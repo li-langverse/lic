@@ -179,7 +179,7 @@ static double nve_energy_msd(double dt, int steps) {
   SoA s;
   init_fcc_liquid(&s, box, STRESS_TEMP, &rng);
   lj_forces(&s, box);
-  const int equil = 2000;
+  const int equil = steps / 5;
   for (int step = 0; step < equil; ++step) {
     vv_step(&s, box, dt);
   }

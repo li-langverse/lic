@@ -27,6 +27,9 @@ LiMdStressResult li_md_stress_momentum(double dt, int steps);
 /* Run all stress tests; returns count written (max cap). */
 int li_md_stress_run_all(LiMdStressResult* out, int cap);
 
+/* Print CSV rows to stdout (harness); always returns 0. */
+int li_md_stress_cli_all(void);
+
 #ifdef __cplusplus
 }
 #endif

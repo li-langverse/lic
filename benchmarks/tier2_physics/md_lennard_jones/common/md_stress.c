@@ -2,6 +2,7 @@
 
 #include <math.h>
 #include <stdint.h>
+#include <stdio.h>
 #include <string.h>
 
 #define STRESS_N 256
@@ -273,4 +274,15 @@ int li_md_stress_run_all(LiMdStressResult* out, int cap) {
   out[2] = li_md_stress_timestep_halving(0.004, 5000);
   out[3] = li_md_stress_momentum(0.004, 5000);
   return 4;
+}
+
+int li_md_stress_cli_all(void) {
+  LiMdStressResult results[8];
+  const int n = li_md_stress_run_all(results, 8);
+  printf("name,value,threshold,passed\n");
+  for (int i = 0; i < n; ++i) {
+    printf("%s,%.12e,%.12e,%d\n", results[i].name, results[i].value, results[i].threshold,
+           results[i].passed);
+  }
+  return 0;
 }

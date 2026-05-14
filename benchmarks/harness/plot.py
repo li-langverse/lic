@@ -38,6 +38,7 @@ from plot_theme import (  # noqa: E402
     MUTED,
     PRIMARY,
     TEXT,
+    WARN,
     brand_figure,
     save_share,
 )
@@ -267,6 +268,107 @@ def plot_md_energy_by_lang(trace_dir: Path, out: Path) -> None:
     plt.close(fig)
 
 
+STABILITY_STRICT = {"harmonic_energy", "momentum_drift"}
+STABILITY_ADVISORY = {"nve_energy_msd", "timestep_halving_ratio"}
+
+
+def plot_stability_by_lang(stability_csv: Path, out: Path) -> None:
+    import matplotlib.pyplot as plt
+    import numpy as np
+
+    from plot_theme import FAIL, PASS, PANEL, apply_theme
+
+    if not stability_csv.exists():
+        print(f"skip stability plot: missing {stability_csv}", file=sys.stderr)
+        return
+
+    df = pd.read_csv(stability_csv)
+    if "lang" not in df.columns:
+        print(f"skip stability plot: missing lang column in {stability_csv}", file=sys.stderr)
+        return
+
+    apply_theme()
+    tests = list(dict.fromkeys(df["test"].tolist()))
+    langs = [lang for lang in ("cpp", "rust", "julia", "li") if lang in set(df["lang"])]
+    if not tests or not langs:
+        return
+
+    width = 0.18
+    offsets = np.linspace(-(len(langs) - 1) / 2, (len(langs) - 1) / 2, len(langs)) * width
+
+    fig, axes = plt.subplots(1, 2, figsize=(16, 9))
+    fig.patch.set_facecolor(PANEL)
+    fig.suptitle(
+        "md_lennard_jones stability by language",
+        fontsize=20,
+        fontweight="bold",
+        color=TEXT,
+        x=0.08,
+        ha="left",
+        y=0.98,
+    )
+    fig.text(
+        0.08,
+        0.94,
+        f"shared C stress kernel · cpp/rust/julia identical · Li via lic+md_stress.c · sha={git_sha()}",
+        fontsize=12,
+        color=MUTED,
+    )
+
+    strict_tests = [t for t in tests if t in STABILITY_STRICT]
+    advisory_tests = [t for t in tests if t in STABILITY_ADVISORY]
+
+    def draw_panel(ax, panel_tests: list[str], title: str) -> None:
+        if not panel_tests:
+            ax.set_visible(False)
+            return
+        px = np.arange(len(panel_tests))
+        for off, lang in zip(offsets, langs):
+            vals = []
+            colors = []
+            for test in panel_tests:
+                sub = df[(df["lang"] == lang) & (df["test"] == test)]
+                if sub.empty:
+                    vals.append(np.nan)
+                    colors.append(MUTED)
+                    continue
+                row = sub.iloc[0]
+                vals.append(float(row["value"]))
+                colors.append(PASS if bool(row["passed"]) else FAIL)
+            bars = ax.bar(
+                px + off,
+                vals,
+                width=width,
+                label=lang,
+                color=LANG_COLORS.get(lang, PRIMARY),
+                alpha=0.85,
+            )
+            for bar, color in zip(bars, colors):
+                bar.set_edgecolor(color)
+                bar.set_linewidth(2.0)
+            for test in panel_tests:
+                sub = df[df["test"] == test]
+                if sub.empty:
+                    continue
+                thr = float(sub.iloc[0]["threshold"])
+                idx = panel_tests.index(test)
+                ax.hlines(thr, idx - 0.4, idx + 0.4, colors=WARN, linestyles="--", linewidth=1.2)
+        ax.set_yscale("log")
+        ax.set_xticks(px)
+        ax.set_xticklabels(panel_tests, rotation=15, ha="right")
+        ax.set_title(title, loc="left", color=TEXT)
+        ax.set_ylabel("metric value (log)")
+        ax.grid(axis="y", linestyle="--", linewidth=0.6, alpha=0.5)
+        ax.legend(loc="upper right", framealpha=0.9)
+
+    draw_panel(axes[0], strict_tests, "Strict (Swope / momentum)")
+    draw_panel(axes[1], advisory_tests, "Advisory (Allen–Tildesley)")
+    fig.text(0.96, 0.03, "Li · li-language", ha="right", fontsize=10, color=MUTED)
+    plt.tight_layout(rect=(0, 0, 1, 0.92))
+    save_share(fig, out)
+    plt.close(fig)
+
+
 def plot_md_energy_overlay(trace_dir: Path, out: Path) -> None:
     import matplotlib.pyplot as plt
 
@@ -314,6 +416,12 @@ def main() -> int:
     parser.add_argument("--out", type=Path, default=SHARE)
     parser.add_argument("--tier", default="tier2")
     parser.add_argument(
+        "--stability-csv",
+        type=Path,
+        default=RESULTS / "stability.csv",
+        help="stability harness CSV (lang × test)",
+    )
+    parser.add_argument(
         "--energy-dir",
         type=Path,
         default=RESULTS / "md_lennard_jones",
@@ -332,6 +440,7 @@ def main() -> int:
     if verify_df is not None and "passed" in verify_df.columns:
         plot_correctness_grid(verify_df, args.out / "correctness_tier0.png")
 
+    plot_stability_by_lang(args.stability_csv, args.out / "md_stability_by_lang.png")
     plot_md_energy_by_lang(args.energy_dir, args.out / "md_lennard_jones_energy_by_lang.png")
     plot_md_energy_overlay(args.energy_dir, args.out / "md_lennard_jones_energy_overlay.png")
 

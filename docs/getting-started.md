@@ -1,6 +1,6 @@
 # Getting started
 
-This page helps you orient in the Li repository before the compiler bootstrap exists. When Phase 0 lands, build steps here will be updated with exact CMake commands.
+This page helps you orient in the Li repository. Phase 0 bootstrap is live — build with CMake + LLVM 18 below.
 
 ## What you are looking at
 
@@ -53,20 +53,18 @@ Do not jump ahead of the [master plan](superpowers/plans/2026-05-14-li-master-pl
 | 5b | N-body, MD, ML benchmarks |
 | 6 | Self-hosted compiler |
 
-## First commands (placeholder)
-
-After Phase 0:
+## First commands
 
 ```bash
-cmake -B build -G Ninja -DLLVM_DIR="$LLVM_DIR"
-cmake --build build
-./build/lic smoke-llvm
+export LLVM_DIR="$(brew --prefix llvm@18)/lib/cmake/llvm"
+./scripts/build.sh
+./build/compiler/lic/lic smoke-llvm
 ```
 
 After Phase 5:
 
 ```bash
-./build/lic build examples/tetris/main.li -o tetris --release
+./build/compiler/lic/lic build examples/tetris/main.li -o tetris --release
 ./tetris
 ```
 

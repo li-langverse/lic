@@ -107,28 +107,6 @@ bool Lexer::process_line_begin(std::size_t line_start, DiagnosticBag& diags) {
     return true;
   }
 
-  if (i < source_.size() && source_[i] == '=') {
-    std::size_t j = i + 1;
-    while (j < source_.size() && source_[j] == ' ') {
-      j++;
-    }
-    if (j >= source_.size() || source_[j] == '\n' || source_[j] == '\r') {
-      Token t;
-      t.kind = TokenKind::Eq;
-      t.line = line_;
-      t.column = spaces + 1;
-      t.start = i;
-      t.end = i + 1;
-      t.text = std::string_view(source_).substr(i, 1);
-      push_token(t);
-      pos_ = j;
-      column_ = spaces + 1;
-      at_line_start_ = (j < source_.size() && source_[j] == '\n');
-      pending_indent_check_ = false;
-      return true;
-    }
-  }
-
   const std::size_t cur = indent_stack_.back();
   if (pending_indent_check_ && spaces <= cur) {
     SourceLoc loc{file_, line_, 1, line_start};
@@ -167,6 +145,28 @@ bool Lexer::process_line_begin(std::size_t line_start, DiagnosticBag& diags) {
     }
   }
   pending_indent_check_ = false;
+
+  if (i < source_.size() && source_[i] == '=') {
+    std::size_t j = i + 1;
+    while (j < source_.size() && source_[j] == ' ') {
+      j++;
+    }
+    if (j >= source_.size() || source_[j] == '\n' || source_[j] == '\r') {
+      Token t;
+      t.kind = TokenKind::Eq;
+      t.line = line_;
+      t.column = spaces + 1;
+      t.start = i;
+      t.end = i + 1;
+      t.text = std::string_view(source_).substr(i, 1);
+      push_token(t);
+      pos_ = j;
+      column_ = spaces + 1;
+      at_line_start_ = (j < source_.size() && source_[j] == '\n');
+      return true;
+    }
+  }
+
   pos_ = i;
   column_ = spaces + 1;
   at_line_start_ = false;
@@ -206,6 +206,16 @@ bool Lexer::lex_number(Token& out, bool is_float_start) {
       while (!at_end() && std::isdigit(static_cast<unsigned char>(peek()))) {
         advance();
       }
+    }
+  }
+  if (peek() == 'e' || peek() == 'E') {
+    is_float = true;
+    advance();
+    if (peek() == '+' || peek() == '-') {
+      advance();
+    }
+    while (!at_end() && std::isdigit(static_cast<unsigned char>(peek()))) {
+      advance();
     }
   }
   out.start = start;
@@ -363,6 +373,7 @@ bool Lexer::tokenize(DiagnosticBag& diags) {
           return false;
         }
         continue;
+      case '|': single(TokenKind::Pipe); continue;
       case '+':
       case '-':
         if (peek() == '>') {

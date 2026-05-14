@@ -13,7 +13,9 @@ struct Span {
   std::size_t end = 0;
 };
 
-enum class TypeKind { Named, Array };
+struct Expr;
+
+enum class TypeKind { Named, Array, Refinement };
 
 struct TypeExpr {
   TypeKind kind = TypeKind::Named;
@@ -21,6 +23,9 @@ struct TypeExpr {
   std::string name;
   std::int64_t array_size = 0;
   std::unique_ptr<TypeExpr> elem;
+  std::string refinement_var;
+  std::unique_ptr<TypeExpr> refinement_base;
+  std::unique_ptr<Expr> refinement_pred;
 };
 
 struct Param {

@@ -30,6 +30,9 @@ struct Ctx {
   SourceLoc loc(const Span& s) const { return SourceLoc{file, 1, 1, s.start}; }
 
   TyPtr resolve_type(const TypeExpr& te) {
+    if (te.kind == TypeKind::Refinement) {
+      return resolve_type(*te.refinement_base);
+    }
     if (te.kind == TypeKind::Array) {
       auto t = std::make_shared<Ty>();
       t->kind = TyKind::Array;

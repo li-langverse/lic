@@ -23,8 +23,8 @@ expected_substr = "indentation"
 [[tests]]
 suite = "typecheck"
 file = "typecheck/fib.li"
-outcome = "compile_fail"
-note = "types only stage until full pipeline; becomes verify_ok"
+outcome = "verify_ok"
+note = "recursive proc compiles once build pipeline exists"
 
 [[tests]]
 suite = "typecheck"

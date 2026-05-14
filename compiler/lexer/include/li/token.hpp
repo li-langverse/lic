@@ -59,6 +59,7 @@ enum class TokenKind {
   EqEq,
   Ne,
   DotDotLt,
+  Pipe,
 };
 
 struct Token {

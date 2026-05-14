@@ -191,6 +191,18 @@ std::unique_ptr<Expr> Parser::parse_expr(int min_prec) {
     left->kind = Expr::Kind::UnaryNot;
     left->span = {t.start, t.end};
     left->operand = parse_expr(100);
+  } else if (at(TokenKind::Minus)) {
+    i++;
+    auto inner = parse_primary();
+    if (inner && inner->kind == Expr::Kind::IntLit) {
+      inner->int_value = -inner->int_value;
+      left = std::move(inner);
+    } else if (inner && inner->kind == Expr::Kind::FloatLit) {
+      inner->float_value = -inner->float_value;
+      left = std::move(inner);
+    } else {
+      left = std::move(inner);
+    }
   } else {
     left = parse_primary();
   }
@@ -220,7 +232,29 @@ std::unique_ptr<Expr> Parser::parse_expr(int min_prec) {
 }
 
 TypeExpr Parser::parse_type() {
-  if (at(TokenKind::Ident) && cur().text == "var") {
+  if (accept(TokenKind::LBrace)) {
+    TypeExpr ty;
+    ty.kind = TypeKind::Refinement;
+    ty.span = {peek(-1).start, peek(-1).end};
+    if (!at(TokenKind::Ident)) {
+      diags.error(loc(cur()), "expected refinement binding name");
+      return ty;
+    }
+    ty.refinement_var = std::string(cur().text);
+    i++;
+    expect(TokenKind::Colon, "':'");
+    ty.refinement_base = std::make_unique<TypeExpr>(parse_type());
+    if (!expect(TokenKind::Pipe, "'|'")) {
+      return ty;
+    }
+    ty.refinement_pred = parse_contract_expr();
+  if (!expect(TokenKind::RBrace, "'}'")) {
+      return ty;
+    }
+    ty.span.end = peek(-1).end;
+    return ty;
+  }
+  if (at(TokenKind::KwVar)) {
     i++;
   }
   const Token& t = cur();
@@ -308,6 +342,13 @@ std::vector<Stmt> Parser::parse_block() {
 
 Stmt Parser::parse_stmt() {
   Stmt s;
+  if (at(TokenKind::Ident) && cur().text == "discard") {
+    s.kind = Stmt::Kind::Expr;
+    s.span = {cur().start, cur().end};
+    i++;
+    skip_newlines();
+    return s;
+  }
   if (at(TokenKind::KwVar)) {
     const Token t = cur();
     s.kind = Stmt::Kind::VarDecl;
@@ -344,19 +385,23 @@ Stmt Parser::parse_stmt() {
   if (at(TokenKind::Ident) && cur().text == "parallel") {
     s.kind = Stmt::Kind::Expr;
     s.span = {cur().start, cur().end};
-    while (!at(TokenKind::Dedent) && !at(TokenKind::Eof)) {
-      const std::size_t b = i;
+    while (!at(TokenKind::Eof) && !at(TokenKind::Newline)) {
       i++;
-      if (at(TokenKind::Eq)) {
-        i++;
-        skip_newlines();
-        if (at(TokenKind::Indent)) {
-          parse_block();
-        }
-        break;
+    }
+    skip_newlines();
+    if (accept(TokenKind::Indent)) {
+      skip_newlines();
+      while (at(TokenKind::KwRequires) || at(TokenKind::KwEnsures) ||
+             at(TokenKind::KwDecreases) || at(TokenKind::KwInvariant)) {
+        (void)parse_contract();
       }
-      if (i == b) {
-        break;
+      expect(TokenKind::Dedent, "dedent");
+      skip_newlines();
+    }
+    if (accept(TokenKind::Eq)) {
+      skip_newlines();
+      if (at(TokenKind::Indent)) {
+        parse_block();
       }
     }
     return s;
@@ -381,6 +426,19 @@ Stmt Parser::parse_stmt() {
     s.then_body = parse_block();
     return s;
   }
+  const std::size_t save = i;
+  auto lhs = parse_primary();
+  if (lhs) {
+    lhs = parse_postfix(std::move(lhs));
+  }
+  if (lhs && accept(TokenKind::Eq)) {
+    s.kind = Stmt::Kind::Expr;
+    s.span = {lhs->span.start, cur().end};
+    s.expr = parse_expr();
+    skip_newlines();
+    return s;
+  }
+  i = save;
   s.kind = Stmt::Kind::Expr;
   s.expr = parse_expr();
   skip_newlines();

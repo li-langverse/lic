@@ -50,7 +50,6 @@ jobs:
           ./scripts/check-version.sh --build
 
   build-and-test-macos:
-    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
     runs-on: macos-14
     steps:
       - uses: actions/checkout@v4

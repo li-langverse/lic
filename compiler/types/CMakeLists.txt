@@ -1,3 +1,3 @@
-add_library(li_types STATIC types.cpp)
+add_library(li_types STATIC types.cpp typecheck.cpp)
 target_include_directories(li_types PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/include)
-target_link_libraries(li_types PUBLIC li_ast)
+target_link_libraries(li_types PUBLIC li_ast li_diagnostics)

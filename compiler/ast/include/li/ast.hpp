@@ -13,9 +13,14 @@ struct Span {
   std::size_t end = 0;
 };
 
+enum class TypeKind { Named, Array };
+
 struct TypeExpr {
+  TypeKind kind = TypeKind::Named;
   Span span;
   std::string name;
+  std::int64_t array_size = 0;
+  std::unique_ptr<TypeExpr> elem;
 };
 
 struct Param {
@@ -29,15 +34,18 @@ enum class ContractKind { Requires, Ensures, Decreases, Invariant };
 enum class BinOp { Add, Sub, Mul, Div, Le, Lt, Ge, Gt, Eq, Ne, And, Or };
 
 struct Expr {
-  enum class Kind { IntLit, Ident, BinOp, Call, UnaryNot };
+  enum class Kind { IntLit, FloatLit, Ident, BinOp, Call, UnaryNot, Index };
   Kind kind = Kind::IntLit;
   Span span;
   std::int64_t int_value = 0;
+  double float_value = 0.0;
   std::string ident;
   BinOp bin_op = BinOp::Add;
   std::unique_ptr<Expr> lhs;
   std::unique_ptr<Expr> rhs;
   std::unique_ptr<Expr> operand;
+  std::unique_ptr<Expr> base;
+  std::unique_ptr<Expr> index;
   std::vector<std::unique_ptr<Expr>> args;
 };
 
@@ -48,13 +56,16 @@ struct Contract {
 };
 
 struct Stmt {
-  enum class Kind { Return, If, Expr };
+  enum class Kind { Return, If, Expr, VarDecl };
   Kind kind = Kind::Return;
   Span span;
   std::unique_ptr<Expr> expr;
   std::unique_ptr<Expr> cond;
   std::vector<Stmt> then_body;
   std::optional<std::vector<Stmt>> else_body;
+  std::string var_name;
+  TypeExpr var_type;
+  std::unique_ptr<Expr> init;
 };
 
 struct ProcDecl {
@@ -66,7 +77,14 @@ struct ProcDecl {
   std::vector<Stmt> body;
 };
 
+struct TypeAlias {
+  Span span;
+  std::string name;
+  TypeExpr definition;
+};
+
 struct Module {
+  std::vector<TypeAlias> types;
   std::vector<ProcDecl> procs;
 };
 

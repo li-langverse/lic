@@ -166,22 +166,38 @@ void Lexer::skip_whitespace_inline() {
   }
 }
 
-bool Lexer::lex_number(Token& out) {
+bool Lexer::lex_number(Token& out, bool is_float_start) {
   const std::size_t start = pos_;
   const std::size_t sl = line_;
   const std::size_t sc = column_;
-  std::int64_t value = 0;
+  std::int64_t int_value = 0;
+  bool is_float = is_float_start;
   while (!at_end() && std::isdigit(static_cast<unsigned char>(peek()))) {
-    value = value * 10 + (peek() - '0');
+    int_value = int_value * 10 + (peek() - '0');
     advance();
   }
-  out.kind = TokenKind::IntLit;
-  out.text = std::string_view(source_).substr(start, pos_ - start);
+  if (!is_float && peek() == '.') {
+    const char next = pos_ + 1 < source_.size() ? source_[pos_ + 1] : '\0';
+    if (std::isdigit(static_cast<unsigned char>(next))) {
+      is_float = true;
+      advance();
+      while (!at_end() && std::isdigit(static_cast<unsigned char>(peek()))) {
+        advance();
+      }
+    }
+  }
   out.start = start;
   out.end = pos_;
   out.line = sl;
   out.column = sc;
-  out.int_value = value;
+  out.text = std::string_view(source_).substr(start, pos_ - start);
+  if (is_float) {
+    out.kind = TokenKind::FloatLit;
+    out.float_value = std::stod(std::string(out.text));
+  } else {
+    out.kind = TokenKind::IntLit;
+    out.int_value = int_value;
+  }
   return true;
 }
 

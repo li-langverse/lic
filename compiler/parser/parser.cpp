@@ -50,6 +50,7 @@ struct Parser {
 
   std::unique_ptr<Expr> parse_expr(int min_prec = 0);
   std::unique_ptr<Expr> parse_primary();
+  std::unique_ptr<Expr> parse_postfix(std::unique_ptr<Expr> base);
   TypeExpr parse_type();
   Param parse_param();
   std::unique_ptr<Expr> parse_contract_expr();
@@ -57,12 +58,16 @@ struct Parser {
   std::vector<Stmt> parse_block();
   Stmt parse_stmt();
   ProcDecl parse_proc();
+  TypeAlias parse_type_alias();
 
   bool parse_module(Module& out) {
     skip_newlines();
     while (!at(TokenKind::Eof)) {
       if (at(TokenKind::KwProc)) {
         out.procs.push_back(parse_proc());
+        skip_newlines();
+      } else if (at(TokenKind::KwType)) {
+        out.types.push_back(parse_type_alias());
         skip_newlines();
       } else {
         diags.error(loc(cur()), "expected top-level declaration");
@@ -76,14 +81,23 @@ struct Parser {
 std::unique_ptr<Expr> Parser::parse_primary() {
   const Token& t = cur();
   if (t.kind == TokenKind::IntLit) {
-  i++;
+    i++;
     auto e = std::make_unique<Expr>();
     e->kind = Expr::Kind::IntLit;
     e->span = {t.start, t.end};
     e->int_value = t.int_value;
-    return e;
+    return parse_postfix(std::move(e));
   }
-  if (t.kind == TokenKind::Ident || t.kind == TokenKind::KwResult) {
+  if (t.kind == TokenKind::FloatLit) {
+    i++;
+    auto e = std::make_unique<Expr>();
+    e->kind = Expr::Kind::FloatLit;
+    e->span = {t.start, t.end};
+    e->float_value = t.float_value;
+    return parse_postfix(std::move(e));
+  }
+  if (t.kind == TokenKind::Ident || t.kind == TokenKind::KwResult ||
+      t.kind == TokenKind::KwTrue || t.kind == TokenKind::KwFalse) {
     const std::string name(t.text);
     i++;
     auto e = std::make_unique<Expr>();
@@ -103,17 +117,33 @@ std::unique_ptr<Expr> Parser::parse_primary() {
       e->kind = Expr::Kind::Ident;
       e->ident = name;
     }
-    return e;
+    return parse_postfix(std::move(e));
   }
   if (accept(TokenKind::LParen)) {
     auto inner = parse_expr();
     if (!expect(TokenKind::RParen, "')'")) {
       return nullptr;
     }
-    return inner;
+    return parse_postfix(std::move(inner));
   }
   diags.error(loc(t), "expected expression");
   return nullptr;
+}
+
+std::unique_ptr<Expr> Parser::parse_postfix(std::unique_ptr<Expr> base) {
+  while (accept(TokenKind::LBracket)) {
+    auto idx = parse_expr();
+    if (!expect(TokenKind::RBracket, "']'")) {
+      return nullptr;
+    }
+    auto node = std::make_unique<Expr>();
+    node->kind = Expr::Kind::Index;
+    node->span = {base->span.start, tokens[i - 1].end};
+    node->base = std::move(base);
+    node->index = std::move(idx);
+    base = std::move(node);
+  }
+  return base;
 }
 
 int prec(TokenKind k) {
@@ -193,11 +223,27 @@ TypeExpr Parser::parse_type() {
   const Token& t = cur();
   TypeExpr ty;
   ty.span = {t.start, t.end};
-  if (t.kind == TokenKind::Ident) {
-    ty.name = std::string(t.text);
-    i++;
-  } else {
+  if (t.kind != TokenKind::Ident) {
     diags.error(loc(t), "expected type");
+    return ty;
+  }
+  const std::string name(t.text);
+  i++;
+  if (name == "array" && accept(TokenKind::LBracket)) {
+    ty.kind = TypeKind::Array;
+    ty.name = "array";
+    if (!at(TokenKind::IntLit)) {
+      diags.error(loc(cur()), "expected array size");
+      return ty;
+    }
+    ty.array_size = cur().int_value;
+    i++;
+    expect(TokenKind::Comma, "','");
+    ty.elem = std::make_unique<TypeExpr>(parse_type());
+    expect(TokenKind::RBracket, "']'");
+  } else {
+    ty.kind = TypeKind::Named;
+    ty.name = name;
   }
   return ty;
 }
@@ -254,6 +300,22 @@ std::vector<Stmt> Parser::parse_block() {
 
 Stmt Parser::parse_stmt() {
   Stmt s;
+  if (at(TokenKind::KwVar)) {
+    const Token t = cur();
+    s.kind = Stmt::Kind::VarDecl;
+    s.span = {t.start, t.end};
+    i++;
+    const Token name = cur();
+    s.var_name = std::string(name.text);
+    i++;
+    expect(TokenKind::Colon, "':'");
+    s.var_type = parse_type();
+    if (accept(TokenKind::Eq)) {
+      s.init = parse_expr();
+    }
+    skip_newlines();
+    return s;
+  }
   if (at(TokenKind::KwReturn)) {
     const Token t = cur();
     s.kind = Stmt::Kind::Return;
@@ -306,6 +368,19 @@ ProcDecl Parser::parse_proc() {
   skip_newlines();
   proc.body = parse_block();
   return proc;
+}
+
+TypeAlias Parser::parse_type_alias() {
+  TypeAlias alias;
+  expect(TokenKind::KwType, "'type'");
+  const Token name = cur();
+  alias.span = {name.start, name.end};
+  alias.name = std::string(name.text);
+  i++;
+  expect(TokenKind::Eq, "'='");
+  alias.definition = parse_type();
+  skip_newlines();
+  return alias;
 }
 
 }  // namespace

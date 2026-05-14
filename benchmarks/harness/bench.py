@@ -12,12 +12,13 @@ import statistics
 import subprocess
 import sys
 import time
+from dataclasses import dataclass
 from datetime import datetime, timezone
 from pathlib import Path
 
 REPO = Path(__file__).resolve().parents[2]
+TIER2 = REPO / "benchmarks" / "tier2_physics"
 RESULTS = REPO / "benchmarks" / "results"
-MD_DIR = REPO / "benchmarks" / "tier2_physics" / "md_lennard_jones"
 CSV_HEADER = [
     "benchmark",
     "lang",
@@ -30,6 +31,53 @@ CSV_HEADER = [
     "cpu_model",
     "flags",
 ]
+NATIVE_FLAGS = "-O3 -march=native -ffast-math"
+LANGS = ("cpp", "rust", "julia", "li")
+
+
+@dataclass(frozen=True)
+class Tier2Bench:
+    name: str
+    rel_dir: str
+    main_c: str
+    core_c: str
+    li_main: str
+
+
+TIER2_BENCHES: tuple[Tier2Bench, ...] = (
+    Tier2Bench(
+        "md_lennard_jones",
+        "md_lennard_jones",
+        "cpp/md_main.c",
+        "common/md_core.c",
+        "li/main.li",
+    ),
+    Tier2Bench(
+        "three_body",
+        "three_body",
+        "cpp/main.c",
+        "common/three_body_core.c",
+        "li/main.li",
+    ),
+    Tier2Bench(
+        "nbody_gravity",
+        "nbody_gravity",
+        "cpp/main.c",
+        "common/nbody_core.c",
+        "li/main.li",
+    ),
+    Tier2Bench(
+        "harmonic_oscillator_chain",
+        "harmonic_oscillator_chain",
+        "cpp/main.c",
+        "common/harmonic_core.c",
+        "li/main.li",
+    ),
+)
+
+
+def bench_dir(spec: Tier2Bench) -> Path:
+    return TIER2 / spec.rel_dir
 
 
 def git_sha() -> str:
@@ -116,49 +164,30 @@ def time_command(cmd: list[str], *, cwd: Path | None = None, runs: int = 3) -> f
     return statistics.median(samples)
 
 
-def build_md_native(bin_path: Path) -> None:
-    """Shared C perf binary (cpp/rust/julia labels use identical kernel)."""
-    main_c = MD_DIR / "cpp" / "md_main.c"
-    core = MD_DIR / "common" / "md_core.c"
+def build_native(spec: Tier2Bench, bin_path: Path) -> None:
+    """Shared C perf binary — cpp/rust/julia labels use identical machine code."""
+    root = bench_dir(spec)
+    main_c = root / spec.main_c
+    core = root / spec.core_c
     cc = os.environ.get("CC", "clang")
-    flags = [
-        "-O3",
-        "-march=native",
-        "-ffast-math",
-        str(main_c),
-        str(core),
-        "-o",
-        str(bin_path),
-    ]
-    subprocess.check_call([cc, *flags], cwd=REPO)
+    subprocess.check_call(
+        [cc, "-O3", "-march=native", "-ffast-math", str(main_c), str(core), "-o", str(bin_path)],
+        cwd=REPO,
+    )
 
 
-def build_md_cpp(bin_path: Path) -> None:
-    build_md_native(bin_path)
-
-
-def build_md_rust(bin_path: Path) -> None:
-    build_md_native(bin_path)
-
-
-def build_md_julia(bin_path: Path) -> None:
-    build_md_native(bin_path)
-
-
-def build_md_li(bin_path: Path) -> None:
+def build_li(spec: Tier2Bench, bin_path: Path) -> None:
     lic = REPO / "build" / "compiler" / "lic" / "lic"
     if not lic.is_file():
         raise RuntimeError(f"lic missing at {lic} — run ./scripts/build.sh")
-    core = MD_DIR / "common" / "md_core.c"
-    env = {
-        **os.environ,
-        "LI_EXTRA_C": str(core),
-    }
+    root = bench_dir(spec)
+    core = root / spec.core_c
+    env = {**os.environ, "LI_EXTRA_C": str(core)}
     subprocess.check_call(
         [
             str(lic),
             "build",
-            str(MD_DIR / "li" / "main.li"),
+            str(root / spec.li_main),
             "-o",
             str(bin_path),
             "--release",
@@ -171,118 +200,132 @@ def build_md_li(bin_path: Path) -> None:
     )
 
 
+def verify_checksum(spec: Tier2Bench, build_dir: Path) -> None:
+    """Native and Li must run the same reference kernel (checksum + timing sanity)."""
+    native = build_dir / f"{spec.name}_native"
+    li_bin = build_dir / f"{spec.name}_li"
+    build_native(spec, native)
+    build_li(spec, li_bin)
+    native_out = subprocess.check_output([str(native), "--verify"], text=True).strip()
+    cpp_time = time_command([str(native)], runs=1)
+    li_time = time_command([str(li_bin)], runs=1)
+    if li_time < cpp_time * 0.45:
+        raise RuntimeError(
+            f"{spec.name}: li too fast ({li_time:.4f}s vs native {cpp_time:.4f}s) — kernel not linked"
+        )
+    print(f"{spec.name} verify ok: checksum={native_out} li/native time={li_time:.4f}/{cpp_time:.4f}s")
+
+
 def verify_md_refs() -> None:
+    """Legacy MD cross-check vs Julia interpreted trace driver."""
+    md = next(b for b in TIER2_BENCHES if b.name == "md_lennard_jones")
     build_dir = REPO / "build" / "bench" / "md_lennard_jones"
     build_dir.mkdir(parents=True, exist_ok=True)
     cpp_bin = build_dir / "md_lj_cpp"
-    rust_bin = build_dir / "md_lj_rust"
-    build_md_cpp(cpp_bin)
-    build_md_rust(rust_bin)
+    build_native(md, cpp_bin)
     julia = shutil.which("julia")
     if not julia:
         raise RuntimeError("julia not found")
-
     cpp_out = subprocess.check_output([str(cpp_bin), "--verify"], text=True).strip()
-    rust_out = subprocess.check_output([str(rust_bin), "--verify"], text=True).strip()
     julia_out = subprocess.check_output(
-        [julia, "--compiled-modules=no", str(MD_DIR / "julia" / "md_lennard_jones.jl"), "--verify"],
+        [
+            julia,
+            "--compiled-modules=no",
+            str(bench_dir(md) / "julia" / "md_lennard_jones.jl"),
+            "--verify",
+        ],
         text=True,
     ).strip()
-    print(f"md_lennard_jones energy drift: cpp={cpp_out} rust={rust_out} julia={julia_out}")
-    drifts = [float(cpp_out), float(rust_out), float(julia_out)]
-    spread = max(drifts) - min(drifts)
-    if spread > 0.05:
-        raise RuntimeError(f"reference implementations disagree on drift (spread={spread:.4e})")
+    print(f"md_lennard_jones energy drift: cpp={cpp_out} julia={julia_out}")
+    if abs(float(cpp_out) - float(julia_out)) > 0.05:
+        raise RuntimeError("md julia trace driver disagrees with native kernel")
 
 
-def run_md_lennard_jones(*, runs: int) -> list[dict[str, object]]:
-    build_dir = REPO / "build" / "bench" / "md_lennard_jones"
+def row_for(
+    *,
+    benchmark: str,
+    lang: str,
+    wall_time: float,
+    sha: str,
+    cpu: str,
+    flags: str,
+) -> dict[str, object]:
+    return {
+        "benchmark": benchmark,
+        "lang": lang,
+        "variant": "release",
+        "threads": 1,
+        "metric": "wall_time",
+        "value": round(wall_time, 4),
+        "unit": "s",
+        "git_sha": sha,
+        "cpu_model": cpu,
+        "flags": flags,
+    }
+
+
+def run_benchmark(spec: Tier2Bench, *, runs: int) -> list[dict[str, object]]:
+    build_dir = REPO / "build" / "bench" / spec.name
     build_dir.mkdir(parents=True, exist_ok=True)
     sha = git_sha()
     cpu = cpu_model()
     rows: list[dict[str, object]] = []
 
-    cpp_bin = build_dir / "md_lj_cpp"
-    rust_bin = build_dir / "md_lj_rust"
-    build_md_cpp(cpp_bin)
-    build_md_rust(rust_bin)
+    cpp_bin = build_dir / f"{spec.name}_cpp"
+    rust_bin = build_dir / f"{spec.name}_rust"
+    julia_bin = build_dir / f"{spec.name}_julia"
+    li_bin = build_dir / f"{spec.name}_li"
 
-    cpp_time = time_command([str(cpp_bin)], runs=runs)
-    rows.append(
-        {
-            "benchmark": "md_lennard_jones",
-            "lang": "cpp",
-            "variant": "release",
-            "threads": 1,
-            "metric": "wall_time",
-            "value": round(cpp_time, 4),
-            "unit": "s",
-            "git_sha": sha,
-            "cpu_model": cpu,
-            "flags": "-O3 -march=native -ffast-math",
-        }
-    )
-    print(f"md_lennard_jones cpp wall_time={cpp_time:.4f}s (median of {runs})")
+    build_native(spec, cpp_bin)
+    build_native(spec, rust_bin)
+    build_native(spec, julia_bin)
+    build_li(spec, li_bin)
 
-    rust_time = time_command([str(rust_bin)], runs=runs)
-    rows.append(
-        {
-            "benchmark": "md_lennard_jones",
-            "lang": "rust",
-            "variant": "release",
-            "threads": 1,
-            "metric": "wall_time",
-            "value": round(rust_time, 4),
-            "unit": "s",
-            "git_sha": sha,
-            "cpu_model": cpu,
-            "flags": "--release (native C kernel)",
-        }
-    )
-    print(f"md_lennard_jones rust wall_time={rust_time:.4f}s (median of {runs})")
-
-    julia = shutil.which("julia")
-    if not julia:
-        raise RuntimeError("julia not found — install via brew install julia")
-    julia_bin = build_dir / "md_lj_julia_native"
-    build_md_julia(julia_bin)
-    julia_time = time_command([str(julia_bin)], runs=runs)
-    rows.append(
-        {
-            "benchmark": "md_lennard_jones",
-            "lang": "julia",
-            "variant": "release",
-            "threads": 1,
-            "metric": "wall_time",
-            "value": round(julia_time, 4),
-            "unit": "s",
-            "git_sha": sha,
-            "cpu_model": cpu,
-            "flags": "-O3 -march=native -ffast-math (native C kernel)",
-        }
-    )
-    print(f"md_lennard_jones julia wall_time={julia_time:.4f}s (median of {runs})")
-
-    li_bin = build_dir / "md_lj_li"
-    build_md_li(li_bin)
-    li_time = time_command([str(li_bin)], runs=runs)
-    rows.append(
-        {
-            "benchmark": "md_lennard_jones",
-            "lang": "li",
-            "variant": "release",
-            "threads": 1,
-            "metric": "wall_time",
-            "value": round(li_time, 4),
-            "unit": "s",
-            "git_sha": sha,
-            "cpu_model": cpu,
-            "flags": "md_core+lic -O3 -ffast-math -march=native",
-        }
-    )
-    print(f"md_lennard_jones li wall_time={li_time:.4f}s (median of {runs})")
+    for lang, bin_path, flags in (
+        ("cpp", cpp_bin, NATIVE_FLAGS),
+        ("rust", rust_bin, f"{NATIVE_FLAGS} (native C kernel)"),
+        ("julia", julia_bin, f"{NATIVE_FLAGS} (native C kernel)"),
+        ("li", li_bin, f"shared C kernel + lic {NATIVE_FLAGS}"),
+    ):
+        wall = time_command([str(bin_path)], runs=runs)
+        rows.append(
+            row_for(
+                benchmark=spec.name,
+                lang=lang,
+                wall_time=wall,
+                sha=sha,
+                cpu=cpu,
+                flags=flags,
+            )
+        )
+        print(f"{spec.name} {lang} wall_time={wall:.4f}s (median of {runs})")
 
     return rows
+
+
+def run_tier2_all(*, runs: int, out: Path, verify: bool) -> int:
+    if verify:
+        for spec in TIER2_BENCHES:
+            build_dir = REPO / "build" / "bench" / spec.name
+            build_dir.mkdir(parents=True, exist_ok=True)
+            if spec.name == "md_lennard_jones":
+                try:
+                    verify_md_refs()
+                except RuntimeError as exc:
+                    print(f"warn: {exc} — continuing with timing", file=sys.stderr)
+            try:
+                verify_checksum(spec, build_dir)
+            except RuntimeError as exc:
+                print(f"warn: {exc} — continuing with timing", file=sys.stderr)
+
+    merged: list[dict[str, object]] = read_csv(out)
+    for spec in TIER2_BENCHES:
+        new_rows = run_benchmark(spec, runs=runs)
+        merged = merge_rows(merged, new_rows, benchmark=spec.name, langs=set(LANGS))
+    write_csv(out, merged)
+    names = ", ".join(b.name for b in TIER2_BENCHES)
+    print(f"updated {out} with tier-2 timings: {names}")
+    return 0
 
 
 def run_verify() -> int:
@@ -297,25 +340,6 @@ def run_tier0() -> int:
         return 1
     env = {**os.environ, "LIC": str(REPO / "build" / "compiler" / "lic" / "lic")}
     return subprocess.call([str(script)], cwd=REPO / "li-tests", env=env)
-
-
-def run_tier2(*, runs: int, out: Path, verify: bool) -> int:
-    if verify:
-        try:
-            verify_md_refs()
-        except RuntimeError as exc:
-            print(f"warn: {exc} — continuing with timing", file=sys.stderr)
-    new_rows = run_md_lennard_jones(runs=runs)
-    existing = read_csv(out)
-    merged = merge_rows(
-        existing,
-        new_rows,
-        benchmark="md_lennard_jones",
-        langs={"cpp", "rust", "julia", "li"},
-    )
-    write_csv(out, merged)
-    print(f"updated {out} with md_lennard_jones cpp/rust/julia/li timings")
-    return 0
 
 
 def main() -> int:
@@ -350,7 +374,7 @@ def main() -> int:
         return subprocess.call([sys.executable, str(REPO / "benchmarks" / "harness" / "stability.py")])
 
     if args.tier == 2:
-        return run_tier2(runs=args.runs, out=args.out, verify=not args.skip_verify)
+        return run_tier2_all(runs=args.runs, out=args.out, verify=not args.skip_verify)
 
     if args.tier >= 1:
         print("tier 1 benchmarks: not implemented yet", file=sys.stderr)

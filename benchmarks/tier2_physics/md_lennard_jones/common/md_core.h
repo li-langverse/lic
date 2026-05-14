@@ -175,6 +175,9 @@ static inline double li_md_run(void) {
 
 void li_md_lj_run(void);
 
+void li_md_kernel(void);
+double li_md_checksum(void);
+
 #ifdef __cplusplus
 }
 #endif

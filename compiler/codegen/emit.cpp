@@ -78,6 +78,7 @@ struct EmitCtx {
   std::map<std::string, llvm::AllocaInst*> int_locals;
   std::map<std::string, llvm::AllocaInst*> float_locals;
   std::map<std::string, llvm::AllocaInst*> i64_locals;
+  std::map<std::string, llvm::AllocaInst*> ptr_locals;
   std::map<std::string, ArraySlot> arrays;
   std::unordered_map<std::string, llvm::BasicBlock*> labels;
   int str_counter = 0;
@@ -106,6 +107,28 @@ struct EmitCtx {
 
   llvm::Value* load_float(const std::string& name) {
     return builder->CreateLoad(llvm::Type::getDoubleTy(context), ensure_float_local(name));
+  }
+
+  llvm::AllocaInst* ensure_ptr_local(const std::string& name) {
+    auto it = ptr_locals.find(name);
+    if (it != ptr_locals.end()) {
+      return it->second;
+    }
+    llvm::AllocaInst* slot =
+        builder->CreateAlloca(i8_ptr(context), nullptr, name);
+    ptr_locals[name] = slot;
+    return slot;
+  }
+
+  llvm::Value* load_ptr(const std::string& name) {
+    if (auto it = ptr_locals.find(name); it != ptr_locals.end()) {
+      return builder->CreateLoad(i8_ptr(context), it->second);
+    }
+    if (auto it64 = i64_locals.find(name); it64 != i64_locals.end()) {
+      return builder->CreateIntToPtr(
+          builder->CreateLoad(i64_ty(context), it64->second), i8_ptr(context));
+    }
+    return llvm::ConstantPointerNull::get(llvm::cast<llvm::PointerType>(i8_ptr(context)));
   }
 
   llvm::AllocaInst* ensure_i64_local(const std::string& name) {
@@ -184,13 +207,16 @@ struct EmitCtx {
     return lhs;
   }
 
-  llvm::Value* mir_arg_value(const MirArg& arg) {
+  llvm::Value* mir_arg_value(const MirArg& arg, bool ptr_param = false) {
     if (arg.is_string) {
       llvm::GlobalVariable* gv = emit_string_global(module, arg.str_value, str_counter);
       return string_ptr(*builder, gv);
     }
     if (arg.is_literal) {
       return int32_val(*builder, context, arg.int_value);
+    }
+    if (ptr_param || ptr_locals.find(arg.ident) != ptr_locals.end()) {
+      return load_ptr(arg.ident);
     }
     if (i64_locals.find(arg.ident) != i64_locals.end()) {
       return load_i64(arg.ident);
@@ -290,13 +316,20 @@ struct EmitCtx {
           return true;
         }
         std::vector<llvm::Value*> args;
-        for (const auto& arg : ins.args) {
-          args.push_back(mir_arg_value(arg));
+        for (std::size_t ai = 0; ai < ins.args.size(); ++ai) {
+          const bool ptr_param =
+              ai < callee->arg_size() &&
+              callee->getArg(ai)->getType() == i8_ptr(context);
+          llvm::Value* val = mir_arg_value(ins.args[ai], ptr_param);
+          if (ptr_param && val->getType() == i64_ty(context)) {
+            val = builder->CreateIntToPtr(val, i8_ptr(context));
+          }
+          args.push_back(val);
         }
         llvm::CallInst* call = builder->CreateCall(callee, args);
         if (!ins.ident.empty()) {
           if (ins.is_i64) {
-            builder->CreateStore(call, ensure_i64_local(ins.ident));
+            builder->CreateStore(call, ensure_ptr_local(ins.ident));
           } else {
             builder->CreateStore(call, ensure_int_local(ins.ident));
           }
@@ -310,7 +343,7 @@ struct EmitCtx {
         }
         std::vector<llvm::Value*> args;
         for (const auto& arg : ins.args) {
-          args.push_back(mir_arg_value(arg));
+          args.push_back(mir_arg_value(arg, false));
         }
         llvm::CallInst* call = builder->CreateCall(callee, args);
         if (!ins.ident.empty()) {
@@ -381,8 +414,18 @@ bool emit_llvm_ir(const MirModule& mir, const std::string& out_path, std::string
                                                       {i8_ptr(context)}, false));
   module->getOrInsertFunction("li_bounds_fail",
                               llvm::FunctionType::get(llvm::Type::getVoidTy(context), {}, false));
+  module->getOrInsertFunction(
+      "li_rt_set_args",
+      llvm::FunctionType::get(llvm::Type::getVoidTy(context),
+                              {i32_ty(context), llvm::PointerType::getUnqual(i8_ptr(context))},
+                              false));
+  module->getOrInsertFunction("li_rt_argc",
+                              llvm::FunctionType::get(i32_ty(context), {}, false));
+  module->getOrInsertFunction("li_rt_argv",
+                              llvm::FunctionType::get(i8_ptr(context), {i32_ty(context)}, false));
 
-  const llvm::Function* user_main = nullptr;
+  llvm::Function* user_main = nullptr;
+  bool user_main_argv_wrapper = false;
 
   for (const auto& fn : mir.functions) {
     if (fn.is_extern) {
@@ -390,10 +433,10 @@ bool emit_llvm_ir(const MirModule& mir, const std::string& out_path, std::string
                                            : llvm_scalar(context, fn.returns_float, false);
       std::vector<llvm::Type*> param_tys;
       for (const auto& p : fn.params) {
-        if (p.is_string) {
+        if (p.is_string || p.is_i64) {
           param_tys.push_back(i8_ptr(context));
         } else {
-          param_tys.push_back(llvm_scalar(context, p.is_float, p.is_i64));
+          param_tys.push_back(llvm_scalar(context, p.is_float, false));
         }
       }
       llvm::FunctionType* fn_ty = llvm::FunctionType::get(ret_ty, param_tys, false);
@@ -408,16 +451,20 @@ bool emit_llvm_ir(const MirModule& mir, const std::string& out_path, std::string
       param_tys.push_back(llvm_scalar(context, p.is_float, p.is_i64));
     }
     llvm::FunctionType* fn_ty = llvm::FunctionType::get(ret_ty, param_tys, false);
+    const bool argv_main = fn.name == "main" && fn.params.empty();
+    const std::string llvm_name = argv_main ? "li_user_main" : fn.name;
     llvm::Function* func =
-        llvm::Function::Create(fn_ty, llvm::Function::ExternalLinkage, fn.name, module.get());
+        llvm::Function::Create(fn_ty, llvm::Function::ExternalLinkage, llvm_name, module.get());
     if (fn.name == "main") {
       user_main = func;
+      user_main_argv_wrapper = argv_main;
     }
 
     llvm::BasicBlock* entry = llvm::BasicBlock::Create(context, "entry", func);
     llvm::IRBuilder<> builder(entry);
 
-    EmitCtx ctx{context, module.get(), func, &builder, ret_ty, fn.returns_float, {}, {}, {}, {}, {}};
+    EmitCtx ctx{context, module.get(), func, &builder, ret_ty, fn.returns_float,
+                {}, {}, {}, {}, {}};
 
     unsigned idx = 0;
     for (auto& arg : func->args()) {
@@ -439,7 +486,19 @@ bool emit_llvm_ir(const MirModule& mir, const std::string& out_path, std::string
     }
   }
 
-  if (!user_main) {
+  if (user_main && user_main_argv_wrapper) {
+    llvm::Type* argv_ty = llvm::PointerType::getUnqual(i8_ptr(context));
+    llvm::FunctionType* main_ty =
+        llvm::FunctionType::get(i32_ty(context), {i32_ty(context), argv_ty}, false);
+    llvm::Function* main_fn =
+        llvm::Function::Create(main_ty, llvm::Function::ExternalLinkage, "main", module.get());
+    llvm::BasicBlock* main_entry = llvm::BasicBlock::Create(context, "entry", main_fn);
+    llvm::IRBuilder<> main_builder(main_entry);
+    llvm::Function* set_args = module->getFunction("li_rt_set_args");
+    main_builder.CreateCall(set_args, {main_fn->getArg(0), main_fn->getArg(1)});
+    llvm::CallInst* user_ret = main_builder.CreateCall(user_main, {});
+    main_builder.CreateRet(user_ret);
+  } else if (!user_main) {
     llvm::FunctionType* main_ty = llvm::FunctionType::get(i32_ty(context), {}, false);
     llvm::Function* main_fn =
         llvm::Function::Create(main_ty, llvm::Function::ExternalLinkage, "main", module.get());

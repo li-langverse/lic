@@ -277,3 +277,11 @@ suite = "tetris"
 file = "tetris/board_oob.li"
 outcome = "compile_fail"
 expected_substr = "out of range"
+
+# --- integration (bootstrap / self-host seed) ---
+
+[[tests]]
+suite = "integration"
+file = "../bootstrap/lic/main.li"
+outcome = "verify_ok"
+note = "Li bootstrap compiler built by C++ lic"

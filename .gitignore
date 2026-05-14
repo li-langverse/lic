@@ -11,3 +11,4 @@ compile_commands.json
 *.so
 *.dylib
 examples/tetris/tetris
+build/lic-from-li

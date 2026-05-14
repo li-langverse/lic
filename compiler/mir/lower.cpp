@@ -114,6 +114,8 @@ std::string lower_expr_to(const Expr& e, const Module& module, std::vector<MirIn
           ma.int_value = arg->int_value;
         } else if (arg->kind == Expr::Kind::Ident) {
           ma.ident = arg->ident;
+        } else {
+          ma.ident = lower_expr_to(*arg, module, out);
         }
         ins.args.push_back(std::move(ma));
       }
@@ -229,9 +231,11 @@ void lower_stmt(const Stmt& stmt, const Module& module, bool returns_float,
             store.rhs_is_literal = true;
             store.rhs_int = stmt.init->int_value;
           } else if (stmt.init->kind == Expr::Kind::Ident) {
+            store.rhs_is_literal = false;
             store.rhs_ident = stmt.init->ident;
           } else {
             const std::string tmp = lower_expr_to(*stmt.init, module, out);
+            store.rhs_is_literal = false;
             store.rhs_ident = tmp;
           }
           out.push_back(std::move(store));
@@ -249,9 +253,11 @@ void lower_stmt(const Stmt& stmt, const Module& module, bool returns_float,
             store.rhs_is_literal = true;
             store.rhs_int = stmt.init->int_value;
           } else if (stmt.init->kind == Expr::Kind::Ident) {
+            store.rhs_is_literal = false;
             store.rhs_ident = stmt.init->ident;
           } else {
             const std::string tmp = lower_expr_to(*stmt.init, module, out);
+            store.rhs_is_literal = false;
             store.rhs_ident = tmp;
           }
           out.push_back(std::move(store));
@@ -291,9 +297,11 @@ void lower_stmt(const Stmt& stmt, const Module& module, bool returns_float,
           ins.rhs_is_literal = true;
           ins.rhs_int = stmt.expr->int_value;
         } else if (stmt.expr->kind == Expr::Kind::Ident) {
+          ins.rhs_is_literal = false;
           ins.rhs_ident = stmt.expr->ident;
         } else {
           ins.rhs_ident = lower_expr_to(*stmt.expr, module, out);
+          ins.rhs_is_literal = false;
         }
         out.push_back(std::move(ins));
       }

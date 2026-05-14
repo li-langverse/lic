@@ -269,8 +269,8 @@ LiMdStressResult li_md_stress_momentum(double dt, int steps) {
 int li_md_stress_run_all(LiMdStressResult* out, int cap) {
   if (cap < 4) return 0;
   out[0] = li_md_stress_harmonic(0.004, 50000);
-  out[1] = li_md_stress_nve_energy_msd(0.004, 5000);
-  out[2] = li_md_stress_timestep_halving(0.004, 2000);
-  out[3] = li_md_stress_momentum(0.004, 2000);
+  out[1] = li_md_stress_nve_energy_msd(0.004, 20000);
+  out[2] = li_md_stress_timestep_halving(0.004, 5000);
+  out[3] = li_md_stress_momentum(0.004, 5000);
   return 4;
 }

@@ -18,6 +18,7 @@ SHARE = RESULTS / "share"
 TIER1_MICRO = {
     "simd_dot",
     "matmul_naive",
+    "matmul_blocked",
     "reduce_sum",
 }
 TIER2_PHYSICS = {

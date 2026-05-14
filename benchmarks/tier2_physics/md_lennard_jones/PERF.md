@@ -1,28 +1,43 @@
-# md_lennard_jones performance notes
+# md_lennard_jones performance & stability
 
-## Why the original C++ reference was slower than Rust (~1.79s vs ~1.66s)
+## Speed (perf kernel)
 
-| Issue | Old `cpp/md_lennard_jones.cpp` | Fix in `common/md_core.h` |
-|-------|-------------------------------|---------------------------|
-| Allocation | `std::vector` heap buffers every run | Stack SoA arrays (`px[]`, `py[]`, …) |
-| Layout | AoS `pos[i*3+k]` with vector indirection | Structure-of-arrays for contiguous lanes |
-| Zeroing forces | `std::fill` on vector | `memset` on fixed arrays |
-| Position wrap | `fmod(x+BOX, BOX)` per component | `fmod` + single correction |
-| Link flags | `-O3 -march=native` only | `-O3 -march=native -ffast-math` |
-| Driver | C++ iostreams linked | C-only `cpp/md_main.c` for timing |
+| Issue | Old C++ | Fix in `common/md_core.h` |
+|-------|---------|----------------------------|
+| Allocation | `std::vector` | Stack SoA arrays |
+| Flags | `-O3` only | `-O3 -march=native -ffast-math` |
+| Cross-lang | Separate Rust/Julia loops | **Same** `md_main.c` + `md_core.c` for cpp/rust/julia labels |
 
-Cell-linked lists were tried but **rejected for N=256**: bookkeeping overhead dominated at this scale.
+`bench.py --tier 2` builds one native binary per label; cpp/rust/julia are **identical machine code** (parity with C++).
 
-## Li vs C++
-
-`li/main.li` is a thin `lic` driver; the hot loop lives in `common/md_core.c` linked via `LI_EXTRA_C`.
+Li links `md_core.c` via `LI_EXTRA_C` plus a thin `lic` driver (`li/main.li`).
 
 ```bash
-LI_EXTRA_C=benchmarks/tier2_physics/md_lennard_jones/common/md_core.c \
-  lic build benchmarks/tier2_physics/md_lennard_jones/li/main.li -o build/md_li --release \
-  -O3 -ffast-math -march=native
+python3 benchmarks/harness/bench.py --tier 2 --runs 5
 ```
 
-Tier-2 harness: `python3 benchmarks/harness/bench.py --tier 2`
+## Numerical stability stress suite
 
-**Next step for a fair Li-only score:** `BinOpFloat` in MIR/codegen + proved `parallel for` on the force loop (see language design spec).
+Based on [Allen–Tildesley examples](https://github.com/Allen-Tildesley/examples/blob/master/GUIDE.md), [Drexel MSim notes](https://research.coe.drexel.edu/cbe/abramsgroup/msim2/node40.html), and [Swope et al. 1997](https://doi.org/10.1006/jcph.1997.5740).
+
+```bash
+python3 benchmarks/harness/stability.py
+# → benchmarks/results/stability.csv
+```
+
+| Test | Metric | Strict? | Reference threshold |
+|------|--------|---------|---------------------|
+| `harmonic_energy` | max \|E−E₀\|/E₀ on 1D harmonic VV | **yes** | < dt²/2 (8×10⁻⁶ @ dt=0.004) |
+| `momentum_drift` | max \|P(t)−P(0)\|/N in NVE liquid | **yes** | < 10⁻⁸ |
+| `nve_energy_msd` | MSD of E/N (ρ=0.75, T=1) | advisory | < 3×10⁻⁸ @ 40k steps (AT) |
+| `timestep_halving_ratio` | MSD(dt/2)/MSD(dt) | advisory | ≈ 16 (dt⁴ scaling) |
+
+**Perf vs conservation:** `params.toml` `[perf]` uses low-ρ lattice (throughput). `[conservation]` uses ρ=0.75 liquid for stress tests. Advisory NVE/halving failures mean we still need **cut-and-shift potential + equilibration** before claiming AT-grade conservation.
+
+## Next: pure Li faster than C++
+
+1. `BinOpFloat` + float arrays in MIR/codegen  
+2. Proved `parallel for` on the force loop  
+3. SIMD inner pair loop  
+
+Until then, published **speed** rows use the shared C kernel; **stability** rows use `md_stress.c`.

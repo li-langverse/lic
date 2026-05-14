@@ -4,6 +4,7 @@ __pycache__/
 *.pyc
 benchmarks/results/share/*.png
 benchmarks/results/md_lennard_jones/energy_*.csv
+benchmarks/results/stability.csv
 compile_commands.json
 .cache/
 .DS_Store

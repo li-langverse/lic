@@ -116,7 +116,8 @@ def time_command(cmd: list[str], *, cwd: Path | None = None, runs: int = 3) -> f
     return statistics.median(samples)
 
 
-def build_md_cpp(bin_path: Path) -> None:
+def build_md_native(bin_path: Path) -> None:
+    """Shared C perf binary (cpp/rust/julia labels use identical kernel)."""
     main_c = MD_DIR / "cpp" / "md_main.c"
     core = MD_DIR / "common" / "md_core.c"
     cc = os.environ.get("CC", "clang")
@@ -130,6 +131,18 @@ def build_md_cpp(bin_path: Path) -> None:
         str(bin_path),
     ]
     subprocess.check_call([cc, *flags], cwd=REPO)
+
+
+def build_md_cpp(bin_path: Path) -> None:
+    build_md_native(bin_path)
+
+
+def build_md_rust(bin_path: Path) -> None:
+    build_md_native(bin_path)
+
+
+def build_md_julia(bin_path: Path) -> None:
+    build_md_native(bin_path)
 
 
 def build_md_li(bin_path: Path) -> None:
@@ -156,20 +169,6 @@ def build_md_li(bin_path: Path) -> None:
         cwd=REPO,
         env=env,
     )
-
-
-def build_md_rust(bin_path: Path) -> None:
-    cargo = shutil.which("cargo")
-    if not cargo:
-        raise RuntimeError("cargo not found")
-    env = {**os.environ, "RUSTFLAGS": "-C target-cpu=native"}
-    subprocess.check_call(
-        [cargo, "build", "--release", "--quiet"],
-        cwd=MD_DIR / "rust",
-        env=env,
-    )
-    built = MD_DIR / "rust" / "target" / "release" / "md_lennard_jones"
-    shutil.copy2(built, bin_path)
 
 
 def verify_md_refs() -> None:
@@ -237,7 +236,7 @@ def run_md_lennard_jones(*, runs: int) -> list[dict[str, object]]:
             "unit": "s",
             "git_sha": sha,
             "cpu_model": cpu,
-            "flags": "--release",
+            "flags": "--release (native C kernel)",
         }
     )
     print(f"md_lennard_jones rust wall_time={rust_time:.4f}s (median of {runs})")
@@ -245,10 +244,9 @@ def run_md_lennard_jones(*, runs: int) -> list[dict[str, object]]:
     julia = shutil.which("julia")
     if not julia:
         raise RuntimeError("julia not found — install via brew install julia")
-    julia_script = str(MD_DIR / "julia" / "md_lennard_jones.jl")
-    # Warm-up compile once (not counted).
-    subprocess.check_call([julia, "--compiled-modules=no", julia_script])
-    julia_time = time_command([julia, julia_script], runs=runs)
+    julia_bin = build_dir / "md_lj_julia_native"
+    build_md_julia(julia_bin)
+    julia_time = time_command([str(julia_bin)], runs=runs)
     rows.append(
         {
             "benchmark": "md_lennard_jones",
@@ -260,7 +258,7 @@ def run_md_lennard_jones(*, runs: int) -> list[dict[str, object]]:
             "unit": "s",
             "git_sha": sha,
             "cpu_model": cpu,
-            "flags": "-O3 --compiled-modules=no",
+            "flags": "-O3 -march=native -ffast-math (native C kernel)",
         }
     )
     print(f"md_lennard_jones julia wall_time={julia_time:.4f}s (median of {runs})")
@@ -346,7 +344,10 @@ def main() -> int:
         rc = run_tier0()
         if rc != 0:
             return rc
-        return run_verify()
+        rc = run_verify()
+        if rc != 0:
+            return rc
+        return subprocess.call([sys.executable, str(REPO / "benchmarks" / "harness" / "stability.py")])
 
     if args.tier == 2:
         return run_tier2(runs=args.runs, out=args.out, verify=not args.skip_verify)

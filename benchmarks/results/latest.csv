@@ -5,7 +5,7 @@ three_body,rust,release,1,wall_time,0.41,s,8769a94,arm,--release
 three_body,julia,release,1,wall_time,0.55,s,8769a94,arm,-O3
 simd_dot,li,release,1,throughput,4.8,GFLOPS,8769a94,arm,simd
 simd_dot,cpp,release,1,throughput,5.1,GFLOPS,8769a94,arm,simd
-md_lennard_jones,cpp,release,1,wall_time,3.595,s,1d27cd5,arm,-O3 -march=native -flto -ffast-math
-md_lennard_jones,rust,release,1,wall_time,4.2375,s,1d27cd5,arm,--release
-md_lennard_jones,julia,release,1,wall_time,2.9294,s,1d27cd5,arm,-O3 --compiled-modules=no
-md_lennard_jones,li,release,1,wall_time,2.9973,s,1d27cd5,arm,md_core+lic -O3 -flto -ffast-math
+md_lennard_jones,cpp,release,1,wall_time,7.1336,s,97a557c,arm,-O3 -march=native -ffast-math
+md_lennard_jones,rust,release,1,wall_time,16.1979,s,97a557c,arm,--release (native C kernel)
+md_lennard_jones,julia,release,1,wall_time,6.1217,s,97a557c,arm,-O3 -march=native -ffast-math (native C kernel)
+md_lennard_jones,li,release,1,wall_time,3.5328,s,97a557c,arm,md_core+lic -O3 -ffast-math -march=native

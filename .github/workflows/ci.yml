@@ -11,6 +11,38 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
+  version:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Version + changelog gate
+        env:
+          GITHUB_BASE_REF: ${{ github.base_ref }}
+        run: |
+          chmod +x scripts/check-version.sh
+          if [[ "${{ github.event_name }}" == "pull_request" ]]; then
+            ./scripts/check-version.sh --pr
+          else
+            ./scripts/check-version.sh
+          fi
+
+  docs:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Build docs (strict)
+        run: |
+          chmod +x scripts/build-docs.sh
+          ./scripts/build-docs.sh --strict
+
   build-and-test:
     runs-on: ubuntu-24.04
     steps:
@@ -27,8 +59,9 @@ jobs:
           CC: clang-18
           CXX: clang++-18
         run: |
-          chmod +x scripts/ci.sh scripts/build.sh
+          chmod +x scripts/ci.sh scripts/build.sh scripts/check-version.sh
           ./scripts/ci.sh
+          ./scripts/check-version.sh --build
 
   build-and-test-macos:
     runs-on: macos-14
@@ -40,9 +73,10 @@ jobs:
 
       - name: CI (build + li-tests + tier-0 benchmarks)
         run: |
-          chmod +x scripts/ci.sh scripts/build.sh
+          chmod +x scripts/ci.sh scripts/build.sh scripts/check-version.sh
           LLVM_DIR="$(brew --prefix llvm@18)/lib/cmake/llvm"
           export LLVM_DIR
           export CC="$(brew --prefix llvm@18)/bin/clang"
           export CXX="$(brew --prefix llvm@18)/bin/clang++"
           ./scripts/ci.sh
+          ./scripts/check-version.sh --build

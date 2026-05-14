@@ -1,5 +1,7 @@
 /build/
 .venv-plot/
+.venv-docs/
+site/
 __pycache__/
 *.pyc
 *.pyo

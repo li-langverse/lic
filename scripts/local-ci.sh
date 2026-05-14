@@ -113,6 +113,8 @@ fi
 echo "==> local-ci (native)"
 detect_compilers
 check_native_prereqs
-chmod +x "$ROOT/scripts/ci.sh" "$ROOT/scripts/build.sh"
+chmod +x "$ROOT/scripts/ci.sh" "$ROOT/scripts/build.sh" "$ROOT/scripts/check-version.sh"
+"$ROOT/scripts/check-version.sh"
 "$ROOT/scripts/ci.sh"
+"$ROOT/scripts/check-version.sh" --build
 echo "local-ci: ok (native)"

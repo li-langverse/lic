@@ -89,7 +89,11 @@ int main(int argc, char** argv) {
   }
   const std::string_view cmd = argv[1];
   if (cmd == "--version" || cmd == "-V") {
-    std::cout << "lic 0.1.0\n";
+#ifdef LI_VERSION
+    std::cout << "lic " << LI_VERSION << '\n';
+#else
+    std::cout << "lic 0.0.0-dev\n";
+#endif
     return 0;
   }
   if (cmd == "smoke-llvm") {

@@ -80,3 +80,12 @@ After Phase 5:
 ## Contributing documentation
 
 See [Documentation style](contributing/documentation.md) before adding or rewriting docs.
+
+Preview the site locally:
+
+```bash
+./scripts/build-docs.sh --strict
+python3 -m http.server -d site 8000
+```
+
+Published at [cap-jmk-real.github.io/li-language](https://cap-jmk-real.github.io/li-language/) on merge to `main`.

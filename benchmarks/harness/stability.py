@@ -47,6 +47,7 @@ def build_native_stress(path: Path) -> None:
             "-march=native",
             str(MD_DIR / "cpp" / "md_stress_main.c"),
             str(MD_DIR / "common" / "md_stress.c"),
+            "-lm",
             "-o",
             str(path),
         ],

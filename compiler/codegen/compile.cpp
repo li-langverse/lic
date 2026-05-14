@@ -32,7 +32,9 @@ bool compile_module(const Module& module, const std::string& output_path, bool r
   }
 
   std::ostringstream cmd;
-  cmd << "clang -Wno-override-module -x ir \"" << ll_path << "\" -x c \""
+  const char* cc_env = std::getenv("CC");
+  const char* cc = (cc_env && *cc_env) ? cc_env : "clang";
+  cmd << cc << " -Wno-override-module -x ir \"" << ll_path << "\" -x c \""
       << rt_path.string() << "\" -o \"" << output_path << "\"";
   if (release) {
     cmd << " -O2";
@@ -55,6 +57,7 @@ bool compile_module(const Module& module, const std::string& output_path, bool r
       }
       start = end + 1;
     }
+    cmd << " -lm";
   }
   const int rc = std::system(cmd.str().c_str());
   std::filesystem::remove(ll_path);

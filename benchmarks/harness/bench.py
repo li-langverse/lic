@@ -264,7 +264,7 @@ def build_native(spec: BenchSpec, bin_path: Path) -> None:
     core = root / spec.core_c
     cc = os.environ.get("CC", "clang")
     subprocess.check_call(
-        [cc, "-O3", "-march=native", "-ffast-math", str(main_c), str(core), "-o", str(bin_path)],
+        [cc, "-O3", "-march=native", "-ffast-math", str(main_c), str(core), "-lm", "-o", str(bin_path)],
         cwd=REPO,
     )
 

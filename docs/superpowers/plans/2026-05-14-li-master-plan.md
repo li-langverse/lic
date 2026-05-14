@@ -61,7 +61,7 @@
 ## Phase completion tracker
 
 - [x] Phase 0 — C++ / LLVM bootstrap
-- [ ] Phase 1 — Lexer + Parser
+- [x] Phase 1 — Lexer + Parser
 - [ ] Phase 2a — Type core
 - [ ] Phase 2b — Generics + Protocol
 - [ ] Phase 2c — Collections + TypedDict

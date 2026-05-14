@@ -89,20 +89,19 @@ run_one() {
 }
 
 while IFS= read -r line; do
+  if [[ "$line" == "[[tests]]" ]]; then
+    if [[ -n "${cur_file:-}" && -n "${cur_outcome:-}" ]]; then
+      if [[ "$FILTER" == "all" || "$FILTER" == "$cur_suite" ]]; then
+        run_one "$cur_suite" "$cur_file" "$cur_outcome" "${cur_substr:-}"
+      fi
+    fi
+    cur_suite="" cur_file="" cur_outcome="" cur_substr=""
+    continue
+  fi
   [[ "$line" =~ ^suite\ =\ \"(.*)\"$ ]] && cur_suite="${BASH_REMATCH[1]}" && continue
   [[ "$line" =~ ^file\ =\ \"(.*)\"$ ]] && cur_file="${BASH_REMATCH[1]}" && continue
   [[ "$line" =~ ^outcome\ =\ \"(.*)\"$ ]] && cur_outcome="${BASH_REMATCH[1]}" && continue
   [[ "$line" =~ ^expected_substr\ =\ \"(.*)\"$ ]] && cur_substr="${BASH_REMATCH[1]}" && continue
-  if [[ "$line" == "[[tests]]" ]]; then
-    cur_suite="" cur_file="" cur_outcome="" cur_substr=""
-    continue
-  fi
-  if [[ -n "${cur_file:-}" && -n "${cur_outcome:-}" && "$line" =~ ^\[ ]]; then
-    if [[ "$FILTER" == "all" || "$FILTER" == "$cur_suite" ]]; then
-      run_one "$cur_suite" "$cur_file" "$cur_outcome" "${cur_substr:-}"
-    fi
-    cur_file="" cur_outcome="" cur_substr=""
-  fi
 done < "$ROOT/manifest.toml"
 
 # last entry

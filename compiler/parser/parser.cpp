@@ -1,7 +1,327 @@
+#include "li/lexer.hpp"
 #include "li/parser.hpp"
+
+#include <utility>
 
 namespace li {
 
-const char* parser_version() { return "0.1.0"; }
+namespace {
+
+struct Parser {
+  const std::vector<Token>& tokens;
+  std::size_t i = 0;
+  std::string file;
+  DiagnosticBag& diags;
+
+  explicit Parser(const std::vector<Token>& toks, std::string file_name,
+                  DiagnosticBag& bag)
+      : tokens(toks), file(std::move(file_name)), diags(bag) {}
+
+  const Token& cur() const { return tokens[i]; }
+  const Token& peek(std::size_t off = 0) const {
+    const std::size_t j = i + off;
+    return j < tokens.size() ? tokens[j] : tokens.back();
+  }
+  bool at(TokenKind k) const { return cur().kind == k; }
+  bool accept(TokenKind k) {
+    if (at(k)) {
+      i++;
+      return true;
+    }
+    return false;
+  }
+  bool expect(TokenKind k, const char* what) {
+    if (!accept(k)) {
+      SourceLoc loc{file, cur().line, cur().column, cur().start};
+      diags.error(loc, std::string("expected ") + what);
+      return false;
+    }
+    return true;
+  }
+  void skip_newlines() {
+    while (at(TokenKind::Newline)) {
+      i++;
+    }
+  }
+
+  SourceLoc loc(const Token& t) const {
+    return SourceLoc{file, t.line, t.column, t.start};
+  }
+
+  std::unique_ptr<Expr> parse_expr(int min_prec = 0);
+  std::unique_ptr<Expr> parse_primary();
+  TypeExpr parse_type();
+  Param parse_param();
+  std::unique_ptr<Expr> parse_contract_expr();
+  Contract parse_contract();
+  std::vector<Stmt> parse_block();
+  Stmt parse_stmt();
+  ProcDecl parse_proc();
+
+  bool parse_module(Module& out) {
+    skip_newlines();
+    while (!at(TokenKind::Eof)) {
+      if (at(TokenKind::KwProc)) {
+        out.procs.push_back(parse_proc());
+        skip_newlines();
+      } else {
+        diags.error(loc(cur()), "expected top-level declaration");
+        return false;
+      }
+    }
+    return true;
+  }
+};
+
+std::unique_ptr<Expr> Parser::parse_primary() {
+  const Token& t = cur();
+  if (t.kind == TokenKind::IntLit) {
+  i++;
+    auto e = std::make_unique<Expr>();
+    e->kind = Expr::Kind::IntLit;
+    e->span = {t.start, t.end};
+    e->int_value = t.int_value;
+    return e;
+  }
+  if (t.kind == TokenKind::Ident || t.kind == TokenKind::KwResult) {
+    const std::string name(t.text);
+    i++;
+    auto e = std::make_unique<Expr>();
+    e->span = {t.start, t.end};
+    if (accept(TokenKind::LParen)) {
+      e->kind = Expr::Kind::Call;
+      e->ident = name;
+      if (!at(TokenKind::RParen)) {
+        do {
+          e->args.push_back(parse_expr());
+        } while (accept(TokenKind::Comma));
+      }
+      if (!expect(TokenKind::RParen, "')'")) {
+        return nullptr;
+      }
+    } else {
+      e->kind = Expr::Kind::Ident;
+      e->ident = name;
+    }
+    return e;
+  }
+  if (accept(TokenKind::LParen)) {
+    auto inner = parse_expr();
+    if (!expect(TokenKind::RParen, "')'")) {
+      return nullptr;
+    }
+    return inner;
+  }
+  diags.error(loc(t), "expected expression");
+  return nullptr;
+}
+
+int prec(TokenKind k) {
+  switch (k) {
+    case TokenKind::KwOr: return 1;
+    case TokenKind::KwAnd: return 2;
+    case TokenKind::EqEq:
+    case TokenKind::Ne:
+    case TokenKind::Lt:
+    case TokenKind::Le:
+    case TokenKind::Gt:
+    case TokenKind::Ge: return 3;
+    case TokenKind::Plus:
+    case TokenKind::Minus: return 4;
+    case TokenKind::Star:
+    case TokenKind::Slash: return 5;
+    default: return -1;
+  }
+}
+
+BinOp binop(TokenKind k) {
+  switch (k) {
+    case TokenKind::Plus: return BinOp::Add;
+    case TokenKind::Minus: return BinOp::Sub;
+    case TokenKind::Star: return BinOp::Mul;
+    case TokenKind::Slash: return BinOp::Div;
+    case TokenKind::Le: return BinOp::Le;
+    case TokenKind::Lt: return BinOp::Lt;
+    case TokenKind::Ge: return BinOp::Ge;
+    case TokenKind::Gt: return BinOp::Gt;
+    case TokenKind::EqEq: return BinOp::Eq;
+    case TokenKind::Ne: return BinOp::Ne;
+    case TokenKind::KwAnd: return BinOp::And;
+    case TokenKind::KwOr: return BinOp::Or;
+    default: return BinOp::Add;
+  }
+}
+
+std::unique_ptr<Expr> Parser::parse_expr(int min_prec) {
+  std::unique_ptr<Expr> left;
+  if (at(TokenKind::KwNot)) {
+    const Token t = cur();
+    i++;
+    left = std::make_unique<Expr>();
+    left->kind = Expr::Kind::UnaryNot;
+    left->span = {t.start, t.end};
+    left->operand = parse_expr(100);
+  } else {
+    left = parse_primary();
+  }
+  if (!left) {
+    return nullptr;
+  }
+  while (true) {
+    const int p = prec(cur().kind);
+    if (p < 0 || p < min_prec) {
+      break;
+    }
+    const Token op = cur();
+    i++;
+    auto right = parse_expr(p + 1);
+    if (!right) {
+      return nullptr;
+    }
+    auto node = std::make_unique<Expr>();
+    node->kind = Expr::Kind::BinOp;
+    node->span = {left->span.start, right->span.end};
+    node->bin_op = binop(op.kind);
+    node->lhs = std::move(left);
+    node->rhs = std::move(right);
+    left = std::move(node);
+  }
+  return left;
+}
+
+TypeExpr Parser::parse_type() {
+  const Token& t = cur();
+  TypeExpr ty;
+  ty.span = {t.start, t.end};
+  if (t.kind == TokenKind::Ident) {
+    ty.name = std::string(t.text);
+    i++;
+  } else {
+    diags.error(loc(t), "expected type");
+  }
+  return ty;
+}
+
+Param Parser::parse_param() {
+  const Token& t = cur();
+  Param p;
+  p.span = {t.start, t.end};
+  p.name = std::string(t.text);
+  i++;
+  expect(TokenKind::Colon, "':'");
+  p.type = parse_type();
+  return p;
+}
+
+std::unique_ptr<Expr> Parser::parse_contract_expr() {
+  skip_newlines();
+  return parse_expr();
+}
+
+Contract Parser::parse_contract() {
+  Contract c;
+  const Token kw = cur();
+  if (kw.kind == TokenKind::KwRequires) {
+    c.kind = ContractKind::Requires;
+  } else if (kw.kind == TokenKind::KwEnsures) {
+    c.kind = ContractKind::Ensures;
+  } else if (kw.kind == TokenKind::KwDecreases) {
+    c.kind = ContractKind::Decreases;
+  } else {
+    c.kind = ContractKind::Invariant;
+  }
+  c.span = {kw.start, kw.end};
+  i++;
+  c.expr = parse_contract_expr();
+  skip_newlines();
+  return c;
+}
+
+std::vector<Stmt> Parser::parse_block() {
+  std::vector<Stmt> body;
+  skip_newlines();
+  if (!expect(TokenKind::Indent, "indented block")) {
+    return body;
+  }
+  skip_newlines();
+  while (!at(TokenKind::Dedent) && !at(TokenKind::Eof)) {
+    body.push_back(parse_stmt());
+    skip_newlines();
+  }
+  expect(TokenKind::Dedent, "dedent");
+  return body;
+}
+
+Stmt Parser::parse_stmt() {
+  Stmt s;
+  if (at(TokenKind::KwReturn)) {
+    const Token t = cur();
+    s.kind = Stmt::Kind::Return;
+    s.span = {t.start, t.end};
+    i++;
+    s.expr = parse_expr();
+    skip_newlines();
+    return s;
+  }
+  if (at(TokenKind::KwIf)) {
+    const Token t = cur();
+    s.kind = Stmt::Kind::If;
+    s.span = {t.start, t.end};
+    i++;
+    s.cond = parse_expr();
+    expect(TokenKind::Colon, "':'");
+    skip_newlines();
+    s.then_body = parse_block();
+    return s;
+  }
+  s.kind = Stmt::Kind::Expr;
+  s.expr = parse_expr();
+  skip_newlines();
+  return s;
+}
+
+ProcDecl Parser::parse_proc() {
+  ProcDecl proc;
+  expect(TokenKind::KwProc, "'proc'");
+  const Token name = cur();
+  proc.span = {name.start, name.end};
+  proc.name = std::string(name.text);
+  i++;
+  expect(TokenKind::LParen, "'('");
+  if (!at(TokenKind::RParen)) {
+    do {
+      proc.params.push_back(parse_param());
+    } while (accept(TokenKind::Comma));
+  }
+  expect(TokenKind::RParen, "')'");
+  if (accept(TokenKind::Arrow)) {
+    proc.ret_type = parse_type();
+  }
+  skip_newlines();
+  while (at(TokenKind::KwRequires) || at(TokenKind::KwEnsures) ||
+         at(TokenKind::KwDecreases) || at(TokenKind::KwInvariant)) {
+    proc.contracts.push_back(parse_contract());
+  }
+  expect(TokenKind::Eq, "'='");
+  skip_newlines();
+  proc.body = parse_block();
+  return proc;
+}
+
+}  // namespace
+
+ParseResult parse_module(std::string source, std::string file) {
+  ParseResult result;
+  Lexer lexer(std::move(source), file);
+  if (!lexer.tokenize(result.diagnostics)) {
+    return result;
+  }
+  Parser p{lexer.tokens(), file, result.diagnostics};
+  Module m;
+  if (p.parse_module(m)) {
+    result.module = std::move(m);
+  }
+  return result;
+}
 
 }  // namespace li

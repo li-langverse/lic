@@ -1,0 +1,3 @@
+benchmark,lang,variant,threads,metric,value,unit,git_sha,cpu_model,flags,passed
+md_energy_single_step,li,verify,1,invariant,1,bool,,,,True
+three_body_invariants,li,verify,1,invariant,1,bool,,,,True

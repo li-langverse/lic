@@ -29,17 +29,18 @@ def git_sha() -> str:
 
 def write_sample_csv(path: Path) -> None:
     """Placeholder rows until Tier 1–2 binaries exist — drives plot harness."""
+    sha = git_sha()
+    cpu = platform.processor() or platform.machine()
     rows = [
-        # benchmark, lang, variant, threads, metric, value, unit, git_sha, cpu_model, flags
-        ("three_body", "li", "release", 1, "wall_time", 0.42, "s", git_sha(), platform.processor(), "-O3"),
-        ("three_body", "cpp", "release", 1, "wall_time", 0.38, "s", git_sha(), platform.processor(), "-O3 -march=native"),
-        ("three_body", "rust", "release", 1, "wall_time", 0.41, "s", git_sha(), platform.processor(), "--release"),
-        ("three_body", "julia", "release", 1, "wall_time", 0.55, "s", git_sha(), platform.processor(), "-O3"),
-        ("md_lennard_jones", "li", "release", 1, "wall_time", 1.2, "s", git_sha(), platform.processor(), "-O3"),
-        ("md_lennard_jones", "cpp", "release", 1, "wall_time", 1.0, "s", git_sha(), platform.processor(), "-O3"),
-        ("md_lennard_jones", "li", "release", 8, "wall_time", 0.22, "s", git_sha(), platform.processor(), "-O3 --threads=8"),
-        ("simd_dot", "li", "release", 1, "throughput", 4.8, "GFLOPS", git_sha(), platform.processor(), "simd"),
-        ("simd_dot", "cpp", "release", 1, "throughput", 5.1, "GFLOPS", git_sha(), platform.processor(), "simd"),
+        ("three_body", "li", "release", 1, "wall_time", 0.42, "s", sha, cpu, "-O3"),
+        ("three_body", "cpp", "release", 1, "wall_time", 0.38, "s", sha, cpu, "-O3 -march=native"),
+        ("three_body", "rust", "release", 1, "wall_time", 0.41, "s", sha, cpu, "--release"),
+        ("three_body", "julia", "release", 1, "wall_time", 0.55, "s", sha, cpu, "-O3"),
+        ("md_lennard_jones", "li", "release", 1, "wall_time", 1.2, "s", sha, cpu, "-O3"),
+        ("md_lennard_jones", "cpp", "release", 1, "wall_time", 1.0, "s", sha, cpu, "-O3"),
+        ("md_lennard_jones", "li", "release", 8, "wall_time", 0.22, "s", sha, cpu, "-O3 --threads=8"),
+        ("simd_dot", "li", "release", 1, "throughput", 4.8, "GFLOPS", sha, cpu, "simd"),
+        ("simd_dot", "cpp", "release", 1, "throughput", 5.1, "GFLOPS", sha, cpu, "simd"),
     ]
     path.parent.mkdir(parents=True, exist_ok=True)
     with path.open("w", newline="") as f:
@@ -62,6 +63,11 @@ def write_sample_csv(path: Path) -> None:
     print(f"wrote sample {path} ({len(rows)} rows) — replace with real timings when codegen lands")
 
 
+def run_verify() -> int:
+    script = REPO / "benchmarks" / "harness" / "verify.py"
+    return subprocess.call([sys.executable, str(script), "--write-csv", str(RESULTS / "verify.csv")])
+
+
 def run_tier0() -> int:
     script = REPO / "li-tests" / "run_all.sh"
     if not script.exists():
@@ -82,7 +88,10 @@ def main() -> int:
         write_sample_csv(RESULTS / "latest.csv")
 
     if args.tier == 0 and not args.sample:
-        return run_tier0()
+        rc = run_tier0()
+        if rc != 0:
+            return rc
+        return run_verify()
     if args.tier >= 1:
         print("tier 1+ benchmarks: run after Phase 3 codegen (see master plan)", file=sys.stderr)
     return 0

@@ -22,32 +22,23 @@ from plot_theme import FAIL, PASS, PRIMARY, MUTED, TEXT, brand_figure, save_shar
 def run_all_suites() -> tuple[dict[str, dict[str, int]], int, int]:
     lic = REPO / "build" / "compiler" / "lic" / "lic"
     env = {**dict(__import__("os").environ), "LIC": str(lic)}
+    proc = subprocess.run(
+        [str(LI_TESTS / "run_all.sh"), "all"],
+        cwd=LI_TESTS,
+        env=env,
+        capture_output=True,
+        text=True,
+        timeout=120,
+    )
     suites: dict[str, dict[str, int]] = defaultdict(lambda: {"pass": 0, "fail": 0, "skip": 0})
-    for suite in [
-        "lexer_parser",
-        "typecheck",
-        "prove_reject",
-        "borrow",
-        "race_shared_memory",
-        "contracts_verify",
-        "benchmarks",
-    ]:
-        proc = subprocess.run(
-            [str(LI_TESTS / "run_all.sh"), suite],
-            cwd=LI_TESTS,
-            env=env,
-            capture_output=True,
-            text=True,
-            timeout=30,
-        )
-        out = proc.stdout + proc.stderr
-        for line in out.splitlines():
-            m = re.match(r"^(PASS|FAIL|SKIP) (\S+) ", line)
-            if not m:
-                continue
-            status, path = m.group(1).lower(), m.group(2)
-            sname = path.split("/")[0] if "/" in path else suite
-            suites[sname][status] += 1
+    out = proc.stdout + proc.stderr
+    for line in out.splitlines():
+        m = re.match(r"^(PASS|FAIL|SKIP) (\S+) ", line)
+        if not m:
+            continue
+        status, path = m.group(1).lower(), m.group(2)
+        sname = path.split("/")[0] if "/" in path else "unknown"
+        suites[sname][status] += 1
     total_pass = sum(v["pass"] for v in suites.values())
     total_fail = sum(v["fail"] for v in suites.values())
     return suites, total_pass, total_fail

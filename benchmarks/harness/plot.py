@@ -43,6 +43,13 @@ def load_csv(path: Path) -> pd.DataFrame:
     return pd.read_csv(path)
 
 
+def load_verify_df() -> pd.DataFrame | None:
+    verify_path = RESULTS / "verify.csv"
+    if not verify_path.exists():
+        return None
+    return pd.read_csv(verify_path)
+
+
 def plot_speed_bars(df: pd.DataFrame, tier: str, out: Path) -> None:
     import matplotlib.pyplot as plt
     import numpy as np
@@ -159,8 +166,9 @@ def main() -> int:
 
     plot_speed_bars(df, args.tier, args.out / f"bench_speed_{args.tier}.png")
     plot_speedup_vs_cpp(df, args.out / "speedup_vs_cpp.png")
-    if "passed" in df.columns:
-        plot_correctness_grid(df, args.out / "correctness_tier0.png")
+    verify_df = load_verify_df()
+    if verify_df is not None and "passed" in verify_df.columns:
+        plot_correctness_grid(verify_df, args.out / "correctness_tier0.png")
 
     print(f"wrote plots to {args.out}")
     return 0

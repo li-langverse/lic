@@ -70,5 +70,5 @@
 - [x] Phase 3 — MIR + LLVM codegen (`lic build`, minimal lower/emit; CFG/bounds IR deferred)
 - [x] Phase 4 — Runtime + stdlib
 - [x] Phase 5 — Tetris
-- [ ] Phase 5b — Benchmarks & simulations (harness + **X plots** skeleton on `dev`)
+- [x] Phase 5b — Benchmarks & simulations (harness + **X plots** skeleton on `dev`)
 - [ ] Phase 6 — Self-host

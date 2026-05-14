@@ -1,0 +1,6 @@
+N = 256
+steps = 10_000
+dt = 0.004
+rc = 2.5
+box_length = 10.0
+seed = 7

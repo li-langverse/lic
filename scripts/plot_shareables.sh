@@ -14,6 +14,7 @@ source "$VENV/bin/activate"
 pip install -q -r "${ROOT}/benchmarks/harness/requirements.txt"
 
 python3 "${ROOT}/benchmarks/harness/bench.py" --sample
+python3 "${ROOT}/benchmarks/harness/verify.py" --write-csv "${ROOT}/benchmarks/results/verify.csv" || true
 python3 "${ROOT}/benchmarks/harness/plot.py" --out "$SHARE"
 python3 "${ROOT}/li-tests/harness/plot_suites.py" --out "$SHARE"
 

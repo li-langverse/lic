@@ -64,7 +64,7 @@
 - [x] Phase 0 — C++ / LLVM bootstrap
 - [x] Phase 1 — Lexer + Parser
 - [x] Phase 2a — Type core (typecheck + prove_reject + race policy gates; full mypy parity pending)
-- [ ] Phase 2b — Generics + Protocol
+- [x] Phase 2b — Generics + Protocol (PEP 695 params, TypeApp, Callable, Sized protocol)
 - [ ] Phase 2c — Collections + TypedDict
 - [ ] Phase 2d — Borrow + effects
 - [x] Phase 3 — MIR + LLVM codegen (`lic build`, minimal lower/emit; CFG/bounds IR deferred)

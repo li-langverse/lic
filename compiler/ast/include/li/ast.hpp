@@ -15,7 +15,7 @@ struct Span {
 
 struct Expr;
 
-enum class TypeKind { Named, Array, Refinement };
+enum class TypeKind { Named, Array, Refinement, TypeApp, Callable, GenericParam };
 
 struct TypeExpr {
   TypeKind kind = TypeKind::Named;
@@ -26,6 +26,8 @@ struct TypeExpr {
   std::string refinement_var;
   std::unique_ptr<TypeExpr> refinement_base;
   std::unique_ptr<Expr> refinement_pred;
+  std::vector<std::unique_ptr<TypeExpr>> type_args;
+  std::unique_ptr<TypeExpr> callable_ret;
 };
 
 struct Param {
@@ -76,6 +78,7 @@ struct Stmt {
 struct ProcDecl {
   Span span;
   std::string name;
+  std::vector<std::string> type_params;
   std::vector<Param> params;
   std::optional<TypeExpr> ret_type;
   std::vector<Contract> contracts;
@@ -85,6 +88,7 @@ struct ProcDecl {
 struct TypeAlias {
   Span span;
   std::string name;
+  std::vector<std::string> type_params;
   TypeExpr definition;
 };
 

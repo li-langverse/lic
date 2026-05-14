@@ -54,6 +54,8 @@ TokenKind Lexer::keyword_kind(std::string_view text) const {
   if (text == "decreases") return TokenKind::KwDecreases;
   if (text == "invariant") return TokenKind::KwInvariant;
   if (text == "result") return TokenKind::KwResult;
+  if (text == "Protocol") return TokenKind::KwProtocol;
+  if (text == "Callable") return TokenKind::KwCallable;
   return TokenKind::Ident;
 }
 
@@ -68,9 +70,6 @@ bool Lexer::process_line_begin(std::size_t line_start, DiagnosticBag& diags) {
     SourceLoc loc{file_, line_, 1, line_start};
     diags.error(loc, "tabs are not allowed for indentation");
     return false;
-  }
-  if (i < source_.size() && source_[i] == '\n') {
-    return true;
   }
   if (i < source_.size() && source_[i] == '#') {
     while (i < source_.size() && source_[i] != '\n') {
@@ -145,6 +144,13 @@ bool Lexer::process_line_begin(std::size_t line_start, DiagnosticBag& diags) {
     }
   }
   pending_indent_check_ = false;
+
+  if (i < source_.size() && source_[i] == '\n') {
+    pos_ = i;
+    column_ = spaces + 1;
+    at_line_start_ = false;
+    return true;
+  }
 
   if (i < source_.size() && source_[i] == '=') {
     std::size_t j = i + 1;

@@ -156,3 +156,37 @@ outcome = "verify_ok"
 suite = "benchmarks"
 file = "benchmarks/tier0_correctness/three_body_invariants.li"
 outcome = "verify_ok"
+
+# --- generics (PEP 695 + Protocol) ---
+
+[[tests]]
+suite = "generics"
+file = "generics/identity.li"
+outcome = "verify_ok"
+
+[[tests]]
+suite = "generics"
+file = "generics/box_alias.li"
+outcome = "verify_ok"
+
+[[tests]]
+suite = "generics"
+file = "generics/callable_param.li"
+outcome = "verify_ok"
+
+[[tests]]
+suite = "generics"
+file = "generics/protocol_sized_ok.li"
+outcome = "verify_ok"
+
+[[tests]]
+suite = "generics"
+file = "generics/return_mismatch.li"
+outcome = "compile_fail"
+expected_substr = "generic"
+
+[[tests]]
+suite = "generics"
+file = "generics/protocol_sized_fail.li"
+outcome = "compile_fail"
+expected_substr = "Protocol"

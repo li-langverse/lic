@@ -52,6 +52,7 @@ struct Parser {
   std::unique_ptr<Expr> parse_primary();
   std::unique_ptr<Expr> parse_postfix(std::unique_ptr<Expr> base);
   TypeExpr parse_type();
+  std::vector<std::string> parse_type_params();
   Param parse_param();
   std::unique_ptr<Expr> parse_contract_expr();
   Contract parse_contract();
@@ -248,7 +249,7 @@ TypeExpr Parser::parse_type() {
       return ty;
     }
     ty.refinement_pred = parse_contract_expr();
-  if (!expect(TokenKind::RBrace, "'}'")) {
+    if (!expect(TokenKind::RBrace, "'}'")) {
       return ty;
     }
     ty.span.end = peek(-1).end;
@@ -260,12 +261,31 @@ TypeExpr Parser::parse_type() {
   const Token& t = cur();
   TypeExpr ty;
   ty.span = {t.start, t.end};
-  if (t.kind != TokenKind::Ident) {
+  if (t.kind != TokenKind::Ident && t.kind != TokenKind::KwCallable &&
+      t.kind != TokenKind::KwProtocol) {
     diags.error(loc(t), "expected type");
     return ty;
   }
   const std::string name(t.text);
   i++;
+  if (name == "Callable" && accept(TokenKind::LBracket)) {
+    ty.kind = TypeKind::Callable;
+    ty.name = "Callable";
+    if (!accept(TokenKind::LBracket)) {
+      diags.error(loc(cur()), "expected '[' for Callable argument list");
+      return ty;
+    }
+    if (!at(TokenKind::RBracket)) {
+      do {
+        ty.type_args.push_back(std::make_unique<TypeExpr>(parse_type()));
+      } while (accept(TokenKind::Comma));
+    }
+    expect(TokenKind::RBracket, "']'");
+    expect(TokenKind::Comma, "','");
+    ty.callable_ret = std::make_unique<TypeExpr>(parse_type());
+    expect(TokenKind::RBracket, "']'");
+    return ty;
+  }
   if (name == "array" && accept(TokenKind::LBracket)) {
     ty.kind = TypeKind::Array;
     ty.name = "array";
@@ -281,8 +301,36 @@ TypeExpr Parser::parse_type() {
   } else {
     ty.kind = TypeKind::Named;
     ty.name = name;
+    if (accept(TokenKind::LBracket)) {
+      ty.kind = TypeKind::TypeApp;
+      if (!at(TokenKind::RBracket)) {
+        do {
+          ty.type_args.push_back(std::make_unique<TypeExpr>(parse_type()));
+        } while (accept(TokenKind::Comma));
+      }
+      expect(TokenKind::RBracket, "']'");
+    }
   }
   return ty;
+}
+
+std::vector<std::string> Parser::parse_type_params() {
+  std::vector<std::string> params;
+  if (!accept(TokenKind::LBracket)) {
+    return params;
+  }
+  if (!at(TokenKind::RBracket)) {
+    do {
+      if (!at(TokenKind::Ident)) {
+        diags.error(loc(cur()), "expected type parameter name");
+        break;
+      }
+      params.push_back(std::string(cur().text));
+      i++;
+    } while (accept(TokenKind::Comma));
+  }
+  expect(TokenKind::RBracket, "']'");
+  return params;
 }
 
 Param Parser::parse_param() {
@@ -452,6 +500,7 @@ ProcDecl Parser::parse_proc() {
   proc.span = {name.start, name.end};
   proc.name = std::string(name.text);
   i++;
+  proc.type_params = parse_type_params();
   expect(TokenKind::LParen, "'('");
   if (!at(TokenKind::RParen)) {
     do {
@@ -480,6 +529,7 @@ TypeAlias Parser::parse_type_alias() {
   alias.span = {name.start, name.end};
   alias.name = std::string(name.text);
   i++;
+  alias.type_params = parse_type_params();
   expect(TokenKind::Eq, "'='");
   alias.definition = parse_type();
   skip_newlines();

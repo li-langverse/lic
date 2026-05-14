@@ -38,6 +38,8 @@ enum class TokenKind {
   KwDecreases,
   KwInvariant,
   KwResult,
+  KwProtocol,
+  KwCallable,
   LParen,
   RParen,
   LBracket,

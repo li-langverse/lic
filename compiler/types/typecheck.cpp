@@ -3,16 +3,20 @@
 #include <map>
 #include <memory>
 #include <string>
+#include <vector>
 
 namespace li {
 namespace {
 
-enum class TyKind { Int, Float, Bool, Array, Named };
+enum class TyKind { Int, Float, Bool, Array, Named, TypeVar, Protocol, Callable };
 
 struct Ty {
   TyKind kind = TyKind::Int;
   std::int64_t array_size = 0;
   std::shared_ptr<Ty> elem;
+  std::string name;
+  std::vector<std::shared_ptr<Ty>> type_args;
+  std::shared_ptr<Ty> callable_ret;
 };
 
 using TyPtr = std::shared_ptr<Ty>;
@@ -21,46 +25,200 @@ TyPtr make_int() { return std::make_shared<Ty>(Ty{TyKind::Int}); }
 TyPtr make_float() { return std::make_shared<Ty>(Ty{TyKind::Float}); }
 TyPtr make_bool() { return std::make_shared<Ty>(Ty{TyKind::Bool}); }
 
+TyPtr make_type_var(std::string name) {
+  auto t = std::make_shared<Ty>();
+  t->kind = TyKind::TypeVar;
+  t->name = std::move(name);
+  return t;
+}
+
+TyPtr make_protocol(std::string name) {
+  auto t = std::make_shared<Ty>();
+  t->kind = TyKind::Protocol;
+  t->name = std::move(name);
+  return t;
+}
+
+struct AliasEntry {
+  std::vector<std::string> type_params;
+  const TypeExpr* definition = nullptr;
+  bool is_protocol = false;
+};
+
 struct Ctx {
-  std::map<std::string, TyPtr> aliases;
+  std::map<std::string, AliasEntry> aliases;
+  std::map<std::string, const ProcDecl*> procs;
   std::map<std::string, TyPtr> locals;
+  std::map<std::string, TyPtr> type_vars;
   DiagnosticBag& diags;
   std::string file;
 
   SourceLoc loc(const Span& s) const { return SourceLoc{file, 1, 1, s.start}; }
 
-  TyPtr resolve_type(const TypeExpr& te) {
+  std::unique_ptr<TypeExpr> clone_type(const TypeExpr& te) const {
+    auto out = std::make_unique<TypeExpr>();
+    out->kind = te.kind;
+    out->span = te.span;
+    out->name = te.name;
+    out->array_size = te.array_size;
+    out->refinement_var = te.refinement_var;
+    if (te.elem) {
+      out->elem = clone_type(*te.elem);
+    }
+    if (te.refinement_base) {
+      out->refinement_base = clone_type(*te.refinement_base);
+    }
+    if (te.refinement_pred) {
+      out->refinement_pred = nullptr;
+    }
+    if (te.callable_ret) {
+      out->callable_ret = clone_type(*te.callable_ret);
+    }
+    for (const auto& arg : te.type_args) {
+      out->type_args.push_back(clone_type(*arg));
+    }
+    return out;
+  }
+
+  std::unique_ptr<TypeExpr> substitute(const TypeExpr& te,
+                                       const std::map<std::string, const TypeExpr*>& subst) const {
+    if (te.kind == TypeKind::Named) {
+      const auto it = subst.find(te.name);
+      if (it != subst.end()) {
+        return clone_type(*it->second);
+      }
+    }
+    auto out = clone_type(te);
+    if (out->elem) {
+      out->elem = substitute(*out->elem, subst);
+    }
+    if (out->refinement_base) {
+      out->refinement_base = substitute(*out->refinement_base, subst);
+    }
+    if (out->callable_ret) {
+      out->callable_ret = substitute(*out->callable_ret, subst);
+    }
+    for (auto& arg : out->type_args) {
+      arg = substitute(*arg, subst);
+    }
+    return out;
+  }
+
+  bool same_kind(const TyPtr& a, const TyPtr& b) const {
+    if (a->kind != b->kind) {
+      return false;
+    }
+    if (a->kind == TyKind::Array) {
+      return a->array_size == b->array_size && same_kind(a->elem, b->elem);
+    }
+    if (a->kind == TyKind::TypeVar || a->kind == TyKind::Named || a->kind == TyKind::Protocol) {
+      return a->name == b->name;
+    }
+    return true;
+  }
+
+  bool satisfies_protocol(const TyPtr& value, const TyPtr& protocol) const {
+    if (protocol->kind != TyKind::Protocol) {
+      return same_kind(value, protocol);
+    }
+    if (protocol->name == "Sized") {
+      return value->kind == TyKind::Array;
+    }
+    return false;
+  }
+
+  bool assignable(const TyPtr& value, const TyPtr& expected) const {
+    if (expected->kind == TyKind::TypeVar) {
+      return true;
+    }
+    if (expected->kind == TyKind::Protocol) {
+      return satisfies_protocol(value, expected);
+    }
+    if (value->kind == TyKind::TypeVar) {
+      return expected->kind == TyKind::TypeVar && value->name == expected->name;
+    }
+    return same_kind(value, expected);
+  }
+
+  TyPtr resolve_type_expr(const TypeExpr& te) {
     if (te.kind == TypeKind::Refinement) {
-      return resolve_type(*te.refinement_base);
+      return resolve_type_expr(*te.refinement_base);
+    }
+    if (te.kind == TypeKind::Callable) {
+      auto t = std::make_shared<Ty>();
+      t->kind = TyKind::Callable;
+      t->name = "Callable";
+      for (const auto& arg : te.type_args) {
+        t->type_args.push_back(resolve_type_expr(*arg));
+      }
+      if (te.callable_ret) {
+        t->callable_ret = resolve_type_expr(*te.callable_ret);
+      }
+      return t;
     }
     if (te.kind == TypeKind::Array) {
       auto t = std::make_shared<Ty>();
       t->kind = TyKind::Array;
       t->array_size = te.array_size;
-      t->elem = resolve_type(*te.elem);
+      t->elem = resolve_type_expr(*te.elem);
       return t;
     }
-    const auto it = aliases.find(te.name);
-    if (it != aliases.end()) {
-      return it->second;
+    if (te.kind == TypeKind::TypeApp) {
+      const auto it = aliases.find(te.name);
+      if (it == aliases.end()) {
+        diags.error(loc(te.span), "unknown type '" + te.name + "'");
+        return make_int();
+      }
+      const AliasEntry& entry = it->second;
+      if (entry.type_params.size() != te.type_args.size()) {
+        diags.error(loc(te.span), "generic arity mismatch for '" + te.name + "'");
+        return make_int();
+      }
+      std::map<std::string, const TypeExpr*> subst;
+      for (std::size_t n = 0; n < entry.type_params.size(); ++n) {
+        subst[entry.type_params[n]] = te.type_args[n].get();
+      }
+      const std::unique_ptr<TypeExpr> expanded = substitute(*entry.definition, subst);
+      return resolve_type_expr(*expanded);
     }
-    if (te.name == "int") {
+    if (te.kind == TypeKind::Named) {
+      const auto tv = type_vars.find(te.name);
+      if (tv != type_vars.end()) {
+        return tv->second;
+      }
+      const auto it = aliases.find(te.name);
+      if (it != aliases.end()) {
+        if (it->second.is_protocol) {
+          return make_protocol(te.name);
+        }
+        if (!it->second.type_params.empty()) {
+          diags.error(loc(te.span), "generic type '" + te.name + "' requires type arguments");
+          return make_int();
+        }
+        return resolve_type_expr(*it->second.definition);
+      }
+      if (te.name == "int") {
+        return make_int();
+      }
+      if (te.name == "float" || te.name == "float64" || te.name == "f64") {
+        return make_float();
+      }
+      if (te.name == "bool") {
+        return make_bool();
+      }
+      if (te.name == "Any") {
+        diags.error(loc(te.span), "type 'Any' is forbidden");
+        return make_int();
+      }
+      if (te.name == "unit") {
+        return make_int();
+      }
+      if (te.name == "Protocol") {
+        return make_protocol("Protocol");
+      }
+      diags.error(loc(te.span), "unknown type '" + te.name + "'");
       return make_int();
     }
-    if (te.name == "float" || te.name == "float64" || te.name == "f64") {
-      return make_float();
-    }
-    if (te.name == "bool") {
-      return make_bool();
-    }
-    if (te.name == "Any") {
-      diags.error(loc(te.span), "type 'Any' is forbidden");
-      return make_int();
-    }
-    if (te.name == "unit") {
-      return make_int();
-    }
-    diags.error(loc(te.span), "unknown type '" + te.name + "'");
     return make_int();
   }
 
@@ -95,8 +253,12 @@ struct Ctx {
         }
         return make_bool();
       }
-      case Expr::Kind::Call:
+      case Expr::Kind::Call: {
+        for (const auto& arg : e.args) {
+          (void)type_of(*arg);
+        }
         return make_int();
+      }
       case Expr::Kind::UnaryNot:
         return make_bool();
       case Expr::Kind::Index: {
@@ -122,13 +284,41 @@ struct Ctx {
     return make_int();
   }
 
+  void check_call_args(const Expr& call) {
+    if (call.kind != Expr::Kind::Call) {
+      return;
+    }
+    const auto it = procs.find(call.ident);
+    if (it == procs.end()) {
+      return;
+    }
+    const ProcDecl& callee = *it->second;
+    for (std::size_t n = 0; n < call.args.size() && n < callee.params.size(); ++n) {
+      const TyPtr arg_ty = type_of(*call.args[n]);
+      const TyPtr param_ty = resolve_type_expr(callee.params[n].type);
+      if (!assignable(arg_ty, param_ty)) {
+        if (param_ty->kind == TyKind::Protocol) {
+          diags.error(loc(call.span),
+                      "argument does not satisfy Protocol '" + param_ty->name + "'");
+        } else {
+          diags.error(loc(call.span), "argument type mismatch in call to '" + call.ident + "'");
+        }
+      }
+    }
+  }
+
   void check_stmt(const Stmt& s) {
     if (s.kind == Stmt::Kind::VarDecl) {
-      const TyPtr declared = resolve_type(s.var_type);
+      const TyPtr declared = resolve_type_expr(s.var_type);
       if (s.init) {
         const TyPtr got = type_of(*s.init);
-        if (declared->kind != got->kind) {
-          diags.error(loc(s.span), "variable type mismatch for int/float types");
+        if (!assignable(got, declared)) {
+          if (declared->kind == TyKind::Protocol) {
+            diags.error(loc(s.span),
+                        "value does not satisfy Protocol '" + declared->name + "'");
+          } else {
+            diags.error(loc(s.span), "variable type mismatch");
+          }
         }
       }
       locals[s.var_name] = declared;
@@ -148,12 +338,19 @@ struct Ctx {
       return;
     }
     if (s.expr) {
+      if (s.expr->kind == Expr::Kind::Call) {
+        check_call_args(*s.expr);
+      }
       type_of(*s.expr);
     }
   }
 
   void check_proc(const ProcDecl& p) {
     locals.clear();
+    type_vars.clear();
+    for (const auto& tp : p.type_params) {
+      type_vars[tp] = make_type_var(tp);
+    }
     bool has_requires = false;
     bool has_ensures = false;
     for (const auto& c : p.contracts) {
@@ -170,10 +367,21 @@ struct Ctx {
     if (!has_ensures) {
       diags.error(loc(p.span), "proc missing ensures clause");
     }
+    std::optional<TyPtr> ret_ty;
+    if (p.ret_type) {
+      ret_ty = resolve_type_expr(*p.ret_type);
+    }
     for (const auto& param : p.params) {
-      locals[param.name] = resolve_type(param.type);
+      const TyPtr pt = resolve_type_expr(param.type);
+      locals[param.name] = pt;
     }
     for (const auto& s : p.body) {
+      if (s.kind == Stmt::Kind::Return && s.expr && ret_ty) {
+        const TyPtr got = type_of(*s.expr);
+        if (!assignable(got, *ret_ty)) {
+          diags.error(loc(s.span), "return type mismatch for generic type parameter");
+        }
+      }
       check_stmt(s);
     }
   }
@@ -183,9 +391,17 @@ struct Ctx {
 
 TypecheckResult typecheck_module(const Module& module) {
   TypecheckResult result;
-  Ctx ctx{{}, {}, result.diagnostics, "module"};
+  Ctx ctx{{}, {}, {}, {}, result.diagnostics, "module"};
+  for (const auto& proc : module.procs) {
+    ctx.procs[proc.name] = &proc;
+  }
   for (const auto& alias : module.types) {
-    ctx.aliases[alias.name] = ctx.resolve_type(alias.definition);
+    AliasEntry entry;
+    entry.type_params = alias.type_params;
+    entry.definition = &alias.definition;
+    entry.is_protocol =
+        alias.definition.kind == TypeKind::Named && alias.definition.name == "Protocol";
+    ctx.aliases[alias.name] = std::move(entry);
   }
   for (const auto& proc : module.procs) {
     ctx.check_proc(proc);

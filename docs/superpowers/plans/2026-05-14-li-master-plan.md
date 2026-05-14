@@ -63,7 +63,7 @@
 
 - [x] Phase 0 — C++ / LLVM bootstrap
 - [x] Phase 1 — Lexer + Parser
-- [ ] Phase 2a — Type core (minimal typecheck landed; full mypy parity pending)
+- [x] Phase 2a — Type core (typecheck + prove_reject + race policy gates; full mypy parity pending)
 - [ ] Phase 2b — Generics + Protocol
 - [ ] Phase 2c — Collections + TypedDict
 - [ ] Phase 2d — Borrow + effects

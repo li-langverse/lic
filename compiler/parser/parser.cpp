@@ -220,6 +220,9 @@ std::unique_ptr<Expr> Parser::parse_expr(int min_prec) {
 }
 
 TypeExpr Parser::parse_type() {
+  if (at(TokenKind::Ident) && cur().text == "var") {
+    i++;
+  }
   const Token& t = cur();
   TypeExpr ty;
   ty.span = {t.start, t.end};
@@ -335,6 +338,26 @@ Stmt Parser::parse_stmt() {
     skip_newlines();
     if (at(TokenKind::Indent)) {
       parse_block();
+    }
+    return s;
+  }
+  if (at(TokenKind::Ident) && cur().text == "parallel") {
+    s.kind = Stmt::Kind::Expr;
+    s.span = {cur().start, cur().end};
+    while (!at(TokenKind::Dedent) && !at(TokenKind::Eof)) {
+      const std::size_t b = i;
+      i++;
+      if (at(TokenKind::Eq)) {
+        i++;
+        skip_newlines();
+        if (at(TokenKind::Indent)) {
+          parse_block();
+        }
+        break;
+      }
+      if (i == b) {
+        break;
+      }
     }
     return s;
   }

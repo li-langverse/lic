@@ -1,4 +1,5 @@
 #include "li/parser.hpp"
+#include "li/policy.hpp"
 #include "li/smoke_llvm.hpp"
 #include "li/typecheck.hpp"
 
@@ -30,6 +31,12 @@ std::string read_file(const char* path) {
 
 int check_file(const char* path) {
   const std::string source = read_file(path);
+  li::DiagnosticBag policy_diags;
+  li::check_source_policies(source, path, policy_diags);
+  if (!policy_diags.empty()) {
+    li::print_diagnostics(policy_diags);
+    return 1;
+  }
   auto parsed = li::parse_module(source, path);
   if (!parsed.ok()) {
     li::print_diagnostics(parsed.diagnostics);

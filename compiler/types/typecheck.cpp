@@ -44,11 +44,18 @@ struct Ctx {
     if (te.name == "int") {
       return make_int();
     }
-    if (te.name == "float" || te.name == "float64") {
+    if (te.name == "float" || te.name == "float64" || te.name == "f64") {
       return make_float();
     }
     if (te.name == "bool") {
       return make_bool();
+    }
+    if (te.name == "Any") {
+      diags.error(loc(te.span), "type 'Any' is forbidden");
+      return make_int();
+    }
+    if (te.name == "unit") {
+      return make_int();
     }
     diags.error(loc(te.span), "unknown type '" + te.name + "'");
     return make_int();
@@ -144,6 +151,22 @@ struct Ctx {
 
   void check_proc(const ProcDecl& p) {
     locals.clear();
+    bool has_requires = false;
+    bool has_ensures = false;
+    for (const auto& c : p.contracts) {
+      if (c.kind == ContractKind::Requires) {
+        has_requires = true;
+      }
+      if (c.kind == ContractKind::Ensures) {
+        has_ensures = true;
+      }
+    }
+    if (!has_requires) {
+      diags.error(loc(p.span), "proc missing requires clause");
+    }
+    if (!has_ensures) {
+      diags.error(loc(p.span), "proc missing ensures clause");
+    }
     for (const auto& param : p.params) {
       locals[param.name] = resolve_type(param.type);
     }

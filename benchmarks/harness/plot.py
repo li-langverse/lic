@@ -15,6 +15,11 @@ REPO = HARNESS.parent.parent
 RESULTS = REPO / "benchmarks" / "results"
 SHARE = RESULTS / "share"
 
+TIER1_MICRO = {
+    "simd_dot",
+    "matmul_naive",
+    "reduce_sum",
+}
 TIER2_PHYSICS = {
     "md_lennard_jones",
     "three_body",
@@ -66,12 +71,19 @@ def plot_speed_bars(df: pd.DataFrame, tier: str, out: Path) -> None:
 
     if tier == "tier2":
         sub = df[df["benchmark"].isin(TIER2_PHYSICS)]
+    elif tier == "tier1":
+        sub = df[df["benchmark"].isin(TIER1_MICRO)]
     elif tier != "all":
         sub = df[df["benchmark"].str.contains(tier, case=False, na=False)]
     else:
         sub = df
     if sub.empty:
-        sub = df[df["benchmark"].isin(TIER2_PHYSICS)] if tier == "tier2" else df
+        if tier == "tier2":
+            sub = df[df["benchmark"].isin(TIER2_PHYSICS)]
+        elif tier == "tier1":
+            sub = df[df["benchmark"].isin(TIER1_MICRO)]
+        else:
+            sub = df
     time_df = sub[sub["metric"].isin(["wall_time", "time", "latency"]) | sub["unit"].str.contains("s", na=False)]
     if time_df.empty:
         time_df = sub
@@ -311,6 +323,8 @@ def main() -> int:
     args.out.mkdir(parents=True, exist_ok=True)
 
     plot_speed_bars(df, args.tier, args.out / f"bench_speed_{args.tier}.png")
+    if args.tier == "tier2":
+        plot_speed_bars(df, "tier1", args.out / "bench_speed_tier1.png")
     plot_speedup_vs_cpp(df, args.out / "speedup_vs_cpp.png")
     verify_df = load_verify_df()
     if verify_df is not None and "passed" in verify_df.columns:

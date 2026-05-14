@@ -17,6 +17,7 @@ from datetime import datetime, timezone
 from pathlib import Path
 
 REPO = Path(__file__).resolve().parents[2]
+TIER1 = REPO / "benchmarks" / "tier1_micro"
 TIER2 = REPO / "benchmarks" / "tier2_physics"
 RESULTS = REPO / "benchmarks" / "results"
 CSV_HEADER = [
@@ -36,59 +37,99 @@ LANGS = ("cpp", "rust", "julia", "li")
 
 
 @dataclass(frozen=True)
-class Tier2Bench:
+class BenchSpec:
     name: str
+    tier: int
     rel_dir: str
     main_c: str
     core_c: str
     li_main: str
+    flops_per_run: float | None = None
+    bytes_per_run: float | None = None
 
 
-TIER2_BENCHES: tuple[Tier2Bench, ...] = (
-    Tier2Bench(
+TIER1_BENCHES: tuple[BenchSpec, ...] = (
+    BenchSpec(
+        "simd_dot",
+        1,
+        "simd_dot",
+        "cpp/main.c",
+        "common/dot_core.c",
+        "li/main.li",
+        flops_per_run=2.0 * 1e7,
+    ),
+    BenchSpec(
+        "matmul_naive",
+        1,
+        "matmul_naive",
+        "cpp/main.c",
+        "common/matmul_core.c",
+        "li/main.li",
+        flops_per_run=2.0 * 256**3,
+    ),
+    BenchSpec(
+        "reduce_sum",
+        1,
+        "reduce_sum",
+        "cpp/main.c",
+        "common/reduce_core.c",
+        "li/main.li",
+        bytes_per_run=8.0 * 1e8,
+    ),
+)
+
+TIER2_BENCHES: tuple[BenchSpec, ...] = (
+    BenchSpec(
         "md_lennard_jones",
+        2,
         "md_lennard_jones",
         "cpp/md_main.c",
         "common/md_core.c",
         "li/main.li",
     ),
-    Tier2Bench(
+    BenchSpec(
         "three_body",
+        2,
         "three_body",
         "cpp/main.c",
         "common/three_body_core.c",
         "li/main.li",
     ),
-    Tier2Bench(
+    BenchSpec(
         "nbody_gravity",
+        2,
         "nbody_gravity",
         "cpp/main.c",
         "common/nbody_core.c",
         "li/main.li",
     ),
-    Tier2Bench(
+    BenchSpec(
         "harmonic_oscillator_chain",
+        2,
         "harmonic_oscillator_chain",
         "cpp/main.c",
         "common/harmonic_core.c",
         "li/main.li",
     ),
-    Tier2Bench(
+    BenchSpec(
         "wave_equation_1d",
+        2,
         "wave_equation_1d",
         "cpp/main.c",
         "common/wave_core.c",
         "li/main.li",
     ),
-    Tier2Bench(
+    BenchSpec(
         "heat_equation_2d",
+        2,
         "heat_equation_2d",
         "cpp/main.c",
         "common/heat_core.c",
         "li/main.li",
     ),
-    Tier2Bench(
+    BenchSpec(
         "double_pendulum",
+        2,
         "double_pendulum",
         "cpp/main.c",
         "common/pendulum_core.c",
@@ -97,8 +138,9 @@ TIER2_BENCHES: tuple[Tier2Bench, ...] = (
 )
 
 
-def bench_dir(spec: Tier2Bench) -> Path:
-    return TIER2 / spec.rel_dir
+def bench_dir(spec: BenchSpec) -> Path:
+    root = TIER1 if spec.tier == 1 else TIER2
+    return root / spec.rel_dir
 
 
 def git_sha() -> str:
@@ -160,13 +202,16 @@ def merge_rows(
     new_rows: list[dict[str, object]],
     *,
     benchmark: str,
-    langs: set[str],
+    langs: set[str] | None = None,
 ) -> list[dict[str, object]]:
-    kept = [
-        row
-        for row in existing
-        if not (row["benchmark"] == benchmark and row["lang"] in langs)
-    ]
+    if langs is None:
+        kept = [row for row in existing if row["benchmark"] != benchmark]
+    else:
+        kept = [
+            row
+            for row in existing
+            if not (row["benchmark"] == benchmark and row["lang"] in langs)
+        ]
     return kept + new_rows
 
 
@@ -192,7 +237,7 @@ def time_command(cmd: list[str], *, cwd: Path | None = None, runs: int = 3) -> f
     return statistics.median(samples)
 
 
-def build_native(spec: Tier2Bench, bin_path: Path) -> None:
+def build_native(spec: BenchSpec, bin_path: Path) -> None:
     """Shared C perf binary — cpp/rust/julia labels use identical machine code."""
     root = bench_dir(spec)
     main_c = root / spec.main_c
@@ -204,7 +249,7 @@ def build_native(spec: Tier2Bench, bin_path: Path) -> None:
     )
 
 
-def build_li(spec: Tier2Bench, bin_path: Path) -> None:
+def build_li(spec: BenchSpec, bin_path: Path) -> None:
     lic = REPO / "build" / "compiler" / "lic" / "lic"
     if not lic.is_file():
         raise RuntimeError(f"lic missing at {lic} — run ./scripts/build.sh")
@@ -228,7 +273,7 @@ def build_li(spec: Tier2Bench, bin_path: Path) -> None:
     )
 
 
-def verify_checksum(spec: Tier2Bench, build_dir: Path) -> None:
+def verify_checksum(spec: BenchSpec, build_dir: Path) -> None:
     """Native and Li must run the same reference kernel (checksum + timing sanity)."""
     native = build_dir / f"{spec.name}_native"
     li_bin = build_dir / f"{spec.name}_li"
@@ -277,7 +322,9 @@ def row_for(
     *,
     benchmark: str,
     lang: str,
-    wall_time: float,
+    value: float,
+    metric: str,
+    unit: str,
     sha: str,
     cpu: str,
     flags: str,
@@ -287,16 +334,16 @@ def row_for(
         "lang": lang,
         "variant": "release",
         "threads": 1,
-        "metric": "wall_time",
-        "value": round(wall_time, 4),
-        "unit": "s",
+        "metric": metric,
+        "value": round(value, 4),
+        "unit": unit,
         "git_sha": sha,
         "cpu_model": cpu,
         "flags": flags,
     }
 
 
-def run_benchmark(spec: Tier2Bench, *, runs: int) -> list[dict[str, object]]:
+def run_benchmark(spec: BenchSpec, *, runs: int) -> list[dict[str, object]]:
     build_dir = REPO / "build" / "bench" / spec.name
     build_dir.mkdir(parents=True, exist_ok=True)
     sha = git_sha()
@@ -324,20 +371,52 @@ def run_benchmark(spec: Tier2Bench, *, runs: int) -> list[dict[str, object]]:
             row_for(
                 benchmark=spec.name,
                 lang=lang,
-                wall_time=wall,
+                value=wall,
+                metric="wall_time",
+                unit="s",
                 sha=sha,
                 cpu=cpu,
                 flags=flags,
             )
         )
+        if spec.flops_per_run is not None and wall > 0:
+            gflops = spec.flops_per_run / wall / 1e9
+            rows.append(
+                row_for(
+                    benchmark=spec.name,
+                    lang=lang,
+                    value=gflops,
+                    metric="throughput",
+                    unit="GFLOPS",
+                    sha=sha,
+                    cpu=cpu,
+                    flags=flags,
+                )
+            )
+        if spec.bytes_per_run is not None and wall > 0:
+            gbps = spec.bytes_per_run / wall / 1e9
+            rows.append(
+                row_for(
+                    benchmark=spec.name,
+                    lang=lang,
+                    value=gbps,
+                    metric="bandwidth",
+                    unit="GB/s",
+                    sha=sha,
+                    cpu=cpu,
+                    flags=flags,
+                )
+            )
         print(f"{spec.name} {lang} wall_time={wall:.4f}s (median of {runs})")
 
     return rows
 
 
-def run_tier2_all(*, runs: int, out: Path, verify: bool) -> int:
+def run_tier_benches(
+    specs: tuple[BenchSpec, ...], *, runs: int, out: Path, verify: bool, label: str
+) -> int:
     if verify:
-        for spec in TIER2_BENCHES:
+        for spec in specs:
             build_dir = REPO / "build" / "bench" / spec.name
             build_dir.mkdir(parents=True, exist_ok=True)
             if spec.name == "md_lennard_jones":
@@ -351,13 +430,21 @@ def run_tier2_all(*, runs: int, out: Path, verify: bool) -> int:
                 print(f"warn: {exc} — continuing with timing", file=sys.stderr)
 
     merged: list[dict[str, object]] = read_csv(out)
-    for spec in TIER2_BENCHES:
+    for spec in specs:
         new_rows = run_benchmark(spec, runs=runs)
-        merged = merge_rows(merged, new_rows, benchmark=spec.name, langs=set(LANGS))
+        merged = merge_rows(merged, new_rows, benchmark=spec.name)
     write_csv(out, merged)
-    names = ", ".join(b.name for b in TIER2_BENCHES)
-    print(f"updated {out} with tier-2 timings: {names}")
+    names = ", ".join(b.name for b in specs)
+    print(f"updated {out} with {label} timings: {names}")
     return 0
+
+
+def run_tier1_all(*, runs: int, out: Path, verify: bool) -> int:
+    return run_tier_benches(TIER1_BENCHES, runs=runs, out=out, verify=verify, label="tier-1")
+
+
+def run_tier2_all(*, runs: int, out: Path, verify: bool) -> int:
+    return run_tier_benches(TIER2_BENCHES, runs=runs, out=out, verify=verify, label="tier-2")
 
 
 def run_verify() -> int:
@@ -405,11 +492,20 @@ def main() -> int:
             return rc
         return subprocess.call([sys.executable, str(REPO / "benchmarks" / "harness" / "stability.py")])
 
+    if args.tier == 1:
+        return run_tier1_all(runs=args.runs, out=args.out, verify=not args.skip_verify)
+
     if args.tier == 2:
         return run_tier2_all(runs=args.runs, out=args.out, verify=not args.skip_verify)
 
+    if args.tier == 12:
+        rc = run_tier1_all(runs=args.runs, out=args.out, verify=not args.skip_verify)
+        if rc != 0:
+            return rc
+        return run_tier2_all(runs=args.runs, out=args.out, verify=not args.skip_verify)
+
     if args.tier >= 1:
-        print("tier 1 benchmarks: not implemented yet", file=sys.stderr)
+        print(f"tier {args.tier} benchmarks: not implemented", file=sys.stderr)
     return 0
 
 

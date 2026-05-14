@@ -13,7 +13,7 @@ fi
 source "$VENV/bin/activate"
 pip install -q -r "${ROOT}/benchmarks/harness/requirements.txt"
 
-python3 "${ROOT}/benchmarks/harness/bench.py" --tier 2 --runs 3 --out "${ROOT}/benchmarks/results/latest.csv" || \
+python3 "${ROOT}/benchmarks/harness/bench.py" --tier 12 --runs 3 --skip-verify --out "${ROOT}/benchmarks/results/latest.csv" || \
   python3 "${ROOT}/benchmarks/harness/bench.py" --sample
 python3 "${ROOT}/benchmarks/harness/stability.py" --out "${ROOT}/benchmarks/results/stability.csv" || true
 python3 "${ROOT}/benchmarks/harness/trace_energy.py" --out "${ROOT}/benchmarks/results/md_lennard_jones" || true

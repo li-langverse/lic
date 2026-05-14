@@ -70,12 +70,16 @@ detect_llvm_dir() {
 
 detect_compilers() {
   if [[ -z "${CC:-}" ]]; then
-    if command -v clang-18 >/dev/null 2>&1; then
+    if [[ "$(uname -s)" == "Darwin" ]]; then
+      # Homebrew llvm@18 clang++ mixes libc++ with Xcode SDK headers badly.
+      export CC=clang
+      export CXX=clang++
+    elif command -v clang-18 >/dev/null 2>&1; then
       export CC=clang-18
       export CXX=clang++-18
     else
-      export CC="${CC:-clang}"
-      export CXX="${CXX:-clang++}"
+      export CC=clang
+      export CXX=clang++
     fi
   fi
 }

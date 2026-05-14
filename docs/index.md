@@ -46,6 +46,7 @@ Forbidden: `Any`, `unsafe`, `sorry`, bare `cast`, unproved `parallel for`.
 
 ```bash
 export LLVM_DIR="$(brew --prefix llvm@18)/lib/cmake/llvm"   # macOS
+export CC=clang CXX=clang++
 ./scripts/build.sh
 ./build/compiler/lic/lic --version
 ./scripts/local-ci.sh

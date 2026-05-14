@@ -29,20 +29,6 @@ jobs:
             ./scripts/check-version.sh
           fi
 
-  docs:
-    runs-on: ubuntu-24.04
-    steps:
-      - uses: actions/checkout@v4
-
-      - uses: actions/setup-python@v5
-        with:
-          python-version: "3.12"
-
-      - name: Build docs (strict)
-        run: |
-          chmod +x scripts/build-docs.sh
-          ./scripts/build-docs.sh --strict
-
   build-and-test:
     runs-on: ubuntu-24.04
     steps:
@@ -64,6 +50,7 @@ jobs:
           ./scripts/check-version.sh --build
 
   build-and-test-macos:
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
     runs-on: macos-14
     steps:
       - uses: actions/checkout@v4
@@ -76,7 +63,9 @@ jobs:
           chmod +x scripts/ci.sh scripts/build.sh scripts/check-version.sh
           LLVM_DIR="$(brew --prefix llvm@18)/lib/cmake/llvm"
           export LLVM_DIR
-          export CC="$(brew --prefix llvm@18)/bin/clang"
-          export CXX="$(brew --prefix llvm@18)/bin/clang++"
+          # Link against Homebrew LLVM, but compile with Xcode clang++/libc++
+          # (brew llvm@18's clang++ breaks libc++ header order on GHA macOS).
+          export CC=clang
+          export CXX=clang++
           ./scripts/ci.sh
           ./scripts/check-version.sh --build

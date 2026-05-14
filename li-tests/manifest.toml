@@ -1,0 +1,158 @@
+# li-tests manifest — single index of all tests
+# outcome: parse_ok | parse_fail | compile_ok | compile_fail | verify_ok | verify_fail
+
+[config]
+lic = "../build/compiler/lic/lic"
+default_flags = ["--release"]
+
+# --- lexer_parser ---
+
+[[tests]]
+suite = "lexer_parser"
+file = "lexer_parser/fib.li"
+outcome = "parse_ok"
+
+[[tests]]
+suite = "lexer_parser"
+file = "lexer_parser/invalid_indent.li"
+outcome = "parse_fail"
+expected_substr = "indentation"
+
+# --- typecheck ---
+
+[[tests]]
+suite = "typecheck"
+file = "typecheck/fib.li"
+outcome = "compile_fail"
+note = "types only stage until full pipeline; becomes verify_ok"
+
+[[tests]]
+suite = "typecheck"
+file = "typecheck/bad_array_index.li"
+outcome = "compile_fail"
+expected_substr = "out of range"
+
+[[tests]]
+suite = "typecheck"
+file = "typecheck/bad_numeric_mix.li"
+outcome = "compile_fail"
+expected_substr = "float"
+
+[[tests]]
+suite = "typecheck"
+file = "typecheck/bad_int_float_add.li"
+outcome = "compile_fail"
+expected_substr = "int"
+
+# --- prove_reject (pillar 1) ---
+
+[[tests]]
+suite = "prove_reject"
+file = "prove_reject/uses_any.li"
+outcome = "compile_fail"
+expected_substr = "Any"
+
+[[tests]]
+suite = "prove_reject"
+file = "prove_reject/uses_sorry.li"
+outcome = "compile_fail"
+expected_substr = "sorry"
+
+[[tests]]
+suite = "prove_reject"
+file = "prove_reject/missing_contracts.li"
+outcome = "compile_fail"
+expected_substr = "requires"
+
+[[tests]]
+suite = "prove_reject"
+file = "prove_reject/missing_decreases.li"
+outcome = "compile_fail"
+expected_substr = "decreases"
+
+[[tests]]
+suite = "prove_reject"
+file = "prove_reject/bare_cast.li"
+outcome = "compile_fail"
+expected_substr = "cast"
+
+# --- contracts_verify (must prove) ---
+
+[[tests]]
+suite = "contracts_verify"
+file = "contracts_verify/sqrt_contract.li"
+outcome = "verify_ok"
+
+[[tests]]
+suite = "contracts_verify"
+file = "contracts_verify/index_refinement.li"
+outcome = "verify_ok"
+
+# --- borrow ---
+
+[[tests]]
+suite = "borrow"
+file = "borrow/double_mut.li"
+outcome = "compile_fail"
+expected_substr = "borrow"
+
+[[tests]]
+suite = "borrow"
+file = "borrow/use_after_move.li"
+outcome = "compile_fail"
+expected_substr = "move"
+
+# --- race_shared_memory (v1 exploits) ---
+
+[[tests]]
+suite = "race_shared_memory"
+file = "race_shared_memory/shared_mut_write.li"
+outcome = "compile_fail"
+expected_substr = "shared"
+
+[[tests]]
+suite = "race_shared_memory"
+file = "race_shared_memory/overlap_par_slice.li"
+outcome = "compile_fail"
+expected_substr = "disjoint"
+
+[[tests]]
+suite = "race_shared_memory"
+file = "race_shared_memory/missing_disjoint_clause.li"
+outcome = "compile_fail"
+expected_substr = "disjoint"
+
+[[tests]]
+suite = "race_shared_memory"
+file = "race_shared_memory/mut_capture_no_sync.li"
+outcome = "compile_fail"
+expected_substr = "Sync"
+
+[[tests]]
+suite = "race_shared_memory"
+file = "race_shared_memory/borrow_mut_across_iters.li"
+outcome = "compile_fail"
+expected_substr = "borrow"
+
+[[tests]]
+suite = "race_shared_memory"
+file = "race_shared_memory/false_disjoint_proof.li"
+outcome = "compile_fail"
+expected_substr = "proof"
+
+[[tests]]
+suite = "race_shared_memory"
+file = "race_shared_memory/good_disjoint_parallel.li"
+outcome = "verify_ok"
+
+# --- benchmarks tier0 ---
+
+[[tests]]
+suite = "benchmarks"
+file = "benchmarks/tier0_correctness/md_energy_single_step.li"
+outcome = "verify_ok"
+
+[[tests]]
+suite = "benchmarks"
+file = "benchmarks/tier0_correctness/three_body_invariants.li"
+outcome = "verify_ok"

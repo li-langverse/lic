@@ -1,0 +1,13 @@
+# EXPLOIT: concurrent write to buf[0] from every parallel iteration.
+# MUST NOT compile — expected: overlapping mutable shared memory.
+
+proc race() -> unit
+  requires true
+  ensures true
+  decreases 0
+=
+  var buf: array[1024, int]
+  parallel for i in 0..<1024
+    decreases 1024 - i
+  =
+    buf[0] = buf[0] + 1

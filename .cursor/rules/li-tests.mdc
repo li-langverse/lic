@@ -1,0 +1,29 @@
+---
+description: li-tests suite conventions and manifest
+globs: li-tests/**/*
+alwaysApply: false
+---
+
+# li-tests
+
+All conformance tests live in `li-tests/`. Do not add scattered fixtures under `compiler/`.
+
+## Register every test
+
+1. Add `.li` under the correct suite directory  
+2. Add `[[tests]]` entry to `li-tests/manifest.toml` with `outcome`  
+3. For `compile_fail`, set `expected_substr` or add `file.exp`  
+
+## Outcomes
+
+| outcome | Meaning |
+|---------|---------|
+| `parse_ok` / `parse_fail` | Parser stage |
+| `compile_ok` / `compile_fail` | Type + borrow (no Lean yet) |
+| `verify_ok` / `verify_fail` | Full `lic build` + Lean |
+
+## Suites
+
+`race_shared_memory` — exploit tests; failures must cite shared memory / disjoint / Sync.
+
+Run: `./li-tests/run_all.sh` or `./li-tests/run_all.sh <suite>`

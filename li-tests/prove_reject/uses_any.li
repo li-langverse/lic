@@ -1,0 +1,6 @@
+proc leak() -> Any
+  requires true
+  ensures true
+  decreases 0
+=
+  return 42

@@ -1,0 +1,8 @@
+add_subdirectory(diagnostics)
+add_subdirectory(lexer)
+add_subdirectory(parser)
+add_subdirectory(ast)
+add_subdirectory(types)
+add_subdirectory(mir)
+add_subdirectory(codegen)
+add_subdirectory(lic)

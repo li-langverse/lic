@@ -190,3 +190,46 @@ suite = "generics"
 file = "generics/protocol_sized_fail.li"
 outcome = "compile_fail"
 expected_substr = "Protocol"
+
+# --- collections (list / dict / tuple / TypedDict / enum) ---
+
+[[tests]]
+suite = "collections"
+file = "collections/list_param.li"
+outcome = "verify_ok"
+
+[[tests]]
+suite = "collections"
+file = "collections/dict_param.li"
+outcome = "verify_ok"
+
+[[tests]]
+suite = "collections"
+file = "collections/tuple_pair.li"
+outcome = "verify_ok"
+
+[[tests]]
+suite = "collections"
+file = "collections/tuple_variadic.li"
+outcome = "verify_ok"
+
+[[tests]]
+suite = "collections"
+file = "collections/named_tuple.li"
+outcome = "verify_ok"
+
+[[tests]]
+suite = "collections"
+file = "collections/typedict_ok.li"
+outcome = "verify_ok"
+
+[[tests]]
+suite = "collections"
+file = "collections/enum_ok.li"
+outcome = "verify_ok"
+
+[[tests]]
+suite = "collections"
+file = "collections/dict_arity_fail.li"
+outcome = "compile_fail"
+expected_substr = "dict"

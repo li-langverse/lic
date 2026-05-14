@@ -56,6 +56,10 @@ TokenKind Lexer::keyword_kind(std::string_view text) const {
   if (text == "result") return TokenKind::KwResult;
   if (text == "Protocol") return TokenKind::KwProtocol;
   if (text == "Callable") return TokenKind::KwCallable;
+  if (text == "NotRequired") return TokenKind::Ident;
+  if (text == "Required") return TokenKind::Ident;
+  if (text == "str") return TokenKind::Ident;
+  if (text == "typedict") return TokenKind::Ident;
   return TokenKind::Ident;
 }
 
@@ -365,12 +369,15 @@ bool Lexer::tokenize(DiagnosticBag& diags) {
       case '.':
         if (peek() == '.') {
           advance();
-          if (peek() == '<') {
+          if (peek() == '.') {
+            advance();
+            single(TokenKind::Ellipsis);
+          } else if (peek() == '<') {
             advance();
             single(TokenKind::DotDotLt);
           } else {
             SourceLoc loc{file_, sl, sc, start};
-            diags.error(loc, "expected '..<' range operator");
+            diags.error(loc, "expected '..<' range operator or '...'");
             return false;
           }
         } else {

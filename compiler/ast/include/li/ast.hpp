@@ -14,8 +14,15 @@ struct Span {
 };
 
 struct Expr;
+struct TypeExpr;
 
-enum class TypeKind { Named, Array, Refinement, TypeApp, Callable, GenericParam };
+struct TypeField {
+  std::string name;
+  std::unique_ptr<TypeExpr> type;
+  bool optional = false;
+};
+
+enum class TypeKind { Named, Array, Refinement, TypeApp, Callable, GenericParam, NamedTuple };
 
 struct TypeExpr {
   TypeKind kind = TypeKind::Named;
@@ -28,7 +35,11 @@ struct TypeExpr {
   std::unique_ptr<Expr> refinement_pred;
   std::vector<std::unique_ptr<TypeExpr>> type_args;
   std::unique_ptr<TypeExpr> callable_ret;
+  std::vector<TypeField> named_fields;
+  bool tuple_variadic = false;
 };
+
+enum class AliasKind { Type, TypedDict, Enum };
 
 struct Param {
   Span span;
@@ -89,7 +100,10 @@ struct TypeAlias {
   Span span;
   std::string name;
   std::vector<std::string> type_params;
+  AliasKind alias_kind = AliasKind::Type;
   TypeExpr definition;
+  std::vector<TypeField> fields;
+  std::vector<std::string> enum_variants;
 };
 
 struct Module {

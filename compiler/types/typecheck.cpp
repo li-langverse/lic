@@ -8,7 +8,14 @@
 namespace li {
 namespace {
 
-enum class TyKind { Int, Float, Bool, Array, Named, TypeVar, Protocol, Callable };
+enum class TyKind {
+  Int, Float, Bool, Str, Array, List, Dict, Tuple, TypedDict, Enum, Named, TypeVar, Protocol,
+  Callable
+};
+
+struct Ty;
+
+using TyPtr = std::shared_ptr<Ty>;
 
 struct Ty {
   TyKind kind = TyKind::Int;
@@ -17,9 +24,10 @@ struct Ty {
   std::string name;
   std::vector<std::shared_ptr<Ty>> type_args;
   std::shared_ptr<Ty> callable_ret;
+  std::vector<std::pair<std::string, TyPtr>> fields;
+  bool tuple_variadic = false;
+  std::vector<std::string> enum_variants;
 };
-
-using TyPtr = std::shared_ptr<Ty>;
 
 TyPtr make_int() { return std::make_shared<Ty>(Ty{TyKind::Int}); }
 TyPtr make_float() { return std::make_shared<Ty>(Ty{TyKind::Float}); }
@@ -40,8 +48,11 @@ TyPtr make_protocol(std::string name) {
 }
 
 struct AliasEntry {
+  AliasKind alias_kind = AliasKind::Type;
   std::vector<std::string> type_params;
   const TypeExpr* definition = nullptr;
+  const std::vector<TypeField>* fields = nullptr;
+  const std::vector<std::string>* enum_variants = nullptr;
   bool is_protocol = false;
 };
 
@@ -77,6 +88,7 @@ struct Ctx {
     for (const auto& arg : te.type_args) {
       out->type_args.push_back(clone_type(*arg));
     }
+    out->tuple_variadic = te.tuple_variadic;
     return out;
   }
 
@@ -111,10 +123,103 @@ struct Ctx {
     if (a->kind == TyKind::Array) {
       return a->array_size == b->array_size && same_kind(a->elem, b->elem);
     }
+    if (a->kind == TyKind::List || a->kind == TyKind::Dict || a->kind == TyKind::Tuple) {
+      if (a->tuple_variadic != b->tuple_variadic) {
+        return false;
+      }
+      if (a->type_args.size() != b->type_args.size()) {
+        return false;
+      }
+      for (std::size_t n = 0; n < a->type_args.size(); ++n) {
+        if (!same_kind(a->type_args[n], b->type_args[n])) {
+          return false;
+        }
+      }
+      return a->name == b->name;
+    }
+    if (a->kind == TyKind::TypedDict) {
+      if (a->fields.size() != b->fields.size()) {
+        return false;
+      }
+      for (std::size_t n = 0; n < a->fields.size(); ++n) {
+        if (a->fields[n].first != b->fields[n].first ||
+            !same_kind(a->fields[n].second, b->fields[n].second)) {
+          return false;
+        }
+      }
+      return a->name == b->name;
+    }
+    if (a->kind == TyKind::Enum) {
+      return a->name == b->name && a->enum_variants == b->enum_variants;
+    }
     if (a->kind == TyKind::TypeVar || a->kind == TyKind::Named || a->kind == TyKind::Protocol) {
       return a->name == b->name;
     }
     return true;
+  }
+
+  TyPtr resolve_builtin_collection(const TypeExpr& te) {
+    auto t = std::make_shared<Ty>();
+    if (te.name == "list") {
+      if (te.type_args.size() != 1) {
+        diags.error(loc(te.span), "list requires exactly 1 type argument");
+        return make_int();
+      }
+      t->kind = TyKind::List;
+      t->name = "list";
+      t->type_args.push_back(resolve_type_expr(*te.type_args[0]));
+      return t;
+    }
+    if (te.name == "dict") {
+      if (te.type_args.size() != 2) {
+        diags.error(loc(te.span), "dict requires exactly 2 type arguments");
+        return make_int();
+      }
+      t->kind = TyKind::Dict;
+      t->name = "dict";
+      t->type_args.push_back(resolve_type_expr(*te.type_args[0]));
+      t->type_args.push_back(resolve_type_expr(*te.type_args[1]));
+      return t;
+    }
+    if (te.name == "tuple") {
+      t->kind = TyKind::Tuple;
+      t->name = "tuple";
+      t->tuple_variadic = te.tuple_variadic;
+      for (const auto& arg : te.type_args) {
+        t->type_args.push_back(resolve_type_expr(*arg));
+      }
+      if (t->type_args.empty() && !te.tuple_variadic) {
+        diags.error(loc(te.span), "tuple requires at least 1 type argument");
+      }
+      return t;
+    }
+    diags.error(loc(te.span), "unknown collection type '" + te.name + "'");
+    return make_int();
+  }
+
+  TyPtr resolve_typedict(const std::string& name, const std::vector<TypeField>& fields,
+                         const Span& span) {
+    auto t = std::make_shared<Ty>();
+    t->kind = TyKind::TypedDict;
+    t->name = name;
+    for (const auto& field : fields) {
+      if (!field.type) {
+        continue;
+      }
+      t->fields.emplace_back(field.name, resolve_type_expr(*field.type));
+    }
+    (void)span;
+    return t;
+  }
+
+  TyPtr resolve_enum(const std::string& name, const std::vector<std::string>& variants,
+                     const Span& span) {
+    auto t = std::make_shared<Ty>();
+    t->kind = TyKind::Enum;
+    t->name = name;
+    t->enum_variants = variants;
+    (void)span;
+    return t;
   }
 
   bool satisfies_protocol(const TyPtr& value, const TyPtr& protocol) const {
@@ -163,13 +268,33 @@ struct Ctx {
       t->elem = resolve_type_expr(*te.elem);
       return t;
     }
+    if (te.kind == TypeKind::NamedTuple) {
+      auto t = std::make_shared<Ty>();
+      t->kind = TyKind::Tuple;
+      t->name = "tuple";
+      for (const auto& field : te.named_fields) {
+        if (!field.type) {
+          continue;
+        }
+        t->fields.emplace_back(field.name, resolve_type_expr(*field.type));
+        t->type_args.push_back(resolve_type_expr(*field.type));
+      }
+      return t;
+    }
     if (te.kind == TypeKind::TypeApp) {
+      if (te.name == "list" || te.name == "dict" || te.name == "tuple") {
+        return resolve_builtin_collection(te);
+      }
       const auto it = aliases.find(te.name);
       if (it == aliases.end()) {
         diags.error(loc(te.span), "unknown type '" + te.name + "'");
         return make_int();
       }
       const AliasEntry& entry = it->second;
+      if (entry.alias_kind != AliasKind::Type || entry.definition == nullptr) {
+        diags.error(loc(te.span), "type '" + te.name + "' is not a generic alias");
+        return make_int();
+      }
       if (entry.type_params.size() != te.type_args.size()) {
         diags.error(loc(te.span), "generic arity mismatch for '" + te.name + "'");
         return make_int();
@@ -188,6 +313,12 @@ struct Ctx {
       }
       const auto it = aliases.find(te.name);
       if (it != aliases.end()) {
+        if (it->second.alias_kind == AliasKind::TypedDict && it->second.fields) {
+          return resolve_typedict(te.name, *it->second.fields, te.span);
+        }
+        if (it->second.alias_kind == AliasKind::Enum && it->second.enum_variants) {
+          return resolve_enum(te.name, *it->second.enum_variants, te.span);
+        }
         if (it->second.is_protocol) {
           return make_protocol(te.name);
         }
@@ -195,7 +326,9 @@ struct Ctx {
           diags.error(loc(te.span), "generic type '" + te.name + "' requires type arguments");
           return make_int();
         }
-        return resolve_type_expr(*it->second.definition);
+        if (it->second.definition) {
+          return resolve_type_expr(*it->second.definition);
+        }
       }
       if (te.name == "int") {
         return make_int();
@@ -205,6 +338,12 @@ struct Ctx {
       }
       if (te.name == "bool") {
         return make_bool();
+      }
+      if (te.name == "str") {
+        auto t = std::make_shared<Ty>();
+        t->kind = TyKind::Str;
+        t->name = "str";
+        return t;
       }
       if (te.name == "Any") {
         diags.error(loc(te.span), "type 'Any' is forbidden");
@@ -397,10 +536,14 @@ TypecheckResult typecheck_module(const Module& module) {
   }
   for (const auto& alias : module.types) {
     AliasEntry entry;
+    entry.alias_kind = alias.alias_kind;
     entry.type_params = alias.type_params;
     entry.definition = &alias.definition;
+    entry.fields = &alias.fields;
+    entry.enum_variants = &alias.enum_variants;
     entry.is_protocol =
-        alias.definition.kind == TypeKind::Named && alias.definition.name == "Protocol";
+        alias.alias_kind == AliasKind::Type && alias.definition.kind == TypeKind::Named &&
+        alias.definition.name == "Protocol";
     ctx.aliases[alias.name] = std::move(entry);
   }
   for (const auto& proc : module.procs) {

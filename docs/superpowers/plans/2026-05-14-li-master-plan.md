@@ -65,7 +65,7 @@
 - [x] Phase 1 — Lexer + Parser
 - [x] Phase 2a — Type core (typecheck + prove_reject + race policy gates; full mypy parity pending)
 - [x] Phase 2b — Generics + Protocol (PEP 695 params, TypeApp, Callable, Sized protocol)
-- [ ] Phase 2c — Collections + TypedDict
+- [x] Phase 2c — Collections + TypedDict (list/dict/tuple, named tuple, enum)
 - [ ] Phase 2d — Borrow + effects
 - [x] Phase 3 — MIR + LLVM codegen (`lic build`, minimal lower/emit; CFG/bounds IR deferred)
 - [ ] Phase 4 — Runtime + stdlib

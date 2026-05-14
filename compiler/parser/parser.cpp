@@ -53,6 +53,7 @@ struct Parser {
   std::unique_ptr<Expr> parse_postfix(std::unique_ptr<Expr> base);
   TypeExpr parse_type();
   std::vector<std::string> parse_type_params();
+  std::vector<TypeField> parse_type_fields();
   Param parse_param();
   std::unique_ptr<Expr> parse_contract_expr();
   Contract parse_contract();
@@ -298,6 +299,37 @@ TypeExpr Parser::parse_type() {
     expect(TokenKind::Comma, "','");
     ty.elem = std::make_unique<TypeExpr>(parse_type());
     expect(TokenKind::RBracket, "']'");
+  } else if (name == "tuple" && accept(TokenKind::LBracket)) {
+    ty.name = "tuple";
+    if (at(TokenKind::Ident) && peek(1).kind == TokenKind::Colon) {
+      ty.kind = TypeKind::NamedTuple;
+      if (!at(TokenKind::RBracket)) {
+        do {
+          TypeField field;
+          field.name = std::string(cur().text);
+          i++;
+          expect(TokenKind::Colon, "':'");
+          field.type = std::make_unique<TypeExpr>(parse_type());
+          ty.named_fields.push_back(std::move(field));
+        } while (accept(TokenKind::Comma));
+      }
+    } else {
+      ty.kind = TypeKind::TypeApp;
+      if (!at(TokenKind::RBracket)) {
+        ty.type_args.push_back(std::make_unique<TypeExpr>(parse_type()));
+        if (accept(TokenKind::Comma)) {
+          if (at(TokenKind::Ellipsis)) {
+            i++;
+            ty.tuple_variadic = true;
+          } else {
+            do {
+              ty.type_args.push_back(std::make_unique<TypeExpr>(parse_type()));
+            } while (accept(TokenKind::Comma));
+          }
+        }
+      }
+    }
+    expect(TokenKind::RBracket, "']'");
   } else {
     ty.kind = TypeKind::Named;
     ty.name = name;
@@ -531,9 +563,51 @@ TypeAlias Parser::parse_type_alias() {
   i++;
   alias.type_params = parse_type_params();
   expect(TokenKind::Eq, "'='");
+  skip_newlines();
+  if (at(TokenKind::Ident) && cur().text == "typedict") {
+    alias.alias_kind = AliasKind::TypedDict;
+    i++;
+    skip_newlines();
+    alias.fields = parse_type_fields();
+    skip_newlines();
+    return alias;
+  }
+  if (at(TokenKind::KwEnum)) {
+    alias.alias_kind = AliasKind::Enum;
+    i++;
+    skip_newlines();
+    while (at(TokenKind::Ident) && cur().text != "proc" && cur().text != "type") {
+      alias.enum_variants.push_back(std::string(cur().text));
+      i++;
+      skip_newlines();
+    }
+    return alias;
+  }
   alias.definition = parse_type();
   skip_newlines();
   return alias;
+}
+
+std::vector<TypeField> Parser::parse_type_fields() {
+  std::vector<TypeField> fields;
+  skip_newlines();
+  while (at(TokenKind::Ident) && peek(1).kind == TokenKind::Colon) {
+    TypeField field;
+    field.name = std::string(cur().text);
+    i++;
+    expect(TokenKind::Colon, "':'");
+    TypeExpr parsed = parse_type();
+    if (parsed.kind == TypeKind::TypeApp && parsed.name == "NotRequired" &&
+        !parsed.type_args.empty()) {
+      field.optional = true;
+      field.type = std::move(parsed.type_args[0]);
+    } else {
+      field.type = std::make_unique<TypeExpr>(std::move(parsed));
+    }
+    fields.push_back(std::move(field));
+    skip_newlines();
+  }
+  return fields;
 }
 
 }  // namespace

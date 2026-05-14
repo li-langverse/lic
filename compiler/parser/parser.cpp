@@ -291,7 +291,12 @@ std::vector<Stmt> Parser::parse_block() {
   }
   skip_newlines();
   while (!at(TokenKind::Dedent) && !at(TokenKind::Eof)) {
+    const std::size_t before = i;
     body.push_back(parse_stmt());
+    if (i == before) {
+      diags.error(loc(cur()), "failed to parse statement");
+      break;
+    }
     skip_newlines();
   }
   expect(TokenKind::Dedent, "dedent");
@@ -314,6 +319,23 @@ Stmt Parser::parse_stmt() {
       s.init = parse_expr();
     }
     skip_newlines();
+    return s;
+  }
+  if (at(TokenKind::KwWhile)) {
+    const Token t = cur();
+    s.kind = Stmt::Kind::Expr;
+    s.span = {t.start, t.end};
+    i++;
+    while (!at(TokenKind::Dedent) && !at(TokenKind::Eof) && !at(TokenKind::Eq)) {
+      i++;
+    }
+    if (at(TokenKind::Eq)) {
+      i++;
+    }
+    skip_newlines();
+    if (at(TokenKind::Indent)) {
+      parse_block();
+    }
     return s;
   }
   if (at(TokenKind::KwReturn)) {

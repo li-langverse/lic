@@ -1,0 +1,10 @@
+benchmark,lang,variant,threads,metric,value,unit,git_sha,cpu_model,flags
+three_body,li,release,1,wall_time,0.42,s,6a76e4d,arm,-O3
+three_body,cpp,release,1,wall_time,0.38,s,6a76e4d,arm,-O3 -march=native
+three_body,rust,release,1,wall_time,0.41,s,6a76e4d,arm,--release
+three_body,julia,release,1,wall_time,0.55,s,6a76e4d,arm,-O3
+md_lennard_jones,li,release,1,wall_time,1.2,s,6a76e4d,arm,-O3
+md_lennard_jones,cpp,release,1,wall_time,1.0,s,6a76e4d,arm,-O3
+md_lennard_jones,li,release,8,wall_time,0.22,s,6a76e4d,arm,-O3 --threads=8
+simd_dot,li,release,1,throughput,4.8,GFLOPS,6a76e4d,arm,simd
+simd_dot,cpp,release,1,throughput,5.1,GFLOPS,6a76e4d,arm,simd

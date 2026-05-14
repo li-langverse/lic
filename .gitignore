@@ -1,4 +1,6 @@
 /build/
+.venv-plot/
+benchmarks/results/share/*.png
 compile_commands.json
 .cache/
 .DS_Store

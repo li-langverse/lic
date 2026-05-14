@@ -15,6 +15,15 @@ REPO = HARNESS.parent.parent
 RESULTS = REPO / "benchmarks" / "results"
 SHARE = RESULTS / "share"
 
+TIER2_PHYSICS = {
+    "md_lennard_jones",
+    "three_body",
+    "nbody_gravity",
+    "harmonic_oscillator_chain",
+    "wave_equation_1d",
+    "heat_equation_2d",
+}
+
 sys.path.insert(0, str(HARNESS))
 from plot_theme import (  # noqa: E402
     LANG_COLORS,
@@ -54,9 +63,14 @@ def plot_speed_bars(df: pd.DataFrame, tier: str, out: Path) -> None:
     import matplotlib.pyplot as plt
     import numpy as np
 
-    sub = df[df["benchmark"].str.contains(tier, case=False, na=False)] if tier != "all" else df
-    if sub.empty:
+    if tier == "tier2":
+        sub = df[df["benchmark"].isin(TIER2_PHYSICS)]
+    elif tier != "all":
+        sub = df[df["benchmark"].str.contains(tier, case=False, na=False)]
+    else:
         sub = df
+    if sub.empty:
+        sub = df[df["benchmark"].isin(TIER2_PHYSICS)] if tier == "tier2" else df
     time_df = sub[sub["metric"].isin(["wall_time", "time", "latency"]) | sub["unit"].str.contains("s", na=False)]
     if time_df.empty:
         time_df = sub
@@ -102,8 +116,9 @@ def plot_speedup_vs_cpp(df: pd.DataFrame, out: Path) -> None:
     import matplotlib.pyplot as plt
     import numpy as np
 
-    li = df[df["lang"] == "li"].set_index("benchmark")["value"]
-    cpp = df[df["lang"] == "cpp"].set_index("benchmark")["value"]
+    physics = df[df["benchmark"].isin(TIER2_PHYSICS)]
+    li = physics[physics["lang"] == "li"].set_index("benchmark")["value"]
+    cpp = physics[physics["lang"] == "cpp"].set_index("benchmark")["value"]
     common = li.index.intersection(cpp.index)
     if len(common) == 0:
         return

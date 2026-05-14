@@ -73,6 +73,20 @@ TIER2_BENCHES: tuple[Tier2Bench, ...] = (
         "common/harmonic_core.c",
         "li/main.li",
     ),
+    Tier2Bench(
+        "wave_equation_1d",
+        "wave_equation_1d",
+        "cpp/main.c",
+        "common/wave_core.c",
+        "li/main.li",
+    ),
+    Tier2Bench(
+        "heat_equation_2d",
+        "heat_equation_2d",
+        "cpp/main.c",
+        "common/heat_core.c",
+        "li/main.li",
+    ),
 )
 
 
@@ -151,6 +165,13 @@ def merge_rows(
 
 def time_command(cmd: list[str], *, cwd: Path | None = None, runs: int = 3) -> float:
     samples: list[float] = []
+    # Discard one warmup run (JIT/cache/thermal).
+    warmup = subprocess.run(cmd, cwd=cwd, capture_output=True, text=True)
+    if warmup.returncode != 0:
+        raise RuntimeError(
+            f"warmup failed ({warmup.returncode}): {' '.join(cmd)}\n"
+            f"{warmup.stderr or warmup.stdout}"
+        )
     for _ in range(runs):
         start = time.perf_counter()
         proc = subprocess.run(cmd, cwd=cwd, capture_output=True, text=True)

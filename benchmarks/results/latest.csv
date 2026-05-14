@@ -1,19 +1,27 @@
 benchmark,lang,variant,threads,metric,value,unit,git_sha,cpu_model,flags
 simd_dot,li,release,1,throughput,4.8,GFLOPS,8769a94,arm,simd
 simd_dot,cpp,release,1,throughput,5.1,GFLOPS,8769a94,arm,simd
-md_lennard_jones,cpp,release,1,wall_time,3.4439,s,9563169,arm,-O3 -march=native -ffast-math
-md_lennard_jones,rust,release,1,wall_time,7.1354,s,9563169,arm,-O3 -march=native -ffast-math (native C kernel)
-md_lennard_jones,julia,release,1,wall_time,2.821,s,9563169,arm,-O3 -march=native -ffast-math (native C kernel)
-md_lennard_jones,li,release,1,wall_time,5.3113,s,9563169,arm,shared C kernel + lic -O3 -march=native -ffast-math
-three_body,cpp,release,1,wall_time,0.7011,s,9563169,arm,-O3 -march=native -ffast-math
-three_body,rust,release,1,wall_time,0.6033,s,9563169,arm,-O3 -march=native -ffast-math (native C kernel)
-three_body,julia,release,1,wall_time,0.6249,s,9563169,arm,-O3 -march=native -ffast-math (native C kernel)
-three_body,li,release,1,wall_time,0.5594,s,9563169,arm,shared C kernel + lic -O3 -march=native -ffast-math
-nbody_gravity,cpp,release,1,wall_time,8.3217,s,9563169,arm,-O3 -march=native -ffast-math
-nbody_gravity,rust,release,1,wall_time,6.9647,s,9563169,arm,-O3 -march=native -ffast-math (native C kernel)
-nbody_gravity,julia,release,1,wall_time,25.8894,s,9563169,arm,-O3 -march=native -ffast-math (native C kernel)
-nbody_gravity,li,release,1,wall_time,7.9745,s,9563169,arm,shared C kernel + lic -O3 -march=native -ffast-math
-harmonic_oscillator_chain,cpp,release,1,wall_time,0.4006,s,9563169,arm,-O3 -march=native -ffast-math
-harmonic_oscillator_chain,rust,release,1,wall_time,0.6515,s,9563169,arm,-O3 -march=native -ffast-math (native C kernel)
-harmonic_oscillator_chain,julia,release,1,wall_time,0.4164,s,9563169,arm,-O3 -march=native -ffast-math (native C kernel)
-harmonic_oscillator_chain,li,release,1,wall_time,0.3751,s,9563169,arm,shared C kernel + lic -O3 -march=native -ffast-math
+md_lennard_jones,cpp,release,1,wall_time,2.0985,s,f218417,arm,-O3 -march=native -ffast-math
+md_lennard_jones,rust,release,1,wall_time,1.7429,s,f218417,arm,-O3 -march=native -ffast-math (native C kernel)
+md_lennard_jones,julia,release,1,wall_time,2.3876,s,f218417,arm,-O3 -march=native -ffast-math (native C kernel)
+md_lennard_jones,li,release,1,wall_time,1.8175,s,f218417,arm,shared C kernel + lic -O3 -march=native -ffast-math
+three_body,cpp,release,1,wall_time,0.9376,s,f218417,arm,-O3 -march=native -ffast-math
+three_body,rust,release,1,wall_time,0.3765,s,f218417,arm,-O3 -march=native -ffast-math (native C kernel)
+three_body,julia,release,1,wall_time,0.3799,s,f218417,arm,-O3 -march=native -ffast-math (native C kernel)
+three_body,li,release,1,wall_time,0.4015,s,f218417,arm,shared C kernel + lic -O3 -march=native -ffast-math
+nbody_gravity,cpp,release,1,wall_time,2.3732,s,f218417,arm,-O3 -march=native -ffast-math
+nbody_gravity,rust,release,1,wall_time,2.3711,s,f218417,arm,-O3 -march=native -ffast-math (native C kernel)
+nbody_gravity,julia,release,1,wall_time,2.3793,s,f218417,arm,-O3 -march=native -ffast-math (native C kernel)
+nbody_gravity,li,release,1,wall_time,2.309,s,f218417,arm,shared C kernel + lic -O3 -march=native -ffast-math
+harmonic_oscillator_chain,cpp,release,1,wall_time,0.2104,s,f218417,arm,-O3 -march=native -ffast-math
+harmonic_oscillator_chain,rust,release,1,wall_time,0.2017,s,f218417,arm,-O3 -march=native -ffast-math (native C kernel)
+harmonic_oscillator_chain,julia,release,1,wall_time,0.1983,s,f218417,arm,-O3 -march=native -ffast-math (native C kernel)
+harmonic_oscillator_chain,li,release,1,wall_time,0.2265,s,f218417,arm,shared C kernel + lic -O3 -march=native -ffast-math
+wave_equation_1d,cpp,release,1,wall_time,5.4237,s,f218417,arm,-O3 -march=native -ffast-math
+wave_equation_1d,rust,release,1,wall_time,6.1666,s,f218417,arm,-O3 -march=native -ffast-math (native C kernel)
+wave_equation_1d,julia,release,1,wall_time,5.7613,s,f218417,arm,-O3 -march=native -ffast-math (native C kernel)
+wave_equation_1d,li,release,1,wall_time,5.5781,s,f218417,arm,shared C kernel + lic -O3 -march=native -ffast-math
+heat_equation_2d,cpp,release,1,wall_time,0.328,s,f218417,arm,-O3 -march=native -ffast-math
+heat_equation_2d,rust,release,1,wall_time,0.3121,s,f218417,arm,-O3 -march=native -ffast-math (native C kernel)
+heat_equation_2d,julia,release,1,wall_time,0.2888,s,f218417,arm,-O3 -march=native -ffast-math (native C kernel)
+heat_equation_2d,li,release,1,wall_time,0.3091,s,f218417,arm,shared C kernel + lic -O3 -march=native -ffast-math

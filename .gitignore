@@ -1,5 +1,7 @@
 /build/
 .venv-plot/
+__pycache__/
+*.pyc
 benchmarks/results/share/*.png
 compile_commands.json
 .cache/

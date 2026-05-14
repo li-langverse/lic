@@ -207,6 +207,21 @@ struct EmitCtx {
     return lhs;
   }
 
+  llvm::Value* emit_fbinop(BinOp op, llvm::Value* lhs, llvm::Value* rhs) {
+    switch (op) {
+      case BinOp::Add:
+        return builder->CreateFAdd(lhs, rhs);
+      case BinOp::Sub:
+        return builder->CreateFSub(lhs, rhs);
+      case BinOp::Mul:
+        return builder->CreateFMul(lhs, rhs);
+      case BinOp::Div:
+        return builder->CreateFDiv(lhs, rhs);
+      default:
+        return lhs;
+    }
+  }
+
   llvm::Value* mir_arg_value(const MirArg& arg, bool ptr_param = false) {
     if (arg.is_string) {
       llvm::GlobalVariable* gv = emit_string_global(module, arg.str_value, str_counter);
@@ -214,6 +229,9 @@ struct EmitCtx {
     }
     if (arg.is_literal) {
       return int32_val(*builder, context, arg.int_value);
+    }
+    if (float_locals.find(arg.ident) != float_locals.end()) {
+      return load_float(arg.ident);
     }
     if (ptr_param || ptr_locals.find(arg.ident) != ptr_locals.end()) {
       return load_ptr(arg.ident);
@@ -265,7 +283,7 @@ struct EmitCtx {
                                                     ins.float_value));
         return false;
       case MirOp::ReturnIdent:
-        if (ins.ret_is_float || returns_float) {
+        if (ins.ret_is_float || returns_float || float_locals.count(ins.ident) > 0) {
           builder->CreateRet(load_float(ins.ident));
         } else {
           builder->CreateRet(load_int(ins.ident));
@@ -273,6 +291,9 @@ struct EmitCtx {
         return false;
       case MirOp::LocalAllocInt:
         (void)ensure_int_local(ins.ident);
+        return true;
+      case MirOp::LocalAllocFloat:
+        (void)ensure_float_local(ins.ident);
         return true;
       case MirOp::LocalAllocI64:
         (void)ensure_i64_local(ins.ident);
@@ -290,11 +311,26 @@ struct EmitCtx {
         builder->CreateStore(val, ensure_i64_local(ins.ident));
         return true;
       }
+      case MirOp::StoreFloat: {
+        llvm::Value* val = ins.rhs_is_literal
+                               ? llvm::ConstantFP::get(llvm::Type::getDoubleTy(context),
+                                                       ins.float_value)
+                               : load_float(ins.rhs_ident);
+        builder->CreateStore(val, ensure_float_local(ins.ident));
+        return true;
+      }
       case MirOp::BinOpInt: {
         llvm::Value* lhs = load_int(ins.lhs_ident);
         llvm::Value* rhs = load_int(ins.rhs_ident);
         llvm::Value* result = emit_binop(ins.bin_op, lhs, rhs);
         builder->CreateStore(result, ensure_int_local(ins.ident));
+        return true;
+      }
+      case MirOp::BinOpFloat: {
+        llvm::Value* lhs = load_float(ins.lhs_ident);
+        llvm::Value* rhs = load_float(ins.rhs_ident);
+        llvm::Value* result = emit_fbinop(ins.bin_op, lhs, rhs);
+        builder->CreateStore(result, ensure_float_local(ins.ident));
         return true;
       }
       case MirOp::EchoInt: {
@@ -330,6 +366,8 @@ struct EmitCtx {
         if (!ins.ident.empty()) {
           if (ins.is_i64) {
             builder->CreateStore(call, ensure_ptr_local(ins.ident));
+          } else if (ins.ret_is_float) {
+            builder->CreateStore(call, ensure_float_local(ins.ident));
           } else {
             builder->CreateStore(call, ensure_int_local(ins.ident));
           }
@@ -347,7 +385,11 @@ struct EmitCtx {
         }
         llvm::CallInst* call = builder->CreateCall(callee, args);
         if (!ins.ident.empty()) {
-          builder->CreateStore(call, ensure_int_local(ins.ident));
+          if (ins.ret_is_float) {
+            builder->CreateStore(call, ensure_float_local(ins.ident));
+          } else {
+            builder->CreateStore(call, ensure_int_local(ins.ident));
+          }
         }
         return true;
       }

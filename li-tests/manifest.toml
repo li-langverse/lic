@@ -183,6 +183,11 @@ outcome = "verify_ok"
 
 [[tests]]
 suite = "benchmarks"
+file = "benchmarks/tier0_correctness/float_binop.li"
+outcome = "verify_ok"
+
+[[tests]]
+suite = "benchmarks"
 file = "benchmarks/tier0_correctness/three_body_invariants.li"
 outcome = "verify_ok"
 

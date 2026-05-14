@@ -20,6 +20,7 @@ TIER1_MICRO = {
     "matmul_naive",
     "matmul_blocked",
     "reduce_sum",
+    "horner_pure_li",
 }
 TIER2_PHYSICS = {
     "md_lennard_jones",

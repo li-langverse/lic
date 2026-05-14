@@ -46,6 +46,7 @@ class BenchSpec:
     li_main: str
     flops_per_run: float | None = None
     bytes_per_run: float | None = None
+    li_pure: bool = False
 
 
 TIER1_BENCHES: tuple[BenchSpec, ...] = (
@@ -84,6 +85,16 @@ TIER1_BENCHES: tuple[BenchSpec, ...] = (
         "common/reduce_core.c",
         "li/main.li",
         bytes_per_run=8.0 * 1e8,
+    ),
+    BenchSpec(
+        "horner_pure_li",
+        1,
+        "horner_pure_li",
+        "cpp/main.c",
+        "common/horner_core.c",
+        "li/main.li",
+        flops_per_run=2.0 * 5e6,
+        li_pure=True,
     ),
 )
 
@@ -263,8 +274,9 @@ def build_li(spec: BenchSpec, bin_path: Path) -> None:
     if not lic.is_file():
         raise RuntimeError(f"lic missing at {lic} — run ./scripts/build.sh")
     root = bench_dir(spec)
-    core = root / spec.core_c
-    env = {**os.environ, "LI_EXTRA_C": str(core)}
+    env = {**os.environ}
+    if not spec.li_pure:
+        env["LI_EXTRA_C"] = str(root / spec.core_c)
     subprocess.check_call(
         [
             str(lic),
@@ -291,6 +303,9 @@ def verify_checksum(spec: BenchSpec, build_dir: Path) -> None:
     native_out = subprocess.check_output([str(native), "--verify"], text=True).strip()
     cpp_time = time_command([str(native)], runs=1)
     li_time = time_command([str(li_bin)], runs=1)
+    if spec.li_pure:
+        print(f"{spec.name} verify ok (pure Li): native checksum={native_out} li/native time={li_time:.4f}/{cpp_time:.4f}s")
+        return
     if li_time < cpp_time * 0.45:
         raise RuntimeError(
             f"{spec.name}: li too fast ({li_time:.4f}s vs native {cpp_time:.4f}s) — kernel not linked"
@@ -373,7 +388,7 @@ def run_benchmark(spec: BenchSpec, *, runs: int) -> list[dict[str, object]]:
         ("cpp", cpp_bin, NATIVE_FLAGS),
         ("rust", rust_bin, f"{NATIVE_FLAGS} (native C kernel)"),
         ("julia", julia_bin, f"{NATIVE_FLAGS} (native C kernel)"),
-        ("li", li_bin, f"shared C kernel + lic {NATIVE_FLAGS}"),
+        ("li", li_bin, f"{'pure lic' if spec.li_pure else 'shared C kernel + lic'} {NATIVE_FLAGS}"),
     ):
         wall = time_command([str(bin_path)], runs=runs)
         rows.append(

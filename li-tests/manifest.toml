@@ -262,3 +262,10 @@ suite = "collections"
 file = "collections/dict_arity_fail.li"
 outcome = "compile_fail"
 expected_substr = "dict"
+
+# --- runtime (echo, arrays, extern) ---
+
+[[tests]]
+suite = "runtime"
+file = "runtime/extern_puts.li"
+outcome = "verify_ok"

@@ -172,6 +172,9 @@ struct BorrowCtx {
   }
 
   void check_proc(const ProcDecl& p) {
+    if (p.is_extern) {
+      return;
+    }
     locals.clear();
     borrow_source.clear();
     borrow_is_mut.clear();
@@ -268,11 +271,34 @@ void borrow_check_module(const Module& module, DiagnosticBag& diags) {
   }
 }
 
+bool proc_mentions_extern_call(const ProcDecl& p,
+                               const std::map<std::string, const ProcDecl*>& proc_map) {
+  for (const auto& s : p.body) {
+    if (s.expr && s.expr->kind == Expr::Kind::Call && s.expr->ident != "echo") {
+      const auto it = proc_map.find(s.expr->ident);
+      if (it != proc_map.end() && it->second->is_extern) {
+        return true;
+      }
+    }
+  }
+  return false;
+}
+
 void effects_check_module(const Module& module, DiagnosticBag& diags) {
+  std::map<std::string, const ProcDecl*> proc_map;
   for (const auto& proc : module.procs) {
+    proc_map[proc.name] = &proc;
+  }
+  for (const auto& proc : module.procs) {
+    if (proc.is_extern) {
+      continue;
+    }
     const SourceLoc loc{ "module", 1, 1, proc.span.start };
     if (proc_mentions_echo(proc) && !has_effect(proc.raises, "IO")) {
       diags.error(loc, "proc calls echo but does not declare raises IO");
+    }
+    if (proc_mentions_extern_call(proc, proc_map) && !has_effect(proc.raises, "IO")) {
+      diags.error(loc, "proc calls extern but does not declare raises IO");
     }
     if (proc_mentions_heap(proc) && !has_effect(proc.raises, "Alloc")) {
       diags.error(loc, "proc uses heap type but does not declare raises Alloc");

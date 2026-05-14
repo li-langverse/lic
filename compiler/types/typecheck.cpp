@@ -34,6 +34,7 @@ struct Ty {
 TyPtr make_int() { return std::make_shared<Ty>(Ty{TyKind::Int}); }
 TyPtr make_float() { return std::make_shared<Ty>(Ty{TyKind::Float}); }
 TyPtr make_bool() { return std::make_shared<Ty>(Ty{TyKind::Bool}); }
+TyPtr make_str() { return std::make_shared<Ty>(Ty{TyKind::Str}); }
 
 TyPtr make_type_var(std::string name) {
   auto t = std::make_shared<Ty>();
@@ -369,6 +370,8 @@ struct Ctx {
         return make_int();
       case Expr::Kind::FloatLit:
         return make_float();
+      case Expr::Kind::StringLit:
+        return make_str();
       case Expr::Kind::Ident: {
         const auto it = locals.find(e.ident);
         if (it == locals.end()) {
@@ -395,6 +398,17 @@ struct Ctx {
         return make_bool();
       }
       case Expr::Kind::Call: {
+        if (e.ident == "echo") {
+          if (e.args.size() != 1) {
+            diags.error(loc(e.span), "echo expects one argument");
+            return make_int();
+          }
+          const TyPtr arg_ty = type_of(*e.args[0]);
+          if (arg_ty->kind != TyKind::Int && arg_ty->kind != TyKind::Str) {
+            diags.error(loc(e.span), "echo expects int or str");
+          }
+          return make_int();
+        }
         for (const auto& arg : e.args) {
           (void)type_of(*arg);
         }
@@ -478,6 +492,22 @@ struct Ctx {
       }
       return;
     }
+    if (s.kind == Stmt::Kind::Borrow) {
+      if (s.init && s.init->kind == Expr::Kind::Ident) {
+        const auto it = locals.find(s.init->ident);
+        if (it == locals.end()) {
+          diags.error(loc(s.span), "unknown borrow source '" + s.init->ident + "'");
+        } else {
+          locals[s.var_name] = it->second;
+        }
+      }
+      return;
+    }
+    if (s.kind == Stmt::Kind::Assign && s.init && s.expr) {
+      type_of(*s.init);
+      type_of(*s.expr);
+      return;
+    }
     if (s.expr) {
       if (s.expr->kind == Expr::Kind::Call) {
         check_call_args(*s.expr);
@@ -487,6 +517,9 @@ struct Ctx {
   }
 
   void check_proc(const ProcDecl& p) {
+    if (p.is_extern) {
+      return;
+    }
     locals.clear();
     type_vars.clear();
     for (const auto& tp : p.type_params) {

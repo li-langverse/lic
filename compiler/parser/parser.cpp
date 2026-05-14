@@ -59,14 +59,21 @@ struct Parser {
   Contract parse_contract();
   std::vector<Stmt> parse_block();
   Stmt parse_stmt();
-  ProcDecl parse_proc();
+  ProcDecl parse_proc(bool is_extern = false);
   TypeAlias parse_type_alias();
 
   bool parse_module(Module& out) {
     skip_newlines();
     while (!at(TokenKind::Eof)) {
-      if (at(TokenKind::KwProc)) {
-        out.procs.push_back(parse_proc());
+      if (at(TokenKind::KwExtern)) {
+        i++;
+        if (!expect(TokenKind::KwProc, "'proc'")) {
+          return false;
+        }
+        out.procs.push_back(parse_proc(true));
+        skip_newlines();
+      } else if (at(TokenKind::KwProc)) {
+        out.procs.push_back(parse_proc(false));
         skip_newlines();
       } else if (at(TokenKind::KwType)) {
         out.types.push_back(parse_type_alias());
@@ -90,6 +97,19 @@ std::unique_ptr<Expr> Parser::parse_primary() {
     e->ident = "echo";
     if (auto arg = parse_primary()) {
       e->args.push_back(std::move(arg));
+    }
+    return parse_postfix(std::move(e));
+  }
+  if (t.kind == TokenKind::StringLit) {
+    i++;
+    auto e = std::make_unique<Expr>();
+    e->kind = Expr::Kind::StringLit;
+    e->span = {t.start, t.end};
+    const std::string raw(t.text);
+    if (raw.size() >= 2 && raw.front() == '"' && raw.back() == '"') {
+      e->str_value = raw.substr(1, raw.size() - 2);
+    } else {
+      e->str_value = raw;
     }
     return parse_postfix(std::move(e));
   }
@@ -546,8 +566,9 @@ Stmt Parser::parse_stmt() {
     lhs = parse_postfix(std::move(lhs));
   }
   if (lhs && accept(TokenKind::Eq)) {
-    s.kind = Stmt::Kind::Expr;
+    s.kind = Stmt::Kind::Assign;
     s.span = {lhs->span.start, cur().end};
+    s.init = std::move(lhs);
     s.expr = parse_expr();
     skip_newlines();
     return s;
@@ -559,9 +580,12 @@ Stmt Parser::parse_stmt() {
   return s;
 }
 
-ProcDecl Parser::parse_proc() {
+ProcDecl Parser::parse_proc(bool is_extern) {
   ProcDecl proc;
-  expect(TokenKind::KwProc, "'proc'");
+  proc.is_extern = is_extern;
+  if (!is_extern) {
+    expect(TokenKind::KwProc, "'proc'");
+  }
   const Token name = cur();
   proc.span = {name.start, name.end};
   proc.name = std::string(name.text);
@@ -598,6 +622,10 @@ ProcDecl Parser::parse_proc() {
   while (at(TokenKind::KwRequires) || at(TokenKind::KwEnsures) ||
          at(TokenKind::KwDecreases) || at(TokenKind::KwInvariant)) {
     proc.contracts.push_back(parse_contract());
+  }
+  if (is_extern) {
+    skip_newlines();
+    return proc;
   }
   expect(TokenKind::Eq, "'='");
   skip_newlines();

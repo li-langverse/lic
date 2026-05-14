@@ -68,7 +68,7 @@
 - [x] Phase 2c — Collections + TypedDict (list/dict/tuple, named tuple, enum)
 - [x] Phase 2d — Borrow + effects (lexical borrowck, raises IO/Alloc)
 - [x] Phase 3 — MIR + LLVM codegen (`lic build`, minimal lower/emit; CFG/bounds IR deferred)
-- [ ] Phase 4 — Runtime + stdlib
+- [x] Phase 4 — Runtime + stdlib
 - [ ] Phase 5 — Tetris
 - [ ] Phase 5b — Benchmarks & simulations (harness + **X plots** skeleton on `dev`)
 - [ ] Phase 6 — Self-host

@@ -27,6 +27,7 @@ enum class TokenKind {
   KwReturn,
   KwRaises,
   KwEcho,
+  KwExtern,
   KwTrue,
   KwFalse,
   KwAnd,

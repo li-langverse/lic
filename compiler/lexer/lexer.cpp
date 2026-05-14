@@ -43,6 +43,7 @@ TokenKind Lexer::keyword_kind(std::string_view text) const {
   if (text == "return") return TokenKind::KwReturn;
   if (text == "raises") return TokenKind::KwRaises;
   if (text == "echo") return TokenKind::KwEcho;
+  if (text == "extern") return TokenKind::KwExtern;
   if (text == "true") return TokenKind::KwTrue;
   if (text == "false") return TokenKind::KwFalse;
   if (text == "and") return TokenKind::KwAnd;

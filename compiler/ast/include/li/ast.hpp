@@ -53,12 +53,13 @@ enum class ContractKind { Requires, Ensures, Decreases, Invariant };
 enum class BinOp { Add, Sub, Mul, Div, Le, Lt, Ge, Gt, Eq, Ne, And, Or };
 
 struct Expr {
-  enum class Kind { IntLit, FloatLit, Ident, BinOp, Call, UnaryNot, Index };
+  enum class Kind { IntLit, FloatLit, StringLit, Ident, BinOp, Call, UnaryNot, Index };
   Kind kind = Kind::IntLit;
   Span span;
   std::int64_t int_value = 0;
   double float_value = 0.0;
   std::string ident;
+  std::string str_value;
   BinOp bin_op = BinOp::Add;
   std::unique_ptr<Expr> lhs;
   std::unique_ptr<Expr> rhs;
@@ -75,7 +76,7 @@ struct Contract {
 };
 
 struct Stmt {
-  enum class Kind { Return, If, Expr, VarDecl, Borrow };
+  enum class Kind { Return, If, Expr, VarDecl, Borrow, Assign };
   Kind kind = Kind::Return;
   Span span;
   std::unique_ptr<Expr> expr;
@@ -91,6 +92,7 @@ struct Stmt {
 struct ProcDecl {
   Span span;
   std::string name;
+  bool is_extern = false;
   std::vector<std::string> type_params;
   std::vector<Param> params;
   std::optional<TypeExpr> ret_type;

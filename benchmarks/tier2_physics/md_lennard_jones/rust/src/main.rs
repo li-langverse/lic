@@ -1,12 +1,17 @@
 //! Lennard-Jones MD reference (velocity Verlet, periodic box).
 //! Params match benchmarks/tier2_physics/md_lennard_jones/params.toml.
 
+use std::fs::File;
+use std::io::{BufWriter, Write};
+use std::path::Path;
+
 const N: usize = 256;
 const STEPS: usize = 10_000;
 const DT: f64 = 0.004;
 const RC: f64 = 2.5;
 const BOX: f64 = 10.0;
 const SEED: u64 = 7;
+const TRACE_INTERVAL: usize = 25;
 
 struct Rng {
     state: u64,
@@ -87,13 +92,17 @@ fn compute_forces(pos: &[[f64; 3]], forces: &mut [[f64; 3]]) {
     }
 }
 
-fn total_energy(pos: &[[f64; 3]], vel: &[[f64; 3]]) -> f64 {
-    let rc2 = RC * RC;
-    let mut pe = 0.0;
+fn kinetic_energy(vel: &[[f64; 3]]) -> f64 {
     let mut ke = 0.0;
     for i in 0..N {
         ke += 0.5 * (vel[i][0] * vel[i][0] + vel[i][1] * vel[i][1] + vel[i][2] * vel[i][2]);
     }
+    ke
+}
+
+fn potential_energy(pos: &[[f64; 3]]) -> f64 {
+    let rc2 = RC * RC;
+    let mut pe = 0.0;
     for i in 0..N {
         for j in (i + 1)..N {
             let dx = mic(pos[j][0] - pos[i][0]);
@@ -109,10 +118,21 @@ fn total_energy(pos: &[[f64; 3]], vel: &[[f64; 3]]) -> f64 {
             pe += 4.0 * (inv_r12 - inv_r6);
         }
     }
-    pe + ke
+    pe
 }
 
-fn run() -> f64 {
+fn record_energy<W: Write>(
+    writer: &mut W,
+    step: usize,
+    pos: &[[f64; 3]],
+    vel: &[[f64; 3]],
+) -> std::io::Result<()> {
+    let pe = potential_energy(pos);
+    let ke = kinetic_energy(vel);
+    writeln!(writer, "{step},{pe:.12e},{ke:.12e},{:.12e}", pe + ke)
+}
+
+fn run(trace_path: Option<&Path>) -> f64 {
     let mut rng = Rng::new(SEED);
     let mut pos = [[0.0; 3]; N];
     let mut vel = [[0.0; 3]; N];
@@ -120,10 +140,21 @@ fn run() -> f64 {
 
     init_lattice(&mut pos, &mut vel, &mut rng);
 
-    compute_forces(&pos, &mut forces);
-    let e0 = total_energy(&pos, &vel);
+    let mut trace_writer: Option<BufWriter<File>> = trace_path.map(|p| {
+        let mut file = BufWriter::new(
+            File::create(p).unwrap_or_else(|e| panic!("trace file {}: {e}", p.display())),
+        );
+        writeln!(file, "step,pe,ke,etotal").expect("trace header");
+        file
+    });
 
-    for _ in 0..STEPS {
+    compute_forces(&pos, &mut forces);
+    if let Some(writer) = trace_writer.as_mut() {
+        record_energy(writer, 0, &pos, &vel).expect("trace write");
+    }
+    let e0 = potential_energy(&pos) + kinetic_energy(&vel);
+
+    for step in 1..=STEPS {
         for i in 0..N {
             vel[i][0] += 0.5 * DT * forces[i][0];
             vel[i][1] += 0.5 * DT * forces[i][1];
@@ -140,16 +171,25 @@ fn run() -> f64 {
             vel[i][1] += 0.5 * DT * forces[i][1];
             vel[i][2] += 0.5 * DT * forces[i][2];
         }
+        if let Some(writer) = trace_writer.as_mut() {
+            if step % TRACE_INTERVAL == 0 || step == STEPS {
+                record_energy(writer, step, &pos, &vel).expect("trace write");
+            }
+        }
     }
 
-    let e1 = total_energy(&pos, &vel);
+    let e1 = potential_energy(&pos) + kinetic_energy(&vel);
     let denom = e0.abs().max(e1.abs()).max(1e-12);
     (e1 - e0).abs() / denom
 }
 
 fn main() {
     let args: Vec<String> = std::env::args().collect();
-    let drift = run();
+    let trace_path = args
+        .windows(2)
+        .find(|w| w[0] == "--trace")
+        .map(|w| Path::new(&w[1]));
+    let drift = run(trace_path);
     if args.iter().any(|a| a == "--verify") {
         println!("{:.8e}", drift);
     }

@@ -154,11 +154,141 @@ def plot_correctness_grid(df: pd.DataFrame, out: Path) -> None:
     plt.close(fig)
 
 
+def load_energy_traces(trace_dir: Path) -> dict[str, pd.DataFrame]:
+    traces: dict[str, pd.DataFrame] = {}
+    for lang in ("cpp", "rust", "julia"):
+        path = trace_dir / f"energy_{lang}.csv"
+        if path.exists():
+            traces[lang] = pd.read_csv(path)
+    return traces
+
+
+def _energy_drift_pct(df: pd.DataFrame) -> float:
+    e0 = float(df["etotal"].iloc[0])
+    e1 = float(df["etotal"].iloc[-1])
+    denom = max(abs(e0), abs(e1), 1e-12)
+    return 100.0 * abs(e1 - e0) / denom
+
+
+def plot_md_energy_by_lang(trace_dir: Path, out: Path) -> None:
+    import matplotlib.pyplot as plt
+
+    from plot_theme import FAIL, PANEL, apply_theme
+
+    traces = load_energy_traces(trace_dir)
+    if not traces:
+        print(f"skip energy-by-lang plot: no traces in {trace_dir}", file=sys.stderr)
+        return
+
+    apply_theme()
+    langs = [lang for lang in ("cpp", "rust", "julia") if lang in traces]
+    fig, axes = plt.subplots(len(langs), 1, figsize=(16, 9), sharex=True)
+    if len(langs) == 1:
+        axes = [axes]
+
+    fig.patch.set_facecolor(PANEL)
+    fig.suptitle(
+        "md_lennard_jones energy traces",
+        fontsize=20,
+        fontweight="bold",
+        color=TEXT,
+        x=0.08,
+        ha="left",
+        y=0.98,
+    )
+    fig.text(
+        0.08,
+        0.94,
+        f"N=256 · dt=0.004 · 10k steps · sampled every 25 · sha={git_sha()}",
+        fontsize=12,
+        color=MUTED,
+    )
+
+    pe_color = LANG_COLORS.get("cpp", "#f0883e")
+    ke_color = PRIMARY
+    total_color = "#e6edf3"
+
+    for ax, lang in zip(axes, langs):
+        df = traces[lang]
+        time_fs = df["step"] * 0.004
+        drift = _energy_drift_pct(df)
+        ax.plot(time_fs, df["pe"], label="E_pot", color=pe_color, linewidth=1.6)
+        ax.plot(time_fs, df["ke"], label="E_kin", color=ke_color, linewidth=1.6)
+        ax.plot(time_fs, df["etotal"], label="E_total", color=total_color, linewidth=2.0, alpha=0.9)
+        ax.set_ylabel("energy (LJ)")
+        ax.set_title(f"{lang} · |ΔE|/E = {drift:.2f}%", loc="left", color=TEXT, fontsize=14)
+        ax.grid(axis="y", linestyle="--", linewidth=0.6, alpha=0.5)
+        ax.legend(loc="upper right", framealpha=0.9)
+        if drift > 0.1:
+            ax.text(
+                0.02,
+                0.05,
+                "unstable / not conserving",
+                transform=ax.transAxes,
+                color=FAIL,
+                fontsize=11,
+                fontweight="bold",
+            )
+
+    axes[-1].set_xlabel("time (LJ units)")
+    fig.text(0.96, 0.03, "Li · li-language", ha="right", fontsize=10, color=MUTED)
+    plt.tight_layout(rect=(0, 0, 1, 0.92))
+    save_share(fig, out)
+    plt.close(fig)
+
+
+def plot_md_energy_overlay(trace_dir: Path, out: Path) -> None:
+    import matplotlib.pyplot as plt
+
+    traces = load_energy_traces(trace_dir)
+    if len(traces) < 2:
+        return
+
+    fig, axes = plt.subplots(1, 3, figsize=(16, 9), sharex=True)
+    panels = [("pe", "Potential energy"), ("ke", "Kinetic energy"), ("etotal", "Total energy")]
+
+    for ax, (col, title) in zip(axes, panels):
+        for lang, df in traces.items():
+            time_fs = df["step"] * 0.004
+            ax.plot(
+                time_fs,
+                df[col],
+                label=lang,
+                color=LANG_COLORS.get(lang, PRIMARY),
+                linewidth=1.8 if col == "etotal" else 1.4,
+                alpha=0.95,
+            )
+        ax.set_title(title, loc="left", color=TEXT)
+        ax.set_xlabel("time (LJ units)")
+        ax.set_ylabel("energy (LJ)")
+        ax.grid(axis="y", linestyle="--", linewidth=0.6)
+        ax.legend(loc="best", framealpha=0.9)
+
+    fig.suptitle(
+        "md_lennard_jones cross-language energy comparison",
+        fontsize=20,
+        fontweight="bold",
+        color=TEXT,
+        x=0.06,
+        ha="left",
+        y=0.98,
+    )
+    plt.tight_layout(rect=(0, 0, 1, 0.94))
+    save_share(fig, out)
+    plt.close(fig)
+
+
 def main() -> int:
     parser = argparse.ArgumentParser(description="Plot benchmark CSV for X")
     parser.add_argument("--csv", type=Path, default=RESULTS / "latest.csv")
     parser.add_argument("--out", type=Path, default=SHARE)
     parser.add_argument("--tier", default="tier2")
+    parser.add_argument(
+        "--energy-dir",
+        type=Path,
+        default=RESULTS / "md_lennard_jones",
+        help="directory with energy_{lang}.csv traces",
+    )
     args = parser.parse_args()
 
     df = load_csv(args.csv)
@@ -169,6 +299,9 @@ def main() -> int:
     verify_df = load_verify_df()
     if verify_df is not None and "passed" in verify_df.columns:
         plot_correctness_grid(verify_df, args.out / "correctness_tier0.png")
+
+    plot_md_energy_by_lang(args.energy_dir, args.out / "md_lennard_jones_energy_by_lang.png")
+    plot_md_energy_overlay(args.energy_dir, args.out / "md_lennard_jones_energy_overlay.png")
 
     print(f"wrote plots to {args.out}")
     return 0

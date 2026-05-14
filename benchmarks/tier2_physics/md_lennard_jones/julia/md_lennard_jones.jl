@@ -7,6 +7,7 @@ const DT = 0.004
 const RC = 2.5
 const BOX = 10.0
 const SEED = UInt64(7)
+const TRACE_INTERVAL = 25
 
 mutable struct Rng
     state::UInt64
@@ -72,13 +73,17 @@ function compute_forces!(pos::Matrix{Float64}, forces::Matrix{Float64})
     end
 end
 
-function total_energy(pos::Matrix{Float64}, vel::Matrix{Float64})::Float64
-    rc2 = RC * RC
+function kinetic_energy(vel::Matrix{Float64})::Float64
     ke = 0.0
-    pe = 0.0
     @inbounds for i in 1:N
         ke += 0.5 * (vel[1, i]^2 + vel[2, i]^2 + vel[3, i]^2)
     end
+    ke
+end
+
+function potential_energy(pos::Matrix{Float64})::Float64
+    rc2 = RC * RC
+    pe = 0.0
     @inbounds for i in 1:N
         for j in (i + 1):N
             dx = mic(pos[1, j] - pos[1, i])
@@ -94,21 +99,31 @@ function total_energy(pos::Matrix{Float64}, vel::Matrix{Float64})::Float64
             pe += 4.0 * (inv_r12 - inv_r6)
         end
     end
-    pe + ke
+    pe
 end
 
-function run_md()::Float64
+function record_energy(io::IO, step::Int, pos::Matrix{Float64}, vel::Matrix{Float64})
+    pe = potential_energy(pos)
+    ke = kinetic_energy(vel)
+    @printf(io, "%d,%.12e,%.12e,%.12e\n", step, pe, ke, pe + ke)
+end
+
+function run_md(trace_path::Union{Nothing,String} = nothing)::Float64
     rng = Rng(SEED)
     pos = Matrix{Float64}(undef, 3, N)
     vel = Matrix{Float64}(undef, 3, N)
     forces = zeros(Float64, 3, N)
+    trace_io = trace_path === nothing ? nothing : open(trace_path, "w")
 
     init_lattice!(pos, vel, rng)
-
     compute_forces!(pos, forces)
-    e0 = total_energy(pos, vel)
+    if trace_io !== nothing
+        println(trace_io, "step,pe,ke,etotal")
+        record_energy(trace_io, 0, pos, vel)
+    end
+    e0 = potential_energy(pos) + kinetic_energy(vel)
 
-    for _ in 1:STEPS
+    for step in 1:STEPS
         @inbounds for i in 1:N
             vel[1, i] += 0.5 * DT * forces[1, i]
             vel[2, i] += 0.5 * DT * forces[2, i]
@@ -125,16 +140,29 @@ function run_md()::Float64
             vel[2, i] += 0.5 * DT * forces[2, i]
             vel[3, i] += 0.5 * DT * forces[3, i]
         end
+        if trace_io !== nothing && (step % TRACE_INTERVAL == 0 || step == STEPS)
+            record_energy(trace_io, step, pos, vel)
+        end
     end
 
-    e1 = total_energy(pos, vel)
+    if trace_io !== nothing
+        close(trace_io)
+    end
+
+    e1 = potential_energy(pos) + kinetic_energy(vel)
     denom = max(abs(e0), abs(e1), 1e-12)
     abs(e1 - e0) / denom
 end
 
 function main()
+    trace_path = nothing
+    for (i, arg) in enumerate(ARGS)
+        if arg == "--trace" && i < length(ARGS)
+            trace_path = ARGS[i + 1]
+        end
+    end
     verify = "--verify" in ARGS
-    drift = run_md()
+    drift = run_md(trace_path)
     if verify
         @printf("%.8e\n", drift)
     end

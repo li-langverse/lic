@@ -2,7 +2,9 @@
 #include <algorithm>
 #include <cmath>
 #include <cstdint>
+#include <fstream>
 #include <iostream>
+#include <memory>
 #include <string>
 #include <vector>
 
@@ -13,6 +15,7 @@ constexpr double DT = 0.004;
 constexpr double RC = 2.5;
 constexpr double BOX = 10.0;
 constexpr std::uint64_t SEED = 7;
+constexpr int TRACE_INTERVAL = 25;
 
 struct Rng {
   std::uint64_t state;
@@ -85,14 +88,18 @@ void compute_forces(const std::vector<double>& pos, std::vector<double>& forces)
   }
 }
 
-double total_energy(const std::vector<double>& pos, const std::vector<double>& vel) {
-  const double rc2 = RC * RC;
+double kinetic_energy(const std::vector<double>& vel) {
   double ke = 0.0;
-  double pe = 0.0;
   for (int i = 0; i < N; ++i) {
     ke += 0.5 * (vel[i * 3 + 0] * vel[i * 3 + 0] + vel[i * 3 + 1] * vel[i * 3 + 1] +
                  vel[i * 3 + 2] * vel[i * 3 + 2]);
   }
+  return ke;
+}
+
+double potential_energy(const std::vector<double>& pos) {
+  const double rc2 = RC * RC;
+  double pe = 0.0;
   for (int i = 0; i < N; ++i) {
     for (int j = i + 1; j < N; ++j) {
       const double dx = mic(pos[j * 3 + 0] - pos[i * 3 + 0]);
@@ -106,16 +113,27 @@ double total_energy(const std::vector<double>& pos, const std::vector<double>& v
       pe += 4.0 * (inv_r12 - inv_r6);
     }
   }
-  return pe + ke;
+  return pe;
 }
 
-double run_md() {
+void record_energy(std::ostream& out, int step, const std::vector<double>& pos,
+                   const std::vector<double>& vel) {
+  const double pe = potential_energy(pos);
+  const double ke = kinetic_energy(vel);
+  out << step << ',' << pe << ',' << ke << ',' << (pe + ke) << '\n';
+}
+
+double run_md(std::ostream* trace_out) {
   Rng rng(SEED);
   std::vector<double> pos(N * 3), vel(N * 3), forces(N * 3);
   init_lattice(pos, vel, rng);
   compute_forces(pos, forces);
-  const double e0 = total_energy(pos, vel);
-  for (int step = 0; step < STEPS; ++step) {
+  if (trace_out) {
+    *trace_out << "step,pe,ke,etotal\n";
+    record_energy(*trace_out, 0, pos, vel);
+  }
+  const double e0 = potential_energy(pos) + kinetic_energy(vel);
+  for (int step = 1; step <= STEPS; ++step) {
     for (int i = 0; i < N * 3; ++i) vel[i] += 0.5 * DT * forces[i];
     for (int i = 0; i < N; ++i) {
       pos[i * 3 + 0] = wrap_pos(pos[i * 3 + 0] + DT * vel[i * 3 + 0]);
@@ -124,15 +142,30 @@ double run_md() {
     }
     compute_forces(pos, forces);
     for (int i = 0; i < N * 3; ++i) vel[i] += 0.5 * DT * forces[i];
+    if (trace_out && (step % TRACE_INTERVAL == 0 || step == STEPS)) {
+      record_energy(*trace_out, step, pos, vel);
+    }
   }
-  const double e1 = total_energy(pos, vel);
+  const double e1 = potential_energy(pos) + kinetic_energy(vel);
   const double denom = std::max({std::abs(e0), std::abs(e1), 1e-12});
   return std::abs(e1 - e0) / denom;
 }
 }  // namespace
 
 int main(int argc, char** argv) {
-  const double drift = run_md();
+  std::string trace_path;
+  for (int i = 1; i < argc; ++i) {
+    if (std::string(argv[i]) == "--trace" && i + 1 < argc) {
+      trace_path = argv[i + 1];
+    }
+  }
+  std::unique_ptr<std::ofstream> trace_file;
+  std::ostream* trace_out = nullptr;
+  if (!trace_path.empty()) {
+    trace_file = std::make_unique<std::ofstream>(trace_path);
+    trace_out = trace_file.get();
+  }
+  const double drift = run_md(trace_out);
   for (int i = 1; i < argc; ++i) {
     if (std::string(argv[i]) == "--verify") {
       std::cout.setf(std::ios::scientific);

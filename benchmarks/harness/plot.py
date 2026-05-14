@@ -22,6 +22,7 @@ TIER2_PHYSICS = {
     "harmonic_oscillator_chain",
     "wave_equation_1d",
     "heat_equation_2d",
+    "double_pendulum",
 }
 
 sys.path.insert(0, str(HARNESS))

@@ -91,6 +91,22 @@ static void init_fcc_liquid(SoA* s, double box, double temperature, Rng* rng) {
   }
 }
 
+static double lj_pe_pair(double r2) {
+  if (r2 >= STRESS_RC * STRESS_RC || r2 < 1e-12) return 0.0;
+  const double inv_r2 = 1.0 / r2;
+  const double inv_r6 = inv_r2 * inv_r2 * inv_r2;
+  const double inv_r12 = inv_r6 * inv_r6;
+  return 4.0 * (inv_r12 - inv_r6);
+}
+
+static double lj_pe_shifted(double r2) {
+  const double rc2 = STRESS_RC * STRESS_RC;
+  const double pe = lj_pe_pair(r2);
+  if (r2 >= rc2) return 0.0;
+  const double pe_rc = lj_pe_pair(rc2);
+  return pe - pe_rc;
+}
+
 static void lj_forces(SoA* s, double box) {
   const double rc2 = STRESS_RC * STRESS_RC;
   memset(s->fx, 0, sizeof(s->fx));
@@ -121,7 +137,6 @@ static void lj_forces(SoA* s, double box) {
 }
 
 static double total_energy(const SoA* s, double box) {
-  const double rc2 = STRESS_RC * STRESS_RC;
   double ke = 0.0, pe = 0.0;
   for (int i = 0; i < STRESS_N; ++i) {
     ke += 0.5 * (s->vx[i] * s->vx[i] + s->vy[i] * s->vy[i] + s->vz[i] * s->vz[i]);
@@ -132,11 +147,7 @@ static double total_energy(const SoA* s, double box) {
       const double dy = mic(s->py[j] - s->py[i], box);
       const double dz = mic(s->pz[j] - s->pz[i], box);
       const double r2 = dx * dx + dy * dy + dz * dz;
-      if (r2 >= rc2 || r2 < 1e-12) continue;
-      const double inv_r2 = 1.0 / r2;
-      const double inv_r6 = inv_r2 * inv_r2 * inv_r2;
-      const double inv_r12 = inv_r6 * inv_r6;
-      pe += 4.0 * (inv_r12 - inv_r6);
+      pe += lj_pe_shifted(r2);
     }
   }
   return pe + ke;
@@ -168,11 +179,15 @@ static double nve_energy_msd(double dt, int steps) {
   SoA s;
   init_fcc_liquid(&s, box, STRESS_TEMP, &rng);
   lj_forces(&s, box);
+  const int equil = 2000;
+  for (int step = 0; step < equil; ++step) {
+    vv_step(&s, box, dt);
+  }
   double mean = 0.0;
   double msd = 0.0;
   for (int step = 0; step < steps; ++step) {
     const double e = total_energy(&s, box) / (double)STRESS_N;
-  const double delta = e - mean;
+    const double delta = e - mean;
     mean += delta / (double)(step + 1);
     const double delta2 = e - mean;
     msd += delta * delta2;

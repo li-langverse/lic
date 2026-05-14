@@ -3,10 +3,9 @@ three_body,li,release,1,wall_time,0.42,s,8769a94,arm,-O3
 three_body,cpp,release,1,wall_time,0.38,s,8769a94,arm,-O3 -march=native
 three_body,rust,release,1,wall_time,0.41,s,8769a94,arm,--release
 three_body,julia,release,1,wall_time,0.55,s,8769a94,arm,-O3
-md_lennard_jones,li,release,1,wall_time,1.2,s,8769a94,arm,-O3
-md_lennard_jones,li,release,8,wall_time,0.22,s,8769a94,arm,-O3 --threads=8
 simd_dot,li,release,1,throughput,4.8,GFLOPS,8769a94,arm,simd
 simd_dot,cpp,release,1,throughput,5.1,GFLOPS,8769a94,arm,simd
-md_lennard_jones,cpp,release,1,wall_time,1.7919,s,d984ed9,arm,-O3 -march=native
-md_lennard_jones,rust,release,1,wall_time,1.6559,s,d984ed9,arm,--release
-md_lennard_jones,julia,release,1,wall_time,1.6652,s,d984ed9,arm,-O3 --compiled-modules=no
+md_lennard_jones,cpp,release,1,wall_time,3.595,s,1d27cd5,arm,-O3 -march=native -flto -ffast-math
+md_lennard_jones,rust,release,1,wall_time,4.2375,s,1d27cd5,arm,--release
+md_lennard_jones,julia,release,1,wall_time,2.9294,s,1d27cd5,arm,-O3 --compiled-modules=no
+md_lennard_jones,li,release,1,wall_time,2.9973,s,1d27cd5,arm,md_core+lic -O3 -flto -ffast-math

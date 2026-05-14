@@ -117,19 +117,56 @@ def time_command(cmd: list[str], *, cwd: Path | None = None, runs: int = 3) -> f
 
 
 def build_md_cpp(bin_path: Path) -> None:
-    src = MD_DIR / "cpp" / "md_lennard_jones.cpp"
-    cxx = os.environ.get("CXX", "clang++")
-    flags = ["-O3", "-march=native", "-std=c++17", str(src), "-o", str(bin_path)]
-    subprocess.check_call([cxx, *flags], cwd=REPO)
+    main_c = MD_DIR / "cpp" / "md_main.c"
+    core = MD_DIR / "common" / "md_core.c"
+    cc = os.environ.get("CC", "clang")
+    flags = [
+        "-O3",
+        "-march=native",
+        "-ffast-math",
+        str(main_c),
+        str(core),
+        "-o",
+        str(bin_path),
+    ]
+    subprocess.check_call([cc, *flags], cwd=REPO)
+
+
+def build_md_li(bin_path: Path) -> None:
+    lic = REPO / "build" / "compiler" / "lic" / "lic"
+    if not lic.is_file():
+        raise RuntimeError(f"lic missing at {lic} — run ./scripts/build.sh")
+    core = MD_DIR / "common" / "md_core.c"
+    env = {
+        **os.environ,
+        "LI_EXTRA_C": str(core),
+    }
+    subprocess.check_call(
+        [
+            str(lic),
+            "build",
+            str(MD_DIR / "li" / "main.li"),
+            "-o",
+            str(bin_path),
+            "--release",
+            "-O3",
+            "-ffast-math",
+            "-march=native",
+        ],
+        cwd=REPO,
+        env=env,
+    )
 
 
 def build_md_rust(bin_path: Path) -> None:
     cargo = shutil.which("cargo")
     if not cargo:
         raise RuntimeError("cargo not found")
+    env = {**os.environ, "RUSTFLAGS": "-C target-cpu=native"}
     subprocess.check_call(
         [cargo, "build", "--release", "--quiet"],
         cwd=MD_DIR / "rust",
+        env=env,
     )
     built = MD_DIR / "rust" / "target" / "release" / "md_lennard_jones"
     shutil.copy2(built, bin_path)
@@ -183,7 +220,7 @@ def run_md_lennard_jones(*, runs: int) -> list[dict[str, object]]:
             "unit": "s",
             "git_sha": sha,
             "cpu_model": cpu,
-            "flags": "-O3 -march=native",
+            "flags": "-O3 -march=native -ffast-math",
         }
     )
     print(f"md_lennard_jones cpp wall_time={cpp_time:.4f}s (median of {runs})")
@@ -228,6 +265,25 @@ def run_md_lennard_jones(*, runs: int) -> list[dict[str, object]]:
     )
     print(f"md_lennard_jones julia wall_time={julia_time:.4f}s (median of {runs})")
 
+    li_bin = build_dir / "md_lj_li"
+    build_md_li(li_bin)
+    li_time = time_command([str(li_bin)], runs=runs)
+    rows.append(
+        {
+            "benchmark": "md_lennard_jones",
+            "lang": "li",
+            "variant": "release",
+            "threads": 1,
+            "metric": "wall_time",
+            "value": round(li_time, 4),
+            "unit": "s",
+            "git_sha": sha,
+            "cpu_model": cpu,
+            "flags": "md_core+lic -O3 -ffast-math -march=native",
+        }
+    )
+    print(f"md_lennard_jones li wall_time={li_time:.4f}s (median of {runs})")
+
     return rows
 
 
@@ -257,10 +313,10 @@ def run_tier2(*, runs: int, out: Path, verify: bool) -> int:
         existing,
         new_rows,
         benchmark="md_lennard_jones",
-        langs={"cpp", "rust", "julia"},
+        langs={"cpp", "rust", "julia", "li"},
     )
     write_csv(out, merged)
-    print(f"updated {out} with md_lennard_jones cpp/rust/julia timings")
+    print(f"updated {out} with md_lennard_jones cpp/rust/julia/li timings")
     return 0
 
 

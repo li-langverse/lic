@@ -17,9 +17,21 @@ DEFAULT_OUT = REPO / "benchmarks" / "results" / "md_lennard_jones"
 
 def build_cpp(bin_path: Path) -> None:
     src = MD_DIR / "cpp" / "md_lennard_jones.cpp"
+    core = MD_DIR / "common" / "md_core.c"
     cxx = shutil.which("clang++") or "clang++"
     subprocess.check_call(
-        [cxx, "-O3", "-march=native", "-std=c++17", str(src), "-o", str(bin_path)],
+        [
+            cxx,
+            "-O3",
+            "-march=native",
+            "-ffast-math",
+            "-flto",
+            "-std=c++17",
+            str(src),
+            str(core),
+            "-o",
+            str(bin_path),
+        ],
         cwd=REPO,
     )
 

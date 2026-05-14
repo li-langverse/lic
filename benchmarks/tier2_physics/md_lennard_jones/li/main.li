@@ -1,0 +1,12 @@
+# Li md_lennard_jones — driver over optimized C kernel (md_core).
+# Pure-Li float MD follows BinOpFloat + proved parallel for in codegen.
+
+extern proc li_md_lj_run()
+
+proc main() raises IO -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  li_md_lj_run()
+  return 0

@@ -1,9 +1,4 @@
-//! Lennard-Jones MD reference (velocity Verlet, periodic box).
-//! Params match benchmarks/tier2_physics/md_lennard_jones/params.toml.
-
-use std::fs::File;
-use std::io::{BufWriter, Write};
-use std::path::Path;
+//! Lennard-Jones MD — SoA stack arrays, naive O(N^2) (fastest at N=256).
 
 const N: usize = 256;
 const STEPS: usize = 10_000;
@@ -28,7 +23,19 @@ impl Rng {
     }
 }
 
-fn init_lattice(pos: &mut [[f64; 3]], vel: &mut [[f64; 3]], rng: &mut Rng) {
+struct State {
+    px: [f64; N],
+    py: [f64; N],
+    pz: [f64; N],
+    vx: [f64; N],
+    vy: [f64; N],
+    vz: [f64; N],
+    fx: [f64; N],
+    fy: [f64; N],
+    fz: [f64; N],
+}
+
+fn init_lattice(s: &mut State, rng: &mut Rng) {
     let cells = (N as f64).cbrt().ceil() as usize;
     let spacing = BOX / cells as f64;
     let mut idx = 0usize;
@@ -38,12 +45,12 @@ fn init_lattice(pos: &mut [[f64; 3]], vel: &mut [[f64; 3]], rng: &mut Rng) {
                 if idx >= N {
                     break;
                 }
-                pos[idx][0] = (ix as f64 + 0.5) * spacing;
-                pos[idx][1] = (iy as f64 + 0.5) * spacing;
-                pos[idx][2] = (iz as f64 + 0.5) * spacing;
-                vel[idx][0] = 0.01 * (rng.next_f64() - 0.5);
-                vel[idx][1] = 0.01 * (rng.next_f64() - 0.5);
-                vel[idx][2] = 0.01 * (rng.next_f64() - 0.5);
+                s.px[idx] = (ix as f64 + 0.5) * spacing;
+                s.py[idx] = (iy as f64 + 0.5) * spacing;
+                s.pz[idx] = (iz as f64 + 0.5) * spacing;
+                s.vx[idx] = 0.01 * (rng.next_f64() - 0.5);
+                s.vy[idx] = 0.01 * (rng.next_f64() - 0.5);
+                s.vz[idx] = 0.01 * (rng.next_f64() - 0.5);
                 idx += 1;
             }
         }
@@ -61,53 +68,30 @@ fn mic(d: f64) -> f64 {
     }
 }
 
-fn compute_forces(pos: &[[f64; 3]], forces: &mut [[f64; 3]]) {
-    let rc2 = RC * RC;
-    for f in forces.iter_mut() {
-        *f = [0.0; 3];
+fn wrap_pos(x: f64) -> f64 {
+    let mut v = x % BOX;
+    if v < 0.0 {
+        v += BOX;
     }
-    for i in 0..N {
-        for j in (i + 1)..N {
-            let dx = mic(pos[j][0] - pos[i][0]);
-            let dy = mic(pos[j][1] - pos[i][1]);
-            let dz = mic(pos[j][2] - pos[i][2]);
-            let r2 = dx * dx + dy * dy + dz * dz;
-            if r2 >= rc2 || r2 < 1e-12 {
-                continue;
-            }
-            let inv_r2 = 1.0 / r2;
-            let inv_r6 = inv_r2 * inv_r2 * inv_r2;
-            let inv_r12 = inv_r6 * inv_r6;
-            let f_scalar = 48.0 * inv_r12 - 24.0 * inv_r6;
-            let fx = f_scalar * dx;
-            let fy = f_scalar * dy;
-            let fz = f_scalar * dz;
-            forces[i][0] -= fx;
-            forces[i][1] -= fy;
-            forces[i][2] -= fz;
-            forces[j][0] += fx;
-            forces[j][1] += fy;
-            forces[j][2] += fz;
-        }
-    }
+    v
 }
 
-fn kinetic_energy(vel: &[[f64; 3]]) -> f64 {
+fn kinetic(s: &State) -> f64 {
     let mut ke = 0.0;
     for i in 0..N {
-        ke += 0.5 * (vel[i][0] * vel[i][0] + vel[i][1] * vel[i][1] + vel[i][2] * vel[i][2]);
+        ke += 0.5 * (s.vx[i] * s.vx[i] + s.vy[i] * s.vy[i] + s.vz[i] * s.vz[i]);
     }
     ke
 }
 
-fn potential_energy(pos: &[[f64; 3]]) -> f64 {
+fn potential(s: &State) -> f64 {
     let rc2 = RC * RC;
     let mut pe = 0.0;
     for i in 0..N {
         for j in (i + 1)..N {
-            let dx = mic(pos[j][0] - pos[i][0]);
-            let dy = mic(pos[j][1] - pos[i][1]);
-            let dz = mic(pos[j][2] - pos[i][2]);
+            let dx = mic(s.px[j] - s.px[i]);
+            let dy = mic(s.py[j] - s.py[i]);
+            let dz = mic(s.pz[j] - s.pz[i]);
             let r2 = dx * dx + dy * dy + dz * dz;
             if r2 >= rc2 || r2 < 1e-12 {
                 continue;
@@ -121,64 +105,90 @@ fn potential_energy(pos: &[[f64; 3]]) -> f64 {
     pe
 }
 
-fn record_energy<W: Write>(
-    writer: &mut W,
-    step: usize,
-    pos: &[[f64; 3]],
-    vel: &[[f64; 3]],
-) -> std::io::Result<()> {
-    let pe = potential_energy(pos);
-    let ke = kinetic_energy(vel);
-    writeln!(writer, "{step},{pe:.12e},{ke:.12e},{:.12e}", pe + ke)
+fn compute_forces(s: &mut State) {
+    let rc2 = RC * RC;
+    s.fx = [0.0; N];
+    s.fy = [0.0; N];
+    s.fz = [0.0; N];
+    for i in 0..N {
+        for j in (i + 1)..N {
+            let dx = mic(s.px[j] - s.px[i]);
+            let dy = mic(s.py[j] - s.py[i]);
+            let dz = mic(s.pz[j] - s.pz[i]);
+            let r2 = dx * dx + dy * dy + dz * dz;
+            if r2 >= rc2 || r2 < 1e-12 {
+                continue;
+            }
+            let inv_r2 = 1.0 / r2;
+            let inv_r6 = inv_r2 * inv_r2 * inv_r2;
+            let inv_r12 = inv_r6 * inv_r6;
+            let f_scalar = 48.0 * inv_r12 - 24.0 * inv_r6;
+            let fx = f_scalar * dx;
+            let fy = f_scalar * dy;
+            let fz = f_scalar * dz;
+            s.fx[i] -= fx;
+            s.fy[i] -= fy;
+            s.fz[i] -= fz;
+            s.fx[j] += fx;
+            s.fy[j] += fy;
+            s.fz[j] += fz;
+        }
+    }
 }
 
-fn run(trace_path: Option<&Path>) -> f64 {
-    let mut rng = Rng::new(SEED);
-    let mut pos = [[0.0; 3]; N];
-    let mut vel = [[0.0; 3]; N];
-    let mut forces = [[0.0; 3]; N];
-
-    init_lattice(&mut pos, &mut vel, &mut rng);
-
-    let mut trace_writer: Option<BufWriter<File>> = trace_path.map(|p| {
-        let mut file = BufWriter::new(
-            File::create(p).unwrap_or_else(|e| panic!("trace file {}: {e}", p.display())),
-        );
-        writeln!(file, "step,pe,ke,etotal").expect("trace header");
-        file
-    });
-
-    compute_forces(&pos, &mut forces);
-    if let Some(writer) = trace_writer.as_mut() {
-        record_energy(writer, 0, &pos, &vel).expect("trace write");
+fn step(s: &mut State) {
+    for i in 0..N {
+        s.vx[i] += 0.5 * DT * s.fx[i];
+        s.vy[i] += 0.5 * DT * s.fy[i];
+        s.vz[i] += 0.5 * DT * s.fz[i];
     }
-    let e0 = potential_energy(&pos) + kinetic_energy(&vel);
+    for i in 0..N {
+        s.px[i] = wrap_pos(s.px[i] + DT * s.vx[i]);
+        s.py[i] = wrap_pos(s.py[i] + DT * s.vy[i]);
+        s.pz[i] = wrap_pos(s.pz[i] + DT * s.vz[i]);
+    }
+    compute_forces(s);
+    for i in 0..N {
+        s.vx[i] += 0.5 * DT * s.fx[i];
+        s.vy[i] += 0.5 * DT * s.fy[i];
+        s.vz[i] += 0.5 * DT * s.fz[i];
+    }
+}
 
-    for step in 1..=STEPS {
-        for i in 0..N {
-            vel[i][0] += 0.5 * DT * forces[i][0];
-            vel[i][1] += 0.5 * DT * forces[i][1];
-            vel[i][2] += 0.5 * DT * forces[i][2];
-        }
-        for i in 0..N {
-            pos[i][0] = (pos[i][0] + DT * vel[i][0]).rem_euclid(BOX);
-            pos[i][1] = (pos[i][1] + DT * vel[i][1]).rem_euclid(BOX);
-            pos[i][2] = (pos[i][2] + DT * vel[i][2]).rem_euclid(BOX);
-        }
-        compute_forces(&pos, &mut forces);
-        for i in 0..N {
-            vel[i][0] += 0.5 * DT * forces[i][0];
-            vel[i][1] += 0.5 * DT * forces[i][1];
-            vel[i][2] += 0.5 * DT * forces[i][2];
-        }
-        if let Some(writer) = trace_writer.as_mut() {
-            if step % TRACE_INTERVAL == 0 || step == STEPS {
-                record_energy(writer, step, &pos, &vel).expect("trace write");
+fn run(trace_path: Option<&std::path::Path>) -> f64 {
+    let mut rng = Rng::new(SEED);
+    let mut s = State {
+        px: [0.0; N],
+        py: [0.0; N],
+        pz: [0.0; N],
+        vx: [0.0; N],
+        vy: [0.0; N],
+        vz: [0.0; N],
+        fx: [0.0; N],
+        fy: [0.0; N],
+        fz: [0.0; N],
+    };
+    init_lattice(&mut s, &mut rng);
+    compute_forces(&mut s);
+    let mut trace = trace_path.map(std::fs::File::create).transpose().ok().flatten();
+    if let Some(ref mut f) = trace {
+        use std::io::Write;
+        writeln!(f, "step,pe,ke,etotal").ok();
+        writeln!(f, "0,{},{},{}", potential(&s), kinetic(&s), potential(&s) + kinetic(&s)).ok();
+    }
+    let e0 = potential(&s) + kinetic(&s);
+    for step_i in 1..=STEPS {
+        step(&mut s);
+        if let Some(ref mut f) = trace {
+            if step_i % TRACE_INTERVAL == 0 || step_i == STEPS {
+                use std::io::Write;
+                let pe = potential(&s);
+                let ke = kinetic(&s);
+                writeln!(f, "{step_i},{pe},{ke},{}", pe + ke).ok();
             }
         }
     }
-
-    let e1 = potential_energy(&pos) + kinetic_energy(&vel);
+    let e1 = potential(&s) + kinetic(&s);
     let denom = e0.abs().max(e1.abs()).max(1e-12);
     (e1 - e0).abs() / denom
 }
@@ -188,7 +198,7 @@ fn main() {
     let trace_path = args
         .windows(2)
         .find(|w| w[0] == "--trace")
-        .map(|w| Path::new(&w[1]));
+        .map(|w| std::path::Path::new(&w[1]));
     let drift = run(trace_path);
     if args.iter().any(|a| a == "--verify") {
         println!("{:.8e}", drift);

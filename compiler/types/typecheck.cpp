@@ -11,8 +11,8 @@ namespace li {
 namespace {
 
 enum class TyKind {
-  Int, Float, Bool, Str, Array, List, Dict, Tuple, TypedDict, Enum, Named, TypeVar, Protocol,
-  Callable
+  Int, Int64, Float, Bool, Str, Array, List, Dict, Tuple, TypedDict, Enum, Named, TypeVar,
+  Protocol, Callable
 };
 
 struct Ty;
@@ -35,6 +35,7 @@ TyPtr make_int() { return std::make_shared<Ty>(Ty{TyKind::Int}); }
 TyPtr make_float() { return std::make_shared<Ty>(Ty{TyKind::Float}); }
 TyPtr make_bool() { return std::make_shared<Ty>(Ty{TyKind::Bool}); }
 TyPtr make_str() { return std::make_shared<Ty>(Ty{TyKind::Str}); }
+TyPtr make_i64() { return std::make_shared<Ty>(Ty{TyKind::Int64}); }
 
 TyPtr make_type_var(std::string name) {
   auto t = std::make_shared<Ty>();
@@ -342,6 +343,9 @@ struct Ctx {
       if (te.name == "bool") {
         return make_bool();
       }
+      if (te.name == "ptr" || te.name == "int64" || te.name == "i64" || te.name == "long") {
+        return make_i64();
+      }
       if (te.name == "str") {
         auto t = std::make_shared<Ty>();
         t->kind = TyKind::Str;
@@ -406,6 +410,17 @@ struct Ctx {
           const TyPtr arg_ty = type_of(*e.args[0]);
           if (arg_ty->kind != TyKind::Int && arg_ty->kind != TyKind::Str) {
             diags.error(loc(e.span), "echo expects int or str");
+          }
+          return make_int();
+        }
+        const auto pit = procs.find(e.ident);
+        if (pit != procs.end()) {
+          const ProcDecl& callee = *pit->second;
+          for (const auto& arg : e.args) {
+            (void)type_of(*arg);
+          }
+          if (callee.ret_type) {
+            return resolve_type_expr(*callee.ret_type);
           }
           return make_int();
         }
@@ -488,6 +503,20 @@ struct Ctx {
         type_of(*s.cond);
       }
       for (const auto& inner : s.then_body) {
+        check_stmt(inner);
+      }
+      if (s.else_body) {
+        for (const auto& inner : *s.else_body) {
+          check_stmt(inner);
+        }
+      }
+      return;
+    }
+    if (s.kind == Stmt::Kind::While) {
+      if (s.cond) {
+        type_of(*s.cond);
+      }
+      for (const auto& inner : s.while_body) {
         check_stmt(inner);
       }
       return;

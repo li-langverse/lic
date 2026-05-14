@@ -501,19 +501,13 @@ Stmt Parser::parse_stmt() {
   }
   if (at(TokenKind::KwWhile)) {
     const Token t = cur();
-    s.kind = Stmt::Kind::Expr;
+    s.kind = Stmt::Kind::While;
     s.span = {t.start, t.end};
     i++;
-    while (!at(TokenKind::Dedent) && !at(TokenKind::Eof) && !at(TokenKind::Eq)) {
-      i++;
-    }
-    if (at(TokenKind::Eq)) {
-      i++;
-    }
+    s.cond = parse_expr();
+    expect(TokenKind::Colon, "':'");
     skip_newlines();
-    if (at(TokenKind::Indent)) {
-      parse_block();
-    }
+    s.while_body = parse_block();
     return s;
   }
   if (at(TokenKind::Ident) && cur().text == "parallel") {

@@ -10,7 +10,7 @@
 namespace li {
 
 bool compile_module(const Module& module, const std::string& output_path, bool release,
-                  std::string* error) {
+                  const std::string& extra_clang_flags, std::string* error) {
   const MirModule mir = lower_to_mir(module);
   const std::string ll_path =
       (std::filesystem::temp_directory_path() /
@@ -36,6 +36,25 @@ bool compile_module(const Module& module, const std::string& output_path, bool r
       << rt_path.string() << "\" -o \"" << output_path << "\"";
   if (release) {
     cmd << " -O2";
+  }
+  if (!extra_clang_flags.empty()) {
+    cmd << " " << extra_clang_flags;
+  }
+  if (const char* extra_c = std::getenv("LI_EXTRA_C")) {
+    std::string paths(extra_c);
+    std::size_t start = 0;
+    while (start < paths.size()) {
+      const std::size_t end = paths.find(' ', start);
+      const std::string path = paths.substr(start, end == std::string::npos ? std::string::npos
+                                                                            : end - start);
+      if (!path.empty()) {
+        cmd << " -x c \"" << path << "\"";
+      }
+      if (end == std::string::npos) {
+        break;
+      }
+      start = end + 1;
+    }
   }
   const int rc = std::system(cmd.str().c_str());
   std::filesystem::remove(ll_path);

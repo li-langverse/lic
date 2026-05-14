@@ -147,6 +147,9 @@ bool Lexer::process_line_begin(std::size_t line_start, DiagnosticBag& diags) {
       diags.error(loc, "inconsistent indentation");
       return false;
     }
+    if (indent_stack_.size() == 1 && spaces == 0) {
+      body_mode_ = false;
+    }
   }
   pending_indent_check_ = false;
 
@@ -472,8 +475,13 @@ bool Lexer::tokenize(DiagnosticBag& diags) {
       indent_stack_.pop_back();
       Token t;
       t.kind = TokenKind::Dedent;
+      t.line = line_;
+      t.column = 1;
+      t.start = pos_;
+      t.end = pos_;
       push_token(t);
     }
+    body_mode_ = false;
   }
   Token eof;
   eof.kind = TokenKind::Eof;

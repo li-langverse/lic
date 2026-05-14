@@ -76,13 +76,14 @@ struct Contract {
 };
 
 struct Stmt {
-  enum class Kind { Return, If, Expr, VarDecl, Borrow, Assign };
+  enum class Kind { Return, If, While, Expr, VarDecl, Borrow, Assign };
   Kind kind = Kind::Return;
   Span span;
   std::unique_ptr<Expr> expr;
   std::unique_ptr<Expr> cond;
   std::vector<Stmt> then_body;
   std::optional<std::vector<Stmt>> else_body;
+  std::vector<Stmt> while_body;
   std::string var_name;
   TypeExpr var_type;
   std::unique_ptr<Expr> init;

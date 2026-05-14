@@ -269,3 +269,11 @@ expected_substr = "dict"
 suite = "runtime"
 file = "runtime/extern_puts.li"
 outcome = "verify_ok"
+
+# --- tetris ---
+
+[[tests]]
+suite = "tetris"
+file = "tetris/board_oob.li"
+outcome = "compile_fail"
+expected_substr = "out of range"

@@ -74,7 +74,7 @@ int build_file(const char* path, const char* output, bool release) {
     return 1;
   }
   std::string err;
-  if (!li::compile_module(module, output, release, &err)) {
+  if (!li::compile_module(module, output, release, "", &err)) {
     std::cerr << "build failed: " << err << '\n';
     return 1;
   }
@@ -126,15 +126,31 @@ int main(int argc, char** argv) {
     const char* input = argv[2];
     const char* output = "/dev/null";
     bool release = false;
+    std::string extra_flags;
     for (int i = 3; i < argc; ++i) {
       const std::string_view arg = argv[i];
       if (arg == "-o" && i + 1 < argc) {
         output = argv[++i];
       } else if (arg == "--release") {
         release = true;
+      } else {
+        extra_flags.append(argv[i]);
+        extra_flags.push_back(' ');
       }
     }
-    return build_file(input, output, release);
+    const std::string source = read_file(input);
+    li::Module module;
+    li::DiagnosticBag diags;
+    if (!frontend(input, source, module, diags)) {
+      li::print_diagnostics(diags);
+      return 1;
+    }
+    std::string err;
+    if (!li::compile_module(module, output, release, extra_flags, &err)) {
+      std::cerr << "build failed: " << err << '\n';
+      return 1;
+    }
+    return 0;
   }
   return usage();
 }

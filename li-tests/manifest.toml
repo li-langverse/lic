@@ -102,6 +102,35 @@ file = "borrow/use_after_move.li"
 outcome = "compile_fail"
 expected_substr = "move"
 
+[[tests]]
+suite = "borrow"
+file = "borrow/borrow_ok.li"
+outcome = "verify_ok"
+
+# --- effects ---
+
+[[tests]]
+suite = "effects"
+file = "effects/alloc_fail.li"
+outcome = "compile_fail"
+expected_substr = "Alloc"
+
+[[tests]]
+suite = "effects"
+file = "effects/alloc_ok.li"
+outcome = "verify_ok"
+
+[[tests]]
+suite = "effects"
+file = "effects/io_fail.li"
+outcome = "compile_fail"
+expected_substr = "IO"
+
+[[tests]]
+suite = "effects"
+file = "effects/io_ok.li"
+outcome = "verify_ok"
+
 # --- race_shared_memory (v1 exploits) ---
 
 [[tests]]

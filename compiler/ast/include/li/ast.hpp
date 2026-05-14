@@ -28,6 +28,7 @@ struct TypeExpr {
   TypeKind kind = TypeKind::Named;
   Span span;
   std::string name;
+  bool is_var = false;
   std::int64_t array_size = 0;
   std::unique_ptr<TypeExpr> elem;
   std::string refinement_var;
@@ -74,7 +75,7 @@ struct Contract {
 };
 
 struct Stmt {
-  enum class Kind { Return, If, Expr, VarDecl };
+  enum class Kind { Return, If, Expr, VarDecl, Borrow };
   Kind kind = Kind::Return;
   Span span;
   std::unique_ptr<Expr> expr;
@@ -84,6 +85,7 @@ struct Stmt {
   std::string var_name;
   TypeExpr var_type;
   std::unique_ptr<Expr> init;
+  bool borrow_mut = false;
 };
 
 struct ProcDecl {
@@ -92,6 +94,7 @@ struct ProcDecl {
   std::vector<std::string> type_params;
   std::vector<Param> params;
   std::optional<TypeExpr> ret_type;
+  std::vector<std::string> raises;
   std::vector<Contract> contracts;
   std::vector<Stmt> body;
 };

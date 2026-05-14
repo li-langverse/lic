@@ -82,6 +82,17 @@ struct Parser {
 
 std::unique_ptr<Expr> Parser::parse_primary() {
   const Token& t = cur();
+  if (t.kind == TokenKind::KwEcho) {
+    i++;
+    auto e = std::make_unique<Expr>();
+    e->kind = Expr::Kind::Call;
+    e->span = {t.start, t.end};
+    e->ident = "echo";
+    if (auto arg = parse_primary()) {
+      e->args.push_back(std::move(arg));
+    }
+    return parse_postfix(std::move(e));
+  }
   if (t.kind == TokenKind::IntLit) {
     i++;
     auto e = std::make_unique<Expr>();
@@ -256,11 +267,12 @@ TypeExpr Parser::parse_type() {
     ty.span.end = peek(-1).end;
     return ty;
   }
+  TypeExpr ty;
   if (at(TokenKind::KwVar)) {
+    ty.is_var = true;
     i++;
   }
   const Token& t = cur();
-  TypeExpr ty;
   ty.span = {t.start, t.end};
   if (t.kind != TokenKind::Ident && t.kind != TokenKind::KwCallable &&
       t.kind != TokenKind::KwProtocol) {
@@ -429,6 +441,28 @@ Stmt Parser::parse_stmt() {
     skip_newlines();
     return s;
   }
+  if (at(TokenKind::Ident) && cur().text == "borrow") {
+    const Token t = cur();
+    s.kind = Stmt::Kind::Borrow;
+    s.span = {t.start, t.end};
+    i++;
+    if (at(TokenKind::Ident) && cur().text == "mut") {
+      s.borrow_mut = true;
+      i++;
+    } else if (at(TokenKind::Ident) && cur().text == "imm") {
+      i++;
+    }
+    if (!at(TokenKind::Ident)) {
+      diags.error(loc(cur()), "expected borrow binding name");
+      return s;
+    }
+    s.var_name = std::string(cur().text);
+    i++;
+    expect(TokenKind::Eq, "'='");
+    s.init = parse_expr();
+    skip_newlines();
+    return s;
+  }
   if (at(TokenKind::KwVar)) {
     const Token t = cur();
     s.kind = Stmt::Kind::VarDecl;
@@ -540,10 +574,27 @@ ProcDecl Parser::parse_proc() {
     } while (accept(TokenKind::Comma));
   }
   expect(TokenKind::RParen, "')'");
+  auto parse_raises = [&]() {
+    if (!at(TokenKind::KwRaises)) {
+      return;
+    }
+    i++;
+    if (!at(TokenKind::Ident)) {
+      diags.error(loc(cur()), "expected effect name after raises");
+      return;
+    }
+    do {
+      proc.raises.push_back(std::string(cur().text));
+      i++;
+    } while (accept(TokenKind::Comma));
+    skip_newlines();
+  };
+  parse_raises();
   if (accept(TokenKind::Arrow)) {
     proc.ret_type = parse_type();
   }
   skip_newlines();
+  parse_raises();
   while (at(TokenKind::KwRequires) || at(TokenKind::KwEnsures) ||
          at(TokenKind::KwDecreases) || at(TokenKind::KwInvariant)) {
     proc.contracts.push_back(parse_contract());

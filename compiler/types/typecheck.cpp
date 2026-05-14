@@ -1,5 +1,7 @@
 #include "li/typecheck.hpp"
 
+#include "li/borrowck.hpp"
+
 #include <map>
 #include <memory>
 #include <string>
@@ -549,6 +551,8 @@ TypecheckResult typecheck_module(const Module& module) {
   for (const auto& proc : module.procs) {
     ctx.check_proc(proc);
   }
+  borrow_check_module(module, result.diagnostics);
+  effects_check_module(module, result.diagnostics);
   result.ok = result.diagnostics.empty();
   return result;
 }

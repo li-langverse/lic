@@ -468,6 +468,23 @@ suite = "math_linalg"
 file = "math_linalg/array_sum.li"
 outcome = "verify_ok"
 
+[[tests]]
+suite = "math_linalg"
+file = "math_linalg/vec3_ops.li"
+outcome = "verify_ok"
+
+# --- physics (packages + profiles) ---
+
+[[tests]]
+suite = "physics"
+file = "physics/profile_defaults.li"
+outcome = "verify_ok"
+
+[[tests]]
+suite = "physics"
+file = "physics/three_body_mini.li"
+outcome = "verify_ok"
+
 # --- math_syntax (2h — %, //, **) ---
 
 [[tests]]

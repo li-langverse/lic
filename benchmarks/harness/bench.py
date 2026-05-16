@@ -242,6 +242,30 @@ TIER2_BENCHES: tuple[BenchSpec, ...] = (
  "common/tdse_core.c",
  "li/main.li",
  ),
+ BenchSpec(
+ "euler_fluid_2d",
+ 2,
+ "euler_fluid_2d",
+ "cpp/main.c",
+ "common/euler_fluid_core.c",
+ "li/main.li",
+ ),
+ BenchSpec(
+ "cloth_swing",
+ 2,
+ "cloth_swing",
+ "cpp/main.c",
+ "common/cloth_core.c",
+ "li/main.li",
+ ),
+ BenchSpec(
+ "ragdoll_chain",
+ 2,
+ "ragdoll_chain",
+ "cpp/main.c",
+ "common/ragdoll_core.c",
+ "li/main.li",
+ ),
 )
 
 

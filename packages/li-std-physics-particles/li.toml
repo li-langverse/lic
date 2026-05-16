@@ -6,7 +6,8 @@ license = "Apache-2.0 OR MIT"
 description = "Li package li-std-physics-particles"
 
 [dependencies]
-# path = { path = "../other" }   # lip 8b+
+li-std-physics-core = { path = "../li-std-physics-core" }
+li-std-numerics = { path = "../li-std-numerics" }
 # registry = "1.0.0"             # lip 8d+
 
 [package.metadata.li]

@@ -21,8 +21,8 @@ for rej in "$ROOT/li-tests/config_desugar/reject"/*.toml; do
 done
 
 echo "== routing cases =="
-python3 "$PY/httpd_match.py" \
-  "$ROOT/li-tests/httpd/fixtures/routing.toml" \
-  "$ROOT/li-tests/routing/cases/api_prefix.toml"
+for cases in "$ROOT/li-tests/routing/cases"/*.toml; do
+  python3 "$PY/httpd_match.py" "$ROOT/li-tests/httpd/fixtures/routing.toml" "$cases"
+done
 
 echo "run_httpd_config: OK"

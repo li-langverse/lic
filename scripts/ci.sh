@@ -28,6 +28,10 @@ echo "==> CVE / security gates (all OS — see scripts/ci-security.sh)"
 chmod +x "$ROOT/scripts/ci-security.sh"
 "$ROOT/scripts/ci-security.sh"
 
+echo "==> httpd config + routing (M1 prep)"
+chmod +x "$ROOT/li-tests/run_httpd_config.sh"
+"$ROOT/li-tests/run_httpd_config.sh"
+
 echo "==> E2E li-tests (full manifest)"
 "$ROOT/li-tests/run_all.sh"
 

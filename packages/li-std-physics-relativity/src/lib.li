@@ -1,0 +1,50 @@
+# PKG-li-std-physics-relativity — special relativity kinematics + weak-field GR stubs.
+
+extern proc li_rt_sqrt(x: float) -> float
+
+proc li_std_physics_relativity_version() -> int
+  requires true
+  ensures result == 1
+  decreases 0
+=
+  return 1
+
+proc lorentz_gamma(v: float, c: float) -> float
+  requires c > 0.0
+  requires v >= 0.0
+  decreases 0
+=
+  var beta: float = v / c
+  if beta >= 1.0
+    return 1.0
+  return 1.0 / li_rt_sqrt(1.0 - beta * beta)
+
+proc time_dilation_proper(dt: float, gamma: float) -> float
+  requires gamma >= 1.0
+  decreases 0
+=
+  return dt / gamma
+
+proc relativistic_momentum(m: float, v: float, c: float) -> float
+  requires m > 0.0
+  requires c > 0.0
+  decreases 0
+=
+  var g: float = lorentz_gamma(v, c)
+  return g * m * v
+
+proc schwarzschild_factor(rs: float, r: float) -> float
+  requires r > 0.0
+  requires rs >= 0.0
+  decreases 0
+=
+  return li_rt_sqrt(1.0 - rs / r)
+
+proc weak_field_perihelion_precession_factor(m: float, a: float, e: float, c: float) -> float
+  requires m > 0.0
+  requires a > 0.0
+  requires e >= 0.0
+  requires c > 0.0
+  decreases 0
+=
+  return 1.0

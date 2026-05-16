@@ -57,6 +57,7 @@
 | `2026-05-14-phase-05-tetris.md` | Valid |
 | `2026-05-14-benchmarks-and-simulations.md` | Physics, ML, cross-lang harness |
 | `2026-05-14-plots-and-social.md` | **X-ready** benchmark + test plots |
+| `2026-05-16-li-httpd-plan.md` | Proved AI/agent HTTP gateway (li-httpd); nginx oracle only |
 
 ---
 

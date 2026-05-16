@@ -230,6 +230,26 @@ const Expr* ensures_rhs_eq_result(const Expr& e) {
   return nullptr;
 }
 
+bool comparison_mirror_requires_ensures(const Expr& req, const Expr& ens,
+                                        const std::string& param) {
+  if (req.kind != Expr::Kind::BinOp || ens.kind != Expr::Kind::BinOp ||
+      req.bin_op != ens.bin_op || !req.lhs || !req.rhs || !ens.lhs || !ens.rhs) {
+    return false;
+  }
+  if (!expr_same_shape(*req.rhs, *ens.rhs)) {
+    return false;
+  }
+  if (req.lhs->kind == Expr::Kind::Ident && req.lhs->ident == param &&
+      ens.lhs->kind == Expr::Kind::Ident && ens.lhs->ident == "result") {
+    return true;
+  }
+  if (req.rhs->kind == Expr::Kind::Ident && req.rhs->ident == param &&
+      ens.rhs->kind == Expr::Kind::Ident && ens.rhs->ident == "result") {
+    return true;
+  }
+  return false;
+}
+
 bool contract_witnessed_trivial(const ProcDecl& proc, const Contract& c) {
   if (!c.expr) {
     return false;
@@ -241,11 +261,24 @@ bool contract_witnessed_trivial(const ProcDecl& proc, const Contract& c) {
     return false;
   }
   const Expr* rhs = ensures_rhs_eq_result(*c.expr);
-  if (rhs == nullptr) {
-    return false;
-  }
   const Expr* ret = single_return_expr(proc);
-  return ret != nullptr && expr_same_shape(*ret, *rhs);
+  if (rhs != nullptr && ret != nullptr && expr_same_shape(*ret, *rhs)) {
+    return true;
+  }
+  if (ret != nullptr && ret->kind == Expr::Kind::Ident) {
+    for (const auto& p : proc.params) {
+      if (p.name != ret->ident || p.type.kind != TypeKind::Named || p.type.name != "int") {
+        continue;
+      }
+      for (const auto& rc : proc.contracts) {
+        if (rc.kind == ContractKind::Requires && rc.expr &&
+            comparison_mirror_requires_ensures(*rc.expr, *c.expr, ret->ident)) {
+          return true;
+        }
+      }
+    }
+  }
+  return false;
 }
 
 void emit_contract_def(std::ostream& out, const Module& module, const ProcDecl& proc,
@@ -287,7 +320,14 @@ void emit_contract_def(std::ostream& out, const Module& module, const ProcDecl& 
   out << " : Prop := " << prop << '\n';
 
   if (prop == "True" && witnessed && c.kind == ContractKind::Ensures) {
-    out << "/-! Phase 2f: return expression matches ensures (static witness) -/\n";
+    const Expr* ret = single_return_expr(proc);
+    if (ret != nullptr && ret->kind == Expr::Kind::Ident && c.expr &&
+        !ensures_rhs_eq_result(*c.expr)) {
+      out << "/-! Phase 2f: requires/return witness for ensures (param `"
+          << ret->ident << "`) -/\n";
+    } else {
+      out << "/-! Phase 2f: return expression matches ensures (static witness) -/\n";
+    }
   }
   if (prop == "True") {
     out << "theorem " << name << "_proved";

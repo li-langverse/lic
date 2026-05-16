@@ -41,6 +41,8 @@ chmod +x "$ROOT/scripts/check-doc-provability-claims.sh" \
   "$ROOT/li-tests/tooling/lip_publish_smoke.sh" \
   "$ROOT/li-tests/tooling/vc_emit_contracts.sh" \
   "$ROOT/li-tests/tooling/discharge_trivial_lean.sh" \
+  "$ROOT/li-tests/tooling/discharge_const_lean.sh" \
+  "$ROOT/li-tests/tooling/contracts_discharge_corpus.sh" \
   "$ROOT/li-tests/tooling/contracts_verify_lean.sh"
 "$ROOT/scripts/check-doc-provability-claims.sh"
 "$ROOT/scripts/check-li-toolchain.sh"
@@ -48,5 +50,6 @@ chmod +x "$ROOT/scripts/check-doc-provability-claims.sh" \
 "$ROOT/li-tests/tooling/lip_lit_smoke.sh"
 "$ROOT/li-tests/tooling/vc_emit_contracts.sh"
 "$ROOT/li-tests/tooling/discharge_trivial_lean.sh"
+"$ROOT/li-tests/tooling/contracts_discharge_corpus.sh"
 
 ok "lic monorepo v1 gates"

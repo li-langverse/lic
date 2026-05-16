@@ -1,0 +1,15 @@
+# Smoke: physics runtime game-default world (no IO).
+
+proc game_physics_tick() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0
+
+proc main() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return game_physics_tick()

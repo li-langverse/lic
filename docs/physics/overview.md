@@ -2,6 +2,8 @@
 
 Physics for the Li game engine is delivered as **`li-std-physics*`** packages on top of **`li-std-math`** and **`li-std-numerics`**.
 
+**Quick start:** [GAME_DEV.md](./GAME_DEV.md) (packages, tier-2 benches, engine checklist).
+
 ## Fidelity tiers
 
 | Tier | Name | Typical use |

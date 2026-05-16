@@ -15,7 +15,7 @@ out="$("$LIC" check --format=json "$BAD" 2>&1 || true)"
 echo "$out" | grep -q '"ok":false' || fail "expected ok:false — output: ${out:0:400}"
 echo "$out" | grep -q '"schema":"diagnostic-v1"' || fail "missing schema"
 echo "$out" | grep -Eq '"code":"(type\.index|E0201)"' || fail "expected type.index — output: ${out:0:400}"
-echo "$out" | grep -q 'bad_array_index' || fail "missing file path in output: ${out:0:400}"
+echo "$out" | grep -q 'array index out of range' || fail "missing index diagnostic message: ${out:0:400}"
 
 diag="$("$LIC" diagnose "$BAD" 2>&1 || true)"
 echo "$diag" | grep -q '"command":"diagnose"' || fail "diagnose envelope: ${diag:0:400}"

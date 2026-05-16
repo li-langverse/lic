@@ -93,8 +93,9 @@ void check_proc_decorators(const std::vector<Decorator>& decos, const std::strin
   for (const auto& d : decos) {
     if (d.name == "parallel" && !decorator_has_disjoint_arg(d)) {
       diag_error(diags, SourceLoc{file, 1, 1, d.span.start}, ErrorCode::E0321,
-                 "The `@parallel` decorator must include a `disjoint=` proof argument.",
-                 "Use `@parallel(disjoint=disjoint_elem(...))`. (parallel_requires_disjoint)");
+                 "parallel_requires_disjoint: `@parallel` must include a `disjoint=` proof "
+                 "argument.",
+                 "Use `@parallel(disjoint=disjoint_elem(...))`.");
     }
   }
 }

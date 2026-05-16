@@ -404,6 +404,13 @@ suite = "effects"
 file = "effects/async_ok.li"
 outcome = "compile_ok"
 
+# --- async (codegen stubs — httpd P0) ---
+
+[[tests]]
+suite = "async"
+file = "async/await_codegen_ok.li"
+outcome = "compile_ok"
+
 [[tests]]
 suite = "effects"
 file = "effects/await_outside_async.li"

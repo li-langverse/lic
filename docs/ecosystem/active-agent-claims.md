@@ -4,7 +4,7 @@
 **Canonical policy:** [agent-coordination.md](agent-coordination.md) (roadmap repo).  
 **Local claims file:** `coding-projects/.li-agent-coord.json` (gitignored — update when you start or finish a task).
 
-**Last updated:** 2026-05-16 (Cursor agent — httpd P0 / package promotion)
+**Last updated:** 2026-05-16 (Cursor agent — httpd P0 async codegen)
 
 ---
 
@@ -12,7 +12,8 @@
 
 | Claim ID | Owner | Repo / path | Branch | Scope | Do not touch |
 |----------|-------|-------------|--------|-------|--------------|
-| `httpd-p0-net` | lic agent | `packages/li-net/`, `compiler/*` async/net | `dev` | Trusted TCP `extern` surface, `async`/`await` parse + effects | Same files without coordinating |
+| `httpd-p0-async-codegen` | lic agent | `compiler/mir`, `compiler/codegen`, `runtime/li_rt.*` | `dev` | MIR `AsyncAwait`, `li_async_*` reactor stubs | Same paths without coordinating |
+| `httpd-p0-net` | lic agent | `packages/li-net/` | `dev` | Trusted TCP `extern` surface (stable) | `packages/li-net` API changes |
 | `httpd-p0-org` | lic agent | `scripts/push-official-package-repo.sh` | `dev` | **Done** — org mirrors pushed (see table below) | `gh repo delete`, uncoordinated force-push |
 | `httpd-p0-docs` | lic agent | `docs/ecosystem/httpd-prerequisites.md`, this file | `dev` | Status tables for P0 gates | Rewriting httpd plan |
 
@@ -44,8 +45,8 @@ Monorepo path stays source until **lip** publish; org repo is the **public home*
 
 ## Next compiler work (queued, unclaimed)
 
-1. Async **codegen** stub → state machine / reactor interface (no epoll impl yet).
-2. `li-httpd` package scaffold (`./scripts/li-new-package li-httpd --official --workspace packages`).
+1. **epoll/kqueue** behind `li_async_poll` (real suspend/resume).
+2. **Bytes** `Reader`/`Writer` + syscall codegen for `li-net`.
 3. HTTP/1 parser slice in `lic` (blocked on 2f for full proof).
 
 To **claim** a row: add an entry under `repos.lic.claims` in `../.li-agent-coord.json` and bump `updated_at`.

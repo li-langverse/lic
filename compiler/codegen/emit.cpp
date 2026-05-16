@@ -614,6 +614,23 @@ struct EmitCtx {
       }
       case MirOp::LoadIntToIdent:
         return true;
+      case MirOp::AsyncAwait: {
+        llvm::Function* await_fn = module->getFunction("li_async_await_i32");
+        llvm::Value* pending = load_int(ins.lhs_ident);
+        llvm::Value* result = builder->CreateCall(await_fn, {pending});
+        builder->CreateStore(result, ensure_int_local(ins.ident));
+        return true;
+      }
+      case MirOp::AsyncFrameEnter: {
+        llvm::Function* enter = module->getFunction("li_async_frame_enter");
+        builder->CreateCall(enter, {});
+        return true;
+      }
+      case MirOp::AsyncFrameLeave: {
+        llvm::Function* leave = module->getFunction("li_async_frame_leave");
+        builder->CreateCall(leave, {});
+        return true;
+      }
     }
     return true;
   }
@@ -652,6 +669,14 @@ bool emit_llvm_ir(const MirModule& mir, const std::string& out_path, std::string
                                llvm::PointerType::getUnqual(llvm::FunctionType::get(
                                    llvm::Type::getVoidTy(context), {i64_ty(context)}, false))},
                               false));
+  module->getOrInsertFunction("li_async_frame_enter",
+                              llvm::FunctionType::get(llvm::Type::getVoidTy(context), {}, false));
+  module->getOrInsertFunction("li_async_frame_leave",
+                              llvm::FunctionType::get(llvm::Type::getVoidTy(context), {}, false));
+  module->getOrInsertFunction("li_async_await_i32",
+                              llvm::FunctionType::get(i32_ty(context), {i32_ty(context)}, false));
+  module->getOrInsertFunction("li_async_poll",
+                              llvm::FunctionType::get(i32_ty(context), {i32_ty(context)}, false));
 
   llvm::Function* user_main = nullptr;
   bool user_main_argv_wrapper = false;

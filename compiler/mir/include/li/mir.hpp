@@ -44,6 +44,9 @@ enum class MirOp {
   Label,
   Jump,
   BranchIfZero,
+  AsyncAwait,
+  AsyncFrameEnter,
+  AsyncFrameLeave,
 };
 
 struct MirArg {
@@ -106,6 +109,7 @@ struct MirFn {
 struct MirModule {
   std::vector<MirFn> functions;
   bool uses_openmp = false;
+  bool uses_async = false;
 };
 
 MirModule lower_to_mir(const Module& module);

@@ -154,11 +154,20 @@ std::string lower_expr_to(const Expr& e, const Module& module, std::vector<MirIn
     }
     case Expr::Kind::Ident:
       return e.ident;
-    case Expr::Kind::Await:
-      if (e.operand) {
-        return lower_expr_to(*e.operand, module, out, float_names, simd_names);
+    case Expr::Kind::Await: {
+      if (!e.operand) {
+        return fresh_temp();
       }
-      return fresh_temp();
+      const std::string pending =
+          lower_expr_to(*e.operand, module, out, float_names, simd_names);
+      const std::string dest = fresh_temp();
+      MirInsn await;
+      await.op = MirOp::AsyncAwait;
+      await.ident = dest;
+      await.lhs_ident = pending;
+      out.push_back(std::move(await));
+      return dest;
+    }
     case Expr::Kind::BinOp: {
       if (e.bin_op == BinOp::MatMul && e.lhs && e.lhs->kind == Expr::Kind::Ident && e.rhs &&
           e.rhs->kind == Expr::Kind::Ident && g_arr_ctx &&
@@ -719,6 +728,16 @@ MirModule lower_to_mir(const Module& module) {
       fn.params.push_back(std::move(mp));
     }
     if (!proc.is_extern) {
+      const bool is_async_fn =
+          proc.is_async ||
+          std::any_of(proc.decorators.begin(), proc.decorators.end(),
+                      [](const Decorator& d) { return d.name == "async"; });
+      if (is_async_fn) {
+        mir.uses_async = true;
+        MirInsn enter;
+        enter.op = MirOp::AsyncFrameEnter;
+        fn.body.push_back(std::move(enter));
+      }
       std::unordered_set<std::string> float_names;
       std::unordered_set<std::string> simd_names;
       std::unordered_set<std::string> float_array_names;
@@ -729,6 +748,15 @@ MirModule lower_to_mir(const Module& module) {
       LowerCtx ctx{&module, &mir, proc.name};
       lower_stmts(proc.body, ctx, fn.returns_float, fn.body, float_names, simd_names,
                   float_array_names);
+      if (is_async_fn) {
+        MirInsn leave;
+        leave.op = MirOp::AsyncFrameLeave;
+        if (!fn.body.empty() && insn_terminates(fn.body.back().op)) {
+          fn.body.insert(fn.body.end() - 1, std::move(leave));
+        } else {
+          fn.body.push_back(std::move(leave));
+        }
+      }
       g_arr_ctx = nullptr;
       append_implicit_return(fn.body);
     }

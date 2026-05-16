@@ -9,6 +9,7 @@
 #include "li/vc_emit.hpp"
 #include "li/mir.hpp"
 #include "li/vc_summary.hpp"
+#include "li/vc_witness.hpp"
 
 #include <cstdio>
 #include <cstdlib>
@@ -151,10 +152,14 @@ int verify_file(const char* path, bool run_lean, bool strict_lean) {
   const li::MirModule mir = li::lower_to_mir(module);
   li::VcSummary vc = li::summarize_vcs(module);
   vc.mir_fn_count = mir.functions.size();
+  const li::VcWitnessStats witness = li::compute_vc_witness_stats(module, &mir);
+  vc.ensures_witnessed = witness.ensures_witnessed;
+  vc.mir_return_linked = witness.mir_return_linked;
   std::cout << "verify: procs=" << vc.proc_count << " mir_fns=" << vc.mir_fn_count
             << " requires=" << vc.requires_count << " ensures=" << vc.ensures_count
             << " decreases=" << vc.decreases_count << " invariant=" << vc.invariant_count
-            << '\n';
+            << " witnessed_ensures=" << vc.ensures_witnessed
+            << " mir_return_linked=" << vc.mir_return_linked << '\n';
   if (vc.requires_count == 0 && vc.ensures_count == 0) {
     std::cerr << "verify: warning — no procedure contracts (G-vc partial)\n";
   }

@@ -38,6 +38,11 @@ Agents **must** follow these before and during work. Style and structure are fle
 - Cross-repo or pillar vision → **master plan** + roadmap **proposal**; not package README only.
 - Org repos / secrets / branch protection → ask human; wait for confirmation.
 
+## Org backup (agent experiment)
+
+- **Never** run `scripts/backup-li-langverse-org.sh`, `export-li-langverse-metadata.sh`, or read `../.env.github.backup`.
+- Human runbook: `docs/ecosystem/org-backup.md`.
+
 ## Escalate (do not do alone)
 
 - Lower coverage tiers, skip CVE tests, weaken bench thresholds

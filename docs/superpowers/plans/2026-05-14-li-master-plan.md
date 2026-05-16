@@ -379,7 +379,7 @@ Track in phase **Doc** until each is checked:
 - [x] Phase 5 — Tetris
 - [x] Phase 5b — Benchmarks & simulations (harness + **X plots** skeleton on `dev`)
 - [x] Phase 6 — Self-host (bootstrap seed: `bootstrap/lic/main.li` → `build/lic-from-li`)
-- [ ] Phase 2e — Contracts + refinements — **partial:** typed `AutoVC.lean`, MIR-linked `lic verify` (`mir_fns=`); open goals checker
+- [ ] Phase 2e — Contracts + refinements — **partial:** typed `AutoVC.lean`; `lic verify` prints `witnessed_ensures=` + `mir_return_linked=` (AST witness ↔ MIR return); open goals checker
 - [ ] Phase 2f — Lean 4 verify — **partial:** auto-discharge (`True`, `decreases`, return/const/mirror `ensures`); `sqrt_contract` stub closed; `sqrt_open_bound` abs VC open; `lic verify --strict-lean`
 - [x] Phase 7 — Native HPC — **v1 gate:** simd + parallel for + OpenMP + `check-master-plan-gates.sh` (tier 1/2 perf advisory)
 - [ ] Phase 7d — Execution decorators — **partial (7d-a/b/d/e/c):** AST `check_module_policies` for disjoint; string heuristics for race exploits

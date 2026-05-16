@@ -5,7 +5,10 @@ ROOT="$(cd "$(dirname "$0")/../.." && pwd)"
 export LI_REPO_ROOT="$ROOT"
 LIC="${LIC:-$("$ROOT/scripts/resolve-lic.sh")}"
 SAMPLE="$ROOT/li-tests/contracts_verify/sqrt_contract.li"
-"$LIC" verify "$SAMPLE" 2>&1 | grep -q 'mir_fns='
+out="$("$LIC" verify "$SAMPLE" 2>&1)"
+echo "$out" | grep -q 'mir_fns='
+echo "$out" | grep -q 'witnessed_ensures='
+echo "$out" | grep -q 'mir_return_linked='
 rm -f "$ROOT/build/generated/AutoVC.lean"
 LI_BUILD_VERIFY_LEAN=1 "$LIC" build "$SAMPLE" -o /dev/null
 if command -v lake >/dev/null 2>&1; then

@@ -15,6 +15,9 @@
       },
       {
         "command": ".cursor/hooks/guard-direct-push.sh"
+      },
+      {
+        "command": ".cursor/hooks/guard-backup.sh"
       }
     ],
     "afterFileEdit": [

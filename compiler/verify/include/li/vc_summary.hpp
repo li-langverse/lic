@@ -11,6 +11,8 @@ struct VcSummary {
   std::size_t invariant_count = 0;
   std::size_t proc_count = 0;
   std::size_t mir_fn_count = 0;
+  std::size_t ensures_witnessed = 0;
+  std::size_t mir_return_linked = 0;
 };
 
 VcSummary summarize_vcs(const Module& module);

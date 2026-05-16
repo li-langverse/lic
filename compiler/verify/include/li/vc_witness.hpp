@@ -1,0 +1,20 @@
+#pragma once
+
+#include "li/ast.hpp"
+#include "li/mir.hpp"
+
+namespace li {
+
+struct VcWitnessStats {
+  std::size_t ensures_total = 0;
+  std::size_t ensures_witnessed = 0;
+  std::size_t mir_return_linked = 0;
+};
+
+const Expr* single_return_expr(const ProcDecl& proc);
+bool contract_witnessed_trivial(const ProcDecl& proc, const Contract& c);
+bool mir_return_links_proc(const MirFn& fn, const ProcDecl& proc);
+
+VcWitnessStats compute_vc_witness_stats(const Module& module, const MirModule* mir);
+
+}  // namespace li

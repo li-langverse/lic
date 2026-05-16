@@ -16,13 +16,14 @@ proc httpd_tag() -> int
 =
   return 0
 
-# Httpd.serve — start listener (stub: returns handle id 0; no socket yet).
+# Httpd.serve — start listener (stub: returns zero-initialized handle; no socket yet).
 proc httpd_serve(config: HttpdConfig) -> HttpdHandle
   requires config.port > 0
   ensures result.id == 0
   decreases 0
 =
-  return HttpdHandle(id=0)
+  var h: HttpdHandle
+  return h
 
 # Httpd.stop — tear down (stub: total no-op on stub handle).
 proc httpd_stop(handle: HttpdHandle) -> int

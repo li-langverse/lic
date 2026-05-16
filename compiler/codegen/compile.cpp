@@ -38,6 +38,14 @@ bool compile_module(const Module& module, const std::string& output_path, bool r
     return true;
   }
 
+  if (!is_safe_link_path(output_path)) {
+    if (error) {
+      *error = "unsafe characters in output path";
+    }
+    std::filesystem::remove(ll_path);
+    return false;
+  }
+
   std::filesystem::path rt_path = std::filesystem::path("runtime") / "li_rt.c";
   if (!std::filesystem::exists(rt_path)) {
     rt_path = std::filesystem::path("..") / "runtime" / "li_rt.c";
@@ -76,6 +84,13 @@ bool compile_module(const Module& module, const std::string& output_path, bool r
       const std::string path = paths.substr(start, end == std::string::npos ? std::string::npos
                                                                             : end - start);
       if (!path.empty()) {
+        if (!is_safe_link_path(path)) {
+          if (error) {
+            *error = "unsafe characters in LI_EXTRA_C path";
+          }
+          std::filesystem::remove(ll_path);
+          return false;
+        }
         cmd << " -x c \"" << path << "\"";
       }
       if (end == std::string::npos) {
@@ -83,8 +98,10 @@ bool compile_module(const Module& module, const std::string& output_path, bool r
       }
       start = end + 1;
     }
-    cmd << " -lm";
   }
+#if defined(__linux__)
+  cmd << " -lm";
+#endif
   const int rc = std::system(cmd.str().c_str());
   std::filesystem::remove(ll_path);
   if (rc != 0) {

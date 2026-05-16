@@ -27,12 +27,16 @@ if [[ ${#members[@]} -eq 0 ]]; then
   exit 0
 fi
 for m in "${members[@]}"; do
+  entry="$ROOT/packages/$m/src/lib.li"
   smoke="$ROOT/packages/$m/li-tests/smoke/builds.li"
-  if [[ -f "$smoke" ]]; then
-    echo "workspace build: $m"
+  if [[ -f "$entry" ]]; then
+    echo "workspace build: $m (src/lib.li)"
+    "$LIC" build "$entry" -o /dev/null
+  elif [[ -f "$smoke" ]]; then
+    echo "workspace build: $m (smoke)"
     "$LIC" build "$smoke" -o /dev/null
   else
-    echo "workspace build: skip $m (no li-tests/smoke/builds.li)" >&2
+    echo "workspace build: skip $m (no entrypoint)" >&2
   fi
 done
 echo "lic-workspace-build: ok (${#members[@]} members)"

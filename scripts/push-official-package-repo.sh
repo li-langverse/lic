@@ -71,9 +71,20 @@ if [[ -n "${GH_TOKEN:-}" ]]; then
   REMOTE="https://x-access-token:${GH_TOKEN}@github.com/${REPO}.git"
 fi
 git remote add origin "$REMOTE"
-if gh api "repos/${REPO}/commits/main" >/dev/null 2>&1; then
-  git pull origin main --rebase || true
-  git push origin main
+git fetch origin main 2>/dev/null || true
+if git rev-parse origin/main >/dev/null 2>&1; then
+  if ! git rebase origin/main; then
+    git rebase --abort 2>/dev/null || true
+    if [[ "${LI_PACKAGE_MIRROR_FORCE:-}" == "1" ]]; then
+      echo "warn: force-with-lease push (monorepo mirror wins)"
+      git push --force-with-lease origin main
+    else
+      echo "error: push rejected; set LI_PACKAGE_MIRROR_FORCE=1 if monorepo should win" >&2
+      exit 1
+    fi
+  else
+    git push origin main
+  fi
 else
   git push -u origin main
 fi

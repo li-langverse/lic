@@ -13,7 +13,7 @@
 | Claim ID | Owner | Repo / path | Branch | Scope | Do not touch |
 |----------|-------|-------------|--------|-------|--------------|
 | `httpd-p0-net` | lic agent | `packages/li-net/`, `compiler/*` async/net | `dev` | Trusted TCP `extern` surface, `async`/`await` parse + effects | Same files without coordinating |
-| `httpd-p0-org` | lic agent | `scripts/push-official-package-repo.sh`, org repos | `dev` | Create/push `li-langverse/li-net` (+ std mirrors) | `gh repo delete`, force-push existing package repos |
+| `httpd-p0-org` | lic agent | `scripts/push-official-package-repo.sh` | `dev` | **Done** — org mirrors pushed (see table below) | `gh repo delete`, uncoordinated force-push |
 | `httpd-p0-docs` | lic agent | `docs/ecosystem/httpd-prerequisites.md`, this file | `dev` | Status tables for P0 gates | Rewriting httpd plan |
 
 **Not claimed here (other repos):**

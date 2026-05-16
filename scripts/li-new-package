@@ -150,6 +150,7 @@ write_tree() {
     mkdir -p "$OUT/.github/workflows"
     cp "$gh/dependabot.yml" "$OUT/.github/dependabot.yml"
     cp "$gh/ecosystem-upstream.yml" "$OUT/.github/workflows/ecosystem-upstream.yml"
+    cp "$gh/ci.yml" "$OUT/.github/workflows/ci.yml"
     cp "$gh/PULL_REQUEST_TEMPLATE.md" "$OUT/.github/PULL_REQUEST_TEMPLATE.md"
   fi
 }

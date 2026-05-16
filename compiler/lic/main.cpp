@@ -1,9 +1,11 @@
 #include "li/compile.hpp"
 #include "li/parser.hpp"
+#include "li/platform.hpp"
 #include "li/policy.hpp"
 #include "li/smoke_llvm.hpp"
 #include "li/typecheck.hpp"
 
+#include <cstdlib>
 #include <fstream>
 #include <iostream>
 #include <sstream>
@@ -17,7 +19,7 @@ int usage() {
             << "usage:\n"
             << "  lic parse <file>       parse and validate syntax\n"
             << "  lic check <file>       parse + typecheck\n"
-            << "  lic build <file> -o <out> [--release]\n"
+            << "  lic build <file> -o <out> [--release] [--threads=N]\n"
             << "  lic smoke-llvm         verify LLVM can emit main returning 0\n"
             << "  lic --version          print version\n";
   return 1;
@@ -128,7 +130,7 @@ int main(int argc, char** argv) {
       return usage();
     }
     const char* input = argv[2];
-    const char* output = "/dev/null";
+    const char* output = li::null_output_path();
     bool release = false;
     std::string extra_flags;
     for (int i = 3; i < argc; ++i) {
@@ -137,6 +139,8 @@ int main(int argc, char** argv) {
         output = argv[++i];
       } else if (arg == "--release") {
         release = true;
+      } else if (arg.rfind("--threads=", 0) == 0) {
+        setenv("LI_OMP_THREADS", std::string(arg.substr(10)).c_str(), 1);
       } else {
         extra_flags.append(argv[i]);
         extra_flags.push_back(' ');

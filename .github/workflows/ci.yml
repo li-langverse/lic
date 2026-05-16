@@ -45,7 +45,8 @@ jobs:
           CC: clang-18
           CXX: clang++-18
         run: |
-          chmod +x scripts/ci.sh scripts/build.sh scripts/check-version.sh
+          chmod +x scripts/ci.sh scripts/build.sh scripts/check-version.sh \
+            scripts/resolve-lic.sh li-tests/run_security.sh
           ./scripts/ci.sh
           ./scripts/check-version.sh --build
 
@@ -59,7 +60,8 @@ jobs:
 
       - name: CI (build + li-tests + tier-0 benchmarks)
         run: |
-          chmod +x scripts/ci.sh scripts/build.sh scripts/check-version.sh
+          chmod +x scripts/ci.sh scripts/build.sh scripts/check-version.sh \
+            scripts/resolve-lic.sh li-tests/run_security.sh
           LLVM_DIR="$(brew --prefix llvm@18)/lib/cmake/llvm"
           export LLVM_DIR
           # Link against Homebrew LLVM, but compile with Xcode clang++/libc++
@@ -68,3 +70,32 @@ jobs:
           export CXX=clang++
           ./scripts/ci.sh
           ./scripts/check-version.sh --build
+
+  build-and-test-windows:
+    runs-on: windows-latest
+    defaults:
+      run:
+        shell: bash
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install LLVM 18, CMake, Ninja
+        run: |
+          choco install llvm --version=18.1.8 cmake ninja -y
+          echo "C:/Program Files/LLVM/bin" >> "$GITHUB_PATH"
+
+      - name: Build lic + smoke + security + li-tests
+        env:
+          LLVM_DIR: 'C:/Program Files/LLVM/lib/cmake/llvm'
+          CC: clang
+          CXX: clang++
+        run: |
+          chmod +x scripts/build.sh scripts/ci.sh scripts/resolve-lic.sh \
+            li-tests/run_security.sh li-tests/run_all.sh
+          cmake -B build -G Ninja -DLLVM_DIR="$LLVM_DIR"
+          cmake --build build
+          LIC="$(./scripts/resolve-lic.sh)"
+          "$LIC" smoke-llvm
+          export LIC
+          ./li-tests/run_security.sh
+          ./li-tests/run_all.sh --ci

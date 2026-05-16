@@ -5,6 +5,17 @@ set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
+# Sanitizers (Linux CI / local debug). macOS + Homebrew LLVM link is often brittle.
+# Usage: cmake -B build-asan -DLI_SANITIZE=address -DLLVM_DIR=...
+set(LI_SANITIZE "" CACHE STRING "Sanitizer: address, undefined, thread, or empty (off)")
+if(LI_SANITIZE)
+  add_compile_options(-fsanitize=${LI_SANITIZE} -fno-omit-frame-pointer -g)
+  add_link_options(-fsanitize=${LI_SANITIZE})
+  message(STATUS "LI_SANITIZE=${LI_SANITIZE}")
+endif()
+
+option(LI_BUILD_FUZZ "Build libFuzzer parser target (Clang + -fsanitize=fuzzer)" OFF)
+
 file(READ "${CMAKE_SOURCE_DIR}/VERSION" LI_VERSION_RAW)
 string(STRIP "${LI_VERSION_RAW}" LI_VERSION_STRING)
 

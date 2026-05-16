@@ -82,23 +82,42 @@ extra:
 nav:
   - Home: index.md
   - Getting started: getting-started.md
-  - Guides:
+  - Guide:
+      - Hello world: guide/hello-world.md
+      - Install tools: guide/getting-started-tools.md
+      - Fast math & parallelism: guide/fast-math-and-parallelism.md
+      - Examples gallery: guide/examples-gallery.md
+  - Language handbook:
+      - Overview: language/overview.md
+      - Types and data: language/types-and-data.md
+      - Numerics: language/numerics.md
+      - SIMD and parallel: language/simd-parallel.md
+      - Contracts and proofs: language/contracts-and-proofs.md
+      - Control flow and functions: language/control-flow-and-functions.md
+      - Collections and generics: language/collections-generics.md
+      - Effects and I/O: language/effects-and-io.md
+  - Compiler:
+      - Build pipeline: compiler/build-pipeline.md
+      - Why provable: compiler/why-provable.md
       - Architecture: architecture/overview.md
       - Verification: verification/overview.md
-      - Benchmarks: benchmarks.md
-      - Contributing docs: contributing/documentation.md
+  - Testing and security:
+      - All tests: testing/overview.md
+      - Security audits: testing/security.md
+  - Benchmarks: benchmarks.md
   - Reference:
-      - Language design: superpowers/specs/2026-05-14-li-language-design.md
+      - Language design (spec): superpowers/specs/2026-05-14-li-language-design.md
       - Trusted axioms: semantics/README.md
+  - Contributing:
+      - Documentation style: contributing/documentation.md
   - Project:
       - Master plan: superpowers/plans/2026-05-14-li-master-plan.md
+      - Phase 7 — Native HPC: superpowers/plans/2026-05-14-phase-07-native-hpc.md
       - Benchmarks plan: superpowers/plans/2026-05-14-benchmarks-and-simulations.md
-      - Plots & social: superpowers/plans/2026-05-14-plots-and-social.md
       - Phase plans:
           - Phase 0 — Bootstrap: superpowers/plans/2026-05-14-phase-00-bootstrap.md
           - Phase 1 — Lexer/Parser: superpowers/plans/2026-05-14-phase-01-lexer-parser.md
           - Phase 2 — Typechecker: superpowers/plans/2026-05-14-phase-02-typechecker.md
-          - Phase 2a — Types core: superpowers/plans/2026-05-14-phase-02a-types-core.md
           - Phase 3 — MIR/Codegen: superpowers/plans/2026-05-14-phase-03-mir-codegen.md
           - Phase 4 — Runtime: superpowers/plans/2026-05-14-phase-04-runtime-stdlib.md
           - Phase 5 — Tetris: superpowers/plans/2026-05-14-phase-05-tetris.md

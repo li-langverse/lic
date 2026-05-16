@@ -58,6 +58,7 @@ TIER1_BENCHES: tuple[BenchSpec, ...] = (
         "common/dot_core.c",
         "li/main.li",
         flops_per_run=2.0 * 1e7,
+        li_pure=True,
     ),
     BenchSpec(
         "matmul_naive",
@@ -98,6 +99,10 @@ TIER1_BENCHES: tuple[BenchSpec, ...] = (
     ),
 )
 
+# Gaming-physics roadmap (physics-only; Tier R = rendering out of scope):
+#   exists: md_lennard_jones, nbody, wave_1d/2d, heat_2d, advection_diffusion_2d, sph_dam_break_2d (stub)
+#   planned: euler_fluid_2d, combustion_passive, wind_field_bc, rigid_body, cloth, mls_mpm
+#   Tier R: shadows, reflections BRDF, fire rendering
 TIER2_BENCHES: tuple[BenchSpec, ...] = (
     BenchSpec(
         "md_lennard_jones",
@@ -106,6 +111,7 @@ TIER2_BENCHES: tuple[BenchSpec, ...] = (
         "cpp/md_main.c",
         "common/md_core.c",
         "li/main.li",
+        li_pure=True,
     ),
     BenchSpec(
         "three_body",
@@ -155,6 +161,30 @@ TIER2_BENCHES: tuple[BenchSpec, ...] = (
         "common/pendulum_core.c",
         "li/main.li",
     ),
+    BenchSpec(
+        "advection_diffusion_2d",
+        2,
+        "advection_diffusion_2d",
+        "cpp/main.c",
+        "common/advdiff_core.c",
+        "li/main.li",
+    ),
+    BenchSpec(
+        "wave_equation_2d",
+        2,
+        "wave_equation_2d",
+        "cpp/main.c",
+        "common/wave2d_core.c",
+        "li/main.li",
+    ),
+    BenchSpec(
+        "sph_dam_break_2d",
+        2,
+        "sph_dam_break_2d",
+        "cpp/main.c",
+        "common/sph_dam_core.c",
+        "li/main.li",
+    ),
 )
 
 
@@ -192,6 +222,12 @@ def write_sample_csv(path: Path) -> None:
         ("md_lennard_jones", "li", "release", 8, "wall_time", 0.22, "s", sha, cpu, "-O3 --threads=8"),
         ("simd_dot", "li", "release", 1, "throughput", 4.8, "GFLOPS", sha, cpu, "simd"),
         ("simd_dot", "cpp", "release", 1, "throughput", 5.1, "GFLOPS", sha, cpu, "simd"),
+        ("advection_diffusion_2d", "li", "release", 1, "wall_time", 0.65, "s", sha, cpu, "-O3"),
+        ("advection_diffusion_2d", "cpp", "release", 1, "wall_time", 0.60, "s", sha, cpu, "-O3"),
+        ("wave_equation_2d", "li", "release", 1, "wall_time", 0.90, "s", sha, cpu, "-O3"),
+        ("wave_equation_2d", "cpp", "release", 1, "wall_time", 0.85, "s", sha, cpu, "-O3"),
+        ("sph_dam_break_2d", "li", "release", 1, "wall_time", 1.5, "s", sha, cpu, "-O3"),
+        ("sph_dam_break_2d", "cpp", "release", 1, "wall_time", 1.4, "s", sha, cpu, "-O3"),
     ]
     path.parent.mkdir(parents=True, exist_ok=True)
     with path.open("w", newline="") as f:
@@ -471,6 +507,46 @@ def run_tier2_all(*, runs: int, out: Path, verify: bool) -> int:
     return run_tier_benches(TIER2_BENCHES, runs=runs, out=out, verify=verify, label="tier-2")
 
 
+def verify_checksum_match(spec: BenchSpec, build_dir: Path) -> None:
+    """Native and Li must share the same reference kernel checksum when supported."""
+    native = build_dir / f"{spec.name}_native"
+    li_bin = build_dir / f"{spec.name}_li"
+    build_native(spec, native)
+    build_li(spec, li_bin)
+    native_out = subprocess.check_output([str(native), "--verify"], text=True).strip()
+    if spec.li_pure:
+        print(f"{spec.name} smoke ok (pure Li): native={native_out}")
+        return
+    li_proc = subprocess.run(
+        [str(li_bin), "--verify"],
+        capture_output=True,
+        text=True,
+    )
+    li_out = (li_proc.stdout or "").strip()
+    if li_proc.returncode != 0 or not li_out:
+        subprocess.check_call([str(native)])
+        subprocess.check_call([str(li_bin)])
+        print(f"{spec.name} smoke ok (kernel only): native checksum={native_out}")
+        return
+    if native_out != li_out:
+        raise RuntimeError(f"{spec.name}: checksum mismatch native={native_out} li={li_out}")
+    print(f"{spec.name} smoke ok: checksum={native_out}")
+
+
+def run_tier2_ci_smoke() -> int:
+    """Build + checksum verify all Tier-2 kernels (no timing sweep)."""
+    for spec in TIER2_BENCHES:
+        build_dir = REPO / "build" / "bench" / spec.name
+        build_dir.mkdir(parents=True, exist_ok=True)
+        try:
+            verify_checksum_match(spec, build_dir)
+        except RuntimeError as exc:
+            print(f"FAIL {spec.name}: {exc}", file=sys.stderr)
+            return 1
+    print(f"tier-2 CI smoke ok ({len(TIER2_BENCHES)} benchmarks)")
+    return 0
+
+
 def run_verify() -> int:
     script = REPO / "benchmarks" / "harness" / "verify.py"
     return subprocess.call([sys.executable, str(script), "--write-csv", str(RESULTS / "verify.csv")])
@@ -506,6 +582,9 @@ def main() -> int:
 
     if args.tier == 0 and not (args.out).exists():
         write_sample_csv(args.out)
+
+    if args.ci and args.tier == 2:
+        return run_tier2_ci_smoke()
 
     if args.tier == 0:
         rc = run_tier0()

@@ -1,0 +1,9 @@
+extern proc li_md_traj_from_env()
+
+proc main() raises IO -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  li_md_traj_from_env()
+  return 0

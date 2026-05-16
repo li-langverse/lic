@@ -10,4 +10,5 @@ if [[ ! -x "$LIC" ]]; then
 fi
 
 python3 "$ROOT/benchmarks/harness/bench.py" --tier 1 --runs 1 --skip-verify
+python3 "$ROOT/benchmarks/harness/bench.py" --tier 2 --ci
 echo "ci-bench: ok"

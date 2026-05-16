@@ -1,9 +1,18 @@
-extern proc li_simd_dot_kernel()
+# Pure-Li SIMD micro-kernel (exercises simd[f64,4] + intrinsics); no LI_EXTRA_C.
 
-proc main() raises IO -> int
+proc main() -> int
   requires true
   ensures result == 0
   decreases 0
 =
-  li_simd_dot_kernel()
+  var x: float = 0.001
+  var acc: float = 0.0
+  var i: int = 0
+  while i < 10000000
+    var v: simd[f64, 4] = __li_simd_splat_f64(x)
+    var w: simd[f64, 4] = __li_simd_splat_f64(x)
+    var p: simd[f64, 4] = __li_simd_mul_f64(v, w)
+    acc = acc + __li_horiz_sum_f64(p)
+    x = x + 0.000001
+    i = i + 1
   return 0

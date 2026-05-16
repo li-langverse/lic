@@ -12,7 +12,7 @@ namespace {
 
 enum class TyKind {
   Int, Int64, Float, Bool, Str, Array, List, Dict, Tuple, TypedDict, Enum, Named, TypeVar,
-  Protocol, Callable
+  Protocol, Callable, Simd
 };
 
 struct Ty;
@@ -29,6 +29,7 @@ struct Ty {
   std::vector<std::pair<std::string, TyPtr>> fields;
   bool tuple_variadic = false;
   std::vector<std::string> enum_variants;
+  std::int64_t simd_lanes = 0;
 };
 
 TyPtr make_int() { return std::make_shared<Ty>(Ty{TyKind::Int}); }
@@ -126,6 +127,9 @@ struct Ctx {
     }
     if (a->kind == TyKind::Array) {
       return a->array_size == b->array_size && same_kind(a->elem, b->elem);
+    }
+    if (a->kind == TyKind::Simd) {
+      return a->simd_lanes == b->simd_lanes && same_kind(a->elem, b->elem);
     }
     if (a->kind == TyKind::List || a->kind == TyKind::Dict || a->kind == TyKind::Tuple) {
       if (a->tuple_variadic != b->tuple_variadic) {
@@ -286,6 +290,34 @@ struct Ctx {
       return t;
     }
     if (te.kind == TypeKind::TypeApp) {
+      if (te.name == "simd") {
+        if (te.type_args.empty()) {
+          diags.error(loc(te.span), "simd requires element type and lane count");
+          return make_float();
+        }
+        std::int64_t lanes = te.array_size;
+        if (lanes <= 0 && te.type_args.size() >= 2) {
+          if (te.type_args[1]->kind == TypeKind::Named && !te.type_args[1]->name.empty()) {
+            try {
+              lanes = std::stoll(te.type_args[1]->name);
+            } catch (...) {
+              lanes = 0;
+            }
+          }
+        }
+        if (lanes != 4 && lanes != 8) {
+          diags.error(loc(te.span), "simd lane count must be 4 or 8 in v1");
+          return make_float();
+        }
+        auto t = std::make_shared<Ty>();
+        t->kind = TyKind::Simd;
+        t->simd_lanes = lanes;
+        t->elem = resolve_type_expr(*te.type_args[0]);
+        if (t->elem->kind != TyKind::Float) {
+          diags.error(loc(te.span), "simd element type must be f64/float in v1");
+        }
+        return t;
+      }
       if (te.name == "list" || te.name == "dict" || te.name == "tuple") {
         return resolve_builtin_collection(te);
       }
@@ -395,6 +427,10 @@ struct Ctx {
           if (l->kind == TyKind::Float && r->kind == TyKind::Float) {
             return make_float();
           }
+          if (l->kind == TyKind::Simd && r->kind == TyKind::Simd &&
+              l->simd_lanes == r->simd_lanes) {
+            return l;
+          }
           diags.error(loc(e.span),
                       "cannot mix int and float in arithmetic without explicit cast");
           return make_int();
@@ -402,6 +438,39 @@ struct Ctx {
         return make_bool();
       }
       case Expr::Kind::Call: {
+        if (e.ident == "__li_simd_splat_f64") {
+          if (e.args.size() != 1) {
+            diags.error(loc(e.span), "__li_simd_splat_f64 expects one argument");
+            return make_float();
+          }
+          auto simd_ty = std::make_shared<Ty>();
+          simd_ty->kind = TyKind::Simd;
+          simd_ty->simd_lanes = 4;
+          simd_ty->elem = make_float();
+          (void)type_of(*e.args[0]);
+          return simd_ty;
+        }
+        if (e.ident == "__li_simd_mul_f64" || e.ident == "__li_simd_add_f64") {
+          if (e.args.size() != 2) {
+            diags.error(loc(e.span), e.ident + " expects two arguments");
+            return make_float();
+          }
+          auto simd_ty = std::make_shared<Ty>();
+          simd_ty->kind = TyKind::Simd;
+          simd_ty->simd_lanes = 4;
+          simd_ty->elem = make_float();
+          (void)type_of(*e.args[0]);
+          (void)type_of(*e.args[1]);
+          return simd_ty;
+        }
+        if (e.ident == "__li_horiz_sum_f64") {
+          if (e.args.size() != 1) {
+            diags.error(loc(e.span), "__li_horiz_sum_f64 expects one argument");
+            return make_float();
+          }
+          (void)type_of(*e.args[0]);
+          return make_float();
+        }
         if (e.ident == "echo") {
           if (e.args.size() != 1) {
             diags.error(loc(e.span), "echo expects one argument");

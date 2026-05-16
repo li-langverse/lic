@@ -76,7 +76,7 @@ struct Contract {
 };
 
 struct Stmt {
-  enum class Kind { Return, If, While, Expr, VarDecl, Borrow, Assign };
+  enum class Kind { Return, If, While, ParallelFor, Expr, VarDecl, Borrow, Assign };
   Kind kind = Kind::Return;
   Span span;
   std::unique_ptr<Expr> expr;
@@ -88,6 +88,12 @@ struct Stmt {
   TypeExpr var_type;
   std::unique_ptr<Expr> init;
   bool borrow_mut = false;
+  // parallel for i in start..<end
+  std::string par_iter;
+  std::int64_t par_start = 0;
+  std::int64_t par_end = 0;
+  std::vector<Contract> par_contracts;
+  std::vector<Stmt> par_body;
 };
 
 struct ProcDecl {

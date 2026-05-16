@@ -1,4 +1,5 @@
 /build/
+build-fuzz/
 .venv-plot/
 .venv-docs/
 site/
@@ -11,7 +12,9 @@ __pycache__/
 # Benchmark / plot artifacts (regenerated locally)
 benchmarks/results/**/*.csv
 benchmarks/results/share/*.png
-benchmarks/results/md_lennard_jones/energy_*.csv
+benchmarks/results/share/*.gif
+benchmarks/results/md_lennard_jones/traj_*.txt
+benchmarks/results/md_lennard_jones/*.csv
 build/bench/
 
 compile_commands.json

@@ -3,6 +3,7 @@
 #
 # Usage:
 #   ./scripts/local-ci.sh              # native (macOS or Linux)
+#   ./scripts/local-ci.sh --memory       # after ci.sh: leak/RSS + security corpus
 #   ./scripts/local-ci.sh --docker     # Ubuntu 24.04 container (closest to GHA linux job)
 #
 # Exits non-zero on the same failures as scripts/ci.sh.
@@ -10,15 +11,17 @@ set -euo pipefail
 
 ROOT="$(cd "$(dirname "$0")/.." && pwd)"
 USE_DOCKER=0
+RUN_MEMORY=0
 for arg in "$@"; do
   case "$arg" in
     --docker) USE_DOCKER=1 ;;
+    --memory) RUN_MEMORY=1 ;;
     -h|--help)
-      sed -n '2,10p' "$0"
+      sed -n '2,12p' "$0"
       exit 0
       ;;
     *)
-      echo "unknown arg: $arg (try --docker or --help)" >&2
+      echo "unknown arg: $arg (try --docker, --memory, or --help)" >&2
       exit 2
       ;;
   esac
@@ -121,4 +124,8 @@ chmod +x "$ROOT/scripts/ci.sh" "$ROOT/scripts/build.sh" "$ROOT/scripts/check-ver
 "$ROOT/scripts/check-version.sh"
 "$ROOT/scripts/ci.sh"
 "$ROOT/scripts/check-version.sh" --build
+if [[ "$RUN_MEMORY" -eq 1 ]]; then
+  chmod +x "$ROOT/scripts/memory-ci.sh"
+  "$ROOT/scripts/memory-ci.sh"
+fi
 echo "local-ci: ok (native)"

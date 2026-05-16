@@ -58,5 +58,7 @@ Fails if any manifest entry mismatches expected outcome.
 
 ## Related docs
 
+- [Tests overview](../docs/testing/overview.md) — full suite list + CI  
+- [Security audits](../docs/testing/security.md) — fuzz, malformed input, race exploits  
 - [Language design spec](../docs/superpowers/specs/2026-05-14-li-language-design.md)  
 - [Benchmarks plan](../docs/superpowers/plans/2026-05-14-benchmarks-and-simulations.md)  

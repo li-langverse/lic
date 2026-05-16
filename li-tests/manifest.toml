@@ -290,3 +290,32 @@ suite = "integration"
 file = "../bootstrap/lic/main.li"
 outcome = "verify_ok"
 note = "Li bootstrap compiler built by C++ lic"
+
+# --- parallel_codegen ---
+
+[[tests]]
+suite = "parallel_codegen"
+file = "parallel_codegen/parallel_float_zero.li"
+outcome = "verify_ok"
+
+[[tests]]
+suite = "parallel_codegen"
+file = "parallel_codegen/three_float_arrays_12.li"
+outcome = "verify_ok"
+
+# --- simd (native vector types) ---
+
+[[tests]]
+suite = "simd"
+file = "simd/simd_type_ok.li"
+outcome = "verify_ok"
+
+[[tests]]
+suite = "simd"
+file = "simd/bad_lanes.li"
+outcome = "compile_fail"
+expected_substr = "lane"
+
+# --- security (malformed inputs; run via ./li-tests/run_security.sh) ---
+# Wired in scripts/ci.sh: parse/check must exit 0/1, never signal (SIGSEGV etc.).
+# Also: compiler/fuzz/parse_fuzz (libFuzzer, optional CI on Linux).

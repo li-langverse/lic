@@ -20,6 +20,8 @@ enum class MirOp {
   ArrayAlloc,
   ArrayStoreInt,
   ArrayLoadInt,
+  ArrayStoreFloat,
+  ArrayLoadFloat,
   LocalAllocInt,
   LocalAllocI64,
   StoreInt,
@@ -29,6 +31,13 @@ enum class MirOp {
   BinOpInt,
   BinOpFloat,
   LocalAllocFloat,
+  LocalAllocSimdF64,
+  SimdSplatF64,
+  SimdMulF64,
+  SimdAddF64,
+  SimdHorizSumF64,
+  SimdCopyF64,
+  OmpParallelFor,
   Label,
   Jump,
   BranchIfZero,
@@ -62,6 +71,8 @@ struct MirInsn {
   bool lhs_is_literal = false;
   std::int64_t lhs_int = 0;
   bool is_i64 = false;
+  bool array_is_float = false;
+  std::int64_t simd_lanes = 0;
   std::vector<MirArg> args;
 };
 
@@ -70,6 +81,8 @@ struct MirParam {
   bool is_float = false;
   bool is_string = false;
   bool is_i64 = false;
+  bool is_simd_f64 = false;
+  std::int64_t simd_lanes = 0;
 };
 
 struct MirFn {
@@ -83,6 +96,7 @@ struct MirFn {
 
 struct MirModule {
   std::vector<MirFn> functions;
+  bool uses_openmp = false;
 };
 
 MirModule lower_to_mir(const Module& module);

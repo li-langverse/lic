@@ -27,6 +27,7 @@
 | 5 | Tetris | `2026-05-14-phase-05-tetris.md` | playable game |
 | 5b | Benchmarks & sims | `2026-05-14-benchmarks-and-simulations.md` | **Verified** Tier 2 physics + cross-lang CSV + **X plots** |
 | 6 | Self-host (post-live) | `2026-05-14-phase-06-self-host.md` | `lic` built by li (bootstrap seed) |
+| 7 | Native HPC (SIMD + OpenMP) | `2026-05-14-phase-07-native-hpc.md` | Pure-Li simd_dot + md; race suite; fuzz daily |
 | **H** | **li-httpd** (proved agent gateway) | `2026-05-16-li-httpd-plan.md` | After **2e–2f**; M1 HTTP + proxy + bench/exploit harness |
 
 **Old 2-week schedule is void.** Type parity alone is ~6 months part-time.
@@ -74,3 +75,4 @@
 - [x] Phase 5 — Tetris
 - [x] Phase 5b — Benchmarks & simulations (harness + **X plots** skeleton on `dev`)
 - [x] Phase 6 — Self-host (bootstrap seed: `bootstrap/lic/main.li` → `build/lic-from-li`)
+- [ ] Phase 7 — Native HPC (`simd`, `parallel for`, OpenMP, pure Tier 1/2 li benches)

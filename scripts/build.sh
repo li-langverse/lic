@@ -8,6 +8,9 @@ fi
 if [[ -z "$LLVM_DIR" && -d /usr/lib/llvm-18/lib/cmake/llvm ]]; then
   LLVM_DIR=/usr/lib/llvm-18/lib/cmake/llvm
 fi
+if [[ -z "$LLVM_DIR" && -d "/c/Program Files/LLVM/lib/cmake/llvm" ]]; then
+  LLVM_DIR="/c/Program Files/LLVM/lib/cmake/llvm"
+fi
 if [[ -z "$LLVM_DIR" ]]; then
   echo "Set LLVM_DIR to LLVM 18 CMake package (e.g. \$(brew --prefix llvm@18)/lib/cmake/llvm)" >&2
   exit 1

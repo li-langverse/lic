@@ -4,7 +4,13 @@ set -euo pipefail
 
 ROOT="$(cd "$(dirname "$0")" && pwd)"
 REPO="$(cd "$ROOT/.." && pwd)"
-LIC="${LIC:-$REPO/build/compiler/lic/lic}"
+if [[ -z "${LIC:-}" ]]; then
+  LIC="$("$REPO/scripts/resolve-lic.sh")"
+fi
+NULL_OUT="/dev/null"
+case "$(uname -s)" in
+  MINGW*|MSYS*|CYGWIN*) NULL_OUT="NUL" ;;
+esac
 FILTER="${1:-all}"
 CI="${CI:-false}"
 
@@ -59,7 +65,7 @@ run_one() {
       fi
       ;;
     compile_ok|verify_ok)
-      if "$LIC" build "$path" -o /dev/null 2>/dev/null; then
+      if "$LIC" build "$path" -o "$NULL_OUT" 2>/dev/null; then
         echo "PASS $outcome $file"
         pass=$((pass + 1))
       else
@@ -69,8 +75,8 @@ run_one() {
       ;;
     compile_fail|verify_fail)
       local err
-      err="$("$LIC" build "$path" -o /dev/null 2>&1)" || true
-      if "$LIC" build "$path" -o /dev/null 2>/dev/null; then
+      err="$("$LIC" build "$path" -o "$NULL_OUT" 2>&1)" || true
+      if "$LIC" build "$path" -o "$NULL_OUT" 2>/dev/null; then
         echo "FAIL $outcome $file (should reject)"
         fail=$((fail + 1))
       elif [[ -n "$substr" ]] && ! echo "$err" | grep -qi "$substr"; then

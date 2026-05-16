@@ -1,0 +1,39 @@
+# Optional memory + security smoke (Linux). Does not gate default CI on macOS.
+name: Memory
+
+on:
+  pull_request:
+    branches: [main, dev]
+  workflow_dispatch:
+
+concurrency:
+  group: memory-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  memory-linux:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install LLVM 18 and build tools
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y -qq cmake ninja-build clang-18 llvm-18-dev zlib1g-dev libzstd-dev python3 valgrind
+
+      - name: Build lic
+        env:
+          LLVM_DIR: /usr/lib/llvm-18/lib/cmake/llvm
+          CC: clang-18
+          CXX: clang++-18
+        run: |
+          chmod +x scripts/build.sh scripts/memory-ci.sh scripts/profile-memory.sh
+          ./scripts/build.sh
+
+      - name: Memory + security smoke
+        env:
+          LLVM_DIR: /usr/lib/llvm-18/lib/cmake/llvm
+          CC: clang-18
+          CXX: clang++-18
+        run: ./scripts/memory-ci.sh
+

@@ -362,6 +362,18 @@ TypeExpr Parser::parse_type() {
       }
     }
     expect(TokenKind::RBracket, "']'");
+  } else if (name == "simd" && accept(TokenKind::LBracket)) {
+    ty.kind = TypeKind::TypeApp;
+    ty.name = "simd";
+    ty.type_args.push_back(std::make_unique<TypeExpr>(parse_type()));
+    expect(TokenKind::Comma, "','");
+    if (at(TokenKind::IntLit)) {
+      ty.array_size = cur().int_value;
+      i++;
+    } else {
+      ty.type_args.push_back(std::make_unique<TypeExpr>(parse_type()));
+    }
+    expect(TokenKind::RBracket, "']'");
   } else {
     ty.kind = TypeKind::Named;
     ty.name = name;
@@ -511,9 +523,40 @@ Stmt Parser::parse_stmt() {
     return s;
   }
   if (at(TokenKind::Ident) && cur().text == "parallel") {
-    s.kind = Stmt::Kind::Expr;
-    s.span = {cur().start, cur().end};
-    while (!at(TokenKind::Eof) && !at(TokenKind::Newline)) {
+    const Token start_tok = cur();
+    i++;
+    if (!at(TokenKind::Ident) || cur().text != "for") {
+      diags.error({file, start_tok.line, 1, start_tok.start},
+                  "expected 'for' after 'parallel'");
+    } else {
+      i++;
+    }
+    s.kind = Stmt::Kind::ParallelFor;
+    if (!at(TokenKind::Ident)) {
+      diags.error({file, start_tok.line, 1, start_tok.start},
+                  "expected loop variable");
+    } else {
+      s.par_iter = std::string(cur().text);
+      i++;
+    }
+    if (!at(TokenKind::Ident) || cur().text != "in") {
+      diags.error({file, start_tok.line, 1, start_tok.start},
+                  "expected 'in' in parallel for");
+    } else {
+      i++;
+    }
+    if (at(TokenKind::IntLit)) {
+      s.par_start = cur().int_value;
+      i++;
+    }
+    if (at(TokenKind::DotDotLt)) {
+      i++;
+    } else {
+      diags.error({file, start_tok.line, 1, start_tok.start},
+                  "parallel for requires '..<' range");
+    }
+    if (at(TokenKind::IntLit)) {
+      s.par_end = cur().int_value;
       i++;
     }
     skip_newlines();
@@ -521,7 +564,7 @@ Stmt Parser::parse_stmt() {
       skip_newlines();
       while (at(TokenKind::KwRequires) || at(TokenKind::KwEnsures) ||
              at(TokenKind::KwDecreases) || at(TokenKind::KwInvariant)) {
-        (void)parse_contract();
+        s.par_contracts.push_back(parse_contract());
       }
       expect(TokenKind::Dedent, "dedent");
       skip_newlines();
@@ -529,9 +572,10 @@ Stmt Parser::parse_stmt() {
     if (accept(TokenKind::Eq)) {
       skip_newlines();
       if (at(TokenKind::Indent)) {
-        parse_block();
+        s.par_body = parse_block();
       }
     }
+    s.span = {start_tok.start, cur().start};
     return s;
   }
   if (at(TokenKind::KwReturn)) {

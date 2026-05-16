@@ -66,6 +66,7 @@ llvm::Value* string_ptr(llvm::IRBuilder<>& builder, llvm::GlobalVariable* gv) {
 struct ArraySlot {
   llvm::AllocaInst* alloca = nullptr;
   std::int64_t size = 0;
+  bool is_float = false;
 };
 
 struct EmitCtx {
@@ -80,8 +81,28 @@ struct EmitCtx {
   std::map<std::string, llvm::AllocaInst*> i64_locals;
   std::map<std::string, llvm::AllocaInst*> ptr_locals;
   std::map<std::string, ArraySlot> arrays;
+  std::map<std::string, llvm::AllocaInst*> simd_f64x4_locals;
   std::unordered_map<std::string, llvm::BasicBlock*> labels;
   int str_counter = 0;
+
+  llvm::Type* vec4_f64() const {
+    return llvm::VectorType::get(llvm::Type::getDoubleTy(context),
+                                 llvm::ElementCount::getFixed(4));
+  }
+
+  llvm::AllocaInst* ensure_simd_f64x4(const std::string& name) {
+    auto it = simd_f64x4_locals.find(name);
+    if (it != simd_f64x4_locals.end()) {
+      return it->second;
+    }
+    llvm::AllocaInst* slot = builder->CreateAlloca(vec4_f64(), nullptr, name);
+    simd_f64x4_locals[name] = slot;
+    return slot;
+  }
+
+  llvm::Value* load_simd_f64x4(const std::string& name) {
+    return builder->CreateLoad(vec4_f64(), ensure_simd_f64x4(name));
+  }
 
   llvm::AllocaInst* ensure_int_local(const std::string& name) {
     auto it = int_locals.find(name);
@@ -393,14 +414,71 @@ struct EmitCtx {
         }
         return true;
       }
-      case MirOp::ArrayAlloc: {
-        llvm::ArrayType* arr_ty =
-            llvm::ArrayType::get(i32_ty(context), static_cast<unsigned>(ins.int_value));
-        llvm::AllocaInst* slot = builder->CreateAlloca(arr_ty, nullptr, ins.ident);
-        arrays[ins.ident] = ArraySlot{slot, ins.int_value};
+      case MirOp::LocalAllocSimdF64:
+        (void)ensure_simd_f64x4(ins.ident);
+        return true;
+      case MirOp::SimdSplatF64: {
+        llvm::Value* scalar = ins.rhs_is_literal
+                                  ? llvm::ConstantFP::get(llvm::Type::getDoubleTy(context),
+                                                          ins.float_value)
+                                  : load_float(ins.rhs_ident);
+        llvm::Value* vec = builder->CreateVectorSplat(4, scalar);
+        builder->CreateStore(vec, ensure_simd_f64x4(ins.ident));
         return true;
       }
-      case MirOp::ArrayStoreInt: {
+      case MirOp::SimdMulF64:
+      case MirOp::SimdAddF64: {
+        llvm::Value* lhs = load_simd_f64x4(ins.lhs_ident);
+        llvm::Value* rhs = load_simd_f64x4(ins.rhs_ident);
+        llvm::Value* result = ins.op == MirOp::SimdMulF64 ? builder->CreateFMul(lhs, rhs)
+                                                          : builder->CreateFAdd(lhs, rhs);
+        builder->CreateStore(result, ensure_simd_f64x4(ins.ident));
+        return true;
+      }
+      case MirOp::SimdHorizSumF64: {
+        llvm::Value* vec = load_simd_f64x4(ins.lhs_ident);
+        llvm::Value* sum = llvm::ConstantFP::get(llvm::Type::getDoubleTy(context), 0.0);
+        for (unsigned i = 0; i < 4; ++i) {
+          llvm::Value* elt = builder->CreateExtractElement(vec, llvm::ConstantInt::get(i32_ty(context), i));
+          sum = builder->CreateFAdd(sum, elt);
+        }
+        builder->CreateStore(sum, ensure_float_local(ins.ident));
+        return true;
+      }
+      case MirOp::SimdCopyF64: {
+        llvm::Value* vec = load_simd_f64x4(ins.rhs_ident);
+        builder->CreateStore(vec, ensure_simd_f64x4(ins.ident));
+        return true;
+      }
+      case MirOp::OmpParallelFor: {
+        llvm::Function* par_fn = module->getFunction(ins.callee);
+        if (!par_fn) {
+          return true;
+        }
+        llvm::FunctionType* iter_ty =
+            llvm::FunctionType::get(llvm::Type::getVoidTy(context), {i64_ty(context)}, false);
+        llvm::FunctionType* omp_ty = llvm::FunctionType::get(
+            llvm::Type::getVoidTy(context),
+            {i64_ty(context), i64_ty(context), iter_ty->getPointerTo()}, false);
+        llvm::FunctionCallee omp_rt =
+            module->getOrInsertFunction("li_omp_parallel_for_i64", omp_ty);
+        builder->CreateCall(
+            omp_rt,
+            {llvm::ConstantInt::get(i64_ty(context), ins.int_value),
+             llvm::ConstantInt::get(i64_ty(context), ins.rhs_int), par_fn});
+        return true;
+      }
+      case MirOp::ArrayAlloc: {
+        llvm::Type* elem_ty = ins.array_is_float ? llvm::Type::getDoubleTy(context)
+                                                 : i32_ty(context);
+        llvm::ArrayType* arr_ty =
+            llvm::ArrayType::get(elem_ty, static_cast<unsigned>(ins.int_value));
+        llvm::AllocaInst* slot = builder->CreateAlloca(arr_ty, nullptr, ins.ident);
+        arrays[ins.ident] = ArraySlot{slot, ins.int_value, ins.array_is_float};
+        return true;
+      }
+      case MirOp::ArrayStoreInt:
+      case MirOp::ArrayStoreFloat: {
         auto it = arrays.find(ins.ident);
         if (it == arrays.end()) {
           return true;
@@ -412,9 +490,17 @@ struct EmitCtx {
         llvm::Value* gep_indices[] = {zero, idx};
         llvm::Value* ptr = builder->CreateInBoundsGEP(
             it->second.alloca->getAllocatedType(), it->second.alloca, gep_indices);
-        llvm::Value* val = ins.rhs_is_literal ? int32_val(*builder, context, ins.rhs_int)
-                                              : load_int(ins.rhs_ident);
-        builder->CreateStore(val, ptr);
+        if (it->second.is_float || ins.op == MirOp::ArrayStoreFloat) {
+          llvm::Value* val =
+              ins.rhs_is_literal
+                  ? llvm::ConstantFP::get(llvm::Type::getDoubleTy(context), ins.float_value)
+                  : load_float(ins.rhs_ident);
+          builder->CreateStore(val, ptr);
+        } else {
+          llvm::Value* val = ins.rhs_is_literal ? int32_val(*builder, context, ins.rhs_int)
+                                                : load_int(ins.rhs_ident);
+          builder->CreateStore(val, ptr);
+        }
         return true;
       }
       case MirOp::ArrayLoadInt: {
@@ -465,6 +551,16 @@ bool emit_llvm_ir(const MirModule& mir, const std::string& out_path, std::string
                               llvm::FunctionType::get(i32_ty(context), {}, false));
   module->getOrInsertFunction("li_rt_argv",
                               llvm::FunctionType::get(i8_ptr(context), {i32_ty(context)}, false));
+  module->getOrInsertFunction("li_rt_sqrt",
+                              llvm::FunctionType::get(llvm::Type::getDoubleTy(context),
+                                                      {llvm::Type::getDoubleTy(context)}, false));
+  module->getOrInsertFunction(
+      "li_omp_parallel_for_i64",
+      llvm::FunctionType::get(llvm::Type::getVoidTy(context),
+                              {i64_ty(context), i64_ty(context),
+                               llvm::PointerType::getUnqual(llvm::FunctionType::get(
+                                   llvm::Type::getVoidTy(context), {i64_ty(context)}, false))},
+                              false));
 
   llvm::Function* user_main = nullptr;
   bool user_main_argv_wrapper = false;
@@ -486,11 +582,19 @@ bool emit_llvm_ir(const MirModule& mir, const std::string& out_path, std::string
       continue;
     }
 
+    const bool is_par_fn = fn.name.rfind("__li_par_", 0) == 0;
     llvm::Type* ret_ty = fn.returns_void ? llvm::Type::getVoidTy(context)
                                          : llvm_scalar(context, fn.returns_float, false);
     std::vector<llvm::Type*> param_tys;
     for (const auto& p : fn.params) {
-      param_tys.push_back(llvm_scalar(context, p.is_float, p.is_i64));
+      if (is_par_fn) {
+        param_tys.push_back(i64_ty(context));
+      } else if (p.is_simd_f64) {
+        param_tys.push_back(llvm::VectorType::get(llvm::Type::getDoubleTy(context),
+                                                  llvm::ElementCount::getFixed(4)));
+      } else {
+        param_tys.push_back(llvm_scalar(context, p.is_float, p.is_i64));
+      }
     }
     llvm::FunctionType* fn_ty = llvm::FunctionType::get(ret_ty, param_tys, false);
     const bool argv_main = fn.name == "main" && fn.params.empty();
@@ -512,7 +616,7 @@ bool emit_llvm_ir(const MirModule& mir, const std::string& out_path, std::string
     for (auto& arg : func->args()) {
       if (idx < fn.params.size()) {
         arg.setName(fn.params[idx].name);
-        if (fn.params[idx].is_i64) {
+        if (is_par_fn || fn.params[idx].is_i64) {
           builder.CreateStore(&arg, ctx.ensure_i64_local(fn.params[idx].name));
         } else if (fn.params[idx].is_float) {
           builder.CreateStore(&arg, ctx.ensure_float_local(fn.params[idx].name));

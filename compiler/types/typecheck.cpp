@@ -465,6 +465,12 @@ struct Ctx {
       case Expr::Kind::StringLit:
         return make_str();
       case Expr::Kind::Ident: {
+        if (e.ident == "true") {
+          return make_bool();
+        }
+        if (e.ident == "false") {
+          return make_bool();
+        }
         const auto it = locals.find(e.ident);
         if (it == locals.end()) {
           diags.error(loc(e.span), "unknown variable '" + e.ident + "'");

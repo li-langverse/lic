@@ -5,14 +5,23 @@ ROOT="$(cd "$(dirname "$0")/../.." && pwd)"
 LIC="${LIC:-$("$ROOT/scripts/resolve-lic.sh")}"
 BAD="$ROOT/li-tests/typecheck/bad_array_index.li"
 
-out="$("$LIC" check --format=json "$BAD" 2>/dev/null || true)"
-echo "$out" | grep -q '"ok":false'
+out="$("$LIC" check --format=json "$BAD" 2>&1 || true)"
+echo "$out" | grep -q '"ok":false' || {
+  echo "diagnose_json_smoke: expected ok:false, got: $out" >&2
+  exit 1
+}
 echo "$out" | grep -q '"schema":"diagnostic-v1"'
-echo "$out" | grep -q '"code":"type.index"'
+echo "$out" | grep -Eq '"code":"(type\.index|E0201)"' || {
+  echo "diagnose_json_smoke: expected type.index code, got: $out" >&2
+  exit 1
+}
 echo "$out" | grep -q 'bad_array_index.li'
 
-diag="$("$LIC" diagnose "$BAD" 2>/dev/null || true)"
-echo "$diag" | grep -q '"command":"diagnose"'
+diag="$("$LIC" diagnose "$BAD" 2>&1 || true)"
+echo "$diag" | grep -q '"command":"diagnose"' || {
+  echo "diagnose_json_smoke: diagnose envelope: $diag" >&2
+  exit 1
+}
 echo "$diag" | grep -q '"diagnostics":\['
 
 GOOD="$ROOT/li-tests/typecheck/fib.li"

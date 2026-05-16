@@ -1,0 +1,64 @@
+# Active agent claims (lic / httpd P0)
+
+**Purpose:** Tell humans and other agents what is in flight so work does not collide.  
+**Canonical policy:** [agent-coordination.md](agent-coordination.md) (roadmap repo).  
+**Local claims file:** `coding-projects/.li-agent-coord.json` (gitignored — update when you start or finish a task).
+
+**Last updated:** 2026-05-16 (Cursor agent — httpd P0 / package promotion)
+
+---
+
+## In progress (do not duplicate)
+
+| Claim ID | Owner | Repo / path | Branch | Scope | Do not touch |
+|----------|-------|-------------|--------|-------|--------------|
+| `httpd-p0-net` | lic agent | `packages/li-net/`, `compiler/*` async/net | `dev` | Trusted TCP `extern` surface, `async`/`await` parse + effects | Same files without coordinating |
+| `httpd-p0-org` | lic agent | `scripts/push-official-package-repo.sh`, org repos | `dev` | Create/push `li-langverse/li-net` (+ std mirrors) | `gh repo delete`, force-push existing package repos |
+| `httpd-p0-docs` | lic agent | `docs/ecosystem/httpd-prerequisites.md`, this file | `dev` | Status tables for P0 gates | Rewriting httpd plan |
+
+**Not claimed here (other repos):**
+
+| Repo | Typical owner | Notes |
+|------|---------------|-------|
+| `lis` | harness / nginx oracle | Tier5 HTTP tests, routing TOML — do not change exploit mitigations without CVE row |
+| `lip` | package manager | Resolver, publish — no compiler changes |
+| `lit` | coverage CLI | Runner only |
+| `roadmap` | human merge | Governance + `official-packages.md` canonical table |
+
+---
+
+## Official package repos (mirror from `lic`)
+
+Monorepo path stays source until **lip** publish; org repo is the **public home** per [governance](../superpowers/plans/2026-05-16-li-ecosystem-governance.md).
+
+| Package | Org repo | PKG id | Monorepo | Push script |
+|---------|----------|--------|----------|-------------|
+| li-net | `li-langverse/li-net` | `PKG-li-net` | `packages/li-net/` | `./scripts/push-official-package-repo.sh li-net --create` |
+| li-std-core | `li-langverse/li-std-core` | `PKG-li-std-core` | `packages/li-std-core/` | same pattern |
+| li-std-math | `li-langverse/li-std-math` | `PKG-li-std-math` | `packages/li-std-math/` | same pattern |
+| li-demo | `li-langverse/li-demo` | `PKG-li-demo` | `packages/li-demo/` | template only |
+
+**Human:** Add rows to [roadmap `official-packages.md`](https://github.com/li-langverse/roadmap/blob/main/docs/ecosystem/official-packages.md) via PR (agents do not merge governance there).
+
+---
+
+## Next compiler work (queued, unclaimed)
+
+1. Async **codegen** stub → state machine / reactor interface (no epoll impl yet).
+2. `li-httpd` package scaffold (`./scripts/li-new-package li-httpd --official --workspace packages`).
+3. HTTP/1 parser slice in `lic` (blocked on 2f for full proof).
+
+To **claim** a row: add an entry under `repos.lic.claims` in `../.li-agent-coord.json` and bump `updated_at`.
+
+---
+
+## Quick commands
+
+```bash
+# Register claim (example)
+# edit ../.li-agent-coord.json — see scripts/templates/.li-agent-coord.json.example
+
+# Push package mirror to org
+set -a && source ../.env.github && set +a
+./scripts/push-official-package-repo.sh li-net --create
+```

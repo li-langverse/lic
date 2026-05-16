@@ -1,5 +1,25 @@
 # li-std-core
 
-In-tree package for prelude-facing standard library pieces. Re-exports land under `std/` until **8a** workspace import is complete.
+Li package li-std-core
 
-Promotion criteria: [docs/ecosystem/official-packages.md](../../docs/ecosystem/official-packages.md).
+## Build
+
+```bash
+lic build src/lib.li -o li-std-core
+```
+
+From the monorepo root, ensure `lic` is built: `./scripts/build.sh`.
+
+## Traceability
+
+| ID | Link |
+|----|------|
+| Package | `PKG-li-std-core` |
+| Org repo | https://github.com/li-langverse/li-std-core |
+| Governance | [Ecosystem governance](https://li-langverse.github.io/li-language/ecosystem/governance/) |
+
+See `PUBLISH.md` and `docs/traceability.md`.
+
+## License
+
+Apache-2.0 OR MIT

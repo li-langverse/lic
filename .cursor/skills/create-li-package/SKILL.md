@@ -54,6 +54,15 @@ git init && git remote add origin git@github.com:li-langverse/<name>.git
 
 Copy `.github/PULL_REQUEST_TEMPLATE.md` from `scripts/templates/github-repo/` if missing.
 
+**Mirror to org** (after local `lic check`):
+
+```bash
+set -a && source ../.env.github && set +a
+./scripts/push-official-package-repo.sh <name> --create
+```
+
+Register in `.github/li-downstream-repos.txt` and [active-agent-claims.md](../../../docs/ecosystem/active-agent-claims.md).
+
 ## Docs to point users to
 
 - [Engineering standards](../../../docs/ecosystem/engineering-standards.md)

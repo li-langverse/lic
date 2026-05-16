@@ -33,8 +33,17 @@ ensure_backup_repo() {
     return 0
   fi
   echo "==> create ${BACKUP_OWNER}/${name} (private mirror)"
-  "$WRAPPER" gh repo create "${BACKUP_OWNER}/${name}" --private \
-    --description "mirror of ${LIVE_ORG}/${name}"
+  if ! "$WRAPPER" gh repo create "${BACKUP_OWNER}/${name}" --private \
+    --description "mirror of ${LIVE_ORG}/${name}" 2>/dev/null; then
+    "$WRAPPER" gh repo view "${BACKUP_OWNER}/${name}" &>/dev/null
+  fi
+}
+
+strip_pull_refs() {
+  local mirror="$1"
+  while IFS= read -r ref; do
+    [[ -n "$ref" ]] && git -C "$mirror" update-ref -d "$ref" 2>/dev/null || true
+  done < <(git -C "$mirror" for-each-ref --format='%(refname)' refs/pull 2>/dev/null || true)
 }
 
 REPOS=()
@@ -69,9 +78,11 @@ for name in "${REPOS[@]}"; do
 
   if [[ "$BACKUP_PUSH" == "1" ]]; then
     ensure_backup_repo "$name"
+    strip_pull_refs "$mirror"
     backup_url="https://github.com/${BACKUP_OWNER}/${name}.git"
-    if ! "$WRAPPER" git -C "$mirror" push --mirror "$backup_url"; then
-      echo "backup-li-langverse-org: push --mirror failed for $name" >&2
+    if ! "$WRAPPER" git -C "$mirror" push --force --prune "$backup_url" \
+      'refs/heads/*:refs/heads/*' 'refs/tags/*:refs/tags/*'; then
+      echo "backup-li-langverse-org: push to backup failed for $name" >&2
       FAIL=1
       continue
     fi

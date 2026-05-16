@@ -15,12 +15,14 @@ diag="$("$LIC" diagnose "$BAD" 2>/dev/null || true)"
 echo "$diag" | grep -q '"command":"diagnose"'
 echo "$diag" | grep -q '"diagnostics":\['
 
-ok="$("$LIC" check --format=json "$ROOT/li-tests/lexer_parser/fib.li" 2>/dev/null)"
+GOOD="$ROOT/li-tests/typecheck/fib.li"
+ok="$("$LIC" check --format=json "$GOOD" 2>/dev/null || true)"
 echo "$ok" | grep -q '"ok":true'
 echo "$ok" | grep -q '"diagnostics":\[\]'
 
 if command -v jq >/dev/null 2>&1; then
-  echo "$out" | "$ROOT/scripts/lic-fix-suggest.sh" >/dev/null || true
+  # lic-fix-suggest exits 1 when diagnostics exist; smoke only checks it runs
+  echo "$out" | "$ROOT/scripts/lic-fix-suggest.sh" >/dev/null 2>&1 || true
 fi
 
 echo "diagnose_json_smoke: ok"

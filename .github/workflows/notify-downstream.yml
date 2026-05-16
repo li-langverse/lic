@@ -14,17 +14,15 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - name: Notify downstream (PAT)
-        if: ${{ secrets.LI_DOWNSTREAM_DISPATCH_TOKEN != '' }}
+      - name: Notify downstream
         env:
-          GH_TOKEN: ${{ secrets.LI_DOWNSTREAM_DISPATCH_TOKEN }}
-          VERSION: ${{ github.event.release.tag_name || github.event.inputs.version }}
-        run: ./.github/scripts/dispatch-upstream-release.sh lic-release
-      - name: Notify downstream (GITHUB_TOKEN fallback)
-        if: ${{ secrets.LI_DOWNSTREAM_DISPATCH_TOKEN == '' }}
-        env:
-          GH_TOKEN: ${{ github.token }}
+          DISPATCH_PAT: ${{ secrets.LI_DOWNSTREAM_DISPATCH_TOKEN }}
           VERSION: ${{ github.event.release.tag_name || github.event.inputs.version }}
         run: |
-          echo "::warning::Set secret LI_DOWNSTREAM_DISPATCH_TOKEN for reliable cross-repo dispatch."
+          if [[ -n "$DISPATCH_PAT" ]]; then
+            export GH_TOKEN="$DISPATCH_PAT"
+          else
+            echo "::warning::Set secret LI_DOWNSTREAM_DISPATCH_TOKEN for reliable cross-repo dispatch."
+            export GH_TOKEN="${{ github.token }}"
+          fi
           ./.github/scripts/dispatch-upstream-release.sh lic-release

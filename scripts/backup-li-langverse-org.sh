@@ -70,7 +70,7 @@ for name in "${REPOS[@]}"; do
   if [[ "$BACKUP_PUSH" == "1" ]]; then
     ensure_backup_repo "$name"
     backup_url="https://github.com/${BACKUP_OWNER}/${name}.git"
-    if ! git -C "$mirror" push --mirror "$backup_url"; then
+    if ! "$WRAPPER" git -C "$mirror" push --mirror "$backup_url"; then
       echo "backup-li-langverse-org: push --mirror failed for $name" >&2
       FAIL=1
       continue

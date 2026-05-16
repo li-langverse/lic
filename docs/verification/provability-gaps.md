@@ -34,8 +34,8 @@ Status legend: **Missing** · **Stub** · **Partial** · **CI only** · **Done**
 
 | ID | Area | Spec / promise | Current state | Phase | How we know |
 |----|------|----------------|---------------|-------|-------------|
-| **G-lean** | Lean 4 gate | `lic build` fails if any VC open | **Partial** — auto `_proved` for `True`, literal `decreases`, MIR-witnessed `ensures`; `sqrt_contract` float VCs open; `contracts_discharge_corpus.sh` | **2f** | `discharge_trivial_lean.sh`, `check-autovc-open-goals.sh` |
-| **G-vc** | VC generation | Contracts → proof obligations | **Partial** — typed `Prop`/`Nat` in `AutoVC.lean`; static witness lowers matching `return` to `True`; non-literal float/index open | **2e** | `vc_emit_lean.cpp`, `discharge_const_lean.sh`, `vc_emit_contracts.sh` |
+| **G-lean** | Lean 4 gate | `lic build` fails if any VC open | **Partial** — auto `_proved` for `True`, literal `decreases`, MIR-witnessed `ensures` (incl. `index_refinement`); `sqrt_contract` float VCs open | **2f** | `contracts_discharge_corpus.sh`, `check-autovc-open-goals.sh` |
+| **G-vc** | VC generation | Contracts → proof obligations | **Partial** — typed `Prop`/`Nat`; static return witness; non-literal float contracts (e.g. `abs` bound) open | **2e** | `vc_emit_lean.cpp`, `discharge_trivial_lean.sh`, `vc_emit_contracts.sh` |
 | **G-par** | `parallel for` safety | Proved iteration independence | **Partial** — AST `check_module_policies` + string exploit patterns in `policy.cpp` | **7b**, **7d-c** | `race_shared_memory`, `decorator_exploits` |
 | **G-stdlib** | Prelude / std seal | User cannot shadow builtin or `std/` names | **Partial** — `check_stdlib_seal` + `resolve_imports` for `std.*` / workspace; cycle detect at load | **4s** | `li-tests/stdlib_seal/`, `li-tests/modules/` |
 | **G-dec** | Execution decorators | Static elaboration; reserved names; no runtime | **Partial** — parse + policy + `MirFn.decorators` tags; prelude table shared | **7d** | `decorator_exploits/`, `decorators/` |

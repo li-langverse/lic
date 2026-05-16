@@ -286,8 +286,8 @@ void emit_contract_def(std::ostream& out, const Module& module, const ProcDecl& 
   }
   out << " : Prop := " << prop << '\n';
 
-  if (prop == "True" && witnessed) {
-    out << "/-! Phase 2f: return expression matches contract (static witness) -/\n";
+  if (prop == "True" && witnessed && c.kind == ContractKind::Ensures) {
+    out << "/-! Phase 2f: return expression matches ensures (static witness) -/\n";
   }
   if (prop == "True") {
     out << "theorem " << name << "_proved";

@@ -10,5 +10,5 @@ rm -f "$AUTOVC"
 "$LIC" build "$SAMPLE" -o /dev/null
 chmod +x "$ROOT/scripts/check-autovc-open-goals.sh"
 "$ROOT/scripts/check-autovc-open-goals.sh" "$AUTOVC"
-grep -q 'Phase 2f: return expression matches contract' "$AUTOVC"
+grep -q 'Phase 2f: return expression matches ensures' "$AUTOVC"
 echo "discharge_const_lean: ok"

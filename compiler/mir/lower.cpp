@@ -48,10 +48,16 @@ std::int64_t simd_lanes_from_type(const TypeExpr& t) {
   return 4;
 }
 
+struct LoopLabels {
+  std::string head;
+  std::string exit;
+};
+
 struct LowerCtx {
   const Module* module = nullptr;
   MirModule* mir = nullptr;
   std::string proc_name;
+  std::vector<LoopLabels>* loop_stack = nullptr;
 };
 std::string fresh_label(const std::string& prefix) {
   return prefix + std::to_string(temp_counter++);
@@ -645,12 +651,70 @@ void lower_stmt(const Stmt& stmt, LowerCtx& ctx, bool returns_float, std::vector
       }
       break;
     }
+    case Stmt::Kind::For: {
+      if (!ctx.loop_stack || stmt.for_iter.empty()) {
+        break;
+      }
+      const std::string head_label = fresh_label("for_head_");
+      const std::string exit_label = fresh_label("for_exit_");
+      MirInsn iter_alloc;
+      iter_alloc.op = MirOp::LocalAllocInt;
+      iter_alloc.ident = stmt.for_iter;
+      out.push_back(std::move(iter_alloc));
+      const std::string end_lit = fresh_temp();
+      MirInsn end_store;
+      end_store.op = MirOp::StoreInt;
+      end_store.ident = end_lit;
+      end_store.rhs_is_literal = true;
+      end_store.rhs_int = stmt.for_end;
+      out.push_back(std::move(end_store));
+      MirInsn init;
+      init.op = MirOp::StoreInt;
+      init.ident = stmt.for_iter;
+      init.rhs_is_literal = true;
+      init.rhs_int = stmt.for_start;
+      out.push_back(std::move(init));
+      ctx.loop_stack->push_back(LoopLabels{head_label, exit_label});
+      push_label(out, head_label);
+      const std::string diff = fresh_temp();
+      MirInsn sub;
+      sub.op = MirOp::BinOpInt;
+      sub.ident = diff;
+      sub.lhs_ident = end_lit;
+      sub.rhs_ident = stmt.for_iter;
+      sub.bin_op = BinOp::Sub;
+      out.push_back(std::move(sub));
+      push_branch_if_zero(out, diff, exit_label);
+      lower_stmts(stmt.for_body, ctx, returns_float, out, float_names, simd_names,
+                  float_array_names);
+      const std::string one_lit = fresh_temp();
+      MirInsn one_store;
+      one_store.op = MirOp::StoreInt;
+      one_store.ident = one_lit;
+      one_store.rhs_is_literal = true;
+      one_store.rhs_int = 1;
+      out.push_back(std::move(one_store));
+      MirInsn inc;
+      inc.op = MirOp::BinOpInt;
+      inc.ident = stmt.for_iter;
+      inc.lhs_ident = stmt.for_iter;
+      inc.rhs_ident = one_lit;
+      inc.bin_op = BinOp::Add;
+      out.push_back(std::move(inc));
+      push_jump(out, head_label);
+      push_label(out, exit_label);
+      ctx.loop_stack->pop_back();
+      break;
+    }
     case Stmt::Kind::While: {
       if (!stmt.cond) {
         break;
       }
       const std::string head_label = fresh_label("while_head_");
       const std::string exit_label = fresh_label("while_exit_");
+      if (ctx.loop_stack) {
+        ctx.loop_stack->push_back(LoopLabels{head_label, exit_label});
+      }
       push_label(out, head_label);
       const std::string cond_tmp =
           lower_expr_to(*stmt.cond, module, out, float_names, simd_names);
@@ -659,8 +723,21 @@ void lower_stmt(const Stmt& stmt, LowerCtx& ctx, bool returns_float, std::vector
                   float_array_names);
       push_jump(out, head_label);
       push_label(out, exit_label);
+      if (ctx.loop_stack) {
+        ctx.loop_stack->pop_back();
+      }
       break;
     }
+    case Stmt::Kind::Break:
+      if (ctx.loop_stack && !ctx.loop_stack->empty()) {
+        push_jump(out, ctx.loop_stack->back().exit);
+      }
+      break;
+    case Stmt::Kind::Continue:
+      if (ctx.loop_stack && !ctx.loop_stack->empty()) {
+        push_jump(out, ctx.loop_stack->back().head);
+      }
+      break;
     case Stmt::Kind::Expr:
       if (stmt.expr && stmt.expr->kind == Expr::Kind::Call) {
         if (stmt.expr->ident == "echo" && !stmt.expr->args.empty()) {
@@ -745,7 +822,8 @@ MirModule lower_to_mir(const Module& module) {
       arr_ctx.float_array_names = &float_array_names;
       g_arr_ctx = &arr_ctx;
       seed_float_params(fn, float_names);
-      LowerCtx ctx{&module, &mir, proc.name};
+      std::vector<LoopLabels> loop_stack;
+      LowerCtx ctx{&module, &mir, proc.name, &loop_stack};
       lower_stmts(proc.body, ctx, fn.returns_float, fn.body, float_names, simd_names,
                   float_array_names);
       if (is_async_fn) {

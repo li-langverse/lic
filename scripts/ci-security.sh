@@ -4,6 +4,8 @@
 set -euo pipefail
 
 ROOT="$(cd "$(dirname "$0")/.." && pwd)"
+# shellcheck source=lib/li-ui.sh
+source "$ROOT/scripts/lib/li-ui.sh"
 
 if [[ -z "${LIC:-}" ]]; then
   LIC="$("$ROOT/scripts/resolve-lic.sh")"
@@ -15,30 +17,30 @@ if [[ ! -x "$LIC" ]]; then
   exit 0
 fi
 
-echo "==> security corpus (no crash on malformed input)"
+li_phase "security corpus"
 chmod +x "$ROOT/li-tests/run_security.sh"
 "$ROOT/li-tests/run_security.sh"
 
-echo "==> stdlib_seal (prelude shadow / duplicate top-level)"
+li_phase "stdlib_seal"
 "$ROOT/li-tests/run_all.sh" stdlib_seal
 
-echo "==> cve_patterns (CWE weakness class rejections)"
+li_phase "cve_patterns"
 "$ROOT/li-tests/run_all.sh" cve_patterns
 
-echo "==> CVE catalog coverage (all CWE rows in pinned catalog)"
+li_phase "CVE catalog coverage"
 chmod +x "$ROOT/scripts/check-cve-coverage.sh"
 "$ROOT/scripts/check-cve-coverage.sh"
 
-echo "==> historic bug registry (Heartbleed, Shellshock, Ariane 5, Firefly OS, …)"
+li_phase "historic bug registry"
 chmod +x "$ROOT/scripts/check-historic-bugs.sh"
 "$ROOT/scripts/check-historic-bugs.sh"
 
-echo "==> webserver vulnerability registry (smuggling, SSRF, traversal, …)"
+li_phase "webserver vulnerability registry"
 chmod +x "$ROOT/scripts/check-webserver-bugs.sh"
 "$ROOT/scripts/check-webserver-bugs.sh"
 
-echo "==> codegen path injection (CWE-78 / CWE-88)"
+li_phase "codegen path injection"
 chmod +x "$ROOT/li-tests/security/codegen_path_injection.sh"
 "$ROOT/li-tests/security/codegen_path_injection.sh"
 
-echo "ci-security: ok ($(uname -s 2>/dev/null || echo unknown))"
+li_gate_ok "security ($(uname -s 2>/dev/null || echo unknown))"

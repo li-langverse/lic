@@ -64,6 +64,7 @@ struct Parser {
   Stmt parse_stmt();
   ProcDecl parse_proc(bool is_extern = false);
   TypeAlias parse_type_alias();
+  ErrorDecl parse_error_decl();
   ImportDecl parse_import();
   bool accept_proc_kw() {
     if (at(TokenKind::KwProc) || at(TokenKind::KwDef)) {
@@ -107,6 +108,9 @@ struct Parser {
         skip_newlines();
       } else if (at(TokenKind::KwType)) {
         out.types.push_back(parse_type_alias());
+        skip_newlines();
+      } else if (at(TokenKind::KwError)) {
+        out.errors.push_back(parse_error_decl());
         skip_newlines();
       } else {
         diags.error(loc(cur()), "expected top-level declaration");
@@ -741,6 +745,58 @@ Stmt Parser::parse_stmt() {
     skip_newlines();
     return s;
   }
+  if (at(TokenKind::KwBreak)) {
+    const Token t = cur();
+    s.kind = Stmt::Kind::Break;
+    s.span = {t.start, t.end};
+    i++;
+    skip_newlines();
+    return s;
+  }
+  if (at(TokenKind::KwContinue)) {
+    const Token t = cur();
+    s.kind = Stmt::Kind::Continue;
+    s.span = {t.start, t.end};
+    i++;
+    skip_newlines();
+    return s;
+  }
+  if (at(TokenKind::KwFor)) {
+    const Token start_tok = cur();
+    s.kind = Stmt::Kind::For;
+    i++;
+    if (!at(TokenKind::Ident)) {
+      diags.error({file, start_tok.line, 1, start_tok.start}, "expected loop variable after 'for'");
+    } else {
+      s.for_iter = std::string(cur().text);
+      i++;
+    }
+    if (!at(TokenKind::Ident) || cur().text != "in") {
+      diags.error({file, start_tok.line, 1, start_tok.start}, "expected 'in' in for loop");
+    } else {
+      i++;
+    }
+    if (at(TokenKind::IntLit)) {
+      s.for_start = cur().int_value;
+      i++;
+    }
+    if (at(TokenKind::DotDotLt)) {
+      i++;
+    } else {
+      diags.error({file, start_tok.line, 1, start_tok.start}, "for loop requires '..<' range");
+    }
+    if (at(TokenKind::IntLit)) {
+      s.for_end = cur().int_value;
+      i++;
+    }
+    if (at(TokenKind::Colon)) {
+      i++;
+    }
+    skip_newlines();
+    s.for_body = parse_block();
+    s.span = {start_tok.start, cur().start};
+    return s;
+  }
   if (at(TokenKind::KwWhile)) {
     const Token t = cur();
     s.kind = Stmt::Kind::While;
@@ -901,6 +957,28 @@ ProcDecl Parser::parse_proc(bool is_extern) {
   skip_newlines();
   proc.body = parse_block();
   return proc;
+}
+
+ErrorDecl Parser::parse_error_decl() {
+  ErrorDecl err;
+  const Token kw = cur();
+  err.span = {kw.start, kw.end};
+  i++;
+  if (!at(TokenKind::Ident)) {
+    diags.error(loc(cur()), "expected error type name after 'error'");
+    return err;
+  }
+  err.name = std::string(cur().text);
+  i++;
+  expect(TokenKind::Colon, "':'");
+  if (!at(TokenKind::StringLit)) {
+    diags.error(loc(cur()), "expected string message template after error name");
+    return err;
+  }
+  err.message_template = std::string(cur().text);
+  err.span.end = cur().end;
+  i++;
+  return err;
 }
 
 TypeAlias Parser::parse_type_alias() {

@@ -108,7 +108,19 @@ struct Decorator {
 };
 
 struct Stmt {
-  enum class Kind { Return, If, While, ParallelFor, Expr, VarDecl, Borrow, Assign };
+  enum class Kind {
+    Return,
+    If,
+    While,
+    For,
+    ParallelFor,
+    Break,
+    Continue,
+    Expr,
+    VarDecl,
+    Borrow,
+    Assign,
+  };
   Kind kind = Kind::Return;
   Span span;
   std::unique_ptr<Expr> expr;
@@ -120,6 +132,12 @@ struct Stmt {
   TypeExpr var_type;
   std::unique_ptr<Expr> init;
   bool borrow_mut = false;
+  // for i in start..<end  (serial)
+  std::string for_iter;
+  std::int64_t for_start = 0;
+  std::int64_t for_end = 0;
+  std::vector<Contract> for_contracts;
+  std::vector<Stmt> for_body;
   // parallel for i in start..<end
   std::string par_iter;
   std::int64_t par_start = 0;
@@ -127,6 +145,12 @@ struct Stmt {
   std::vector<Contract> par_contracts;
   std::vector<Stmt> par_body;
   std::vector<Decorator> decorators;
+};
+
+struct ErrorDecl {
+  Span span;
+  std::string name;
+  std::string message_template;
 };
 
 struct ProcDecl {
@@ -156,6 +180,7 @@ struct TypeAlias {
 struct Module {
   std::vector<ImportDecl> imports;
   std::vector<TypeAlias> types;
+  std::vector<ErrorDecl> errors;
   std::vector<ProcDecl> procs;
 };
 

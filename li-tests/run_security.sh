@@ -4,6 +4,8 @@ set -euo pipefail
 
 ROOT="$(cd "$(dirname "$0")" && pwd)"
 REPO="$(cd "$ROOT/.." && pwd)"
+# shellcheck source=../scripts/lib/li-ui.sh
+source "$REPO/scripts/lib/li-ui.sh"
 if [[ -z "${LIC:-}" ]]; then
   LIC="$("$REPO/scripts/resolve-lic.sh")"
 fi
@@ -29,17 +31,17 @@ run_no_crash() {
     out="$("$@" 2>&1)" && rc=0 || rc=$?
   fi
   if (( rc > 128 )); then
-    echo "FAIL $label (signal exit $rc)"
+    li_test_fail "$label (signal exit $rc)"
     echo "$out" | head -20
     fail=$((fail + 1))
     return
   fi
   if (( rc == 124 )); then
-    echo "FAIL $label (timeout ${TIMEOUT_SEC}s)"
+    li_test_fail "$label (timeout ${TIMEOUT_SEC}s)"
     fail=$((fail + 1))
     return
   fi
-  echo "PASS $label (exit $rc)"
+  li_test_pass "$label (exit $rc)"
   pass=$((pass + 1))
 }
 
@@ -58,4 +60,5 @@ run_no_crash "parse huge_comment" "$LIC" parse "$tmp"
 run_no_crash "check huge_comment" "$LIC" check "$tmp"
 
 echo "--- run_security: pass=$pass fail=$fail"
+li_tests_footer "$pass" "$fail" 0
 [[ "$fail" -eq 0 ]]

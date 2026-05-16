@@ -1,17 +1,23 @@
 # Li Language Design Spec
 
+> **Strict by default:** Proof, security, and performance gates are always on at maximum. There is **no optional provability** — only explicit downgrades in `li.toml` or documented env. Policy: [Strict by default](../../ecosystem/strict-by-default.md). Contracts below are **mandatory**, not opt-in.
+
 **Date:** 2026-05-14 (rev. 5)  
 **Status:** Planning  
 **Milestone:** Tetris + proved physics kernels — **unproved code does not compile**
 **License:** Apache-2.0 OR MIT (open source)
 
-> **Implementation status:** Normative **target**. For what `lic` proves **today**, see [Provability gaps](../../verification/provability-gaps.md).
+> **Implementation status:** Normative **target**. For what `lic` proves **today**, see [Provability gaps](../../verification/provability-gaps.md). Gaps are **compiler maturity**, not a user toggle to disable proof.
 
 ## Vision
 
 Li is an **open-source**, **compiled**, Nim-syntax language for HPC and scientific computing. Its reason to exist is **mathematical provability**: every shipped program is a theorem the **Lean 4 kernel** accepts — not a program we merely tested or type-checked.
 
 **Easy syntax** and **fast execution** are co-equal product goals, but **neither may weaken the proof gate**. If a feature cannot be made provable, it does not ship in user code.
+
+## Composability (ecosystem principle)
+
+Substantial features (HTTP gateway, benchmark harness, package tooling) ship as **small, importable APIs** — `serve`, `stop`, `ready` (or domain-equivalent verbs) — in `src/lib.li`, not only as monolithic `main` binaries. Other Li programs and agents compose services by `import` without copy-paste. Composability does **not** relax the proof gate: exported lifecycle `proc`s still require contracts and `lic build` discharge. See [composable-by-default.md](../../ecosystem/composable-by-default.md).
 
 ## The three pillars (priority order)
 

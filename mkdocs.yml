@@ -25,7 +25,7 @@ theme:
         icon: material/brightness-7
         name: Dark mode
   font:
-    text: Inter
+    text: Space Grotesk
     code: JetBrains Mono
   features:
     - navigation.instant
@@ -72,6 +72,7 @@ markdown_extensions:
       custom_checkbox: true
 
 extra_css:
+  - stylesheets/fonts.css
   - stylesheets/extra.css
 
 extra:
@@ -94,6 +95,7 @@ nav:
       - Canonical docs (roadmap repo): https://github.com/li-langverse/roadmap/tree/main/docs/ecosystem
       - Agent-kit adoption: ecosystem/ADOPTION.md
       - Governance: ecosystem/governance.md
+      - Strict by default: ecosystem/strict-by-default.md
       - Engineering standards: ecosystem/engineering-standards.md
       - Vision and roadmap: ecosystem/vision-and-roadmap.md
       - Agent coordination: ecosystem/agent-coordination.md
@@ -102,6 +104,7 @@ nav:
       - Official packages: ecosystem/official-packages.md
       - HTTPd prerequisites: ecosystem/httpd-prerequisites.md
   - Language handbook:
+      - li.toml manifest: language/li-toml.md
       - Overview: language/overview.md
       - Types and data: language/types-and-data.md
       - Numerics: language/numerics.md

@@ -1,5 +1,7 @@
 #include "li/borrowck.hpp"
 
+#include "li/error_codes.hpp"
+
 #include <map>
 #include <set>
 #include <string>
@@ -31,11 +33,15 @@ struct BorrowCtx {
       return;
     }
     if (it->second.moved) {
-      diags.error(loc(span), "use after move of `" + name + "`");
+      diag_error(diags, loc(span), ErrorCode::E0311,
+                 "Variable `" + name + "` was moved and cannot be used again.",
+                 "Use the new owner, or borrow before the move if you need shared access.");
       return;
     }
     if (it->second.mut_borrows > 0) {
-      diags.error(loc(span), "cannot use `" + name + "` while mut borrow is active");
+      diag_error(diags, loc(span), ErrorCode::E0310,
+                 "Cannot read `" + name + "` while a mutable borrow is still active.",
+                 "End the `borrow mut` scope (or drop the binding) before using the value.");
     }
   }
 
@@ -116,12 +122,17 @@ struct BorrowCtx {
     auto& state = locals[src];
     if (s.borrow_mut) {
       if (state.mut_borrows > 0 || state.imm_borrows > 0) {
-        diags.error(loc(s.span), "cannot borrow mut while existing borrow of `" + src + "` is active");
+        diag_error(diags, loc(s.span), ErrorCode::E0310,
+                   "Cannot take `borrow mut` of `" + src +
+                       "` while another borrow is still active.",
+                   "Wait until existing `borrow` / `borrow mut` bindings go out of scope.");
       }
       state.mut_borrows++;
     } else {
       if (state.mut_borrows > 0) {
-        diags.error(loc(s.span), "cannot borrow imm while mut borrow of `" + src + "` is active");
+        diag_error(diags, loc(s.span), ErrorCode::E0310,
+                   "Cannot take `borrow imm` of `" + src + "` while a mutable borrow is active.",
+                   "Release the `borrow mut` binding first.");
       }
       state.imm_borrows++;
     }
@@ -303,6 +314,11 @@ bool stmt_has_await(const Stmt& s) {
     }
   }
   for (const auto& child : s.while_body) {
+    if (stmt_has_await(child)) {
+      return true;
+    }
+  }
+  for (const auto& child : s.for_body) {
     if (stmt_has_await(child)) {
       return true;
     }

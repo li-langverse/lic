@@ -44,6 +44,10 @@ TokenKind Lexer::keyword_kind(std::string_view text) const {
   if (text == "else") return TokenKind::KwElse;
   if (text == "elif") return TokenKind::KwElif;
   if (text == "while") return TokenKind::KwWhile;
+  if (text == "for") return TokenKind::KwFor;
+  if (text == "break") return TokenKind::KwBreak;
+  if (text == "continue") return TokenKind::KwContinue;
+  if (text == "error") return TokenKind::KwError;
   if (text == "return") return TokenKind::KwReturn;
   if (text == "raises") return TokenKind::KwRaises;
   if (text == "echo") return TokenKind::KwEcho;

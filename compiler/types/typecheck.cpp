@@ -1,6 +1,7 @@
 #include "li/typecheck.hpp"
 
 #include "li/borrowck.hpp"
+#include "li/error_codes.hpp"
 
 #include <map>
 #include <memory>
@@ -71,6 +72,7 @@ struct Ctx {
   std::map<std::string, TyPtr> type_vars;
   std::set<std::string> refined_index_params;
   std::set<std::string> loop_index_vars;
+  int loop_depth = 0;
   bool in_async = false;
   DiagnosticBag& diags;
   std::string file;
@@ -437,7 +439,9 @@ struct Ctx {
         return t;
       }
       if (te.name == "Any") {
-        diags.error(loc(te.span), "type 'Any' is forbidden");
+        diag_error(diags, loc(te.span), ErrorCode::E0340,
+                   "The type `Any` is not allowed in Li — every value must be provably typed.",
+                   "Replace `Any` with a concrete type or a generic parameter `T`.");
         return make_int();
       }
       if (te.name == "unit") {
@@ -626,7 +630,10 @@ struct Ctx {
         if (e.index->kind == Expr::Kind::IntLit) {
           const auto i = e.index->int_value;
           if (i < 0 || i >= base->array_size) {
-            diags.error(loc(e.span), "array index out of range");
+            diag_error(diags, loc(e.span), ErrorCode::E0201,
+                       "This index is outside the array — the program cannot prove it is safe.",
+                       "Use a constant index, a refinement-typed loop variable, or narrow the "
+                       "index with a `requires` proof.");
           }
         } else if (e.index->kind == Expr::Kind::Ident) {
           if (refined_index_params.count(e.index->ident) > 0 ||
@@ -706,8 +713,25 @@ struct Ctx {
       }
       return;
     }
+    if (s.kind == Stmt::Kind::Break) {
+      if (loop_depth == 0) {
+        diag_error(diags, loc(s.span), ErrorCode::E0401,
+                   "`break` can only be used inside a `while` or `for` loop.",
+                   "Move this statement into a loop body, or remove it.");
+      }
+      return;
+    }
+    if (s.kind == Stmt::Kind::Continue) {
+      if (loop_depth == 0) {
+        diag_error(diags, loc(s.span), ErrorCode::E0402,
+                   "`continue` can only be used inside a `while` or `for` loop.",
+                   "Move this statement into a loop body, or remove it.");
+      }
+      return;
+    }
     if (s.kind == Stmt::Kind::While) {
       std::set<std::string> saved_loop = loop_index_vars;
+      loop_depth++;
       if (s.cond) {
         note_loop_index_from_cond(*s.cond);
         type_of(*s.cond);
@@ -715,11 +739,32 @@ struct Ctx {
       for (const auto& inner : s.while_body) {
         check_stmt(inner);
       }
+      loop_depth--;
+      loop_index_vars = std::move(saved_loop);
+      return;
+    }
+    if (s.kind == Stmt::Kind::For) {
+      std::set<std::string> saved_loop = loop_index_vars;
+      loop_depth++;
+      if (!s.for_iter.empty()) {
+        loop_index_vars.insert(s.for_iter);
+        locals[s.for_iter] = make_int();
+      }
+      for (const auto& c : s.for_contracts) {
+        if (c.expr) {
+          type_of(*c.expr);
+        }
+      }
+      for (const auto& inner : s.for_body) {
+        check_stmt(inner);
+      }
+      loop_depth--;
       loop_index_vars = std::move(saved_loop);
       return;
     }
     if (s.kind == Stmt::Kind::ParallelFor) {
       std::set<std::string> saved_loop = loop_index_vars;
+      loop_depth++;
       if (!s.par_iter.empty()) {
         loop_index_vars.insert(s.par_iter);
         locals[s.par_iter] = make_int();
@@ -732,6 +777,7 @@ struct Ctx {
       for (const auto& inner : s.par_body) {
         check_stmt(inner);
       }
+      loop_depth--;
       loop_index_vars = std::move(saved_loop);
       return;
     }
@@ -787,19 +833,28 @@ struct Ctx {
     }
     if (p.is_extern) {
       if (!has_requires) {
-        diags.error(loc(p.span), "extern proc missing requires clause");
+        diag_error(diags, loc(p.span), ErrorCode::E0301,
+                   "Every `extern proc` must declare what must be true before it runs (`requires`).",
+                   "Add a `requires` clause on the line above `=`.");
       }
       if (!has_ensures) {
-        diags.error(loc(p.span), "extern proc missing ensures clause");
+        diag_error(diags, loc(p.span), ErrorCode::E0302,
+                   "Every `extern proc` must declare what it guarantees on exit (`ensures`).",
+                   "Add an `ensures` clause, often `ensures true` for opaque C calls.");
       }
       in_async = prev_async;
       return;
     }
     if (!has_requires) {
-      diags.error(loc(p.span), "proc missing requires clause");
+      diag_error(diags, loc(p.span), ErrorCode::E0301,
+                 "Every proc must state what must be true before it runs (`requires`).",
+                 "Add `requires <condition>` on the line above `=` (use `requires true` if there "
+                 "is no precondition yet).");
     }
     if (!has_ensures) {
-      diags.error(loc(p.span), "proc missing ensures clause");
+      diag_error(diags, loc(p.span), ErrorCode::E0302,
+                 "Every proc must state what it guarantees on exit (`ensures`).",
+                 "Add `ensures <condition>` — use `ensures true` temporarily while developing.");
     }
     locals.clear();
     type_vars.clear();

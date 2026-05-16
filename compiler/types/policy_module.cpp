@@ -1,5 +1,7 @@
 #include "li/policy.hpp"
 
+#include "li/error_codes.hpp"
+
 #include <string>
 
 namespace li {
@@ -63,8 +65,10 @@ void check_stmt_parallel(const Stmt& stmt, const std::string& file, DiagnosticBa
   const bool disjoint = contract_has_disjoint(stmt.par_contracts) ||
                         decorator_parallel_has_disjoint(stmt.decorators);
   if (!disjoint) {
-    diags.error(SourceLoc{file, 1, 1, stmt.span.start},
-                "parallel for requires proved disjoint slices");
+    diag_error(diags, SourceLoc{file, 1, 1, stmt.span.start}, ErrorCode::E0320,
+               "A `parallel for` must prove that iterations do not touch the same memory.",
+               "Add `requires disjoint_elem(...)` in the loop block, or `@parallel(disjoint=...)` "
+               "on the loop.");
   }
 }
 
@@ -77,6 +81,7 @@ void walk_stmts(const std::vector<Stmt>& stmts, const std::string& file,
       walk_stmts(*s.else_body, file, diags);
     }
     walk_stmts(s.while_body, file, diags);
+    walk_stmts(s.for_body, file, diags);
     walk_stmts(s.par_body, file, diags);
   }
 }
@@ -87,7 +92,9 @@ void check_proc_decorators(const std::vector<Decorator>& decos, const std::strin
                            DiagnosticBag& diags) {
   for (const auto& d : decos) {
     if (d.name == "parallel" && !decorator_has_disjoint_arg(d)) {
-      diags.error(SourceLoc{file, 1, 1, d.span.start}, "parallel_requires_disjoint");
+      diag_error(diags, SourceLoc{file, 1, 1, d.span.start}, ErrorCode::E0321,
+                 "The `@parallel` decorator must include a `disjoint=` proof argument.",
+                 "Use `@parallel(disjoint=disjoint_elem(...))`. (parallel_requires_disjoint)");
     }
   }
 }

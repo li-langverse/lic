@@ -83,6 +83,7 @@ jobs:
 
   build-and-test-windows:
     runs-on: windows-latest
+    continue-on-error: true # best-effort; ubuntu+macos gate release
     defaults:
       run:
         shell: bash

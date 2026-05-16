@@ -4,6 +4,15 @@ All notable changes to Li are documented here. The format follows
 [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and versioning follows
 [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [Unreleased]
+
+### Added
+
+- Agent-first JSON diagnostics: `lic check --format=json`, `lic diagnose` (`docs/schemas/diagnostic-v1.json`)
+- LLM-first design research stub, agent handover comparison, `li-agent-manifest.toml`
+- `scripts/lic-fix-suggest.sh`, `scripts/gen-li-agent-manifest.sh`, `li-tests/tooling/diagnose_json_smoke.sh`
+- Cursor rule `li-llm-first.mdc`, skill `agent-diagnose-fix-li`
+
 ## [0.1.0] - 2026-05-14
 
 ### Added

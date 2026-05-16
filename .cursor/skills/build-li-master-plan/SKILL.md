@@ -14,7 +14,7 @@ Autonomous workflow for implementing Li per `docs/superpowers/plans/2026-05-14-l
 
 ## On every invocation
 
-0. Read [engineering-standards.md](../../../docs/ecosystem/engineering-standards.md) (functionality, security, performance gates).
+0. Read [strict-by-default.md](../../../docs/ecosystem/strict-by-default.md) and [engineering-standards.md](../../../docs/ecosystem/engineering-standards.md) (functionality, security, performance gates — always on).
 1. Read the **phase completion tracker** in the master plan; pick the **first unchecked** phase.
 2. Read that phase's plan file (table in master plan). If marked **Stale**, rewrite it for **C++17 + CMake + Ninja + LLVM 18** before coding.
 3. Read canonical context only as needed:
@@ -29,12 +29,14 @@ Autonomous workflow for implementing Li per `docs/superpowers/plans/2026-05-14-l
 
 | Priority | Rule |
 |----------|------|
+| 0 | **Strict by default** — no optional provability; explicit `li.toml` `[gates]` or documented env only to relax |
 | 1 | **Provability** — no user-facing feature that bypasses Lean/contracts gate |
 | 2 | **Stack** — C++ compiler only in `compiler/`; **LLVM 18** sole backend; no Rust/Zig host |
 | 3 | **Tests** — new behavior → fixture in `li-tests/` + `manifest.toml` entry |
 | 4 | **Truth** — update master plan checkboxes only after verification commands pass |
 | 5 | **Provability honesty** — if the PR touches proof surface (Lean, VC, parallel, decorators, math, bounds), update `docs/verification/provability-gaps.md` (**G-*** rows) and linked handbook pages in the **same PR** (master plan § Doc) |
 | 6 | **`std/`** — **100%** line coverage before phase checkbox; run `scripts/check-stdlib-coverage.sh` when instrumented |
+| 7 | **Packages** — new workspace members export composable `src/lib.li` (serve/stop/ready or equivalent); see `composable-li-library` skill |
 
 ## Per-phase loop
 

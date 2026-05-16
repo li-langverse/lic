@@ -1,18 +1,161 @@
 #include "li/diagnostics.hpp"
+#include "li/terminal.hpp"
 
+#include <cstdio>
 #include <iostream>
+#include <string>
 
 namespace li {
 
+namespace {
+
+std::string json_escape(std::string_view text) {
+  std::string out;
+  out.reserve(text.size() + 8);
+  out.push_back('"');
+  for (const char ch : text) {
+    switch (ch) {
+      case '"':
+        out += "\\\"";
+        break;
+      case '\\':
+        out += "\\\\";
+        break;
+      case '\n':
+        out += "\\n";
+        break;
+      case '\r':
+        out += "\\r";
+        break;
+      case '\t':
+        out += "\\t";
+        break;
+      default:
+        if (static_cast<unsigned char>(ch) < 0x20) {
+          char buf[8];
+          std::snprintf(buf, sizeof(buf), "\\u%04x", static_cast<unsigned char>(ch));
+          out += buf;
+        } else {
+          out.push_back(ch);
+        }
+    }
+  }
+  out.push_back('"');
+  return out;
+}
+
+std::string infer_diagnostic_code(std::string_view message) {
+  const auto has = [&](std::string_view needle) {
+    return message.find(needle) != std::string_view::npos;
+  };
+  if (has("indentation")) {
+    return "E0101";
+  }
+  if (has("out of range") || has("index")) {
+    return "E0201";
+  }
+  if (has("type") && has("expected")) {
+    return "E0202";
+  }
+  if (has("import") || has("module")) {
+    return "resolve.import";
+  }
+  if (has("stdlib_symbol_shadow")) {
+    return "E0330";
+  }
+  if (has("shadow") || has("seal") || has("stdlib")) {
+    return "E0330";
+  }
+  if (has("parallel_requires_disjoint") || has("disjoint slices")) {
+    return "E0320";
+  }
+  if (has("parallel") || has("disjoint")) {
+    return "E0320";
+  }
+  if (has("missing requires")) {
+    return "E0301";
+  }
+  if (has("missing ensures")) {
+    return "E0302";
+  }
+  if (has("contract") || has("requires") || has("ensures")) {
+    return "E0301";
+  }
+  if (has("borrow")) {
+    return "E0310";
+  }
+  if (has("break") && has("loop")) {
+    return "E0401";
+  }
+  if (has("continue") && has("loop")) {
+    return "E0402";
+  }
+  return "lic.error";
+}
+
+std::string effective_code(const Diagnostic& d) {
+  if (!d.code.empty()) {
+    return d.code;
+  }
+  return infer_diagnostic_code(d.message);
+}
+
+}  // namespace
+
 void DiagnosticBag::error(SourceLoc loc, std::string message) {
-  items_.push_back(Diagnostic{std::move(loc), std::move(message)});
+  items_.push_back(Diagnostic{std::move(loc), {}, std::move(message), std::nullopt});
+}
+
+void DiagnosticBag::error(SourceLoc loc, std::string code, std::string message,
+                          std::string hint) {
+  std::optional<std::string> hint_opt;
+  if (!hint.empty()) {
+    hint_opt = std::move(hint);
+  }
+  items_.push_back(
+      Diagnostic{std::move(loc), std::move(code), std::move(message), std::move(hint_opt)});
 }
 
 void print_diagnostics(const DiagnosticBag& bag) {
-  for (const auto& d : bag.items()) {
-    std::cerr << d.loc.file << ':' << d.loc.line << ':' << d.loc.column << ": "
-              << "error: " << d.message << '\n';
+  if (bag.empty()) {
+    return;
   }
+  print_lic_banner(std::cerr);
+  for (const auto& d : bag.items()) {
+    const std::string code = effective_code(d);
+    std::cerr << styled_dim(d.loc.file) << ':' << styled_accent(std::to_string(d.loc.line))
+              << ':' << styled_accent(std::to_string(d.loc.column)) << ": "
+              << styled_error_label() << " [" << styled_accent(code) << "]: " << d.message
+              << reset_style() << '\n';
+    if (d.hint && !d.hint->empty()) {
+      std::cerr << "  " << styled_dim("hint:") << ' ' << *d.hint << reset_style() << '\n';
+    }
+  }
+}
+
+void print_diagnostics_json(const DiagnosticBag& bag, std::ostream& out,
+                            std::string_view command) {
+  out << "{\"version\":1,\"schema\":\"diagnostic-v1\",\"tool\":\"lic\",\"command\":"
+      << json_escape(command) << ",\"ok\":" << (bag.empty() ? "true" : "false")
+      << ",\"diagnostics\":[";
+  bool first = true;
+  for (const auto& d : bag.items()) {
+    if (!first) {
+      out << ',';
+    }
+    first = false;
+    const std::string code = effective_code(d);
+    out << "{\"severity\":\"error\",\"file\":" << json_escape(d.loc.file) << ",\"line\":"
+        << d.loc.line << ",\"column\":" << d.loc.column << ",\"offset\":" << d.loc.offset
+        << ",\"code\":" << json_escape(code) << ",\"message\":" << json_escape(d.message);
+    if (d.hint && !d.hint->empty()) {
+      out << ",\"fix_hint\":" << json_escape(*d.hint);
+    } else {
+      out << ",\"fix_hint\":null";
+    }
+    out << '}';
+  }
+  out << "]}\n";
 }
 
 }  // namespace li

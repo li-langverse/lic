@@ -1,8 +1,11 @@
-# Welcome to Li
+<div class="li-hero" markdown="1">
 
-**理** — principle, reason.
+<div class="li-hero__glyph">理</div>
+<p class="li-hero__tagline">Li · prove · write · run fast</p>
 
-Li helps you write programs that are **checked before they run**: types, memory, loops that end, and parallel work that does not trample shared data. When the check succeeds, you get fast native code with **vectors** and **many CPU cores** built in.
+Li is a language for **programs you can trust in production**: contracts checked before ship, memory and parallelism ruled out as failure modes, and native speed when the proof closes.
+
+</div>
 
 <div class="grid cards" markdown>
 

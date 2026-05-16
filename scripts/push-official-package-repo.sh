@@ -55,7 +55,12 @@ fi
 
 TMP="$(mktemp -d)"
 trap 'rm -rf "$TMP"' EXIT
-rsync -a --delete --exclude='.git' "$PKG/" "$TMP/"
+if command -v rsync >/dev/null 2>&1; then
+  rsync -a --delete --exclude='.git' "$PKG/" "$TMP/"
+else
+  rm -rf "$TMP"/*
+  cp -a "$PKG/." "$TMP/"
+fi
 cd "$TMP"
 git init -q -b main
 git add -A

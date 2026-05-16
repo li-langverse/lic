@@ -40,6 +40,10 @@
       {
         "command": ".cursor/hooks/composable-package-nudge.sh",
         "matcher": "packages/**/src/main.li"
+      },
+      {
+        "command": ".cursor/hooks/guard-official-package-ci.sh",
+        "matcher": "packages/**"
       }
     ],
     "stop": [

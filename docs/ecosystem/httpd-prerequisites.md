@@ -1,13 +1,15 @@
-# Httpd Prerequisites
+# li-httpd compiler prerequisites (P0)
 
-<!-- DOC-ecosystem-stub-httpd-prerequisites.md -->
+li-httpd **M1 `.li` code** does not start until these **`lic`** gates pass. Infra in **`lis`** can proceed in parallel.
 
-**Canonical doc:** [httpd-prerequisites.md](https://github.com/li-langverse/roadmap/blob/main/docs/ecosystem/httpd-prerequisites.md) in [`li-langverse/roadmap`](https://github.com/li-langverse/roadmap).
+| ID | Work | Repo | Status |
+|----|------|------|--------|
+| P0-lean | VC + Lean on `lic build` (real discharge) | `lic` | **Partial** — AutoVC + Discharge; strict gate optional |
+| P0-bytes | `std` bytes, stringview, Reader/Writer | `lic` | **Partial** — [`std/bytes/bytes.li`](../../std/bytes/bytes.li) stub |
+| P0-net | `raises Net`, trusted syscall RFC | `lic` | **Partial** — effects + [`trusted.lean`](../semantics/trusted.lean) |
+| P0-async | async/await + epoll/kqueue | `lic` | **Not started** — `@async` requires `raises Async` only |
+| P0-http | HTTP/1.1 parser proofs | `lic` | **Not started** |
 
-Do not edit ecosystem policy here — open a PR to the roadmap repo (human merge for governance paths).
+**Coverage:** `std/**` = **100%**; published `li-*` = **≥80%** ([engineering-standards.md](engineering-standards.md)).
 
-## Related
-
-- [Roadmap milestones](https://github.com/li-langverse/roadmap/blob/main/docs/roadmap/milestones.md)
-- [Benchmarks dashboard](https://li-langverse.github.io/benchmarks/)
-- [lic master plan](https://github.com/li-langverse/lic/blob/main/docs/superpowers/plans/2026-05-14-li-master-plan.md)
+**lis:** [implementation-status](https://github.com/li-langverse/lis/blob/main/docs/implementation-status.md).

@@ -428,7 +428,8 @@ struct Ctx {
       if (te.name == "ptr" || te.name == "int64" || te.name == "i64" || te.name == "long") {
         return make_i64();
       }
-      if (te.name == "str") {
+      if (te.name == "str" || te.name == "bytes" || te.name == "stringview" ||
+          te.name == "Bytes" || te.name == "StringView") {
         auto t = std::make_shared<Ty>();
         t->kind = TyKind::Str;
         t->name = "str";

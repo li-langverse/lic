@@ -355,6 +355,36 @@ file = "simd/bad_lanes.li"
 outcome = "compile_fail"
 expected_substr = "lane"
 
+# --- effects (Net / Async / Alloc — httpd P0) ---
+
+[[tests]]
+suite = "effects"
+file = "effects/net_ok.li"
+outcome = "compile_ok"
+
+[[tests]]
+suite = "effects"
+file = "effects/net_forward_ok.li"
+outcome = "compile_ok"
+
+[[tests]]
+suite = "effects"
+file = "effects/net_missing_raises.li"
+outcome = "compile_fail"
+expected_substr = "raises Net"
+
+[[tests]]
+suite = "effects"
+file = "effects/async_missing_raises.li"
+outcome = "compile_fail"
+expected_substr = "raises Async"
+
+[[tests]]
+suite = "effects"
+file = "effects/bytes_need_alloc.li"
+outcome = "compile_fail"
+expected_substr = "raises Alloc"
+
 # --- httpd (Phase H placeholder) ---
 
 [[tests]]
@@ -401,6 +431,13 @@ outcome = "verify_ok"
 [[tests]]
 suite = "math_syntax"
 file = "math_syntax/int_pow.li"
+outcome = "verify_ok"
+
+# --- stdlib_coverage (8e — std/**/*.li instrumented build) ---
+
+[[tests]]
+suite = "stdlib_coverage"
+file = "stdlib_coverage/build_std_decorators.li"
 outcome = "verify_ok"
 
 # --- stdlib_seal (4s — prelude/stdlib names cannot be shadowed) ---

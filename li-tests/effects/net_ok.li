@@ -1,0 +1,11 @@
+extern proc net_ping() raises Net -> int
+  requires true
+  ensures true
+  decreases 0
+
+proc handler() raises Net, IO -> int
+  requires true
+  ensures true
+  decreases 0
+=
+  return 0

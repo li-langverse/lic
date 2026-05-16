@@ -1,0 +1,22 @@
+# std/bytes — wire buffer surface (httpd P0 stub; full proofs when 2e–2f widen)
+
+type Bytes = str
+type StringView = str
+
+type Reader = object
+  # incremental parse over Bytes (implementation in li-bytes package later)
+
+type Writer = object
+  # incremental emit into Bytes
+
+extern proc bytes_len(b: Bytes) raises Alloc -> int
+  requires true
+  ensures true
+  decreases 0
+
+extern proc bytes_slice(b: Bytes, off: int, n: int) raises Alloc -> StringView
+  requires 0 <= off
+  requires 0 <= n
+  requires off + n <= bytes_len(b)
+  ensures true
+  decreases 0

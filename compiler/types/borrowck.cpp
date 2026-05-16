@@ -189,6 +189,11 @@ struct BorrowCtx {
 };
 
 bool type_mentions_heap(const TypeExpr& te) {
+  if (te.kind == TypeKind::Named &&
+      (te.name == "str" || te.name == "bytes" || te.name == "stringview" ||
+       te.name == "Bytes" || te.name == "StringView")) {
+    return true;
+  }
   if (te.kind == TypeKind::TypeApp &&
       (te.name == "list" || te.name == "dict" || te.name == "set")) {
     return true;
@@ -230,6 +235,23 @@ bool proc_mentions_echo(const ProcDecl& p) {
     }
   }
   return false;
+}
+
+bool proc_has_decorator(const ProcDecl& p, const std::string& name) {
+  for (const auto& d : p.decorators) {
+    if (d.name == name) {
+      return true;
+    }
+  }
+  return false;
+}
+
+void collect_calls(const ProcDecl& p, std::vector<std::string>& out) {
+  for (const auto& s : p.body) {
+    if (s.expr && s.expr->kind == Expr::Kind::Call) {
+      out.push_back(s.expr->ident);
+    }
+  }
 }
 
 bool proc_mentions_heap(const ProcDecl& p) {
@@ -302,6 +324,32 @@ void effects_check_module(const Module& module, DiagnosticBag& diags) {
     }
     if (proc_mentions_heap(proc) && !has_effect(proc.raises, "Alloc")) {
       diags.error(loc, "proc uses heap type but does not declare raises Alloc");
+    }
+  }
+  for (const auto& proc : module.procs) {
+    if (proc.is_extern) {
+      continue;
+    }
+    const SourceLoc loc{"module", 1, 1, proc.span.start};
+    if (proc_has_decorator(proc, "async") && !has_effect(proc.raises, "Async")) {
+      diags.error(loc, "proc has @async but does not declare raises Async");
+    }
+    std::vector<std::string> calls;
+    collect_calls(proc, calls);
+    for (const std::string& callee_name : calls) {
+      const auto it = proc_map.find(callee_name);
+      if (it == proc_map.end()) {
+        continue;
+      }
+      const ProcDecl& callee = *it->second;
+      if (has_effect(callee.raises, "Net") && !has_effect(proc.raises, "Net")) {
+        diags.error(loc, "proc calls `" + callee_name +
+                             "` which raises Net but caller does not declare raises Net");
+      }
+      if (has_effect(callee.raises, "Async") && !has_effect(proc.raises, "Async")) {
+        diags.error(loc, "proc calls `" + callee_name +
+                             "` which raises Async but caller does not declare raises Async");
+      }
     }
   }
 }

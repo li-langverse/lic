@@ -48,6 +48,8 @@ TokenKind Lexer::keyword_kind(std::string_view text) const {
   if (text == "raises") return TokenKind::KwRaises;
   if (text == "echo") return TokenKind::KwEcho;
   if (text == "extern") return TokenKind::KwExtern;
+  if (text == "async") return TokenKind::KwAsync;
+  if (text == "await") return TokenKind::KwAwait;
   if (text == "true") return TokenKind::KwTrue;
   if (text == "false") return TokenKind::KwFalse;
   if (text == "and") return TokenKind::KwAnd;

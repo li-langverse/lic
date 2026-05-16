@@ -71,6 +71,7 @@ struct Ctx {
   std::map<std::string, TyPtr> type_vars;
   std::set<std::string> refined_index_params;
   std::set<std::string> loop_index_vars;
+  bool in_async = false;
   DiagnosticBag& diags;
   std::string file;
 
@@ -601,6 +602,16 @@ struct Ctx {
         diags.error(loc(e.span), "unknown field '" + e.field_name + "'");
         return make_int();
       }
+      case Expr::Kind::Await: {
+        if (!in_async) {
+          diags.error(loc(e.span), "await is only allowed in async proc");
+          return make_int();
+        }
+        if (!e.operand) {
+          return make_int();
+        }
+        return type_of(*e.operand);
+      }
       case Expr::Kind::Index: {
         const TyPtr base = type_of(*e.base);
         const TyPtr idx = type_of(*e.index);
@@ -748,7 +759,22 @@ struct Ctx {
     }
   }
 
+  static bool proc_has_decorator(const ProcDecl& p, const std::string& name) {
+    for (const auto& d : p.decorators) {
+      if (d.name == name) {
+        return true;
+      }
+    }
+    return false;
+  }
+
+  static bool proc_is_async(const ProcDecl& p) {
+    return p.is_async || proc_has_decorator(p, "async");
+  }
+
   void check_proc(const ProcDecl& p) {
+    const bool prev_async = in_async;
+    in_async = proc_is_async(p);
     bool has_requires = false;
     bool has_ensures = false;
     for (const auto& c : p.contracts) {
@@ -766,6 +792,7 @@ struct Ctx {
       if (!has_ensures) {
         diags.error(loc(p.span), "extern proc missing ensures clause");
       }
+      in_async = prev_async;
       return;
     }
     if (!has_requires) {
@@ -801,6 +828,7 @@ struct Ctx {
       }
       check_stmt(s);
     }
+    in_async = prev_async;
   }
 };
 
@@ -809,7 +837,7 @@ struct Ctx {
 TypecheckResult typecheck_module(const Module& module) {
   TypecheckResult result;
   DiagnosticBag& diags = result.diagnostics;
-  Ctx ctx{{}, {}, {}, {}, {}, {}, diags, "module"};
+  Ctx ctx{{}, {}, {}, {}, {}, {}, false, diags, "module"};
   for (const auto& proc : module.procs) {
     ctx.procs[proc.name] = &proc;
   }

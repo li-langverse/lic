@@ -33,6 +33,8 @@ enum class TokenKind {
   KwRaises,
   KwEcho,
   KwExtern,
+  KwAsync,
+  KwAwait,
   KwTrue,
   KwFalse,
   KwAnd,

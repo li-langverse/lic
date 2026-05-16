@@ -154,6 +154,11 @@ std::string lower_expr_to(const Expr& e, const Module& module, std::vector<MirIn
     }
     case Expr::Kind::Ident:
       return e.ident;
+    case Expr::Kind::Await:
+      if (e.operand) {
+        return lower_expr_to(*e.operand, module, out, float_names, simd_names);
+      }
+      return fresh_temp();
     case Expr::Kind::BinOp: {
       if (e.bin_op == BinOp::MatMul && e.lhs && e.lhs->kind == Expr::Kind::Ident && e.rhs &&
           e.rhs->kind == Expr::Kind::Ident && g_arr_ctx &&
@@ -697,6 +702,7 @@ MirModule lower_to_mir(const Module& module) {
     MirFn fn;
     fn.name = proc.name;
     fn.is_extern = proc.is_extern;
+    fn.is_async = proc.is_async;
     copy_decorators(proc.decorators, fn.decorators);
     if (proc.ret_type) {
       fn.returns_float = is_float_type_name(proc.ret_type->name);

@@ -33,6 +33,8 @@ benchmarks/tier2_physics/**/target/
 # Local GitHub PAT (parent dir)
 .env.github
 ../.env.github
+.env.github.backup
+../.env.github.backup
 
 # Multi-agent coordination (local only, parent dir)
 .li-agent-coord.json

@@ -23,6 +23,11 @@ suite = "lexer_parser"
 file = "lexer_parser/decorators_parse.li"
 outcome = "parse_ok"
 
+[[tests]]
+suite = "lexer_parser"
+file = "lexer_parser/async_await_parse.li"
+outcome = "parse_ok"
+
 # --- decorators (7d — parse + policy) ---
 
 [[tests]]
@@ -125,6 +130,16 @@ outcome = "verify_ok"
 [[tests]]
 suite = "contracts_verify"
 file = "contracts_verify/index_refinement.li"
+outcome = "verify_ok"
+
+[[tests]]
+suite = "contracts_verify"
+file = "contracts_verify/discharge_trivial.li"
+outcome = "verify_ok"
+
+[[tests]]
+suite = "contracts_verify"
+file = "contracts_verify/discharge_const.li"
 outcome = "verify_ok"
 
 # --- borrow ---
@@ -376,6 +391,23 @@ expected_substr = "raises Net"
 [[tests]]
 suite = "effects"
 file = "effects/async_missing_raises.li"
+outcome = "compile_fail"
+expected_substr = "raises Async"
+
+[[tests]]
+suite = "effects"
+file = "effects/async_ok.li"
+outcome = "compile_ok"
+
+[[tests]]
+suite = "effects"
+file = "effects/await_outside_async.li"
+outcome = "compile_fail"
+expected_substr = "async proc"
+
+[[tests]]
+suite = "effects"
+file = "effects/async_keyword_missing_raises.li"
 outcome = "compile_fail"
 expected_substr = "raises Async"
 

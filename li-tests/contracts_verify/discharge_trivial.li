@@ -1,0 +1,30 @@
+# Phase 2f discharge corpus: trivial requires/ensures + literal decreases.
+# Static return witness in vc_emit lowers matching ensures to True + trivial proof.
+
+proc main() -> int
+  requires true
+  ensures true
+  decreases 0
+=
+  return 0
+
+proc const_zero() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0
+
+proc const_forty_two() -> int
+  requires true
+  ensures result == 42
+  decreases 1
+=
+  return 42
+
+proc identity_int(x: int) -> int
+  requires true
+  ensures result == x
+  decreases 0
+=
+  return x

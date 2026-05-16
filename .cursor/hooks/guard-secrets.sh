@@ -7,7 +7,7 @@ cmd="$(echo "$input" | python3 -c "import sys,json; d=json.load(sys.stdin); prin
 if [[ "${LI_HOOK_ALLOW:-}" == "1" ]]; then
   exit 0
 fi
-if echo "$cmd" | grep -qE '\.(env\.github|pem|key)$|/\.env\.github|credentials\.json'; then
+if echo "$cmd" | grep -qE '\.(env\.github|env\.github\.backup|pem|key)$|/\.env\.github|/\.env\.github\.backup|credentials\.json'; then
   if echo "$cmd" | grep -qE '(cat|head|tail|less|more|echo|type)\s'; then
     echo "blocked: command may expose secrets; use env vars, not cat" >&2
     exit 2

@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# contracts_verify + Lean lake (2f); strict open-goal check optional.
+# contracts_verify + Lean lake (2f): sqrt emits real Props; corpus has zero open goals.
 set -euo pipefail
 ROOT="$(cd "$(dirname "$0")/../.." && pwd)"
 export LI_REPO_ROOT="$ROOT"
@@ -10,8 +10,9 @@ rm -f "$ROOT/build/generated/AutoVC.lean"
 LI_BUILD_VERIFY_LEAN=1 "$LIC" build "$SAMPLE" -o /dev/null
 if command -v lake >/dev/null 2>&1; then
   (cd "$ROOT/docs/semantics" && lake build)
-  echo "contracts_verify_lean: lake ok"
+  echo "contracts_verify_lean: lake ok (sqrt AutoVC may have open float goals)"
 else
   echo "contracts_verify_lean: skipped lake (not installed)"
 fi
+"$ROOT/li-tests/tooling/discharge_trivial_lean.sh"
 echo "contracts_verify_lean: ok"

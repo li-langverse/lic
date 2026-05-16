@@ -24,16 +24,14 @@ jobs:
           curl -sSf https://raw.githubusercontent.com/leanprover/elan/master/elan-init.sh | sh -s -- -y --default-toolchain stable
           echo "$HOME/.elan/bin" >> "$GITHUB_PATH"
 
-      - name: Generate AutoVC and lake build
+      - name: Discharge corpus + sqrt AutoVC + lake build
         env:
           LI_REPO_ROOT: ${{ github.workspace }}
           LI_BUILD_VERIFY_LEAN: "1"
+          LI_BUILD_VERIFY_LEAN_STRICT: "1"
         run: |
+          chmod +x scripts/check-autovc-open-goals.sh li-tests/tooling/discharge_trivial_lean.sh
+          ./li-tests/tooling/discharge_trivial_lean.sh
           LIC="${{ github.workspace }}/build/compiler/lic/lic"
           "$LIC" build li-tests/contracts_verify/sqrt_contract.li -o /dev/null
           (cd docs/semantics && lake build)
-          chmod +x scripts/check-autovc-open-goals.sh
-          ./scripts/check-autovc-open-goals.sh || {
-            echo "Note: open goals expected until 2f discharge lands; see provability-gaps G-lean"
-            exit 0
-          }

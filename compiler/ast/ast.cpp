@@ -34,6 +34,15 @@ std::string debug_expr(const Expr& e, int indent) {
         os << debug_expr(*a, indent + 2);
       }
       break;
+    case Expr::Kind::Await:
+      os << p << "Await\n";
+      if (e.operand) {
+        os << debug_expr(*e.operand, indent + 2);
+      }
+      break;
+    default:
+      os << p << "Expr\n";
+      break;
   }
   return os.str();
 }

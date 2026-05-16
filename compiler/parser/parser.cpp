@@ -86,6 +86,12 @@ struct Parser {
         }
         out.procs.push_back(parse_proc(true));
         skip_newlines();
+      } else if (at(TokenKind::KwAsync)) {
+        i++;
+        ProcDecl proc = parse_proc(false);
+        proc.is_async = true;
+        out.procs.push_back(std::move(proc));
+        skip_newlines();
       } else if (at(TokenKind::At)) {
         std::vector<Decorator> decos = parse_decorator_list();
         if (!at(TokenKind::KwProc) && !at(TokenKind::KwDef)) {
@@ -113,6 +119,18 @@ struct Parser {
 
 std::unique_ptr<Expr> Parser::parse_primary() {
   const Token& t = cur();
+  if (t.kind == TokenKind::KwAwait) {
+    i++;
+    auto inner = parse_primary();
+    if (!inner) {
+      return nullptr;
+    }
+    auto e = std::make_unique<Expr>();
+    e->kind = Expr::Kind::Await;
+    e->span = {t.start, inner->span.end};
+    e->operand = std::move(inner);
+    return parse_postfix(std::move(e));
+  }
   if (t.kind == TokenKind::KwEcho) {
     i++;
     auto e = std::make_unique<Expr>();
@@ -554,7 +572,7 @@ Decorator Parser::parse_decorator() {
   if (!expect(TokenKind::At, "'@'")) {
     return deco;
   }
-  if (!at(TokenKind::Ident)) {
+  if (!at(TokenKind::Ident) && !at(TokenKind::KwAsync)) {
     diags.error(loc(cur()), "expected decorator name after '@'");
     return deco;
   }

@@ -34,8 +34,8 @@ Status legend: **Missing** · **Stub** · **Partial** · **CI only** · **Done**
 
 | ID | Area | Spec / promise | Current state | Phase | How we know |
 |----|------|----------------|---------------|-------|-------------|
-| **G-lean** | Lean 4 gate | `lic build` fails if any VC open | **Partial** — `.github/workflows/lean.yml`, `Init.Data.Float` in AutoVC; `check-autovc-open-goals.sh` with `LI_BUILD_VERIFY_LEAN_STRICT` | **2f** | `contracts_verify_lean.sh` |
-| **G-vc** | VC generation | Contracts → proof obligations | **Partial** — `AutoVC.lean` emits typed `Prop`/`Nat` from contract AST (not `True` stubs); proofs only for `True`; `lic verify --strict-lean` / `LI_BUILD_VERIFY_LEAN_STRICT` fail on open goals | **2e** | `vc_emit_lean.cpp`, `li-tests/tooling/vc_emit_contracts.sh`, `check-autovc-open-goals.sh` |
+| **G-lean** | Lean 4 gate | `lic build` fails if any VC open | **Partial** — auto `_proved` for `True`, literal `decreases`, MIR-witnessed `ensures`; `sqrt_contract` float VCs open; `contracts_discharge_corpus.sh` | **2f** | `discharge_trivial_lean.sh`, `check-autovc-open-goals.sh` |
+| **G-vc** | VC generation | Contracts → proof obligations | **Partial** — typed `Prop`/`Nat` in `AutoVC.lean`; static witness lowers matching `return` to `True`; non-literal float/index open | **2e** | `vc_emit_lean.cpp`, `discharge_const_lean.sh`, `vc_emit_contracts.sh` |
 | **G-par** | `parallel for` safety | Proved iteration independence | **Partial** — AST `check_module_policies` + string exploit patterns in `policy.cpp` | **7b**, **7d-c** | `race_shared_memory`, `decorator_exploits` |
 | **G-stdlib** | Prelude / std seal | User cannot shadow builtin or `std/` names | **Partial** — `check_stdlib_seal` + `resolve_imports` for `std.*` / workspace; cycle detect at load | **4s** | `li-tests/stdlib_seal/`, `li-tests/modules/` |
 | **G-dec** | Execution decorators | Static elaboration; reserved names; no runtime | **Partial** — parse + policy + `MirFn.decorators` tags; prelude table shared | **7d** | `decorator_exploits/`, `decorators/` |
@@ -120,8 +120,9 @@ flowchart LR
 | `li-tests/race_shared_memory/` | Policy + typecheck **reject** bad parallel patterns (not Lean) |
 | `li-tests/decorator_exploits/` | **Planned** — reserved names, macro hijack (7d-e) |
 | `li-tests/math_linalg/` | **Partial** — 1d float `@` lowering (2i/7e) |
-| `li-tests/contracts_verify/` | **Partial** — `lic build` emits real Props; Lean discharge needs Lean 4 (2f) |
+| `li-tests/contracts_verify/` | **Partial** — `sqrt_contract` real float Props; `discharge_trivial.li` fully discharged (2f slice) |
 | `li-tests/tooling/vc_emit_contracts.sh` | `sqrt_contract` AutoVC uses `≥` / `Float.abs`, not `True` stubs |
+| `li-tests/tooling/discharge_trivial_lean.sh` | `discharge_trivial.li` → zero open Prop goals + `lake build` when Lean installed |
 | `li-tests/prove_reject/` | Rejection of forbidden constructs (where present) |
 | Fuzz (`compiler/fuzz/`) | Parser robustness — **not** end-to-end proof |
 

@@ -380,7 +380,7 @@ Track in phase **Doc** until each is checked:
 - [x] Phase 5b — Benchmarks & simulations (harness + **X plots** skeleton on `dev`)
 - [x] Phase 6 — Self-host (bootstrap seed: `bootstrap/lic/main.li` → `build/lic-from-li`)
 - [ ] Phase 2e — Contracts + refinements — **partial:** typed `AutoVC.lean`, MIR-linked `lic verify` (`mir_fns=`); open goals checker
-- [ ] Phase 2f — Lean 4 verify — **partial:** `.github/workflows/lean.yml`, `contracts_verify_lean.sh`; `lic verify --strict-lean` + `LI_BUILD_VERIFY_LEAN_STRICT` (open goals fail); real discharge still open
+- [ ] Phase 2f — Lean 4 verify — **partial:** auto-discharge (`True`, literal `decreases`, MIR-witnessed `ensures`); `contracts_discharge_corpus.sh`; `sqrt_contract` float VCs open; `lic verify --strict-lean`
 - [x] Phase 7 — Native HPC — **v1 gate:** simd + parallel for + OpenMP + `check-master-plan-gates.sh` (tier 1/2 perf advisory)
 - [ ] Phase 7d — Execution decorators — **partial (7d-a/b/d/e/c):** AST `check_module_policies` for disjoint; string heuristics for race exploits
 - [ ] Phase 7e — Math → SIMD/parallel lowering — **partial:** `ArrayDotF64` for 1d `float` `@`; SIMD matmul deferred

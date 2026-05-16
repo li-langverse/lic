@@ -1,0 +1,35 @@
+# Trusted TCP surface (P0) — implementations are platform code + trusted.lean axioms.
+# See docs/superpowers/specs/2026-05-16-li-trusted-net-rfc.md
+
+extern proc tcp_listen(port: int) raises Net -> int
+  requires 0 < port
+  ensures true
+  decreases 0
+
+extern proc tcp_accept(listen_fd: int) raises Net -> int
+  requires listen_fd >= 0
+  ensures true
+  decreases 0
+
+extern proc tcp_send(conn_fd: int, data: bytes) raises Net -> int
+  requires conn_fd >= 0
+  ensures true
+  decreases 0
+
+extern proc tcp_recv(conn_fd: int, max_bytes: int) raises Net, Alloc -> bytes
+  requires conn_fd >= 0
+  requires 0 < max_bytes
+  ensures true
+  decreases 0
+
+extern proc tcp_close(conn_fd: int) raises Net -> unit
+  requires conn_fd >= 0
+  ensures true
+  decreases 0
+
+proc net_tag() raises Net -> int
+  requires true
+  ensures result == 1
+  decreases 0
+=
+  return 1

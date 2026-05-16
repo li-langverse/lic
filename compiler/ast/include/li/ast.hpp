@@ -56,7 +56,18 @@ enum class ContractKind { Requires, Ensures, Decreases, Invariant };
 enum class BinOp { Add, Sub, Mul, Div, Mod, FloorDiv, Pow, MatMul, Le, Lt, Ge, Gt, Eq, Ne, And, Or };
 
 struct Expr {
-  enum class Kind { IntLit, FloatLit, StringLit, Ident, BinOp, Call, UnaryNot, Index, FieldAccess };
+  enum class Kind {
+    IntLit,
+    FloatLit,
+    StringLit,
+    Ident,
+    BinOp,
+    Call,
+    UnaryNot,
+    Index,
+    FieldAccess,
+    Await,
+  };
   Kind kind = Kind::IntLit;
   Span span;
   std::int64_t int_value = 0;
@@ -122,6 +133,7 @@ struct ProcDecl {
   Span span;
   std::string name;
   bool is_extern = false;
+  bool is_async = false;
   std::vector<Decorator> decorators;
   std::vector<std::string> type_params;
   std::vector<Param> params;

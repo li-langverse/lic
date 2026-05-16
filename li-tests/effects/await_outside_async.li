@@ -1,0 +1,13 @@
+proc main() -> int
+  requires true
+  ensures true
+  decreases 0
+=
+  return await helper()
+
+async proc helper() raises Async -> int
+  requires true
+  ensures true
+  decreases 0
+=
+  return 1

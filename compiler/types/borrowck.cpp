@@ -73,6 +73,11 @@ struct BorrowCtx {
           check_expr_uses(*e.operand);
         }
         break;
+      case Expr::Kind::Await:
+        if (e.operand) {
+          check_expr_uses(*e.operand);
+        }
+        break;
       default:
         break;
     }
@@ -246,6 +251,70 @@ bool proc_has_decorator(const ProcDecl& p, const std::string& name) {
   return false;
 }
 
+bool proc_is_async(const ProcDecl& p) {
+  return p.is_async || proc_has_decorator(p, "async");
+}
+
+bool expr_has_await(const Expr& e) {
+  if (e.kind == Expr::Kind::Await) {
+    return true;
+  }
+  switch (e.kind) {
+    case Expr::Kind::BinOp:
+      return (e.lhs && expr_has_await(*e.lhs)) || (e.rhs && expr_has_await(*e.rhs));
+    case Expr::Kind::Call:
+      for (const auto& arg : e.args) {
+        if (arg && expr_has_await(*arg)) {
+          return true;
+        }
+      }
+      return false;
+    case Expr::Kind::UnaryNot:
+      return e.operand && expr_has_await(*e.operand);
+    case Expr::Kind::Index:
+      return (e.base && expr_has_await(*e.base)) || (e.index && expr_has_await(*e.index));
+    case Expr::Kind::FieldAccess:
+      return e.base && expr_has_await(*e.base);
+    default:
+      return false;
+  }
+}
+
+bool stmt_has_await(const Stmt& s) {
+  if (s.expr && expr_has_await(*s.expr)) {
+    return true;
+  }
+  if (s.init && expr_has_await(*s.init)) {
+    return true;
+  }
+  if (s.cond && expr_has_await(*s.cond)) {
+    return true;
+  }
+  for (const auto& child : s.then_body) {
+    if (stmt_has_await(child)) {
+      return true;
+    }
+  }
+  if (s.else_body) {
+    for (const auto& child : *s.else_body) {
+      if (stmt_has_await(child)) {
+        return true;
+      }
+    }
+  }
+  for (const auto& child : s.while_body) {
+    if (stmt_has_await(child)) {
+      return true;
+    }
+  }
+  for (const auto& child : s.par_body) {
+    if (stmt_has_await(child)) {
+      return true;
+    }
+  }
+  return false;
+}
+
 void collect_calls(const ProcDecl& p, std::vector<std::string>& out) {
   for (const auto& s : p.body) {
     if (s.expr && s.expr->kind == Expr::Kind::Call) {
@@ -331,8 +400,14 @@ void effects_check_module(const Module& module, DiagnosticBag& diags) {
       continue;
     }
     const SourceLoc loc{"module", 1, 1, proc.span.start};
-    if (proc_has_decorator(proc, "async") && !has_effect(proc.raises, "Async")) {
-      diags.error(loc, "proc has @async but does not declare raises Async");
+    if (proc_is_async(proc) && !has_effect(proc.raises, "Async")) {
+      diags.error(loc, "async proc does not declare raises Async");
+    }
+    for (const auto& s : proc.body) {
+      if (stmt_has_await(s) && !proc_is_async(proc)) {
+        diags.error(loc, "await is only allowed in async proc");
+        break;
+      }
     }
     std::vector<std::string> calls;
     collect_calls(proc, calls);

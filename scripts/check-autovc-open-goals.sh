@@ -9,7 +9,22 @@ if [[ ! -f "$AUTOVC" ]]; then
 fi
 open=0
 while IFS= read -r line; do
+  if [[ "$line" =~ ^def\ vc_.*decreases.*:\ Nat\ := ]]; then
+    name="${line#def }"
+    name="${name%% *}"
+    if ! grep -q "theorem ${name}_proved" "$AUTOVC"; then
+      echo "open VC (decreases): $name" >&2
+      open=$((open + 1))
+    fi
+    continue
+  fi
   if [[ "$line" =~ ^def\ vc_.*\ :\ Prop\ :=\ True$ ]]; then
+    name="${line#def }"
+    name="${name%% *}"
+    if ! grep -q "theorem ${name}_proved" "$AUTOVC"; then
+      echo "open VC (true): $name" >&2
+      open=$((open + 1))
+    fi
     continue
   fi
   if [[ "$line" =~ ^def\ vc_.*\ :\ Prop\ := ]]; then

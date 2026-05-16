@@ -97,6 +97,7 @@ struct MirFn {
   bool returns_float = false;
   bool returns_void = false;
   bool is_extern = false;
+  bool is_async = false;
   std::vector<MirDecorator> decorators;
   std::vector<MirParam> params;
   std::vector<MirInsn> body;

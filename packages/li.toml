@@ -1,4 +1,4 @@
 # Li monorepo workspace — members added by scripts/li-new-package
 [workspace]
-members = ["li-demo", "li-std-core", "li-std-math"]
+members = ["li-net", "li-demo", "li-std-core", "li-std-math"]
 resolver = "path"

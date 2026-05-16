@@ -79,13 +79,22 @@ std::filesystem::path std_module_to_path(const std::string& module) {
   return p;
 }
 
+bool is_workspace_toml(const std::filesystem::path& toml) {
+  const std::string text = read_file(toml);
+  return text.find("[workspace]") != std::string::npos;
+}
+
 std::optional<std::filesystem::path> find_workspace_toml(
     const std::filesystem::path& from_file) {
   std::filesystem::path dir = from_file.parent_path();
   for (int depth = 0; depth < 12 && !dir.empty(); ++depth) {
-    const auto ws = dir / "packages" / "li.toml";
-    if (std::filesystem::exists(ws)) {
-      return ws;
+    const auto nested = dir / "packages" / "li.toml";
+    if (std::filesystem::exists(nested)) {
+      return nested;
+    }
+    const auto here = dir / "li.toml";
+    if (std::filesystem::exists(here) && is_workspace_toml(here)) {
+      return here;
     }
     dir = dir.parent_path();
   }
@@ -128,6 +137,89 @@ std::vector<std::string> parse_workspace_members(const std::filesystem::path& to
     i = q2 + 1;
   }
   return members;
+}
+
+std::optional<std::filesystem::path> find_package_toml(const std::filesystem::path& from_file) {
+  std::filesystem::path dir = from_file.parent_path();
+  for (int depth = 0; depth < 12 && !dir.empty(); ++depth) {
+    const auto toml = dir / "li.toml";
+    if (std::filesystem::exists(toml)) {
+      return toml;
+    }
+    dir = dir.parent_path();
+  }
+  return std::nullopt;
+}
+
+std::optional<std::filesystem::path> path_dependency_entry(const std::filesystem::path& package_toml,
+                                                         const std::string& module) {
+  const std::string text = read_file(package_toml);
+  const std::size_t deps = text.find("[dependencies]");
+  if (deps == std::string::npos) {
+    return std::nullopt;
+  }
+  const std::string tail = text.substr(deps);
+  std::size_t pos = 0;
+  while (pos < tail.size()) {
+    const std::size_t line_end = tail.find('\n', pos);
+    const std::string line = tail.substr(pos, line_end == std::string::npos ? std::string::npos
+                                                                          : line_end - pos);
+    pos = line_end == std::string::npos ? tail.size() : line_end + 1;
+    const std::size_t eq = line.find('=');
+    if (eq == std::string::npos) {
+      continue;
+    }
+    std::string dep_name = line.substr(0, eq);
+    while (!dep_name.empty() && (dep_name.back() == ' ' || dep_name.back() == '\t')) {
+      dep_name.pop_back();
+    }
+    if (kebab_to_snake(dep_name) != module && dep_name != module) {
+      continue;
+    }
+    const std::size_t path_key = line.find("path");
+    if (path_key == std::string::npos) {
+      continue;
+    }
+    const std::size_t q1 = line.find('"', path_key);
+    const std::size_t q2 = line.find('"', q1 + 1);
+    if (q1 == std::string::npos || q2 == std::string::npos) {
+      continue;
+    }
+    const std::string rel = line.substr(q1 + 1, q2 - q1 - 1);
+    const std::filesystem::path lib = (package_toml.parent_path() / rel / "src" / "lib.li");
+    if (std::filesystem::exists(lib)) {
+      return lib;
+    }
+    const std::filesystem::path vendor =
+        package_toml.parent_path() / ".li" / "vendor" / dep_name / "src" / "lib.li";
+    if (std::filesystem::exists(vendor)) {
+      return vendor;
+    }
+  }
+  return std::nullopt;
+}
+
+std::optional<std::filesystem::path> same_package_entry(const std::filesystem::path& package_toml,
+                                                        const std::string& module) {
+  const std::string text = read_file(package_toml);
+  const std::size_t name_key = text.find("name");
+  if (name_key == std::string::npos) {
+    return std::nullopt;
+  }
+  const std::size_t q1 = text.find('"', name_key);
+  const std::size_t q2 = text.find('"', q1 + 1);
+  if (q1 == std::string::npos || q2 == std::string::npos) {
+    return std::nullopt;
+  }
+  const std::string pkg_name = text.substr(q1 + 1, q2 - q1 - 1);
+  if (kebab_to_snake(pkg_name) != module && pkg_name != module) {
+    return std::nullopt;
+  }
+  const std::filesystem::path lib = package_toml.parent_path() / "src" / "lib.li";
+  if (std::filesystem::exists(lib)) {
+    return lib;
+  }
+  return std::nullopt;
 }
 
 std::optional<std::filesystem::path> workspace_package_entry(
@@ -194,6 +286,15 @@ std::optional<std::filesystem::path> resolve_module_path(const std::string& modu
 
   if (const auto ws = find_workspace_toml(importer)) {
     if (auto p = workspace_package_entry(*ws, module)) {
+      return p;
+    }
+  }
+
+  if (const auto pkg_toml = find_package_toml(importer)) {
+    if (auto p = same_package_entry(*pkg_toml, module)) {
+      return p;
+    }
+    if (auto p = path_dependency_entry(*pkg_toml, module)) {
       return p;
     }
   }

@@ -13,7 +13,7 @@ ok() { echo "gate ok: $*"; }
 echo "==> li-tests core"
 "$ROOT/li-tests/run_all.sh" || fail "run_all"
 for s in simd race_shared_memory parallel_codegen decorator_exploits decorators \
-  stdlib_seal math_syntax math_linalg encapsulation modules httpd; do
+  stdlib_seal stdlib_coverage math_syntax math_linalg encapsulation modules httpd; do
   "$ROOT/li-tests/run_all.sh" "$s" || fail "suite $s"
 done
 

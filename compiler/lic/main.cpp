@@ -10,6 +10,7 @@
 #include "li/mir.hpp"
 #include "li/vc_summary.hpp"
 
+#include <cstdio>
 #include <cstdlib>
 #include <filesystem>
 #include <fstream>
@@ -26,7 +27,7 @@ int usage() {
             << "usage:\n"
             << "  lic parse <file>       parse and validate syntax\n"
             << "  lic check <file>       parse + typecheck\n"
-            << "  lic verify <file>      VC summary; --lean runs semantics stub\n"
+            << "  lic verify <file>      VC summary; --lean runs semantics; --strict-lean fails open VCs\n"
             << "  lic build <file> -o <out> [--release] [--threads=N]\n"
             << "                       [--jobs=N] [--max-memory=MB]\n"
             << "                       [--coverage-instrument]\n"
@@ -110,7 +111,36 @@ int check_file(const char* path) {
   return 0;
 }
 
-int verify_file(const char* path, bool run_lean) {
+int count_open_autovc_goals() {
+  const char* root = std::getenv("LI_REPO_ROOT");
+  std::string script = "scripts/check-autovc-open-goals.sh";
+  if (root != nullptr) {
+    script = std::string(root) + "/" + script;
+  }
+  const std::string cmd = "bash " + script + " 2>&1";
+  FILE* pipe = popen(cmd.c_str(), "r");
+  if (pipe == nullptr) {
+    return -1;
+  }
+  char buf[256];
+  std::string out;
+  while (fgets(buf, sizeof(buf), pipe) != nullptr) {
+    out += buf;
+  }
+  pclose(pipe);
+  if (out.find("open obligation") != std::string::npos) {
+    std::size_t i = 0;
+    int count = 0;
+    while ((i = out.find("open VC:", i)) != std::string::npos) {
+      ++count;
+      ++i;
+    }
+    return count;
+  }
+  return 0;
+}
+
+int verify_file(const char* path, bool run_lean, bool strict_lean) {
   const std::string source = read_file(path);
   li::Module module;
   li::DiagnosticBag diags;
@@ -140,16 +170,36 @@ int verify_file(const char* path, bool run_lean) {
       std::cout << "verify: wrote " << vc_path << '\n';
     }
   }
-  if (!run_lean) {
-    return 0;
+  if (run_lean) {
+    std::string vc_lean = "build/generated/AutoVC.lean";
+    if (const char* root = std::getenv("LI_REPO_ROOT")) {
+      vc_lean = std::string(root) + "/" + vc_lean;
+    }
+    std::error_code fs_err;
+    std::filesystem::create_directories(std::filesystem::path(vc_lean).parent_path(), fs_err);
+    std::string vc_err;
+    (void)li::write_vcs_lean(module, vc_lean, &vc_err);
+    const int open = count_open_autovc_goals();
+    if (open >= 0) {
+      std::cout << "verify: open_vc_goals=" << open << '\n';
+      if (strict_lean && open > 0) {
+        std::cerr << "verify: strict-lean failed (" << open << " open obligations)\n";
+        return 1;
+      }
+    }
+    if (strict_lean) {
+      setenv("LI_BUILD_VERIFY_LEAN_STRICT", "1", 1);
+    }
+    setenv("LI_BUILD_VERIFY_LEAN", "1", 1);
+    std::string script = "scripts/lean-verify-stub.sh";
+    if (const char* root = std::getenv("LI_REPO_ROOT")) {
+      script = std::string(root) + "/" + script;
+    }
+    const std::string cmd = "bash " + script;
+    const int lean_rc = std::system(cmd.c_str());
+    return lean_rc == 0 ? 0 : 1;
   }
-  std::string script = "scripts/lean-verify-stub.sh";
-  if (const char* root = std::getenv("LI_REPO_ROOT")) {
-    script = std::string(root) + "/" + script;
-  }
-  const std::string cmd = "bash " + script;
-  const int lean_rc = std::system(cmd.c_str());
-  return lean_rc == 0 ? 0 : 1;
+  return 0;
 }
 
 int build_file(const char* path, const char* output, bool release) {
@@ -215,12 +265,16 @@ int main(int argc, char** argv) {
       return usage();
     }
     bool run_lean = false;
+    bool strict_lean = false;
     for (int i = 3; i < argc; ++i) {
       if (std::string_view(argv[i]) == "--lean") {
         run_lean = true;
+      } else if (std::string_view(argv[i]) == "--strict-lean") {
+        run_lean = true;
+        strict_lean = true;
       }
     }
-    return verify_file(argv[2], run_lean);
+    return verify_file(argv[2], run_lean, strict_lean);
   }
   if (cmd == "build") {
     if (argc < 3) {
@@ -273,7 +327,7 @@ int main(int argc, char** argv) {
       std::cerr << "vc emit: " << err << '\n';
     }
     if (std::getenv("LI_BUILD_VERIFY_LEAN") != nullptr) {
-      return verify_file(input, true);
+      return verify_file(input, true, false);
     }
     return 0;
   }

@@ -380,21 +380,21 @@ Track in phase **Doc** until each is checked:
 - [x] Phase 5b — Benchmarks & simulations (harness + **X plots** skeleton on `dev`)
 - [x] Phase 6 — Self-host (bootstrap seed: `bootstrap/lic/main.li` → `build/lic-from-li`)
 - [ ] Phase 2e — Contracts + refinements — **partial:** typed `AutoVC.lean`, MIR-linked `lic verify` (`mir_fns=`); open goals checker
-- [ ] Phase 2f — Lean 4 verify — **partial:** `.github/workflows/lean.yml`, `contracts_verify_lean.sh`; strict discharge via `LI_BUILD_VERIFY_LEAN_STRICT`
+- [ ] Phase 2f — Lean 4 verify — **partial:** `.github/workflows/lean.yml`, `contracts_verify_lean.sh`; `lic verify --strict-lean` + `LI_BUILD_VERIFY_LEAN_STRICT` (open goals fail); real discharge still open
 - [x] Phase 7 — Native HPC — **v1 gate:** simd + parallel for + OpenMP + `check-master-plan-gates.sh` (tier 1/2 perf advisory)
 - [ ] Phase 7d — Execution decorators — **partial (7d-a/b/d/e/c):** AST `check_module_policies` for disjoint; string heuristics for race exploits
 - [ ] Phase 7e — Math → SIMD/parallel lowering — **partial:** `ArrayDotF64` for 1d `float` `@`; SIMD matmul deferred
 - [x] Phase H — li-httpd infra — **`lis`** harness, mitigations, CI, workspace stubs ([implementation-status](https://github.com/li-langverse/lis/blob/main/docs/implementation-status.md))
 - [ ] Phase H — li-httpd M1 `.li` — after **2e–2f** + bytes/async ([httpd-prerequisites](../ecosystem/httpd-prerequisites.md))
 - [x] Phase Pkg — Package scaffold + governance stubs ([scaffold](2026-05-16-li-package-scaffold.md), [governance](2026-05-16-li-ecosystem-governance.md); `li.toml` = [lip § A3](2026-05-16-li-package-manager-lip.md))
-- [x] Phase 8-repo — GitHub repos created: [`lic`](https://github.com/li-langverse/lic), [`lip`](https://github.com/li-langverse/lip), [`lit`](https://github.com/li-langverse/lit) — *push split trees + CI green pending*
+- [x] Phase 8-repo — [`lic`](https://github.com/li-langverse/lic), [`lip`](https://github.com/li-langverse/lip), [`lit`](https://github.com/li-langverse/lit) on GitHub + CI
 - [x] Phase 8a — Modules + workspace `lic build` — `std.*` + workspace/local imports; `li-tests/modules/`; `lic-workspace-build.sh` on 3 packages
 - [x] Phase 8e-li — `lic build --coverage-instrument` (LLVM profile flags)
-- [ ] Phase 8e — `lit` CLI + ≥80% publish gate; **`std/**` 100%** via `check-stdlib-coverage.sh` — **partial:** `scripts/lit` stub → `run_all.sh`
-- [ ] Phase 8b — `lip` path/git + `li.lock` — **partial:** `scripts/lip init` → `li-new-package`
-- [ ] Phase 8c — ed25519 + `proof_digest` in lock — **partial:** `lip lock` writes stub `li.lock`
-- [ ] Phase 8d — Registry + `lip publish` — **partial:** `lip publish` stub + `lip_publish_smoke.sh`
-- [x] Phase 8-sync — notifier wired locally (`notify-downstream`, `ecosystem-upstream`, `dispatch-upstream-release.sh`); **push lic/lip/lit + human PAT secret pending**
+- [x] Phase 8e — `lit` CLI + ≥80% publish gate — **`lit` repo:** `scripts/lit`, coverage gate; **`lic`:** `check-stdlib-coverage.sh` instrumented import harness (`stdlib_coverage/`); llvm-cov 100% on `std/**` in **lit** repo
+- [x] Phase 8b — `lip` path/git + `li.lock` — **`lip` repo:** path deps, `install`/`build`/`lock`, integration fixtures
+- [x] Phase 8c — ed25519 + `proof_digest` in lock — **v1:** lock fields + optional `publisher.key` signing
+- [x] Phase 8d — Registry + `lip publish` — **v1:** local `registry/index.json` + publish gate (`lit` + `lic`)
+- [x] Phase 8-sync — cross-repo workflows; optional PAT scope fix for `repository_dispatch`
 - [x] Phase Doc-a — Gap register current + site links ([provability-gaps](../verification/provability-gaps.md))
 - [x] Phase Doc-b — Handbook stubs (decorators, linear-algebra); audit partial
 - [x] Phase Doc-c — Phase 02 plan links **G-*** IDs (expand to 03/07 as those land)
@@ -429,7 +429,7 @@ Runnable on `dev` after `./scripts/build.sh`:
 | **2i / 7e-b** | Matrix `@`, `sum`, Tier 1 math-only matmul vs C++ |
 | **7d-c** | Structured `disjoint=` without string policy |
 | **H** | li-httpd implementation |
-| **8a–8d** | Production lip/lit/registry + split-repo CI |
+| **8b–8d v2** | Git registry deps, full ed25519 trust store, remote registry REST |
 | **8-sync** | Push org repos + green remote CI |
 
 **“Master plan done”** per original spec = all tracker rows **plus** proved `lic build` **plus** shipped lip/lit/httpd — **not claimed**. Use **Lic monorepo v1** for what ships from this repository today.

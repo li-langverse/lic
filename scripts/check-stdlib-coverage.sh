@@ -1,35 +1,36 @@
 #!/usr/bin/env bash
-# Gate: std/**/*.li must reach 100% line coverage when lic --coverage-instrument is available.
+# Gate: std/**/*.li must be reachable via import harness + coverage build (phase 8e).
 set -euo pipefail
 ROOT="$(cd "$(dirname "$0")/.." && pwd)"
 cd "$ROOT"
+export LI_REPO_ROOT="$ROOT"
 
 if [[ ! -d std ]]; then
-  echo "check-stdlib-coverage: no std/ directory — skip"
+  echo "check-stdlib-coverage: no std/ — skip"
   exit 0
 fi
 
-LI_FILES=()
-while IFS= read -r f; do
-  LI_FILES+=("$f")
-done < <(find std -name '*.li' -type f 2>/dev/null | sort)
-
-if [[ ${#LI_FILES[@]} -eq 0 ]]; then
-  echo "check-stdlib-coverage: no std/**/*.li yet — OK"
-  exit 0
-fi
+n="$(find std -name '*.li' -type f | wc -l | tr -d ' ')"
+echo "check-stdlib-coverage: $n std source file(s)"
 
 LIC="${LIC:-}"
 if [[ -z "$LIC" && -x build/compiler/lic/lic ]]; then
   LIC=build/compiler/lic/lic
 fi
-
-if [[ -z "$LIC" ]] || ! "$LIC" --help 2>&1 | grep -q coverage-instrument; then
-  echo "check-stdlib-coverage: LIC without --coverage-instrument — stub OK (${#LI_FILES[@]} std files listed)"
-  printf '  %s\n' "${LI_FILES[@]}"
+if [[ -z "$LIC" ]]; then
+  echo "check-stdlib-coverage: stub OK (no lic binary)"
   exit 0
 fi
 
-echo "check-stdlib-coverage: --coverage-instrument available — run lit/coverage integration (phase 8e)" >&2
-echo "check-stdlib-coverage: enforce 100% on: ${#LI_FILES[@]} files" >&2
-exit 0
+harness=li-tests/stdlib_coverage/build_std_decorators.li
+if [[ ! -f "$harness" ]]; then
+  echo "check-stdlib-coverage: missing $harness" >&2
+  exit 1
+fi
+
+echo "check-stdlib-coverage: instrument $harness (imports std)"
+if ! "$LIC" build "$harness" -o /dev/null --coverage-instrument 2>&1; then
+  echo "check-stdlib-coverage: FAIL" >&2
+  exit 1
+fi
+echo "check-stdlib-coverage: ok (instrumented import harness; lit repo owns llvm-cov 100%)"

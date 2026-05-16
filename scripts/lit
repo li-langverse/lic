@@ -1,38 +1,16 @@
 #!/usr/bin/env bash
-# Phase 8e stub — test runner with coverage gate (full impl in li-langverse/lit).
+# Delegates to li-langverse/lit when checked out beside lic; else embedded stub path.
 set -euo pipefail
 ROOT="$(cd "$(dirname "$0")/.." && pwd)"
-
-usage() {
-  cat <<'EOF'
-lit — Li test runner (stub)
-
-  lit test [suite]     run li-tests (delegates to run_all.sh)
-  lit test --coverage  run tests (coverage gate not enforced in stub)
-  lit --version
-EOF
-}
-
-cmd="${1:-}"
-case "$cmd" in
-  -h|--help|"") usage; exit 0 ;;
-  --version|-V) echo "lit 0.1.0-stub"; exit 0 ;;
-  test)
-    shift
-    if [[ "${1:-}" == "--coverage" ]]; then
-      shift
-      min="${LI_LIT_MIN_COVERAGE:-80}"
-      echo "lit: coverage gate ≥${min}% not enforced in stub (set LI_LIT_ENFORCE_COVERAGE=1 when lit repo lands)" >&2
-      if [[ "${LI_LIT_ENFORCE_COVERAGE:-}" == "1" ]]; then
-        echo "lit: coverage enforcement not implemented" >&2
-        exit 1
-      fi
-    fi
-    suite="${1:-all}"
-    exec "$ROOT/li-tests/run_all.sh" "$suite"
-    ;;
-  *)
-    echo "lit: unknown command '$cmd' (stub)" >&2
-    exit 1
-    ;;
-esac
+for lit in "$ROOT/../lit/scripts/lit" "$ROOT/scripts/../lit/scripts/lit"; do
+  if [[ -x "$lit" ]]; then
+    exec "$lit" "$@"
+  fi
+done
+# Fallback: minimal runner in-tree (keep in sync with lit repo)
+# shellcheck source=../lit/scripts/lit
+if [[ -f "$ROOT/../lit/scripts/lit" ]]; then
+  exec "$ROOT/../lit/scripts/lit" "$@"
+fi
+echo "lit: clone li-langverse/lit beside lic or set PATH" >&2
+exit 1

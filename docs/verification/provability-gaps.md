@@ -35,7 +35,7 @@ Status legend: **Missing** · **Stub** · **Partial** · **CI only** · **Done**
 | ID | Area | Spec / promise | Current state | Phase | How we know |
 |----|------|----------------|---------------|-------|-------------|
 | **G-lean** | Lean 4 gate | `lic build` fails if any VC open | **Partial** — `.github/workflows/lean.yml`, `Init.Data.Float` in AutoVC; `check-autovc-open-goals.sh` with `LI_BUILD_VERIFY_LEAN_STRICT` | **2f** | `contracts_verify_lean.sh` |
-| **G-vc** | VC generation | Contracts → proof obligations | **Partial** — `AutoVC.lean` emits typed `Prop`/`Nat` from contract AST (not `True` stubs); proofs only for `True` | **2e** | `vc_emit_lean.cpp`, `li-tests/tooling/vc_emit_contracts.sh` |
+| **G-vc** | VC generation | Contracts → proof obligations | **Partial** — `AutoVC.lean` emits typed `Prop`/`Nat` from contract AST (not `True` stubs); proofs only for `True`; `lic verify --strict-lean` / `LI_BUILD_VERIFY_LEAN_STRICT` fail on open goals | **2e** | `vc_emit_lean.cpp`, `li-tests/tooling/vc_emit_contracts.sh`, `check-autovc-open-goals.sh` |
 | **G-par** | `parallel for` safety | Proved iteration independence | **Partial** — AST `check_module_policies` + string exploit patterns in `policy.cpp` | **7b**, **7d-c** | `race_shared_memory`, `decorator_exploits` |
 | **G-stdlib** | Prelude / std seal | User cannot shadow builtin or `std/` names | **Partial** — `check_stdlib_seal` + `resolve_imports` for `std.*` / workspace; cycle detect at load | **4s** | `li-tests/stdlib_seal/`, `li-tests/modules/` |
 | **G-dec** | Execution decorators | Static elaboration; reserved names; no runtime | **Partial** — parse + policy + `MirFn.decorators` tags; prelude table shared | **7d** | `decorator_exploits/`, `decorators/` |

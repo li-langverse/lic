@@ -4,6 +4,7 @@
   "labels": ["dependencies"],
   "regexManagers": [
     {
+      "description": "lic_version in li-toolchain.toml (repo root and packages/)",
       "fileMatch": ["(^|/)li-toolchain\\.toml$"],
       "matchStrings": ["lic_version\\s*=\\s*\"(?<currentValue>[^\"]+)\""],
       "depNameTemplate": "li-langverse/lic",

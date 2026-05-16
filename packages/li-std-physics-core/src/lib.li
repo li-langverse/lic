@@ -1,0 +1,124 @@
+# PKG-li-std-physics-core — simulation profiles, units, and shared stepping hooks.
+
+type PhysicsTier = object
+  public value: int
+
+type NumericalTargets = object
+  public max_energy_drift: float
+  public max_momentum_drift: float
+  public target_fps: int
+  public cfl_safety: float
+
+type PhysicsProfile = object
+  public tier: int
+  public dt: float
+  public substeps: int
+  public targets: NumericalTargets
+
+type SimulationParams = object
+  public n: int
+  public steps: int
+  public dt: float
+  public seed: int
+
+proc li_std_physics_core_version() -> int
+  requires true
+  ensures result == 1
+  decreases 0
+=
+  return 1
+
+proc physics_tier_arcade() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0
+
+proc physics_tier_simulation() -> int
+  requires true
+  ensures result == 1
+  decreases 0
+=
+  return 1
+
+proc physics_tier_scientific() -> int
+  requires true
+  ensures result == 2
+  decreases 0
+=
+  return 2
+
+proc physics_tier_research() -> int
+  requires true
+  ensures result == 3
+  decreases 0
+=
+  return 3
+
+proc default_numerical_targets() -> NumericalTargets
+  requires true
+  decreases 0
+=
+  var t: NumericalTargets
+  t.max_energy_drift = 0.001
+  t.max_momentum_drift = 0.0001
+  t.target_fps = 60
+  t.cfl_safety = 0.9
+  return t
+
+proc default_physics_profile() -> PhysicsProfile
+  requires true
+  decreases 0
+=
+  var p: PhysicsProfile
+  p.tier = physics_tier_simulation()
+  p.dt = 1.0 / 60.0
+  p.substeps = 1
+  p.targets = default_numerical_targets()
+  return p
+
+proc profile_for_tier(tier: int) -> PhysicsProfile
+  requires tier >= 0
+  requires tier <= 3
+  decreases tier
+=
+  var p: PhysicsProfile = default_physics_profile()
+  p.tier = tier
+  if tier == physics_tier_arcade()
+    p.dt = 1.0 / 60.0
+    p.substeps = 1
+    p.targets.max_energy_drift = 0.05
+  if tier == physics_tier_simulation()
+    p.dt = 1.0 / 120.0
+    p.substeps = 2
+    p.targets.max_energy_drift = 0.001
+  if tier == physics_tier_scientific()
+    p.dt = 0.001
+    p.substeps = 4
+    p.targets.max_energy_drift = 0.0001
+  if tier == physics_tier_research()
+    p.dt = 0.0001
+    p.substeps = 8
+    p.targets.max_energy_drift = 0.00001
+  return p
+
+# Compile-time policy hook (future: elaborator reads profile + chooses integrator)
+proc select_integrator_order(profile: PhysicsProfile) -> int
+  requires true
+  decreases profile.tier
+=
+  if profile.tier == physics_tier_arcade()
+    return 1
+  if profile.tier == physics_tier_simulation()
+    return 2
+  if profile.tier == physics_tier_scientific()
+    return 4
+  return 4
+
+proc simulation_fixed_dt_steps(params: SimulationParams) -> int
+  requires params.dt > 0.0
+  requires params.steps > 0
+  decreases params.steps
+=
+  return params.steps

@@ -15,6 +15,11 @@ void li_omp_parallel_for_i64(long long start, long long end, void (*body)(long l
 int32_t li_rt_floor_div_i32(int32_t a, int32_t b);
 int32_t li_rt_pow_i32(int32_t base, int32_t exp);
 double li_rt_sqrt(double x);
+double li_rt_sin(double x);
+double li_rt_cos(double x);
+double li_rt_atan2(double y, double x);
+double li_rt_exp(double x);
+double li_rt_log(double x);
 
 /* Async reactor stubs (httpd P0 — sync completion until epoll/kqueue lands). */
 void li_async_frame_enter(void);

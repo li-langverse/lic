@@ -142,8 +142,10 @@ peak_rss "md_lj_native traj" "$NATIVE_BIN"
 
 if [[ "$(uname -s)" == "Darwin" ]]; then
   run_macos_leaks
-else
+elif [[ "$ASAN_MD" -eq 0 && "$ASAN_LIC" -eq 0 ]]; then
   run_valgrind_if_present
+else
+  echo "==> valgrind: skip (incompatible with ASan build)"
 fi
 
 chmod +x "$ROOT/li-tests/run_security.sh"

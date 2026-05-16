@@ -1,0 +1,3 @@
+[routes]
+"GET /v1/*" = "proxy:a"
+"GET /v1/chat/*" = "proxy:b"

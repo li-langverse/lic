@@ -80,6 +80,10 @@ bool frontend(const char* path, const std::string& source, li::Module& out,
   if (!li::resolve_imports(*parsed.module, path, diags)) {
     return false;
   }
+  li::check_module_policies(*parsed.module, path, diags);
+  if (!diags.empty()) {
+    return false;
+  }
   li::check_duplicate_definitions(*parsed.module, path, diags);
   if (!diags.empty()) {
     return false;

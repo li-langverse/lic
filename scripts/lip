@@ -9,6 +9,7 @@ lip — Li package manager (stub)
 
   lip init NAME [--kind library|binary]   scaffold via li-new-package
   lip lock [--out FILE]                   write stub li.lock (phase 8c)
+  lip publish [--dry-run]                 verify + lit stub (phase 8d)
   lip --version
 
 Set LI_REPO_ROOT to the lic monorepo when developing.
@@ -46,6 +47,26 @@ sig_ed25519 = ""
 coverage_digest = "stub-none"
 EOF
     echo "wrote $out"
+    ;;
+  publish)
+    shift
+    dry=false
+    while [[ $# -gt 0 ]]; do
+      case "$1" in
+        --dry-run) dry=true; shift ;;
+        *) echo "lip publish: unknown option $1" >&2; exit 1 ;;
+      esac
+    done
+    LIC="${LIC:-$("$ROOT/scripts/resolve-lic.sh")}"
+  export LI_REPO_ROOT="$ROOT"
+    echo "lip publish: lic build + lit (stub gate)"
+    if [[ "$dry" == true ]]; then
+      echo "lip publish: dry-run ok"
+      exit 0
+    fi
+    "$LIC" build "$ROOT/li-tests/modules/greeter/greeter.li" -o /dev/null
+    "$ROOT/scripts/lit" test modules
+    echo "lip publish: ok (registry upload not implemented)"
     ;;
   *)
     echo "lip: unknown command '$cmd' (stub)" >&2

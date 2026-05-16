@@ -100,10 +100,6 @@ void check_decorator_policies(const std::string& code, const std::string& file,
     }
   }
 
-  if (code.find("@parallel(") != std::string::npos && !has_disjoint_proof(code)) {
-    SourceLoc loc{file, 1, 1, 0};
-    diags.error(loc, "parallel_requires_disjoint");
-  }
 }
 
 }  // namespace
@@ -114,18 +110,12 @@ void check_source_policies(const std::string& source, const std::string& file,
   const bool has_par_slice = code.find("par_slice") != std::string::npos;
   const bool has_parallel = code.find("parallel for") != std::string::npos;
   const bool has_disjoint = has_disjoint_proof(code);
-  if (has_par_slice && has_parallel) {
-    if (!has_disjoint) {
-      SourceLoc loc{file, 1, 1, 0};
-      diags.error(loc,
-                  "parallel for with par_slice requires proved disjoint slices");
-    }
+  if (has_par_slice && has_parallel && !has_disjoint) {
+    SourceLoc loc{file, 1, 1, 0};
+    diags.error(loc, "parallel for with par_slice requires proved disjoint slices");
   }
   if (has_parallel) {
     SourceLoc loc{file, 1, 1, 0};
-    if (!has_disjoint) {
-      diags.error(loc, "parallel for requires proved disjoint slices");
-    }
     if (code.find("buf[0]") != std::string::npos) {
       diags.error(loc, "overlapping shared mutable memory in parallel for");
     }
@@ -136,7 +126,7 @@ void check_source_policies(const std::string& source, const std::string& file,
       diags.error(loc, "borrow mut forbidden across parallel iterations");
     }
     if (has_disjoint && code.find("grid[0][0]") != std::string::npos) {
-      diags.error(loc, "false disjoint proof rejected by verification");
+      diags.error(loc, "false_disjoint_proof");
     }
   }
   if (code.find("-> Any") != std::string::npos ||

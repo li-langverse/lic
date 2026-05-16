@@ -12,3 +12,7 @@ lean_lib LiSemantics where
 lean_lib AutoVC where
   srcDir := "../../build/generated"
   roots := #[`AutoVC]
+
+lean_lib Discharge where
+  roots := #[`Discharge]
+  deps := #[`LiSemantics, `AutoVC]

@@ -38,6 +38,7 @@ chmod +x "$ROOT/scripts/check-doc-provability-claims.sh" \
   "$ROOT/scripts/check-li-toolchain.sh" \
   "$ROOT/li-tests/tooling/li_new_package_smoke.sh" \
   "$ROOT/li-tests/tooling/lip_lit_smoke.sh" \
+  "$ROOT/li-tests/tooling/lip_publish_smoke.sh" \
   "$ROOT/li-tests/tooling/vc_emit_contracts.sh" \
   "$ROOT/li-tests/tooling/contracts_verify_lean.sh"
 "$ROOT/scripts/check-doc-provability-claims.sh"

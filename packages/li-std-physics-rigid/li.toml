@@ -1,0 +1,21 @@
+[package]
+name = "li-std-physics-rigid"
+version = "0.1.0"
+edition = "2026"
+license = "Apache-2.0 OR MIT"
+description = "Li package li-std-physics-rigid"
+
+[dependencies]
+li-std-physics-core = { path = "../li-std-physics-core" }
+li-std-math = { path = "../li-std-math" }
+# registry = "1.0.0"             # lip 8d+
+
+[package.metadata.li]
+min_lic = "0.1.0"
+maintainer = "li-langverse"
+pkg_id = "PKG-li-std-physics-rigid"
+
+[package.repository]
+url = "https://github.com/li-langverse/li-std-physics-rigid"
+documentation = "https://li-langverse.github.io/li-language/ecosystem/li-std-physics-rigid/"
+changelog = "https://github.com/li-langverse/li-std-physics-rigid/blob/main/CHANGELOG.md"

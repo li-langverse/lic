@@ -1,0 +1,70 @@
+# Li physics for game development
+
+**Status:** tier-2 benchmarks + `li-std-physics-*` packages on branch `feat/physics-game-dev`  
+**Oracle:** shared C kernels in `benchmarks/tier2_physics/*/common/*_core.c` (Li matches cpp/rust/julia shape)
+
+---
+
+## Packages (import path when `import` lands)
+
+| Package | Use in games |
+|---------|----------------|
+| `li-std-physics-core` | Units, constants, shared types |
+| `li-std-physics-rigid` | Bodies, AABB/sphere overlap, PGS normal stub |
+| `li-std-physics-particles` | Particles, simple forces |
+| `li-std-physics-fluids` | Grid/fluid helpers (tier-2 euler/sph benches) |
+| `li-std-physics-runtime` | `PhysicsWorld`, `physics_step`, scene sync hooks |
+
+**Entry API:** `physics_world_new(2)` → loop `physics_step(world, 1.0/60.0)` → `physics_sync_to_scene`.
+
+---
+
+## Tier-2 benches (game-adjacent)
+
+| Bench id | Game use |
+|----------|----------|
+| `nbody_gravity` | Many-body / orbital particles |
+| `double_pendulum` | Chaotic constraints |
+| `rigid_body_stack` | Stacked colliders |
+| `ragdoll_chain` | Articulated character chain |
+| `cloth_swing` | Cloth / rope grid |
+| `sph_dam_break_2d` | Fluid splash |
+| `euler_fluid_2d` | Grid smoke/water (Euler) |
+| `three_body_pure` | Pure-Li integrator path (PH-7e) |
+
+Run harness:
+
+```bash
+cd lic/benchmarks/harness
+python3 bench.py --list
+python3 bench.py rigid_body_stack ragdoll_chain cloth_swing euler_fluid_2d
+```
+
+Catalog + dashboard: `li-langverse/benchmarks` `catalog.toml` → ingest.
+
+---
+
+## Integration checklist (engine)
+
+1. **Fixed timestep** — `physics_world_new`; set `substeps` ≥ 1 for stability.  
+2. **Scene sync** — implement `physics_sync_from_scene` / `physics_sync_to_scene` bodies when binding to entities.  
+3. **Prove game step** — game logic `proc game_step(...) ensures …` calls `physics_step` under contract (see `examples/tetris/` pattern).  
+4. **Validate** — tier-0 + tier-2 green; render GIFs via benchmarks `render-benchmark-visuals.sh`.  
+5. **Numerics** — skill `research-li-numerics`; study doc for novel integrators.
+
+---
+
+## PR / merge order (org)
+
+1. **lic** `fix/typecheck-ctx-init` / #4 — compiler blocker (merge first).  
+2. **Package CI** — `li-net`, `li-httpd`, `li-std-*`, `li-demo` #2 (or #1).  
+3. **lic** `feat/physics-game-dev` — physics packages + game benches.  
+4. **benchmarks** — catalog/ingest PRs after lic `main` builds.
+
+Run org sweep: `python3 scripts/run-pr-program.py` in **benchmarks** repo.
+
+---
+
+## Out of scope (tier R)
+
+Rendering (shadows, BRDF, particles on GPU) — physics-only in PH-5b. Use your engine renderer + Li physics state.

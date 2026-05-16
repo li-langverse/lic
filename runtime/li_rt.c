@@ -91,6 +91,16 @@ double li_rt_sqrt(double x) {
 #endif
 }
 
+double li_rt_sin(double x) { return sin(x); }
+
+double li_rt_cos(double x) { return cos(x); }
+
+double li_rt_atan2(double y, double x) { return atan2(y, x); }
+
+double li_rt_exp(double x) { return exp(x); }
+
+double li_rt_log(double x) { return log(x); }
+
 void li_async_frame_enter(void) {}
 
 void li_async_frame_leave(void) {}

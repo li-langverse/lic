@@ -1,0 +1,52 @@
+# PKG-li-std-physics-aero — atmosphere, lift/drag, orbital mechanics lite.
+
+extern proc li_rt_sqrt(x: float) -> float
+extern proc li_rt_sin(x: float) -> float
+extern proc li_rt_cos(x: float) -> float
+extern proc li_rt_exp(x: float) -> float
+
+proc li_std_physics_aero_version() -> int
+  requires true
+  ensures result == 1
+  decreases 0
+=
+  return 1
+
+proc atmosphere_density_exponential(altitude: float, rho0: float, scale_h: float) -> float
+  requires rho0 > 0.0
+  requires scale_h > 0.0
+  decreases 0
+=
+  return rho0 * li_rt_exp(-altitude / scale_h)
+
+proc lift_coefficient_alpha(alpha_rad: float) -> float
+  requires true
+  decreases 0
+=
+  return 2.0 * 3.14159265 * alpha_rad
+
+proc drag_force(speed: float, rho: float, cd: float, area: float) -> float
+  requires speed >= 0.0
+  requires rho >= 0.0
+  requires cd >= 0.0
+  requires area >= 0.0
+  decreases 0
+=
+  return 0.5 * rho * speed * speed * cd * area
+
+proc orbit_circular_period(mu: float, radius: float) -> float
+  requires mu > 0.0
+  requires radius > 0.0
+  decreases 0
+=
+  var two_pi: float = 2.0 * 3.14159265
+  return two_pi * li_rt_sqrt(radius * radius * radius / mu)
+
+proc two_body_accel(
+    ax: float, ay: float, bx: float, by: float,
+    mu: float, soft: float,
+    out_ax: float, out_ay: float) -> unit
+  requires mu > 0.0
+  decreases 0
+=
+  return

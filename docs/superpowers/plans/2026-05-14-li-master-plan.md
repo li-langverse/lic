@@ -37,7 +37,7 @@
 | Change | Update |
 |--------|--------|
 | Language pillars, compiler phases, org policy | **This master plan** (+ language design spec if normative) |
-| Quarterly / public milestones | **Future:** `li-langverse/roadmap` repo; until then, a section here |
+| Quarterly / public milestones | [`li-langverse/roadmap`](https://github.com/li-langverse/roadmap) + [benchmarks dashboard](https://li-langverse.github.io/benchmarks/) |
 | Single package scope | That package’s `README`, `PUBLISH.md`, `docs/traceability.md` only |
 | li-httpd product | [2026-05-16-li-httpd-plan.md](2026-05-16-li-httpd-plan.md) + **`lis`** |
 

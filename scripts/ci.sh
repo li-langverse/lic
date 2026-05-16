@@ -70,6 +70,10 @@ echo "==> encapsulation (2g def/object/import)"
 echo "==> decorator_exploits + decorators (7d policy/parse)"
 "$ROOT/li-tests/run_all.sh" decorator_exploits decorators
 
+echo "==> stdlib coverage instrument (8e)"
+chmod +x "$ROOT/scripts/check-stdlib-coverage.sh"
+"$ROOT/scripts/check-stdlib-coverage.sh"
+
 echo "==> doc provability claims"
 chmod +x "$ROOT/scripts/check-doc-provability-claims.sh"
 "$ROOT/scripts/check-doc-provability-claims.sh"

@@ -4,6 +4,11 @@ on:
   workflow_dispatch:
   schedule:
     - cron: "0 6 * * 1"
+  push:
+    branches: [main, dev]
+    paths:
+      - "benchmarks/**"
+      - ".github/workflows/benchmarks.yml"
 
 jobs:
   tier1-smoke:
@@ -25,3 +30,27 @@ jobs:
           chmod +x scripts/ci.sh scripts/ci-bench.sh scripts/build.sh
           ./scripts/ci.sh
           ./scripts/ci-bench.sh
+
+      - name: Upload benchmark CSV
+        uses: actions/upload-artifact@v4
+        with:
+          name: benchmark-csv
+          path: |
+            benchmarks/results/latest.csv
+            benchmarks/results/stability.csv
+            benchmarks/results/verify.csv
+          if-no-files-found: warn
+
+      - name: Dispatch benchmarks ingest
+        if: github.ref == 'refs/heads/main' || github.ref == 'refs/heads/dev'
+        env:
+          GH_TOKEN: ${{ secrets.LI_BENCHMARKS_DISPATCH_TOKEN }}
+        run: |
+          if [[ -z "${GH_TOKEN:-}" ]]; then
+            echo "LI_BENCHMARKS_DISPATCH_TOKEN not set — skip dispatch"
+            exit 0
+          fi
+          gh api repos/li-langverse/benchmarks/dispatches \
+            -f event_type=lic-bench-complete \
+            -f client_payload[ref]="${{ github.sha }}" \
+            -f client_payload[run_url]="${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}"

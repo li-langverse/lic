@@ -74,6 +74,16 @@ struct Parser {
     return false;
   }
 
+  bool at_for_kw() const {
+    return at(TokenKind::KwFor) || (at(TokenKind::Ident) && cur().text == "for");
+  }
+
+  void consume_for_kw() {
+    if (at_for_kw()) {
+      i++;
+    }
+  }
+
   bool parse_module(Module& out) {
     skip_newlines();
     while (!at(TokenKind::Eof)) {
@@ -644,11 +654,11 @@ Stmt Parser::parse_stmt() {
       const Token start_tok = cur();
       s.decorators = std::move(decos);
       i++;
-      if (!at(TokenKind::Ident) || cur().text != "for") {
+      if (!at_for_kw()) {
         diags.error({file, start_tok.line, 1, start_tok.start},
                     "expected 'for' after 'parallel'");
       } else {
-        i++;
+        consume_for_kw();
       }
       s.kind = Stmt::Kind::ParallelFor;
       if (!at(TokenKind::Ident)) {
@@ -813,13 +823,13 @@ Stmt Parser::parse_stmt() {
   if (at(TokenKind::Ident) && cur().text == "parallel") {
     const Token start_tok = cur();
     i++;
-    if (!at(TokenKind::Ident) || cur().text != "for") {
-      diags.error({file, start_tok.line, 1, start_tok.start},
-                  "expected 'for' after 'parallel'");
-    } else {
-      i++;
-    }
-    s.kind = Stmt::Kind::ParallelFor;
+      if (!at(TokenKind::KwFor)) {
+        diags.error({file, start_tok.line, 1, start_tok.start},
+                    "expected 'for' after 'parallel'");
+      } else {
+        i++;
+      }
+      s.kind = Stmt::Kind::ParallelFor;
     if (!at(TokenKind::Ident)) {
       diags.error({file, start_tok.line, 1, start_tok.start},
                   "expected loop variable");

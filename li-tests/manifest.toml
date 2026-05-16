@@ -74,7 +74,7 @@ note = "recursive proc compiles once build pipeline exists"
 suite = "typecheck"
 file = "typecheck/bad_array_index.li"
 outcome = "compile_fail"
-expected_substr = "out of range"
+expected_substr = "outside the array"
 
 [[tests]]
 suite = "typecheck"
@@ -340,7 +340,7 @@ outcome = "verify_ok"
 suite = "tetris"
 file = "tetris/board_oob.li"
 outcome = "compile_fail"
-expected_substr = "out of range"
+expected_substr = "outside the array"
 
 # --- integration (bootstrap / self-host seed) ---
 
@@ -566,19 +566,19 @@ outcome = "verify_ok"
 suite = "cve_patterns"
 file = "cve_patterns/cwe787_oob_index.li"
 outcome = "compile_fail"
-expected_substr = "out of range"
+expected_substr = "outside the array"
 
 [[tests]]
 suite = "cve_patterns"
 file = "cve_patterns/cwe125_negative_index.li"
 outcome = "compile_fail"
-expected_substr = "out of range"
+expected_substr = "outside the array"
 
 [[tests]]
 suite = "cve_patterns"
 file = "cve_patterns/cwe120_stack_buffer_oob.li"
 outcome = "compile_fail"
-expected_substr = "out of range"
+expected_substr = "outside the array"
 
 [[tests]]
 suite = "cve_patterns"

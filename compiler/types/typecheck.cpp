@@ -631,7 +631,7 @@ struct Ctx {
           const auto i = e.index->int_value;
           if (i < 0 || i >= base->array_size) {
             diag_error(diags, loc(e.span), ErrorCode::E0201,
-                       "This index is outside the array — the program cannot prove it is safe.",
+                       "index out of range — the program cannot prove it is safe.",
                        "Use a constant index, a refinement-typed loop variable, or narrow the "
                        "index with a `requires` proof.");
           }

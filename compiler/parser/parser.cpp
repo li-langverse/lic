@@ -640,16 +640,11 @@ Stmt Parser::parse_stmt() {
       s.while_body = parse_block();
       return s;
     }
-    if (at(TokenKind::Ident) && cur().text == "parallel") {
+    if (at(TokenKind::Ident) && cur().text == "parallel" && peek(1).kind == TokenKind::KwFor) {
       const Token start_tok = cur();
       s.decorators = std::move(decos);
-      i++;
-      if (!at(TokenKind::Ident) || cur().text != "for") {
-        diags.error({file, start_tok.line, 1, start_tok.start},
-                    "expected 'for' after 'parallel'");
-      } else {
-        i++;
-      }
+      i++; /* parallel */
+      i++; /* for */
       s.kind = Stmt::Kind::ParallelFor;
       if (!at(TokenKind::Ident)) {
         diags.error({file, start_tok.line, 1, start_tok.start},
@@ -813,7 +808,7 @@ Stmt Parser::parse_stmt() {
   if (at(TokenKind::Ident) && cur().text == "parallel") {
     const Token start_tok = cur();
     i++;
-    if (!at(TokenKind::Ident) || cur().text != "for") {
+    if (!at(TokenKind::KwFor)) {
       diags.error({file, start_tok.line, 1, start_tok.start},
                   "expected 'for' after 'parallel'");
     } else {

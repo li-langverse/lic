@@ -13,7 +13,8 @@ URL="https://github.com/llvm/llvm-project/releases/download/llvmorg-${VER}/LLVM-
 echo "install-llvm-windows: downloading LLVM ${VER}"
 curl -fsSL -o "$EXE" "$URL"
 echo "install-llvm-windows: silent install"
-cmd.exe //c "\"$(cygpath -w "$EXE")\" /S"
+EXE_WIN="$(cygpath -w "$EXE")"
+cmd.exe //c "$EXE_WIN /S"
 for _ in $(seq 1 30); do
   [[ -f "$LLVM_CMAKE" ]] && break
   sleep 2

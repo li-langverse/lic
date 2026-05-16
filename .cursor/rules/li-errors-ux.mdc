@@ -1,0 +1,13 @@
+---
+description: Li diagnostic UX — stable E#### codes and handbook
+globs:
+  - compiler/**/*
+  - docs/language/errors.md
+---
+
+# Li error UX
+
+- New diagnostics: assign `E####` in `error_codes.hpp`, row in `docs/language/errors.md`, emit via `diag_error(...)`.
+- No bare `error:` without `[E####]`.
+- JSON must include `"code"` and `"fix_hint"` for catalogued errors.
+- Skill: `.cursor/skills/li-error-catalog/SKILL.md`

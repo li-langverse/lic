@@ -32,6 +32,7 @@ Lowering is **never implicit**. It requires an **explicit, reviewable** project 
 Forbidden as ways to lower gates:
 
 - Omitting `requires` / `ensures` “for now”
+- Masking a **failed CI platform** with `continue-on-error` or “Linux-only” merge policy (see [ci-platforms.md](ci-platforms.md))
 - Default-off Lean verify without a named downgrade
 - `--no-verify`, hook bypass, or skipping `li-tests` / security harness unless the user **explicitly** requests a documented downgrade path
 - Agent suggestions to use `sorry`, `unsafe`, or weaken stdlib seal “to unblock” without user-requested downgrade

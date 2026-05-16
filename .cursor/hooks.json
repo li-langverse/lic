@@ -17,7 +17,7 @@
         "command": ".cursor/hooks/guard-direct-push.sh"
       },
       {
-        "command": ".cursor/hooks/guard-backup.sh"
+        "command": ".cursor/hooks/guard-pr-merge.sh"
       }
     ],
     "afterFileEdit": [
@@ -32,20 +32,9 @@
       {
         "command": ".cursor/hooks/remind-stdlib-coverage.sh",
         "matcher": "std/**"
-      },
-      {
-        "command": ".cursor/hooks/hpc-competitive-nudge.sh",
-        "matcher": "benchmarks/**"
-      },
-      {
-        "command": ".cursor/hooks/composable-package-nudge.sh",
-        "matcher": "packages/**/src/main.li"
       }
     ],
     "stop": [
-      {
-        "command": ".cursor/hooks/strict-by-default-guard.sh"
-      },
       {
         "command": ".cursor/hooks/remind-release-notes.sh"
       },
@@ -54,9 +43,6 @@
       },
       {
         "command": ".cursor/hooks/open-pr-github.sh"
-      },
-      {
-        "command": ".cursor/hooks/hpc-competitive-nudge.sh"
       }
     ]
   }

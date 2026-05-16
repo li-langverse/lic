@@ -1,10 +1,13 @@
-<div class="li-hero" markdown="1">
+# Welcome to Li
 
-<div class="li-hero__glyph">理</div>
-<p class="li-hero__tagline">Li · prove · write · run fast</p>
-
-Li is a language for **programs you can trust in production**: contracts checked before ship, memory and parallelism ruled out as failure modes, and native speed when the proof closes.
-
+<div class="li-hero" markdown="0">
+  <p class="li-hero__title">理 · Li</p>
+  <p class="li-hero__tagline">Prove it before it runs. Write it clearly. Ship native speed with vectors and parallel cores—after the proof closes.</p>
+  <ul class="li-hero__pillars">
+    <li>Prove it</li>
+    <li>Write it easily</li>
+    <li>Run it fast</li>
+  </ul>
 </div>
 
 <div class="grid cards" markdown>

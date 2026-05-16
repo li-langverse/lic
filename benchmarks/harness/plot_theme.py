@@ -1,4 +1,4 @@
-"""Li dark theme for matplotlib — X-ready 16:9 figures."""
+"""Li Space theme for matplotlib — X-ready 16:9 figures."""
 
 from __future__ import annotations
 
@@ -10,9 +10,9 @@ FIG_H = 9
 FIG_DPI = 200
 RETINA_SCALE = 2
 
-# Li Space palette (aligned with docs/stylesheets/extra.css)
+# Li Space palette
 BG = "#05060a"
-PANEL = "#121826"
+PANEL = "#0b0e14"
 TEXT = "#e8eef7"
 MUTED = "#8b9cb3"
 PRIMARY = "#3dd6ff"
@@ -23,11 +23,11 @@ WARN = "#ffb347"
 
 LANG_COLORS = {
     "li": PRIMARY,
-    "cpp": "#f0883e",
+    "cpp": ACCENT,
     "rust": "#ffa657",
-    "julia": "#a371f7",
-    "python": "#79c0ff",
-    "python+numpy": "#56d364",
+    "julia": "#c4a5ff",
+    "python": "#6de4ff",
+    "python+numpy": PASS,
 }
 
 
@@ -38,18 +38,18 @@ def apply_theme():
         {
             "figure.facecolor": BG,
             "axes.facecolor": PANEL,
-            "axes.edgecolor": "#1e2a3d",
+            "axes.edgecolor": "#1e2638",
             "axes.labelcolor": TEXT,
             "text.color": TEXT,
             "xtick.color": MUTED,
             "ytick.color": MUTED,
-            "grid.color": "#21262d",
-            "grid.alpha": 0.8,
+            "grid.color": "#141c2e",
+            "grid.alpha": 0.85,
             "font.size": 13,
             "axes.titlesize": 20,
             "axes.titleweight": "bold",
             "legend.facecolor": PANEL,
-            "legend.edgecolor": "#1e2a3d",
+            "legend.edgecolor": "#1e2638",
             "figure.dpi": FIG_DPI,
         }
     )
@@ -64,7 +64,7 @@ def brand_figure(title: str, subtitle: str = ""):
     ax.set_title(title, loc="left", pad=16, color=TEXT)
     if subtitle:
         fig.text(0.08, 0.92, subtitle, fontsize=12, color=MUTED)
-    fig.text(0.96, 0.03, "Li Space · prove · write · run fast", ha="right", fontsize=10, color=MUTED)
+    fig.text(0.96, 0.03, "Li · li-language", ha="right", fontsize=10, color=MUTED)
     return fig, ax
 
 

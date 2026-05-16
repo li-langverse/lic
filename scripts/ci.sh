@@ -5,6 +5,15 @@ ROOT="$(cd "$(dirname "$0")/.." && pwd)"
 export CC="${CC:-clang}"
 export CXX="${CXX:-clang++}"
 
+echo "==> agent-kit sync check"
+chmod +x "$ROOT/scripts/check-agent-kit-sync.sh" 2>/dev/null || true
+if [[ -x "$ROOT/scripts/check-agent-kit-sync.sh" ]]; then
+  "$ROOT/scripts/check-agent-kit-sync.sh" || {
+    echo "hint: run ../roadmap/scripts/install-agent-kit.sh from sibling roadmap checkout" >&2
+    exit 1
+  }
+fi
+
 echo "==> build"
 "$ROOT/scripts/build.sh"
 

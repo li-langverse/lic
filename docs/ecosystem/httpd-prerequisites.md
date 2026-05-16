@@ -1,15 +1,13 @@
-# li-httpd compiler prerequisites (P0)
+# Httpd Prerequisites
 
-li-httpd **M1 `.li` code** does not start until these **`lic`** gates pass. Infra in **`lis`** can proceed in parallel.
+<!-- DOC-ecosystem-stub-httpd-prerequisites.md -->
 
-| ID | Work | Repo | Plan |
-|----|------|------|------|
-| P0-lean | VC + Lean on `lic build` (real discharge) | `lic` | Master plan 2e–2f |
-| P0-bytes | `std` bytes, stringview, Reader/Writer | `lic` | [li-httpd plan](../superpowers/plans/2026-05-16-li-httpd-plan.md) w0-bytes-io |
-| P0-net | `raises Net`, trusted syscall RFC | `lic` | httpd plan |
-| P0-async | async/await + epoll/kqueue | `lic` | w1-async-reactor |
-| P0-http | HTTP/1.1 parser proofs | `lic` | w2-http11 |
+**Canonical doc:** [httpd-prerequisites.md](https://github.com/li-langverse/roadmap/blob/main/docs/ecosystem/httpd-prerequisites.md) in [`li-langverse/roadmap`](https://github.com/li-langverse/roadmap).
 
-**Coverage:** `std/**` = **100%**; published `li-*` = **≥80%** ([engineering-standards.md](engineering-standards.md)).
+Do not edit ecosystem policy here — open a PR to the roadmap repo (human merge for governance paths).
 
-**lis status:** [implementation-status](https://github.com/li-langverse/lis/blob/main/docs/implementation-status.md) (infra harness complete).
+## Related
+
+- [Roadmap milestones](https://github.com/li-langverse/roadmap/blob/main/docs/roadmap/milestones.md)
+- [Benchmarks dashboard](https://li-langverse.github.io/benchmarks/)
+- [lic master plan](https://github.com/li-langverse/lic/blob/main/docs/superpowers/plans/2026-05-14-li-master-plan.md)

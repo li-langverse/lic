@@ -12,16 +12,23 @@
       },
       {
         "command": ".cursor/hooks/guard-secrets.sh"
+      },
+      {
+        "command": ".cursor/hooks/guard-direct-push.sh"
       }
     ],
     "afterFileEdit": [
       {
-        "command": ".cursor/hooks/remind-stdlib-coverage.sh",
-        "matcher": "std/**"
+        "command": ".cursor/hooks/remind-governance-docs.sh",
+        "matcher": "docs/**"
       },
       {
-        "command": ".cursor/hooks/remind-ecosystem-docs.sh",
-        "matcher": "docs/**"
+        "command": ".cursor/hooks/remind-governance-docs.sh",
+        "matcher": "proposals/**"
+      },
+      {
+        "command": ".cursor/hooks/remind-stdlib-coverage.sh",
+        "matcher": "std/**"
       }
     ],
     "stop": [
@@ -29,7 +36,7 @@
         "command": ".cursor/hooks/session-audit.sh"
       },
       {
-        "command": ".cursor/hooks/auto-push-github.sh"
+        "command": ".cursor/hooks/open-pr-github.sh"
       }
     ]
   }

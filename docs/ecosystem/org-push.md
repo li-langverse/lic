@@ -1,22 +1,13 @@
-# Pushing lic / lip / lit to li-langverse
+# Org Push
 
-Automation: [`scripts/push-li-langverse-repos.sh`](../../scripts/push-li-langverse-repos.sh).
+<!-- DOC-ecosystem-stub-org-push.md -->
 
-## Prerequisites (human)
+**Canonical doc:** [org-push.md](https://github.com/li-langverse/roadmap/blob/main/docs/ecosystem/org-push.md) in [`li-langverse/roadmap`](https://github.com/li-langverse/roadmap).
 
-1. Fine-grained PAT or `gh auth login` scoped to **`li-langverse`**.
-2. Store token outside git (e.g. local `.env.github` — **never commit**).
-3. Set `LI_DOWNSTREAM_DISPATCH_TOKEN` on **`lic`** for `notify-downstream.yml`.
+Do not edit ecosystem policy here — open a PR to the roadmap repo (human merge for governance paths).
 
-## Agent steps
+## Related
 
-```bash
-./scripts/build.sh
-./scripts/check-master-plan-gates.sh
-./scripts/push-li-langverse-repos.sh   # when remotes configured
-```
-
-## Exit gate (8-sync)
-
-- `lic`, `lip`, `lit` on GitHub with green CI (Linux + macOS).
-- Tag `lic` v* → downstream `ecosystem-upstream` workflow fires on **lip**.
+- [Roadmap milestones](https://github.com/li-langverse/roadmap/blob/main/docs/roadmap/milestones.md)
+- [Benchmarks dashboard](https://li-langverse.github.io/benchmarks/)
+- [lic master plan](https://github.com/li-langverse/lic/blob/main/docs/superpowers/plans/2026-05-14-li-master-plan.md)

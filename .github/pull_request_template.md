@@ -8,6 +8,8 @@
 - [ ] **Learned from** — if new ecosystem feature (2–4 references)
 - [ ] **Coverage** — `std/**` 100% if touched; packages ≥80% when `lit` applies
 - [ ] **Vision** — master plan updated if cross-repo / pillar change
+- [ ] **Roadmap governance** PR opened/merged (human) if pillars or ecosystem policy changed
+- [ ] **Agent-kit** — `./scripts/sync-agent-kit.sh` if roadmap `agent-kit/` version bumped
 
 ## Test plan
 

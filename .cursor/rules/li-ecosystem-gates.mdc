@@ -9,10 +9,11 @@ Agents **must** follow these before and during work. Style and structure are fle
 
 ## Read order (start of session)
 
-1. `docs/ecosystem/engineering-standards.md` — functionality, security, performance
-2. `docs/ecosystem/vision-and-roadmap.md` — where vision docs live
-3. `docs/ecosystem/agent-coordination.md` — `.li-agent-coord.json`, claims
-4. `docs/superpowers/plans/2026-05-14-li-master-plan.md` — current **PH-** phase
+1. `../roadmap/docs/ecosystem/engineering-standards.md` (or sibling `roadmap/` checkout)
+2. `../roadmap/docs/ecosystem/vision-and-roadmap.md`
+3. `../roadmap/docs/ecosystem/agent-coordination.md` — `.li-agent-coord.json`, claims
+4. `docs/superpowers/plans/2026-05-14-li-master-plan.md` in **`lic`** — current **PH-** phase
+5. [Benchmarks dashboard](https://li-langverse.github.io/benchmarks/) — perf status
 
 ## Three gates (every change)
 
@@ -20,7 +21,7 @@ Agents **must** follow these before and during work. Style and structure are fle
 |------|----------|
 | **Functionality** | `li-tests` / `lit` green; REQ/PH ids; contracts when phase requires |
 | **Security** | Relevant CVE/CWE rows; `run_security.sh` / tier5 exploits; no trusted creep |
-| **Performance** | Benchmark row or documented N/A; investigate regressions |
+| **Performance** | Benchmark row or documented N/A; [benchmarks dashboard](https://li-langverse.github.io/benchmarks/) |
 
 ## Coverage tiers
 
@@ -33,15 +34,16 @@ Agents **must** follow these before and during work. Style and structure are fle
 ## Design discipline
 
 - New ecosystem feature: survey **2–4** mature systems; document **Learned from**; adapt to easy + AI-first + provable + fast.
-- Cross-repo or pillar vision → **master plan**, not package README only.
-- Org repos / secrets / branch protection → use `./scripts/agent-push-github.sh` when `../.env.github` has `GH_TOKEN`; ask human only if push fails.
+- Cross-repo or pillar vision → **master plan** + roadmap **proposal**; not package README only.
+- Org repos / secrets / branch protection → ask human; wait for confirmation.
 
 ## Escalate (do not do alone)
 
 - Lower coverage tiers, skip CVE tests, weaken bench thresholds
 - New `trusted.lean` axioms
 - Changing pillar priority or master plan phase order
+- Weakening `agent-kit/hooks/guard-*.sh`
 
 ## Hooks
 
-Project hooks in `.cursor/hooks.json` enforce session reminders and guard destructive git / secret leaks.
+Synced from `li-langverse/roadmap` agent-kit via `./scripts/sync-agent-kit.sh`.

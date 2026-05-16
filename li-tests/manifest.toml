@@ -129,6 +129,11 @@ outcome = "verify_ok"
 
 [[tests]]
 suite = "contracts_verify"
+file = "contracts_verify/sqrt_open_bound.li"
+outcome = "verify_ok"
+
+[[tests]]
+suite = "contracts_verify"
 file = "contracts_verify/index_refinement.li"
 outcome = "verify_ok"
 

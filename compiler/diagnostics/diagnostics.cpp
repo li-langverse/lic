@@ -93,6 +93,38 @@ std::string infer_diagnostic_code(std::string_view message) {
   return "lic.error";
 }
 
+/** Stable category strings for agents (diagnostic-v1); maps E-codes to semantic ids. */
+std::string agent_diagnostic_code(std::string_view code) {
+  if (code == "E0201") {
+    return "type.index";
+  }
+  if (code == "E0202") {
+    return "type.mismatch";
+  }
+  if (code == "E0101") {
+    return "parse.indent";
+  }
+  if (code == "E0301") {
+    return "contract.requires";
+  }
+  if (code == "E0302") {
+    return "contract.ensures";
+  }
+  if (code == "E0320") {
+    return "parallel.disjoint";
+  }
+  if (code == "E0330") {
+    return "resolve.shadow";
+  }
+  if (code == "E0401") {
+    return "control.break";
+  }
+  if (code == "E0402") {
+    return "control.continue";
+  }
+  return std::string(code);
+}
+
 std::string effective_code(const Diagnostic& d) {
   if (!d.code.empty()) {
     return d.code;
@@ -144,7 +176,7 @@ void print_diagnostics_json(const DiagnosticBag& bag, std::ostream& out,
       out << ',';
     }
     first = false;
-    const std::string code = effective_code(d);
+    const std::string code = agent_diagnostic_code(effective_code(d));
     out << "{\"severity\":\"error\",\"file\":" << json_escape(d.loc.file) << ",\"line\":"
         << d.loc.line << ",\"column\":" << d.loc.column << ",\"offset\":" << d.loc.offset
         << ",\"code\":" << json_escape(code) << ",\"message\":" << json_escape(d.message);

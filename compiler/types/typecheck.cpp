@@ -465,6 +465,12 @@ struct Ctx {
       case Expr::Kind::StringLit:
         return make_str();
       case Expr::Kind::Ident: {
+        if (e.ident == "true") {
+          return make_bool();
+        }
+        if (e.ident == "false") {
+          return make_bool();
+        }
         const auto it = locals.find(e.ident);
         if (it == locals.end()) {
           diags.error(loc(e.span), "unknown variable '" + e.ident + "'");
@@ -631,7 +637,7 @@ struct Ctx {
           const auto i = e.index->int_value;
           if (i < 0 || i >= base->array_size) {
             diag_error(diags, loc(e.span), ErrorCode::E0201,
-                       "This index is outside the array — the program cannot prove it is safe.",
+                       "array index out of range — the program cannot prove it is safe.",
                        "Use a constant index, a refinement-typed loop variable, or narrow the "
                        "index with a `requires` proof.");
           }
@@ -892,7 +898,7 @@ struct Ctx {
 TypecheckResult typecheck_module(const Module& module) {
   TypecheckResult result;
   DiagnosticBag& diags = result.diagnostics;
-  Ctx ctx{{}, {}, {}, {}, {}, {}, false, diags, "module"};
+  Ctx ctx{{}, {}, {}, {}, {}, {}, 0, false, diags, "module"};
   for (const auto& proc : module.procs) {
     ctx.procs[proc.name] = &proc;
   }

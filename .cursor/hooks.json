@@ -18,6 +18,10 @@
       {
         "command": ".cursor/hooks/remind-stdlib-coverage.sh",
         "matcher": "std/**"
+      },
+      {
+        "command": ".cursor/hooks/remind-ecosystem-docs.sh",
+        "matcher": "docs/**"
       }
     ],
     "stop": [

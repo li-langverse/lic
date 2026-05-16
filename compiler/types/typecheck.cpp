@@ -543,6 +543,25 @@ struct Ctx {
           }
           return make_int();
         }
+        if (e.ident == "sum") {
+          if (e.args.size() != 1) {
+            diags.error(loc(e.span), "sum expects one array argument");
+            return make_int();
+          }
+          const TyPtr arg_ty = type_of(*e.args[0]);
+          if (arg_ty->kind != TyKind::Array || !arg_ty->elem) {
+            diags.error(loc(e.span), "sum expects a fixed array argument");
+            return make_int();
+          }
+          if (arg_ty->elem->kind == TyKind::Int) {
+            return make_int();
+          }
+          if (arg_ty->elem->kind == TyKind::Float) {
+            return make_float();
+          }
+          diags.error(loc(e.span), "sum supports int or float arrays only");
+          return make_int();
+        }
         const auto pit = procs.find(e.ident);
         if (pit != procs.end()) {
           const ProcDecl& callee = *pit->second;

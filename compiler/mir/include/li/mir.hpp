@@ -23,6 +23,8 @@ enum class MirOp {
   ArrayStoreFloat,
   ArrayLoadFloat,
   ArrayDotF64,
+  ArraySumF64,
+  ArraySumI64,
   LocalAllocInt,
   LocalAllocI64,
   StoreInt,

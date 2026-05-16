@@ -36,6 +36,7 @@ Committed in **`lic`** at `.cursor/hooks.json`:
 | `sessionStart` | Remind: engineering-standards, vision, three gates, std 100% |
 | `beforeShellExecution` | Block force-push, `reset --hard`, `--no-verify`; block `cat` of secret paths |
 | `afterFileEdit` (`std/**`) | Remind 100% coverage + tests |
+| `afterFileEdit` (`docs/ecosystem/*`, `docs/superpowers/plans/*`) | Remind vision placement (master plan vs package) |
 | `stop` | Suggest `ci.sh` / security if sensitive paths touched |
 
 Override blocks with `LI_HOOK_ALLOW=1` only when intentional.

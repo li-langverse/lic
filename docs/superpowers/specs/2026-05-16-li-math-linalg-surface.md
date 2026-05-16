@@ -1,6 +1,6 @@
 # Mathematical linear-algebra surface (spec stub)
 
-**Status:** Planned (Phase 2i + 7e) — **not implemented**  
+**Status:** Partial (Phase 2i + 7e) — 1d `@`, `sum(array)` implemented; matrix `@` deferred  
 **Plan:** `docs/superpowers/plans/2026-05-16-li-math-linalg-surface.md`  
 **Gaps:** [Provability gaps](../../verification/provability-gaps.md) **G-math**
 

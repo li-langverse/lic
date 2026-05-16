@@ -13,6 +13,7 @@ int par_counter = 0;
 
 struct LowerArrayCtx {
   std::unordered_map<std::string, std::int64_t> float_array_sizes;
+  std::unordered_map<std::string, std::int64_t> int_array_sizes;
   const std::unordered_set<std::string>* float_array_names = nullptr;
 };
 
@@ -232,6 +233,37 @@ std::string lower_expr_to(const Expr& e, const Module& module, std::vector<MirIn
         simd_names.insert(dest);
         return dest;
       }
+      if (e.ident == "sum" && e.args.size() == 1 && e.args[0]->kind == Expr::Kind::Ident &&
+          g_arr_ctx) {
+        const std::string arr = e.args[0]->ident;
+        const std::string dest = fresh_temp();
+        if (g_arr_ctx->float_array_names &&
+            g_arr_ctx->float_array_names->count(arr) > 0) {
+          const auto sz = g_arr_ctx->float_array_sizes.find(arr);
+          if (sz != g_arr_ctx->float_array_sizes.end()) {
+            MirInsn ins;
+            ins.op = MirOp::ArraySumF64;
+            ins.ident = dest;
+            ins.lhs_ident = arr;
+            ins.int_value = sz->second;
+            out.push_back(std::move(ins));
+            float_names.insert(dest);
+            return dest;
+          }
+        }
+        {
+          const auto sz = g_arr_ctx->int_array_sizes.find(arr);
+          if (sz != g_arr_ctx->int_array_sizes.end()) {
+            MirInsn ins;
+            ins.op = MirOp::ArraySumI64;
+            ins.ident = dest;
+            ins.lhs_ident = arr;
+            ins.int_value = sz->second;
+            out.push_back(std::move(ins));
+            return dest;
+          }
+        }
+      }
       if (e.ident == "__li_horiz_sum_f64" && e.args.size() == 1) {
         const std::string dest = fresh_temp();
         const std::string vec = lower_expr_to(*e.args[0], module, out, float_names, simd_names);
@@ -410,6 +442,9 @@ void lower_stmt(const Stmt& stmt, LowerCtx& ctx, bool returns_float, std::vector
           if (g_arr_ctx) {
             g_arr_ctx->float_array_sizes[stmt.var_name] = stmt.var_type.array_size;
           }
+        } else if (stmt.var_type.elem && stmt.var_type.elem->kind == TypeKind::Named &&
+                   stmt.var_type.elem->name == "int" && g_arr_ctx) {
+          g_arr_ctx->int_array_sizes[stmt.var_name] = stmt.var_type.array_size;
         }
       } else if (is_i64_type_name(stmt.var_type.name)) {
         MirInsn ins;

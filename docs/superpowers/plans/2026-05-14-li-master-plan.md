@@ -372,7 +372,7 @@ Track in phase **Doc** until each is checked:
 - [x] Phase 2d — Borrow + effects (lexical borrowck, raises IO/Alloc)
 - [x] Phase 2g — `def`, `object` + `private`/`public`, minimal `import` (`encapsulation` suite green; import parse-only)
 - [x] Phase 2h — Python-math operators `%`, `//`, `**` (`math_syntax` suite); `for`/`range` deferred
-- [ ] Phase 2i — Math / linalg surface — **partial:** 1d `float` `@` via **7e**; `sum`/matrix `@` deferred
+- [ ] Phase 2i — Math / linalg surface — **partial:** 1d `float` `@`, `sum(array)`; matrix `@` deferred
 - [x] Phase 3 — MIR + LLVM codegen (`lic build`, minimal lower/emit; CFG/bounds IR deferred)
 - [x] Phase 4 — Runtime + stdlib
 - [x] Phase 4s — Stdlib seal (prelude/`std/` names cannot be shadowed; `stdlib_seal/` CI)

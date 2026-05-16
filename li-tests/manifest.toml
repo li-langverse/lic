@@ -381,6 +381,11 @@ file = "math_linalg/array_dot_mismatch.li"
 outcome = "compile_fail"
 expected_substr = "matrix multiply"
 
+[[tests]]
+suite = "math_linalg"
+file = "math_linalg/array_sum.li"
+outcome = "verify_ok"
+
 # --- math_syntax (2h — %, //, **) ---
 
 [[tests]]

@@ -25,7 +25,7 @@ flowchart TD
 | **Policy** | Forbidden constructs (`Any`, bad parallel patterns, …) |
 | **Typecheck** | Types, effects, contracts surface |
 | **Borrow** | Memory exclusivity |
-| **Lean** (full gate) | Discharge proof obligations |
+| **Lean** (full gate) | Discharge proof obligations — **not wired yet** ([gaps](../verification/provability-gaps.md) **G-lean**) |
 | **MIR** | Typed AST → mid-level IR (SIMD, loops, calls) |
 | **LLVM** | MIR → `.ll` IR |
 | **Link** | Clang links IR + `runtime/li_rt.c` (+ OpenMP if needed) |
@@ -42,7 +42,7 @@ flowchart TD
 | LLVM optimization (`--release`) | CPU executes machine code |
 | OpenMP team creation | Threads run parallel loops |
 
-Most safety wins are **before** you run the program.
+Most safety wins are **before** you run the program. The full proof gate is still **in progress** — see **[Provability gaps](../verification/provability-gaps.md)**.
 
 ## Flags
 

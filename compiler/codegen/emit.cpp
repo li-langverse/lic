@@ -192,6 +192,19 @@ struct EmitCtx {
     return bb;
   }
 
+  llvm::Function* rt_fn_i32_i32(const char* name) {
+    if (llvm::Function* f = module->getFunction(name)) {
+      return f;
+    }
+    llvm::FunctionType* ft =
+        llvm::FunctionType::get(i32_ty(context), {i32_ty(context), i32_ty(context)}, false);
+    return llvm::Function::Create(ft, llvm::Function::ExternalLinkage, name, module);
+  }
+
+  llvm::Value* call_rt_i32_i32(const char* name, llvm::Value* a, llvm::Value* b) {
+    return builder->CreateCall(rt_fn_i32_i32(name), {a, b});
+  }
+
   llvm::Value* emit_binop(BinOp op, llvm::Value* lhs, llvm::Value* rhs) {
     switch (op) {
       case BinOp::Add:
@@ -202,6 +215,12 @@ struct EmitCtx {
         return builder->CreateMul(lhs, rhs);
       case BinOp::Div:
         return builder->CreateSDiv(lhs, rhs);
+      case BinOp::Mod:
+        return builder->CreateSRem(lhs, rhs);
+      case BinOp::FloorDiv:
+        return call_rt_i32_i32("li_rt_floor_div_i32", lhs, rhs);
+      case BinOp::Pow:
+        return call_rt_i32_i32("li_rt_pow_i32", lhs, rhs);
       case BinOp::Lt:
         return builder->CreateZExt(
             builder->CreateICmpSLT(lhs, rhs), i32_ty(context));
@@ -515,10 +534,43 @@ struct EmitCtx {
         llvm::Value* gep_indices[] = {zero, idx};
         llvm::Value* ptr = builder->CreateInBoundsGEP(
             it->second.alloca->getAllocatedType(), it->second.alloca, gep_indices);
-        llvm::Value* loaded = builder->CreateLoad(i32_ty(context), ptr);
-        if (!ins.lhs_ident.empty()) {
-          builder->CreateStore(loaded, ensure_int_local(ins.lhs_ident));
+        if (it->second.is_float) {
+          llvm::Value* loaded = builder->CreateLoad(llvm::Type::getDoubleTy(context), ptr);
+          if (!ins.lhs_ident.empty()) {
+            builder->CreateStore(loaded, ensure_float_local(ins.lhs_ident));
+          }
+        } else {
+          llvm::Value* loaded = builder->CreateLoad(i32_ty(context), ptr);
+          if (!ins.lhs_ident.empty()) {
+            builder->CreateStore(loaded, ensure_int_local(ins.lhs_ident));
+          }
         }
+        return true;
+      }
+      case MirOp::ArrayLoadFloat:
+        return true;
+      case MirOp::ArrayDotF64: {
+        auto a_it = arrays.find(ins.lhs_ident);
+        auto b_it = arrays.find(ins.rhs_ident);
+        if (a_it == arrays.end() || b_it == arrays.end()) {
+          return true;
+        }
+        llvm::Type* f64 = llvm::Type::getDoubleTy(context);
+        llvm::Value* acc = llvm::ConstantFP::get(f64, 0.0);
+        const auto n = static_cast<unsigned>(ins.int_value);
+        for (unsigned i = 0; i < n; ++i) {
+          llvm::Value* idx = llvm::ConstantInt::get(i32_ty(context), i);
+          llvm::Value* zero = llvm::ConstantInt::get(builder->getInt32Ty(), 0);
+          llvm::Value* gep_idx[] = {zero, idx};
+          llvm::Value* ap = builder->CreateInBoundsGEP(
+              a_it->second.alloca->getAllocatedType(), a_it->second.alloca, gep_idx);
+          llvm::Value* bp = builder->CreateInBoundsGEP(
+              b_it->second.alloca->getAllocatedType(), b_it->second.alloca, gep_idx);
+          llvm::Value* av = builder->CreateLoad(f64, ap);
+          llvm::Value* bv = builder->CreateLoad(f64, bp);
+          acc = builder->CreateFAdd(acc, builder->CreateFMul(av, bv));
+        }
+        builder->CreateStore(acc, ensure_float_local(ins.ident));
         return true;
       }
       case MirOp::LoadIntToIdent:

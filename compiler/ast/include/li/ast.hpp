@@ -16,10 +16,13 @@ struct Span {
 struct Expr;
 struct TypeExpr;
 
+enum class Visibility { Public, Private };
+
 struct TypeField {
   std::string name;
   std::unique_ptr<TypeExpr> type;
   bool optional = false;
+  Visibility visibility = Visibility::Public;
 };
 
 enum class TypeKind { Named, Array, Refinement, TypeApp, Callable, GenericParam, NamedTuple };
@@ -40,7 +43,7 @@ struct TypeExpr {
   bool tuple_variadic = false;
 };
 
-enum class AliasKind { Type, TypedDict, Enum };
+enum class AliasKind { Type, TypedDict, Enum, Object };
 
 struct Param {
   Span span;
@@ -50,10 +53,10 @@ struct Param {
 
 enum class ContractKind { Requires, Ensures, Decreases, Invariant };
 
-enum class BinOp { Add, Sub, Mul, Div, Le, Lt, Ge, Gt, Eq, Ne, And, Or };
+enum class BinOp { Add, Sub, Mul, Div, Mod, FloorDiv, Pow, MatMul, Le, Lt, Ge, Gt, Eq, Ne, And, Or };
 
 struct Expr {
-  enum class Kind { IntLit, FloatLit, StringLit, Ident, BinOp, Call, UnaryNot, Index };
+  enum class Kind { IntLit, FloatLit, StringLit, Ident, BinOp, Call, UnaryNot, Index, FieldAccess };
   Kind kind = Kind::IntLit;
   Span span;
   std::int64_t int_value = 0;
@@ -66,13 +69,31 @@ struct Expr {
   std::unique_ptr<Expr> operand;
   std::unique_ptr<Expr> base;
   std::unique_ptr<Expr> index;
+  std::string field_name;
   std::vector<std::unique_ptr<Expr>> args;
+};
+
+struct ImportDecl {
+  Span span;
+  std::string module;
+  std::string alias;
 };
 
 struct Contract {
   ContractKind kind;
   Span span;
   std::unique_ptr<Expr> expr;
+};
+
+struct DecoratorArg {
+  std::string name;
+  std::unique_ptr<Expr> value;
+};
+
+struct Decorator {
+  Span span;
+  std::string name;
+  std::vector<DecoratorArg> args;
 };
 
 struct Stmt {
@@ -94,12 +115,14 @@ struct Stmt {
   std::int64_t par_end = 0;
   std::vector<Contract> par_contracts;
   std::vector<Stmt> par_body;
+  std::vector<Decorator> decorators;
 };
 
 struct ProcDecl {
   Span span;
   std::string name;
   bool is_extern = false;
+  std::vector<Decorator> decorators;
   std::vector<std::string> type_params;
   std::vector<Param> params;
   std::optional<TypeExpr> ret_type;
@@ -119,6 +142,7 @@ struct TypeAlias {
 };
 
 struct Module {
+  std::vector<ImportDecl> imports;
   std::vector<TypeAlias> types;
   std::vector<ProcDecl> procs;
 };

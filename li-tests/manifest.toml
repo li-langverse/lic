@@ -18,6 +18,45 @@ file = "lexer_parser/invalid_indent.li"
 outcome = "parse_fail"
 expected_substr = "indentation"
 
+[[tests]]
+suite = "lexer_parser"
+file = "lexer_parser/decorators_parse.li"
+outcome = "parse_ok"
+
+# --- decorators (7d — parse + policy) ---
+
+[[tests]]
+suite = "decorators"
+file = "decorators/cpu_only_ok.li"
+outcome = "verify_ok"
+
+[[tests]]
+suite = "decorators"
+file = "decorators/parallel_with_disjoint.li"
+outcome = "verify_ok"
+
+# --- decorator_exploits (7d-e — must reject) ---
+
+[[tests]]
+suite = "decorator_exploits"
+file = "decorator_exploits/reserved_def_parallel.li"
+outcome = "compile_fail"
+
+[[tests]]
+suite = "decorator_exploits"
+file = "decorator_exploits/typosquat_paralell.li"
+outcome = "compile_fail"
+
+[[tests]]
+suite = "decorator_exploits"
+file = "decorator_exploits/single_segment_name.li"
+outcome = "compile_fail"
+
+[[tests]]
+suite = "decorator_exploits"
+file = "decorator_exploits/missing_disjoint_at_parallel.li"
+outcome = "compile_fail"
+
 # --- typecheck ---
 
 [[tests]]
@@ -315,6 +354,160 @@ suite = "simd"
 file = "simd/bad_lanes.li"
 outcome = "compile_fail"
 expected_substr = "lane"
+
+# --- httpd (Phase H placeholder) ---
+
+[[tests]]
+suite = "httpd"
+file = "httpd/gate_placeholder.li"
+outcome = "verify_ok"
+note = "li-httpd package stub; real routing tests when Phase H lands"
+
+[[tests]]
+suite = "httpd"
+file = "httpd/reserved_wellknown_note.li"
+outcome = "verify_ok"
+
+# --- math_linalg (2i — @ dot / matmul surface) ---
+
+[[tests]]
+suite = "math_linalg"
+file = "math_linalg/array_dot_matmul.li"
+outcome = "verify_ok"
+
+[[tests]]
+suite = "math_linalg"
+file = "math_linalg/array_dot_mismatch.li"
+outcome = "compile_fail"
+expected_substr = "matrix multiply"
+
+# --- math_syntax (2h — %, //, **) ---
+
+[[tests]]
+suite = "math_syntax"
+file = "math_syntax/int_mod.li"
+outcome = "verify_ok"
+
+[[tests]]
+suite = "math_syntax"
+file = "math_syntax/int_floordiv.li"
+outcome = "verify_ok"
+
+[[tests]]
+suite = "math_syntax"
+file = "math_syntax/int_pow.li"
+outcome = "verify_ok"
+
+# --- stdlib_seal (4s — prelude/stdlib names cannot be shadowed) ---
+
+[[tests]]
+suite = "stdlib_seal"
+file = "stdlib_seal/ok_control.li"
+outcome = "verify_ok"
+
+[[tests]]
+suite = "stdlib_seal"
+file = "stdlib_seal/shadow_echo.li"
+outcome = "compile_fail"
+
+[[tests]]
+suite = "stdlib_seal"
+file = "stdlib_seal/shadow_list_type.li"
+outcome = "compile_fail"
+
+[[tests]]
+suite = "stdlib_seal"
+file = "stdlib_seal/duplicate_proc.li"
+outcome = "compile_fail"
+
+[[tests]]
+suite = "stdlib_seal"
+file = "stdlib_seal/shadow_std_symbol.li"
+outcome = "compile_fail"
+
+# --- encapsulation (2g — def, object, visibility, import) ---
+
+[[tests]]
+suite = "encapsulation"
+file = "encapsulation/def_syntax_ok.li"
+outcome = "verify_ok"
+
+[[tests]]
+suite = "encapsulation"
+file = "encapsulation/object_public_field.li"
+outcome = "verify_ok"
+
+[[tests]]
+suite = "encapsulation"
+file = "encapsulation/import_parse.li"
+outcome = "verify_ok"
+
+[[tests]]
+suite = "encapsulation"
+file = "encapsulation/private_field_access.li"
+outcome = "compile_fail"
+expected_substr = "cannot access private field"
+
+# --- modules (2g placeholder — single file, no import graph) ---
+
+[[tests]]
+suite = "modules"
+file = "modules/greeter/greeter.li"
+outcome = "verify_ok"
+
+[[tests]]
+suite = "modules"
+file = "modules/import_std_decorators.li"
+outcome = "verify_ok"
+
+# --- cve_patterns (C memory-safety classes — must reject or prove safe) ---
+
+[[tests]]
+suite = "cve_patterns"
+file = "cve_patterns/cwe787_oob_index.li"
+outcome = "compile_fail"
+expected_substr = "out of range"
+
+[[tests]]
+suite = "cve_patterns"
+file = "cve_patterns/cwe125_negative_index.li"
+outcome = "compile_fail"
+expected_substr = "out of range"
+
+[[tests]]
+suite = "cve_patterns"
+file = "cve_patterns/cwe120_stack_buffer_oob.li"
+outcome = "compile_fail"
+expected_substr = "out of range"
+
+[[tests]]
+suite = "cve_patterns"
+file = "cve_patterns/cwe787_dyn_index.li"
+outcome = "compile_fail"
+expected_substr = "array index must be constant"
+
+[[tests]]
+suite = "cve_patterns"
+file = "cve_patterns/cwe676_extern_no_contract.li"
+outcome = "compile_fail"
+expected_substr = "requires"
+
+[[tests]]
+suite = "cve_patterns"
+file = "cve_patterns/good_bounded_index.li"
+outcome = "verify_ok"
+
+[[tests]]
+suite = "cve_patterns"
+file = "cve_patterns/historic_ariane5_narrowing.li"
+outcome = "compile_fail"
+expected_substr = "bare cast"
+
+[[tests]]
+suite = "cve_patterns"
+file = "cve_patterns/historic_goto_fail.li"
+outcome = "compile_fail"
+expected_substr = "goto is forbidden"
 
 # --- security (malformed inputs; run via ./li-tests/run_security.sh) ---
 # Wired in scripts/ci.sh: parse/check must exit 0/1, never signal (SIGSEGV etc.).

@@ -5,11 +5,13 @@
 ## The proof gate
 
 ```
-lic build  →  binary exists  ⟺  proofs closed
+lic build  →  binary exists  ⟺  proofs closed   (target)
 lic check  →  fast feedback only (no certificate)
 ```
 
-If Lean still has open goals, **no executable ships**.
+**Today:** `lic build` runs parse, policy, typecheck, borrow, and codegen — **without** Lean yet. See **[Provability gaps](../verification/provability-gaps.md)**.
+
+When Phase **2f** lands: if Lean still has open goals, **no executable ships**.
 
 ## What is being proved?
 
@@ -56,6 +58,7 @@ Only this file may contain unproved axioms (bounded, reviewed). Application logi
 
 | Limit | Explanation |
 |-------|-------------|
+| **Implementation gaps** | Features listed in the spec but not fully proved yet — **[gap register](../verification/provability-gaps.md)** |
 | Wrong spec | You can prove the wrong theorem perfectly |
 | Trusted base growth | Must stay tiny and audited |
 | Compiler correctness | Proving the C++ compiler matches Lean is future meta-work |
@@ -67,6 +70,7 @@ Shared-memory parallelism is the hardest part of HPC correctness. Li’s answer:
 
 ## Learn more
 
+- [Provability gaps (today)](../verification/provability-gaps.md)
 - [Contracts and proofs](../language/contracts-and-proofs.md)
 - [Verification overview](../verification/overview.md)
 - [Language design — pillars](../superpowers/specs/2026-05-14-li-language-design.md)

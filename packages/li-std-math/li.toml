@@ -1,0 +1,7 @@
+[package]
+name = "li-std-math"
+version = "0.1.0"
+description = "Math / linalg surface docs and benchmarks (2i/7e)"
+
+[dependencies]
+li-std-core = { path = "../li-std-core" }

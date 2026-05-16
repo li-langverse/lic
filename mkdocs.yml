@@ -1,10 +1,10 @@
-# Li documentation site — https://cap-jmk-real.github.io/li-language/
+# Li documentation site — https://li-langverse.github.io/li-language/
 
 site_name: Li
 site_description: Prove it. Write it easily. Run it fast.
-site_url: https://cap-jmk-real.github.io/li-language/
-repo_url: https://github.com/cap-jmk-real/li-language
-repo_name: cap-jmk-real/li-language
+site_url: https://li-langverse.github.io/li-language/
+repo_url: https://github.com/li-langverse/li-language
+repo_name: li-langverse/li-language
 edit_uri: edit/dev/docs/
 
 theme:
@@ -77,7 +77,7 @@ extra_css:
 extra:
   social:
     - icon: fontawesome/brands/github
-      link: https://github.com/cap-jmk-real/li-language
+      link: https://github.com/li-langverse/li-language
 
 nav:
   - Home: index.md
@@ -87,11 +87,25 @@ nav:
       - Install tools: guide/getting-started-tools.md
       - Fast math & parallelism: guide/fast-math-and-parallelism.md
       - Examples gallery: guide/examples-gallery.md
+      - Creating packages: guide/creating-packages.md
+      - Package layout: guide/package-layout-reference.md
+  - Ecosystem:
+      - Overview: ecosystem/overview.md
+      - Governance: ecosystem/governance.md
+      - Engineering standards: ecosystem/engineering-standards.md
+      - Vision and roadmap: ecosystem/vision-and-roadmap.md
+      - Agent coordination: ecosystem/agent-coordination.md
+      - Language evolution: ecosystem/language-evolution.md
+      - Upstream notifications: ecosystem/upstream-notifications.md
+      - Official packages: ecosystem/official-packages.md
+      - HTTPd prerequisites: ecosystem/httpd-prerequisites.md
   - Language handbook:
       - Overview: language/overview.md
       - Types and data: language/types-and-data.md
       - Numerics: language/numerics.md
       - SIMD and parallel: language/simd-parallel.md
+      - Decorators: language/decorators.md
+      - Linear algebra: language/linear-algebra.md
       - Contracts and proofs: language/contracts-and-proofs.md
       - Control flow and functions: language/control-flow-and-functions.md
       - Collections and generics: language/collections-generics.md
@@ -100,10 +114,13 @@ nav:
       - Build pipeline: compiler/build-pipeline.md
       - Why provable: compiler/why-provable.md
       - Architecture: architecture/overview.md
-      - Verification: verification/overview.md
+      - Verification:
+          - Overview: verification/overview.md
+          - Provability gaps (today): verification/provability-gaps.md
   - Testing and security:
       - All tests: testing/overview.md
       - Security audits: testing/security.md
+      - Web server security: testing/webserver-security.md
   - Benchmarks: benchmarks.md
   - Reference:
       - Language design (spec): superpowers/specs/2026-05-14-li-language-design.md

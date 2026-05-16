@@ -15,4 +15,4 @@ All notable changes to Li are documented here. The format follows
 - Cross-language physics benchmark harness (shared C kernels)
 - MkDocs documentation site and CI/local-ci tooling
 
-[0.1.0]: https://github.com/cap-jmk-real/li-language/releases/tag/v0.1.0
+[0.1.0]: https://github.com/li-langverse/li-language/releases/tag/v0.1.0

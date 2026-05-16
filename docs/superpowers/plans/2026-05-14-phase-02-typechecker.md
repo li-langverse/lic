@@ -11,6 +11,8 @@
 **Depends on:** Phase 1  
 **Blocks:** Phase 3
 
+**Proof gaps (Doc-c):** [G-vc](../../verification/provability-gaps.md#g-vc) · [G-bnd](../../verification/provability-gaps.md#g-bnd) · [G-def](../../verification/provability-gaps.md#g-def) · [G-math-syn](../../verification/provability-gaps.md#g-math-syn)
+
 ---
 
 ## Type system (v1)

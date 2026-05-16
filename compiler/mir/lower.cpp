@@ -1,6 +1,7 @@
 #include "li/mir.hpp"
 
 #include <algorithm>
+#include <unordered_map>
 #include <unordered_set>
 
 namespace li {
@@ -10,7 +11,22 @@ namespace {
 int temp_counter = 0;
 int par_counter = 0;
 
+struct LowerArrayCtx {
+  std::unordered_map<std::string, std::int64_t> float_array_sizes;
+  const std::unordered_set<std::string>* float_array_names = nullptr;
+};
+
+LowerArrayCtx* g_arr_ctx = nullptr;
+
 std::string fresh_temp() { return "__t" + std::to_string(temp_counter++); }
+
+void copy_decorators(const std::vector<Decorator>& src, std::vector<MirDecorator>& dst) {
+  for (const auto& d : src) {
+    MirDecorator md;
+    md.name = d.name;
+    dst.push_back(std::move(md));
+  }
+}
 
 bool is_float_type_name(const std::string& n) {
   return n == "float" || n == "f64" || n == "float64";
@@ -76,7 +92,8 @@ void push_branch_if_zero(std::vector<MirInsn>& out, const std::string& ident,
 }
 
 bool is_arith_binop(BinOp op) {
-  return op == BinOp::Add || op == BinOp::Sub || op == BinOp::Mul || op == BinOp::Div;
+  return op == BinOp::Add || op == BinOp::Sub || op == BinOp::Mul || op == BinOp::Div ||
+         op == BinOp::Mod || op == BinOp::FloorDiv || op == BinOp::Pow;
 }
 
 bool is_float_expr(const Expr& e, const std::unordered_set<std::string>& float_names) {
@@ -137,6 +154,27 @@ std::string lower_expr_to(const Expr& e, const Module& module, std::vector<MirIn
     case Expr::Kind::Ident:
       return e.ident;
     case Expr::Kind::BinOp: {
+      if (e.bin_op == BinOp::MatMul && e.lhs && e.lhs->kind == Expr::Kind::Ident && e.rhs &&
+          e.rhs->kind == Expr::Kind::Ident && g_arr_ctx &&
+          g_arr_ctx->float_array_names) {
+        const auto& names = *g_arr_ctx->float_array_names;
+        const auto sz_a = g_arr_ctx->float_array_sizes.find(e.lhs->ident);
+        const auto sz_b = g_arr_ctx->float_array_sizes.find(e.rhs->ident);
+        if (names.count(e.lhs->ident) > 0 && names.count(e.rhs->ident) > 0 &&
+            sz_a != g_arr_ctx->float_array_sizes.end() &&
+            sz_b != g_arr_ctx->float_array_sizes.end() && sz_a->second == sz_b->second) {
+          const std::string dest = fresh_temp();
+          MirInsn dot;
+          dot.op = MirOp::ArrayDotF64;
+          dot.ident = dest;
+          dot.lhs_ident = e.lhs->ident;
+          dot.rhs_ident = e.rhs->ident;
+          dot.int_value = sz_a->second;
+          out.push_back(std::move(dot));
+          float_names.insert(dest);
+          return dest;
+        }
+      }
       const std::string lhs = lower_expr_to(*e.lhs, module, out, float_names, simd_names);
       const std::string rhs = lower_expr_to(*e.rhs, module, out, float_names, simd_names);
       const std::string dest = fresh_temp();
@@ -369,6 +407,9 @@ void lower_stmt(const Stmt& stmt, LowerCtx& ctx, bool returns_float, std::vector
         out.push_back(std::move(ins));
         if (ins.array_is_float) {
           float_array_names.insert(stmt.var_name);
+          if (g_arr_ctx) {
+            g_arr_ctx->float_array_sizes[stmt.var_name] = stmt.var_type.array_size;
+          }
         }
       } else if (is_i64_type_name(stmt.var_type.name)) {
         MirInsn ins;
@@ -511,6 +552,7 @@ void lower_stmt(const Stmt& stmt, LowerCtx& ctx, bool returns_float, std::vector
           "__li_par_" + ctx.proc_name + "_" + std::to_string(par_counter++);
       MirFn par_fn;
       par_fn.name = par_name;
+      copy_decorators(stmt.decorators, par_fn.decorators);
       MirParam ip;
       ip.name = stmt.par_iter;
       ip.is_i64 = true;
@@ -620,6 +662,7 @@ MirModule lower_to_mir(const Module& module) {
     MirFn fn;
     fn.name = proc.name;
     fn.is_extern = proc.is_extern;
+    copy_decorators(proc.decorators, fn.decorators);
     if (proc.ret_type) {
       fn.returns_float = is_float_type_name(proc.ret_type->name);
       fn.returns_void = proc.ret_type->name == "unit";
@@ -638,10 +681,14 @@ MirModule lower_to_mir(const Module& module) {
       std::unordered_set<std::string> float_names;
       std::unordered_set<std::string> simd_names;
       std::unordered_set<std::string> float_array_names;
+      LowerArrayCtx arr_ctx;
+      arr_ctx.float_array_names = &float_array_names;
+      g_arr_ctx = &arr_ctx;
       seed_float_params(fn, float_names);
       LowerCtx ctx{&module, &mir, proc.name};
       lower_stmts(proc.body, ctx, fn.returns_float, fn.body, float_names, simd_names,
                   float_array_names);
+      g_arr_ctx = nullptr;
       append_implicit_return(fn.body);
     }
     if (!proc.is_extern && fn.body.empty()) {

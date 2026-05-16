@@ -182,6 +182,8 @@ benchmarks/tier5_http/
 
 **Harness / tooling:** `bench_http.py`, `exploit_http.py`, `audit_nginx_src.py` in-repo (Python OK). **Crypto:** `li-crypto` in Li first; optional `li-crypto-hacl` org package later.
 
+**Agent discipline:** [engineering-standards.md](../ecosystem/engineering-standards.md) (mandatory gates). **Vision:** product here; language/ecosystem in [master plan](2026-05-14-li-master-plan.md). **Learn from others:** nginx/Envoy/LiteLLM for algorithms — not C ports; CVE rows in `nginx_mitigations.toml` + tier5 exploits must stay green.
+
 ---
 
 ## Why provability makes li-httpd easier (not harder)

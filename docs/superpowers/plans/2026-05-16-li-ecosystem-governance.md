@@ -199,6 +199,17 @@ Third-party packages are **not** listed here; they appear only in the public `li
 
 ---
 
+## Agent coordination (documented)
+
+| Doc | Role |
+|-----|------|
+| [engineering-standards.md](../../ecosystem/engineering-standards.md) | **Strict** functionality, security, performance; CVE; learn-from-other-ecosystems |
+| [vision-and-roadmap.md](../../ecosystem/vision-and-roadmap.md) | Master plan vs roadmap repo vs package vision |
+| [agent-coordination.md](../../ecosystem/agent-coordination.md) | `.li-agent-coord.json`, claims, checklist |
+| [language-evolution.md](../../ecosystem/language-evolution.md) | Downstream pins when `lic` changes |
+
+---
+
 ## Exit gate (governance slice)
 
 - [ ] Confirm org access: `gh api orgs/li-langverse` (or org owner invites bot/users)

@@ -5,6 +5,8 @@
 **Milestone:** Tetris + proved physics kernels — **unproved code does not compile**
 **License:** Apache-2.0 OR MIT (open source)
 
+> **Implementation status:** Normative **target**. For what `lic` proves **today**, see [Provability gaps](../../verification/provability-gaps.md).
+
 ## Vision
 
 Li is an **open-source**, **compiled**, Nim-syntax language for HPC and scientific computing. Its reason to exist is **mathematical provability**: every shipped program is a theorem the **Lean 4 kernel** accepts — not a program we merely tested or type-checked.

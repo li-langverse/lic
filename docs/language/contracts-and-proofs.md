@@ -1,6 +1,9 @@
 # Contracts and proofs
 
-Li is **provable-only**: if the proof obligations are not discharged, there is **no binary**.
+Li is **provable-only** by design: if proof obligations are not discharged, there should be **no binary**.
+
+!!! note "Implementation status"
+    **Today:** contracts are required in the surface grammar and checked for well-formedness, but **Lean 4 discharge is not wired into `lic build` yet**. See **[Provability gaps](../verification/provability-gaps.md)** for the live gap register.
 
 ## On every procedure
 
@@ -43,8 +46,8 @@ while n < limit
 | Type safety | Static checker |
 | Index bounds | Refinements + checks |
 | Memory / borrow | Borrow checker |
-| Contract obligations | Lean 4 VC generation |
-| Parallel races | Disjointness + `Send`/`Sync` |
+| Contract obligations | Lean 4 VC generation (**planned** — Phase 2e–2f) |
+| Parallel races | Disjointness + `Send`/`Sync` (**partial** — policy heuristics today) |
 | No `Any` / `sorry` | Hard reject |
 
 ## `lic check` vs `lic build`
@@ -52,9 +55,9 @@ while n < limit
 | Command | Proof certificate? |
 |---------|-------------------|
 | `lic check` | **No** — IDE-speed feedback |
-| `lic build` | **Yes** — Lean must accept remaining goals |
+| `lic build` | **Target:** Lean must accept remaining goals · **Today:** static gate only ([gaps](../verification/provability-gaps.md)) |
 
-Treat `lic build` like signing a theorem: the executable is the certificate artifact.
+When Phase **2f** lands, treat `lic build` like signing a theorem: the executable is the certificate artifact.
 
 ## Trusted base (tiny)
 
@@ -73,4 +76,4 @@ Proofs are checked by the **Lean 4 kernel**, not by “we ran tests and it looke
 | `ensures` too strong | Proof fails — strengthen code or weaken spec honestly |
 | Using `sorry` | Rejected |
 
-More: [Verification overview](../verification/overview.md).
+More: [Verification overview](../verification/overview.md) · [Provability gaps](../verification/provability-gaps.md).

@@ -1,0 +1,16 @@
+# EXPLOIT: user proc shadows std/execution symbol.
+# MUST NOT compile — expected: stdlib_symbol_shadow: __execution_decorators_doc
+
+proc __execution_decorators_doc() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0
+
+def main() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0

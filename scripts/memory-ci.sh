@@ -23,6 +23,8 @@ if [[ "$uname_s" == "Linux" ]]; then
   else
     echo "memory-ci: ASan lic skipped (LLVM link may need extra flags)"
   fi
+  echo "==> memory-ci: ASan li_rt smoke"
+  "$ROOT/scripts/profile-memory.sh" --asan-rt
 else
   echo "memory-ci: ASan targets skipped on $uname_s (use Linux CI job)"
 fi

@@ -21,11 +21,13 @@ LIC="$ROOT/build/compiler/lic/lic"
 NATIVE_BIN="$BUILD_BENCH/md_lj_native"
 ASAN_MD=0
 ASAN_LIC=0
+ASAN_RT=0
 
 for arg in "$@"; do
   case "$arg" in
     --asan-md) ASAN_MD=1 ;;
     --asan-lic) ASAN_LIC=1 ;;
+    --asan-rt) ASAN_RT=1 ;;
     -h|--help) sed -n '2,18p' "$0"; exit 0 ;;
     *) echo "unknown arg: $arg" >&2; exit 2 ;;
   esac
@@ -62,6 +64,25 @@ build_lic_asan() {
   cmake -B "$ROOT/build-asan" -G Ninja -DLLVM_DIR="$LLVM_DIR" -DLI_SANITIZE=address "$ROOT"
   cmake --build "$ROOT/build-asan" --target lic
   LIC="$ROOT/build-asan/compiler/lic/lic"
+}
+
+build_rt_asan_smoke() {
+  local cc="${CC:-clang}" out="$ROOT/build/bench/rt_asan_smoke"
+  mkdir -p "$(dirname "$out")"
+  local driver
+  driver="$(mktemp -t li_rt_smoke.XXXXXX.c)"
+  cat >"$driver" <<'EOF'
+#include "li_rt.h"
+int main(void) {
+  li_rt_print_int(42);
+  return 0;
+}
+EOF
+  "$cc" -fsanitize=address -fno-omit-frame-pointer -g \
+    -I"$ROOT/runtime" \
+    "$driver" "$ROOT/runtime/li_rt.c" -o "$out"
+  rm -f "$driver"
+  "$out"
 }
 
 ensure_lic() {
@@ -104,6 +125,11 @@ run_valgrind_if_present() {
   export LI_MD_TRAJ_STEPS=40
   valgrind --error-exitcode=42 --leak-check=summary -q "$NATIVE_BIN" 2>&1 | tail -8
 }
+
+if [[ "$ASAN_RT" -eq 1 ]]; then
+  echo "==> ASan li_rt smoke"
+  build_rt_asan_smoke
+fi
 
 build_native_md
 ensure_lic

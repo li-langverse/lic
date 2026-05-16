@@ -26,6 +26,43 @@
 
 **Design spec:** `docs/superpowers/specs/2026-05-14-li-language-design.md`
 
+**Ecosystem (agents — read before cross-repo work):** [agent-coordination.md](../ecosystem/agent-coordination.md), [engineering-standards.md](../ecosystem/engineering-standards.md), [vision-and-roadmap.md](../ecosystem/vision-and-roadmap.md).
+
+---
+
+## Vision, roadmap, and agent discipline
+
+### Where to record vision
+
+| Change | Update |
+|--------|--------|
+| Language pillars, compiler phases, org policy | **This master plan** (+ language design spec if normative) |
+| Quarterly / public milestones | **Future:** `li-langverse/roadmap` repo; until then, a section here |
+| Single package scope | That package’s `README`, `PUBLISH.md`, `docs/traceability.md` only |
+| li-httpd product | [2026-05-16-li-httpd-plan.md](2026-05-16-li-httpd-plan.md) + **`lis`** |
+
+Agents **must not** treat package README as the only vision doc when the change affects multiple repos or pillars.
+
+### Non-negotiable engineering (all agents)
+
+**Strict gates — no exceptions without human approval and a tracked PH-/issue:**
+
+1. **Functionality** — spec/REQ correct; tests green; no silent wrong behavior.
+2. **Security** — [engineering-standards § CVE](../ecosystem/engineering-standards.md#security--cve-discipline); `run_security` / exploit harness / fuzz per repo; map to catalog.
+3. **Performance** — measured; benchmark regressions investigated; no “fast” without data.
+
+Agents have freedom on structure and naming; **not** on skipping these three.
+
+### Learn from other ecosystems (implementing Li features)
+
+Before shipping ecosystem tooling (lip, lit, httpd, std split):
+
+- Survey **2–4** mature systems (Cargo, nginx, npm, Envoy, …).
+- Adopt **algorithms and practices** that fit Li: **easy, AI-first, provable, blazingly fast**.
+- Document **“Learned from”** in the phase plan or ADR; **do not** port C/nginx verbatim.
+
+Details: [engineering-standards.md](../ecosystem/engineering-standards.md).
+
 ---
 
 ## Repository separation — when to create repos
@@ -335,25 +372,27 @@ Track in phase **Doc** until each is checked:
 - [x] Phase 2d — Borrow + effects (lexical borrowck, raises IO/Alloc)
 - [x] Phase 2g — `def`, `object` + `private`/`public`, minimal `import` (`encapsulation` suite green; import parse-only)
 - [x] Phase 2h — Python-math operators `%`, `//`, `**` (`math_syntax` suite); `for`/`range` deferred
-- [ ] Phase 2i — Math / linalg surface (`dot`, `sum`, `A @ B`, element-wise infix; no user `simd(...)`)
+- [ ] Phase 2i — Math / linalg surface — **partial:** 1d `float` `@` via **7e**; `sum`/matrix `@` deferred
 - [x] Phase 3 — MIR + LLVM codegen (`lic build`, minimal lower/emit; CFG/bounds IR deferred)
 - [x] Phase 4 — Runtime + stdlib
+- [x] Phase 4s — Stdlib seal (prelude/`std/` names cannot be shadowed; `stdlib_seal/` CI)
 - [x] Phase 5 — Tetris
 - [x] Phase 5b — Benchmarks & simulations (harness + **X plots** skeleton on `dev`)
 - [x] Phase 6 — Self-host (bootstrap seed: `bootstrap/lic/main.li` → `build/lic-from-li`)
-- [ ] Phase 2e — Contracts + refinements (VC generation) — **partial:** `lic verify` + `LI_EMIT_VCS` → `build/vcs.json`
-- [ ] Phase 2f — Lean 4 verify — **partial:** `docs/semantics/Core.lean` + `lake build`; `LI_BUILD_VERIFY_LEAN=1` on `lic build`
-- [ ] Phase 7 — Native HPC (`simd`, `parallel for`, OpenMP, pure Tier 1/2 li benches) — see **7a–7c** in [phase-07](2026-05-14-phase-07-native-hpc.md)
-- [ ] Phase 7d — Execution decorators — **partial (7d-a/e):** parse + policy + `decorator_exploits` CI; MIR elaborate pending — [plan](.cursor/plans/li_execution_decorators_7c6e3b42.plan.md)
-- [ ] Phase 7e — Math → SIMD/parallel lowering; Tier 1 math-only Li; handbook [linear-algebra](docs/language/linear-algebra.md) — [plan](2026-05-16-li-math-linalg-surface.md)
-- [ ] Phase H — li-httpd (after 2e–2f)
+- [ ] Phase 2e — Contracts + refinements — **partial:** typed `AutoVC.lean`, MIR-linked `lic verify` (`mir_fns=`); open goals checker
+- [ ] Phase 2f — Lean 4 verify — **partial:** `.github/workflows/lean.yml`, `contracts_verify_lean.sh`; strict discharge via `LI_BUILD_VERIFY_LEAN_STRICT`
+- [x] Phase 7 — Native HPC — **v1 gate:** simd + parallel for + OpenMP + `check-master-plan-gates.sh` (tier 1/2 perf advisory)
+- [ ] Phase 7d — Execution decorators — **partial (7d-a/b/d/e):** parse, policy, MIR tags, `std/execution/decorators.li`; structured disjoint deferred
+- [ ] Phase 7e — Math → SIMD/parallel lowering — **partial:** `ArrayDotF64` for 1d `float` `@`; SIMD matmul deferred
+- [x] Phase H — li-httpd infra — **`lis`** harness, mitigations, CI, workspace stubs ([implementation-status](https://github.com/li-langverse/lis/blob/main/docs/implementation-status.md))
+- [ ] Phase H — li-httpd M1 `.li` — after **2e–2f** + bytes/async ([httpd-prerequisites](../ecosystem/httpd-prerequisites.md))
 - [x] Phase Pkg — Package scaffold + governance stubs ([scaffold](2026-05-16-li-package-scaffold.md), [governance](2026-05-16-li-ecosystem-governance.md); `li.toml` = [lip § A3](2026-05-16-li-package-manager-lip.md))
 - [x] Phase 8-repo — GitHub repos created: [`lic`](https://github.com/li-langverse/lic), [`lip`](https://github.com/li-langverse/lip), [`lit`](https://github.com/li-langverse/lit) — *push split trees + CI green pending*
-- [ ] Phase 8a — Modules + workspace `lic build` (**`lic`** repo)
+- [ ] Phase 8a — Modules + workspace `lic build` — **partial:** `resolve_imports` for `std.*`; workspace `li-std-*` packages
 - [x] Phase 8e-li — `lic build --coverage-instrument` (LLVM profile flags)
-- [ ] Phase 8e — `lit` CLI + ≥80% coverage gate (**`lit`** repo; pinned by **`lip`**)
-- [ ] Phase 8b — `lip` path/git + `li.lock` (**`lip`** repo; `lip init` → scaffold)
-- [ ] Phase 8c — ed25519 + `proof_digest` in lock (**`lip`**)
+- [ ] Phase 8e — `lit` CLI + ≥80% coverage gate — **partial:** `scripts/lit` stub → `run_all.sh`
+- [ ] Phase 8b — `lip` path/git + `li.lock` — **partial:** `scripts/lip init` → `li-new-package`
+- [ ] Phase 8c — ed25519 + `proof_digest` in lock — **partial:** `lip lock` writes stub `li.lock`
 - [ ] Phase 8d — Registry + `lip publish` (**`lip`**; invokes **`lit`**)
 - [x] Phase 8-sync — notifier wired locally (`notify-downstream`, `ecosystem-upstream`, `dispatch-upstream-release.sh`); **push lic/lip/lit + human PAT secret pending**
 - [x] Phase Doc-a — Gap register current + site links ([provability-gaps](../verification/provability-gaps.md))
@@ -372,11 +411,25 @@ Track in phase **Doc** until each is checked:
 
 ## v1 compiler milestone (honest scope)
 
-**Not “master plan complete.”** The items below are the current **`lic` monorepo gate** on `dev`; remaining rows in the tracker are **v2+** (full Lean gate, lip/lit split, li-httpd, math surface, 7e).
+### Lic monorepo v1 — **gate complete** (`scripts/check-master-plan-gates.sh`)
 
-| Done on `dev` | Still open |
-|---------------|------------|
-| Phases 0–6, Pkg, Doc-a/b/d/e, 8-sync, 8e-li (flag) | **2e–2f** full Lean in `lic build` |
-| 7d-a/e (decorator parse/policy/tests) | **7d-b–d**, **7e**, full **7** benches |
-| `lic verify` VC summary + lean stub | **2g–2i**, **H**, **8a–8d**, **8e** (`lit` repo) |
-| Security + fuzz corpus + tier-0 CI | Ecosystem repo push + green CI per repo |
+Runnable on `dev` after `./scripts/build.sh`:
+
+- Phases **0–6**, **2g**, **2h**, **7** (core), **Pkg**, **Doc**, **8-sync**, **8e-li**
+- **77+** `li-tests` suites (simd, parallel, decorators, stdlib_seal, math, CVE, encapsulation, …)
+- **2e partial:** `build/generated/AutoVC.lean` every `lic build`
+- **7e partial:** 1d float `@` → `ArrayDotF64`
+- **7d partial:** parse, policy, `MirFn.decorators`, `std/execution/decorators.li`
+
+### Full master plan — **not complete** (v2 backlog)
+
+| v2 item | Why still open |
+|---------|----------------|
+| **2e–2f** | Real VC discharge in Lean kernel (not `True := trivial`) |
+| **2i / 7e-b** | Matrix `@`, `sum`, Tier 1 math-only matmul vs C++ |
+| **7d-c** | Structured `disjoint=` without string policy |
+| **H** | li-httpd implementation |
+| **8a–8d** | Production lip/lit/registry + split-repo CI |
+| **8-sync** | Push org repos + green remote CI |
+
+**“Master plan done”** per original spec = all tracker rows **plus** proved `lic build` **plus** shipped lip/lit/httpd — **not claimed**. Use **Lic monorepo v1** for what ships from this repository today.

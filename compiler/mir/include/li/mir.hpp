@@ -22,6 +22,7 @@ enum class MirOp {
   ArrayLoadInt,
   ArrayStoreFloat,
   ArrayLoadFloat,
+  ArrayDotF64,
   LocalAllocInt,
   LocalAllocI64,
   StoreInt,
@@ -85,11 +86,16 @@ struct MirParam {
   std::int64_t simd_lanes = 0;
 };
 
+struct MirDecorator {
+  std::string name;
+};
+
 struct MirFn {
   std::string name;
   bool returns_float = false;
   bool returns_void = false;
   bool is_extern = false;
+  std::vector<MirDecorator> decorators;
   std::vector<MirParam> params;
   std::vector<MirInsn> body;
 };

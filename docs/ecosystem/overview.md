@@ -25,9 +25,13 @@ Use the scaffold script (same layout `lip` will expect later):
 
 Official / standard packages belong in **[`li-langverse`](https://github.com/li-langverse)** on GitHub. See [Creating packages](../guide/creating-packages.md) and [Governance](governance.md).
 
-## Upstream release notifications
+## Agents working in parallel
 
-When **`lic`**, **`lit`**, or **`lip`** releases, dependent repos get GitHub issues / dispatch. See [upstream-notifications.md](upstream-notifications.md).
+**New agents — read in order:** [engineering-standards.md](engineering-standards.md) (strict functionality / security / performance) → [vision-and-roadmap.md](vision-and-roadmap.md) → [agent-coordination.md](agent-coordination.md) (`.li-agent-coord.json`, claims).
+
+## Language + ecosystem evolving together
+
+Compiler changes flow downstream via **`li-toolchain.toml`**, release dispatch, and CI. See **[language-evolution.md](language-evolution.md)** and [upstream-notifications.md](upstream-notifications.md).
 
 ## Bootstrap lip / lit locally
 

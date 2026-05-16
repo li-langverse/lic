@@ -1,0 +1,10 @@
+type Vault = object
+  public open: int
+  private secret: int
+
+proc leak(v: Vault) -> int
+  requires true
+  ensures true
+  decreases 0
+=
+  return v.secret

@@ -1,4 +1,6 @@
 extern proc li_matmul_blocked_kernel()
+  requires true
+  ensures true
 
 proc main() raises IO -> int
   requires true

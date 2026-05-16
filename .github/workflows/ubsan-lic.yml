@@ -1,0 +1,33 @@
+# Nightly UBSan build of lic (Linux). Non-blocking until link is stable everywhere.
+name: UBSan lic
+
+on:
+  schedule:
+    - cron: "0 5 * * 2"
+  workflow_dispatch:
+
+jobs:
+  ubsan-lic:
+    runs-on: ubuntu-24.04
+    continue-on-error: true
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install LLVM 18
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y -qq cmake ninja-build clang-18 llvm-18-dev zlib1g-dev libzstd-dev
+
+      - name: Build lic with UBSan
+        env:
+          LLVM_DIR: /usr/lib/llvm-18/lib/cmake/llvm
+          CC: clang-18
+          CXX: clang++-18
+        run: |
+          cmake -B build-ubsan -G Ninja -DLLVM_DIR="$LLVM_DIR" -DLI_SANITIZE=undefined
+          cmake --build build-ubsan --target lic
+
+      - name: Smoke check under UBSan
+        run: |
+          ./build-ubsan/compiler/lic/lic check li-tests/lexer_parser/fib.li
+          ./build-ubsan/compiler/lic/lic parse li-tests/security/empty.li

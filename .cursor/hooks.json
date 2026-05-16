@@ -1,0 +1,32 @@
+{
+  "version": 1,
+  "hooks": {
+    "sessionStart": [
+      {
+        "command": ".cursor/hooks/session-context.sh"
+      }
+    ],
+    "beforeShellExecution": [
+      {
+        "command": ".cursor/hooks/guard-destructive-git.sh"
+      },
+      {
+        "command": ".cursor/hooks/guard-secrets.sh"
+      }
+    ],
+    "afterFileEdit": [
+      {
+        "command": ".cursor/hooks/remind-stdlib-coverage.sh",
+        "matcher": "std/**"
+      }
+    ],
+    "stop": [
+      {
+        "command": ".cursor/hooks/session-audit.sh"
+      },
+      {
+        "command": ".cursor/hooks/auto-push-github.sh"
+      }
+    ]
+  }
+}

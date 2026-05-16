@@ -1,0 +1,9 @@
+# CWE-120: buffer overflow on stack — nested fixed arrays with OOB access.
+
+proc stack_slop() -> int
+  requires true
+  ensures true
+  decreases 0
+=
+  var frame: array[32, int]
+  return frame[40]

@@ -2,6 +2,20 @@
 
 All conformance tests live in **`li-tests/`**. Nothing is scattered under `compiler/` as one-off files.
 
+!!! note "Tests vs full proof gate"
+    Passing `run_all.sh` exercises the **current** compiler gate (parse, policy, typecheck, borrow, codegen). It does **not** yet mean Lean discharged all contracts. See **[Provability gaps](../verification/provability-gaps.md)**.
+
+## E2E-first policy (master plan v2)
+
+PR gates prioritize **end-to-end** confidence over isolated unit suites:
+
+1. Full **`./li-tests/run_all.sh`** (parse → policy → seal → typecheck → build).
+2. **Security:** `run_security.sh`, `stdlib_seal`, `cve_patterns`, `decorator_exploits`.
+3. **Physics:** `bench.py --tier 0` (strict stability); tier 2 shared-kernel parity is advisory until MSD harness is fixed.
+4. **Proof slice:** `vc_emit_contracts.sh`; Lean `lake build` when `lake` is on PATH (`scripts/ci.sh`).
+
+Unit suites (`math_syntax`, `math_linalg`) run in CI but are not the primary ship bar.
+
 ## Run everything
 
 ```bash
@@ -40,6 +54,9 @@ Every test is listed in `li-tests/manifest.toml` with an expected **outcome**:
 | `borrow` | `mut` / `imm`, use-after-move |
 | `effects` | `raises IO`, `raises Alloc` |
 | `race_shared_memory` | Parallel **exploit** programs must fail |
+| `stdlib_seal` | Prelude / `std/` names cannot be shadowed |
+| `decorator_exploits` | Decorator hijack / reserved names must fail |
+| `decorators` | Valid `@` decorator stacks must build |
 | `simd` | Vector types and lane rules |
 | `parallel_codegen` | OpenMP lowering smoke |
 | `generics` | PEP 695, `Protocol`, `Callable` |
@@ -64,7 +81,24 @@ Files in `li-tests/race_shared_memory/` are **deliberate bugs**:
 
 Positive control: `good_disjoint_parallel.li` **must build**.
 
+## Decorator exploit suite (7d-e)
+
+`li-tests/decorator_exploits/` — must **not** compile (policy gate):
+
+| File | Attack |
+|------|--------|
+| `reserved_def_parallel.li` | `decorator def parallel` |
+| `typosquat_paralell.li` | Segment `paralell` near `parallel` |
+| `single_segment_name.li` | `decorator def tiled` (one segment) |
+| `missing_disjoint_at_parallel.li` | `@parallel(threads=auto)` without `disjoint=` |
+
+Positive: `decorators/cpu_only_ok.li`, `decorators/parallel_with_disjoint.li`.
+
 Run alone:
+
+```bash
+./li-tests/run_all.sh decorator_exploits decorators
+```
 
 ```bash
 ./scripts/test_race_reject.sh
@@ -88,11 +122,11 @@ Details: [Security audits](security.md).
 
 - Corpus: `compiler/fuzz/corpus/`
 - Merge script: `scripts/merge_fuzz_corpus.sh`
-- CI: daily [`.github/workflows/fuzz.yml`](https://github.com/cap-jmk-real/li-language/blob/dev/.github/workflows/fuzz.yml) + PR smoke
+- CI: daily [`.github/workflows/fuzz.yml`](https://github.com/li-langverse/li-language/blob/dev/.github/workflows/fuzz.yml) + PR smoke
 
 ## Memory / sanitizer (optional CI)
 
-[`.github/workflows/memory.yml`](https://github.com/cap-jmk-real/li-language/blob/dev/.github/workflows/memory.yml):
+[`.github/workflows/memory.yml`](https://github.com/li-langverse/li-language/blob/dev/.github/workflows/memory.yml):
 
 - Valgrind / ASan smoke on Linux
 - Memory profiling scripts under `scripts/profile-memory.sh`

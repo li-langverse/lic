@@ -60,6 +60,29 @@ void li_omp_parallel_for_i64(long long start, long long end,
 #endif
 }
 
+int32_t li_rt_floor_div_i32(int32_t a, int32_t b) {
+  if (b == 0) {
+    li_panic("division by zero");
+  }
+  int32_t q = a / b;
+  int32_t r = a % b;
+  if (r != 0 && ((r < 0) != (b < 0))) {
+    --q;
+  }
+  return q;
+}
+
+int32_t li_rt_pow_i32(int32_t base, int32_t exp) {
+  if (exp < 0) {
+    return 0;
+  }
+  int32_t out = 1;
+  for (int32_t i = 0; i < exp; ++i) {
+    out *= base;
+  }
+  return out;
+}
+
 double li_rt_sqrt(double x) {
 #if defined(_WIN32)
   return sqrt(x);

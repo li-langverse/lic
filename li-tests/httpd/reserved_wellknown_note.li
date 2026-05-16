@@ -1,0 +1,8 @@
+# Phase H: /.well-known/acme-challenge/ is reserved in li-httpd (cannot be user-routed).
+# Placeholder until std/net ships; must compile under current gate.
+def main() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0

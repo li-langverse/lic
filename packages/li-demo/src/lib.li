@@ -1,0 +1,8 @@
+# PKG-li-demo — library entry (add modules under src/ when import lands)
+
+proc li_demo_version() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0

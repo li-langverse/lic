@@ -1,0 +1,23 @@
+---
+description: Agents must commit and push to GitHub after verified work — never ask the user to push manually
+alwaysApply: true
+---
+
+# Auto-push to GitHub (mandatory)
+
+After **verified** changes (`./li-tests/run_all.sh` and relevant gates green):
+
+1. Commit with a clear message (`feat(phase-N): …` or `chore: …`).
+2. Push without asking the user:
+   ```bash
+   ./scripts/agent-push-github.sh "your commit message"
+   ```
+3. Uses [`scripts/with-github-env.sh`](../../scripts/with-github-env.sh) → `../.env.github` (`GH_TOKEN`). Never commit tokens.
+
+**Remotes:** `origin` (current branch, usually `dev`); `langverse` → `li-langverse/lic` (`dev:main`).
+
+**Opt out (rare):** `LI_SKIP_AUTO_PUSH=1` for one session.
+
+**Org split repos:** `./scripts/push-li-langverse-repos.sh` for lip/lit siblings.
+
+Do **not** stop with "please push" or "run git push" — push yourself or report a concrete token/remote error.

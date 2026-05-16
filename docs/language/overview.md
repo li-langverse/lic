@@ -60,4 +60,6 @@ proc name(arg: T) -> R
 
 The compiler is **growing**. Some spec features are fully implemented; others are parsed or typechecked only. When in doubt, look at `li-tests/` for a working `.li` example or run `lic build` on your file.
 
+**Canonical gap list:** [Provability gaps (current compiler)](../verification/provability-gaps.md) — what is **not** proved or not wired yet (Lean gate, decorator elaboration, math surface, heuristic parallel checks, …).
+
 Implementation phases: [Master plan](../superpowers/plans/2026-05-14-li-master-plan.md).

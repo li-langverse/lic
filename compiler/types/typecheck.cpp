@@ -4,15 +4,17 @@
 
 #include <map>
 #include <memory>
+#include <set>
 #include <string>
+#include <utility>
 #include <vector>
 
 namespace li {
 namespace {
 
 enum class TyKind {
-  Int, Int64, Float, Bool, Str, Array, List, Dict, Tuple, TypedDict, Enum, Named, TypeVar,
-  Protocol, Callable, Simd
+  Int, Int64, Float, Bool, Str, Array, List, Dict, Tuple, TypedDict, Object, Enum, Named,
+  TypeVar, Protocol, Callable, Simd
 };
 
 struct Ty;
@@ -27,6 +29,7 @@ struct Ty {
   std::vector<std::shared_ptr<Ty>> type_args;
   std::shared_ptr<Ty> callable_ret;
   std::vector<std::pair<std::string, TyPtr>> fields;
+  std::map<std::string, Visibility> field_vis;
   bool tuple_variadic = false;
   std::vector<std::string> enum_variants;
   std::int64_t simd_lanes = 0;
@@ -66,8 +69,36 @@ struct Ctx {
   std::map<std::string, const ProcDecl*> procs;
   std::map<std::string, TyPtr> locals;
   std::map<std::string, TyPtr> type_vars;
+  std::set<std::string> refined_index_params;
+  std::set<std::string> loop_index_vars;
   DiagnosticBag& diags;
   std::string file;
+
+  void note_loop_index_from_cond(const Expr& cond) {
+    if (cond.kind != Expr::Kind::BinOp) {
+      return;
+    }
+    if (cond.bin_op != BinOp::Lt && cond.bin_op != BinOp::Le) {
+      return;
+    }
+    if (cond.lhs && cond.lhs->kind == Expr::Kind::Ident) {
+      loop_index_vars.insert(cond.lhs->ident);
+    }
+  }
+
+  bool is_refinement_index_type(const TypeExpr& te) const {
+    if (te.kind == TypeKind::Refinement) {
+      return true;
+    }
+    if (te.kind == TypeKind::Named) {
+      const auto it = aliases.find(te.name);
+      if (it != aliases.end() && it->second.definition &&
+          it->second.definition->kind == TypeKind::Refinement) {
+        return true;
+      }
+    }
+    return false;
+  }
 
   SourceLoc loc(const Span& s) const { return SourceLoc{file, 1, 1, s.start}; }
 
@@ -145,7 +176,7 @@ struct Ctx {
       }
       return a->name == b->name;
     }
-    if (a->kind == TyKind::TypedDict) {
+    if (a->kind == TyKind::TypedDict || a->kind == TyKind::Object) {
       if (a->fields.size() != b->fields.size()) {
         return false;
       }
@@ -155,7 +186,7 @@ struct Ctx {
           return false;
         }
       }
-      return a->name == b->name;
+      return a->name == b->name && a->kind == b->kind;
     }
     if (a->kind == TyKind::Enum) {
       return a->name == b->name && a->enum_variants == b->enum_variants;
@@ -215,6 +246,22 @@ struct Ctx {
         continue;
       }
       t->fields.emplace_back(field.name, resolve_type_expr(*field.type));
+    }
+    (void)span;
+    return t;
+  }
+
+  TyPtr resolve_object(const std::string& name, const std::vector<TypeField>& fields,
+                       const Span& span) {
+    auto t = std::make_shared<Ty>();
+    t->kind = TyKind::Object;
+    t->name = name;
+    for (const auto& field : fields) {
+      if (!field.type) {
+        continue;
+      }
+      t->fields.emplace_back(field.name, resolve_type_expr(*field.type));
+      t->field_vis[field.name] = field.visibility;
     }
     (void)span;
     return t;
@@ -352,6 +399,9 @@ struct Ctx {
         if (it->second.alias_kind == AliasKind::TypedDict && it->second.fields) {
           return resolve_typedict(te.name, *it->second.fields, te.span);
         }
+        if (it->second.alias_kind == AliasKind::Object && it->second.fields) {
+          return resolve_object(te.name, *it->second.fields, te.span);
+        }
         if (it->second.alias_kind == AliasKind::Enum && it->second.enum_variants) {
           return resolve_enum(te.name, *it->second.enum_variants, te.span);
         }
@@ -419,8 +469,19 @@ struct Ctx {
       case Expr::Kind::BinOp: {
         const TyPtr l = type_of(*e.lhs);
         const TyPtr r = type_of(*e.rhs);
+        if (e.bin_op == BinOp::MatMul) {
+          if (l->kind == TyKind::Array && r->kind == TyKind::Array && l->array_size == r->array_size &&
+              l->elem && r->elem && same_kind(l->elem, r->elem) &&
+              l->elem->kind == TyKind::Float) {
+            return make_float();
+          }
+          diags.error(loc(e.span),
+                      "matrix multiply '@' requires matching float arrays (1d dot in v1)");
+          return make_float();
+        }
         if (e.bin_op == BinOp::Add || e.bin_op == BinOp::Sub || e.bin_op == BinOp::Mul ||
-            e.bin_op == BinOp::Div) {
+            e.bin_op == BinOp::Div || e.bin_op == BinOp::Mod || e.bin_op == BinOp::FloorDiv ||
+            e.bin_op == BinOp::Pow) {
           if (l->kind == TyKind::Int && r->kind == TyKind::Int) {
             return make_int();
           }
@@ -500,6 +561,26 @@ struct Ctx {
       }
       case Expr::Kind::UnaryNot:
         return make_bool();
+      case Expr::Kind::FieldAccess: {
+        const TyPtr base = type_of(*e.base);
+        if (base->kind != TyKind::Object && base->kind != TyKind::TypedDict) {
+          diags.error(loc(e.span), "field access on non-object type");
+          return make_int();
+        }
+        const auto vis_it = base->field_vis.find(e.field_name);
+        if (vis_it != base->field_vis.end() &&
+            vis_it->second == Visibility::Private) {
+          diags.error(loc(e.span), "cannot access private field '" + e.field_name + "'");
+          return make_int();
+        }
+        for (const auto& fld : base->fields) {
+          if (fld.first == e.field_name) {
+            return fld.second;
+          }
+        }
+        diags.error(loc(e.span), "unknown field '" + e.field_name + "'");
+        return make_int();
+      }
       case Expr::Kind::Index: {
         const TyPtr base = type_of(*e.base);
         const TyPtr idx = type_of(*e.index);
@@ -516,6 +597,19 @@ struct Ctx {
           if (i < 0 || i >= base->array_size) {
             diags.error(loc(e.span), "array index out of range");
           }
+        } else if (e.index->kind == Expr::Kind::Ident) {
+          if (refined_index_params.count(e.index->ident) > 0 ||
+              loop_index_vars.count(e.index->ident) > 0) {
+            // refinement param or while-bound loop index
+          } else if (idx->kind != TyKind::Int) {
+            diags.error(loc(e.span), "array index must be int");
+          } else {
+            diags.error(loc(e.span),
+                        "array index must be constant or refinement-typed index");
+          }
+        } else {
+          diags.error(loc(e.span),
+                      "array index must be constant or refinement-typed index");
         }
         return base->elem;
       }
@@ -582,12 +676,32 @@ struct Ctx {
       return;
     }
     if (s.kind == Stmt::Kind::While) {
+      std::set<std::string> saved_loop = loop_index_vars;
       if (s.cond) {
+        note_loop_index_from_cond(*s.cond);
         type_of(*s.cond);
       }
       for (const auto& inner : s.while_body) {
         check_stmt(inner);
       }
+      loop_index_vars = std::move(saved_loop);
+      return;
+    }
+    if (s.kind == Stmt::Kind::ParallelFor) {
+      std::set<std::string> saved_loop = loop_index_vars;
+      if (!s.par_iter.empty()) {
+        loop_index_vars.insert(s.par_iter);
+        locals[s.par_iter] = make_int();
+      }
+      for (const auto& c : s.par_contracts) {
+        if (c.expr) {
+          type_of(*c.expr);
+        }
+      }
+      for (const auto& inner : s.par_body) {
+        check_stmt(inner);
+      }
+      loop_index_vars = std::move(saved_loop);
       return;
     }
     if (s.kind == Stmt::Kind::Borrow) {
@@ -615,14 +729,6 @@ struct Ctx {
   }
 
   void check_proc(const ProcDecl& p) {
-    if (p.is_extern) {
-      return;
-    }
-    locals.clear();
-    type_vars.clear();
-    for (const auto& tp : p.type_params) {
-      type_vars[tp] = make_type_var(tp);
-    }
     bool has_requires = false;
     bool has_ensures = false;
     for (const auto& c : p.contracts) {
@@ -633,17 +739,36 @@ struct Ctx {
         has_ensures = true;
       }
     }
+    if (p.is_extern) {
+      if (!has_requires) {
+        diags.error(loc(p.span), "extern proc missing requires clause");
+      }
+      if (!has_ensures) {
+        diags.error(loc(p.span), "extern proc missing ensures clause");
+      }
+      return;
+    }
     if (!has_requires) {
       diags.error(loc(p.span), "proc missing requires clause");
     }
     if (!has_ensures) {
       diags.error(loc(p.span), "proc missing ensures clause");
     }
+    locals.clear();
+    type_vars.clear();
+    refined_index_params.clear();
+    loop_index_vars.clear();
+    for (const auto& tp : p.type_params) {
+      type_vars[tp] = make_type_var(tp);
+    }
     std::optional<TyPtr> ret_ty;
     if (p.ret_type) {
       ret_ty = resolve_type_expr(*p.ret_type);
     }
     for (const auto& param : p.params) {
+      if (is_refinement_index_type(param.type)) {
+        refined_index_params.insert(param.name);
+      }
       const TyPtr pt = resolve_type_expr(param.type);
       locals[param.name] = pt;
     }
@@ -663,7 +788,8 @@ struct Ctx {
 
 TypecheckResult typecheck_module(const Module& module) {
   TypecheckResult result;
-  Ctx ctx{{}, {}, {}, {}, result.diagnostics, "module"};
+  DiagnosticBag& diags = result.diagnostics;
+  Ctx ctx{{}, {}, {}, {}, {}, {}, diags, "module"};
   for (const auto& proc : module.procs) {
     ctx.procs[proc.name] = &proc;
   }

@@ -15,7 +15,9 @@ on:
     paths:
       - compiler/parser/**
       - compiler/fuzz/**
+      - compiler/types/**
       - compiler/lexer/**
+      - security/**
       - .github/workflows/fuzz.yml
       - scripts/merge_fuzz_corpus.sh
 
@@ -52,7 +54,7 @@ jobs:
         run: |
           cmake -B build-fuzz -G Ninja -DLI_BUILD_FUZZ=ON -DLLVM_DIR="$LLVM_DIR" \
             -DCMAKE_C_COMPILER=clang-18 -DCMAKE_CXX_COMPILER=clang++-18
-          cmake --build build-fuzz --target parse_fuzz
+          cmake --build build-fuzz --target parse_fuzz check_fuzz
 
       - name: Prepare corpus workspace
         run: |

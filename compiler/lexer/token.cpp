@@ -15,6 +15,7 @@ const char* token_kind_name(TokenKind kind) {
     case TokenKind::KwEnsures: return "ensures";
     case TokenKind::KwDecreases: return "decreases";
     case TokenKind::KwResult: return "result";
+    case TokenKind::At: return "@";
     default: return "Token";
   }
 }

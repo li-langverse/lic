@@ -31,7 +31,11 @@ void Lexer::push_token(Token t) { tokens_.push_back(std::move(t)); }
 
 TokenKind Lexer::keyword_kind(std::string_view text) const {
   if (text == "proc") return TokenKind::KwProc;
+  if (text == "def") return TokenKind::KwDef;
   if (text == "type") return TokenKind::KwType;
+  if (text == "private") return TokenKind::KwPrivate;
+  if (text == "public") return TokenKind::KwPublic;
+  if (text == "import") return TokenKind::KwImport;
   if (text == "object") return TokenKind::KwObject;
   if (text == "enum") return TokenKind::KwEnum;
   if (text == "var") return TokenKind::KwVar;
@@ -385,11 +389,10 @@ bool Lexer::tokenize(DiagnosticBag& diags) {
             return false;
           }
         } else {
-          SourceLoc loc{file_, sl, sc, start};
-          diags.error(loc, "unexpected character '.'");
-          return false;
+          single(TokenKind::Dot);
         }
         continue;
+      case '@': single(TokenKind::At); continue;
       case '|': single(TokenKind::Pipe); continue;
       case '+':
       case '-':
@@ -403,8 +406,23 @@ bool Lexer::tokenize(DiagnosticBag& diags) {
           single(TokenKind::Minus);
         }
         continue;
-      case '*': single(TokenKind::Star); continue;
-      case '/': single(TokenKind::Slash); continue;
+      case '*':
+        if (peek() == '*') {
+          advance();
+          single(TokenKind::StarStar);
+        } else {
+          single(TokenKind::Star);
+        }
+        continue;
+      case '/':
+        if (peek() == '/') {
+          advance();
+          single(TokenKind::SlashSlash);
+        } else {
+          single(TokenKind::Slash);
+        }
+        continue;
+      case '%': single(TokenKind::Percent); continue;
       case '=':
         if (peek() == '=') {
           advance();

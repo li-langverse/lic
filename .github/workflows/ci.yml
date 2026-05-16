@@ -90,12 +90,14 @@ jobs:
           CC: clang
           CXX: clang++
         run: |
-          chmod +x scripts/build.sh scripts/ci.sh scripts/resolve-lic.sh \
-            li-tests/run_security.sh li-tests/run_all.sh
+          chmod +x scripts/build.sh scripts/ci-security.sh scripts/resolve-lic.sh \
+            scripts/check-cve-coverage.sh scripts/check-historic-bugs.sh \
+            li-tests/run_security.sh li-tests/security/codegen_path_injection.sh \
+            li-tests/run_all.sh
           cmake -B build -G Ninja -DLLVM_DIR="$LLVM_DIR"
           cmake --build build
           LIC="$(./scripts/resolve-lic.sh)"
           "$LIC" smoke-llvm
           export LIC
-          ./li-tests/run_security.sh
+          ./scripts/ci-security.sh
           ./li-tests/run_all.sh --ci

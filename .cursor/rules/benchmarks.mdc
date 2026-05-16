@@ -35,3 +35,11 @@ Plot spec: `docs/superpowers/plans/2026-05-14-plots-and-social.md`
 ## Reference impls
 
 Each Tier 2+ benchmark needs a C++ reference that passes `verify.py` before li numbers are published.
+
+## tier5_http (li-httpd / `lis`)
+
+Config lives in **TOML only** (`benchmarks/tier5_http/`). Do not hardcode scenarios in Python.
+
+- Merge: `defaults.toml` ← `scenarios/*/bench.toml`
+- Harness: `verify_http.py`, `bench_http.py`, `exploit_http.py`, `audit_nginx_src.py`
+- CI: `lis/scripts/verify-http.sh`

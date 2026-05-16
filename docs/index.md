@@ -36,7 +36,7 @@ Li helps you write programs that are **checked before they run**: types, memory,
 
 | | |
 |---|---|
-| **Prove it** | `lic build` fails if proofs do not close. |
+| **Prove it** | **Target:** `lic build` fails if proofs do not close. **Today:** static gate; [gaps](verification/provability-gaps.md). |
 | **Write it easily** | Readable syntax; Python-like types without `Any`. |
 | **Run it fast** | LLVM + SIMD + `parallel for` after proof. |
 
@@ -64,8 +64,11 @@ proc main() -> int
 | [Language](language/overview.md) | Every type, feature, and rule |
 | [Compiler](compiler/build-pipeline.md) | Compile-time behavior |
 | [Testing](testing/overview.md) | Suites, fuzz, CI, audits |
+| [Provability gaps](verification/provability-gaps.md) | What is **not** proved/wired yet (honest status) |
+| [Ecosystem](ecosystem/overview.md) | Packages, `lip`, governance (`li-langverse`) |
+| [Creating packages](guide/creating-packages.md) | `li-new-package` scaffold |
 | [Reference spec](superpowers/specs/2026-05-14-li-language-design.md) | Normative design (technical) |
 
 ## Project status
 
-The compiler is under active development. Phase tracker: [Master plan](superpowers/plans/2026-05-14-li-master-plan.md). Native HPC (SIMD + OpenMP): [Phase 7 plan](superpowers/plans/2026-05-14-phase-07-native-hpc.md).
+The compiler is under active development. Phase tracker: [Master plan](superpowers/plans/2026-05-14-li-master-plan.md). **What proofs exist today:** [Provability gaps](verification/provability-gaps.md). Native HPC (SIMD + OpenMP): [Phase 7 plan](superpowers/plans/2026-05-14-phase-07-native-hpc.md).

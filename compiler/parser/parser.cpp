@@ -57,22 +57,46 @@ struct Parser {
   Param parse_param();
   std::unique_ptr<Expr> parse_contract_expr();
   Contract parse_contract();
+  std::unique_ptr<Expr> parse_decorator_value();
+  Decorator parse_decorator();
+  std::vector<Decorator> parse_decorator_list();
   std::vector<Stmt> parse_block();
   Stmt parse_stmt();
   ProcDecl parse_proc(bool is_extern = false);
   TypeAlias parse_type_alias();
+  ImportDecl parse_import();
+  bool accept_proc_kw() {
+    if (at(TokenKind::KwProc) || at(TokenKind::KwDef)) {
+      i++;
+      return true;
+    }
+    return false;
+  }
 
   bool parse_module(Module& out) {
     skip_newlines();
     while (!at(TokenKind::Eof)) {
-      if (at(TokenKind::KwExtern)) {
+      if (at(TokenKind::KwImport)) {
+        out.imports.push_back(parse_import());
+        skip_newlines();
+      } else if (at(TokenKind::KwExtern)) {
         i++;
         if (!expect(TokenKind::KwProc, "'proc'")) {
           return false;
         }
         out.procs.push_back(parse_proc(true));
         skip_newlines();
-      } else if (at(TokenKind::KwProc)) {
+      } else if (at(TokenKind::At)) {
+        std::vector<Decorator> decos = parse_decorator_list();
+        if (!at(TokenKind::KwProc) && !at(TokenKind::KwDef)) {
+          diags.error(loc(cur()), "expected proc or def after decorators");
+          return false;
+        }
+        ProcDecl proc = parse_proc(false);
+        proc.decorators = std::move(decos);
+        out.procs.push_back(std::move(proc));
+        skip_newlines();
+      } else if (at(TokenKind::KwProc) || at(TokenKind::KwDef)) {
         out.procs.push_back(parse_proc(false));
         skip_newlines();
       } else if (at(TokenKind::KwType)) {
@@ -164,6 +188,20 @@ std::unique_ptr<Expr> Parser::parse_primary() {
 }
 
 std::unique_ptr<Expr> Parser::parse_postfix(std::unique_ptr<Expr> base) {
+  while (accept(TokenKind::Dot)) {
+    if (!at(TokenKind::Ident)) {
+      diags.error(loc(cur()), "expected field name after '.'");
+      return base;
+    }
+    const Token field = cur();
+    i++;
+    auto node = std::make_unique<Expr>();
+    node->kind = Expr::Kind::FieldAccess;
+    node->span = {base->span.start, field.end};
+    node->base = std::move(base);
+    node->field_name = std::string(field.text);
+    base = std::move(node);
+  }
   while (accept(TokenKind::LBracket)) {
     auto idx = parse_expr();
     if (!expect(TokenKind::RBracket, "']'")) {
@@ -192,7 +230,11 @@ int prec(TokenKind k) {
     case TokenKind::Plus:
     case TokenKind::Minus: return 4;
     case TokenKind::Star:
-    case TokenKind::Slash: return 5;
+    case TokenKind::Slash:
+    case TokenKind::Percent:
+    case TokenKind::SlashSlash: return 5;
+    case TokenKind::StarStar: return 6;
+    case TokenKind::At: return 6;
     default: return -1;
   }
 }
@@ -202,7 +244,11 @@ BinOp binop(TokenKind k) {
     case TokenKind::Plus: return BinOp::Add;
     case TokenKind::Minus: return BinOp::Sub;
     case TokenKind::Star: return BinOp::Mul;
+    case TokenKind::StarStar: return BinOp::Pow;
     case TokenKind::Slash: return BinOp::Div;
+    case TokenKind::SlashSlash: return BinOp::FloorDiv;
+    case TokenKind::Percent: return BinOp::Mod;
+    case TokenKind::At: return BinOp::MatMul;
     case TokenKind::Le: return BinOp::Le;
     case TokenKind::Lt: return BinOp::Lt;
     case TokenKind::Ge: return BinOp::Ge;
@@ -464,8 +510,174 @@ std::vector<Stmt> Parser::parse_block() {
   return body;
 }
 
+std::unique_ptr<Expr> Parser::parse_decorator_value() {
+  const Token& t = cur();
+  if (t.kind == TokenKind::Ident || t.kind == TokenKind::KwTrue ||
+      t.kind == TokenKind::KwFalse) {
+    auto e = std::make_unique<Expr>();
+    e->kind = Expr::Kind::Ident;
+    e->span = {t.start, t.end};
+    e->ident = std::string(t.text);
+    i++;
+    return e;
+  }
+  if (t.kind == TokenKind::IntLit) {
+    auto e = std::make_unique<Expr>();
+    e->kind = Expr::Kind::IntLit;
+    e->span = {t.start, t.end};
+    e->int_value = t.int_value;
+    i++;
+    return e;
+  }
+  if (t.kind == TokenKind::FloatLit) {
+    auto e = std::make_unique<Expr>();
+    e->kind = Expr::Kind::FloatLit;
+    e->span = {t.start, t.end};
+    e->float_value = t.float_value;
+    i++;
+    return e;
+  }
+  if (t.kind == TokenKind::StringLit) {
+    auto e = std::make_unique<Expr>();
+    e->kind = Expr::Kind::StringLit;
+    e->span = {t.start, t.end};
+    e->str_value = std::string(t.text);
+    i++;
+    return e;
+  }
+  diags.error(loc(t), "expected decorator argument");
+  return nullptr;
+}
+
+Decorator Parser::parse_decorator() {
+  Decorator deco;
+  if (!expect(TokenKind::At, "'@'")) {
+    return deco;
+  }
+  if (!at(TokenKind::Ident)) {
+    diags.error(loc(cur()), "expected decorator name after '@'");
+    return deco;
+  }
+  const Token name = cur();
+  deco.span = {name.start, name.end};
+  deco.name = std::string(name.text);
+  i++;
+  if (accept(TokenKind::LParen)) {
+    if (!at(TokenKind::RParen)) {
+      do {
+        DecoratorArg arg;
+        if (!at(TokenKind::Ident)) {
+          diags.error(loc(cur()), "expected decorator argument name");
+          break;
+        }
+        const Token key = cur();
+        arg.name = std::string(key.text);
+        i++;
+        if (accept(TokenKind::Eq)) {
+          arg.value = parse_decorator_value();
+        } else {
+          arg.value = std::make_unique<Expr>();
+          arg.value->kind = Expr::Kind::Ident;
+          arg.value->span = {key.start, key.end};
+          arg.value->ident = arg.name;
+        }
+        deco.args.push_back(std::move(arg));
+      } while (accept(TokenKind::Comma));
+    }
+    expect(TokenKind::RParen, "')'");
+    deco.span.end = tokens[i > 0 ? i - 1 : 0].end;
+  }
+  return deco;
+}
+
+std::vector<Decorator> Parser::parse_decorator_list() {
+  std::vector<Decorator> decos;
+  skip_newlines();
+  while (at(TokenKind::At)) {
+    decos.push_back(parse_decorator());
+    skip_newlines();
+  }
+  return decos;
+}
+
 Stmt Parser::parse_stmt() {
   Stmt s;
+  if (at(TokenKind::At)) {
+    std::vector<Decorator> decos = parse_decorator_list();
+    if (at(TokenKind::KwWhile)) {
+      const Token t = cur();
+      s.kind = Stmt::Kind::While;
+      s.span = {t.start, t.end};
+      s.decorators = std::move(decos);
+      i++;
+      s.cond = parse_expr();
+      if (at(TokenKind::Colon)) {
+        i++;
+      }
+      skip_newlines();
+      s.while_body = parse_block();
+      return s;
+    }
+    if (at(TokenKind::Ident) && cur().text == "parallel") {
+      const Token start_tok = cur();
+      s.decorators = std::move(decos);
+      i++;
+      if (!at(TokenKind::Ident) || cur().text != "for") {
+        diags.error({file, start_tok.line, 1, start_tok.start},
+                    "expected 'for' after 'parallel'");
+      } else {
+        i++;
+      }
+      s.kind = Stmt::Kind::ParallelFor;
+      if (!at(TokenKind::Ident)) {
+        diags.error({file, start_tok.line, 1, start_tok.start},
+                    "expected loop variable");
+      } else {
+        s.par_iter = std::string(cur().text);
+        i++;
+      }
+      if (!at(TokenKind::Ident) || cur().text != "in") {
+        diags.error({file, start_tok.line, 1, start_tok.start},
+                    "expected 'in' in parallel for");
+      } else {
+        i++;
+      }
+      if (at(TokenKind::IntLit)) {
+        s.par_start = cur().int_value;
+        i++;
+      }
+      if (at(TokenKind::DotDotLt)) {
+        i++;
+      } else {
+        diags.error({file, start_tok.line, 1, start_tok.start},
+                    "parallel for requires '..<' range");
+      }
+      if (at(TokenKind::IntLit)) {
+        s.par_end = cur().int_value;
+        i++;
+      }
+      skip_newlines();
+      if (accept(TokenKind::Indent)) {
+        skip_newlines();
+        while (at(TokenKind::KwRequires) || at(TokenKind::KwEnsures) ||
+               at(TokenKind::KwDecreases) || at(TokenKind::KwInvariant)) {
+          s.par_contracts.push_back(parse_contract());
+        }
+        expect(TokenKind::Dedent, "dedent");
+        skip_newlines();
+      }
+      if (accept(TokenKind::Eq)) {
+        skip_newlines();
+        if (at(TokenKind::Indent)) {
+          s.par_body = parse_block();
+        }
+      }
+      s.span = {start_tok.start, cur().start};
+      return s;
+    }
+    diags.error(loc(cur()), "expected while or parallel for after decorators");
+    return s;
+  }
   if (at(TokenKind::Ident) && cur().text == "discard") {
     s.kind = Stmt::Kind::Expr;
     s.span = {cur().start, cur().end};
@@ -517,7 +729,9 @@ Stmt Parser::parse_stmt() {
     s.span = {t.start, t.end};
     i++;
     s.cond = parse_expr();
-    expect(TokenKind::Colon, "':'");
+    if (at(TokenKind::Colon)) {
+      i++;
+    }
     skip_newlines();
     s.while_body = parse_block();
     return s;
@@ -621,8 +835,8 @@ Stmt Parser::parse_stmt() {
 ProcDecl Parser::parse_proc(bool is_extern) {
   ProcDecl proc;
   proc.is_extern = is_extern;
-  if (!is_extern) {
-    expect(TokenKind::KwProc, "'proc'");
+  if (!is_extern && !accept_proc_kw()) {
+    diags.error(loc(cur()), "expected 'proc' or 'def'");
   }
   const Token name = cur();
   proc.span = {name.start, name.end};
@@ -693,11 +907,20 @@ TypeAlias Parser::parse_type_alias() {
     alias.alias_kind = AliasKind::Enum;
     i++;
     skip_newlines();
-    while (at(TokenKind::Ident) && cur().text != "proc" && cur().text != "type") {
+    while (at(TokenKind::Ident) && cur().text != "proc" && cur().text != "def" &&
+           cur().text != "type" && cur().text != "import") {
       alias.enum_variants.push_back(std::string(cur().text));
       i++;
       skip_newlines();
     }
+    return alias;
+  }
+  if (at(TokenKind::KwObject)) {
+    alias.alias_kind = AliasKind::Object;
+    i++;
+    skip_newlines();
+    alias.fields = parse_type_fields();
+    skip_newlines();
     return alias;
   }
   alias.definition = parse_type();
@@ -705,11 +928,57 @@ TypeAlias Parser::parse_type_alias() {
   return alias;
 }
 
+ImportDecl Parser::parse_import() {
+  ImportDecl imp;
+  const Token start = cur();
+  expect(TokenKind::KwImport, "'import'");
+  if (!at(TokenKind::Ident)) {
+    diags.error(loc(cur()), "expected module name after import");
+    return imp;
+  }
+  imp.module = std::string(cur().text);
+  i++;
+  while (accept(TokenKind::Dot)) {
+    if (!at(TokenKind::Ident)) {
+      diags.error(loc(cur()), "expected identifier after '.' in module path");
+      break;
+    }
+    imp.module.push_back('.');
+    imp.module.append(cur().text);
+    i++;
+  }
+  if (at(TokenKind::Ident) && cur().text == "as") {
+    i++;
+    if (!at(TokenKind::Ident)) {
+      diags.error(loc(cur()), "expected alias after 'as'");
+    } else {
+      imp.alias = std::string(cur().text);
+      i++;
+    }
+  } else {
+    imp.alias = imp.module;
+  }
+  imp.span = {start.start, tokens[i > 0 ? i - 1 : i].end};
+  return imp;
+}
+
 std::vector<TypeField> Parser::parse_type_fields() {
   std::vector<TypeField> fields;
   skip_newlines();
-  while (at(TokenKind::Ident) && peek(1).kind == TokenKind::Colon) {
+  while (at(TokenKind::KwPrivate) || at(TokenKind::KwPublic) ||
+         (at(TokenKind::Ident) && peek(1).kind == TokenKind::Colon)) {
     TypeField field;
+    field.visibility = Visibility::Public;
+    if (at(TokenKind::KwPrivate)) {
+      field.visibility = Visibility::Private;
+      i++;
+    } else if (at(TokenKind::KwPublic)) {
+      i++;
+    }
+    if (!at(TokenKind::Ident)) {
+      diags.error(loc(cur()), "expected field name");
+      break;
+    }
     field.name = std::string(cur().text);
     i++;
     expect(TokenKind::Colon, "':'");

@@ -1,4 +1,6 @@
 extern proc puts(s: str) -> int
+  requires true
+  ensures true
 
 proc main() raises IO -> int
   requires true

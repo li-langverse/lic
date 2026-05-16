@@ -2,6 +2,8 @@
 
 Li is implemented as a **multi-stage compiler** in C++ that lowers programs to **LLVM IR**, then links a small C runtime. This page is the map; exact type rules live in the [language design spec](../superpowers/specs/2026-05-14-li-language-design.md).
 
+Some boxes below are **planned** (Lean gate, deferred annotations). See **[Provability gaps](../verification/provability-gaps.md)** for what is wired today.
+
 ## End-to-end pipeline
 
 ```

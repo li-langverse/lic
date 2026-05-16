@@ -1,0 +1,11 @@
+{
+  "version": 1,
+  "updated_at": "2026-05-16T00:00:00Z",
+  "repos": {
+    "lic": { "path": "../li", "branch": "dev", "claims": [] },
+    "lip": { "path": "../lip", "branch": "dev", "claims": [] },
+    "lit": { "path": "../lit", "branch": "dev", "claims": [] },
+    "lis": { "path": "../lis", "branch": "dev", "claims": [] }
+  },
+  "notes": "Copy to coding-projects/.li-agent-coord.json — never commit secrets or this file with PATs."
+}

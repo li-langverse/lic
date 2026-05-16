@@ -9,7 +9,8 @@ Packages maintained under **[`li-langverse`](https://github.com/li-langverse)**.
 | `PKG-lic` | [`li-langverse/lic`](https://github.com/li-langverse/lic) | Compiler, runtime, `li-tests`, docs | 0–7 | — (source of `lic` releases) |
 | `PKG-lip` | [`li-langverse/lip`](https://github.com/li-langverse/lip) | Package manager + registry | 8b–8d | `lic`, `lit` |
 | `PKG-lit` | [`li-langverse/lit`](https://github.com/li-langverse/lit) | Tests + ≥80% coverage | 8e | `lic` |
-| `PKG-li-std-core` | *planned* `li-langverse/li-std-core` | Standard library core | 4+ | `lic` |
+| `PKG-li-std-core` | `packages/li-std-core` → *planned* [`li-std-core`](https://github.com/li-langverse/li-std-core) | Standard library core | **4s**, **8a** | `lic` |
+| `PKG-li-std-math` | `packages/li-std-math` → *planned* `li-std-math` | Math / linalg (2i/7e) | **2i** | `lic`, `li-std-core` |
 | `PKG-li-http` | *planned* `li-langverse/li-http` | HTTP stack | H | `lic`, registry deps TBD |
 
 ## Monorepo paths (pre-split)

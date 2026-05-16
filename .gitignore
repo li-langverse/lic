@@ -29,3 +29,11 @@ compile_commands.json
 examples/tetris/tetris
 build/lic-from-li
 benchmarks/tier2_physics/**/target/
+
+# Local GitHub PAT (parent dir)
+.env.github
+../.env.github
+
+# Multi-agent coordination (local only, parent dir)
+.li-agent-coord.json
+../.li-agent-coord.json

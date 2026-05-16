@@ -1,5 +1,8 @@
 # Fast math and parallelism
 
+!!! note "Status"
+    User-facing **math notation** (`A @ B`, no manual `simd`) is **planned** (Phase 2i/7e). **Decorators** parse but do not elaborate yet. Parallel disjointness uses **heuristic** checks today. See **[Provability gaps](../verification/provability-gaps.md)**.
+
 Li is built for **scientific and high-performance** work. Two features matter most:
 
 1. **SIMD** — do the same operation on several numbers in one step (vector lanes).

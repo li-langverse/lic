@@ -14,6 +14,7 @@ Autonomous workflow for implementing Li per `docs/superpowers/plans/2026-05-14-l
 
 ## On every invocation
 
+0. Read [engineering-standards.md](../../../docs/ecosystem/engineering-standards.md) (functionality, security, performance gates).
 1. Read the **phase completion tracker** in the master plan; pick the **first unchecked** phase.
 2. Read that phase's plan file (table in master plan). If marked **Stale**, rewrite it for **C++17 + CMake + Ninja + LLVM 18** before coding.
 3. Read canonical context only as needed:
@@ -32,6 +33,8 @@ Autonomous workflow for implementing Li per `docs/superpowers/plans/2026-05-14-l
 | 2 | **Stack** — C++ compiler only in `compiler/`; **LLVM 18** sole backend; no Rust/Zig host |
 | 3 | **Tests** — new behavior → fixture in `li-tests/` + `manifest.toml` entry |
 | 4 | **Truth** — update master plan checkboxes only after verification commands pass |
+| 5 | **Provability honesty** — if the PR touches proof surface (Lean, VC, parallel, decorators, math, bounds), update `docs/verification/provability-gaps.md` (**G-*** rows) and linked handbook pages in the **same PR** (master plan § Doc) |
+| 6 | **`std/`** — **100%** line coverage before phase checkbox; run `scripts/check-stdlib-coverage.sh` when instrumented |
 
 ## Per-phase loop
 
@@ -40,8 +43,10 @@ READ phase plan
 → IMPLEMENT (smallest vertical slice first)
 → VERIFY (commands in phase plan exit gate)
 → REGISTER tests if applicable
+→ UPDATE provability-gaps.md (+ handbook) when proof surface changed (see master plan § Doc)
 → COMMIT (one logical commit per task group)
 → CHECK master plan box
+→ PUSH `./scripts/agent-push-github.sh "feat(phase-N): …"` (see `.cursor/rules/li-auto-push.mdc` — never ask user to push)
 → NEXT phase (same session if context allows)
 ```
 

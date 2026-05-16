@@ -2,6 +2,9 @@
 
 Li targets **CPU HPC**: vector lanes on one core, many cores on shared memory — **without** user-installed parallel frameworks.
 
+!!! note "Provability status"
+    Disjointness for `parallel for` is enforced today partly via **string heuristics** in `policy.cpp`, not full Lean discharge. Decorators (`@parallel`, …) **parse** but do not yet elaborate. See **[Provability gaps](../verification/provability-gaps.md)** (**G-par**, **G-dec**).
+
 ## Two layers
 
 | Layer | Syntax | Hardware |

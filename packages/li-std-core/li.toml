@@ -1,0 +1,6 @@
+[package]
+name = "li-std-core"
+version = "0.1.0"
+description = "Prelude-facing std types and helpers (in-tree until promotion to li-langverse/li-std-core)"
+
+[dependencies]

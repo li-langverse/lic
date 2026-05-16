@@ -1,4 +1,6 @@
 extern proc li_md_traj_from_env()
+  requires true
+  ensures true
 
 proc main() raises IO -> int
   requires true

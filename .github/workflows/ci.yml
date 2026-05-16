@@ -83,7 +83,6 @@ jobs:
 
   build-and-test-windows:
     runs-on: windows-latest
-    continue-on-error: true # best-effort; ubuntu+macos gate release
     defaults:
       run:
         shell: bash
@@ -93,7 +92,8 @@ jobs:
       - name: Install LLVM 18, CMake, Ninja
         run: |
           choco install cmake ninja -y
-          choco install llvm --version=18.1.7 -y || choco install llvm -y
+          chmod +x scripts/install-llvm-windows.sh
+          ./scripts/install-llvm-windows.sh
           echo "C:/Program Files/LLVM/bin" >> "$GITHUB_PATH"
 
       - name: Build lic + smoke + security + li-tests

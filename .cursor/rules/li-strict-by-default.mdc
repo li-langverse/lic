@@ -12,6 +12,7 @@ There is **no optional provability** by default. Mathematical proof, security, a
 ## Forbidden (agents)
 
 - Suggesting `sorry`, `assume`, `unsafe`, or bare `cast` to “unblock” work
+- `continue-on-error` on **CI OS jobs** (ubuntu / macOS / Windows) or treating platform CI as optional
 - Skipping `requires` / `ensures` on new or changed `proc`
 - Treating `lic check` as sufficient for ship — **`lic build`** is the certificate path
 - Weakening `stdlib_seal`, removing CVE/exploit tests, or lowering bench thresholds without human approval + tracked issue

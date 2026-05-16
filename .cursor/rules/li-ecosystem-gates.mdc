@@ -46,9 +46,19 @@ Agents **must** follow these before and during work. Style and structure are fle
 - **Never** run `scripts/backup-li-langverse-org.sh`, `export-li-langverse-metadata.sh`, or read `../.env.github.backup`.
 - Human runbook: `docs/ecosystem/org-backup.md`.
 
+## CI platforms (all OS must pass)
+
+Canonical: `docs/ecosystem/ci-platforms.md`
+
+- **Ubuntu, macOS, and Windows** CI jobs are **required** on `main` / PRs — same bar, no exceptions.
+- **Forbidden:** `continue-on-error` (or equivalent) on OS build/test jobs to hide platform breakage.
+- **Forbidden:** removing a platform from `.github/workflows/ci.yml` without human approval + tracked issue.
+- On failure: **fix the platform** (LLVM install, paths, flags) — never merge “Linux-only green.”
+
 ## Escalate (do not do alone)
 
 - Lower coverage tiers, skip CVE tests, weaken bench thresholds
+- Non-blocking or dropped CI platform jobs
 - New `trusted.lean` axioms
 - Changing pillar priority or master plan phase order
 - Weakening `agent-kit/hooks/guard-*.sh`

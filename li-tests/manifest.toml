@@ -404,6 +404,7 @@ file = "math_syntax/int_pow.li"
 outcome = "verify_ok"
 
 # --- stdlib_seal (4s — prelude/stdlib names cannot be shadowed) ---
+# Coverage policy: std/**/*.li requires 100% line coverage (scripts/check-stdlib-coverage.sh).
 
 [[tests]]
 suite = "stdlib_seal"

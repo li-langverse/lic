@@ -34,7 +34,7 @@ Agents **must** follow these before and during work. Style and structure are fle
 
 - New ecosystem feature: survey **2–4** mature systems; document **Learned from**; adapt to easy + AI-first + provable + fast.
 - Cross-repo or pillar vision → **master plan**, not package README only.
-- Org repos / secrets / branch protection → **ask human**; wait for confirmation.
+- Org repos / secrets / branch protection → use `./scripts/agent-push-github.sh` when `../.env.github` has `GH_TOKEN`; ask human only if push fails.
 
 ## Escalate (do not do alone)
 

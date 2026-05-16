@@ -191,7 +191,7 @@ When **`lic`**, **`lit`**, **`lip`**, or any **`li-std-*` / `li-*`** package rel
 | **8-repo** | **Org repos live + push/CI** | [2026-05-16-li-package-manager-lip.md](2026-05-16-li-package-manager-lip.md) | **`lic`**, **`lip`**, **`lit`** on GitHub; toolchain pins; bootstrap smoke |
 | **8a** | **Modules + workspace** `lic build` | same § 8a | **`lic`**: `li-tests/modules/`; same `li.toml` as Pkg |
 | **8e-li** | **`lic --coverage-instrument`** | same § 8e | **`lic`**: LLVM profiling flag for coverage |
-| **8e** | **`lit` + 80% coverage gate** | same § 8e | **`lit`**: `lit test --coverage`; **`lip`** lock `coverage_digest` |
+| **8e** | **`lit` + coverage gate** | same § 8e | **`lit`**: ≥80% on publish; **`std/**` in `lic`**: **100%** (`check-stdlib-coverage.sh`) |
 | **8b** | **`lip` path/git + lockfile** | same § 8b | **`lip`**: `lip init` → scaffold; `lip install` reproducible |
 | **8c** | **Signatures + proof digests** | same § 8c | **`lip`**: ed25519; `proof_digest` in `li.lock` |
 | **8d** | **Registry + `lip publish`** | same § 8d | **`lip`**: hybrid git + registry; CI runs **`lit`** + `lic build` |
@@ -390,7 +390,7 @@ Track in phase **Doc** until each is checked:
 - [x] Phase 8-repo — GitHub repos created: [`lic`](https://github.com/li-langverse/lic), [`lip`](https://github.com/li-langverse/lip), [`lit`](https://github.com/li-langverse/lit) — *push split trees + CI green pending*
 - [ ] Phase 8a — Modules + workspace `lic build` — **partial:** `resolve_imports` for `std.*`; workspace `li-std-*` packages
 - [x] Phase 8e-li — `lic build --coverage-instrument` (LLVM profile flags)
-- [ ] Phase 8e — `lit` CLI + ≥80% coverage gate — **partial:** `scripts/lit` stub → `run_all.sh`
+- [ ] Phase 8e — `lit` CLI + ≥80% publish gate; **`std/**` 100%** via `check-stdlib-coverage.sh` — **partial:** `scripts/lit` stub → `run_all.sh`
 - [ ] Phase 8b — `lip` path/git + `li.lock` — **partial:** `scripts/lip init` → `li-new-package`
 - [ ] Phase 8c — ed25519 + `proof_digest` in lock — **partial:** `lip lock` writes stub `li.lock`
 - [ ] Phase 8d — Registry + `lip publish` (**`lip`**; invokes **`lit`**)

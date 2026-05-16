@@ -16,7 +16,9 @@
 
 **Rule:** If a change affects **more than one package** or **Li pillars**, update the **master plan** (same PR or immediate follow-up). Do not hide ecosystem vision only in a package README.
 
-### Future `roadmap` repo (planned)
+### Future `roadmap` repo (planned — human creates)
+
+**Deferred** until milestones outgrow the master plan. Do not create the repo from agent sessions without explicit human approval ([master plan — human-only actions](../superpowers/plans/2026-05-14-li-master-plan.md)).
 
 When the org outgrows one markdown file:
 

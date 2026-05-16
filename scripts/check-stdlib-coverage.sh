@@ -9,7 +9,11 @@ if [[ ! -d std ]]; then
   exit 0
 fi
 
-mapfile -t LI_FILES < <(find std -name '*.li' -type f 2>/dev/null | sort)
+LI_FILES=()
+while IFS= read -r f; do
+  LI_FILES+=("$f")
+done < <(find std -name '*.li' -type f 2>/dev/null | sort)
+
 if [[ ${#LI_FILES[@]} -eq 0 ]]; then
   echo "check-stdlib-coverage: no std/**/*.li yet — OK"
   exit 0

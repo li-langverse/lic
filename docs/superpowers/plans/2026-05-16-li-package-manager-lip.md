@@ -35,6 +35,7 @@ Li’s **proof gate** is the primary security differentiator: unproved user code
 | Discovery | **Hybrid** — git URLs + semver tags; central registry recommended for publish |
 | Third-party trust | **Proof + signature** — `lic build` required; unsigned third-party **rejected by default** |
 | Package quality | **≥ 80% line coverage** — `lit test --coverage` on publish/install |
+| **`std/` in `lic`** | **100%** line coverage (in-tree; not `lip publish` default) — see [engineering-standards § Coverage](../../ecosystem/engineering-standards.md#coverage-tiers) |
 
 ---
 
@@ -168,7 +169,8 @@ Pinned closure: version/git SHA, tree digest SHA-256, manifest signature, `proof
 
 - `lic --coverage-instrument`
 - `lit test` / `lit coverage report`
-- 80% gate on fixture packages
+- **80%** gate on published / official packages (`min_coverage` in `li.toml`)
+- **`std/**` in `lic`:** **100%** enforced by `scripts/check-stdlib-coverage.sh` (stricter than publish default)
 - Coverage fields in `li.lock`
 
 **Depends on:** 8a. **Parallel with:** 8b once multi-file tests build.

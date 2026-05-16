@@ -8,6 +8,10 @@ export CXX="${CXX:-clang++}"
 echo "==> build"
 "$ROOT/scripts/build.sh"
 
+echo "==> stdlib coverage gate (100% when instrumented)"
+chmod +x "$ROOT/scripts/check-stdlib-coverage.sh"
+"$ROOT/scripts/check-stdlib-coverage.sh"
+
 export LI_REPO_ROOT="$ROOT"
 export LIC="$("$ROOT/scripts/resolve-lic.sh")"
 

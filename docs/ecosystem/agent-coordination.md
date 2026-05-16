@@ -178,6 +178,7 @@ CI runs `scripts/check-li-toolchain.sh` (when landed) to compare pins to latest 
 | **`lic`** | build + `li-tests` + security + fuzz/memory (see workflows) |
 | **`lip` / `lit`** | infra + toolchain check + (later) `lic build` of tool |
 | **`lis`** (httpd) | 3-OS infra + security + load TOML; later + `lic build` + tier5 exploit |
+| **`lic` `std/**`** | **100%** line coverage (`check-stdlib-coverage.sh`) + `stdlib_seal` suite |
 | **Official `li-*` package** | `lic build` + `lit` ≥80% + `check-traceability.sh` |
 
 **Security:** `li-tests/security/`, tier5 exploit TOML, Lean gate — not optional for release branches.

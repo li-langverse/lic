@@ -16,6 +16,7 @@ description: >-
 3. **`li.toml`** must match [package manager plan § A3](../../../docs/superpowers/plans/2026-05-16-li-package-manager-lip.md).
 4. Every `proc` needs `requires`, `ensures`, `decreases` (no `sorry`, no `Any`).
 5. Add **`PKG-*`** to [official-packages.md](../../../docs/ecosystem/official-packages.md) when `--official`.
+6. **`min_coverage`:** default **80** in `li.toml`; **`li-std-*` / in-tree `std/`** slices use **100** (see engineering-standards).
 
 ## Commands
 

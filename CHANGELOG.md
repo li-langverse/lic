@@ -12,6 +12,7 @@ All notable changes to Li are documented here. The format follows
 - LLM-first design research stub, agent handover comparison, `li-agent-manifest.toml`
 - `scripts/lic-fix-suggest.sh`, `scripts/gen-li-agent-manifest.sh`, `li-tests/tooling/diagnose_json_smoke.sh`
 - Cursor rule `li-llm-first.mdc`, skill `agent-diagnose-fix-li`
+- **Composable by default:** [composable-by-default.md](docs/ecosystem/composable-by-default.md), `li-tests/composable/import_httpd_lib.li`, aspirational `li-httpd` lifecycle stubs
 
 ## [0.1.0] - 2026-05-14
 

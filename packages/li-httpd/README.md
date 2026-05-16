@@ -11,10 +11,7 @@ Path deps: `li-net`, `li-bytes` (planned), workspace in `lic` `packages/li.toml`
 ```nim
 import li_httpd
 
-let cfg = HttpdConfig(port=8080)
-let h = httpd_serve(cfg)      # start (stub until P0-net)
-discard httpd_ready(h)        # await accepting
-httpd_stop(h)                 # tear down
+httpd_stop(httpd_serve(8080))   # start then tear down (stubs until P0-net)
 ```
 
 Other packages embed the same calls in their own `proc main` — no copy-paste of server loop.

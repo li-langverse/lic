@@ -1,0 +1,8 @@
+import li_std_math
+
+proc main() -> int
+  requires true
+  ensures result == 2
+  decreases 0
+=
+  return math_tag()

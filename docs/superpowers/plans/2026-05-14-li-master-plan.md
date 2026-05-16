@@ -382,18 +382,18 @@ Track in phase **Doc** until each is checked:
 - [ ] Phase 2e — Contracts + refinements — **partial:** typed `AutoVC.lean`, MIR-linked `lic verify` (`mir_fns=`); open goals checker
 - [ ] Phase 2f — Lean 4 verify — **partial:** `.github/workflows/lean.yml`, `contracts_verify_lean.sh`; strict discharge via `LI_BUILD_VERIFY_LEAN_STRICT`
 - [x] Phase 7 — Native HPC — **v1 gate:** simd + parallel for + OpenMP + `check-master-plan-gates.sh` (tier 1/2 perf advisory)
-- [ ] Phase 7d — Execution decorators — **partial (7d-a/b/d/e):** parse, policy, MIR tags, `std/execution/decorators.li`; structured disjoint deferred
+- [ ] Phase 7d — Execution decorators — **partial (7d-a/b/d/e/c):** AST `check_module_policies` for disjoint; string heuristics for race exploits
 - [ ] Phase 7e — Math → SIMD/parallel lowering — **partial:** `ArrayDotF64` for 1d `float` `@`; SIMD matmul deferred
 - [x] Phase H — li-httpd infra — **`lis`** harness, mitigations, CI, workspace stubs ([implementation-status](https://github.com/li-langverse/lis/blob/main/docs/implementation-status.md))
 - [ ] Phase H — li-httpd M1 `.li` — after **2e–2f** + bytes/async ([httpd-prerequisites](../ecosystem/httpd-prerequisites.md))
 - [x] Phase Pkg — Package scaffold + governance stubs ([scaffold](2026-05-16-li-package-scaffold.md), [governance](2026-05-16-li-ecosystem-governance.md); `li.toml` = [lip § A3](2026-05-16-li-package-manager-lip.md))
 - [x] Phase 8-repo — GitHub repos created: [`lic`](https://github.com/li-langverse/lic), [`lip`](https://github.com/li-langverse/lip), [`lit`](https://github.com/li-langverse/lit) — *push split trees + CI green pending*
-- [ ] Phase 8a — Modules + workspace `lic build` — **partial:** `resolve_imports` for `std.*`; workspace `li-std-*` packages
+- [x] Phase 8a — Modules + workspace `lic build` — `std.*` + workspace/local imports; `li-tests/modules/`; `lic-workspace-build.sh` on 3 packages
 - [x] Phase 8e-li — `lic build --coverage-instrument` (LLVM profile flags)
 - [ ] Phase 8e — `lit` CLI + ≥80% publish gate; **`std/**` 100%** via `check-stdlib-coverage.sh` — **partial:** `scripts/lit` stub → `run_all.sh`
 - [ ] Phase 8b — `lip` path/git + `li.lock` — **partial:** `scripts/lip init` → `li-new-package`
 - [ ] Phase 8c — ed25519 + `proof_digest` in lock — **partial:** `lip lock` writes stub `li.lock`
-- [ ] Phase 8d — Registry + `lip publish` (**`lip`**; invokes **`lit`**)
+- [ ] Phase 8d — Registry + `lip publish` — **partial:** `lip publish` stub + `lip_publish_smoke.sh`
 - [x] Phase 8-sync — notifier wired locally (`notify-downstream`, `ecosystem-upstream`, `dispatch-upstream-release.sh`); **push lic/lip/lit + human PAT secret pending**
 - [x] Phase Doc-a — Gap register current + site links ([provability-gaps](../verification/provability-gaps.md))
 - [x] Phase Doc-b — Handbook stubs (decorators, linear-algebra); audit partial

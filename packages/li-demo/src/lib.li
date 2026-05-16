@@ -1,8 +1,8 @@
-# PKG-li-demo — library entry (add modules under src/ when import lands)
+import li_std_math
 
 proc li_demo_version() -> int
   requires true
-  ensures result == 0
+  ensures result == 3
   decreases 0
 =
-  return 0
+  return math_tag() + 1

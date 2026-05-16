@@ -466,6 +466,11 @@ suite = "modules"
 file = "modules/import_std_decorators.li"
 outcome = "verify_ok"
 
+[[tests]]
+suite = "modules"
+file = "modules/use_greeter.li"
+outcome = "verify_ok"
+
 # --- cve_patterns (C memory-safety classes — must reject or prove safe) ---
 
 [[tests]]

@@ -1,0 +1,8 @@
+import li_std_core
+
+proc main() -> int
+  requires true
+  ensures result == 1
+  decreases 0
+=
+  return core_tag()

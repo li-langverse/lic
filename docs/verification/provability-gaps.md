@@ -36,8 +36,8 @@ Status legend: **Missing** · **Stub** · **Partial** · **CI only** · **Done**
 |----|------|----------------|---------------|-------|-------------|
 | **G-lean** | Lean 4 gate | `lic build` fails if any VC open | **Partial** — `.github/workflows/lean.yml`, `Init.Data.Float` in AutoVC; `check-autovc-open-goals.sh` with `LI_BUILD_VERIFY_LEAN_STRICT` | **2f** | `contracts_verify_lean.sh` |
 | **G-vc** | VC generation | Contracts → proof obligations | **Partial** — `AutoVC.lean` emits typed `Prop`/`Nat` from contract AST (not `True` stubs); proofs only for `True` | **2e** | `vc_emit_lean.cpp`, `li-tests/tooling/vc_emit_contracts.sh` |
-| **G-par** | `parallel for` safety | Proved iteration independence | **Partial** — `has_disjoint_proof()` string search in `compiler/types/policy.cpp` | **7b**, **7d-c** | `race_shared_memory` tests; not Lean |
-| **G-stdlib** | Prelude / std seal | User cannot shadow builtin or `std/` names | **Partial** — `check_stdlib_seal` on prelude + std exports; import graph pending | **4s**, **8a** | `li-tests/stdlib_seal/` |
+| **G-par** | `parallel for` safety | Proved iteration independence | **Partial** — AST `check_module_policies` + string exploit patterns in `policy.cpp` | **7b**, **7d-c** | `race_shared_memory`, `decorator_exploits` |
+| **G-stdlib** | Prelude / std seal | User cannot shadow builtin or `std/` names | **Partial** — `check_stdlib_seal` + `resolve_imports` for `std.*` / workspace; cycle detect at load | **4s** | `li-tests/stdlib_seal/`, `li-tests/modules/` |
 | **G-dec** | Execution decorators | Static elaboration; reserved names; no runtime | **Partial** — parse + policy + `MirFn.decorators` tags; prelude table shared | **7d** | `decorator_exploits/`, `decorators/` |
 | **G-math** | Math / `A @ B` | Shape errors at compile time; no user `simd(...)` | **Partial** — 1d `float` `@` → `ArrayDotF64` LLVM loop | **2i**, **7e** | `li-tests/math_linalg/` |
 | **G-bnd** | Bounds in release | No reliance on `li_bounds_fail` for proved indices | **Partial** — architecture lists MIR bounds; not full refinement | **2e**, **3** | [Architecture](../architecture/overview.md); codegen paths |

@@ -607,6 +607,10 @@ def main() -> int:
             return rc
         return run_tier2_all(runs=args.runs, out=args.out, verify=not args.skip_verify)
 
+    if args.tier == 3:
+        script = REPO / "benchmarks" / "harness" / "bench_ecosystem.py"
+        return subprocess.call([sys.executable, str(script), "--runs", str(args.runs)])
+
     if args.tier >= 1:
         print(f"tier {args.tier} benchmarks: not implemented", file=sys.stderr)
     return 0

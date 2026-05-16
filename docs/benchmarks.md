@@ -12,6 +12,7 @@ the same `.c` file through `lic` (`LI_EXTRA_C`).
 | 0 | `li-tests` + verify + MD stability (strict) | `./scripts/ci.sh` |
 | 1 | Micro kernels (`simd_dot`, matmul, horner) | `./scripts/ci-bench.sh` |
 | 2 | Physics sims (MD, N-body, wave, heat, pendulum) | manual / weekly workflow |
+| 3 | Ecosystem: compile time, async stub runtime, security gate timing | `./scripts/ci-bench.sh` (smoke) · weekly workflow |
 
 ## Stability vs speed
 
@@ -23,8 +24,16 @@ the same `.c` file through `lic` (`LI_EXTRA_C`).
 ```bash
 python3 benchmarks/harness/stability.py
 python3 benchmarks/harness/bench.py --tier 12 --runs 3 --skip-verify
+python3 benchmarks/harness/bench_ecosystem.py --runs 3
 ./scripts/plot_shareables.sh
 ```
+
+## Dashboard ([li-langverse/benchmarks](https://github.com/li-langverse/benchmarks))
+
+CI on `lic` `dev`/`main` uploads `benchmarks/results/latest.csv` (+ `stability.csv`, `security.csv`) and dispatches ingest.
+Add new benchmark ids to the org **`catalog.toml`** — see [benchmarks-catalog-additions.toml](ecosystem/benchmarks-catalog-additions.toml) for tier-3 rows (async, effects, security).
+
+Published site: [li-langverse.github.io/benchmarks](https://li-langverse.github.io/benchmarks/).
 
 See the [benchmarks implementation plan](superpowers/plans/2026-05-14-benchmarks-and-simulations.md)
 for the full matrix and publication workflow.

@@ -94,7 +94,6 @@ jobs:
           choco install cmake ninja -y
           chmod +x scripts/install-llvm-windows.sh
           ./scripts/install-llvm-windows.sh
-          echo "C:/Program Files/LLVM/bin" >> "$GITHUB_PATH"
 
       - name: Build lic + smoke + security + li-tests
         env:
@@ -105,7 +104,7 @@ jobs:
             scripts/check-cve-coverage.sh scripts/check-historic-bugs.sh \
             li-tests/run_security.sh li-tests/security/codegen_path_injection.sh \
             li-tests/run_all.sh
-          : "${LLVM_DIR:=C:/Program Files/LLVM/lib/cmake/llvm}"
+          : "${LLVM_DIR:=C:/LLVM-18.1.8/lib/cmake/llvm}"
           cmake -B build -G Ninja -DLLVM_DIR="$LLVM_DIR"
           cmake --build build
           LIC="$(./scripts/resolve-lic.sh)"

@@ -5,6 +5,8 @@ alwaysApply: true
 
 # Li project context
 
+**Ecosystem north star:** Li aims to be the **go-to open ecosystem for HPC, scientific computing, and AI** (canonical: `li-langverse/roadmap` → `docs/ecosystem/vision-and-roadmap.md`).
+
 **Li — three pillars (strict priority):**
 
 1. **Mathematical provability** (Lean 4 kernel, mandatory contracts) — **#1, never compromised**

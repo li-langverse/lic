@@ -4,6 +4,12 @@ All notable changes to Li are documented here. The format follows
 [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and versioning follows
 [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [Unreleased]
+
+### Changed
+
+- Agent entry points link to roadmap **north star** (HPC, scientific computing, AI): `AGENTS.md`, `.cursor/rules/`, `docs/ecosystem/vision-and-roadmap.md` stub
+
 ## [0.1.0] - 2026-05-14
 
 ### Added

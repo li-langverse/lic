@@ -1,0 +1,14 @@
+extern proc li_rt_sqrt(x: float) -> float
+
+def main() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  var px: array[3, float]
+  var py: array[3, float]
+  px[0] = 0.0
+  py[0] = 1.0
+  var dx: float = px[1] - px[0]
+  var r: float = li_rt_sqrt(dx * dx + 1.0)
+  return 0

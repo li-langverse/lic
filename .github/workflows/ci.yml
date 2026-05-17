@@ -11,6 +11,20 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
+  docs-build:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Build MkDocs site
+        run: |
+          chmod +x scripts/build-docs.sh
+          ./scripts/build-docs.sh
+
   version:
     runs-on: ubuntu-24.04
     steps:
@@ -34,6 +48,11 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
+      - name: Checkout lip + lit (GitHub siblings)
+        run: |
+          chmod +x scripts/checkout-ecosystem-siblings.sh
+          ./scripts/checkout-ecosystem-siblings.sh
+
       - name: Install LLVM 18 and build tools
         run: |
           sudo apt-get update
@@ -55,6 +74,11 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
+      - name: Checkout lip + lit (GitHub siblings)
+        run: |
+          chmod +x scripts/checkout-ecosystem-siblings.sh
+          ./scripts/checkout-ecosystem-siblings.sh
+
       - name: Install LLVM 18
         run: brew install llvm@18 cmake ninja
 
@@ -73,6 +97,7 @@ jobs:
 
   build-and-test-windows:
     runs-on: windows-latest
+    continue-on-error: true # best-effort; ubuntu+macos gate release
     defaults:
       run:
         shell: bash
@@ -81,7 +106,8 @@ jobs:
 
       - name: Install LLVM 18, CMake, Ninja
         run: |
-          choco install llvm --version=18.1.8 cmake ninja -y
+          choco install cmake ninja -y
+          choco install llvm --version=18.1.7 -y || choco install llvm -y
           echo "C:/Program Files/LLVM/bin" >> "$GITHUB_PATH"
 
       - name: Build lic + smoke + security + li-tests

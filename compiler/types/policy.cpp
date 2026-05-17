@@ -1,5 +1,6 @@
 #include "li/policy.hpp"
 
+#include "li/error_codes.hpp"
 #include "li/prelude.hpp"
 
 #include <cctype>
@@ -117,7 +118,10 @@ void check_source_policies(const std::string& source, const std::string& file,
   if (has_parallel) {
     SourceLoc loc{file, 1, 1, 0};
     if (code.find("buf[0]") != std::string::npos) {
-      diags.error(loc, "overlapping shared mutable memory in parallel for");
+      diag_error(diags, loc, ErrorCode::E0350,
+                 "This parallel loop may write the same shared memory from multiple threads.",
+                 "Prove disjoint access with `requires disjoint_elem(...)`, or use private buffers "
+                 "per iteration.");
     }
     if (code.find("counter = counter") != std::string::npos) {
       diags.error(loc, "parallel mutable capture requires Sync proof");
@@ -132,7 +136,9 @@ void check_source_policies(const std::string& source, const std::string& file,
   if (code.find("-> Any") != std::string::npos ||
       code.find(": Any") != std::string::npos) {
     SourceLoc loc{file, 1, 1, 0};
-    diags.error(loc, "type 'Any' is forbidden");
+    diag_error(diags, loc, ErrorCode::E0340,
+               "The type `Any` is not allowed in Li — every value must be provably typed.",
+               "Replace `Any` with a concrete type or a generic parameter.");
   }
   // Historic bug classes (Ariane 5, prove_reject, Apple goto fail hygiene)
   if (code.find("cast[") != std::string::npos) {

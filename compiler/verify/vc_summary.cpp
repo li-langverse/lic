@@ -25,11 +25,13 @@ void count_contracts(const std::vector<Contract>& contracts, VcSummary& out) {
 void walk_stmts(const std::vector<Stmt>& stmts, VcSummary& out) {
   for (const auto& s : stmts) {
     count_contracts(s.par_contracts, out);
+    count_contracts(s.for_contracts, out);
     walk_stmts(s.then_body, out);
     if (s.else_body) {
       walk_stmts(*s.else_body, out);
     }
     walk_stmts(s.while_body, out);
+    walk_stmts(s.for_body, out);
     walk_stmts(s.par_body, out);
   }
 }

@@ -6,9 +6,17 @@ All notable changes to Li are documented here. The format follows
 
 ## [Unreleased]
 
+### Added
+
+- Agent-first JSON diagnostics: `lic check --format=json`, `lic diagnose` (`docs/schemas/diagnostic-v1.json`)
+- LLM-first design research stub, agent handover comparison, `li-agent-manifest.toml`
+- `scripts/lic-fix-suggest.sh`, `scripts/gen-li-agent-manifest.sh`, `li-tests/tooling/diagnose_json_smoke.sh`
+- Cursor rule `li-llm-first.mdc`, skill `agent-diagnose-fix-li`
+
 ### Changed
 
 - Agent entry points link to roadmap **north star** (HPC, scientific computing, AI): `AGENTS.md`, `.cursor/rules/`, `docs/ecosystem/vision-and-roadmap.md` stub
+- **Docs site** canonical on **`lic`**: `mkdocs.yml` → `li-langverse.github.io/lic/`; CI `docs-build` on PRs; Pages deploy on `main` push
 
 ## [0.1.0] - 2026-05-14
 
@@ -21,4 +29,4 @@ All notable changes to Li are documented here. The format follows
 - Cross-language physics benchmark harness (shared C kernels)
 - MkDocs documentation site and CI/local-ci tooling
 
-[0.1.0]: https://github.com/li-langverse/li-language/releases/tag/v0.1.0
+[0.1.0]: https://github.com/li-langverse/lic/releases/tag/v0.1.0

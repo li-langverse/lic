@@ -148,6 +148,7 @@ write_tree() {
   if [[ "$OFFICIAL" -eq 1 ]]; then
     local gh="$ROOT/scripts/templates/github-repo"
     mkdir -p "$OUT/.github/workflows"
+    cp "$gh/ci.yml" "$OUT/.github/workflows/ci.yml"
     cp "$gh/dependabot.yml" "$OUT/.github/dependabot.yml"
     cp "$gh/ecosystem-upstream.yml" "$OUT/.github/workflows/ecosystem-upstream.yml"
     cp "$gh/PULL_REQUEST_TEMPLATE.md" "$OUT/.github/PULL_REQUEST_TEMPLATE.md"
@@ -201,9 +202,11 @@ echo "  lic check li-tests/smoke/builds.li   # from repo root with LIC set"
 if [[ "$OFFICIAL" -eq 1 ]]; then
   echo ""
   echo "Official package (li-langverse):"
+  echo "  ./scripts/ensure-package-ci.sh   # verifies .github/workflows/ci.yml"
   echo "  gh repo create li-langverse/$NAME --public --description \"$DESCRIPTION\""
-  echo "  git init && git remote add origin git@github.com:li-langverse/$NAME.git"
+  echo "  ./scripts/push-official-package-repo.sh $NAME --create"
   echo "  Add row to docs/ecosystem/official-packages.md"
+  echo "  roadmap: apply branch protection (required check: check)"
 fi
 echo ""
 echo "Docs: docs/guide/creating-packages.md"

@@ -1,4 +1,13 @@
-# PKG-li-httpd — gateway entry (M1 lands here)
+# PKG-li-httpd — composable HTTP gateway API (M1 aspirational; not fully implemented)
+#
+# Target: one import + serve/stop/ready from any proc main. See docs/ecosystem/composable-by-default.md
+
+type HttpdConfig = object
+  public port: int
+
+# Stub handle is an int id (0) until object literals and HttpdHandle wiring land.
+type HttpdHandle = object
+  public id: int
 
 proc httpd_tag() -> int
   requires true
@@ -6,3 +15,24 @@ proc httpd_tag() -> int
   decreases 0
 =
   return 0
+
+proc httpd_serve(config: HttpdConfig) -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0
+
+proc httpd_stop(handle_id: int) -> int
+  requires handle_id == 0
+  ensures result == 0
+  decreases 0
+=
+  return 0
+
+proc httpd_ready(handle_id: int) -> bool
+  requires handle_id == 0
+  ensures result == true
+  decreases 0
+=
+  return true

@@ -10,6 +10,10 @@ Do not edit ecosystem policy here — open a PR to the roadmap repo (human merge
 
 **Go-to ecosystem for HPC, scientific computing, and AI** — full text: [vision-and-roadmap.md § North star](https://github.com/li-langverse/roadmap/blob/main/docs/ecosystem/vision-and-roadmap.md#north-star--go-to-ecosystem-agents-read-first) in `li-langverse/roadmap`.
 
+## Strict by default
+
+Li is **strict by default**: proof, security, and performance gates are always on at maximum. There is **no optional provability** — only explicit project downgrades. **Canonical (lic workspace):** [strict-by-default.md](strict-by-default.md).
+
 ## Related
 
 - [Roadmap milestones](https://github.com/li-langverse/roadmap/blob/main/docs/roadmap/milestones.md)

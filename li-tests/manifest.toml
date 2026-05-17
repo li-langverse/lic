@@ -429,6 +429,14 @@ file = "effects/bytes_need_alloc.li"
 outcome = "compile_fail"
 expected_substr = "raises Alloc"
 
+# --- composable (package lib import — not exec-only binary) ---
+
+[[tests]]
+suite = "composable"
+file = "composable/import_httpd_lib.li"
+outcome = "verify_ok"
+note = "imports packages/li-httpd/src/lib.li via workspace li_httpd"
+
 # --- httpd (Phase H placeholder) ---
 
 [[tests]]
@@ -458,6 +466,23 @@ expected_substr = "matrix multiply"
 [[tests]]
 suite = "math_linalg"
 file = "math_linalg/array_sum.li"
+outcome = "verify_ok"
+
+[[tests]]
+suite = "math_linalg"
+file = "math_linalg/vec3_ops.li"
+outcome = "verify_ok"
+
+# --- physics (packages + profiles) ---
+
+[[tests]]
+suite = "physics"
+file = "physics/profile_defaults.li"
+outcome = "verify_ok"
+
+[[tests]]
+suite = "physics"
+file = "physics/three_body_mini.li"
 outcome = "verify_ok"
 
 # --- math_syntax (2h — %, //, **) ---
@@ -600,6 +625,8 @@ suite = "cve_patterns"
 file = "cve_patterns/historic_goto_fail.li"
 outcome = "compile_fail"
 expected_substr = "goto is forbidden"
+
+# --- hpc_competitive (registry gate; ./li-tests/run_all.sh hpc_competitive) ---
 
 # --- security (malformed inputs; run via ./li-tests/run_security.sh) ---
 # Wired in scripts/ci.sh: parse/check must exit 0/1, never signal (SIGSEGV etc.).

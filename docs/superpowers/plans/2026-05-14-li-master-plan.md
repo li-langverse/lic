@@ -8,6 +8,8 @@
 
 **Goal:** Open-source language: **(1) Lean provability (2) Nim syntax (3) LLVM speed** — in that priority order.
 
+**Strict by default:** Proof, security, and performance gates are always on at maximum; there is **no optional provability** ([strict-by-default.md](../ecosystem/strict-by-default.md)). Tracker items close **implementation** gaps — they do not add implicit opt-out.
+
 **Reliability target:** Li is **not a runtime-interpreted language**. User logic is **fully static**: types, contracts, memory, parallelism, and (for release) bounds/shapes are resolved at **`lic build`** + Lean — **not** at process start with dynamic checks. Push failures **left** until runtime error rate for proved programs approaches **zero** (only the capped **trusted** `IO` / platform surface remains outside user proofs).
 
 **Honest status (docs):** [Provability gaps (today)](../verification/provability-gaps.md) — living register of what is **not** proved/wired yet (Lean gate, heuristic parallel policy, decorator parse-only, …). Update that file when closing a phase gate.
@@ -44,6 +46,8 @@
 Agents **must not** treat package README as the only vision doc when the change affects multiple repos or pillars.
 
 ### Non-negotiable engineering (all agents)
+
+**Strict-by-default:** See [strict-by-default.md](../ecosystem/strict-by-default.md). Agents must not treat proof, CVE suites, or benches as optional; explicit downgrades only.
 
 **Strict gates — no exceptions without human approval and a tracked PH-/issue:**
 
@@ -400,6 +404,7 @@ Track in phase **Doc** until each is checked:
 - [x] Phase Doc-c — Phase 02 plan links **G-*** IDs (expand to 03/07 as those land)
 - [x] Phase Doc-d — Contributing / build skill requires gap-register updates
 - [x] Phase Doc-e — `scripts/check-doc-provability-claims.sh` in `scripts/ci.sh` (expand patterns over time)
+- [ ] **Vision-LLM** — LLM-first + agent JSON diagnostics — **partial:** `lic check --format=json`, `lic diagnose`, `diagnostic-v1` schema, handover docs, manifest stub ([llm-first spec](../specs/2026-05-16-li-llm-first-design.md), [agent-handover](../ecosystem/agent-handover-formats.md))
 
 **Dashboards (Cursor):** `canvases/li-master-plan-progress.canvas.tsx` — phase tracker; `canvases/li-fuzz-security-dashboard.canvas.tsx` — updated by `scripts/export-fuzz-status.sh` after nightly fuzz.
 

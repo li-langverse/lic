@@ -1,11 +1,11 @@
-# Li documentation site — https://li-langverse.github.io/li-language/
+# Li documentation site — https://li-langverse.github.io/lic/
 
 site_name: Li
 site_description: Prove it. Write it easily. Run it fast.
-site_url: https://li-langverse.github.io/li-language/
-repo_url: https://github.com/li-langverse/li-language
-repo_name: li-langverse/li-language
-edit_uri: edit/dev/docs/
+site_url: https://li-langverse.github.io/lic/
+repo_url: https://github.com/li-langverse/lic
+repo_name: li-langverse/lic
+edit_uri: edit/main/docs/
 
 theme:
   name: material
@@ -25,7 +25,7 @@ theme:
         icon: material/brightness-7
         name: Dark mode
   font:
-    text: Inter
+    text: Space Grotesk
     code: JetBrains Mono
   features:
     - navigation.instant
@@ -72,12 +72,13 @@ markdown_extensions:
       custom_checkbox: true
 
 extra_css:
+  - stylesheets/fonts.css
   - stylesheets/extra.css
 
 extra:
   social:
     - icon: fontawesome/brands/github
-      link: https://github.com/li-langverse/li-language
+      link: https://github.com/li-langverse/lic
 
 nav:
   - Home: index.md
@@ -94,6 +95,7 @@ nav:
       - Canonical docs (roadmap repo): https://github.com/li-langverse/roadmap/tree/main/docs/ecosystem
       - Agent-kit adoption: ecosystem/ADOPTION.md
       - Governance: ecosystem/governance.md
+      - Strict by default: ecosystem/strict-by-default.md
       - Engineering standards: ecosystem/engineering-standards.md
       - Vision and roadmap: ecosystem/vision-and-roadmap.md
       - Agent coordination: ecosystem/agent-coordination.md
@@ -102,6 +104,7 @@ nav:
       - Official packages: ecosystem/official-packages.md
       - HTTPd prerequisites: ecosystem/httpd-prerequisites.md
   - Language handbook:
+      - li.toml manifest: language/li-toml.md
       - Overview: language/overview.md
       - Types and data: language/types-and-data.md
       - Numerics: language/numerics.md

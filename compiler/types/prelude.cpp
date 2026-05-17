@@ -1,5 +1,7 @@
 #include "li/prelude.hpp"
 
+#include "li/error_codes.hpp"
+
 #include <set>
 #include <string>
 #include <string_view>
@@ -66,8 +68,14 @@ void check_duplicate_definitions(const Module& module, const std::string& file,
 
 void check_stdlib_seal(const Module& module, const std::string& file,
                        DiagnosticBag& diags) {
-  auto report = [&](const Span& span, const std::string& msg) {
-    diags.error(SourceLoc{file, 1, 1, span.start}, msg);
+  auto report_shadow = [&](const Span& span, const std::string& name) {
+    diag_error(diags, SourceLoc{file, 1, 1, span.start}, ErrorCode::E0330,
+               "The name `" + name +
+                   "` is reserved for the standard library — pick a different name "
+                   "(stdlib_symbol_shadow: " +
+                   name + ").",
+               "Rename this symbol, or move it into a module under `std/` if you are extending "
+               "the prelude.");
   };
   const bool defining_std =
       file.find("/std/") != std::string::npos || file.find("\\std\\") != std::string::npos ||
@@ -75,22 +83,22 @@ void check_stdlib_seal(const Module& module, const std::string& file,
 
   for (const auto& alias : module.types) {
     if (is_prelude_type_name(alias.name)) {
-      report(alias.span, "stdlib_symbol_shadow: " + alias.name);
+      report_shadow(alias.span, alias.name);
     }
     if (!defining_std && is_std_module_symbol(alias.name)) {
-      report(alias.span, "stdlib_symbol_shadow: " + alias.name);
+      report_shadow(alias.span, alias.name);
     }
   }
 
   for (const auto& proc : module.procs) {
     if (is_prelude_proc_name(proc.name)) {
-      report(proc.span, "stdlib_symbol_shadow: " + proc.name);
+      report_shadow(proc.span, proc.name);
     }
     if (!defining_std && is_std_module_symbol(proc.name)) {
-      report(proc.span, "stdlib_symbol_shadow: " + proc.name);
+      report_shadow(proc.span, proc.name);
     }
     if (is_prelude_type_name(proc.name)) {
-      report(proc.span, "stdlib_symbol_shadow: " + proc.name);
+      report_shadow(proc.span, proc.name);
     }
   }
 }

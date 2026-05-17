@@ -9,14 +9,14 @@
 
 ## Summary (one sentence)
 
-Points `lic` agents at the roadmap **north star** (HPC + scientific computing + AI) via `AGENTS.md`, always-on Cursor rules, and the ecosystem vision stub — canonical policy remains in `li-langverse/roadmap`.
+Points `lic` agents at the roadmap **north star** (HPC + scientific computing + AI) via `AGENTS.md`, always-on Cursor rules, and the ecosystem vision stub; moves the MkDocs handbook to **`lic`** (`li-langverse.github.io/lic/`) with PR CI `docs-build`.
 
 ## Agent continuation (required)
 
 1. Read: [roadmap vision § North star](https://github.com/li-langverse/roadmap/blob/main/docs/ecosystem/vision-and-roadmap.md#north-star--go-to-ecosystem-agents-read-first)
 2. Run: after roadmap PR merges, `./scripts/sync-agent-kit.sh` in this repo
 3. Then: prioritize PH/bench/proof work that advances HPC, simulation, or agent-first AI; defer generic syntax unless master plan requires
-4. Blocked on: roadmap PR merge for canonical text; **none** for lic pointers
+4. Blocked on: enable **Settings → Pages → GitHub Actions** on `lic` after merge (human); archive `li-language` repo when ready
 
 ## Changed (specific)
 
@@ -25,6 +25,7 @@ Points `lic` agents at the roadmap **north star** (HPC + scientific computing + 
 | AGENTS.md | Read order item 3 names north star | `AGENTS.md` |
 | Rules | `li-project.mdc`, `li-ecosystem-gates.mdc` one-line reminders | `.cursor/rules/` |
 | Stub | Link to canonical § North star | `docs/ecosystem/vision-and-roadmap.md` |
+| Docs site | `mkdocs.yml` → `li-langverse/lic`; CI `docs-build`; Pages on `main` | `.github/workflows/ci.yml`, `docs.yml`, `scripts/build-docs.sh` |
 
 ## Not changed (scope fence)
 
@@ -49,7 +50,8 @@ N/A.
 
 | Repo | Action |
 |------|--------|
-| roadmap | Merge `feat/docs-hpc-ai-north-star` first (canonical) |
+| roadmap | North star already on `main` — sync agent-kit 1.3.2 |
+| li-language | Archive after `lic` Pages is live |
 | lip / lit / lis | sync agent-kit after roadmap merge |
 
 ## CHANGELOG entry (paste into Unreleased)

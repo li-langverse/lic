@@ -1,0 +1,21 @@
+[package]
+name = "li-std-physics-aero"
+version = "0.1.0"
+edition = "2026"
+license = "Apache-2.0 OR MIT"
+description = "Li package li-std-physics-aero"
+
+[dependencies]
+li-std-physics-core = { path = "../li-std-physics-core" }
+li-std-numerics = { path = "../li-std-numerics" }
+# registry = "1.0.0"             # lip 8d+
+
+[package.metadata.li]
+min_lic = "0.1.0"
+maintainer = "li-langverse"
+pkg_id = "PKG-li-std-physics-aero"
+
+[package.repository]
+url = "https://github.com/li-langverse/li-std-physics-aero"
+documentation = "https://li-langverse.github.io/li-language/ecosystem/li-std-physics-aero/"
+changelog = "https://github.com/li-langverse/li-std-physics-aero/blob/main/CHANGELOG.md"

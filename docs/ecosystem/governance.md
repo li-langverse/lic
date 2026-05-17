@@ -6,6 +6,10 @@
 
 Do not edit ecosystem policy here — open a PR to the roadmap repo (human merge for governance paths).
 
+## Strict by default
+
+Org and package policy assumes **strict by default**: no optional provability; gate relaxation requires explicit `li.toml` / documented env and human review on protected branches. See [strict-by-default.md](strict-by-default.md).
+
 ## Related
 
 - [org-backup.md](org-backup.md) — **lic** runbook: mirror `li-langverse` → `li-langverse-backup` (human-operated)

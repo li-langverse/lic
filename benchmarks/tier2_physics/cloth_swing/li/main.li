@@ -1,0 +1,9 @@
+extern proc li_cloth_swing_kernel()
+
+proc main() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  li_cloth_swing_kernel()
+  return 0

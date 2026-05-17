@@ -10,6 +10,7 @@
 #include "li/mir.hpp"
 #include "li/vc_summary.hpp"
 #include "li/vc_witness.hpp"
+#include "li/terminal.hpp"
 
 #include <cstdio>
 #include <cstdlib>
@@ -24,10 +25,12 @@ namespace {
 
 int usage() {
   const unsigned jobs = li::default_host_jobs();
-  std::cerr << "lic — Li compiler\n"
-            << "usage:\n"
+  li::print_lic_banner(std::cerr);
+  std::cerr << li::styled_accent("lic") << li::styled_dim(" — prove · write · run fast") << li::reset_style()
+            << "\nusage:\n"
             << "  lic parse <file>       parse and validate syntax\n"
-            << "  lic check <file>       parse + typecheck\n"
+            << "  lic check <file> [--format=json]  parse + typecheck\n"
+            << "  lic diagnose <file>    agent-oriented JSON diagnostics\n"
             << "  lic verify <file>      VC summary; --lean runs semantics; --strict-lean fails open VCs\n"
             << "  lic build <file> -o <out> [--release] [--threads=N]\n"
             << "                       [--jobs=N] [--max-memory=MB]\n"
@@ -101,13 +104,22 @@ bool frontend(const char* path, const std::string& source, li::Module& out,
   return true;
 }
 
-int check_file(const char* path) {
+enum class DiagOutput { Human, Json };
+
+int check_file(const char* path, DiagOutput output, std::string_view json_command) {
   const std::string source = read_file(path);
   li::Module module;
   li::DiagnosticBag diags;
   if (!frontend(path, source, module, diags)) {
-    li::print_diagnostics(diags);
+    if (output == DiagOutput::Json) {
+      li::print_diagnostics_json(diags, std::cout, json_command);
+    } else {
+      li::print_diagnostics(diags);
+    }
     return 1;
+  }
+  if (output == DiagOutput::Json) {
+    li::print_diagnostics_json(diags, std::cout, json_command);
   }
   return 0;
 }
@@ -160,8 +172,21 @@ int verify_file(const char* path, bool run_lean, bool strict_lean) {
             << " decreases=" << vc.decreases_count << " invariant=" << vc.invariant_count
             << " witnessed_ensures=" << vc.ensures_witnessed
             << " mir_return_linked=" << vc.mir_return_linked << '\n';
+  if (li::terminal_color_enabled()) {
+    std::cout << li::styled_success("verify") << li::styled_dim(" telemetry") << li::reset_style()
+              << '\n';
+    li::print_verify_telemetry(std::cout, "procs", std::to_string(vc.proc_count));
+    li::print_verify_telemetry(std::cout, "mir_fns", std::to_string(vc.mir_fn_count));
+    li::print_verify_telemetry(std::cout, "requires", std::to_string(vc.requires_count));
+    li::print_verify_telemetry(std::cout, "ensures", std::to_string(vc.ensures_count));
+    li::print_verify_telemetry(std::cout, "witnessed_ensures",
+                               std::to_string(vc.ensures_witnessed));
+    li::print_verify_telemetry(std::cout, "mir_return_linked",
+                               std::to_string(vc.mir_return_linked));
+  }
   if (vc.requires_count == 0 && vc.ensures_count == 0) {
-    std::cerr << "verify: warning — no procedure contracts (G-vc partial)\n";
+    std::cerr << li::styled_warning("verify") << li::styled_dim(" — no procedure contracts (G-vc partial)")
+              << li::reset_style() << '\n';
   }
   if (std::getenv("LI_EMIT_VCS") != nullptr) {
     std::string vc_path = "build/vcs.json";
@@ -217,7 +242,7 @@ int build_file(const char* path, const char* output, bool release) {
   }
   std::string err;
   if (!li::compile_module(module, output, release, "", &err)) {
-    std::cerr << "build failed: " << err << '\n';
+    std::cerr << li::styled_error_label() << ": build failed: " << err << li::reset_style() << '\n';
     return 1;
   }
   return 0;
@@ -231,10 +256,11 @@ int main(int argc, char** argv) {
   }
   const std::string_view cmd = argv[1];
   if (cmd == "--version" || cmd == "-V") {
+    li::print_lic_banner(std::cout);
 #ifdef LI_VERSION
-    std::cout << "lic " << LI_VERSION << '\n';
+    std::cout << li::styled_accent("lic ") << LI_VERSION << li::reset_style() << '\n';
 #else
-    std::cout << "lic 0.0.0-dev\n";
+    std::cout << li::styled_accent("lic 0.0.0-dev") << li::reset_style() << '\n';
 #endif
     return 0;
   }
@@ -263,7 +289,28 @@ int main(int argc, char** argv) {
     if (argc < 3) {
       return usage();
     }
-    return check_file(argv[2]);
+    const char* path = nullptr;
+    DiagOutput output = DiagOutput::Human;
+    for (int i = 2; i < argc; ++i) {
+      const std::string_view arg = argv[i];
+      if (arg == "--format=json") {
+        output = DiagOutput::Json;
+      } else if (path == nullptr) {
+        path = argv[i];
+      } else {
+        return usage();
+      }
+    }
+    if (path == nullptr) {
+      return usage();
+    }
+    return check_file(path, output, "check");
+  }
+  if (cmd == "diagnose") {
+    if (argc < 3) {
+      return usage();
+    }
+    return check_file(argv[2], DiagOutput::Json, "diagnose");
   }
   if (cmd == "verify") {
     if (argc < 3) {
@@ -319,8 +366,12 @@ int main(int argc, char** argv) {
     }
     std::string err;
     if (!li::compile_module(module, output, release, extra_flags, &err)) {
-      std::cerr << "build failed: " << err << '\n';
+      std::cerr << li::styled_error_label() << ": build failed: " << err << li::reset_style() << '\n';
       return 1;
+    }
+    if (li::terminal_color_enabled()) {
+      std::cout << li::styled_success("build") << li::styled_dim(" ok → ") << li::styled_accent(output)
+                << li::reset_style() << '\n';
     }
     std::string vc_lean = "build/generated/AutoVC.lean";
     if (const char* root = std::getenv("LI_REPO_ROOT")) {

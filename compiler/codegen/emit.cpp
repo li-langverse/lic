@@ -90,12 +90,18 @@ struct EmitCtx {
                                  llvm::ElementCount::getFixed(4));
   }
 
+  llvm::AllocaInst* entry_alloca(llvm::Type* ty, const llvm::Twine& name = "") {
+    llvm::BasicBlock& entry = func->getEntryBlock();
+    llvm::IRBuilder<> entry_builder(&entry, entry.begin());
+    return entry_builder.CreateAlloca(ty, nullptr, name);
+  }
+
   llvm::AllocaInst* ensure_simd_f64x4(const std::string& name) {
     auto it = simd_f64x4_locals.find(name);
     if (it != simd_f64x4_locals.end()) {
       return it->second;
     }
-    llvm::AllocaInst* slot = builder->CreateAlloca(vec4_f64(), nullptr, name);
+    llvm::AllocaInst* slot = entry_alloca(vec4_f64(), name);
     simd_f64x4_locals[name] = slot;
     return slot;
   }
@@ -109,8 +115,7 @@ struct EmitCtx {
     if (it != int_locals.end()) {
       return it->second;
     }
-    llvm::AllocaInst* slot =
-        builder->CreateAlloca(i32_ty(context), nullptr, name);
+    llvm::AllocaInst* slot = entry_alloca(i32_ty(context), name);
     int_locals[name] = slot;
     return slot;
   }
@@ -121,7 +126,7 @@ struct EmitCtx {
       return it->second;
     }
     llvm::AllocaInst* slot =
-        builder->CreateAlloca(llvm::Type::getDoubleTy(context), nullptr, name);
+        entry_alloca(llvm::Type::getDoubleTy(context), name);
     float_locals[name] = slot;
     return slot;
   }
@@ -135,8 +140,7 @@ struct EmitCtx {
     if (it != ptr_locals.end()) {
       return it->second;
     }
-    llvm::AllocaInst* slot =
-        builder->CreateAlloca(i8_ptr(context), nullptr, name);
+    llvm::AllocaInst* slot = entry_alloca(i8_ptr(context), name);
     ptr_locals[name] = slot;
     return slot;
   }
@@ -157,8 +161,7 @@ struct EmitCtx {
     if (it != i64_locals.end()) {
       return it->second;
     }
-    llvm::AllocaInst* slot =
-        builder->CreateAlloca(i64_ty(context), nullptr, name);
+    llvm::AllocaInst* slot = entry_alloca(i64_ty(context), name);
     i64_locals[name] = slot;
     return slot;
   }
@@ -360,15 +363,23 @@ struct EmitCtx {
         return true;
       }
       case MirOp::BinOpInt: {
-        llvm::Value* lhs = load_int(ins.lhs_ident);
-        llvm::Value* rhs = load_int(ins.rhs_ident);
+        llvm::Value* lhs = ins.lhs_is_literal ? int32_val(*builder, context, ins.lhs_int)
+                                              : load_int(ins.lhs_ident);
+        llvm::Value* rhs = ins.rhs_is_literal ? int32_val(*builder, context, ins.rhs_int)
+                                              : load_int(ins.rhs_ident);
         llvm::Value* result = emit_binop(ins.bin_op, lhs, rhs);
         builder->CreateStore(result, ensure_int_local(ins.ident));
         return true;
       }
       case MirOp::BinOpFloat: {
-        llvm::Value* lhs = load_float(ins.lhs_ident);
-        llvm::Value* rhs = load_float(ins.rhs_ident);
+        llvm::Value* lhs =
+            ins.lhs_is_literal
+                ? llvm::ConstantFP::get(llvm::Type::getDoubleTy(context), ins.float_value)
+                : load_float(ins.lhs_ident);
+        llvm::Value* rhs =
+            ins.rhs_is_literal
+                ? llvm::ConstantFP::get(llvm::Type::getDoubleTy(context), ins.rhs_float_value)
+                : load_float(ins.rhs_ident);
         llvm::Value* result = emit_fbinop(ins.bin_op, lhs, rhs);
         builder->CreateStore(result, ensure_float_local(ins.ident));
         return true;

@@ -401,6 +401,8 @@ bool Lexer::tokenize(DiagnosticBag& diags) {
       case '@': single(TokenKind::At); continue;
       case '|': single(TokenKind::Pipe); continue;
       case '+':
+        single(TokenKind::Plus);
+        continue;
       case '-':
         if (peek() == '>') {
           advance();

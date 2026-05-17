@@ -57,7 +57,7 @@ bool compile_module(const Module& module, const std::string& output_path, bool r
   cmd << cc << " -Wno-override-module -x ir \"" << ll_path << "\" -x c \""
       << rt_path.string() << "\" -o \"" << output_path << "\"";
   if (release) {
-    cmd << " -O2";
+    cmd << " -O3";
   }
   if (!extra_clang_flags.empty()) {
     cmd << " " << extra_clang_flags;
@@ -103,6 +103,11 @@ bool compile_module(const Module& module, const std::string& output_path, bool r
   cmd << " -lm";
 #endif
   const int rc = std::system(cmd.str().c_str());
+  if (const char* keep = std::getenv("LI_KEEP_LL"); keep && *keep) {
+    std::error_code cp_err;
+    std::filesystem::copy_file(ll_path, keep, std::filesystem::copy_options::overwrite_existing,
+                             cp_err);
+  }
   std::filesystem::remove(ll_path);
   if (rc != 0) {
     if (error) {

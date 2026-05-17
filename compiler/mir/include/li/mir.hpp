@@ -61,6 +61,7 @@ struct MirInsn {
   MirOp op = MirOp::ReturnVoid;
   std::int64_t int_value = 0;
   double float_value = 0.0;
+  double rhs_float_value = 0.0;
   std::string ident;
   std::string str_value;
   std::string callee;
@@ -72,7 +73,7 @@ struct MirInsn {
   bool index_is_literal = true;
   std::string index_ident;
   bool use_loaded_int = false;
-  bool rhs_is_literal = true;
+  bool rhs_is_literal = false;
   std::int64_t rhs_int = 0;
   bool lhs_is_literal = false;
   std::int64_t lhs_int = 0;

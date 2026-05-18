@@ -12,13 +12,12 @@ Use when work spans **`lic`**, **`lip`**, **`lit`**, **`lis`**, or official **`l
 
 ## Before coding
 
-1. [strict-by-default.md](../../../docs/ecosystem/strict-by-default.md) — no optional provability
-2. [engineering-standards.md](../../../docs/ecosystem/engineering-standards.md) (this repo)
-3. [vision-and-roadmap.md](../../../docs/ecosystem/vision-and-roadmap.md)
-4. [agent-coordination.md](../../../docs/ecosystem/agent-coordination.md) — update `.li-agent-coord.json`
-5. [lic master plan](https://github.com/li-langverse/lic/blob/main/docs/superpowers/plans/2026-05-14-li-master-plan.md) — current **PH-**
-6. [Benchmarks dashboard](https://li-langverse.github.io/benchmarks/) — after perf work
-7. [release-notes.md](../../../docs/ecosystem/release-notes.md) — before PR
+1. [engineering-standards.md](../../../docs/ecosystem/engineering-standards.md) (this repo)
+2. [vision-and-roadmap.md](../../../docs/ecosystem/vision-and-roadmap.md)
+3. [agent-coordination.md](../../../docs/ecosystem/agent-coordination.md) — update `.li-agent-coord.json`
+4. [lic master plan](https://github.com/li-langverse/lic/blob/main/docs/superpowers/plans/2026-05-14-li-master-plan.md) — current **PH-**
+5. [Benchmarks dashboard](https://li-langverse.github.io/benchmarks/) — after perf work
+6. [release-notes.md](../../../docs/ecosystem/release-notes.md) — before PR
 
 ## Per task checklist
 
@@ -34,7 +33,6 @@ Use when work spans **`lic`**, **`lip`**, **`lit`**, **`lis`**, or official **`l
 
 ## Related skills (in `lic` after sync)
 
-- `strict-by-default-gate` — per-feature proof/security/perf checklist
 - `create-li-package` — new packages
 - `build-li-master-plan` — compiler phases
 - `write-li-release-notes` — before every merge-worthy PR

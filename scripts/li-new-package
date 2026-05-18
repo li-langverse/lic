@@ -149,6 +149,7 @@ write_tree() {
     local gh="$ROOT/scripts/templates/github-repo"
     mkdir -p "$OUT/.github/workflows"
     cp "$gh/ci.yml" "$OUT/.github/workflows/ci.yml"
+    cp "$gh/security-gate.yml" "$OUT/.github/workflows/security-gate.yml"
     cp "$gh/dependabot.yml" "$OUT/.github/dependabot.yml"
     cp "$gh/ecosystem-upstream.yml" "$OUT/.github/workflows/ecosystem-upstream.yml"
     cp "$gh/PULL_REQUEST_TEMPLATE.md" "$OUT/.github/PULL_REQUEST_TEMPLATE.md"

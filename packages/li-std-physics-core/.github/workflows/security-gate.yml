@@ -1,0 +1,59 @@
+# Downstream security gate — runs lic CVE/CWE corpus on attack-surface PRs.
+# Copied by: ./scripts/li-new-package --official  and  ./scripts/ensure-package-ci.sh
+# Canonical catalog: lic/security/cve-catalog.json (CWE rows cited in PR bodies).
+name: security-gate
+
+on:
+  pull_request:
+    branches: [main]
+    paths:
+      - "src/**"
+      - "li-tests/**"
+      - "**/*.li"
+      - ".github/workflows/**"
+  push:
+    branches: [main]
+    paths:
+      - "src/**"
+      - "li-tests/**"
+      - "**/*.li"
+
+concurrency:
+  group: security-gate-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  lic-security-corpus:
+    name: lic ci-security
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/checkout@v4
+        with:
+          repository: li-langverse/lic
+          path: lic
+          ref: main
+
+      - name: Install LLVM 18
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y cmake ninja-build clang-18 llvm-18-dev zlib1g-dev libzstd-dev python3
+
+      - name: Build lic
+        working-directory: lic
+        env:
+          LLVM_DIR: /usr/lib/llvm-18/lib/cmake/llvm
+          CC: clang-18
+          CXX: clang++-18
+        run: |
+          chmod +x scripts/build.sh scripts/resolve-lic.sh scripts/ci-security.sh
+          ./scripts/build.sh
+
+      - name: CVE/CWE corpus (security/cve-catalog.json)
+        working-directory: lic
+        env:
+          LIC: ${{ github.workspace }}/lic/build/compiler/lic/lic
+        run: |
+          test -x "$LIC"
+          ./scripts/ci-security.sh

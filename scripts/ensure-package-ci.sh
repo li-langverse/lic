@@ -18,19 +18,28 @@ for pkg in "$ROOT/packages"/*/; do
   [[ "$name" == "li.toml" ]] && continue
   dest="$pkg/.github/workflows/ci.yml"
   if [[ -f "$dest" ]]; then
-    echo "OK   $name"
-    continue
+    echo "OK   $name ci.yml"
+  else
+    echo "ADD  $name ci.yml"
+    mkdir -p "$(dirname "$dest")"
+    cp "$TPL" "$dest"
+    FIXED=$((FIXED + 1))
   fi
-  echo "ADD  $name"
-  mkdir -p "$(dirname "$dest")"
-  cp "$TPL" "$dest"
-  FIXED=$((FIXED + 1))
-  # Also ensure ecosystem-upstream exists for official packages
   if [[ ! -f "$pkg/.github/workflows/ecosystem-upstream.yml" ]]; then
     gh_src="$ROOT/scripts/templates/github-repo/ecosystem-upstream.yml"
     if [[ -f "$gh_src" ]]; then
+      mkdir -p "$pkg/.github/workflows"
       cp "$gh_src" "$pkg/.github/workflows/ecosystem-upstream.yml"
+      FIXED=$((FIXED + 1))
     fi
+  fi
+  sec_dest="$pkg/.github/workflows/security-gate.yml"
+  sec_tpl="$ROOT/scripts/templates/github-repo/security-gate.yml"
+  if [[ -f "$sec_tpl" && ! -f "$sec_dest" ]]; then
+    mkdir -p "$(dirname "$sec_dest")"
+    cp "$sec_tpl" "$sec_dest"
+    echo "ADD  $name security-gate.yml"
+    FIXED=$((FIXED + 1))
   fi
 done
 

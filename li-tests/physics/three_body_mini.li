@@ -1,4 +1,6 @@
 extern proc li_rt_sqrt(x: float) -> float
+  requires x >= 0.0
+  ensures true
 
 def main() -> int
   requires true

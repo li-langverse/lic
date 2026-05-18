@@ -638,7 +638,11 @@ def run_tier0() -> int:
     if not script.exists():
         print("li-tests harness missing", file=sys.stderr)
         return 1
-    env = {**os.environ, "LIC": str(REPO / "build" / "compiler" / "lic" / "lic")}
+    env = {
+        **os.environ,
+        "LIC": str(REPO / "build" / "compiler" / "lic" / "lic"),
+        "LI_REPO_ROOT": str(REPO),
+    }
     return subprocess.call([str(script)], cwd=REPO / "li-tests", env=env)
 
 

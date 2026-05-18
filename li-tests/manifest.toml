@@ -28,6 +28,11 @@ suite = "lexer_parser"
 file = "lexer_parser/async_await_parse.li"
 outcome = "parse_ok"
 
+[[tests]]
+suite = "lexer_parser"
+file = "lexer_parser/plus_minus_binop.li"
+outcome = "verify_ok"
+
 # --- decorators (7d — parse + policy) ---
 
 [[tests]]

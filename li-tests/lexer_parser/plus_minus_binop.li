@@ -1,0 +1,11 @@
+# Regression: '+' must tokenize as Plus, not Minus (horner_pure_li loop counter).
+
+proc smoke() -> int
+  requires true
+  ensures result == 3
+  decreases 0
+=
+  var i: int = 0
+  i = i + 1
+  i = i + 2
+  return i

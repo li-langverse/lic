@@ -401,7 +401,8 @@ bool Lexer::tokenize(DiagnosticBag& diags) {
       case '@': single(TokenKind::At); continue;
       case '|': single(TokenKind::Pipe); continue;
       case '+':
-      case '-':
+      case '-': {
+        const char op = source_[start];
         if (peek() == '>') {
           advance();
           t.kind = TokenKind::Arrow;
@@ -409,9 +410,10 @@ bool Lexer::tokenize(DiagnosticBag& diags) {
           t.text = std::string_view(source_).substr(start, pos_ - start);
           push_token(t);
         } else {
-          single(TokenKind::Minus);
+          single(op == '+' ? TokenKind::Plus : TokenKind::Minus);
         }
         continue;
+      }
       case '*':
         if (peek() == '*') {
           advance();

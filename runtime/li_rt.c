@@ -18,6 +18,11 @@ void li_rt_print_int(int32_t value) { printf("%d\n", value); }
 
 void li_rt_print_str(const char* s) { puts(s); }
 
+/* Opaque sink for pure-Li micro-benches — prevents LLVM from DCE'ing accumulators. */
+volatile double g_li_bench_sink_f64;
+
+void li_rt_bench_sink_f64(double x) { g_li_bench_sink_f64 = x; }
+
 static int li_argc = 0;
 static char** li_argv = NULL;
 

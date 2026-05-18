@@ -28,6 +28,12 @@ suite = "lexer_parser"
 file = "lexer_parser/async_await_parse.li"
 outcome = "parse_ok"
 
+[[tests]]
+suite = "lexer_parser"
+file = "lexer_parser/plus_minus.li"
+outcome = "verify_ok"
+note = "lexer '+' must not tokenize as Minus (horner_pure_li autoresearch)"
+
 # --- decorators (7d — parse + policy) ---
 
 [[tests]]

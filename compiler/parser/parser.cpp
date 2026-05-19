@@ -44,6 +44,14 @@ struct Parser {
     }
   }
 
+  /// Newlines and indents inside `(...)` parameter lists (not proc bodies).
+  void skip_param_layout() {
+    skip_newlines();
+    while (at(TokenKind::Indent)) {
+      i++;
+    }
+  }
+
   SourceLoc loc(const Token& t) const {
     return SourceLoc{file, t.line, t.column, t.start};
   }
@@ -500,6 +508,7 @@ std::vector<std::string> Parser::parse_type_params() {
 }
 
 Param Parser::parse_param() {
+  skip_param_layout();
   const Token& t = cur();
   Param p;
   p.span = {t.start, t.end};
@@ -936,11 +945,14 @@ ProcDecl Parser::parse_proc(bool is_extern) {
   i++;
   proc.type_params = parse_type_params();
   expect(TokenKind::LParen, "'('");
+  skip_param_layout();
   if (!at(TokenKind::RParen)) {
     do {
       proc.params.push_back(parse_param());
+      skip_param_layout();
     } while (accept(TokenKind::Comma));
   }
+  skip_param_layout();
   expect(TokenKind::RParen, "')'");
   auto parse_raises = [&]() {
     if (!at(TokenKind::KwRaises)) {

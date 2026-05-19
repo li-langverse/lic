@@ -11,7 +11,7 @@ def li_std_physics_relativity_version() -> int
 =
   return 1
 
-def lorentz_gamma(v: float, c: float) raises IO -> float
+def lorentz_gamma(v: var float, c: float) raises IO -> float
   requires c > 0.0
   requires v >= 0.0
   ensures true
@@ -29,7 +29,7 @@ def time_dilation_proper(dt: float, gamma: float) -> float
 =
   return dt / gamma
 
-def relativistic_momentum(m: float, v: float, c: float) -> float
+def relativistic_momentum(m: float, v: var float, c: float) -> float
   requires m > 0.0
   requires c > 0.0
   ensures true

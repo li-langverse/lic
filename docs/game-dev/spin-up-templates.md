@@ -21,9 +21,12 @@
 
 ```bash
 ./scripts/lis-new-world-studio.sh game ./my-game
-./scripts/lis-new-world-studio.sh mmorpg ./my-realm
-./scripts/lis-new-world-studio.sh drug_design ./my-lab
-./scripts/lis-new-world-studio.sh bioengineering ./my-bio
+# or (shim until lis package ships):
+./scripts/lis new world-studio mmorpg ./my-realm
+./scripts/lis new world-studio drug_design ./my-lab
+./scripts/lis new world-studio bioengineering ./my-bio
+./scripts/lis new world-studio robotics ./my-cell
+./scripts/lis new world-studio automotive ./my-race
 ```
 
 Registry: [deploy/world-studio-spinup/spinup.toml](../../deploy/world-studio-spinup/spinup.toml)

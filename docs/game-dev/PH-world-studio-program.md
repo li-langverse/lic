@@ -1,6 +1,6 @@
 # PH-world-studio-program — master tracker
 
-**Status:** In progress (impl-22 on `feat/world-studio-impl-1`) — **ready for draft PR** · [demo showcase](demo-showcase.md)  
+**Status:** Ready for merge (impl-23 on `feat/world-studio-impl-1`) · [merge checklist](MERGE-world-studio-checklist.md) · [demo showcase](demo-showcase.md)  
 **Vision:** [world-studio-vision.md](world-studio-vision.md)  
 **Progress report:** [PH-world-studio-progress-report.md](PH-world-studio-progress-report.md) ← **read this for sprint status**
 

@@ -1,0 +1,39 @@
+#!/usr/bin/env bash
+# Lis CLI shim (lic repo) — forwards world-studio spin-up until lis package ships subcommands.
+set -euo pipefail
+ROOT="$(cd "$(dirname "$0")/.." && pwd)"
+
+usage() {
+  cat <<'EOF'
+lis (lic shim) — partial CLI
+
+  lis new world-studio [template] [dest]
+      Scaffold World Studio project (templates in deploy/world-studio-spinup/)
+
+  Templates: game, mmorpg, drug_design, bioengineering, robotics, automotive
+
+  Full CLI: li-langverse/lis (separate repo)
+EOF
+}
+
+cmd="${1:-}"
+case "$cmd" in
+  -h|--help|help|"")
+    usage
+    exit 0
+    ;;
+  new)
+    shift
+  sub="${1:-}"
+    if [[ "$sub" == "world-studio" || "$sub" == "world" ]]; then
+      shift
+      exec "$ROOT/scripts/lis-new-world-studio.sh" "$@"
+    fi
+    echo "lis shim: unknown template target '$sub' (try: lis new world-studio game ./proj)" >&2
+    exit 1
+    ;;
+  *)
+    echo "lis shim: unknown command '$cmd' (try: lis new world-studio)" >&2
+    exit 1
+    ;;
+esac

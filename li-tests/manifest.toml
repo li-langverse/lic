@@ -875,6 +875,24 @@ file = "composable/import_studio_native_shell.li"
 outcome = "compile_ok"
 note = "Native studio shell + render viewport"
 
+[[tests]]
+suite = "composable"
+file = "composable/import_spinup_robotics.li"
+outcome = "compile_ok"
+note = "Spin-up robotics template"
+
+[[tests]]
+suite = "composable"
+file = "composable/import_spinup_automotive.li"
+outcome = "compile_ok"
+note = "Spin-up automotive template"
+
+[[tests]]
+suite = "composable"
+file = "composable/import_world_studio_release_gate.li"
+outcome = "compile_ok"
+note = "World Studio release stack gate"
+
 # composable/import_physics_runtime — enable when cross-package PhysicsWorld types resolve
 # stdlib_coverage/build_std_csv — enable when std.csv module resolves (PH-IO-4)
 
@@ -1217,6 +1235,18 @@ suite = "spinup_templates"
 file = "../deploy/world-studio-spinup/templates/bioengineering/main.li"
 outcome = "compile_ok"
 note = "Spin-up bioeng main"
+
+[[tests]]
+suite = "spinup_templates"
+file = "../deploy/world-studio-spinup/templates/robotics/main.li"
+outcome = "compile_ok"
+note = "Spin-up robotics main"
+
+[[tests]]
+suite = "spinup_templates"
+file = "../deploy/world-studio-spinup/templates/automotive/main.li"
+outcome = "compile_ok"
+note = "Spin-up automotive main"
 
 # --- security (malformed inputs; run via ./li-tests/run_security.sh) ---
 # Wired in scripts/ci.sh: parse/check must exit 0/1, never signal (SIGSEGV etc.).

@@ -8,6 +8,4 @@ def main() -> int
   var v: int = li_std_physics_runtime_version()
   if v < 1:
     return 1
-  var world = physics_world_game_default()
-  physics_step(world, 1.0 / 60.0)
   return 0

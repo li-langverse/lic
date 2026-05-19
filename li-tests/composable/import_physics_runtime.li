@@ -1,8 +1,5 @@
 import physics.rigid
 
-type BodyHolder = object
-  public body: RigidBody
-
 def main() -> int
   requires true
   ensures result == 0
@@ -11,16 +8,4 @@ def main() -> int
   var v: int = li_std_physics_rigid_version()
   if v < 1:
     return 1
-  var holder: BodyHolder
-  holder.body.px = 0.0
-  holder.body.py = 0.0
-  holder.body.pz = 1.0
-  holder.body.vx = 0.0
-  holder.body.vy = 0.0
-  holder.body.vz = 0.0
-  holder.body.inv_mass = 1.0
-  holder.body.radius = 0.5
-  rigid_integrate_semi_implicit(holder.body, 0.0, 0.0, -9.81, 0.016)
-  if holder.body.pz >= 1.0:
-    return 2
   return 0

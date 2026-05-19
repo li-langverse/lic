@@ -8,10 +8,10 @@ type StudioProject = object
 
 def li_studio_version() -> int
   requires true
-  ensures result == 6
+  ensures result == 7
   decreases 0
 =
-  return 6
+  return 7
 
 def studio_project_new() -> StudioProject
   requires true
@@ -138,6 +138,27 @@ def studio_render_scene_hook_stub(viewport_frames: int, scene_nodes: int) -> int
   decreases viewport_frames
 =
   return viewport_frames + scene_nodes
+
+# PH-GD-5 — studio shell binds render viewport (composable with import render).
+def studio_viewport_bind_render_stub(width: int, height: int, scene_nodes: int) -> int
+  requires width > 0
+  requires height > 0
+  requires scene_nodes >= 0
+  ensures result == width + height + scene_nodes
+  decreases width
+=
+  return width + height + scene_nodes
+
+def studio_render_viewport_smoke() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  if studio_viewport_bind_render_stub(1280, 720, 4) != 2004:
+    return 1
+  if studio_render_scene_hook_stub(1, 4) != 5:
+    return 2
+  return 0
 
 def studio_mmo_deploy_status_stub(profile: int, shard_count: int) -> int
   requires profile >= 0

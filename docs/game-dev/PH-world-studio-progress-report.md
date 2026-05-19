@@ -1,7 +1,7 @@
 # World Studio / Li Engine — progress report
 
 **Branch:** `feat/world-studio-impl-1`  
-**Sprint:** impl-19 (2026-05)  
+**Sprint:** impl-20 (2026-05)  
 **Tracker:** [PH-world-studio-program.md](PH-world-studio-program.md)  
 **PR summary:** [PR-world-studio-impl-summary.md](PR-world-studio-impl-summary.md)
 
@@ -12,45 +12,47 @@
 | Metric | Value |
 |--------|--------|
 | **Packages** | 28 |
-| **Composable gates** | **66 / 66 pass** ✅ |
-| **Demo GUI** | [deploy/studio-demo/](../../deploy/studio-demo/) (HTML showcase) |
-| **Sprints** | impl-1 → **impl-19** |
+| **Composable gates** | **68 / 68 pass** ✅ |
+| **Game dev smokes** | **10 parse_ok** |
+| **Demo GUI** | [deploy/studio-demo/](../../deploy/studio-demo/) |
+| **Vertical `.li` demos** | rocket, racing, robot, drug |
+| **Sprints** | impl-1 → **impl-20** |
 | **Blocked** | `sim_step_physics` |
 | **Merge** | ⬜ open PR → `main` |
 
 ---
 
-## Sprint impl-19
+## Sprint impl-20
 
 | Deliverable | Track | State |
 |-------------|-------|--------|
-| `import_scientific_drug_chem` | PH-SCI / DRUG / QM | ✅ |
-| `import_sim_relativity_rocket` | Rocket / relativity | ✅ |
-| `import_pub_bioeng_leaderboard` | PH-PUB / BIOENG | ✅ |
-| **Studio demo GUI** | showcase | ✅ HTML + record script |
-| [demo-showcase.md](demo-showcase.md) | docs | ✅ |
+| `studio_viewport_bind_render_stub` + render bridge | PH-GD-5 | ✅ |
+| `import_studio_render_viewport` composable | PH-GD | ✅ |
+| `demo_*_main.li` per vertical | demos | ✅ |
+| `import_demo_verticals` composable | gates | ✅ |
+| game_dev `demo_*.li` parse gates | tests | ✅ |
 
 ---
 
-## Demo videos
+## Sprint impl-19 (shipped)
 
-| Asset | How |
-|-------|-----|
-| **Interactive** | `deploy/studio-demo/index.html` — rocket, racing, robot, drug, bioeng, MMO |
-| **Reel (WebM)** | `./scripts/record-studio-demo.sh` → `deploy/studio-demo/videos/` |
-
-Native Li Studio binary GUI is **not** yet shipped; the showcase is the visual prototype until `li-render` wires to the shell.
+| Deliverable | Track | State |
+|-------------|-------|--------|
+| HTML studio showcase + WebM reel | demo | ✅ |
+| sci+drug+chem · relativity · pub composables | gates | ✅ |
 
 ---
 
-## Program progress
+## Vertical demo entrypoints
 
-| Program | ~% | Change (impl-19) |
-|---------|-----|------------------|
-| **PH-DRUG** | **52%** | sci+drug+chem stack |
-| **PH-QM** | **22%** | TDDFT LITL |
-| **PH-GD** | **72%** | demo showcase GUI |
-| **PH-PUB** | **30%** | pub+bioeng bundle |
+| Demo | File |
+|------|------|
+| Rocket | `packages/li-physics-custom/src/demo_rocket_main.li` |
+| Racing | `packages/li-sim-automotive/src/demo_racing_main.li` |
+| Robot | `packages/li-sim-robotics/src/demo_robot_main.li` |
+| Drug LITL | `packages/li-sim-drug-design/src/demo_drug_main.li` |
+
+Interactive visuals: [demo-showcase.md](demo-showcase.md)
 
 ---
 
@@ -58,8 +60,8 @@ Native Li Studio binary GUI is **not** yet shipped; the showcase is the visual p
 
 | Sprint | Gates |
 |--------|-------|
-| impl-18 | 63 |
-| **impl-19** | **66** |
+| impl-19 | 66 |
+| **impl-20** | **68** |
 
 ---
 
@@ -67,18 +69,18 @@ Native Li Studio binary GUI is **not** yet shipped; the showcase is the visual p
 
 ```bash
 ./li-tests/run_all.sh composable
-python3 -m http.server 8765 --directory deploy/studio-demo
+./li-tests/run_all.sh game_dev
 ```
 
 ---
 
-## Next (impl-20)
+## Next (impl-21)
 
 1. Merge PR → `main`  
-2. Native viewport hook (`li-render` → studio shell)  
-3. Per-vertical demo `.li` mains (rocket, race, robot)  
-4. `sim_step_physics` when types land  
+2. `lic build` vertical demos when package mains stable  
+3. Wire studio-demo HTML to live composable status JSON  
+4. `sim_step_physics` when cross-package types land  
 
 ---
 
-*impl-19 · `feat/world-studio-impl-1`*
+*impl-20 · `feat/world-studio-impl-1`*

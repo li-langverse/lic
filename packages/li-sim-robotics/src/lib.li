@@ -44,3 +44,10 @@ def robotics_smoke() -> int
   if c.step_count != 1:
     return 1
   return 0
+
+def demo_robot_smoke() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return robotics_smoke()

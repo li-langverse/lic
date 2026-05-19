@@ -1,0 +1,9 @@
+# Vertical demo — rocket / inverse gravity (PH-PHYS-CUSTOM).
+import physics.custom
+
+def main() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return demo_rocket_smoke()

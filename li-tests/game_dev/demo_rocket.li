@@ -1,0 +1,9 @@
+# PH-PHYS-CUSTOM — rocket vertical demo (parse gate).
+import physics.custom
+
+def main() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return demo_rocket_smoke()

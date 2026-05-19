@@ -85,3 +85,10 @@ def lab_loop_full_smoke() -> int
   if lab_loop_stage_smoke(lab_loop_stage_dft()) != 0:
     return 3
   return 0
+
+def demo_drug_smoke() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return lab_loop_full_smoke()

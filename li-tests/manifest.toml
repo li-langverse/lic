@@ -833,6 +833,18 @@ file = "composable/import_pub_bioeng_leaderboard.li"
 outcome = "compile_ok"
 note = "PH-PUB publish + bioeng scorecard bundle"
 
+[[tests]]
+suite = "composable"
+file = "composable/import_studio_render_viewport.li"
+outcome = "compile_ok"
+note = "PH-GD native viewport render bridge"
+
+[[tests]]
+suite = "composable"
+file = "composable/import_demo_verticals.li"
+outcome = "compile_ok"
+note = "Vertical demo mains rocket/racing/robot/drug"
+
 # composable/import_physics_runtime — enable when cross-package PhysicsWorld types resolve
 # stdlib_coverage/build_std_csv — enable when std.csv module resolves (PH-IO-4)
 
@@ -1067,6 +1079,30 @@ suite = "game_dev"
 file = "game_dev/bioeng_smoke.li"
 outcome = "parse_ok"
 note = "PH-BIOENG DBTL advance smoke"
+
+[[tests]]
+suite = "game_dev"
+file = "game_dev/demo_rocket.li"
+outcome = "parse_ok"
+note = "Vertical demo rocket"
+
+[[tests]]
+suite = "game_dev"
+file = "game_dev/demo_racing.li"
+outcome = "parse_ok"
+note = "Vertical demo racing"
+
+[[tests]]
+suite = "game_dev"
+file = "game_dev/demo_robot.li"
+outcome = "parse_ok"
+note = "Vertical demo robot"
+
+[[tests]]
+suite = "game_dev"
+file = "game_dev/demo_drug.li"
+outcome = "parse_ok"
+note = "Vertical demo drug LITL"
 
 # --- hpc_competitive (registry gate; ./li-tests/run_all.sh hpc_competitive) ---
 

@@ -1,0 +1,17 @@
+import physics.custom
+import sim.automotive
+import sim.robotics
+import sim.drug_design
+
+def main() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  if demo_rocket_smoke() != 0:
+    return 1
+  if demo_racing_smoke() != 0:
+    return 2
+  if demo_robot_smoke() != 0:
+    return 3
+  return demo_drug_smoke()

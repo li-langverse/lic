@@ -7,10 +7,10 @@ type RenderViewport = object
 
 def li_render_version() -> int
   requires true
-  ensures result == 1
+  ensures result == 2
   decreases 0
 =
-  return 1
+  return 2
 
 def render_viewport_new(width: int, height: int) -> RenderViewport
   requires width > 0
@@ -41,5 +41,25 @@ def render_smoke() -> int
   var v: RenderViewport = render_viewport_new(1920, 1080)
   render_frame_tick_stub(v)
   if v.frame_id != 1:
+    return 1
+  return 0
+
+# PH-GD-5 — native viewport bridge (pairs with li-studio shell).
+def render_studio_viewport_tick_stub(width: int, height: int) -> int
+  requires width > 0
+  requires height > 0
+  ensures result >= 1
+  decreases width
+=
+  var v: RenderViewport = render_viewport_new(width, height)
+  render_frame_tick_stub(v)
+  return v.frame_id
+
+def render_studio_viewport_smoke() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  if render_studio_viewport_tick_stub(1280, 720) != 1:
     return 1
   return 0

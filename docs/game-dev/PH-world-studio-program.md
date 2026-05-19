@@ -1,6 +1,6 @@
 # PH-world-studio-program — master tracker
 
-**Status:** In progress (impl-19 on `feat/world-studio-impl-1`) — **ready for draft PR** · [demo showcase](demo-showcase.md)  
+**Status:** In progress (impl-20 on `feat/world-studio-impl-1`) — **ready for draft PR** · [demo showcase](demo-showcase.md)  
 **Vision:** [world-studio-vision.md](world-studio-vision.md)  
 **Progress report:** [PH-world-studio-progress-report.md](PH-world-studio-progress-report.md) ← **read this for sprint status**
 
@@ -101,6 +101,8 @@ Cross-cutting program IDs. Implementation order respects dependencies in the vis
 | Studio HTML demo showcase + record script | Done |
 | sci+drug+chem · relativity rocket · pub+scorecard composables | Done |
 | **66 composable** gates | Done |
+| Native viewport render bridge + vertical demo mains | Done |
+| **68 composable** gates · **10 game_dev** parse_ok | Done |
 | MMO-5 WebSocket stubs (`net.httpd`) | Done |
 | MMO-6 `world_checkpoint_mmo_stub` | Done |
 | BIOENG-2 construct registry | Done |

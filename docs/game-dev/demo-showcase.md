@@ -50,6 +50,21 @@ For production marketing, re-record with OBS at 1080p while driving the interact
 
 ---
 
+## Li vertical demo mains
+
+| Vertical | Package main |
+|----------|----------------|
+| Rocket | `packages/li-physics-custom/src/demo_rocket_main.li` |
+| Racing | `packages/li-sim-automotive/src/demo_racing_main.li` |
+| Robot | `packages/li-sim-robotics/src/demo_robot_main.li` |
+| Drug | `packages/li-sim-drug-design/src/demo_drug_main.li` |
+
+```bash
+./build/compiler/lic/lic check packages/li-physics-custom/src/demo_rocket_main.li
+```
+
+---
+
 ## Roadmap to native Studio
 
 1. Wire `li-studio` viewport to real `li-render` / `li-scene` (not canvas stub).  

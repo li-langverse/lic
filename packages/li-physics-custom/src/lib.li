@@ -20,10 +20,10 @@ type CustomLawDesc = object
 
 def li_physics_custom_version() -> int
   requires true
-  ensures result == 2
+  ensures result == 3
   decreases 0
 =
-  return 2
+  return 3
 
 def physics_law_mode_realistic() -> int
   requires true
@@ -174,3 +174,10 @@ def custom_law_user_register_stub(law_id: int, conserve_energy: int) -> int
   decreases law_id
 =
   return law_id
+
+def demo_rocket_smoke() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return physics_custom_arbitrary_stack_smoke()

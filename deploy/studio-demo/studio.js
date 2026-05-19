@@ -1,7 +1,7 @@
 /* Li World Studio — interactive demo showcase (visual prototype). */
 const canvas = document.getElementById("viewport");
 const ctx = canvas.getContext("2d");
-const demos = ["rocket", "racing", "robot", "drug", "bioeng", "mmo", "unphysical", "scientific"];
+const demos = ["rocket", "racing", "robot", "drug", "bioeng", "mmo", "unphysical", "scientific", "publish"];
 let active = "rocket";
 let tick = 0;
 let autoReel = false;
@@ -56,6 +56,12 @@ const meta = {
     profile: "sim.scientific + render viewport",
     panel: "Heat-equation stub · SimVizFrame samples · native binary bridge",
     nodes: ["ReactorField", "SimVizFrame", "HeatStep", "Viewport"],
+  },
+  publish: {
+    title: "Publication export — figures + bundles",
+    profile: "studio.publish + PH-PUB",
+    panel: "PublishBundle hash · 300 DPI figures · spin-up: publish",
+    nodes: ["Figure", "PublishBundle", "ContentHash", "Export"],
   },
 };
 
@@ -277,6 +283,36 @@ function drawUnphysical(t) {
   ctx.fillText(`law_mode=arbitrary · custom_law_id=1`, 24, h - 40);
 }
 
+function drawPublish(t) {
+  const w = canvas.width;
+  const h = canvas.height;
+  ctx.fillStyle = "#0d1117";
+  ctx.fillRect(0, 0, w, h);
+  ctx.fillStyle = "#161b22";
+  ctx.fillRect(80, 80, w - 160, h - 160);
+  ctx.strokeStyle = "#30363d";
+  ctx.strokeRect(80, 80, w - 160, h - 160);
+  ctx.fillStyle = "#58a6ff";
+  ctx.font = "bold 18px sans-serif";
+  ctx.fillText("Figure 1 — World Studio export", 120, 120);
+  const bars = 8;
+  for (let i = 0; i < bars; i++) {
+    const bh = 40 + Math.sin(t * 0.04 + i) * 30 + 80;
+    ctx.fillStyle = i % 2 === 0 ? "#3fb950" : "#a371f7";
+    ctx.fillRect(140 + i * 110, h - 180 - bh, 70, bh);
+  }
+  ctx.fillStyle = "#8b949e";
+  ctx.font = "13px monospace";
+  ctx.fillText(`PublishBundle hash=3291 · dpi=300 · files=3`, 120, h - 100);
+  ctx.fillStyle = "#f0883e";
+  ctx.fillRect(w - 200, 100, 120, 36);
+  ctx.fillStyle = "#000";
+  ctx.font = "12px sans-serif";
+  ctx.textAlign = "center";
+  ctx.fillText("Export PDF", w - 140, 122);
+  ctx.textAlign = "left";
+}
+
 function drawMmo(t) {
   const w = canvas.width;
   const h = canvas.height;
@@ -317,6 +353,7 @@ const drawers = {
   mmo: drawMmo,
   unphysical: drawUnphysical,
   scientific: drawScientific,
+  publish: drawPublish,
 };
 
 function frame() {
@@ -365,7 +402,8 @@ fetch("status.json")
     const st = document.getElementById("lic-status");
     if (st) {
       const gpu = s.gpu_viewport ? " · GPU viewport" : "";
-      st.textContent = `lic ✓ · ${s.sprint} · ${s.branch}${gpu}`;
+      const pub = s.publish_template ? " · publish" : "";
+      st.textContent = `lic ✓ · ${s.sprint} · ${s.branch}${gpu}${pub}`;
     }
   })
   .catch(() => {});

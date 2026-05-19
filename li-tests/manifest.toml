@@ -985,6 +985,24 @@ note = "Spin-up publish template composable"
 
 [[tests]]
 suite = "composable"
+file = "composable/import_port_windows_target.li"
+outcome = "compile_ok"
+note = "PH-PORT-1 Windows tier-2 target stub"
+
+[[tests]]
+suite = "composable"
+file = "composable/import_world_studio_final_merge.li"
+outcome = "compile_ok"
+note = "Final merge composable rollup"
+
+[[tests]]
+suite = "composable"
+file = "composable/import_studio_publish_demo_gate.li"
+outcome = "compile_ok"
+note = "Publish bundle + assets + viewport demo gate"
+
+[[tests]]
+suite = "composable"
 file = "composable/import_world_studio_benchmark_tier1.li"
 outcome = "compile_ok"
 note = "Competitive world-studio.toml tier-1 rollup"

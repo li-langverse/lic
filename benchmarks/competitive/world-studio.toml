@@ -4,7 +4,7 @@
 schema = 1
 track = "PH-GD"
 plan = "docs/game-dev/world-studio-vision.md"
-composable_gates = 92
+composable_gates = 95
 branch = "feat/world-studio-impl-1"
 
 [[benchmark]]
@@ -160,3 +160,24 @@ name = "Publication export spin-up"
 tier = 1
 li_package = "li-studio"
 composable = "import_spinup_publish"
+
+[[benchmark]]
+id = "port-windows-target"
+name = "PH-PORT-1 Windows tier-2 target"
+tier = 1
+li_package = "li-studio"
+composable = "import_port_windows_target"
+
+[[benchmark]]
+id = "world-studio-final-merge"
+name = "Final merge composable gate"
+tier = 1
+li_package = "li-studio"
+composable = "import_world_studio_final_merge"
+
+[[benchmark]]
+id = "studio-publish-demo-gate"
+name = "Publish demo + viewport gate"
+tier = 1
+li_package = "li-studio"
+composable = "import_studio_publish_demo_gate"

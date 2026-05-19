@@ -323,3 +323,22 @@ def studio_portable_targets_smoke() -> int
   if studio_publish_smoke() != 0:
     return 2
   return 0
+
+# PH-PORT-1 — tier-2 Windows desktop triple (targets/manifest.toml index 4).
+def studio_port_windows_target_id_stub() -> int
+  requires true
+  ensures result == 4
+  decreases 0
+=
+  return 4
+
+def studio_port_windows_target_smoke() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  if studio_port_windows_target_id_stub() != 4:
+    return 1
+  if studio_portable_target_count_stub() != 5:
+    return 2
+  return 0

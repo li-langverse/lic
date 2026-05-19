@@ -1,6 +1,6 @@
 # Merge checklist — `feat/world-studio-impl-1` → `main`
 
-**PR title:** feat: World Studio / Li Engine (impl-1–29)
+**PR title:** feat: World Studio / Li Engine (impl-1–30)
 
 ## Pre-merge verify
 
@@ -12,11 +12,12 @@
 ./scripts/ci.sh
 ```
 
-## Stats (impl-29)
+## Stats (impl-30)
 
 | Metric | Value |
 |--------|--------|
-| Composable gates | 92 |
+| Composable gates | 95 |
+| Demo tabs | 10 (incl. Publish) |
 | Spin-up templates | 9 |
 | Portable targets | 5 triples (`check-portable-targets.sh`) |
 | game_dev parse_ok | 12 |

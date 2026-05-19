@@ -37,7 +37,9 @@ Refresh after tests:
 ```bash
 cd lic
 ./scripts/gen-studio-demo-status.sh
-python3 -m http.server 8765 --directory deploy/studio-demo
+./scripts/open-studio-demo.sh
+# or: python3 -m http.server 8765 --directory deploy/studio-demo
+# Publish tab: http://127.0.0.1:8765/?demo=publish
 # Open http://localhost:8765
 ```
 

@@ -24,6 +24,13 @@ jobs:
           path: lic
           ref: main
 
+      - name: Enforce def syntax (no bare proc)
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y ripgrep
+          chmod +x lic/scripts/check-li-def-syntax.sh
+          lic/scripts/check-li-def-syntax.sh .
+
       - name: Install LLVM 18
         run: |
           sudo apt-get update

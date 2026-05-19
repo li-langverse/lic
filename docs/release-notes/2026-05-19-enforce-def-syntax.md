@@ -15,8 +15,25 @@ User-facing Li functions must be declared with `def`; bare `proc` is rejected ex
 
 - `compiler/parser/parser.cpp` — reject top-level / `async` / decorated `proc`; require `def`.
 - `scripts/migrate-proc-to-def.py` — one-shot source migrator (181 `.li` files).
+- `scripts/check-li-def-syntax.sh` — CI/policy grep gate (`rg`); wired in `scripts/ci.sh` and package mirror `ci.yml`.
+- `scripts/sync-package-mirror-def-syntax-pr.sh` — sync `packages/<name>/` to org mirrors.
 - `li-tests/encapsulation/proc_syntax_rejected.li` + manifest row (`compile_fail`).
 - Handbook and examples under `docs/`, `examples/`, `packages/`, `benchmarks/`, `std/`, `li-tests/`.
+- All `packages/*/.github/workflows/ci.yml` — run def-syntax check before `lic build`.
+
+## Downstream (package mirrors)
+
+Open PRs on official mirrors (sync from `packages/<name>/`):
+
+| Repo | PR |
+|------|-----|
+| `li-std-core` | https://github.com/li-langverse/li-std-core/pull/4 |
+| `li-std-math` | https://github.com/li-langverse/li-std-math/pull/5 |
+| `li-httpd` | https://github.com/li-langverse/li-httpd/pull/4 |
+| `li-net` | https://github.com/li-langverse/li-net/pull/4 |
+| `li-demo` | https://github.com/li-langverse/li-demo/pull/5 |
+
+Physics/UI packages (`li-std-physics-*`, `li-std-ui`, …) live in the monorepo only until published as separate repos.
 
 ## Not changed
 

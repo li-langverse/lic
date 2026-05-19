@@ -1,4 +1,4 @@
-proc deep() -> int
+def deep() -> int
   requires true
   ensures true
   decreases 0

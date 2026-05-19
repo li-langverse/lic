@@ -2,14 +2,14 @@
 
 extern proc li_rt_sqrt(x: float) -> float
 
-proc li_std_physics_quantum_version() -> int
+def li_std_physics_quantum_version() -> int
   requires true
   ensures result == 1
   decreases 0
 =
   return 1
 
-proc norm_sq_1d(psi_re: array[8, float], psi_im: array[8, float]) -> float
+def norm_sq_1d(psi_re: array[8, float], psi_im: array[8, float]) -> float
   requires true
   decreases 0
 =
@@ -20,7 +20,7 @@ proc norm_sq_1d(psi_re: array[8, float], psi_im: array[8, float]) -> float
     i = i + 1
   return s
 
-proc normalize_1d(psi_re: array[8, float], psi_im: array[8, float]) -> unit
+def normalize_1d(psi_re: array[8, float], psi_im: array[8, float]) -> unit
   requires true
   decreases 0
 =
@@ -34,13 +34,13 @@ proc normalize_1d(psi_re: array[8, float], psi_im: array[8, float]) -> unit
     psi_im[i] = psi_im[i] * inv_n
     i = i + 1
 
-proc harmonic_potential_1d(x: float, k: float) -> float
+def harmonic_potential_1d(x: float, k: float) -> float
   requires k >= 0.0
   decreases 0
 =
   return 0.5 * k * x * x
 
-proc schrodinger_kinetic_diag(dx: float, mass: float) -> float
+def schrodinger_kinetic_diag(dx: float, mass: float) -> float
   requires dx > 0.0
   requires mass > 0.0
   decreases 0

@@ -8,7 +8,7 @@ Li is **provable-only** by design: if proof obligations are not discharged, ther
 ## On every procedure
 
 ```nim
-proc sqrt_pos(x: float) -> float
+def sqrt_pos(x: float) -> float
   requires x >= 0.0
   ensures result >= 0.0
   decreases 0

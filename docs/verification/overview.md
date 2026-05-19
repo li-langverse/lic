@@ -31,7 +31,7 @@ The only unproved surface is **`trusted.lean`** (minimal `IO`). Decorators, math
 ## Required on every compiling unit
 
 - Types + refinements (no `Any`)  
-- `requires` / `ensures` on every `proc`  
+- `requires` / `ensures` on every `def`  
 - `invariant` + `decreases` on every loop  
 - Borrow/memory safety  
 - Parallel: proved disjointness  

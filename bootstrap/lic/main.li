@@ -11,7 +11,7 @@ extern proc strcmp(a: ptr, b: ptr) -> int
   requires true
   ensures true
 
-proc print_version() raises IO -> int
+def print_version() raises IO -> int
   requires true
   ensures result == 0
   decreases 0
@@ -19,7 +19,7 @@ proc print_version() raises IO -> int
   echo "lic 0.2.0-bootstrap (compiled with Li)"
   return 0
 
-proc print_usage() raises IO -> int
+def print_usage() raises IO -> int
   requires true
   ensures result == 1
   decreases 0
@@ -27,7 +27,7 @@ proc print_usage() raises IO -> int
   echo "usage: lic --version | lic smoke"
   return 1
 
-proc dispatch() raises IO -> int
+def dispatch() raises IO -> int
   requires true
   ensures result >= 0
   decreases 0
@@ -41,7 +41,7 @@ proc dispatch() raises IO -> int
     return 0
   return print_usage()
 
-proc main() raises IO -> int
+def main() raises IO -> int
   requires true
   ensures result >= 0
   decreases 0

@@ -561,6 +561,12 @@ outcome = "verify_ok"
 
 [[tests]]
 suite = "encapsulation"
+file = "encapsulation/proc_syntax_rejected.li"
+outcome = "compile_fail"
+expected_substr = "use 'def' for Li procedures"
+
+[[tests]]
+suite = "encapsulation"
 file = "encapsulation/object_public_field.li"
 outcome = "verify_ok"
 

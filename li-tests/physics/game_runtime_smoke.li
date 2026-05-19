@@ -8,7 +8,7 @@ type PhysicsWorld = object
   public gravity_z: float
   public body_count: int
 
-proc physics_world_game_default() -> PhysicsWorld
+def physics_world_game_default() -> PhysicsWorld
   requires true
   ensures result.tier == 2
   ensures result.substeps >= 1
@@ -23,7 +23,7 @@ proc physics_world_game_default() -> PhysicsWorld
   w.body_count = 1
   return w
 
-proc physics_step(world: PhysicsWorld, frame_dt: float) -> int
+def physics_step(world: PhysicsWorld, frame_dt: float) -> int
   requires frame_dt > 0.0
   requires world.substeps >= 1
   decreases world.substeps
@@ -34,7 +34,7 @@ proc physics_step(world: PhysicsWorld, frame_dt: float) -> int
     i = i + 1
   return world.step_count
 
-proc game_physics_tick() -> int
+def game_physics_tick() -> int
   requires true
   ensures result >= 4
   decreases 0
@@ -42,7 +42,7 @@ proc game_physics_tick() -> int
   var w: PhysicsWorld = physics_world_game_default()
   return physics_step(w, 1.0 / 60.0)
 
-proc main() -> int
+def main() -> int
   requires true
   ensures result == 0
   decreases 0

@@ -1,7 +1,7 @@
 # EXPLOIT: user proc shadows builtin echo.
 # MUST NOT compile — expected: stdlib_symbol_shadow: echo
 
-proc echo(x: int) -> int
+def echo(x: int) -> int
   requires true
   ensures result == x
   decreases 0

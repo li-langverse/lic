@@ -1,4 +1,4 @@
-proc p() -> int
+def p() -> int
   requires true
   ensures true
   decreases 0

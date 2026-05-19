@@ -1,6 +1,6 @@
 # CWE-122 / heap OOB class: dynamic int index without refinement proof.
 
-proc heap_style_oob(buf: array[64, int], i: int) -> int
+def heap_style_oob(buf: array[64, int], i: int) -> int
   requires true
   ensures true
   decreases 0

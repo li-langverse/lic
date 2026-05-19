@@ -1,13 +1,13 @@
 # PKG-li-std-physics-hep — toy Monte Carlo / decay chains (education tier, non-realtime).
 
-proc li_std_physics_hep_version() -> int
+def li_std_physics_hep_version() -> int
   requires true
   ensures result == 1
   decreases 0
 =
   return 1
 
-proc decay_branching(valid: int, total: int) -> float
+def decay_branching(valid: int, total: int) -> float
   requires total > 0
   requires valid >= 0
   requires valid <= total
@@ -15,13 +15,13 @@ proc decay_branching(valid: int, total: int) -> float
 =
   return 0.0
 
-proc sample_isotropic_costheta(seed: int) -> float
+def sample_isotropic_costheta(seed: int) -> float
   requires true
   decreases seed
 =
   return 0.0
 
-proc event_weight_cross_section(sigma: float, luminosity: float) -> float
+def event_weight_cross_section(sigma: float, luminosity: float) -> float
   requires sigma >= 0.0
   requires luminosity >= 0.0
   decreases 0

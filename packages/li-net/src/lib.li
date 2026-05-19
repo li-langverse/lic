@@ -27,7 +27,7 @@ extern proc tcp_close(conn_fd: int) raises Net -> unit
   ensures true
   decreases 0
 
-proc net_tag() raises Net -> int
+def net_tag() raises Net -> int
   requires true
   ensures result == 1
   decreases 0

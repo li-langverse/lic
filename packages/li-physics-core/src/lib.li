@@ -21,42 +21,42 @@ type SimulationParams = object
   public dt: float
   public seed: int
 
-proc li_std_physics_core_version() -> int
+def li_std_physics_core_version() -> int
   requires true
   ensures result == 1
   decreases 0
 =
   return 1
 
-proc physics_tier_arcade() -> int
+def physics_tier_arcade() -> int
   requires true
   ensures result == 0
   decreases 0
 =
   return 0
 
-proc physics_tier_simulation() -> int
+def physics_tier_simulation() -> int
   requires true
   ensures result == 1
   decreases 0
 =
   return 1
 
-proc physics_tier_scientific() -> int
+def physics_tier_scientific() -> int
   requires true
   ensures result == 2
   decreases 0
 =
   return 2
 
-proc physics_tier_research() -> int
+def physics_tier_research() -> int
   requires true
   ensures result == 3
   decreases 0
 =
   return 3
 
-proc default_numerical_targets() -> NumericalTargets
+def default_numerical_targets() -> NumericalTargets
   requires true
   decreases 0
 =
@@ -67,7 +67,7 @@ proc default_numerical_targets() -> NumericalTargets
   t.cfl_safety = 0.9
   return t
 
-proc default_physics_profile() -> PhysicsProfile
+def default_physics_profile() -> PhysicsProfile
   requires true
   decreases 0
 =
@@ -78,7 +78,7 @@ proc default_physics_profile() -> PhysicsProfile
   p.targets = default_numerical_targets()
   return p
 
-proc profile_for_tier(tier: int) -> PhysicsProfile
+def profile_for_tier(tier: int) -> PhysicsProfile
   requires tier >= 0
   requires tier <= 3
   decreases tier
@@ -104,7 +104,7 @@ proc profile_for_tier(tier: int) -> PhysicsProfile
   return p
 
 # Compile-time policy hook (future: elaborator reads profile + chooses integrator)
-proc select_integrator_order(profile: PhysicsProfile) -> int
+def select_integrator_order(profile: PhysicsProfile) -> int
   requires true
   decreases profile.tier
 =
@@ -116,7 +116,7 @@ proc select_integrator_order(profile: PhysicsProfile) -> int
     return 4
   return 4
 
-proc simulation_fixed_dt_steps(params: SimulationParams) -> int
+def simulation_fixed_dt_steps(params: SimulationParams) -> int
   requires params.dt > 0.0
   requires params.steps > 0
   decreases params.steps

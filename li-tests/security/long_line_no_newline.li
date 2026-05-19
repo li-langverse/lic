@@ -1,5 +1,5 @@
 # Parser stress: very long line without newline (CVE-inspired corpus seed).
-proc long_line() -> int
+def long_line() -> int
   requires true
   ensures true
   decreases 0

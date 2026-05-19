@@ -1,13 +1,13 @@
 # PKG-li-std-physics-chem — reaction networks and passive combustion fields.
 
-proc li_std_physics_chem_version() -> int
+def li_std_physics_chem_version() -> int
   requires true
   ensures result == 1
   decreases 0
 =
   return 1
 
-proc arrhenius_rate(k0: float, ea: float, temp: float, r_gas: float) -> float
+def arrhenius_rate(k0: float, ea: float, temp: float, r_gas: float) -> float
   requires k0 >= 0.0
   requires temp > 0.0
   requires r_gas > 0.0
@@ -15,7 +15,7 @@ proc arrhenius_rate(k0: float, ea: float, temp: float, r_gas: float) -> float
 =
   return k0
 
-proc reactor_euler_step(
+def reactor_euler_step(
     conc: array[4, float], rates: array[4, float], dt: float) -> unit
   requires dt > 0.0
   decreases 0
@@ -27,7 +27,7 @@ proc reactor_euler_step(
       conc[i] = 0.0
     i = i + 1
 
-proc combustion_passive_step(
+def combustion_passive_step(
     fuel: array[8, float], oxidizer: array[8, float],
     temp: array[8, float], dt: float, burn_rate: float) -> unit
   requires dt > 0.0

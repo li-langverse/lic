@@ -66,13 +66,20 @@ struct Parser {
   TypeAlias parse_type_alias();
   ErrorDecl parse_error_decl();
   ImportDecl parse_import();
-  bool accept_proc_kw() {
-    if (at(TokenKind::KwProc) || at(TokenKind::KwDef)) {
+  bool accept_def_kw() {
+    if (at(TokenKind::KwDef)) {
       i++;
       return true;
     }
+    if (at(TokenKind::KwProc)) {
+      diags.error(loc(cur()),
+                  "use 'def' for Li procedures; 'proc' is only allowed after 'extern'");
+      i++;
+      return false;
+    }
     return false;
   }
+  bool at_fn_kw() const { return at(TokenKind::KwDef) || at(TokenKind::KwProc); }
   bool at_for_kw() const {
     return at(TokenKind::KwFor) || (at(TokenKind::Ident) && cur().text == "for");
   }
@@ -105,16 +112,21 @@ struct Parser {
         skip_newlines();
       } else if (at(TokenKind::At)) {
         std::vector<Decorator> decos = parse_decorator_list();
-        if (!at(TokenKind::KwProc) && !at(TokenKind::KwDef)) {
-          diags.error(loc(cur()), "expected proc or def after decorators");
+        if (!at_fn_kw()) {
+          diags.error(loc(cur()), "expected 'def' after decorators");
           return false;
         }
         ProcDecl proc = parse_proc(false);
         proc.decorators = std::move(decos);
         out.procs.push_back(std::move(proc));
         skip_newlines();
-      } else if (at(TokenKind::KwProc) || at(TokenKind::KwDef)) {
+      } else if (at(TokenKind::KwDef)) {
         out.procs.push_back(parse_proc(false));
+        skip_newlines();
+      } else if (at(TokenKind::KwProc)) {
+        diags.error(loc(cur()),
+                    "use 'def' for Li procedures; 'proc' is only allowed after 'extern'");
+        i++;
         skip_newlines();
       } else if (at(TokenKind::KwType)) {
         out.types.push_back(parse_type_alias());
@@ -915,8 +927,8 @@ Stmt Parser::parse_stmt() {
 ProcDecl Parser::parse_proc(bool is_extern) {
   ProcDecl proc;
   proc.is_extern = is_extern;
-  if (!is_extern && !accept_proc_kw()) {
-    diags.error(loc(cur()), "expected 'proc' or 'def'");
+  if (!is_extern && !accept_def_kw()) {
+    diags.error(loc(cur()), "expected 'def'");
   }
   const Token name = cur();
   proc.span = {name.start, name.end};

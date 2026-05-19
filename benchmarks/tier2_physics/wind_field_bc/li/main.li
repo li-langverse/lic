@@ -1,7 +1,7 @@
 extern proc li_wind_field_kernel()
 extern proc li_wind_field_checksum() -> float
 
-proc main() -> int
+def main() -> int
   requires true
   ensures result == 0
   decreases 0

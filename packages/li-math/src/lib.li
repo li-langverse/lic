@@ -48,21 +48,21 @@ type Aabb = object
   public min: Vec3
   public max: Vec3
 
-proc math_tag() -> int
+def math_tag() -> int
   requires true
   ensures result == 2
   decreases 0
 =
   return 2
 
-proc li_std_math_version() -> int
+def li_std_math_version() -> int
   requires true
   ensures result == 1
   decreases 0
 =
   return 1
 
-proc vec2(x: float, y: float) -> Vec2
+def vec2(x: float, y: float) -> Vec2
   requires true
   ensures result.x == x
   ensures result.y == y
@@ -73,7 +73,7 @@ proc vec2(x: float, y: float) -> Vec2
   v.y = y
   return v
 
-proc vec3(x: float, y: float, z: float) -> Vec3
+def vec3(x: float, y: float, z: float) -> Vec3
   requires true
   ensures result.x == x
   ensures result.y == y
@@ -86,7 +86,7 @@ proc vec3(x: float, y: float, z: float) -> Vec3
   v.z = z
   return v
 
-proc vec3_add(a: Vec3, b: Vec3) -> Vec3
+def vec3_add(a: Vec3, b: Vec3) -> Vec3
   requires true
   ensures result.x == a.x + b.x
   ensures result.y == a.y + b.y
@@ -95,7 +95,7 @@ proc vec3_add(a: Vec3, b: Vec3) -> Vec3
 =
   return vec3(a.x + b.x, a.y + b.y, a.z + b.z)
 
-proc vec3_sub(a: Vec3, b: Vec3) -> Vec3
+def vec3_sub(a: Vec3, b: Vec3) -> Vec3
   requires true
   ensures result.x == a.x - b.x
   ensures result.y == a.y - b.y
@@ -104,7 +104,7 @@ proc vec3_sub(a: Vec3, b: Vec3) -> Vec3
 =
   return vec3(a.x - b.x, a.y - b.y, a.z - b.z)
 
-proc vec3_scale(a: Vec3, s: float) -> Vec3
+def vec3_scale(a: Vec3, s: float) -> Vec3
   requires true
   ensures result.x == a.x * s
   ensures result.y == a.y * s
@@ -113,14 +113,14 @@ proc vec3_scale(a: Vec3, s: float) -> Vec3
 =
   return vec3(a.x * s, a.y * s, a.z * s)
 
-proc vec3_dot(a: Vec3, b: Vec3) -> float
+def vec3_dot(a: Vec3, b: Vec3) -> float
   requires true
   ensures result == a.x * b.x + a.y * b.y + a.z * b.z
   decreases 0
 =
   return a.x * b.x + a.y * b.y + a.z * b.z
 
-proc vec3_cross(a: Vec3, b: Vec3) -> Vec3
+def vec3_cross(a: Vec3, b: Vec3) -> Vec3
   requires true
   decreases 0
 =
@@ -129,20 +129,20 @@ proc vec3_cross(a: Vec3, b: Vec3) -> Vec3
     a.z * b.x - a.x * b.z,
     a.x * b.y - a.y * b.x)
 
-proc vec3_len_sq(a: Vec3) -> float
+def vec3_len_sq(a: Vec3) -> float
   requires true
   ensures result == vec3_dot(a, a)
   decreases 0
 =
   return vec3_dot(a, a)
 
-proc vec3_len(a: Vec3) -> float
+def vec3_len(a: Vec3) -> float
   requires true
   decreases 0
 =
   return li_rt_sqrt(vec3_len_sq(a))
 
-proc vec3_normalize(a: Vec3) -> Vec3
+def vec3_normalize(a: Vec3) -> Vec3
   requires true
   decreases 0
 =
@@ -151,13 +151,13 @@ proc vec3_normalize(a: Vec3) -> Vec3
     return vec3(0.0, 0.0, 0.0)
   return vec3_scale(a, 1.0 / l)
 
-proc vec3_lerp(a: Vec3, b: Vec3, t: float) -> Vec3
+def vec3_lerp(a: Vec3, b: Vec3, t: float) -> Vec3
   requires true
   decreases 0
 =
   return vec3_add(vec3_scale(a, 1.0 - t), vec3_scale(b, t))
 
-proc quat_identity() -> Quat
+def quat_identity() -> Quat
   requires true
   ensures result.w == 1.0
   decreases 0
@@ -169,7 +169,7 @@ proc quat_identity() -> Quat
   q.z = 0.0
   return q
 
-proc quat_mul(a: Quat, b: Quat) -> Quat
+def quat_mul(a: Quat, b: Quat) -> Quat
   requires true
   decreases 0
 =
@@ -180,7 +180,7 @@ proc quat_mul(a: Quat, b: Quat) -> Quat
   q.z = a.w * b.z + a.x * b.y - a.y * b.x + a.z * b.w
   return q
 
-proc mat4_identity() -> Mat4
+def mat4_identity() -> Mat4
   requires true
   decreases 0
 =
@@ -203,7 +203,7 @@ proc mat4_identity() -> Mat4
   m.m33 = 1.0
   return m
 
-proc mat4_mul_point(m: Mat4, p: Vec3) -> Vec3
+def mat4_mul_point(m: Mat4, p: Vec3) -> Vec3
   requires true
   decreases 0
 =
@@ -212,14 +212,14 @@ proc mat4_mul_point(m: Mat4, p: Vec3) -> Vec3
   var z: float = m.m20 * p.x + m.m21 * p.y + m.m22 * p.z + m.m23
   return vec3(x, y, z)
 
-proc array_dot_f64(a: array[4, float], b: array[4, float]) -> float
+def array_dot_f64(a: array[4, float], b: array[4, float]) -> float
   requires true
   ensures result == a @ b
   decreases 0
 =
   return a @ b
 
-proc array_sum_f64(a: array[4, float]) -> float
+def array_sum_f64(a: array[4, float]) -> float
   requires true
   decreases 0
 =

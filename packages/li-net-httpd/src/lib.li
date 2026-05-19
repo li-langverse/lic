@@ -9,28 +9,28 @@ type HttpdConfig = object
 type HttpdHandle = object
   public id: int
 
-proc httpd_tag() -> int
+def httpd_tag() -> int
   requires true
   ensures result == 0
   decreases 0
 =
   return 0
 
-proc httpd_serve(config: HttpdConfig) -> int
+def httpd_serve(config: HttpdConfig) -> int
   requires true
   ensures result == 0
   decreases 0
 =
   return 0
 
-proc httpd_stop(handle_id: int) -> int
+def httpd_stop(handle_id: int) -> int
   requires handle_id == 0
   ensures result == 0
   decreases 0
 =
   return 0
 
-proc httpd_ready(handle_id: int) -> bool
+def httpd_ready(handle_id: int) -> bool
   requires handle_id == 0
   ensures result == true
   decreases 0

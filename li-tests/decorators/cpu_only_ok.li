@@ -1,5 +1,5 @@
 @cpu
-proc host_only() -> int
+def host_only() -> int
   requires true
   ensures true
   decreases 0

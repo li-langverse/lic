@@ -15,14 +15,14 @@ type Contact = object
   public body_b: int
   public depth: float
 
-proc li_std_physics_rigid_version() -> int
+def li_std_physics_rigid_version() -> int
   requires true
   ensures result == 1
   decreases 0
 =
   return 1
 
-proc rigid_integrate_semi_implicit(b: RigidBody, fx: float, fy: float, fz: float, dt: float) -> unit
+def rigid_integrate_semi_implicit(b: RigidBody, fx: float, fy: float, fz: float, dt: float) -> unit
   requires dt > 0.0
   decreases 0
 =
@@ -34,7 +34,7 @@ proc rigid_integrate_semi_implicit(b: RigidBody, fx: float, fy: float, fz: float
   b.py = b.py + b.vy * dt
   b.pz = b.pz + b.vz * dt
 
-proc aabb_overlap(
+def aabb_overlap(
     min_ax: float, min_ay: float, max_ax: float, max_ay: float,
     min_bx: float, min_by: float, max_bx: float, max_by: float) -> int
   requires true
@@ -50,7 +50,7 @@ proc aabb_overlap(
     return 0
   return 1
 
-proc sphere_sphere_overlap(
+def sphere_sphere_overlap(
     ax: float, ay: float, az: float, ra: float,
     bx: float, by: float, bz: float, rb: float) -> int
   requires ra >= 0.0
@@ -66,7 +66,7 @@ proc sphere_sphere_overlap(
   return 0
 
 # One PGS iteration for normal impulse (scalar, 1D constraint)
-proc pgs_resolve_normal(
+def pgs_resolve_normal(
     vn: float, impulse: float, bias: float, mass_inv: float) -> float
   requires mass_inv >= 0.0
   decreases 0
@@ -76,7 +76,7 @@ proc pgs_resolve_normal(
     lambda_n = 0.0
   return impulse + lambda_n
 
-proc broadphase_cell_index(x: float, cell_size: float) -> int
+def broadphase_cell_index(x: float, cell_size: float) -> int
   requires cell_size > 0.0
   decreases 0
 =

@@ -3,7 +3,7 @@ extern proc net_ping() raises Net -> int
   ensures true
   decreases 0
 
-proc handler() raises Net, IO -> int
+def handler() raises Net, IO -> int
   requires true
   ensures true
   decreases 0

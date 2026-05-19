@@ -14,7 +14,7 @@ Libraries are **verbs for agents and programs**, not monolithic binaries:
 | `stop(handle)` | Tear down listeners and workers |
 | `ready(handle)` | Await or poll until the service accepts work |
 
-Callers own lifecycle: integration tests, agents, and `proc main` in other packages import the library and drive these verbs explicitly.
+Callers own lifecycle: integration tests, agents, and `def main` in other packages import the library and drive these verbs explicitly.
 
 ## Package layout (binding)
 

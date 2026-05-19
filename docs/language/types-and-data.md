@@ -89,7 +89,7 @@ type Sized = Protocol["__len__", int]
 Generics use PEP 695 style:
 
 ```nim
-proc identity[T](x: T) -> T
+def identity[T](x: T) -> T
 ```
 
 ## What is forbidden

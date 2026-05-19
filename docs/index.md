@@ -46,7 +46,7 @@ Li is a language for **programs you can trust in production**: contracts checked
 ## Quick example
 
 ```nim
-proc main() -> int
+def main() -> int
   requires true
   ensures result == 0
   decreases 0

@@ -1,6 +1,6 @@
 @cpu
 @parallel(disjoint=disjoint_elem)
-proc par_decorated() -> int
+def par_decorated() -> int
   requires true
   ensures true
   decreases 0

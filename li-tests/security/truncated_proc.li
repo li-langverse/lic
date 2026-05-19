@@ -1,4 +1,4 @@
-proc cut() -> int
+def cut() -> int
   requires true
   ensures true
   decreases 0

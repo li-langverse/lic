@@ -6,6 +6,10 @@ All notable changes to Li are documented here. The format follows
 
 ## [Unreleased]
 
+### Changed
+
+- **Breaking:** Li procedure declarations must use `def`; bare `proc` is rejected (keep `extern proc` for FFI). See `docs/release-notes/2026-05-19-enforce-def-syntax.md`.
+
 ### Added
 
 - Agent-first JSON diagnostics: `lic check --format=json`, `lic diagnose` (`docs/schemas/diagnostic-v1.json`)

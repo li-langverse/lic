@@ -1,7 +1,7 @@
 @cpu
 @parallel(threads=auto, disjoint=disjoint_row)
 @vectorized(lanes=8)
-proc decorated_kernel(x: array[8, float64]) -> float64
+def decorated_kernel(x: array[8, float64]) -> float64
   requires True
 =
   var acc: float64 = 0.0

@@ -3,7 +3,7 @@ extern proc net_ping() raises Net -> int
   ensures true
   decreases 0
 
-proc forward() raises Net, IO -> int
+def forward() raises Net, IO -> int
   requires true
   ensures true
   decreases 0

@@ -1,4 +1,4 @@
-import li_httpd
+import net.httpd
 
 def main() -> int
   requires true

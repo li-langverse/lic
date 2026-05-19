@@ -6,6 +6,10 @@ All notable changes to Li are documented here. The format follows
 
 ## [Unreleased]
 
+### Changed
+
+- Composable imports: workspace `packages/*` (via `import_name` in `li.toml`) resolve before `std/` facades for the same ergonomic path (e.g. `physics.rigid`).
+
 ### Fixed
 
 - Windows CI discovers `LLVM_DIR` via `llvm-config` or `find` when Chocolatey layout differs.

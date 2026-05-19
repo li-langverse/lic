@@ -1,0 +1,9 @@
+# std/physics/rigid — rigid bodies, contacts (facade).
+# Prefer: import physics.rigid  |  import std.physics.rigid
+
+proc physics_rigid_std_tag() -> int
+  requires true
+  ensures result == 1
+  decreases 0
+=
+  return 1

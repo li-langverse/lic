@@ -1,0 +1,9 @@
+# std/physics/core — profiles, tiers, simulation params (facade).
+# Prefer: import physics.core  |  import std.physics.core
+
+proc physics_core_std_tag() -> int
+  requires true
+  ensures result == 1
+  decreases 0
+=
+  return 1

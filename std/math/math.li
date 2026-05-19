@@ -1,0 +1,9 @@
+# std/math — vectors, quaternions, AABB (facade).
+# Prefer: import math  |  import std.math
+
+proc math_std_tag() -> int
+  requires true
+  ensures result == 2
+  decreases 0
+=
+  return 2

@@ -9,6 +9,7 @@ description = "Li scene graph and entity transforms for games and simulation"
 li-std-math = { path = "../li-std-math" }
 
 [package.metadata.li]
+import_name = "scene"
 min_lic = "0.1.0"
 maintainer = "li-langverse"
 pkg_id = "PKG-li-std-scene"

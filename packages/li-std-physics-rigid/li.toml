@@ -11,6 +11,7 @@ li-std-math = { path = "../li-std-math" }
 # registry = "1.0.0"             # lip 8d+
 
 [package.metadata.li]
+import_name = "physics.rigid"
 min_lic = "0.1.0"
 maintainer = "li-langverse"
 pkg_id = "PKG-li-std-physics-rigid"

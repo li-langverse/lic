@@ -5,17 +5,27 @@
 
 ---
 
-## Packages (import path when `import` lands)
+## Packages (import style)
 
-| Package | Use in games |
-|---------|----------------|
-| `li-std-physics-core` | Units, constants, shared types |
-| `li-std-physics-rigid` | Bodies, AABB/sphere overlap, PGS normal stub |
-| `li-std-physics-particles` | Particles, simple forces |
-| `li-std-physics-fluids` | Grid/fluid helpers (tier-2 euler/sph benches) |
-| `li-std-physics-runtime` | `PhysicsWorld`, `physics_step`, scene sync hooks |
-| `li-std-scene` | `EntityId`, `Transform3`, `Scene` graph |
-| `li-std-ui` | `Color`, `Rect`, `UiFrame`, `InputState` |
+Use **short modules** — see [import-style.md](../language/import-style.md):
+
+```li
+import physics.runtime
+import physics.rigid
+import scene
+import ui
+import math
+```
+
+| Import | Use in games |
+|--------|----------------|
+| `physics.core` | Units, constants, shared types |
+| `physics.rigid` | Bodies, AABB/sphere overlap, PGS normal stub |
+| `physics.particles` | Particles, simple forces |
+| `physics.fluids` | Grid/fluid helpers (tier-2 euler/sph benches) |
+| `physics.runtime` | `PhysicsWorld`, `physics_step`, scene sync hooks |
+| `scene` | `EntityId`, `Transform3`, `Scene` graph |
+| `ui` | `Color`, `Rect`, `UiFrame`, `InputState` |
 
 **Entry API:** `physics_world_new(2)` → loop `physics_step(world, 1.0/60.0)` → `physics_sync_to_scene`.
 

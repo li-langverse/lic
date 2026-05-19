@@ -9,6 +9,7 @@ description = "Li package li-std-math"
 li-std-core = { path = "../li-std-core" }
 
 [package.metadata.li]
+import_name = "math"
 min_lic = "0.1.0"
 maintainer = "li-langverse"
 pkg_id = "PKG-li-std-math"

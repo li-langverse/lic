@@ -10,6 +10,7 @@ li-std-physics-core = { path = "../li-std-physics-core" }
 # registry = "1.0.0"             # lip 8d+
 
 [package.metadata.li]
+import_name = "physics.quantum"
 min_lic = "0.1.0"
 maintainer = "li-langverse"
 pkg_id = "PKG-li-std-physics-quantum"

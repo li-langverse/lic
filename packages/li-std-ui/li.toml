@@ -9,6 +9,7 @@ description = "Li UI types and frame hooks for games and simulation tools"
 li-std-math = { path = "../li-std-math" }
 
 [package.metadata.li]
+import_name = "ui"
 min_lic = "0.1.0"
 maintainer = "li-langverse"
 pkg_id = "PKG-li-std-ui"

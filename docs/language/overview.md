@@ -7,7 +7,7 @@ For the normative technical spec, see the [language design spec](../superpowers/
 ## Design goals (plain language)
 
 1. **No silent lies** — types and contracts must agree; the build fails otherwise.
-2. **Readable code** — indentation blocks, familiar names (`int`, `float`, `list`, `dict`).
+2. **Readable code** — **does what it reads like it does** (Python-style simplicity: clear names, obvious flow). See [Philosophy](philosophy.md).
 3. **Real speed** — after proof, LLVM produces native code with SIMD and multiple cores.
 
 ## Program shape
@@ -30,6 +30,8 @@ proc name(arg: T) -> R
 
 | Topic | Page |
 |-------|------|
+| Philosophy & naming | [Philosophy](philosophy.md) |
+| Imports | [Import style](import-style.md) |
 | Types & data | [Types and data](types-and-data.md) |
 | Numbers | [Numerics](numerics.md) |
 | Vectors & parallel | [SIMD and parallel](simd-parallel.md) |

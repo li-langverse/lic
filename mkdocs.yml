@@ -106,6 +106,8 @@ nav:
   - Language handbook:
       - li.toml manifest: language/li-toml.md
       - Overview: language/overview.md
+      - Philosophy: language/philosophy.md
+      - Import style: language/import-style.md
       - Types and data: language/types-and-data.md
       - Numerics: language/numerics.md
       - SIMD and parallel: language/simd-parallel.md

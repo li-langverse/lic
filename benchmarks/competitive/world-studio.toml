@@ -1,0 +1,64 @@
+# World Studio / Li Engine — competitive benchmark registry (stub).
+
+[meta]
+schema = 1
+track = "PH-GD"
+plan = "docs/game-dev/world-studio-vision.md"
+composable_gates = 78
+branch = "feat/world-studio-impl-1"
+
+[[benchmark]]
+id = "studio-viewport-bridge"
+name = "Studio render viewport tick bridge"
+tier = 1
+li_package = "li-studio"
+composable = "import_studio_render_viewport"
+
+[[benchmark]]
+id = "vertical-demo-rocket"
+name = "Rocket custom physics demo"
+tier = 1
+li_package = "li-physics-custom"
+composable = "import_demo_verticals"
+
+[[benchmark]]
+id = "drug-litl-chem"
+name = "Drug LITL + chem DFT stack"
+tier = 1
+li_package = "li-sim-drug-design"
+composable = "import_scientific_drug_chem"
+
+[[benchmark]]
+id = "mmo-deploy-stack"
+name = "MMO deploy + store replay"
+tier = 1
+li_package = "li-mmo"
+composable = "import_mmo_deploy_stack"
+
+[[benchmark]]
+id = "bioeng-dbtl-bridge"
+name = "Bioengineering LITL+DBTL bridge"
+tier = 1
+li_package = "li-bioeng"
+composable = "import_bioeng_drug_litl"
+
+[[benchmark]]
+id = "world-studio-release"
+name = "Full release composable gate"
+tier = 1
+li_package = "li-studio"
+composable = "import_world_studio_release_gate"
+
+[[benchmark]]
+id = "spinup-unphysical"
+name = "Arbitrary physics spin-up template"
+tier = 1
+li_package = "li-physics-custom"
+composable = "import_spinup_unphysical"
+
+[[benchmark]]
+id = "sim-world-studio-stack"
+name = "PH-SIM world studio integration stack"
+tier = 1
+li_package = "li-sim"
+composable = "import_sim_world_studio_stack"

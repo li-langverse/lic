@@ -1,32 +1,36 @@
 # PR summary — `feat/world-studio-impl-1` → `main`
 
-**Purpose:** Land World Studio / Li Engine implementation (impl-1…impl-20).
+**Purpose:** Land World Studio / Li Engine implementation (impl-1…impl-24).
 
-## Stats (impl-20)
+## Stats (impl-24)
 
 | Metric | Value |
 |--------|-------|
 | Packages added/extended | 28+ |
-| Composable gates | **68** |
-| Game dev parse_ok | **10** |
+| Composable gates | **78** |
+| Game dev parse_ok | **12** |
+| Spin-up templates | **7** (incl. `game_unphysical`) |
+| Vertical demo builds | **7** |
 | Demo showcase | `deploy/studio-demo/` + WebM reel |
-| Vertical demos | rocket / racing / robot / drug `.li` mains |
-| Docs / plans | MMORPG, bioeng, arbitrary physics, progress report |
+| Studio binary | `build/bin/world-studio` |
+| CI | `ci-world-studio.sh` + `check-world-studio-gates.sh` |
 
 ## Verify before merge
 
 ```bash
+./scripts/check-world-studio-gates.sh
+# or:
 ./li-tests/run_all.sh composable
-./li-tests/run_all.sh game_dev
+./li-tests/run_all.sh spinup_templates
 ```
 
 ## After merge
 
-- Publish draft PR from branch or merge squashed
+- Squash-merge or merge PR from `feat/world-studio-impl-1`
 - Register new packages in ecosystem `official-packages.md` (human)
 - Enable package CI per repo
+- Upstream `lis new world-studio` in lis repo (shim exists in `lic/scripts/lis`)
 
 ## Known blockers (post-merge OK)
 
-- `sim_step_physics` → `physics.runtime`
-- Full `lic build` on some game_dev smokes
+- `sim_step_physics` → `physics.runtime` (`sim_physics_runtime_deferred`)

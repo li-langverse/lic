@@ -1,0 +1,12 @@
+# Spin-up: game with arbitrary physics only (inverse gravity, teleports).
+import sim
+import physics.custom
+
+def main() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  if sim_custom_physics_stack_smoke() != 0:
+    return 1
+  return physics_custom_arbitrary_stack_smoke()

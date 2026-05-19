@@ -111,7 +111,8 @@ chmod +x "$ROOT/scripts/check-master-plan-gates.sh"
 
 li_phase "World Studio / Li Engine"
 chmod +x "$ROOT/scripts/ci-world-studio.sh" "$ROOT/scripts/lis" \
-  "$ROOT/scripts/lis-new-world-studio.sh" "$ROOT/scripts/build-studio-binary.sh"
+  "$ROOT/scripts/lis-new-world-studio.sh" "$ROOT/scripts/build-studio-binary.sh" \
+  "$ROOT/scripts/check-world-studio-gates.sh"
 "$ROOT/scripts/ci-world-studio.sh"
 
 li_gate_ok "continuous integration"

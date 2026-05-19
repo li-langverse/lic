@@ -40,3 +40,9 @@ id = "automotive"
 title = "Racing / automotive"
 profile = "sim_profile_automotive"
 imports = ["studio", "sim", "sim.automotive"]
+
+[[templates]]
+id = "game_unphysical"
+title = "Game — arbitrary physics only"
+profile = "sim_law_mode_arbitrary"
+imports = ["sim", "physics.custom"]

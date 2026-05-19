@@ -1,6 +1,6 @@
 # PH-world-studio-program — master tracker
 
-**Status:** In progress (impl-17 on `feat/world-studio-impl-1`) — **ready for draft PR**  
+**Status:** In progress (impl-18 on `feat/world-studio-impl-1`) — **ready for draft PR**  
 **Vision:** [world-studio-vision.md](world-studio-vision.md)  
 **Progress report:** [PH-world-studio-progress-report.md](PH-world-studio-progress-report.md) ← **read this for sprint status**
 
@@ -94,6 +94,10 @@ Cross-cutting program IDs. Implementation order respects dependencies in the vis
 | PH-VOXEL + sim.additive composable | Done |
 | studio.adaptive + drug stage composable | Done |
 | **60 composable** gates | Done |
+| PH-PHYS-CUSTOM + sim arbitrary full stack composable | Done |
+| scene+render+player client stack composable | Done |
+| robotics+automotive cross-profile composable | Done |
+| **63 composable** gates | Done |
 | MMO-5 WebSocket stubs (`net.httpd`) | Done |
 | MMO-6 `world_checkpoint_mmo_stub` | Done |
 | BIOENG-2 construct registry | Done |

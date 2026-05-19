@@ -20,10 +20,10 @@ type CustomLawDesc = object
 
 def li_physics_custom_version() -> int
   requires true
-  ensures result == 1
+  ensures result == 2
   decreases 0
 =
-  return 1
+  return 2
 
 def physics_law_mode_realistic() -> int
   requires true
@@ -152,6 +152,18 @@ def physics_custom_inverse_gravity_smoke() -> int
   custom_law_step_inverse_gravity(s, 1.0 / 60.0)
   if s.vy <= 0.0:
     return 1
+  return 0
+
+def physics_custom_arbitrary_stack_smoke() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  if physics_custom_inverse_gravity_smoke() != 0:
+    return 1
+  var d: CustomLawDesc = custom_law_desc_for_builtin(custom_law_builtin_inverse_gravity())
+  if d.conserve_energy != 0:
+    return 2
   return 0
 
 def custom_law_user_register_stub(law_id: int, conserve_energy: int) -> int

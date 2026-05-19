@@ -1,7 +1,7 @@
 # World Studio / Li Engine — progress report
 
 **Branch:** `feat/world-studio-impl-1`  
-**Sprint:** impl-17 (2026-05)  
+**Sprint:** impl-18 (2026-05)  
 **Tracker:** [PH-world-studio-program.md](PH-world-studio-program.md)  
 **PR summary:** [PR-world-studio-impl-summary.md](PR-world-studio-impl-summary.md)
 
@@ -12,55 +12,54 @@
 | Metric | Value |
 |--------|--------|
 | **Packages** | 28 |
-| **Composable gates** | **60 / 60 pass** ✅ |
+| **Composable gates** | **63 / 63 pass** ✅ |
 | **Game dev smokes** | 6 parse_ok |
-| **Sprints** | impl-1 → **impl-17** |
+| **Sprints** | impl-1 → **impl-18** |
 | **Blocked** | `sim_step_physics` |
 | **Merge** | ⬜ open PR → `main` |
 
 ---
 
-## Sprint impl-17
+## Sprint impl-18
 
 | Deliverable | Track | State |
 |-------------|-------|--------|
-| `chem_litl_dft_smoke` + `import_drug_chem_litl` | PH-DRUG / PH-QM | ✅ |
-| `voxel_additive_smoke` + `import_voxel_additive` | PH-VOXEL / PH-AM | ✅ |
-| `studio_adaptive_for_drug_stage_stub` composable | PH-UX / PH-DRUG | ✅ |
+| `import_sim_custom_physics_full` | PH-PHYS-CUSTOM | ✅ |
+| `import_scene_render_player` | PH-GD client stack | ✅ |
+| `import_robotics_automotive` | PH-ROBO / automotive | ✅ |
 
 ---
 
-## Sprint impl-16 (shipped)
+## Sprint impl-17 (shipped)
 
 | Deliverable | Track | State |
 |-------------|-------|--------|
-| BIOENG-1 LITL+DBTL composable | BIOENG-1 | ✅ |
-| PH-ML job graph | PH-ML | ✅ |
-| MMO deploy dev profile | MMO-3 | ✅ |
+| drug + chem LITL DFT | PH-DRUG / PH-QM | ✅ |
+| voxel + additive | PH-VOXEL / PH-AM | ✅ |
+| studio.adaptive drug panels | PH-UX | ✅ |
 
 ---
 
 ## Program progress
 
-| Program | ~% | Change (impl-17) |
+| Program | ~% | Change (impl-18) |
 |---------|-----|------------------|
-| **PH-DRUG** | **48%** | chem DFT LITL hook |
-| **PH-QM** | **18%** | geometry + tagged DFT smoke |
-| **PH-VOXEL** | **22%** | additive cross-profile |
-| **PH-AM** | **20%** | voxel export stub |
-| **PH-UX** | **25%** | adaptive drug panels |
+| **PH-PHYS-CUSTOM** | **55%** | full sim+custom stack |
+| **PH-GD** | **70%** | scene+render+player |
+| **PH-ROBO** | **30%** | robotics+automotive composable |
+| **PH-SIM** | **50%** | custom physics stack smoke |
 
 ---
 
 ## Phase completion tables
 
-### PH-DRUG / PH-UX / PH-VOXEL
+### PH-PHYS-CUSTOM / PH-GD / PH-ROBO
 
 | Phase | State |
 |-------|--------|
-| DRUG LITL + chem DFT | ✅ composable |
-| **PH-UX** adaptive drug panels | ✅ composable |
-| **PH-VOXEL** + additive | ✅ composable |
+| CUSTOM full stack composable | ✅ |
+| GD client (scene+render+player) | ✅ |
+| ROBO + automotive profiles | ✅ composable |
 
 ---
 
@@ -68,9 +67,9 @@
 
 | Sprint | Gates |
 |--------|-------|
-| impl-15 | 53 |
 | impl-16 | 57 |
-| **impl-17** | **60** |
+| impl-17 | 60 |
+| **impl-18** | **63** |
 
 ---
 
@@ -82,14 +81,14 @@
 
 ---
 
-## Next (impl-18)
+## Next (impl-19)
 
 1. Merge PR `feat/world-studio-impl-1` → `main`  
-2. `physics.custom` + `sim_step_arbitrary` full stack composable  
-3. `li-scene` + `li-render` + `li-player` client stack composable  
-4. PH-ROBO `sim.robotics` + automotive cross-profile composable  
+2. `sim.scientific` + `sim.drug_design` + chem TDDFT composable  
+3. `physics.relativity` + `sim` profile cross-gate  
+4. PH-PUB publish + bioeng scorecard leaderboard composable  
 5. `sim_step_physics` when cross-package types land  
 
 ---
 
-*impl-17 · `feat/world-studio-impl-1`*
+*impl-18 · `feat/world-studio-impl-1`*

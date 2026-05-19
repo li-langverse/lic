@@ -234,3 +234,18 @@ def sim_mmo_profile_step_smoke() -> int
   if w.profile != sim_profile_mmo():
     return 2
   return 0
+
+# PH-PHYS-CUSTOM full stack (pairs with physics.custom in composable gate).
+def sim_custom_physics_stack_smoke() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  if sim_arbitrary_law_smoke() != 0:
+    return 1
+  var w: SimWorld = sim_world_new(1.0 / 60.0, 1)
+  sim_set_law_mode(w, sim_law_mode_arbitrary(), 1)
+  sim_step_arbitrary(w)
+  if w.custom_law_id != 1:
+    return 2
+  return 0

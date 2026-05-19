@@ -797,6 +797,24 @@ file = "composable/import_studio_adaptive_drug.li"
 outcome = "compile_ok"
 note = "PH-UX studio.adaptive + drug LITL stages"
 
+[[tests]]
+suite = "composable"
+file = "composable/import_sim_custom_physics_full.li"
+outcome = "compile_ok"
+note = "PH-PHYS-CUSTOM + sim_step_arbitrary full stack"
+
+[[tests]]
+suite = "composable"
+file = "composable/import_scene_render_player.li"
+outcome = "compile_ok"
+note = "PH-GD scene+render+player client stack"
+
+[[tests]]
+suite = "composable"
+file = "composable/import_robotics_automotive.li"
+outcome = "compile_ok"
+note = "PH-ROBO robotics + automotive cross-profile"
+
 # composable/import_physics_runtime — enable when cross-package PhysicsWorld types resolve
 # stdlib_coverage/build_std_csv — enable when std.csv module resolves (PH-IO-4)
 

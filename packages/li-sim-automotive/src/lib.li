@@ -7,10 +7,10 @@ type AutomotiveWorld = object
 
 def li_sim_automotive_version() -> int
   requires true
-  ensures result == 1
+  ensures result == 2
   decreases 0
 =
-  return 1
+  return 2
 
 def automotive_world_new() -> AutomotiveWorld
   requires true
@@ -38,3 +38,17 @@ def automotive_load_map_stub(world: AutomotiveWorld) -> unit
   decreases 0
 =
   world.map_loaded = 1
+
+def automotive_smoke() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  var w: AutomotiveWorld = automotive_world_new()
+  automotive_load_map_stub(w)
+  automotive_sensor_tick(w)
+  if w.map_loaded != 1:
+    return 1
+  if w.sensor_frames != 1:
+    return 2
+  return 0

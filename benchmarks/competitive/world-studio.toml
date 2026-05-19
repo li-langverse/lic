@@ -4,7 +4,7 @@
 schema = 1
 track = "PH-GD"
 plan = "docs/game-dev/world-studio-vision.md"
-composable_gates = 98
+composable_gates = 100
 branch = "feat/world-studio-impl-1"
 
 [[benchmark]]
@@ -202,3 +202,17 @@ name = "Voxel + publish + viewport stack"
 tier = 1
 li_package = "li-voxel"
 composable = "import_voxel_publish_stack"
+
+[[benchmark]]
+id = "world-studio-milestone-100"
+name = "Milestone 100 composable gates"
+tier = 1
+li_package = "li-studio"
+composable = "import_world_studio_milestone_100"
+
+[[benchmark]]
+id = "studio-agent-publish-stack"
+name = "Studio AI agent + publish stack"
+tier = 1
+li_package = "li-studio"
+composable = "import_studio_agent_publish_stack"

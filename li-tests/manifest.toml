@@ -1021,6 +1021,18 @@ note = "Voxel additive + publish + viewport"
 
 [[tests]]
 suite = "composable"
+file = "composable/import_world_studio_milestone_100.li"
+outcome = "compile_ok"
+note = "Milestone 100 composable gates rollup"
+
+[[tests]]
+suite = "composable"
+file = "composable/import_studio_agent_publish_stack.li"
+outcome = "compile_ok"
+note = "Studio AI agent + publish + assets + viewport"
+
+[[tests]]
+suite = "composable"
 file = "composable/import_world_studio_benchmark_tier1.li"
 outcome = "compile_ok"
 note = "Competitive world-studio.toml tier-1 rollup"

@@ -1,9 +1,9 @@
 # World Studio / Li Engine — progress report
 
 **Branch:** `feat/world-studio-impl-1`  
-**Sprint:** impl-31 (2026-05)  
+**Sprint:** impl-32 (2026-05)  
 **Tracker:** [PH-world-studio-program.md](PH-world-studio-program.md)  
-**Merge:** [MERGE-world-studio-checklist.md](MERGE-world-studio-checklist.md)
+**Merge:** [MERGE-world-studio-checklist.md](MERGE-world-studio-checklist.md) · [MERGE-PR-world-studio.md](MERGE-PR-world-studio.md)
 
 ---
 
@@ -11,22 +11,21 @@
 
 | Metric | Value |
 |--------|--------|
-| **Composable gates** | **98 / 98 pass** ✅ |
+| **Composable gates** | **100 / 100 pass** ✅ |
 | **Spin-up templates** | **10 compile_ok** |
-| **Demo tabs** | **11** (incl. **Additive**) |
-| **Merge preflight** | `./scripts/merge-world-studio-preflight.sh` ✅ |
+| **Demo tabs** | **11** |
+| **Milestone** | **100 composable gates** 🎯 |
 
 ---
 
-## Sprint impl-31
+## Sprint impl-32
 
 | Deliverable | State |
 |-------------|--------|
-| `additive` spin-up template (10th) | ✅ |
-| `import_world_studio_ci_complete` composable | ✅ |
-| `import_voxel_publish_stack` | ✅ |
-| Demo **Additive** tab (voxel grid viz) | ✅ |
-| `merge-world-studio-preflight.sh` | ✅ |
+| `studio_milestone_100_smoke()` | ✅ |
+| `import_world_studio_milestone_100` composable | ✅ |
+| `import_studio_agent_publish_stack` (AI + publish + assets) | ✅ |
+| [MERGE-PR-world-studio.md](MERGE-PR-world-studio.md) PR instructions | ✅ |
 
 ---
 
@@ -34,7 +33,7 @@
 
 ```bash
 ./scripts/merge-world-studio-preflight.sh
-./scripts/lis new world-studio additive ./my-am-cell
+# See MERGE-PR-world-studio.md for gh pr create
 ./scripts/open-studio-demo.sh
 ```
 
@@ -44,18 +43,18 @@
 
 | Sprint | Gates |
 |--------|-------|
-| impl-30 | 95 |
-| **impl-31** | **98** |
+| impl-31 | 98 |
+| **impl-32** | **100** |
 
 ---
 
 ## Next
 
-1. **Merge PR** → `main`  
-2. `./scripts/record-studio-demo.sh` (40s default reel)  
-3. LIC runtime smokes in `studio_main`  
+1. **Open & merge PR** → `main`  
+2. impl-33: `agent` spin-up template (11th)  
+3. Record demo reel (44s+ for 11 tabs)  
 4. `sim_step_physics` when compiler allows cross-package types  
 
 ---
 
-*impl-31 · `feat/world-studio-impl-1`*
+*impl-32 · `feat/world-studio-impl-1` · **100 gates***

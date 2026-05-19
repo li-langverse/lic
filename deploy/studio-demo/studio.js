@@ -437,7 +437,8 @@ fetch("status.json")
     if (st) {
       const gpu = s.gpu_viewport ? " · GPU viewport" : "";
       const pub = s.publish_template ? " · publish" : "";
-      st.textContent = `lic ✓ · ${s.sprint} · ${s.branch}${gpu}${pub}`;
+      const m100 = s.milestone_composable_gates === 100 ? " · 100 gates" : "";
+      st.textContent = `lic ✓ · ${s.sprint} · ${s.branch}${gpu}${pub}${m100}`;
     }
   })
   .catch(() => {});

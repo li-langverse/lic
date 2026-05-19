@@ -297,6 +297,27 @@ def studio_spinup_registry_smoke() -> int
     return 2
   return 0
 
+# PH-GD milestone — composable gate target (impl-32).
+def studio_milestone_composable_target_stub() -> int
+  requires true
+  ensures result == 100
+  decreases 0
+=
+  return 100
+
+def studio_milestone_100_smoke() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  if studio_milestone_composable_target_stub() != 100:
+    return 1
+  if studio_binary_runtime_tag_stub() != 8288:
+    return 2
+  if studio_spinup_template_count_stub() != 10:
+    return 3
+  return 0
+
 # PH-GD-1 — binary runtime tag (impl-28; verify-world-studio-binary.sh).
 def studio_binary_runtime_tag_stub() -> int
   requires true

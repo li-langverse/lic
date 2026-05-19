@@ -1,7 +1,7 @@
 /* Li World Studio — interactive demo showcase (visual prototype). */
 const canvas = document.getElementById("viewport");
 const ctx = canvas.getContext("2d");
-const demos = ["rocket", "racing", "robot", "drug", "bioeng", "mmo"];
+const demos = ["rocket", "racing", "robot", "drug", "bioeng", "mmo", "unphysical"];
 let active = "rocket";
 let tick = 0;
 let autoReel = false;
@@ -44,6 +44,12 @@ const meta = {
     profile: "sim_profile_mmo + store.realtime",
     panel: "Realm tick · WS session bind · postgres presence",
     nodes: ["Gateway", "Shard0", "Shard1", "PlayerSessions"],
+  },
+  unphysical: {
+    title: "Unphysical game — inverse gravity + teleports",
+    profile: "sim_law_mode_arbitrary + physics.custom",
+    panel: "Spin-up: game_unphysical · custom_law_id · no tier-2 runtime yet",
+    nodes: ["World", "InverseGravity", "TeleportZone", "ArbitraryLaw"],
   },
 };
 
@@ -207,6 +213,41 @@ function drawBioeng(t) {
   ctx.fillText("Bioreactor T=37°C · DBTL iteration " + Math.floor(t / 60), 24, h - 50);
 }
 
+function drawUnphysical(t) {
+  const w = canvas.width;
+  const h = canvas.height;
+  const grad = ctx.createLinearGradient(0, h, 0, 0);
+  grad.addColorStop(0, "#161b22");
+  grad.addColorStop(1, "#0d1117");
+  ctx.fillStyle = grad;
+  ctx.fillRect(0, 0, w, h);
+  ctx.strokeStyle = "#30363d";
+  ctx.setLineDash([8, 8]);
+  ctx.strokeRect(40, h * 0.72, w - 80, 2);
+  ctx.setLineDash([]);
+  ctx.fillStyle = "#8b949e";
+  ctx.font = "12px monospace";
+  ctx.fillText("ground (objects fall up)", 48, h * 0.72 - 8);
+  const n = 24;
+  for (let i = 0; i < n; i++) {
+    const px = 60 + (i * 47 + t * 3) % (w - 120);
+    const py = h * 0.65 - ((t * 2 + i * 31) % 280);
+    ctx.fillStyle = i % 4 === 0 ? "#a371f7" : "#58a6ff";
+    ctx.beginPath();
+    ctx.arc(px, py, 6 + (i % 3), 0, Math.PI * 2);
+    ctx.fill();
+  }
+  ctx.fillStyle = "#f0883e";
+  ctx.fillRect(w * 0.5 - 40, h * 0.25, 80, 50);
+  ctx.fillStyle = "#fff";
+  ctx.font = "11px sans-serif";
+  ctx.textAlign = "center";
+  ctx.fillText("TELEPORT", w * 0.5, h * 0.25 + 30);
+  ctx.textAlign = "left";
+  ctx.fillStyle = "#3fb950";
+  ctx.fillText(`law_mode=arbitrary · custom_law_id=1`, 24, h - 40);
+}
+
 function drawMmo(t) {
   const w = canvas.width;
   const h = canvas.height;
@@ -245,6 +286,7 @@ const drawers = {
   drug: drawDrug,
   bioeng: drawBioeng,
   mmo: drawMmo,
+  unphysical: drawUnphysical,
 };
 
 function frame() {

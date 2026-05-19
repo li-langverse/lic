@@ -4,7 +4,7 @@
 schema = 1
 track = "PH-GD"
 plan = "docs/game-dev/world-studio-vision.md"
-composable_gates = 78
+composable_gates = 80
 branch = "feat/world-studio-impl-1"
 
 [[benchmark]]
@@ -62,3 +62,17 @@ name = "PH-SIM world studio integration stack"
 tier = 1
 li_package = "li-sim"
 composable = "import_sim_world_studio_stack"
+
+[[benchmark]]
+id = "studio-spinup-registry"
+name = "Spin-up template registry (7 templates)"
+tier = 1
+li_package = "li-studio"
+composable = "import_studio_spinup_registry"
+
+[[benchmark]]
+id = "world-studio-tier1-rollup"
+name = "Tier-1 competitive benchmark rollup"
+tier = 1
+li_package = "li-studio"
+composable = "import_world_studio_benchmark_tier1"

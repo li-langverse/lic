@@ -1,7 +1,7 @@
 # World Studio / Li Engine — progress report
 
 **Branch:** `feat/world-studio-impl-1`  
-**Sprint:** impl-24 (2026-05)  
+**Sprint:** impl-25 (2026-05)  
 **Tracker:** [PH-world-studio-program.md](PH-world-studio-program.md)  
 **Merge:** [MERGE-world-studio-checklist.md](MERGE-world-studio-checklist.md)
 
@@ -11,7 +11,7 @@
 
 | Metric | Value |
 |--------|--------|
-| **Composable gates** | **78 / 78 pass** ✅ |
+| **Composable gates** | **80 / 80 pass** ✅ |
 | **Game dev** | **12 parse_ok** |
 | **Vertical builds** | **7** |
 | **Spin-up templates** | **7 compile_ok** |
@@ -22,6 +22,15 @@
 
 ---
 
+## Sprint impl-25
+
+| Deliverable | State |
+|-------------|--------|
+| `studio_spinup_registry_smoke()` (7 templates) | ✅ |
+| `import_studio_spinup_registry` + tier-1 benchmark composable | ✅ |
+| Demo GUI **Unphysical** tab (`deploy/studio-demo/`) | ✅ |
+| Competitive registry entries for impl-25 gates | ✅ |
+
 ## Sprint impl-24
 
 | Deliverable | State |
@@ -31,7 +40,6 @@
 | `import_spinup_unphysical` + `import_sim_world_studio_stack` composables | ✅ |
 | `benchmarks/competitive/world-studio.toml` registry stub | ✅ |
 | `scripts/check-world-studio-gates.sh` pre-merge rollup | ✅ |
-| [MERGE-world-studio-checklist.md](MERGE-world-studio-checklist.md) impl-24 stats | ✅ |
 
 ---
 
@@ -53,17 +61,18 @@ python3 -m http.server 8765 --directory deploy/studio-demo
 | Sprint | Gates |
 |--------|-------|
 | impl-23 | 76 |
-| **impl-24** | **78** |
+| impl-24 | 78 |
+| **impl-25** | **80** |
 
 ---
 
 ## Next
 
 1. **Merge PR** → `main` ([checklist](MERGE-world-studio-checklist.md))  
-2. Demo GUI: `game_unphysical` tab + tier-1 benchmark composable (impl-25)  
+2. Native `world-studio` binary viewport (wire `li-render` beyond HTML demo)  
 3. Upstream `lis` package: native `new world-studio` subcommand  
 4. `sim_step_physics` when compiler allows cross-package types  
 
 ---
 
-*impl-24 · `feat/world-studio-impl-1`*
+*impl-25 · `feat/world-studio-impl-1`*

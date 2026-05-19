@@ -15,7 +15,9 @@ Agents drive **Li World Studio** and **Li Engine** via MCP tools, not ad-hoc she
 | `engine_sim_step` | Advance `sim` world N ticks (headless) |
 | `engine_studio_play` | Toggle `studio` play/pause on a project handle |
 | `engine_chem_stub` | Run `chem.dft_run_stub` for pipeline wiring tests |
-| `engine_export_print` | Call `sim_export_print_stub` → future STL/3MF/G-code |
+| `engine_export_print` | `additive_export_print_stub` via `import sim.additive` |
+| `engine_world_save` | `world_save_text_stub` on `WorldSnapshot` |
+| `engine_replay_push` | `sim_replay_push` for RL / regression |
 
 ## Safety
 

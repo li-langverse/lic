@@ -1,0 +1,45 @@
+# PKG-li-world — world snapshots and text save/load stubs (PH-GD-2).
+
+type WorldSnapshot = object
+  public tick: int
+  public checksum: int
+  public entity_count: int
+
+def li_world_version() -> int
+  requires true
+  ensures result == 1
+  decreases 0
+=
+  return 1
+
+def world_snapshot_new(tick: int, entity_count: int) -> WorldSnapshot
+  requires tick >= 0
+  requires entity_count >= 0
+  ensures result.tick == tick
+  ensures result.entity_count == entity_count
+  decreases tick
+=
+  var s: WorldSnapshot
+  s.tick = tick
+  s.entity_count = entity_count
+  s.checksum = tick * 31 + entity_count
+  return s
+
+# PH-GD-2 — serialized world text (format TBD; returns byte length stub).
+def world_save_text_stub(snap: WorldSnapshot) -> int
+  requires snap.tick >= 0
+  ensures result >= 0
+  decreases snap.tick
+=
+  return snap.checksum + snap.entity_count
+
+def world_load_text_stub(checksum: int) -> WorldSnapshot
+  requires checksum >= 0
+  ensures result.checksum == checksum
+  decreases checksum
+=
+  var s: WorldSnapshot
+  s.tick = 0
+  s.entity_count = 0
+  s.checksum = checksum
+  return s

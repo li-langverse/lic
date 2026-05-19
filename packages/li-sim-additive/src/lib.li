@@ -1,0 +1,46 @@
+# PKG-li-sim-additive — AM simulation + export to printer (PH-AM-0 stub).
+# Formats: 0=STL 1=3MF 2=G-code (see sim.export.print in vision).
+
+def li_sim_additive_version() -> int
+  requires true
+  ensures result == 1
+  decreases 0
+=
+  return 1
+
+def additive_format_stl() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0
+
+def additive_format_3mf() -> int
+  requires true
+  ensures result == 1
+  decreases 0
+=
+  return 1
+
+def additive_format_gcode() -> int
+  requires true
+  ensures result == 2
+  decreases 0
+=
+  return 2
+
+def additive_export_print_stub(format_tag: int, layer_count: int) -> int
+  requires format_tag >= 0
+  requires format_tag <= 2
+  requires layer_count > 0
+  ensures result == format_tag
+  decreases layer_count
+=
+  return format_tag
+
+def additive_preflight_stub(layer_count: int) -> int
+  requires layer_count > 0
+  ensures result == 1
+  decreases layer_count
+=
+  return 1

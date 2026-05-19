@@ -1,6 +1,6 @@
 # PH-world-studio-program — master tracker
 
-**Status:** In progress (impl-2 on `feat/world-studio-impl-1`)  
+**Status:** In progress (impl-3 on `feat/world-studio-impl-1`)  
 **Vision:** [world-studio-vision.md](world-studio-vision.md)
 
 Cross-cutting program IDs. Implementation order respects dependencies in the vision doc.
@@ -32,4 +32,8 @@ Cross-cutting program IDs. Implementation order respects dependencies in the vis
 | `li-tests/composable/import_sim` / `import_studio` | Done |
 | `targets/manifest.toml` (PH-PORT-0) | Done |
 | `sim_step` → `physics.runtime` | Blocked — imported types in fields/locals |
+| `li-world` save/load stubs (PH-GD-2) | Done |
+| `li-sim-additive` export stubs (PH-AM-0) | Done |
+| SIM-2 replay buffer in `li-sim` | Done |
+| Studio viewport/outliner hooks | Done |
 | MCP `li-engine` server | Docs: [agent-mcp-sketch.md](agent-mcp-sketch.md) |

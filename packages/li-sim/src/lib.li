@@ -1,28 +1,68 @@
-# PKG-li-sim — unified simulation step API (PH-SIM-1).
-# sim_step_physics lands when cross-package types resolve in object fields / locals (compiler in flux).
+# PKG-li-sim — unified simulation step API (PH-SIM-1, SIM-2 replay).
+# sim_step_physics → physics.runtime when cross-package types stabilize.
 
 type SimWorld = object
   public tick: int
   public dt: float
   public headless: int
+  public profile: int
+
+type SimReplay = object
+  public capacity: int
+  public count: int
+  public last_tick: int
 
 def li_sim_version() -> int
+  requires true
+  ensures result == 2
+  decreases 0
+=
+  return 2
+
+def sim_profile_game() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0
+
+def sim_profile_rl() -> int
   requires true
   ensures result == 1
   decreases 0
 =
   return 1
 
+def sim_profile_automotive() -> int
+  requires true
+  ensures result == 2
+  decreases 0
+=
+  return 2
+
 def sim_world_new(dt: float, headless: int) -> SimWorld
   requires dt > 0.0
   ensures result.tick == 0
   ensures result.dt == dt
+  ensures result.profile == 0
   decreases 0
 =
   var w: SimWorld
   w.tick = 0
   w.dt = dt
   w.headless = headless
+  w.profile = sim_profile_game()
+  return w
+
+def sim_world_with_profile(dt: float, headless: int, profile: int) -> SimWorld
+  requires dt > 0.0
+  requires profile >= 0
+  requires profile <= 2
+  ensures result.profile == profile
+  decreases profile
+=
+  var w: SimWorld = sim_world_new(dt, headless)
+  w.profile = profile
   return w
 
 def sim_reset(world: SimWorld) -> unit
@@ -39,11 +79,33 @@ def sim_step(world: SimWorld) -> unit
 =
   world.tick = world.tick + 1
 
-# PH-AM-0 — export hook stub (STL/3MF/G-code pipeline in li-sim-additive).
-def sim_export_print_stub(format_tag: int) -> int
-  requires format_tag >= 0
-  requires format_tag <= 2
-  ensures result == format_tag
-  decreases format_tag
+def sim_replay_new(capacity: int) -> SimReplay
+  requires capacity > 0
+  ensures result.capacity == capacity
+  ensures result.count == 0
+  ensures result.last_tick == 0
+  decreases capacity
 =
-  return format_tag
+  var r: SimReplay
+  r.capacity = capacity
+  r.count = 0
+  r.last_tick = 0
+  return r
+
+def sim_replay_push(replay: SimReplay, tick: int) -> unit
+  requires replay.capacity > 0
+  requires tick >= 0
+  ensures replay.last_tick == tick
+  decreases replay.count
+=
+  replay.count = replay.count + 1
+  if replay.count > replay.capacity:
+    replay.count = replay.capacity
+  replay.last_tick = tick
+
+def sim_replay_last_tick(replay: SimReplay) -> int
+  requires true
+  ensures result == replay.last_tick
+  decreases 0
+=
+  return replay.last_tick

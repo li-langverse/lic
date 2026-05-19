@@ -1,0 +1,9 @@
+# std/world — world save/load facade (PH-GD-2).
+# Prefer: import world  |  workspace packages/li-world.
+
+def world_std_tag() -> int
+  requires true
+  ensures result == 1
+  decreases 0
+=
+  return 1

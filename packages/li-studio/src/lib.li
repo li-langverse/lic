@@ -1,24 +1,30 @@
-# PKG-li-studio — World Studio shell API (PH-GD-1 stub).
+# PKG-li-studio — World Studio shell API (PH-GD-1).
 
 type StudioProject = object
   public name: int
   public playing: int
+  public viewport_ticks: int
+  public outliner_count: int
 
 def li_studio_version() -> int
   requires true
-  ensures result == 1
+  ensures result == 2
   decreases 0
 =
-  return 1
+  return 2
 
 def studio_project_new() -> StudioProject
   requires true
   ensures result.playing == 0
+  ensures result.viewport_ticks == 0
+  ensures result.outliner_count == 0
   decreases 0
 =
   var p: StudioProject
   p.name = 0
   p.playing = 0
+  p.viewport_ticks = 0
+  p.outliner_count = 0
   return p
 
 def studio_play(project: StudioProject) -> unit
@@ -34,3 +40,17 @@ def studio_pause(project: StudioProject) -> unit
   decreases 0
 =
   project.playing = 0
+
+def studio_viewport_tick(project: StudioProject) -> unit
+  requires project.playing == 1
+  ensures project.viewport_ticks >= 1
+  decreases project.viewport_ticks
+=
+  project.viewport_ticks = project.viewport_ticks + 1
+
+def studio_outliner_set_count(project: StudioProject, count: int) -> unit
+  requires count >= 0
+  ensures project.outliner_count == count
+  decreases count
+=
+  project.outliner_count = count

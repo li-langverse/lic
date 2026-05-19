@@ -1,0 +1,25 @@
+# PH-GD-2 smoke — world snapshot save/load stub.
+
+type WorldSnapshot = object
+  public tick: int
+  public checksum: int
+
+def world_save_text_stub(snap: WorldSnapshot) -> int
+  requires snap.tick >= 0
+  ensures result >= 0
+  decreases snap.tick
+=
+  return snap.checksum
+
+def main() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  var s: WorldSnapshot
+  s.tick = 1
+  s.checksum = 42
+  var n: int = world_save_text_stub(s)
+  if n != 42:
+    return 1
+  return 0

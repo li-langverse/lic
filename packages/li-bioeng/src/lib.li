@@ -14,10 +14,10 @@ type BioengPipeline = object
 
 def li_bioeng_version() -> int
   requires true
-  ensures result == 6
+  ensures result == 7
   decreases 0
 =
-  return 6
+  return 7
 
 # BIOENG-3 — assay batch ingest (stubs).
 type AssayBatch = object
@@ -324,6 +324,32 @@ def bioeng_regulatory_smoke() -> int
   if e.audit_event_id != 9001:
     return 1
   if e.model_card_hash != 156:
+    return 2
+  return 0
+
+# BIOENG-7 — GPU surrogate batch job (wired to import gpu in composable gate).
+def bioeng_gpu_batch_size_stub() -> int
+  requires true
+  ensures result == 64
+  decreases 0
+=
+  return 64
+
+def bioeng_gpu_surrogate_job_id() -> int
+  requires true
+  ensures result == 7001
+  decreases 0
+=
+  return 7001
+
+def bioeng_gpu_surrogate_smoke() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  if bioeng_gpu_batch_size_stub() != 64:
+    return 1
+  if bioeng_gpu_surrogate_job_id() != 7001:
     return 2
   return 0
 

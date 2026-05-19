@@ -78,6 +78,10 @@ Cross-cutting program IDs. Implementation order respects dependencies in the vis
 | BIOENG-6 `RegulatoryExport` stub | Done |
 | `studio_gen_asset_hook_stub` + assets composable | Done |
 | **47 composable** gates | Done |
+| MMO-7 anticheat + `ComplianceAuditRow` | Done |
+| BIOENG-7 `gpu_batch_score` surrogate bridge | Done |
+| PH-PUB `PublishBundle` + content hash | Done |
+| **50 composable** gates | Done |
 | MMO-5 WebSocket stubs (`net.httpd`) | Done |
 | MMO-6 `world_checkpoint_mmo_stub` | Done |
 | BIOENG-2 construct registry | Done |

@@ -61,7 +61,7 @@ Deliver a **competitive bioengineering vertical** inside Li World Studio / Li En
 | 4 | BIOENG-4 | **Competitive scorecard** — benchmark table vs registry | PH-PUB | ✅ stub |
 | 5 | BIOENG-5 | Bioreactor hook → `sim.scientific` + `heat_equation` tier-2 | PH-SCI-1 | ✅ stub |
 | 6 | BIOENG-6 | Regulatory export (audit trail, model cards) | PH-COMPLY | ✅ stub |
-| 7 | BIOENG-7 | GPU surrogates + `li-gpu` batch scoring | PH-HW, PH-ML |
+| 7 | BIOENG-7 | GPU surrogates + `li-gpu` batch scoring | PH-HW, PH-ML | ✅ stub |
 
 ---
 

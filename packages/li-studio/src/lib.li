@@ -8,10 +8,10 @@ type StudioProject = object
 
 def li_studio_version() -> int
   requires true
-  ensures result == 4
+  ensures result == 5
   decreases 0
 =
-  return 4
+  return 5
 
 def studio_project_new() -> StudioProject
   requires true
@@ -86,6 +86,39 @@ def studio_publish_bundle_stub(file_count: int) -> int
   decreases file_count
 =
   return file_count
+
+# PH-PUB — publication bundle with content hash (repro bundles).
+type PublishBundle = object
+  public file_count: int
+  public content_hash: int
+  public dpi: int
+
+def studio_publish_bundle_hash_stub(file_count: int, dpi: int) -> PublishBundle
+  requires file_count > 0
+  requires dpi >= 72
+  requires dpi <= 600
+  ensures result.file_count == file_count
+  ensures result.dpi == dpi
+  ensures result.content_hash >= 0
+  decreases file_count
+=
+  var b: PublishBundle
+  b.file_count = file_count
+  b.dpi = dpi
+  b.content_hash = file_count * 997 + dpi
+  return b
+
+def studio_publish_smoke() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  var b: PublishBundle = studio_publish_bundle_hash_stub(3, 300)
+  if b.content_hash != 3291:
+    return 1
+  if studio_publish_figure_stub(b.dpi) != 300:
+    return 2
+  return 0
 
 # PH-MMO-3 — deploy wizard status (pairs with deploy/mmo/realm.toml).
 def studio_render_scene_hook_stub(viewport_frames: int, scene_nodes: int) -> int

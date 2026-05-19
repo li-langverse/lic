@@ -15,10 +15,10 @@ type PlayerSession = object
 
 def li_mmo_version() -> int
   requires true
-  ensures result == 5
+  ensures result == 6
   decreases 0
 =
-  return 5
+  return 6
 
 # MMO-7 partial — server-side validation hook (full anti-cheat later).
 def mmo_anticheat_validate_tick_stub(tick: int, checksum: int) -> int
@@ -251,4 +251,42 @@ def mmo_shard_tick_smoke() -> int
   mmo_shard_tick_stub(r)
   if r.tick != 1:
     return 1
+  return 0
+
+# MMO-7 — compliance audit row (pairs with PH-COMPLY / bioeng regulatory).
+type ComplianceAuditRow = object
+  public tick: int
+  public player_id: int
+  public verdict: int
+  public audit_code: int
+
+def mmo_compliance_audit_stub(tick: int, player_id: int, verdict: int) -> ComplianceAuditRow
+  requires tick >= 0
+  requires player_id > 0
+  requires verdict >= 0
+  requires verdict <= 1
+  ensures result.tick == tick
+  ensures result.player_id == player_id
+  ensures result.verdict == verdict
+  decreases tick
+=
+  var row: ComplianceAuditRow
+  row.tick = tick
+  row.player_id = player_id
+  row.verdict = verdict
+  row.audit_code = tick * 31 + player_id
+  return row
+
+def mmo_anticheat_compliance_smoke() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  if mmo_anticheat_validate_tick_stub(10, 170) != 1:
+    return 1
+  var row: ComplianceAuditRow = mmo_compliance_audit_stub(10, 42, 1)
+  if row.audit_code != 352:
+    return 2
+  if row.verdict != 1:
+    return 3
   return 0

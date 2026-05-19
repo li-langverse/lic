@@ -1,7 +1,7 @@
 # World Studio / Li Engine — progress report
 
 **Branch:** `feat/world-studio-impl-1`  
-**Sprint:** impl-13 (2026-05)  
+**Sprint:** impl-14 (2026-05)  
 **Tracker:** [PH-world-studio-program.md](PH-world-studio-program.md)  
 **PR summary:** [PR-world-studio-impl-summary.md](PR-world-studio-impl-summary.md)
 
@@ -12,44 +12,43 @@
 | Metric | Value |
 |--------|--------|
 | **Packages** | 28 |
-| **Composable gates** | **47 / 47 pass** ✅ |
+| **Composable gates** | **50 / 50 pass** ✅ |
 | **Game dev smokes** | 6 parse_ok |
-| **Sprints** | impl-1 → **impl-13** |
+| **Sprints** | impl-1 → **impl-14** |
 | **Blocked** | `sim_step_physics` |
 | **Merge** | ⬜ open PR → `main` |
 
 ---
 
-## Sprint impl-13
+## Sprint impl-14
 
 | Deliverable | Track | State |
 |-------------|-------|--------|
-| `WsSession` + `httpd_ws_session_*` bind | MMO-5 | ✅ |
-| `MmoWsBinding` + `mmo_ws_session_bind_smoke` | MMO-5 | ✅ |
-| `RegulatoryExport` + `bioeng_regulatory_*` | BIOENG-6 | ✅ |
-| `studio_gen_asset_hook_stub` + assets composable | PH-GD-4 / studio.gen | ✅ |
-| Composable: `import_mmo_ws_session`, `import_bioeng_regulatory`, `import_studio_gen_assets` | gates | ✅ |
+| `mmo_anticheat_compliance_smoke` + `ComplianceAuditRow` | MMO-7 | ✅ |
+| `gpu_batch_score_stub` + `bioeng_gpu_surrogate_*` | BIOENG-7 | ✅ |
+| `PublishBundle` + `studio_publish_bundle_hash_stub` | PH-PUB / GD-6 | ✅ |
+| Composable: anticheat, gpu surrogate, studio publish | gates | ✅ |
 
 ---
 
-## Sprint impl-12 (shipped)
+## Sprint impl-13 (shipped)
 
 | Deliverable | Track | State |
 |-------------|-------|--------|
-| `li-assets` package | PH-GD-4 | ✅ |
-| BIOENG-5 bioreactor + `sim.scientific` | BIOENG-5 | ✅ |
-| MMO shard tick + `sim_mmo_profile_step_smoke` | PH-MMO | ✅ |
+| WebSocket session bind | MMO-5 | ✅ |
+| BIOENG-6 regulatory export | BIOENG-6 | ✅ |
+| studio.gen + assets | PH-GD-4 | ✅ |
 
 ---
 
 ## Program progress
 
-| Program | ~% | Change (impl-13) |
+| Program | ~% | Change (impl-14) |
 |---------|-----|------------------|
-| **PH-MMO** | **82%** | WS session binding |
-| **PH-BIOENG** | **48%** | BIOENG-6 regulatory |
-| **PH-GD** | **62%** | studio.gen + assets |
-| **PH-AGENT** | 15% | — |
+| **PH-MMO** | **88%** | MMO-7 anticheat+compliance |
+| **PH-BIOENG** | **55%** | BIOENG-7 GPU surrogate |
+| **PH-GD** | **65%** | PH-PUB publish bundle |
+| **PH-HW** | **20%** | gpu batch score stub |
 | **PH-SIM** | 45% | — |
 
 ---
@@ -60,26 +59,22 @@
 
 | Phase | State |
 |-------|--------|
-| MMO-0…5 | ✅ |
-| **MMO-5** session bind | ✅ |
-| MMO-6 checkpoint | ✅ |
-| MMO-7 anticheat | 🟡 |
+| MMO-0…6 | ✅ |
+| **MMO-7** anticheat + compliance | ✅ stub |
 
 ### PH-BIOENG
 
 | Phase | State |
 |-------|--------|
-| BIOENG-0…5 | ✅ |
-| **BIOENG-6** regulatory | ✅ stub |
-| BIOENG-7 | ⬜ |
+| BIOENG-0…6 | ✅ |
+| **BIOENG-7** GPU surrogate | ✅ stub |
 
-### PH-GD
+### PH-GD / PH-PUB
 
 | Phase | State |
 |-------|--------|
 | GD-0…5, 7 | ✅ stub |
-| **GD-4** assets + studio.gen | ✅ |
-| GD-6 publish | 🟡 |
+| **GD-6 / PUB** publish bundle hash | ✅ stub |
 
 ---
 
@@ -87,9 +82,9 @@
 
 | Sprint | Gates |
 |--------|-------|
-| impl-11 | 41 |
 | impl-12 | 44 |
-| **impl-13** | **47** |
+| impl-13 | 47 |
+| **impl-14** | **50** |
 
 ---
 
@@ -101,14 +96,14 @@
 
 ---
 
-## Next (impl-14)
+## Next (impl-15)
 
 1. Merge PR `feat/world-studio-impl-1` → `main`  
-2. MMO-7 anticheat + compliance audit composable  
-3. BIOENG-7 GPU surrogate scoring stub (`li-gpu` bridge)  
-4. `studio_publish_*` + PH-PUB bundle hash  
+2. PH-AGENT diagnose gate composable (`studio.ai` + JSON bridge)  
+3. `world` realm persistence + `store.realtime` replay composable  
+4. PH-DRUG full `lab_loop_*` composable (borrowck-safe path)  
 5. `sim_step_physics` when cross-package types land  
 
 ---
 
-*impl-13 · `feat/world-studio-impl-1`*
+*impl-14 · `feat/world-studio-impl-1`*

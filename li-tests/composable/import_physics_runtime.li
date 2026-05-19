@@ -1,4 +1,4 @@
-import li_std_physics_rigid
+import physics.rigid
 
 def main() -> int
   requires true

@@ -333,6 +333,13 @@ std::vector<std::filesystem::path> local_module_candidates(const std::filesystem
 
 std::optional<std::filesystem::path> resolve_module_path(const std::string& module,
                                                          const std::filesystem::path& importer) {
+  // Workspace packages (import_name in li.toml) win over std facades for the same path.
+  if (const auto ws = find_workspace_toml(importer)) {
+    if (auto p = workspace_package_entry(*ws, module)) {
+      return p;
+    }
+  }
+
   if (const auto std_mod = easy_std_module(module)) {
     const std::filesystem::path p = std_module_to_path(*std_mod);
     if (std::filesystem::exists(p)) {
@@ -346,12 +353,6 @@ std::optional<std::filesystem::path> resolve_module_path(const std::string& modu
       return p;
     }
     return std::nullopt;
-  }
-
-  if (const auto ws = find_workspace_toml(importer)) {
-    if (auto p = workspace_package_entry(*ws, module)) {
-      return p;
-    }
   }
 
   for (const auto& c : local_module_candidates(importer, module)) {

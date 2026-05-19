@@ -178,21 +178,21 @@ def vec3_normalize(a: Vec3) -> Vec3
   ensures true
   decreases 0
 =
-  var v: Vec3
-  v.x = a.x
-  v.y = a.y
-  v.z = a.z
-  var l: float = vec3_len(v)
+  var ax: float = a.x
+  var ay: float = a.y
+  var az: float = a.z
+  var l: float = li_rt_sqrt(ax * ax + ay * ay + az * az)
   if l == 0.0:
     return vec3(0.0, 0.0, 0.0)
-  return vec3_scale(v, 1.0 / l)
+  return vec3(ax / l, ay / l, az / l)
 
 def vec3_lerp(a: Vec3, b: Vec3, t: float) -> Vec3
   requires true
   ensures true
   decreases 0
 =
-  return vec3_add(vec3_scale(a, 1.0 - t), vec3_scale(b, t))
+  var one_t: float = 1.0 - t
+  return vec3(a.x * one_t + b.x * t, a.y * one_t + b.y * t, a.z * one_t + b.z * t)
 
 def quat_identity() -> Quat
   requires true

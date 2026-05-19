@@ -1,6 +1,6 @@
 # `lic diagnose` → Studio AI bridge (PH-AGENT-1)
 
-**Status:** Schema stub — wire when `lic diagnose --format=json` is stable.
+**Status:** Stub wired in `li-studio-ai` (`studio_ai_diagnose_json_error_count_stub`, composable `import_studio_ai_agent`).
 
 ## Flow
 

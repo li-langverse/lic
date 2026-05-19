@@ -52,3 +52,9 @@ id = "scientific"
 title = "Scientific / engineering viz"
 profile = "sim_profile_scientific"
 imports = ["studio", "sim.scientific", "render", "scene"]
+
+[[templates]]
+id = "publish"
+title = "Publication / figure export"
+profile = "studio_publish"
+imports = ["studio"]

@@ -909,7 +909,7 @@ note = "PH-SIM world studio stack smoke"
 suite = "composable"
 file = "composable/import_studio_spinup_registry.li"
 outcome = "compile_ok"
-note = "Studio spin-up registry (8 templates)"
+note = "Studio spin-up registry (9 templates)"
 
 [[tests]]
 suite = "composable"
@@ -958,6 +958,30 @@ suite = "composable"
 file = "composable/import_world_studio_merge_ready.li"
 outcome = "compile_ok"
 note = "Merge-ready gate (binary tag + assets + spinup)"
+
+[[tests]]
+suite = "composable"
+file = "composable/import_studio_portable_targets.li"
+outcome = "compile_ok"
+note = "PH-PORT portable triple registry smoke"
+
+[[tests]]
+suite = "composable"
+file = "composable/import_studio_publish_player_stack.li"
+outcome = "compile_ok"
+note = "Publish + assets + player GPU + LKIR stack"
+
+[[tests]]
+suite = "composable"
+file = "composable/import_world_studio_release_rollup.li"
+outcome = "compile_ok"
+note = "Release rollup (portable + gpu + verticals)"
+
+[[tests]]
+suite = "composable"
+file = "composable/import_spinup_publish.li"
+outcome = "compile_ok"
+note = "Spin-up publish template composable"
 
 [[tests]]
 suite = "composable"
@@ -1331,6 +1355,12 @@ suite = "spinup_templates"
 file = "../deploy/world-studio-spinup/templates/scientific/main.li"
 outcome = "compile_ok"
 note = "Spin-up scientific main"
+
+[[tests]]
+suite = "spinup_templates"
+file = "../deploy/world-studio-spinup/templates/publish/main.li"
+outcome = "compile_ok"
+note = "Spin-up publish main"
 
 # --- security (malformed inputs; run via ./li-tests/run_security.sh) ---
 # Wired in scripts/ci.sh: parse/check must exit 0/1, never signal (SIGSEGV etc.).

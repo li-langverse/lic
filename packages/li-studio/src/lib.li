@@ -281,17 +281,17 @@ def studio_gpu_viewport_smoke() -> int
 # PH-GD spin-up registry (deploy/world-studio-spinup/spinup.toml template count).
 def studio_spinup_template_count_stub() -> int
   requires true
-  ensures result == 8
+  ensures result == 9
   decreases 0
 =
-  return 8
+  return 9
 
 def studio_spinup_registry_smoke() -> int
   requires true
   ensures result == 0
   decreases 0
 =
-  if studio_spinup_template_count_stub() != 8:
+  if studio_spinup_template_count_stub() != 9:
     return 1
   if studio_native_shell_smoke() != 0:
     return 2
@@ -304,3 +304,22 @@ def studio_binary_runtime_tag_stub() -> int
   decreases 0
 =
   return 8288
+
+# PH-PORT-0 — portable triple registry (targets/manifest.toml tier-1/2 count).
+def studio_portable_target_count_stub() -> int
+  requires true
+  ensures result == 5
+  decreases 0
+=
+  return 5
+
+def studio_portable_targets_smoke() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  if studio_portable_target_count_stub() != 5:
+    return 1
+  if studio_publish_smoke() != 0:
+    return 2
+  return 0

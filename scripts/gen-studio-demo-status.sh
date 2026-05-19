@@ -4,7 +4,7 @@ set -euo pipefail
 ROOT="$(cd "$(dirname "$0")/.." && pwd)"
 OUT="$ROOT/deploy/studio-demo/status.json"
 BRANCH="$(git -C "$ROOT" branch --show-current 2>/dev/null || echo unknown)"
-SPRINT="impl-28"
+SPRINT="impl-29"
 
 comp_out="$("$ROOT/li-tests/run_all.sh" composable 2>&1)" || true
 gd_out="$("$ROOT/li-tests/run_all.sh" game_dev 2>&1)" || true

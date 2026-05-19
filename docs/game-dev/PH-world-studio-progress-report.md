@@ -1,7 +1,7 @@
 # World Studio / Li Engine — progress report
 
 **Branch:** `feat/world-studio-impl-1`  
-**Sprint:** impl-28 (2026-05)  
+**Sprint:** impl-29 (2026-05)  
 **Tracker:** [PH-world-studio-program.md](PH-world-studio-program.md)  
 **Merge:** [MERGE-world-studio-checklist.md](MERGE-world-studio-checklist.md)
 
@@ -11,33 +11,33 @@
 
 | Metric | Value |
 |--------|--------|
-| **Composable gates** | **88 / 88 pass** ✅ |
+| **Composable gates** | **92 / 92 pass** ✅ |
+| **Spin-up templates** | **9 compile_ok** |
+| **Portable targets** | `targets/manifest.toml` (5 triples) + CI script ✅ |
 | **Game dev** | **12 parse_ok** |
 | **Vertical builds** | **7** |
-| **Spin-up templates** | **8 compile_ok** |
-| **Studio binary** | runtime tag **8288** + verify script ✅ |
-| **LKIR GPU present** | `gpu_lkir_present_*` + `render_lkir_present_*` ✅ |
 | **Blocked** | `sim_step_physics` (deferred) |
 
 ---
 
-## Sprint impl-28
+## Sprint impl-29
 
 | Deliverable | State |
 |-------------|--------|
-| `gpu_lkir_present_tick_stub` + `render_lkir_present_bridge_stub` | ✅ |
-| `player_gpu_render_client_smoke` | ✅ |
-| `studio_binary_runtime_tag_stub` (8288) in binary | ✅ |
-| Composables: LKIR present, player GPU client, **merge_ready** | ✅ |
+| `studio_portable_targets_smoke` (PH-PORT) | ✅ |
+| `publish` spin-up template (9th) | ✅ |
+| `import_studio_publish_player_stack` | ✅ |
+| `import_world_studio_release_rollup` | ✅ |
+| `scripts/check-portable-targets.sh` in CI | ✅ |
 
 ---
 
 ## Quick commands
 
 ```bash
-./scripts/verify-world-studio-binary.sh
 ./scripts/check-world-studio-gates.sh
-./scripts/record-studio-demo.sh   # optional reel refresh
+./scripts/check-portable-targets.sh
+./scripts/lis new world-studio publish ./my-paper-figs
 ```
 
 ---
@@ -46,18 +46,18 @@
 
 | Sprint | Gates |
 |--------|-------|
-| impl-27 | 85 |
-| **impl-28** | **88** |
+| impl-28 | 88 |
+| **impl-29** | **92** |
 
 ---
 
 ## Next
 
 1. **Merge PR** → `main`  
-2. Compiled runtime: full object smokes in `studio_main` (when LIC runtime stable)  
-3. Real LKIR kernel launch in `li-gpu`  
+2. Windows tier-2 target smoke (PH-PORT-1)  
+3. Re-record demo reel with publish workflow tab (optional)  
 4. `sim_step_physics` when compiler allows cross-package types  
 
 ---
 
-*impl-28 · `feat/world-studio-impl-1`*
+*impl-29 · `feat/world-studio-impl-1`*

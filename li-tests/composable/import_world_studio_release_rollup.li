@@ -1,0 +1,26 @@
+import studio
+import render
+import gpu
+import sim
+import mmo
+import bioeng
+import physics.custom
+
+def main() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  if studio_binary_runtime_tag_stub() != 8288:
+    return 1
+  if li_studio_version() < 8:
+    return 2
+  if li_sim_version() < 7:
+    return 3
+  if studio_portable_targets_smoke() != 0:
+    return 4
+  if studio_gpu_viewport_smoke() != 0:
+    return 5
+  if demo_rocket_smoke() != 0:
+    return 6
+  return bioeng_drug_litl_bridge_smoke()

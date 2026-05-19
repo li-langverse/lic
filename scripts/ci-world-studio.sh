@@ -7,6 +7,10 @@ source "$ROOT/scripts/lib/li-ui.sh"
 export LI_REPO_ROOT="$ROOT"
 export LIC="${LIC:-$("$ROOT/scripts/resolve-lic.sh")}"
 
+li_phase "World Studio portable targets"
+chmod +x "$ROOT/scripts/check-portable-targets.sh"
+"$ROOT/scripts/check-portable-targets.sh"
+
 li_phase "World Studio composable gates"
 "$ROOT/li-tests/run_all.sh" composable
 

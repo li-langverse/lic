@@ -4,7 +4,7 @@
 schema = 1
 track = "PH-GD"
 plan = "docs/game-dev/world-studio-vision.md"
-composable_gates = 88
+composable_gates = 92
 branch = "feat/world-studio-impl-1"
 
 [[benchmark]]
@@ -132,3 +132,31 @@ name = "Merge-ready composable rollup"
 tier = 1
 li_package = "li-studio"
 composable = "import_world_studio_merge_ready"
+
+[[benchmark]]
+id = "studio-portable-targets"
+name = "PH-PORT portable triple registry"
+tier = 1
+li_package = "li-studio"
+composable = "import_studio_portable_targets"
+
+[[benchmark]]
+id = "studio-publish-player-stack"
+name = "Publish + player GPU client stack"
+tier = 1
+li_package = "li-studio"
+composable = "import_studio_publish_player_stack"
+
+[[benchmark]]
+id = "world-studio-release-rollup"
+name = "Full release composable rollup"
+tier = 1
+li_package = "li-studio"
+composable = "import_world_studio_release_rollup"
+
+[[benchmark]]
+id = "spinup-publish"
+name = "Publication export spin-up"
+tier = 1
+li_package = "li-studio"
+composable = "import_spinup_publish"

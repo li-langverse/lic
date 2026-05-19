@@ -1,6 +1,6 @@
 # PH-world-studio-program — master tracker
 
-**Status:** In progress (impl-9 on `feat/world-studio-impl-1`)  
+**Status:** In progress (impl-10 on `feat/world-studio-impl-1`)  
 **Vision:** [world-studio-vision.md](world-studio-vision.md)  
 **Progress report:** [PH-world-studio-progress-report.md](PH-world-studio-progress-report.md) ← **read this for sprint status**
 
@@ -60,7 +60,11 @@ Cross-cutting program IDs. Implementation order respects dependencies in the vis
 | BIOENG-1 pipeline smoke | Done |
 | MMO-7 anticheat tick stub (partial) | Done |
 | `benchmarks/competitive/mmorpg.toml` | Done |
-| **32 composable** import gates | Done |
+| **37 composable** import gates | Done |
+| render + scene + studio stack composable | Done |
+| BIOENG-3 assay batch types | Done |
+| `lic-diagnose-agent-bridge` doc | Done |
+| `scripts/deploy-mmo-dev.sh` | Done |
 | MMO-5 WebSocket stubs (`net.httpd`) | Done |
 | MMO-6 `world_checkpoint_mmo_stub` | Done |
 | BIOENG-2 construct registry | Done |

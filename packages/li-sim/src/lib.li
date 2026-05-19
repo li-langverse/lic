@@ -191,6 +191,14 @@ def sim_replay_push(replay: SimReplay, tick: int) -> unit
     replay.count = replay.capacity
   replay.last_tick = tick
 
+def sim_tick_budget_for_mmo(tick_hz: int) -> int
+  requires tick_hz > 0
+  requires tick_hz <= 128
+  ensures result == tick_hz
+  decreases tick_hz
+=
+  return tick_hz
+
 def sim_replay_last_tick(replay: SimReplay) -> int
   requires true
   ensures result == replay.last_tick

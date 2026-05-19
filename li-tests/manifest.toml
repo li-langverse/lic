@@ -629,6 +629,36 @@ file = "composable/import_world_mmo_checkpoint.li"
 outcome = "compile_ok"
 note = "PH-MMO-6 world checkpoint stub"
 
+[[tests]]
+suite = "composable"
+file = "composable/import_scene.li"
+outcome = "compile_ok"
+note = "PH-GD scene graph gate"
+
+[[tests]]
+suite = "composable"
+file = "composable/import_render_scene.li"
+outcome = "compile_ok"
+note = "PH-GD-5 render+scene stack"
+
+[[tests]]
+suite = "composable"
+file = "composable/import_studio_render_scene.li"
+outcome = "compile_ok"
+note = "PH-GD studio render/scene hook"
+
+[[tests]]
+suite = "composable"
+file = "composable/import_bioeng_assay.li"
+outcome = "compile_ok"
+note = "PH-BIOENG-3 assay smoke"
+
+[[tests]]
+suite = "composable"
+file = "composable/import_mmo_tick_budget.li"
+outcome = "compile_ok"
+note = "PH-MMO sim tick budget + mmo"
+
 # composable/import_physics_runtime — enable when cross-package PhysicsWorld types resolve
 # stdlib_coverage/build_std_csv — enable when std.csv module resolves (PH-IO-4)
 

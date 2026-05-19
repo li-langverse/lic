@@ -11,7 +11,7 @@ Agents drive **Li World Studio** and **Li Engine** via MCP tools, not ad-hoc she
 
 | Tool | Action |
 |------|--------|
-| `engine_check` | Run `lic check` on project paths; return structured diagnostics |
+| `engine_check` | Run `lic diagnose --format=json`; map to `studio_ai_diagnose_gate_stub` — [lic-diagnose-agent-bridge.md](lic-diagnose-agent-bridge.md) |
 | `engine_sim_step` | Advance `sim` world N ticks (headless) |
 | `engine_studio_play` | Toggle `studio` play/pause on a project handle |
 | `engine_chem_stub` | Run `chem.dft_run_stub` for pipeline wiring tests |

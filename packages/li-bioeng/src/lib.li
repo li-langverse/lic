@@ -14,10 +14,46 @@ type BioengPipeline = object
 
 def li_bioeng_version() -> int
   requires true
-  ensures result == 3
+  ensures result == 4
   decreases 0
 =
-  return 3
+  return 4
+
+# BIOENG-3 — assay batch ingest (stubs).
+type AssayBatch = object
+  public sample_count: int
+  public total_score: float
+
+def assay_batch_new(capacity: int) -> AssayBatch
+  requires capacity > 0
+  ensures result.sample_count == 0
+  ensures result.total_score == 0.0
+  decreases capacity
+=
+  var b: AssayBatch
+  b.sample_count = 0
+  b.total_score = 0.0
+  return b
+
+def assay_batch_mean(batch: AssayBatch) -> float
+  requires batch.sample_count >= 0
+  ensures result >= 0.0
+  decreases 0
+=
+  if batch.sample_count == 0:
+    return 0.0
+  return batch.total_score / batch.sample_count
+
+def bioeng_assay_smoke() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  if bioeng_stage_test() != 2:
+    return 1
+  if assay_batch_mean(assay_batch_new(16)) != 0.0:
+    return 2
+  return 0
 
 # BIOENG-1 — pipeline smoke (no cross-package mutation until borrowck allows).
 def bioeng_dbtl_pipeline_smoke() -> int

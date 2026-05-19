@@ -57,7 +57,7 @@ Deliver a **competitive bioengineering vertical** inside Li World Studio / Li En
 | 0 | BIOENG-0 | This plan + RFC + `li-bioeng` stubs | PH-DRUG-0 |
 | 1 | BIOENG-1 | **DBTL loop** API (`bioeng_dbtl_*`) wired to `lab_loop_*` | DRUG-0 |
 | 2 | BIOENG-2 | Construct registry (parts, plasmids, strains) text stubs | BIOENG-1 | ✅ |
-| 3 | BIOENG-3 | Assay ingest + objective vector (fitness, titer, burden) | BIOENG-2, PH-ML |
+| 3 | BIOENG-3 | Assay ingest + objective vector (fitness, titer, burden) | BIOENG-2, PH-ML | ✅ stub |
 | 4 | BIOENG-4 | **Competitive scorecard** — benchmark table vs registry | PH-PUB |
 | 5 | BIOENG-5 | Bioreactor hook → `sim.scientific` + `heat_equation` tier-2 | PH-SCI-1 |
 | 6 | BIOENG-6 | Regulatory export (audit trail, model cards) | PH-COMPLY |

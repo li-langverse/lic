@@ -1,4 +1,4 @@
-proc math_std_tag() -> int
+def math_std_tag() -> int
   requires true
   ensures result == 2
   decreases 0

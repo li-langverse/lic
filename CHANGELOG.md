@@ -6,6 +6,11 @@ All notable changes to Li are documented here. The format follows
 
 ## [Unreleased]
 
+### Fixed
+
+- Windows CI discovers `LLVM_DIR` via `llvm-config` or `find` when Chocolatey layout differs.
+- `packages/li-math-numerics`: remove duplicate `extern proc` contract clauses.
+
 ### Changed
 
 - **Breaking:** Li procedure declarations must use `def`; bare `proc` is rejected (keep `extern proc` for FFI). See `docs/release-notes/2026-05-19-enforce-def-syntax.md`.

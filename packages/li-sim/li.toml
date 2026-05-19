@@ -6,7 +6,7 @@ license = "Apache-2.0 OR MIT"
 description = "Li Engine simulation API — step, reset, replay hooks (PH-SIM)"
 
 [dependencies]
-# path = { path = "../other" }   # lip 8b+
+# li-physics-runtime = { path = "../li-physics-runtime" }  # PH-SIM-1b when import types stabilize
 # registry = "1.0.0"             # lip 8d+
 
 [package.metadata.li]

@@ -1,0 +1,13 @@
+# Ergonomic import: sim (PH-SIM-1 composable gate).
+
+import sim
+
+def main() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  var v: int = li_sim_version()
+  if v < 1:
+    return 1
+  return 0

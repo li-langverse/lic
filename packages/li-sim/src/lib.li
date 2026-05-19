@@ -1,4 +1,5 @@
 # PKG-li-sim — unified simulation step API (PH-SIM-1).
+# sim_step_physics lands when cross-package types resolve in object fields / locals (compiler in flux).
 
 type SimWorld = object
   public tick: int
@@ -37,3 +38,12 @@ def sim_step(world: SimWorld) -> unit
   decreases world.tick
 =
   world.tick = world.tick + 1
+
+# PH-AM-0 — export hook stub (STL/3MF/G-code pipeline in li-sim-additive).
+def sim_export_print_stub(format_tag: int) -> int
+  requires format_tag >= 0
+  requires format_tag <= 2
+  ensures result == format_tag
+  decreases format_tag
+=
+  return format_tag

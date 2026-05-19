@@ -1,0 +1,33 @@
+# PH-PORT-0 — supported compilation targets (stub; CLI flags tracked in portable-targets-rfc.md)
+# Tier-1: required in CI for official packages. Tier-2: best-effort / partner labs.
+
+[config]
+min_lic = "0.1.0"
+schema = 1
+
+[[target]]
+triple = "x86_64-unknown-linux-gnu"
+tier = 1
+cpu_features = ["sse4.2", "avx2"]
+gpu_backends = ["rocm", "cuda", "cpu-fallback"]
+note = "Primary Linux CI; GPU via li-gpu / engine.gpu_backend"
+
+[[target]]
+triple = "aarch64-unknown-linux-gnu"
+tier = 1
+note = "ARM64 Linux servers and embedded dev boards"
+
+[[target]]
+triple = "aarch64-apple-darwin"
+tier = 1
+note = "Apple Silicon developer machines"
+
+[[target]]
+triple = "x86_64-apple-darwin"
+tier = 2
+note = "Intel Mac — maintenance window only"
+
+[[target]]
+triple = "x86_64-pc-windows-msvc"
+tier = 2
+note = "Windows desktop — PH-PORT-1"

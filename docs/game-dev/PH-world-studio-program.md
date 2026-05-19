@@ -1,6 +1,6 @@
 # PH-world-studio-program — master tracker
 
-**Status:** Planning  
+**Status:** In progress (impl-2 on `feat/world-studio-impl-1`)  
 **Vision:** [world-studio-vision.md](world-studio-vision.md)
 
 Cross-cutting program IDs. Implementation order respects dependencies in the vision doc.
@@ -23,4 +23,13 @@ Cross-cutting program IDs. Implementation order respects dependencies in the vis
 | **PH-HW** | HW-0…4 | `li-gpu` |
 | **PH-COMPLY** | COMPLY-0…4 | governance |
 
-**Next execution milestones:** RFC stubs (landed) → `li-studio` scaffold (PH-GD-1) → `li-sim` step API (PH-SIM-1).
+**Next execution milestones:** RFC stubs (landed) → package scaffolds (PH-GD-1 / PH-SIM-1) → composable import gates → `sim_step_physics` when compiler merges imported types.
+
+| Milestone | State |
+|-----------|--------|
+| RFC stubs + vision on `main` | Done (#59) |
+| `li-sim`, `li-studio`, `li-chem`, `li-voxel` packages | Done (PR #60 branch) |
+| `li-tests/composable/import_sim` / `import_studio` | Done |
+| `targets/manifest.toml` (PH-PORT-0) | Done |
+| `sim_step` → `physics.runtime` | Blocked — imported types in fields/locals |
+| MCP `li-engine` server | Docs: [agent-mcp-sketch.md](agent-mcp-sketch.md) |

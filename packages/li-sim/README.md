@@ -1,5 +1,7 @@
 # li-sim
 
+Unified simulation step API (PH-SIM). `sim_step` advances tick; `sim_step_physics` (delegating to `physics.runtime`) lands when the compiler exposes imported types in object fields and local annotations.
+
 Li package li-sim
 
 ## Build

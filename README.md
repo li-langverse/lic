@@ -131,6 +131,7 @@ Proof always comes first. Speed never skips the check.
 | See more copy-paste examples | [Examples gallery](docs/guide/examples-gallery.md) |
 | Learn the whole language | [Language handbook](docs/language/overview.md) |
 | Naming & simplicity | [Philosophy](docs/language/philosophy.md) |
+| Game worlds (vision) | [World Studio](docs/game-dev/world-studio-vision.md) |
 | Understand the build steps | [How `lic build` works](docs/compiler/build-pipeline.md) |
 | Understand why this is “mathematically provable” | [Why Li is provable](docs/compiler/why-provable.md) |
 | See every test and security check | [Tests & audits](docs/testing/overview.md) |

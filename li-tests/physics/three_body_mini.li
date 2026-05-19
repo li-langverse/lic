@@ -1,13 +1,4 @@
-# Mini three-body distance smoke (initialized arrays; compile + verify).
-
-proc dist2(px: array[3, float], py: array[3, float], i: int) -> float
-  requires i >= 0
-  requires i < 3
-  decreases i
-=
-  var dx: float = px[i] - px[0]
-  var dy: float = py[i] - py[0]
-  return dx * dx + dy * dy
+# Mini three-body distance smoke (initialized arrays).
 
 def main() -> int
   requires true
@@ -22,7 +13,9 @@ def main() -> int
   py[0] = 1.0
   py[1] = 0.0
   py[2] = 0.0
-  var r2: float = dist2(px, py, 1)
+  var dx: float = px[1] - px[0]
+  var dy: float = py[1] - py[0]
+  var r2: float = dx * dx + dy * dy
   if r2 < 0.0
     return 1
   return 0

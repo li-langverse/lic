@@ -1,0 +1,96 @@
+# PKG-li-std-ui — 2D UI types and frame hooks for game / simulation tools.
+
+type Color = object
+  public r: float
+  public g: float
+  public b: float
+  public a: float
+
+type Rect = object
+  public x: float
+  public y: float
+  public w: float
+  public h: float
+
+type Vec2 = object
+  public x: float
+  public y: float
+
+type InputState = object
+  public pointer_down: int
+  public pointer_x: float
+  public pointer_y: float
+  public key_escape: int
+
+type UiFrame = object
+  public frame_id: int
+  public dt: float
+  public viewport_w: float
+  public viewport_h: float
+
+proc li_std_ui_version() -> int
+  requires true
+  ensures result == 1
+  decreases 0
+=
+  return 1
+
+proc color_rgb(r: float, g: float, b: float, a: float) -> Color
+  requires r >= 0.0
+  requires g >= 0.0
+  requires b >= 0.0
+  requires a >= 0.0
+  requires a <= 1.0
+  decreases 0
+=
+  var c: Color
+  c.r = r
+  c.g = g
+  c.b = b
+  c.a = a
+  return c
+
+proc rect_contains(r: Rect, px: float, py: float) -> int
+  requires r.w >= 0.0
+  requires r.h >= 0.0
+  decreases 0
+=
+  if px < r.x
+    return 0
+  if py < r.y
+    return 0
+  if px > r.x + r.w
+    return 0
+  if py > r.y + r.h
+    return 0
+  return 1
+
+proc ui_frame_begin(w: float, h: float, dt: float) -> UiFrame
+  requires w > 0.0
+  requires h > 0.0
+  requires dt > 0.0
+  decreases 0
+=
+  var f: UiFrame
+  f.frame_id = 0
+  f.dt = dt
+  f.viewport_w = w
+  f.viewport_h = h
+  return f
+
+proc ui_frame_end(frame: UiFrame) -> unit
+  requires true
+  decreases 0
+=
+  return
+
+proc input_default() -> InputState
+  requires true
+  decreases 0
+=
+  var s: InputState
+  s.pointer_down = 0
+  s.pointer_x = 0.0
+  s.pointer_y = 0.0
+  s.key_escape = 0
+  return s

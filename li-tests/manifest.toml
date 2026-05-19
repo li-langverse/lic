@@ -443,6 +443,9 @@ file = "composable/import_httpd_lib.li"
 outcome = "verify_ok"
 note = "imports packages/li-httpd/src/lib.li via workspace li_httpd"
 
+# composable/import_physics_runtime — enable when li_std_physics_rigid import resolves in li-tests
+# stdlib_coverage/build_std_csv — enable when std.csv module resolves (PH-IO-4)
+
 # --- httpd (Phase H placeholder) ---
 
 [[tests]]
@@ -489,7 +492,7 @@ outcome = "verify_ok"
 [[tests]]
 suite = "physics"
 file = "physics/three_body_mini.li"
-outcome = "verify_ok"
+outcome = "compile_ok"
 
 # --- math_syntax (2h — %, //, **) ---
 

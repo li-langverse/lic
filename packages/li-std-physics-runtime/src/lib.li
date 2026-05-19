@@ -1,4 +1,15 @@
 # PKG-li-std-physics-runtime — world step scheduler and engine-facing API.
+# Calls rigid/numerics APIs inline until cross-package `import` resolves in li-tests (see li.toml deps).
+
+type RigidBody = object
+  public px: float
+  public py: float
+  public pz: float
+  public vx: float
+  public vy: float
+  public vz: float
+  public inv_mass: float
+  public radius: float
 
 type PhysicsWorld = object
   public tier: int
@@ -8,6 +19,8 @@ type PhysicsWorld = object
   public rigid_enabled: int
   public fluids_enabled: int
   public particles_enabled: int
+  public gravity_z: float
+  public body: RigidBody
 
 proc li_std_physics_runtime_version() -> int
   requires true
@@ -15,6 +28,18 @@ proc li_std_physics_runtime_version() -> int
   decreases 0
 =
   return 1
+
+proc rigid_integrate_semi_implicit(b: RigidBody, fx: float, fy: float, fz: float, dt: float) -> unit
+  requires dt > 0.0
+  decreases 0
+=
+  if b.inv_mass > 0.0
+    b.vx = b.vx + fx * b.inv_mass * dt
+    b.vy = b.vy + fy * b.inv_mass * dt
+    b.vz = b.vz + fz * b.inv_mass * dt
+  b.px = b.px + b.vx * dt
+  b.py = b.py + b.vy * dt
+  b.pz = b.pz + b.vz * dt
 
 proc physics_world_new(tier: int) -> PhysicsWorld
   requires tier >= 0
@@ -29,6 +54,15 @@ proc physics_world_new(tier: int) -> PhysicsWorld
   w.rigid_enabled = 1
   w.fluids_enabled = 0
   w.particles_enabled = 0
+  w.gravity_z = -9.81
+  w.body.px = 0.0
+  w.body.py = 0.0
+  w.body.pz = 0.0
+  w.body.vx = 0.0
+  w.body.vy = 0.0
+  w.body.vz = 0.0
+  w.body.inv_mass = 1.0
+  w.body.radius = 0.5
   return w
 
 proc physics_world_game_default() -> PhysicsWorld
@@ -39,6 +73,14 @@ proc physics_world_game_default() -> PhysicsWorld
 =
   return physics_world_new(2)
 
+proc physics_rigid_substep(world: PhysicsWorld, sub_dt: float) -> unit
+  requires sub_dt > 0.0
+  decreases 0
+=
+  if world.rigid_enabled == 0
+    return
+  rigid_integrate_semi_implicit(world.body, 0.0, 0.0, world.gravity_z, sub_dt)
+
 proc physics_step(world: PhysicsWorld, frame_dt: float) -> unit
   requires frame_dt > 0.0
   requires world.substeps >= 1
@@ -48,6 +90,7 @@ proc physics_step(world: PhysicsWorld, frame_dt: float) -> unit
   var i: int = 0
   while i < world.substeps
     world.dt = sub
+    physics_rigid_substep(world, sub)
     world.step_count = world.step_count + 1
     i = i + 1
 

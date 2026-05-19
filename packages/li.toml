@@ -1,4 +1,4 @@
 # Li monorepo workspace — members added by scripts/li-new-package
 [workspace]
-members = ["li-std-physics-hep", "li-std-physics-relativity", "li-std-physics-quantum", "li-std-physics-em", "li-std-physics-chem", "li-std-physics-aero", "li-std-physics-weather", "li-std-physics-fluids", "li-std-physics-particles", "li-std-physics-runtime", "li-std-physics-rigid", "li-std-physics-core", "li-std-numerics", "li-httpd", "li-net", "li-demo", "li-std-core", "li-std-math"]
+members = ["li-std-physics-hep", "li-std-physics-relativity", "li-std-physics-quantum", "li-std-physics-em", "li-std-physics-chem", "li-std-physics-aero", "li-std-physics-weather", "li-std-physics-fluids", "li-std-physics-particles", "li-std-physics-runtime", "li-std-physics-rigid", "li-std-physics-core", "li-std-numerics", "li-std-ui", "li-std-scene", "li-httpd", "li-net", "li-demo", "li-std-core", "li-std-math"]
 resolver = "path"

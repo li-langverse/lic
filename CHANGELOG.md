@@ -11,7 +11,7 @@ All notable changes to Li are documented here. The format follows
 - Composable imports: workspace `packages/*` (via `import_name` in `li.toml`) resolve before `std/` facades for the same ergonomic path (e.g. `physics.rigid`).
 - Docs: `composable-by-default.md`, `import-style.md`, `li-net-httpd` README — `def` + `import net.httpd` (not `li_httpd`).
 - Physics docs use monorepo package paths (`li-physics-*`, `import physics.*`); philosophy example uses `def`.
-- Composable rigid smoke (`import_physics_runtime.li`) exercises one gravity substep via `holder.body` field-access call (borrowck-safe).
+- Composable runtime smoke (`import_physics_runtime.li`) imports `physics.runtime` and runs `physics_step` once.
 
 ### Fixed
 

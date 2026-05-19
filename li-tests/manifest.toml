@@ -28,6 +28,12 @@ suite = "lexer_parser"
 file = "lexer_parser/async_await_parse.li"
 outcome = "parse_ok"
 
+[[tests]]
+suite = "lexer_parser"
+file = "lexer_parser/plus_minus_binop.li"
+outcome = "parse_ok"
+note = "regression: '+' must lex as Plus (horner_pure_li loop counter)"
+
 # --- decorators (7d — parse + policy) ---
 
 [[tests]]

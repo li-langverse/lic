@@ -1,0 +1,6 @@
+proc p() -> int
+=
+  retuser true
+  decreases 0
+=
+  re0

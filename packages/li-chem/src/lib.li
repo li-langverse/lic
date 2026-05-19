@@ -78,6 +78,17 @@ def geometry_new(atom_count: int) -> Geometry
   return g
 
 # PH-DRUG / PH-QM — DFT hook at LITL DFT stage (composable with sim.drug_design).
+def chem_tddft_litl_smoke(atom_count: int) -> int
+  requires atom_count > 0
+  ensures result == 0
+  decreases atom_count
+=
+  var g: Geometry = geometry_new(atom_count)
+  var r: DftResult = tddft_run_stub(g)
+  if r.total_energy >= 0.0:
+    return 1
+  return 0
+
 def chem_litl_dft_smoke(atom_count: int) -> int
   requires atom_count > 0
   ensures result == 0

@@ -108,6 +108,16 @@ def studio_publish_bundle_hash_stub(file_count: int, dpi: int) -> PublishBundle
   b.content_hash = file_count * 997 + dpi
   return b
 
+def studio_pub_bioeng_bundle_stub(scorecard_beats: int, file_count: int) -> int
+  requires scorecard_beats >= 0
+  requires scorecard_beats <= 1
+  requires file_count > 0
+  ensures result >= 0
+  decreases file_count
+=
+  var b: PublishBundle = studio_publish_bundle_hash_stub(file_count, 300)
+  return b.content_hash + scorecard_beats
+
 def studio_publish_smoke() -> int
   requires true
   ensures result == 0

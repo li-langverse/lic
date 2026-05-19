@@ -257,6 +257,13 @@ def bioeng_scorecard_row_new(run_id: int, objective: float, baseline: float) -> 
   row.beats_baseline = bioeng_scorecard_rank(objective, baseline)
   return row
 
+def bioeng_leaderboard_export_tag() -> int
+  requires true
+  ensures result == 9001
+  decreases 0
+=
+  return 9001
+
 def bioeng_scorecard_smoke() -> int
   requires true
   ensures result == 0

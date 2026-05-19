@@ -70,6 +70,22 @@ def scientific_reactor_heat_step_stub(field: ReactorField, dt: float) -> unit
   field.timestep = field.timestep + 1
   field.temperature_c = field.temperature_c + dt
 
+def scientific_drug_profile_tag() -> int
+  requires true
+  ensures result == 6
+  decreases 0
+=
+  return 6
+
+def scientific_drug_stack_smoke() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  if scientific_drug_profile_tag() != 6:
+    return 1
+  return scientific_reactor_smoke()
+
 def scientific_reactor_smoke() -> int
   requires true
   ensures result == 0

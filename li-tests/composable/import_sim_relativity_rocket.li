@@ -1,0 +1,11 @@
+import sim
+import physics.relativity
+
+def main() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  if sim_profile_scientific() != 4:
+    return 1
+  return relativistic_rocket_smoke()

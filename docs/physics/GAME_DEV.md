@@ -81,7 +81,8 @@ Run org sweep: `python3 scripts/run-pr-program.py` in **benchmarks** repo.
 
 Long-term **AI-first editor** (local models, proved worlds, agent APIs) — not a Unity clone on day one:
 
-→ **[World Studio vision](../game-dev/world-studio-vision.md)** (PH-GD phases, module map, SOTA).
+→ **[World Studio & Li Engine vision](../game-dev/world-studio-vision.md)** (PH-GD + PH-SIM/ROBO/AM/SCI/DRUG/QM/UX/AGENT).  
+→ **[Program tracker](../game-dev/PH-world-studio-program.md)** · **[RFCs](../game-dev/specs/README.md)**
 
 ## Out of scope (tier R)
 

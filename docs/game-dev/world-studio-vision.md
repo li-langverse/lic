@@ -1,208 +1,126 @@
-# Li World Studio — AI-first game authoring vision
+# Li World Studio & Li Engine — master vision
 
-**Status:** Vision / master plan (not shipped)  
-**Audience:** Architects, agents, contributors planning modules above Unity/Unreal-class tooling  
-**Related:** [GAME_DEV.md](../physics/GAME_DEV.md), [SIMULATION_UI_READINESS.md](../physics/SIMULATION_UI_READINESS.md), [philosophy.md](../language/philosophy.md), [master plan](../superpowers/plans/2026-05-14-li-master-plan.md)
+**Status:** Vision / master plan (execution started 2026-05)  
+**Audience:** Architects, agents, contributors  
+**Syntax:** Li uses Python-style **`def`** for functions (not `proc`). Contracts: `requires` / `ensures` / `decreases` unchanged.
+
+**Related:** [GAME_DEV.md](../physics/GAME_DEV.md), [PH-world-studio-program.md](PH-world-studio-program.md), [competitive-landscape.md](competitive-landscape.md), [specs/](specs/), [philosophy.md](../language/philosophy.md), [master plan](../superpowers/plans/2026-05-14-li-master-plan.md)
 
 ---
 
 ## 1. One-sentence vision
 
-**Li World Studio** is an **agent-native, provably correct world builder**: you describe a world in prose (or sketch it), **local models** propose layouts and assets, **Li physics + scene graph** simulate it with contracts, and the **editor GUI** stays as simple as Python to read — while going **beyond** classic engines by making proof, replay, and AI iteration first-class, not bolted on.
-
-“Above Unity/Unreal” does **not** mean “more features on day one.” It means:
-
-| Classic engine default | Li World Studio default |
-|------------------------|-------------------------|
-| C#/C++ gameplay + hidden physics | **Li `proc`s with `requires`/`ensures`** on game + sim step |
-| Editor state = opaque binary | **World = versioned, diffable Li + assets** (agents can patch) |
-| AI = marketplace plugins | **AI = first workflow** (local LLM/VLM, structured tool calls) |
-| Determinism optional | **Deterministic sim tier** + recorded seeds for regression |
-| Asset pipeline external | **Generate → prove bounds → hot-reload** in one loop |
-
-Rendering may still delegate to **GPU backends** (Vulkan/Metal/WebGPU) in early phases; the differentiator is **authoring + simulation + proof + agents**, not a from-scratch rasterizer on day one.
+**Li World Studio** is an **agent-native, provably correct** platform on **Li Engine**: one runtime for **games**, **simulation** (RL, automotive, robotics, additive manufacturing, scientific/engineering, **AI drug design**), with **killer UI/UX**, **publication-grade export**, and **Cursor SDK** agents — while **`lic build`** keeps proof first.
 
 ---
 
-## 2. Design north star (AI-first)
+## 2. Design north star
 
-1. **Prompt → structured world** — NL/sketch/audio in; **schema-valid** scene + physics + narrative graph out (never raw binary-only).
-2. **Local-first models** — Ollama/llama.cpp/MLX-class runners; optional cloud with explicit `raises Net` and audit trail.
-3. **Agents are users** — Every editor action has a **stable API** (`world.create_biome`, `entity.place`, `physics.set_tier`) so Cursor/CLI/automation == human menus.
-4. **Prove what matters** — Game rules and sim invariants (`energy_drift`, `no_interpenetration` stubs → full) gate `lic build` before publish.
-5. **Read like prose** — Modules `world`, `scene`, `physics.*`, `studio.ui`; see [philosophy.md](../language/philosophy.md).
+| Pillar | Meaning |
+|--------|---------|
+| **One engine** | Same `li-world` · `li-scene` · `li-physics-*` · `li-render` — no CARLA/GROMACS/slicer forks |
+| **AI-first** | Local models default; agents via MCP + `@cursor/sdk` |
+| **Killer UX** | 60 fps, adaptive layouts, ≤3 clicks for primary flows ([PH-UX](#17-ph-ux--killer-uiux)) |
+| **Research + ship** | Deterministic replay, repro bundles, `li-player` for games |
+| **Read like Python** | `def`, `import`, prose names — [philosophy.md](../language/philosophy.md) |
 
----
+Classic engine contrast:
 
-## 3. Current Li baseline (2026)
-
-What exists today (stubs → integratable):
-
-| Layer | Package / path | Maturity |
-|-------|----------------|----------|
-| Math | `li-math` | Vec3, Quat, Mat4, AABB — **expand** |
-| Numerics | `li-math-numerics` | Integrators — **expand** |
-| Physics domains | `li-physics-*` | Tier-2 benches, partial runtime — **expand** |
-| Physics runtime | `li-physics-runtime` | Single-body step, scene hooks — **expand** |
-| Scene | `li-scene` | EntityId, Transform3, graph hooks — **expand** |
-| UI | `li-ui` | 2D frame/input stubs — **replace/expand** with studio |
-| I/O | `std/io`, `std/csv` | PH-IO-4 stubs — **implement** |
-| Compiler | `lic` | Proof gate, MIR, LLVM — **extend** for hot reload / plugins |
-| Agents | `li-httpd`, `lis`, benchmarks agent-kit | Gateway — **wire** to studio API |
-| Game sample | `examples/tetris/` | Proof pattern — **template** for `game_step` |
-
-**Gap:** No viewport, no asset DB, no terrain, no AI tool schema, no undo graph, no build/player packaging.
+| Classic | Li |
+|---------|-----|
+| Hidden binary scenes | `world.li` + assets (git-diffable) |
+| AI bolt-ons | Agents = first-class users |
+| CUDA-only ML | **CUDA + ROCm/HIP** ([PH-HW](#20-ph-hw--gpu-port--lkir)) |
+| Sim ≠ game | **Profiles** on one engine ([PH-SIM](#18-li-engine--runtime-profiles)) |
 
 ---
 
-## 4. State of the art (what we replicate and beat)
+## 3. Current baseline (lic repo)
 
-### 4.1 Traditional engines (baseline to exceed on *workflow*)
+| Layer | Package | Maturity |
+|-------|---------|----------|
+| Math / numerics | `li-math`, `li-math-numerics` | Expand |
+| Physics | `li-physics-*`, `li-physics-runtime` | Tier-2 benches |
+| Scene / UI | `li-scene`, `li-ui` | Stubs → studio chrome |
+| Gameplay chem | `physics.chem` | Reactions stub — **not** QM |
+| Compiler | `lic` | Proof, MIR, LLVM 18; `def` + `proc` parse (`def` preferred) |
+| Agents | `li-httpd`, `lis`, `.cursor` rules | Wire to studio MCP |
 
-| Product | Strength | Weakness for AI/proof |
-|---------|----------|------------------------|
-| **Unity 6** | Ecosystem, UGUI, Asset Store, DOTS emerging | Opaque scenes; AI tools fragmented; no proof |
-| **Unreal 5** | Nanite/Lumen, Blueprints, World Partition | Heavy; C++ complexity; agent-hostile binary assets |
-| **Godot 4** | Open, GDScript, lightweight | Smaller AAA path; same opaque scene tree |
-| **Bevy** (Rust) | ECS, data-oriented | No proof; AI still external |
-
-**Li beat condition:** Same *authoring speed* via AI, plus **exportable Li source** for rules/sim and **CI proof** on worlds.
-
-### 4.2 AI world & asset generation (replicate pipelines)
-
-| Area | SOTA examples | Li integration |
-|------|---------------|----------------|
-| Text → 3D mesh | Meshy, Tripo, Rodin, SF3D | `studio.gen.mesh` → glTF + collision proxy |
-| Text → layout | Promethean AI (layout), SceneCraft | `studio.gen.layout` → `Scene` + constraints |
-| Image → 3D | InstantMesh, Trellis, SF3D | `studio.gen.from_image` |
-| Gaussian / NeRF worlds | Nerfstudio, 3DGS flythrough | `studio.render.splat` preview; bake to mesh for physics |
-| Text → world (research) | LatticeWorld, HY-World 2.0, NeoWorld | **Target:** Li-native world graph + UE-quality preview optional |
-| NPC / dialog AI | Inworld, Convai | `studio.ai.character` with local LLM + `requires` policy |
-| Code gen | Copilot, Cursor | **Native:** Li game logic gen with `lic build` loop |
-
-### 4.3 Authoring GUIs (UX target)
-
-| Product | Pattern to steal |
-|---------|------------------|
-| **Unreal Editor** | Viewport, outliner, details, content browser |
-| **Unity** | Inspector, play mode, prefabs |
-| **Blender** | Modifiers stack, non-destructive history |
-| **Roblox Studio** | Simple part tree, instant play |
-| **Dreams / S&box** | In-engine creative loop |
-
-**Li simplification:** Fewer panels; **command palette + agent chat** as primary; expert panels optional.
-
-### 4.4 Local models (2026 practical stack)
-
-| Role | Typical local stack | Studio module |
-|------|---------------------|---------------|
-| Layout / DSL | Llama 3.x 8B–70B, Qwen2.5, Mistral | `studio.llm.local` |
-| Vision / sketch | LLaVA, Qwen-VL, Florence | `studio.vlm.local` |
-| Mesh / texture | SDXL, Flux (local), specialized checkpoints | `studio.diffusion.local` |
-| Embeddings / search | nomic-embed, bge | `studio.rag.assets` |
-| Speech (optional) | Whisper.cpp | `studio.audio.transcribe` |
-
-**Principle:** Default **offline**; cloud is opt-in with typed consent in project `li.toml`.
+**Gaps:** `li-studio`, `li-sim`, `li-chem`, `li-voxel`, `li-render`, viewport, MCP `li-engine`, export/print pipelines.
 
 ---
 
-## 5. Target architecture
+## 4. Target architecture
 
 ```text
-┌─────────────────────────────────────────────────────────────────┐
-│  Studio shell (li-studio) — viewport, panels, command palette    │
-│  studio.ui · studio.commands · studio.undo                      │
-├─────────────────────────────────────────────────────────────────┤
-│  AI orchestration (li-studio-ai)                                 │
-│  tool schema · local_llm · rag · plan/apply/verify loop          │
-├─────────────────────────────────────────────────────────────────┤
-│  World model (li-world) — biomes, layers, narrative, rules       │
-│  world.* · import scene · import physics.runtime                 │
-├─────────────────────────────────────────────────────────────────┤
-│  Scene + assets (expand li-scene, new li-assets)                 │
-│  entities · prefabs · glTF/USD ingest · LOD                      │
-├─────────────────────────────────────────────────────────────────┤
-│  Simulation (expand li-physics-*)                                │
-│  rigid · particles · fluids · cloth · provenance tier            │
-├─────────────────────────────────────────────────────────────────┤
-│  Render bridge (li-render — Phase R)                             │
-│  WebGPU/Vulkan backend · draw lists from scene                   │
-├─────────────────────────────────────────────────────────────────┤
-│  Player / publish (li-player)                                    │
-│  lic build → proved binary + asset bundle                        │
-└─────────────────────────────────────────────────────────────────┘
-         ▲                              ▲
-         │ lic build (proof)            │ agent API (HTTP/stdio)
-         │                              │
-    li-langverse/lic              lis / li-httpd / Cursor
+┌──────────────────────────────────────────────────────────────────────────┐
+│  li-studio — killer UX, studio.adaptive, studio.publish, command palette │
+│  li-studio-ai + @cursor/sdk (PH-AGENT)                                    │
+├──────────────────────────────────────────────────────────────────────────┤
+│  RUNTIME PROFILES: game | sim_rl | sim_automotive | sim_robotics |       │
+│    sim_additive | sim_scientific | sim_drug_design                        │
+├──────────────────────────────────────────────────────────────────────────┤
+│  Li Engine: li-world · li-scene · li-assets · li-physics-* · li-render   │
+│             li-voxel (PH-VOXEL) · li-sim (step/replay/sensors)            │
+├──────────────────────────────────────────────────────────────────────────┤
+│  Domain packs: automotive · robotics · additive · scientific · drug       │
+│  li-chem (DFT/TDDFT/AI) · li-ml (async JobGraph)                          │
+├──────────────────────────────────────────────────────────────────────────┤
+│  lic build (proof) · PH-PORT targets · PH-HW CUDA/HIP/LKIR                │
+└──────────────────────────────────────────────────────────────────────────┘
 ```
 
-**World file (conceptual):** `world.li` + `assets/` + `studio.toml` — all text-first for agents.
+**Project files:** `world.li` + `assets/` + `studio.toml` + optional `compliance.toml` (CRITICAL packages).
 
 ---
 
-## 6. Module plan — NEW packages
+## 5. Runtime profiles (PH-SIM)
 
-| Import | GitHub repo | Purpose | Phase |
-|--------|-------------|---------|-------|
-| `studio` | `li-studio` | Editor shell, play mode, project model | GD-1 |
-| `studio.ui` | (in studio) | Panels, docking, theme, input routing | GD-1 |
-| `studio.commands` | (in studio) | Undo/redo, macro recording, agent verbs | GD-1 |
-| `world` | `li-world` | Biome, terrain graph, spawn rules, metadata | GD-2 |
-| `world.gen` | (in world) | Procedural + AI layout application | GD-2 |
-| `assets` | `li-assets` | glTF/USD/PNG ingest, IDs, deps | GD-2 |
-| `studio.ai` | `li-studio-ai` | Tool schema, local model runners, RAG | GD-3 |
-| `render` | `li-render` | Draw list, materials, camera (backend FFI) | GD-4 |
-| `player` | `li-player` | Ship proved builds, fullscreen run | GD-4 |
-| `studio.net` | optional | Cloud model bridge (`raises Net`) | GD-5 |
+One **`sim.step` / `game_step`** family — not duplicate physics.
 
-**Repo naming:** follows [repo-naming.md](../ecosystem/repo-naming.md) (`import world` → `li-world`).
+| Profile | Use | Domain packs |
+|---------|-----|----------------|
+| `game` | Ship via `li-player` | — |
+| `sim_rl` | Async env pools → engine tick | PH-ML |
+| `sim_automotive` | Driving, sensors, maps | `li-sim-automotive` |
+| `sim_robotics` | Arms, mobile, factory cells | `li-sim-robotics` |
+| `sim_additive` | AM sim + **export to printer** | `li-sim-additive`, `sim.export.print` |
+| `sim_scientific` | CFD, chem MD, heat, orbital | `li-sim-scientific`, `sim.viz` |
+| `sim_drug_design` | Lab-in-the-Loop, adaptive GUI | `li-sim-drug-design`, `li-chem` |
 
----
+```toml
+[engine]
+profile = "sim_additive"
+domain = "metal_am"
+determinism_tier = 2
 
-## 7. Module plan — EXPAND existing
-
-| Module | Today | Expand to |
-|--------|-------|-----------|
-| `li-ui` | 2D Color/Rect/Input | **Studio chrome**: panels, widgets, layout, accessibility |
-| `li-scene` | Flat node list hooks | **Full graph**: parent/child, prefab, tags, layers |
-| `li-physics-runtime` | 1 body, substep | **N-body**, broadphase, scene sync both ways |
-| `li-physics-rigid` | AABB/sphere stub | PGS/sequential impulse, joints, character controller |
-| `li-physics-particles` | Basic | GPU-friendly SOA, emitters |
-| `li-physics-fluids` | Tier-2 kernels | Game-scale SPH heightfield |
-| `li-math` | Vec/Mat | Frustum, raycast, spline paths for camera/tools |
-| `std/io` | Stub | Watch folders, async read for assets |
-| `std/csv` | Stub | Telemetry + bench ingest for studio perf |
-| `lic` | Batch compile | **Hot reload** slice (game logic), incremental VC cache |
-| `li-httpd` | Gateway | **Studio agent API**: `POST /world/apply_patch` |
-
----
-
-## 8. AI-first workflows (concrete)
-
-### 8.1 Create world from text (local)
-
-```text
-User: "Coastal village at dusk, low poly, physics-safe props"
-  → studio.ai.plan (local LLM, JSON schema)
-  → world.gen.apply_layout(plan)
-  → assets.resolve_or_generate(mesh prompts)
-  → physics.validate_static_colliders
-  → lic build (world rules + sim contracts)
-  → viewport preview
+[engine.export]
+formats = ["3mf", "gcode"]
+printer_profile = "profiles/bambu_x1c.toml"
+require_sim_pass = true
 ```
 
-**Improve vs SOTA:** Plan is **Li source + scene graph**, not only Unreal `.umap` — agent can `git diff` it.
+RFC: [li-engine-unified-sim-rfc.md](specs/li-engine-unified-sim-rfc.md)
 
-### 8.2 Sketch → layout (local VLM)
+---
 
-- Tablet layer → `studio.vlm` → extruded zones (water, road, buildable).
-- Zones map to `world.layers` with proved bounds (`requires area > 0`).
+## 6. PH-GD — World Studio editor (game authoring)
 
-### 8.3 Iterate with proof
+| Phase | ID | Deliverable |
+|-------|-----|-------------|
+| 0 | PH-GD-0 | This doc + RFC index |
+| 1 | PH-GD-1 | `li-studio` MVP: viewport, outliner, play/pause |
+| 2 | PH-GD-2 | `li-world`, save/load text |
+| 3 | PH-GD-3 | `li-studio-ai`, apply_patch loop |
+| 4 | PH-GD-4 | glTF, `studio.gen` hooks |
+| 5 | PH-GD-5 | `li-render` PBR-lite |
+| 6 | PH-GD-6 | Scale: fluids, streaming |
+| 7 | PH-GD-7 | `li-player` publish |
+
+### Example ( `def` syntax )
 
 ```li
-proc game_step(world: GameWorld, input: InputState) -> unit
+def game_step(world: GameWorld, input: InputState) -> unit
   requires world.time >= 0.0
   ensures player_alive(world) or world.game_over
   decreases world.tick_budget
@@ -212,112 +130,246 @@ proc game_step(world: GameWorld, input: InputState) -> unit
   world.tick_budget = world.tick_budget - 1
 ```
 
-Failed proof → agent gets **structured diagnostic** (not a crash in play mode).
+---
 
-### 8.4 Regression for worlds
+## 7. Module plan — new packages
 
-- **World seed + asset manifest hash** → deterministic physics tier-0 replay.
-- CI: `lic build` + `studio.test.snapshot(world)` in `li-tests/game_dev/`.
+| Import | Repo | Track |
+|--------|------|-------|
+| `studio` | `li-studio` | PH-GD, PH-UX |
+| `studio.adaptive` | (studio) | PH-DRUG, PH-UX |
+| `studio.publish` | (studio) | PH-PUB |
+| `studio.ai` | `li-studio-ai` | PH-GD-3, PH-AGENT |
+| `world` | `li-world` | PH-GD-2 |
+| `assets` | `li-assets` | PH-GD-4 |
+| `render` | `li-render` | PH-GD-5, PH-SCI |
+| `player` | `li-player` | PH-GD-7 |
+| `sim` | `li-sim` | PH-SIM |
+| `sim.automotive` | `li-sim-automotive` | PH-SIM |
+| `sim.robotics` | `li-sim-robotics` | PH-ROBO |
+| `sim.additive` | `li-sim-additive` | PH-AM |
+| `sim.scientific` | `li-sim-scientific` | PH-SCI |
+| `sim.drug_design` | `li-sim-drug-design` | PH-DRUG |
+| `chem` / `chem.dft` | `li-chem` | PH-QM |
+| `voxel` | `li-voxel` | PH-VOXEL |
+| `ml` | `li-ml` | PH-ML |
+| `gpu` | `li-gpu` | PH-HW |
 
 ---
 
-## 9. Phased roadmap (PH-GD)
+## 8. AI-first workflows
 
-| Phase | ID | Deliverable | Proof / bench |
-|-------|-----|-------------|---------------|
-| **0** | PH-GD-0 | Vision doc (this), issue tree, agent API sketch | — |
-| **1** | PH-GD-1 | **Studio MVP**: viewport stub, outliner, inspector, play/pause, `studio.commands` undo | `li-tests/game_dev/studio_smoke.li` |
-| **2** | PH-GD-2 | **World model**: `li-world`, terrain heightfield, entity placement, save/load text | Tier-0: save/load roundtrip |
-| **3** | PH-GD-3 | **AI loop**: `li-studio-ai`, Ollama tool calls, apply_patch, `lic check` in loop | Agent integration test vs golden world |
-| **4** | PH-GD-4 | **Assets**: glTF ingest, collision proxies, `studio.gen` mesh hook | Import + physics sleep stack bench |
-| **5** | PH-GD-5 | **Render**: `li-render` draw list, PBR-lite, scene sync | Frame time bench (no proof on GPU) |
-| **6** | PH-GD-6 | **Scale**: fluids/particles in editor, World Partition–style streaming | Tier-2 benches green |
-| **7** | PH-GD-7 | **Publish**: `li-player`, proved game packages | Tetris-class + mini open world demo |
+```text
+User prompt → studio.ai / Cursor SDK → world.apply_patch
+  → lic check (JSON diagnostics) → lic build → viewport / sim / export
+```
 
-**Dependency order:** PH-GD-1 blocks on `li-scene` graph + `li-ui` panels; PH-GD-3 blocks on `lis` agent protocol; PH-GD-5 can parallelize with physics expand.
+**Cursor SDK:** `@cursor/sdk` local + cloud; MCP server `lis mcp li-engine`. RFC: [studio-cursor-sdk-rfc.md](specs/studio-cursor-sdk-rfc.md)
+
+**Spin-up templates:** game, sim_rl, sim_automotive, sim_robotics, sim_additive, sim_scientific, sim_drug_design.
 
 ---
 
-## 10. Replication + improvement matrix
+## 9. Additive manufacturing (PH-AM)
 
-| Capability | Industry SOTA | Li plan | Improve how |
-|------------|---------------|---------|-------------|
-| Scene hierarchy | Unity/UE outliner | `li-scene` graph + text export | Git-diffable; agent patchable |
-| World partition | UE5 streaming | `world.streaming` grid | Prove load bounds; no silent unload |
-| Physics | PhysX/Havok | `li-physics-*` | Provable invariants; tier picker |
-| AI layout | Promethean / research | `world.gen` + local LLM | Build-verify loop with `lic` |
-| 3D from text | Meshy/Tripo | `studio.gen.mesh` | Auto collision + LOD policy |
-| NPC dialog | Inworld | `studio.ai.character` | Policy in `requires`; local model |
-| Hot reload | Unity play mode | `lic` incremental | Only after VC cache safe |
-| Networking | Netcode | **Later** GD-NET | Spec with proved sync subset |
-| Visual fidelity | Lumen/Nanite | `li-render` + optional UE bridge | **Optional** export, not lock-in |
+Simulate **and** manufacture:
+
+1. Engineer mesh in scene  
+2. Thermal/warp sim (`heat_equation`, proved bounds)  
+3. Optional warp compensation  
+4. **Export** STL / 3MF / G-code  
+5. Send to printer (OctoPrint-class, trusted)
+
+RFC: [li-sim-additive-rfc.md](specs/li-sim-additive-rfc.md)
 
 ---
 
-## 11. Technology choices (recommended)
+## 10. Robotics (PH-ROBO)
 
-| Concern | Recommendation | Rationale |
-|---------|----------------|-----------|
-| Viewport | **wgpu** or **SDL3 + Metal/Vulkan** via thin C (`li_rt`) | Cross-platform; keep proof out of GPU |
-| UI framework | **Li-owned immediate mode** first (extend `li-ui`) | Agents read layout code; no XAML |
-| Asset format | **glTF 2.0** primary, USD optional | Tooling everywhere |
-| Local LLM | **Ollama API** + **llama.cpp** embed | De facto local standard |
-| Tool protocol | **JSON schema** + MCP-compatible surface | Cursor/lis reuse |
-| Scripting | **Li only** (no second language) | Single proof pipeline |
+Manipulators, mobile bases, digital twins on **same** rigid-body stack as games. Optional ROS2 bridge (trusted). RL via `sim_rl` + `sim.step`.
+
+RFC: [li-sim-robotics-rfc.md](specs/li-sim-robotics-rfc.md)
 
 ---
 
-## 12. Compiler & runtime requirements
+## 11. Scientific & engineering sim (PH-SCI)
 
-| Feature | Needed for | PH link |
-|---------|------------|---------|
-| Package `import` graph | Studio modules call physics | Import resolver (lic#57) |
-| Dynamic library hot reload | Play mode code tweak | Compiler RFC |
-| `extern` GPU / audio | Render bridge | Trusted C audit |
-| `@physics(tier=…)` elaboration | One-click sim quality | PHY-n policy |
-| `watch` on `std/io` | Asset hot reload | PH-IO-4 |
+Graphical CFD, MD (`md_lennard_jones`), heat, fluids, orbital — `li-physics-*` + `sim.viz`. Tier-2 benches run **in** the engine viewport.
+
+RFC: [sim-viz-scientific-rfc.md](specs/sim-viz-scientific-rfc.md)
 
 ---
 
-## 13. Risks and mitigations
+## 12. AI drug design (PH-DRUG)
 
-| Risk | Mitigation |
+Roche **Lab-in-the-Loop**–class workflow: hypothesis → generate → **DFT/TDDFT** (`li-chem`) → lab ingest → retrain. **`studio.adaptive`** panels by stage/role.
+
+RFC: [drug-design-lab-loop-rfc.md](specs/drug-design-lab-loop-rfc.md)
+
+---
+
+## 13. Quantum chemistry — `li-chem` (PH-QM)
+
+**Separate from** gameplay `physics.chem`.
+
+```li
+import chem.dft
+
+def benzene_energy() -> float
+  requires geom_valid(benzene_ring())
+=
+  chem.dft.run(method = "rks", basis = "def2-svp", geometry = benzene_ring(), backend = "auto").total_energy
+```
+
+| Module | Methods |
+|--------|---------|
+| `chem.abinitio` | HF, MP2 (staged) |
+| `chem.dft` | Ground-state DFT |
+| `chem.tddft` | Excited states |
+| `chem.ml` | AI surrogates (PH-ML) |
+
+Backends: native Li → GPU/LKIR → trusted ORCA/Psi4. RFC: [li-chem-qm-rfc.md](specs/li-chem-qm-rfc.md)
+
+---
+
+## 14. Voxels (PH-VOXEL)
+
+Unified **`VoxelGrid`** for games (blocks), AM (powder bed), engineering grids, scientific fields, QM density.
+
+RFC: [voxel-engine-rfc.md](specs/voxel-engine-rfc.md)
+
+---
+
+## 15. Publication export (PH-PUB)
+
+Paper-ready **figures** (SVG, PDF, 300+ dpi PNG) and **data** (HDF5, CSV, VTK) + **reproducibility bundle**.
+
+```li
+# conceptual API
+# studio.publish.figure(path = "figures/fig1.svg", template = "nature_single_column")
+# studio.publish.bundle(path = "publish.zip")
+```
+
+RFC: [publication-export-rfc.md](specs/publication-export-rfc.md)
+
+---
+
+## 16. ML / RL async (PH-ML)
+
+Four parallelism axes: sample (env pools), host prefetch, GPU streams, cluster (Triton-distributed–class). Default `ml.runtime.mode = "async_parallel"`.
+
+RFC: [ml-async-parallel-rfc.md](specs/ml-async-parallel-rfc.md)
+
+---
+
+## 17. PH-UX — killer UI/UX
+
+| Target | Metric |
+|--------|--------|
+| Viewport | ≥60 fps |
+| Panel switch | &lt;100 ms |
+| AM export | ≤3 clicks |
+| a11y | WCAG 2.2 AA chrome |
+| Design system | `studio.design` tokens |
+
+RFC: [studio-ux-design-system-rfc.md](specs/studio-ux-design-system-rfc.md)
+
+---
+
+## 18. PH-AGENT — Cursor SDK + MCP
+
+| Tool (examples) | Action |
+|-----------------|--------|
+| `world_scaffold` | New project from template |
+| `sim_set_profile` | Switch engine profile |
+| `lic_check` / `lic_build` | Proof gate |
+| `am_export_print` | Export to printer |
+| `chem_dft_run` | Queue QM job |
+| `publish_bundle` | Repro archive |
+| `studio_adaptive_layout` | Drug/role layouts |
+
+---
+
+## 19. PH-HW — GPU, AMD, LKIR
+
+| Backend | Use |
+|---------|-----|
+| wgpu | Viewport (all vendors) |
+| CUDA | NVIDIA |
+| **ROCm/HIP** | AMD (peer, not afterthought) |
+| LKIR | Li kernel IR → CUDA/HIP/Triton |
+
+**Portability:** `lic build --target <triple>` — RFC: [portable-targets-rfc.md](specs/portable-targets-rfc.md), [li-gpu-lkir-rfc.md](specs/li-gpu-lkir-rfc.md)
+
+---
+
+## 20. PH-COMPLY — critical packages
+
+| Tier | Packages |
 |------|------------|
-| Scope = build UE5 | **Render bridge** + prove sim; delegate AAA graphics optionally |
-| Local models too weak | Hybrid cloud tier; small models for DSL, big for one-shot gen |
-| Proof too slow for interact | `lic check` in editor; full `lic build` on save/publish |
-| Agent runaway edits | `studio.commands` undo + max patch size + human approve gate |
+| **CRITICAL** | `lic`, `li-chem`, `li-sim-drug-design`, `li-sim-additive`, `studio.publish` |
+| **IMPORTANT** | `li-ml`, `li-sim`, `li-gpu` |
+
+CRITICAL: traceability `PKG-*`, SBOM, export audit log. RFC: [critical-package-compliance-rfc.md](specs/critical-package-compliance-rfc.md)
 
 ---
 
-## 14. Success metrics
+## 21. Technology choices
 
-| Metric | Target (GD-7) |
-|--------|-----------------|
-| Text → playable stub world | < 5 min on M-series laptop (local 8B) |
-| Agent patch → green `lic check` | > 80% on curated benchmark prompts |
-| Physics tier-2 | All game-adjacent benches ≤ 1.2× C++ |
-| World project size | 10⁴ entities, streaming on |
-| User readability | New author understands `world.li` in < 10 min |
-
----
-
-## 15. Immediate next actions (org)
-
-1. **Roadmap:** Add PH-GD-0…7 to master plan tracker (proposal in `roadmap` repo).  
-2. **Issues:** Epic `world-studio` with GD-1 subtasks (scene graph, studio shell).  
-3. **Package:** Scaffold `li-studio` with `--import-name studio`.  
-4. **Agent API:** Draft OpenAPI for `world.apply_patch` in `lis`.  
-5. **Do not** merge scope into `li-demo` (automation sandbox per org rule).
+| Concern | Choice |
+|---------|--------|
+| Viewport | wgpu / Vulkan / Metal |
+| UI | Extend `li-ui` (immediate mode, agent-readable) |
+| GPU ML | LKIR + optional Triton; ROCm + CUDA |
+| Agents | MCP + `@cursor/sdk` |
+| Syntax | **`def`** + contracts |
+| Assets | glTF primary |
 
 ---
 
-## 16. Related links
+## 22. Success metrics (rollup)
 
-- [GAME_DEV.md](../physics/GAME_DEV.md) — current physics integration  
-- [SIMULATION_UI_READINESS.md](../physics/SIMULATION_UI_READINESS.md) — shipped stubs  
-- [import-style.md](../language/import-style.md) — module naming  
-- [composable-by-default.md](../ecosystem/composable-by-default.md) — APIs not monoliths  
-- [li-httpd plan](../superpowers/plans/2026-05-16-li-httpd-plan.md) — agent gateway  
+| Area | Target |
+|------|--------|
+| Game | Text → playable &lt;5 min (local 8B) |
+| UX | SUS ≥75; 60 fps viewport |
+| Sim | One `world.li` across game + sim profiles |
+| AM | Sim pass → export 3MF/G-code |
+| Drug | Lab-in-the-loop demo + adaptive stages |
+| QM | DFT smoke + optional Psi4 parity bench |
+| Publish | SVG + HDF5 + repro bundle |
+| Agents | 70% fix-rate on curated `lic check` prompts |
+| Compliance | CRITICAL packages SBOM in CI |
 
-**Maintainers:** Update this doc when PH-GD phases ship or SOTA shifts (quarterly review).
+---
+
+## 23. Immediate actions
+
+1. Land RFC stubs under [specs/](specs/) (this execution).  
+2. Tracker: [PH-world-studio-program.md](PH-world-studio-program.md).  
+3. Update [li-world-studio-vision.mdc](../../.cursor/rules/li-world-studio-vision.mdc).  
+4. Scaffold `li-studio` after GD-1 approval (separate PR).  
+5. **Do not** use `li-demo` for studio features.
+
+---
+
+## 24. RFC index
+
+| RFC | Track |
+|-----|-------|
+| [li-engine-unified-sim-rfc.md](specs/li-engine-unified-sim-rfc.md) | PH-SIM |
+| [studio-cursor-sdk-rfc.md](specs/studio-cursor-sdk-rfc.md) | PH-AGENT |
+| [studio-ux-design-system-rfc.md](specs/studio-ux-design-system-rfc.md) | PH-UX |
+| [li-sim-additive-rfc.md](specs/li-sim-additive-rfc.md) | PH-AM |
+| [li-sim-robotics-rfc.md](specs/li-sim-robotics-rfc.md) | PH-ROBO |
+| [sim-viz-scientific-rfc.md](specs/sim-viz-scientific-rfc.md) | PH-SCI |
+| [drug-design-lab-loop-rfc.md](specs/drug-design-lab-loop-rfc.md) | PH-DRUG |
+| [li-chem-qm-rfc.md](specs/li-chem-qm-rfc.md) | PH-QM |
+| [voxel-engine-rfc.md](specs/voxel-engine-rfc.md) | PH-VOXEL |
+| [publication-export-rfc.md](specs/publication-export-rfc.md) | PH-PUB |
+| [ml-async-parallel-rfc.md](specs/ml-async-parallel-rfc.md) | PH-ML |
+| [portable-targets-rfc.md](specs/portable-targets-rfc.md) | PH-PORT |
+| [li-gpu-lkir-rfc.md](specs/li-gpu-lkir-rfc.md) | PH-HW |
+| [critical-package-compliance-rfc.md](specs/critical-package-compliance-rfc.md) | PH-COMPLY |
+
+**Maintainers:** Quarterly SOTA review; keep in sync with Cursor plan artifact `world_studio_amd_port_be6fdf4f.plan.md`.

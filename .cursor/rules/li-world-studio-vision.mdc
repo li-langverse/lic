@@ -1,45 +1,45 @@
 ---
-description: World Studio vision — AI-first game GUI above classic engines; module map PH-GD
+description: World Studio + Li Engine — unified sim, UX, agents, AMD, chem, voxels
 globs:
   - docs/game-dev/**
   - docs/physics/GAME_DEV.md
   - packages/li-scene/**
   - packages/li-ui/**
-  - packages/li-physics-runtime/**
+  - packages/li-physics-*/
+  - packages/li-sim/**
+  - packages/li-chem/**
+  - packages/li-voxel/**
 alwaysApply: false
 ---
 
-# Li World Studio (vision guardrails)
+# Li World Studio & Li Engine
 
-**Canonical plan:** `docs/game-dev/world-studio-vision.md`
+**Canonical:** `docs/game-dev/world-studio-vision.md`  
+**Tracker:** `docs/game-dev/PH-world-studio-program.md`  
+**RFCs:** `docs/game-dev/specs/`
 
-When designing game dev, editor, or world-creation features:
+## Syntax
 
-## Product direction
+- Use Python-style **`def`** for functions in new code and docs (not `proc`).
+- Keep `requires` / `ensures` / `decreases` on exported APIs.
 
-- **AI-first:** every feature must be reachable via **stable agent APIs** (`studio.commands.*`), not menu-only.
-- **Local models default:** Ollama/llama.cpp-class; cloud requires explicit `raises Net` + audit.
-- **Above Unity/Unreal on workflow:** diffable Li worlds + `lic build` proof — not “clone UE5 renderer first.”
-- **Read like prose:** imports `world`, `scene`, `physics.runtime`, `studio.ui` — see `li-readability-philosophy.mdc`.
+## Product
 
-## Module rules
+- **One engine** for game + sim profiles — no CARLA/GROMACS/slicer forks.
+- **Killer UX** (PH-UX): 60 fps, adaptive layouts, export wizards.
+- **Agents:** MCP `li-engine` + `@cursor/sdk`; every path → `lic build`.
+- **GPU:** CUDA + **ROCm/HIP** (no CUDA-only user kernels).
+- **AM:** simulate + **export STL/3MF/G-code** to printers.
+- **Drug design:** Lab-in-the-Loop + `studio.adaptive` + `li-chem` QM.
+- **Publish:** `studio.publish` for paper-ready figures + repro bundles.
+- **Compliance:** CRITICAL tier on `li-chem`, drug, AM export, `lic`.
 
-| Need | Package | Do not |
-|------|---------|--------|
-| Editor shell | `li-studio` (new) | Dump editor into `lic` compiler |
-| World/biomes | `li-world` (new) | Encode worlds only in binary |
-| Assets | `li-assets` (new) | Hardcode paths in compiler |
-| AI tools | `li-studio-ai` (new) | Silent cloud calls |
-| Scene graph | **expand** `li-scene` | Fork second scene system |
-| UI chrome | **expand** `li-ui` | Adopt opaque UI framework without Li bindings |
-| Physics | **expand** `li-physics-*` | Unproved C++ physics in user path |
+## Do not
 
-## Phases (PH-GD)
+- Dump studio into `lic` compiler.
+- Use `li-demo` for studio features by default.
+- Add second physics engine for RL/sim.
 
-Work in order unless issue says otherwise: **GD-1** studio MVP → **GD-2** world model → **GD-3** AI loop → **GD-4** assets → **GD-5** render → **GD-6** scale → **GD-7** player.
+## Phases
 
-## Agents
-
-- Proposals that touch >1 repo: update master plan + this vision doc section.
-- Reference SOTA in PR (what we replicate/improve); add bench or `li-tests/game_dev/` row.
-- **No** default work in `li-demo` for studio features.
+PH-GD (editor) → PH-SIM (profiles) → domain packs (ROBO, AM, SCI, DRUG) → PH-QM / PH-VOXEL / PH-PUB in parallel where deps allow.

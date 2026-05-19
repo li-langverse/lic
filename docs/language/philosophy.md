@@ -12,7 +12,7 @@ Python’s [Zen of Python (PEP 20)](https://peps.python.org/pep-0020/) is not a 
 
 | Aphorism | Li reading |
 |----------|------------|
-| **Simple is better than complex** | Prefer one clear `proc` over clever metaprogramming. Sugar must desugar to a small core the prover understands. |
+| **Simple is better than complex** | Prefer one clear `def` over clever metaprogramming. Sugar must desugar to a small core the prover understands. |
 | **Readability counts** | If a teammate cannot skim it in one pass, rename or split it — proof obligations do not excuse opaque names. |
 | **Explicit is better than implicit** | Effects (`raises IO`), contracts (`requires` / `ensures`), and types are written out — no hidden globals, no `Any`. |
 | **There should be one obvious way** | One idiomatic import (`import physics.runtime`), one obvious loop shape with `decreases`, one obvious parallel form with `disjoint`. |
@@ -65,7 +65,9 @@ Contracts are **promises in English-shaped logic**, not magic comments:
 
 Rule: **import path = how you talk about the domain.** See [import-style.md](import-style.md) and [repo naming](../ecosystem/repo-naming.md).
 
-### Functions (`proc`)
+### Functions (`def`)
+
+Li uses Python-style **`def`** for functions. Legacy docs may mention `proc`; new code and game-dev vision use **`def`** only.
 
 - **Verb phrases:** `step_world`, `load_scene`, `compute_forces`, `normalize_velocity`
 - **Say what, not how:** `merge_collisions` not `do_pass_2`

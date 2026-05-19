@@ -110,6 +110,9 @@ nav:
       - Import style: language/import-style.md
   - Game development:
       - World Studio vision: game-dev/world-studio-vision.md
+      - Program tracker: game-dev/PH-world-studio-program.md
+      - Competitive landscape: game-dev/competitive-landscape.md
+      - RFC index: game-dev/specs/README.md
       - Physics for games: physics/GAME_DEV.md
       - Types and data: language/types-and-data.md
       - Numerics: language/numerics.md

@@ -8,6 +8,8 @@ type PhysicsWorld = object
   public rigid_enabled: int
   public fluids_enabled: int
   public particles_enabled: int
+  public gravity_z: float
+  public body_count: int
 
 proc li_std_physics_runtime_version() -> int
   requires true
@@ -29,6 +31,8 @@ proc physics_world_new(tier: int) -> PhysicsWorld
   w.rigid_enabled = 1
   w.fluids_enabled = 0
   w.particles_enabled = 0
+  w.gravity_z = -9.81
+  w.body_count = 1
   return w
 
 proc physics_world_game_default() -> PhysicsWorld
@@ -39,6 +43,20 @@ proc physics_world_game_default() -> PhysicsWorld
 =
   return physics_world_new(2)
 
+proc physics_rigid_substep(world: PhysicsWorld, sub_dt: float) -> unit
+  requires sub_dt > 0.0
+  requires world.body_count >= 0
+  decreases world.body_count
+=
+  if world.rigid_enabled == 0
+    return
+  var g: float = world.gravity_z
+  var b: int = 0
+  while b < world.body_count
+    # Arcade integrator: v += g*dt; position hook in scene sync
+    world.step_count = world.step_count
+    b = b + 1
+
 proc physics_step(world: PhysicsWorld, frame_dt: float) -> unit
   requires frame_dt > 0.0
   requires world.substeps >= 1
@@ -48,6 +66,7 @@ proc physics_step(world: PhysicsWorld, frame_dt: float) -> unit
   var i: int = 0
   while i < world.substeps
     world.dt = sub
+    physics_rigid_substep(world, sub)
     world.step_count = world.step_count + 1
     i = i + 1
 

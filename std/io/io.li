@@ -1,0 +1,27 @@
+# std/io — file and stream surface (PH-IO-4 stub; full IO when compiler wires syscalls).
+
+type Path = str
+type FileHandle = object
+  public open: int
+
+proc io_tag() -> int
+  requires true
+  ensures result == 4
+  decreases 0
+=
+  return 4
+
+proc file_open_read(path: Path) -> FileHandle
+  requires true
+  decreases 0
+=
+  var f: FileHandle
+  f.open = 0
+  return f
+
+proc file_read_all_stub() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0

@@ -15,10 +15,10 @@ type PlayerSession = object
 
 def li_mmo_version() -> int
   requires true
-  ensures result == 6
+  ensures result == 7
   decreases 0
 =
-  return 6
+  return 7
 
 # MMO-7 partial — server-side validation hook (full anti-cheat later).
 def mmo_anticheat_validate_tick_stub(tick: int, checksum: int) -> int
@@ -162,6 +162,43 @@ def mmo_realm_config_tick_hz_dev() -> int
   decreases 0
 =
   return 30
+
+# PH-MMO-3 — deploy/mmo/realm.toml dev profile constants (pairs with deploy-mmo-dev.sh).
+def mmo_deploy_dev_shard_count() -> int
+  requires true
+  ensures result == 2
+  decreases 0
+=
+  return 2
+
+def mmo_deploy_dev_gateway_port() -> int
+  requires true
+  ensures result == 8080
+  decreases 0
+=
+  return 8080
+
+def mmo_deploy_dev_websocket_port() -> int
+  requires true
+  ensures result == 8081
+  decreases 0
+=
+  return 8081
+
+def mmo_deploy_dev_smoke() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  if mmo_deploy_dev_shard_count() != 2:
+    return 1
+  if mmo_realm_config_tick_hz_dev() != 30:
+    return 2
+  if mmo_deploy_dev_gateway_port() != 8080:
+    return 3
+  if mmo_deploy_dev_websocket_port() != 8081:
+    return 4
+  return 0
 
 def mmo_smoke() -> int
   requires true

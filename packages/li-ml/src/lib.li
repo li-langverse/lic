@@ -7,10 +7,10 @@ type JobGraph = object
 
 def li_ml_version() -> int
   requires true
-  ensures result == 1
+  ensures result == 2
   decreases 0
 =
-  return 1
+  return 2
 
 def ml_runtime_mode_async_parallel() -> int
   requires true
@@ -45,3 +45,27 @@ def env_pool_step_stub(batch_size: int) -> int
   decreases batch_size
 =
   return batch_size
+
+def job_graph_smoke() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  var g: JobGraph = job_graph_new(4)
+  job_graph_run_stub(g)
+  if g.completed != 4:
+    return 1
+  if g.async_mode != ml_runtime_mode_async_parallel():
+    return 2
+  return 0
+
+def ml_job_graph_batch_smoke() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  if job_graph_smoke() != 0:
+    return 1
+  if env_pool_step_stub(8) != 8:
+    return 2
+  return 0

@@ -1,0 +1,13 @@
+import bioeng
+import sim.drug_design
+
+def main() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  if lab_loop_full_smoke() != 0:
+    return 1
+  if bioeng_from_drug_stage(lab_loop_stage_dft()) != bioeng_stage_test():
+    return 2
+  return bioeng_drug_litl_bridge_smoke()

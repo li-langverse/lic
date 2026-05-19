@@ -1,6 +1,6 @@
 # PH-world-studio-program — master tracker
 
-**Status:** In progress (impl-4 on `feat/world-studio-impl-1`)  
+**Status:** In progress (impl-5 on `feat/world-studio-impl-1`)  
 **Vision:** [world-studio-vision.md](world-studio-vision.md)
 
 Cross-cutting program IDs. Implementation order respects dependencies in the vision doc.
@@ -15,6 +15,7 @@ Cross-cutting program IDs. Implementation order respects dependencies in the vis
 | **PH-AM** | AM-0…9 | PH-SCI-2, PH-UX-3 |
 | **PH-SCI** | SCI-0…7 | tier-2 physics |
 | **PH-DRUG** | DRUG-0…7 | PH-SCI-2, PH-GD-1, PH-AGENT |
+| **PH-BIOENG** | BIOENG-0…7 | PH-DRUG-0, PH-ML-0, PH-QM-0 |
 | **PH-QM** | QM-0…7 | PH-HW, PH-COMPLY |
 | **PH-VOXEL** | VOXEL-0…5 | PH-GD-5 |
 | **PH-PUB** | PUB-0…5 | PH-UX, `sim.viz` |
@@ -44,3 +45,5 @@ Cross-cutting program IDs. Implementation order respects dependencies in the vis
 | `chem` DFT/TDDFT tagged stubs | Done |
 | **Arbitrary / unphysical physics** (`li-physics-custom`) | Done (CUSTOM-0) |
 | `sim` law_mode + `sim_step_arbitrary` | Done |
+| **PH-BIOENG** plan + `li-bioeng` + drug bridge | Done (BIOENG-0) |
+| `benchmarks/competitive/bioengineering.toml` | Done (stub) |

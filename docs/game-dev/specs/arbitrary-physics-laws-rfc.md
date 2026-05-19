@@ -26,7 +26,8 @@ Hard-coding “real physics only” forces studios to bypass the engine with ad-
 ### Package: `li-physics-custom` (`import physics.custom`)
 
 - `CustomState` — minimal phase-space carrier (games + research)
-- `custom_law_apply(law_id, state, dt)` — dispatch built-in or user-registered laws
+- `custom_law_step_*` — per-law integrators (inverse gravity, zero drag, teleport)
+- `custom_law_apply(law_id, …)` — **CUSTOM-1** (dispatch blocked on borrowck in CUSTOM-0)
 - Built-ins: inverse gravity, zero drag, teleport pulse (`allows_discontinuity`)
 - User laws: `law_id >= 1000` via `custom_law_user_register_stub` (future: `def` callbacks with proofs optional)
 
@@ -43,7 +44,7 @@ def game_step_unphysical(w: SimWorld, s: CustomState) -> unit
   requires w.law_mode == sim_law_mode_arbitrary()
   requires w.custom_law_id == custom_law_builtin_inverse_gravity()
 =
-  custom_law_apply(w.custom_law_id, s, w.dt)
+  custom_law_step_inverse_gravity(s, w.dt)
   sim_step_arbitrary(w)
 ```
 

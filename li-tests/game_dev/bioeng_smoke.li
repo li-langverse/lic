@@ -1,0 +1,27 @@
+# PH-BIOENG smoke — DBTL stage advance (standalone).
+
+type BioengPipeline = object
+  public iteration: int
+  public stage_id: int
+
+def bioeng_dbtl_advance(p: BioengPipeline) -> unit
+  requires p.stage_id >= 0
+  requires p.stage_id <= 3
+  decreases p.stage_id
+=
+  if p.stage_id < 3:
+    p.stage_id = p.stage_id + 1
+  p.iteration = p.iteration + 1
+
+def main() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  var p: BioengPipeline
+  p.iteration = 0
+  p.stage_id = 0
+  bioeng_dbtl_advance(p)
+  if p.stage_id != 1:
+    return 1
+  return 0

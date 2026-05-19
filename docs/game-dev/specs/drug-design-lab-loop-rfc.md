@@ -23,6 +23,8 @@ Roche Lab-in-the-Loop–class: stage-gated panels, audit on CRITICAL exports.
 
 DRUG-0 stubs → DRUG-1 real `chem.dft` backend → DRUG-2 LIMS ingest (trusted).
 
+**Extension:** [competitive-bioengineering-rfc.md](competitive-bioengineering-rfc.md) (PH-BIOENG) — DBTL stages on this spine.
+
 ## Compliance
 
 `li-chem` + `li-sim-drug-design` — CRITICAL tier; model cards (PH-COMPLY).

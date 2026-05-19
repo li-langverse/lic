@@ -12,6 +12,7 @@
 | `sim_scientific` | SCI | `sim`, `sim.scientific`, `physics.*`, `chem` |
 | `sim_robotics` | ROBO | `sim`, `sim.robotics` |
 | `sim_drug_design` | DRUG | `studio`, `chem`, `sim.drug_design` |
+| `bioengineering` | BIOENG | `bioeng`, `sim.drug_design`, `chem`, `ml`, `studio` |
 | `sim_rl` | ML | `sim`, `ml` |
 
 Example project snippet (hand-authored until scaffolding lands):

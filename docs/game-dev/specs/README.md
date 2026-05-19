@@ -12,6 +12,7 @@
 | [li-sim-robotics-rfc.md](li-sim-robotics-rfc.md) | PH-ROBO |
 | [sim-viz-scientific-rfc.md](sim-viz-scientific-rfc.md) | PH-SCI |
 | [drug-design-lab-loop-rfc.md](drug-design-lab-loop-rfc.md) | PH-DRUG |
+| [competitive-bioengineering-rfc.md](competitive-bioengineering-rfc.md) | PH-BIOENG |
 | [li-chem-qm-rfc.md](li-chem-qm-rfc.md) | PH-QM |
 | [voxel-engine-rfc.md](voxel-engine-rfc.md) | PH-VOXEL |
 | [publication-export-rfc.md](publication-export-rfc.md) | PH-PUB |

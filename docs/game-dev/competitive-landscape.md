@@ -12,6 +12,7 @@
 | Scientific viz | ParaView, MATLAB | In-engine graphics + PH-PUB repro bundles |
 | MD / CFD | GROMACS, OpenFOAM | Live tier-2 benches in viewport |
 | Drug discovery | Roche Lab-in-the-Loop, BioNeMo | Open projects + adaptive GUI + QM in Li |
+| **Bioengineering** | Benchling, Rosetta, ProteinMPNN, COMSOL Biokinetics | **PH-BIOENG:** DBTL on same LITL spine as drug design + `lic build` + scorecard — [plan](competitive-bioengineering-plan.md) |
 | QM packages | Gaussian, ORCA, Psi4 | `li-chem` easy API + native/GPU + trusted drivers |
 | GPU lock-in | CUDA-only stacks | **ROCm/HIP** + LKIR |
 | Agents | Ad-hoc Copilot | MCP + `@cursor/sdk` + mandatory `lic build` |

@@ -533,6 +533,18 @@ file = "composable/import_sim_custom_law.li"
 outcome = "compile_ok"
 note = "PH-SIM law_mode + physics.custom"
 
+[[tests]]
+suite = "composable"
+file = "composable/import_bioeng.li"
+outcome = "compile_ok"
+note = "PH-BIOENG-0 import bioeng"
+
+[[tests]]
+suite = "composable"
+file = "composable/import_bioeng_drug_bridge.li"
+outcome = "compile_ok"
+note = "PH-BIOENG bridge to sim.drug_design"
+
 # composable/import_physics_runtime — enable when cross-package PhysicsWorld types resolve
 # stdlib_coverage/build_std_csv — enable when std.csv module resolves (PH-IO-4)
 
@@ -761,6 +773,12 @@ suite = "game_dev"
 file = "game_dev/custom_physics_smoke.li"
 outcome = "parse_ok"
 note = "PH-PHYS-CUSTOM inverse gravity smoke"
+
+[[tests]]
+suite = "game_dev"
+file = "game_dev/bioeng_smoke.li"
+outcome = "parse_ok"
+note = "PH-BIOENG DBTL advance smoke"
 
 # --- hpc_competitive (registry gate; ./li-tests/run_all.sh hpc_competitive) ---
 

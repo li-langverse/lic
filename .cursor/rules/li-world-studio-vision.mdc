@@ -9,6 +9,8 @@ globs:
   - packages/li-physics-custom/**
   - packages/li-sim/**
   - packages/li-chem/**
+  - packages/li-bioeng/**
+  - packages/li-sim-drug-design/**
   - packages/li-voxel/**
 alwaysApply: false
 ---

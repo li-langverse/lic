@@ -121,7 +121,7 @@ import physics.custom
 def powerup_step(w: SimWorld, s: CustomState) -> unit
   requires w.law_mode == sim_law_mode_arbitrary()
 =
-  custom_law_apply(custom_law_builtin_inverse_gravity(), s, w.dt)
+  custom_law_step_inverse_gravity(s, w.dt)
   sim_step_arbitrary(w)
 ```
 
@@ -176,6 +176,7 @@ def game_step(world: GameWorld, input: InputState) -> unit
 | `sim.additive` | `li-sim-additive` | PH-AM |
 | `sim.scientific` | `li-sim-scientific` | PH-SCI |
 | `sim.drug_design` | `li-sim-drug-design` | PH-DRUG |
+| `bioeng` | `li-bioeng` | PH-BIOENG (extends PH-DRUG) |
 | `chem` / `chem.dft` | `li-chem` | PH-QM |
 | `voxel` | `li-voxel` | PH-VOXEL |
 | `ml` | `li-ml` | PH-ML |
@@ -231,6 +232,22 @@ RFC: [sim-viz-scientific-rfc.md](specs/sim-viz-scientific-rfc.md)
 Roche **Lab-in-the-Loop**–class workflow: hypothesis → generate → **DFT/TDDFT** (`li-chem`) → lab ingest → retrain. **`studio.adaptive`** panels by stage/role.
 
 RFC: [drug-design-lab-loop-rfc.md](specs/drug-design-lab-loop-rfc.md)
+
+---
+
+## 12b. Competitive bioengineering (PH-BIOENG)
+
+**Builds on PH-DRUG** — same Lab-in-the-Loop spine, extended to **DBTL** (Design–Build–Test–Learn) for synthetic biology, protein engineering, and bioprocess.
+
+| Stage | Package |
+|-------|---------|
+| Design / Build / Test / Learn | `bioeng` — `bioeng_dbtl_*` |
+| Drug LITL bridge | `sim.drug_design` — `bioeng_from_drug_stage` |
+| QM / affinity | `li-chem` |
+| Search | `li-ml` |
+| Scorecard | `bioeng_scorecard_rank` vs competitive registry |
+
+Plan: [competitive-bioengineering-plan.md](competitive-bioengineering-plan.md) · RFC: [competitive-bioengineering-rfc.md](specs/competitive-bioengineering-rfc.md)
 
 ---
 

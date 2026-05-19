@@ -1,0 +1,10 @@
+# PH-BIOENG-0 — import bioeng composable gate.
+
+import bioeng
+
+def main() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return bioeng_dbtl_smoke()

@@ -114,6 +114,7 @@ nav:
       - Agent MCP sketch: game-dev/agent-mcp-sketch.md
       - Spin-up templates: game-dev/spin-up-templates.md
       - Competitive landscape: game-dev/competitive-landscape.md
+      - Bioengineering plan: game-dev/competitive-bioengineering-plan.md
       - RFC index: game-dev/specs/README.md
       - Physics for games: physics/GAME_DEV.md
       - Types and data: language/types-and-data.md

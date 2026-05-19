@@ -1,0 +1,146 @@
+# PKG-li-bioeng — competitive bioengineering (PH-BIOENG-0).
+# Builds on PH-DRUG: import sim.drug_design + chem + studio from application layer.
+
+type BioengConstruct = object
+  public part_count: int
+  public valid: int
+
+type BioengPipeline = object
+  public iteration: int
+  public stage_id: int
+  public drug_stage_linked: int
+  public objective_score: float
+  public assay_count: int
+
+def li_bioeng_version() -> int
+  requires true
+  ensures result == 1
+  decreases 0
+=
+  return 1
+
+def bioeng_stage_design() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0
+
+def bioeng_stage_build() -> int
+  requires true
+  ensures result == 1
+  decreases 0
+=
+  return 1
+
+def bioeng_stage_test() -> int
+  requires true
+  ensures result == 2
+  decreases 0
+=
+  return 2
+
+def bioeng_stage_learn() -> int
+  requires true
+  ensures result == 3
+  decreases 0
+=
+  return 3
+
+# Map drug-design LITL stage → bioeng DBTL stage (see competitive-bioengineering-plan.md).
+def bioeng_from_drug_stage(drug_stage_id: int) -> int
+  requires drug_stage_id >= 0
+  requires drug_stage_id <= 3
+  ensures result >= 0
+  ensures result <= 3
+  decreases drug_stage_id
+=
+  if drug_stage_id == 0:
+    return bioeng_stage_design()
+  if drug_stage_id == 1:
+    return bioeng_stage_build()
+  if drug_stage_id == 2:
+    return bioeng_stage_test()
+  return bioeng_stage_learn()
+
+def bioeng_construct_new(part_count: int) -> BioengConstruct
+  requires part_count > 0
+  ensures result.part_count == part_count
+  ensures result.valid == 1
+  decreases part_count
+=
+  var c: BioengConstruct
+  c.part_count = part_count
+  c.valid = 1
+  return c
+
+def bioeng_dbtl_new(iteration: int) -> BioengPipeline
+  requires iteration >= 0
+  ensures result.iteration == iteration
+  ensures result.stage_id == bioeng_stage_design()
+  ensures result.drug_stage_linked == 0
+  decreases iteration
+=
+  var p: BioengPipeline
+  p.iteration = iteration
+  p.stage_id = bioeng_stage_design()
+  p.drug_stage_linked = 0
+  p.objective_score = 0.0
+  p.assay_count = 0
+  return p
+
+def bioeng_dbtl_link_drug_stage(p: BioengPipeline, drug_stage_id: int) -> unit
+  requires drug_stage_id >= 0
+  requires drug_stage_id <= 3
+  ensures p.drug_stage_linked == drug_stage_id
+  ensures p.stage_id == bioeng_from_drug_stage(drug_stage_id)
+  decreases drug_stage_id
+=
+  p.drug_stage_linked = drug_stage_id
+  p.stage_id = bioeng_from_drug_stage(drug_stage_id)
+
+def bioeng_dbtl_advance(p: BioengPipeline) -> unit
+  requires p.stage_id >= 0
+  requires p.stage_id <= 3
+  ensures p.iteration >= 0
+  decreases p.stage_id
+=
+  if p.stage_id < bioeng_stage_learn():
+    p.stage_id = p.stage_id + 1
+  p.iteration = p.iteration + 1
+
+def bioeng_assay_ingest_stub(p: BioengPipeline, raw_score: float) -> unit
+  requires raw_score >= 0.0
+  ensures p.assay_count >= 1
+  decreases p.assay_count
+=
+  p.assay_count = p.assay_count + 1
+  p.objective_score = p.objective_score + raw_score
+
+def bioeng_objective_score(p: BioengPipeline) -> float
+  requires true
+  ensures result == p.objective_score
+  decreases 0
+=
+  return p.objective_score
+
+def bioeng_scorecard_rank(score: float, baseline: float) -> int
+  requires baseline > 0.0
+  requires score >= 0.0
+  ensures result >= 0
+  decreases 0
+=
+  if score >= baseline:
+    return 1
+  return 0
+
+def bioeng_dbtl_smoke() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  if bioeng_from_drug_stage(2) != bioeng_stage_test():
+    return 1
+  if bioeng_scorecard_rank(1.0, 0.5) != 1:
+    return 2
+  return 0

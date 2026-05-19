@@ -1,0 +1,9 @@
+# std/bioeng — competitive bioengineering facade (PH-BIOENG).
+# Prefer: import bioeng  |  workspace packages/li-bioeng.
+
+def bioeng_std_tag() -> int
+  requires true
+  ensures result == 1
+  decreases 0
+=
+  return 1

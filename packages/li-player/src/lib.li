@@ -1,0 +1,43 @@
+# PKG-li-player — game client / publish shell (PH-GD-7 / MMO client stub).
+
+type PlayerConnection = object
+  public session_id: int
+  public realm_id: int
+  public connected: int
+
+def li_player_version() -> int
+  requires true
+  ensures result == 1
+  decreases 0
+=
+  return 1
+
+def player_connect_stub(session_id: int, realm_id: int) -> PlayerConnection
+  requires session_id > 0
+  requires realm_id >= 0
+  ensures result.connected == 1
+  ensures result.session_id == session_id
+  decreases session_id
+=
+  var c: PlayerConnection
+  c.session_id = session_id
+  c.realm_id = realm_id
+  c.connected = 1
+  return c
+
+def player_tick_stub(conn: PlayerConnection) -> unit
+  requires conn.connected == 1
+  decreases 0
+=
+  conn.session_id = conn.session_id
+
+def player_smoke() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  var c: PlayerConnection = player_connect_stub(1, 1)
+  player_tick_stub(c)
+  if c.realm_id != 1:
+    return 1
+  return 0

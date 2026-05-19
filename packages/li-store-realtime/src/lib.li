@@ -1,16 +1,28 @@
-# PKG-li-store-realtime — realtime store facade (PH-MMO-0).
-# NOT a new database engine: backends are memory (dev), Redis, Postgres (trusted FFI in MMO-4).
+# PKG-li-store-realtime — realtime store facade (PH-MMO / MMO-4).
+# NOT a new database engine: memory (dev), Redis, Postgres via trusted extern.
+
+# MMO-4 — trusted platform hooks (axioms in trusted.lean when wired).
+extern proc store_trusted_redis_ping(port: int) -> int
+  requires port > 0
+  ensures true
+  decreases 0
+
+extern proc store_trusted_postgres_ping(port: int) -> int
+  requires port > 0
+  ensures true
+  decreases 0
 
 type StoreHandle = object
   public id: int
   public backend: int
+  public port: int
 
 def li_store_realtime_version() -> int
   requires true
-  ensures result == 1
+  ensures result == 2
   decreases 0
 =
-  return 1
+  return 2
 
 def store_backend_memory() -> int
   requires true
@@ -42,6 +54,19 @@ def store_realtime_open_stub(backend: int) -> StoreHandle
   var h: StoreHandle
   h.id = 1
   h.backend = backend
+  h.port = 6379
+  return h
+
+def store_realtime_open_redis(port: int) -> StoreHandle
+  requires port > 0
+  ensures result.backend == store_backend_redis()
+  ensures result.port == port
+  decreases port
+=
+  var h: StoreHandle
+  h.id = store_trusted_redis_ping(port)
+  h.backend = store_backend_redis()
+  h.port = port
   return h
 
 def store_presence_set_stub(handle: StoreHandle, player_id: int, online: int) -> unit
@@ -68,6 +93,17 @@ def store_realtime_flush_stub(handle: StoreHandle) -> int
   ensures result == 0
   decreases 0
 =
+  return 0
+
+def store_redis_smoke() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  var h: StoreHandle = store_realtime_open_redis(6379)
+  if h.backend != store_backend_redis():
+    return 1
+  store_presence_set_stub(h, 42, 1)
   return 0
 
 def store_realtime_smoke() -> int

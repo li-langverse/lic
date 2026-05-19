@@ -1,0 +1,40 @@
+# PKG-li-studio-ai — agent apply_patch loop (PH-GD-3 stub).
+
+type PatchRequest = object
+  public patch_id: int
+  public line_count: int
+
+def li_studio_ai_version() -> int
+  requires true
+  ensures result == 1
+  decreases 0
+=
+  return 1
+
+def studio_ai_patch_new(patch_id: int, line_count: int) -> PatchRequest
+  requires patch_id > 0
+  requires line_count > 0
+  ensures result.patch_id == patch_id
+  decreases patch_id
+=
+  var p: PatchRequest
+  p.patch_id = patch_id
+  p.line_count = line_count
+  return p
+
+def studio_ai_apply_patch_stub(req: PatchRequest) -> int
+  requires req.patch_id > 0
+  ensures result == req.patch_id
+  decreases req.patch_id
+=
+  return req.patch_id
+
+def studio_ai_smoke() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  var p: PatchRequest = studio_ai_patch_new(1, 10)
+  if studio_ai_apply_patch_stub(p) != 1:
+    return 1
+  return 0

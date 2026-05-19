@@ -1,6 +1,6 @@
 # PH-world-studio-program — master tracker
 
-**Status:** In progress (impl-7 on `feat/world-studio-impl-1`)  
+**Status:** In progress (impl-8 on `feat/world-studio-impl-1`)  
 **Vision:** [world-studio-vision.md](world-studio-vision.md)  
 **Progress report:** [PH-world-studio-progress-report.md](PH-world-studio-progress-report.md) ← **read this for sprint status**
 
@@ -55,3 +55,9 @@ Cross-cutting program IDs. Implementation order respects dependencies in the vis
 | Matchmaking stubs + shard/gateway mains | Done (MMO-2/3) |
 | `world_snapshot_for_realm` | Done (MMO-6 partial) |
 | `studio_mmo_deploy_status_stub` | Done |
+| MMO-4 Redis trusted extern + `store_redis_smoke` | Done (stub) |
+| `li-studio-ai`, `li-player` packages | Done (GD-3/7 stub) |
+| BIOENG-1 pipeline smoke | Done |
+| MMO-7 anticheat tick stub (partial) | Done |
+| `benchmarks/competitive/mmorpg.toml` | Done |
+| **27 composable** import gates | Done |

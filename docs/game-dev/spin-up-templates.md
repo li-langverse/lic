@@ -13,7 +13,8 @@
 | `sim_robotics` | ROBO | `sim`, `sim.robotics` |
 | `sim_drug_design` | DRUG | `studio`, `chem`, `sim.drug_design` |
 | `bioengineering` | BIOENG | `bioeng`, `sim.drug_design`, `chem`, `ml`, `studio` |
-| `mmorpg` | MMO | `mmo`, `store.realtime`, `sim`, `world`, `scene`, `net.httpd` |
+| `mmorpg` | MMO | `mmo`, `store.realtime`, `player`, `sim`, `world`, `scene`, `net.httpd` |
+| `studio_agent` | GD-3 | `studio.ai`, `studio`, `lic check` |
 | `sim_rl` | ML | `sim`, `ml` |
 
 Example project snippet (hand-authored until scaffolding lands):

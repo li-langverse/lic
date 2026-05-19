@@ -569,6 +569,36 @@ file = "composable/import_mmo_stack.li"
 outcome = "compile_ok"
 note = "PH-MMO-1 mmo+sim+store+world stack"
 
+[[tests]]
+suite = "composable"
+file = "composable/import_store_redis.li"
+outcome = "compile_ok"
+note = "PH-MMO-4 store trusted redis extern"
+
+[[tests]]
+suite = "composable"
+file = "composable/import_studio_ai.li"
+outcome = "compile_ok"
+note = "PH-GD-3 studio.ai apply_patch stub"
+
+[[tests]]
+suite = "composable"
+file = "composable/import_player.li"
+outcome = "compile_ok"
+note = "PH-GD-7 / MMO player client stub"
+
+[[tests]]
+suite = "composable"
+file = "composable/import_bioeng_pipeline.li"
+outcome = "compile_ok"
+note = "PH-BIOENG-1 dbtl pipeline smoke"
+
+[[tests]]
+suite = "composable"
+file = "composable/import_mmo_player_stack.li"
+outcome = "compile_ok"
+note = "PH-MMO player+store+anticheat stack"
+
 # composable/import_physics_runtime — enable when cross-package PhysicsWorld types resolve
 # stdlib_coverage/build_std_csv — enable when std.csv module resolves (PH-IO-4)
 

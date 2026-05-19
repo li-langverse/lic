@@ -179,6 +179,8 @@ def game_step(world: GameWorld, input: InputState) -> unit
 | `bioeng` | `li-bioeng` | PH-BIOENG (extends PH-DRUG) |
 | `mmo` | `li-mmo` | PH-MMO |
 | `store.realtime` | `li-store-realtime` | PH-MMO persistence facade |
+| `studio.ai` | `li-studio-ai` | PH-GD-3 |
+| `player` | `li-player` | PH-GD-7 |
 | `chem` / `chem.dft` | `li-chem` | PH-QM |
 | `voxel` | `li-voxel` | PH-VOXEL |
 | `ml` | `li-ml` | PH-ML |

@@ -2,7 +2,7 @@
 
 ## Summary
 
-Agent-facing physics docs now reference `packages/li-*` folders and ergonomic imports; composable test exercises `rigid_integrate_semi_implicit` via `import physics.rigid`.
+Agent-facing physics docs now reference `packages/li-*` folders and ergonomic imports (composable rigid test remains version smoke until struct-by-value move rules are clear).
 
 ## Agent continuation
 
@@ -15,7 +15,7 @@ Agent-facing physics docs now reference `packages/li-*` folders and ergonomic im
 
 - `docs/physics/overview.md`, `SIMULATION_UI_READINESS.md`, `GAME_DEV.md`, `numerical-policy.md`
 - `docs/language/philosophy.md`, `fp-numerical-stability.md`
-- `li-tests/composable/import_physics_runtime.li` — rigid integrate smoke
+- `li-tests/composable/import_physics_runtime.li` — unchanged version smoke (integrate test blocked on move semantics)
 
 ## Not changed
 

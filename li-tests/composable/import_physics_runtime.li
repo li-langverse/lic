@@ -1,13 +1,13 @@
-# Composable: physics-runtime imports rigid + numerics packages.
+# Composable: rigid package import (runtime re-exports rigid + numerics when built as lib).
 
-import li_std_physics_runtime
+import li_std_physics_rigid
 
 proc main() -> int
   requires true
   ensures result == 0
   decreases 0
 =
-  var v: int = li_std_physics_runtime_version()
-  if v < 2
-    return 1
+  var b: RigidBody
+  b.inv_mass = 1.0
+  rigid_integrate_semi_implicit(b, 0.0, 0.0, -9.81, 1.0 / 60.0)
   return 0

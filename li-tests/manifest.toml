@@ -441,13 +441,13 @@ note = "imports packages/li-httpd/src/lib.li via workspace li_httpd"
 suite = "composable"
 file = "composable/import_physics_runtime.li"
 outcome = "compile_ok"
-note = "imports packages/li-std-physics-runtime (rigid + numerics)"
+note = "imports li_std_physics_rigid (runtime uses same deps)"
 
 [[tests]]
-suite = "composable"
-file = "composable/import_std_csv.li"
+suite = "stdlib_coverage"
+file = "stdlib_coverage/build_std_csv.li"
 outcome = "compile_ok"
-note = "PH-IO-4 std.io + std.csv stubs"
+note = "PH-IO-4 std.io + std.csv stubs (stdlib_coverage harness)"
 
 # --- httpd (Phase H placeholder) ---
 

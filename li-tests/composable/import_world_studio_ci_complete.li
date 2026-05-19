@@ -1,0 +1,27 @@
+import studio
+import render
+import gpu
+import sim
+import voxel
+import assets
+
+def main() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  if studio_spinup_template_count_stub() != 10:
+    return 1
+  if studio_binary_runtime_tag_stub() != 8288:
+    return 2
+  if studio_port_windows_target_smoke() != 0:
+    return 3
+  if studio_gpu_viewport_smoke() != 0:
+    return 4
+  if render_lkir_present_smoke() != 0:
+    return 5
+  if voxel_additive_smoke() != 0:
+    return 6
+  if assets_smoke() != 0:
+    return 7
+  return sim_world_studio_stack_smoke()

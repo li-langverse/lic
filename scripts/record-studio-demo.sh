@@ -2,7 +2,7 @@
 # Record Li World Studio demo showcase to WebM (puppeteer + ffmpeg).
 set -euo pipefail
 ROOT="$(cd "$(dirname "$0")/.." && pwd)"
-DURATION="${DURATION:-30}"
+DURATION="${DURATION:-40}"
 FPS="${FPS:-12}"
 PKG="$ROOT/scripts/studio-demo-pkg"
 

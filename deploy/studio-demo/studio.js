@@ -1,7 +1,7 @@
 /* Li World Studio — interactive demo showcase (visual prototype). */
 const canvas = document.getElementById("viewport");
 const ctx = canvas.getContext("2d");
-const demos = ["rocket", "racing", "robot", "drug", "bioeng", "mmo", "unphysical", "scientific", "publish"];
+const demos = ["rocket", "racing", "robot", "drug", "bioeng", "mmo", "unphysical", "scientific", "publish", "additive"];
 let active = "rocket";
 let tick = 0;
 let autoReel = false;
@@ -62,6 +62,12 @@ const meta = {
     profile: "studio.publish + PH-PUB",
     panel: "PublishBundle hash · 300 DPI figures · spin-up: publish",
     nodes: ["Figure", "PublishBundle", "ContentHash", "Export"],
+  },
+  additive: {
+    title: "Additive manufacturing — voxel grid",
+    profile: "sim_profile_additive + voxel",
+    panel: "4×4×4 grid · sim.additive · spin-up: additive",
+    nodes: ["VoxelGrid", "Layer", "Slicer", "BuildPlate"],
   },
 };
 
@@ -283,6 +289,33 @@ function drawUnphysical(t) {
   ctx.fillText(`law_mode=arbitrary · custom_law_id=1`, 24, h - 40);
 }
 
+function drawAdditive(t) {
+  const w = canvas.width;
+  const h = canvas.height;
+  ctx.fillStyle = "#0d1117";
+  ctx.fillRect(0, 0, w, h);
+  const size = 4;
+  const cell = 36;
+  const ox = w * 0.5 - (size * cell) / 2;
+  const oy = h * 0.45 - (size * cell) / 2;
+  for (let z = 0; z < size; z++) {
+    for (let y = 0; y < size; y++) {
+      for (let x = 0; x < size; x++) {
+        const idx = x + y * size + z * size * size;
+        const on = (idx + Math.floor(t / 8)) % 5 !== 0;
+        if (!on) continue;
+        const px = ox + x * cell + z * 4;
+        const py = oy + y * cell - z * 6;
+        ctx.fillStyle = `hsl(${200 + idx * 8}, 70%, ${45 + z * 8}%)`;
+        ctx.fillRect(px, py, cell - 2, cell - 2);
+      }
+    }
+  }
+  ctx.fillStyle = "#8b949e";
+  ctx.font = "13px monospace";
+  ctx.fillText("voxel 4³ · profile=sim_profile_additive", 24, h - 36);
+}
+
 function drawPublish(t) {
   const w = canvas.width;
   const h = canvas.height;
@@ -354,6 +387,7 @@ const drawers = {
   unphysical: drawUnphysical,
   scientific: drawScientific,
   publish: drawPublish,
+  additive: drawAdditive,
 };
 
 function frame() {

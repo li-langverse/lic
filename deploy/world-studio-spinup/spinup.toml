@@ -58,3 +58,9 @@ id = "publish"
 title = "Publication / figure export"
 profile = "studio_publish"
 imports = ["studio"]
+
+[[templates]]
+id = "additive"
+title = "Additive / voxel manufacturing"
+profile = "sim_profile_additive"
+imports = ["studio", "voxel", "sim.additive", "sim"]

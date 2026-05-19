@@ -1,28 +1,28 @@
 # Merge checklist — `feat/world-studio-impl-1` → `main`
 
-**PR title:** feat: World Studio / Li Engine (impl-1–30)
+**PR title:** feat: World Studio / Li Engine (impl-1–31)
 
 ## Pre-merge verify
 
 ```bash
+./scripts/merge-world-studio-preflight.sh
+# or stepwise:
 ./scripts/check-world-studio-gates.sh
 ./scripts/check-portable-targets.sh
 ./scripts/verify-world-studio-binary.sh
-# or full CI:
-./scripts/ci.sh
 ```
 
-## Stats (impl-30)
+## Stats (impl-31)
 
 | Metric | Value |
 |--------|--------|
-| Composable gates | 95 |
-| Demo tabs | 10 (incl. Publish) |
-| Spin-up templates | 9 |
+| Composable gates | 98 |
+| Demo tabs | 11 (incl. Additive) |
+| Spin-up templates | 10 |
 | Portable targets | 5 triples (`check-portable-targets.sh`) |
 | game_dev parse_ok | 12 |
 | vertical_demos build | 7 |
-| spinup_templates | 9 |
+| spinup_templates | 10 |
 | Release rollup | `import_world_studio_release_rollup` |
 
 ## After merge

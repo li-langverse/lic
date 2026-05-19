@@ -30,6 +30,7 @@
 ./scripts/lis new world-studio scientific ./my-viz
 ./scripts/lis new world-studio game_unphysical ./my-weird-game
 ./scripts/lis new world-studio publish ./my-paper-figs
+./scripts/lis new world-studio additive ./my-am-cell
 ```
 
 Registry: [deploy/world-studio-spinup/spinup.toml](../../deploy/world-studio-spinup/spinup.toml)

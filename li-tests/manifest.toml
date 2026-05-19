@@ -909,7 +909,7 @@ note = "PH-SIM world studio stack smoke"
 suite = "composable"
 file = "composable/import_studio_spinup_registry.li"
 outcome = "compile_ok"
-note = "Studio spin-up registry (9 templates)"
+note = "Studio spin-up registry (10 templates)"
 
 [[tests]]
 suite = "composable"
@@ -1000,6 +1000,24 @@ suite = "composable"
 file = "composable/import_studio_publish_demo_gate.li"
 outcome = "compile_ok"
 note = "Publish bundle + assets + viewport demo gate"
+
+[[tests]]
+suite = "composable"
+file = "composable/import_spinup_additive.li"
+outcome = "compile_ok"
+note = "Spin-up additive / voxel template"
+
+[[tests]]
+suite = "composable"
+file = "composable/import_world_studio_ci_complete.li"
+outcome = "compile_ok"
+note = "CI complete rollup (10 spinups + stack)"
+
+[[tests]]
+suite = "composable"
+file = "composable/import_voxel_publish_stack.li"
+outcome = "compile_ok"
+note = "Voxel additive + publish + viewport"
 
 [[tests]]
 suite = "composable"
@@ -1379,6 +1397,12 @@ suite = "spinup_templates"
 file = "../deploy/world-studio-spinup/templates/publish/main.li"
 outcome = "compile_ok"
 note = "Spin-up publish main"
+
+[[tests]]
+suite = "spinup_templates"
+file = "../deploy/world-studio-spinup/templates/additive/main.li"
+outcome = "compile_ok"
+note = "Spin-up additive main"
 
 # --- security (malformed inputs; run via ./li-tests/run_security.sh) ---
 # Wired in scripts/ci.sh: parse/check must exit 0/1, never signal (SIGSEGV etc.).

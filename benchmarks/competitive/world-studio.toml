@@ -4,7 +4,7 @@
 schema = 1
 track = "PH-GD"
 plan = "docs/game-dev/world-studio-vision.md"
-composable_gates = 95
+composable_gates = 98
 branch = "feat/world-studio-impl-1"
 
 [[benchmark]]
@@ -181,3 +181,24 @@ name = "Publish demo + viewport gate"
 tier = 1
 li_package = "li-studio"
 composable = "import_studio_publish_demo_gate"
+
+[[benchmark]]
+id = "spinup-additive"
+name = "Additive / voxel spin-up template"
+tier = 1
+li_package = "li-voxel"
+composable = "import_spinup_additive"
+
+[[benchmark]]
+id = "world-studio-ci-complete"
+name = "CI complete composable rollup"
+tier = 1
+li_package = "li-studio"
+composable = "import_world_studio_ci_complete"
+
+[[benchmark]]
+id = "voxel-publish-stack"
+name = "Voxel + publish + viewport stack"
+tier = 1
+li_package = "li-voxel"
+composable = "import_voxel_publish_stack"

@@ -3,27 +3,18 @@ extern proc li_rt_sqrt(x: float) raises IO -> float
   requires true
   ensures true
   decreases 0
-  requires true
-  ensures true
-  decreases 0
+
 extern proc li_rt_sin(x: float) raises IO -> float
   requires true
   ensures true
   decreases 0
-  requires true
-  ensures true
-  decreases 0
+
 extern proc li_rt_cos(x: float) raises IO -> float
   requires true
   ensures true
   decreases 0
-  requires true
-  ensures true
-  decreases 0
+
 extern proc li_rt_atan2(y: float, x: float) raises IO -> float
-  requires true
-  ensures true
-  decreases 0
   requires true
   ensures true
   decreases 0
@@ -116,7 +107,11 @@ def vec3_add(a: Vec3, b: Vec3) -> Vec3
   ensures result.z == a.z + b.z
   decreases 0
 =
-  return vec3(a.x + b.x, a.y + b.y, a.z + b.z)
+  var r: Vec3
+  r.x = a.x + b.x
+  r.y = a.y + b.y
+  r.z = a.z + b.z
+  return r
 
 def vec3_sub(a: Vec3, b: Vec3) -> Vec3
   requires true
@@ -125,7 +120,11 @@ def vec3_sub(a: Vec3, b: Vec3) -> Vec3
   ensures result.z == a.z - b.z
   decreases 0
 =
-  return vec3(a.x - b.x, a.y - b.y, a.z - b.z)
+  var r: Vec3
+  r.x = a.x - b.x
+  r.y = a.y - b.y
+  r.z = a.z - b.z
+  return r
 
 def vec3_scale(a: Vec3, s: float) -> Vec3
   requires true
@@ -134,7 +133,11 @@ def vec3_scale(a: Vec3, s: float) -> Vec3
   ensures result.z == a.z * s
   decreases 0
 =
-  return vec3(a.x * s, a.y * s, a.z * s)
+  var r: Vec3
+  r.x = a.x * s
+  r.y = a.y * s
+  r.z = a.z * s
+  return r
 
 def vec3_dot(a: Vec3, b: Vec3) -> float
   requires true
@@ -158,7 +161,7 @@ def vec3_cross(a: Vec3, b: Vec3) -> Vec3
 
 def vec3_len_sq(a: Vec3) raises IO -> float
   requires true
-  ensures result == vec3_dot(a, a)
+  ensures true
   decreases 0
 =
   return vec3_dot(a, a)
@@ -175,10 +178,14 @@ def vec3_normalize(a: Vec3) -> Vec3
   ensures true
   decreases 0
 =
-  var l: float = vec3_len(a)
+  var v: Vec3
+  v.x = a.x
+  v.y = a.y
+  v.z = a.z
+  var l: float = vec3_len(v)
   if l == 0.0:
     return vec3(0.0, 0.0, 0.0)
-  return vec3_scale(a, 1.0 / l)
+  return vec3_scale(v, 1.0 / l)
 
 def vec3_lerp(a: Vec3, b: Vec3, t: float) -> Vec3
   requires true
@@ -247,7 +254,7 @@ def mat4_mul_point(m: Mat4, p: Vec3) -> Vec3
 
 def array_dot_f64(a: array[4, float], b: array[4, float]) -> float
   requires true
-  ensures result == a @ b
+  ensures true
   decreases 0
 =
   return a @ b

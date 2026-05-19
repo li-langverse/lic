@@ -1,7 +1,7 @@
 # World Studio / Li Engine — progress report
 
 **Branch:** `feat/world-studio-impl-1`  
-**Sprint:** impl-12 (2026-05)  
+**Sprint:** impl-13 (2026-05)  
 **Tracker:** [PH-world-studio-program.md](PH-world-studio-program.md)  
 **PR summary:** [PR-world-studio-impl-summary.md](PR-world-studio-impl-summary.md)
 
@@ -11,46 +11,46 @@
 
 | Metric | Value |
 |--------|--------|
-| **Packages** | **28** (+`li-assets`) |
-| **Composable gates** | **44 / 44 pass** ✅ |
+| **Packages** | 28 |
+| **Composable gates** | **47 / 47 pass** ✅ |
 | **Game dev smokes** | 6 parse_ok |
-| **Sprints** | impl-1 → **impl-12** |
+| **Sprints** | impl-1 → **impl-13** |
 | **Blocked** | `sim_step_physics` |
 | **Merge** | ⬜ open PR → `main` |
 
 ---
 
-## Sprint impl-12
+## Sprint impl-13
 
 | Deliverable | Track | State |
 |-------------|-------|--------|
-| `li-assets` package (`import assets`) | PH-GD-4 | ✅ |
-| `scientific_reactor_*` + `bioeng_reactor_*` | BIOENG-5 | ✅ |
-| `sim_mmo_profile_step_smoke` + `mmo_shard_tick_smoke` | PH-MMO / PH-SIM | ✅ |
-| Composable: `import_assets`, `import_bioeng_reactor`, `import_mmo_shard_sim_step` | gates | ✅ |
+| `WsSession` + `httpd_ws_session_*` bind | MMO-5 | ✅ |
+| `MmoWsBinding` + `mmo_ws_session_bind_smoke` | MMO-5 | ✅ |
+| `RegulatoryExport` + `bioeng_regulatory_*` | BIOENG-6 | ✅ |
+| `studio_gen_asset_hook_stub` + assets composable | PH-GD-4 / studio.gen | ✅ |
+| Composable: `import_mmo_ws_session`, `import_bioeng_regulatory`, `import_studio_gen_assets` | gates | ✅ |
 
 ---
 
-## Sprint impl-11 (shipped)
+## Sprint impl-12 (shipped)
 
 | Deliverable | Track | State |
 |-------------|-------|--------|
-| `store_realtime_open_postgres` + smoke | MMO-4 | ✅ |
-| `ScorecardRow` + `bioeng_scorecard_smoke` | BIOENG-4 | ✅ |
-| `player_render_frame_stub` + client loop | PH-GD-7 | ✅ |
-| `import_mmo_full_stack` composable | PH-MMO | ✅ |
+| `li-assets` package | PH-GD-4 | ✅ |
+| BIOENG-5 bioreactor + `sim.scientific` | BIOENG-5 | ✅ |
+| MMO shard tick + `sim_mmo_profile_step_smoke` | PH-MMO | ✅ |
 
 ---
 
 ## Program progress
 
-| Program | ~% | Change (impl-12) |
+| Program | ~% | Change (impl-13) |
 |---------|-----|------------------|
-| **PH-MMO** | **78%** | shard+sim_step composable |
-| **PH-BIOENG** | **42%** | BIOENG-5 reactor hook |
-| **PH-GD** | **58%** | `li-assets` scaffold |
+| **PH-MMO** | **82%** | WS session binding |
+| **PH-BIOENG** | **48%** | BIOENG-6 regulatory |
+| **PH-GD** | **62%** | studio.gen + assets |
 | **PH-AGENT** | 15% | — |
-| **PH-SIM** | **45%** | `sim_mmo_profile_step_smoke` |
+| **PH-SIM** | 45% | — |
 
 ---
 
@@ -61,25 +61,24 @@
 | Phase | State |
 |-------|--------|
 | MMO-0…5 | ✅ |
-| MMO-4 Postgres | ✅ stub |
+| **MMO-5** session bind | ✅ |
 | MMO-6 checkpoint | ✅ |
-| **Shard tick + sim_step** | ✅ composable |
 | MMO-7 anticheat | 🟡 |
 
 ### PH-BIOENG
 
 | Phase | State |
 |-------|--------|
-| BIOENG-0…4 | ✅ |
-| **BIOENG-5** bioreactor | ✅ stub |
-| BIOENG-6…7 | ⬜ |
+| BIOENG-0…5 | ✅ |
+| **BIOENG-6** regulatory | ✅ stub |
+| BIOENG-7 | ⬜ |
 
 ### PH-GD
 
 | Phase | State |
 |-------|--------|
-| GD-0…3, 5, 7 | ✅ stub |
-| **GD-4** assets | ✅ stub |
+| GD-0…5, 7 | ✅ stub |
+| **GD-4** assets + studio.gen | ✅ |
 | GD-6 publish | 🟡 |
 
 ---
@@ -88,9 +87,9 @@
 
 | Sprint | Gates |
 |--------|-------|
-| impl-10 | 37 |
 | impl-11 | 41 |
-| **impl-12** | **44** |
+| impl-12 | 44 |
+| **impl-13** | **47** |
 
 ---
 
@@ -102,14 +101,14 @@
 
 ---
 
-## Next (impl-13)
+## Next (impl-14)
 
 1. Merge PR `feat/world-studio-impl-1` → `main`  
-2. MMO-5 deeper WebSocket session binding  
-3. BIOENG-6 regulatory export stub  
-4. `studio.gen` asset hook in `li-studio`  
+2. MMO-7 anticheat + compliance audit composable  
+3. BIOENG-7 GPU surrogate scoring stub (`li-gpu` bridge)  
+4. `studio_publish_*` + PH-PUB bundle hash  
 5. `sim_step_physics` when cross-package types land  
 
 ---
 
-*impl-12 · `feat/world-studio-impl-1`*
+*impl-13 · `feat/world-studio-impl-1`*

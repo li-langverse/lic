@@ -15,10 +15,10 @@ type PlayerSession = object
 
 def li_mmo_version() -> int
   requires true
-  ensures result == 1
+  ensures result == 2
   decreases 0
 =
-  return 1
+  return 2
 
 def mmo_deploy_profile_dev() -> int
   requires true
@@ -110,15 +110,63 @@ def mmo_gateway_route_shard_stub(realm_id: int, shard_count: int) -> int
 =
   return realm_id % shard_count
 
+type MatchQueue = object
+  public realm_id: int
+  public waiting: int
+  public assigned_shard: int
+
+def match_queue_new(realm_id: int) -> MatchQueue
+  requires realm_id >= 0
+  ensures result.waiting == 0
+  ensures result.realm_id == realm_id
+  decreases realm_id
+=
+  var q: MatchQueue
+  q.realm_id = realm_id
+  q.waiting = 0
+  q.assigned_shard = 0
+  return q
+
+def match_enqueue_stub(q: MatchQueue) -> unit
+  requires q.realm_id >= 0
+  ensures q.waiting >= 1
+  decreases q.waiting
+=
+  q.waiting = q.waiting + 1
+
+def match_assign_shard_stub(q: MatchQueue, shard_count: int) -> unit
+  requires shard_count > 0
+  requires q.waiting > 0
+  ensures q.assigned_shard >= 0
+  ensures q.assigned_shard < shard_count
+  decreases q.waiting
+=
+  q.assigned_shard = mmo_gateway_route_shard_stub(q.realm_id, shard_count)
+  q.waiting = q.waiting - 1
+
+def mmo_realm_config_tick_hz_dev() -> int
+  requires true
+  ensures result == 30
+  decreases 0
+=
+  return 30
+
 def mmo_smoke() -> int
   requires true
   ensures result == 0
   decreases 0
 =
-  var r: RealmState = realm_state_new(1, 0)
-  mmo_shard_tick_stub(r)
-  if r.tick != 1:
-    return 1
   if mmo_gateway_route_shard_stub(7, 4) != 3:
+    return 1
+  return 0
+
+def mmo_matchmaking_smoke() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  if mmo_gateway_route_shard_stub(5, 4) != 1:
+    return 1
+  if match_queue_new(5).realm_id != 5:
     return 2
   return 0

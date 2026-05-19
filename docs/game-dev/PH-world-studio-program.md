@@ -1,7 +1,8 @@
 # PH-world-studio-program — master tracker
 
-**Status:** In progress (impl-6 / PH-MMO on `feat/world-studio-impl-1`)  
-**Vision:** [world-studio-vision.md](world-studio-vision.md)
+**Status:** In progress (impl-7 on `feat/world-studio-impl-1`)  
+**Vision:** [world-studio-vision.md](world-studio-vision.md)  
+**Progress report:** [PH-world-studio-progress-report.md](PH-world-studio-progress-report.md) ← **read this for sprint status**
 
 Cross-cutting program IDs. Implementation order respects dependencies in the vision doc.
 
@@ -49,5 +50,8 @@ Cross-cutting program IDs. Implementation order respects dependencies in the vis
 | **PH-BIOENG** plan + `li-bioeng` + drug bridge | Done (BIOENG-0) |
 | `benchmarks/competitive/bioengineering.toml` | Done (stub) |
 | **PH-MMO** plan + `li-mmo` + `store.realtime` | Done (MMO-0) |
-| `deploy/mmo/` realm.toml + compose | Done (stub) |
-| `sim_profile_mmo` | Done |
+| `deploy/mmo/` realm.toml + compose | Done (MMO-3) |
+| `sim_profile_mmo` + stack composable | Done (MMO-1) |
+| Matchmaking stubs + shard/gateway mains | Done (MMO-2/3) |
+| `world_snapshot_for_realm` | Done (MMO-6 partial) |
+| `studio_mmo_deploy_status_stub` | Done |

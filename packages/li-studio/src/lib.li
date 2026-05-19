@@ -86,3 +86,13 @@ def studio_publish_bundle_stub(file_count: int) -> int
   decreases file_count
 =
   return file_count
+
+# PH-MMO-3 — deploy wizard status (pairs with deploy/mmo/realm.toml).
+def studio_mmo_deploy_status_stub(profile: int, shard_count: int) -> int
+  requires profile >= 0
+  requires profile <= 1
+  requires shard_count > 0
+  ensures result == shard_count
+  decreases shard_count
+=
+  return shard_count

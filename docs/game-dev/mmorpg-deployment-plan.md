@@ -115,10 +115,10 @@ def shard_tick(realm: RealmState) -> unit
 
 | Phase | ID | Deliverable |
 |-------|-----|-------------|
-| 0 | MMO-0 | Plan, RFC, `li-mmo` + `li-store-realtime` stubs |
-| 1 | MMO-1 | Realm tick + `sim_profile_mmo` composable gate |
-| 2 | MMO-2 | Matchmaking + gateway route table stub |
-| 3 | MMO-3 | `deploy/mmo/` compose + realm.toml |
+| 0 | MMO-0 | Plan, RFC, `li-mmo` + `li-store-realtime` stubs | ✅ |
+| 1 | MMO-1 | Realm tick + `sim_profile_mmo` composable gate | ✅ |
+| 2 | MMO-2 | Matchmaking + gateway route table stub | ✅ |
+| 3 | MMO-3 | `deploy/mmo/` compose + realm.toml + shard/gateway mains | ✅ |
 | 4 | MMO-4 | Trusted Redis/Postgres FFI behind `store.realtime` |
 | 5 | MMO-5 | WebSocket gateway on `net.httpd` |
 | 6 | MMO-6 | Cross-shard migration + `world` checkpoint |

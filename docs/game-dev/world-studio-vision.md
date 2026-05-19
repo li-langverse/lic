@@ -177,6 +177,8 @@ def game_step(world: GameWorld, input: InputState) -> unit
 | `sim.scientific` | `li-sim-scientific` | PH-SCI |
 | `sim.drug_design` | `li-sim-drug-design` | PH-DRUG |
 | `bioeng` | `li-bioeng` | PH-BIOENG (extends PH-DRUG) |
+| `mmo` | `li-mmo` | PH-MMO |
+| `store.realtime` | `li-store-realtime` | PH-MMO persistence facade |
 | `chem` / `chem.dft` | `li-chem` | PH-QM |
 | `voxel` | `li-voxel` | PH-VOXEL |
 | `ml` | `li-ml` | PH-ML |
@@ -232,6 +234,12 @@ RFC: [sim-viz-scientific-rfc.md](specs/sim-viz-scientific-rfc.md)
 Roche **Lab-in-the-Loop**–class workflow: hypothesis → generate → **DFT/TDDFT** (`li-chem`) → lab ingest → retrain. **`studio.adaptive`** panels by stage/role.
 
 RFC: [drug-design-lab-loop-rfc.md](specs/drug-design-lab-loop-rfc.md)
+
+---
+
+## 12c. MMORPGs (PH-MMO)
+
+Online realms on the **same** engine: authoritative **shard** ticks (`mmo`), **gateway** (`net.httpd`), **realtime store facade** (`store.realtime` → Redis/Postgres via trusted FFI — **not** a from-scratch Li database). Deploy: [deploy/mmo/](../../deploy/mmo/) · Plan: [mmorpg-deployment-plan.md](mmorpg-deployment-plan.md).
 
 ---
 

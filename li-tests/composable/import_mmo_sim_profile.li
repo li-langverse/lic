@@ -1,0 +1,13 @@
+import sim
+import mmo
+
+def main() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  if sim_profile_mmo() != 8:
+    return 1
+  if mmo_deploy_profile_dev() != 0:
+    return 2
+  return mmo_smoke()

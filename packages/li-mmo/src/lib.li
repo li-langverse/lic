@@ -1,0 +1,124 @@
+# PKG-li-mmo — MMORPG realms, shards, sessions (PH-MMO-0).
+
+type RealmState = object
+  public realm_id: int
+  public shard_id: int
+  public tick: int
+  public player_count: int
+  public store_handle: int
+
+type PlayerSession = object
+  public session_id: int
+  public player_id: int
+  public realm_id: int
+  public connected: int
+
+def li_mmo_version() -> int
+  requires true
+  ensures result == 1
+  decreases 0
+=
+  return 1
+
+def mmo_deploy_profile_dev() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0
+
+def mmo_deploy_profile_prod() -> int
+  requires true
+  ensures result == 1
+  decreases 0
+=
+  return 1
+
+def mmo_role_gateway() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0
+
+def mmo_role_shard() -> int
+  requires true
+  ensures result == 1
+  decreases 0
+=
+  return 1
+
+def mmo_role_matchmaking() -> int
+  requires true
+  ensures result == 2
+  decreases 0
+=
+  return 2
+
+def realm_state_new(realm_id: int, shard_id: int) -> RealmState
+  requires realm_id >= 0
+  requires shard_id >= 0
+  ensures result.tick == 0
+  ensures result.player_count == 0
+  decreases realm_id
+=
+  var r: RealmState
+  r.realm_id = realm_id
+  r.shard_id = shard_id
+  r.tick = 0
+  r.player_count = 0
+  r.store_handle = 0
+  return r
+
+def mmo_shard_tick_stub(realm: RealmState) -> unit
+  requires realm.realm_id >= 0
+  ensures realm.tick >= 1
+  decreases realm.tick
+=
+  realm.tick = realm.tick + 1
+
+def mmo_aoi_cell_count(player_count: int, cell_size: int) -> int
+  requires player_count >= 0
+  requires cell_size > 0
+  ensures result >= 0
+  decreases player_count
+=
+  if player_count == 0:
+    return 0
+  return player_count / cell_size + 1
+
+def player_session_new(session_id: int, player_id: int, realm_id: int) -> PlayerSession
+  requires session_id > 0
+  requires player_id > 0
+  requires realm_id >= 0
+  ensures result.connected == 1
+  decreases session_id
+=
+  var s: PlayerSession
+  s.session_id = session_id
+  s.player_id = player_id
+  s.realm_id = realm_id
+  s.connected = 1
+  return s
+
+def mmo_gateway_route_shard_stub(realm_id: int, shard_count: int) -> int
+  requires realm_id >= 0
+  requires shard_count > 0
+  ensures result >= 0
+  ensures result < shard_count
+  decreases realm_id
+=
+  return realm_id % shard_count
+
+def mmo_smoke() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  var r: RealmState = realm_state_new(1, 0)
+  mmo_shard_tick_stub(r)
+  if r.tick != 1:
+    return 1
+  if mmo_gateway_route_shard_stub(7, 4) != 3:
+    return 2
+  return 0

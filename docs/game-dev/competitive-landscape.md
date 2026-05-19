@@ -6,6 +6,7 @@
 | Area | Incumbent | Li beat condition |
 |------|-----------|-------------------|
 | Game engines | Unity, Unreal, Godot | Diffable Li worlds + `lic build` + agents |
+| **MMORPGs** | Photon, Spatial, custom shards | **PH-MMO:** proved shard logic + `store.realtime` facade — [plan](mmorpg-deployment-plan.md) |
 | Driving sim | CARLA, AirSim | **No fork** — `sim_automotive` on Li Engine |
 | Robotics | Gazebo, Isaac Sim | Same engine as games; optional ROS2 bridge |
 | AM slicers | Cura, PrusaSlicer | Sim + warp proof + **export to printer** in Studio |

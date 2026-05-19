@@ -11,6 +11,9 @@ globs:
   - packages/li-chem/**
   - packages/li-bioeng/**
   - packages/li-sim-drug-design/**
+  - packages/li-mmo/**
+  - packages/li-store-realtime/**
+  - deploy/mmo/**
   - packages/li-voxel/**
 alwaysApply: false
 ---

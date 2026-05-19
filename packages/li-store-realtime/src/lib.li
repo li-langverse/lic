@@ -1,0 +1,82 @@
+# PKG-li-store-realtime — realtime store facade (PH-MMO-0).
+# NOT a new database engine: backends are memory (dev), Redis, Postgres (trusted FFI in MMO-4).
+
+type StoreHandle = object
+  public id: int
+  public backend: int
+
+def li_store_realtime_version() -> int
+  requires true
+  ensures result == 1
+  decreases 0
+=
+  return 1
+
+def store_backend_memory() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0
+
+def store_backend_redis() -> int
+  requires true
+  ensures result == 1
+  decreases 0
+=
+  return 1
+
+def store_backend_postgres() -> int
+  requires true
+  ensures result == 2
+  decreases 0
+=
+  return 2
+
+def store_realtime_open_stub(backend: int) -> StoreHandle
+  requires backend >= 0
+  requires backend <= 2
+  ensures result.backend == backend
+  decreases backend
+=
+  var h: StoreHandle
+  h.id = 1
+  h.backend = backend
+  return h
+
+def store_presence_set_stub(handle: StoreHandle, player_id: int, online: int) -> unit
+  requires handle.id > 0
+  requires player_id > 0
+  requires online >= 0
+  requires online <= 1
+  ensures handle.id == handle.id
+  decreases player_id
+=
+  handle.id = handle.id
+
+def store_pub_stub(handle: StoreHandle, channel_id: int, payload_len: int) -> int
+  requires handle.id > 0
+  requires channel_id >= 0
+  requires payload_len >= 0
+  ensures result == payload_len
+  decreases payload_len
+=
+  return payload_len
+
+def store_realtime_flush_stub(handle: StoreHandle) -> int
+  requires handle.id > 0
+  ensures result == 0
+  decreases 0
+=
+  return 0
+
+def store_realtime_smoke() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  var h: StoreHandle = store_realtime_open_stub(store_backend_memory())
+  store_presence_set_stub(h, 42, 1)
+  if store_pub_stub(h, 1, 128) != 128:
+    return 1
+  return 0

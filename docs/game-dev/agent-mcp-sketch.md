@@ -20,6 +20,8 @@ Agents drive **Li World Studio** and **Li Engine** via MCP tools, not ad-hoc she
 | `engine_replay_push` | `sim_replay_push` for RL / regression |
 | `engine_bioeng_dbtl` | `bioeng_dbtl_advance` + `bioeng_scorecard_rank` |
 | `engine_drug_litl` | `lab_loop_advance_stub` on `sim.drug_design` |
+| `engine_mmo_realm` | `mmo_smoke` / realm status from `deploy/mmo/realm.toml` |
+| `engine_store_presence` | `store_presence_set_stub` via `store.realtime` |
 
 ## Safety
 

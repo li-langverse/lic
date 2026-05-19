@@ -1,0 +1,31 @@
+# PH-MMO-3 — realm deployment profile (stub).
+# Used by compose / K8s generators (planned).
+
+[realm]
+name = "dev-realm-1"
+shard_count = 2
+tick_hz = 30
+profile = "mmo"
+deploy = "mmo-dev"
+
+[engine]
+profile = "mmo"
+determinism_tier = 1
+
+[store]
+backend = "memory"
+# prod: redis_url = "redis://redis:6379"
+# prod: postgres_url = "postgres://mmo@db:5432/mmo"
+
+[gateway]
+port = 8080
+role = "gateway"
+
+[[shards]]
+id = 0
+role = "shard"
+# binary = "mmo-shard"
+
+[[shards]]
+id = 1
+role = "shard"

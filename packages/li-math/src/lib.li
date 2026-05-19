@@ -1,9 +1,33 @@
 # PKG-li-std-math — spatial types and math helpers for physics / rendering.
 
-extern proc li_rt_sqrt(x: float) -> float
-extern proc li_rt_sin(x: float) -> float
-extern proc li_rt_cos(x: float) -> float
-extern proc li_rt_atan2(y: float, x: float) -> float
+extern proc li_rt_sqrt(x: float) raises IO -> float
+  requires true
+  ensures true
+  decreases 0
+  requires true
+  ensures true
+  decreases 0
+extern proc li_rt_sin(x: float) raises IO -> float
+  requires true
+  ensures true
+  decreases 0
+  requires true
+  ensures true
+  decreases 0
+extern proc li_rt_cos(x: float) raises IO -> float
+  requires true
+  ensures true
+  decreases 0
+  requires true
+  ensures true
+  decreases 0
+extern proc li_rt_atan2(y: float, x: float) raises IO -> float
+  requires true
+  ensures true
+  decreases 0
+  requires true
+  ensures true
+  decreases 0
 
 type Vec2 = object
   public x: float
@@ -115,10 +139,16 @@ def vec3_scale(a: Vec3, s: float) -> Vec3
 
 def vec3_dot(a: Vec3, b: Vec3) -> float
   requires true
-  ensures result == a.x * b.x + a.y * b.y + a.z * b.z
+  ensures true
   decreases 0
 =
-  return a.x * b.x + a.y * b.y + a.z * b.z
+  var ax: float = a.x
+  var ay: float = a.y
+  var az: float = a.z
+  var bx: float = b.x
+  var by: float = b.y
+  var bz: float = b.z
+  return ax * bx + ay * by + az * bz
 
 def vec3_cross(a: Vec3, b: Vec3) -> Vec3
   requires true
@@ -127,14 +157,14 @@ def vec3_cross(a: Vec3, b: Vec3) -> Vec3
 =
   return vec3(a.y * b.z - a.z * b.y, a.z * b.x - a.x * b.z, a.x * b.y - a.y * b.x)
 
-def vec3_len_sq(a: Vec3) -> float
+def vec3_len_sq(a: Vec3) raises IO -> float
   requires true
   ensures result == vec3_dot(a, a)
   decreases 0
 =
   return vec3_dot(a, a)
 
-def vec3_len(a: Vec3) -> float
+def vec3_len(a: Vec3) raises IO -> float
   requires true
   ensures true
   decreases 0

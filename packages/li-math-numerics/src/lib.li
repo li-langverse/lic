@@ -1,8 +1,26 @@
 # PKG-li-std-numerics — ODE integrators and basic solvers for physics.
 
-extern proc li_rt_sqrt(x: float) -> float
-extern proc li_rt_sin(x: float) -> float
-extern proc li_rt_cos(x: float) -> float
+extern proc li_rt_sqrt(x: float) raises IO -> float
+  requires true
+  ensures true
+  decreases 0
+  requires true
+  ensures true
+  decreases 0
+extern proc li_rt_sin(x: float) raises IO -> float
+  requires true
+  ensures true
+  decreases 0
+  requires true
+  ensures true
+  decreases 0
+extern proc li_rt_cos(x: float) raises IO -> float
+  requires true
+  ensures true
+  decreases 0
+  requires true
+  ensures true
+  decreases 0
 
 def li_std_numerics_version() -> int
   requires true

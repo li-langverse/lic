@@ -19,10 +19,10 @@ type StoreHandle = object
 
 def li_store_realtime_version() -> int
   requires true
-  ensures result == 2
+  ensures result == 3
   decreases 0
 =
-  return 2
+  return 3
 
 def store_backend_memory() -> int
   requires true
@@ -104,6 +104,30 @@ def store_redis_smoke() -> int
   if h.backend != store_backend_redis():
     return 1
   store_presence_set_stub(h, 42, 1)
+  return 0
+
+def store_realtime_open_postgres(port: int) -> StoreHandle
+  requires port > 0
+  ensures result.backend == store_backend_postgres()
+  ensures result.port == port
+  decreases port
+=
+  var h: StoreHandle
+  h.id = store_trusted_postgres_ping(port)
+  h.backend = store_backend_postgres()
+  h.port = port
+  return h
+
+def store_postgres_smoke() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  var h: StoreHandle = store_realtime_open_postgres(5432)
+  if h.backend != store_backend_postgres():
+    return 1
+  if store_realtime_flush_stub(h) != 0:
+    return 2
   return 0
 
 def store_realtime_smoke() -> int

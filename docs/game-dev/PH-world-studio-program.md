@@ -1,6 +1,6 @@
 # PH-world-studio-program — master tracker
 
-**Status:** In progress (impl-10 on `feat/world-studio-impl-1`)  
+**Status:** In progress (impl-11 on `feat/world-studio-impl-1`) — **ready for draft PR**  
 **Vision:** [world-studio-vision.md](world-studio-vision.md)  
 **Progress report:** [PH-world-studio-progress-report.md](PH-world-studio-progress-report.md) ← **read this for sprint status**
 
@@ -65,6 +65,11 @@ Cross-cutting program IDs. Implementation order respects dependencies in the vis
 | BIOENG-3 assay batch types | Done |
 | `lic-diagnose-agent-bridge` doc | Done |
 | `scripts/deploy-mmo-dev.sh` | Done |
+| **41 composable** gates | Done |
+| MMO-4 Postgres `open_postgres` | Done |
+| BIOENG-4 scorecard row | Done |
+| player + render client loop | Done |
+| [PR-world-studio-impl-summary.md](PR-world-studio-impl-summary.md) | Done |
 | MMO-5 WebSocket stubs (`net.httpd`) | Done |
 | MMO-6 `world_checkpoint_mmo_stub` | Done |
 | BIOENG-2 construct registry | Done |

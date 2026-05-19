@@ -659,6 +659,30 @@ file = "composable/import_mmo_tick_budget.li"
 outcome = "compile_ok"
 note = "PH-MMO sim tick budget + mmo"
 
+[[tests]]
+suite = "composable"
+file = "composable/import_store_postgres.li"
+outcome = "compile_ok"
+note = "PH-MMO-4 postgres store open"
+
+[[tests]]
+suite = "composable"
+file = "composable/import_bioeng_scorecard.li"
+outcome = "compile_ok"
+note = "PH-BIOENG-4 scorecard row"
+
+[[tests]]
+suite = "composable"
+file = "composable/import_player_render.li"
+outcome = "compile_ok"
+note = "PH-GD-7 player + render loop"
+
+[[tests]]
+suite = "composable"
+file = "composable/import_mmo_full_stack.li"
+outcome = "compile_ok"
+note = "PH-MMO full stack postgres+world+player"
+
 # composable/import_physics_runtime — enable when cross-package PhysicsWorld types resolve
 # stdlib_coverage/build_std_csv — enable when std.csv module resolves (PH-IO-4)
 

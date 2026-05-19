@@ -237,6 +237,39 @@ def bioeng_scorecard_rank(score: float, baseline: float) -> int
     return 1
   return 0
 
+# BIOENG-4 — competitive scorecard row (leaderboard stub).
+type ScorecardRow = object
+  public run_id: int
+  public objective: float
+  public beats_baseline: int
+
+def bioeng_scorecard_row_new(run_id: int, objective: float, baseline: float) -> ScorecardRow
+  requires run_id > 0
+  requires objective >= 0.0
+  requires baseline > 0.0
+  ensures result.run_id == run_id
+  ensures result.objective == objective
+  decreases run_id
+=
+  var row: ScorecardRow
+  row.run_id = run_id
+  row.objective = objective
+  row.beats_baseline = bioeng_scorecard_rank(objective, baseline)
+  return row
+
+def bioeng_scorecard_smoke() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  var row: ScorecardRow = bioeng_scorecard_row_new(1, 1.2, 0.5)
+  if row.beats_baseline != 1:
+    return 1
+  var row2: ScorecardRow = bioeng_scorecard_row_new(2, 0.3, 0.5)
+  if row2.beats_baseline != 0:
+    return 2
+  return 0
+
 def bioeng_dbtl_smoke() -> int
   requires true
   ensures result == 0

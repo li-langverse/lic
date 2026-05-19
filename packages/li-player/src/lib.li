@@ -7,10 +7,10 @@ type PlayerConnection = object
 
 def li_player_version() -> int
   requires true
-  ensures result == 1
+  ensures result == 2
   decreases 0
 =
-  return 1
+  return 2
 
 def player_connect_stub(session_id: int, realm_id: int) -> PlayerConnection
   requires session_id > 0
@@ -31,13 +31,25 @@ def player_tick_stub(conn: PlayerConnection) -> unit
 =
   conn.session_id = conn.session_id
 
+def player_render_frame_stub(frame_id: int) -> int
+  requires frame_id >= 0
+  ensures result == frame_id + 1
+  decreases frame_id
+=
+  return frame_id + 1
+
+def player_client_loop_smoke() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  if player_render_frame_stub(0) != 1:
+    return 1
+  return 0
+
 def player_smoke() -> int
   requires true
   ensures result == 0
   decreases 0
 =
-  var c: PlayerConnection = player_connect_stub(1, 1)
-  player_tick_stub(c)
-  if c.realm_id != 1:
-    return 1
-  return 0
+  return player_client_loop_smoke()

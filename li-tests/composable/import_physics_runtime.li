@@ -8,4 +8,5 @@ def main() -> int
   var v: int = li_std_physics_runtime_version()
   if v < 1:
     return 1
+  var world = physics_world_game_default()
   return 0

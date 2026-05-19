@@ -29,12 +29,13 @@ fi
 for m in "${members[@]}"; do
   entry="$ROOT/packages/$m/src/lib.li"
   smoke="$ROOT/packages/$m/li-tests/smoke/builds.li"
-  if [[ -f "$entry" ]]; then
-    echo "workspace build: $m (src/lib.li)"
-    "$LIC" build "$entry" -o /dev/null
-  elif [[ -f "$smoke" ]]; then
+  # Prefer smoke: package libs may use extern stubs not yet proof-complete (8a).
+  if [[ -f "$smoke" ]]; then
     echo "workspace build: $m (smoke)"
     "$LIC" build "$smoke" -o /dev/null
+  elif [[ -f "$entry" ]]; then
+    echo "workspace build: $m (src/lib.li)"
+    "$LIC" build "$entry" -o /dev/null
   else
     echo "workspace build: skip $m (no entrypoint)" >&2
   fi

@@ -1,5 +1,3 @@
-# Smoke: game loop shape — physics world + fixed step (no package import yet).
-
 type PhysicsWorld = object
   public tier: int
   public substeps: int

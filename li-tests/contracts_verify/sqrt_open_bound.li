@@ -1,4 +1,3 @@
-# Float refinement VC intentionally left open for 2f (not provable for arbitrary x >= 0).
 def sqrt_open(x: float) -> float
   requires x >= 0.0
   ensures abs(result * result - x) < 1e-12

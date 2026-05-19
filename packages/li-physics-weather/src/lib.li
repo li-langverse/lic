@@ -1,4 +1,3 @@
-# PKG-li-std-physics-weather — advection-diffusion and wind sampling.
 
 def li_std_physics_weather_version() -> int
   requires true

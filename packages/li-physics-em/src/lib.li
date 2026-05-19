@@ -1,4 +1,3 @@
-# PKG-li-std-physics-em — electrostatics and FDTD stubs.
 
 extern proc li_rt_sqrt(x: float) raises IO -> float
   requires true

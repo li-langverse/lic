@@ -1,4 +1,3 @@
-# PKG-li-std-physics-relativity — special relativity kinematics + weak-field GR stubs.
 
 extern proc li_rt_sqrt(x: float) raises IO -> float
   requires true

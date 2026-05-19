@@ -1,5 +1,3 @@
-# EXPLOIT: overlapping par_slice ranges on same buffer.
-# MUST NOT compile — expected: disjoint refinement failure.
 
 def overlap_slices() -> unit
   requires true

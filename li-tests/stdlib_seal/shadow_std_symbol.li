@@ -1,5 +1,3 @@
-# EXPLOIT: user proc shadows std/execution symbol.
-# MUST NOT compile — expected: stdlib_symbol_shadow: __execution_decorators_doc
 
 def __execution_decorators_doc() -> int
   requires true

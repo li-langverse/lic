@@ -1,4 +1,3 @@
-# PKG-li-std-physics-hep — toy Monte Carlo / decay chains (education tier, non-realtime).
 
 def li_std_physics_hep_version() -> int
   requires true

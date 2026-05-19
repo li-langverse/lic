@@ -1,6 +1,3 @@
-# Phase 2f discharge corpus: trivial requires/ensures + literal decreases.
-# Static return witness in vc_emit lowers matching ensures to True + trivial proof.
-
 def main() -> int
   requires true
   ensures true

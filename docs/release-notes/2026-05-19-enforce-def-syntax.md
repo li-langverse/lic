@@ -19,6 +19,7 @@ User-facing Li functions must be declared with `def`; bare `proc` is rejected ex
 - `scripts/sync-package-mirror-def-syntax-pr.sh` — sync `packages/<name>/` to org mirrors.
 - `li-tests/encapsulation/proc_syntax_rejected.li` + manifest row (`compile_fail`).
 - Handbook and examples under `docs/`, `examples/`, `packages/`, `benchmarks/`, `std/`, `li-tests/`.
+- Stripped agent/history header comments from tests, package stubs, `std/` facades, and `scripts/templates/package/library/src/lib.li.template` (CWE test labels unchanged).
 - All `packages/*/.github/workflows/ci.yml` — run def-syntax check before `lic build`.
 
 ## Downstream (package mirrors)

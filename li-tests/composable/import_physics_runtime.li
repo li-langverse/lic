@@ -1,5 +1,3 @@
-# Composable: rigid package import (runtime re-exports rigid + numerics when built as lib).
-
 import li_std_physics_rigid
 
 def main() -> int

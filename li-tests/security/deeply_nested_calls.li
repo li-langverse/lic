@@ -1,4 +1,3 @@
-# Parser/typecheck stress: deeply nested call expression (compiler crash class).
 def wrap(x: int) -> int
   requires true
   ensures result == x + 1

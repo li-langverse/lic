@@ -1,4 +1,3 @@
-# std/physics/chem — facade (import physics.chem).
 proc physics_chem_std_tag() -> int
   requires true
   ensures result == 1

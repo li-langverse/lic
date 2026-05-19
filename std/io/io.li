@@ -1,5 +1,3 @@
-# std/io — file and stream surface (PH-IO-4 stub; full IO when compiler wires syscalls).
-
 type Path = str
 type FileHandle = object
   public open: int

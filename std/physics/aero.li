@@ -1,4 +1,3 @@
-# std/physics/aero — facade (import physics.aero).
 proc physics_aero_std_tag() -> int
   requires true
   ensures result == 1

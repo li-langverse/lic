@@ -1,5 +1,3 @@
-# Regression: '+' must tokenize as Plus, not Minus (horner_pure_li loop counter).
-
 def smoke() -> int
   requires true
   ensures result == 3

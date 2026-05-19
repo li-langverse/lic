@@ -1,5 +1,3 @@
-# Trusted TCP surface (P0) — implementations are platform code + trusted.lean axioms.
-# See docs/superpowers/specs/2026-05-16-li-trusted-net-rfc.md
 
 extern proc tcp_listen(port: int) raises Net -> int
   requires 0 < port

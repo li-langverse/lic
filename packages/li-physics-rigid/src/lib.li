@@ -1,4 +1,3 @@
-# PKG-li-std-physics-rigid — rigid bodies, broadphase grid, sequential PGS stub.
 
 type RigidBody = object
   public px: float

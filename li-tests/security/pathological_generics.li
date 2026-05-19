@@ -1,4 +1,3 @@
-# Generic arity / type surface stress for check_fuzz corpus.
 type Box[T] = T
 
 def id_int(x: Box[int]) -> int

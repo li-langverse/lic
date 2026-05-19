@@ -1,5 +1,3 @@
-# MUST NOT compile — use def for procedures (proc only after extern).
-
 proc old_style() -> int
   requires true
   ensures result == 0

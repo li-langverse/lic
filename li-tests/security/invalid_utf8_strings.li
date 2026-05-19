@@ -1,4 +1,3 @@
-# String lexer stress — quotes and escapes.
 def strings() -> int
   requires true
   ensures true

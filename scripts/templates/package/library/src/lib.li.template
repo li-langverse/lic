@@ -1,5 +1,3 @@
-# {{PKG_ID}} — library entry (add modules under src/ when import lands)
-
 def {{SNAKE}}_version() -> int
   requires true
   ensures result == 0

@@ -1,4 +1,3 @@
-# std/physics/hep — facade (import physics.hep).
 proc physics_hep_std_tag() -> int
   requires true
   ensures result == 1

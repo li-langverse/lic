@@ -1,4 +1,3 @@
-# PKG-li-std-scene — entity transforms and scene graph hooks for game / simulation.
 
 type EntityId = object
   public value: int

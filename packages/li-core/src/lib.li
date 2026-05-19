@@ -1,4 +1,3 @@
-# PKG-li-std-core — library entry (add modules under src/ when import lands)
 
 def li_std_core_version() -> int
   requires true

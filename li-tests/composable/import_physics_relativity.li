@@ -1,5 +1,3 @@
-# Ergonomic import: physics.relativity (not li_std_physics_relativity).
-
 import physics.relativity
 
 def main() -> int

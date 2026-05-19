@@ -1,5 +1,3 @@
-# std/csv — benchmark CSV parsing surface (PH-IO-4 stub).
-
 type CsvRow = object
   public field_count: int
 

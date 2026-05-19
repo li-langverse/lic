@@ -1,4 +1,3 @@
-# PKG-li-std-physics-particles — game emitters + scientific N-body/MD SoA layouts.
 
 type Particle = object
   public px: float

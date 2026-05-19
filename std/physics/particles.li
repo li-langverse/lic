@@ -1,4 +1,3 @@
-# std/physics/particles — facade (import physics.particles).
 proc physics_particles_std_tag() -> int
   requires true
   ensures result == 1

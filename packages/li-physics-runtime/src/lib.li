@@ -1,5 +1,3 @@
-# PKG-li-std-physics-runtime — world step scheduler and engine-facing API.
-# Calls rigid/numerics APIs inline until cross-package `import` resolves in li-tests (see li.toml deps).
 
 type RigidBody = object
   public px: float

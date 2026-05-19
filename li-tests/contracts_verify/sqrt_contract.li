@@ -1,4 +1,3 @@
-# Stub sqrt body (`return x`); contracts match identity return, not true sqrt.
 def sqrt_pos(x: float) -> float
   requires x >= 0.0
   ensures result >= 0.0

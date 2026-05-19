@@ -1,4 +1,3 @@
-# PKG-li-std-physics-aero — atmosphere, lift/drag, orbital mechanics lite.
 
 extern proc li_rt_sqrt(x: float) raises IO -> float
   requires true

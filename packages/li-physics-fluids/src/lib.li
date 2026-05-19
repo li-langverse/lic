@@ -1,4 +1,3 @@
-# PKG-li-std-physics-fluids — grid Euler, SPH, cloth/PBD hooks.
 
 extern proc li_rt_sqrt(x: float) raises IO -> float
   requires true

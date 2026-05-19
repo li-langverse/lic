@@ -1,6 +1,3 @@
-# Minimal game loop shape: fixed tick counter (physics packages when import works).
-# See docs/physics/GAME_DEV.md
-
 def game_step(tick: int) -> int
   requires tick >= 0
   ensures result >= tick

@@ -1,5 +1,3 @@
-# std/bytes — wire buffer surface (httpd P0 stub; full proofs when 2e–2f widen)
-
 type Bytes = str
 type StringView = str
 

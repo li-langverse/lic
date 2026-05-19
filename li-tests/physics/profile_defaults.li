@@ -1,5 +1,3 @@
-# Smoke: physics profile tier constants compile.
-
 type NumericalTargets = object
   public max_energy_drift: float
   public target_fps: int

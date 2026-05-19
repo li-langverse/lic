@@ -1,5 +1,3 @@
-# EXPLOIT: duplicate top-level proc names.
-# MUST NOT compile — expected: duplicate_definition: foo
 
 def foo() -> int
   requires true

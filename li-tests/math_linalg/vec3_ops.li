@@ -1,5 +1,3 @@
-# Smoke: spatial math types compile (package mirrors these APIs).
-
 type Vec3 = object
   public x: float
   public y: float

@@ -1,4 +1,3 @@
-# std/physics/weather — facade (import physics.weather).
 proc physics_weather_std_tag() -> int
   requires true
   ensures result == 1

@@ -1,4 +1,3 @@
-# Parser stress: very long line without newline (CVE-inspired corpus seed).
 def long_line() -> int
   requires true
   ensures true

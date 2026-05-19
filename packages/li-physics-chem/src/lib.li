@@ -1,4 +1,3 @@
-# PKG-li-std-physics-chem — reaction networks and passive combustion fields.
 
 def li_std_physics_chem_version() -> int
   requires true

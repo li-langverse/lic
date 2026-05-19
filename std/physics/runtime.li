@@ -1,6 +1,3 @@
-# std/physics/runtime — PhysicsWorld, physics_step (facade).
-# Prefer: import physics.runtime  |  import std.physics.runtime
-
 proc physics_runtime_std_tag() -> int
   requires true
   ensures result == 1

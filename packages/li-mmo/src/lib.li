@@ -327,3 +327,12 @@ def mmo_anticheat_compliance_smoke() -> int
   if row.verdict != 1:
     return 3
   return 0
+
+def demo_mmo_smoke() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  if mmo_deploy_dev_smoke() != 0:
+    return 1
+  return mmo_anticheat_compliance_smoke()

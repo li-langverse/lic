@@ -1,0 +1,32 @@
+#!/usr/bin/env bash
+# Write deploy/studio-demo/status.json from li-tests results.
+set -euo pipefail
+ROOT="$(cd "$(dirname "$0")/.." && pwd)"
+OUT="$ROOT/deploy/studio-demo/status.json"
+BRANCH="$(git -C "$ROOT" branch --show-current 2>/dev/null || echo unknown)"
+SPRINT="impl-21"
+
+comp_out="$("$ROOT/li-tests/run_all.sh" composable 2>&1)" || true
+gd_out="$("$ROOT/li-tests/run_all.sh" game_dev 2>&1)" || true
+vd_out="$("$ROOT/li-tests/run_all.sh" vertical_demos 2>&1)" || true
+
+comp_pass="$(echo "$comp_out" | sed -n 's/.*pass=\([0-9]*\).*/\1/p' | head -1)"
+gd_pass="$(echo "$gd_out" | sed -n 's/.*pass=\([0-9]*\).*/\1/p' | head -1)"
+vd_pass="$(echo "$vd_out" | sed -n 's/.*pass=\([0-9]*\).*/\1/p' | head -1)"
+
+comp_pass="${comp_pass:-0}"
+gd_pass="${gd_pass:-0}"
+vd_pass="${vd_pass:-0}"
+
+cat > "$OUT" <<EOF
+{
+  "branch": "$BRANCH",
+  "sprint": "$SPRINT",
+  "composable_gates": $comp_pass,
+  "game_dev_gates": $gd_pass,
+  "vertical_demo_builds": $vd_pass,
+  "blocked": ["sim_step_physics"],
+  "updated": "$(date -u +%Y-%m-%dT%H:%M:%SZ)"
+}
+EOF
+echo "Wrote $OUT (composable=$comp_pass game_dev=$gd_pass vertical_demos=$vd_pass)"

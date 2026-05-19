@@ -1,7 +1,7 @@
 # World Studio / Li Engine — progress report
 
 **Branch:** `feat/world-studio-impl-1`  
-**Sprint:** impl-20 (2026-05)  
+**Sprint:** impl-21 (2026-05)  
 **Tracker:** [PH-world-studio-program.md](PH-world-studio-program.md)  
 **PR summary:** [PR-world-studio-impl-summary.md](PR-world-studio-impl-summary.md)
 
@@ -12,47 +12,47 @@
 | Metric | Value |
 |--------|--------|
 | **Packages** | 28 |
-| **Composable gates** | **68 / 68 pass** ✅ |
-| **Game dev smokes** | **10 parse_ok** |
-| **Demo GUI** | [deploy/studio-demo/](../../deploy/studio-demo/) |
-| **Vertical `.li` demos** | rocket, racing, robot, drug |
-| **Sprints** | impl-1 → **impl-20** |
+| **Composable gates** | **69 / 69 pass** ✅ |
+| **Game dev smokes** | **12 parse_ok** |
+| **Vertical demo builds** | **6 / 6 compile_ok** ✅ |
+| **Demo GUI** | [deploy/studio-demo/](../../deploy/studio-demo/) + live `status.json` |
+| **Sprints** | impl-1 → **impl-21** |
 | **Blocked** | `sim_step_physics` |
 | **Merge** | ⬜ open PR → `main` |
 
 ---
 
-## Sprint impl-20
+## Sprint impl-21
 
 | Deliverable | Track | State |
 |-------------|-------|--------|
-| `studio_viewport_bind_render_stub` + render bridge | PH-GD-5 | ✅ |
-| `import_studio_render_viewport` composable | PH-GD | ✅ |
-| `demo_*_main.li` per vertical | demos | ✅ |
-| `import_demo_verticals` composable | gates | ✅ |
-| game_dev `demo_*.li` parse gates | tests | ✅ |
+| `demo_bioeng_main` + `demo_mmo_main` | verticals | ✅ |
+| All 6 verticals in `import_demo_verticals` | composable | ✅ |
+| `import_spinup_game` composable | spin-up | ✅ |
+| `vertical_demos` suite — **lic build** on 6 mains | CI | ✅ |
+| `status.json` + `gen-studio-demo-status.sh` | demo GUI | ✅ |
 
 ---
 
-## Sprint impl-19 (shipped)
+## Sprint impl-20 (shipped)
 
 | Deliverable | Track | State |
 |-------------|-------|--------|
-| HTML studio showcase + WebM reel | demo | ✅ |
-| sci+drug+chem · relativity · pub composables | gates | ✅ |
+| Render viewport bridge | PH-GD-5 | ✅ |
+| rocket/racing/robot/drug demo mains | demos | ✅ |
 
 ---
 
-## Vertical demo entrypoints
+## Vertical demos (all build)
 
-| Demo | File |
-|------|------|
-| Rocket | `packages/li-physics-custom/src/demo_rocket_main.li` |
-| Racing | `packages/li-sim-automotive/src/demo_racing_main.li` |
-| Robot | `packages/li-sim-robotics/src/demo_robot_main.li` |
-| Drug LITL | `packages/li-sim-drug-design/src/demo_drug_main.li` |
-
-Interactive visuals: [demo-showcase.md](demo-showcase.md)
+| Vertical | Main | Build |
+|----------|------|-------|
+| Rocket | `li-physics-custom/.../demo_rocket_main.li` | ✅ |
+| Racing | `li-sim-automotive/.../demo_racing_main.li` | ✅ |
+| Robot | `li-sim-robotics/.../demo_robot_main.li` | ✅ |
+| Drug | `li-sim-drug-design/.../demo_drug_main.li` | ✅ |
+| Bioeng | `li-bioeng/.../demo_bioeng_main.li` | ✅ |
+| MMO | `li-mmo/.../demo_mmo_main.li` | ✅ |
 
 ---
 
@@ -60,8 +60,8 @@ Interactive visuals: [demo-showcase.md](demo-showcase.md)
 
 | Sprint | Gates |
 |--------|-------|
-| impl-19 | 66 |
-| **impl-20** | **68** |
+| impl-20 | 68 |
+| **impl-21** | **69** |
 
 ---
 
@@ -70,17 +70,20 @@ Interactive visuals: [demo-showcase.md](demo-showcase.md)
 ```bash
 ./li-tests/run_all.sh composable
 ./li-tests/run_all.sh game_dev
+./li-tests/run_all.sh vertical_demos
+./scripts/gen-studio-demo-status.sh
+python3 -m http.server 8765 --directory deploy/studio-demo
 ```
 
 ---
 
-## Next (impl-21)
+## Next (impl-22)
 
-1. Merge PR → `main`  
-2. `lic build` vertical demos when package mains stable  
-3. Wire studio-demo HTML to live composable status JSON  
+1. **Merge PR** `feat/world-studio-impl-1` → `main`  
+2. Embed native render in studio binary (beyond HTML prototype)  
+3. `lis new` spin-up CLI wiring  
 4. `sim_step_physics` when cross-package types land  
 
 ---
 
-*impl-20 · `feat/world-studio-impl-1`*
+*impl-21 · `feat/world-studio-impl-1`*

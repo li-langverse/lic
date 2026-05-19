@@ -843,7 +843,13 @@ note = "PH-GD native viewport render bridge"
 suite = "composable"
 file = "composable/import_demo_verticals.li"
 outcome = "compile_ok"
-note = "Vertical demo mains rocket/racing/robot/drug"
+note = "Vertical demo mains all six verticals"
+
+[[tests]]
+suite = "composable"
+file = "composable/import_spinup_game.li"
+outcome = "compile_ok"
+note = "Spin-up game template composable"
 
 # composable/import_physics_runtime — enable when cross-package PhysicsWorld types resolve
 # stdlib_coverage/build_std_csv — enable when std.csv module resolves (PH-IO-4)
@@ -1103,6 +1109,56 @@ suite = "game_dev"
 file = "game_dev/demo_drug.li"
 outcome = "parse_ok"
 note = "Vertical demo drug LITL"
+
+[[tests]]
+suite = "game_dev"
+file = "game_dev/demo_bioeng.li"
+outcome = "parse_ok"
+note = "Vertical demo bioeng"
+
+[[tests]]
+suite = "game_dev"
+file = "game_dev/demo_mmo.li"
+outcome = "parse_ok"
+note = "Vertical demo MMO"
+
+# --- vertical_demos (package demo mains — lic build) ---
+
+[[tests]]
+suite = "vertical_demos"
+file = "../packages/li-physics-custom/src/demo_rocket_main.li"
+outcome = "compile_ok"
+note = "Vertical demo rocket build"
+
+[[tests]]
+suite = "vertical_demos"
+file = "../packages/li-sim-automotive/src/demo_racing_main.li"
+outcome = "compile_ok"
+note = "Vertical demo racing build"
+
+[[tests]]
+suite = "vertical_demos"
+file = "../packages/li-sim-robotics/src/demo_robot_main.li"
+outcome = "compile_ok"
+note = "Vertical demo robot build"
+
+[[tests]]
+suite = "vertical_demos"
+file = "../packages/li-sim-drug-design/src/demo_drug_main.li"
+outcome = "compile_ok"
+note = "Vertical demo drug build"
+
+[[tests]]
+suite = "vertical_demos"
+file = "../packages/li-bioeng/src/demo_bioeng_main.li"
+outcome = "compile_ok"
+note = "Vertical demo bioeng build"
+
+[[tests]]
+suite = "vertical_demos"
+file = "../packages/li-mmo/src/demo_mmo_main.li"
+outcome = "compile_ok"
+note = "Vertical demo mmo build"
 
 # --- hpc_competitive (registry gate; ./li-tests/run_all.sh hpc_competitive) ---
 

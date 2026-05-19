@@ -386,3 +386,12 @@ def bioeng_drug_litl_bridge_smoke() -> int
   if bioeng_from_drug_stage(3) != bioeng_stage_learn():
     return 4
   return bioeng_dbtl_pipeline_smoke()
+
+def demo_bioeng_smoke() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  if bioeng_drug_litl_bridge_smoke() != 0:
+    return 1
+  return bioeng_scorecard_smoke()

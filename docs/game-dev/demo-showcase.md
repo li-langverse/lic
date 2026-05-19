@@ -58,9 +58,11 @@ For production marketing, re-record with OBS at 1080p while driving the interact
 | Racing | `packages/li-sim-automotive/src/demo_racing_main.li` |
 | Robot | `packages/li-sim-robotics/src/demo_robot_main.li` |
 | Drug | `packages/li-sim-drug-design/src/demo_drug_main.li` |
+| Bioeng | `packages/li-bioeng/src/demo_bioeng_main.li` |
+| MMO | `packages/li-mmo/src/demo_mmo_main.li` |
 
 ```bash
-./build/compiler/lic/lic check packages/li-physics-custom/src/demo_rocket_main.li
+./li-tests/run_all.sh vertical_demos   # lic build all six
 ```
 
 ---

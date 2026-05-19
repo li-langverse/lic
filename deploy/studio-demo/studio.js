@@ -281,3 +281,16 @@ if (params.get("demo")) setDemo(params.get("demo"));
 
 setDemo(active);
 requestAnimationFrame(frame);
+
+fetch("status.json")
+  .then((r) => (r.ok ? r.json() : null))
+  .then((s) => {
+    if (!s) return;
+    const el = document.getElementById("gate-count");
+    if (el) {
+      el.textContent = `${s.composable_gates} composable · ${s.game_dev_gates} game_dev · ${s.vertical_demo_builds} builds`;
+    }
+    const st = document.getElementById("lic-status");
+    if (st) st.textContent = `lic ✓ · ${s.sprint} · ${s.branch}`;
+  })
+  .catch(() => {});

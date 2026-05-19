@@ -1,0 +1,9 @@
+{
+  "branch": "feat/world-studio-impl-1",
+  "sprint": "impl-21",
+  "composable_gates": 69,
+  "game_dev_gates": 12,
+  "vertical_demo_builds": 6,
+  "blocked": ["sim_step_physics"],
+  "updated": "2026-05-19T20:00:00Z"
+}

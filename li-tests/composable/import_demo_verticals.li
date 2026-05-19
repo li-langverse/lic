@@ -2,6 +2,8 @@ import physics.custom
 import sim.automotive
 import sim.robotics
 import sim.drug_design
+import bioeng
+import mmo
 
 def main() -> int
   requires true
@@ -14,4 +16,8 @@ def main() -> int
     return 2
   if demo_robot_smoke() != 0:
     return 3
-  return demo_drug_smoke()
+  if demo_drug_smoke() != 0:
+    return 4
+  if demo_bioeng_smoke() != 0:
+    return 5
+  return demo_mmo_smoke()

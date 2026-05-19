@@ -204,7 +204,7 @@ nginx stays secure by **volume**: checks scattered across modules, runtime limit
 **What you write once (M1 core):**
 
 ```nim
-proc parse_request(buf: bytes, limits: Limits) -> Result[Request, HttpError]
+def parse_request(buf: bytes, limits: Limits) -> Result[Request, HttpError]
   requires buf.len <= limits.max_header_block
   ensures result.ok -> result.value.body_len <= limits.max_body
   decreases buf.len
@@ -486,7 +486,7 @@ Optional later: `**li-httpd import-nginx-locations`** suggests li routes from ng
 #### Proved router (`std/http/router.li`)
 
 ```nim
-proc match_route(table: RouteTable, req: RequestView) -> Option[RouteName]
+def match_route(table: RouteTable, req: RequestView) -> Option[RouteName]
   requires table.sorted_valid
   ensures result.isSome -> route_matches(table[result.get], req)
   ensures result.isNone -> forall r in table, not route_matches(r, req)
@@ -551,7 +551,7 @@ expect = { status = 404 }
 
 **M1 gate:** routing suite green + `config_reject` overlap cases + router in `lic build`.
 
-`**proc validate(c: HttpdConfig) -> Result[unit, ConfigError]`** with contracts:
+`**def validate(c: HttpdConfig) -> Result[unit, ConfigError]`** with contracts:
 
 - `ensures` no ambiguous overlap on same `priority` (validator rejects)  
 - `ensures` every `StaticRoot` path ⊆ allowed filesystem roots (declared in config)  
@@ -722,7 +722,7 @@ Minimal L7 balancer inside reverse proxy—no separate binary, no nginx `upstrea
 ### Proved core (`std/http/upstream.li`)
 
 ```nim
-proc pick_peer(pool: var UpstreamPool, ctx: RequestCtx) -> Result[PeerId, UpstreamError]
+def pick_peer(pool: var UpstreamPool, ctx: RequestCtx) -> Result[PeerId, UpstreamError]
   requires pool.peers.len > 0
   requires pool.active.len > 0
   ensures result.ok -> pool.peer_active(result.value)
@@ -1045,13 +1045,13 @@ Desugar: if `[log]` absent → use defaults with `dir = "./logs"` for dev profil
 ```nim
 type LogLevel = enum trace, debug, info, warn, error
 
-proc log_access(e: AccessEvent) raises Log
+def log_access(e: AccessEvent) raises Log
   ensures e.authorization == Redacted or e.authorization == Absent
 
-proc log_audit(e: AuditEvent) raises Log
+def log_audit(e: AuditEvent) raises Log
   ensures ∀ k ∈ e.fields, k ∉ SecretFieldNames
 
-proc redact_log(msg: string) -> string
+def redact_log(msg: string) -> string
   ensures no SecretPattern in result
 ```
 
@@ -1503,7 +1503,7 @@ User modules **prove implications** from `OsRngUniform`; they do not re-prove ph
 type RngSource = object
   VTable  # fill_bytes, maybe label for logs
 
-proc tls_generate_iv(src: RngSource, ...) -> bytes
+def tls_generate_iv(src: RngSource, ...) -> bytes
   requires ...
   ensures result.len == IV_LEN
   # deterministic ensures + prob_ensures on collision given OsRngUniform or PrngSeed
@@ -1523,7 +1523,7 @@ proc tls_generate_iv(src: RngSource, ...) -> bytes
 Li extends contracts with **probability bounds**, discharged by **Lean (measure theory)** and/or **Monte Carlo evidence** at build time.
 
 ```nim
-proc issue_iv(r: RngSource, key_id: uint64) -> bytes
+def issue_iv(r: RngSource, key_id: uint64) -> bytes
   requires ...
   ensures result.len == IV_LEN
   prob_ensures collision_iv(key_id, result) < 1e-12

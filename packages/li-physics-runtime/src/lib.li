@@ -1,5 +1,3 @@
-# PKG-li-std-physics-runtime — world step scheduler and engine-facing API.
-# Calls rigid/numerics APIs inline until cross-package `import` resolves in li-tests (see li.toml deps).
 
 type RigidBody = object
   public px: float
@@ -22,18 +20,19 @@ type PhysicsWorld = object
   public gravity_z: float
   public body: RigidBody
 
-proc li_std_physics_runtime_version() -> int
+def li_std_physics_runtime_version() -> int
   requires true
   ensures result == 1
   decreases 0
 =
   return 1
 
-proc rigid_integrate_semi_implicit(b: RigidBody, fx: float, fy: float, fz: float, dt: float) -> unit
+def rigid_integrate_semi_implicit(b: RigidBody, fx: float, fy: float, fz: float, dt: float) -> unit
   requires dt > 0.0
+  ensures true
   decreases 0
 =
-  if b.inv_mass > 0.0
+  if b.inv_mass > 0.0:
     b.vx = b.vx + fx * b.inv_mass * dt
     b.vy = b.vy + fy * b.inv_mass * dt
     b.vz = b.vz + fz * b.inv_mass * dt
@@ -41,9 +40,10 @@ proc rigid_integrate_semi_implicit(b: RigidBody, fx: float, fy: float, fz: float
   b.py = b.py + b.vy * dt
   b.pz = b.pz + b.vz * dt
 
-proc physics_world_new(tier: int) -> PhysicsWorld
+def physics_world_new(tier: int) -> PhysicsWorld
   requires tier >= 0
   requires tier <= 3
+  ensures true
   decreases tier
 =
   var w: PhysicsWorld
@@ -65,7 +65,7 @@ proc physics_world_new(tier: int) -> PhysicsWorld
   w.body.radius = 0.5
   return w
 
-proc physics_world_game_default() -> PhysicsWorld
+def physics_world_game_default() -> PhysicsWorld
   requires true
   ensures result.tier == 2
   ensures result.substeps >= 1
@@ -73,17 +73,19 @@ proc physics_world_game_default() -> PhysicsWorld
 =
   return physics_world_new(2)
 
-proc physics_rigid_substep(world: PhysicsWorld, sub_dt: float) -> unit
+def physics_rigid_substep(world: PhysicsWorld, sub_dt: float) -> unit
   requires sub_dt > 0.0
+  ensures true
   decreases 0
 =
-  if world.rigid_enabled == 0
+  if world.rigid_enabled == 0:
     return
   rigid_integrate_semi_implicit(world.body, 0.0, 0.0, world.gravity_z, sub_dt)
 
-proc physics_step(world: PhysicsWorld, frame_dt: float) -> unit
+def physics_step(world: PhysicsWorld, frame_dt: float) -> unit
   requires frame_dt > 0.0
   requires world.substeps >= 1
+  ensures true
   decreases world.substeps
 =
   var sub: float = frame_dt / world.substeps
@@ -94,14 +96,16 @@ proc physics_step(world: PhysicsWorld, frame_dt: float) -> unit
     world.step_count = world.step_count + 1
     i = i + 1
 
-proc physics_sync_from_scene(world: PhysicsWorld) -> unit
+def physics_sync_from_scene(world: PhysicsWorld) -> unit
   requires true
+  ensures true
   decreases 0
 =
   return
 
-proc physics_sync_to_scene(world: PhysicsWorld) -> unit
+def physics_sync_to_scene(world: PhysicsWorld) -> unit
   requires true
+  ensures true
   decreases 0
 =
   return

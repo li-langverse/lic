@@ -5,7 +5,7 @@ Copy these into a `.li` file and run `lic build file.li -o out`.
 ## Hello
 
 ```nim
-proc main() -> int
+def main() -> int
   requires true
   ensures result == 0
   decreases 0
@@ -17,7 +17,7 @@ proc main() -> int
 ## Float arithmetic
 
 ```nim
-proc main() -> int
+def main() -> int
   requires true
   ensures result == 0
   decreases 0
@@ -31,7 +31,7 @@ proc main() -> int
 ## Fixed-size array
 
 ```nim
-proc main() -> int
+def main() -> int
   requires true
   ensures result == 0
   decreases 0
@@ -47,7 +47,7 @@ proc main() -> int
 ## SIMD micro-loop
 
 ```nim
-proc main() -> int
+def main() -> int
   requires true
   ensures result == 0
   decreases 0
@@ -67,7 +67,7 @@ proc main() -> int
 ## Parallel zeroing
 
 ```nim
-proc main() -> int
+def main() -> int
   requires true
   ensures result == 0
   decreases 0

@@ -1,6 +1,6 @@
 # CWE-125: out-of-bounds read — negative constant index (Heartbleed / OOB read class).
 
-proc read_before_start(buf: array[16, int]) -> int
+def read_before_start(buf: array[16, int]) -> int
   requires true
   ensures true
   decreases 0

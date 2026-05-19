@@ -1,10 +1,27 @@
-# PKG-li-std-numerics — ODE integrators and basic solvers for physics.
 
-extern proc li_rt_sqrt(x: float) -> float
-extern proc li_rt_sin(x: float) -> float
-extern proc li_rt_cos(x: float) -> float
+extern proc li_rt_sqrt(x: float) raises IO -> float
+  requires true
+  ensures true
+  decreases 0
+  requires true
+  ensures true
+  decreases 0
+extern proc li_rt_sin(x: float) raises IO -> float
+  requires true
+  ensures true
+  decreases 0
+  requires true
+  ensures true
+  decreases 0
+extern proc li_rt_cos(x: float) raises IO -> float
+  requires true
+  ensures true
+  decreases 0
+  requires true
+  ensures true
+  decreases 0
 
-proc li_std_numerics_version() -> int
+def li_std_numerics_version() -> int
   requires true
   ensures result == 1
   decreases 0
@@ -12,12 +29,13 @@ proc li_std_numerics_version() -> int
   return 1
 
 # Semi-implicit Euler: v += a*dt; x += v*dt
-proc euler_step_vec2(
+def euler_step_vec2(
     px: array[3, float], py: array[3, float],
     vx: array[3, float], vy: array[3, float],
     fx: array[3, float], fy: array[3, float],
     inv_mass: float, dt: float) -> unit
   requires dt > 0.0
+  ensures true
   decreases 0
 =
   var i: int = 0
@@ -29,12 +47,13 @@ proc euler_step_vec2(
     i = i + 1
 
 # Velocity Verlet (kick-drift-kick) for 2D N-body style state
-proc verlet_step_vec2(
+def verlet_step_vec2(
     px: array[3, float], py: array[3, float],
     vx: array[3, float], vy: array[3, float],
     fx: array[3, float], fy: array[3, float],
     inv_mass: float, dt: float) -> unit
   requires dt > 0.0
+  ensures true
   decreases 0
 =
   var i: int = 0
@@ -50,8 +69,9 @@ proc verlet_step_vec2(
     i = i + 1
 
 # RK4 for state y[4] with user-provided derivative via indices (double pendulum shape)
-proc rk4_step_4(y: array[4, float], dydt: array[4, float], dt: float) -> unit
+def rk4_step_4(y: array[4, float], dydt: array[4, float], dt: float) -> unit
   requires dt > 0.0
+  ensures true
   decreases 0
 =
   var k1: array[4, float]
@@ -94,10 +114,11 @@ proc rk4_step_4(y: array[4, float], dydt: array[4, float], dt: float) -> unit
     i = i + 1
 
 # Conjugate gradient: one iteration (for Poisson / implicit steps)
-proc cg_iteration(
+def cg_iteration(
     x: array[8, float], r: array[8, float], p: array[8, float],
     Ap: array[8, float], alpha: float, beta: float) -> unit
   requires true
+  ensures true
   decreases 0
 =
   var i: int = 0
@@ -111,12 +132,13 @@ proc cg_iteration(
     i = i + 1
 
 # Three-body gravity forces (2D, N=3) — pure-Li reference matching tier2 bench
-proc three_body_forces_2d(
+def three_body_forces_2d(
     px: array[3, float], py: array[3, float],
     fx: array[3, float], fy: array[3, float],
     g: float, mass: float, soft: float) -> unit
   requires g > 0.0
   requires mass > 0.0
+  ensures true
   decreases 0
 =
   var i: int = 0
@@ -144,12 +166,13 @@ proc three_body_forces_2d(
       j = j + 1
     i = i + 1
 
-proc three_body_energy_2d(
+def three_body_energy_2d(
     px: array[3, float], py: array[3, float],
     vx: array[3, float], vy: array[3, float],
     g: float, mass: float, soft: float) -> float
   requires g > 0.0
   requires mass > 0.0
+  ensures true
   decreases 0
 =
   var ke: float = 0.0
@@ -171,8 +194,9 @@ proc three_body_energy_2d(
     i = i + 1
   return ke + pe
 
-proc three_body_init_2d(px: array[3, float], py: array[3, float]) -> unit
+def three_body_init_2d(px: array[3, float], py: array[3, float]) -> unit
   requires true
+  ensures true
   decreases 0
 =
   var r: float = 1.0
@@ -183,12 +207,13 @@ proc three_body_init_2d(px: array[3, float], py: array[3, float]) -> unit
   px[2] = 0.8660254037844386 * r
   py[2] = -0.5 * r
 
-proc three_body_step_mini(
+def three_body_step_mini(
     px: array[3, float], py: array[3, float],
     vx: array[3, float], vy: array[3, float],
     fx: array[3, float], fy: array[3, float],
     dt: float) -> unit
   requires dt > 0.0
+  ensures true
   decreases 0
 =
   three_body_forces_2d(px, py, fx, fy, 1.0, 1.0, 0.000000001)

@@ -1,4 +1,4 @@
-proc bad() -> float
+def bad() -> float
   requires true
   ensures true
   decreases 0

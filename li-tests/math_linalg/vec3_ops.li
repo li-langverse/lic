@@ -1,11 +1,9 @@
-# Smoke: spatial math types compile (package mirrors these APIs).
-
 type Vec3 = object
   public x: float
   public y: float
   public z: float
 
-proc vec3_dot(a: Vec3, b: Vec3) -> float
+def vec3_dot(a: Vec3, b: Vec3) -> float
   requires true
   ensures result == a.x * b.x + a.y * b.y + a.z * b.z
   decreases 0

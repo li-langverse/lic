@@ -9,10 +9,10 @@ User modules cannot redefine or hijack names owned by the language prelude or sh
 ## Rules
 
 1. **Prelude types** (`int`, `list`, `dict`, `tuple`, `Option`, `simd`, …) — no user `type` alias with the same unqualified name.
-2. **Prelude procs** (`echo`) — no user `proc` / `def` with the same name.
+2. **Prelude procs** (`echo`) — no user `def` with the same name.
 3. **Std module exports** — symbols defined in `std/**/*.li` (e.g. `__execution_decorators_doc`) cannot be redefined in user code.
 4. **Reserved decorators** — `parallel`, `cpu`, … remain blocked for `decorator def` (see execution-decorators spec); shared table in `compiler/types/prelude.cpp`.
-5. **Duplicates** — two top-level `proc`/`def` or `type` with the same name in one file → `duplicate_definition`.
+5. **Duplicates** — two top-level `def` or `type` with the same name in one file → `duplicate_definition`.
 
 ## Diagnostics
 

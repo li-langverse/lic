@@ -1,14 +1,13 @@
-# Generic arity / type surface stress for check_fuzz corpus.
 type Box[T] = T
 
-proc id_int(x: Box[int]) -> int
+def id_int(x: Box[int]) -> int
   requires true
   ensures result == x
   decreases 0
 =
   return x
 
-proc id_float(x: Box[float]) -> float
+def id_float(x: Box[float]) -> float
   requires true
   ensures result == x
   decreases 0

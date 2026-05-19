@@ -1,4 +1,4 @@
-proc simd_locals() -> float
+def simd_locals() -> float
   requires true
   ensures true
   decreases 0

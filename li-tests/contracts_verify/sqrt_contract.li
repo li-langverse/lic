@@ -1,5 +1,4 @@
-# Stub sqrt body (`return x`); contracts match identity return, not true sqrt.
-proc sqrt_pos(x: float) -> float
+def sqrt_pos(x: float) -> float
   requires x >= 0.0
   ensures result >= 0.0
   ensures result == x

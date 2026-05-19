@@ -2,7 +2,7 @@ extern proc li_reduce_sum_kernel()
   requires true
   ensures true
 
-proc main() raises IO -> int
+def main() raises IO -> int
   requires true
   ensures result == 0
   decreases 0

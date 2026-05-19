@@ -2,7 +2,7 @@
 
 extern proc li_rt_sqrt(x: float) -> float
 
-proc three_body_forces(
+def three_body_forces(
     px: array[3, float], py: array[3, float],
     fx: array[3, float], fy: array[3, float]) -> unit
   requires true
@@ -36,7 +36,7 @@ proc three_body_forces(
       j = j + 1
     i = i + 1
 
-proc main() -> int
+def main() -> int
   requires true
   ensures result == 0
   decreases 0

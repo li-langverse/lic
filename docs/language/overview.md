@@ -15,7 +15,7 @@ For the normative technical spec, see the [language design spec](../superpowers/
 ```nim
 # optional types and imports at top level
 
-proc name(arg: T) -> R
+def name(arg: T) -> R
   requires <precondition>
   ensures <postcondition>
   decreases <measure>
@@ -44,7 +44,7 @@ proc name(arg: T) -> R
 
 | Feature | Required? |
 |---------|-----------|
-| `requires` / `ensures` on each `proc` | Yes |
+| `requires` / `ensures` on each `def` | Yes |
 | `decreases` on each loop | Yes |
 | `invariant` on `while` loops (when used) | Yes |
 | Disjoint proof on `parallel for` | Yes |

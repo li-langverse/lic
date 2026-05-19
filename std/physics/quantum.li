@@ -1,5 +1,4 @@
-# std/physics/quantum — facade (import physics.quantum).
-proc physics_quantum_std_tag() -> int
+def physics_quantum_std_tag() -> int
   requires true
   ensures result == 1
   decreases 0

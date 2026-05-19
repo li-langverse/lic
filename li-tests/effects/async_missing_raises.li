@@ -1,5 +1,5 @@
 @async
-proc worker() -> int
+def worker() -> int
   requires true
   ensures true
 =

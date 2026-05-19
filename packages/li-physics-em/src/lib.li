@@ -1,35 +1,40 @@
-# PKG-li-std-physics-em — electrostatics and FDTD stubs.
 
-extern proc li_rt_sqrt(x: float) -> float
+extern proc li_rt_sqrt(x: float) raises IO -> float
+  requires true
+  ensures true
+  decreases 0
 
-proc li_std_physics_em_version() -> int
+def li_std_physics_em_version() -> int
   requires true
   ensures result == 1
   decreases 0
 =
   return 1
 
-proc coulomb_force_scalar(q1: float, q2: float, r: float, k: float, soft: float) -> float
+def coulomb_force_scalar(q1: float, q2: float, r: float, k: float, soft: float) -> float
   requires r > 0.0
   requires soft >= 0.0
+  ensures true
   decreases 0
 =
   var r2: float = r * r + soft * soft
   return k * q1 * q2 / r2
 
-proc fdtd_cfl_dt(dx: float, c: float, safety: float) -> float
+def fdtd_cfl_dt(dx: float, c: float, safety: float) -> float
   requires dx > 0.0
   requires c > 0.0
   requires safety > 0.0
   requires safety <= 1.0
+  ensures true
   decreases 0
 =
   return safety * dx / c
 
-proc yee_update_ex_2d(
+def yee_update_ex_2d(
     ex: array[8, float], hz: array[8, float], dt: float, dx: float) -> unit
   requires dt > 0.0
   requires dx > 0.0
+  ensures true
   decreases 0
 =
   var i: int = 0
@@ -37,9 +42,10 @@ proc yee_update_ex_2d(
     ex[i] = ex[i] + (dt / dx) * (hz[i + 1] - hz[i])
     i = i + 1
 
-proc poisson_jacobi_step(
+def poisson_jacobi_step(
     phi: array[8, float], rho: array[8, float], dx: float) -> unit
   requires dx > 0.0
+  ensures true
   decreases 0
 =
   var inv_dx2: float = 1.0 / (dx * dx)

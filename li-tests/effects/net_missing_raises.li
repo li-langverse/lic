@@ -2,7 +2,7 @@ extern proc net_ping() raises Net -> int
   requires true
   ensures true
 
-proc calls_net_without_effect() raises IO -> int
+def calls_net_without_effect() raises IO -> int
   requires true
   ensures true
 =

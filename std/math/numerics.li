@@ -1,7 +1,4 @@
-# std/math/numerics — integrators, ODE helpers (facade).
-# Prefer: import math.numerics  |  import std.math.numerics
-
-proc math_numerics_std_tag() -> int
+def math_numerics_std_tag() -> int
   requires true
   ensures result == 1
   decreases 0

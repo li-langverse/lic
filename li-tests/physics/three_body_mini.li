@@ -1,5 +1,3 @@
-# Mini three-body state init smoke (compile-only).
-
 def main() -> int
   requires true
   ensures result == 0

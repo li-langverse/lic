@@ -1,4 +1,3 @@
-# PKG-li-std-ui — 2D UI types and frame hooks for game / simulation tools.
 
 type Color = object
   public r: float
@@ -28,19 +27,20 @@ type UiFrame = object
   public viewport_w: float
   public viewport_h: float
 
-proc li_std_ui_version() -> int
+def li_std_ui_version() -> int
   requires true
   ensures result == 1
   decreases 0
 =
   return 1
 
-proc color_rgb(r: float, g: float, b: float, a: float) -> Color
+def color_rgb(r: float, g: float, b: float, a: float) -> Color
   requires r >= 0.0
   requires g >= 0.0
   requires b >= 0.0
   requires a >= 0.0
   requires a <= 1.0
+  ensures true
   decreases 0
 =
   var c: Color
@@ -50,25 +50,27 @@ proc color_rgb(r: float, g: float, b: float, a: float) -> Color
   c.a = a
   return c
 
-proc rect_contains(r: Rect, px: float, py: float) -> int
+def rect_contains(r: Rect, px: float, py: float) -> int
   requires r.w >= 0.0
   requires r.h >= 0.0
+  ensures true
   decreases 0
 =
-  if px < r.x
+  if px < r.x:
     return 0
-  if py < r.y
+  if py < r.y:
     return 0
-  if px > r.x + r.w
+  if px > r.x + r.w:
     return 0
-  if py > r.y + r.h
+  if py > r.y + r.h:
     return 0
   return 1
 
-proc ui_frame_begin(w: float, h: float, dt: float) -> UiFrame
+def ui_frame_begin(w: float, h: float, dt: float) -> UiFrame
   requires w > 0.0
   requires h > 0.0
   requires dt > 0.0
+  ensures true
   decreases 0
 =
   var f: UiFrame
@@ -78,14 +80,16 @@ proc ui_frame_begin(w: float, h: float, dt: float) -> UiFrame
   f.viewport_h = h
   return f
 
-proc ui_frame_end(frame: UiFrame) -> unit
+def ui_frame_end(frame: UiFrame) -> unit
   requires true
+  ensures true
   decreases 0
 =
   return
 
-proc input_default() -> InputState
+def input_default() -> InputState
   requires true
+  ensures true
   decreases 0
 =
   var s: InputState

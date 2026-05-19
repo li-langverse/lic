@@ -1,5 +1,4 @@
-# std/physics/em — facade (import physics.em).
-proc physics_em_std_tag() -> int
+def physics_em_std_tag() -> int
   requires true
   ensures result == 1
   decreases 0

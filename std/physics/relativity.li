@@ -1,7 +1,4 @@
-# std/physics/relativity — SR / weak-field GR (facade).
-# Prefer: import physics.relativity  |  import std.physics.relativity
-
-proc physics_relativity_std_tag() -> int
+def physics_relativity_std_tag() -> int
   requires true
   ensures result == 1
   decreases 0

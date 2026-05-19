@@ -1,4 +1,4 @@
-proc const_seven() -> int
+def const_seven() -> int
   requires true
   ensures result == 7
   decreases 0

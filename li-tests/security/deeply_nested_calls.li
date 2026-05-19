@@ -1,12 +1,11 @@
-# Parser/typecheck stress: deeply nested call expression (compiler crash class).
-proc wrap(x: int) -> int
+def wrap(x: int) -> int
   requires true
   ensures result == x + 1
   decreases 0
 =
   return x + 1
 
-proc deep() -> int
+def deep() -> int
   requires true
   ensures true
   decreases 0

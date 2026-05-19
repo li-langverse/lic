@@ -1,5 +1,3 @@
-# std/ui — re-export surface aligned with li-std-ui (compiler prelude stub).
-
 type Color = object
   public r: float
   public g: float
@@ -12,14 +10,14 @@ type Rect = object
   public w: float
   public h: float
 
-proc ui_tag() -> int
+def ui_tag() -> int
   requires true
   ensures result == 5
   decreases 0
 =
   return 5
 
-proc color_white() -> Color
+def color_white() -> Color
   requires true
   decreases 0
 =

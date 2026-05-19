@@ -1,6 +1,6 @@
 # Pure-Li SIMD micro-kernel (exercises simd[f64,4] + intrinsics); no LI_EXTRA_C.
 
-proc main() -> int
+def main() -> int
   requires true
   ensures result == 0
   decreases 0

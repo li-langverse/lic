@@ -1,6 +1,4 @@
-# Regression: '+' must tokenize as Plus, not Minus (horner_pure_li loop counter).
-
-proc smoke() -> int
+def smoke() -> int
   requires true
   ensures result == 3
   decreases 0

@@ -36,3 +36,30 @@ proc httpd_ready(handle_id: int) -> bool
   decreases 0
 =
   return true
+
+# PH-MMO-5 — WebSocket upgrade path (stub until P0-net + WS stack).
+proc httpd_websocket_listen_stub(port: int) -> int
+  requires port > 0
+  requires port <= 65535
+  ensures result == port
+  decreases port
+=
+  return port
+
+proc httpd_websocket_upgrade_stub(handle_id: int) -> int
+  requires handle_id >= 0
+  ensures result == 1
+  decreases handle_id
+=
+  return 1
+
+proc httpd_ws_smoke() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  if httpd_websocket_listen_stub(8080) != 8080:
+    return 1
+  if httpd_websocket_upgrade_stub(0) != 1:
+    return 2
+  return 0

@@ -167,7 +167,7 @@ def game_step(world: GameWorld, input: InputState) -> unit
 | `studio.ai` | `li-studio-ai` | PH-GD-3, PH-AGENT |
 | `world` | `li-world` | PH-GD-2 |
 | `assets` | `li-assets` | PH-GD-4 |
-| `render` | `li-render` | PH-GD-5, PH-SCI |
+| `render` | `li-render` | PH-GD-5, PH-SCI (stub landed) |
 | `player` | `li-player` | PH-GD-7 |
 | `sim` | `li-sim` | PH-SIM |
 | `physics.custom` | `li-physics-custom` | PH-PHYS-CUSTOM |

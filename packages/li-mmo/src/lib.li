@@ -172,6 +172,15 @@ def mmo_smoke() -> int
     return 1
   return 0
 
+def mmo_gateway_ws_smoke() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  if mmo_role_gateway() != 0:
+    return 1
+  return 0
+
 def mmo_matchmaking_smoke() -> int
   requires true
   ensures result == 0

@@ -14,10 +14,10 @@ type BioengPipeline = object
 
 def li_bioeng_version() -> int
   requires true
-  ensures result == 2
+  ensures result == 3
   decreases 0
 =
-  return 2
+  return 3
 
 # BIOENG-1 — pipeline smoke (no cross-package mutation until borrowck allows).
 def bioeng_dbtl_pipeline_smoke() -> int
@@ -87,6 +87,59 @@ def bioeng_construct_new(part_count: int) -> BioengConstruct
   c.part_count = part_count
   c.valid = 1
   return c
+
+# BIOENG-2 — construct registry (parts / plasmids / strains).
+type BioengPart = object
+  public part_id: int
+  public part_type: int
+
+type ConstructRegistry = object
+  public slot_count: int
+  public next_part_id: int
+
+def bioeng_part_type_promoter() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0
+
+def bioeng_part_type_cds() -> int
+  requires true
+  ensures result == 1
+  decreases 0
+=
+  return 1
+
+def construct_registry_new(slot_count: int) -> ConstructRegistry
+  requires slot_count > 0
+  ensures result.slot_count == slot_count
+  ensures result.next_part_id == 1
+  decreases slot_count
+=
+  var r: ConstructRegistry
+  r.slot_count = slot_count
+  r.next_part_id = 1
+  return r
+
+def construct_valid_stub(part_count: int) -> int
+  requires part_count > 0
+  ensures result == 1
+  decreases part_count
+=
+  return 1
+
+def construct_registry_smoke() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  if construct_valid_stub(3) != 1:
+    return 1
+  var r: ConstructRegistry = construct_registry_new(8)
+  if r.slot_count != 8:
+    return 2
+  return 0
 
 def bioeng_dbtl_new(iteration: int) -> BioengPipeline
   requires iteration >= 0

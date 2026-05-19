@@ -120,8 +120,8 @@ def shard_tick(realm: RealmState) -> unit
 | 2 | MMO-2 | Matchmaking + gateway route table stub | ✅ |
 | 3 | MMO-3 | `deploy/mmo/` compose + realm.toml + shard/gateway mains | ✅ |
 | 4 | MMO-4 | Trusted Redis/Postgres FFI behind `store.realtime` | ✅ stub |
-| 5 | MMO-5 | WebSocket gateway on `net.httpd` |
-| 6 | MMO-6 | Cross-shard migration + `world` checkpoint |
+| 5 | MMO-5 | WebSocket gateway on `net.httpd` | ✅ stub |
+| 6 | MMO-6 | Cross-shard migration + `world` checkpoint | ✅ stub |
 | 7 | MMO-7 | Anti-cheat hooks + compliance audit |
 
 ---

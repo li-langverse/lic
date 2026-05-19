@@ -29,12 +29,35 @@ def studio_ai_apply_patch_stub(req: PatchRequest) -> int
 =
   return req.patch_id
 
+# GD-3 — hook for lic diagnose JSON (agent applies patch after check passes).
+def studio_ai_diagnose_gate_stub(error_count: int) -> int
+  requires error_count >= 0
+  ensures result == 0
+  ensures result <= 1
+  decreases error_count
+=
+  if error_count > 0:
+    return 1
+  return 0
+
+def studio_ai_apply_if_clean_stub(req: PatchRequest, error_count: int) -> int
+  requires req.patch_id > 0
+  requires error_count >= 0
+  ensures result >= 0
+  decreases error_count
+=
+  if studio_ai_diagnose_gate_stub(error_count) != 0:
+    return 0
+  return studio_ai_apply_patch_stub(req)
+
 def studio_ai_smoke() -> int
   requires true
   ensures result == 0
   decreases 0
 =
   var p: PatchRequest = studio_ai_patch_new(1, 10)
-  if studio_ai_apply_patch_stub(p) != 1:
+  if studio_ai_apply_if_clean_stub(p, 0) != 1:
     return 1
+  if studio_ai_diagnose_gate_stub(1) != 1:
+    return 2
   return 0

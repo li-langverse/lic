@@ -1,0 +1,45 @@
+# PKG-li-render — PBR-lite viewport rendering (PH-GD-5 stub).
+
+type RenderViewport = object
+  public width: int
+  public height: int
+  public frame_id: int
+
+def li_render_version() -> int
+  requires true
+  ensures result == 1
+  decreases 0
+=
+  return 1
+
+def render_viewport_new(width: int, height: int) -> RenderViewport
+  requires width > 0
+  requires height > 0
+  ensures result.width == width
+  ensures result.height == height
+  ensures result.frame_id == 0
+  decreases width
+=
+  var v: RenderViewport
+  v.width = width
+  v.height = height
+  v.frame_id = 0
+  return v
+
+def render_frame_tick_stub(viewport: RenderViewport) -> unit
+  requires viewport.width > 0
+  ensures viewport.frame_id >= 1
+  decreases viewport.frame_id
+=
+  viewport.frame_id = viewport.frame_id + 1
+
+def render_smoke() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  var v: RenderViewport = render_viewport_new(1920, 1080)
+  render_frame_tick_stub(v)
+  if v.frame_id != 1:
+    return 1
+  return 0

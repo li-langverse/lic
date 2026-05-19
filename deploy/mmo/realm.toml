@@ -19,6 +19,7 @@ backend = "memory"
 
 [gateway]
 port = 8080
+websocket_port = 8081
 role = "gateway"
 
 [[shards]]

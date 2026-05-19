@@ -53,6 +53,16 @@ def world_save_text_stub(snap: WorldSnapshot) -> int
 =
   return snap.checksum + snap.entity_count
 
+def world_checkpoint_mmo_stub(tick: int, realm_id: int, shard_id: int) -> int
+  requires tick >= 0
+  requires realm_id >= 0
+  requires shard_id >= 0
+  ensures result >= 0
+  decreases tick
+=
+  var s: WorldSnapshot = world_snapshot_for_realm(tick, 0, realm_id, shard_id)
+  return world_save_text_stub(s)
+
 def world_realm_smoke() -> int
   requires true
   ensures result == 0

@@ -1,8 +1,10 @@
 # Li physics module overview
 
-Physics for the Li game engine is delivered as **`li-std-physics*`** packages on top of **`li-std-math`** and **`li-std-numerics`**.
+Physics for the Li game engine ships as **`li-physics-*`** workspace packages on **`li-math`** and **`li-math-numerics`**, with ergonomic imports (`import physics.runtime`, `import math`).
 
 **Quick start:** [GAME_DEV.md](./GAME_DEV.md) (packages, tier-2 benches, engine checklist).
+
+> **Org mirrors:** some published repos still use legacy names (`li-std-math`, `li-httpd`). Monorepo folders and `import_name` values use `li-math`, `li-physics-*`, etc. See [repo-naming.md](../ecosystem/repo-naming.md).
 
 ## Fidelity tiers
 
@@ -15,24 +17,24 @@ Physics for the Li game engine is delivered as **`li-std-physics*`** packages on
 
 Scenes select a **`PhysicsProfile`** (`tier`, `dt`, `substeps`, **`NumericalTargets`**).
 
-## Packages
+## Packages (monorepo `packages/`)
 
-| Package | Role |
-|---------|------|
-| `li-std-math` | Vec3, Quat, Mat4, array dot/sum |
-| `li-std-numerics` | Integrators, three-body reference |
-| `li-std-physics-core` | Profiles, tier defaults |
-| `li-std-physics-rigid` | Rigid bodies, PGS stub |
-| `li-std-physics-runtime` | `PhysicsWorld`, `physics_step` |
-| `li-std-physics-particles` | Emitters, MD SoA |
-| `li-std-physics-fluids` | SPH, heat, cloth PBD |
-| `li-std-physics-weather` | Advection/diffusion wind |
-| `li-std-physics-aero` | Atmosphere, orbits |
-| `li-std-physics-chem` | Reactions, passive combustion |
-| `li-std-physics-em` | Coulomb, FDTD, Poisson |
-| `li-std-physics-quantum` | TDSE 1D hooks |
-| `li-std-physics-relativity` | SR + Schwarzschild factor |
-| `li-std-physics-hep` | Toy MC (education) |
+| Folder | Import | Role |
+|--------|--------|------|
+| `li-math` | `import math` | Vec3, Quat, Mat4, array dot/sum |
+| `li-math-numerics` | `import math.numerics` | Integrators, three-body reference |
+| `li-physics-core` | `import physics.core` | Profiles, tier defaults |
+| `li-physics-rigid` | `import physics.rigid` | Rigid bodies, PGS stub |
+| `li-physics-runtime` | `import physics.runtime` | `PhysicsWorld`, `physics_step` |
+| `li-physics-particles` | `import physics.particles` | Emitters, MD SoA |
+| `li-physics-fluids` | `import physics.fluids` | SPH, heat, cloth PBD |
+| `li-physics-weather` | `import physics.weather` | Advection/diffusion wind |
+| `li-physics-aero` | `import physics.aero` | Atmosphere, orbits |
+| `li-physics-chem` | `import physics.chem` | Reactions, passive combustion |
+| `li-physics-em` | `import physics.em` | Coulomb, FDTD, Poisson |
+| `li-physics-quantum` | `import physics.quantum` | TDSE 1D hooks |
+| `li-physics-relativity` | `import physics.relativity` | SR + Schwarzschild factor |
+| `li-physics-hep` | `import physics.hep` | Toy MC (education) |
 
 ## Benchmarks
 

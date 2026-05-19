@@ -42,6 +42,6 @@ Contributors use **`.cursor/skills/research-li-numerics`** before adding a new k
 - `requires dt > 0`, CFL inequalities as `requires` where explicit schemes are chosen
 - `ensures` energy drift bounds for symplectic integrators when **G-vc** / **G-lean** support them
 
-**Status:** Library types in `li-std-physics-core` today; decorator elaboration is **planned** (see [provability gaps](../verification/provability-gaps.md)).
+**Status:** Library types in `li-physics-core` today; decorator elaboration is **planned** (see [provability gaps](../verification/provability-gaps.md)).
 
 For **floating-point expression stability** (subtraction cancellation, compensated sums), see [fp-numerical-stability.md](../language/fp-numerical-stability.md) (`lic build --numerically-stable`).

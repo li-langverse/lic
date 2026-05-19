@@ -42,7 +42,7 @@ With `--numerically-stable`, array `sum` on `float`/`f64` arrays uses **Kahan su
 - No Herbie-style expression search across equivalent formulas
 - No interval/arbitrary-precision proof of error bounds
 
-For those, keep using `li-std-numerics`, explicit `requires`/`ensures`, and Tier-0 stability benches.
+For those, keep using `math.numerics` / `li-math-numerics`, explicit `requires`/`ensures`, and Tier-0 stability benches.
 
 ## Benchmarks note
 

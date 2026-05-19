@@ -36,7 +36,7 @@ Python also teaches **practicality beats purity** — Li allows that *after* pro
 Good Li reads as **short sentences**:
 
 ```li
-proc advance_orbit(body: Body, dt: float) -> unit
+def advance_orbit(body: Body, dt: float) -> unit
   requires dt > 0
   ensures energy_drift(body) < max_drift
   decreases 0

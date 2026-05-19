@@ -1,6 +1,6 @@
 # Li physics for game development
 
-**Status:** tier-2 benchmarks + `li-std-physics-*` packages on branch `feat/physics-game-dev`  
+**Status:** tier-2 benchmarks + `li-physics-*` workspace packages on `lic` `main`  
 **Oracle:** shared C kernels in `benchmarks/tier2_physics/*/common/*_core.c` (Li matches cpp/rust/julia shape)
 
 ---
@@ -69,8 +69,8 @@ Catalog + dashboard: `li-langverse/benchmarks` `catalog.toml` → ingest.
 ## PR / merge order (org)
 
 1. **lic** `fix/typecheck-ctx-init` / #4 — compiler blocker (merge first).  
-2. **Package CI** — `li-net`, `li-httpd`, `li-std-*`, `li-demo` #2 (or #1).  
-3. **lic** `feat/physics-game-dev` — physics packages + game benches.  
+2. **Package CI** — `li-net`, `li-httpd`, `li-std-core`, `li-std-math`, `li-demo` (org mirrors).  
+3. **lic** `main` — `li-physics-*`, `def` syntax, composable imports (#58–#64).  
 4. **benchmarks** — catalog/ingest PRs after lic `main` builds.
 
 Run org sweep: `python3 scripts/run-pr-program.py` in **benchmarks** repo.

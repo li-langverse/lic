@@ -363,6 +363,9 @@ fetch("status.json")
       el.textContent = `${s.composable_gates} composable · ${s.game_dev_gates} game_dev · ${s.vertical_demo_builds} builds`;
     }
     const st = document.getElementById("lic-status");
-    if (st) st.textContent = `lic ✓ · ${s.sprint} · ${s.branch}`;
+    if (st) {
+      const gpu = s.gpu_viewport ? " · GPU viewport" : "";
+      st.textContent = `lic ✓ · ${s.sprint} · ${s.branch}${gpu}`;
+    }
   })
   .catch(() => {});

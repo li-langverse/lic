@@ -925,6 +925,24 @@ note = "Spin-up scientific template composable"
 
 [[tests]]
 suite = "composable"
+file = "composable/import_render_gpu_viewport.li"
+outcome = "compile_ok"
+note = "PH-GD-5 GPU viewport surface + gpu backend"
+
+[[tests]]
+suite = "composable"
+file = "composable/import_studio_gpu_viewport_stack.li"
+outcome = "compile_ok"
+note = "Studio GPU viewport bind + render surface"
+
+[[tests]]
+suite = "composable"
+file = "composable/import_world_studio_premerge.li"
+outcome = "compile_ok"
+note = "Pre-merge rollup (spinup + gpu + sim stack)"
+
+[[tests]]
+suite = "composable"
 file = "composable/import_world_studio_benchmark_tier1.li"
 outcome = "compile_ok"
 note = "Competitive world-studio.toml tier-1 rollup"

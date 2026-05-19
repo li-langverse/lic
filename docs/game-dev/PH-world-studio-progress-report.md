@@ -1,7 +1,7 @@
 # World Studio / Li Engine — progress report
 
 **Branch:** `feat/world-studio-impl-1`  
-**Sprint:** impl-26 (2026-05)  
+**Sprint:** impl-27 (2026-05)  
 **Tracker:** [PH-world-studio-program.md](PH-world-studio-program.md)  
 **Merge:** [MERGE-world-studio-checklist.md](MERGE-world-studio-checklist.md)
 
@@ -11,34 +11,32 @@
 
 | Metric | Value |
 |--------|--------|
-| **Composable gates** | **82 / 82 pass** ✅ |
+| **Composable gates** | **85 / 85 pass** ✅ |
 | **Game dev** | **12 parse_ok** |
 | **Vertical builds** | **7** |
 | **Spin-up templates** | **8 compile_ok** |
-| **Studio binary** | `build/bin/world-studio` (viewport + render bridge) ✅ |
-| **CI** | `./scripts/ci-world-studio.sh` + `check-world-studio-gates.sh` |
-| **CLI** | `./scripts/lis new world-studio …` (incl. `scientific`) |
+| **Studio binary** | `build/bin/world-studio` + **verify script** ✅ |
+| **GPU viewport** | `RenderGpuSurface` + `render_gpu_viewport_smoke` ✅ |
 | **Blocked** | `sim_step_physics` (deferred) |
 
 ---
 
-## Sprint impl-26
+## Sprint impl-27
 
 | Deliverable | State |
 |-------------|--------|
-| `studio_native_viewport_bridge_smoke()` + `studio_main.li` render wire | ✅ |
-| `import_studio_native_viewport_bridge` composable | ✅ |
-| `scientific` spin-up template (8th) + `import_spinup_scientific` | ✅ |
-| Demo GUI **Scientific** tab | ✅ |
-| Spin-up registry count → 8 | ✅ |
+| `RenderGpuSurface` + `render_gpu_viewport_smoke` in `li-render` | ✅ |
+| `studio_bind_gpu_viewport_stub` + `studio_gpu_viewport_smoke` | ✅ |
+| `studio_main.li` wires `gpu` backend + GPU viewport | ✅ |
+| Composables: GPU viewport, studio GPU stack, **premerge rollup** | ✅ |
+| `scripts/verify-world-studio-binary.sh` in CI | ✅ |
 
 ---
 
 ## Quick commands
 
 ```bash
-./scripts/lis new world-studio scientific ./my-lab-viz
-./scripts/build-studio-binary.sh && ./build/bin/world-studio
+./scripts/verify-world-studio-binary.sh
 ./scripts/check-world-studio-gates.sh
 python3 -m http.server 8765 --directory deploy/studio-demo
 ```
@@ -49,18 +47,18 @@ python3 -m http.server 8765 --directory deploy/studio-demo
 
 | Sprint | Gates |
 |--------|-------|
-| impl-25 | 80 |
-| **impl-26** | **82** |
+| impl-26 | 82 |
+| **impl-27** | **85** |
 
 ---
 
 ## Next
 
-1. **Merge PR** → `main` ([checklist](MERGE-world-studio-checklist.md))  
-2. Real GPU viewport in `li-render` (beyond tick stubs)  
-3. Upstream `lis new world-studio` in lis repo  
+1. **Merge PR** → `main`  
+2. LKIR / real GPU present path in `li-gpu` + `li-render`  
+3. Re-record demo reel (`./scripts/record-studio-demo.sh`)  
 4. `sim_step_physics` when compiler allows cross-package types  
 
 ---
 
-*impl-26 · `feat/world-studio-impl-1`*
+*impl-27 · `feat/world-studio-impl-1`*

@@ -20,8 +20,8 @@ li_phase "World Studio spin-up templates"
 "$ROOT/li-tests/run_all.sh" spinup_templates
 
 li_phase "World Studio studio binary"
-chmod +x "$ROOT/scripts/build-studio-binary.sh"
-"$ROOT/scripts/build-studio-binary.sh"
+chmod +x "$ROOT/scripts/build-studio-binary.sh" "$ROOT/scripts/verify-world-studio-binary.sh"
+"$ROOT/scripts/verify-world-studio-binary.sh"
 
 li_phase "World Studio demo status.json"
 chmod +x "$ROOT/scripts/gen-studio-demo-status.sh"

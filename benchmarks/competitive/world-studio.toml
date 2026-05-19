@@ -4,7 +4,7 @@
 schema = 1
 track = "PH-GD"
 plan = "docs/game-dev/world-studio-vision.md"
-composable_gates = 82
+composable_gates = 85
 branch = "feat/world-studio-impl-1"
 
 [[benchmark]]
@@ -90,3 +90,24 @@ name = "Scientific engineering spin-up template"
 tier = 1
 li_package = "li-sim-scientific"
 composable = "import_spinup_scientific"
+
+[[benchmark]]
+id = "render-gpu-viewport"
+name = "GPU viewport surface + backend select"
+tier = 1
+li_package = "li-render"
+composable = "import_render_gpu_viewport"
+
+[[benchmark]]
+id = "studio-gpu-viewport-stack"
+name = "Studio shell GPU viewport stack"
+tier = 1
+li_package = "li-studio"
+composable = "import_studio_gpu_viewport_stack"
+
+[[benchmark]]
+id = "world-studio-premerge"
+name = "Pre-merge composable rollup"
+tier = 1
+li_package = "li-studio"
+composable = "import_world_studio_premerge"

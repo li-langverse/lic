@@ -256,6 +256,28 @@ def studio_native_viewport_bridge_smoke() -> int
     return 2
   return 0
 
+# PH-GD-5 / PH-HW — GPU viewport bind (pairs with render_gpu_* in composable/binary).
+def studio_bind_gpu_viewport_stub(width: int, height: int, backend_id: int) -> int
+  requires width > 0
+  requires height > 0
+  requires backend_id >= 0
+  requires backend_id <= 2
+  ensures result == width + height + backend_id + 1000
+  decreases width
+=
+  return width + height + backend_id + 1000
+
+def studio_gpu_viewport_smoke() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  if studio_bind_gpu_viewport_stub(1280, 720, 1) != 3001:
+    return 1
+  if studio_native_viewport_bridge_smoke() != 0:
+    return 2
+  return 0
+
 # PH-GD spin-up registry (deploy/world-studio-spinup/spinup.toml template count).
 def studio_spinup_template_count_stub() -> int
   requires true

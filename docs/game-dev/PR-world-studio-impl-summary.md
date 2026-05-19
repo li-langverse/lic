@@ -1,13 +1,15 @@
 # PR summary — `feat/world-studio-impl-1` → `main`
 
-**Purpose:** Land World Studio / Li Engine implementation (impl-1…impl-26).
+**Purpose:** Land World Studio / Li Engine implementation (impl-1…impl-27).
 
-## Stats (impl-26)
+## Stats (impl-27)
 
 | Metric | Value |
 |--------|-------|
 | Packages added/extended | 28+ |
-| Composable gates | **82** |
+| Composable gates | **85** |
+| GPU viewport | `RenderGpuSurface` + composable gates |
+| Binary verify | `./scripts/verify-world-studio-binary.sh` |
 | Game dev parse_ok | **12** |
 | Spin-up templates | **8** (incl. `scientific`, `game_unphysical`) |
 | Vertical demo builds | **7** |

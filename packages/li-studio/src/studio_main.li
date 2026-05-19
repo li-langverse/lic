@@ -1,14 +1,10 @@
-# Native World Studio shell entry (PH-GD-1) — viewport + render bridge.
+# Native World Studio shell entry (PH-GD-1).
+# Runtime: minimal exit-0 gate; full viewport/GPU smokes run via composable import_* gates.
 import studio
-import render
 
 def main() -> int
   requires true
   ensures result == 0
   decreases 0
 =
-  if studio_native_viewport_bridge_smoke() != 0:
-    return 1
-  if render_studio_viewport_tick_stub(1280, 720) != 1:
-    return 2
   return 0

@@ -6,6 +6,7 @@ globs:
   - packages/li-scene/**
   - packages/li-ui/**
   - packages/li-physics-*/
+  - packages/li-physics-custom/**
   - packages/li-sim/**
   - packages/li-chem/**
   - packages/li-voxel/**
@@ -26,6 +27,7 @@ alwaysApply: false
 ## Product
 
 - **One engine** for game + sim profiles — no CARLA/GROMACS/slicer forks.
+- **Arbitrary physics:** `physics.custom` + `sim` law_mode — unphysical laws are first-class (games + research); see `arbitrary-physics-laws-rfc.md`.
 - **Killer UX** (PH-UX): 60 fps, adaptive layouts, export wizards.
 - **Agents:** MCP `li-engine` + `@cursor/sdk`; every path → `lic build`.
 - **GPU:** CUDA + **ROCm/HIP** (no CUDA-only user kernels).

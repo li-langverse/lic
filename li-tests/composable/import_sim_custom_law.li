@@ -1,0 +1,10 @@
+# PH-SIM + PH-PHYS-CUSTOM — law mode smoke via li-sim export.
+
+import sim
+
+def main() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return sim_arbitrary_law_smoke()

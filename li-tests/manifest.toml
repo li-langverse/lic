@@ -521,6 +521,18 @@ file = "composable/import_gpu.li"
 outcome = "compile_ok"
 note = "PH-HW-0 import gpu"
 
+[[tests]]
+suite = "composable"
+file = "composable/import_physics_custom.li"
+outcome = "compile_ok"
+note = "PH-PHYS-CUSTOM import physics.custom"
+
+[[tests]]
+suite = "composable"
+file = "composable/import_sim_custom_law.li"
+outcome = "compile_ok"
+note = "PH-SIM law_mode + physics.custom"
+
 # composable/import_physics_runtime — enable when cross-package PhysicsWorld types resolve
 # stdlib_coverage/build_std_csv — enable when std.csv module resolves (PH-IO-4)
 
@@ -743,6 +755,12 @@ suite = "game_dev"
 file = "game_dev/replay_smoke.li"
 outcome = "parse_ok"
 note = "PH-SIM-2 replay push smoke"
+
+[[tests]]
+suite = "game_dev"
+file = "game_dev/custom_physics_smoke.li"
+outcome = "parse_ok"
+note = "PH-PHYS-CUSTOM inverse gravity smoke"
 
 # --- hpc_competitive (registry gate; ./li-tests/run_all.sh hpc_competitive) ---
 

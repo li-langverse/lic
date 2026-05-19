@@ -1,0 +1,9 @@
+# std/physics/custom — arbitrary law facade (PH-PHYS-CUSTOM).
+# Prefer: import physics.custom  |  workspace packages/li-physics-custom.
+
+def physics_custom_std_tag() -> int
+  requires true
+  ensures result == 1
+  decreases 0
+=
+  return 1

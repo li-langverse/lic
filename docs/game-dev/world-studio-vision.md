@@ -102,6 +102,31 @@ require_sim_pass = true
 
 RFC: [li-engine-unified-sim-rfc.md](specs/li-engine-unified-sim-rfc.md)
 
+### Arbitrary & unphysical physics (essential)
+
+**Not all worlds obey \(\mathbb{R}^3\) Newtonian laws.** Li treats **custom laws as first-class**, alongside tiered realistic physics:
+
+| Mode | Package | Use |
+|------|---------|-----|
+| `realistic` | `li-physics-runtime`, `li-physics-*` | Sims, science, automotive |
+| `arbitrary` | **`physics.custom`** | Games, counterfactual research, toy universes |
+| `hybrid` | both | e.g. realistic rigid body + inverse-gravity power-up zone |
+
+Games routinely need inverse gravity, teleports, non-conservative boosts, and per-frame rule swaps. Research needs the same hooks for unphysical but **scientifically interesting** models (broken symmetries, alternate dynamics).
+
+```li
+import sim
+import physics.custom
+
+def powerup_step(w: SimWorld, s: CustomState) -> unit
+  requires w.law_mode == sim_law_mode_arbitrary()
+=
+  custom_law_apply(custom_law_builtin_inverse_gravity(), s, w.dt)
+  sim_step_arbitrary(w)
+```
+
+RFC: [arbitrary-physics-laws-rfc.md](specs/arbitrary-physics-laws-rfc.md) · package **`li-physics-custom`**.
+
 ---
 
 ## 6. PH-GD — World Studio editor (game authoring)
@@ -145,6 +170,7 @@ def game_step(world: GameWorld, input: InputState) -> unit
 | `render` | `li-render` | PH-GD-5, PH-SCI |
 | `player` | `li-player` | PH-GD-7 |
 | `sim` | `li-sim` | PH-SIM |
+| `physics.custom` | `li-physics-custom` | PH-PHYS-CUSTOM |
 | `sim.automotive` | `li-sim-automotive` | PH-SIM |
 | `sim.robotics` | `li-sim-robotics` | PH-ROBO |
 | `sim.additive` | `li-sim-additive` | PH-AM |

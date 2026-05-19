@@ -6,6 +6,8 @@ type SimWorld = object
   public dt: float
   public headless: int
   public profile: int
+  public law_mode: int
+  public custom_law_id: int
 
 type SimReplay = object
   public capacity: int
@@ -14,10 +16,32 @@ type SimReplay = object
 
 def li_sim_version() -> int
   requires true
-  ensures result == 3
+  ensures result == 4
   decreases 0
 =
-  return 3
+  return 4
+
+# PH-PHYS-CUSTOM — 0 realistic stack, 1 arbitrary-only, 2 hybrid (see physics.custom).
+def sim_law_mode_realistic() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0
+
+def sim_law_mode_arbitrary() -> int
+  requires true
+  ensures result == 1
+  decreases 0
+=
+  return 1
+
+def sim_law_mode_hybrid() -> int
+  requires true
+  ensures result == 2
+  decreases 0
+=
+  return 2
 
 def sim_profile_game() -> int
   requires true
@@ -80,6 +104,8 @@ def sim_world_new(dt: float, headless: int) -> SimWorld
   w.dt = dt
   w.headless = headless
   w.profile = sim_profile_game()
+  w.law_mode = sim_law_mode_realistic()
+  w.custom_law_id = 0
   return w
 
 def sim_world_with_profile(dt: float, headless: int, profile: int) -> SimWorld
@@ -102,6 +128,26 @@ def sim_reset(world: SimWorld) -> unit
 
 def sim_step(world: SimWorld) -> unit
   requires world.dt > 0.0
+  ensures world.tick >= 1
+  decreases world.tick
+=
+  world.tick = world.tick + 1
+
+def sim_set_law_mode(world: SimWorld, mode: int, custom_law_id: int) -> unit
+  requires mode >= 0
+  requires mode <= 2
+  requires custom_law_id >= 0
+  ensures world.law_mode == mode
+  ensures world.custom_law_id == custom_law_id
+  decreases mode
+=
+  world.law_mode = mode
+  world.custom_law_id = custom_law_id
+
+# Advances tick; caller runs physics.custom.custom_law_apply when law_mode != realistic.
+def sim_step_arbitrary(world: SimWorld) -> unit
+  requires world.dt > 0.0
+  requires world.law_mode == sim_law_mode_arbitrary()
   ensures world.tick >= 1
   decreases world.tick
 =
@@ -137,3 +183,18 @@ def sim_replay_last_tick(replay: SimReplay) -> int
   decreases 0
 =
   return replay.last_tick
+
+# Composable smoke: arbitrary law_mode without exporting SimWorld to importers.
+def sim_arbitrary_law_smoke() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  var w: SimWorld = sim_world_new(1.0 / 60.0, 1)
+  sim_set_law_mode(w, sim_law_mode_arbitrary(), 1)
+  sim_step_arbitrary(w)
+  if w.tick != 1:
+    return 1
+  if w.law_mode != sim_law_mode_arbitrary():
+    return 2
+  return 0

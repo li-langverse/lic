@@ -4,7 +4,8 @@
 
 | Template | Profile | Packages |
 |----------|---------|----------|
-| `game` | `sim_profile_game()` | `studio`, `world`, `scene`, `sim` |
+| `game` | `sim_profile_game()` | `studio`, `world`, `scene`, `sim`, `physics.custom` |
+| `game_unphysical` | `sim_law_mode_arbitrary()` | `sim`, `physics.custom` (inverse gravity, teleports, etc.) |
 | `sim_rl` | `sim_profile_rl()` | `sim`, `ml` (future) |
 | `sim_automotive` | `sim_profile_automotive()` | `sim`, `sim.automotive` |
 | `sim_additive` | AM | `sim`, `sim.additive`, `voxel` |

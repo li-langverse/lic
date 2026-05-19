@@ -10,6 +10,7 @@ Cross-cutting program IDs. Implementation order respects dependencies in the vis
 | **PH-GD** | GD-0…7 | `li-scene`, `li-ui` |
 | **PH-UX** | UX-0…5 | PH-GD-1 |
 | **PH-SIM** | SIM-0…6 | `li-physics-runtime` |
+| **PH-PHYS-CUSTOM** | CUSTOM-0…3 | PH-SIM-1 |
 | **PH-ROBO** | ROBO-0…5 | PH-SIM-1 |
 | **PH-AM** | AM-0…9 | PH-SCI-2, PH-UX-3 |
 | **PH-SCI** | SCI-0…7 | tier-2 physics |
@@ -41,3 +42,5 @@ Cross-cutting program IDs. Implementation order respects dependencies in the vis
 | `li-ml`, `li-gpu` stubs | Done |
 | `studio_adaptive_*`, `studio_publish_*` in `li-studio` | Done |
 | `chem` DFT/TDDFT tagged stubs | Done |
+| **Arbitrary / unphysical physics** (`li-physics-custom`) | Done (CUSTOM-0) |
+| `sim` law_mode + `sim_step_arbitrary` | Done |

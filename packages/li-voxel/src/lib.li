@@ -8,10 +8,10 @@ type VoxelGrid = object
 
 def li_voxel_version() -> int
   requires true
-  ensures result == 1
+  ensures result == 2
   decreases 0
 =
-  return 1
+  return 2
 
 def voxel_grid_new(nx: int, ny: int, nz: int, mode: int) -> VoxelGrid
   requires nx > 0
@@ -37,3 +37,21 @@ def voxel_cell_count(grid: VoxelGrid) -> int
   decreases grid.nx
 =
   return grid.nx * grid.ny * grid.nz
+
+# PH-VOXEL + PH-AM — additive profile mode tag (pairs with sim_profile_additive).
+def voxel_mode_additive() -> int
+  requires true
+  ensures result == 5
+  decreases 0
+=
+  return 5
+
+def voxel_additive_smoke() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  var g: VoxelGrid = voxel_grid_new(4, 4, 4, voxel_mode_additive())
+  if voxel_cell_count(g) != 64:
+    return 1
+  return 0

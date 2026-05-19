@@ -3,10 +3,10 @@
 
 def li_sim_additive_version() -> int
   requires true
-  ensures result == 1
+  ensures result == 2
   decreases 0
 =
-  return 1
+  return 2
 
 def additive_format_stl() -> int
   requires true
@@ -44,3 +44,23 @@ def additive_preflight_stub(layer_count: int) -> int
   decreases layer_count
 =
   return 1
+
+def additive_voxel_export_stub(voxel_cells: int, format_tag: int) -> int
+  requires voxel_cells > 0
+  requires format_tag >= 0
+  requires format_tag <= 2
+  ensures result == format_tag
+  decreases voxel_cells
+=
+  return format_tag
+
+def additive_voxel_smoke() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  if additive_voxel_export_stub(64, additive_format_3mf()) != additive_format_3mf():
+    return 1
+  if additive_preflight_stub(12) != 1:
+    return 2
+  return 0

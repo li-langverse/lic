@@ -8,10 +8,10 @@ type StudioProject = object
 
 def li_studio_version() -> int
   requires true
-  ensures result == 5
+  ensures result == 6
   decreases 0
 =
-  return 5
+  return 6
 
 def studio_project_new() -> StudioProject
   requires true
@@ -155,4 +155,24 @@ def studio_gen_smoke() -> int
 =
   if studio_gen_asset_hook_stub(42, 0) != 42:
     return 1
+  return 0
+
+# PH-UX / PH-DRUG — adaptive panel id for drug LITL stage (composable gate).
+def studio_adaptive_for_drug_stage_stub(drug_stage_id: int) -> int
+  requires drug_stage_id >= 0
+  requires drug_stage_id <= 2
+  ensures result == drug_stage_id
+  decreases drug_stage_id
+=
+  return studio_adaptive_panel_for_stage(drug_stage_id)
+
+def studio_adaptive_drug_smoke() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  if studio_adaptive_for_drug_stage_stub(0) != 0:
+    return 1
+  if studio_adaptive_for_drug_stage_stub(2) != 2:
+    return 2
   return 0

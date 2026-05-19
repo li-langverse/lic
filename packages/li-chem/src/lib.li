@@ -8,10 +8,10 @@ type DftResult = object
 
 def li_chem_version() -> int
   requires true
-  ensures result == 2
+  ensures result == 3
   decreases 0
 =
-  return 2
+  return 3
 
 def chem_method_rks() -> int
   requires true
@@ -67,3 +67,26 @@ def tddft_run_stub(g: Geometry) -> DftResult
   var r: DftResult
   r.total_energy = -0.5
   return r
+
+def geometry_new(atom_count: int) -> Geometry
+  requires atom_count > 0
+  ensures result.atom_count == atom_count
+  decreases atom_count
+=
+  var g: Geometry
+  g.atom_count = atom_count
+  return g
+
+# PH-DRUG / PH-QM — DFT hook at LITL DFT stage (composable with sim.drug_design).
+def chem_litl_dft_smoke(atom_count: int) -> int
+  requires atom_count > 0
+  ensures result == 0
+  decreases atom_count
+=
+  var g: Geometry = geometry_new(atom_count)
+  if geometry_valid(g) != 1:
+    return 1
+  var r: DftResult = dft_run_tagged_stub(g, chem_method_rks(), chem_basis_def2svp_tag())
+  if r.total_energy >= 0.0:
+    return 2
+  return 0

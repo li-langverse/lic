@@ -641,6 +641,11 @@ file = "cve_patterns/historic_goto_fail.li"
 outcome = "compile_fail"
 expected_substr = "goto is forbidden"
 
+[[tests]]
+suite = "codegen"
+file = "codegen/fp_numerically_stable.li"
+outcome = "compile_ok"
+
 # --- hpc_competitive (registry gate; ./li-tests/run_all.sh hpc_competitive) ---
 
 # --- security (malformed inputs; run via ./li-tests/run_security.sh) ---

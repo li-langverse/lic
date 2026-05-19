@@ -76,6 +76,7 @@ struct EmitCtx {
   llvm::IRBuilder<>* builder;
   llvm::Type* ret_ty = nullptr;
   bool returns_float = false;
+  bool fp_numerically_stable = false;
   std::map<std::string, llvm::AllocaInst*> int_locals;
   std::map<std::string, llvm::AllocaInst*> float_locals;
   std::map<std::string, llvm::AllocaInst*> i64_locals;
@@ -555,7 +556,8 @@ struct EmitCtx {
           return true;
         }
         llvm::Type* f64 = llvm::Type::getDoubleTy(context);
-        llvm::Value* acc = llvm::ConstantFP::get(f64, 0.0);
+        llvm::Value* sum = llvm::ConstantFP::get(f64, 0.0);
+        llvm::Value* c_comp = llvm::ConstantFP::get(f64, 0.0);
         const auto n = static_cast<unsigned>(ins.int_value);
         for (unsigned i = 0; i < n; ++i) {
           llvm::Value* idx = llvm::ConstantInt::get(i32_ty(context), i);
@@ -563,10 +565,17 @@ struct EmitCtx {
           llvm::Value* gep_idx[] = {zero, idx};
           llvm::Value* ap = builder->CreateInBoundsGEP(
               a_it->second.alloca->getAllocatedType(), a_it->second.alloca, gep_idx);
-          llvm::Value* av = builder->CreateLoad(f64, ap);
-          acc = builder->CreateFAdd(acc, av);
+          llvm::Value* y = builder->CreateLoad(f64, ap);
+          if (fp_numerically_stable) {
+            llvm::Value* y_adj = builder->CreateFSub(y, c_comp);
+            llvm::Value* t = builder->CreateFAdd(sum, y_adj);
+            c_comp = builder->CreateFSub(builder->CreateFSub(t, sum), y_adj);
+            sum = t;
+          } else {
+            sum = builder->CreateFAdd(sum, y);
+          }
         }
-        builder->CreateStore(acc, ensure_float_local(ins.ident));
+        builder->CreateStore(sum, ensure_float_local(ins.ident));
         return true;
       }
       case MirOp::ArraySumI64: {
@@ -662,6 +671,11 @@ bool emit_llvm_ir(const MirModule& mir, const std::string& out_path, std::string
   module->getOrInsertFunction("li_rt_sqrt",
                               llvm::FunctionType::get(llvm::Type::getDoubleTy(context),
                                                       {llvm::Type::getDoubleTy(context)}, false));
+  llvm::Type* f64 = llvm::Type::getDoubleTy(context);
+  module->getOrInsertFunction(
+      "li_rt_hypot", llvm::FunctionType::get(f64, {f64, f64}, false));
+  module->getOrInsertFunction("li_rt_expm1", llvm::FunctionType::get(f64, {f64}, false));
+  module->getOrInsertFunction("li_rt_log1p", llvm::FunctionType::get(f64, {f64}, false));
   module->getOrInsertFunction(
       "li_omp_parallel_for_i64",
       llvm::FunctionType::get(llvm::Type::getVoidTy(context),
@@ -724,9 +738,14 @@ bool emit_llvm_ir(const MirModule& mir, const std::string& out_path, std::string
 
     llvm::BasicBlock* entry = llvm::BasicBlock::Create(context, "entry", func);
     llvm::IRBuilder<> builder(entry);
+    llvm::FastMathFlags saved_fmf;
+    if (mir.fp_numerically_stable) {
+      saved_fmf = builder.getFastMathFlags();
+      builder.setFastMathFlags(llvm::FastMathFlags());
+    }
 
     EmitCtx ctx{context, module.get(), func, &builder, ret_ty, fn.returns_float,
-                {}, {}, {}, {}, {}};
+                mir.fp_numerically_stable, {}, {}, {}, {}, {}};
 
     unsigned idx = 0;
     for (auto& arg : func->args()) {
@@ -745,6 +764,9 @@ bool emit_llvm_ir(const MirModule& mir, const std::string& out_path, std::string
 
     for (const auto& ins : fn.body) {
       ctx.emit_insn(ins);
+    }
+    if (mir.fp_numerically_stable) {
+      builder.setFastMathFlags(saved_fmf);
     }
   }
 

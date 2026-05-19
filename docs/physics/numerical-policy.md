@@ -43,3 +43,5 @@ Contributors use **`.cursor/skills/research-li-numerics`** before adding a new k
 - `ensures` energy drift bounds for symplectic integrators when **G-vc** / **G-lean** support them
 
 **Status:** Library types in `li-std-physics-core` today; decorator elaboration is **planned** (see [provability gaps](../verification/provability-gaps.md)).
+
+For **floating-point expression stability** (subtraction cancellation, compensated sums), see [fp-numerical-stability.md](../language/fp-numerical-stability.md) (`lic build --numerically-stable`).

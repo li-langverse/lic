@@ -110,6 +110,8 @@ struct MirModule {
   std::vector<MirFn> functions;
   bool uses_openmp = false;
   bool uses_async = false;
+  /** When true: MIR stability pass + strict FP codegen (no fast-math reassociation). */
+  bool fp_numerically_stable = false;
 };
 
 MirModule lower_to_mir(const Module& module);

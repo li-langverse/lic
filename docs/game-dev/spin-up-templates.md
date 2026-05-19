@@ -1,6 +1,6 @@
 # World Studio spin-up templates (PH-GD / PH-SIM)
 
-**Status:** Stub — `lis new` integration pending.
+**Status:** Scaffold via `./scripts/lis-new-world-studio.sh` (until `lis new` ships).
 
 | Template | Profile | Packages |
 |----------|---------|----------|
@@ -17,7 +17,20 @@
 | `studio_agent` | GD-3 | `studio.ai`, `studio`, `lic check` |
 | `sim_rl` | ML | `sim`, `ml` |
 
-Example project snippet (hand-authored until scaffolding lands):
+## Scaffold a project
+
+```bash
+./scripts/lis-new-world-studio.sh game ./my-game
+./scripts/lis-new-world-studio.sh mmorpg ./my-realm
+./scripts/lis-new-world-studio.sh drug_design ./my-lab
+./scripts/lis-new-world-studio.sh bioengineering ./my-bio
+```
+
+Registry: [deploy/world-studio-spinup/spinup.toml](../../deploy/world-studio-spinup/spinup.toml)
+
+Composable gates: `import_spinup_game`, `import_spinup_mmorpg`, `import_spinup_drug`, `import_spinup_bioeng`.
+
+Example project snippet (hand-authored):
 
 ```li
 import studio

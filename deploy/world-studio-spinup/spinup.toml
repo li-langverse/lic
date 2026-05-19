@@ -1,0 +1,42 @@
+# World Studio spin-up template registry (PH-GD).
+# Used by scripts/lis-new-world-studio.sh until `lis new` lands.
+
+[config]
+version = 1
+default_template = "game"
+
+[[templates]]
+id = "game"
+title = "Game + custom physics"
+profile = "sim_profile_game"
+imports = ["studio", "world", "scene", "sim", "physics.custom"]
+
+[[templates]]
+id = "mmorpg"
+title = "MMORPG realm"
+profile = "sim_profile_mmo"
+imports = ["studio", "world", "scene", "sim", "mmo", "store.realtime", "player"]
+
+[[templates]]
+id = "drug_design"
+title = "Drug design LITL"
+profile = "sim_profile_drug_design"
+imports = ["studio", "sim.drug_design", "chem", "studio.ai"]
+
+[[templates]]
+id = "bioengineering"
+title = "Bioengineering DBTL"
+profile = "sim_profile_bioeng"
+imports = ["studio", "bioeng", "sim.drug_design", "sim.scientific", "chem"]
+
+[[templates]]
+id = "robotics"
+title = "Factory robotics"
+profile = "sim_profile_robotics"
+imports = ["studio", "sim", "sim.robotics", "scene"]
+
+[[templates]]
+id = "automotive"
+title = "Racing / automotive"
+profile = "sim_profile_automotive"
+imports = ["studio", "sim", "sim.automotive"]

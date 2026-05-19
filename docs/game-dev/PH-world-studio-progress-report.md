@@ -1,7 +1,7 @@
 # World Studio / Li Engine — progress report
 
 **Branch:** `feat/world-studio-impl-1`  
-**Sprint:** impl-21 (2026-05)  
+**Sprint:** impl-22 (2026-05)  
 **Tracker:** [PH-world-studio-program.md](PH-world-studio-program.md)  
 **PR summary:** [PR-world-studio-impl-summary.md](PR-world-studio-impl-summary.md)
 
@@ -12,47 +12,38 @@
 | Metric | Value |
 |--------|--------|
 | **Packages** | 28 |
-| **Composable gates** | **69 / 69 pass** ✅ |
-| **Game dev smokes** | **12 parse_ok** |
-| **Vertical demo builds** | **6 / 6 compile_ok** ✅ |
-| **Demo GUI** | [deploy/studio-demo/](../../deploy/studio-demo/) + live `status.json` |
-| **Sprints** | impl-1 → **impl-21** |
+| **Composable gates** | **73 / 73 pass** ✅ |
+| **Game dev** | **12 parse_ok** |
+| **Vertical demo builds** | **7** (incl. `studio_main.li`) |
+| **Spin-up templates** | **4 compile_ok** |
+| **Demo GUI** | [deploy/studio-demo/](../../deploy/studio-demo/) |
+| **Spin-up CLI** | `./scripts/lis-new-world-studio.sh` |
+| **Sprints** | impl-1 → **impl-22** |
 | **Blocked** | `sim_step_physics` |
 | **Merge** | ⬜ open PR → `main` |
 
 ---
 
-## Sprint impl-21
+## Sprint impl-22
 
 | Deliverable | Track | State |
 |-------------|-------|--------|
-| `demo_bioeng_main` + `demo_mmo_main` | verticals | ✅ |
-| All 6 verticals in `import_demo_verticals` | composable | ✅ |
-| `import_spinup_game` composable | spin-up | ✅ |
-| `vertical_demos` suite — **lic build** on 6 mains | CI | ✅ |
-| `status.json` + `gen-studio-demo-status.sh` | demo GUI | ✅ |
+| `deploy/world-studio-spinup/` + `spinup.toml` | PH-GD | ✅ |
+| `lis-new-world-studio.sh` scaffold script | spin-up | ✅ |
+| `studio_main.li` + `studio_native_shell_smoke` | native shell | ✅ |
+| Spin-up composables (mmorpg, drug, bioeng, native) | gates | ✅ |
+| `spinup_templates` test suite | CI | ✅ |
 
 ---
 
-## Sprint impl-20 (shipped)
+## Spin-up
 
-| Deliverable | Track | State |
-|-------------|-------|--------|
-| Render viewport bridge | PH-GD-5 | ✅ |
-| rocket/racing/robot/drug demo mains | demos | ✅ |
+```bash
+./scripts/lis-new-world-studio.sh game ./my-game
+./scripts/lis-new-world-studio.sh mmorpg ./my-realm
+```
 
----
-
-## Vertical demos (all build)
-
-| Vertical | Main | Build |
-|----------|------|-------|
-| Rocket | `li-physics-custom/.../demo_rocket_main.li` | ✅ |
-| Racing | `li-sim-automotive/.../demo_racing_main.li` | ✅ |
-| Robot | `li-sim-robotics/.../demo_robot_main.li` | ✅ |
-| Drug | `li-sim-drug-design/.../demo_drug_main.li` | ✅ |
-| Bioeng | `li-bioeng/.../demo_bioeng_main.li` | ✅ |
-| MMO | `li-mmo/.../demo_mmo_main.li` | ✅ |
+Templates: game, mmorpg, drug_design, bioengineering, robotics, automotive (registry in `spinup.toml`).
 
 ---
 
@@ -60,8 +51,8 @@
 
 | Sprint | Gates |
 |--------|-------|
-| impl-20 | 68 |
-| **impl-21** | **69** |
+| impl-21 | 69 |
+| **impl-22** | **73** |
 
 ---
 
@@ -69,21 +60,20 @@
 
 ```bash
 ./li-tests/run_all.sh composable
-./li-tests/run_all.sh game_dev
+./li-tests/run_all.sh spinup_templates
 ./li-tests/run_all.sh vertical_demos
 ./scripts/gen-studio-demo-status.sh
-python3 -m http.server 8765 --directory deploy/studio-demo
 ```
 
 ---
 
-## Next (impl-22)
+## Next (impl-23)
 
-1. **Merge PR** `feat/world-studio-impl-1` → `main`  
-2. Embed native render in studio binary (beyond HTML prototype)  
-3. `lis new` spin-up CLI wiring  
-4. `sim_step_physics` when cross-package types land  
+1. Merge PR → `main`  
+2. Wire `lis new` to call spin-up script  
+3. Package `studio` binary in CI release  
+4. `sim_step_physics` when types land  
 
 ---
 
-*impl-21 · `feat/world-studio-impl-1`*
+*impl-22 · `feat/world-studio-impl-1`*

@@ -22,11 +22,21 @@ Visuals are **illustrative**; simulation truth is in **63+ composable `lic check
 
 ---
 
+## Live test status
+
+The showcase reads [status.json](../../deploy/studio-demo/status.json) (composable / game_dev / vertical build counts).
+
+Refresh after tests:
+
+```bash
+./scripts/gen-studio-demo-status.sh
+```
+
 ## Run interactively
 
 ```bash
 cd lic
-# Python or any static server:
+./scripts/gen-studio-demo-status.sh
 python3 -m http.server 8765 --directory deploy/studio-demo
 # Open http://localhost:8765
 ```

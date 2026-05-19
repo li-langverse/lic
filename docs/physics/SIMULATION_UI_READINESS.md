@@ -29,7 +29,7 @@ Fixed timestep: `physics_world_game_default()` → `physics_step(world, 1.0/60.0
 ## Next (priority)
 
 1. **PH-IO-4** — wire `std/io` + `std/csv` in compiler (CSV ingest without Python).
-2. **Import graph** — composable `import_physics_runtime.li` smoke-tests `import physics.runtime` + `physics_step`; extend with direct `RigidBody` fixtures when imported object types compile in `li-tests/composable/`.
+2. **Import graph** — composable `import_physics_runtime.li` is version smoke only; rigid integrate blocked until imported object types / `var` struct params work in composable `lic build` (see release note 2026-05-19-rigid-var-param-composable).
 3. **Pure-Li tier-2** — expand `three_body_pure` and `horner_pure_li` (PH-7e).
 4. **Render bridge** — `li-ui` → engine draw list; keep rendering out of physics (GAME_DEV.md).
 5. **Publish mirrors** — org repos for physics/UI packages (see lic #50).

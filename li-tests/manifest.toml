@@ -453,7 +453,7 @@ note = "import physics.relativity resolves to packages/li-physics-relativity"
 suite = "composable"
 file = "composable/import_physics_runtime.li"
 outcome = "compile_ok"
-note = "import physics.runtime resolves to packages/li-physics-runtime"
+note = "import physics.rigid resolves to packages/li-physics-rigid"
 
 # stdlib_coverage/build_std_csv — enable when std.csv module resolves (PH-IO-4)
 

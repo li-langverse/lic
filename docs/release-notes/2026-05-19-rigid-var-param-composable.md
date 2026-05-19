@@ -1,41 +1,34 @@
-# Composable smoke: `import physics.runtime` step loop
+# Composable physics: document integrate gap (version smoke only)
 
 ## Summary
 
-Composable `import_physics_runtime.li` imports `physics.runtime`, calls `physics_world_game_default` and one `physics_step` (no local `RigidBody` type — workspace package types are not yet used in composable fixtures).
+Records why `li-tests/composable/import_physics_runtime.li` stays a version smoke (`import physics.rigid`) until composable builds accept imported object types and non-`Ident` integrate calls.
 
 ## Agent continuation
 
-1. Read `packages/li-physics-runtime/src/lib.li` and `li-tests/composable/import_physics_runtime.li`.
-2. Run `cmake --build build` then `./li-tests/run_all.sh composable` (or CI `check` job).
-3. Next: composable fixture using imported `RigidBody` once type re-exports are verified; consider `b: var RigidBody` on `rigid_integrate_semi_implicit`.
-4. Blocked on: publishing `li-physics-*` org mirrors (lic #50) for out-of-monorepo consumers.
+1. Read `li-tests/composable/import_physics_runtime.li` and `compiler/types/borrowck.cpp` (`check_call_moves`).
+2. Run `./li-tests/run_all.sh composable` after `lic` build — must stay green with version-only fixture.
+3. Next: fix composable compile for `RigidBody` locals + `rigid_integrate_semi_implicit(body, …)` or add `b: var RigidBody` end-to-end; see ecosystem-gap issue from this PR.
+4. Blocked on: publishing `li-physics-*` org mirrors (lic #50).
 
 ## Changed
 
-- `li-tests/composable/import_physics_runtime.li` — `import physics.runtime` + `physics_step` smoke
-- `li-tests/manifest.toml` — note updated for runtime import
-- `docs/physics/SIMULATION_UI_READINESS.md` — composable status line
+- `docs/physics/SIMULATION_UI_READINESS.md` — composable status (integrate deferred)
+- `docs/release-notes/2026-05-19-rigid-var-param-composable.md` (this file)
 
 ## Not changed
 
-- Compiler borrowck (`check_call_moves` unchanged); import resolver; `std/` physics facades.
-- Package mirror repos (`li-std-*`, `li-httpd`) — re-sync only if mirror PRs are open.
-- PH-* master plan phase ordering.
+- `packages/li-physics-rigid` / `li-physics-runtime` APIs (no `var RigidBody` param in this PR)
+- Import resolver, `std/` facades, mirror repos
 
 ## Breaking
 
-N/A — parameter typing is stricter for in-place mutation (callers passing struct identifiers were already invalid for use-after-call).
+N/A
 
-## Security
+## Security / Performance / Downstream
 
-N/A — no trust boundary change.
+N/A
 
-## Performance
+## Evidence
 
-N/A — same integrator math; avoids accidental struct copies when borrow rules tighten.
-
-## Downstream
-
-- Monorepo packages only until lic #50 publishes physics mirrors.
-- Agents syncing mirrors: run `./scripts/sync-package-mirror-def-syntax-pr.sh` for affected repos after merge.
+CI on branch `cursor/rigid-var-param-57b4`: composable tests that reference imported `RigidBody` or call `physics_world_game_default()` fail `compile_ok`; version-only `li_std_physics_*_version()` passes.

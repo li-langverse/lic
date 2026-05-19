@@ -898,7 +898,9 @@ Stmt Parser::parse_stmt() {
     s.kind = Stmt::Kind::Return;
     s.span = {t.start, t.end};
     i++;
-    s.expr = parse_expr();
+    if (!at(TokenKind::Newline) && !at(TokenKind::Dedent) && !at(TokenKind::Eof)) {
+      s.expr = parse_expr();
+    }
     skip_newlines();
     return s;
   }

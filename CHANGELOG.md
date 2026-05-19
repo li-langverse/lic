@@ -15,7 +15,7 @@ All notable changes to Li are documented here. The format follows
 ### Fixed
 
 - Workspace import: `parse_workspace_members` no longer treats `[workspace]` as the `members` array — `import physics.rigid` loads `packages/li-physics-rigid` instead of the std facade stub.
-- Parser: multiline `def` parameter lists (indent after `(` / between parameters).
+- Parser: multiline `def` parameter lists (indent after `(` / between parameters); bare `return` for `-> unit` procs.
 - Windows CI discovers `LLVM_DIR` via `llvm-config` or `find` when Chocolatey layout differs.
 - `packages/li-math-numerics`: remove duplicate `extern proc` contract clauses.
 

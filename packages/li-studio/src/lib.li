@@ -230,20 +230,46 @@ def studio_native_shell_smoke() -> int
 =
   return studio_native_project_tick_stub()
 
+# PH-GD-5 — native binary viewport bridge (pairs with li-render in studio_main.li).
+def studio_native_viewport_bridge_tick_stub(width: int, height: int, scene_nodes: int) -> int
+  requires width > 0
+  requires height > 0
+  requires scene_nodes >= 0
+  ensures result == width + height + scene_nodes
+  decreases width
+=
+  var p: StudioProject = studio_project_new()
+  studio_play(p)
+  studio_viewport_tick(p)
+  if p.viewport_ticks != 1:
+    return 0
+  return studio_viewport_bind_render_stub(width, height, scene_nodes)
+
+def studio_native_viewport_bridge_smoke() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  if studio_native_viewport_bridge_tick_stub(1280, 720, 4) != 2004:
+    return 1
+  if studio_render_viewport_smoke() != 0:
+    return 2
+  return 0
+
 # PH-GD spin-up registry (deploy/world-studio-spinup/spinup.toml template count).
 def studio_spinup_template_count_stub() -> int
   requires true
-  ensures result == 7
+  ensures result == 8
   decreases 0
 =
-  return 7
+  return 8
 
 def studio_spinup_registry_smoke() -> int
   requires true
   ensures result == 0
   decreases 0
 =
-  if studio_spinup_template_count_stub() != 7:
+  if studio_spinup_template_count_stub() != 8:
     return 1
   if studio_native_shell_smoke() != 0:
     return 2

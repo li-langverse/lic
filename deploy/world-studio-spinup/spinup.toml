@@ -46,3 +46,9 @@ id = "game_unphysical"
 title = "Game — arbitrary physics only"
 profile = "sim_law_mode_arbitrary"
 imports = ["sim", "physics.custom"]
+
+[[templates]]
+id = "scientific"
+title = "Scientific / engineering viz"
+profile = "sim_profile_scientific"
+imports = ["studio", "sim.scientific", "render", "scene"]

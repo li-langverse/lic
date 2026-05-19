@@ -1,6 +1,6 @@
-# Native World Studio shell entry (PH-GD-1) — viewport + render bridge.
 import studio
 import render
+import scene
 
 def main() -> int
   requires true
@@ -11,4 +11,6 @@ def main() -> int
     return 1
   if render_studio_viewport_tick_stub(1280, 720) != 1:
     return 2
-  return 0
+  if studio_viewport_bind_render_stub(1280, 720, 4) != render_studio_viewport_tick_stub(1280, 720) + 2003:
+    return 3
+  return scene_smoke()

@@ -4,7 +4,7 @@
 schema = 1
 track = "PH-GD"
 plan = "docs/game-dev/world-studio-vision.md"
-composable_gates = 80
+composable_gates = 82
 branch = "feat/world-studio-impl-1"
 
 [[benchmark]]
@@ -76,3 +76,17 @@ name = "Tier-1 competitive benchmark rollup"
 tier = 1
 li_package = "li-studio"
 composable = "import_world_studio_benchmark_tier1"
+
+[[benchmark]]
+id = "studio-native-viewport-bridge"
+name = "Native binary viewport + render bridge"
+tier = 1
+li_package = "li-studio"
+composable = "import_studio_native_viewport_bridge"
+
+[[benchmark]]
+id = "spinup-scientific"
+name = "Scientific engineering spin-up template"
+tier = 1
+li_package = "li-sim-scientific"
+composable = "import_spinup_scientific"

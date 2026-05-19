@@ -1,7 +1,7 @@
 /* Li World Studio — interactive demo showcase (visual prototype). */
 const canvas = document.getElementById("viewport");
 const ctx = canvas.getContext("2d");
-const demos = ["rocket", "racing", "robot", "drug", "bioeng", "mmo", "unphysical"];
+const demos = ["rocket", "racing", "robot", "drug", "bioeng", "mmo", "unphysical", "scientific"];
 let active = "rocket";
 let tick = 0;
 let autoReel = false;
@@ -50,6 +50,12 @@ const meta = {
     profile: "sim_law_mode_arbitrary + physics.custom",
     panel: "Spin-up: game_unphysical · custom_law_id · no tier-2 runtime yet",
     nodes: ["World", "InverseGravity", "TeleportZone", "ArbitraryLaw"],
+  },
+  scientific: {
+    title: "Scientific — reactor field + viz frames",
+    profile: "sim.scientific + render viewport",
+    panel: "Heat-equation stub · SimVizFrame samples · native binary bridge",
+    nodes: ["ReactorField", "SimVizFrame", "HeatStep", "Viewport"],
   },
 };
 
@@ -213,6 +219,29 @@ function drawBioeng(t) {
   ctx.fillText("Bioreactor T=37°C · DBTL iteration " + Math.floor(t / 60), 24, h - 50);
 }
 
+function drawScientific(t) {
+  const w = canvas.width;
+  const h = canvas.height;
+  ctx.fillStyle = "#0d1117";
+  ctx.fillRect(0, 0, w, h);
+  const cols = 16;
+  const rows = 10;
+  const cw = (w - 80) / cols;
+  const ch = (h - 120) / rows;
+  for (let r = 0; r < rows; r++) {
+    for (let c = 0; c < cols; c++) {
+      const heat = 0.5 + 0.5 * Math.sin(t * 0.03 + c * 0.4 + r * 0.6);
+      const red = Math.floor(80 + heat * 175);
+      const blue = Math.floor(40 + (1 - heat) * 120);
+      ctx.fillStyle = `rgb(${red},${Math.floor(heat * 80)},${blue})`;
+      ctx.fillRect(40 + c * cw, 60 + r * ch, cw - 2, ch - 2);
+    }
+  }
+  ctx.fillStyle = "#58a6ff";
+  ctx.font = "13px monospace";
+  ctx.fillText(`T=37.${(t % 10)}°C · timestep ${Math.floor(t / 3)}`, 24, h - 36);
+}
+
 function drawUnphysical(t) {
   const w = canvas.width;
   const h = canvas.height;
@@ -287,6 +316,7 @@ const drawers = {
   bioeng: drawBioeng,
   mmo: drawMmo,
   unphysical: drawUnphysical,
+  scientific: drawScientific,
 };
 
 function frame() {

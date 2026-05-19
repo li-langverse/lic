@@ -909,7 +909,19 @@ note = "PH-SIM world studio stack smoke"
 suite = "composable"
 file = "composable/import_studio_spinup_registry.li"
 outcome = "compile_ok"
-note = "Studio spin-up registry (7 templates)"
+note = "Studio spin-up registry (8 templates)"
+
+[[tests]]
+suite = "composable"
+file = "composable/import_studio_native_viewport_bridge.li"
+outcome = "compile_ok"
+note = "Native studio binary viewport + render bridge"
+
+[[tests]]
+suite = "composable"
+file = "composable/import_spinup_scientific.li"
+outcome = "compile_ok"
+note = "Spin-up scientific template composable"
 
 [[tests]]
 suite = "composable"
@@ -1277,6 +1289,12 @@ suite = "spinup_templates"
 file = "../deploy/world-studio-spinup/templates/game_unphysical/main.li"
 outcome = "compile_ok"
 note = "Spin-up game_unphysical main"
+
+[[tests]]
+suite = "spinup_templates"
+file = "../deploy/world-studio-spinup/templates/scientific/main.li"
+outcome = "compile_ok"
+note = "Spin-up scientific main"
 
 # --- security (malformed inputs; run via ./li-tests/run_security.sh) ---
 # Wired in scripts/ci.sh: parse/check must exit 0/1, never signal (SIGSEGV etc.).

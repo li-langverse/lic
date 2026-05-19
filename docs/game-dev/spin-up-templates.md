@@ -27,6 +27,8 @@
 ./scripts/lis new world-studio bioengineering ./my-bio
 ./scripts/lis new world-studio robotics ./my-cell
 ./scripts/lis new world-studio automotive ./my-race
+./scripts/lis new world-studio scientific ./my-viz
+./scripts/lis new world-studio game_unphysical ./my-weird-game
 ```
 
 Registry: [deploy/world-studio-spinup/spinup.toml](../../deploy/world-studio-spinup/spinup.toml)

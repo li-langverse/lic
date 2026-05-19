@@ -7,10 +7,10 @@ type LabLoopStage = object
 
 def li_sim_drug_design_version() -> int
   requires true
-  ensures result == 1
+  ensures result == 2
   decreases 0
 =
-  return 1
+  return 2
 
 def lab_loop_stage_hypothesis() -> int
   requires true
@@ -54,3 +54,34 @@ def lab_loop_advance_stub(stage: LabLoopStage) -> unit
   stage.iteration = stage.iteration + 1
   if stage.stage_id == lab_loop_stage_dft():
     stage.dft_done = 1
+
+def lab_loop_stage_smoke(stage_id: int) -> int
+  requires stage_id >= 0
+  requires stage_id <= 2
+  ensures result == 0
+  decreases stage_id
+=
+  var s: LabLoopStage = lab_loop_stage_new(stage_id)
+  if s.stage_id != stage_id:
+    return 1
+  lab_loop_advance_stub(s)
+  if s.iteration != 1:
+    return 2
+  if stage_id == lab_loop_stage_dft():
+    if s.dft_done != 1:
+      return 3
+  return 0
+
+# PH-DRUG — full LITL path smoke (hypothesis → generate → DFT).
+def lab_loop_full_smoke() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  if lab_loop_stage_smoke(lab_loop_stage_hypothesis()) != 0:
+    return 1
+  if lab_loop_stage_smoke(lab_loop_stage_generate()) != 0:
+    return 2
+  if lab_loop_stage_smoke(lab_loop_stage_dft()) != 0:
+    return 3
+  return 0

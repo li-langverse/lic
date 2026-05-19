@@ -9,10 +9,10 @@ type WorldSnapshot = object
 
 def li_world_version() -> int
   requires true
-  ensures result == 2
+  ensures result == 3
   decreases 0
 =
-  return 2
+  return 3
 
 def world_snapshot_new(tick: int, entity_count: int) -> WorldSnapshot
   requires tick >= 0
@@ -74,6 +74,25 @@ def world_realm_smoke() -> int
   if s.shard_id != 0:
     return 2
   return 0
+
+def world_persist_realm_stub(realm_id: int, shard_id: int, tick: int) -> int
+  requires realm_id >= 0
+  requires shard_id >= 0
+  requires tick >= 0
+  ensures result >= 0
+  decreases tick
+=
+  var s: WorldSnapshot = world_snapshot_for_realm(tick, 5, realm_id, shard_id)
+  return world_save_text_stub(s)
+
+def world_realm_persist_smoke() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  if world_persist_realm_stub(1, 0, 20) <= 0:
+    return 1
+  return world_realm_smoke()
 
 def world_load_text_stub(checksum: int) -> WorldSnapshot
   requires checksum >= 0

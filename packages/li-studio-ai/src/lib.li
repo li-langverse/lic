@@ -6,10 +6,10 @@ type PatchRequest = object
 
 def li_studio_ai_version() -> int
   requires true
-  ensures result == 1
+  ensures result == 2
   decreases 0
 =
-  return 1
+  return 2
 
 def studio_ai_patch_new(patch_id: int, line_count: int) -> PatchRequest
   requires patch_id > 0
@@ -50,6 +50,32 @@ def studio_ai_apply_if_clean_stub(req: PatchRequest, error_count: int) -> int
     return 0
   return studio_ai_apply_patch_stub(req)
 
+# PH-AGENT — map lic diagnose --format=json fields (see lic-diagnose-agent-bridge.md).
+def studio_ai_diagnose_json_error_count_stub(ok_flag: int, error_count: int) -> int
+  requires ok_flag >= 0
+  requires ok_flag <= 1
+  requires error_count >= 0
+  ensures result == error_count
+  decreases error_count
+=
+  if ok_flag == 0:
+    return error_count + 1
+  return error_count
+
+def studio_ai_agent_diagnose_smoke() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  if studio_ai_diagnose_json_error_count_stub(1, 0) != 0:
+    return 1
+  if studio_ai_diagnose_gate_stub(studio_ai_diagnose_json_error_count_stub(1, 0)) != 0:
+    return 2
+  var p: PatchRequest = studio_ai_patch_new(2, 4)
+  if studio_ai_apply_if_clean_stub(p, 0) != 2:
+    return 3
+  return 0
+
 def studio_ai_smoke() -> int
   requires true
   ensures result == 0
@@ -60,4 +86,4 @@ def studio_ai_smoke() -> int
     return 1
   if studio_ai_diagnose_gate_stub(1) != 1:
     return 2
-  return 0
+  return studio_ai_agent_diagnose_smoke()

@@ -1,13 +1,13 @@
 # PR summary — `feat/world-studio-impl-1` → `main`
 
-**Purpose:** Land World Studio / Li Engine implementation (impl-1…impl-14).
+**Purpose:** Land World Studio / Li Engine implementation (impl-1…impl-15).
 
-## Stats (impl-14)
+## Stats (impl-15)
 
 | Metric | Value |
 |--------|-------|
 | Packages added/extended | 28+ |
-| Composable gates | **50** |
+| Composable gates | **53** |
 | Docs / plans | MMORPG, bioeng, arbitrary physics, progress report |
 
 ## Verify before merge

@@ -222,10 +222,35 @@ std::optional<std::filesystem::path> same_package_entry(const std::filesystem::p
   return std::nullopt;
 }
 
+std::optional<std::string> parse_metadata_import_name(const std::filesystem::path& package_toml) {
+  const std::string text = read_file(package_toml);
+  const std::size_t pos = text.find("import_name");
+  if (pos == std::string::npos) {
+    return std::nullopt;
+  }
+  const std::size_t q1 = text.find('"', pos);
+  const std::size_t q2 = text.find('"', q1 + 1);
+  if (q1 == std::string::npos || q2 == std::string::npos) {
+    return std::nullopt;
+  }
+  return text.substr(q1 + 1, q2 - q1 - 1);
+}
+
 std::optional<std::filesystem::path> workspace_package_entry(
     const std::filesystem::path& workspace_toml, const std::string& module) {
   const std::filesystem::path packages_dir = workspace_toml.parent_path();
   for (const std::string& member : parse_workspace_members(workspace_toml)) {
+    const auto pkg_toml = packages_dir / member / "li.toml";
+    if (std::filesystem::exists(pkg_toml)) {
+      if (const auto alias = parse_metadata_import_name(pkg_toml)) {
+        if (*alias == module) {
+          const std::filesystem::path lib = packages_dir / member / "src" / "lib.li";
+          if (std::filesystem::exists(lib)) {
+            return lib;
+          }
+        }
+      }
+    }
     const std::string snake = kebab_to_snake(member);
     if (module != snake && module != member) {
       continue;
@@ -234,6 +259,44 @@ std::optional<std::filesystem::path> workspace_package_entry(
     if (std::filesystem::exists(lib)) {
       return lib;
     }
+  }
+  return std::nullopt;
+}
+
+/// Map ergonomic imports (physics.relativity) to std tree paths (std/physics/relativity.li).
+std::optional<std::string> easy_std_module(const std::string& module) {
+  if (module.rfind("std.", 0) == 0 || module == "std") {
+    return module;
+  }
+  if (module.rfind("physics.", 0) == 0) {
+    return "std." + module;
+  }
+  if (module == "physics") {
+    return "std.physics.core";
+  }
+  if (module.rfind("math.", 0) == 0) {
+    return "std." + module;
+  }
+  if (module == "math") {
+    return "std.math";
+  }
+  if (module.rfind("ui.", 0) == 0 || module == "ui") {
+    return module == "ui" ? "std.ui" : "std." + module;
+  }
+  if (module.rfind("scene.", 0) == 0 || module == "scene") {
+    return module == "scene" ? "std.scene" : "std." + module;
+  }
+  if (module == "io") {
+    return "std.io";
+  }
+  if (module.rfind("io.", 0) == 0) {
+    return "std." + module;
+  }
+  if (module == "csv") {
+    return "std.csv";
+  }
+  if (module.rfind("csv.", 0) == 0) {
+    return "std." + module;
   }
   return std::nullopt;
 }
@@ -270,6 +333,13 @@ std::vector<std::filesystem::path> local_module_candidates(const std::filesystem
 
 std::optional<std::filesystem::path> resolve_module_path(const std::string& module,
                                                          const std::filesystem::path& importer) {
+  if (const auto std_mod = easy_std_module(module)) {
+    const std::filesystem::path p = std_module_to_path(*std_mod);
+    if (std::filesystem::exists(p)) {
+      return p;
+    }
+  }
+
   if (module.rfind("std.", 0) == 0 || module == "std") {
     const std::filesystem::path p = std_module_to_path(module);
     if (std::filesystem::exists(p)) {
@@ -278,15 +348,15 @@ std::optional<std::filesystem::path> resolve_module_path(const std::string& modu
     return std::nullopt;
   }
 
-  for (const auto& c : local_module_candidates(importer, module)) {
-    if (std::filesystem::exists(c)) {
-      return c;
-    }
-  }
-
   if (const auto ws = find_workspace_toml(importer)) {
     if (auto p = workspace_package_entry(*ws, module)) {
       return p;
+    }
+  }
+
+  for (const auto& c : local_module_candidates(importer, module)) {
+    if (std::filesystem::exists(c)) {
+      return c;
     }
   }
 

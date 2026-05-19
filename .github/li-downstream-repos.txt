@@ -3,7 +3,7 @@
 li-langverse/lip
 li-langverse/lit
 li-langverse/li-net
-li-langverse/li-std-core
-li-langverse/li-std-math
+li-langverse/li-core
+li-langverse/li-math
 li-langverse/li-demo
 li-langverse/li-httpd

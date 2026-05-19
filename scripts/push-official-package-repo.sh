@@ -24,7 +24,14 @@ if [[ ! -d "$PKG" ]]; then
 fi
 
 ORG="${LI_ORG:-li-langverse}"
-REPO="${ORG}/${NAME}"
+GITHUB_REPO="$NAME"
+if [[ -f "$PKG/li.toml" ]]; then
+  gr="$(grep -E '^github_repo\s*=' "$PKG/li.toml" | head -1 | sed -E 's/^github_repo\s*=\s*"([^"]*)".*/\1/' || true)"
+  if [[ -n "$gr" ]]; then
+    GITHUB_REPO="$gr"
+  fi
+fi
+REPO="${ORG}/${GITHUB_REPO}"
 DESC="Li package ${NAME}"
 if [[ -f "$PKG/li.toml" ]]; then
   line="$(grep -E '^description\s*=' "$PKG/li.toml" | head -1 || true)"

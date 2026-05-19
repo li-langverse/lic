@@ -10,7 +10,7 @@ alwaysApply: true
 **Li — three pillars (strict priority):**
 
 1. **Mathematical provability** (Lean 4 kernel, mandatory contracts) — **#1, never compromised**
-2. **Easy syntax** (Nim-like, Python 3.14 − `Any`)
+2. **Easy syntax** (reads like prose — Python clarity, Nim layout; see `docs/language/philosophy.md`)
 3. **Fast execution** (LLVM, SIMD, OpenMP v1) — **only after proof**
 
 **Tradeoff rule:** provability wins. No feature ships if it cannot be proved in user code. Contracts are **mandatory**, not opt-in.

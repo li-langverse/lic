@@ -10,6 +10,8 @@ description = "Li package li-net"
 # registry = "1.0.0"             # lip 8d+
 
 [package.metadata.li]
+github_repo = "li-net"
+import_name = "net"
 min_lic = "0.1.0"
 maintainer = "li-langverse"
 pkg_id = "PKG-li-net"

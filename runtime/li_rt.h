@@ -20,6 +20,9 @@ double li_rt_cos(double x);
 double li_rt_atan2(double y, double x);
 double li_rt_exp(double x);
 double li_rt_log(double x);
+double li_rt_hypot(double x, double y);
+double li_rt_expm1(double x);
+double li_rt_log1p(double x);
 
 /* Async reactor stubs (httpd P0 — sync completion until epoll/kqueue lands). */
 void li_async_frame_enter(void);

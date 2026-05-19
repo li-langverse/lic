@@ -101,6 +101,24 @@ double li_rt_exp(double x) { return exp(x); }
 
 double li_rt_log(double x) { return log(x); }
 
+double li_rt_hypot(double x, double y) {
+#if defined(_WIN32)
+  return hypot(x, y);
+#else
+  return __builtin_hypot(x, y);
+#endif
+}
+
+double li_rt_expm1(double x) {
+#if defined(_WIN32)
+  return expm1(x);
+#else
+  return __builtin_expm1(x);
+#endif
+}
+
+double li_rt_log1p(double x) { return log1p(x); }
+
 void li_async_frame_enter(void) {}
 
 void li_async_frame_leave(void) {}

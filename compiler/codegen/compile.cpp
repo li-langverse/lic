@@ -1,6 +1,7 @@
 #include "li/compile.hpp"
 #include "li/emit.hpp"
 #include "li/mir.hpp"
+#include "li/num_stable.hpp"
 #include "li/platform.hpp"
 
 #include <atomic>
@@ -24,9 +25,12 @@ std::string unique_temp_ll_path() {
 
 }  // namespace
 
-bool compile_module(const Module& module, const std::string& output_path, bool release,
-                  const std::string& extra_clang_flags, std::string* error) {
-  const MirModule mir = lower_to_mir(module);
+bool compile_module(const Module& module, const std::string& output_path,
+                  const CompileOptions& opts, const std::string& extra_clang_flags,
+                  std::string* error) {
+  MirModule mir = lower_to_mir(module);
+  mir.fp_numerically_stable = opts.fp_numerically_stable;
+  apply_numerical_stability(mir);
   const std::string ll_path = unique_temp_ll_path();
 
   if (!emit_llvm_ir(mir, ll_path, error)) {
@@ -56,8 +60,11 @@ bool compile_module(const Module& module, const std::string& output_path, bool r
   const char* cc = (cc_env && *cc_env) ? cc_env : "clang";
   cmd << cc << " -Wno-override-module -x ir \"" << ll_path << "\" -x c \""
       << rt_path.string() << "\" -o \"" << output_path << "\"";
-  if (release) {
+  if (opts.release) {
     cmd << " -O2";
+  }
+  if (opts.fp_numerically_stable) {
+    cmd << " -fno-fast-math -ffp-contract=off";
   }
   if (!extra_clang_flags.empty()) {
     cmd << " " << extra_clang_flags;

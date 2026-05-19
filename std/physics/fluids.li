@@ -1,0 +1,7 @@
+# std/physics/fluids — facade (import physics.fluids).
+proc physics_fluids_std_tag() -> int
+  requires true
+  ensures result == 1
+  decreases 0
+=
+  return 1

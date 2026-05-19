@@ -116,7 +116,7 @@ If two threads would write the same slot, **the build stops** — you fix it bef
 | Idea | In plain words |
 |------|----------------|
 | **Prove it** | Wrong programs are rejected at build time, not discovered in production. |
-| **Write it easily** | Familiar, readable syntax — closer to Nim and Python than to assembly. |
+| **Write it easily** | Reads like prose — Python-style clarity, Nim-like layout; see [philosophy](docs/language/philosophy.md). |
 | **Run it fast** | After proof, the same code becomes native speed with vectors and multiple cores. |
 
 Proof always comes first. Speed never skips the check.
@@ -130,6 +130,8 @@ Proof always comes first. Speed never skips the check.
 | Install tools and build Li | [Getting started (tools)](docs/guide/getting-started-tools.md) |
 | See more copy-paste examples | [Examples gallery](docs/guide/examples-gallery.md) |
 | Learn the whole language | [Language handbook](docs/language/overview.md) |
+| Naming & simplicity | [Philosophy](docs/language/philosophy.md) |
+| Game worlds (vision) | [World Studio](docs/game-dev/world-studio-vision.md) |
 | Understand the build steps | [How `lic build` works](docs/compiler/build-pipeline.md) |
 | Understand why this is “mathematically provable” | [Why Li is provable](docs/compiler/why-provable.md) |
 | See every test and security check | [Tests & audits](docs/testing/overview.md) |

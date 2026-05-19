@@ -6,10 +6,12 @@ license = "Apache-2.0 OR MIT"
 description = "Li package li-demo"
 
 [dependencies]
-li-std-math = { path = "../li-std-math" }
+li-math = { path = "../li-math" }
 # registry = "1.0.0"             # lip 8d+
 
 [package.metadata.li]
+github_repo = "li-demo"
+import_name = "demo"
 min_lic = "0.1.0"
 maintainer = "li-langverse"
 pkg_id = "PKG-li-demo"

@@ -32,8 +32,8 @@ int usage() {
             << "  lic check <file> [--format=json]  parse + typecheck\n"
             << "  lic diagnose <file>    agent-oriented JSON diagnostics\n"
             << "  lic verify <file>      VC summary; --lean runs semantics; --strict-lean fails open VCs\n"
-            << "  lic build <file> -o <out> [--release] [--threads=N]\n"
-            << "                       [--jobs=N] [--max-memory=MB]\n"
+            << "  lic build <file> -o <out> [--release] [--numerically-stable]\n"
+            << "                       [--threads=N] [--jobs=N] [--max-memory=MB]\n"
             << "                       [--coverage-instrument]\n"
             << "  lic smoke-llvm         verify LLVM can emit main returning 0\n"
             << "  lic --version          print version\n"
@@ -42,7 +42,8 @@ int usage() {
             << "  --jobs=N / LI_COMPILE_JOBS / LI_BUILD_JOBS (host=" << jobs
             << ") — reserved for parallel frontend\n"
             << "  --max-memory=MB / LI_MAX_MEMORY_MB — reserved memory budget\n"
-            << "  --threads=N / LI_OMP_THREADS — OpenMP team size at run time\n";
+            << "  --threads=N / LI_OMP_THREADS — OpenMP team size at run time\n"
+            << "  --numerically-stable / LI_FP_NUMERICALLY_STABLE=1 — cancellation-safe FP\n";
   return 1;
 }
 
@@ -232,7 +233,7 @@ int verify_file(const char* path, bool run_lean, bool strict_lean) {
   return 0;
 }
 
-int build_file(const char* path, const char* output, bool release) {
+int build_file(const char* path, const char* output, const li::CompileOptions& opts) {
   const std::string source = read_file(path);
   li::Module module;
   li::DiagnosticBag diags;
@@ -241,7 +242,7 @@ int build_file(const char* path, const char* output, bool release) {
     return 1;
   }
   std::string err;
-  if (!li::compile_module(module, output, release, "", &err)) {
+  if (!li::compile_module(module, output, opts, "", &err)) {
     std::cerr << li::styled_error_label() << ": build failed: " << err << li::reset_style() << '\n';
     return 1;
   }
@@ -334,15 +335,21 @@ int main(int argc, char** argv) {
     }
     const char* input = argv[2];
     const char* output = li::null_output_path();
-    bool release = false;
+    li::CompileOptions opts;
     bool coverage = false;
     std::string extra_flags;
+    if (const char* env_stable = std::getenv("LI_FP_NUMERICALLY_STABLE");
+        env_stable && *env_stable && env_stable[0] != '0') {
+      opts.fp_numerically_stable = true;
+    }
     for (int i = 3; i < argc; ++i) {
       const std::string_view arg = argv[i];
       if (arg == "-o" && i + 1 < argc) {
         output = argv[++i];
       } else if (arg == "--release") {
-        release = true;
+        opts.release = true;
+      } else if (arg == "--numerically-stable") {
+        opts.fp_numerically_stable = true;
       } else if (arg == "--coverage-instrument") {
         coverage = true;
       } else if (arg.rfind("--threads=", 0) == 0) {
@@ -365,7 +372,7 @@ int main(int argc, char** argv) {
       return 1;
     }
     std::string err;
-    if (!li::compile_module(module, output, release, extra_flags, &err)) {
+    if (!li::compile_module(module, output, opts, extra_flags, &err)) {
       std::cerr << li::styled_error_label() << ": build failed: " << err << li::reset_style() << '\n';
       return 1;
     }

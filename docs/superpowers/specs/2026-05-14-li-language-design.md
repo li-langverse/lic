@@ -13,7 +13,9 @@
 
 Li is an **open-source**, **compiled**, Nim-syntax language for HPC and scientific computing. Its reason to exist is **mathematical provability**: every shipped program is a theorem the **Lean 4 kernel** accepts — not a program we merely tested or type-checked.
 
-**Easy syntax** and **fast execution** are co-equal product goals, but **neither may weaken the proof gate**. If a feature cannot be made provable, it does not ship in user code.
+**Easy syntax** means code **does what it reads like it does** — influenced by Python’s readability ([PEP 20](https://peps.python.org/pep-0020/)): simple names, obvious control flow, pseudocode-friendly surface. See [Language philosophy](../../language/philosophy.md).
+
+**Fast execution** is a co-equal product goal, but **neither clarity nor speed may weaken the proof gate**. If a feature cannot be made provable, it does not ship in user code.
 
 ## Composability (ecosystem principle)
 

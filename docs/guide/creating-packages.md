@@ -48,6 +48,9 @@ See [package layout reference](package-layout-reference.md) and the [package man
 Official packages set:
 
 ```toml
+[package.metadata.li]
+import_name = "math.foo"   # ergonomic: import math.foo
+
 [package.metadata.lip]
 maintainer = "li-langverse"
 pkg_id = "PKG-my-math"
@@ -55,6 +58,8 @@ pkg_id = "PKG-my-math"
 [package.repository]
 url = "https://github.com/li-langverse/my-math"
 ```
+
+See [import-style.md](../language/import-style.md). Physics packages use `physics.<area>` (e.g. `physics.relativity`).
 
 ## Workspace (monorepo)
 

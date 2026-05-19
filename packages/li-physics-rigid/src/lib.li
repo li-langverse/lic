@@ -21,7 +21,7 @@ def li_std_physics_rigid_version() -> int
 =
   return 1
 
-def rigid_integrate_semi_implicit(b: var RigidBody, fx: float, fy: float, fz: float, dt: float) -> unit
+def rigid_integrate_semi_implicit(b: RigidBody, fx: float, fy: float, fz: float, dt: float) -> unit
   requires dt > 0.0
   ensures true
   decreases 0

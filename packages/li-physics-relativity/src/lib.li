@@ -12,6 +12,7 @@ def li_std_physics_relativity_version() -> int
 def lorentz_gamma(v: float, c: float) -> float
   requires c > 0.0
   requires v >= 0.0
+  ensures true
   decreases 0
 =
   var beta: float = v / c
@@ -21,6 +22,7 @@ def lorentz_gamma(v: float, c: float) -> float
 
 def time_dilation_proper(dt: float, gamma: float) -> float
   requires gamma >= 1.0
+  ensures true
   decreases 0
 =
   return dt / gamma
@@ -28,6 +30,7 @@ def time_dilation_proper(dt: float, gamma: float) -> float
 def relativistic_momentum(m: float, v: float, c: float) -> float
   requires m > 0.0
   requires c > 0.0
+  ensures true
   decreases 0
 =
   var g: float = lorentz_gamma(v, c)
@@ -36,6 +39,7 @@ def relativistic_momentum(m: float, v: float, c: float) -> float
 def schwarzschild_factor(rs: float, r: float) -> float
   requires r > 0.0
   requires rs >= 0.0
+  ensures true
   decreases 0
 =
   return li_rt_sqrt(1.0 - rs / r)
@@ -45,6 +49,7 @@ def weak_field_perihelion_precession_factor(m: float, a: float, e: float, c: flo
   requires a > 0.0
   requires e >= 0.0
   requires c > 0.0
+  ensures true
   decreases 0
 =
   return 1.0

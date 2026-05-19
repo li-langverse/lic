@@ -24,6 +24,7 @@ def li_std_physics_rigid_version() -> int
 
 def rigid_integrate_semi_implicit(b: RigidBody, fx: float, fy: float, fz: float, dt: float) -> unit
   requires dt > 0.0
+  ensures true
   decreases 0
 =
   if b.inv_mass > 0.0
@@ -38,6 +39,7 @@ def aabb_overlap(
     min_ax: float, min_ay: float, max_ax: float, max_ay: float,
     min_bx: float, min_by: float, max_bx: float, max_by: float) -> int
   requires true
+  ensures true
   decreases 0
 =
   if max_ax < min_bx
@@ -55,6 +57,7 @@ def sphere_sphere_overlap(
     bx: float, by: float, bz: float, rb: float) -> int
   requires ra >= 0.0
   requires rb >= 0.0
+  ensures true
   decreases 0
 =
   var dx: float = bx - ax
@@ -69,6 +72,7 @@ def sphere_sphere_overlap(
 def pgs_resolve_normal(
     vn: float, impulse: float, bias: float, mass_inv: float) -> float
   requires mass_inv >= 0.0
+  ensures true
   decreases 0
 =
   var lambda_n: float = -(vn + bias) / mass_inv
@@ -78,6 +82,7 @@ def pgs_resolve_normal(
 
 def broadphase_cell_index(x: float, cell_size: float) -> int
   requires cell_size > 0.0
+  ensures true
   decreases 0
 =
   var c: int = 0

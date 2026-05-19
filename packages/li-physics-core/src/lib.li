@@ -58,6 +58,7 @@ def physics_tier_research() -> int
 
 def default_numerical_targets() -> NumericalTargets
   requires true
+  ensures true
   decreases 0
 =
   var t: NumericalTargets
@@ -69,6 +70,7 @@ def default_numerical_targets() -> NumericalTargets
 
 def default_physics_profile() -> PhysicsProfile
   requires true
+  ensures true
   decreases 0
 =
   var p: PhysicsProfile
@@ -81,6 +83,7 @@ def default_physics_profile() -> PhysicsProfile
 def profile_for_tier(tier: int) -> PhysicsProfile
   requires tier >= 0
   requires tier <= 3
+  ensures true
   decreases tier
 =
   var p: PhysicsProfile = default_physics_profile()
@@ -106,6 +109,7 @@ def profile_for_tier(tier: int) -> PhysicsProfile
 # Compile-time policy hook (future: elaborator reads profile + chooses integrator)
 def select_integrator_order(profile: PhysicsProfile) -> int
   requires true
+  ensures true
   decreases profile.tier
 =
   if profile.tier == physics_tier_arcade()
@@ -119,6 +123,7 @@ def select_integrator_order(profile: PhysicsProfile) -> int
 def simulation_fixed_dt_steps(params: SimulationParams) -> int
   requires params.dt > 0.0
   requires params.steps > 0
+  ensures true
   decreases params.steps
 =
   return params.steps

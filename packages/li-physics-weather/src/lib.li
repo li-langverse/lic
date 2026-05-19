@@ -11,6 +11,7 @@ def advect_scalar_1d(
     field: array[8, float], wind: array[8, float], dt: float, dx: float) -> unit
   requires dt > 0.0
   requires dx > 0.0
+  ensures true
   decreases 0
 =
   var i: int = 0
@@ -22,6 +23,7 @@ def diffuse_explicit(
     field: array[8, float], kappa: float, dt: float, dx: float) -> unit
   requires dt > 0.0
   requires dx > 0.0
+  ensures true
   decreases 0
 =
   var inv_dx2: float = 1.0 / (dx * dx)
@@ -34,6 +36,7 @@ def diffuse_explicit(
 def sample_wind_at(wind_x: array[8, float], wind_y: array[8, float], ix: int) -> float
   requires ix >= 0
   requires ix < 8
+  ensures true
   decreases ix
 =
   return wind_x[ix]

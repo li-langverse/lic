@@ -41,6 +41,7 @@ def color_rgb(r: float, g: float, b: float, a: float) -> Color
   requires b >= 0.0
   requires a >= 0.0
   requires a <= 1.0
+  ensures true
   decreases 0
 =
   var c: Color
@@ -53,6 +54,7 @@ def color_rgb(r: float, g: float, b: float, a: float) -> Color
 def rect_contains(r: Rect, px: float, py: float) -> int
   requires r.w >= 0.0
   requires r.h >= 0.0
+  ensures true
   decreases 0
 =
   if px < r.x
@@ -69,6 +71,7 @@ def ui_frame_begin(w: float, h: float, dt: float) -> UiFrame
   requires w > 0.0
   requires h > 0.0
   requires dt > 0.0
+  ensures true
   decreases 0
 =
   var f: UiFrame
@@ -80,12 +83,14 @@ def ui_frame_begin(w: float, h: float, dt: float) -> UiFrame
 
 def ui_frame_end(frame: UiFrame) -> unit
   requires true
+  ensures true
   decreases 0
 =
   return
 
 def input_default() -> InputState
   requires true
+  ensures true
   decreases 0
 =
   var s: InputState

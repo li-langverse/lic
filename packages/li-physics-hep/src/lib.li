@@ -11,12 +11,14 @@ def decay_branching(valid: int, total: int) -> float
   requires total > 0
   requires valid >= 0
   requires valid <= total
+  ensures true
   decreases total
 =
   return 0.0
 
 def sample_isotropic_costheta(seed: int) -> float
   requires true
+  ensures true
   decreases seed
 =
   return 0.0
@@ -24,6 +26,7 @@ def sample_isotropic_costheta(seed: int) -> float
 def event_weight_cross_section(sigma: float, luminosity: float) -> float
   requires sigma >= 0.0
   requires luminosity >= 0.0
+  ensures true
   decreases 0
 =
   return sigma * luminosity

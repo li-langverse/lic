@@ -34,6 +34,7 @@ def li_std_scene_version() -> int
 
 def entity_id_new(v: int) -> EntityId
   requires v >= 0
+  ensures true
   decreases v
 =
   var e: EntityId
@@ -42,6 +43,7 @@ def entity_id_new(v: int) -> EntityId
 
 def transform_identity() -> Transform3
   requires true
+  ensures true
   decreases 0
 =
   var t: Transform3
@@ -59,6 +61,7 @@ def transform_identity() -> Transform3
 
 def scene_new() -> Scene
   requires true
+  ensures true
   decreases 0
 =
   var s: Scene
@@ -68,18 +71,21 @@ def scene_new() -> Scene
 
 def scene_attach_node(scene: Scene, node: SceneNode) -> unit
   requires scene.node_count >= 0
+  ensures true
   decreases scene.node_count
 =
   scene.node_count = scene.node_count + 1
 
 def scene_sync_from_physics(scene: Scene) -> unit
   requires true
+  ensures true
   decreases 0
 =
   return
 
 def scene_sync_to_physics(scene: Scene) -> unit
   requires true
+  ensures true
   decreases 0
 =
   return

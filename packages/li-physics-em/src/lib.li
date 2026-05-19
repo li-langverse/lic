@@ -12,6 +12,7 @@ def li_std_physics_em_version() -> int
 def coulomb_force_scalar(q1: float, q2: float, r: float, k: float, soft: float) -> float
   requires r > 0.0
   requires soft >= 0.0
+  ensures true
   decreases 0
 =
   var r2: float = r * r + soft * soft
@@ -22,6 +23,7 @@ def fdtd_cfl_dt(dx: float, c: float, safety: float) -> float
   requires c > 0.0
   requires safety > 0.0
   requires safety <= 1.0
+  ensures true
   decreases 0
 =
   return safety * dx / c
@@ -30,6 +32,7 @@ def yee_update_ex_2d(
     ex: array[8, float], hz: array[8, float], dt: float, dx: float) -> unit
   requires dt > 0.0
   requires dx > 0.0
+  ensures true
   decreases 0
 =
   var i: int = 0
@@ -40,6 +43,7 @@ def yee_update_ex_2d(
 def poisson_jacobi_step(
     phi: array[8, float], rho: array[8, float], dx: float) -> unit
   requires dx > 0.0
+  ensures true
   decreases 0
 =
   var inv_dx2: float = 1.0 / (dx * dx)

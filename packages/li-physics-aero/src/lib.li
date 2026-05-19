@@ -15,12 +15,14 @@ def li_std_physics_aero_version() -> int
 def atmosphere_density_exponential(altitude: float, rho0: float, scale_h: float) -> float
   requires rho0 > 0.0
   requires scale_h > 0.0
+  ensures true
   decreases 0
 =
   return rho0 * li_rt_exp(-altitude / scale_h)
 
 def lift_coefficient_alpha(alpha_rad: float) -> float
   requires true
+  ensures true
   decreases 0
 =
   return 2.0 * 3.14159265 * alpha_rad
@@ -30,6 +32,7 @@ def drag_force(speed: float, rho: float, cd: float, area: float) -> float
   requires rho >= 0.0
   requires cd >= 0.0
   requires area >= 0.0
+  ensures true
   decreases 0
 =
   return 0.5 * rho * speed * speed * cd * area
@@ -37,6 +40,7 @@ def drag_force(speed: float, rho: float, cd: float, area: float) -> float
 def orbit_circular_period(mu: float, radius: float) -> float
   requires mu > 0.0
   requires radius > 0.0
+  ensures true
   decreases 0
 =
   var two_pi: float = 2.0 * 3.14159265
@@ -47,6 +51,7 @@ def two_body_accel(
     mu: float, soft: float,
     out_ax: float, out_ay: float) -> unit
   requires mu > 0.0
+  ensures true
   decreases 0
 =
   return

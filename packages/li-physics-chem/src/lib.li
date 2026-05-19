@@ -11,6 +11,7 @@ def arrhenius_rate(k0: float, ea: float, temp: float, r_gas: float) -> float
   requires k0 >= 0.0
   requires temp > 0.0
   requires r_gas > 0.0
+  ensures true
   decreases 0
 =
   return k0
@@ -18,6 +19,7 @@ def arrhenius_rate(k0: float, ea: float, temp: float, r_gas: float) -> float
 def reactor_euler_step(
     conc: array[4, float], rates: array[4, float], dt: float) -> unit
   requires dt > 0.0
+  ensures true
   decreases 0
 =
   var i: int = 0
@@ -32,6 +34,7 @@ def combustion_passive_step(
     temp: array[8, float], dt: float, burn_rate: float) -> unit
   requires dt > 0.0
   requires burn_rate >= 0.0
+  ensures true
   decreases 0
 =
   var i: int = 0

@@ -11,6 +11,7 @@ def li_std_physics_quantum_version() -> int
 
 def norm_sq_1d(psi_re: array[8, float], psi_im: array[8, float]) -> float
   requires true
+  ensures true
   decreases 0
 =
   var s: float = 0.0
@@ -22,6 +23,7 @@ def norm_sq_1d(psi_re: array[8, float], psi_im: array[8, float]) -> float
 
 def normalize_1d(psi_re: array[8, float], psi_im: array[8, float]) -> unit
   requires true
+  ensures true
   decreases 0
 =
   var n2: float = norm_sq_1d(psi_re, psi_im)
@@ -36,6 +38,7 @@ def normalize_1d(psi_re: array[8, float], psi_im: array[8, float]) -> unit
 
 def harmonic_potential_1d(x: float, k: float) -> float
   requires k >= 0.0
+  ensures true
   decreases 0
 =
   return 0.5 * k * x * x
@@ -43,6 +46,7 @@ def harmonic_potential_1d(x: float, k: float) -> float
 def schrodinger_kinetic_diag(dx: float, mass: float) -> float
   requires dx > 0.0
   requires mass > 0.0
+  ensures true
   decreases 0
 =
   var hbar: float = 1.0

@@ -17,6 +17,7 @@ def li_std_physics_fluids_version() -> int
 def sph_kernel_poly6(r: float, h: float) -> float
   requires h > 0.0
   requires r >= 0.0
+  ensures true
   decreases 0
 =
   if r >= h
@@ -27,6 +28,7 @@ def sph_kernel_poly6(r: float, h: float) -> float
 def euler_advect_scalar(field: array[8, float], vx: array[8, float], dt: float, dx: float) -> unit
   requires dt > 0.0
   requires dx > 0.0
+  ensures true
   decreases 0
 =
   var i: int = 0
@@ -37,6 +39,7 @@ def euler_advect_scalar(field: array[8, float], vx: array[8, float], dt: float, 
 def heat_step_explicit(
     u: array[8, float], lap: array[8, float], alpha: float, dt: float) -> unit
   requires dt > 0.0
+  ensures true
   decreases 0
 =
   var i: int = 0
@@ -50,6 +53,7 @@ def cloth_pbd_distance(
   requires rest > 0.0
   requires stiffness >= 0.0
   requires stiffness <= 1.0
+  ensures true
   decreases 0
 =
   var dx: float = px[j] - px[i]

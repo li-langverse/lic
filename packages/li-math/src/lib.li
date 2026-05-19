@@ -122,6 +122,7 @@ def vec3_dot(a: Vec3, b: Vec3) -> float
 
 def vec3_cross(a: Vec3, b: Vec3) -> Vec3
   requires true
+  ensures true
   decreases 0
 =
   return vec3(
@@ -138,12 +139,14 @@ def vec3_len_sq(a: Vec3) -> float
 
 def vec3_len(a: Vec3) -> float
   requires true
+  ensures true
   decreases 0
 =
   return li_rt_sqrt(vec3_len_sq(a))
 
 def vec3_normalize(a: Vec3) -> Vec3
   requires true
+  ensures true
   decreases 0
 =
   var l: float = vec3_len(a)
@@ -153,6 +156,7 @@ def vec3_normalize(a: Vec3) -> Vec3
 
 def vec3_lerp(a: Vec3, b: Vec3, t: float) -> Vec3
   requires true
+  ensures true
   decreases 0
 =
   return vec3_add(vec3_scale(a, 1.0 - t), vec3_scale(b, t))
@@ -171,6 +175,7 @@ def quat_identity() -> Quat
 
 def quat_mul(a: Quat, b: Quat) -> Quat
   requires true
+  ensures true
   decreases 0
 =
   var q: Quat
@@ -182,6 +187,7 @@ def quat_mul(a: Quat, b: Quat) -> Quat
 
 def mat4_identity() -> Mat4
   requires true
+  ensures true
   decreases 0
 =
   var m: Mat4
@@ -205,6 +211,7 @@ def mat4_identity() -> Mat4
 
 def mat4_mul_point(m: Mat4, p: Vec3) -> Vec3
   requires true
+  ensures true
   decreases 0
 =
   var x: float = m.m00 * p.x + m.m01 * p.y + m.m02 * p.z + m.m03
@@ -221,6 +228,7 @@ def array_dot_f64(a: array[4, float], b: array[4, float]) -> float
 
 def array_sum_f64(a: array[4, float]) -> float
   requires true
+  ensures true
   decreases 0
 =
   return sum(a)

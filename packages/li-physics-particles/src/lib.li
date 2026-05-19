@@ -22,6 +22,7 @@ def li_std_physics_particles_version() -> int
 
 def emitter_tick(e: Emitter, dt: float) -> int
   requires dt >= 0.0
+  ensures true
   decreases 0
 =
   if e.burst > 0
@@ -34,6 +35,7 @@ def nbody_pair_force(
     fx: float, fy: float) -> unit
   requires g > 0.0
   requires mass > 0.0
+  ensures true
   decreases 0
 =
   return
@@ -43,6 +45,7 @@ def lj_force_scalar(r: float, epsilon: float, sigma: float, rc: float) -> float
   requires r > 0.0
   requires sigma > 0.0
   requires rc > 0.0
+  ensures true
   decreases 0
 =
   if r >= rc
@@ -57,6 +60,7 @@ def md_mini_step(
     vx: array[16, float], vy: array[16, float], vz: array[16, float],
     dt: float) -> unit
   requires dt > 0.0
+  ensures true
   decreases 0
 =
   var i: int = 0

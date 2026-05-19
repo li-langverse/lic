@@ -42,7 +42,10 @@ Official packages set in `li.toml`:
 ```toml
 [package.metadata.li]
 import_name = "physics.relativity"
+github_repo = "li-physics-relativity"
 ```
+
+GitHub org mirror name = `li-` + import with dots → hyphens. See [repo-naming.md](../ecosystem/repo-naming.md).
 
 Run `python3 scripts/apply-import-names.py` after adding a package.
 

@@ -16,6 +16,7 @@ Options:
   --kind KIND       library (default) or binary
   --out DIR         Output directory (default: packages/NAME under ROOT)
   --workspace DIR   Append NAME to DIR/li.toml [workspace].members
+  --import-name PATH  Ergonomic import (e.g. physics.foo) — sets github_repo + folder hint
   --official        li-langverse maintainer + PKG id + org repo checklist
   --force           Overwrite existing directory
   --dry-run         Print actions only
@@ -32,6 +33,7 @@ NAME=""
 KIND="library"
 OUT=""
 WORKSPACE=""
+IMPORT_NAME=""
 OFFICIAL=0
 FORCE=0
 DRY_RUN=0
@@ -42,6 +44,7 @@ while [[ $# -gt 0 ]]; do
     --kind) KIND="${2:?}"; shift 2 ;;
     --out) OUT="${2:?}"; shift 2 ;;
     --workspace) WORKSPACE="${2:?}"; shift 2 ;;
+    --import-name) IMPORT_NAME="${2:?}"; shift 2 ;;
     --official) OFFICIAL=1; shift ;;
     --force) FORCE=1; shift ;;
     --dry-run) DRY_RUN=1; shift ;;
@@ -57,10 +60,14 @@ while [[ $# -gt 0 ]]; do
   esac
 done
 
-if [[ -z "$NAME" ]]; then
-  echo "error: NAME required" >&2
+if [[ -z "$NAME" && -z "$IMPORT_NAME" ]]; then
+  echo "error: NAME or --import-name required" >&2
   usage >&2
   exit 1
+fi
+
+if [[ -n "$IMPORT_NAME" && -z "$NAME" ]]; then
+  NAME="li-$(echo "$IMPORT_NAME" | tr '.' '-')"
 fi
 
 if [[ ! "$NAME" =~ ^[a-z][a-z0-9]*(-[a-z0-9]+)*$ ]]; then
@@ -157,6 +164,11 @@ write_tree() {
 
 write_tree
 
+if [[ -n "$IMPORT_NAME" && "$DRY_RUN" -eq 0 && -f "$OUT/li.toml" ]]; then
+  PYTHONPATH="$ROOT/scripts" python3 -c \
+    "from import_repo_names import patch_package_toml; from pathlib import Path; patch_package_toml(Path('$OUT/li.toml'), '$IMPORT_NAME')"
+fi
+
 append_workspace() {
   local ws_dir="${WORKSPACE:-}"
   if [[ -z "$ws_dir" ]]; then
@@ -204,7 +216,7 @@ if [[ "$OFFICIAL" -eq 1 ]]; then
   echo "Official package (li-langverse):"
   echo "  ./scripts/ensure-package-ci.sh   # verifies .github/workflows/ci.yml"
   echo "  gh repo create li-langverse/$NAME --public --description \"$DESCRIPTION\""
-  echo "  ./scripts/push-official-package-repo.sh $NAME --create"
+  echo "  ./scripts/push-official-package-repo.sh $NAME --create  # uses github_repo from li.toml"
   echo "  Add row to docs/ecosystem/official-packages.md"
   echo "  roadmap: apply branch protection (required check: check)"
 fi

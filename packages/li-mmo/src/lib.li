@@ -15,10 +15,10 @@ type PlayerSession = object
 
 def li_mmo_version() -> int
   requires true
-  ensures result == 4
+  ensures result == 5
   decreases 0
 =
-  return 4
+  return 5
 
 # MMO-7 partial — server-side validation hook (full anti-cheat later).
 def mmo_anticheat_validate_tick_stub(tick: int, checksum: int) -> int
@@ -172,6 +172,56 @@ def mmo_smoke() -> int
     return 1
   return 0
 
+# MMO-5 — gateway WebSocket session binding (pairs with net.httpd WsSession).
+type MmoWsBinding = object
+  public ws_handle_id: int
+  public player_id: int
+  public realm_id: int
+  public shard_id: int
+  public bound: int
+
+def mmo_ws_binding_new(ws_handle_id: int, player_id: int, realm_id: int) -> MmoWsBinding
+  requires ws_handle_id >= 0
+  requires player_id > 0
+  requires realm_id >= 0
+  ensures result.ws_handle_id == ws_handle_id
+  ensures result.player_id == player_id
+  ensures result.realm_id == realm_id
+  ensures result.bound == 0
+  decreases player_id
+=
+  var b: MmoWsBinding
+  b.ws_handle_id = ws_handle_id
+  b.player_id = player_id
+  b.realm_id = realm_id
+  b.shard_id = 0
+  b.bound = 0
+  return b
+
+def mmo_ws_binding_assign_shard(binding: MmoWsBinding, shard_count: int) -> unit
+  requires shard_count > 0
+  requires binding.realm_id >= 0
+  ensures binding.shard_id >= 0
+  ensures binding.shard_id < shard_count
+  ensures binding.bound == 1
+  decreases shard_count
+=
+  binding.shard_id = mmo_gateway_route_shard_stub(binding.realm_id, shard_count)
+  binding.bound = 1
+
+def mmo_ws_session_bind_smoke() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  var b: MmoWsBinding = mmo_ws_binding_new(1, 42, 7)
+  mmo_ws_binding_assign_shard(b, 4)
+  if b.bound != 1:
+    return 1
+  if b.shard_id != 3:
+    return 2
+  return 0
+
 def mmo_gateway_ws_smoke() -> int
   requires true
   ensures result == 0
@@ -179,7 +229,7 @@ def mmo_gateway_ws_smoke() -> int
 =
   if mmo_role_gateway() != 0:
     return 1
-  return 0
+  return mmo_ws_session_bind_smoke()
 
 def mmo_matchmaking_smoke() -> int
   requires true

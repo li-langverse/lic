@@ -14,10 +14,10 @@ type BioengPipeline = object
 
 def li_bioeng_version() -> int
   requires true
-  ensures result == 5
+  ensures result == 6
   decreases 0
 =
-  return 5
+  return 6
 
 # BIOENG-3 — assay batch ingest (stubs).
 type AssayBatch = object
@@ -293,6 +293,37 @@ def bioeng_reactor_smoke() -> int
   if bioeng_reactor_field_id() != 7:
     return 1
   if bioeng_reactor_tier_stub() != 2:
+    return 2
+  return 0
+
+# BIOENG-6 — regulatory export / audit trail stub (PH-COMPLY).
+type RegulatoryExport = object
+  public run_id: int
+  public audit_event_id: int
+  public model_card_hash: int
+
+def bioeng_regulatory_export_stub(run_id: int) -> RegulatoryExport
+  requires run_id > 0
+  ensures result.run_id == run_id
+  ensures result.audit_event_id >= 1
+  ensures result.model_card_hash >= 0
+  decreases run_id
+=
+  var e: RegulatoryExport
+  e.run_id = run_id
+  e.audit_event_id = run_id * 1000 + 1
+  e.model_card_hash = run_id * 17 + 3
+  return e
+
+def bioeng_regulatory_smoke() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  var e: RegulatoryExport = bioeng_regulatory_export_stub(9)
+  if e.audit_event_id != 9001:
+    return 1
+  if e.model_card_hash != 156:
     return 2
   return 0
 

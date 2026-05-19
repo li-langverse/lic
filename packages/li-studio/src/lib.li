@@ -8,10 +8,10 @@ type StudioProject = object
 
 def li_studio_version() -> int
   requires true
-  ensures result == 3
+  ensures result == 4
   decreases 0
 =
-  return 3
+  return 4
 
 def studio_project_new() -> StudioProject
   requires true
@@ -104,3 +104,22 @@ def studio_mmo_deploy_status_stub(profile: int, shard_count: int) -> int
   decreases shard_count
 =
   return shard_count
+
+# PH-GD-4 / studio.gen — procedural asset generation hook (pairs with import assets).
+def studio_gen_asset_hook_stub(asset_hook_id: int, gen_kind: int) -> int
+  requires asset_hook_id > 0
+  requires gen_kind >= 0
+  requires gen_kind <= 2
+  ensures result == asset_hook_id
+  decreases asset_hook_id
+=
+  return asset_hook_id
+
+def studio_gen_smoke() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  if studio_gen_asset_hook_stub(42, 0) != 42:
+    return 1
+  return 0

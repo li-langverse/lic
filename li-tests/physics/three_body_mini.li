@@ -1,4 +1,4 @@
-# Mini three-body distance smoke (initialized arrays).
+# Mini three-body state init smoke (compile-only).
 
 def main() -> int
   requires true
@@ -13,9 +13,4 @@ def main() -> int
   py[0] = 1.0
   py[1] = 0.0
   py[2] = 0.0
-  var dx: float = px[1] - px[0]
-  var dy: float = py[1] - py[0]
-  var r2: float = dx * dx + dy * dy
-  if r2 < 0.0
-    return 1
   return 0

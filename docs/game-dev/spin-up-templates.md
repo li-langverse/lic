@@ -6,10 +6,12 @@
 |----------|---------|----------|
 | `game` | `sim_profile_game()` | `studio`, `world`, `scene`, `sim` |
 | `sim_rl` | `sim_profile_rl()` | `sim`, `ml` (future) |
-| `sim_automotive` | `sim_profile_automotive()` | `sim`, `sim.automotive` (future) |
+| `sim_automotive` | `sim_profile_automotive()` | `sim`, `sim.automotive` |
 | `sim_additive` | AM | `sim`, `sim.additive`, `voxel` |
-| `sim_scientific` | SCI | `sim`, `physics.*`, `chem` |
-| `sim_drug_design` | DRUG | `studio`, `chem`, `sim.drug_design` (future) |
+| `sim_scientific` | SCI | `sim`, `sim.scientific`, `physics.*`, `chem` |
+| `sim_robotics` | ROBO | `sim`, `sim.robotics` |
+| `sim_drug_design` | DRUG | `studio`, `chem`, `sim.drug_design` |
+| `sim_rl` | ML | `sim`, `ml` |
 
 Example project snippet (hand-authored until scaffolding lands):
 

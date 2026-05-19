@@ -14,10 +14,10 @@ type SimReplay = object
 
 def li_sim_version() -> int
   requires true
-  ensures result == 2
+  ensures result == 3
   decreases 0
 =
-  return 2
+  return 3
 
 def sim_profile_game() -> int
   requires true
@@ -40,6 +40,34 @@ def sim_profile_automotive() -> int
 =
   return 2
 
+def sim_profile_robotics() -> int
+  requires true
+  ensures result == 3
+  decreases 0
+=
+  return 3
+
+def sim_profile_scientific() -> int
+  requires true
+  ensures result == 4
+  decreases 0
+=
+  return 4
+
+def sim_profile_additive() -> int
+  requires true
+  ensures result == 5
+  decreases 0
+=
+  return 5
+
+def sim_profile_drug_design() -> int
+  requires true
+  ensures result == 6
+  decreases 0
+=
+  return 6
+
 def sim_world_new(dt: float, headless: int) -> SimWorld
   requires dt > 0.0
   ensures result.tick == 0
@@ -57,7 +85,7 @@ def sim_world_new(dt: float, headless: int) -> SimWorld
 def sim_world_with_profile(dt: float, headless: int, profile: int) -> SimWorld
   requires dt > 0.0
   requires profile >= 0
-  requires profile <= 2
+  requires profile <= 6
   ensures result.profile == profile
   decreases profile
 =

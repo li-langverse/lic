@@ -8,10 +8,10 @@ type StudioProject = object
 
 def li_studio_version() -> int
   requires true
-  ensures result == 2
+  ensures result == 3
   decreases 0
 =
-  return 2
+  return 3
 
 def studio_project_new() -> StudioProject
   requires true
@@ -54,3 +54,35 @@ def studio_outliner_set_count(project: StudioProject, count: int) -> unit
   decreases count
 =
   project.outliner_count = count
+
+# PH-DRUG / PH-UX — adaptive panels (studio.adaptive path TBD).
+def studio_adaptive_panel_for_stage(stage_id: int) -> int
+  requires stage_id >= 0
+  requires stage_id <= 3
+  ensures result == stage_id
+  decreases stage_id
+=
+  return stage_id
+
+def studio_adaptive_layout_reset(project: StudioProject) -> unit
+  requires true
+  ensures project.playing == project.playing
+  decreases 0
+=
+  project.name = project.name
+
+# PH-PUB-0 — publication export hooks (studio.publish path TBD).
+def studio_publish_figure_stub(dpi: int) -> int
+  requires dpi >= 72
+  requires dpi <= 600
+  ensures result == dpi
+  decreases dpi
+=
+  return dpi
+
+def studio_publish_bundle_stub(file_count: int) -> int
+  requires file_count > 0
+  ensures result == file_count
+  decreases file_count
+=
+  return file_count

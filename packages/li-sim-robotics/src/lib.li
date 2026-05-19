@@ -1,0 +1,35 @@
+# PKG-li-sim-robotics — manipulators, mobile bases, factory cells (PH-ROBO-0).
+
+type RobotCell = object
+  public joint_count: int
+  public step_count: int
+  public mobile_base: int
+
+def li_sim_robotics_version() -> int
+  requires true
+  ensures result == 1
+  decreases 0
+=
+  return 1
+
+def robot_cell_new(joint_count: int, mobile_base: int) -> RobotCell
+  requires joint_count > 0
+  requires mobile_base >= 0
+  requires mobile_base <= 1
+  ensures result.joint_count == joint_count
+  ensures result.step_count == 0
+  decreases joint_count
+=
+  var c: RobotCell
+  c.joint_count = joint_count
+  c.mobile_base = mobile_base
+  c.step_count = 0
+  return c
+
+def robotics_step_stub(cell: RobotCell, dt: float) -> unit
+  requires cell.joint_count > 0
+  requires dt > 0.0
+  ensures cell.step_count >= 1
+  decreases cell.step_count
+=
+  cell.step_count = cell.step_count + 1

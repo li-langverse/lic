@@ -485,6 +485,42 @@ file = "composable/import_sim_additive.li"
 outcome = "compile_ok"
 note = "PH-AM-0 import sim.additive (li-sim-additive lib)"
 
+[[tests]]
+suite = "composable"
+file = "composable/import_sim_scientific.li"
+outcome = "compile_ok"
+note = "PH-SCI-0 import sim.scientific"
+
+[[tests]]
+suite = "composable"
+file = "composable/import_sim_robotics.li"
+outcome = "compile_ok"
+note = "PH-ROBO-0 import sim.robotics"
+
+[[tests]]
+suite = "composable"
+file = "composable/import_sim_automotive.li"
+outcome = "compile_ok"
+note = "PH-SIM import sim.automotive"
+
+[[tests]]
+suite = "composable"
+file = "composable/import_sim_drug_design.li"
+outcome = "compile_ok"
+note = "PH-DRUG-0 import sim.drug_design"
+
+[[tests]]
+suite = "composable"
+file = "composable/import_ml.li"
+outcome = "compile_ok"
+note = "PH-ML-0 import ml"
+
+[[tests]]
+suite = "composable"
+file = "composable/import_gpu.li"
+outcome = "compile_ok"
+note = "PH-HW-0 import gpu"
+
 # composable/import_physics_runtime — enable when cross-package PhysicsWorld types resolve
 # stdlib_coverage/build_std_csv — enable when std.csv module resolves (PH-IO-4)
 

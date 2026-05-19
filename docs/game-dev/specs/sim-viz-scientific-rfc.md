@@ -1,30 +1,27 @@
-# RFC stub: sim-viz-scientific-rfc
+# RFC: Scientific simulation + viewport viz (PH-SCI)
 
-**Status:** Draft stub  
-**Date:** 2026-05  
+**Status:** Draft  
+**Track:** PH-SCI  
 **Vision:** [world-studio-vision.md](../world-studio-vision.md)
 
 ## Problem
 
-<!-- TODO: one paragraph -->
+CFD, MD, heat, and orbital workflows need tier-2 physics **and** field visualization in one engine viewport — not a separate VTK-only tool chain.
 
 ## Proposal
 
-<!-- TODO: API, packages, phases -->
+**`li-sim-scientific`** (`import sim.scientific`):
 
-## Li syntax
+- `SimVizFrame` — field samples per timestep  
+- `sim_viz_push_sample` — viewport feed hook  
+- `scientific_run_stub` — ties to `li-physics-*` tier 1–3  
 
-Use Python-style `def` for functions; `requires` / `ensures` / `decreases` on exported APIs.
+Runs inside World Studio; benches from `li-tests/hpc_competitive` link here later.
 
-## Proof / trust
+## Phases
 
-<!-- TODO: what is proved vs trusted -->
+SCI-0 stubs (landed) → SCI-1 real field buffers → SCI-2 VTK/HDF5 export (PH-PUB).
 
 ## Dependencies
 
-See [PH-world-studio-program.md](../PH-world-studio-program.md).
-
-## Open questions
-
-- [ ] …
-
+`li-physics-*`, `li-sim`, PH-UX viewport performance targets.

@@ -1,30 +1,28 @@
-# RFC stub: drug-design-lab-loop-rfc
+# RFC: AI drug design — Lab-in-the-Loop (PH-DRUG)
 
-**Status:** Draft stub  
-**Date:** 2026-05  
+**Status:** Draft  
+**Track:** PH-DRUG  
 **Vision:** [world-studio-vision.md](../world-studio-vision.md)
 
 ## Problem
 
-<!-- TODO: one paragraph -->
+Drug discovery loops need hypothesis → generate → **QM** → lab ingest → retrain with an adaptive UI, not static forms.
 
 ## Proposal
 
-<!-- TODO: API, packages, phases -->
+| Layer | Package / API |
+|-------|----------------|
+| Workflow stages | `li-sim-drug-design` — `lab_loop_*` |
+| QM | `li-chem` — `dft_run_*`, `tddft_run_stub` |
+| Adaptive UI | `li-studio` — `studio_adaptive_panel_for_stage` |
+| Agents | MCP `engine_chem_stub` (see [agent-mcp-sketch.md](../agent-mcp-sketch.md)) |
 
-## Li syntax
+Roche Lab-in-the-Loop–class: stage-gated panels, audit on CRITICAL exports.
 
-Use Python-style `def` for functions; `requires` / `ensures` / `decreases` on exported APIs.
+## Phases
 
-## Proof / trust
+DRUG-0 stubs → DRUG-1 real `chem.dft` backend → DRUG-2 LIMS ingest (trusted).
 
-<!-- TODO: what is proved vs trusted -->
+## Compliance
 
-## Dependencies
-
-See [PH-world-studio-program.md](../PH-world-studio-program.md).
-
-## Open questions
-
-- [ ] …
-
+`li-chem` + `li-sim-drug-design` — CRITICAL tier; model cards (PH-COMPLY).

@@ -1,0 +1,40 @@
+# PKG-li-sim-automotive — driving, sensors, maps (PH-SIM automotive profile).
+
+type AutomotiveWorld = object
+  public tick: int
+  public sensor_frames: int
+  public map_loaded: int
+
+def li_sim_automotive_version() -> int
+  requires true
+  ensures result == 1
+  decreases 0
+=
+  return 1
+
+def automotive_world_new() -> AutomotiveWorld
+  requires true
+  ensures result.tick == 0
+  ensures result.sensor_frames == 0
+  decreases 0
+=
+  var w: AutomotiveWorld
+  w.tick = 0
+  w.sensor_frames = 0
+  w.map_loaded = 0
+  return w
+
+def automotive_sensor_tick(world: AutomotiveWorld) -> unit
+  requires true
+  ensures world.sensor_frames >= 1
+  decreases world.sensor_frames
+=
+  world.sensor_frames = world.sensor_frames + 1
+  world.tick = world.tick + 1
+
+def automotive_load_map_stub(world: AutomotiveWorld) -> unit
+  requires true
+  ensures world.map_loaded == 1
+  decreases 0
+=
+  world.map_loaded = 1

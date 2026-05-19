@@ -1,6 +1,6 @@
 # PH-world-studio-program — master tracker
 
-**Status:** In progress (impl-3 on `feat/world-studio-impl-1`)  
+**Status:** In progress (impl-4 on `feat/world-studio-impl-1`)  
 **Vision:** [world-studio-vision.md](world-studio-vision.md)
 
 Cross-cutting program IDs. Implementation order respects dependencies in the vision doc.
@@ -37,3 +37,7 @@ Cross-cutting program IDs. Implementation order respects dependencies in the vis
 | SIM-2 replay buffer in `li-sim` | Done |
 | Studio viewport/outliner hooks | Done |
 | MCP `li-engine` server | Docs: [agent-mcp-sketch.md](agent-mcp-sketch.md) |
+| `sim.scientific` / `sim.robotics` / `sim.automotive` / `sim.drug_design` | Done |
+| `li-ml`, `li-gpu` stubs | Done |
+| `studio_adaptive_*`, `studio_publish_*` in `li-studio` | Done |
+| `chem` DFT/TDDFT tagged stubs | Done |

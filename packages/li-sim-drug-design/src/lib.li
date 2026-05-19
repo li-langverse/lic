@@ -1,0 +1,56 @@
+# PKG-li-sim-drug-design — Lab-in-the-Loop workflow stages (PH-DRUG-0).
+
+type LabLoopStage = object
+  public stage_id: int
+  public iteration: int
+  public dft_done: int
+
+def li_sim_drug_design_version() -> int
+  requires true
+  ensures result == 1
+  decreases 0
+=
+  return 1
+
+def lab_loop_stage_hypothesis() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0
+
+def lab_loop_stage_generate() -> int
+  requires true
+  ensures result == 1
+  decreases 0
+=
+  return 1
+
+def lab_loop_stage_dft() -> int
+  requires true
+  ensures result == 2
+  decreases 0
+=
+  return 2
+
+def lab_loop_stage_new(stage_id: int) -> LabLoopStage
+  requires stage_id >= 0
+  requires stage_id <= 3
+  ensures result.stage_id == stage_id
+  ensures result.iteration == 0
+  decreases stage_id
+=
+  var s: LabLoopStage
+  s.stage_id = stage_id
+  s.iteration = 0
+  s.dft_done = 0
+  return s
+
+def lab_loop_advance_stub(stage: LabLoopStage) -> unit
+  requires stage.stage_id >= 0
+  ensures stage.iteration >= 1
+  decreases stage.iteration
+=
+  stage.iteration = stage.iteration + 1
+  if stage.stage_id == lab_loop_stage_dft():
+    stage.dft_done = 1

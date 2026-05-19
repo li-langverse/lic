@@ -8,6 +8,20 @@ type DftResult = object
 
 def li_chem_version() -> int
   requires true
+  ensures result == 2
+  decreases 0
+=
+  return 2
+
+def chem_method_rks() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0
+
+def chem_basis_def2svp_tag() -> int
+  requires true
   ensures result == 1
   decreases 0
 =
@@ -29,4 +43,27 @@ def dft_run_stub(g: Geometry) -> DftResult
 =
   var r: DftResult
   r.total_energy = -1.0
+  return r
+
+def dft_run_tagged_stub(g: Geometry, method: int, basis: int) -> DftResult
+  requires g.atom_count > 0
+  requires method >= 0
+  requires basis >= 0
+  ensures result.total_energy < 0.0
+  decreases g.atom_count
+=
+  if method == chem_method_rks():
+    if basis == chem_basis_def2svp_tag():
+      return dft_run_stub(g)
+  var r: DftResult
+  r.total_energy = -1.0
+  return r
+
+def tddft_run_stub(g: Geometry) -> DftResult
+  requires g.atom_count > 0
+  ensures result.total_energy < 0.0
+  decreases g.atom_count
+=
+  var r: DftResult
+  r.total_energy = -0.5
   return r

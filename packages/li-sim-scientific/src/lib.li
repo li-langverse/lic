@@ -1,0 +1,43 @@
+# PKG-li-sim-scientific — scientific / engineering sim + viz hooks (PH-SCI-0).
+
+type SimVizFrame = object
+  public field_id: int
+  public timestep: int
+  public sample_count: int
+
+def li_sim_scientific_version() -> int
+  requires true
+  ensures result == 1
+  decreases 0
+=
+  return 1
+
+def sim_viz_frame_new(field_id: int, timestep: int) -> SimVizFrame
+  requires field_id >= 0
+  requires timestep >= 0
+  ensures result.field_id == field_id
+  ensures result.timestep == timestep
+  decreases timestep
+=
+  var f: SimVizFrame
+  f.field_id = field_id
+  f.timestep = timestep
+  f.sample_count = 0
+  return f
+
+def sim_viz_push_sample(frame: SimVizFrame, value: float) -> unit
+  requires frame.timestep >= 0
+  ensures frame.sample_count >= 1
+  decreases frame.sample_count
+=
+  if value == value:
+    frame.sample_count = frame.sample_count + 1
+
+def scientific_run_stub(tier: int, steps: int) -> int
+  requires tier >= 1
+  requires tier <= 3
+  requires steps > 0
+  ensures result == steps
+  decreases steps
+=
+  return steps

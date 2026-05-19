@@ -14,9 +14,10 @@
 ## Changed
 
 - `compiler/types/import_resolve.cpp` — `members = [` array parse (skip `[workspace]` section header)
-- `compiler/parser/parser.cpp` — newlines/indents inside `def (...)` parameter lists
+- `compiler/parser/parser.cpp` — newlines/indents inside `def (...)` parameter lists; bare `return` for `-> unit`
 - `packages/li-physics-rigid/src/lib.li`, `packages/li-physics-runtime/src/lib.li` — `b: var RigidBody` on `rigid_integrate_semi_implicit`
 - `packages/li-physics-relativity/src/lib.li` — `var float` on `lorentz_gamma` / `relativistic_momentum` velocity param (borrowck)
+- `packages/li-physics-runtime/src/lib.li` — `substep_inv` for float substep dt; `var PhysicsWorld` on step/substep procs (typecheck; full `lic build` of runtime lib still hits codegen crash — follow-up)
 - `li-tests/composable/import_physics_runtime.li` — version + integrate smoke
 - `li-tests/encapsulation/def_multiline_params.li`, `li-tests/manifest.toml`
 - `docs/physics/SIMULATION_UI_READINESS.md`

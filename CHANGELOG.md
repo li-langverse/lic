@@ -18,6 +18,7 @@ All notable changes to Li are documented here. The format follows
 - Parser: multiline `def` parameter lists (indent after `(` / between parameters); bare `return` for `-> unit` procs.
 - Windows CI discovers `LLVM_DIR` via `llvm-config` or `find` when Chocolatey layout differs.
 - `packages/li-math-numerics`: remove duplicate `extern proc` contract clauses.
+- `packages/li-physics-runtime`: `substep_inv` field and `var PhysicsWorld` step APIs (typecheck; codegen crash on full lib build is a known follow-up).
 
 ### Changed
 

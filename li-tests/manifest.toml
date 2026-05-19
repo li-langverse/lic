@@ -943,6 +943,24 @@ note = "Pre-merge rollup (spinup + gpu + sim stack)"
 
 [[tests]]
 suite = "composable"
+file = "composable/import_lkir_gpu_present.li"
+outcome = "compile_ok"
+note = "LKIR GPU present tick + render bridge"
+
+[[tests]]
+suite = "composable"
+file = "composable/import_player_gpu_render_client.li"
+outcome = "compile_ok"
+note = "Player GPU frame + render viewport client"
+
+[[tests]]
+suite = "composable"
+file = "composable/import_world_studio_merge_ready.li"
+outcome = "compile_ok"
+note = "Merge-ready gate (binary tag + assets + spinup)"
+
+[[tests]]
+suite = "composable"
 file = "composable/import_world_studio_benchmark_tier1.li"
 outcome = "compile_ok"
 note = "Competitive world-studio.toml tier-1 rollup"

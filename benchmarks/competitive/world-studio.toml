@@ -4,7 +4,7 @@
 schema = 1
 track = "PH-GD"
 plan = "docs/game-dev/world-studio-vision.md"
-composable_gates = 85
+composable_gates = 88
 branch = "feat/world-studio-impl-1"
 
 [[benchmark]]
@@ -111,3 +111,24 @@ name = "Pre-merge composable rollup"
 tier = 1
 li_package = "li-studio"
 composable = "import_world_studio_premerge"
+
+[[benchmark]]
+id = "lkir-gpu-present"
+name = "LKIR GPU present tick + render bridge"
+tier = 1
+li_package = "li-gpu"
+composable = "import_lkir_gpu_present"
+
+[[benchmark]]
+id = "player-gpu-render-client"
+name = "Player GPU frame + render client"
+tier = 1
+li_package = "li-player"
+composable = "import_player_gpu_render_client"
+
+[[benchmark]]
+id = "world-studio-merge-ready"
+name = "Merge-ready composable rollup"
+tier = 1
+li_package = "li-studio"
+composable = "import_world_studio_merge_ready"

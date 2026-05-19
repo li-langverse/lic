@@ -296,3 +296,11 @@ def studio_spinup_registry_smoke() -> int
   if studio_native_shell_smoke() != 0:
     return 2
   return 0
+
+# PH-GD-1 — binary runtime tag (impl-28; verify-world-studio-binary.sh).
+def studio_binary_runtime_tag_stub() -> int
+  requires true
+  ensures result == 8288
+  decreases 0
+=
+  return 8288

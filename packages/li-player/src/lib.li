@@ -64,3 +64,24 @@ def player_game_client_stack_smoke() -> int
   if player_render_frame_stub(1) != 2:
     return 2
   return 0
+
+# PH-GD-7 — GPU frame present hook (pairs with render LKIR bridge).
+def player_gpu_frame_present_stub(frame_id: int, backend_id: int) -> int
+  requires frame_id >= 0
+  requires backend_id >= 0
+  requires backend_id <= 2
+  ensures result == player_render_frame_stub(frame_id) + backend_id
+  decreases frame_id
+=
+  return player_render_frame_stub(frame_id) + backend_id
+
+def player_gpu_render_client_smoke() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  if player_gpu_frame_present_stub(0, 1) != 2:
+    return 1
+  if player_game_client_stack_smoke() != 0:
+    return 2
+  return 0

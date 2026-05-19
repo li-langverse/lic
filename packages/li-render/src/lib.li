@@ -127,3 +127,23 @@ def render_gpu_viewport_smoke() -> int
   if render_gpu_studio_bind_tag_stub(1280, 720, 1) != 3001:
     return 2
   return 0
+
+# PH-HW — LKIR present bridge (gpu tag + studio bind tag).
+def render_lkir_present_bridge_stub(width: int, height: int, backend_id: int) -> int
+  requires width > 0
+  requires height > 0
+  requires backend_id >= 0
+  requires backend_id <= 2
+  ensures result == render_gpu_studio_bind_tag_stub(width, height, backend_id) + 1
+  decreases width
+=
+  return render_gpu_studio_bind_tag_stub(width, height, backend_id) + 1
+
+def render_lkir_present_smoke() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  if render_lkir_present_bridge_stub(1280, 720, 1) != 3002:
+    return 1
+  return render_gpu_viewport_smoke()

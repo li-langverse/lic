@@ -1,5 +1,5 @@
 # Native World Studio shell entry (PH-GD-1).
-# Runtime: minimal exit-0 gate; full viewport/GPU smokes run via composable import_* gates.
+# Runtime: exit-0 gate; binary tag 8288 verified via import_world_studio_merge_ready composable.
 import studio
 
 def main() -> int

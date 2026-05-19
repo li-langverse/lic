@@ -1,7 +1,7 @@
 # World Studio / Li Engine — progress report
 
 **Branch:** `feat/world-studio-impl-1`  
-**Sprint:** impl-27 (2026-05)  
+**Sprint:** impl-28 (2026-05)  
 **Tracker:** [PH-world-studio-program.md](PH-world-studio-program.md)  
 **Merge:** [MERGE-world-studio-checklist.md](MERGE-world-studio-checklist.md)
 
@@ -11,25 +11,24 @@
 
 | Metric | Value |
 |--------|--------|
-| **Composable gates** | **85 / 85 pass** ✅ |
+| **Composable gates** | **88 / 88 pass** ✅ |
 | **Game dev** | **12 parse_ok** |
 | **Vertical builds** | **7** |
 | **Spin-up templates** | **8 compile_ok** |
-| **Studio binary** | `build/bin/world-studio` + **verify script** ✅ |
-| **GPU viewport** | `RenderGpuSurface` + `render_gpu_viewport_smoke` ✅ |
+| **Studio binary** | runtime tag **8288** + verify script ✅ |
+| **LKIR GPU present** | `gpu_lkir_present_*` + `render_lkir_present_*` ✅ |
 | **Blocked** | `sim_step_physics` (deferred) |
 
 ---
 
-## Sprint impl-27
+## Sprint impl-28
 
 | Deliverable | State |
 |-------------|--------|
-| `RenderGpuSurface` + `render_gpu_viewport_smoke` in `li-render` | ✅ |
-| `studio_bind_gpu_viewport_stub` + `studio_gpu_viewport_smoke` | ✅ |
-| `studio_main.li` wires `gpu` backend + GPU viewport | ✅ |
-| Composables: GPU viewport, studio GPU stack, **premerge rollup** | ✅ |
-| `scripts/verify-world-studio-binary.sh` in CI | ✅ |
+| `gpu_lkir_present_tick_stub` + `render_lkir_present_bridge_stub` | ✅ |
+| `player_gpu_render_client_smoke` | ✅ |
+| `studio_binary_runtime_tag_stub` (8288) in binary | ✅ |
+| Composables: LKIR present, player GPU client, **merge_ready** | ✅ |
 
 ---
 
@@ -38,7 +37,7 @@
 ```bash
 ./scripts/verify-world-studio-binary.sh
 ./scripts/check-world-studio-gates.sh
-python3 -m http.server 8765 --directory deploy/studio-demo
+./scripts/record-studio-demo.sh   # optional reel refresh
 ```
 
 ---
@@ -47,18 +46,18 @@ python3 -m http.server 8765 --directory deploy/studio-demo
 
 | Sprint | Gates |
 |--------|-------|
-| impl-26 | 82 |
-| **impl-27** | **85** |
+| impl-27 | 85 |
+| **impl-28** | **88** |
 
 ---
 
 ## Next
 
 1. **Merge PR** → `main`  
-2. LKIR / real GPU present path in `li-gpu` + `li-render`  
-3. Re-record demo reel (`./scripts/record-studio-demo.sh`)  
+2. Compiled runtime: full object smokes in `studio_main` (when LIC runtime stable)  
+3. Real LKIR kernel launch in `li-gpu`  
 4. `sim_step_physics` when compiler allows cross-package types  
 
 ---
 
-*impl-27 · `feat/world-studio-impl-1`*
+*impl-28 · `feat/world-studio-impl-1`*

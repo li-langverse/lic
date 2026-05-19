@@ -1,0 +1,14 @@
+import player
+import render
+import gpu
+
+def main() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  if player_gpu_render_client_smoke() != 0:
+    return 1
+  if gpu_lkir_present_tick_stub(gpu_backend_rocm()) != render_lkir_present_bridge_stub(1280, 720, 1) - 3000:
+    return 2
+  return render_studio_viewport_smoke()

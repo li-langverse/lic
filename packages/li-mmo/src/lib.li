@@ -15,10 +15,10 @@ type PlayerSession = object
 
 def li_mmo_version() -> int
   requires true
-  ensures result == 3
+  ensures result == 4
   decreases 0
 =
-  return 3
+  return 4
 
 # MMO-7 partial — server-side validation hook (full anti-cheat later).
 def mmo_anticheat_validate_tick_stub(tick: int, checksum: int) -> int
@@ -190,4 +190,15 @@ def mmo_matchmaking_smoke() -> int
     return 1
   if match_queue_new(5).realm_id != 5:
     return 2
+  return 0
+
+def mmo_shard_tick_smoke() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  var r: RealmState = realm_state_new(1, 0)
+  mmo_shard_tick_stub(r)
+  if r.tick != 1:
+    return 1
   return 0

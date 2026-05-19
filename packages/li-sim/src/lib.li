@@ -16,10 +16,10 @@ type SimReplay = object
 
 def li_sim_version() -> int
   requires true
-  ensures result == 6
+  ensures result == 7
   decreases 0
 =
-  return 6
+  return 7
 
 # PH-PHYS-CUSTOM — 0 realistic stack, 1 arbitrary-only, 2 hybrid (see physics.custom).
 def sim_law_mode_realistic() -> int
@@ -218,5 +218,19 @@ def sim_arbitrary_law_smoke() -> int
   if w.tick != 1:
     return 1
   if w.law_mode != sim_law_mode_arbitrary():
+    return 2
+  return 0
+
+# MMO shard tick budget: sim_step with mmo profile (no PhysicsWorld embed).
+def sim_mmo_profile_step_smoke() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  var w: SimWorld = sim_world_with_profile(1.0 / 30.0, 1, sim_profile_mmo())
+  sim_step(w)
+  if w.tick != 1:
+    return 1
+  if w.profile != sim_profile_mmo():
     return 2
   return 0

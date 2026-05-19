@@ -7,10 +7,10 @@ type SimVizFrame = object
 
 def li_sim_scientific_version() -> int
   requires true
-  ensures result == 1
+  ensures result == 2
   decreases 0
 =
-  return 1
+  return 2
 
 def sim_viz_frame_new(field_id: int, timestep: int) -> SimVizFrame
   requires field_id >= 0
@@ -41,3 +41,42 @@ def scientific_run_stub(tier: int, steps: int) -> int
   decreases steps
 =
   return steps
+
+# BIOENG-5 — bioreactor / heat-equation tier-2 hook (stub).
+type ReactorField = object
+  public cell_count: int
+  public timestep: int
+  public temperature_c: float
+
+def scientific_reactor_field_new(cell_count: int) -> ReactorField
+  requires cell_count > 0
+  ensures result.cell_count == cell_count
+  ensures result.timestep == 0
+  ensures result.temperature_c == 37.0
+  decreases cell_count
+=
+  var f: ReactorField
+  f.cell_count = cell_count
+  f.timestep = 0
+  f.temperature_c = 37.0
+  return f
+
+def scientific_reactor_heat_step_stub(field: ReactorField, dt: float) -> unit
+  requires field.cell_count > 0
+  requires dt > 0.0
+  ensures field.timestep >= 1
+  decreases field.timestep
+=
+  field.timestep = field.timestep + 1
+  field.temperature_c = field.temperature_c + dt
+
+def scientific_reactor_smoke() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  var f: ReactorField = scientific_reactor_field_new(32)
+  scientific_reactor_heat_step_stub(f, 0.1)
+  if f.timestep != 1:
+    return 1
+  return 0

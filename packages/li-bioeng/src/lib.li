@@ -14,10 +14,10 @@ type BioengPipeline = object
 
 def li_bioeng_version() -> int
   requires true
-  ensures result == 4
+  ensures result == 5
   decreases 0
 =
-  return 4
+  return 5
 
 # BIOENG-3 — assay batch ingest (stubs).
 type AssayBatch = object
@@ -267,6 +267,32 @@ def bioeng_scorecard_smoke() -> int
     return 1
   var row2: ScorecardRow = bioeng_scorecard_row_new(2, 0.3, 0.5)
   if row2.beats_baseline != 0:
+    return 2
+  return 0
+
+# BIOENG-5 — bioreactor field link (sim.scientific wired in composable gate).
+def bioeng_reactor_field_id() -> int
+  requires true
+  ensures result == 7
+  decreases 0
+=
+  return 7
+
+def bioeng_reactor_tier_stub() -> int
+  requires true
+  ensures result == 2
+  decreases 0
+=
+  return 2
+
+def bioeng_reactor_smoke() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  if bioeng_reactor_field_id() != 7:
+    return 1
+  if bioeng_reactor_tier_stub() != 2:
     return 2
   return 0
 

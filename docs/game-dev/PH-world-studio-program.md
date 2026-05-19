@@ -1,6 +1,6 @@
 # PH-world-studio-program — master tracker
 
-**Status:** In progress (impl-11 on `feat/world-studio-impl-1`) — **ready for draft PR**  
+**Status:** In progress (impl-12 on `feat/world-studio-impl-1`) — **ready for draft PR**  
 **Vision:** [world-studio-vision.md](world-studio-vision.md)  
 **Progress report:** [PH-world-studio-progress-report.md](PH-world-studio-progress-report.md) ← **read this for sprint status**
 
@@ -70,6 +70,10 @@ Cross-cutting program IDs. Implementation order respects dependencies in the vis
 | BIOENG-4 scorecard row | Done |
 | player + render client loop | Done |
 | [PR-world-studio-impl-summary.md](PR-world-studio-impl-summary.md) | Done |
+| **`li-assets`** glTF stub (PH-GD-4) | Done |
+| BIOENG-5 bioreactor → `sim.scientific` | Done |
+| MMO shard tick + `sim_mmo_profile_step_smoke` | Done |
+| **44 composable** gates | Done |
 | MMO-5 WebSocket stubs (`net.httpd`) | Done |
 | MMO-6 `world_checkpoint_mmo_stub` | Done |
 | BIOENG-2 construct registry | Done |

@@ -1,0 +1,22 @@
+[package]
+name = "li-assets"
+version = "0.1.0"
+edition = "2026"
+license = "Apache-2.0 OR MIT"
+description = "glTF and asset pipeline for World Studio (PH-GD-4)"
+
+[dependencies]
+# path = { path = "../other" }   # lip 8b+
+# registry = "1.0.0"             # lip 8d+
+
+[package.metadata.li]
+github_repo = "li-assets"
+import_name = "assets"
+min_lic = "0.1.0"
+maintainer = "li-langverse"
+pkg_id = "PKG-li-assets"
+
+[package.repository]
+url = "https://github.com/li-langverse/li-assets"
+documentation = "https://li-langverse.github.io/li-language/ecosystem/li-assets/"
+changelog = "https://github.com/li-langverse/li-assets/blob/main/CHANGELOG.md"

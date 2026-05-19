@@ -683,6 +683,24 @@ file = "composable/import_mmo_full_stack.li"
 outcome = "compile_ok"
 note = "PH-MMO full stack postgres+world+player"
 
+[[tests]]
+suite = "composable"
+file = "composable/import_assets.li"
+outcome = "compile_ok"
+note = "PH-GD-4 glTF asset pipeline stub"
+
+[[tests]]
+suite = "composable"
+file = "composable/import_bioeng_reactor.li"
+outcome = "compile_ok"
+note = "PH-BIOENG-5 bioreactor + sim.scientific"
+
+[[tests]]
+suite = "composable"
+file = "composable/import_mmo_shard_sim_step.li"
+outcome = "compile_ok"
+note = "PH-MMO shard tick + sim_step mmo profile"
+
 # composable/import_physics_runtime — enable when cross-package PhysicsWorld types resolve
 # stdlib_coverage/build_std_csv — enable when std.csv module resolves (PH-IO-4)
 

@@ -16,7 +16,7 @@ def lorentz_gamma(v: float, c: float) -> float
   decreases 0
 =
   var beta: float = v / c
-  if beta >= 1.0
+  if beta >= 1.0:
     return 1.0
   return 1.0 / li_rt_sqrt(1.0 - beta * beta)
 

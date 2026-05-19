@@ -25,7 +25,7 @@ def reactor_euler_step(
   var i: int = 0
   while i < 4
     conc[i] = conc[i] + rates[i] * dt
-    if conc[i] < 0.0
+    if conc[i] < 0.0:
       conc[i] = 0.0
     i = i + 1
 
@@ -40,7 +40,7 @@ def combustion_passive_step(
   var i: int = 0
   while i < 8
     var burned: float = burn_rate * dt * fuel[i]
-    if burned > fuel[i]
+    if burned > fuel[i]:
       burned = fuel[i]
     fuel[i] = fuel[i] - burned
     temp[i] = temp[i] + burned

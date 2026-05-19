@@ -57,13 +57,13 @@ def rect_contains(r: Rect, px: float, py: float) -> int
   ensures true
   decreases 0
 =
-  if px < r.x
+  if px < r.x:
     return 0
-  if py < r.y
+  if py < r.y:
     return 0
-  if px > r.x + r.w
+  if px > r.x + r.w:
     return 0
-  if py > r.y + r.h
+  if py > r.y + r.h:
     return 0
   return 1
 

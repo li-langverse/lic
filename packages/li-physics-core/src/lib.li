@@ -88,19 +88,19 @@ def profile_for_tier(tier: int) -> PhysicsProfile
 =
   var p: PhysicsProfile = default_physics_profile()
   p.tier = tier
-  if tier == physics_tier_arcade()
+  if tier == physics_tier_arcade():
     p.dt = 1.0 / 60.0
     p.substeps = 1
     p.targets.max_energy_drift = 0.05
-  if tier == physics_tier_simulation()
+  if tier == physics_tier_simulation():
     p.dt = 1.0 / 120.0
     p.substeps = 2
     p.targets.max_energy_drift = 0.001
-  if tier == physics_tier_scientific()
+  if tier == physics_tier_scientific():
     p.dt = 0.001
     p.substeps = 4
     p.targets.max_energy_drift = 0.0001
-  if tier == physics_tier_research()
+  if tier == physics_tier_research():
     p.dt = 0.0001
     p.substeps = 8
     p.targets.max_energy_drift = 0.00001
@@ -112,11 +112,11 @@ def select_integrator_order(profile: PhysicsProfile) -> int
   ensures true
   decreases profile.tier
 =
-  if profile.tier == physics_tier_arcade()
+  if profile.tier == physics_tier_arcade():
     return 1
-  if profile.tier == physics_tier_simulation()
+  if profile.tier == physics_tier_simulation():
     return 2
-  if profile.tier == physics_tier_scientific()
+  if profile.tier == physics_tier_scientific():
     return 4
   return 4
 

@@ -20,7 +20,7 @@ def sph_kernel_poly6(r: float, h: float) -> float
   ensures true
   decreases 0
 =
-  if r >= h
+  if r >= h:
     return 0.0
   var x: float = (h * h - r * r) / (h * h * h)
   return 315.0 / (64.0 * 3.14159265) * x * x * x
@@ -59,7 +59,7 @@ def cloth_pbd_distance(
   var dx: float = px[j] - px[i]
   var dy: float = py[j] - py[i]
   var len: float = li_rt_sqrt(dx * dx + dy * dy)
-  if len == 0.0
+  if len == 0.0:
     return
   var corr: float = stiffness * (len - rest) / len
   px[i] = px[i] + 0.5 * corr * dx

@@ -34,7 +34,7 @@ def rigid_integrate_semi_implicit(b: RigidBody, fx: float, fy: float, fz: float,
   ensures true
   decreases 0
 =
-  if b.inv_mass > 0.0
+  if b.inv_mass > 0.0:
     b.vx = b.vx + fx * b.inv_mass * dt
     b.vy = b.vy + fy * b.inv_mass * dt
     b.vz = b.vz + fz * b.inv_mass * dt
@@ -80,7 +80,7 @@ def physics_rigid_substep(world: PhysicsWorld, sub_dt: float) -> unit
   ensures true
   decreases 0
 =
-  if world.rigid_enabled == 0
+  if world.rigid_enabled == 0:
     return
   rigid_integrate_semi_implicit(world.body, 0.0, 0.0, world.gravity_z, sub_dt)
 

@@ -27,7 +27,7 @@ def normalize_1d(psi_re: array[8, float], psi_im: array[8, float]) -> unit
   decreases 0
 =
   var n2: float = norm_sq_1d(psi_re, psi_im)
-  if n2 == 0.0
+  if n2 == 0.0:
     return
   var inv_n: float = 1.0 / li_rt_sqrt(n2)
   var i: int = 0

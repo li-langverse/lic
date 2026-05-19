@@ -27,7 +27,7 @@ Fixed timestep: `physics_world_game_default()` → `physics_step(world, 1.0/60.0
 ## Next (priority)
 
 1. **PH-IO-4** — wire `std/io` + `std/csv` in compiler (CSV ingest without Python).
-2. **Import graph** — package `import` so runtime calls `li-std-physics-rigid` directly.
+2. **Import graph** — package `import` so runtime calls `li-std-physics-rigid` directly (deps in `li.toml`; runtime inlines until `li-tests` resolver lands).
 3. **Pure-Li tier-2** — expand `three_body_pure` and `horner_pure_li` (PH-7e).
 4. **Render bridge** — `li-std-ui` → engine draw list; keep rendering out of physics (GAME_DEV.md).
 5. **Publish mirrors** — `push-official-package-repo.sh` for new `li-std-ui`, `li-std-scene`.

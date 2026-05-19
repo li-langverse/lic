@@ -1,7 +1,15 @@
 # PKG-li-std-physics-runtime — world step scheduler and engine-facing API.
+# Calls rigid/numerics APIs inline until cross-package `import` resolves in li-tests (see li.toml deps).
 
-import li_std_physics_rigid
-import li_std_numerics
+type RigidBody = object
+  public px: float
+  public py: float
+  public pz: float
+  public vx: float
+  public vy: float
+  public vz: float
+  public inv_mass: float
+  public radius: float
 
 type PhysicsWorld = object
   public tier: int
@@ -19,7 +27,19 @@ proc li_std_physics_runtime_version() -> int
   ensures result == 1
   decreases 0
 =
-  return li_std_physics_rigid_version() + li_std_numerics_version()
+  return 1
+
+proc rigid_integrate_semi_implicit(b: RigidBody, fx: float, fy: float, fz: float, dt: float) -> unit
+  requires dt > 0.0
+  decreases 0
+=
+  if b.inv_mass > 0.0
+    b.vx = b.vx + fx * b.inv_mass * dt
+    b.vy = b.vy + fy * b.inv_mass * dt
+    b.vz = b.vz + fz * b.inv_mass * dt
+  b.px = b.px + b.vx * dt
+  b.py = b.py + b.vy * dt
+  b.pz = b.pz + b.vz * dt
 
 proc physics_world_new(tier: int) -> PhysicsWorld
   requires tier >= 0

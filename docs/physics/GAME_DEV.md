@@ -77,6 +77,12 @@ Run org sweep: `python3 scripts/run-pr-program.py` in **benchmarks** repo.
 
 ---
 
+## World Studio (vision)
+
+Long-term **AI-first editor** (local models, proved worlds, agent APIs) — not a Unity clone on day one:
+
+→ **[World Studio vision](../game-dev/world-studio-vision.md)** (PH-GD phases, module map, SOTA).
+
 ## Out of scope (tier R)
 
-Rendering (shadows, BRDF, particles on GPU) — physics-only in PH-5b. Use your engine renderer + Li physics state.
+Rendering (shadows, BRDF, particles on GPU) — physics-only in PH-5b until **PH-GD-5** (`li-render`). Use your engine renderer + Li physics state until then.

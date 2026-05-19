@@ -1,0 +1,45 @@
+---
+description: World Studio vision — AI-first game GUI above classic engines; module map PH-GD
+globs:
+  - docs/game-dev/**
+  - docs/physics/GAME_DEV.md
+  - packages/li-scene/**
+  - packages/li-ui/**
+  - packages/li-physics-runtime/**
+alwaysApply: false
+---
+
+# Li World Studio (vision guardrails)
+
+**Canonical plan:** `docs/game-dev/world-studio-vision.md`
+
+When designing game dev, editor, or world-creation features:
+
+## Product direction
+
+- **AI-first:** every feature must be reachable via **stable agent APIs** (`studio.commands.*`), not menu-only.
+- **Local models default:** Ollama/llama.cpp-class; cloud requires explicit `raises Net` + audit.
+- **Above Unity/Unreal on workflow:** diffable Li worlds + `lic build` proof — not “clone UE5 renderer first.”
+- **Read like prose:** imports `world`, `scene`, `physics.runtime`, `studio.ui` — see `li-readability-philosophy.mdc`.
+
+## Module rules
+
+| Need | Package | Do not |
+|------|---------|--------|
+| Editor shell | `li-studio` (new) | Dump editor into `lic` compiler |
+| World/biomes | `li-world` (new) | Encode worlds only in binary |
+| Assets | `li-assets` (new) | Hardcode paths in compiler |
+| AI tools | `li-studio-ai` (new) | Silent cloud calls |
+| Scene graph | **expand** `li-scene` | Fork second scene system |
+| UI chrome | **expand** `li-ui` | Adopt opaque UI framework without Li bindings |
+| Physics | **expand** `li-physics-*` | Unproved C++ physics in user path |
+
+## Phases (PH-GD)
+
+Work in order unless issue says otherwise: **GD-1** studio MVP → **GD-2** world model → **GD-3** AI loop → **GD-4** assets → **GD-5** render → **GD-6** scale → **GD-7** player.
+
+## Agents
+
+- Proposals that touch >1 repo: update master plan + this vision doc section.
+- Reference SOTA in PR (what we replicate/improve); add bench or `li-tests/game_dev/` row.
+- **No** default work in `li-demo` for studio features.

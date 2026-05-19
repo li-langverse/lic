@@ -108,6 +108,9 @@ nav:
       - Overview: language/overview.md
       - Philosophy: language/philosophy.md
       - Import style: language/import-style.md
+  - Game development:
+      - World Studio vision: game-dev/world-studio-vision.md
+      - Physics for games: physics/GAME_DEV.md
       - Types and data: language/types-and-data.md
       - Numerics: language/numerics.md
       - SIMD and parallel: language/simd-parallel.md

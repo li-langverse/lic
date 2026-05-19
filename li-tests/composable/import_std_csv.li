@@ -1,0 +1,14 @@
+# PH-IO-4 smoke: std.csv + std.io stubs compile.
+
+import std.csv
+import std.io
+
+proc main() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  var t: int = csv_tag() + io_tag()
+  if t != 10
+    return 1
+  return csv_read_table_stub()

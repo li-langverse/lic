@@ -1,5 +1,8 @@
 # PKG-li-std-physics-runtime — world step scheduler and engine-facing API.
 
+import li_std_physics_rigid
+import li_std_numerics
+
 type PhysicsWorld = object
   public tier: int
   public dt: float
@@ -9,14 +12,14 @@ type PhysicsWorld = object
   public fluids_enabled: int
   public particles_enabled: int
   public gravity_z: float
-  public body_count: int
+  public body: RigidBody
 
 proc li_std_physics_runtime_version() -> int
   requires true
   ensures result == 1
   decreases 0
 =
-  return 1
+  return li_std_physics_rigid_version() + li_std_numerics_version()
 
 proc physics_world_new(tier: int) -> PhysicsWorld
   requires tier >= 0
@@ -32,7 +35,14 @@ proc physics_world_new(tier: int) -> PhysicsWorld
   w.fluids_enabled = 0
   w.particles_enabled = 0
   w.gravity_z = -9.81
-  w.body_count = 1
+  w.body.px = 0.0
+  w.body.py = 0.0
+  w.body.pz = 0.0
+  w.body.vx = 0.0
+  w.body.vy = 0.0
+  w.body.vz = 0.0
+  w.body.inv_mass = 1.0
+  w.body.radius = 0.5
   return w
 
 proc physics_world_game_default() -> PhysicsWorld
@@ -45,17 +55,11 @@ proc physics_world_game_default() -> PhysicsWorld
 
 proc physics_rigid_substep(world: PhysicsWorld, sub_dt: float) -> unit
   requires sub_dt > 0.0
-  requires world.body_count >= 0
-  decreases world.body_count
+  decreases 0
 =
   if world.rigid_enabled == 0
     return
-  var g: float = world.gravity_z
-  var b: int = 0
-  while b < world.body_count
-    # Arcade integrator: v += g*dt; position hook in scene sync
-    world.step_count = world.step_count
-    b = b + 1
+  rigid_integrate_semi_implicit(world.body, 0.0, 0.0, world.gravity_z, sub_dt)
 
 proc physics_step(world: PhysicsWorld, frame_dt: float) -> unit
   requires frame_dt > 0.0

@@ -1,4 +1,4 @@
-extern proc li_rt_sqrt(x: float) -> float
+# Mini three-body distance smoke (all indices initialized for verify).
 
 def main() -> int
   requires true
@@ -8,7 +8,14 @@ def main() -> int
   var px: array[3, float]
   var py: array[3, float]
   px[0] = 0.0
+  px[1] = 1.0
+  px[2] = 0.0
   py[0] = 1.0
+  py[1] = 0.0
+  py[2] = 0.0
   var dx: float = px[1] - px[0]
-  var r: float = li_rt_sqrt(dx * dx + 1.0)
+  var dy: float = py[1] - py[0]
+  var r2: float = dx * dx + dy * dy
+  if r2 < 0.0
+    return 1
   return 0

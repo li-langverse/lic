@@ -4,7 +4,7 @@
 schema = 1
 track = "PH-GD"
 plan = "docs/game-dev/world-studio-vision.md"
-composable_gates = 100
+composable_gates = 103
 branch = "feat/world-studio-impl-1"
 
 [[benchmark]]
@@ -216,3 +216,24 @@ name = "Studio AI agent + publish stack"
 tier = 1
 li_package = "li-studio"
 composable = "import_studio_agent_publish_stack"
+
+[[benchmark]]
+id = "spinup-agent"
+name = "Studio agent spin-up template"
+tier = 1
+li_package = "li-studio-ai"
+composable = "import_spinup_agent"
+
+[[benchmark]]
+id = "studio-ai-patch-apply"
+name = "Studio AI patch apply stack"
+tier = 1
+li_package = "li-studio-ai"
+composable = "import_studio_ai_patch_apply"
+
+[[benchmark]]
+id = "world-studio-agent-realm"
+name = "Agent + MMO realm deploy stack"
+tier = 1
+li_package = "li-mmo"
+composable = "import_world_studio_agent_realm"

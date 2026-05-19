@@ -1,7 +1,7 @@
 # World Studio / Li Engine — progress report
 
 **Branch:** `feat/world-studio-impl-1`  
-**Sprint:** impl-32 (2026-05)  
+**Sprint:** impl-33 (2026-05)  
 **Tracker:** [PH-world-studio-program.md](PH-world-studio-program.md)  
 **Merge:** [MERGE-world-studio-checklist.md](MERGE-world-studio-checklist.md) · [MERGE-PR-world-studio.md](MERGE-PR-world-studio.md)
 
@@ -11,29 +11,29 @@
 
 | Metric | Value |
 |--------|--------|
-| **Composable gates** | **100 / 100 pass** ✅ |
-| **Spin-up templates** | **10 compile_ok** |
-| **Demo tabs** | **11** |
-| **Milestone** | **100 composable gates** 🎯 |
+| **Composable gates** | **103 / 103 pass** ✅ |
+| **Milestone** | **100** gates (impl-32) |
+| **Spin-up templates** | **11 compile_ok** |
+| **Demo tabs** | **12** (incl. **Agent**) |
 
 ---
 
-## Sprint impl-32
+## Sprint impl-33
 
 | Deliverable | State |
 |-------------|--------|
-| `studio_milestone_100_smoke()` | ✅ |
-| `import_world_studio_milestone_100` composable | ✅ |
-| `import_studio_agent_publish_stack` (AI + publish + assets) | ✅ |
-| [MERGE-PR-world-studio.md](MERGE-PR-world-studio.md) PR instructions | ✅ |
+| `agent` spin-up template (11th) | ✅ |
+| `import_spinup_agent`, `import_studio_ai_patch_apply` | ✅ |
+| `import_world_studio_agent_realm` (agent + MMO) | ✅ |
+| Demo GUI **Agent** tab | ✅ |
 
 ---
 
 ## Quick commands
 
 ```bash
+./scripts/lis new world-studio agent ./my-agent-project
 ./scripts/merge-world-studio-preflight.sh
-# See MERGE-PR-world-studio.md for gh pr create
 ./scripts/open-studio-demo.sh
 ```
 
@@ -43,18 +43,17 @@
 
 | Sprint | Gates |
 |--------|-------|
-| impl-31 | 98 |
-| **impl-32** | **100** |
+| impl-32 | **100** (milestone) |
+| **impl-33** | **103** |
 
 ---
 
 ## Next
 
-1. **Open & merge PR** → `main`  
-2. impl-33: `agent` spin-up template (11th)  
-3. Record demo reel (44s+ for 11 tabs)  
-4. `sim_step_physics` when compiler allows cross-package types  
+1. **Merge PR** → `main`  
+2. Record demo reel (12 tabs, ~48s)  
+3. Upstream `lis new world-studio` in lis repo  
 
 ---
 
-*impl-32 · `feat/world-studio-impl-1` · **100 gates***
+*impl-33 · `feat/world-studio-impl-1`*

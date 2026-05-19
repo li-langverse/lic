@@ -10,7 +10,7 @@ lis (lic shim) — partial CLI
   lis new world-studio [template] [dest]
       Scaffold World Studio project (templates in deploy/world-studio-spinup/)
 
-  Templates: game, game_unphysical, scientific, publish, additive, mmorpg, drug_design, bioengineering, robotics, automotive
+  Templates: game, game_unphysical, scientific, publish, additive, agent, mmorpg, drug_design, bioengineering, robotics, automotive
 
   Full CLI: li-langverse/lis (separate repo)
 EOF

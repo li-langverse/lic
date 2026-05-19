@@ -1,6 +1,6 @@
 # PH-world-studio-program — master tracker
 
-**Status:** Ready for merge (impl-32 / **100 gates** on `feat/world-studio-impl-1`) · [merge checklist](MERGE-world-studio-checklist.md) · [demo showcase](demo-showcase.md)  
+**Status:** Ready for merge (impl-33 on `feat/world-studio-impl-1`) · [merge checklist](MERGE-world-studio-checklist.md) · [demo showcase](demo-showcase.md)  
 **Vision:** [world-studio-vision.md](world-studio-vision.md)  
 **Progress report:** [PH-world-studio-progress-report.md](PH-world-studio-progress-report.md) ← **read this for sprint status**
 
@@ -121,6 +121,7 @@ Cross-cutting program IDs. Implementation order respects dependencies in the vis
 | **95 composable** · Publish demo tab · Windows PORT-1 · final_merge | Done |
 | **98 composable** · additive spin-up · CI complete · merge preflight | Done |
 | **100 composable** · milestone gate · agent+publish stack · merge PR doc | Done |
+| **103 composable** · agent spin-up (11th) · AI patch + agent realm | Done |
 | MMO-5 WebSocket stubs (`net.httpd`) | Done |
 | MMO-6 `world_checkpoint_mmo_stub` | Done |
 | BIOENG-2 construct registry | Done |

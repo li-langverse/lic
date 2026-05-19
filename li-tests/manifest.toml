@@ -909,7 +909,7 @@ note = "PH-SIM world studio stack smoke"
 suite = "composable"
 file = "composable/import_studio_spinup_registry.li"
 outcome = "compile_ok"
-note = "Studio spin-up registry (10 templates)"
+note = "Studio spin-up registry (11 templates)"
 
 [[tests]]
 suite = "composable"
@@ -1030,6 +1030,24 @@ suite = "composable"
 file = "composable/import_studio_agent_publish_stack.li"
 outcome = "compile_ok"
 note = "Studio AI agent + publish + assets + viewport"
+
+[[tests]]
+suite = "composable"
+file = "composable/import_spinup_agent.li"
+outcome = "compile_ok"
+note = "Spin-up agent template (studio.ai)"
+
+[[tests]]
+suite = "composable"
+file = "composable/import_studio_ai_patch_apply.li"
+outcome = "compile_ok"
+note = "Studio AI patch apply + diagnose smoke"
+
+[[tests]]
+suite = "composable"
+file = "composable/import_world_studio_agent_realm.li"
+outcome = "compile_ok"
+note = "Agent diagnose + MMO realm deploy stack"
 
 [[tests]]
 suite = "composable"
@@ -1415,6 +1433,12 @@ suite = "spinup_templates"
 file = "../deploy/world-studio-spinup/templates/additive/main.li"
 outcome = "compile_ok"
 note = "Spin-up additive main"
+
+[[tests]]
+suite = "spinup_templates"
+file = "../deploy/world-studio-spinup/templates/agent/main.li"
+outcome = "compile_ok"
+note = "Spin-up agent main"
 
 # --- security (malformed inputs; run via ./li-tests/run_security.sh) ---
 # Wired in scripts/ci.sh: parse/check must exit 0/1, never signal (SIGSEGV etc.).

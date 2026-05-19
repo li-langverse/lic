@@ -1,7 +1,7 @@
 /* Li World Studio — interactive demo showcase (visual prototype). */
 const canvas = document.getElementById("viewport");
 const ctx = canvas.getContext("2d");
-const demos = ["rocket", "racing", "robot", "drug", "bioeng", "mmo", "unphysical", "scientific", "publish", "additive"];
+const demos = ["rocket", "racing", "robot", "drug", "bioeng", "mmo", "unphysical", "scientific", "publish", "additive", "agent"];
 let active = "rocket";
 let tick = 0;
 let autoReel = false;
@@ -68,6 +68,12 @@ const meta = {
     profile: "sim_profile_additive + voxel",
     panel: "4×4×4 grid · sim.additive · spin-up: additive",
     nodes: ["VoxelGrid", "Layer", "Slicer", "BuildPlate"],
+  },
+  agent: {
+    title: "Studio agent — lic diagnose + apply_patch",
+    profile: "studio.ai + PH-AGENT",
+    panel: "JSON diagnose gate · patch_id=2 · spin-up: agent",
+    nodes: ["Diagnose", "PatchRequest", "ApplyPatch", "Gate"],
   },
 };
 
@@ -289,6 +295,30 @@ function drawUnphysical(t) {
   ctx.fillText(`law_mode=arbitrary · custom_law_id=1`, 24, h - 40);
 }
 
+function drawAgent(t) {
+  const w = canvas.width;
+  const h = canvas.height;
+  ctx.fillStyle = "#0d1117";
+  ctx.fillRect(0, 0, w, h);
+  ctx.fillStyle = "#161b22";
+  ctx.fillRect(60, 80, w - 120, h - 200);
+  ctx.strokeStyle = "#3fb950";
+  ctx.strokeRect(60, 80, w - 120, h - 200);
+  const lines = [
+    "{ \"ok\": true, \"errors\": 0 }",
+    "patch_id: 2 · lines: 4",
+    "studio_ai_apply_if_clean ✓",
+    "lic check --format=json",
+  ];
+  ctx.font = "14px monospace";
+  lines.forEach((line, i) => {
+    ctx.fillStyle = i === 0 ? "#3fb950" : "#8b949e";
+    ctx.fillText(line, 80, 120 + i * 28);
+  });
+  ctx.fillStyle = "#58a6ff";
+  ctx.fillText(`tick ${Math.floor(t / 2)} · agent gate clear`, 80, h - 120);
+}
+
 function drawAdditive(t) {
   const w = canvas.width;
   const h = canvas.height;
@@ -388,6 +418,7 @@ const drawers = {
   scientific: drawScientific,
   publish: drawPublish,
   additive: drawAdditive,
+  agent: drawAgent,
 };
 
 function frame() {

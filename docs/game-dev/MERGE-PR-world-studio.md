@@ -14,18 +14,18 @@
 gh pr create \
   --base main \
   --head feat/world-studio-impl-1 \
-  --title "feat: World Studio / Li Engine (impl-1–32)" \
+  --title "feat: World Studio / Li Engine (impl-1–33, 100+ gates)" \
   --body-file docs/game-dev/PR-world-studio-impl-summary.md \
   --draft
 ```
 
-## Metrics at merge (impl-32)
+## Metrics at merge (impl-33)
 
 | Metric | Value |
 |--------|--------|
-| Composable gates | **100** |
-| Spin-up templates | **10** |
-| Demo tabs | 11 |
+| Composable gates | **103** (milestone 100) |
+| Spin-up templates | **11** |
+| Demo tabs | 12 |
 | Vertical demos | 7 |
 
 See [MERGE-world-studio-checklist.md](MERGE-world-studio-checklist.md).

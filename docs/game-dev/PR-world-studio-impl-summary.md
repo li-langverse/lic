@@ -1,13 +1,14 @@
 # PR summary — `feat/world-studio-impl-1` → `main`
 
-**Purpose:** Land World Studio / Li Engine implementation (impl-1…impl-32).
+**Purpose:** Land World Studio / Li Engine implementation (impl-1…impl-33).
 
-## Stats (impl-32)
+## Stats (impl-33)
 
 | Metric | Value |
 |--------|-------|
 | Packages added/extended | 28+ |
-| Composable gates | **100** 🎯 |
+| Composable gates | **103** (milestone **100** at impl-32) |
+| Spin-up templates | **11** (incl. `agent`) |
 | Spin-up templates | **10** |
 | Merge preflight | `./scripts/merge-world-studio-preflight.sh` |
 | Demo | 10 tabs incl. Publish · `./scripts/open-studio-demo.sh` |

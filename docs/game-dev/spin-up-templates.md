@@ -31,6 +31,7 @@
 ./scripts/lis new world-studio game_unphysical ./my-weird-game
 ./scripts/lis new world-studio publish ./my-paper-figs
 ./scripts/lis new world-studio additive ./my-am-cell
+./scripts/lis new world-studio agent ./my-agent-project
 ```
 
 Registry: [deploy/world-studio-spinup/spinup.toml](../../deploy/world-studio-spinup/spinup.toml)

@@ -26,14 +26,14 @@ import std.csv
 
 Maps to files under `std/` (e.g. `std/physics/relativity.li`).
 
-## Legacy (workspace / mirrors)
+## Legacy (avoid in new code)
 
 ```li
-import li_std_physics_relativity   # still resolves via package name
-import li_httpd
+import li_std_physics_relativity   # old package snake; prefer physics.relativity
+import li_httpd                     # old httpd alias; prefer net.httpd
 ```
 
-Use **only** in generated code or until facades cover your package.
+Use **only** in generated code or third-party pins not yet updated.
 
 ## Package metadata
 
@@ -63,4 +63,4 @@ Run `python3 scripts/apply-import-names.py` after adding a package.
 
 ## Compiler
 
-`import_resolve.cpp` resolves ergonomic names → `std/*` facades → workspace `import_name` → legacy snake names.
+`import_resolve.cpp` resolves workspace `import_name` (when `packages/li.toml` is present) → ergonomic `std/*` facades → explicit `std.*` paths → legacy snake / folder names.

@@ -1,0 +1,39 @@
+# PKG-li-sim — unified simulation step API (PH-SIM-1).
+
+type SimWorld = object
+  public tick: int
+  public dt: float
+  public headless: int
+
+def li_sim_version() -> int
+  requires true
+  ensures result == 1
+  decreases 0
+=
+  return 1
+
+def sim_world_new(dt: float, headless: int) -> SimWorld
+  requires dt > 0.0
+  ensures result.tick == 0
+  ensures result.dt == dt
+  decreases 0
+=
+  var w: SimWorld
+  w.tick = 0
+  w.dt = dt
+  w.headless = headless
+  return w
+
+def sim_reset(world: SimWorld) -> unit
+  requires world.dt > 0.0
+  ensures world.tick == 0
+  decreases 0
+=
+  world.tick = 0
+
+def sim_step(world: SimWorld) -> unit
+  requires world.dt > 0.0
+  ensures world.tick >= 1
+  decreases world.tick
+=
+  world.tick = world.tick + 1

@@ -646,6 +646,20 @@ suite = "codegen"
 file = "codegen/fp_numerically_stable.li"
 outcome = "compile_ok"
 
+# --- game_dev (World Studio / Li Engine — PH-GD, PH-SIM) ---
+
+[[tests]]
+suite = "game_dev"
+file = "game_dev/sim_smoke.li"
+outcome = "parse_ok"
+note = "PH-SIM-1 sim step smoke (build: lic check passes; full build tracked separately)"
+
+[[tests]]
+suite = "game_dev"
+file = "game_dev/studio_smoke.li"
+outcome = "parse_ok"
+note = "PH-GD-1 studio play smoke"
+
 # --- hpc_competitive (registry gate; ./li-tests/run_all.sh hpc_competitive) ---
 
 # --- security (malformed inputs; run via ./li-tests/run_security.sh) ---

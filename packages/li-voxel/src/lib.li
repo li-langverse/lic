@@ -1,0 +1,39 @@
+# PKG-li-voxel — unified voxel grid (PH-VOXEL-1 stub).
+
+type VoxelGrid = object
+  public nx: int
+  public ny: int
+  public nz: int
+  public mode: int
+
+def li_voxel_version() -> int
+  requires true
+  ensures result == 1
+  decreases 0
+=
+  return 1
+
+def voxel_grid_new(nx: int, ny: int, nz: int, mode: int) -> VoxelGrid
+  requires nx > 0
+  requires ny > 0
+  requires nz > 0
+  ensures result.nx == nx
+  ensures result.ny == ny
+  ensures result.nz == nz
+  decreases nx
+=
+  var g: VoxelGrid
+  g.nx = nx
+  g.ny = ny
+  g.nz = nz
+  g.mode = mode
+  return g
+
+def voxel_cell_count(grid: VoxelGrid) -> int
+  requires grid.nx > 0
+  requires grid.ny > 0
+  requires grid.nz > 0
+  ensures result == grid.nx * grid.ny * grid.nz
+  decreases grid.nx
+=
+  return grid.nx * grid.ny * grid.nz

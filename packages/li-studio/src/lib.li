@@ -1,0 +1,36 @@
+# PKG-li-studio — World Studio shell API (PH-GD-1 stub).
+
+type StudioProject = object
+  public name: int
+  public playing: int
+
+def li_studio_version() -> int
+  requires true
+  ensures result == 1
+  decreases 0
+=
+  return 1
+
+def studio_project_new() -> StudioProject
+  requires true
+  ensures result.playing == 0
+  decreases 0
+=
+  var p: StudioProject
+  p.name = 0
+  p.playing = 0
+  return p
+
+def studio_play(project: StudioProject) -> unit
+  requires true
+  ensures project.playing == 1
+  decreases 0
+=
+  project.playing = 1
+
+def studio_pause(project: StudioProject) -> unit
+  requires true
+  ensures project.playing == 0
+  decreases 0
+=
+  project.playing = 0

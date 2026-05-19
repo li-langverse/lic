@@ -1,0 +1,32 @@
+# PKG-li-chem — quantum chemistry API stub (PH-QM-1).
+
+type Geometry = object
+  public atom_count: int
+
+type DftResult = object
+  public total_energy: float
+
+def li_chem_version() -> int
+  requires true
+  ensures result == 1
+  decreases 0
+=
+  return 1
+
+def geometry_valid(g: Geometry) -> int
+  requires true
+  ensures result >= 0
+  decreases 0
+=
+  if g.atom_count > 0:
+    return 1
+  return 0
+
+def dft_run_stub(g: Geometry) -> DftResult
+  requires g.atom_count > 0
+  ensures result.total_energy < 0.0
+  decreases g.atom_count
+=
+  var r: DftResult
+  r.total_energy = -1.0
+  return r

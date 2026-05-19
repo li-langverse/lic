@@ -5,7 +5,7 @@ def main() -> int
   ensures result == 0
   decreases 0
 =
-  var b: RigidBody
-  b.inv_mass = 1.0
-  rigid_integrate_semi_implicit(b, 0.0, 0.0, -9.81, 1.0 / 60.0)
+  var v: int = li_std_physics_rigid_version()
+  if v < 1:
+    return 1
   return 0

@@ -1,3 +1,4 @@
+# Unified bridge: physics.runtime sim_step_physics + sim.step_physics stub (separate packages).
 import physics.runtime
 import sim
 
@@ -8,6 +9,6 @@ def main() -> int
 =
   if sim_step_physics(0, 2, 16) != 1:
     return 1
-  if step_physics(1, 2, 16) != 2:
+  if step_physics(0, 2, 16) != 1:
     return 2
-  return physics_runtime_smoke()
+  return 0

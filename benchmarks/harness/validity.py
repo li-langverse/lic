@@ -85,6 +85,7 @@ def workload_class(name: str) -> str:
         "game_world_soa_10k",
         "game_replication_encode",
         "sim_physics_frame",
+        "render_frame_present",
     }:
         return "world_engine"
     if name in {"cloth_swing", "rigid_body_stack"} and not is_quick():

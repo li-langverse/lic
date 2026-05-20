@@ -66,6 +66,7 @@ QUICK: dict[str, Scale] = {
     "game_world_soa_10k": Scale(n=2048, steps=120, note="quick SoA world tick"),
     "game_replication_encode": Scale(n=200, steps=100, note="replication encode rounds"),
     "sim_physics_frame": Scale(n=12, steps=400, note="physics frame substeps"),
+    "render_frame_present": Scale(n=720, steps=120, note="1280x720 present quick"),
 }
 
 # Production-scale (matches current C enum defaults when LI_BENCH_QUICK unset).
@@ -100,6 +101,7 @@ FULL: dict[str, Scale] = {
     "game_world_soa_10k": Scale(n=10240, steps=600, note="10k entity SoA budget"),
     "game_replication_encode": Scale(n=1000, steps=500, note="replication competitive"),
     "sim_physics_frame": Scale(n=12, steps=2000, note="game physics frame"),
+    "render_frame_present": Scale(n=720, steps=600, note="1280x720 present full"),
 }
 
 

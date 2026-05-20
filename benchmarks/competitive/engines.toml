@@ -11,6 +11,7 @@ proxy_bench_map = [
   "game_world_soa_10k → ECS/archetype tick budget (DOTS/UE Mass-class)",
   "game_replication_encode → delta bandwidth vs full snapshot (UE replication class)",
   "sim_physics_frame → fixed-timestep rigid substeps (Chaos/Bullet-class)",
+  "render_frame_present → RHI present / viewport resolve class",
   "cloth_swing / rigid_body_stack → v0_gaming / gaming_full physics stubs",
 ]
 parity_wedge = ["diffable worlds", "lic build contracts", "agent-native studio", "arbitrary physics laws"]

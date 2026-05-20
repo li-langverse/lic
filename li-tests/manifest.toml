@@ -1261,6 +1261,24 @@ note = "PH-UX command palette play/pause/build (≤3 clicks)"
 
 [[tests]]
 suite = "composable"
+file = "composable/import_sim_physics_unified.li"
+outcome = "compile_ok"
+note = "physics.runtime sim_step_physics + sim.step_physics stub bridge"
+
+[[tests]]
+suite = "composable"
+file = "composable/import_game_replication_interest.li"
+outcome = "compile_ok"
+note = "GW-2b replication interest filter + delta encode"
+
+[[tests]]
+suite = "composable"
+file = "composable/import_render_frame_present.li"
+outcome = "compile_ok"
+note = "li-render present path + tier2 render_frame_present bench"
+
+[[tests]]
+suite = "composable"
 file = "composable/import_physics_runtime_smoke.li"
 outcome = "compile_ok"
 note = "physics.runtime PhysicsWorld step smoke"

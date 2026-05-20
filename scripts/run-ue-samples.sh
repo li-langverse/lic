@@ -76,4 +76,9 @@ PY
 fi
 
 python3 "$ROOT/benchmarks/harness/import_ue_baseline.py" --csv "$OUT_CSV"
+echo ""
+echo "Next steps:"
+echo "  1. Add rows for game_replication_encode, sim_physics_frame, render_frame_present if missing"
+echo "  2. ./scripts/run-world-benches.sh && ./scripts/publish-benchmarks-ingest.sh"
+echo "  3. See docs/game-dev/UE-BENCHMARK-RUNBOOK.md"
 echo "done: $OUT_CSV + ue-baselines-merged.json"

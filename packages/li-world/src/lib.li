@@ -232,6 +232,70 @@ def game_replication_delta_smoke() -> int
     return 2
   return 0
 
+# GW-2b — interest management (replication beyond encode: viewer radius filter).
+def game_replication_interest_radius_cells() -> int
+  requires true
+  ensures result == 8
+  decreases 0
+=
+  return 8
+
+def game_replication_interest_filter(
+    viewer_cell_x: int,
+    viewer_cell_y: int,
+    entity_cell_x: int,
+    entity_cell_y: int,
+    radius_cells: int) -> int
+  requires radius_cells >= 0
+  requires radius_cells <= 32
+  ensures result == 0 || result == 1
+  decreases radius_cells
+=
+  var dx: int = viewer_cell_x - entity_cell_x
+  if dx < 0:
+    dx = 0 - dx
+  var dy: int = viewer_cell_y - entity_cell_y
+  if dy < 0:
+    dy = 0 - dy
+  if dx > radius_cells:
+    return 0
+  if dy > radius_cells:
+    return 0
+  return 1
+
+def game_replication_interest_encode_stub(
+    world: GameWorld, viewer_id: int, entity_id: int, component_mask: int) -> int
+  requires world.tick >= 0
+  requires viewer_id >= 0
+  requires entity_id > 0
+  requires component_mask >= 0
+  ensures result >= 0
+  ensures result <= 64
+  decreases entity_id
+=
+  var interested: int = game_replication_interest_filter(
+      viewer_id % 16, viewer_id / 16, entity_id % 16, entity_id / 16,
+      game_replication_interest_radius_cells())
+  if interested == 0:
+    return 0
+  return game_replication_delta_stub(world, entity_id, component_mask)
+
+def game_replication_interest_smoke() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  var w: GameWorld = game_world_new(1)
+  game_world_spawn_entity(w, 1)
+  game_world_spawn_entity(w, 2)
+  if game_replication_interest_encode_stub(w, 0, 1, 7) <= 0:
+    return 1
+  if game_replication_interest_encode_stub(w, 0, 99, 7) != 0:
+    return 2
+  if game_replication_delta_smoke() != 0:
+    return 3
+  return 0
+
 # GW-3 — region streaming (load / unload under a fixed memory budget).
 type GameRegion = object
   public region_id: int

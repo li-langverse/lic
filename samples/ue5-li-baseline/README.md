@@ -10,10 +10,13 @@ Run **real Unreal Engine 5** timings for the same workloads as `benchmarks/tier2
 
 ## Quick run
 
+**Full instructions:** [docs/game-dev/UE-BENCHMARK-RUNBOOK.md](../../docs/game-dev/UE-BENCHMARK-RUNBOOK.md)
+
 ```bash
 export UE_ROOT=/path/to/UE_5.4
 ./scripts/run-ue-samples.sh
-./scripts/publish-benchmarks-ingest.sh   # merges ue-baselines into dashboard
+python3 benchmarks/harness/import_ue_baseline.py --csv benchmarks/competitive/ue-baselines.csv
+./scripts/publish-benchmarks-ingest.sh   # Li timings + optional org benchmarks ingest
 ```
 
 Outputs:
@@ -28,6 +31,7 @@ Outputs:
 | `LiMass10k` map | `game_world_soa_10k` | Mass / ISM tick, `stat unit` Game thread |
 | `LiReplication` | `game_replication_encode` | Net serialize test map |
 | `LiPhysicsFrame` | `sim_physics_frame` | Chaos rigid substep, `stat Physics` |
+| `LiRenderPresent` | `render_frame_present` | RHI present / `stat GPU` |
 
 ## Install UE on Linux (developer machine)
 

@@ -30,6 +30,15 @@
       "notes": "Li stub kernel ~0.6ms; production Chaos is scene-dependent.",
       "measurement_path": "UE stat Physics, Tracy; map to tier2_world/sim_physics_frame scale"
     },
+    "render_frame_present": {
+      "subsystem": "Render present / RHI",
+      "ue_class_reference": "UE RHI present + viewport resolve",
+      "proxy_metric": "wall_time",
+      "unit": "s",
+      "aspirational_budget_ms_at_60fps": 8.0,
+      "notes": "Li kernel: 1280x720 RGBA fill × frames; not Lumen/Nanite.",
+      "measurement_path": "UE stat GPU, RenderThread; map to tier2_world/render_frame_present"
+    },
     "cloth_swing": {
       "subsystem": "Cloth / constraints",
       "ue_class_reference": "Chaos cloth PBD",

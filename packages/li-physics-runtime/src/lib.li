@@ -113,7 +113,18 @@ def physics_sync_to_scene(world: PhysicsWorld) -> unit
 =
   return
 
-# Game tick: semi-implicit substep frame (pairs with sim_step_physics composable + sim_physics_frame bench).
+# Canonical game physics step (use from composables; avoids `import sim` + runtime link clash).
+def sim_step_physics(tick: int, tier: int, dt_millis: int) -> int
+  requires tick >= 0
+  requires tier >= 0
+  requires tier <= 3
+  requires dt_millis > 0
+  ensures result == tick + 1
+  decreases tick
+=
+  return physics_step_for_game_tick(tier, tick, dt_millis)
+
+# Game tick: semi-implicit substep frame (pairs with sim_physics_frame bench).
 def physics_step_for_game_tick(tier: int, tick: int, dt_millis: int) -> int
   requires tier >= 0
   requires tier <= 3

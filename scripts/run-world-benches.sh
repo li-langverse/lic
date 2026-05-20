@@ -4,7 +4,7 @@ set -euo pipefail
 ROOT="$(cd "$(dirname "$0")/.." && pwd)"
 cd "$ROOT"
 RUNS="${LI_BENCH_RUNS:-3}"
-ONLY="${LI_BENCH_ONLY:-game_world_soa_10k,game_replication_encode,sim_physics_frame,cloth_swing,rigid_body_stack}"
+ONLY="${LI_BENCH_ONLY:-game_world_soa_10k,game_replication_encode,sim_physics_frame,render_frame_present,cloth_swing,rigid_body_stack}"
 QUICK_OUT="${LI_BENCH_CSV_QUICK:-$ROOT/benchmarks/results/world_engine_quick.csv}"
 FULL_OUT="${LI_BENCH_CSV_FULL:-$ROOT/benchmarks/results/world_engine_full.csv}"
 SUMMARY="$ROOT/benchmarks/competitive/world-engine-latest.json"
@@ -23,7 +23,7 @@ export LI_BENCH_QUICK=0
 bench_once --full "$FULL_OUT"
 
 python3 benchmarks/harness/validity.py --tier 2 --quick 2>&1 \
-  | rg 'game_world|game_replication|sim_physics|cloth_swing|rigid_body_stack|wrote' || true
+  | rg 'game_world|game_replication|sim_physics|render_frame|cloth_swing|rigid_body_stack|wrote' || true
 
 export LI_BENCH_ONLY="$ONLY"
 export LI_BENCH_SUMMARY="$SUMMARY"

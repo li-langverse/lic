@@ -57,6 +57,7 @@ WORLD = {
     "game_world_soa_10k",
     "game_replication_encode",
     "sim_physics_frame",
+    "render_frame_present",
     "cloth_swing",
     "rigid_body_stack",
 }

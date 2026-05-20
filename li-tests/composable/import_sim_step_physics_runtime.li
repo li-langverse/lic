@@ -1,19 +1,13 @@
-# Author-facing sim_step_physics — copy `sim_step_physics` into world.li (see physics.runtime).
+# Author API: sim_step_physics lives in physics.runtime (do not import sim in this file).
 import physics.runtime
-
-def sim_step_physics(tick: int, tier: int, dt_millis: int) -> int
-  requires tick >= 0
-  requires tier >= 0
-  requires tier <= 3
-  requires dt_millis > 0
-  ensures result == tick + 1
-  decreases tick
-=
-  return physics_step_for_game_tick(tier, tick, dt_millis)
 
 def main() -> int
   requires true
   ensures result == 0
   decreases 0
 =
-  return 0
+  if sim_step_physics(0, 2, 16) != 1:
+    return 1
+  if sim_step_physics(1, 2, 16) != 2:
+    return 2
+  return physics_runtime_smoke()

@@ -46,6 +46,7 @@ WORLD_ENGINE_BENCHES = frozenset(
         "game_world_soa_10k",
         "game_replication_encode",
         "sim_physics_frame",
+        "render_frame_present",
     }
 )
 
@@ -336,6 +337,14 @@ TIER2_BENCHES: tuple[BenchSpec, ...] = (
         "sim_physics_frame",
         "cpp/main.c",
         "common/sim_phys_core.c",
+        "li/main.li",
+    ),
+    BenchSpec(
+        "render_frame_present",
+        2,
+        "render_frame_present",
+        "cpp/main.c",
+        "common/render_present_core.c",
         "li/main.li",
     ),
 )

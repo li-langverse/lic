@@ -35,7 +35,7 @@ Dashboard: `benchmarks` repo `data/latest/summary.json` → `unreal_proxy_compar
 
 ### P0 — Measuring (now)
 
-- [x] `world_engine` timed: `game_world_soa_10k`, `game_replication_encode`, `sim_physics_frame`
+- [x] `world_engine` timed: `game_world_soa_10k`, `game_replication_encode`, `sim_physics_frame`, `render_frame_present`
 - [x] `gaming_full` at `--full`: `cloth_swing`, `rigid_body_stack`
 - [x] Org `catalog.toml` + ingest merge (`world_engine_full.csv`)
 - [x] UE proxy JSON + `engines.toml`
@@ -43,10 +43,12 @@ Dashboard: `benchmarks` repo `data/latest/summary.json` → `unreal_proxy_compar
 
 ### P1 — Li runtime catches C kernel
 
-- [x] `sim_step_physics` composable body (`import_sim_step_physics_runtime.li` → `physics.runtime`)
-- [ ] `sim_step_physics` in `li-sim` package (blocked: PhysicsWorld cross-package in `lib.li`)
-- [ ] `li-render` present path + `render_frame` tier-2 bench
-- [ ] Replication beyond encode ratio (interest, prediction stub)
+- [x] `sim_step_physics` in `physics.runtime` + composable `import_sim_step_physics_runtime.li`
+- [x] `import_sim_physics_unified.li` — runtime + `sim.step_physics` stub (no `import sim` in physics-only composable)
+- [ ] `sim_step_physics` in `li-sim` package `lib.li` (blocked: PhysicsWorld cross-package)
+- [x] `li-render` present path + `render_frame_present` tier-2 bench
+- [x] Replication interest filter (`game_replication_interest_*`) + composable gate
+- [ ] Replication prediction stub (net tick p99)
 
 ### P2 — Studio UX (easier than UE for agents)
 

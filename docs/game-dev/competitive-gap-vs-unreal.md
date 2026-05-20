@@ -45,3 +45,5 @@ Latest captured timings: [`benchmarks/competitive/world-engine-latest.json`](../
 - **`gaming_full`** — use `bench.py --full` on `cloth_swing`, `rigid_body_stack` (quick/full scales in C).
 
 Do **not** claim engine parity until `world_engine` + `gaming_full` rows are green in ingest with documented SOTA refs ([sota-reference-registry.md](../benchmarks/sota-reference-registry.md)).
+
+**Roadmap:** [ue-parity-agentic-roadmap.md](ue-parity-agentic-roadmap.md) · **Ingest:** `./scripts/publish-benchmarks-ingest.sh`

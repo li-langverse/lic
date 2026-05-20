@@ -4,6 +4,8 @@ How to write **one API** that applies at **every** scalar width (`float32`, `flo
 
 **Prerequisites:** [Scalar precision](scalar-precision.md) (type names, suffixes, `binary`, physics metadata).
 
+**Who picks the width?** **You do** — via `type Real = float32`, generics `[S]`, literal suffixes, `li.toml` notes, or `PhysicsProfile.float_bits`. Li does not pick a single org-wide accuracy; see [You set precision yourself](scalar-precision.md#you-set-precision-yourself).
+
 ---
 
 ## Goal

@@ -9,6 +9,65 @@ Li exposes **explicit** integer and float widths for HPC, quantization, and per-
 
 ---
 
+## You set precision yourself
+
+**You** (package author, game dev, simulation author) choose scalar width — not the Li org, not a parent `li.toml`, and not `physics.core` defaults alone. Pick the accuracy that fits **your** module; other packages in the same repo may use different widths.
+
+| How you set it | What it affects | Enforced on others? |
+|----------------|-----------------|---------------------|
+| **Explicit types** — `var x: float32`, `def f(v: float16) -> float16` | Types and width-mix errors in **your** source | No |
+| **Module alias** — `type Real = float32` at top of file | Whole file uses one width (Pattern A) | No |
+| **Literal suffixes** — `1.0f32`, `42i32`, `0b1010` | Inferred type of each literal | No |
+| **`li.toml` `[numerics]`** — `default_float = "float32"` | Documents intent for agents/humans | **No** — not applied to dependencies |
+| **Physics profile** — `p.float_bits = 32`, `precision_float32()` | Runtime metadata for kernel/asset choice | No — metadata only today |
+| **Separate modules** — e.g. `integrator_fp32.li` vs `integrator_fp64.li` | Ship two builds or two entry points | No |
+
+Nothing in the toolchain **forces** your project to `float64` or `float32`. Defaults (`float`, `int`, unsuffixed `3.14` / `42`) are **64-bit** for ergonomics; narrow them explicitly when you want less precision or smaller storage.
+
+### End-to-end example (FP32 simulation)
+
+```nim
+# Your package — you chose float32 everywhere in this module
+type Real = float32
+
+def step(dt: Real) -> Real
+  requires dt > 0.0f32
+  ensures result >= 0.0f32
+  decreases 0
+=
+  var t: Real = 0.0f32
+  return t + dt
+
+def main() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  var dt: Real = 0.016f32
+  var _ = step(dt)
+  return 0
+```
+
+Optional manifest (documents your choice; does not rewrite dependent code):
+
+```toml
+[numerics]
+default_float = "float32"
+default_int = "int32"
+```
+
+Optional physics metadata (records width for dispatch / assets):
+
+```nim
+var p: PhysicsProfile = profile_for_tier(physics_tier_arcade())
+p.float_bits = 32
+p.int_bits = 32
+```
+
+For shared math at **multiple** widths in one codebase, see [Precision polymorphism](precision-polymorphism.md) (generics `[S]`, duplicate modules per `Real`, proposed `precision float32:` block).
+
+---
+
 ## Design principle: no global accuracy
 
 | Do | Do not |

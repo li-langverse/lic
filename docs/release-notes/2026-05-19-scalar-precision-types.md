@@ -25,7 +25,7 @@ The compiler accepts explicit fixed-width scalars (`float32`, `int16`, `float8`,
 | `li-tests/typecheck/binary_literal_ok.li` | `binary` + `0b` |
 | `std/binary/binary.li` | Facade stub |
 | `compiler/lexer/lexer.cpp` | Suffix + `0b` lexing |
-| `docs/language/scalar-precision.md` | **Canonical doc** — full tables, suffixes, `binary`, physics API, agent checklist |
+| `docs/language/scalar-precision.md` | **Canonical doc** — full tables, suffixes, `binary`, physics API, **You set precision yourself**, agent checklist |
 | `packages/li-physics-core/docs/scalar-precision.md` | Package-focused precision guide |
 | `std/binary/README.md` | `binary` vs `bytes` |
 | `mkdocs.yml`, `language/overview.md`, `AGENTS.md` | Nav + agent pointers |

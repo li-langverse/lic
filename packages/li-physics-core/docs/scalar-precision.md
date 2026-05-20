@@ -2,6 +2,8 @@
 
 This package does **not** enforce a global float width for the Li org. It exposes **metadata** so simulations, games, and agents can record which scalar widths and weight encodings a profile uses.
 
+**You set precision** in source (`float32`, `type Real = …`, suffixes) and optionally on `PhysicsProfile.float_bits` / `ScalarPrecision` presets — see [You set precision yourself](https://github.com/li-langverse/lic/blob/main/docs/language/scalar-precision.md#you-set-precision-yourself) in the language handbook.
+
 **Canonical language doc:** [Scalar precision, literals, and binary data](https://github.com/li-langverse/lic/blob/main/docs/language/scalar-precision.md) (in the `lic` repo).
 
 ## Types

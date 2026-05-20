@@ -1,5 +1,7 @@
-# PKG-li-world — world snapshots and text save/load stubs (PH-GD-2).
+# PKG-li-world — realm heads, GameWorld ECS (GW), persistence stubs (PH-GD-2).
+# Competitive split: GameWorld vs SimField — see specs/world-architecture-competitive-rfc.md
 
+# RealmHead — MMO/metadata snapshot (not full game ECS).
 type WorldSnapshot = object
   public tick: int
   public checksum: int
@@ -9,10 +11,87 @@ type WorldSnapshot = object
 
 def li_world_version() -> int
   requires true
-  ensures result == 3
+  ensures result == 5
   decreases 0
 =
-  return 3
+  return 5
+
+# GW-0 — game ECS head (AAA path; not UE-scale yet).
+type GameEntity = object
+  public entity_id: int
+  public archetype_id: int
+  public alive: int
+
+type GameWorld = object
+  public tick: int
+  public entity_count: int
+  public realm_id: int
+  public replication_seq: int
+
+def game_world_new(realm_id: int) -> GameWorld
+  requires realm_id >= 0
+  ensures result.entity_count == 0
+  ensures result.realm_id == realm_id
+  ensures result.replication_seq == 0
+  decreases realm_id
+=
+  var w: GameWorld
+  w.tick = 0
+  w.entity_count = 0
+  w.realm_id = realm_id
+  w.replication_seq = 0
+  return w
+
+def game_world_spawn_entity(world: GameWorld, archetype_id: int) -> GameEntity
+  requires world.entity_count >= 0
+  requires archetype_id >= 0
+  requires archetype_id <= 255
+  ensures result.archetype_id == archetype_id
+  ensures result.alive == 1
+  ensures world.entity_count >= 1
+  decreases world.entity_count
+=
+  var e: GameEntity
+  e.entity_id = world.entity_count + 1
+  e.archetype_id = archetype_id
+  e.alive = 1
+  world.entity_count = world.entity_count + 1
+  return e
+
+# GW-2 stub — replication delta size (target: ≪ full snapshot).
+def game_replication_delta_stub(world: GameWorld, entity_id: int, component_mask: int) -> int
+  requires world.tick >= 0
+  requires entity_id > 0
+  requires component_mask >= 0
+  ensures result >= 0
+  ensures result <= 64
+  decreases entity_id
+=
+  world.replication_seq = world.replication_seq + 1
+  return component_mask + 8
+
+def game_world_tick_stub(world: GameWorld) -> unit
+  requires true
+  ensures world.tick >= 1
+  decreases world.tick
+=
+  world.tick = world.tick + 1
+
+def game_world_ecs_smoke() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  var w: GameWorld = game_world_new(1)
+  var e: GameEntity = game_world_spawn_entity(w, 3)
+  if e.entity_id != 1:
+    return 1
+  if game_replication_delta_stub(w, e.entity_id, 7) > 64:
+    return 2
+  game_world_tick_stub(w)
+  if w.tick != 1:
+    return 3
+  return 0
 
 def world_snapshot_new(tick: int, entity_count: int) -> WorldSnapshot
   requires tick >= 0
@@ -104,3 +183,51 @@ def world_load_text_stub(checksum: int) -> WorldSnapshot
   s.entity_count = 0
   s.checksum = checksum
   return s
+
+# Li-native realm journal — in-memory persist port (no external DB for composable gates).
+type WorldLiJournal = object
+  public entry_count: int
+  public last_tick: int
+  public last_checksum: int
+  public realm_id: int
+
+def world_li_native_journal_new(realm_id: int) -> WorldLiJournal
+  requires realm_id >= 0
+  ensures result.entry_count == 0
+  ensures result.realm_id == realm_id
+  decreases realm_id
+=
+  var j: WorldLiJournal
+  j.entry_count = 0
+  j.last_tick = 0
+  j.last_checksum = 0
+  j.realm_id = realm_id
+  return j
+
+def world_li_native_journal_append(j: WorldLiJournal, snap: WorldSnapshot) -> int
+  requires j.realm_id == snap.realm_id
+  requires snap.tick >= 0
+  ensures j.entry_count >= 1
+  ensures j.last_tick == snap.tick
+  ensures result == snap.checksum
+  decreases snap.tick
+=
+  j.entry_count = j.entry_count + 1
+  j.last_tick = snap.tick
+  j.last_checksum = snap.checksum
+  return snap.checksum
+
+def world_li_native_persist_smoke() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  var j: WorldLiJournal = world_li_native_journal_new(1)
+  var s: WorldSnapshot = world_snapshot_for_realm(20, 8, 1, 0)
+  if world_li_native_journal_append(j, s) <= 0:
+    return 1
+  if j.entry_count != 1:
+    return 2
+  if world_load_text_stub(j.last_checksum).checksum != j.last_checksum:
+    return 3
+  return world_realm_smoke()

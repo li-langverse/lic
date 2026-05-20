@@ -1069,6 +1069,42 @@ note = "Li-native store + MMO WS + player + agent"
 
 [[tests]]
 suite = "composable"
+file = "composable/import_httpd_li_native_gateway.li"
+outcome = "compile_ok"
+note = "Li-native httpd WS gateway + mmo bridge"
+
+[[tests]]
+suite = "composable"
+file = "composable/import_world_li_native_persist.li"
+outcome = "compile_ok"
+note = "Li-native world journal + store"
+
+[[tests]]
+suite = "composable"
+file = "composable/import_ecosystem_gateway_realm_li_native.li"
+outcome = "compile_ok"
+note = "Gateway + realm + store Li-native ecosystem"
+
+[[tests]]
+suite = "composable"
+file = "composable/import_game_world_ecs.li"
+outcome = "compile_ok"
+note = "GameWorld ECS GW-0 competitive path"
+
+[[tests]]
+suite = "composable"
+file = "composable/import_sim_field_chunk.li"
+outcome = "compile_ok"
+note = "SimFieldChunk SF-0 HPC path"
+
+[[tests]]
+suite = "composable"
+file = "composable/import_world_dual_model_stack.li"
+outcome = "compile_ok"
+note = "GameWorld + SimField + RealmHead dual model"
+
+[[tests]]
+suite = "composable"
 file = "composable/import_world_studio_benchmark_tier1.li"
 outcome = "compile_ok"
 note = "Competitive world-studio.toml tier-1 rollup"

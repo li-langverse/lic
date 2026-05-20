@@ -1,9 +1,8 @@
 # World Studio / Li Engine — progress report
 
 **Branch:** `feat/world-studio-impl-1`  
-**Sprint:** impl-34 (2026-05)  
-**Tracker:** [PH-world-studio-program.md](PH-world-studio-program.md)  
-**Policy:** [li-native-first.mdc](../../.cursor/rules/li-native-first.mdc) · [li-native-store-port.md](li-native-store-port.md)
+**Sprint:** impl-35–36 (2026-05)  
+**Architecture:** [specs/world-architecture-competitive-rfc.md](specs/world-architecture-competitive-rfc.md)
 
 ---
 
@@ -11,21 +10,39 @@
 
 | Metric | Value |
 |--------|--------|
-| **Composable gates** | **106 / 106 pass** ✅ |
-| **Li-native store** | `store_backend_li_native()` — no Redis required for gates |
-| **Spin-up templates** | **11** |
+| **Composable gates** | **112** (target) |
 | **Milestone** | **100** composable (impl-32) |
+| **World model** | **GameWorld** (ECS) + **SimField** (HPC) + **RealmHead** |
+| **Spin-up** | **11** |
 
 ---
 
-## Sprint impl-34
+## Sprint impl-36 — competitive world rethink
 
 | Deliverable | State |
 |-------------|--------|
-| `.cursor/rules/li-native-first.mdc` | ✅ |
-| `store_li_native_*` in `li-store-realtime` | ✅ |
-| Composables: `import_store_li_native`, ecosystem stacks | ✅ |
-| [li-native-store-port.md](li-native-store-port.md) | ✅ |
+| [world-architecture-competitive-rfc.md](specs/world-architecture-competitive-rfc.md) | ✅ |
+| `GameEntity` / `GameWorld` / `game_replication_delta_stub` | ✅ |
+| `SimFieldChunk` / `sim_field_step_stub` | ✅ |
+| Composables: ECS, SimField, dual-model stack | ✅ |
+
+## Sprint impl-35 — Li-native gateway + persist
+
+| Deliverable | State |
+|-------------|--------|
+| `httpd_li_native_gateway_*` | ✅ |
+| `world_li_native_persist_*` | ✅ |
+| `import_ecosystem_gateway_realm_li_native` | ✅ |
+
+---
+
+## Honest competitiveness note
+
+| Target | Status |
+|--------|--------|
+| Unreal-class rendering | **Not yet** — GW-0 ECS stub only |
+| HPC tier-2 physics | **Path via** `SimField` + `li-physics-*` benches |
+| MMO / agents / repro | **Strong wedge** — RealmHead + Li-native store/httpd |
 
 ---
 
@@ -38,21 +55,4 @@
 
 ---
 
-## Composable timeline
-
-| Sprint | Gates |
-|--------|-------|
-| impl-33 | 103 |
-| **impl-34** | **106** |
-
----
-
-## Next
-
-1. **Merge PR** → `main`  
-2. Li-native HTTP/WS session path in `li-net-httpd` (no Node gateway)  
-3. Record demo reel  
-
----
-
-*impl-34 · Li-native ecosystem*
+*impl-36 · competitive architecture*

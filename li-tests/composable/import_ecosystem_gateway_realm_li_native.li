@@ -1,0 +1,20 @@
+import li_httpd
+import mmo
+import world
+import store.realtime
+import sim
+
+def main() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  if httpd_li_native_gateway_smoke() != 0:
+    return 1
+  if mmo_li_native_gateway_smoke() != 0:
+    return 2
+  if world_li_native_persist_smoke() != 0:
+    return 3
+  if store_ecosystem_li_native_smoke() != 0:
+    return 4
+  return sim_profile_mmo()

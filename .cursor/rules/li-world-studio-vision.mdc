@@ -47,6 +47,7 @@ alwaysApply: false
 - Use `li-demo` for studio features by default.
 - Add second physics engine for RL/sim.
 - Add **external product stacks** (Python services, Redis/DB clients, etc.) — **port or redesign in Li** (`li-native-first.mdc`).
+- Treat **`WorldSnapshot` as RealmHead only** — game state is **`GameWorld` ECS**; HPC state is **`SimField`** ([world-architecture-competitive-rfc.md](../docs/game-dev/specs/world-architecture-competitive-rfc.md)).
 
 ## Phases
 

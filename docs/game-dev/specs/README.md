@@ -4,6 +4,7 @@
 
 | RFC | Track |
 |-----|-------|
+| [world-architecture-competitive-rfc.md](world-architecture-competitive-rfc.md) | PH-GD-2 / PH-SCI |
 | [li-engine-unified-sim-rfc.md](li-engine-unified-sim-rfc.md) | PH-SIM |
 | [arbitrary-physics-laws-rfc.md](arbitrary-physics-laws-rfc.md) | PH-PHYS-CUSTOM |
 | [studio-cursor-sdk-rfc.md](studio-cursor-sdk-rfc.md) | PH-AGENT |

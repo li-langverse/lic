@@ -7,10 +7,60 @@ type SimVizFrame = object
 
 def li_sim_scientific_version() -> int
   requires true
-  ensures result == 2
+  ensures result == 3
   decreases 0
 =
-  return 2
+  return 3
+
+# SF-0 — field chunk head (HPC path; not OpenFOAM-scale yet).
+type SimFieldChunk = object
+  public field_id: int
+  public cell_count: int
+  public tier: int
+  public timestep: int
+  public sample_norm: float
+
+def sim_field_chunk_new(field_id: int, cell_count: int, tier: int) -> SimFieldChunk
+  requires field_id >= 0
+  requires cell_count > 0
+  requires tier >= 1
+  requires tier <= 3
+  ensures result.field_id == field_id
+  ensures result.cell_count == cell_count
+  ensures result.tier == tier
+  ensures result.timestep == 0
+  decreases cell_count
+=
+  var c: SimFieldChunk
+  c.field_id = field_id
+  c.cell_count = cell_count
+  c.tier = tier
+  c.timestep = 0
+  c.sample_norm = 0.0
+  return c
+
+def sim_field_step_stub(chunk: SimFieldChunk, dt: float) -> unit
+  requires chunk.cell_count > 0
+  requires dt > 0.0
+  requires chunk.tier >= 1
+  ensures chunk.timestep >= 1
+  decreases chunk.timestep
+=
+  chunk.timestep = chunk.timestep + 1
+  chunk.sample_norm = chunk.sample_norm + dt
+
+def sim_field_chunk_smoke() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  var c: SimFieldChunk = sim_field_chunk_new(0, 64, 2)
+  sim_field_step_stub(c, 0.01)
+  if c.timestep != 1:
+    return 1
+  if scientific_run_stub(c.tier, 10) != 10:
+    return 2
+  return 0
 
 def sim_viz_frame_new(field_id: int, timestep: int) -> SimVizFrame
   requires field_id >= 0

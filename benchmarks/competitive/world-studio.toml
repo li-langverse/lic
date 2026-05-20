@@ -4,7 +4,7 @@
 schema = 1
 track = "PH-GD"
 plan = "docs/game-dev/world-studio-vision.md"
-composable_gates = 106
+composable_gates = 112
 branch = "feat/world-studio-impl-1"
 
 [[benchmark]]
@@ -258,3 +258,45 @@ name = "World Studio Li-native ecosystem rollup"
 tier = 1
 li_package = "li-studio"
 composable = "import_world_studio_li_ecosystem"
+
+[[benchmark]]
+id = "game-world-ecs"
+name = "GameWorld ECS GW-0"
+tier = 1
+li_package = "li-world"
+composable = "import_game_world_ecs"
+
+[[benchmark]]
+id = "sim-field-chunk"
+name = "SimFieldChunk SF-0 HPC"
+tier = 1
+li_package = "li-sim-scientific"
+composable = "import_sim_field_chunk"
+
+[[benchmark]]
+id = "world-dual-model"
+name = "GameWorld + SimField dual model"
+tier = 1
+li_package = "li-world"
+composable = "import_world_dual_model_stack"
+
+[[benchmark]]
+id = "httpd-li-native-gateway"
+name = "Li-native HTTP/WS gateway"
+tier = 1
+li_package = "li-net-httpd"
+composable = "import_httpd_li_native_gateway"
+
+[[benchmark]]
+id = "world-li-native-persist"
+name = "Li-native world journal persist"
+tier = 1
+li_package = "li-world"
+composable = "import_world_li_native_persist"
+
+[[benchmark]]
+id = "ecosystem-gateway-realm-li-native"
+name = "Gateway + realm Li-native ecosystem"
+tier = 1
+li_package = "li-mmo"
+composable = "import_ecosystem_gateway_realm_li_native"

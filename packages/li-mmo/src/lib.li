@@ -268,6 +268,31 @@ def mmo_gateway_ws_smoke() -> int
     return 1
   return mmo_ws_session_bind_smoke()
 
+# Li-native gateway bridge tick (pairs with httpd_li_native_gateway_tick_stub in composable).
+def mmo_li_native_gateway_bridge_stub(ws_handle_id: int, player_id: int, realm_id: int, shard_count: int) -> int
+  requires ws_handle_id >= 0
+  requires player_id > 0
+  requires realm_id >= 0
+  requires shard_count > 0
+  ensures result >= 0
+  ensures result < shard_count
+  decreases player_id
+=
+  var b: MmoWsBinding = mmo_ws_binding_new(ws_handle_id, player_id, realm_id)
+  mmo_ws_binding_assign_shard(b, shard_count)
+  if b.bound != 1:
+    return 0
+  return b.shard_id
+
+def mmo_li_native_gateway_smoke() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  if mmo_li_native_gateway_bridge_stub(0, 42, 7, 4) != 3:
+    return 1
+  return mmo_ws_session_bind_smoke()
+
 def mmo_matchmaking_smoke() -> int
   requires true
   ensures result == 0

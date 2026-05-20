@@ -123,6 +123,7 @@ Cross-cutting program IDs. Implementation order respects dependencies in the vis
 | **100 composable** · milestone gate · agent+publish stack · merge PR doc | Done |
 | **103 composable** · agent spin-up (11th) · AI patch + agent realm | Done |
 | **106 composable** · Li-native store port (`store_li_native_*`) | Done |
+| **112 composable** · GameWorld ECS + SimField + competitive RFC | Done |
 | [li-native-first.mdc](../../.cursor/rules/li-native-first.mdc) | Done |
 | MMO-5 WebSocket stubs (`net.httpd`) | Done |
 | MMO-6 `world_checkpoint_mmo_stub` | Done |

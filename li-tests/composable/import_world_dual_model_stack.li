@@ -1,0 +1,16 @@
+import world
+import sim.scientific
+import sim
+
+def main() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  if game_world_ecs_smoke() != 0:
+    return 1
+  if sim_field_chunk_smoke() != 0:
+    return 2
+  if world_realm_smoke() != 0:
+    return 3
+  return sim_profile_scientific()

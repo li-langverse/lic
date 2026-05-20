@@ -180,6 +180,11 @@ suite = "contracts_verify"
 file = "contracts_verify/discharge_const.li"
 outcome = "verify_ok"
 
+[[tests]]
+suite = "contracts_verify"
+file = "contracts_verify/caller_requires_ok.li"
+outcome = "verify_ok"
+
 # --- borrow ---
 
 [[tests]]

@@ -46,7 +46,7 @@ while n < limit
 | Type safety | Static checker |
 | Index bounds | Refinements + checks |
 | Memory / borrow | Borrow checker |
-| Contract obligations | Lean 4 VC generation (**planned** — Phase 2e–2f) |
+| Contract obligations | Lean 4 VC generation (**partial** — proc + call-site `requires`; see [gaps](../verification/provability-gaps.md)) |
 | Parallel races | Disjointness + `Send`/`Sync` (**partial** — policy heuristics today) |
 | No `Any` / `sorry` | Hard reject |
 

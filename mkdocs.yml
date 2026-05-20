@@ -118,6 +118,7 @@ nav:
       - Scalar precision & binary: language/scalar-precision.md
       - Precision-polymorphic APIs: language/precision-polymorphism.md
       - Numerics: language/numerics.md
+      - Errors & warnings: language/errors.md
       - SIMD and parallel: language/simd-parallel.md
       - Decorators: language/decorators.md
       - Linear algebra: language/linear-algebra.md

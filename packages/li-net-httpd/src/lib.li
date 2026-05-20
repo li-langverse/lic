@@ -612,7 +612,9 @@ def httpd_serve_port_root_proxy(port: var int, root: var ptr, backend_port: var 
   ensures true
   decreases 0
 =
-  return nginx_proxy_epoll_serve(port, root, backend_port)
+  if httpd_env_li_proxy_loop_i() == 1:
+    return nginx_proxy_epoll_serve(port, root, backend_port)
+  return httpd_epoll_serve_proxy_i(port, root, backend_port)
 
 def path_ends_with_conf(path: var ptr) raises IO -> int
   requires true

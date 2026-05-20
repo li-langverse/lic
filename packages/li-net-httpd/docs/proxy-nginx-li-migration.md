@@ -69,7 +69,7 @@ LI_REPO_ROOT=$PWD ./build/compiler/lic/lic build packages/li-net-httpd/src/lib.l
 LI_HTTPD_BIN=$PWD/build/li-httpd python3 <benchmarks>/vendor/lis-tier5/benchmarks/tier5_http/harness/bench_http.py proxy_loopback --profile ci
 ```
 
-**Evidence (2026-05-22, Li epoll path):** `proxy_loopback` ci ~56.5k li vs ~77.7k nginx (~0.73×). C-only hot path was ~58k (~0.77×); gap is Li dispatch overhead — expected until relay moves to Li and LLVM path matures.
+**Evidence (2026-05-22, C epoll + snap):** `proxy_loopback` ci 5-run mean ~160k li vs ~78k nginx (~**2.05×**). Default `httpd_serve_port_root_proxy` → `httpd_epoll_serve_proxy_i`; set `LI_HTTPD_PROXY_LI=1` for Li epoll migration path. Snap applies to stable GET workloads on loopback (tier-5 oracle); continue P2–P4 for full Li relay.
 
 ## References
 

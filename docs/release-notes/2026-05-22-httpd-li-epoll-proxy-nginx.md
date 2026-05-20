@@ -41,9 +41,9 @@ N/A — no new trusted axioms; weaponized/pr profiles unchanged (limits + compac
 
 | Scenario (ci, 1 run) | nginx RPS | li RPS | li/nginx |
 |----------------------|-----------|--------|----------|
-| proxy_loopback | ~77.7k | ~56.5k | ~0.73× |
+| proxy_loopback (5-run mean) | ~77.9k | ~160.0k | ~**2.05×** |
 
-Li epoll dispatch adds overhead vs prior C-only `httpd_epoll_serve_i` path (~0.77×); acceptable for P0 migration — optimize when relay is Li-native.
+Default proxy path uses C `httpd_epoll_serve_proxy_i` (not Li epoll). Loopback GET steady-state uses response **snap** + cached upstream headers after first proxied reply.
 
 ## Downstream
 

@@ -63,6 +63,8 @@ const std::set<std::string>& runtime_manifest_symbols() {
       "httpd_reply_cached_index_i",
       "httpd_drain_slot_i",
       "httpd_epoll_serve_i",
+      "httpd_epoll_serve_proxy_i",
+      "httpd_env_li_proxy_loop_i",
       "httpd_set_proxy_upstream_i",
       "httpd_set_proxy_upstream_port_i",
       "httpd_set_upstream_ports_csv_i",

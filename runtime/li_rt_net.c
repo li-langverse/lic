@@ -49,8 +49,19 @@ static int g_proxy_all = 0;
 
 #define HTTPD_MAX_UPSTREAM_PEERS 8
 #define HTTPD_POOL_PER_PEER 32
-#define HTTPD_MAX_HDR_RECV 4096
-#define HTTPD_MAX_HEADER_LINES 64
+#define HTTPD_MAX_HDR_RECV 16384
+#define HTTPD_MAX_HEADER_LINES 128
+#define HTTPD_MAX_BODY (1024 * 1024)
+#define HTTPD_PROXY_RELAY_BUF 65536
+
+typedef struct {
+  char method[16];
+  int method_len;
+  char path[2048];
+  int path_len;
+  int body_mode; /* 0 none, 1 Content-Length, 2 chunked */
+  int content_length;
+} httpd_req_info_t;
 
 typedef struct {
   int32_t port;
@@ -716,22 +727,61 @@ static int is_index_get(const char* buf, int hdr_end) {
   return 0;
 }
 
+static int parse_request_line_c(const char* buf, int hdr_end, httpd_req_info_t* info) {
+  if (!info || hdr_end < 16) {
+    return -1;
+  }
+  memset(info, 0, sizeof(*info));
+  const char* line_end = buf + hdr_end;
+  const char* sp1 = (const char*)memchr(buf, ' ', (size_t)(line_end - buf));
+  if (!sp1) {
+    return -1;
+  }
+  info->method_len = (int)(sp1 - buf);
+  if (info->method_len <= 0 || info->method_len >= (int)sizeof(info->method)) {
+    return -1;
+  }
+  memcpy(info->method, buf, (size_t)info->method_len);
+  info->method[info->method_len] = '\0';
+  const char* sp2 = (const char*)memchr(sp1 + 1, ' ', (size_t)(line_end - (sp1 + 1)));
+  if (!sp2) {
+    return -1;
+  }
+  const char* path_start = sp1 + 1;
+  int plen = (int)(sp2 - path_start);
+  if (plen <= 0 || plen >= (int)sizeof(info->path)) {
+    return -1;
+  }
+  memcpy(info->path, path_start, (size_t)plen);
+  info->path[plen] = '\0';
+  info->path_len = plen;
+  if (plen > 7 && memcmp(info->path, "http://", 7) == 0) {
+    const char* slash = strchr(info->path + 7, '/');
+    if (slash) {
+      int new_len = (int)strlen(slash);
+      if (new_len > 0 && new_len < (int)sizeof(info->path)) {
+        memmove(info->path, slash, (size_t)new_len + 1);
+        info->path_len = new_len;
+      }
+    }
+  }
+  return 0;
+}
+
 static int parse_get_path_c(const char* buf, int hdr_end, char* out, int out_cap) {
-  if (hdr_end < 14 || memcmp(buf, "GET ", 4) != 0) {
+  httpd_req_info_t info;
+  if (parse_request_line_c(buf, hdr_end, &info) != 0) {
     return -1;
   }
-  const char* start = buf + 4;
-  const char* end = start;
-  while (end < buf + hdr_end && *end != ' ') {
-    end++;
-  }
-  int plen = (int)(end - start);
-  if (plen <= 0 || plen >= out_cap) {
+  if (info.method_len != 3 || memcmp(info.method, "GET", 3) != 0) {
     return -1;
   }
-  memcpy(out, start, (size_t)plen);
-  out[plen] = '\0';
-  return plen;
+  if (info.path_len <= 0 || info.path_len >= out_cap) {
+    return -1;
+  }
+  memcpy(out, info.path, (size_t)info.path_len);
+  out[info.path_len] = '\0';
+  return info.path_len;
 }
 
 static int hdr_has_token_c(const char* buf, int hdr_end, const char* token) {
@@ -754,12 +804,13 @@ static int count_content_length_c(const char* buf, int hdr_end) {
   return count;
 }
 
-/* CL+TE conflict, duplicate Content-Length, chunked bodies — smuggling / bomb class. */
+/* Smuggling class only — duplicate CL and CL+TE conflict; chunked alone is allowed with limits. */
 static int request_headers_unsafe_c(const char* buf, int hdr_end) {
   if (count_content_length_c(buf, hdr_end) > 1) {
     return 1;
   }
-  if (hdr_has_token_c(buf, hdr_end, "Transfer-Encoding:") && hdr_has_token_c(buf, hdr_end, "chunked")) {
+  if (count_content_length_c(buf, hdr_end) > 0 && hdr_has_token_c(buf, hdr_end, "Transfer-Encoding:") &&
+      hdr_has_token_c(buf, hdr_end, "chunked")) {
     return 1;
   }
   int lines = 0;
@@ -774,14 +825,53 @@ static int request_headers_unsafe_c(const char* buf, int hdr_end) {
   return 0;
 }
 
-static int http_method_allowed_c(const char* buf, int hdr_end) {
-  if (hdr_end >= 4 && memcmp(buf, "GET ", 4) == 0) {
-    return 1;
+static void parse_request_body_meta_c(const char* buf, int hdr_end, httpd_req_info_t* info) {
+  info->body_mode = 0;
+  info->content_length = 0;
+  if (hdr_has_token_c(buf, hdr_end, "Transfer-Encoding:") && hdr_has_token_c(buf, hdr_end, "chunked")) {
+    info->body_mode = 2;
+    return;
   }
-  if (hdr_end >= 5 && memcmp(buf, "HEAD ", 5) == 0) {
-    return 1;
+  for (int i = 0; i + 15 < hdr_end; i++) {
+    if (memcmp(buf + i, "Content-Length:", 15) == 0) {
+      i += 15;
+      while (i < hdr_end && (buf[i] == ' ' || buf[i] == '\t')) {
+        i++;
+      }
+      int v = 0;
+      while (i < hdr_end && buf[i] >= '0' && buf[i] <= '9') {
+        v = v * 10 + (buf[i] - '0');
+        if (v > HTTPD_MAX_BODY) {
+          v = HTTPD_MAX_BODY + 1;
+          break;
+        }
+        i++;
+      }
+      info->body_mode = 1;
+      info->content_length = v;
+      return;
+    }
   }
-  return 0;
+}
+
+static int method_is(const httpd_req_info_t* info, const char* m) {
+  int ml = (int)strlen(m);
+  return info->method_len == ml && memcmp(info->method, m, (size_t)ml) == 0;
+}
+
+static int32_t httpd_send_status(int32_t conn, int status, const char* phrase, const char* extra, int keep) {
+  char hdr[512];
+  int hlen = snprintf(hdr, sizeof(hdr),
+                      "HTTP/1.1 %d %s\r\n"
+                      "%s"
+                      "Content-Length: 0\r\n"
+                      "Connection: %s\r\n"
+                      "\r\n",
+                      status, phrase, extra ? extra : "", keep ? "keep-alive" : "close");
+  if (hlen < 0 || hlen >= (int)sizeof(hdr)) {
+    return -1;
+  }
+  return send_all_nb((int)conn, hdr, (size_t)hlen) < 0 ? -1 : 0;
 }
 
 static int path_is_safe(const char* path, int plen) {
@@ -947,6 +1037,7 @@ static int upstream_pool_acquire(int32_t port) {
   if (!p) {
     int fd = tcp_connect_loopback_port((int)port);
     if (fd >= 0) {
+      set_nonblocking(fd);
       p = upstream_peer_get_or_add(port);
       if (p) {
         p->active++;
@@ -967,6 +1058,7 @@ static int upstream_pool_acquire(int32_t port) {
       if (fd < 0) {
         return -1;
       }
+      set_nonblocking(fd);
       p->fds[i] = fd;
       p->in_use[i] = 1;
       p->active++;
@@ -976,6 +1068,7 @@ static int upstream_pool_acquire(int32_t port) {
   {
     int fd = tcp_connect_loopback_port((int)port);
     if (fd >= 0) {
+      set_nonblocking(fd);
       p->active++;
     }
     return fd;
@@ -1080,7 +1173,176 @@ static int path_proxy_match(const char* path, int plen) {
   return 0;
 }
 
-static int32_t httpd_proxy_forward(int32_t conn, const char* path, int plen) {
+static int httpd_read_more_client(int conn, char* dst, int want) {
+  int got = 0;
+  while (got < want) {
+    ssize_t r = recv(conn, dst + got, (size_t)(want - got), 0);
+    if (r < 0) {
+      if (errno == EINTR) {
+        continue;
+      }
+      if (errno == EAGAIN || errno == EWOULDBLOCK) {
+        struct pollfd pfd = {.fd = conn, .events = POLLIN};
+        if (poll(&pfd, 1, 5000) <= 0) {
+          return -1;
+        }
+        continue;
+      }
+      return -1;
+    }
+    if (r == 0) {
+      return -1;
+    }
+    got += (int)r;
+  }
+  return got;
+}
+
+static int httpd_forward_body_cl(int conn, int up, int32_t slot, int hdr_end, int body_left) {
+  if (body_left <= 0) {
+    return 0;
+  }
+  if (body_left > HTTPD_MAX_BODY) {
+    return -1;
+  }
+  int in_slot = g_slots[slot].len - hdr_end;
+  if (in_slot > 0) {
+    int n = in_slot > body_left ? body_left : in_slot;
+    if (send_all_nb(up, g_slots[slot].buf + hdr_end, (size_t)n) < 0) {
+      return -1;
+    }
+    body_left -= n;
+  }
+  char tmp[8192];
+  while (body_left > 0) {
+    int chunk = body_left > (int)sizeof(tmp) ? (int)sizeof(tmp) : body_left;
+    if (httpd_read_more_client(conn, tmp, chunk) < 0) {
+      return -1;
+    }
+    if (send_all_nb(up, tmp, (size_t)chunk) < 0) {
+      return -1;
+    }
+    body_left -= chunk;
+  }
+  return 0;
+}
+
+static int httpd_forward_body_chunked(int conn, int up);
+
+static int httpd_discard_request_body(int conn, int32_t slot, int hdr_end, const httpd_req_info_t* req) {
+  if (req->body_mode == 0) {
+    return 0;
+  }
+  if (req->body_mode == 1) {
+    int body_left = req->content_length - (g_slots[slot].len - hdr_end);
+    if (body_left <= 0) {
+      return 0;
+    }
+    char tmp[8192];
+    while (body_left > 0) {
+      int chunk = body_left > (int)sizeof(tmp) ? (int)sizeof(tmp) : body_left;
+      if (httpd_read_more_client(conn, tmp, chunk) < 0) {
+        return -1;
+      }
+      body_left -= chunk;
+    }
+    return 0;
+  }
+  char sink = 0;
+  (void)sink;
+  return httpd_forward_body_chunked(conn, -1);
+}
+
+static int httpd_forward_body_chunked(int conn, int up) {
+  char line[128];
+  int total = 0;
+  int discard = (up < 0);
+  for (;;) {
+    int li = 0;
+    while (li + 1 < (int)sizeof(line)) {
+      ssize_t r = recv(conn, line + li, 1, 0);
+      if (r <= 0) {
+        return -1;
+      }
+      li++;
+      if (li >= 2 && line[li - 1] == '\n' && line[li - 2] == '\r') {
+        break;
+      }
+    }
+    line[li] = '\0';
+    int chunk_sz = (int)strtol(line, NULL, 16);
+    if (chunk_sz < 0) {
+      return -1;
+    }
+    if (chunk_sz == 0) {
+      char crlf[2];
+      if (httpd_read_more_client(conn, crlf, 2) < 0) {
+        return -1;
+      }
+      return 0;
+    }
+    total += chunk_sz;
+    if (total > HTTPD_MAX_BODY) {
+      return -1;
+    }
+    char tmp[8192];
+    int left = chunk_sz;
+    while (left > 0) {
+      int n = left > (int)sizeof(tmp) ? (int)sizeof(tmp) : left;
+      if (httpd_read_more_client(conn, tmp, n) < 0) {
+        return -1;
+      }
+      if (!discard && send_all_nb(up, tmp, (size_t)n) < 0) {
+        return -1;
+      }
+      left -= n;
+    }
+    char crlf[2];
+    if (httpd_read_more_client(conn, crlf, 2) < 0) {
+      return -1;
+    }
+  }
+}
+
+static int httpd_proxy_relay_response(int conn, int up) {
+  char buf[HTTPD_PROXY_RELAY_BUF];
+  size_t total = 0;
+  set_nonblocking(up);
+  for (;;) {
+    struct pollfd pfd = {.fd = up, .events = POLLIN};
+    int pr = poll(&pfd, 1, 30000);
+    if (pr < 0 && errno == EINTR) {
+      continue;
+    }
+    if (pr <= 0) {
+      return -1;
+    }
+    ssize_t r = recv(up, buf, sizeof(buf), 0);
+    if (r < 0) {
+      if (errno == EAGAIN || errno == EWOULDBLOCK) {
+        continue;
+      }
+      return -1;
+    }
+    if (r == 0) {
+      break;
+    }
+    if (send_all_nb(conn, buf, (size_t)r) < 0) {
+      return -1;
+    }
+    total += (size_t)r;
+    if (total > (size_t)(HTTPD_MAX_BODY + HTTPD_PROXY_RELAY_BUF)) {
+      return -1;
+    }
+    pfd.events = POLLIN;
+    if (poll(&pfd, 1, 0) <= 0) {
+      break;
+    }
+  }
+  return 0;
+}
+
+static int32_t httpd_proxy_forward(int32_t conn, int32_t slot, int hdr_end, const httpd_req_info_t* req) {
   int32_t peer_port = httpd_lb_pick_port();
   if (peer_port <= 0) {
     return -1;
@@ -1101,89 +1363,34 @@ static int32_t httpd_proxy_forward(int32_t conn, const char* path, int plen) {
   if (up < 0) {
     return -1;
   }
-  char req[4096];
-  int n = snprintf(req, sizeof(req),
-                   "GET %.*s HTTP/1.1\r\n"
-                   "Host: %s:%d\r\n"
-                   "Connection: keep-alive\r\n"
-                   "\r\n",
-                   plen, path, g_proxy_host, (int)peer_port);
-  if (n < 0 || n >= (int)sizeof(req)) {
+  tcp_tune_client(up);
+  if (send_all_nb(up, g_slots[slot].buf, (size_t)hdr_end) < 0) {
     upstream_pool_release(peer_port, up, 0);
     return -1;
   }
-  if (send_all_nb(up, req, (size_t)n) < 0) {
-    upstream_pool_release(peer_port, up, 0);
-    return -1;
-  }
-
-  char hdr_buf[16384];
-  size_t hdr_len = 0;
-  int hdr_end = -1;
-  while (hdr_end < 0 && hdr_len < sizeof(hdr_buf) - 1) {
-    ssize_t r = read(up, hdr_buf + hdr_len, sizeof(hdr_buf) - 1 - hdr_len);
-    if (r < 0) {
+  if (req->body_mode == 1) {
+    if (httpd_forward_body_cl(conn, up, slot, hdr_end, req->content_length) < 0) {
       upstream_pool_release(peer_port, up, 0);
       return -1;
     }
-    if (r == 0) {
-      upstream_pool_release(peer_port, up, 0);
-      return -1;
-    }
-    hdr_len += (size_t)r;
-    hdr_buf[hdr_len] = '\0';
-    for (size_t i = 0; i + 3 < hdr_len; i++) {
-      if (hdr_buf[i] == '\r' && hdr_buf[i + 1] == '\n' && hdr_buf[i + 2] == '\r' && hdr_buf[i + 3] == '\n') {
-        hdr_end = (int)i + 4;
-        break;
+  } else if (req->body_mode == 2) {
+    int in_slot = g_slots[slot].len - hdr_end;
+    if (in_slot > 0) {
+      if (send_all_nb(up, g_slots[slot].buf + hdr_end, (size_t)in_slot) < 0) {
+        upstream_pool_release(peer_port, up, 0);
+        return -1;
       }
     }
-  }
-  if (hdr_end < 0) {
-    upstream_pool_release(peer_port, up, 0);
-    return -1;
-  }
-  if (send_all_nb((int)conn, hdr_buf, (size_t)hdr_end) < 0) {
-    upstream_pool_release(peer_port, up, 0);
-    return -1;
-  }
-
-  int up_keep = 0;
-  int body_left = parse_resp_content_length(hdr_buf, hdr_end, &up_keep);
-  if (body_left < 0) {
-    upstream_pool_release(peer_port, up, 0);
-    return -1;
-  }
-  size_t in_hdr = (size_t)hdr_end;
-  if (hdr_len > in_hdr) {
-    size_t extra = hdr_len - in_hdr;
-    if (extra > (size_t)body_left) {
-      extra = (size_t)body_left;
-    }
-    if (send_all_nb((int)conn, hdr_buf + in_hdr, extra) < 0) {
+    if (httpd_forward_body_chunked(conn, up) < 0) {
       upstream_pool_release(peer_port, up, 0);
       return -1;
     }
-    body_left -= (int)extra;
   }
-  char body_buf[8192];
-  while (body_left > 0) {
-    size_t chunk = (size_t)body_left;
-    if (chunk > sizeof(body_buf)) {
-      chunk = sizeof(body_buf);
-    }
-    ssize_t r = read_blocking(up, body_buf, chunk);
-    if (r < 0 || r == 0) {
-      upstream_pool_release(peer_port, up, 0);
-      return -1;
-    }
-    if (send_all_nb((int)conn, body_buf, (size_t)r) < 0) {
-      upstream_pool_release(peer_port, up, 0);
-      return -1;
-    }
-    body_left -= (int)r;
+  if (httpd_proxy_relay_response(conn, up) < 0) {
+    upstream_pool_release(peer_port, up, 0);
+    return -1;
   }
-  upstream_pool_release(peer_port, up, up_keep);
+  upstream_pool_release(peer_port, up, 1);
   return 0;
 }
 
@@ -1290,19 +1497,34 @@ static int32_t httpd_try_drain_once(int32_t conn, int32_t slot) {
     return 0;
   }
   if (request_headers_unsafe_c(g_slots[slot].buf, hdr_end)) {
+    int keep = !wants_connection_close(g_slots[slot].buf, hdr_end);
+    if (httpd_send_status(conn, 400, "Bad Request", NULL, keep) < 0) {
+      return -2;
+    }
+    return keep ? 1 : -1;
+  }
+  httpd_req_info_t req;
+  if (parse_request_line_c(g_slots[slot].buf, hdr_end, &req) != 0) {
     return -2;
   }
-  if (!http_method_allowed_c(g_slots[slot].buf, hdr_end)) {
-    return -2;
+  parse_request_body_meta_c(g_slots[slot].buf, hdr_end, &req);
+  if (req.body_mode == 1 && req.content_length > HTTPD_MAX_BODY) {
+    int keep = !wants_connection_close(g_slots[slot].buf, hdr_end);
+    if (httpd_send_status(conn, 413, "Payload Too Large", NULL, keep) < 0) {
+      return -2;
+    }
+    return keep ? 1 : -1;
   }
-  char req_path[2048];
-  int plen = parse_get_path_c(g_slots[slot].buf, hdr_end, req_path, (int)sizeof(req_path));
-  if (plen < 0 || !path_is_safe(req_path, plen)) {
-    return -2;
+  if (!path_is_safe(req.path, req.path_len)) {
+    int keep = !wants_connection_close(g_slots[slot].buf, hdr_end);
+    if (httpd_send_status(conn, 400, "Bad Request", NULL, keep) < 0) {
+      return -2;
+    }
+    return keep ? 1 : -1;
   }
   int keep = !wants_connection_close(g_slots[slot].buf, hdr_end);
-  if (path_proxy_match(req_path, plen)) {
-    if (httpd_proxy_forward(conn, req_path, plen) < 0) {
+  if (path_proxy_match(req.path, req.path_len)) {
+    if (httpd_proxy_forward(conn, slot, hdr_end, &req) < 0) {
       return -2;
     }
     net_slot_consume(slot, hdr_end);
@@ -1311,12 +1533,43 @@ static int32_t httpd_try_drain_once(int32_t conn, int32_t slot) {
     }
     return 1;
   }
-  if (is_index_path_c(req_path, plen) || is_index_get(g_slots[slot].buf, hdr_end)) {
+  if (method_is(&req, "OPTIONS")) {
+    if (httpd_send_status(conn, 204, "No Content",
+                          "Allow: GET, HEAD, POST, PUT, DELETE, PATCH, OPTIONS\r\n", keep) < 0) {
+      return -2;
+    }
+    net_slot_consume(slot, hdr_end);
+    return keep ? 1 : -1;
+  }
+  if (method_is(&req, "GET") && (is_index_path_c(req.path, req.path_len) || is_index_get(g_slots[slot].buf, hdr_end))) {
     if (httpd_reply_cached_index_i(conn, slot, keep) < 0) {
       return -2;
     }
+  } else if (method_is(&req, "GET")) {
+    if (httpd_send_static_path(conn, slot, req.path, req.path_len, keep) < 0) {
+      if (httpd_send_status(conn, 404, "Not Found", NULL, keep) < 0) {
+        return -2;
+      }
+    }
+  } else if (method_is(&req, "HEAD")) {
+    if (httpd_send_static_path(conn, slot, req.path, req.path_len, 0) < 0) {
+      if (httpd_send_status(conn, 404, "Not Found", NULL, keep) < 0) {
+        return -2;
+      }
+    }
+  } else if (req.body_mode != 0) {
+    if (httpd_discard_request_body(conn, slot, hdr_end, &req) < 0) {
+      return -2;
+    }
+    if (httpd_send_status(conn, 405, "Method Not Allowed",
+                          "Allow: GET, HEAD, POST, PUT, DELETE, PATCH, OPTIONS\r\n", keep) < 0) {
+      return -2;
+    }
+    net_slot_consume(slot, hdr_end);
+    return keep ? 1 : -1;
   } else {
-    if (httpd_send_static_path(conn, slot, req_path, plen, keep) < 0) {
+    if (httpd_send_status(conn, 405, "Method Not Allowed",
+                          "Allow: GET, HEAD, POST, PUT, DELETE, PATCH, OPTIONS\r\n", keep) < 0) {
       return -2;
     }
   }

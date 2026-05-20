@@ -317,7 +317,7 @@ PY
 
 echo "== Write manifest =="
 python3 - <<'PY'
-import json, time
+import json, os, time
 from pathlib import Path
 
 base = Path(os.environ["ROOT"]) / os.environ["BASE"]

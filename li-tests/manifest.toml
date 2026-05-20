@@ -1105,6 +1105,30 @@ note = "GameWorld + SimField + RealmHead dual model"
 
 [[tests]]
 suite = "composable"
+file = "composable/import_game_world_soa_gw1.li"
+outcome = "compile_ok"
+note = "GameWorld SoA GW-1 10k entity tick budget"
+
+[[tests]]
+suite = "composable"
+file = "composable/import_game_replication_gw2.li"
+outcome = "compile_ok"
+note = "GameWorld replication delta GW-2"
+
+[[tests]]
+suite = "composable"
+file = "composable/import_sim_field_tier2_sf1.li"
+outcome = "compile_ok"
+note = "SimField tier-2 physics coupling SF-1"
+
+[[tests]]
+suite = "composable"
+file = "composable/import_world_competitive_gw_sf.li"
+outcome = "compile_ok"
+note = "GW-1 + GW-2 + SF-1 competitive world stack"
+
+[[tests]]
+suite = "composable"
 file = "composable/import_world_studio_benchmark_tier1.li"
 outcome = "compile_ok"
 note = "Competitive world-studio.toml tier-1 rollup"

@@ -1,6 +1,6 @@
 # RFC: Competitive world architecture — GameWorld vs SimField
 
-**Status:** Draft (impl-36)  
+**Status:** Draft (impl-37)  
 **Track:** PH-GD-2 / PH-SCI  
 **Policy:** [li-native-first.mdc](../../../.cursor/rules/li-native-first.mdc)  
 **Vision:** [world-studio-vision.md](../world-studio-vision.md)
@@ -40,8 +40,8 @@ Composable gates on journals prove **Li-native policy**, not **engine competitiv
 | Phase | Deliverable | Target |
 |-------|-------------|--------|
 | GW-0 | `GameEntity`, `GameWorld`, spawn | Composable smoke |
-| GW-1 | SoA component tables | ≥10k entities/tick stub budget |
-| GW-2 | `game_replication_delta_*` | Delta bytes ≪ full snapshot |
+| GW-1 | SoA component tables | ✅ ≥10k entities/tick stub budget |
+| GW-2 | `game_replication_delta_*` | ✅ Delta bytes ≪ full snapshot |
 | GW-3 | Region streaming hooks | Memory budget per [PH-PORT](../portable-targets-rfc.md) |
 | GW-4 | `li-render` residency | 60 fps viewport ([PH-UX](../studio-ux-design-system-rfc.md)) |
 
@@ -62,7 +62,7 @@ type GameWorld = object
 | Phase | Deliverable | Target |
 |-------|-------------|--------|
 | SF-0 | `SimFieldChunk` metadata | Composable smoke |
-| SF-1 | Tier-2 physics coupling | `scientific_run_stub` + benches |
+| SF-1 | Tier-2 physics coupling | ✅ `sim_field_tier2_*` + `physics.core` profile |
 | SF-2 | GPU batch via LKIR | `li-gpu` + `li-chem` |
 | SF-3 | Checkpoint manifest | PH-PUB repro bundle |
 
@@ -89,11 +89,15 @@ type SimFieldChunk = object
 | OpenFOAM/GROMACS | Unified sim + in-viewport tier-2 + repro export |
 | Redis MMO | Proved shard logic + Li-native store semantics |
 
-## Composable gates (impl-36)
+## Composable gates (impl-37)
 
-- `import_game_world_ecs`  
-- `import_sim_field_chunk`  
+- `import_game_world_ecs` (GW-0)  
+- `import_game_world_soa_gw1` (GW-1)  
+- `import_game_replication_gw2` (GW-2)  
+- `import_sim_field_chunk` (SF-0)  
+- `import_sim_field_tier2_sf1` (SF-1)  
 - `import_world_dual_model_stack`  
+- `import_world_competitive_gw_sf` (rollup)  
 
 ## References
 

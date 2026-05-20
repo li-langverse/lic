@@ -281,6 +281,34 @@ li_package = "li-world"
 composable = "import_world_dual_model_stack"
 
 [[benchmark]]
+id = "game-world-soa-gw1"
+name = "GameWorld SoA GW-1 10k budget"
+tier = 1
+li_package = "li-world"
+composable = "import_game_world_soa_gw1"
+
+[[benchmark]]
+id = "game-replication-gw2"
+name = "GameWorld replication GW-2"
+tier = 1
+li_package = "li-world"
+composable = "import_game_replication_gw2"
+
+[[benchmark]]
+id = "sim-field-tier2-sf1"
+name = "SimField tier-2 SF-1"
+tier = 1
+li_package = "li-sim-scientific"
+composable = "import_sim_field_tier2_sf1"
+
+[[benchmark]]
+id = "world-competitive-gw-sf"
+name = "GW-1 + GW-2 + SF-1 competitive stack"
+tier = 1
+li_package = "li-world"
+composable = "import_world_competitive_gw_sf"
+
+[[benchmark]]
 id = "httpd-li-native-gateway"
 name = "Li-native HTTP/WS gateway"
 tier = 1

@@ -1,0 +1,21 @@
+import world
+import sim.scientific
+import physics.core
+import sim
+
+def main() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  if game_world_ecs_smoke() != 0:
+    return 1
+  if game_world_soa_10k_tick_budget_smoke() != 0:
+    return 2
+  if game_replication_delta_smoke() != 0:
+    return 3
+  if sim_field_tier2_physics_smoke() != 0:
+    return 4
+  if world_realm_smoke() != 0:
+    return 5
+  return sim_profile_scientific()

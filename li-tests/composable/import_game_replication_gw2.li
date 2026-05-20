@@ -7,4 +7,4 @@ def main() -> int
 =
   if li_world_version() < 6:
     return 1
-  return game_world_ecs_smoke()
+  return game_replication_delta_smoke()

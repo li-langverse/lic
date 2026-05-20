@@ -1,0 +1,15 @@
+import sim.scientific
+import physics.core
+
+def main() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  if li_sim_scientific_version() < 4:
+    return 1
+  if physics_tier_scientific() != sim_field_tier2_physics_tier():
+    return 2
+  if select_integrator_order(profile_for_tier(physics_tier_scientific())) < 4:
+    return 3
+  return sim_field_tier2_physics_smoke()

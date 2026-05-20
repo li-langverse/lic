@@ -7,10 +7,10 @@ type SimVizFrame = object
 
 def li_sim_scientific_version() -> int
   requires true
-  ensures result == 3
+  ensures result == 4
   decreases 0
 =
-  return 3
+  return 4
 
 # SF-0 — field chunk head (HPC path; not OpenFOAM-scale yet).
 type SimFieldChunk = object
@@ -59,6 +59,40 @@ def sim_field_chunk_smoke() -> int
   if c.timestep != 1:
     return 1
   if scientific_run_stub(c.tier, 10) != 10:
+    return 2
+  return 0
+
+# SF-1 — tier-2 physics coupling (scientific profile substeps; not OpenFOAM yet).
+def sim_field_tier2_physics_tier() -> int
+  requires true
+  ensures result == 2
+  decreases 0
+=
+  return 2
+
+def sim_field_tier2_couple_stub(chunk: SimFieldChunk, dt: float, substeps: int) -> int
+  requires chunk.tier == sim_field_tier2_physics_tier()
+  requires chunk.cell_count > 0
+  requires dt > 0.0
+  requires substeps > 0
+  ensures result == substeps
+  decreases substeps
+=
+  var i: int = 0
+  while i < substeps
+    sim_field_step_stub(chunk, dt)
+    i = i + 1
+  return chunk.timestep
+
+def sim_field_tier2_physics_smoke() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  var c: SimFieldChunk = sim_field_chunk_new(1, 128, sim_field_tier2_physics_tier())
+  if sim_field_tier2_couple_stub(c, 0.001, 4) != 4:
+    return 1
+  if c.sample_norm <= 0.0:
     return 2
   return 0
 

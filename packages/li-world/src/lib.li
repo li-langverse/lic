@@ -11,10 +11,10 @@ type WorldSnapshot = object
 
 def li_world_version() -> int
   requires true
-  ensures result == 5
+  ensures result == 6
   decreases 0
 =
-  return 5
+  return 6
 
 # GW-0 — game ECS head (AAA path; not UE-scale yet).
 type GameEntity = object
@@ -58,7 +58,151 @@ def game_world_spawn_entity(world: GameWorld, archetype_id: int) -> GameEntity
   world.entity_count = world.entity_count + 1
   return e
 
-# GW-2 stub — replication delta size (target: ≪ full snapshot).
+# GW-1 — SoA component tables (fixed chunk; 10k entity/tick budget stub).
+def game_soa_chunk_capacity() -> int
+  requires true
+  ensures result == 64
+  decreases 0
+=
+  return 64
+
+def game_world_entity_budget() -> int
+  requires true
+  ensures result == 10240
+  decreases 0
+=
+  return 10240
+
+def game_soa_spawn_slot(
+    entity_ids: array[64, int],
+    archetypes: array[64, int],
+    pos_x: array[64, float],
+    filled: int,
+    archetype_id: int) -> int
+  requires filled >= 0
+  requires filled < game_soa_chunk_capacity()
+  requires archetype_id >= 0
+  requires archetype_id <= 255
+  ensures result == filled + 1
+  decreases filled
+=
+  var slot: int = filled
+  entity_ids[slot] = slot + 1
+  archetypes[slot] = archetype_id
+  pos_x[slot] = 0.0
+  return filled + 1
+
+def game_soa_tick_chunk_stub(
+    entity_ids: array[64, int],
+    pos_x: array[64, float],
+    pos_y: array[64, float],
+    filled: int,
+    dt: float) -> int
+  requires filled > 0
+  requires filled <= game_soa_chunk_capacity()
+  requires dt > 0.0
+  ensures result == filled
+  decreases filled
+=
+  var i: int = 0
+  while i < filled
+    if entity_ids[i] > 0:
+      pos_x[i] = pos_x[i] + dt
+      pos_y[i] = pos_y[i] + dt * 0.5
+    i = i + 1
+  return filled
+
+def game_soa_fill_chunk_stub(
+    entity_ids: array[64, int],
+    archetypes: array[64, int],
+    pos_x: array[64, float],
+    archetype_id: int) -> int
+  requires archetype_id >= 0
+  ensures result == game_soa_chunk_capacity()
+  decreases game_soa_chunk_capacity()
+=
+  var filled: int = 0
+  while filled < game_soa_chunk_capacity()
+    filled = game_soa_spawn_slot(entity_ids, archetypes, pos_x, filled, archetype_id)
+  return filled
+
+def game_world_soa_10k_tick_budget_smoke() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  var entity_ids: array[64, int]
+  var archetypes: array[64, int]
+  var pos_x: array[64, float]
+  var pos_y: array[64, float]
+  var filled: int = game_soa_fill_chunk_stub(entity_ids, archetypes, pos_x, 1)
+  if filled != game_soa_chunk_capacity():
+    return 1
+  var total: int = 0
+  var pass: int = 0
+  var chunks: int = game_world_entity_budget() / game_soa_chunk_capacity()
+  while pass < chunks
+    total = total + game_soa_tick_chunk_stub(entity_ids, pos_x, pos_y, filled, 0.016)
+    pass = pass + 1
+  if total != game_world_entity_budget():
+    return 2
+  return 0
+
+# GW-2 — replication delta encoding (target: byte_size ≪ full snapshot).
+type GameReplicationDelta = object
+  public entity_id: int
+  public component_mask: int
+  public byte_size: int
+  public seq: int
+
+def game_replication_bytes_per_entity() -> int
+  requires true
+  ensures result == 128
+  decreases 0
+=
+  return 128
+
+def game_replication_full_snapshot_bytes(world: GameWorld) -> int
+  requires world.entity_count >= 0
+  ensures result >= 32
+  decreases world.entity_count
+=
+  return world.entity_count * game_replication_bytes_per_entity() + 32
+
+def game_replication_popcount_stub(mask: int) -> int
+  requires mask >= 0
+  ensures result >= 0
+  ensures result <= 16
+  decreases mask
+=
+  var bits: int = 0
+  var m: int = mask
+  var i: int = 0
+  while i < 16
+    if m % 2 == 1:
+      bits = bits + 1
+    m = m / 2
+    i = i + 1
+  return bits
+
+def game_replication_delta_encode(
+    world: GameWorld, entity_id: int, component_mask: int) -> GameReplicationDelta
+  requires entity_id > 0
+  requires component_mask >= 0
+  ensures result.entity_id == entity_id
+  ensures result.component_mask == component_mask
+  ensures result.byte_size >= 12
+  ensures result.byte_size <= 64
+  decreases entity_id
+=
+  world.replication_seq = world.replication_seq + 1
+  var d: GameReplicationDelta
+  d.entity_id = entity_id
+  d.component_mask = component_mask
+  d.seq = world.replication_seq
+  d.byte_size = 12 + game_replication_popcount_stub(component_mask) * 8
+  return d
+
 def game_replication_delta_stub(world: GameWorld, entity_id: int, component_mask: int) -> int
   requires world.tick >= 0
   requires entity_id > 0
@@ -67,8 +211,26 @@ def game_replication_delta_stub(world: GameWorld, entity_id: int, component_mask
   ensures result <= 64
   decreases entity_id
 =
-  world.replication_seq = world.replication_seq + 1
-  return component_mask + 8
+  var d: GameReplicationDelta = game_replication_delta_encode(world, entity_id, component_mask)
+  return d.byte_size
+
+def game_replication_delta_smoke() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  var w: GameWorld = game_world_new(1)
+  var i: int = 0
+  while i < 100
+    game_world_spawn_entity(w, 1)
+    i = i + 1
+  var full: int = game_replication_full_snapshot_bytes(w)
+  var d: GameReplicationDelta = game_replication_delta_encode(w, 1, 7)
+  if d.byte_size >= full:
+    return 1
+  if d.byte_size > 64:
+    return 2
+  return 0
 
 def game_world_tick_stub(world: GameWorld) -> unit
   requires true

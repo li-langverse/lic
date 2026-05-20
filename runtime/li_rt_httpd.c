@@ -1,0 +1,431 @@
+/* Minimal li-httpd [routes] TOML loader + matcher (M1 — trusted C until std TOML ships). */
+
+#include "li_rt.h"
+
+#include <ctype.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+
+#define LI_HTTPD_MAX_ROUTES 64
+#define LI_HTTPD_METHOD_MAX 16
+#define LI_HTTPD_PATH_MAX 512
+#define LI_HTTPD_ACTION_MAX 128
+#define LI_HTTPD_NAME_MAX 64
+#define LI_HTTPD_FILE_MAX (256 * 1024)
+
+typedef enum {
+  LI_PATH_EXACT = 0,
+  LI_PATH_PREFIX = 1,
+  LI_PATH_PREFIX_STRIP = 2,
+} LiPathKind;
+
+typedef struct {
+  char name[LI_HTTPD_NAME_MAX];
+  char method[LI_HTTPD_METHOD_MAX];
+  char path[LI_HTTPD_PATH_MAX];
+  LiPathKind path_kind;
+  char action[LI_HTTPD_ACTION_MAX];
+  int32_t priority;
+  int32_t route_id; /* 1-based id after load */
+} LiHttpdRoute;
+
+static LiHttpdRoute g_routes[LI_HTTPD_MAX_ROUTES];
+static int32_t g_route_count = 0;
+
+static void httpd_clear_routes(void) {
+  g_route_count = 0;
+  memset(g_routes, 0, sizeof(g_routes));
+}
+
+static void slug_route_name(const char* method, const char* path, char* out, size_t out_len) {
+  size_t n = 0;
+  const char* p = method;
+  while (*p && n + 1 < out_len) {
+    char c = *p++;
+    if (c >= 'A' && c <= 'Z') {
+      c = (char)(c - 'A' + 'a');
+    }
+    if ((c >= 'a' && c <= 'z') || (c >= '0' && c <= '9')) {
+      out[n++] = c;
+    } else {
+      out[n++] = '_';
+    }
+  }
+  if (n + 1 < out_len) {
+    out[n++] = '_';
+  }
+  for (p = path; *p && n + 1 < out_len; p++) {
+    char c = *p;
+    if (c == '/') {
+      if (n > 0 && out[n - 1] != '_') {
+        out[n++] = '_';
+      }
+      continue;
+    }
+    if (c == '*') {
+      if (n + 4 < out_len) {
+        out[n++] = 'w';
+        out[n++] = 'i';
+        out[n++] = 'l';
+        out[n++] = 'd';
+      }
+      continue;
+    }
+    if ((c >= 'a' && c <= 'z') || (c >= 'A' && c <= 'Z') || (c >= '0' && c <= '9')) {
+      if (c >= 'A' && c <= 'Z') {
+        c = (char)(c - 'A' + 'a');
+      }
+      out[n++] = c;
+    } else {
+      out[n++] = '_';
+    }
+  }
+  while (n > 0 && out[n - 1] == '_') {
+    n--;
+  }
+  if (n == 0 && out_len > 4) {
+    memcpy(out, "route", 5);
+    n = 5;
+  }
+  out[n] = '\0';
+}
+
+static int parse_path_kind(const char* raw_path, char* norm_path, size_t norm_len, LiPathKind* kind) {
+  size_t len = strlen(raw_path);
+  if (len >= norm_len) {
+    return -1;
+  }
+  memcpy(norm_path, raw_path, len + 1);
+  *kind = LI_PATH_EXACT;
+  if (len >= 3 && strcmp(raw_path + len - 3, "/**") == 0) {
+    norm_path[len - 3] = '\0';
+    *kind = LI_PATH_PREFIX_STRIP;
+    return 0;
+  }
+  if (len >= 2 && strcmp(raw_path + len - 2, "/*") == 0) {
+    norm_path[len - 2] = '\0';
+    *kind = LI_PATH_PREFIX;
+    return 0;
+  }
+  return 0;
+}
+
+static int path_has_traversal(const char* raw_path) {
+  if (strstr(raw_path, "..") != NULL) {
+    return 1;
+  }
+  const char* p = raw_path;
+  while ((p = strstr(p, "//")) != NULL) {
+    if (p > raw_path + 1 && p[-2] != ':' && p[-1] != '/') {
+      return 1;
+    }
+    p += 2;
+  }
+  return 0;
+}
+
+static int parse_route_key_value(const char* key, const char* action, int32_t priority, LiHttpdRoute* out) {
+  char method[LI_HTTPD_METHOD_MAX];
+  char raw_path[LI_HTTPD_PATH_MAX];
+  const char* sp;
+  const char* p = key;
+  size_t mi = 0;
+  while (*p && !isspace((unsigned char)*p) && mi + 1 < sizeof(method)) {
+    method[mi++] = *p++;
+  }
+  method[mi] = '\0';
+  if (mi == 0) {
+    return -1;
+  }
+  while (*p && isspace((unsigned char)*p)) {
+    p++;
+  }
+  if (*p != '/') {
+    return -1;
+  }
+  sp = p;
+  while (*p && *p != '#') {
+    p++;
+  }
+  size_t plen = (size_t)(p - sp);
+  if (plen == 0 || plen >= sizeof(raw_path)) {
+    return -1;
+  }
+  memcpy(raw_path, sp, plen);
+  raw_path[plen] = '\0';
+  while (plen > 0 && isspace((unsigned char)raw_path[plen - 1])) {
+    raw_path[--plen] = '\0';
+  }
+  if (path_has_traversal(raw_path)) {
+    return -1;
+  }
+  memset(out, 0, sizeof(*out));
+  strncpy(out->method, method, sizeof(out->method) - 1);
+  if (parse_path_kind(raw_path, out->path, sizeof(out->path), &out->path_kind) != 0) {
+    return -1;
+  }
+  strncpy(out->action, action, sizeof(out->action) - 1);
+  slug_route_name(method, raw_path, out->name, sizeof(out->name));
+  out->priority = priority;
+  return 0;
+}
+
+static int routes_overlap(const LiHttpdRoute* a, const LiHttpdRoute* b) {
+  if (strcmp(a->method, b->method) != 0) {
+    return 0;
+  }
+  if (a->path_kind == LI_PATH_EXACT && b->path_kind == LI_PATH_EXACT) {
+    return strcmp(a->path, b->path) == 0;
+  }
+  if (a->path_kind != LI_PATH_EXACT && b->path_kind != LI_PATH_EXACT) {
+    size_t la = strlen(a->path);
+    size_t lb = strlen(b->path);
+    const char* pa = a->path;
+    const char* pb = b->path;
+    if (strcmp(pa, pb) == 0) {
+      return 1;
+    }
+    if (la <= lb && strncmp(pb, pa, la) == 0 && (pb[la] == '\0' || pb[la] == '/')) {
+      return 1;
+    }
+    if (lb <= la && strncmp(pa, pb, lb) == 0 && (pa[lb] == '\0' || pa[lb] == '/')) {
+      return 1;
+    }
+  }
+  return strcmp(a->path, b->path) == 0;
+}
+
+static int validate_routes(void) {
+  for (int32_t i = 0; i < g_route_count; i++) {
+    for (int32_t j = i + 1; j < g_route_count; j++) {
+      if (g_routes[i].priority != g_routes[j].priority && routes_overlap(&g_routes[i], &g_routes[j])) {
+        continue;
+      }
+      if (routes_overlap(&g_routes[i], &g_routes[j])) {
+        return -1;
+      }
+    }
+  }
+  return 0;
+}
+
+static void trim_line(char* line) {
+  size_t n = strlen(line);
+  while (n > 0 && (line[n - 1] == '\n' || line[n - 1] == '\r' || isspace((unsigned char)line[n - 1]))) {
+    line[--n] = '\0';
+  }
+  char* p = line;
+  while (*p && isspace((unsigned char)*p)) {
+    p++;
+  }
+  if (p != line) {
+    memmove(line, p, strlen(p) + 1);
+  }
+}
+
+static int parse_quoted(const char** pp, char* out, size_t out_len) {
+  const char* p = *pp;
+  if (*p != '"') {
+    return -1;
+  }
+  p++;
+  size_t n = 0;
+  while (*p && *p != '"') {
+    if (n + 1 >= out_len) {
+      return -1;
+    }
+    out[n++] = *p++;
+  }
+  if (*p != '"') {
+    return -1;
+  }
+  p++;
+  out[n] = '\0';
+  *pp = p;
+  return 0;
+}
+
+static int parse_routes_table(const char* text) {
+  const char* sec = strstr(text, "[routes]");
+  if (sec == NULL) {
+    return 0;
+  }
+  char line[1024];
+  const char* p = strchr(sec, '\n');
+  int32_t priority = 0;
+  httpd_clear_routes();
+  if (p == NULL) {
+    return 0;
+  }
+  while (*p) {
+    const char* line_end = strchr(p, '\n');
+    size_t len = line_end ? (size_t)(line_end - p) : strlen(p);
+    if (len >= sizeof(line)) {
+      return -1;
+    }
+    memcpy(line, p, len);
+    line[len] = '\0';
+    trim_line(line);
+    p = line_end ? line_end + 1 : p + len;
+    if (line[0] == '\0' || line[0] == '#') {
+      continue;
+    }
+    if (line[0] == '[') {
+      break;
+    }
+    const char* q = line;
+    char key[512];
+    char action[256];
+    if (parse_quoted(&q, key, sizeof(key)) != 0) {
+      return -1;
+    }
+    while (*q && isspace((unsigned char)*q)) {
+      q++;
+    }
+    if (*q != '=') {
+      return -1;
+    }
+    q++;
+    while (*q && isspace((unsigned char)*q)) {
+      q++;
+    }
+    if (parse_quoted(&q, action, sizeof(action)) != 0) {
+      return -1;
+    }
+    if (g_route_count >= LI_HTTPD_MAX_ROUTES) {
+      return -1;
+    }
+    if (parse_route_key_value(key, action, priority, &g_routes[g_route_count]) != 0) {
+      return -1;
+    }
+    g_route_count++;
+    priority++;
+  }
+  for (int32_t i = 0; i < g_route_count; i++) {
+    g_routes[i].route_id = i + 1;
+  }
+  return validate_routes();
+}
+
+static void normalize_request_path(const char* path, char* out, size_t out_len) {
+  if (path == NULL || path[0] == '\0') {
+    strncpy(out, "/", out_len - 1);
+    out[out_len - 1] = '\0';
+    return;
+  }
+  char tmp[LI_HTTPD_PATH_MAX];
+  size_t n = 0;
+  const char* p = path;
+  if (*p == '/') {
+    tmp[n++] = '/';
+    p++;
+  } else {
+    tmp[n++] = '/';
+  }
+  while (*p && n + 2 < sizeof(tmp)) {
+    if (*p == '/') {
+      p++;
+      continue;
+    }
+    const char* seg = p;
+    while (*p && *p != '/') {
+      p++;
+    }
+    if (n > 1) {
+      tmp[n++] = '/';
+    }
+    size_t seglen = (size_t)(p - seg);
+    if (seglen > 0 && n + seglen < sizeof(tmp)) {
+      memcpy(tmp + n, seg, seglen);
+      n += seglen;
+    }
+  }
+  if (n == 0) {
+    tmp[n++] = '/';
+  }
+  tmp[n] = '\0';
+  strncpy(out, tmp, out_len - 1);
+  out[out_len - 1] = '\0';
+}
+
+static int route_matches(const LiHttpdRoute* route, const char* method, const char* norm_path) {
+  if (strcmp(route->method, method) != 0) {
+    return 0;
+  }
+  if (route->path_kind == LI_PATH_EXACT) {
+    return li_rt_path_exact(norm_path, route->path);
+  }
+  return li_rt_path_prefix(norm_path, route->path);
+}
+
+int32_t li_rt_httpd_load_config(const char* path) {
+  if (path == NULL) {
+    return -1;
+  }
+  FILE* f = fopen(path, "rb");
+  if (f == NULL) {
+    return -1;
+  }
+  char* buf = (char*)malloc(LI_HTTPD_FILE_MAX);
+  if (buf == NULL) {
+    fclose(f);
+    return -1;
+  }
+  size_t n = fread(buf, 1, LI_HTTPD_FILE_MAX - 1, f);
+  fclose(f);
+  if (n == 0) {
+    free(buf);
+    return -1;
+  }
+  buf[n] = '\0';
+  int rc = parse_routes_table(buf);
+  free(buf);
+  return rc == 0 ? 0 : -1;
+}
+
+int32_t li_rt_httpd_match_route(const char* method, const char* path) {
+  if (method == NULL || path == NULL || g_route_count == 0) {
+    return 0;
+  }
+  char norm[LI_HTTPD_PATH_MAX];
+  normalize_request_path(path, norm, sizeof(norm));
+  for (int32_t pri = 0; pri < g_route_count; pri++) {
+    for (int32_t i = 0; i < g_route_count; i++) {
+      if (g_routes[i].priority != pri) {
+        continue;
+      }
+      if (route_matches(&g_routes[i], method, norm)) {
+        return g_routes[i].route_id;
+      }
+    }
+  }
+  return 0;
+}
+
+int32_t li_rt_httpd_load_routing_fixture(void) {
+  const char* root = getenv("LI_REPO_ROOT");
+  if (root == NULL || root[0] == '\0') {
+    return -1;
+  }
+  char path[4096];
+  int n = snprintf(path, sizeof(path), "%s/li-tests/httpd/fixtures/routing.toml", root);
+  if (n < 0 || (size_t)n >= sizeof(path)) {
+    return -1;
+  }
+  return li_rt_httpd_load_config(path);
+}
+
+int32_t li_rt_httpd_route_action_kind(int32_t route_id) {
+  if (route_id <= 0 || route_id > g_route_count) {
+    return 0;
+  }
+  const char* action = g_routes[route_id - 1].action;
+  if (strncmp(action, "static:", 7) == 0) {
+    return 1;
+  }
+  if (strncmp(action, "proxy:", 6) == 0) {
+    return 2;
+  }
+  return 0;
+}

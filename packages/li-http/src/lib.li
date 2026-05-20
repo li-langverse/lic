@@ -107,3 +107,61 @@ def match_route_fixture(method: str, path: str) raises IO, Alloc -> int
   decreases 0
 =
   return li_rt_match_route_fixture(method, path)
+
+extern proc li_rt_httpd_load_config(path: str) -> int
+  requires true
+  ensures -1 <= result
+  ensures result <= 0
+  decreases 0
+
+extern proc li_rt_httpd_match_route(method: str, path: str) -> int
+  requires true
+  ensures 0 <= result
+  ensures result <= 64
+  decreases 0
+
+extern proc li_rt_httpd_route_action_kind(route_id: int) -> int
+  requires 0 <= route_id
+  requires route_id <= 64
+  ensures 0 <= result
+  ensures result <= 2
+  decreases route_id
+
+extern proc li_rt_httpd_load_routing_fixture() -> int
+  requires true
+  ensures -1 <= result
+  ensures result <= 0
+  decreases 0
+
+def load_routes_from_toml(path: str) raises IO, Alloc -> int
+  requires true
+  ensures -1 <= result
+  ensures result <= 0
+  decreases 0
+=
+  return li_rt_httpd_load_config(path)
+
+def load_routes_from_routing_fixture() raises IO, Alloc -> int
+  requires true
+  ensures -1 <= result
+  ensures result <= 0
+  decreases 0
+=
+  return li_rt_httpd_load_routing_fixture()
+
+def match_route(method: str, path: str) raises IO, Alloc -> int
+  requires true
+  ensures 0 <= result
+  ensures result <= 64
+  decreases 0
+=
+  return li_rt_httpd_match_route(method, path)
+
+def route_action_kind(route_id: int) raises IO, Alloc -> int
+  requires 0 < route_id
+  requires route_id <= 64
+  ensures 0 <= result
+  ensures result <= 2
+  decreases route_id
+=
+  return li_rt_httpd_route_action_kind(route_id)

@@ -33,4 +33,9 @@ export LI_REPO_ROOT="$ROOT"
 /tmp/li_match_routes
 test "$(/tmp/li_match_routes; echo $?)" -eq 0
 
+echo "== routing (Li TOML loader) =="
+"$LIC" build "$ROOT/li-tests/routing/match_routes_toml.li" -o /tmp/li_match_routes_toml
+/tmp/li_match_routes_toml
+test "$(/tmp/li_match_routes_toml; echo $?)" -eq 0
+
 echo "run_httpd_config: OK"

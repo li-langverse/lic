@@ -31,7 +31,7 @@ todos:
     status: in_progress
   - id: m1-toml-desugar
     content: Simple TOML desugar + config_desugar golden tests + explain-config CLI
-    status: pending
+    status: in_progress
   - id: m15-agent
     content: "M1.5: SSE streaming, stream timeouts, model routing, cancel on disconnect, OTel headers"
     status: pending

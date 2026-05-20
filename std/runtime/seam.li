@@ -154,6 +154,36 @@ extern proc httpd_set_proxy_upstream_port_i(port: var int, proxy_all: var int) r
   ensures true
   decreases 0
 
+extern proc httpd_set_upstream_ports_csv_i(csv: var ptr, proxy_all: var int) raises Net -> int
+  requires true
+  ensures true
+  decreases 0
+
+extern proc httpd_add_upstream_peer_i(port: var int) raises Net -> int
+  requires port > 0
+  ensures true
+  decreases 0
+
+extern proc httpd_clear_upstream_peers_i() raises Net -> unit
+  requires true
+  ensures true
+  decreases 0
+
+extern proc httpd_load_runtime_config_i(path: var ptr) raises IO -> int
+  requires true
+  ensures true
+  decreases 0
+
+extern proc httpd_config_listen_port_i() -> int
+  requires true
+  ensures true
+  decreases 0
+
+extern proc httpd_config_doc_root_i() -> ptr
+  requires true
+  ensures true
+  decreases 0
+
 extern proc net_lit_loopback_i() -> ptr
   requires true
   ensures true

@@ -8,6 +8,7 @@ All notable changes to Li are documented here. The format follows
 
 ### Added
 
+- **li-httpd M1 wave 3:** upstream keep-alive pool, RR LB (`httpd_set_upstream_ports_csv_i`), `httpd_load_runtime_config_i` + `scripts/flatten-httpd-config.py`; `lb_round_robin` bench.
 - **li-httpd M1 wave 2:** loopback reverse proxy (`httpd_set_proxy_upstream_port_i`, CLI `PORT ROOT BACKEND_PORT`); `proxy_loopback` tier-5 scenario; `examples/proxy_loopback.toml`.
 - **li-httpd M1 wave 1:** generic static GET + sendfile in `httpd_epoll_serve_i` hot path; `packages/li-httpd/examples/minimal.toml`; `scripts/validate-httpd-config.py`.
 - **Trusted runtime ABI:** `std/runtime/seam.li` canonical `extern proc` surface for `li_rt.c` / `li_rt_net.c`; compiler gate **E0331** (`check_trusted_extern_abi`); docs `docs/compiler/trusted-extern-abi.md`.

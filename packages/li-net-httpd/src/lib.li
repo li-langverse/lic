@@ -441,11 +441,49 @@ def httpd_serve_port_root_proxy(port: var int, root: var ptr, backend_port: var 
     return 1
   return httpd_serve_port_root(port, root)
 
+def path_ends_with_conf(path: var ptr) raises IO -> int
+  requires true
+  ensures true
+  decreases 0
+=
+  var n: int = bytes_len_i(path)
+  if n < 5:
+    return 0
+  if net_byte_at_i(path, n - 5) != 46:
+    return 0
+  if net_byte_at_i(path, n - 4) != 99:
+    return 0
+  if net_byte_at_i(path, n - 3) != 111:
+    return 0
+  if net_byte_at_i(path, n - 2) != 110:
+    return 0
+  if net_byte_at_i(path, n - 1) != 102:
+    return 0
+  return 1
+
+def httpd_run_from_runtime_config(path: var ptr) raises Net, Alloc, IO -> int
+  requires true
+  ensures true
+  decreases 0
+=
+  var ok: int = httpd_load_runtime_config_i(path)
+  if ok < 0:
+    return 1
+  var p: int = httpd_config_listen_port_i()
+  var r: ptr = httpd_config_doc_root_i()
+  if p <= 0:
+    return 1
+  return httpd_serve_port_root(p, r)
+
 def httpd_run_from_argv() raises Net, Alloc, IO -> int
   requires true
   ensures true
   decreases 0
 =
+  if li_rt_argc() == 2:
+    var cfg: ptr = li_rt_argv_i(1)
+    if path_ends_with_conf(cfg) == 1:
+      return httpd_run_from_runtime_config(cfg)
   if li_rt_argc() < 3:
     return 1
   var port_arg: ptr = li_rt_argv_i(1)
@@ -453,6 +491,10 @@ def httpd_run_from_argv() raises Net, Alloc, IO -> int
   var r: ptr = li_rt_argv_i(2)
   if li_rt_argc() >= 4:
     var backend_arg: ptr = li_rt_argv_i(3)
+    var all_paths: int = 1
+    var csv_ok: int = httpd_set_upstream_ports_csv_i(backend_arg, all_paths)
+    if csv_ok > 0:
+      return httpd_serve_port_root(p, r)
     var bp: int = httpd_parse_port_i(backend_arg)
     return httpd_serve_port_root_proxy(p, r, bp)
   return httpd_serve_port_root(p, r)

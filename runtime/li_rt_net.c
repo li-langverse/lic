@@ -47,6 +47,20 @@ static char g_proxy_host[64] = "127.0.0.1";
 static int32_t g_proxy_port = 0;
 static int g_proxy_all = 0;
 
+#define HTTPD_MAX_UPSTREAM_PEERS 8
+#define HTTPD_POOL_PER_PEER 4
+
+typedef struct {
+  int32_t port;
+  int fds[HTTPD_POOL_PER_PEER];
+  int in_use[HTTPD_POOL_PER_PEER];
+} httpd_upstream_peer_t;
+
+static httpd_upstream_peer_t g_up_peers[HTTPD_MAX_UPSTREAM_PEERS];
+static int g_up_peer_count = 0;
+static int g_lb_rr = 0;
+static int32_t g_config_listen_port = 0;
+
 static void slots_init_once(void) {
   if (g_slots_inited) {
     return;
@@ -323,7 +337,42 @@ int32_t httpd_set_proxy_upstream_port_i(int32_t port, int32_t proxy_all) {
   g_proxy_host[sizeof(g_proxy_host) - 1] = '\0';
   g_proxy_port = port;
   g_proxy_all = proxy_all ? 1 : 0;
-  return 0;
+  return httpd_add_upstream_peer_i(port);
+}
+
+int32_t httpd_set_upstream_ports_csv_i(intptr_t csv, int32_t proxy_all) {
+  const char* s = ptr_i(csv);
+  if (!s) {
+    return -1;
+  }
+  httpd_clear_upstream_peers_i();
+  g_proxy_all = proxy_all ? 1 : 0;
+  strncpy(g_proxy_host, "127.0.0.1", sizeof(g_proxy_host) - 1);
+  g_proxy_host[sizeof(g_proxy_host) - 1] = '\0';
+  int count = 0;
+  while (*s) {
+    while (*s == ' ' || *s == ',') {
+      s++;
+    }
+    if (!*s) {
+      break;
+    }
+    int port = 0;
+    while (*s >= '0' && *s <= '9') {
+      port = port * 10 + (*s - '0');
+      s++;
+    }
+    if (port > 0 && port <= 65535) {
+      if (httpd_add_upstream_peer_i(port) == 0) {
+        count++;
+        g_proxy_port = port;
+      }
+    }
+    while (*s && *s != ',') {
+      s++;
+    }
+  }
+  return count > 0 ? count : -1;
 }
 
 int32_t httpd_set_proxy_upstream_i(int32_t host, int32_t port, int32_t proxy_all) {
@@ -686,7 +735,7 @@ static int path_is_safe(const char* path, int plen) {
   return 1;
 }
 
-static int tcp_connect_loopback(int port) {
+static int tcp_connect_loopback_port(int port) {
   struct sockaddr_in addr;
   memset(&addr, 0, sizeof(addr));
   addr.sin_family = AF_INET;
@@ -702,7 +751,159 @@ static int tcp_connect_loopback(int port) {
     close(fd);
     return -1;
   }
+  tcp_tune_client((int32_t)fd);
   return fd;
+}
+
+static httpd_upstream_peer_t* upstream_peer_find(int32_t port) {
+  for (int i = 0; i < g_up_peer_count; i++) {
+    if (g_up_peers[i].port == port) {
+      return &g_up_peers[i];
+    }
+  }
+  return NULL;
+}
+
+static httpd_upstream_peer_t* upstream_peer_get_or_add(int32_t port) {
+  httpd_upstream_peer_t* p = upstream_peer_find(port);
+  if (p) {
+    return p;
+  }
+  if (g_up_peer_count >= HTTPD_MAX_UPSTREAM_PEERS) {
+    return NULL;
+  }
+  p = &g_up_peers[g_up_peer_count++];
+  memset(p, 0, sizeof(*p));
+  p->port = port;
+  for (int i = 0; i < HTTPD_POOL_PER_PEER; i++) {
+    p->fds[i] = -1;
+    p->in_use[i] = 0;
+  }
+  return p;
+}
+
+int32_t httpd_add_upstream_peer_i(int32_t port) {
+  if (port <= 0 || port > 65535) {
+    return -1;
+  }
+  if (!upstream_peer_get_or_add(port)) {
+    return -1;
+  }
+  g_proxy_port = port;
+  return 0;
+}
+
+void httpd_clear_upstream_peers_i(void) {
+  for (int i = 0; i < g_up_peer_count; i++) {
+    for (int j = 0; j < HTTPD_POOL_PER_PEER; j++) {
+      if (g_up_peers[i].fds[j] >= 0) {
+        close(g_up_peers[i].fds[j]);
+        g_up_peers[i].fds[j] = -1;
+      }
+      g_up_peers[i].in_use[j] = 0;
+    }
+  }
+  g_up_peer_count = 0;
+  g_lb_rr = 0;
+}
+
+static int32_t httpd_lb_pick_port(void) {
+  if (g_up_peer_count <= 0) {
+    return g_proxy_port;
+  }
+  int idx = g_lb_rr % g_up_peer_count;
+  g_lb_rr++;
+  return g_up_peers[idx].port;
+}
+
+static int upstream_pool_acquire(int32_t port) {
+  httpd_upstream_peer_t* p = upstream_peer_get_or_add(port);
+  if (!p) {
+    return tcp_connect_loopback_port((int)port);
+  }
+  for (int i = 0; i < HTTPD_POOL_PER_PEER; i++) {
+    if (p->fds[i] >= 0 && !p->in_use[i]) {
+      p->in_use[i] = 1;
+      return p->fds[i];
+    }
+  }
+  for (int i = 0; i < HTTPD_POOL_PER_PEER; i++) {
+    if (p->fds[i] < 0) {
+      int fd = tcp_connect_loopback_port((int)port);
+      if (fd < 0) {
+        return -1;
+      }
+      p->fds[i] = fd;
+      p->in_use[i] = 1;
+      return fd;
+    }
+  }
+  return tcp_connect_loopback_port((int)port);
+}
+
+static void upstream_pool_release(int32_t port, int fd, int reuse) {
+  httpd_upstream_peer_t* p = upstream_peer_find(port);
+  if (!p) {
+    close(fd);
+    return;
+  }
+  for (int i = 0; i < HTTPD_POOL_PER_PEER; i++) {
+    if (p->fds[i] == fd) {
+      p->in_use[i] = 0;
+      if (!reuse) {
+        close(fd);
+        p->fds[i] = -1;
+      }
+      return;
+    }
+  }
+  close(fd);
+}
+
+static int parse_resp_content_length(const char* hdr, int hdr_len, int* out_keep) {
+  *out_keep = 0;
+  int cl = -1;
+  for (int i = 0; i + 15 < hdr_len; i++) {
+    if (hdr[i] == 'C' && memcmp(hdr + i, "Content-Length:", 15) == 0) {
+      i += 15;
+      while (i < hdr_len && (hdr[i] == ' ' || hdr[i] == '\t')) {
+        i++;
+      }
+      cl = 0;
+      while (i < hdr_len && hdr[i] >= '0' && hdr[i] <= '9') {
+        cl = cl * 10 + (hdr[i] - '0');
+        i++;
+      }
+    }
+    if (hdr[i] == 'C' && i + 10 < hdr_len && memcmp(hdr + i, "Connection:", 11) == 0) {
+      for (int j = i + 11; j < hdr_len; j++) {
+        if (hdr[j] == 'k' || hdr[j] == 'K') {
+          *out_keep = 1;
+          break;
+        }
+      }
+    }
+  }
+  return cl;
+}
+
+static ssize_t read_blocking(int fd, void* buf, size_t n) {
+  char* p = (char*)buf;
+  size_t off = 0;
+  while (off < n) {
+    ssize_t r = read(fd, p + off, n - off);
+    if (r < 0) {
+      if (errno == EINTR) {
+        continue;
+      }
+      return -1;
+    }
+    if (r == 0) {
+      return (ssize_t)off;
+    }
+    off += (size_t)r;
+  }
+  return (ssize_t)off;
 }
 
 static int path_proxy_match(const char* path, int plen) {
@@ -719,7 +920,11 @@ static int path_proxy_match(const char* path, int plen) {
 }
 
 static int32_t httpd_proxy_forward(int32_t conn, const char* path, int plen) {
-  int up = tcp_connect_loopback((int)g_proxy_port);
+  int32_t peer_port = httpd_lb_pick_port();
+  if (peer_port <= 0) {
+    return -1;
+  }
+  int up = upstream_pool_acquire(peer_port);
   if (up < 0) {
     return -1;
   }
@@ -727,36 +932,85 @@ static int32_t httpd_proxy_forward(int32_t conn, const char* path, int plen) {
   int n = snprintf(req, sizeof(req),
                    "GET %.*s HTTP/1.1\r\n"
                    "Host: %s:%d\r\n"
-                   "Connection: close\r\n"
+                   "Connection: keep-alive\r\n"
                    "\r\n",
-                   plen, path, g_proxy_host, (int)g_proxy_port);
+                   plen, path, g_proxy_host, (int)peer_port);
   if (n < 0 || n >= (int)sizeof(req)) {
-    close(up);
+    upstream_pool_release(peer_port, up, 0);
     return -1;
   }
   if (send_all_nb(up, req, (size_t)n) < 0) {
-    close(up);
+    upstream_pool_release(peer_port, up, 0);
     return -1;
   }
-  char buf[8192];
-  for (;;) {
-    ssize_t r = read(up, buf, sizeof(buf));
+
+  char hdr_buf[16384];
+  size_t hdr_len = 0;
+  int hdr_end = -1;
+  while (hdr_end < 0 && hdr_len < sizeof(hdr_buf) - 1) {
+    ssize_t r = read(up, hdr_buf + hdr_len, sizeof(hdr_buf) - 1 - hdr_len);
     if (r < 0) {
-      if (errno == EINTR) {
-        continue;
-      }
-      close(up);
+      upstream_pool_release(peer_port, up, 0);
       return -1;
     }
     if (r == 0) {
-      break;
-    }
-    if (send_all_nb((int)conn, buf, (size_t)r) < 0) {
-      close(up);
+      upstream_pool_release(peer_port, up, 0);
       return -1;
     }
+    hdr_len += (size_t)r;
+    hdr_buf[hdr_len] = '\0';
+    for (size_t i = 0; i + 3 < hdr_len; i++) {
+      if (hdr_buf[i] == '\r' && hdr_buf[i + 1] == '\n' && hdr_buf[i + 2] == '\r' && hdr_buf[i + 3] == '\n') {
+        hdr_end = (int)i + 4;
+        break;
+      }
+    }
   }
-  close(up);
+  if (hdr_end < 0) {
+    upstream_pool_release(peer_port, up, 0);
+    return -1;
+  }
+  if (send_all_nb((int)conn, hdr_buf, (size_t)hdr_end) < 0) {
+    upstream_pool_release(peer_port, up, 0);
+    return -1;
+  }
+
+  int up_keep = 0;
+  int body_left = parse_resp_content_length(hdr_buf, hdr_end, &up_keep);
+  if (body_left < 0) {
+    upstream_pool_release(peer_port, up, 0);
+    return -1;
+  }
+  size_t in_hdr = (size_t)hdr_end;
+  if (hdr_len > in_hdr) {
+    size_t extra = hdr_len - in_hdr;
+    if (extra > (size_t)body_left) {
+      extra = (size_t)body_left;
+    }
+    if (send_all_nb((int)conn, hdr_buf + in_hdr, extra) < 0) {
+      upstream_pool_release(peer_port, up, 0);
+      return -1;
+    }
+    body_left -= (int)extra;
+  }
+  char body_buf[8192];
+  while (body_left > 0) {
+    size_t chunk = (size_t)body_left;
+    if (chunk > sizeof(body_buf)) {
+      chunk = sizeof(body_buf);
+    }
+    ssize_t r = read_blocking(up, body_buf, chunk);
+    if (r < 0 || r == 0) {
+      upstream_pool_release(peer_port, up, 0);
+      return -1;
+    }
+    if (send_all_nb((int)conn, body_buf, (size_t)r) < 0) {
+      upstream_pool_release(peer_port, up, 0);
+      return -1;
+    }
+    body_left -= (int)r;
+  }
+  upstream_pool_release(peer_port, up, up_keep);
   return 0;
 }
 
@@ -1274,6 +1528,76 @@ int32_t httpd_write_response_hdr_i(intptr_t buf, int32_t cap, int32_t status, in
   }
   return (int32_t)n;
 }
+
+static void trim_line(char* s) {
+  size_t n = strlen(s);
+  while (n > 0 && (s[n - 1] == '\n' || s[n - 1] == '\r' || s[n - 1] == ' ' || s[n - 1] == '\t')) {
+    s[--n] = '\0';
+  }
+  char* p = s;
+  while (*p == ' ' || *p == '\t') {
+    p++;
+  }
+  if (p != s) {
+    memmove(s, p, strlen(p) + 1);
+  }
+}
+
+int32_t httpd_load_runtime_config_i(intptr_t path) {
+  const char* cfg_path = ptr_i(path);
+  if (!cfg_path) {
+    return -1;
+  }
+  FILE* f = fopen(cfg_path, "r");
+  if (!f) {
+    return -1;
+  }
+  httpd_clear_upstream_peers_i();
+  g_config_listen_port = 0;
+  g_doc_root_len = 0;
+  g_proxy_all = 0;
+  char line[4096];
+  while (fgets(line, sizeof(line), f)) {
+    trim_line(line);
+    if (!line[0] || line[0] == '#') {
+      continue;
+    }
+    char* eq = strchr(line, '=');
+    if (!eq) {
+      continue;
+    }
+    *eq = '\0';
+    char* key = line;
+    char* val = eq + 1;
+    trim_line(key);
+    trim_line(val);
+    if (strcmp(key, "listen_port") == 0) {
+      g_config_listen_port = (int32_t)atoi(val);
+    } else if (strcmp(key, "document_root") == 0) {
+      g_doc_root_len = strlen(val);
+      if (g_doc_root_len > 0 && g_doc_root_len < sizeof(g_doc_root)) {
+        memcpy(g_doc_root, val, g_doc_root_len + 1);
+      }
+    } else if (strcmp(key, "proxy_all") == 0) {
+      g_proxy_all = (strcmp(val, "1") == 0 || strcmp(val, "true") == 0) ? 1 : 0;
+    } else if (strcmp(key, "upstream_peer") == 0) {
+      int port = atoi(val);
+      if (port > 0) {
+        httpd_add_upstream_peer_i(port);
+        g_proxy_port = port;
+      }
+    }
+  }
+  fclose(f);
+  if (g_doc_root_len == 0) {
+    return -1;
+  }
+  return 0;
+}
+
+int32_t httpd_config_listen_port_i(void) { return g_config_listen_port; }
+
+intptr_t httpd_config_doc_root_i(void) { return g_doc_root_len ? iptr(g_doc_root) : 0; }
 
 int32_t net_diag(int32_t tag) {
   (void)tag;

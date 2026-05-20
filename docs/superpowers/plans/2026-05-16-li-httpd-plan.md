@@ -84,7 +84,7 @@ isProject: false
 | **Static HTTP** | GET `/` + `/index.html` cached; **generic GET** under doc root via sendfile/coalesce in C | `static_many`, path canonicalization tests |
 | **Harness** | `bench_http.py` + 2 scenarios in `suite.toml` ci/nightly | `static_large`, `[load].url_path`, fixture generator |
 | **Config** | CLI `port` + doc root only | `examples/minimal.toml` + `scripts/validate-httpd-config.py` |
-| **Proxy / LB** | Loopback reverse proxy (`httpd_set_proxy_upstream_i`, CLI 4th arg); `proxy_loopback` bench | `lb_round_robin`, health, typed TOML router in Li |
+| **Proxy / LB** | Keep-alive upstream pool, RR LB (`httpd_set_upstream_ports_csv_i`), runtime `.conf` from TOML | Passive health, `lic validate-config` in-process, Li route table |
 | **TLS / H2 / SSE** | M1.5 / M2 per table below | Do not block M1 static + proxy on proof gate |
 
 **Nginx remains oracle only** — no `nginx.conf` compatibility target. Each new capability gets a **tier5_http scenario** before merge (correctness `[verify]` in CI profile; RPS in nightly).
@@ -94,8 +94,8 @@ isProject: false
 | Wave | Code | Bench scenarios | Gate |
 | ---- | ---- | ----------------- | ---- |
 | **1** (done) | Generic static files; validate-config subset; harness `url_path` | `static_large` in ci + nightly | `lic build` + `bench_http.py --profile ci` |
-| **2** (active) | Loopback reverse proxy (`httpd_set_proxy_upstream_i`, CLI `PORT ROOT BACKEND_PORT`) | `proxy_loopback` in ci; `proxy_upstream_nginx` next | verify + rps vs nginx |
-| **3** | LB RR + least_conn + passive health | `lb_round_robin`, `lb_least_conn`, `lb_peer_down` | failover verify row |
+| **2** (done) | Loopback reverse proxy + keep-alive pool | `proxy_loopback` in ci | verify + rps vs nginx |
+| **3** (active) | LB RR (`httpd_lb_pick_port`), runtime config loader | `lb_round_robin` in ci; `lb_least_conn`, `lb_peer_down` next | failover verify row |
 | **4** | Rate limit 429; route DSL; exploit A+B on li-httpd | `rate_limit_429`; `exploit_http.py` wired | stricter-than-nginx `[expect]` ok |
 
 ---

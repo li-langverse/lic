@@ -56,11 +56,7 @@
 | RB-DOC-03 | docs | Animation | https://create.roblox.com/docs/animation | Avatar tab |
 | RB-DOC-04 | docs | Assistant (agent) | https://create.roblox.com/docs/assistant/guide | Competitor agent UX |
 
-**Screenshot sources (from docs, capture in browser):**
-
-- `…/assets/studio/general/Editor-Window.jpg`
-- `…/assets/studio/explorer/Parent-Child-Hierarchy.png`
-- `…/assets/studio/general/Docking-Grouped-Tabs.png`
+**Screenshot sources:** `prod.docsiteassets.roblox.com/assets/studio/…` (auto via `./scripts/checkout-competitive-media.sh`). Legacy `create.roblox.com/docs/assets/…` paths 404.
 
 ---
 

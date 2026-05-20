@@ -16,12 +16,15 @@ competitive-intel/media/local/
   clips/              # short screen recordings (.webm)
 ```
 
-Add to `.gitignore` if binaries should not push:
+Already in repo `.gitignore` — binaries never commit.
 
-```gitignore
-docs/game-dev/competitive-intel/media/local/**
-!docs/game-dev/competitive-intel/media/local/.gitkeep
+**Quick checkout** (official doc images + YouTube thumbs):
+
+```bash
+./scripts/checkout-competitive-media.sh
 ```
+
+Roblox CDN note: use `prod.docsiteassets.roblox.com`, not `create.roblox.com/docs/assets/…` (404).
 
 ## Suggested captures (per competitor)
 

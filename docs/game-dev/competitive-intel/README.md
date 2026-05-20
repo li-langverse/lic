@@ -16,8 +16,13 @@
 
 1. Read **analysis.md** for product decisions.  
 2. Use **media-catalog.md** to watch official intros in order (§ Recommended viewing order).  
-3. Capture screenshots locally → `media/local/<competitor>/` (gitignored or LFS).  
-4. Iterate [li-native-gui-plan.md](../plans/li-native-gui-plan.md) from analysis § Li mapping.
+3. **Checkout reference media locally** (not in git):
+   ```bash
+   ./scripts/checkout-competitive-media.sh
+   ```
+   → `media/local/<competitor>/` + `media/local/manifest.json` (gitignored).  
+4. Add your own captures per [CAPTURE.md](CAPTURE.md).  
+5. Iterate [li-native-gui-plan.md](../plans/li-native-gui-plan.md) from analysis § Li mapping.
 
 ## Competitors covered
 

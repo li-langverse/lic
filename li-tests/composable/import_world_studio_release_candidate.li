@@ -1,0 +1,22 @@
+import studio
+import world
+import sim.scientific
+import render
+import gpu
+
+def main() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  if studio_merge_to_main_smoke() != 0:
+    return 1
+  if world_author_api_smoke() != 0:
+    return 2
+  if sim_field_checkpoint_smoke() != 0:
+    return 3
+  if render_lkir_present_smoke() != 0:
+    return 4
+  if gpu_lkir_present_smoke() != 0:
+    return 5
+  return 0

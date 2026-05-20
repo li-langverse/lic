@@ -1,6 +1,6 @@
 # PH-world-studio-program — master tracker
 
-**Status:** Ready for merge (impl-33 on `feat/world-studio-impl-1`) · [merge checklist](MERGE-world-studio-checklist.md) · [demo showcase](demo-showcase.md)  
+**Status:** Ready for merge (impl-41 on `feat/world-studio-impl-1`) · [merge checklist](MERGE-world-studio-checklist.md) · [demo showcase](demo-showcase.md)  
 **Vision:** [world-studio-vision.md](world-studio-vision.md)  
 **Progress report:** [PH-world-studio-progress-report.md](PH-world-studio-progress-report.md) ← **read this for sprint status**
 
@@ -128,6 +128,7 @@ Cross-cutting program IDs. Implementation order respects dependencies in the vis
 | **121 composable** · GW-3–4 · SF-2–3 · author API quickstart | Done |
 | **126 composable** · play mode · publish field · ecosystem · milestone 121 | Done |
 | **130 composable** · play_mode spin-up (12) · demo Play tab · merge-ready | Done |
+| **132 composable** · merge_to_main · release_candidate · create-world-studio-pr | Done |
 | [li-native-first.mdc](../../.cursor/rules/li-native-first.mdc) | Done |
 | MMO-5 WebSocket stubs (`net.httpd`) | Done |
 | MMO-6 `world_checkpoint_mmo_stub` | Done |

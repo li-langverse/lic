@@ -1213,6 +1213,18 @@ note = "Demo Play tab game frame + viewport gate"
 
 [[tests]]
 suite = "composable"
+file = "composable/import_world_studio_merge_to_main.li"
+outcome = "compile_ok"
+note = "Merge-to-main rollup (impl-41)"
+
+[[tests]]
+suite = "composable"
+file = "composable/import_world_studio_release_candidate.li"
+outcome = "compile_ok"
+note = "Release candidate stack before main merge"
+
+[[tests]]
+suite = "composable"
 file = "composable/import_world_studio_benchmark_tier1.li"
 outcome = "compile_ok"
 note = "Competitive world-studio.toml tier-1 rollup"

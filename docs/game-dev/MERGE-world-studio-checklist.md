@@ -1,6 +1,6 @@
 # Merge checklist — `feat/world-studio-impl-1` → `main`
 
-**PR title:** feat: World Studio / Li Engine (impl-1–33)
+**PR title:** feat: World Studio / Li Engine (130 gates, play_mode)
 
 ## Pre-merge verify
 
@@ -12,19 +12,24 @@
 ./scripts/verify-world-studio-binary.sh
 ```
 
-## Stats (impl-34)
+## Stats (impl-41)
 
 | Metric | Value |
 |--------|--------|
-| Composable gates | 106 (milestone **100** at impl-32) |
-| Li-native store | `store_backend_li_native()` — composable without Redis |
-| Demo tabs | 12 (incl. Agent) |
-| Spin-up templates | 11 |
+| Composable gates | **132** (milestone **130** at impl-40) |
+| Li-native store / httpd / world journal | composable ecosystem gates |
+| Demo tabs | **13** (incl. **Play**) |
+| Spin-up templates | **12** (`play_mode`) |
 | Portable targets | 5 triples (`check-portable-targets.sh`) |
 | game_dev parse_ok | 12 |
 | vertical_demos build | 7 |
-| spinup_templates | 12 |
-| Release rollup | `import_world_studio_release_rollup` |
+| Merge gate | `import_world_studio_merge_to_main` |
+| Release candidate | `import_world_studio_release_candidate` |
+| Author API | [world-api-quickstart.md](world-api-quickstart.md) |
+
+```bash
+./scripts/create-world-studio-pr.sh   # preflight + gh pr create --draft
+```
 
 ## After merge
 

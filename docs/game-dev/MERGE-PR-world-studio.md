@@ -8,22 +8,28 @@
 ./scripts/merge-world-studio-preflight.sh
 ```
 
-## Create draft PR (GitHub CLI)
+## Create draft PR
+
+```bash
+./scripts/create-world-studio-pr.sh
+```
+
+Or manually:
 
 ```bash
 gh pr create \
   --base main \
   --head feat/world-studio-impl-1 \
-  --title "feat: World Studio / Li Engine (impl-1–33, 100+ gates)" \
+  --title "feat: World Studio / Li Engine (130 gates, play_mode)" \
   --body-file docs/game-dev/PR-world-studio-impl-summary.md \
   --draft
 ```
 
-## Metrics at merge (impl-39)
+## Metrics at merge (impl-41)
 
 | Metric | Value |
 |--------|--------|
-| Composable gates | **130** (milestone 130) |
+| Composable gates | **132** (milestone 130) |
 | Spin-up templates | **12** (`play_mode`) |
 | Demo tabs | 13 |
 | Vertical demos | 7 |

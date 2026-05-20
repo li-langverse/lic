@@ -187,6 +187,7 @@ std::unique_ptr<Expr> Parser::parse_primary() {
     e->kind = Expr::Kind::IntLit;
     e->span = {t.start, t.end};
     e->int_value = t.int_value;
+    e->lit_suffix = t.lit_suffix;
     return parse_postfix(std::move(e));
   }
   if (t.kind == TokenKind::FloatLit) {
@@ -195,6 +196,16 @@ std::unique_ptr<Expr> Parser::parse_primary() {
     e->kind = Expr::Kind::FloatLit;
     e->span = {t.start, t.end};
     e->float_value = t.float_value;
+    e->lit_suffix = t.lit_suffix;
+    return parse_postfix(std::move(e));
+  }
+  if (t.kind == TokenKind::BinaryLit) {
+    i++;
+    auto e = std::make_unique<Expr>();
+    e->kind = Expr::Kind::BinaryLit;
+    e->span = {t.start, t.end};
+    e->int_value = t.int_value;
+    e->str_value = std::string(t.text);
     return parse_postfix(std::move(e));
   }
   if (t.kind == TokenKind::Ident || t.kind == TokenKind::KwResult ||
@@ -570,6 +581,7 @@ std::unique_ptr<Expr> Parser::parse_decorator_value() {
     e->kind = Expr::Kind::IntLit;
     e->span = {t.start, t.end};
     e->int_value = t.int_value;
+    e->lit_suffix = t.lit_suffix;
     i++;
     return e;
   }
@@ -578,6 +590,16 @@ std::unique_ptr<Expr> Parser::parse_decorator_value() {
     e->kind = Expr::Kind::FloatLit;
     e->span = {t.start, t.end};
     e->float_value = t.float_value;
+    e->lit_suffix = t.lit_suffix;
+    i++;
+    return e;
+  }
+  if (t.kind == TokenKind::BinaryLit) {
+    auto e = std::make_unique<Expr>();
+    e->kind = Expr::Kind::BinaryLit;
+    e->span = {t.start, t.end};
+    e->int_value = t.int_value;
+    e->str_value = std::string(t.text);
     i++;
     return e;
   }

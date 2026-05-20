@@ -6,6 +6,13 @@ All notable changes to Li are documented here. The format follows
 
 ## [Unreleased]
 
+### Added
+
+- Fixed-width scalars: `float4`–`float512`, `int4`–`int512` (and aliases); width mismatch is a type error; see `docs/language/scalar-precision.md`.
+- Literal suffixes: `3.14f32`, `42i32`, `42u`, `255u8`; binary type + `0b…` literals; `std/binary/binary.li`.
+- Documentation: [docs/language/scalar-precision.md](docs/language/scalar-precision.md) (canonical), `packages/li-physics-core/docs/scalar-precision.md`, `std/binary/README.md`; mkdocs + handbook nav; **“You set precision yourself”** (per-module types, suffixes, `li.toml`, physics metadata — no org-wide enforcement).
+- `physics.core`: `ScalarPrecision` (`weights_encoding` for binary weights) and profile bit-width metadata (not org-enforced).
+
 ### Changed
 
 - **Breaking:** **E0303** — `ensures true` is rejected on non-`unit` return types (non-`extern`); packages and `li-tests` updated with `ensures result == …` or domain bounds. See `docs/release-notes/2026-05-19-enforce-strict-ensures.md`.

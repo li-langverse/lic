@@ -1,0 +1,33 @@
+---
+description: Agentic World Studio development — UE parity measurement path
+globs:
+  - packages/li-world/**
+  - packages/li-studio/**
+  - packages/li-sim/**
+  - samples/ue5-li-baseline/**
+  - benchmarks/tier2_world/**
+  - scripts/run-ue-samples.sh
+  - scripts/publish-benchmarks-ingest.sh
+---
+
+# World Studio agentic parity
+
+## Default agent loop
+
+1. Read `docs/game-dev/ue-parity-agentic-roadmap.md`
+2. Patch **Li** (`world.li`, packages) — not C oracles in package trees
+3. `lic build` composable gates touched by the change
+4. `bench.py --only <affected>` for world/gaming kernels
+5. `./scripts/publish-benchmarks-ingest.sh` when timings matter
+
+## UE comparison (required before claiming vs Unreal)
+
+- Run `./scripts/run-ue-samples.sh` on a machine with `UE_ROOT` (not cloud-only agents)
+- Or ingest manual CSV via `import_ue_baseline.py`
+- Do **not** treat `unreal-proxy-targets.json` budgets as measured UE
+
+## Parity priorities (P1)
+
+- `sim_step_physics` Li body + `physics.runtime`
+- `li-render` present path + frame bench
+- Native `li-studio` shell (command palette, adaptive panels)

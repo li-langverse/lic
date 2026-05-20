@@ -1,0 +1,28 @@
+# Run UE5 baseline capture on a self-hosted runner with UE installed.
+name: ue-baseline
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - "samples/ue5-li-baseline/**"
+      - "scripts/run-ue-samples.sh"
+
+jobs:
+  ue-baseline:
+    runs-on: [self-hosted, linux, unreal-engine]
+    if: vars.UE_ROOT != ''
+    steps:
+      - uses: actions/checkout@v4
+      - name: Capture UE baselines
+        env:
+          UE_ROOT: ${{ vars.UE_ROOT }}
+        run: |
+          chmod +x scripts/run-ue-samples.sh scripts/publish-benchmarks-ingest.sh
+          ./scripts/run-ue-samples.sh
+      - uses: actions/upload-artifact@v4
+        with:
+          name: ue-baselines
+          path: |
+            benchmarks/competitive/ue-baselines.csv
+            benchmarks/competitive/ue-baselines-merged.json

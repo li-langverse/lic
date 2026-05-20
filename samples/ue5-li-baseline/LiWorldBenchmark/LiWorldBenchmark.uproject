@@ -1,0 +1,17 @@
+{
+  "FileVersion": 3,
+  "EngineAssociation": "5.4",
+  "Category": "",
+  "Description": "Li world_engine UE baseline capture (stat unit, Mass tick proxy)",
+  "Modules": [
+    {
+      "Name": "LiWorldBenchmark",
+      "Type": "Runtime",
+      "LoadingPhase": "Default"
+    }
+  ],
+  "Plugins": [
+    { "Name": "MassEntity", "Enabled": true },
+    { "Name": "MassGameplay", "Enabled": true }
+  ]
+}

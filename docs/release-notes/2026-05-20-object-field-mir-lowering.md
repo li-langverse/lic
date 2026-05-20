@@ -16,7 +16,9 @@
 - `compiler/mir/include/li/mir.hpp` — `MirParam::fixed_array_elems`; comments for `ReturnObject` / `object_layout`.
 - `compiler/mir/lower.cpp` — `collect_object_return_layout_r` / `append_mir_params_for_object_type` include fixed `array[N, int|float]`; implicit `ReturnObject` zero uses per-index `ArrayStore*` for those fields; `seed_*_params` skip fixed-array param roots; prior object work unchanged (`ReturnObject`, `CallProc` temps, `var`/`Assign` copies, `emit_copy_array_slots_r`, `g_arr_ctx`, `Index` / `Assign` `FieldAccess` bases, deferred `g_arr_ctx` clear).
 - `compiler/codegen/emit.cpp` — `llvm_type_for_mir_param`, LLVM struct fields `[N x T]`, `ReturnObject` aggregate load, `CallProc` aggregate store to `ArrayAlloc` slots, `mir_arg_value` loads for array idents, prologue stores for expanded array params.
-- `li-tests/objects/object_array_return_call.li` — callee returns `Buf` with `array[2, int]`; `li-tests/manifest.toml` registers it alongside other object tests.
+- `li-tests/objects/object_array_return_call.li` — callee returns object whose only field is `array[2, int]`.
+- `li-tests/objects/object_mixed_scalar_array_return.li` — struct return with `int`, `array[2, int]`, `int` fields (ordering vs layout).
+- `li-tests/manifest.toml` — register `object_mixed_scalar_array_return.li`.
 
 ## Not changed
 

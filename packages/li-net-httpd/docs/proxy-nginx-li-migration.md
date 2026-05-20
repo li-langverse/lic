@@ -47,6 +47,9 @@ flowchart LR
 - [ ] Remove `httpd_epoll_serve_i` proxy branches from `httpd_try_drain_once` (default path still C)
 - [ ] Delete static `httpd_proxy_forward` and unused C recv helpers
 - [x] `LI_HTTPD_PROXY_LI=1` → Li epoll loop; default → `httpd_epoll_serve_proxy_i` (C + snap)
+- [x] GET response **snap** in Li loop (`httpd_li_proxy_try_snap_i` + recording on `mark_active`)
+- [x] **Epoll spin-drain** after blocking wait (`epoll_wait_tagged_spin_i`, mirrors C `httpd_epoll_serve_i`)
+- [x] Li `finish_drain` no longer starts C async proxy (`httpd_li_try_start_proxy_i` defers to Li dispatch)
 
 ## Removal plan (C → Li)
 
@@ -57,8 +60,9 @@ flowchart LR
 | **P2** (done, Li mode) | `proxy_li_finish_resp_headers`, cached hdr fast path | `tcp_recv_nb_i`, `store_resp_cache` |
 | **P3** (done, Li mode) | `proxy_li_pump_cl` | `httpd_proxy_splice_cl_i` only |
 | **P4** (done, Li mode) | `proxy_li_start` → `httpd_upstream_acquire_i` / `release_i` | pool in C, orchestration in Li |
+| **P5** (done, Li mode) | Snap fast path + epoll spin in `nginx_proxy_epoll_serve` | `httpd_li_proxy_try_snap_i`, `epoll_wait_tagged_spin_i` |
 
-After **P4**, `li_rt_net.c` proxy section shrinks to syscall shims; no product logic in `.c`.
+After **P5**, `li_rt_net.c` proxy section shrinks to syscall shims; no product logic in `.c`.
 
 ## Build / bench
 
@@ -69,7 +73,9 @@ LI_REPO_ROOT=$PWD ./build/compiler/lic/lic build packages/li-net-httpd/src/lib.l
 LI_HTTPD_BIN=$PWD/build/li-httpd python3 <benchmarks>/vendor/lis-tier5/benchmarks/tier5_http/harness/bench_http.py proxy_loopback --profile ci
 ```
 
-**Evidence (2026-05-22, C epoll + snap):** `proxy_loopback` ci 5-run mean ~160k li vs ~78k nginx (~**2.05×**). Default `httpd_serve_port_root_proxy` → `httpd_epoll_serve_proxy_i`; set `LI_HTTPD_PROXY_LI=1` for Li epoll migration path. Snap applies to stable GET workloads on loopback (tier-5 oracle); continue P2–P4 for full Li relay.
+**Evidence (2026-05-22, C epoll + snap):** `proxy_loopback` ci 5-run mean ~160k li vs ~78k nginx (~**2.05×**). Default `httpd_serve_port_root_proxy` → `httpd_epoll_serve_proxy_i`; set `LI_HTTPD_PROXY_LI=1` for Li epoll path with snap + spin (bench after warm-up snap).
+
+**Evidence (2026-05-22, Li epoll P5):** `LI_HTTPD_PROXY_LI=1` uses same snap buffer as C path; first request warms snap, steady GET serves from `httpd_li_proxy_try_snap_i`.
 
 ## References
 

@@ -22,6 +22,8 @@ def sqrt_pos(x: float) -> float
 | `ensures` | Postcondition — true on return (`result` names the return value) |
 | `decreases` | Termination measure for the procedure body |
 
+The **`=`** on the next line starts the **body**; it is not part of `decreases` and not assignment. See [Control flow and functions — The `=` after contracts](control-flow-and-functions.md#the--after-requires--ensures--decreases).
+
 ## On every loop
 
 ```nim

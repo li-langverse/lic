@@ -20,7 +20,9 @@ def main() -> int
 | `requires true` | Precondition (here: always allowed to run) |
 | `ensures result == 0` | Postcondition: return value is 0 |
 | `decreases 0` | This procedure does not loop — trivially finishes |
-| `=` | Start of the body (indentation continues the block) |
+| `=` | **Body delimiter** — starts the implementation (not an assignment to `decreases`) |
+
+The line **`=`** after `decreases` confuses newcomers because it looks like “equals,” but it only marks **where the contract block ends and the body begins**. You are not assigning anything to `decreases 0`; you are telling the compiler “executable statements follow.” Same delimiter appears on **`while`** loops: `decreases …` then `=` then the loop body.
 
 ## Build
 

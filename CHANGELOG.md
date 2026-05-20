@@ -18,7 +18,7 @@ All notable changes to Li are documented here. The format follows
 ### Changed
 
 - Composable imports: workspace `packages/*` (via `import_name` in `li.toml`) resolve before `std/` facades for the same ergonomic path (e.g. `physics.rigid`).
-- Docs: `composable-by-default.md`, `import-style.md`, `li-net-httpd` README — `def` + `import net.httpd` (not `li_httpd`).
+- Docs: clarify `def` / `while` **`=`** as body delimiter (not assignment to `decreases`) in `overview.md`, `hello-world.md`, `control-flow-and-functions.md`, `contracts-and-proofs.md`.
 - Physics docs use monorepo package paths (`li-physics-*`, `import physics.*`); philosophy example uses `def` (no rigid integrate composable test yet).
 
 ### Fixed

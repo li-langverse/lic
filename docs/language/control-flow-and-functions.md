@@ -11,6 +11,15 @@ def add(a: int, b: int) -> int
   return a + b
 ```
 
+### The `=` after `requires` / `ensures` / `decreases`
+
+That **`=`** is **syntax**, not the assignment operator and **not** attached to `decreases` in meaning. Read the procedure as two parts:
+
+1. **Header** — `def …`, then `requires`, `ensures`, `decreases` (and optional clauses the language adds later).
+2. **Body** — everything after **`=`**, indented one level.
+
+Without a delimiter, the parser could not tell where a contract expression ends and a statement begins. Li uses **`=`** on its own line (Nim-family habit: `proc foo = …`). **`while`** uses the same pattern: `while cond` / `invariant` / `decreases` / **`=`** / body.
+
 ### Parameters
 
 - Positional parameters with types.

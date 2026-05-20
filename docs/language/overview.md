@@ -23,6 +23,8 @@ def name(arg: T) -> R
   <statements>
 ```
 
+The **`=`** on its own line is **not** part of `decreases` and is **not** an assignment. It is the **token that starts the procedure body**: everything indented below it is executable code. The block above it (`requires` / `ensures` / `decreases`) is the **contract header**; the parser needs an explicit delimiter before the body (same idea as Nim’s `proc … =`).
+
 - **Top level:** `proc`, `type`, `object`, `enum`, `extern proc`.
 - **No `Any`**, no `unsafe`, no `sorry` in user code.
 

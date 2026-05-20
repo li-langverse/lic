@@ -94,6 +94,17 @@ file = "typecheck/bad_int_float_add.li"
 outcome = "compile_fail"
 expected_substr = "int"
 
+[[tests]]
+suite = "typecheck"
+file = "typecheck/scalar_width_ok.li"
+outcome = "compile_ok"
+
+[[tests]]
+suite = "typecheck"
+file = "typecheck/scalar_width_mix_fail.li"
+outcome = "compile_fail"
+expected_substr = "integer widths"
+
 # --- prove_reject (pillar 1) ---
 
 [[tests]]

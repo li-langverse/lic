@@ -8,11 +8,17 @@ type NumericalTargets = object
   public target_fps: int
   public cfl_safety: float
 
+type ScalarPrecision = object
+  public float_bits: int
+  public int_bits: int
+
 type PhysicsProfile = object
   public tier: int
   public dt: float
   public substeps: int
   public targets: NumericalTargets
+  public float_bits: int
+  public int_bits: int
 
 type SimulationParams = object
   public n: int
@@ -55,6 +61,39 @@ def physics_tier_research() -> int
 =
   return 3
 
+def precision_default() -> ScalarPrecision
+  requires true
+  ensures result.float_bits == 64
+  ensures result.int_bits == 64
+  decreases 0
+=
+  var p: ScalarPrecision
+  p.float_bits = 64
+  p.int_bits = 64
+  return p
+
+def precision_float32() -> ScalarPrecision
+  requires true
+  ensures result.float_bits == 32
+  ensures result.int_bits == 32
+  decreases 0
+=
+  var p: ScalarPrecision
+  p.float_bits = 32
+  p.int_bits = 32
+  return p
+
+def precision_quantized_fp8() -> ScalarPrecision
+  requires true
+  ensures result.float_bits == 8
+  ensures result.int_bits == 8
+  decreases 0
+=
+  var p: ScalarPrecision
+  p.float_bits = 8
+  p.int_bits = 8
+  return p
+
 def default_numerical_targets() -> NumericalTargets
   requires true
   ensures true
@@ -77,6 +116,8 @@ def default_physics_profile() -> PhysicsProfile
   p.dt = 1.0 / 60.0
   p.substeps = 1
   p.targets = default_numerical_targets()
+  p.float_bits = 64
+  p.int_bits = 64
   return p
 
 def profile_for_tier(tier: int) -> PhysicsProfile

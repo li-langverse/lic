@@ -1,6 +1,7 @@
 #include "li/prelude.hpp"
 
 #include "li/error_codes.hpp"
+#include "li/numeric_types.hpp"
 
 #include <set>
 #include <string>
@@ -24,9 +25,11 @@ bool in_set(std::string_view name, std::initializer_list<const char*> names) {
 }  // namespace
 
 bool is_prelude_type_name(const std::string_view name) {
-  return in_set(name, {"int",   "float", "bool", "str",  "unit", "int64",
-                       "list",  "dict",  "tuple", "Option", "simd",
-                       "bytes", "stringview", nullptr});
+  if (is_numeric_scalar_type_name(name)) {
+    return true;
+  }
+  return in_set(name, {"bool", "str", "unit", "list", "dict", "tuple", "Option", "simd", "bytes",
+                       "stringview", "ptr", nullptr});
 }
 
 bool is_prelude_proc_name(const std::string_view name) {

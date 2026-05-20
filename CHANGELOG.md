@@ -6,6 +6,11 @@ All notable changes to Li are documented here. The format follows
 
 ## [Unreleased]
 
+### Added
+
+- Fixed-width scalars: `float4`–`float512`, `int4`–`int512` (and aliases); width mismatch is a type error; see `docs/language/scalar-precision.md`.
+- `physics.core`: `ScalarPrecision` and `PhysicsProfile.float_bits` / `int_bits` for per-simulation accuracy metadata (not org-enforced).
+
 ### Changed
 
 - Composable imports: workspace `packages/*` (via `import_name` in `li.toml`) resolve before `std/` facades for the same ergonomic path (e.g. `physics.rigid`).

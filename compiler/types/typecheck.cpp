@@ -2,6 +2,7 @@
 
 #include "li/borrowck.hpp"
 #include "li/error_codes.hpp"
+#include "li/numeric_types.hpp"
 
 #include <map>
 #include <memory>
@@ -34,10 +35,37 @@ struct Ty {
   bool tuple_variadic = false;
   std::vector<std::string> enum_variants;
   std::int64_t simd_lanes = 0;
+  int numeric_bits = 64;
+  bool unsigned_scalar = false;
 };
 
-TyPtr make_int() { return std::make_shared<Ty>(Ty{TyKind::Int}); }
-TyPtr make_float() { return std::make_shared<Ty>(Ty{TyKind::Float}); }
+TyPtr make_int(const int bits = 64) {
+  auto t = std::make_shared<Ty>();
+  t->kind = TyKind::Int;
+  t->numeric_bits = bits;
+  t->name = "int";
+  return t;
+}
+TyPtr make_float(const int bits = 64) {
+  auto t = std::make_shared<Ty>();
+  t->kind = TyKind::Float;
+  t->numeric_bits = bits;
+  t->name = "float";
+  return t;
+}
+
+TyPtr make_numeric_scalar(const NumericScalarDesc& desc) {
+  auto t = std::make_shared<Ty>();
+  t->numeric_bits = desc.bits;
+  t->name = std::string(desc.canonical);
+  if (desc.kind == NumericScalarKind::Float) {
+    t->kind = TyKind::Float;
+    return t;
+  }
+  t->kind = TyKind::Int;
+  t->unsigned_scalar = desc.kind == NumericScalarKind::IntUnsigned;
+  return t;
+}
 TyPtr make_bool() { return std::make_shared<Ty>(Ty{TyKind::Bool}); }
 TyPtr make_str() { return std::make_shared<Ty>(Ty{TyKind::Str}); }
 TyPtr make_i64() { return std::make_shared<Ty>(Ty{TyKind::Int64}); }
@@ -196,6 +224,15 @@ struct Ctx {
     }
     if (a->kind == TyKind::TypeVar || a->kind == TyKind::Named || a->kind == TyKind::Protocol) {
       return a->name == b->name;
+    }
+    if (a->kind == TyKind::Int) {
+      return a->numeric_bits == b->numeric_bits && a->unsigned_scalar == b->unsigned_scalar;
+    }
+    if (a->kind == TyKind::Float) {
+      return a->numeric_bits == b->numeric_bits;
+    }
+    if (a->kind == TyKind::Int64) {
+      return b->kind == TyKind::Int64;
     }
     return true;
   }
@@ -419,16 +456,13 @@ struct Ctx {
           return resolve_type_expr(*it->second.definition);
         }
       }
-      if (te.name == "int") {
-        return make_int();
-      }
-      if (te.name == "float" || te.name == "float64" || te.name == "f64") {
-        return make_float();
+      if (const auto scalar = lookup_numeric_scalar(te.name)) {
+        return make_numeric_scalar(*scalar);
       }
       if (te.name == "bool") {
         return make_bool();
       }
-      if (te.name == "ptr" || te.name == "int64" || te.name == "i64" || te.name == "long") {
+      if (te.name == "ptr") {
         return make_i64();
       }
       if (te.name == "str" || te.name == "bytes" || te.name == "stringview" ||
@@ -495,10 +529,28 @@ struct Ctx {
             e.bin_op == BinOp::Div || e.bin_op == BinOp::Mod || e.bin_op == BinOp::FloorDiv ||
             e.bin_op == BinOp::Pow) {
           if (l->kind == TyKind::Int && r->kind == TyKind::Int) {
-            return make_int();
+            if (l->unsigned_scalar != r->unsigned_scalar) {
+              diags.error(loc(e.span), "cannot mix signed and unsigned integers without cast");
+              return make_int();
+            }
+            if (l->numeric_bits != r->numeric_bits) {
+              diags.error(loc(e.span),
+                          "cannot mix integer widths (" + std::to_string(l->numeric_bits) + " and " +
+                              std::to_string(r->numeric_bits) +
+                              " bits) without explicit cast");
+              return make_int();
+            }
+            return l;
           }
           if (l->kind == TyKind::Float && r->kind == TyKind::Float) {
-            return make_float();
+            if (l->numeric_bits != r->numeric_bits) {
+              diags.error(loc(e.span),
+                          "cannot mix float widths (" + std::to_string(l->numeric_bits) + " and " +
+                              std::to_string(r->numeric_bits) +
+                              " bits) without explicit cast");
+              return make_float();
+            }
+            return l;
           }
           if (l->kind == TyKind::Simd && r->kind == TyKind::Simd &&
               l->simd_lanes == r->simd_lanes) {

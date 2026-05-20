@@ -15,12 +15,14 @@ Li’s type system follows **Python 3.14 typing** habits, but programs compile t
 
 ## Fixed-width integers and floats
 
-| Signed | Unsigned | Float |
-|--------|----------|-------|
-| `i8` … `i128` | `u8` … `u128` | `f32`, `f64` |
-| `isize` | `usize` | `float32`, `float64` |
+Full tables (including `float4` … `float512`, `int4` … `int512`): **[Scalar precision](scalar-precision.md)**.
 
-Mixing widths without a cast is an error.
+| Signed | Unsigned | Float (examples) |
+|--------|----------|-------------------|
+| `i8` … `i128`, `int32` | `u8` … `u128`, `uint32` | `float16`, `float32`, `float64` (`float`) |
+| `int4` … `int512` | `uint4` … `uint512` | `float4`, `float8`, … `float512` |
+
+Mixing widths without a cast is an error. The ecosystem does **not** enforce one global accuracy — projects and physics profiles choose per module.
 
 ## Complex numbers
 

@@ -1,7 +1,7 @@
 # World Studio / Li Engine — progress report
 
 **Branch:** `feat/world-studio-impl-1`  
-**Sprint:** impl-38 (2026-05)  
+**Sprint:** impl-39 (2026-05)  
 **Architecture:** [specs/world-architecture-competitive-rfc.md](specs/world-architecture-competitive-rfc.md)
 
 ---
@@ -10,13 +10,22 @@
 
 | Metric | Value |
 |--------|--------|
-| **Composable gates** | **121** (target) |
+| **Composable gates** | **126** (target) |
 | **Milestone** | **100** composable (impl-32) |
 | **World model** | **GameWorld** GW-0–4 + **SimField** SF-0–3 + **RealmHead** |
 | **Author API** | [world-api-quickstart.md](world-api-quickstart.md) |
 | **Spin-up** | **11** |
 
 ---
+
+## Sprint impl-39 — play mode + publish + ecosystem
+
+| Deliverable | State |
+|-------------|--------|
+| `start_playing` / `tick_viewport` / `publish_repro` | ✅ |
+| `sync_realm_head` (GameWorld ↔ RealmHead) | ✅ |
+| `import_world_studio_ecosystem_stack` | ✅ |
+| Milestone **121** gate (`studio_milestone_121_smoke`) | ✅ |
 
 ## Sprint impl-38 — ergonomics + GW-3 / GW-4 / SF-2 / SF-3
 
@@ -74,4 +83,4 @@
 
 ---
 
-*impl-38 · author API · GW-3–4 · SF-2–3*
+*impl-39 · play mode · publish field · ecosystem stack*

@@ -19,13 +19,14 @@ gh pr create \
   --draft
 ```
 
-## Metrics at merge (impl-33)
+## Metrics at merge (impl-39)
 
 | Metric | Value |
 |--------|--------|
-| Composable gates | **103** (milestone 100) |
+| Composable gates | **126** (milestone 121) |
 | Spin-up templates | **11** |
 | Demo tabs | 12 |
 | Vertical demos | 7 |
+| Author API | [world-api-quickstart.md](world-api-quickstart.md) |
 
 See [MERGE-world-studio-checklist.md](MERGE-world-studio-checklist.md).

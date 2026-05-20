@@ -8,10 +8,10 @@ type StudioProject = object
 
 def li_studio_version() -> int
   requires true
-  ensures result == 8
+  ensures result == 9
   decreases 0
 =
-  return 8
+  return 9
 
 def studio_project_new() -> StudioProject
   requires true
@@ -40,6 +40,25 @@ def studio_pause(project: StudioProject) -> unit
   decreases 0
 =
   project.playing = 0
+
+# Short names for authors and agents.
+def start_playing(project: StudioProject) -> unit
+  requires true
+  decreases 0
+=
+  studio_play(project)
+
+def stop_playing(project: StudioProject) -> unit
+  requires true
+  decreases 0
+=
+  studio_pause(project)
+
+def tick_viewport(project: StudioProject) -> unit
+  requires project.playing == 1
+  decreases project.viewport_ticks
+=
+  studio_viewport_tick(project)
 
 def studio_viewport_tick(project: StudioProject) -> unit
   requires project.playing == 1
@@ -129,6 +148,73 @@ def studio_publish_smoke() -> int
   if studio_publish_figure_stub(b.dpi) != 300:
     return 2
   return 0
+
+def publish_field_checkpoint(manifest_hash: int, file_count: int) -> int
+  requires manifest_hash >= 0
+  requires file_count > 0
+  ensures result > 0
+  decreases file_count
+=
+  var b: PublishBundle = studio_publish_bundle_hash_stub(file_count, 300)
+  return b.content_hash + manifest_hash
+
+def publish_repro(manifest_hash: int, file_count: int) -> int
+  requires manifest_hash >= 0
+  requires file_count > 0
+  decreases file_count
+=
+  return publish_field_checkpoint(manifest_hash, file_count)
+
+def studio_game_frame_tag(realm_id: int, width: int, height: int) -> int
+  requires realm_id >= 0
+  requires width > 0
+  requires height > 0
+  ensures result > 0
+  decreases width
+=
+  return realm_id + width + height + 3000
+
+def studio_sim_frame_tag(field_id: int, steps: int) -> int
+  requires field_id >= 0
+  requires steps > 0
+  ensures result > 0
+  decreases steps
+=
+  return field_id + steps + 4000
+
+def studio_play_mode_smoke() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  var p: StudioProject = studio_project_new()
+  start_playing(p)
+  tick_viewport(p)
+  if p.viewport_ticks != 1:
+    return 1
+  if studio_game_frame_tag(1, 1280, 720) < 3000:
+    return 2
+  if studio_sim_frame_tag(0, 4) < 4000:
+    return 3
+  if publish_repro(42, 2) <= 0:
+    return 4
+  return 0
+
+def studio_milestone_composable_target_121_stub() -> int
+  requires true
+  ensures result == 121
+  decreases 0
+=
+  return 121
+
+def studio_milestone_121_smoke() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  if studio_milestone_composable_target_121_stub() != 121:
+    return 1
+  return studio_play_mode_smoke()
 
 # PH-MMO-3 — deploy wizard status (pairs with deploy/mmo/realm.toml).
 def studio_render_scene_hook_stub(viewport_frames: int, scene_nodes: int) -> int

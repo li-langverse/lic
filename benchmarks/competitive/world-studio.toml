@@ -344,6 +344,41 @@ li_package = "li-world"
 composable = "import_world_author_api"
 
 [[benchmark]]
+id = "studio-play-mode"
+name = "Studio play mode"
+tier = 1
+li_package = "li-studio"
+composable = "import_studio_play_mode"
+
+[[benchmark]]
+id = "studio-publish-field"
+name = "Publish field checkpoint"
+tier = 1
+li_package = "li-studio"
+composable = "import_studio_publish_field"
+
+[[benchmark]]
+id = "world-realm-game-bridge"
+name = "RealmHead + GameWorld bridge"
+tier = 1
+li_package = "li-world"
+composable = "import_world_realm_game_bridge"
+
+[[benchmark]]
+id = "world-studio-ecosystem"
+name = "World Studio ecosystem stack"
+tier = 1
+li_package = "li-studio"
+composable = "import_world_studio_ecosystem_stack"
+
+[[benchmark]]
+id = "world-studio-milestone-121"
+name = "Milestone 121 composable gates"
+tier = 1
+li_package = "li-studio"
+composable = "import_world_studio_milestone_121"
+
+[[benchmark]]
 id = "httpd-li-native-gateway"
 name = "Li-native HTTP/WS gateway"
 tier = 1

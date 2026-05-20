@@ -203,6 +203,15 @@ def sim_field_checkpoint_smoke() -> int
     return 2
   return 0
 
+def field_checkpoint_manifest_for_smoke() -> int
+  requires true
+  ensures result > 0
+  decreases 0
+=
+  var c: SimFieldChunk = new_field(0, 64, 2)
+  step_field(c, 0.01)
+  return save_field_checkpoint(c).manifest_hash
+
 def sim_viz_frame_new(field_id: int, timestep: int) -> SimVizFrame
   requires field_id >= 0
   requires timestep >= 0

@@ -1159,6 +1159,36 @@ note = "Author-friendly world + field API aliases"
 
 [[tests]]
 suite = "composable"
+file = "composable/import_studio_play_mode.li"
+outcome = "compile_ok"
+note = "Studio play mode start_playing + frame tags"
+
+[[tests]]
+suite = "composable"
+file = "composable/import_studio_publish_field.li"
+outcome = "compile_ok"
+note = "Publish repro bundle from field checkpoint"
+
+[[tests]]
+suite = "composable"
+file = "composable/import_world_realm_game_bridge.li"
+outcome = "compile_ok"
+note = "sync_realm_head GameWorld to RealmHead"
+
+[[tests]]
+suite = "composable"
+file = "composable/import_world_studio_ecosystem_stack.li"
+outcome = "compile_ok"
+note = "Studio + world + field + render ecosystem"
+
+[[tests]]
+suite = "composable"
+file = "composable/import_world_studio_milestone_121.li"
+outcome = "compile_ok"
+note = "Milestone 121 composable gates"
+
+[[tests]]
+suite = "composable"
 file = "composable/import_world_studio_benchmark_tier1.li"
 outcome = "compile_ok"
 note = "Competitive world-studio.toml tier-1 rollup"

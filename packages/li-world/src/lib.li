@@ -377,6 +377,28 @@ def world_author_api_smoke() -> int
     return 1
   return 0
 
+# Link GameWorld entity count to RealmHead metadata (MMO shard tick).
+def sync_realm_head(world: GameWorld, tick: int, shard_id: int) -> int
+  requires tick >= 0
+  requires shard_id >= 0
+  ensures result >= 0
+  decreases tick
+=
+  var snap: WorldSnapshot = world_snapshot_for_realm(
+      tick, world.entity_count, world.realm_id, shard_id)
+  return snap.checksum
+
+def world_realm_game_bridge_smoke() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  var w: GameWorld = new_game_world(1)
+  spawn_entity(w, 1)
+  if sync_realm_head(w, 10, 0) <= 0:
+    return 1
+  return world_realm_smoke()
+
 def game_world_tick_stub(world: GameWorld) -> unit
   requires true
   ensures world.tick >= 1

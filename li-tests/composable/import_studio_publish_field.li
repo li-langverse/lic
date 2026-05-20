@@ -1,0 +1,15 @@
+import studio
+import sim.scientific
+
+def main() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  if li_studio_version() < 9:
+    return 1
+  if sim_field_checkpoint_smoke() != 0:
+    return 2
+  if publish_repro(field_checkpoint_manifest_for_smoke(), 2) <= 0:
+    return 3
+  return 0

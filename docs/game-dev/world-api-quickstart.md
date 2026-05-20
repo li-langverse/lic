@@ -68,6 +68,42 @@ def frame(world: GameWorld) -> int
 
 ---
 
+## Studio play mode
+
+```li
+import studio
+
+def main() -> int
+=
+  var project: StudioProject = studio_project_new()
+  start_playing(project)
+  tick_viewport(project)
+  return studio_game_frame_tag(1, 1280, 720)
+```
+
+| You want | Call |
+|----------|------|
+| Start / stop | `start_playing(project)` · `stop_playing(project)` |
+| Viewport tick | `tick_viewport(project)` |
+| Game frame tag | `studio_game_frame_tag(realm_id, width, height)` |
+| Sim frame tag | `studio_sim_frame_tag(field_id, steps)` |
+| Publish repro | `publish_repro(manifest_hash, file_count)` |
+| Field → publish | `publish_field_checkpoint(manifest_hash, file_count)` |
+
+---
+
+## Realm + game together
+
+```li
+import world
+
+var w = new_game_world(1)
+spawn_entity(w, 1)
+sync_realm_head(w, tick, shard_id)
+```
+
+---
+
 ## Realm metadata only (MMO head — not ECS)
 
 Use `world_snapshot_for_realm` / `world_li_native_journal_*` when you only need shard tick and checksum — **not** entity positions.

@@ -697,6 +697,21 @@ def run_benchmark(spec: BenchSpec, *, runs: int) -> list[dict[str, object]]:
     return rows
 
 
+def filter_specs(
+    specs: tuple[BenchSpec, ...], only: str | None
+) -> tuple[BenchSpec, ...]:
+    if not only:
+        return specs
+    names = {n.strip() for n in only.split(",") if n.strip()}
+    picked = tuple(s for s in specs if s.name in names)
+    unknown = names - {s.name for s in picked}
+    if unknown:
+        raise SystemExit(f"unknown benchmark id(s): {', '.join(sorted(unknown))}")
+    if not picked:
+        raise SystemExit("no benchmarks matched --only")
+    return picked
+
+
 def run_tier_benches(
     specs: tuple[BenchSpec, ...], *, runs: int, out: Path, verify: bool, label: str
 ) -> int:
@@ -821,6 +836,12 @@ def main() -> int:
         default=RESULTS / "latest.csv",
         help="CSV output path",
     )
+    parser.add_argument(
+        "--only",
+        type=str,
+        default=None,
+        help="comma-separated benchmark ids (e.g. game_world_soa_10k,sim_physics_frame)",
+    )
     scale = parser.add_mutually_exclusive_group()
     scale.add_argument(
         "--quick",
@@ -865,13 +886,27 @@ def main() -> int:
         return run_tier1_all(runs=args.runs, out=args.out, verify=not args.skip_verify)
 
     if args.tier == 2:
-        return run_tier2_all(runs=args.runs, out=args.out, verify=not args.skip_verify)
+        specs = filter_specs(TIER2_BENCHES, args.only)
+        return run_tier_benches(
+            specs,
+            runs=args.runs,
+            out=args.out,
+            verify=not args.skip_verify,
+            label="tier-2",
+        )
 
     if args.tier == 12:
         rc = run_tier1_all(runs=args.runs, out=args.out, verify=not args.skip_verify)
         if rc != 0:
             return rc
-        rc = run_tier2_all(runs=args.runs, out=args.out, verify=not args.skip_verify)
+        specs = filter_specs(TIER2_BENCHES, args.only)
+        rc = run_tier_benches(
+            specs,
+            runs=args.runs,
+            out=args.out,
+            verify=not args.skip_verify,
+            label="tier-2",
+        )
         if rc != 0:
             return rc
         if not args.skip_validity:

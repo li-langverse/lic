@@ -1,0 +1,199 @@
+{
+  "generated_at": "2026-05-20T13:45:31.410153+00:00",
+  "git_sha": "73c9aff",
+  "quick": {
+    "game_world_soa_10k": {
+      "workload_class": "world_engine",
+      "cpp": {
+        "s": 0.0004,
+        "stdev": "0.000177"
+      },
+      "rust": {
+        "s": 0.0008,
+        "stdev": "9.9e-05"
+      },
+      "julia": {
+        "s": 0.0004,
+        "stdev": "0.000149"
+      },
+      "li": {
+        "s": 0.0004,
+        "stdev": "2.3e-05"
+      }
+    },
+    "game_replication_encode": {
+      "workload_class": "world_engine",
+      "cpp": {
+        "s": 0.0004,
+        "stdev": "0.000166"
+      },
+      "rust": {
+        "s": 0.0007,
+        "stdev": "0.000203"
+      },
+      "julia": {
+        "s": 0.0004,
+        "stdev": "3.5e-05"
+      },
+      "li": {
+        "s": 0.0006,
+        "stdev": "0.000137"
+      }
+    },
+    "sim_physics_frame": {
+      "workload_class": "world_engine",
+      "cpp": {
+        "s": 0.0007,
+        "stdev": "0.000228"
+      },
+      "rust": {
+        "s": 0.0004,
+        "stdev": "0.000255"
+      },
+      "julia": {
+        "s": 0.0004,
+        "stdev": "4.8e-05"
+      },
+      "li": {
+        "s": 0.0006,
+        "stdev": "0.000182"
+      }
+    },
+    "cloth_swing": {
+      "workload_class": "v0_gaming",
+      "cpp": {
+        "s": 0.0016,
+        "stdev": "0.000103"
+      },
+      "rust": {
+        "s": 0.0014,
+        "stdev": "7.1e-05"
+      },
+      "julia": {
+        "s": 0.0015,
+        "stdev": "0.000185"
+      },
+      "li": {
+        "s": 0.0014,
+        "stdev": "0.000131"
+      }
+    },
+    "rigid_body_stack": {
+      "workload_class": "v0_gaming",
+      "cpp": {
+        "s": 0.0006,
+        "stdev": "0.000148"
+      },
+      "rust": {
+        "s": 0.0004,
+        "stdev": "0.000146"
+      },
+      "julia": {
+        "s": 0.0005,
+        "stdev": "0.000152"
+      },
+      "li": {
+        "s": 0.0008,
+        "stdev": "0.000185"
+      }
+    }
+  },
+  "full": {
+    "game_world_soa_10k": {
+      "workload_class": "world_engine",
+      "cpp": {
+        "s": 0.0008,
+        "stdev": "5.3e-05"
+      },
+      "rust": {
+        "s": 0.0008,
+        "stdev": "0.000242"
+      },
+      "julia": {
+        "s": 0.0007,
+        "stdev": "0.000127"
+      },
+      "li": {
+        "s": 0.0006,
+        "stdev": "0.000149"
+      }
+    },
+    "game_replication_encode": {
+      "workload_class": "world_engine",
+      "cpp": {
+        "s": 0.0011,
+        "stdev": "9.9e-05"
+      },
+      "rust": {
+        "s": 0.0008,
+        "stdev": "0.000161"
+      },
+      "julia": {
+        "s": 0.0007,
+        "stdev": "0.000287"
+      },
+      "li": {
+        "s": 0.0007,
+        "stdev": "7.7e-05"
+      }
+    },
+    "sim_physics_frame": {
+      "workload_class": "world_engine",
+      "cpp": {
+        "s": 0.0008,
+        "stdev": "0.000118"
+      },
+      "rust": {
+        "s": 0.0005,
+        "stdev": "0.000146"
+      },
+      "julia": {
+        "s": 0.0007,
+        "stdev": "6.2e-05"
+      },
+      "li": {
+        "s": 0.0006,
+        "stdev": "0.000149"
+      }
+    },
+    "cloth_swing": {
+      "workload_class": "gaming_full",
+      "cpp": {
+        "s": 0.0047,
+        "stdev": "1.7e-05"
+      },
+      "rust": {
+        "s": 0.0047,
+        "stdev": "2e-05"
+      },
+      "julia": {
+        "s": 0.0048,
+        "stdev": "6.8e-05"
+      },
+      "li": {
+        "s": 0.0047,
+        "stdev": "1.5e-05"
+      }
+    },
+    "rigid_body_stack": {
+      "workload_class": "gaming_full",
+      "cpp": {
+        "s": 0.0006,
+        "stdev": "5.4e-05"
+      },
+      "rust": {
+        "s": 0.0007,
+        "stdev": "0.000226"
+      },
+      "julia": {
+        "s": 0.0008,
+        "stdev": "0.000144"
+      },
+      "li": {
+        "s": 0.0004,
+        "stdev": "0.000256"
+      }
+    }
+  },
+  "notes": "Not UE parity \u2014 timed C/Li shared kernels; Li sim_step_physics body still stub."
+}

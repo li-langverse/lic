@@ -18,7 +18,8 @@
 - `compiler/codegen/emit.cpp` — `llvm_type_for_mir_param`, LLVM struct fields `[N x T]`, `ReturnObject` aggregate load, `CallProc` aggregate store to `ArrayAlloc` slots, `mir_arg_value` loads for array idents, prologue stores for expanded array params.
 - `li-tests/objects/object_array_return_call.li` — callee returns object whose only field is `array[2, int]`.
 - `li-tests/objects/object_mixed_scalar_array_return.li` — struct return with `int`, `array[2, int]`, `int` fields (ordering vs layout).
-- `li-tests/manifest.toml` — register `object_mixed_scalar_array_return.li`.
+- `li-tests/objects/object_mixed_param_pass.li` — expanded `Mixed` object parameter (scalar + `array[2,int]`) passed to callee.
+- `li-tests/manifest.toml` — register `object_mixed_param_pass.li`.
 
 ## Not changed
 

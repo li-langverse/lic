@@ -187,7 +187,7 @@ def plot_correctness_grid(df: pd.DataFrame, out: Path) -> None:
 
 def load_energy_traces(trace_dir: Path) -> dict[str, pd.DataFrame]:
     traces: dict[str, pd.DataFrame] = {}
-    for lang in ("cpp", "rust", "julia", "li"):
+    for lang in ("cpp", "rust", "julia", "numpy", "li"):
         path = trace_dir / f"energy_{lang}.csv"
         if path.exists():
             traces[lang] = pd.read_csv(path)
@@ -212,7 +212,7 @@ def plot_md_energy_by_lang(trace_dir: Path, out: Path) -> None:
         return
 
     apply_theme()
-    langs = [lang for lang in ("cpp", "rust", "julia", "li") if lang in traces]
+    langs = [lang for lang in ("cpp", "rust", "julia", "numpy", "li") if lang in traces]
     fig, axes = plt.subplots(len(langs), 1, figsize=(16, 9), sharex=True)
     if len(langs) == 1:
         axes = [axes]
@@ -291,7 +291,9 @@ def plot_stability_by_lang(stability_csv: Path, out: Path) -> None:
 
     apply_theme()
     tests = list(dict.fromkeys(df["test"].tolist()))
-    langs = [lang for lang in ("cpp", "rust", "julia", "li") if lang in set(df["lang"])]
+    langs = [
+        lang for lang in ("cpp", "rust", "julia", "numpy", "li") if lang in set(df["lang"])
+    ]
     if not tests or not langs:
         return
 

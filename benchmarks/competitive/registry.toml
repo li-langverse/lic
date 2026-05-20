@@ -53,13 +53,13 @@ notes = "Label pure_li vs shared_c_kernel per benchmarks/results/README.md; para
 
 [[ecosystem]]
 id = "python_numpy"
-track = "watch"
+track = "bench_tier2"
 repo_url = "https://github.com/numpy/numpy"
-compare = ["matmul_blocked", "mlp_forward"]
-csv_lang = ""
+compare = ["matmul_blocked", "matmul_naive", "simd_dot", "reduce_sum", "nbody_gravity", "wave_equation_2d", "advection_diffusion_2d"]
+csv_lang = "numpy"
 kernel_honesty = "blas_labeled"
-last_reviewed = "2026-05-16"
-notes = "Tier-3 ML only; never compare naive Python to SIMD li without BLAS label."
+last_reviewed = "2026-05-20"
+notes = "Always run via bench.py --tier 12; @/dot/sum use BLAS. Physics rows use vectorized/loop NumPy ports of C kernels."
 
 [[ecosystem]]
 id = "chapel"

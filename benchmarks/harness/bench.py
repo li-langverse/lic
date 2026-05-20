@@ -35,7 +35,9 @@ CSV_HEADER = [
     "flags",
 ]
 NATIVE_FLAGS = "-O3 -march=native -ffast-math"
-LANGS = ("cpp", "rust", "julia", "li")
+LANGS = ("cpp", "rust", "julia", "numpy", "li")
+NUMPY_FLAGS = "numpy (@/dot/sum use BLAS when linked)"
+NUMPY_RUNNER = REPO / "benchmarks" / "harness" / "numpy_runner.py"
 
 
 @dataclass(frozen=True)
@@ -325,6 +327,15 @@ def cpu_model() -> str:
     return platform.processor() or platform.machine()
 
 
+def ensure_numpy() -> None:
+    try:
+        import numpy  # noqa: F401
+    except ImportError as exc:
+        raise RuntimeError(
+            "numpy is required for tier benchmarks (pip install numpy)"
+        ) from exc
+
+
 def write_sample_csv(path: Path) -> None:
     """Placeholder rows until Tier 1–2 binaries exist — drives plot harness."""
     sha = git_sha()
@@ -550,14 +561,28 @@ def run_benchmark(spec: BenchSpec, *, runs: int) -> list[dict[str, object]]:
     build_native(spec, rust_bin)
     build_native(spec, julia_bin)
     build_li(spec, li_bin)
+    ensure_numpy()
+    numpy_cmd = [
+        sys.executable,
+        str(NUMPY_RUNNER),
+        "--benchmark",
+        spec.name,
+    ]
 
-    for lang, bin_path, flags in (
-        ("cpp", cpp_bin, NATIVE_FLAGS),
-        ("rust", rust_bin, f"{NATIVE_FLAGS} (native C kernel)"),
-        ("julia", julia_bin, f"{NATIVE_FLAGS} (native C kernel)"),
-        ("li", li_bin, f"{'pure lic' if spec.li_pure else 'shared C kernel + lic'} {NATIVE_FLAGS}"),
-    ):
-        timing = time_command([str(bin_path)], runs=runs)
+    lang_runs: list[tuple[str, list[str], str]] = [
+        ("cpp", [str(cpp_bin)], NATIVE_FLAGS),
+        ("rust", [str(rust_bin)], f"{NATIVE_FLAGS} (native C kernel)"),
+        ("julia", [str(julia_bin)], f"{NATIVE_FLAGS} (native C kernel)"),
+        ("numpy", numpy_cmd, NUMPY_FLAGS),
+        (
+            "li",
+            [str(li_bin)],
+            f"{'pure lic' if spec.li_pure else 'shared C kernel + lic'} {NATIVE_FLAGS}",
+        ),
+    ]
+
+    for lang, cmd, flags in lang_runs:
+        timing = time_command(cmd, runs=runs)
         wall = timing.median
         rows.append(
             row_for(
@@ -612,6 +637,7 @@ def run_benchmark(spec: BenchSpec, *, runs: int) -> list[dict[str, object]]:
 def run_tier_benches(
     specs: tuple[BenchSpec, ...], *, runs: int, out: Path, verify: bool, label: str
 ) -> int:
+    ensure_numpy()
     if verify:
         for spec in specs:
             build_dir = REPO / "build" / "bench" / spec.name

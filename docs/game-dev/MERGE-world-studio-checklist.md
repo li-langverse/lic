@@ -1,6 +1,6 @@
 # Merge checklist — `feat/world-studio-impl-1` → `main`
 
-**PR title:** feat: World Studio / Li Engine (160 gates, play_mode)
+**PR title:** feat: World Studio / Li Engine (165 gates, play_mode)
 
 ## Pre-merge verify
 
@@ -12,11 +12,11 @@
 ./scripts/verify-world-studio-binary.sh
 ```
 
-## Stats (impl-48)
+## Stats (impl-49)
 
 | Metric | Value |
 |--------|--------|
-| Composable gates | **160** (milestone **160** at impl-48) |
+| Composable gates | **165** (milestone **165** at impl-49) |
 | Li-native store / httpd / world journal | composable ecosystem gates |
 | Demo tabs | **13** (incl. **Play**) |
 | Spin-up templates | **12** (`play_mode`) |

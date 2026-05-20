@@ -20,16 +20,16 @@ Or manually:
 gh pr create \
   --base main \
   --head feat/world-studio-impl-1 \
-  --title "feat: World Studio / Li Engine (130 gates, play_mode)" \
+  --title "feat: World Studio / Li Engine (165 gates, play_mode)" \
   --body-file docs/game-dev/PR-world-studio-impl-summary.md \
   --draft
 ```
 
-## Metrics at merge (impl-41)
+## Metrics at merge (impl-49)
 
 | Metric | Value |
 |--------|--------|
-| Composable gates | **160** |
+| Composable gates | **165** |
 | Spin-up templates | **12** (`play_mode`) |
 | Demo tabs | 13 |
 | Vertical demos | 7 |

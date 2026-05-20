@@ -1393,6 +1393,36 @@ note = "Milestone 160 composable gates"
 
 [[tests]]
 suite = "composable"
+file = "composable/import_robotics_studio_quick.li"
+outcome = "compile_ok"
+note = "Robotics sim + studio native shell"
+
+[[tests]]
+suite = "composable"
+file = "composable/import_automotive_studio_quick.li"
+outcome = "compile_ok"
+note = "Automotive sim + studio play mode"
+
+[[tests]]
+suite = "composable"
+file = "composable/import_drug_studio_quick.li"
+outcome = "compile_ok"
+note = "Drug design lab loop + studio shell"
+
+[[tests]]
+suite = "composable"
+file = "composable/import_additive_studio_publish_quick.li"
+outcome = "compile_ok"
+note = "Additive voxel + studio publish"
+
+[[tests]]
+suite = "composable"
+file = "composable/import_world_studio_milestone_165.li"
+outcome = "compile_ok"
+note = "Milestone 165 composable gates"
+
+[[tests]]
+suite = "composable"
 file = "composable/import_world_studio_benchmark_tier1.li"
 outcome = "compile_ok"
 note = "Competitive world-studio.toml tier-1 rollup"

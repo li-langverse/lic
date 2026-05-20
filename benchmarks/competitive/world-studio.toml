@@ -4,7 +4,7 @@
 schema = 1
 track = "PH-GD"
 plan = "docs/game-dev/world-studio-vision.md"
-composable_gates = 112
+composable_gates = 165
 branch = "feat/world-studio-impl-1"
 
 [[benchmark]]
@@ -573,6 +573,41 @@ name = "Milestone 160 composable gates"
 tier = 1
 li_package = "li-studio"
 composable = "import_world_studio_milestone_160"
+
+[[benchmark]]
+id = "robotics-studio-quick"
+name = "Robotics + studio"
+tier = 1
+li_package = "li-sim-robotics"
+composable = "import_robotics_studio_quick"
+
+[[benchmark]]
+id = "automotive-studio-quick"
+name = "Automotive + studio"
+tier = 1
+li_package = "li-sim-automotive"
+composable = "import_automotive_studio_quick"
+
+[[benchmark]]
+id = "drug-studio-quick"
+name = "Drug design + studio"
+tier = 1
+li_package = "li-sim-drug-design"
+composable = "import_drug_studio_quick"
+
+[[benchmark]]
+id = "additive-studio-publish-quick"
+name = "Additive + publish"
+tier = 1
+li_package = "li-sim-additive"
+composable = "import_additive_studio_publish_quick"
+
+[[benchmark]]
+id = "world-studio-milestone-165"
+name = "Milestone 165 composable gates"
+tier = 1
+li_package = "li-studio"
+composable = "import_world_studio_milestone_165"
 
 [[benchmark]]
 id = "httpd-li-native-gateway"

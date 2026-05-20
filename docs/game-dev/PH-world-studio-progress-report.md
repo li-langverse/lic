@@ -1,7 +1,7 @@
 # World Studio / Li Engine — progress report
 
 **Branch:** `feat/world-studio-impl-1`  
-**Sprint:** impl-48 (2026-05)  
+**Sprint:** impl-49 (2026-05)  
 **Architecture:** [specs/world-architecture-competitive-rfc.md](specs/world-architecture-competitive-rfc.md)
 
 ---
@@ -10,14 +10,22 @@
 
 | Metric | Value |
 |--------|--------|
-| **Composable gates** | **160** |
-| **Milestone** | **160** composable (impl-48) |
+| **Composable gates** | **165** |
+| **Milestone** | **165** composable (impl-49) |
 | **World model** | **GameWorld** GW-0–4 + **SimField** SF-0–3 + **RealmHead** |
 | **Author API** | [world-api-quickstart.md](world-api-quickstart.md) |
 | **Spin-up** | **12** (`play_mode`) |
 | **Demo tabs** | **13** (Play) |
 
 ---
+
+## Sprint impl-49 — milestone 165 + vertical studio quick stacks
+
+| Deliverable | State |
+|-------------|--------|
+| `li_studio_version` **16** · `studio_milestone_165_smoke` | ✅ |
+| Robotics / automotive / drug / additive + studio publish quick composables | ✅ |
+| `import_world_studio_milestone_165` | ✅ |
 
 ## Sprint impl-48 — milestone 160 + assets/ML/chem stacks
 
@@ -153,4 +161,4 @@
 
 ---
 
-*impl-48 · 160 gates · cross-vertical studio stacks*
+*impl-49 · 165 gates · cross-vertical studio stacks*

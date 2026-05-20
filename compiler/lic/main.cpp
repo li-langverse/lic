@@ -4,6 +4,7 @@
 #include "li/policy.hpp"
 #include "li/import_resolve.hpp"
 #include "li/prelude.hpp"
+#include "li/trusted_extern.hpp"
 #include "li/smoke_llvm.hpp"
 #include "li/typecheck.hpp"
 #include "li/vc_emit.hpp"
@@ -80,6 +81,10 @@ bool frontend(const char* path, const std::string& source, li::Module& out,
     return false;
   }
   li::check_stdlib_seal(*parsed.module, path, diags);
+  if (!diags.empty()) {
+    return false;
+  }
+  li::check_trusted_extern_abi(*parsed.module, path, diags);
   if (!diags.empty()) {
     return false;
   }

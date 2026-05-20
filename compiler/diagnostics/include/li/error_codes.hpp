@@ -19,6 +19,7 @@ enum class ErrorCode {
   E0320,  // policy.parallel_disjoint
   E0321,  // policy.parallel_decorator_disjoint
   E0330,  // policy.stdlib_shadow
+  E0331,  // policy.trusted_extern_abi
   E0340,  // policy.forbidden_any
   E0350,  // policy.parallel_overlap
   E0401,  // control.break_outside_loop

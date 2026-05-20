@@ -116,6 +116,9 @@ std::string agent_diagnostic_code(std::string_view code) {
   if (code == "E0330") {
     return "resolve.shadow";
   }
+  if (code == "E0331") {
+    return "policy.trusted_extern";
+  }
   if (code == "E0401") {
     return "control.break";
   }

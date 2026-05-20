@@ -1,0 +1,71 @@
+# Trusted runtime ABI manifest — Li proc name == C linker symbol in runtime/li_rt.c | li_rt_net.c
+# Canonical Li declarations: std/runtime/seam.li (+ std/bytes/bytes.li for typed bytes facade)
+# Compiler: check_trusted_extern_abi() in compiler/types/trusted_extern.cpp (sync symbols when editing)
+
+doc = "docs/compiler/trusted-extern-abi.md"
+
+[[symbol]]
+name = "li_rt_argc"
+runtime = "core"
+c_file = "runtime/li_rt.c"
+
+[[symbol]]
+name = "li_rt_argv_i"
+runtime = "core"
+c_file = "runtime/li_rt.c"
+
+[[symbol]]
+name = "li_rt_sqrt"
+runtime = "core"
+c_file = "runtime/li_rt.c"
+
+[[symbol]]
+name = "li_rt_sin"
+runtime = "core"
+c_file = "runtime/li_rt.c"
+
+[[symbol]]
+name = "li_rt_cos"
+runtime = "core"
+c_file = "runtime/li_rt.c"
+
+[[symbol]]
+name = "li_rt_atan2"
+runtime = "core"
+c_file = "runtime/li_rt.c"
+
+[[symbol]]
+name = "li_rt_exp"
+runtime = "core"
+c_file = "runtime/li_rt.c"
+
+[[symbol]]
+name = "li_rt_log"
+runtime = "core"
+c_file = "runtime/li_rt.c"
+
+[[symbol]]
+name = "tcp_listen"
+runtime = "net"
+c_file = "runtime/li_rt_net.c"
+
+[[symbol]]
+name = "httpd_drain_slot_i"
+runtime = "net"
+c_file = "runtime/li_rt_net.c"
+
+# Full list is enforced in trusted_extern.cpp; extend seam.li + li_rt*.c + both files together.
+
+[declarator_allowlist]
+paths = [
+  "std/runtime/seam.li",
+  "std/bytes/bytes.li",
+]
+
+[declarator_exempt]
+path_globs = [
+  "li-tests/**",
+  "benchmarks/**",
+  "examples/**",
+  "bootstrap/**",
+]

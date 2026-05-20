@@ -8,6 +8,7 @@ All notable changes to Li are documented here. The format follows
 
 ### Added
 
+- **Trusted runtime ABI:** `std/runtime/seam.li` canonical `extern proc` surface for `li_rt.c` / `li_rt_net.c`; compiler gate **E0331** (`check_trusted_extern_abi`); docs `docs/compiler/trusted-extern-abi.md`.
 - **M0 li-httpd bench binary:** `runtime/li_rt_net.c` (POSIX `tcp_*`, static HTTP server), `packages/li-net-httpd` → `build/li-httpd` for tier-5 nginx oracle comparison (`LI_HTTPD_BIN`).
 - **Li-native tier-5 httpd:** `packages/li-net-httpd/src/lib.li` — accept loop, keep-alive, pipeline drain, static GET; build with `lic build packages/li-net-httpd/src/lib.li -o build/li-httpd`.
 - **Compiler:** two-pass LLVM emit declares imported `extern` before Li bodies; `ptr` returns/params for C handles; `import_name` workspace resolution errors when a module is missing.

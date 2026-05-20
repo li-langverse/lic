@@ -1,20 +1,4 @@
-
-extern proc li_rt_sqrt(x: float) raises IO -> float
-  requires true
-  ensures true
-  decreases 0
-extern proc li_rt_sin(x: float) raises IO -> float
-  requires true
-  ensures true
-  decreases 0
-extern proc li_rt_cos(x: float) raises IO -> float
-  requires true
-  ensures true
-  decreases 0
-extern proc li_rt_exp(x: float) raises IO -> float
-  requires true
-  ensures true
-  decreases 0
+import std.runtime.seam
 
 def li_std_physics_aero_version() raises IO -> int
   requires true

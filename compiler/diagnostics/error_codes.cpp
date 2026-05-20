@@ -36,6 +36,8 @@ std::string_view error_code_string(ErrorCode code) {
       return "E0321";
     case ErrorCode::E0330:
       return "E0330";
+    case ErrorCode::E0331:
+      return "E0331";
     case ErrorCode::E0340:
       return "E0340";
     case ErrorCode::E0350:

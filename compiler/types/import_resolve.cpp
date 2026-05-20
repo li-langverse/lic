@@ -1,4 +1,5 @@
 #include "li/import_resolve.hpp"
+#include "li/trusted_extern.hpp"
 
 #include "li/parser.hpp"
 #include "li/prelude.hpp"
@@ -314,6 +315,9 @@ std::optional<std::string> easy_std_module(const std::string& module) {
   if (module.rfind("csv.", 0) == 0) {
     return "std." + module;
   }
+  if (module == "runtime" || module.rfind("runtime.", 0) == 0) {
+    return module == "runtime" ? "std.runtime.seam" : "std." + module;
+  }
   return std::nullopt;
 }
 
@@ -420,6 +424,12 @@ bool load_module_recursive(const std::filesystem::path& mod_path, Module& out,
   if (!parsed.module) {
     loading.erase(key);
     return diags.empty();
+  }
+
+  check_trusted_extern_abi(*parsed.module, mod_path.string(), diags);
+  if (!diags.empty()) {
+    loading.erase(key);
+    return false;
   }
 
   Module imported = std::move(*parsed.module);

@@ -96,7 +96,11 @@ bool frontend(const char* path, const std::string& source, li::Module& out,
   }
   auto checked = li::typecheck_module(*parsed.module);
   for (const auto& d : checked.diagnostics.items()) {
-    diags.error(d.loc, d.message);
+    if (!d.code.empty()) {
+      diags.error(d.loc, d.code, d.message, d.hint ? *d.hint : std::string{});
+    } else {
+      diags.error(d.loc, d.message);
+    }
   }
   if (!checked.ok) {
     return false;
@@ -393,8 +397,11 @@ int main(int argc, char** argv) {
       const int open = count_open_autovc_goals();
       if (open > 0) {
         std::cerr << "lic build: " << open
-                  << " open proof obligation(s) in build/generated/AutoVC.lean\n";
-        std::cerr << "hint: discharge in Lean or set LI_ALLOW_OPEN_VC=1 for emergency bypass\n";
+                  << " proof obligation(s) still need a Lean proof "
+                     "(see build/generated/AutoVC.lean)\n";
+        std::cerr << "hint: a `requires` or `ensures` on your code created a goal the compiler "
+                     "could not close automatically — prove it in Lean, simplify the "
+                     "contract, or set LI_ALLOW_OPEN_VC=1 only for emergency bypass\n";
         return 1;
       }
     }

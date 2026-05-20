@@ -770,8 +770,9 @@ struct Ctx {
     const auto it = procs.find(call.ident);
     if (it == procs.end()) {
       diag_error(diags, loc(call.span), ErrorCode::E0202,
-                 "Call to unknown function '" + call.ident + "'.",
-                 "Define the function in this module or import it with `import`.");
+                 "No function named `" + call.ident + "` is visible here.",
+                 "Spell the name correctly, define `def " + call.ident +
+                     "()` in this file, or add `import` for the module that defines it.");
       return;
     }
     const ProcDecl& callee = *it->second;
@@ -789,9 +790,16 @@ struct Ctx {
     }
     const RequiresCheckResult req = check_requires_at_call(callee, call, const_int_locals);
     if (req == RequiresCheckResult::Violated) {
-      diag_error(diags, loc(call.span), ErrorCode::E0304,
-                 "Call to '" + call.ident + "' does not satisfy callee `requires`.",
-                 "Adjust arguments or strengthen caller facts so the precondition holds.");
+      const auto explained = explain_requires_violation(callee, call, const_int_locals);
+      if (explained) {
+        diag_error(diags, loc(call.span), ErrorCode::E0304, explained->message, explained->hint);
+      } else {
+        diag_error(diags, loc(call.span), ErrorCode::E0304,
+                   "Cannot call `" + call_to_user_string(call) + "`: `" + callee.name +
+                       "` has a `requires` precondition that is not met here.",
+                   "Change the arguments so the callee's `requires` clause holds, or relax the "
+                   "callee's rule if it is too strict.");
+      }
     }
   }
 

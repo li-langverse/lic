@@ -32,6 +32,19 @@ RequiresCheckResult check_requires_at_call(
     const ProcDecl& callee, const Expr& call,
     const std::map<std::string, std::int64_t>& const_int_locals);
 
+/// When a call provably breaks a callee `requires`, plain-language text for diagnostics.
+struct RequiresViolationExplanation {
+  std::string message;
+  std::string hint;
+};
+
+std::optional<RequiresViolationExplanation> explain_requires_violation(
+    const ProcDecl& callee, const Expr& call,
+    const std::map<std::string, std::int64_t>& const_int_locals);
+
+std::string expr_to_user_string(const Expr& expr);
+std::string call_to_user_string(const Expr& call);
+
 void collect_calls_in_stmts(const std::vector<Stmt>& stmts,
                             std::vector<const Expr*>& out);
 

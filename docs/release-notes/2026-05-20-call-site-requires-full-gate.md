@@ -15,7 +15,7 @@ Call-site callee `requires` now **fail `lic build` on open Lean goals** (opt-out
 
 | Path | Change |
 |------|--------|
-| `compiler/verify/call_requires.{hpp,cpp}` | Shared substitute/fold/check for call-site requires |
+| `compiler/verify/call_requires.{hpp,cpp}` | Shared substitute/fold/check; **`explain_requires_violation`** plain-language **E0304** |
 | `compiler/verify/vc_emit_lean.cpp` | Call-site VCs for all resolved callees including `extern` |
 | `compiler/types/typecheck.cpp` | **E0304** on violated requires; const-int local map; unknown call error |
 | `compiler/lic/main.cpp` | Default fail build when `AutoVC` has open goals |
@@ -36,7 +36,7 @@ Call-site callee `requires` now **fail `lic build` on open Lean goals** (opt-out
 | Item | Migration |
 |------|-----------|
 | `lic build` fails on open `AutoVC` goals | Discharge proofs or `LI_ALLOW_OPEN_VC=1` (emergency); specimens with intentional open VCs use `verify_open_ok` in manifest |
-| **E0304** on bad call args | Fix call or strengthen facts (e.g. `callee(-1)` when `requires x >= 0`) |
+| **E0304** on bad call args | Read the spelled-out precondition (e.g. ``Cannot call `callee(-1)`: `callee` requires `x >= 0`…``) |
 
 ## Security
 

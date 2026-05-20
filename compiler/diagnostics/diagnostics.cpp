@@ -81,7 +81,8 @@ std::string infer_diagnostic_code(std::string_view message) {
   if (has("ensures true") || has("weak postcondition")) {
     return "E0303";
   }
-  if (has("does not satisfy callee")) {
+  if (has("does not satisfy callee") || has("Cannot call `") ||
+      has("has a `requires` precondition")) {
     return "E0304";
   }
   if (has("contract") || has("requires") || has("ensures")) {

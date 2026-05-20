@@ -6,13 +6,13 @@
 |--------|-------------------------|-------|
 | Public `summary.json` (2026-05-16 ingest) | **88.82×** | Stale: pre-`+` lexer fix; loop did not increment |
 | Local tier-1 (DCE, `acc` unused) | **0.57×** | Bogus green — LLVM deleted the Horner loop |
-| Local tier-1 (this pass, `li_rt_volatile_sink_f64`) | **10.7×** | Honest pure-Li scalar codegen vs native C reference |
+| Local tier-1 (this pass, `li_rt_volatile_sink_f64`) | **10.8×** | Honest pure-Li scalar codegen vs native C reference (median of 5) |
 
-Evidence rows (`benchmarks/results/latest.csv` on this branch):
+Evidence rows (`benchmarks/results/latest.csv`, gitignored — regenerate with `bench.py --tier 1`):
 
 ```csv
-horner_pure_li,cpp,...,wall_time,0.0009,s,...
-horner_pure_li,li,...,wall_time,0.0096,s,...
+horner_pure_li,cpp,release,1,wall_time,0.0009,s,...
+horner_pure_li,li,release,1,wall_time,0.0097,s,...
 ```
 
 ## Changes

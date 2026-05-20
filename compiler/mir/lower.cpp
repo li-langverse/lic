@@ -57,6 +57,7 @@ struct LowerCtx {
   const Module* module = nullptr;
   MirModule* mir = nullptr;
   std::string proc_name;
+  const ProcDecl* proc = nullptr;
   std::vector<LoopLabels>* loop_stack = nullptr;
 };
 std::string fresh_label(const std::string& prefix) {
@@ -69,10 +70,6 @@ bool is_string_type_name(const std::string& n) {
 
 bool is_i64_type_name(const std::string& n) {
   return n == "ptr" || n == "int64" || n == "i64" || n == "long";
-}
-
-bool is_int_type_name(const std::string& n) {
-  return n == "int" || n == "bool" || n == "unit";
 }
 
 void push_label(std::vector<MirInsn>& out, const std::string& name) {
@@ -240,6 +237,34 @@ void emit_copy_object_slots_r(const Module& module, const TypeExpr& te, const st
         ins.op = MirOp::StoreInt;
       }
       out.push_back(std::move(ins));
+    }
+  }
+}
+
+void collect_object_return_layout_r(const Module& module, const TypeExpr& te,
+                                    const std::string& rel_path, std::vector<MirParam>& out) {
+  const TypeAlias* ta = object_alias_for_named_type(module, te);
+  if (!ta) {
+    return;
+  }
+  for (const auto& fld : ta->fields) {
+    if (!fld.type) {
+      continue;
+    }
+    const std::string sub = rel_path.empty() ? fld.name : (rel_path + "_" + fld.name);
+    if (object_alias_for_named_type(module, *fld.type)) {
+      collect_object_return_layout_r(module, *fld.type, sub, out);
+    } else {
+      const TypeExpr* ut = unwrap_refinement_type(fld.type.get());
+      if (!ut || ut->kind == TypeKind::Array) {
+        continue;
+      }
+      MirParam mp;
+      mp.name = sub;
+      mp.is_float = is_float_type_name(ut->name);
+      mp.is_string = is_string_type_name(ut->name);
+      mp.is_i64 = is_i64_type_name(ut->name) || mp.is_string;
+      out.push_back(std::move(mp));
     }
   }
 }
@@ -525,9 +550,18 @@ std::string lower_expr_to(const Expr& e, const Module& module, std::vector<MirIn
           }
           ins.args.push_back(std::move(ma));
         }
-        const std::string dest = fresh_temp();
+        const bool callee_ret_obj =
+            callee->ret_type && object_alias_for_named_type(module, *callee->ret_type);
+        std::string dest;
+        if (callee_ret_obj) {
+          dest = std::string("__li_o___cr") + std::to_string(temp_counter++);
+          emit_object_slots_r(module, *callee->ret_type, dest, out, float_names, i64_locals);
+          collect_object_return_layout_r(module, *callee->ret_type, "", ins.object_layout);
+        } else {
+          dest = fresh_temp();
+        }
         ins.ident = dest;
-        if (callee->ret_type && is_float_type_name(callee->ret_type->name)) {
+        if (!callee_ret_obj && callee->ret_type && is_float_type_name(callee->ret_type->name)) {
           ins.ret_is_float = true;
           float_names.insert(dest);
         }
@@ -615,10 +649,13 @@ void lower_echo_arg(const Expr& arg, std::vector<MirInsn>& out) {
   out.push_back(std::move(ins));
 }
 
-void lower_return_expr(const Expr& e, bool returns_float, const Module& module,
-                       std::vector<MirInsn>& out, std::unordered_set<std::string>& float_names,
+void lower_return_expr(const Expr& e, const LowerCtx& ctx, bool returns_float,
+                       const Module& module, std::vector<MirInsn>& out,
+                       std::unordered_set<std::string>& float_names,
                        std::unordered_set<std::string>& simd_names,
                        std::unordered_set<std::string>& i64_locals) {
+  const bool ret_obj =
+      ctx.proc && ctx.proc->ret_type && object_alias_for_named_type(module, *ctx.proc->ret_type);
   MirInsn ins;
   if (e.kind == Expr::Kind::IntLit) {
     ins.op = MirOp::ReturnInt;
@@ -627,15 +664,27 @@ void lower_return_expr(const Expr& e, bool returns_float, const Module& module,
     ins.op = MirOp::ReturnFloat;
     ins.float_value = e.float_value;
   } else if (e.kind == Expr::Kind::Ident) {
-    ins.op = MirOp::ReturnIdent;
-    ins.ident = e.ident;
-    ins.ret_is_float = returns_float || float_names.count(e.ident) > 0;
+    if (ret_obj) {
+      ins.op = MirOp::ReturnObject;
+      ins.ident = std::string("__li_o_") + e.ident;
+      collect_object_return_layout_r(module, *ctx.proc->ret_type, "", ins.object_layout);
+    } else {
+      ins.op = MirOp::ReturnIdent;
+      ins.ident = e.ident;
+      ins.ret_is_float = returns_float || float_names.count(e.ident) > 0;
+    }
   } else if (e.kind == Expr::Kind::Call || e.kind == Expr::Kind::BinOp ||
              e.kind == Expr::Kind::Index || e.kind == Expr::Kind::FieldAccess) {
     const std::string tmp = lower_expr_to(e, module, out, float_names, simd_names, i64_locals);
-    ins.op = MirOp::ReturnIdent;
-    ins.ident = tmp;
-    ins.ret_is_float = returns_float || is_float_expr(e, float_names);
+    if (ret_obj) {
+      ins.op = MirOp::ReturnObject;
+      ins.ident = tmp;
+      collect_object_return_layout_r(module, *ctx.proc->ret_type, "", ins.object_layout);
+    } else {
+      ins.op = MirOp::ReturnIdent;
+      ins.ident = tmp;
+      ins.ret_is_float = returns_float || is_float_expr(e, float_names);
+    }
   } else {
     ins.op = MirOp::ReturnVoid;
   }
@@ -663,7 +712,8 @@ void lower_stmt(const Stmt& stmt, LowerCtx& ctx, bool returns_float, std::vector
         ins.op = MirOp::ReturnVoid;
         out.push_back(std::move(ins));
       } else {
-        lower_return_expr(*stmt.expr, returns_float, module, out, float_names, simd_names, i64_locals);
+        lower_return_expr(*stmt.expr, ctx, returns_float, module, out, float_names, simd_names,
+                          i64_locals);
       }
       break;
     case Stmt::Kind::VarDecl: {
@@ -743,6 +793,17 @@ void lower_stmt(const Stmt& stmt, LowerCtx& ctx, bool returns_float, std::vector
         if (stmt.init && stmt.init->kind == Expr::Kind::Ident) {
           emit_copy_object_slots_r(module, stmt.var_type, std::string("__li_o_") + stmt.init->ident,
                                    dst_base, out);
+        } else if (stmt.init && stmt.init->kind == Expr::Kind::Call) {
+          const ProcDecl* c = find_proc(module, stmt.init->ident);
+          if (c && c->ret_type && object_alias_for_named_type(module, *c->ret_type)) {
+            const std::string tmp =
+                lower_expr_to(*stmt.init, module, out, float_names, simd_names, i64_locals);
+            emit_copy_object_slots_r(module, stmt.var_type, tmp, dst_base, out);
+          } else {
+            (void)lower_expr_to(*stmt.init, module, out, float_names, simd_names, i64_locals);
+          }
+        } else if (stmt.init) {
+          (void)lower_expr_to(*stmt.init, module, out, float_names, simd_names, i64_locals);
         }
       } else {
         MirInsn ins;
@@ -878,7 +939,7 @@ void lower_stmt(const Stmt& stmt, LowerCtx& ctx, bool returns_float, std::vector
       std::unordered_set<std::string> par_simd;
       std::unordered_set<std::string> par_float_arrays;
       std::unordered_set<std::string> par_i64s;
-      LowerCtx par_ctx{ctx.module, ctx.mir, par_name};
+      LowerCtx par_ctx{ctx.module, ctx.mir, par_name, nullptr, nullptr};
       lower_stmts(stmt.par_body, par_ctx, false, par_fn.body, par_floats, par_simd,
                   par_float_arrays, par_i64s);
       append_implicit_return(par_fn.body);
@@ -1024,7 +1085,8 @@ void lower_stmts(const std::vector<Stmt>& stmts, LowerCtx& ctx, bool returns_flo
     lower_stmt(stmt, ctx, returns_float, out, float_names, simd_names, float_array_names,
                i64_locals);
     if (!out.empty() && (out.back().op == MirOp::ReturnVoid || out.back().op == MirOp::ReturnInt ||
-                         out.back().op == MirOp::ReturnFloat || out.back().op == MirOp::ReturnIdent)) {
+                         out.back().op == MirOp::ReturnFloat || out.back().op == MirOp::ReturnIdent ||
+                         out.back().op == MirOp::ReturnObject)) {
       return;
     }
   }
@@ -1032,7 +1094,7 @@ void lower_stmts(const std::vector<Stmt>& stmts, LowerCtx& ctx, bool returns_flo
 
 bool insn_terminates(MirOp op) {
   return op == MirOp::ReturnVoid || op == MirOp::ReturnInt || op == MirOp::ReturnFloat ||
-         op == MirOp::ReturnIdent;
+         op == MirOp::ReturnIdent || op == MirOp::ReturnObject;
 }
 
 void append_implicit_return(std::vector<MirInsn>& body) {
@@ -1058,6 +1120,12 @@ MirModule lower_to_mir(const Module& module) {
     if (proc.ret_type) {
       fn.returns_float = is_float_type_name(proc.ret_type->name);
       fn.returns_void = proc.ret_type->name == "unit";
+      if (object_alias_for_named_type(module, *proc.ret_type)) {
+        fn.returns_object = true;
+        fn.returns_float = false;
+        fn.returns_void = false;
+        collect_object_return_layout_r(module, *proc.ret_type, "", fn.return_object_layout);
+      }
     } else if (proc.is_extern) {
       fn.returns_void = true;
     }
@@ -1095,7 +1163,7 @@ MirModule lower_to_mir(const Module& module) {
       seed_float_params(fn, float_names);
       seed_i64_params(fn, i64_locals);
       std::vector<LoopLabels> loop_stack;
-      LowerCtx ctx{&module, &mir, proc.name, &loop_stack};
+      LowerCtx ctx{&module, &mir, proc.name, &proc, &loop_stack};
       lower_stmts(proc.body, ctx, fn.returns_float, fn.body, float_names, simd_names,
                   float_array_names, i64_locals);
       if (is_async_fn) {
@@ -1108,7 +1176,34 @@ MirModule lower_to_mir(const Module& module) {
         }
       }
       g_arr_ctx = nullptr;
-      append_implicit_return(fn.body);
+      if (!fn.body.empty() && !insn_terminates(fn.body.back().op) && fn.returns_object &&
+          proc.ret_type) {
+        const std::string z = std::string("__li_o___im") + std::to_string(temp_counter++);
+        emit_object_slots_r(module, *proc.ret_type, z, fn.body, float_names, i64_locals);
+        for (const auto& lf : fn.return_object_layout) {
+          MirInsn st;
+          st.ident = z + "_" + lf.name;
+          st.rhs_is_literal = true;
+          if (lf.is_float) {
+            st.op = MirOp::StoreFloat;
+            st.float_value = 0.0;
+          } else if (lf.is_i64 || lf.is_string) {
+            st.op = MirOp::StoreI64;
+            st.rhs_int = 0;
+          } else {
+            st.op = MirOp::StoreInt;
+            st.rhs_int = 0;
+          }
+          fn.body.push_back(std::move(st));
+        }
+        MirInsn ret;
+        ret.op = MirOp::ReturnObject;
+        ret.ident = z;
+        ret.object_layout = fn.return_object_layout;
+        fn.body.push_back(std::move(ret));
+      } else {
+        append_implicit_return(fn.body);
+      }
     }
     if (!proc.is_extern && fn.body.empty()) {
       MirInsn ins;

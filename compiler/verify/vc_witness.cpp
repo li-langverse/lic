@@ -155,6 +155,7 @@ const MirInsn* last_return_insn(const MirFn& fn) {
       case MirOp::ReturnInt:
       case MirOp::ReturnFloat:
       case MirOp::ReturnIdent:
+      case MirOp::ReturnObject:
         return &*it;
       default:
         break;
@@ -206,7 +207,13 @@ bool mir_return_links_proc(const MirFn& fn, const ProcDecl& proc) {
     case Expr::Kind::FloatLit:
       return mir_ret->op == MirOp::ReturnFloat && mir_ret->float_value == ast_ret->float_value;
     case Expr::Kind::Ident:
-      return mir_ret->op == MirOp::ReturnIdent && mir_ret->ident == ast_ret->ident;
+      if (mir_ret->op == MirOp::ReturnIdent) {
+        return mir_ret->ident == ast_ret->ident;
+      }
+      if (mir_ret->op == MirOp::ReturnObject) {
+        return mir_ret->ident == (std::string("__li_o_") + ast_ret->ident);
+      }
+      return false;
     default:
       return false;
   }

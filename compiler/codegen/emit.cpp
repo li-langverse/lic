@@ -41,6 +41,18 @@ llvm::Type* llvm_scalar(llvm::LLVMContext& ctx, bool is_float, bool is_i64) {
   return is_float ? llvm::Type::getDoubleTy(ctx) : i32_ty(ctx);
 }
 
+llvm::Type* llvm_struct_from_layout(llvm::LLVMContext& ctx, const std::vector<MirParam>& layout) {
+  std::vector<llvm::Type*> elems;
+  elems.reserve(layout.size());
+  for (const auto& p : layout) {
+    elems.push_back(llvm_scalar(ctx, p.is_float, p.is_i64 || p.is_string));
+  }
+  if (elems.empty()) {
+    return llvm::Type::getVoidTy(ctx);
+  }
+  return llvm::StructType::get(ctx, elems);
+}
+
 llvm::Value* int32_val(llvm::IRBuilder<>& builder, llvm::LLVMContext& ctx, std::int64_t v) {
   return llvm::ConstantInt::get(i32_ty(ctx), v);
 }
@@ -76,6 +88,7 @@ struct EmitCtx {
   llvm::IRBuilder<>* builder;
   llvm::Type* ret_ty = nullptr;
   bool returns_float = false;
+  bool returns_object = false;
   bool fp_numerically_stable = false;
   std::map<std::string, llvm::AllocaInst*> int_locals;
   std::map<std::string, llvm::AllocaInst*> float_locals;
@@ -311,6 +324,8 @@ struct EmitCtx {
       case MirOp::ReturnVoid:
         if (ret_ty->isVoidTy()) {
           builder->CreateRetVoid();
+        } else if (returns_object && ret_ty->isStructTy()) {
+          builder->CreateRet(llvm::ConstantAggregateZero::get(ret_ty));
         } else {
           builder->CreateRet(returns_float ? llvm::ConstantFP::get(ret_ty, 0.0)
                                            : llvm::ConstantInt::get(ret_ty, 0));
@@ -330,6 +345,32 @@ struct EmitCtx {
           builder->CreateRet(load_int(ins.ident));
         }
         return false;
+      case MirOp::ReturnObject: {
+        auto* st = llvm::dyn_cast<llvm::StructType>(ret_ty);
+        if (!st || ins.object_layout.empty()) {
+          builder->CreateRetVoid();
+          return false;
+        }
+        llvm::Value* agg = llvm::UndefValue::get(st);
+        for (unsigned i = 0; i < ins.object_layout.size(); ++i) {
+          const MirParam& leaf = ins.object_layout[i];
+          const std::string full = ins.ident + "_" + leaf.name;
+          llvm::Value* v =
+              leaf.is_float ? load_float(full)
+                            : (leaf.is_i64 || leaf.is_string ? load_i64(full) : load_int(full));
+          llvm::Type* want = st->getElementType(i);
+          if (v->getType() != want) {
+            if (want->isIntegerTy(32) && v->getType()->isIntegerTy(64)) {
+              v = builder->CreateTrunc(v, want);
+            } else if (want->isIntegerTy(64) && v->getType()->isIntegerTy(32)) {
+              v = builder->CreateSExt(v, want);
+            }
+          }
+          agg = builder->CreateInsertValue(agg, v, i);
+        }
+        builder->CreateRet(agg);
+        return false;
+      }
       case MirOp::LocalAllocInt:
         (void)ensure_int_local(ins.ident);
         return true;
@@ -425,6 +466,31 @@ struct EmitCtx {
           args.push_back(mir_arg_value(arg, false));
         }
         llvm::CallInst* call = builder->CreateCall(callee, args);
+        if (!ins.object_layout.empty() && callee->getReturnType()->isStructTy()) {
+          llvm::Value* agg = call;
+          auto* st = llvm::cast<llvm::StructType>(callee->getReturnType());
+          for (unsigned i = 0; i < ins.object_layout.size(); ++i) {
+            const MirParam& leaf = ins.object_layout[i];
+            const std::string full = ins.ident + "_" + leaf.name;
+            llvm::Value* elt = builder->CreateExtractValue(agg, i);
+            llvm::Type* want = st->getElementType(i);
+            if (elt->getType() != want) {
+              if (want->isIntegerTy(32) && elt->getType()->isIntegerTy(64)) {
+                elt = builder->CreateTrunc(elt, want);
+              } else if (want->isIntegerTy(64) && elt->getType()->isIntegerTy(32)) {
+                elt = builder->CreateSExt(elt, want);
+              }
+            }
+            if (leaf.is_float) {
+              builder->CreateStore(elt, ensure_float_local(full));
+            } else if (leaf.is_i64 || leaf.is_string) {
+              builder->CreateStore(elt, ensure_i64_local(full));
+            } else {
+              builder->CreateStore(elt, ensure_int_local(full));
+            }
+          }
+          return true;
+        }
         if (!ins.ident.empty()) {
           if (ins.ret_is_float) {
             builder->CreateStore(call, ensure_float_local(ins.ident));
@@ -713,8 +779,14 @@ bool emit_llvm_ir(const MirModule& mir, const std::string& out_path, std::string
     }
 
     const bool is_par_fn = fn.name.rfind("__li_par_", 0) == 0;
-    llvm::Type* ret_ty = fn.returns_void ? llvm::Type::getVoidTy(context)
-                                         : llvm_scalar(context, fn.returns_float, false);
+    llvm::Type* ret_ty = nullptr;
+    if (fn.returns_void) {
+      ret_ty = llvm::Type::getVoidTy(context);
+    } else if (fn.returns_object && !fn.return_object_layout.empty()) {
+      ret_ty = llvm_struct_from_layout(context, fn.return_object_layout);
+    } else {
+      ret_ty = llvm_scalar(context, fn.returns_float, false);
+    }
     std::vector<llvm::Type*> param_tys;
     for (const auto& p : fn.params) {
       if (is_par_fn) {
@@ -745,7 +817,7 @@ bool emit_llvm_ir(const MirModule& mir, const std::string& out_path, std::string
     }
 
     EmitCtx ctx{context, module.get(), func, &builder, ret_ty, fn.returns_float,
-                mir.fp_numerically_stable, {}, {}, {}, {}, {}};
+                fn.returns_object, mir.fp_numerically_stable, {}, {}, {}, {}, {}, {}};
 
     unsigned idx = 0;
     for (auto& arg : func->args()) {

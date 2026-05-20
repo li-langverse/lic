@@ -2,28 +2,31 @@
 
 ## Summary
 
-`object`-typed values are lowered as flattened per-field locals with deterministic MIR names (`__li_o_<root>_<field>…`), so field reads, assignments, `var` slots, non-extern calls with object parameters, and `var dst: T = src` (same-type object identifier) slot copies match the type checker.
+`object`-typed values are lowered as flattened per-field locals (`__li_o_<root>_<field>…`) for field access, assignment, `var`, expanded call arguments, same-type `var dst: T = srcIdent` slot copies, and **LLVM struct returns** (`ReturnObject`, callee unpack) including `var w: T = foo()` when `foo` returns `T`.
 
 ## Agent continuation
 
-1. Read `compiler/mir/lower.cpp` (`mir_field_slot_for_expr`, `emit_object_slots_r`, `emit_copy_object_slots_r`, `CallProc` argument expansion, `VarDecl` / `Assign` branches).
+1. Read `compiler/mir/include/li/mir.hpp` (`ReturnObject`, `MirFn::returns_object` / `return_object_layout`, `MirInsn::object_layout`), `compiler/mir/lower.cpp`, `compiler/codegen/emit.cpp`.
 2. Run `cmake --build build` then `./li-tests/run_all.sh encapsulation` and `./li-tests/run_all.sh math_linalg` with `LIC` pointing at the built `lic`.
-3. Next: lower object **return** values and `var x: T = callee()` copy-in when `callee` returns an object; extend the same layout to `typedict` if product policy requires runtime parity.
-4. Blocked: none for flat `object` tests; object returns and `typedict` call ABI need a separate design pass.
+3. Next: whole-object assign `b = a`; nested object returns with mixed layouts; `extern proc` returning object; `typedict` parity.
+4. Blocked: none for scalar-only object tests; array fields inside objects still not copied on `var` init.
 
 ## Changed
 
-- `compiler/mir/lower.cpp` — object field MIR paths; `i64_locals` tracking for pointer-like scalar slots; `is_float_expr` handles `FieldAccess`; `CallProc` / `MirParam` expansion for object-typed parameters; `emit_copy_object_slots_r` for `var dst: Obj = srcIdent`.
-- `li-tests/objects/object_field_smoke.li` — regression for `limits.max_header_block` + `max_body` store/load.
-- `li-tests/objects/object_copy_init.li` — regression for object `var` initialized from another object.
-- `li-tests/manifest.toml` — register object tests under encapsulation suite.
+- `compiler/mir/include/li/mir.hpp` — `MirOp::ReturnObject`, `MirInsn::object_layout`, `MirFn::returns_object` / `return_object_layout`.
+- `compiler/mir/lower.cpp` — `collect_object_return_layout_r`, `ReturnObject` lowering, object-return `CallProc` temps (`__li_o___cr*`), `var … = call()` copy from temp, implicit zero-struct return for object procedures.
+- `compiler/codegen/emit.cpp` — LLVM struct return types, `ReturnObject`, struct unpack on `CallProc`.
+- `compiler/verify/vc_witness.cpp` — treat `ReturnObject` as a return terminator; link `return v` to `ReturnObject` with `__li_o_v` prefix.
+- `li-tests/objects/object_return_call.li` — regression for callee returning `Vec3` consumed by `var`.
+- `li-tests/manifest.toml` — register `object_return_call.li`.
 
 ## Not changed
 
-- LLVM instruction selection outside existing `Store*` / `Load*` / `Call` paths (`emit.cpp` unchanged).
+- General scalar/control-flow codegen paths in `emit.cpp` beyond struct-return plumbing (`llvm_struct_from_layout`, `InsertValue`/`ExtractValue` for object layouts).
 - `typedict` runtime layout (still not flattened in MIR).
 - Parser, borrow checker, and verifier contracts for objects.
 - Whole-object reassignment (`b = a` as a single assign) is not lowered to per-field copies; use field-wise assign or `var` with identifier initializer.
+- `extern proc` returning a Li `object` type (no struct lowering contract).
 
 ## Breaking
 

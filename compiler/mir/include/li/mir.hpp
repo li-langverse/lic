@@ -13,6 +13,8 @@ enum class MirOp {
   ReturnInt,
   ReturnFloat,
   ReturnIdent,
+  /** Pack scalar locals named `ident + "_" + layout[i].name` into LLVM struct return. */
+  ReturnObject,
   EchoInt,
   EchoString,
   CallExtern,
@@ -57,6 +59,15 @@ struct MirArg {
   std::string str_value;
 };
 
+struct MirParam {
+  std::string name;
+  bool is_float = false;
+  bool is_string = false;
+  bool is_i64 = false;
+  bool is_simd_f64 = false;
+  std::int64_t simd_lanes = 0;
+};
+
 struct MirInsn {
   MirOp op = MirOp::ReturnVoid;
   std::int64_t int_value = 0;
@@ -80,15 +91,9 @@ struct MirInsn {
   bool array_is_float = false;
   std::int64_t simd_lanes = 0;
   std::vector<MirArg> args;
-};
-
-struct MirParam {
-  std::string name;
-  bool is_float = false;
-  bool is_string = false;
-  bool is_i64 = false;
-  bool is_simd_f64 = false;
-  std::int64_t simd_lanes = 0;
+  /** Leaf layout: `name` is path under object root (e.g. `x`, `mid_x`). Used for ReturnObject
+   *  (pack) and CallProc when callee returns an object (unpack into `ident + "_" + name`). */
+  std::vector<MirParam> object_layout;
 };
 
 struct MirDecorator {
@@ -99,10 +104,14 @@ struct MirFn {
   std::string name;
   bool returns_float = false;
   bool returns_void = false;
+  /** When true, LLVM return type is a struct; `return_object_layout` lists leaf fields. */
+  bool returns_object = false;
   bool is_extern = false;
   bool is_async = false;
   std::vector<MirDecorator> decorators;
   std::vector<MirParam> params;
+  /** Populated when `returns_object`; parallel to ReturnObject / unpack layout. */
+  std::vector<MirParam> return_object_layout;
   std::vector<MirInsn> body;
 };
 

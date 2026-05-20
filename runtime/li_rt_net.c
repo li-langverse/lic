@@ -723,6 +723,38 @@ static int parse_get_path_c(const char* buf, int hdr_end, char* out, int out_cap
   return plen;
 }
 
+static int hdr_has_token_c(const char* buf, int hdr_end, const char* token) {
+  int tlen = (int)strlen(token);
+  for (int i = 0; i + tlen <= hdr_end; i++) {
+    if (memcmp(buf + i, token, (size_t)tlen) == 0) {
+      return 1;
+    }
+  }
+  return 0;
+}
+
+static int count_content_length_c(const char* buf, int hdr_end) {
+  int count = 0;
+  for (int i = 0; i + 15 < hdr_end; i++) {
+    if (memcmp(buf + i, "Content-Length:", 15) == 0) {
+      count++;
+    }
+  }
+  return count;
+}
+
+/* CL+TE conflict, duplicate Content-Length — smuggling class (CVE-2019-20372). */
+static int request_headers_unsafe_c(const char* buf, int hdr_end) {
+  if (count_content_length_c(buf, hdr_end) > 1) {
+    return 1;
+  }
+  if (count_content_length_c(buf, hdr_end) > 0 && hdr_has_token_c(buf, hdr_end, "Transfer-Encoding:") &&
+      hdr_has_token_c(buf, hdr_end, "chunked")) {
+    return 1;
+  }
+  return 0;
+}
+
 static int path_is_safe(const char* path, int plen) {
   if (plen <= 0 || plen > 2048 || path[0] != '/') {
     return 0;
@@ -1210,6 +1242,9 @@ static int32_t httpd_try_drain_once(int32_t conn, int32_t slot) {
   int hdr_end = hdr_end_at_c(g_slots[slot].buf, len);
   if (hdr_end < 0) {
     return 0;
+  }
+  if (request_headers_unsafe_c(g_slots[slot].buf, hdr_end)) {
+    return -2;
   }
   char req_path[2048];
   int plen = parse_get_path_c(g_slots[slot].buf, hdr_end, req_path, (int)sizeof(req_path));

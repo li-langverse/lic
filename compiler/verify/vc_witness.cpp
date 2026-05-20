@@ -1,16 +1,34 @@
 #include "li/vc_witness.hpp"
 
+#include "li/call_requires.hpp"
+
 #include <memory>
 
 namespace li {
 
-const Expr* single_return_expr(const ProcDecl& proc) {
-  for (const auto& stmt : proc.body) {
-    if (stmt.kind == Stmt::Kind::Return && stmt.expr) {
-      return stmt.expr.get();
+void collect_return_exprs_in_stmts(const std::vector<Stmt>& stmts,
+                                   std::vector<const Expr*>& out) {
+  for (const auto& s : stmts) {
+    if (s.kind == Stmt::Kind::Return && s.expr) {
+      out.push_back(s.expr.get());
     }
+    collect_return_exprs_in_stmts(s.then_body, out);
+    if (s.else_body) {
+      collect_return_exprs_in_stmts(*s.else_body, out);
+    }
+    collect_return_exprs_in_stmts(s.while_body, out);
+    collect_return_exprs_in_stmts(s.for_body, out);
+    collect_return_exprs_in_stmts(s.par_body, out);
   }
-  return nullptr;
+}
+
+const Expr* single_return_expr(const ProcDecl& proc) {
+  std::vector<const Expr*> returns;
+  collect_return_exprs_in_stmts(proc.body, returns);
+  if (returns.empty()) {
+    return nullptr;
+  }
+  return returns.back();
 }
 
 namespace {
@@ -164,9 +182,135 @@ const MirInsn* last_return_insn(const MirFn& fn) {
   return nullptr;
 }
 
+bool callee_ensures_result_equals_param(const ProcDecl& callee, std::size_t param_idx) {
+  if (param_idx >= callee.params.size()) {
+    return false;
+  }
+  const std::string& pname = callee.params[param_idx].name;
+  for (const auto& rc : callee.contracts) {
+    if (rc.kind != ContractKind::Ensures || !rc.expr) {
+      continue;
+    }
+    const Expr* rhs = ensures_rhs_eq_result(*rc.expr);
+    if (rhs && rhs->kind == Expr::Kind::Ident && rhs->ident == pname) {
+      return true;
+    }
+  }
+  return false;
+}
+
+bool call_ident_arg_matches_ensures(const Module& module, const Contract& c,
+                                    const Expr& ret, const CallerProofFacts& facts) {
+  if (c.kind != ContractKind::Ensures || !c.expr) {
+    return false;
+  }
+  const Expr* rhs = ensures_rhs_eq_result(*c.expr);
+  if (rhs == nullptr || ret.kind != Expr::Kind::Call) {
+    return false;
+  }
+  const ProcDecl* callee = find_proc_by_name(module, ret.ident);
+  if (callee == nullptr) {
+    return false;
+  }
+  for (std::size_t i = 0; i < ret.args.size() && i < callee->params.size(); ++i) {
+    if (!ret.args[i] || ret.args[i]->kind != Expr::Kind::Ident) {
+      continue;
+    }
+    const std::string& arg_id = ret.args[i]->ident;
+    if (rhs->kind == Expr::Kind::Ident) {
+      if (arg_id != rhs->ident) {
+        continue;
+      }
+    } else if (rhs->kind == Expr::Kind::IntLit) {
+      const auto it = facts.const_int_locals.find(arg_id);
+      if (it == facts.const_int_locals.end() || it->second != rhs->int_value) {
+        continue;
+      }
+    } else {
+      continue;
+    }
+    if (callee_ensures_result_equals_param(*callee, i)) {
+      return true;
+    }
+  }
+  return false;
+}
+
+bool call_literal_return_matches_ensures(const Module& module, const Contract& c,
+                                         const Expr& ret) {
+  if (c.kind != ContractKind::Ensures || !c.expr) {
+    return false;
+  }
+  const Expr* rhs = ensures_rhs_eq_result(*c.expr);
+  if (rhs == nullptr || ret.kind != Expr::Kind::Call) {
+    return false;
+  }
+  const ProcDecl* callee = find_proc_by_name(module, ret.ident);
+  if (callee == nullptr || ret.args.empty()) {
+    return false;
+  }
+  for (std::size_t i = 0; i < ret.args.size() && i < callee->params.size(); ++i) {
+    if (!ret.args[i] || !expr_same_shape(*ret.args[i], *rhs)) {
+      continue;
+    }
+    if (callee_ensures_result_equals_param(*callee, i)) {
+      return true;
+    }
+  }
+  return false;
+}
+
+bool ident_return_matches_const_ensures(const Contract& c, const Expr& ret,
+                                        const CallerProofFacts& facts) {
+  if (c.kind != ContractKind::Ensures || !c.expr) {
+    return false;
+  }
+  const Expr* rhs = ensures_rhs_eq_result(*c.expr);
+  if (rhs == nullptr || ret.kind != Expr::Kind::Ident) {
+    return false;
+  }
+  if (rhs->kind != Expr::Kind::IntLit) {
+    return false;
+  }
+  const auto it = facts.const_int_locals.find(ret.ident);
+  return it != facts.const_int_locals.end() && it->second == rhs->int_value;
+}
+
+bool ensures_witnessed_for_return(const ProcDecl& proc, const Contract& c, const Expr& ret,
+                                  const Module* module, const CallerProofFacts* caller_facts) {
+  const Expr* rhs = ensures_rhs_eq_result(*c.expr);
+  if (rhs != nullptr && expr_same_shape(ret, *rhs)) {
+    return true;
+  }
+  if (module != nullptr && call_literal_return_matches_ensures(*module, c, ret)) {
+    return true;
+  }
+  if (caller_facts != nullptr) {
+    if (ident_return_matches_const_ensures(c, ret, *caller_facts)) {
+      return true;
+    }
+    if (module != nullptr && call_ident_arg_matches_ensures(*module, c, ret, *caller_facts)) {
+      return true;
+    }
+  }
+  if (ret.kind == Expr::Kind::Ident) {
+    for (const auto& rc : proc.contracts) {
+      if (rc.kind == ContractKind::Requires && rc.expr &&
+          comparison_mirror_requires_ensures(*rc.expr, *c.expr, ret.ident)) {
+        return true;
+      }
+    }
+    if (ensures_subst_matches_requires(proc, c)) {
+      return true;
+    }
+  }
+  return false;
+}
+
 }  // namespace
 
-bool contract_witnessed_trivial(const ProcDecl& proc, const Contract& c) {
+bool contract_witnessed_trivial(const ProcDecl& proc, const Contract& c, const Module* module,
+                                const CallerProofFacts* caller_facts) {
   if (!c.expr) {
     return false;
   }
@@ -176,21 +320,15 @@ bool contract_witnessed_trivial(const ProcDecl& proc, const Contract& c) {
   if (c.kind != ContractKind::Ensures) {
     return false;
   }
-  const Expr* rhs = ensures_rhs_eq_result(*c.expr);
-  const Expr* ret = single_return_expr(proc);
-  if (rhs != nullptr && ret != nullptr && expr_same_shape(*ret, *rhs)) {
-    return true;
-  }
-  if (ret != nullptr && ret->kind == Expr::Kind::Ident) {
-    for (const auto& rc : proc.contracts) {
-      if (rc.kind == ContractKind::Requires && rc.expr &&
-          comparison_mirror_requires_ensures(*rc.expr, *c.expr, ret->ident)) {
+  std::vector<const Expr*> returns;
+  collect_return_exprs_in_stmts(proc.body, returns);
+  if (!returns.empty()) {
+    for (const Expr* ret : returns) {
+      if (ret != nullptr && ensures_witnessed_for_return(proc, c, *ret, module, caller_facts)) {
         return true;
       }
     }
-    if (ensures_subst_matches_requires(proc, c)) {
-      return true;
-    }
+    return false;
   }
   return false;
 }

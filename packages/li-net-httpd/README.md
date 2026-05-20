@@ -1,6 +1,6 @@
 # li-httpd
 
-Proved AI/agent HTTP gateway (Phase H). **M1 not implemented** — blocked on full **2e–2f** Lean gate; see [httpd plan](../../docs/superpowers/plans/2026-05-16-li-httpd-plan.md) and [httpd prerequisites](../../docs/ecosystem/httpd-prerequisites.md).
+Proved AI/agent HTTP gateway (Phase H). **M1 `.li` routing not implemented** — **2e–2f proof gate ready on branch** `cursor/refinement-call-check-57b4` (merge then start M1); see [httpd plan](../../docs/superpowers/plans/2026-05-16-li-httpd-plan.md) and [phase completion](../../docs/ecosystem/phase-completion-2026-05-20.md).
 
 **Composable by default:** `import net.httpd` from any program; lifecycle lives in `src/lib.li`. `src/main.li` is a thin demo only. See [composable-by-default](../../docs/ecosystem/composable-by-default.md).
 

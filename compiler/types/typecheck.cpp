@@ -1,6 +1,7 @@
 #include "li/typecheck.hpp"
 
 #include "li/borrowck.hpp"
+#include "li/call_requires.hpp"
 #include "li/error_codes.hpp"
 #include "li/numeric_types.hpp"
 
@@ -103,6 +104,8 @@ struct Ctx {
   std::map<std::string, AliasEntry> aliases;
   std::map<std::string, const ProcDecl*> procs;
   std::map<std::string, TyPtr> locals;
+  std::map<std::string, std::int64_t> const_int_locals;
+  std::set<std::string> assum_nonneg_ints;
   std::map<std::string, TyPtr> type_vars;
   std::set<std::string> refined_index_params;
   std::set<std::string> loop_index_vars;
@@ -120,6 +123,48 @@ struct Ctx {
     }
     if (cond.lhs && cond.lhs->kind == Expr::Kind::Ident) {
       loop_index_vars.insert(cond.lhs->ident);
+    }
+  }
+
+  const TypeExpr* alias_definition(const std::string& name) const {
+    const auto it = aliases.find(name);
+    if (it == aliases.end() || it->second.definition == nullptr) {
+      return nullptr;
+    }
+    return it->second.definition;
+  }
+
+  AliasTypeLookup alias_lookup() const {
+    return [this](const std::string& name) -> const TypeExpr* {
+      return alias_definition(name);
+    };
+  }
+
+  ProofFacts proof_facts() const { return ProofFacts{const_int_locals, assum_nonneg_ints}; }
+
+  void report_refinement_violation(const Span& span, const ResolvedRefinement& refinement,
+                                   const Expr& value) {
+    const auto explained = explain_refinement_violation(refinement, value, proof_facts());
+    if (explained) {
+      diag_error(diags, loc(span), ErrorCode::E0305, explained->message, explained->hint);
+      return;
+    }
+    diag_error(diags, loc(span), ErrorCode::E0305,
+               "Value `" + expr_to_user_string(value) + "` does not satisfy refinement type `" +
+                   refinement.type_label + "`.",
+               "Use a value inside the declared range, or relax the refinement on the type "
+               "alias.");
+  }
+
+  void check_value_matches_refinement(const TypeExpr& declared_type, const Expr& value,
+                                      const Span& span) {
+    const auto refinement = resolve_refinement_on_type(declared_type, alias_lookup());
+    if (!refinement) {
+      return;
+    }
+    const RequiresCheckResult ref_check = check_refinement_argument(*refinement, value, proof_facts());
+    if (ref_check == RequiresCheckResult::Violated) {
+      report_refinement_violation(span, *refinement, value);
     }
   }
 
@@ -665,6 +710,7 @@ struct Ctx {
           for (const auto& arg : e.args) {
             (void)type_of(*arg);
           }
+          check_call_args(e);
           if (callee.ret_type) {
             return resolve_type_expr(*callee.ret_type);
           }
@@ -673,6 +719,7 @@ struct Ctx {
         for (const auto& arg : e.args) {
           (void)type_of(*arg);
         }
+        check_call_args(e);
         return make_int();
       }
       case Expr::Kind::UnaryNot:
@@ -746,12 +793,29 @@ struct Ctx {
     return make_int();
   }
 
+  void record_const_int_binding(const std::string& name, const Expr& init) {
+    if (init.kind == Expr::Kind::IntLit) {
+      const_int_locals[name] = init.int_value;
+      return;
+    }
+    if (init.kind == Expr::Kind::Ident) {
+      const auto it = const_int_locals.find(init.ident);
+      if (it != const_int_locals.end()) {
+        const_int_locals[name] = it->second;
+      }
+    }
+  }
+
   void check_call_args(const Expr& call) {
     if (call.kind != Expr::Kind::Call) {
       return;
     }
     const auto it = procs.find(call.ident);
     if (it == procs.end()) {
+      diag_error(diags, loc(call.span), ErrorCode::E0202,
+                 "No function named `" + call.ident + "` is visible here.",
+                 "Spell the name correctly, define `def " + call.ident +
+                     "()` in this file, or add `import` for the module that defines it.");
       return;
     }
     const ProcDecl& callee = *it->second;
@@ -765,6 +829,22 @@ struct Ctx {
         } else {
           diags.error(loc(call.span), "argument type mismatch in call to '" + call.ident + "'");
         }
+      }
+      if (call.args[n]) {
+        check_value_matches_refinement(callee.params[n].type, *call.args[n], call.span);
+      }
+    }
+    const RequiresCheckResult req = check_requires_at_call(callee, call, proof_facts());
+    if (req == RequiresCheckResult::Violated) {
+      const auto explained = explain_requires_violation(callee, call, proof_facts());
+      if (explained) {
+        diag_error(diags, loc(call.span), ErrorCode::E0304, explained->message, explained->hint);
+      } else {
+        diag_error(diags, loc(call.span), ErrorCode::E0304,
+                   "Cannot call `" + call_to_user_string(call) + "`: `" + callee.name +
+                       "` has a `requires` precondition that is not met here.",
+                   "Change the arguments so the callee's `requires` clause holds, or relax the "
+                   "callee's rule if it is too strict.");
       }
     }
   }
@@ -782,6 +862,8 @@ struct Ctx {
             diags.error(loc(s.span), "variable type mismatch");
           }
         }
+        check_value_matches_refinement(s.var_type, *s.init, s.span);
+        record_const_int_binding(s.var_name, *s.init);
       }
       locals[s.var_name] = declared;
       return;
@@ -791,12 +873,15 @@ struct Ctx {
       return;
     }
     if (s.kind == Stmt::Kind::If) {
+      const auto saved_assum = assum_nonneg_ints;
       if (s.cond) {
         type_of(*s.cond);
+        note_nonneg_assumption_from_cond(*s.cond, assum_nonneg_ints);
       }
       for (const auto& inner : s.then_body) {
         check_stmt(inner);
       }
+      assum_nonneg_ints = saved_assum;
       if (s.else_body) {
         for (const auto& inner : *s.else_body) {
           check_stmt(inner);
@@ -822,16 +907,19 @@ struct Ctx {
     }
     if (s.kind == Stmt::Kind::While) {
       std::set<std::string> saved_loop = loop_index_vars;
+      const auto saved_assum = assum_nonneg_ints;
       loop_depth++;
       if (s.cond) {
         note_loop_index_from_cond(*s.cond);
         type_of(*s.cond);
+        note_nonneg_assumption_from_cond(*s.cond, assum_nonneg_ints);
       }
       for (const auto& inner : s.while_body) {
         check_stmt(inner);
       }
       loop_depth--;
       loop_index_vars = std::move(saved_loop);
+      assum_nonneg_ints = saved_assum;
       return;
     }
     if (s.kind == Stmt::Kind::For) {
@@ -884,14 +972,13 @@ struct Ctx {
       return;
     }
     if (s.kind == Stmt::Kind::Assign && s.init && s.expr) {
-      type_of(*s.init);
       type_of(*s.expr);
+      if (s.init->kind == Expr::Kind::Ident) {
+        record_const_int_binding(s.init->ident, *s.expr);
+      }
       return;
     }
     if (s.expr) {
-      if (s.expr->kind == Expr::Kind::Call) {
-        check_call_args(*s.expr);
-      }
       type_of(*s.expr);
     }
   }
@@ -984,6 +1071,8 @@ struct Ctx {
     }
     check_weak_ensures(p);
     locals.clear();
+    const_int_locals.clear();
+    assum_nonneg_ints.clear();
     type_vars.clear();
     refined_index_params.clear();
     loop_index_vars.clear();
@@ -1002,12 +1091,6 @@ struct Ctx {
       locals[param.name] = pt;
     }
     for (const auto& s : p.body) {
-      if (s.kind == Stmt::Kind::Return && s.expr && ret_ty) {
-        const TyPtr got = type_of(*s.expr);
-        if (!assignable(got, *ret_ty)) {
-          diags.error(loc(s.span), "return type mismatch for generic type parameter");
-        }
-      }
       check_stmt(s);
     }
     in_async = prev_async;
@@ -1019,7 +1102,7 @@ struct Ctx {
 TypecheckResult typecheck_module(const Module& module) {
   TypecheckResult result;
   DiagnosticBag& diags = result.diagnostics;
-  Ctx ctx{{}, {}, {}, {}, {}, {}, 0, false, diags, "module"};
+  Ctx ctx{{}, {}, {}, {}, {}, {}, {}, {}, 0, false, diags, "module"};
   for (const auto& proc : module.procs) {
     ctx.procs[proc.name] = &proc;
   }

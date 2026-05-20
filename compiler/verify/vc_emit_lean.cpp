@@ -1,11 +1,13 @@
 #include "li/vc_emit.hpp"
 
 #include "li/ast.hpp"
+#include "li/call_requires.hpp"
 #include "li/vc_summary.hpp"
 #include "li/vc_witness.hpp"
 
 #include <algorithm>
 #include <fstream>
+#include <optional>
 #include <sstream>
 #include <string>
 
@@ -217,7 +219,9 @@ void emit_contract_def(std::ostream& out, const Module& module, const ProcDecl& 
   ctx.in_ensures = (c.kind == ContractKind::Ensures);
 
   std::string prop = "True";
-  const bool witnessed = contract_witnessed_trivial(proc, c);
+  const CallerProofFacts caller_facts = collect_caller_proof_facts(proc);
+  const bool witnessed =
+      contract_witnessed_trivial(proc, c, &module, &caller_facts);
   if (witnessed) {
     prop = "True";
   } else if (c.expr) {
@@ -269,6 +273,91 @@ void emit_contract_def(std::ostream& out, const Module& module, const ProcDecl& 
   }
 }
 
+void emit_call_site_requires(std::ostream& out, const Module& module, const ProcDecl& caller) {
+  const CallerProofFacts caller_facts = collect_caller_proof_facts(caller);
+  const ProofFacts facts = caller_facts.view();
+  std::vector<const Expr*> calls;
+  collect_calls_in_stmts(caller.body, calls);
+  std::size_t call_idx = 0;
+  for (const Expr* call : calls) {
+    if (call == nullptr || call->kind != Expr::Kind::Call) {
+      continue;
+    }
+    const ProcDecl* callee = find_proc_by_name(module, call->ident);
+    if (callee == nullptr) {
+      continue;
+    }
+    std::vector<std::string> param_names;
+    for (const auto& p : callee->params) {
+      param_names.push_back(p.name);
+    }
+    AliasTypeLookup alias_lookup = [&module](const std::string& name) -> const TypeExpr* {
+      const TypeAlias* alias = find_type_alias(module, name);
+      if (alias == nullptr) {
+        return nullptr;
+      }
+      return &alias->definition;
+    };
+    std::size_t ref_idx = 0;
+    for (std::size_t p = 0; p < callee->params.size() && p < call->args.size(); ++p) {
+      const auto refinement = resolve_refinement_on_type(callee->params[p].type, alias_lookup);
+      if (!refinement || call->args[p] == nullptr || !refinement->predicate) {
+        continue;
+      }
+      const std::string name = "vc_" + proc_section(caller.name) + "_call" +
+                               std::to_string(call_idx) + '_' + proc_section(callee->name) +
+                               "_refine_" + std::to_string(ref_idx++);
+      const auto sub = substitute_refinement_binding(*refinement->predicate, refinement->bind_var,
+                                                     *call->args[p]);
+      std::string prop = "True";
+      const bool witnessed =
+          check_refinement_argument(*refinement, *call->args[p], facts) ==
+              RequiresCheckResult::Satisfied;
+      VcCtx ctx;
+      if (witnessed) {
+        prop = "True";
+      } else if (auto lean = expr_to_lean(*sub, ctx)) {
+        prop = *lean;
+      } else {
+        out << "/-! VC call-site refinement: param " << p << " of '" << callee->name
+            << "' at call " << call_idx << " -/\n";
+      }
+      out << "def " << name << " : Prop := " << prop << '\n';
+      if (prop == "True" && witnessed) {
+        out << "theorem " << name << "_proved : " << name << " := trivial\n";
+      }
+    }
+    std::size_t req_idx = 0;
+    for (const auto& rc : callee->contracts) {
+      if (rc.kind != ContractKind::Requires || !rc.expr) {
+        continue;
+      }
+      const std::string name = "vc_" + proc_section(caller.name) + "_call" +
+                               std::to_string(call_idx) + '_' + proc_section(callee->name) +
+                               "_requires_" + std::to_string(req_idx++);
+      const auto sub = substitute_call_params(*rc.expr, param_names, call->args);
+      const auto folded = fold_const_int_locals(*sub, facts.const_int_locals);
+      std::string prop = "True";
+      const bool witnessed =
+          expr_statically_true(*folded) || folded_discharged_by_proof_facts(*folded, facts);
+      VcCtx ctx;
+      if (witnessed) {
+        prop = "True";
+      } else if (auto lean = expr_to_lean(*sub, ctx)) {
+        prop = *lean;
+      } else {
+        out << "/-! VC call-site requires (opaque): callee '" << callee->name
+            << "' at call " << call_idx << " -/\n";
+      }
+      out << "def " << name << " : Prop := " << prop << '\n';
+      if (prop == "True" && witnessed) {
+        out << "theorem " << name << "_proved : " << name << " := trivial\n";
+      }
+    }
+    ++call_idx;
+  }
+}
+
 void walk_contracts(std::ostream& out, const Module& module, const ProcDecl& proc,
                     const std::vector<Contract>& contracts) {
   std::size_t req = 0;
@@ -314,6 +403,7 @@ bool write_vcs_lean(const Module& module, const std::string& path, std::string* 
     for (const auto& stmt : proc.body) {
       walk_contracts(out, module, proc, stmt.par_contracts);
     }
+    emit_call_site_requires(out, module, proc);
     out << "\nend " << proc_section(proc.name) << "\n\n";
   }
   out << "end AutoVC\n";

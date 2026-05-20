@@ -383,13 +383,13 @@ Track in phase **Doc** until each is checked:
 - [x] Phase 5 — Tetris
 - [x] Phase 5b — Benchmarks & simulations (harness + **X plots** skeleton on `dev`)
 - [x] Phase 6 — Self-host (bootstrap seed: `bootstrap/lic/main.li` → `build/lic-from-li`)
-- [ ] Phase 2e — Contracts + refinements — **partial:** typed `AutoVC.lean`; `lic verify` prints `witnessed_ensures=` + `mir_return_linked=` (AST witness ↔ MIR return); open goals checker
-- [ ] Phase 2f — Lean 4 verify — **partial:** auto-discharge (`True`, `decreases`, return/const/mirror `ensures`); `sqrt_contract` stub closed; `sqrt_open_bound` abs VC open; `lic verify --strict-lean`
+- [x] Phase 2e — Contracts + refinements — **merged (PR #83):** call-site `requires` (**E0304**), refinement types (**E0305**), if-guard VC discharge, import/extern; corpus [proof-corpus-roadmap.md](../verification/proof-corpus-roadmap.md); float/nontrivial ensures still open
+- [x] Phase 2f — Lean 4 verify — **partial (PR #83):** `lic build` + `check-autovc-open-goals.sh`; `LI_BUILD_VERIFY_LEAN=1` → semantics `lake build`; `contracts_verify/` 16/16; `sqrt_open_bound` = `verify_open_ok`; full kernel certificate still **G-lean** partial
 - [x] Phase 7 — Native HPC — **v1 gate:** simd + parallel for + OpenMP + `check-master-plan-gates.sh` (tier 1/2 perf advisory)
 - [ ] Phase 7d — Execution decorators — **partial (7d-a/b/d/e/c):** AST `check_module_policies` for disjoint; string heuristics for race exploits
 - [ ] Phase 7e — Math → SIMD/parallel lowering — **partial:** `ArrayDotF64` for 1d `float` `@`; SIMD matmul deferred
 - [x] Phase H — li-httpd infra — **`lis`** harness, mitigations, CI, workspace stubs ([implementation-status](https://github.com/li-langverse/lis/blob/main/docs/implementation-status.md))
-- [ ] Phase H — li-httpd M1 `.li` — after **2e–2f** + bytes/async ([httpd-prerequisites](../ecosystem/httpd-prerequisites.md))
+- [ ] Phase H — li-httpd M1 `.li` — **unblocked after 2e–2f merge**; infra + `li-http`/`li-net-httpd` stubs on main; M1 routing `.li` + `li-tests/routing/` next ([httpd-prerequisites](../ecosystem/httpd-prerequisites.md))
 - [x] Phase Pkg — Package scaffold + governance stubs ([scaffold](2026-05-16-li-package-scaffold.md), [governance](2026-05-16-li-ecosystem-governance.md); `li.toml` = [lip § A3](2026-05-16-li-package-manager-lip.md))
 - [x] Phase 8-repo — [`lic`](https://github.com/li-langverse/lic), [`lip`](https://github.com/li-langverse/lip), [`lit`](https://github.com/li-langverse/lit) on GitHub + CI
 - [x] Phase 8a — Modules + workspace `lic build` — `std.*` + workspace/local imports; `li-tests/modules/`; `lic-workspace-build.sh` on 3 packages
@@ -430,7 +430,7 @@ Runnable on `dev` after `./scripts/build.sh`:
 
 | v2 item | Why still open |
 |---------|----------------|
-| **2e–2f** | Real VC discharge in Lean kernel (not `True := trivial`) |
+| **2e–2f** | Real VC discharge in Lean kernel (not `True := trivial`) — corpus + backlog: [proof-corpus-roadmap.md](../verification/proof-corpus-roadmap.md) |
 | **2i / 7e-b** | Matrix `@`, `sum`, Tier 1 math-only matmul vs C++ |
 | **7d-c** | Structured `disjoint=` without string policy |
 | **H** | li-httpd implementation |

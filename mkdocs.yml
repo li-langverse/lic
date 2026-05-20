@@ -127,11 +127,13 @@ nav:
       - Effects and I/O: language/effects-and-io.md
   - Compiler:
       - Build pipeline: compiler/build-pipeline.md
+      - LLVM ABI: compiler/llvm-abi.md
       - Why provable: compiler/why-provable.md
       - Architecture: architecture/overview.md
       - Verification:
           - Overview: verification/overview.md
           - Provability gaps (today): verification/provability-gaps.md
+          - Proof corpus roadmap: verification/proof-corpus-roadmap.md
   - Testing and security:
       - All tests: testing/overview.md
       - Security audits: testing/security.md

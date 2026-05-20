@@ -74,13 +74,19 @@ type Color = enum
   Red, Green, Blue
 ```
 
-## Refinement types (indexed safety)
+## Refinement types (value domains)
 
-```nim
+```li
+type NonNeg = {x: int | x >= 0}
 type Index = {i: int | 0 <= i and i < N}
 ```
 
-Refinements tie indices to bounds so out-of-range access is a **compile-time** failure when the proof goes through.
+A refinement declares **which values** a name may take. Parameters and `var` bindings of that type are checked at **calls** and **initializers**:
+
+- Provably **outside** the predicate → **E0305** (compile error).
+- **Inside** but not yet provable → proof obligation (see [Refinement types](refinement-types.md)).
+
+Index refinements (`Index`, `Index10`, …) use the same syntax for array safety; see `li-tests/contracts_verify/index_refinement.li`.
 
 ## Callable and Protocol
 

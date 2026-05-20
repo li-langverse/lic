@@ -96,7 +96,11 @@ bool frontend(const char* path, const std::string& source, li::Module& out,
   }
   auto checked = li::typecheck_module(*parsed.module);
   for (const auto& d : checked.diagnostics.items()) {
-    diags.error(d.loc, d.message);
+    if (!d.code.empty()) {
+      diags.error(d.loc, d.code, d.message, d.hint ? *d.hint : std::string{});
+    } else {
+      diags.error(d.loc, d.message);
+    }
   }
   if (!checked.ok) {
     return false;
@@ -121,6 +125,30 @@ int check_file(const char* path, DiagOutput output, std::string_view json_comman
   }
   if (output == DiagOutput::Json) {
     li::print_diagnostics_json(diags, std::cout, json_command);
+  }
+  return 0;
+}
+
+int run_lean_verify_after_build() {
+  if (std::getenv("LI_BUILD_VERIFY_LEAN") == nullptr &&
+      std::getenv("LI_BUILD_VERIFY_LEAN_STRICT") == nullptr) {
+    return 0;
+  }
+  const char* root = std::getenv("LI_REPO_ROOT");
+  std::string script = "scripts/lean-verify-stub.sh";
+  if (root != nullptr) {
+    script = std::string(root) + "/" + script;
+  }
+  if (std::system("command -v lake >/dev/null 2>&1") != 0) {
+    std::cerr << "lic build: warning — Lean 4 / lake not installed; skipping semantics proof "
+                 "(install for full 2f gate)\n";
+    return 0;
+  }
+  const std::string cmd = "bash " + script;
+  const int rc = std::system(cmd.c_str());
+  if (rc != 0) {
+    std::cerr << "lic build: Lean semantics verification failed (see docs/semantics)\n";
+    return 1;
   }
   return 0;
 }
@@ -388,6 +416,21 @@ int main(int argc, char** argv) {
     std::filesystem::create_directories(std::filesystem::path(vc_lean).parent_path(), fs_err);
     if (!li::write_vcs_lean(module, vc_lean, &err)) {
       std::cerr << "vc emit: " << err << '\n';
+    }
+    if (std::getenv("LI_ALLOW_OPEN_VC") == nullptr) {
+      const int open = count_open_autovc_goals();
+      if (open > 0) {
+        std::cerr << "lic build: " << open
+                  << " proof obligation(s) still need a Lean proof "
+                     "(see build/generated/AutoVC.lean)\n";
+        std::cerr << "hint: a `requires` or `ensures` on your code created a goal the compiler "
+                     "could not close automatically — prove it in Lean, simplify the "
+                     "contract, or set LI_ALLOW_OPEN_VC=1 only for emergency bypass\n";
+        return 1;
+      }
+    }
+    if (const int lean_rc = run_lean_verify_after_build(); lean_rc != 0) {
+      return lean_rc;
     }
     if (std::getenv("LI_BUILD_VERIFY_LEAN") != nullptr) {
       return verify_file(input, true, false);

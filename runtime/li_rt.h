@@ -28,6 +28,12 @@ double li_rt_log1p(double x);
 int32_t bytes_len(const char* b);
 const char* bytes_slice(const char* b, int32_t off, int32_t n);
 int32_t li_rt_str_byte_at(const char* s, int32_t i);
+/* HTTP routing helpers (Phase H M1 — trusted C until pure-Li path compare ships). */
+int32_t li_rt_str_eq(const char* a, const char* b);
+int32_t li_rt_path_exact(const char* path, const char* want);
+int32_t li_rt_path_prefix(const char* path, const char* prefix);
+/* Priority-ordered routes for li-tests/httpd/fixtures/routing.toml (M1). */
+int32_t li_rt_match_route_fixture(const char* method, const char* path);
 
 /* Async reactor stubs (httpd P0 — sync completion until epoll/kqueue lands). */
 void li_async_frame_enter(void);

@@ -163,7 +163,7 @@ outcome = "verify_ok"
 [[tests]]
 suite = "contracts_verify"
 file = "contracts_verify/sqrt_open_bound.li"
-outcome = "verify_ok"
+outcome = "verify_open_ok"
 
 [[tests]]
 suite = "contracts_verify"
@@ -178,6 +178,64 @@ outcome = "verify_ok"
 [[tests]]
 suite = "contracts_verify"
 file = "contracts_verify/discharge_const.li"
+outcome = "verify_ok"
+
+[[tests]]
+suite = "contracts_verify"
+file = "contracts_verify/caller_requires_ok.li"
+outcome = "verify_ok"
+
+[[tests]]
+suite = "contracts_verify"
+file = "contracts_verify/caller_requires_local_ok.li"
+outcome = "verify_ok"
+
+[[tests]]
+suite = "contracts_verify"
+file = "contracts_verify/caller_requires_fail.li"
+outcome = "compile_fail"
+expected_substr = "E0304"
+
+[[tests]]
+suite = "contracts_verify"
+file = "contracts_verify/refinement_call_ok.li"
+outcome = "verify_ok"
+
+[[tests]]
+suite = "contracts_verify"
+file = "contracts_verify/refinement_inline_ok.li"
+outcome = "verify_ok"
+
+[[tests]]
+suite = "contracts_verify"
+file = "contracts_verify/refinement_local_ok.li"
+outcome = "verify_ok"
+
+[[tests]]
+suite = "contracts_verify"
+file = "contracts_verify/refinement_init_ok.li"
+outcome = "verify_ok"
+
+[[tests]]
+suite = "contracts_verify"
+file = "contracts_verify/refinement_call_fail.li"
+outcome = "compile_fail"
+expected_substr = "E0305"
+
+[[tests]]
+suite = "contracts_verify"
+file = "contracts_verify/refinement_init_fail.li"
+outcome = "compile_fail"
+expected_substr = "E0305"
+
+[[tests]]
+suite = "contracts_verify"
+file = "contracts_verify/refinement_guard_ok.li"
+outcome = "verify_ok"
+
+[[tests]]
+suite = "contracts_verify"
+file = "contracts_verify/extern_call_requires_ok.li"
 outcome = "verify_ok"
 
 # --- borrow ---
@@ -531,6 +589,12 @@ file = "httpd/parse_request_smoke.li"
 outcome = "compile_ok"
 note = "parse_request from li-http + GET line probe"
 
+[[tests]]
+suite = "routing"
+file = "routing/match_routes.li"
+outcome = "compile_ok"
+note = "match_route_fixture vs routing.toml fixture (also run_httpd_config.sh)"
+
 # --- math_linalg (2i — @ dot / matmul surface) ---
 
 [[tests]]
@@ -707,6 +771,11 @@ outcome = "verify_ok"
 [[tests]]
 suite = "modules"
 file = "modules/use_greeter.li"
+outcome = "verify_ok"
+
+[[tests]]
+suite = "modules"
+file = "modules/use_positive.li"
 outcome = "verify_ok"
 
 # --- cve_patterns (C memory-safety classes — must reject or prove safe) ---

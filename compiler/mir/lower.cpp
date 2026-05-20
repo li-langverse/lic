@@ -74,6 +74,15 @@ bool is_string_type_name(const std::string& n) {
   return n == "str" || n == "string";
 }
 
+bool is_bytes_type_name(const std::string& n) {
+  return n == "bytes";
+}
+
+/// Types passed as i8* in LLVM (string literals and byte buffers).
+bool mir_ptr_param_type_name(const std::string& n) {
+  return is_string_type_name(n) || is_bytes_type_name(n);
+}
+
 bool is_i64_type_name(const std::string& n) {
   return n == "ptr" || n == "int64" || n == "i64" || n == "long";
 }
@@ -389,8 +398,8 @@ void collect_object_return_layout_r(const Module& module, const TypeExpr& te,
       MirParam mp;
       mp.name = sub;
       mp.is_float = is_float_type_name(ut->name);
-      mp.is_string = is_string_type_name(ut->name);
-      mp.is_i64 = is_i64_type_name(ut->name) || mp.is_string;
+      mp.is_string = mir_ptr_param_type_name(ut->name);
+      mp.is_i64 = is_i64_type_name(ut->name) || is_string_type_name(ut->name);
       out.push_back(std::move(mp));
     }
   }
@@ -453,8 +462,8 @@ void append_mir_params_for_object_type(const Module& module, const TypeExpr& te,
       MirParam mp;
       mp.name = sub;
       mp.is_float = is_float_type_name(ut->name);
-      mp.is_string = is_string_type_name(ut->name);
-      mp.is_i64 = is_i64_type_name(ut->name) || mp.is_string;
+      mp.is_string = mir_ptr_param_type_name(ut->name);
+      mp.is_i64 = is_i64_type_name(ut->name) || is_string_type_name(ut->name);
       out_params.push_back(std::move(mp));
     }
   }
@@ -683,7 +692,10 @@ std::string lower_expr_to(const Expr& e, const Module& module, std::vector<MirIn
             continue;
           }
           MirArg ma;
-          if (arg.kind == Expr::Kind::IntLit) {
+          if (arg.kind == Expr::Kind::StringLit) {
+            ma.is_string = true;
+            ma.str_value = arg.str_value;
+          } else if (arg.kind == Expr::Kind::IntLit) {
             ma.is_literal = true;
             ma.int_value = arg.int_value;
           } else if (arg.kind == Expr::Kind::Ident) {
@@ -1327,8 +1339,8 @@ MirModule lower_to_mir(const Module& module) {
         MirParam mp;
         mp.name = p.name;
         mp.is_float = is_float_type_name(p.type.name);
-        mp.is_string = is_string_type_name(p.type.name);
-        mp.is_i64 = is_i64_type_name(p.type.name);
+        mp.is_string = mir_ptr_param_type_name(p.type.name);
+        mp.is_i64 = is_i64_type_name(p.type.name) || is_string_type_name(p.type.name);
         fn.params.push_back(std::move(mp));
       }
     }

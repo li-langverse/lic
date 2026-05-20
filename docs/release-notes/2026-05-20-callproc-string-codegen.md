@@ -16,7 +16,7 @@
 | Path | What |
 |------|------|
 | `compiler/codegen/emit.cpp` | Pass 1: declare all MIR fns; pass 2: bodies; `CallProc`/`CallExtern` string args → `i8*`; string params in `ptr_locals` |
-| `compiler/mir/lower.cpp` | `StringLit` → `MirArg{is_string}` for `CallProc`; proc param `is_i64` includes `str` |
+| `compiler/mir/lower.cpp` | `StringLit` → `MirArg{is_string}` for `CallProc`; `bytes` params use `i8*` (`mir_ptr_param_type_name`) |
 | `li-tests/routing/match_routes.li` | Single `main` oracle vs `api_prefix.toml` |
 | `li-tests/run_httpd_config.sh` | Run compiled `/tmp/li_match_routes`, assert exit 0 |
 

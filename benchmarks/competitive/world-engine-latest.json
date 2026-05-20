@@ -1,100 +1,100 @@
 {
-  "generated_at": "2026-05-20T13:45:31.410153+00:00",
-  "git_sha": "73c9aff",
+  "generated_at": "2026-05-20T13:54:28.369832+00:00",
+  "git_sha": "61ce75b",
   "quick": {
     "game_world_soa_10k": {
       "workload_class": "world_engine",
       "cpp": {
-        "s": 0.0004,
-        "stdev": "0.000177"
+        "s": 0.0006,
+        "stdev": "0.000134"
       },
       "rust": {
-        "s": 0.0008,
-        "stdev": "9.9e-05"
+        "s": 0.0007,
+        "stdev": "0.000192"
       },
       "julia": {
         "s": 0.0004,
-        "stdev": "0.000149"
+        "stdev": "1e-05"
       },
       "li": {
-        "s": 0.0004,
-        "stdev": "2.3e-05"
+        "s": 0.0003,
+        "stdev": "7e-06"
       }
     },
     "game_replication_encode": {
       "workload_class": "world_engine",
       "cpp": {
-        "s": 0.0004,
-        "stdev": "0.000166"
+        "s": 0.0007,
+        "stdev": "0.000136"
       },
       "rust": {
-        "s": 0.0007,
-        "stdev": "0.000203"
+        "s": 0.0004,
+        "stdev": "4.3e-05"
       },
       "julia": {
-        "s": 0.0004,
-        "stdev": "3.5e-05"
+        "s": 0.0007,
+        "stdev": "0.0002"
       },
       "li": {
-        "s": 0.0006,
-        "stdev": "0.000137"
+        "s": 0.0004,
+        "stdev": "2.1e-05"
       }
     },
     "sim_physics_frame": {
       "workload_class": "world_engine",
       "cpp": {
-        "s": 0.0007,
-        "stdev": "0.000228"
+        "s": 0.0006,
+        "stdev": "3.6e-05"
       },
       "rust": {
-        "s": 0.0004,
-        "stdev": "0.000255"
+        "s": 0.0007,
+        "stdev": "0.000204"
       },
       "julia": {
-        "s": 0.0004,
-        "stdev": "4.8e-05"
+        "s": 0.0006,
+        "stdev": "0.000146"
       },
       "li": {
-        "s": 0.0006,
-        "stdev": "0.000182"
+        "s": 0.0004,
+        "stdev": "4.9e-05"
       }
     },
     "cloth_swing": {
       "workload_class": "v0_gaming",
       "cpp": {
-        "s": 0.0016,
-        "stdev": "0.000103"
+        "s": 0.0015,
+        "stdev": "0.000102"
       },
       "rust": {
         "s": 0.0014,
-        "stdev": "7.1e-05"
+        "stdev": "0.000201"
       },
       "julia": {
         "s": 0.0015,
-        "stdev": "0.000185"
+        "stdev": "0.000105"
       },
       "li": {
-        "s": 0.0014,
-        "stdev": "0.000131"
+        "s": 0.0013,
+        "stdev": "0.00032"
       }
     },
     "rigid_body_stack": {
       "workload_class": "v0_gaming",
       "cpp": {
-        "s": 0.0006,
-        "stdev": "0.000148"
+        "s": 0.0005,
+        "stdev": "0.000219"
       },
       "rust": {
         "s": 0.0004,
-        "stdev": "0.000146"
+        "stdev": "0.000128"
       },
       "julia": {
         "s": 0.0005,
-        "stdev": "0.000152"
+        "stdev": "0.000151"
       },
       "li": {
         "s": 0.0008,
-        "stdev": "0.000185"
+        "stdev": "9.9e-05"
       }
     }
   },
@@ -102,96 +102,96 @@
     "game_world_soa_10k": {
       "workload_class": "world_engine",
       "cpp": {
-        "s": 0.0008,
-        "stdev": "5.3e-05"
+        "s": 0.0007,
+        "stdev": "0.000128"
       },
       "rust": {
-        "s": 0.0008,
-        "stdev": "0.000242"
+        "s": 0.0007,
+        "stdev": "0.000153"
       },
       "julia": {
-        "s": 0.0007,
-        "stdev": "0.000127"
+        "s": 0.0009,
+        "stdev": "0.000138"
       },
       "li": {
-        "s": 0.0006,
-        "stdev": "0.000149"
+        "s": 0.0008,
+        "stdev": "0.000126"
       }
     },
     "game_replication_encode": {
       "workload_class": "world_engine",
       "cpp": {
         "s": 0.0011,
-        "stdev": "9.9e-05"
+        "stdev": "9.3e-05"
       },
       "rust": {
-        "s": 0.0008,
-        "stdev": "0.000161"
+        "s": 0.0007,
+        "stdev": "4.1e-05"
       },
       "julia": {
         "s": 0.0007,
-        "stdev": "0.000287"
+        "stdev": "0.000124"
       },
       "li": {
-        "s": 0.0007,
-        "stdev": "7.7e-05"
+        "s": 0.0008,
+        "stdev": "0.000114"
       }
     },
     "sim_physics_frame": {
       "workload_class": "world_engine",
       "cpp": {
-        "s": 0.0008,
-        "stdev": "0.000118"
+        "s": 0.0007,
+        "stdev": "0.000149"
       },
       "rust": {
-        "s": 0.0005,
-        "stdev": "0.000146"
+        "s": 0.0007,
+        "stdev": "0.000172"
       },
       "julia": {
-        "s": 0.0007,
-        "stdev": "6.2e-05"
+        "s": 0.0005,
+        "stdev": "3.9e-05"
       },
       "li": {
-        "s": 0.0006,
-        "stdev": "0.000149"
+        "s": 0.0005,
+        "stdev": "0.000141"
       }
     },
     "cloth_swing": {
       "workload_class": "gaming_full",
       "cpp": {
         "s": 0.0047,
-        "stdev": "1.7e-05"
+        "stdev": "4.5e-05"
       },
       "rust": {
         "s": 0.0047,
-        "stdev": "2e-05"
+        "stdev": "5e-05"
       },
       "julia": {
-        "s": 0.0048,
-        "stdev": "6.8e-05"
+        "s": 0.0047,
+        "stdev": "6.5e-05"
       },
       "li": {
         "s": 0.0047,
-        "stdev": "1.5e-05"
+        "stdev": "8.9e-05"
       }
     },
     "rigid_body_stack": {
       "workload_class": "gaming_full",
       "cpp": {
-        "s": 0.0006,
-        "stdev": "5.4e-05"
+        "s": 0.0008,
+        "stdev": "0.000199"
       },
       "rust": {
-        "s": 0.0007,
-        "stdev": "0.000226"
+        "s": 0.0004,
+        "stdev": "2e-05"
       },
       "julia": {
-        "s": 0.0008,
-        "stdev": "0.000144"
+        "s": 0.0005,
+        "stdev": "0.000232"
       },
       "li": {
-        "s": 0.0004,
-        "stdev": "0.000256"
+        "s": 0.0008,
+        "stdev": "0.000209"
       }
     }
   },

@@ -15,5 +15,11 @@ Li ships solvers in `packages/*`. **Correctness** is checked against C oracles i
 | `sim.robotics` · `robot_joint_step_li` | (planned) | Pinocchio / Drake joint integration | 1-DOF damped oscillator |
 | `sim.automotive` · `bicycle_step_li` | (planned) | Kinematic bicycle model literature | Yaw–speed coupling |
 | `sim.drug_design` · `lab_loop_advance_li` | `drug-litl-chem` composable | Lab-in-the-loop QM workflows | Stages + LJ energy hook |
+| `li-world` · SoA tick | `game_world_soa_10k` | DOTS / UE Mass-class ECS throughput | `world_engine`; UE proxy budget in ingest |
+| `li-world` · replication | `game_replication_encode` | UE NetDriver / Photon-class delta encode | `world_engine` |
+| `li-sim` · physics frame | `sim_physics_frame` | Chaos / Bullet fixed substep | `world_engine`; Li body stub |
+| gaming cloth/rigid | `cloth_swing`, `rigid_body_stack` | Chaos cloth / rigid (simplified kernel) | `v0_gaming` quick; `gaming_full` with `--full` |
+
+**UE comparison:** aspirational budgets in `benchmarks/competitive/unreal-proxy-targets.json`; optional manual UE CSV via `benchmarks/harness/import_ue_baseline.py`.
 
 **Rule:** new rows require PR updating this table + `.cursor/rules/li-sota-benchmark-li-only.mdc` compliance.

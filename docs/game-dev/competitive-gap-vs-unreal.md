@@ -20,12 +20,24 @@
 | `game_replication_encode` | `world_engine` | Replication delta bandwidth (Photon/UE net) |
 | `sim_physics_frame` | `world_engine` | Fixed-timestep rigid + substeps (Bullet-class) |
 
-Run:
+Run (focused world + gaming kernels):
 
 ```bash
-python3 benchmarks/harness/bench.py --tier 2 --full --runs 3
-python3 benchmarks/harness/validity.py --tier 2 --quick
+./scripts/run-world-benches.sh
+# or:
+python3 benchmarks/harness/bench.py --tier 2 --quick --runs 3 \
+  --only game_world_soa_10k,game_replication_encode,sim_physics_frame,cloth_swing,rigid_body_stack
 ```
+
+Latest captured timings: [`benchmarks/competitive/world-engine-latest.json`](../../benchmarks/competitive/world-engine-latest.json) (regenerate with the script above).
+
+| Bench | Scale | cpp (median) | li (median) | Validity @ quick |
+|-------|-------|----------------|-------------|------------------|
+| `game_world_soa_10k` | full 10k×600 | 0.8 ms | 0.6 ms | PASS (checksum 6144000) |
+| `game_replication_encode` | full 1k×500 | 1.1 ms | 0.7 ms | PASS |
+| `sim_physics_frame` | full 12×2000 | 0.8 ms | 0.6 ms | PASS |
+| `cloth_swing` | full 16×8k | 4.7 ms | 4.7 ms | PASS |
+| `rigid_body_stack` | full 50×2k | 0.6 ms | 0.4 ms | PASS |
 
 ## `gaming_full` vs `v0_gaming`
 

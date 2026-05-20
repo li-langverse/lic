@@ -1,115 +1,53 @@
-# Engine / framework competitive map — measurement honesty.
-# HPC wall-time: benchmarks/competitive/registry.toml + bench.py tier 12.
-# Product/integration: composable gates in world-studio.toml.
-
-[meta]
-version = 1
-updated = "2026-05-20"
-plan = "docs/benchmarks/competitive-engines-plan.md"
-
-# measure: harness_wall_time | composable_gate | validity_checksum | planned_study
-# status: green | yellow | red | unknown | not_applicable
+# Engine incumbents — what we measure vs what we claim.
+# Timed harness rows live in catalog.toml; composable gates in world-studio.toml.
 
 [[engine]]
-id = "cpp_native"
-category = "hpc_reference"
-measure = "harness_wall_time"
-csv_lang = "cpp"
-status = "green"
-notes = "Native C kernels; reference oracle for validity."
-
-[[engine]]
-id = "numpy"
-category = "hpc_reference"
-measure = "harness_wall_time"
-csv_lang = "numpy"
-status = "green"
-notes = "Always in tier 12; BLAS for matmul/dot; validity vs cpp with tolerance."
-
-[[engine]]
-id = "li_lic"
-category = "li_runtime"
-measure = "harness_wall_time"
-csv_lang = "li"
-status = "yellow"
-notes = "shared_c_kernel parity green; pure_li micros improving; v0_gaming algorithms incomplete."
+id = "unreal_engine_5"
+name = "Unreal Engine 5"
+category = "game_engine"
+measurement_today = "world_engine + gaming_full harness proxies; composable studio gates"
+measurement_not = "Nanite/Lumen FPS in-repo; Blueprint parity"
+proxy_bench_map = [
+  "game_world_soa_10k → ECS/archetype tick budget (DOTS/UE Mass-class)",
+  "game_replication_encode → delta bandwidth vs full snapshot (UE replication class)",
+  "sim_physics_frame → fixed-timestep rigid substeps (Chaos/Bullet-class)",
+  "cloth_swing / rigid_body_stack → v0_gaming / gaming_full physics stubs",
+]
+parity_wedge = ["diffable worlds", "lic build contracts", "agent-native studio", "arbitrary physics laws"]
+external_baseline = "benchmarks/competitive/unreal-proxy-targets.json"
 
 [[engine]]
 id = "unity"
+name = "Unity (DOTS/NetCode class)"
 category = "game_engine"
-measure = "planned_study"
-status = "not_applicable"
-compare = ["GW-1", "GW-2", "studio_play_mode"]
-notes = "No wall-time column; composable integration gates only today."
-
-[[engine]]
-id = "unreal"
-category = "game_engine"
-measure = "planned_study"
-status = "not_applicable"
-compare = ["GW-3", "GW-4", "render-gpu-viewport"]
-notes = "End-to-end latency studies future; not micro-harness."
+measurement_today = "Same world_engine proxies where applicable"
+measurement_not = "URP/HDRP render parity"
+proxy_bench_map = ["game_world_soa_10k → Entities tick throughput"]
+parity_wedge = ["Li unified sim profiles", "single repo game+sim"]
 
 [[engine]]
 id = "godot"
+name = "Godot 4"
 category = "game_engine"
-measure = "planned_study"
-status = "not_applicable"
-compare = ["studio_play_mode"]
-notes = "Agent-friendly authoring is Li differentiator; perf TBD."
+measurement_today = "composable world gates only"
+measurement_not = "Production netcode parity"
+proxy_bench_map = []
+parity_wedge = ["Open Li packages", "proof path"]
 
 [[engine]]
-id = "gazebo"
-category = "robotics_sim"
-measure = "planned_study"
-status = "not_applicable"
-compare = ["sim-physics-bridge", "robotics-studio-quick"]
-notes = "Tier-2 nbody/wave/heat are physics proxies; not Gazebo SDFormat."
+id = "bullet_physx"
+name = "Bullet / PhysX / Chaos (physics middleware)"
+category = "physics"
+measurement_today = "sim_physics_frame, rigid_body_stack, cloth_swing"
+measurement_not = "Contact manifolds, destruction, soft-body ship quality"
+proxy_bench_map = ["sim_physics_frame → per-frame rigid integrate + substeps"]
+parity_wedge = ["physics.custom arbitrary laws", "sim profiles"]
 
 [[engine]]
-id = "carla"
-category = "automotive_sim"
-measure = "planned_study"
-status = "not_applicable"
-compare = ["automotive-studio-quick", "advection_diffusion_2d"]
-notes = "Use advdiff/wind v0 for smoke/fluid proxy until automotive profile ships."
-
-[[engine]]
-id = "openfoam"
-category = "cfd"
-measure = "planned_study"
-status = "not_applicable"
-compare = ["euler_fluid_2d", "advection_diffusion_2d", "heat_equation_2d"]
-notes = "v0_gaming euler is not OpenFOAM-class; full PDE rows are heat/advdiff."
-
-[[engine]]
-id = "gromacs"
-category = "md"
-measure = "planned_study"
-status = "not_applicable"
-compare = ["md_lennard_jones"]
-notes = "C MD kernel full scale; Li main.li is micro-stub — see validity pure_li_stub."
-
-[[engine]]
-id = "bullet"
-category = "physics_engine"
-measure = "planned_study"
-status = "not_applicable"
-compare = ["rigid_body_stack", "ragdoll_chain", "cloth_swing"]
-notes = "v0 harness lacks contact solvers; validity checks checksum only."
-
-[[engine]]
-id = "photon"
-category = "mmo_net"
-measure = "composable_gate"
-status = "unknown"
-compare = ["mmo-deploy-stack", "mmo-realm-sync-quick"]
-notes = "Shard logic gates; no netcode latency bench in latest.csv yet."
-
-[[engine]]
-id = "benchling"
-category = "bioengineering"
-measure = "composable_gate"
-status = "unknown"
-compare = ["bioeng-dbtl-bridge", "drug-studio-quick"]
-notes = "PH-BIOENG integration; timed DBTL bench planned in bioengineering.toml."
+id = "photon_ue_replication"
+name = "Photon / UE replication literature"
+category = "networking"
+measurement_today = "game_replication_encode timed kernel"
+measurement_not = "Live MMO shard load tests"
+proxy_bench_map = ["game_replication_encode → encode ratio + wall time"]
+parity_wedge = ["li-mmo stubs → timed shard path"]

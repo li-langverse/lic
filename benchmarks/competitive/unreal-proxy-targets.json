@@ -1,0 +1,58 @@
+{
+  "schema": "unreal_proxy_v1",
+  "disclaimer": "Not measured UE5 runs in CI. Published/industry order-of-magnitude budgets for dashboard comparison only.",
+  "budget_60fps_frame_ms": 16.67,
+  "targets": {
+    "game_world_soa_10k": {
+      "subsystem": "ECS / Mass-entity tick (CPU)",
+      "ue_class_reference": "UE Mass / DOTS-style archetype iteration",
+      "proxy_metric": "wall_time",
+      "unit": "s",
+      "aspirational_budget_ms_at_60fps": 2.0,
+      "notes": "Full harness: 10k entities × 600 ticks. Li/cpp ~0.6–0.8ms median on dev CPU — micro-kernel, not UE editor.",
+      "measurement_path": "External: UE Insights / Unreal Stats `STAT_Group_*` on equivalent sample project (manual upload to data/external/ue-baselines.csv)"
+    },
+    "game_replication_encode": {
+      "subsystem": "Replication encode",
+      "ue_class_reference": "UE NetDriver delta serialization",
+      "proxy_metric": "wall_time",
+      "unit": "s",
+      "aspirational_budget_ms_per_tick": 0.5,
+      "notes": "Harness measures encode rounds, not live player count.",
+      "measurement_path": "net.ReplicationGraph + packet capture; compare bytes/tick vs our checksum kernel"
+    },
+    "sim_physics_frame": {
+      "subsystem": "Physics tick",
+      "ue_class_reference": "Chaos fixed step substepping",
+      "proxy_metric": "wall_time",
+      "unit": "s",
+      "aspirational_budget_ms_at_60fps": 4.0,
+      "notes": "Li stub kernel ~0.6ms; production Chaos is scene-dependent.",
+      "measurement_path": "UE stat Physics, Tracy; map to tier2_world/sim_physics_frame scale"
+    },
+    "cloth_swing": {
+      "subsystem": "Cloth / constraints",
+      "ue_class_reference": "Chaos cloth PBD",
+      "proxy_metric": "wall_time",
+      "unit": "s",
+      "gaming_full_scale": "16 links × 8000 steps",
+      "aspirational_budget_ms": 8.0,
+      "notes": "gaming_full Li/cpp ~4.7ms on reference kernel — simplified PBD."
+    },
+    "rigid_body_stack": {
+      "subsystem": "Rigid bodies",
+      "ue_class_reference": "Chaos rigid stacking",
+      "proxy_metric": "wall_time",
+      "unit": "s",
+      "gaming_full_scale": "50 bodies × 2000 steps",
+      "aspirational_budget_ms": 4.0,
+      "notes": "Harness has no contact stacking yet."
+    }
+  },
+  "agentic_parity_pillars": [
+    "Cursor MCP + li-studio-ai on world.li",
+    "Natural-language patch with lic build gate",
+    "Diffable GameWorld vs SimField",
+    "Killer UX: command palette, adaptive panels (PH-UX)"
+  ]
+}

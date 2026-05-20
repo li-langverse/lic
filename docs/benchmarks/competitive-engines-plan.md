@@ -25,8 +25,18 @@ python3 benchmarks/harness/bench.py --tier 13
 Org ingest + status report (benchmarks repo):
 
 ```bash
+# From lic repo (runs benches + patches latest + ingest):
+./scripts/publish-benchmarks-ingest.sh
+
+# Or manually from benchmarks repo:
 python3 scripts/ingest/build_summary.py "$LIC_ROOT" "$LIS_ROOT"
 python3 scripts/generate_competitive_status.py "$LIC_ROOT"
+```
+
+Optional manual UE5 sample project timings:
+
+```bash
+python3 benchmarks/harness/import_ue_baseline.py --csv path/to/ue_insights_export.csv
 ```
 
 ## HPC competitors (in `latest.csv` today)
@@ -42,7 +52,8 @@ python3 scripts/generate_competitive_status.py "$LIC_ROOT"
 
 | Incumbent | What we measure **today** | What we do **not** claim |
 |-----------|---------------------------|---------------------------|
-| Unity / Unreal / Godot | Composable studio/world gates | Micro-harness FPS |
+| **Unreal Engine 5** | `world_engine` + `gaming_full` timed; UE proxy budgets in ingest | Measured UE5 in CI |
+| Unity / Godot | World proxies + composable gates | Editor/render parity |
 | Gazebo / CARLA | Composable + PDE/nbody proxies | Full robot/scenario parity |
 | OpenFOAM / GROMACS | Tier-2 PDE/MD rows + validity | Field-SOTA without external run |
 | Bullet / PhysX | v0 rigid/cloth/ragdoll checksums | Production contact stacks |

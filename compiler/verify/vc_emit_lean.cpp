@@ -287,6 +287,40 @@ void emit_call_site_requires(std::ostream& out, const Module& module, const Proc
     for (const auto& p : callee->params) {
       param_names.push_back(p.name);
     }
+    AliasTypeLookup alias_lookup = [&module](const std::string& name) -> const TypeExpr* {
+      const TypeAlias* alias = find_type_alias(module, name);
+      if (alias == nullptr) {
+        return nullptr;
+      }
+      return &alias->definition;
+    };
+    std::size_t ref_idx = 0;
+    for (std::size_t p = 0; p < callee->params.size() && p < call->args.size(); ++p) {
+      const auto refinement = resolve_refinement_on_type(callee->params[p].type, alias_lookup);
+      if (!refinement || call->args[p] == nullptr || !refinement->predicate) {
+        continue;
+      }
+      const std::string name = "vc_" + proc_section(caller.name) + "_call" +
+                               std::to_string(call_idx) + '_' + proc_section(callee->name) +
+                               "_refine_" + std::to_string(ref_idx++);
+      const auto sub = substitute_refinement_binding(*refinement->predicate, refinement->bind_var,
+                                                     *call->args[p]);
+      std::string prop = "True";
+      const bool witnessed = expr_statically_true(*sub);
+      VcCtx ctx;
+      if (witnessed) {
+        prop = "True";
+      } else if (auto lean = expr_to_lean(*sub, ctx)) {
+        prop = *lean;
+      } else {
+        out << "/-! VC call-site refinement: param " << p << " of '" << callee->name
+            << "' at call " << call_idx << " -/\n";
+      }
+      out << "def " << name << " : Prop := " << prop << '\n';
+      if (prop == "True" && witnessed) {
+        out << "theorem " << name << "_proved : " << name << " := trivial\n";
+      }
+    }
     std::size_t req_idx = 0;
     for (const auto& rc : callee->contracts) {
       if (rc.kind != ContractKind::Requires || !rc.expr) {

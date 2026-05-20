@@ -85,6 +85,9 @@ std::string infer_diagnostic_code(std::string_view message) {
       has("has a `requires` precondition")) {
     return "E0304";
   }
+  if (has("does not satisfy refinement") || has("refinement type `")) {
+    return "E0305";
+  }
   if (has("contract") || has("requires") || has("ensures")) {
     return "E0301";
   }
@@ -122,6 +125,9 @@ std::string agent_diagnostic_code(std::string_view code) {
   }
   if (code == "E0304") {
     return "contract.callee_requires";
+  }
+  if (code == "E0305") {
+    return "type.refinement";
   }
   if (code == "E0320") {
     return "parallel.disjoint";

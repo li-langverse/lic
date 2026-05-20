@@ -125,6 +125,47 @@ struct Ctx {
     }
   }
 
+  const TypeExpr* alias_definition(const std::string& name) const {
+    const auto it = aliases.find(name);
+    if (it == aliases.end() || it->second.definition == nullptr) {
+      return nullptr;
+    }
+    return it->second.definition;
+  }
+
+  AliasTypeLookup alias_lookup() const {
+    return [this](const std::string& name) -> const TypeExpr* {
+      return alias_definition(name);
+    };
+  }
+
+  void report_refinement_violation(const Span& span, const ResolvedRefinement& refinement,
+                                   const Expr& value) {
+    const auto explained = explain_refinement_violation(refinement, value, const_int_locals);
+    if (explained) {
+      diag_error(diags, loc(span), ErrorCode::E0305, explained->message, explained->hint);
+      return;
+    }
+    diag_error(diags, loc(span), ErrorCode::E0305,
+               "Value `" + expr_to_user_string(value) + "` does not satisfy refinement type `" +
+                   refinement.type_label + "`.",
+               "Use a value inside the declared range, or relax the refinement on the type "
+               "alias.");
+  }
+
+  void check_value_matches_refinement(const TypeExpr& declared_type, const Expr& value,
+                                      const Span& span) {
+    const auto refinement = resolve_refinement_on_type(declared_type, alias_lookup());
+    if (!refinement) {
+      return;
+    }
+    const RequiresCheckResult ref_check =
+        check_refinement_argument(*refinement, value, const_int_locals);
+    if (ref_check == RequiresCheckResult::Violated) {
+      report_refinement_violation(span, *refinement, value);
+    }
+  }
+
   bool is_refinement_index_type(const TypeExpr& te) const {
     if (te.kind == TypeKind::Refinement) {
       return true;
@@ -787,6 +828,9 @@ struct Ctx {
           diags.error(loc(call.span), "argument type mismatch in call to '" + call.ident + "'");
         }
       }
+      if (call.args[n]) {
+        check_value_matches_refinement(callee.params[n].type, *call.args[n], call.span);
+      }
     }
     const RequiresCheckResult req = check_requires_at_call(callee, call, const_int_locals);
     if (req == RequiresCheckResult::Violated) {
@@ -816,6 +860,7 @@ struct Ctx {
             diags.error(loc(s.span), "variable type mismatch");
           }
         }
+        check_value_matches_refinement(s.var_type, *s.init, s.span);
         record_const_int_binding(s.var_name, *s.init);
       }
       locals[s.var_name] = declared;

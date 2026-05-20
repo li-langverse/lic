@@ -59,6 +59,26 @@ std::string suggest_fix_for_int_comparison(BinOp op, std::int64_t lhs, std::int6
          "if the rule is wrong.";
 }
 
+std::string suggest_fix_for_refinement(BinOp op, std::int64_t lhs, std::int64_t rhs) {
+  if (op == BinOp::Ge && lhs < 0 && rhs == 0) {
+    return "The value " + std::to_string(lhs) + " is negative. Use zero or a positive number, or "
+           "widen the refinement type if the bound is wrong.";
+  }
+  if (op == BinOp::Gt && lhs <= rhs) {
+    return "The value " + std::to_string(lhs) + " must be greater than " + std::to_string(rhs) +
+           " for this refinement type.";
+  }
+  if (op == BinOp::Le && lhs > rhs) {
+    return "The value " + std::to_string(lhs) + " must be at most " + std::to_string(rhs) +
+           " for this refinement type.";
+  }
+  if (op == BinOp::Lt && lhs >= rhs) {
+    return "The value " + std::to_string(lhs) + " must be less than " + std::to_string(rhs) +
+           " for this refinement type.";
+  }
+  return "Use a value inside the declared range, or relax the refinement on the type alias.";
+}
+
 std::unique_ptr<Expr> clone_expr(const Expr& e) {
   auto out = std::make_unique<Expr>();
   out->span = e.span;
@@ -119,6 +139,15 @@ bool compare_int_literals(BinOp op, std::int64_t lhs, std::int64_t rhs) {
 }
 
 }  // namespace
+
+std::unique_ptr<Expr> substitute_refinement_binding(const Expr& predicate,
+                                                    const std::string& bind_var,
+                                                    const Expr& arg_value) {
+  const std::vector<std::string> names{bind_var};
+  std::vector<std::unique_ptr<Expr>> args;
+  args.push_back(clone_expr(arg_value));
+  return substitute_call_params(predicate, names, args);
+}
 
 const ProcDecl* find_proc_by_name(const Module& module, const std::string& name) {
   for (const auto& proc : module.procs) {
@@ -379,6 +408,98 @@ std::optional<RequiresViolationExplanation> explain_requires_violation(
     return out;
   }
   return std::nullopt;
+}
+
+std::optional<ResolvedRefinement> resolve_refinement_on_type(const TypeExpr& te,
+                                                             AliasTypeLookup lookup) {
+  if (te.kind == TypeKind::Refinement) {
+    if (!te.refinement_pred) {
+      return std::nullopt;
+    }
+    ResolvedRefinement out;
+    out.bind_var = te.refinement_var;
+    out.type_label =
+        "{" + te.refinement_var + " | " + expr_to_user_string(*te.refinement_pred) + "}";
+    out.predicate = te.refinement_pred.get();
+    return out;
+  }
+  if (te.kind == TypeKind::Named) {
+    const TypeExpr* def = lookup(te.name);
+    if (def == nullptr) {
+      return std::nullopt;
+    }
+    auto resolved = resolve_refinement_on_type(*def, lookup);
+    if (resolved) {
+      resolved->type_label = te.name;
+    }
+    return resolved;
+  }
+  return std::nullopt;
+}
+
+RequiresCheckResult check_refinement_argument(
+    const ResolvedRefinement& refinement, const Expr& arg,
+    const std::map<std::string, std::int64_t>& const_int_locals) {
+  if (!refinement.predicate) {
+    return RequiresCheckResult::Unknown;
+  }
+  const auto sub = substitute_refinement_binding(*refinement.predicate, refinement.bind_var, arg);
+  const auto folded = fold_const_int_locals(*sub, const_int_locals);
+  if (expr_statically_true(*folded)) {
+    return RequiresCheckResult::Satisfied;
+  }
+  if (expr_statically_false(*folded)) {
+    return RequiresCheckResult::Violated;
+  }
+  return RequiresCheckResult::Unknown;
+}
+
+std::optional<RequiresViolationExplanation> explain_refinement_violation(
+    const ResolvedRefinement& refinement, const Expr& arg,
+    const std::map<std::string, std::int64_t>& const_int_locals) {
+  if (!refinement.predicate) {
+    return std::nullopt;
+  }
+  const std::string value_text = expr_to_user_string(arg);
+  const std::string rule_text = expr_to_user_string(*refinement.predicate);
+  const auto sub = substitute_refinement_binding(*refinement.predicate, refinement.bind_var, arg);
+  const auto folded = fold_const_int_locals(*sub, const_int_locals);
+  if (!expr_statically_false(*folded)) {
+    return std::nullopt;
+  }
+  RequiresViolationExplanation out;
+  const std::string check_text = expr_to_user_string(*folded);
+  std::ostringstream msg;
+  msg << "Value `" << value_text << "` does not satisfy refinement type `"
+      << refinement.type_label << "` (`" << rule_text << "`";
+  if (check_text != rule_text) {
+    msg << "; here that means `" << check_text << "`";
+  }
+  msg << "), which is not satisfied";
+  if (folded->kind == Expr::Kind::BinOp && folded->lhs && folded->rhs) {
+    const auto li = int_lit_value(*folded->lhs);
+    const auto ri = int_lit_value(*folded->rhs);
+    if (li && ri) {
+      msg << " (" << false_comparison_phrase(folded->bin_op, *li, *ri) << ")";
+    }
+  }
+  msg << '.';
+  out.message = msg.str();
+  std::ostringstream hint;
+  hint << "A refinement type declares which values are allowed (e.g. non-negative integers). ";
+  if (folded->kind == Expr::Kind::BinOp && folded->lhs && folded->rhs) {
+    const auto li = int_lit_value(*folded->lhs);
+    const auto ri = int_lit_value(*folded->rhs);
+    if (li && ri) {
+      hint << suggest_fix_for_refinement(folded->bin_op, *li, *ri);
+    } else {
+      hint << "Use a value inside the declared range, or relax the refinement on the type alias.";
+    }
+  } else {
+    hint << "Use a value inside the declared range, or relax the refinement on the type alias.";
+  }
+  out.hint = hint.str();
+  return out;
 }
 
 void collect_calls_in_expr(const Expr& e, std::vector<const Expr*>& out) {

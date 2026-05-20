@@ -470,6 +470,41 @@ li_package = "li-studio"
 composable = "import_world_studio_milestone_145"
 
 [[benchmark]]
+id = "world-journal-game-stack"
+name = "Journal + game author API"
+tier = 1
+li_package = "li-world"
+composable = "import_world_journal_game_stack"
+
+[[benchmark]]
+id = "mmo-realm-sync-quick"
+name = "MMO + realm sync quick"
+tier = 1
+li_package = "li-mmo"
+composable = "import_mmo_realm_sync_quick"
+
+[[benchmark]]
+id = "httpd-studio-health"
+name = "HTTPd + studio health"
+tier = 1
+li_package = "li-studio"
+composable = "import_httpd_studio_health"
+
+[[benchmark]]
+id = "scene-play-quick"
+name = "Scene + play session"
+tier = 1
+li_package = "li-studio"
+composable = "import_scene_play_quick"
+
+[[benchmark]]
+id = "world-studio-milestone-150"
+name = "Milestone 150 composable gates"
+tier = 1
+li_package = "li-studio"
+composable = "import_world_studio_milestone_150"
+
+[[benchmark]]
 id = "httpd-li-native-gateway"
 name = "Li-native HTTP/WS gateway"
 tier = 1

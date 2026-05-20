@@ -27,7 +27,7 @@ else
   gh pr create \
     --base main \
     --head feat/world-studio-impl-1 \
-    --title "feat: World Studio / Li Engine (145 gates, play_mode)" \
+    --title "feat: World Studio / Li Engine (150 gates, play_mode)" \
     --body-file "$ROOT/docs/game-dev/PR-world-studio-impl-summary.md" \
     --draft
 fi

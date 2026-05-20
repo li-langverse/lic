@@ -133,6 +133,7 @@ Cross-cutting program IDs. Implementation order respects dependencies in the vis
 | **139 composable** · run_play_session · physics bridge · preflight 140 | Done |
 | **140 composable** · milestone 140 · AGENTS guide · GHA world-studio | Done |
 | **145 composable** · milestone 145 · integration quick gates · verify on main | Done |
+| **150 composable** · milestone 150 · journal/MMO/httpd/scene quick stacks | Done |
 | [li-native-first.mdc](../../.cursor/rules/li-native-first.mdc) | Done |
 | MMO-5 WebSocket stubs (`net.httpd`) | Done |
 | MMO-6 `world_checkpoint_mmo_stub` | Done |

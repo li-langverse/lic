@@ -1,6 +1,6 @@
 # World Studio — guide for coding agents
 
-**Branch:** `feat/world-studio-impl-1` · **Gates:** 145 composable · **Policy:** Li-native first ([li-native-first.mdc](../../.cursor/rules/li-native-first.mdc))
+**Branch:** `feat/world-studio-impl-1` · **Gates:** 150 composable · **Policy:** Li-native first ([li-native-first.mdc](../../.cursor/rules/li-native-first.mdc))
 
 ## Start here (copy-paste)
 

@@ -1303,6 +1303,36 @@ note = "Milestone 145 composable gates"
 
 [[tests]]
 suite = "composable"
+file = "composable/import_world_journal_game_stack.li"
+outcome = "compile_ok"
+note = "Li-native journal + author game API"
+
+[[tests]]
+suite = "composable"
+file = "composable/import_mmo_realm_sync_quick.li"
+outcome = "compile_ok"
+note = "MMO deploy + realm game bridge"
+
+[[tests]]
+suite = "composable"
+file = "composable/import_httpd_studio_health.li"
+outcome = "compile_ok"
+note = "HTTPd WS + studio native shell"
+
+[[tests]]
+suite = "composable"
+file = "composable/import_scene_play_quick.li"
+outcome = "compile_ok"
+note = "Scene + run_play_session"
+
+[[tests]]
+suite = "composable"
+file = "composable/import_world_studio_milestone_150.li"
+outcome = "compile_ok"
+note = "Milestone 150 composable gates"
+
+[[tests]]
+suite = "composable"
 file = "composable/import_world_studio_benchmark_tier1.li"
 outcome = "compile_ok"
 note = "Competitive world-studio.toml tier-1 rollup"

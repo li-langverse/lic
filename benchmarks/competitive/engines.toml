@@ -1,0 +1,115 @@
+# Engine / framework competitive map — measurement honesty.
+# HPC wall-time: benchmarks/competitive/registry.toml + bench.py tier 12.
+# Product/integration: composable gates in world-studio.toml.
+
+[meta]
+version = 1
+updated = "2026-05-20"
+plan = "docs/benchmarks/competitive-engines-plan.md"
+
+# measure: harness_wall_time | composable_gate | validity_checksum | planned_study
+# status: green | yellow | red | unknown | not_applicable
+
+[[engine]]
+id = "cpp_native"
+category = "hpc_reference"
+measure = "harness_wall_time"
+csv_lang = "cpp"
+status = "green"
+notes = "Native C kernels; reference oracle for validity."
+
+[[engine]]
+id = "numpy"
+category = "hpc_reference"
+measure = "harness_wall_time"
+csv_lang = "numpy"
+status = "green"
+notes = "Always in tier 12; BLAS for matmul/dot; validity vs cpp with tolerance."
+
+[[engine]]
+id = "li_lic"
+category = "li_runtime"
+measure = "harness_wall_time"
+csv_lang = "li"
+status = "yellow"
+notes = "shared_c_kernel parity green; pure_li micros improving; v0_gaming algorithms incomplete."
+
+[[engine]]
+id = "unity"
+category = "game_engine"
+measure = "planned_study"
+status = "not_applicable"
+compare = ["GW-1", "GW-2", "studio_play_mode"]
+notes = "No wall-time column; composable integration gates only today."
+
+[[engine]]
+id = "unreal"
+category = "game_engine"
+measure = "planned_study"
+status = "not_applicable"
+compare = ["GW-3", "GW-4", "render-gpu-viewport"]
+notes = "End-to-end latency studies future; not micro-harness."
+
+[[engine]]
+id = "godot"
+category = "game_engine"
+measure = "planned_study"
+status = "not_applicable"
+compare = ["studio_play_mode"]
+notes = "Agent-friendly authoring is Li differentiator; perf TBD."
+
+[[engine]]
+id = "gazebo"
+category = "robotics_sim"
+measure = "planned_study"
+status = "not_applicable"
+compare = ["sim-physics-bridge", "robotics-studio-quick"]
+notes = "Tier-2 nbody/wave/heat are physics proxies; not Gazebo SDFormat."
+
+[[engine]]
+id = "carla"
+category = "automotive_sim"
+measure = "planned_study"
+status = "not_applicable"
+compare = ["automotive-studio-quick", "advection_diffusion_2d"]
+notes = "Use advdiff/wind v0 for smoke/fluid proxy until automotive profile ships."
+
+[[engine]]
+id = "openfoam"
+category = "cfd"
+measure = "planned_study"
+status = "not_applicable"
+compare = ["euler_fluid_2d", "advection_diffusion_2d", "heat_equation_2d"]
+notes = "v0_gaming euler is not OpenFOAM-class; full PDE rows are heat/advdiff."
+
+[[engine]]
+id = "gromacs"
+category = "md"
+measure = "planned_study"
+status = "not_applicable"
+compare = ["md_lennard_jones"]
+notes = "C MD kernel full scale; Li main.li is micro-stub — see validity pure_li_stub."
+
+[[engine]]
+id = "bullet"
+category = "physics_engine"
+measure = "planned_study"
+status = "not_applicable"
+compare = ["rigid_body_stack", "ragdoll_chain", "cloth_swing"]
+notes = "v0 harness lacks contact solvers; validity checks checksum only."
+
+[[engine]]
+id = "photon"
+category = "mmo_net"
+measure = "composable_gate"
+status = "unknown"
+compare = ["mmo-deploy-stack", "mmo-realm-sync-quick"]
+notes = "Shard logic gates; no netcode latency bench in latest.csv yet."
+
+[[engine]]
+id = "benchling"
+category = "bioengineering"
+measure = "composable_gate"
+status = "unknown"
+compare = ["bioeng-dbtl-bridge", "drug-studio-quick"]
+notes = "PH-BIOENG integration; timed DBTL bench planned in bioengineering.toml."

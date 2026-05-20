@@ -1,10 +1,16 @@
 #include "sph_dam_core.h"
 
+#include "bench_quick.h"
+
 #include <math.h>
 #include <string.h>
 
 /* SPH v0: column IC, gravity, O(N^2) repulsion — density/pressure kernels TBD. */
-enum { LI_SPH_N = 512, LI_SPH_STEPS = 10000 };
+enum { LI_SPH_N_MAX = 512 };
+#define LI_SPH_N_FULL 512
+#define LI_SPH_N_QUICK 48
+#define LI_SPH_STEPS_FULL 10000
+#define LI_SPH_STEPS_QUICK 3000
 #define LI_SPH_BOX 1.0
 #define LI_SPH_H 0.08
 #define LI_SPH_MASS 1.0
@@ -19,18 +25,18 @@ typedef struct LiSphParticle {
 } LiSphParticle;
 
 typedef struct LiSphState {
-  LiSphParticle p[LI_SPH_N];
+  LiSphParticle p[LI_SPH_N_MAX];
 } LiSphState;
 
 static double g_li_sph_dam_checksum;
 
-static void li_sph_init(LiSphState* s) {
+static void li_sph_init(LiSphState* s, int n) {
   int idx = 0;
   const int nx = 32;
   const int ny = 16;
   const double dx = 0.03;
-  for (int j = 0; j < ny && idx < LI_SPH_N; ++j) {
-    for (int i = 0; i < nx && idx < LI_SPH_N; ++i) {
+  for (int j = 0; j < ny && idx < n; ++j) {
+    for (int i = 0; i < nx && idx < n; ++i) {
       s->p[idx].x[0] = 0.05 + (double)i * dx;
       s->p[idx].x[1] = 0.05 + (double)j * dx;
       s->p[idx].v[0] = 0.0;
@@ -40,27 +46,26 @@ static void li_sph_init(LiSphState* s) {
       ++idx;
     }
   }
-  for (; idx < LI_SPH_N; ++idx) {
+  for (; idx < LI_SPH_N_MAX; ++idx) {
     memset(&s->p[idx], 0, sizeof(s->p[idx]));
   }
 }
 
-static double li_sph_sum_y(const LiSphState* s) {
+static double li_sph_sum_y(const LiSphState* s, int n) {
   double acc = 0.0;
-  for (int i = 0; i < LI_SPH_N; ++i) {
+  for (int i = 0; i < n; ++i) {
     acc += s->p[i].x[1];
   }
   return acc;
 }
 
-static void li_sph_forces(LiSphState* s) {
-  for (int i = 0; i < LI_SPH_N; ++i) {
+static void li_sph_forces(LiSphState* s, int n) {
+  for (int i = 0; i < n; ++i) {
     s->p[i].a[0] = 0.0;
     s->p[i].a[1] = -LI_SPH_G;
   }
-  const double h2 = LI_SPH_H * LI_SPH_H;
-  for (int i = 0; i < LI_SPH_N; ++i) {
-    for (int j = i + 1; j < LI_SPH_N; ++j) {
+  for (int i = 0; i < n; ++i) {
+    for (int j = i + 1; j < n; ++j) {
       const double rx = s->p[j].x[0] - s->p[i].x[0];
       const double ry = s->p[j].x[1] - s->p[i].x[1];
       const double r2 = rx * rx + ry * ry + 1e-12;
@@ -78,7 +83,7 @@ static void li_sph_forces(LiSphState* s) {
       s->p[j].a[1] += fy;
     }
   }
-  for (int i = 0; i < LI_SPH_N; ++i) {
+  for (int i = 0; i < n; ++i) {
     if (s->p[i].x[0] < 0.0) {
       s->p[i].x[0] = 0.0;
       s->p[i].v[0] = 0.0;
@@ -99,24 +104,26 @@ static void li_sph_forces(LiSphState* s) {
 }
 
 __attribute__((noinline)) void li_sph_dam_2d_kernel(void) {
+  const int n = li_bench_pick_int(LI_SPH_N_QUICK, LI_SPH_N_FULL);
+  const int steps = li_bench_pick_int(LI_SPH_STEPS_QUICK, LI_SPH_STEPS_FULL);
   LiSphState s;
-  li_sph_init(&s);
-  for (int step = 0; step < LI_SPH_STEPS; ++step) {
-    li_sph_forces(&s);
-    for (int i = 0; i < LI_SPH_N; ++i) {
+  li_sph_init(&s, n);
+  for (int step = 0; step < steps; ++step) {
+    li_sph_forces(&s, n);
+    for (int i = 0; i < n; ++i) {
       s.p[i].v[0] += 0.5 * LI_SPH_DT * s.p[i].a[0];
       s.p[i].v[1] += 0.5 * LI_SPH_DT * s.p[i].a[1];
       s.p[i].x[0] += LI_SPH_DT * s.p[i].v[0];
       s.p[i].x[1] += LI_SPH_DT * s.p[i].v[1];
     }
-    li_sph_forces(&s);
-    for (int i = 0; i < LI_SPH_N; ++i) {
+    li_sph_forces(&s, n);
+    for (int i = 0; i < n; ++i) {
       s.p[i].v[0] += 0.5 * LI_SPH_DT * s.p[i].a[0];
       s.p[i].v[1] += 0.5 * LI_SPH_DT * s.p[i].a[1];
     }
     (void)step;
   }
-  g_li_sph_dam_checksum = li_sph_sum_y(&s);
+  g_li_sph_dam_checksum = li_sph_sum_y(&s, n);
 }
 
 double li_sph_dam_2d_checksum(void) { return g_li_sph_dam_checksum; }

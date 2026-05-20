@@ -1,6 +1,6 @@
 """NumPy reference implementations for tier-1/2 harness benches.
 
-Mirrors problem sizes in benchmarks/tier*/common/*_core.c.
+Mirrors problem sizes in benchmarks/tier*/common/*_core.c (see bench_scales.py).
 Matmul/dot/sum use BLAS-backed NumPy ops (@, dot, sum).
 """
 from __future__ import annotations
@@ -10,11 +10,13 @@ from typing import Callable
 
 import numpy as np
 
+from bench_scales import scale as bench_scale
+
 # --- tier 1 ---
 
 
 def simd_dot() -> float:
-    n = 10_000_000
+    n = bench_scale("simd_dot").dot_n or 10_000_000
     i = np.arange(n, dtype=np.int64)
     a = (i % 256).astype(np.float64) * 0.001
     b = ((i * 7) % 256).astype(np.float64) * 0.002
@@ -30,41 +32,48 @@ def _matmul_init(n: int) -> tuple[np.ndarray, np.ndarray]:
 
 
 def matmul_naive() -> float:
-    a, b = _matmul_init(256)
+    n = bench_scale("matmul_naive").matmul_n or 256
+    a, b = _matmul_init(n)
     c = a @ b
     return float(np.sum(c))
 
 
 def matmul_naive_n128() -> float:
-    a, b = _matmul_init(128)
+    n = bench_scale("matmul_naive_n128").matmul_n or 128
+    a, b = _matmul_init(n)
     return float(np.sum(a @ b))
 
 
 def matmul_blocked() -> float:
-    a, b = _matmul_init(512)
+    n = bench_scale("matmul_blocked").matmul_n or 512
+    a, b = _matmul_init(n)
     return float(np.sum(a @ b))
 
 
 def matmul_blocked_n128() -> float:
-    a, b = _matmul_init(128)
+    n = bench_scale("matmul_blocked_n128").matmul_n or 128
+    a, b = _matmul_init(n)
     return float(np.sum(a @ b))
 
 
 def matmul_blocked_n1024() -> float:
-    a, b = _matmul_init(1024)
+    n = bench_scale("matmul_blocked_n1024").matmul_n or 1024
+    a, b = _matmul_init(n)
     return float(np.sum(a @ b))
 
 
 def reduce_sum() -> float:
-    n = 100_000_000
-    a = np.arange(n, dtype=np.float64) * 1e-6
+    n = bench_scale("reduce_sum").reduce_n or 100_000_000
+    i = np.arange(n, dtype=np.int64)
+    a = (i % 1024).astype(np.float64) * 1e-6
     return float(np.sum(a))
 
 
 def horner_pure_li() -> float:
+    steps = bench_scale("horner_pure_li").horner_steps or 5_000_000
     x = 1.1
     acc = 0.0
-    for _ in range(5_000_000):
+    for _ in range(steps):
         acc = acc * x + 1.0
     return acc
 
@@ -77,7 +86,8 @@ def _rng(seed: int) -> np.random.Generator:
 
 
 def euler_fluid_2d() -> float:
-    nx, ny, steps = 64, 64, 8000
+    sc = bench_scale("euler_fluid_2d")
+    nx, ny, steps = sc.nx or 64, sc.ny or 64, sc.steps or 8000
     dt, dx, dy, c = 0.001, 0.05, 0.05, 0.5
     cx, cy = c * dt / dx, c * dt / dy
     i = np.arange(nx, dtype=np.float64)[:, None]
@@ -93,7 +103,8 @@ def euler_fluid_2d() -> float:
 
 
 def wind_field_bc() -> float:
-    nx, ny, steps = 64, 64, 5000
+    sc = bench_scale("wind_field_bc")
+    nx, ny, steps = sc.nx or 64, sc.ny or 64, sc.steps or 5000
     dt, dx, dy = 0.008, 0.05, 0.05
     cx, cy = dt / dx, dt / dy
     u = np.full((nx, ny), 0.1, dtype=np.float64)
@@ -108,7 +119,8 @@ def wind_field_bc() -> float:
 
 
 def combustion_passive() -> float:
-    n, steps = 128, 3000
+    sc = bench_scale("combustion_passive")
+    n, steps = sc.n or 128, sc.steps or 3000
     dt, burn = 0.02, 0.1
     fuel = np.ones(n, dtype=np.float64)
     temp = np.full(n, 300.0, dtype=np.float64)
@@ -120,7 +132,8 @@ def combustion_passive() -> float:
 
 
 def schrodinger_1d_barrier() -> float:
-    n, steps = 128, 8000
+    sc = bench_scale("schrodinger_1d_barrier")
+    n, steps = sc.n or 128, sc.steps or 8000
     dt, dx, v0 = 0.00005, 0.08, 8.0
     inv_dx2 = 1.0 / (dx * dx)
     i0, i1 = n // 3, (2 * n) // 3
@@ -137,7 +150,8 @@ def schrodinger_1d_barrier() -> float:
 
 
 def fdtd_waveguide_2d() -> float:
-    n, steps = 128, 8000
+    sc = bench_scale("fdtd_waveguide_2d")
+    n, steps = sc.n or 128, sc.steps or 8000
     dt, dx, c = 0.001, 0.01, 1.0
     ce = c * dt / dx
     ex = np.zeros(n, dtype=np.float64)
@@ -150,7 +164,8 @@ def fdtd_waveguide_2d() -> float:
 
 
 def rigid_body_stack() -> float:
-    n, steps = 50, 2000
+    sc = bench_scale("rigid_body_stack")
+    n, steps = sc.n or 50, sc.steps or 2000
     dt, g = 1.0 / 60.0, 9.81
     y = np.linspace(1.0, 0.5, n, dtype=np.float64)
     vy = np.zeros(n, dtype=np.float64)
@@ -163,7 +178,8 @@ def rigid_body_stack() -> float:
 
 
 def cloth_swing() -> float:
-    n, steps = 16, 8000
+    sc = bench_scale("cloth_swing")
+    n, steps = sc.n or 16, sc.steps or 8000
     dt, rest, stiff = 1.0 / 60.0, 0.2, 0.95
     px = np.arange(n, dtype=np.float64) * rest
     py = np.ones(n, dtype=np.float64)
@@ -191,7 +207,8 @@ def cloth_swing() -> float:
 
 
 def ragdoll_chain() -> float:
-    joints, steps = 12, 3600
+    sc = bench_scale("ragdoll_chain")
+    joints, steps = sc.n or 12, sc.steps or 3600
     dt, length = 1.0 / 60.0, 0.35
     px = np.zeros(joints, dtype=np.float64)
     py = np.linspace(0.0, -length * (joints - 1), joints, dtype=np.float64)
@@ -215,7 +232,8 @@ def ragdoll_chain() -> float:
 
 
 def orbit_two_body() -> float:
-    steps, dt, mu, r0 = 100_000, 0.001, 1.0, 1.0
+    steps = bench_scale("orbit_two_body").steps or 100_000
+    dt, mu, r0 = 0.001, 1.0, 1.0
     x, y = r0, 0.0
     vx, vy = 0.0, math.sqrt(mu / r0)
     for _ in range(steps):
@@ -231,7 +249,8 @@ def orbit_two_body() -> float:
 
 
 def sph_dam_break_2d() -> float:
-    n, steps = 512, 10_000
+    sc = bench_scale("sph_dam_break_2d")
+    n, steps = sc.n or 512, sc.steps or 10_000
     h, dt, g, k = 0.08, 0.00025, 9.81, 500.0
     box = 1.0
     nx, ny, dx = 32, 16, 0.03
@@ -286,7 +305,8 @@ def sph_dam_break_2d() -> float:
 
 
 def three_body() -> float:
-    steps, dt, g, soft, mass = 10_000_000, 0.01, 1.0, 1e-9, 1.0
+    steps = bench_scale("three_body").steps or 10_000_000
+    dt, g, soft, mass = 0.01, 1.0, 1e-9, 1.0
     r = 1.0
     px = np.array([0.0, -0.8660254037844386 * r, 0.8660254037844386 * r], dtype=np.float64)
     py = np.array([r, -0.5 * r, -0.5 * r], dtype=np.float64)
@@ -331,61 +351,124 @@ def three_body() -> float:
     return energy()
 
 
+def _c_lcg_rng(seed: int):
+    """Match tier2 nbody_gravity/common/nbody_core.c LiNbRng."""
+    state = seed & ((1 << 64) - 1)
+
+    def next_u01() -> float:
+        nonlocal state
+        state = (state * 6364136223846793005 + 1) & ((1 << 64) - 1)
+        return (state >> 11) / float(1 << 53)
+
+    return next_u01
+
+
 def nbody_gravity() -> float:
-    n, steps = 128, 50_000
+    sc = bench_scale("nbody_gravity")
+    n, steps = sc.n or 128, sc.steps or 50_000
     dt, g, soft = 0.01, 1.0, 1e-6
-    rng = _rng(42)
-    pos = rng.random((n, 3)) - 0.5
-    vel = 0.01 * (rng.random((n, 3)) - 0.5)
-    for _ in range(steps):
+    rng = _c_lcg_rng(42)
+    pos = np.zeros((n, 3), dtype=np.float64)
+    vel = np.zeros((n, 3), dtype=np.float64)
+    for i in range(n):
+        pos[i, 0] = rng() - 0.5
+        pos[i, 1] = rng() - 0.5
+        pos[i, 2] = rng() - 0.5
+        vel[i, 0] = 0.01 * (rng() - 0.5)
+        vel[i, 1] = 0.01 * (rng() - 0.5)
+        vel[i, 2] = 0.01 * (rng() - 0.5)
+    mass = 1.0
+    eps2 = soft * soft
+
+    def accel() -> np.ndarray:
         acc = np.zeros((n, 3), dtype=np.float64)
         for i in range(n):
             for j in range(i + 1, n):
                 d = pos[j] - pos[i]
-                r2 = np.dot(d, d) + soft
-                r = math.sqrt(r2)
-                f = g / r2
-                acc[i] -= f * d / r
-                acc[j] += f * d / r
-        vel += dt * acc
+                r2 = float(np.dot(d, d) + eps2)
+                inv_r3 = 1.0 / (r2 * math.sqrt(r2))
+                scale_f = g * mass * mass * inv_r3
+                acc[i] += scale_f * d
+                acc[j] -= scale_f * d
+        return acc
+
+    acc = accel()
+    for _ in range(steps):
+        vel += 0.5 * dt * acc / mass
         pos += dt * vel
-    return float(np.sum(pos[:, 0]))
+        acc = accel()
+        vel += 0.5 * dt * acc / mass
+    ke = 0.5 * mass * np.sum(vel * vel)
+    pe = 0.0
+    for i in range(n):
+        for j in range(i + 1, n):
+            d = pos[j] - pos[i]
+            pe -= g * mass * mass / math.sqrt(np.dot(d, d) + eps2)
+    return float(ke + pe)
 
 
 def harmonic_oscillator_chain() -> float:
-    n, steps = 64, 2_000_000
+    sc = bench_scale("harmonic_oscillator_chain")
+    n, steps = sc.n or 64, sc.steps or 2_000_000
     dt, k, mass, spacing = 0.001, 1.0, 1.0, 1.0
     x = np.arange(n, dtype=np.float64) * spacing
     v = np.zeros(n, dtype=np.float64)
-    for _ in range(steps):
+    x[n // 2] += 0.1
+
+    def forces() -> np.ndarray:
         f = np.zeros(n, dtype=np.float64)
-        f[:-1] += k * (x[1:] - x[:-1])
-        f[1:] -= k * (x[1:] - x[:-1])
-        v += dt * f / mass
+        stretch = x[1:] - x[:-1] - spacing
+        f[:-1] += k * stretch
+        f[1:] -= k * stretch
+        f[0] = 0.0
+        f[-1] = 0.0
+        return f
+
+    f = forces()
+    for _ in range(steps):
+        v += 0.5 * dt * f / mass
         x += dt * v
-    return float(x[-1])
+        x[0] = 0.0
+        x[-1] = (n - 1) * spacing
+        v[0] = 0.0
+        v[-1] = 0.0
+        f = forces()
+        v += 0.5 * dt * f / mass
+    ke = 0.5 * mass * np.sum(v * v)
+    pe = 0.5 * k * np.sum((x[1:] - x[:-1] - spacing) ** 2)
+    return float(ke + pe)
 
 
 def wave_equation_1d() -> float:
-    n, steps = 8192, 400_000
+    sc = bench_scale("wave_equation_1d")
+    n, steps = sc.n or 8192, sc.steps or 400_000
     c, dx, dt = 1.0, 0.01, 0.004
-    r = c * dt / dx
-    u = np.zeros(n, dtype=np.float64)
-    u_prev = np.zeros(n, dtype=np.float64)
-    u_next = np.zeros(n, dtype=np.float64)
-    u[n // 4] = 1.0
+    r2 = (c * dt / dx) ** 2
+    center = 0.5 * (n - 1) * dx
+    width = 0.15
+    xs = np.arange(n, dtype=np.float64) * dx
+    u1 = np.exp(-((xs - center) / width) ** 2)
+    u0 = u1.copy()
+    u2 = u1.copy()
+    u0[0] = u0[-1] = 0.0
+    u1[0] = u1[-1] = 0.0
     for _ in range(steps):
-        u_next[1:-1] = (
-            2.0 * u[1:-1]
-            - u_prev[1:-1]
-            + r * r * (u[2:] - 2.0 * u[1:-1] + u[:-2])
+        u2[1:-1] = (
+            2.0 * u1[1:-1]
+            - u0[1:-1]
+            + r2 * (u1[2:] - 2.0 * u1[1:-1] + u1[:-2])
         )
-        u_prev, u, u_next = u, u_next, u_prev
-    return float(u[n // 2])
+        u2[0] = u2[-1] = 0.0
+        u0, u1, u2 = u1, u2, u0
+    v = (u1[1:-1] - u0[1:-1]) / dt
+    du = (u1[2:] - u1[:-2]) / (2.0 * dx)
+    e = 0.5 * np.sum(v * v + c * c * du * du)
+    return float(e)
 
 
 def wave_equation_2d() -> float:
-    nx, ny, steps = 128, 128, 25_000
+    sc = bench_scale("wave_equation_2d")
+    nx, ny, steps = sc.nx or 128, sc.ny or 128, sc.steps or 25_000
     c, dx, dt = 1.0, 0.01, 0.004
     r2 = (c * dt / dx) ** 2
     u = np.zeros((nx, ny), dtype=np.float64)
@@ -410,7 +493,8 @@ def wave_equation_2d() -> float:
 
 
 def heat_equation_2d() -> float:
-    nx, ny, steps = 128, 128, 20_000
+    sc = bench_scale("heat_equation_2d")
+    nx, ny, steps = sc.nx or 128, sc.ny or 128, sc.steps or 20_000
     alpha, dx, dt = 0.25, 0.01, 0.0001
     r = alpha * dt / (dx * dx)
     u = np.zeros((nx, ny), dtype=np.float64)
@@ -429,7 +513,8 @@ def heat_equation_2d() -> float:
 
 
 def advection_diffusion_2d() -> float:
-    nx, ny, steps = 128, 128, 15_000
+    sc = bench_scale("advection_diffusion_2d")
+    nx, ny, steps = sc.nx or 128, sc.ny or 128, sc.steps or 15_000
     dx, dt, vx, vy, diff = 0.01, 0.0002, 0.8, 0.2, 0.05
     r = diff * dt / (dx * dx)
     cfx, cfy = vx * dt / dx, vy * dt / dx
@@ -456,35 +541,51 @@ def advection_diffusion_2d() -> float:
 
 
 def double_pendulum() -> float:
-    steps, dt = 3_000_000, 0.0005
+    steps = bench_scale("double_pendulum").steps or 3_000_000
+    dt = 0.0005
     m1, m2, l1, l2, g = 1.0, 1.0, 1.0, 1.0, 9.81
-    th1, th2, w1, w2 = 0.5, 0.5, 0.0, 0.0
+    y = np.array([2.0, 2.2, 0.0, 0.0], dtype=np.float64)
+
+    def derivs(state: np.ndarray) -> np.ndarray:
+        t1, t2, w1, w2 = state
+        delta = t1 - t2
+        c, s = math.cos(delta), math.sin(delta)
+        den1 = (m1 + m2) * l1 - m2 * l1 * c * c
+        den2 = (l2 / l1) * den1
+        dydt = np.zeros(4, dtype=np.float64)
+        dydt[0] = w1
+        dydt[1] = w2
+        dydt[2] = (
+            -m2 * l1 * w1 * w1 * s * c
+            + m2 * g * math.sin(t2) * c
+            + m2 * l2 * w2 * w2 * s
+            - (m1 + m2) * g * math.sin(t1)
+        ) / den1
+        dydt[3] = (
+            -m2 * l2 * w2 * w2 * s * c
+            + (m1 + m2) * (g * math.sin(t1) * c - l1 * w1 * w1 * s - g * math.sin(t2))
+        ) / den2
+        return dydt
+
+    h = dt
     for _ in range(steps):
-        d1, d2 = th1 - th2, w1 - w2
-        den = 2.0 * m1 + m2 - m2 * math.cos(2.0 * d1)
-        a1 = (
-            -g * (2.0 * m1 + m2) * math.sin(th1)
-            - m2 * g * math.sin(th1 - 2.0 * th2)
-            - 2.0 * m2 * math.sin(d1) * (w2 * w2 * l2 + w1 * w1 * l1 * math.cos(d1))
-        ) / (l1 * den)
-        a2 = (
-            2.0
-            * math.sin(d1)
-            * (
-                w1 * w1 * l1 * (m1 + m2)
-                + g * (m1 + m2) * math.cos(th1)
-                + w2 * w2 * l2 * m2 * math.cos(d1)
-            )
-        ) / (l2 * den)
-        w1 += dt * a1
-        w2 += dt * a2
-        th1 += dt * w1
-        th2 += dt * w2
-    return float(th1)
+        k1 = derivs(y)
+        k2 = derivs(y + 0.5 * h * k1)
+        k3 = derivs(y + 0.5 * h * k2)
+        k4 = derivs(y + h * k3)
+        y += (h / 6.0) * (k1 + 2.0 * k2 + 2.0 * k3 + k4)
+    t1, t2, w1, w2 = y
+    delta = t1 - t2
+    v1_sq = l1 * l1 * w1 * w1
+    v2_sq = l1 * l1 * w1 * w1 + l2 * l2 * w2 * w2 + 2.0 * l1 * l2 * w1 * w2 * math.cos(delta)
+    ke = 0.5 * m1 * v1_sq + 0.5 * m2 * v2_sq
+    pe = -(m1 + m2) * g * l1 * math.cos(t1) - m2 * g * l2 * math.cos(t2)
+    return float(ke + pe)
 
 
 def md_lennard_jones() -> float:
-    n, steps = 256, 10_000
+    sc = bench_scale("md_lennard_jones")
+    n, steps = sc.n or 256, sc.steps or 10_000
     dt, rc, box, temp = 0.004, 2.5, 10.0, 1.0
     rc2 = rc * rc
     rng = _rng(7)

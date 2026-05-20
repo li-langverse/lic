@@ -17,6 +17,7 @@ from datetime import datetime, timezone
 from pathlib import Path
 
 REPO = Path(__file__).resolve().parents[2]
+HARNESS = REPO / "benchmarks" / "harness"
 TIER1 = REPO / "benchmarks" / "tier1_micro"
 TIER2 = REPO / "benchmarks" / "tier2_physics"
 RESULTS = REPO / "benchmarks" / "results"
@@ -430,6 +431,17 @@ def time_command(cmd: list[str], *, cwd: Path | None = None, runs: int = 5) -> T
     return TimingStats(median=med, stdev=stdev, n=runs)
 
 
+def apply_bench_scale(*, quick: bool | None) -> None:
+    """Set LI_BENCH_QUICK / LI_BENCH_SCALE for child processes (C + NumPy)."""
+    if quick is True:
+        os.environ["LI_BENCH_QUICK"] = "1"
+        os.environ["LI_BENCH_SCALE"] = "quick"
+    elif quick is False:
+        os.environ.pop("LI_BENCH_QUICK", None)
+        os.environ["LI_BENCH_SCALE"] = "full"
+    # quick is None: leave env unchanged
+
+
 def build_native(spec: BenchSpec, bin_path: Path) -> None:
     """Shared C perf binary — cpp/rust/julia labels use identical machine code."""
     root = bench_dir(spec)
@@ -437,7 +449,18 @@ def build_native(spec: BenchSpec, bin_path: Path) -> None:
     core = root / spec.core_c
     cc = os.environ.get("CC", "clang")
     subprocess.check_call(
-        [cc, "-O3", "-march=native", "-ffast-math", str(main_c), str(core), "-lm", "-o", str(bin_path)],
+        [
+            cc,
+            "-O3",
+            "-march=native",
+            "-ffast-math",
+            f"-I{HARNESS}",
+            str(main_c),
+            str(core),
+            "-lm",
+            "-o",
+            str(bin_path),
+        ],
         cwd=REPO,
     )
 
@@ -461,6 +484,7 @@ def build_li(spec: BenchSpec, bin_path: Path) -> None:
             "-O3",
             "-ffast-math",
             "-march=native",
+            f"-I{HARNESS}",
         ],
         cwd=REPO,
         env=env,
@@ -650,7 +674,8 @@ def run_tier_benches(
             try:
                 verify_checksum(spec, build_dir)
             except RuntimeError as exc:
-                print(f"warn: {exc} — continuing with timing", file=sys.stderr)
+                print(f"FAIL verify {spec.name}: {exc}", file=sys.stderr)
+                return 1
 
     merged: list[dict[str, object]] = read_csv(out)
     for spec in specs:
@@ -715,6 +740,16 @@ def run_verify() -> int:
     return subprocess.call([sys.executable, str(script), "--write-csv", str(RESULTS / "verify.csv")])
 
 
+def run_validity_all() -> int:
+    """Checksum oracles: cpp reference, li shared-kernel match, numpy tolerance."""
+    script = REPO / "benchmarks" / "harness" / "validity.py"
+    return subprocess.call(
+        [sys.executable, str(script), "--tier", "12"],
+        cwd=REPO,
+        env={**os.environ},
+    )
+
+
 def run_tier0() -> int:
     script = REPO / "li-tests" / "run_all.sh"
     if not script.exists():
@@ -737,13 +772,36 @@ def main() -> int:
     )
     parser.add_argument("--skip-verify", action="store_true")
     parser.add_argument(
+        "--skip-validity",
+        action="store_true",
+        help="skip checksum validity.py after tier 12 (use with --skip-verify for timing-only)",
+    )
+    parser.add_argument(
         "--out",
         type=Path,
         default=RESULTS / "latest.csv",
         help="CSV output path",
     )
+    scale = parser.add_mutually_exclusive_group()
+    scale.add_argument(
+        "--quick",
+        action="store_true",
+        help="few DOFs, long-enough steps for stability/validity (default for tier 12/13)",
+    )
+    scale.add_argument(
+        "--full",
+        action="store_true",
+        help="production-scale perf sizes (LI_BENCH_SCALE=full)",
+    )
     args = parser.parse_args()
     args.runs = clamp_timing_runs(args.runs)
+
+    if args.full:
+        apply_bench_scale(quick=False)
+    elif args.quick or args.tier in (12, 13):
+        apply_bench_scale(quick=True)
+    else:
+        apply_bench_scale(quick=None)
 
     if args.sample:
         write_sample_csv(args.out)
@@ -774,7 +832,15 @@ def main() -> int:
         rc = run_tier1_all(runs=args.runs, out=args.out, verify=not args.skip_verify)
         if rc != 0:
             return rc
-        return run_tier2_all(runs=args.runs, out=args.out, verify=not args.skip_verify)
+        rc = run_tier2_all(runs=args.runs, out=args.out, verify=not args.skip_verify)
+        if rc != 0:
+            return rc
+        if not args.skip_validity:
+            return run_validity_all()
+        return 0
+
+    if args.tier == 13:
+        return run_validity_all()
 
     if args.tier == 3:
         script = REPO / "benchmarks" / "harness" / "bench_ecosystem.py"

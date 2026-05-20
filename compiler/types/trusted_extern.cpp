@@ -62,6 +62,7 @@ const std::set<std::string>& runtime_manifest_symbols() {
       "httpd_cached_sz_i",
       "httpd_reply_cached_index_i",
       "httpd_drain_slot_i",
+      "httpd_epoll_serve_i",
       "net_slot_consume",
       "httpd_slot_alloc",
       "httpd_slot_find_fd",

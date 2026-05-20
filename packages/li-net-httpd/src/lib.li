@@ -359,34 +359,7 @@ def httpd_epoll_serve(port: var int, root: var ptr) raises Net, Alloc, IO -> int
   ensures true
   decreases 0
 =
-  httpd_prepare_root_i(root)
-  var listen_fd: int = tcp_listen(port)
-  net_set_nonblock(listen_fd)
-  var epfd: int = epoll_create1_i()
-  epoll_ctl_add_listen_i(epfd, listen_fd)
-  var events: ptr = net_buf_alloc(1024)
-  var running: int = 1
-  while running == 1:
-    var n: int = epoll_wait_events_i(epfd, events, 128)
-    var ei: int = 0
-    while ei < n:
-      var fd: int = net_events_fd(events, ei)
-      var rev: int = net_events_revents(events, ei)
-      if fd == listen_fd:
-        accept_batch(epfd, listen_fd)
-      if fd != listen_fd:
-        if net_epoll_hangup(rev) == 1:
-          var slot_h: int = httpd_slot_find_fd(fd)
-          if slot_h >= 0:
-            conn_close(epfd, fd, slot_h)
-        if net_epoll_hangup(rev) == 0:
-          if net_epoll_readable(rev) == 1:
-            var slot_r: int = httpd_slot_find_fd(fd)
-            if slot_r >= 0:
-              handle_conn_io(epfd, fd, slot_r, root)
-      ei = ei + 1
-  net_buf_free(events)
-  return 0
+  return httpd_epoll_serve_i(port, root)
 
 def handle_conn_blocking(conn: var int, slot: var int, root: var ptr) raises Net, Alloc, IO -> int
   requires conn >= 0
@@ -446,7 +419,7 @@ def httpd_serve_static_blocking(port: var int, root: var ptr) raises Net, Alloc,
   var epfd_probe: int = epoll_create1_i()
   if epfd_probe >= 0:
     net_close_fd(epfd_probe)
-    return httpd_epoll_serve(port, root)
+    return httpd_epoll_serve_i(port, root)
   return httpd_blocking_serve(port, root)
 
 def httpd_serve_port_root(port: var int, root: var ptr) raises Net, Alloc, IO -> int

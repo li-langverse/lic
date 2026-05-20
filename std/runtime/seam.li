@@ -139,6 +139,11 @@ extern proc httpd_drain_slot_i(conn: var int, slot: var int) raises Net, IO -> i
   ensures true
   decreases 0
 
+extern proc httpd_epoll_serve_i(port: var int, root: var ptr) raises Net, Alloc, IO -> int
+  requires 0 < port
+  ensures true
+  decreases 0
+
 extern proc net_slot_consume(slot: var int, n: int) -> int
   requires 0 <= slot
   ensures true

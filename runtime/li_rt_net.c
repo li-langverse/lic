@@ -37,6 +37,10 @@ static int g_slots_inited = 0;
 static char g_cached_body[HTTPD_IO_BUF];
 static int32_t g_cached_sz = 0;
 static int g_cache_ready = 0;
+static char g_cached_blob_ka[512 + HTTPD_IO_BUF];
+static int32_t g_cached_blob_ka_len = 0;
+static char g_cached_blob_close[512 + HTTPD_IO_BUF];
+static int32_t g_cached_blob_close_len = 0;
 
 static void slots_init_once(void) {
   if (g_slots_inited) {
@@ -518,6 +522,33 @@ int32_t httpd_prepare_root_i(intptr_t root) {
     return -1;
   }
   g_cached_sz = (int32_t)rd;
+  g_cached_blob_ka_len = snprintf(g_cached_blob_ka, sizeof(g_cached_blob_ka),
+                                  "HTTP/1.1 200 OK\r\n"
+                                  "Content-Type: text/html\r\n"
+                                  "Content-Length: %d\r\n"
+                                  "Connection: keep-alive\r\n"
+                                  "\r\n",
+                                  (int)g_cached_sz);
+  if (g_cached_blob_ka_len < 0 || g_cached_blob_ka_len >= (int32_t)sizeof(g_cached_blob_ka) - g_cached_sz) {
+    return -1;
+  }
+  memcpy(g_cached_blob_ka + g_cached_blob_ka_len, g_cached_body, (size_t)g_cached_sz);
+  g_cached_blob_ka_len += g_cached_sz;
+
+  g_cached_blob_close_len = snprintf(g_cached_blob_close, sizeof(g_cached_blob_close),
+                                     "HTTP/1.1 200 OK\r\n"
+                                     "Content-Type: text/html\r\n"
+                                     "Content-Length: %d\r\n"
+                                     "Connection: close\r\n"
+                                     "\r\n",
+                                     (int)g_cached_sz);
+  if (g_cached_blob_close_len < 0 ||
+      g_cached_blob_close_len >= (int32_t)sizeof(g_cached_blob_close) - g_cached_sz) {
+    return -1;
+  }
+  memcpy(g_cached_blob_close + g_cached_blob_close_len, g_cached_body, (size_t)g_cached_sz);
+  g_cached_blob_close_len += g_cached_sz;
+
   g_cache_ready = 1;
   return 0;
 }
@@ -532,13 +563,18 @@ int32_t httpd_reply_cached_index_i(int32_t conn, int32_t slot, int32_t keep_aliv
   if (!g_cache_ready || slot < 0 || slot >= HTTPD_MAX_CONN) {
     return -1;
   }
-  char* hdr = g_slots[slot].hdr;
-  int32_t hlen =
-      httpd_write_response_hdr_i(iptr(hdr), 512, 200, g_cached_sz, keep_alive);
-  if (hlen < 0) {
+  (void)slot;
+  tcp_ack_now(conn);
+  if (keep_alive) {
+    if (send_all_nb((int)conn, g_cached_blob_ka, (size_t)g_cached_blob_ka_len) < 0) {
+      return -1;
+    }
+    return 0;
+  }
+  if (send_all_nb((int)conn, g_cached_blob_close, (size_t)g_cached_blob_close_len) < 0) {
     return -1;
   }
-  return tcp_send_coalesce_i(conn, iptr(hdr), hlen, iptr(g_cached_body), g_cached_sz);
+  return 0;
 }
 
 static int hdr_end_at_c(const char* buf, int len) {
@@ -579,33 +615,188 @@ static int is_index_get(const char* buf, int hdr_end) {
   return 0;
 }
 
-/* Drain pipelined GET /index requests. Returns -2 I/O close, -1 close after reply, 0 need bytes, 1 drained. */
-int32_t httpd_drain_slot_i(int32_t conn, int32_t slot) {
+/* 0 = need bytes; 1 = served keep-alive; -1 = close after reply; -2 = I/O error */
+static int32_t httpd_try_drain_once(int32_t conn, int32_t slot) {
   slots_init_once();
   if (!g_cache_ready || slot < 0 || slot >= HTTPD_MAX_CONN || g_slots[slot].fd != conn) {
     return -2;
   }
+  int len = g_slots[slot].len;
+  if (len <= 0) {
+    return 0;
+  }
+  int hdr_end = hdr_end_at_c(g_slots[slot].buf, len);
+  if (hdr_end < 0) {
+    return 0;
+  }
+  if (!is_index_get(g_slots[slot].buf, hdr_end)) {
+    return -2;
+  }
+  int keep = !wants_connection_close(g_slots[slot].buf, hdr_end);
+  if (httpd_reply_cached_index_i(conn, slot, keep) < 0) {
+    return -2;
+  }
+  net_slot_consume(slot, hdr_end);
+  if (!keep) {
+    return -1;
+  }
+  return 1;
+}
+
+int32_t httpd_drain_slot_i(int32_t conn, int32_t slot) {
   for (;;) {
-    int len = g_slots[slot].len;
-    if (len <= 0) {
-      return 0;
-    }
-    int hdr_end = hdr_end_at_c(g_slots[slot].buf, len);
-    if (hdr_end < 0) {
-      return 0;
-    }
-    if (!is_index_get(g_slots[slot].buf, hdr_end)) {
-      return -2;
-    }
-    int keep = !wants_connection_close(g_slots[slot].buf, hdr_end);
-    if (httpd_reply_cached_index_i(conn, slot, keep) < 0) {
-      return -2;
-    }
-    net_slot_consume(slot, hdr_end);
-    if (!keep) {
-      return -1;
+    int32_t rc = httpd_try_drain_once(conn, slot);
+    if (rc <= 0) {
+      return rc;
     }
   }
+}
+
+static void httpd_conn_close_slot(int epfd, int32_t slot) {
+  slots_init_once();
+  if (slot < 0 || slot >= HTTPD_MAX_CONN) {
+    return;
+  }
+  if (g_slots[slot].fd >= 0) {
+    if (epfd >= 0) {
+      epoll_ctl((int)epfd, EPOLL_CTL_DEL, g_slots[slot].fd, NULL);
+    }
+    close(g_slots[slot].fd);
+    g_slots[slot].fd = -1;
+    g_slots[slot].len = 0;
+  }
+}
+
+static void httpd_serve_conn_epoll(int epfd, int32_t slot) {
+  slots_init_once();
+  if (slot < 0 || slot >= HTTPD_MAX_CONN || g_slots[slot].fd < 0) {
+    return;
+  }
+  if (!g_cache_ready) {
+    return;
+  }
+  int conn = g_slots[slot].fd;
+  for (;;) {
+    if (g_slots[slot].len >= HTTPD_IO_BUF) {
+      httpd_conn_close_slot(epfd, slot);
+      return;
+    }
+    tcp_ack_now(conn);
+    ssize_t r =
+        recv(conn, g_slots[slot].buf + g_slots[slot].len, (size_t)(HTTPD_IO_BUF - g_slots[slot].len), 0);
+    if (r < 0) {
+      if (errno == EAGAIN || errno == EWOULDBLOCK) {
+        break;
+      }
+      httpd_conn_close_slot(epfd, slot);
+      return;
+    }
+    if (r == 0) {
+      httpd_conn_close_slot(epfd, slot);
+      return;
+    }
+    g_slots[slot].len += (int)r;
+
+    for (;;) {
+      int32_t d = httpd_try_drain_once(conn, slot);
+      if (d == 0) {
+        break;
+      }
+      if (d < 0) {
+        httpd_conn_close_slot(epfd, slot);
+        return;
+      }
+    }
+  }
+}
+
+static void httpd_dispatch_epoll_event(int epfd, int listen_fd, struct epoll_event* ev) {
+  int fd = ev->data.fd;
+  if (fd == listen_fd) {
+    for (;;) {
+      int cfd = accept(listen_fd, NULL, NULL);
+      if (cfd < 0) {
+        if (errno == EAGAIN || errno == EWOULDBLOCK) {
+          break;
+        }
+        net_fail("accept");
+      }
+      net_set_nonblock(cfd);
+      tcp_tune_client(cfd);
+      int32_t slot = httpd_slot_alloc(cfd);
+      if (slot < 0) {
+        close(cfd);
+        break;
+      }
+      struct epoll_event cev;
+      cev.events = EPOLLIN;
+      cev.data.fd = cfd;
+      if (epoll_ctl(epfd, EPOLL_CTL_ADD, cfd, &cev) < 0) {
+        httpd_conn_close_slot(-1, slot);
+      }
+    }
+    return;
+  }
+
+  if (ev->events & (EPOLLERR | EPOLLHUP)) {
+    int32_t slot = httpd_slot_find_fd(fd);
+    if (slot >= 0) {
+      httpd_conn_close_slot(epfd, slot);
+    }
+    return;
+  }
+
+  if (ev->events & EPOLLIN) {
+    int32_t slot = httpd_slot_find_fd(fd);
+    if (slot >= 0) {
+      httpd_serve_conn_epoll(epfd, slot);
+    }
+  }
+}
+
+int32_t httpd_epoll_serve_i(int32_t port, intptr_t root) {
+  if (port <= 0 || port > 65535) {
+    return -1;
+  }
+  if (httpd_prepare_root_i(root) < 0) {
+    return -1;
+  }
+  int listen_fd = (int)tcp_listen(port);
+  net_set_nonblock(listen_fd);
+  int epfd = epoll_create1(0);
+  if (epfd < 0) {
+    net_fail("epoll_create1");
+  }
+  struct epoll_event lev;
+  lev.events = EPOLLIN;
+  lev.data.fd = listen_fd;
+  if (epoll_ctl(epfd, EPOLL_CTL_ADD, listen_fd, &lev) < 0) {
+    net_fail("epoll_ctl listen");
+  }
+
+  struct epoll_event events[256];
+  for (;;) {
+    int n = epoll_wait(epfd, events, 256, -1);
+    if (n < 0) {
+      if (errno == EINTR) {
+        continue;
+      }
+      net_fail("epoll_wait");
+    }
+    for (int i = 0; i < n; i++) {
+      httpd_dispatch_epoll_event(epfd, listen_fd, &events[i]);
+    }
+    for (;;) {
+      int n2 = epoll_wait(epfd, events, 256, 0);
+      if (n2 <= 0) {
+        break;
+      }
+      for (int j = 0; j < n2; j++) {
+        httpd_dispatch_epoll_event(epfd, listen_fd, &events[j]);
+      }
+    }
+  }
+  return 0;
 }
 
 int32_t net_slot_consume(int32_t slot, int32_t n) {
@@ -665,7 +856,7 @@ int32_t epoll_create1_i(void) {
 
 int32_t epoll_ctl_add_i(int32_t epfd, int32_t fd) {
   struct epoll_event ev;
-  ev.events = EPOLLIN | EPOLLET;
+  ev.events = EPOLLIN;
   ev.data.fd = (int)fd;
   if (epoll_ctl((int)epfd, EPOLL_CTL_ADD, (int)fd, &ev) < 0) {
     return -1;

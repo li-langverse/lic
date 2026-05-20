@@ -68,6 +68,7 @@ intptr_t httpd_cached_body_i(void);
 int32_t httpd_cached_sz_i(void);
 int32_t httpd_reply_cached_index_i(int32_t conn, int32_t slot, int32_t keep_alive);
 int32_t httpd_drain_slot_i(int32_t conn, int32_t slot);
+int32_t httpd_epoll_serve_i(int32_t port, intptr_t root);
 int32_t httpd_slot_alloc(int32_t fd);
 int32_t httpd_slot_find_fd(int32_t fd);
 void httpd_slot_free(int32_t slot);

@@ -144,6 +144,21 @@ extern proc httpd_epoll_serve_i(port: var int, root: var ptr) raises Net, Alloc,
   ensures true
   decreases 0
 
+extern proc httpd_set_proxy_upstream_i(host: var ptr, port: var int, proxy_all: var int) raises Net -> int
+  requires port > 0
+  ensures true
+  decreases 0
+
+extern proc httpd_set_proxy_upstream_port_i(port: var int, proxy_all: var int) raises Net -> int
+  requires port > 0
+  ensures true
+  decreases 0
+
+extern proc net_lit_loopback_i() -> ptr
+  requires true
+  ensures true
+  decreases 0
+
 extern proc net_slot_consume(slot: var int, n: int) -> int
   requires 0 <= slot
   ensures true

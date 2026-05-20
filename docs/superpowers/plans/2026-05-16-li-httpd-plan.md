@@ -16,10 +16,13 @@ todos:
     status: in_progress
   - id: m1-static-generic
     content: "M1 wave 1: generic static GET + sendfile in C hot path; static_large scenario"
-    status: in_progress
+    status: completed
   - id: m1-validate-config
     content: "M1 wave 1: examples/minimal.toml + scripts/validate-httpd-config.py (schema subset)"
-    status: in_progress
+    status: completed
+  - id: m1-proxy-loopback
+    content: "M1 wave 2: loopback reverse proxy + proxy_loopback tier5 scenario"
+    status: completed
   - id: nginx-src-audit
     content: nginx submodule + nginx_mitigations.toml (read-only checklist); no Li port tracking
     status: pending
@@ -81,7 +84,7 @@ isProject: false
 | **Static HTTP** | GET `/` + `/index.html` cached; **generic GET** under doc root via sendfile/coalesce in C | `static_many`, path canonicalization tests |
 | **Harness** | `bench_http.py` + 2 scenarios in `suite.toml` ci/nightly | `static_large`, `[load].url_path`, fixture generator |
 | **Config** | CLI `port` + doc root only | `examples/minimal.toml` + `scripts/validate-httpd-config.py` |
-| **Proxy / LB** | Not started | `proxy_loopback`, `lb_round_robin` scenarios (disabled until code lands) |
+| **Proxy / LB** | Loopback reverse proxy (`httpd_set_proxy_upstream_i`, CLI 4th arg); `proxy_loopback` bench | `lb_round_robin`, health, typed TOML router in Li |
 | **TLS / H2 / SSE** | M1.5 / M2 per table below | Do not block M1 static + proxy on proof gate |
 
 **Nginx remains oracle only** — no `nginx.conf` compatibility target. Each new capability gets a **tier5_http scenario** before merge (correctness `[verify]` in CI profile; RPS in nightly).
@@ -90,8 +93,8 @@ isProject: false
 
 | Wave | Code | Bench scenarios | Gate |
 | ---- | ---- | ----------------- | ---- |
-| **1** (active) | Generic static files; validate-config subset; harness `url_path` | `static_large` in ci (verify) + nightly (timing) | `lic build` + `bench_http.py --profile ci` |
-| **2** | Reverse proxy loopback; typed upstream allowlist | `proxy_loopback`, `proxy_upstream_nginx` | verify + rps vs nginx |
+| **1** (done) | Generic static files; validate-config subset; harness `url_path` | `static_large` in ci + nightly | `lic build` + `bench_http.py --profile ci` |
+| **2** (active) | Loopback reverse proxy (`httpd_set_proxy_upstream_i`, CLI `PORT ROOT BACKEND_PORT`) | `proxy_loopback` in ci; `proxy_upstream_nginx` next | verify + rps vs nginx |
 | **3** | LB RR + least_conn + passive health | `lb_round_robin`, `lb_least_conn`, `lb_peer_down` | failover verify row |
 | **4** | Rate limit 429; route DSL; exploit A+B on li-httpd | `rate_limit_429`; `exploit_http.py` wired | stricter-than-nginx `[expect]` ok |
 

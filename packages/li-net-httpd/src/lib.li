@@ -429,6 +429,18 @@ def httpd_serve_port_root(port: var int, root: var ptr) raises Net, Alloc, IO ->
 =
   return httpd_serve_static_blocking(port, root)
 
+def httpd_serve_port_root_proxy(port: var int, root: var ptr, backend_port: var int) raises Net, Alloc, IO -> int
+  requires 0 < port
+  requires 0 < backend_port
+  ensures true
+  decreases 0
+=
+  var all_paths: int = 1
+  var ok: int = httpd_set_proxy_upstream_port_i(backend_port, all_paths)
+  if ok < 0:
+    return 1
+  return httpd_serve_port_root(port, root)
+
 def httpd_run_from_argv() raises Net, Alloc, IO -> int
   requires true
   ensures true
@@ -439,6 +451,10 @@ def httpd_run_from_argv() raises Net, Alloc, IO -> int
   var port_arg: ptr = li_rt_argv_i(1)
   var p: int = httpd_parse_port_i(port_arg)
   var r: ptr = li_rt_argv_i(2)
+  if li_rt_argc() >= 4:
+    var backend_arg: ptr = li_rt_argv_i(3)
+    var bp: int = httpd_parse_port_i(backend_arg)
+    return httpd_serve_port_root_proxy(p, r, bp)
   return httpd_serve_port_root(p, r)
 
 def main() raises Net, Alloc, IO -> int

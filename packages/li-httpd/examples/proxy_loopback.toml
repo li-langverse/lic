@@ -1,0 +1,14 @@
+# Loopback reverse proxy (M1 wave 2) — upstream must be 127.0.0.1 only
+[server]
+listen = ":8080"
+document_root = "./public"
+
+[limits]
+max_body = "1m"
+max_header = "16k"
+
+[upstreams.backend]
+peers = ["http://127.0.0.1:18081"]
+
+[routes]
+"GET /*" = "proxy:backend"

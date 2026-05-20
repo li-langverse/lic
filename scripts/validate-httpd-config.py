@@ -1,14 +1,16 @@
 #!/usr/bin/env python3
-"""Validate a subset of li-httpd.toml (M1 wave 1 — no listen until wired to binary).
+"""Validate a subset of li-httpd.toml (M1 — static + loopback proxy upstreams).
 
-Exit 0 when config is safe to document; exit 1 with stderr message on reject.
+Exit 0 when config is safe; exit 1 with stderr message on reject.
 Future: fold into `lic validate-config` when HTTP config module lands.
 """
 from __future__ import annotations
 
 import argparse
+import re
 import sys
 from pathlib import Path
+from urllib.parse import urlparse
 
 try:
     import tomllib
@@ -16,10 +18,42 @@ except ModuleNotFoundError:
     import tomli as tomllib  # type: ignore
 
 FORBIDDEN_SUBSTRINGS = ("..", "include ", "load_module", "proxy_pass http://")
+PEER_URL_RE = re.compile(r"^https?://")
 
 
 def load(path: Path) -> dict:
     return tomllib.loads(path.read_text(encoding="utf-8"))
+
+
+def collect_upstreams(cfg: dict) -> dict[str, list[str]]:
+    pools: dict[str, list[str]] = {}
+    nested = cfg.get("upstreams")
+    if isinstance(nested, dict):
+        for pool_id, val in nested.items():
+            if isinstance(val, dict):
+                peers = val.get("peers") or []
+                if isinstance(peers, list):
+                    pools[str(pool_id)] = [str(p) for p in peers]
+    for key, val in cfg.items():
+        if not key.startswith("upstreams."):
+            continue
+        pool_id = key.split(".", 1)[1]
+        if isinstance(val, dict):
+            peers = val.get("peers") or []
+            if isinstance(peers, list):
+                pools[pool_id] = [str(p) for p in peers]
+    return pools
+
+
+def validate_peer_url(url: str) -> str | None:
+    u = urlparse(url)
+    if u.scheme not in ("http", "https"):
+        return f"peer must be http(s) URL: {url!r}"
+    if u.hostname not in ("127.0.0.1", "::1", "localhost"):
+        return f"peer must be loopback (M1 wave 2): {url!r}"
+    if not u.port:
+        return f"peer must include explicit port: {url!r}"
+    return None
 
 
 def validate(cfg: dict) -> list[str]:
@@ -45,16 +79,26 @@ def validate(cfg: dict) -> list[str]:
     if routes is None:
         errs.append("routes table is required (may be empty in tests)")
 
+    pools = collect_upstreams(cfg)
+
+    for pool_id, peers in pools.items():
+        if not peers:
+            errs.append(f"upstreams.{pool_id}: peers must be non-empty")
+        for peer in peers:
+            err = validate_peer_url(peer)
+            if err:
+                errs.append(f"upstreams.{pool_id}: {err}")
+
     if routes:
         for key, action in routes.items():
             if not isinstance(key, str) or not isinstance(action, str):
                 errs.append(f"routes entry must be strings: {key!r} -> {action!r}")
                 continue
-            if "proxy:" in action and "allowlist" not in raw:
-                # wave 1: no proxy routes without future upstream block
-                errs.append(
-                    f"proxy route {key!r} rejected in wave 1 — add [[upstreams]] when proxy ships"
-                )
+            if action.startswith("proxy:"):
+                pool = action.split(":", 1)[1]
+                if pool not in pools:
+                    errs.append(f"proxy route {key!r} references unknown upstream {pool!r}")
+
     return errs
 
 

@@ -43,6 +43,9 @@ static char g_cached_blob_close[512 + HTTPD_IO_BUF];
 static int32_t g_cached_blob_close_len = 0;
 static char g_doc_root[4096];
 static size_t g_doc_root_len = 0;
+static char g_proxy_host[64] = "127.0.0.1";
+static int32_t g_proxy_port = 0;
+static int g_proxy_all = 0;
 
 static void slots_init_once(void) {
   if (g_slots_inited) {
@@ -309,6 +312,34 @@ static const char* str_cat2(const char* a, const char* b) {
 intptr_t str_cat2_i(intptr_t a, intptr_t b) { return iptr(str_cat2(ptr_i(a), ptr_i(b))); }
 
 intptr_t net_lit_index_html_i(void) { return iptr("/index.html"); }
+
+intptr_t net_lit_loopback_i(void) { return iptr("127.0.0.1"); }
+
+int32_t httpd_set_proxy_upstream_port_i(int32_t port, int32_t proxy_all) {
+  if (port <= 0 || port > 65535) {
+    return -1;
+  }
+  strncpy(g_proxy_host, "127.0.0.1", sizeof(g_proxy_host) - 1);
+  g_proxy_host[sizeof(g_proxy_host) - 1] = '\0';
+  g_proxy_port = port;
+  g_proxy_all = proxy_all ? 1 : 0;
+  return 0;
+}
+
+int32_t httpd_set_proxy_upstream_i(int32_t host, int32_t port, int32_t proxy_all) {
+  const char* h = ptr_i(host);
+  if (!h || port <= 0 || port > 65535) {
+    return -1;
+  }
+  if (strcmp(h, "127.0.0.1") != 0 && strcmp(h, "::1") != 0) {
+    return -1;
+  }
+  strncpy(g_proxy_host, h, sizeof(g_proxy_host) - 1);
+  g_proxy_host[sizeof(g_proxy_host) - 1] = '\0';
+  g_proxy_port = port;
+  g_proxy_all = proxy_all ? 1 : 0;
+  return 0;
+}
 
 int32_t net_set_nonblock(int32_t fd) { return set_nonblocking((int)fd); }
 
@@ -655,6 +686,80 @@ static int path_is_safe(const char* path, int plen) {
   return 1;
 }
 
+static int tcp_connect_loopback(int port) {
+  struct sockaddr_in addr;
+  memset(&addr, 0, sizeof(addr));
+  addr.sin_family = AF_INET;
+  addr.sin_port = htons((uint16_t)port);
+  if (inet_pton(AF_INET, g_proxy_host, &addr.sin_addr) <= 0) {
+    return -1;
+  }
+  int fd = socket(AF_INET, SOCK_STREAM, 0);
+  if (fd < 0) {
+    return -1;
+  }
+  if (connect(fd, (struct sockaddr*)&addr, sizeof(addr)) < 0) {
+    close(fd);
+    return -1;
+  }
+  return fd;
+}
+
+static int path_proxy_match(const char* path, int plen) {
+  if (g_proxy_port <= 0) {
+    return 0;
+  }
+  if (g_proxy_all) {
+    return 1;
+  }
+  if (plen >= 4 && memcmp(path, "/v1", 3) == 0) {
+    return 1;
+  }
+  return 0;
+}
+
+static int32_t httpd_proxy_forward(int32_t conn, const char* path, int plen) {
+  int up = tcp_connect_loopback((int)g_proxy_port);
+  if (up < 0) {
+    return -1;
+  }
+  char req[4096];
+  int n = snprintf(req, sizeof(req),
+                   "GET %.*s HTTP/1.1\r\n"
+                   "Host: %s:%d\r\n"
+                   "Connection: close\r\n"
+                   "\r\n",
+                   plen, path, g_proxy_host, (int)g_proxy_port);
+  if (n < 0 || n >= (int)sizeof(req)) {
+    close(up);
+    return -1;
+  }
+  if (send_all_nb(up, req, (size_t)n) < 0) {
+    close(up);
+    return -1;
+  }
+  char buf[8192];
+  for (;;) {
+    ssize_t r = read(up, buf, sizeof(buf));
+    if (r < 0) {
+      if (errno == EINTR) {
+        continue;
+      }
+      close(up);
+      return -1;
+    }
+    if (r == 0) {
+      break;
+    }
+    if (send_all_nb((int)conn, buf, (size_t)r) < 0) {
+      close(up);
+      return -1;
+    }
+  }
+  close(up);
+  return 0;
+}
+
 static int is_index_path_c(const char* path, int plen) {
   if (plen == 1 && path[0] == '/') {
     return 1;
@@ -763,6 +868,13 @@ static int32_t httpd_try_drain_once(int32_t conn, int32_t slot) {
     return -2;
   }
   int keep = !wants_connection_close(g_slots[slot].buf, hdr_end);
+  if (path_proxy_match(req_path, plen)) {
+    if (httpd_proxy_forward(conn, req_path, plen) < 0) {
+      return -2;
+    }
+    net_slot_consume(slot, hdr_end);
+    return -1;
+  }
   if (is_index_path_c(req_path, plen) || is_index_get(g_slots[slot].buf, hdr_end)) {
     if (httpd_reply_cached_index_i(conn, slot, keep) < 0) {
       return -2;

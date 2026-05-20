@@ -372,7 +372,7 @@ CRITICAL: traceability `PKG-*`, SBOM, export audit log. RFC: [critical-package-c
 | Concern | Choice |
 |---------|--------|
 | Viewport | wgpu / Vulkan / Metal |
-| UI | Extend `li-ui` (immediate mode, agent-readable) |
+| UI | **`li-gui`** (Li-only HUD + compositor) + `li-ui` (Studio cmds) — [plan](plans/li-native-gui-plan.md) |
 | GPU ML | LKIR + optional Triton; ROCm + CUDA |
 | Agents | MCP + `@cursor/sdk` |
 | Syntax | **`def`** + contracts |

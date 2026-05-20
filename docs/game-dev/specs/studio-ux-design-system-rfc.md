@@ -59,9 +59,13 @@ ui_command_palette_execute(cmd)
 |-------|-------------|
 | **UX-0** ✅ | Types + smokes + composable gates |
 | **UX-1** ✅ | HTML demo: agent dock + ⌘K palette |
-| **UX-2** | Native `li-studio` bind `UiLayoutProfile` |
-| **UX-3** | MCP tool map `ui_cmd_*` → filesystem paths |
-| **UX-4** | GPU present path via `li-render` draw lists |
+| **UX-2** | **Li-only native GUI** — [li-native-gui-plan.md](../plans/li-native-gui-plan.md) (iterate there) |
+| **UX-3** | `packages/li-gui` + `world-studio` target + `lic` |
+| **UX-4** | In-game creator UI — [li-gui-schema-rfc.md](li-gui-schema-rfc.md) |
+| **UX-4** | MCP tool map `ui_cmd_*` → filesystem paths |
+| **UX-5** | GPU present path via `li-render` draw lists |
+
+**Stack decision:** SvelteKit + Tauri for Studio shell; Next.js optional for marketing/docs only (not editor).
 
 ## Dependencies
 

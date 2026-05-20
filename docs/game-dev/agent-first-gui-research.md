@@ -41,7 +41,7 @@ Humans need ≤3 clicks and familiar editor chrome. **One registry** serves both
 | Layout | `li-ui` | `ui_layout_agent_first` |
 | Commands | `li-ui` + `li-studio` | `ui_cmd_*` / `studio_cmd_*` |
 | Agent patch | `li-studio-ai` | `studio_ai_apply_if_clean_stub` |
-| Demo shell | `deploy/studio-demo` | `studio.js` + agent dock |
+| Demo shell | `deploy/studio-demo` | HTML prototype only — canonical UI is Li ([plan](plans/li-native-gui-plan.md)) |
 | Proof | `li-tests` composable | `import_ui_agent_studio_stack` |
 
 ## Anti-patterns (forbidden claims)

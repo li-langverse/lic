@@ -48,7 +48,9 @@ static int32_t g_proxy_port = 0;
 static int g_proxy_all = 0;
 
 #define HTTPD_MAX_UPSTREAM_PEERS 8
-#define HTTPD_POOL_PER_PEER 4
+#define HTTPD_POOL_PER_PEER 32
+#define HTTPD_MAX_HDR_RECV 4096
+#define HTTPD_MAX_HEADER_LINES 64
 
 typedef struct {
   int32_t port;
@@ -63,6 +65,8 @@ static int g_up_peer_count = 0;
 static int g_lb_rr = 0;
 static int g_lb_mode = 0; /* 0=round_robin, 1=least_conn */
 static int32_t g_config_listen_port = 0;
+
+static void upstream_pool_prewarm_all(void);
 
 static void slots_init_once(void) {
   if (g_slots_inited) {
@@ -340,7 +344,11 @@ int32_t httpd_set_proxy_upstream_port_i(int32_t port, int32_t proxy_all) {
   g_proxy_host[sizeof(g_proxy_host) - 1] = '\0';
   g_proxy_port = port;
   g_proxy_all = proxy_all ? 1 : 0;
-  return httpd_add_upstream_peer_i(port);
+  if (httpd_add_upstream_peer_i(port) < 0) {
+    return -1;
+  }
+  upstream_pool_prewarm_all();
+  return 0;
 }
 
 int32_t httpd_set_upstream_ports_csv_i(intptr_t csv, int32_t proxy_all) {
@@ -374,6 +382,9 @@ int32_t httpd_set_upstream_ports_csv_i(intptr_t csv, int32_t proxy_all) {
     while (*s && *s != ',') {
       s++;
     }
+  }
+  if (count > 0) {
+    upstream_pool_prewarm_all();
   }
   return count > 0 ? count : -1;
 }
@@ -743,13 +754,31 @@ static int count_content_length_c(const char* buf, int hdr_end) {
   return count;
 }
 
-/* CL+TE conflict, duplicate Content-Length — smuggling class (CVE-2019-20372). */
+/* CL+TE conflict, duplicate Content-Length, chunked bodies — smuggling / bomb class. */
 static int request_headers_unsafe_c(const char* buf, int hdr_end) {
   if (count_content_length_c(buf, hdr_end) > 1) {
     return 1;
   }
-  if (count_content_length_c(buf, hdr_end) > 0 && hdr_has_token_c(buf, hdr_end, "Transfer-Encoding:") &&
-      hdr_has_token_c(buf, hdr_end, "chunked")) {
+  if (hdr_has_token_c(buf, hdr_end, "Transfer-Encoding:") && hdr_has_token_c(buf, hdr_end, "chunked")) {
+    return 1;
+  }
+  int lines = 0;
+  for (int i = 0; i < hdr_end; i++) {
+    if (buf[i] == '\n') {
+      lines++;
+      if (lines > HTTPD_MAX_HEADER_LINES) {
+        return 1;
+      }
+    }
+  }
+  return 0;
+}
+
+static int http_method_allowed_c(const char* buf, int hdr_end) {
+  if (hdr_end >= 4 && memcmp(buf, "GET ", 4) == 0) {
+    return 1;
+  }
+  if (hdr_end >= 5 && memcmp(buf, "HEAD ", 5) == 0) {
     return 1;
   }
   return 0;
@@ -973,6 +1002,23 @@ static void upstream_pool_release(int32_t port, int fd, int reuse) {
     }
   }
   close(fd);
+}
+
+static void upstream_pool_prewarm_all(void) {
+  for (int i = 0; i < g_up_peer_count; i++) {
+    if (g_up_peers[i].down) {
+      continue;
+    }
+    for (int j = 0; j < HTTPD_POOL_PER_PEER; j++) {
+      if (g_up_peers[i].fds[j] < 0) {
+        int fd = tcp_connect_loopback_port(g_up_peers[i].port);
+        if (fd >= 0) {
+          g_up_peers[i].fds[j] = fd;
+          g_up_peers[i].in_use[j] = 0;
+        }
+      }
+    }
+  }
 }
 
 static int parse_resp_content_length(const char* hdr, int hdr_len, int* out_keep) {
@@ -1246,6 +1292,9 @@ static int32_t httpd_try_drain_once(int32_t conn, int32_t slot) {
   if (request_headers_unsafe_c(g_slots[slot].buf, hdr_end)) {
     return -2;
   }
+  if (!http_method_allowed_c(g_slots[slot].buf, hdr_end)) {
+    return -2;
+  }
   char req_path[2048];
   int plen = parse_get_path_c(g_slots[slot].buf, hdr_end, req_path, (int)sizeof(req_path));
   if (plen < 0 || !path_is_safe(req_path, plen)) {
@@ -1257,7 +1306,10 @@ static int32_t httpd_try_drain_once(int32_t conn, int32_t slot) {
       return -2;
     }
     net_slot_consume(slot, hdr_end);
-    return -1;
+    if (!keep) {
+      return -1;
+    }
+    return 1;
   }
   if (is_index_path_c(req_path, plen) || is_index_get(g_slots[slot].buf, hdr_end)) {
     if (httpd_reply_cached_index_i(conn, slot, keep) < 0) {
@@ -1310,6 +1362,10 @@ static void httpd_serve_conn_epoll(int epfd, int32_t slot) {
   int conn = g_slots[slot].fd;
   for (;;) {
     if (g_slots[slot].len >= HTTPD_IO_BUF) {
+      httpd_conn_close_slot(epfd, slot);
+      return;
+    }
+    if (g_slots[slot].len >= HTTPD_MAX_HDR_RECV && hdr_end_at_c(g_slots[slot].buf, g_slots[slot].len) < 0) {
       httpd_conn_close_slot(epfd, slot);
       return;
     }
@@ -1721,6 +1777,9 @@ int32_t httpd_load_runtime_config_i(intptr_t path) {
   fclose(f);
   if (g_doc_root_len == 0) {
     return -1;
+  }
+  if (g_up_peer_count > 0) {
+    upstream_pool_prewarm_all();
   }
   return 0;
 }

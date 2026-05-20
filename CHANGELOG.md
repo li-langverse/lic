@@ -8,6 +8,10 @@ All notable changes to Li are documented here. The format follows
 
 ### Added
 
+- **li-httpd proxy perf + weaponized hardening:** client keep-alive after proxy, 32-socket upstream prewarm, chunked/POST/header limits — [2026-05-21-httpd-proxy-perf-weaponized.md](docs/release-notes/2026-05-21-httpd-proxy-perf-weaponized.md).
+
+### Added
+
 - **li-httpd M1 wave 4:** `least_conn` LB, `httpd_mark_upstream_peer_down_i`, `path_is_safe` rejects `%` and `\`; `scripts/audit-nginx-mitigations.py` — see [2026-05-21-httpd-m1-wave4-exploits.md](docs/release-notes/2026-05-21-httpd-m1-wave4-exploits.md).
 
 ### Added

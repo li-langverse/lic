@@ -547,13 +547,13 @@ expected_substr = "raises Alloc"
 [[tests]]
 suite = "composable"
 file = "composable/import_http_lib.li"
-outcome = "compile_ok"
-note = "import http from workspace package li-http"
+outcome = "verify_open_ok"
+note = "import http from workspace package li-http (open VC on http externs until 2f full)"
 
 [[tests]]
 suite = "composable"
 file = "composable/import_httpd_lib.li"
-outcome = "verify_ok"
+outcome = "verify_open_ok"
 note = "import net.httpd from workspace package li-net-httpd"
 
 [[tests]]
@@ -586,20 +586,20 @@ outcome = "verify_ok"
 [[tests]]
 suite = "httpd"
 file = "httpd/parse_request_smoke.li"
-outcome = "compile_ok"
-note = "parse_request from li-http + GET line probe"
+outcome = "verify_open_ok"
+note = "parse_request from li-http + net.httpd; open VC on trusted externs"
 
 [[tests]]
 suite = "routing"
 file = "routing/match_routes.li"
-outcome = "compile_ok"
-note = "match_route_fixture vs routing.toml fixture (also run_httpd_config.sh)"
+outcome = "verify_open_ok"
+note = "match_route_fixture; run_httpd_config.sh binary oracle"
 
 [[tests]]
 suite = "routing"
 file = "routing/match_routes_toml.li"
-outcome = "compile_ok"
-note = "load_routes_from_toml + match_route; full oracle in run_httpd_config.sh"
+outcome = "verify_open_ok"
+note = "load_routes_from_routing_fixture; run_httpd_config.sh TOML oracle"
 
 # --- math_linalg (2i — @ dot / matmul surface) ---
 

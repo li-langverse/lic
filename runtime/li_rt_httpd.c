@@ -403,6 +403,42 @@ int32_t li_rt_httpd_match_route(const char* method, const char* path) {
   return 0;
 }
 
+static const char* path_kind_name(LiPathKind kind) {
+  switch (kind) {
+    case LI_PATH_PREFIX:
+      return "prefix";
+    case LI_PATH_PREFIX_STRIP:
+      return "prefix_strip";
+    case LI_PATH_EXACT:
+    default:
+      return "exact";
+  }
+}
+
+int32_t li_rt_httpd_explain_config(const char* path) {
+  if (li_rt_httpd_load_config(path) != 0) {
+    return -1;
+  }
+  fputs("# canonical routes (desugared)\n", stdout);
+  for (int32_t i = 0; i < g_route_count; i++) {
+    const LiHttpdRoute* r = &g_routes[i];
+    if (i > 0) {
+      fputc('\n', stdout);
+    }
+    fputs("[[routes]]\n", stdout);
+    fprintf(stdout, "name = \"%s\"\n", r->name);
+    fprintf(stdout, "priority = %d\n", (int)r->priority);
+    fprintf(stdout, "method = \"%s\"\n", r->method);
+    fprintf(stdout, "path = \"%s\"\n", r->path);
+    fprintf(stdout, "path_kind = \"%s\"\n", path_kind_name(r->path_kind));
+    fprintf(stdout, "action = \"%s\"\n", r->action);
+  }
+  if (g_route_count > 0) {
+    fputc('\n', stdout);
+  }
+  return 0;
+}
+
 int32_t li_rt_httpd_load_routing_fixture(void) {
   const char* root = getenv("LI_REPO_ROOT");
   if (root == NULL || root[0] == '\0') {

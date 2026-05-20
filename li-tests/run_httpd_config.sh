@@ -38,4 +38,11 @@ echo "== routing (Li TOML loader) =="
 /tmp/li_match_routes_toml
 test "$(/tmp/li_match_routes_toml; echo $?)" -eq 0
 
+echo "== explain-config (lic CLI + C/Python parity) =="
+CFG="$ROOT/li-tests/config_desugar/good/agent_gateway.toml"
+export LI_REPO_ROOT="$ROOT"
+"$LIC" httpd explain-config "$CFG" | diff -u "$ROOT/li-tests/config_desugar/good/agent_gateway.explained.golden" -
+chmod +x "$ROOT/scripts/check-httpd-explain-config.sh" "$ROOT/scripts/li-httpd-explain-config.sh"
+"$ROOT/scripts/check-httpd-explain-config.sh" "$CFG"
+
 echo "run_httpd_config: OK"

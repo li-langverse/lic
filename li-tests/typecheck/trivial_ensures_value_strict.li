@@ -1,0 +1,7 @@
+# Under --strict-contracts, `ensures true` on a value-returning def is E0303.
+def main() -> int
+  requires true
+  ensures true
+  decreases 0
+=
+  return 0

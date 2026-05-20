@@ -110,6 +110,9 @@ std::string agent_diagnostic_code(std::string_view code) {
   if (code == "E0302") {
     return "contract.ensures";
   }
+  if (code == "E0303") {
+    return "contract.trivial_ensures";
+  }
   if (code == "E0320") {
     return "parallel.disjoint";
   }
@@ -127,6 +130,9 @@ std::string agent_diagnostic_code(std::string_view code) {
   }
   if (code == "W0502") {
     return "numerics.int_div_trunc";
+  }
+  if (code == "W0601") {
+    return "contract.trivial_ensures";
   }
   return std::string(code);
 }

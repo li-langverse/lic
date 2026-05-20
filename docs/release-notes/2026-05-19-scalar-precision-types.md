@@ -37,7 +37,7 @@ The compiler accepts explicit fixed-width scalars (`float32`, `int16`, `float8`,
 - Default literals still map to **64-bit** (`int` / `float`).
 - No org CI rule mandating `float64` or `float32`.
 - Full quantization kernels and `float4` layout in MIR/LLVM.
-- E0303 strict ensures (separate PR #70).
+- E0303 / W0601 trivial-`ensures` on value-returning `def`: **shipped** (`--strict-contracts`, `LI_STRICT_CONTRACTS=1`).
 
 ## Breaking
 

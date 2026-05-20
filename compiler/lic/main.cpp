@@ -29,10 +29,10 @@ int usage() {
   std::cerr << li::styled_accent("lic") << li::styled_dim(" — prove · write · run fast") << li::reset_style()
             << "\nusage:\n"
             << "  lic parse <file>       parse and validate syntax\n"
-            << "  lic check <file> [--format=json]  parse + typecheck\n"
+            << "  lic check <file> [--format=json] [--strict-contracts]  parse + typecheck\n"
             << "  lic diagnose <file>    agent-oriented JSON diagnostics\n"
             << "  lic verify <file>      VC summary; --lean runs semantics; --strict-lean fails open VCs\n"
-            << "  lic build <file> -o <out> [--release] [--numerically-stable]\n"
+            << "  lic build <file> -o <out> [--release] [--numerically-stable] [--strict-contracts]\n"
             << "                       [--threads=N] [--jobs=N] [--max-memory=MB]\n"
             << "                       [--coverage-instrument]\n"
             << "  lic smoke-llvm         verify LLVM can emit main returning 0\n"
@@ -43,7 +43,9 @@ int usage() {
             << ") — reserved for parallel frontend\n"
             << "  --max-memory=MB / LI_MAX_MEMORY_MB — reserved memory budget\n"
             << "  --threads=N / LI_OMP_THREADS — OpenMP team size at run time\n"
-            << "  --numerically-stable / LI_FP_NUMERICALLY_STABLE=1 — cancellation-safe FP\n";
+            << "  --numerically-stable / LI_FP_NUMERICALLY_STABLE=1 — cancellation-safe FP\n"
+            << "  --strict-contracts / LI_STRICT_CONTRACTS=1 — reject `ensures true` on value-returning "
+               "`def` (E0303); default is warning only (W0601)\n";
   return 1;
 }
 
@@ -59,6 +61,11 @@ bool apply_resource_flag(std::string_view arg) {
   return false;
 }
 
+bool env_strict_contracts() {
+  const char* e = std::getenv("LI_STRICT_CONTRACTS");
+  return e != nullptr && e[0] != '\0' && e[0] != '0';
+}
+
 std::string read_file(const char* path) {
   std::ifstream in(path);
   std::ostringstream ss;
@@ -67,7 +74,7 @@ std::string read_file(const char* path) {
 }
 
 bool frontend(const char* path, const std::string& source, li::Module& out,
-              li::DiagnosticBag& diags) {
+              li::DiagnosticBag& diags, bool strict_contracts_cli = false) {
   li::check_source_policies(source, path, diags);
   if (diags.has_errors()) {
     return false;
@@ -94,7 +101,9 @@ bool frontend(const char* path, const std::string& source, li::Module& out,
   if (diags.has_errors()) {
     return false;
   }
-  auto checked = li::typecheck_module(*parsed.module);
+  li::TypecheckOptions tc;
+  tc.strict_contracts = strict_contracts_cli || env_strict_contracts();
+  auto checked = li::typecheck_module(*parsed.module, tc);
   for (const auto& d : checked.diagnostics.items()) {
     diags.add(d);
   }
@@ -107,11 +116,12 @@ bool frontend(const char* path, const std::string& source, li::Module& out,
 
 enum class DiagOutput { Human, Json };
 
-int check_file(const char* path, DiagOutput output, std::string_view json_command) {
+int check_file(const char* path, DiagOutput output, std::string_view json_command,
+               bool strict_contracts_cli) {
   const std::string source = read_file(path);
   li::Module module;
   li::DiagnosticBag diags;
-  const bool ok = frontend(path, source, module, diags);
+  const bool ok = frontend(path, source, module, diags, strict_contracts_cli);
   if (output == DiagOutput::Json) {
     li::print_diagnostics_json(diags, std::cout, json_command);
   } else if (!diags.empty()) {
@@ -149,11 +159,11 @@ int count_open_autovc_goals() {
   return 0;
 }
 
-int verify_file(const char* path, bool run_lean, bool strict_lean) {
+int verify_file(const char* path, bool run_lean, bool strict_lean, bool strict_contracts_cli) {
   const std::string source = read_file(path);
   li::Module module;
   li::DiagnosticBag diags;
-  if (!frontend(path, source, module, diags)) {
+  if (!frontend(path, source, module, diags, strict_contracts_cli)) {
     li::print_diagnostics(diags);
     return 1;
   }
@@ -228,11 +238,12 @@ int verify_file(const char* path, bool run_lean, bool strict_lean) {
   return 0;
 }
 
-int build_file(const char* path, const char* output, const li::CompileOptions& opts) {
+int build_file(const char* path, const char* output, const li::CompileOptions& opts,
+               bool strict_contracts_cli) {
   const std::string source = read_file(path);
   li::Module module;
   li::DiagnosticBag diags;
-  if (!frontend(path, source, module, diags)) {
+  if (!frontend(path, source, module, diags, strict_contracts_cli)) {
     li::print_diagnostics(diags);
     return 1;
   }
@@ -287,10 +298,13 @@ int main(int argc, char** argv) {
     }
     const char* path = nullptr;
     DiagOutput output = DiagOutput::Human;
+    bool strict_contracts = false;
     for (int i = 2; i < argc; ++i) {
       const std::string_view arg = argv[i];
       if (arg == "--format=json") {
         output = DiagOutput::Json;
+      } else if (arg == "--strict-contracts") {
+        strict_contracts = true;
       } else if (path == nullptr) {
         path = argv[i];
       } else {
@@ -300,13 +314,28 @@ int main(int argc, char** argv) {
     if (path == nullptr) {
       return usage();
     }
-    return check_file(path, output, "check");
+    return check_file(path, output, "check", strict_contracts);
   }
   if (cmd == "diagnose") {
     if (argc < 3) {
       return usage();
     }
-    return check_file(argv[2], DiagOutput::Json, "diagnose");
+    bool strict_contracts = false;
+    const char* path = nullptr;
+    for (int i = 2; i < argc; ++i) {
+      const std::string_view arg = argv[i];
+      if (arg == "--strict-contracts") {
+        strict_contracts = true;
+      } else if (path == nullptr) {
+        path = argv[i];
+      } else {
+        return usage();
+      }
+    }
+    if (path == nullptr) {
+      return usage();
+    }
+    return check_file(path, DiagOutput::Json, "diagnose", strict_contracts);
   }
   if (cmd == "verify") {
     if (argc < 3) {
@@ -314,15 +343,18 @@ int main(int argc, char** argv) {
     }
     bool run_lean = false;
     bool strict_lean = false;
+    bool strict_contracts = false;
     for (int i = 3; i < argc; ++i) {
       if (std::string_view(argv[i]) == "--lean") {
         run_lean = true;
       } else if (std::string_view(argv[i]) == "--strict-lean") {
         run_lean = true;
         strict_lean = true;
+      } else if (std::string_view(argv[i]) == "--strict-contracts") {
+        strict_contracts = true;
       }
     }
-    return verify_file(argv[2], run_lean, strict_lean);
+    return verify_file(argv[2], run_lean, strict_lean, strict_contracts);
   }
   if (cmd == "build") {
     if (argc < 3) {
@@ -332,6 +364,7 @@ int main(int argc, char** argv) {
     const char* output = li::null_output_path();
     li::CompileOptions opts;
     bool coverage = false;
+    bool strict_contracts = false;
     std::string extra_flags;
     if (const char* env_stable = std::getenv("LI_FP_NUMERICALLY_STABLE");
         env_stable && *env_stable && env_stable[0] != '0') {
@@ -345,6 +378,8 @@ int main(int argc, char** argv) {
         opts.release = true;
       } else if (arg == "--numerically-stable") {
         opts.fp_numerically_stable = true;
+      } else if (arg == "--strict-contracts") {
+        strict_contracts = true;
       } else if (arg == "--coverage-instrument") {
         coverage = true;
       } else if (arg.rfind("--threads=", 0) == 0) {
@@ -362,7 +397,7 @@ int main(int argc, char** argv) {
     const std::string source = read_file(input);
     li::Module module;
     li::DiagnosticBag diags;
-    if (!frontend(input, source, module, diags)) {
+    if (!frontend(input, source, module, diags, strict_contracts)) {
       li::print_diagnostics(diags);
       return 1;
     }
@@ -388,7 +423,7 @@ int main(int argc, char** argv) {
       std::cerr << "vc emit: " << err << '\n';
     }
     if (std::getenv("LI_BUILD_VERIFY_LEAN") != nullptr) {
-      return verify_file(input, true, false);
+      return verify_file(input, true, false, false);
     }
     return 0;
   }

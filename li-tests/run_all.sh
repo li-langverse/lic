@@ -95,6 +95,20 @@ run_one() {
         pass=$((pass + 1))
       fi
       ;;
+    compile_fail_strict)
+      local err
+      err="$("$LIC" build "$path" -o "$NULL_OUT" --strict-contracts 2>&1)" || true
+      if "$LIC" build "$path" -o "$NULL_OUT" --strict-contracts 2>/dev/null; then
+        li_test_fail "$outcome $file (should reject under --strict-contracts)"
+        fail=$((fail + 1))
+      elif [[ -n "$substr" ]] && ! echo "$err" | grep -qi "$substr"; then
+        li_test_fail "$outcome $file (missing expected substring: $substr)"
+        fail=$((fail + 1))
+      else
+        li_test_pass "$outcome $file"
+        pass=$((pass + 1))
+      fi
+      ;;
     *)
       echo "unknown outcome $outcome for $file"
       fail=$((fail + 1))

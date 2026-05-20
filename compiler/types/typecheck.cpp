@@ -99,6 +99,14 @@ struct AliasEntry {
   bool is_protocol = false;
 };
 
+bool expr_is_literal_true(const Expr* e) {
+  return e != nullptr && e->kind == Expr::Kind::Ident && e->ident == "true";
+}
+
+bool ret_type_is_named_unit(const TypeExpr& te) {
+  return te.kind == TypeKind::Named && te.name == "unit";
+}
+
 void check_fixed_point_numerics_warnings(DiagnosticBag& diags, SourceLoc loc, BinOp op,
                                          const TyPtr& l, const TyPtr& r) {
   if (l->kind != TyKind::Int || r->kind != TyKind::Int) {
@@ -133,6 +141,7 @@ struct Ctx {
   std::set<std::string> loop_index_vars;
   int loop_depth = 0;
   bool in_async = false;
+  bool strict_contracts = false;
   DiagnosticBag& diags;
   std::string file;
 
@@ -971,7 +980,32 @@ struct Ctx {
     if (!has_ensures) {
       diag_error(diags, loc(p.span), ErrorCode::E0302,
                  "Every proc must state what it guarantees on exit (`ensures`).",
-                 "Add `ensures <condition>` — use `ensures true` temporarily while developing.");
+                 "Add `ensures <condition>` — relate `result` to inputs when the procedure returns "
+                 "a value (see W0601 / `--strict-contracts`).");
+    }
+    if (p.ret_type && !ret_type_is_named_unit(*p.ret_type)) {
+      static const char* const k_trivial_ensures_hint =
+          "Say what `result` is (e.g. `ensures result == x + y`) or use `-> unit` when there is "
+          "no return value. CI: `lic build --strict-contracts` or LI_STRICT_CONTRACTS=1.";
+      for (const auto& c : p.contracts) {
+        if (c.kind != ContractKind::Ensures) {
+          continue;
+        }
+        if (!expr_is_literal_true(c.expr.get())) {
+          continue;
+        }
+        if (strict_contracts) {
+          diag_error(diags, loc(c.span), ErrorCode::E0303,
+                     "`ensures true` is rejected on `def` procedures that return a value — it does "
+                     "not constrain `result`.",
+                     k_trivial_ensures_hint);
+        } else {
+          diag_warning(diags, loc(c.span), WarningCode::W0601,
+                         "`ensures true` on a value-returning `def` does not constrain `result`; "
+                         "strengthen `ensures` for meaningful verification.",
+                         k_trivial_ensures_hint);
+        }
+      }
     }
     locals.clear();
     type_vars.clear();
@@ -1006,10 +1040,10 @@ struct Ctx {
 
 }  // namespace
 
-TypecheckResult typecheck_module(const Module& module) {
+TypecheckResult typecheck_module(const Module& module, TypecheckOptions opts) {
   TypecheckResult result;
   DiagnosticBag& diags = result.diagnostics;
-  Ctx ctx{{}, {}, {}, {}, {}, {}, 0, false, diags, "module"};
+  Ctx ctx{{}, {}, {}, {}, {}, {}, 0, false, opts.strict_contracts, diags, "module"};
   for (const auto& proc : module.procs) {
     ctx.procs[proc.name] = &proc;
   }

@@ -14,6 +14,7 @@ enum class ErrorCode {
   E0202,  // type.mismatch
   E0301,  // contract.missing_requires
   E0302,  // contract.missing_ensures
+  E0303,  // contract.trivial_ensures
   E0310,  // borrow.conflict
   E0311,  // borrow.use_after_move
   E0320,  // policy.parallel_disjoint
@@ -29,6 +30,7 @@ enum class ErrorCode {
 enum class WarningCode {
   W0501,  // numerics.int_mul_overflow
   W0502,  // numerics.int_div_trunc
+  W0601,  // contract.trivial_ensures
 };
 
 std::string_view error_code_string(ErrorCode code);

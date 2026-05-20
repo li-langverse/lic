@@ -24,6 +24,12 @@ def sqrt_pos(x: float) -> float
 
 The **`=`** on the next line starts the **body**; it is not part of `decreases` and not assignment. See [Control flow and functions — The `=` after contracts](control-flow-and-functions.md#the--after-requires--ensures--decreases).
 
+### Trivial `ensures true` on value returns
+
+- **Default:** **`ensures true`** on a `def` that returns a real value (not `-> unit`) emits **W0601** — the postcondition does not mention `result`.
+- **Strict:** `lic check` / `lic build` / `lic verify` with **`--strict-contracts`**, or **`LI_STRICT_CONTRACTS=1`**, turns that into **E0303** (build fails).
+- **Exempt:** `extern proc` (opaque C), and **`-> unit`** (no meaningful `result`).
+
 ## On every loop
 
 ```nim

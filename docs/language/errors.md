@@ -9,7 +9,19 @@ Stable **E** codes are errors (fail `lic check`). **W** codes are warnings (prin
 | W0501 | `numerics.int_mul_overflow` | `int` multiply at ≤32-bit width |
 | W0502 | `numerics.int_div_trunc` | integer `/` (truncates; prefer `//` or multiply+shift) |
 
-See [Scalar precision — integer inner loops](scalar-precision.md#integer-inner-loops-rescale-to-float-at-the-boundary).
+## Contracts (warnings)
+
+| Code | Agent id | When |
+|------|----------|------|
+| W0601 | `contract.trivial_ensures` | `ensures true` on a value-returning `def` (default: warn; strengthen postcondition) |
+
+## Contracts (errors, strict mode)
+
+| Code | Agent id | When |
+|------|----------|------|
+| E0303 | `contract.trivial_ensures` | Same as W0601 when **`lic build --strict-contracts`** or **`LI_STRICT_CONTRACTS=1`** |
+
+`extern proc` may still use `ensures true` for opaque FFI. `def` with **`-> unit`** may use `ensures true` (no `result`).
 
 ## Type and policy (errors)
 

@@ -13,6 +13,13 @@ struct TypecheckResult {
   DiagnosticBag diagnostics;
 };
 
-TypecheckResult typecheck_module(const Module& module);
+struct TypecheckOptions {
+  /// When true, `ensures true` on value-returning `def` is an error (E0303). Otherwise warning
+  /// (W0601). Also enable with `LI_STRICT_CONTRACTS=1` or `lic build --strict-contracts`.
+  bool strict_contracts = false;
+};
+
+TypecheckResult typecheck_module(const Module& module,
+                                 TypecheckOptions opts = TypecheckOptions{});
 
 }  // namespace li

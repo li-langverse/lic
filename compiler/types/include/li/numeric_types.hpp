@@ -20,4 +20,7 @@ std::optional<NumericScalarDesc> lookup_numeric_scalar(std::string_view name);
 
 bool is_numeric_scalar_type_name(std::string_view name);
 
+/// Literal suffix (`f32`, `i32`, `u`, …) after a numeric token.
+std::optional<NumericScalarDesc> lookup_literal_suffix(std::string_view suffix, bool from_float);
+
 }  // namespace li

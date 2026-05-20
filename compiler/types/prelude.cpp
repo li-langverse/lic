@@ -28,8 +28,8 @@ bool is_prelude_type_name(const std::string_view name) {
   if (is_numeric_scalar_type_name(name)) {
     return true;
   }
-  return in_set(name, {"bool", "str", "unit", "list", "dict", "tuple", "Option", "simd", "bytes",
-                       "stringview", "ptr", nullptr});
+  return in_set(name, {"bool", "str", "binary", "Binary", "unit", "list", "dict", "tuple",
+                       "Option", "simd", "bytes", "stringview", "ptr", nullptr});
 }
 
 bool is_prelude_proc_name(const std::string_view name) {

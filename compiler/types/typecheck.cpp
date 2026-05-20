@@ -15,7 +15,7 @@ namespace li {
 namespace {
 
 enum class TyKind {
-  Int, Int64, Float, Bool, Str, Array, List, Dict, Tuple, TypedDict, Object, Enum, Named,
+  Int, Int64, Float, Bool, Str, Binary, Array, List, Dict, Tuple, TypedDict, Object, Enum, Named,
   TypeVar, Protocol, Callable, Simd
 };
 
@@ -68,6 +68,12 @@ TyPtr make_numeric_scalar(const NumericScalarDesc& desc) {
 }
 TyPtr make_bool() { return std::make_shared<Ty>(Ty{TyKind::Bool}); }
 TyPtr make_str() { return std::make_shared<Ty>(Ty{TyKind::Str}); }
+TyPtr make_binary() {
+  auto t = std::make_shared<Ty>();
+  t->kind = TyKind::Binary;
+  t->name = "binary";
+  return t;
+}
 TyPtr make_i64() { return std::make_shared<Ty>(Ty{TyKind::Int64}); }
 
 TyPtr make_type_var(std::string name) {
@@ -233,6 +239,12 @@ struct Ctx {
     }
     if (a->kind == TyKind::Int64) {
       return b->kind == TyKind::Int64;
+    }
+    if (a->kind == TyKind::Binary) {
+      return b->kind == TyKind::Binary;
+    }
+    if (a->kind == TyKind::Str) {
+      return b->kind == TyKind::Str;
     }
     return true;
   }
@@ -465,6 +477,9 @@ struct Ctx {
       if (te.name == "ptr") {
         return make_i64();
       }
+      if (te.name == "binary" || te.name == "Binary") {
+        return make_binary();
+      }
       if (te.name == "str" || te.name == "bytes" || te.name == "stringview" ||
           te.name == "Bytes" || te.name == "StringView") {
         auto t = std::make_shared<Ty>();
@@ -490,12 +505,26 @@ struct Ctx {
     return make_int();
   }
 
+  TyPtr type_of_numeric_literal(const Expr& e, const bool is_float) {
+    if (e.lit_suffix.empty()) {
+      return is_float ? make_float() : make_int();
+    }
+    const auto desc = lookup_literal_suffix(e.lit_suffix, is_float);
+    if (!desc) {
+      diags.error(loc(e.span), "unknown or invalid literal suffix '" + e.lit_suffix + "'");
+      return is_float ? make_float() : make_int();
+    }
+    return make_numeric_scalar(*desc);
+  }
+
   TyPtr type_of(const Expr& e) {
     switch (e.kind) {
       case Expr::Kind::IntLit:
-        return make_int();
+        return type_of_numeric_literal(e, false);
       case Expr::Kind::FloatLit:
-        return make_float();
+        return type_of_numeric_literal(e, true);
+      case Expr::Kind::BinaryLit:
+        return make_binary();
       case Expr::Kind::StringLit:
         return make_str();
       case Expr::Kind::Ident: {
@@ -551,6 +580,10 @@ struct Ctx {
               return make_float();
             }
             return l;
+          }
+          if (l->kind == TyKind::Binary || r->kind == TyKind::Binary) {
+            diags.error(loc(e.span), "binary values do not support arithmetic operators yet");
+            return make_binary();
           }
           if (l->kind == TyKind::Simd && r->kind == TyKind::Simd &&
               l->simd_lanes == r->simd_lanes) {

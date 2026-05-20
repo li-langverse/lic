@@ -33,7 +33,8 @@ Also: `i8`/`u8`, `Int32`, `UInt64`, …
 | Width mix | `int32 + int64` → **error** unless explicit cast |
 | Sign mix | `int32 + uint32` → **error** unless cast |
 | `int` + `float` | **error** (unchanged) |
-| Literals | `3.14` / `42` default to **64-bit**; narrow with typed variables + cast (suffixes: roadmap) |
+| Literals | `3.14` / `42` default to **64-bit**; suffixes `3.14f32`, `42i32`, `42u`, `255u8` set width |
+| Binary | Type `binary`; literals `0b1010…` for packed bit masks / quantized weights |
 
 No silent widening between widths.
 
@@ -47,6 +48,27 @@ No silent widening between widths.
 | **Packages** | Generic APIs `def step[T](...)` (future) or duplicate thin wrappers per width |
 
 The org **does not** enforce one float width in CI. Packages ship defaults; callers override.
+
+## Binary type (`binary`)
+
+| Item | Detail |
+|------|--------|
+| Purpose | Bit-packed values (quantized weight masks, sign bits) — **not** `bytes` (byte-aligned) |
+| Literals | `0b1010`, `0b11110000` |
+| Facade | `std/binary/binary.li` |
+| Physics | `precision_binary_weights()` sets `weights_encoding = 1` on `ScalarPrecision` |
+
+`binary` does not allow arithmetic yet; use `bytes` or explicit kernels for bitwise ops (roadmap).
+
+## Literal suffixes
+
+| Example | Type |
+|---------|------|
+| `3.14f32` | `float32` |
+| `1.0f16` | `float16` |
+| `42i32` | `int32` |
+| `42u` | `uint` (64-bit) |
+| `255u8` | `uint8` |
 
 ## Codegen (current)
 

@@ -59,6 +59,7 @@ struct Expr {
   enum class Kind {
     IntLit,
     FloatLit,
+    BinaryLit,
     StringLit,
     Ident,
     BinOp,
@@ -74,6 +75,8 @@ struct Expr {
   double float_value = 0.0;
   std::string ident;
   std::string str_value;
+  /// Literal suffix (`f32`, `i32`, `u`, …) when present on numeric literals.
+  std::string lit_suffix;
   BinOp bin_op = BinOp::Add;
   std::unique_ptr<Expr> lhs;
   std::unique_ptr<Expr> rhs;

@@ -128,4 +128,28 @@ bool is_numeric_scalar_type_name(const std::string_view name) {
   return lookup_numeric_scalar(name).has_value();
 }
 
+std::optional<NumericScalarDesc> lookup_literal_suffix(const std::string_view suffix,
+                                                       const bool from_float) {
+  if (suffix.empty()) {
+    return std::nullopt;
+  }
+  if (!from_float && suffix == "u") {
+    return NumericScalarDesc{NumericScalarKind::IntUnsigned, 64, "uint", false};
+  }
+  const auto desc = lookup_numeric_scalar(suffix);
+  if (!desc) {
+    return std::nullopt;
+  }
+  if (from_float) {
+    if (desc->kind != NumericScalarKind::Float) {
+      return std::nullopt;
+    }
+    return desc;
+  }
+  if (desc->kind == NumericScalarKind::Float) {
+    return std::nullopt;
+  }
+  return desc;
+}
+
 }  // namespace li

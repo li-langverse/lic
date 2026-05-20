@@ -12,6 +12,7 @@ Li’s type system follows **Python 3.14 typing** habits, but programs compile t
 | `bool` | `bool` | Not a number |
 | `str` | string | UTF-8 at runtime |
 | `unit` | void-like | “No useful value” |
+| `binary` | bit-packed | Quantized masks / weights (`0b…` literals); not `bytes` |
 
 ## Fixed-width integers and floats
 

@@ -29,10 +29,13 @@ else
 fi
 
 "$ROOT/scripts/reset-git-github-profile.sh"
+export GIT_CONFIG_GLOBAL="${LI_GITCONFIG:-/tmp/li-gitconfig-lic}"
+export GIT_CONFIG_SYSTEM=/dev/null
 
 if git remote get-url origin &>/dev/null; then
   li_phase "push origin $branch"
-  "$WRAPPER" git push -u origin "$branch"
+  "$WRAPPER" env GIT_CONFIG_GLOBAL="$GIT_CONFIG_GLOBAL" GIT_CONFIG_SYSTEM="$GIT_CONFIG_SYSTEM" \
+    git push -u origin "$branch"
 fi
 
 if git remote get-url langverse &>/dev/null; then

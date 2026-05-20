@@ -13,6 +13,9 @@ enum class MirOp {
   ReturnInt,
   ReturnFloat,
   ReturnIdent,
+  /** Pack locals named `ident + "_" + layout[i].name` into LLVM struct return (scalars or
+   *  fixed arrays as `[N x T]` aggregates). */
+  ReturnObject,
   EchoInt,
   EchoString,
   CallExtern,
@@ -57,6 +60,17 @@ struct MirArg {
   std::string str_value;
 };
 
+struct MirParam {
+  std::string name;
+  bool is_float = false;
+  bool is_string = false;
+  bool is_i64 = false;
+  bool is_simd_f64 = false;
+  std::int64_t simd_lanes = 0;
+  /** When >0, slot is `ident + "_" + name` as ArrayAlloc; LLVM uses `[N x scalar]` in structs. */
+  std::int64_t fixed_array_elems = 0;
+};
+
 struct MirInsn {
   MirOp op = MirOp::ReturnVoid;
   std::int64_t int_value = 0;
@@ -80,15 +94,9 @@ struct MirInsn {
   bool array_is_float = false;
   std::int64_t simd_lanes = 0;
   std::vector<MirArg> args;
-};
-
-struct MirParam {
-  std::string name;
-  bool is_float = false;
-  bool is_string = false;
-  bool is_i64 = false;
-  bool is_simd_f64 = false;
-  std::int64_t simd_lanes = 0;
+  /** Layout entries under object root (`name` paths). Used for ReturnObject pack and CallProc
+   *  unpack into `ident + "_" + name` (scalar locals or ArrayAlloc slots). */
+  std::vector<MirParam> object_layout;
 };
 
 struct MirDecorator {
@@ -99,10 +107,14 @@ struct MirFn {
   std::string name;
   bool returns_float = false;
   bool returns_void = false;
+  /** When true, LLVM return type is a struct; `return_object_layout` lists leaf fields. */
+  bool returns_object = false;
   bool is_extern = false;
   bool is_async = false;
   std::vector<MirDecorator> decorators;
   std::vector<MirParam> params;
+  /** Populated when `returns_object`; parallel to ReturnObject / unpack layout. */
+  std::vector<MirParam> return_object_layout;
   std::vector<MirInsn> body;
 };
 

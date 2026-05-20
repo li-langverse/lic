@@ -2,14 +2,14 @@
 
 ## Summary
 
-`runtime/li_rt_net.c` async epoll proxy now covers **chunked request bodies**, **upstream response header/body framing** (`Content-Length` / chunked), **`splice` relay** for large CL bodies, and **cached epoll MOD** masks; `proxy_loopback` ci ~**39k** li RPS vs ~**49k** nginx (~**0.81×**).
+`runtime/li_rt_net.c` async epoll proxy covers chunked bodies, response framing, splice relay, and **loopback perf pass** (no hot-path `poll`, CL splice pump, conditional pool drain, epoll slot tags, keep-alive pipeline recv); `proxy_loopback` ci ~**58k** li vs ~**76k** nginx (~**0.77×**, was ~0.66×).
 
 ## Agent continuation
 
 1. **Read:** `runtime/li_rt_net.c` — `httpd_proxy_try_send_chunked`, `httpd_proxy_resp_feed`, `httpd_proxy_resp_finish_headers`, `httpd_proxy_splice_once`, `proxy_client_epoll_events`.
 2. **Run:** `LI_REPO_ROOT=$PWD ./build/compiler/lic/lic build packages/li-net-httpd/src/lib.li -o build/li-httpd` then `LI_HTTPD_BIN=$PWD/build/li-httpd python3 <benchmarks>/vendor/lis-tier5/benchmarks/tier5_http/harness/bench_http.py proxy_loopback --profile ci`.
 3. **Then:** client pipelining during active proxy; non-blocking pool connect under saturation; optional Apache `mod_proxy` oracle in harness (benchmarks repo).
-4. **Blocked on:** none for tranches 1–2; merge via human review on PR #87.
+4. **Blocked on:** none for tranches 1–2; follow [proxy-nginx-li-migration.md](../../packages/li-net-httpd/docs/proxy-nginx-li-migration.md) for Li epoll loop + C removal.
 
 ## Changed
 

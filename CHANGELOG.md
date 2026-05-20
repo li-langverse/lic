@@ -8,6 +8,7 @@ All notable changes to Li are documented here. The format follows
 
 ### Added
 
+- **li-httpd Li epoll proxy loop (nginx parity shell):** `nginx_proxy_epoll_serve` in `lib.li`, `Connection` header strip toward upstream, migration plan to drop C proxy — [2026-05-22-httpd-li-epoll-proxy-nginx.md](docs/release-notes/2026-05-22-httpd-li-epoll-proxy-nginx.md).
 - **li-httpd async upstream proxy (epoll):** chunked/CL response parse, splice CL pump, loopback perf (~0.77× nginx `proxy_loopback`, up from ~0.66×) — [2026-05-22-httpd-async-proxy-epoll.md](docs/release-notes/2026-05-22-httpd-async-proxy-epoll.md).
 
 ### Added

@@ -8,6 +8,10 @@ All notable changes to Li are documented here. The format follows
 
 ### Added
 
+- **li-httpd M1 wave 4:** `least_conn` LB, `httpd_mark_upstream_peer_down_i`, `path_is_safe` rejects `%` and `\`; `scripts/audit-nginx-mitigations.py` — see [2026-05-21-httpd-m1-wave4-exploits.md](docs/release-notes/2026-05-21-httpd-m1-wave4-exploits.md).
+
+### Added
+
 - **li-httpd M1 wave 3:** upstream keep-alive pool, RR LB (`httpd_set_upstream_ports_csv_i`), `httpd_load_runtime_config_i` + `scripts/flatten-httpd-config.py`; `lb_round_robin` bench.
 - **li-httpd M1 wave 2:** loopback reverse proxy (`httpd_set_proxy_upstream_port_i`, CLI `PORT ROOT BACKEND_PORT`); `proxy_loopback` tier-5 scenario; `examples/proxy_loopback.toml`.
 - **li-httpd M1 wave 1:** generic static GET + sendfile in `httpd_epoll_serve_i` hot path; `packages/li-httpd/examples/minimal.toml`; `scripts/validate-httpd-config.py`.

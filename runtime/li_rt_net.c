@@ -54,11 +54,14 @@ typedef struct {
   int32_t port;
   int fds[HTTPD_POOL_PER_PEER];
   int in_use[HTTPD_POOL_PER_PEER];
+  int active;
+  int down;
 } httpd_upstream_peer_t;
 
 static httpd_upstream_peer_t g_up_peers[HTTPD_MAX_UPSTREAM_PEERS];
 static int g_up_peer_count = 0;
 static int g_lb_rr = 0;
+static int g_lb_mode = 0; /* 0=round_robin, 1=least_conn */
 static int32_t g_config_listen_port = 0;
 
 static void slots_init_once(void) {
@@ -727,6 +730,11 @@ static int path_is_safe(const char* path, int plen) {
   if (plen >= 2 && path[0] == '/' && path[1] == '/') {
     return 0;
   }
+  for (int i = 0; i < plen; i++) {
+    if (path[i] == '%' || path[i] == '\\') {
+      return 0;
+    }
+  }
   for (int i = 0; i < plen - 1; i++) {
     if (path[i] == '.' && path[i + 1] == '.' && (i == 0 || path[i - 1] == '/')) {
       return 0;
@@ -807,23 +815,88 @@ void httpd_clear_upstream_peers_i(void) {
   g_lb_rr = 0;
 }
 
+int32_t httpd_set_lb_mode_i(int32_t mode) {
+  g_lb_mode = mode ? 1 : 0;
+  return 0;
+}
+
+int32_t httpd_lb_mode_from_arg_i(intptr_t s) {
+  const char* p = ptr_i(s);
+  if (!p) {
+    return 0;
+  }
+  if (strcmp(p, "least_conn") == 0) {
+    return 1;
+  }
+  return 0;
+}
+
+int32_t httpd_mark_upstream_peer_down_i(int32_t port) {
+  httpd_upstream_peer_t* p = upstream_peer_find(port);
+  if (!p) {
+    return -1;
+  }
+  p->down = 1;
+  for (int i = 0; i < HTTPD_POOL_PER_PEER; i++) {
+    if (p->fds[i] >= 0) {
+      close(p->fds[i]);
+      p->fds[i] = -1;
+      p->in_use[i] = 0;
+    }
+  }
+  return 0;
+}
+
 static int32_t httpd_lb_pick_port(void) {
   if (g_up_peer_count <= 0) {
     return g_proxy_port;
   }
-  int idx = g_lb_rr % g_up_peer_count;
-  g_lb_rr++;
-  return g_up_peers[idx].port;
+  if (g_lb_mode == 0) {
+    for (int tries = 0; tries < g_up_peer_count; tries++) {
+      int idx = g_lb_rr % g_up_peer_count;
+      g_lb_rr++;
+      if (!g_up_peers[idx].down) {
+        return g_up_peers[idx].port;
+      }
+    }
+    return g_proxy_port;
+  }
+  int best = -1;
+  int min_act = 2147483647;
+  for (int i = 0; i < g_up_peer_count; i++) {
+    if (g_up_peers[i].down) {
+      continue;
+    }
+    if (g_up_peers[i].active < min_act) {
+      min_act = g_up_peers[i].active;
+      best = i;
+    }
+  }
+  if (best < 0) {
+    return g_proxy_port;
+  }
+  return g_up_peers[best].port;
 }
 
 static int upstream_pool_acquire(int32_t port) {
   httpd_upstream_peer_t* p = upstream_peer_get_or_add(port);
+  if (p && p->down) {
+    return -1;
+  }
   if (!p) {
-    return tcp_connect_loopback_port((int)port);
+    int fd = tcp_connect_loopback_port((int)port);
+    if (fd >= 0) {
+      p = upstream_peer_get_or_add(port);
+      if (p) {
+        p->active++;
+      }
+    }
+    return fd;
   }
   for (int i = 0; i < HTTPD_POOL_PER_PEER; i++) {
     if (p->fds[i] >= 0 && !p->in_use[i]) {
       p->in_use[i] = 1;
+      p->active++;
       return p->fds[i];
     }
   }
@@ -835,10 +908,17 @@ static int upstream_pool_acquire(int32_t port) {
       }
       p->fds[i] = fd;
       p->in_use[i] = 1;
+      p->active++;
       return fd;
     }
   }
-  return tcp_connect_loopback_port((int)port);
+  {
+    int fd = tcp_connect_loopback_port((int)port);
+    if (fd >= 0) {
+      p->active++;
+    }
+    return fd;
+  }
 }
 
 static void upstream_pool_release(int32_t port, int fd, int reuse) {
@@ -846,6 +926,9 @@ static void upstream_pool_release(int32_t port, int fd, int reuse) {
   if (!p) {
     close(fd);
     return;
+  }
+  if (p->active > 0) {
+    p->active--;
   }
   for (int i = 0; i < HTTPD_POOL_PER_PEER; i++) {
     if (p->fds[i] == fd) {
@@ -925,6 +1008,18 @@ static int32_t httpd_proxy_forward(int32_t conn, const char* path, int plen) {
     return -1;
   }
   int up = upstream_pool_acquire(peer_port);
+  if (up < 0 && g_up_peer_count > 1) {
+    for (int i = 0; i < g_up_peer_count; i++) {
+      if (g_up_peers[i].down || g_up_peers[i].port == peer_port) {
+        continue;
+      }
+      peer_port = g_up_peers[i].port;
+      up = upstream_pool_acquire(peer_port);
+      if (up >= 0) {
+        break;
+      }
+    }
+  }
   if (up < 0) {
     return -1;
   }

@@ -169,6 +169,21 @@ extern proc httpd_clear_upstream_peers_i() raises Net -> unit
   ensures true
   decreases 0
 
+extern proc httpd_set_lb_mode_i(mode: var int) raises Net -> int
+  requires true
+  ensures true
+  decreases 0
+
+extern proc httpd_lb_mode_from_arg_i(s: var ptr) -> int
+  requires true
+  ensures true
+  decreases 0
+
+extern proc httpd_mark_upstream_peer_down_i(port: var int) raises Net -> int
+  requires port > 0
+  ensures true
+  decreases 0
+
 extern proc httpd_load_runtime_config_i(path: var ptr) raises IO -> int
   requires true
   ensures true

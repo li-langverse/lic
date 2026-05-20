@@ -23,12 +23,15 @@ todos:
   - id: m1-proxy-loopback
     content: "M1 wave 2: loopback reverse proxy + proxy_loopback tier5 scenario"
     status: completed
+  - id: m1-upstream-pool-lb
+    content: "M1 wave 3: keep-alive pool, LB RR, flatten-httpd-config, lb_round_robin bench"
+    status: completed
   - id: nginx-src-audit
     content: nginx submodule + nginx_mitigations.toml (read-only checklist); no Li port tracking
     status: pending
   - id: exploit-harness
     content: Exploit/bench TOML vs nginx baseline + li-httpd; li may be stricter than nginx on [expect]
-    status: pending
+    status: completed
   - id: rng-exploit-suite
     content: Tier F RNG exploits (BadRng/SimRng inject via bench.toml); PR gate when touching li-rng/li-tls
     status: pending

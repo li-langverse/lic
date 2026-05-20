@@ -27,7 +27,7 @@ N/A — lexer-only; no `trusted.lean` or new axioms.
 
 ## Follow-up
 
-- Add anti-DCE to `horner_pure_li/li/main.li` (cpp uses `volatile` checksum sink) so tier-1 timing reflects real FLOPs.
-- Ingest row into org `benchmarks` catalog after merge.
+- [x] Anti-DCE in `horner_pure_li/li/main.li` (`if acc < 0.0` branch) — harness `verify_checksum` rejects pure_li if li < 0.45× native (DCE guard).
+- Ingest row into org `benchmarks` catalog after merge (normal ingest only).
 
 **north_star_fit:** scientific computing / micro-kernel codegen (**PH-5b**, **PH-7e**).

@@ -24,7 +24,8 @@
    ```
    → `media/local/<competitor>/` + `media/local/manifest.json` (gitignored).  
 5. Add your own captures per [CAPTURE.md](CAPTURE.md).  
-6. Iterate [li-native-gui-plan.md](../plans/li-native-gui-plan.md) from analysis § Li mapping.
+6. Apply patterns via **[unified-studio-ux-vision.md](../unified-studio-ux-vision.md)** (game + sim + CAD + agent, one shell).  
+7. Iterate [li-native-gui-plan.md](../plans/li-native-gui-plan.md) from analysis § Li mapping.
 
 ## Competitors covered
 

@@ -4,7 +4,7 @@
 **Audience:** Architects, agents, contributors  
 **Syntax:** Li uses Python-style **`def`** for functions (not `proc`). Contracts: `requires` / `ensures` / `decreases` unchanged.
 
-**Related:** [GAME_DEV.md](../physics/GAME_DEV.md), [PH-world-studio-program.md](PH-world-studio-program.md), [competitive-landscape.md](competitive-landscape.md), [specs/](specs/), [philosophy.md](../language/philosophy.md), [master plan](../superpowers/plans/2026-05-14-li-master-plan.md)
+**Related:** [GAME_DEV.md](../physics/GAME_DEV.md), [PH-world-studio-program.md](PH-world-studio-program.md), [competitive-landscape.md](competitive-landscape.md), [unified-studio-ux-vision.md](unified-studio-ux-vision.md), [specs/](specs/), [philosophy.md](../language/philosophy.md), [master plan](../superpowers/plans/2026-05-14-li-master-plan.md)
 
 ---
 
@@ -20,7 +20,7 @@
 |--------|---------|
 | **One engine** | Same `li-world` · `li-scene` · `li-physics-*` · `li-render` — no CARLA/GROMACS/slicer forks |
 | **AI-first** | Local models default; agents via MCP + `@cursor/sdk` |
-| **Killer UX** | 60 fps, adaptive layouts, ≤3 clicks for primary flows ([PH-UX](#17-ph-ux--killer-uiux)) |
+| **Killer UX** | One shell for all profiles — [unified-studio-ux-vision.md](unified-studio-ux-vision.md); 60 fps, ≤3 clicks ([PH-UX](#17-ph-ux--killer-uiux)) |
 | **Research + ship** | Deterministic replay, repro bundles, `li-player` for games |
 | **Read like Python** | `def`, `import`, prose names — [philosophy.md](../language/philosophy.md) |
 

@@ -17,6 +17,9 @@
 | 0.3 | 2026-05 | **Infinite agentic canvas** — spatial Studio surface for agents + creators |
 | 0.4 | 2026-05 | **Creative stack** — 3D scenes, animation, cinematics, video export (Li-only) |
 | 0.4.1 | 2026-05 | **Competitive intel** — [competitive-intel/](../competitive-intel/) catalog + analysis |
+| 0.5 | 2026-05 | **Unified UX vision** — game + sim + CAD + agent; see [unified-studio-ux-vision.md](../unified-studio-ux-vision.md) |
+
+**UX north star (all domains):** [unified-studio-ux-vision.md](../unified-studio-ux-vision.md)
 
 ---
 
@@ -90,6 +93,24 @@ We **do not** copy their implementation language — only patterns.
 | **Figma / Miro / tldraw** | Infinite 2D canvas; frames; connectors | Pixel pushing not needed — **spatial graph + links** |
 | **Unreal Blueprint** | Node graph editor | Typed pins; compile gate — **Li canvas → `lic build`** |
 | **ComfyUI / n8n** | Agent workflows on canvas | **Agent cards** with status (pending / green / failed) |
+
+### 2.2 Simulation, engineering, CAD, DCC (UX only)
+
+Same chrome as games — **profile-adaptive panels**, not a second app. Full cross-domain map: [unified-studio-ux-vision.md](../unified-studio-ux-vision.md).
+
+| Source | Steal | Avoid |
+|--------|-------|-------|
+| **ParaView / MATLAB** | Field overlay in viewport; time slider | VTK-only fork |
+| **ANSYS / COMSOL** | Study tree, BC inspector, run → report | Certified solver claims day one |
+| **OpenFOAM / GROMACS** | Case manifest, reproducible run folder | CLI-only workflow without `lic build` |
+| **SolidWorks / Fusion** | Parametric **logic** (our Li source), export pre-flight | B-rep kernel in v1 |
+| **Cura / Prusa** | 3-click export wizard | Export without sim pass |
+| **Houdini** | Procedural graph, cache/bake nodes on canvas | Non-compiling graphs |
+| **Benchling / LITL** | Stage strip, role layouts | Siloed LIMS without engine |
+| **Gazebo / Isaac** | Robot cell viewport | Parallel physics fork |
+| **Roblox agentic (2026)** | Plan → build → playtest agent | Apply without gate |
+
+**Li takeaway — unified:** one dock layout; bottom panel = timeline **or** bench runs **or** lab stages; **Publish** always shows hash.
 
 ### 2.3 Cinematics, animation, video (UX only)
 

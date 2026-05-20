@@ -142,17 +142,20 @@ See [CAPTURE.md](CAPTURE.md). Priority frames:
 
 ---
 
-## 8. Recommendations → update plan v0.5
+## 8. Recommendations → unified product UX
+
+**Canonical:** [unified-studio-ux-vision.md](../unified-studio-ux-vision.md) — one shell, five surfaces, agent gate lifecycle, profile-adaptive workspaces (game + sim + CAD + drug).
 
 | Priority | Action |
 |----------|--------|
-| P0 | Add **media-catalog** links to onboarding doc for new contributors |
+| P0 | Implement **gate chip + transcript + ⌘K** per unified vision §5 |
+| P0 | **Workspace presets** per `engine.profile` (viewport vs canvas default) |
 | P0 | Capture Roblox + UE Sequencer screenshots locally (see CAPTURE.md) |
-| P1 | Studio **default workspace** = canvas (confirmed) |
-| P1 | **Cinematic workspace** bottom timeline like UE (not hidden) |
-| P1 | **Publish** preset UX like MRQ (presets only, honest scope) |
+| P1 | Studio **default workspace** = canvas for pipeline profiles; viewport for spatial sim |
+| P1 | **Adaptive bottom strip** — timeline / bench / LITL stage |
+| P1 | **Publish drawer** — video, repro bundle, G-code (presets + hash) |
 | P2 | **Style Editor**-class panel for `gui.theme` (Roblox parity for creators) |
-| P2 | Compare reel: Li `seq` render vs `record-studio-demo.sh` HTML |
+| P2 | **Plan node** on canvas before agent apply (Roblox agentic parity) |
 | P3 | Competitive slide: "Assistant vs `lic` gate" for investors |
 
 ---

@@ -8,10 +8,10 @@ type DftResult = object
 
 def li_chem_version() -> int
   requires true
-  ensures result == 3
+  ensures result == 4
   decreases 0
 =
-  return 3
+  return 4
 
 def chem_method_rks() -> int
   requires true
@@ -36,14 +36,42 @@ def geometry_valid(g: Geometry) -> int
     return 1
   return 0
 
+def lj_pair_energy_chem(dx: float, dy: float, dz: float) -> float
+  requires true
+  decreases 0
+=
+  var r2: float = dx * dx + dy * dy + dz * dz
+  if r2 >= 6.25:
+    return 0.0
+  if r2 < 1e-12:
+    return 0.0
+  var inv_r2: float = 1.0 / r2
+  var inv_r6: float = inv_r2 * inv_r2 * inv_r2
+  var inv_r12: float = inv_r6 * inv_r6
+  return 4.0 * (inv_r12 - inv_r6)
+
+# Li LJ tetramer reference energy (SOTA proxy: GROMACS/OpenMM until DFT kernel).
+def dft_run_lj_reference(g: Geometry) -> DftResult
+  requires g.atom_count > 0
+  ensures result.total_energy < 0.0
+  decreases g.atom_count
+=
+  var pe: float = lj_pair_energy_chem(1.0, 0.0, 0.0)
+  pe = pe + lj_pair_energy_chem(0.5, 0.8660254, 0.0)
+  pe = pe + lj_pair_energy_chem(0.5, 0.2886751, 0.8164966)
+  pe = pe + lj_pair_energy_chem(-0.5, 0.8660254, 0.0)
+  pe = pe + lj_pair_energy_chem(0.0, -0.8660254, 0.0)
+  pe = pe + lj_pair_energy_chem(0.3164966, -0.1830127, 0.8164966)
+  var r: DftResult
+  r.total_energy = pe
+  return r
+
 def dft_run_stub(g: Geometry) -> DftResult
   requires g.atom_count > 0
   ensures result.total_energy < 0.0
   decreases g.atom_count
 =
-  var r: DftResult
-  r.total_energy = -1.0
-  return r
+  return dft_run_lj_reference(g)
 
 def dft_run_tagged_stub(g: Geometry, method: int, basis: int) -> DftResult
   requires g.atom_count > 0

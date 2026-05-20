@@ -823,6 +823,18 @@ note = "PH-SCI + DRUG + chem TDDFT stack"
 
 [[tests]]
 suite = "composable"
+file = "composable/import_math_numerics_solvers.li"
+outcome = "compile_ok"
+note = "Li numerics solvers: three-body, harmonic, Monod, LJ (SOTA bench registry)"
+
+[[tests]]
+suite = "composable"
+file = "composable/import_sim_scientific_field_li.li"
+outcome = "compile_ok"
+note = "sim.scientific sim_field_step_li explicit heat"
+
+[[tests]]
+suite = "composable"
 file = "composable/import_sim_relativity_rocket.li"
 outcome = "compile_ok"
 note = "PH-ROBO rocket relativity + sim scientific profile"

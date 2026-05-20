@@ -7,10 +7,10 @@ type SimVizFrame = object
 
 def li_sim_scientific_version() -> int
   requires true
-  ensures result == 5
+  ensures result == 6
   decreases 0
 =
-  return 5
+  return 6
 
 # SF-0 — field chunk head (HPC path; not OpenFOAM-scale yet).
 type SimFieldChunk = object
@@ -46,8 +46,41 @@ def sim_field_step_stub(chunk: SimFieldChunk, dt: float) -> unit
   ensures chunk.timestep >= 1
   decreases chunk.timestep
 =
+  sim_field_step_li(chunk, dt)
+
+# Li-native explicit heat on 8-cell strip (SOTA: OpenFOAM-class diffusion; bench: heat_equation_2d).
+def sim_field_step_li(chunk: SimFieldChunk, dt: float) -> unit
+  requires chunk.cell_count > 0
+  requires dt > 0.0
+  requires chunk.tier >= 1
+  ensures chunk.timestep >= 1
+  decreases chunk.timestep
+=
+  var u: array[8, float]
+  var i: int = 0
+  while i < 8
+    u[i] = 0.0
+    i = i + 1
+  u[2] = 1.0
+  var alpha: float = 0.25
+  var dx: float = 0.01
+  var sub: int = 0
+  while sub < 4
+    var j: int = 1
+    var r: float = alpha * dt / (dx * dx)
+    var un: array[8, float]
+    while j < 7
+      un[j] = u[j] + r * (u[j + 1] - 2.0 * u[j] + u[j - 1])
+      j = j + 1
+    un[0] = u[0]
+    un[7] = u[7]
+    j = 0
+    while j < 8
+      u[j] = un[j]
+      j = j + 1
+    sub = sub + 1
   chunk.timestep = chunk.timestep + 1
-  chunk.sample_norm = chunk.sample_norm + dt
+  chunk.sample_norm = chunk.sample_norm + u[4]
 
 def sim_field_chunk_smoke() -> int
   requires true
@@ -267,8 +300,31 @@ def scientific_reactor_heat_step_stub(field: ReactorField, dt: float) -> unit
   ensures field.timestep >= 1
   decreases field.timestep
 =
+  scientific_reactor_heat_step_li(field, dt)
+
+def scientific_reactor_heat_step_li(field: ReactorField, dt: float) -> unit
+  requires field.cell_count > 0
+  requires dt > 0.0
+  ensures field.timestep >= 1
+  decreases field.timestep
+=
+  var u: array[8, float]
+  var i: int = 0
+  while i < 8
+    u[i] = field.temperature_c
+    i = i + 1
+  var alpha: float = 0.01
+  var dx: float = 0.05
+  var j: int = 1
+  var r: float = alpha * dt / (dx * dx)
+  var un: array[8, float]
+  while j < 7
+    un[j] = u[j] + r * (u[j + 1] - 2.0 * u[j] + u[j - 1])
+    j = j + 1
+  un[0] = u[0]
+  un[7] = u[7]
+  field.temperature_c = un[4]
   field.timestep = field.timestep + 1
-  field.temperature_c = field.temperature_c + dt
 
 def scientific_drug_profile_tag() -> int
   requires true

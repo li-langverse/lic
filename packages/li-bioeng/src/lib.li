@@ -14,10 +14,47 @@ type BioengPipeline = object
 
 def li_bioeng_version() -> int
   requires true
-  ensures result == 8
+  ensures result == 9
   decreases 0
 =
-  return 8
+  return 9
+
+# Monod growth (SOTA: bioprocess kinetics; bench row planned in bioengineering.toml).
+def bioeng_monod_growth(mu_max: float, substrate: float, ks: float) -> float
+  requires mu_max > 0.0
+  requires substrate >= 0.0
+  requires ks > 0.0
+  decreases 0
+=
+  return mu_max * substrate / (ks + substrate)
+
+def bioeng_monod_step(pipeline: BioengPipeline, dt: float) -> unit
+  requires dt > 0.0
+  ensures pipeline.iteration >= 0
+  decreases pipeline.iteration
+=
+  var mu: float = bioeng_monod_growth(0.8, pipeline.objective_score + 1.0, 1.0)
+  pipeline.objective_score = pipeline.objective_score + mu * dt
+  pipeline.iteration = pipeline.iteration + 1
+
+def bioeng_monod_smoke() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  var p: BioengPipeline
+  p.iteration = 0
+  p.stage_id = bioeng_stage_build()
+  p.drug_stage_linked = 0
+  p.objective_score = 0.1
+  p.assay_count = 0
+  var i: int = 0
+  while i < 100
+    bioeng_monod_step(p, 0.01)
+    i = i + 1
+  if p.objective_score <= 0.1:
+    return 1
+  return 0
 
 # BIOENG-3 — assay batch ingest (stubs).
 type AssayBatch = object

@@ -10,7 +10,7 @@ alwaysApply: false
 
 # Package ↔ benchmark suites (strict builds)
 
-**Read first:** [strict-by-default](../docs/ecosystem/strict-by-default.md) · [package coverage audit](../docs/benchmarks/package-suite-coverage-audit.md) · [benchmarks plan (lic)](../docs/superpowers/plans/2026-05-14-benchmarks-and-simulations.md) · **benchmarks repo** [`catalog.toml`](https://github.com/li-langverse/benchmarks/blob/main/catalog.toml).
+**Read first:** [strict-by-default](../docs/ecosystem/strict-by-default.md) · [package coverage audit](../docs/benchmarks/package-suite-coverage-audit.md) · [SOTA registry](../docs/benchmarks/sota-reference-registry.md) · [Li-only + SOTA rule](li-sota-benchmark-li-only.mdc) · [benchmarks plan (lic)](../docs/superpowers/plans/2026-05-14-benchmarks-and-simulations.md) · **benchmarks repo** [`catalog.toml`](https://github.com/li-langverse/benchmarks/blob/main/catalog.toml).
 
 ## Non-negotiable
 

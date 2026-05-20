@@ -4,6 +4,13 @@ type AutomotiveWorld = object
   public tick: int
   public sensor_frames: int
   public map_loaded: int
+  public x: float
+  public y: float
+  public yaw: float
+  public speed: float
+
+extern proc li_rt_cos(x: float) -> float
+extern proc li_rt_sin(x: float) -> float
 
 def li_sim_automotive_version() -> int
   requires true
@@ -22,13 +29,29 @@ def automotive_world_new() -> AutomotiveWorld
   w.tick = 0
   w.sensor_frames = 0
   w.map_loaded = 0
+  w.x = 0.0
+  w.y = 0.0
+  w.yaw = 0.0
+  w.speed = 5.0
   return w
+
+def bicycle_step_li(world: AutomotiveWorld, steer: float, wheelbase: float, dt: float) -> unit
+  requires world.speed >= 0.0
+  requires wheelbase > 0.0
+  requires dt > 0.0
+  decreases world.tick
+=
+  var slip: float = world.speed * steer / wheelbase
+  world.x = world.x + world.speed * li_rt_cos(world.yaw) * dt
+  world.y = world.y + world.speed * li_rt_sin(world.yaw) * dt
+  world.yaw = world.yaw + slip * dt
 
 def automotive_sensor_tick(world: AutomotiveWorld) -> unit
   requires true
   ensures world.sensor_frames >= 1
   decreases world.sensor_frames
 =
+  bicycle_step_li(world, 0.05, 2.7, 0.01)
   world.sensor_frames = world.sensor_frames + 1
   world.tick = world.tick + 1
 

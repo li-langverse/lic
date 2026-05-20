@@ -7,10 +7,10 @@ type LabLoopStage = object
 
 def li_sim_drug_design_version() -> int
   requires true
-  ensures result == 2
+  ensures result == 3
   decreases 0
 =
-  return 2
+  return 3
 
 def lab_loop_stage_hypothesis() -> int
   requires true
@@ -47,6 +47,14 @@ def lab_loop_stage_new(stage_id: int) -> LabLoopStage
   return s
 
 def lab_loop_advance_stub(stage: LabLoopStage) -> unit
+  requires stage.stage_id >= 0
+  ensures stage.iteration >= 1
+  decreases stage.iteration
+=
+  lab_loop_advance_li(stage)
+
+# Li LITL advance: DFT stage uses chem LJ reference (composable with import chem).
+def lab_loop_advance_li(stage: LabLoopStage) -> unit
   requires stage.stage_id >= 0
   ensures stage.iteration >= 1
   decreases stage.iteration

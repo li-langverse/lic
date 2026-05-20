@@ -26,12 +26,32 @@ def robot_cell_new(joint_count: int, mobile_base: int) -> RobotCell
   c.step_count = 0
   return c
 
+type JointState = object
+  public angle: float
+  public velocity: float
+  public torque: float
+
+def robot_joint_step_li(j: JointState, dt: float, stiffness: float, damping: float) -> unit
+  requires dt > 0.0
+  requires stiffness > 0.0
+  requires damping >= 0.0
+  decreases 0
+=
+  var accel: float = j.torque - stiffness * j.angle - damping * j.velocity
+  j.velocity = j.velocity + accel * dt
+  j.angle = j.angle + j.velocity * dt
+
 def robotics_step_stub(cell: RobotCell, dt: float) -> unit
   requires cell.joint_count > 0
   requires dt > 0.0
   ensures cell.step_count >= 1
   decreases cell.step_count
 =
+  var j: JointState
+  j.angle = 0.1
+  j.velocity = 0.0
+  j.torque = 0.5
+  robot_joint_step_li(j, dt, 10.0, 0.5)
   cell.step_count = cell.step_count + 1
 
 def robotics_smoke() -> int

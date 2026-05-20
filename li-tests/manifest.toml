@@ -1333,6 +1333,36 @@ note = "Milestone 150 composable gates"
 
 [[tests]]
 suite = "composable"
+file = "composable/import_store_world_author_quick.li"
+outcome = "compile_ok"
+note = "Li-native store + world author API"
+
+[[tests]]
+suite = "composable"
+file = "composable/import_gpu_studio_viewport_quick.li"
+outcome = "compile_ok"
+note = "LKIR GPU + studio GPU viewport"
+
+[[tests]]
+suite = "composable"
+file = "composable/import_player_realm_quick.li"
+outcome = "compile_ok"
+note = "Player + realm head"
+
+[[tests]]
+suite = "composable"
+file = "composable/import_studio_ai_play_quick.li"
+outcome = "compile_ok"
+note = "Studio AI + play session"
+
+[[tests]]
+suite = "composable"
+file = "composable/import_world_studio_milestone_155.li"
+outcome = "compile_ok"
+note = "Milestone 155 composable gates"
+
+[[tests]]
+suite = "composable"
 file = "composable/import_world_studio_benchmark_tier1.li"
 outcome = "compile_ok"
 note = "Competitive world-studio.toml tier-1 rollup"

@@ -1,10 +1,11 @@
 import studio
+import studio.ai
 
 def main() -> int
   requires true
   ensures result == 0
   decreases 0
 =
-  if li_studio_version() < 14:
+  if studio_ai_smoke() != 0:
     return 1
-  return studio_milestone_140_smoke()
+  return run_play_session_smoke()

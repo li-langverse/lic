@@ -505,6 +505,41 @@ li_package = "li-studio"
 composable = "import_world_studio_milestone_150"
 
 [[benchmark]]
+id = "store-world-author-quick"
+name = "Store Li-native + world author"
+tier = 1
+li_package = "li-store-realtime"
+composable = "import_store_world_author_quick"
+
+[[benchmark]]
+id = "gpu-studio-viewport-quick"
+name = "GPU LKIR + studio viewport"
+tier = 1
+li_package = "li-gpu"
+composable = "import_gpu_studio_viewport_quick"
+
+[[benchmark]]
+id = "player-realm-quick"
+name = "Player + realm"
+tier = 1
+li_package = "li-player"
+composable = "import_player_realm_quick"
+
+[[benchmark]]
+id = "studio-ai-play-quick"
+name = "Studio AI + play"
+tier = 1
+li_package = "li-studio"
+composable = "import_studio_ai_play_quick"
+
+[[benchmark]]
+id = "world-studio-milestone-155"
+name = "Milestone 155 composable gates"
+tier = 1
+li_package = "li-studio"
+composable = "import_world_studio_milestone_155"
+
+[[benchmark]]
 id = "httpd-li-native-gateway"
 name = "Li-native HTTP/WS gateway"
 tier = 1

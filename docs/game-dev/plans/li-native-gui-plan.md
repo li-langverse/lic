@@ -2,7 +2,7 @@
 
 | Field | Value |
 |-------|--------|
-| **Version** | 0.3 |
+| **Version** | 0.4 |
 | **Status** | Draft — iterate in-repo |
 | **Policy** | **Full Li only** — no Rust, C++, TypeScript, Slint, Svelte, or Electron on the GUI path |
 | **Owners** | PH-UX, PH-GD, PH-GD-7, PH-AGENT |
@@ -15,6 +15,7 @@
 | 0.1 | 2026-05 | Initial: engine UX research, Studio + creator HUD |
 | 0.2 | 2026-05 | **Li-only mandate**; removed Rust/web implementation paths |
 | 0.3 | 2026-05 | **Infinite agentic canvas** — spatial Studio surface for agents + creators |
+| 0.4 | 2026-05 | **Creative stack** — 3D scenes, animation, cinematics, video export (Li-only) |
 
 ---
 
@@ -42,17 +43,33 @@ If we build a **native GUI**, the **entire product path** is Li:
 
 ## 1. Goal
 
-**One GUI system, three surfaces** (all Li):
+**One creative authoring system in Li** — GUI + spatial canvas + **3D scenes + animation + cinematics + video** — all diffable, agent-gated, **no foreign authoring languages**.
+
+### 1.1 Surfaces (all Li)
+
+**Four user-facing surfaces** plus shared creative core:
 
 | Surface | Users | Host |
 |---------|-------|------|
 | **Studio chrome** | Developers, agents | `world-studio` — panels, palette, inspector |
 | **Infinite agentic canvas** | Developers, agents, creators | `world-studio` — spatial graph of worlds, sims, UI, notes |
 | **Game UI** | Players, **creator-users** | `li-player` — `gui/*.li` HUD (screen-space, not infinite canvas) |
+| **Cinematic / video** | Creators, marketing, agents | `seq/*.li` timelines → **MP4/WebM** via `studio.publish` |
 
-Creators author **`gui/*.li`** (HUD, menus). They **arrange and reason** on **`canvas/*.li`** (or `world.canvas.li`) — realms, shards, sim fields, gui screens, agent plans, and links between them.
+Creators author:
 
-**Infinite canvas** = default Studio workspace for **agent-native authoring** (not a separate product). Pan/zoom without bound; every node has stable **`canvas_node_id`** for MCP.
+| Artifact | Purpose |
+|----------|---------|
+| `gui/*.li` | HUD, menus |
+| `canvas/*.li` | Spatial graph (worlds, sequences, links) |
+| `scene/*.li` or `world.li` + scene | **3D placement**, transforms, hierarchy |
+| `anim/*.li` | Keyframes, clips, blend trees (stubs → full) |
+| `seq/*.li` | **Cinematic timeline** — shots, cameras, cuts, audio marks |
+| `assets/*` | glTF meshes, textures (via `li-assets`) |
+
+**Infinite canvas** = default Studio workspace — nodes include **Sequence**, **Shot**, **Camera**, **AnimationClip**, not only World/GuiScreen.
+
+**Creative parity target (honest):** not day-one UE Sequencer + Movie Render Queue — phased **Li seq + replay + export** with validity on deterministic frames.
 
 ---
 
@@ -73,7 +90,26 @@ We **do not** copy their implementation language — only patterns.
 | **Unreal Blueprint** | Node graph editor | Typed pins; compile gate — **Li canvas → `lic build`** |
 | **ComfyUI / n8n** | Agent workflows on canvas | **Agent cards** with status (pending / green / failed) |
 
-### 2.2 In-game / user-created UI
+### 2.3 Cinematics, animation, video (UX only)
+
+| Source | Steal | Avoid |
+|--------|-------|-------|
+| **Unreal Sequencer** | Timeline, shots, camera cuts, spawnables, take recorder | Opaque take binary |
+| **Unity Timeline** | Tracks per object; animation / activation / audio | Mixing with unrelated prefab-only workflow |
+| **Blender** | Scene + timeline + VSE | Becoming a full DCC — we **author in Li**, preview in Studio |
+| **Godot AnimationPlayer** | Named clips, blend | — |
+| **After Effects / Resolve** (class) | Comp layers, export presets | Proprietary project formats — **export from Li manifest** |
+| **Roblox / Fortnite Creative** | User-made experiences + thumbnails | — |
+
+**Li takeaway — creative:**
+
+1. **3D scene** = `li-scene` graph synced with `world` / physics.  
+2. **Animation** = `anim/*.li` curves bound to `SceneNode` paths.  
+3. **Cinematic** = `seq/*.li` timeline drives camera + spawns + clip playback.  
+4. **Video** = deterministic **offline render** or real-time capture → `studio.publish` bundle (repro hash).  
+5. **Canvas** shows Sequence nodes linked to World + Export nodes.
+
+### 2.4 In-game / user-created UI
 
 | Source | Steal | Avoid |
 |--------|-------|-------|
@@ -99,6 +135,10 @@ We **do not** copy their implementation language — only patterns.
 | P10 | **Infinite extent** — virtual bounds; tile paint + cull; pan/zoom @ 60 fps |
 | P11 | **Agents place nodes** — `canvas_node_id`, `canvas_link_id`; manifest for MCP |
 | P12 | **Canvas → build** — subgraph selection compiles to `world.li` / `gui/` / `sim` profile |
+| P13 | **Creative is Li** — `scene`, `anim`, `seq` files; not `.uasset` / `.blend` only |
+| P14 | **Deterministic takes** — same `seq` + seed → same frame hash (replay for video) |
+| P15 | **Agents edit timelines** — `seq_track_id`, `shot_id` in manifest |
+| P16 | **Creators export video** — preset + `lic build` + publish bundle |
 
 ---
 
@@ -110,17 +150,31 @@ packages/
   li-gui/         # NEW — schema, layout, paint IR, compositor, input (Li only)
   li-studio/      # Editor shell state, workspaces (existing)
   li-player/      # Client: load gui/, route input (extend)
-  li-render/      # World viewport (3D/sim)
-  li-gpu/         # Present / swapchain hooks (Li)
+  li-render/      # World + cinematic viewport (3D/sim)
+  li-gpu/         # Present / swapchain / offline frame export (Li)
+  li-scene/       # Scene graph, Transform3, EntityId (extend)
+  li-assets/      # glTF, textures, audio refs (extend)
+  li-anim/        # NEW — clips, curves, skeletal stub (Li only)
+  li-seq/         # NEW — cinematic timeline, shots, cameras (Li only)
 
 targets/
   world-studio/   # lic build entry: studio_main + full gui stack
 
 my-game/
   world.li
+  scene/
+    main.li
+  anim/
+    hero_walk.li
+  seq/
+    intro_cinematic.li
   gui/
     hud.li
     theme.li
+  assets/
+    hero.gltf
+  publish/
+    exports/          # generated MP4/WebM + manifest hash
 ```
 
 **No `li-gui-native` Rust crate.** The name **`li-gui`** is the native GUI package in Li.
@@ -141,6 +195,10 @@ my-game/
 | `gui.canvas` | **Infinite agentic canvas** — nodes, links, camera, tiles |
 | `gui.canvas.node` | World, SimField, GuiScreen, AgentPlan, Note, BenchRef, … |
 | `gui.canvas.link` | Typed edges (spawns, binds, replicates, documents) |
+| `seq.timeline` | Tracks: camera, transform, spawn, anim clip, audio, event |
+| `seq.shot` | Time range, camera rig, world subset |
+| `anim.clip` | Keyframes / curve channels → `SceneNode` paths |
+| `anim.playback` | Sample clip at `t` → transform / morph stub |
 
 `li-ui` stays **editor-only** commands (`ui_cmd_*`). **`gui.cmd_*`** is **in-game** only.  
 **`canvas.*`** is **Studio-only** (never shipped in player HUD).
@@ -181,8 +239,74 @@ my-game/
 | `Note` | markdown hash | Sticky note |
 | `BenchRef` | benchmark id | Last median ms |
 | `Realm` | MMO shard metadata | Shard id + tick budget |
+| `Sequence` | `seq/*.li` path | Timeline strip preview |
+| `Shot` | Sub-range of sequence | Thumbnail + duration |
+| `Camera` | Camera rig / cut | Frustum preview |
+| `AnimationClip` | `anim/*.li` | Clip name + duration |
+| `VideoExport` | Publish preset | Last export hash + resolution |
+| `Scene3D` | `scene/*.li` | Node count + root transform |
 
-**Link kinds (v1):** `Spawns`, `Binds`, `Replicates`, `Documents`, `DependsOn`, `AgentEdited`.
+**Link kinds (v1):** `Spawns`, `Binds`, `Replicates`, `Documents`, `DependsOn`, `AgentEdited`, **`Plays`**, **`CutsTo`**, **`Animates`**, **`Renders`**.
+
+### 4.5 Creative pipeline (3D · animation · cinematics · video)
+
+```text
+assets (glTF) ──► li-scene ──► world + physics
+                      │
+anim/*.li (clips) ────┤
+                      ▼
+seq/*.li (timeline) ──► sim replay @ fixed dt ──► li-render frames
+                      │
+                      ▼
+              studio.publish → video (WebM/MP4) + PublishBundle hash
+```
+
+| Stage | Li owner | Agent / creator |
+|-------|----------|-----------------|
+| **Layout 3D** | `li-scene` + viewport gizmos | Place nodes; canvas `Scene3D` node |
+| **Animate** | `li-anim` | Keyframe editor; `anim/*.li` |
+| **Direct** | `li-seq` | Timeline UI (Li); shots + camera cuts |
+| **Preview** | `li-render` + `li-gpu` | Scrub timeline @ 30/60 fps |
+| **Export** | `studio.publish` + `li-gpu` encode | Preset: 1080p30, 4K60; repro manifest |
+
+**In-game vs Studio:** Players see **results** (cinematic playback in-game via `seq` player mode). **Authoring** is Studio (+ creator mode later). User-generated **machinima**: creator links `seq` + `world` on canvas → export → share `publish` bundle.
+
+**Video export (Li-only path):**
+
+- `seq_render_frame(seq, t)` → render target (Li → `li-render`)  
+- `seq_encode_video(frames, preset)` → container (Li package `li-gpu` or `studio.publish` codec stub)  
+- **No After Effects project** — optional **import manifest** only  
+
+**Animation v1:**
+
+- Transform channels: `px, py, pz, qx, qy, qz, qw` on `SceneNode` path  
+- Float curves: piecewise linear → `decreases` on segment count  
+- **Skeletal / skinned mesh:** Phase G7+ (bind to `li-assets`)
+
+**Cinematic v1:**
+
+- Tracks: `Camera`, `Transform`, `Spawn`, `AnimClip`, `Event`  
+- Shots: `[t0, t1]` + camera override + sub-world flag  
+- **Cut** events: hard camera switch  
+
+**3D scene v1:**
+
+- Extend existing `li-scene` (`SceneNode`, `Transform3`)  
+- Sync hooks: `scene_sync_from_physics` (already stubbed)  
+- **Not** replacing `li-render` — scene feeds render
+
+### 4.6 Studio workspaces (creative modes)
+
+| Workspace | Primary view | Li files |
+|-----------|--------------|----------|
+| **Canvas** (default) | Infinite graph | `canvas.li` |
+| **Scene** | 3D viewport + gizmos | `scene/*.li`, `world.li` |
+| **Animate** | Dope sheet / curve editor | `anim/*.li` |
+| **Cinematic** | Timeline (Sequencer-class) | `seq/*.li` |
+| **UI** | Screen HUD editor | `gui/*.li` |
+| **Publish** | Export queue (video, figures, bundles) | `studio.publish` |
+
+Switch via `ui_layout_*` / `studio.workspace_*` — same **Li-only** chrome.
 
 **Camera:** `CanvasCamera { pan_x, pan_y, zoom }` — Li state; gestures → `canvas.cmd_pan`, `canvas.cmd_zoom`.
 
@@ -276,6 +400,56 @@ def studio_world_graph() -> gui.canvas.Document
 
 **Workspace default:** new Studio project opens **canvas view**; classic panels dock on edges (outliner = filtered list view of canvas nodes).
 
+### 5.3 Scene (`scene.li`)
+
+```li
+import scene
+
+def main_scene() -> scene.Scene
+=
+  var s: scene.Scene = scene.scene_new()
+  var root: scene.SceneNode = scene.node_with_transform(
+      scene.entity_id_new(1), scene.transform_identity())
+  scene.scene_attach_node(s, root)
+  return s
+```
+
+### 5.4 Animation (`anim/*.li`)
+
+Illustrative:
+
+```li
+import anim
+
+def hero_walk_clip() -> anim.Clip
+=
+  return anim.clip(
+    anim.channel_transform(scene_path="hero", keyframes=anim.keys_walk_stub()))
+```
+
+### 5.5 Cinematic (`seq/*.li`)
+
+Illustrative:
+
+```li
+import seq
+
+def intro_cinematic() -> seq.Timeline
+=
+  return seq.timeline(
+    fps=60,
+    duration_sec=12,
+    seq.track_camera(seq.shot_wide(0.0, 4.0)),
+    seq.track_anim(seq.play_clip("anim/hero_walk.li", at=2.0)),
+    seq.track_event(seq.cut_camera("cam_close", at=4.0)))
+```
+
+| Artifact | Purpose |
+|----------|---------|
+| `seq/*.li` | Timeline source |
+| `seq.manifest.json` | Agent index: shots, tracks, cuts |
+| `publish/video.toml` | Resolution, codec, output path |
+
 ---
 
 ## 6. Studio native shell (Li)
@@ -289,7 +463,9 @@ def studio_world_graph() -> gui.canvas.Document
 | Inspector | `li-studio` — node props + Li file fields |
 | Command palette | `li-ui` (`ui_cmd_*`) + `canvas.cmd_*` |
 | Agent dock | `li-studio-ai` + transcript; **pins to canvas selection** |
-| Status bar | `lic` gate + bench + canvas tile stats |
+| **Timeline** (Cinematic workspace) | `li-seq` + scrubber UI in Li |
+| **Curve / dope sheet** (Animate) | `li-anim` |
+| Status bar | `lic` gate + bench + canvas tile + **seq timecode** |
 
 Entry binary: extend `packages/li-studio/src/studio_main.li` → real shell when compositor ready (today: gate stub).
 
@@ -319,9 +495,11 @@ Entry binary: extend `packages/li-studio/src/studio_main.li` → real shell when
 | `lic build` | Gate |
 | MCP `gui_scaffold` (future) | NL → Li HUD |
 | MCP `canvas_*` (future) | NL → spatial graph |
+| MCP `seq_*` (future) | “Add 5s camera pan” → `seq/*.li` |
 | `canvas.manifest.json` | Spatial index for agents |
+| `seq.manifest.json` | Timeline index for agents |
 
-Agents never drive pixels — only **Li source** + **canvas graph** (camera snaps are `canvas.cmd_focus`, not mouse coords).
+Agents never drive pixels — only **Li source** + **canvas graph** + **seq/anim/scene** files (camera snaps are `canvas.cmd_focus`, not mouse coords).
 
 ---
 
@@ -368,6 +546,31 @@ Agents never drive pixels — only **Li source** + **canvas graph** (camera snap
 - [ ] MCP: `canvas_add_node`, `canvas_link`, `canvas_focus`
 - [ ] Bench: `canvas_frame_pan_zoom` tier-2 (Li-only timing of tile paint, optional)
 
+### Phase G6 — 3D scene + animation (Li)
+
+- [ ] Extend `li-scene`: node paths, parent/child, gizmo hooks (Li)
+- [ ] `packages/li-anim`: `Clip`, `Channel`, `Sample` + composable smoke
+- [ ] Animate workspace: curve editor (Li paint, not foreign toolkit)
+- [ ] Canvas nodes: `Scene3D`, `AnimationClip`
+- [ ] Link `anim` → `SceneNode` paths; `lic build` validates paths
+
+### Phase G7 — Cinematics + video export (Li)
+
+- [ ] `packages/li-seq`: `Timeline`, `Track`, `Shot`, `CameraCut`
+- [ ] Cinematic workspace: timeline UI (Li); scrub → `li-render`
+- [ ] `seq_playback_at(t)` deterministic replay (sim + world + anim)
+- [ ] `studio.publish` video preset: 1080p WebM/MP4 + **PublishBundle** hash
+- [ ] Replace headless Chrome demo reel with **Li seq render** path (see `record-studio-demo.sh` successor)
+- [ ] Canvas nodes: `Sequence`, `Shot`, `Camera`, `VideoExport`
+- [ ] MCP: `seq_add_shot`, `seq_add_track`, `publish_render_video`
+- [ ] Bench (optional): `seq_frame_render` tier-2 wall time per frame
+
+### Phase G8 — Creator creative (in-game + UGC)
+
+- [ ] Creator mode: place props + simple anim (permissions)
+- [ ] User-shared `seq` + `publish` bundles on realm (MMO)
+- [ ] Machinima template spin-ups on canvas
+
 ---
 
 ## 10. Performance & honesty
@@ -377,6 +580,9 @@ Agents never drive pixels — only **Li source** + **canvas graph** (camera snap
 | Li compositor ms/frame on `render_frame_present` | Yes, with validity |
 | “Faster than Unreal Slate” | No unless measured external baseline |
 | Creator HUD in Li | Yes, with composable + manifest |
+| “UE Sequencer parity” | No without measured baseline + feature checklist |
+| Deterministic cinematic frame | Yes, with `seq` replay hash + validity |
+| User-exported video | Yes, with publish manifest + preset recorded |
 
 ---
 
@@ -402,6 +608,9 @@ See archived note: [li-gui-cross-platform-plan.md](li-gui-cross-platform-plan.md
 - [ ] Canvas file: one `world.canvas.li` per project vs `canvas/*.li` graphs?
 - [ ] Max nodes before LOD-only (performance)? default 10k?
 - [ ] Creators: read-only canvas on published realms or full edit?
+- [ ] Video codec path: Li-only encoder stub vs platform encode API (still no FFmpeg **authoring** — export driver TBD in Li)?
+- [ ] Audio tracks in `seq` v1 or v2?
+- [ ] Skeletal animation: which `li-assets` skin format first?
 
 ---
 
@@ -411,6 +620,7 @@ See archived note: [li-gui-cross-platform-plan.md](li-gui-cross-platform-plan.md
 |-----|------|
 | [specs/li-gui-schema-rfc.md](../specs/li-gui-schema-rfc.md) | Syntax + binding grammar |
 | [specs/li-canvas-agentic-rfc.md](../specs/li-canvas-agentic-rfc.md) | Infinite canvas nodes + links |
+| [specs/li-creative-cinematic-rfc.md](../specs/li-creative-cinematic-rfc.md) | Scene, anim, seq, video export |
 | [specs/studio-ux-design-system-rfc.md](../specs/studio-ux-design-system-rfc.md) | PH-UX phases |
 | [agent-first-gui-research.md](../agent-first-gui-research.md) | SOTA research |
 | [world-studio-vision.md](../world-studio-vision.md) | Program rollup |

@@ -63,6 +63,7 @@ ui_command_palette_execute(cmd)
 | **UX-3** | `packages/li-gui` + `world-studio` target + `lic` |
 | **UX-4** | In-game creator UI — [li-gui-schema-rfc.md](li-gui-schema-rfc.md) |
 | **UX-5** | Infinite agentic canvas — [li-canvas-agentic-rfc.md](li-canvas-agentic-rfc.md) |
+| **UX-6** | Creative: scene, anim, seq, video — [li-creative-cinematic-rfc.md](li-creative-cinematic-rfc.md) |
 | **UX-4** | MCP tool map `ui_cmd_*` → filesystem paths |
 | **UX-5** | GPU present path via `li-render` draw lists |
 

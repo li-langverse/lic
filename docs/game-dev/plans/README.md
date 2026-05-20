@@ -2,7 +2,7 @@
 
 | Plan | Status | Description |
 |------|--------|-------------|
-| **[li-native-gui-plan.md](li-native-gui-plan.md)** | **Active** v0.3 | Li-only GUI + **infinite agentic canvas** |
+| **[li-native-gui-plan.md](li-native-gui-plan.md)** | **Active** v0.4 | Li-only GUI + canvas + **3D/anim/cinematic/video** |
 | [li-gui-cross-platform-plan.md](li-gui-cross-platform-plan.md) | Archived | Svelte/Tauri evaluation |
 | [li-native-gui-master-plan.md](li-native-gui-master-plan.md) | Redirect | → `li-native-gui-plan.md` |
 

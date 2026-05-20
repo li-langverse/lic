@@ -58,12 +58,16 @@ bool compile_module(const Module& module, const std::string& output_path,
     return p;
   };
   const std::filesystem::path rt_path = resolve_runtime_c("li_rt.c");
+  const std::filesystem::path rt_httpd_path = resolve_runtime_c("li_rt_httpd.c");
   const std::filesystem::path rt_net_path = resolve_runtime_c("li_rt_net.c");
 
   std::ostringstream cmd;
   const char* cc_env = std::getenv("CC");
   const char* cc = (cc_env && *cc_env) ? cc_env : "clang";
   cmd << cc << " -Wno-override-module -x ir \"" << ll_path << "\" -x c \"" << rt_path.string() << "\"";
+  if (std::filesystem::exists(rt_httpd_path)) {
+    cmd << " -x c \"" << rt_httpd_path.string() << "\"";
+  }
   if (std::filesystem::exists(rt_net_path)) {
     cmd << " -x c \"" << rt_net_path.string() << "\"";
   }

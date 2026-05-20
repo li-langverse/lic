@@ -179,8 +179,8 @@ When **`lic`**, **`lit`**, **`lip`**, or any **`li-std-*` / `li-*`** package rel
 | 2g | **`def`**, Nim `object`, `private`/`public`, `import` | `.cursor/plans/nim_oop_and_def_e5f70493.plan.md` | `li-tests/encapsulation/` green |
 | 2h | **Python-math surface** (`**`, `//`, `%`, `for`/`range`, contract sugar, `old`) | same plan (Phase A0) | `li-tests/math_syntax/` green |
 | **2i** | **Math / linalg surface** (infix `*`, `+`, `dot`, `A @ B` — not user `simd(...)`) | [2026-05-16-li-math-linalg-surface.md](2026-05-16-li-math-linalg-surface.md) | `li-tests/math_linalg/`; docs samples |
-| 2e | Contracts + refinements | TBD | VC generation |
-| 2f | Lean 4 verify | TBD | `lic verify` on integers/reals |
+| 2e | Contracts + refinements | [proof-corpus-roadmap](../verification/proof-corpus-roadmap.md) | **Partial (PR #83):** call-site `requires`, refinements, AutoVC |
+| 2f | Lean 4 verify | same + [provability-gaps](../verification/provability-gaps.md) | **Partial:** open-VC gate; `contracts_verify` 16/16; full kernel **G-lean** open |
 | 3 | MIR + LLVM codegen | `2026-05-14-phase-03-mir-codegen.md` | `lic build` |
 | 4 | Stdlib + runtime + deferred annotations | `2026-05-14-phase-04-runtime-stdlib.md` | hello + collections run |
 | 5 | Tetris | `2026-05-14-phase-05-tetris.md` | playable game |
@@ -189,7 +189,7 @@ When **`lic`**, **`lit`**, **`lip`**, or any **`li-std-*` / `li-*`** package rel
 | 7 | Native HPC (SIMD + OpenMP) | `2026-05-14-phase-07-native-hpc.md` | Pure-Li simd_dot + md; race suite; fuzz daily |
 | **7d** | **Execution decorators** (`@parallel`, `@vectorized`, `@cpu`/`@gpu`, strict user names) | `.cursor/plans/li_execution_decorators_7c6e3b42.plan.md` | `decorator_exploits` + `decorators/` CI; handbook |
 | **7e** | **Math → SIMD/parallel lowering** (formulas in source, intrinsics internal only) | [2026-05-16-li-math-linalg-surface.md](2026-05-16-li-math-linalg-surface.md) § 7e | Tier 1 benches math-only Li; ≤1.2× C++ |
-| **H** | **li-httpd** (proved agent gateway) | `2026-05-16-li-httpd-plan.md` | After **2e–2f**; M1 HTTP + proxy + bench/exploit harness |
+| **H** | **li-httpd** (proved agent gateway) | `2026-05-16-li-httpd-plan.md` | **M1 partial:** routing match + LLVM str ABI; **next:** TOML route loader in Li |
 | **Obs** | Fuzz dashboard + plan canvas | `scripts/export-fuzz-status.sh` + `canvases/*.canvas.tsx` | Nightly updates `.canvas.data.json` sidecars |
 | **Pkg** | **Package scaffold** (dirs + `li.toml`) | [2026-05-16-li-package-scaffold.md](2026-05-16-li-package-scaffold.md) | `li-new-package` + skill + creating-packages guide (**`lic`** repo) |
 | **8-repo** | **Org repos live + push/CI** | [2026-05-16-li-package-manager-lip.md](2026-05-16-li-package-manager-lip.md) | **`lic`**, **`lip`**, **`lit`** on GitHub; toolchain pins; bootstrap smoke |
@@ -389,7 +389,7 @@ Track in phase **Doc** until each is checked:
 - [ ] Phase 7d — Execution decorators — **partial (7d-a/b/d/e/c):** AST `check_module_policies` for disjoint; string heuristics for race exploits
 - [ ] Phase 7e — Math → SIMD/parallel lowering — **partial:** `ArrayDotF64` for 1d `float` `@`; SIMD matmul deferred
 - [x] Phase H — li-httpd infra — **`lis`** harness, mitigations, CI, workspace stubs ([implementation-status](https://github.com/li-langverse/lis/blob/main/docs/implementation-status.md))
-- [x] Phase H — li-httpd M1 `.li` — **partial (PR #83):** `match_route_fixture`, `li-tests/routing/match_routes.li`, `run_httpd_config.sh` binary oracle; two-pass LLVM + `str`/`bytes` ABI ([llvm-abi.md](../compiler/llvm-abi.md)); **next:** TOML route loader in Li ([httpd-prerequisites](../ecosystem/httpd-prerequisites.md))
+- [x] Phase H — li-httpd M1 `.li` — **partial:** `match_route_fixture` + **`load_routes_from_toml` / `match_route`** (`runtime/li_rt_httpd.c`, `li-tests/routing/match_routes_toml.li`); **next:** pure-Li TOML parse, config reject in `lic build`, serve loop ([httpd-prerequisites](../ecosystem/httpd-prerequisites.md))
 - [x] Phase Pkg — Package scaffold + governance stubs ([scaffold](2026-05-16-li-package-scaffold.md), [governance](2026-05-16-li-ecosystem-governance.md); `li.toml` = [lip § A3](2026-05-16-li-package-manager-lip.md))
 - [x] Phase 8-repo — [`lic`](https://github.com/li-langverse/lic), [`lip`](https://github.com/li-langverse/lip), [`lit`](https://github.com/li-langverse/lit) on GitHub + CI
 - [x] Phase 8a — Modules + workspace `lic build` — `std.*` + workspace/local imports; `li-tests/modules/`; `lic-workspace-build.sh` on 3 packages

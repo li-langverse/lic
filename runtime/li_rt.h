@@ -34,6 +34,11 @@ int32_t li_rt_path_exact(const char* path, const char* want);
 int32_t li_rt_path_prefix(const char* path, const char* prefix);
 /* Priority-ordered routes for li-tests/httpd/fixtures/routing.toml (M1). */
 int32_t li_rt_match_route_fixture(const char* method, const char* path);
+/* Load [routes] from TOML path; match after li_rt_httpd_load_config (M1). */
+int32_t li_rt_httpd_load_config(const char* path);
+int32_t li_rt_httpd_load_routing_fixture(void);
+int32_t li_rt_httpd_match_route(const char* method, const char* path);
+int32_t li_rt_httpd_route_action_kind(int32_t route_id);
 
 /* Async reactor stubs (httpd P0 — sync completion until epoll/kqueue lands). */
 void li_async_frame_enter(void);

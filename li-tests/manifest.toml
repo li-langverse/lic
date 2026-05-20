@@ -126,6 +126,12 @@ file = "prove_reject/bare_cast.li"
 outcome = "compile_fail"
 expected_substr = "cast"
 
+[[tests]]
+suite = "prove_reject"
+file = "prove_reject/weak_ensures_true.li"
+outcome = "compile_fail"
+expected_substr = "ensures true"
+
 # --- contracts_verify (must prove) ---
 
 [[tests]]

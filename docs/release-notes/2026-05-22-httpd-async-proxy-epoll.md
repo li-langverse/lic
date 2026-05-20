@@ -18,8 +18,9 @@
 | Async proxy | `httpd_slot_t` proxy phases (`SEND_REQ` / `SEND_BODY` / `RELAY`); upstream fd on `g_httpd_epfd`; `httpd_try_drain_once` returns `0` while proxy active |
 | Chunked req | `httpd_proxy_try_send_chunked` — async pass-through; blocking `httpd_proxy_forward` removed from `httpd_try_drain_once` |
 | Response parse | `httpd_proxy_resp_feed` + `parse_response_body_meta_c`; forwards full upstream headers then body with CL/chunked/close completion |
-| Splice | `httpd_proxy_splice_once` (pipe2 + `splice`) for CL body relay ≥4 KiB when client outbuf empty |
-| Epoll | `proxy_*_epoll_events` caches skip redundant `epoll_ctl(MOD)` |
+| Splice | `httpd_proxy_pump_cl_relay` + `splice` from 512 B; dedicated CL pump until `body_left==0` |
+| Epoll | `HTTPD_EPOLL_*_TAG` slot tags; cached MOD masks; finish_ok recv+drain for pipelined keep-alive |
+| Pool | `FIONREAD` before drain on acquire/release (skip idle syscalls) |
 | Relay done | `httpd_proxy_relay_maybe_done` uses `proxy_resp_body_left` / chunked terminal chunk, not poll-only |
 | Pool | `proxy_up_reuse = client keep-alive`; drain on pool acquire/release |
 
@@ -42,8 +43,8 @@ N/A — exploit profiles (`pr`, `weaponized`) still 0 fail with limits-based han
 
 | Scenario (ci) | nginx RPS | li RPS | li/nginx |
 |---------------|-----------|--------|----------|
-| proxy_loopback | ~49k | ~39k | ~0.81× |
-| lb_round_robin | N/A | N/A | re-run after merge |
+| proxy_loopback | ~76k | ~58k | ~0.77× (3-run mean) |
+| lb_round_robin | ~69k | ~55k | ~0.80× |
 | static_small | ~84k | ~128k | ~1.5× |
 
 Evidence: local `harness/bench_http.py --profile ci` after `build/li-httpd`.

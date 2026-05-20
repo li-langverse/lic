@@ -8,7 +8,7 @@ All notable changes to Li are documented here. The format follows
 
 ### Added
 
-- **li-httpd async upstream proxy (epoll):** non-blocking relay on `g_httpd_epfd`; chunked request async, upstream response CL/chunked parse, `splice` relay, epoll MOD cache — [2026-05-22-httpd-async-proxy-epoll.md](docs/release-notes/2026-05-22-httpd-async-proxy-epoll.md).
+- **li-httpd async upstream proxy (epoll):** chunked/CL response parse, splice CL pump, loopback perf (~0.77× nginx `proxy_loopback`, up from ~0.66×) — [2026-05-22-httpd-async-proxy-epoll.md](docs/release-notes/2026-05-22-httpd-async-proxy-epoll.md).
 
 ### Added
 

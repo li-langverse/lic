@@ -198,4 +198,5 @@ See [CAPTURE.md](CAPTURE.md). Priority frames:
 - [by-competitor/cura.md](by-competitor/cura.md)  
 - [by-competitor/cursor.md](by-competitor/cursor.md)  
 - [by-competitor/houdini.md](by-competitor/houdini.md)  
-- [by-competitor/benchling.md](by-competitor/benchling.md)
+- [by-competitor/benchling.md](by-competitor/benchling.md)  
+- [by-competitor/capcut.md](by-competitor/capcut.md)

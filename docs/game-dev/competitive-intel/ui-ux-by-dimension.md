@@ -429,6 +429,7 @@ Default workspace for drug/bio/agent · [li-canvas-agentic-rfc](../specs/li-canv
 | **Unity Timeline** | UN-DOC-02/03 |
 | **Blender VSE** | BL-DOC-*, `media/local/blender/` |
 | **DaVinci Resolve** | Timeline + color page — blackmagic design media |
+| **CapCut Desktop** | CC-* · `media/local/capcut/` — creator short-form + AI |
 
 ### What works
 
@@ -436,8 +437,11 @@ Default workspace for drug/bio/agent · [li-canvas-agentic-rfc](../specs/li-canv
 |---------|-----|
 | **Horizontal timeline** | Industry standard |
 | **Tracks per object/shot** | Parallel editing |
+| **Media bin + preview + inspector** | CapCut/Resolve clarity — 4-quadrant NLE |
 | **Scrub + transport** | Muscle memory |
-| **Export presets** | YouTube / ProRes / 1080p30 |
+| **Export presets** | YouTube / ProRes / 1080p30 / **9:16 vertical** |
+| **One-click social export** | CapCut — TikTok/YT/IG (we: publish drawer presets) |
+| **AI captions / script-to-video** | CapCut — creator speed (we: agent → `seq`, gated) |
 | **Render queue** | Batch overnight |
 
 ### Pain points
@@ -451,9 +455,13 @@ Default workspace for drug/bio/agent · [li-canvas-agentic-rfc](../specs/li-canv
 | | Action |
 |---|--------|
 | ✅ | Bottom timeline; shot list; camera tracks |
-| ✅ | Export presets + progress + **frame hash** |
+| ✅ | **4-quadrant NLE** (media, preview, timeline, inspector) — CapCut lesson |
+| ✅ | Export presets incl. **9:16** + progress + **frame hash** |
+| ✅ | Stock/media panel → `li-assets` browser |
+| ⚠️ | CapCut-class AI captions — v2; agent proposes `seq` text tracks in v1 |
 | ⚠️ | Color grading suite — out of scope v1 |
-| ➕ | `seq` in Li + reproducible publish bundle |
+| ❌ | Opaque cloud project as source of truth |
+| ➕ | `seq` in Li + reproducible publish bundle tied to `world.li` |
 
 ### Li mapping
 
@@ -662,6 +670,7 @@ Canvas workspace · Config 2025 lesson: prompt-to-build → our **agent + `lic b
 |----------|-----------|----------------------------|
 | P0 | CAE | COMSOL Model Builder + Study (web) |
 | P0 | SciVis | ParaView pipeline + color map |
+| P0 | CapCut | Desktop default layout + export dialog (`media/local/capcut/`) |
 | P0 | Slicer | Cura plater + slice preview |
 | P1 | IDE | Cursor agent + palette (marketing) |
 | P1 | Houdini | Network editor screenshot |

@@ -17,6 +17,7 @@
 | 0.3 | 2026-05 | **Infinite agentic canvas** — spatial Studio surface for agents + creators |
 | 0.4 | 2026-05 | **Creative stack** — 3D scenes, animation, cinematics, video export (Li-only) |
 | 0.4.1 | 2026-05 | **Competitive intel** — [competitive-intel/](../competitive-intel/) catalog + analysis |
+| 0.5.2 | 2026-05 | **UI/UX by dimension** — [ui-ux-by-dimension.md](../competitive-intel/ui-ux-by-dimension.md) |
 | 0.5 | 2026-05 | **Unified UX vision** — game + sim + CAD + agent; see [unified-studio-ux-vision.md](../unified-studio-ux-vision.md) |
 | 0.5.1 | 2026-05 | **Four killers + proof** — [product-north-star.md](../product-north-star.md) |
 
@@ -122,6 +123,7 @@ Same chrome as games — **profile-adaptive panels**, not a second app. Full cro
 | **Blender** | Scene + timeline + VSE | Becoming a full DCC — we **author in Li**, preview in Studio |
 | **Godot AnimationPlayer** | Named clips, blend | — |
 | **After Effects / Resolve** (class) | Comp layers, export presets | Proprietary project formats — **export from Li manifest** |
+| **CapCut Desktop** | 4-panel NLE; 9:16 export; AI captions | Cloud project — we: `seq/*.li` + publish hash |
 | **Roblox / Fortnite Creative** | User-made experiences + thumbnails | — |
 
 **Li takeaway — creative:**

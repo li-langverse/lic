@@ -9,7 +9,7 @@ BASE="${ROOT}/docs/game-dev/competitive-intel/media/local"
 export ROOT
 export BASE="${BASE#${ROOT}/}"
 
-mkdir -p "${BASE}"/{unreal-engine,unity,godot,roblox,blender,figma,fortnite-uefn,clips}
+mkdir -p "${BASE}"/{unreal-engine,unity,godot,roblox,blender,figma,fortnite-uefn,capcut,paraview,comsol,cura,cursor,houdini,clips}
 
 download() {
   local url="$1" dest="$2"
@@ -59,6 +59,21 @@ download "https://docs.blender.org/manual/en/latest/_images/editors_vse_view_typ
 echo "== Figma UI3 blog hero =="
 download "https://cdn.sanity.io/images/599r6htc/regionalized/97284b712a3df41c61698edaeb20fd9146c66af3-1608x1072.png?w=1200&q=70&fit=max&auto=format" \
   "${BASE}/figma/ui3-redesign-hero.png" || true
+
+echo "== CapCut desktop (marketing / resource pages) =="
+CC_PAGE="https://www.capcut.com/resource/how-to-use-capcut-on-pc/"
+mapfile -t cc_imgs < <(curl -fsSL "$CC_PAGE" 2>/dev/null | rg -o 'https://p16[^"'\'' ]+\.webp' | sort -u | head -8)
+i=0
+for url in "${cc_imgs[@]}"; do
+  i=$((i + 1))
+  download "$url" "${BASE}/capcut/desktop-ui-$(printf '%02d' "$i").webp" || true
+done
+
+echo "== ParaView docs (pipeline browser figures) =="
+curl -fsSL "https://docs.paraview.org/en/latest/UsersGuide.html" 2>/dev/null | rg -o '_images/[^"'\'' ]+\.(png|webp|jpg)' | sort -u | head -5 | while read -r p; do
+  name=$(basename "$p")
+  download "https://docs.paraview.org/en/latest/${p}" "${BASE}/paraview/${name}" || true
+done
 
 echo "== YouTube thumbnails (from catalog.json demo entries) =="
 python3 - <<'PY'

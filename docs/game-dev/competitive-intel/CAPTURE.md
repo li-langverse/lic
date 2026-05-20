@@ -13,6 +13,12 @@ competitive-intel/media/local/
   blender/
   figma/
   fortnite-uefn/
+  capcut/             # desktop NLE layout (checkout script)
+  paraview/
+  comsol/
+  cura/
+  cursor/
+  houdini/
   clips/              # short screen recordings (.webm)
 ```
 

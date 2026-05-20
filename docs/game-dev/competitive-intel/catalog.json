@@ -452,6 +452,35 @@
       "topics": ["uefn", "onboarding"]
     },
     {
+      "id": "CC-DOC-01",
+      "competitor": "capcut",
+      "dimension": "cinematic_video",
+      "type": "documentation",
+      "title": "How to use CapCut on PC & Mac",
+      "url": "https://www.capcut.com/resource/how-to-use-capcut-on-pc/",
+      "topics": ["nle_layout", "timeline", "screenshot_source"]
+    },
+    {
+      "id": "CC-DOC-02",
+      "competitor": "capcut",
+      "dimension": "cinematic_video",
+      "type": "documentation",
+      "title": "CapCut Desktop video editor",
+      "url": "https://www.capcut.com/tools/desktop-video-editor/",
+      "topics": ["export", "creator", "ai_features"]
+    },
+    {
+      "id": "CC-VID-01",
+      "competitor": "capcut",
+      "dimension": "cinematic_video",
+      "type": "demo",
+      "subtype": "tutorial",
+      "title": "CapCut PC tutorial",
+      "url": "https://www.youtube.com/watch?v=J7LpydZu7yQ",
+      "youtube_id": "J7LpydZu7yQ",
+      "topics": ["desktop_ui", "tutorial"]
+    },
+    {
       "id": "LI-01",
       "competitor": "li_world_studio",
       "type": "internal",

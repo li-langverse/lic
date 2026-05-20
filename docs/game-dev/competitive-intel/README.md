@@ -33,7 +33,7 @@
 
 **Games:** Unreal · Unity · Godot · Roblox · UEFN  
 **Design / graph:** Figma · Houdini · ComfyUI (ref) · Cursor  
-**DCC / video:** Blender  
+**DCC / video:** Blender · **CapCut** (creator NLE)  
 **Sci / CAE:** ParaView · COMSOL · OpenFOAM/GROMACS (workflow)  
 **CAD / AM:** Fusion/SolidWorks (patterns) · Cura/slicers  
 **Robotics:** Gazebo · Isaac (patterns)  

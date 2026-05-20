@@ -115,6 +115,19 @@
 
 ---
 
+## CapCut (creator video / short-form NLE)
+
+| ID | Type | Title | URL | Notes |
+|----|------|-------|-----|-------|
+| CC-DOC-01 | docs | How to use CapCut on PC & Mac | https://www.capcut.com/resource/how-to-use-capcut-on-pc/ | 4-panel UI; screenshot CDN |
+| CC-DOC-02 | product | CapCut Desktop — AI video editor | https://www.capcut.com/tools/desktop-video-editor/ | Features, export |
+| CC-DOC-03 | product | CapCut Desktop AI-powered | https://www.capcut.com/tools/desktop-ai-power | Captions, script-to-video |
+| CC-VID-01 | tutorial | CapCut PC tutorial (community) | https://www.youtube.com/watch?v=J7LpydZu7yQ | Desktop walkthrough — verify ID |
+
+**Local:** `media/local/capcut/desktop-ui-*.webp` via `./scripts/checkout-competitive-media.sh`
+
+---
+
 ## Reference (agent / workflow — not game engines)
 
 | ID | Type | Title | URL | Notes |

@@ -14,9 +14,10 @@
 | **UI/UX** | 60 fps viewport/canvas; ⌘K; agent transcript; ≤3 clicks to publish |
 | **Performance** | Status overlay: ms/frame, bench row, ratio vs baseline |
 | **Results** | Validity line (green/red); export/publish **hash** on screen |
-| **Proven** | **Gate chip** — `lic build` / `lic check` before ▶ play or export |
+| **Proven** | **Gate chip** — `lic build` before ▶ play, **Run sim**, bench, or export |
+| **Engineering** | Validity line + oracle id + drift on bench panel | Same chrome for `sim_scientific`, AM, bio |
 
-**Rule:** A beautiful UI that hides proof is **off-brand**. Gate + validity + hash are **chrome**, not debug dialogs.
+**Rule:** A beautiful UI that hides proof is **off-brand**. Proof is **not game-only** — physics and numeric validity must show for engineering profiles. See [product-north-star.md §3](product-north-star.md#3-reliability-scope--not-just-safe-to-play).
 
 ---
 

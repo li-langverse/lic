@@ -10,7 +10,7 @@
 
 ## 1. One-sentence vision
 
-**Li World Studio** is an **agent-native** platform on **Li Engine** with **killer UI/UX**, **killer performance**, **killer results** — all **mathematically provable** where it matters: **`lic build`**, composable gates, tier-2 **validity**, and publication-grade repro bundles. One runtime for games, simulation, and engineering profiles.
+**Li World Studio** is an **agent-native** platform on **Li Engine** with **killer UI/UX**, **killer performance**, **killer results** — **mathematically provable** for **games, reliable engineering simulation, and physics/numerics**: **`lic build`**, composable gates, tier-2 **validity** (drift, checksum, oracles), law modes, and publication-grade repro bundles. One runtime for all profiles.
 
 **North star (four killers + proof):** [product-north-star.md](product-north-star.md)
 

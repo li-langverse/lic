@@ -1,47 +1,256 @@
 
-type HttpdConfig = object
-  public port: int
-  public root: str
+import net
 
-type HttpdHandle = object
-  public id: int
+extern proc li_rt_argc() -> int
+  requires true
+  ensures true
+  decreases 0
 
-extern proc httpd_serve_static_blocking(port: int, root: str) raises Net -> int
+extern proc tcp_recv_i(conn: var int, max: int) raises Net, Alloc -> ptr
+  requires conn >= 0
+  requires 0 < max
+  ensures true
+  decreases 0
+
+extern proc li_rt_argv_i(index: int) -> ptr
+  requires 0 <= index
+  ensures true
+  decreases 0
+
+extern proc httpd_parse_port_i(s: var ptr) -> int
+  requires true
+  ensures true
+  decreases 0
+
+extern proc bytes_len_i(b: var ptr) raises Alloc -> int
+  requires true
+  ensures true
+  decreases 0
+
+extern proc bytes_slice_i(b: var ptr, off: int, n: int) raises Alloc -> ptr
+  requires 0 <= off
+  requires 0 <= n
+  ensures true
+  decreases 0
+
+extern proc bytes_append_i(a: var ptr, b: var ptr) raises Alloc -> ptr
+  requires true
+  ensures true
+  decreases 0
+
+extern proc net_byte_at_i(b: var ptr, off: int) -> int
+  requires 0 <= off
+  ensures true
+  decreases 0
+
+extern proc str_path_join_i(root: var ptr, path: var ptr) raises Alloc -> ptr
+  requires true
+  ensures true
+  decreases 0
+
+extern proc file_read_all_i(path: var ptr, max: int) raises IO, Alloc -> ptr
+  requires true
+  ensures true
+  decreases 0
+
+extern proc net_empty_str_i() raises Alloc -> ptr
+  requires true
+  ensures true
+  decreases 0
+
+extern proc net_slash_path_i() -> ptr
+  requires true
+  ensures true
+  decreases 0
+
+def hdr_end_at(buf: var ptr, start: var int, limit: var int) raises IO -> int
+  requires 0 <= start
+  requires start <= limit
+  ensures true
+  decreases limit - start
+=
+  var i: int = start
+  while i + 3 < limit:
+    if net_byte_at_i(buf, i) == 13:
+      if net_byte_at_i(buf, i + 1) == 10:
+        if net_byte_at_i(buf, i + 2) == 13:
+          if net_byte_at_i(buf, i + 3) == 10:
+            return i + 4
+    i = i + 1
+  return -1
+
+def buf_has_connection_close(buf: var ptr, hdr_end: var int) -> int
+  requires 0 <= hdr_end
+  ensures true
+  decreases hdr_end
+=
+  var i: int = 0
+  while i + 10 < hdr_end:
+    if net_byte_at_i(buf, i) == 67:
+      if net_byte_at_i(buf, i + 10) == 58:
+        var j: int = i + 11
+        while j < hdr_end:
+          if net_byte_at_i(buf, j) == 99:
+            return 1
+          j = j + 1
+    i = i + 1
+  return 0
+
+def parse_get_path(buf: var ptr, req_len: var int) raises IO, Alloc -> ptr
+  requires 4 <= req_len
+  ensures true
+  decreases req_len
+=
+  if net_byte_at_i(buf, 0) != 71:
+    return net_empty_str_i()
+  if net_byte_at_i(buf, 3) != 32:
+    return net_empty_str_i()
+  var i: int = 4
+  while i < req_len:
+    if net_byte_at_i(buf, i) == 32:
+      if i == 4:
+        return net_slash_path_i()
+      return bytes_slice_i(buf, 4, i - 4)
+    i = i + 1
+  return net_empty_str_i()
+
+extern proc httpd_send_reply_i(conn: var int, body: var ptr, keep_alive: int) raises Net -> int
+  requires conn >= 0
+  ensures true
+  decreases 0
+
+extern proc httpd_send_404_i(conn: var int, keep_alive: int) raises Net -> int
+  requires conn >= 0
+  ensures true
+  decreases 0
+
+def send_static_keep(conn: var int, filepath: var ptr) raises Net, Alloc, IO -> int
+  requires conn >= 0
+  ensures true
+  decreases 0
+=
+  var body: ptr = file_read_all_i(filepath, 16384)
+  if bytes_len_i(body) <= 0:
+    return httpd_send_404_i(conn, 1)
+  return httpd_send_reply_i(conn, body, 1)
+
+def send_static_close(conn: var int, filepath: var ptr) raises Net, Alloc, IO -> int
+  requires conn >= 0
+  ensures true
+  decreases 0
+=
+  var body: ptr = file_read_all_i(filepath, 16384)
+  if bytes_len_i(body) <= 0:
+    return httpd_send_404_i(conn, 0)
+  return httpd_send_reply_i(conn, body, 0)
+
+def serve_one_request(conn: var int, root: var ptr, buf: var ptr, req_len: var int) raises Net, Alloc, IO -> int
+  requires conn >= 0
+  requires 0 < req_len
+  ensures true
+  decreases req_len
+=
+  var path: ptr = parse_get_path(buf, req_len)
+  var hdr_end: int = hdr_end_at(buf, 0, req_len)
+  var keep_alive: int = 1
+  if hdr_end > 0:
+    if buf_has_connection_close(buf, hdr_end) == 1:
+      keep_alive = 0
+  var plen: int = bytes_len_i(path)
+  var fp: ptr = net_empty_str_i()
+  if plen <= 0:
+    fp = str_path_join_i(root, net_slash_path_i())
+  if plen > 0:
+    fp = str_path_join_i(root, path)
+  var rc: int = 0
+  if keep_alive == 1:
+    rc = send_static_keep(conn, fp)
+  if keep_alive == 0:
+    rc = send_static_close(conn, fp)
+  if keep_alive == 0:
+    return 1
+  if rc < 0:
+    return 1
+  return 0
+
+def try_drain(conn: var int, root: var ptr, buf: var ptr) raises Net, Alloc, IO -> int
+  requires conn >= 0
+  ensures true
+  decreases 0
+=
+  var filled: int = bytes_len_i(buf)
+  if filled <= 0:
+    return 0
+  var hdr_done: int = hdr_end_at(buf, 0, filled)
+  if hdr_done < 0:
+    return 0
+  var close_after: int = serve_one_request(conn, root, buf, hdr_done)
+  if close_after == 1:
+    return -1
+  return hdr_done
+
+def serve_connection(conn: var int, root: var ptr) raises Net, Alloc, IO -> int
+  requires conn >= 0
+  ensures true
+  decreases 0
+=
+  var buf: ptr = tcp_recv_i(conn, 16384)
+  var running: int = 1
+  while running == 1:
+    var drained: int = try_drain(conn, root, buf)
+    if drained < 0:
+      return 0
+    if drained > 0:
+      var filled: int = bytes_len_i(buf)
+      var remain: int = filled - drained
+      buf = bytes_slice_i(buf, drained, remain)
+    if drained == 0:
+      var more: ptr = tcp_recv_i(conn, 16384)
+      var mlen: int = bytes_len_i(more)
+      if mlen <= 0:
+        return 0
+      buf = bytes_append_i(buf, more)
+      var total: int = bytes_len_i(buf)
+      if total >= 16384:
+        return 0
+  return 0
+
+def httpd_serve_static_blocking(port: var int, root: var ptr) raises Net, Alloc, IO -> int
   requires 0 < port
   ensures true
   decreases 0
-
-def httpd_tag() -> int
-  requires true
-  ensures result == 0
-  decreases 0
 =
+  var listen_fd: int = tcp_listen(port)
+  var running: int = 1
+  while running == 1:
+    var conn: int = tcp_accept(listen_fd)
+    tcp_tune_client(conn)
+    serve_connection(conn, root)
+    tcp_close(conn)
   return 0
 
-def httpd_serve(config: HttpdConfig) raises Net -> int
-  requires 0 < config.port
-  ensures true
-  decreases 0
-=
-  return httpd_serve_static_blocking(config.port, config.root)
-
-def httpd_serve_port_root(port: int, root: str) raises Net -> int
+def httpd_serve_port_root(port: var int, root: var ptr) raises Net, Alloc, IO -> int
   requires 0 < port
   ensures true
   decreases 0
 =
   return httpd_serve_static_blocking(port, root)
 
-def httpd_stop(handle_id: int) -> int
-  requires handle_id == 0
+def httpd_run_from_argv() raises Net, Alloc, IO -> int
+  requires true
+  ensures true
+  decreases 0
+=
+  if li_rt_argc() < 3:
+    return 1
+  var port_arg: ptr = li_rt_argv_i(1)
+  var p: int = httpd_parse_port_i(port_arg)
+  var r: ptr = li_rt_argv_i(2)
+  return httpd_serve_port_root(p, r)
+
+def main() raises Net, Alloc, IO -> int
+  requires true
   ensures result == 0
   decreases 0
 =
-  return 0
-
-def httpd_ready(handle_id: int) -> bool
-  requires handle_id == 0
-  ensures result == true
-  decreases 0
-=
-  return true
+  return httpd_run_from_argv()

@@ -54,6 +54,7 @@ struct MirArg {
   std::int64_t int_value = 0;
   std::string ident;
   bool is_string = false;
+  bool is_i64 = false;
   std::string str_value;
 };
 
@@ -98,6 +99,7 @@ struct MirDecorator {
 struct MirFn {
   std::string name;
   bool returns_float = false;
+  bool returns_ptr = false;
   bool returns_void = false;
   bool is_extern = false;
   bool is_async = false;

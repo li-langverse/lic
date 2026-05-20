@@ -4,25 +4,92 @@ extern proc tcp_listen(port: int) raises Net -> int
   ensures true
   decreases 0
 
-extern proc tcp_accept(listen_fd: int) raises Net -> int
+extern proc tcp_accept(listen_fd: var int) raises Net -> int
   requires listen_fd >= 0
   ensures true
   decreases 0
 
-extern proc tcp_send(conn_fd: int, data: bytes) raises Net -> int
+extern proc tcp_send(conn_fd: var int, data: str) raises Net -> int
   requires conn_fd >= 0
   ensures true
   decreases 0
 
-extern proc tcp_recv(conn_fd: int, max_bytes: int) raises Net, Alloc -> bytes
+extern proc tcp_send_n(conn_fd: var int, data: bytes, n: int) raises Net -> int
+  requires conn_fd >= 0
+  requires 0 <= n
+  ensures true
+  decreases 0
+
+extern proc tcp_recv(conn_fd: var int, max_bytes: int) raises Net, Alloc -> str
   requires conn_fd >= 0
   requires 0 < max_bytes
   ensures true
   decreases 0
 
-extern proc tcp_close(conn_fd: int) raises Net -> unit
+extern proc tcp_close(conn_fd: var int) raises Net -> unit
   requires conn_fd >= 0
   ensures true
+  decreases 0
+
+extern proc tcp_tune_client(conn_fd: var int) raises Net -> unit
+  requires conn_fd >= 0
+  ensures true
+  decreases 0
+
+extern proc bytes_len(b: var str) raises Alloc -> int
+  requires true
+  ensures true
+  decreases 0
+
+extern proc bytes_slice(b: var str, off: int, n: int) raises Alloc -> str
+  requires 0 <= off
+  requires 0 <= n
+  ensures true
+  decreases 0
+
+extern proc bytes_append(a: var str, b: var str) raises Alloc -> str
+  requires true
+  ensures true
+  decreases 0
+
+extern proc net_byte_at(b: var str, off: int) -> int
+  requires 0 <= off
+  ensures true
+  decreases 0
+
+extern proc net_atoi(s: str) -> int
+  requires true
+  ensures true
+  decreases 0
+
+extern proc int_to_str(n: int) raises Alloc -> str
+  requires true
+  ensures true
+  decreases 0
+
+extern proc str_cat2(a: str, b: str) raises Alloc -> str
+  requires true
+  ensures true
+  decreases 0
+
+extern proc str_path_join(root: var str, path: var str) raises Alloc -> str
+  requires true
+  ensures true
+  decreases 0
+
+extern proc file_read_all(path: str, max_bytes: int) raises IO, Alloc -> str
+  requires true
+  ensures true
+  decreases 0
+
+extern proc net_empty_str() raises Alloc -> str
+  requires true
+  ensures true
+  decreases 0
+
+extern proc net_diag(tag: int) -> int
+  requires true
+  ensures result == tag
   decreases 0
 
 def net_tag() raises Net -> int

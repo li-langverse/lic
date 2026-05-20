@@ -899,8 +899,8 @@ TypecheckResult typecheck_module(const Module& module) {
   TypecheckResult result;
   DiagnosticBag& diags = result.diagnostics;
   Ctx ctx{{}, {}, {}, {}, {}, {}, 0, false, diags, "module"};
-  for (const auto& proc : module.procs) {
-    ctx.procs[proc.name] = &proc;
+  for (std::size_t pi = 0; pi < module.procs.size(); ++pi) {
+    ctx.procs[module.procs[pi].name] = &module.procs[pi];
   }
   for (const auto& alias : module.types) {
     AliasEntry entry;

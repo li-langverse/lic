@@ -76,6 +76,7 @@ struct EmitCtx {
   llvm::IRBuilder<>* builder;
   llvm::Type* ret_ty = nullptr;
   bool returns_float = false;
+  bool returns_ptr = false;
   bool fp_numerically_stable = false;
   std::map<std::string, llvm::AllocaInst*> int_locals;
   std::map<std::string, llvm::AllocaInst*> float_locals;
@@ -274,8 +275,12 @@ struct EmitCtx {
     if (float_locals.find(arg.ident) != float_locals.end()) {
       return load_float(arg.ident);
     }
-    if (ptr_param || ptr_locals.find(arg.ident) != ptr_locals.end()) {
-      return load_ptr(arg.ident);
+    if (arg.is_i64 || ptr_param || ptr_locals.find(arg.ident) != ptr_locals.end()) {
+      llvm::Value* val = load_ptr(arg.ident);
+      if (ptr_param && val->getType() == i64_ty(context)) {
+        val = builder->CreateIntToPtr(val, i8_ptr(context));
+      }
+      return val;
     }
     if (i64_locals.find(arg.ident) != i64_locals.end()) {
       return load_i64(arg.ident);
@@ -326,6 +331,8 @@ struct EmitCtx {
       case MirOp::ReturnIdent:
         if (ins.ret_is_float || returns_float || float_locals.count(ins.ident) > 0) {
           builder->CreateRet(load_float(ins.ident));
+        } else if (returns_ptr || ins.is_i64) {
+          builder->CreateRet(load_ptr(ins.ident));
         } else {
           builder->CreateRet(load_int(ins.ident));
         }
@@ -337,7 +344,7 @@ struct EmitCtx {
         (void)ensure_float_local(ins.ident);
         return true;
       case MirOp::LocalAllocI64:
-        (void)ensure_i64_local(ins.ident);
+        (void)ensure_ptr_local(ins.ident);
         return true;
       case MirOp::StoreInt: {
         llvm::Value* val = ins.rhs_is_literal ? int32_val(*builder, context, ins.rhs_int)
@@ -348,8 +355,8 @@ struct EmitCtx {
       case MirOp::StoreI64: {
         llvm::Value* val = ins.rhs_is_literal
                                ? llvm::ConstantInt::get(i64_ty(context), ins.rhs_int)
-                               : load_i64(ins.rhs_ident);
-        builder->CreateStore(val, ensure_i64_local(ins.ident));
+                               : load_ptr(ins.rhs_ident);
+        builder->CreateStore(val, ensure_ptr_local(ins.ident));
         return true;
       }
       case MirOp::StoreFloat: {
@@ -421,13 +428,17 @@ struct EmitCtx {
           return true;
         }
         std::vector<llvm::Value*> args;
-        for (const auto& arg : ins.args) {
-          args.push_back(mir_arg_value(arg, false));
+        for (std::size_t ai = 0; ai < ins.args.size(); ++ai) {
+          const bool ptr_param = ai < callee->arg_size() &&
+                                 callee->getArg(ai)->getType() == i8_ptr(context);
+          args.push_back(mir_arg_value(ins.args[ai], ptr_param));
         }
         llvm::CallInst* call = builder->CreateCall(callee, args);
         if (!ins.ident.empty()) {
           if (ins.ret_is_float) {
             builder->CreateStore(call, ensure_float_local(ins.ident));
+          } else if (ins.is_i64) {
+            builder->CreateStore(call, ensure_ptr_local(ins.ident));
           } else {
             builder->CreateStore(call, ensure_int_local(ins.ident));
           }
@@ -696,25 +707,38 @@ bool emit_llvm_ir(const MirModule& mir, const std::string& out_path, std::string
   bool user_main_argv_wrapper = false;
 
   for (const auto& fn : mir.functions) {
-    if (fn.is_extern) {
-      llvm::Type* ret_ty = fn.returns_void ? llvm::Type::getVoidTy(context)
-                                           : llvm_scalar(context, fn.returns_float, false);
-      std::vector<llvm::Type*> param_tys;
-      for (const auto& p : fn.params) {
-        if (p.is_string || p.is_i64) {
-          param_tys.push_back(i8_ptr(context));
-        } else {
-          param_tys.push_back(llvm_scalar(context, p.is_float, false));
-        }
+    if (!fn.is_extern) {
+      continue;
+    }
+    llvm::Type* ret_ty =
+        fn.returns_void ? llvm::Type::getVoidTy(context)
+                        : fn.returns_ptr ? i8_ptr(context)
+                                         : llvm_scalar(context, fn.returns_float, false);
+    std::vector<llvm::Type*> param_tys;
+    for (const auto& p : fn.params) {
+      if (p.is_string || p.is_i64) {
+        param_tys.push_back(i8_ptr(context));
+      } else {
+        param_tys.push_back(llvm_scalar(context, p.is_float, false));
       }
-      llvm::FunctionType* fn_ty = llvm::FunctionType::get(ret_ty, param_tys, false);
+    }
+    llvm::FunctionType* fn_ty = llvm::FunctionType::get(ret_ty, param_tys, false);
+    if (module->getFunction(fn.name) == nullptr) {
       llvm::Function::Create(fn_ty, llvm::Function::ExternalLinkage, fn.name, module.get());
+    }
+  }
+
+  for (const auto& fn : mir.functions) {
+    if (fn.is_extern) {
       continue;
     }
 
     const bool is_par_fn = fn.name.rfind("__li_par_", 0) == 0;
-    llvm::Type* ret_ty = fn.returns_void ? llvm::Type::getVoidTy(context)
-                                         : llvm_scalar(context, fn.returns_float, false);
+    llvm::Type* ret_ty = fn.returns_void
+                             ? llvm::Type::getVoidTy(context)
+                             : fn.returns_ptr
+                                   ? i8_ptr(context)
+                                   : llvm_scalar(context, fn.returns_float, false);
     std::vector<llvm::Type*> param_tys;
     for (const auto& p : fn.params) {
       if (is_par_fn) {
@@ -722,8 +746,10 @@ bool emit_llvm_ir(const MirModule& mir, const std::string& out_path, std::string
       } else if (p.is_simd_f64) {
         param_tys.push_back(llvm::VectorType::get(llvm::Type::getDoubleTy(context),
                                                   llvm::ElementCount::getFixed(4)));
+      } else if (p.is_string || p.is_i64) {
+        param_tys.push_back(i8_ptr(context));
       } else {
-        param_tys.push_back(llvm_scalar(context, p.is_float, p.is_i64));
+        param_tys.push_back(llvm_scalar(context, p.is_float, false));
       }
     }
     llvm::FunctionType* fn_ty = llvm::FunctionType::get(ret_ty, param_tys, false);
@@ -744,8 +770,8 @@ bool emit_llvm_ir(const MirModule& mir, const std::string& out_path, std::string
       builder.setFastMathFlags(llvm::FastMathFlags());
     }
 
-    EmitCtx ctx{context, module.get(), func, &builder, ret_ty, fn.returns_float,
-                mir.fp_numerically_stable, {}, {}, {}, {}, {}};
+    EmitCtx ctx{context,     module.get(), func, &builder, ret_ty, fn.returns_float,
+                fn.returns_ptr, mir.fp_numerically_stable, {}, {}, {}, {}, {}};
 
     unsigned idx = 0;
     for (auto& arg : func->args()) {
@@ -753,6 +779,8 @@ bool emit_llvm_ir(const MirModule& mir, const std::string& out_path, std::string
         arg.setName(fn.params[idx].name);
         if (is_par_fn || fn.params[idx].is_i64) {
           builder.CreateStore(&arg, ctx.ensure_i64_local(fn.params[idx].name));
+        } else if (fn.params[idx].is_string) {
+          builder.CreateStore(&arg, ctx.ensure_ptr_local(fn.params[idx].name));
         } else if (fn.params[idx].is_float) {
           builder.CreateStore(&arg, ctx.ensure_float_local(fn.params[idx].name));
         } else {

@@ -9,10 +9,13 @@ All notable changes to Li are documented here. The format follows
 ### Added
 
 - **M0 li-httpd bench binary:** `runtime/li_rt_net.c` (POSIX `tcp_*`, static HTTP server), `packages/li-net-httpd` → `build/li-httpd` for tier-5 nginx oracle comparison (`LI_HTTPD_BIN`).
+- **Li-native tier-5 httpd:** `packages/li-net-httpd/src/lib.li` — accept loop, keep-alive, pipeline drain, static GET; build with `lic build packages/li-net-httpd/src/lib.li -o build/li-httpd`.
+- **Compiler:** two-pass LLVM emit declares imported `extern` before Li bodies; `ptr` returns/params for C handles; `import_name` workspace resolution errors when a module is missing.
 
 ### Changed
 
-- **li-httpd M1 perf (tier-5):** `runtime/li_rt_net.c` — Linux `epoll`, HTTP/1.1 keep-alive + pipelined GET drain, `sendfile` for large files, single-segment small responses, `TCP_NODELAY`/`TCP_QUICKACK`; default accept loop on non-Linux. Local ci profile: `static_small` and `keepalive_pipelining` **li ≥ nginx** RPS on loopback fixture.
+- **li-httpd runtime seam:** `runtime/li_rt_net.c` — primitives + `*_i` intptr helpers + `httpd_send_*_i` only (no monolithic C `httpd_serve_static_blocking`).
+- **li-httpd M1 perf (tier-5):** prior C epoll/M1 loop removed with monolith; loopback RPS regressed until epoll is reintroduced in Li or a thin extern driver (see `docs/release-notes/2026-05-20-li-native-httpd.md`).
 
 ### Changed
 

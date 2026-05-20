@@ -14,6 +14,8 @@
 namespace li {
 namespace {
 
+std::optional<std::string> parse_metadata_import_name(const std::filesystem::path& package_toml);
+
 std::string read_file(const std::filesystem::path& path) {
   std::ifstream in(path);
   std::ostringstream ss;
@@ -173,9 +175,6 @@ std::optional<std::filesystem::path> path_dependency_entry(const std::filesystem
     while (!dep_name.empty() && (dep_name.back() == ' ' || dep_name.back() == '\t')) {
       dep_name.pop_back();
     }
-    if (kebab_to_snake(dep_name) != module && dep_name != module) {
-      continue;
-    }
     const std::size_t path_key = line.find("path");
     if (path_key == std::string::npos) {
       continue;
@@ -186,7 +185,18 @@ std::optional<std::filesystem::path> path_dependency_entry(const std::filesystem
       continue;
     }
     const std::string rel = line.substr(q1 + 1, q2 - q1 - 1);
-    const std::filesystem::path lib = (package_toml.parent_path() / rel / "src" / "lib.li");
+    const std::filesystem::path dep_root = package_toml.parent_path() / rel;
+    const std::filesystem::path dep_toml = dep_root / "li.toml";
+    bool name_match = (kebab_to_snake(dep_name) == module || dep_name == module);
+    if (!name_match && std::filesystem::exists(dep_toml)) {
+      if (const auto alias = parse_metadata_import_name(dep_toml)) {
+        name_match = (*alias == module);
+      }
+    }
+    if (!name_match) {
+      continue;
+    }
+    const std::filesystem::path lib = dep_root / "src" / "lib.li";
     if (std::filesystem::exists(lib)) {
       return lib;
     }
@@ -212,7 +222,13 @@ std::optional<std::filesystem::path> same_package_entry(const std::filesystem::p
     return std::nullopt;
   }
   const std::string pkg_name = text.substr(q1 + 1, q2 - q1 - 1);
-  if (kebab_to_snake(pkg_name) != module && pkg_name != module) {
+  bool name_match = (kebab_to_snake(pkg_name) == module || pkg_name == module);
+  if (!name_match) {
+    if (const auto alias = parse_metadata_import_name(package_toml)) {
+      name_match = (*alias == module);
+    }
+  }
+  if (!name_match) {
     return std::nullopt;
   }
   const std::filesystem::path lib = package_toml.parent_path() / "src" / "lib.li";
@@ -439,10 +455,8 @@ bool resolve_imports(Module& out, const std::string& file_path, DiagnosticBag& d
     const std::filesystem::path importer(file_path);
     const auto mod_path = resolve_module_path(imp.module, importer);
     if (!mod_path) {
-      if (imp.module.rfind("std.", 0) == 0 || imp.module == "std") {
-        SourceLoc loc{file_path, 1, 1, imp.span.start};
-        diags.error(loc, "import_resolve: module not found: " + imp.module);
-      }
+      SourceLoc loc{file_path, 1, 1, imp.span.start};
+      diags.error(loc, "import_resolve: module not found: " + imp.module);
       continue;
     }
     if (!load_module_recursive(*mod_path, out, file_path, diags, loading, loaded)) {

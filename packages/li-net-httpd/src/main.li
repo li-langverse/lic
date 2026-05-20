@@ -1,12 +1,8 @@
-
+/* Build entry: prefer `lic build packages/li-net-httpd/src/lib.li -o build/li-httpd`
+   (defines `main` → li_user_main). This file re-exports the same entry via import. */
 import net.httpd
 
-extern proc httpd_run_from_argv() raises Net -> int
-  requires true
-  ensures true
-  decreases 0
-
-def main() raises Net, IO -> int
+def main() raises Net, Alloc, IO -> int
   requires true
   ensures result == 0
   decreases 0

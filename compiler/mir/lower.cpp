@@ -64,7 +64,11 @@ std::string fresh_label(const std::string& prefix) {
 }
 
 bool is_string_type_name(const std::string& n) {
-  return n == "str" || n == "string";
+  return n == "str" || n == "string" || n == "bytes" || n == "stringview";
+}
+
+bool is_heap_str_ret(const ProcDecl& callee) {
+  return callee.ret_type && is_string_type_name(callee.ret_type->name);
 }
 
 bool is_i64_type_name(const std::string& n) {
@@ -301,13 +305,19 @@ std::string lower_expr_to(const Expr& e, const Module& module, std::vector<MirIn
         MirInsn ins;
         ins.op = MirOp::CallProc;
         ins.callee = e.ident;
-        for (const auto& arg : e.args) {
+        for (std::size_t ai = 0; ai < e.args.size(); ++ai) {
+          const auto& arg = e.args[ai];
           MirArg ma;
           if (arg->kind == Expr::Kind::IntLit) {
             ma.is_literal = true;
             ma.int_value = arg->int_value;
           } else if (arg->kind == Expr::Kind::Ident) {
             ma.ident = arg->ident;
+          }
+          if (ai < callee->params.size() &&
+              (is_string_type_name(callee->params[ai].type.name) ||
+               is_i64_type_name(callee->params[ai].type.name))) {
+            ma.is_i64 = true;
           }
           ins.args.push_back(std::move(ma));
         }
@@ -317,13 +327,17 @@ std::string lower_expr_to(const Expr& e, const Module& module, std::vector<MirIn
           ins.ret_is_float = true;
           float_names.insert(dest);
         }
+        if (is_heap_str_ret(*callee)) {
+          ins.is_i64 = true;
+        }
         out.push_back(std::move(ins));
         return dest;
       }
       MirInsn ins;
       ins.op = MirOp::CallExtern;
       ins.callee = e.ident;
-      for (const auto& arg : e.args) {
+      for (std::size_t ai = 0; ai < e.args.size(); ++ai) {
+        const auto& arg = e.args[ai];
         MirArg ma;
         if (arg->kind == Expr::Kind::StringLit) {
           ma.is_string = true;
@@ -336,14 +350,18 @@ std::string lower_expr_to(const Expr& e, const Module& module, std::vector<MirIn
         } else {
           ma.ident = lower_expr_to(*arg, module, out, float_names, simd_names);
         }
+        if (callee && ai < callee->params.size() &&
+            (is_string_type_name(callee->params[ai].type.name) ||
+             is_i64_type_name(callee->params[ai].type.name))) {
+          ma.is_i64 = true;
+        }
         ins.args.push_back(std::move(ma));
       }
       if (callee && callee->is_extern && callee->ret_type &&
           callee->ret_type->name != "unit") {
         const std::string dest = fresh_temp();
         ins.ident = dest;
-        if (callee->ret_type->name == "ptr" || callee->ret_type->name == "int64" ||
-            callee->ret_type->name == "i64") {
+        if (is_i64_type_name(callee->ret_type->name) || is_heap_str_ret(*callee)) {
           ins.is_i64 = true;
         } else if (is_float_type_name(callee->ret_type->name)) {
           ins.ret_is_float = true;
@@ -394,7 +412,7 @@ void lower_echo_arg(const Expr& arg, std::vector<MirInsn>& out) {
   out.push_back(std::move(ins));
 }
 
-void lower_return_expr(const Expr& e, bool returns_float, const Module& module,
+void lower_return_expr(const Expr& e, bool returns_float, bool returns_ptr, const Module& module,
                        std::vector<MirInsn>& out, std::unordered_set<std::string>& float_names,
                        std::unordered_set<std::string>& simd_names) {
   MirInsn ins;
@@ -408,12 +426,14 @@ void lower_return_expr(const Expr& e, bool returns_float, const Module& module,
     ins.op = MirOp::ReturnIdent;
     ins.ident = e.ident;
     ins.ret_is_float = returns_float || float_names.count(e.ident) > 0;
+    ins.is_i64 = returns_ptr;
   } else if (e.kind == Expr::Kind::Call || e.kind == Expr::Kind::BinOp ||
              e.kind == Expr::Kind::Index) {
     const std::string tmp = lower_expr_to(e, module, out, float_names, simd_names);
     ins.op = MirOp::ReturnIdent;
     ins.ident = tmp;
     ins.ret_is_float = returns_float || is_float_expr(e, float_names);
+    ins.is_i64 = returns_ptr;
   } else {
     ins.op = MirOp::ReturnVoid;
   }
@@ -423,12 +443,16 @@ void lower_return_expr(const Expr& e, bool returns_float, const Module& module,
 void append_implicit_return(std::vector<MirInsn>& body);
 
 void lower_stmts(const std::vector<Stmt>& stmts, LowerCtx& ctx, bool returns_float,
-                 std::vector<MirInsn>& out, std::unordered_set<std::string>& float_names,
+                 bool returns_ptr, std::vector<MirInsn>& out,
+                 std::unordered_set<std::string>& float_names,
+                 std::unordered_set<std::string>& str_names,
                  std::unordered_set<std::string>& simd_names,
                  std::unordered_set<std::string>& float_array_names);
 
-void lower_stmt(const Stmt& stmt, LowerCtx& ctx, bool returns_float, std::vector<MirInsn>& out,
+void lower_stmt(const Stmt& stmt, LowerCtx& ctx, bool returns_float, bool returns_ptr,
+                std::vector<MirInsn>& out,
                 std::unordered_set<std::string>& float_names,
+                std::unordered_set<std::string>& str_names,
                 std::unordered_set<std::string>& simd_names,
                 std::unordered_set<std::string>& float_array_names) {
   const Module& module = *ctx.module;
@@ -439,7 +463,8 @@ void lower_stmt(const Stmt& stmt, LowerCtx& ctx, bool returns_float, std::vector
         ins.op = MirOp::ReturnVoid;
         out.push_back(std::move(ins));
       } else {
-        lower_return_expr(*stmt.expr, returns_float, module, out, float_names, simd_names);
+        lower_return_expr(*stmt.expr, returns_float, returns_ptr, module, out, float_names,
+                          simd_names);
       }
       break;
     case Stmt::Kind::VarDecl: {
@@ -466,11 +491,13 @@ void lower_stmt(const Stmt& stmt, LowerCtx& ctx, bool returns_float, std::vector
                    stmt.var_type.elem->name == "int" && g_arr_ctx) {
           g_arr_ctx->int_array_sizes[stmt.var_name] = stmt.var_type.array_size;
         }
-      } else if (is_i64_type_name(stmt.var_type.name)) {
+      } else if (is_i64_type_name(stmt.var_type.name) ||
+                 is_string_type_name(stmt.var_type.name)) {
         MirInsn ins;
         ins.op = MirOp::LocalAllocI64;
         ins.ident = stmt.var_name;
         out.push_back(std::move(ins));
+        str_names.insert(stmt.var_name);
         if (stmt.init) {
           MirInsn store;
           store.op = MirOp::StoreI64;
@@ -580,10 +607,15 @@ void lower_stmt(const Stmt& stmt, LowerCtx& ctx, bool returns_float, std::vector
           break;
         }
         const bool flt = float_names.count(stmt.init->ident) > 0;
+        const bool str = str_names.count(stmt.init->ident) > 0;
         MirInsn ins;
-        ins.op = flt ? MirOp::StoreFloat : MirOp::StoreInt;
+        if (str) {
+          ins.op = MirOp::StoreI64;
+        } else {
+          ins.op = flt ? MirOp::StoreFloat : MirOp::StoreInt;
+        }
         ins.ident = stmt.init->ident;
-        if (stmt.expr->kind == Expr::Kind::IntLit && !flt) {
+        if (stmt.expr->kind == Expr::Kind::IntLit && !flt && !str) {
           ins.rhs_is_literal = true;
           ins.rhs_int = stmt.expr->int_value;
         } else if (stmt.expr->kind == Expr::Kind::FloatLit && flt) {
@@ -616,7 +648,8 @@ void lower_stmt(const Stmt& stmt, LowerCtx& ctx, bool returns_float, std::vector
       std::unordered_set<std::string> par_simd;
       std::unordered_set<std::string> par_float_arrays;
       LowerCtx par_ctx{ctx.module, ctx.mir, par_name};
-      lower_stmts(stmt.par_body, par_ctx, false, par_fn.body, par_floats, par_simd,
+      std::unordered_set<std::string> par_strs;
+      lower_stmts(stmt.par_body, par_ctx, false, false, par_fn.body, par_floats, par_strs, par_simd,
                   par_float_arrays);
       append_implicit_return(par_fn.body);
       ctx.mir->functions.push_back(std::move(par_fn));
@@ -638,12 +671,14 @@ void lower_stmt(const Stmt& stmt, LowerCtx& ctx, bool returns_float, std::vector
       const std::string else_label = fresh_label("else_");
       const std::string merge_label = fresh_label("merge_");
       push_branch_if_zero(out, cond_tmp, else_label);
-      lower_stmts(stmt.then_body, ctx, returns_float, out, float_names, simd_names,
+      lower_stmts(stmt.then_body, ctx, returns_float, returns_ptr, out, float_names, str_names,
+                  simd_names,
                   float_array_names);
       if (stmt.else_body) {
         push_jump(out, merge_label);
         push_label(out, else_label);
-        lower_stmts(*stmt.else_body, ctx, returns_float, out, float_names, simd_names,
+        lower_stmts(*stmt.else_body, ctx, returns_float, returns_ptr, out, float_names, str_names,
+                    simd_names,
                     float_array_names);
         push_label(out, merge_label);
       } else {
@@ -685,7 +720,8 @@ void lower_stmt(const Stmt& stmt, LowerCtx& ctx, bool returns_float, std::vector
       sub.bin_op = BinOp::Sub;
       out.push_back(std::move(sub));
       push_branch_if_zero(out, diff, exit_label);
-      lower_stmts(stmt.for_body, ctx, returns_float, out, float_names, simd_names,
+      lower_stmts(stmt.for_body, ctx, returns_float, returns_ptr, out, float_names, str_names,
+                  simd_names,
                   float_array_names);
       const std::string one_lit = fresh_temp();
       MirInsn one_store;
@@ -719,7 +755,8 @@ void lower_stmt(const Stmt& stmt, LowerCtx& ctx, bool returns_float, std::vector
       const std::string cond_tmp =
           lower_expr_to(*stmt.cond, module, out, float_names, simd_names);
       push_branch_if_zero(out, cond_tmp, exit_label);
-      lower_stmts(stmt.while_body, ctx, returns_float, out, float_names, simd_names,
+      lower_stmts(stmt.while_body, ctx, returns_float, returns_ptr, out, float_names, str_names,
+                  simd_names,
                   float_array_names);
       push_jump(out, head_label);
       push_label(out, exit_label);
@@ -753,11 +790,14 @@ void lower_stmt(const Stmt& stmt, LowerCtx& ctx, bool returns_float, std::vector
 }
 
 void lower_stmts(const std::vector<Stmt>& stmts, LowerCtx& ctx, bool returns_float,
-                 std::vector<MirInsn>& out, std::unordered_set<std::string>& float_names,
+                 bool returns_ptr, std::vector<MirInsn>& out,
+                 std::unordered_set<std::string>& float_names,
+                 std::unordered_set<std::string>& str_names,
                  std::unordered_set<std::string>& simd_names,
                  std::unordered_set<std::string>& float_array_names) {
   for (const auto& stmt : stmts) {
-    lower_stmt(stmt, ctx, returns_float, out, float_names, simd_names, float_array_names);
+    lower_stmt(stmt, ctx, returns_float, returns_ptr, out, float_names, str_names, simd_names,
+               float_array_names);
     if (!out.empty() && (out.back().op == MirOp::ReturnVoid || out.back().op == MirOp::ReturnInt ||
                          out.back().op == MirOp::ReturnFloat || out.back().op == MirOp::ReturnIdent)) {
       return;
@@ -792,6 +832,8 @@ MirModule lower_to_mir(const Module& module) {
     copy_decorators(proc.decorators, fn.decorators);
     if (proc.ret_type) {
       fn.returns_float = is_float_type_name(proc.ret_type->name);
+      fn.returns_ptr = is_string_type_name(proc.ret_type->name) ||
+                       is_i64_type_name(proc.ret_type->name);
       fn.returns_void = proc.ret_type->name == "unit";
     } else if (proc.is_extern) {
       fn.returns_void = true;
@@ -816,6 +858,7 @@ MirModule lower_to_mir(const Module& module) {
         fn.body.push_back(std::move(enter));
       }
       std::unordered_set<std::string> float_names;
+      std::unordered_set<std::string> str_names;
       std::unordered_set<std::string> simd_names;
       std::unordered_set<std::string> float_array_names;
       LowerArrayCtx arr_ctx;
@@ -824,8 +867,8 @@ MirModule lower_to_mir(const Module& module) {
       seed_float_params(fn, float_names);
       std::vector<LoopLabels> loop_stack;
       LowerCtx ctx{&module, &mir, proc.name, &loop_stack};
-      lower_stmts(proc.body, ctx, fn.returns_float, fn.body, float_names, simd_names,
-                  float_array_names);
+      lower_stmts(proc.body, ctx, fn.returns_float, fn.returns_ptr, fn.body, float_names, str_names,
+                  simd_names, float_array_names);
       if (is_async_fn) {
         MirInsn leave;
         leave.op = MirOp::AsyncFrameLeave;

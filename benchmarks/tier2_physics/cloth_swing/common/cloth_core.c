@@ -1,6 +1,6 @@
 #include <math.h>
 
-enum { LI_CL_N = 8, LI_CL_STEPS = 3000 };
+enum { LI_CL_N = 16, LI_CL_STEPS = 8000 };
 #define LI_CL_DT (1.0 / 60.0)
 #define LI_CL_REST 0.2
 #define LI_CL_STIFF 0.95

@@ -27,6 +27,8 @@ CSV_HEADER = [
     "threads",
     "metric",
     "value",
+    "value_stdev",
+    "timing_runs",
     "unit",
     "git_sha",
     "cpu_model",
@@ -34,6 +36,20 @@ CSV_HEADER = [
 ]
 NATIVE_FLAGS = "-O3 -march=native -ffast-math"
 LANGS = ("cpp", "rust", "julia", "li")
+
+
+@dataclass(frozen=True)
+class TimingStats:
+    """Wall-clock samples after one discarded warmup (not included in n)."""
+
+    median: float
+    stdev: float
+    n: int
+
+
+def clamp_timing_runs(n: int) -> int:
+    """Org policy: 3–6 timed repetitions (median + sample stdev)."""
+    return max(3, min(6, n))
 
 
 @dataclass(frozen=True)
@@ -127,8 +143,8 @@ TIER1_BENCHES: tuple[BenchSpec, ...] = (
 )
 
 # Gaming-physics roadmap (physics-only; Tier R = rendering out of scope):
-#   exists: md_lennard_jones, nbody, wave_1d/2d, heat_2d, advection_diffusion_2d, sph_dam_break_2d (stub)
-#   planned: euler_fluid_2d, combustion_passive, wind_field_bc, rigid_body, cloth, mls_mpm
+#   full-scale refs: wave_1d/2d, heat_2d, advection_diffusion_2d, nbody, md (C kernel)
+#   v0 gaming harness: euler/wind/combustion/cloth/ragdoll/sph — see tier2_physics/BENCH_WORKLOADS.md
 #   Tier R: shadows, reflections BRDF, fire rendering
 TIER2_BENCHES: tuple[BenchSpec, ...] = (
     BenchSpec(
@@ -220,15 +236,8 @@ TIER2_BENCHES: tuple[BenchSpec, ...] = (
  "common/rigid_stack_core.c",
  "li/main.li",
  ),
- BenchSpec(
- "three_body_pure",
- 2,
- "three_body_pure",
- "cpp/main.c",
- "common/three_body_core.c",
- "li/main.li",
- li_pure=True,
- ),
+#   three_body_pure: Li-only mini kernel — omitted from TIER2_BENCHES until `lic build`
+#   stops SIGSEGV on benchmarks/tier2_physics/three_body_pure/li/main.li (compiler issue).
  BenchSpec(
  "wind_field_bc",
  2,
@@ -320,28 +329,34 @@ def write_sample_csv(path: Path) -> None:
     """Placeholder rows until Tier 1–2 binaries exist — drives plot harness."""
     sha = git_sha()
     cpu = cpu_model()
-    rows = [
-        ("three_body", "li", "release", 1, "wall_time", 0.42, "s", sha, cpu, "-O3"),
-        ("three_body", "cpp", "release", 1, "wall_time", 0.38, "s", sha, cpu, "-O3 -march=native"),
-        ("three_body", "rust", "release", 1, "wall_time", 0.41, "s", sha, cpu, "--release"),
-        ("three_body", "julia", "release", 1, "wall_time", 0.55, "s", sha, cpu, "-O3"),
-        ("md_lennard_jones", "li", "release", 1, "wall_time", 1.2, "s", sha, cpu, "-O3"),
-        ("md_lennard_jones", "cpp", "release", 1, "wall_time", 1.0, "s", sha, cpu, "-O3"),
-        ("md_lennard_jones", "li", "release", 8, "wall_time", 0.22, "s", sha, cpu, "-O3 --threads=8"),
-        ("simd_dot", "li", "release", 1, "throughput", 4.8, "GFLOPS", sha, cpu, "simd"),
-        ("simd_dot", "cpp", "release", 1, "throughput", 5.1, "GFLOPS", sha, cpu, "simd"),
-        ("advection_diffusion_2d", "li", "release", 1, "wall_time", 0.65, "s", sha, cpu, "-O3"),
-        ("advection_diffusion_2d", "cpp", "release", 1, "wall_time", 0.60, "s", sha, cpu, "-O3"),
-        ("wave_equation_2d", "li", "release", 1, "wall_time", 0.90, "s", sha, cpu, "-O3"),
-        ("wave_equation_2d", "cpp", "release", 1, "wall_time", 0.85, "s", sha, cpu, "-O3"),
-        ("sph_dam_break_2d", "li", "release", 1, "wall_time", 1.5, "s", sha, cpu, "-O3"),
-        ("sph_dam_break_2d", "cpp", "release", 1, "wall_time", 1.4, "s", sha, cpu, "-O3"),
+    sample_rows = [
+        row_for(
+            benchmark="three_body",
+            lang="li",
+            value=0.42,
+            metric="wall_time",
+            unit="s",
+            sha=sha,
+            cpu=cpu,
+            flags="-O3",
+            timing_runs=5,
+            value_stdev=0.001,
+        ),
+        row_for(
+            benchmark="three_body",
+            lang="cpp",
+            value=0.38,
+            metric="wall_time",
+            unit="s",
+            sha=sha,
+            cpu=cpu,
+            flags="-O3 -march=native",
+            timing_runs=5,
+            value_stdev=0.0008,
+        ),
     ]
     path.parent.mkdir(parents=True, exist_ok=True)
-    with path.open("w", newline="") as f:
-        w = csv.writer(f)
-        w.writerow(CSV_HEADER)
-        w.writerows(rows)
+    write_csv(path, sample_rows)
     print(f"wrote sample {path} ({len(rows)} rows) — replace with real timings when codegen lands")
 
 
@@ -358,7 +373,7 @@ def write_csv(path: Path, rows: list[dict[str, object]]) -> None:
         w = csv.DictWriter(f, fieldnames=CSV_HEADER)
         w.writeheader()
         for row in rows:
-            w.writerow({k: row[k] for k in CSV_HEADER})
+            w.writerow({k: row.get(k, "") for k in CSV_HEADER})
 
 
 def merge_rows(
@@ -379,7 +394,8 @@ def merge_rows(
     return kept + new_rows
 
 
-def time_command(cmd: list[str], *, cwd: Path | None = None, runs: int = 3) -> float:
+def time_command(cmd: list[str], *, cwd: Path | None = None, runs: int = 5) -> TimingStats:
+    runs = clamp_timing_runs(runs)
     samples: list[float] = []
     # Discard one warmup run (JIT/cache/thermal).
     warmup = subprocess.run(cmd, cwd=cwd, capture_output=True, text=True)
@@ -398,7 +414,9 @@ def time_command(cmd: list[str], *, cwd: Path | None = None, runs: int = 3) -> f
                 f"{proc.stderr or proc.stdout}"
             )
         samples.append(elapsed)
-    return statistics.median(samples)
+    med = statistics.median(samples)
+    stdev = statistics.stdev(samples) if len(samples) >= 2 else 0.0
+    return TimingStats(median=med, stdev=stdev, n=runs)
 
 
 def build_native(spec: BenchSpec, bin_path: Path) -> None:
@@ -445,8 +463,8 @@ def verify_checksum(spec: BenchSpec, build_dir: Path) -> None:
     build_native(spec, native)
     build_li(spec, li_bin)
     native_out = subprocess.check_output([str(native), "--verify"], text=True).strip()
-    cpp_time = time_command([str(native)], runs=1)
-    li_time = time_command([str(li_bin)], runs=1)
+    cpp_time = time_command([str(native)], runs=3).median
+    li_time = time_command([str(li_bin)], runs=3).median
     if spec.li_pure:
         print(f"{spec.name} verify ok (pure Li): native checksum={native_out} li/native time={li_time:.4f}/{cpp_time:.4f}s")
         return
@@ -496,6 +514,8 @@ def row_for(
     sha: str,
     cpu: str,
     flags: str,
+    timing_runs: int | None = None,
+    value_stdev: float | None = None,
 ) -> dict[str, object]:
     return {
         "benchmark": benchmark,
@@ -504,6 +524,8 @@ def row_for(
         "threads": 1,
         "metric": metric,
         "value": round(value, 4),
+        "value_stdev": round(value_stdev, 6) if value_stdev is not None else "",
+        "timing_runs": timing_runs if timing_runs is not None else "",
         "unit": unit,
         "git_sha": sha,
         "cpu_model": cpu,
@@ -512,6 +534,7 @@ def row_for(
 
 
 def run_benchmark(spec: BenchSpec, *, runs: int) -> list[dict[str, object]]:
+    runs = clamp_timing_runs(runs)
     build_dir = REPO / "build" / "bench" / spec.name
     build_dir.mkdir(parents=True, exist_ok=True)
     sha = git_sha()
@@ -534,7 +557,8 @@ def run_benchmark(spec: BenchSpec, *, runs: int) -> list[dict[str, object]]:
         ("julia", julia_bin, f"{NATIVE_FLAGS} (native C kernel)"),
         ("li", li_bin, f"{'pure lic' if spec.li_pure else 'shared C kernel + lic'} {NATIVE_FLAGS}"),
     ):
-        wall = time_command([str(bin_path)], runs=runs)
+        timing = time_command([str(bin_path)], runs=runs)
+        wall = timing.median
         rows.append(
             row_for(
                 benchmark=spec.name,
@@ -545,6 +569,8 @@ def run_benchmark(spec: BenchSpec, *, runs: int) -> list[dict[str, object]]:
                 sha=sha,
                 cpu=cpu,
                 flags=flags,
+                timing_runs=timing.n,
+                value_stdev=timing.stdev,
             )
         )
         if spec.flops_per_run is not None and wall > 0:
@@ -575,7 +601,10 @@ def run_benchmark(spec: BenchSpec, *, runs: int) -> list[dict[str, object]]:
                     flags=flags,
                 )
             )
-        print(f"{spec.name} {lang} wall_time={wall:.4f}s (median of {runs})")
+        print(
+            f"{spec.name} {lang} wall_time={wall:.4f}s "
+            f"(median of {timing.n}, stdev={timing.stdev:.6f}s)"
+        )
 
     return rows
 
@@ -674,7 +703,12 @@ def main() -> int:
     parser.add_argument("--tier", type=int, default=0)
     parser.add_argument("--sample", action="store_true", help="write demo CSV for plots")
     parser.add_argument("--ci", action="store_true")
-    parser.add_argument("--runs", type=int, default=3, help="timing repetitions (median)")
+    parser.add_argument(
+        "--runs",
+        type=int,
+        default=5,
+        help="timed repetitions after warmup; clamped to 3–6; reports median+stdev",
+    )
     parser.add_argument("--skip-verify", action="store_true")
     parser.add_argument(
         "--out",
@@ -683,6 +717,7 @@ def main() -> int:
         help="CSV output path",
     )
     args = parser.parse_args()
+    args.runs = clamp_timing_runs(args.runs)
 
     if args.sample:
         write_sample_csv(args.out)

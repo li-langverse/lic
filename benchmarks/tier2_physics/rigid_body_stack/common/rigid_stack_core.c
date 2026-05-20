@@ -1,6 +1,6 @@
 #include <math.h>
 
-enum { LI_RS_N = 20, LI_RS_STEPS = 600 };
+enum { LI_RS_N = 50, LI_RS_STEPS = 2000 };
 #define LI_RS_DT (1.0 / 60.0)
 #define LI_RS_G 9.81
 

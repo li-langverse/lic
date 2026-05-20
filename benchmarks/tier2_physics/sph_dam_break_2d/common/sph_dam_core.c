@@ -3,8 +3,8 @@
 #include <math.h>
 #include <string.h>
 
-/* Minimal 2D dam-break stub: column IC, gravity, pairwise repulsion (SPH v0). */
-enum { LI_SPH_N = 256, LI_SPH_STEPS = 8000 };
+/* SPH v0: column IC, gravity, O(N^2) repulsion — density/pressure kernels TBD. */
+enum { LI_SPH_N = 512, LI_SPH_STEPS = 10000 };
 #define LI_SPH_BOX 1.0
 #define LI_SPH_H 0.08
 #define LI_SPH_MASS 1.0
@@ -26,9 +26,9 @@ static double g_li_sph_dam_checksum;
 
 static void li_sph_init(LiSphState* s) {
   int idx = 0;
-  const int nx = 16;
+  const int nx = 32;
   const int ny = 16;
-  const double dx = 0.04;
+  const double dx = 0.03;
   for (int j = 0; j < ny && idx < LI_SPH_N; ++j) {
     for (int i = 0; i < nx && idx < LI_SPH_N; ++i) {
       s->p[idx].x[0] = 0.05 + (double)i * dx;

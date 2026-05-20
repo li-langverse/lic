@@ -4,6 +4,9 @@
 
 | Column | Meaning |
 |--------|---------|
+| **value** | Median wall time (or derived throughput/bandwidth from that median). |
+| **value_stdev** | Sample standard deviation of timed runs (seconds); empty on derived metrics. |
+| **timing_runs** | Count of timed repetitions (3–6 after warmup). |
 | **shared_c_kernel** | Li driver links the same C/C++ kernel as `cpp`/`rust`/`julia` via `LI_EXTRA_C` (wall time ≈ native reference). |
 | **pure_li** | Logic compiled from `.li` only (`horner_pure_li`, `simd_dot`, future matmul). Often slower until **7e** codegen matures. |
 
@@ -28,5 +31,7 @@ Tracked ecosystems live in `benchmarks/competitive/registry.toml` (`cpp`, `rust`
 
 ```bash
 python3 benchmarks/harness/bench.py --tier 0
-python3 benchmarks/harness/bench.py --tier 12 --runs 5
+python3 benchmarks/harness/bench.py --tier 12 --runs 5  # 3–6 timed reps; median + stdev in CSV
 ```
+
+Tier-2 gaming vs full workloads: [../tier2_physics/BENCH_WORKLOADS.md](../tier2_physics/BENCH_WORKLOADS.md).

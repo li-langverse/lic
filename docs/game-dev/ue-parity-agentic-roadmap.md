@@ -43,13 +43,15 @@ Dashboard: `benchmarks` repo `data/latest/summary.json` → `unreal_proxy_compar
 
 ### P1 — Li runtime catches C kernel
 
-- [ ] `sim_step_physics` real body (`physics.runtime`, borrowck-safe)
+- [x] `sim_step_physics` composable body (`import_sim_step_physics_runtime.li` → `physics.runtime`)
+- [ ] `sim_step_physics` in `li-sim` package (blocked: PhysicsWorld cross-package in `lib.li`)
 - [ ] `li-render` present path + `render_frame` tier-2 bench
 - [ ] Replication beyond encode ratio (interest, prediction stub)
 
 ### P2 — Studio UX (easier than UE for agents)
 
-- [ ] Native `li-studio` shell (replace HTML demo): outliner, viewport, command palette
+- [x] Command palette API (`studio_command_execute` — play / pause / lic build)
+- [ ] Native `li-studio` shell (replace HTML demo): outliner, viewport, GPU present path
 - [ ] **≤3 clicks** primary flows ([PH-UX](PH-world-studio-program.md))
 - [ ] `studio.adaptive` panels by profile (game / sim / drug)
 - [ ] Agent loop: prompt → edit `world.li` → `lic build` → preview

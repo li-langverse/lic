@@ -1,7 +1,7 @@
 {
   "branch": "feat/world-studio-impl-1",
   "sprint": "impl-49",
-  "composable_gates": 165,
+  "composable_gates": 170,
   "game_dev_gates": 12,
   "vertical_demo_builds": 7,
   "spinup_templates": 12,

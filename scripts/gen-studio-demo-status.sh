@@ -34,10 +34,10 @@ cat > "$OUT" <<EOF
   "publish_template": true,
   "portable_targets": 5,
   "binary_runtime_tag": 8288,
-  "milestone_composable_gates": 165,
+  "milestone_composable_gates": 170,
   "demo_tabs": 13,
   "li_native_store": true,
-  "blocked": ["sim_step_physics"],
+  "blocked": ["sim_step_physics_li_package"],
   "updated": "$(date -u +%Y-%m-%dT%H:%M:%SZ)"
 }
 EOF

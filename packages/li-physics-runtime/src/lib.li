@@ -113,6 +113,34 @@ def physics_sync_to_scene(world: PhysicsWorld) -> unit
 =
   return
 
+# Game tick: semi-implicit substep frame (pairs with sim_step_physics composable + sim_physics_frame bench).
+def physics_step_for_game_tick(tier: int, tick: int, dt_millis: int) -> int
+  requires tier >= 0
+  requires tier <= 3
+  requires tick >= 0
+  requires dt_millis > 0
+  ensures result == tick + 1
+  decreases tick
+=
+  var next_tick: int = tick + 1
+  var w: PhysicsWorld = physics_world_new(tier)
+  physics_step(w, 1.0 / 60.0)
+  physics_sync_to_scene(w)
+  return next_tick
+
+def physics_step_for_game_tick_smoke() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  if physics_step_for_game_tick(2, 0, 16) != 1:
+    return 1
+  var w: PhysicsWorld = physics_world_game_default()
+  physics_step(w, 1.0 / 60.0)
+  if w.step_count < w.substeps:
+    return 2
+  return 0
+
 proc physics_runtime_smoke() -> int
   requires true
   ensures result == 0

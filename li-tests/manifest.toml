@@ -1249,6 +1249,18 @@ note = "sim_step_physics_stub until runtime types unify"
 
 [[tests]]
 suite = "composable"
+file = "composable/import_sim_step_physics_runtime.li"
+outcome = "compile_ok"
+note = "sim_step_physics with physics.runtime body (composable author API)"
+
+[[tests]]
+suite = "composable"
+file = "composable/import_studio_command_palette.li"
+outcome = "compile_ok"
+note = "PH-UX command palette play/pause/build (≤3 clicks)"
+
+[[tests]]
+suite = "composable"
 file = "composable/import_physics_runtime_smoke.li"
 outcome = "compile_ok"
 note = "physics.runtime PhysicsWorld step smoke"

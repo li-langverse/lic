@@ -94,6 +94,27 @@ file = "typecheck/bad_int_float_add.li"
 outcome = "compile_fail"
 expected_substr = "int"
 
+[[tests]]
+suite = "typecheck"
+file = "typecheck/scalar_width_ok.li"
+outcome = "compile_ok"
+
+[[tests]]
+suite = "typecheck"
+file = "typecheck/scalar_width_mix_fail.li"
+outcome = "compile_fail"
+expected_substr = "integer widths"
+
+[[tests]]
+suite = "typecheck"
+file = "typecheck/literal_suffix_ok.li"
+outcome = "compile_ok"
+
+[[tests]]
+suite = "typecheck"
+file = "typecheck/binary_literal_ok.li"
+outcome = "compile_ok"
+
 # --- prove_reject (pillar 1) ---
 
 [[tests]]
@@ -125,6 +146,12 @@ suite = "prove_reject"
 file = "prove_reject/bare_cast.li"
 outcome = "compile_fail"
 expected_substr = "cast"
+
+[[tests]]
+suite = "prove_reject"
+file = "prove_reject/weak_ensures_true.li"
+outcome = "compile_fail"
+expected_substr = "ensures true"
 
 # --- contracts_verify (must prove) ---
 
@@ -257,6 +284,16 @@ file = "benchmarks/tier0_correctness/three_body_invariants.li"
 outcome = "verify_ok"
 
 # --- generics (PEP 695 + Protocol) ---
+
+[[tests]]
+suite = "generics"
+file = "generics/precision_real_alias.li"
+outcome = "verify_ok"
+
+[[tests]]
+suite = "generics"
+file = "generics/precision_generic_fn.li"
+outcome = "verify_ok"
 
 [[tests]]
 suite = "generics"

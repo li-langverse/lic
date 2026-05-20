@@ -254,6 +254,69 @@ bool Lexer::lex_number(Token& out, bool is_float_start) {
     out.kind = TokenKind::IntLit;
     out.int_value = int_value;
   }
+  lex_literal_suffix(out, is_float);
+  return true;
+}
+
+void Lexer::lex_literal_suffix(Token& out, const bool is_float) {
+  if (at_end()) {
+    return;
+  }
+  if (!is_float && peek() == 'u') {
+    const std::size_t u_pos = pos_;
+    advance();
+    if (at_end() || !(std::isalnum(static_cast<unsigned char>(peek())) || peek() == '_')) {
+      out.lit_suffix = "u";
+      return;
+    }
+    pos_ = u_pos;
+  }
+  if (!(std::isalpha(static_cast<unsigned char>(peek())) || peek() == '_')) {
+    return;
+  }
+  const std::size_t suffix_start = pos_;
+  while (!at_end()) {
+    const char ch = peek();
+    if (std::isalnum(static_cast<unsigned char>(ch)) || ch == '_') {
+      advance();
+    } else {
+      break;
+    }
+  }
+  if (pos_ > suffix_start) {
+    out.lit_suffix =
+        std::string(std::string_view(source_).substr(suffix_start, pos_ - suffix_start));
+  }
+}
+
+bool Lexer::lex_binary_literal(Token& out) {
+  const std::size_t start = pos_;
+  const std::size_t sl = line_;
+  const std::size_t sc = column_;
+  advance();
+  if (!at_end() && peek() == 'b') {
+    advance();
+  } else {
+    return false;
+  }
+  const std::size_t bits_start = pos_;
+  while (!at_end() && (peek() == '0' || peek() == '1')) {
+    advance();
+  }
+  if (pos_ == bits_start) {
+    return false;
+  }
+  out.start = start;
+  out.end = pos_;
+  out.line = sl;
+  out.column = sc;
+  out.kind = TokenKind::BinaryLit;
+  out.text = std::string_view(source_).substr(bits_start, pos_ - bits_start);
+  out.int_value = 0;
+  for (const char bit : out.text) {
+    out.int_value = (out.int_value << 1) + (bit == '1' ? 1 : 0);
+  }
+  out.lit_suffix.clear();
   return true;
 }
 
@@ -474,6 +537,17 @@ bool Lexer::tokenize(DiagnosticBag& diags) {
         lex_string(t);
         push_token(t);
         continue;
+      case '0':
+        if (peek() == 'b') {
+          pos_ = start;
+          line_ = sl;
+          column_ = sc;
+          if (lex_binary_literal(t)) {
+            push_token(t);
+            continue;
+          }
+        }
+        [[fallthrough]];
       default:
         if (std::isdigit(static_cast<unsigned char>(c))) {
           pos_ = start;

@@ -2,6 +2,7 @@
 
 #include "li/borrowck.hpp"
 #include "li/error_codes.hpp"
+#include "li/numeric_types.hpp"
 
 #include <map>
 #include <memory>
@@ -14,7 +15,7 @@ namespace li {
 namespace {
 
 enum class TyKind {
-  Int, Int64, Float, Bool, Str, Array, List, Dict, Tuple, TypedDict, Object, Enum, Named,
+  Int, Int64, Float, Bool, Str, Binary, Array, List, Dict, Tuple, TypedDict, Object, Enum, Named,
   TypeVar, Protocol, Callable, Simd
 };
 
@@ -34,12 +35,45 @@ struct Ty {
   bool tuple_variadic = false;
   std::vector<std::string> enum_variants;
   std::int64_t simd_lanes = 0;
+  int numeric_bits = 64;
+  bool unsigned_scalar = false;
 };
 
-TyPtr make_int() { return std::make_shared<Ty>(Ty{TyKind::Int}); }
-TyPtr make_float() { return std::make_shared<Ty>(Ty{TyKind::Float}); }
+TyPtr make_int(const int bits = 64) {
+  auto t = std::make_shared<Ty>();
+  t->kind = TyKind::Int;
+  t->numeric_bits = bits;
+  t->name = "int";
+  return t;
+}
+TyPtr make_float(const int bits = 64) {
+  auto t = std::make_shared<Ty>();
+  t->kind = TyKind::Float;
+  t->numeric_bits = bits;
+  t->name = "float";
+  return t;
+}
+
+TyPtr make_numeric_scalar(const NumericScalarDesc& desc) {
+  auto t = std::make_shared<Ty>();
+  t->numeric_bits = desc.bits;
+  t->name = std::string(desc.canonical);
+  if (desc.kind == NumericScalarKind::Float) {
+    t->kind = TyKind::Float;
+    return t;
+  }
+  t->kind = TyKind::Int;
+  t->unsigned_scalar = desc.kind == NumericScalarKind::IntUnsigned;
+  return t;
+}
 TyPtr make_bool() { return std::make_shared<Ty>(Ty{TyKind::Bool}); }
 TyPtr make_str() { return std::make_shared<Ty>(Ty{TyKind::Str}); }
+TyPtr make_binary() {
+  auto t = std::make_shared<Ty>();
+  t->kind = TyKind::Binary;
+  t->name = "binary";
+  return t;
+}
 TyPtr make_i64() { return std::make_shared<Ty>(Ty{TyKind::Int64}); }
 
 TyPtr make_type_var(std::string name) {
@@ -196,6 +230,21 @@ struct Ctx {
     }
     if (a->kind == TyKind::TypeVar || a->kind == TyKind::Named || a->kind == TyKind::Protocol) {
       return a->name == b->name;
+    }
+    if (a->kind == TyKind::Int) {
+      return a->numeric_bits == b->numeric_bits && a->unsigned_scalar == b->unsigned_scalar;
+    }
+    if (a->kind == TyKind::Float) {
+      return a->numeric_bits == b->numeric_bits;
+    }
+    if (a->kind == TyKind::Int64) {
+      return b->kind == TyKind::Int64;
+    }
+    if (a->kind == TyKind::Binary) {
+      return b->kind == TyKind::Binary;
+    }
+    if (a->kind == TyKind::Str) {
+      return b->kind == TyKind::Str;
     }
     return true;
   }
@@ -419,17 +468,17 @@ struct Ctx {
           return resolve_type_expr(*it->second.definition);
         }
       }
-      if (te.name == "int") {
-        return make_int();
-      }
-      if (te.name == "float" || te.name == "float64" || te.name == "f64") {
-        return make_float();
+      if (const auto scalar = lookup_numeric_scalar(te.name)) {
+        return make_numeric_scalar(*scalar);
       }
       if (te.name == "bool") {
         return make_bool();
       }
-      if (te.name == "ptr" || te.name == "int64" || te.name == "i64" || te.name == "long") {
+      if (te.name == "ptr") {
         return make_i64();
+      }
+      if (te.name == "binary" || te.name == "Binary") {
+        return make_binary();
       }
       if (te.name == "str" || te.name == "bytes" || te.name == "stringview" ||
           te.name == "Bytes" || te.name == "StringView") {
@@ -456,12 +505,26 @@ struct Ctx {
     return make_int();
   }
 
+  TyPtr type_of_numeric_literal(const Expr& e, const bool is_float) {
+    if (e.lit_suffix.empty()) {
+      return is_float ? make_float() : make_int();
+    }
+    const auto desc = lookup_literal_suffix(e.lit_suffix, is_float);
+    if (!desc) {
+      diags.error(loc(e.span), "unknown or invalid literal suffix '" + e.lit_suffix + "'");
+      return is_float ? make_float() : make_int();
+    }
+    return make_numeric_scalar(*desc);
+  }
+
   TyPtr type_of(const Expr& e) {
     switch (e.kind) {
       case Expr::Kind::IntLit:
-        return make_int();
+        return type_of_numeric_literal(e, false);
       case Expr::Kind::FloatLit:
-        return make_float();
+        return type_of_numeric_literal(e, true);
+      case Expr::Kind::BinaryLit:
+        return make_binary();
       case Expr::Kind::StringLit:
         return make_str();
       case Expr::Kind::Ident: {
@@ -495,10 +558,32 @@ struct Ctx {
             e.bin_op == BinOp::Div || e.bin_op == BinOp::Mod || e.bin_op == BinOp::FloorDiv ||
             e.bin_op == BinOp::Pow) {
           if (l->kind == TyKind::Int && r->kind == TyKind::Int) {
-            return make_int();
+            if (l->unsigned_scalar != r->unsigned_scalar) {
+              diags.error(loc(e.span), "cannot mix signed and unsigned integers without cast");
+              return make_int();
+            }
+            if (l->numeric_bits != r->numeric_bits) {
+              diags.error(loc(e.span),
+                          "cannot mix integer widths (" + std::to_string(l->numeric_bits) + " and " +
+                              std::to_string(r->numeric_bits) +
+                              " bits) without explicit cast");
+              return make_int();
+            }
+            return l;
           }
           if (l->kind == TyKind::Float && r->kind == TyKind::Float) {
-            return make_float();
+            if (l->numeric_bits != r->numeric_bits) {
+              diags.error(loc(e.span),
+                          "cannot mix float widths (" + std::to_string(l->numeric_bits) + " and " +
+                              std::to_string(r->numeric_bits) +
+                              " bits) without explicit cast");
+              return make_float();
+            }
+            return l;
+          }
+          if (l->kind == TyKind::Binary || r->kind == TyKind::Binary) {
+            diags.error(loc(e.span), "binary values do not support arithmetic operators yet");
+            return make_binary();
           }
           if (l->kind == TyKind::Simd && r->kind == TyKind::Simd &&
               l->simd_lanes == r->simd_lanes) {
@@ -824,6 +909,39 @@ struct Ctx {
     return p.is_async || proc_has_decorator(p, "async");
   }
 
+  static bool type_expr_is_unit(const TypeExpr& te) {
+    return te.kind == TypeKind::Named && te.name == "unit";
+  }
+
+  static bool proc_returns_unit(const ProcDecl& p) {
+    return !p.ret_type || type_expr_is_unit(*p.ret_type);
+  }
+
+  static bool expr_is_true_literal(const Expr& e) {
+    return e.kind == Expr::Kind::Ident && e.ident == "true";
+  }
+
+  void check_weak_ensures(const ProcDecl& p) {
+    if (p.is_extern || proc_returns_unit(p)) {
+      return;
+    }
+    for (const auto& c : p.contracts) {
+      if (c.kind != ContractKind::Ensures || !c.expr) {
+        continue;
+      }
+      if (!expr_is_true_literal(*c.expr)) {
+        continue;
+      }
+      diag_error(
+          diags, loc(c.span), ErrorCode::E0303,
+          "`ensures true` is not allowed when the procedure returns a value — the postcondition "
+          "must relate `result` to the computation.",
+          "Use `ensures result == <expr>` when the return is an expression, or a property such as "
+          "`ensures result >= 0.0`. Opaque `extern proc` may still use `ensures true`.");
+      return;
+    }
+  }
+
   void check_proc(const ProcDecl& p) {
     const bool prev_async = in_async;
     in_async = proc_is_async(p);
@@ -846,7 +964,7 @@ struct Ctx {
       if (!has_ensures) {
         diag_error(diags, loc(p.span), ErrorCode::E0302,
                    "Every `extern proc` must declare what it guarantees on exit (`ensures`).",
-                   "Add an `ensures` clause, often `ensures true` for opaque C calls.");
+                   "Add an `ensures` clause (often `ensures true` for opaque runtime calls).");
       }
       in_async = prev_async;
       return;
@@ -860,8 +978,11 @@ struct Ctx {
     if (!has_ensures) {
       diag_error(diags, loc(p.span), ErrorCode::E0302,
                  "Every proc must state what it guarantees on exit (`ensures`).",
-                 "Add `ensures <condition>` — use `ensures true` temporarily while developing.");
+                 proc_returns_unit(p)
+                     ? "Add `ensures <condition>` (or `ensures true` for `-> unit` stubs)."
+                     : "Add `ensures result == <expr>` or a property on `result` — not `ensures true`.");
     }
+    check_weak_ensures(p);
     locals.clear();
     type_vars.clear();
     refined_index_params.clear();

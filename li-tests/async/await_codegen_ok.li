@@ -1,6 +1,6 @@
 async def inner() raises Async -> int
   requires true
-  ensures true
+  ensures result == 1
   decreases 0
 =
   return 1

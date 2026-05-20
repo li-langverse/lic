@@ -8,10 +8,10 @@ type StudioProject = object
 
 def li_studio_version() -> int
   requires true
-  ensures result == 14
+  ensures result == 15
   decreases 0
 =
-  return 14
+  return 15
 
 def studio_project_new() -> StudioProject
   requires true
@@ -307,6 +307,24 @@ def studio_milestone_155_smoke() -> int
   if studio_spinup_template_count_stub() != 12:
     return 2
   return studio_milestone_150_smoke()
+
+def studio_milestone_composable_target_160_stub() -> int
+  requires true
+  ensures result == 160
+  decreases 0
+=
+  return 160
+
+def studio_milestone_160_smoke() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  if studio_milestone_composable_target_160_stub() != 160:
+    return 1
+  if studio_spinup_template_count_stub() != 12:
+    return 2
+  return studio_milestone_155_smoke()
 
 def studio_milestone_composable_target_121_stub() -> int
   requires true

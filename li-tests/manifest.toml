@@ -1363,6 +1363,36 @@ note = "Milestone 155 composable gates"
 
 [[tests]]
 suite = "composable"
+file = "composable/import_assets_studio_play_quick.li"
+outcome = "compile_ok"
+note = "Assets + play session"
+
+[[tests]]
+suite = "composable"
+file = "composable/import_voxel_studio_shell_quick.li"
+outcome = "compile_ok"
+note = "Voxel additive + studio native shell"
+
+[[tests]]
+suite = "composable"
+file = "composable/import_ml_studio_quick.li"
+outcome = "compile_ok"
+note = "ML job graph + studio play mode"
+
+[[tests]]
+suite = "composable"
+file = "composable/import_chem_studio_shell_quick.li"
+outcome = "compile_ok"
+note = "Chem LITL DFT + studio native shell"
+
+[[tests]]
+suite = "composable"
+file = "composable/import_world_studio_milestone_160.li"
+outcome = "compile_ok"
+note = "Milestone 160 composable gates"
+
+[[tests]]
+suite = "composable"
 file = "composable/import_world_studio_benchmark_tier1.li"
 outcome = "compile_ok"
 note = "Competitive world-studio.toml tier-1 rollup"

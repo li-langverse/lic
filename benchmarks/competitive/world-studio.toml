@@ -540,6 +540,41 @@ li_package = "li-studio"
 composable = "import_world_studio_milestone_155"
 
 [[benchmark]]
+id = "assets-studio-play-quick"
+name = "Assets + play session"
+tier = 1
+li_package = "li-assets"
+composable = "import_assets_studio_play_quick"
+
+[[benchmark]]
+id = "voxel-studio-shell-quick"
+name = "Voxel + studio shell"
+tier = 1
+li_package = "li-voxel"
+composable = "import_voxel_studio_shell_quick"
+
+[[benchmark]]
+id = "ml-studio-quick"
+name = "ML + studio play mode"
+tier = 1
+li_package = "li-ml"
+composable = "import_ml_studio_quick"
+
+[[benchmark]]
+id = "chem-studio-shell-quick"
+name = "Chem + studio shell"
+tier = 1
+li_package = "li-chem"
+composable = "import_chem_studio_shell_quick"
+
+[[benchmark]]
+id = "world-studio-milestone-160"
+name = "Milestone 160 composable gates"
+tier = 1
+li_package = "li-studio"
+composable = "import_world_studio_milestone_160"
+
+[[benchmark]]
 id = "httpd-li-native-gateway"
 name = "Li-native HTTP/WS gateway"
 tier = 1

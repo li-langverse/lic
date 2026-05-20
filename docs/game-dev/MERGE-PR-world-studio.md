@@ -29,7 +29,7 @@ gh pr create \
 
 | Metric | Value |
 |--------|--------|
-| Composable gates | **155** |
+| Composable gates | **160** |
 | Spin-up templates | **12** (`play_mode`) |
 | Demo tabs | 13 |
 | Vertical demos | 7 |

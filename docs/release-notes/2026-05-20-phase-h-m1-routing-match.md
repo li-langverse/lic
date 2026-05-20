@@ -8,7 +8,7 @@ First **M1 `.li` routing** piece: `match_route_fixture` in `packages/li-http`, t
 
 1. Read `packages/li-http/src/lib.li`, `runtime/li_rt.c` (`li_rt_match_route_fixture`), `scripts/check-httpd-route-fixture.sh`.
 2. Run `./li-tests/run_httpd_config.sh` and `LI_ALLOW_OPEN_VC=1 LIC=./build/compiler/lic/lic build li-tests/routing/match_routes.li`.
-3. Next: load routes from desugared TOML in Li (not fixture-hardcoded); fix str/extern runtime ABI so `match_routes` binary returns 0.
+3. Next: load routes from desugared TOML in Li (not fixture-hardcoded); extend `match_route` beyond `match_route_fixture` oracle.
 
 ## Changed
 
@@ -24,7 +24,7 @@ First **M1 `.li` routing** piece: `match_route_fixture` in `packages/li-http`, t
 
 - Full TOML route table loader in Li.
 - li-httpd binary serve loop.
-- str move ABI at runtime (Li binary exit codes may not match `ensures` yet).
+- str move ABI beyond `i8*` call args (full `str` stdlib semantics).
 
 ## Breaking
 

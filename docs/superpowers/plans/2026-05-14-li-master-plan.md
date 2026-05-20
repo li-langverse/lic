@@ -179,8 +179,8 @@ When **`lic`**, **`lit`**, **`lip`**, or any **`li-std-*` / `li-*`** package rel
 | 2g | **`def`**, Nim `object`, `private`/`public`, `import` | `.cursor/plans/nim_oop_and_def_e5f70493.plan.md` | `li-tests/encapsulation/` green |
 | 2h | **Python-math surface** (`**`, `//`, `%`, `for`/`range`, contract sugar, `old`) | same plan (Phase A0) | `li-tests/math_syntax/` green |
 | **2i** | **Math / linalg surface** (infix `*`, `+`, `dot`, `A @ B` — not user `simd(...)`) | [2026-05-16-li-math-linalg-surface.md](2026-05-16-li-math-linalg-surface.md) | `li-tests/math_linalg/`; docs samples |
-| 2e | Contracts + refinements | TBD | VC generation |
-| 2f | Lean 4 verify | TBD | `lic verify` on integers/reals |
+| 2e | Contracts + refinements | [proof-corpus-roadmap](../verification/proof-corpus-roadmap.md) | **Partial (PR #83):** call-site `requires`, refinements, AutoVC |
+| 2f | Lean 4 verify | same + [provability-gaps](../verification/provability-gaps.md) | **Partial:** open-VC gate; `contracts_verify` 16/16; full kernel **G-lean** open |
 | 3 | MIR + LLVM codegen | `2026-05-14-phase-03-mir-codegen.md` | `lic build` |
 | 4 | Stdlib + runtime + deferred annotations | `2026-05-14-phase-04-runtime-stdlib.md` | hello + collections run |
 | 5 | Tetris | `2026-05-14-phase-05-tetris.md` | playable game |
@@ -189,7 +189,7 @@ When **`lic`**, **`lit`**, **`lip`**, or any **`li-std-*` / `li-*`** package rel
 | 7 | Native HPC (SIMD + OpenMP) | `2026-05-14-phase-07-native-hpc.md` | Pure-Li simd_dot + md; race suite; fuzz daily |
 | **7d** | **Execution decorators** (`@parallel`, `@vectorized`, `@cpu`/`@gpu`, strict user names) | `.cursor/plans/li_execution_decorators_7c6e3b42.plan.md` | `decorator_exploits` + `decorators/` CI; handbook |
 | **7e** | **Math → SIMD/parallel lowering** (formulas in source, intrinsics internal only) | [2026-05-16-li-math-linalg-surface.md](2026-05-16-li-math-linalg-surface.md) § 7e | Tier 1 benches math-only Li; ≤1.2× C++ |
-| **H** | **li-httpd** (proved agent gateway) | `2026-05-16-li-httpd-plan.md` | After **2e–2f**; M1 HTTP + proxy + bench/exploit harness |
+| **H** | **li-httpd** (proved agent gateway) | `2026-05-16-li-httpd-plan.md` | **M1 partial:** routing match + LLVM str ABI; **next:** TOML route loader in Li |
 | **Obs** | Fuzz dashboard + plan canvas | `scripts/export-fuzz-status.sh` + `canvases/*.canvas.tsx` | Nightly updates `.canvas.data.json` sidecars |
 | **Pkg** | **Package scaffold** (dirs + `li.toml`) | [2026-05-16-li-package-scaffold.md](2026-05-16-li-package-scaffold.md) | `li-new-package` + skill + creating-packages guide (**`lic`** repo) |
 | **8-repo** | **Org repos live + push/CI** | [2026-05-16-li-package-manager-lip.md](2026-05-16-li-package-manager-lip.md) | **`lic`**, **`lip`**, **`lit`** on GitHub; toolchain pins; bootstrap smoke |

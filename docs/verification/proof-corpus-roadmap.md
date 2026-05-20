@@ -53,14 +53,15 @@
 | `prove_reject/weak_ensures_true.li` | reject | **E0303** |
 | `cve_patterns/cwe676_extern_no_contract.li` | reject | Extern must have contracts |
 
-## Run results (2026-05-20, branch `cursor/refinement-call-check-57b4`)
+## Run results (2026-05-20, `main` after PR **#83** / **#88**)
 
 | Suite | Result | Notes |
 |-------|--------|-------|
-| `run_all.sh contracts_verify` | **11 pass / 5 fail** | Fails: `refinement_*_ok` — open `ensures (result = …)` without `_proved` theorem |
-| `contracts_discharge_corpus.sh` | **ok** | Trivial/const/index closed; `sqrt_open_bound` stays open |
-| `contracts_verify_lean.sh` | **partial** | Stops at `use_positive.li` — open `vc_main_ensures_0`, `vc_positive_requires_0` |
-| `lake build` | **skipped** | Lean 4 not installed in agent VM — install for kernel-level proof |
+| `run_all.sh contracts_verify` | **16 pass / 0 fail** | Includes `refinement_*_ok`; `sqrt_open_bound` = `verify_open_ok` |
+| `contracts_discharge_corpus.sh` | **ok** | Trivial/const/index/caller-requires closed; `sqrt_open_bound` intentionally open |
+| `run_httpd_config.sh` | **ok** | Python oracle + Li `match_routes.li` binary exit 0 |
+| `contracts_verify_lean.sh` | **partial** | Needs Lean 4 + lake; may stop on specimens with open user `ensures` |
+| `lake build` | **env-dependent** | `LI_BUILD_VERIFY_LEAN=1` on CI when lake present |
 
 ## Master-plan backlog (research: what to prove next)
 

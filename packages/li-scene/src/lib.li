@@ -23,26 +23,27 @@ type SceneNode = object
 type Scene = object
   public node_count: int
   public root_id: int
-
 def li_std_scene_version() -> int
   requires true
   ensures result == 1
   decreases 0
 =
   return 1
-
 def entity_id_new(v: int) -> EntityId
   requires v >= 0
-  ensures true
+  ensures result.value == v
   decreases v
 =
   var e: EntityId
   e.value = v
   return e
-
 def transform_identity() -> Transform3
   requires true
-  ensures true
+  ensures result.px == 0.0
+  ensures result.py == 0.0
+  ensures result.pz == 0.0
+  ensures result.qw == 1.0
+  ensures result.sx == 1.0
   decreases 0
 =
   var t: Transform3
@@ -57,31 +58,28 @@ def transform_identity() -> Transform3
   t.sy = 1.0
   t.sz = 1.0
   return t
-
 def scene_new() -> Scene
   requires true
-  ensures true
+  ensures result.node_count == 0
+  ensures result.root_id == 0
   decreases 0
 =
   var s: Scene
   s.node_count = 0
   s.root_id = 0
   return s
-
 def scene_attach_node(scene: Scene, node: SceneNode) -> unit
   requires scene.node_count >= 0
   ensures true
   decreases scene.node_count
 =
   scene.node_count = scene.node_count + 1
-
 def scene_sync_from_physics(scene: Scene) -> unit
   requires true
   ensures true
   decreases 0
 =
   return
-
 def scene_sync_to_physics(scene: Scene) -> unit
   requires true
   ensures true

@@ -114,7 +114,11 @@ std::vector<std::string> parse_workspace_members(const std::filesystem::path& to
   if (pos == std::string::npos) {
     return members;
   }
-  const std::size_t bracket = text.find('[', pos);
+  const std::size_t eq = text.find('=', pos);
+  if (eq == std::string::npos) {
+    return members;
+  }
+  const std::size_t bracket = text.find('[', eq);
   if (bracket == std::string::npos) {
     return members;
   }

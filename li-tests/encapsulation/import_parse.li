@@ -1,4 +1,4 @@
-import std_math as m
+import import_fixture as f
 
 def main() -> int
   requires true

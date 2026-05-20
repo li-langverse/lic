@@ -19,7 +19,7 @@ def li_std_physics_fluids_version() -> int
 def sph_kernel_poly6(r: float, h: float) -> float
   requires h > 0.0
   requires r >= 0.0
-  ensures true
+  ensures result >= 0.0
   decreases 0
 =
   if r >= h:

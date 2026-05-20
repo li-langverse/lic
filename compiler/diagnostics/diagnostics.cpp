@@ -78,6 +78,9 @@ std::string infer_diagnostic_code(std::string_view message) {
   if (has("missing ensures")) {
     return "E0302";
   }
+  if (has("ensures true") || has("weak postcondition")) {
+    return "E0303";
+  }
   if (has("contract") || has("requires") || has("ensures")) {
     return "E0301";
   }
@@ -109,6 +112,9 @@ std::string agent_diagnostic_code(std::string_view code) {
   }
   if (code == "E0302") {
     return "contract.ensures";
+  }
+  if (code == "E0303") {
+    return "contract.weak_ensures";
   }
   if (code == "E0320") {
     return "parallel.disjoint";

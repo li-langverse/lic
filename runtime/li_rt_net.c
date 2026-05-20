@@ -3499,14 +3499,17 @@ int32_t tcp_send_nb_i(int32_t fd, intptr_t buf, int32_t off, int32_t n) {
 }
 
 #ifdef __linux__
-int32_t epoll_wait_tagged_i(int32_t epfd, intptr_t events, int32_t max_events) {
+static int32_t epoll_wait_tagged_timeout_impl(int32_t epfd, intptr_t events, int32_t max_events, int timeout_ms) {
   if (max_events <= 0 || max_events > 256) {
     max_events = 256;
   }
   struct epoll_event evs[256];
-  int n = epoll_wait((int)epfd, evs, max_events, -1);
+  int n = epoll_wait((int)epfd, evs, max_events, timeout_ms);
   if (n < 0) {
     if (errno == EINTR) {
+      return 0;
+    }
+    if (timeout_ms == 0 && (errno == EAGAIN || errno == EWOULDBLOCK)) {
       return 0;
     }
     net_fail("epoll_wait");
@@ -3519,6 +3522,14 @@ int32_t epoll_wait_tagged_i(int32_t epfd, intptr_t events, int32_t max_events) {
     out[i * 3 + 2] = (int32_t)evs[i].events;
   }
   return n;
+}
+
+int32_t epoll_wait_tagged_i(int32_t epfd, intptr_t events, int32_t max_events) {
+  return epoll_wait_tagged_timeout_impl(epfd, events, max_events, -1);
+}
+
+int32_t epoll_wait_tagged_spin_i(int32_t epfd, intptr_t events, int32_t max_events) {
+  return epoll_wait_tagged_timeout_impl(epfd, events, max_events, 0);
 }
 
 int32_t httpd_epoll_register_up_i(int32_t epfd, int32_t up_fd, int32_t slot) {
@@ -3552,6 +3563,12 @@ int32_t httpd_proxy_splice_cl_i(int32_t up_fd, int32_t client_fd, int32_t max_by
 }
 #else
 int32_t epoll_wait_tagged_i(int32_t epfd, intptr_t events, int32_t max_events) {
+  (void)epfd;
+  (void)events;
+  (void)max_events;
+  return -1;
+}
+int32_t epoll_wait_tagged_spin_i(int32_t epfd, intptr_t events, int32_t max_events) {
   (void)epfd;
   (void)events;
   (void)max_events;
@@ -3692,7 +3709,56 @@ static int httpd_proxy_start_async(int epfd, int32_t conn, int32_t slot, int hdr
 
 int32_t httpd_li_proxy_start_i(int32_t epfd, int32_t conn, int32_t slot, int32_t hdr_end, int32_t keep);
 
+static void httpd_proxy_snap_begin_recording_if_get(int32_t slot) {
+  g_proxy_snap_recording = 0;
+  if (g_proxy_snap_ready || slot < 0 || slot >= HTTPD_MAX_CONN) {
+    return;
+  }
+  if (g_slots[slot].len < 4) {
+    return;
+  }
+  const char* b = g_slots[slot].buf;
+  if (b[0] == 'G' && b[1] == 'E' && b[2] == 'T' && b[3] == ' ') {
+    g_proxy_snap_recording = 1;
+    g_proxy_snap_len = 0;
+  }
+}
+
+/* 0 = no snap; 1 = served keep-alive; -1 = served then close; -2 = I/O error */
+int32_t httpd_li_proxy_snap_ready_i(void) { return g_proxy_snap_ready ? 1 : 0; }
+
+int32_t httpd_li_proxy_try_snap_i(int32_t conn, int32_t slot, int32_t hdr_end, int32_t keep) {
+  if (!g_proxy_snap_ready || slot < 0 || slot >= HTTPD_MAX_CONN || hdr_end < 4) {
+    return 0;
+  }
+  if (g_slots[slot].len > hdr_end) {
+    return 0;
+  }
+  if (g_slots[slot].buf[0] != 'G' || g_slots[slot].buf[1] != 'E' || g_slots[slot].buf[2] != 'T' ||
+      g_slots[slot].buf[3] != ' ') {
+    return 0;
+  }
+  httpd_req_info_t req;
+  if (parse_request_line_c(g_slots[slot].buf, hdr_end, &req) != 0) {
+    return -2;
+  }
+  if (!path_proxy_match(req.path, req.path_len)) {
+    return 0;
+  }
+  size_t off = 0;
+  ssize_t rc = httpd_send_nb(conn, g_proxy_snap, (size_t)g_proxy_snap_len, &off);
+  if (rc < 0) {
+    return -2;
+  }
+  if (rc == 0 && off < (size_t)g_proxy_snap_len) {
+    return -2;
+  }
+  net_slot_consume(slot, hdr_end);
+  return keep ? 1 : -1;
+}
+
 static int32_t httpd_li_try_start_proxy_i(int32_t epfd, int32_t conn, int32_t slot) {
+  (void)epfd;
   if (!g_li_proxy_mode || !g_cache_ready || g_slots[slot].proxy_active) {
     return 0;
   }
@@ -3711,8 +3777,15 @@ static int32_t httpd_li_try_start_proxy_i(int32_t epfd, int32_t conn, int32_t sl
   if (!path_proxy_match(req.path, req.path_len)) {
     return 0;
   }
+  if (g_slots[slot].len > hdr_end) {
+    return 0;
+  }
   int keep = !wants_connection_close(g_slots[slot].buf, hdr_end);
-  return httpd_li_proxy_start_i(epfd, conn, slot, hdr_end, keep);
+  int32_t snap = httpd_li_proxy_try_snap_i(conn, slot, hdr_end, keep);
+  if (snap != 0) {
+    return snap;
+  }
+  return 0;
 }
 
 int32_t httpd_li_proxy_start_i(int32_t epfd, int32_t conn, int32_t slot, int32_t hdr_end, int32_t keep) {
@@ -3850,6 +3923,7 @@ int32_t httpd_li_proxy_mark_active_i(int32_t epfd, int32_t slot, int32_t up_fd, 
     return -1;
   }
   httpd_proxy_client_epoll_mod(epfd, slot, EPOLLIN | EPOLLET);
+  httpd_proxy_snap_begin_recording_if_get(slot);
   return 0;
 }
 

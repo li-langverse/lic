@@ -201,6 +201,22 @@ extern proc epoll_wait_tagged_i(epfd: var int, events: var ptr, max_events: int)
   ensures true
   decreases 0
 
+extern proc epoll_wait_tagged_spin_i(epfd: var int, events: var ptr, max_events: int) raises Net -> int
+  requires epfd >= 0
+  ensures true
+  decreases 0
+
+extern proc httpd_li_proxy_snap_ready_i() -> int
+  requires true
+  ensures true
+  decreases 0
+
+extern proc httpd_li_proxy_try_snap_i(conn: var int, slot: var int, hdr_end: var int, keep: var int) raises Net, IO -> int
+  requires conn >= 0
+  requires 0 <= slot
+  ensures true
+  decreases 0
+
 extern proc httpd_epoll_add_client_i(epfd: var int, conn: var int, slot: var int) raises Net -> int
   requires epfd >= 0
   requires conn >= 0

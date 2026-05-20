@@ -740,6 +740,13 @@ def proxy_handle_client_in(epfd: var int, slot: var int) raises Net, Alloc, IO -
   if buf_has_connection_close(buf, hdr_end) == 1:
     keep = 0
   var filled2: int = net_buf_len(slot)
+  if filled2 <= hdr_end:
+    if httpd_li_proxy_snap_ready_i() == 1:
+      var snap: int = httpd_li_proxy_try_snap_i(conn, slot, hdr_end, keep)
+      if snap == 1:
+        return 0
+      if snap < 0:
+        return -1
   if filled2 > hdr_end:
     var st: int = httpd_li_proxy_start_i(epfd, conn, slot, hdr_end, keep)
     if st < 0:
@@ -871,6 +878,16 @@ def nginx_proxy_epoll_serve(port: var int, root: var ptr, backend_port: var int)
       while i < n:
         proxy_dispatch_one(epfd, listen_fd, evbuf, i)
         i = i + 1
+      var spin: int = 1
+      while spin == 1:
+        var n2: int = epoll_wait_tagged_spin_i(epfd, evbuf, 256)
+        if n2 <= 0:
+          spin = 0
+        if n2 > 0:
+          var j: int = 0
+          while j < n2:
+            proxy_dispatch_one(epfd, listen_fd, evbuf, j)
+            j = j + 1
   net_buf_free(evbuf)
   return 0
 

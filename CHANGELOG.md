@@ -8,6 +8,7 @@ All notable changes to Li are documented here. The format follows
 
 ### Added
 
+- **li-httpd Li proxy P5:** GET snap fast path + epoll spin-drain in Li epoll loop when `LI_HTTPD_PROXY_LI=1` — [2026-05-22-httpd-li-proxy-p5-snap-spin.md](docs/release-notes/2026-05-22-httpd-li-proxy-p5-snap-spin.md).
 - **li-httpd Li proxy P2–P4:** response parse, CL splice relay, upstream pool in `lib.li` when `LI_HTTPD_PROXY_LI=1` — [2026-05-22-httpd-li-proxy-p2-p4.md](docs/release-notes/2026-05-22-httpd-li-proxy-p2-p4.md).
 - **li-httpd proxy_loopback perf:** C `httpd_epoll_serve_proxy_i` + cached upstream headers + GET response snap (~2× nginx `proxy_loopback` ci) — [2026-05-22-httpd-li-epoll-proxy-nginx.md](docs/release-notes/2026-05-22-httpd-li-epoll-proxy-nginx.md).
 - **li-httpd Li epoll proxy loop (nginx parity shell):** `nginx_proxy_epoll_serve` in `lib.li` when `LI_HTTPD_PROXY_LI=1`; migration plan to drop C proxy — same note.

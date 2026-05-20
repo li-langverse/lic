@@ -206,6 +206,44 @@ void emit_object_slots_r(const Module& module, const TypeExpr& te, const std::st
   }
 }
 
+void emit_copy_object_slots_r(const Module& module, const TypeExpr& te, const std::string& src_prefix,
+                               const std::string& dst_prefix, std::vector<MirInsn>& out) {
+  const TypeAlias* ta = object_alias_for_named_type(module, te);
+  if (!ta) {
+    return;
+  }
+  for (const auto& fld : ta->fields) {
+    if (!fld.type) {
+      continue;
+    }
+    const std::string s_sub = src_prefix + "_" + fld.name;
+    const std::string d_sub = dst_prefix + "_" + fld.name;
+    if (object_alias_for_named_type(module, *fld.type)) {
+      emit_copy_object_slots_r(module, *fld.type, s_sub, d_sub, out);
+    } else {
+      const TypeExpr* ut = unwrap_refinement_type(fld.type.get());
+      if (!ut) {
+        continue;
+      }
+      if (ut->kind == TypeKind::Array) {
+        continue;
+      }
+      MirInsn ins;
+      ins.ident = d_sub;
+      ins.rhs_is_literal = false;
+      ins.rhs_ident = s_sub;
+      if (is_float_type_name(ut->name)) {
+        ins.op = MirOp::StoreFloat;
+      } else if (is_i64_type_name(ut->name) || is_string_type_name(ut->name)) {
+        ins.op = MirOp::StoreI64;
+      } else {
+        ins.op = MirOp::StoreInt;
+      }
+      out.push_back(std::move(ins));
+    }
+  }
+}
+
 std::string mir_field_slot_for_expr(const Expr& e) {
   const Expr* cur = &e;
   std::vector<std::string> fields_rev;
@@ -700,8 +738,12 @@ void lower_stmt(const Stmt& stmt, LowerCtx& ctx, bool returns_float, std::vector
           out.push_back(std::move(store));
         }
       } else if (object_alias_for_named_type(module, stmt.var_type)) {
-        emit_object_slots_r(module, stmt.var_type, std::string("__li_o_") + stmt.var_name, out,
-                            float_names, i64_locals);
+        const std::string dst_base = std::string("__li_o_") + stmt.var_name;
+        emit_object_slots_r(module, stmt.var_type, dst_base, out, float_names, i64_locals);
+        if (stmt.init && stmt.init->kind == Expr::Kind::Ident) {
+          emit_copy_object_slots_r(module, stmt.var_type, std::string("__li_o_") + stmt.init->ident,
+                                   dst_base, out);
+        }
       } else {
         MirInsn ins;
         ins.op = MirOp::LocalAllocInt;

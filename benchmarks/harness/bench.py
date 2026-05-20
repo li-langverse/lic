@@ -421,6 +421,11 @@ def verify_checksum(spec: BenchSpec, build_dir: Path) -> None:
     cpp_time = time_command([str(native)], runs=1)
     li_time = time_command([str(li_bin)], runs=1)
     if spec.li_pure:
+        if li_time < cpp_time * 0.45:
+            raise RuntimeError(
+                f"{spec.name}: pure_li too fast ({li_time:.4f}s vs native {cpp_time:.4f}s) "
+                "— loop likely DCE'd; observe accumulator in main.li"
+            )
         print(f"{spec.name} verify ok (pure Li): native checksum={native_out} li/native time={li_time:.4f}/{cpp_time:.4f}s")
         return
     if li_time < cpp_time * 0.45:

@@ -12,11 +12,12 @@
 ./scripts/verify-world-studio-binary.sh
 ```
 
-## Stats (impl-33)
+## Stats (impl-34)
 
 | Metric | Value |
 |--------|--------|
-| Composable gates | 103 (milestone **100** at impl-32) |
+| Composable gates | 106 (milestone **100** at impl-32) |
+| Li-native store | `store_backend_li_native()` — composable without Redis |
 | Demo tabs | 12 (incl. Agent) |
 | Spin-up templates | 11 |
 | Portable targets | 5 triples (`check-portable-targets.sh`) |

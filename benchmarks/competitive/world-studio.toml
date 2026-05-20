@@ -4,7 +4,7 @@
 schema = 1
 track = "PH-GD"
 plan = "docs/game-dev/world-studio-vision.md"
-composable_gates = 103
+composable_gates = 106
 branch = "feat/world-studio-impl-1"
 
 [[benchmark]]
@@ -237,3 +237,24 @@ name = "Agent + MMO realm deploy stack"
 tier = 1
 li_package = "li-mmo"
 composable = "import_world_studio_agent_realm"
+
+[[benchmark]]
+id = "store-li-native"
+name = "Li-native in-memory realtime store"
+tier = 1
+li_package = "li-store-realtime"
+composable = "import_store_li_native"
+
+[[benchmark]]
+id = "ecosystem-li-native-stack"
+name = "Li-native ecosystem stack"
+tier = 1
+li_package = "li-store-realtime"
+composable = "import_ecosystem_li_native_stack"
+
+[[benchmark]]
+id = "world-studio-li-ecosystem"
+name = "World Studio Li-native ecosystem rollup"
+tier = 1
+li_package = "li-studio"
+composable = "import_world_studio_li_ecosystem"

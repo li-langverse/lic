@@ -1,9 +1,9 @@
 # World Studio / Li Engine — progress report
 
 **Branch:** `feat/world-studio-impl-1`  
-**Sprint:** impl-33 (2026-05)  
+**Sprint:** impl-34 (2026-05)  
 **Tracker:** [PH-world-studio-program.md](PH-world-studio-program.md)  
-**Merge:** [MERGE-world-studio-checklist.md](MERGE-world-studio-checklist.md) · [MERGE-PR-world-studio.md](MERGE-PR-world-studio.md)
+**Policy:** [li-native-first.mdc](../../.cursor/rules/li-native-first.mdc) · [li-native-store-port.md](li-native-store-port.md)
 
 ---
 
@@ -11,30 +11,29 @@
 
 | Metric | Value |
 |--------|--------|
-| **Composable gates** | **103 / 103 pass** ✅ |
-| **Milestone** | **100** gates (impl-32) |
-| **Spin-up templates** | **11 compile_ok** |
-| **Demo tabs** | **12** (incl. **Agent**) |
+| **Composable gates** | **106 / 106 pass** ✅ |
+| **Li-native store** | `store_backend_li_native()` — no Redis required for gates |
+| **Spin-up templates** | **11** |
+| **Milestone** | **100** composable (impl-32) |
 
 ---
 
-## Sprint impl-33
+## Sprint impl-34
 
 | Deliverable | State |
 |-------------|--------|
-| `agent` spin-up template (11th) | ✅ |
-| `import_spinup_agent`, `import_studio_ai_patch_apply` | ✅ |
-| `import_world_studio_agent_realm` (agent + MMO) | ✅ |
-| Demo GUI **Agent** tab | ✅ |
+| `.cursor/rules/li-native-first.mdc` | ✅ |
+| `store_li_native_*` in `li-store-realtime` | ✅ |
+| Composables: `import_store_li_native`, ecosystem stacks | ✅ |
+| [li-native-store-port.md](li-native-store-port.md) | ✅ |
 
 ---
 
 ## Quick commands
 
 ```bash
-./scripts/lis new world-studio agent ./my-agent-project
 ./scripts/merge-world-studio-preflight.sh
-./scripts/open-studio-demo.sh
+./li-tests/run_all.sh composable
 ```
 
 ---
@@ -43,17 +42,17 @@
 
 | Sprint | Gates |
 |--------|-------|
-| impl-32 | **100** (milestone) |
-| **impl-33** | **103** |
+| impl-33 | 103 |
+| **impl-34** | **106** |
 
 ---
 
 ## Next
 
 1. **Merge PR** → `main`  
-2. Record demo reel (12 tabs, ~48s)  
-3. Upstream `lis new world-studio` in lis repo  
+2. Li-native HTTP/WS session path in `li-net-httpd` (no Node gateway)  
+3. Record demo reel  
 
 ---
 
-*impl-33 · `feat/world-studio-impl-1`*
+*impl-34 · Li-native ecosystem*

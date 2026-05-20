@@ -1,0 +1,68 @@
+---
+description: Li-native product stack — no external languages for engine features; port or redesign in Li
+globs:
+  - packages/**
+  - std/**
+  - docs/game-dev/**
+  - deploy/world-studio-spinup/**
+  - deploy/studio-demo/**
+  - deploy/mmo/**
+  - li-tests/composable/**
+alwaysApply: true
+---
+
+# Li-native first (no external product stack)
+
+**Premise:** World Studio / Li Engine ship as **Li packages + `lic build`**, not as a polyglot app glued together.
+
+## Product code → Li
+
+- Implement **sim, studio, net, store, render, chem, agents** in **`.li`** with composable `lib.li` APIs.
+- Do **not** add Python/JS/Rust/Go/Java/etc. **product** logic, services, or gameplay loops.
+- Do **not** depend on Redis/Postgres/CUDA-only stacks/etc. as **required external runtimes** for core features — **port the design to Li** (e.g. realtime store → `store.realtime` in Li).
+
+## Porting vs copying
+
+| Approach | When |
+|----------|------|
+| **Port to Li** | You need a capability (queues, shards, KV, HTTP) — reimplement API + semantics in a `li-*` package. |
+| **Redesign in Li** | Prefer when Li’s contracts (`requires`/`ensures`, composable gates, proof path) enable **simpler or safer** designs than cloning legacy mistakes. |
+| **Cargo-cult port** | Avoid — don’t transliterate Redis/MMORPG patterns line-for-line if Li suggests a cleaner model. |
+
+Learn from other systems’ **failure modes**; don’t treat their stacks as mandatory.
+
+## Bounded repo exceptions (not product features)
+
+| Layer | Allowed | Notes |
+|-------|---------|--------|
+| **`lic` compiler** | C++ bootstrap | Existing; don’t grow new product features in C++. |
+| **CI / scaffolding** | Small shell scripts | `li-tests`, gates, spin-up — keep thin; prefer Li for new tooling when practical. |
+| **Demo showcase** | HTML/JS **prototype** | Illustrative only; native shell is `studio_main.li` + `li-render` — don’t expand into a second engine. |
+
+## Examples
+
+```li
+# ✅ GOOD — store in Li
+import store.realtime
+# realm replay, session bind — composable smokes in li-tests
+```
+
+```python
+# ❌ BAD — product feature in Python
+import redis
+r = redis.Redis()
+```
+
+```li
+# ✅ GOOD — “redis-like” behavior as Li package API (port), not pip dependency
+def store_redis_smoke() -> int
+```
+
+## Gates
+
+- New verticals: **`li-tests/composable/import_*.li`** + package `*_smoke()` in **`lib.li`**.
+- Track progress: `docs/game-dev/PH-world-studio-progress-report.md`.
+
+**See also:** `li-world-studio-vision.mdc`, `li-composable.mdc`, `docs/game-dev/world-studio-vision.md`, `docs/game-dev/li-native-store-port.md`.
+
+**Reference impl:** `store_li_native_*` in `packages/li-store-realtime` (impl-34).

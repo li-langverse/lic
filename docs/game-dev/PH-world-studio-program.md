@@ -122,6 +122,8 @@ Cross-cutting program IDs. Implementation order respects dependencies in the vis
 | **98 composable** · additive spin-up · CI complete · merge preflight | Done |
 | **100 composable** · milestone gate · agent+publish stack · merge PR doc | Done |
 | **103 composable** · agent spin-up (11th) · AI patch + agent realm | Done |
+| **106 composable** · Li-native store port (`store_li_native_*`) | Done |
+| [li-native-first.mdc](../../.cursor/rules/li-native-first.mdc) | Done |
 | MMO-5 WebSocket stubs (`net.httpd`) | Done |
 | MMO-6 `world_checkpoint_mmo_stub` | Done |
 | BIOENG-2 construct registry | Done |

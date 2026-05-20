@@ -46,6 +46,7 @@ alwaysApply: false
 - Dump studio into `lic` compiler.
 - Use `li-demo` for studio features by default.
 - Add second physics engine for RL/sim.
+- Add **external product stacks** (Python services, Redis/DB clients, etc.) — **port or redesign in Li** (`li-native-first.mdc`).
 
 ## Phases
 

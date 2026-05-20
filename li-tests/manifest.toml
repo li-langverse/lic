@@ -1051,6 +1051,24 @@ note = "Agent diagnose + MMO realm deploy stack"
 
 [[tests]]
 suite = "composable"
+file = "composable/import_store_li_native.li"
+outcome = "compile_ok"
+note = "Li-native in-memory store (no external Redis)"
+
+[[tests]]
+suite = "composable"
+file = "composable/import_ecosystem_li_native_stack.li"
+outcome = "compile_ok"
+note = "Li-native store + studio + sim ecosystem"
+
+[[tests]]
+suite = "composable"
+file = "composable/import_world_studio_li_ecosystem.li"
+outcome = "compile_ok"
+note = "Li-native store + MMO WS + player + agent"
+
+[[tests]]
+suite = "composable"
 file = "composable/import_world_studio_benchmark_tier1.li"
 outcome = "compile_ok"
 note = "Competitive world-studio.toml tier-1 rollup"

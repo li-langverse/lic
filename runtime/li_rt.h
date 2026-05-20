@@ -4,6 +4,10 @@
 #include <stdlib.h>
 #include <stdint.h>
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 void li_panic(const char* msg);
 void li_bounds_fail(void);
 void li_rt_print_int(int32_t value);
@@ -37,6 +41,13 @@ int32_t li_rt_match_route_fixture(const char* method, const char* path);
 /* Load [routes] from TOML path; match after li_rt_httpd_load_config (M1). */
 int32_t li_rt_httpd_load_config(const char* path);
 int32_t li_rt_httpd_explain_config(const char* path);
+int32_t li_rt_httpd_last_error_kind(void);
+const char* li_rt_httpd_last_error_message(void);
+int32_t li_rt_httpd_route_count(void);
+int32_t li_rt_httpd_route_key_valid(const char* key);
+int32_t li_rt_httpd_serve_once(int32_t port);
+int32_t li_rt_str_len(const char* s);
+int32_t li_rt_str_char_at(const char* s, int32_t i);
 int32_t li_rt_httpd_load_routing_fixture(void);
 int32_t li_rt_httpd_match_route(const char* method, const char* path);
 int32_t li_rt_httpd_route_action_kind(int32_t route_id);
@@ -47,3 +58,7 @@ void li_async_frame_leave(void);
 int32_t li_async_await_i32(int32_t pending);
 /* Poll slot: 1 = ready, 0 = pending (stub always ready). */
 int32_t li_async_poll(uint32_t slot);
+
+#ifdef __cplusplus
+}
+#endif

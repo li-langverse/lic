@@ -37,3 +37,19 @@ def httpd_ready(handle_id: int) -> bool
   decreases 0
 =
   return true
+
+extern proc li_rt_httpd_serve_once(port: int) -> int
+  requires 0 < port
+  requires port <= 65535
+  ensures -1 <= result
+  ensures result <= 0
+  decreases port
+
+def httpd_serve_once(port: int) raises Net, IO -> int
+  requires 0 < port
+  requires port <= 65535
+  ensures -1 <= result
+  ensures result <= 0
+  decreases port
+=
+  return li_rt_httpd_serve_once(port)

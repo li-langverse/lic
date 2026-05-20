@@ -161,6 +161,24 @@ int32_t li_rt_str_byte_at(const char* s, int32_t i) {
   return (int32_t)(unsigned char)s[i];
 }
 
+int32_t li_rt_str_len(const char* s) {
+  if (s == NULL) {
+    return 0;
+  }
+  return (int32_t)strlen(s);
+}
+
+int32_t li_rt_str_char_at(const char* s, int32_t i) {
+  if (s == NULL || i < 0) {
+    return -1;
+  }
+  const size_t len = strlen(s);
+  if ((size_t)i >= len) {
+    return -1;
+  }
+  return (int32_t)(unsigned char)s[i];
+}
+
 int32_t li_rt_str_eq(const char* a, const char* b) {
   if (a == NULL || b == NULL) {
     return 0;

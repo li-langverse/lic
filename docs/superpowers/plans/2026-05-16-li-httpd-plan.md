@@ -35,6 +35,12 @@ todos:
   - id: m1-explain-config-cli
     content: "lic httpd explain-config + check-httpd-explain-config.sh golden"
     status: completed
+  - id: m1-validate-config-cli
+    content: "lic httpd validate-config with E0501–E0504"
+    status: completed
+  - id: m1-serve-once-stub
+    content: "httpd_serve_once TCP stub (listen/accept/200 OK)"
+    status: completed
   - id: m15-agent
     content: "M1.5: SSE streaming, stream timeouts, model routing, cancel on disconnect, OTel headers"
     status: pending

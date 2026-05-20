@@ -1,6 +1,7 @@
 /* Minimal li-httpd [routes] TOML loader + matcher (M1 — trusted C until std TOML ships). */
 
 #include "li_rt.h"
+#include "li_rt_net.h"
 
 #include <ctype.h>
 #include <stdio.h>
@@ -32,6 +33,26 @@ typedef struct {
 
 static LiHttpdRoute g_routes[LI_HTTPD_MAX_ROUTES];
 static int32_t g_route_count = 0;
+
+/* 1=io 2=route_key 3=path_traversal 4=overlap 5=parse */
+static int32_t g_httpd_last_kind = 0;
+static char g_httpd_last_msg[512];
+
+static void httpd_set_error(int32_t kind, const char* msg) {
+  g_httpd_last_kind = kind;
+  if (msg == NULL) {
+    g_httpd_last_msg[0] = '\0';
+    return;
+  }
+  strncpy(g_httpd_last_msg, msg, sizeof(g_httpd_last_msg) - 1);
+  g_httpd_last_msg[sizeof(g_httpd_last_msg) - 1] = '\0';
+}
+
+int32_t li_rt_httpd_last_error_kind(void) { return g_httpd_last_kind; }
+
+const char* li_rt_httpd_last_error_message(void) { return g_httpd_last_msg; }
+
+int32_t li_rt_httpd_route_count(void) { return g_route_count; }
 
 static void httpd_clear_routes(void) {
   g_route_count = 0;
@@ -136,12 +157,14 @@ static int parse_route_key_value(const char* key, const char* action, int32_t pr
   }
   method[mi] = '\0';
   if (mi == 0) {
+    httpd_set_error(2, "invalid route key: expected METHOD /path");
     return -1;
   }
   while (*p && isspace((unsigned char)*p)) {
     p++;
   }
   if (*p != '/') {
+    httpd_set_error(2, "invalid route key: path must start with /");
     return -1;
   }
   sp = p;
@@ -158,6 +181,7 @@ static int parse_route_key_value(const char* key, const char* action, int32_t pr
     raw_path[--plen] = '\0';
   }
   if (path_has_traversal(raw_path)) {
+    httpd_set_error(3, "path must not contain .. or //");
     return -1;
   }
   memset(out, 0, sizeof(*out));
@@ -203,6 +227,9 @@ static int validate_routes(void) {
         continue;
       }
       if (routes_overlap(&g_routes[i], &g_routes[j])) {
+        char msg[256];
+        snprintf(msg, sizeof(msg), "overlapping routes: %s vs %s", g_routes[i].name, g_routes[j].name);
+        httpd_set_error(4, msg);
         return -1;
       }
     }
@@ -278,6 +305,7 @@ static int parse_routes_table(const char* text) {
     char key[512];
     char action[256];
     if (parse_quoted(&q, key, sizeof(key)) != 0) {
+      httpd_set_error(2, "invalid route key: expected quoted \"METHOD /path\"");
       return -1;
     }
     while (*q && isspace((unsigned char)*q)) {
@@ -360,11 +388,14 @@ static int route_matches(const LiHttpdRoute* route, const char* method, const ch
 }
 
 int32_t li_rt_httpd_load_config(const char* path) {
+  httpd_set_error(0, "");
   if (path == NULL) {
+    httpd_set_error(1, "config path is null");
     return -1;
   }
   FILE* f = fopen(path, "rb");
   if (f == NULL) {
+    httpd_set_error(1, "cannot open config file");
     return -1;
   }
   char* buf = (char*)malloc(LI_HTTPD_FILE_MAX);
@@ -381,7 +412,34 @@ int32_t li_rt_httpd_load_config(const char* path) {
   buf[n] = '\0';
   int rc = parse_routes_table(buf);
   free(buf);
+  if (rc != 0 && g_httpd_last_kind == 0) {
+    httpd_set_error(5, "invalid [routes] table");
+  }
   return rc == 0 ? 0 : -1;
+}
+
+int32_t li_rt_httpd_route_key_valid(const char* key) {
+  LiHttpdRoute tmp;
+  if (key == NULL) {
+    return 0;
+  }
+  if (parse_route_key_value(key, "static:noop", 0, &tmp) != 0) {
+    return 0;
+  }
+  return 1;
+}
+
+int32_t li_rt_httpd_serve_once(int32_t port) {
+  if (port <= 0 || port > 65535) {
+    return -1;
+  }
+  const int32_t listen_fd = tcp_listen(port);
+  const int32_t conn_fd = tcp_accept(listen_fd);
+  const char* resp = "HTTP/1.1 200 OK\r\nContent-Length: 2\r\nConnection: close\r\n\r\nok";
+  tcp_send(conn_fd, resp);
+  tcp_close(conn_fd);
+  tcp_close(listen_fd);
+  return 0;
 }
 
 int32_t li_rt_httpd_match_route(const char* method, const char* path) {

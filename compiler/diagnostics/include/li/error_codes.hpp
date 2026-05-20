@@ -26,6 +26,10 @@ enum class ErrorCode {
   E0350,  // policy.parallel_overlap
   E0401,  // control.break_outside_loop
   E0402,  // control.continue_outside_loop
+  E0501,  // httpd.config.io
+  E0502,  // httpd.config.route_key
+  E0503,  // httpd.config.path_traversal
+  E0504,  // httpd.config.overlap
 };
 
 std::string_view error_code_string(ErrorCode code);

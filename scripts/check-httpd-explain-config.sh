@@ -9,8 +9,9 @@ BIN="${TMPDIR:-/tmp}/li_httpd_explain_$$"
 trap 'rm -f "$BIN"' EXIT
 
 "$ROOT/scripts/li-httpd-explain-config.sh" "$CFG" >"${BIN}.py"
-"$CC" -Wno-override-module -x c "$ROOT/runtime/li_rt.c" -x c "$ROOT/runtime/li_rt_httpd.c" \
-  -x c "$ROOT/scripts/httpd_explain_main.c" -I"$ROOT/runtime" -lm -o "$BIN"
+"$CC" -Wno-override-module -x c "$ROOT/runtime/li_rt.c" -x c "$ROOT/runtime/li_rt_net.c" \
+  -x c "$ROOT/runtime/li_rt_httpd.c" -x c "$ROOT/scripts/httpd_explain_main.c" \
+  -I"$ROOT/runtime" -lm -o "$BIN"
 "$BIN" "$CFG" >"${BIN}.c"
 if ! diff -u "$GOLDEN" "${BIN}.c" >/dev/null; then
   echo "check-httpd-explain-config: C vs golden mismatch" >&2

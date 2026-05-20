@@ -38,6 +38,17 @@ echo "== routing (Li TOML loader) =="
 /tmp/li_match_routes_toml
 test "$(/tmp/li_match_routes_toml; echo $?)" -eq 0
 
+echo "== validate-config (lic CLI) =="
+"$LIC" httpd validate-config "$ROOT/li-tests/config_desugar/good/agent_gateway.toml"
+for rej in "$ROOT/li-tests/config_desugar/reject"/*.toml; do
+  name="$(basename "$rej")"
+  if "$LIC" httpd validate-config "$rej" 2>/dev/null; then
+    echo "validate-config: expected reject for $name" >&2
+    exit 1
+  fi
+  echo "validate-config $name: rejected OK"
+done
+
 echo "== explain-config (lic CLI + C/Python parity) =="
 CFG="$ROOT/li-tests/config_desugar/good/agent_gateway.toml"
 export LI_REPO_ROOT="$ROOT"

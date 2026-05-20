@@ -11,6 +11,9 @@
 #include "li/vc_summary.hpp"
 #include "li/vc_witness.hpp"
 #include "li/terminal.hpp"
+#include "li/error_codes.hpp"
+
+#include "li_rt.h"
 
 #include <cstdio>
 #include <cstdlib>
@@ -37,6 +40,7 @@ int usage() {
             << "                       [--coverage-instrument]\n"
             << "  lic smoke-llvm         verify LLVM can emit main returning 0\n"
             << "  lic httpd explain-config <file.toml>  desugar [routes] to canonical form\n"
+            << "  lic httpd validate-config <file.toml>  validate [routes] (E0501–E0504)\n"
             << "  lic --version          print version\n"
             << "\n"
             << "resource defaults (override via flags or env):\n"
@@ -66,6 +70,44 @@ std::filesystem::path resolve_httpd_config_script() {
     }
   }
   return {};
+}
+
+static li::ErrorCode httpd_error_kind_to_code(int32_t kind) {
+  switch (kind) {
+    case 1:
+      return li::ErrorCode::E0501;
+    case 2:
+      return li::ErrorCode::E0502;
+    case 3:
+      return li::ErrorCode::E0503;
+    case 4:
+      return li::ErrorCode::E0504;
+    default:
+      return li::ErrorCode::E0502;
+  }
+}
+
+int httpd_validate_config(int argc, char** argv) {
+  if (argc < 4 || std::string_view(argv[2]) != "validate-config") {
+    std::cerr << "usage: lic httpd validate-config <config.toml>\n";
+    return 1;
+  }
+  const char* path = argv[3];
+  if (li_rt_httpd_load_config(path) != 0) {
+    const int32_t kind = li_rt_httpd_last_error_kind();
+    const char* msg = li_rt_httpd_last_error_message();
+    const auto code = httpd_error_kind_to_code(kind);
+    const auto fd = li::format_diagnostic(code, msg ? msg : "config error",
+                                        "fix [routes] keys or paths; see docs/ecosystem/httpd-prerequisites.md");
+    std::cerr << path << ":1:1: " << li::styled_error_label() << " [" << fd.code << "]: " << fd.message;
+    if (!fd.hint.empty()) {
+      std::cerr << "\n  hint: " << fd.hint;
+    }
+    std::cerr << '\n';
+    return 1;
+  }
+  std::cout << "OK: " << li_rt_httpd_route_count() << " routes\n";
+  return 0;
 }
 
 int httpd_explain_config(int argc, char** argv) {
@@ -398,7 +440,14 @@ int main(int argc, char** argv) {
     return verify_file(argv[2], run_lean, strict_lean);
   }
   if (cmd == "httpd") {
-    return httpd_explain_config(argc, argv);
+    if (argc >= 3 && std::string_view(argv[2]) == "validate-config") {
+      return httpd_validate_config(argc, argv);
+    }
+    if (argc >= 3 && std::string_view(argv[2]) == "explain-config") {
+      return httpd_explain_config(argc, argv);
+    }
+    std::cerr << "usage: lic httpd explain-config|validate-config <config.toml>\n";
+    return 1;
   }
   if (cmd == "build") {
     if (argc < 3) {

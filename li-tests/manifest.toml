@@ -602,6 +602,12 @@ outcome = "verify_open_ok"
 note = "M1 serve-once stub: tcp_listen/accept/send health response"
 
 [[tests]]
+suite = "httpd"
+file = "httpd/serve_routed_once.li"
+outcome = "verify_open_ok"
+note = "serve_routed_once: TOML routes + GET /health -> 200 static (oracle; not epoll loop)"
+
+[[tests]]
 suite = "routing"
 file = "routing/match_routes.li"
 outcome = "verify_open_ok"

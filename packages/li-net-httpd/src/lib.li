@@ -53,3 +53,20 @@ def httpd_serve_once(port: int) raises Net, IO -> int
   decreases port
 =
   return li_rt_httpd_serve_once(port)
+
+extern proc li_rt_httpd_serve_routed_once(port: int) -> int
+  requires 0 < port
+  requires port <= 65535
+  ensures -1 <= result
+  ensures result <= 2
+  decreases port
+
+# One-shot accept: match GET /health against loaded routes (M1 oracle; not production loop).
+def httpd_serve_routed_once(port: int) raises Net, IO -> int
+  requires 0 < port
+  requires port <= 65535
+  ensures -1 <= result
+  ensures result <= 2
+  decreases port
+=
+  return li_rt_httpd_serve_routed_once(port)

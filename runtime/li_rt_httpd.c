@@ -429,6 +429,99 @@ int32_t li_rt_httpd_route_key_valid(const char* key) {
   return 1;
 }
 
+static int parse_http_request_line(const char* req, char* method, size_t method_len, char* path,
+                                   size_t path_len) {
+  if (req == NULL || method == NULL || path == NULL) {
+    return -1;
+  }
+  const char* sp1 = strchr(req, ' ');
+  if (sp1 == NULL) {
+    return -1;
+  }
+  size_t mlen = (size_t)(sp1 - req);
+  if (mlen == 0 || mlen >= method_len) {
+    return -1;
+  }
+  memcpy(method, req, mlen);
+  method[mlen] = '\0';
+  const char* p = sp1 + 1;
+  while (*p == ' ') {
+    p++;
+  }
+  const char* sp2 = strchr(p, ' ');
+  if (sp2 == NULL) {
+    return -1;
+  }
+  size_t plen = (size_t)(sp2 - p);
+  if (plen == 0 || plen >= path_len) {
+    return -1;
+  }
+  memcpy(path, p, plen);
+  path[plen] = '\0';
+  return 0;
+}
+
+static int32_t httpd_send_response(int32_t conn_fd, int32_t status, const char* body) {
+  char hdr[256];
+  const char* reason = "OK";
+  if (status == 404) {
+    reason = "Not Found";
+  } else if (status == 502) {
+    reason = "Bad Gateway";
+  }
+  const int blen = body ? (int)strlen(body) : 0;
+  snprintf(hdr, sizeof(hdr),
+           "HTTP/1.1 %d %s\r\nContent-Length: %d\r\nConnection: close\r\n\r\n%s", status, reason,
+           blen, body ? body : "");
+  tcp_send(conn_fd, hdr);
+  return 0;
+}
+
+/* M1 oracle: one accept, built-in GET /health, match loaded [routes]. Not the production loop
+ * (see draft PRs httpd-m1-impl / httpd-m1-perf for epoll + full serve). */
+int32_t li_rt_httpd_serve_routed_once(int32_t port) {
+  if (port <= 0 || port > 65535) {
+    return -1;
+  }
+  if (g_route_count == 0) {
+    if (li_rt_httpd_load_routing_fixture() != 0) {
+      return -1;
+    }
+  }
+  const char* req = "GET /health HTTP/1.1\r\nHost: localhost\r\n\r\n";
+  char method[LI_HTTPD_METHOD_MAX];
+  char path[LI_HTTPD_PATH_MAX];
+  if (parse_http_request_line(req, method, sizeof(method), path, sizeof(path)) != 0) {
+    return -1;
+  }
+  const int32_t route_id = li_rt_httpd_match_route(method, path);
+  const int32_t listen_fd = tcp_listen(port);
+  const int32_t conn_fd = tcp_accept(listen_fd);
+  if (route_id == 0) {
+    httpd_send_response(conn_fd, 404, "not found\n");
+    tcp_close(conn_fd);
+    tcp_close(listen_fd);
+    return 1;
+  }
+  const int32_t kind = li_rt_httpd_route_action_kind(route_id);
+  if (kind == 1) {
+    httpd_send_response(conn_fd, 200, "ok\n");
+    tcp_close(conn_fd);
+    tcp_close(listen_fd);
+    return 0;
+  }
+  if (kind == 2) {
+    httpd_send_response(conn_fd, 502, "proxy not wired\n");
+    tcp_close(conn_fd);
+    tcp_close(listen_fd);
+    return 2;
+  }
+  httpd_send_response(conn_fd, 404, "not found\n");
+  tcp_close(conn_fd);
+  tcp_close(listen_fd);
+  return 1;
+}
+
 int32_t li_rt_httpd_serve_once(int32_t port) {
   if (port <= 0 || port > 65535) {
     return -1;

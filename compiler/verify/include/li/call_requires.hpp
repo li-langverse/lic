@@ -6,6 +6,7 @@
 #include <functional>
 #include <map>
 #include <optional>
+#include <set>
 #include <string>
 #include <vector>
 
@@ -15,6 +16,12 @@ enum class RequiresCheckResult {
   Satisfied,
   Violated,
   Unknown,
+};
+
+/// Facts available for lightweight proof discharge (const locals, if-guard assumptions).
+struct ProofFacts {
+  const std::map<std::string, std::int64_t>& const_int_locals;
+  const std::set<std::string>& assum_nonneg_ints;
 };
 
 const ProcDecl* find_proc_by_name(const Module& module, const std::string& name);
@@ -34,9 +41,8 @@ std::unique_ptr<Expr> fold_const_int_locals(
 bool expr_statically_true(const Expr& expr);
 bool expr_statically_false(const Expr& expr);
 
-RequiresCheckResult check_requires_at_call(
-    const ProcDecl& callee, const Expr& call,
-    const std::map<std::string, std::int64_t>& const_int_locals);
+RequiresCheckResult check_requires_at_call(const ProcDecl& callee, const Expr& call,
+                                           const ProofFacts& facts);
 
 /// When a call provably breaks a callee `requires`, plain-language text for diagnostics.
 struct RequiresViolationExplanation {
@@ -45,8 +51,7 @@ struct RequiresViolationExplanation {
 };
 
 std::optional<RequiresViolationExplanation> explain_requires_violation(
-    const ProcDecl& callee, const Expr& call,
-    const std::map<std::string, std::int64_t>& const_int_locals);
+    const ProcDecl& callee, const Expr& call, const ProofFacts& facts);
 
 std::string expr_to_user_string(const Expr& expr);
 std::string call_to_user_string(const Expr& call);
@@ -66,12 +71,13 @@ using AliasTypeLookup = std::function<const TypeExpr*(const std::string&)>;
 std::optional<ResolvedRefinement> resolve_refinement_on_type(const TypeExpr& param_type,
                                                              AliasTypeLookup lookup);
 
-RequiresCheckResult check_refinement_argument(
-    const ResolvedRefinement& refinement, const Expr& arg,
-    const std::map<std::string, std::int64_t>& const_int_locals);
+RequiresCheckResult check_refinement_argument(const ResolvedRefinement& refinement,
+                                              const Expr& arg, const ProofFacts& facts);
 
 std::optional<RequiresViolationExplanation> explain_refinement_violation(
-    const ResolvedRefinement& refinement, const Expr& arg,
-    const std::map<std::string, std::int64_t>& const_int_locals);
+    const ResolvedRefinement& refinement, const Expr& arg, const ProofFacts& facts);
+
+/// Record `name` as non-negative inside a guarded branch (`if name >= 0`, etc.).
+void note_nonneg_assumption_from_cond(const Expr& cond, std::set<std::string>& out);
 
 }  // namespace li

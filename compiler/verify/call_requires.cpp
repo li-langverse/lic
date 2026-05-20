@@ -314,9 +314,59 @@ std::string call_to_user_string(const Expr& call) {
   return os.str();
 }
 
-RequiresCheckResult check_requires_at_call(
-    const ProcDecl& callee, const Expr& call,
-    const std::map<std::string, std::int64_t>& const_int_locals) {
+bool is_ge_zero_for_ident(const Expr& e, const std::string& ident) {
+  if (e.kind != Expr::Kind::BinOp || e.bin_op != BinOp::Ge || !e.lhs || !e.rhs) {
+    return false;
+  }
+  if (e.lhs->kind != Expr::Kind::Ident || e.lhs->ident != ident) {
+    return false;
+  }
+  const auto rhs = int_lit_value(*e.rhs);
+  return rhs && *rhs == 0;
+}
+
+bool folded_discharged_by_proof_facts(const Expr& folded, const ProofFacts& facts) {
+  if (folded.kind != Expr::Kind::BinOp || !folded.lhs || folded.lhs->kind != Expr::Kind::Ident) {
+    return false;
+  }
+  const std::string& id = folded.lhs->ident;
+  if (!is_ge_zero_for_ident(folded, id)) {
+    return false;
+  }
+  if (facts.assum_nonneg_ints.count(id) > 0) {
+    return true;
+  }
+  const auto it = facts.const_int_locals.find(id);
+  return it != facts.const_int_locals.end() && it->second >= 0;
+}
+
+void note_nonneg_assumption_from_cond(const Expr& cond, std::set<std::string>& out) {
+  if (cond.kind == Expr::Kind::BinOp && cond.bin_op == BinOp::And && cond.lhs && cond.rhs) {
+    note_nonneg_assumption_from_cond(*cond.lhs, out);
+    note_nonneg_assumption_from_cond(*cond.rhs, out);
+    return;
+  }
+  if (cond.kind != Expr::Kind::BinOp || !cond.lhs || !cond.rhs) {
+    return;
+  }
+  if (cond.bin_op == BinOp::Ge) {
+    if (cond.lhs->kind == Expr::Kind::Ident) {
+      const auto rhs = int_lit_value(*cond.rhs);
+      if (rhs && *rhs == 0) {
+        out.insert(cond.lhs->ident);
+      }
+    }
+    if (cond.rhs->kind == Expr::Kind::Ident) {
+      const auto lhs = int_lit_value(*cond.lhs);
+      if (lhs && *lhs == 0) {
+        out.insert(cond.rhs->ident);
+      }
+    }
+  }
+}
+
+RequiresCheckResult check_requires_at_call(const ProcDecl& callee, const Expr& call,
+                                           const ProofFacts& facts) {
   if (call.kind != Expr::Kind::Call) {
     return RequiresCheckResult::Unknown;
   }
@@ -331,8 +381,8 @@ RequiresCheckResult check_requires_at_call(
       continue;
     }
     const auto sub = substitute_call_params(*rc.expr, param_names, call.args);
-    const auto folded = fold_const_int_locals(*sub, const_int_locals);
-    if (expr_statically_true(*folded)) {
+    const auto folded = fold_const_int_locals(*sub, facts.const_int_locals);
+    if (expr_statically_true(*folded) || folded_discharged_by_proof_facts(*folded, facts)) {
       continue;
     }
     if (expr_statically_false(*folded)) {
@@ -350,9 +400,9 @@ RequiresCheckResult check_requires_at_call(
   return RequiresCheckResult::Satisfied;
 }
 
-std::optional<RequiresViolationExplanation> explain_requires_violation(
-    const ProcDecl& callee, const Expr& call,
-    const std::map<std::string, std::int64_t>& const_int_locals) {
+std::optional<RequiresViolationExplanation> explain_requires_violation(const ProcDecl& callee,
+                                                                       const Expr& call,
+                                                                       const ProofFacts& facts) {
   if (call.kind != Expr::Kind::Call) {
     return std::nullopt;
   }
@@ -367,8 +417,8 @@ std::optional<RequiresViolationExplanation> explain_requires_violation(
     }
     const std::string rule_text = expr_to_user_string(*rc.expr);
     const auto sub = substitute_call_params(*rc.expr, param_names, call.args);
-    const auto folded = fold_const_int_locals(*sub, const_int_locals);
-    if (!expr_statically_false(*folded)) {
+    const auto folded = fold_const_int_locals(*sub, facts.const_int_locals);
+    if (!expr_statically_false(*folded) || folded_discharged_by_proof_facts(*folded, facts)) {
       continue;
     }
     RequiresViolationExplanation out;
@@ -437,15 +487,14 @@ std::optional<ResolvedRefinement> resolve_refinement_on_type(const TypeExpr& te,
   return std::nullopt;
 }
 
-RequiresCheckResult check_refinement_argument(
-    const ResolvedRefinement& refinement, const Expr& arg,
-    const std::map<std::string, std::int64_t>& const_int_locals) {
+RequiresCheckResult check_refinement_argument(const ResolvedRefinement& refinement,
+                                              const Expr& arg, const ProofFacts& facts) {
   if (!refinement.predicate) {
     return RequiresCheckResult::Unknown;
   }
   const auto sub = substitute_refinement_binding(*refinement.predicate, refinement.bind_var, arg);
-  const auto folded = fold_const_int_locals(*sub, const_int_locals);
-  if (expr_statically_true(*folded)) {
+  const auto folded = fold_const_int_locals(*sub, facts.const_int_locals);
+  if (expr_statically_true(*folded) || folded_discharged_by_proof_facts(*folded, facts)) {
     return RequiresCheckResult::Satisfied;
   }
   if (expr_statically_false(*folded)) {
@@ -455,16 +504,15 @@ RequiresCheckResult check_refinement_argument(
 }
 
 std::optional<RequiresViolationExplanation> explain_refinement_violation(
-    const ResolvedRefinement& refinement, const Expr& arg,
-    const std::map<std::string, std::int64_t>& const_int_locals) {
+    const ResolvedRefinement& refinement, const Expr& arg, const ProofFacts& facts) {
   if (!refinement.predicate) {
     return std::nullopt;
   }
   const std::string value_text = expr_to_user_string(arg);
   const std::string rule_text = expr_to_user_string(*refinement.predicate);
   const auto sub = substitute_refinement_binding(*refinement.predicate, refinement.bind_var, arg);
-  const auto folded = fold_const_int_locals(*sub, const_int_locals);
-  if (!expr_statically_false(*folded)) {
+  const auto folded = fold_const_int_locals(*sub, facts.const_int_locals);
+  if (!expr_statically_false(*folded) || folded_discharged_by_proof_facts(*folded, facts)) {
     return std::nullopt;
   }
   RequiresViolationExplanation out;

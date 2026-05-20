@@ -105,6 +105,7 @@ struct Ctx {
   std::map<std::string, const ProcDecl*> procs;
   std::map<std::string, TyPtr> locals;
   std::map<std::string, std::int64_t> const_int_locals;
+  std::set<std::string> assum_nonneg_ints;
   std::map<std::string, TyPtr> type_vars;
   std::set<std::string> refined_index_params;
   std::set<std::string> loop_index_vars;
@@ -139,9 +140,11 @@ struct Ctx {
     };
   }
 
+  ProofFacts proof_facts() const { return ProofFacts{const_int_locals, assum_nonneg_ints}; }
+
   void report_refinement_violation(const Span& span, const ResolvedRefinement& refinement,
                                    const Expr& value) {
-    const auto explained = explain_refinement_violation(refinement, value, const_int_locals);
+    const auto explained = explain_refinement_violation(refinement, value, proof_facts());
     if (explained) {
       diag_error(diags, loc(span), ErrorCode::E0305, explained->message, explained->hint);
       return;
@@ -159,8 +162,7 @@ struct Ctx {
     if (!refinement) {
       return;
     }
-    const RequiresCheckResult ref_check =
-        check_refinement_argument(*refinement, value, const_int_locals);
+    const RequiresCheckResult ref_check = check_refinement_argument(*refinement, value, proof_facts());
     if (ref_check == RequiresCheckResult::Violated) {
       report_refinement_violation(span, *refinement, value);
     }
@@ -832,9 +834,9 @@ struct Ctx {
         check_value_matches_refinement(callee.params[n].type, *call.args[n], call.span);
       }
     }
-    const RequiresCheckResult req = check_requires_at_call(callee, call, const_int_locals);
+    const RequiresCheckResult req = check_requires_at_call(callee, call, proof_facts());
     if (req == RequiresCheckResult::Violated) {
-      const auto explained = explain_requires_violation(callee, call, const_int_locals);
+      const auto explained = explain_requires_violation(callee, call, proof_facts());
       if (explained) {
         diag_error(diags, loc(call.span), ErrorCode::E0304, explained->message, explained->hint);
       } else {
@@ -871,12 +873,15 @@ struct Ctx {
       return;
     }
     if (s.kind == Stmt::Kind::If) {
+      const auto saved_assum = assum_nonneg_ints;
       if (s.cond) {
         type_of(*s.cond);
+        note_nonneg_assumption_from_cond(*s.cond, assum_nonneg_ints);
       }
       for (const auto& inner : s.then_body) {
         check_stmt(inner);
       }
+      assum_nonneg_ints = saved_assum;
       if (s.else_body) {
         for (const auto& inner : *s.else_body) {
           check_stmt(inner);
@@ -902,16 +907,19 @@ struct Ctx {
     }
     if (s.kind == Stmt::Kind::While) {
       std::set<std::string> saved_loop = loop_index_vars;
+      const auto saved_assum = assum_nonneg_ints;
       loop_depth++;
       if (s.cond) {
         note_loop_index_from_cond(*s.cond);
         type_of(*s.cond);
+        note_nonneg_assumption_from_cond(*s.cond, assum_nonneg_ints);
       }
       for (const auto& inner : s.while_body) {
         check_stmt(inner);
       }
       loop_depth--;
       loop_index_vars = std::move(saved_loop);
+      assum_nonneg_ints = saved_assum;
       return;
     }
     if (s.kind == Stmt::Kind::For) {
@@ -1064,6 +1072,7 @@ struct Ctx {
     check_weak_ensures(p);
     locals.clear();
     const_int_locals.clear();
+    assum_nonneg_ints.clear();
     type_vars.clear();
     refined_index_params.clear();
     loop_index_vars.clear();
@@ -1093,7 +1102,7 @@ struct Ctx {
 TypecheckResult typecheck_module(const Module& module) {
   TypecheckResult result;
   DiagnosticBag& diags = result.diagnostics;
-  Ctx ctx{{}, {}, {}, {}, {}, {}, {}, 0, false, diags, "module"};
+  Ctx ctx{{}, {}, {}, {}, {}, {}, {}, {}, 0, false, diags, "module"};
   for (const auto& proc : module.procs) {
     ctx.procs[proc.name] = &proc;
   }

@@ -129,6 +129,30 @@ int check_file(const char* path, DiagOutput output, std::string_view json_comman
   return 0;
 }
 
+int run_lean_verify_after_build() {
+  if (std::getenv("LI_BUILD_VERIFY_LEAN") == nullptr &&
+      std::getenv("LI_BUILD_VERIFY_LEAN_STRICT") == nullptr) {
+    return 0;
+  }
+  const char* root = std::getenv("LI_REPO_ROOT");
+  std::string script = "scripts/lean-verify-stub.sh";
+  if (root != nullptr) {
+    script = std::string(root) + "/" + script;
+  }
+  if (std::system("command -v lake >/dev/null 2>&1") != 0) {
+    std::cerr << "lic build: warning — Lean 4 / lake not installed; skipping semantics proof "
+                 "(install for full 2f gate)\n";
+    return 0;
+  }
+  const std::string cmd = "bash " + script;
+  const int rc = std::system(cmd.c_str());
+  if (rc != 0) {
+    std::cerr << "lic build: Lean semantics verification failed (see docs/semantics)\n";
+    return 1;
+  }
+  return 0;
+}
+
 int count_open_autovc_goals() {
   const char* root = std::getenv("LI_REPO_ROOT");
   std::string script = "scripts/check-autovc-open-goals.sh";
@@ -404,6 +428,9 @@ int main(int argc, char** argv) {
                      "contract, or set LI_ALLOW_OPEN_VC=1 only for emergency bypass\n";
         return 1;
       }
+    }
+    if (const int lean_rc = run_lean_verify_after_build(); lean_rc != 0) {
+      return lean_rc;
     }
     if (std::getenv("LI_BUILD_VERIFY_LEAN") != nullptr) {
       return verify_file(input, true, false);

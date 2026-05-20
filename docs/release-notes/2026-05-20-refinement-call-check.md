@@ -8,13 +8,15 @@ Refinement types (`{x: int | …}` and aliases like `NonNeg`) are enforced at **
 
 1. **Read** `compiler/verify/call_requires.cpp` (`resolve_refinement_on_type`, `check_refinement_argument`), `typecheck.cpp` (`check_value_matches_refinement`).
 2. **Run** `LI_ALLOW_OPEN_VC=1 LIC=./build/compiler/lic/lic bash li-tests/run_all.sh` and filter `refinement_`.
-3. **Next** flow facts (`if x >= 0` → discharge), `and` bounds static eval, return-type refinements.
+3. **Next** caller `requires` → callee discharge, `and` bounds static eval, return-type refinements.
 
 ## Changed
 
 | Path | Change |
 |------|--------|
-| `compiler/verify/call_requires.{hpp,cpp}` | Resolve alias/inline refinements; check + explain; `substitute_refinement_binding` |
+| `compiler/verify/call_requires.{hpp,cpp}` | `ProofFacts`, if-guard `>= 0` discharge; resolve/check/explain refinements |
+| `compiler/lic/main.cpp` | `run_lean_verify_after_build` when `LI_BUILD_VERIFY_LEAN=1` |
+| `scripts/ci.sh` | `LI_BUILD_VERIFY_LEAN_STRICT=1` + autovc on CI sample |
 | `compiler/types/typecheck.cpp` | E0305 on calls + `var` init |
 | `compiler/verify/vc_emit_lean.cpp` | Call-site refinement VCs |
 | `compiler/diagnostics/*` | **E0305** `type.refinement` |

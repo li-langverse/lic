@@ -230,6 +230,11 @@ expected_substr = "E0305"
 
 [[tests]]
 suite = "contracts_verify"
+file = "contracts_verify/refinement_guard_ok.li"
+outcome = "verify_ok"
+
+[[tests]]
+suite = "contracts_verify"
 file = "contracts_verify/extern_call_requires_ok.li"
 outcome = "verify_ok"
 

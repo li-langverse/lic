@@ -22,6 +22,10 @@ compile_commands.json
 .cache/
 .DS_Store
 
+# Competitive intel — local screenshots/clips (links stay in docs)
+docs/game-dev/competitive-intel/media/local/**
+!docs/game-dev/competitive-intel/media/local/.gitkeep
+
 # Studio demo capture artifacts
 deploy/studio-demo/videos/frames/
 scripts/studio-demo-pkg/node_modules/

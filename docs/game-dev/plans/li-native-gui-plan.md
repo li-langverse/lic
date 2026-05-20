@@ -16,6 +16,7 @@
 | 0.2 | 2026-05 | **Li-only mandate**; removed Rust/web implementation paths |
 | 0.3 | 2026-05 | **Infinite agentic canvas** — spatial Studio surface for agents + creators |
 | 0.4 | 2026-05 | **Creative stack** — 3D scenes, animation, cinematics, video export (Li-only) |
+| 0.4.1 | 2026-05 | **Competitive intel** — [competitive-intel/](../competitive-intel/) catalog + analysis |
 
 ---
 
@@ -624,6 +625,8 @@ See archived note: [li-gui-cross-platform-plan.md](li-gui-cross-platform-plan.md
 | [specs/studio-ux-design-system-rfc.md](../specs/studio-ux-design-system-rfc.md) | PH-UX phases |
 | [agent-first-gui-research.md](../agent-first-gui-research.md) | SOTA research |
 | [world-studio-vision.md](../world-studio-vision.md) | Program rollup |
+| [competitive-intel/analysis.md](../competitive-intel/analysis.md) | Competitor videos/docs synthesis |
+| [competitive-intel/media-catalog.md](../competitive-intel/media-catalog.md) | Link catalog |
 
 ---
 

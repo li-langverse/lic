@@ -1,0 +1,114 @@
+{
+  "schema": "competitive_intel_v1",
+  "updated": "2026-05-20",
+  "policy": "links_and_metadata_only_no_third_party_binaries_in_repo",
+  "entries": [
+    {
+      "id": "UE-VID-01",
+      "competitor": "unreal_engine",
+      "type": "video",
+      "title": "State of Unreal 2022 — UE5 release keynote",
+      "url": "https://www.youtube.com/watch?v=7ZLibi6s_ew",
+      "duration_min": 38,
+      "topics": ["lumen", "nanite", "world_partition", "product_intro"]
+    },
+    {
+      "id": "UE-DOC-01",
+      "competitor": "unreal_engine",
+      "type": "documentation",
+      "title": "Sequencer Cinematic Editor",
+      "url": "https://dev.epicgames.com/documentation/unreal-engine/sequencer-cinematic-editor-unreal-engine",
+      "topics": ["sequencer", "cinematic", "screenshot_source"]
+    },
+    {
+      "id": "UN-VID-01",
+      "competitor": "unity",
+      "type": "video",
+      "title": "Unite 2024 Keynote — Unity 6",
+      "url": "https://www.youtube.com/watch?v=j_inZPiqSdQ",
+      "topics": ["unity_6", "product_intro", "liveops"]
+    },
+    {
+      "id": "UN-DOC-01",
+      "competitor": "unity",
+      "type": "documentation",
+      "title": "UI Builder interface overview",
+      "url": "https://docs.unity3d.com/6000.6/Documentation/Manual/UIB-interface-overview.html",
+      "topics": ["ui_toolkit", "uxml", "uss", "screenshot_source"]
+    },
+    {
+      "id": "UN-DOC-02",
+      "competitor": "unity",
+      "type": "documentation",
+      "title": "Timeline package manual",
+      "url": "https://docs.unity3d.com/Packages/com.unity.timeline@1.8/manual/index.html",
+      "topics": ["timeline", "animation", "cinematic"]
+    },
+    {
+      "id": "GO-VID-01",
+      "competitor": "godot",
+      "type": "video",
+      "title": "Godot 4.0 feature breakdown",
+      "url": "https://www.youtube.com/watch?v=chXAjMQrcZk",
+      "topics": ["godot_4", "editor", "product_intro"]
+    },
+    {
+      "id": "GO-DOC-01",
+      "competitor": "godot",
+      "type": "documentation",
+      "title": "First look at the editor",
+      "url": "https://docs.godotengine.org/en/4.5/getting_started/introduction/first_look_at_the_editor.html",
+      "topics": ["editor_layout", "screenshot_source"]
+    },
+    {
+      "id": "RB-DOC-01",
+      "competitor": "roblox_studio",
+      "type": "documentation",
+      "title": "Studio interface overview",
+      "url": "https://create.roblox.com/docs/studio/ui-overview",
+      "topics": ["toolbar", "viewport", "explorer", "creator_ui", "assistant", "screenshot_source"],
+      "screenshot_assets_note": "create.roblox.com/docs/assets/studio/general/Editor-Window.jpg"
+    },
+    {
+      "id": "BL-DOC-01",
+      "competitor": "blender",
+      "type": "documentation",
+      "title": "Video Sequencer editor",
+      "url": "https://docs.blender.org/manual/en/latest/editors/video_sequencer/index.html",
+      "topics": ["vse", "video_export", "screenshot_source"]
+    },
+    {
+      "id": "FI-BLOG-01",
+      "competitor": "figma",
+      "type": "blog",
+      "title": "UI3 redesign — canvas center stage",
+      "url": "https://www.figma.com/blog/behind-our-redesign-ui3",
+      "topics": ["infinite_canvas", "sections", "minimal_chrome"]
+    },
+    {
+      "id": "FN-VID-03",
+      "competitor": "fortnite_uefn",
+      "type": "video",
+      "title": "UEFN Cinematic Sequence Device tutorial",
+      "url": "https://www.youtube.com/watch?v=GkpVO9aziaU",
+      "duration_min": 8,
+      "topics": ["creator_cinematic", "uefn", "tutorial"]
+    },
+    {
+      "id": "FN-VID-01",
+      "competitor": "fortnite_uefn",
+      "type": "video",
+      "title": "GDC 2023 — First game in UEFN",
+      "url": "https://www.youtube.com/watch?v=by7QPeQH8ZY",
+      "topics": ["uefn", "product_intro"]
+    },
+    {
+      "id": "LI-01",
+      "competitor": "li_world_studio",
+      "type": "internal",
+      "title": "HTML studio demo",
+      "path": "lic/deploy/studio-demo/",
+      "topics": ["prototype", "not_canonical_ui"]
+    }
+  ]
+}

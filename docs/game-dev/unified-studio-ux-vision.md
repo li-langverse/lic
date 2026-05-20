@@ -2,7 +2,21 @@
 
 **Status:** Canonical product UX vision (2026-05)  
 **Audience:** PH-UX, PH-AGENT, PH-SIM, PH-GD  
-**Related:** [world-studio-vision.md](world-studio-vision.md) · [li-native-gui-plan.md](plans/li-native-gui-plan.md) · [agent-first-gui-research.md](agent-first-gui-research.md) · [competitive-intel/analysis.md](competitive-intel/analysis.md)
+**North star:** [product-north-star.md](product-north-star.md) — killer UI · killer performance · killer results · **mathematically proven**  
+**Related:** [world-studio-vision.md](world-studio-vision.md) · [li-native-gui-plan.md](plans/li-native-gui-plan.md) · [agent-first-gui-research.md](agent-first-gui-research.md)
+
+---
+
+## 0. UX serves the four killers (including proof)
+
+| Killer | What Studio must show |
+|--------|------------------------|
+| **UI/UX** | 60 fps viewport/canvas; ⌘K; agent transcript; ≤3 clicks to publish |
+| **Performance** | Status overlay: ms/frame, bench row, ratio vs baseline |
+| **Results** | Validity line (green/red); export/publish **hash** on screen |
+| **Proven** | **Gate chip** — `lic build` / `lic check` before ▶ play or export |
+
+**Rule:** A beautiful UI that hides proof is **off-brand**. Gate + validity + hash are **chrome**, not debug dialogs.
 
 ---
 
@@ -230,17 +244,22 @@ Phases align with [li-native-gui-plan.md](plans/li-native-gui-plan.md) G0–G8.
 
 ---
 
-## 10. Success metrics (killer UI)
+## 10. Success metrics (all four killers)
 
-| Metric | Target |
-|--------|--------|
-| Viewport / canvas pan | ≥60 fps |
-| Workspace switch | &lt;100 ms |
-| Primary flow | ≤3 clicks |
-| Agent patch → visible gate | &lt;2 s (local `lic check`) |
-| Publish | Bundle hash + manifest always shown |
-| a11y | WCAG 2.2 AA on studio chrome |
+| Pillar | Metric | Target |
+|--------|--------|--------|
+| UI/UX | Viewport / canvas pan | ≥60 fps |
+| UI/UX | Workspace switch | &lt;100 ms |
+| UI/UX | Primary flow | ≤3 clicks |
+| Proof | Agent patch → visible gate | &lt;2 s (local `lic check`) |
+| Proof | Play/export blocked on fail | 100% enforcement |
+| Performance | `render_frame_present` | Green validity + CI threshold |
+| Results | Publish | Bundle hash + bench row ids always shown |
+| Results | Sim bench | Validity column required |
+| a11y | Studio chrome | WCAG 2.2 AA |
+
+Full scorecard: [product-north-star.md](product-north-star.md).
 
 ---
 
-*This is the UX north star for a unified product. Implementation detail stays in [li-native-gui-plan.md](plans/li-native-gui-plan.md); engine scope stays in [world-studio-vision.md](world-studio-vision.md).*
+*UX north star for a unified product. Pillars: [product-north-star.md](product-north-star.md). Build: [li-native-gui-plan.md](plans/li-native-gui-plan.md). Engine: [world-studio-vision.md](world-studio-vision.md).*

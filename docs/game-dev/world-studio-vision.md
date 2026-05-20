@@ -10,7 +10,9 @@
 
 ## 1. One-sentence vision
 
-**Li World Studio** is an **agent-native, provably correct** platform on **Li Engine**: one runtime for **games**, **simulation** (RL, automotive, robotics, additive manufacturing, scientific/engineering, **AI drug design**), with **killer UI/UX**, **publication-grade export**, and **Cursor SDK** agents — while **`lic build`** keeps proof first.
+**Li World Studio** is an **agent-native** platform on **Li Engine** with **killer UI/UX**, **killer performance**, **killer results** — all **mathematically provable** where it matters: **`lic build`**, composable gates, tier-2 **validity**, and publication-grade repro bundles. One runtime for games, simulation, and engineering profiles.
+
+**North star (four killers + proof):** [product-north-star.md](product-north-star.md)
 
 ---
 
@@ -18,9 +20,12 @@
 
 | Pillar | Meaning |
 |--------|---------|
+| **Four killers + proof** | UI · performance · results · **`lic`/validity** — [product-north-star.md](product-north-star.md) |
 | **One engine** | Same `li-world` · `li-scene` · `li-physics-*` · `li-render` — no CARLA/GROMACS/slicer forks |
-| **AI-first** | Local models default; agents via MCP + `@cursor/sdk` |
-| **Killer UX** | One shell for all profiles — [unified-studio-ux-vision.md](unified-studio-ux-vision.md); 60 fps, ≤3 clicks ([PH-UX](#17-ph-ux--killer-uiux)) |
+| **AI-first** | Local models default; agents via MCP + `@cursor/sdk`; **no patch without gate** |
+| **Killer UX** | One shell — [unified-studio-ux-vision.md](unified-studio-ux-vision.md); 60 fps, ≤3 clicks ([PH-UX](#17-ph-ux--killer-uiux)) |
+| **Killer performance** | Timed tier-2 rows (`world_engine`, `render_frame_present`, …) + validity — no naked FPS |
+| **Killer results** | Checksums, drift, publish hash, PH-PUB bundles — not screenshot science |
 | **Research + ship** | Deterministic replay, repro bundles, `li-player` for games |
 | **Read like Python** | `def`, `import`, prose names — [philosophy.md](../language/philosophy.md) |
 

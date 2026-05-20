@@ -18,8 +18,9 @@
 | 0.4 | 2026-05 | **Creative stack** — 3D scenes, animation, cinematics, video export (Li-only) |
 | 0.4.1 | 2026-05 | **Competitive intel** — [competitive-intel/](../competitive-intel/) catalog + analysis |
 | 0.5 | 2026-05 | **Unified UX vision** — game + sim + CAD + agent; see [unified-studio-ux-vision.md](../unified-studio-ux-vision.md) |
+| 0.5.1 | 2026-05 | **Four killers + proof** — [product-north-star.md](../product-north-star.md) |
 
-**UX north star (all domains):** [unified-studio-ux-vision.md](../unified-studio-ux-vision.md)
+**Product north star:** [product-north-star.md](../product-north-star.md) · **UX:** [unified-studio-ux-vision.md](../unified-studio-ux-vision.md)
 
 ---
 

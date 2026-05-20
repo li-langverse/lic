@@ -27,8 +27,11 @@ Already in repo `.gitignore` — binaries never commit.
 **Quick checkout** (official doc images + YouTube thumbs):
 
 ```bash
-./scripts/checkout-competitive-media.sh
+./scripts/checkout-competitive-media.sh          # images + thumbs (~130+ files)
+DOWNLOAD_VIDEOS=1 ./scripts/checkout-competitive-media.sh   # + short MP4 (needs yt-dlp + YouTube cookies on your machine)
 ```
+
+See [coverage-inventory.md](coverage-inventory.md) for what’s automatic vs manual.
 
 Roblox CDN note: use `prod.docsiteassets.roblox.com`, not `create.roblox.com/docs/assets/…` (404).
 

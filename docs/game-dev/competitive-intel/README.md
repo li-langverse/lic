@@ -5,6 +5,7 @@
 
 | Doc | Contents |
 |-----|----------|
+| **[coverage-inventory.md](coverage-inventory.md)** | **What’s downloaded vs gaps** (stills / thumbs / videos) |
 | **[material-study-notes.md](material-study-notes.md)** | **Local UI pulls → plan deltas** (run checkout script first) |
 | **[ui-ux-by-dimension.md](ui-ux-by-dimension.md)** | **UI/UX learnings — every dimension (game, CAE, CAD, lab, …)** |
 | **[recent-published.md](recent-published.md)** | **Aggregated announcements + demo videos (2024–2026)** |

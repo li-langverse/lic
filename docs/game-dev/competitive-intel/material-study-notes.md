@@ -24,7 +24,12 @@ Open images while reading [ui-ux-by-dimension.md](ui-ux-by-dimension.md).
 | `houdini/` | 3 png | **Node graph** density, subnets |
 | `paraview/` | 0–6 | Pipeline browser + 3D view (when docs fetch ok) |
 | `simscale/` | 2 | Cloud CAE project UI |
-| `comsol/` | 1 | Placeholder — **capture desktop UI manually** |
+| `comsol/` | 6+ | **Model Builder** busbar workflow + GUI PNG |
+| `figma-make/` | 10 | Figma Make / prompt-to-app marketing |
+| `unity/` | 9 | UI Builder + **Timeline** manual images |
+| `roblox/` | 9 | Studio + **Assistant** panels |
+| `isaac/` | 3 | Isaac Sim viewport promos |
+| `miro/` | up to 6 | Infinite board marketing |
 | `benchling/` | 1 | Platform marketing — registry narrative |
 | `clips/` | 20+ thumbs | Tutorial entry points per dimension |
 

@@ -2,24 +2,23 @@
 
 ## Summary
 
-`object`-typed values are lowered as flattened per-field locals (`__li_o_<root>_<field>…`) for field access, assignment, `var`, expanded call arguments, same-type `var dst: T = srcIdent` slot copies, whole-object `dst = srcIdent` / `dst = foo()` assigns, and **LLVM struct returns** (`ReturnObject`, callee unpack) including `var w: T = foo()` when `foo` returns `T`.
+`object`-typed values are lowered as flattened per-field locals (`__li_o_<root>_<field>…`) for field access, assignment, `var`, expanded call arguments, same-type `var dst: T = srcIdent` slot copies, whole-object `dst = srcIdent` / `dst = foo()` assigns, **element-wise copy of fixed `array[N, int|float]` fields**, and **LLVM struct returns** (`ReturnObject`, callee unpack) including `var w: T = foo()` when `foo` returns `T`.
 
 ## Agent continuation
 
 1. Read `compiler/mir/include/li/mir.hpp` (`ReturnObject`, `MirFn::returns_object` / `return_object_layout`, `MirInsn::object_layout`), `compiler/mir/lower.cpp`, `compiler/codegen/emit.cpp`.
 2. Run `cmake --build build` then `./li-tests/run_all.sh encapsulation` and `./li-tests/run_all.sh math_linalg` with `LIC` pointing at the built `lic`.
-3. Next: nested object returns with mixed layouts; `extern proc` returning object; `typedict` parity; object locals declared only on one branch of `if` (shadowing / dominance).
-4. Blocked: none for scalar-only object tests; array fields inside objects still not copied on `var` init.
+3. Next: extend `return_object_layout` + LLVM struct for array leaves (or forbid at typecheck); `extern proc` returning object; `typedict` parity.
+4. Blocked: none for scalar-only object tests; `array[N, …]` inside objects is copied on `var`/assign only for `int`/`float` elements; object returns with array fields still omit arrays from `return_object_layout` / LLVM struct.
 
 ## Changed
 
 - `compiler/mir/include/li/mir.hpp` — `MirOp::ReturnObject`, `MirInsn::object_layout`, `MirFn::returns_object` / `return_object_layout`.
-- `compiler/mir/lower.cpp` — `collect_object_return_layout_r`, `ReturnObject` lowering, object-return `CallProc` temps (`__li_o___cr*`), `var … = call()` copy from temp, implicit zero-struct return for object procedures, `collect_object_local_types` + whole-object `Assign` (`b = a`, `b = foo()`).
+- `compiler/mir/lower.cpp` — `collect_object_return_layout_r`, `ReturnObject` lowering, object-return `CallProc` temps (`__li_o___cr*`), `var … = call()` copy from temp, implicit zero-struct return for object procedures, `collect_object_local_types` + whole-object `Assign` (`b = a`, `b = foo()`), `emit_copy_array_slots_r`, `g_arr_ctx` registration for nested object arrays, `Index` / array `Assign` with `FieldAccess` bases, defer `g_arr_ctx` teardown until after implicit object return.
 - `compiler/codegen/emit.cpp` — LLVM struct return types, `ReturnObject`, struct unpack on `CallProc`.
 - `compiler/verify/vc_witness.cpp` — treat `ReturnObject` as a return terminator; link `return v` to `ReturnObject` with `__li_o_v` prefix.
-- `li-tests/objects/object_return_call.li` — regression for callee returning `Vec3` consumed by `var`.
-- `li-tests/objects/object_whole_assign.li` — regression for `b = a` and `c = unit_vec()`.
-- `li-tests/manifest.toml` — register `object_return_call.li`, `object_whole_assign.li`.
+- `li-tests/objects/object_array_field_copy.li` — regression for `array[2, int]` field deep copy (`var b = a` then mutate `a`).
+- `li-tests/manifest.toml` — register `object_return_call.li`, `object_whole_assign.li`, `object_array_field_copy.li`.
 
 ## Not changed
 
@@ -28,6 +27,7 @@
 - Parser, borrow checker, and verifier contracts for objects.
 - Dominance: `object_locals` is a flat map from the whole procedure AST; assigning to a name that is not object-typed or not declared on all paths may still be accepted by the typechecker separately from MIR slot layout.
 - `extern proc` returning a Li `object` type (no struct lowering contract).
+- LLVM `ReturnObject` / `return_object_layout` still lists only scalar leaves; objects containing **array** fields are not fully returnable via struct pack yet.
 
 ## Breaking
 

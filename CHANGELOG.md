@@ -18,12 +18,15 @@ All notable changes to Li are documented here. The format follows
 - **Breaking:** **E0303** — `ensures true` is rejected on non-`unit` return types (non-`extern`); packages and `li-tests` updated with `ensures result == …` or domain bounds. See `docs/release-notes/2026-05-19-enforce-strict-ensures.md`.
 - Composable imports: workspace `packages/*` (via `import_name` in `li.toml`) resolve before `std/` facades for the same ergonomic path (e.g. `physics.rigid`).
 - Docs: `composable-by-default.md`, `import-style.md`, `li-net-httpd` README — `def` + `import net.httpd` (not `li_httpd`).
-- Physics docs use monorepo package paths (`li-physics-*`, `import physics.*`); philosophy example uses `def` (no rigid integrate composable test yet).
+- Physics docs use monorepo package paths (`li-physics-*`, `import physics.*`); composable `import_physics_runtime.li` integrates `physics.rigid` once.
 
 ### Fixed
 
+- Workspace import: `parse_workspace_members` no longer treats `[workspace]` as the `members` array — `import physics.rigid` loads `packages/li-physics-rigid` instead of the std facade stub.
+- Parser: multiline `def` parameter lists (indent after `(` / between parameters); bare `return` for `-> unit` procs.
 - Windows CI discovers `LLVM_DIR` via `llvm-config` or `find` when Chocolatey layout differs.
 - `packages/li-math-numerics`: remove duplicate `extern proc` contract clauses.
+- `packages/li-physics-runtime`: `substep_inv` field and `var PhysicsWorld` step APIs (typecheck; codegen crash on full lib build is a known follow-up).
 
 ### Changed
 

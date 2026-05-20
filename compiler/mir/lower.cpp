@@ -1,5 +1,6 @@
 #include "li/mir.hpp"
 #include "li/numeric_types.hpp"
+#include "li/prelude.hpp"
 
 #include <algorithm>
 #include <unordered_map>
@@ -75,6 +76,18 @@ bool is_string_type_name(const std::string& n) {
 
 bool is_i64_type_name(const std::string& n) {
   return n == "ptr" || n == "int64" || n == "i64" || n == "long";
+}
+
+bool is_int_type_name(const std::string& n) {
+  return n == "int" || n == "bool" || n == "unit";
+}
+
+bool std_extern_returns_int(std::string_view name) {
+  return name == "bytes_len";
+}
+
+bool std_extern_returns_str(std::string_view name) {
+  return name == "bytes_slice";
 }
 
 void push_label(std::vector<MirInsn>& out, const std::string& name) {
@@ -714,14 +727,23 @@ std::string lower_expr_to(const Expr& e, const Module& module, std::vector<MirIn
         }
         ins.args.push_back(std::move(ma));
       }
-      if (callee && callee->is_extern && callee->ret_type &&
-          callee->ret_type->name != "unit") {
+      const bool std_int_extern =
+          !callee && is_std_module_symbol(e.ident) && std_extern_returns_int(e.ident);
+      const bool std_str_extern =
+          !callee && is_std_module_symbol(e.ident) && std_extern_returns_str(e.ident);
+      const bool extern_with_value =
+          (callee && callee->is_extern && callee->ret_type && callee->ret_type->name != "unit") ||
+          std_int_extern || std_str_extern;
+      if (extern_with_value) {
         const std::string dest = fresh_temp();
         ins.ident = dest;
-        if (callee->ret_type->name == "ptr" || callee->ret_type->name == "int64" ||
-            callee->ret_type->name == "i64") {
+        if (std_str_extern || (callee && callee->ret_type &&
+                               (callee->ret_type->name == "ptr" || callee->ret_type->name == "str" ||
+                                callee->ret_type->name == "string" || callee->ret_type->name == "bytes" ||
+                                callee->ret_type->name == "StringView" ||
+                                callee->ret_type->name == "int64" || callee->ret_type->name == "i64"))) {
           ins.is_i64 = true;
-        } else if (is_float_type_name(callee->ret_type->name)) {
+        } else if (callee && callee->ret_type && is_float_type_name(callee->ret_type->name)) {
           ins.ret_is_float = true;
           float_names.insert(dest);
         }

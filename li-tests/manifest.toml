@@ -377,6 +377,18 @@ suite = "runtime"
 file = "runtime/extern_puts.li"
 outcome = "verify_ok"
 
+[[tests]]
+suite = "runtime"
+file = "runtime/bytes_len_slice_link.li"
+outcome = "compile_ok"
+note = "std/bytes externs link against runtime/li_rt.c"
+
+[[tests]]
+suite = "runtime"
+file = "runtime/tcp_stub_link.li"
+outcome = "compile_ok"
+note = "li-net tcp_* externs link against runtime/li_rt_net.c"
+
 # --- tetris ---
 
 [[tests]]
@@ -476,6 +488,12 @@ expected_substr = "raises Alloc"
 
 [[tests]]
 suite = "composable"
+file = "composable/import_http_lib.li"
+outcome = "compile_ok"
+note = "import http from workspace package li-http"
+
+[[tests]]
+suite = "composable"
 file = "composable/import_httpd_lib.li"
 outcome = "verify_ok"
 note = "import net.httpd from workspace package li-net-httpd"
@@ -506,6 +524,12 @@ note = "li-httpd package stub; real routing tests when Phase H lands"
 suite = "httpd"
 file = "httpd/reserved_wellknown_note.li"
 outcome = "verify_ok"
+
+[[tests]]
+suite = "httpd"
+file = "httpd/parse_request_smoke.li"
+outcome = "compile_ok"
+note = "parse_request from li-http + GET line probe"
 
 # --- math_linalg (2i — @ dot / matmul surface) ---
 

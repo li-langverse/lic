@@ -24,6 +24,11 @@ double li_rt_hypot(double x, double y);
 double li_rt_expm1(double x);
 double li_rt_log1p(double x);
 
+/* std/bytes + httpd trusted string inspection (Bytes = str until distinct buffer ships). */
+int32_t bytes_len(const char* b);
+const char* bytes_slice(const char* b, int32_t off, int32_t n);
+int32_t li_rt_str_byte_at(const char* s, int32_t i);
+
 /* Async reactor stubs (httpd P0 — sync completion until epoll/kqueue lands). */
 void li_async_frame_enter(void);
 void li_async_frame_leave(void);

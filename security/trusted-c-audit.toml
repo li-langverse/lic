@@ -25,6 +25,24 @@ cwe = "CWE-362"
 mitigation = "OpenMP static schedule; Li parallel policy enforces disjointness"
 cve_refs = []
 
+[[file.functions]]
+name = "bytes_len"
+cwe = "CWE-125"
+mitigation = "null-safe strlen for Bytes (=str) prelude alias"
+cve_refs = []
+
+[[file.functions]]
+name = "bytes_slice"
+cwe = "CWE-787"
+mitigation = "bounds check off+n against strlen; panic on violation"
+cve_refs = []
+
+[[file.functions]]
+name = "li_rt_str_byte_at"
+cwe = "CWE-125"
+mitigation = "bounds check index against strlen before unsigned char read"
+cve_refs = []
+
 [[file]]
 path = "benchmarks/tier2_physics/md_lennard_jones/common/md_core.c"
 status = "active"
@@ -39,6 +57,18 @@ cve_refs = []
 
 [[file]]
 path = "runtime/li_rt_net.c"
-status = "planned"
+status = "active"
 asan_in_ci = false
-notes = "Future li-httpd syscall seam — not shipped in v1"
+notes = "P0 li-httpd syscall seam stubs (in-process fds; no epoll yet)"
+
+[[file.functions]]
+name = "tcp_listen"
+cwe = "CWE-20"
+mitigation = "reject port outside 1..65535 before returning stub fd"
+cve_refs = []
+
+[[file.functions]]
+name = "tcp_recv"
+cwe = "CWE-125"
+mitigation = "reject non-positive max_bytes; return empty buffer"
+cve_refs = []

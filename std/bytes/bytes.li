@@ -7,12 +7,12 @@ type Reader = object
 type Writer = object
   # incremental emit into Bytes
 
-extern proc bytes_len(b: Bytes) raises Alloc -> int
+extern proc bytes_len(b: var bytes) raises Alloc -> int
   requires true
   ensures true
   decreases 0
 
-extern proc bytes_slice(b: Bytes, off: int, n: int) raises Alloc -> StringView
+extern proc bytes_slice(b: var bytes, off: int, n: int) raises Alloc -> StringView
   requires 0 <= off
   requires 0 <= n
   requires off + n <= bytes_len(b)

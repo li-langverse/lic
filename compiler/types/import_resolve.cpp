@@ -72,7 +72,13 @@ std::filesystem::path std_module_to_path(const std::string& module) {
     i = dot + 1;
   }
   if (!last.empty()) {
-    p = p.parent_path() / (last + ".li");
+    /* Multi-segment (e.g. physics.relativity): .../physics/relativity → .../relativity.li */
+    if (rest.find('.') != std::string::npos) {
+      p = p.parent_path() / (last + ".li");
+    } else {
+      /* Single-segment (e.g. bytes, csv): .../bytes → .../bytes/bytes.li */
+      p = p / (last + ".li");
+    }
   } else {
     p /= "lib.li";
   }
@@ -86,7 +92,9 @@ bool is_workspace_toml(const std::filesystem::path& toml) {
 
 std::optional<std::filesystem::path> find_workspace_toml(
     const std::filesystem::path& from_file) {
-  std::filesystem::path dir = from_file.parent_path();
+  const std::filesystem::path file_abs =
+      from_file.is_absolute() ? from_file : std::filesystem::absolute(from_file);
+  std::filesystem::path dir = file_abs.parent_path();
   for (int depth = 0; depth < 12 && !dir.empty(); ++depth) {
     const auto nested = dir / "packages" / "li.toml";
     if (std::filesystem::exists(nested)) {
@@ -122,7 +130,19 @@ std::vector<std::string> parse_workspace_members(const std::filesystem::path& to
   if (bracket == std::string::npos) {
     return members;
   }
-  const std::size_t end = text.find(']', bracket);
+  int depth = 0;
+  std::size_t end = std::string::npos;
+  for (std::size_t i = bracket; i < text.size(); ++i) {
+    if (text[i] == '[') {
+      ++depth;
+    } else if (text[i] == ']') {
+      --depth;
+      if (depth == 0) {
+        end = i;
+        break;
+      }
+    }
+  }
   if (end == std::string::npos) {
     return members;
   }
@@ -337,8 +357,10 @@ std::vector<std::filesystem::path> local_module_candidates(const std::filesystem
 
 std::optional<std::filesystem::path> resolve_module_path(const std::string& module,
                                                          const std::filesystem::path& importer) {
+  const std::filesystem::path importer_abs =
+      importer.is_absolute() ? importer : std::filesystem::absolute(importer);
   // Workspace packages (import_name in li.toml) win over std facades for the same path.
-  if (const auto ws = find_workspace_toml(importer)) {
+  if (const auto ws = find_workspace_toml(importer_abs)) {
     if (auto p = workspace_package_entry(*ws, module)) {
       return p;
     }
@@ -359,13 +381,13 @@ std::optional<std::filesystem::path> resolve_module_path(const std::string& modu
     return std::nullopt;
   }
 
-  for (const auto& c : local_module_candidates(importer, module)) {
+  for (const auto& c : local_module_candidates(importer_abs, module)) {
     if (std::filesystem::exists(c)) {
       return c;
     }
   }
 
-  if (const auto pkg_toml = find_package_toml(importer)) {
+  if (const auto pkg_toml = find_package_toml(importer_abs)) {
     if (auto p = same_package_entry(*pkg_toml, module)) {
       return p;
     }
@@ -443,10 +465,8 @@ bool resolve_imports(Module& out, const std::string& file_path, DiagnosticBag& d
     const std::filesystem::path importer(file_path);
     const auto mod_path = resolve_module_path(imp.module, importer);
     if (!mod_path) {
-      if (imp.module.rfind("std.", 0) == 0 || imp.module == "std") {
-        SourceLoc loc{file_path, 1, 1, imp.span.start};
-        diags.error(loc, "import_resolve: module not found: " + imp.module);
-      }
+      SourceLoc loc{file_path, 1, 1, imp.span.start};
+      diags.error(loc, "import_resolve: module not found: " + imp.module);
       continue;
     }
     if (!load_module_recursive(*mod_path, out, file_path, diags, loading, loaded)) {

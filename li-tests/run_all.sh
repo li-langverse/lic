@@ -4,6 +4,7 @@ set -euo pipefail
 
 ROOT="$(cd "$(dirname "$0")" && pwd)"
 REPO="$(cd "$ROOT/.." && pwd)"
+export LI_REPO_ROOT="${LI_REPO_ROOT:-$REPO}"
 # shellcheck source=../scripts/lib/li-ui.sh
 source "$REPO/scripts/lib/li-ui.sh"
 if [[ -z "${LIC:-}" ]]; then

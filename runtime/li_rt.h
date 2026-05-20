@@ -30,3 +30,15 @@ void li_async_frame_leave(void);
 int32_t li_async_await_i32(int32_t pending);
 /* Poll slot: 1 = ready, 0 = pending (stub always ready). */
 int32_t li_async_poll(uint32_t slot);
+
+/* Net / httpd (trusted seam — li_rt_net.c) */
+int32_t tcp_listen(int32_t port);
+int32_t tcp_accept(int32_t listen_fd);
+int32_t tcp_send(int32_t conn_fd, const char* data);
+const char* tcp_recv(int32_t conn_fd, int32_t max_bytes);
+void tcp_close(int32_t conn_fd);
+int32_t bytes_len(const char* b);
+const char* bytes_slice(const char* b, int32_t off, int32_t n);
+int32_t httpd_parse_port(const char* s);
+int32_t httpd_run_from_argv(void);
+int32_t httpd_serve_static_blocking(int32_t port, const char* root);

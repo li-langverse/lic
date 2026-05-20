@@ -50,16 +50,25 @@ bool compile_module(const Module& module, const std::string& output_path,
     return false;
   }
 
-  std::filesystem::path rt_path = std::filesystem::path("runtime") / "li_rt.c";
-  if (!std::filesystem::exists(rt_path)) {
-    rt_path = std::filesystem::path("..") / "runtime" / "li_rt.c";
-  }
+  auto resolve_rt = [](const char* name) -> std::filesystem::path {
+    std::filesystem::path p = std::filesystem::path("runtime") / name;
+    if (!std::filesystem::exists(p)) {
+      p = std::filesystem::path("..") / "runtime" / name;
+    }
+    return p;
+  };
+  const std::filesystem::path rt_path = resolve_rt("li_rt.c");
+  const std::filesystem::path rt_net_path = resolve_rt("li_rt_net.c");
 
   std::ostringstream cmd;
   const char* cc_env = std::getenv("CC");
   const char* cc = (cc_env && *cc_env) ? cc_env : "clang";
   cmd << cc << " -Wno-override-module -x ir \"" << ll_path << "\" -x c \""
-      << rt_path.string() << "\" -o \"" << output_path << "\"";
+      << rt_path.string() << "\"";
+  if (std::filesystem::exists(rt_net_path)) {
+    cmd << " -x c \"" << rt_net_path.string() << "\"";
+  }
+  cmd << " -o \"" << output_path << "\"";
   if (opts.release) {
     cmd << " -O2";
   }

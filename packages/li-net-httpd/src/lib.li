@@ -1,9 +1,15 @@
 
 type HttpdConfig = object
   public port: int
+  public root: str
 
 type HttpdHandle = object
   public id: int
+
+extern proc httpd_serve_static_blocking(port: int, root: str) raises Net -> int
+  requires 0 < port
+  ensures true
+  decreases 0
 
 def httpd_tag() -> int
   requires true
@@ -12,12 +18,19 @@ def httpd_tag() -> int
 =
   return 0
 
-def httpd_serve(config: HttpdConfig) -> int
-  requires true
-  ensures result == 0
+def httpd_serve(config: HttpdConfig) raises Net -> int
+  requires 0 < config.port
+  ensures true
   decreases 0
 =
-  return 0
+  return httpd_serve_static_blocking(config.port, config.root)
+
+def httpd_serve_port_root(port: int, root: str) raises Net -> int
+  requires 0 < port
+  ensures true
+  decreases 0
+=
+  return httpd_serve_static_blocking(port, root)
 
 def httpd_stop(handle_id: int) -> int
   requires handle_id == 0

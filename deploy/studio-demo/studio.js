@@ -494,6 +494,101 @@ document.getElementById("btn-auto").addEventListener("click", () => {
   }
 });
 
+/** Agent-first command registry (maps to li-ui ui_cmd_* / studio_command_execute). */
+const COMMANDS = [
+  { id: 1, name: "Play", hint: "lic build && start_playing", keys: "⌘P" },
+  { id: 2, name: "Pause", hint: "stop_playing", keys: "" },
+  { id: 3, name: "Build", hint: "lic build packages/…", keys: "⌘B" },
+  { id: 4, name: "Apply patch", hint: "studio.ai apply_if_clean", keys: "" },
+  { id: 5, name: "Open world.li", hint: "focus world spawn", keys: "⌘O" },
+];
+
+const paletteEl = document.getElementById("command-palette");
+const paletteInput = document.getElementById("palette-input");
+const paletteList = document.getElementById("palette-list");
+const agentTranscript = document.getElementById("agent-transcript");
+
+function appendTranscript(role, text) {
+  if (!agentTranscript) return;
+  const div = document.createElement("div");
+  div.className =
+    role === "user" ? "line-user" : role === "agent" ? "line-agent" : "line-system";
+  div.textContent = `[${role}] ${text}`;
+  agentTranscript.appendChild(div);
+  agentTranscript.scrollTop = agentTranscript.scrollHeight;
+}
+
+function renderPalette(filter) {
+  const q = (filter || "").toLowerCase();
+  paletteList.innerHTML = COMMANDS.filter(
+    (c) => c.name.toLowerCase().includes(q) || String(c.id).includes(q)
+  )
+    .map(
+      (c) =>
+        `<li data-cmd="${c.id}"><span>${c.name}</span><span class="cmd-id">ui_cmd_${c.id} · ${c.hint}</span></li>`
+    )
+    .join("");
+}
+
+function openPalette() {
+  paletteEl.classList.remove("hidden");
+  renderPalette("");
+  paletteInput.value = "";
+  paletteInput.focus();
+}
+
+function closePalette() {
+  paletteEl.classList.add("hidden");
+}
+
+function runCommand(id) {
+  const c = COMMANDS.find((x) => x.id === id);
+  if (!c) return;
+  closePalette();
+  appendTranscript("system", `execute ui_cmd_${id} → ${c.hint}`);
+  if (id === 1) appendTranscript("agent", "gate: lic build OK (stub) · viewport play");
+  if (id === 3) appendTranscript("agent", "gate: composable compile_ok (stub)");
+  if (id === 4) appendTranscript("agent", "diagnose ok=1 · patch_id=2 applied (stub)");
+  if (id === 5) setDemo("play");
+}
+
+paletteList.addEventListener("click", (e) => {
+  const li = e.target.closest("li[data-cmd]");
+  if (li) runCommand(Number(li.dataset.cmd));
+});
+
+paletteInput.addEventListener("input", () => renderPalette(paletteInput.value));
+paletteInput.addEventListener("keydown", (e) => {
+  if (e.key === "Escape") closePalette();
+  if (e.key === "Enter") {
+    const first = paletteList.querySelector("li[data-cmd]");
+    if (first) runCommand(Number(first.dataset.cmd));
+  }
+});
+
+document.getElementById("btn-palette").addEventListener("click", openPalette);
+document.addEventListener("keydown", (e) => {
+  if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === "k") {
+    e.preventDefault();
+    if (paletteEl.classList.contains("hidden")) openPalette();
+    else closePalette();
+  }
+});
+
+document.getElementById("agent-form").addEventListener("submit", (e) => {
+  e.preventDefault();
+  const input = document.getElementById("agent-input");
+  const msg = (input.value || "").trim();
+  if (!msg) return;
+  appendTranscript("user", msg);
+  input.value = "";
+  appendTranscript("agent", "Plan: search world.li → patch → lic build → bench (stub)");
+  appendTranscript("system", "UiAgentAction target_hash=… lic_gate=1");
+});
+
+appendTranscript("system", "Agent-first layout · ui_layout_agent_first · 173+ gates");
+appendTranscript("agent", "Try ⌘K: Play, Build, Apply patch");
+
 const params = new URLSearchParams(location.search);
 if (params.get("autoreel") === "1") {
   document.getElementById("btn-auto").click();

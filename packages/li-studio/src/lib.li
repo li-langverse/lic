@@ -8,10 +8,10 @@ type StudioProject = object
 
 def li_studio_version() -> int
   requires true
-  ensures result == 16
+  ensures result == 17
   decreases 0
 =
-  return 16
+  return 17
 
 def studio_project_new() -> StudioProject
   requires true
@@ -513,6 +513,39 @@ def studio_command_palette_smoke() -> int
     return 4
   if studio_command_execute(p, studio_cmd_lic_build()) != 3:
     return 5
+  return 0
+
+# PH-UX — bridge to li-ui agent-first layout (composable with import ui).
+def studio_ui_layout_agent_first_tag_stub() -> int
+  requires true
+  ensures result == 1
+  decreases 0
+=
+  return 1
+
+def studio_ui_cmd_bridge_stub(ui_cmd_id: int) -> int
+  requires ui_cmd_id >= 1
+  requires ui_cmd_id <= 5
+  ensures result == ui_cmd_id
+  decreases ui_cmd_id
+=
+  if ui_cmd_id == studio_cmd_play():
+    return studio_cmd_play()
+  if ui_cmd_id == studio_cmd_pause():
+    return studio_cmd_pause()
+  return studio_cmd_lic_build()
+
+def studio_ui_agent_stack_smoke() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  if studio_ui_layout_agent_first_tag_stub() != 1:
+    return 1
+  if studio_ui_cmd_bridge_stub(studio_cmd_play()) != studio_cmd_play():
+    return 2
+  if studio_command_palette_smoke() != 0:
+    return 3
   return 0
 
 # PH-GD-5 — native binary viewport bridge (pairs with li-render in studio_main.li).

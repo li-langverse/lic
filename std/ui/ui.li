@@ -12,10 +12,18 @@ type Rect = object
 
 def ui_tag() -> int
   requires true
-  ensures result == 5
+  ensures result == 6
   decreases 0
 =
-  return 5
+  return 6
+
+# Prefer workspace package: import ui  →  packages/li-ui (agent-first PH-UX).
+def ui_std_agent_first_tag() -> int
+  requires true
+  ensures result == 1
+  decreases 0
+=
+  return 1
 
 def color_white() -> Color
   requires true

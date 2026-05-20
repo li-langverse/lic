@@ -53,6 +53,8 @@ Dashboard: `benchmarks` repo `data/latest/summary.json` → `unreal_proxy_compar
 ### P2 — Studio UX (easier than UE for agents)
 
 - [x] Command palette API (`studio_command_execute` — play / pause / lic build)
+- [x] `li-ui` agent-first GUI library (`UiAgentAction`, `ui_layout_agent_first`, transcript)
+- [x] HTML demo: ⌘K palette + agent transcript dock
 - [ ] Native `li-studio` shell (replace HTML demo): outliner, viewport, GPU present path
 - [ ] **≤3 clicks** primary flows ([PH-UX](PH-world-studio-program.md))
 - [ ] `studio.adaptive` panels by profile (game / sim / drug)

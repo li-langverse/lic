@@ -11,9 +11,14 @@
     <div class="logo">◇ Li World Studio</div>
     <span class="badge">feat/world-studio-impl-1</span>
     <span class="gates" id="gate-count">112 composable gates</span>
+    <button id="btn-palette" type="button" title="Command palette (⌘K)">⌘K</button>
     <button id="btn-auto" type="button">▶ Demo reel</button>
     <span class="status ok" id="lic-status">lic check ✓</span>
   </header>
+  <div id="command-palette" class="palette hidden" role="dialog" aria-label="Command palette">
+    <input id="palette-input" type="text" placeholder="Type a command (agent: use ui_cmd_id)…" autocomplete="off" />
+    <ul id="palette-list"></ul>
+  </div>
   <div class="shell">
     <aside class="outliner">
       <h2>Outliner</h2>
@@ -45,6 +50,12 @@
       <div id="panel-content"></div>
       <h2>Sim profile</h2>
       <code id="profile-tag">sim_profile_scientific</code>
+      <h2>Agent</h2>
+      <div id="agent-transcript" class="agent-transcript"></div>
+      <form id="agent-form" class="agent-form">
+        <input id="agent-input" type="text" placeholder="Ask agent: edit world.li, lic build…" />
+        <button type="submit">Send</button>
+      </form>
     </aside>
   </div>
   <footer>

@@ -1,3 +1,5 @@
+# PKG-li-ui — agent-first immediate-mode UI (PH-UX, PH-GD).
+# SOTA refs: VS Code command palette, Figma layers+props, Cursor agent+diff, Blender workspaces.
 
 type Color = object
   public r: float
@@ -20,18 +22,101 @@ type InputState = object
   public pointer_x: float
   public pointer_y: float
   public key_escape: int
+  public key_command_palette: int
 
 type UiFrame = object
   public frame_id: int
   public dt: float
   public viewport_w: float
   public viewport_h: float
+
+# Machine-readable action for agents (MCP / studio.ai apply_patch loop).
+type UiAgentAction = object
+  public action_id: int
+  public panel_slot: int
+  public lic_gate: int
+  public target_hash: int
+
+type UiCommand = object
+  public cmd_id: int
+  public shortcut_mod: int
+  public enabled: int
+
+type UiTranscriptLine = object
+  public line_id: int
+  public role: int
+  public text_hash: int
+
+type UiLayoutProfile = object
+  public profile_id: int
+  public outliner_w: int
+  public inspector_w: int
+  public agent_dock_h: int
+  public show_viewport: int
+
 def li_std_ui_version() -> int
+  requires true
+  ensures result == 2
+  decreases 0
+=
+  return 2
+
+def ui_role_user() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0
+
+def ui_role_agent() -> int
   requires true
   ensures result == 1
   decreases 0
 =
   return 1
+
+def ui_role_system() -> int
+  requires true
+  ensures result == 2
+  decreases 0
+=
+  return 2
+
+def ui_panel_outliner() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0
+
+def ui_panel_viewport() -> int
+  requires true
+  ensures result == 1
+  decreases 0
+=
+  return 1
+
+def ui_panel_inspector() -> int
+  requires true
+  ensures result == 2
+  decreases 0
+=
+  return 2
+
+def ui_panel_agent() -> int
+  requires true
+  ensures result == 3
+  decreases 0
+=
+  return 3
+
+def ui_panel_command_palette() -> int
+  requires true
+  ensures result == 4
+  decreases 0
+=
+  return 4
+
 def color_rgb(r: float, g: float, b: float, a: float) -> Color
   requires r >= 0.0
   requires g >= 0.0
@@ -50,6 +135,7 @@ def color_rgb(r: float, g: float, b: float, a: float) -> Color
   c.b = b
   c.a = a
   return c
+
 def rect_contains(r: Rect, px: float, py: float) -> int
   requires r.w >= 0.0
   requires r.h >= 0.0
@@ -66,6 +152,7 @@ def rect_contains(r: Rect, px: float, py: float) -> int
   if py > r.y + r.h:
     return 0
   return 1
+
 def ui_frame_begin(w: float, h: float, dt: float) -> UiFrame
   requires w > 0.0
   requires h > 0.0
@@ -82,17 +169,21 @@ def ui_frame_begin(w: float, h: float, dt: float) -> UiFrame
   f.viewport_w = w
   f.viewport_h = h
   return f
+
 def ui_frame_end(frame: UiFrame) -> unit
   requires true
   ensures true
   decreases 0
 =
   return
+
 def input_default() -> InputState
   requires true
   ensures result.pointer_down == 0
   ensures result.pointer_x == 0.0
   ensures result.pointer_y == 0.0
+  ensures result.key_escape == 0
+  ensures result.key_command_palette == 0
   decreases 0
 =
   var s: InputState
@@ -100,4 +191,187 @@ def input_default() -> InputState
   s.pointer_x = 0.0
   s.pointer_y = 0.0
   s.key_escape = 0
+  s.key_command_palette = 0
   return s
+
+# VS Code / Cursor class: Cmd+K palette (shortcut_mod 1 = meta).
+def ui_command_new(cmd_id: int, shortcut_mod: int) -> UiCommand
+  requires cmd_id >= 1
+  requires cmd_id <= 32
+  requires shortcut_mod >= 0
+  requires shortcut_mod <= 3
+  ensures result.cmd_id == cmd_id
+  ensures result.enabled == 1
+  decreases cmd_id
+=
+  var c: UiCommand
+  c.cmd_id = cmd_id
+  c.shortcut_mod = shortcut_mod
+  c.enabled = 1
+  return c
+
+def ui_cmd_play() -> int
+  requires true
+  ensures result == 1
+  decreases 0
+=
+  return 1
+
+def ui_cmd_pause() -> int
+  requires true
+  ensures result == 2
+  decreases 0
+=
+  return 2
+
+def ui_cmd_lic_build() -> int
+  requires true
+  ensures result == 3
+  decreases 0
+=
+  return 3
+
+def ui_cmd_agent_patch() -> int
+  requires true
+  ensures result == 4
+  decreases 0
+=
+  return 4
+
+def ui_cmd_open_world() -> int
+  requires true
+  ensures result == 5
+  decreases 0
+=
+  return 5
+
+def ui_command_palette_execute(cmd: UiCommand) -> int
+  requires cmd.cmd_id >= 1
+  requires cmd.cmd_id <= 32
+  requires cmd.enabled == 1
+  ensures result == cmd.cmd_id
+  decreases cmd.cmd_id
+=
+  return cmd.cmd_id
+
+def ui_agent_action_new(action_id: int, panel_slot: int, lic_gate: int) -> UiAgentAction
+  requires action_id > 0
+  requires panel_slot >= 0
+  requires panel_slot <= 4
+  requires lic_gate >= 0
+  ensures result.action_id == action_id
+  decreases action_id
+=
+  var a: UiAgentAction
+  a.action_id = action_id
+  a.panel_slot = panel_slot
+  a.lic_gate = lic_gate
+  a.target_hash = action_id * 997 + panel_slot
+  return a
+
+def ui_agent_action_for_command(cmd_id: int) -> UiAgentAction
+  requires cmd_id >= 1
+  requires cmd_id <= 32
+  ensures result.action_id == cmd_id
+  decreases cmd_id
+=
+  return ui_agent_action_new(cmd_id, ui_panel_command_palette(), 1)
+
+def ui_transcript_append(line_id: int, role: int, text_hash: int) -> UiTranscriptLine
+  requires line_id >= 0
+  requires role >= 0
+  requires role <= 2
+  requires text_hash >= 0
+  ensures result.line_id == line_id
+  ensures result.role == role
+  decreases line_id
+=
+  var t: UiTranscriptLine
+  t.line_id = line_id
+  t.role = role
+  t.text_hash = text_hash
+  return t
+
+# Agent-first default: outliner + viewport + inspector + agent dock (Cursor/Figma hybrid).
+def ui_layout_agent_first() -> UiLayoutProfile
+  requires true
+  ensures result.profile_id == 1
+  ensures result.outliner_w == 200
+  ensures result.inspector_w == 280
+  ensures result.agent_dock_h == 180
+  ensures result.show_viewport == 1
+  decreases 0
+=
+  var p: UiLayoutProfile
+  p.profile_id = 1
+  p.outliner_w = 200
+  p.inspector_w = 280
+  p.agent_dock_h = 180
+  p.show_viewport = 1
+  return p
+
+# Classic game editor (Unity/Unreal class): no agent dock, wider viewport.
+def ui_layout_game_editor() -> UiLayoutProfile
+  requires true
+  ensures result.profile_id == 0
+  ensures result.agent_dock_h == 0
+  ensures result.show_viewport == 1
+  decreases 0
+=
+  var p: UiLayoutProfile
+  p.profile_id = 0
+  p.outliner_w = 220
+  p.inspector_w = 260
+  p.agent_dock_h = 0
+  p.show_viewport = 1
+  return p
+
+def ui_layout_panel_count(profile: UiLayoutProfile) -> int
+  requires true
+  ensures result >= 3
+  ensures result <= 5
+  decreases profile.profile_id
+=
+  if profile.agent_dock_h > 0:
+    return 4
+  return 3
+
+def ui_three_click_flow_smoke() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  var layout: UiLayoutProfile = ui_layout_agent_first()
+  if ui_layout_panel_count(layout) != 4:
+    return 1
+  var c: UiCommand = ui_command_new(ui_cmd_play(), 1)
+  if ui_command_palette_execute(c) != ui_cmd_play():
+    return 2
+  var a: UiAgentAction = ui_agent_action_for_command(ui_cmd_lic_build())
+  if a.lic_gate != 1:
+    return 3
+  return 0
+
+def ui_agent_transcript_smoke() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  var u: UiTranscriptLine = ui_transcript_append(0, ui_role_user(), 100)
+  var ag: UiTranscriptLine = ui_transcript_append(1, ui_role_agent(), 200)
+  if u.role != ui_role_user():
+    return 1
+  if ag.role != ui_role_agent():
+    return 2
+  return ui_three_click_flow_smoke()
+
+def ui_smoke() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  var v: UiFrame = ui_frame_begin(1280.0, 720.0, 1.0 / 60.0)
+  ui_frame_end(v)
+  if ui_agent_transcript_smoke() != 0:
+    return 1
+  return 0

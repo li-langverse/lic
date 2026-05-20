@@ -1261,6 +1261,18 @@ note = "PH-UX command palette play/pause/build (≤3 clicks)"
 
 [[tests]]
 suite = "composable"
+file = "composable/import_ui_agent_palette.li"
+outcome = "compile_ok"
+note = "PH-UX li-ui agent transcript + command palette"
+
+[[tests]]
+suite = "composable"
+file = "composable/import_ui_agent_studio_stack.li"
+outcome = "compile_ok"
+note = "PH-UX ui layout agent-first + studio bridge"
+
+[[tests]]
+suite = "composable"
 file = "composable/import_sim_physics_unified.li"
 outcome = "compile_ok"
 note = "physics.runtime sim_step_physics + sim.step_physics stub bridge"

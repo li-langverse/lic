@@ -133,6 +133,7 @@ nav:
       - Verification:
           - Overview: verification/overview.md
           - Provability gaps (today): verification/provability-gaps.md
+          - Proof corpus roadmap: verification/proof-corpus-roadmap.md
   - Testing and security:
       - All tests: testing/overview.md
       - Security audits: testing/security.md

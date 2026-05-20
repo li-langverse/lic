@@ -383,8 +383,8 @@ Track in phase **Doc** until each is checked:
 - [x] Phase 5 — Tetris
 - [x] Phase 5b — Benchmarks & simulations (harness + **X plots** skeleton on `dev`)
 - [x] Phase 6 — Self-host (bootstrap seed: `bootstrap/lic/main.li` → `build/lic-from-li`)
-- [ ] Phase 2e — Contracts + refinements — **ready on branch `cursor/refinement-call-check-57b4`:** call-site `requires` (**E0304**), refinement types (**E0305**), if-guard discharge, import/extern; merge PR #78+ ; see [phase-completion-2026-05-20.md](../ecosystem/phase-completion-2026-05-20.md)
-- [ ] Phase 2f — Lean 4 verify — **ready on same branch:** `lic build` + `check-autovc-open-goals.sh`; `LI_BUILD_VERIFY_LEAN=1` → `lake build` semantics; CI strict; float `sqrt_open_bound` still `verify_open_ok`
+- [x] Phase 2e — Contracts + refinements — **merged (PR #83):** call-site `requires` (**E0304**), refinement types (**E0305**), if-guard VC discharge, import/extern; corpus [proof-corpus-roadmap.md](../verification/proof-corpus-roadmap.md); float/nontrivial ensures still open
+- [x] Phase 2f — Lean 4 verify — **partial (PR #83):** `lic build` + `check-autovc-open-goals.sh`; `LI_BUILD_VERIFY_LEAN=1` → semantics `lake build`; `contracts_verify/` 16/16; `sqrt_open_bound` = `verify_open_ok`; full kernel certificate still **G-lean** partial
 - [x] Phase 7 — Native HPC — **v1 gate:** simd + parallel for + OpenMP + `check-master-plan-gates.sh` (tier 1/2 perf advisory)
 - [ ] Phase 7d — Execution decorators — **partial (7d-a/b/d/e/c):** AST `check_module_policies` for disjoint; string heuristics for race exploits
 - [ ] Phase 7e — Math → SIMD/parallel lowering — **partial:** `ArrayDotF64` for 1d `float` `@`; SIMD matmul deferred

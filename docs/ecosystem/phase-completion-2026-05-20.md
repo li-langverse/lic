@@ -1,37 +1,19 @@
 # Phase completion snapshot (2026-05-20)
 
-Branch **`cursor/refinement-call-check-57b4`** (stacked on call-site `requires`). **Not merged to `main` yet** — merge via PR after CI.
+**Merged:** PR **#83** (`cursor/refinement-call-check-57b4` → `main`).
 
 ## Status vs master plan
 
-| Phase | Status on branch | On `main`? |
-|-------|------------------|------------|
-| **Foundation** | Parse, types, MIR, `lic build`, stdlib gate, packages, bench harness | **Yes** (through #72/#73) |
-| **2e — Contracts + refinements** | Call-site `requires` (E0304), refinements (E0305), if-guard `>= 0`, import/extern, open-VC gate | **No** — PR [#78](https://github.com/li-langverse/lic/pull/78) + refinement commits |
-| **2f — Lean in `lic build`** | `check-autovc-open-goals.sh` on build; `LI_BUILD_VERIFY_LEAN=1` runs `lean-verify-stub.sh`; CI strict | **Partial on main** — full gate on branch |
-| **Phase H — li-httpd M1** | Infra + `li-http` / `li-net-httpd` stubs; Python routing oracle; **M1 `.li` routing** not started | **Infra only** on main |
+| Phase | Status | Notes |
+|-------|--------|-------|
+| **2e — Contracts + refinements** | **Merged** | E0304 call-site `requires`, E0305 refinements, VC emit + proof corpus |
+| **2f — Lean in `lic build`** | **Partial on main** | Open-VC gate on build; `contracts_verify/` green; `sqrt_open_bound` intentionally open; Lean kernel optional via `LI_BUILD_VERIFY_LEAN` |
+| **Phase H M1 routing** | **Partial on main** | `match_routes.li` exits 0; Python + Li oracles in `run_httpd_config.sh` |
+| **Docs** | **Merged** | `llvm-abi.md`, `proof-corpus-roadmap.md`, `refinement-types.md` |
 
-## Merge checklist (human)
+## Agent continuation
 
-1. Push `cursor/refinement-call-check-57b4` (includes all 2e/2f commits).
-2. Update or supersede draft PR **#78** with this branch.
-3. CI green → review → merge (agents do not `gh pr merge`).
-4. After merge: close **#77** (subset), run `install-agent-kit` if needed.
-
-## 2e delivered on branch
-
-- Callee `requires` at every call + **E0304** + plain-language errors
-- **Refinement types** at calls and `var` init + **E0305**
-- Const-local discharge; **`if x >= 0`** branch discharge for `x >= 0` facts
-- Call-site + refinement VCs in `AutoVC.lean`
-
-## 2f delivered on branch
-
-- Build fails on open AutoVC (unless `LI_ALLOW_OPEN_VC=1`)
-- With `LI_BUILD_VERIFY_LEAN=1`: `lake build` in `docs/semantics` via `lean-verify-stub.sh`
-- CI: `LI_BUILD_VERIFY_LEAN_STRICT=1` + autovc check on greeter sample
-
-## Phase H started (this branch)
-
-- **M1 routing (first `.li` piece):** `match_route_fixture` + `li-tests/routing/match_routes.li` + C oracle in CI (`check-httpd-route-fixture.sh`).
-- **Next:** TOML route loader in Li; `li-httpd` serve; str ABI for runtime test binary exit 0.
+1. Read [proof-corpus-roadmap.md](../verification/proof-corpus-roadmap.md) and [provability-gaps.md](../verification/provability-gaps.md) (**G-lean**, **G-vc**).
+2. Run `./li-tests/run_all.sh contracts_verify` and `./li-tests/run_httpd_config.sh`.
+3. Next: float `abs` lemmas (`sqrt_open_bound`); TOML route table in Li; structured `disjoint=` (**7d-c**).
+4. Close superseded draft PRs **#77**, **#78** if still open.

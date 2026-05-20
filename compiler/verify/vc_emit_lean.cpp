@@ -219,7 +219,9 @@ void emit_contract_def(std::ostream& out, const Module& module, const ProcDecl& 
   ctx.in_ensures = (c.kind == ContractKind::Ensures);
 
   std::string prop = "True";
-  const bool witnessed = contract_witnessed_trivial(proc, c);
+  const CallerProofFacts caller_facts = collect_caller_proof_facts(proc);
+  const bool witnessed =
+      contract_witnessed_trivial(proc, c, &module, &caller_facts);
   if (witnessed) {
     prop = "True";
   } else if (c.expr) {
@@ -272,6 +274,8 @@ void emit_contract_def(std::ostream& out, const Module& module, const ProcDecl& 
 }
 
 void emit_call_site_requires(std::ostream& out, const Module& module, const ProcDecl& caller) {
+  const CallerProofFacts caller_facts = collect_caller_proof_facts(caller);
+  const ProofFacts facts = caller_facts.view();
   std::vector<const Expr*> calls;
   collect_calls_in_stmts(caller.body, calls);
   std::size_t call_idx = 0;
@@ -306,7 +310,9 @@ void emit_call_site_requires(std::ostream& out, const Module& module, const Proc
       const auto sub = substitute_refinement_binding(*refinement->predicate, refinement->bind_var,
                                                      *call->args[p]);
       std::string prop = "True";
-      const bool witnessed = expr_statically_true(*sub);
+      const bool witnessed =
+          check_refinement_argument(*refinement, *call->args[p], facts) ==
+              RequiresCheckResult::Satisfied;
       VcCtx ctx;
       if (witnessed) {
         prop = "True";
@@ -330,8 +336,10 @@ void emit_call_site_requires(std::ostream& out, const Module& module, const Proc
                                std::to_string(call_idx) + '_' + proc_section(callee->name) +
                                "_requires_" + std::to_string(req_idx++);
       const auto sub = substitute_call_params(*rc.expr, param_names, call->args);
+      const auto folded = fold_const_int_locals(*sub, facts.const_int_locals);
       std::string prop = "True";
-      const bool witnessed = expr_statically_true(*sub);
+      const bool witnessed =
+          expr_statically_true(*folded) || folded_discharged_by_proof_facts(*folded, facts);
       VcCtx ctx;
       if (witnessed) {
         prop = "True";

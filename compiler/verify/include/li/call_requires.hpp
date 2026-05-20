@@ -40,6 +40,7 @@ std::unique_ptr<Expr> fold_const_int_locals(
 
 bool expr_statically_true(const Expr& expr);
 bool expr_statically_false(const Expr& expr);
+bool folded_discharged_by_proof_facts(const Expr& folded, const ProofFacts& facts);
 
 RequiresCheckResult check_requires_at_call(const ProcDecl& callee, const Expr& call,
                                            const ProofFacts& facts);
@@ -79,5 +80,14 @@ std::optional<RequiresViolationExplanation> explain_refinement_violation(
 
 /// Record `name` as non-negative inside a guarded branch (`if name >= 0`, etc.).
 void note_nonneg_assumption_from_cond(const Expr& cond, std::set<std::string>& out);
+
+/// Owned facts for VC emit (const `var` inits + `if n >= 0` guards in procedure body).
+struct CallerProofFacts {
+  std::map<std::string, std::int64_t> const_int_locals;
+  std::set<std::string> assum_nonneg_ints;
+  ProofFacts view() const { return ProofFacts{const_int_locals, assum_nonneg_ints}; }
+};
+
+CallerProofFacts collect_caller_proof_facts(const ProcDecl& caller);
 
 }  // namespace li

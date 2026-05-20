@@ -598,4 +598,20 @@ void collect_calls_in_stmts(const std::vector<Stmt>& stmts,
   }
 }
 
+CallerProofFacts collect_caller_proof_facts(const ProcDecl& caller) {
+  CallerProofFacts facts;
+  for (const auto& s : caller.body) {
+    if (s.kind == Stmt::Kind::VarDecl && s.init &&
+        s.init->kind == Expr::Kind::IntLit) {
+      facts.const_int_locals[s.var_name] = s.init->int_value;
+    }
+  }
+  for (const auto& s : caller.body) {
+    if (s.kind == Stmt::Kind::If && s.cond) {
+      note_nonneg_assumption_from_cond(*s.cond, facts.assum_nonneg_ints);
+    }
+  }
+  return facts;
+}
+
 }  // namespace li

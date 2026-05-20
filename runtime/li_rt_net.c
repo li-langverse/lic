@@ -41,6 +41,8 @@ static char g_cached_blob_ka[512 + HTTPD_IO_BUF];
 static int32_t g_cached_blob_ka_len = 0;
 static char g_cached_blob_close[512 + HTTPD_IO_BUF];
 static int32_t g_cached_blob_close_len = 0;
+static char g_doc_root[4096];
+static size_t g_doc_root_len = 0;
 
 static void slots_init_once(void) {
   if (g_slots_inited) {
@@ -502,6 +504,11 @@ int32_t httpd_prepare_root_i(intptr_t root) {
   if (!r) {
     return -1;
   }
+  g_doc_root_len = strlen(r);
+  if (g_doc_root_len == 0 || g_doc_root_len >= sizeof(g_doc_root)) {
+    return -1;
+  }
+  memcpy(g_doc_root, r, g_doc_root_len + 1);
   char path[4096];
   int n = snprintf(path, sizeof(path), "%s/index.html", r);
   if (n < 0 || n >= (int)sizeof(path)) {
@@ -615,6 +622,127 @@ static int is_index_get(const char* buf, int hdr_end) {
   return 0;
 }
 
+static int parse_get_path_c(const char* buf, int hdr_end, char* out, int out_cap) {
+  if (hdr_end < 14 || memcmp(buf, "GET ", 4) != 0) {
+    return -1;
+  }
+  const char* start = buf + 4;
+  const char* end = start;
+  while (end < buf + hdr_end && *end != ' ') {
+    end++;
+  }
+  int plen = (int)(end - start);
+  if (plen <= 0 || plen >= out_cap) {
+    return -1;
+  }
+  memcpy(out, start, (size_t)plen);
+  out[plen] = '\0';
+  return plen;
+}
+
+static int path_is_safe(const char* path, int plen) {
+  if (plen <= 0 || plen > 2048 || path[0] != '/') {
+    return 0;
+  }
+  if (plen >= 2 && path[0] == '/' && path[1] == '/') {
+    return 0;
+  }
+  for (int i = 0; i < plen - 1; i++) {
+    if (path[i] == '.' && path[i + 1] == '.' && (i == 0 || path[i - 1] == '/')) {
+      return 0;
+    }
+  }
+  return 1;
+}
+
+static int is_index_path_c(const char* path, int plen) {
+  if (plen == 1 && path[0] == '/') {
+    return 1;
+  }
+  if (plen == 11 && memcmp(path, "/index.html", 11) == 0) {
+    return 1;
+  }
+  return 0;
+}
+
+static int32_t httpd_send_static_path(int32_t conn, int32_t slot, const char* rel, int plen, int keep) {
+  slots_init_once();
+  if (g_doc_root_len == 0 || slot < 0 || slot >= HTTPD_MAX_CONN) {
+    return -1;
+  }
+  char filepath[4096];
+  int n = snprintf(filepath, sizeof(filepath), "%s%.*s", g_doc_root, plen, rel);
+  if (n < 0 || n >= (int)sizeof(filepath)) {
+    return -1;
+  }
+  int fd = open(filepath, O_RDONLY);
+  if (fd < 0) {
+    return -1;
+  }
+  struct stat st;
+  if (fstat(fd, &st) < 0 || !S_ISREG(st.st_mode)) {
+    close(fd);
+    return -1;
+  }
+  if (st.st_size > 0x7fffffff) {
+    close(fd);
+    return -1;
+  }
+  int32_t body_len = (int32_t)st.st_size;
+  const char* ctype = "application/octet-stream";
+  if (plen >= 5 && memcmp(rel + plen - 5, ".html", 5) == 0) {
+    ctype = "text/html";
+  }
+  int hlen = snprintf(g_slots[slot].hdr, sizeof(g_slots[slot].hdr),
+                      "HTTP/1.1 200 OK\r\n"
+                      "Content-Type: %s\r\n"
+                      "Content-Length: %d\r\n"
+                      "Connection: %s\r\n"
+                      "\r\n",
+                      ctype, (int)body_len, keep ? "keep-alive" : "close");
+  if (hlen < 0 || hlen >= (int)sizeof(g_slots[slot].hdr)) {
+    close(fd);
+    return -1;
+  }
+  tcp_ack_now(conn);
+  if (body_len > 16384) {
+    if (send_all_nb((int)conn, g_slots[slot].hdr, (size_t)hlen) < 0) {
+      close(fd);
+      return -1;
+    }
+    if (net_sendfile_fd(conn, fd, body_len) < 0) {
+      close(fd);
+      return -1;
+    }
+    close(fd);
+    return 0;
+  }
+  if (body_len > 0) {
+    char* body = (char*)malloc((size_t)body_len);
+    if (!body) {
+      close(fd);
+      return -1;
+    }
+    ssize_t rd = read(fd, body, (size_t)body_len);
+    close(fd);
+    if (rd != (ssize_t)body_len) {
+      free(body);
+      return -1;
+    }
+    if (tcp_send_coalesce_i(conn, iptr(g_slots[slot].hdr), hlen, iptr(body), body_len) < 0) {
+      free(body);
+      return -1;
+    }
+    free(body);
+    return 0;
+  }
+  close(fd);
+  if (send_all_nb((int)conn, g_slots[slot].hdr, (size_t)hlen) < 0) {
+    return -1;
+  }
+  return 0;
+}
+
 /* 0 = need bytes; 1 = served keep-alive; -1 = close after reply; -2 = I/O error */
 static int32_t httpd_try_drain_once(int32_t conn, int32_t slot) {
   slots_init_once();
@@ -629,12 +757,20 @@ static int32_t httpd_try_drain_once(int32_t conn, int32_t slot) {
   if (hdr_end < 0) {
     return 0;
   }
-  if (!is_index_get(g_slots[slot].buf, hdr_end)) {
+  char req_path[2048];
+  int plen = parse_get_path_c(g_slots[slot].buf, hdr_end, req_path, (int)sizeof(req_path));
+  if (plen < 0 || !path_is_safe(req_path, plen)) {
     return -2;
   }
   int keep = !wants_connection_close(g_slots[slot].buf, hdr_end);
-  if (httpd_reply_cached_index_i(conn, slot, keep) < 0) {
-    return -2;
+  if (is_index_path_c(req_path, plen) || is_index_get(g_slots[slot].buf, hdr_end)) {
+    if (httpd_reply_cached_index_i(conn, slot, keep) < 0) {
+      return -2;
+    }
+  } else {
+    if (httpd_send_static_path(conn, slot, req_path, plen, keep) < 0) {
+      return -2;
+    }
   }
   net_slot_consume(slot, hdr_end);
   if (!keep) {

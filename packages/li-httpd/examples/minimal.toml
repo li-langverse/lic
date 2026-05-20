@@ -1,0 +1,13 @@
+# Minimal li-httpd config (M1 wave 1 — validated by scripts/validate-httpd-config.py)
+[server]
+listen = ":8080"
+document_root = "./public"
+
+[limits]
+max_body = "1m"
+max_header = "16k"
+
+# Routes (desugar target — static only in wave 1)
+[routes]
+"GET /health" = "static:healthcheck"
+"GET /" = "static:index"

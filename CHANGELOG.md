@@ -16,7 +16,7 @@ All notable changes to Li are documented here. The format follows
 ### Changed
 
 - **li-httpd runtime seam:** `runtime/li_rt_net.c` — syscall + M1 epoll hot path (`httpd_epoll_serve_i`: recv-until-`EAGAIN`, prebuilt keep-alive blobs, level-triggered `EPOLLIN`, `epoll_wait(0)` spin); Li loop remains fallback when epoll unavailable.
-- **li-httpd tier-5 perf:** loopback `bench_http.py --profile ci` — `static_small` li ~160k vs nginx ~85k RPS (~1.9×); `keepalive_pipelining` li ~319k vs nginx ~91k RPS (~3.5×) (2026-05-20, `LI_HTTPD_BIN=build/li-httpd`).
+- **li-httpd tier-5 perf:** loopback `bench_http.py --profile ci` — `static_small` li ~160k vs nginx ~85k RPS (~1.9×); `keepalive_pipelining` li ~319k vs nginx ~91k RPS (~3.5×); `static_large` li ~9.6k vs nginx ~9.4k RPS (~1.02×) on 1 MiB `/file.bin` (2026-05-21).
 - **li-httpd epoll (tier-5):** `packages/li-net-httpd` routes `httpd_serve_static_blocking` → `httpd_epoll_serve_i`; `httpd_prepare_root_i` caches `index.html` + response blobs; Li epoll loop when cache missing or non-Linux epoll stub.
 - **li-net:** expanded `extern proc` surface; use `var ptr` / `var int` on extern params that must not move caller locals (borrow checker).
 

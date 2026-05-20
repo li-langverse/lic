@@ -7,13 +7,19 @@ todos:
     status: pending
   - id: w0-bytes-io
     content: Ship std bytes/stringview/Reader/Writer + raises Net effect + trusted syscall RFC
-    status: pending
+    status: in_progress
   - id: w1-async-reactor
     content: Implement async/await + epoll/kqueue reactor; TCP echo benchmark
-    status: pending
+    status: in_progress
   - id: bench-harness
     content: tier5_http TOML-driven harness (suite.toml + per-scenario bench.toml); bench_http.py reads only TOML
-    status: pending
+    status: in_progress
+  - id: m1-static-generic
+    content: "M1 wave 1: generic static GET + sendfile in C hot path; static_large scenario"
+    status: in_progress
+  - id: m1-validate-config
+    content: "M1 wave 1: examples/minimal.toml + scripts/validate-httpd-config.py (schema subset)"
+    status: in_progress
   - id: nginx-src-audit
     content: nginx submodule + nginx_mitigations.toml (read-only checklist); no Li port tracking
     status: pending
@@ -67,6 +73,30 @@ isProject: false
 
 # li-httpd — minimal, proved, nginx-competitive
 
+## Implementation status (2026-05-21)
+
+| Track | Shipped | Next (this branch / M1 wave 1) |
+| ----- | ------- | ------------------------------ |
+| **Perf oracle** | `httpd_epoll_serve_i` beats nginx on `static_small` + `keepalive_pipelining` (loopback wrk) | Keep index fast path; add `static_large` bench row |
+| **Static HTTP** | GET `/` + `/index.html` cached; **generic GET** under doc root via sendfile/coalesce in C | `static_many`, path canonicalization tests |
+| **Harness** | `bench_http.py` + 2 scenarios in `suite.toml` ci/nightly | `static_large`, `[load].url_path`, fixture generator |
+| **Config** | CLI `port` + doc root only | `examples/minimal.toml` + `scripts/validate-httpd-config.py` |
+| **Proxy / LB** | Not started | `proxy_loopback`, `lb_round_robin` scenarios (disabled until code lands) |
+| **TLS / H2 / SSE** | M1.5 / M2 per table below | Do not block M1 static + proxy on proof gate |
+
+**Nginx remains oracle only** — no `nginx.conf` compatibility target. Each new capability gets a **tier5_http scenario** before merge (correctness `[verify]` in CI profile; RPS in nightly).
+
+### M1 implementation waves
+
+| Wave | Code | Bench scenarios | Gate |
+| ---- | ---- | ----------------- | ---- |
+| **1** (active) | Generic static files; validate-config subset; harness `url_path` | `static_large` in ci (verify) + nightly (timing) | `lic build` + `bench_http.py --profile ci` |
+| **2** | Reverse proxy loopback; typed upstream allowlist | `proxy_loopback`, `proxy_upstream_nginx` | verify + rps vs nginx |
+| **3** | LB RR + least_conn + passive health | `lb_round_robin`, `lb_least_conn`, `lb_peer_down` | failover verify row |
+| **4** | Rate limit 429; route DSL; exploit A+B on li-httpd | `rate_limit_429`; `exploit_http.py` wired | stricter-than-nginx `[expect]` ok |
+
+---
+
 ## Honest starting point
 
 Li today is optimized for **proved HPC kernels** (Tetris/SDL, physics benchmarks), not servers:
@@ -78,7 +108,7 @@ Li today is optimized for **proved HPC kernels** (Tetris/SDL, physics benchmarks
 | Trusted IO | [trusted.lean](docs/semantics/trusted.lean): SDL/frame axioms only                                                                                                               | Syscalls, sockets, timers, process spawn — **RFC-reviewed axioms only** |
 | Stdlib     | `std/` effectively empty; heap `str`/`bytes`/`list` mostly **spec** ([data structures roadmap](docs/superpowers/specs/2026-05-14-li-language-design.md#data-structures-roadmap)) | Full bytes I/O, config, containers, regex, compression                  |
 | Async      | Spec: `async`/`await` + `raises Async` — **not shipped**                                                                                                                         | Event loop driving 100k+ connections                                    |
-| Networking | **None** in repo                                                                                                                                                                 | TCP/UDP, DNS, TLS, HTTP/1.1–3, stream proxy                             |
+| Networking | **Partial** — `li_rt_net.c` epoll static server; `packages/li-net-httpd`; tier-5 benches vs nginx                                                                                | Reverse proxy, LB, TLS, HTTP/2, full parser proofs                      |
 
 
 **Product goal:** **AI/agent-native HTTP gateway** — long-lived **streaming** (SSE), **safe header policy**, **rate limits**, **load balancing** to inference/tool backends, **secure-by-design TOML** (no misconfig vulns). Beat nginx on clarity and assurance at **far lower LOC**; match perf on agent workloads (many concurrent streams, fewer trivial GETs).
@@ -1772,7 +1802,7 @@ Li’s edge: **security = what compiles** (plus a tiny trusted base). nginx’s 
 | Milestone | Deliverable                                                          | Exit gate                                                        |
 | --------- | -------------------------------------------------------------------- | ---------------------------------------------------------------- |
 | **P0**    | **2e–2f Lean gate** + bytes + `raises Net` + async reactor           | `lic build` on `parse_request` with real proofs                  |
-| **P0b**   | tier5 harness + nginx audit (`li_invariant` list only)               | `nginx_mitigations.toml`; nginx bench baseline                   |
+| **P0b**   | tier5 harness + nginx audit (`li_invariant` list only)               | `nginx_mitigations.toml`; **2 scenarios green**; `static_large` + exploits wired |
 | **M1**    | Core + LB + header policy + rate limit + validate-config             | `lic build`; lb_* + rate_limit bench; config_reject; exploit A+B |
 | **M1.5**  | SSE, stream caps, model routing, TLS auto (LE + self_signed), cancel | stream_* bench; staging ACME; tls config_reject                  |
 | **M2**    | HTTP/2, WebSocket, circuit breaker, 429 backpressure                 | agent workload bench vs nginx                                    |

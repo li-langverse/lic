@@ -1,16 +1,87 @@
 {
-  "schema": "competitive_intel_v1",
+  "schema": "competitive_intel_v2",
   "updated": "2026-05-20",
   "policy": "links_and_metadata_only_no_third_party_binaries_in_repo",
+  "aggregate_doc": "recent-published.md",
   "entries": [
+    {
+      "id": "UE-NEWS-06",
+      "competitor": "unreal_engine",
+      "type": "announcement",
+      "published": "2025-06-11",
+      "title": "Updated game templates for UE 5.6",
+      "url": "https://www.unrealengine.com/en-US/news/updated-game-templates-for-unreal-engine-5-6available-now",
+      "topics": ["templates", "ue5.6"]
+    },
+    {
+      "id": "UE-NEWS-05",
+      "competitor": "unreal_engine",
+      "type": "announcement",
+      "published": "2025-06-03",
+      "title": "State of Unreal 2025 — all announcements",
+      "url": "https://www.unrealengine.com/en-US/news/all-the-big-news-and-announcements-from-the-state-of-unreal-2025",
+      "topics": ["ue5.6", "witcher", "metahuman", "open_world_60fps"]
+    },
+    {
+      "id": "UE-NEWS-04",
+      "competitor": "unreal_engine",
+      "type": "announcement",
+      "published": "2025-06-03",
+      "title": "Unreal Engine 5.6 is now available",
+      "url": "https://www.unrealengine.com/en-US/news/unreal-engine-5-6-is-now-available",
+      "topics": ["ue5.6", "release"]
+    },
+    {
+      "id": "UE-NEWS-03",
+      "competitor": "unreal_engine",
+      "type": "announcement",
+      "published": "2024-11-12",
+      "title": "Unreal Engine 5.5 is now available",
+      "url": "https://www.unrealengine.com/en-US/blog/unreal-engine-5-5-is-now-available",
+      "topics": ["ue5.5", "animation", "mobile"]
+    },
+    {
+      "id": "UE-VID-05",
+      "competitor": "unreal_engine",
+      "type": "demo",
+      "subtype": "keynote",
+      "published": "2025-06-03",
+      "title": "State of Unreal 2025 — Unreal Fest Orlando",
+      "url": "https://www.youtube.com/watch?v=ubCXb9BHhbE",
+      "youtube_id": "ubCXb9BHhbE",
+      "topics": ["ue5.6", "keynote", "product_intro"]
+    },
+    {
+      "id": "UE-VID-06",
+      "competitor": "unreal_engine",
+      "type": "demo",
+      "subtype": "tech_demo",
+      "published": "2025-06-03",
+      "title": "Unreal Engine 5.6 — State of Unreal",
+      "url": "https://www.youtube.com/watch?v=Pk9zUwSASVU",
+      "youtube_id": "Pk9zUwSASVU",
+      "topics": ["nanite", "lumen", "ue5.6"]
+    },
+    {
+      "id": "UE-VID-04",
+      "competitor": "unreal_engine",
+      "type": "demo",
+      "subtype": "tech_demo",
+      "title": "The Witcher IV — UE5 tech demo",
+      "url": "https://www.youtube.com/watch?v=-XkhD4gNeQg",
+      "youtube_id": "-XkhD4gNeQg",
+      "topics": ["cinematic", "partner_demo", "ps5"]
+    },
     {
       "id": "UE-VID-01",
       "competitor": "unreal_engine",
-      "type": "video",
-      "title": "State of Unreal 2022 — UE5 release keynote",
+      "type": "demo",
+      "subtype": "keynote",
+      "title": "State of Unreal 2022 — UE5 release",
       "url": "https://www.youtube.com/watch?v=7ZLibi6s_ew",
+      "youtube_id": "7ZLibi6s_ew",
       "duration_min": 38,
-      "topics": ["lumen", "nanite", "world_partition", "product_intro"]
+      "topics": ["lumen", "nanite", "product_intro"]
     },
     {
       "id": "UE-DOC-01",
@@ -21,12 +92,103 @@
       "topics": ["sequencer", "cinematic", "screenshot_source"]
     },
     {
+      "id": "UN-NEWS-04",
+      "competitor": "unity",
+      "type": "announcement",
+      "published": "2025-10",
+      "title": "Unity 6.4 release",
+      "url": "https://unity.com/releases/unity-6-4",
+      "topics": ["unity_6.4", "graphics", "workflow"]
+    },
+    {
+      "id": "UN-NEWS-03",
+      "competitor": "unity",
+      "type": "announcement",
+      "published": "2025-03",
+      "title": "GDC 2025 — performance, AI workflows",
+      "url": "https://investors.unity.com/news/news-details/2025/Unity-Announces-Enhanced-Engine-Performance-and-Stability-New-Platforms-and-AI-Powered-Workflows-at-GDC-2025/default.aspx",
+      "topics": ["gdc", "ai", "agentic"]
+    },
+    {
+      "id": "UN-NEWS-02",
+      "competitor": "unity",
+      "type": "announcement",
+      "published": "2025-04",
+      "title": "Unity 6.1 release",
+      "url": "https://unity.com/releases/unity-6-1",
+      "topics": ["unity_6.1", "performance"]
+    },
+    {
+      "id": "UN-NEWS-01",
+      "competitor": "unity",
+      "type": "announcement",
+      "published": "2024-10-17",
+      "title": "Unity 6 global release",
+      "url": "https://unity.com/news/unity-6-will-release-globally-october-17-2024-unity-announces-at-annual-unite-developer-conference",
+      "topics": ["unity_6", "release"]
+    },
+    {
+      "id": "UN-DEMO-01",
+      "competitor": "unity",
+      "type": "demo",
+      "subtype": "cinematic",
+      "title": "Time Ghost — Unity 6 cinematic demo",
+      "url": "https://unity.com/demos/time-ghost",
+      "topics": ["hdrp", "cinematic", "unity_6"]
+    },
+    {
+      "id": "UN-VID-04",
+      "competitor": "unity",
+      "type": "demo",
+      "subtype": "keynote",
+      "published": "2025",
+      "title": "Unite 2025 — Unity engine roadmap",
+      "url": "https://www.youtube.com/watch?v=rEKmARCIkSI",
+      "youtube_id": "rEKmARCIkSI",
+      "topics": ["roadmap", "unite_2025"]
+    },
+    {
+      "id": "UN-VID-03",
+      "competitor": "unity",
+      "type": "demo",
+      "subtype": "session",
+      "published": "2025-03",
+      "title": "GDC 2025 — Unity roadmap",
+      "url": "https://www.youtube.com/watch?v=bXG87FMd2aI",
+      "youtube_id": "bXG87FMd2aI",
+      "topics": ["gdc", "ai", "roadmap"]
+    },
+    {
+      "id": "UN-VID-05",
+      "competitor": "unity",
+      "type": "demo",
+      "subtype": "product_demo",
+      "published": "2025-10",
+      "title": "Unity 6.4 is here",
+      "url": "https://www.youtube.com/watch?v=sZ2c52yy53Q",
+      "youtube_id": "sZ2c52yy53Q",
+      "topics": ["unity_6.4", "release"]
+    },
+    {
       "id": "UN-VID-01",
       "competitor": "unity",
-      "type": "video",
-      "title": "Unite 2024 Keynote — Unity 6",
+      "type": "demo",
+      "subtype": "keynote",
+      "published": "2024",
+      "title": "Unite 2024 — Unity 6 keynote",
       "url": "https://www.youtube.com/watch?v=j_inZPiqSdQ",
-      "topics": ["unity_6", "product_intro", "liveops"]
+      "youtube_id": "j_inZPiqSdQ",
+      "topics": ["unity_6", "product_intro"]
+    },
+    {
+      "id": "UN-VID-02",
+      "competitor": "unity",
+      "type": "demo",
+      "subtype": "product_demo",
+      "title": "UI Toolkit Dragon Crashers sample",
+      "url": "https://www.youtube.com/watch?v=RVp3-D2nEEg",
+      "youtube_id": "RVp3-D2nEEg",
+      "topics": ["ui_toolkit", "runtime_ui"]
     },
     {
       "id": "UN-DOC-01",
@@ -34,23 +196,65 @@
       "type": "documentation",
       "title": "UI Builder interface overview",
       "url": "https://docs.unity3d.com/6000.6/Documentation/Manual/UIB-interface-overview.html",
-      "topics": ["ui_toolkit", "uxml", "uss", "screenshot_source"]
+      "topics": ["ui_toolkit", "screenshot_source"]
     },
     {
-      "id": "UN-DOC-02",
-      "competitor": "unity",
-      "type": "documentation",
-      "title": "Timeline package manual",
-      "url": "https://docs.unity3d.com/Packages/com.unity.timeline@1.8/manual/index.html",
-      "topics": ["timeline", "animation", "cinematic"]
+      "id": "GO-NEWS-04",
+      "competitor": "godot",
+      "type": "announcement",
+      "published": "2026-03-19",
+      "title": "Godot 4.5.2 maintenance release",
+      "url": "https://godotengine.org/article/maintenance-release-godot-4-5-2/",
+      "topics": ["maintenance"]
+    },
+    {
+      "id": "GO-NEWS-03",
+      "competitor": "godot",
+      "type": "announcement",
+      "published": "2025-09-15",
+      "title": "Godot 4.5 — making dreams accessible",
+      "url": "https://godotengine.org/releases/4.5/",
+      "topics": ["accessibility", "stencil", "editor"]
+    },
+    {
+      "id": "GO-NEWS-02",
+      "competitor": "godot",
+      "type": "announcement",
+      "published": "2025-03-03",
+      "title": "Godot 4.4 — unified experience",
+      "url": "https://godotengine.org/releases/4.4/",
+      "topics": ["jolt", "embedded_game_window"]
+    },
+    {
+      "id": "GO-VID-02",
+      "competitor": "godot",
+      "type": "demo",
+      "subtype": "product_demo",
+      "published": "2025",
+      "title": "Godot 4.5 is HERE — What's New?",
+      "url": "https://www.youtube.com/watch?v=Q3HibQT0OdM",
+      "youtube_id": "Q3HibQT0OdM",
+      "topics": ["godot_4.5", "features"]
+    },
+    {
+      "id": "GO-VID-03",
+      "competitor": "godot",
+      "type": "demo",
+      "subtype": "product_demo",
+      "title": "Godot 4.5 Beta hands-on",
+      "url": "https://www.youtube.com/watch?v=us6uSZVTWJQ",
+      "youtube_id": "us6uSZVTWJQ",
+      "topics": ["godot_4.5", "beta"]
     },
     {
       "id": "GO-VID-01",
       "competitor": "godot",
-      "type": "video",
+      "type": "demo",
+      "subtype": "product_demo",
       "title": "Godot 4.0 feature breakdown",
       "url": "https://www.youtube.com/watch?v=chXAjMQrcZk",
-      "topics": ["godot_4", "editor", "product_intro"]
+      "youtube_id": "chXAjMQrcZk",
+      "topics": ["godot_4", "editor"]
     },
     {
       "id": "GO-DOC-01",
@@ -61,13 +265,100 @@
       "topics": ["editor_layout", "screenshot_source"]
     },
     {
+      "id": "RB-NEWS-04",
+      "competitor": "roblox_studio",
+      "type": "announcement",
+      "published": "2026-04-15",
+      "title": "Roblox Studio is going agentic",
+      "url": "https://about.roblox.com/ta/newsroom/2026/04/roblox-studio-going-agentic",
+      "topics": ["assistant", "agentic", "playtest_agent", "mesh_gen"]
+    },
+    {
+      "id": "RB-NEWS-03",
+      "competitor": "roblox_studio",
+      "type": "announcement",
+      "published": "2025-09",
+      "title": "RDC 2025 — platform news",
+      "url": "https://about.roblox.com/newsroom/2025/09/roblox-rdc-2025",
+      "topics": ["rdc", "ai", "4d_objects", "moments"]
+    },
+    {
+      "id": "RB-NEWS-02",
+      "competitor": "roblox_studio",
+      "type": "announcement",
+      "published": "2025-09",
+      "title": "AI, monetization, performance innovations",
+      "url": "https://ir.roblox.com/news/news-details/2025/Roblox-Unveils-AI-Monetization-and-Performance-Innovations-for-Creators/default.aspx",
+      "topics": ["ai", "monetization"]
+    },
+    {
+      "id": "RB-NEWS-01",
+      "competitor": "roblox_studio",
+      "type": "announcement",
+      "published": "2025-03",
+      "title": "Native 3D generation and collaborative Studio",
+      "url": "https://about.roblox.com/mr/newsroom/2025/03/unveiling-future-creation-native-3d-generation-collaborative-studio-tools-economy-expansion",
+      "topics": ["3d_gen", "studio", "economy"]
+    },
+    {
+      "id": "RB-VID-01",
+      "competitor": "roblox_studio",
+      "type": "demo",
+      "subtype": "keynote",
+      "published": "2025-09-05",
+      "title": "RDC 2025 Opening Keynote",
+      "url": "https://www.youtube.com/watch?v=PVlCHE9pc50",
+      "youtube_id": "PVlCHE9pc50",
+      "topics": ["rdc", "keynote", "ai"]
+    },
+    {
+      "id": "RB-VID-02",
+      "competitor": "roblox_studio",
+      "type": "demo",
+      "subtype": "session",
+      "published": "2025",
+      "title": "Building Fun Games with AI — RDC 2025",
+      "url": "https://www.youtube.com/watch?v=3h25HUtBHFk",
+      "youtube_id": "3h25HUtBHFk",
+      "topics": ["ai", "creator_workflow"]
+    },
+    {
       "id": "RB-DOC-01",
       "competitor": "roblox_studio",
       "type": "documentation",
       "title": "Studio interface overview",
       "url": "https://create.roblox.com/docs/studio/ui-overview",
-      "topics": ["toolbar", "viewport", "explorer", "creator_ui", "assistant", "screenshot_source"],
-      "screenshot_assets_note": "create.roblox.com/docs/assets/studio/general/Editor-Window.jpg"
+      "topics": ["toolbar", "viewport", "screenshot_source"],
+      "screenshot_cdn": "prod.docsiteassets.roblox.com"
+    },
+    {
+      "id": "BL-NEWS-02",
+      "competitor": "blender",
+      "type": "announcement",
+      "published": "2025-07-15",
+      "title": "Blender 4.5 LTS release",
+      "url": "https://www.blender.org/press/blender-4-5-lts-release/",
+      "topics": ["vulkan", "vse", "geometry_nodes", "lts"]
+    },
+    {
+      "id": "BL-NEWS-01",
+      "competitor": "blender",
+      "type": "announcement",
+      "published": "2025-03-18",
+      "title": "Blender 4.4 release",
+      "url": "https://www.blender.org/press/blender-4-4-release/",
+      "topics": ["compositor", "vse", "grease_pencil"]
+    },
+    {
+      "id": "BL-VID-01",
+      "competitor": "blender",
+      "type": "demo",
+      "subtype": "product_demo",
+      "published": "2025-07-15",
+      "title": "Blender 4.5 LTS official release video",
+      "url": "https://www.youtube.com/watch?v=wPhA0imjvVs",
+      "youtube_id": "wPhA0imjvVs",
+      "topics": ["blender_4.5", "release"]
     },
     {
       "id": "BL-DOC-01",
@@ -75,32 +366,90 @@
       "type": "documentation",
       "title": "Video Sequencer editor",
       "url": "https://docs.blender.org/manual/en/latest/editors/video_sequencer/index.html",
-      "topics": ["vse", "video_export", "screenshot_source"]
+      "topics": ["vse", "screenshot_source"]
+    },
+    {
+      "id": "FI-NEWS-02",
+      "competitor": "figma",
+      "type": "announcement",
+      "published": "2025-05-07",
+      "title": "Config 2025 recap — Make, Sites, Draw, Buzz",
+      "url": "https://www.figma.com/blog/config-2025-recap",
+      "topics": ["config", "figma_make", "ai", "sites"]
+    },
+    {
+      "id": "FI-NEWS-01",
+      "competitor": "figma",
+      "type": "announcement",
+      "published": "2025-05-07",
+      "title": "Config 2025 press release",
+      "url": "https://www.figma.com/blog/config-2025-press-release",
+      "topics": ["config", "product_launch"]
+    },
+    {
+      "id": "FI-NEWS-03",
+      "competitor": "figma",
+      "type": "announcement",
+      "published": "2026-03-03",
+      "title": "Config 2026 speakers",
+      "url": "https://www.figma.com/blog/config-speakers-looking-ahead-2026/",
+      "topics": ["config_2026", "ai"]
     },
     {
       "id": "FI-BLOG-01",
       "competitor": "figma",
-      "type": "blog",
+      "type": "announcement",
       "title": "UI3 redesign — canvas center stage",
       "url": "https://www.figma.com/blog/behind-our-redesign-ui3",
-      "topics": ["infinite_canvas", "sections", "minimal_chrome"]
+      "topics": ["infinite_canvas", "ui3"]
+    },
+    {
+      "id": "FN-NEWS-04",
+      "competitor": "fortnite_uefn",
+      "type": "announcement",
+      "published": "2025-06",
+      "title": "State of Unreal 2025 — Fortnite creator highlights",
+      "url": "https://create.fortnite.com/news/state-of-unreal-2025-highlights-for-fortnite-creators",
+      "topics": ["persona_device", "scene_graph", "ip"]
+    },
+    {
+      "id": "FN-NEWS-03",
+      "competitor": "fortnite_uefn",
+      "type": "announcement",
+      "published": "2025-06-07",
+      "title": "Scene Graph experimental in UEFN",
+      "url": "https://create.fortnite.com/news/scene-graph-is-now-available-as-an-experimental-feature-in-uefn",
+      "topics": ["scene_graph", "prefabs"]
+    },
+    {
+      "id": "FN-NEWS-02",
+      "competitor": "fortnite_uefn",
+      "type": "announcement",
+      "published": "2025",
+      "title": "In-island transactions tools preview",
+      "url": "https://www.fortnite.com/news/tools-for-in-island-transactions-now-available-to-fortnite-developers",
+      "topics": ["monetization", "vbucks"]
     },
     {
       "id": "FN-VID-03",
       "competitor": "fortnite_uefn",
-      "type": "video",
-      "title": "UEFN Cinematic Sequence Device tutorial",
+      "type": "demo",
+      "subtype": "tutorial",
+      "title": "UEFN Cinematic Sequence Device",
       "url": "https://www.youtube.com/watch?v=GkpVO9aziaU",
+      "youtube_id": "GkpVO9aziaU",
       "duration_min": 8,
-      "topics": ["creator_cinematic", "uefn", "tutorial"]
+      "topics": ["cinematic", "creator"]
     },
     {
       "id": "FN-VID-01",
       "competitor": "fortnite_uefn",
-      "type": "video",
+      "type": "demo",
+      "subtype": "tutorial",
       "title": "GDC 2023 — First game in UEFN",
       "url": "https://www.youtube.com/watch?v=by7QPeQH8ZY",
-      "topics": ["uefn", "product_intro"]
+      "youtube_id": "by7QPeQH8ZY",
+      "topics": ["uefn", "onboarding"]
     },
     {
       "id": "LI-01",
@@ -108,7 +457,7 @@
       "type": "internal",
       "title": "HTML studio demo",
       "path": "lic/deploy/studio-demo/",
-      "topics": ["prototype", "not_canonical_ui"]
+      "topics": ["prototype", "agent_first_gui"]
     }
   ]
 }

@@ -5,24 +5,26 @@
 
 | Doc | Contents |
 |-----|----------|
-| [media-catalog.md](media-catalog.md) | URLs: keynotes, tutorials, official docs with images |
+| **[recent-published.md](recent-published.md)** | **Aggregated announcements + demo videos (2024–2026)** |
+| [media-catalog.md](media-catalog.md) | Full URL tables + docs/screenshot sources |
 | [analysis.md](analysis.md) | Cross-competitor synthesis → Li recommendations |
-| [catalog.json](catalog.json) | Machine-readable index for agents |
+| [catalog.json](catalog.json) | Machine-readable index (`announcement` \| `demo` \| `doc`) |
 | [by-competitor/](by-competitor/) | One-pagers per product |
 
 **Last updated:** 2026-05-20
 
 ## Quick use
 
-1. Read **analysis.md** for product decisions.  
-2. Use **media-catalog.md** to watch official intros in order (§ Recommended viewing order).  
-3. **Checkout reference media locally** (not in git):
+1. Read **recent-published.md** for latest announcements and demo videos.  
+2. Read **analysis.md** for product decisions.  
+3. Use **media-catalog.md** for full URL tables and screenshot sources.  
+4. **Checkout reference media locally** (not in git):
    ```bash
    ./scripts/checkout-competitive-media.sh
    ```
    → `media/local/<competitor>/` + `media/local/manifest.json` (gitignored).  
-4. Add your own captures per [CAPTURE.md](CAPTURE.md).  
-5. Iterate [li-native-gui-plan.md](../plans/li-native-gui-plan.md) from analysis § Li mapping.
+5. Add your own captures per [CAPTURE.md](CAPTURE.md).  
+6. Iterate [li-native-gui-plan.md](../plans/li-native-gui-plan.md) from analysis § Li mapping.
 
 ## Competitors covered
 

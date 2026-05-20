@@ -60,19 +60,35 @@ echo "== Figma UI3 blog hero =="
 download "https://cdn.sanity.io/images/599r6htc/regionalized/97284b712a3df41c61698edaeb20fd9146c66af3-1608x1072.png?w=1200&q=70&fit=max&auto=format" \
   "${BASE}/figma/ui3-redesign-hero.png" || true
 
-echo "== YouTube thumbnails (catalog videos) =="
-declare -A yt=(
-  ["7ZLibi6s_ew"]="ue-state-of-unreal-2022"
-  ["j_inZPiqSdQ"]="unity-unite-2024"
-  ["chXAjMQrcZk"]="godot-4-breakdown"
-  ["GkpVO9aziaU"]="uefn-cinematic-device"
-)
-for id in "${!yt[@]}"; do
-  name="${yt[$id]}"
-  dest="${BASE}/clips/${name}-thumb.jpg"
-  download "https://i.ytimg.com/vi/${id}/maxresdefault.jpg" "$dest" \
-    || download "https://i.ytimg.com/vi/${id}/hqdefault.jpg" "$dest" || true
-done
+echo "== YouTube thumbnails (from catalog.json demo entries) =="
+python3 - <<'PY'
+import json, os, subprocess
+from pathlib import Path
+
+root = Path(os.environ["ROOT"])
+catalog = root / "docs/game-dev/competitive-intel/catalog.json"
+clips = root / os.environ["BASE"] / "clips"
+data = json.loads(catalog.read_text())
+for e in data.get("entries", []):
+    yid = e.get("youtube_id")
+    if not yid:
+        continue
+    slug = e["id"].lower().replace("-", "_")
+    dest = clips / f"{slug}-thumb.jpg"
+    for url in (
+        f"https://i.ytimg.com/vi/{yid}/maxresdefault.jpg",
+        f"https://i.ytimg.com/vi/{yid}/hqdefault.jpg",
+    ):
+        r = subprocess.run(
+            ["curl", "-fsSL", url, "-o", str(dest)],
+            capture_output=True,
+        )
+        if r.returncode == 0:
+            print(f"  ok {dest.name}")
+            break
+    else:
+        print(f"  fail {slug}")
+PY
 
 echo "== Unreal Sequencer (Epic docs CDN) =="
 UE="https://d1iv7db44yhgxn.cloudfront.net/documentation/images"

@@ -1,6 +1,22 @@
 # Media catalog — competitor videos & screenshot sources
 
-**Type legend:** `keynote` | `tutorial` | `docs` | `blog` | `demo`
+**Type legend:** `keynote` | `tutorial` | `docs` | `blog` | `demo` | `announcement`
+
+> **Recent aggregate (2024–2026):** [recent-published.md](recent-published.md) — all **announcements** + **demo/keynote videos** in one place. Machine index: [catalog.json](catalog.json) (`schema: competitive_intel_v2`).
+
+---
+
+## Recent highlights (quick links)
+
+| Competitor | Latest announcement | Latest demo video |
+|------------|---------------------|-------------------|
+| Unreal | [UE 5.6 + State of Unreal 2025](https://www.unrealengine.com/en-US/news/unreal-engine-5-6-is-now-available) | [State of Unreal 2025](https://www.youtube.com/watch?v=ubCXb9BHhbE) |
+| Unity | [Unity 6.4](https://unity.com/releases/unity-6-4) | [Unite 2025 roadmap](https://www.youtube.com/watch?v=rEKmARCIkSI) |
+| Godot | [Godot 4.5](https://godotengine.org/releases/4.5/) | [Godot 4.5 what's new](https://www.youtube.com/watch?v=Q3HibQT0OdM) |
+| Roblox | [Studio going agentic (Apr 2026)](https://about.roblox.com/ta/newsroom/2026/04/roblox-studio-going-agentic) | [RDC 2025 keynote](https://www.youtube.com/watch?v=PVlCHE9pc50) |
+| Blender | [4.5 LTS](https://www.blender.org/press/blender-4-5-lts-release/) | [4.5 release video](https://www.youtube.com/watch?v=wPhA0imjvVs) |
+| Figma | [Config 2025 recap](https://www.figma.com/blog/config-2025-recap) | [Figma YouTube](https://www.youtube.com/@Figma) |
+| UEFN | [State of Unreal creator news](https://create.fortnite.com/news/state-of-unreal-2025-highlights-for-fortnite-creators) | [Cinematic Sequence Device](https://www.youtube.com/watch?v=GkpVO9aziaU) |
 
 ---
 
@@ -108,7 +124,11 @@
 
 ---
 
-## Recommended viewing order (~2 hours)
+## Recommended viewing order
+
+**Recent (~90 min):** see [recent-published.md §3](recent-published.md#3-recommended-watch-order-recent).
+
+**Classic baseline (~2 hours):**
 
 1. UE-VID-01 (UE5 vision)  
 2. UN-VID-01 (Unity 6)  

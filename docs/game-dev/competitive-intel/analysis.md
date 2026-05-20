@@ -1,7 +1,24 @@
 # Competitive analysis — synthesis for Li World Studio
 
-**Inputs:** [media-catalog.md](media-catalog.md), [li-native-gui-plan.md](../plans/li-native-gui-plan.md) v0.4  
+**Inputs:** [recent-published.md](recent-published.md), [media-catalog.md](media-catalog.md), [li-native-gui-plan.md](../plans/li-native-gui-plan.md) v0.4  
 **Method:** Pattern extraction from official docs + keynotes (not hands-on benchmarking).
+
+---
+
+## 0. Recent market moves (2024–2026)
+
+See **[recent-published.md](recent-published.md)** for dated links. Headlines that affect Li priorities:
+
+| When | Who | What | Li implication |
+|------|-----|------|----------------|
+| 2025-06 | Epic | **UE 5.6**, State of Unreal, Witcher IV 60fps RT demo | Cinematic + open-world narrative; stay bench-honest |
+| 2025-05 | Figma | **Config 2025** — Make, Sites, Buzz, Grid | Infinite canvas + prompt-to-build; maps to `canvas` + agent |
+| 2025-09 | Roblox | **RDC 2025** — 4D objects, MCP, Moments | Creator agent + UGC; `ui_agent_*` parity target |
+| 2026-04 | Roblox | **Studio agentic** — plan, mesh gen, playtest agent | Direct competitor to agent-first GUI plan |
+| 2025-03/09 | Godot | **4.4 / 4.5** — embedded game window, a11y | Editor/game same tree; a11y in `li-gui` |
+| 2025 | Unity | **6.1–6.4**, GDC/Unite AI workflows | Agentic editor trend; Time Ghost = `li-seq` reference |
+| 2025 | Blender | **4.4 / 4.5 LTS** — VSE HDR, Vulkan | Video export path for `studio.publish_video` |
+| 2025 | UEFN | Scene Graph, Persona device, in-island economy | Creator graphs + NPC AI; economy out of v1 |
 
 ---
 

@@ -151,6 +151,7 @@ static char g_proxy_snap[HTTPD_PROXY_SNAP_MAX];
 static int g_proxy_snap_len = 0;
 static int g_proxy_snap_ready = 0;
 static int g_proxy_snap_recording = 0;
+static int32_t g_li_scratch = 0;
 
 /* Li-native proxy per-slot glue (logic in packages/li-net-httpd/src/lib.li). */
 static int g_lp_up_fd[HTTPD_MAX_CONN];
@@ -3642,11 +3643,12 @@ void httpd_li_proxy_set_keep_i(int32_t slot, int32_t k) {
 }
 
 int32_t httpd_li_proxy_resp_parsing_i(int32_t slot) {
-  return (slot >= 0 && slot < HTTPD_MAX_CONN) ? g_lp_resp_parsing[slot] : 0;
+  return (slot >= 0 && slot < HTTPD_MAX_CONN) ? g_slots[slot].proxy_resp_parsing : 0;
 }
 
 void httpd_li_proxy_set_resp_parsing_i(int32_t slot, int32_t v) {
   if (slot >= 0 && slot < HTTPD_MAX_CONN) {
+    g_slots[slot].proxy_resp_parsing = v;
     g_lp_resp_parsing[slot] = v;
   }
 }
@@ -3738,6 +3740,158 @@ int32_t httpd_li_proxy_on_up_i(int32_t epfd, int32_t slot, int32_t revents) {
 int32_t httpd_li_proxy_on_client_i(int32_t epfd, int32_t slot, int32_t revents) {
   httpd_proxy_client_handler((int)epfd, slot, (uint32_t)revents);
   return httpd_li_proxy_active_i(slot);
+}
+
+int32_t httpd_li_proxy_get_resp_parsing_i(int32_t slot) {
+  return httpd_li_proxy_resp_parsing_i(slot);
+}
+
+int32_t httpd_li_proxy_get_resp_body_mode_i(int32_t slot) {
+  return (slot >= 0 && slot < HTTPD_MAX_CONN) ? g_slots[slot].proxy_resp_body_mode : 0;
+}
+
+void httpd_li_proxy_set_resp_body_mode_i(int32_t slot, int32_t v) {
+  if (slot >= 0 && slot < HTTPD_MAX_CONN) {
+    g_slots[slot].proxy_resp_body_mode = v;
+  }
+}
+
+int32_t httpd_li_proxy_get_resp_body_left_i(int32_t slot) {
+  return (slot >= 0 && slot < HTTPD_MAX_CONN) ? g_slots[slot].proxy_resp_body_left : 0;
+}
+
+void httpd_li_proxy_set_resp_body_left_i(int32_t slot, int32_t v) {
+  if (slot >= 0 && slot < HTTPD_MAX_CONN) {
+    g_slots[slot].proxy_resp_body_left = v;
+    g_lp_body_left[slot] = v;
+  }
+}
+
+int32_t httpd_li_proxy_get_resp_hdr_len_i(int32_t slot) {
+  return (slot >= 0 && slot < HTTPD_MAX_CONN) ? g_slots[slot].proxy_resp_hdr_len : 0;
+}
+
+intptr_t httpd_li_proxy_resp_hdr_acc_i(int32_t slot) {
+  if (slot < 0 || slot >= HTTPD_MAX_CONN) {
+    return 0;
+  }
+  return iptr(g_slots[slot].proxy_resp_hdr_acc);
+}
+
+int32_t httpd_li_proxy_append_resp_hdr_i(int32_t slot, intptr_t data, int32_t n) {
+  if (slot < 0 || slot >= HTTPD_MAX_CONN || !data || n <= 0) {
+    return -1;
+  }
+  httpd_slot_t* s = &g_slots[slot];
+  int room = (int)sizeof(s->proxy_resp_hdr_acc) - s->proxy_resp_hdr_len;
+  if (n > room) {
+    return -1;
+  }
+  memcpy(s->proxy_resp_hdr_acc + s->proxy_resp_hdr_len, ptr_i(data), (size_t)n);
+  s->proxy_resp_hdr_len += n;
+  return s->proxy_resp_hdr_len;
+}
+
+int32_t httpd_li_proxy_cached_hdr_len_i(void) { return g_proxy_resp_hdr_bytes_cached; }
+
+void httpd_li_scratch_set_i(int32_t v) { g_li_scratch = v; }
+
+int32_t httpd_li_scratch_get_i(void) { return g_li_scratch; }
+
+int32_t httpd_li_proxy_store_resp_cache_i(int32_t slot) {
+  if (slot < 0 || slot >= HTTPD_MAX_CONN || g_proxy_resp_cl_cached >= 0) {
+    return 0;
+  }
+  httpd_slot_t* s = &g_slots[slot];
+  int he = hdr_end_at_c(s->proxy_resp_hdr_acc, s->proxy_resp_hdr_len);
+  if (he < 0) {
+    return -1;
+  }
+  int keep = 0;
+  int cl = parse_resp_content_length(s->proxy_resp_hdr_acc, he, &keep);
+  if (cl < 0) {
+    return -1;
+  }
+  g_proxy_resp_cl_cached = cl;
+  g_proxy_resp_hdr_bytes_cached = he;
+  if (he > 0 && he <= (int)sizeof(g_proxy_resp_hdr_copy)) {
+    memcpy(g_proxy_resp_hdr_copy, s->proxy_resp_hdr_acc, (size_t)he);
+  }
+  return 0;
+}
+
+intptr_t httpd_li_proxy_cached_hdr_ptr_i(void) {
+  return g_proxy_resp_hdr_bytes_cached > 0 ? iptr(g_proxy_resp_hdr_copy) : 0;
+}
+
+int32_t httpd_li_proxy_mark_active_i(int32_t epfd, int32_t slot, int32_t up_fd, int32_t hdr_end, int32_t keep) {
+  if (slot < 0 || slot >= HTTPD_MAX_CONN || up_fd < 0) {
+    return -1;
+  }
+  httpd_slot_t* s = &g_slots[slot];
+  s->proxy_active = 1;
+  s->proxy_up_fd = up_fd;
+  s->proxy_hdr_end = hdr_end;
+  s->proxy_keep = keep ? 1 : 0;
+  s->proxy_up_reuse = keep ? 1 : 0;
+  s->proxy_phase = HTTPD_PROXY_PHASE_SEND_REQ;
+  s->proxy_send_off = 0;
+  s->proxy_relay_got_data = 0;
+  s->proxy_resp_parsing = 0;
+  s->proxy_resp_hdr_len = 0;
+  s->proxy_resp_body_mode = PROXY_RESP_BODY_NONE;
+  s->proxy_resp_body_left = 0;
+  g_lp_up_fd[slot] = up_fd;
+  g_lp_hdr_end[slot] = hdr_end;
+  g_lp_keep[slot] = keep ? 1 : 0;
+  g_lp_phase[slot] = HTTPD_PROXY_PHASE_SEND_REQ;
+  if (epfd >= 0 && httpd_epoll_register_up_i(epfd, up_fd, slot) < 0) {
+    httpd_proxy_clear(epfd, slot);
+    return -1;
+  }
+  httpd_proxy_client_epoll_mod(epfd, slot, EPOLLIN | EPOLLET);
+  return 0;
+}
+
+int32_t httpd_li_proxy_send_request_i(int32_t epfd, int32_t slot) {
+  if (slot < 0 || slot >= HTTPD_MAX_CONN || !g_slots[slot].proxy_active) {
+    return -1;
+  }
+  if (g_slots[slot].proxy_phase == HTTPD_PROXY_PHASE_SEND_REQ) {
+    httpd_proxy_try_send_req(epfd, slot);
+  } else if (g_slots[slot].proxy_phase == HTTPD_PROXY_PHASE_SEND_BODY) {
+    httpd_proxy_try_send_body(epfd, slot);
+  }
+  if (!g_slots[slot].proxy_active) {
+    return -1;
+  }
+  if (g_slots[slot].proxy_phase == HTTPD_PROXY_PHASE_RELAY) {
+    return 1;
+  }
+  return 0;
+}
+
+int32_t httpd_li_proxy_forward_bytes_i(int32_t epfd, int32_t slot, intptr_t data, int32_t n) {
+  if (slot < 0 || slot >= HTTPD_MAX_CONN || !data || n <= 0) {
+    return -1;
+  }
+  return httpd_proxy_relay_to_client(epfd, slot, ptr_i(data), (size_t)n);
+}
+
+int32_t httpd_li_proxy_finish_ok_i(int32_t epfd, int32_t slot) {
+  if (slot < 0 || slot >= HTTPD_MAX_CONN) {
+    return -1;
+  }
+  httpd_proxy_finish_ok(epfd, slot);
+  return 0;
+}
+
+int32_t httpd_li_proxy_finish_err_i(int32_t epfd, int32_t slot) {
+  if (slot < 0 || slot >= HTTPD_MAX_CONN) {
+    return -1;
+  }
+  httpd_proxy_finish_err(epfd, slot);
+  return 0;
 }
 
 int32_t httpd_li_proxy_finish_drain_i(int32_t epfd, int32_t slot) {

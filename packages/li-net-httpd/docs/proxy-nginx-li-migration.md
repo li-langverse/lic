@@ -43,20 +43,20 @@ flowchart LR
 - [x] Keep-alive upstream pool (32)
 - [x] Tagged epoll dispatch (client vs upstream fd)
 - [x] Li-owned epoll loop for proxy mode (`httpd_serve_port_root_proxy`)
-- [ ] Full request/response relay in Li (`lib.li`) — still C
-- [ ] Remove `httpd_epoll_serve_i` proxy branches from `httpd_try_drain_once`
+- [x] Full request/response relay in Li (`lib.li`) when `LI_HTTPD_PROXY_LI=1` (GET + CL; chunked req → C fallback)
+- [ ] Remove `httpd_epoll_serve_i` proxy branches from `httpd_try_drain_once` (default path still C)
 - [ ] Delete static `httpd_proxy_forward` and unused C recv helpers
-- [ ] Optional `LI_HTTPD_PROXY_LI=0` → `httpd_epoll_serve_i` for A/B (not wired yet)
+- [x] `LI_HTTPD_PROXY_LI=1` → Li epoll loop; default → `httpd_epoll_serve_proxy_i` (C + snap)
 
 ## Removal plan (C → Li)
 
 | Phase | Move to Li | Leave in seam (`seam.li` + `li_rt_net.c`) |
 |-------|------------|-------------------------------------------|
 | **P0** (done) | Epoll accept/dispatch loop | `tcp_*`, `epoll_*`, `httpd_li_proxy_*` glue |
-| **P1** | Header compact + request line parse (already partial in `lib.li`) | splice optional |
-| **P2** | Upstream response header parse + CL/chunked state machine | `tcp_recv_nb_i` / `tcp_send_nb_i` |
-| **P3** | Relay pump (replace `httpd_proxy_splice_cl_i`) | `splice` syscall wrapper only |
-| **P4** | Upstream pool bookkeeping | `connect` / `close` |
+| **P1** (done) | Header compact via `httpd_proxy_compact_req_hdr_i` | — |
+| **P2** (done, Li mode) | `proxy_li_finish_resp_headers`, cached hdr fast path | `tcp_recv_nb_i`, `store_resp_cache` |
+| **P3** (done, Li mode) | `proxy_li_pump_cl` | `httpd_proxy_splice_cl_i` only |
+| **P4** (done, Li mode) | `proxy_li_start` → `httpd_upstream_acquire_i` / `release_i` | pool in C, orchestration in Li |
 
 After **P4**, `li_rt_net.c` proxy section shrinks to syscall shims; no product logic in `.c`.
 

@@ -271,6 +271,111 @@ extern proc httpd_li_proxy_finish_drain_i(epfd: var int, slot: var int) raises N
   ensures true
   decreases 0
 
+extern proc httpd_li_proxy_get_resp_parsing_i(slot: var int) -> int
+  requires 0 <= slot
+  ensures true
+  decreases 0
+
+extern proc httpd_li_proxy_set_resp_parsing_i(slot: var int, v: var int) raises IO -> unit
+  requires 0 <= slot
+  ensures true
+  decreases 0
+
+extern proc httpd_li_proxy_get_resp_body_mode_i(slot: var int) -> int
+  requires 0 <= slot
+  ensures true
+  decreases 0
+
+extern proc httpd_li_proxy_set_resp_body_mode_i(slot: var int, v: var int) raises IO -> unit
+  requires 0 <= slot
+  ensures true
+  decreases 0
+
+extern proc httpd_li_proxy_get_resp_body_left_i(slot: var int) -> int
+  requires 0 <= slot
+  ensures true
+  decreases 0
+
+extern proc httpd_li_proxy_set_resp_body_left_i(slot: var int, v: var int) raises IO -> unit
+  requires 0 <= slot
+  ensures true
+  decreases 0
+
+extern proc httpd_li_proxy_get_resp_hdr_len_i(slot: var int) -> int
+  requires 0 <= slot
+  ensures true
+  decreases 0
+
+extern proc httpd_li_proxy_resp_hdr_acc_i(slot: var int) -> ptr
+  requires 0 <= slot
+  ensures true
+  decreases 0
+
+extern proc httpd_li_proxy_append_resp_hdr_i(slot: var int, data: var ptr, n: var int) -> int
+  requires 0 <= slot
+  ensures true
+  decreases 0
+
+extern proc httpd_li_proxy_cached_hdr_len_i() -> int
+  requires true
+  ensures true
+  decreases 0
+
+extern proc httpd_li_proxy_cached_hdr_ptr_i() -> ptr
+  requires true
+  ensures true
+  decreases 0
+
+extern proc httpd_li_proxy_cached_cl_i() -> int
+  requires true
+  ensures true
+  decreases 0
+
+extern proc httpd_li_scratch_set_i(v: var int) raises IO -> unit
+  requires true
+  ensures true
+  decreases 0
+
+extern proc httpd_li_scratch_get_i() -> int
+  requires true
+  ensures true
+  decreases 0
+
+extern proc httpd_li_proxy_store_resp_cache_i(slot: var int) raises IO -> int
+  requires 0 <= slot
+  ensures true
+  decreases 0
+
+extern proc httpd_li_proxy_mark_active_i(epfd: var int, slot: var int, up_fd: var int, hdr_end: var int, keep: var int) raises Net, IO -> int
+  requires epfd >= 0
+  requires 0 <= slot
+  ensures true
+  decreases 0
+
+extern proc httpd_li_proxy_send_request_i(epfd: var int, slot: var int) raises Net, IO -> int
+  requires epfd >= 0
+  requires 0 <= slot
+  ensures true
+  decreases 0
+
+extern proc httpd_li_proxy_forward_bytes_i(epfd: var int, slot: var int, data: var ptr, n: var int) raises Net, IO -> int
+  requires epfd >= 0
+  requires 0 <= slot
+  ensures true
+  decreases 0
+
+extern proc httpd_li_proxy_finish_ok_i(epfd: var int, slot: var int) raises Net, IO -> int
+  requires epfd >= 0
+  requires 0 <= slot
+  ensures true
+  decreases 0
+
+extern proc httpd_li_proxy_finish_err_i(epfd: var int, slot: var int) raises Net, IO -> int
+  requires epfd >= 0
+  requires 0 <= slot
+  ensures true
+  decreases 0
+
 extern proc httpd_proxy_splice_cl_i(up_fd: var int, client_fd: var int, max_bytes: var int) raises Net -> int
   requires true
   ensures true

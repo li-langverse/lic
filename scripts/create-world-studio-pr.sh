@@ -20,11 +20,16 @@ if ! command -v gh >/dev/null 2>&1; then
   exit 1
 fi
 
-gh pr create \
-  --base main \
-  --head feat/world-studio-impl-1 \
-  --title "feat: World Studio / Li Engine (130 gates, play_mode)" \
-  --body-file "$ROOT/docs/game-dev/PR-world-studio-impl-summary.md" \
-  --draft
+if gh pr view --head feat/world-studio-impl-1 >/dev/null 2>&1; then
+  echo "PR already exists for feat/world-studio-impl-1:"
+  gh pr view --head feat/world-studio-impl-1
+else
+  gh pr create \
+    --base main \
+    --head feat/world-studio-impl-1 \
+    --title "feat: World Studio / Li Engine (140 gates, play_mode)" \
+    --body-file "$ROOT/docs/game-dev/PR-world-studio-impl-summary.md" \
+    --draft
+fi
 
-li_gate_ok "draft PR created (or already exists)"
+li_gate_ok "draft PR ready"

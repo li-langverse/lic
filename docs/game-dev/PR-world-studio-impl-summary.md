@@ -6,8 +6,8 @@
 
 | Metric | Value |
 |--------|--------|
-| Composable gates | **139** |
-| Milestone gates | 100 (impl-32) · 121 (impl-39) · **130** (impl-40) |
+| Composable gates | **140** |
+| Milestone gates | 100 · 121 · 130 · **140** |
 | Spin-up templates | **12** (incl. `play_mode`) |
 | Demo tabs | **13** (incl. **Play**) |
 | game_dev parse_ok | **12** |

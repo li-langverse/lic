@@ -428,6 +428,13 @@ li_package = "li-studio"
 composable = "import_world_studio_agent_onboarding"
 
 [[benchmark]]
+id = "world-studio-milestone-140"
+name = "Milestone 140 composable gates"
+tier = 1
+li_package = "li-studio"
+composable = "import_world_studio_milestone_140"
+
+[[benchmark]]
 id = "httpd-li-native-gateway"
 name = "Li-native HTTP/WS gateway"
 tier = 1

@@ -1,7 +1,7 @@
 {
   "branch": "feat/world-studio-impl-1",
-  "sprint": "impl-43",
-  "composable_gates": 139,
+  "sprint": "impl-44",
+  "composable_gates": 140,
   "game_dev_gates": 12,
   "vertical_demo_builds": 7,
   "spinup_templates": 12,
@@ -10,9 +10,9 @@
   "publish_template": true,
   "portable_targets": 5,
   "binary_runtime_tag": 8288,
-  "milestone_composable_gates": 130,
+  "milestone_composable_gates": 140,
   "demo_tabs": 13,
   "li_native_store": true,
   "blocked": ["sim_step_physics"],
-  "updated": "2026-05-20T06:56:25Z"
+  "updated": "2026-05-20T06:57:59Z"
 }

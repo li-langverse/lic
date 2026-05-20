@@ -3,7 +3,7 @@
 **Status:** Canonical product UX vision (2026-05)  
 **Audience:** PH-UX, PH-AGENT, PH-SIM, PH-GD  
 **North star:** [product-north-star.md](product-north-star.md) — killer UI · killer performance · killer results · **mathematically proven**  
-**Related:** [world-studio-vision.md](world-studio-vision.md) · [li-native-gui-plan.md](plans/li-native-gui-plan.md) · [agent-first-gui-research.md](agent-first-gui-research.md)
+**Related:** [ui-ux-by-dimension.md](competitive-intel/ui-ux-by-dimension.md) · [world-studio-vision.md](world-studio-vision.md) · [li-native-gui-plan.md](plans/li-native-gui-plan.md)
 
 ---
 
@@ -41,7 +41,8 @@ Incumbents **fork products** (game engine vs CFD GUI vs CAD vs LIMS vs slicer) a
 
 ## 2. What works best (cross-domain) — steal the pattern, not the app
 
-**Full per-dimension analysis (14 industries):** [competitive-intel/ui-ux-by-dimension.md](competitive-intel/ui-ux-by-dimension.md)
+**Full per-dimension analysis (14 industries):** [competitive-intel/ui-ux-by-dimension.md](competitive-intel/ui-ux-by-dimension.md)  
+**Local pixels → plan deltas:** [competitive-intel/material-study-notes.md](competitive-intel/material-study-notes.md) · run `./scripts/checkout-competitive-media.sh`
 
 ### 2.1 Spatial + hierarchical (every serious tool)
 

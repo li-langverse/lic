@@ -2,7 +2,7 @@
 
 | Field | Value |
 |-------|--------|
-| **Version** | 0.4 |
+| **Version** | 0.6 |
 | **Status** | Draft — iterate in-repo |
 | **Policy** | **Full Li only** — no Rust, C++, TypeScript, Slint, Svelte, or Electron on the GUI path |
 | **Owners** | PH-UX, PH-GD, PH-GD-7, PH-AGENT |
@@ -20,8 +20,9 @@
 | 0.5.2 | 2026-05 | **UI/UX by dimension** — [ui-ux-by-dimension.md](../competitive-intel/ui-ux-by-dimension.md) |
 | 0.5 | 2026-05 | **Unified UX vision** — game + sim + CAD + agent; see [unified-studio-ux-vision.md](../unified-studio-ux-vision.md) |
 | 0.5.1 | 2026-05 | **Four killers + proof** — [product-north-star.md](../product-north-star.md) |
+| 0.6 | 2026-05 | **Material study** — local UI pulls → dock IDs, 4-panel NLE, validity inspector ([material-study-notes](../competitive-intel/material-study-notes.md)) |
 
-**Product north star:** [product-north-star.md](../product-north-star.md) · **UX:** [unified-studio-ux-vision.md](../unified-studio-ux-vision.md) · **Competitive UI:** [ui-ux-by-dimension.md](../competitive-intel/ui-ux-by-dimension.md)
+**Product north star:** [product-north-star.md](../product-north-star.md) · **UX:** [unified-studio-ux-vision.md](../unified-studio-ux-vision.md) · **Competitive UI:** [ui-ux-by-dimension.md](../competitive-intel/ui-ux-by-dimension.md) · **Local study set:** [material-study-notes.md](../competitive-intel/material-study-notes.md) (`./scripts/checkout-competitive-media.sh`)
 
 ---
 
@@ -132,7 +133,8 @@ Same chrome as games — **profile-adaptive panels**, not a second app. Full cro
 2. **Animation** = `anim/*.li` curves bound to `SceneNode` paths.  
 3. **Cinematic** = `seq/*.li` timeline drives camera + spawns + clip playback.  
 4. **Video** = deterministic **offline render** or real-time capture → `studio.publish` bundle (repro hash).  
-5. **Canvas** shows Sequence nodes linked to World + Export nodes.
+5. **Canvas** shows Sequence nodes linked to World + Export nodes.  
+6. **Cinematic workspace** uses CapCut-class **4-panel NLE** (media · preview · timeline · inspector) — see [CapCut](../competitive-intel/by-competitor/capcut.md).
 
 ### 2.4 In-game / user-created UI
 
@@ -552,10 +554,17 @@ Agents never drive pixels — only **Li source** + **canvas graph** + **seq/anim
 - [ ] `li-player` loads `gui/` in client loop
 - [ ] Input hit-test smokes
 
-### Phase G3 — Studio shell
+### Phase G3 — Studio shell (material: Godot, Roblox, VS Code, ParaView)
 
-- [ ] `world-studio` target: outliner, inspector, palette in **Li** (not HTML demo)
-- [ ] Deprecate `deploy/studio-demo` as canonical (keep as screenshot legacy optional)
+**Reference pixels:** `media/local/godot/`, `roblox/`, `vscode/hero.png`, `paraview/AddCameraOrbit.png`
+
+- [ ] **Dock IDs** (stable for agents): `dock.outliner`, `dock.viewport`, `dock.inspector`, `dock.bottom`, `dock.agent`, `dock.problems`
+- [ ] `world-studio` target: outliner, inspector, ⌘K palette in **Li** (not HTML demo)
+- [ ] **Bottom mode** switch: `timeline` | `bench` | `litl` ([material-study-notes](../competitive-intel/material-study-notes.md) §2A)
+- [ ] Inspector tabs for `sim_scientific`: **Params** | **Validity** | **Info** (ParaView lesson)
+- [ ] **Problems panel** ← `lic diagnose` JSON (VS Code lesson)
+- [ ] Gate chip + validity badge in toolbar (all profiles)
+- [ ] Deprecate `deploy/studio-demo` as canonical (keep HTML as legacy; add `cinematic.html` mock in G7)
 
 ### Phase G4 — Creator UX
 
@@ -568,7 +577,7 @@ Agents never drive pixels — only **Li source** + **canvas graph** + **seq/anim
 - [ ] `canvas.li` parse + `lic build` + composable `import_canvas_document_smoke.li`
 - [ ] Pan/zoom + tile cull paint in Li (`gui.canvas.paint`)
 - [ ] Node previews: World → embed `li-render`; GuiScreen → mini `gui` layout
-- [ ] Agent cards (`AgentPlan` node) with diagnose/build status colors
+- [ ] Agent cards (`AgentPlan` node) with diagnose/build status colors (Houdini node-state lesson — `media/local/houdini/h20-nodes.png`)
 - [ ] `canvas_compile_selection` → `lic build` referenced paths
 - [ ] MCP: `canvas_add_node`, `canvas_link`, `canvas_focus`
 - [ ] Bench: `canvas_frame_pan_zoom` tier-2 (Li-only timing of tile paint, optional)
@@ -581,9 +590,13 @@ Agents never drive pixels — only **Li source** + **canvas graph** + **seq/anim
 - [ ] Canvas nodes: `Scene3D`, `AnimationClip`
 - [ ] Link `anim` → `SceneNode` paths; `lic build` validates paths
 
-### Phase G7 — Cinematics + video export (Li)
+### Phase G7 — Cinematics + video export (material: CapCut, DaVinci, Blender VSE, UE)
+
+**Reference pixels:** `media/local/capcut/desktop-ui-*.webp`, `davinci/cut-automatic-ui.jpg`, `blender/vse-overview.svg`, `unreal-engine/sequencer-*.png`
 
 - [ ] `packages/li-seq`: `Timeline`, `Track`, `Shot`, `CameraCut`
+- [ ] **4-panel NLE workspace** (CapCut): `MediaBin` | `SeqPreview` + transport | `SeqTimeline` | `SeqInspector`
+- [ ] Export preset strip: **16:9 1080p30**, **9:16 vertical**, **4K** + progress + frame hash
 - [ ] Cinematic workspace: timeline UI (Li); scrub → `li-render`
 - [ ] `seq_playback_at(t)` deterministic replay (sim + world + anim)
 - [ ] `studio.publish` video preset: 1080p WebM/MP4 + **PublishBundle** hash

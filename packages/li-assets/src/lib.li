@@ -1,0 +1,70 @@
+# PKG-li-assets — glTF / asset pipeline stubs (PH-GD-4).
+
+type AssetHandle = object
+  public asset_id: int
+  public format: int
+  public byte_len: int
+
+def li_assets_version() -> int
+  requires true
+  ensures result == 1
+  decreases 0
+=
+  return 1
+
+def asset_format_gltf() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0
+
+def asset_format_mesh_stub() -> int
+  requires true
+  ensures result == 1
+  decreases 0
+=
+  return 1
+
+def asset_handle_new(asset_id: int, format: int, byte_len: int) -> AssetHandle
+  requires asset_id > 0
+  requires format >= 0
+  requires format <= 1
+  requires byte_len >= 0
+  ensures result.asset_id == asset_id
+  ensures result.format == format
+  ensures result.byte_len == byte_len
+  decreases asset_id
+=
+  var h: AssetHandle
+  h.asset_id = asset_id
+  h.format = format
+  h.byte_len = byte_len
+  return h
+
+def asset_gltf_import_stub(path_len: int) -> AssetHandle
+  requires path_len > 0
+  ensures result.format == asset_format_gltf()
+  ensures result.byte_len >= 0
+  decreases path_len
+=
+  return asset_handle_new(1, asset_format_gltf(), path_len * 64)
+
+def asset_studio_gen_hook_id() -> int
+  requires true
+  ensures result == 42
+  decreases 0
+=
+  return 42
+
+def assets_smoke() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  var h: AssetHandle = asset_gltf_import_stub(12)
+  if h.format != asset_format_gltf():
+    return 1
+  if asset_studio_gen_hook_id() != 42:
+    return 2
+  return 0

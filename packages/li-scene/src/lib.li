@@ -86,3 +86,12 @@ def scene_sync_to_physics(scene: Scene) -> unit
   decreases 0
 =
   return
+
+proc scene_smoke() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  if li_std_scene_version() < 1:
+    return 1
+  return 0

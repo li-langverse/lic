@@ -1,0 +1,131 @@
+# PKG-li-chem — quantum chemistry API stub (PH-QM-1).
+
+type Geometry = object
+  public atom_count: int
+
+type DftResult = object
+  public total_energy: float
+
+def li_chem_version() -> int
+  requires true
+  ensures result == 4
+  decreases 0
+=
+  return 4
+
+def chem_method_rks() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0
+
+def chem_basis_def2svp_tag() -> int
+  requires true
+  ensures result == 1
+  decreases 0
+=
+  return 1
+
+def geometry_valid(g: Geometry) -> int
+  requires true
+  ensures result >= 0
+  decreases 0
+=
+  if g.atom_count > 0:
+    return 1
+  return 0
+
+def lj_pair_energy_chem(dx: float, dy: float, dz: float) -> float
+  requires true
+  decreases 0
+=
+  var r2: float = dx * dx + dy * dy + dz * dz
+  if r2 >= 6.25:
+    return 0.0
+  if r2 < 1e-12:
+    return 0.0
+  var inv_r2: float = 1.0 / r2
+  var inv_r6: float = inv_r2 * inv_r2 * inv_r2
+  var inv_r12: float = inv_r6 * inv_r6
+  return 4.0 * (inv_r12 - inv_r6)
+
+# Li LJ tetramer reference energy (SOTA proxy: GROMACS/OpenMM until DFT kernel).
+def dft_run_lj_reference(g: Geometry) -> DftResult
+  requires g.atom_count > 0
+  ensures result.total_energy < 0.0
+  decreases g.atom_count
+=
+  var pe: float = lj_pair_energy_chem(1.0, 0.0, 0.0)
+  pe = pe + lj_pair_energy_chem(0.5, 0.8660254, 0.0)
+  pe = pe + lj_pair_energy_chem(0.5, 0.2886751, 0.8164966)
+  pe = pe + lj_pair_energy_chem(-0.5, 0.8660254, 0.0)
+  pe = pe + lj_pair_energy_chem(0.0, -0.8660254, 0.0)
+  pe = pe + lj_pair_energy_chem(0.3164966, -0.1830127, 0.8164966)
+  var r: DftResult
+  r.total_energy = pe
+  return r
+
+def dft_run_stub(g: Geometry) -> DftResult
+  requires g.atom_count > 0
+  ensures result.total_energy < 0.0
+  decreases g.atom_count
+=
+  return dft_run_lj_reference(g)
+
+def dft_run_tagged_stub(g: Geometry, method: int, basis: int) -> DftResult
+  requires g.atom_count > 0
+  requires method >= 0
+  requires basis >= 0
+  ensures result.total_energy < 0.0
+  decreases g.atom_count
+=
+  if method == chem_method_rks():
+    if basis == chem_basis_def2svp_tag():
+      return dft_run_stub(g)
+  var r: DftResult
+  r.total_energy = -1.0
+  return r
+
+def tddft_run_stub(g: Geometry) -> DftResult
+  requires g.atom_count > 0
+  ensures result.total_energy < 0.0
+  decreases g.atom_count
+=
+  var r: DftResult
+  r.total_energy = -0.5
+  return r
+
+def geometry_new(atom_count: int) -> Geometry
+  requires atom_count > 0
+  ensures result.atom_count == atom_count
+  decreases atom_count
+=
+  var g: Geometry
+  g.atom_count = atom_count
+  return g
+
+# PH-DRUG / PH-QM — DFT hook at LITL DFT stage (composable with sim.drug_design).
+def chem_tddft_litl_smoke(atom_count: int) -> int
+  requires atom_count > 0
+  ensures result == 0
+  decreases atom_count
+=
+  var g: Geometry = geometry_new(atom_count)
+  var r: DftResult = tddft_run_stub(g)
+  if r.total_energy >= 0.0:
+    return 1
+  return 0
+
+def chem_litl_dft_smoke(atom_count: int) -> int
+  requires atom_count > 0
+  ensures result == 0
+  decreases atom_count
+=
+  var g: Geometry = geometry_new(atom_count)
+  if geometry_valid(g) != 1:
+    return 1
+  var r: DftResult = dft_run_tagged_stub(g, chem_method_rks(), chem_basis_def2svp_tag())
+  if r.total_energy >= 0.0:
+    return 2
+  return 0

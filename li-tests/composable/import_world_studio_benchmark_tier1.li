@@ -1,0 +1,34 @@
+import studio
+import render
+import scene
+import physics.custom
+import sim.automotive
+import sim.robotics
+import sim.drug_design
+import bioeng
+import mmo
+import sim.scientific
+import chem
+import sim
+import store.realtime
+
+def main() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  if studio_viewport_bind_render_stub(1280, 720, 4) != render_studio_viewport_tick_stub(1280, 720) + 2003:
+    return 1
+  if studio_render_viewport_smoke() != 0:
+    return 2
+  if demo_rocket_smoke() != 0:
+    return 3
+  if scientific_drug_stack_smoke() != 0:
+    return 4
+  if mmo_deploy_dev_smoke() != 0:
+    return 5
+  if bioeng_drug_litl_bridge_smoke() != 0:
+    return 6
+  if li_studio_version() < 8:
+    return 7
+  return store_realm_replay_smoke()

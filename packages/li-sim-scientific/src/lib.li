@@ -1,0 +1,354 @@
+# PKG-li-sim-scientific — scientific / engineering sim + viz hooks (PH-SCI-0).
+
+type SimVizFrame = object
+  public field_id: int
+  public timestep: int
+  public sample_count: int
+
+def li_sim_scientific_version() -> int
+  requires true
+  ensures result == 6
+  decreases 0
+=
+  return 6
+
+# SF-0 — field chunk head (HPC path; not OpenFOAM-scale yet).
+type SimFieldChunk = object
+  public field_id: int
+  public cell_count: int
+  public tier: int
+  public timestep: int
+  public sample_norm: float
+
+def sim_field_chunk_new(field_id: int, cell_count: int, tier: int) -> SimFieldChunk
+  requires field_id >= 0
+  requires cell_count > 0
+  requires tier >= 1
+  requires tier <= 3
+  ensures result.field_id == field_id
+  ensures result.cell_count == cell_count
+  ensures result.tier == tier
+  ensures result.timestep == 0
+  decreases cell_count
+=
+  var c: SimFieldChunk
+  c.field_id = field_id
+  c.cell_count = cell_count
+  c.tier = tier
+  c.timestep = 0
+  c.sample_norm = 0.0
+  return c
+
+def sim_field_step_stub(chunk: SimFieldChunk, dt: float) -> unit
+  requires chunk.cell_count > 0
+  requires dt > 0.0
+  requires chunk.tier >= 1
+  ensures chunk.timestep >= 1
+  decreases chunk.timestep
+=
+  sim_field_step_li(chunk, dt)
+
+# Li-native explicit heat on 8-cell strip (SOTA: OpenFOAM-class diffusion; bench: heat_equation_2d).
+def sim_field_step_li(chunk: SimFieldChunk, dt: float) -> unit
+  requires chunk.cell_count > 0
+  requires dt > 0.0
+  requires chunk.tier >= 1
+  ensures chunk.timestep >= 1
+  decreases chunk.timestep
+=
+  var u: array[8, float]
+  var i: int = 0
+  while i < 8
+    u[i] = 0.0
+    i = i + 1
+  u[2] = 1.0
+  var alpha: float = 0.25
+  var dx: float = 0.01
+  var sub: int = 0
+  while sub < 4
+    var j: int = 1
+    var r: float = alpha * dt / (dx * dx)
+    var un: array[8, float]
+    while j < 7
+      un[j] = u[j] + r * (u[j + 1] - 2.0 * u[j] + u[j - 1])
+      j = j + 1
+    un[0] = u[0]
+    un[7] = u[7]
+    j = 0
+    while j < 8
+      u[j] = un[j]
+      j = j + 1
+    sub = sub + 1
+  chunk.timestep = chunk.timestep + 1
+  chunk.sample_norm = chunk.sample_norm + u[4]
+
+def sim_field_chunk_smoke() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  var c: SimFieldChunk = sim_field_chunk_new(0, 64, 2)
+  sim_field_step_stub(c, 0.01)
+  if c.timestep != 1:
+    return 1
+  if scientific_run_stub(c.tier, 10) != 10:
+    return 2
+  return 0
+
+# SF-1 — tier-2 physics coupling (scientific profile substeps; not OpenFOAM yet).
+def sim_field_tier2_physics_tier() -> int
+  requires true
+  ensures result == 2
+  decreases 0
+=
+  return 2
+
+def sim_field_tier2_couple_stub(chunk: SimFieldChunk, dt: float, substeps: int) -> int
+  requires chunk.tier == sim_field_tier2_physics_tier()
+  requires chunk.cell_count > 0
+  requires dt > 0.0
+  requires substeps > 0
+  ensures result == substeps
+  decreases substeps
+=
+  var i: int = 0
+  while i < substeps
+    sim_field_step_stub(chunk, dt)
+    i = i + 1
+  return chunk.timestep
+
+def sim_field_tier2_physics_smoke() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  var c: SimFieldChunk = sim_field_chunk_new(1, 128, sim_field_tier2_physics_tier())
+  if sim_field_tier2_couple_stub(c, 0.001, 4) != 4:
+    return 1
+  if c.sample_norm <= 0.0:
+    return 2
+  return 0
+
+# SF-2 — GPU batch hook (pairs with gpu.* in composable; simple score for authors).
+def sim_field_gpu_batch_size() -> int
+  requires true
+  ensures result == 64
+  decreases 0
+=
+  return 64
+
+def sim_field_run_gpu_stub(chunk: SimFieldChunk, batch_size: int) -> int
+  requires chunk.cell_count > 0
+  requires batch_size > 0
+  ensures result > 0
+  decreases batch_size
+=
+  return batch_size + chunk.cell_count / sim_field_gpu_batch_size()
+
+# SF-3 — checkpoint manifest for publish / repro bundles.
+type SimFieldCheckpoint = object
+  public field_id: int
+  public tick: int
+  public file_count: int
+  public manifest_hash: int
+
+def sim_field_save_checkpoint(chunk: SimFieldChunk) -> SimFieldCheckpoint
+  requires chunk.field_id >= 0
+  ensures result.field_id == chunk.field_id
+  ensures result.tick == chunk.timestep
+  ensures result.file_count >= 1
+  decreases chunk.timestep
+=
+  var cp: SimFieldCheckpoint
+  cp.field_id = chunk.field_id
+  cp.tick = chunk.timestep
+  cp.file_count = 2
+  cp.manifest_hash = chunk.field_id * 1009 + chunk.timestep * 31 + chunk.cell_count
+  return cp
+
+def sim_field_load_checkpoint(manifest_hash: int) -> SimFieldCheckpoint
+  requires manifest_hash >= 0
+  ensures result.manifest_hash == manifest_hash
+  decreases manifest_hash
+=
+  var cp: SimFieldCheckpoint
+  cp.field_id = manifest_hash % 1000
+  cp.tick = manifest_hash / 1000
+  cp.file_count = 2
+  cp.manifest_hash = manifest_hash
+  return cp
+
+# Short names — same behavior as sim_field_* above.
+def new_field(field_id: int, cell_count: int, tier: int) -> SimFieldChunk
+  requires cell_count > 0
+  requires tier >= 1
+  requires tier <= 3
+  decreases cell_count
+=
+  return sim_field_chunk_new(field_id, cell_count, tier)
+
+def step_field(chunk: SimFieldChunk, dt: float) -> unit
+  requires dt > 0.0
+  decreases chunk.timestep
+=
+  sim_field_step_stub(chunk, dt)
+
+def run_field_on_gpu(chunk: SimFieldChunk, batch_size: int) -> int
+  requires batch_size > 0
+  decreases batch_size
+=
+  return sim_field_run_gpu_stub(chunk, batch_size)
+
+def save_field_checkpoint(chunk: SimFieldChunk) -> SimFieldCheckpoint
+  requires true
+  decreases chunk.timestep
+=
+  return sim_field_save_checkpoint(chunk)
+
+def load_field_checkpoint(manifest_hash: int) -> SimFieldCheckpoint
+  requires manifest_hash >= 0
+  decreases manifest_hash
+=
+  return sim_field_load_checkpoint(manifest_hash)
+
+def sim_field_gpu_smoke() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  var c: SimFieldChunk = new_field(2, 256, 2)
+  if run_field_on_gpu(c, sim_field_gpu_batch_size()) <= 0:
+    return 1
+  return 0
+
+def sim_field_checkpoint_smoke() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  var c: SimFieldChunk = new_field(0, 64, 2)
+  step_field(c, 0.01)
+  var saved: SimFieldCheckpoint = save_field_checkpoint(c)
+  var loaded: SimFieldCheckpoint = load_field_checkpoint(saved.manifest_hash)
+  if loaded.manifest_hash != saved.manifest_hash:
+    return 1
+  if loaded.file_count < 1:
+    return 2
+  return 0
+
+def field_checkpoint_manifest_for_smoke() -> int
+  requires true
+  ensures result > 0
+  decreases 0
+=
+  var c: SimFieldChunk = new_field(0, 64, 2)
+  step_field(c, 0.01)
+  return save_field_checkpoint(c).manifest_hash
+
+def sim_viz_frame_new(field_id: int, timestep: int) -> SimVizFrame
+  requires field_id >= 0
+  requires timestep >= 0
+  ensures result.field_id == field_id
+  ensures result.timestep == timestep
+  decreases timestep
+=
+  var f: SimVizFrame
+  f.field_id = field_id
+  f.timestep = timestep
+  f.sample_count = 0
+  return f
+
+def sim_viz_push_sample(frame: SimVizFrame, value: float) -> unit
+  requires frame.timestep >= 0
+  ensures frame.sample_count >= 1
+  decreases frame.sample_count
+=
+  if value == value:
+    frame.sample_count = frame.sample_count + 1
+
+def scientific_run_stub(tier: int, steps: int) -> int
+  requires tier >= 1
+  requires tier <= 3
+  requires steps > 0
+  ensures result == steps
+  decreases steps
+=
+  return steps
+
+# BIOENG-5 — bioreactor / heat-equation tier-2 hook (stub).
+type ReactorField = object
+  public cell_count: int
+  public timestep: int
+  public temperature_c: float
+
+def scientific_reactor_field_new(cell_count: int) -> ReactorField
+  requires cell_count > 0
+  ensures result.cell_count == cell_count
+  ensures result.timestep == 0
+  ensures result.temperature_c == 37.0
+  decreases cell_count
+=
+  var f: ReactorField
+  f.cell_count = cell_count
+  f.timestep = 0
+  f.temperature_c = 37.0
+  return f
+
+def scientific_reactor_heat_step_stub(field: ReactorField, dt: float) -> unit
+  requires field.cell_count > 0
+  requires dt > 0.0
+  ensures field.timestep >= 1
+  decreases field.timestep
+=
+  scientific_reactor_heat_step_li(field, dt)
+
+def scientific_reactor_heat_step_li(field: ReactorField, dt: float) -> unit
+  requires field.cell_count > 0
+  requires dt > 0.0
+  ensures field.timestep >= 1
+  decreases field.timestep
+=
+  var u: array[8, float]
+  var i: int = 0
+  while i < 8
+    u[i] = field.temperature_c
+    i = i + 1
+  var alpha: float = 0.01
+  var dx: float = 0.05
+  var j: int = 1
+  var r: float = alpha * dt / (dx * dx)
+  var un: array[8, float]
+  while j < 7
+    un[j] = u[j] + r * (u[j + 1] - 2.0 * u[j] + u[j - 1])
+    j = j + 1
+  un[0] = u[0]
+  un[7] = u[7]
+  field.temperature_c = un[4]
+  field.timestep = field.timestep + 1
+
+def scientific_drug_profile_tag() -> int
+  requires true
+  ensures result == 6
+  decreases 0
+=
+  return 6
+
+def scientific_drug_stack_smoke() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  if scientific_drug_profile_tag() != 6:
+    return 1
+  return scientific_reactor_smoke()
+
+def scientific_reactor_smoke() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  var f: ReactorField = scientific_reactor_field_new(32)
+  scientific_reactor_heat_step_stub(f, 0.1)
+  if f.timestep != 1:
+    return 1
+  return 0

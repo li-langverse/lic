@@ -1,0 +1,71 @@
+# PKG-li-ml — async parallel ML/RL runtime hooks (PH-ML-0).
+
+type JobGraph = object
+  public node_count: int
+  public completed: int
+  public async_mode: int
+
+def li_ml_version() -> int
+  requires true
+  ensures result == 2
+  decreases 0
+=
+  return 2
+
+def ml_runtime_mode_async_parallel() -> int
+  requires true
+  ensures result == 1
+  decreases 0
+=
+  return 1
+
+def job_graph_new(node_count: int) -> JobGraph
+  requires node_count > 0
+  ensures result.node_count == node_count
+  ensures result.completed == 0
+  ensures result.async_mode == 1
+  decreases node_count
+=
+  var g: JobGraph
+  g.node_count = node_count
+  g.completed = 0
+  g.async_mode = ml_runtime_mode_async_parallel()
+  return g
+
+def job_graph_run_stub(graph: JobGraph) -> unit
+  requires graph.node_count > 0
+  ensures graph.completed == graph.node_count
+  decreases graph.node_count
+=
+  graph.completed = graph.node_count
+
+def env_pool_step_stub(batch_size: int) -> int
+  requires batch_size > 0
+  ensures result == batch_size
+  decreases batch_size
+=
+  return batch_size
+
+def job_graph_smoke() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  var g: JobGraph = job_graph_new(4)
+  job_graph_run_stub(g)
+  if g.completed != 4:
+    return 1
+  if g.async_mode != ml_runtime_mode_async_parallel():
+    return 2
+  return 0
+
+def ml_job_graph_batch_smoke() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  if job_graph_smoke() != 0:
+    return 1
+  if env_pool_step_stub(8) != 8:
+    return 2
+  return 0

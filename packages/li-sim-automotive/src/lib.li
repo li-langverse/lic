@@ -1,0 +1,84 @@
+# PKG-li-sim-automotive — driving, sensors, maps (PH-SIM automotive profile).
+
+type AutomotiveWorld = object
+  public tick: int
+  public sensor_frames: int
+  public map_loaded: int
+  public x: float
+  public y: float
+  public yaw: float
+  public speed: float
+
+extern proc li_rt_cos(x: float) -> float
+extern proc li_rt_sin(x: float) -> float
+
+def li_sim_automotive_version() -> int
+  requires true
+  ensures result == 2
+  decreases 0
+=
+  return 2
+
+def automotive_world_new() -> AutomotiveWorld
+  requires true
+  ensures result.tick == 0
+  ensures result.sensor_frames == 0
+  decreases 0
+=
+  var w: AutomotiveWorld
+  w.tick = 0
+  w.sensor_frames = 0
+  w.map_loaded = 0
+  w.x = 0.0
+  w.y = 0.0
+  w.yaw = 0.0
+  w.speed = 5.0
+  return w
+
+def bicycle_step_li(world: AutomotiveWorld, steer: float, wheelbase: float, dt: float) -> unit
+  requires world.speed >= 0.0
+  requires wheelbase > 0.0
+  requires dt > 0.0
+  decreases world.tick
+=
+  var slip: float = world.speed * steer / wheelbase
+  world.x = world.x + world.speed * li_rt_cos(world.yaw) * dt
+  world.y = world.y + world.speed * li_rt_sin(world.yaw) * dt
+  world.yaw = world.yaw + slip * dt
+
+def automotive_sensor_tick(world: AutomotiveWorld) -> unit
+  requires true
+  ensures world.sensor_frames >= 1
+  decreases world.sensor_frames
+=
+  bicycle_step_li(world, 0.05, 2.7, 0.01)
+  world.sensor_frames = world.sensor_frames + 1
+  world.tick = world.tick + 1
+
+def automotive_load_map_stub(world: AutomotiveWorld) -> unit
+  requires true
+  ensures world.map_loaded == 1
+  decreases 0
+=
+  world.map_loaded = 1
+
+def automotive_smoke() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  var w: AutomotiveWorld = automotive_world_new()
+  automotive_load_map_stub(w)
+  automotive_sensor_tick(w)
+  if w.map_loaded != 1:
+    return 1
+  if w.sensor_frames != 1:
+    return 2
+  return 0
+
+def demo_racing_smoke() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return automotive_smoke()

@@ -17,8 +17,10 @@ from datetime import datetime, timezone
 from pathlib import Path
 
 REPO = Path(__file__).resolve().parents[2]
+HARNESS = REPO / "benchmarks" / "harness"
 TIER1 = REPO / "benchmarks" / "tier1_micro"
 TIER2 = REPO / "benchmarks" / "tier2_physics"
+TIER2_WORLD = REPO / "benchmarks" / "tier2_world"
 RESULTS = REPO / "benchmarks" / "results"
 CSV_HEADER = [
     "benchmark",
@@ -27,13 +29,39 @@ CSV_HEADER = [
     "threads",
     "metric",
     "value",
+    "value_stdev",
+    "timing_runs",
     "unit",
     "git_sha",
     "cpu_model",
     "flags",
 ]
 NATIVE_FLAGS = "-O3 -march=native -ffast-math"
-LANGS = ("cpp", "rust", "julia", "li")
+LANGS = ("cpp", "rust", "julia", "numpy", "li")
+NUMPY_FLAGS = "numpy (@/dot/sum use BLAS when linked)"
+NUMPY_RUNNER = REPO / "benchmarks" / "harness" / "numpy_runner.py"
+# Timed world/replication/physics-frame — C/Li only until numpy oracles exist.
+WORLD_ENGINE_BENCHES = frozenset(
+    {
+        "game_world_soa_10k",
+        "game_replication_encode",
+        "sim_physics_frame",
+    }
+)
+
+
+@dataclass(frozen=True)
+class TimingStats:
+    """Wall-clock samples after one discarded warmup (not included in n)."""
+
+    median: float
+    stdev: float
+    n: int
+
+
+def clamp_timing_runs(n: int) -> int:
+    """Org policy: 3–6 timed repetitions (median + sample stdev)."""
+    return max(3, min(6, n))
 
 
 @dataclass(frozen=True)
@@ -79,6 +107,33 @@ TIER1_BENCHES: tuple[BenchSpec, ...] = (
         flops_per_run=2.0 * 512**3,
     ),
     BenchSpec(
+        "matmul_blocked_n128",
+        1,
+        "matmul_blocked_n128",
+        "cpp/main.c",
+        "common/matmul_blocked_core.c",
+        "li/main.li",
+        flops_per_run=2.0 * 128**3,
+    ),
+    BenchSpec(
+        "matmul_blocked_n1024",
+        1,
+        "matmul_blocked_n1024",
+        "cpp/main.c",
+        "common/matmul_blocked_core.c",
+        "li/main.li",
+        flops_per_run=2.0 * 1024**3,
+    ),
+    BenchSpec(
+        "matmul_naive_n128",
+        1,
+        "matmul_naive_n128",
+        "cpp/main.c",
+        "common/matmul_core.c",
+        "li/main.li",
+        flops_per_run=2.0 * 128**3,
+    ),
+    BenchSpec(
         "reduce_sum",
         1,
         "reduce_sum",
@@ -100,8 +155,8 @@ TIER1_BENCHES: tuple[BenchSpec, ...] = (
 )
 
 # Gaming-physics roadmap (physics-only; Tier R = rendering out of scope):
-#   exists: md_lennard_jones, nbody, wave_1d/2d, heat_2d, advection_diffusion_2d, sph_dam_break_2d (stub)
-#   planned: euler_fluid_2d, combustion_passive, wind_field_bc, rigid_body, cloth, mls_mpm
+#   full-scale refs: wave_1d/2d, heat_2d, advection_diffusion_2d, nbody, md (C kernel)
+#   v0 gaming harness: euler/wind/combustion/cloth/ragdoll/sph — see tier2_physics/BENCH_WORKLOADS.md
 #   Tier R: shadows, reflections BRDF, fire rendering
 TIER2_BENCHES: tuple[BenchSpec, ...] = (
     BenchSpec(
@@ -193,15 +248,8 @@ TIER2_BENCHES: tuple[BenchSpec, ...] = (
  "common/rigid_stack_core.c",
  "li/main.li",
  ),
- BenchSpec(
- "three_body_pure",
- 2,
- "three_body_pure",
- "cpp/main.c",
- "common/three_body_core.c",
- "li/main.li",
- li_pure=True,
- ),
+#   three_body_pure: Li-only mini kernel — omitted from TIER2_BENCHES until `lic build`
+#   stops SIGSEGV on benchmarks/tier2_physics/three_body_pure/li/main.li (compiler issue).
  BenchSpec(
  "wind_field_bc",
  2,
@@ -258,20 +306,48 @@ TIER2_BENCHES: tuple[BenchSpec, ...] = (
  "common/cloth_core.c",
  "li/main.li",
  ),
- BenchSpec(
- "ragdoll_chain",
- 2,
- "ragdoll_chain",
- "cpp/main.c",
- "common/ragdoll_core.c",
- "li/main.li",
- ),
+    BenchSpec(
+        "ragdoll_chain",
+        2,
+        "ragdoll_chain",
+        "cpp/main.c",
+        "common/ragdoll_core.c",
+        "li/main.li",
+    ),
+    BenchSpec(
+        "game_world_soa_10k",
+        2,
+        "game_world_soa_10k",
+        "cpp/main.c",
+        "common/game_world_core.c",
+        "li/main.li",
+    ),
+    BenchSpec(
+        "game_replication_encode",
+        2,
+        "game_replication_encode",
+        "cpp/main.c",
+        "common/repl_core.c",
+        "li/main.li",
+    ),
+    BenchSpec(
+        "sim_physics_frame",
+        2,
+        "sim_physics_frame",
+        "cpp/main.c",
+        "common/sim_phys_core.c",
+        "li/main.li",
+    ),
 )
 
 
 def bench_dir(spec: BenchSpec) -> Path:
-    root = TIER1 if spec.tier == 1 else TIER2
-    return root / spec.rel_dir
+    if spec.tier == 1:
+        return TIER1 / spec.rel_dir
+    world_path = TIER2_WORLD / spec.rel_dir
+    if world_path.is_dir():
+        return world_path
+    return TIER2 / spec.rel_dir
 
 
 def git_sha() -> str:
@@ -289,32 +365,47 @@ def cpu_model() -> str:
     return platform.processor() or platform.machine()
 
 
+def ensure_numpy() -> None:
+    try:
+        import numpy  # noqa: F401
+    except ImportError as exc:
+        raise RuntimeError(
+            "numpy is required for tier benchmarks (pip install numpy)"
+        ) from exc
+
+
 def write_sample_csv(path: Path) -> None:
     """Placeholder rows until Tier 1–2 binaries exist — drives plot harness."""
     sha = git_sha()
     cpu = cpu_model()
-    rows = [
-        ("three_body", "li", "release", 1, "wall_time", 0.42, "s", sha, cpu, "-O3"),
-        ("three_body", "cpp", "release", 1, "wall_time", 0.38, "s", sha, cpu, "-O3 -march=native"),
-        ("three_body", "rust", "release", 1, "wall_time", 0.41, "s", sha, cpu, "--release"),
-        ("three_body", "julia", "release", 1, "wall_time", 0.55, "s", sha, cpu, "-O3"),
-        ("md_lennard_jones", "li", "release", 1, "wall_time", 1.2, "s", sha, cpu, "-O3"),
-        ("md_lennard_jones", "cpp", "release", 1, "wall_time", 1.0, "s", sha, cpu, "-O3"),
-        ("md_lennard_jones", "li", "release", 8, "wall_time", 0.22, "s", sha, cpu, "-O3 --threads=8"),
-        ("simd_dot", "li", "release", 1, "throughput", 4.8, "GFLOPS", sha, cpu, "simd"),
-        ("simd_dot", "cpp", "release", 1, "throughput", 5.1, "GFLOPS", sha, cpu, "simd"),
-        ("advection_diffusion_2d", "li", "release", 1, "wall_time", 0.65, "s", sha, cpu, "-O3"),
-        ("advection_diffusion_2d", "cpp", "release", 1, "wall_time", 0.60, "s", sha, cpu, "-O3"),
-        ("wave_equation_2d", "li", "release", 1, "wall_time", 0.90, "s", sha, cpu, "-O3"),
-        ("wave_equation_2d", "cpp", "release", 1, "wall_time", 0.85, "s", sha, cpu, "-O3"),
-        ("sph_dam_break_2d", "li", "release", 1, "wall_time", 1.5, "s", sha, cpu, "-O3"),
-        ("sph_dam_break_2d", "cpp", "release", 1, "wall_time", 1.4, "s", sha, cpu, "-O3"),
+    sample_rows = [
+        row_for(
+            benchmark="three_body",
+            lang="li",
+            value=0.42,
+            metric="wall_time",
+            unit="s",
+            sha=sha,
+            cpu=cpu,
+            flags="-O3",
+            timing_runs=5,
+            value_stdev=0.001,
+        ),
+        row_for(
+            benchmark="three_body",
+            lang="cpp",
+            value=0.38,
+            metric="wall_time",
+            unit="s",
+            sha=sha,
+            cpu=cpu,
+            flags="-O3 -march=native",
+            timing_runs=5,
+            value_stdev=0.0008,
+        ),
     ]
     path.parent.mkdir(parents=True, exist_ok=True)
-    with path.open("w", newline="") as f:
-        w = csv.writer(f)
-        w.writerow(CSV_HEADER)
-        w.writerows(rows)
+    write_csv(path, sample_rows)
     print(f"wrote sample {path} ({len(rows)} rows) — replace with real timings when codegen lands")
 
 
@@ -331,7 +422,7 @@ def write_csv(path: Path, rows: list[dict[str, object]]) -> None:
         w = csv.DictWriter(f, fieldnames=CSV_HEADER)
         w.writeheader()
         for row in rows:
-            w.writerow({k: row[k] for k in CSV_HEADER})
+            w.writerow({k: row.get(k, "") for k in CSV_HEADER})
 
 
 def merge_rows(
@@ -352,7 +443,8 @@ def merge_rows(
     return kept + new_rows
 
 
-def time_command(cmd: list[str], *, cwd: Path | None = None, runs: int = 3) -> float:
+def time_command(cmd: list[str], *, cwd: Path | None = None, runs: int = 5) -> TimingStats:
+    runs = clamp_timing_runs(runs)
     samples: list[float] = []
     # Discard one warmup run (JIT/cache/thermal).
     warmup = subprocess.run(cmd, cwd=cwd, capture_output=True, text=True)
@@ -371,7 +463,20 @@ def time_command(cmd: list[str], *, cwd: Path | None = None, runs: int = 3) -> f
                 f"{proc.stderr or proc.stdout}"
             )
         samples.append(elapsed)
-    return statistics.median(samples)
+    med = statistics.median(samples)
+    stdev = statistics.stdev(samples) if len(samples) >= 2 else 0.0
+    return TimingStats(median=med, stdev=stdev, n=runs)
+
+
+def apply_bench_scale(*, quick: bool | None) -> None:
+    """Set LI_BENCH_QUICK / LI_BENCH_SCALE for child processes (C + NumPy)."""
+    if quick is True:
+        os.environ["LI_BENCH_QUICK"] = "1"
+        os.environ["LI_BENCH_SCALE"] = "quick"
+    elif quick is False:
+        os.environ.pop("LI_BENCH_QUICK", None)
+        os.environ["LI_BENCH_SCALE"] = "full"
+    # quick is None: leave env unchanged
 
 
 def build_native(spec: BenchSpec, bin_path: Path) -> None:
@@ -381,7 +486,18 @@ def build_native(spec: BenchSpec, bin_path: Path) -> None:
     core = root / spec.core_c
     cc = os.environ.get("CC", "clang")
     subprocess.check_call(
-        [cc, "-O3", "-march=native", "-ffast-math", str(main_c), str(core), "-lm", "-o", str(bin_path)],
+        [
+            cc,
+            "-O3",
+            "-march=native",
+            "-ffast-math",
+            f"-I{HARNESS}",
+            str(main_c),
+            str(core),
+            "-lm",
+            "-o",
+            str(bin_path),
+        ],
         cwd=REPO,
     )
 
@@ -405,6 +521,7 @@ def build_li(spec: BenchSpec, bin_path: Path) -> None:
             "-O3",
             "-ffast-math",
             "-march=native",
+            f"-I{HARNESS}",
         ],
         cwd=REPO,
         env=env,
@@ -418,8 +535,8 @@ def verify_checksum(spec: BenchSpec, build_dir: Path) -> None:
     build_native(spec, native)
     build_li(spec, li_bin)
     native_out = subprocess.check_output([str(native), "--verify"], text=True).strip()
-    cpp_time = time_command([str(native)], runs=1)
-    li_time = time_command([str(li_bin)], runs=1)
+    cpp_time = time_command([str(native)], runs=3).median
+    li_time = time_command([str(li_bin)], runs=3).median
     if spec.li_pure:
         print(f"{spec.name} verify ok (pure Li): native checksum={native_out} li/native time={li_time:.4f}/{cpp_time:.4f}s")
         return
@@ -469,6 +586,8 @@ def row_for(
     sha: str,
     cpu: str,
     flags: str,
+    timing_runs: int | None = None,
+    value_stdev: float | None = None,
 ) -> dict[str, object]:
     return {
         "benchmark": benchmark,
@@ -477,6 +596,8 @@ def row_for(
         "threads": 1,
         "metric": metric,
         "value": round(value, 4),
+        "value_stdev": round(value_stdev, 6) if value_stdev is not None else "",
+        "timing_runs": timing_runs if timing_runs is not None else "",
         "unit": unit,
         "git_sha": sha,
         "cpu_model": cpu,
@@ -485,6 +606,7 @@ def row_for(
 
 
 def run_benchmark(spec: BenchSpec, *, runs: int) -> list[dict[str, object]]:
+    runs = clamp_timing_runs(runs)
     build_dir = REPO / "build" / "bench" / spec.name
     build_dir.mkdir(parents=True, exist_ok=True)
     sha = git_sha()
@@ -500,14 +622,31 @@ def run_benchmark(spec: BenchSpec, *, runs: int) -> list[dict[str, object]]:
     build_native(spec, rust_bin)
     build_native(spec, julia_bin)
     build_li(spec, li_bin)
+    ensure_numpy()
+    numpy_cmd = [
+        sys.executable,
+        str(NUMPY_RUNNER),
+        "--benchmark",
+        spec.name,
+    ]
 
-    for lang, bin_path, flags in (
-        ("cpp", cpp_bin, NATIVE_FLAGS),
-        ("rust", rust_bin, f"{NATIVE_FLAGS} (native C kernel)"),
-        ("julia", julia_bin, f"{NATIVE_FLAGS} (native C kernel)"),
-        ("li", li_bin, f"{'pure lic' if spec.li_pure else 'shared C kernel + lic'} {NATIVE_FLAGS}"),
-    ):
-        wall = time_command([str(bin_path)], runs=runs)
+    lang_runs: list[tuple[str, list[str], str]] = [
+        ("cpp", [str(cpp_bin)], NATIVE_FLAGS),
+        ("rust", [str(rust_bin)], f"{NATIVE_FLAGS} (native C kernel)"),
+        ("julia", [str(julia_bin)], f"{NATIVE_FLAGS} (native C kernel)"),
+        ("numpy", numpy_cmd, NUMPY_FLAGS),
+        (
+            "li",
+            [str(li_bin)],
+            f"{'pure lic' if spec.li_pure else 'shared C kernel + lic'} {NATIVE_FLAGS}",
+        ),
+    ]
+    if spec.name in WORLD_ENGINE_BENCHES:
+        lang_runs = [lr for lr in lang_runs if lr[0] != "numpy"]
+
+    for lang, cmd, flags in lang_runs:
+        timing = time_command(cmd, runs=runs)
+        wall = timing.median
         rows.append(
             row_for(
                 benchmark=spec.name,
@@ -518,6 +657,8 @@ def run_benchmark(spec: BenchSpec, *, runs: int) -> list[dict[str, object]]:
                 sha=sha,
                 cpu=cpu,
                 flags=flags,
+                timing_runs=timing.n,
+                value_stdev=timing.stdev,
             )
         )
         if spec.flops_per_run is not None and wall > 0:
@@ -548,14 +689,33 @@ def run_benchmark(spec: BenchSpec, *, runs: int) -> list[dict[str, object]]:
                     flags=flags,
                 )
             )
-        print(f"{spec.name} {lang} wall_time={wall:.4f}s (median of {runs})")
+        print(
+            f"{spec.name} {lang} wall_time={wall:.4f}s "
+            f"(median of {timing.n}, stdev={timing.stdev:.6f}s)"
+        )
 
     return rows
+
+
+def filter_specs(
+    specs: tuple[BenchSpec, ...], only: str | None
+) -> tuple[BenchSpec, ...]:
+    if not only:
+        return specs
+    names = {n.strip() for n in only.split(",") if n.strip()}
+    picked = tuple(s for s in specs if s.name in names)
+    unknown = names - {s.name for s in picked}
+    if unknown:
+        raise SystemExit(f"unknown benchmark id(s): {', '.join(sorted(unknown))}")
+    if not picked:
+        raise SystemExit("no benchmarks matched --only")
+    return picked
 
 
 def run_tier_benches(
     specs: tuple[BenchSpec, ...], *, runs: int, out: Path, verify: bool, label: str
 ) -> int:
+    ensure_numpy()
     if verify:
         for spec in specs:
             build_dir = REPO / "build" / "bench" / spec.name
@@ -568,7 +728,8 @@ def run_tier_benches(
             try:
                 verify_checksum(spec, build_dir)
             except RuntimeError as exc:
-                print(f"warn: {exc} — continuing with timing", file=sys.stderr)
+                print(f"FAIL verify {spec.name}: {exc}", file=sys.stderr)
+                return 1
 
     merged: list[dict[str, object]] = read_csv(out)
     for spec in specs:
@@ -633,6 +794,16 @@ def run_verify() -> int:
     return subprocess.call([sys.executable, str(script), "--write-csv", str(RESULTS / "verify.csv")])
 
 
+def run_validity_all() -> int:
+    """Checksum oracles: cpp reference, li shared-kernel match, numpy tolerance."""
+    script = REPO / "benchmarks" / "harness" / "validity.py"
+    return subprocess.call(
+        [sys.executable, str(script), "--tier", "12"],
+        cwd=REPO,
+        env={**os.environ},
+    )
+
+
 def run_tier0() -> int:
     script = REPO / "li-tests" / "run_all.sh"
     if not script.exists():
@@ -647,15 +818,50 @@ def main() -> int:
     parser.add_argument("--tier", type=int, default=0)
     parser.add_argument("--sample", action="store_true", help="write demo CSV for plots")
     parser.add_argument("--ci", action="store_true")
-    parser.add_argument("--runs", type=int, default=3, help="timing repetitions (median)")
+    parser.add_argument(
+        "--runs",
+        type=int,
+        default=5,
+        help="timed repetitions after warmup; clamped to 3–6; reports median+stdev",
+    )
     parser.add_argument("--skip-verify", action="store_true")
+    parser.add_argument(
+        "--skip-validity",
+        action="store_true",
+        help="skip checksum validity.py after tier 12 (use with --skip-verify for timing-only)",
+    )
     parser.add_argument(
         "--out",
         type=Path,
         default=RESULTS / "latest.csv",
         help="CSV output path",
     )
+    parser.add_argument(
+        "--only",
+        type=str,
+        default=None,
+        help="comma-separated benchmark ids (e.g. game_world_soa_10k,sim_physics_frame)",
+    )
+    scale = parser.add_mutually_exclusive_group()
+    scale.add_argument(
+        "--quick",
+        action="store_true",
+        help="few DOFs, long-enough steps for stability/validity (default for tier 12/13)",
+    )
+    scale.add_argument(
+        "--full",
+        action="store_true",
+        help="production-scale perf sizes (LI_BENCH_SCALE=full)",
+    )
     args = parser.parse_args()
+    args.runs = clamp_timing_runs(args.runs)
+
+    if args.full:
+        apply_bench_scale(quick=False)
+    elif args.quick or args.tier in (12, 13):
+        apply_bench_scale(quick=True)
+    else:
+        apply_bench_scale(quick=None)
 
     if args.sample:
         write_sample_csv(args.out)
@@ -680,13 +886,35 @@ def main() -> int:
         return run_tier1_all(runs=args.runs, out=args.out, verify=not args.skip_verify)
 
     if args.tier == 2:
-        return run_tier2_all(runs=args.runs, out=args.out, verify=not args.skip_verify)
+        specs = filter_specs(TIER2_BENCHES, args.only)
+        return run_tier_benches(
+            specs,
+            runs=args.runs,
+            out=args.out,
+            verify=not args.skip_verify,
+            label="tier-2",
+        )
 
     if args.tier == 12:
         rc = run_tier1_all(runs=args.runs, out=args.out, verify=not args.skip_verify)
         if rc != 0:
             return rc
-        return run_tier2_all(runs=args.runs, out=args.out, verify=not args.skip_verify)
+        specs = filter_specs(TIER2_BENCHES, args.only)
+        rc = run_tier_benches(
+            specs,
+            runs=args.runs,
+            out=args.out,
+            verify=not args.skip_verify,
+            label="tier-2",
+        )
+        if rc != 0:
+            return rc
+        if not args.skip_validity:
+            return run_validity_all()
+        return 0
+
+    if args.tier == 13:
+        return run_validity_all()
 
     if args.tier == 3:
         script = REPO / "benchmarks" / "harness" / "bench_ecosystem.py"

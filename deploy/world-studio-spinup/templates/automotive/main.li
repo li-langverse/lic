@@ -1,0 +1,13 @@
+# Spin-up: automotive / racing (PH-SIM automotive).
+import studio
+import sim
+import sim.automotive
+
+def main() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  if sim_profile_automotive() != 2:
+    return 1
+  return demo_racing_smoke()

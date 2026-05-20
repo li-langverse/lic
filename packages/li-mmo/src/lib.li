@@ -1,0 +1,363 @@
+# PKG-li-mmo — MMORPG realms, shards, sessions (PH-MMO-0).
+
+type RealmState = object
+  public realm_id: int
+  public shard_id: int
+  public tick: int
+  public player_count: int
+  public store_handle: int
+
+type PlayerSession = object
+  public session_id: int
+  public player_id: int
+  public realm_id: int
+  public connected: int
+
+def li_mmo_version() -> int
+  requires true
+  ensures result == 7
+  decreases 0
+=
+  return 7
+
+# MMO-7 partial — server-side validation hook (full anti-cheat later).
+def mmo_anticheat_validate_tick_stub(tick: int, checksum: int) -> int
+  requires tick >= 0
+  requires checksum >= 0
+  ensures result >= 0
+  ensures result <= 1
+  decreases tick
+=
+  if checksum == tick * 17:
+    return 1
+  return 0
+
+def mmo_deploy_profile_dev() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0
+
+def mmo_deploy_profile_prod() -> int
+  requires true
+  ensures result == 1
+  decreases 0
+=
+  return 1
+
+def mmo_role_gateway() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0
+
+def mmo_role_shard() -> int
+  requires true
+  ensures result == 1
+  decreases 0
+=
+  return 1
+
+def mmo_role_matchmaking() -> int
+  requires true
+  ensures result == 2
+  decreases 0
+=
+  return 2
+
+def realm_state_new(realm_id: int, shard_id: int) -> RealmState
+  requires realm_id >= 0
+  requires shard_id >= 0
+  ensures result.tick == 0
+  ensures result.player_count == 0
+  decreases realm_id
+=
+  var r: RealmState
+  r.realm_id = realm_id
+  r.shard_id = shard_id
+  r.tick = 0
+  r.player_count = 0
+  r.store_handle = 0
+  return r
+
+def mmo_shard_tick_stub(realm: RealmState) -> unit
+  requires realm.realm_id >= 0
+  ensures realm.tick >= 1
+  decreases realm.tick
+=
+  realm.tick = realm.tick + 1
+
+def mmo_aoi_cell_count(player_count: int, cell_size: int) -> int
+  requires player_count >= 0
+  requires cell_size > 0
+  ensures result >= 0
+  decreases player_count
+=
+  if player_count == 0:
+    return 0
+  return player_count / cell_size + 1
+
+def player_session_new(session_id: int, player_id: int, realm_id: int) -> PlayerSession
+  requires session_id > 0
+  requires player_id > 0
+  requires realm_id >= 0
+  ensures result.connected == 1
+  decreases session_id
+=
+  var s: PlayerSession
+  s.session_id = session_id
+  s.player_id = player_id
+  s.realm_id = realm_id
+  s.connected = 1
+  return s
+
+def mmo_gateway_route_shard_stub(realm_id: int, shard_count: int) -> int
+  requires realm_id >= 0
+  requires shard_count > 0
+  ensures result >= 0
+  ensures result < shard_count
+  decreases realm_id
+=
+  return realm_id % shard_count
+
+type MatchQueue = object
+  public realm_id: int
+  public waiting: int
+  public assigned_shard: int
+
+def match_queue_new(realm_id: int) -> MatchQueue
+  requires realm_id >= 0
+  ensures result.waiting == 0
+  ensures result.realm_id == realm_id
+  decreases realm_id
+=
+  var q: MatchQueue
+  q.realm_id = realm_id
+  q.waiting = 0
+  q.assigned_shard = 0
+  return q
+
+def match_enqueue_stub(q: MatchQueue) -> unit
+  requires q.realm_id >= 0
+  ensures q.waiting >= 1
+  decreases q.waiting
+=
+  q.waiting = q.waiting + 1
+
+def match_assign_shard_stub(q: MatchQueue, shard_count: int) -> unit
+  requires shard_count > 0
+  requires q.waiting > 0
+  ensures q.assigned_shard >= 0
+  ensures q.assigned_shard < shard_count
+  decreases q.waiting
+=
+  q.assigned_shard = mmo_gateway_route_shard_stub(q.realm_id, shard_count)
+  q.waiting = q.waiting - 1
+
+def mmo_realm_config_tick_hz_dev() -> int
+  requires true
+  ensures result == 30
+  decreases 0
+=
+  return 30
+
+# PH-MMO-3 — deploy/mmo/realm.toml dev profile constants (pairs with deploy-mmo-dev.sh).
+def mmo_deploy_dev_shard_count() -> int
+  requires true
+  ensures result == 2
+  decreases 0
+=
+  return 2
+
+def mmo_deploy_dev_gateway_port() -> int
+  requires true
+  ensures result == 8080
+  decreases 0
+=
+  return 8080
+
+def mmo_deploy_dev_websocket_port() -> int
+  requires true
+  ensures result == 8081
+  decreases 0
+=
+  return 8081
+
+def mmo_deploy_dev_smoke() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  if mmo_deploy_dev_shard_count() != 2:
+    return 1
+  if mmo_realm_config_tick_hz_dev() != 30:
+    return 2
+  if mmo_deploy_dev_gateway_port() != 8080:
+    return 3
+  if mmo_deploy_dev_websocket_port() != 8081:
+    return 4
+  return 0
+
+def mmo_smoke() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  if mmo_gateway_route_shard_stub(7, 4) != 3:
+    return 1
+  return 0
+
+# MMO-5 — gateway WebSocket session binding (pairs with net.httpd WsSession).
+type MmoWsBinding = object
+  public ws_handle_id: int
+  public player_id: int
+  public realm_id: int
+  public shard_id: int
+  public bound: int
+
+def mmo_ws_binding_new(ws_handle_id: int, player_id: int, realm_id: int) -> MmoWsBinding
+  requires ws_handle_id >= 0
+  requires player_id > 0
+  requires realm_id >= 0
+  ensures result.ws_handle_id == ws_handle_id
+  ensures result.player_id == player_id
+  ensures result.realm_id == realm_id
+  ensures result.bound == 0
+  decreases player_id
+=
+  var b: MmoWsBinding
+  b.ws_handle_id = ws_handle_id
+  b.player_id = player_id
+  b.realm_id = realm_id
+  b.shard_id = 0
+  b.bound = 0
+  return b
+
+def mmo_ws_binding_assign_shard(binding: MmoWsBinding, shard_count: int) -> unit
+  requires shard_count > 0
+  requires binding.realm_id >= 0
+  ensures binding.shard_id >= 0
+  ensures binding.shard_id < shard_count
+  ensures binding.bound == 1
+  decreases shard_count
+=
+  binding.shard_id = mmo_gateway_route_shard_stub(binding.realm_id, shard_count)
+  binding.bound = 1
+
+def mmo_ws_session_bind_smoke() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  var b: MmoWsBinding = mmo_ws_binding_new(1, 42, 7)
+  mmo_ws_binding_assign_shard(b, 4)
+  if b.bound != 1:
+    return 1
+  if b.shard_id != 3:
+    return 2
+  return 0
+
+def mmo_gateway_ws_smoke() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  if mmo_role_gateway() != 0:
+    return 1
+  return mmo_ws_session_bind_smoke()
+
+# Li-native gateway bridge tick (pairs with httpd_li_native_gateway_tick_stub in composable).
+def mmo_li_native_gateway_bridge_stub(ws_handle_id: int, player_id: int, realm_id: int, shard_count: int) -> int
+  requires ws_handle_id >= 0
+  requires player_id > 0
+  requires realm_id >= 0
+  requires shard_count > 0
+  ensures result >= 0
+  ensures result < shard_count
+  decreases player_id
+=
+  var b: MmoWsBinding = mmo_ws_binding_new(ws_handle_id, player_id, realm_id)
+  mmo_ws_binding_assign_shard(b, shard_count)
+  if b.bound != 1:
+    return 0
+  return b.shard_id
+
+def mmo_li_native_gateway_smoke() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  if mmo_li_native_gateway_bridge_stub(0, 42, 7, 4) != 3:
+    return 1
+  return mmo_ws_session_bind_smoke()
+
+def mmo_matchmaking_smoke() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  if mmo_gateway_route_shard_stub(5, 4) != 1:
+    return 1
+  if match_queue_new(5).realm_id != 5:
+    return 2
+  return 0
+
+def mmo_shard_tick_smoke() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  var r: RealmState = realm_state_new(1, 0)
+  mmo_shard_tick_stub(r)
+  if r.tick != 1:
+    return 1
+  return 0
+
+# MMO-7 — compliance audit row (pairs with PH-COMPLY / bioeng regulatory).
+type ComplianceAuditRow = object
+  public tick: int
+  public player_id: int
+  public verdict: int
+  public audit_code: int
+
+def mmo_compliance_audit_stub(tick: int, player_id: int, verdict: int) -> ComplianceAuditRow
+  requires tick >= 0
+  requires player_id > 0
+  requires verdict >= 0
+  requires verdict <= 1
+  ensures result.tick == tick
+  ensures result.player_id == player_id
+  ensures result.verdict == verdict
+  decreases tick
+=
+  var row: ComplianceAuditRow
+  row.tick = tick
+  row.player_id = player_id
+  row.verdict = verdict
+  row.audit_code = tick * 31 + player_id
+  return row
+
+def mmo_anticheat_compliance_smoke() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  if mmo_anticheat_validate_tick_stub(10, 170) != 1:
+    return 1
+  var row: ComplianceAuditRow = mmo_compliance_audit_stub(10, 42, 1)
+  if row.audit_code != 352:
+    return 2
+  if row.verdict != 1:
+    return 3
+  return 0
+
+def demo_mmo_smoke() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  if mmo_deploy_dev_smoke() != 0:
+    return 1
+  return mmo_anticheat_compliance_smoke()

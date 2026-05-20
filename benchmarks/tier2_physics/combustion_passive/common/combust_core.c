@@ -1,4 +1,4 @@
-enum { LI_CB_N = 32, LI_CB_STEPS = 500 };
+enum { LI_CB_N = 128, LI_CB_STEPS = 3000 };
 #define LI_CB_DT 0.02
 #define LI_CB_BURN 0.1
 

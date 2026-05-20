@@ -1,0 +1,13 @@
+# PH-GD-2 — import world (li-world composable gate).
+
+import world
+
+def main() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  var v: int = li_world_version()
+  if v < 1:
+    return 1
+  return 0

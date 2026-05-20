@@ -1,0 +1,13 @@
+import sim
+import physics.custom
+
+def main() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  if sim_law_mode_arbitrary() != physics_law_mode_arbitrary():
+    return 1
+  if sim_custom_physics_stack_smoke() != 0:
+    return 2
+  return physics_custom_arbitrary_stack_smoke()

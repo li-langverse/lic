@@ -1,0 +1,22 @@
+import studio
+import render
+import gpu
+import sim
+import assets
+
+def main() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  if studio_binary_runtime_tag_stub() != 8288:
+    return 1
+  if li_studio_version() < 8:
+    return 2
+  if li_render_version() < 3:
+    return 3
+  if assets_smoke() != 0:
+    return 4
+  if studio_spinup_registry_smoke() != 0:
+    return 5
+  return sim_world_studio_stack_smoke()

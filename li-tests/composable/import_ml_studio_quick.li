@@ -1,0 +1,11 @@
+import ml
+import studio
+
+def main() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  if ml_job_graph_batch_smoke() != 0:
+    return 1
+  return studio_play_mode_smoke()

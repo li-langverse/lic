@@ -1,0 +1,44 @@
+# PH-BIOENG-4 — competitive bioengineering benchmark registry (stub).
+# Validate with: ./scripts/check-hpc-competitive.sh (extend for bioeng schema in BIOENG-4b).
+
+[meta]
+schema = 1
+track = "PH-BIOENG"
+plan = "docs/game-dev/competitive-bioengineering-plan.md"
+last_reviewed = "2026-05"
+
+[[benchmark]]
+id = "bioeng-dbtl-throughput"
+name = "DBTL iterations per hour (with lic check)"
+tier = 1
+li_package = "li-bioeng"
+notes = "Measures closed loop: design → build → test → learn"
+
+[[benchmark]]
+id = "bioeng-protein-design-proxy"
+name = "Protein design task proxy score"
+tier = 2
+competitor = "ProteinMPNN-class"
+notes = "Definition only; driver TBD"
+
+[[benchmark]]
+id = "bioeng-docking-proxy"
+name = "Docking affinity proxy"
+tier = 2
+competitor = "GNINA-class"
+li_package = "li-chem"
+notes = "Uses chem.dft stubs until real backend"
+
+[[benchmark]]
+id = "bioeng-bioreactor-cstr"
+name = "Ideal CSTR yield vs sim.scientific stub"
+tier = 2
+li_package = "li-sim-scientific"
+notes = "PH-SCI + BIOENG-5"
+
+[[benchmark]]
+id = "bioeng-litl-repro-bundle"
+name = "Publish bundle hash stability"
+tier = 1
+li_package = "li-studio"
+notes = "PH-PUB + PH-COMPLY audit trail"

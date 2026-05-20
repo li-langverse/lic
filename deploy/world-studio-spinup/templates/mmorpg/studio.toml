@@ -1,0 +1,9 @@
+[project]
+name = "my-realm"
+template = "mmorpg"
+sim_profile = "mmo"
+tick_hz = 30
+shard_count = 2
+
+[deploy]
+profile = "mmo-dev"

@@ -1,0 +1,10 @@
+import studio
+
+def main() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  if studio_publish_figure_stub(300) != 300:
+    return 1
+  return studio_publish_smoke()

@@ -1,0 +1,28 @@
+# PH-SIM-2 smoke — replay buffer push.
+
+type SimReplay = object
+  public capacity: int
+  public count: int
+  public last_tick: int
+
+def sim_replay_push(replay: SimReplay, tick: int) -> unit
+  requires replay.capacity > 0
+  ensures replay.last_tick == tick
+  decreases replay.count
+=
+  replay.count = replay.count + 1
+  replay.last_tick = tick
+
+def main() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  var r: SimReplay
+  r.capacity = 8
+  r.count = 0
+  r.last_tick = 0
+  sim_replay_push(r, 3)
+  if r.last_tick != 3:
+    return 1
+  return 0

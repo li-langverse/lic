@@ -1,0 +1,11 @@
+import mmo
+import li_httpd
+
+def main() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  if httpd_ws_session_smoke() != 0:
+    return 1
+  return mmo_ws_session_bind_smoke()

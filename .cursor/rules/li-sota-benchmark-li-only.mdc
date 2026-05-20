@@ -1,0 +1,49 @@
+---
+description: Numerics/simulation/physics/solvers must be Li-native and benchmarked vs SOTA (C oracle only inside lic)
+globs:
+  - packages/**/*.li
+  - packages/**/src/**/*.li
+  - benchmarks/**/*
+  - std/**/*.li
+  - docs/benchmarks/**/*
+  - docs/**/SOTA*.md
+alwaysApply: false
+---
+
+# Li-only solvers · SOTA benchmarks required
+
+**Read:** [package ↔ benchmark suites](li-package-benchmark-suites.mdc) · [HPC competitive](li-hpc-competitive.mdc) · `docs/benchmarks/sota-reference-registry.md`
+
+## Language policy
+
+| Layer | Allowed | Forbidden |
+|-------|---------|-----------|
+| **Shipped solver / sim API** (`packages/*`, `std/*`) | **Li only** (`.li`) | Rust/Julia/Python/C++ in package trees |
+| **Reference oracle + timing** (`lic/benchmarks/**`) | **C** in `common/*_core.c` + Li `extern proc` shim | Duplicate oracle outside `lic/` |
+| **Dashboard ingest** (`benchmarks` org repo) | Python scripts only (ingest/plot) | New physics kernels |
+
+When you add or change a **numerical method, integrator, PDE step, optimizer, or engineering/game physics algorithm**:
+
+1. **Implement in Li** under the right package (`math.numerics`, `physics.*`, `sim.*`, `chem`, `bioeng`, …).
+2. **Register a harness row** in `benchmarks/tier1_micro/` or `benchmarks/tier2_physics/` with C reference + `bench.py` `BenchSpec` + org `catalog.toml` path.
+3. **Name SOTA baselines** in code comment + `docs/benchmarks/sota-reference-registry.md` (e.g. OpenMM, GROMACS, OpenFOAM, Bullet, SciPy `solve_ivp`, ASE, etc.).
+4. **Validity:** `python3 benchmarks/harness/validity.py --quick` — finite checksum / tolerance vs C; use `--quick` for stability (few DOFs, long steps).
+5. **Composable gate:** `li-tests/composable/import_<domain>_<feature>.li` must compile the public API you added.
+
+## Claims
+
+- **No “faster than X”** without `latest.csv` + same `workload_class` + machine flags.
+- **`pure_li` benches** — label `kernel_honesty = pure_li`; compare to C oracle with documented tolerance, not bitwise unless proven.
+- **Stubs** — suffix `_stub` or doc “v0”; never ingest as `full` workload class.
+
+## Commands
+
+```bash
+python3 benchmarks/harness/bench.py --tier 12 --quick --runs 3
+python3 benchmarks/harness/validity.py --tier 2 --quick
+./li-tests/run_all.sh composable
+```
+
+## Cross-repo
+
+New `catalog.toml` rows → **li-langverse/benchmarks** after `lic/benchmarks/` path exists (see `lic-benchmark-catalog-parity` in benchmarks repo).

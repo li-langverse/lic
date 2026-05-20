@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Li World Studio — Demo Showcase</title>
+  <link rel="stylesheet" href="studio.css" />
+</head>
+<body>
+  <header class="topbar">
+    <div class="logo">◇ Li World Studio</div>
+    <span class="badge">feat/world-studio-impl-1</span>
+    <span class="gates" id="gate-count">112 composable gates</span>
+    <button id="btn-auto" type="button">▶ Demo reel</button>
+    <span class="status ok" id="lic-status">lic check ✓</span>
+  </header>
+  <div class="shell">
+    <aside class="outliner">
+      <h2>Outliner</h2>
+      <ul id="outliner-list"></ul>
+    </aside>
+    <main class="viewport-wrap">
+      <div class="toolbar">
+        <button class="tab active" data-demo="rocket">Rocket</button>
+        <button class="tab" data-demo="racing">Racing</button>
+        <button class="tab" data-demo="robot">Robot</button>
+        <button class="tab" data-demo="drug">Drug LITL</button>
+        <button class="tab" data-demo="bioeng">Bioeng</button>
+        <button class="tab" data-demo="mmo">MMO</button>
+        <button class="tab" data-demo="unphysical">Unphysical</button>
+        <button class="tab" data-demo="scientific">Scientific</button>
+        <button class="tab" data-demo="publish">Publish</button>
+        <button class="tab" data-demo="additive">Additive</button>
+        <button class="tab" data-demo="agent">Agent</button>
+        <button class="tab" data-demo="play">Play</button>
+      </div>
+      <canvas id="viewport" width="1280" height="720"></canvas>
+      <div class="hud">
+        <span id="demo-title">Rocket — custom physics + relativity</span>
+        <span id="tick">tick 0</span>
+      </div>
+    </main>
+    <aside class="inspector">
+      <h2>Adaptive panel</h2>
+      <div id="panel-content"></div>
+      <h2>Sim profile</h2>
+      <code id="profile-tag">sim_profile_scientific</code>
+    </aside>
+  </div>
+  <footer>
+    <p>Prototype showcase — engine APIs are Li package stubs; visuals are illustrative.</p>
+    <p><code>./scripts/record-studio-demo.sh</code> · <a href="../../docs/game-dev/demo-showcase.md">docs</a></p>
+  </footer>
+  <script src="studio.js"></script>
+</body>
+</html>

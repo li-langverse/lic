@@ -1,0 +1,579 @@
+{
+  "total": 66,
+  "passed": 52,
+  "failed": 14,
+  "by_benchmark": {
+    "md_lennard_jones": {
+      "workload_class": "pure_li_stub",
+      "langs": {
+        "cpp": {
+          "passed": true,
+          "rule": "stability_oracle",
+          "checksum": 0.4099379754290611,
+          "ref_checksum": 0.4099379754290611,
+          "note": "finite within stability bounds"
+        },
+        "li": {
+          "passed": false,
+          "rule": "pure_li_no_verify",
+          "checksum": null,
+          "ref_checksum": 0.4099379754290611,
+          "note": "pure_li: add --verify or checksum export to main.li"
+        },
+        "numpy": {
+          "passed": false,
+          "rule": "numpy_vs_cpp_tolerance",
+          "checksum": 0.38500406888253474,
+          "ref_checksum": 0.4099379754290611,
+          "note": "rtol=1e-05 atol=1e-08"
+        }
+      }
+    },
+    "three_body": {
+      "workload_class": "full",
+      "langs": {
+        "cpp": {
+          "passed": true,
+          "rule": "stability_oracle",
+          "checksum": 236.16431198825452,
+          "ref_checksum": 236.16431198825452,
+          "note": "finite within stability bounds"
+        },
+        "li": {
+          "passed": true,
+          "rule": "shared_kernel_cpp_oracle_proxy",
+          "checksum": 236.16431198825452,
+          "ref_checksum": 236.16431198825452,
+          "note": "Li uses LI_EXTRA_C; checksum equals cpp (link verified)"
+        },
+        "numpy": {
+          "passed": true,
+          "rule": "numpy_vs_cpp_tolerance",
+          "checksum": 236.16431198824458,
+          "ref_checksum": 236.16431198825452,
+          "note": "rtol=1e-05 atol=1e-08"
+        }
+      }
+    },
+    "nbody_gravity": {
+      "workload_class": "full",
+      "langs": {
+        "cpp": {
+          "passed": true,
+          "rule": "stability_oracle",
+          "checksum": 4930.474340911361,
+          "ref_checksum": 4930.474340911361,
+          "note": "finite within stability bounds"
+        },
+        "li": {
+          "passed": true,
+          "rule": "shared_kernel_cpp_oracle_proxy",
+          "checksum": 4930.474340911361,
+          "ref_checksum": 4930.474340911361,
+          "note": "Li uses LI_EXTRA_C; checksum equals cpp (link verified)"
+        },
+        "numpy": {
+          "passed": false,
+          "rule": "numpy_vs_cpp_tolerance",
+          "checksum": 4794.570847080905,
+          "ref_checksum": 4930.474340911361,
+          "note": "rtol=1e-05 atol=1e-08"
+        }
+      }
+    },
+    "harmonic_oscillator_chain": {
+      "workload_class": "full",
+      "langs": {
+        "cpp": {
+          "passed": true,
+          "rule": "stability_oracle",
+          "checksum": 0.009999996583543865,
+          "ref_checksum": 0.009999996583543865,
+          "note": "finite within stability bounds"
+        },
+        "li": {
+          "passed": true,
+          "rule": "shared_kernel_cpp_oracle_proxy",
+          "checksum": 0.009999996583543865,
+          "ref_checksum": 0.009999996583543865,
+          "note": "Li uses LI_EXTRA_C; checksum equals cpp (link verified)"
+        },
+        "numpy": {
+          "passed": true,
+          "rule": "numpy_vs_cpp_tolerance",
+          "checksum": 0.009999996583542545,
+          "ref_checksum": 0.009999996583543865,
+          "note": "rtol=1e-05 atol=1e-08"
+        }
+      }
+    },
+    "wave_equation_1d": {
+      "workload_class": "full",
+      "langs": {
+        "cpp": {
+          "passed": true,
+          "rule": "stability_oracle",
+          "checksum": 416.8353895065291,
+          "ref_checksum": 416.8353895065291,
+          "note": "finite within stability bounds"
+        },
+        "li": {
+          "passed": true,
+          "rule": "shared_kernel_cpp_oracle_proxy",
+          "checksum": 416.8353895065291,
+          "ref_checksum": 416.8353895065291,
+          "note": "Li uses LI_EXTRA_C; checksum equals cpp (link verified)"
+        },
+        "numpy": {
+          "passed": true,
+          "rule": "numpy_vs_cpp_tolerance",
+          "checksum": 416.8353895065217,
+          "ref_checksum": 416.8353895065291,
+          "note": "rtol=1e-05 atol=1e-08"
+        }
+      }
+    },
+    "heat_equation_2d": {
+      "workload_class": "full",
+      "langs": {
+        "cpp": {
+          "passed": true,
+          "rule": "stability_oracle",
+          "checksum": -3387.696597679664,
+          "ref_checksum": -3387.696597679664,
+          "note": "finite within stability bounds"
+        },
+        "li": {
+          "passed": true,
+          "rule": "shared_kernel_cpp_oracle_proxy",
+          "checksum": -3387.696597679664,
+          "ref_checksum": -3387.696597679664,
+          "note": "Li uses LI_EXTRA_C; checksum equals cpp (link verified)"
+        },
+        "numpy": {
+          "passed": false,
+          "rule": "numpy_vs_cpp_tolerance",
+          "checksum": 2.054980211598751e-06,
+          "ref_checksum": -3387.696597679664,
+          "note": "rtol=1e-05 atol=1e-08"
+        }
+      }
+    },
+    "double_pendulum": {
+      "workload_class": "full",
+      "langs": {
+        "cpp": {
+          "passed": true,
+          "rule": "stability_oracle",
+          "checksum": -11.082183523578092,
+          "ref_checksum": -11.082183523578092,
+          "note": "finite within stability bounds"
+        },
+        "li": {
+          "passed": true,
+          "rule": "shared_kernel_cpp_oracle_proxy",
+          "checksum": -11.082183523578092,
+          "ref_checksum": -11.082183523578092,
+          "note": "Li uses LI_EXTRA_C; checksum equals cpp (link verified)"
+        },
+        "numpy": {
+          "passed": false,
+          "rule": "numpy_vs_cpp_tolerance",
+          "checksum": 85.50552881742428,
+          "ref_checksum": -11.082183523578092,
+          "note": "rtol=1e-05 atol=1e-08"
+        }
+      }
+    },
+    "advection_diffusion_2d": {
+      "workload_class": "full",
+      "langs": {
+        "cpp": {
+          "passed": true,
+          "rule": "stability_oracle",
+          "checksum": 0.05190845551620467,
+          "ref_checksum": 0.05190845551620467,
+          "note": "finite within stability bounds"
+        },
+        "li": {
+          "passed": true,
+          "rule": "shared_kernel_cpp_oracle_proxy",
+          "checksum": 0.05190845551620467,
+          "ref_checksum": 0.05190845551620467,
+          "note": "Li uses LI_EXTRA_C; checksum equals cpp (link verified)"
+        },
+        "numpy": {
+          "passed": false,
+          "rule": "numpy_vs_cpp_tolerance",
+          "checksum": 0.37972793923859305,
+          "ref_checksum": 0.05190845551620467,
+          "note": "rtol=1e-05 atol=1e-08"
+        }
+      }
+    },
+    "wave_equation_2d": {
+      "workload_class": "full",
+      "langs": {
+        "cpp": {
+          "passed": true,
+          "rule": "stability_oracle",
+          "checksum": 15553.018841049574,
+          "ref_checksum": 15553.018841049574,
+          "note": "finite within stability bounds"
+        },
+        "li": {
+          "passed": true,
+          "rule": "shared_kernel_cpp_oracle_proxy",
+          "checksum": 15553.018841049574,
+          "ref_checksum": 15553.018841049574,
+          "note": "Li uses LI_EXTRA_C; checksum equals cpp (link verified)"
+        },
+        "numpy": {
+          "passed": false,
+          "rule": "numpy_vs_cpp_tolerance",
+          "checksum": 0.024107215561346776,
+          "ref_checksum": 15553.018841049574,
+          "note": "rtol=1e-05 atol=1e-08"
+        }
+      }
+    },
+    "sph_dam_break_2d": {
+      "workload_class": "v0_gaming",
+      "langs": {
+        "cpp": {
+          "passed": true,
+          "rule": "stability_oracle",
+          "checksum": 6.714578748618703,
+          "ref_checksum": 6.714578748618703,
+          "note": "finite within stability bounds"
+        },
+        "li": {
+          "passed": true,
+          "rule": "shared_kernel_cpp_oracle_proxy",
+          "checksum": 6.714578748618703,
+          "ref_checksum": 6.714578748618703,
+          "note": "Li uses LI_EXTRA_C; checksum equals cpp (link verified)"
+        },
+        "numpy": {
+          "passed": false,
+          "rule": "numpy_vs_cpp_tolerance",
+          "checksum": 7.2021488990125135,
+          "ref_checksum": 6.714578748618703,
+          "note": "rtol=1e-05 atol=1e-08"
+        }
+      }
+    },
+    "rigid_body_stack": {
+      "workload_class": "v0_gaming",
+      "langs": {
+        "cpp": {
+          "passed": true,
+          "rule": "stability_oracle",
+          "checksum": 0.0,
+          "ref_checksum": 0.0,
+          "note": "finite within stability bounds"
+        },
+        "li": {
+          "passed": true,
+          "rule": "shared_kernel_cpp_oracle_proxy",
+          "checksum": 0.0,
+          "ref_checksum": 0.0,
+          "note": "Li uses LI_EXTRA_C; checksum equals cpp (link verified)"
+        },
+        "numpy": {
+          "passed": true,
+          "rule": "numpy_vs_cpp_tolerance",
+          "checksum": 0.0,
+          "ref_checksum": 0.0,
+          "note": "rtol=1e-05 atol=1e-08"
+        }
+      }
+    },
+    "wind_field_bc": {
+      "workload_class": "v0_gaming",
+      "langs": {
+        "cpp": {
+          "passed": true,
+          "rule": "stability_oracle",
+          "checksum": 0.1,
+          "ref_checksum": 0.1,
+          "note": "finite within stability bounds"
+        },
+        "li": {
+          "passed": true,
+          "rule": "shared_kernel_cpp_oracle_proxy",
+          "checksum": 0.1,
+          "ref_checksum": 0.1,
+          "note": "Li uses LI_EXTRA_C; checksum equals cpp (link verified)"
+        },
+        "numpy": {
+          "passed": true,
+          "rule": "numpy_vs_cpp_tolerance",
+          "checksum": 0.1,
+          "ref_checksum": 0.1,
+          "note": "rtol=1e-05 atol=1e-08"
+        }
+      }
+    },
+    "combustion_passive": {
+      "workload_class": "v0_gaming",
+      "langs": {
+        "cpp": {
+          "passed": true,
+          "rule": "stability_oracle",
+          "checksum": 399.75360955488844,
+          "ref_checksum": 399.75360955488844,
+          "note": "finite within stability bounds"
+        },
+        "li": {
+          "passed": true,
+          "rule": "shared_kernel_cpp_oracle_proxy",
+          "checksum": 399.75360955488844,
+          "ref_checksum": 399.75360955488844,
+          "note": "Li uses LI_EXTRA_C; checksum equals cpp (link verified)"
+        },
+        "numpy": {
+          "passed": false,
+          "rule": "numpy_vs_cpp_tolerance",
+          "checksum": 398.17575747762504,
+          "ref_checksum": 399.75360955488844,
+          "note": "rtol=1e-05 atol=1e-08"
+        }
+      }
+    },
+    "orbit_two_body": {
+      "workload_class": "v0_gaming",
+      "langs": {
+        "cpp": {
+          "passed": true,
+          "rule": "stability_oracle",
+          "checksum": 0.9647568643830415,
+          "ref_checksum": 0.9647568643830415,
+          "note": "finite within stability bounds"
+        },
+        "li": {
+          "passed": true,
+          "rule": "shared_kernel_cpp_oracle_proxy",
+          "checksum": 0.9647568643830415,
+          "ref_checksum": 0.9647568643830415,
+          "note": "Li uses LI_EXTRA_C; checksum equals cpp (link verified)"
+        },
+        "numpy": {
+          "passed": false,
+          "rule": "numpy_vs_cpp_tolerance",
+          "checksum": 0.965092478707015,
+          "ref_checksum": 0.9647568643830415,
+          "note": "rtol=1e-05 atol=1e-08"
+        }
+      }
+    },
+    "fdtd_waveguide_2d": {
+      "workload_class": "v0_gaming",
+      "langs": {
+        "cpp": {
+          "passed": true,
+          "rule": "stability_oracle",
+          "checksum": 0.9977279084123727,
+          "ref_checksum": 0.9977279084123727,
+          "note": "finite within stability bounds"
+        },
+        "li": {
+          "passed": true,
+          "rule": "shared_kernel_cpp_oracle_proxy",
+          "checksum": 0.9977279084123727,
+          "ref_checksum": 0.9977279084123727,
+          "note": "Li uses LI_EXTRA_C; checksum equals cpp (link verified)"
+        },
+        "numpy": {
+          "passed": false,
+          "rule": "numpy_vs_cpp_tolerance",
+          "checksum": 1.1625943964451976e+220,
+          "ref_checksum": 0.9977279084123727,
+          "note": "rtol=1e-05 atol=1e-08"
+        }
+      }
+    },
+    "schrodinger_1d_barrier": {
+      "workload_class": "v0_gaming",
+      "langs": {
+        "cpp": {
+          "passed": true,
+          "rule": "stability_oracle",
+          "checksum": 0.02551667291267275,
+          "ref_checksum": 0.02551667291267275,
+          "note": "finite within stability bounds"
+        },
+        "li": {
+          "passed": true,
+          "rule": "shared_kernel_cpp_oracle_proxy",
+          "checksum": 0.02551667291267275,
+          "ref_checksum": 0.02551667291267275,
+          "note": "Li uses LI_EXTRA_C; checksum equals cpp (link verified)"
+        },
+        "numpy": {
+          "passed": false,
+          "rule": "numpy_vs_cpp_tolerance",
+          "checksum": 1.3313920026392132,
+          "ref_checksum": 0.02551667291267275,
+          "note": "rtol=1e-05 atol=1e-08"
+        }
+      }
+    },
+    "euler_fluid_2d": {
+      "workload_class": "v0_gaming",
+      "langs": {
+        "cpp": {
+          "passed": true,
+          "rule": "stability_oracle",
+          "checksum": 0.6654456886718589,
+          "ref_checksum": 0.6654456886718589,
+          "note": "finite within stability bounds"
+        },
+        "li": {
+          "passed": true,
+          "rule": "shared_kernel_cpp_oracle_proxy",
+          "checksum": 0.6654456886718589,
+          "ref_checksum": 0.6654456886718589,
+          "note": "Li uses LI_EXTRA_C; checksum equals cpp (link verified)"
+        },
+        "numpy": {
+          "passed": false,
+          "rule": "numpy_vs_cpp_tolerance",
+          "checksum": 0.6653960087063577,
+          "ref_checksum": 0.6654456886718589,
+          "note": "rtol=1e-05 atol=1e-08"
+        }
+      }
+    },
+    "cloth_swing": {
+      "workload_class": "v0_gaming",
+      "langs": {
+        "cpp": {
+          "passed": true,
+          "rule": "stability_oracle",
+          "checksum": -91.39836088654644,
+          "ref_checksum": -91.39836088654644,
+          "note": "finite within stability bounds"
+        },
+        "li": {
+          "passed": true,
+          "rule": "shared_kernel_cpp_oracle_proxy",
+          "checksum": -91.39836088654644,
+          "ref_checksum": -91.39836088654644,
+          "note": "Li uses LI_EXTRA_C; checksum equals cpp (link verified)"
+        },
+        "numpy": {
+          "passed": true,
+          "rule": "numpy_vs_cpp_tolerance",
+          "checksum": -91.39836088654644,
+          "ref_checksum": -91.39836088654644,
+          "note": "rtol=1e-05 atol=1e-08"
+        }
+      }
+    },
+    "ragdoll_chain": {
+      "workload_class": "v0_gaming",
+      "langs": {
+        "cpp": {
+          "passed": true,
+          "rule": "stability_oracle",
+          "checksum": -1.8500000000000003,
+          "ref_checksum": -1.8500000000000003,
+          "note": "finite within stability bounds"
+        },
+        "li": {
+          "passed": true,
+          "rule": "shared_kernel_cpp_oracle_proxy",
+          "checksum": -1.8500000000000003,
+          "ref_checksum": -1.8500000000000003,
+          "note": "Li uses LI_EXTRA_C; checksum equals cpp (link verified)"
+        },
+        "numpy": {
+          "passed": false,
+          "rule": "numpy_vs_cpp_tolerance",
+          "checksum": -17666.75499999991,
+          "ref_checksum": -1.8500000000000003,
+          "note": "rtol=1e-05 atol=1e-08"
+        }
+      }
+    },
+    "game_world_soa_10k": {
+      "workload_class": "world_engine",
+      "langs": {
+        "cpp": {
+          "passed": true,
+          "rule": "stability_oracle",
+          "checksum": 245760.0,
+          "ref_checksum": 245760.0,
+          "note": "finite within stability bounds"
+        },
+        "li": {
+          "passed": true,
+          "rule": "shared_kernel_cpp_oracle_proxy",
+          "checksum": 245760.0,
+          "ref_checksum": 245760.0,
+          "note": "Li uses LI_EXTRA_C; checksum equals cpp (link verified)"
+        },
+        "numpy": {
+          "passed": true,
+          "rule": "world_engine_numpy_skipped",
+          "checksum": null,
+          "ref_checksum": 245760.0,
+          "note": "timed C/Li kernel only; numpy oracle TBD"
+        }
+      }
+    },
+    "game_replication_encode": {
+      "workload_class": "world_engine",
+      "langs": {
+        "cpp": {
+          "passed": true,
+          "rule": "stability_oracle",
+          "checksum": 0.043297297297297296,
+          "ref_checksum": 0.043297297297297296,
+          "note": "finite within stability bounds"
+        },
+        "li": {
+          "passed": true,
+          "rule": "shared_kernel_cpp_oracle_proxy",
+          "checksum": 0.043297297297297296,
+          "ref_checksum": 0.043297297297297296,
+          "note": "Li uses LI_EXTRA_C; checksum equals cpp (link verified)"
+        },
+        "numpy": {
+          "passed": true,
+          "rule": "world_engine_numpy_skipped",
+          "checksum": null,
+          "ref_checksum": 0.043297297297297296,
+          "note": "timed C/Li kernel only; numpy oracle TBD"
+        }
+      }
+    },
+    "sim_physics_frame": {
+      "workload_class": "world_engine",
+      "langs": {
+        "cpp": {
+          "passed": true,
+          "rule": "stability_oracle",
+          "checksum": 2.0999999046325684,
+          "ref_checksum": 2.0999999046325684,
+          "note": "finite within stability bounds"
+        },
+        "li": {
+          "passed": true,
+          "rule": "shared_kernel_cpp_oracle_proxy",
+          "checksum": 2.0999999046325684,
+          "ref_checksum": 2.0999999046325684,
+          "note": "Li uses LI_EXTRA_C; checksum equals cpp (link verified)"
+        },
+        "numpy": {
+          "passed": true,
+          "rule": "world_engine_numpy_skipped",
+          "checksum": null,
+          "ref_checksum": 2.0999999046325684,
+          "note": "timed C/Li kernel only; numpy oracle TBD"
+        }
+      }
+    }
+  }
+}

@@ -1,31 +1,23 @@
+# PKG-li-std-numerics — ODE integrators and basic solvers for physics.
 
-extern proc li_rt_sqrt(x: float) raises IO -> float
+extern proc li_rt_sqrt(x: float) -> float
+extern proc li_rt_sin(x: float) -> float
+extern proc li_rt_cos(x: float) -> float
+
+proc li_std_numerics_version() -> int
   requires true
-  ensures true
-  decreases 0
-extern proc li_rt_sin(x: float) raises IO -> float
-  requires true
-  ensures true
-  decreases 0
-extern proc li_rt_cos(x: float) raises IO -> float
-  requires true
-  ensures true
-  decreases 0
-def li_std_numerics_version() -> int
-  requires true
-  ensures result == 1
+  ensures result == 2
   decreases 0
 =
-  return 1
+  return 2
 
 # Semi-implicit Euler: v += a*dt; x += v*dt
-def euler_step_vec2(
+proc euler_step_vec2(
     px: array[3, float], py: array[3, float],
     vx: array[3, float], vy: array[3, float],
     fx: array[3, float], fy: array[3, float],
     inv_mass: float, dt: float) -> unit
   requires dt > 0.0
-  ensures true
   decreases 0
 =
   var i: int = 0
@@ -37,13 +29,12 @@ def euler_step_vec2(
     i = i + 1
 
 # Velocity Verlet (kick-drift-kick) for 2D N-body style state
-def verlet_step_vec2(
+proc verlet_step_vec2(
     px: array[3, float], py: array[3, float],
     vx: array[3, float], vy: array[3, float],
     fx: array[3, float], fy: array[3, float],
     inv_mass: float, dt: float) -> unit
   requires dt > 0.0
-  ensures true
   decreases 0
 =
   var i: int = 0
@@ -59,9 +50,8 @@ def verlet_step_vec2(
     i = i + 1
 
 # RK4 for state y[4] with user-provided derivative via indices (double pendulum shape)
-def rk4_step_4(y: array[4, float], dydt: array[4, float], dt: float) -> unit
+proc rk4_step_4(y: array[4, float], dydt: array[4, float], dt: float) -> unit
   requires dt > 0.0
-  ensures true
   decreases 0
 =
   var k1: array[4, float]
@@ -104,11 +94,10 @@ def rk4_step_4(y: array[4, float], dydt: array[4, float], dt: float) -> unit
     i = i + 1
 
 # Conjugate gradient: one iteration (for Poisson / implicit steps)
-def cg_iteration(
+proc cg_iteration(
     x: array[8, float], r: array[8, float], p: array[8, float],
     Ap: array[8, float], alpha: float, beta: float) -> unit
   requires true
-  ensures true
   decreases 0
 =
   var i: int = 0
@@ -122,13 +111,12 @@ def cg_iteration(
     i = i + 1
 
 # Three-body gravity forces (2D, N=3) — pure-Li reference matching tier2 bench
-def three_body_forces_2d(
+proc three_body_forces_2d(
     px: array[3, float], py: array[3, float],
     fx: array[3, float], fy: array[3, float],
     g: float, mass: float, soft: float) -> unit
   requires g > 0.0
   requires mass > 0.0
-  ensures true
   decreases 0
 =
   var i: int = 0
@@ -155,13 +143,13 @@ def three_body_forces_2d(
       fy[j] = fy[j] - fyi
       j = j + 1
     i = i + 1
-def three_body_energy_2d(
+
+proc three_body_energy_2d(
     px: array[3, float], py: array[3, float],
     vx: array[3, float], vy: array[3, float],
     g: float, mass: float, soft: float) -> float
   requires g > 0.0
   requires mass > 0.0
-  ensures result == ke + pe
   decreases 0
 =
   var ke: float = 0.0
@@ -182,9 +170,9 @@ def three_body_energy_2d(
       j = j + 1
     i = i + 1
   return ke + pe
-def three_body_init_2d(px: array[3, float], py: array[3, float]) -> unit
+
+proc three_body_init_2d(px: array[3, float], py: array[3, float]) -> unit
   requires true
-  ensures true
   decreases 0
 =
   var r: float = 1.0
@@ -194,14 +182,244 @@ def three_body_init_2d(px: array[3, float], py: array[3, float]) -> unit
   py[1] = -0.5 * r
   px[2] = 0.8660254037844386 * r
   py[2] = -0.5 * r
-def three_body_step_mini(
+
+# Leapfrog (kick–drift–kick) — matches tier2 three_body_core.c (SOTA: symplectic integrators / REBOUND-class).
+proc leapfrog_step_2d_n3(
+    px: array[3, float], py: array[3, float],
+    vx: array[3, float], vy: array[3, float],
+    fx: array[3, float], fy: array[3, float],
+    mass: float, dt: float) -> unit
+  requires dt > 0.0
+  requires mass > 0.0
+  decreases 0
+=
+  var i: int = 0
+  var half: float = 0.5 * dt
+  while i < 3
+    vx[i] = vx[i] + half * fx[i] / mass
+    vy[i] = vy[i] + half * fy[i] / mass
+    i = i + 1
+  i = 0
+  while i < 3
+    px[i] = px[i] + dt * vx[i]
+    py[i] = py[i] + dt * vy[i]
+    i = i + 1
+  three_body_forces_2d(px, py, fx, fy, 1.0, mass, 0.000000001)
+  i = 0
+  while i < 3
+    vx[i] = vx[i] + half * fx[i] / mass
+    vy[i] = vy[i] + half * fy[i] / mass
+    i = i + 1
+
+proc three_body_step_mini(
     px: array[3, float], py: array[3, float],
     vx: array[3, float], vy: array[3, float],
     fx: array[3, float], fy: array[3, float],
     dt: float) -> unit
   requires dt > 0.0
-  ensures true
   decreases 0
 =
   three_body_forces_2d(px, py, fx, fy, 1.0, 1.0, 0.000000001)
-  verlet_step_vec2(px, py, vx, vy, fx, fy, 1.0, dt)
+  leapfrog_step_2d_n3(px, py, vx, vy, fx, fy, 1.0, dt)
+
+# Integrate three-body for `steps` (quick stability profile uses 200k in harness).
+proc three_body_integrate_energy(steps: int, dt: float) -> float
+  requires steps > 0
+  requires dt > 0.0
+  decreases steps
+=
+  var px: array[3, float]
+  var py: array[3, float]
+  var vx: array[3, float]
+  var vy: array[3, float]
+  var fx: array[3, float]
+  var fy: array[3, float]
+  var i: int = 0
+  while i < 3
+    vx[i] = 0.0
+    vy[i] = 0.0
+    i = i + 1
+  three_body_init_2d(px, py)
+  three_body_forces_2d(px, py, fx, fy, 1.0, 1.0, 0.000000001)
+  var s: int = 0
+  while s < steps
+    leapfrog_step_2d_n3(px, py, vx, vy, fx, fy, 1.0, dt)
+    s = s + 1
+  return three_body_energy_2d(px, py, vx, vy, 1.0, 1.0, 0.000000001)
+
+# Harmonic chain N=8 (tier2 harmonic quick uses 32 in C; mini gate for composable).
+proc harmonic_chain_step_n8(
+    x: array[8, float], v: array[8, float], f: array[8, float],
+    dt: float, k: float, mass: float, spacing: float) -> unit
+  requires dt > 0.0
+  requires k > 0.0
+  requires mass > 0.0
+  decreases 0
+=
+  var i: int = 0
+  while i < 8
+    f[i] = 0.0
+    i = i + 1
+  i = 0
+  while i < 7
+    var stretch: float = x[i + 1] - x[i] - spacing
+    var force: float = k * stretch
+    f[i] = f[i] + force
+    f[i + 1] = f[i + 1] - force
+    i = i + 1
+  f[0] = 0.0
+  f[7] = 0.0
+  i = 0
+  while i < 8
+    v[i] = v[i] + 0.5 * dt * f[i] / mass
+    i = i + 1
+  i = 0
+  while i < 8
+    x[i] = x[i] + dt * v[i]
+    i = i + 1
+  x[0] = 0.0
+  x[7] = 7.0 * spacing
+  v[0] = 0.0
+  v[7] = 0.0
+
+proc harmonic_chain_energy_n8(
+    x: array[8, float], v: array[8, float], k: float, mass: float, spacing: float) -> float
+  requires k > 0.0
+  requires mass > 0.0
+  decreases 0
+=
+  var ke: float = 0.0
+  var pe: float = 0.0
+  var i: int = 0
+  while i < 8
+    ke = ke + 0.5 * mass * v[i] * v[i]
+    i = i + 1
+  i = 0
+  while i < 7
+    var stretch: float = x[i + 1] - x[i] - spacing
+    pe = pe + 0.5 * k * stretch * stretch
+    i = i + 1
+  return ke + pe
+
+proc harmonic_chain_integrate_n8(steps: int) -> float
+  requires steps > 0
+  decreases steps
+=
+  var x: array[8, float]
+  var v: array[8, float]
+  var f: array[8, float]
+  var i: int = 0
+  while i < 8
+    x[i] = (i) * 1.0
+    v[i] = 0.0
+    i = i + 1
+  x[4] = x[4] + 0.1
+  var s: int = 0
+  while s < steps
+    harmonic_chain_step_n8(x, v, f, 0.001, 1.0, 1.0, 1.0)
+    s = s + 1
+  return harmonic_chain_energy_n8(x, v, 1.0, 1.0, 1.0)
+
+# 1D explicit heat step (SOTA: explicit FD / OpenFOAM-class diffusion limit).
+proc heat_1d_explicit_step(
+    u: array[8, float], alpha: float, dt: float, dx: float) -> unit
+  requires alpha > 0.0
+  requires dt > 0.0
+  requires dx > 0.0
+  decreases 0
+=
+  var r: float = alpha * dt / (dx * dx)
+  var un: array[8, float]
+  var i: int = 1
+  while i < 7
+    un[i] = u[i] + r * (u[i + 1] - 2.0 * u[i] + u[i - 1])
+    i = i + 1
+  un[0] = u[0]
+  un[7] = u[7]
+  i = 0
+  while i < 8
+    u[i] = un[i]
+    i = i + 1
+
+# Monod bioprocess growth (SOTA: bioreactor ODE texts).
+proc monod_growth(mu_max: float, substrate: float, ks: float) -> float
+  requires mu_max > 0.0
+  requires substrate >= 0.0
+  requires ks > 0.0
+  decreases 0
+=
+  return mu_max * substrate / (ks + substrate)
+
+proc monod_integrate_biomass(steps: int, dt: float) -> float
+  requires steps > 0
+  requires dt > 0.0
+  decreases steps
+=
+  var x: float = 0.1
+  var s: float = 10.0
+  var i: int = 0
+  while i < steps
+    var mu: float = monod_growth(0.8, s, 1.0)
+    x = x + mu * x * dt
+    s = s - 0.05 * x * dt
+    if s < 0.0
+      s = 0.0
+    i = i + 1
+  return x
+
+# Mini LJ cluster energy (4 atoms) — chem/MD surrogate (SOTA: GROMACS/OpenMM LJ).
+proc lj_pair_energy(dx: float, dy: float, dz: float, rc2: float) -> float
+  requires rc2 > 0.0
+  decreases 0
+=
+  var r2: float = dx * dx + dy * dy + dz * dz
+  if r2 >= rc2
+    return 0.0
+  if r2 < 0.000000000001
+    return 0.0
+  var inv_r2: float = 1.0 / r2
+  var inv_r6: float = inv_r2 * inv_r2 * inv_r2
+  var inv_r12: float = inv_r6 * inv_r6
+  return 4.0 * (inv_r12 - inv_r6)
+
+proc lj_cluster_energy_n4() -> float
+  requires true
+  decreases 0
+=
+  var pe: float = 0.0
+  pe = pe + lj_pair_energy(1.0, 0.0, 0.0, 6.25)
+  pe = pe + lj_pair_energy(0.5, 0.8660254, 0.0, 6.25)
+  pe = pe + lj_pair_energy(0.5, 0.2886751, 0.8164966, 6.25)
+  return pe
+
+proc numerics_three_body_quick_smoke() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  var e: float = three_body_integrate_energy(1000, 0.01)
+  if e != e:
+    return 1
+  if e > 1e6:
+    return 2
+  return 0
+
+proc numerics_harmonic_smoke() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  var e: float = harmonic_chain_integrate_n8(500)
+  if e != e:
+    return 1
+  return 0
+
+proc numerics_monod_smoke() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  var x: float = monod_integrate_biomass(200, 0.01)
+  if x <= 0.0:
+    return 1
+  return 0

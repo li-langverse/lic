@@ -1,0 +1,7 @@
+# PH-COMPLY — CRITICAL (export to printer)
+tier = "CRITICAL"
+audit_exports = true
+
+[export]
+formats = ["stl", "3mf", "gcode"]
+require_sim_pass = true

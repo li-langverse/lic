@@ -1,30 +1,25 @@
-# RFC stub: li-sim-robotics-rfc
+# RFC: Robotics simulation (PH-ROBO)
 
-**Status:** Draft stub  
-**Date:** 2026-05  
+**Status:** Draft  
+**Track:** PH-ROBO  
 **Vision:** [world-studio-vision.md](../world-studio-vision.md)
 
 ## Problem
 
-<!-- TODO: one paragraph -->
+Factory digital twins and manipulator RL need the **same** rigid-body stack as games, not a parallel Bullet-only fork.
 
 ## Proposal
 
-<!-- TODO: API, packages, phases -->
+**`li-sim-robotics`** (`import sim.robotics`):
 
-## Li syntax
+- `RobotCell` — joints + optional mobile base  
+- `robotics_step_stub` — advances cell; future → `physics.runtime`  
+- ROS2 bridge (trusted FFI) in ROBO-3+
 
-Use Python-style `def` for functions; `requires` / `ensures` / `decreases` on exported APIs.
+## Phases
 
-## Proof / trust
-
-<!-- TODO: what is proved vs trusted -->
+ROBO-0 stubs → ROBO-1 IK hooks → ROBO-2 ROS2 bridge.
 
 ## Dependencies
 
-See [PH-world-studio-program.md](../PH-world-studio-program.md).
-
-## Open questions
-
-- [ ] …
-
+PH-SIM-1, `li-physics-rigid`, optional `li-ml` for RL env pools.

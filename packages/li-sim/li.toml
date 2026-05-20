@@ -1,0 +1,22 @@
+[package]
+name = "li-sim"
+version = "0.1.0"
+edition = "2026"
+license = "Apache-2.0 OR MIT"
+description = "Li Engine simulation API — step, reset, replay hooks (PH-SIM)"
+
+[dependencies]
+# li-physics-runtime = { path = "../li-physics-runtime" }  # PH-SIM-1b when import types stabilize
+# registry = "1.0.0"             # lip 8d+
+
+[package.metadata.li]
+github_repo = "li-sim"
+import_name = "sim"
+min_lic = "0.1.0"
+maintainer = "li-langverse"
+pkg_id = "PKG-li-sim"
+
+[package.repository]
+url = "https://github.com/li-langverse/li-sim"
+documentation = "https://li-langverse.github.io/li-language/ecosystem/li-sim/"
+changelog = "https://github.com/li-langverse/li-sim/blob/main/CHANGELOG.md"

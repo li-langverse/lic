@@ -1,0 +1,658 @@
+# World Studio / Li Engine — competitive benchmark registry (stub).
+
+[meta]
+schema = 1
+track = "PH-GD"
+plan = "docs/game-dev/world-studio-vision.md"
+composable_gates = 165
+branch = "feat/world-studio-impl-1"
+
+[[benchmark]]
+id = "studio-viewport-bridge"
+name = "Studio render viewport tick bridge"
+tier = 1
+li_package = "li-studio"
+composable = "import_studio_render_viewport"
+
+[[benchmark]]
+id = "vertical-demo-rocket"
+name = "Rocket custom physics demo"
+tier = 1
+li_package = "li-physics-custom"
+composable = "import_demo_verticals"
+
+[[benchmark]]
+id = "drug-litl-chem"
+name = "Drug LITL + chem DFT stack"
+tier = 1
+li_package = "li-sim-drug-design"
+composable = "import_scientific_drug_chem"
+
+[[benchmark]]
+id = "mmo-deploy-stack"
+name = "MMO deploy + store replay"
+tier = 1
+li_package = "li-mmo"
+composable = "import_mmo_deploy_stack"
+
+[[benchmark]]
+id = "bioeng-dbtl-bridge"
+name = "Bioengineering LITL+DBTL bridge"
+tier = 1
+li_package = "li-bioeng"
+composable = "import_bioeng_drug_litl"
+
+[[benchmark]]
+id = "world-studio-release"
+name = "Full release composable gate"
+tier = 1
+li_package = "li-studio"
+composable = "import_world_studio_release_gate"
+
+[[benchmark]]
+id = "spinup-unphysical"
+name = "Arbitrary physics spin-up template"
+tier = 1
+li_package = "li-physics-custom"
+composable = "import_spinup_unphysical"
+
+[[benchmark]]
+id = "sim-world-studio-stack"
+name = "PH-SIM world studio integration stack"
+tier = 1
+li_package = "li-sim"
+composable = "import_sim_world_studio_stack"
+
+[[benchmark]]
+id = "studio-spinup-registry"
+name = "Spin-up template registry (7 templates)"
+tier = 1
+li_package = "li-studio"
+composable = "import_studio_spinup_registry"
+
+[[benchmark]]
+id = "world-studio-tier1-rollup"
+name = "Tier-1 competitive benchmark rollup"
+tier = 1
+li_package = "li-studio"
+composable = "import_world_studio_benchmark_tier1"
+
+[[benchmark]]
+id = "studio-native-viewport-bridge"
+name = "Native binary viewport + render bridge"
+tier = 1
+li_package = "li-studio"
+composable = "import_studio_native_viewport_bridge"
+
+[[benchmark]]
+id = "spinup-scientific"
+name = "Scientific engineering spin-up template"
+tier = 1
+li_package = "li-sim-scientific"
+composable = "import_spinup_scientific"
+
+[[benchmark]]
+id = "render-gpu-viewport"
+name = "GPU viewport surface + backend select"
+tier = 1
+li_package = "li-render"
+composable = "import_render_gpu_viewport"
+
+[[benchmark]]
+id = "studio-gpu-viewport-stack"
+name = "Studio shell GPU viewport stack"
+tier = 1
+li_package = "li-studio"
+composable = "import_studio_gpu_viewport_stack"
+
+[[benchmark]]
+id = "world-studio-premerge"
+name = "Pre-merge composable rollup"
+tier = 1
+li_package = "li-studio"
+composable = "import_world_studio_premerge"
+
+[[benchmark]]
+id = "lkir-gpu-present"
+name = "LKIR GPU present tick + render bridge"
+tier = 1
+li_package = "li-gpu"
+composable = "import_lkir_gpu_present"
+
+[[benchmark]]
+id = "player-gpu-render-client"
+name = "Player GPU frame + render client"
+tier = 1
+li_package = "li-player"
+composable = "import_player_gpu_render_client"
+
+[[benchmark]]
+id = "world-studio-merge-ready"
+name = "Merge-ready composable rollup"
+tier = 1
+li_package = "li-studio"
+composable = "import_world_studio_merge_ready"
+
+[[benchmark]]
+id = "studio-portable-targets"
+name = "PH-PORT portable triple registry"
+tier = 1
+li_package = "li-studio"
+composable = "import_studio_portable_targets"
+
+[[benchmark]]
+id = "studio-publish-player-stack"
+name = "Publish + player GPU client stack"
+tier = 1
+li_package = "li-studio"
+composable = "import_studio_publish_player_stack"
+
+[[benchmark]]
+id = "world-studio-release-rollup"
+name = "Full release composable rollup"
+tier = 1
+li_package = "li-studio"
+composable = "import_world_studio_release_rollup"
+
+[[benchmark]]
+id = "spinup-publish"
+name = "Publication export spin-up"
+tier = 1
+li_package = "li-studio"
+composable = "import_spinup_publish"
+
+[[benchmark]]
+id = "port-windows-target"
+name = "PH-PORT-1 Windows tier-2 target"
+tier = 1
+li_package = "li-studio"
+composable = "import_port_windows_target"
+
+[[benchmark]]
+id = "world-studio-final-merge"
+name = "Final merge composable gate"
+tier = 1
+li_package = "li-studio"
+composable = "import_world_studio_final_merge"
+
+[[benchmark]]
+id = "studio-publish-demo-gate"
+name = "Publish demo + viewport gate"
+tier = 1
+li_package = "li-studio"
+composable = "import_studio_publish_demo_gate"
+
+[[benchmark]]
+id = "spinup-additive"
+name = "Additive / voxel spin-up template"
+tier = 1
+li_package = "li-voxel"
+composable = "import_spinup_additive"
+
+[[benchmark]]
+id = "world-studio-ci-complete"
+name = "CI complete composable rollup"
+tier = 1
+li_package = "li-studio"
+composable = "import_world_studio_ci_complete"
+
+[[benchmark]]
+id = "voxel-publish-stack"
+name = "Voxel + publish + viewport stack"
+tier = 1
+li_package = "li-voxel"
+composable = "import_voxel_publish_stack"
+
+[[benchmark]]
+id = "world-studio-milestone-100"
+name = "Milestone 100 composable gates"
+tier = 1
+li_package = "li-studio"
+composable = "import_world_studio_milestone_100"
+
+[[benchmark]]
+id = "studio-agent-publish-stack"
+name = "Studio AI agent + publish stack"
+tier = 1
+li_package = "li-studio"
+composable = "import_studio_agent_publish_stack"
+
+[[benchmark]]
+id = "spinup-agent"
+name = "Studio agent spin-up template"
+tier = 1
+li_package = "li-studio-ai"
+composable = "import_spinup_agent"
+
+[[benchmark]]
+id = "studio-ai-patch-apply"
+name = "Studio AI patch apply stack"
+tier = 1
+li_package = "li-studio-ai"
+composable = "import_studio_ai_patch_apply"
+
+[[benchmark]]
+id = "world-studio-agent-realm"
+name = "Agent + MMO realm deploy stack"
+tier = 1
+li_package = "li-mmo"
+composable = "import_world_studio_agent_realm"
+
+[[benchmark]]
+id = "store-li-native"
+name = "Li-native in-memory realtime store"
+tier = 1
+li_package = "li-store-realtime"
+composable = "import_store_li_native"
+
+[[benchmark]]
+id = "ecosystem-li-native-stack"
+name = "Li-native ecosystem stack"
+tier = 1
+li_package = "li-store-realtime"
+composable = "import_ecosystem_li_native_stack"
+
+[[benchmark]]
+id = "world-studio-li-ecosystem"
+name = "World Studio Li-native ecosystem rollup"
+tier = 1
+li_package = "li-studio"
+composable = "import_world_studio_li_ecosystem"
+
+[[benchmark]]
+id = "game-world-ecs"
+name = "GameWorld ECS GW-0"
+tier = 1
+li_package = "li-world"
+composable = "import_game_world_ecs"
+
+[[benchmark]]
+id = "sim-field-chunk"
+name = "SimFieldChunk SF-0 HPC"
+tier = 1
+li_package = "li-sim-scientific"
+composable = "import_sim_field_chunk"
+
+[[benchmark]]
+id = "world-dual-model"
+name = "GameWorld + SimField dual model"
+tier = 1
+li_package = "li-world"
+composable = "import_world_dual_model_stack"
+
+[[benchmark]]
+id = "game-world-soa-gw1"
+name = "GameWorld SoA GW-1 10k budget"
+tier = 1
+li_package = "li-world"
+composable = "import_game_world_soa_gw1"
+
+[[benchmark]]
+id = "game-replication-gw2"
+name = "GameWorld replication GW-2"
+tier = 1
+li_package = "li-world"
+composable = "import_game_replication_gw2"
+
+[[benchmark]]
+id = "sim-field-tier2-sf1"
+name = "SimField tier-2 SF-1"
+tier = 1
+li_package = "li-sim-scientific"
+composable = "import_sim_field_tier2_sf1"
+
+[[benchmark]]
+id = "world-competitive-gw-sf"
+name = "GW-1 + GW-2 + SF-1 competitive stack"
+tier = 1
+li_package = "li-world"
+composable = "import_world_competitive_gw_sf"
+
+[[benchmark]]
+id = "game-region-streaming-gw3"
+name = "GameWorld region streaming GW-3"
+tier = 1
+li_package = "li-world"
+composable = "import_game_region_streaming_gw3"
+
+[[benchmark]]
+id = "game-world-viewport-gw4"
+name = "GameWorld viewport GW-4"
+tier = 1
+li_package = "li-world"
+composable = "import_game_world_viewport_gw4"
+
+[[benchmark]]
+id = "sim-field-gpu-sf2"
+name = "SimField GPU SF-2"
+tier = 1
+li_package = "li-sim-scientific"
+composable = "import_sim_field_gpu_sf2"
+
+[[benchmark]]
+id = "sim-field-checkpoint-sf3"
+name = "SimField checkpoint SF-3"
+tier = 1
+li_package = "li-sim-scientific"
+composable = "import_sim_field_checkpoint_sf3"
+
+[[benchmark]]
+id = "world-author-api"
+name = "Author-friendly world API"
+tier = 1
+li_package = "li-world"
+composable = "import_world_author_api"
+
+[[benchmark]]
+id = "studio-play-mode"
+name = "Studio play mode"
+tier = 1
+li_package = "li-studio"
+composable = "import_studio_play_mode"
+
+[[benchmark]]
+id = "studio-publish-field"
+name = "Publish field checkpoint"
+tier = 1
+li_package = "li-studio"
+composable = "import_studio_publish_field"
+
+[[benchmark]]
+id = "world-realm-game-bridge"
+name = "RealmHead + GameWorld bridge"
+tier = 1
+li_package = "li-world"
+composable = "import_world_realm_game_bridge"
+
+[[benchmark]]
+id = "world-studio-ecosystem"
+name = "World Studio ecosystem stack"
+tier = 1
+li_package = "li-studio"
+composable = "import_world_studio_ecosystem_stack"
+
+[[benchmark]]
+id = "world-studio-milestone-121"
+name = "Milestone 121 composable gates"
+tier = 1
+li_package = "li-studio"
+composable = "import_world_studio_milestone_121"
+
+[[benchmark]]
+id = "spinup-play-mode"
+name = "Spin-up play_mode template"
+tier = 1
+li_package = "li-studio"
+composable = "import_spinup_play_mode"
+
+[[benchmark]]
+id = "world-studio-merge-ready-126"
+name = "Merge-ready at 126 gates"
+tier = 1
+li_package = "li-studio"
+composable = "import_world_studio_merge_ready_126"
+
+[[benchmark]]
+id = "world-studio-milestone-130"
+name = "Milestone 130 composable gates"
+tier = 1
+li_package = "li-studio"
+composable = "import_world_studio_milestone_130"
+
+[[benchmark]]
+id = "studio-run-play-session"
+name = "run_play_session one-call API"
+tier = 1
+li_package = "li-studio"
+composable = "import_studio_run_play_session"
+
+[[benchmark]]
+id = "sim-physics-bridge"
+name = "sim + physics.runtime bridge"
+tier = 1
+li_package = "li-sim"
+composable = "import_sim_physics_bridge"
+
+[[benchmark]]
+id = "world-studio-preflight-140"
+name = "Preflight 140 merge rollup"
+tier = 1
+li_package = "li-studio"
+composable = "import_world_studio_preflight_140"
+
+[[benchmark]]
+id = "world-studio-agent-onboarding"
+name = "Agent onboarding stack"
+tier = 1
+li_package = "li-studio"
+composable = "import_world_studio_agent_onboarding"
+
+[[benchmark]]
+id = "world-studio-milestone-140"
+name = "Milestone 140 composable gates"
+tier = 1
+li_package = "li-studio"
+composable = "import_world_studio_milestone_140"
+
+[[benchmark]]
+id = "world-stream-delta-quick"
+name = "Streaming + delta quick"
+tier = 1
+li_package = "li-world"
+composable = "import_world_stream_delta_quick"
+
+[[benchmark]]
+id = "sim-field-publish-quick"
+name = "Field to publish quick"
+tier = 1
+li_package = "li-sim-scientific"
+composable = "import_sim_field_publish_quick"
+
+[[benchmark]]
+id = "studio-render-play-chain"
+name = "Play + render chain"
+tier = 1
+li_package = "li-studio"
+composable = "import_studio_render_play_chain"
+
+[[benchmark]]
+id = "sim-game-physics-tick-quick"
+name = "Sim game + physics tick quick"
+tier = 1
+li_package = "li-sim"
+composable = "import_sim_game_physics_tick_quick"
+
+[[benchmark]]
+id = "world-studio-milestone-145"
+name = "Milestone 145 composable gates"
+tier = 1
+li_package = "li-studio"
+composable = "import_world_studio_milestone_145"
+
+[[benchmark]]
+id = "world-journal-game-stack"
+name = "Journal + game author API"
+tier = 1
+li_package = "li-world"
+composable = "import_world_journal_game_stack"
+
+[[benchmark]]
+id = "mmo-realm-sync-quick"
+name = "MMO + realm sync quick"
+tier = 1
+li_package = "li-mmo"
+composable = "import_mmo_realm_sync_quick"
+
+[[benchmark]]
+id = "httpd-studio-health"
+name = "HTTPd + studio health"
+tier = 1
+li_package = "li-studio"
+composable = "import_httpd_studio_health"
+
+[[benchmark]]
+id = "scene-play-quick"
+name = "Scene + play session"
+tier = 1
+li_package = "li-studio"
+composable = "import_scene_play_quick"
+
+[[benchmark]]
+id = "world-studio-milestone-150"
+name = "Milestone 150 composable gates"
+tier = 1
+li_package = "li-studio"
+composable = "import_world_studio_milestone_150"
+
+[[benchmark]]
+id = "store-world-author-quick"
+name = "Store Li-native + world author"
+tier = 1
+li_package = "li-store-realtime"
+composable = "import_store_world_author_quick"
+
+[[benchmark]]
+id = "gpu-studio-viewport-quick"
+name = "GPU LKIR + studio viewport"
+tier = 1
+li_package = "li-gpu"
+composable = "import_gpu_studio_viewport_quick"
+
+[[benchmark]]
+id = "player-realm-quick"
+name = "Player + realm"
+tier = 1
+li_package = "li-player"
+composable = "import_player_realm_quick"
+
+[[benchmark]]
+id = "studio-ai-play-quick"
+name = "Studio AI + play"
+tier = 1
+li_package = "li-studio"
+composable = "import_studio_ai_play_quick"
+
+[[benchmark]]
+id = "world-studio-milestone-155"
+name = "Milestone 155 composable gates"
+tier = 1
+li_package = "li-studio"
+composable = "import_world_studio_milestone_155"
+
+[[benchmark]]
+id = "assets-studio-play-quick"
+name = "Assets + play session"
+tier = 1
+li_package = "li-assets"
+composable = "import_assets_studio_play_quick"
+
+[[benchmark]]
+id = "voxel-studio-shell-quick"
+name = "Voxel + studio shell"
+tier = 1
+li_package = "li-voxel"
+composable = "import_voxel_studio_shell_quick"
+
+[[benchmark]]
+id = "ml-studio-quick"
+name = "ML + studio play mode"
+tier = 1
+li_package = "li-ml"
+composable = "import_ml_studio_quick"
+
+[[benchmark]]
+id = "chem-studio-shell-quick"
+name = "Chem + studio shell"
+tier = 1
+li_package = "li-chem"
+composable = "import_chem_studio_shell_quick"
+
+[[benchmark]]
+id = "world-studio-milestone-160"
+name = "Milestone 160 composable gates"
+tier = 1
+li_package = "li-studio"
+composable = "import_world_studio_milestone_160"
+
+[[benchmark]]
+id = "robotics-studio-quick"
+name = "Robotics + studio"
+tier = 1
+li_package = "li-sim-robotics"
+composable = "import_robotics_studio_quick"
+
+[[benchmark]]
+id = "automotive-studio-quick"
+name = "Automotive + studio"
+tier = 1
+li_package = "li-sim-automotive"
+composable = "import_automotive_studio_quick"
+
+[[benchmark]]
+id = "drug-studio-quick"
+name = "Drug design + studio"
+tier = 1
+li_package = "li-sim-drug-design"
+composable = "import_drug_studio_quick"
+
+[[benchmark]]
+id = "additive-studio-publish-quick"
+name = "Additive + publish"
+tier = 1
+li_package = "li-sim-additive"
+composable = "import_additive_studio_publish_quick"
+
+[[benchmark]]
+id = "world-studio-milestone-165"
+name = "Milestone 165 composable gates"
+tier = 1
+li_package = "li-studio"
+composable = "import_world_studio_milestone_165"
+
+[[benchmark]]
+id = "httpd-li-native-gateway"
+name = "Li-native HTTP/WS gateway"
+tier = 1
+li_package = "li-net-httpd"
+composable = "import_httpd_li_native_gateway"
+
+[[benchmark]]
+id = "world-li-native-persist"
+name = "Li-native world journal persist"
+tier = 1
+li_package = "li-world"
+composable = "import_world_li_native_persist"
+
+[[benchmark]]
+id = "ecosystem-gateway-realm-li-native"
+name = "Gateway + realm Li-native ecosystem"
+tier = 1
+li_package = "li-mmo"
+composable = "import_ecosystem_gateway_realm_li_native"
+
+[[benchmark]]
+id = "game-world-soa-timed"
+name = "Timed GameWorld SoA 10k (tier2_world)"
+tier = 2
+li_package = "li-world"
+harness = "benchmarks/tier2_world/game_world_soa_10k"
+workload_class = "world_engine"
+composable = "import_game_world_soa_gw1"
+
+[[benchmark]]
+id = "game-replication-timed"
+name = "Timed replication delta encode"
+tier = 2
+li_package = "li-world"
+harness = "benchmarks/tier2_world/game_replication_encode"
+workload_class = "world_engine"
+composable = "import_game_replication_gw2"
+
+[[benchmark]]
+id = "sim-physics-frame-timed"
+name = "Timed sim physics frame"
+tier = 2
+li_package = "li-sim"
+harness = "benchmarks/tier2_world/sim_physics_frame"
+workload_class = "world_engine"
+composable = "import_sim_physics_render_world"

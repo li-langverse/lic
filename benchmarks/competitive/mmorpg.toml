@@ -1,0 +1,30 @@
+# PH-MMO-4 — competitive MMORPG benchmark registry (stub).
+
+[meta]
+schema = 1
+track = "PH-MMO"
+plan = "docs/game-dev/mmorpg-deployment-plan.md"
+
+[[benchmark]]
+id = "mmo-shard-tick-latency"
+name = "Authoritative shard tick p99"
+tier = 1
+li_package = "li-mmo"
+
+[[benchmark]]
+id = "mmo-gateway-route"
+name = "Gateway shard routing correctness"
+tier = 1
+li_package = "li-mmo"
+
+[[benchmark]]
+id = "mmo-store-presence"
+name = "Realtime presence round-trip"
+tier = 1
+li_package = "li-store-realtime"
+
+[[benchmark]]
+id = "mmo-player-session"
+name = "Client session connect smoke"
+tier = 2
+li_package = "li-player"

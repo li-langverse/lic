@@ -1,0 +1,6 @@
+# PH-COMPLY — CRITICAL package metadata (stub)
+tier = "CRITICAL"
+audit_exports = true
+
+[ai]
+model_card_required = true

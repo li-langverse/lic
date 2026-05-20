@@ -1,0 +1,9 @@
+# Vertical demo — bioengineering DBTL (PH-BIOENG).
+import bioeng
+
+def main() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return demo_bioeng_smoke()

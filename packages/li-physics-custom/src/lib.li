@@ -1,0 +1,183 @@
+# PKG-li-physics-custom — arbitrary & unphysical laws (PH-PHYS-CUSTOM).
+# Games need non-conservative, discontinuous, and rule-breaking physics by design.
+# Research uses the same hooks for counterfactual and toy universes.
+
+type CustomState = object
+  public px: float
+  public py: float
+  public pz: float
+  public vx: float
+  public vy: float
+  public vz: float
+  public aux: float
+
+type CustomLawDesc = object
+  public law_id: int
+  public state_dim: int
+  public conserve_energy: int
+  public conserve_momentum: int
+  public allows_discontinuity: int
+
+def li_physics_custom_version() -> int
+  requires true
+  ensures result == 3
+  decreases 0
+=
+  return 3
+
+def physics_law_mode_realistic() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0
+
+def physics_law_mode_arbitrary() -> int
+  requires true
+  ensures result == 1
+  decreases 0
+=
+  return 1
+
+def physics_law_mode_hybrid() -> int
+  requires true
+  ensures result == 2
+  decreases 0
+=
+  return 2
+
+# Built-in law tags (user-defined laws use law_id >= 1000).
+def custom_law_builtin_inverse_gravity() -> int
+  requires true
+  ensures result == 1
+  decreases 0
+=
+  return 1
+
+def custom_law_builtin_zero_drag() -> int
+  requires true
+  ensures result == 2
+  decreases 0
+=
+  return 2
+
+def custom_law_builtin_teleport_pulse() -> int
+  requires true
+  ensures result == 3
+  decreases 0
+=
+  return 3
+
+def custom_law_builtin_user_base() -> int
+  requires true
+  ensures result == 1000
+  decreases 0
+=
+  return 1000
+
+def custom_state_new() -> CustomState
+  requires true
+  ensures result.px == 0.0
+  decreases 0
+=
+  var s: CustomState
+  s.px = 0.0
+  s.py = 0.0
+  s.pz = 0.0
+  s.vx = 0.0
+  s.vy = 0.0
+  s.vz = 0.0
+  s.aux = 0.0
+  return s
+
+def custom_law_desc_for_builtin(law_id: int) -> CustomLawDesc
+  requires law_id >= 1
+  requires law_id <= 3
+  ensures result.law_id == law_id
+  ensures result.conserve_energy == 0
+  decreases law_id
+=
+  var d: CustomLawDesc
+  d.law_id = law_id
+  d.state_dim = 7
+  d.conserve_energy = 0
+  d.conserve_momentum = 0
+  d.allows_discontinuity = 0
+  if law_id == custom_law_builtin_teleport_pulse():
+    d.allows_discontinuity = 1
+  return d
+
+def custom_law_step_inverse_gravity(s: CustomState, dt: float) -> unit
+  requires dt > 0.0
+  ensures true
+  decreases 0
+=
+  s.vy = s.vy + 9.81 * dt
+  s.px = s.px + s.vx * dt
+  s.py = s.py + s.vy * dt
+  s.pz = s.pz + s.vz * dt
+
+def custom_law_step_zero_drag(s: CustomState, dt: float) -> unit
+  requires dt > 0.0
+  ensures true
+  decreases 0
+=
+  s.px = s.px + s.vx * dt
+  s.py = s.py + s.vy * dt
+  s.pz = s.pz + s.vz * dt
+
+def custom_law_step_teleport_pulse(s: CustomState, dt: float) -> unit
+  requires dt > 0.0
+  ensures s.pz >= 0.0
+  ensures true
+  decreases 0
+=
+  if s.aux > 0.5:
+    s.pz = s.pz + 10.0
+    s.aux = 0.0
+  if s.aux <= 0.5:
+    s.aux = 1.0
+  s.px = s.px + s.vx * dt
+  s.py = s.py + s.vy * dt
+
+# CUSTOM-1: `custom_law_apply(law_id, …)` dispatch when borrowck allows re-use of `s`.
+# CUSTOM-0: call `custom_law_step_*` directly per law.
+
+def physics_custom_inverse_gravity_smoke() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  var s: CustomState = custom_state_new()
+  custom_law_step_inverse_gravity(s, 1.0 / 60.0)
+  if s.vy <= 0.0:
+    return 1
+  return 0
+
+def physics_custom_arbitrary_stack_smoke() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  if physics_custom_inverse_gravity_smoke() != 0:
+    return 1
+  var d: CustomLawDesc = custom_law_desc_for_builtin(custom_law_builtin_inverse_gravity())
+  if d.conserve_energy != 0:
+    return 2
+  return 0
+
+def custom_law_user_register_stub(law_id: int, conserve_energy: int) -> int
+  requires law_id >= custom_law_builtin_user_base()
+  requires conserve_energy >= 0
+  requires conserve_energy <= 1
+  ensures result == law_id
+  decreases law_id
+=
+  return law_id
+
+def demo_rocket_smoke() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return physics_custom_arbitrary_stack_smoke()

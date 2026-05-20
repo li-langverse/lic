@@ -1,0 +1,14 @@
+import mmo
+import sim
+import store.realtime
+
+def main() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  if mmo_deploy_dev_smoke() != 0:
+    return 1
+  if sim_profile_mmo() != 8:
+    return 2
+  return store_realm_replay_smoke()

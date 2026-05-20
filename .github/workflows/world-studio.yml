@@ -1,0 +1,56 @@
+name: World Studio
+
+on:
+  pull_request:
+    paths:
+      - "packages/li-studio/**"
+      - "packages/li-world/**"
+      - "packages/li-sim/**"
+      - "packages/li-sim-scientific/**"
+      - "packages/li-render/**"
+      - "packages/li-mmo/**"
+      - "packages/li-store-realtime/**"
+      - "packages/li-net-httpd/**"
+      - "deploy/world-studio-spinup/**"
+      - "deploy/studio-demo/**"
+      - "li-tests/composable/**"
+      - "scripts/ci-world-studio.sh"
+      - "scripts/merge-world-studio-preflight.sh"
+      - "scripts/verify-world-studio-on-main.sh"
+      - "scripts/create-world-studio-pr.sh"
+      - "scripts/list-world-studio-spinups.sh"
+  push:
+    branches:
+      - "feat/world-studio-impl-1"
+    paths:
+      - "packages/li-studio/**"
+      - "packages/li-world/**"
+      - "deploy/world-studio-spinup/**"
+      - "li-tests/composable/**"
+      - "scripts/ci-world-studio.sh"
+
+concurrency:
+  group: world-studio-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  gates:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install build deps
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y cmake ninja-build clang-18 llvm-18-dev zlib1g-dev libzstd-dev python3
+
+      - name: World Studio preflight
+        env:
+          LLVM_DIR: /usr/lib/llvm-18/lib/cmake/llvm
+          CC: clang-18
+          CXX: clang++-18
+        run: |
+          chmod +x scripts/build.sh scripts/resolve-lic.sh scripts/ci-world-studio.sh \
+            scripts/merge-world-studio-preflight.sh
+          ./scripts/build.sh
+          ./scripts/merge-world-studio-preflight.sh

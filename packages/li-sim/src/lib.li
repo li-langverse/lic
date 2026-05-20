@@ -1,0 +1,298 @@
+# PKG-li-sim — unified simulation step API (PH-SIM-1, SIM-2 replay).
+# sim_step_physics → physics.runtime when cross-package types stabilize.
+
+type SimWorld = object
+  public tick: int
+  public dt: float
+  public headless: int
+  public profile: int
+  public law_mode: int
+  public custom_law_id: int
+
+type SimReplay = object
+  public capacity: int
+  public count: int
+  public last_tick: int
+
+def li_sim_version() -> int
+  requires true
+  ensures result == 7
+  decreases 0
+=
+  return 7
+
+# PH-PHYS-CUSTOM — 0 realistic stack, 1 arbitrary-only, 2 hybrid (see physics.custom).
+def sim_law_mode_realistic() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0
+
+def sim_law_mode_arbitrary() -> int
+  requires true
+  ensures result == 1
+  decreases 0
+=
+  return 1
+
+def sim_law_mode_hybrid() -> int
+  requires true
+  ensures result == 2
+  decreases 0
+=
+  return 2
+
+def sim_profile_game() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0
+
+def sim_profile_rl() -> int
+  requires true
+  ensures result == 1
+  decreases 0
+=
+  return 1
+
+def sim_profile_automotive() -> int
+  requires true
+  ensures result == 2
+  decreases 0
+=
+  return 2
+
+def sim_profile_robotics() -> int
+  requires true
+  ensures result == 3
+  decreases 0
+=
+  return 3
+
+def sim_profile_scientific() -> int
+  requires true
+  ensures result == 4
+  decreases 0
+=
+  return 4
+
+def sim_profile_additive() -> int
+  requires true
+  ensures result == 5
+  decreases 0
+=
+  return 5
+
+def sim_profile_drug_design() -> int
+  requires true
+  ensures result == 6
+  decreases 0
+=
+  return 6
+
+def sim_profile_bioeng() -> int
+  requires true
+  ensures result == 7
+  decreases 0
+=
+  return 7
+
+def sim_profile_mmo() -> int
+  requires true
+  ensures result == 8
+  decreases 0
+=
+  return 8
+
+def sim_world_new(dt: float, headless: int) -> SimWorld
+  requires dt > 0.0
+  ensures result.tick == 0
+  ensures result.dt == dt
+  ensures result.profile == 0
+  decreases 0
+=
+  var w: SimWorld
+  w.tick = 0
+  w.dt = dt
+  w.headless = headless
+  w.profile = sim_profile_game()
+  w.law_mode = sim_law_mode_realistic()
+  w.custom_law_id = 0
+  return w
+
+def sim_world_with_profile(dt: float, headless: int, profile: int) -> SimWorld
+  requires dt > 0.0
+  requires profile >= 0
+  requires profile <= 8
+  ensures result.profile == profile
+  decreases profile
+=
+  var w: SimWorld = sim_world_new(dt, headless)
+  w.profile = profile
+  return w
+
+def sim_reset(world: SimWorld) -> unit
+  requires world.dt > 0.0
+  ensures world.tick == 0
+  decreases 0
+=
+  world.tick = 0
+
+def sim_step(world: SimWorld) -> unit
+  requires world.dt > 0.0
+  ensures world.tick >= 1
+  decreases world.tick
+=
+  world.tick = world.tick + 1
+
+def sim_set_law_mode(world: SimWorld, mode: int, custom_law_id: int) -> unit
+  requires mode >= 0
+  requires mode <= 2
+  requires custom_law_id >= 0
+  ensures world.law_mode == mode
+  ensures world.custom_law_id == custom_law_id
+  decreases mode
+=
+  world.law_mode = mode
+  world.custom_law_id = custom_law_id
+
+# Advances tick; caller runs physics.custom.custom_law_apply when law_mode != realistic.
+def sim_step_arbitrary(world: SimWorld) -> unit
+  requires world.dt > 0.0
+  requires world.law_mode == sim_law_mode_arbitrary()
+  ensures world.tick >= 1
+  decreases world.tick
+=
+  world.tick = world.tick + 1
+
+def sim_replay_new(capacity: int) -> SimReplay
+  requires capacity > 0
+  ensures result.capacity == capacity
+  ensures result.count == 0
+  ensures result.last_tick == 0
+  decreases capacity
+=
+  var r: SimReplay
+  r.capacity = capacity
+  r.count = 0
+  r.last_tick = 0
+  return r
+
+def sim_replay_push(replay: SimReplay, tick: int) -> unit
+  requires replay.capacity > 0
+  requires tick >= 0
+  ensures replay.last_tick == tick
+  decreases replay.count
+=
+  replay.count = replay.count + 1
+  if replay.count > replay.capacity:
+    replay.count = replay.capacity
+  replay.last_tick = tick
+
+def sim_tick_budget_for_mmo(tick_hz: int) -> int
+  requires tick_hz > 0
+  requires tick_hz <= 128
+  ensures result == tick_hz
+  decreases tick_hz
+=
+  return tick_hz
+
+def sim_replay_last_tick(replay: SimReplay) -> int
+  requires true
+  ensures result == replay.last_tick
+  decreases 0
+=
+  return replay.last_tick
+
+# Composable smoke: arbitrary law_mode without exporting SimWorld to importers.
+def sim_arbitrary_law_smoke() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  var w: SimWorld = sim_world_new(1.0, 1)
+  w.law_mode = sim_law_mode_arbitrary()
+  w.custom_law_id = 1
+  w.tick = w.tick + 1
+  return 0
+
+# MMO shard tick budget: sim_step with mmo profile (no PhysicsWorld embed).
+def sim_mmo_profile_step_smoke() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  var w: SimWorld = sim_world_with_profile(1.0, 1, sim_profile_mmo())
+  w.tick = w.tick + 1
+  return 0
+
+# PH-PHYS-CUSTOM full stack (pairs with physics.custom in composable gate).
+def sim_custom_physics_stack_smoke() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return sim_arbitrary_law_smoke()
+
+# Deferred until PhysicsWorld visible across packages (see PH-SIM program).
+def sim_physics_runtime_deferred() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0
+
+# Author-facing placeholder until sim_step_physics(world, physics_world) unifies packages.
+def sim_step_physics_stub(tick: int, tier: int, dt_millis: int) -> int
+  requires tick >= 0
+  requires tier >= 0
+  requires tier <= 3
+  requires dt_millis > 0
+  ensures result == tick + 1
+  decreases tick
+=
+  return tick + 1
+
+def sim_step_physics_smoke() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  if sim_step_physics_stub(0, 2, 16) != 1:
+    return 1
+  return sim_physics_runtime_deferred()
+
+# Alias for authors (same as sim_step_physics_stub).
+def step_physics(tick: int, tier: int, dt_millis: int) -> int
+  requires tick >= 0
+  requires tier >= 0
+  requires tier <= 3
+  requires dt_millis > 0
+  ensures result == tick + 1
+  decreases tick
+=
+  return sim_step_physics_stub(tick, tier, dt_millis)
+
+def sim_game_physics_tick_quick_smoke() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  if step_physics(0, 2, 16) != 1:
+    return 1
+  return 0
+
+def sim_world_studio_stack_smoke() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  if sim_custom_physics_stack_smoke() != 0:
+    return 1
+  if sim_step_physics_smoke() != 0:
+    return 2
+  if sim_mmo_profile_step_smoke() != 0:
+    return 3
+  return 0

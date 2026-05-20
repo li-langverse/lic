@@ -1,9 +1,12 @@
 #include "pendulum_core.h"
 
+#include "bench_quick.h"
+
 #include <math.h>
 #include <string.h>
 
-enum { LI_DP_STEPS = 3000000 };
+#define LI_DP_STEPS_FULL 3000000
+#define LI_DP_STEPS_QUICK 100000
 #define LI_DP_DT 0.0005
 #define LI_DP_M1 1.0
 #define LI_DP_M2 1.0
@@ -76,7 +79,8 @@ __attribute__((noinline)) void li_double_pendulum_kernel(void) {
   s.y[1] = 2.2;
   s.y[2] = 0.0;
   s.y[3] = 0.0;
-  for (int step = 0; step < LI_DP_STEPS; ++step) {
+  const int steps = li_bench_pick_int(LI_DP_STEPS_QUICK, LI_DP_STEPS_FULL);
+  for (int step = 0; step < steps; ++step) {
     li_dp_rk4_step(&s);
     (void)step;
   }

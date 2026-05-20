@@ -1,0 +1,15 @@
+# Spin-up: play mode — game world + field + studio (short API names).
+import studio
+import world
+import sim.scientific
+
+def main() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  if run_play_session_smoke() != 0:
+    return 1
+  if world_author_api_smoke() != 0:
+    return 2
+  return sim_field_checkpoint_smoke()

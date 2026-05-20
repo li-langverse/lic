@@ -1,0 +1,14 @@
+# Spin-up: MMORPG template (PH-MMO).
+import studio
+import mmo
+import sim
+import world
+
+def main() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  if sim_profile_mmo() != 8:
+    return 1
+  return demo_mmo_smoke()

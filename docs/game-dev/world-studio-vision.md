@@ -102,6 +102,31 @@ require_sim_pass = true
 
 RFC: [li-engine-unified-sim-rfc.md](specs/li-engine-unified-sim-rfc.md)
 
+### Arbitrary & unphysical physics (essential)
+
+**Not all worlds obey \(\mathbb{R}^3\) Newtonian laws.** Li treats **custom laws as first-class**, alongside tiered realistic physics:
+
+| Mode | Package | Use |
+|------|---------|-----|
+| `realistic` | `li-physics-runtime`, `li-physics-*` | Sims, science, automotive |
+| `arbitrary` | **`physics.custom`** | Games, counterfactual research, toy universes |
+| `hybrid` | both | e.g. realistic rigid body + inverse-gravity power-up zone |
+
+Games routinely need inverse gravity, teleports, non-conservative boosts, and per-frame rule swaps. Research needs the same hooks for unphysical but **scientifically interesting** models (broken symmetries, alternate dynamics).
+
+```li
+import sim
+import physics.custom
+
+def powerup_step(w: SimWorld, s: CustomState) -> unit
+  requires w.law_mode == sim_law_mode_arbitrary()
+=
+  custom_law_step_inverse_gravity(s, w.dt)
+  sim_step_arbitrary(w)
+```
+
+RFC: [arbitrary-physics-laws-rfc.md](specs/arbitrary-physics-laws-rfc.md) · package **`li-physics-custom`**.
+
 ---
 
 ## 6. PH-GD — World Studio editor (game authoring)
@@ -142,14 +167,20 @@ def game_step(world: GameWorld, input: InputState) -> unit
 | `studio.ai` | `li-studio-ai` | PH-GD-3, PH-AGENT |
 | `world` | `li-world` | PH-GD-2 |
 | `assets` | `li-assets` | PH-GD-4 |
-| `render` | `li-render` | PH-GD-5, PH-SCI |
+| `render` | `li-render` | PH-GD-5, PH-SCI (stub landed) |
 | `player` | `li-player` | PH-GD-7 |
 | `sim` | `li-sim` | PH-SIM |
+| `physics.custom` | `li-physics-custom` | PH-PHYS-CUSTOM |
 | `sim.automotive` | `li-sim-automotive` | PH-SIM |
 | `sim.robotics` | `li-sim-robotics` | PH-ROBO |
 | `sim.additive` | `li-sim-additive` | PH-AM |
 | `sim.scientific` | `li-sim-scientific` | PH-SCI |
 | `sim.drug_design` | `li-sim-drug-design` | PH-DRUG |
+| `bioeng` | `li-bioeng` | PH-BIOENG (extends PH-DRUG) |
+| `mmo` | `li-mmo` | PH-MMO |
+| `store.realtime` | `li-store-realtime` | PH-MMO persistence facade |
+| `studio.ai` | `li-studio-ai` | PH-GD-3 |
+| `player` | `li-player` | PH-GD-7 |
 | `chem` / `chem.dft` | `li-chem` | PH-QM |
 | `voxel` | `li-voxel` | PH-VOXEL |
 | `ml` | `li-ml` | PH-ML |
@@ -205,6 +236,28 @@ RFC: [sim-viz-scientific-rfc.md](specs/sim-viz-scientific-rfc.md)
 Roche **Lab-in-the-Loop**–class workflow: hypothesis → generate → **DFT/TDDFT** (`li-chem`) → lab ingest → retrain. **`studio.adaptive`** panels by stage/role.
 
 RFC: [drug-design-lab-loop-rfc.md](specs/drug-design-lab-loop-rfc.md)
+
+---
+
+## 12c. MMORPGs (PH-MMO)
+
+Online realms on the **same** engine: authoritative **shard** ticks (`mmo`), **gateway** (`net.httpd`), **realtime store facade** (`store.realtime` → Redis/Postgres via trusted FFI — **not** a from-scratch Li database). Deploy: [deploy/mmo/](../../deploy/mmo/) · Plan: [mmorpg-deployment-plan.md](mmorpg-deployment-plan.md).
+
+---
+
+## 12b. Competitive bioengineering (PH-BIOENG)
+
+**Builds on PH-DRUG** — same Lab-in-the-Loop spine, extended to **DBTL** (Design–Build–Test–Learn) for synthetic biology, protein engineering, and bioprocess.
+
+| Stage | Package |
+|-------|---------|
+| Design / Build / Test / Learn | `bioeng` — `bioeng_dbtl_*` |
+| Drug LITL bridge | `sim.drug_design` — `bioeng_from_drug_stage` |
+| QM / affinity | `li-chem` |
+| Search | `li-ml` |
+| Scorecard | `bioeng_scorecard_rank` vs competitive registry |
+
+Plan: [competitive-bioengineering-plan.md](competitive-bioengineering-plan.md) · RFC: [competitive-bioengineering-rfc.md](specs/competitive-bioengineering-rfc.md)
 
 ---
 

@@ -37,3 +37,104 @@ def httpd_ready(handle_id: int) -> bool
   decreases 0
 =
   return true
+
+# PH-MMO-5 — WebSocket upgrade path (stub until P0-net + WS stack).
+proc httpd_websocket_listen_stub(port: int) -> int
+  requires port > 0
+  requires port <= 65535
+  ensures result == port
+  decreases port
+=
+  return port
+
+proc httpd_websocket_upgrade_stub(handle_id: int) -> int
+  requires handle_id >= 0
+  ensures result == 1
+  decreases handle_id
+=
+  return 1
+
+# MMO-5 — session record after upgrade (player binding stub).
+type WsSession = object
+  public handle_id: int
+  public upgraded: int
+  public player_id: int
+
+proc httpd_ws_session_new(handle_id: int) -> WsSession
+  requires handle_id >= 0
+  ensures result.handle_id == handle_id
+  ensures result.upgraded == 0
+  ensures result.player_id == 0
+  decreases handle_id
+=
+  var s: WsSession
+  s.handle_id = handle_id
+  s.upgraded = 0
+  s.player_id = 0
+  return s
+
+proc httpd_ws_session_upgrade(session: WsSession) -> unit
+  requires session.handle_id >= 0
+  ensures session.upgraded == 1
+  decreases session.handle_id
+=
+  session.upgraded = 1
+
+proc httpd_ws_session_bind_player(session: WsSession, player_id: int) -> unit
+  requires session.upgraded == 1
+  requires player_id > 0
+  ensures session.player_id == player_id
+  decreases player_id
+=
+  session.player_id = player_id
+
+proc httpd_ws_session_smoke() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  var s: WsSession = httpd_ws_session_new(1)
+  httpd_ws_session_upgrade(s)
+  httpd_ws_session_bind_player(s, 42)
+  if s.player_id != 42:
+    return 1
+  return 0
+
+proc httpd_ws_smoke() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  if httpd_websocket_listen_stub(8080) != 8080:
+    return 1
+  if httpd_websocket_upgrade_stub(0) != 1:
+    return 2
+  return httpd_ws_session_smoke()
+
+# Li-native gateway tick — WS listen + session bind in Li (no Node/external gateway).
+proc httpd_li_native_gateway_tick_stub(port: int, player_id: int) -> int
+  requires port > 0
+  requires port <= 65535
+  requires player_id > 0
+  ensures result == player_id
+  decreases port
+=
+  if httpd_websocket_listen_stub(port) != port:
+    return 0
+  if httpd_websocket_upgrade_stub(0) != 1:
+    return 0
+  var s: WsSession = httpd_ws_session_new(0)
+  httpd_ws_session_upgrade(s)
+  httpd_ws_session_bind_player(s, player_id)
+  if s.player_id != player_id:
+    return 0
+  return player_id
+
+proc httpd_li_native_gateway_smoke() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  if httpd_li_native_gateway_tick_stub(8080, 42) != 42:
+    return 1
+  return httpd_ws_smoke()

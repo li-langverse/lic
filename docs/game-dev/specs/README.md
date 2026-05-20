@@ -4,13 +4,18 @@
 
 | RFC | Track |
 |-----|-------|
+| [world-architecture-competitive-rfc.md](world-architecture-competitive-rfc.md) | PH-GD-2 / PH-SCI |
 | [li-engine-unified-sim-rfc.md](li-engine-unified-sim-rfc.md) | PH-SIM |
+| [arbitrary-physics-laws-rfc.md](arbitrary-physics-laws-rfc.md) | PH-PHYS-CUSTOM |
 | [studio-cursor-sdk-rfc.md](studio-cursor-sdk-rfc.md) | PH-AGENT |
+| [studio-ai-rfc.md](studio-ai-rfc.md) | PH-GD-3 |
 | [studio-ux-design-system-rfc.md](studio-ux-design-system-rfc.md) | PH-UX |
 | [li-sim-additive-rfc.md](li-sim-additive-rfc.md) | PH-AM |
 | [li-sim-robotics-rfc.md](li-sim-robotics-rfc.md) | PH-ROBO |
 | [sim-viz-scientific-rfc.md](sim-viz-scientific-rfc.md) | PH-SCI |
 | [drug-design-lab-loop-rfc.md](drug-design-lab-loop-rfc.md) | PH-DRUG |
+| [competitive-bioengineering-rfc.md](competitive-bioengineering-rfc.md) | PH-BIOENG |
+| [mmorpg-online-rfc.md](mmorpg-online-rfc.md) | PH-MMO |
 | [li-chem-qm-rfc.md](li-chem-qm-rfc.md) | PH-QM |
 | [voxel-engine-rfc.md](voxel-engine-rfc.md) | PH-VOXEL |
 | [publication-export-rfc.md](publication-export-rfc.md) | PH-PUB |

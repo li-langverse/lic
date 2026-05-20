@@ -1,4 +1,4 @@
-enum { LI_FD_N = 32, LI_FD_STEPS = 2000 };
+enum { LI_FD_N = 128, LI_FD_STEPS = 8000 };
 #define LI_FD_DT 0.001
 #define LI_FD_DX 0.01
 #define LI_FD_C 1.0

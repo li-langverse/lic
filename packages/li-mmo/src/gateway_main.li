@@ -1,0 +1,10 @@
+# PH-MMO-3 — thin gateway demo (routes to shard).
+
+import mmo
+
+def main() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return mmo_matchmaking_smoke()

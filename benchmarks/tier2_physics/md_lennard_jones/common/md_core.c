@@ -1,7 +1,13 @@
 #include "md_core.h"
 
+#include "bench_quick.h"
+
 #include <stdio.h>
 #include <stdlib.h>
+
+int li_md_bench_n(void) { return li_bench_pick_int(64, LI_MD_N); }
+
+int li_md_bench_steps(void) { return li_bench_pick_int(2000, LI_MD_STEPS); }
 
 static double g_li_md_checksum;
 
@@ -34,9 +40,10 @@ static double md_run_impl(FILE* trace_out) {
   li_md_kinetic(&state, &ke);
   li_md_potential(&state, &pe);
   const double e0 = pe + ke;
-  for (int step = 1; step <= LI_MD_STEPS; ++step) {
+  const int md_steps = li_md_active_steps();
+  for (int step = 1; step <= md_steps; ++step) {
     li_md_step(&state);
-    if (trace_out && (step % LI_MD_TRACE_INTERVAL == 0 || step == LI_MD_STEPS)) {
+    if (trace_out && (step % LI_MD_TRACE_INTERVAL == 0 || step == md_steps)) {
       record_energy(trace_out, step, &state);
     }
   }

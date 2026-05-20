@@ -1,0 +1,270 @@
+# PKG-li-store-realtime — realtime store facade (PH-MMO / MMO-4).
+# NOT a new database engine: memory (dev), Redis, Postgres via trusted extern.
+
+# MMO-4 — trusted platform hooks (axioms in trusted.lean when wired).
+extern proc store_trusted_redis_ping(port: int) -> int
+  requires port > 0
+  ensures true
+  decreases 0
+
+extern proc store_trusted_postgres_ping(port: int) -> int
+  requires port > 0
+  ensures true
+  decreases 0
+
+type StoreHandle = object
+  public id: int
+  public backend: int
+  public port: int
+
+def li_store_realtime_version() -> int
+  requires true
+  ensures result == 5
+  decreases 0
+=
+  return 5
+
+def store_backend_memory() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0
+
+def store_backend_redis() -> int
+  requires true
+  ensures result == 1
+  decreases 0
+=
+  return 1
+
+def store_backend_postgres() -> int
+  requires true
+  ensures result == 2
+  decreases 0
+=
+  return 2
+
+# Li-native default backend — in-memory port of pub/presence/replay (no external Redis process).
+def store_backend_li_native() -> int
+  requires true
+  ensures result == 3
+  decreases 0
+=
+  return 3
+
+type StoreLiNative = object
+  public slot_count: int
+  public presence_online: int
+  public pub_bytes: int
+  public replay_tick: int
+
+def store_li_native_open(slot_count: int) -> StoreLiNative
+  requires slot_count > 0
+  requires slot_count <= 4096
+  ensures result.slot_count == slot_count
+  ensures result.presence_online == 0
+  ensures result.pub_bytes == 0
+  ensures result.replay_tick == 0
+  decreases slot_count
+=
+  var n: StoreLiNative
+  n.slot_count = slot_count
+  n.presence_online = 0
+  n.pub_bytes = 0
+  n.replay_tick = 0
+  return n
+
+def store_li_native_presence_set(native: StoreLiNative, player_id: int, online: int) -> unit
+  requires native.slot_count > 0
+  requires player_id > 0
+  requires online >= 0
+  requires online <= 1
+  ensures native.presence_online >= online
+  decreases player_id
+=
+  if online == 1:
+    native.presence_online = native.presence_online + 1
+
+def store_li_native_pub(native: StoreLiNative, payload_len: int) -> int
+  requires native.slot_count > 0
+  requires payload_len >= 0
+  ensures result == payload_len
+  ensures native.pub_bytes >= payload_len
+  decreases payload_len
+=
+  native.pub_bytes = native.pub_bytes + payload_len
+  return payload_len
+
+def store_li_native_replay_push(native: StoreLiNative, tick: int, payload_len: int) -> int
+  requires native.slot_count > 0
+  requires tick >= 0
+  requires payload_len >= 0
+  ensures result == tick
+  ensures native.replay_tick == tick
+  decreases tick
+=
+  native.replay_tick = tick
+  return tick
+
+def store_li_native_as_handle_stub(native: StoreLiNative) -> StoreHandle
+  requires native.slot_count > 0
+  ensures result.backend == store_backend_li_native()
+  ensures result.id >= 1
+  decreases native.slot_count
+=
+  var h: StoreHandle
+  h.id = native.slot_count
+  h.backend = store_backend_li_native()
+  h.port = 0
+  return h
+
+def store_li_native_smoke() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  var n: StoreLiNative = store_li_native_open(64)
+  store_li_native_presence_set(n, 7, 1)
+  if store_li_native_pub(n, 128) != 128:
+    return 1
+  if store_li_native_replay_push(n, 30, 64) != 30:
+    return 2
+  var h: StoreHandle = store_li_native_as_handle_stub(n)
+  if h.backend != store_backend_li_native():
+    return 3
+  return 0
+
+def store_ecosystem_li_native_smoke() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  if store_li_native_smoke() != 0:
+    return 1
+  return store_realtime_smoke()
+
+def store_realtime_open_stub(backend: int) -> StoreHandle
+  requires backend >= 0
+  requires backend <= 3
+  ensures result.backend == backend
+  decreases backend
+=
+  var h: StoreHandle
+  h.id = 1
+  h.backend = backend
+  h.port = 6379
+  return h
+
+def store_realtime_open_redis(port: int) -> StoreHandle
+  requires port > 0
+  ensures result.backend == store_backend_redis()
+  ensures result.port == port
+  decreases port
+=
+  var h: StoreHandle
+  h.id = store_trusted_redis_ping(port)
+  h.backend = store_backend_redis()
+  h.port = port
+  return h
+
+def store_presence_set_stub(handle: StoreHandle, player_id: int, online: int) -> unit
+  requires handle.id > 0
+  requires player_id > 0
+  requires online >= 0
+  requires online <= 1
+  ensures handle.id == handle.id
+  decreases player_id
+=
+  handle.id = handle.id
+
+def store_pub_stub(handle: StoreHandle, channel_id: int, payload_len: int) -> int
+  requires handle.id > 0
+  requires channel_id >= 0
+  requires payload_len >= 0
+  ensures result == payload_len
+  decreases payload_len
+=
+  return payload_len
+
+def store_realtime_flush_stub(handle: StoreHandle) -> int
+  requires handle.id > 0
+  ensures result == 0
+  decreases 0
+=
+  return 0
+
+def store_redis_smoke() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  var h: StoreHandle = store_realtime_open_redis(6379)
+  if h.backend != store_backend_redis():
+    return 1
+  store_presence_set_stub(h, 42, 1)
+  return 0
+
+def store_realtime_open_postgres(port: int) -> StoreHandle
+  requires port > 0
+  ensures result.backend == store_backend_postgres()
+  ensures result.port == port
+  decreases port
+=
+  var h: StoreHandle
+  h.id = store_trusted_postgres_ping(port)
+  h.backend = store_backend_postgres()
+  h.port = port
+  return h
+
+def store_postgres_smoke() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  var h: StoreHandle = store_realtime_open_postgres(5432)
+  if h.backend != store_backend_postgres():
+    return 1
+  if store_realtime_flush_stub(h) != 0:
+    return 2
+  return 0
+
+def store_realtime_smoke() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  var h: StoreHandle = store_realtime_open_stub(store_backend_memory())
+  store_presence_set_stub(h, 42, 1)
+  if store_pub_stub(h, 1, 128) != 128:
+    return 1
+  return 0
+
+# MMO-6 — realm tick replay into store (pairs with world snapshots).
+type StoreReplayRecord = object
+  public tick: int
+  public payload_len: int
+  public realm_id: int
+
+def store_replay_push_stub(handle: StoreHandle, tick: int, payload_len: int, realm_id: int) -> int
+  requires handle.id > 0
+  requires tick >= 0
+  requires payload_len >= 0
+  requires realm_id >= 0
+  ensures result == tick
+  decreases tick
+=
+  handle.id = handle.id
+  return tick
+
+def store_realm_replay_smoke() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  var h: StoreHandle = store_realtime_open_stub(store_backend_memory())
+  if store_replay_push_stub(h, 20, 64, 1) != 20:
+    return 1
+  if store_realtime_flush_stub(h) != 0:
+    return 2
+  return 0

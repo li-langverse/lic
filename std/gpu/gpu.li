@@ -1,0 +1,8 @@
+# std/gpu — LKIR / GPU backend facade (PH-HW).
+
+def gpu_std_tag() -> int
+  requires true
+  ensures result == 1
+  decreases 0
+=
+  return 1

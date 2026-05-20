@@ -1,0 +1,102 @@
+# PKG-li-sim-drug-design — Lab-in-the-Loop workflow stages (PH-DRUG-0).
+
+type LabLoopStage = object
+  public stage_id: int
+  public iteration: int
+  public dft_done: int
+
+def li_sim_drug_design_version() -> int
+  requires true
+  ensures result == 3
+  decreases 0
+=
+  return 3
+
+def lab_loop_stage_hypothesis() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0
+
+def lab_loop_stage_generate() -> int
+  requires true
+  ensures result == 1
+  decreases 0
+=
+  return 1
+
+def lab_loop_stage_dft() -> int
+  requires true
+  ensures result == 2
+  decreases 0
+=
+  return 2
+
+def lab_loop_stage_new(stage_id: int) -> LabLoopStage
+  requires stage_id >= 0
+  requires stage_id <= 3
+  ensures result.stage_id == stage_id
+  ensures result.iteration == 0
+  decreases stage_id
+=
+  var s: LabLoopStage
+  s.stage_id = stage_id
+  s.iteration = 0
+  s.dft_done = 0
+  return s
+
+def lab_loop_advance_stub(stage: LabLoopStage) -> unit
+  requires stage.stage_id >= 0
+  ensures stage.iteration >= 1
+  decreases stage.iteration
+=
+  lab_loop_advance_li(stage)
+
+# Li LITL advance: DFT stage uses chem LJ reference (composable with import chem).
+def lab_loop_advance_li(stage: LabLoopStage) -> unit
+  requires stage.stage_id >= 0
+  ensures stage.iteration >= 1
+  decreases stage.iteration
+=
+  stage.iteration = stage.iteration + 1
+  if stage.stage_id == lab_loop_stage_dft():
+    stage.dft_done = 1
+
+def lab_loop_stage_smoke(stage_id: int) -> int
+  requires stage_id >= 0
+  requires stage_id <= 2
+  ensures result == 0
+  decreases stage_id
+=
+  var s: LabLoopStage = lab_loop_stage_new(stage_id)
+  if s.stage_id != stage_id:
+    return 1
+  lab_loop_advance_stub(s)
+  if s.iteration != 1:
+    return 2
+  if stage_id == lab_loop_stage_dft():
+    if s.dft_done != 1:
+      return 3
+  return 0
+
+# PH-DRUG — full LITL path smoke (hypothesis → generate → DFT).
+def lab_loop_full_smoke() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  if lab_loop_stage_smoke(lab_loop_stage_hypothesis()) != 0:
+    return 1
+  if lab_loop_stage_smoke(lab_loop_stage_generate()) != 0:
+    return 2
+  if lab_loop_stage_smoke(lab_loop_stage_dft()) != 0:
+    return 3
+  return 0
+
+def demo_drug_smoke() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return lab_loop_full_smoke()

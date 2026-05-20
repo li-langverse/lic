@@ -1,0 +1,84 @@
+# PKG-li-gpu — LKIR / ROCm / CUDA backend selection (PH-HW-0).
+
+def li_gpu_version() -> int
+  requires true
+  ensures result == 2
+  decreases 0
+=
+  return 2
+
+def gpu_backend_cpu() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0
+
+def gpu_backend_rocm() -> int
+  requires true
+  ensures result == 1
+  decreases 0
+=
+  return 1
+
+def gpu_backend_cuda() -> int
+  requires true
+  ensures result == 2
+  decreases 0
+=
+  return 2
+
+def gpu_select_backend_stub(preferred: int) -> int
+  requires preferred >= 0
+  requires preferred <= 2
+  ensures result == preferred
+  decreases preferred
+=
+  return preferred
+
+def gpu_lkir_tag_stub() -> int
+  requires true
+  ensures result == 1
+  decreases 0
+=
+  return 1
+
+# PH-HW / LKIR — present tick (pairs with li-render bridge).
+def gpu_lkir_present_tick_stub(backend: int) -> int
+  requires backend >= 0
+  requires backend <= 2
+  ensures result == gpu_lkir_tag_stub() + backend
+  decreases backend
+=
+  return gpu_lkir_tag_stub() + backend
+
+def gpu_lkir_present_smoke() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  if gpu_lkir_present_tick_stub(gpu_backend_rocm()) != 2:
+    return 1
+  if gpu_select_backend_stub(gpu_backend_cuda()) != gpu_backend_cuda():
+    return 2
+  return 0
+
+# BIOENG-7 / PH-HW — batch surrogate scoring stub (LKIR path later).
+def gpu_batch_score_stub(batch_size: int, backend: int) -> int
+  requires batch_size > 0
+  requires batch_size <= 4096
+  requires backend >= 0
+  requires backend <= 2
+  ensures result == batch_size
+  decreases batch_size
+=
+  return batch_size
+
+def gpu_surrogate_smoke() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  if gpu_batch_score_stub(64, gpu_backend_rocm()) != 64:
+    return 1
+  return 0

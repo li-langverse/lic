@@ -1,0 +1,15 @@
+import studio
+import world
+import sim
+import physics.custom
+
+def main() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  if sim_profile_game() != 0:
+    return 1
+  if sim_custom_physics_stack_smoke() != 0:
+    return 2
+  return world_realm_smoke()

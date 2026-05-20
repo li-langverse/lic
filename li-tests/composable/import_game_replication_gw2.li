@@ -1,0 +1,10 @@
+import world
+
+def main() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  if li_world_version() < 7:
+    return 1
+  return game_replication_delta_smoke()

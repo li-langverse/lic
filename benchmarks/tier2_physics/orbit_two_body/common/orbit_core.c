@@ -1,6 +1,9 @@
+#include "bench_quick.h"
+
 #include <math.h>
 
-enum { LI_ORB_STEPS = 100000 };
+#define LI_ORB_STEPS_FULL 100000
+#define LI_ORB_STEPS_QUICK 50000
 #define LI_ORB_DT 0.001
 #define LI_ORB_MU 1.0
 #define LI_ORB_R 1.0
@@ -12,7 +15,8 @@ void li_orbit_two_body_kernel(void) {
   double py = 0.0;
   double vx = 0.0;
   double vy = sqrt(LI_ORB_MU / LI_ORB_R);
-  for (int s = 0; s < LI_ORB_STEPS; ++s) {
+  const int steps = li_bench_pick_int(LI_ORB_STEPS_QUICK, LI_ORB_STEPS_FULL);
+  for (int s = 0; s < steps; ++s) {
     double rx = -LI_ORB_MU * px / (px * px + py * py + 1e-18);
     double ry = -LI_ORB_MU * py / (px * px + py * py + 1e-18);
     vx += rx * LI_ORB_DT;

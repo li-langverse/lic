@@ -6,8 +6,14 @@ globs:
   - packages/li-scene/**
   - packages/li-ui/**
   - packages/li-physics-*/
+  - packages/li-physics-custom/**
   - packages/li-sim/**
   - packages/li-chem/**
+  - packages/li-bioeng/**
+  - packages/li-sim-drug-design/**
+  - packages/li-mmo/**
+  - packages/li-store-realtime/**
+  - deploy/mmo/**
   - packages/li-voxel/**
 alwaysApply: false
 ---
@@ -23,9 +29,17 @@ alwaysApply: false
 - Use Python-style **`def`** for functions in new code and docs (not `proc`).
 - Keep `requires` / `ensures` / `decreases` on exported APIs.
 
+## API ergonomics (authors + agents)
+
+- Prefer **verb phrases** and **short aliases** in `lib.li`: `new_game_world`, `spawn_entity`, `new_field`, `step_field` — see [world-api-quickstart.md](../docs/game-dev/world-api-quickstart.md).
+- Avoid cryptic suffixes in **public** APIs (`_stub` only for internal gates; expose a clear name beside it).
+- One concept → one obvious name; document aliases in the quickstart, not only in RFCs.
+- Agents: [AGENTS-world-studio.md](../docs/game-dev/AGENTS-world-studio.md) — start with `run_play_session`.
+
 ## Product
 
 - **One engine** for game + sim profiles — no CARLA/GROMACS/slicer forks.
+- **Arbitrary physics:** `physics.custom` + `sim` law_mode — unphysical laws are first-class (games + research); see `arbitrary-physics-laws-rfc.md`.
 - **Killer UX** (PH-UX): 60 fps, adaptive layouts, export wizards.
 - **Agents:** MCP `li-engine` + `@cursor/sdk`; every path → `lic build`.
 - **GPU:** CUDA + **ROCm/HIP** (no CUDA-only user kernels).
@@ -39,6 +53,8 @@ alwaysApply: false
 - Dump studio into `lic` compiler.
 - Use `li-demo` for studio features by default.
 - Add second physics engine for RL/sim.
+- Add **external product stacks** (Python services, Redis/DB clients, etc.) — **port or redesign in Li** (`li-native-first.mdc`).
+- Treat **`WorldSnapshot` as RealmHead only** — game state is **`GameWorld` ECS**; HPC state is **`SimField`** ([world-architecture-competitive-rfc.md](../docs/game-dev/specs/world-architecture-competitive-rfc.md)).
 
 ## Phases
 

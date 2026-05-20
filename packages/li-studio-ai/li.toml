@@ -1,0 +1,22 @@
+[package]
+name = "li-studio-ai"
+version = "0.1.0"
+edition = "2026"
+license = "Apache-2.0 OR MIT"
+description = "World Studio AI apply_patch loop (PH-GD-3)"
+
+[dependencies]
+# path = { path = "../other" }   # lip 8b+
+# registry = "1.0.0"             # lip 8d+
+
+[package.metadata.li]
+github_repo = "li-studio-ai"
+import_name = "studio.ai"
+min_lic = "0.1.0"
+maintainer = "li-langverse"
+pkg_id = "PKG-li-studio-ai"
+
+[package.repository]
+url = "https://github.com/li-langverse/li-studio-ai"
+documentation = "https://li-langverse.github.io/li-language/ecosystem/li-studio-ai/"
+changelog = "https://github.com/li-langverse/li-studio-ai/blob/main/CHANGELOG.md"

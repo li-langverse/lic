@@ -1,0 +1,575 @@
+# PKG-li-world — realm heads, GameWorld ECS (GW), persistence stubs (PH-GD-2).
+# Competitive split: GameWorld vs SimField — see specs/world-architecture-competitive-rfc.md
+
+# RealmHead — MMO/metadata snapshot (not full game ECS).
+type WorldSnapshot = object
+  public tick: int
+  public checksum: int
+  public entity_count: int
+  public realm_id: int
+  public shard_id: int
+
+def li_world_version() -> int
+  requires true
+  ensures result == 7
+  decreases 0
+=
+  return 7
+
+# GW-0 — game ECS head (AAA path; not UE-scale yet).
+type GameEntity = object
+  public entity_id: int
+  public archetype_id: int
+  public alive: int
+
+type GameWorld = object
+  public tick: int
+  public entity_count: int
+  public realm_id: int
+  public replication_seq: int
+
+def game_world_new(realm_id: int) -> GameWorld
+  requires realm_id >= 0
+  ensures result.entity_count == 0
+  ensures result.realm_id == realm_id
+  ensures result.replication_seq == 0
+  decreases realm_id
+=
+  var w: GameWorld
+  w.tick = 0
+  w.entity_count = 0
+  w.realm_id = realm_id
+  w.replication_seq = 0
+  return w
+
+def game_world_spawn_entity(world: GameWorld, archetype_id: int) -> GameEntity
+  requires world.entity_count >= 0
+  requires archetype_id >= 0
+  requires archetype_id <= 255
+  ensures result.archetype_id == archetype_id
+  ensures result.alive == 1
+  ensures world.entity_count >= 1
+  decreases world.entity_count
+=
+  var e: GameEntity
+  e.entity_id = world.entity_count + 1
+  e.archetype_id = archetype_id
+  e.alive = 1
+  world.entity_count = world.entity_count + 1
+  return e
+
+# GW-1 — SoA component tables (fixed chunk; 10k entity/tick budget stub).
+def game_soa_chunk_capacity() -> int
+  requires true
+  ensures result == 64
+  decreases 0
+=
+  return 64
+
+def game_world_entity_budget() -> int
+  requires true
+  ensures result == 10240
+  decreases 0
+=
+  return 10240
+
+def game_soa_spawn_slot(
+    entity_ids: array[64, int],
+    archetypes: array[64, int],
+    pos_x: array[64, float],
+    filled: int,
+    archetype_id: int) -> int
+  requires filled >= 0
+  requires filled < game_soa_chunk_capacity()
+  requires archetype_id >= 0
+  requires archetype_id <= 255
+  ensures result == filled + 1
+  decreases filled
+=
+  var slot: int = filled
+  entity_ids[slot] = slot + 1
+  archetypes[slot] = archetype_id
+  pos_x[slot] = 0.0
+  return filled + 1
+
+def game_soa_tick_chunk_stub(
+    entity_ids: array[64, int],
+    pos_x: array[64, float],
+    pos_y: array[64, float],
+    filled: int,
+    dt: float) -> int
+  requires filled > 0
+  requires filled <= game_soa_chunk_capacity()
+  requires dt > 0.0
+  ensures result == filled
+  decreases filled
+=
+  var i: int = 0
+  while i < filled
+    if entity_ids[i] > 0:
+      pos_x[i] = pos_x[i] + dt
+      pos_y[i] = pos_y[i] + dt * 0.5
+    i = i + 1
+  return filled
+
+def game_soa_fill_chunk_stub(
+    entity_ids: array[64, int],
+    archetypes: array[64, int],
+    pos_x: array[64, float],
+    archetype_id: int) -> int
+  requires archetype_id >= 0
+  ensures result == game_soa_chunk_capacity()
+  decreases game_soa_chunk_capacity()
+=
+  var filled: int = 0
+  while filled < game_soa_chunk_capacity()
+    filled = game_soa_spawn_slot(entity_ids, archetypes, pos_x, filled, archetype_id)
+  return filled
+
+def game_world_soa_10k_tick_budget_smoke() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  var entity_ids: array[64, int]
+  var archetypes: array[64, int]
+  var pos_x: array[64, float]
+  var pos_y: array[64, float]
+  var filled: int = game_soa_fill_chunk_stub(entity_ids, archetypes, pos_x, 1)
+  if filled != game_soa_chunk_capacity():
+    return 1
+  var total: int = 0
+  var pass: int = 0
+  var chunks: int = game_world_entity_budget() / game_soa_chunk_capacity()
+  while pass < chunks
+    total = total + game_soa_tick_chunk_stub(entity_ids, pos_x, pos_y, filled, 0.016)
+    pass = pass + 1
+  if total != game_world_entity_budget():
+    return 2
+  return 0
+
+# GW-2 — replication delta encoding (target: byte_size ≪ full snapshot).
+type GameReplicationDelta = object
+  public entity_id: int
+  public component_mask: int
+  public byte_size: int
+  public seq: int
+
+def game_replication_bytes_per_entity() -> int
+  requires true
+  ensures result == 128
+  decreases 0
+=
+  return 128
+
+def game_replication_full_snapshot_bytes(world: GameWorld) -> int
+  requires world.entity_count >= 0
+  ensures result >= 32
+  decreases world.entity_count
+=
+  return world.entity_count * game_replication_bytes_per_entity() + 32
+
+def game_replication_popcount_stub(mask: int) -> int
+  requires mask >= 0
+  ensures result >= 0
+  ensures result <= 16
+  decreases mask
+=
+  var bits: int = 0
+  var m: int = mask
+  var i: int = 0
+  while i < 16
+    if m % 2 == 1:
+      bits = bits + 1
+    m = m / 2
+    i = i + 1
+  return bits
+
+def game_replication_delta_encode(
+    world: GameWorld, entity_id: int, component_mask: int) -> GameReplicationDelta
+  requires entity_id > 0
+  requires component_mask >= 0
+  ensures result.entity_id == entity_id
+  ensures result.component_mask == component_mask
+  ensures result.byte_size >= 12
+  ensures result.byte_size <= 64
+  decreases entity_id
+=
+  world.replication_seq = world.replication_seq + 1
+  var d: GameReplicationDelta
+  d.entity_id = entity_id
+  d.component_mask = component_mask
+  d.seq = world.replication_seq
+  d.byte_size = 12 + game_replication_popcount_stub(component_mask) * 8
+  return d
+
+def game_replication_delta_stub(world: GameWorld, entity_id: int, component_mask: int) -> int
+  requires world.tick >= 0
+  requires entity_id > 0
+  requires component_mask >= 0
+  ensures result >= 0
+  ensures result <= 64
+  decreases entity_id
+=
+  var d: GameReplicationDelta = game_replication_delta_encode(world, entity_id, component_mask)
+  return d.byte_size
+
+def game_replication_delta_smoke() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  var w: GameWorld = game_world_new(1)
+  var i: int = 0
+  while i < 100
+    game_world_spawn_entity(w, 1)
+    i = i + 1
+  var full: int = game_replication_full_snapshot_bytes(w)
+  var d: GameReplicationDelta = game_replication_delta_encode(w, 1, 7)
+  if d.byte_size >= full:
+    return 1
+  if d.byte_size > 64:
+    return 2
+  return 0
+
+# GW-3 — region streaming (load / unload under a fixed memory budget).
+type GameRegion = object
+  public region_id: int
+  public loaded: int
+  public entity_slots: int
+  public memory_bytes: int
+
+def game_streaming_memory_budget_bytes() -> int
+  requires true
+  ensures result > 0
+  decreases 0
+=
+  return 268435456
+
+def game_region_new(region_id: int, entity_slots: int) -> GameRegion
+  requires region_id >= 0
+  requires entity_slots > 0
+  ensures result.region_id == region_id
+  ensures result.entity_slots == entity_slots
+  ensures result.loaded == 0
+  ensures result.memory_bytes == 0
+  decreases region_id
+=
+  var r: GameRegion
+  r.region_id = region_id
+  r.entity_slots = entity_slots
+  r.loaded = 0
+  r.memory_bytes = 0
+  return r
+
+def game_region_load(region: GameRegion) -> unit
+  requires region.entity_slots > 0
+  ensures region.loaded == 1
+  ensures region.memory_bytes > 0
+  decreases region.region_id
+=
+  region.loaded = 1
+  region.memory_bytes = region.entity_slots * game_replication_bytes_per_entity()
+
+def game_region_unload(region: GameRegion) -> unit
+  requires true
+  ensures region.loaded == 0
+  ensures region.memory_bytes == 0
+  decreases region.region_id
+=
+  region.loaded = 0
+  region.memory_bytes = 0
+
+def game_streaming_can_load(used_bytes: int, region: GameRegion) -> int
+  requires used_bytes >= 0
+  requires region.loaded == 0
+  ensures result == 0 || result == 1
+  decreases used_bytes
+=
+  var need: int = region.entity_slots * game_replication_bytes_per_entity()
+  if used_bytes + need <= game_streaming_memory_budget_bytes():
+    return 1
+  return 0
+
+def game_streaming_load_region(used_bytes: int, region: GameRegion) -> int
+  requires used_bytes >= 0
+  requires region.loaded == 0
+  ensures result >= used_bytes
+  decreases used_bytes
+=
+  if game_streaming_can_load(used_bytes, region) != 1:
+    return used_bytes
+  game_region_load(region)
+  return used_bytes + region.memory_bytes
+
+def game_streaming_smoke() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  var r: GameRegion = game_region_new(1, 1024)
+  var used: int = 0
+  used = game_streaming_load_region(used, r)
+  if r.loaded != 1:
+    return 1
+  game_region_unload(r)
+  if r.loaded != 0:
+    return 2
+  return 0
+
+# GW-4 — one call to advance sim tick before the viewport draws (pairs with render.*).
+def game_world_draw_frame(world: GameWorld, width: int, height: int) -> int
+  requires width > 0
+  requires height > 0
+  ensures result >= 1
+  decreases world.tick
+=
+  game_world_tick_stub(world)
+  return world.tick + width + height
+
+def game_world_viewport_smoke() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  var w: GameWorld = game_world_new(0)
+  game_world_spawn_entity(w, 1)
+  if game_world_draw_frame(w, 1280, 720) < 1:
+    return 1
+  return 0
+
+# Short names for authors and agents (same behavior as game_world_* above).
+def new_game_world(realm_id: int) -> GameWorld
+  requires realm_id >= 0
+  decreases realm_id
+=
+  return game_world_new(realm_id)
+
+def spawn_entity(world: GameWorld, archetype_id: int) -> GameEntity
+  requires archetype_id >= 0
+  requires archetype_id <= 255
+  decreases world.entity_count
+=
+  return game_world_spawn_entity(world, archetype_id)
+
+def tick_game_world(world: GameWorld) -> unit
+  requires true
+  decreases world.tick
+=
+  game_world_tick_stub(world)
+
+def send_entity_delta(world: GameWorld, entity_id: int, component_mask: int) -> int
+  requires entity_id > 0
+  requires component_mask >= 0
+  decreases entity_id
+=
+  return game_replication_delta_stub(world, entity_id, component_mask)
+
+def world_author_api_smoke() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  var w: GameWorld = new_game_world(1)
+  var e: GameEntity = spawn_entity(w, 2)
+  tick_game_world(w)
+  if send_entity_delta(w, e.entity_id, 1) <= 0:
+    return 1
+  return 0
+
+# Link GameWorld entity count to RealmHead metadata (MMO shard tick).
+def sync_realm_head(world: GameWorld, tick: int, shard_id: int) -> int
+  requires tick >= 0
+  requires shard_id >= 0
+  ensures result >= 0
+  decreases tick
+=
+  var snap: WorldSnapshot = world_snapshot_for_realm(
+      tick, world.entity_count, world.realm_id, shard_id)
+  return snap.checksum
+
+def world_realm_game_bridge_smoke() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  var w: GameWorld = new_game_world(1)
+  spawn_entity(w, 1)
+  if sync_realm_head(w, 10, 0) <= 0:
+    return 1
+  return world_realm_smoke()
+
+def world_stream_delta_quick_smoke() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  if game_streaming_smoke() != 0:
+    return 1
+  var w: GameWorld = new_game_world(1)
+  var e: GameEntity = spawn_entity(w, 1)
+  if send_entity_delta(w, e.entity_id, 3) <= 0:
+    return 2
+  return 0
+
+def game_world_tick_stub(world: GameWorld) -> unit
+  requires true
+  ensures world.tick >= 1
+  decreases world.tick
+=
+  world.tick = world.tick + 1
+
+def game_world_ecs_smoke() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  var w: GameWorld = game_world_new(1)
+  var e: GameEntity = game_world_spawn_entity(w, 3)
+  if e.entity_id != 1:
+    return 1
+  if game_replication_delta_stub(w, e.entity_id, 7) > 64:
+    return 2
+  game_world_tick_stub(w)
+  if w.tick != 1:
+    return 3
+  return 0
+
+def world_snapshot_new(tick: int, entity_count: int) -> WorldSnapshot
+  requires tick >= 0
+  requires entity_count >= 0
+  ensures result.tick == tick
+  ensures result.entity_count == entity_count
+  ensures result.realm_id == 0
+  decreases tick
+=
+  var s: WorldSnapshot
+  s.tick = tick
+  s.entity_count = entity_count
+  s.realm_id = 0
+  s.shard_id = 0
+  s.checksum = tick * 31 + entity_count
+  return s
+
+def world_snapshot_for_realm(tick: int, entity_count: int, realm_id: int, shard_id: int) -> WorldSnapshot
+  requires tick >= 0
+  requires entity_count >= 0
+  requires realm_id >= 0
+  requires shard_id >= 0
+  ensures result.realm_id == realm_id
+  ensures result.shard_id == shard_id
+  decreases tick
+=
+  var s: WorldSnapshot = world_snapshot_new(tick, entity_count)
+  s.realm_id = realm_id
+  s.shard_id = shard_id
+  s.checksum = s.checksum + realm_id * 17 + shard_id
+  return s
+
+# PH-GD-2 — serialized world text (format TBD; returns byte length stub).
+def world_save_text_stub(snap: WorldSnapshot) -> int
+  requires snap.tick >= 0
+  ensures result >= 0
+  decreases snap.tick
+=
+  return snap.checksum + snap.entity_count
+
+def world_checkpoint_mmo_stub(tick: int, realm_id: int, shard_id: int) -> int
+  requires tick >= 0
+  requires realm_id >= 0
+  requires shard_id >= 0
+  ensures result >= 0
+  decreases tick
+=
+  var s: WorldSnapshot = world_snapshot_for_realm(tick, 0, realm_id, shard_id)
+  return world_save_text_stub(s)
+
+def world_realm_smoke() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  var s: WorldSnapshot = world_snapshot_for_realm(1, 10, 1, 0)
+  if s.realm_id != 1:
+    return 1
+  if s.shard_id != 0:
+    return 2
+  return 0
+
+def world_persist_realm_stub(realm_id: int, shard_id: int, tick: int) -> int
+  requires realm_id >= 0
+  requires shard_id >= 0
+  requires tick >= 0
+  ensures result >= 0
+  decreases tick
+=
+  var s: WorldSnapshot = world_snapshot_for_realm(tick, 5, realm_id, shard_id)
+  return world_save_text_stub(s)
+
+def world_realm_persist_smoke() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  if world_persist_realm_stub(1, 0, 20) <= 0:
+    return 1
+  return world_realm_smoke()
+
+def world_load_text_stub(checksum: int) -> WorldSnapshot
+  requires checksum >= 0
+  ensures result.checksum == checksum
+  decreases checksum
+=
+  var s: WorldSnapshot
+  s.tick = 0
+  s.entity_count = 0
+  s.checksum = checksum
+  return s
+
+# Li-native realm journal — in-memory persist port (no external DB for composable gates).
+type WorldLiJournal = object
+  public entry_count: int
+  public last_tick: int
+  public last_checksum: int
+  public realm_id: int
+
+def world_li_native_journal_new(realm_id: int) -> WorldLiJournal
+  requires realm_id >= 0
+  ensures result.entry_count == 0
+  ensures result.realm_id == realm_id
+  decreases realm_id
+=
+  var j: WorldLiJournal
+  j.entry_count = 0
+  j.last_tick = 0
+  j.last_checksum = 0
+  j.realm_id = realm_id
+  return j
+
+def world_li_native_journal_append(j: WorldLiJournal, snap: WorldSnapshot) -> int
+  requires j.realm_id == snap.realm_id
+  requires snap.tick >= 0
+  ensures j.entry_count >= 1
+  ensures j.last_tick == snap.tick
+  ensures result == snap.checksum
+  decreases snap.tick
+=
+  j.entry_count = j.entry_count + 1
+  j.last_tick = snap.tick
+  j.last_checksum = snap.checksum
+  return snap.checksum
+
+def world_li_native_persist_smoke() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  var j: WorldLiJournal = world_li_native_journal_new(1)
+  var s: WorldSnapshot = world_snapshot_for_realm(20, 8, 1, 0)
+  if world_li_native_journal_append(j, s) <= 0:
+    return 1
+  if j.entry_count != 1:
+    return 2
+  if world_load_text_stub(j.last_checksum).checksum != j.last_checksum:
+    return 3
+  return world_realm_smoke()

@@ -1,0 +1,23 @@
+import studio
+import world
+import sim.scientific
+import render
+
+def main() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  if studio_play_mode_smoke() != 0:
+    return 1
+  if world_author_api_smoke() != 0:
+    return 2
+  if sim_field_checkpoint_smoke() != 0:
+    return 3
+  if world_realm_game_bridge_smoke() != 0:
+    return 4
+  if game_world_viewport_smoke() != 0:
+    return 5
+  if render_gpu_viewport_tick_stub(1280, 720, 1) != 1:
+    return 6
+  return 0

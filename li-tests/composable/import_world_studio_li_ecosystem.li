@@ -1,0 +1,18 @@
+import store.realtime
+import mmo
+import studio
+import studio.ai
+import player
+
+def main() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  if store_li_native_smoke() != 0:
+    return 1
+  if mmo_ws_session_bind_smoke() != 0:
+    return 2
+  if player_gpu_render_client_smoke() != 0:
+    return 3
+  return studio_ai_agent_diagnose_smoke()

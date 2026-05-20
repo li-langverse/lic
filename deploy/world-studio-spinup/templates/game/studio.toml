@@ -1,0 +1,10 @@
+# Li World Studio project — game template
+[project]
+name = "my-game"
+template = "game"
+sim_profile = "game"
+tick_hz = 60
+
+[studio]
+viewport_width = 1280
+viewport_height = 720

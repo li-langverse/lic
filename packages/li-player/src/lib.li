@@ -1,0 +1,87 @@
+# PKG-li-player — game client / publish shell (PH-GD-7 / MMO client stub).
+
+type PlayerConnection = object
+  public session_id: int
+  public realm_id: int
+  public connected: int
+
+def li_player_version() -> int
+  requires true
+  ensures result == 2
+  decreases 0
+=
+  return 2
+
+def player_connect_stub(session_id: int, realm_id: int) -> PlayerConnection
+  requires session_id > 0
+  requires realm_id >= 0
+  ensures result.connected == 1
+  ensures result.session_id == session_id
+  decreases session_id
+=
+  var c: PlayerConnection
+  c.session_id = session_id
+  c.realm_id = realm_id
+  c.connected = 1
+  return c
+
+def player_tick_stub(conn: PlayerConnection) -> unit
+  requires conn.connected == 1
+  decreases 0
+=
+  conn.session_id = conn.session_id
+
+def player_render_frame_stub(frame_id: int) -> int
+  requires frame_id >= 0
+  ensures result == frame_id + 1
+  decreases frame_id
+=
+  return frame_id + 1
+
+def player_client_loop_smoke() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  if player_render_frame_stub(0) != 1:
+    return 1
+  return 0
+
+def player_smoke() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return player_client_loop_smoke()
+
+def player_game_client_stack_smoke() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  if player_client_loop_smoke() != 0:
+    return 1
+  if player_render_frame_stub(1) != 2:
+    return 2
+  return 0
+
+# PH-GD-7 — GPU frame present hook (pairs with render LKIR bridge).
+def player_gpu_frame_present_stub(frame_id: int, backend_id: int) -> int
+  requires frame_id >= 0
+  requires backend_id >= 0
+  requires backend_id <= 2
+  ensures result == player_render_frame_stub(frame_id) + backend_id
+  decreases frame_id
+=
+  return player_render_frame_stub(frame_id) + backend_id
+
+def player_gpu_render_client_smoke() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  if player_gpu_frame_present_stub(0, 1) != 2:
+    return 1
+  if player_game_client_stack_smoke() != 0:
+    return 2
+  return 0

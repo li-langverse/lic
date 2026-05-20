@@ -1,0 +1,11 @@
+import world
+import store.realtime
+
+def main() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  if world_persist_realm_stub(1, 0, 20) != store_replay_push_stub(store_realtime_open_stub(store_backend_memory()), 20, 64, 1):
+    return 1
+  return store_realm_replay_smoke()

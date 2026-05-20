@@ -1,0 +1,40 @@
+---
+description: Science/maths/physics/engineering/gaming packages must stay tied to benchmark + strict-build gates
+globs:
+  - packages/**/*.li
+  - packages/**/src/**/*.li
+  - benchmarks/**/*
+  - li-tests/composable/**/*.li
+alwaysApply: false
+---
+
+# Package ↔ benchmark suites (strict builds)
+
+**Read first:** [strict-by-default](../docs/ecosystem/strict-by-default.md) · [package coverage audit](../docs/benchmarks/package-suite-coverage-audit.md) · [SOTA registry](../docs/benchmarks/sota-reference-registry.md) · [Li-only + SOTA rule](li-sota-benchmark-li-only.mdc) · [benchmarks plan (lic)](../docs/superpowers/plans/2026-05-14-benchmarks-and-simulations.md) · **benchmarks repo** [`catalog.toml`](https://github.com/li-langverse/benchmarks/blob/main/catalog.toml).
+
+## Non-negotiable
+
+1. **Strict compilation:** benchmark and package Li that ships must pass **`lic build`** with project defaults (release, contracts, Lean verify when on for that target). No `sorry` / bare `cast` / missing `requires` `ensures` to “unblock”.
+2. **`extern proc` in benches:** always `requires` / `ensures`; **`main`** must match compiler rules (`raises IO` when required).
+3. **Perf claims:** need **`benchmarks/tier*`** timing or honest **unknown** in ingest — not composable green alone.
+
+## When you touch `packages/*`
+
+| If you change… | Then also… |
+|----------------|--------------|
+| Numerics / LA (`li-math*`) | Extend or add **tier-1** harness or document gap in **package-suite-coverage-audit.md** |
+| Physics / sim kernels (`li-physics-*`, `li-sim*`) | Run **tier-2** relevant bench + **composable** import; update **benchmarks** `catalog.toml` if new top-level perf id |
+| Gaming / world (`li-world`, `li-studio`, …) | Run **World Studio** composables / `ci-world-studio.sh` as applicable |
+| Only API stubs | Composable **compile_ok** + note “no GFLOP bench yet” in audit gap column |
+
+## Commands (minimal)
+
+```bash
+./scripts/ci-bench.sh                    # tier-1 quick
+python3 benchmarks/harness/bench.py --tier 2 --runs 1 --skip-verify   # when editing tier-2
+./li-tests/run_all.sh composable         # integration gates
+```
+
+## Cross-repo
+
+New **`catalog.toml`** rows live in **li-langverse/benchmarks**; paths must exist under **`lic/benchmarks/`** (or documented `li-tests/` tier-0 path). Run **`plan-completion-audit.py`** with `LIC_ROOT` before merge.

@@ -17,7 +17,26 @@ enum {
 #define LI_MD_DT 0.004
 #define LI_MD_RC 2.5
 #define LI_MD_BOX 10.0
-#define LI_MD_RHO ((double)LI_MD_N / (LI_MD_BOX * LI_MD_BOX * LI_MD_BOX))
+#define LI_MD_RHO ((double)li_md_active_n() / (LI_MD_BOX * LI_MD_BOX * LI_MD_BOX))
+
+int li_md_bench_n(void);
+int li_md_bench_steps(void);
+
+static inline int li_md_active_n(void) {
+  static int n = -1;
+  if (n < 0) {
+    n = li_md_bench_n();
+  }
+  return n;
+}
+
+static inline int li_md_active_steps(void) {
+  static int steps = -1;
+  if (steps < 0) {
+    steps = li_md_bench_steps();
+  }
+  return steps;
+}
 #define LI_MD_TEMP 1.0
 #define LI_MD_SEED UINT64_C(7)
 
@@ -54,7 +73,7 @@ static inline double li_md_rng_normal(LiMdRng* rng) {
 /* Smallest integer k with 4*k^3 >= N (FCC sites per cubic cell). */
 static inline int li_md_fcc_ncell(void) {
   int k = 1;
-  while (4 * k * k * k < LI_MD_N) {
+  while (4 * k * k * k < li_md_active_n()) {
     ++k;
   }
   return k;
@@ -62,7 +81,7 @@ static inline int li_md_fcc_ncell(void) {
 
 static inline void li_md_kinetic(const LiMdState* s, double* ke_out) {
   double ke = 0.0;
-  for (int i = 0; i < LI_MD_N; ++i) {
+  for (int i = 0; i < li_md_active_n(); ++i) {
     ke += 0.5 * (s->vx[i] * s->vx[i] + s->vy[i] * s->vy[i] + s->vz[i] * s->vz[i]);
   }
   *ke_out = ke;
@@ -70,29 +89,29 @@ static inline void li_md_kinetic(const LiMdState* s, double* ke_out) {
 
 static inline void li_md_init_velocities_mb(LiMdState* s, LiMdRng* rng, double temperature) {
   const double scale = sqrt(temperature);
-  for (int i = 0; i < LI_MD_N; ++i) {
+  for (int i = 0; i < li_md_active_n(); ++i) {
     s->vx[i] = scale * li_md_rng_normal(rng);
     s->vy[i] = scale * li_md_rng_normal(rng);
     s->vz[i] = scale * li_md_rng_normal(rng);
   }
   double px_sum = 0.0, py_sum = 0.0, pz_sum = 0.0;
-  for (int i = 0; i < LI_MD_N; ++i) {
+  for (int i = 0; i < li_md_active_n(); ++i) {
     px_sum += s->vx[i];
     py_sum += s->vy[i];
     pz_sum += s->vz[i];
   }
-  const double inv_n = 1.0 / (double)LI_MD_N;
-  for (int i = 0; i < LI_MD_N; ++i) {
+  const double inv_n = 1.0 / (double)li_md_active_n();
+  for (int i = 0; i < li_md_active_n(); ++i) {
     s->vx[i] -= px_sum * inv_n;
     s->vy[i] -= py_sum * inv_n;
     s->vz[i] -= pz_sum * inv_n;
   }
   double ke = 0.0;
   li_md_kinetic(s, &ke);
-  const double target = 1.5 * (double)LI_MD_N * temperature;
+  const double target = 1.5 * (double)li_md_active_n() * temperature;
   if (ke > 1e-20) {
     const double vel_scale = sqrt(target / ke);
-    for (int i = 0; i < LI_MD_N; ++i) {
+    for (int i = 0; i < li_md_active_n(); ++i) {
       s->vx[i] *= vel_scale;
       s->vy[i] *= vel_scale;
       s->vz[i] *= vel_scale;
@@ -107,10 +126,10 @@ static inline void li_md_init_fcc(LiMdState* s, LiMdRng* rng, double temperature
   const int ncell = li_md_fcc_ncell();
   const double a = LI_MD_BOX / (double)ncell;
   int idx = 0;
-  for (int ix = 0; ix < ncell && idx < LI_MD_N; ++ix) {
-    for (int iy = 0; iy < ncell && idx < LI_MD_N; ++iy) {
-      for (int iz = 0; iz < ncell && idx < LI_MD_N; ++iz) {
-        for (int b = 0; b < 4 && idx < LI_MD_N; ++b) {
+  for (int ix = 0; ix < ncell && idx < li_md_active_n(); ++ix) {
+    for (int iy = 0; iy < ncell && idx < li_md_active_n(); ++iy) {
+      for (int iz = 0; iz < ncell && idx < li_md_active_n(); ++iz) {
+        for (int b = 0; b < 4 && idx < li_md_active_n(); ++b) {
           s->px[idx] = ((double)ix + basis[b][0]) * a;
           s->py[idx] = ((double)iy + basis[b][1]) * a;
           s->pz[idx] = ((double)iz + basis[b][2]) * a;
@@ -120,7 +139,7 @@ static inline void li_md_init_fcc(LiMdState* s, LiMdRng* rng, double temperature
     }
   }
   if (temperature <= 0.0) {
-    for (int i = 0; i < LI_MD_N; ++i) {
+    for (int i = 0; i < li_md_active_n(); ++i) {
       s->vx[i] = 0.0;
       s->vy[i] = 0.0;
       s->vz[i] = 0.0;
@@ -153,8 +172,8 @@ double li_md_temperature_from_env(void);
 static inline void li_md_potential(const LiMdState* s, double* pe_out) {
   const double rc2 = LI_MD_RC * LI_MD_RC;
   double pe = 0.0;
-  for (int i = 0; i < LI_MD_N; ++i) {
-    for (int j = i + 1; j < LI_MD_N; ++j) {
+  for (int i = 0; i < li_md_active_n(); ++i) {
+    for (int j = i + 1; j < li_md_active_n(); ++j) {
       const double dx = li_md_mic(s->px[j] - s->px[i]);
       const double dy = li_md_mic(s->py[j] - s->py[i]);
       const double dz = li_md_mic(s->pz[j] - s->pz[i]);
@@ -174,8 +193,8 @@ static inline void li_md_compute_forces(LiMdState* s) {
   memset(s->fx, 0, sizeof(s->fx));
   memset(s->fy, 0, sizeof(s->fy));
   memset(s->fz, 0, sizeof(s->fz));
-  for (int i = 0; i < LI_MD_N; ++i) {
-    for (int j = i + 1; j < LI_MD_N; ++j) {
+  for (int i = 0; i < li_md_active_n(); ++i) {
+    for (int j = i + 1; j < li_md_active_n(); ++j) {
       const double dx = li_md_mic(s->px[j] - s->px[i]);
       const double dy = li_md_mic(s->py[j] - s->py[i]);
       const double dz = li_md_mic(s->pz[j] - s->pz[i]);
@@ -199,18 +218,18 @@ static inline void li_md_compute_forces(LiMdState* s) {
 }
 
 static inline void li_md_step(LiMdState* s) {
-  for (int i = 0; i < LI_MD_N; ++i) {
+  for (int i = 0; i < li_md_active_n(); ++i) {
     s->vx[i] += 0.5 * LI_MD_DT * s->fx[i];
     s->vy[i] += 0.5 * LI_MD_DT * s->fy[i];
     s->vz[i] += 0.5 * LI_MD_DT * s->fz[i];
   }
-  for (int i = 0; i < LI_MD_N; ++i) {
+  for (int i = 0; i < li_md_active_n(); ++i) {
     s->px[i] = li_md_wrap(s->px[i] + LI_MD_DT * s->vx[i]);
     s->py[i] = li_md_wrap(s->py[i] + LI_MD_DT * s->vy[i]);
     s->pz[i] = li_md_wrap(s->pz[i] + LI_MD_DT * s->vz[i]);
   }
   li_md_compute_forces(s);
-  for (int i = 0; i < LI_MD_N; ++i) {
+  for (int i = 0; i < li_md_active_n(); ++i) {
     s->vx[i] += 0.5 * LI_MD_DT * s->fx[i];
     s->vy[i] += 0.5 * LI_MD_DT * s->fy[i];
     s->vz[i] += 0.5 * LI_MD_DT * s->fz[i];

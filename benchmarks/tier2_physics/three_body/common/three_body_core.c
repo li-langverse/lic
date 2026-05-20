@@ -1,12 +1,13 @@
 #include "three_body_core.h"
 
+#include "bench_quick.h"
+
 #include <math.h>
 #include <string.h>
 
-enum {
-  LI_TB_N = 3,
-  LI_TB_STEPS = 10000000,
-};
+enum { LI_TB_N = 3 };
+#define LI_TB_STEPS_FULL 10000000
+#define LI_TB_STEPS_QUICK 200000
 #define LI_TB_DT 0.01
 #define LI_TB_G 1.0
 #define LI_TB_SOFT 1e-9
@@ -81,7 +82,8 @@ __attribute__((noinline)) void li_three_body_kernel(void) {
   LiTbState s, f;
   li_tb_init(&s);
   li_tb_forces(&s, &f);
-  for (int step = 0; step < LI_TB_STEPS; ++step) {
+  const int steps = li_bench_pick_int(LI_TB_STEPS_QUICK, LI_TB_STEPS_FULL);
+  for (int step = 0; step < steps; ++step) {
     for (int i = 0; i < LI_TB_N; ++i) {
       s.vx[i] += 0.5 * LI_TB_DT * f.fx[i] / LI_TB_MASS;
       s.vy[i] += 0.5 * LI_TB_DT * f.fy[i] / LI_TB_MASS;

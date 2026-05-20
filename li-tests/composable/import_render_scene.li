@@ -1,0 +1,13 @@
+# PH-GD-5 — render + scene viewport stack.
+
+import render
+import scene
+
+def main() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  if render_smoke() != 0:
+    return 1
+  return scene_smoke()

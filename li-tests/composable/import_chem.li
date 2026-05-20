@@ -1,0 +1,13 @@
+# PH-QM-0 — import chem (li-chem composable gate).
+
+import chem
+
+def main() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  var v: int = li_chem_version()
+  if v < 1:
+    return 1
+  return 0

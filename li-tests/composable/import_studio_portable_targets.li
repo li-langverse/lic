@@ -1,0 +1,17 @@
+import studio
+import gpu
+
+def main() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  if studio_portable_target_count_stub() != 5:
+    return 1
+  if gpu_select_backend_stub(gpu_backend_cpu()) != gpu_backend_cpu():
+    return 2
+  if gpu_select_backend_stub(gpu_backend_rocm()) != gpu_backend_rocm():
+    return 3
+  if gpu_select_backend_stub(gpu_backend_cuda()) != gpu_backend_cuda():
+    return 4
+  return studio_portable_targets_smoke()

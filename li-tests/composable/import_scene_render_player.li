@@ -1,0 +1,14 @@
+import scene
+import render
+import player
+
+def main() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  if scene_smoke() != 0:
+    return 1
+  if render_smoke() != 0:
+    return 2
+  return player_game_client_stack_smoke()

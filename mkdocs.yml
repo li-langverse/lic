@@ -111,7 +111,15 @@ nav:
   - Game development:
       - World Studio vision: game-dev/world-studio-vision.md
       - Program tracker: game-dev/PH-world-studio-program.md
+      - Progress report: game-dev/PH-world-studio-progress-report.md
+      - MMORPG deployment: game-dev/mmorpg-deployment-plan.md
+      - Agent MCP sketch: game-dev/agent-mcp-sketch.md
+      - lic diagnose bridge: game-dev/lic-diagnose-agent-bridge.md
+      - Spin-up templates: game-dev/spin-up-templates.md
       - Competitive landscape: game-dev/competitive-landscape.md
+      - Bioengineering plan: game-dev/competitive-bioengineering-plan.md
+      - Demo showcase: game-dev/demo-showcase.md
+      - Merge checklist: game-dev/MERGE-world-studio-checklist.md
       - RFC index: game-dev/specs/README.md
       - Physics for games: physics/GAME_DEV.md
       - Types and data: language/types-and-data.md

@@ -1,0 +1,78 @@
+# World Studio spin-up template registry (PH-GD).
+# Used by scripts/lis-new-world-studio.sh until `lis new` lands.
+
+[config]
+version = 1
+default_template = "game"
+
+[[templates]]
+id = "game"
+title = "Game + custom physics"
+profile = "sim_profile_game"
+imports = ["studio", "world", "scene", "sim", "physics.custom"]
+
+[[templates]]
+id = "mmorpg"
+title = "MMORPG realm"
+profile = "sim_profile_mmo"
+imports = ["studio", "world", "scene", "sim", "mmo", "store.realtime", "player"]
+
+[[templates]]
+id = "drug_design"
+title = "Drug design LITL"
+profile = "sim_profile_drug_design"
+imports = ["studio", "sim.drug_design", "chem", "studio.ai"]
+
+[[templates]]
+id = "bioengineering"
+title = "Bioengineering DBTL"
+profile = "sim_profile_bioeng"
+imports = ["studio", "bioeng", "sim.drug_design", "sim.scientific", "chem"]
+
+[[templates]]
+id = "robotics"
+title = "Factory robotics"
+profile = "sim_profile_robotics"
+imports = ["studio", "sim", "sim.robotics", "scene"]
+
+[[templates]]
+id = "automotive"
+title = "Racing / automotive"
+profile = "sim_profile_automotive"
+imports = ["studio", "sim", "sim.automotive"]
+
+[[templates]]
+id = "game_unphysical"
+title = "Game — arbitrary physics only"
+profile = "sim_law_mode_arbitrary"
+imports = ["sim", "physics.custom"]
+
+[[templates]]
+id = "scientific"
+title = "Scientific / engineering viz"
+profile = "sim_profile_scientific"
+imports = ["studio", "sim.scientific", "render", "scene"]
+
+[[templates]]
+id = "publish"
+title = "Publication / figure export"
+profile = "studio_publish"
+imports = ["studio"]
+
+[[templates]]
+id = "additive"
+title = "Additive / voxel manufacturing"
+profile = "sim_profile_additive"
+imports = ["studio", "voxel", "sim.additive", "sim"]
+
+[[templates]]
+id = "agent"
+title = "Studio agent + lic diagnose"
+profile = "studio_agent"
+imports = ["studio", "studio.ai"]
+
+[[templates]]
+id = "play_mode"
+title = "Play mode — game world + field"
+profile = "studio_play_mode"
+imports = ["studio", "world", "sim.scientific", "render"]

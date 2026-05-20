@@ -1,13 +1,16 @@
 #include "nbody_core.h"
 
+#include "bench_quick.h"
+
 #include <math.h>
 #include <stdint.h>
 #include <string.h>
 
-enum {
-  LI_NB_N = 128,
-  LI_NB_STEPS = 50000,
-};
+enum { LI_NB_N_MAX = 128 };
+#define LI_NB_N_FULL 128
+#define LI_NB_N_QUICK 32
+#define LI_NB_STEPS_FULL 50000
+#define LI_NB_STEPS_QUICK 5000
 #define LI_NB_DT 0.01
 #define LI_NB_G 1.0
 #define LI_NB_SOFT 1e-6
@@ -19,15 +22,15 @@ typedef struct LiNbRng {
 } LiNbRng;
 
 typedef struct LiNbState {
-  double px[LI_NB_N];
-  double py[LI_NB_N];
-  double pz[LI_NB_N];
-  double vx[LI_NB_N];
-  double vy[LI_NB_N];
-  double vz[LI_NB_N];
-  double fx[LI_NB_N];
-  double fy[LI_NB_N];
-  double fz[LI_NB_N];
+  double px[LI_NB_N_MAX];
+  double py[LI_NB_N_MAX];
+  double pz[LI_NB_N_MAX];
+  double vx[LI_NB_N_MAX];
+  double vy[LI_NB_N_MAX];
+  double vz[LI_NB_N_MAX];
+  double fx[LI_NB_N_MAX];
+  double fy[LI_NB_N_MAX];
+  double fz[LI_NB_N_MAX];
 } LiNbState;
 
 static double g_li_nbody_checksum;
@@ -39,8 +42,8 @@ static double li_nb_rng_next(LiNbRng* rng) {
   return (double)(rng->state >> 11) / (double)(1ULL << 53);
 }
 
-static void li_nb_init(LiNbState* s, LiNbRng* rng) {
-  for (int i = 0; i < LI_NB_N; ++i) {
+static void li_nb_init(LiNbState* s, LiNbRng* rng, int n) {
+  for (int i = 0; i < n; ++i) {
     s->px[i] = li_nb_rng_next(rng) - 0.5;
     s->py[i] = li_nb_rng_next(rng) - 0.5;
     s->pz[i] = li_nb_rng_next(rng) - 0.5;
@@ -50,13 +53,13 @@ static void li_nb_init(LiNbState* s, LiNbRng* rng) {
   }
 }
 
-static void li_nb_forces(const LiNbState* s, LiNbState* out) {
+static void li_nb_forces(const LiNbState* s, LiNbState* out, int n) {
   memset(out->fx, 0, sizeof(out->fx));
   memset(out->fy, 0, sizeof(out->fy));
   memset(out->fz, 0, sizeof(out->fz));
   const double eps2 = LI_NB_SOFT * LI_NB_SOFT;
-  for (int i = 0; i < LI_NB_N; ++i) {
-    for (int j = i + 1; j < LI_NB_N; ++j) {
+  for (int i = 0; i < n; ++i) {
+    for (int j = i + 1; j < n; ++j) {
       const double dx = s->px[j] - s->px[i];
       const double dy = s->py[j] - s->py[i];
       const double dz = s->pz[j] - s->pz[i];
@@ -77,16 +80,16 @@ static void li_nb_forces(const LiNbState* s, LiNbState* out) {
   }
 }
 
-static double li_nb_energy(const LiNbState* s) {
+static double li_nb_energy(const LiNbState* s, int n) {
   double ke = 0.0;
   double pe = 0.0;
   const double eps2 = LI_NB_SOFT * LI_NB_SOFT;
-  for (int i = 0; i < LI_NB_N; ++i) {
+  for (int i = 0; i < n; ++i) {
     ke += 0.5 * LI_NB_MASS
           * (s->vx[i] * s->vx[i] + s->vy[i] * s->vy[i] + s->vz[i] * s->vz[i]);
   }
-  for (int i = 0; i < LI_NB_N; ++i) {
-    for (int j = i + 1; j < LI_NB_N; ++j) {
+  for (int i = 0; i < n; ++i) {
+    for (int j = i + 1; j < n; ++j) {
       const double dx = s->px[j] - s->px[i];
       const double dy = s->py[j] - s->py[i];
       const double dz = s->pz[j] - s->pz[i];
@@ -98,31 +101,33 @@ static double li_nb_energy(const LiNbState* s) {
 }
 
 __attribute__((noinline)) void li_nbody_gravity_kernel(void) {
+  const int n = li_bench_pick_int(LI_NB_N_QUICK, LI_NB_N_FULL);
+  const int steps = li_bench_pick_int(LI_NB_STEPS_QUICK, LI_NB_STEPS_FULL);
   LiNbRng rng;
   LiNbState s, f;
   li_nb_rng_init(&rng, LI_NB_SEED);
-  li_nb_init(&s, &rng);
-  li_nb_forces(&s, &f);
-  for (int step = 0; step < LI_NB_STEPS; ++step) {
-    for (int i = 0; i < LI_NB_N; ++i) {
+  li_nb_init(&s, &rng, n);
+  li_nb_forces(&s, &f, n);
+  for (int step = 0; step < steps; ++step) {
+    for (int i = 0; i < n; ++i) {
       s.vx[i] += 0.5 * LI_NB_DT * f.fx[i] / LI_NB_MASS;
       s.vy[i] += 0.5 * LI_NB_DT * f.fy[i] / LI_NB_MASS;
       s.vz[i] += 0.5 * LI_NB_DT * f.fz[i] / LI_NB_MASS;
     }
-    for (int i = 0; i < LI_NB_N; ++i) {
+    for (int i = 0; i < n; ++i) {
       s.px[i] += LI_NB_DT * s.vx[i];
       s.py[i] += LI_NB_DT * s.vy[i];
       s.pz[i] += LI_NB_DT * s.vz[i];
     }
-    li_nb_forces(&s, &f);
-    for (int i = 0; i < LI_NB_N; ++i) {
+    li_nb_forces(&s, &f, n);
+    for (int i = 0; i < n; ++i) {
       s.vx[i] += 0.5 * LI_NB_DT * f.fx[i] / LI_NB_MASS;
       s.vy[i] += 0.5 * LI_NB_DT * f.fy[i] / LI_NB_MASS;
       s.vz[i] += 0.5 * LI_NB_DT * f.fz[i] / LI_NB_MASS;
     }
     (void)step;
   }
-  g_li_nbody_checksum = li_nb_energy(&s);
+  g_li_nbody_checksum = li_nb_energy(&s, n);
 }
 
 double li_nbody_gravity_checksum(void) { return g_li_nbody_checksum; }

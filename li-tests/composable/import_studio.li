@@ -1,0 +1,13 @@
+# Ergonomic import: studio (PH-GD-1 composable gate).
+
+import studio
+
+def main() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  var v: int = li_studio_version()
+  if v < 1:
+    return 1
+  return 0

@@ -1,0 +1,9 @@
+# Vertical demo — drug design LITL (PH-DRUG).
+import sim.drug_design
+
+def main() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return demo_drug_smoke()

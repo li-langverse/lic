@@ -1,10 +1,14 @@
 ---
-description: Physics and ML benchmark suite rules
+description: Physics and ML benchmark suite rules (strict builds + package coverage)
 globs: benchmarks/**/*
 alwaysApply: false
 ---
 
 # Benchmark conventions
+
+**Strict builds:** [strict-by-default](../../docs/ecosystem/strict-by-default.md) · `.cursor/rules/li-strict-by-default.mdc` — benchmark Li must **`lic build --release`**; `extern proc` always has `requires`/`ensures`; no bench-only proof bypass.
+
+**Package ↔ bench mapping:** [package-suite-coverage-audit](../../docs/benchmarks/package-suite-coverage-audit.md) · agents: `.cursor/rules/li-package-benchmark-suites.mdc`.
 
 Plan: `docs/superpowers/plans/2026-05-14-benchmarks-and-simulations.md`
 
@@ -12,8 +16,8 @@ Plan: `docs/superpowers/plans/2026-05-14-benchmarks-and-simulations.md`
 
 1. Shared `params.toml` across li and reference impls (C++, Rust, Julia, Python)
 2. `verify.py` must pass (energy drift, momentum, trajectory hash)
-3. **`lic build` must pass Lean** on all `benchmarks/tier2_physics/` li sources
-4. Document flags: `lic --release --verified`, Clang `-O3 -march=native`
+3. **`lic build` must succeed** on all benchmark Li sources (Lean verify when enabled for that target) — **not** `lic check` alone
+4. Document flags: `lic build --release`, Clang `-O3 -march=native`
 
 ## Tiers
 

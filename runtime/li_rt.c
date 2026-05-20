@@ -2,6 +2,7 @@
 
 #include <math.h>
 #include <stdlib.h>
+#include <string.h>
 
 #if defined(_OPENMP)
 #include <omp.h>
@@ -118,6 +119,47 @@ double li_rt_expm1(double x) {
 }
 
 double li_rt_log1p(double x) { return log1p(x); }
+
+int32_t bytes_len(const char* b) {
+  if (b == NULL) {
+    return 0;
+  }
+  return (int32_t)strlen(b);
+}
+
+const char* bytes_slice(const char* b, int32_t off, int32_t n) {
+  if (b == NULL) {
+    if (off != 0 || n != 0) {
+      li_panic("bytes_slice: out of bounds");
+    }
+    return "";
+  }
+  const int32_t len = bytes_len(b);
+  if (off < 0 || n < 0 || off > len || off + n > len) {
+    li_panic("bytes_slice: out of bounds");
+  }
+  if (n == 0) {
+    return "";
+  }
+  char* out = (char*)malloc((size_t)n + 1u);
+  if (out == NULL) {
+    li_panic("bytes_slice: alloc failed");
+  }
+  memcpy(out, b + off, (size_t)n);
+  out[n] = '\0';
+  return out;
+}
+
+int32_t li_rt_str_byte_at(const char* s, int32_t i) {
+  if (s == NULL || i < 0) {
+    li_panic("li_rt_str_byte_at: bad args");
+  }
+  const size_t len = strlen(s);
+  if ((size_t)i >= len) {
+    li_panic("li_rt_str_byte_at: out of bounds");
+  }
+  return (int32_t)(unsigned char)s[i];
+}
 
 void li_async_frame_enter(void) {}
 

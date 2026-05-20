@@ -2,7 +2,7 @@ import net.httpd
 
 def main() -> int
   requires true
-  ensures result == 0
+  ensures result == 1
   decreases 0
 =
   return httpd_tag()

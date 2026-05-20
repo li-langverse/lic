@@ -1,0 +1,38 @@
+
+import std.bytes
+
+extern proc li_rt_str_byte_at(s: var bytes, i: int) raises IO -> int
+  requires 0 <= i
+  requires i < bytes_len(s)
+  ensures 0 <= result
+  ensures result <= 255
+  decreases 0
+
+def http_is_get_method_line(buf: var bytes) raises Alloc, IO -> int
+  requires bytes_len(buf) >= 3
+  ensures 0 <= result
+  ensures result <= 1
+  decreases 0
+=
+  var g: int = li_rt_str_byte_at(buf, 0)
+  if g != 71:
+    return 0
+  if li_rt_str_byte_at(buf, 1) != 69:
+    return 0
+  if li_rt_str_byte_at(buf, 2) != 84:
+    return 0
+  return 1
+
+def parse_request(buf: var bytes, max_header_block: int, max_body: int) raises Alloc, IO -> int
+  requires 0 < max_header_block
+  requires 0 < max_body
+  requires bytes_len(buf) <= max_header_block
+  ensures 0 <= result
+  ensures result <= bytes_len(buf) + 1
+  ensures result <= max_body
+  decreases bytes_len(buf)
+=
+  if bytes_len(buf) >= 3:
+    var tag: int = http_is_get_method_line(buf)
+    return bytes_len(buf) + tag
+  return bytes_len(buf)

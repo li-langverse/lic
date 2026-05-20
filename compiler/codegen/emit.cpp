@@ -692,6 +692,29 @@ bool emit_llvm_ir(const MirModule& mir, const std::string& out_path, std::string
   module->getOrInsertFunction("li_async_poll",
                               llvm::FunctionType::get(i32_ty(context), {i32_ty(context)}, false));
 
+  module->getOrInsertFunction("bytes_len",
+                              llvm::FunctionType::get(i32_ty(context), {i8_ptr(context)}, false));
+  module->getOrInsertFunction(
+      "bytes_slice",
+      llvm::FunctionType::get(i8_ptr(context), {i8_ptr(context), i32_ty(context), i32_ty(context)},
+                              false));
+  module->getOrInsertFunction(
+      "li_rt_str_byte_at",
+      llvm::FunctionType::get(i32_ty(context), {i8_ptr(context), i32_ty(context)}, false));
+  module->getOrInsertFunction("tcp_listen",
+                              llvm::FunctionType::get(i32_ty(context), {i32_ty(context)}, false));
+  module->getOrInsertFunction("tcp_accept",
+                              llvm::FunctionType::get(i32_ty(context), {i32_ty(context)}, false));
+  module->getOrInsertFunction(
+      "tcp_send",
+      llvm::FunctionType::get(i32_ty(context), {i32_ty(context), i8_ptr(context)}, false));
+  module->getOrInsertFunction(
+      "tcp_recv",
+      llvm::FunctionType::get(i8_ptr(context), {i32_ty(context), i32_ty(context)}, false));
+  module->getOrInsertFunction("tcp_close",
+                              llvm::FunctionType::get(llvm::Type::getVoidTy(context),
+                                                      {i32_ty(context)}, false));
+
   llvm::Function* user_main = nullptr;
   bool user_main_argv_wrapper = false;
 

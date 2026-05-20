@@ -113,7 +113,10 @@ li_phase "World Studio / Li Engine"
 chmod +x "$ROOT/scripts/ci-world-studio.sh" "$ROOT/scripts/lis" \
   "$ROOT/scripts/lis-new-world-studio.sh" "$ROOT/scripts/build-studio-binary.sh" \
   "$ROOT/scripts/check-world-studio-gates.sh" \
-  "$ROOT/scripts/verify-world-studio-binary.sh"
+  "$ROOT/scripts/verify-world-studio-binary.sh" \
+  "$ROOT/scripts/create-world-studio-pr.sh" \
+  "$ROOT/scripts/list-world-studio-spinups.sh" \
+  "$ROOT/scripts/verify-world-studio-on-main.sh"
 "$ROOT/scripts/ci-world-studio.sh"
 
 li_gate_ok "continuous integration"

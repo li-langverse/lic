@@ -6,10 +6,8 @@ def main() -> int
   ensures result == 0
   decreases 0
 =
-  if li_studio_version() < 12:
-    return 1
   if sim_field_checkpoint_smoke() != 0:
-    return 2
+    return 1
   if publish_repro(field_checkpoint_manifest_for_smoke(), 2) <= 0:
-    return 3
+    return 2
   return 0

@@ -7,4 +7,4 @@ def main() -> int
 =
   if li_studio_version() < 12:
     return 1
-  return studio_play_mode_smoke()
+  return studio_milestone_145_smoke()

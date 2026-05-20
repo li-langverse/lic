@@ -288,6 +288,19 @@ def step_physics(tick: int, tier: int, dt_millis: int) -> int
 =
   return sim_step_physics_stub(tick, tier, dt_millis)
 
+def sim_game_physics_tick_quick_smoke() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  if step_physics(0, 2, 16) != 1:
+    return 1
+  var w: SimWorld = sim_world_new(1.0 / 60.0, 1)
+  sim_step(w)
+  if w.tick < 1:
+    return 2
+  return 0
+
 def sim_world_studio_stack_smoke() -> int
   requires true
   ensures result == 0

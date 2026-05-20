@@ -16,6 +16,9 @@ on:
       - "li-tests/composable/**"
       - "scripts/ci-world-studio.sh"
       - "scripts/merge-world-studio-preflight.sh"
+      - "scripts/verify-world-studio-on-main.sh"
+      - "scripts/create-world-studio-pr.sh"
+      - "scripts/list-world-studio-spinups.sh"
   push:
     branches:
       - "feat/world-studio-impl-1"

@@ -1,7 +1,7 @@
 # World Studio / Li Engine — progress report
 
 **Branch:** `feat/world-studio-impl-1`  
-**Sprint:** impl-44 (2026-05)  
+**Sprint:** impl-45 (2026-05)  
 **Architecture:** [specs/world-architecture-competitive-rfc.md](specs/world-architecture-competitive-rfc.md)
 
 ---
@@ -10,14 +10,22 @@
 
 | Metric | Value |
 |--------|--------|
-| **Composable gates** | **140** |
-| **Milestone** | **140** composable (impl-44) |
+| **Composable gates** | **145** |
+| **Milestone** | **145** composable (impl-45) |
 | **World model** | **GameWorld** GW-0–4 + **SimField** SF-0–3 + **RealmHead** |
 | **Author API** | [world-api-quickstart.md](world-api-quickstart.md) |
 | **Spin-up** | **12** (`play_mode`) |
 | **Demo tabs** | **13** (Play) |
 
 ---
+
+## Sprint impl-45 — milestone 145 + main verify
+
+| Deliverable | State |
+|-------------|--------|
+| `studio_milestone_145_smoke` | ✅ |
+| Quick gates: stream+delta, field→publish, play+render, world+physics | ✅ |
+| `verify-world-studio-on-main.sh` | ✅ |
 
 ## Sprint impl-44 — milestone 140 + agent guide
 
@@ -124,4 +132,4 @@
 
 ---
 
-*impl-43 · run_play_session · agent onboarding · 139 gates*
+*impl-45 · 145 gates · main verify script*

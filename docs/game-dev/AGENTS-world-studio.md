@@ -1,6 +1,6 @@
 # World Studio — guide for coding agents
 
-**Branch:** `feat/world-studio-impl-1` · **Gates:** 140 composable · **Policy:** Li-native first ([li-native-first.mdc](../../.cursor/rules/li-native-first.mdc))
+**Branch:** `feat/world-studio-impl-1` · **Gates:** 145 composable · **Policy:** Li-native first ([li-native-first.mdc](../../.cursor/rules/li-native-first.mdc))
 
 ## Start here (copy-paste)
 
@@ -44,6 +44,8 @@ lic check my-project/main.li
 
 ```bash
 ./scripts/merge-world-studio-preflight.sh
+# After merge to main only:
+./scripts/verify-world-studio-on-main.sh
 ```
 
 ## Do not

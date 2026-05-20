@@ -435,6 +435,41 @@ li_package = "li-studio"
 composable = "import_world_studio_milestone_140"
 
 [[benchmark]]
+id = "world-stream-delta-quick"
+name = "Streaming + delta quick"
+tier = 1
+li_package = "li-world"
+composable = "import_world_stream_delta_quick"
+
+[[benchmark]]
+id = "sim-field-publish-quick"
+name = "Field to publish quick"
+tier = 1
+li_package = "li-sim-scientific"
+composable = "import_sim_field_publish_quick"
+
+[[benchmark]]
+id = "studio-render-play-chain"
+name = "Play + render chain"
+tier = 1
+li_package = "li-studio"
+composable = "import_studio_render_play_chain"
+
+[[benchmark]]
+id = "sim-game-physics-tick-quick"
+name = "Sim game + physics tick quick"
+tier = 1
+li_package = "li-sim"
+composable = "import_sim_game_physics_tick_quick"
+
+[[benchmark]]
+id = "world-studio-milestone-145"
+name = "Milestone 145 composable gates"
+tier = 1
+li_package = "li-studio"
+composable = "import_world_studio_milestone_145"
+
+[[benchmark]]
 id = "httpd-li-native-gateway"
 name = "Li-native HTTP/WS gateway"
 tier = 1

@@ -1273,6 +1273,36 @@ note = "Milestone 140 composable gates"
 
 [[tests]]
 suite = "composable"
+file = "composable/import_world_stream_delta_quick.li"
+outcome = "compile_ok"
+note = "Streaming + entity delta quick gate"
+
+[[tests]]
+suite = "composable"
+file = "composable/import_sim_field_publish_quick.li"
+outcome = "compile_ok"
+note = "Field checkpoint to publish_repro"
+
+[[tests]]
+suite = "composable"
+file = "composable/import_studio_render_play_chain.li"
+outcome = "compile_ok"
+note = "Play session + GPU viewport tick"
+
+[[tests]]
+suite = "composable"
+file = "composable/import_sim_game_physics_tick_quick.li"
+outcome = "compile_ok"
+note = "SimWorld tick + step_physics quick"
+
+[[tests]]
+suite = "composable"
+file = "composable/import_world_studio_milestone_145.li"
+outcome = "compile_ok"
+note = "Milestone 145 composable gates"
+
+[[tests]]
+suite = "composable"
 file = "composable/import_world_studio_benchmark_tier1.li"
 outcome = "compile_ok"
 note = "Competitive world-studio.toml tier-1 rollup"

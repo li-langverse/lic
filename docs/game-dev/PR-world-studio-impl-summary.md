@@ -1,13 +1,13 @@
 # PR summary — `feat/world-studio-impl-1` → `main`
 
-**Purpose:** Land World Studio / Li Engine (impl-1…impl-40): Li-native game world, scientific fields, studio shell, MMO/store/httpd, competitive GW/SF path, author APIs.
+**Purpose:** Land World Studio / Li Engine (impl-1…impl-45): Li-native game world, scientific fields, studio shell, MMO/store/httpd, competitive GW/SF path, author APIs.
 
-## Stats (impl-43)
+## Stats (impl-45)
 
 | Metric | Value |
 |--------|--------|
-| Composable gates | **140** |
-| Milestone gates | 100 · 121 · 130 · **140** |
+| Composable gates | **145** |
+| Milestone gates | 100 · 121 · 130 · 140 · **145** |
 | Spin-up templates | **12** (incl. `play_mode`) |
 | Demo tabs | **13** (incl. **Play**) |
 | game_dev parse_ok | **12** |

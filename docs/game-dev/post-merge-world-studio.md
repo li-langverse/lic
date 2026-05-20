@@ -9,6 +9,12 @@ After merging `feat/world-studio-impl-1`:
 ./scripts/list-world-studio-spinups.sh
 ```
 
+On **`main`** after merge:
+
+```bash
+./scripts/verify-world-studio-on-main.sh
+```
+
 ## 2. New project
 
 ```bash

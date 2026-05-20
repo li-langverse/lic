@@ -6,6 +6,8 @@ Benchmarks in this tree are **not** all comparable “game engine” simulations
 |-------|---------|----------|
 | **full** | Problem size and numerics match a serious reference workload | `wave_equation_1d/2d`, `heat_equation_2d`, `advection_diffusion_2d`, `nbody_gravity`, `harmonic_oscillator_chain`, `double_pendulum`, `three_body`, `md_lennard_jones` (C kernel) |
 | **v0_gaming** | Recognizable game/sim loop, **scaled up** from micro-stubs but still missing production physics | `euler_fluid_2d`, `wind_field_bc`, `combustion_passive`, `cloth_swing`, `ragdoll_chain`, `rigid_body_stack`, `sph_dam_break_2d`, `orbit_two_body`, `fdtd_waveguide_2d`, `schrodinger_1d_barrier` |
+| **gaming_full** | Same algorithms as v0 at **full** `LI_BENCH_QUICK=0` scale (cloth PBD iterations, rigid stack bodies) | `cloth_swing`, `rigid_body_stack` — use `bench.py --full` |
+| **world_engine** | Timed world/replication/physics-frame paths (not Unreal parity) | `game_world_soa_10k`, `game_replication_encode`, `sim_physics_frame` in `tier2_world/` |
 | **pure_li_stub** | Li path does not run the full C reference kernel | `md_lennard_jones` `main.li` micro-buffer |
 
 ## v0_gaming — what is implemented (2026-05)

@@ -629,3 +629,30 @@ name = "Gateway + realm Li-native ecosystem"
 tier = 1
 li_package = "li-mmo"
 composable = "import_ecosystem_gateway_realm_li_native"
+
+[[benchmark]]
+id = "game-world-soa-timed"
+name = "Timed GameWorld SoA 10k (tier2_world)"
+tier = 2
+li_package = "li-world"
+harness = "benchmarks/tier2_world/game_world_soa_10k"
+workload_class = "world_engine"
+composable = "import_game_world_soa_gw1"
+
+[[benchmark]]
+id = "game-replication-timed"
+name = "Timed replication delta encode"
+tier = 2
+li_package = "li-world"
+harness = "benchmarks/tier2_world/game_replication_encode"
+workload_class = "world_engine"
+composable = "import_game_replication_gw2"
+
+[[benchmark]]
+id = "sim-physics-frame-timed"
+name = "Timed sim physics frame"
+tier = 2
+li_package = "li-sim"
+harness = "benchmarks/tier2_world/sim_physics_frame"
+workload_class = "world_engine"
+composable = "import_sim_physics_render_world"

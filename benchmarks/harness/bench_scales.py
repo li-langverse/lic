@@ -63,6 +63,9 @@ QUICK: dict[str, Scale] = {
     "orbit_two_body": Scale(steps=50_000, note="2-body orbit"),
     "fdtd_waveguide_2d": Scale(n=64, steps=4000, note="1D FDTD"),
     "schrodinger_1d_barrier": Scale(n=64, steps=4000, note="TDSE barrier"),
+    "game_world_soa_10k": Scale(n=2048, steps=120, note="quick SoA world tick"),
+    "game_replication_encode": Scale(n=200, steps=100, note="replication encode rounds"),
+    "sim_physics_frame": Scale(n=12, steps=400, note="physics frame substeps"),
 }
 
 # Production-scale (matches current C enum defaults when LI_BENCH_QUICK unset).
@@ -94,6 +97,9 @@ FULL: dict[str, Scale] = {
     "orbit_two_body": Scale(steps=100_000),
     "fdtd_waveguide_2d": Scale(n=128, steps=8000),
     "schrodinger_1d_barrier": Scale(n=128, steps=8000),
+    "game_world_soa_10k": Scale(n=10240, steps=600, note="10k entity SoA budget"),
+    "game_replication_encode": Scale(n=1000, steps=500, note="replication competitive"),
+    "sim_physics_frame": Scale(n=12, steps=2000, note="game physics frame"),
 }
 
 

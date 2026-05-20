@@ -1,6 +1,6 @@
 # li-sim
 
-Unified simulation step API (PH-SIM): `sim_step`, runtime profiles, SIM-2 `sim_replay_*`. Export/print lives in **`li-sim-additive`** (`import sim.additive`). `sim_step_physics` → `physics.runtime` waits on cross-package type visibility in the compiler.
+Unified simulation step API (PH-SIM): `sim_step`, runtime profiles, SIM-2 `sim_replay_*`. Export/print lives in **`li-sim-additive`** (`import sim.additive`). **Timed** physics frame: `benchmarks/tier2_world/sim_physics_frame` (C kernel). Li `sim_step_physics` → `physics.runtime` waits on cross-package types + borrowck (use `sim_step_physics_stub` + composable `import_sim_physics_render_world` today).
 
 Li package li-sim
 

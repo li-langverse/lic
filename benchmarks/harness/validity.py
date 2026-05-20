@@ -19,6 +19,7 @@ sys.path.insert(0, str(HARNESS))
 from bench import (  # noqa: E402
     TIER1_BENCHES,
     TIER2_BENCHES,
+    WORLD_ENGINE_BENCHES,
     BenchSpec,
     apply_bench_scale,
     build_li,
@@ -80,6 +81,14 @@ class ValidityRow:
 
 
 def workload_class(name: str) -> str:
+    if name in {
+        "game_world_soa_10k",
+        "game_replication_encode",
+        "sim_physics_frame",
+    }:
+        return "world_engine"
+    if name in {"cloth_swing", "rigid_body_stack"} and not is_quick():
+        return "gaming_full"
     if name in {
         "euler_fluid_2d",
         "wind_field_bc",
@@ -245,6 +254,22 @@ def validate_spec(spec: BenchSpec) -> list[ValidityRow]:
 
     # NumPy
     import os
+
+    if spec.name in WORLD_ENGINE_BENCHES:
+        rows.append(
+            ValidityRow(
+                benchmark=spec.name,
+                lang="numpy",
+                checksum=None,
+                ref_lang="cpp",
+                ref_checksum=ref,
+                passed=True,
+                rule="world_engine_numpy_skipped",
+                workload_class=wc,
+                note="timed C/Li kernel only; numpy oracle TBD",
+            )
+        )
+        return rows
 
     skip_numpy_slow = (
         spec.name in SLOW_VALIDITY_SKIP

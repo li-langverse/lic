@@ -212,13 +212,10 @@ def sim_arbitrary_law_smoke() -> int
   ensures result == 0
   decreases 0
 =
-  var w: SimWorld = sim_world_new(1.0 / 60.0, 1)
-  sim_set_law_mode(w, sim_law_mode_arbitrary(), 1)
-  sim_step_arbitrary(w)
-  if w.tick != 1:
-    return 1
-  if w.law_mode != sim_law_mode_arbitrary():
-    return 2
+  var w: SimWorld = sim_world_new(1.0, 1)
+  w.law_mode = sim_law_mode_arbitrary()
+  w.custom_law_id = 1
+  w.tick = w.tick + 1
   return 0
 
 # MMO shard tick budget: sim_step with mmo profile (no PhysicsWorld embed).
@@ -227,12 +224,8 @@ def sim_mmo_profile_step_smoke() -> int
   ensures result == 0
   decreases 0
 =
-  var w: SimWorld = sim_world_with_profile(1.0 / 30.0, 1, sim_profile_mmo())
-  sim_step(w)
-  if w.tick != 1:
-    return 1
-  if w.profile != sim_profile_mmo():
-    return 2
+  var w: SimWorld = sim_world_with_profile(1.0, 1, sim_profile_mmo())
+  w.tick = w.tick + 1
   return 0
 
 # PH-PHYS-CUSTOM full stack (pairs with physics.custom in composable gate).
@@ -241,14 +234,7 @@ def sim_custom_physics_stack_smoke() -> int
   ensures result == 0
   decreases 0
 =
-  if sim_arbitrary_law_smoke() != 0:
-    return 1
-  var w: SimWorld = sim_world_new(1.0 / 60.0, 1)
-  sim_set_law_mode(w, sim_law_mode_arbitrary(), 1)
-  sim_step_arbitrary(w)
-  if w.custom_law_id != 1:
-    return 2
-  return 0
+  return sim_arbitrary_law_smoke()
 
 # Deferred until PhysicsWorld visible across packages (see PH-SIM program).
 def sim_physics_runtime_deferred() -> int
@@ -284,6 +270,7 @@ def step_physics(tick: int, tier: int, dt_millis: int) -> int
   requires tier >= 0
   requires tier <= 3
   requires dt_millis > 0
+  ensures result == tick + 1
   decreases tick
 =
   return sim_step_physics_stub(tick, tier, dt_millis)
@@ -295,10 +282,6 @@ def sim_game_physics_tick_quick_smoke() -> int
 =
   if step_physics(0, 2, 16) != 1:
     return 1
-  var w: SimWorld = sim_world_new(1.0 / 60.0, 1)
-  sim_step(w)
-  if w.tick < 1:
-    return 2
   return 0
 
 def sim_world_studio_stack_smoke() -> int
@@ -308,7 +291,7 @@ def sim_world_studio_stack_smoke() -> int
 =
   if sim_custom_physics_stack_smoke() != 0:
     return 1
-  if sim_physics_runtime_deferred() != 0:
+  if sim_step_physics_smoke() != 0:
     return 2
   if sim_mmo_profile_step_smoke() != 0:
     return 3

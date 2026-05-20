@@ -13,6 +13,6 @@
   "milestone_composable_gates": 165,
   "demo_tabs": 13,
   "li_native_store": true,
-  "blocked": ["sim_step_physics"],
+  "blocked": ["sim_step_physics_li_body"],
   "updated": "2026-05-20T08:14:45Z"
 }

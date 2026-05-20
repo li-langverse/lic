@@ -20,6 +20,7 @@ REPO = Path(__file__).resolve().parents[2]
 HARNESS = REPO / "benchmarks" / "harness"
 TIER1 = REPO / "benchmarks" / "tier1_micro"
 TIER2 = REPO / "benchmarks" / "tier2_physics"
+TIER2_WORLD = REPO / "benchmarks" / "tier2_world"
 RESULTS = REPO / "benchmarks" / "results"
 CSV_HEADER = [
     "benchmark",
@@ -39,6 +40,14 @@ NATIVE_FLAGS = "-O3 -march=native -ffast-math"
 LANGS = ("cpp", "rust", "julia", "numpy", "li")
 NUMPY_FLAGS = "numpy (@/dot/sum use BLAS when linked)"
 NUMPY_RUNNER = REPO / "benchmarks" / "harness" / "numpy_runner.py"
+# Timed world/replication/physics-frame — C/Li only until numpy oracles exist.
+WORLD_ENGINE_BENCHES = frozenset(
+    {
+        "game_world_soa_10k",
+        "game_replication_encode",
+        "sim_physics_frame",
+    }
+)
 
 
 @dataclass(frozen=True)
@@ -297,20 +306,48 @@ TIER2_BENCHES: tuple[BenchSpec, ...] = (
  "common/cloth_core.c",
  "li/main.li",
  ),
- BenchSpec(
- "ragdoll_chain",
- 2,
- "ragdoll_chain",
- "cpp/main.c",
- "common/ragdoll_core.c",
- "li/main.li",
- ),
+    BenchSpec(
+        "ragdoll_chain",
+        2,
+        "ragdoll_chain",
+        "cpp/main.c",
+        "common/ragdoll_core.c",
+        "li/main.li",
+    ),
+    BenchSpec(
+        "game_world_soa_10k",
+        2,
+        "game_world_soa_10k",
+        "cpp/main.c",
+        "common/game_world_core.c",
+        "li/main.li",
+    ),
+    BenchSpec(
+        "game_replication_encode",
+        2,
+        "game_replication_encode",
+        "cpp/main.c",
+        "common/repl_core.c",
+        "li/main.li",
+    ),
+    BenchSpec(
+        "sim_physics_frame",
+        2,
+        "sim_physics_frame",
+        "cpp/main.c",
+        "common/sim_phys_core.c",
+        "li/main.li",
+    ),
 )
 
 
 def bench_dir(spec: BenchSpec) -> Path:
-    root = TIER1 if spec.tier == 1 else TIER2
-    return root / spec.rel_dir
+    if spec.tier == 1:
+        return TIER1 / spec.rel_dir
+    world_path = TIER2_WORLD / spec.rel_dir
+    if world_path.is_dir():
+        return world_path
+    return TIER2 / spec.rel_dir
 
 
 def git_sha() -> str:
@@ -604,6 +641,8 @@ def run_benchmark(spec: BenchSpec, *, runs: int) -> list[dict[str, object]]:
             f"{'pure lic' if spec.li_pure else 'shared C kernel + lic'} {NATIVE_FLAGS}",
         ),
     ]
+    if spec.name in WORLD_ENGINE_BENCHES:
+        lang_runs = [lr for lr in lang_runs if lr[0] != "numpy"]
 
     for lang, cmd, flags in lang_runs:
         timing = time_command(cmd, runs=runs)

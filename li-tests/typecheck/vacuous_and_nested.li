@@ -1,0 +1,7 @@
+# Nested tautologies.
+def bad() -> int
+  requires true
+  ensures true and result == result
+  decreases 0
+=
+  return 0

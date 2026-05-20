@@ -26,9 +26,13 @@ The **`=`** on the next line starts the **body**; it is not part of `decreases` 
 
 ### Trivial `ensures true` on value returns
 
-- **Default:** **`ensures true`** on a `def` that returns a real value (not `-> unit`) emits **W0601** — the postcondition does not mention `result`.
+- **Default:** any **vacuous** `ensures` on a `def` that returns a value (not `-> unit`) emits **W0601** — the postcondition is a tautology or always-true formula (see below).
 - **Strict:** `lic check` / `lic build` / `lic verify` with **`--strict-contracts`**, or **`LI_STRICT_CONTRACTS=1`**, turns that into **E0303** (build fails).
 - **Exempt:** `extern proc` (opaque C), and **`-> unit`** (no meaningful `result`).
+
+**Detected vacuous shapes (syntax-level, conservative):** literal **`true`**; **`not false`**; **`e == e`**, **`e <= e`**, **`e >= e`** for structurally identical `e`; **`A or B`** when `A` or `B` is vacuous (so `true or …` is caught); **`A and B`** when both sides are vacuous. This is not a full theorem prover — nested non-tautologies may still slip through.
+
+**Regression / audit:** `li-tests/typecheck/vacuous_*.li` (strict must reject), `compile_ok_strict` entries in `li-tests/manifest.toml`, and **`scripts/audit-strict-good-contracts.sh`** (representative good programs under strict).
 
 ## On every loop
 

@@ -1,0 +1,7 @@
+# Structural tautology: result compared to itself.
+def bad() -> int
+  requires true
+  ensures result == result
+  decreases 0
+=
+  return 0

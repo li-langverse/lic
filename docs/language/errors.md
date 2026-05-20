@@ -13,7 +13,7 @@ Stable **E** codes are errors (fail `lic check`). **W** codes are warnings (prin
 
 | Code | Agent id | When |
 |------|----------|------|
-| W0601 | `contract.trivial_ensures` | `ensures true` on a value-returning `def` (default: warn; strengthen postcondition) |
+| W0601 | `contract.trivial_ensures` | Vacuous `ensures` on a value-returning `def` — includes `ensures true`, **tautologies** (`result == result`, `a == a`, `result <= result`), **`true or …` / `… or true`**, **`true and …`** when the whole formula is still tautological, **`not false`** |
 
 ## Contracts (errors, strict mode)
 

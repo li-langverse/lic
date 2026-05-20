@@ -103,6 +103,83 @@ bool expr_is_literal_true(const Expr* e) {
   return e != nullptr && e->kind == Expr::Kind::Ident && e->ident == "true";
 }
 
+bool expr_is_literal_false(const Expr* e) {
+  return e != nullptr && e->kind == Expr::Kind::Ident && e->ident == "false";
+}
+
+bool expr_structurally_equal(const Expr& a, const Expr& b) {
+  if (a.kind != b.kind) {
+    return false;
+  }
+  switch (a.kind) {
+    case Expr::Kind::IntLit:
+      return a.int_value == b.int_value && a.lit_suffix == b.lit_suffix;
+    case Expr::Kind::FloatLit:
+      return a.float_value == b.float_value && a.lit_suffix == b.lit_suffix;
+    case Expr::Kind::BinaryLit:
+      return a.int_value == b.int_value && a.str_value == b.str_value;
+    case Expr::Kind::StringLit:
+      return a.str_value == b.str_value;
+    case Expr::Kind::Ident:
+      return a.ident == b.ident;
+    case Expr::Kind::BinOp:
+      return a.bin_op == b.bin_op && a.lhs && b.lhs && a.rhs && b.rhs &&
+             expr_structurally_equal(*a.lhs, *b.lhs) && expr_structurally_equal(*a.rhs, *b.rhs);
+    case Expr::Kind::UnaryNot:
+      return a.operand && b.operand && expr_structurally_equal(*a.operand, *b.operand);
+    case Expr::Kind::Call:
+      if (a.ident != b.ident || a.args.size() != b.args.size()) {
+        return false;
+      }
+      for (std::size_t i = 0; i < a.args.size(); ++i) {
+        if (!expr_structurally_equal(*a.args[i], *b.args[i])) {
+          return false;
+        }
+      }
+      return true;
+    case Expr::Kind::Index:
+      return a.base && b.base && a.index && b.index && expr_structurally_equal(*a.base, *b.base) &&
+             expr_structurally_equal(*a.index, *b.index);
+    case Expr::Kind::FieldAccess:
+      return a.field_name == b.field_name && a.base && b.base &&
+             expr_structurally_equal(*a.base, *b.base);
+    case Expr::Kind::Await:
+      return a.operand && b.operand && expr_structurally_equal(*a.operand, *b.operand);
+  }
+  return false;
+}
+
+/// Postcondition that is always true (tautology), so it does not constrain `result`.
+bool ensures_expr_is_vacuous(const Expr* e) {
+  if (e == nullptr) {
+    return false;
+  }
+  if (expr_is_literal_true(e)) {
+    return true;
+  }
+  if (e->kind == Expr::Kind::UnaryNot && e->operand && expr_is_literal_false(e->operand.get())) {
+    return true;
+  }
+  if (e->kind != Expr::Kind::BinOp || !e->lhs || !e->rhs) {
+    return false;
+  }
+  const Expr& L = *e->lhs;
+  const Expr& R = *e->rhs;
+  switch (e->bin_op) {
+    case BinOp::Eq:
+      return expr_structurally_equal(L, R);
+    case BinOp::Le:
+    case BinOp::Ge:
+      return expr_structurally_equal(L, R);
+    case BinOp::Or:
+      return ensures_expr_is_vacuous(e->lhs.get()) || ensures_expr_is_vacuous(e->rhs.get());
+    case BinOp::And:
+      return ensures_expr_is_vacuous(e->lhs.get()) && ensures_expr_is_vacuous(e->rhs.get());
+    default:
+      return false;
+  }
+}
+
 bool ret_type_is_named_unit(const TypeExpr& te) {
   return te.kind == TypeKind::Named && te.name == "unit";
 }
@@ -984,26 +1061,29 @@ struct Ctx {
                  "a value (see W0601 / `--strict-contracts`).");
     }
     if (p.ret_type && !ret_type_is_named_unit(*p.ret_type)) {
-      static const char* const k_trivial_ensures_hint =
-          "Say what `result` is (e.g. `ensures result == x + y`) or use `-> unit` when there is "
-          "no return value. CI: `lic build --strict-contracts` or LI_STRICT_CONTRACTS=1.";
+      static const char* const k_vacuous_ensures_hint =
+          "Relate `result` to inputs (e.g. `ensures result == x + y`), avoid tautologies (`result "
+          "== result`, `x <= x`), and avoid `true or …` / `… or true` unless intentional. Use `-> "
+          "unit` when there is no return value. CI: `lic build --strict-contracts` or "
+          "LI_STRICT_CONTRACTS=1.";
       for (const auto& c : p.contracts) {
         if (c.kind != ContractKind::Ensures) {
           continue;
         }
-        if (!expr_is_literal_true(c.expr.get())) {
+        if (!ensures_expr_is_vacuous(c.expr.get())) {
           continue;
         }
         if (strict_contracts) {
           diag_error(diags, loc(c.span), ErrorCode::E0303,
-                     "`ensures true` is rejected on `def` procedures that return a value — it does "
-                     "not constrain `result`.",
-                     k_trivial_ensures_hint);
+                     "vacuous `ensures` on a value-returning `def` — the postcondition is always "
+                     "true (e.g. `ensures true`, `ensures result == result`, `ensures x <= x`) and "
+                     "does not constrain `result`.",
+                     k_vacuous_ensures_hint);
         } else {
           diag_warning(diags, loc(c.span), WarningCode::W0601,
-                         "`ensures true` on a value-returning `def` does not constrain `result`; "
-                         "strengthen `ensures` for meaningful verification.",
-                         k_trivial_ensures_hint);
+                         "vacuous `ensures` on a value-returning `def` — tautology or always-true "
+                         "formula; strengthen the postcondition so it constrains `result`.",
+                         k_vacuous_ensures_hint);
         }
       }
     }

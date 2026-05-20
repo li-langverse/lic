@@ -21,6 +21,7 @@ Define terms on first use. Link to the design spec instead of copying ten-page t
 - Explain *why* a design choice exists (e.g. LLVM-only, Python 3.14 types)  
 - Give copy-pasteable commands and small complete examples  
 - For `lic check` / `lic build` output, use **macOS-style terminal blocks** ([Numerics in practice](../language/numerics-in-practice.md#how-to-add-terminal-blocks-in-docs) + `stylesheets/terminal.css`) so readers see source and CLI side by side  
+- After changing **vacuous `ensures`** detection, run **`./scripts/audit-strict-good-contracts.sh`** and **`./li-tests/run_all.sh typecheck`** (covers `compile_ok_strict` / `compile_fail_strict` in the manifest).
 
 **Avoid:**
 

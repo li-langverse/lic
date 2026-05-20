@@ -109,6 +109,15 @@ run_one() {
         pass=$((pass + 1))
       fi
       ;;
+    compile_ok_strict)
+      if "$LIC" build "$path" -o "$NULL_OUT" --strict-contracts 2>/dev/null; then
+        li_test_pass "$outcome $file"
+        pass=$((pass + 1))
+      else
+        li_test_fail "$outcome $file (should pass under --strict-contracts)"
+        fail=$((fail + 1))
+      fi
+      ;;
     *)
       echo "unknown outcome $outcome for $file"
       fail=$((fail + 1))

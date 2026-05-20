@@ -1,5 +1,5 @@
 # li-tests manifest — single index of all tests
-# outcome: parse_ok | parse_fail | compile_ok | compile_fail | compile_fail_strict | verify_ok | verify_fail
+# outcome: parse_ok | parse_fail | compile_ok | compile_fail | compile_fail_strict | compile_ok_strict | verify_ok | verify_fail
 
 [config]
 lic = "../build/compiler/lic/lic"
@@ -110,6 +110,56 @@ suite = "typecheck"
 file = "typecheck/trivial_ensures_value_strict.li"
 outcome = "compile_fail_strict"
 expected_substr = "E0303"
+
+[[tests]]
+suite = "typecheck"
+file = "typecheck/vacuous_result_eq_result.li"
+outcome = "compile_fail_strict"
+expected_substr = "E0303"
+
+[[tests]]
+suite = "typecheck"
+file = "typecheck/vacuous_or_true.li"
+outcome = "compile_fail_strict"
+expected_substr = "E0303"
+
+[[tests]]
+suite = "typecheck"
+file = "typecheck/vacuous_param_eq.li"
+outcome = "compile_fail_strict"
+expected_substr = "E0303"
+
+[[tests]]
+suite = "typecheck"
+file = "typecheck/vacuous_reflexive_le.li"
+outcome = "compile_fail_strict"
+expected_substr = "E0303"
+
+[[tests]]
+suite = "typecheck"
+file = "typecheck/vacuous_and_nested.li"
+outcome = "compile_fail_strict"
+expected_substr = "E0303"
+
+[[tests]]
+suite = "typecheck"
+file = "typecheck/provable_add_ok.li"
+outcome = "compile_ok_strict"
+
+[[tests]]
+suite = "contracts_verify"
+file = "contracts_verify/discharge_const.li"
+outcome = "compile_ok_strict"
+
+[[tests]]
+suite = "contracts_verify"
+file = "contracts_verify/sqrt_contract.li"
+outcome = "compile_ok_strict"
+
+[[tests]]
+suite = "contracts_verify"
+file = "contracts_verify/index_refinement.li"
+outcome = "compile_ok_strict"
 
 [[tests]]
 suite = "typecheck"

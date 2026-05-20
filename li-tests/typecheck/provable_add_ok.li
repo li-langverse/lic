@@ -1,0 +1,15 @@
+# Provable-style postcondition — must pass `lic build … --strict-contracts`.
+def add(a: int, b: int) -> int
+  requires true
+  ensures result == a + b
+  decreases 0
+=
+  return a + b
+
+def main() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  var sum: int = add(2, 3)
+  return sum - 5

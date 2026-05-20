@@ -1,0 +1,7 @@
+# Parameter reflexivity does not constrain return value.
+def bad(a: int) -> int
+  requires true
+  ensures a == a
+  decreases 0
+=
+  return a

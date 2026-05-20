@@ -41,11 +41,19 @@ llvm::Type* llvm_scalar(llvm::LLVMContext& ctx, bool is_float, bool is_i64) {
   return is_float ? llvm::Type::getDoubleTy(ctx) : i32_ty(ctx);
 }
 
+llvm::Type* llvm_type_for_mir_param(llvm::LLVMContext& ctx, const MirParam& p) {
+  if (p.fixed_array_elems > 0) {
+    llvm::Type* elem = llvm_scalar(ctx, p.is_float, p.is_i64 || p.is_string);
+    return llvm::ArrayType::get(elem, static_cast<unsigned>(p.fixed_array_elems));
+  }
+  return llvm_scalar(ctx, p.is_float, p.is_i64 || p.is_string);
+}
+
 llvm::Type* llvm_struct_from_layout(llvm::LLVMContext& ctx, const std::vector<MirParam>& layout) {
   std::vector<llvm::Type*> elems;
   elems.reserve(layout.size());
   for (const auto& p : layout) {
-    elems.push_back(llvm_scalar(ctx, p.is_float, p.is_i64 || p.is_string));
+    elems.push_back(llvm_type_for_mir_param(ctx, p));
   }
   if (elems.empty()) {
     return llvm::Type::getVoidTy(ctx);
@@ -284,6 +292,10 @@ struct EmitCtx {
     if (arg.is_literal) {
       return int32_val(*builder, context, arg.int_value);
     }
+    if (auto a_it = arrays.find(arg.ident); a_it != arrays.end()) {
+      llvm::Type* arr_ty = a_it->second.alloca->getAllocatedType();
+      return builder->CreateLoad(arr_ty, a_it->second.alloca);
+    }
     if (float_locals.find(arg.ident) != float_locals.end()) {
       return load_float(arg.ident);
     }
@@ -355,9 +367,20 @@ struct EmitCtx {
         for (unsigned i = 0; i < ins.object_layout.size(); ++i) {
           const MirParam& leaf = ins.object_layout[i];
           const std::string full = ins.ident + "_" + leaf.name;
-          llvm::Value* v =
-              leaf.is_float ? load_float(full)
+          llvm::Value* v = nullptr;
+          if (leaf.fixed_array_elems > 0) {
+            auto a_it = arrays.find(full);
+            if (a_it != arrays.end()) {
+              llvm::Type* arr_ty = a_it->second.alloca->getAllocatedType();
+              v = builder->CreateLoad(arr_ty, a_it->second.alloca);
+            }
+          } else {
+            v = leaf.is_float ? load_float(full)
                             : (leaf.is_i64 || leaf.is_string ? load_i64(full) : load_int(full));
+          }
+          if (!v) {
+            continue;
+          }
           llvm::Type* want = st->getElementType(i);
           if (v->getType() != want) {
             if (want->isIntegerTy(32) && v->getType()->isIntegerTy(64)) {
@@ -474,6 +497,13 @@ struct EmitCtx {
             const std::string full = ins.ident + "_" + leaf.name;
             llvm::Value* elt = builder->CreateExtractValue(agg, i);
             llvm::Type* want = st->getElementType(i);
+            if (leaf.fixed_array_elems > 0) {
+              auto a_it = arrays.find(full);
+              if (a_it != arrays.end() && elt->getType() == a_it->second.alloca->getAllocatedType()) {
+                builder->CreateStore(elt, a_it->second.alloca);
+              }
+              continue;
+            }
             if (elt->getType() != want) {
               if (want->isIntegerTy(32) && elt->getType()->isIntegerTy(64)) {
                 elt = builder->CreateTrunc(elt, want);
@@ -795,7 +825,7 @@ bool emit_llvm_ir(const MirModule& mir, const std::string& out_path, std::string
         param_tys.push_back(llvm::VectorType::get(llvm::Type::getDoubleTy(context),
                                                   llvm::ElementCount::getFixed(4)));
       } else {
-        param_tys.push_back(llvm_scalar(context, p.is_float, p.is_i64));
+        param_tys.push_back(llvm_type_for_mir_param(context, p));
       }
     }
     llvm::FunctionType* fn_ty = llvm::FunctionType::get(ret_ty, param_tys, false);
@@ -823,12 +853,18 @@ bool emit_llvm_ir(const MirModule& mir, const std::string& out_path, std::string
     for (auto& arg : func->args()) {
       if (idx < fn.params.size()) {
         arg.setName(fn.params[idx].name);
-        if (is_par_fn || fn.params[idx].is_i64) {
-          builder.CreateStore(&arg, ctx.ensure_i64_local(fn.params[idx].name));
-        } else if (fn.params[idx].is_float) {
-          builder.CreateStore(&arg, ctx.ensure_float_local(fn.params[idx].name));
+        const auto& mp = fn.params[idx];
+        if (mp.fixed_array_elems > 0) {
+          llvm::Type* arr_ty = llvm_type_for_mir_param(context, mp);
+          llvm::AllocaInst* ap = builder.CreateAlloca(arr_ty, nullptr, mp.name);
+          ctx.arrays[mp.name] = ArraySlot{ap, mp.fixed_array_elems, mp.is_float};
+          builder.CreateStore(&arg, ap);
+        } else if (is_par_fn || mp.is_i64) {
+          builder.CreateStore(&arg, ctx.ensure_i64_local(mp.name));
+        } else if (mp.is_float) {
+          builder.CreateStore(&arg, ctx.ensure_float_local(mp.name));
         } else {
-          builder.CreateStore(&arg, ctx.ensure_int_local(fn.params[idx].name));
+          builder.CreateStore(&arg, ctx.ensure_int_local(mp.name));
         }
       }
       idx++;

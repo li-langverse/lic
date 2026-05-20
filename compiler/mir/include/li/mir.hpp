@@ -13,7 +13,8 @@ enum class MirOp {
   ReturnInt,
   ReturnFloat,
   ReturnIdent,
-  /** Pack scalar locals named `ident + "_" + layout[i].name` into LLVM struct return. */
+  /** Pack locals named `ident + "_" + layout[i].name` into LLVM struct return (scalars or
+   *  fixed arrays as `[N x T]` aggregates). */
   ReturnObject,
   EchoInt,
   EchoString,
@@ -66,6 +67,8 @@ struct MirParam {
   bool is_i64 = false;
   bool is_simd_f64 = false;
   std::int64_t simd_lanes = 0;
+  /** When >0, slot is `ident + "_" + name` as ArrayAlloc; LLVM uses `[N x scalar]` in structs. */
+  std::int64_t fixed_array_elems = 0;
 };
 
 struct MirInsn {
@@ -91,8 +94,8 @@ struct MirInsn {
   bool array_is_float = false;
   std::int64_t simd_lanes = 0;
   std::vector<MirArg> args;
-  /** Leaf layout: `name` is path under object root (e.g. `x`, `mid_x`). Used for ReturnObject
-   *  (pack) and CallProc when callee returns an object (unpack into `ident + "_" + name`). */
+  /** Layout entries under object root (`name` paths). Used for ReturnObject pack and CallProc
+   *  unpack into `ident + "_" + name` (scalar locals or ArrayAlloc slots). */
   std::vector<MirParam> object_layout;
 };
 

@@ -348,7 +348,25 @@ void collect_object_return_layout_r(const Module& module, const TypeExpr& te,
       collect_object_return_layout_r(module, *fld.type, sub, out);
     } else {
       const TypeExpr* ut = unwrap_refinement_type(fld.type.get());
-      if (!ut || ut->kind == TypeKind::Array) {
+      if (!ut) {
+        continue;
+      }
+      if (ut->kind == TypeKind::Array && ut->array_size > 0 && ut->elem) {
+        const TypeExpr* el = unwrap_refinement_type(ut->elem.get());
+        if (el && el->kind == TypeKind::Named) {
+          const bool iflt = is_float_type_name(el->name);
+          const bool iint = el->name == "int";
+          if (iflt || iint) {
+            MirParam mp;
+            mp.name = sub;
+            mp.is_float = iflt;
+            mp.fixed_array_elems = ut->array_size;
+            out.push_back(std::move(mp));
+          }
+        }
+        continue;
+      }
+      if (ut->kind == TypeKind::Array) {
         continue;
       }
       MirParam mp;
@@ -397,15 +415,29 @@ void append_mir_params_for_object_type(const Module& module, const TypeExpr& te,
       if (!ut) {
         continue;
       }
+      if (ut->kind == TypeKind::Array && ut->array_size > 0 && ut->elem) {
+        const TypeExpr* el = unwrap_refinement_type(ut->elem.get());
+        if (el && el->kind == TypeKind::Named) {
+          const bool iflt = is_float_type_name(el->name);
+          const bool iint = el->name == "int";
+          if (iflt || iint) {
+            MirParam mp;
+            mp.name = sub;
+            mp.is_float = iflt;
+            mp.fixed_array_elems = ut->array_size;
+            out_params.push_back(std::move(mp));
+          }
+        }
+        continue;
+      }
+      if (ut->kind == TypeKind::Array) {
+        continue;
+      }
       MirParam mp;
       mp.name = sub;
-      if (ut->kind == TypeKind::Array) {
-        mp.is_float = ut->elem && is_float_type_name(ut->elem->name);
-      } else {
-        mp.is_float = is_float_type_name(ut->name);
-        mp.is_string = is_string_type_name(ut->name);
-        mp.is_i64 = is_i64_type_name(ut->name) || mp.is_string;
-      }
+      mp.is_float = is_float_type_name(ut->name);
+      mp.is_string = is_string_type_name(ut->name);
+      mp.is_i64 = is_i64_type_name(ut->name) || mp.is_string;
       out_params.push_back(std::move(mp));
     }
   }
@@ -443,7 +475,7 @@ void push_mir_args_for_object_value(const Module& module, const TypeExpr& param_
 
 void seed_float_params(const MirFn& fn, std::unordered_set<std::string>& float_names) {
   for (const auto& p : fn.params) {
-    if (p.is_float) {
+    if (p.is_float && p.fixed_array_elems == 0) {
       float_names.insert(p.name);
     }
   }
@@ -451,7 +483,7 @@ void seed_float_params(const MirFn& fn, std::unordered_set<std::string>& float_n
 
 void seed_i64_params(const MirFn& fn, std::unordered_set<std::string>& i64_locals) {
   for (const auto& p : fn.params) {
-    if (p.is_i64 || p.is_string) {
+    if ((p.is_i64 || p.is_string) && p.fixed_array_elems == 0) {
       i64_locals.insert(p.name);
     }
   }
@@ -1314,20 +1346,38 @@ MirModule lower_to_mir(const Module& module) {
         const std::string z = std::string("__li_o___im") + std::to_string(temp_counter++);
         emit_object_slots_r(module, *proc.ret_type, z, fn.body, float_names, i64_locals);
         for (const auto& lf : fn.return_object_layout) {
-          MirInsn st;
-          st.ident = z + "_" + lf.name;
-          st.rhs_is_literal = true;
-          if (lf.is_float) {
-            st.op = MirOp::StoreFloat;
-            st.float_value = 0.0;
-          } else if (lf.is_i64 || lf.is_string) {
-            st.op = MirOp::StoreI64;
-            st.rhs_int = 0;
+          if (lf.fixed_array_elems > 0) {
+            for (std::int64_t i = 0; i < lf.fixed_array_elems; ++i) {
+              MirInsn st;
+              st.ident = z + "_" + lf.name;
+              st.index_is_literal = true;
+              st.int_value = i;
+              st.rhs_is_literal = true;
+              if (lf.is_float) {
+                st.op = MirOp::ArrayStoreFloat;
+                st.float_value = 0.0;
+              } else {
+                st.op = MirOp::ArrayStoreInt;
+                st.rhs_int = 0;
+              }
+              fn.body.push_back(std::move(st));
+            }
           } else {
-            st.op = MirOp::StoreInt;
-            st.rhs_int = 0;
+            MirInsn st;
+            st.ident = z + "_" + lf.name;
+            st.rhs_is_literal = true;
+            if (lf.is_float) {
+              st.op = MirOp::StoreFloat;
+              st.float_value = 0.0;
+            } else if (lf.is_i64 || lf.is_string) {
+              st.op = MirOp::StoreI64;
+              st.rhs_int = 0;
+            } else {
+              st.op = MirOp::StoreInt;
+              st.rhs_int = 0;
+            }
+            fn.body.push_back(std::move(st));
           }
-          fn.body.push_back(std::move(st));
         }
         MirInsn ret;
         ret.op = MirOp::ReturnObject;

@@ -13,6 +13,7 @@ All notable changes to Li are documented here. The format follows
 - MIR + codegen: object-typed procedure returns use LLVM **struct** returns (`ReturnObject`, `MirFn::return_object_layout`); `CallProc` unpacks struct into `__li_o___cr*` temp slots; `var w: T = foo()` when `foo` returns `T` (`li-tests/objects/object_return_call.li`). Implicit fall-through returns for object procedures return a zero-valued struct.
 - MIR: whole-object assignment `dst = src` and `dst = foo()` when `dst` is an `object`-typed local/param and `src`/`foo` match (`collect_object_local_types`, `emit_copy_object_slots_r`); regression `li-tests/objects/object_whole_assign.li`.
 - MIR: `emit_copy_object_slots_r` copies fixed `array[N, int]` / `array[N, float]` fields element-wise; nested object array slots register in `g_arr_ctx` for index/assign; `Index` / array `Assign` accept `FieldAccess` array bases; regression `li-tests/objects/object_array_field_copy.li`.
+- MIR + codegen: `return_object_layout` / `object_layout` include fixed `array[N, int|float]` as `[N x T]` LLVM struct fields; `ReturnObject` / `CallProc` unpack load/store aggregates; expanded object params receive by-value array args; regression `li-tests/objects/object_array_return_call.li`.
 
 ### Changed
 

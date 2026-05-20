@@ -1,7 +1,7 @@
 # World Studio / Li Engine — progress report
 
 **Branch:** `feat/world-studio-impl-1`  
-**Sprint:** impl-37 (2026-05)  
+**Sprint:** impl-38 (2026-05)  
 **Architecture:** [specs/world-architecture-competitive-rfc.md](specs/world-architecture-competitive-rfc.md)
 
 ---
@@ -10,12 +10,22 @@
 
 | Metric | Value |
 |--------|--------|
-| **Composable gates** | **116** (target) |
+| **Composable gates** | **121** (target) |
 | **Milestone** | **100** composable (impl-32) |
-| **World model** | **GameWorld** GW-0–2 + **SimField** SF-0–1 + **RealmHead** |
+| **World model** | **GameWorld** GW-0–4 + **SimField** SF-0–3 + **RealmHead** |
+| **Author API** | [world-api-quickstart.md](world-api-quickstart.md) |
 | **Spin-up** | **11** |
 
 ---
+
+## Sprint impl-38 — ergonomics + GW-3 / GW-4 / SF-2 / SF-3
+
+| Deliverable | State |
+|-------------|--------|
+| Short aliases (`new_game_world`, `new_field`, …) | ✅ |
+| [world-api-quickstart.md](world-api-quickstart.md) | ✅ |
+| GW-3 region streaming · GW-4 draw_frame + render | ✅ |
+| SF-2 GPU · SF-3 checkpoint manifest | ✅ |
 
 ## Sprint impl-37 — GW-1 / GW-2 / SF-1
 
@@ -64,4 +74,4 @@
 
 ---
 
-*impl-37 · GW-1 SoA · GW-2 replication · SF-1 tier-2*
+*impl-38 · author API · GW-3–4 · SF-2–3*

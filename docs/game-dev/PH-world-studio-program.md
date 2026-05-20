@@ -125,6 +125,7 @@ Cross-cutting program IDs. Implementation order respects dependencies in the vis
 | **106 composable** · Li-native store port (`store_li_native_*`) | Done |
 | **112 composable** · GameWorld ECS + SimField + competitive RFC | Done |
 | **116 composable** · GW-1 SoA · GW-2 replication · SF-1 tier-2 | Done |
+| **121 composable** · GW-3–4 · SF-2–3 · author API quickstart | Done |
 | [li-native-first.mdc](../../.cursor/rules/li-native-first.mdc) | Done |
 | MMO-5 WebSocket stubs (`net.httpd`) | Done |
 | MMO-6 `world_checkpoint_mmo_stub` | Done |

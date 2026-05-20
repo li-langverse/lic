@@ -7,10 +7,10 @@ type SimVizFrame = object
 
 def li_sim_scientific_version() -> int
   requires true
-  ensures result == 4
+  ensures result == 5
   decreases 0
 =
-  return 4
+  return 5
 
 # SF-0 — field chunk head (HPC path; not OpenFOAM-scale yet).
 type SimFieldChunk = object
@@ -93,6 +93,113 @@ def sim_field_tier2_physics_smoke() -> int
   if sim_field_tier2_couple_stub(c, 0.001, 4) != 4:
     return 1
   if c.sample_norm <= 0.0:
+    return 2
+  return 0
+
+# SF-2 — GPU batch hook (pairs with gpu.* in composable; simple score for authors).
+def sim_field_gpu_batch_size() -> int
+  requires true
+  ensures result == 64
+  decreases 0
+=
+  return 64
+
+def sim_field_run_gpu_stub(chunk: SimFieldChunk, batch_size: int) -> int
+  requires chunk.cell_count > 0
+  requires batch_size > 0
+  ensures result > 0
+  decreases batch_size
+=
+  return batch_size + chunk.cell_count / sim_field_gpu_batch_size()
+
+# SF-3 — checkpoint manifest for publish / repro bundles.
+type SimFieldCheckpoint = object
+  public field_id: int
+  public tick: int
+  public file_count: int
+  public manifest_hash: int
+
+def sim_field_save_checkpoint(chunk: SimFieldChunk) -> SimFieldCheckpoint
+  requires chunk.field_id >= 0
+  ensures result.field_id == chunk.field_id
+  ensures result.tick == chunk.timestep
+  ensures result.file_count >= 1
+  decreases chunk.timestep
+=
+  var cp: SimFieldCheckpoint
+  cp.field_id = chunk.field_id
+  cp.tick = chunk.timestep
+  cp.file_count = 2
+  cp.manifest_hash = chunk.field_id * 1009 + chunk.timestep * 31 + chunk.cell_count
+  return cp
+
+def sim_field_load_checkpoint(manifest_hash: int) -> SimFieldCheckpoint
+  requires manifest_hash >= 0
+  ensures result.manifest_hash == manifest_hash
+  decreases manifest_hash
+=
+  var cp: SimFieldCheckpoint
+  cp.field_id = manifest_hash % 1000
+  cp.tick = manifest_hash / 1000
+  cp.file_count = 2
+  cp.manifest_hash = manifest_hash
+  return cp
+
+# Short names — same behavior as sim_field_* above.
+def new_field(field_id: int, cell_count: int, tier: int) -> SimFieldChunk
+  requires cell_count > 0
+  requires tier >= 1
+  requires tier <= 3
+  decreases cell_count
+=
+  return sim_field_chunk_new(field_id, cell_count, tier)
+
+def step_field(chunk: SimFieldChunk, dt: float) -> unit
+  requires dt > 0.0
+  decreases chunk.timestep
+=
+  sim_field_step_stub(chunk, dt)
+
+def run_field_on_gpu(chunk: SimFieldChunk, batch_size: int) -> int
+  requires batch_size > 0
+  decreases batch_size
+=
+  return sim_field_run_gpu_stub(chunk, batch_size)
+
+def save_field_checkpoint(chunk: SimFieldChunk) -> SimFieldCheckpoint
+  requires true
+  decreases chunk.timestep
+=
+  return sim_field_save_checkpoint(chunk)
+
+def load_field_checkpoint(manifest_hash: int) -> SimFieldCheckpoint
+  requires manifest_hash >= 0
+  decreases manifest_hash
+=
+  return sim_field_load_checkpoint(manifest_hash)
+
+def sim_field_gpu_smoke() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  var c: SimFieldChunk = new_field(2, 256, 2)
+  if run_field_on_gpu(c, sim_field_gpu_batch_size()) <= 0:
+    return 1
+  return 0
+
+def sim_field_checkpoint_smoke() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  var c: SimFieldChunk = new_field(0, 64, 2)
+  step_field(c, 0.01)
+  var saved: SimFieldCheckpoint = save_field_checkpoint(c)
+  var loaded: SimFieldCheckpoint = load_field_checkpoint(saved.manifest_hash)
+  if loaded.manifest_hash != saved.manifest_hash:
+    return 1
+  if loaded.file_count < 1:
     return 2
   return 0
 

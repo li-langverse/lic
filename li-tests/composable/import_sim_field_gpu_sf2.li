@@ -1,4 +1,5 @@
 import sim.scientific
+import gpu
 
 def main() -> int
   requires true
@@ -7,4 +8,8 @@ def main() -> int
 =
   if li_sim_scientific_version() < 5:
     return 1
-  return sim_field_chunk_smoke()
+  if sim_field_gpu_smoke() != 0:
+    return 2
+  if gpu_lkir_present_smoke() != 0:
+    return 3
+  return 0

@@ -11,10 +11,10 @@ type WorldSnapshot = object
 
 def li_world_version() -> int
   requires true
-  ensures result == 6
+  ensures result == 7
   decreases 0
 =
-  return 6
+  return 7
 
 # GW-0 — game ECS head (AAA path; not UE-scale yet).
 type GameEntity = object
@@ -230,6 +230,151 @@ def game_replication_delta_smoke() -> int
     return 1
   if d.byte_size > 64:
     return 2
+  return 0
+
+# GW-3 — region streaming (load / unload under a fixed memory budget).
+type GameRegion = object
+  public region_id: int
+  public loaded: int
+  public entity_slots: int
+  public memory_bytes: int
+
+def game_streaming_memory_budget_bytes() -> int
+  requires true
+  ensures result > 0
+  decreases 0
+=
+  return 268435456
+
+def game_region_new(region_id: int, entity_slots: int) -> GameRegion
+  requires region_id >= 0
+  requires entity_slots > 0
+  ensures result.region_id == region_id
+  ensures result.entity_slots == entity_slots
+  ensures result.loaded == 0
+  ensures result.memory_bytes == 0
+  decreases region_id
+=
+  var r: GameRegion
+  r.region_id = region_id
+  r.entity_slots = entity_slots
+  r.loaded = 0
+  r.memory_bytes = 0
+  return r
+
+def game_region_load(region: GameRegion) -> unit
+  requires region.entity_slots > 0
+  ensures region.loaded == 1
+  ensures region.memory_bytes > 0
+  decreases region.region_id
+=
+  region.loaded = 1
+  region.memory_bytes = region.entity_slots * game_replication_bytes_per_entity()
+
+def game_region_unload(region: GameRegion) -> unit
+  requires true
+  ensures region.loaded == 0
+  ensures region.memory_bytes == 0
+  decreases region.region_id
+=
+  region.loaded = 0
+  region.memory_bytes = 0
+
+def game_streaming_can_load(used_bytes: int, region: GameRegion) -> int
+  requires used_bytes >= 0
+  requires region.loaded == 0
+  ensures result == 0 || result == 1
+  decreases used_bytes
+=
+  var need: int = region.entity_slots * game_replication_bytes_per_entity()
+  if used_bytes + need <= game_streaming_memory_budget_bytes():
+    return 1
+  return 0
+
+def game_streaming_load_region(used_bytes: int, region: GameRegion) -> int
+  requires used_bytes >= 0
+  requires region.loaded == 0
+  ensures result >= used_bytes
+  decreases used_bytes
+=
+  if game_streaming_can_load(used_bytes, region) != 1:
+    return used_bytes
+  game_region_load(region)
+  return used_bytes + region.memory_bytes
+
+def game_streaming_smoke() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  var r: GameRegion = game_region_new(1, 1024)
+  var used: int = 0
+  used = game_streaming_load_region(used, r)
+  if r.loaded != 1:
+    return 1
+  game_region_unload(r)
+  if r.loaded != 0:
+    return 2
+  return 0
+
+# GW-4 — one call to advance sim tick before the viewport draws (pairs with render.*).
+def game_world_draw_frame(world: GameWorld, width: int, height: int) -> int
+  requires width > 0
+  requires height > 0
+  ensures result >= 1
+  decreases world.tick
+=
+  game_world_tick_stub(world)
+  return world.tick + width + height
+
+def game_world_viewport_smoke() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  var w: GameWorld = game_world_new(0)
+  game_world_spawn_entity(w, 1)
+  if game_world_draw_frame(w, 1280, 720) < 1:
+    return 1
+  return 0
+
+# Short names for authors and agents (same behavior as game_world_* above).
+def new_game_world(realm_id: int) -> GameWorld
+  requires realm_id >= 0
+  decreases realm_id
+=
+  return game_world_new(realm_id)
+
+def spawn_entity(world: GameWorld, archetype_id: int) -> GameEntity
+  requires archetype_id >= 0
+  requires archetype_id <= 255
+  decreases world.entity_count
+=
+  return game_world_spawn_entity(world, archetype_id)
+
+def tick_game_world(world: GameWorld) -> unit
+  requires true
+  decreases world.tick
+=
+  game_world_tick_stub(world)
+
+def send_entity_delta(world: GameWorld, entity_id: int, component_mask: int) -> int
+  requires entity_id > 0
+  requires component_mask >= 0
+  decreases entity_id
+=
+  return game_replication_delta_stub(world, entity_id, component_mask)
+
+def world_author_api_smoke() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  var w: GameWorld = new_game_world(1)
+  var e: GameEntity = spawn_entity(w, 2)
+  tick_game_world(w)
+  if send_entity_delta(w, e.entity_id, 1) <= 0:
+    return 1
   return 0
 
 def game_world_tick_stub(world: GameWorld) -> unit

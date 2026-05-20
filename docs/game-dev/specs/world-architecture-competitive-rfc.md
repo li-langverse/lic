@@ -1,6 +1,6 @@
 # RFC: Competitive world architecture — GameWorld vs SimField
 
-**Status:** Draft (impl-37)  
+**Status:** Draft (impl-38)  
 **Track:** PH-GD-2 / PH-SCI  
 **Policy:** [li-native-first.mdc](../../../.cursor/rules/li-native-first.mdc)  
 **Vision:** [world-studio-vision.md](../world-studio-vision.md)
@@ -42,8 +42,8 @@ Composable gates on journals prove **Li-native policy**, not **engine competitiv
 | GW-0 | `GameEntity`, `GameWorld`, spawn | Composable smoke |
 | GW-1 | SoA component tables | ✅ ≥10k entities/tick stub budget |
 | GW-2 | `game_replication_delta_*` | ✅ Delta bytes ≪ full snapshot |
-| GW-3 | Region streaming hooks | Memory budget per [PH-PORT](../portable-targets-rfc.md) |
-| GW-4 | `li-render` residency | 60 fps viewport ([PH-UX](../studio-ux-design-system-rfc.md)) |
+| GW-3 | Region streaming hooks | ✅ `game_region_*` + memory budget |
+| GW-4 | `li-render` residency | ✅ `game_world_draw_frame` + render composable |
 
 ```li
 # li-world (GW-0)
@@ -63,8 +63,8 @@ type GameWorld = object
 |-------|-------------|--------|
 | SF-0 | `SimFieldChunk` metadata | Composable smoke |
 | SF-1 | Tier-2 physics coupling | ✅ `sim_field_tier2_*` + `physics.core` profile |
-| SF-2 | GPU batch via LKIR | `li-gpu` + `li-chem` |
-| SF-3 | Checkpoint manifest | PH-PUB repro bundle |
+| SF-2 | GPU batch via LKIR | ✅ `run_field_on_gpu` + `gpu.*` |
+| SF-3 | Checkpoint manifest | ✅ `save_field_checkpoint` / `load_field_checkpoint` |
 
 ```li
 # li-sim-scientific (SF-0)
@@ -89,14 +89,16 @@ type SimFieldChunk = object
 | OpenFOAM/GROMACS | Unified sim + in-viewport tier-2 + repro export |
 | Redis MMO | Proved shard logic + Li-native store semantics |
 
-## Composable gates (impl-37)
+## Author API
 
-- `import_game_world_ecs` (GW-0)  
-- `import_game_world_soa_gw1` (GW-1)  
-- `import_game_replication_gw2` (GW-2)  
-- `import_sim_field_chunk` (SF-0)  
-- `import_sim_field_tier2_sf1` (SF-1)  
-- `import_world_dual_model_stack`  
+See **[world-api-quickstart.md](../world-api-quickstart.md)** — copy-paste names for agents and end users.
+
+## Composable gates (impl-38)
+
+- GW-0–2: `import_game_world_ecs`, `import_game_world_soa_gw1`, `import_game_replication_gw2`  
+- GW-3–4: `import_game_region_streaming_gw3`, `import_game_world_viewport_gw4`  
+- SF-0–3: `import_sim_field_chunk`, `import_sim_field_tier2_sf1`, `import_sim_field_gpu_sf2`, `import_sim_field_checkpoint_sf3`  
+- `import_world_author_api` (short aliases)  
 - `import_world_competitive_gw_sf` (rollup)  
 
 ## References

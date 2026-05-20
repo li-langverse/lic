@@ -309,6 +309,41 @@ li_package = "li-world"
 composable = "import_world_competitive_gw_sf"
 
 [[benchmark]]
+id = "game-region-streaming-gw3"
+name = "GameWorld region streaming GW-3"
+tier = 1
+li_package = "li-world"
+composable = "import_game_region_streaming_gw3"
+
+[[benchmark]]
+id = "game-world-viewport-gw4"
+name = "GameWorld viewport GW-4"
+tier = 1
+li_package = "li-world"
+composable = "import_game_world_viewport_gw4"
+
+[[benchmark]]
+id = "sim-field-gpu-sf2"
+name = "SimField GPU SF-2"
+tier = 1
+li_package = "li-sim-scientific"
+composable = "import_sim_field_gpu_sf2"
+
+[[benchmark]]
+id = "sim-field-checkpoint-sf3"
+name = "SimField checkpoint SF-3"
+tier = 1
+li_package = "li-sim-scientific"
+composable = "import_sim_field_checkpoint_sf3"
+
+[[benchmark]]
+id = "world-author-api"
+name = "Author-friendly world API"
+tier = 1
+li_package = "li-world"
+composable = "import_world_author_api"
+
+[[benchmark]]
 id = "httpd-li-native-gateway"
 name = "Li-native HTTP/WS gateway"
 tier = 1

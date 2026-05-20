@@ -7,6 +7,4 @@ def main() -> int
 =
   if li_world_version() < 7:
     return 1
-  if game_soa_chunk_capacity() != 64:
-    return 2
-  return game_world_soa_10k_tick_budget_smoke()
+  return game_streaming_smoke()

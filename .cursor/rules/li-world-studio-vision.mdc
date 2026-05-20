@@ -29,6 +29,12 @@ alwaysApply: false
 - Use Python-style **`def`** for functions in new code and docs (not `proc`).
 - Keep `requires` / `ensures` / `decreases` on exported APIs.
 
+## API ergonomics (authors + agents)
+
+- Prefer **verb phrases** and **short aliases** in `lib.li`: `new_game_world`, `spawn_entity`, `new_field`, `step_field` — see [world-api-quickstart.md](../docs/game-dev/world-api-quickstart.md).
+- Avoid cryptic suffixes in **public** APIs (`_stub` only for internal gates; expose a clear name beside it).
+- One concept → one obvious name; document aliases in the quickstart, not only in RFCs.
+
 ## Product
 
 - **One engine** for game + sim profiles — no CARLA/GROMACS/slicer forks.

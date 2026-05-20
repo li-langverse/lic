@@ -6,7 +6,7 @@
 |--------|-------------------------|-------|
 | Public `summary.json` (2026-05-16 ingest) | **88.82×** | Stale: pre-`+` lexer fix; loop did not increment |
 | Local tier-1 (DCE, `acc` unused) | **0.57×** | Bogus green — LLVM deleted the Horner loop |
-| Local tier-1 (this pass, `li_rt_volatile_sink_f64`) | **12.0×** | Honest pure-Li scalar codegen vs native C reference |
+| Local tier-1 (this pass, `li_rt_volatile_sink_f64`) | **10.7×** | Honest pure-Li scalar codegen vs native C reference |
 
 Evidence rows (`benchmarks/results/latest.csv` on this branch):
 
@@ -23,7 +23,7 @@ horner_pure_li,li,...,wall_time,0.0096,s,...
 
 ## Status vs ≤1.2× cpp gate
 
-Still **red** (12.0×). Next work is **PH-7e** codegen (SIMD/unroll Horner), not catalog threshold edits. Lexer `Plus` fix is already on `main` ([autoresearch-horner-lexer-2026-05-18.md](./autoresearch-horner-lexer-2026-05-18.md)).
+Still **red** (~10.7×). Next work is **PH-7e** codegen (SIMD/unroll Horner), not catalog threshold edits. Lexer `Plus` fix is already on `main` ([autoresearch-horner-lexer-2026-05-18.md](./autoresearch-horner-lexer-2026-05-18.md)).
 
 ## Near-limit tier-2 (deferred)
 

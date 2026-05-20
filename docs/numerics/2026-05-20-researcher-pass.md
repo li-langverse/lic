@@ -17,14 +17,16 @@
 | Preflight `near_threshold` | `matmul_blocked`, `nbody_gravity`, `double_pendulum`, `wave_equation_1d`, `harmonic_oscillator_chain` (1.02–1.04× on dashboard) |
 | **Local tier-1** (this run) | `./scripts/benchmark-failures-report.sh` after `bench.py --tier 1` |
 
-**Local failures report** (`git_sha=c3deeeb`, 3 runs, `THRESHOLD_RATIO_CPP=1.2`):
+**Local failures report** (branch with lic #85 anti-DCE, 3 runs, `THRESHOLD_RATIO_CPP=1.2`):
 
 | Catalog id | li/cpp | Status |
 |------------|--------|--------|
-| `matmul_naive` | **1.30×** | RED (not on stale dashboard — wrapper/link overhead) |
-| `matmul_blocked` | **1.02×** | near-limit |
-| `horner_pure_li` | **0.40×** | misleading green — **DCE** (see below) |
+| `horner_pure_li` | **13.86×** | RED — honest pure-Li scalar loop (was false 0.40× pre-sink) |
+| `matmul_naive` | **1.06×** | near-limit (wrapper overhead) |
+| `matmul_blocked` | **1.03×** | near-limit |
 | `reduce_sum`, `simd_dot` | ≤1.0× | green |
+
+Pre-anti-DCE on `main` only: `horner_pure_li` **0.40×** false green; dashboard ingest still **88×** until re-ingest.
 
 Tier-2 harness on this tree failed at `md_lennard_jones` Li build (`disjoint_elem` missing); near-limit physics ratios below are from **dashboard ingest** until tier-2 verify is unblocked.
 
@@ -43,7 +45,7 @@ Tier-2 harness on this tree failed at `md_lennard_jones` Li build (`disjoint_ele
 
 **Map:** **PH-5b** (fp policy / fair compare), **PH-7e** (pure-Li loop codegen must retain timed work).
 
-**Root cause (2026-05-20):** Dashboard **88×** is dominated by (a) historical lexer bug (fixed; `li-tests` → `lexer_parser/plus_minus_binop.li`) and (b) **benchmark honesty**: `horner_pure_li/li/main.li` returns constant `0` while C++ stores `acc` through `volatile` (`horner_core.c`). Local run without anti-DCE reports **0.40×** — a false green; verify line shows `native checksum=inf` for Li (stale/zero path).
+**Root cause (2026-05-20):** Dashboard **88×** is dominated by (a) historical lexer bug (fixed; `li-tests` → `lexer_parser/plus_minus_binop.li`) and (b) **benchmark honesty**: without `li_rt_volatile_sink_f64`, LLVM DCE yields false sub-1× greens. With anti-DCE on this branch, local honest ratio is **~14×** cpp (PH-7e SIMD/unroll still required for ≤1.2×).
 
 **Implementation path (lic — `bench_improver`, not threshold edits):**
 

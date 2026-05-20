@@ -590,6 +590,18 @@ outcome = "verify_open_ok"
 note = "parse_request from li-http + net.httpd; open VC on trusted externs"
 
 [[tests]]
+suite = "httpd"
+file = "httpd/route_key_valid.li"
+outcome = "verify_open_ok"
+note = "pure-Li route_key_valid for METHOD /path keys"
+
+[[tests]]
+suite = "httpd"
+file = "httpd/serve_once_smoke.li"
+outcome = "verify_open_ok"
+note = "M1 serve-once stub: tcp_listen/accept/send health response"
+
+[[tests]]
 suite = "routing"
 file = "routing/match_routes.li"
 outcome = "verify_open_ok"

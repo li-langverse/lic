@@ -165,3 +165,18 @@ def route_action_kind(route_id: int) raises IO, Alloc -> int
   decreases route_id
 =
   return li_rt_httpd_route_action_kind(route_id)
+
+extern proc li_rt_httpd_route_key_valid(key: str) -> int
+  requires true
+  ensures 0 <= result
+  ensures result <= 1
+  decreases 0
+
+# Validates "METHOD /path" shape (trusted C until str can be scanned in Li without move).
+def route_key_valid(key: str) raises IO, Alloc -> int
+  requires true
+  ensures 0 <= result
+  ensures result <= 1
+  decreases 0
+=
+  return li_rt_httpd_route_key_valid(key)

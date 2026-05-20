@@ -46,6 +46,7 @@ const char* li_rt_httpd_last_error_message(void);
 int32_t li_rt_httpd_route_count(void);
 int32_t li_rt_httpd_route_key_valid(const char* key);
 int32_t li_rt_httpd_serve_once(int32_t port);
+int32_t li_rt_httpd_serve_routed_once(int32_t port);
 int32_t li_rt_str_len(const char* s);
 int32_t li_rt_str_char_at(const char* s, int32_t i);
 int32_t li_rt_httpd_load_routing_fixture(void);

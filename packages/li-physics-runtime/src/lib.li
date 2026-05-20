@@ -20,7 +20,6 @@ type PhysicsWorld = object
   public particles_enabled: int
   public gravity_z: float
   public body: RigidBody
-
 def li_std_physics_runtime_version() -> int
   requires true
   ensures result == 1
@@ -40,11 +39,13 @@ def rigid_integrate_semi_implicit(b: var RigidBody, fx: float, fy: float, fz: fl
   b.px = b.px + b.vx * dt
   b.py = b.py + b.vy * dt
   b.pz = b.pz + b.vz * dt
-
 def physics_world_new(tier: int) -> PhysicsWorld
   requires tier >= 0
   requires tier <= 3
-  ensures true
+  ensures result.tier == tier
+  ensures result.dt == 1.0 / 60.0
+  ensures result.substeps == 4
+  ensures result.step_count == 0
   decreases tier
 =
   var w: PhysicsWorld
@@ -66,7 +67,6 @@ def physics_world_new(tier: int) -> PhysicsWorld
   w.body.inv_mass = 1.0
   w.body.radius = 0.5
   return w
-
 def physics_world_game_default() -> PhysicsWorld
   requires true
   ensures result.tier == 2
@@ -100,14 +100,12 @@ def physics_step(world: var PhysicsWorld, frame_dt: float) -> unit
     sc = sc + 1
     world.step_count = sc
     i = i + 1
-
 def physics_sync_from_scene(world: PhysicsWorld) -> unit
   requires true
   ensures true
   decreases 0
 =
   return
-
 def physics_sync_to_scene(world: PhysicsWorld) -> unit
   requires true
   ensures true

@@ -1225,6 +1225,24 @@ note = "Release candidate stack before main merge"
 
 [[tests]]
 suite = "composable"
+file = "composable/import_sim_step_physics_stub.li"
+outcome = "compile_ok"
+note = "sim_step_physics_stub until runtime types unify"
+
+[[tests]]
+suite = "composable"
+file = "composable/import_physics_runtime_smoke.li"
+outcome = "compile_ok"
+note = "physics.runtime PhysicsWorld step smoke"
+
+[[tests]]
+suite = "composable"
+file = "composable/import_world_studio_postmerge.li"
+outcome = "compile_ok"
+note = "Post-merge studio + sim physics stub rollup"
+
+[[tests]]
+suite = "composable"
 file = "composable/import_world_studio_benchmark_tier1.li"
 outcome = "compile_ok"
 note = "Competitive world-studio.toml tier-1 rollup"

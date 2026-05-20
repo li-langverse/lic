@@ -258,6 +258,26 @@ def sim_physics_runtime_deferred() -> int
 =
   return 0
 
+# Author-facing placeholder until sim_step_physics(world, physics_world) unifies packages.
+def sim_step_physics_stub(tick: int, tier: int, dt_millis: int) -> int
+  requires tick >= 0
+  requires tier >= 0
+  requires tier <= 3
+  requires dt_millis > 0
+  ensures result == tick + 1
+  decreases tick
+=
+  return tick + 1
+
+def sim_step_physics_smoke() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  if sim_step_physics_stub(0, 2, 16) != 1:
+    return 1
+  return sim_physics_runtime_deferred()
+
 def sim_world_studio_stack_smoke() -> int
   requires true
   ensures result == 0

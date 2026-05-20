@@ -448,6 +448,17 @@ def studio_merge_to_main_smoke() -> int
     return 3
   return studio_play_mode_smoke()
 
+def studio_postmerge_smoke() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  if studio_merge_to_main_smoke() != 0:
+    return 1
+  if studio_spinup_template_count_stub() != 12:
+    return 2
+  return studio_publish_smoke()
+
 # PH-GD-1 — binary runtime tag (impl-28; verify-world-studio-binary.sh).
 def studio_binary_runtime_tag_stub() -> int
   requires true

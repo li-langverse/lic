@@ -120,3 +120,16 @@ lic check my-game/main.li
 ```
 
 Templates: `deploy/world-studio-spinup/spinup.toml` (includes **play_mode**).
+
+```bash
+./scripts/list-world-studio-spinups.sh
+```
+
+## Physics step (deferred full API)
+
+```li
+import sim
+
+# Placeholder until sim_step_physics(world, physics_world) compiles across packages:
+sim_step_physics_stub(tick, tier, dt_millis)
+```

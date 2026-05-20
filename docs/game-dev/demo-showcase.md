@@ -17,8 +17,9 @@ The **killer GUI** is not yet the native Li Studio binary — it is an **HTML5 s
 | Drug LITL | Drug design | `sim.drug_design`, `chem`, `studio` |
 | Bioeng | DBTL + bioreactor | `bioeng`, `sim.scientific` |
 | MMO | Realms / shards | `mmo`, `store.realtime`, `world` |
+| Play | Game world + field | `studio`, `world`, `sim.scientific` (spin-up: `play_mode`) |
 
-Visuals are **illustrative**; simulation truth is in **63+ composable `lic check` gates**.
+Visuals are **illustrative**; simulation truth is in **130+ composable `lic check` gates**.
 
 ---
 
@@ -40,6 +41,7 @@ cd lic
 ./scripts/open-studio-demo.sh
 # or: python3 -m http.server 8765 --directory deploy/studio-demo
 # Publish tab: http://127.0.0.1:8765/?demo=publish
+# Play tab: http://127.0.0.1:8765/?demo=play
 # Open http://localhost:8765
 ```
 

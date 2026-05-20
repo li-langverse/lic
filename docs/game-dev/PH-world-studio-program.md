@@ -129,6 +129,7 @@ Cross-cutting program IDs. Implementation order respects dependencies in the vis
 | **126 composable** · play mode · publish field · ecosystem · milestone 121 | Done |
 | **130 composable** · play_mode spin-up (12) · demo Play tab · merge-ready | Done |
 | **132 composable** · merge_to_main · release_candidate · create-world-studio-pr | Done |
+| **135 composable** · sim_step_physics_stub · physics.runtime · postmerge | Done |
 | [li-native-first.mdc](../../.cursor/rules/li-native-first.mdc) | Done |
 | MMO-5 WebSocket stubs (`net.httpd`) | Done |
 | MMO-6 `world_checkpoint_mmo_stub` | Done |

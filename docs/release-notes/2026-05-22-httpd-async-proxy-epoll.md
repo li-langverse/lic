@@ -2,27 +2,30 @@
 
 ## Summary
 
-`runtime/li_rt_net.c` multiplexes reverse-proxy upstream I/O on the same epoll set as clients (edge-triggered relay state machine) so one blocked upstream no longer stalls the reactor; `proxy_loopback` ci ~**57k** li RPS vs ~**73k** nginx (~**0.79×**, up from ~0.46× sync tunnel).
+`runtime/li_rt_net.c` async epoll proxy now covers **chunked request bodies**, **upstream response header/body framing** (`Content-Length` / chunked), **`splice` relay** for large CL bodies, and **cached epoll MOD** masks; `proxy_loopback` ci ~**39k** li RPS vs ~**49k** nginx (~**0.81×**).
 
 ## Agent continuation
 
-1. **Read:** `runtime/li_rt_net.c` — `httpd_proxy_start_async`, `httpd_proxy_pump_relay`, `httpd_proxy_relay_maybe_done`, `g_httpd_epfd`.
-2. **Run:** `LI_REPO_ROOT=$PWD ./build/compiler/lic/lic build packages/li-net-httpd/src/lib.li -o build/li-httpd` then `LI_HTTPD_BIN=$PWD/build/li-httpd python3 ../benchmarks/vendor/lis-tier5/benchmarks/tier5_http/harness/bench_http.py proxy_loopback --profile ci`.
-3. **Then:** chunked POST async path (today still `httpd_proxy_forward` blocking); optional `splice` body relay; parse upstream `Content-Length` for stricter relay completion.
-4. **Blocked on:** none for this tranche; tier5 `lb_peer_down` verify flake is harness/backend-kill timing (separate).
+1. **Read:** `runtime/li_rt_net.c` — `httpd_proxy_try_send_chunked`, `httpd_proxy_resp_feed`, `httpd_proxy_resp_finish_headers`, `httpd_proxy_splice_once`, `proxy_client_epoll_events`.
+2. **Run:** `LI_REPO_ROOT=$PWD ./build/compiler/lic/lic build packages/li-net-httpd/src/lib.li -o build/li-httpd` then `LI_HTTPD_BIN=$PWD/build/li-httpd python3 <benchmarks>/vendor/lis-tier5/benchmarks/tier5_http/harness/bench_http.py proxy_loopback --profile ci`.
+3. **Then:** client pipelining during active proxy; non-blocking pool connect under saturation; optional Apache `mod_proxy` oracle in harness (benchmarks repo).
+4. **Blocked on:** none for tranches 1–2; merge via human review on PR #87.
 
 ## Changed
 
 | Area | Detail |
 |------|--------|
 | Async proxy | `httpd_slot_t` proxy phases (`SEND_REQ` / `SEND_BODY` / `RELAY`); upstream fd on `g_httpd_epfd`; `httpd_try_drain_once` returns `0` while proxy active |
-| Relay done | `httpd_proxy_relay_maybe_done` after first upstream bytes + `poll(POLLIN,0)<=0` (keep-alive safe, not EOF-only) |
-| Pool | `proxy_up_reuse = client keep-alive`; drain readable bytes on pool acquire/release; ET immediate `httpd_proxy_pump_relay` on `RELAY` entry |
-| Bench | `proxy_loopback` / `lb_*` ci rows emit `lang=li` RPS again (urllib verify no longer poisons pool) |
+| Chunked req | `httpd_proxy_try_send_chunked` — async pass-through; blocking `httpd_proxy_forward` removed from `httpd_try_drain_once` |
+| Response parse | `httpd_proxy_resp_feed` + `parse_response_body_meta_c`; forwards full upstream headers then body with CL/chunked/close completion |
+| Splice | `httpd_proxy_splice_once` (pipe2 + `splice`) for CL body relay ≥4 KiB when client outbuf empty |
+| Epoll | `proxy_*_epoll_events` caches skip redundant `epoll_ctl(MOD)` |
+| Relay done | `httpd_proxy_relay_maybe_done` uses `proxy_resp_body_left` / chunked terminal chunk, not poll-only |
+| Pool | `proxy_up_reuse = client keep-alive`; drain on pool acquire/release |
 
 ## Not changed
 
-- Chunked client bodies on proxy (still blocking `httpd_proxy_forward`)
+- Blocking `httpd_proxy_forward` still exists for non-epoll fallback paths (unused on Linux epoll serve)
 - TLS / HTTP/2 / WebSocket
 - `lic` compiler, `std/**`, master-plan PH order
 - benchmarks exploit TOMLs (weaponized still passes unchanged)
@@ -39,8 +42,8 @@ N/A — exploit profiles (`pr`, `weaponized`) still 0 fail with limits-based han
 
 | Scenario (ci) | nginx RPS | li RPS | li/nginx |
 |---------------|-----------|--------|----------|
-| proxy_loopback | ~73k | ~58k | ~0.79× |
-| lb_round_robin | ~69k | ~54k | ~0.78× |
+| proxy_loopback | ~49k | ~39k | ~0.81× |
+| lb_round_robin | N/A | N/A | re-run after merge |
 | static_small | ~84k | ~128k | ~1.5× |
 
 Evidence: local `harness/bench_http.py --profile ci` after `build/li-httpd`.

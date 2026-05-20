@@ -592,6 +592,11 @@ outcome = "verify_ok"
 
 [[tests]]
 suite = "encapsulation"
+file = "objects/object_whole_assign.li"
+outcome = "verify_ok"
+
+[[tests]]
+suite = "encapsulation"
 file = "encapsulation/import_parse.li"
 outcome = "verify_ok"
 

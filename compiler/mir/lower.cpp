@@ -59,6 +59,7 @@ struct LowerCtx {
   std::string proc_name;
   const ProcDecl* proc = nullptr;
   std::vector<LoopLabels>* loop_stack = nullptr;
+  const std::unordered_map<std::string, const TypeExpr*>* object_locals = nullptr;
 };
 std::string fresh_label(const std::string& prefix) {
   return prefix + std::to_string(temp_counter++);
@@ -239,6 +240,48 @@ void emit_copy_object_slots_r(const Module& module, const TypeExpr& te, const st
       out.push_back(std::move(ins));
     }
   }
+}
+
+void collect_object_local_types_r(const Module& module, const std::vector<Stmt>& stmts,
+                                  std::unordered_map<std::string, const TypeExpr*>& out) {
+  for (const auto& st : stmts) {
+    switch (st.kind) {
+      case Stmt::Kind::VarDecl:
+        if (object_alias_for_named_type(module, st.var_type)) {
+          out[st.var_name] = &st.var_type;
+        }
+        break;
+      case Stmt::Kind::If:
+        collect_object_local_types_r(module, st.then_body, out);
+        if (st.else_body) {
+          collect_object_local_types_r(module, *st.else_body, out);
+        }
+        break;
+      case Stmt::Kind::While:
+        collect_object_local_types_r(module, st.while_body, out);
+        break;
+      case Stmt::Kind::For:
+        collect_object_local_types_r(module, st.for_body, out);
+        break;
+      case Stmt::Kind::ParallelFor:
+        collect_object_local_types_r(module, st.par_body, out);
+        break;
+      default:
+        break;
+    }
+  }
+}
+
+std::unordered_map<std::string, const TypeExpr*> collect_object_local_types(const Module& module,
+                                                                            const ProcDecl& proc) {
+  std::unordered_map<std::string, const TypeExpr*> out;
+  for (const auto& p : proc.params) {
+    if (object_alias_for_named_type(module, p.type)) {
+      out[p.name] = &p.type;
+    }
+  }
+  collect_object_local_types_r(module, proc.body, out);
+  return out;
 }
 
 void collect_object_return_layout_r(const Module& module, const TypeExpr& te,
@@ -891,6 +934,29 @@ void lower_stmt(const Stmt& stmt, LowerCtx& ctx, bool returns_float, std::vector
           out.push_back(std::move(ins));
         }
       } else if (stmt.init && stmt.init->kind == Expr::Kind::Ident && stmt.expr) {
+        if (ctx.object_locals) {
+          const auto ol_it = ctx.object_locals->find(stmt.init->ident);
+          if (ol_it != ctx.object_locals->end()) {
+            const TypeExpr& oty = *ol_it->second;
+            const std::string dst_base = std::string("__li_o_") + stmt.init->ident;
+            if (stmt.expr->kind == Expr::Kind::Ident) {
+              emit_copy_object_slots_r(module, oty, std::string("__li_o_") + stmt.expr->ident,
+                                       dst_base, out);
+              break;
+            }
+            if (stmt.expr->kind == Expr::Kind::Call) {
+              const ProcDecl* c = find_proc(module, stmt.expr->ident);
+              if (c && c->ret_type && object_alias_for_named_type(module, *c->ret_type)) {
+                const std::string tmp =
+                    lower_expr_to(*stmt.expr, module, out, float_names, simd_names, i64_locals);
+                emit_copy_object_slots_r(module, oty, tmp, dst_base, out);
+                break;
+              }
+            }
+            (void)lower_expr_to(*stmt.expr, module, out, float_names, simd_names, i64_locals);
+            break;
+          }
+        }
         if (simd_names.count(stmt.init->ident) > 0) {
           const std::string tmp =
               lower_expr_to(*stmt.expr, module, out, float_names, simd_names, i64_locals);
@@ -939,7 +1005,7 @@ void lower_stmt(const Stmt& stmt, LowerCtx& ctx, bool returns_float, std::vector
       std::unordered_set<std::string> par_simd;
       std::unordered_set<std::string> par_float_arrays;
       std::unordered_set<std::string> par_i64s;
-      LowerCtx par_ctx{ctx.module, ctx.mir, par_name, nullptr, nullptr};
+      LowerCtx par_ctx{ctx.module, ctx.mir, par_name, nullptr, nullptr, ctx.object_locals};
       lower_stmts(stmt.par_body, par_ctx, false, par_fn.body, par_floats, par_simd,
                   par_float_arrays, par_i64s);
       append_implicit_return(par_fn.body);
@@ -1163,7 +1229,9 @@ MirModule lower_to_mir(const Module& module) {
       seed_float_params(fn, float_names);
       seed_i64_params(fn, i64_locals);
       std::vector<LoopLabels> loop_stack;
-      LowerCtx ctx{&module, &mir, proc.name, &proc, &loop_stack};
+      std::unordered_map<std::string, const TypeExpr*> object_local_types =
+          collect_object_local_types(module, proc);
+      LowerCtx ctx{&module, &mir, proc.name, &proc, &loop_stack, &object_local_types};
       lower_stmts(proc.body, ctx, fn.returns_float, fn.body, float_names, simd_names,
                   float_array_names, i64_locals);
       if (is_async_fn) {

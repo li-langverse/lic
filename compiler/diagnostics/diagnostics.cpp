@@ -81,6 +81,9 @@ std::string infer_diagnostic_code(std::string_view message) {
   if (has("ensures true") || has("weak postcondition")) {
     return "E0303";
   }
+  if (has("does not satisfy callee")) {
+    return "E0304";
+  }
   if (has("contract") || has("requires") || has("ensures")) {
     return "E0301";
   }
@@ -115,6 +118,9 @@ std::string agent_diagnostic_code(std::string_view code) {
   }
   if (code == "E0303") {
     return "contract.weak_ensures";
+  }
+  if (code == "E0304") {
+    return "contract.callee_requires";
   }
   if (code == "E0320") {
     return "parallel.disjoint";

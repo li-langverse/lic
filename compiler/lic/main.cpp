@@ -389,6 +389,15 @@ int main(int argc, char** argv) {
     if (!li::write_vcs_lean(module, vc_lean, &err)) {
       std::cerr << "vc emit: " << err << '\n';
     }
+    if (std::getenv("LI_ALLOW_OPEN_VC") == nullptr) {
+      const int open = count_open_autovc_goals();
+      if (open > 0) {
+        std::cerr << "lic build: " << open
+                  << " open proof obligation(s) in build/generated/AutoVC.lean\n";
+        std::cerr << "hint: discharge in Lean or set LI_ALLOW_OPEN_VC=1 for emergency bypass\n";
+        return 1;
+      }
+    }
     if (std::getenv("LI_BUILD_VERIFY_LEAN") != nullptr) {
       return verify_file(input, true, false);
     }

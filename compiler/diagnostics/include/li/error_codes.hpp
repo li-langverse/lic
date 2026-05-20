@@ -15,6 +15,7 @@ enum class ErrorCode {
   E0301,  // contract.missing_requires
   E0302,  // contract.missing_ensures
   E0303,  // contract.weak_ensures_true
+  E0304,  // contract.callee_requires_not_met
   E0310,  // borrow.conflict
   E0311,  // borrow.use_after_move
   E0320,  // policy.parallel_disjoint

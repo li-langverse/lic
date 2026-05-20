@@ -20,4 +20,8 @@ fi
 "$ROOT/li-tests/tooling/discharge_trivial_lean.sh"
 chmod +x "$ROOT/li-tests/tooling/discharge_caller_requires_lean.sh"
 "$ROOT/li-tests/tooling/discharge_caller_requires_lean.sh"
+chmod +x "$ROOT/li-tests/tooling/discharge_caller_requires_local_lean.sh" \
+  "$ROOT/li-tests/tooling/discharge_import_requires_lean.sh"
+"$ROOT/li-tests/tooling/discharge_caller_requires_local_lean.sh"
+"$ROOT/li-tests/tooling/discharge_import_requires_lean.sh"
 echo "contracts_verify_lean: ok"

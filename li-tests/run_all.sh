@@ -82,6 +82,15 @@ run_one() {
         fail=$((fail + 1))
       fi
       ;;
+    verify_open_ok)
+      if LI_ALLOW_OPEN_VC=1 "$LIC" build "$path" -o "$NULL_OUT" 2>/dev/null; then
+        li_test_pass "verify_open_ok $file"
+        pass=$((pass + 1))
+      else
+        li_test_fail "verify_open_ok $file"
+        fail=$((fail + 1))
+      fi
+      ;;
     compile_fail|verify_fail)
       local err
       err="$("$LIC" build "$path" -o "$NULL_OUT" 2>&1)" || true

@@ -163,7 +163,7 @@ outcome = "verify_ok"
 [[tests]]
 suite = "contracts_verify"
 file = "contracts_verify/sqrt_open_bound.li"
-outcome = "verify_ok"
+outcome = "verify_open_ok"
 
 [[tests]]
 suite = "contracts_verify"
@@ -183,6 +183,22 @@ outcome = "verify_ok"
 [[tests]]
 suite = "contracts_verify"
 file = "contracts_verify/caller_requires_ok.li"
+outcome = "verify_ok"
+
+[[tests]]
+suite = "contracts_verify"
+file = "contracts_verify/caller_requires_local_ok.li"
+outcome = "verify_ok"
+
+[[tests]]
+suite = "contracts_verify"
+file = "contracts_verify/caller_requires_fail.li"
+outcome = "compile_fail"
+expected_substr = "E0304"
+
+[[tests]]
+suite = "contracts_verify"
+file = "contracts_verify/extern_call_requires_ok.li"
 outcome = "verify_ok"
 
 # --- borrow ---
@@ -712,6 +728,11 @@ outcome = "verify_ok"
 [[tests]]
 suite = "modules"
 file = "modules/use_greeter.li"
+outcome = "verify_ok"
+
+[[tests]]
+suite = "modules"
+file = "modules/use_positive.li"
 outcome = "verify_ok"
 
 # --- cve_patterns (C memory-safety classes — must reject or prove safe) ---

@@ -1,6 +1,7 @@
 #include "li/typecheck.hpp"
 
 #include "li/borrowck.hpp"
+#include "li/call_requires.hpp"
 #include "li/error_codes.hpp"
 #include "li/numeric_types.hpp"
 
@@ -103,6 +104,7 @@ struct Ctx {
   std::map<std::string, AliasEntry> aliases;
   std::map<std::string, const ProcDecl*> procs;
   std::map<std::string, TyPtr> locals;
+  std::map<std::string, std::int64_t> const_int_locals;
   std::map<std::string, TyPtr> type_vars;
   std::set<std::string> refined_index_params;
   std::set<std::string> loop_index_vars;
@@ -665,6 +667,7 @@ struct Ctx {
           for (const auto& arg : e.args) {
             (void)type_of(*arg);
           }
+          check_call_args(e);
           if (callee.ret_type) {
             return resolve_type_expr(*callee.ret_type);
           }
@@ -673,6 +676,7 @@ struct Ctx {
         for (const auto& arg : e.args) {
           (void)type_of(*arg);
         }
+        check_call_args(e);
         return make_int();
       }
       case Expr::Kind::UnaryNot:
@@ -746,12 +750,28 @@ struct Ctx {
     return make_int();
   }
 
+  void record_const_int_binding(const std::string& name, const Expr& init) {
+    if (init.kind == Expr::Kind::IntLit) {
+      const_int_locals[name] = init.int_value;
+      return;
+    }
+    if (init.kind == Expr::Kind::Ident) {
+      const auto it = const_int_locals.find(init.ident);
+      if (it != const_int_locals.end()) {
+        const_int_locals[name] = it->second;
+      }
+    }
+  }
+
   void check_call_args(const Expr& call) {
     if (call.kind != Expr::Kind::Call) {
       return;
     }
     const auto it = procs.find(call.ident);
     if (it == procs.end()) {
+      diag_error(diags, loc(call.span), ErrorCode::E0202,
+                 "Call to unknown function '" + call.ident + "'.",
+                 "Define the function in this module or import it with `import`.");
       return;
     }
     const ProcDecl& callee = *it->second;
@@ -766,6 +786,12 @@ struct Ctx {
           diags.error(loc(call.span), "argument type mismatch in call to '" + call.ident + "'");
         }
       }
+    }
+    const RequiresCheckResult req = check_requires_at_call(callee, call, const_int_locals);
+    if (req == RequiresCheckResult::Violated) {
+      diag_error(diags, loc(call.span), ErrorCode::E0304,
+                 "Call to '" + call.ident + "' does not satisfy callee `requires`.",
+                 "Adjust arguments or strengthen caller facts so the precondition holds.");
     }
   }
 
@@ -782,6 +808,7 @@ struct Ctx {
             diags.error(loc(s.span), "variable type mismatch");
           }
         }
+        record_const_int_binding(s.var_name, *s.init);
       }
       locals[s.var_name] = declared;
       return;
@@ -884,14 +911,13 @@ struct Ctx {
       return;
     }
     if (s.kind == Stmt::Kind::Assign && s.init && s.expr) {
-      type_of(*s.init);
       type_of(*s.expr);
+      if (s.init->kind == Expr::Kind::Ident) {
+        record_const_int_binding(s.init->ident, *s.expr);
+      }
       return;
     }
     if (s.expr) {
-      if (s.expr->kind == Expr::Kind::Call) {
-        check_call_args(*s.expr);
-      }
       type_of(*s.expr);
     }
   }
@@ -984,6 +1010,7 @@ struct Ctx {
     }
     check_weak_ensures(p);
     locals.clear();
+    const_int_locals.clear();
     type_vars.clear();
     refined_index_params.clear();
     loop_index_vars.clear();
@@ -1002,12 +1029,6 @@ struct Ctx {
       locals[param.name] = pt;
     }
     for (const auto& s : p.body) {
-      if (s.kind == Stmt::Kind::Return && s.expr && ret_ty) {
-        const TyPtr got = type_of(*s.expr);
-        if (!assignable(got, *ret_ty)) {
-          diags.error(loc(s.span), "return type mismatch for generic type parameter");
-        }
-      }
       check_stmt(s);
     }
     in_async = prev_async;
@@ -1019,7 +1040,7 @@ struct Ctx {
 TypecheckResult typecheck_module(const Module& module) {
   TypecheckResult result;
   DiagnosticBag& diags = result.diagnostics;
-  Ctx ctx{{}, {}, {}, {}, {}, {}, 0, false, diags, "module"};
+  Ctx ctx{{}, {}, {}, {}, {}, {}, {}, 0, false, diags, "module"};
   for (const auto& proc : module.procs) {
     ctx.procs[proc.name] = &proc;
   }

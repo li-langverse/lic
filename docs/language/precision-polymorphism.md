@@ -94,6 +94,16 @@ type Block[S] = array[4, S]
 
 Prefer `array[64, Real]` with `type Real = float32` for production packages today.
 
+### Compiler maturity (honest)
+
+| Feature | Status |
+|---------|--------|
+| Pattern A `type Real = float32` | Typecheck + build ✓ — `li-tests/generics/precision_real_alias.li` |
+| Pattern B `def f[S](x: S) -> S` | Definition ✓ — `precision_generic_fn.li`, `identity.li` |
+| Pattern B calls `f(1.0f32, …)` from `main` | Call-site monomorph — **in progress** |
+| `ensures` with `*` on generic `S` | Prefer `ensures true` or Pattern A until contract typing catches up |
+| `return 1.0f32` from `-> float32` | Prefer `return x` (variable) until LLVM width lowering is complete |
+
 ### Contract pitfalls
 
 | Bad | Why |

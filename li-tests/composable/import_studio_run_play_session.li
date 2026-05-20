@@ -7,4 +7,4 @@ def main() -> int
 =
   if li_studio_version() < 11:
     return 1
-  return studio_merge_to_main_smoke()
+  return run_play_session_smoke()

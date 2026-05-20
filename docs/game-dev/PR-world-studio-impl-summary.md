@@ -2,11 +2,11 @@
 
 **Purpose:** Land World Studio / Li Engine (impl-1…impl-40): Li-native game world, scientific fields, studio shell, MMO/store/httpd, competitive GW/SF path, author APIs.
 
-## Stats (impl-40)
+## Stats (impl-43)
 
 | Metric | Value |
 |--------|--------|
-| Composable gates | **130** |
+| Composable gates | **139** |
 | Milestone gates | 100 (impl-32) · 121 (impl-39) · **130** (impl-40) |
 | Spin-up templates | **12** (incl. `play_mode`) |
 | Demo tabs | **13** (incl. **Play**) |

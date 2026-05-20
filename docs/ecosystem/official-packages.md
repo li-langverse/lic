@@ -18,3 +18,5 @@
 | `PKG-li-httpd` | [`li-langverse/li-httpd`](https://github.com/li-langverse/li-httpd) | HTTP gateway (Phase H — stub) |
 
 Add rows via PR to the **roadmap** repo (human merge). **Active claims:** [active-agent-claims.md](active-agent-claims.md).
+
+**World Studio (monorepo, pre-registry):** [world-studio-packages.md](world-studio-packages.md) — `studio`, `world`, `sim.scientific`, … on branch `feat/world-studio-impl-1`.

@@ -29,7 +29,7 @@ gh pr create \
 
 | Metric | Value |
 |--------|--------|
-| Composable gates | **132** (milestone 130) |
+| Composable gates | **139** (preflight 140 rollup) |
 | Spin-up templates | **12** (`play_mode`) |
 | Demo tabs | 13 |
 | Vertical demos | 7 |

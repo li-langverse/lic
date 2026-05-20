@@ -1,7 +1,7 @@
 # World Studio / Li Engine — progress report
 
 **Branch:** `feat/world-studio-impl-1`  
-**Sprint:** impl-42 (2026-05)  
+**Sprint:** impl-43 (2026-05)  
 **Architecture:** [specs/world-architecture-competitive-rfc.md](specs/world-architecture-competitive-rfc.md)
 
 ---
@@ -10,7 +10,7 @@
 
 | Metric | Value |
 |--------|--------|
-| **Composable gates** | **135** (target) |
+| **Composable gates** | **139** (target) |
 | **Milestone** | **121** composable (impl-39) · **130** (impl-40) |
 | **World model** | **GameWorld** GW-0–4 + **SimField** SF-0–3 + **RealmHead** |
 | **Author API** | [world-api-quickstart.md](world-api-quickstart.md) |
@@ -18,6 +18,14 @@
 | **Demo tabs** | **13** (Play) |
 
 ---
+
+## Sprint impl-43 — run_play_session + agent onboarding
+
+| Deliverable | State |
+|-------------|--------|
+| `run_play_session` one-call play loop | ✅ |
+| `step_physics` alias · sim/physics bridge composable | ✅ |
+| `studio_preflight_140_smoke` | ✅ |
 
 ## Sprint impl-42 — physics stub + post-merge
 
@@ -108,4 +116,4 @@
 
 ---
 
-*impl-41 · merge-to-main · release candidate · PR script*
+*impl-43 · run_play_session · agent onboarding · 139 gates*

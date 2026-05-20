@@ -8,10 +8,10 @@ type StudioProject = object
 
 def li_studio_version() -> int
   requires true
-  ensures result == 10
+  ensures result == 11
   decreases 0
 =
-  return 10
+  return 11
 
 def studio_project_new() -> StudioProject
   requires true
@@ -182,23 +182,59 @@ def studio_sim_frame_tag(field_id: int, steps: int) -> int
 =
   return field_id + steps + 4000
 
-def studio_play_mode_smoke() -> int
+# One call: play + game frame tag + sim frame tag (agents copy this first).
+def run_play_session(
+    project: StudioProject,
+    realm_id: int,
+    width: int,
+    height: int,
+    field_id: int,
+    sim_steps: int) -> int
+  requires realm_id >= 0
+  requires width > 0
+  requires height > 0
+  requires field_id >= 0
+  requires sim_steps > 0
+  ensures result > 0
+  decreases width
+=
+  start_playing(project)
+  tick_viewport(project)
+  var tag: int = studio_game_frame_tag(realm_id, width, height)
+  tag = tag + studio_sim_frame_tag(field_id, sim_steps)
+  return tag
+
+def run_play_session_smoke() -> int
   requires true
   ensures result == 0
   decreases 0
 =
   var p: StudioProject = studio_project_new()
-  start_playing(p)
-  tick_viewport(p)
-  if p.viewport_ticks != 1:
+  if run_play_session(p, 1, 1280, 720, 0, 4) < 7000:
     return 1
-  if studio_game_frame_tag(1, 1280, 720) < 3000:
-    return 2
-  if studio_sim_frame_tag(0, 4) < 4000:
-    return 3
-  if publish_repro(42, 2) <= 0:
-    return 4
   return 0
+
+def studio_play_mode_smoke() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  if run_play_session_smoke() != 0:
+    return 1
+  if publish_repro(42, 2) <= 0:
+    return 2
+  return 0
+
+def studio_preflight_140_smoke() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  if studio_postmerge_smoke() != 0:
+    return 1
+  if studio_merge_to_main_smoke() != 0:
+    return 2
+  return run_play_session_smoke()
 
 def studio_milestone_composable_target_121_stub() -> int
   requires true

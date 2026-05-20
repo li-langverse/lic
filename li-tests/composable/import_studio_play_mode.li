@@ -5,6 +5,6 @@ def main() -> int
   ensures result == 0
   decreases 0
 =
-  if li_studio_version() < 10:
+  if li_studio_version() < 11:
     return 1
   return studio_play_mode_smoke()

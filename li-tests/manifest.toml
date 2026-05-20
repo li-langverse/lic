@@ -1243,6 +1243,30 @@ note = "Post-merge studio + sim physics stub rollup"
 
 [[tests]]
 suite = "composable"
+file = "composable/import_studio_run_play_session.li"
+outcome = "compile_ok"
+note = "run_play_session one-call play loop"
+
+[[tests]]
+suite = "composable"
+file = "composable/import_sim_physics_bridge.li"
+outcome = "compile_ok"
+note = "sim step_physics + physics.runtime bridge"
+
+[[tests]]
+suite = "composable"
+file = "composable/import_world_studio_preflight_140.li"
+outcome = "compile_ok"
+note = "Preflight 140 merge rollup"
+
+[[tests]]
+suite = "composable"
+file = "composable/import_world_studio_agent_onboarding.li"
+outcome = "compile_ok"
+note = "Agent onboarding play + world + field"
+
+[[tests]]
+suite = "composable"
 file = "composable/import_world_studio_benchmark_tier1.li"
 outcome = "compile_ok"
 note = "Competitive world-studio.toml tier-1 rollup"

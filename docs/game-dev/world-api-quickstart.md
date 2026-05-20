@@ -70,23 +70,29 @@ def frame(world: GameWorld) -> int
 
 ## Studio play mode
 
+**Easiest path — one call:**
+
 ```li
 import studio
 
-def main() -> int
-=
-  var project: StudioProject = studio_project_new()
-  start_playing(project)
-  tick_viewport(project)
-  return studio_game_frame_tag(1, 1280, 720)
+var project = studio_project_new()
+run_play_session(project, realm_id, width, height, field_id, sim_steps)
+```
+
+**Manual steps** (when you need control):
+
+```li
+start_playing(project)
+tick_viewport(project)
+studio_game_frame_tag(realm_id, width, height)
+studio_sim_frame_tag(field_id, steps)
 ```
 
 | You want | Call |
 |----------|------|
+| Full play loop | `run_play_session(project, realm, w, h, field_id, steps)` |
 | Start / stop | `start_playing(project)` · `stop_playing(project)` |
 | Viewport tick | `tick_viewport(project)` |
-| Game frame tag | `studio_game_frame_tag(realm_id, width, height)` |
-| Sim frame tag | `studio_sim_frame_tag(field_id, steps)` |
 | Publish repro | `publish_repro(manifest_hash, file_count)` |
 | Field → publish | `publish_field_checkpoint(manifest_hash, file_count)` |
 
@@ -131,5 +137,6 @@ Templates: `deploy/world-studio-spinup/spinup.toml` (includes **play_mode**).
 import sim
 
 # Placeholder until sim_step_physics(world, physics_world) compiles across packages:
-sim_step_physics_stub(tick, tier, dt_millis)
+step_physics(tick, tier, dt_millis)
+# same as sim_step_physics_stub(...)
 ```

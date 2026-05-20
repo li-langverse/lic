@@ -278,6 +278,16 @@ def sim_step_physics_smoke() -> int
     return 1
   return sim_physics_runtime_deferred()
 
+# Alias for authors (same as sim_step_physics_stub).
+def step_physics(tick: int, tier: int, dt_millis: int) -> int
+  requires tick >= 0
+  requires tier >= 0
+  requires tier <= 3
+  requires dt_millis > 0
+  decreases tick
+=
+  return sim_step_physics_stub(tick, tier, dt_millis)
+
 def sim_world_studio_stack_smoke() -> int
   requires true
   ensures result == 0

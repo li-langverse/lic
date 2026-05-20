@@ -27,4 +27,4 @@ alwaysApply: false
 
 ## httpd
 
-`packages/li-httpd` targets `httpd_serve` / `httpd_stop` / `httpd_ready` on `HttpdHandle`. **Do not claim M1 complete** until [httpd-prerequisites.md](../../docs/ecosystem/httpd-prerequisites.md) P0 rows are green and routing tests exist.
+`packages/li-net-httpd` (org mirror `li-httpd`) targets `httpd_serve` / `httpd_stop` / `httpd_ready` on `HttpdHandle` in **Li** — see **li-li-only-outside-lic.mdc**. **Do not claim M1 complete** until [httpd-prerequisites.md](../../docs/ecosystem/httpd-prerequisites.md) P0 rows are green, routing tests exist, and serve loop is not a monolithic C `httpd_serve_static_blocking`.

@@ -1,0 +1,38 @@
+---
+description: Keep application logic in Li; runtime C is syscall shim only — no monolithic servers in li_rt_*.c
+alwaysApply: true
+---
+
+# Li-first in `lic` (runtime seam discipline)
+
+**Canonical org rule:** Li-only product code in every repo **except** trusted C in `lic/runtime/`.  
+(See sibling template `li-li-only-outside-lic.mdc` in **benchmarks** / **roadmap** agent-kit.)
+
+## In this repo
+
+| Layer | Location | What belongs there |
+|-------|----------|-------------------|
+| **Product** | `packages/*/src/*.li`, `std/**` | HTTP serve loop, parsers, routing, config |
+| **Trusted seam** | `runtime/li_rt*.c` | Syscalls, ABI, `sendfile`, nonblocking/epoll **primitives** |
+| **Compiler** | `compiler/**` | Lowering, codegen — not HTTP handlers |
+
+## Forbidden
+
+- New **application** HTTP/TCP logic in `runtime/li_rt_net.c` beyond thin `extern proc` targets.
+- `packages/*` shipping `.c` sources or `#include` of runtime internals.
+- Declaring `extern proc` in `std/` with bodies outside `runtime/` audit list.
+
+## `li-net-httpd` / `li-httpd`
+
+- **Target:** `packages/li-net-httpd/src/lib.li` owns `httpd_serve` (keep-alive, pipeline, static map).
+- **Shims:** `tcp_*`, optional `tcp_sendfile`, `tcp_set_nodelay` — small, contract-backed `extern proc`.
+- **CLI:** `main.li` stays thin (`httpd_run_from_argv` or Li arg parse only).
+
+## Temporary bench exception
+
+`httpd_serve_static_blocking` in C is **tier-5 debt** — do not extend it for features (TLS, routing tables, middleware).  
+Port to Li when P0-bytes/net/async allow; update [httpd-prerequisites.md](../../docs/ecosystem/httpd-prerequisites.md).
+
+## PR gate
+
+Before merge: if the diff adds **>~50 lines** of HTTP semantics in `runtime/`, require a linked issue to port the same behavior to `.li` in the same or next PH tranche.

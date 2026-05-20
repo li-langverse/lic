@@ -20,7 +20,7 @@ Upgrades `runtime/li_rt_net.c` so tier-5 `li-httpd` matches or beats stock nginx
 
 ## Not changed
 
-- `packages/li-net-httpd/src/*.li` API surface (`httpd_serve_static_blocking` unchanged).
+- **Li serve loop** — still delegated to C `httpd_serve_static_blocking` (tier-5 debt; port to `packages/li-net-httpd/src/*.li` per **li-li-only-outside-lic** rule).
 - TLS, HTTP/2, path traversal hardening beyond bench fixture.
 - **lis** harness (`bench_http.py`) — no code change required; uses `LI_HTTPD_BIN`.
 

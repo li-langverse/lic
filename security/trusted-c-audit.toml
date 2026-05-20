@@ -61,6 +61,12 @@ cwe = "CWE-20"
 mitigation = "priority-ordered first match; normalize request path"
 cve_refs = []
 
+[[file.functions]]
+name = "li_rt_httpd_explain_config"
+cwe = "CWE-200"
+mitigation = "read-only config path; stdout canonical routes only"
+cve_refs = []
+
 [[file]]
 path = "benchmarks/tier2_physics/md_lennard_jones/common/md_core.c"
 status = "active"

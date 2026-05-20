@@ -389,7 +389,7 @@ Track in phase **Doc** until each is checked:
 - [ ] Phase 7d — Execution decorators — **partial (7d-a/b/d/e/c):** AST `check_module_policies` for disjoint; string heuristics for race exploits
 - [ ] Phase 7e — Math → SIMD/parallel lowering — **partial:** `ArrayDotF64` for 1d `float` `@`; SIMD matmul deferred
 - [x] Phase H — li-httpd infra — **`lis`** harness, mitigations, CI, workspace stubs ([implementation-status](https://github.com/li-langverse/lis/blob/main/docs/implementation-status.md))
-- [x] Phase H — li-httpd M1 `.li` — **partial:** `match_route_fixture` + **`load_routes_from_toml` / `match_route`** (`runtime/li_rt_httpd.c`, `li-tests/routing/match_routes_toml.li`); **next:** pure-Li TOML parse, config reject in `lic build`, serve loop ([httpd-prerequisites](../ecosystem/httpd-prerequisites.md))
+- [x] Phase H — li-httpd M1 `.li` — **partial:** TOML `match_route` + **`lic httpd explain-config`** + `verify_open_ok` httpd/routing manifest; **next:** pure-Li TOML, config diagnostics in `lic build`, serve loop ([httpd-prerequisites](../ecosystem/httpd-prerequisites.md))
 - [x] Phase Pkg — Package scaffold + governance stubs ([scaffold](2026-05-16-li-package-scaffold.md), [governance](2026-05-16-li-ecosystem-governance.md); `li.toml` = [lip § A3](2026-05-16-li-package-manager-lip.md))
 - [x] Phase 8-repo — [`lic`](https://github.com/li-langverse/lic), [`lip`](https://github.com/li-langverse/lip), [`lit`](https://github.com/li-langverse/lit) on GitHub + CI
 - [x] Phase 8a — Modules + workspace `lic build` — `std.*` + workspace/local imports; `li-tests/modules/`; `lic-workspace-build.sh` on 3 packages

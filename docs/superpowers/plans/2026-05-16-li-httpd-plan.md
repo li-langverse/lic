@@ -32,6 +32,9 @@ todos:
   - id: m1-toml-desugar
     content: Simple TOML desugar + config_desugar golden tests + explain-config CLI
     status: in_progress
+  - id: m1-explain-config-cli
+    content: "lic httpd explain-config + check-httpd-explain-config.sh golden"
+    status: completed
   - id: m15-agent
     content: "M1.5: SSE streaming, stream timeouts, model routing, cancel on disconnect, OTel headers"
     status: pending

@@ -36,6 +36,7 @@ int usage() {
             << "                       [--threads=N] [--jobs=N] [--max-memory=MB]\n"
             << "                       [--coverage-instrument]\n"
             << "  lic smoke-llvm         verify LLVM can emit main returning 0\n"
+            << "  lic httpd explain-config <file.toml>  desugar [routes] to canonical form\n"
             << "  lic --version          print version\n"
             << "\n"
             << "resource defaults (override via flags or env):\n"
@@ -45,6 +46,45 @@ int usage() {
             << "  --threads=N / LI_OMP_THREADS — OpenMP team size at run time\n"
             << "  --numerically-stable / LI_FP_NUMERICALLY_STABLE=1 — cancellation-safe FP\n";
   return 1;
+}
+
+std::filesystem::path resolve_httpd_config_script() {
+  if (const char* root = std::getenv("LI_REPO_ROOT")) {
+    const std::filesystem::path p =
+        std::filesystem::path(root) / "scripts" / "httpd_config.py";
+    if (std::filesystem::exists(p)) {
+      return p;
+    }
+  }
+  const std::filesystem::path candidates[] = {
+      std::filesystem::path("scripts/httpd_config.py"),
+      std::filesystem::path("../scripts/httpd_config.py"),
+  };
+  for (const auto& c : candidates) {
+    if (std::filesystem::exists(c)) {
+      return std::filesystem::absolute(c);
+    }
+  }
+  return {};
+}
+
+int httpd_explain_config(int argc, char** argv) {
+  if (argc < 4 || std::string_view(argv[2]) != "explain-config") {
+    std::cerr << "usage: lic httpd explain-config <config.toml>\n";
+    return 1;
+  }
+  const std::filesystem::path script = resolve_httpd_config_script();
+  if (script.empty()) {
+    std::cerr << "lic: cannot find scripts/httpd_config.py (set LI_REPO_ROOT)\n";
+    return 1;
+  }
+  std::ostringstream cmd;
+  cmd << "python3 \"" << script.string() << "\" \"" << argv[3] << "\" --explain";
+  const int rc = std::system(cmd.str().c_str());
+  if (rc != 0) {
+    return 1;
+  }
+  return 0;
 }
 
 bool apply_resource_flag(std::string_view arg) {
@@ -356,6 +396,9 @@ int main(int argc, char** argv) {
       }
     }
     return verify_file(argv[2], run_lean, strict_lean);
+  }
+  if (cmd == "httpd") {
+    return httpd_explain_config(argc, argv);
   }
   if (cmd == "build") {
     if (argc < 3) {

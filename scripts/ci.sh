@@ -47,7 +47,9 @@ chmod +x "$ROOT/scripts/ci-security.sh"
 "$ROOT/scripts/ci-security.sh"
 
 li_phase "httpd config + routing (M1 prep)"
-chmod +x "$ROOT/li-tests/run_httpd_config.sh"
+chmod +x "$ROOT/li-tests/run_httpd_config.sh" \
+  "$ROOT/scripts/li-httpd-explain-config.sh" \
+  "$ROOT/scripts/check-httpd-explain-config.sh"
 "$ROOT/li-tests/run_httpd_config.sh"
 
 li_phase "E2E li-tests (full manifest)"

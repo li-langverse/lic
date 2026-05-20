@@ -184,10 +184,18 @@ See [CAPTURE.md](CAPTURE.md). Priority frames:
 
 ## Appendix: competitor one-pagers
 
+**By dimension (full UX matrix):** [ui-ux-by-dimension.md](ui-ux-by-dimension.md)
+
 - [by-competitor/unreal-engine.md](by-competitor/unreal-engine.md)  
 - [by-competitor/unity.md](by-competitor/unity.md)  
 - [by-competitor/godot.md](by-competitor/godot.md)  
 - [by-competitor/roblox-studio.md](by-competitor/roblox-studio.md)  
 - [by-competitor/blender.md](by-competitor/blender.md)  
 - [by-competitor/figma.md](by-competitor/figma.md)  
-- [by-competitor/fortnite-uefn.md](by-competitor/fortnite-uefn.md)
+- [by-competitor/fortnite-uefn.md](by-competitor/fortnite-uefn.md)  
+- [by-competitor/paraview.md](by-competitor/paraview.md)  
+- [by-competitor/comsol.md](by-competitor/comsol.md)  
+- [by-competitor/cura.md](by-competitor/cura.md)  
+- [by-competitor/cursor.md](by-competitor/cursor.md)  
+- [by-competitor/houdini.md](by-competitor/houdini.md)  
+- [by-competitor/benchling.md](by-competitor/benchling.md)

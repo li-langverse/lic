@@ -15,8 +15,9 @@
 
 ## Quick use
 
-1. Read **recent-published.md** for latest announcements and demo videos.  
-2. Read **analysis.md** for product decisions.  
+1. Read **ui-ux-by-dimension.md** for per-industry UI/UX patterns and Li mapping.  
+2. Read **recent-published.md** for latest announcements and demo videos.  
+3. Read **analysis.md** for product decisions.  
 3. Use **media-catalog.md** for full URL tables and screenshot sources.  
 4. **Checkout reference media locally** (not in git):
    ```bash

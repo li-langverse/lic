@@ -41,6 +41,8 @@ Incumbents **fork products** (game engine vs CFD GUI vs CAD vs LIMS vs slicer) a
 
 ## 2. What works best (cross-domain) — steal the pattern, not the app
 
+**Full per-dimension analysis (14 industries):** [competitive-intel/ui-ux-by-dimension.md](competitive-intel/ui-ux-by-dimension.md)
+
 ### 2.1 Spatial + hierarchical (every serious tool)
 
 | Pattern | Games | Sim / CAE | CAD / AM | DCC | Li surface |

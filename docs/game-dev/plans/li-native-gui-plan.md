@@ -20,7 +20,7 @@
 | 0.5 | 2026-05 | **Unified UX vision** — game + sim + CAD + agent; see [unified-studio-ux-vision.md](../unified-studio-ux-vision.md) |
 | 0.5.1 | 2026-05 | **Four killers + proof** — [product-north-star.md](../product-north-star.md) |
 
-**Product north star:** [product-north-star.md](../product-north-star.md) · **UX:** [unified-studio-ux-vision.md](../unified-studio-ux-vision.md)
+**Product north star:** [product-north-star.md](../product-north-star.md) · **UX:** [unified-studio-ux-vision.md](../unified-studio-ux-vision.md) · **Competitive UI:** [ui-ux-by-dimension.md](../competitive-intel/ui-ux-by-dimension.md)
 
 ---
 
@@ -162,6 +162,8 @@ Same chrome as games — **profile-adaptive panels**, not a second app. Full cro
 | P14 | **Deterministic takes** — same `seq` + seed → same frame hash (replay for video) |
 | P15 | **Agents edit timelines** — `seq_track_id`, `shot_id` in manifest |
 | P16 | **Creators export video** — preset + `lic build` + publish bundle |
+| P17 | **Proof visible in chrome** — gate chip, validity badge, publish hash ([product-north-star](../product-north-star.md)) |
+| P18 | **Perf honest in UI** — status overlay cites bench row + ratio, not fake FPS |
 
 ---
 

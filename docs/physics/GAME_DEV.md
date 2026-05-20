@@ -62,7 +62,8 @@ Catalog + dashboard: `li-langverse/benchmarks` `catalog.toml` → ingest.
 2. **Scene sync** — implement `physics_sync_from_scene` / `physics_sync_to_scene` bodies when binding to entities.  
 3. **Prove game step** — game logic `def game_step(...) ensures …` calls `physics_step` under contract (see `examples/tetris/` pattern).  
 4. **Validate** — tier-0 + tier-2 green; render GIFs via benchmarks `render-benchmark-visuals.sh`.  
-5. **Numerics** — skill `research-li-numerics`; study doc for novel integrators.
+5. **Numerics** — skill `research-li-numerics`; study doc for novel integrators.  
+6. **Scalar precision** — per-sim `PhysicsProfile.float_bits` / `ScalarPrecision`; see [Scalar precision](../language/scalar-precision.md) (`float32`, `binary` weights — not org-enforced).
 
 ---
 

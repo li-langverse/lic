@@ -1,4 +1,5 @@
 #include "li/mir.hpp"
+#include "li/numeric_types.hpp"
 #include "li/prelude.hpp"
 
 #include <algorithm>
@@ -31,7 +32,10 @@ void copy_decorators(const std::vector<Decorator>& src, std::vector<MirDecorator
 }
 
 bool is_float_type_name(const std::string& n) {
-  return n == "float" || n == "f64" || n == "float64";
+  if (const auto scalar = li::lookup_numeric_scalar(n)) {
+    return scalar->kind == li::NumericScalarKind::Float;
+  }
+  return false;
 }
 
 bool is_simd_type(const TypeExpr& t) {

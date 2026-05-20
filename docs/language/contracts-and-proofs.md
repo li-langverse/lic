@@ -72,6 +72,7 @@ Proofs are checked by the **Lean 4 kernel**, not by “we ran tests and it looke
 | Mistake | What Li does |
 |---------|----------------|
 | Missing `decreases` | Compile error |
+| `ensures true` on `-> float` / `-> int` / struct | **Compile error E0303** — postcondition must mention `result` |
 | `ensures` too weak | May still prove, but you lied — review specs |
 | `ensures` too strong | Proof fails — strengthen code or weaken spec honestly |
 | Using `sorry` | Rejected |

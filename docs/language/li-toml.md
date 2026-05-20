@@ -36,6 +36,18 @@ Parser support may lag; the **policy** is fixed: any relaxation must be visible 
 
 Do not use undocumented env vars to silence gates in CI.
 
+## Optional numerics defaults (not enforced org-wide)
+
+```toml
+[numerics]
+# Documents this package's preferred scalar widths for agents and humans.
+# Does NOT change dependent packages or CI for the whole org.
+default_float = "float64"   # or float32, float16, float8, …
+default_int = "int64"
+```
+
+Callers override in source (`float32` locals) or in physics metadata (`PhysicsProfile.float_bits`). See [Scalar precision](scalar-precision.md).
+
 ## Package sections (summary)
 
 See lip § A3 for `[package]`, `[dependencies]`, `[package.metadata.lip]`, `min_coverage`, and workspace `members`.

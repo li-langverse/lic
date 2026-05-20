@@ -44,6 +44,14 @@ struct Parser {
     }
   }
 
+  /// Newlines and indents inside `(...)` parameter lists (not proc bodies).
+  void skip_param_layout() {
+    skip_newlines();
+    while (at(TokenKind::Indent)) {
+      i++;
+    }
+  }
+
   SourceLoc loc(const Token& t) const {
     return SourceLoc{file, t.line, t.column, t.start};
   }
@@ -187,6 +195,7 @@ std::unique_ptr<Expr> Parser::parse_primary() {
     e->kind = Expr::Kind::IntLit;
     e->span = {t.start, t.end};
     e->int_value = t.int_value;
+    e->lit_suffix = t.lit_suffix;
     return parse_postfix(std::move(e));
   }
   if (t.kind == TokenKind::FloatLit) {
@@ -195,6 +204,16 @@ std::unique_ptr<Expr> Parser::parse_primary() {
     e->kind = Expr::Kind::FloatLit;
     e->span = {t.start, t.end};
     e->float_value = t.float_value;
+    e->lit_suffix = t.lit_suffix;
+    return parse_postfix(std::move(e));
+  }
+  if (t.kind == TokenKind::BinaryLit) {
+    i++;
+    auto e = std::make_unique<Expr>();
+    e->kind = Expr::Kind::BinaryLit;
+    e->span = {t.start, t.end};
+    e->int_value = t.int_value;
+    e->str_value = std::string(t.text);
     return parse_postfix(std::move(e));
   }
   if (t.kind == TokenKind::Ident || t.kind == TokenKind::KwResult ||
@@ -500,6 +519,7 @@ std::vector<std::string> Parser::parse_type_params() {
 }
 
 Param Parser::parse_param() {
+  skip_param_layout();
   const Token& t = cur();
   Param p;
   p.span = {t.start, t.end};
@@ -570,6 +590,7 @@ std::unique_ptr<Expr> Parser::parse_decorator_value() {
     e->kind = Expr::Kind::IntLit;
     e->span = {t.start, t.end};
     e->int_value = t.int_value;
+    e->lit_suffix = t.lit_suffix;
     i++;
     return e;
   }
@@ -578,6 +599,16 @@ std::unique_ptr<Expr> Parser::parse_decorator_value() {
     e->kind = Expr::Kind::FloatLit;
     e->span = {t.start, t.end};
     e->float_value = t.float_value;
+    e->lit_suffix = t.lit_suffix;
+    i++;
+    return e;
+  }
+  if (t.kind == TokenKind::BinaryLit) {
+    auto e = std::make_unique<Expr>();
+    e->kind = Expr::Kind::BinaryLit;
+    e->span = {t.start, t.end};
+    e->int_value = t.int_value;
+    e->str_value = std::string(t.text);
     i++;
     return e;
   }
@@ -889,7 +920,9 @@ Stmt Parser::parse_stmt() {
     s.kind = Stmt::Kind::Return;
     s.span = {t.start, t.end};
     i++;
-    s.expr = parse_expr();
+    if (!at(TokenKind::Newline) && !at(TokenKind::Dedent) && !at(TokenKind::Eof)) {
+      s.expr = parse_expr();
+    }
     skip_newlines();
     return s;
   }
@@ -936,11 +969,14 @@ ProcDecl Parser::parse_proc(bool is_extern) {
   i++;
   proc.type_params = parse_type_params();
   expect(TokenKind::LParen, "'('");
+  skip_param_layout();
   if (!at(TokenKind::RParen)) {
     do {
       proc.params.push_back(parse_param());
+      skip_param_layout();
     } while (accept(TokenKind::Comma));
   }
+  skip_param_layout();
   expect(TokenKind::RParen, "')'");
   auto parse_raises = [&]() {
     if (!at(TokenKind::KwRaises)) {

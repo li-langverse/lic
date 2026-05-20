@@ -2,7 +2,9 @@
 
 **Status:** Shipped in `lic` typechecker (width rules, suffixes, `binary` literals). MIR/codegen for packed `float4`/`float8` and full `binary` runtime is **partial** — see [Codegen maturity](#codegen-maturity) below.
 
-Li exposes **explicit** integer and float widths for HPC, quantization, and per-domain accuracy. The org **does not** enforce one global float width — each package and simulation chooses.
+Li exposes **explicit** integer and float widths for HPC, quantization, and per-domain accuracy. Each package and simulation chooses its own widths and suffixes.
+
+**Walkthrough with terminal examples:** [Numerics in practice](numerics-in-practice.md) (float32 `x`, fixed-point `x`, `lic check` output).
 
 **Normative registry (compiler):** `compiler/types/numeric_types.cpp`  
 **Physics metadata API:** `packages/li-physics-core/src/lib.li` (`ScalarPrecision`, `PhysicsProfile`)

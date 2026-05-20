@@ -17,6 +17,8 @@ Li uses **Python-like names** with **compiled fixed-width** behavior. This catch
 
 **Fixed-point / integer inner loops:** accumulate in `int64`, rescale with shift or one float conversion at the boundary; compiler hints **W0501** / **W0502**. See [Integer inner loops, rescale to float](scalar-precision.md#integer-inner-loops-rescale-to-float-at-the-boundary).
 
+**Real-world examples (macOS-style terminal windows):** [Numerics in practice](numerics-in-practice.md).
+
 ## Literal suffixes
 
 ```

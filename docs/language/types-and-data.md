@@ -112,4 +112,4 @@ cast[T](value, proof)
 
 Only when a proof term shows the cast is valid.
 
-More numbers detail: [Numerics](numerics.md).
+More numbers detail: [Numerics](numerics.md). **CLI walkthroughs:** [Numerics in practice](numerics-in-practice.md).

@@ -12,6 +12,7 @@ All notable changes to Li are documented here. The format follows
 - Literal suffixes: `3.14f32`, `42i32`, `42u`, `255u8`; binary type + `0b…` literals; `std/binary/binary.li`.
 - Documentation: [docs/language/scalar-precision.md](docs/language/scalar-precision.md) (canonical), `packages/li-physics-core/docs/scalar-precision.md`, `std/binary/README.md`; mkdocs + handbook nav; **“You set precision yourself”**; **integer inner loops / fixed-point rescale** + compiler warning roadmap.
 - Compiler warnings (non-fatal): **W0501** `int` multiply at ≤32-bit width; **W0502** integer `/` truncation; JSON `severity: warning`; `lic check` still exits 0.
+- Docs: [numerics-in-practice.md](docs/language/numerics-in-practice.md) with real-world `x` examples and macOS-style terminal renderings (`terminal.css`).
 - `physics.core`: `ScalarPrecision` (`weights_encoding` for binary weights) and profile bit-width metadata (not org-enforced).
 
 ### Changed

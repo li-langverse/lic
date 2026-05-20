@@ -115,6 +115,7 @@ nav:
       - RFC index: game-dev/specs/README.md
       - Physics for games: physics/GAME_DEV.md
       - Types and data: language/types-and-data.md
+      - Scalar precision & binary: language/scalar-precision.md
       - Numerics: language/numerics.md
       - SIMD and parallel: language/simd-parallel.md
       - Decorators: language/decorators.md

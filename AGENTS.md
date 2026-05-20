@@ -9,5 +9,6 @@
 7. **std/** = 100% coverage; `lip publish` = ≥80%.
 8. Perf status: https://li-langverse.github.io/benchmarks/
 9. li-httpd: **`lis`** + [httpd prerequisites](docs/ecosystem/httpd-prerequisites.md).
+10. Scalar widths / quantization: [scalar-precision.md](docs/language/scalar-precision.md) — `float4`–`float512`, suffixes (`3.14f32`), `binary` + `0b`; **no org-wide float width**; physics uses `ScalarPrecision` / `PhysicsProfile.float_bits`.
 
 Skills: `strict-by-default-gate`, `build-li-master-plan`, `create-li-package`, `li-ecosystem-discipline` (in `.cursor/skills/`).

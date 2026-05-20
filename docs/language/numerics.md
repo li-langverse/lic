@@ -11,6 +11,8 @@ Li uses **Python-like names** with **compiled fixed-width** behavior. This catch
 | `42` | integer literal → `i64` |
 | `3.14` | float literal → `f64` |
 
+**Full width tables, suffixes, `binary`, and physics metadata:** [Scalar precision](scalar-precision.md) (canonical).
+
 ## Literal suffixes
 
 ```

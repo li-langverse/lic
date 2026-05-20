@@ -2,7 +2,7 @@
 
 ## Summary
 
-The compiler accepts explicit fixed-width scalars (`float32`, `int16`, `float8`, …) with width-mismatch errors, and physics core exposes optional `ScalarPrecision` / profile bit-width metadata without org-wide accuracy enforcement.
+The compiler accepts explicit fixed-width scalars (`float32`, `int16`, `float8`, …) with width-mismatch errors, literal suffixes (`3.14f32`, `42i32`), a `binary` type with `0b…` literals, and physics core exposes optional `ScalarPrecision` / profile bit-width metadata without org-wide accuracy enforcement.
 
 ## Agent continuation
 
@@ -25,7 +25,10 @@ The compiler accepts explicit fixed-width scalars (`float32`, `int16`, `float8`,
 | `li-tests/typecheck/binary_literal_ok.li` | `binary` + `0b` |
 | `std/binary/binary.li` | Facade stub |
 | `compiler/lexer/lexer.cpp` | Suffix + `0b` lexing |
-| `docs/language/scalar-precision.md` | Policy: per-project accuracy, not global |
+| `docs/language/scalar-precision.md` | **Canonical doc** — full tables, suffixes, `binary`, physics API, agent checklist |
+| `packages/li-physics-core/docs/scalar-precision.md` | Package-focused precision guide |
+| `std/binary/README.md` | `binary` vs `bytes` |
+| `mkdocs.yml`, `language/overview.md`, `AGENTS.md` | Nav + agent pointers |
 
 ## Not changed
 

@@ -6,6 +6,14 @@ All notable changes to Li are documented here. The format follows
 
 ## [Unreleased]
 
+### Added
+
+- **M0 li-httpd bench binary:** `runtime/li_rt_net.c` (POSIX `tcp_*`, static HTTP server), `packages/li-net-httpd` → `build/li-httpd` for tier-5 nginx oracle comparison (`LI_HTTPD_BIN`).
+
+### Changed
+
+- **li-httpd M1 perf (tier-5):** `runtime/li_rt_net.c` — Linux `epoll`, HTTP/1.1 keep-alive + pipelined GET drain, `sendfile` for large files, single-segment small responses, `TCP_NODELAY`/`TCP_QUICKACK`; default accept loop on non-Linux. Local ci profile: `static_small` and `keepalive_pipelining` **li ≥ nginx** RPS on loopback fixture.
+
 ### Changed
 
 - Composable imports: workspace `packages/*` (via `import_name` in `li.toml`) resolve before `std/` facades for the same ergonomic path (e.g. `physics.rigid`).

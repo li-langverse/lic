@@ -34,7 +34,7 @@ Loopback bind; static files only; no path traversal hardening beyond realpath-st
 
 ## Performance
 
-M0 fork-per-connection; ~5× slower than nginx on small static fixture in local tier-5 ci profile (see benchmarks ingest).
+M0 fork-per-connection; ~5× slower than nginx on small static fixture (superseded by M1 keep-alive/epoll — see `2026-05-20-httpd-m1-keepalive-perf.md`).
 
 ## Downstream
 

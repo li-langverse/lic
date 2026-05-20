@@ -25,12 +25,12 @@ for cases in "$ROOT/li-tests/routing/cases"/*.toml; do
   python3 "$PY/httpd_match.py" "$ROOT/li-tests/httpd/fixtures/routing.toml" "$cases"
 done
 
-echo "== routing (Li — compile + C oracle) =="
+echo "== routing (Li compile + binary oracle) =="
 LIC="${LIC:-$("$ROOT/scripts/resolve-lic.sh")}"
 export LI_ALLOW_OPEN_VC=1
 export LI_REPO_ROOT="$ROOT"
 "$LIC" build "$ROOT/li-tests/routing/match_routes.li" -o /tmp/li_match_routes
-chmod +x "$ROOT/scripts/check-httpd-route-fixture.sh"
-"$ROOT/scripts/check-httpd-route-fixture.sh"
+/tmp/li_match_routes
+test "$(/tmp/li_match_routes; echo $?)" -eq 0
 
 echo "run_httpd_config: OK"

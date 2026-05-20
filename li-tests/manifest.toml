@@ -589,6 +589,12 @@ file = "httpd/parse_request_smoke.li"
 outcome = "compile_ok"
 note = "parse_request from li-http + GET line probe"
 
+[[tests]]
+suite = "routing"
+file = "routing/match_routes.li"
+outcome = "compile_ok"
+note = "match_route_fixture vs routing.toml fixture (also run_httpd_config.sh)"
+
 # --- math_linalg (2i — @ dot / matmul surface) ---
 
 [[tests]]

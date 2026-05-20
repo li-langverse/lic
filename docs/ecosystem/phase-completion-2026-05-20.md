@@ -31,6 +31,7 @@ Branch **`cursor/refinement-call-check-57b4`** (stacked on call-site `requires`)
 - With `LI_BUILD_VERIFY_LEAN=1`: `lake build` in `docs/semantics` via `lean-verify-stub.sh`
 - CI: `LI_BUILD_VERIFY_LEAN_STRICT=1` + autovc check on greeter sample
 
-## Phase H next (after merge)
+## Phase H started (this branch)
 
-Per [httpd-prerequisites.md](httpd-prerequisites.md): M1 `.li` — `match_route`, config desugar in Li, `li-tests/routing/` (Python oracle exists).
+- **M1 routing (first `.li` piece):** `match_route_fixture` + `li-tests/routing/match_routes.li` + C oracle in CI (`check-httpd-route-fixture.sh`).
+- **Next:** TOML route loader in Li; `li-httpd` serve; str ABI for runtime test binary exit 0.

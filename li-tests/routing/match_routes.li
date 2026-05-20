@@ -1,0 +1,52 @@
+# Mirrors li-tests/routing/cases/api_prefix.toml (Python oracle in run_httpd_config.sh).
+import http
+
+def check_health() raises IO, Alloc -> int
+  requires true
+  ensures 0 <= result
+  ensures result <= 5
+  decreases 0
+=
+  var health: int = match_route_fixture("GET", "/health")
+  if health != 1:
+    return 1
+  if http_action_kind_for_route(health) != http_route_action_static():
+    return 2
+  return 0
+
+def check_chat() raises IO, Alloc -> int
+  requires true
+  ensures 0 <= result
+  ensures result <= 5
+  decreases 0
+=
+  var chat: int = match_route_fixture("POST", "/v1/chat/completions")
+  if chat != 2:
+    return 3
+  if http_action_kind_for_route(chat) != http_route_action_proxy():
+    return 4
+  return 0
+
+def check_miss() raises IO, Alloc -> int
+  requires true
+  ensures 0 <= result
+  ensures result <= 5
+  decreases 0
+=
+  var miss: int = match_route_fixture("GET", "/unknown")
+  if miss != http_route_id_none():
+    return 5
+  return 0
+
+def main() raises IO, Alloc -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  var a: int = check_health()
+  if a != 0:
+    return a
+  var b: int = check_chat()
+  if b != 0:
+    return b
+  return check_miss()

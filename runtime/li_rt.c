@@ -161,6 +161,60 @@ int32_t li_rt_str_byte_at(const char* s, int32_t i) {
   return (int32_t)(unsigned char)s[i];
 }
 
+int32_t li_rt_str_eq(const char* a, const char* b) {
+  if (a == NULL || b == NULL) {
+    return 0;
+  }
+  return strcmp(a, b) == 0 ? 1 : 0;
+}
+
+int32_t li_rt_path_exact(const char* path, const char* want) {
+  return li_rt_str_eq(path, want);
+}
+
+int32_t li_rt_path_prefix(const char* path, const char* prefix) {
+  if (path == NULL || prefix == NULL || prefix[0] == '\0') {
+    return 0;
+  }
+  const size_t plen = strlen(prefix);
+  const size_t pathlen = strlen(path);
+  if (pathlen < plen) {
+    return 0;
+  }
+  if (strncmp(path, prefix, plen) != 0) {
+    return 0;
+  }
+  if (pathlen == plen) {
+    return 1;
+  }
+  if (path[plen] == '/') {
+    return 1;
+  }
+  return 0;
+}
+
+int32_t li_rt_match_route_fixture(const char* method, const char* path) {
+  if (method == NULL || path == NULL) {
+    return 0;
+  }
+  if (strcmp(method, "GET") == 0) {
+    if (li_rt_path_exact(path, "/health")) {
+      return 1;
+    }
+    if (li_rt_path_prefix(path, "/v1")) {
+      return 3;
+    }
+    return 0;
+  }
+  if (strcmp(method, "POST") == 0) {
+    if (li_rt_path_prefix(path, "/v1")) {
+      return 2;
+    }
+    return 0;
+  }
+  return 0;
+}
+
 void li_async_frame_enter(void) {}
 
 void li_async_frame_leave(void) {}

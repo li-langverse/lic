@@ -2,7 +2,7 @@
 
 | Field | Value |
 |-------|--------|
-| **Version** | 0.2 |
+| **Version** | 0.3 |
 | **Status** | Draft — iterate in-repo |
 | **Policy** | **Full Li only** — no Rust, C++, TypeScript, Slint, Svelte, or Electron on the GUI path |
 | **Owners** | PH-UX, PH-GD, PH-GD-7, PH-AGENT |
@@ -14,6 +14,7 @@
 |-----|------|--------|
 | 0.1 | 2026-05 | Initial: engine UX research, Studio + creator HUD |
 | 0.2 | 2026-05 | **Li-only mandate**; removed Rust/web implementation paths |
+| 0.3 | 2026-05 | **Infinite agentic canvas** — spatial Studio surface for agents + creators |
 
 ---
 
@@ -41,14 +42,17 @@ If we build a **native GUI**, the **entire product path** is Li:
 
 ## 1. Goal
 
-**One GUI system, two surfaces** (both Li):
+**One GUI system, three surfaces** (all Li):
 
 | Surface | Users | Host |
 |---------|-------|------|
-| **Studio chrome** | Developers, agents | `world-studio` binary (`lic build` of Li `studio` + `gui` + `ui`) |
-| **Game UI** | Players, **creator-users** | `li-player` runtime |
+| **Studio chrome** | Developers, agents | `world-studio` — panels, palette, inspector |
+| **Infinite agentic canvas** | Developers, agents, creators | `world-studio` — spatial graph of worlds, sims, UI, notes |
+| **Game UI** | Players, **creator-users** | `li-player` — `gui/*.li` HUD (screen-space, not infinite canvas) |
 
-Creators author **`gui/*.li`** (HUD, menus, inventories). Same tree runs in Studio preview and in published games.
+Creators author **`gui/*.li`** (HUD, menus). They **arrange and reason** on **`canvas/*.li`** (or `world.canvas.li`) — realms, shards, sim fields, gui screens, agent plans, and links between them.
+
+**Infinite canvas** = default Studio workspace for **agent-native authoring** (not a separate product). Pan/zoom without bound; every node has stable **`canvas_node_id`** for MCP.
 
 ---
 
@@ -65,6 +69,9 @@ We **do not** copy their implementation language — only patterns.
 | **Godot** | Same tree in editor and runtime | — |
 | **Blender** | Workspace presets (game / sim / drug) | — |
 | **Cursor** | ⌘K palette, agent transcript, build gate | — |
+| **Figma / Miro / tldraw** | Infinite 2D canvas; frames; connectors | Pixel pushing not needed — **spatial graph + links** |
+| **Unreal Blueprint** | Node graph editor | Typed pins; compile gate — **Li canvas → `lic build`** |
+| **ComfyUI / n8n** | Agent workflows on canvas | **Agent cards** with status (pending / green / failed) |
 
 ### 2.2 In-game / user-created UI
 
@@ -88,6 +95,10 @@ We **do not** copy their implementation language — only patterns.
 | P6 | Studio primary flows ≤ 3 clicks |
 | P7 | Visual editor **emits Li** (never a parallel format) |
 | P8 | Diffable `gui/` + `theme.li` in git |
+| P9 | **Canvas is Li** — `canvas.li` / `CanvasDocument`; not a proprietary binary scene |
+| P10 | **Infinite extent** — virtual bounds; tile paint + cull; pan/zoom @ 60 fps |
+| P11 | **Agents place nodes** — `canvas_node_id`, `canvas_link_id`; manifest for MCP |
+| P12 | **Canvas → build** — subgraph selection compiles to `world.li` / `gui/` / `sim` profile |
 
 ---
 
@@ -127,10 +138,71 @@ my-game/
 | `gui.input` | Hit-test, focus, key/pointer events |
 | `gui.cmd` | In-game commands (`gui.cmd_jump`, …) |
 | `gui.compositor` | Layer game UI + optional dev overlay |
+| `gui.canvas` | **Infinite agentic canvas** — nodes, links, camera, tiles |
+| `gui.canvas.node` | World, SimField, GuiScreen, AgentPlan, Note, BenchRef, … |
+| `gui.canvas.link` | Typed edges (spawns, binds, replicates, documents) |
 
-`li-ui` stays **editor-only** commands (`ui_cmd_*`). **`gui.cmd_*`** is **in-game** only.
+`li-ui` stays **editor-only** commands (`ui_cmd_*`). **`gui.cmd_*`** is **in-game** only.  
+**`canvas.*`** is **Studio-only** (never shipped in player HUD).
 
-### 4.2 Runtime flow (Li)
+### 4.3 Infinite agentic canvas (design)
+
+**What it is:** A **2D world space** (Li coords, unbounded) where nodes are **first-class artifacts** and agents **read/write the graph** before touching pixels.
+
+```text
+┌────────────────────────────────────────────────────────────────────────┐
+│  Studio toolbar · ⌘K · agent transcript                                 │
+├────────────────────────────────────────────────────────────────────────┤
+│                                                                        │
+│     ┌──────────┐      spawns      ┌─────────────┐                      │
+│     │ world.li │ ───────────────► │ GameWorld   │──┐                   │
+│     │  node    │                  │  preview    │  │ replicates        │
+│     └──────────┘                  └─────────────┘  ▼                   │
+│           │                              ┌──────────────┐               │
+│           │ documents                    │ gui/hud.li   │               │
+│           └────────────────────────────► │  screen node │               │
+│                                            └──────────────┘               │
+│     ┌────────────┐   bench ref   ┌────────────────┐                    │
+│     │ AgentPlan    │ ────────────► │ sim_physics    │                    │
+│     │  (MCP card)  │               │  frame (tag)   │                    │
+│     └────────────┘               └────────────────┘                    │
+│              ∞ pan / zoom (camera transform in Li)                      │
+└────────────────────────────────────────────────────────────────────────┘
+```
+
+**Node kinds (v1):**
+
+| `CanvasNodeKind` | Binds to | On-canvas preview |
+|------------------|----------|-------------------|
+| `World` | `world.li` path | Mini viewport / entity count |
+| `GuiScreen` | `gui/*.li` | Thumbnail frame |
+| `SimField` | `sim` / scientific profile | Heatmap stub |
+| `AgentPlan` | transcript + patch id | Status chip (idle/build/ok/fail) |
+| `Note` | markdown hash | Sticky note |
+| `BenchRef` | benchmark id | Last median ms |
+| `Realm` | MMO shard metadata | Shard id + tick budget |
+
+**Link kinds (v1):** `Spawns`, `Binds`, `Replicates`, `Documents`, `DependsOn`, `AgentEdited`.
+
+**Camera:** `CanvasCamera { pan_x, pan_y, zoom }` — Li state; gestures → `canvas.cmd_pan`, `canvas.cmd_zoom`.
+
+**Infinite mechanics (Li, no foreign engine):**
+
+- **Virtual grid** — `int64` world coords; no hard max size  
+- **Tile index** — `canvas.tile_key(tx, ty)` for paint cull + hit-test  
+- **Level-of-detail** — zoomed out: icons only; zoomed in: preview ports  
+- **Spatial index** — hash map tile → node ids (Li `CanvasIndex`)
+
+**Agentic rules:**
+
+1. Agent adds node → must set `canvas_node_id` + `source_path` (`world.li`, etc.)  
+2. Agent adds link → `lic build` validates typed endpoints (no `World → BenchRef` nonsense unless allowed)  
+3. Agent “apply patch” → updates **Li file** + **canvas node status** in one transcript line  
+4. MCP tools: `canvas_add_node`, `canvas_link`, `canvas_focus`, `canvas_compile_selection`
+
+**Not the same as game UI:** Canvas is **authoring**; `gui/*.li` is **player screen-space**. A `GuiScreen` **node** on canvas **opens** the UI editor for that file.
+
+### 4.4 Runtime flow (Li)
 
 ```text
 lic build gui/hud.li  →  UiDocument IR + manifest JSON
@@ -143,9 +215,21 @@ input → hit-test (Li) → gui.cmd / game sim
 
 Studio preview uses the **same** `li-gui` code path inside `world-studio`.
 
+**Canvas:**
+
+```text
+canvas/world.canvas.li  →  CanvasDocument IR + canvas.manifest.json
+        ↓
+Studio: camera + tiles → paint links/nodes → optional embed li-render preview per World node
+        ↓
+canvas_compile_selection() → triggers lic build on referenced paths only
+```
+
 ---
 
-## 5. Authoring model (`gui.li`)
+## 5. Authoring models
+
+### 5.1 Screen UI (`gui.li`)
 
 Illustrative API (syntax RFC before implementation):
 
@@ -168,19 +252,44 @@ def hud_main() -> gui.Document
 
 **Bindings** invalid at compile time → `lic build` fails (like broken `world.li`).
 
+### 5.2 Infinite canvas (`canvas.li`)
+
+Illustrative API:
+
+```li
+import gui.canvas
+
+def studio_world_graph() -> gui.canvas.Document
+=
+  var cam: gui.canvas.Camera = gui.canvas.camera_default()
+  var n_world: int = gui.canvas.node_world(id=10, path="world.li", at=gui.canvas.vec(0, 0))
+  var n_hud: int = gui.canvas.node_gui_screen(id=11, path="gui/hud.li", at=gui.canvas.vec(480, 0))
+  gui.canvas.link_binds(from=n_world, to=n_hud, id=100)
+  return gui.canvas.doc(camera=cam, nodes=gui.canvas.node_set(n_world, n_hud))
+```
+
+| Artifact | Purpose |
+|----------|---------|
+| `canvas/*.li` or `world.canvas.li` | Spatial graph source |
+| `canvas.manifest.json` | Agent index: nodes, links, bounds, selection |
+| `canvas.selection` | Ephemeral — which subgraph to build/play |
+
+**Workspace default:** new Studio project opens **canvas view**; classic panels dock on edges (outliner = filtered list view of canvas nodes).
+
 ---
 
 ## 6. Studio native shell (Li)
 
 | Region | Li owner |
 |--------|----------|
+| **Infinite canvas** (center) | `li-gui` **`gui.canvas`** — primary workspace |
 | Menu / toolbar | `li-studio` + `li-ui` |
-| Outliner (entities + UI nodes) | `li-studio` + `li-gui` |
-| Viewport | `li-render` / `li-gpu` |
-| Inspector | `li-studio` (reflect Li types) |
-| Command palette | `li-ui` (`ui_cmd_*`) |
-| Agent dock | `li-studio-ai` + transcript types in `li-ui` |
-| Status bar | `lic` gate + bench hooks |
+| Outliner | Projection of **canvas nodes** + entity tree for selected World |
+| Embedded viewport | `li-render` inside **World** / **SimField** canvas nodes |
+| Inspector | `li-studio` — node props + Li file fields |
+| Command palette | `li-ui` (`ui_cmd_*`) + `canvas.cmd_*` |
+| Agent dock | `li-studio-ai` + transcript; **pins to canvas selection** |
+| Status bar | `lic` gate + bench + canvas tile stats |
 
 Entry binary: extend `packages/li-studio/src/studio_main.li` → real shell when compositor ready (today: gate stub).
 
@@ -209,8 +318,10 @@ Entry binary: extend `packages/li-studio/src/studio_main.li` → real shell when
 | `ui_cmd_*` | Studio chrome only |
 | `lic build` | Gate |
 | MCP `gui_scaffold` (future) | NL → Li HUD |
+| MCP `canvas_*` (future) | NL → spatial graph |
+| `canvas.manifest.json` | Spatial index for agents |
 
-Agents never drive pixels — only **Li source**.
+Agents never drive pixels — only **Li source** + **canvas graph** (camera snaps are `canvas.cmd_focus`, not mouse coords).
 
 ---
 
@@ -246,6 +357,17 @@ Agents never drive pixels — only **Li source**.
 - [ ] Visual editor writes `gui.li`
 - [ ] Creator mode + MMO permissions
 
+### Phase G5 — Infinite agentic canvas
+
+- [ ] `gui.canvas` types: `Document`, `Node`, `Link`, `Camera`, `TileIndex`
+- [ ] `canvas.li` parse + `lic build` + composable `import_canvas_document_smoke.li`
+- [ ] Pan/zoom + tile cull paint in Li (`gui.canvas.paint`)
+- [ ] Node previews: World → embed `li-render`; GuiScreen → mini `gui` layout
+- [ ] Agent cards (`AgentPlan` node) with diagnose/build status colors
+- [ ] `canvas_compile_selection` → `lic build` referenced paths
+- [ ] MCP: `canvas_add_node`, `canvas_link`, `canvas_focus`
+- [ ] Bench: `canvas_frame_pan_zoom` tier-2 (Li-only timing of tile paint, optional)
+
 ---
 
 ## 10. Performance & honesty
@@ -277,6 +399,9 @@ See archived note: [li-gui-cross-platform-plan.md](li-gui-cross-platform-plan.md
 - [ ] Font: bitmap stub first vs Li font atlas in `li-assets`?
 - [ ] Window creation: which `lic` target triple for `world-studio`? (`targets/manifest.toml`)
 - [ ] Dev overlay (ImGui-class) in Li for profilers — yes/no?
+- [ ] Canvas file: one `world.canvas.li` per project vs `canvas/*.li` graphs?
+- [ ] Max nodes before LOD-only (performance)? default 10k?
+- [ ] Creators: read-only canvas on published realms or full edit?
 
 ---
 
@@ -285,6 +410,7 @@ See archived note: [li-gui-cross-platform-plan.md](li-gui-cross-platform-plan.md
 | Doc | Role |
 |-----|------|
 | [specs/li-gui-schema-rfc.md](../specs/li-gui-schema-rfc.md) | Syntax + binding grammar |
+| [specs/li-canvas-agentic-rfc.md](../specs/li-canvas-agentic-rfc.md) | Infinite canvas nodes + links |
 | [specs/studio-ux-design-system-rfc.md](../specs/studio-ux-design-system-rfc.md) | PH-UX phases |
 | [agent-first-gui-research.md](../agent-first-gui-research.md) | SOTA research |
 | [world-studio-vision.md](../world-studio-vision.md) | Program rollup |

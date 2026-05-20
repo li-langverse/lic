@@ -1189,6 +1189,30 @@ note = "Milestone 121 composable gates"
 
 [[tests]]
 suite = "composable"
+file = "composable/import_spinup_play_mode.li"
+outcome = "compile_ok"
+note = "Spin-up play_mode template smoke"
+
+[[tests]]
+suite = "composable"
+file = "composable/import_world_studio_merge_ready_126.li"
+outcome = "compile_ok"
+note = "Merge-ready rollup at 126+ gates"
+
+[[tests]]
+suite = "composable"
+file = "composable/import_world_studio_milestone_130.li"
+outcome = "compile_ok"
+note = "Milestone 130 composable + 12 spin-ups"
+
+[[tests]]
+suite = "composable"
+file = "composable/import_studio_demo_play_tab.li"
+outcome = "compile_ok"
+note = "Demo Play tab game frame + viewport gate"
+
+[[tests]]
+suite = "composable"
 file = "composable/import_world_studio_benchmark_tier1.li"
 outcome = "compile_ok"
 note = "Competitive world-studio.toml tier-1 rollup"
@@ -1577,6 +1601,12 @@ suite = "spinup_templates"
 file = "../deploy/world-studio-spinup/templates/agent/main.li"
 outcome = "compile_ok"
 note = "Spin-up agent main"
+
+[[tests]]
+suite = "spinup_templates"
+file = "../deploy/world-studio-spinup/templates/play_mode/main.li"
+outcome = "compile_ok"
+note = "Spin-up play_mode main"
 
 # --- security (malformed inputs; run via ./li-tests/run_security.sh) ---
 # Wired in scripts/ci.sh: parse/check must exit 0/1, never signal (SIGSEGV etc.).

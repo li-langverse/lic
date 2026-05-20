@@ -379,6 +379,27 @@ li_package = "li-studio"
 composable = "import_world_studio_milestone_121"
 
 [[benchmark]]
+id = "spinup-play-mode"
+name = "Spin-up play_mode template"
+tier = 1
+li_package = "li-studio"
+composable = "import_spinup_play_mode"
+
+[[benchmark]]
+id = "world-studio-merge-ready-126"
+name = "Merge-ready at 126 gates"
+tier = 1
+li_package = "li-studio"
+composable = "import_world_studio_merge_ready_126"
+
+[[benchmark]]
+id = "world-studio-milestone-130"
+name = "Milestone 130 composable gates"
+tier = 1
+li_package = "li-studio"
+composable = "import_world_studio_milestone_130"
+
+[[benchmark]]
 id = "httpd-li-native-gateway"
 name = "Li-native HTTP/WS gateway"
 tier = 1

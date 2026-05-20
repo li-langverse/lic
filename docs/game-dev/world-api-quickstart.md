@@ -109,3 +109,14 @@ sync_realm_head(w, tick, shard_id)
 Use `world_snapshot_for_realm` / `world_li_native_journal_*` when you only need shard tick and checksum — **not** entity positions.
 
 See [world-architecture-competitive-rfc.md](specs/world-architecture-competitive-rfc.md).
+
+---
+
+## New project (spin-up)
+
+```bash
+./scripts/lis-new-world-studio.sh play_mode my-game
+lic check my-game/main.li
+```
+
+Templates: `deploy/world-studio-spinup/spinup.toml` (includes **play_mode**).

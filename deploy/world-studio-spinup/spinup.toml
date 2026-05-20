@@ -70,3 +70,9 @@ id = "agent"
 title = "Studio agent + lic diagnose"
 profile = "studio_agent"
 imports = ["studio", "studio.ai"]
+
+[[templates]]
+id = "play_mode"
+title = "Play mode — game world + field"
+profile = "studio_play_mode"
+imports = ["studio", "world", "sim.scientific", "render"]

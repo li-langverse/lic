@@ -1,0 +1,14 @@
+import studio
+import world
+import sim.scientific
+
+def main() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  if studio_milestone_130_smoke() != 0:
+    return 1
+  if world_author_api_smoke() != 0:
+    return 2
+  return sim_field_checkpoint_smoke()

@@ -4,7 +4,7 @@ set -euo pipefail
 ROOT="$(cd "$(dirname "$0")/.." && pwd)"
 OUT="$ROOT/deploy/studio-demo/status.json"
 BRANCH="$(git -C "$ROOT" branch --show-current 2>/dev/null || echo unknown)"
-SPRINT="impl-39"
+SPRINT="impl-40"
 
 comp_out="$("$ROOT/li-tests/run_all.sh" composable 2>&1)" || true
 gd_out="$("$ROOT/li-tests/run_all.sh" game_dev 2>&1)" || true
@@ -34,7 +34,8 @@ cat > "$OUT" <<EOF
   "publish_template": true,
   "portable_targets": 5,
   "binary_runtime_tag": 8288,
-  "milestone_composable_gates": 121,
+  "milestone_composable_gates": 130,
+  "demo_tabs": 13,
   "li_native_store": true,
   "blocked": ["sim_step_physics"],
   "updated": "$(date -u +%Y-%m-%dT%H:%M:%SZ)"

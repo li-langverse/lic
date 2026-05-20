@@ -1,0 +1,16 @@
+import studio
+import world
+import render
+
+def main() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  if studio_game_frame_tag(1, 1280, 720) < 3000:
+    return 1
+  if game_world_draw_frame(new_game_world(1), 1280, 720) < 1:
+    return 2
+  if render_gpu_viewport_tick_stub(1280, 720, 1) != 1:
+    return 3
+  return 0

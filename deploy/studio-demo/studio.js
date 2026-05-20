@@ -1,7 +1,7 @@
 /* Li World Studio — interactive demo showcase (visual prototype). */
 const canvas = document.getElementById("viewport");
 const ctx = canvas.getContext("2d");
-const demos = ["rocket", "racing", "robot", "drug", "bioeng", "mmo", "unphysical", "scientific", "publish", "additive", "agent"];
+const demos = ["rocket", "racing", "robot", "drug", "bioeng", "mmo", "unphysical", "scientific", "publish", "additive", "agent", "play"];
 let active = "rocket";
 let tick = 0;
 let autoReel = false;
@@ -74,6 +74,12 @@ const meta = {
     profile: "studio.ai + PH-AGENT",
     panel: "JSON diagnose gate · patch_id=2 · spin-up: agent",
     nodes: ["Diagnose", "PatchRequest", "ApplyPatch", "Gate"],
+  },
+  play: {
+    title: "Play mode — new_game_world + new_field",
+    profile: "studio_play_mode + world + sim.scientific",
+    panel: "start_playing · tick_viewport · publish_repro · spin-up: play_mode",
+    nodes: ["GameWorld", "SimField", "Viewport", "PublishBundle"],
   },
 };
 
@@ -295,6 +301,46 @@ function drawUnphysical(t) {
   ctx.fillText(`law_mode=arbitrary · custom_law_id=1`, 24, h - 40);
 }
 
+function drawPlay(t) {
+  const w = canvas.width;
+  const h = canvas.height;
+  ctx.fillStyle = "#0d1117";
+  ctx.fillRect(0, 0, w, h);
+  const n = 24;
+  for (let i = 0; i < n; i++) {
+    const px = 80 + (i % 6) * 90 + Math.sin(t * 0.03 + i) * 12;
+    const py = 140 + Math.floor(i / 6) * 70 + Math.cos(t * 0.04 + i) * 8;
+    ctx.fillStyle = i % 4 === 0 ? "#58a6ff" : "#3fb950";
+    ctx.beginPath();
+    ctx.arc(px, py, 10, 0, Math.PI * 2);
+    ctx.fill();
+  }
+  const gx = w * 0.62;
+  const gy = h * 0.35;
+  const gw = w * 0.28;
+  const gh = h * 0.45;
+  const grad = ctx.createLinearGradient(gx, gy, gx + gw, gy + gh);
+  grad.addColorStop(0, "#1f6feb");
+  grad.addColorStop(1, "#a371f7");
+  ctx.fillStyle = grad;
+  ctx.fillRect(gx, gy, gw, gh);
+  ctx.strokeStyle = "#30363d";
+  ctx.strokeRect(gx, gy, gw, gh);
+  ctx.fillStyle = "#f0883e";
+  ctx.beginPath();
+  ctx.arc(w * 0.5, h * 0.72, 36, 0, Math.PI * 2);
+  ctx.fill();
+  ctx.fillStyle = "#000";
+  ctx.font = "bold 16px sans-serif";
+  ctx.textAlign = "center";
+  ctx.fillText("▶", w * 0.5, h * 0.72 + 6);
+  ctx.textAlign = "left";
+  ctx.fillStyle = "#8b949e";
+  ctx.font = "13px monospace";
+  ctx.fillText("new_game_world · new_field · start_playing", 24, h - 48);
+  ctx.fillText(`tick ${Math.floor(t / 2)} · spin-up: play_mode`, 24, h - 28);
+}
+
 function drawAgent(t) {
   const w = canvas.width;
   const h = canvas.height;
@@ -419,6 +465,7 @@ const drawers = {
   publish: drawPublish,
   additive: drawAdditive,
   agent: drawAgent,
+  play: drawPlay,
 };
 
 function frame() {
@@ -468,8 +515,9 @@ fetch("status.json")
     if (st) {
       const gpu = s.gpu_viewport ? " · GPU viewport" : "";
       const pub = s.publish_template ? " · publish" : "";
-      const m100 = s.milestone_composable_gates === 100 ? " · 100 gates" : "";
-      st.textContent = `lic ✓ · ${s.sprint} · ${s.branch}${gpu}${pub}${m100}`;
+      const milestone =
+        s.milestone_composable_gates >= 121 ? ` · ${s.milestone_composable_gates} gates` : "";
+      st.textContent = `lic ✓ · ${s.sprint} · ${s.branch}${gpu}${pub}${milestone}`;
     }
   })
   .catch(() => {});

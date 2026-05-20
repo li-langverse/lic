@@ -367,17 +367,17 @@ def studio_gpu_viewport_smoke() -> int
 # PH-GD spin-up registry (deploy/world-studio-spinup/spinup.toml template count).
 def studio_spinup_template_count_stub() -> int
   requires true
-  ensures result == 11
+  ensures result == 12
   decreases 0
 =
-  return 11
+  return 12
 
 def studio_spinup_registry_smoke() -> int
   requires true
   ensures result == 0
   decreases 0
 =
-  if studio_spinup_template_count_stub() != 11:
+  if studio_spinup_template_count_stub() != 12:
     return 1
   if studio_native_shell_smoke() != 0:
     return 2
@@ -400,7 +400,38 @@ def studio_milestone_100_smoke() -> int
     return 1
   if studio_binary_runtime_tag_stub() != 8288:
     return 2
-  if studio_spinup_template_count_stub() != 11:
+  if studio_spinup_template_count_stub() != 12:
+    return 3
+  return 0
+
+def studio_milestone_composable_target_130_stub() -> int
+  requires true
+  ensures result == 130
+  decreases 0
+=
+  return 130
+
+def studio_milestone_130_smoke() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  if studio_milestone_composable_target_130_stub() != 130:
+    return 1
+  if studio_spinup_template_count_stub() != 12:
+    return 2
+  return studio_play_mode_smoke()
+
+def studio_merge_ready_smoke() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  if studio_milestone_121_smoke() != 0:
+    return 1
+  if studio_spinup_registry_smoke() != 0:
+    return 2
+  if studio_binary_runtime_tag_stub() != 8288:
     return 3
   return 0
 

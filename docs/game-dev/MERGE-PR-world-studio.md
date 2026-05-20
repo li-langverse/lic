@@ -23,9 +23,9 @@ gh pr create \
 
 | Metric | Value |
 |--------|--------|
-| Composable gates | **126** (milestone 121) |
-| Spin-up templates | **11** |
-| Demo tabs | 12 |
+| Composable gates | **130** (milestone 130) |
+| Spin-up templates | **12** (`play_mode`) |
+| Demo tabs | 13 |
 | Vertical demos | 7 |
 | Author API | [world-api-quickstart.md](world-api-quickstart.md) |
 

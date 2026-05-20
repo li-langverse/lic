@@ -23,7 +23,7 @@
 | Portable targets | 5 triples (`check-portable-targets.sh`) |
 | game_dev parse_ok | 12 |
 | vertical_demos build | 7 |
-| spinup_templates | 11 |
+| spinup_templates | 12 |
 | Release rollup | `import_world_studio_release_rollup` |
 
 ## After merge

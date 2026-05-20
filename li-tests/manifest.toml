@@ -281,6 +281,16 @@ outcome = "verify_ok"
 
 [[tests]]
 suite = "generics"
+file = "generics/precision_real_alias.li"
+outcome = "verify_ok"
+
+[[tests]]
+suite = "generics"
+file = "generics/precision_generic_fn.li"
+outcome = "verify_ok"
+
+[[tests]]
+suite = "generics"
 file = "generics/identity.li"
 outcome = "verify_ok"
 

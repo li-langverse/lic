@@ -34,6 +34,7 @@ def name(arg: T) -> R
 | Imports | [Import style](import-style.md) |
 | Types & data | [Types and data](types-and-data.md) |
 | Scalar precision (`float32`, `binary`, suffixes) | [Scalar precision](scalar-precision.md) |
+| Math/physics at any width | [Precision polymorphism](precision-polymorphism.md) |
 | Numbers | [Numerics](numerics.md) |
 | Vectors & parallel | [SIMD and parallel](simd-parallel.md) |
 | Contracts & proof | [Contracts and proofs](contracts-and-proofs.md) |

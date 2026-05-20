@@ -229,8 +229,24 @@ Track gaps: [Provability gaps](../verification/provability-gaps.md).
 
 ---
 
+## Precision-polymorphic APIs (math / physics / numerics)
+
+To make **all** widths applicable in shared code (not only `float64`):
+
+| Pattern | Syntax | Doc |
+|---------|--------|-----|
+| Module alias | `type Real = float32` | [Precision polymorphism](precision-polymorphism.md) § A |
+| Generic scalar | `def dot[S](a: S, b: S) -> S` | § B |
+| Proposed block | `precision float32: …` | § C (desugars to § A) |
+
+**Examples:** `li-tests/generics/precision_real_alias.li` (Pattern A), `precision_generic_fn.li` (Pattern B def)  
+**Copy-paste sample:** `docs/language/examples/precision-physics-math.li`
+
+---
+
 ## Related
 
+- [Precision polymorphism](precision-polymorphism.md) — math/physics/numerics patterns
 - [Types and data](types-and-data.md)
 - [Numerics](numerics.md)
 - [Contracts and proofs](contracts-and-proofs.md)

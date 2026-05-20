@@ -49,7 +49,24 @@ import physics.core
 
 Workspace package: `packages/li-physics-core` (`import_name` in `packages/li.toml`).
 
+## Precision-polymorphic APIs
+
+Shared math/physics should use **generics** or a **`type Real = …` alias** so every width stays applicable:
+
+- Guide: [Precision polymorphism](https://github.com/li-langverse/lic/blob/main/docs/language/precision-polymorphism.md)
+- Example test: `li-tests/generics/precision_polymorphic.li`
+
+```nim
+type Real = float32
+
+def step(vx: Real, fz: Real, dt: Real) -> Real
+  ensures result == vx + fz * dt
+  decreases 0
+=
+  return vx + fz * dt
+```
+
 ## Not in scope
 
 - Compiler does not read `float_bits` to change LLVM types automatically (yet).
-- Downstream physics packages (`physics.rigid`, `physics.runtime`, …) still use `float` in signatures until width-generic APIs land — set profile metadata first, then migrate kernels.
+- Downstream physics packages (`physics.rigid`, `physics.runtime`, …) still use `float` in signatures until width-generic APIs land — set profile metadata first, then migrate kernels per [precision-polymorphism.md](https://github.com/li-langverse/lic/blob/main/docs/language/precision-polymorphism.md).

@@ -430,7 +430,7 @@ Runnable on `dev` after `./scripts/build.sh`:
 
 | v2 item | Why still open |
 |---------|----------------|
-| **2e–2f** | Real VC discharge in Lean kernel (not `True := trivial`) |
+| **2e–2f** | Real VC discharge in Lean kernel (not `True := trivial`) — corpus + backlog: [proof-corpus-roadmap.md](../verification/proof-corpus-roadmap.md) |
 | **2i / 7e-b** | Matrix `@`, `sum`, Tier 1 math-only matmul vs C++ |
 | **7d-c** | Structured `disjoint=` without string policy |
 | **H** | li-httpd implementation |

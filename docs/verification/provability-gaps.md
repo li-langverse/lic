@@ -130,6 +130,8 @@ flowchart LR
 
 Passing **`./li-tests/run_all.sh`** means the **current** gate holds — not the full spec gate.
 
+**Corpus inventory, run commands, and proof backlog for the master plan:** [proof-corpus-roadmap.md](proof-corpus-roadmap.md).
+
 ---
 
 ## Documentation that must stay aligned

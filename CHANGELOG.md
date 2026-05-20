@@ -14,8 +14,9 @@ All notable changes to Li are documented here. The format follows
 
 ### Changed
 
-- **li-httpd runtime seam:** `runtime/li_rt_net.c` — primitives + `*_i` intptr helpers + `httpd_send_*_i` only (no monolithic C `httpd_serve_static_blocking`).
-- **li-httpd M1 perf (tier-5):** prior C epoll/M1 loop removed with monolith; loopback RPS regressed until epoll is reintroduced in Li or a thin extern driver (see `docs/release-notes/2026-05-20-li-native-httpd.md`).
+- **li-httpd runtime seam:** `runtime/li_rt_net.c` — syscall-only (epoll, slots, `writev` coalesce, sendfile, index cache, `httpd_drain_slot_i`); no monolithic C HTTP server.
+- **li-httpd epoll (tier-5):** `packages/li-net-httpd` Li accept/epoll loop; `httpd_prepare_root_i` caches `index.html` body; pipelined drain in runtime for bench hot path; Li fallback when cache missing.
+- **li-net:** expanded `extern proc` surface; use `var ptr` / `var int` on extern params that must not move caller locals (borrow checker).
 
 ### Changed
 

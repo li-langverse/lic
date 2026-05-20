@@ -26,21 +26,22 @@ type UiFrame = object
   public dt: float
   public viewport_w: float
   public viewport_h: float
-
 def li_std_ui_version() -> int
   requires true
   ensures result == 1
   decreases 0
 =
   return 1
-
 def color_rgb(r: float, g: float, b: float, a: float) -> Color
   requires r >= 0.0
   requires g >= 0.0
   requires b >= 0.0
   requires a >= 0.0
   requires a <= 1.0
-  ensures true
+  ensures result.r == r
+  ensures result.g == g
+  ensures result.b == b
+  ensures result.a == a
   decreases 0
 =
   var c: Color
@@ -49,11 +50,11 @@ def color_rgb(r: float, g: float, b: float, a: float) -> Color
   c.b = b
   c.a = a
   return c
-
 def rect_contains(r: Rect, px: float, py: float) -> int
   requires r.w >= 0.0
   requires r.h >= 0.0
-  ensures true
+  ensures result >= 0
+  ensures result <= 1
   decreases 0
 =
   if px < r.x:
@@ -65,12 +66,14 @@ def rect_contains(r: Rect, px: float, py: float) -> int
   if py > r.y + r.h:
     return 0
   return 1
-
 def ui_frame_begin(w: float, h: float, dt: float) -> UiFrame
   requires w > 0.0
   requires h > 0.0
   requires dt > 0.0
-  ensures true
+  ensures result.frame_id == 0
+  ensures result.dt == dt
+  ensures result.viewport_w == w
+  ensures result.viewport_h == h
   decreases 0
 =
   var f: UiFrame
@@ -79,17 +82,17 @@ def ui_frame_begin(w: float, h: float, dt: float) -> UiFrame
   f.viewport_w = w
   f.viewport_h = h
   return f
-
 def ui_frame_end(frame: UiFrame) -> unit
   requires true
   ensures true
   decreases 0
 =
   return
-
 def input_default() -> InputState
   requires true
-  ensures true
+  ensures result.pointer_down == 0
+  ensures result.pointer_x == 0.0
+  ensures result.pointer_y == 0.0
   decreases 0
 =
   var s: InputState

@@ -1,11 +1,9 @@
-
 def li_std_physics_weather_version() -> int
   requires true
   ensures result == 1
   decreases 0
 =
   return 1
-
 def advect_scalar_1d(
     field: array[8, float], wind: array[8, float], dt: float, dx: float) -> unit
   requires dt > 0.0
@@ -17,7 +15,6 @@ def advect_scalar_1d(
   while i < 8
     field[i] = field[i] - wind[i] * dt / dx
     i = i + 1
-
 def diffuse_explicit(
     field: array[8, float], kappa: float, dt: float, dx: float) -> unit
   requires dt > 0.0
@@ -31,11 +28,10 @@ def diffuse_explicit(
     var lap: float = field[i + 1] - 2.0 * field[i] + field[i - 1]
     field[i] = field[i] + kappa * dt * lap * inv_dx2
     i = i + 1
-
 def sample_wind_at(wind_x: array[8, float], wind_y: array[8, float], ix: int) -> float
   requires ix >= 0
   requires ix < 8
-  ensures true
+  ensures result == wind_x[ix]
   decreases ix
 =
   return wind_x[ix]

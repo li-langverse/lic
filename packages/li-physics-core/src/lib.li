@@ -19,45 +19,40 @@ type SimulationParams = object
   public steps: int
   public dt: float
   public seed: int
-
 def li_std_physics_core_version() -> int
   requires true
   ensures result == 1
   decreases 0
 =
   return 1
-
 def physics_tier_arcade() -> int
   requires true
   ensures result == 0
   decreases 0
 =
   return 0
-
 def physics_tier_simulation() -> int
   requires true
   ensures result == 1
   decreases 0
 =
   return 1
-
 def physics_tier_scientific() -> int
   requires true
   ensures result == 2
   decreases 0
 =
   return 2
-
 def physics_tier_research() -> int
   requires true
   ensures result == 3
   decreases 0
 =
   return 3
-
 def default_numerical_targets() -> NumericalTargets
   requires true
-  ensures true
+  ensures result.max_energy_drift == 0.001
+  ensures result.target_fps == 60
   decreases 0
 =
   var t: NumericalTargets
@@ -66,10 +61,10 @@ def default_numerical_targets() -> NumericalTargets
   t.target_fps = 60
   t.cfl_safety = 0.9
   return t
-
 def default_physics_profile() -> PhysicsProfile
   requires true
-  ensures true
+  ensures result.tier == 1
+  ensures result.substeps == 1
   decreases 0
 =
   var p: PhysicsProfile
@@ -78,11 +73,10 @@ def default_physics_profile() -> PhysicsProfile
   p.substeps = 1
   p.targets = default_numerical_targets()
   return p
-
 def profile_for_tier(tier: int) -> PhysicsProfile
   requires tier >= 0
   requires tier <= 3
-  ensures true
+  ensures result.tier == tier
   decreases tier
 =
   var p: PhysicsProfile = default_physics_profile()
@@ -104,10 +98,10 @@ def profile_for_tier(tier: int) -> PhysicsProfile
     p.substeps = 8
     p.targets.max_energy_drift = 0.00001
   return p
-
 def select_integrator_order(profile: PhysicsProfile) -> int
   requires true
-  ensures true
+  ensures result >= 1
+  ensures result <= 4
   decreases profile.tier
 =
   if profile.tier == physics_tier_arcade():
@@ -117,11 +111,10 @@ def select_integrator_order(profile: PhysicsProfile) -> int
   if profile.tier == physics_tier_scientific():
     return 4
   return 4
-
 def simulation_fixed_dt_steps(params: SimulationParams) -> int
   requires params.dt > 0.0
   requires params.steps > 0
-  ensures true
+  ensures result == params.steps
   decreases params.steps
 =
   return params.steps

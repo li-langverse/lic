@@ -263,6 +263,52 @@ See [li.toml manifest](li-toml.md).
 
 ---
 
+## Integer inner loops, rescale to float at the boundary
+
+Many physics, graphics, and quantization pipelines keep the **hot path in integers** (fixed-point or scaled integers), then **convert to float once** for I/O, UI, or a float-only solver step.
+
+| Phase | Typical choice | Why |
+|-------|----------------|-----|
+| Store samples / weights | `int32` or `int64` scaled by `S` (often `S = 2^k`) | Deterministic MACs; no FP drift in the loop |
+| Accumulate | `int64` sum of products | Avoids `int32 * int32` overflow (see **W0501**) |
+| Rescale | `>> k` or divide by `S` | Cheap; exact for power-of-two scales |
+| Boundary | `float32` / `float64` | Display, neural net head, coupling to FP integrator |
+
+**Pattern:** `real ≈ q / S` where `q` is the stored integer. Inner loop: `acc += int64(a) * int64(b)`. Outer API: one explicit conversion to float — not FP arithmetic mixed into every multiply.
+
+**Example:** [examples/fixed-point-accum.li](examples/fixed-point-accum.li)  
+**Test (warnings only):** `li-tests/typecheck/fixed_point_mul_warn.li`
+
+### Compiler support today
+
+| Mechanism | Status |
+|-----------|--------|
+| Separate `int` / `float` (no silent mix) | **Error** (E0202-style messages) |
+| Width mismatch on scalars | **Error** |
+| `int32 * int32` in fixed-point kernels | **Warning W0501** — prefer `int64` accumulator |
+| `int32 / int32` with `/` | **Warning W0502** — truncation; prefer `//`, multiply+shift, or float at boundary |
+| Warnings fail `lic check` / `lic build`? | **No** (exit 0); printed on stderr / JSON |
+| `-Werror` (treat warnings as errors) | **Planned** |
+| `Fixed[Scale]` type in source | **Planned** (language design spec) |
+| Proof of narrowing (`cast` with evidence) | **Planned** (see `historic_ariane5_narrowing.li`) |
+
+JSON diagnostics use `"severity":"warning"` and stable ids `numerics.int_mul_overflow` / `numerics.int_div_trunc` (codes **W0501** / **W0502**). See [diagnostic-v1 schema](../schemas/diagnostic-v1.json).
+
+### Roadmap (compiler)
+
+| Idea | Benefit |
+|------|---------|
+| `-Wnumerics` / `-Wno-numerics` | Toggle fixed-point hints per target (GPU kernel vs host) |
+| `-Werror` | CI opt-in: warnings fail the build |
+| **W0503** float op on values fed only from int locals in same `def` | Nudge “rescale at boundary” |
+| `fixed int32 scale=16` type alias | Scale in the type; catch `q1 * q2` without `>>` |
+| Constant-range analysis on `acc` | Prove overflow impossible → suppress W0501 |
+| `li.toml` `[numerics] warn_fixed_point = true` | Per-package default for agents |
+
+Org policy: **hints, not mandates** — same as scalar width (no global accuracy enforcement).
+
+---
+
 ## Codegen maturity
 
 | Feature | Typecheck | MIR / LLVM |

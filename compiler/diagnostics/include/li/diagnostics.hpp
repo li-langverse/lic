@@ -9,6 +9,8 @@
 
 namespace li {
 
+enum class DiagnosticSeverity { Error, Warning, Note };
+
 struct SourceLoc {
   std::string file;
   std::size_t line = 1;
@@ -18,6 +20,7 @@ struct SourceLoc {
 
 struct Diagnostic {
   SourceLoc loc;
+  DiagnosticSeverity severity = DiagnosticSeverity::Error;
   std::string code;
   std::string message;
   std::optional<std::string> hint;
@@ -27,10 +30,15 @@ class DiagnosticBag {
  public:
   void error(SourceLoc loc, std::string message);
   void error(SourceLoc loc, std::string code, std::string message, std::string hint = {});
+  void warning(SourceLoc loc, std::string code, std::string message, std::string hint = {});
+  void add(const Diagnostic& diagnostic);
   bool empty() const { return items_.empty(); }
+  bool has_errors() const;
   const std::vector<Diagnostic>& items() const { return items_; }
 
  private:
+  void push(SourceLoc loc, DiagnosticSeverity severity, std::string code, std::string message,
+            std::string hint);
   std::vector<Diagnostic> items_;
 };
 

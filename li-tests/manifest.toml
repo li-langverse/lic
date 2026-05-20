@@ -101,6 +101,12 @@ outcome = "compile_ok"
 
 [[tests]]
 suite = "typecheck"
+file = "typecheck/fixed_point_mul_warn.li"
+outcome = "compile_ok"
+note = "W0501 int32 multiply is a warning only; build must still succeed"
+
+[[tests]]
+suite = "typecheck"
 file = "typecheck/scalar_width_mix_fail.li"
 outcome = "compile_fail"
 expected_substr = "integer widths"

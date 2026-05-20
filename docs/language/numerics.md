@@ -15,6 +15,8 @@ Li uses **Python-like names** with **compiled fixed-width** behavior. This catch
 
 **You choose precision** — explicit types (`float32`), suffixes (`3.14f32`), optional `li.toml` `[numerics]`, and physics `float_bits` are all **per-project / per-module** choices; the org does not enforce one global width. See [You set precision yourself](scalar-precision.md#you-set-precision-yourself).
 
+**Fixed-point / integer inner loops:** accumulate in `int64`, rescale with shift or one float conversion at the boundary; compiler hints **W0501** / **W0502**. See [Integer inner loops, rescale to float](scalar-precision.md#integer-inner-loops-rescale-to-float-at-the-boundary).
+
 ## Literal suffixes
 
 ```

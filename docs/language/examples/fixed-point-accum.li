@@ -1,0 +1,17 @@
+# Integer inner loop, rescale to float at boundary (scale S = 65536 = 2^16).
+# W0501 may appear on bare int32 * int32 — widen products to int64 (shown below).
+
+def dot_fixed(ax: int32, ay: int32, bx: int32, by: int32) -> int64
+  requires true
+  ensures true
+  decreases 0
+=
+  return int64(ax) * int64(bx) + int64(ay) * int64(by)
+
+def main() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  var acc: int64 = dot_fixed(1000i32, 0i32, 2000i32, 0i32)
+  return int(acc)

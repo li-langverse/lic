@@ -403,7 +403,7 @@ bool load_module_recursive(const std::filesystem::path& mod_path, Module& out,
   }
   if (!parsed.module) {
     loading.erase(key);
-    return diags.empty();
+    return !diags.has_errors();
   }
 
   Module imported = std::move(*parsed.module);
@@ -449,7 +449,7 @@ bool resolve_imports(Module& out, const std::string& file_path, DiagnosticBag& d
       continue;
     }
   }
-  return diags.empty();
+  return !diags.has_errors();
 }
 
 }  // namespace li

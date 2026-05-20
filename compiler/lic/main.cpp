@@ -69,34 +69,34 @@ std::string read_file(const char* path) {
 bool frontend(const char* path, const std::string& source, li::Module& out,
               li::DiagnosticBag& diags) {
   li::check_source_policies(source, path, diags);
-  if (!diags.empty()) {
+  if (diags.has_errors()) {
     return false;
   }
   auto parsed = li::parse_module(source, path);
   for (const auto& d : parsed.diagnostics.items()) {
-    diags.error(d.loc, d.message);
+    diags.add(d);
   }
-  if (!parsed.module) {
+  if (!parsed.module || diags.has_errors()) {
     return false;
   }
   li::check_stdlib_seal(*parsed.module, path, diags);
-  if (!diags.empty()) {
+  if (diags.has_errors()) {
     return false;
   }
   if (!li::resolve_imports(*parsed.module, path, diags)) {
     return false;
   }
   li::check_module_policies(*parsed.module, path, diags);
-  if (!diags.empty()) {
+  if (diags.has_errors()) {
     return false;
   }
   li::check_duplicate_definitions(*parsed.module, path, diags);
-  if (!diags.empty()) {
+  if (diags.has_errors()) {
     return false;
   }
   auto checked = li::typecheck_module(*parsed.module);
   for (const auto& d : checked.diagnostics.items()) {
-    diags.error(d.loc, d.message);
+    diags.add(d);
   }
   if (!checked.ok) {
     return false;
@@ -111,18 +111,13 @@ int check_file(const char* path, DiagOutput output, std::string_view json_comman
   const std::string source = read_file(path);
   li::Module module;
   li::DiagnosticBag diags;
-  if (!frontend(path, source, module, diags)) {
-    if (output == DiagOutput::Json) {
-      li::print_diagnostics_json(diags, std::cout, json_command);
-    } else {
-      li::print_diagnostics(diags);
-    }
-    return 1;
-  }
+  const bool ok = frontend(path, source, module, diags);
   if (output == DiagOutput::Json) {
     li::print_diagnostics_json(diags, std::cout, json_command);
+  } else if (!diags.empty()) {
+    li::print_diagnostics(diags);
   }
-  return 0;
+  return ok ? 0 : 1;
 }
 
 int count_open_autovc_goals() {
@@ -370,6 +365,9 @@ int main(int argc, char** argv) {
     if (!frontend(input, source, module, diags)) {
       li::print_diagnostics(diags);
       return 1;
+    }
+    if (!diags.empty()) {
+      li::print_diagnostics(diags);
     }
     std::string err;
     if (!li::compile_module(module, output, opts, extra_flags, &err)) {

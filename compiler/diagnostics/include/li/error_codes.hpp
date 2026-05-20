@@ -25,7 +25,14 @@ enum class ErrorCode {
   E0402,  // control.continue_outside_loop
 };
 
+/// Numerics / fixed-point hints (warnings by default; do not fail `lic check` unless -Werror).
+enum class WarningCode {
+  W0501,  // numerics.int_mul_overflow
+  W0502,  // numerics.int_div_trunc
+};
+
 std::string_view error_code_string(ErrorCode code);
+std::string_view warning_code_string(WarningCode code);
 
 struct FormattedDiagnostic {
   std::string code;
@@ -38,5 +45,8 @@ FormattedDiagnostic format_diagnostic(ErrorCode code, std::string_view message,
 
 void diag_error(DiagnosticBag& bag, SourceLoc loc, ErrorCode code,
                 std::string_view message, std::string_view hint = {});
+
+void diag_warning(DiagnosticBag& bag, SourceLoc loc, WarningCode code,
+                  std::string_view message, std::string_view hint = {});
 
 }  // namespace li

@@ -99,6 +99,31 @@ struct AliasEntry {
   bool is_protocol = false;
 };
 
+void check_fixed_point_numerics_warnings(DiagnosticBag& diags, SourceLoc loc, BinOp op,
+                                         const TyPtr& l, const TyPtr& r) {
+  if (l->kind != TyKind::Int || r->kind != TyKind::Int) {
+    return;
+  }
+  const int bits = static_cast<int>(l->numeric_bits);
+  if (op == BinOp::Mul && bits <= 32) {
+    diag_warning(
+        diags, loc, WarningCode::W0501,
+        "integer multiply at " + std::to_string(bits) +
+            "-bit width can overflow; use a wider accumulator (e.g. int64) in fixed-point "
+            "inner loops",
+        "store products in int64, rescale with >> k or one explicit cast to float at the "
+        "module boundary");
+  }
+  if (op == BinOp::Div) {
+    diag_warning(
+        diags, loc, WarningCode::W0502,
+        "integer '/' truncates toward zero; fixed-point pipelines usually rescale with multiply "
+        "+ shift, not float division in the inner loop",
+        "use '//' for integer quotient, or multiply + right-shift by scale k; convert to float "
+        "only at the API boundary");
+  }
+}
+
 struct Ctx {
   std::map<std::string, AliasEntry> aliases;
   std::map<std::string, const ProcDecl*> procs;
@@ -569,6 +594,7 @@ struct Ctx {
                               " bits) without explicit cast");
               return make_int();
             }
+            check_fixed_point_numerics_warnings(diags, loc(e.span), e.bin_op, l, r);
             return l;
           }
           if (l->kind == TyKind::Float && r->kind == TyKind::Float) {
@@ -1004,7 +1030,7 @@ TypecheckResult typecheck_module(const Module& module) {
   }
   borrow_check_module(module, result.diagnostics);
   effects_check_module(module, result.diagnostics);
-  result.ok = result.diagnostics.empty();
+  result.ok = !result.diagnostics.has_errors();
   return result;
 }
 

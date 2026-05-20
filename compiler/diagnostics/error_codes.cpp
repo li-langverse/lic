@@ -48,6 +48,16 @@ std::string_view error_code_string(ErrorCode code) {
   return "E0000";
 }
 
+std::string_view warning_code_string(WarningCode code) {
+  switch (code) {
+    case WarningCode::W0501:
+      return "W0501";
+    case WarningCode::W0502:
+      return "W0502";
+  }
+  return "W0500";
+}
+
 FormattedDiagnostic format_diagnostic(ErrorCode code, std::string_view message,
                                       std::string_view hint) {
   return FormattedDiagnostic{std::string(error_code_string(code)), std::string(message),
@@ -58,6 +68,12 @@ void diag_error(DiagnosticBag& bag, SourceLoc loc, ErrorCode code, std::string_v
                 std::string_view hint) {
   const auto fd = format_diagnostic(code, message, hint);
   bag.error(loc, fd.code, fd.message, fd.hint);
+}
+
+void diag_warning(DiagnosticBag& bag, SourceLoc loc, WarningCode code, std::string_view message,
+                  std::string_view hint) {
+  bag.warning(loc, std::string(warning_code_string(code)), std::string(message),
+              std::string(hint));
 }
 
 }  // namespace li

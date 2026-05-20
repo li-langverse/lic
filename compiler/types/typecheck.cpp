@@ -909,6 +909,39 @@ struct Ctx {
     return p.is_async || proc_has_decorator(p, "async");
   }
 
+  static bool type_expr_is_unit(const TypeExpr& te) {
+    return te.kind == TypeKind::Named && te.name == "unit";
+  }
+
+  static bool proc_returns_unit(const ProcDecl& p) {
+    return !p.ret_type || type_expr_is_unit(*p.ret_type);
+  }
+
+  static bool expr_is_true_literal(const Expr& e) {
+    return e.kind == Expr::Kind::Ident && e.ident == "true";
+  }
+
+  void check_weak_ensures(const ProcDecl& p) {
+    if (p.is_extern || proc_returns_unit(p)) {
+      return;
+    }
+    for (const auto& c : p.contracts) {
+      if (c.kind != ContractKind::Ensures || !c.expr) {
+        continue;
+      }
+      if (!expr_is_true_literal(*c.expr)) {
+        continue;
+      }
+      diag_error(
+          diags, loc(c.span), ErrorCode::E0303,
+          "`ensures true` is not allowed when the procedure returns a value — the postcondition "
+          "must relate `result` to the computation.",
+          "Use `ensures result == <expr>` when the return is an expression, or a property such as "
+          "`ensures result >= 0.0`. Opaque `extern proc` may still use `ensures true`.");
+      return;
+    }
+  }
+
   void check_proc(const ProcDecl& p) {
     const bool prev_async = in_async;
     in_async = proc_is_async(p);
@@ -931,7 +964,7 @@ struct Ctx {
       if (!has_ensures) {
         diag_error(diags, loc(p.span), ErrorCode::E0302,
                    "Every `extern proc` must declare what it guarantees on exit (`ensures`).",
-                   "Add an `ensures` clause, often `ensures true` for opaque C calls.");
+                   "Add an `ensures` clause (often `ensures true` for opaque runtime calls).");
       }
       in_async = prev_async;
       return;
@@ -945,8 +978,11 @@ struct Ctx {
     if (!has_ensures) {
       diag_error(diags, loc(p.span), ErrorCode::E0302,
                  "Every proc must state what it guarantees on exit (`ensures`).",
-                 "Add `ensures <condition>` — use `ensures true` temporarily while developing.");
+                 proc_returns_unit(p)
+                     ? "Add `ensures <condition>` (or `ensures true` for `-> unit` stubs)."
+                     : "Add `ensures result == <expr>` or a property on `result` — not `ensures true`.");
     }
+    check_weak_ensures(p);
     locals.clear();
     type_vars.clear();
     refined_index_params.clear();

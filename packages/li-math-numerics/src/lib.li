@@ -11,7 +11,6 @@ extern proc li_rt_cos(x: float) raises IO -> float
   requires true
   ensures true
   decreases 0
-
 def li_std_numerics_version() -> int
   requires true
   ensures result == 1
@@ -156,14 +155,13 @@ def three_body_forces_2d(
       fy[j] = fy[j] - fyi
       j = j + 1
     i = i + 1
-
 def three_body_energy_2d(
     px: array[3, float], py: array[3, float],
     vx: array[3, float], vy: array[3, float],
     g: float, mass: float, soft: float) -> float
   requires g > 0.0
   requires mass > 0.0
-  ensures true
+  ensures result == ke + pe
   decreases 0
 =
   var ke: float = 0.0
@@ -184,7 +182,6 @@ def three_body_energy_2d(
       j = j + 1
     i = i + 1
   return ke + pe
-
 def three_body_init_2d(px: array[3, float], py: array[3, float]) -> unit
   requires true
   ensures true
@@ -197,7 +194,6 @@ def three_body_init_2d(px: array[3, float], py: array[3, float]) -> unit
   py[1] = -0.5 * r
   px[2] = 0.8660254037844386 * r
   py[2] = -0.5 * r
-
 def three_body_step_mini(
     px: array[3, float], py: array[3, float],
     vx: array[3, float], vy: array[3, float],

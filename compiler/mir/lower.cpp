@@ -190,6 +190,32 @@ std::string lower_expr_to(const Expr& e, const Module& module, std::vector<MirIn
                           std::unordered_set<std::string>& simd_names,
                           std::unordered_set<std::string>& i64_locals);
 
+std::string lower_float_array_dot_f64(const std::string& lhs_ident, const std::string& rhs_ident,
+                                      std::vector<MirInsn>& out,
+                                      std::unordered_set<std::string>& float_names) {
+  if (!g_arr_ctx || !g_arr_ctx->float_array_names) {
+    return {};
+  }
+  const auto& names = *g_arr_ctx->float_array_names;
+  const auto sz_a = g_arr_ctx->float_array_sizes.find(lhs_ident);
+  const auto sz_b = g_arr_ctx->float_array_sizes.find(rhs_ident);
+  if (names.count(lhs_ident) == 0 || names.count(rhs_ident) == 0 ||
+      sz_a == g_arr_ctx->float_array_sizes.end() ||
+      sz_b == g_arr_ctx->float_array_sizes.end() || sz_a->second != sz_b->second) {
+    return {};
+  }
+  const std::string dest = fresh_temp();
+  MirInsn dot;
+  dot.op = MirOp::ArrayDotF64;
+  dot.ident = dest;
+  dot.lhs_ident = lhs_ident;
+  dot.rhs_ident = rhs_ident;
+  dot.int_value = sz_a->second;
+  out.push_back(std::move(dot));
+  float_names.insert(dest);
+  return dest;
+}
+
 bool is_arith_binop(BinOp op) {
   return op == BinOp::Add || op == BinOp::Sub || op == BinOp::Mul || op == BinOp::Div ||
          op == BinOp::Mod || op == BinOp::FloorDiv || op == BinOp::Pow;
@@ -808,24 +834,10 @@ std::string lower_expr_to(const Expr& e, const Module& module, std::vector<MirIn
           out.push_back(std::move(mm));
           return dest;
         }
-        if (g_arr_ctx->float_array_names) {
-          const auto& names = *g_arr_ctx->float_array_names;
-          const auto sz_a = g_arr_ctx->float_array_sizes.find(e.lhs->ident);
-          const auto sz_b = g_arr_ctx->float_array_sizes.find(e.rhs->ident);
-          if (names.count(e.lhs->ident) > 0 && names.count(e.rhs->ident) > 0 &&
-              sz_a != g_arr_ctx->float_array_sizes.end() &&
-              sz_b != g_arr_ctx->float_array_sizes.end() && sz_a->second == sz_b->second) {
-            const std::string dest = fresh_temp();
-            MirInsn dot;
-            dot.op = MirOp::ArrayDotF64;
-            dot.ident = dest;
-            dot.lhs_ident = e.lhs->ident;
-            dot.rhs_ident = e.rhs->ident;
-            dot.int_value = sz_a->second;
-            out.push_back(std::move(dot));
-            float_names.insert(dest);
-            return dest;
-          }
+        const std::string dest =
+            lower_float_array_dot_f64(e.lhs->ident, e.rhs->ident, out, float_names);
+        if (!dest.empty()) {
+          return dest;
         }
       }
       const std::string lhs = lower_expr_to(*e.lhs, module, out, float_names, simd_names, i64_locals);
@@ -884,6 +896,14 @@ std::string lower_expr_to(const Expr& e, const Module& module, std::vector<MirIn
         out.push_back(std::move(ins));
         simd_names.insert(dest);
         return dest;
+      }
+      if (e.ident == "dot" && e.args.size() == 2 && e.args[0]->kind == Expr::Kind::Ident &&
+          e.args[1]->kind == Expr::Kind::Ident) {
+        const std::string dest =
+            lower_float_array_dot_f64(e.args[0]->ident, e.args[1]->ident, out, float_names);
+        if (!dest.empty()) {
+          return dest;
+        }
       }
       if (e.ident == "sum" && e.args.size() == 1 && e.args[0]->kind == Expr::Kind::Ident &&
           g_arr_ctx) {

@@ -8,7 +8,7 @@ C += A @ B
 y[i] = alpha * x[i] + y[i]
 ```
 
-For matching 1d `array[N, float]` operands, `a @ b` lowers to a compile-time dot product loop.
+For matching 1d `array[N, float]` operands, `a @ b` and `dot(a, b)` lower to the same dot-product loop (`ArrayDotF64` MIR).
 
 For fixed 2d tiles `array[M, array[K, float]] @ array[K, array[N, float]]`, the result type is `array[M, array[N, float]]`; inner-dimension mismatches fail at compile time (`li-tests/math_linalg/matmul_dim_mismatch.li`). Lowering is a scalar triple loop today (**2i-c**); SIMD / `@parallel` on matmul (**7e-a/b**) is planned.
 

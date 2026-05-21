@@ -920,6 +920,22 @@ struct Ctx {
           diags.error(loc(e.span), "sum supports int or float arrays only");
           return make_int();
         }
+        if (e.ident == "dot") {
+          if (e.args.size() != 2) {
+            diags.error(loc(e.span), "dot expects two array arguments");
+            return make_float();
+          }
+          const TyPtr a = type_of(*e.args[0]);
+          const TyPtr b = type_of(*e.args[1]);
+          if (a->kind == TyKind::Array && b->kind == TyKind::Array && a->array_size == b->array_size &&
+              a->elem && b->elem && same_kind(a->elem, b->elem) &&
+              a->elem->kind == TyKind::Float) {
+            return make_float();
+          }
+          diags.error(loc(e.span),
+                      "dot expects two matching array[N, float] operands (same as 1d '@')");
+          return make_float();
+        }
         if (e.ident == "disjoint_elem" || e.ident == "disjoint_row" ||
             e.ident == "disjoint_slice" || e.ident == "row_ok") {
           if (e.args.size() != 2) {
@@ -1140,6 +1156,13 @@ struct Ctx {
 
   void check_call_args(const Expr& call) {
     if (call.kind != Expr::Kind::Call) {
+      return;
+    }
+    if (call.ident == "echo" || call.ident == "sum" || call.ident == "dot" ||
+        call.ident == "disjoint_elem" || call.ident == "disjoint_row" ||
+        call.ident == "disjoint_slice" || call.ident == "row_ok" ||
+        call.ident == "__li_simd_splat_f64" || call.ident == "__li_simd_mul_f64" ||
+        call.ident == "__li_simd_add_f64" || call.ident == "__li_horiz_sum_f64") {
       return;
     }
     const auto it = procs.find(call.ident);

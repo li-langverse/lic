@@ -1,18 +1,33 @@
-# Pure-Li SIMD micro-kernel (exercises simd[f64,4] + intrinsics); no LI_EXTRA_C.
+# Pure-Li dot (7e-a): 800× dot(array[40000,float]) via `a @ b`; no LI_EXTRA_C / __li_simd_*.
 
-def main() -> int
+extern proc li_rt_volatile_sink_f64(v: float) raises IO -> unit
+  requires true
+  ensures true
+
+def dot_tile_f64(rep: int) raises IO -> float
+  requires true
+  ensures result >= 0.0
+  decreases 0
+=
+  var a: array[40000, float]
+  var b: array[40000, float]
+  var i: int = 0
+  while i < 40000
+    var idx: int = (i + rep) % 40000
+    a[idx] = 0.001
+    b[idx] = 0.002
+    i = i + 1
+  return a @ b
+
+def main() raises IO -> int
   requires true
   ensures result == 0
   decreases 0
 =
-  var x: float = 0.001
   var acc: float = 0.0
-  var i: int = 0
-  while i < 10000000
-    var v: simd[f64, 4] = __li_simd_splat_f64(x)
-    var w: simd[f64, 4] = __li_simd_splat_f64(x)
-    var p: simd[f64, 4] = __li_simd_mul_f64(v, w)
-    acc = acc + __li_horiz_sum_f64(p)
-    x = x + 0.000001
-    i = i + 1
+  var rep: int = 0
+  while rep < 800
+    acc = acc + dot_tile_f64(rep)
+    rep = rep + 1
+  li_rt_volatile_sink_f64(acc)
   return 0

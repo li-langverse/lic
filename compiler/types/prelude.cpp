@@ -33,8 +33,8 @@ bool is_prelude_type_name(const std::string_view name) {
 }
 
 bool is_prelude_proc_name(const std::string_view name) {
-  return in_set(name, {"echo", "sum", "disjoint_elem", "disjoint_row", "disjoint_slice", "row_ok",
-                     nullptr});
+  return in_set(name, {"echo", "sum", "dot", "disjoint_elem", "disjoint_row", "disjoint_slice",
+                       "row_ok", nullptr});
 }
 
 bool is_reserved_decorator_name(const std::string_view name) {

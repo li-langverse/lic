@@ -1,6 +1,6 @@
 # Mathematical linear-algebra surface (spec stub)
 
-**Status:** Partial (Phase 2i + 7e) — 1d `@`, `sum(array)`, 2d fixed-shape matrix `@` (**2i-c**); SIMD matmul (**7e**) deferred  
+**Status:** Partial (Phase 2i + 7e) — 1d `@`/`dot`, `sum(array)`, 2d `@` (**2i-c**); `simd_dot`/`matmul_naive` pure-Li benches; explicit SIMD MIR (**7e-a**) deferred  
 **Plan:** `docs/superpowers/plans/2026-05-16-li-math-linalg-surface.md`  
 **Gaps:** [Provability gaps](../../verification/provability-gaps.md) **G-math**
 

@@ -68,6 +68,9 @@ todos:
   - id: m1-wave8-tls-headers
     content: "M1 wave 8: li-tls scaffold; strip x-internal response headers; https_static tier5 stub"
     status: completed
+  - id: m1-wave9-auth-validate
+    content: "M1 wave 9: lic validate-httpd-config subcommand; Bearer API key auth (401)"
+    status: completed
   - id: m15-tls-auto
     content: "TLS auto: self-signed dev certs on setup; ACME Let's Encrypt obtain+renew; secure TOML modes"
     status: pending
@@ -120,6 +123,7 @@ isProject: false
 | **6** (done) | C access log (stderr RFC3339); per-route rate via `[route_limits]` + runtime `route=…\|rps\|burst` | `test-rate-limit-per-route.sh` | — |
 | **7** (done) | Passive upstream health (`health_max_fails`, recovery timeout); `lic-validate-httpd-config.sh` | `test-passive-upstream-health.sh`; validate all examples in CI | — |
 | **8** (done) | `packages/li-tls` scaffold; strip `x-internal-*` on proxy responses; tier5 `https_static` (nightly skip) | `test-strip-internal-headers.sh`; `https_static` verify_skip row | TLS terminate + ACME; SSE |
+| **9** (done) | `lic validate-httpd-config`; `[auth] require_bearer` + runtime `auth_key=` rows | `test-auth-bearer.sh` | SSE; active health; key hashing |
 
 ---
 

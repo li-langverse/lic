@@ -8,6 +8,7 @@ All notable changes to Li are documented here. The format follows
 
 ### Added
 
+- **li-httpd M1 wave 9:** `lic validate-httpd-config`; Bearer API key auth (`401`) — [2026-05-22-httpd-m1-wave9-auth-validate.md](docs/release-notes/2026-05-22-httpd-m1-wave9-auth-validate.md).
 - **li-httpd M1 wave 8:** `li-tls` scaffold; strip `x-internal-*` proxy response headers; tier5 `https_static` stub — [2026-05-22-httpd-m1-wave8-tls-headers.md](docs/release-notes/2026-05-22-httpd-m1-wave8-tls-headers.md).
 - **li-httpd M1 wave 7:** passive upstream health; `lic-validate-httpd-config.sh` — [2026-05-22-httpd-m1-wave7-health-validate.md](docs/release-notes/2026-05-22-httpd-m1-wave7-health-validate.md).
 - **li-httpd M1 wave 6:** stderr access log (RFC3339); per-route rate limits via `[route_limits]` — [2026-05-22-httpd-m1-wave6-access-per-route-limit.md](docs/release-notes/2026-05-22-httpd-m1-wave6-access-per-route-limit.md).

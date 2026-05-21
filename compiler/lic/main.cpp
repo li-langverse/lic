@@ -37,6 +37,7 @@ int usage() {
             << "                       [--threads=N] [--jobs=N] [--max-memory=MB]\n"
             << "                       [--coverage-instrument]\n"
             << "  lic smoke-llvm         verify LLVM can emit main returning 0\n"
+            << "  lic validate-httpd-config <file.toml>  validate li-httpd TOML (M1 subset)\n"
             << "  lic --version          print version\n"
             << "\n"
             << "resource defaults (override via flags or env):\n"
@@ -254,6 +255,29 @@ int build_file(const char* path, const char* output, const li::CompileOptions& o
   return 0;
 }
 
+int validate_httpd_config_cmd(int argc, char** argv) {
+  if (argc < 3) {
+    std::cerr << "usage: lic validate-httpd-config <file.toml>\n";
+    return 1;
+  }
+  std::filesystem::path repo = std::filesystem::current_path();
+  if (const char* root = std::getenv("LI_REPO_ROOT")) {
+    repo = root;
+  }
+  const std::filesystem::path script = repo / "scripts/validate-httpd-config.py";
+  if (!std::filesystem::is_regular_file(script)) {
+    std::cerr << "validate-httpd-config: missing " << script << " (set LI_REPO_ROOT)\n";
+    return 1;
+  }
+  std::ostringstream cmd;
+  cmd << "python3 " << script.string() << " " << argv[2];
+  const int st = std::system(cmd.str().c_str());
+  if (st != 0) {
+    return 1;
+  }
+  return 0;
+}
+
 }  // namespace
 
 int main(int argc, char** argv) {
@@ -269,6 +293,9 @@ int main(int argc, char** argv) {
     std::cout << li::styled_accent("lic 0.0.0-dev") << li::reset_style() << '\n';
 #endif
     return 0;
+  }
+  if (cmd == "validate-httpd-config") {
+    return validate_httpd_config_cmd(argc, argv);
   }
   if (cmd == "smoke-llvm") {
     std::string err;

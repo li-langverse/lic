@@ -107,6 +107,18 @@ def validate(cfg: dict) -> list[str]:
         if mf is not None and int(mf) < 1:
             errs.append("health.max_fails must be >= 1")
 
+    auth = cfg.get("auth") or {}
+    if isinstance(auth, dict):
+        req = auth.get("require_bearer")
+        keys = auth.get("keys")
+        if req and str(req).lower() not in ("0", "false", "no"):
+            if not isinstance(keys, list) or not keys:
+                errs.append("auth.require_bearer=true requires auth.keys = [\"...\"]")
+            else:
+                for k in keys:
+                    if not str(k).strip():
+                        errs.append("auth.keys must not contain empty strings")
+
     tls = cfg.get("tls") or {}
     if isinstance(tls, dict):
         mode = str(tls.get("mode") or "").strip()

@@ -58,6 +58,19 @@ def flatten(cfg_path: Path) -> list[str]:
             on = str(si).lower() not in ("0", "false", "no")
             lines.append(f"strip_internal_headers={1 if on else 0}")
 
+    auth = data.get("auth") or {}
+    if isinstance(auth, dict):
+        req = auth.get("require_bearer")
+        if req is not None:
+            on = str(req).lower() not in ("0", "false", "no")
+            lines.append(f"auth_required={1 if on else 0}")
+        keys = auth.get("keys")
+        if isinstance(keys, list):
+            for key in keys:
+                k = str(key).strip()
+                if k:
+                    lines.append(f"auth_key={k}")
+
     tls = data.get("tls") or {}
     if isinstance(tls, dict):
         mode = tls.get("mode")

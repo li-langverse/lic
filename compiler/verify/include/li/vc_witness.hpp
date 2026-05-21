@@ -19,6 +19,7 @@ bool contract_witnessed_trivial(const ProcDecl& proc, const Contract& c,
                                 const CallerProofFacts* caller_facts = nullptr);
 bool mir_return_links_proc(const MirFn& fn, const ProcDecl& proc);
 bool witness_dot4_int_loop(const ProcDecl& proc, const Expr& ensures_rhs);
+bool witness_dot4_prelude_call(const Expr& ret, const Expr& ensures_rhs);
 
 VcWitnessStats compute_vc_witness_stats(const Module& module, const MirModule* mir);
 

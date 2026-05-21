@@ -46,6 +46,10 @@ llvm::Type* llvm_scalar(llvm::LLVMContext& ctx, bool is_float, bool is_i64, bool
 
 llvm::Type* llvm_array_type(llvm::LLVMContext& ctx, const MirParam& p) {
   llvm::Type* elem = llvm_scalar(ctx, p.is_float, p.is_i64, p.is_string);
+  if (p.is_matrix && p.matrix_cols > 0) {
+    llvm::Type* row_ty = llvm::ArrayType::get(elem, static_cast<unsigned>(p.matrix_cols));
+    return llvm::ArrayType::get(row_ty, static_cast<unsigned>(p.fixed_array_elems));
+  }
   return llvm::ArrayType::get(elem, static_cast<unsigned>(p.fixed_array_elems));
 }
 
@@ -563,24 +567,23 @@ struct EmitCtx {
         }
         std::vector<llvm::Value*> args;
         for (std::size_t ai = 0; ai < ins.args.size(); ++ai) {
-          const bool ptr_param =
-              ai < callee->arg_size() &&
-              callee->getArg(ai)->getType() == i8_ptr(context);
-          llvm::Value* val = mir_arg_value(ins.args[ai], ptr_param);
-          if (ptr_param && val->getType() == i64_ty(context)) {
+          llvm::Type* want =
+              ai < callee->arg_size() ? callee->getArg(ai)->getType() : nullptr;
+          const bool i8_ptr_param = want && want == i8_ptr(context);
+          llvm::Value* val = mir_arg_value(ins.args[ai], i8_ptr_param);
+          if (i8_ptr_param && val->getType() == i64_ty(context)) {
             val = builder->CreateIntToPtr(val, i8_ptr(context));
           }
-          if (ai < callee->arg_size()) {
-            llvm::Type* want = callee->getArg(ai)->getType();
-            if (want != val->getType()) {
-              if (want->isDoubleTy() && val->getType()->isIntegerTy(32)) {
-                val = builder->CreateSIToFP(val, want);
-              } else if (want->isIntegerTy(32) && val->getType()->isDoubleTy()) {
-                val = builder->CreateFPTrunc(val, llvm::Type::getFloatTy(context));
-                val = builder->CreateBitCast(val, want);
-              } else if (want->isIntegerTy(32) && val->getType()->isFloatTy()) {
-                val = builder->CreateBitCast(val, want);
-              }
+          if (want != nullptr && val->getType() != want) {
+            if (ins.args[ai].is_array_ident && want->isPointerTy()) {
+              val = builder->CreatePointerCast(val, want);
+            } else if (want->isDoubleTy() && val->getType()->isIntegerTy(32)) {
+              val = builder->CreateSIToFP(val, want);
+            } else if (want->isIntegerTy(32) && val->getType()->isDoubleTy()) {
+              val = builder->CreateFPTrunc(val, llvm::Type::getFloatTy(context));
+              val = builder->CreateBitCast(val, want);
+            } else if (want->isIntegerTy(32) && val->getType()->isFloatTy()) {
+              val = builder->CreateBitCast(val, want);
             }
           }
           args.push_back(val);
@@ -1261,17 +1264,34 @@ bool emit_llvm_ir(const MirModule& mir, const std::string& out_path, std::string
         if (mp.fixed_array_elems > 0) {
           llvm::Type* arr_ty = llvm_array_type(context, mp);
           llvm::AllocaInst* ap = builder.CreateAlloca(arr_ty, nullptr, mp.name);
-          ctx.arrays[mp.name] = ArraySlot{ap, mp.fixed_array_elems, 0, mp.is_float, false};
+          ctx.arrays[mp.name] = ArraySlot{ap, mp.fixed_array_elems, mp.matrix_cols, mp.is_float,
+                                          mp.is_matrix};
           llvm::Type* elem = llvm_scalar(context, mp.is_float, mp.is_i64, mp.is_string);
           llvm::Value* zero = llvm::ConstantInt::get(builder.getInt32Ty(), 0);
-          const auto n = static_cast<unsigned>(mp.fixed_array_elems);
-          for (unsigned i = 0; i < n; ++i) {
-            llvm::Value* idx = llvm::ConstantInt::get(i32_ty(context), i);
-            llvm::Value* gep_idx[] = {zero, idx};
-            llvm::Value* from_p = builder.CreateInBoundsGEP(arr_ty, &arg, gep_idx);
-            llvm::Value* to_p = builder.CreateInBoundsGEP(arr_ty, ap, gep_idx);
-            llvm::Value* v = builder.CreateLoad(elem, from_p);
-            builder.CreateStore(v, to_p);
+          if (mp.is_matrix && mp.matrix_cols > 0) {
+            const unsigned m = static_cast<unsigned>(mp.fixed_array_elems);
+            const unsigned n = static_cast<unsigned>(mp.matrix_cols);
+            for (unsigned i = 0; i < m; ++i) {
+              llvm::Value* ri = llvm::ConstantInt::get(i32_ty(context), i);
+              for (unsigned j = 0; j < n; ++j) {
+                llvm::Value* rj = llvm::ConstantInt::get(i32_ty(context), j);
+                llvm::Value* gep_idx[] = {zero, ri, rj};
+                llvm::Value* from_p = builder.CreateInBoundsGEP(arr_ty, &arg, gep_idx);
+                llvm::Value* to_p = builder.CreateInBoundsGEP(arr_ty, ap, gep_idx);
+                llvm::Value* v = builder.CreateLoad(elem, from_p);
+                builder.CreateStore(v, to_p);
+              }
+            }
+          } else {
+            const auto len = static_cast<unsigned>(mp.fixed_array_elems);
+            for (unsigned i = 0; i < len; ++i) {
+              llvm::Value* ai = llvm::ConstantInt::get(i32_ty(context), i);
+              llvm::Value* gep_idx[] = {zero, ai};
+              llvm::Value* from_p = builder.CreateInBoundsGEP(arr_ty, &arg, gep_idx);
+              llvm::Value* to_p = builder.CreateInBoundsGEP(arr_ty, ap, gep_idx);
+              llvm::Value* v = builder.CreateLoad(elem, from_p);
+              builder.CreateStore(v, to_p);
+            }
           }
         } else if (mp.is_string) {
           builder.CreateStore(&arg, ctx.ensure_ptr_local(mp.name));

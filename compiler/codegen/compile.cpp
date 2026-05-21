@@ -74,6 +74,9 @@ bool compile_module(const Module& module, const std::string& output_path,
   cmd << " -o \"" << output_path << "\"";
   if (opts.release) {
     cmd << " -O2";
+    if (!opts.fp_numerically_stable) {
+      cmd << " -ffast-math -ffp-contract=fast";
+    }
   }
   if (opts.fp_numerically_stable) {
     cmd << " -fno-fast-math -ffp-contract=off";

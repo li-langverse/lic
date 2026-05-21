@@ -12,7 +12,8 @@ for sample in \
   "$ROOT/li-tests/contracts_verify/linalg_dot4_int_loop_open.li" \
   "$ROOT/li-tests/contracts_verify/linalg_norm4_int_closed.li" \
   "$ROOT/li-tests/contracts_verify/linalg_axpy4_int_closed.li" \
-  "$ROOT/li-tests/contracts_verify/linalg_dot4_float_closed.li"; do
+  "$ROOT/li-tests/contracts_verify/linalg_dot4_float_closed.li" \
+  "$ROOT/li-tests/contracts_verify/linalg_mat2_callproc_float_closed.li"; do
   AUTOVC="$ROOT/build/generated/AutoVC.lean"
   rm -f "$AUTOVC"
   "$LIC" build "$sample" -o /dev/null

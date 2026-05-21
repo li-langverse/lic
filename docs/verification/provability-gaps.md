@@ -37,7 +37,7 @@ This page is the **honest inventory** of what is **not** fully proved or not yet
 | **G-vc** | Partial | Float/`abs` ensures; opaque `vec3_dot`-style returns; loop implementations vs closed-form `ensures` |
 | **G-par** | Partial | AST `policy_module` rejects missing disjoint, false `disjoint_row`, mut capture, borrow-in-par; Lean proofs open |
 | **G-dec** | Partial | Decorator elaboration to MIR; `decorator_exploits` proofs |
-| **G-math** | Partial | **Open:** float `@` full Props, 2D **CallProc** (LLVM ptr mismatch); tier-1 **≤1.2× C++** (`matmul_naive`, `horner_pure_li`). **Closed slice:** `linalg_dot4_float_closed`, prelude `norm`/`axpy`/**, IKJ `ArrayMatMul2DF64` codegen enforced only with `LI_TIER1_PERF_STRICT=1` (`check-tier1-li-vs-cpp.sh` reports gaps by default). **Closed slice:** prelude `norm`, `axpy`, same-length `**`, scalar×array, `math_linalg/reductions/`, loop-dot witness, P-linalg corpus |
+| **G-math** | Partial | **Open:** full 2×2 `@` Lean Props; tier-1 **≤1.2× C++** (`matmul_naive`, `horner_pure_li` — refresh CSV after IKJ/`-ffp-contract=fast`). **Closed slice:** `linalg_dot4_float_closed` (prelude `dot`), `linalg_mat2_callproc_float_closed`, prelude `norm`/`axpy`/**, IKJ `ArrayMatMul2DF64` enforced only with `LI_TIER1_PERF_STRICT=1` (`check-tier1-li-vs-cpp.sh` reports gaps by default). **Closed slice:** prelude `norm`, `axpy`, same-length `**`, scalar×array, `math_linalg/reductions/`, loop-dot witness, P-linalg corpus |
 | **G-bnd** | Partial | Release path without `li_bounds_fail` for proved indices |
 | **G-def** | Partial+ | Cross-module method privacy proofs; virtual dispatch deferred |
 | **G-oop** | Partial | Lean `ensures` on methods; trait laws in kernel |

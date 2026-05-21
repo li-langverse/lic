@@ -2068,10 +2068,19 @@ MirModule lower_to_mir(const Module& module) {
         mp.name = p.name;
         const TypeExpr* ut = unwrap_refinement_type(&p.type);
         if (ut && ut->kind == TypeKind::Array && ut->array_size > 0 && ut->elem) {
-          const TypeExpr* el = unwrap_refinement_type(ut->elem.get());
-          if (el && el->kind == TypeKind::Named) {
-            mp.fixed_array_elems = ut->array_size;
-            mp.is_float = is_float_type_name(el->name);
+          std::int64_t m_rows = 0;
+          std::int64_t m_cols = 0;
+          if (is_2d_float_matrix_type(*ut, &m_rows, &m_cols)) {
+            mp.fixed_array_elems = m_rows;
+            mp.matrix_cols = m_cols;
+            mp.is_matrix = true;
+            mp.is_float = true;
+          } else {
+            const TypeExpr* el = unwrap_refinement_type(ut->elem.get());
+            if (el && el->kind == TypeKind::Named) {
+              mp.fixed_array_elems = ut->array_size;
+              mp.is_float = is_float_type_name(el->name);
+            }
           }
         } else {
           mp.is_float = is_float_type_name(p.type.name);

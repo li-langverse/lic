@@ -405,10 +405,23 @@ bool witness_dot4_int_loop_impl(const ProcDecl& proc, const Expr& ensures_rhs) {
   return ret != nullptr && expr_is_ident(ret, acc);
 }
 
+bool witness_dot4_prelude_call_impl(const Expr& ret, const Expr& ensures_rhs) {
+  if (ret.kind != Expr::Kind::Call || ret.ident != "dot" || ret.args.size() != 2) {
+    return false;
+  }
+  if (ret.args[0]->kind != Expr::Kind::Ident || ret.args[1]->kind != Expr::Kind::Ident) {
+    return false;
+  }
+  return expr_is_dot4_int_spec(ensures_rhs, ret.args[0]->ident, ret.args[1]->ident);
+}
+
 bool ensures_witnessed_for_return(const ProcDecl& proc, const Contract& c, const Expr& ret,
                                   const Module* module, const CallerProofFacts* caller_facts) {
   const Expr* rhs = ensures_rhs_eq_result(*c.expr);
   if (rhs != nullptr && witness_dot4_int_loop_impl(proc, *rhs) && expr_is_ident(&ret, "acc")) {
+    return true;
+  }
+  if (rhs != nullptr && witness_dot4_prelude_call_impl(ret, *rhs)) {
     return true;
   }
   if (rhs != nullptr && expr_same_shape(ret, *rhs)) {
@@ -519,6 +532,10 @@ VcWitnessStats compute_vc_witness_stats(const Module& module, const MirModule* m
 
 bool witness_dot4_int_loop(const ProcDecl& proc, const Expr& ensures_rhs) {
   return witness_dot4_int_loop_impl(proc, ensures_rhs);
+}
+
+bool witness_dot4_prelude_call(const Expr& ret, const Expr& ensures_rhs) {
+  return witness_dot4_prelude_call_impl(ret, ensures_rhs);
 }
 
 }  // namespace li

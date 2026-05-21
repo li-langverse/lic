@@ -16,15 +16,16 @@ Closes the **2i-b** math surface slice (prelude `axpy`, same-length `**`, scalar
 | Area | Paths / evidence |
 |------|------------------|
 | **2i-b** | `compiler/mir/lower.cpp` (`ArrayScaleF64`, `ArrayAxpyF64`, `**` in `ArrayBinOpF64`); `compiler/types/typecheck.cpp`, `prelude.cpp`; `li-tests/math_linalg/{elementwise_pow_float4,scale_float4,axpy_float4}.li`, `reductions/*.li` |
-| **2f** | `linalg_axpy4_int_closed`, `linalg_dot4_float_closed`; `lic build --strict-lean`; `glean_strict_build_smoke.sh` |
-| **7e** | IKJ matmul in `emit.cpp`; `check-tier1-li-vs-cpp.sh` (advisory; strict env for CI fail) |
+| **2f** | `linalg_dot4_float_closed` (`dot()` witness), `linalg_mat2_callproc_float_closed`; `--strict-lean` |
+| **7e** | IKJ `ArrayMatMul2DF64`; release `-ffp-contract=fast`; matrix **CallProc** ABI (`MirParam.is_matrix`) |
+| **2i** | `witness_dot4_prelude_call` in `vc_witness.cpp` / `vc_emit_lean.cpp` |
 | **Docs** | `provability-gaps.md`, master plan, `proof-corpus-roadmap.md`, math-linalg plan |
 
 ## Not changed
 
 - **G-lean** default kernel gate still off (use `--strict-lean` when lake is installed).
-- 2D float **CallProc** `@` still broken at LLVM link (specimen removed; **G-math** open).
-- `horner_pure_li` tier-1 gap unchanged (scalar Horner loop).
+- Full 2×2 `@` **ensures** as Lean `Prop` (entry-only closed via `linalg_mat2_callproc_float_closed`).
+- Tier-1 CSV not refreshed in-agent (`matmul_naive` bench run exceeds session budget); re-run `bench.py --tier 1` after merge.
 - No `@parallel` MIR elaboration (**G-dec**).
 - No org **benchmarks** catalog ingest (lic-local tier-1 CSV only).
 

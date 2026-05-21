@@ -87,6 +87,9 @@ struct MirParam {
   std::int64_t simd_lanes = 0;
   /** When >0, slot is `ident + "_" + name` as ArrayAlloc; LLVM uses `[N x scalar]` in structs. */
   std::int64_t fixed_array_elems = 0;
+  /** `array[M, array[K, float]]` param: rows in fixed_array_elems, cols here. */
+  bool is_matrix = false;
+  std::int64_t matrix_cols = 0;
 };
 
 struct MirInsn {

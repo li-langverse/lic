@@ -66,7 +66,7 @@
 
 | Suite | Result | Notes |
 |-------|--------|-------|
-| `run_all.sh contracts_verify` | **23 pass / 0 fail** | Includes **P-linalg** closed + `linalg_dot4_int_loop_open` = `verify_open_ok` |
+| `run_all.sh contracts_verify` | **26 pass / 0 fail** | Includes **P-linalg** closed + `linalg_dot4_int_loop_open` = `verify_open_ok` |
 | `contracts_discharge_corpus.sh` | **ok** | Trivial/const/index/caller-requires/**linalg closed**; `sqrt_open_bound` + loop dot intentionally open |
 | `run_httpd_config.sh` | **ok** | Python oracle + Li `match_routes.li` binary exit 0 |
 | `contracts_verify_lean.sh` | **partial** | Needs Lean 4 + lake; may stop on specimens with open user `ensures` |

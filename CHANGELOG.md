@@ -8,6 +8,7 @@ All notable changes to Li are documented here. The format follows
 
 ### Added
 
+- **li-httpd M1 wave 7:** passive upstream health; `lic-validate-httpd-config.sh` — [2026-05-22-httpd-m1-wave7-health-validate.md](docs/release-notes/2026-05-22-httpd-m1-wave7-health-validate.md).
 - **li-httpd M1 wave 6:** stderr access log (RFC3339); per-route rate limits via `[route_limits]` — [2026-05-22-httpd-m1-wave6-access-per-route-limit.md](docs/release-notes/2026-05-22-httpd-m1-wave6-access-per-route-limit.md).
 - **li-httpd M1 wave 5:** routing table cases (`static_exact`, `prefix_strip`), strict overlap reject, `packages/li-log` stub — [2026-05-22-httpd-m1-wave5-routing-log.md](docs/release-notes/2026-05-22-httpd-m1-wave5-routing-log.md).
 - **li-httpd M1 wave 4:** global rate limit (HTTP 429), runtime `route=` table from flattened TOML, `explain-httpd-config.py`, `test-rate-limit-429.sh` — [2026-05-22-httpd-m1-wave4-rate-route.md](docs/release-notes/2026-05-22-httpd-m1-wave4-rate-route.md).

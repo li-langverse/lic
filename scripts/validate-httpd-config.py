@@ -2,7 +2,7 @@
 """Validate a subset of li-httpd.toml (M1 — static + loopback proxy upstreams).
 
 Exit 0 when config is safe; exit 1 with stderr message on reject.
-Future: fold into `lic validate-config` when HTTP config module lands.
+Invoked by ``scripts/lic-validate-httpd-config.sh`` (``lic validate-httpd-config`` alias).
 """
 from __future__ import annotations
 
@@ -11,6 +11,8 @@ import re
 import sys
 from pathlib import Path
 from urllib.parse import urlparse
+
+from httpd_config import ConfigError, load_httpd_config
 
 try:
     import tomllib
@@ -99,6 +101,21 @@ def validate(cfg: dict) -> list[str]:
                 if pool not in pools:
                     errs.append(f"proxy route {key!r} references unknown upstream {pool!r}")
 
+    health = cfg.get("health") or {}
+    if isinstance(health, dict):
+        mf = health.get("max_fails")
+        if mf is not None and int(mf) < 1:
+            errs.append("health.max_fails must be >= 1")
+
+    return errs
+
+
+def validate_routes_desugar(path: Path) -> list[str]:
+    errs: list[str] = []
+    try:
+        load_httpd_config(path)
+    except ConfigError as e:
+        errs.append(str(e))
     return errs
 
 
@@ -115,6 +132,7 @@ def main() -> int:
         print(f"validate-httpd-config: parse error: {e}", file=sys.stderr)
         return 1
     errs = validate(cfg)
+    errs.extend(validate_routes_desugar(args.config))
     if errs:
         for e in errs:
             print(f"validate-httpd-config: {e}", file=sys.stderr)

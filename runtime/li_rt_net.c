@@ -141,6 +141,9 @@ static int g_rate_limit_burst = 0;
 static double g_rate_tokens = 0.0;
 static double g_rate_last_ts = 0.0;
 
+static int g_health_max_fails = 1;
+static int g_health_fail_timeout_sec = 10;
+
 #define HTTPD_MAX_UPSTREAM_PEERS 8
 #define HTTPD_POOL_PER_PEER 32
 
@@ -150,6 +153,8 @@ typedef struct {
   int in_use[HTTPD_POOL_PER_PEER];
   int active;
   int down;
+  int fail_count;
+  double down_until;
 } httpd_upstream_peer_t;
 
 static httpd_upstream_peer_t g_up_peers[HTTPD_MAX_UPSTREAM_PEERS];
@@ -1174,12 +1179,18 @@ int32_t httpd_lb_mode_from_arg_i(intptr_t s) {
   return 0;
 }
 
-int32_t httpd_mark_upstream_peer_down_i(int32_t port) {
-  httpd_upstream_peer_t* p = upstream_peer_find(port);
-  if (!p) {
-    return -1;
+static double httpd_monotonic_now(void) {
+  struct timespec ts;
+  if (clock_gettime(CLOCK_MONOTONIC, &ts) != 0) {
+    return 0.0;
   }
-  p->down = 1;
+  return (double)ts.tv_sec + (double)ts.tv_nsec * 1e-9;
+}
+
+static void httpd_upstream_close_pool_fds(httpd_upstream_peer_t* p) {
+  if (!p) {
+    return;
+  }
   for (int i = 0; i < HTTPD_POOL_PER_PEER; i++) {
     if (p->fds[i] >= 0) {
       close(p->fds[i]);
@@ -1187,12 +1198,66 @@ int32_t httpd_mark_upstream_peer_down_i(int32_t port) {
       p->in_use[i] = 0;
     }
   }
+}
+
+static void httpd_upstream_peer_maybe_recover(httpd_upstream_peer_t* p) {
+  if (!p || !p->down) {
+    return;
+  }
+  double now = httpd_monotonic_now();
+  if (p->down_until > 0.0 && now >= p->down_until) {
+    p->down = 0;
+    p->fail_count = 0;
+    p->down_until = 0.0;
+  }
+}
+
+static void httpd_upstream_peer_mark_down(httpd_upstream_peer_t* p) {
+  if (!p) {
+    return;
+  }
+  p->down = 1;
+  p->down_until = httpd_monotonic_now() + (double)g_health_fail_timeout_sec;
+  httpd_upstream_close_pool_fds(p);
+}
+
+static void httpd_upstream_peer_note_failure(int32_t port) {
+  httpd_upstream_peer_t* p = upstream_peer_find(port);
+  if (!p) {
+    return;
+  }
+  p->fail_count++;
+  if (p->fail_count >= g_health_max_fails) {
+    httpd_upstream_peer_mark_down(p);
+  }
+}
+
+static void httpd_upstream_peer_note_success(int32_t port) {
+  httpd_upstream_peer_t* p = upstream_peer_find(port);
+  if (!p) {
+    return;
+  }
+  p->fail_count = 0;
+  if (p->down && p->down_until > 0.0) {
+    httpd_upstream_peer_maybe_recover(p);
+  }
+}
+
+int32_t httpd_mark_upstream_peer_down_i(int32_t port) {
+  httpd_upstream_peer_t* p = upstream_peer_find(port);
+  if (!p) {
+    return -1;
+  }
+  httpd_upstream_peer_mark_down(p);
   return 0;
 }
 
 static int32_t httpd_lb_pick_port(void) {
   if (g_up_peer_count <= 0) {
     return g_proxy_port;
+  }
+  for (int i = 0; i < g_up_peer_count; i++) {
+    httpd_upstream_peer_maybe_recover(&g_up_peers[i]);
   }
   if (g_lb_mode == 0) {
     for (int tries = 0; tries < g_up_peer_count; tries++) {
@@ -1223,17 +1288,21 @@ static int32_t httpd_lb_pick_port(void) {
 
 static int upstream_pool_acquire(int32_t port) {
   httpd_upstream_peer_t* p = upstream_peer_get_or_add(port);
+  if (p) {
+    httpd_upstream_peer_maybe_recover(p);
+  }
   if (p && p->down) {
     return -1;
   }
   if (!p) {
     int fd = tcp_connect_loopback_port((int)port);
-    if (fd >= 0) {
+    p = upstream_peer_get_or_add(port);
+    if (fd >= 0 && p) {
       set_nonblocking(fd);
-      p = upstream_peer_get_or_add(port);
-      if (p) {
-        p->active++;
-      }
+      p->active++;
+      httpd_upstream_peer_note_success(port);
+    } else if (p) {
+      httpd_upstream_peer_note_failure(port);
     }
     return fd;
   }
@@ -1241,6 +1310,7 @@ static int upstream_pool_acquire(int32_t port) {
     if (p->fds[i] >= 0 && !p->in_use[i]) {
       p->in_use[i] = 1;
       p->active++;
+      httpd_upstream_peer_note_success(port);
       return p->fds[i];
     }
   }
@@ -1248,12 +1318,14 @@ static int upstream_pool_acquire(int32_t port) {
     if (p->fds[i] < 0) {
       int fd = tcp_connect_loopback_port((int)port);
       if (fd < 0) {
+        httpd_upstream_peer_note_failure(port);
         return -1;
       }
       set_nonblocking(fd);
       p->fds[i] = fd;
       p->in_use[i] = 1;
       p->active++;
+      httpd_upstream_peer_note_success(port);
       return fd;
     }
   }
@@ -1262,6 +1334,9 @@ static int upstream_pool_acquire(int32_t port) {
     if (fd >= 0) {
       set_nonblocking(fd);
       p->active++;
+      httpd_upstream_peer_note_success(port);
+    } else {
+      httpd_upstream_peer_note_failure(port);
     }
     return fd;
   }
@@ -1282,6 +1357,7 @@ static void upstream_pool_release(int32_t port, int fd, int reuse) {
       if (!reuse) {
         close(fd);
         p->fds[i] = -1;
+        httpd_upstream_peer_note_failure(port);
       } else if (httpd_fd_readable(fd) > 0) {
         httpd_drain_upstream_fd(fd);
       }
@@ -3239,8 +3315,10 @@ int32_t httpd_epoll_serve_proxy_i(int32_t port, intptr_t root, int32_t backend_p
   if (port <= 0 || port > 65535 || backend_port <= 0 || backend_port > 65535) {
     return -1;
   }
-  if (httpd_set_proxy_upstream_port_i(backend_port, 1) < 0) {
-    return -1;
+  if (g_up_peer_count <= 0) {
+    if (httpd_set_proxy_upstream_port_i(backend_port, 1) < 0) {
+      return -1;
+    }
   }
   g_li_proxy_mode = 0;
   return httpd_epoll_serve_i(port, root);
@@ -3560,6 +3638,8 @@ int32_t httpd_load_runtime_config_i(intptr_t path) {
   g_rate_limit_burst = 0;
   g_rate_tokens = 0.0;
   g_rate_last_ts = 0.0;
+  g_health_max_fails = 1;
+  g_health_fail_timeout_sec = 10;
   char line[4096];
   while (fgets(line, sizeof(line), f)) {
     trim_line(line);
@@ -3594,6 +3674,16 @@ int32_t httpd_load_runtime_config_i(intptr_t path) {
       g_rate_limit_rps = atoi(val);
     } else if (strcmp(key, "rate_limit_burst") == 0) {
       g_rate_limit_burst = atoi(val);
+    } else if (strcmp(key, "health_max_fails") == 0) {
+      g_health_max_fails = atoi(val);
+      if (g_health_max_fails < 1) {
+        g_health_max_fails = 1;
+      }
+    } else if (strcmp(key, "health_fail_timeout_sec") == 0) {
+      g_health_fail_timeout_sec = atoi(val);
+      if (g_health_fail_timeout_sec < 1) {
+        g_health_fail_timeout_sec = 1;
+      }
     } else if (strcmp(key, "route") == 0 && g_route_count < HTTPD_MAX_ROUTES) {
       char method[16] = "";
       char path[512] = "";

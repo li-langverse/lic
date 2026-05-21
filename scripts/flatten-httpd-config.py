@@ -51,6 +51,16 @@ def flatten(cfg_path: Path) -> list[str]:
             rp = (cfg_path.parent / rp).resolve()
         lines.append(f"document_root={rp}")
 
+    health = data.get("health") or {}
+    if isinstance(health, dict):
+        if health.get("max_fails") is not None:
+            lines.append(f"health_max_fails={int(health['max_fails'])}")
+        ft = health.get("fail_timeout") or health.get("fail_timeout_sec")
+        if ft is not None:
+            s = str(ft).strip().rstrip("s")
+            if s.isdigit():
+                lines.append(f"health_fail_timeout_sec={int(s)}")
+
     limits = data.get("limits") or {}
     if limits.get("rate_limit_rps") is not None:
         lines.append(f"rate_limit_rps={int(limits['rate_limit_rps'])}")

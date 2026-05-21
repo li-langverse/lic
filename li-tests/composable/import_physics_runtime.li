@@ -17,7 +17,7 @@ def main() -> int
   body.vz = 0.0
   body.inv_mass = 1.0
   body.radius = 0.5
-  body = rigid_integrate_semi_implicit(body, 0.0, 0.0, -9.81, 0.016)
+  rigid_integrate_semi_implicit(body, 0.0, 0.0, -9.81, 0.016)
   if body.pz >= 1.0:
     return 2
   return 0

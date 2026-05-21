@@ -18,10 +18,10 @@
 | `public` / `private` **fields** | **Done** | `private_field_access.li` → compile_fail |
 | Free `def` + `import` | **Done** | `encapsulation/`, `modules/` |
 | Object MIR lowering (scalars, arrays) | **Done** | `object_*` tests, composable physics smoke |
-| `var T` object params | **Partial** | Call-by-expanded-scalars; **no write-back** to caller |
-| Methods on types | **Partial (2j-a)** | `obj.method(args)` → `Type_method(self, …)`; `def_method_*.li` |
-| Private **methods** | **Partial (2j-b)** | `private def` not merged on import; `private_method_use.li` |
-| Object mutation to caller | **Partial (2j-c)** | `body = integrate(...)` / `c = c.bump()`; MIR in-out slots deferred |
+| `var T` object params | **Done (2j-c)** | MIR `__li_o_wb*` copy-in/out for `var` object first param + `Ident` receiver |
+| Methods on types | **Done (2j-a)** | `obj.method(args)` → `Type_method(self, …)`; `def_method_*.li` |
+| Private **methods** | **Done (2j-b)** | `private def` not merged on import; `private_method_use.li` |
+| Object mutation to caller | **Done (2j-c)** | `c.bump()`, `rigid_integrate(body, …)` without return-assign |
 | Inheritance / `override` | **Missing** | Spec mentions; not parsed |
 | Traits (`Hash`, …) | **Spec only** | [language design § Hash](../specs/2026-05-14-li-language-design.md) |
 | Cross-module private **fields** | **Done** | `leak_imported_vault.li` compile_fail |

@@ -1,13 +1,12 @@
 type Counter = object
   public value: int
 
-def Counter_bump(self: var Counter) -> Counter
+def Counter_bump(self: var Counter) -> unit
   requires true
-  ensures result.value == self.value + 1
+  ensures true
   decreases 0
 =
   self.value = self.value + 1
-  return self
 
 def main() -> int
   requires true
@@ -16,5 +15,5 @@ def main() -> int
 =
   var c: Counter
   c.value = 0
-  c = c.bump()
+  c.bump()
   return c.value

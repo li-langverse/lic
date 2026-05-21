@@ -125,6 +125,11 @@ void push_branch_if_zero(std::vector<MirInsn>& out, const std::string& ident,
 
 std::string mir_field_slot_for_expr(const Expr& e);
 
+std::string lower_expr_to(const Expr& e, const Module& module, std::vector<MirInsn>& out,
+                          std::unordered_set<std::string>& float_names,
+                          std::unordered_set<std::string>& simd_names,
+                          std::unordered_set<std::string>& i64_locals);
+
 bool is_arith_binop(BinOp op) {
   return op == BinOp::Add || op == BinOp::Sub || op == BinOp::Mul || op == BinOp::Div ||
          op == BinOp::Mod || op == BinOp::FloorDiv || op == BinOp::Pow;
@@ -523,6 +528,120 @@ void push_mir_args_for_object_value(const Module& module, const TypeExpr& param_
   push_mir_args_for_object_value_r(module, param_ty, std::string("__li_o_") + arg.ident, args_out);
 }
 
+std::string object_root_ident(const Expr& e) {
+  const Expr* cur = &e;
+  while (cur && cur->kind == Expr::Kind::FieldAccess) {
+    cur = cur->base.get();
+  }
+  if (cur && cur->kind == Expr::Kind::Ident) {
+    return cur->ident;
+  }
+  return {};
+}
+
+bool first_param_is_var_object(const Module& module, const ProcDecl& callee, const TypeExpr** out_ty) {
+  if (callee.params.empty()) {
+    return false;
+  }
+  const Param& p = callee.params[0];
+  if (!p.type.is_var || !object_alias_for_named_type(module, p.type)) {
+    return false;
+  }
+  if (out_ty) {
+    *out_ty = &p.type;
+  }
+  return true;
+}
+
+void push_mir_args_for_object_prefix(const Module& module, const TypeExpr& param_ty,
+                                     const std::string& slot_prefix,
+                                     std::vector<MirArg>& args_out) {
+  push_mir_args_for_object_value_r(module, param_ty, slot_prefix, args_out);
+}
+
+std::string lower_callproc_with_optional_inout(
+    const ProcDecl& callee, const std::string& callee_name, const Expr* receiver_or_first_arg,
+    const std::vector<std::unique_ptr<Expr>>* extra_args, bool method_call, const Module& module,
+    std::vector<MirInsn>& out, std::unordered_set<std::string>& float_names,
+    std::unordered_set<std::string>& simd_names, std::unordered_set<std::string>& i64_locals) {
+  const TypeExpr* inout_ty = nullptr;
+  const std::string recv_ident =
+      receiver_or_first_arg ? object_root_ident(*receiver_or_first_arg) : std::string{};
+  const bool inout =
+      !recv_ident.empty() && first_param_is_var_object(module, callee, &inout_ty) && inout_ty;
+  std::string wb_prefix;
+  if (inout) {
+    wb_prefix = std::string("__li_o_wb") + std::to_string(temp_counter++);
+    emit_object_slots_r(module, *inout_ty, wb_prefix, out, float_names, i64_locals);
+    emit_copy_object_slots_r(module, *inout_ty, std::string("__li_o_") + recv_ident, wb_prefix, out,
+                             float_names, i64_locals);
+  }
+  MirInsn ins;
+  ins.op = MirOp::CallProc;
+  ins.callee = callee_name;
+  for (std::size_t ai = 0; ai < callee.params.size(); ++ai) {
+    const Param& fp = callee.params[ai];
+    const Expr* arg = nullptr;
+    if (method_call) {
+      arg = (ai == 0) ? receiver_or_first_arg
+                        : (extra_args && ai - 1 < extra_args->size() ? (*extra_args)[ai - 1].get()
+                                                                      : nullptr);
+    } else if (extra_args && ai < extra_args->size()) {
+      arg = (*extra_args)[ai].get();
+    }
+    if (!arg) {
+      continue;
+    }
+    if (object_alias_for_named_type(module, fp.type)) {
+      if (inout && ai == 0) {
+        push_mir_args_for_object_prefix(module, fp.type, wb_prefix, ins.args);
+      } else {
+        push_mir_args_for_object_value(module, fp.type, *arg, ins.args);
+      }
+      continue;
+    }
+    MirArg ma;
+    if (arg->kind == Expr::Kind::StringLit) {
+      ma.is_string = true;
+      ma.str_value = arg->str_value;
+    } else if (arg->kind == Expr::Kind::IntLit) {
+      ma.is_literal = true;
+      ma.int_value = arg->int_value;
+    } else if (arg->kind == Expr::Kind::FloatLit) {
+      ma.is_float_literal = true;
+      ma.float_value = arg->float_value;
+    } else if (arg->kind == Expr::Kind::Ident) {
+      ma.ident = arg->ident;
+    } else {
+      ma.ident = lower_expr_to(*arg, module, out, float_names, simd_names, i64_locals);
+    }
+    ins.args.push_back(std::move(ma));
+  }
+  const bool callee_ret_obj =
+      callee.ret_type && object_alias_for_named_type(module, *callee.ret_type);
+  std::string dest;
+  if (callee_ret_obj) {
+    dest = std::string("__li_o___cr") + std::to_string(temp_counter++);
+    emit_object_slots_r(module, *callee.ret_type, dest, out, float_names, i64_locals);
+    collect_object_return_layout_r(module, *callee.ret_type, "", ins.object_layout);
+  } else if (callee.ret_type && callee.ret_type->name == "unit") {
+    dest.clear();
+  } else {
+    dest = fresh_temp();
+  }
+  ins.ident = dest;
+  if (!callee_ret_obj && callee.ret_type && is_float_type_name(callee.ret_type->name)) {
+    ins.ret_is_float = true;
+    float_names.insert(dest);
+  }
+  out.push_back(std::move(ins));
+  if (inout && inout_ty) {
+    emit_copy_object_slots_r(module, *inout_ty, wb_prefix, std::string("__li_o_") + recv_ident, out,
+                             float_names, i64_locals);
+  }
+  return dest.empty() ? std::string{} : dest;
+}
+
 void seed_float_params(const MirFn& fn, std::unordered_set<std::string>& float_names) {
   for (const auto& p : fn.params) {
     if (p.is_float && p.fixed_array_elems == 0) {
@@ -705,50 +824,10 @@ std::string lower_expr_to(const Expr& e, const Module& module, std::vector<MirIn
       }
       const ProcDecl* callee = find_proc(module, e.ident);
       if (callee && !callee->is_extern) {
-        MirInsn ins;
-        ins.op = MirOp::CallProc;
-        ins.callee = e.ident;
-        for (std::size_t ai = 0; ai < callee->params.size(); ++ai) {
-          const Param& fp = callee->params[ai];
-          const Expr& arg = *e.args[ai];
-          if (object_alias_for_named_type(module, fp.type)) {
-            push_mir_args_for_object_value(module, fp.type, arg, ins.args);
-            continue;
-          }
-          MirArg ma;
-          if (arg.kind == Expr::Kind::StringLit) {
-            ma.is_string = true;
-            ma.str_value = arg.str_value;
-          } else if (arg.kind == Expr::Kind::IntLit) {
-            ma.is_literal = true;
-            ma.int_value = arg.int_value;
-          } else if (arg.kind == Expr::Kind::FloatLit) {
-            ma.is_float_literal = true;
-            ma.float_value = arg.float_value;
-          } else if (arg.kind == Expr::Kind::Ident) {
-            ma.ident = arg.ident;
-          }
-          ins.args.push_back(std::move(ma));
-        }
-        const bool callee_ret_obj =
-            callee->ret_type && object_alias_for_named_type(module, *callee->ret_type);
-        std::string dest;
-        if (callee_ret_obj) {
-          dest = std::string("__li_o___cr") + std::to_string(temp_counter++);
-          emit_object_slots_r(module, *callee->ret_type, dest, out, float_names, i64_locals);
-          collect_object_return_layout_r(module, *callee->ret_type, "", ins.object_layout);
-        } else if (callee->ret_type && callee->ret_type->name == "unit") {
-          dest.clear();
-        } else {
-          dest = fresh_temp();
-        }
-        ins.ident = dest;
-        if (!callee_ret_obj && callee->ret_type && is_float_type_name(callee->ret_type->name)) {
-          ins.ret_is_float = true;
-          float_names.insert(dest);
-        }
-        out.push_back(std::move(ins));
-        return dest.empty() ? std::string{} : dest;
+        const std::string dest = lower_callproc_with_optional_inout(
+            *callee, e.ident, e.args.empty() ? nullptr : e.args[0].get(), &e.args, false, module,
+            out, float_names, simd_names, i64_locals);
+        return dest;
       }
       MirInsn ins;
       ins.op = MirOp::CallExtern;
@@ -807,56 +886,10 @@ std::string lower_expr_to(const Expr& e, const Module& module, std::vector<MirIn
       if (!callee_proc || callee_proc->is_extern) {
         return fresh_temp();
       }
-      MirInsn ins;
-      ins.op = MirOp::CallProc;
-      ins.callee = callee;
-      for (std::size_t ai = 0; ai < callee_proc->params.size(); ++ai) {
-        const Param& fp = callee_proc->params[ai];
-        const Expr* arg = (ai == 0) ? e.base.get() : e.args[ai - 1].get();
-        if (!arg) {
-          continue;
-        }
-        if (object_alias_for_named_type(module, fp.type)) {
-          push_mir_args_for_object_value(module, fp.type, *arg, ins.args);
-          continue;
-        }
-        MirArg ma;
-        if (arg->kind == Expr::Kind::StringLit) {
-          ma.is_string = true;
-          ma.str_value = arg->str_value;
-        } else if (arg->kind == Expr::Kind::IntLit) {
-          ma.is_literal = true;
-          ma.int_value = arg->int_value;
-        } else if (arg->kind == Expr::Kind::FloatLit) {
-          ma.is_float_literal = true;
-          ma.float_value = arg->float_value;
-        } else if (arg->kind == Expr::Kind::Ident) {
-          ma.ident = arg->ident;
-        } else {
-          ma.ident = lower_expr_to(*arg, module, out, float_names, simd_names, i64_locals);
-        }
-        ins.args.push_back(std::move(ma));
-      }
-      const bool callee_ret_obj =
-          callee_proc->ret_type && object_alias_for_named_type(module, *callee_proc->ret_type);
-      std::string dest;
-      if (callee_ret_obj) {
-        dest = std::string("__li_o___cr") + std::to_string(temp_counter++);
-        emit_object_slots_r(module, *callee_proc->ret_type, dest, out, float_names, i64_locals);
-        collect_object_return_layout_r(module, *callee_proc->ret_type, "", ins.object_layout);
-      } else if (callee_proc->ret_type && callee_proc->ret_type->name == "unit") {
-        dest.clear();
-      } else {
-        dest = fresh_temp();
-      }
-      ins.ident = dest;
-      if (!callee_ret_obj && callee_proc->ret_type &&
-          is_float_type_name(callee_proc->ret_type->name)) {
-        ins.ret_is_float = true;
-        float_names.insert(dest);
-      }
-      out.push_back(std::move(ins));
-      return dest.empty() ? std::string{} : dest;
+      const std::string dest = lower_callproc_with_optional_inout(
+          *callee_proc, callee, e.base.get(), &e.args, true, module, out, float_names, simd_names,
+          i64_locals);
+      return dest;
     }
     case Expr::Kind::FieldAccess: {
       const std::string slot = mir_field_slot_for_expr(e);

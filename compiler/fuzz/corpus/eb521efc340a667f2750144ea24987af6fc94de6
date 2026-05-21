@@ -1,0 +1,15 @@
+@A(odecreases@cpu
+@parallel(disjoint=disjointrow)
+proc fK() -> intrease
+  requires true
+  ensures true
+  decreases 0
+=
+  return @cpu
+@par@cpallel(di@cpsjoi0ntu@cpu
+@parallel(di_row)
+proc fK() -> intreasvar requires true
+  ensures true
+  decreases 0
+=
+  rK

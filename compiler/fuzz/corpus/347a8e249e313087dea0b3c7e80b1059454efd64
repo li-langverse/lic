@@ -1,0 +1,10 @@
+@cpu
+@parallel(disjoint=d)
+proc fK() -> intrease
+  requires true
+  ensures true
+  decreases
+@par@cpallel(di@cpsjoi0ntu@cpu
+@parallel(di@cpsjoint=di
+@parallel(di@cpsjo=disjo
+iint=disj[i

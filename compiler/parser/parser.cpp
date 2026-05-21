@@ -1124,6 +1124,16 @@ TypeAlias Parser::parse_type_alias() {
     alias.alias_kind = AliasKind::Object;
     i++;
     skip_newlines();
+    if (at(TokenKind::Ident) && cur().text == "of") {
+      i++;
+      if (!at(TokenKind::Ident)) {
+        diags.error(loc(cur()), "expected base type name after 'object of'");
+      } else {
+        alias.base_object = std::string(cur().text);
+        i++;
+      }
+      skip_newlines();
+    }
     alias.fields = parse_type_fields();
     skip_newlines();
     return alias;

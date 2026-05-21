@@ -177,6 +177,8 @@ struct TypeAlias {
   std::string name;
   std::vector<std::string> type_params;
   AliasKind alias_kind = AliasKind::Type;
+  /// For `type Derived = object of Base` — nominal supertype (static subtyping only).
+  std::string base_object;
   TypeExpr definition;
   std::vector<TypeField> fields;
   std::vector<std::string> enum_variants;

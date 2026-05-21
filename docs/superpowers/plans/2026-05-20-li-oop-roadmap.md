@@ -22,7 +22,7 @@
 | Methods on types | **Done (2j-a)** | `obj.method(args)` → `Type_method(self, …)`; `def_method_*.li` |
 | Private **methods** | **Done (2j-b)** | `private def` not merged on import; `private_method_use.li` |
 | Object mutation to caller | **Done (2j-c)** | `c.bump()`, `rigid_integrate(body, …)` without return-assign |
-| Inheritance / `override` | **Missing** | Spec mentions; not parsed |
+| Inheritance / `override` | **Done (2j-d)** | `object of Base`, static subtyping, `@override` signature check |
 | Traits (`Hash`, …) | **Spec only** | [language design § Hash](../specs/2026-05-14-li-language-design.md) |
 | Cross-module private **fields** | **Done** | `leak_imported_vault.li` compile_fail |
 

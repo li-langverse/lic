@@ -44,7 +44,7 @@ Status legend: **Missing** · **Stub** · **Partial** · **CI only** · **Done**
 | **G-math** | Math / `A @ B` | Shape errors at compile time; no user `simd(...)` | **Partial** — 1d `float` `@` → `ArrayDotF64` LLVM loop | **2i**, **7e** | `li-tests/math_linalg/` |
 | **G-bnd** | Bounds in release | No reliance on `li_bounds_fail` for proved indices | **Partial** — architecture lists MIR bounds; not full refinement | **2e**, **3** | [Architecture](../architecture/overview.md); codegen paths |
 | **G-def** | `def` / `object` / visibility | Handbook surface | **Partial+** — methods/`self`, `private def`, MIR in-out write-back (**2j-a/b/c**); inheritance/traits open (**2j-d–f**) | **2j** | `li-tests/encapsulation/`, `composable/import_physics_runtime.li` |
-| **G-oop** | Full OOP | Methods, traits, inheritance, cross-module encapsulation | **Missing** — roadmap [2026-05-20-li-oop-roadmap.md](../superpowers/plans/2026-05-20-li-oop-roadmap.md); **2g** = records only | **2j** | Future `encapsulation/def_method*.li`, `trait_*.li` |
+| **G-oop** | Full OOP | Methods, traits, inheritance, cross-module encapsulation | **Partial** — inheritance + override (**2j-d**); traits (**2j-e**) open | **2j** | `li-tests/encapsulation/inheritance_*.li`, `override_mismatch.li` |
 | **G-math-syn** | Python-math (`**`, `for`, …) | Ergonomic surface | **Partial** — `%`, `//`, `**` on `int`; `for`/`range` open | **2h** | `li-tests/math_syntax/` |
 | **G-ann** | Deferred annotations (PEP 649) | Lazy resolve at check | **Missing** — shown in pipeline diagram as planned | **4** | Not in compiler tree |
 | **G-gpu** | `@gpu` / device buffers | Separate address space proofs | **Missing** | **3+**, **7d** | Spec Phase 3+ |

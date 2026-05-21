@@ -3,6 +3,7 @@
 #include "li/prelude.hpp"
 
 #include <algorithm>
+#include <functional>
 #include <unordered_map>
 #include <unordered_set>
 
@@ -170,6 +171,18 @@ const TypeAlias* find_type_alias(const Module& module, const std::string& name) 
   return nullptr;
 }
 
+void for_each_object_field(const Module& module, const TypeAlias& ta,
+                          const std::function<void(const TypeField&)>& fn) {
+  if (!ta.base_object.empty()) {
+    if (const TypeAlias* base = find_type_alias(module, ta.base_object)) {
+      for_each_object_field(module, *base, fn);
+    }
+  }
+  for (const auto& fld : ta.fields) {
+    fn(fld);
+  }
+}
+
 const TypeExpr* unwrap_refinement_type(const TypeExpr* ty) {
   while (ty && ty->kind == TypeKind::Refinement && ty->refinement_base) {
     ty = ty->refinement_base.get();
@@ -182,7 +195,10 @@ const TypeAlias* object_alias_for_named_type(const Module& module, const TypeExp
     return nullptr;
   }
   const TypeAlias* ta = find_type_alias(module, te.name);
-  if (!ta || ta->alias_kind != AliasKind::Object || ta->fields.empty()) {
+  if (!ta || ta->alias_kind != AliasKind::Object) {
+    return nullptr;
+  }
+  if (ta->fields.empty() && ta->base_object.empty()) {
     return nullptr;
   }
   return ta;
@@ -254,9 +270,9 @@ void emit_object_slots_r(const Module& module, const TypeExpr& te, const std::st
   if (!ta) {
     return;
   }
-  for (const auto& fld : ta->fields) {
+  for_each_object_field(module, *ta, [&](const TypeField& fld) {
     if (!fld.type) {
-      continue;
+      return;
     }
     const std::string sub = path_prefix + "_" + fld.name;
     if (object_alias_for_named_type(module, *fld.type)) {
@@ -264,7 +280,7 @@ void emit_object_slots_r(const Module& module, const TypeExpr& te, const std::st
     } else {
       emit_scalar_object_slot(*fld.type, sub, out, float_names, i64_locals);
     }
-  }
+  });
 }
 
 void emit_copy_array_slots_r(const TypeExpr& arr_ty, const std::string& src_slot,
@@ -313,9 +329,9 @@ void emit_copy_object_slots_r(const Module& module, const TypeExpr& te, const st
   if (!ta) {
     return;
   }
-  for (const auto& fld : ta->fields) {
+  for_each_object_field(module, *ta, [&](const TypeField& fld) {
     if (!fld.type) {
-      continue;
+      return;
     }
     const std::string s_sub = src_prefix + "_" + fld.name;
     const std::string d_sub = dst_prefix + "_" + fld.name;
@@ -324,11 +340,11 @@ void emit_copy_object_slots_r(const Module& module, const TypeExpr& te, const st
     } else {
       const TypeExpr* ut = unwrap_refinement_type(fld.type.get());
       if (!ut) {
-        continue;
+        return;
       }
       if (ut->kind == TypeKind::Array) {
         emit_copy_array_slots_r(*ut, s_sub, d_sub, out, float_names);
-        continue;
+        return;
       }
       MirInsn ins;
       ins.ident = d_sub;
@@ -343,7 +359,7 @@ void emit_copy_object_slots_r(const Module& module, const TypeExpr& te, const st
       }
       out.push_back(std::move(ins));
     }
-  }
+  });
 }
 
 void collect_object_local_types_r(const Module& module, const std::vector<Stmt>& stmts,
@@ -394,9 +410,9 @@ void collect_object_return_layout_r(const Module& module, const TypeExpr& te,
   if (!ta) {
     return;
   }
-  for (const auto& fld : ta->fields) {
+  for_each_object_field(module, *ta, [&](const TypeField& fld) {
     if (!fld.type) {
-      continue;
+      return;
     }
     const std::string sub = rel_path.empty() ? fld.name : (rel_path + "_" + fld.name);
     if (object_alias_for_named_type(module, *fld.type)) {
@@ -404,7 +420,7 @@ void collect_object_return_layout_r(const Module& module, const TypeExpr& te,
     } else {
       const TypeExpr* ut = unwrap_refinement_type(fld.type.get());
       if (!ut) {
-        continue;
+        return;
       }
       if (ut->kind == TypeKind::Array && ut->array_size > 0 && ut->elem) {
         const TypeExpr* el = unwrap_refinement_type(ut->elem.get());
@@ -419,10 +435,10 @@ void collect_object_return_layout_r(const Module& module, const TypeExpr& te,
             out.push_back(std::move(mp));
           }
         }
-        continue;
+        return;
       }
       if (ut->kind == TypeKind::Array) {
-        continue;
+        return;
       }
       MirParam mp;
       mp.name = sub;
@@ -431,7 +447,7 @@ void collect_object_return_layout_r(const Module& module, const TypeExpr& te,
       mp.is_i64 = is_i64_type_name(ut->name) || is_string_type_name(ut->name);
       out.push_back(std::move(mp));
     }
-  }
+  });
 }
 
 std::string mir_field_slot_for_expr(const Expr& e) {
@@ -458,9 +474,9 @@ void append_mir_params_for_object_type(const Module& module, const TypeExpr& te,
   if (!ta) {
     return;
   }
-  for (const auto& fld : ta->fields) {
+  for_each_object_field(module, *ta, [&](const TypeField& fld) {
     if (!fld.type) {
-      continue;
+      return;
     }
     const std::string sub = path_prefix + "_" + fld.name;
     if (object_alias_for_named_type(module, *fld.type)) {
@@ -468,7 +484,7 @@ void append_mir_params_for_object_type(const Module& module, const TypeExpr& te,
     } else {
       const TypeExpr* ut = unwrap_refinement_type(fld.type.get());
       if (!ut) {
-        continue;
+        return;
       }
       if (ut->kind == TypeKind::Array && ut->array_size > 0 && ut->elem) {
         const TypeExpr* el = unwrap_refinement_type(ut->elem.get());
@@ -483,10 +499,10 @@ void append_mir_params_for_object_type(const Module& module, const TypeExpr& te,
             out_params.push_back(std::move(mp));
           }
         }
-        continue;
+        return;
       }
       if (ut->kind == TypeKind::Array) {
-        continue;
+        return;
       }
       MirParam mp;
       mp.name = sub;
@@ -495,7 +511,7 @@ void append_mir_params_for_object_type(const Module& module, const TypeExpr& te,
       mp.is_i64 = is_i64_type_name(ut->name) || is_string_type_name(ut->name);
       out_params.push_back(std::move(mp));
     }
-  }
+  });
 }
 
 void push_mir_args_for_object_value_r(const Module& module, const TypeExpr& te,
@@ -505,9 +521,9 @@ void push_mir_args_for_object_value_r(const Module& module, const TypeExpr& te,
   if (!ta) {
     return;
   }
-  for (const auto& fld : ta->fields) {
+  for_each_object_field(module, *ta, [&](const TypeField& fld) {
     if (!fld.type) {
-      continue;
+      return;
     }
     const std::string sub = path_prefix + "_" + fld.name;
     if (object_alias_for_named_type(module, *fld.type)) {
@@ -517,7 +533,7 @@ void push_mir_args_for_object_value_r(const Module& module, const TypeExpr& te,
       ma.ident = sub;
       args_out.push_back(std::move(ma));
     }
-  }
+  });
 }
 
 void push_mir_args_for_object_value(const Module& module, const TypeExpr& param_ty,

@@ -819,6 +819,26 @@ file = "encapsulation/object_method_mutate.li"
 outcome = "verify_ok"
 note = "2j-c: mutating method via returned object assign"
 
+[[tests]]
+suite = "encapsulation"
+file = "encapsulation/inheritance_subtype.li"
+outcome = "verify_ok"
+note = "2j-d: Derived assignable where Base expected (static subtyping)"
+
+[[tests]]
+suite = "encapsulation"
+file = "encapsulation/inheritance_layout.li"
+outcome = "compile_fail"
+expected_substr = "incompatible with base layout"
+note = "2j-d: derived field cannot change base slot type"
+
+[[tests]]
+suite = "encapsulation"
+file = "encapsulation/override_mismatch.li"
+outcome = "compile_fail"
+expected_substr = "override return type mismatch"
+note = "2j-d: @override must match base method signature"
+
 # --- modules (2g placeholder — single file, no import graph) ---
 
 [[tests]]

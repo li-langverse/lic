@@ -377,7 +377,7 @@ Track in phase **Doc** until each is checked:
 - [x] Phase 2c — Collections + TypedDict (list/dict/tuple, named tuple, enum)
 - [x] Phase 2d — Borrow + effects (lexical borrowck, raises IO/Alloc)
 - [x] Phase 2g — `def`, `object` + field `private`/`public`, minimal `import` (`encapsulation` suite green; import parse-only; **not** full OOP)
-- [ ] Phase 2j — Full OOP — **in progress:** **2j-a/b/c done** (PR #134): methods, `private def`, MIR in-out write-back; **next 2j-d** inheritance — [OOP roadmap](2026-05-20-li-oop-roadmap.md)
+- [ ] Phase 2j — Full OOP — **in progress:** **2j-a/b/c/d done**: methods, visibility, write-back, inheritance; **next 2j-e** traits — [OOP roadmap](2026-05-20-li-oop-roadmap.md)
 - [x] Phase 2h — Python-math operators `%`, `//`, `**` (`math_syntax` suite); `for`/`range` deferred
 - [ ] Phase 2i — Math / linalg surface — **partial:** 1d `float` `@`, `sum(array)`; matrix `@` deferred
 - [x] Phase 3 — MIR + LLVM codegen (`lic build`, minimal lower/emit; CFG/bounds IR deferred)

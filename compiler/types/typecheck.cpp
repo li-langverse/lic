@@ -105,6 +105,7 @@ std::string mangle_method_name(const std::string& type_name, const std::string& 
 struct AliasEntry {
   AliasKind alias_kind = AliasKind::Type;
   std::vector<std::string> type_params;
+  std::string base_object;
   const TypeExpr* definition = nullptr;
   const std::vector<TypeField>* fields = nullptr;
   const std::vector<std::string>* enum_variants = nullptr;
@@ -113,6 +114,8 @@ struct AliasEntry {
 
 struct Ctx {
   std::map<std::string, AliasEntry> aliases;
+  std::map<std::string, TyPtr> resolved_objects;
+  std::set<std::string> resolving_objects;
   std::map<std::string, const ProcDecl*> procs;
   std::map<std::string, TyPtr> locals;
   std::map<std::string, std::int64_t> const_int_locals;
@@ -360,20 +363,78 @@ struct Ctx {
     return t;
   }
 
-  TyPtr resolve_object(const std::string& name, const std::vector<TypeField>& fields,
-                       const Span& span) {
+  TyPtr build_object_ty(const std::string& name, const AliasEntry& entry, const Span& span) {
     auto t = std::make_shared<Ty>();
     t->kind = TyKind::Object;
     t->name = name;
-    for (const auto& field : fields) {
-      if (!field.type) {
-        continue;
+    if (!entry.base_object.empty()) {
+      const auto bit = aliases.find(entry.base_object);
+      if (bit == aliases.end()) {
+        diags.error(loc(span), "unknown base object type '" + entry.base_object + "'");
+      } else if (bit->second.alias_kind != AliasKind::Object) {
+        diags.error(loc(span), "base type '" + entry.base_object + "' is not an object");
+      } else {
+        const TyPtr base_ty = resolve_object_type(entry.base_object, span);
+        if (base_ty->kind == TyKind::Object) {
+          t->fields = base_ty->fields;
+          t->field_vis = base_ty->field_vis;
+        }
       }
-      t->fields.emplace_back(field.name, resolve_type_expr(*field.type));
-      t->field_vis[field.name] = field.visibility;
     }
-    (void)span;
+    if (entry.fields) {
+      for (const auto& field : *entry.fields) {
+        if (!field.type) {
+          continue;
+        }
+        const TyPtr ft = resolve_type_expr(*field.type);
+        for (const auto& existing : t->fields) {
+          if (existing.first != field.name) {
+            continue;
+          }
+          if (!same_kind(existing.second, ft)) {
+            diags.error(loc(span), "object field '" + field.name +
+                                        "' incompatible with base layout");
+          }
+          goto next_field;
+        }
+        t->fields.emplace_back(field.name, ft);
+        t->field_vis[field.name] = field.visibility;
+      next_field:;
+      }
+    }
     return t;
+  }
+
+  TyPtr resolve_object_type(const std::string& name, const Span& span) {
+    const auto cached = resolved_objects.find(name);
+    if (cached != resolved_objects.end()) {
+      return cached->second;
+    }
+    const auto it = aliases.find(name);
+    if (it == aliases.end()) {
+      diags.error(loc(span), "unknown object type '" + name + "'");
+      return make_int();
+    }
+    if (resolving_objects.count(name) > 0) {
+      diags.error(loc(span), "cyclic object inheritance involving '" + name + "'");
+      return make_int();
+    }
+    resolving_objects.insert(name);
+    const TyPtr t = build_object_ty(name, it->second, span);
+    resolving_objects.erase(name);
+    resolved_objects[name] = t;
+    return t;
+  }
+
+  bool object_subtype_of(const std::string& derived, const std::string& base) const {
+    if (derived == base) {
+      return true;
+    }
+    const auto it = aliases.find(derived);
+    if (it == aliases.end() || it->second.base_object.empty()) {
+      return false;
+    }
+    return object_subtype_of(it->second.base_object, base);
   }
 
   TyPtr resolve_enum(const std::string& name, const std::vector<std::string>& variants,
@@ -408,6 +469,10 @@ struct Ctx {
     }
     if (value->kind == TyKind::Str && expected->kind == TyKind::Int64) {
       return true;
+    }
+    if (value->kind == TyKind::Object && expected->kind == TyKind::Object &&
+        !value->name.empty() && !expected->name.empty() && value->name != expected->name) {
+      return object_subtype_of(value->name, expected->name);
     }
     return same_kind(value, expected);
   }
@@ -512,7 +577,7 @@ struct Ctx {
           return resolve_typedict(te.name, *it->second.fields, te.span);
         }
         if (it->second.alias_kind == AliasKind::Object && it->second.fields) {
-          return resolve_object(te.name, *it->second.fields, te.span);
+          return resolve_object_type(te.name, te.span);
         }
         if (it->second.alias_kind == AliasKind::Enum && it->second.enum_variants) {
           return resolve_enum(te.name, *it->second.enum_variants, te.span);
@@ -1091,6 +1156,54 @@ struct Ctx {
     return e.kind == Expr::Kind::Ident && e.ident == "true";
   }
 
+  void check_override_method(const ProcDecl& p) {
+    if (!proc_has_decorator(p, "override")) {
+      return;
+    }
+    const std::size_t us = p.name.find('_');
+    if (us == std::string::npos || us == 0) {
+      diags.error(loc(p.span), "@override requires a Type_method procedure name");
+      return;
+    }
+    const std::string type_name = p.name.substr(0, us);
+    const std::string method_suffix = p.name.substr(us + 1);
+    const auto ait = aliases.find(type_name);
+    if (ait == aliases.end() || ait->second.base_object.empty()) {
+      diags.error(loc(p.span), "@override requires object type with `object of Base`");
+      return;
+    }
+    const std::string base_callee = ait->second.base_object + "_" + method_suffix;
+    const auto pit = procs.find(base_callee);
+    if (pit == procs.end()) {
+      diags.error(loc(p.span), "no base method '" + base_callee + "' to override");
+      return;
+    }
+    const ProcDecl& base_proc = *pit->second;
+    if (p.params.size() != base_proc.params.size()) {
+      diags.error(loc(p.span), "override parameter count mismatch for '" + base_callee + "'");
+      return;
+    }
+    for (std::size_t n = 0; n < p.params.size(); ++n) {
+      const TyPtr got = resolve_type_expr(p.params[n].type);
+      const TyPtr want = resolve_type_expr(base_proc.params[n].type);
+      if (!same_kind(got, want)) {
+        diags.error(loc(p.span), "override parameter type mismatch for '" + p.params[n].name +
+                                     "' vs base '" + base_proc.params[n].name + "'");
+      }
+    }
+    if (static_cast<bool>(p.ret_type) != static_cast<bool>(base_proc.ret_type)) {
+      diags.error(loc(p.span), "override return type mismatch for '" + p.name + "'");
+      return;
+    }
+    if (p.ret_type && base_proc.ret_type) {
+      const TyPtr got = resolve_type_expr(*p.ret_type);
+      const TyPtr want = resolve_type_expr(*base_proc.ret_type);
+      if (!same_kind(got, want)) {
+        diags.error(loc(p.span), "override return type mismatch for '" + p.name + "'");
+      }
+    }
+  }
+
   void check_weak_ensures(const ProcDecl& p) {
     if (p.is_extern || proc_returns_unit(p)) {
       return;
@@ -1153,6 +1266,7 @@ struct Ctx {
                      : "Add `ensures result == <expr>` or a property on `result` — not `ensures true`.");
     }
     check_weak_ensures(p);
+    check_override_method(p);
     locals.clear();
     const_int_locals.clear();
     assum_nonneg_ints.clear();
@@ -1186,7 +1300,7 @@ struct Ctx {
 TypecheckResult typecheck_module(const Module& module) {
   TypecheckResult result;
   DiagnosticBag& diags = result.diagnostics;
-  Ctx ctx{{}, {}, {}, {}, {}, {}, {}, {}, 0, false, std::nullopt, diags, "module"};
+  Ctx ctx{{}, {}, {}, {}, {}, {}, {}, {}, {}, {}, 0, false, std::nullopt, diags, "module"};
   for (const auto& proc : module.procs) {
     ctx.procs[proc.name] = &proc;
   }
@@ -1194,6 +1308,7 @@ TypecheckResult typecheck_module(const Module& module) {
     AliasEntry entry;
     entry.alias_kind = alias.alias_kind;
     entry.type_params = alias.type_params;
+    entry.base_object = alias.base_object;
     entry.definition = &alias.definition;
     entry.fields = &alias.fields;
     entry.enum_variants = &alias.enum_variants;

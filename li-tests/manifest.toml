@@ -638,6 +638,18 @@ note = "import net.httpd from workspace package li-net-httpd"
 
 [[tests]]
 suite = "composable"
+file = "composable/import_log_lib.li"
+outcome = "verify_open_ok"
+note = "import log from workspace package li-log (open VC on log externs)"
+
+[[tests]]
+suite = "log"
+file = "log/redact_bearer.li"
+outcome = "verify_open_ok"
+note = "li-log redact_log strips Bearer and sk- tokens (li_rt_log.c)"
+
+[[tests]]
+suite = "composable"
 file = "composable/import_physics_relativity.li"
 outcome = "compile_ok"
 note = "import physics.relativity resolves to packages/li-physics-relativity"

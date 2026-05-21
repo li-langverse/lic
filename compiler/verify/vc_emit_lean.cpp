@@ -341,21 +341,15 @@ void emit_contract_def(std::ostream& out, const Module& module, const ProcDecl& 
 
   std::string prop = "True";
   const CallerProofFacts caller_facts = collect_caller_proof_facts(proc);
-  bool loop_witness_real_prop = false;
   bool mat2_discharge_theorem = false;
   if (c.kind == ContractKind::Ensures && c.expr) {
-    const Expr* rhs = ensures_rhs_eq_result(*c.expr);
-    if (rhs != nullptr && ctx.proc != nullptr &&
-        witness_dot4_int_loop(*ctx.proc, *rhs)) {
-      loop_witness_real_prop = true;
-    }
     if (ctx.proc != nullptr && witness_mat2_int_at2_spec(*ctx.proc, *c.expr)) {
       mat2_discharge_theorem = true;
     }
   }
   const bool witnessed =
       contract_witnessed_trivial(proc, c, &module, &caller_facts);
-  if (witnessed && !loop_witness_real_prop && !mat2_discharge_theorem) {
+  if (witnessed && !mat2_discharge_theorem) {
     prop = "True";
   } else if (mat2_discharge_theorem && c.kind == ContractKind::Ensures) {
     prop = "Li.Discharge.mat2_at2_float_spec";
@@ -364,10 +358,6 @@ void emit_contract_def(std::ostream& out, const Module& module, const ProcDecl& 
       prop += p.name;
     }
     prop += " result";
-  } else if (loop_witness_real_prop && c.expr) {
-    if (auto lean = expr_to_lean(*c.expr, ctx)) {
-      prop = *lean;
-    }
   } else if (c.expr) {
     if (auto lean = expr_to_lean(*c.expr, ctx)) {
       prop = *lean;

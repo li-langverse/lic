@@ -33,7 +33,7 @@
 | `linalg_dot4_int_closed.li` | Fixed 4-term int dot — return matches ensures | Fully discharged (`discharge_linalg_int_lean.sh`) |
 | `linalg_sum4_int_closed.li` | Fixed 4-term int sum | Fully discharged |
 | `linalg_mat2_entry00_int_closed.li` | Matmul (0,0) entry via scalars | Fully discharged |
-| `linalg_dot4_int_loop_open.li` | Loop dot — real `Prop`, not static witness | **Intentionally open** — `verify_open_ok` |
+| `linalg_dot4_int_loop_open.li` | Loop dot — `witness_dot4_int_loop` + `dot4_int_loop_eval_spec` | **Closed** — `verify_ok` |
 | `linalg_norm4_int_closed.li` | Int norm (sum of squares) | Fully discharged |
 | `linalg_axpy4_int_closed.li` | Scalar axpy `alpha*x+y` | Fully discharged |
 | `linalg_dot4_float_closed.li` | Float dot via prelude | Fully discharged |
@@ -66,7 +66,7 @@
 
 | Suite | Result | Notes |
 |-------|--------|-------|
-| `run_all.sh contracts_verify` | **26 pass / 0 fail** | Includes **P-linalg** closed + `linalg_dot4_int_loop_open` = `verify_open_ok` |
+| `run_all.sh contracts_verify` | **26 pass / 0 fail** | Includes **P-linalg** closed + loop dot `verify_ok` |
 | `contracts_discharge_corpus.sh` | **ok** | Trivial/const/index/caller-requires/**linalg closed**; `sqrt_open_bound` + loop dot intentionally open |
 | `run_httpd_config.sh` | **ok** | Python oracle + Li `match_routes.li` binary exit 0 |
 | `contracts_verify_lean.sh` | **partial** | Needs Lean 4 + lake; may stop on specimens with open user `ensures` |

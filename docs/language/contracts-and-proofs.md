@@ -3,7 +3,7 @@
 Li is **provable-only** by design: if proof obligations are not discharged, there should be **no binary**.
 
 !!! note "Implementation status"
-    **Today:** contracts are required in the surface grammar and checked for well-formedness, but **Lean 4 discharge is not wired into `lic build` yet**. See **[Provability gaps](../verification/provability-gaps.md)** for the live gap register.
+    **Today:** every `lic build` emits `build/generated/AutoVC.lean` and runs **Lean typecheck** when `lake` is installed; **open** obligations fail the build unless `--allow-open-vc`. Kernel discharge of all ensures is still **partial** — see **[Provability gaps](../verification/provability-gaps.md)**.
 
 ## On every procedure
 

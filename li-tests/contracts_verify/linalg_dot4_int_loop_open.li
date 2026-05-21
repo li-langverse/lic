@@ -1,4 +1,4 @@
-# P-linalg: loop dot emits real Lean Prop; implementation proof deferred (cf. sqrt_open_bound).
+# P-linalg: 4-iteration dot loop — static witness + Li.Discharge.dot4_int_loop_eval_spec.
 def dot4_int_loop(a: array[4, int], b: array[4, int]) -> int
   requires true
   ensures result == a[0] * b[0] + a[1] * b[1] + a[2] * b[2] + a[3] * b[3]

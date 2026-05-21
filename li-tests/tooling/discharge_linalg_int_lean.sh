@@ -8,7 +8,9 @@ chmod +x "$ROOT/scripts/check-autovc-open-goals.sh"
 for sample in \
   "$ROOT/li-tests/contracts_verify/linalg_dot4_int_closed.li" \
   "$ROOT/li-tests/contracts_verify/linalg_sum4_int_closed.li" \
-  "$ROOT/li-tests/contracts_verify/linalg_mat2_entry00_int_closed.li"; do
+  "$ROOT/li-tests/contracts_verify/linalg_mat2_entry00_int_closed.li" \
+  "$ROOT/li-tests/contracts_verify/linalg_dot4_int_loop_open.li" \
+  "$ROOT/li-tests/contracts_verify/linalg_norm4_int_closed.li"; do
   AUTOVC="$ROOT/build/generated/AutoVC.lean"
   rm -f "$AUTOVC"
   "$LIC" build "$sample" -o /dev/null

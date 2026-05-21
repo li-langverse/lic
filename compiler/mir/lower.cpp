@@ -1035,6 +1035,42 @@ std::string lower_expr_to(const Expr& e, const Module& module, std::vector<MirIn
           return dest;
         }
       }
+      if (e.ident == "norm" && e.args.size() == 1 && e.args[0]->kind == Expr::Kind::Ident &&
+          g_arr_ctx) {
+        const std::string& arr = e.args[0]->ident;
+        if (g_arr_ctx->float_array_names &&
+            g_arr_ctx->float_array_names->count(arr) > 0) {
+          const std::string dotv = lower_float_array_dot_f64(arr, arr, out, float_names);
+          if (!dotv.empty()) {
+            const std::string dest = fresh_temp();
+            MirInsn ins;
+            ins.op = MirOp::CallExtern;
+            ins.callee = "li_rt_sqrt";
+            MirArg ma;
+            ma.ident = dotv;
+            ins.args.push_back(std::move(ma));
+            ins.ident = dest;
+            out.push_back(std::move(ins));
+            float_names.insert(dest);
+            return dest;
+          }
+        }
+        const auto ia = g_arr_ctx->int_array_sizes.find(arr);
+        if (ia != g_arr_ctx->int_array_sizes.end()) {
+          const std::string sq =
+              lower_array_elementwise_binop_expr(arr, arr, BinOp::Mul, out);
+          if (!sq.empty()) {
+            const std::string dest = fresh_temp();
+            MirInsn ins;
+            ins.op = MirOp::ArraySumI64;
+            ins.ident = dest;
+            ins.lhs_ident = sq;
+            ins.int_value = ia->second;
+            out.push_back(std::move(ins));
+            return dest;
+          }
+        }
+      }
       if (e.ident == "sum" && e.args.size() == 1 && g_arr_ctx) {
         const std::string arr =
             lower_expr_to(*e.args[0], module, out, float_names, simd_names, i64_locals);

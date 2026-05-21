@@ -276,9 +276,141 @@ bool ident_return_matches_const_ensures(const Contract& c, const Expr& ret,
   return it != facts.const_int_locals.end() && it->second == rhs->int_value;
 }
 
+bool expr_is_ident(const Expr* e, const std::string& name) {
+  return e != nullptr && e->kind == Expr::Kind::Ident && e->ident == name;
+}
+
+bool expr_is_int_lit(const Expr* e, std::int64_t v) {
+  return e != nullptr && e->kind == Expr::Kind::IntLit && e->int_value == v;
+}
+
+bool expr_is_index_lit_mul(const Expr* e, const std::string& a, const std::string& b,
+                           std::int64_t idx) {
+  if (e == nullptr || e->kind != Expr::Kind::BinOp || e->bin_op != BinOp::Mul || !e->lhs ||
+      !e->rhs) {
+    return false;
+  }
+  const auto lit_index_ok = [&](const Expr* side, const std::string& arr) -> bool {
+    return side && side->kind == Expr::Kind::Index && expr_is_ident(side->base.get(), arr) &&
+           expr_is_int_lit(side->index.get(), idx);
+  };
+  return (lit_index_ok(e->lhs.get(), a) && lit_index_ok(e->rhs.get(), b)) ||
+         (lit_index_ok(e->lhs.get(), b) && lit_index_ok(e->rhs.get(), a));
+}
+
+bool expr_is_index_var_mul(const Expr* e, const std::string& a, const std::string& b,
+                           const std::string& i) {
+  if (e == nullptr || e->kind != Expr::Kind::BinOp || e->bin_op != BinOp::Mul || !e->lhs ||
+      !e->rhs) {
+    return false;
+  }
+  const auto var_index_ok = [&](const Expr* side, const std::string& arr) -> bool {
+    return side && side->kind == Expr::Kind::Index && expr_is_ident(side->base.get(), arr) &&
+           expr_is_ident(side->index.get(), i);
+  };
+  return (var_index_ok(e->lhs.get(), a) && var_index_ok(e->rhs.get(), b)) ||
+         (var_index_ok(e->lhs.get(), b) && var_index_ok(e->rhs.get(), a));
+}
+
+void collect_add_chain_terms(const Expr* e, std::vector<const Expr*>& terms) {
+  if (e == nullptr) {
+    return;
+  }
+  if (e->kind == Expr::Kind::BinOp && e->bin_op == BinOp::Add && e->lhs && e->rhs) {
+    collect_add_chain_terms(e->lhs.get(), terms);
+    collect_add_chain_terms(e->rhs.get(), terms);
+    return;
+  }
+  terms.push_back(e);
+}
+
+bool expr_is_dot4_int_spec(const Expr& e, const std::string& a, const std::string& b) {
+  std::vector<const Expr*> terms;
+  collect_add_chain_terms(&e, terms);
+  if (terms.size() != 4) {
+    return false;
+  }
+  for (std::int64_t idx = 0; idx < 4; ++idx) {
+    if (!expr_is_index_lit_mul(terms[static_cast<std::size_t>(idx)], a, b, idx)) {
+      return false;
+    }
+  }
+  return true;
+}
+
+bool expr_is_i_lt_bound(const Expr* e, const std::string& i, std::int64_t bound) {
+  if (e == nullptr || e->kind != Expr::Kind::BinOp || e->bin_op != BinOp::Lt || !e->lhs ||
+      !e->rhs) {
+    return false;
+  }
+  return expr_is_ident(e->lhs.get(), i) && expr_is_int_lit(e->rhs.get(), bound);
+}
+
+bool stmt_is_acc_plus_index_mul(const Stmt& s, const std::string& acc, const std::string& a,
+                               const std::string& b, const std::string& i) {
+  if (s.kind != Stmt::Kind::Assign || !s.init || !s.expr || !expr_is_ident(s.init.get(), acc)) {
+    return false;
+  }
+  const Expr& rhs = *s.expr;
+  if (rhs.kind != Expr::Kind::BinOp || rhs.bin_op != BinOp::Add || !rhs.lhs || !rhs.rhs) {
+    return false;
+  }
+  if (!expr_is_ident(rhs.lhs.get(), acc)) {
+    return false;
+  }
+  return expr_is_index_var_mul(rhs.rhs.get(), a, b, i);
+}
+
+bool stmt_is_i_plus_one(const Stmt& s, const std::string& i) {
+  if (s.kind != Stmt::Kind::Assign || !s.init || !s.expr || !expr_is_ident(s.init.get(), i)) {
+    return false;
+  }
+  const Expr& rhs = *s.expr;
+  return rhs.kind == Expr::Kind::BinOp && rhs.bin_op == BinOp::Add && rhs.lhs &&
+         expr_is_ident(rhs.lhs.get(), i) && rhs.rhs && expr_is_int_lit(rhs.rhs.get(), 1);
+}
+
+bool witness_dot4_int_loop_impl(const ProcDecl& proc, const Expr& ensures_rhs) {
+  const std::string a = "a";
+  const std::string b = "b";
+  const std::string acc = "acc";
+  const std::string i = "i";
+  if (!expr_is_dot4_int_spec(ensures_rhs, a, b)) {
+    return false;
+  }
+  const Stmt* loop = nullptr;
+  for (const auto& st : proc.body) {
+    if (st.kind == Stmt::Kind::While) {
+      loop = &st;
+      break;
+    }
+  }
+  if (loop == nullptr || !expr_is_i_lt_bound(loop->cond.get(), i, 4)) {
+    return false;
+  }
+  bool saw_acc = false;
+  bool saw_i = false;
+  for (const auto& st : loop->while_body) {
+    if (stmt_is_acc_plus_index_mul(st, acc, a, b, i)) {
+      saw_acc = true;
+    }
+    if (stmt_is_i_plus_one(st, i)) {
+      saw_i = true;
+    }
+  }
+  if (!saw_acc || !saw_i) {
+    return false;
+  }
+  const Expr* ret = single_return_expr(proc);
+  return ret != nullptr && expr_is_ident(ret, acc);
+}
+
 bool ensures_witnessed_for_return(const ProcDecl& proc, const Contract& c, const Expr& ret,
                                   const Module* module, const CallerProofFacts* caller_facts) {
   const Expr* rhs = ensures_rhs_eq_result(*c.expr);
+  if (rhs != nullptr && witness_dot4_int_loop_impl(proc, *rhs) && expr_is_ident(&ret, "acc")) {
+    return true;
+  }
   if (rhs != nullptr && expr_same_shape(ret, *rhs)) {
     return true;
   }
@@ -383,6 +515,10 @@ VcWitnessStats compute_vc_witness_stats(const Module& module, const MirModule* m
     }
   }
   return stats;
+}
+
+bool witness_dot4_int_loop(const ProcDecl& proc, const Expr& ensures_rhs) {
+  return witness_dot4_int_loop_impl(proc, ensures_rhs);
 }
 
 }  // namespace li

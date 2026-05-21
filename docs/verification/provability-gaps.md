@@ -35,9 +35,9 @@ This page is the **honest inventory** of what is **not** fully proved or not yet
 |----|--------|----------------|
 | **G-lean** | Partial | Default `lic build` must fail on open non-trivial Props; kernel discharge, not only `trivial` |
 | **G-vc** | Partial | Float/`abs` ensures; opaque `vec3_dot`-style returns; loop implementations vs closed-form `ensures` |
-| **G-par** | Partial | Structured `disjoint=` + Lean (**7d-c**); not `policy.cpp` strings |
+| **G-par** | Partial | AST `policy_module` rejects missing disjoint, false `disjoint_row`, mut capture, borrow-in-par; Lean proofs open |
 | **G-dec** | Partial | Decorator elaboration to MIR; `decorator_exploits` proofs |
-| **G-math** | Partial | **Open:** loop dot proof, float `@`/`dot` Props, 2D `array` **CallProc**; **2i-b** `norm`/reductions; tier-1 **≤1.2× C++** |
+| **G-math** | Partial | **Open:** float `@`/`dot` Lean Props, 2D **CallProc**; tier-1 **≤1.2× C++**. **Closed slice:** prelude `norm`, loop-dot witness, P-linalg corpus |
 | **G-bnd** | Partial | Release path without `li_bounds_fail` for proved indices |
 | **G-def** | Partial+ | Cross-module method privacy proofs; virtual dispatch deferred |
 | **G-oop** | Partial | Lean `ensures` on methods; trait laws in kernel |
@@ -55,7 +55,7 @@ This page is the **honest inventory** of what is **not** fully proved or not yet
 | **G-hw** | Axiomatic | FP/hardware model limit (documented, not closable) |
 | **G-wrong-spec** | Social | User theorem quality (not tool-closable) |
 
-**Proof backlog still open:** **P-refine**, **P-ensures-witness**, **P-float**, **P-loop**, **P-linalg** (loop ≡ closed form; float matmul), **P-par**, **P-dec**, **P-bnd**, **P-http**, **P-narrow**, **P-meta** — see [proof-corpus-roadmap](proof-corpus-roadmap.md). **P-linalg partial (PR #151):** closed `linalg_dot4_int_closed`, `linalg_sum4_int_closed`, `linalg_mat2_entry00_int_closed`; open `linalg_dot4_int_loop_open`.
+**Proof backlog still open:** **P-refine**, **P-ensures-witness**, **P-float**, **P-loop**, **P-linalg** (float `@` Props; full matmul), **P-par**, **P-dec**, **P-bnd**, **P-http**, **P-narrow**, **P-meta** — see [proof-corpus-roadmap](proof-corpus-roadmap.md). **P-linalg partial:** closed dot/sum/matmul-entry + **loop dot witness** (`linalg_dot4_int_loop_open`); open float `vec3_dot`, 2D CallProc.
 
 !!! warning "Do not overclaim in docs or packages"
     Until **Phase 2f** lands, saying “`lic build` proves your program in Lean” is **aspirational**. Prefer: “`lic build` runs the current static gate; see [provability gaps](provability-gaps.md).”

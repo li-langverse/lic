@@ -31,6 +31,7 @@ def name(arg: T) -> R
 | Topic | Page |
 |-------|------|
 | Philosophy & naming | [Philosophy](philosophy.md) |
+| Naming conventions (PascalCase types) | [Naming conventions](naming-conventions.md) |
 | Imports | [Import style](import-style.md) |
 | Types & data | [Types and data](types-and-data.md) |
 | Scalar precision (`float32`, `binary`, suffixes) | [Scalar precision](scalar-precision.md) |

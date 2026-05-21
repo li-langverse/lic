@@ -56,6 +56,8 @@ Contracts are **promises in English-shaped logic**, not magic comments:
 
 ## Naming (packages, types, functions, variables)
 
+**Canonical table:** [Naming conventions](naming-conventions.md) — PascalCase **`ClassName`** for types/objects; snake_case for `def`, variables, and fields.
+
 ### Packages and imports
 
 | Do | Don’t |
@@ -73,10 +75,13 @@ Li uses Python-style **`def`** for functions. Legacy docs may mention `proc`; ne
 - **Say what, not how:** `merge_collisions` not `do_pass_2`
 - **Units in the name when it matters:** `distance_meters`, `angle_rad`
 
-### Types and objects
+### Types and objects (class names)
 
-- **Nouns:** `Body`, `PhysicsWorld`, `CollisionPair`
-- **Fields are plain:** `position`, `mass`, `velocity` — not `p`, `m`, `v` in public APIs
+Li uses `type Name = object`, not a `class` keyword — but **type names follow class naming:**
+
+- **PascalCase** (`ClassName`): `Body`, `PhysicsWorld`, `RigidBody`, `CollisionPair`
+- **Not** snake_case or camelCase for types: no `rigid_body`, no `physicsWorld`
+- **Fields** stay **snake_case:** `position`, `mass`, `velocity` — not `p`, `m`, `v` in public APIs
 
 ### Variables
 
@@ -84,10 +89,12 @@ Li uses Python-style **`def`** for functions. Legacy docs may mention `proc`; ne
 - **Long scope → full words:** `accumulated_energy`, `time_step`
 - **Booleans read as questions:** `is_visible`, `has_collision`, `can_merge`
 
-### Casing
+### Casing (summary)
 
-- **snake_case** for `proc`, variables, modules (like Python)
-- **PascalCase** for `type` / `object` names when we use them for types
+| Kind | Style |
+|------|--------|
+| `def`, variables, fields, modules | **snake_case** (Python-like) |
+| `type` / `object` names | **PascalCase** (`ClassName`) |
 
 ## Pseudocode ↔ Li
 

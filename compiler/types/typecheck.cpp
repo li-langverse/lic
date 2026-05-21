@@ -96,6 +96,34 @@ bool ty_is_2d_float_matrix(const TyPtr& t, std::int64_t* rows, std::int64_t* col
   return true;
 }
 
+bool ty_is_1d_numeric_array(const TyPtr& t, bool* out_float, std::int64_t* out_n) {
+  if (!t || t->kind != TyKind::Array || !t->elem) {
+    return false;
+  }
+  if (t->elem->kind == TyKind::Array) {
+    return false;
+  }
+  if (t->elem->kind == TyKind::Float) {
+    if (out_float) {
+      *out_float = true;
+    }
+    if (out_n) {
+      *out_n = t->array_size;
+    }
+    return true;
+  }
+  if (t->elem->kind == TyKind::Int) {
+    if (out_float) {
+      *out_float = false;
+    }
+    if (out_n) {
+      *out_n = t->array_size;
+    }
+    return true;
+  }
+  return false;
+}
+
 TyPtr make_2d_float_matrix(const std::int64_t rows, const std::int64_t cols) {
   auto inner = std::make_shared<Ty>();
   inner->kind = TyKind::Array;
@@ -818,6 +846,23 @@ struct Ctx {
         if (e.bin_op == BinOp::Add || e.bin_op == BinOp::Sub || e.bin_op == BinOp::Mul ||
             e.bin_op == BinOp::Div || e.bin_op == BinOp::Mod || e.bin_op == BinOp::FloorDiv ||
             e.bin_op == BinOp::Pow) {
+          bool l_float = false;
+          bool r_float = false;
+          std::int64_t ln = 0;
+          std::int64_t rn = 0;
+          if (ty_is_1d_numeric_array(l, &l_float, &ln) && ty_is_1d_numeric_array(r, &r_float, &rn)) {
+            if (l_float != r_float) {
+              diags.error(loc(e.span),
+                          "cannot mix int and float arrays in element-wise arithmetic");
+              return make_int();
+            }
+            if (ln != rn) {
+              diags.error(loc(e.span),
+                          "element-wise arithmetic requires arrays of the same length");
+              return l;
+            }
+            return l;
+          }
           if (l->kind == TyKind::Int && r->kind == TyKind::Int) {
             if (l->unsigned_scalar != r->unsigned_scalar) {
               diags.error(loc(e.span), "cannot mix signed and unsigned integers without cast");

@@ -33,6 +33,9 @@ enum class MirOp {
   ArrayMatMul2DF64,
   ArraySumF64,
   ArraySumI64,
+  /** Element-wise binop into `ident` from `lhs_ident` and `rhs_ident` (length `int_value`). */
+  ArrayBinOpF64,
+  ArrayBinOpI64,
   LocalAllocInt,
   LocalAllocI64,
   StoreInt,

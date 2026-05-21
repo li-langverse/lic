@@ -735,6 +735,57 @@ struct EmitCtx {
         builder->CreateStore(acc, ensure_int_local(ins.ident));
         return true;
       }
+      case MirOp::ArrayBinOpF64: {
+        auto d_it = arrays.find(ins.ident);
+        auto a_it = arrays.find(ins.lhs_ident);
+        auto b_it = arrays.find(ins.rhs_ident);
+        if (d_it == arrays.end() || a_it == arrays.end() || b_it == arrays.end()) {
+          return true;
+        }
+        llvm::Type* f64 = llvm::Type::getDoubleTy(context);
+        const auto n = static_cast<unsigned>(ins.int_value);
+        llvm::Value* zero = llvm::ConstantInt::get(builder->getInt32Ty(), 0);
+        for (unsigned i = 0; i < n; ++i) {
+          llvm::Value* idx = llvm::ConstantInt::get(i32_ty(context), i);
+          llvm::Value* gep_idx[] = {zero, idx};
+          llvm::Value* ap = builder->CreateInBoundsGEP(
+              a_it->second.alloca->getAllocatedType(), a_it->second.alloca, gep_idx);
+          llvm::Value* bp = builder->CreateInBoundsGEP(
+              b_it->second.alloca->getAllocatedType(), b_it->second.alloca, gep_idx);
+          llvm::Value* dp = builder->CreateInBoundsGEP(
+              d_it->second.alloca->getAllocatedType(), d_it->second.alloca, gep_idx);
+          llvm::Value* av = builder->CreateLoad(f64, ap);
+          llvm::Value* bv = builder->CreateLoad(f64, bp);
+          llvm::Value* rv = emit_fbinop(ins.bin_op, av, bv);
+          builder->CreateStore(rv, dp);
+        }
+        return true;
+      }
+      case MirOp::ArrayBinOpI64: {
+        auto d_it = arrays.find(ins.ident);
+        auto a_it = arrays.find(ins.lhs_ident);
+        auto b_it = arrays.find(ins.rhs_ident);
+        if (d_it == arrays.end() || a_it == arrays.end() || b_it == arrays.end()) {
+          return true;
+        }
+        const auto n = static_cast<unsigned>(ins.int_value);
+        llvm::Value* zero = llvm::ConstantInt::get(builder->getInt32Ty(), 0);
+        for (unsigned i = 0; i < n; ++i) {
+          llvm::Value* idx = llvm::ConstantInt::get(i32_ty(context), i);
+          llvm::Value* gep_idx[] = {zero, idx};
+          llvm::Value* ap = builder->CreateInBoundsGEP(
+              a_it->second.alloca->getAllocatedType(), a_it->second.alloca, gep_idx);
+          llvm::Value* bp = builder->CreateInBoundsGEP(
+              b_it->second.alloca->getAllocatedType(), b_it->second.alloca, gep_idx);
+          llvm::Value* dp = builder->CreateInBoundsGEP(
+              d_it->second.alloca->getAllocatedType(), d_it->second.alloca, gep_idx);
+          llvm::Value* av = builder->CreateLoad(i32_ty(context), ap);
+          llvm::Value* bv = builder->CreateLoad(i32_ty(context), bp);
+          llvm::Value* rv = emit_binop(ins.bin_op, av, bv);
+          builder->CreateStore(rv, dp);
+        }
+        return true;
+      }
       case MirOp::ArrayLoad2DF64: {
         auto it = arrays.find(ins.ident);
         if (it == arrays.end() || !it->second.is_matrix) {

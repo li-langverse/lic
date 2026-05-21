@@ -22,11 +22,10 @@ Inner-dimension mismatches on `@` fail at compile time (`li-tests/math_linalg/ma
 ```li
 # target (Phase 2i / 7e)
 C += A @ B
-y[i] = alpha * x[i] + y[i]   # element-wise + AXPY surface
-sum(a * b)                   # needs element-wise *
+y[i] = alpha * x[i] + y[i]   # AXPY via index loop until `@vectorized`
 ```
 
-- Element-wise `*` / `+` on arrays (**2i-a**)
+- `**` on arrays; broadcast rules beyond matching lengths
 - `@vectorized` / `@parallel` lowering on math loops (**7d** / **7e-a**)
 - `tensor[(M,N), f64]` when Phase 3 lands
 

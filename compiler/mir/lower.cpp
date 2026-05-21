@@ -221,6 +221,95 @@ bool is_arith_binop(BinOp op) {
          op == BinOp::Mod || op == BinOp::FloorDiv || op == BinOp::Pow;
 }
 
+bool is_array_elementwise_binop(BinOp op) {
+  return op == BinOp::Add || op == BinOp::Sub || op == BinOp::Mul || op == BinOp::Div;
+}
+
+bool emit_array_elementwise_binop(const std::string& dest, const std::string& lhs_ident,
+                                  const std::string& rhs_ident, BinOp op,
+                                  std::vector<MirInsn>& out) {
+  if (!g_arr_ctx || !is_array_elementwise_binop(op)) {
+    return false;
+  }
+  if (g_arr_ctx->float_array_names) {
+    const auto& names = *g_arr_ctx->float_array_names;
+    const auto sz_a = g_arr_ctx->float_array_sizes.find(lhs_ident);
+    const auto sz_b = g_arr_ctx->float_array_sizes.find(rhs_ident);
+    if (names.count(lhs_ident) > 0 && names.count(rhs_ident) > 0 &&
+        sz_a != g_arr_ctx->float_array_sizes.end() &&
+        sz_b != g_arr_ctx->float_array_sizes.end() && sz_a->second == sz_b->second) {
+      MirInsn ins;
+      ins.op = MirOp::ArrayBinOpF64;
+      ins.ident = dest;
+      ins.lhs_ident = lhs_ident;
+      ins.rhs_ident = rhs_ident;
+      ins.int_value = sz_a->second;
+      ins.bin_op = op;
+      out.push_back(std::move(ins));
+      return true;
+    }
+  }
+  const auto sz_a = g_arr_ctx->int_array_sizes.find(lhs_ident);
+  const auto sz_b = g_arr_ctx->int_array_sizes.find(rhs_ident);
+  if (sz_a != g_arr_ctx->int_array_sizes.end() && sz_b != g_arr_ctx->int_array_sizes.end() &&
+      sz_a->second == sz_b->second) {
+    MirInsn ins;
+    ins.op = MirOp::ArrayBinOpI64;
+    ins.ident = dest;
+    ins.lhs_ident = lhs_ident;
+    ins.rhs_ident = rhs_ident;
+    ins.int_value = sz_a->second;
+    ins.bin_op = op;
+    out.push_back(std::move(ins));
+    return true;
+  }
+  return false;
+}
+
+std::string lower_array_elementwise_binop_expr(const std::string& lhs_ident,
+                                               const std::string& rhs_ident, BinOp op,
+                                               std::vector<MirInsn>& out) {
+  if (!g_arr_ctx || !is_array_elementwise_binop(op)) {
+    return {};
+  }
+  if (g_arr_ctx->float_array_names) {
+    const auto& names = *g_arr_ctx->float_array_names;
+    const auto sz_a = g_arr_ctx->float_array_sizes.find(lhs_ident);
+    const auto sz_b = g_arr_ctx->float_array_sizes.find(rhs_ident);
+    if (names.count(lhs_ident) > 0 && names.count(rhs_ident) > 0 &&
+        sz_a != g_arr_ctx->float_array_sizes.end() &&
+        sz_b != g_arr_ctx->float_array_sizes.end() && sz_a->second == sz_b->second) {
+      const std::string dest = fresh_temp();
+      MirInsn alloc;
+      alloc.op = MirOp::ArrayAlloc;
+      alloc.ident = dest;
+      alloc.int_value = sz_a->second;
+      alloc.array_is_float = true;
+      out.push_back(std::move(alloc));
+      g_arr_ctx->float_array_names->insert(dest);
+      g_arr_ctx->float_array_sizes[dest] = sz_a->second;
+      emit_array_elementwise_binop(dest, lhs_ident, rhs_ident, op, out);
+      return dest;
+    }
+  }
+  const auto ia = g_arr_ctx->int_array_sizes.find(lhs_ident);
+  const auto ib = g_arr_ctx->int_array_sizes.find(rhs_ident);
+  if (ia != g_arr_ctx->int_array_sizes.end() && ib != g_arr_ctx->int_array_sizes.end() &&
+      ia->second == ib->second) {
+    const std::string dest = fresh_temp();
+    MirInsn alloc;
+    alloc.op = MirOp::ArrayAlloc;
+    alloc.ident = dest;
+    alloc.int_value = ia->second;
+    alloc.array_is_float = false;
+    out.push_back(std::move(alloc));
+    g_arr_ctx->int_array_sizes[dest] = ia->second;
+    emit_array_elementwise_binop(dest, lhs_ident, rhs_ident, op, out);
+    return dest;
+  }
+  return {};
+}
+
 bool is_float_expr(const Expr& e, const std::unordered_set<std::string>& float_names) {
   switch (e.kind) {
     case Expr::Kind::FloatLit:
@@ -840,6 +929,14 @@ std::string lower_expr_to(const Expr& e, const Module& module, std::vector<MirIn
           return dest;
         }
       }
+      if (is_array_elementwise_binop(e.bin_op) && e.lhs && e.lhs->kind == Expr::Kind::Ident &&
+          e.rhs && e.rhs->kind == Expr::Kind::Ident) {
+        const std::string dest =
+            lower_array_elementwise_binop_expr(e.lhs->ident, e.rhs->ident, e.bin_op, out);
+        if (!dest.empty()) {
+          return dest;
+        }
+      }
       const std::string lhs = lower_expr_to(*e.lhs, module, out, float_names, simd_names, i64_locals);
       const std::string rhs = lower_expr_to(*e.rhs, module, out, float_names, simd_names, i64_locals);
       const std::string dest = fresh_temp();
@@ -905,9 +1002,9 @@ std::string lower_expr_to(const Expr& e, const Module& module, std::vector<MirIn
           return dest;
         }
       }
-      if (e.ident == "sum" && e.args.size() == 1 && e.args[0]->kind == Expr::Kind::Ident &&
-          g_arr_ctx) {
-        const std::string arr = e.args[0]->ident;
+      if (e.ident == "sum" && e.args.size() == 1 && g_arr_ctx) {
+        const std::string arr =
+            lower_expr_to(*e.args[0], module, out, float_names, simd_names, i64_locals);
         const std::string dest = fresh_temp();
         if (g_arr_ctx->float_array_names &&
             g_arr_ctx->float_array_names->count(arr) > 0) {
@@ -1224,6 +1321,13 @@ void lower_stmt(const Stmt& stmt, LowerCtx& ctx, bool returns_float, std::vector
                      stmt.var_type.elem->name == "int" && g_arr_ctx) {
             g_arr_ctx->int_array_sizes[stmt.var_name] = stmt.var_type.array_size;
           }
+          if (stmt.init && stmt.init->kind == Expr::Kind::BinOp &&
+              is_array_elementwise_binop(stmt.init->bin_op) && stmt.init->lhs &&
+              stmt.init->lhs->kind == Expr::Kind::Ident && stmt.init->rhs &&
+              stmt.init->rhs->kind == Expr::Kind::Ident) {
+            emit_array_elementwise_binop(stmt.var_name, stmt.init->lhs->ident,
+                                         stmt.init->rhs->ident, stmt.init->bin_op, out);
+          }
         }
       } else if (is_i64_type_name(stmt.var_type.name)) {
         MirInsn ins;
@@ -1384,6 +1488,14 @@ void lower_stmt(const Stmt& stmt, LowerCtx& ctx, bool returns_float, std::vector
           }
           out.push_back(std::move(ins));
         }
+      } else if (stmt.init && stmt.init->kind == Expr::Kind::Ident && stmt.expr &&
+                 stmt.expr->kind == Expr::Kind::BinOp &&
+                 is_array_elementwise_binop(stmt.expr->bin_op) && stmt.expr->lhs &&
+                 stmt.expr->lhs->kind == Expr::Kind::Ident && stmt.expr->rhs &&
+                 stmt.expr->rhs->kind == Expr::Kind::Ident &&
+                 emit_array_elementwise_binop(stmt.init->ident, stmt.expr->lhs->ident,
+                                            stmt.expr->rhs->ident, stmt.expr->bin_op, out)) {
+        break;
       } else if (stmt.init && stmt.init->kind == Expr::Kind::Ident && stmt.expr &&
                  stmt.expr->kind == Expr::Kind::BinOp && stmt.expr->bin_op == BinOp::MatMul &&
                  g_arr_ctx && g_arr_ctx->matrix_names &&

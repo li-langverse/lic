@@ -646,6 +646,22 @@ outcome = "verify_ok"
 
 [[tests]]
 suite = "math_linalg"
+file = "math_linalg/elementwise_mul_float.li"
+outcome = "verify_ok"
+
+[[tests]]
+suite = "math_linalg"
+file = "math_linalg/sum_elementwise_product.li"
+outcome = "verify_ok"
+
+[[tests]]
+suite = "math_linalg"
+file = "math_linalg/elementwise_len_mismatch.li"
+outcome = "compile_fail"
+expected_substr = "same length"
+
+[[tests]]
+suite = "math_linalg"
 file = "math_linalg/array_dot_mismatch.li"
 outcome = "compile_fail"
 expected_substr = "matrix multiply"

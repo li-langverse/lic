@@ -8,6 +8,9 @@ All notable changes to Li are documented here. The format follows
 
 ### Added
 
+- **docs(httpd):** `docs/ecosystem/why-li-rt-net-in-lic.md` — runtime seam layering (`li_rt_net.c` / `li_rt_httpd.c` in **lic**, not benchmarks).
+- **httpd M1 scripts (branch):** wave 8–9 validators, examples, `packages/li-tls` scaffold — see `docs/release-notes/2026-05-22-httpd-m1-wave8-tls-headers.md` and `2026-05-22-httpd-m1-wave9-auth-validate.md` (runtime epoll integration is a separate PR).
+
 - **Phase 2j OOP roadmap** — methods/`self`, traits, inheritance, write-back — `docs/superpowers/plans/2026-05-20-li-oop-roadmap.md`.
 - **Language naming conventions** — PascalCase `ClassName` for `type` / `object`; snake_case for `def`, variables, fields; see `docs/language/naming-conventions.md`.
 - **Phase 7d-c (partial):** proof builtins `disjoint_elem`, `disjoint_row`, `disjoint_slice`, `row_ok` in typecheck + prelude reserve; see `docs/release-notes/2026-05-20-disjoint-builtins-and-codegen-fixes.md`.

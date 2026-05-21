@@ -2,7 +2,7 @@
 
 ## Summary
 
-Added `packages/li-tls` (M1.5 scaffold), default stripping of `x-internal-*` upstream response headers on the proxy path, and benchmarks nightly `https_static` row marked `verify_skip` until TLS terminates.
+Ports M1 wave-8 **scripts, examples, and `packages/li-tls` scaffold** onto current `lic` `main` — no `runtime/li_rt_net.c` changes in this PR (epoll integration is a separate rebase).
 
 ## Agent continuation
 
@@ -14,15 +14,17 @@ Added `packages/li-tls` (M1.5 scaffold), default stripping of `x-internal-*` ups
 ## Changed
 
 - `packages/li-tls/` — scaffold `li.toml`, `src/lib.li`, `examples/dev-self-signed.toml`.
-- `runtime/li_rt_net.c` — `httpd_filter_proxy_resp_headers`, `strip_internal_headers` runtime key; cap `HTTPD_PREWARM_AT_START` (avoid listen stall); relay buffered body after header filter.
-- `scripts/flatten-httpd-config.py`, `validate-httpd-config.py` — `[headers]`, `[tls]` subset.
+- `scripts/flatten-httpd-config.py`, `validate-httpd-config.py` — `[headers]`, `[tls]` subset validators.
 - `packages/li-httpd/examples/header_strip_proxy.toml`; `scripts/test-strip-internal-headers.sh`, `scripts/test-header-filter-policy.py`, `scripts/_run_header_strip_check.py`.
+- `docs/ecosystem/why-li-rt-net-in-lic.md` — documents why the net seam stays in **lic** `runtime/`.
 
 ## Not changed
 
+- `runtime/li_rt_net.c` / `runtime/li_rt_httpd.c` on `main` (stub net + routing oracle unchanged).
 - TLS listen/terminate (no HTTPS port yet).
 - Request header filtering (egress allowlist is M1.5).
 - SSE / HTTP/2.
+- **benchmarks** catalog (ingest-only; no harness copy).
 
 ## Breaking
 

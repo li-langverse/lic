@@ -2,7 +2,7 @@
 
 ## Summary
 
-Added `lic validate-httpd-config` (wraps Python schema) and M1 Bearer API key gate (`401` without valid `Authorization: Bearer`).
+Ports M1 wave-9 **config validators and auth test scripts** onto current `lic` `main` — uses existing `lic httpd validate-config` on `main`; does not add `validate-httpd-config` subcommand or Bearer logic to `li_rt_net.c` in this PR.
 
 ## Agent continuation
 
@@ -13,14 +13,14 @@ Added `lic validate-httpd-config` (wraps Python schema) and M1 Bearer API key ga
 
 ## Changed
 
-- `compiler/lic/main.cpp` — `lic validate-httpd-config <toml>`.
-- `scripts/lic-validate-httpd-config.sh` — prefers built `lic` when present.
-- `runtime/li_rt_net.c` — `auth_required`, `auth_key=` runtime keys; `401 Unauthorized`.
-- `scripts/flatten-httpd-config.py`, `validate-httpd-config.py` — `[auth]` section.
-- `packages/li-httpd/examples/auth_bearer.toml`; `scripts/test-auth-bearer.sh`; `scripts/ci.sh`.
+- `scripts/lic-validate-httpd-config.sh` — wraps `lic httpd validate-config` when `build/compiler/lic/lic` exists, else Python validator.
+- `scripts/flatten-httpd-config.py`, `validate-httpd-config.py` — `[auth]` section schema for CI/offline checks.
+- `packages/li-httpd/examples/auth_bearer.toml`; `scripts/test-auth-bearer.sh` (live test **skipped** until epoll branch lands Bearer in `li_rt_net.c`).
 
 ## Not changed
 
+- `compiler/lic/main.cpp` subcommands (no new `validate-httpd-config` name on `main`).
+- `runtime/li_rt_net.c` Bearer gate (follow-up epoll rebase PR).
 - Per-route auth exemptions (all routes share gate when enabled).
 - mTLS, hashed key store, or `api_key` rate-limit key selection.
 - TLS listen / SSE.

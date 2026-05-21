@@ -403,6 +403,7 @@ def build_li(spec: BenchSpec, bin_path: Path) -> None:
             str(root / spec.li_main),
             "-o",
             str(bin_path),
+            "--allow-open-vc",
             "--no-lean-verify",
             "--release",
             "-O3",

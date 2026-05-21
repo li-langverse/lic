@@ -48,6 +48,11 @@ outcome = "verify_ok"
 
 [[tests]]
 suite = "decorators"
+file = "decorators/parallel_def_disjoint_inherit.li"
+outcome = "compile_ok"
+
+[[tests]]
+suite = "decorators"
 file = "decorators/vectorized_dot_ok.li"
 outcome = "verify_ok"
 

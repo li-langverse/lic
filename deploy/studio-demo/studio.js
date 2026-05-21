@@ -156,7 +156,13 @@ function setDemo(name) {
   const ctx = document.getElementById("agent-context");
   if (ctx) ctx.textContent = `world.li · ${m.nodes[0] || "World"}`;
   const list = document.getElementById("outliner-list");
-  list.innerHTML = m.nodes.map((n, i) => `<li class="${i === 0 ? "active" : ""}">${n}</li>`).join("");
+  if (list) {
+    list.innerHTML = m.nodes
+      .map((n, i) => `<li class="${i === 0 ? "active" : ""}" data-entity="${n}">${n}</li>`)
+      .join("");
+    if (m.nodes[0] && window.StudioPanels) StudioPanels.renderInspector(m.nodes[0]);
+  }
+  if (window.StudioPanels) StudioPanels.showTimelineForDemo(name);
   if (name === "agent" || name === "scientific") switchRail("agent");
 }
 
@@ -568,8 +574,13 @@ const COMMANDS = [
   { id: 1, name: "Play", hint: "lic build && start_playing", keys: "⌘P" },
   { id: 2, name: "Pause", hint: "stop_playing", keys: "" },
   { id: 3, name: "Build", hint: "lic build packages/…", keys: "⌘B" },
-  { id: 4, name: "Apply patch", hint: "studio.ai apply_if_clean", keys: "" },
-  { id: 5, name: "Open world.li", hint: "focus world spawn", keys: "⌘O" },
+  { id: 4, name: "Apply patch", hint: "studio.ai apply_if_clean + diff", keys: "" },
+  { id: 5, name: "Open world.li", hint: "code editor · world.li", keys: "⌘O" },
+  { id: 6, name: "Open Code editor", hint: "center panel Code", keys: "" },
+  { id: 7, name: "Show Problems", hint: "lic diagnose list", keys: "" },
+  { id: 8, name: "Focus mode", hint: "hide side rails", keys: "" },
+  { id: 9, name: "New .li file", hint: "user creation script", keys: "" },
+  { id: 10, name: "Run bench tier-2", hint: "world_engine row", keys: "" },
 ];
 
 const paletteEl = document.getElementById("command-palette");
@@ -625,7 +636,10 @@ function renderMessage({ role, text, time, plan, actions, gate }) {
       btn.type = "button";
       btn.textContent = a.label;
       btn.className = a.kind === "apply" ? "btn-apply" : a.kind === "reject" ? "btn-reject" : "btn-secondary";
-      if (a.cmd) btn.addEventListener("click", () => runCommand(a.cmd));
+      if (a.cmd) btn.addEventListener("click", () => {
+        if (a.kind === "apply" && a.cmd === 4) window.StudioEditor?.showDiff("world.li");
+        runCommand(a.cmd);
+      });
       row.appendChild(btn);
     });
     wrap.appendChild(row);
@@ -642,6 +656,7 @@ function appendTranscript(role, text, extras = {}) {
 }
 
 function switchRail(which) {
+  window.switchRail = switchRail;
   document.querySelectorAll(".rail-tab").forEach((t) => {
     const on = t.dataset.rail === which;
     t.classList.toggle("active", on);
@@ -705,6 +720,7 @@ function runCommand(id) {
   if (!c) return;
   closePalette();
   appendTranscript("system", `ui_cmd_${id} · ${c.name} → ${c.hint}`);
+  window.runCommand = runCommand;
   if (id === 1) {
     appendTranscript("agent", "Play session armed. Viewport tick started after gate.", {
       gate: "lic build · PASS · composable compile_ok",
@@ -723,7 +739,20 @@ function runCommand(id) {
     const chip = document.getElementById("gate-chip");
     if (chip) chip.innerHTML = '<span class="chip-dot"></span>lic build · PASS';
   }
+  if (id === 5) {
+    window.StudioEditor?.openFile("world.li");
+    setDemo(active);
+  }
+  if (id === 6) window.StudioEditor?.switchCenterPanel("editor");
+  if (id === 7) window.StudioPanels?.switchBottom("problems");
+  if (id === 8) document.body.classList.toggle("studio-focus");
+  if (id === 9) document.querySelector(".editor-tab--add")?.click();
+  if (id === 10) {
+    window.StudioPanels?.appendTerminal("$ lic bench tier-2 world_engine\n  ratio=1.02× · validity PASS");
+    window.StudioPanels?.switchBottom("output");
+  }
   if (id === 4) {
+    window.StudioEditor?.showDiff("world.li");
     appendTranscript("agent", "Diagnose clean. Patch touches world.li spawn + sim profile.", {
       plan: [
         { text: "studio.ai diagnose", state: "done" },
@@ -738,8 +767,8 @@ function runCommand(id) {
       gate: "lic_gate=1 · target_hash=8f2a…",
     });
   }
-  if (id === 5) setDemo("play");
 }
+window.runCommand = runCommand;
 
 paletteList.addEventListener("click", (e) => {
   const li = e.target.closest("li[data-cmd]");

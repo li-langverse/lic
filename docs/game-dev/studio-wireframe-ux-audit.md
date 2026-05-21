@@ -252,3 +252,5 @@ Severity: **H** high (blocks “commercial feel”), **M** medium, **L** low / i
 | Cursor without proof | Never ship “Apply” without `lic_gate` |
 
 Full domain matrix (14 industries): [competitive-intel/ui-ux-by-dimension.md](competitive-intel/ui-ux-by-dimension.md).
+
+**Wireframe implementation:** [studio-wireframe-full-spec.md](studio-wireframe-full-spec.md) — code editor, problems, diff, inspector, assets, terminal, timeline.

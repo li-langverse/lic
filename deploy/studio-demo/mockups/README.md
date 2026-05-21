@@ -15,4 +15,4 @@ PNG concept art is **not** committed to `lic`. Regenerate locally:
 
 **Product repo target:** `studio-app/demo/` — same rule: no binary mockups in git unless release assets.
 
-Docs: [planned-ui-mockups.md](../../../docs/game-dev/planned-ui-mockups.md)
+Docs: [planned-ui-mockups.md](../../../docs/game-dev/planned-ui-mockups.md) · [studio-wireframe-full-spec.md](../../../docs/game-dev/studio-wireframe-full-spec.md)

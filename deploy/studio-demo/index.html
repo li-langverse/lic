@@ -3,8 +3,13 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Li World Studio — Agent-first demo</title>
+  <title>Li World Studio — Full wireframe</title>
   <link rel="stylesheet" href="studio.css" />
+  <link rel="stylesheet" href="studio-shell.css" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/codemirror.min.css" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/theme/dracula.min.css" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/theme/ambiance.min.css" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/theme/eclipse.min.css" />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet" />
@@ -26,12 +31,13 @@
       <span class="chip chip-muted" id="validity-chip">bench OK · 1.02×</span>
     </div>
     <div class="topbar-actions">
+      <button type="button" class="btn-ghost" id="btn-focus" title="Focus mode (hide side panels)">Focus</button>
       <div class="theme-picker" role="group" aria-label="Color theme">
         <span class="theme-picker-label">Theme</span>
-        <button type="button" class="theme-btn active" data-theme="aurora" title="Aurora — iris + champagne gold" aria-pressed="true"></button>
-        <button type="button" class="theme-btn" data-theme="ember" title="Ember — engine gold (gaming)" aria-pressed="false"></button>
-        <button type="button" class="theme-btn" data-theme="slate" title="Slate — frost blue verified" aria-pressed="false"></button>
-        <button type="button" class="theme-btn theme-btn--custom" data-theme="custom" id="btn-theme-custom" title="Custom theme (import JSON)" aria-pressed="false">+</button>
+        <button type="button" class="theme-btn active" data-theme="aurora" title="Aurora" aria-pressed="true"></button>
+        <button type="button" class="theme-btn" data-theme="ember" title="Ember" aria-pressed="false"></button>
+        <button type="button" class="theme-btn" data-theme="slate" title="Slate" aria-pressed="false"></button>
+        <button type="button" class="theme-btn theme-btn--custom" data-theme="custom" id="btn-theme-custom" title="Custom theme" aria-pressed="false">+</button>
       </div>
       <span class="gates" id="gate-count" title="Composable gate count">gates</span>
       <button id="btn-palette" type="button" class="btn-ghost" title="Command palette (⌘K)">⌘K</button>
@@ -41,7 +47,6 @@
   </header>
 
   <div id="palette-backdrop" class="palette-backdrop hidden" aria-hidden="true"></div>
-
   <div id="command-palette" class="palette hidden" role="dialog" aria-label="Command palette" aria-modal="true">
     <div class="palette-head">
       <span class="palette-label">Command palette</span>
@@ -51,122 +56,216 @@
     <ul id="palette-list"></ul>
   </div>
 
-  <div class="shell shell--agent-first">
-    <aside class="outliner">
-      <div class="panel-head">
-        <h2>Outliner</h2>
-        <button type="button" class="icon-btn" title="Filter">⌕</button>
+  <div class="shell shell--full">
+    <aside class="left-rail" id="left-rail">
+      <nav class="left-rail-tabs" role="tablist">
+        <button type="button" class="left-rail-tab active" data-left-panel="outliner" role="tab">Scene</button>
+        <button type="button" class="left-rail-tab" data-left-panel="assets" role="tab">Assets</button>
+      </nav>
+      <div class="left-panel" data-left-panel="outliner">
+        <div class="panel-head">
+          <h2>Outliner</h2>
+          <button type="button" class="icon-btn" title="Filter">⌕</button>
+        </div>
+        <ul id="outliner-list"></ul>
       </div>
-      <ul id="outliner-list"></ul>
+      <div class="left-panel hidden" data-left-panel="assets">
+        <div class="panel-head"><h2>Content</h2></div>
+        <ul id="assets-list" class="assets-list"></ul>
+      </div>
     </aside>
 
-    <main class="viewport-wrap">
-      <div class="toolbar">
+    <div class="center-column">
+      <div class="center-toolbar">
+        <div class="center-tabs" role="tablist">
+          <button type="button" class="center-tab active" data-center="viewport" role="tab">Viewport</button>
+          <button type="button" class="center-tab" data-center="editor" role="tab">Code</button>
+          <button type="button" class="center-tab" data-center="canvas" role="tab">Canvas</button>
+        </div>
         <label class="workspace-select-wrap">
-          <span class="workspace-select-label">Workspace</span>
-          <select id="workspace-select" class="workspace-select" aria-label="Switch workspace demo">
+          <span class="workspace-select-label">Profile</span>
+          <select id="workspace-select" class="workspace-select" aria-label="Workspace demo">
             <optgroup label="Game">
-              <option value="rocket" selected>Rocket · custom physics</option>
-              <option value="racing">Racing · automotive</option>
-              <option value="robot">Robot · factory cell</option>
-              <option value="mmo">MMO · shards</option>
-              <option value="unphysical">Unphysical · arbitrary laws</option>
-              <option value="play">Play mode</option>
+              <option value="rocket" selected>Rocket</option>
+              <option value="racing">Racing</option>
+              <option value="robot">Robot</option>
+              <option value="mmo">MMO</option>
+              <option value="unphysical">Unphysical</option>
+              <option value="play">Play</option>
             </optgroup>
             <optgroup label="Simulation">
-              <option value="scientific">Scientific · field view</option>
-              <option value="drug">Drug · LITL</option>
-              <option value="bioeng">Bioeng · DBTL</option>
-              <option value="additive">Additive · voxel</option>
+              <option value="scientific">Scientific</option>
+              <option value="drug">Drug LITL</option>
+              <option value="bioeng">Bioeng</option>
+              <option value="additive">Additive</option>
             </optgroup>
             <optgroup label="Studio">
-              <option value="agent">Agent · diagnose</option>
-              <option value="publish">Publish · figures</option>
+              <option value="agent">Agent</option>
+              <option value="publish">Publish</option>
             </optgroup>
           </select>
         </label>
-        <div class="toolbar-pins" role="group" aria-label="Pinned workspaces">
+        <div class="toolbar-pins" role="group" aria-label="Pinned">
           <button type="button" class="tab pin active" data-demo="rocket">Game</button>
           <button type="button" class="tab pin" data-demo="scientific">Sim</button>
           <button type="button" class="tab pin" data-demo="agent">Agent</button>
-          <button type="button" class="tab pin" data-demo="publish">Publish</button>
         </div>
       </div>
-      <canvas id="viewport" width="1280" height="720"></canvas>
-      <div class="hud">
-        <span id="demo-title">Rocket — custom physics + relativity</span>
-        <span class="hud-meta">
-          <span id="profile-tag" class="mono">sim_profile_scientific</span>
-          <span id="tick">tick 0</span>
-        </span>
-      </div>
-    </main>
 
-    <aside class="right-rail" aria-label="Agent and inspector">
+      <div class="center-panels">
+        <section class="center-panel viewport-wrap" data-center-panel="viewport">
+          <div class="viewport-gizmo" id="viewport-gizmo" aria-hidden="true">
+            <span class="gizmo-axis gizmo-x"></span>
+            <span class="gizmo-axis gizmo-y"></span>
+            <span class="gizmo-handle gizmo-move" title="Move"></span>
+          </div>
+          <canvas id="viewport" width="1280" height="720"></canvas>
+          <div class="hud">
+            <span id="demo-title">Rocket — custom physics</span>
+            <span class="hud-meta">
+              <span id="profile-tag" class="mono">sim_profile_scientific</span>
+              <span id="tick">tick 0</span>
+            </span>
+          </div>
+        </section>
+
+        <section class="center-panel hidden" data-center-panel="editor" hidden>
+          <div class="editor-chrome">
+            <div class="editor-file-tabs" id="editor-file-tabs" role="tablist"></div>
+            <div id="code-editor-host" class="code-editor-host"></div>
+            <div id="diff-panel" class="diff-panel hidden">
+              <header class="diff-head">
+                <span>Proposed patch</span>
+                <div class="diff-actions">
+                  <button type="button" class="btn-apply" id="diff-apply">Apply patch</button>
+                  <button type="button" class="btn-reject" id="diff-close">Dismiss</button>
+                </div>
+              </header>
+              <div id="diff-body" class="diff-body mono"></div>
+            </div>
+          </div>
+        </section>
+
+        <section class="center-panel hidden canvas-panel" data-center-panel="canvas" hidden>
+          <p class="canvas-stub">Infinite agentic canvas (G5) — nodes compile to <code>world.li</code> / <code>seq</code></p>
+          <div class="canvas-nodes">
+            <div class="canvas-node active">Plan</div>
+            <div class="canvas-node">world.li</div>
+            <div class="canvas-node">sim.step</div>
+            <div class="canvas-node pass">lic build</div>
+          </div>
+        </section>
+      </div>
+    </div>
+
+    <aside class="right-rail" id="right-rail">
       <nav class="rail-tabs" role="tablist">
         <button type="button" class="rail-tab active" data-rail="agent" role="tab" aria-selected="true">Agent</button>
         <button type="button" class="rail-tab" data-rail="inspector" role="tab">Inspector</button>
       </nav>
-
       <section class="agent-dock" id="agent-dock" role="tabpanel">
         <header class="agent-dock-head">
           <div class="agent-identity">
             <span class="agent-avatar" aria-hidden="true">✦</span>
             <div>
               <span class="agent-name">Studio Agent</span>
-              <span class="agent-context mono" id="agent-context">world.li · packages/world</span>
+              <span class="agent-context mono" id="agent-context">world.li</span>
             </div>
           </div>
           <span class="agent-mode">Plan → gate → apply</span>
         </header>
-
         <div id="agent-chat" class="agent-chat" aria-live="polite"></div>
-
         <div class="agent-composer">
+          <div id="composer-chips" class="composer-chips"></div>
           <div class="composer-hints">
             <button type="button" class="hint-chip" data-hint="/build">/build</button>
             <button type="button" class="hint-chip" data-hint="/bench">/bench</button>
             <button type="button" class="hint-chip" data-hint="/patch">/patch</button>
+            <button type="button" class="hint-chip" id="btn-at-file">@file</button>
           </div>
           <form id="agent-form" class="agent-form">
-            <textarea id="agent-input" rows="2" placeholder="Ask to edit world.li, run lic build, apply patch…"></textarea>
+            <textarea id="agent-input" rows="2" placeholder="Ask or @world.li — patch, build, bench…"></textarea>
             <button type="submit" class="btn-send" aria-label="Send">↑</button>
           </form>
         </div>
       </section>
-
       <section class="inspector-dock hidden" id="inspector-dock" role="tabpanel" hidden>
-        <h2>Adaptive panel</h2>
-        <div id="panel-content" class="panel-body"></div>
+        <h2 class="inspector-head">Inspector · <span id="inspector-title">RocketBody</span></h2>
+        <form id="inspector-form" class="inspector-form"></form>
         <h2>Sim profile</h2>
         <code id="profile-code" class="mono block">sim_profile_scientific</code>
       </section>
     </aside>
+
+    <footer class="bottom-dock" id="bottom-dock">
+      <nav class="bottom-tabs" role="tablist">
+        <button type="button" class="bottom-tab active" data-bottom="problems" role="tab">Problems <span class="bottom-badge" id="problems-count">3</span></button>
+        <button type="button" class="bottom-tab" data-bottom="terminal" role="tab">Terminal</button>
+        <button type="button" class="bottom-tab" data-bottom="output" role="tab">Output</button>
+        <button type="button" class="bottom-tab" data-bottom="timeline" role="tab">Timeline</button>
+      </nav>
+      <div class="bottom-panel" data-bottom-panel="problems">
+        <ul id="problems-list" class="problems-list"></ul>
+      </div>
+      <div class="bottom-panel hidden" data-bottom-panel="terminal" hidden>
+        <pre id="terminal-output" class="terminal-output mono"></pre>
+      </div>
+      <div class="bottom-panel hidden" data-bottom-panel="output" hidden>
+        <pre id="output-log" class="terminal-output mono">[lic] check --format=json → ok=1 errors=0
+[bench] world_engine tier-2 · ratio=1.02× validity=PASS</pre>
+      </div>
+      <div class="bottom-panel hidden" data-bottom-panel="timeline" hidden>
+        <div id="timeline-strip" class="timeline-strip"></div>
+      </div>
+    </footer>
   </div>
 
   <dialog id="theme-dialog" class="theme-dialog">
     <form method="dialog" class="theme-dialog-inner">
       <header class="theme-dialog-head">
         <h2>Custom theme</h2>
-        <p class="theme-dialog-sub">Override CSS tokens (JSON). Built-ins stay in <code>studio.css</code>.</p>
+        <p class="theme-dialog-sub">Override CSS tokens (JSON).</p>
       </header>
-      <textarea id="theme-json" class="theme-json mono" rows="12" spellcheck="false" placeholder='{"name":"My theme","tokens":{"pass":"#c9b066","agent":"#9eb8ff"}}'></textarea>
+      <textarea id="theme-json" class="theme-json mono" rows="12" spellcheck="false"></textarea>
       <div class="theme-dialog-actions">
-        <button type="button" class="btn-ghost" id="theme-import-file">Import file</button>
+        <button type="button" class="btn-ghost" id="theme-import-file">Import</button>
         <button type="button" class="btn-ghost" id="theme-export">Export</button>
-        <button type="button" class="btn-ghost" id="theme-example">Load example</button>
-        <button type="button" class="btn-reject" id="theme-reset">Reset custom</button>
+        <button type="button" class="btn-ghost" id="theme-example">Example</button>
+        <button type="button" class="btn-reject" id="theme-reset">Reset</button>
         <button type="button" class="btn-primary" id="theme-apply">Apply</button>
       </div>
       <input type="file" id="theme-file" accept="application/json,.json" hidden />
     </form>
   </dialog>
 
-  <footer>
-    <p>Wireframe · <code>ui_layout_agent_first</code> · branch <code>feat/agent-first-gui</code></p>
-    <p><a href="../../docs/game-dev/studio-wireframe-ux-audit.md">UX audit</a> · <a href="../../docs/game-dev/demo-showcase.md">docs</a> · <a href="themes/example.custom.json">theme example</a></p>
+  <footer class="page-footer">
+    <p>Wireframe — <a href="../../docs/game-dev/studio-wireframe-full-spec.md">full spec</a> · <a href="../../docs/game-dev/studio-wireframe-ux-audit.md">UX audit</a></p>
   </footer>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/codemirror.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/mode/python/python.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/mode/properties/properties.min.js"></script>
   <script src="studio-themes.js"></script>
+  <script src="studio-files.js"></script>
+  <script src="studio-editor.js"></script>
+  <script src="studio-panels.js"></script>
   <script src="studio.js"></script>
+  <script>
+    document.addEventListener("DOMContentLoaded", () => {
+      StudioPanels.initPanels();
+      StudioEditor.initEditor();
+      document.querySelectorAll(".center-tab").forEach((b) => {
+        b.addEventListener("click", () => StudioEditor.switchCenterPanel(b.dataset.center));
+      });
+      document.getElementById("btn-focus")?.addEventListener("click", () => {
+        document.body.classList.toggle("studio-focus");
+      });
+      const origApply = window.applyTheme;
+      window.applyTheme = function (id, payload) {
+        origApply?.(id, payload);
+        StudioEditor.refreshTheme?.();
+      };
+    });
+  </script>
 </body>
 </html>

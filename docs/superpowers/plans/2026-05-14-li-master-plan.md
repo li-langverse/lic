@@ -425,7 +425,7 @@ Track in phase **Doc** until each is checked:
 Runnable on `dev` after `./scripts/build.sh`:
 
 - Phases **0–6**, **2g**, **2h**, **7** (core), **Pkg**, **Doc**, **8-sync**, **8e-li**
-- **176** `li-tests` manifest entries (`run_all.sh --ci` on `main`)
+- **180** `li-tests` manifest entries (`run_all.sh --ci` after gap-closure)
 - **2e/2f partial:** `build/generated/AutoVC.lean` every `lic build`; **P-linalg** closed VCs (#151)
 - **7e partial:** 1d/2d float `@`, element-wise SIMD, pure-Li tier-1 `simd_dot` / `matmul_*` (#148)
 - **7d partial:** `@vectorized(lanes=4)` + scoped `for` (**#150**); structured `disjoint=` still open

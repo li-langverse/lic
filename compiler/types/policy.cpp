@@ -100,27 +100,7 @@ void check_decorator_policies(const std::string& code, const std::string& file,
 void check_source_policies(const std::string& source, const std::string& file,
                            DiagnosticBag& diags) {
   const std::string code = strip_comments(source);
-  const bool has_parallel = code.find("parallel for") != std::string::npos;
-  if (has_parallel && code.find("disjoint_row") != std::string::npos &&
-      code.find("grid[0][0]") != std::string::npos) {
-    SourceLoc loc{file, 1, 1, 0};
-    diags.error(loc, "false_disjoint_proof");
-  }
-  if (has_parallel) {
-    SourceLoc loc{file, 1, 1, 0};
-    if (code.find("buf[0]") != std::string::npos) {
-      diag_error(diags, loc, ErrorCode::E0350,
-                 "This parallel loop may write the same shared memory from multiple threads.",
-                 "Prove disjoint access with `requires disjoint_elem(...)`, or use private buffers "
-                 "per iteration.");
-    }
-    if (code.find("counter = counter") != std::string::npos) {
-      diags.error(loc, "parallel mutable capture requires Sync proof");
-    }
-    if (code.find("borrow mut") != std::string::npos) {
-      diags.error(loc, "borrow mut forbidden across parallel iterations");
-    }
-  }
+  /* Parallel race patterns: AST checks in policy_module.cpp (7d-c). */
   if (code.find("-> Any") != std::string::npos ||
       code.find(": Any") != std::string::npos) {
     SourceLoc loc{file, 1, 1, 0};

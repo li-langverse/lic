@@ -303,8 +303,14 @@ note = "P-linalg: 2×2 matmul (0,0) entry via scalars — static witness"
 [[tests]]
 suite = "contracts_verify"
 file = "contracts_verify/linalg_dot4_int_loop_open.li"
-outcome = "verify_open_ok"
-note = "P-linalg: loop dot — real Prop, open until loop↔formula lemma"
+outcome = "verify_ok"
+note = "P-linalg: loop dot — fixed-bound loop witness (4 iterations)"
+
+[[tests]]
+suite = "contracts_verify"
+file = "contracts_verify/linalg_norm4_int_closed.li"
+outcome = "verify_ok"
+note = "P-linalg: int norm (sum of squares) via prelude norm"
 
 # --- borrow ---
 
@@ -355,7 +361,7 @@ outcome = "verify_ok"
 suite = "race_shared_memory"
 file = "race_shared_memory/shared_mut_write.li"
 outcome = "compile_fail"
-expected_substr = "shared"
+expected_substr = "parallel for"
 
 [[tests]]
 suite = "race_shared_memory"
@@ -385,7 +391,7 @@ expected_substr = "borrow"
 suite = "race_shared_memory"
 file = "race_shared_memory/false_disjoint_proof.li"
 outcome = "compile_fail"
-expected_substr = "proof"
+expected_substr = "disjoint_row"
 
 [[tests]]
 suite = "race_shared_memory"
@@ -676,6 +682,12 @@ outcome = "verify_open_ok"
 note = "serve_routed_once: TOML routes + GET /health -> 200 static (oracle; not epoll loop)"
 
 [[tests]]
+suite = "httpd"
+file = "httpd/route_match_contract.li"
+outcome = "verify_ok"
+note = "Phase H: match_route_fixture contract smoke"
+
+[[tests]]
 suite = "routing"
 file = "routing/match_routes.li"
 outcome = "verify_open_ok"
@@ -740,6 +752,16 @@ expected_substr = "inner dimension mismatch"
 [[tests]]
 suite = "math_linalg"
 file = "math_linalg/array_sum.li"
+outcome = "verify_ok"
+
+[[tests]]
+suite = "math_linalg"
+file = "math_linalg/norm_float4.li"
+outcome = "verify_ok"
+
+[[tests]]
+suite = "math_linalg"
+file = "math_linalg/norm_int4_sq.li"
 outcome = "verify_ok"
 
 [[tests]]

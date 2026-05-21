@@ -981,6 +981,23 @@ struct Ctx {
                       "dot expects two matching array[N, float] operands (same as 1d '@')");
           return make_float();
         }
+        if (e.ident == "norm") {
+          if (e.args.size() != 1) {
+            diags.error(loc(e.span), "norm expects one array argument");
+            return make_float();
+          }
+          const TyPtr a = type_of(*e.args[0]);
+          if (a->kind == TyKind::Array && a->elem) {
+            if (a->elem->kind == TyKind::Float) {
+              return make_float();
+            }
+            if (a->elem->kind == TyKind::Int) {
+              return make_int();
+            }
+          }
+          diags.error(loc(e.span), "norm expects array[N, int] or array[N, float]");
+          return make_float();
+        }
         if (e.ident == "disjoint_elem" || e.ident == "disjoint_row" ||
             e.ident == "disjoint_slice" || e.ident == "row_ok") {
           if (e.args.size() != 2) {
@@ -1204,6 +1221,7 @@ struct Ctx {
       return;
     }
     if (call.ident == "echo" || call.ident == "sum" || call.ident == "dot" ||
+        call.ident == "norm" ||
         call.ident == "disjoint_elem" || call.ident == "disjoint_row" ||
         call.ident == "disjoint_slice" || call.ident == "row_ok" ||
         call.ident == "__li_simd_splat_f64" || call.ident == "__li_simd_mul_f64" ||

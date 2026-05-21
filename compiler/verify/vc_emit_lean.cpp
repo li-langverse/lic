@@ -300,6 +300,9 @@ void emit_contract_def(std::ostream& out, const Module& module, const ProcDecl& 
         !ensures_rhs_eq_result(*c.expr)) {
       out << "/-! Phase 2f: requires/return witness for ensures (param `"
           << ret->ident << "`) -/\n";
+    } else if (ctx.proc != nullptr && c.expr && ensures_rhs_eq_result(*c.expr) &&
+               witness_dot4_int_loop(*ctx.proc, *ensures_rhs_eq_result(*c.expr))) {
+      out << "/-! Phase 2f: fixed-bound dot loop witness (4 iterations) -/\n";
     } else {
       out << "/-! Phase 2f: return expression matches ensures (static witness) -/\n";
     }

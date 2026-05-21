@@ -111,6 +111,7 @@ struct Ctx {
   std::set<std::string> loop_index_vars;
   int loop_depth = 0;
   bool in_async = false;
+  std::optional<TyPtr> current_ret_ty;
   DiagnosticBag& diags;
   std::string file;
 
@@ -393,6 +394,9 @@ struct Ctx {
     }
     if (value->kind == TyKind::TypeVar) {
       return expected->kind == TyKind::TypeVar && value->name == expected->name;
+    }
+    if (value->kind == TyKind::Str && expected->kind == TyKind::Int64) {
+      return true;
     }
     return same_kind(value, expected);
   }
@@ -704,6 +708,16 @@ struct Ctx {
           diags.error(loc(e.span), "sum supports int or float arrays only");
           return make_int();
         }
+        if (e.ident == "disjoint_elem" || e.ident == "disjoint_row" ||
+            e.ident == "disjoint_slice" || e.ident == "row_ok") {
+          if (e.args.size() != 2) {
+            diags.error(loc(e.span), e.ident + " expects two arguments (index, buffer)");
+            return make_bool();
+          }
+          (void)type_of(*e.args[0]);
+          (void)type_of(*e.args[1]);
+          return make_bool();
+        }
         const auto pit = procs.find(e.ident);
         if (pit != procs.end()) {
           const ProcDecl& callee = *pit->second;
@@ -869,7 +883,18 @@ struct Ctx {
       return;
     }
     if (s.kind == Stmt::Kind::Return && s.expr) {
-      type_of(*s.expr);
+      const TyPtr got = type_of(*s.expr);
+      if (current_ret_ty && !assignable(got, *current_ret_ty)) {
+        if (got->kind == TyKind::TypeVar || (*current_ret_ty)->kind == TyKind::TypeVar) {
+          diag_error(diags, loc(s.span), ErrorCode::E0202,
+                     "generic return type mismatch: cannot return this expression from a "
+                     "procedure with the declared return type",
+                     "Instantiate the generic parameter consistently, or change the return type "
+                     "annotation.");
+        } else {
+          diags.error(loc(s.span), "return type mismatch");
+        }
+      }
       return;
     }
     if (s.kind == Stmt::Kind::If) {
@@ -1079,9 +1104,9 @@ struct Ctx {
     for (const auto& tp : p.type_params) {
       type_vars[tp] = make_type_var(tp);
     }
-    std::optional<TyPtr> ret_ty;
+    current_ret_ty.reset();
     if (p.ret_type) {
-      ret_ty = resolve_type_expr(*p.ret_type);
+      current_ret_ty = resolve_type_expr(*p.ret_type);
     }
     for (const auto& param : p.params) {
       if (is_refinement_index_type(param.type)) {
@@ -1093,6 +1118,7 @@ struct Ctx {
     for (const auto& s : p.body) {
       check_stmt(s);
     }
+    current_ret_ty.reset();
     in_async = prev_async;
   }
 };
@@ -1102,7 +1128,7 @@ struct Ctx {
 TypecheckResult typecheck_module(const Module& module) {
   TypecheckResult result;
   DiagnosticBag& diags = result.diagnostics;
-  Ctx ctx{{}, {}, {}, {}, {}, {}, {}, {}, 0, false, diags, "module"};
+  Ctx ctx{{}, {}, {}, {}, {}, {}, {}, {}, 0, false, std::nullopt, diags, "module"};
   for (const auto& proc : module.procs) {
     ctx.procs[proc.name] = &proc;
   }

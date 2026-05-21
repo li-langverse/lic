@@ -55,6 +55,8 @@ enum class MirOp {
 struct MirArg {
   bool is_literal = false;
   std::int64_t int_value = 0;
+  bool is_float_literal = false;
+  double float_value = 0.0;
   std::string ident;
   bool is_string = false;
   std::string str_value;

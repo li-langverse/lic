@@ -282,6 +282,30 @@ suite = "contracts_verify"
 file = "contracts_verify/extern_call_requires_ok.li"
 outcome = "verify_ok"
 
+[[tests]]
+suite = "contracts_verify"
+file = "contracts_verify/linalg_dot4_int_closed.li"
+outcome = "verify_ok"
+note = "P-linalg: fixed int dot — static witness, zero open AutoVC goals"
+
+[[tests]]
+suite = "contracts_verify"
+file = "contracts_verify/linalg_sum4_int_closed.li"
+outcome = "verify_ok"
+note = "P-linalg: fixed int sum — static witness"
+
+[[tests]]
+suite = "contracts_verify"
+file = "contracts_verify/linalg_mat2_entry00_int_closed.li"
+outcome = "verify_ok"
+note = "P-linalg: 2×2 matmul (0,0) entry via scalars — static witness"
+
+[[tests]]
+suite = "contracts_verify"
+file = "contracts_verify/linalg_dot4_int_loop_open.li"
+outcome = "verify_open_ok"
+note = "P-linalg: loop dot — real Prop, open until loop↔formula lemma"
+
 # --- borrow ---
 
 [[tests]]

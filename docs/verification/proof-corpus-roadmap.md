@@ -30,11 +30,16 @@
 | `sqrt_open_bound.li` | `abs(result² - x) < ε` | **Intentionally open** — `verify_open_ok` |
 | `refinement_*_ok.li` | Refinement types at call/init | **Partial** — refinement VCs often `True`; user `ensures` may stay open |
 | `refinement_guard_ok.li` | `if n >= 0` branch discharge | Same |
+| `linalg_dot4_int_closed.li` | Fixed 4-term int dot — return matches ensures | Fully discharged (`discharge_linalg_int_lean.sh`) |
+| `linalg_sum4_int_closed.li` | Fixed 4-term int sum | Fully discharged |
+| `linalg_mat2_entry00_int_closed.li` | Matmul (0,0) entry via scalars | Fully discharged |
+| `linalg_dot4_int_loop_open.li` | Loop dot — real `Prop`, not static witness | **Intentionally open** — `verify_open_ok` |
 
 **Tooling entrypoints:**
 
 ```bash
 ./li-tests/tooling/contracts_discharge_corpus.sh
+./li-tests/tooling/discharge_linalg_int_lean.sh   # P-linalg closed specimens
 ./li-tests/tooling/contracts_verify_lean.sh   # needs Lean 4 + lake for full 2f
 ./li-tests/run_all.sh contracts_verify
 ```
@@ -58,8 +63,8 @@
 
 | Suite | Result | Notes |
 |-------|--------|-------|
-| `run_all.sh contracts_verify` | **16 pass / 0 fail** | Includes `refinement_*_ok`; `sqrt_open_bound` = `verify_open_ok` |
-| `contracts_discharge_corpus.sh` | **ok** | Trivial/const/index/caller-requires closed; `sqrt_open_bound` intentionally open |
+| `run_all.sh contracts_verify` | **22 pass / 0 fail** | Includes **P-linalg** closed + `linalg_dot4_int_loop_open` = `verify_open_ok` |
+| `contracts_discharge_corpus.sh` | **ok** | Trivial/const/index/caller-requires/**linalg closed**; `sqrt_open_bound` + loop dot intentionally open |
 | `run_httpd_config.sh` | **ok** | Python oracle + Li `match_routes.li` binary exit 0 |
 | `contracts_verify_lean.sh` | **partial** | Needs Lean 4 + lake; may stop on specimens with open user `ensures` |
 | `lake build` | **env-dependent** | `LI_BUILD_VERIFY_LEAN=1` on CI when lake present |
@@ -74,7 +79,7 @@ Priority order aligned with [provability-gaps](provability-gaps.md) and **2e →
 | **P-ensures-witness** | MIR-linked `ensures` for non-literal returns | `witnessed_ensures` partial | `caller()`, `use_positive.li`, physics smokes |
 | **P-float** | `Float.abs`, sqrt error bounds | **G-vc** open (`sqrt_open_bound`) | `sqrt_open_bound.li` + `Li.Discharge` lemmas |
 | **P-loop** | `while` invariant preservation | Few loop specimens | New `contracts_verify/loop_invariant_*.li` |
-| **P-linalg** | Matrix/vector shapes (`@`, slices) | **G-math** partial | `math_linalg/*` + shape refinements |
+| **P-linalg** | Matrix/vector shapes (`@`, slices) | **G-math** partial — closed int dot/sum/matmul entry VCs; loop dot + `@` lowering open | `contracts_verify/linalg_*`, `math_linalg/*` |
 | **P-par** | `parallel for` disjointness | **G-par** string heuristics only | Lean specs for `disjoint=` (7d-c) |
 | **P-dec** | Decorators never run at runtime | **G-dec** no MIR lowering | `decorator_exploits/` + elaboration proofs |
 | **P-bnd** | Release builds omit `li_bounds_fail` | **G-bnd** | Refined indices + codegen proof |

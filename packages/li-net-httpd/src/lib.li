@@ -1002,10 +1002,3 @@ def httpd_run_from_argv() raises Net, Alloc, IO -> int
     var bp: int = httpd_parse_port_i(backend_arg)
     return httpd_serve_port_root_proxy(p, r, bp)
   return httpd_serve_port_root(p, r)
-
-def main() raises Net, Alloc, IO -> int
-  requires true
-  ensures result == 0
-  decreases 0
-=
-  return httpd_run_from_argv()

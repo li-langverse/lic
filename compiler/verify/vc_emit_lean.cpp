@@ -357,7 +357,12 @@ void emit_contract_def(std::ostream& out, const Module& module, const ProcDecl& 
       prop += ' ';
       prop += p.name;
     }
-    prop += " result";
+    prop += " (Li.Discharge.mat2_at2_eval";
+    for (const auto& p : proc.params) {
+      prop += ' ';
+      prop += p.name;
+    }
+    prop += ')';
   } else if (c.expr) {
     if (auto lean = expr_to_lean(*c.expr, ctx)) {
       prop = *lean;
@@ -366,8 +371,10 @@ void emit_contract_def(std::ostream& out, const Module& module, const ProcDecl& 
     }
   }
 
+  const bool mat2_ensures =
+      mat2_discharge_theorem && c.kind == ContractKind::Ensures;
   out << "def " << name;
-  emit_formals(true);
+  emit_formals(!mat2_ensures);
   out << " : Prop := " << prop << '\n';
 
   if (prop == "True" && witnessed && c.kind == ContractKind::Ensures) {
@@ -392,11 +399,13 @@ void emit_contract_def(std::ostream& out, const Module& module, const ProcDecl& 
   }
   if (mat2_discharge_theorem && c.kind == ContractKind::Ensures) {
     out << "theorem " << name << "_proved";
-    emit_formals(true);
+    emit_formals(false);
     out << " : " << name;
-    emit_args(true);
+    emit_args(false);
     out << " := Li.Discharge.mat2_at2_float_spec_proved";
-    emit_args(true);
+    for (const auto& p : proc.params) {
+      out << ' ' << lean_ident(p.name);
+    }
     out << '\n';
   } else if (prop == "True") {
     out << "theorem " << name << "_proved";

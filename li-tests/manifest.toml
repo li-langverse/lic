@@ -312,6 +312,12 @@ file = "contracts_verify/linalg_norm4_int_closed.li"
 outcome = "verify_ok"
 note = "P-linalg: int norm (sum of squares) via prelude norm"
 
+[[tests]]
+suite = "contracts_verify"
+file = "contracts_verify/linalg_axpy4_int_closed.li"
+outcome = "verify_ok"
+note = "P-linalg: axpy scalar closed form (alpha*x+y)"
+
 # --- borrow ---
 
 [[tests]]
@@ -767,6 +773,31 @@ outcome = "verify_ok"
 [[tests]]
 suite = "math_linalg"
 file = "math_linalg/vec3_ops.li"
+outcome = "verify_ok"
+
+[[tests]]
+suite = "math_linalg"
+file = "math_linalg/elementwise_pow_float4.li"
+outcome = "verify_ok"
+
+[[tests]]
+suite = "math_linalg"
+file = "math_linalg/scale_float4.li"
+outcome = "verify_ok"
+
+[[tests]]
+suite = "math_linalg"
+file = "math_linalg/axpy_float4.li"
+outcome = "verify_ok"
+
+[[tests]]
+suite = "math_linalg"
+file = "math_linalg/reductions/sum_float4.li"
+outcome = "verify_ok"
+
+[[tests]]
+suite = "math_linalg"
+file = "math_linalg/reductions/dot_via_sum_product.li"
 outcome = "verify_ok"
 
 # --- physics (packages + profiles) ---

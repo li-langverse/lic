@@ -36,6 +36,10 @@ enum class MirOp {
   /** Element-wise binop into `ident` from `lhs_ident` and `rhs_ident` (length `int_value`). */
   ArrayBinOpF64,
   ArrayBinOpI64,
+  /** `dest[i] = scale * lhs[i]` — scale in `rhs_ident` (float local) or `float_value` if literal. */
+  ArrayScaleF64,
+  /** `rhs[i] = scale * lhs[i] + rhs[i]` — scale in `ident`, lhs=x, rhs=y. */
+  ArrayAxpyF64,
   LocalAllocInt,
   LocalAllocI64,
   StoreInt,

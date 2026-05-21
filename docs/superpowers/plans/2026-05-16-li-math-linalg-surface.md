@@ -105,7 +105,7 @@ flowchart LR
 | Sub | Deliverable | Exit |
 |-----|-------------|------|
 | **2i-a** | Infix `*`, `+`, `-`, `/`, `**` on numeric arrays; `sum`; parse + types | `li-tests/math_linalg/scalar_elementwise/` |
-| **2i-b** | `dot`, `norm`; reduction lowering | **partial** — prelude `dot`; `reductions/` + proofs open |
+| **2i-b** | `dot`, `norm`, `axpy`, `**`, reductions | **partial** — prelude `dot`/`norm`/`axpy`; `math_linalg/reductions/`; float Lean Props open |
 | **2i-c** | Binary `@` for 2D matmul desugar (fixed small shapes + `tensor` when ready) | **done** — `matmul_*.li` on `main` |
 | **2f / P-linalg** | `requires`/`ensures` on fixed dot/sum/matmul entry | **partial (#151)** — closed int specimens; loop dot open |
 | **7e-a** | Connect math expr lowering to existing 7a SIMD MIR | `simd_dot` Li source has **zero** `__li_simd_*` in user file |
@@ -167,6 +167,6 @@ Use existing [benchmarks plan](2026-05-14-benchmarks-and-simulations.md) harness
 - [x] Tier 1 Li benchmarks use math-only sources (`li_pure=True` on `simd_dot`, `matmul_*`)
 - [x] Handbook pages published (`linear-algebra.md`, `math-hpc-examples.md`)
 - [x] No user-facing doc recommends `__li_simd_*` as the default path
-- [ ] **2i-b** `norm`, named reductions; same-length `**` / `axpy` (no broadcast)
+- [x] **2i-b** `norm`, `sum`/`dot`, `reductions/` suite; same-length `**` / prelude `axpy` / scalar×array (no broadcast) — float Lean Props still open
 - [ ] **P-linalg** loop implementation ≡ closed-form `ensures` in Lean (**G-lean**)
 - [ ] Tier 1 perf ≤1.2× C++ (benchmarks dashboard)

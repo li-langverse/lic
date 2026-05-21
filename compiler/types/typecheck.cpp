@@ -863,6 +863,18 @@ struct Ctx {
             }
             return l;
           }
+          {
+            bool rf = false;
+            std::int64_t rn = 0;
+            if (l->kind == TyKind::Float && ty_is_1d_numeric_array(r, &rf, &rn) && rf) {
+              return r;
+            }
+            bool lf = false;
+            std::int64_t ln = 0;
+            if (r->kind == TyKind::Float && ty_is_1d_numeric_array(l, &lf, &ln) && lf) {
+              return l;
+            }
+          }
           if (l->kind == TyKind::Int && r->kind == TyKind::Int) {
             if (l->unsigned_scalar != r->unsigned_scalar) {
               diags.error(loc(e.span), "cannot mix signed and unsigned integers without cast");
@@ -997,6 +1009,27 @@ struct Ctx {
           }
           diags.error(loc(e.span), "norm expects array[N, int] or array[N, float]");
           return make_float();
+        }
+        if (e.ident == "axpy") {
+          if (e.args.size() != 3) {
+            diags.error(loc(e.span), "axpy expects (alpha, x, y) array arguments");
+            return make_int();
+          }
+          const TyPtr alpha = type_of(*e.args[0]);
+          const TyPtr x = type_of(*e.args[1]);
+          const TyPtr y = type_of(*e.args[2]);
+          if (alpha->kind != TyKind::Float) {
+            diags.error(loc(e.span), "axpy alpha must be float");
+            return make_int();
+          }
+          if (x->kind == TyKind::Array && y->kind == TyKind::Array && x->array_size == y->array_size &&
+              x->elem && y->elem && x->elem->kind == TyKind::Float &&
+              y->elem->kind == TyKind::Float) {
+            return make_int();
+          }
+          diags.error(loc(e.span),
+                      "axpy expects matching array[N, float] for x and y (same length, no broadcast)");
+          return make_int();
         }
         if (e.ident == "disjoint_elem" || e.ident == "disjoint_row" ||
             e.ident == "disjoint_slice" || e.ident == "row_ok") {
@@ -1221,7 +1254,7 @@ struct Ctx {
       return;
     }
     if (call.ident == "echo" || call.ident == "sum" || call.ident == "dot" ||
-        call.ident == "norm" ||
+        call.ident == "norm" || call.ident == "axpy" ||
         call.ident == "disjoint_elem" || call.ident == "disjoint_row" ||
         call.ident == "disjoint_slice" || call.ident == "row_ok" ||
         call.ident == "__li_simd_splat_f64" || call.ident == "__li_simd_mul_f64" ||

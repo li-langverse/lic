@@ -380,7 +380,7 @@ Track in phase **Doc** until each is checked:
 - [x] Phase 2g — `def`, `object` + field `private`/`public`, minimal `import` (`encapsulation` suite green; import parse-only; **not** full OOP)
 - [x] Phase 2j — Full OOP surface — **2j-a…f done** (#83+); Lean method/trait `ensures` sugar still **G-oop** open — [OOP roadmap](2026-05-20-li-oop-roadmap.md)
 - [x] Phase 2h — Python-math operators `%`, `//`, `**` (`math_syntax` suite); `for`/`range` deferred (**G-math-syn**)
-- [ ] Phase 2i — Math / linalg surface — **partial:** **2i-a/c** on `main` (#148); **2i-b** `norm`/reductions; same-length `**`/named `axpy` — no broadcast
+- [ ] Phase 2i — Math / linalg surface — **partial:** **2i-a/c** (#148); **2i-b** `norm`, `sum`/`dot`, `reductions/`, same-length `**`, prelude `axpy`, scalar×array — no broadcast; matrix `@` proofs open
 - [x] Phase 3 — MIR + LLVM codegen (`lic build`, minimal lower/emit; CFG/bounds IR deferred)
 - [x] Phase 4 — Runtime + stdlib
 - [x] Phase 4s — Stdlib seal (prelude/`std/` names cannot be shadowed; `stdlib_seal/` CI)
@@ -388,10 +388,10 @@ Track in phase **Doc** until each is checked:
 - [x] Phase 5b — Benchmarks & simulations (harness + **X plots** skeleton on `dev`)
 - [x] Phase 6 — Self-host (bootstrap seed: `bootstrap/lic/main.li` → `build/lic-from-li`)
 - [x] Phase 2e — Contracts + refinements — **merged (PR #83):** call-site `requires` (**E0304**), refinement types (**E0305**), if-guard VC discharge, import/extern; corpus [proof-corpus-roadmap.md](../verification/proof-corpus-roadmap.md); float/nontrivial ensures still open
-- [x] Phase 2f — Lean 4 verify — **partial (#83, #151):** AutoVC + open-goal script; **P-linalg** closed corpus (`discharge_linalg_int_lean.sh`); `contracts_verify/` **22/22**; intentional open: `sqrt_open_bound`, `linalg_dot4_int_loop_open`; **G-lean** / **G-vc** still open — [still open gaps](../verification/provability-gaps.md#still-open-report-every-session)
+- [x] Phase 2f — Lean 4 verify — **partial (#83, #151):** AutoVC + open-goal script; **P-linalg** closed corpus (`discharge_linalg_int_lean.sh`); `contracts_verify/` **24/24**; intentional open: `sqrt_open_bound`, `linalg_dot4_int_loop_open`; **G-lean** / **G-vc** still open — [still open gaps](../verification/provability-gaps.md#still-open-report-every-session)
 - [x] Phase 7 — Native HPC — **v1 gate:** simd + parallel for + OpenMP + `check-master-plan-gates.sh` (tier 1/2 perf advisory)
 - [ ] Phase 7d — Execution decorators — **partial (#150 7d-c):** `@vectorized` on `for` → `ArraySimdScope`; **7d-b** lanes=4; **open:** structured `disjoint=` (**G-par**), `@parallel` MIR elaboration
-- [ ] Phase 7e — Math → SIMD/parallel lowering — **partial (#148, #150):** 1d/2d `@`, element-wise, tier-1 pure-Li benches, `ArrayBinOpF64`/`ArrayDotF64` SIMD; **open:** tier-1 **≤1.2× C++**, loop/dot Lean proofs, **2i-b**
+- [ ] Phase 7e — Math → SIMD/parallel lowering — **partial (#148, #150):** 1d/2d `@`, element-wise, tier-1 pure-Li benches, `ArrayBinOpF64`/`ArrayDotF64` SIMD; **`check-tier1-li-vs-cpp.sh`** reports Li/C++ gaps (strict ≤1.2× optional); **open:** closing all tier-1 gaps, float Lean Props
 - [x] Phase H — li-httpd infra — **`lis`** harness, mitigations, CI, workspace stubs ([implementation-status](https://github.com/li-langverse/lis/blob/main/docs/implementation-status.md))
 - [x] Phase H — li-httpd M1 `.li` — **partial:** TOML `match_route`, explain/validate-config, `httpd_serve_routed_once` oracle; **in flight:** [httpd-m1-impl](https://github.com/li-langverse/lic/pull/87), [httpd-m1-perf](https://github.com/li-langverse/lic/pull/84); **next:** merge reactor + real recv ([httpd-prerequisites](../ecosystem/httpd-prerequisites.md))
 - [x] Phase Pkg — Package scaffold + governance stubs ([scaffold](2026-05-16-li-package-scaffold.md), [governance](2026-05-16-li-ecosystem-governance.md); `li.toml` = [lip § A3](2026-05-16-li-package-manager-lip.md))

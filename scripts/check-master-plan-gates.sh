@@ -65,4 +65,9 @@ chmod +x "$ROOT/li-tests/tooling/hpc_competitive_registry.sh"
 export LI_HPC_COMPETITIVE_STRICT=0
 "$ROOT/li-tests/tooling/hpc_competitive_registry.sh" || li_warn "hpc competitive registry — see benchmarks/competitive/registry.toml"
 
+li_phase "tier-1 Li vs C++ (advisory; strict via LI_TIER1_PERF_STRICT=1)"
+chmod +x "$ROOT/scripts/check-tier1-li-vs-cpp.sh" "$ROOT/li-tests/tooling/tier1_li_vs_cpp.sh"
+export LI_TIER1_PERF_STRICT="${LI_TIER1_PERF_STRICT:-0}"
+"$ROOT/li-tests/tooling/tier1_li_vs_cpp.sh" || li_warn "tier-1 perf gaps — see benchmarks/results/latest.csv"
+
 ok "lic monorepo v1 gates"

@@ -112,6 +112,7 @@ struct EmitCtx {
   bool returns_object = false;
   bool fp_numerically_stable = false;
   bool enable_array_simd = true;
+  std::vector<bool> array_simd_scope_stack;
   std::map<std::string, llvm::AllocaInst*> int_locals;
   std::map<std::string, llvm::AllocaInst*> float_locals;
   std::map<std::string, llvm::AllocaInst*> i64_locals;
@@ -124,6 +125,13 @@ struct EmitCtx {
   llvm::Type* vec4_f64() const {
     return llvm::VectorType::get(llvm::Type::getDoubleTy(context),
                                  llvm::ElementCount::getFixed(4));
+  }
+
+  bool array_simd_enabled() const {
+    if (!array_simd_scope_stack.empty()) {
+      return array_simd_scope_stack.back();
+    }
+    return enable_array_simd;
   }
 
   llvm::AllocaInst* ensure_simd_f64x4(const std::string& name) {
@@ -799,7 +807,7 @@ struct EmitCtx {
         }
         llvm::Type* f64 = llvm::Type::getDoubleTy(context);
         const auto n = static_cast<unsigned>(ins.int_value);
-        const unsigned simd_end = enable_array_simd ? (n / 4) * 4 : 0;
+        const unsigned simd_end = array_simd_enabled() ? (n / 4) * 4 : 0;
         for (unsigned i = 0; i < simd_end; i += 4) {
           llvm::Value* av = gather_array_f64x4(a_it->second.alloca, i);
           llvm::Value* bv = gather_array_f64x4(b_it->second.alloca, i);
@@ -940,7 +948,7 @@ struct EmitCtx {
         llvm::Type* f64 = llvm::Type::getDoubleTy(context);
         llvm::Value* acc = llvm::ConstantFP::get(f64, 0.0);
         const auto n = static_cast<unsigned>(ins.int_value);
-        const unsigned simd_end = enable_array_simd ? (n / 4) * 4 : 0;
+        const unsigned simd_end = array_simd_enabled() ? (n / 4) * 4 : 0;
         if (simd_end > 0) {
           llvm::Value* v_acc =
               builder->CreateVectorSplat(4, llvm::ConstantFP::get(f64, 0.0));
@@ -985,6 +993,13 @@ struct EmitCtx {
         builder->CreateCall(leave, {});
         return true;
       }
+      case MirOp::ArraySimdScope:
+        if (ins.int_value != 0) {
+          array_simd_scope_stack.push_back(true);
+        } else if (!array_simd_scope_stack.empty()) {
+          array_simd_scope_stack.pop_back();
+        }
+        return true;
     }
     return true;
   }

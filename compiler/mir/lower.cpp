@@ -56,6 +56,15 @@ void apply_fn_decorator_codegen_flags(MirFn& fn) {
   }
 }
 
+bool stmt_has_vectorized(const std::vector<Decorator>& decos) {
+  for (const auto& d : decos) {
+    if (d.name == "vectorized") {
+      return true;
+    }
+  }
+  return false;
+}
+
 bool is_float_type_name(const std::string& n) {
   if (const auto scalar = li::lookup_numeric_scalar(n)) {
     return scalar->kind == li::NumericScalarKind::Float;
@@ -1717,8 +1726,20 @@ void lower_stmt(const Stmt& stmt, LowerCtx& ctx, bool returns_float, std::vector
       sub.bin_op = BinOp::Sub;
       out.push_back(std::move(sub));
       push_branch_if_zero(out, diff, exit_label);
+      if (stmt_has_vectorized(stmt.decorators)) {
+        MirInsn simd_on;
+        simd_on.op = MirOp::ArraySimdScope;
+        simd_on.int_value = 1;
+        out.push_back(std::move(simd_on));
+      }
       lower_stmts(stmt.for_body, ctx, returns_float, out, float_names, simd_names,
                   float_array_names, i64_locals);
+      if (stmt_has_vectorized(stmt.decorators)) {
+        MirInsn simd_off;
+        simd_off.op = MirOp::ArraySimdScope;
+        simd_off.int_value = 0;
+        out.push_back(std::move(simd_off));
+      }
       const std::string one_lit = fresh_temp();
       MirInsn one_store;
       one_store.op = MirOp::StoreInt;

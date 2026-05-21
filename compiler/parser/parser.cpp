@@ -808,7 +808,45 @@ Stmt Parser::parse_stmt() {
       s.span = {start_tok.start, cur().start};
       return s;
     }
-    diags.error(loc(cur()), "expected while or parallel for after decorators");
+    if (at(TokenKind::KwFor)) {
+      const Token start_tok = cur();
+      s.kind = Stmt::Kind::For;
+      s.decorators = std::move(decos);
+      i++;
+      if (!at(TokenKind::Ident)) {
+        diags.error({file, start_tok.line, 1, start_tok.start},
+                    "expected loop variable after 'for'");
+      } else {
+        s.for_iter = std::string(cur().text);
+        i++;
+      }
+      if (!at(TokenKind::Ident) || cur().text != "in") {
+        diags.error({file, start_tok.line, 1, start_tok.start}, "expected 'in' in for loop");
+      } else {
+        i++;
+      }
+      if (at(TokenKind::IntLit)) {
+        s.for_start = cur().int_value;
+        i++;
+      }
+      if (at(TokenKind::DotDotLt)) {
+        i++;
+      } else {
+        diags.error({file, start_tok.line, 1, start_tok.start}, "for loop requires '..<' range");
+      }
+      if (at(TokenKind::IntLit)) {
+        s.for_end = cur().int_value;
+        i++;
+      }
+      if (at(TokenKind::Colon)) {
+        i++;
+      }
+      skip_newlines();
+      s.for_body = parse_block();
+      s.span = {start_tok.start, cur().start};
+      return s;
+    }
+    diags.error(loc(cur()), "expected while, for, or parallel for after decorators");
     return s;
   }
   if (at(TokenKind::Ident) && cur().text == "discard") {

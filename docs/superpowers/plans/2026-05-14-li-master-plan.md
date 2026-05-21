@@ -427,7 +427,7 @@ Runnable on `dev` after `./scripts/build.sh`:
 - **77+** `li-tests` suites (simd, parallel, decorators, stdlib_seal, math, CVE, encapsulation, …)
 - **2e partial:** `build/generated/AutoVC.lean` every `lic build`
 - **7e partial:** 1d float `@` → `ArrayDotF64` (4-wide gather SIMD when N≥4)
-- **7d partial:** parse, policy, `MirFn.decorators`, `std/execution/decorators.li`
+- **7d partial:** parse, policy, `MirFn.decorators`, `no_vectorize` / `@vectorized(lanes=4)` codegen gate (**7d-b**); loop elaboration deferred
 
 ### Full master plan — **not complete** (v2 backlog)
 

@@ -113,6 +113,8 @@ struct MirInsn {
 
 struct MirDecorator {
   std::string name;
+  /** `@vectorized(lanes=N)` when name is vectorized; 0 if omitted. */
+  std::int64_t lanes = 0;
 };
 
 struct MirFn {
@@ -123,6 +125,8 @@ struct MirFn {
   bool returns_object = false;
   bool is_extern = false;
   bool is_async = false;
+  /** When true, `ArrayDotF64` / `ArrayBinOpF64` use scalar loops only. */
+  bool no_vectorize = false;
   std::vector<MirDecorator> decorators;
   std::vector<MirParam> params;
   /** Populated when `returns_object`; parallel to ReturnObject / unpack layout. */

@@ -68,7 +68,33 @@ bool decorator_parallel_has_disjoint(const std::vector<Decorator>& decos) {
   return false;
 }
 
+std::int64_t decorator_vectorized_lanes(const Decorator& d) {
+  if (d.name != "vectorized") {
+    return 0;
+  }
+  for (const auto& arg : d.args) {
+    if (arg.name == "lanes" && arg.value && arg.value->kind == Expr::Kind::IntLit) {
+      return arg.value->int_value;
+    }
+  }
+  return 4;
+}
+
+void check_stmt_decorators(const Stmt& stmt, const std::string& file, DiagnosticBag& diags) {
+  for (const auto& d : stmt.decorators) {
+    if (d.name == "vectorized") {
+      const std::int64_t lanes = decorator_vectorized_lanes(d);
+      if (lanes != 4) {
+        diag_error(diags, SourceLoc{file, 1, 1, d.span.start}, ErrorCode::E0322,
+                   "`@vectorized` supports only `lanes=4` today (f64x4 codegen).",
+                   "Use `@vectorized(lanes=4)` or omit `lanes` for the default.");
+      }
+    }
+  }
+}
+
 void check_stmt_parallel(const Stmt& stmt, const std::string& file, DiagnosticBag& diags) {
+  check_stmt_decorators(stmt, file, diags);
   if (stmt.kind != Stmt::Kind::ParallelFor) {
     return;
   }
@@ -106,6 +132,14 @@ void check_proc_decorators(const std::vector<Decorator>& decos, const std::strin
                  "parallel_requires_disjoint: `@parallel` must include a `disjoint=` proof "
                  "argument.",
                  "Use `@parallel(disjoint=disjoint_elem(...))`.");
+    }
+    if (d.name == "vectorized") {
+      const std::int64_t lanes = decorator_vectorized_lanes(d);
+      if (lanes != 4) {
+        diag_error(diags, SourceLoc{file, 1, 1, d.span.start}, ErrorCode::E0322,
+                   "`@vectorized` supports only `lanes=4` today (f64x4 codegen).",
+                   "Use `@vectorized(lanes=4)` or omit `lanes` for the default.");
+      }
     }
   }
 }

@@ -103,6 +103,7 @@ struct EmitCtx {
   bool returns_float = false;
   bool returns_object = false;
   bool fp_numerically_stable = false;
+  bool enable_array_simd = true;
   std::map<std::string, llvm::AllocaInst*> int_locals;
   std::map<std::string, llvm::AllocaInst*> float_locals;
   std::map<std::string, llvm::AllocaInst*> i64_locals;
@@ -785,7 +786,7 @@ struct EmitCtx {
         }
         llvm::Type* f64 = llvm::Type::getDoubleTy(context);
         const auto n = static_cast<unsigned>(ins.int_value);
-        const unsigned simd_end = (n / 4) * 4;
+        const unsigned simd_end = enable_array_simd ? (n / 4) * 4 : 0;
         for (unsigned i = 0; i < simd_end; i += 4) {
           llvm::Value* av = gather_array_f64x4(a_it->second.alloca, i);
           llvm::Value* bv = gather_array_f64x4(b_it->second.alloca, i);
@@ -926,7 +927,7 @@ struct EmitCtx {
         llvm::Type* f64 = llvm::Type::getDoubleTy(context);
         llvm::Value* acc = llvm::ConstantFP::get(f64, 0.0);
         const auto n = static_cast<unsigned>(ins.int_value);
-        const unsigned simd_end = (n / 4) * 4;
+        const unsigned simd_end = enable_array_simd ? (n / 4) * 4 : 0;
         if (simd_end > 0) {
           llvm::Value* v_acc =
               builder->CreateVectorSplat(4, llvm::ConstantFP::get(f64, 0.0));
@@ -1137,8 +1138,21 @@ bool emit_llvm_ir(const MirModule& mir, const std::string& out_path, std::string
       builder.setFastMathFlags(llvm::FastMathFlags());
     }
 
-    EmitCtx ctx{context, module.get(), func, &builder, ret_ty, fn.returns_float,
-                fn.returns_object, mir.fp_numerically_stable, {}, {}, {}, {}, {}, {}};
+    EmitCtx ctx{context,
+                module.get(),
+                func,
+                &builder,
+                ret_ty,
+                fn.returns_float,
+                fn.returns_object,
+                mir.fp_numerically_stable,
+                !fn.no_vectorize,
+                {},
+                {},
+                {},
+                {},
+                {},
+                {}};
 
     unsigned idx = 0;
     for (auto& arg : func->args()) {

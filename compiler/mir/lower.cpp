@@ -36,7 +36,23 @@ void copy_decorators(const std::vector<Decorator>& src, std::vector<MirDecorator
   for (const auto& d : src) {
     MirDecorator md;
     md.name = d.name;
+    for (const auto& arg : d.args) {
+      if (arg.name == "lanes" && arg.value && arg.value->kind == Expr::Kind::IntLit) {
+        md.lanes = arg.value->int_value;
+      }
+    }
     dst.push_back(std::move(md));
+  }
+}
+
+void apply_fn_decorator_codegen_flags(MirFn& fn) {
+  for (const auto& d : fn.decorators) {
+    if (d.name == "vectorized") {
+      (void)d.lanes;
+    }
+    if (d.name == "no_vectorize") {
+      fn.no_vectorize = true;
+    }
   }
 }
 
@@ -1803,6 +1819,7 @@ MirModule lower_to_mir(const Module& module) {
     fn.is_extern = proc.is_extern;
     fn.is_async = proc.is_async;
     copy_decorators(proc.decorators, fn.decorators);
+    apply_fn_decorator_codegen_flags(fn);
     if (proc.ret_type) {
       fn.returns_float = is_float_type_name(proc.ret_type->name);
       fn.returns_void = proc.ret_type->name == "unit";

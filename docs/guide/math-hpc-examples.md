@@ -9,7 +9,9 @@ Write numerical kernels as **ordinary math** on fixed-size `array` tiles. The co
 | Blocked IKJ `C[i][j] += …` on tiles | Implemented (manual loops) | [`matmul_blocked`](../../benchmarks/tier1_micro/matmul_blocked/li/main.li) |
 | `sum(a)` on `array[N, int\|float]` | Implemented | — |
 | Element-wise `a * b` on arrays | Implemented (**2i-a**) | — |
-| `@vectorized` / `@parallel` on `def` | Parse only (**7d**) | — |
+| `@vectorized(lanes=4)` / `@no_vectorize` on `def` | Policy + array SIMD gate (**7d-b**) | — |
+| `@vectorized` on `for` | Parse only | — |
+| `@parallel` on `def` / loops | Policy + OpenMP when proved | — |
 
 See also: [Linear algebra](../language/linear-algebra.md), [Fast math & parallelism](fast-math-and-parallelism.md), [math/linalg plan](../superpowers/plans/2026-05-16-li-math-linalg-surface.md).
 

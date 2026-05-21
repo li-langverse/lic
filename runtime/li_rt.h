@@ -29,17 +29,12 @@ double li_rt_expm1(double x);
 double li_rt_log1p(double x);
 void li_rt_volatile_sink_f64(double v);
 
-/* std/bytes + httpd trusted string inspection (Bytes = str until distinct buffer ships). */
-int32_t bytes_len(const char* b);
-const char* bytes_slice(const char* b, int32_t off, int32_t n);
+/* HTTP routing + config (li_rt_httpd.c — M1 validate-config / routing tests). */
 int32_t li_rt_str_byte_at(const char* s, int32_t i);
-/* HTTP routing helpers (Phase H M1 — trusted C until pure-Li path compare ships). */
 int32_t li_rt_str_eq(const char* a, const char* b);
 int32_t li_rt_path_exact(const char* path, const char* want);
 int32_t li_rt_path_prefix(const char* path, const char* prefix);
-/* Priority-ordered routes for li-tests/httpd/fixtures/routing.toml (M1). */
 int32_t li_rt_match_route_fixture(const char* method, const char* path);
-/* Load [routes] from TOML path; match after li_rt_httpd_load_config (M1). */
 int32_t li_rt_httpd_load_config(const char* path);
 int32_t li_rt_httpd_explain_config(const char* path);
 int32_t li_rt_httpd_last_error_kind(void);
@@ -54,12 +49,93 @@ int32_t li_rt_httpd_load_routing_fixture(void);
 int32_t li_rt_httpd_match_route(const char* method, const char* path);
 int32_t li_rt_httpd_route_action_kind(int32_t route_id);
 
-/* Async reactor stubs (httpd P0 — sync completion until epoll/kqueue lands). */
 void li_async_frame_enter(void);
 void li_async_frame_leave(void);
 int32_t li_async_await_i32(int32_t pending);
-/* Poll slot: 1 = ready, 0 = pending (stub always ready). */
 int32_t li_async_poll(uint32_t slot);
+
+/* Net trusted seam (li_rt_net.c) — syscalls + I/O buffers; HTTP in Li packages. */
+int32_t tcp_listen(int32_t port);
+int32_t tcp_accept(int32_t listen_fd);
+int32_t tcp_send(int32_t conn_fd, const char* data);
+int32_t tcp_send_n(int32_t conn_fd, const char* data, int32_t len);
+const char* tcp_recv(int32_t conn_fd, int32_t max_bytes);
+void tcp_close(int32_t fd);
+void tcp_tune_client(int32_t fd);
+int32_t bytes_len(const char* b);
+const char* bytes_slice(const char* b, int32_t off, int32_t n);
+const char* bytes_append(const char* a, const char* b);
+int32_t net_byte_at(const char* b, int32_t off);
+int32_t net_atoi(const char* s);
+
+intptr_t tcp_recv_i(int32_t conn, int32_t max);
+int32_t tcp_send_i(int32_t conn, intptr_t data);
+intptr_t li_rt_argv_i(int32_t index);
+int32_t bytes_len_i(intptr_t b);
+intptr_t bytes_slice_i(intptr_t b, int32_t off, int32_t n);
+intptr_t bytes_append_i(intptr_t a, intptr_t b);
+int32_t net_byte_at_i(intptr_t b, int32_t off);
+int32_t httpd_parse_port_i(intptr_t s);
+
+int32_t net_set_nonblock(int32_t fd);
+int32_t net_tcp_ack_now(int32_t fd);
+int32_t tcp_accept_nb(int32_t listen_fd);
+int32_t tcp_recv_slot(int32_t conn, int32_t slot, int32_t max_bytes);
+int32_t tcp_send_buf(int32_t conn, intptr_t data, int32_t off, int32_t n);
+int32_t tcp_send_coalesce_i(int32_t conn, intptr_t a, int32_t la, intptr_t b, int32_t lb);
+int32_t net_buf_len(int32_t slot);
+intptr_t net_slot_buf_ptr(int32_t slot);
+intptr_t httpd_slot_hdr_i(int32_t slot);
+int32_t net_slot_consume(int32_t slot, int32_t n);
+int32_t httpd_prepare_root_i(intptr_t root);
+int32_t httpd_cache_ready_i(void);
+intptr_t httpd_cached_body_i(void);
+int32_t httpd_cached_sz_i(void);
+int32_t httpd_reply_cached_index_i(int32_t conn, int32_t slot, int32_t keep_alive);
+int32_t httpd_drain_slot_i(int32_t conn, int32_t slot);
+int32_t httpd_epoll_serve_i(int32_t port, intptr_t root);
+int32_t httpd_set_proxy_upstream_i(int32_t host, int32_t port, int32_t proxy_all);
+int32_t httpd_set_proxy_upstream_port_i(int32_t port, int32_t proxy_all);
+int32_t httpd_set_upstream_ports_csv_i(intptr_t csv, int32_t proxy_all);
+int32_t httpd_set_lb_mode_i(int32_t mode);
+int32_t httpd_lb_mode_from_arg_i(intptr_t s);
+int32_t httpd_mark_upstream_peer_down_i(int32_t port);
+int32_t httpd_add_upstream_peer_i(int32_t port);
+void httpd_clear_upstream_peers_i(void);
+int32_t httpd_load_runtime_config_i(intptr_t path);
+int32_t httpd_config_listen_port_i(void);
+intptr_t httpd_config_doc_root_i(void);
+intptr_t net_lit_loopback_i(void);
+int32_t httpd_slot_alloc(int32_t fd);
+int32_t httpd_slot_find_fd(int32_t fd);
+void httpd_slot_free(int32_t slot);
+
+int32_t epoll_create1_i(void);
+int32_t epoll_ctl_add_i(int32_t epfd, int32_t fd);
+int32_t epoll_ctl_add_listen_i(int32_t epfd, int32_t fd);
+int32_t epoll_ctl_del_i(int32_t epfd, int32_t fd);
+int32_t epoll_wait_events_i(int32_t epfd, intptr_t events, int32_t max_events);
+int32_t net_events_fd(intptr_t events, int32_t index);
+int32_t net_events_revents(intptr_t events, int32_t index);
+int32_t net_epoll_readable(int32_t revents);
+int32_t net_epoll_hangup(int32_t revents);
+int32_t net_fill_not_found_i(intptr_t p);
+
+int32_t net_open_readonly_i(intptr_t path);
+int32_t net_fstat_size(int32_t fd);
+int32_t net_read_fd(int32_t fd, intptr_t buf, int32_t max_bytes);
+int32_t net_close_fd(int32_t fd);
+int32_t net_sendfile_fd(int32_t conn, int32_t file_fd, int32_t file_size);
+
+intptr_t net_buf_alloc(int32_t size);
+void net_buf_free(intptr_t p);
+int32_t net_buf_fill_i(intptr_t dst, intptr_t src, int32_t off, int32_t n);
+int32_t httpd_write_response_hdr_i(intptr_t buf, int32_t cap, int32_t status, int32_t body_len,
+                                   int32_t keep_alive);
+
+intptr_t str_cat2_i(intptr_t a, intptr_t b);
+intptr_t net_lit_index_html_i(void);
+int32_t net_diag(int32_t tag);
 
 #ifdef __cplusplus
 }

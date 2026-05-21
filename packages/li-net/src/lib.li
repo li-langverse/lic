@@ -1,29 +1,5 @@
-
-extern proc tcp_listen(port: int) raises Net -> int
-  requires 0 < port
-  ensures true
-  decreases 0
-
-extern proc tcp_accept(listen_fd: int) raises Net -> int
-  requires listen_fd >= 0
-  ensures true
-  decreases 0
-
-extern proc tcp_send(conn_fd: int, data: bytes) raises Net -> int
-  requires conn_fd >= 0
-  ensures true
-  decreases 0
-
-extern proc tcp_recv(conn_fd: int, max_bytes: int) raises Net, Alloc -> bytes
-  requires conn_fd >= 0
-  requires 0 < max_bytes
-  ensures true
-  decreases 0
-
-extern proc tcp_close(conn_fd: int) raises Net -> unit
-  requires conn_fd >= 0
-  ensures true
-  decreases 0
+# Re-export trusted runtime seam (std/runtime/seam.li). HTTP product code imports `net`.
+import std.runtime.seam
 
 def net_tag() raises Net -> int
   requires true

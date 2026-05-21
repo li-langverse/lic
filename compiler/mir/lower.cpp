@@ -981,6 +981,10 @@ std::string lower_callproc_with_optional_inout(
   if (!callee_ret_obj && callee.ret_type && is_float_type_name(callee.ret_type->name)) {
     ins.ret_is_float = true;
     float_names.insert(dest);
+  } else if (!callee_ret_obj && callee.ret_type &&
+             is_i64_type_name(callee.ret_type->name)) {
+    ins.ret_is_i64 = true;
+    i64_locals.insert(dest);
   }
   out.push_back(std::move(ins));
   if (inout && inout_ty) {
@@ -1321,6 +1325,8 @@ std::string lower_expr_to(const Expr& e, const Module& module, std::vector<MirIn
                                 callee->ret_type->name == "StringView" ||
                                 callee->ret_type->name == "int64" || callee->ret_type->name == "i64"))) {
           ins.is_i64 = true;
+          ins.ret_is_i64 = true;
+          i64_locals.insert(dest);
         } else if (callee && callee->ret_type && is_float_type_name(callee->ret_type->name)) {
           ins.ret_is_float = true;
           float_names.insert(dest);
@@ -1449,6 +1455,9 @@ void lower_return_expr(const Expr& e, const LowerCtx& ctx, bool returns_float,
       ins.op = MirOp::ReturnIdent;
       ins.ident = e.ident;
       ins.ret_is_float = returns_float || float_names.count(e.ident) > 0;
+      ins.ret_is_i64 =
+          i64_locals.count(e.ident) > 0 ||
+          (ctx.proc && ctx.proc->ret_type && is_i64_type_name(ctx.proc->ret_type->name));
     }
   } else if (e.kind == Expr::Kind::Call || e.kind == Expr::Kind::MethodCall ||
              e.kind == Expr::Kind::BinOp || e.kind == Expr::Kind::Index ||
@@ -1462,6 +1471,9 @@ void lower_return_expr(const Expr& e, const LowerCtx& ctx, bool returns_float,
       ins.op = MirOp::ReturnIdent;
       ins.ident = tmp;
       ins.ret_is_float = returns_float || is_float_expr(e, float_names);
+      ins.ret_is_i64 =
+          i64_locals.count(tmp) > 0 ||
+          (ctx.proc && ctx.proc->ret_type && is_i64_type_name(ctx.proc->ret_type->name));
     }
   } else {
     ins.op = MirOp::ReturnVoid;
@@ -2184,6 +2196,8 @@ MirModule lower_to_mir(const Module& module) {
     apply_fn_decorator_codegen_flags(fn);
     if (proc.ret_type) {
       fn.returns_float = is_float_type_name(proc.ret_type->name);
+      fn.returns_i64 = mir_ptr_param_type_name(proc.ret_type->name) ||
+                        is_i64_type_name(proc.ret_type->name);
       fn.returns_void = proc.ret_type->name == "unit";
       if (object_alias_for_named_type(module, *proc.ret_type)) {
         fn.returns_object = true;

@@ -1,5 +1,5 @@
-
 import net
+import std.runtime.seam
 
 def hdr_end_at(buf: var ptr, start: var int, limit: var int) raises IO -> int
   requires 0 <= start

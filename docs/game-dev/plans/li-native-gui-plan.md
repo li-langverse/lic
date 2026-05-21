@@ -22,7 +22,7 @@
 | 0.5.1 | 2026-05 | **Four killers + proof** — [product-north-star.md](../product-north-star.md) |
 | 0.6 | 2026-05 | **Material study** — local UI pulls → dock IDs, 4-panel NLE, validity inspector ([material-study-notes](../competitive-intel/material-study-notes.md)) |
 
-**Product north star:** [product-north-star.md](../product-north-star.md) · **UX:** [unified-studio-ux-vision.md](../unified-studio-ux-vision.md) · **Competitive UI:** [ui-ux-by-dimension.md](../competitive-intel/ui-ux-by-dimension.md) · **Local study set:** [material-study-notes.md](../competitive-intel/material-study-notes.md) (`./scripts/checkout-competitive-media.sh`)
+**Product north star:** [product-north-star.md](../product-north-star.md) · **UX:** [unified-studio-ux-vision.md](../unified-studio-ux-vision.md) · **Mockups:** [planned-ui-mockups.md](../planned-ui-mockups.md) · **Competitive UI:** [ui-ux-by-dimension.md](../competitive-intel/ui-ux-by-dimension.md)
 
 ---
 

@@ -60,7 +60,9 @@ struct Parser {
   std::unique_ptr<Expr> parse_primary();
   std::unique_ptr<Expr> parse_postfix(std::unique_ptr<Expr> base);
   TypeExpr parse_type();
-  std::vector<std::string> parse_type_params();
+  std::vector<std::string> parse_type_params(std::vector<std::string>* bounds_out = nullptr);
+  std::vector<ProcDecl> parse_trait_methods();
+  ProcDecl parse_trait_method();
   std::vector<TypeField> parse_type_fields();
   Param parse_param();
   std::unique_ptr<Expr> parse_contract_expr();
@@ -127,6 +129,14 @@ struct Parser {
         ProcDecl proc = parse_proc(false);
         proc.decorators = std::move(decos);
         out.procs.push_back(std::move(proc));
+        skip_newlines();
+      } else if (at(TokenKind::KwPrivate) || at(TokenKind::KwPublic)) {
+        if (peek(1).kind == TokenKind::KwDef || at_fn_kw()) {
+          out.procs.push_back(parse_proc(false));
+        } else {
+          diags.error(loc(cur()), "expected 'def' after visibility");
+          return false;
+        }
         skip_newlines();
       } else if (at(TokenKind::KwDef)) {
         out.procs.push_back(parse_proc(false));
@@ -250,6 +260,24 @@ std::unique_ptr<Expr> Parser::parse_primary() {
   return nullptr;
 }
 
+namespace {
+
+bool peel_method_receiver(Expr* field_access, std::string* method_name,
+                          std::unique_ptr<Expr>* receiver_out) {
+  if (!field_access || field_access->kind != Expr::Kind::FieldAccess || !method_name ||
+      !receiver_out) {
+    return false;
+  }
+  *method_name = field_access->field_name;
+  if (field_access->base->kind == Expr::Kind::FieldAccess) {
+    return peel_method_receiver(field_access->base.get(), method_name, receiver_out);
+  }
+  *receiver_out = std::move(field_access->base);
+  return true;
+}
+
+}  // namespace
+
 std::unique_ptr<Expr> Parser::parse_postfix(std::unique_ptr<Expr> base) {
   while (accept(TokenKind::Dot)) {
     if (!at(TokenKind::Ident)) {
@@ -276,6 +304,27 @@ std::unique_ptr<Expr> Parser::parse_postfix(std::unique_ptr<Expr> base) {
     node->base = std::move(base);
     node->index = std::move(idx);
     base = std::move(node);
+  }
+  if (base && base->kind == Expr::Kind::FieldAccess && accept(TokenKind::LParen)) {
+    std::string method_name;
+    std::unique_ptr<Expr> receiver;
+    if (peel_method_receiver(base.get(), &method_name, &receiver)) {
+      auto call = std::make_unique<Expr>();
+      call->kind = Expr::Kind::MethodCall;
+      call->span = base->span;
+      call->field_name = method_name;
+      call->base = std::move(receiver);
+      if (!at(TokenKind::RParen)) {
+        do {
+          call->args.push_back(parse_expr());
+        } while (accept(TokenKind::Comma));
+      }
+      if (!expect(TokenKind::RParen, "')'")) {
+        return nullptr;
+      }
+      call->span.end = tokens[i - 1].end;
+      return parse_postfix(std::move(call));
+    }
   }
   return base;
 }
@@ -499,7 +548,7 @@ TypeExpr Parser::parse_type() {
   return ty;
 }
 
-std::vector<std::string> Parser::parse_type_params() {
+std::vector<std::string> Parser::parse_type_params(std::vector<std::string>* bounds_out) {
   std::vector<std::string> params;
   if (!accept(TokenKind::LBracket)) {
     return params;
@@ -512,6 +561,17 @@ std::vector<std::string> Parser::parse_type_params() {
       }
       params.push_back(std::string(cur().text));
       i++;
+      if (bounds_out) {
+        bounds_out->push_back({});
+        if (accept(TokenKind::Colon)) {
+          if (!at(TokenKind::Ident)) {
+            diags.error(loc(cur()), "expected trait name after ':' in type parameter");
+          } else {
+            bounds_out->back() = std::string(cur().text);
+            i++;
+          }
+        }
+      }
     } while (accept(TokenKind::Comma));
   }
   expect(TokenKind::RBracket, "']'");
@@ -748,7 +808,45 @@ Stmt Parser::parse_stmt() {
       s.span = {start_tok.start, cur().start};
       return s;
     }
-    diags.error(loc(cur()), "expected while or parallel for after decorators");
+    if (at(TokenKind::KwFor)) {
+      const Token start_tok = cur();
+      s.kind = Stmt::Kind::For;
+      s.decorators = std::move(decos);
+      i++;
+      if (!at(TokenKind::Ident)) {
+        diags.error({file, start_tok.line, 1, start_tok.start},
+                    "expected loop variable after 'for'");
+      } else {
+        s.for_iter = std::string(cur().text);
+        i++;
+      }
+      if (!at(TokenKind::Ident) || cur().text != "in") {
+        diags.error({file, start_tok.line, 1, start_tok.start}, "expected 'in' in for loop");
+      } else {
+        i++;
+      }
+      if (at(TokenKind::IntLit)) {
+        s.for_start = cur().int_value;
+        i++;
+      }
+      if (at(TokenKind::DotDotLt)) {
+        i++;
+      } else {
+        diags.error({file, start_tok.line, 1, start_tok.start}, "for loop requires '..<' range");
+      }
+      if (at(TokenKind::IntLit)) {
+        s.for_end = cur().int_value;
+        i++;
+      }
+      if (at(TokenKind::Colon)) {
+        i++;
+      }
+      skip_newlines();
+      s.for_body = parse_block();
+      s.span = {start_tok.start, cur().start};
+      return s;
+    }
+    diags.error(loc(cur()), "expected while, for, or parallel for after decorators");
     return s;
   }
   if (at(TokenKind::Ident) && cur().text == "discard") {
@@ -960,14 +1058,22 @@ Stmt Parser::parse_stmt() {
 ProcDecl Parser::parse_proc(bool is_extern) {
   ProcDecl proc;
   proc.is_extern = is_extern;
-  if (!is_extern && !accept_def_kw()) {
-    diags.error(loc(cur()), "expected 'def'");
+  if (!is_extern) {
+    if (at(TokenKind::KwPrivate)) {
+      proc.visibility = Visibility::Private;
+      i++;
+    } else if (at(TokenKind::KwPublic)) {
+      i++;
+    }
+    if (!accept_def_kw()) {
+      diags.error(loc(cur()), "expected 'def'");
+    }
   }
   const Token name = cur();
   proc.span = {name.start, name.end};
   proc.name = std::string(name.text);
   i++;
-  proc.type_params = parse_type_params();
+  proc.type_params = parse_type_params(&proc.type_param_bounds);
   expect(TokenKind::LParen, "'('");
   skip_param_layout();
   if (!at(TokenKind::RParen)) {
@@ -1065,10 +1171,28 @@ TypeAlias Parser::parse_type_alias() {
     }
     return alias;
   }
+  if (at(TokenKind::Ident) && cur().text == "trait") {
+    alias.alias_kind = AliasKind::Trait;
+    i++;
+    skip_newlines();
+    alias.trait_methods = parse_trait_methods();
+    skip_newlines();
+    return alias;
+  }
   if (at(TokenKind::KwObject)) {
     alias.alias_kind = AliasKind::Object;
     i++;
     skip_newlines();
+    if (at(TokenKind::Ident) && cur().text == "of") {
+      i++;
+      if (!at(TokenKind::Ident)) {
+        diags.error(loc(cur()), "expected base type name after 'object of'");
+      } else {
+        alias.base_object = std::string(cur().text);
+        i++;
+      }
+      skip_newlines();
+    }
     alias.fields = parse_type_fields();
     skip_newlines();
     return alias;
@@ -1112,11 +1236,63 @@ ImportDecl Parser::parse_import() {
   return imp;
 }
 
+ProcDecl Parser::parse_trait_method() {
+  ProcDecl proc;
+  if (at(TokenKind::KwPrivate)) {
+    proc.visibility = Visibility::Private;
+    i++;
+  } else if (at(TokenKind::KwPublic)) {
+    i++;
+  }
+  if (!accept_def_kw()) {
+    diags.error(loc(cur()), "expected 'def' in trait method");
+    return proc;
+  }
+  const Token name = cur();
+  proc.span = {name.start, name.end};
+  proc.name = std::string(name.text);
+  i++;
+  expect(TokenKind::LParen, "'('");
+  skip_param_layout();
+  if (!at(TokenKind::RParen)) {
+    do {
+      proc.params.push_back(parse_param());
+      skip_param_layout();
+    } while (accept(TokenKind::Comma));
+  }
+  skip_param_layout();
+  expect(TokenKind::RParen, "')'");
+  if (accept(TokenKind::Arrow)) {
+    proc.ret_type = parse_type();
+  }
+  skip_newlines();
+  while (at(TokenKind::KwRequires) || at(TokenKind::KwEnsures) || at(TokenKind::KwDecreases) ||
+         at(TokenKind::KwInvariant)) {
+    proc.contracts.push_back(parse_contract());
+  }
+  skip_newlines();
+  return proc;
+}
+
+std::vector<ProcDecl> Parser::parse_trait_methods() {
+  std::vector<ProcDecl> methods;
+  skip_newlines();
+  while (at(TokenKind::KwPrivate) || at(TokenKind::KwPublic) || at_fn_kw()) {
+    methods.push_back(parse_trait_method());
+    skip_newlines();
+  }
+  return methods;
+}
+
 std::vector<TypeField> Parser::parse_type_fields() {
   std::vector<TypeField> fields;
   skip_newlines();
   while (at(TokenKind::KwPrivate) || at(TokenKind::KwPublic) ||
          (at(TokenKind::Ident) && peek(1).kind == TokenKind::Colon)) {
+    if ((at(TokenKind::KwPrivate) || at(TokenKind::KwPublic)) &&
+        (peek(1).kind == TokenKind::KwDef || at_fn_kw())) {
+      break;
+    }
     TypeField field;
     field.visibility = Visibility::Public;
     if (at(TokenKind::KwPrivate)) {

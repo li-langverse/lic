@@ -17,7 +17,7 @@ namespace {
 
 enum class TyKind {
   Int, Int64, Float, Bool, Str, Binary, Array, List, Dict, Tuple, TypedDict, Object, Enum, Named,
-  TypeVar, Protocol, Callable, Simd
+  TypeVar, Protocol, Trait, Callable, Simd
 };
 
 struct Ty;
@@ -77,6 +77,65 @@ TyPtr make_binary() {
 }
 TyPtr make_i64() { return std::make_shared<Ty>(Ty{TyKind::Int64}); }
 
+bool ty_is_2d_float_matrix(const TyPtr& t, std::int64_t* rows, std::int64_t* cols) {
+  if (!t || t->kind != TyKind::Array || !t->elem) {
+    return false;
+  }
+  if (t->elem->kind != TyKind::Array || !t->elem->elem) {
+    return false;
+  }
+  if (t->elem->elem->kind != TyKind::Float) {
+    return false;
+  }
+  if (rows) {
+    *rows = t->array_size;
+  }
+  if (cols) {
+    *cols = t->elem->array_size;
+  }
+  return true;
+}
+
+bool ty_is_1d_numeric_array(const TyPtr& t, bool* out_float, std::int64_t* out_n) {
+  if (!t || t->kind != TyKind::Array || !t->elem) {
+    return false;
+  }
+  if (t->elem->kind == TyKind::Array) {
+    return false;
+  }
+  if (t->elem->kind == TyKind::Float) {
+    if (out_float) {
+      *out_float = true;
+    }
+    if (out_n) {
+      *out_n = t->array_size;
+    }
+    return true;
+  }
+  if (t->elem->kind == TyKind::Int) {
+    if (out_float) {
+      *out_float = false;
+    }
+    if (out_n) {
+      *out_n = t->array_size;
+    }
+    return true;
+  }
+  return false;
+}
+
+TyPtr make_2d_float_matrix(const std::int64_t rows, const std::int64_t cols) {
+  auto inner = std::make_shared<Ty>();
+  inner->kind = TyKind::Array;
+  inner->array_size = cols;
+  inner->elem = make_float();
+  auto outer = std::make_shared<Ty>();
+  outer->kind = TyKind::Array;
+  outer->array_size = rows;
+  outer->elem = inner;
+  return outer;
+}
+
 TyPtr make_type_var(std::string name) {
   auto t = std::make_shared<Ty>();
   t->kind = TyKind::TypeVar;
@@ -91,17 +150,32 @@ TyPtr make_protocol(std::string name) {
   return t;
 }
 
+std::string object_type_name_for_method(const TyPtr& ty) {
+  if (ty && ty->kind == TyKind::Object && !ty->name.empty()) {
+    return ty->name;
+  }
+  return {};
+}
+
+std::string mangle_method_name(const std::string& type_name, const std::string& method) {
+  return type_name + "_" + method;
+}
+
 struct AliasEntry {
   AliasKind alias_kind = AliasKind::Type;
   std::vector<std::string> type_params;
+  std::string base_object;
   const TypeExpr* definition = nullptr;
   const std::vector<TypeField>* fields = nullptr;
   const std::vector<std::string>* enum_variants = nullptr;
+  const std::vector<ProcDecl>* trait_methods = nullptr;
   bool is_protocol = false;
 };
 
 struct Ctx {
   std::map<std::string, AliasEntry> aliases;
+  std::map<std::string, TyPtr> resolved_objects;
+  std::set<std::string> resolving_objects;
   std::map<std::string, const ProcDecl*> procs;
   std::map<std::string, TyPtr> locals;
   std::map<std::string, std::int64_t> const_int_locals;
@@ -274,7 +348,8 @@ struct Ctx {
     if (a->kind == TyKind::Enum) {
       return a->name == b->name && a->enum_variants == b->enum_variants;
     }
-    if (a->kind == TyKind::TypeVar || a->kind == TyKind::Named || a->kind == TyKind::Protocol) {
+    if (a->kind == TyKind::TypeVar || a->kind == TyKind::Named || a->kind == TyKind::Protocol ||
+        a->kind == TyKind::Trait) {
       return a->name == b->name;
     }
     if (a->kind == TyKind::Int) {
@@ -349,20 +424,78 @@ struct Ctx {
     return t;
   }
 
-  TyPtr resolve_object(const std::string& name, const std::vector<TypeField>& fields,
-                       const Span& span) {
+  TyPtr build_object_ty(const std::string& name, const AliasEntry& entry, const Span& span) {
     auto t = std::make_shared<Ty>();
     t->kind = TyKind::Object;
     t->name = name;
-    for (const auto& field : fields) {
-      if (!field.type) {
-        continue;
+    if (!entry.base_object.empty()) {
+      const auto bit = aliases.find(entry.base_object);
+      if (bit == aliases.end()) {
+        diags.error(loc(span), "unknown base object type '" + entry.base_object + "'");
+      } else if (bit->second.alias_kind != AliasKind::Object) {
+        diags.error(loc(span), "base type '" + entry.base_object + "' is not an object");
+      } else {
+        const TyPtr base_ty = resolve_object_type(entry.base_object, span);
+        if (base_ty->kind == TyKind::Object) {
+          t->fields = base_ty->fields;
+          t->field_vis = base_ty->field_vis;
+        }
       }
-      t->fields.emplace_back(field.name, resolve_type_expr(*field.type));
-      t->field_vis[field.name] = field.visibility;
     }
-    (void)span;
+    if (entry.fields) {
+      for (const auto& field : *entry.fields) {
+        if (!field.type) {
+          continue;
+        }
+        const TyPtr ft = resolve_type_expr(*field.type);
+        for (const auto& existing : t->fields) {
+          if (existing.first != field.name) {
+            continue;
+          }
+          if (!same_kind(existing.second, ft)) {
+            diags.error(loc(span), "object field '" + field.name +
+                                        "' incompatible with base layout");
+          }
+          goto next_field;
+        }
+        t->fields.emplace_back(field.name, ft);
+        t->field_vis[field.name] = field.visibility;
+      next_field:;
+      }
+    }
     return t;
+  }
+
+  TyPtr resolve_object_type(const std::string& name, const Span& span) {
+    const auto cached = resolved_objects.find(name);
+    if (cached != resolved_objects.end()) {
+      return cached->second;
+    }
+    const auto it = aliases.find(name);
+    if (it == aliases.end()) {
+      diags.error(loc(span), "unknown object type '" + name + "'");
+      return make_int();
+    }
+    if (resolving_objects.count(name) > 0) {
+      diags.error(loc(span), "cyclic object inheritance involving '" + name + "'");
+      return make_int();
+    }
+    resolving_objects.insert(name);
+    const TyPtr t = build_object_ty(name, it->second, span);
+    resolving_objects.erase(name);
+    resolved_objects[name] = t;
+    return t;
+  }
+
+  bool object_subtype_of(const std::string& derived, const std::string& base) const {
+    if (derived == base) {
+      return true;
+    }
+    const auto it = aliases.find(derived);
+    if (it == aliases.end() || it->second.base_object.empty()) {
+      return false;
+    }
+    return object_subtype_of(it->second.base_object, base);
   }
 
   TyPtr resolve_enum(const std::string& name, const std::vector<std::string>& variants,
@@ -372,6 +505,92 @@ struct Ctx {
     t->name = name;
     t->enum_variants = variants;
     (void)span;
+    return t;
+  }
+
+  std::unique_ptr<TypeExpr> substitute_self_in_type(const TypeExpr& te,
+                                                    const std::string& object_name) const {
+    auto out = clone_type(te);
+    if (out->kind == TypeKind::Named && out->name == "Self") {
+      out->name = object_name;
+      return out;
+    }
+    if (out->elem) {
+      out->elem = substitute_self_in_type(*out->elem, object_name);
+    }
+    if (out->refinement_base) {
+      out->refinement_base = substitute_self_in_type(*out->refinement_base, object_name);
+    }
+    if (out->callable_ret) {
+      out->callable_ret = substitute_self_in_type(*out->callable_ret, object_name);
+    }
+    for (auto& arg : out->type_args) {
+      if (arg) {
+        arg = substitute_self_in_type(*arg, object_name);
+      }
+    }
+    return out;
+  }
+
+  bool proc_signatures_match_trait_impl(const ProcDecl& required, const ProcDecl& impl,
+                                        const std::string& object_name) {
+    if (impl.params.size() != required.params.size()) {
+      return false;
+    }
+    for (std::size_t n = 0; n < required.params.size(); ++n) {
+      const std::unique_ptr<TypeExpr> want_te =
+          substitute_self_in_type(required.params[n].type, object_name);
+      const TyPtr want = resolve_type_expr(*want_te);
+      const TyPtr got = resolve_type_expr(impl.params[n].type);
+      if (!same_kind(got, want)) {
+        return false;
+      }
+    }
+    if (static_cast<bool>(required.ret_type) != static_cast<bool>(impl.ret_type)) {
+      return false;
+    }
+    if (required.ret_type && impl.ret_type) {
+      const std::unique_ptr<TypeExpr> want_ret =
+          substitute_self_in_type(*required.ret_type, object_name);
+      const TyPtr want = resolve_type_expr(*want_ret);
+      const TyPtr got = resolve_type_expr(*impl.ret_type);
+      if (!same_kind(got, want)) {
+        return false;
+      }
+    }
+    return true;
+  }
+
+  bool object_implements_trait(const std::string& object_name, const std::string& trait_name) {
+    const auto tit = aliases.find(trait_name);
+    if (tit == aliases.end() || tit->second.alias_kind != AliasKind::Trait ||
+        !tit->second.trait_methods) {
+      return false;
+    }
+    for (const ProcDecl& req : *tit->second.trait_methods) {
+      const std::string impl_name = object_name + "_" + req.name;
+      const auto pit = procs.find(impl_name);
+      if (pit == procs.end()) {
+        return false;
+      }
+      if (!proc_signatures_match_trait_impl(req, *pit->second, object_name)) {
+        return false;
+      }
+    }
+    return true;
+  }
+
+  bool value_satisfies_trait(const TyPtr& value, const std::string& trait_name) {
+    if (!value || value->kind != TyKind::Object || value->name.empty()) {
+      return false;
+    }
+    return object_implements_trait(value->name, trait_name);
+  }
+
+  TyPtr make_trait(std::string name) {
+    auto t = std::make_shared<Ty>();
+    t->kind = TyKind::Trait;
+    t->name = std::move(name);
     return t;
   }
 
@@ -397,6 +616,10 @@ struct Ctx {
     }
     if (value->kind == TyKind::Str && expected->kind == TyKind::Int64) {
       return true;
+    }
+    if (value->kind == TyKind::Object && expected->kind == TyKind::Object &&
+        !value->name.empty() && !expected->name.empty() && value->name != expected->name) {
+      return object_subtype_of(value->name, expected->name);
     }
     return same_kind(value, expected);
   }
@@ -501,7 +724,10 @@ struct Ctx {
           return resolve_typedict(te.name, *it->second.fields, te.span);
         }
         if (it->second.alias_kind == AliasKind::Object && it->second.fields) {
-          return resolve_object(te.name, *it->second.fields, te.span);
+          return resolve_object_type(te.name, te.span);
+        }
+        if (it->second.alias_kind == AliasKind::Trait) {
+          return make_trait(te.name);
         }
         if (it->second.alias_kind == AliasKind::Enum && it->second.enum_variants) {
           return resolve_enum(te.name, *it->second.enum_variants, te.span);
@@ -594,18 +820,49 @@ struct Ctx {
         const TyPtr l = type_of(*e.lhs);
         const TyPtr r = type_of(*e.rhs);
         if (e.bin_op == BinOp::MatMul) {
+          std::int64_t m = 0;
+          std::int64_t k_a = 0;
+          std::int64_t k_b = 0;
+          std::int64_t n = 0;
+          if (ty_is_2d_float_matrix(l, &m, &k_a) && ty_is_2d_float_matrix(r, &k_b, &n) &&
+              k_a == k_b) {
+            return make_2d_float_matrix(m, n);
+          }
           if (l->kind == TyKind::Array && r->kind == TyKind::Array && l->array_size == r->array_size &&
               l->elem && r->elem && same_kind(l->elem, r->elem) &&
               l->elem->kind == TyKind::Float) {
             return make_float();
           }
-          diags.error(loc(e.span),
-                      "matrix multiply '@' requires matching float arrays (1d dot in v1)");
+          if (ty_is_2d_float_matrix(l, nullptr, nullptr) || ty_is_2d_float_matrix(r, nullptr, nullptr)) {
+            diags.error(loc(e.span),
+                        "matrix multiply '@' inner dimension mismatch (expected A[M,K] @ B[K,N])");
+          } else {
+            diags.error(loc(e.span),
+                        "matrix multiply '@' requires matching float arrays (1d dot) or 2d "
+                        "array[M, array[K, float]] operands");
+          }
           return make_float();
         }
         if (e.bin_op == BinOp::Add || e.bin_op == BinOp::Sub || e.bin_op == BinOp::Mul ||
             e.bin_op == BinOp::Div || e.bin_op == BinOp::Mod || e.bin_op == BinOp::FloorDiv ||
             e.bin_op == BinOp::Pow) {
+          bool l_float = false;
+          bool r_float = false;
+          std::int64_t ln = 0;
+          std::int64_t rn = 0;
+          if (ty_is_1d_numeric_array(l, &l_float, &ln) && ty_is_1d_numeric_array(r, &r_float, &rn)) {
+            if (l_float != r_float) {
+              diags.error(loc(e.span),
+                          "cannot mix int and float arrays in element-wise arithmetic");
+              return make_int();
+            }
+            if (ln != rn) {
+              diags.error(loc(e.span),
+                          "element-wise arithmetic requires arrays of the same length");
+              return l;
+            }
+            return l;
+          }
           if (l->kind == TyKind::Int && r->kind == TyKind::Int) {
             if (l->unsigned_scalar != r->unsigned_scalar) {
               diags.error(loc(e.span), "cannot mix signed and unsigned integers without cast");
@@ -708,6 +965,22 @@ struct Ctx {
           diags.error(loc(e.span), "sum supports int or float arrays only");
           return make_int();
         }
+        if (e.ident == "dot") {
+          if (e.args.size() != 2) {
+            diags.error(loc(e.span), "dot expects two array arguments");
+            return make_float();
+          }
+          const TyPtr a = type_of(*e.args[0]);
+          const TyPtr b = type_of(*e.args[1]);
+          if (a->kind == TyKind::Array && b->kind == TyKind::Array && a->array_size == b->array_size &&
+              a->elem && b->elem && same_kind(a->elem, b->elem) &&
+              a->elem->kind == TyKind::Float) {
+            return make_float();
+          }
+          diags.error(loc(e.span),
+                      "dot expects two matching array[N, float] operands (same as 1d '@')");
+          return make_float();
+        }
         if (e.ident == "disjoint_elem" || e.ident == "disjoint_row" ||
             e.ident == "disjoint_slice" || e.ident == "row_ok") {
           if (e.args.size() != 2) {
@@ -721,14 +994,20 @@ struct Ctx {
         const auto pit = procs.find(e.ident);
         if (pit != procs.end()) {
           const ProcDecl& callee = *pit->second;
+          const std::map<std::string, TyPtr> saved_tv = type_vars;
+          for (const auto& tp : callee.type_params) {
+            type_vars[tp] = make_type_var(tp);
+          }
           for (const auto& arg : e.args) {
             (void)type_of(*arg);
           }
           check_call_args(e);
+          TyPtr ret_ty = make_int();
           if (callee.ret_type) {
-            return resolve_type_expr(*callee.ret_type);
+            ret_ty = resolve_type_expr(*callee.ret_type);
           }
-          return make_int();
+          type_vars = saved_tv;
+          return ret_ty;
         }
         for (const auto& arg : e.args) {
           (void)type_of(*arg);
@@ -738,6 +1017,69 @@ struct Ctx {
       }
       case Expr::Kind::UnaryNot:
         return make_bool();
+      case Expr::Kind::MethodCall: {
+        if (!e.base) {
+          diags.error(loc(e.span), "method call missing receiver");
+          return make_int();
+        }
+        const TyPtr recv_ty = type_of(*e.base);
+        const std::string type_name = object_type_name_for_method(recv_ty);
+        if (type_name.empty()) {
+          diags.error(loc(e.span), "method call requires an object receiver");
+          return make_int();
+        }
+        const std::string callee = mangle_method_name(type_name, e.field_name);
+        const auto pit = procs.find(callee);
+        if (pit == procs.end()) {
+          diag_error(diags, loc(e.span), ErrorCode::E0202,
+                     "No method `" + e.field_name + "` on `" + type_name +
+                         "` (expected `def " + callee + "(self: var " + type_name + ", ...)`)",
+                     "Define the method with that name, or fix the call spelling.");
+          return make_int();
+        }
+        const ProcDecl& callee_proc = *pit->second;
+        if (callee_proc.params.empty()) {
+          diags.error(loc(e.span),
+                      "method `" + callee + "` must declare `self` as the first parameter");
+          return make_int();
+        }
+        const TyPtr self_ty = resolve_type_expr(callee_proc.params[0].type);
+        if (!assignable(recv_ty, self_ty)) {
+          diags.error(loc(e.span), "receiver type mismatch for method `" + e.field_name + "`");
+          return make_int();
+        }
+        if (1 + e.args.size() != callee_proc.params.size()) {
+          diags.error(loc(e.span), "argument count mismatch in method call `" + e.field_name + "'");
+          return make_int();
+        }
+        for (std::size_t n = 0; n < e.args.size(); ++n) {
+          const TyPtr arg_ty = type_of(*e.args[n]);
+          const TyPtr param_ty = resolve_type_expr(callee_proc.params[n + 1].type);
+          if (!assignable(arg_ty, param_ty)) {
+            diags.error(loc(e.span), "argument type mismatch in method call `" + e.field_name + "'");
+          }
+        }
+        const RequiresCheckResult req =
+            check_requires_at_method_call(callee_proc, *e.base, e.args, proof_facts());
+        if (req == RequiresCheckResult::Violated) {
+          const auto explained = explain_requires_violation_method(callee_proc, *e.base,
+                                                                    e.field_name, e.args,
+                                                                    proof_facts());
+          if (explained) {
+            diag_error(diags, loc(e.span), ErrorCode::E0304, explained->message, explained->hint);
+          } else {
+            diag_error(diags, loc(e.span), ErrorCode::E0304,
+                       "Cannot call `" + e.field_name + "` on `" + type_name +
+                           "`: method `requires` precondition not met.",
+                       "Change the arguments or receiver state so the method's `requires` "
+                       "clause holds.");
+          }
+        }
+        if (callee_proc.ret_type) {
+          return resolve_type_expr(*callee_proc.ret_type);
+        }
+        return make_int();
+      }
       case Expr::Kind::FieldAccess: {
         const TyPtr base = type_of(*e.base);
         if (base->kind != TyKind::Object && base->kind != TyKind::TypedDict) {
@@ -820,8 +1162,52 @@ struct Ctx {
     }
   }
 
+  void check_generic_trait_bounds(const ProcDecl& callee, const Expr& call) {
+    if (callee.type_params.empty()) {
+      return;
+    }
+    std::map<std::string, TyPtr> subst;
+    for (std::size_t n = 0; n < call.args.size() && n < callee.params.size(); ++n) {
+      const TyPtr arg_ty = type_of(*call.args[n]);
+      const TyPtr param_ty = resolve_type_expr(callee.params[n].type);
+      if (param_ty->kind != TyKind::TypeVar) {
+        continue;
+      }
+      const auto existing = subst.find(param_ty->name);
+      if (existing != subst.end()) {
+        if (!same_kind(existing->second, arg_ty)) {
+          diags.error(loc(call.span), "conflicting generic inference for '" + param_ty->name +
+                                           "' in call to '" + call.ident + "'");
+        }
+      } else {
+        subst[param_ty->name] = arg_ty;
+      }
+    }
+    for (std::size_t i = 0; i < callee.type_params.size(); ++i) {
+      if (i >= callee.type_param_bounds.size() || callee.type_param_bounds[i].empty()) {
+        continue;
+      }
+      const std::string& tp = callee.type_params[i];
+      const std::string& bound = callee.type_param_bounds[i];
+      const auto sit = subst.find(tp);
+      if (sit == subst.end()) {
+        continue;
+      }
+      if (!value_satisfies_trait(sit->second, bound)) {
+        diags.error(loc(call.span), "type does not implement trait '" + bound + "'");
+      }
+    }
+  }
+
   void check_call_args(const Expr& call) {
     if (call.kind != Expr::Kind::Call) {
+      return;
+    }
+    if (call.ident == "echo" || call.ident == "sum" || call.ident == "dot" ||
+        call.ident == "disjoint_elem" || call.ident == "disjoint_row" ||
+        call.ident == "disjoint_slice" || call.ident == "row_ok" ||
+        call.ident == "__li_simd_splat_f64" || call.ident == "__li_simd_mul_f64" ||
+        call.ident == "__li_simd_add_f64" || call.ident == "__li_horiz_sum_f64") {
       return;
     }
     const auto it = procs.find(call.ident);
@@ -833,6 +1219,10 @@ struct Ctx {
       return;
     }
     const ProcDecl& callee = *it->second;
+    const std::map<std::string, TyPtr> saved_type_vars = type_vars;
+    for (const auto& tp : callee.type_params) {
+      type_vars[tp] = make_type_var(tp);
+    }
     for (std::size_t n = 0; n < call.args.size() && n < callee.params.size(); ++n) {
       const TyPtr arg_ty = type_of(*call.args[n]);
       const TyPtr param_ty = resolve_type_expr(callee.params[n].type);
@@ -840,6 +1230,9 @@ struct Ctx {
         if (param_ty->kind == TyKind::Protocol) {
           diags.error(loc(call.span),
                       "argument does not satisfy Protocol '" + param_ty->name + "'");
+        } else if (param_ty->kind == TyKind::Trait) {
+          diags.error(loc(call.span),
+                      "argument does not implement trait '" + param_ty->name + "'");
         } else {
           diags.error(loc(call.span), "argument type mismatch in call to '" + call.ident + "'");
         }
@@ -848,6 +1241,8 @@ struct Ctx {
         check_value_matches_refinement(callee.params[n].type, *call.args[n], call.span);
       }
     }
+    check_generic_trait_bounds(callee, call);
+    type_vars = saved_type_vars;
     const RequiresCheckResult req = check_requires_at_call(callee, call, proof_facts());
     if (req == RequiresCheckResult::Violated) {
       const auto explained = explain_requires_violation(callee, call, proof_facts());
@@ -1001,6 +1396,12 @@ struct Ctx {
       if (s.init->kind == Expr::Kind::Ident) {
         record_const_int_binding(s.init->ident, *s.expr);
       }
+      if (s.init->kind == Expr::Kind::FieldAccess) {
+        const auto key = object_field_const_key(*s.init);
+        if (key && s.expr->kind == Expr::Kind::IntLit) {
+          const_int_locals[*key] = s.expr->int_value;
+        }
+      }
       return;
     }
     if (s.expr) {
@@ -1031,6 +1432,54 @@ struct Ctx {
 
   static bool expr_is_true_literal(const Expr& e) {
     return e.kind == Expr::Kind::Ident && e.ident == "true";
+  }
+
+  void check_override_method(const ProcDecl& p) {
+    if (!proc_has_decorator(p, "override")) {
+      return;
+    }
+    const std::size_t us = p.name.find('_');
+    if (us == std::string::npos || us == 0) {
+      diags.error(loc(p.span), "@override requires a Type_method procedure name");
+      return;
+    }
+    const std::string type_name = p.name.substr(0, us);
+    const std::string method_suffix = p.name.substr(us + 1);
+    const auto ait = aliases.find(type_name);
+    if (ait == aliases.end() || ait->second.base_object.empty()) {
+      diags.error(loc(p.span), "@override requires object type with `object of Base`");
+      return;
+    }
+    const std::string base_callee = ait->second.base_object + "_" + method_suffix;
+    const auto pit = procs.find(base_callee);
+    if (pit == procs.end()) {
+      diags.error(loc(p.span), "no base method '" + base_callee + "' to override");
+      return;
+    }
+    const ProcDecl& base_proc = *pit->second;
+    if (p.params.size() != base_proc.params.size()) {
+      diags.error(loc(p.span), "override parameter count mismatch for '" + base_callee + "'");
+      return;
+    }
+    for (std::size_t n = 0; n < p.params.size(); ++n) {
+      const TyPtr got = resolve_type_expr(p.params[n].type);
+      const TyPtr want = resolve_type_expr(base_proc.params[n].type);
+      if (!same_kind(got, want)) {
+        diags.error(loc(p.span), "override parameter type mismatch for '" + p.params[n].name +
+                                     "' vs base '" + base_proc.params[n].name + "'");
+      }
+    }
+    if (static_cast<bool>(p.ret_type) != static_cast<bool>(base_proc.ret_type)) {
+      diags.error(loc(p.span), "override return type mismatch for '" + p.name + "'");
+      return;
+    }
+    if (p.ret_type && base_proc.ret_type) {
+      const TyPtr got = resolve_type_expr(*p.ret_type);
+      const TyPtr want = resolve_type_expr(*base_proc.ret_type);
+      if (!same_kind(got, want)) {
+        diags.error(loc(p.span), "override return type mismatch for '" + p.name + "'");
+      }
+    }
   }
 
   void check_weak_ensures(const ProcDecl& p) {
@@ -1095,6 +1544,7 @@ struct Ctx {
                      : "Add `ensures result == <expr>` or a property on `result` — not `ensures true`.");
     }
     check_weak_ensures(p);
+    check_override_method(p);
     locals.clear();
     const_int_locals.clear();
     assum_nonneg_ints.clear();
@@ -1128,7 +1578,7 @@ struct Ctx {
 TypecheckResult typecheck_module(const Module& module) {
   TypecheckResult result;
   DiagnosticBag& diags = result.diagnostics;
-  Ctx ctx{{}, {}, {}, {}, {}, {}, {}, {}, 0, false, std::nullopt, diags, "module"};
+  Ctx ctx{{}, {}, {}, {}, {}, {}, {}, {}, {}, {}, 0, false, std::nullopt, diags, "module"};
   for (const auto& proc : module.procs) {
     ctx.procs[proc.name] = &proc;
   }
@@ -1136,9 +1586,11 @@ TypecheckResult typecheck_module(const Module& module) {
     AliasEntry entry;
     entry.alias_kind = alias.alias_kind;
     entry.type_params = alias.type_params;
+    entry.base_object = alias.base_object;
     entry.definition = &alias.definition;
     entry.fields = &alias.fields;
     entry.enum_variants = &alias.enum_variants;
+    entry.trait_methods = &alias.trait_methods;
     entry.is_protocol =
         alias.alias_kind == AliasKind::Type && alias.definition.kind == TypeKind::Named &&
         alias.definition.name == "Protocol";

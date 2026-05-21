@@ -7,6 +7,7 @@
 
 #include <algorithm>
 #include <fstream>
+#include <map>
 #include <optional>
 #include <sstream>
 #include <string>
@@ -29,11 +30,62 @@ std::string lean_ident(const std::string& name) {
 
 const TypeAlias* find_type_alias(const Module& module, const std::string& name) {
   for (const auto& alias : module.types) {
-    if (alias.name == name && alias.alias_kind == AliasKind::Type) {
+    if (alias.name == name) {
       return &alias;
     }
   }
   return nullptr;
+}
+
+const Expr* object_receiver_root(const Expr& e) {
+  const Expr* cur = &e;
+  while (cur && cur->kind == Expr::Kind::FieldAccess) {
+    cur = cur->base.get();
+  }
+  if (cur && cur->kind == Expr::Kind::Ident) {
+    return cur;
+  }
+  return nullptr;
+}
+
+void collect_local_types_in_stmts(const std::vector<Stmt>& stmts,
+                                  std::map<std::string, const TypeExpr*>& out) {
+  for (const auto& s : stmts) {
+    if (s.kind == Stmt::Kind::VarDecl) {
+      out[s.var_name] = &s.var_type;
+    }
+    collect_local_types_in_stmts(s.then_body, out);
+    if (s.else_body) {
+      collect_local_types_in_stmts(*s.else_body, out);
+    }
+    collect_local_types_in_stmts(s.while_body, out);
+    collect_local_types_in_stmts(s.for_body, out);
+    collect_local_types_in_stmts(s.par_body, out);
+  }
+}
+
+std::string object_type_name_from_method_receiver(const ProcDecl& caller, const Expr& recv) {
+  const Expr* root = object_receiver_root(recv);
+  if (!root) {
+    return {};
+  }
+  std::map<std::string, const TypeExpr*> locals;
+  for (const auto& p : caller.params) {
+    locals[p.name] = &p.type;
+  }
+  collect_local_types_in_stmts(caller.body, locals);
+  const auto it = locals.find(root->ident);
+  if (it == locals.end() || !it->second) {
+    return {};
+  }
+  const TypeExpr* te = it->second;
+  while (te && te->kind == TypeKind::Refinement && te->refinement_base) {
+    te = te->refinement_base.get();
+  }
+  if (te && te->kind == TypeKind::Named) {
+    return te->name;
+  }
+  return {};
 }
 
 std::string lean_type_name(const TypeExpr& ty, const Module& module);
@@ -273,6 +325,43 @@ void emit_contract_def(std::ostream& out, const Module& module, const ProcDecl& 
   }
 }
 
+void emit_requires_vcs_for_call(std::ostream& out, const ProcDecl& caller, const ProcDecl& callee,
+                                std::size_t call_idx,
+                                const std::vector<std::unique_ptr<Expr>>& args,
+                                const ProofFacts& facts) {
+  std::vector<std::string> param_names;
+  for (const auto& p : callee.params) {
+    param_names.push_back(p.name);
+  }
+  std::size_t req_idx = 0;
+  for (const auto& rc : callee.contracts) {
+    if (rc.kind != ContractKind::Requires || !rc.expr) {
+      continue;
+    }
+    const std::string name = "vc_" + proc_section(caller.name) + "_call" +
+                             std::to_string(call_idx) + '_' + proc_section(callee.name) +
+                             "_requires_" + std::to_string(req_idx++);
+    const auto sub = substitute_call_params(*rc.expr, param_names, args);
+    const auto folded = fold_const_int_locals(*sub, facts.const_int_locals);
+    std::string prop = "True";
+    const bool witnessed =
+        expr_statically_true(*folded) || folded_discharged_by_proof_facts(*folded, facts);
+    VcCtx ctx;
+    if (witnessed) {
+      prop = "True";
+    } else if (auto lean = expr_to_lean(*sub, ctx)) {
+      prop = *lean;
+    } else {
+      out << "/-! VC call-site requires (opaque): callee '" << callee.name << "' at call "
+          << call_idx << " -/\n";
+    }
+    out << "def " << name << " : Prop := " << prop << '\n';
+    if (prop == "True" && witnessed) {
+      out << "theorem " << name << "_proved : " << name << " := trivial\n";
+    }
+  }
+}
+
 void emit_call_site_requires(std::ostream& out, const Module& module, const ProcDecl& caller) {
   const CallerProofFacts caller_facts = collect_caller_proof_facts(caller);
   const ProofFacts facts = caller_facts.view();
@@ -327,33 +416,26 @@ void emit_call_site_requires(std::ostream& out, const Module& module, const Proc
         out << "theorem " << name << "_proved : " << name << " := trivial\n";
       }
     }
-    std::size_t req_idx = 0;
-    for (const auto& rc : callee->contracts) {
-      if (rc.kind != ContractKind::Requires || !rc.expr) {
-        continue;
-      }
-      const std::string name = "vc_" + proc_section(caller.name) + "_call" +
-                               std::to_string(call_idx) + '_' + proc_section(callee->name) +
-                               "_requires_" + std::to_string(req_idx++);
-      const auto sub = substitute_call_params(*rc.expr, param_names, call->args);
-      const auto folded = fold_const_int_locals(*sub, facts.const_int_locals);
-      std::string prop = "True";
-      const bool witnessed =
-          expr_statically_true(*folded) || folded_discharged_by_proof_facts(*folded, facts);
-      VcCtx ctx;
-      if (witnessed) {
-        prop = "True";
-      } else if (auto lean = expr_to_lean(*sub, ctx)) {
-        prop = *lean;
-      } else {
-        out << "/-! VC call-site requires (opaque): callee '" << callee->name
-            << "' at call " << call_idx << " -/\n";
-      }
-      out << "def " << name << " : Prop := " << prop << '\n';
-      if (prop == "True" && witnessed) {
-        out << "theorem " << name << "_proved : " << name << " := trivial\n";
-      }
+    emit_requires_vcs_for_call(out, caller, *callee, call_idx, call->args, facts);
+    ++call_idx;
+  }
+  std::vector<const Expr*> methods;
+  collect_method_calls_in_stmts(caller.body, methods);
+  for (const Expr* mc : methods) {
+    if (mc == nullptr || !mc->base) {
+      continue;
     }
+    const std::string type_name = object_type_name_from_method_receiver(caller, *mc->base);
+    if (type_name.empty()) {
+      continue;
+    }
+    const std::string callee_name = type_name + "_" + mc->field_name;
+    const ProcDecl* callee = find_proc_by_name(module, callee_name);
+    if (callee == nullptr) {
+      continue;
+    }
+    const auto args = method_call_arg_list(*mc->base, mc->args);
+    emit_requires_vcs_for_call(out, caller, *callee, call_idx, args, facts);
     ++call_idx;
   }
 }

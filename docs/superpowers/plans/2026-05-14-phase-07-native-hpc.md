@@ -81,7 +81,7 @@
 |-----|------|------|
 | **7e-a** | Lower `*`, `+`, `dot`, `sum` to 7a SIMD MIR | `simd_dot` Li file has no `__li_simd_*` |
 | **7e-b** | Lower `A @ B` for Tier 1 matmul benches | `bench.py --tier 1` vs C++/Rust/Julia; ≤1.2× C++ |
-| **7e-c** | `docs/language/linear-algebra.md`, `docs/guide/math-hpc-examples.md` | Samples in plan; intrinsics appendix-only |
+| **7e-c** | `docs/language/linear-algebra.md`, `docs/guide/math-hpc-examples.md` | **partial:** math guide + gallery/README/fast-math refresh |
 
 - [x] `./li-tests/run_all.sh math_linalg`
 - [ ] Tier 1 Li sources: math notation only (`C += A @ B`, not manual lanes)

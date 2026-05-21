@@ -66,6 +66,16 @@ struct BorrowCtx {
         }
         check_call_moves(e);
         break;
+      case Expr::Kind::MethodCall:
+        if (e.base) {
+          check_expr_uses(*e.base);
+        }
+        for (const auto& arg : e.args) {
+          if (arg) {
+            check_expr_uses(*arg);
+          }
+        }
+        break;
       case Expr::Kind::Index:
         if (e.base) {
           check_expr_uses(*e.base);
@@ -274,6 +284,16 @@ bool expr_has_await(const Expr& e) {
     case Expr::Kind::BinOp:
       return (e.lhs && expr_has_await(*e.lhs)) || (e.rhs && expr_has_await(*e.rhs));
     case Expr::Kind::Call:
+      for (const auto& arg : e.args) {
+        if (arg && expr_has_await(*arg)) {
+          return true;
+        }
+      }
+      return false;
+    case Expr::Kind::MethodCall:
+      if (e.base && expr_has_await(*e.base)) {
+        return true;
+      }
       for (const auto& arg : e.args) {
         if (arg && expr_has_await(*arg)) {
           return true;

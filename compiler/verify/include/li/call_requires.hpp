@@ -26,6 +26,10 @@ struct ProofFacts {
 
 const ProcDecl* find_proc_by_name(const Module& module, const std::string& name);
 
+/// Build `[receiver, ...method_args]` for requires substitution on desugared methods.
+std::vector<std::unique_ptr<Expr>> method_call_arg_list(
+    const Expr& receiver, const std::vector<std::unique_ptr<Expr>>& method_args);
+
 std::unique_ptr<Expr> substitute_call_params(
     const Expr& expr, const std::vector<std::string>& param_names,
     const std::vector<std::unique_ptr<Expr>>& args);
@@ -45,6 +49,11 @@ bool folded_discharged_by_proof_facts(const Expr& folded, const ProofFacts& fact
 RequiresCheckResult check_requires_at_call(const ProcDecl& callee, const Expr& call,
                                            const ProofFacts& facts);
 
+/// Method call: substitutes `self` from receiver, then remaining params from `method_args`.
+RequiresCheckResult check_requires_at_method_call(
+    const ProcDecl& callee, const Expr& receiver,
+    const std::vector<std::unique_ptr<Expr>>& method_args, const ProofFacts& facts);
+
 /// When a call provably breaks a callee `requires`, plain-language text for diagnostics.
 struct RequiresViolationExplanation {
   std::string message;
@@ -54,11 +63,21 @@ struct RequiresViolationExplanation {
 std::optional<RequiresViolationExplanation> explain_requires_violation(
     const ProcDecl& callee, const Expr& call, const ProofFacts& facts);
 
+std::optional<RequiresViolationExplanation> explain_requires_violation_method(
+    const ProcDecl& callee, const Expr& receiver, const std::string& method_name,
+    const std::vector<std::unique_ptr<Expr>>& method_args, const ProofFacts& facts);
+
+std::string method_call_to_user_string(const Expr& receiver, const std::string& method,
+                                       const std::vector<std::unique_ptr<Expr>>& method_args);
+
 std::string expr_to_user_string(const Expr& expr);
 std::string call_to_user_string(const Expr& call);
 
 void collect_calls_in_stmts(const std::vector<Stmt>& stmts,
                             std::vector<const Expr*>& out);
+
+void collect_method_calls_in_stmts(const std::vector<Stmt>& stmts,
+                                 std::vector<const Expr*>& out);
 
 /// Resolved refinement on a parameter or variable type (`{x: int | …}` or alias).
 struct ResolvedRefinement {
@@ -80,6 +99,9 @@ std::optional<RequiresViolationExplanation> explain_refinement_violation(
 
 /// Record `name` as non-negative inside a guarded branch (`if name >= 0`, etc.).
 void note_nonneg_assumption_from_cond(const Expr& cond, std::set<std::string>& out);
+
+/// `w.balance` after `w.balance = 5` for method `requires self.balance >= n` folding.
+std::optional<std::string> object_field_const_key(const Expr& e);
 
 /// Owned facts for VC emit (const `var` inits + `if n >= 0` guards in procedure body).
 struct CallerProofFacts {

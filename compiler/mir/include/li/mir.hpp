@@ -26,8 +26,16 @@ enum class MirOp {
   ArrayStoreFloat,
   ArrayLoadFloat,
   ArrayDotF64,
+  /** Element of `array[M, array[N, float]]`; row=int_value/index_ident, col=rhs_int/lhs_ident */
+  ArrayLoad2DF64,
+  ArrayStore2DF64,
+  /** C[M,N] = A[M,K] @ B[K,N] — nested `array[M, array[K, float]]`; M=int_value, K=rhs_int, N=lhs_int */
+  ArrayMatMul2DF64,
   ArraySumF64,
   ArraySumI64,
+  /** Element-wise binop into `ident` from `lhs_ident` and `rhs_ident` (length `int_value`). */
+  ArrayBinOpF64,
+  ArrayBinOpI64,
   LocalAllocInt,
   LocalAllocI64,
   StoreInt,
@@ -60,6 +68,8 @@ struct MirArg {
   std::string ident;
   bool is_string = false;
   std::string str_value;
+  /** Pass `ident` array alloca by address (CallProc array param). */
+  bool is_array_ident = false;
 };
 
 struct MirParam {
@@ -94,6 +104,8 @@ struct MirInsn {
   std::int64_t lhs_int = 0;
   bool is_i64 = false;
   bool array_is_float = false;
+  /** `array[M, array[K, float]]` row-major tile; cols in rhs_int when true. */
+  bool array_is_matrix = false;
   std::int64_t simd_lanes = 0;
   std::vector<MirArg> args;
   /** Layout entries under object root (`name` paths). Used for ReturnObject pack and CallProc
@@ -103,6 +115,8 @@ struct MirInsn {
 
 struct MirDecorator {
   std::string name;
+  /** `@vectorized(lanes=N)` when name is vectorized; 0 if omitted. */
+  std::int64_t lanes = 0;
 };
 
 struct MirFn {
@@ -113,6 +127,8 @@ struct MirFn {
   bool returns_object = false;
   bool is_extern = false;
   bool is_async = false;
+  /** When true, `ArrayDotF64` / `ArrayBinOpF64` use scalar loops only. */
+  bool no_vectorize = false;
   std::vector<MirDecorator> decorators;
   std::vector<MirParam> params;
   /** Populated when `returns_object`; parallel to ReturnObject / unpack layout. */

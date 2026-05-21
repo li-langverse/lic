@@ -57,7 +57,7 @@ TIER1_BENCHES: tuple[BenchSpec, ...] = (
         "cpp/main.c",
         "common/dot_core.c",
         "li/main.li",
-        flops_per_run=2.0 * 1e7,
+        flops_per_run=8.0 * 1e7,
         li_pure=True,
     ),
     BenchSpec(
@@ -68,6 +68,7 @@ TIER1_BENCHES: tuple[BenchSpec, ...] = (
         "common/matmul_core.c",
         "li/main.li",
         flops_per_run=2.0 * 256**3,
+        li_pure=True,
     ),
     BenchSpec(
         "matmul_blocked",
@@ -77,6 +78,7 @@ TIER1_BENCHES: tuple[BenchSpec, ...] = (
         "common/matmul_blocked_core.c",
         "li/main.li",
         flops_per_run=2.0 * 512**3,
+        li_pure=True,
     ),
     BenchSpec(
         "reduce_sum",

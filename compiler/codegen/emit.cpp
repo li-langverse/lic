@@ -44,12 +44,20 @@ llvm::Type* llvm_scalar(llvm::LLVMContext& ctx, bool is_float, bool is_i64, bool
   return is_float ? llvm::Type::getDoubleTy(ctx) : i32_ty(ctx);
 }
 
+llvm::Type* llvm_array_type(llvm::LLVMContext& ctx, const MirParam& p) {
+  llvm::Type* elem = llvm_scalar(ctx, p.is_float, p.is_i64, p.is_string);
+  return llvm::ArrayType::get(elem, static_cast<unsigned>(p.fixed_array_elems));
+}
+
 llvm::Type* llvm_type_for_mir_param(llvm::LLVMContext& ctx, const MirParam& p) {
   if (p.fixed_array_elems > 0) {
-    llvm::Type* elem = llvm_scalar(ctx, p.is_float, p.is_i64, p.is_string);
-    return llvm::ArrayType::get(elem, static_cast<unsigned>(p.fixed_array_elems));
+    return llvm_array_type(ctx, p);
   }
   return llvm_scalar(ctx, p.is_float, p.is_i64, p.is_string);
+}
+
+llvm::Type* llvm_array_param_ptr(llvm::LLVMContext& ctx, const MirParam& p) {
+  return llvm::PointerType::getUnqual(llvm_array_type(ctx, p));
 }
 
 llvm::Type* llvm_struct_from_layout(llvm::LLVMContext& ctx, const std::vector<MirParam>& layout) {
@@ -89,7 +97,9 @@ llvm::Value* string_ptr(llvm::IRBuilder<>& builder, llvm::GlobalVariable* gv) {
 struct ArraySlot {
   llvm::AllocaInst* alloca = nullptr;
   std::int64_t size = 0;
+  std::int64_t cols = 0;
   bool is_float = false;
+  bool is_matrix = false;
 };
 
 struct EmitCtx {
@@ -101,6 +111,7 @@ struct EmitCtx {
   bool returns_float = false;
   bool returns_object = false;
   bool fp_numerically_stable = false;
+  bool enable_array_simd = true;
   std::map<std::string, llvm::AllocaInst*> int_locals;
   std::map<std::string, llvm::AllocaInst*> float_locals;
   std::map<std::string, llvm::AllocaInst*> i64_locals;
@@ -127,6 +138,47 @@ struct EmitCtx {
 
   llvm::Value* load_simd_f64x4(const std::string& name) {
     return builder->CreateLoad(vec4_f64(), ensure_simd_f64x4(name));
+  }
+
+  llvm::Value* horiz_sum_f64x4(llvm::Value* vec) {
+    llvm::Type* f64 = llvm::Type::getDoubleTy(context);
+    llvm::Value* sum = llvm::ConstantFP::get(f64, 0.0);
+    for (unsigned lane = 0; lane < 4; ++lane) {
+      llvm::Value* elt = builder->CreateExtractElement(
+          vec, llvm::ConstantInt::get(i32_ty(context), lane));
+      sum = builder->CreateFAdd(sum, elt);
+    }
+    return sum;
+  }
+
+  llvm::Value* gather_array_f64x4(llvm::AllocaInst* alloca, unsigned start) {
+    llvm::Type* f64 = llvm::Type::getDoubleTy(context);
+    llvm::Value* zero = llvm::ConstantInt::get(builder->getInt32Ty(), 0);
+    llvm::Type* arr_ty = alloca->getAllocatedType();
+    llvm::Value* vec = llvm::UndefValue::get(vec4_f64());
+    for (unsigned lane = 0; lane < 4; ++lane) {
+      llvm::Value* idx = llvm::ConstantInt::get(i32_ty(context), start + lane);
+      llvm::Value* gep_idx[] = {zero, idx};
+      llvm::Value* ptr = builder->CreateInBoundsGEP(arr_ty, alloca, gep_idx);
+      llvm::Value* scalar = builder->CreateLoad(f64, ptr);
+      vec = builder->CreateInsertElement(
+          vec, scalar, llvm::ConstantInt::get(i32_ty(context), lane));
+    }
+    return vec;
+  }
+
+  void scatter_array_f64x4(llvm::AllocaInst* alloca, unsigned start, llvm::Value* vec) {
+    llvm::Type* f64 = llvm::Type::getDoubleTy(context);
+    llvm::Value* zero = llvm::ConstantInt::get(builder->getInt32Ty(), 0);
+    llvm::Type* arr_ty = alloca->getAllocatedType();
+    for (unsigned lane = 0; lane < 4; ++lane) {
+      llvm::Value* idx = llvm::ConstantInt::get(i32_ty(context), start + lane);
+      llvm::Value* gep_idx[] = {zero, idx};
+      llvm::Value* ptr = builder->CreateInBoundsGEP(arr_ty, alloca, gep_idx);
+      llvm::Value* scalar = builder->CreateExtractElement(
+          vec, llvm::ConstantInt::get(i32_ty(context), lane));
+      builder->CreateStore(scalar, ptr);
+    }
   }
 
   llvm::AllocaInst* ensure_int_local(const std::string& name) {
@@ -297,6 +349,11 @@ struct EmitCtx {
     }
     if (arg.is_literal) {
       return int32_val(*builder, context, arg.int_value);
+    }
+    if (arg.is_array_ident) {
+      if (auto a_it = arrays.find(arg.ident); a_it != arrays.end()) {
+        return a_it->second.alloca;
+      }
     }
     if (auto a_it = arrays.find(arg.ident); a_it != arrays.end()) {
       llvm::Type* arr_ty = a_it->second.alloca->getAllocatedType();
@@ -614,12 +671,23 @@ struct EmitCtx {
         return true;
       }
       case MirOp::ArrayAlloc: {
-        llvm::Type* elem_ty = ins.array_is_float ? llvm::Type::getDoubleTy(context)
-                                                 : i32_ty(context);
-        llvm::ArrayType* arr_ty =
-            llvm::ArrayType::get(elem_ty, static_cast<unsigned>(ins.int_value));
-        llvm::AllocaInst* slot = builder->CreateAlloca(arr_ty, nullptr, ins.ident);
-        arrays[ins.ident] = ArraySlot{slot, ins.int_value, ins.array_is_float};
+        llvm::AllocaInst* slot = nullptr;
+        if (ins.array_is_matrix) {
+          llvm::Type* f64 = llvm::Type::getDoubleTy(context);
+          llvm::ArrayType* row_ty =
+              llvm::ArrayType::get(f64, static_cast<unsigned>(ins.rhs_int));
+          llvm::ArrayType* mat_ty =
+              llvm::ArrayType::get(row_ty, static_cast<unsigned>(ins.int_value));
+          slot = builder->CreateAlloca(mat_ty, nullptr, ins.ident);
+          arrays[ins.ident] = ArraySlot{slot, ins.int_value, ins.rhs_int, true, true};
+        } else {
+          llvm::Type* elem_ty = ins.array_is_float ? llvm::Type::getDoubleTy(context)
+                                                   : i32_ty(context);
+          llvm::ArrayType* arr_ty =
+              llvm::ArrayType::get(elem_ty, static_cast<unsigned>(ins.int_value));
+          slot = builder->CreateAlloca(arr_ty, nullptr, ins.ident);
+          arrays[ins.ident] = ArraySlot{slot, ins.int_value, 0, ins.array_is_float, false};
+        }
         return true;
       }
       case MirOp::ArrayStoreInt:
@@ -722,6 +790,147 @@ struct EmitCtx {
         builder->CreateStore(acc, ensure_int_local(ins.ident));
         return true;
       }
+      case MirOp::ArrayBinOpF64: {
+        auto d_it = arrays.find(ins.ident);
+        auto a_it = arrays.find(ins.lhs_ident);
+        auto b_it = arrays.find(ins.rhs_ident);
+        if (d_it == arrays.end() || a_it == arrays.end() || b_it == arrays.end()) {
+          return true;
+        }
+        llvm::Type* f64 = llvm::Type::getDoubleTy(context);
+        const auto n = static_cast<unsigned>(ins.int_value);
+        const unsigned simd_end = enable_array_simd ? (n / 4) * 4 : 0;
+        for (unsigned i = 0; i < simd_end; i += 4) {
+          llvm::Value* av = gather_array_f64x4(a_it->second.alloca, i);
+          llvm::Value* bv = gather_array_f64x4(b_it->second.alloca, i);
+          llvm::Value* rv = emit_fbinop(ins.bin_op, av, bv);
+          scatter_array_f64x4(d_it->second.alloca, i, rv);
+        }
+        llvm::Value* zero = llvm::ConstantInt::get(builder->getInt32Ty(), 0);
+        for (unsigned i = simd_end; i < n; ++i) {
+          llvm::Value* idx = llvm::ConstantInt::get(i32_ty(context), i);
+          llvm::Value* gep_idx[] = {zero, idx};
+          llvm::Value* ap = builder->CreateInBoundsGEP(
+              a_it->second.alloca->getAllocatedType(), a_it->second.alloca, gep_idx);
+          llvm::Value* bp = builder->CreateInBoundsGEP(
+              b_it->second.alloca->getAllocatedType(), b_it->second.alloca, gep_idx);
+          llvm::Value* dp = builder->CreateInBoundsGEP(
+              d_it->second.alloca->getAllocatedType(), d_it->second.alloca, gep_idx);
+          llvm::Value* av = builder->CreateLoad(f64, ap);
+          llvm::Value* bv = builder->CreateLoad(f64, bp);
+          llvm::Value* rv = emit_fbinop(ins.bin_op, av, bv);
+          builder->CreateStore(rv, dp);
+        }
+        return true;
+      }
+      case MirOp::ArrayBinOpI64: {
+        auto d_it = arrays.find(ins.ident);
+        auto a_it = arrays.find(ins.lhs_ident);
+        auto b_it = arrays.find(ins.rhs_ident);
+        if (d_it == arrays.end() || a_it == arrays.end() || b_it == arrays.end()) {
+          return true;
+        }
+        const auto n = static_cast<unsigned>(ins.int_value);
+        llvm::Value* zero = llvm::ConstantInt::get(builder->getInt32Ty(), 0);
+        for (unsigned i = 0; i < n; ++i) {
+          llvm::Value* idx = llvm::ConstantInt::get(i32_ty(context), i);
+          llvm::Value* gep_idx[] = {zero, idx};
+          llvm::Value* ap = builder->CreateInBoundsGEP(
+              a_it->second.alloca->getAllocatedType(), a_it->second.alloca, gep_idx);
+          llvm::Value* bp = builder->CreateInBoundsGEP(
+              b_it->second.alloca->getAllocatedType(), b_it->second.alloca, gep_idx);
+          llvm::Value* dp = builder->CreateInBoundsGEP(
+              d_it->second.alloca->getAllocatedType(), d_it->second.alloca, gep_idx);
+          llvm::Value* av = builder->CreateLoad(i32_ty(context), ap);
+          llvm::Value* bv = builder->CreateLoad(i32_ty(context), bp);
+          llvm::Value* rv = emit_binop(ins.bin_op, av, bv);
+          builder->CreateStore(rv, dp);
+        }
+        return true;
+      }
+      case MirOp::ArrayLoad2DF64: {
+        auto it = arrays.find(ins.ident);
+        if (it == arrays.end() || !it->second.is_matrix) {
+          return true;
+        }
+        llvm::Type* f64 = llvm::Type::getDoubleTy(context);
+        llvm::Value* row = ins.index_is_literal
+                               ? int32_val(*builder, context, ins.int_value)
+                               : load_int(ins.index_ident);
+        llvm::Value* col = ins.rhs_is_literal
+                               ? int32_val(*builder, context, ins.rhs_int)
+                               : load_int(ins.rhs_ident);
+        llvm::Value* zero = llvm::ConstantInt::get(builder->getInt32Ty(), 0);
+        llvm::Value* gep_idx[] = {zero, row, col};
+        llvm::Value* ptr = builder->CreateInBoundsGEP(
+            it->second.alloca->getAllocatedType(), it->second.alloca, gep_idx);
+        llvm::Value* loaded = builder->CreateLoad(f64, ptr);
+        if (!ins.lhs_ident.empty()) {
+          builder->CreateStore(loaded, ensure_float_local(ins.lhs_ident));
+        }
+        return true;
+      }
+      case MirOp::ArrayStore2DF64: {
+        auto it = arrays.find(ins.ident);
+        if (it == arrays.end() || !it->second.is_matrix) {
+          return true;
+        }
+        llvm::Type* f64 = llvm::Type::getDoubleTy(context);
+        llvm::Value* row = ins.index_is_literal
+                               ? int32_val(*builder, context, ins.int_value)
+                               : load_int(ins.index_ident);
+        llvm::Value* col = ins.rhs_is_literal
+                               ? int32_val(*builder, context, ins.rhs_int)
+                               : load_int(ins.rhs_ident);
+        llvm::Value* val =
+            ins.lhs_is_literal
+                ? llvm::ConstantFP::get(f64, ins.float_value)
+                : load_float(ins.lhs_ident);
+        llvm::Value* zero = llvm::ConstantInt::get(builder->getInt32Ty(), 0);
+        llvm::Value* gep_idx[] = {zero, row, col};
+        llvm::Value* ptr = builder->CreateInBoundsGEP(
+            it->second.alloca->getAllocatedType(), it->second.alloca, gep_idx);
+        builder->CreateStore(val, ptr);
+        return true;
+      }
+      case MirOp::ArrayMatMul2DF64: {
+        auto c_it = arrays.find(ins.ident);
+        auto a_it = arrays.find(ins.lhs_ident);
+        auto b_it = arrays.find(ins.rhs_ident);
+        if (c_it == arrays.end() || a_it == arrays.end() || b_it == arrays.end()) {
+          return true;
+        }
+        llvm::Type* f64 = llvm::Type::getDoubleTy(context);
+        const unsigned m = static_cast<unsigned>(ins.int_value);
+        const unsigned k = static_cast<unsigned>(ins.rhs_int);
+        const unsigned n = static_cast<unsigned>(ins.lhs_int);
+        llvm::Value* zero = llvm::ConstantInt::get(builder->getInt32Ty(), 0);
+        llvm::Value* zf = llvm::ConstantFP::get(f64, 0.0);
+        for (unsigned i = 0; i < m; ++i) {
+          llvm::Value* ri = llvm::ConstantInt::get(i32_ty(context), i);
+          for (unsigned j = 0; j < n; ++j) {
+            llvm::Value* rj = llvm::ConstantInt::get(i32_ty(context), j);
+            llvm::Value* sum = zf;
+            for (unsigned t = 0; t < k; ++t) {
+              llvm::Value* rt = llvm::ConstantInt::get(i32_ty(context), t);
+              llvm::Value* a_idx[] = {zero, ri, rt};
+              llvm::Value* ap = builder->CreateInBoundsGEP(
+                  a_it->second.alloca->getAllocatedType(), a_it->second.alloca, a_idx);
+              llvm::Value* av = builder->CreateLoad(f64, ap);
+              llvm::Value* b_idx[] = {zero, rt, rj};
+              llvm::Value* bp = builder->CreateInBoundsGEP(
+                  b_it->second.alloca->getAllocatedType(), b_it->second.alloca, b_idx);
+              llvm::Value* bv = builder->CreateLoad(f64, bp);
+              sum = builder->CreateFAdd(sum, builder->CreateFMul(av, bv));
+            }
+            llvm::Value* c_idx[] = {zero, ri, rj};
+            llvm::Value* cp = builder->CreateInBoundsGEP(
+                c_it->second.alloca->getAllocatedType(), c_it->second.alloca, c_idx);
+            builder->CreateStore(sum, cp);
+          }
+        }
+        return true;
+      }
       case MirOp::ArrayDotF64: {
         auto a_it = arrays.find(ins.lhs_ident);
         auto b_it = arrays.find(ins.rhs_ident);
@@ -731,9 +940,20 @@ struct EmitCtx {
         llvm::Type* f64 = llvm::Type::getDoubleTy(context);
         llvm::Value* acc = llvm::ConstantFP::get(f64, 0.0);
         const auto n = static_cast<unsigned>(ins.int_value);
-        for (unsigned i = 0; i < n; ++i) {
+        const unsigned simd_end = enable_array_simd ? (n / 4) * 4 : 0;
+        if (simd_end > 0) {
+          llvm::Value* v_acc =
+              builder->CreateVectorSplat(4, llvm::ConstantFP::get(f64, 0.0));
+          for (unsigned i = 0; i < simd_end; i += 4) {
+            llvm::Value* av = gather_array_f64x4(a_it->second.alloca, i);
+            llvm::Value* bv = gather_array_f64x4(b_it->second.alloca, i);
+            v_acc = builder->CreateFAdd(v_acc, builder->CreateFMul(av, bv));
+          }
+          acc = horiz_sum_f64x4(v_acc);
+        }
+        llvm::Value* zero = llvm::ConstantInt::get(builder->getInt32Ty(), 0);
+        for (unsigned i = simd_end; i < n; ++i) {
           llvm::Value* idx = llvm::ConstantInt::get(i32_ty(context), i);
-          llvm::Value* zero = llvm::ConstantInt::get(builder->getInt32Ty(), 0);
           llvm::Value* gep_idx[] = {zero, idx};
           llvm::Value* ap = builder->CreateInBoundsGEP(
               a_it->second.alloca->getAllocatedType(), a_it->second.alloca, gep_idx);
@@ -900,6 +1120,8 @@ bool emit_llvm_ir(const MirModule& mir, const std::string& out_path, std::string
       } else if (p.is_simd_f64) {
         param_tys.push_back(llvm::VectorType::get(llvm::Type::getDoubleTy(context),
                                                   llvm::ElementCount::getFixed(4)));
+      } else if (p.fixed_array_elems > 0) {
+        param_tys.push_back(llvm_array_param_ptr(context, p));
       } else {
         param_tys.push_back(llvm_type_for_mir_param(context, p));
       }
@@ -931,8 +1153,21 @@ bool emit_llvm_ir(const MirModule& mir, const std::string& out_path, std::string
       builder.setFastMathFlags(llvm::FastMathFlags());
     }
 
-    EmitCtx ctx{context, module.get(), func, &builder, ret_ty, fn.returns_float,
-                fn.returns_object, mir.fp_numerically_stable, {}, {}, {}, {}, {}, {}};
+    EmitCtx ctx{context,
+                module.get(),
+                func,
+                &builder,
+                ret_ty,
+                fn.returns_float,
+                fn.returns_object,
+                mir.fp_numerically_stable,
+                !fn.no_vectorize,
+                {},
+                {},
+                {},
+                {},
+                {},
+                {}};
 
     unsigned idx = 0;
     for (auto& arg : func->args()) {
@@ -940,10 +1175,20 @@ bool emit_llvm_ir(const MirModule& mir, const std::string& out_path, std::string
         arg.setName(fn.params[idx].name);
         const auto& mp = fn.params[idx];
         if (mp.fixed_array_elems > 0) {
-          llvm::Type* arr_ty = llvm_type_for_mir_param(context, mp);
+          llvm::Type* arr_ty = llvm_array_type(context, mp);
           llvm::AllocaInst* ap = builder.CreateAlloca(arr_ty, nullptr, mp.name);
-          ctx.arrays[mp.name] = ArraySlot{ap, mp.fixed_array_elems, mp.is_float};
-          builder.CreateStore(&arg, ap);
+          ctx.arrays[mp.name] = ArraySlot{ap, mp.fixed_array_elems, 0, mp.is_float, false};
+          llvm::Type* elem = llvm_scalar(context, mp.is_float, mp.is_i64, mp.is_string);
+          llvm::Value* zero = llvm::ConstantInt::get(builder.getInt32Ty(), 0);
+          const auto n = static_cast<unsigned>(mp.fixed_array_elems);
+          for (unsigned i = 0; i < n; ++i) {
+            llvm::Value* idx = llvm::ConstantInt::get(i32_ty(context), i);
+            llvm::Value* gep_idx[] = {zero, idx};
+            llvm::Value* from_p = builder.CreateInBoundsGEP(arr_ty, &arg, gep_idx);
+            llvm::Value* to_p = builder.CreateInBoundsGEP(arr_ty, ap, gep_idx);
+            llvm::Value* v = builder.CreateLoad(elem, from_p);
+            builder.CreateStore(v, to_p);
+          }
         } else if (mp.is_string) {
           builder.CreateStore(&arg, ctx.ensure_ptr_local(mp.name));
         } else if (is_par_fn || mp.is_i64) {

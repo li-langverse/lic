@@ -377,9 +377,9 @@ Track in phase **Doc** until each is checked:
 - [x] Phase 2c — Collections + TypedDict (list/dict/tuple, named tuple, enum)
 - [x] Phase 2d — Borrow + effects (lexical borrowck, raises IO/Alloc)
 - [x] Phase 2g — `def`, `object` + field `private`/`public`, minimal `import` (`encapsulation` suite green; import parse-only; **not** full OOP)
-- [ ] Phase 2j — Full OOP — **not started:** methods/`self`, private methods, traits, inheritance — [OOP roadmap](2026-05-20-li-oop-roadmap.md)
+- [ ] Phase 2j — Full OOP — **in progress:** **2j-a…f done** (method call-site `requires` + AutoVC); traits/Lean method `ensures` sugar deferred — [OOP roadmap](2026-05-20-li-oop-roadmap.md)
 - [x] Phase 2h — Python-math operators `%`, `//`, `**` (`math_syntax` suite); `for`/`range` deferred
-- [ ] Phase 2i — Math / linalg surface — **partial:** 1d `float` `@`, `sum(array)`; matrix `@` deferred
+- [ ] Phase 2i — Math / linalg surface — **partial:** 1d `@`/`dot`, `sum`, element-wise `+ - * /` (**2i-a**), 2d `@` (**2i-c**); `**`/broadcast deferred
 - [x] Phase 3 — MIR + LLVM codegen (`lic build`, minimal lower/emit; CFG/bounds IR deferred)
 - [x] Phase 4 — Runtime + stdlib
 - [x] Phase 4s — Stdlib seal (prelude/`std/` names cannot be shadowed; `stdlib_seal/` CI)
@@ -390,7 +390,7 @@ Track in phase **Doc** until each is checked:
 - [x] Phase 2f — Lean 4 verify — **partial (PR #83):** `lic build` + `check-autovc-open-goals.sh`; `LI_BUILD_VERIFY_LEAN=1` → semantics `lake build`; `contracts_verify/` 16/16; `sqrt_open_bound` = `verify_open_ok`; full kernel certificate still **G-lean** partial
 - [x] Phase 7 — Native HPC — **v1 gate:** simd + parallel for + OpenMP + `check-master-plan-gates.sh` (tier 1/2 perf advisory)
 - [ ] Phase 7d — Execution decorators — **partial (7d-a/b/d/e/c):** AST `check_module_policies` for disjoint; proof builtins `disjoint_elem`/`disjoint_row`/`row_ok` in typecheck; string heuristics for race exploits (**7d-c** structured `disjoint=` still open)
-- [ ] Phase 7e — Math → SIMD/parallel lowering — **partial:** `ArrayDotF64` for 1d `float` `@`; SIMD matmul deferred
+- [ ] Phase 7e — Math → SIMD/parallel lowering — **partial:** math benches + docs (**7e-a/b/c/d/e** partial); **7e-e:** `ArrayBinOpF64` SIMD gather/scatter; `@vectorized` decorator lowering deferred
 - [x] Phase H — li-httpd infra — **`lis`** harness, mitigations, CI, workspace stubs ([implementation-status](https://github.com/li-langverse/lis/blob/main/docs/implementation-status.md))
 - [x] Phase H — li-httpd M1 `.li` — **partial:** TOML `match_route`, explain/validate-config, `httpd_serve_routed_once` oracle; **in flight:** [httpd-m1-impl](https://github.com/li-langverse/lic/pull/87), [httpd-m1-perf](https://github.com/li-langverse/lic/pull/84); **next:** merge reactor + real recv ([httpd-prerequisites](../ecosystem/httpd-prerequisites.md))
 - [x] Phase Pkg — Package scaffold + governance stubs ([scaffold](2026-05-16-li-package-scaffold.md), [governance](2026-05-16-li-ecosystem-governance.md); `li.toml` = [lip § A3](2026-05-16-li-package-manager-lip.md))
@@ -426,8 +426,8 @@ Runnable on `dev` after `./scripts/build.sh`:
 - Phases **0–6**, **2g**, **2h**, **7** (core), **Pkg**, **Doc**, **8-sync**, **8e-li**
 - **77+** `li-tests` suites (simd, parallel, decorators, stdlib_seal, math, CVE, encapsulation, …)
 - **2e partial:** `build/generated/AutoVC.lean` every `lic build`
-- **7e partial:** 1d float `@` → `ArrayDotF64`
-- **7d partial:** parse, policy, `MirFn.decorators`, `std/execution/decorators.li`
+- **7e partial:** 1d float `@` → `ArrayDotF64` (4-wide gather SIMD when N≥4)
+- **7d partial:** parse, policy, `MirFn.decorators`, `no_vectorize` / `@vectorized(lanes=4)` codegen gate (**7d-b**); loop elaboration deferred
 
 ### Full master plan — **not complete** (v2 backlog)
 

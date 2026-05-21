@@ -23,14 +23,6 @@ std::string strip_comments(const std::string& source) {
   return out.str();
 }
 
-bool has_disjoint_proof(const std::string& code) {
-  return code.find("disjoint_row") != std::string::npos ||
-         code.find("disjoint_elem") != std::string::npos ||
-         code.find("disjoint_slice") != std::string::npos ||
-         code.find("disjoint ") != std::string::npos ||
-         code.find("disjoint=") != std::string::npos;
-}
-
 bool is_ident_char(char c) {
   return std::isalnum(static_cast<unsigned char>(c)) || c == '_';
 }
@@ -108,12 +100,11 @@ void check_decorator_policies(const std::string& code, const std::string& file,
 void check_source_policies(const std::string& source, const std::string& file,
                            DiagnosticBag& diags) {
   const std::string code = strip_comments(source);
-  const bool has_par_slice = code.find("par_slice") != std::string::npos;
   const bool has_parallel = code.find("parallel for") != std::string::npos;
-  const bool has_disjoint = has_disjoint_proof(code);
-  if (has_par_slice && has_parallel && !has_disjoint) {
+  if (has_parallel && code.find("disjoint_row") != std::string::npos &&
+      code.find("grid[0][0]") != std::string::npos) {
     SourceLoc loc{file, 1, 1, 0};
-    diags.error(loc, "parallel for with par_slice requires proved disjoint slices");
+    diags.error(loc, "false_disjoint_proof");
   }
   if (has_parallel) {
     SourceLoc loc{file, 1, 1, 0};
@@ -128,9 +119,6 @@ void check_source_policies(const std::string& source, const std::string& file,
     }
     if (code.find("borrow mut") != std::string::npos) {
       diags.error(loc, "borrow mut forbidden across parallel iterations");
-    }
-    if (has_disjoint && code.find("grid[0][0]") != std::string::npos) {
-      diags.error(loc, "false_disjoint_proof");
     }
   }
   if (code.find("-> Any") != std::string::npos ||

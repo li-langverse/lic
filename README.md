@@ -56,27 +56,28 @@ Li insists that loops say how they finish (`decreases`) so endless loops cannot 
 
 ---
 
-## Fast math on many lanes (vectors)
+## Fast math (write math, not intrinsics)
 
-Li can work on **several numbers at once** — useful for science and graphics-style workloads:
+On fixed `array[N, float]` tiles, use **`dot(x, y)`** or **`x @ y`** — the compiler lowers to fast loops (and SIMD at `-O3`):
 
-```nim
-proc main() -> int
+```li
+def main() -> int
   requires true
   ensures result == 0
   decreases 0
 =
-  var x: float = 0.001
-  var acc: float = 0.0
+  var x: array[4, float]
+  var y: array[4, float]
   var i: int = 0
-  while i < 1000000
-    var v: simd[f64, 4] = __li_simd_splat_f64(x)
-    var p: simd[f64, 4] = __li_simd_mul_f64(v, v)
-    acc = acc + __li_horiz_sum_f64(p)
-    x = x + 0.000001
+  while i < 4
+    x[i] = 1.0
+    y[i] = 2.0
     i = i + 1
+  var s: float = x @ y
   return 0
 ```
+
+More: [Math-first HPC examples](docs/guide/math-hpc-examples.md) · [Linear algebra](docs/language/linear-algebra.md).
 
 You do **not** need NumPy, a special C extension, or a separate vector library for this — it is part of the language.
 

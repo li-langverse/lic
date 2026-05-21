@@ -18,11 +18,13 @@
 | `public` / `private` **fields** | **Done** | `private_field_access.li` → compile_fail |
 | Free `def` + `import` | **Done** | `encapsulation/`, `modules/` |
 | Object MIR lowering (scalars, arrays) | **Done** | `object_*` tests, composable physics smoke |
-| `var T` object params | **Partial** | Call-by-expanded-scalars; **no write-back** to caller |
-| Methods on types | **Missing** | No `self` in parser |
-| Private **methods** | **Missing** | Only field visibility |
-| Inheritance / `override` | **Missing** | Spec mentions; not parsed |
-| Traits (`Hash`, …) | **Spec only** | [language design § Hash](../specs/2026-05-14-li-language-design.md) |
+| `var T` object params | **Done (2j-c)** | MIR `__li_o_wb*` copy-in/out for `var` object first param + `Ident` receiver |
+| Methods on types | **Done (2j-a)** | `obj.method(args)` → `Type_method(self, …)`; `def_method_*.li` |
+| Private **methods** | **Done (2j-b)** | `private def` not merged on import; `private_method_use.li` |
+| Object mutation to caller | **Done (2j-c)** | `c.bump()`, `rigid_integrate(body, …)` without return-assign |
+| Inheritance / `override` | **Done (2j-d)** | `object of Base`, static subtyping, `@override` signature check |
+| Traits (`Hash`, …) | **Done (2j-e)** | `type Hash = trait`; `def f[T: Hash]`; `trait_hash_impl.li` / `trait_missing_impl.li` |
+| Method VCs at call site | **Done (2j-f)** | `check_requires_at_method_call`; `method_call_requires_*.li` |
 | Cross-module private **fields** | **Done** | `leak_imported_vault.li` compile_fail |
 
 **Honest label:** **2g = records + field privacy**, not full OOP. This plan is **2j**.

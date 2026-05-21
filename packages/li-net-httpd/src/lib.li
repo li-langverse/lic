@@ -575,7 +575,7 @@ def proxy_li_finish_resp_headers(epfd: var int, slot: var int) raises Net, Alloc
     httpd_li_proxy_set_resp_body_left_i(slot, left0 - tail)
   return proxy_li_pump_cl(epfd, slot)
 
-def proxy_li_feed_cached_hdr(epfd: var int, slot: var int, data: var ptr, n: int) raises Net, Alloc, IO -> int
+def proxy_li_feed_cached_hdr(epfd: var int, slot: var int, data: var ptr, n: var int) raises Net, Alloc, IO -> int
   requires epfd >= 0
   requires n >= 0
   ensures true
@@ -742,6 +742,7 @@ def proxy_accept_batch(epfd: var int, listen_fd: var int) raises Net, Alloc, IO 
       tcp_close(conn)
       httpd_slot_free(slot)
       return accepted
+    proxy_handle_client_in(epfd, slot)
     accepted = accepted + 1
   return accepted
 
@@ -828,11 +829,15 @@ def proxy_dispatch_up_loaded(epfd: var int, slot_u: int, rev: int) raises Net, A
   ensures true
   decreases 0
 =
-  var rc: int = proxy_li_on_up(epfd, slot_u, rev)
-  if rc < 0:
-    return 0
-  if httpd_li_proxy_active_i(slot_u) == 0:
-    httpd_li_proxy_finish_drain_i(epfd, slot_u)
+  var eu1: int = epfd
+  var su1: int = slot_u
+  var ru1: int = rev
+  httpd_li_proxy_up_epoll_i(eu1, su1, ru1)
+  var su2: int = slot_u
+  if httpd_li_proxy_active_i(su2) == 0:
+    var eu2: int = epfd
+    var su3: int = slot_u
+    httpd_li_proxy_finish_drain_i(eu2, su3)
   return 0
 
 def proxy_dispatch_client_loaded(epfd: var int, slot_c: int, rev: int) raises Net, Alloc, IO -> int
@@ -841,11 +846,15 @@ def proxy_dispatch_client_loaded(epfd: var int, slot_c: int, rev: int) raises Ne
   decreases 0
 =
   if httpd_li_proxy_active_i(slot_c) == 1:
-    var rc: int = proxy_li_on_client(epfd, slot_c)
-    if rc < 0:
-      return 0
-    if httpd_li_proxy_active_i(slot_c) == 0:
-      httpd_li_proxy_finish_drain_i(epfd, slot_c)
+    var ec1: int = epfd
+    var sc1: int = slot_c
+    var rc1: int = rev
+    httpd_li_proxy_client_epoll_i(ec1, sc1, rc1)
+    var sc2: int = slot_c
+    if httpd_li_proxy_active_i(sc2) == 0:
+      var ec2: int = epfd
+      var sc3: int = slot_c
+      httpd_li_proxy_finish_drain_i(ec2, sc3)
     return 0
   if net_epoll_readable(rev) == 1:
     var rc2: int = proxy_handle_client_in(epfd, slot_c)
@@ -1002,23 +1011,6 @@ def httpd_run_from_argv() raises Net, Alloc, IO -> int
     var bp: int = httpd_parse_port_i(backend_arg)
     return httpd_serve_port_root_proxy(p, r, bp)
   return httpd_serve_port_root(p, r)
-
-extern proc li_rt_httpd_serve_routed_once(port: int) -> int
-  requires 0 < port
-  requires port <= 65535
-  ensures -1 <= result
-  ensures result <= 2
-  decreases port
-
-# One-shot accept: match GET /health against loaded routes (M1 oracle; not production loop).
-def httpd_serve_routed_once(port: int) raises Net, IO -> int
-  requires 0 < port
-  requires port <= 65535
-  ensures -1 <= result
-  ensures result <= 2
-  decreases port
-=
-  return li_rt_httpd_serve_routed_once(port)
 
 def main() raises Net, Alloc, IO -> int
   requires true

@@ -4286,6 +4286,15 @@ int32_t httpd_li_proxy_finish_ok_i(int32_t epfd, int32_t slot) {
   return 0;
 }
 
+
+void httpd_li_proxy_up_epoll_i(int32_t epfd, int32_t slot, int32_t revents) {
+  if (slot < 0 || slot >= HTTPD_MAX_CONN) return;
+  httpd_proxy_up_handler((int)epfd, slot, (uint32_t)revents);
+}
+void httpd_li_proxy_client_epoll_i(int32_t epfd, int32_t slot, int32_t revents) {
+  if (slot < 0 || slot >= HTTPD_MAX_CONN) return;
+  httpd_proxy_client_handler((int)epfd, slot, (uint32_t)revents);
+}
 int32_t httpd_li_proxy_finish_err_i(int32_t epfd, int32_t slot) {
   if (slot < 0 || slot >= HTTPD_MAX_CONN) {
     return -1;

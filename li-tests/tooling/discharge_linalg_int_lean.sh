@@ -14,7 +14,7 @@ for sample in \
   "$ROOT/li-tests/contracts_verify/linalg_dot4_float_closed.li" \
   "$ROOT/li-tests/contracts_verify/linalg_mat2_at2_float_closed.li" \
   "$ROOT/li-tests/contracts_verify/linalg_mat2_callproc_float_closed.li"; do
-# Intentional open: linalg_dot4_int_loop_open.li — see contracts_discharge_corpus.sh (LI_ALLOW_OPEN_VC=1)
+# Intentional open: linalg_dot4_int_loop_open.li — see contracts_discharge_corpus.sh (--allow-open-vc)
   AUTOVC="$ROOT/build/generated/AutoVC.lean"
   rm -f "$AUTOVC"
   "$LIC" build "$sample" -o /dev/null

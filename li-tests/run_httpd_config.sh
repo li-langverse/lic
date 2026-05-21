@@ -27,19 +27,19 @@ done
 
 echo "== routing (Li compile + binary oracle) =="
 LIC="${LIC:-$("$ROOT/scripts/resolve-lic.sh")}"
-export LI_ALLOW_OPEN_VC=1
+HTTPD_BUILD_FLAGS=(--allow-open-vc)
 export LI_REPO_ROOT="$ROOT"
-"$LIC" build "$ROOT/li-tests/routing/match_routes.li" -o /tmp/li_match_routes
+"$LIC" build "${HTTPD_BUILD_FLAGS[@]}" "$ROOT/li-tests/routing/match_routes.li" -o /tmp/li_match_routes
 /tmp/li_match_routes
 test "$(/tmp/li_match_routes; echo $?)" -eq 0
 
 echo "== routing (Li serve_routed_once oracle) =="
-"$LIC" build "$ROOT/li-tests/httpd/serve_routed_once.li" -o /tmp/li_serve_routed_once
+"$LIC" build "${HTTPD_BUILD_FLAGS[@]}" "$ROOT/li-tests/httpd/serve_routed_once.li" -o /tmp/li_serve_routed_once
 /tmp/li_serve_routed_once
 test "$(/tmp/li_serve_routed_once; echo $?)" -eq 0
 
 echo "== routing (Li TOML loader) =="
-"$LIC" build "$ROOT/li-tests/routing/match_routes_toml.li" -o /tmp/li_match_routes_toml
+"$LIC" build "${HTTPD_BUILD_FLAGS[@]}" "$ROOT/li-tests/routing/match_routes_toml.li" -o /tmp/li_match_routes_toml
 /tmp/li_match_routes_toml
 test "$(/tmp/li_match_routes_toml; echo $?)" -eq 0
 

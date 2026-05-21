@@ -26,7 +26,7 @@ Lowering is **never implicit**. It requires an **explicit, reviewable** project 
 | Mechanism | Example | Notes |
 |-----------|---------|--------|
 | **`li.toml` `[gates]`** | `proof.lean = "off"` | Must be present in manifest; CI may reject on protected branches |
-| **Documented env downgrade** | `LI_BUILD_VERIFY_LEAN=0` | Local dev only; compiler should warn when Lean verify is skipped |
+| **Documented CLI downgrade** | `--no-lean-verify`, `--allow-open-vc` | Local dev / manifest `verify_open_ok` only; compiler warns on skip |
 | **Human-approved CI exception** | Tracked PH-/issue | Agents escalate; do not land silently |
 
 Forbidden as ways to lower gates:

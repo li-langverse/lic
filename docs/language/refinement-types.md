@@ -25,7 +25,7 @@ The compiler uses the same three-way rule as call-site `requires`:
 
 1. **Provably inside** the refinement (literal, or `var y = 5` folded into `callee(y)`) → OK.
 2. **Provably outside** (e.g. `callee(-1)` with `NonNeg`) → **compile error E0305** with a plain-language message.
-3. **Not provable yet** (parameter, computed value) → no false error; a **Lean VC** is emitted at the call / init site and **`lic build` fails** if the goal stays open (unless `LI_ALLOW_OPEN_VC=1`).
+3. **Not provable yet** (parameter, computed value) → no false error; a **Lean VC** is emitted at the call / init site and **`lic build` fails** if the goal stays open (unless `--allow-open-vc`).
 
 You declare possible values once on the type; callers stay free to pass any value **inside** that declaration, and the toolchain blocks values **outside** it when it can prove the violation.
 

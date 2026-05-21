@@ -33,7 +33,7 @@ This page is the **honest inventory** of what is **not** fully proved or not yet
 
 | ID | Status | What remains |
 |----|--------|----------------|
-| **G-lean** | Partial | **Tier B (default when lake installed):** `lic build` runs `lake build AutoVC` (typecheck only; `LI_BUILD_VERIFY_LEAN=0` opt-out). **Strict** open goals: `--strict-lean` or `LI_BUILD_VERIFY_LEAN_STRICT=1`. **`LiArray`** + fib/recursive call-site + parallel `_par*` VCs typecheck. **Still open:** kernel proofs for intentional open specimens (`sqrt_open_bound`, loop dot); `sorry` on `mat2_at2_float_spec` |
+| **G-lean** | Partial | **Tier B (default when lake installed):** `lic build` runs `lake build AutoVC` (typecheck only; `--no-lean-verify` opt-out). **Strict** open goals: `--strict-lean`. Open obligations: fail unless `--allow-open-vc` (CLI only; env bypass removed). **`LiArray`** + fib/recursive call-site + parallel `_par*` VCs typecheck. **Still open:** kernel proofs for intentional open specimens (`sqrt_open_bound`, loop dot); `sorry` on `mat2_at2_float_spec` |
 | **G-vc** | Partial | Float/`abs` ensures; opaque `vec3_dot`-style returns; loop implementations vs closed-form `ensures` |
 | **G-par** | Partial | AST `policy_module` rejects missing disjoint, false `disjoint_row`, mut capture, borrow-in-par; Lean proofs open |
 | **G-dec** | Partial | Decorator elaboration to MIR; `decorator_exploits` proofs |
@@ -101,9 +101,9 @@ What **`lic build`** runs **now** (see `compiler/lic/main.cpp`):
 4. `compile_module()` → MIR → LLVM → link `li_rt`  
 5. `write_vcs_lean()` → `build/generated/AutoVC.lean` (typed `Prop` obligations)  
 
-**`lic verify`** / `LI_BUILD_VERIFY_LEAN=1`: VC counts + optional `lake build` on `docs/semantics` — see `compiler/verify/`.
+**`lic verify --lean`**: VC counts + `lake build` on `docs/semantics` — see `compiler/verify/`.
 
-What **`lic build`** does **not** run yet (unless `LI_BUILD_VERIFY_LEAN=1` and Lean 4 installed):
+What **`lic build`** does **not** run yet (unless Lean 4 installed and not `--no-lean-verify`):
 
 - Lean 4 kernel discharge of non-trivial ensures  
 - Lean 4 kernel as default hard gate  

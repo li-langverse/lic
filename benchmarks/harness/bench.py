@@ -393,7 +393,7 @@ def build_li(spec: BenchSpec, bin_path: Path) -> None:
     if not lic.is_file():
         raise RuntimeError(f"lic missing at {lic} — run ./scripts/build.sh")
     root = bench_dir(spec)
-    env = {**os.environ, "LI_BUILD_VERIFY_LEAN": "0"}
+    env = dict(os.environ)
     if not spec.li_pure:
         env["LI_EXTRA_C"] = str(root / spec.core_c)
     subprocess.check_call(
@@ -403,6 +403,7 @@ def build_li(spec: BenchSpec, bin_path: Path) -> None:
             str(root / spec.li_main),
             "-o",
             str(bin_path),
+            "--no-lean-verify",
             "--release",
             "-O3",
             "-ffast-math",

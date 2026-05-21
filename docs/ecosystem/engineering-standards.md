@@ -10,7 +10,7 @@ Do not edit ecosystem policy here — open a PR to the roadmap repo (human merge
 
 **Canonical in this workspace:** [strict-by-default.md](strict-by-default.md)
 
-Proof, security, and performance gates are **always on at maximum** for every build/check. There is **no optional provability** — users may only relax via explicit `li.toml` `[gates]` or documented env downgrades (for example `LI_BUILD_VERIFY_LEAN=0` for local dev with warning). Silence or omission never weakens a gate.
+Proof, security, and performance gates are **always on at maximum** for every build/check. There is **no optional provability** — users may only relax via explicit `li.toml` `[gates]` or documented CLI flags on `lic build` (`--no-lean-verify`, `--allow-open-vc`). Silence or omission never weakens a gate.
 
 The three engineering gates below remain **strict**; strict-by-default is how they apply by default.
 

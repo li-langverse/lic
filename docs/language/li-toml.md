@@ -32,7 +32,8 @@ Parser support may lag; the **policy** is fixed: any relaxation must be visible 
 
 | Variable | Effect |
 |----------|--------|
-| `LI_BUILD_VERIFY_LEAN=0` | Skip Lean verify on build (local dev); compiler should warn |
+| `--no-lean-verify` on `lic build` | Skip Lean verify on build (local dev); compiler warns |
+| `--allow-open-vc` on `lic build` | Allow open AutoVC goals (tests / emergency only) |
 
 Do not use undocumented env vars to silence gates in CI.
 

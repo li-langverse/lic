@@ -83,7 +83,7 @@ run_one() {
       fi
       ;;
     verify_open_ok)
-      if LI_ALLOW_OPEN_VC=1 "$LIC" build "$path" -o "$NULL_OUT" 2>/dev/null; then
+      if "$LIC" build --allow-open-vc "$path" -o "$NULL_OUT" 2>/dev/null; then
         li_test_pass "verify_open_ok $file"
         pass=$((pass + 1))
       else

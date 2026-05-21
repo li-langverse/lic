@@ -7,7 +7,7 @@ alwaysApply: true
 
 **Canonical:** `docs/ecosystem/strict-by-default.md`
 
-There is **no optional provability** by default. Mathematical proof, security, and performance gates run at **maximum** for every build/check. Users may **only relax** via **explicit** `li.toml` `[gates]` or **documented** env downgrades (for example `LI_BUILD_VERIFY_LEAN=0` for local dev with warning). Silence or omission never weakens a gate.
+There is **no optional provability** by default. Mathematical proof, security, and performance gates run at **maximum** for every build/check. Users may **only relax** via **explicit** `li.toml` `[gates]` or **documented** CLI flags (`--no-lean-verify`, `--allow-open-vc` on `lic build`). Silence or omission never weakens a gate.
 
 ## Forbidden (agents)
 

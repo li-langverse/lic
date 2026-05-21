@@ -176,7 +176,8 @@ When **`lic`**, **`lit`**, **`lip`**, or any **`li-std-*` / `li-*`** package rel
 | 2b | Types: generics PEP 695, Callable, Protocol | `2026-05-14-phase-02b-types-generics.md` (new) | Protocol structural tests |
 | 2c | Types: TypedDict, enums, collections | `2026-05-14-phase-02c-types-collections.md` (new) | dict/list/tuple tests |
 | 2d | Borrow + effects + `array[N,T]` | `2026-05-14-phase-02-typechecker.md` | borrow error tests |
-| 2g | **`def`**, Nim `object`, `private`/`public`, `import` | `.cursor/plans/nim_oop_and_def_e5f70493.plan.md` | `li-tests/encapsulation/` green |
+| 2g | **`def`**, Nim `object`, field `private`/`public`, `import` (v1) | `.cursor/plans/nim_oop_and_def_e5f70493.plan.md` | `li-tests/encapsulation/` green |
+| **2j** | **Full OOP** — methods/`self`, method visibility, traits, inheritance, object write-back | [2026-05-20-li-oop-roadmap.md](2026-05-20-li-oop-roadmap.md) | 2j-a…f exit gates in OOP plan |
 | 2h | **Python-math surface** (`**`, `//`, `%`, `for`/`range`, contract sugar, `old`) | same plan (Phase A0) | `li-tests/math_syntax/` green |
 | **2i** | **Math / linalg surface** (infix `*`, `+`, `dot`, `A @ B` — not user `simd(...)`) | [2026-05-16-li-math-linalg-surface.md](2026-05-16-li-math-linalg-surface.md) | `li-tests/math_linalg/`; docs samples |
 | 2e | Contracts + refinements | [proof-corpus-roadmap](../verification/proof-corpus-roadmap.md) | **Partial (PR #83):** call-site `requires`, refinements, AutoVC |
@@ -353,6 +354,7 @@ Track in phase **Doc** until each is checked:
 | `2026-05-14-plots-and-social.md` | **X-ready** benchmark + test plots |
 | `2026-05-16-li-httpd-plan.md` | Proved AI/agent HTTP gateway (li-httpd); nginx oracle only |
 | `.cursor/plans/nim_oop_and_def_e5f70493.plan.md` | Phase **2g** (objects/visibility/`def`) + **2h** (Python-math syntax audit) |
+| [2026-05-20-li-oop-roadmap.md](2026-05-20-li-oop-roadmap.md) | Phase **2j** (full OOP — methods, traits, inheritance; **not** httpd) |
 | `2026-05-16-li-package-scaffold.md` | **Pkg** — scaffold tool, skill, guide (same `li.toml` as lip) |
 | `2026-05-16-li-package-manager-lip.md` | **8-repo, 8a–8d, 8e, 8e-li** — three repos (`lic`/`lip`/`lit`), registry, proof+sig+coverage |
 | `2026-05-16-li-ecosystem-governance.md` | GitHub org policy, intl doc standards, PKG/REQ traceability, org repo templates |
@@ -374,7 +376,8 @@ Track in phase **Doc** until each is checked:
 - [x] Phase 2b — Generics + Protocol (PEP 695 params, TypeApp, Callable, Sized protocol)
 - [x] Phase 2c — Collections + TypedDict (list/dict/tuple, named tuple, enum)
 - [x] Phase 2d — Borrow + effects (lexical borrowck, raises IO/Alloc)
-- [x] Phase 2g — `def`, `object` + `private`/`public`, minimal `import` (`encapsulation` suite green; import parse-only)
+- [x] Phase 2g — `def`, `object` + field `private`/`public`, minimal `import` (`encapsulation` suite green; import parse-only; **not** full OOP)
+- [ ] Phase 2j — Full OOP — **not started:** methods/`self`, private methods, traits, inheritance — [OOP roadmap](2026-05-20-li-oop-roadmap.md)
 - [x] Phase 2h — Python-math operators `%`, `//`, `**` (`math_syntax` suite); `for`/`range` deferred
 - [ ] Phase 2i — Math / linalg surface — **partial:** 1d `float` `@`, `sum(array)`; matrix `@` deferred
 - [x] Phase 3 — MIR + LLVM codegen (`lic build`, minimal lower/emit; CFG/bounds IR deferred)
@@ -386,7 +389,7 @@ Track in phase **Doc** until each is checked:
 - [x] Phase 2e — Contracts + refinements — **merged (PR #83):** call-site `requires` (**E0304**), refinement types (**E0305**), if-guard VC discharge, import/extern; corpus [proof-corpus-roadmap.md](../verification/proof-corpus-roadmap.md); float/nontrivial ensures still open
 - [x] Phase 2f — Lean 4 verify — **partial (PR #83):** `lic build` + `check-autovc-open-goals.sh`; `LI_BUILD_VERIFY_LEAN=1` → semantics `lake build`; `contracts_verify/` 16/16; `sqrt_open_bound` = `verify_open_ok`; full kernel certificate still **G-lean** partial
 - [x] Phase 7 — Native HPC — **v1 gate:** simd + parallel for + OpenMP + `check-master-plan-gates.sh` (tier 1/2 perf advisory)
-- [ ] Phase 7d — Execution decorators — **partial (7d-a/b/d/e/c):** AST `check_module_policies` for disjoint; string heuristics for race exploits
+- [ ] Phase 7d — Execution decorators — **partial (7d-a/b/d/e/c):** AST `check_module_policies` for disjoint; proof builtins `disjoint_elem`/`disjoint_row`/`row_ok` in typecheck; string heuristics for race exploits (**7d-c** structured `disjoint=` still open)
 - [ ] Phase 7e — Math → SIMD/parallel lowering — **partial:** `ArrayDotF64` for 1d `float` `@`; SIMD matmul deferred
 - [x] Phase H — li-httpd infra — **`lis`** harness, mitigations, CI, workspace stubs ([implementation-status](https://github.com/li-langverse/lis/blob/main/docs/implementation-status.md))
 - [x] Phase H — li-httpd M1 `.li` — **partial:** TOML `match_route`, explain/validate-config, `httpd_serve_routed_once` oracle; **in flight:** [httpd-m1-impl](https://github.com/li-langverse/lic/pull/87), [httpd-m1-perf](https://github.com/li-langverse/lic/pull/84); **next:** merge reactor + real recv ([httpd-prerequisites](../ecosystem/httpd-prerequisites.md))
@@ -431,6 +434,7 @@ Runnable on `dev` after `./scripts/build.sh`:
 | v2 item | Why still open |
 |---------|----------------|
 | **2e–2f** | Real VC discharge in Lean kernel (not `True := trivial`) — corpus + backlog: [proof-corpus-roadmap.md](../verification/proof-corpus-roadmap.md) |
+| **2j** | Full OOP — methods, traits, inheritance, cross-module privacy — [2026-05-20-li-oop-roadmap.md](2026-05-20-li-oop-roadmap.md) |
 | **2i / 7e-b** | Matrix `@`, `sum`, Tier 1 math-only matmul vs C++ |
 | **7d-c** | Structured `disjoint=` without string policy |
 | **H** | li-httpd implementation |

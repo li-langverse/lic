@@ -13,7 +13,7 @@ Li is **correct first**, but user code should feel like **Python that keeps its 
 
 Inspired by Python ([PEP 20](https://peps.python.org/pep-0020/)): *Simple is better than complex. Readability counts. Explicit is better than implicit.*
 
-Full doc: `docs/language/philosophy.md`
+Full doc: `docs/language/philosophy.md` · Canonical casing: `docs/language/naming-conventions.md`
 
 ## Naming
 
@@ -21,10 +21,12 @@ Full doc: `docs/language/philosophy.md`
 |------|--------|----------|
 | **Import / package** | Domain dotted path | `import physics.runtime`, `import math` |
 | **GitHub repo** | `li-` + import (dots → hyphens) | `li-physics-runtime` |
-| **proc** | snake_case **verb phrase** | `step_world`, `apply_gravity`, `load_scene` |
-| **type / object** | PascalCase **noun** | `PhysicsWorld`, `Body` |
-| **variable** | snake_case; scope-sized | `time_step`, `i` in tiny loops |
+| **`def`** | snake_case **verb phrase** | `step_world`, `apply_gravity`, `load_scene` |
+| **type / object** (class name) | **PascalCase** `ClassName` | `PhysicsWorld`, `RigidBody`, `Vec3` |
+| **variable / field** | snake_case; scope-sized | `time_step`, `inv_mass`; `i` in tiny loops |
 | **bool** | `is_` / `has_` / `can_` | `is_stable`, `has_collision` |
+
+**Types:** PascalCase only (`RigidBody`). **Not** `rigid_body`, `physicsWorld`, or camelCase for type names.
 
 **Avoid in user-facing code:** `li_std_*`, `mgr`, `cfg`, `tmp` in public APIs, abbreviations that need a glossary.
 

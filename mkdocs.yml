@@ -107,6 +107,7 @@ nav:
       - li.toml manifest: language/li-toml.md
       - Overview: language/overview.md
       - Philosophy: language/philosophy.md
+      - Naming conventions: language/naming-conventions.md
       - Import style: language/import-style.md
   - Game development:
       - World Studio vision: game-dev/world-studio-vision.md

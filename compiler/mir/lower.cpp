@@ -698,6 +698,9 @@ std::string lower_expr_to(const Expr& e, const Module& module, std::vector<MirIn
           } else if (arg.kind == Expr::Kind::IntLit) {
             ma.is_literal = true;
             ma.int_value = arg.int_value;
+          } else if (arg.kind == Expr::Kind::FloatLit) {
+            ma.is_float_literal = true;
+            ma.float_value = arg.float_value;
           } else if (arg.kind == Expr::Kind::Ident) {
             ma.ident = arg.ident;
           }
@@ -710,6 +713,8 @@ std::string lower_expr_to(const Expr& e, const Module& module, std::vector<MirIn
           dest = std::string("__li_o___cr") + std::to_string(temp_counter++);
           emit_object_slots_r(module, *callee->ret_type, dest, out, float_names, i64_locals);
           collect_object_return_layout_r(module, *callee->ret_type, "", ins.object_layout);
+        } else if (callee->ret_type && callee->ret_type->name == "unit") {
+          dest.clear();
         } else {
           dest = fresh_temp();
         }
@@ -719,7 +724,7 @@ std::string lower_expr_to(const Expr& e, const Module& module, std::vector<MirIn
           float_names.insert(dest);
         }
         out.push_back(std::move(ins));
-        return dest;
+        return dest.empty() ? std::string{} : dest;
       }
       MirInsn ins;
       ins.op = MirOp::CallExtern;

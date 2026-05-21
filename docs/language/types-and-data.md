@@ -65,6 +65,8 @@ Allocation may carry `raises Alloc`.
 
 ## Named shapes
 
+Type and object names use **PascalCase** (`ClassName`) — see [Naming conventions](naming-conventions.md). Fields use **snake_case**.
+
 ```nim
 type Point = object
   x: float

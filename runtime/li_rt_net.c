@@ -143,9 +143,12 @@ static double g_rate_last_ts = 0.0;
 
 static int g_health_max_fails = 1;
 static int g_health_fail_timeout_sec = 10;
+static int g_strip_internal_headers = 1;
 
 #define HTTPD_MAX_UPSTREAM_PEERS 8
 #define HTTPD_POOL_PER_PEER 32
+/* Blocking prewarm of the full pool before listen can stall on single-threaded backends. */
+#define HTTPD_PREWARM_AT_START 2
 
 typedef struct {
   int32_t port;
@@ -198,6 +201,7 @@ static int g_lp_resp_parsing[HTTPD_MAX_CONN];
 #define PROXY_RESP_BODY_CLOSE 3
 
 static void upstream_pool_prewarm_all(void);
+static int httpd_filter_proxy_resp_headers(char* buf, int len, int cap);
 static void httpd_drain_upstream_fd(int fd);
 static int httpd_fd_readable(int fd);
 
@@ -1404,7 +1408,8 @@ static void upstream_pool_prewarm_all(void) {
     if (g_up_peers[i].down) {
       continue;
     }
-    for (int j = 0; j < HTTPD_POOL_PER_PEER; j++) {
+    int warmed = 0;
+    for (int j = 0; j < HTTPD_POOL_PER_PEER && warmed < HTTPD_PREWARM_AT_START; j++) {
       if (g_up_peers[i].fds[j] < 0) {
         int fd = tcp_connect_loopback_port(g_up_peers[i].port);
         if (fd >= 0) {
@@ -1412,6 +1417,7 @@ static void upstream_pool_prewarm_all(void) {
           tcp_tune_client(fd);
           g_up_peers[i].fds[j] = fd;
           g_up_peers[i].in_use[j] = 0;
+          warmed++;
         }
       }
     }
@@ -2181,6 +2187,19 @@ static void httpd_proxy_finish_ok(int epfd, int32_t slot) {
   int hdr_end = g_slots[slot].proxy_hdr_end;
   int conn = g_slots[slot].fd;
   if (g_proxy_snap_recording && g_proxy_snap_len > 0) {
+    int snap_hdr = hdr_end_at_c(g_proxy_snap, g_proxy_snap_len);
+    if (snap_hdr > 0) {
+      int new_hdr = httpd_filter_proxy_resp_headers(g_proxy_snap, snap_hdr, HTTPD_PROXY_SNAP_MAX);
+      if (new_hdr > 0 && new_hdr != snap_hdr) {
+        int tail = g_proxy_snap_len - snap_hdr;
+        if (tail > 0 && new_hdr + tail <= HTTPD_PROXY_SNAP_MAX) {
+          memmove(g_proxy_snap + new_hdr, g_proxy_snap + snap_hdr, (size_t)tail);
+          g_proxy_snap_len = new_hdr + tail;
+        } else {
+          g_proxy_snap_len = new_hdr;
+        }
+      }
+    }
     g_proxy_snap_ready = 1;
     g_proxy_snap_recording = 0;
   }
@@ -2632,6 +2651,65 @@ static void httpd_proxy_try_send_body(int epfd, int32_t slot) {
   }
 }
 
+static int httpd_header_line_is_x_internal(const char* line, int line_len) {
+  if (line_len < 12) {
+    return 0;
+  }
+  if (line_len >= 5 && (line[0] == 'H' || line[0] == 'h') && (line[1] == 'T' || line[1] == 't') &&
+      (line[2] == 'T' || line[2] == 't') && (line[3] == 'P' || line[3] == 'p') && line[4] == '/') {
+    return 0;
+  }
+  if (line_len >= 11 && (line[0] == 'x' || line[0] == 'X') && (line[1] == '-') &&
+      (line[2] == 'i' || line[2] == 'I') && (line[3] == 'n' || line[3] == 'N') &&
+      (line[4] == 't' || line[4] == 'T') && (line[5] == 'e' || line[5] == 'E') &&
+      (line[6] == 'r' || line[6] == 'R') && (line[7] == 'n' || line[7] == 'N') &&
+      (line[8] == 'a' || line[8] == 'A') && (line[9] == 'l' || line[9] == 'L') && line[10] == '-') {
+    return 1;
+  }
+  return 0;
+}
+
+static int httpd_filter_proxy_resp_headers(char* buf, int len, int cap) {
+  if (!g_strip_internal_headers || len <= 0 || len >= cap) {
+    return len;
+  }
+  char tmp[4096];
+  int w = 0;
+  int i = 0;
+  while (i < len && w < (int)sizeof(tmp) - 3) {
+    int line_start = i;
+    while (i < len && buf[i] != '\n') {
+      i++;
+    }
+    int line_len = i - line_start;
+    int drop = 0;
+    if (line_len > 0) {
+      int eff = line_len;
+      if (eff > 0 && buf[line_start + eff - 1] == '\r') {
+        eff--;
+      }
+      drop = httpd_header_line_is_x_internal(buf + line_start, eff);
+    }
+    if (!drop) {
+      if (w + line_len + 2 > (int)sizeof(tmp)) {
+        break;
+      }
+      memcpy(tmp + w, buf + line_start, (size_t)line_len);
+      w += line_len;
+      tmp[w++] = '\r';
+      tmp[w++] = '\n';
+    }
+    if (i < len && buf[i] == '\n') {
+      i++;
+    }
+  }
+  if (w <= 0 || w >= cap) {
+    return len;
+  }
+  memcpy(buf, tmp, (size_t)w);
+  return w;
+}
+
 static int httpd_proxy_relay_to_client(int epfd, int32_t slot, const char* data, size_t len) {
   httpd_slot_t* s = &g_slots[slot];
   if (len == 0) {
@@ -2680,10 +2758,6 @@ static int httpd_proxy_resp_finish_headers(int epfd, int32_t slot) {
     s->proxy_resp_body_left = cl;
     if (g_proxy_resp_cl_cached < 0) {
       g_proxy_resp_cl_cached = cl;
-      g_proxy_resp_hdr_bytes_cached = hdr_end;
-      if (hdr_end > 0 && hdr_end <= (int)sizeof(g_proxy_resp_hdr_copy)) {
-        memcpy(g_proxy_resp_hdr_copy, s->proxy_resp_hdr_acc, (size_t)hdr_end);
-      }
     }
   } else if (hdr_has_token_c(s->proxy_resp_hdr_acc, hdr_end, "Transfer-Encoding:") &&
              hdr_has_token_c(s->proxy_resp_hdr_acc, hdr_end, "chunked")) {
@@ -2702,12 +2776,44 @@ static int httpd_proxy_resp_finish_headers(int epfd, int32_t slot) {
     s->proxy_resp_chunk_remain = 0;
     s->proxy_resp_chunk_line_len = 0;
   }
+  int orig_hdr_end = hdr_end;
+  int buffered_body = s->proxy_resp_hdr_len - orig_hdr_end;
+  char body_stash[8192];
+  if (buffered_body < 0) {
+    buffered_body = 0;
+  }
+  if (buffered_body > (int)sizeof(body_stash)) {
+    return -1;
+  }
+  if (buffered_body > 0) {
+    memcpy(body_stash, s->proxy_resp_hdr_acc + orig_hdr_end, (size_t)buffered_body);
+  }
+  int filtered_len = httpd_filter_proxy_resp_headers(s->proxy_resp_hdr_acc, orig_hdr_end,
+                                                    (int)sizeof(s->proxy_resp_hdr_acc));
+  if (filtered_len < 0) {
+    return -1;
+  }
+  hdr_end = filtered_len;
+  s->proxy_resp_hdr_len = filtered_len;
+  if (cl >= 0) {
+    g_proxy_resp_hdr_bytes_cached = filtered_len;
+    if (filtered_len > 0 && filtered_len <= (int)sizeof(g_proxy_resp_hdr_copy)) {
+      memcpy(g_proxy_resp_hdr_copy, s->proxy_resp_hdr_acc, (size_t)filtered_len);
+    }
+  }
   if (httpd_proxy_relay_to_client(epfd, slot, s->proxy_resp_hdr_acc, (size_t)hdr_end) < 0) {
     return -1;
   }
-  int tail = s->proxy_resp_hdr_len - hdr_end;
-  if (tail > 0) {
-    return httpd_proxy_resp_feed(epfd, slot, s->proxy_resp_hdr_acc + hdr_end, (size_t)tail);
+  if (buffered_body > 0) {
+    if (httpd_proxy_relay_to_client(epfd, slot, body_stash, (size_t)buffered_body) < 0) {
+      return -1;
+    }
+    if (s->proxy_resp_body_mode == PROXY_RESP_BODY_CL && s->proxy_resp_body_left > 0) {
+      s->proxy_resp_body_left -= buffered_body;
+      if (s->proxy_resp_body_left <= 0) {
+        httpd_proxy_finish_ok(epfd, slot);
+      }
+    }
   }
   return 0;
 }
@@ -3640,6 +3746,7 @@ int32_t httpd_load_runtime_config_i(intptr_t path) {
   g_rate_last_ts = 0.0;
   g_health_max_fails = 1;
   g_health_fail_timeout_sec = 10;
+  g_strip_internal_headers = 1;
   char line[4096];
   while (fgets(line, sizeof(line), f)) {
     trim_line(line);
@@ -3684,6 +3791,12 @@ int32_t httpd_load_runtime_config_i(intptr_t path) {
       if (g_health_fail_timeout_sec < 1) {
         g_health_fail_timeout_sec = 1;
       }
+    } else if (strcmp(key, "strip_internal_headers") == 0) {
+      g_strip_internal_headers =
+          (strcmp(val, "0") == 0 || strcmp(val, "false") == 0) ? 0 : 1;
+    } else if (strcmp(key, "tls_mode") == 0) {
+      /* M1.5: parsed for validate-config; termination not in C yet */
+      (void)val;
     } else if (strcmp(key, "route") == 0 && g_route_count < HTTPD_MAX_ROUTES) {
       char method[16] = "";
       char path[512] = "";

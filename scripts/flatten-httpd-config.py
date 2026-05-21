@@ -51,6 +51,19 @@ def flatten(cfg_path: Path) -> list[str]:
             rp = (cfg_path.parent / rp).resolve()
         lines.append(f"document_root={rp}")
 
+    headers = data.get("headers") or {}
+    if isinstance(headers, dict):
+        si = headers.get("strip_internal")
+        if si is not None:
+            on = str(si).lower() not in ("0", "false", "no")
+            lines.append(f"strip_internal_headers={1 if on else 0}")
+
+    tls = data.get("tls") or {}
+    if isinstance(tls, dict):
+        mode = tls.get("mode")
+        if mode:
+            lines.append(f"tls_mode={str(mode).strip()}")
+
     health = data.get("health") or {}
     if isinstance(health, dict):
         if health.get("max_fails") is not None:

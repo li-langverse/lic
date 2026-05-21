@@ -48,10 +48,12 @@ li_phase "httpd config + routing (M1 prep)"
 chmod +x "$ROOT/li-tests/run_httpd_config.sh"
 "$ROOT/li-tests/run_httpd_config.sh"
 chmod +x "$ROOT/scripts/test-rate-limit-429.sh" "$ROOT/scripts/test-rate-limit-per-route.sh"
-chmod +x "$ROOT/scripts/test-passive-upstream-health.sh" "$ROOT/scripts/lic-validate-httpd-config.sh"
+chmod +x "$ROOT/scripts/test-passive-upstream-health.sh" "$ROOT/scripts/test-strip-internal-headers.sh"
+chmod +x "$ROOT/scripts/lic-validate-httpd-config.sh"
 "$ROOT/scripts/test-rate-limit-429.sh"
 "$ROOT/scripts/test-rate-limit-per-route.sh"
 "$ROOT/scripts/test-passive-upstream-health.sh"
+"$ROOT/scripts/test-strip-internal-headers.sh"
 for ex in "$ROOT/packages/li-httpd/examples"/*.toml; do
   "$ROOT/scripts/lic-validate-httpd-config.sh" "$ex"
 done

@@ -65,6 +65,12 @@ todos:
   - id: m1-wave7-health-validate
     content: "M1 wave 7: passive upstream health; lic-validate-httpd-config wrapper + route desugar gate"
     status: completed
+  - id: m1-wave8-tls-headers
+    content: "M1 wave 8: li-tls scaffold; strip x-internal response headers; https_static tier5 stub"
+    status: completed
+  - id: m15-tls-auto
+    content: "TLS auto: self-signed dev certs on setup; ACME Let's Encrypt obtain+renew; secure TOML modes"
+    status: pending
   - id: m15-tls-auto
     content: "TLS auto: self-signed dev certs on setup; ACME Let's Encrypt obtain+renew; secure TOML modes"
     status: pending
@@ -112,7 +118,8 @@ isProject: false
 | **4** (done) | Global rate limit 429; runtime routes via `flatten-httpd-config.py`; `explain-httpd-config.py` | `scripts/test-rate-limit-429.sh`; tier5 `rate_limit_429` (benchmarks catalog) | exploit nightly smuggling still M2 prep |
 | **5** (done) | Routing table cases + strict overlap reject; `packages/li-log` stub | `rate_limit_429` tier5 verify row; `li-tests/routing/*` | — |
 | **6** (done) | C access log (stderr RFC3339); per-route rate via `[route_limits]` + runtime `route=…\|rps\|burst` | `test-rate-limit-per-route.sh` | — |
-| **7** (done) | Passive upstream health (`health_max_fails`, recovery timeout); `lic-validate-httpd-config.sh` | `test-passive-upstream-health.sh`; validate all examples in CI | M1.5 TLS; api_key rate buckets |
+| **7** (done) | Passive upstream health (`health_max_fails`, recovery timeout); `lic-validate-httpd-config.sh` | `test-passive-upstream-health.sh`; validate all examples in CI | — |
+| **8** (done) | `packages/li-tls` scaffold; strip `x-internal-*` on proxy responses; tier5 `https_static` (nightly skip) | `test-strip-internal-headers.sh`; `https_static` verify_skip row | TLS terminate + ACME; SSE |
 
 ---
 

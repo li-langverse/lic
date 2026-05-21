@@ -107,6 +107,17 @@ def validate(cfg: dict) -> list[str]:
         if mf is not None and int(mf) < 1:
             errs.append("health.max_fails must be >= 1")
 
+    tls = cfg.get("tls") or {}
+    if isinstance(tls, dict):
+        mode = str(tls.get("mode") or "").strip()
+        if mode and mode not in ("self_signed", "lets_encrypt", "off", "none"):
+            errs.append(f"tls.mode unsupported in M1 scaffold: {mode!r}")
+        if mode in ("self_signed", "lets_encrypt"):
+            if not tls.get("cert") and mode == "self_signed":
+                errs.append("tls.cert required for self_signed (M1.5)")
+            if mode == "lets_encrypt":
+                errs.append("tls.mode lets_encrypt is M1.5 — not active in runtime yet")
+
     return errs
 
 

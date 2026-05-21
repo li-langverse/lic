@@ -1,9 +1,9 @@
 # Release notes: 2026-05-21 — scientific-agent-tutorial-plan
 
-**Status:** Ready for review  
-**Repo:** li-langverse/lic  
-**PR:** branch `cursor/scientific-agent-tutorial-plan-e8f9`  
-**PH / REQ:** Docs tutorial plan; supports PH-5b/PH-7e onboarding and ecosystem gates  
+**Status:** Ready for review
+**Repo:** li-langverse/lic
+**PR:** branch `cursor/scientific-agent-tutorial-plan-e8f9`
+**PH / REQ:** Docs tutorial plan; supports PH-5b/PH-7e onboarding and ecosystem gates
 **Author:** agent
 
 ---

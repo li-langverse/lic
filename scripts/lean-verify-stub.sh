@@ -6,6 +6,10 @@ SEM="$ROOT/docs/semantics"
 if [[ -x "$(command -v lake)" && -f "$SEM/lakefile.lean" ]]; then
   echo "lean: running lake in docs/semantics"
   (cd "$SEM" && lake build) || exit $?
+  if [[ -f "$ROOT/build/generated/AutoVC.lean" ]]; then
+    echo "lean: typechecking generated AutoVC"
+    (cd "$SEM" && lake build AutoVC Discharge) || exit $?
+  fi
   if [[ "${LI_BUILD_VERIFY_LEAN:-}" == "1" ]]; then
     chmod +x "$ROOT/scripts/check-autovc-open-goals.sh"
   fi

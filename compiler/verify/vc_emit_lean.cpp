@@ -111,10 +111,10 @@ std::string lean_type_name(const TypeExpr& ty, const Module& module) {
       return "Int";
     case TypeKind::Array:
       if (ty.elem) {
-        return "Array " + lean_type_name(*ty.elem, module) + " " +
+        return "LiArray " + lean_type_name(*ty.elem, module) + " " +
                std::to_string(ty.array_size);
       }
-      return "Array Unit 0";
+      return "LiArray Unit 0";
     case TypeKind::Refinement:
       if (ty.refinement_base) {
         return lean_type_name(*ty.refinement_base, module);
@@ -485,7 +485,7 @@ bool write_vcs_lean(const Module& module, const std::string& path, std::string* 
     return false;
   }
   out << "-- Auto-generated VC obligations (Phase 2e). Props typecheck in Lean; discharge in 2f.\n";
-  out << "import Init.Data.Float\nimport Core\n\nnamespace AutoVC\n\n";
+  out << "import Init.Data.Float\nimport Core\n\nopen Li\n\nnamespace AutoVC\n\n";
   for (const auto& proc : module.procs) {
     if (proc.is_extern) {
       continue;

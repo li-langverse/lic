@@ -66,6 +66,9 @@ export LI_HPC_COMPETITIVE_STRICT=0
 "$ROOT/li-tests/tooling/hpc_competitive_registry.sh" || li_warn "hpc competitive registry — see benchmarks/competitive/registry.toml"
 
 if command -v lake >/dev/null 2>&1; then
+  li_phase "G-lean AutoVC lake typecheck (LiArray)"
+  chmod +x "$ROOT/li-tests/tooling/autovc_lake_typecheck.sh"
+  "$ROOT/li-tests/tooling/autovc_lake_typecheck.sh" || fail "autovc lake typecheck"
   li_phase "G-lean strict build smoke (--strict-lean)"
   chmod +x "$ROOT/li-tests/tooling/glean_strict_build_smoke.sh"
   "$ROOT/li-tests/tooling/glean_strict_build_smoke.sh" || fail "glean strict smoke"

@@ -24,14 +24,21 @@ jobs:
           curl -sSf https://raw.githubusercontent.com/leanprover/elan/master/elan-init.sh | sh -s -- -y --default-toolchain stable
           echo "$HOME/.elan/bin" >> "$GITHUB_PATH"
 
-      - name: Discharge corpus + sqrt AutoVC + lake build
+      - name: Discharge corpus + P-linalg AutoVC lake typecheck
         env:
           LI_REPO_ROOT: ${{ github.workspace }}
           LI_BUILD_VERIFY_LEAN: "1"
           LI_BUILD_VERIFY_LEAN_STRICT: "1"
         run: |
-          chmod +x scripts/check-autovc-open-goals.sh li-tests/tooling/discharge_trivial_lean.sh
+          chmod +x scripts/check-autovc-open-goals.sh scripts/lean-verify-stub.sh \
+            li-tests/tooling/discharge_trivial_lean.sh \
+            li-tests/tooling/discharge_linalg_int_lean.sh \
+            li-tests/tooling/contracts_verify_lean.sh \
+            li-tests/tooling/glean_strict_build_smoke.sh
           ./li-tests/tooling/discharge_trivial_lean.sh
           LIC="${{ github.workspace }}/build/compiler/lic/lic"
           "$LIC" build li-tests/contracts_verify/sqrt_contract.li -o /dev/null
-          (cd docs/semantics && lake build)
+          ./li-tests/tooling/discharge_linalg_int_lean.sh
+          "$LIC" build li-tests/contracts_verify/linalg_dot4_float_closed.li -o /dev/null
+          (cd docs/semantics && lake build AutoVC Discharge)
+          ./li-tests/tooling/glean_strict_build_smoke.sh

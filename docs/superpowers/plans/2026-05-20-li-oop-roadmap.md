@@ -23,7 +23,7 @@
 | Private **methods** | **Done (2j-b)** | `private def` not merged on import; `private_method_use.li` |
 | Object mutation to caller | **Done (2j-c)** | `c.bump()`, `rigid_integrate(body, …)` without return-assign |
 | Inheritance / `override` | **Done (2j-d)** | `object of Base`, static subtyping, `@override` signature check |
-| Traits (`Hash`, …) | **Spec only** | [language design § Hash](../specs/2026-05-14-li-language-design.md) |
+| Traits (`Hash`, …) | **Done (2j-e)** | `type Hash = trait`; `def f[T: Hash]`; `trait_hash_impl.li` / `trait_missing_impl.li` |
 | Cross-module private **fields** | **Done** | `leak_imported_vault.li` compile_fail |
 
 **Honest label:** **2g = records + field privacy**, not full OOP. This plan is **2j**.

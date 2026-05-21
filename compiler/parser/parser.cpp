@@ -60,7 +60,9 @@ struct Parser {
   std::unique_ptr<Expr> parse_primary();
   std::unique_ptr<Expr> parse_postfix(std::unique_ptr<Expr> base);
   TypeExpr parse_type();
-  std::vector<std::string> parse_type_params();
+  std::vector<std::string> parse_type_params(std::vector<std::string>* bounds_out = nullptr);
+  std::vector<ProcDecl> parse_trait_methods();
+  ProcDecl parse_trait_method();
   std::vector<TypeField> parse_type_fields();
   Param parse_param();
   std::unique_ptr<Expr> parse_contract_expr();
@@ -546,7 +548,7 @@ TypeExpr Parser::parse_type() {
   return ty;
 }
 
-std::vector<std::string> Parser::parse_type_params() {
+std::vector<std::string> Parser::parse_type_params(std::vector<std::string>* bounds_out) {
   std::vector<std::string> params;
   if (!accept(TokenKind::LBracket)) {
     return params;
@@ -559,6 +561,17 @@ std::vector<std::string> Parser::parse_type_params() {
       }
       params.push_back(std::string(cur().text));
       i++;
+      if (bounds_out) {
+        bounds_out->push_back({});
+        if (accept(TokenKind::Colon)) {
+          if (!at(TokenKind::Ident)) {
+            diags.error(loc(cur()), "expected trait name after ':' in type parameter");
+          } else {
+            bounds_out->back() = std::string(cur().text);
+            i++;
+          }
+        }
+      }
     } while (accept(TokenKind::Comma));
   }
   expect(TokenKind::RBracket, "']'");
@@ -1022,7 +1035,7 @@ ProcDecl Parser::parse_proc(bool is_extern) {
   proc.span = {name.start, name.end};
   proc.name = std::string(name.text);
   i++;
-  proc.type_params = parse_type_params();
+  proc.type_params = parse_type_params(&proc.type_param_bounds);
   expect(TokenKind::LParen, "'('");
   skip_param_layout();
   if (!at(TokenKind::RParen)) {
@@ -1120,6 +1133,14 @@ TypeAlias Parser::parse_type_alias() {
     }
     return alias;
   }
+  if (at(TokenKind::Ident) && cur().text == "trait") {
+    alias.alias_kind = AliasKind::Trait;
+    i++;
+    skip_newlines();
+    alias.trait_methods = parse_trait_methods();
+    skip_newlines();
+    return alias;
+  }
   if (at(TokenKind::KwObject)) {
     alias.alias_kind = AliasKind::Object;
     i++;
@@ -1175,6 +1196,54 @@ ImportDecl Parser::parse_import() {
   }
   imp.span = {start.start, tokens[i > 0 ? i - 1 : i].end};
   return imp;
+}
+
+ProcDecl Parser::parse_trait_method() {
+  ProcDecl proc;
+  if (at(TokenKind::KwPrivate)) {
+    proc.visibility = Visibility::Private;
+    i++;
+  } else if (at(TokenKind::KwPublic)) {
+    i++;
+  }
+  if (!accept_def_kw()) {
+    diags.error(loc(cur()), "expected 'def' in trait method");
+    return proc;
+  }
+  const Token name = cur();
+  proc.span = {name.start, name.end};
+  proc.name = std::string(name.text);
+  i++;
+  expect(TokenKind::LParen, "'('");
+  skip_param_layout();
+  if (!at(TokenKind::RParen)) {
+    do {
+      proc.params.push_back(parse_param());
+      skip_param_layout();
+    } while (accept(TokenKind::Comma));
+  }
+  skip_param_layout();
+  expect(TokenKind::RParen, "')'");
+  if (accept(TokenKind::Arrow)) {
+    proc.ret_type = parse_type();
+  }
+  skip_newlines();
+  while (at(TokenKind::KwRequires) || at(TokenKind::KwEnsures) || at(TokenKind::KwDecreases) ||
+         at(TokenKind::KwInvariant)) {
+    proc.contracts.push_back(parse_contract());
+  }
+  skip_newlines();
+  return proc;
+}
+
+std::vector<ProcDecl> Parser::parse_trait_methods() {
+  std::vector<ProcDecl> methods;
+  skip_newlines();
+  while (at(TokenKind::KwPrivate) || at(TokenKind::KwPublic) || at_fn_kw()) {
+    methods.push_back(parse_trait_method());
+    skip_newlines();
+  }
+  return methods;
 }
 
 std::vector<TypeField> Parser::parse_type_fields() {

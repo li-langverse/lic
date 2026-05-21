@@ -17,7 +17,7 @@ namespace {
 
 enum class TyKind {
   Int, Int64, Float, Bool, Str, Binary, Array, List, Dict, Tuple, TypedDict, Object, Enum, Named,
-  TypeVar, Protocol, Callable, Simd
+  TypeVar, Protocol, Trait, Callable, Simd
 };
 
 struct Ty;
@@ -109,6 +109,7 @@ struct AliasEntry {
   const TypeExpr* definition = nullptr;
   const std::vector<TypeField>* fields = nullptr;
   const std::vector<std::string>* enum_variants = nullptr;
+  const std::vector<ProcDecl>* trait_methods = nullptr;
   bool is_protocol = false;
 };
 
@@ -288,7 +289,8 @@ struct Ctx {
     if (a->kind == TyKind::Enum) {
       return a->name == b->name && a->enum_variants == b->enum_variants;
     }
-    if (a->kind == TyKind::TypeVar || a->kind == TyKind::Named || a->kind == TyKind::Protocol) {
+    if (a->kind == TyKind::TypeVar || a->kind == TyKind::Named || a->kind == TyKind::Protocol ||
+        a->kind == TyKind::Trait) {
       return a->name == b->name;
     }
     if (a->kind == TyKind::Int) {
@@ -447,6 +449,92 @@ struct Ctx {
     return t;
   }
 
+  std::unique_ptr<TypeExpr> substitute_self_in_type(const TypeExpr& te,
+                                                    const std::string& object_name) const {
+    auto out = clone_type(te);
+    if (out->kind == TypeKind::Named && out->name == "Self") {
+      out->name = object_name;
+      return out;
+    }
+    if (out->elem) {
+      out->elem = substitute_self_in_type(*out->elem, object_name);
+    }
+    if (out->refinement_base) {
+      out->refinement_base = substitute_self_in_type(*out->refinement_base, object_name);
+    }
+    if (out->callable_ret) {
+      out->callable_ret = substitute_self_in_type(*out->callable_ret, object_name);
+    }
+    for (auto& arg : out->type_args) {
+      if (arg) {
+        arg = substitute_self_in_type(*arg, object_name);
+      }
+    }
+    return out;
+  }
+
+  bool proc_signatures_match_trait_impl(const ProcDecl& required, const ProcDecl& impl,
+                                        const std::string& object_name) {
+    if (impl.params.size() != required.params.size()) {
+      return false;
+    }
+    for (std::size_t n = 0; n < required.params.size(); ++n) {
+      const std::unique_ptr<TypeExpr> want_te =
+          substitute_self_in_type(required.params[n].type, object_name);
+      const TyPtr want = resolve_type_expr(*want_te);
+      const TyPtr got = resolve_type_expr(impl.params[n].type);
+      if (!same_kind(got, want)) {
+        return false;
+      }
+    }
+    if (static_cast<bool>(required.ret_type) != static_cast<bool>(impl.ret_type)) {
+      return false;
+    }
+    if (required.ret_type && impl.ret_type) {
+      const std::unique_ptr<TypeExpr> want_ret =
+          substitute_self_in_type(*required.ret_type, object_name);
+      const TyPtr want = resolve_type_expr(*want_ret);
+      const TyPtr got = resolve_type_expr(*impl.ret_type);
+      if (!same_kind(got, want)) {
+        return false;
+      }
+    }
+    return true;
+  }
+
+  bool object_implements_trait(const std::string& object_name, const std::string& trait_name) {
+    const auto tit = aliases.find(trait_name);
+    if (tit == aliases.end() || tit->second.alias_kind != AliasKind::Trait ||
+        !tit->second.trait_methods) {
+      return false;
+    }
+    for (const ProcDecl& req : *tit->second.trait_methods) {
+      const std::string impl_name = object_name + "_" + req.name;
+      const auto pit = procs.find(impl_name);
+      if (pit == procs.end()) {
+        return false;
+      }
+      if (!proc_signatures_match_trait_impl(req, *pit->second, object_name)) {
+        return false;
+      }
+    }
+    return true;
+  }
+
+  bool value_satisfies_trait(const TyPtr& value, const std::string& trait_name) {
+    if (!value || value->kind != TyKind::Object || value->name.empty()) {
+      return false;
+    }
+    return object_implements_trait(value->name, trait_name);
+  }
+
+  TyPtr make_trait(std::string name) {
+    auto t = std::make_shared<Ty>();
+    t->kind = TyKind::Trait;
+    t->name = std::move(name);
+    return t;
+  }
+
   bool satisfies_protocol(const TyPtr& value, const TyPtr& protocol) const {
     if (protocol->kind != TyKind::Protocol) {
       return same_kind(value, protocol);
@@ -578,6 +666,9 @@ struct Ctx {
         }
         if (it->second.alias_kind == AliasKind::Object && it->second.fields) {
           return resolve_object_type(te.name, te.span);
+        }
+        if (it->second.alias_kind == AliasKind::Trait) {
+          return make_trait(te.name);
         }
         if (it->second.alias_kind == AliasKind::Enum && it->second.enum_variants) {
           return resolve_enum(te.name, *it->second.enum_variants, te.span);
@@ -797,14 +888,20 @@ struct Ctx {
         const auto pit = procs.find(e.ident);
         if (pit != procs.end()) {
           const ProcDecl& callee = *pit->second;
+          const std::map<std::string, TyPtr> saved_tv = type_vars;
+          for (const auto& tp : callee.type_params) {
+            type_vars[tp] = make_type_var(tp);
+          }
           for (const auto& arg : e.args) {
             (void)type_of(*arg);
           }
           check_call_args(e);
+          TyPtr ret_ty = make_int();
           if (callee.ret_type) {
-            return resolve_type_expr(*callee.ret_type);
+            ret_ty = resolve_type_expr(*callee.ret_type);
           }
-          return make_int();
+          type_vars = saved_tv;
+          return ret_ty;
         }
         for (const auto& arg : e.args) {
           (void)type_of(*arg);
@@ -943,6 +1040,43 @@ struct Ctx {
     }
   }
 
+  void check_generic_trait_bounds(const ProcDecl& callee, const Expr& call) {
+    if (callee.type_params.empty()) {
+      return;
+    }
+    std::map<std::string, TyPtr> subst;
+    for (std::size_t n = 0; n < call.args.size() && n < callee.params.size(); ++n) {
+      const TyPtr arg_ty = type_of(*call.args[n]);
+      const TyPtr param_ty = resolve_type_expr(callee.params[n].type);
+      if (param_ty->kind != TyKind::TypeVar) {
+        continue;
+      }
+      const auto existing = subst.find(param_ty->name);
+      if (existing != subst.end()) {
+        if (!same_kind(existing->second, arg_ty)) {
+          diags.error(loc(call.span), "conflicting generic inference for '" + param_ty->name +
+                                           "' in call to '" + call.ident + "'");
+        }
+      } else {
+        subst[param_ty->name] = arg_ty;
+      }
+    }
+    for (std::size_t i = 0; i < callee.type_params.size(); ++i) {
+      if (i >= callee.type_param_bounds.size() || callee.type_param_bounds[i].empty()) {
+        continue;
+      }
+      const std::string& tp = callee.type_params[i];
+      const std::string& bound = callee.type_param_bounds[i];
+      const auto sit = subst.find(tp);
+      if (sit == subst.end()) {
+        continue;
+      }
+      if (!value_satisfies_trait(sit->second, bound)) {
+        diags.error(loc(call.span), "type does not implement trait '" + bound + "'");
+      }
+    }
+  }
+
   void check_call_args(const Expr& call) {
     if (call.kind != Expr::Kind::Call) {
       return;
@@ -956,6 +1090,10 @@ struct Ctx {
       return;
     }
     const ProcDecl& callee = *it->second;
+    const std::map<std::string, TyPtr> saved_type_vars = type_vars;
+    for (const auto& tp : callee.type_params) {
+      type_vars[tp] = make_type_var(tp);
+    }
     for (std::size_t n = 0; n < call.args.size() && n < callee.params.size(); ++n) {
       const TyPtr arg_ty = type_of(*call.args[n]);
       const TyPtr param_ty = resolve_type_expr(callee.params[n].type);
@@ -963,6 +1101,9 @@ struct Ctx {
         if (param_ty->kind == TyKind::Protocol) {
           diags.error(loc(call.span),
                       "argument does not satisfy Protocol '" + param_ty->name + "'");
+        } else if (param_ty->kind == TyKind::Trait) {
+          diags.error(loc(call.span),
+                      "argument does not implement trait '" + param_ty->name + "'");
         } else {
           diags.error(loc(call.span), "argument type mismatch in call to '" + call.ident + "'");
         }
@@ -971,6 +1112,8 @@ struct Ctx {
         check_value_matches_refinement(callee.params[n].type, *call.args[n], call.span);
       }
     }
+    check_generic_trait_bounds(callee, call);
+    type_vars = saved_type_vars;
     const RequiresCheckResult req = check_requires_at_call(callee, call, proof_facts());
     if (req == RequiresCheckResult::Violated) {
       const auto explained = explain_requires_violation(callee, call, proof_facts());
@@ -1312,6 +1455,7 @@ TypecheckResult typecheck_module(const Module& module) {
     entry.definition = &alias.definition;
     entry.fields = &alias.fields;
     entry.enum_variants = &alias.enum_variants;
+    entry.trait_methods = &alias.trait_methods;
     entry.is_protocol =
         alias.alias_kind == AliasKind::Type && alias.definition.kind == TypeKind::Named &&
         alias.definition.name == "Protocol";

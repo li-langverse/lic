@@ -43,7 +43,7 @@ struct TypeExpr {
   bool tuple_variadic = false;
 };
 
-enum class AliasKind { Type, TypedDict, Enum, Object };
+enum class AliasKind { Type, TypedDict, Enum, Object, Trait };
 
 struct Param {
   Span span;
@@ -165,6 +165,8 @@ struct ProcDecl {
   bool is_async = false;
   std::vector<Decorator> decorators;
   std::vector<std::string> type_params;
+  /// Parallel to `type_params` — trait name after `:` (e.g. `def f[T: Hash]`).
+  std::vector<std::string> type_param_bounds;
   std::vector<Param> params;
   std::optional<TypeExpr> ret_type;
   std::vector<std::string> raises;
@@ -182,6 +184,8 @@ struct TypeAlias {
   TypeExpr definition;
   std::vector<TypeField> fields;
   std::vector<std::string> enum_variants;
+  /// Required method signatures for `type Name = trait` (bodies empty).
+  std::vector<ProcDecl> trait_methods;
 };
 
 struct Module {

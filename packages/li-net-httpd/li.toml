@@ -6,8 +6,8 @@ license = "Apache-2.0 OR MIT"
 description = "Li package li-httpd"
 
 [dependencies]
-li-http = { path = "../li-http" }
 li-net = { path = "../li-net" }
+# path = { path = "../other" }   # lip 8b+
 # registry = "1.0.0"             # lip 8d+
 
 [package.metadata.li]

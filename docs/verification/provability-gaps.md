@@ -1,6 +1,6 @@
 # Provability gaps (current compiler)
 
-**Last updated:** 2026-05-16  
+**Last updated:** 2026-05-20  
 **Audience:** contributors, package authors, anyone relying on `lic build` as a proof certificate  
 
 Li’s **north star** is: user logic is proved before ship; runtime failures for proved programs → **~0%**. That is the **target**, not a complete description of **`lic` today**.
@@ -22,7 +22,7 @@ This page is the **honest inventory** of what is **not** fully proved or not yet
 | **Parallel disjointness** | Lean + structured proofs | **Partial** — substring heuristics in `policy.cpp` |
 | **Index bounds (release)** | Refinement / proved → no user traps | **Partial** — MIR/runtime paths still evolving |
 | **Decorators (`@parallel`, …)** | Compile-time elaboration + proofs | **Partial** — parse + policy (7d-a/e); no MIR lowering yet |
-| **Math / linalg surface** | Static shapes, compile-time lowering | **Not started** (2i / 7e) |
+| **Math / linalg surface** | Static shapes, compile-time lowering | **Partial** — shape tests + **P-linalg** closed VCs (2i / 7e) |
 | **Zero user runtime errors** | All above + 2f gate | **In progress** — see table below |
 
 !!! warning "Do not overclaim in docs or packages"
@@ -41,7 +41,7 @@ Status legend: **Missing** · **Stub** · **Partial** · **CI only** · **Done**
 | **G-par** | `parallel for` safety | Proved iteration independence | **Partial** — AST `check_module_policies` + string exploit patterns in `policy.cpp` | **7b**, **7d-c** | `race_shared_memory`, `decorator_exploits` |
 | **G-stdlib** | Prelude / std seal | User cannot shadow builtin or `std/` names | **Partial** — `check_stdlib_seal` + `resolve_imports` for `std.*` / workspace; cycle detect at load | **4s** | `li-tests/stdlib_seal/`, `li-tests/modules/` |
 | **G-dec** | Execution decorators | Static elaboration; reserved names; no runtime | **Partial** — parse + policy + `MirFn.decorators` tags; prelude table shared | **7d** | `decorator_exploits/`, `decorators/` |
-| **G-math** | Math / `A @ B` | Shape errors at compile time; no user `simd(...)` | **Partial** — 1d `float` `@` → `ArrayDotF64` LLVM loop | **2i**, **7e** | `li-tests/math_linalg/` |
+| **G-math** | Math / `A @ B` | Shape errors at compile time; no user `simd(...)` | **Partial** — 1d/2d `@` lowering + **P-linalg** proof corpus (`linalg_*_closed.li`, loop dot open) | **2i**, **7e**, **2f** | `li-tests/math_linalg/`, `li-tests/contracts_verify/linalg_*` |
 | **G-bnd** | Bounds in release | No reliance on `li_bounds_fail` for proved indices | **Partial** — architecture lists MIR bounds; not full refinement | **2e**, **3** | [Architecture](../architecture/overview.md); codegen paths |
 | **G-def** | `def` / `object` / visibility | Handbook surface | **Partial+** — methods/`self`, `private def`, MIR in-out write-back (**2j-a/b/c**); inheritance/traits open (**2j-d–f**) | **2j** | `li-tests/encapsulation/`, `composable/import_physics_runtime.li` |
 | **G-oop** | Full OOP | Methods, traits, inheritance, cross-module encapsulation | **Partial** — traits + bounds (**2j-e**); method VCs (**2j-f**) open | **2j** | `li-tests/encapsulation/trait_*.li`, `inheritance_*.li` |
@@ -122,8 +122,9 @@ flowchart LR
 |-------|----------------|
 | `li-tests/race_shared_memory/` | Policy + typecheck **reject** bad parallel patterns (not Lean) |
 | `li-tests/decorator_exploits/` | **Planned** — reserved names, macro hijack (7d-e) |
-| `li-tests/math_linalg/` | **Partial** — 1d float `@` lowering (2i/7e) |
-| `li-tests/contracts_verify/` | **Partial** — `sqrt_contract` real float Props; `discharge_trivial.li` fully discharged (2f slice) |
+| `li-tests/math_linalg/` | **Partial** — 1d/2d `@`, element-wise, matmul compile tests (2i/7e) |
+| `li-tests/contracts_verify/` | **Partial** — `sqrt_contract` float Props; **P-linalg** closed int dot/sum/matmul entry; `linalg_dot4_int_loop_open` intentional open |
+| `li-tests/tooling/discharge_linalg_int_lean.sh` | P-linalg closed specimens → zero open AutoVC goals |
 | `li-tests/tooling/vc_emit_contracts.sh` | `sqrt_contract` AutoVC uses `≥` / `Float.abs`, not `True` stubs |
 | `li-tests/tooling/discharge_trivial_lean.sh` | `discharge_trivial.li` → zero open Prop goals + `lake build` when Lean installed |
 | `li-tests/prove_reject/` | Rejection of forbidden constructs (where present) |

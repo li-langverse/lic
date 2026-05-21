@@ -4,9 +4,11 @@ set -euo pipefail
 ROOT="$(cd "$(dirname "$0")/../.." && pwd)"
 export LI_REPO_ROOT="$ROOT"
 chmod +x "$ROOT/li-tests/tooling/discharge_trivial_lean.sh" \
-  "$ROOT/li-tests/tooling/discharge_const_lean.sh"
+  "$ROOT/li-tests/tooling/discharge_const_lean.sh" \
+  "$ROOT/li-tests/tooling/discharge_linalg_int_lean.sh"
 "$ROOT/li-tests/tooling/discharge_trivial_lean.sh"
 "$ROOT/li-tests/tooling/discharge_const_lean.sh"
+"$ROOT/li-tests/tooling/discharge_linalg_int_lean.sh"
 LIC="${LIC:-$("$ROOT/scripts/resolve-lic.sh")}"
 "$LIC" build "$ROOT/li-tests/contracts_verify/index_refinement.li" -o /dev/null
 chmod +x "$ROOT/scripts/check-autovc-open-goals.sh"

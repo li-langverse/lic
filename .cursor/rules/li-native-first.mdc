@@ -37,7 +37,7 @@ Learn from other systems’ **failure modes**; don’t treat their stacks as man
 |-------|---------|--------|
 | **`lic` compiler** | C++ bootstrap | Existing; don’t grow new product features in C++. |
 | **CI / scaffolding** | Small shell scripts | `li-tests`, gates, spin-up — keep thin; prefer Li for new tooling when practical. |
-| **Demo showcase** | — | **Do not add** under `lic/` — use sibling **`li-studio-app`** (`demo/`). See `studio-naming.md` + `lic-compiler-repo-boundary.mdc`. |
+| **Demo showcase** | — | **Do not add** under `lic/` — use sibling **`studio-app`** (`demo/`). See `package-import-naming.md`. |
 
 ## Examples
 

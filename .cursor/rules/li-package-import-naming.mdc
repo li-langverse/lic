@@ -1,0 +1,58 @@
+---
+description: Official Li packages — repo/registry name must match import path
+globs:
+  - packages/**
+  - "**/PUBLISH.md"
+  - "**/li.toml"
+  - docs/ecosystem/**
+alwaysApply: true
+---
+
+# Package naming = import path
+
+**Rule:** Any package **officially released** by li-langverse is named **exactly how users import it** — not `li-<name>` unless the import is literally `li.<name>`.
+
+## Released package repos
+
+| Import in Li code | GitHub repo | Registry / `name` in `li.toml` |
+|-------------------|-------------|--------------------------------|
+| `import studio` | **`studio`** | `studio` |
+| `import studio.ai` | **`studio.ai`** | `studio.ai` |
+| `import world` | **`world`** | `world` |
+| `import sim.scientific` | **`sim.scientific`** | `sim.scientific` |
+| `import store.realtime` | **`store.realtime`** | `store.realtime` |
+
+**Submodules:** dotted imports → **dotted repo names** (`studio.ai`, not `studio-ai` or `li-studio-ai`).
+
+## Not import-aligned (different rules)
+
+| Kind | Naming | Example |
+|------|--------|---------|
+| **Compiler / tooling** | Historical `lic`, `lip`, `lit` | Not lip packages |
+| **Std slices** | `li-std-*` registry convention | See roadmap official-packages |
+| **Application** (binary, demo, mocks) | Product suffix OK | **`studio-app`** — not imported as `import studio-app` |
+
+## Monorepo (`lic/packages/li-studio`)
+
+Paths like `packages/li-studio/` are **integration mirrors** only. When publishing or creating the org repo:
+
+- Set `import_name` / publish target to **`studio`**
+- Do **not** register new official packages as `li-studio` on lip
+
+```toml
+# li.toml — target state for published packages
+[package]
+name = "studio"   # matches: import studio
+
+[package.metadata.li]
+import_name = "studio"
+github_repo = "studio"
+```
+
+## Checklist before a new official package
+
+1. What is the **`import`** line? → that is the repo slug and registry name.
+2. Is it a **submodule** of an existing import? → use a dot (`parent.child`).
+3. Is it an **app** users run, not import? → use a product name (e.g. `studio-app`), not a fake `li-*` package prefix.
+
+**Docs:** `docs/ecosystem/package-import-naming.md`

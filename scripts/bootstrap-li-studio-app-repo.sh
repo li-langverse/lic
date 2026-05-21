@@ -5,7 +5,7 @@
 set -euo pipefail
 
 ROOT="$(cd "$(dirname "$0")/.." && pwd)"
-DEST="${1:-$ROOT/../li-studio-app}"
+DEST="${1:-$ROOT/../studio-app}"
 
 if [[ -e "$DEST" && -n "$(ls -A "$DEST" 2>/dev/null)" ]]; then
   echo "Refusing to overwrite non-empty: $DEST" >&2
@@ -14,7 +14,7 @@ fi
 
 mkdir -p "$DEST"/{demo,docs,scripts}
 
-echo "→ $DEST (li-studio-app — Li World Studio application repo)"
+echo "→ $DEST (studio-app — Li World Studio application repo)"
 
 cp -a "$ROOT/deploy/studio-demo/." "$DEST/demo/"
 
@@ -50,15 +50,16 @@ for f in "$DEST/scripts/"*.sh "$DEST/scripts/"*.mjs; do
 done
 
 cat > "$DEST/README.md" <<'EOF'
-# li-studio-app
+# studio-app
 
-**Li World Studio** — the editor application (demo, mockups, native shell).
+**Li World Studio** — the editor application (demo, mockups, native shell). **Not** a lip import.
 
 | Repo kind | Name | This repo? |
 |-----------|------|------------|
-| Application | **li-studio-app** | ✅ yes |
-| Package `import studio` | **li-studio** | ❌ sibling |
-| Package `import world` | **li-world** | ❌ sibling |
+| Application | **studio-app** | ✅ yes |
+| `import studio` | **studio** | ❌ sibling package |
+| `import studio.ai` | **studio.ai** | ❌ sibling package |
+| `import world` | **world** | ❌ sibling package |
 
 ```bash
 export LIC_ROOT=../lic

@@ -1,16 +1,14 @@
-# Moved → `li-studio-app` repo
+# Moved → `studio-app` repo
 
-**Li World Studio** (brand) lives in the **`li-studio-app`** repo — not `lic`, and not to be confused with the **`li-studio`** package.
+**Li World Studio** (brand) → application repo **`studio-app`**.  
+Package **`studio`** / **`studio.ai`** are separate import-aligned repos — see [package-import-naming.md](../../docs/ecosystem/package-import-naming.md).
 
 | | |
 |--|--|
-| **App repo** | [github.com/li-langverse/li-studio-app](https://github.com/li-langverse/li-studio-app) |
-| **Path** | `li-studio-app/demo/` (was `lic/deploy/studio-demo/`) |
-| **Naming guide** | [studio-naming.md](../../docs/ecosystem/studio-naming.md) |
+| **App repo** | `github.com/li-langverse/studio-app` |
+| **Package repos** | `studio`, `studio.ai`, `world`, … |
+| **Path** | `studio-app/demo/` |
 
 ```bash
-cd lic
-./scripts/bootstrap-li-studio-app-repo.sh ../li-studio-app
+./scripts/bootstrap-li-studio-app-repo.sh ../studio-app
 ```
-
-**Deprecated repo slug:** `li-world-studio` → use **`li-studio-app`**.

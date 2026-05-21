@@ -1,6 +1,6 @@
 # Agent instructions (Li compiler / `lic`)
 
-**Repo boundary:** `lic` is **compiler-only** — Studio UX/demo → **`li-studio-app`**; `import studio` → **`li-studio`** package. See `docs/ecosystem/studio-naming.md`.
+**Repo boundary:** `lic` = compiler only. **Imports:** published repo name = import (`studio`, `studio.ai`). **App:** `studio-app`. See `docs/ecosystem/package-import-naming.md`.
 
 1. Read [strict-by-default](docs/ecosystem/strict-by-default.md) — proof, security, performance **always on**; **no optional provability**.
 2. Read [engineering-standards](https://github.com/li-langverse/roadmap/blob/main/docs/ecosystem/engineering-standards.md) — **functionality, security, performance** (strict).

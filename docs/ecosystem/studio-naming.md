@@ -1,64 +1,47 @@
-# Studio naming — brand vs repos vs packages
+# Studio naming — brand vs app vs packages
 
-**Problem:** `li-world-studio` vs `li-studio` sounds like the same thing. **`li-world`** is already the ECS package — “world” in a product repo name adds noise.
-
-**Status:** Canonical naming (2026-05). Supersedes `li-world-studio` as a repo slug.
+**Package repos** follow [package-import-naming.md](package-import-naming.md) — repo name = import path.
 
 ---
 
-## Three layers (use the right word)
+## Four layers
 
-| Layer | Name | GitHub repo | Li import / binary |
-|-------|------|-------------|-------------------|
-| **Brand** (what users say) | **Li World Studio** | — | — |
-| **Application** (editor you open) | **Studio app** | **`li-studio-app`** | binary: `studio-app` (was `world-studio`) |
-| **Library** (shell API in code) | **studio package** | **`li-studio`** | `import studio` |
-| **Agent library** | **studio.ai** | **`li-studio-ai`** | `import studio.ai` |
-| **World simulation** | **world package** | **`li-world`** | `import world` — **not** the editor |
+| Layer | Name | GitHub repo | In code |
+|-------|------|-------------|---------|
+| **Brand** | Li World Studio | — | — |
+| **Application** (editor, demo) | Studio app | **`studio-app`** | binary `studio-app` — **not imported** |
+| **Package** | studio | **`studio`** | `import studio` |
+| **Submodule** | studio.ai | **`studio.ai`** | `import studio.ai` |
+| **Package** | world | **`world`** | `import world` — ECS, not the editor |
 
-**Mnemonic:** **`li-studio`** = code you import · **`li-studio-app`** = repo you clone to run mocks and ship the editor.
-
----
-
-## Deprecated → use instead
-
-| Avoid (confusing) | Use |
-|-------------------|-----|
-| `li-world-studio` (repo) | **`li-studio-app`** |
-| “the studio repo” (ambiguous) | **`li-studio-app`** or **`li-studio`** — pick one |
-| `world-studio` (binary target) | **`studio-app`** |
-| Putting demos in `lic/deploy/` | **`li-studio-app/demo/`** |
+**Mnemonic:** **`studio`** = import · **`studio-app`** = product you run · **`studio.ai`** = agent submodule.
 
 ---
 
-## Sibling folder layout
+## Deprecated slugs
+
+| Avoid | Use |
+|-------|-----|
+| `li-world-studio`, `li-studio-app` confusion with `li-studio` prefix on packages | App: **`studio-app`** · package: **`studio`** |
+| `li-studio`, `li-studio-ai` as **published** names | **`studio`**, **`studio.ai`** |
+| Demos in `lic/deploy/` | **`studio-app/demo/`** |
+
+---
+
+## Sibling layout
 
 ```text
-~/li-langverse/
-  lic/              # compiler only
-  li-studio-app/    # ← product: demo/, mockups, UX docs, native app
-  li-studio/        # ← package mirror: import studio
-  li-studio-ai/
-  li-world/         # ← ECS / realms (not the editor)
-  li-ui/
-  li-gui/
+lic/           # compiler
+studio-app/    # application (demo, mocks, native shell)
+studio/        # import studio
+studio.ai/     # import studio.ai
+world/         # import world
+ui/
+gui/
 ```
-
----
-
-## Env vars
 
 ```bash
-export LIC_ROOT=../lic
-export STUDIO_APP_ROOT=../li-studio-app   # not LI_WORLD_STUDIO_ROOT
+./scripts/bootstrap-li-studio-app-repo.sh ../studio-app
 ```
 
----
-
-## Bootstrap app repo from lic
-
-```bash
-./scripts/bootstrap-li-studio-app-repo.sh ../li-studio-app
-```
-
-See [li-studio-repos.md](li-studio-repos.md) for full repo map.
+See [li-studio-repos.md](li-studio-repos.md).

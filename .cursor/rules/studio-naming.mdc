@@ -14,13 +14,14 @@ alwaysApply: false
 | You mean | Use | Never call it |
 |----------|-----|----------------|
 | **Li World Studio** (product brand) | User-facing name in docs | A repo slug |
-| **Editor / demo / mockups** | Repo **`li-studio-app`** | `li-world-studio`, “the studio repo” |
-| **`import studio`** API | Repo **`li-studio`** (package) | The application |
-| **`import world`** ECS | Repo **`li-world`** | The editor |
+| **Editor / demo / mockups** | Repo **`studio-app`** | `li-world-studio`, `li-studio-app` |
+| **`import studio`** | Repo **`studio`** | `li-studio` as published name |
+| **`import studio.ai`** | Repo **`studio.ai`** | `li-studio-ai` |
+| **`import world`** | Repo **`world`** | `li-world`; not the editor |
 
 ```bash
 # Bootstrap application repo from lic (one-time)
-./scripts/bootstrap-li-studio-app-repo.sh ../li-studio-app
+./scripts/bootstrap-li-studio-app-repo.sh ../studio-app
 ```
 
-**Canonical doc:** `docs/ecosystem/studio-naming.md`
+**Packages:** `docs/ecosystem/package-import-naming.md` · **App:** `docs/ecosystem/studio-naming.md`

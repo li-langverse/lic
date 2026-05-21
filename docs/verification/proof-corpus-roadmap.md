@@ -59,7 +59,7 @@
 | `prove_reject/weak_ensures_true.li` | reject | **E0303** |
 | `cve_patterns/cwe676_extern_no_contract.li` | reject | Extern must have contracts |
 
-## Run results (2026-05-20, `main` after PR **#83** / **#88**)
+## Run results (2026-05-21, `main` after PR **#151** P-linalg)
 
 | Suite | Result | Notes |
 |-------|--------|-------|
@@ -79,7 +79,7 @@ Priority order aligned with [provability-gaps](provability-gaps.md) and **2e →
 | **P-ensures-witness** | MIR-linked `ensures` for non-literal returns | `witnessed_ensures` partial | `caller()`, `use_positive.li`, physics smokes |
 | **P-float** | `Float.abs`, sqrt error bounds | **G-vc** open (`sqrt_open_bound`) | `sqrt_open_bound.li` + `Li.Discharge` lemmas |
 | **P-loop** | `while` invariant preservation | Few loop specimens | New `contracts_verify/loop_invariant_*.li` |
-| **P-linalg** | Matrix/vector shapes (`@`, slices) | **G-math** partial — closed int dot/sum/matmul entry VCs; loop dot + `@` lowering open | `contracts_verify/linalg_*`, `math_linalg/*` |
+| **P-linalg** | Matrix/vector shapes (`@`, slices) | **Partial** — **closed (#151):** `linalg_dot4_int_closed`, `linalg_sum4_int_closed`, `linalg_mat2_entry00_int_closed`. **Open:** `linalg_dot4_int_loop_open`, float `vec3_dot` Props, 2D array CallProc | `contracts_verify/linalg_*`, `math_linalg/*` |
 | **P-par** | `parallel for` disjointness | **G-par** string heuristics only | Lean specs for `disjoint=` (7d-c) |
 | **P-dec** | Decorators never run at runtime | **G-dec** no MIR lowering | `decorator_exploits/` + elaboration proofs |
 | **P-bnd** | Release builds omit `li_bounds_fail` | **G-bnd** | Refined indices + codegen proof |

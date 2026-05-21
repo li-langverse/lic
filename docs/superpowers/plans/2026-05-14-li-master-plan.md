@@ -188,8 +188,8 @@ When **`lic`**, **`lit`**, **`lip`**, or any **`li-std-*` / `li-*`** package rel
 | 5b | Benchmarks & sims | `2026-05-14-benchmarks-and-simulations.md` | **Verified** Tier 2 physics + cross-lang CSV + **X plots** |
 | 6 | Self-host (post-live) | `2026-05-14-phase-06-self-host.md` | `lic` built by li (bootstrap seed) |
 | 7 | Native HPC (SIMD + OpenMP) | `2026-05-14-phase-07-native-hpc.md` | Pure-Li simd_dot + md; race suite; fuzz daily |
-| **7d** | **Execution decorators** (`@parallel`, `@vectorized`, `@cpu`/`@gpu`, strict user names) | `.cursor/plans/li_execution_decorators_7c6e3b42.plan.md` | `decorator_exploits` + `decorators/` CI; handbook |
-| **7e** | **Math → SIMD/parallel lowering** (formulas in source, intrinsics internal only) | [2026-05-16-li-math-linalg-surface.md](2026-05-16-li-math-linalg-surface.md) § 7e | Tier 1 benches math-only Li; ≤1.2× C++ |
+| **7d** | **Execution decorators** | `.cursor/plans/li_execution_decorators_7c6e3b42.plan.md` | **Partial:** `@vectorized` scope (#150); **G-par** disjoint= open |
+| **7e** | **Math → SIMD lowering** | [2026-05-16-li-math-linalg-surface.md](2026-05-16-li-math-linalg-surface.md) § 7e | **Partial:** pure-Li tier-1 (#148); perf bar open |
 | **H** | **li-httpd** (proved agent gateway) | `2026-05-16-li-httpd-plan.md` | **M1 partial:** routing match + LLVM str ABI; **next:** TOML route loader in Li |
 | **Obs** | Fuzz dashboard + plan canvas | `scripts/export-fuzz-status.sh` + `canvases/*.canvas.tsx` | Nightly updates `.canvas.data.json` sidecars |
 | **Pkg** | **Package scaffold** (dirs + `li.toml`) | [2026-05-16-li-package-scaffold.md](2026-05-16-li-package-scaffold.md) | `li-new-package` + skill + creating-packages guide (**`lic`** repo) |
@@ -306,8 +306,9 @@ Maps **master plan phases** to gap IDs and what “mathematical provability esta
 | 7b | Structured `disjoint=` | **G-par** | Disjointness from AST, not `policy.cpp` strings | simd-parallel, gaps |
 | 7d-a | Decorator parse | **G-dec** | (partial) parse only — mark **Partial** | decorators spec |
 | 7d-b–e | Decorator elaborate + exploits | **G-dec** | Elaboration + `decorator_exploits` CI green | language/decorators.md (new), fast-math guide |
-| 2i | Math surface types | **G-math** | `A @ B` / `dot` shape errors at typecheck | linear-algebra.md (new), math spec |
-| 7e | Math → SIMD MIR | **G-math** | Tier 1 Li sources math-only; lowering proved or documented | gaps, benchmarks plan |
+| 2i | Math surface types | **G-math** | `A @ B` / `dot` shape errors at typecheck; **P-linalg** closed VCs (#151) | linear-algebra.md, math spec, `contracts_verify/linalg_*` |
+| 7e | Math → SIMD MIR | **G-math** | Tier 1 Li sources math-only; lowering proved or documented | gaps, benchmarks plan, `discharge_linalg_int_lean.sh` |
+| 2f | P-linalg corpus | **G-lean**, **G-math** | Closed dot/sum/matmul-entry; loop dot open | [proof-corpus-roadmap](../verification/proof-corpus-roadmap.md) |
 | 2g / 2h | `def`, math syntax | — | Syntax only unless tied to VC | language overview |
 | 4 | Deferred annotations | **G-ann** | PEP 649 resolve at check time | architecture diagram |
 | H / GPU | Device / async | **G-gpu**, **G-async** | Device laws in Lean + codegen | decorator spec, effects |
@@ -321,7 +322,7 @@ Track in phase **Doc** until each is checked:
 - [x] **Doc-a** — gap register complete and linked site-wide (mkdocs nav; README audit ongoing)  
 - [x] **Doc-b** — [linear-algebra.md](../language/linear-algebra.md) stub + [decorators.md](../language/decorators.md); fast-math guide audit partial  
 - [x] **Doc-b** — [language design spec](../specs/2026-05-14-li-language-design.md) banner: “implementation status → provability-gaps”  
-- [ ] **Doc-c** — phase plan files (02, 03, 07) link **G-*** in exit gates  
+- [x] **Doc-c** — phase plan files (02, 03, 07) link **G-*** in exit gates  
 - [x] **Doc-d** — `.cursor/skills/build-li-master-plan/SKILL.md` includes gap-register update step  
 - [x] **Doc-e** — `check-doc-provability-claims.sh` in `scripts/ci.sh`  
 
@@ -377,9 +378,9 @@ Track in phase **Doc** until each is checked:
 - [x] Phase 2c — Collections + TypedDict (list/dict/tuple, named tuple, enum)
 - [x] Phase 2d — Borrow + effects (lexical borrowck, raises IO/Alloc)
 - [x] Phase 2g — `def`, `object` + field `private`/`public`, minimal `import` (`encapsulation` suite green; import parse-only; **not** full OOP)
-- [ ] Phase 2j — Full OOP — **in progress:** **2j-a…f done** (method call-site `requires` + AutoVC); traits/Lean method `ensures` sugar deferred — [OOP roadmap](2026-05-20-li-oop-roadmap.md)
-- [x] Phase 2h — Python-math operators `%`, `//`, `**` (`math_syntax` suite); `for`/`range` deferred
-- [ ] Phase 2i — Math / linalg surface — **partial:** 1d `@`/`dot`, `sum`, element-wise `+ - * /` (**2i-a**), 2d `@` (**2i-c**); `**`/broadcast deferred
+- [x] Phase 2j — Full OOP surface — **2j-a…f done** (#83+); Lean method/trait `ensures` sugar still **G-oop** open — [OOP roadmap](2026-05-20-li-oop-roadmap.md)
+- [x] Phase 2h — Python-math operators `%`, `//`, `**` (`math_syntax` suite); `for`/`range` deferred (**G-math-syn**)
+- [ ] Phase 2i — Math / linalg surface — **partial:** **2i-a/c** on `main` (#148); **2i-b** `norm`/reductions; same-length `**`/named `axpy` — no broadcast
 - [x] Phase 3 — MIR + LLVM codegen (`lic build`, minimal lower/emit; CFG/bounds IR deferred)
 - [x] Phase 4 — Runtime + stdlib
 - [x] Phase 4s — Stdlib seal (prelude/`std/` names cannot be shadowed; `stdlib_seal/` CI)
@@ -387,10 +388,10 @@ Track in phase **Doc** until each is checked:
 - [x] Phase 5b — Benchmarks & simulations (harness + **X plots** skeleton on `dev`)
 - [x] Phase 6 — Self-host (bootstrap seed: `bootstrap/lic/main.li` → `build/lic-from-li`)
 - [x] Phase 2e — Contracts + refinements — **merged (PR #83):** call-site `requires` (**E0304**), refinement types (**E0305**), if-guard VC discharge, import/extern; corpus [proof-corpus-roadmap.md](../verification/proof-corpus-roadmap.md); float/nontrivial ensures still open
-- [x] Phase 2f — Lean 4 verify — **partial (PR #83):** `lic build` + `check-autovc-open-goals.sh`; `LI_BUILD_VERIFY_LEAN=1` → semantics `lake build`; `contracts_verify/` 16/16; `sqrt_open_bound` = `verify_open_ok`; full kernel certificate still **G-lean** partial
+- [x] Phase 2f — Lean 4 verify — **partial (#83, #151):** AutoVC + open-goal script; **P-linalg** closed corpus (`discharge_linalg_int_lean.sh`); `contracts_verify/` **22/22**; intentional open: `sqrt_open_bound`, `linalg_dot4_int_loop_open`; **G-lean** / **G-vc** still open — [still open gaps](../verification/provability-gaps.md#still-open-report-every-session)
 - [x] Phase 7 — Native HPC — **v1 gate:** simd + parallel for + OpenMP + `check-master-plan-gates.sh` (tier 1/2 perf advisory)
-- [ ] Phase 7d — Execution decorators — **partial (7d-a/b/d/e/c):** AST `check_module_policies` for disjoint; proof builtins `disjoint_elem`/`disjoint_row`/`row_ok` in typecheck; string heuristics for race exploits (**7d-c** structured `disjoint=` still open)
-- [ ] Phase 7e — Math → SIMD/parallel lowering — **partial:** math benches + docs (**7e-a/b/c/d/e** partial); **7e-e:** `ArrayBinOpF64` SIMD gather/scatter; `@vectorized` decorator lowering deferred
+- [ ] Phase 7d — Execution decorators — **partial (#150 7d-c):** `@vectorized` on `for` → `ArraySimdScope`; **7d-b** lanes=4; **open:** structured `disjoint=` (**G-par**), `@parallel` MIR elaboration
+- [ ] Phase 7e — Math → SIMD/parallel lowering — **partial (#148, #150):** 1d/2d `@`, element-wise, tier-1 pure-Li benches, `ArrayBinOpF64`/`ArrayDotF64` SIMD; **open:** tier-1 **≤1.2× C++**, loop/dot Lean proofs, **2i-b**
 - [x] Phase H — li-httpd infra — **`lis`** harness, mitigations, CI, workspace stubs ([implementation-status](https://github.com/li-langverse/lis/blob/main/docs/implementation-status.md))
 - [x] Phase H — li-httpd M1 `.li` — **partial:** TOML `match_route`, explain/validate-config, `httpd_serve_routed_once` oracle; **in flight:** [httpd-m1-impl](https://github.com/li-langverse/lic/pull/87), [httpd-m1-perf](https://github.com/li-langverse/lic/pull/84); **next:** merge reactor + real recv ([httpd-prerequisites](../ecosystem/httpd-prerequisites.md))
 - [x] Phase Pkg — Package scaffold + governance stubs ([scaffold](2026-05-16-li-package-scaffold.md), [governance](2026-05-16-li-ecosystem-governance.md); `li.toml` = [lip § A3](2026-05-16-li-package-manager-lip.md))
@@ -424,21 +425,23 @@ Track in phase **Doc** until each is checked:
 Runnable on `dev` after `./scripts/build.sh`:
 
 - Phases **0–6**, **2g**, **2h**, **7** (core), **Pkg**, **Doc**, **8-sync**, **8e-li**
-- **77+** `li-tests` suites (simd, parallel, decorators, stdlib_seal, math, CVE, encapsulation, …)
-- **2e partial:** `build/generated/AutoVC.lean` every `lic build`
-- **7e partial:** 1d float `@` → `ArrayDotF64` (4-wide gather SIMD when N≥4)
-- **7d partial:** parse, policy, `MirFn.decorators`, `no_vectorize` / `@vectorized(lanes=4)` codegen gate (**7d-b**); loop elaboration deferred
+- **176** `li-tests` manifest entries (`run_all.sh --ci` on `main`)
+- **2e/2f partial:** `build/generated/AutoVC.lean` every `lic build`; **P-linalg** closed VCs (#151)
+- **7e partial:** 1d/2d float `@`, element-wise SIMD, pure-Li tier-1 `simd_dot` / `matmul_*` (#148)
+- **7d partial:** `@vectorized(lanes=4)` + scoped `for` (**#150**); structured `disjoint=` still open
 
 ### Full master plan — **not complete** (v2 backlog)
 
-| v2 item | Why still open |
-|---------|----------------|
-| **2e–2f** | Real VC discharge in Lean kernel (not `True := trivial`) — corpus + backlog: [proof-corpus-roadmap.md](../verification/proof-corpus-roadmap.md) |
-| **2j** | Full OOP — methods, traits, inheritance, cross-module privacy — [2026-05-20-li-oop-roadmap.md](2026-05-20-li-oop-roadmap.md) |
-| **2i / 7e-b** | Matrix `@`, `sum`, Tier 1 math-only matmul vs C++ |
-| **7d-c** | Structured `disjoint=` without string policy |
-| **H** | li-httpd implementation |
-| **8b–8d v2** | Git registry deps, full ed25519 trust store, remote registry REST |
-| **8-sync** | Push org repos + green remote CI |
+| v2 item | Gap ID(s) | Why still open |
+|---------|-----------|----------------|
+| **2e–2f** | **G-lean**, **G-vc**, **G-trust** | Kernel discharge; float/loop VCs — [still open](../verification/provability-gaps.md#still-open-report-every-session) · [proof-corpus-roadmap](../verification/proof-corpus-roadmap.md) |
+| **2i / 7e** | **G-math** | **2i-b**, tier-1 perf bar, loop-dot proof, 2D array CallProc |
+| **7d** | **G-par**, **G-dec** | Structured `disjoint=`; decorator elaboration |
+| **2j proofs** | **G-oop** | Method/trait Lean `ensures` (surface done) |
+| **H** | — | li-httpd reactor + real recv |
+| **8b–8d v2** | — | Remote registry, full trust store |
+| **Vision-LLM** | — | Agent JSON diagnostics completion |
+
+**Open G-* register:** every row in [provability-gaps.md](../verification/provability-gaps.md#still-open-report-every-session) — **none Done**; **Partial** is the best current status.
 
 **“Master plan done”** per original spec = all tracker rows **plus** proved `lic build` **plus** shipped lip/lit/httpd — **not claimed**. Use **Lic monorepo v1** for what ships from this repository today.

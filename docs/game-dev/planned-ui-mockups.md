@@ -35,11 +35,13 @@ Optional **local PNG gallery** (gitignored under `.artifacts/studio-mockups/`):
 
 Three palettes via `data-theme` on `<html>` (top bar swatches):
 
-| Theme | Use | Agent accent | Pass |
-|-------|-----|--------------|------|
-| **aurora** (default) | Balanced studio | `#6ee7d4` mint | `#5ee0a8` |
-| **ember** | Gaming / warm | `#ffb86c` amber | `#7dd9a0` |
-| **slate** | Scientific / pro | `#8ec8ff` sky | `#62c995` |
+| Theme | Use | Agent accent | Gate OK (`lic build · PASS`) |
+|-------|-----|--------------|------------------------------|
+| **aurora** (default) | Balanced studio | `#9eb8ff` periwinkle | `#c9b066` champagne gold |
+| **ember** | Gaming / warm | `#ffb86c` amber | `#d4af37` engine gold (not UE `#FFE000`) |
+| **slate** | Scientific / pro | `#8ec8ff` sky | `#9ec5e8` frost blue |
+
+No mint/teal “success green”. **Warn** stays orange (`--warn`) so it never clashes with pass gold.
 
 Shared surfaces (aurora): `--bg-deep` `#0b0d12`, `--bg-surface` `#12151c`, `--accent` `#7c9cff`
 

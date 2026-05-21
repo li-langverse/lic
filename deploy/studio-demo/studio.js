@@ -25,7 +25,7 @@ function syncCanvasColors() {
     pass: g("--canvas-pass"),
     violet: g("--canvas-violet"),
     coral: g("--canvas-coral"),
-    greenDark: g("--canvas-green-dark"),
+    terrain: g("--canvas-terrain"),
     fail: g("--fail"),
     warn: g("--warn"),
   };
@@ -175,15 +175,15 @@ function drawRocket(t) {
   ctx.save();
   ctx.translate(x, y);
   ctx.rotate(-0.05);
-  ctx.fillStyle = C.elevated;
+  ctx.fillStyle = "";
   ctx.fillRect(-18, -50, 36, 70);
-  ctx.fillStyle = C.fail;
+  ctx.fillStyle = "#f85149";
   ctx.beginPath();
   ctx.moveTo(0, 30);
   ctx.lineTo(-14, 55);
   ctx.lineTo(14, 55);
   ctx.fill();
-  ctx.fillStyle = C.warn;
+  ctx.fillStyle = "#ffa657";
   ctx.globalAlpha = 0.7 + 0.3 * Math.sin(t * 0.3);
   ctx.beginPath();
   ctx.ellipse(0, 42, 10, 18 + Math.sin(t * 0.4) * 6, 0, 0, Math.PI * 2);
@@ -198,8 +198,8 @@ function drawRacing(t) {
   const w = canvas.width;
   const h = canvas.height;
   const grad = ctx.createLinearGradient(0, 0, 0, h);
-  grad.addColorStop(0, C.greenDark);
-  grad.addColorStop(1, C.bg);
+  grad.addColorStop(0, C.terrain);
+  grad.addColorStop(1, "");
   ctx.fillStyle = grad;
   ctx.fillRect(0, 0, w, h);
   ctx.strokeStyle = C.border;
@@ -212,9 +212,9 @@ function drawRacing(t) {
     ctx.stroke();
   }
   const carX = (t * 4) % (w + 100) - 50;
-  ctx.fillStyle = C.fail;
+  ctx.fillStyle = "#ff6b6b";
   ctx.fillRect(carX, h * 0.55, 90, 28);
-  ctx.fillStyle = C.surface2;
+  ctx.fillStyle = "#21262d";
   ctx.fillRect(carX + 15, h * 0.52, 40, 18);
   ctx.fillStyle = C.pass;
   ctx.font = "12px monospace";
@@ -250,7 +250,7 @@ function drawRobot(t) {
   ctx.beginPath();
   ctx.arc(x, y, 14, 0, Math.PI * 2);
   ctx.fill();
-  ctx.fillStyle = C.elevated;
+  ctx.fillStyle = "";
   ctx.font = "13px sans-serif";
   ctx.fillText("6-DOF · mobile base", 24, h - 30);
 }
@@ -268,7 +268,7 @@ function drawDrug(t) {
     const x = 80 + i * ((w - 160) / 3);
     ctx.fillStyle = i === stage ? C.accent : C.border;
     ctx.fillRect(x - 40, 40, 80, 36);
-    ctx.fillStyle = "#fff";
+    ctx.fillStyle = "#e6edf3";
     ctx.font = "12px sans-serif";
     ctx.textAlign = "center";
     ctx.fillText(s, x, 64);
@@ -288,7 +288,7 @@ function drawDrug(t) {
   ctx.beginPath();
   ctx.arc(cx, cy, 100, 0, Math.PI * 2);
   ctx.stroke();
-  ctx.fillStyle = C.elevated;
+  ctx.fillStyle = "";
   ctx.fillText(`E = ${(-124.5 - Math.sin(t * 0.01) * 2).toFixed(2)} Ha (stub)`, 24, h - 24);
 }
 
@@ -296,7 +296,7 @@ function drawBioeng(t) {
   const w = canvas.width;
   const h = canvas.height;
   drawDrug(t);
-  ctx.fillStyle = "rgba(94, 224, 168, 0.15)";
+  ctx.fillStyle = "rgba(63, 185, 80, 0.15)";
   ctx.fillRect(0, h * 0.75, w, h * 0.25);
   ctx.fillStyle = C.pass;
   ctx.font = "13px monospace";
@@ -331,14 +331,14 @@ function drawUnphysical(t) {
   const h = canvas.height;
   const grad = ctx.createLinearGradient(0, h, 0, 0);
   grad.addColorStop(0, C.elevated);
-  grad.addColorStop(1, C.bg);
+  grad.addColorStop(1, "");
   ctx.fillStyle = grad;
   ctx.fillRect(0, 0, w, h);
   ctx.strokeStyle = C.border;
   ctx.setLineDash([8, 8]);
   ctx.strokeRect(40, h * 0.72, w - 80, 2);
   ctx.setLineDash([]);
-  ctx.fillStyle = C.elevated;
+  ctx.fillStyle = "";
   ctx.font = "12px monospace";
   ctx.fillText("ground (objects fall up)", 48, h * 0.72 - 8);
   const n = 24;
@@ -380,7 +380,7 @@ function drawPlay(t) {
   const gw = w * 0.28;
   const gh = h * 0.45;
   const grad = ctx.createLinearGradient(gx, gy, gx + gw, gy + gh);
-  grad.addColorStop(0, C.accent);
+  grad.addColorStop(0, "#1f6feb");
   grad.addColorStop(1, C.violet);
   ctx.fillStyle = grad;
   ctx.fillRect(gx, gy, gw, gh);
@@ -395,7 +395,7 @@ function drawPlay(t) {
   ctx.textAlign = "center";
   ctx.fillText("▶", w * 0.5, h * 0.72 + 6);
   ctx.textAlign = "left";
-  ctx.fillStyle = C.elevated;
+  ctx.fillStyle = "";
   ctx.font = "13px monospace";
   ctx.fillText("new_game_world · new_field · start_playing", 24, h - 48);
   ctx.fillText(`tick ${Math.floor(t / 2)} · spin-up: play_mode`, 24, h - 28);
@@ -418,7 +418,7 @@ function drawAgent(t) {
   ];
   ctx.font = "14px monospace";
   lines.forEach((line, i) => {
-    ctx.fillStyle = i === 0 ? C.pass : C.muted;
+    ctx.fillStyle = i === 0 ? C.pass : "";
     ctx.fillText(line, 80, 120 + i * 28);
   });
   ctx.fillStyle = C.accent;
@@ -447,7 +447,7 @@ function drawAdditive(t) {
       }
     }
   }
-  ctx.fillStyle = C.elevated;
+  ctx.fillStyle = "";
   ctx.font = "13px monospace";
   ctx.fillText("voxel 4³ · profile=sim_profile_additive", 24, h - 36);
 }
@@ -470,7 +470,7 @@ function drawPublish(t) {
     ctx.fillStyle = i % 2 === 0 ? C.pass : C.violet;
     ctx.fillRect(140 + i * 110, h - 180 - bh, 70, bh);
   }
-  ctx.fillStyle = C.elevated;
+  ctx.fillStyle = "";
   ctx.font = "13px monospace";
   ctx.fillText(`PublishBundle hash=3291 · dpi=300 · files=3`, 120, h - 100);
   ctx.fillStyle = C.coral;
@@ -498,7 +498,7 @@ function drawMmo(t) {
     for (let p = 0; p < 12; p++) {
       const px = ox + 40 + (p % 4) * 70;
       const py = 120 + Math.floor(p / 4) * 50 + Math.sin(t * 0.05 + p + s) * 5;
-      ctx.fillStyle = p % 3 === 0 ? C.pass : C.muted;
+      ctx.fillStyle = p % 3 === 0 ? C.pass : "";
       ctx.fillRect(px, py, 20, 20);
     }
   }
@@ -509,7 +509,7 @@ function drawMmo(t) {
   ctx.textAlign = "center";
   ctx.fillText("Gateway", w / 2, 40);
   ctx.textAlign = "left";
-  ctx.fillStyle = C.elevated;
+  ctx.fillStyle = "";
   ctx.fillText(`tick ${Math.floor(t / 2)} · realm dev-realm-1`, 24, h - 24);
 }
 
@@ -697,7 +697,7 @@ function runCommand(id) {
     setDemo("play");
   }
   if (id === 3) {
-    appendTranscript("agent", "Build finished — 112 composable gates green (stub).", {
+    appendTranscript("agent", "Build finished — 112 composable gates PASS (stub).", {
       gate: "lic build · PASS",
       plan: [
         { text: "Resolve packages/world", state: "done" },

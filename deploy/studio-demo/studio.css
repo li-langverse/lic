@@ -16,24 +16,25 @@
   --muted: #7a8499;
   --accent: #7c9cff;
   --accent-soft: rgba(124, 156, 255, 0.14);
-  --agent: #6ee7d4;
+  --agent: #9eb8ff;
   --agent-secondary: #a78bfa;
-  --agent-glow: rgba(110, 231, 212, 0.14);
-  --agent-border: rgba(110, 231, 212, 0.38);
-  --pass: #5ee0a8;
-  --pass-bg: rgba(94, 224, 168, 0.11);
-  --pass-border: rgba(94, 224, 168, 0.35);
-  --warn: #e8b84a;
+  --agent-glow: rgba(158, 184, 255, 0.14);
+  --agent-border: rgba(158, 184, 255, 0.38);
+  /* Gate OK: champagne gold (not green; not UE #FFE000) */
+  --pass: #c9b066;
+  --pass-bg: rgba(201, 176, 102, 0.12);
+  --pass-border: rgba(201, 176, 102, 0.38);
+  --warn: #e08850;
   --fail: #f07070;
   --user-bubble: #1e2438;
   --shadow-rail: rgba(0, 0, 0, 0.32);
   --gradient-topbar: linear-gradient(180deg, #1a1f2e 0%, #12151c 100%);
-  --gradient-agent-btn: linear-gradient(135deg, #7c9cff 0%, #6ee7d4 100%);
-  --gradient-agent-head: linear-gradient(135deg, rgba(124, 156, 255, 0.12) 0%, rgba(110, 231, 212, 0.06) 55%);
-  --gradient-brand: linear-gradient(135deg, rgba(124, 156, 255, 0.22) 0%, rgba(110, 231, 212, 0.12) 100%);
+  --gradient-agent-btn: linear-gradient(135deg, #7c9cff 0%, #9eb8ff 100%);
+  --gradient-agent-head: linear-gradient(135deg, rgba(124, 156, 255, 0.12) 0%, rgba(158, 184, 255, 0.06) 55%);
+  --gradient-brand: linear-gradient(135deg, rgba(124, 156, 255, 0.22) 0%, rgba(158, 184, 255, 0.12) 100%);
   --canvas-bg: #06080c;
   --canvas-accent: #7c9cff;
-  --canvas-pass: #5ee0a8;
+  --canvas-pass: #c9b066;
   --canvas-violet: #a78bfa;
   --canvas-coral: #f4a574;
   --canvas-muted: #7a8499;
@@ -41,7 +42,7 @@
   --canvas-border: #2a3040;
   --canvas-surface2: #1e2438;
   --canvas-text: #f1f3f9;
-  --canvas-green-dark: #1a3d32;
+  --canvas-terrain: #252230;
   --radius: 10px;
   --radius-sm: 6px;
   --rail-width: 380px;
@@ -67,10 +68,11 @@
   --agent-secondary: #e87850;
   --agent-glow: rgba(255, 184, 108, 0.14);
   --agent-border: rgba(255, 184, 108, 0.4);
-  --pass: #7dd9a0;
-  --pass-bg: rgba(125, 217, 160, 0.11);
-  --pass-border: rgba(125, 217, 160, 0.35);
-  --warn: #f0c050;
+  /* Engine gold — muted vs trademark UE yellow & vs --warn orange */
+  --pass: #d4af37;
+  --pass-bg: rgba(212, 175, 55, 0.13);
+  --pass-border: rgba(212, 175, 55, 0.42);
+  --warn: #e87848;
   --fail: #e87070;
   --user-bubble: #2a221e;
   --shadow-rail: rgba(0, 0, 0, 0.38);
@@ -80,7 +82,7 @@
   --gradient-brand: linear-gradient(135deg, rgba(240, 160, 96, 0.24) 0%, rgba(255, 184, 108, 0.1) 100%);
   --canvas-bg: #080605;
   --canvas-accent: #f0a060;
-  --canvas-pass: #7dd9a0;
+  --canvas-pass: #d4af37;
   --canvas-violet: #d4a574;
   --canvas-coral: #ff8c5a;
   --canvas-muted: #9a8b7a;
@@ -88,7 +90,7 @@
   --canvas-border: #3d342c;
   --canvas-surface2: #2a221e;
   --canvas-text: #f5efe8;
-  --canvas-green-dark: #2a2218;
+  --canvas-terrain: #2e2418;
 }
 
 /* —— Slate: neutral pro tool (scientific / engineering) —— */
@@ -110,10 +112,11 @@
   --agent-secondary: #9aa8c4;
   --agent-glow: rgba(142, 200, 255, 0.12);
   --agent-border: rgba(142, 200, 255, 0.38);
-  --pass: #62c995;
-  --pass-bg: rgba(98, 201, 149, 0.11);
-  --pass-border: rgba(98, 201, 149, 0.35);
-  --warn: #d4b050;
+  /* Verified: frost blue (no green, no engine-yellow confusion) */
+  --pass: #9ec5e8;
+  --pass-bg: rgba(158, 197, 232, 0.11);
+  --pass-border: rgba(158, 197, 232, 0.38);
+  --warn: #d4a050;
   --fail: #e87878;
   --user-bubble: #22252d;
   --shadow-rail: rgba(0, 0, 0, 0.3);
@@ -123,7 +126,7 @@
   --gradient-brand: linear-gradient(135deg, rgba(110, 181, 255, 0.2) 0%, rgba(142, 200, 255, 0.1) 100%);
   --canvas-bg: #070809;
   --canvas-accent: #6eb5ff;
-  --canvas-pass: #62c995;
+  --canvas-pass: #9ec5e8;
   --canvas-violet: #9aa8c4;
   --canvas-coral: #c9a06a;
   --canvas-muted: #8d93a0;
@@ -131,7 +134,7 @@
   --canvas-border: #333840;
   --canvas-surface2: #22252d;
   --canvas-text: #eceef2;
-  --canvas-green-dark: #1a2420;
+  --canvas-terrain: #1c1e24;
 }
 
 * { box-sizing: border-box; }
@@ -245,13 +248,13 @@ body {
   box-shadow: 0 0 0 2px var(--bg-deep);
 }
 .theme-btn[data-theme="aurora"] {
-  background: linear-gradient(135deg, #7c9cff 45%, #6ee7d4 100%);
+  background: linear-gradient(135deg, #7c9cff 45%, #c9b066 100%);
 }
 .theme-btn[data-theme="ember"] {
-  background: linear-gradient(135deg, #f0a060 45%, #ffb86c 100%);
+  background: linear-gradient(135deg, #d4af37 45%, #ffb86c 100%);
 }
 .theme-btn[data-theme="slate"] {
-  background: linear-gradient(135deg, #6eb5ff 45%, #8ec8ff 100%);
+  background: linear-gradient(135deg, #6eb5ff 45%, #9ec5e8 100%);
 }
 
 .badge, .gates { font-size: 0.7rem; color: var(--muted); }

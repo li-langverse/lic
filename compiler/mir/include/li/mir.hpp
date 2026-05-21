@@ -58,6 +58,8 @@ enum class MirOp {
   AsyncAwait,
   AsyncFrameEnter,
   AsyncFrameLeave,
+  /** Push/pop scoped array SIMD: int_value 1=enable, 0=pop (pairs with `@vectorized` on `for`). */
+  ArraySimdScope,
 };
 
 struct MirArg {

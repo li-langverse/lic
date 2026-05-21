@@ -68,6 +68,11 @@ outcome = "verify_ok"
 
 [[tests]]
 suite = "decorators"
+file = "decorators/vectorized_for_scope_ok.li"
+outcome = "verify_ok"
+
+[[tests]]
+suite = "decorators"
 file = "decorators/vectorized_lanes8_fail.li"
 outcome = "compile_fail"
 expected_substr = "lanes=4"

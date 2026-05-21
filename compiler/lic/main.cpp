@@ -37,7 +37,8 @@ int usage() {
             << "  lic verify <file>      VC summary; --lean runs semantics; --strict-lean fails open VCs\n"
             << "  lic build <file> -o <out> [--release] [--numerically-stable]\n"
             << "                       [--strict-lean]  (alias) lake + open-VC check when installed\n"
-            << "                       default: lake build when installed; LI_BUILD_VERIFY_LEAN=0 to skip\n"
+            << "                       default: lake typecheck AutoVC when installed; --strict-lean for open goals\n"
+            << "                       LI_BUILD_VERIFY_LEAN=0 to skip; LI_BUILD_VERIFY_LEAN_STRICT=1 for open goals\n"
             << "                       [--threads=N] [--jobs=N] [--max-memory=MB]\n"
             << "                       [--coverage-instrument]\n"
             << "  lic smoke-llvm         verify LLVM can emit main returning 0\n"
@@ -228,11 +229,6 @@ void configure_default_lean_verify_env(bool strict_lean_flag) {
   }
   setenv("LI_BUILD_VERIFY_LEAN", "1", 1);
   if (strict_lean_flag) {
-    setenv("LI_BUILD_VERIFY_LEAN_STRICT", "1", 1);
-    return;
-  }
-  if (std::getenv("LI_BUILD_VERIFY_LEAN_STRICT") == nullptr &&
-      std::getenv("LI_ALLOW_OPEN_VC") == nullptr) {
     setenv("LI_BUILD_VERIFY_LEAN_STRICT", "1", 1);
   }
 }

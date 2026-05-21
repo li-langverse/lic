@@ -30,6 +30,9 @@ class CanonicalRoute:
     action: str
     headers: dict[str, str]
     priority: int
+    source_key: str = ""
+    rate_limit_rps: int = 0
+    rate_limit_burst: int = 0
 
 
 def slug_route_name(method: str, path: str) -> str:
@@ -73,7 +76,24 @@ def parse_route_key(key: str, action: str, priority: int) -> CanonicalRoute:
         action=str(action).strip().strip('"'),
         headers=headers,
         priority=priority,
+        source_key=key.strip(),
     )
+
+
+def apply_route_limits(routes: list[CanonicalRoute], data: dict[str, Any]) -> None:
+    limits = data.get("route_limits")
+    if not isinstance(limits, dict):
+        return
+    for r in routes:
+        lim = limits.get(r.source_key)
+        if not isinstance(lim, dict):
+            continue
+        rps = lim.get("requests_per_sec", lim.get("rps"))
+        if rps is not None:
+            r.rate_limit_rps = int(rps)
+        burst = lim.get("burst")
+        if burst is not None:
+            r.rate_limit_burst = int(burst)
 
 
 def desugar_config(data: dict[str, Any]) -> list[CanonicalRoute]:
@@ -121,6 +141,7 @@ def validate_routes(routes: list[CanonicalRoute], *, strict_overlap: bool = Fals
 def load_httpd_config(path: Path, *, strict_overlap: bool = False) -> list[CanonicalRoute]:
     data = tomllib.loads(path.read_text(encoding="utf-8"))
     routes = desugar_config(data)
+    apply_route_limits(routes, data)
     validate_routes(routes, strict_overlap=strict_overlap)
     return routes
 

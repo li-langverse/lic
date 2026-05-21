@@ -127,6 +127,10 @@ typedef struct {
   int path_len;
   int is_prefix;
   int is_proxy;
+  int rate_limit_rps;
+  int rate_limit_burst;
+  double rate_tokens;
+  double rate_last_ts;
 } httpd_route_t;
 
 static httpd_route_t g_routes[HTTPD_MAX_ROUTES];
@@ -1463,32 +1467,95 @@ static int path_proxy_match_route(const char* path, int plen, const httpd_req_in
   return 0;
 }
 
-static int httpd_rate_limit_allow(void) {
-  if (g_rate_limit_rps <= 0) {
+static int httpd_rate_bucket_allow(int rps, int burst, double* tokens, double* last_ts) {
+  if (rps <= 0) {
     return 1;
+  }
+  if (burst <= 0) {
+    burst = rps;
   }
   struct timespec ts;
   if (clock_gettime(CLOCK_MONOTONIC, &ts) != 0) {
     return 1;
   }
   double now = (double)ts.tv_sec + (double)ts.tv_nsec * 1e-9;
-  if (g_rate_last_ts <= 0.0) {
-    g_rate_last_ts = now;
-    g_rate_tokens = (double)g_rate_limit_burst;
+  if (*last_ts <= 0.0) {
+    *last_ts = now;
+    *tokens = (double)burst;
   }
-  double elapsed = now - g_rate_last_ts;
-  g_rate_last_ts = now;
+  double elapsed = now - *last_ts;
+  *last_ts = now;
   if (elapsed > 0.0) {
-    g_rate_tokens += elapsed * (double)g_rate_limit_rps;
+    *tokens += elapsed * (double)rps;
   }
-  if (g_rate_tokens > (double)g_rate_limit_burst) {
-    g_rate_tokens = (double)g_rate_limit_burst;
+  if (*tokens > (double)burst) {
+    *tokens = (double)burst;
   }
-  if (g_rate_tokens < 1.0) {
+  if (*tokens < 1.0) {
     return 0;
   }
-  g_rate_tokens -= 1.0;
+  *tokens -= 1.0;
   return 1;
+}
+
+static int httpd_rate_limit_allow(void) {
+  return httpd_rate_bucket_allow(g_rate_limit_rps, g_rate_limit_burst, &g_rate_tokens,
+                                 &g_rate_last_ts);
+}
+
+static int httpd_match_route_index(const char* path, int plen, const httpd_req_info_t* req) {
+  for (int i = 0; i < g_route_count; i++) {
+    const httpd_route_t* r = &g_routes[i];
+    if (!route_method_match(r, req)) {
+      continue;
+    }
+    if (path_prefix_match(path, plen, r)) {
+      return i;
+    }
+  }
+  return -1;
+}
+
+static int httpd_rate_limit_allow_request(const char* path, int plen, const httpd_req_info_t* req) {
+  int idx = httpd_match_route_index(path, plen, req);
+  if (idx >= 0) {
+    httpd_route_t* r = &g_routes[idx];
+    if (r->rate_limit_rps > 0) {
+      return httpd_rate_bucket_allow(r->rate_limit_rps, r->rate_limit_burst, &r->rate_tokens,
+                                   &r->rate_last_ts);
+    }
+  }
+  return httpd_rate_limit_allow();
+}
+
+static void httpd_access_log(const httpd_req_info_t* req, int status, int bytes_out) {
+  struct timespec ts;
+  if (clock_gettime(CLOCK_REALTIME, &ts) != 0) {
+    return;
+  }
+  char tbuf[32];
+  struct tm tm;
+  if (gmtime_r(&ts.tv_sec, &tm) == NULL) {
+    return;
+  }
+  strftime(tbuf, sizeof(tbuf), "%Y-%m-%dT%H:%M:%SZ", &tm);
+  char pathbuf[256];
+  int plen = req->path_len;
+  if (plen <= 0 || plen >= (int)sizeof(pathbuf)) {
+    snprintf(pathbuf, sizeof(pathbuf), "/");
+  } else {
+    memcpy(pathbuf, req->path, (size_t)plen);
+    pathbuf[plen] = '\0';
+  }
+  char mbuf[16];
+  int ml = req->method_len;
+  if (ml <= 0 || ml >= (int)sizeof(mbuf)) {
+    snprintf(mbuf, sizeof(mbuf), "GET");
+  } else {
+    memcpy(mbuf, req->method, (size_t)ml);
+    mbuf[ml] = '\0';
+  }
+  fprintf(stderr, "access %s %s %s %d %d\n", tbuf, mbuf, pathbuf, status, bytes_out);
 }
 
 static int path_proxy_match(const char* path, int plen, const httpd_req_info_t* req) {
@@ -1844,6 +1911,8 @@ static int32_t httpd_try_drain_once(int32_t conn, int32_t slot) {
   if (hdr_end < 0) {
     return 0;
   }
+  httpd_req_info_t req;
+  memset(&req, 0, sizeof(req));
   if (request_headers_unsafe_c(g_slots[slot].buf, hdr_end)) {
     int keep = !wants_connection_close(g_slots[slot].buf, hdr_end);
     if (httpd_send_status(conn, 400, "Bad Request", NULL, keep) < 0) {
@@ -1851,7 +1920,6 @@ static int32_t httpd_try_drain_once(int32_t conn, int32_t slot) {
     }
     return keep ? 1 : -1;
   }
-  httpd_req_info_t req;
   if (parse_request_line_c(g_slots[slot].buf, hdr_end, &req) != 0) {
     return -2;
   }
@@ -1861,6 +1929,7 @@ static int32_t httpd_try_drain_once(int32_t conn, int32_t slot) {
     if (httpd_send_status(conn, 413, "Payload Too Large", NULL, keep) < 0) {
       return -2;
     }
+    httpd_access_log(&req, 413, 0);
     return keep ? 1 : -1;
   }
   if (!path_is_safe(req.path, req.path_len)) {
@@ -1868,14 +1937,16 @@ static int32_t httpd_try_drain_once(int32_t conn, int32_t slot) {
     if (httpd_send_status(conn, 400, "Bad Request", NULL, keep) < 0) {
       return -2;
     }
+    httpd_access_log(&req, 400, 0);
     return keep ? 1 : -1;
   }
   int keep = !wants_connection_close(g_slots[slot].buf, hdr_end);
-  if (!httpd_rate_limit_allow()) {
+  if (!httpd_rate_limit_allow_request(req.path, req.path_len, &req)) {
     if (httpd_send_status(conn, 429, "Too Many Requests",
                           "Retry-After: 1\r\n", keep) < 0) {
       return -2;
     }
+    httpd_access_log(&req, 429, 0);
     net_slot_consume(slot, hdr_end);
     return keep ? 1 : -1;
   }
@@ -1909,6 +1980,7 @@ static int32_t httpd_try_drain_once(int32_t conn, int32_t slot) {
                           "Allow: GET, HEAD, POST, PUT, DELETE, PATCH, OPTIONS\r\n", keep) < 0) {
       return -2;
     }
+    httpd_access_log(&req, 204, 0);
     net_slot_consume(slot, hdr_end);
     return keep ? 1 : -1;
   }
@@ -1916,17 +1988,24 @@ static int32_t httpd_try_drain_once(int32_t conn, int32_t slot) {
     if (httpd_reply_cached_index_i(conn, slot, keep) < 0) {
       return -2;
     }
+    httpd_access_log(&req, 200, 0);
   } else if (method_is(&req, "GET")) {
     if (httpd_send_static_path(conn, slot, req.path, req.path_len, keep) < 0) {
       if (httpd_send_status(conn, 404, "Not Found", NULL, keep) < 0) {
         return -2;
       }
+      httpd_access_log(&req, 404, 0);
+    } else {
+      httpd_access_log(&req, 200, 0);
     }
   } else if (method_is(&req, "HEAD")) {
     if (httpd_send_static_path(conn, slot, req.path, req.path_len, 0) < 0) {
       if (httpd_send_status(conn, 404, "Not Found", NULL, keep) < 0) {
         return -2;
       }
+      httpd_access_log(&req, 404, 0);
+    } else {
+      httpd_access_log(&req, 200, 0);
     }
   } else if (req.body_mode != 0) {
     if (httpd_discard_request_body(conn, slot, hdr_end, &req) < 0) {
@@ -1936,6 +2015,7 @@ static int32_t httpd_try_drain_once(int32_t conn, int32_t slot) {
                           "Allow: GET, HEAD, POST, PUT, DELETE, PATCH, OPTIONS\r\n", keep) < 0) {
       return -2;
     }
+    httpd_access_log(&req, 405, 0);
     net_slot_consume(slot, hdr_end);
     return keep ? 1 : -1;
   } else {
@@ -1943,6 +2023,7 @@ static int32_t httpd_try_drain_once(int32_t conn, int32_t slot) {
                           "Allow: GET, HEAD, POST, PUT, DELETE, PATCH, OPTIONS\r\n", keep) < 0) {
       return -2;
     }
+    httpd_access_log(&req, 405, 0);
   }
   net_slot_consume(slot, hdr_end);
   if (!keep) {
@@ -3518,7 +3599,11 @@ int32_t httpd_load_runtime_config_i(intptr_t path) {
       char path[512] = "";
       char kind[16] = "";
       char action[16] = "";
-      if (sscanf(val, "%15[^|]|%511[^|]|%15[^|]|%15s", method, path, kind, action) == 4) {
+      int rrps = 0;
+      int rburst = 0;
+      int n = sscanf(val, "%15[^|]|%511[^|]|%15[^|]|%15[^|]|%d|%d", method, path, kind,
+                     action, &rrps, &rburst);
+      if (n >= 4) {
         httpd_route_t* r = &g_routes[g_route_count++];
         memset(r, 0, sizeof(*r));
         snprintf(r->method, sizeof(r->method), "%s", method);
@@ -3526,6 +3611,10 @@ int32_t httpd_load_runtime_config_i(intptr_t path) {
         r->path_len = (int)strlen(r->path_prefix);
         r->is_prefix = (strcmp(kind, "prefix") == 0 || strcmp(kind, "prefix_strip") == 0) ? 1 : 0;
         r->is_proxy = (strcmp(action, "proxy") == 0) ? 1 : 0;
+        if (n >= 6 && rrps > 0) {
+          r->rate_limit_rps = rrps;
+          r->rate_limit_burst = rburst > 0 ? rburst : rrps;
+        }
         if (r->is_proxy) {
           g_proxy_all = 0;
         }

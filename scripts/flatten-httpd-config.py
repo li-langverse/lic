@@ -66,7 +66,13 @@ def flatten(cfg_path: Path) -> list[str]:
         if action == "proxy":
             proxy_any = True
             upstream_ids.add(r.action.split(":", 1)[1])
-        lines.append(f"route={r.method}|{r.path}|{kind}|{action}")
+        if r.rate_limit_rps > 0:
+            burst = r.rate_limit_burst if r.rate_limit_burst > 0 else r.rate_limit_rps
+            lines.append(
+                f"route={r.method}|{r.path}|{kind}|{action}|{r.rate_limit_rps}|{burst}"
+            )
+        else:
+            lines.append(f"route={r.method}|{r.path}|{kind}|{action}")
 
     nested = data.get("upstreams") or {}
     if isinstance(nested, dict):

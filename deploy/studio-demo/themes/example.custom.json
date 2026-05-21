@@ -1,0 +1,13 @@
+{
+  "name": "Midnight rose",
+  "tokens": {
+    "bg-deep": "#0e0a10",
+    "bg-surface": "#16121a",
+    "accent": "#e879a8",
+    "agent": "#f0abfc",
+    "pass": "#e8c468",
+    "warn": "#fb923c",
+    "fail": "#f87171",
+    "border-focus": "#e879a8"
+  }
+}

@@ -31,16 +31,18 @@
         <button type="button" class="theme-btn active" data-theme="aurora" title="Aurora — iris + champagne gold" aria-pressed="true"></button>
         <button type="button" class="theme-btn" data-theme="ember" title="Ember — engine gold (gaming)" aria-pressed="false"></button>
         <button type="button" class="theme-btn" data-theme="slate" title="Slate — frost blue verified" aria-pressed="false"></button>
+        <button type="button" class="theme-btn theme-btn--custom" data-theme="custom" id="btn-theme-custom" title="Custom theme (import JSON)" aria-pressed="false">+</button>
       </div>
-      <span class="badge">feat/agent-first-gui</span>
-      <span class="gates" id="gate-count">composable gates</span>
+      <span class="gates" id="gate-count" title="Composable gate count">gates</span>
       <button id="btn-palette" type="button" class="btn-ghost" title="Command palette (⌘K)">⌘K</button>
       <button id="btn-auto" type="button" class="btn-primary">▶ Demo reel</button>
       <span class="status ok" id="lic-status">lic ✓</span>
     </div>
   </header>
 
-  <div id="command-palette" class="palette hidden" role="dialog" aria-label="Command palette">
+  <div id="palette-backdrop" class="palette-backdrop hidden" aria-hidden="true"></div>
+
+  <div id="command-palette" class="palette hidden" role="dialog" aria-label="Command palette" aria-modal="true">
     <div class="palette-head">
       <span class="palette-label">Command palette</span>
       <kbd>esc</kbd>
@@ -60,16 +62,35 @@
 
     <main class="viewport-wrap">
       <div class="toolbar">
-        <button class="tab active" data-demo="rocket">Rocket</button>
-        <button class="tab" data-demo="racing">Racing</button>
-        <button class="tab" data-demo="robot">Robot</button>
-        <button class="tab" data-demo="drug">Drug LITL</button>
-        <button class="tab" data-demo="bioeng">Bioeng</button>
-        <button class="tab" data-demo="mmo">MMO</button>
-        <button class="tab" data-demo="scientific">Scientific</button>
-        <button class="tab" data-demo="agent">Agent</button>
-        <button class="tab" data-demo="publish">Publish</button>
-        <button class="tab" data-demo="play">Play</button>
+        <label class="workspace-select-wrap">
+          <span class="workspace-select-label">Workspace</span>
+          <select id="workspace-select" class="workspace-select" aria-label="Switch workspace demo">
+            <optgroup label="Game">
+              <option value="rocket" selected>Rocket · custom physics</option>
+              <option value="racing">Racing · automotive</option>
+              <option value="robot">Robot · factory cell</option>
+              <option value="mmo">MMO · shards</option>
+              <option value="unphysical">Unphysical · arbitrary laws</option>
+              <option value="play">Play mode</option>
+            </optgroup>
+            <optgroup label="Simulation">
+              <option value="scientific">Scientific · field view</option>
+              <option value="drug">Drug · LITL</option>
+              <option value="bioeng">Bioeng · DBTL</option>
+              <option value="additive">Additive · voxel</option>
+            </optgroup>
+            <optgroup label="Studio">
+              <option value="agent">Agent · diagnose</option>
+              <option value="publish">Publish · figures</option>
+            </optgroup>
+          </select>
+        </label>
+        <div class="toolbar-pins" role="group" aria-label="Pinned workspaces">
+          <button type="button" class="tab pin active" data-demo="rocket">Game</button>
+          <button type="button" class="tab pin" data-demo="scientific">Sim</button>
+          <button type="button" class="tab pin" data-demo="agent">Agent</button>
+          <button type="button" class="tab pin" data-demo="publish">Publish</button>
+        </div>
       </div>
       <canvas id="viewport" width="1280" height="720"></canvas>
       <div class="hud">
@@ -123,10 +144,29 @@
     </aside>
   </div>
 
+  <dialog id="theme-dialog" class="theme-dialog">
+    <form method="dialog" class="theme-dialog-inner">
+      <header class="theme-dialog-head">
+        <h2>Custom theme</h2>
+        <p class="theme-dialog-sub">Override CSS tokens (JSON). Built-ins stay in <code>studio.css</code>.</p>
+      </header>
+      <textarea id="theme-json" class="theme-json mono" rows="12" spellcheck="false" placeholder='{"name":"My theme","tokens":{"pass":"#c9b066","agent":"#9eb8ff"}}'></textarea>
+      <div class="theme-dialog-actions">
+        <button type="button" class="btn-ghost" id="theme-import-file">Import file</button>
+        <button type="button" class="btn-ghost" id="theme-export">Export</button>
+        <button type="button" class="btn-ghost" id="theme-example">Load example</button>
+        <button type="button" class="btn-reject" id="theme-reset">Reset custom</button>
+        <button type="button" class="btn-primary" id="theme-apply">Apply</button>
+      </div>
+      <input type="file" id="theme-file" accept="application/json,.json" hidden />
+    </form>
+  </dialog>
+
   <footer>
-    <p>Prototype showcase — native <code>li-ui</code> / <code>li-gui</code> is canonical; agent dock maps to <code>ui_layout_agent_first</code>.</p>
-    <p><code>./scripts/record-studio-demo.sh</code> · <a href="../../docs/game-dev/demo-showcase.md">docs</a> · <a href="mockups/">mockups</a></p>
+    <p>Wireframe · <code>ui_layout_agent_first</code> · branch <code>feat/agent-first-gui</code></p>
+    <p><a href="../../docs/game-dev/studio-wireframe-ux-audit.md">UX audit</a> · <a href="../../docs/game-dev/demo-showcase.md">docs</a> · <a href="themes/example.custom.json">theme example</a></p>
   </footer>
+  <script src="studio-themes.js"></script>
   <script src="studio.js"></script>
 </body>
 </html>

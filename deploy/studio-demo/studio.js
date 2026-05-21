@@ -31,17 +31,14 @@ function syncCanvasColors() {
   };
 }
 
-function applyTheme(id) {
+function applyTheme(id, customPayload) {
+  if (window.StudioThemes) {
+    StudioThemes.applyTheme(id, customPayload);
+    syncCanvasColors();
+    return;
+  }
   document.documentElement.dataset.theme = id;
   syncCanvasColors();
-  try {
-    localStorage.setItem("li-studio-theme", id);
-  } catch (_) {}
-  document.querySelectorAll(".theme-btn").forEach((b) => {
-    const on = b.dataset.theme === id;
-    b.classList.toggle("active", on);
-    b.setAttribute("aria-pressed", on ? "true" : "false");
-  });
 }
 
 const meta = {
@@ -136,7 +133,14 @@ const WORKSPACE_LABELS = {
 
 function setDemo(name) {
   active = name;
-  document.querySelectorAll(".tab").forEach((b) => {
+  const wrap = document.querySelector(".viewport-wrap");
+  if (wrap) {
+    wrap.classList.add("is-switching");
+    window.setTimeout(() => wrap.classList.remove("is-switching"), 180);
+  }
+  const sel = document.getElementById("workspace-select");
+  if (sel && sel.value !== name) sel.value = name;
+  document.querySelectorAll(".tab.pin").forEach((b) => {
     b.classList.toggle("active", b.dataset.demo === name);
   });
   const m = meta[name];
@@ -189,7 +193,7 @@ function drawRocket(t) {
   ctx.ellipse(0, 42, 10, 18 + Math.sin(t * 0.4) * 6, 0, 0, Math.PI * 2);
   ctx.fill();
   ctx.restore();
-  ctx.fillStyle = C.accent;
+  ctx.fillStyle = "#58a6ff";
   ctx.font = "14px monospace";
   ctx.fillText(`γ ≈ ${(1.02 + 0.01 * Math.sin(t * 0.05)).toFixed(3)}`, 24, h - 40);
 }
@@ -198,11 +202,11 @@ function drawRacing(t) {
   const w = canvas.width;
   const h = canvas.height;
   const grad = ctx.createLinearGradient(0, 0, 0, h);
-  grad.addColorStop(0, C.terrain);
+  grad.addColorStop(0, "#1a472a");
   grad.addColorStop(1, "");
   ctx.fillStyle = grad;
   ctx.fillRect(0, 0, w, h);
-  ctx.strokeStyle = C.border;
+  ctx.strokeStyle = "#30363d";
   ctx.lineWidth = 4;
   for (let i = 0; i < 12; i++) {
     const y = h * 0.35 + i * 28;
@@ -216,7 +220,7 @@ function drawRacing(t) {
   ctx.fillRect(carX, h * 0.55, 90, 28);
   ctx.fillStyle = "#21262d";
   ctx.fillRect(carX + 15, h * 0.52, 40, 18);
-  ctx.fillStyle = C.pass;
+  ctx.fillStyle = "#3fb950";
   ctx.font = "12px monospace";
   ctx.fillText(`LiDAR frame ${Math.floor(t / 10) % 1000}`, 24, 32);
 }
@@ -224,11 +228,11 @@ function drawRacing(t) {
 function drawRobot(t) {
   const w = canvas.width;
   const h = canvas.height;
-  ctx.fillStyle = C.elevated;
+  ctx.fillStyle = "#161b22";
   ctx.fillRect(0, 0, w, h);
   const bx = w * 0.35;
   const by = h * 0.7;
-  ctx.strokeStyle = C.accent;
+  ctx.strokeStyle = "#58a6ff";
   ctx.lineWidth = 8;
   ctx.lineCap = "round";
   let angle = Math.sin(t * 0.03) * 0.8;
@@ -246,7 +250,7 @@ function drawRobot(t) {
     y = ny;
     angle += 0.6 + Math.sin(t * 0.02) * 0.2;
   }
-  ctx.fillStyle = C.coral;
+  ctx.fillStyle = "#f0883e";
   ctx.beginPath();
   ctx.arc(x, y, 14, 0, Math.PI * 2);
   ctx.fill();
@@ -266,7 +270,7 @@ function drawDrug(t) {
   const stage = Math.floor(t / 90) % 4;
   stages.forEach((s, i) => {
     const x = 80 + i * ((w - 160) / 3);
-    ctx.fillStyle = i === stage ? C.accent : C.border;
+    ctx.fillStyle = i === stage ? "#58a6ff" : "#30363d";
     ctx.fillRect(x - 40, 40, 80, 36);
     ctx.fillStyle = "#e6edf3";
     ctx.font = "12px sans-serif";
@@ -278,12 +282,12 @@ function drawDrug(t) {
   for (let i = 0; i < n; i++) {
     const a = (i / n) * Math.PI * 2 + t * 0.02;
     const r = 60 + Math.sin(t * 0.05 + i) * 10;
-    ctx.fillStyle = i % 2 ? C.pass : C.violet;
+    ctx.fillStyle = i % 2 ? "#3fb950" : "#a371f7";
     ctx.beginPath();
     ctx.arc(cx + Math.cos(a) * r, cy + Math.sin(a) * r * 0.6, 12, 0, Math.PI * 2);
     ctx.fill();
   }
-  ctx.strokeStyle = C.accent;
+  ctx.strokeStyle = "#58a6ff";
   ctx.lineWidth = 2;
   ctx.beginPath();
   ctx.arc(cx, cy, 100, 0, Math.PI * 2);
@@ -298,7 +302,7 @@ function drawBioeng(t) {
   drawDrug(t);
   ctx.fillStyle = "rgba(63, 185, 80, 0.15)";
   ctx.fillRect(0, h * 0.75, w, h * 0.25);
-  ctx.fillStyle = C.pass;
+  ctx.fillStyle = "#3fb950";
   ctx.font = "13px monospace";
   ctx.fillText("Bioreactor T=37°C · DBTL iteration " + Math.floor(t / 60), 24, h - 50);
 }
@@ -321,7 +325,7 @@ function drawScientific(t) {
       ctx.fillRect(40 + c * cw, 60 + r * ch, cw - 2, ch - 2);
     }
   }
-  ctx.fillStyle = C.accent;
+  ctx.fillStyle = "#58a6ff";
   ctx.font = "13px monospace";
   ctx.fillText(`T=37.${(t % 10)}°C · timestep ${Math.floor(t / 3)}`, 24, h - 36);
 }
@@ -330,11 +334,11 @@ function drawUnphysical(t) {
   const w = canvas.width;
   const h = canvas.height;
   const grad = ctx.createLinearGradient(0, h, 0, 0);
-  grad.addColorStop(0, C.elevated);
+  grad.addColorStop(0, "#161b22");
   grad.addColorStop(1, "");
   ctx.fillStyle = grad;
   ctx.fillRect(0, 0, w, h);
-  ctx.strokeStyle = C.border;
+  ctx.strokeStyle = "#30363d";
   ctx.setLineDash([8, 8]);
   ctx.strokeRect(40, h * 0.72, w - 80, 2);
   ctx.setLineDash([]);
@@ -345,19 +349,19 @@ function drawUnphysical(t) {
   for (let i = 0; i < n; i++) {
     const px = 60 + (i * 47 + t * 3) % (w - 120);
     const py = h * 0.65 - ((t * 2 + i * 31) % 280);
-    ctx.fillStyle = i % 4 === 0 ? C.violet : C.accent;
+    ctx.fillStyle = i % 4 === 0 ? "#a371f7" : "#58a6ff";
     ctx.beginPath();
     ctx.arc(px, py, 6 + (i % 3), 0, Math.PI * 2);
     ctx.fill();
   }
-  ctx.fillStyle = C.coral;
+  ctx.fillStyle = "#f0883e";
   ctx.fillRect(w * 0.5 - 40, h * 0.25, 80, 50);
   ctx.fillStyle = "#fff";
   ctx.font = "11px sans-serif";
   ctx.textAlign = "center";
   ctx.fillText("TELEPORT", w * 0.5, h * 0.25 + 30);
   ctx.textAlign = "left";
-  ctx.fillStyle = C.pass;
+  ctx.fillStyle = "#3fb950";
   ctx.fillText(`law_mode=arbitrary · custom_law_id=1`, 24, h - 40);
 }
 
@@ -370,7 +374,7 @@ function drawPlay(t) {
   for (let i = 0; i < n; i++) {
     const px = 80 + (i % 6) * 90 + Math.sin(t * 0.03 + i) * 12;
     const py = 140 + Math.floor(i / 6) * 70 + Math.cos(t * 0.04 + i) * 8;
-    ctx.fillStyle = i % 4 === 0 ? C.accent : C.pass;
+    ctx.fillStyle = i % 4 === 0 ? "#58a6ff" : "#3fb950";
     ctx.beginPath();
     ctx.arc(px, py, 10, 0, Math.PI * 2);
     ctx.fill();
@@ -381,12 +385,12 @@ function drawPlay(t) {
   const gh = h * 0.45;
   const grad = ctx.createLinearGradient(gx, gy, gx + gw, gy + gh);
   grad.addColorStop(0, "#1f6feb");
-  grad.addColorStop(1, C.violet);
+  grad.addColorStop(1, "#a371f7");
   ctx.fillStyle = grad;
   ctx.fillRect(gx, gy, gw, gh);
-  ctx.strokeStyle = C.border;
+  ctx.strokeStyle = "#30363d";
   ctx.strokeRect(gx, gy, gw, gh);
-  ctx.fillStyle = C.coral;
+  ctx.fillStyle = "#f0883e";
   ctx.beginPath();
   ctx.arc(w * 0.5, h * 0.72, 36, 0, Math.PI * 2);
   ctx.fill();
@@ -406,9 +410,9 @@ function drawAgent(t) {
   const h = canvas.height;
   ctx.fillStyle = C.bg;
   ctx.fillRect(0, 0, w, h);
-  ctx.fillStyle = C.elevated;
+  ctx.fillStyle = "#161b22";
   ctx.fillRect(60, 80, w - 120, h - 200);
-  ctx.strokeStyle = C.pass;
+  ctx.strokeStyle = "#3fb950";
   ctx.strokeRect(60, 80, w - 120, h - 200);
   const lines = [
     "{ \"ok\": true, \"errors\": 0 }",
@@ -418,10 +422,10 @@ function drawAgent(t) {
   ];
   ctx.font = "14px monospace";
   lines.forEach((line, i) => {
-    ctx.fillStyle = i === 0 ? C.pass : "";
+    ctx.fillStyle = i === 0 ? "#3fb950" : "";
     ctx.fillText(line, 80, 120 + i * 28);
   });
-  ctx.fillStyle = C.accent;
+  ctx.fillStyle = "#58a6ff";
   ctx.fillText(`tick ${Math.floor(t / 2)} · agent gate clear`, 80, h - 120);
 }
 
@@ -457,23 +461,23 @@ function drawPublish(t) {
   const h = canvas.height;
   ctx.fillStyle = C.bg;
   ctx.fillRect(0, 0, w, h);
-  ctx.fillStyle = C.elevated;
+  ctx.fillStyle = "#161b22";
   ctx.fillRect(80, 80, w - 160, h - 160);
-  ctx.strokeStyle = C.border;
+  ctx.strokeStyle = "#30363d";
   ctx.strokeRect(80, 80, w - 160, h - 160);
-  ctx.fillStyle = C.accent;
+  ctx.fillStyle = "#58a6ff";
   ctx.font = "bold 18px sans-serif";
   ctx.fillText("Figure 1 — World Studio export", 120, 120);
   const bars = 8;
   for (let i = 0; i < bars; i++) {
     const bh = 40 + Math.sin(t * 0.04 + i) * 30 + 80;
-    ctx.fillStyle = i % 2 === 0 ? C.pass : C.violet;
+    ctx.fillStyle = i % 2 === 0 ? "#3fb950" : "#a371f7";
     ctx.fillRect(140 + i * 110, h - 180 - bh, 70, bh);
   }
   ctx.fillStyle = "";
   ctx.font = "13px monospace";
   ctx.fillText(`PublishBundle hash=3291 · dpi=300 · files=3`, 120, h - 100);
-  ctx.fillStyle = C.coral;
+  ctx.fillStyle = "#f0883e";
   ctx.fillRect(w - 200, 100, 120, 36);
   ctx.fillStyle = "#000";
   ctx.font = "12px sans-serif";
@@ -490,19 +494,19 @@ function drawMmo(t) {
   const shards = 2;
   for (let s = 0; s < shards; s++) {
     const ox = s * (w / 2);
-    ctx.strokeStyle = C.border;
+    ctx.strokeStyle = "#30363d";
     ctx.strokeRect(ox + 20, 60, w / 2 - 40, h - 120);
-    ctx.fillStyle = C.accent;
+    ctx.fillStyle = "#58a6ff";
     ctx.font = "bold 14px sans-serif";
     ctx.fillText(`Shard ${s}`, ox + 32, 88);
     for (let p = 0; p < 12; p++) {
       const px = ox + 40 + (p % 4) * 70;
       const py = 120 + Math.floor(p / 4) * 50 + Math.sin(t * 0.05 + p + s) * 5;
-      ctx.fillStyle = p % 3 === 0 ? C.pass : "";
+      ctx.fillStyle = p % 3 === 0 ? "#3fb950" : "";
       ctx.fillRect(px, py, 20, 20);
     }
   }
-  ctx.fillStyle = C.coral;
+  ctx.fillStyle = "#f0883e";
   ctx.fillRect(w / 2 - 50, 20, 100, 30);
   ctx.fillStyle = "#000";
   ctx.font = "12px sans-serif";
@@ -535,9 +539,14 @@ function frame() {
   requestAnimationFrame(frame);
 }
 
-document.querySelectorAll(".tab").forEach((btn) => {
+document.querySelectorAll(".tab.pin").forEach((btn) => {
   btn.addEventListener("click", () => setDemo(btn.dataset.demo));
 });
+
+const workspaceSelect = document.getElementById("workspace-select");
+if (workspaceSelect) {
+  workspaceSelect.addEventListener("change", () => setDemo(workspaceSelect.value));
+}
 
 document.getElementById("btn-auto").addEventListener("click", () => {
   autoReel = !autoReel;
@@ -626,7 +635,9 @@ function renderMessage({ role, text, time, plan, actions, gate }) {
 
 function appendTranscript(role, text, extras = {}) {
   if (!agentChat) return;
-  agentChat.appendChild(renderMessage({ role, text, ...extras }));
+  const node = renderMessage({ role, text, ...extras });
+  node.classList.add("msg-enter");
+  agentChat.appendChild(node);
   agentChat.scrollTop = agentChat.scrollHeight;
 }
 
@@ -674,8 +685,11 @@ function renderPalette(filter) {
     .join("");
 }
 
+const paletteBackdrop = document.getElementById("palette-backdrop");
+
 function openPalette() {
   paletteEl.classList.remove("hidden");
+  if (paletteBackdrop) paletteBackdrop.classList.remove("hidden");
   renderPalette("");
   paletteInput.value = "";
   paletteInput.focus();
@@ -683,6 +697,7 @@ function openPalette() {
 
 function closePalette() {
   paletteEl.classList.add("hidden");
+  if (paletteBackdrop) paletteBackdrop.classList.add("hidden");
 }
 
 function runCommand(id) {
@@ -816,14 +831,92 @@ const savedTheme = (() => {
     return null;
   }
 })();
-if (savedTheme && ["aurora", "ember", "slate"].includes(savedTheme)) {
+if (savedTheme === "custom" && window.StudioThemes) {
+  applyTheme("custom");
+} else if (savedTheme && StudioThemes && StudioThemes.BUILTIN.includes(savedTheme)) {
   applyTheme(savedTheme);
 } else {
   syncCanvasColors();
 }
-document.querySelectorAll(".theme-btn").forEach((btn) => {
-  btn.addEventListener("click", () => applyTheme(btn.dataset.theme));
+
+document.querySelectorAll(".theme-btn[data-theme]").forEach((btn) => {
+  btn.addEventListener("click", () => {
+    if (btn.dataset.theme === "custom") {
+      openThemeDialog();
+      return;
+    }
+    applyTheme(btn.dataset.theme);
+  });
 });
+
+if (paletteBackdrop) {
+  paletteBackdrop.addEventListener("click", closePalette);
+}
+
+function openThemeDialog() {
+  const dlg = document.getElementById("theme-dialog");
+  const ta = document.getElementById("theme-json");
+  if (!dlg || !ta) return;
+  const exported = StudioThemes?.exportCustomTheme();
+  ta.value = exported || JSON.stringify(
+    { name: "My theme", tokens: { pass: "#c9b066", agent: "#9eb8ff", accent: "#7c9cff" } },
+    null,
+    2
+  );
+  dlg.showModal();
+}
+
+function initThemeDialog() {
+  const dlg = document.getElementById("theme-dialog");
+  const ta = document.getElementById("theme-json");
+  const fileInput = document.getElementById("theme-file");
+  if (!dlg || !ta || !window.StudioThemes) return;
+
+  document.getElementById("theme-apply")?.addEventListener("click", (e) => {
+    e.preventDefault();
+    try {
+      const theme = StudioThemes.parseThemeJson(ta.value);
+      StudioThemes.saveCustomTheme(theme);
+      applyTheme("custom", theme);
+      dlg.close();
+    } catch (err) {
+      ta.setCustomValidity(err.message || "Invalid JSON");
+      ta.reportValidity();
+    }
+  });
+
+  document.getElementById("theme-export")?.addEventListener("click", () => {
+    const ex = StudioThemes.exportCustomTheme();
+    if (ex) ta.value = ex;
+    else ta.value = JSON.stringify(JSON.parse(ta.value), null, 2);
+  });
+
+  document.getElementById("theme-reset")?.addEventListener("click", () => {
+    localStorage.removeItem("li-studio-custom-theme");
+    StudioThemes.clearCustomStyle();
+    applyTheme("aurora");
+    dlg.close();
+  });
+
+  document.getElementById("theme-example")?.addEventListener("click", async () => {
+    try {
+      const r = await fetch("themes/example.custom.json");
+      ta.value = await r.text();
+    } catch (_) {
+      ta.value = '{"name":"Midnight rose","tokens":{"pass":"#e8c468","agent":"#f0abfc","accent":"#e879a8"}}';
+    }
+  });
+
+  document.getElementById("theme-import-file")?.addEventListener("click", () => fileInput?.click());
+  fileInput?.addEventListener("change", async () => {
+    const f = fileInput.files?.[0];
+    if (!f) return;
+    ta.value = await f.text();
+    fileInput.value = "";
+  });
+}
+
+initThemeDialog();
 
 const params = new URLSearchParams(location.search);
 if (params.get("autoreel") === "1") {

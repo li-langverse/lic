@@ -43,6 +43,8 @@ Three palettes via `data-theme` on `<html>` (top bar swatches):
 
 No mint/teal “success green”. **Warn** stays orange (`--warn`) so it never clashes with pass gold.
 
+**Custom themes:** top bar **+** → import `themes/example.custom.json` or paste token overrides. Schema: `deploy/studio-demo/themes/schema.json`. UX audit: [studio-wireframe-ux-audit.md](studio-wireframe-ux-audit.md).
+
 Shared surfaces (aurora): `--bg-deep` `#0b0d12`, `--bg-surface` `#12151c`, `--accent` `#7c9cff`
 
 See `deploy/studio-demo/studio.css` and [studio-ux-design-system-rfc](specs/studio-ux-design-system-rfc.md).

@@ -58,7 +58,7 @@ ui_command_palette_execute(cmd)
 | Phase | Deliverable |
 |-------|-------------|
 | **UX-0** ✅ | Types + smokes + composable gates |
-| **UX-1** ✅ | HTML demo: **hero agent dock** + ⌘K palette · **v4 themes** (aurora / ember / slate) via `data-theme` |
+| **UX-1** ✅ | HTML demo: agent dock + ⌘K · themes (aurora / ember / slate + **custom JSON**) · [wireframe UX audit](../studio-wireframe-ux-audit.md) |
 | **UX-2** | **Li-only native GUI** — [li-native-gui-plan.md](../plans/li-native-gui-plan.md) (iterate there) |
 | **UX-3** | `packages/li-gui` + `world-studio` target + `lic` |
 | **UX-4** | In-game creator UI — [li-gui-schema-rfc.md](li-gui-schema-rfc.md) |

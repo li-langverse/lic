@@ -86,7 +86,9 @@ bool compile_module(const Module& module, const std::string& output_path,
   }
   if (mir.uses_openmp) {
 #if defined(__linux__)
-    cmd << " -fopenmp";
+    if (std::filesystem::exists("/usr/include/omp.h")) {
+      cmd << " -fopenmp";
+    }
 #elif defined(__APPLE__)
     if (std::filesystem::exists("/opt/homebrew/opt/libomp/lib/libomp.dylib")) {
       cmd << " -Xpreprocessor -fopenmp -I/opt/homebrew/opt/libomp/include"

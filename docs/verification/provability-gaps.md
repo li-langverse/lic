@@ -33,7 +33,7 @@ This page is the **honest inventory** of what is **not** fully proved or not yet
 
 | ID | Status | What remains |
 |----|--------|----------------|
-| **G-lean** | Partial | **Tier A (on):** `lic build` fails open AutoVC unless `LI_ALLOW_OPEN_VC=1`. **Tier B (default when lake installed):** `lic build` runs `lean-verify-stub.sh` + `lake build AutoVC` (`LI_BUILD_VERIFY_LEAN=0` opt-out). **`LiArray`** typechecks P-linalg. **Still open:** kernel proofs for intentional open specimens (`sqrt_open_bound`, loop dot); `sorry` on `mat2_at2_float_spec` |
+| **G-lean** | Partial | **Tier B (default when lake installed):** `lic build` runs `lake build AutoVC` (`LI_BUILD_VERIFY_LEAN=0` opt-out). **`LiArray`** + fib/recursive call-site + parallel `_par*` VCs typecheck. **Still open:** kernel proofs for intentional open specimens (`sqrt_open_bound`, loop dot); `sorry` on `mat2_at2_float_spec` |
 | **G-vc** | Partial | Float/`abs` ensures; opaque `vec3_dot`-style returns; loop implementations vs closed-form `ensures` |
 | **G-par** | Partial | AST `policy_module` rejects missing disjoint, false `disjoint_row`, mut capture, borrow-in-par; Lean proofs open |
 | **G-dec** | Partial | Decorator elaboration to MIR; `decorator_exploits` proofs |

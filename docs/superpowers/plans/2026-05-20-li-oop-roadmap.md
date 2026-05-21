@@ -24,6 +24,7 @@
 | Object mutation to caller | **Done (2j-c)** | `c.bump()`, `rigid_integrate(body, …)` without return-assign |
 | Inheritance / `override` | **Done (2j-d)** | `object of Base`, static subtyping, `@override` signature check |
 | Traits (`Hash`, …) | **Done (2j-e)** | `type Hash = trait`; `def f[T: Hash]`; `trait_hash_impl.li` / `trait_missing_impl.li` |
+| Method VCs at call site | **Done (2j-f)** | `check_requires_at_method_call`; `method_call_requires_*.li` |
 | Cross-module private **fields** | **Done** | `leak_imported_vault.li` compile_fail |
 
 **Honest label:** **2g = records + field privacy**, not full OOP. This plan is **2j**.

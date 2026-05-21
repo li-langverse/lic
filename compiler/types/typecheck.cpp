@@ -953,6 +953,22 @@ struct Ctx {
             diags.error(loc(e.span), "argument type mismatch in method call `" + e.field_name + "'");
           }
         }
+        const RequiresCheckResult req =
+            check_requires_at_method_call(callee_proc, *e.base, e.args, proof_facts());
+        if (req == RequiresCheckResult::Violated) {
+          const auto explained = explain_requires_violation_method(callee_proc, *e.base,
+                                                                    e.field_name, e.args,
+                                                                    proof_facts());
+          if (explained) {
+            diag_error(diags, loc(e.span), ErrorCode::E0304, explained->message, explained->hint);
+          } else {
+            diag_error(diags, loc(e.span), ErrorCode::E0304,
+                       "Cannot call `" + e.field_name + "` on `" + type_name +
+                           "`: method `requires` precondition not met.",
+                       "Change the arguments or receiver state so the method's `requires` "
+                       "clause holds.");
+          }
+        }
         if (callee_proc.ret_type) {
           return resolve_type_expr(*callee_proc.ret_type);
         }
@@ -1266,6 +1282,12 @@ struct Ctx {
       type_of(*s.expr);
       if (s.init->kind == Expr::Kind::Ident) {
         record_const_int_binding(s.init->ident, *s.expr);
+      }
+      if (s.init->kind == Expr::Kind::FieldAccess) {
+        const auto key = object_field_const_key(*s.init);
+        if (key && s.expr->kind == Expr::Kind::IntLit) {
+          const_int_locals[*key] = s.expr->int_value;
+        }
       }
       return;
     }

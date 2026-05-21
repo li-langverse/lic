@@ -198,6 +198,19 @@ expected_substr = "E0304"
 
 [[tests]]
 suite = "contracts_verify"
+file = "contracts_verify/method_call_requires_ok.li"
+outcome = "verify_ok"
+note = "2j-f: method call-site requires on desugared Type_method"
+
+[[tests]]
+suite = "contracts_verify"
+file = "contracts_verify/method_call_requires_fail.li"
+outcome = "compile_fail"
+expected_substr = "E0304"
+note = "2j-f: violated method requires at call site"
+
+[[tests]]
+suite = "contracts_verify"
 file = "contracts_verify/refinement_call_ok.li"
 outcome = "verify_ok"
 

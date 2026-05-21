@@ -193,8 +193,60 @@ std::unique_ptr<Expr> substitute_call_params(
   return out;
 }
 
+std::optional<std::string> object_field_const_key(const Expr& e) {
+  if (e.kind != Expr::Kind::FieldAccess || !e.base) {
+    return std::nullopt;
+  }
+  const Expr* root = e.base.get();
+  while (root && root->kind == Expr::Kind::FieldAccess) {
+    root = root->base.get();
+  }
+  if (!root || root->kind != Expr::Kind::Ident) {
+    return std::nullopt;
+  }
+  return root->ident + "." + e.field_name;
+}
+
+void note_object_field_const_assign(const Expr& lhs, const Expr& rhs,
+                                    std::map<std::string, std::int64_t>& const_int_locals) {
+  const auto key = object_field_const_key(lhs);
+  if (!key) {
+    return;
+  }
+  if (rhs.kind == Expr::Kind::IntLit) {
+    const_int_locals[*key] = rhs.int_value;
+    return;
+  }
+  if (rhs.kind == Expr::Kind::Ident) {
+    const auto it = const_int_locals.find(rhs.ident);
+    if (it != const_int_locals.end()) {
+      const_int_locals[*key] = it->second;
+    }
+    const auto fit = object_field_const_key(rhs);
+    if (fit) {
+      const auto it2 = const_int_locals.find(*fit);
+      if (it2 != const_int_locals.end()) {
+        const_int_locals[*key] = it2->second;
+      }
+    }
+  }
+}
+
 std::unique_ptr<Expr> fold_const_int_locals(
     const Expr& expr, const std::map<std::string, std::int64_t>& const_int_locals) {
+  if (expr.kind == Expr::Kind::FieldAccess) {
+    const auto key = object_field_const_key(expr);
+    if (key) {
+      const auto it = const_int_locals.find(*key);
+      if (it != const_int_locals.end()) {
+        auto lit = std::make_unique<Expr>();
+        lit->kind = Expr::Kind::IntLit;
+        lit->span = expr.span;
+        lit->int_value = it->second;
+        return lit;
+      }
+    }
+  }
   if (expr.kind == Expr::Kind::Ident) {
     const auto it = const_int_locals.find(expr.ident);
     if (it != const_int_locals.end()) {
@@ -365,11 +417,23 @@ void note_nonneg_assumption_from_cond(const Expr& cond, std::set<std::string>& o
   }
 }
 
-RequiresCheckResult check_requires_at_call(const ProcDecl& callee, const Expr& call,
-                                           const ProofFacts& facts) {
-  if (call.kind != Expr::Kind::Call) {
-    return RequiresCheckResult::Unknown;
+std::vector<std::unique_ptr<Expr>> method_call_arg_list(
+    const Expr& receiver, const std::vector<std::unique_ptr<Expr>>& method_args) {
+  std::vector<std::unique_ptr<Expr>> args;
+  args.push_back(clone_expr(receiver));
+  for (const auto& a : method_args) {
+    if (a) {
+      args.push_back(clone_expr(*a));
+    } else {
+      args.push_back(nullptr);
+    }
   }
+  return args;
+}
+
+RequiresCheckResult check_requires_with_subst_args(
+    const ProcDecl& callee, const std::vector<std::unique_ptr<Expr>>& args,
+    const ProofFacts& facts) {
   std::vector<std::string> param_names;
   for (const auto& p : callee.params) {
     param_names.push_back(p.name);
@@ -380,7 +444,7 @@ RequiresCheckResult check_requires_at_call(const ProcDecl& callee, const Expr& c
     if (rc.kind != ContractKind::Requires || !rc.expr) {
       continue;
     }
-    const auto sub = substitute_call_params(*rc.expr, param_names, call.args);
+    const auto sub = substitute_call_params(*rc.expr, param_names, args);
     const auto folded = fold_const_int_locals(*sub, facts.const_int_locals);
     if (expr_statically_true(*folded) || folded_discharged_by_proof_facts(*folded, facts)) {
       continue;
@@ -400,23 +464,51 @@ RequiresCheckResult check_requires_at_call(const ProcDecl& callee, const Expr& c
   return RequiresCheckResult::Satisfied;
 }
 
-std::optional<RequiresViolationExplanation> explain_requires_violation(const ProcDecl& callee,
-                                                                       const Expr& call,
-                                                                       const ProofFacts& facts) {
+RequiresCheckResult check_requires_at_call(const ProcDecl& callee, const Expr& call,
+                                           const ProofFacts& facts) {
   if (call.kind != Expr::Kind::Call) {
-    return std::nullopt;
+    return RequiresCheckResult::Unknown;
   }
+  return check_requires_with_subst_args(callee, call.args, facts);
+}
+
+RequiresCheckResult check_requires_at_method_call(
+    const ProcDecl& callee, const Expr& receiver,
+    const std::vector<std::unique_ptr<Expr>>& method_args, const ProofFacts& facts) {
+  return check_requires_with_subst_args(callee, method_call_arg_list(receiver, method_args), facts);
+}
+
+std::string method_call_to_user_string(const Expr& receiver, const std::string& method,
+                                       const std::vector<std::unique_ptr<Expr>>& method_args) {
+  std::ostringstream os;
+  os << expr_to_user_string(receiver) << '.' << method << '(';
+  for (std::size_t i = 0; i < method_args.size(); ++i) {
+    if (i > 0) {
+      os << ", ";
+    }
+    if (method_args[i]) {
+      os << expr_to_user_string(*method_args[i]);
+    } else {
+      os << '?';
+    }
+  }
+  os << ')';
+  return os.str();
+}
+
+std::optional<RequiresViolationExplanation> explain_requires_violation_with_args(
+    const ProcDecl& callee, const std::vector<std::unique_ptr<Expr>>& args,
+    const std::string& call_text, const ProofFacts& facts) {
   std::vector<std::string> param_names;
   for (const auto& p : callee.params) {
     param_names.push_back(p.name);
   }
-  const std::string call_text = call_to_user_string(call);
   for (const auto& rc : callee.contracts) {
     if (rc.kind != ContractKind::Requires || !rc.expr) {
       continue;
     }
     const std::string rule_text = expr_to_user_string(*rc.expr);
-    const auto sub = substitute_call_params(*rc.expr, param_names, call.args);
+    const auto sub = substitute_call_params(*rc.expr, param_names, args);
     const auto folded = fold_const_int_locals(*sub, facts.const_int_locals);
     if (!expr_statically_false(*folded) || folded_discharged_by_proof_facts(*folded, facts)) {
       continue;
@@ -458,6 +550,23 @@ std::optional<RequiresViolationExplanation> explain_requires_violation(const Pro
     return out;
   }
   return std::nullopt;
+}
+
+std::optional<RequiresViolationExplanation> explain_requires_violation(const ProcDecl& callee,
+                                                                       const Expr& call,
+                                                                       const ProofFacts& facts) {
+  if (call.kind != Expr::Kind::Call) {
+    return std::nullopt;
+  }
+  return explain_requires_violation_with_args(callee, call.args, call_to_user_string(call), facts);
+}
+
+std::optional<RequiresViolationExplanation> explain_requires_violation_method(
+    const ProcDecl& callee, const Expr& receiver, const std::string& method_name,
+    const std::vector<std::unique_ptr<Expr>>& method_args, const ProofFacts& facts) {
+  return explain_requires_violation_with_args(
+      callee, method_call_arg_list(receiver, method_args),
+      method_call_to_user_string(receiver, method_name, method_args), facts);
 }
 
 std::optional<ResolvedRefinement> resolve_refinement_on_type(const TypeExpr& te,
@@ -550,6 +659,32 @@ std::optional<RequiresViolationExplanation> explain_refinement_violation(
   return out;
 }
 
+void collect_method_calls_in_expr(const Expr& e, std::vector<const Expr*>& out) {
+  if (e.kind == Expr::Kind::MethodCall) {
+    out.push_back(&e);
+  }
+  if (e.lhs) {
+    collect_method_calls_in_expr(*e.lhs, out);
+  }
+  if (e.rhs) {
+    collect_method_calls_in_expr(*e.rhs, out);
+  }
+  if (e.operand) {
+    collect_method_calls_in_expr(*e.operand, out);
+  }
+  if (e.base) {
+    collect_method_calls_in_expr(*e.base, out);
+  }
+  if (e.index) {
+    collect_method_calls_in_expr(*e.index, out);
+  }
+  for (const auto& arg : e.args) {
+    if (arg) {
+      collect_method_calls_in_expr(*arg, out);
+    }
+  }
+}
+
 void collect_calls_in_expr(const Expr& e, std::vector<const Expr*>& out) {
   if (e.kind == Expr::Kind::Call) {
     out.push_back(&e);
@@ -576,6 +711,28 @@ void collect_calls_in_expr(const Expr& e, std::vector<const Expr*>& out) {
   }
 }
 
+void collect_method_calls_in_stmts(const std::vector<Stmt>& stmts,
+                                   std::vector<const Expr*>& out) {
+  for (const auto& s : stmts) {
+    if (s.expr) {
+      collect_method_calls_in_expr(*s.expr, out);
+    }
+    if (s.init) {
+      collect_method_calls_in_expr(*s.init, out);
+    }
+    if (s.cond) {
+      collect_method_calls_in_expr(*s.cond, out);
+    }
+    collect_method_calls_in_stmts(s.then_body, out);
+    if (s.else_body) {
+      collect_method_calls_in_stmts(*s.else_body, out);
+    }
+    collect_method_calls_in_stmts(s.while_body, out);
+    collect_method_calls_in_stmts(s.for_body, out);
+    collect_method_calls_in_stmts(s.par_body, out);
+  }
+}
+
 void collect_calls_in_stmts(const std::vector<Stmt>& stmts,
                             std::vector<const Expr*>& out) {
   for (const auto& s : stmts) {
@@ -598,14 +755,38 @@ void collect_calls_in_stmts(const std::vector<Stmt>& stmts,
   }
 }
 
+void collect_const_facts_in_stmts(const std::vector<Stmt>& stmts,
+                                  std::map<std::string, std::int64_t>& const_int_locals) {
+  for (const auto& s : stmts) {
+    if (s.kind == Stmt::Kind::VarDecl && s.init && s.init->kind == Expr::Kind::IntLit) {
+      const_int_locals[s.var_name] = s.init->int_value;
+    }
+    if (s.kind == Stmt::Kind::Assign && s.init && s.expr) {
+      note_object_field_const_assign(*s.init, *s.expr, const_int_locals);
+      if (s.init->kind == Expr::Kind::Ident) {
+        if (s.expr->kind == Expr::Kind::IntLit) {
+          const_int_locals[s.init->ident] = s.expr->int_value;
+        } else if (s.expr->kind == Expr::Kind::Ident) {
+          const auto it = const_int_locals.find(s.expr->ident);
+          if (it != const_int_locals.end()) {
+            const_int_locals[s.init->ident] = it->second;
+          }
+        }
+      }
+    }
+    collect_const_facts_in_stmts(s.then_body, const_int_locals);
+    if (s.else_body) {
+      collect_const_facts_in_stmts(*s.else_body, const_int_locals);
+    }
+    collect_const_facts_in_stmts(s.while_body, const_int_locals);
+    collect_const_facts_in_stmts(s.for_body, const_int_locals);
+    collect_const_facts_in_stmts(s.par_body, const_int_locals);
+  }
+}
+
 CallerProofFacts collect_caller_proof_facts(const ProcDecl& caller) {
   CallerProofFacts facts;
-  for (const auto& s : caller.body) {
-    if (s.kind == Stmt::Kind::VarDecl && s.init &&
-        s.init->kind == Expr::Kind::IntLit) {
-      facts.const_int_locals[s.var_name] = s.init->int_value;
-    }
-  }
+  collect_const_facts_in_stmts(caller.body, facts.const_int_locals);
   for (const auto& s : caller.body) {
     if (s.kind == Stmt::Kind::If && s.cond) {
       note_nonneg_assumption_from_cond(*s.cond, facts.assum_nonneg_ints);

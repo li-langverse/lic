@@ -1,0 +1,16 @@
+# M1.5 — TLS dev profile (not active until li-tls ships)
+[server]
+listen = ":8443"
+document_root = "./public"
+
+[limits]
+max_body = "1m"
+max_header = "16k"
+
+[tls]
+mode = "self_signed"
+cert = "./cert.pem"
+key = "./key.pem"
+
+[routes]
+"GET /*" = "static:root"

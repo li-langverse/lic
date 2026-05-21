@@ -1,0 +1,10 @@
+# M1.5 scaffold — TLS not linked into li-httpd yet.
+
+def tls_available() -> int
+  return 0
+
+def tls_dev_self_signed_load(cert_path: ptr, key_path: ptr) -> int
+  return -1
+
+def tls_listen_wrap(tcp_fd: int) -> int
+  return -1

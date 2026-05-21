@@ -1,0 +1,17 @@
+# M1 wave 6 — per-route rate limit (stricter on /api than global)
+[server]
+listen = ":29196"
+document_root = "./public"
+
+[limits]
+max_body = "1m"
+max_header = "16k"
+rate_limit_rps = 100
+rate_limit_burst = 50
+
+[route_limits]
+"GET /api/*" = { rps = 2, burst = 1 }
+
+[routes]
+"GET /api/*" = "static:api"
+"GET /index.html" = "static:root"

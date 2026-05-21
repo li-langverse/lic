@@ -1,0 +1,17 @@
+# M1 wave 8 — strip x-internal-* from upstream responses
+[server]
+listen = ":39210"
+document_root = "./public"
+
+[limits]
+max_body = "1m"
+max_header = "16k"
+
+[headers]
+strip_internal = true
+
+[upstreams.backend]
+peers = ["http://127.0.0.1:39211"]
+
+[routes]
+"GET /*" = "proxy:backend"

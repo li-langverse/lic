@@ -1,0 +1,18 @@
+# M1 wave 7 — passive upstream health (dead peer skipped after connect failures)
+[server]
+listen = ":18100"
+document_root = "./public"
+
+[limits]
+max_body = "1m"
+max_header = "16k"
+
+[health]
+max_fails = 1
+fail_timeout = "30s"
+
+[upstreams.api]
+peers = ["http://127.0.0.1:18101", "http://127.0.0.1:18102"]
+
+[routes]
+"GET /*" = "proxy:api"

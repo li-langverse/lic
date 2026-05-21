@@ -1019,3 +1019,10 @@ def httpd_serve_routed_once(port: int) raises Net, IO -> int
   decreases port
 =
   return li_rt_httpd_serve_routed_once(port)
+
+def main() raises Net, Alloc, IO -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return httpd_run_from_argv()

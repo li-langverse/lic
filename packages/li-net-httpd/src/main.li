@@ -1,5 +1,3 @@
-/* Build entry: prefer `lic build packages/li-net-httpd/src/lib.li -o build/li-httpd`
-   (defines `main` → li_user_main). This file re-exports the same entry via import. */
 import net.httpd
 
 def main() raises Net, Alloc, IO -> int

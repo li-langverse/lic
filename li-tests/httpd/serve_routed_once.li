@@ -1,5 +1,7 @@
 import http
-import net.httpd
+
+extern proc li_rt_httpd_load_routing_fixture() -> int32
+extern proc li_rt_httpd_serve_routed_once(port: int32) -> int32
 
 def main() raises IO, Alloc -> int
   requires true
@@ -8,7 +10,7 @@ def main() raises IO, Alloc -> int
 =
   if load_routes_from_routing_fixture() != 0:
     return 10
-  var rc: int = httpd_serve_routed_once(18081)
+  var rc: int = li_rt_httpd_serve_routed_once(18081)
   if rc != 0:
     return rc
   return 0

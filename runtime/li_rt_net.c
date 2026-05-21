@@ -1684,7 +1684,7 @@ static void httpd_access_log(const httpd_req_info_t* req, int status, int bytes_
     memcpy(mbuf, req->method, (size_t)ml);
     mbuf[ml] = '\0';
   }
-  fprintf(stderr, "access %s %s %s %d %d\n", tbuf, mbuf, pathbuf, status, bytes_out);
+  li_rt_log_access_line(tbuf, mbuf, pathbuf, status, bytes_out);
 }
 
 static int path_proxy_match(const char* path, int plen, const httpd_req_info_t* req) {

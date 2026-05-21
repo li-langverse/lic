@@ -137,6 +137,15 @@ intptr_t str_cat2_i(intptr_t a, intptr_t b);
 intptr_t net_lit_index_html_i(void);
 int32_t net_diag(int32_t tag);
 
+/* Logging seam (li_rt_log.c — packages/li-log M1). */
+void li_rt_log_set_dir(const char* dir);
+int32_t li_rt_log_redact_line(const char* in, char* out, int32_t cap);
+void li_rt_log_access_line(const char* ts, const char* method, const char* path, int32_t status,
+                           int32_t bytes_out);
+int32_t li_rt_log_reopen(void);
+const char* li_rt_log_redact(const char* in);
+int32_t li_rt_log_redact_ok(const char* in);
+
 #ifdef __cplusplus
 }
 #endif

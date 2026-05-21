@@ -55,7 +55,7 @@ todos:
     status: pending
   - id: li-log-package
     content: "packages/li-log: rotation, RFC3339 timestamps, redact-by-default; li-httpd access/audit/error sinks"
-    status: pending
+    status: in_progress
   - id: m15-tls-auto
     content: "TLS auto: self-signed dev certs on setup; ACME Let's Encrypt obtain+renew; secure TOML modes"
     status: pending

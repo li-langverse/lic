@@ -1,19 +1,31 @@
 # Planned UI mockups (concept art)
 
-Visual targets for **Li World Studio** native shell — generated from [unified-studio-ux-vision.md](unified-studio-ux-vision.md) and competitive material study.
+Visual targets for **Li World Studio** native shell — v2 uses **teal agent dock** + navy shell (no violet).
 
-**Files (in repo):** `lic/deploy/studio-demo/mockups/`
+**Folder:** `lic/deploy/studio-demo/mockups/` · **Live prototype:** [deploy/studio-demo/](../../deploy/studio-demo/)
+
+---
+
+## v2 gallery (current)
+
+| | Workspace |
+|---|-----------|
+| ![Game viewport v2](../../deploy/studio-demo/mockups/li-studio-viewport-game-v2.png) | **Game** — outliner · 3D viewport · **agent dock** |
+| ![Agent chat v2](../../deploy/studio-demo/mockups/li-studio-agent-chat-v2.png) | **Agent dock** — chat · plan · Apply/Reject |
+| ![Scientific v2](../../deploy/studio-demo/mockups/li-studio-scientific-sim-v2.png) | **Scientific** — heat field · validity · agent |
+| ![Cinematic v2](../../deploy/studio-demo/mockups/li-studio-cinematic-nle-v2.png) | **Cinematic** — 4-panel NLE + agent |
+| ![Canvas v2](../../deploy/studio-demo/mockups/li-studio-agentic-canvas-v2.png) | **Canvas** — spatial graph · AgentPlan |
+| ![Publish v2](../../deploy/studio-demo/mockups/li-studio-publish-v2.png) | **Publish** — figures · bundle hash |
 
 ---
 
 ## 1. Game / viewport workspace
 
-![Game viewport mockup](../../deploy/studio-demo/mockups/li-studio-viewport-game.png)
+![Game viewport v2](../../deploy/studio-demo/mockups/li-studio-viewport-game-v2.png)
 
-- Outliner + **3D viewport** + inspector  
-- Toolbar: workspace, profile, **gate PASS**, Play, Agent, ⌘K, Publish  
-- Bottom: timeline + **agent transcript**  
-- Status overlay: fps + bench OK  
+- Outliner + **3D viewport** + **agent dock** (right, ~380px)  
+- Toolbar: workspace, **gate PASS** (emerald), Play, ⌘K  
+- Agent: plan → patch → `lic build`  
 
 **Maps to:** G3 Studio shell · `engine.profile = game`
 
@@ -21,11 +33,11 @@ Visual targets for **Li World Studio** native shell — generated from [unified-
 
 ## 2. Cinematic — 4-panel NLE
 
-![Cinematic NLE mockup](../../deploy/studio-demo/mockups/li-studio-cinematic-nle.png)
+![Cinematic NLE v2](../../deploy/studio-demo/mockups/li-studio-cinematic-nle-v2.png)
 
-- **Media bin** · **Preview** · **Timeline** · **Inspector** (CapCut/DaVinci pattern)  
+- **Media bin** · **Preview** · **Timeline** · clip inspector  
 - Export presets: 1080p30, 9:16, 4K + **repro hash**  
-- Workspace: Cinematic  
+- Agent dock: export / seq steps  
 
 **Maps to:** G7 `li-seq` · `studio.publish_video`
 
@@ -33,12 +45,11 @@ Visual targets for **Li World Studio** native shell — generated from [unified-
 
 ## 3. Infinite agentic canvas
 
-![Agentic canvas mockup](../../deploy/studio-demo/mockups/li-studio-agentic-canvas.png)
+![Agentic canvas v2](../../deploy/studio-demo/mockups/li-studio-agentic-canvas-v2.png)
 
 - Spatial graph: `world.li`, `Sequence`, `gui`, `sim`, **AgentPlan**  
-- Node status colors (pass / building)  
-- Links: Spawns, Compiles, Validates  
-- Default for drug/bio + agent-heavy sessions  
+- Node status: pass / building  
+- Agent dock: compile + validate loop  
 
 **Maps to:** G5 `gui.canvas` · [li-canvas-agentic-rfc](specs/li-canvas-agentic-rfc.md)
 
@@ -46,42 +57,48 @@ Visual targets for **Li World Studio** native shell — generated from [unified-
 
 ## 4. Scientific simulation
 
-![Scientific sim mockup](../../deploy/studio-demo/mockups/li-studio-scientific-sim.png)
+![Scientific sim v2](../../deploy/studio-demo/mockups/li-studio-scientific-sim-v2.png)
 
 - Field viewport (heat map)  
-- Inspector: **Params | Validity | Info**  
-- Validity green: `heat_equation_2d`, drift, oracle name  
-- Bottom: bench runs table  
+- **Params | Validity | Info** + agent discussing bench/oracle  
+- Validity green: `heat_equation_2d`, drift, oracle  
 
 **Maps to:** `sim_scientific` · tier-2 validity chrome
 
 ---
 
-## 5. Agent dock (v2 — hero chat)
+## 5. Agent dock (detail)
 
-![Agent chat v2 mockup](../../deploy/studio-demo/mockups/li-studio-agent-chat-v2.png)
+![Agent chat v2](../../deploy/studio-demo/mockups/li-studio-agent-chat-v2.png)
 
-- **Right rail = Agent first** (380px) — not a footnote in inspector  
-- **Chat bubbles** — user / agent / system roles + timestamps  
-- **Plan card** — steps before apply (Roblox Assistant / Cursor class)  
-- **Gate inline** — `lic build · PASS` inside transcript + top chip  
-- **Apply / Reject** — human-in-the-loop after diagnose  
-- **Composer** — `/build` `/bench` `/patch` hint chips  
+- **Chat bubbles** — user / agent / system  
+- **Plan card** — steps before apply  
+- **Gate inline** — `lic build · PASS`  
+- **Apply / Reject** · composer `/build` `/bench` `/patch`  
 
-**Live prototype:** `deploy/studio-demo/` — open in browser; agent dock matches this mock.
-
-**Maps to:** G3 `dock.agent` · [studio-ux-design-system-rfc](specs/studio-ux-design-system-rfc.md) `ui_layout_agent_first`
+**Maps to:** G3 `dock.agent` · `ui_layout_agent_first`
 
 ---
 
-## Design tokens (v2 target)
+## 6. Publish
+
+![Publish v2](../../deploy/studio-demo/mockups/li-studio-publish-v2.png)
+
+- Figure canvas + **PublishBundle** hash  
+- Agent: export plan + repro gate  
+
+**Maps to:** `studio.publish` · PH-PUB
+
+---
+
+## Design tokens (v2)
 
 | Token | Value |
 |-------|--------|
 | `--bg-deep` | `#0f1219` |
 | `--bg-surface` | `#161b26` |
 | `--bg-elevated` | `#1c2233` |
-| `--accent-agent` | `#2dd4bf` (teal — not violet) |
+| `--accent-agent` | `#2dd4bf` (teal) |
 | `--accent-workspace` | `#5b9cf5` |
 | `--pass` | `#34d399` |
 | `--fail` | `#f87171` |
@@ -91,11 +108,16 @@ Formalize in `specs/studio-ux-design-system-rfc.md` when native `li-ui` paint la
 
 ---
 
-## Not shown (future mocks)
+## v1 (legacy)
 
-- AM / slicer plater + 3-step export wizard  
+Older mocks without hero agent dock: `li-studio-viewport-game.png`, `li-studio-cinematic-nle.png`, etc. Prefer **`*-v2.png`** for reviews.
+
+---
+
+## Not shown (future)
+
+- AM / slicer plater + export wizard  
 - LITL / bio adaptive stage strip  
-- GUI theme editor (Roblox Style Editor class)  
-- Publish drawer full layout  
+- GUI theme editor  
 
-Request additional mocks in `#ph-ux` when a workspace is ready to implement.
+Request in `#ph-ux` when a workspace is ready to implement.

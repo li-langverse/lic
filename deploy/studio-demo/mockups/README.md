@@ -1,24 +1,29 @@
 # Li World Studio — planned UI mockups
 
-**Status:** Concept art aligned with [unified-studio-ux-vision.md](../../../docs/game-dev/unified-studio-ux-vision.md) v0.6 / [li-native-gui-plan.md](../../../docs/game-dev/plans/li-native-gui-plan.md).
+**Status:** v2 concept art (teal agent · navy shell · no violet) — [unified-studio-ux-vision.md](../../../docs/game-dev/unified-studio-ux-vision.md) · [planned-ui-mockups.md](../../../docs/game-dev/planned-ui-mockups.md)
 
-These are **design targets** for native Li chrome (not shipped UI). HTML demo remains prototype-only.
+Native `li-ui` targets; HTML demo: [../index.html](../index.html).
 
-| Image | Workspace | Plan phase |
-|-------|-----------|------------|
-| [li-studio-viewport-game.png](li-studio-viewport-game.png) | Game / default 3D viewport | G3 Studio shell |
-| [li-studio-cinematic-nle.png](li-studio-cinematic-nle.png) | Cinematic 4-panel NLE | G7 `li-seq` |
-| [li-studio-agentic-canvas.png](li-studio-agentic-canvas.png) | Infinite agentic canvas | G5 canvas |
-| [li-studio-scientific-sim.png](li-studio-scientific-sim.png) | Scientific + validity | G3 + bench panel |
-| [li-studio-agent-chat-v2.png](li-studio-agent-chat-v2.png) | **Agent dock + chat** (hero right rail) | G3 `dock.agent` |
+## v2 set (current — check these)
 
-**v2 agent mock** supersedes burying transcript in inspector — see live `../index.html`.
+| Preview | File | Workspace |
+|---------|------|-----------|
+| Game + agent dock | [li-studio-viewport-game-v2.png](li-studio-viewport-game-v2.png) | 3D viewport · rocket |
+| Agent chat (detail) | [li-studio-agent-chat-v2.png](li-studio-agent-chat-v2.png) | Right-rail hero |
+| Scientific + agent | [li-studio-scientific-sim-v2.png](li-studio-scientific-sim-v2.png) | Field viz · validity |
+| Cinematic NLE | [li-studio-cinematic-nle-v2.png](li-studio-cinematic-nle-v2.png) | 4-panel video |
+| Agentic canvas | [li-studio-agentic-canvas-v2.png](li-studio-agentic-canvas-v2.png) | Spatial graph |
+| Publish | [li-studio-publish-v2.png](li-studio-publish-v2.png) | Figures · bundle hash |
 
-**Chrome called out in all mocks:**
+**Tokens:** `#0f1219` bg · `#161b26` panels · `#2dd4bf` agent · `#5b9cf5` workspace · `#34d399` PASS
 
-- **Gate chip** — `lic build` PASS/FAIL (toolbar)  
-- **Validity** — engineering profile (oracle, drift)  
-- **Agent transcript** — bottom or dock  
-- **⌘K / Publish** — primary actions  
+## v1 (legacy)
 
-Iterate mocks when dock IDs or tokens change in `studio.design`.
+| File | Note |
+|------|------|
+| `li-studio-viewport-game.png` | Pre–agent-dock layout |
+| `li-studio-cinematic-nle.png` | Pre–teal palette |
+| `li-studio-agentic-canvas.png` | Pre–agent-dock |
+| `li-studio-scientific-sim.png` | Pre–agent-dock |
+
+**Chrome in all v2 mocks:** gate chip · agent chat dock · ⌘K · proof/validity where relevant.

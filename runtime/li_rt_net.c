@@ -24,6 +24,34 @@
 #define HTTPD_PROXY_SPLICE_MIN 512
 #else
 #define HTTPD_PROXY_SPLICE_MIN 4096
+#define HTTPD_EPOLL_CLIENT_TAG UINT64_C(0)
+#define HTTPD_EPOLL_UP_TAG UINT64_C(0)
+#ifndef EPOLLIN
+#define EPOLLIN 0x001u
+#define EPOLLOUT 0x004u
+#define EPOLLET (1u << 30)
+#define EPOLLERR 0x008u
+#define EPOLLHUP 0x010u
+#define EPOLL_CTL_ADD 1
+#define EPOLL_CTL_MOD 2
+#define EPOLL_CTL_DEL 3
+struct epoll_event {
+  uint32_t events;
+  union {
+    void* ptr;
+    int fd;
+    uint32_t u32;
+    uint64_t u64;
+  } data;
+};
+static int epoll_ctl(int epfd, int op, int fd, struct epoll_event* event) {
+  (void)epfd;
+  (void)op;
+  (void)fd;
+  (void)event;
+  return 0;
+}
+#endif
 #endif
 
 #ifdef __linux__
@@ -1968,14 +1996,12 @@ static int32_t httpd_send_static_path(int32_t conn, int32_t slot, const char* re
   return 0;
 }
 
-#ifdef __linux__
 static void httpd_serve_conn_epoll(int epfd, int32_t slot);
 static void httpd_conn_close_slot(int epfd, int32_t slot);
 static void httpd_proxy_client_epoll_mod(int epfd, int32_t slot, uint32_t events);
 static void httpd_proxy_pump_relay(int epfd, int32_t slot);
 static int httpd_proxy_start_async(int epfd, int32_t conn, int32_t slot, int hdr_end, const httpd_req_info_t* req,
                                    int keep);
-#endif
 
 static ssize_t httpd_send_nb(int fd, const char* data, size_t total, size_t* off);
 
@@ -2054,11 +2080,18 @@ static int32_t httpd_try_drain_once(int32_t conn, int32_t slot) {
     if (g_httpd_epfd < 0) {
       return -2;
     }
+#ifdef __linux__
     httpd_proxy_client_epoll_mod(g_httpd_epfd, slot, EPOLLIN | EPOLLET);
     if (httpd_proxy_start_async(g_httpd_epfd, conn, slot, hdr_end, &req, keep) < 0) {
       return -2;
     }
     return 0;
+#else
+    (void)conn;
+    (void)hdr_end;
+    (void)keep;
+    return -2;
+#endif
   }
   if (method_is(&req, "OPTIONS")) {
     if (httpd_send_status(conn, 204, "No Content",
@@ -2141,9 +2174,11 @@ static void httpd_proxy_clear(int epfd, int32_t slot) {
     return;
   }
   if (g_slots[slot].proxy_up_fd >= 0) {
+#ifdef __linux__
     if (epfd >= 0) {
       epoll_ctl((int)epfd, EPOLL_CTL_DEL, g_slots[slot].proxy_up_fd, NULL);
     }
+#endif
     upstream_pool_release(g_slots[slot].proxy_peer_port, g_slots[slot].proxy_up_fd,
                           g_slots[slot].proxy_up_reuse);
     g_slots[slot].proxy_up_fd = -1;
@@ -3185,9 +3220,11 @@ static void httpd_conn_close_slot(int epfd, int32_t slot) {
     httpd_proxy_clear(epfd, slot);
   }
   if (g_slots[slot].fd >= 0) {
+#ifdef __linux__
     if (epfd >= 0) {
       epoll_ctl((int)epfd, EPOLL_CTL_DEL, g_slots[slot].fd, NULL);
     }
+#endif
     close(g_slots[slot].fd);
     g_slots[slot].fd = -1;
     g_slots[slot].len = 0;

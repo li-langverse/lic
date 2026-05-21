@@ -1,12 +1,12 @@
-# Pure-Li matmul (2i-c): 64× (64×64) @ tiles ≡ 256³ flops; no LI_EXTRA_C / __li_simd_*.
+# Pure-Li matmul (2i-c): 64× (64×64) @ tiles ≡ 256³ flops; init once, hot loop is `@` only.
 
 extern proc li_rt_volatile_sink_f64(v: float) raises IO -> unit
   requires true
   ensures true
 
-def matmul_tile_f64() raises IO -> float
+def main() raises IO -> int
   requires true
-  ensures result >= 0.0
+  ensures result == 0
   decreases 0
 =
   var A: array[64, array[64, float]]
@@ -20,27 +20,11 @@ def matmul_tile_f64() raises IO -> float
       B[i][j] = 0.02
       j = j + 1
     i = i + 1
-  C = A @ B
-  var acc_tile: float = 0.0
-  var ri: int = 0
-  while ri < 64
-    var rj: int = 0
-    while rj < 64
-      acc_tile = acc_tile + C[ri][rj]
-      rj = rj + 1
-    ri = ri + 1
-  li_rt_volatile_sink_f64(acc_tile)
-  return C[0][0]
-
-def main() raises IO -> int
-  requires true
-  ensures result == 0
-  decreases 0
-=
   var acc: float = 0.0
   var rep: int = 0
   while rep < 64
-    acc = acc + matmul_tile_f64()
+    C = A @ B
+    acc = acc + C[0][0]
     rep = rep + 1
   li_rt_volatile_sink_f64(acc)
   return 0

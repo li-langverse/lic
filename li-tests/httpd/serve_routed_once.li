@@ -1,7 +1,8 @@
 import http
 
-extern proc li_rt_httpd_load_routing_fixture() -> int32
-extern proc li_rt_httpd_serve_routed_once(port: int32) -> int32
+extern proc li_rt_httpd_serve_routed_once(port: int) -> int
+  requires true
+  ensures true
 
 def main() raises IO, Alloc -> int
   requires true

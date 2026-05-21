@@ -430,4 +430,19 @@ CRITICAL: traceability `PKG-*`, SBOM, export audit log. RFC: [critical-package-c
 | [li-gpu-lkir-rfc.md](specs/li-gpu-lkir-rfc.md) | PH-HW |
 | [critical-package-compliance-rfc.md](specs/critical-package-compliance-rfc.md) | PH-COMPLY |
 
-**Maintainers:** Quarterly SOTA review; keep in sync with Cursor plan artifact `world_studio_amd_port_be6fdf4f.plan.md`.
+## 25. Algorithms & libraries (not studio-only)
+
+World Studio is the shell; **on-par science and games require proved libraries** tracked separately:
+
+| Doc | Role |
+|-----|------|
+| [algorithms-and-libraries-plan.md](../ecosystem/algorithms-and-libraries-plan.md) | Vertical matrix, Wave A–E scheduling, Layer B competitor registry |
+| `benchmarks/competitive/verticals.toml` | Per-vertical incumbent kernel + `workload_class` honesty |
+| [competitive-engines-plan.md](../benchmarks/competitive-engines-plan.md) | HPC language layer (cpp/numpy/…) |
+| [provability-gaps.md](../verification/provability-gaps.md) | **`lic` maturity** — blocks large-scale domain implementation |
+
+**Large-scale library implementation starts in Wave D** — only after Wave A (`2e`/`2f`/`7b`/`2i`/`7e`) + Wave B (tier-2 external oracles) + Wave C (`lip`/`lit` **8x**). Until then: composable stubs + UX/agent work only.
+
+---
+
+**Maintainers:** Quarterly SOTA review; keep in sync with Cursor plan artifact `world_studio_amd_port_be6fdf4f.plan.md` and **verticals.toml** `last_reviewed` dates.

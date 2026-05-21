@@ -1,0 +1,144 @@
+# Domain vertical algorithm intelligence (Layer B).
+# Complements registry.toml (HPC languages) and engines.toml (game/CAE products).
+# Agents: update last_reviewed when reviewing incumbent APIs/kernels.
+# Plan: docs/ecosystem/algorithms-and-libraries-plan.md
+
+[meta]
+version = 1
+updated = "2026-05-21"
+review_days_warn = 90
+
+# workload_class: full | v0_gaming | stub | composable_only
+# oracle: cpp | external_binary | composable_only | trusted_ffi
+
+[[vertical]]
+id = "gaming_rigid"
+vertical = "gaming"
+incumbent = "Bullet / PhysX / Jolt"
+kernel_or_api = "rigid contact + integrator"
+workload_class = "v0_gaming"
+oracle = "cpp"
+li_package = "physics.rigid"
+bench_id = "world-studio.toml"
+last_reviewed = "2026-05-21"
+notes = "v1 gaming kernels per competitive-engines-plan; not UE-class."
+
+[[vertical]]
+id = "hpc_md"
+vertical = "hpc_physics"
+incumbent = "LAMMPS / GROMACS"
+kernel_or_api = "LJ cutoff MD force"
+workload_class = "full"
+oracle = "cpp"
+li_package = "physics.particles"
+bench_id = "md_lennard_jones"
+last_reviewed = "2026-05-16"
+notes = "Add external_binary oracle column — AL-1 roadmap."
+
+[[vertical]]
+id = "cfd_pde"
+vertical = "engineering"
+incumbent = "OpenFOAM"
+kernel_or_api = "2D heat / wave explicit stencil"
+workload_class = "full"
+oracle = "cpp"
+li_package = "physics.fluids"
+bench_id = "heat_equation_2d"
+last_reviewed = "2026-05-16"
+notes = "Full CFD coupling not started; PH-SCI."
+
+[[vertical]]
+id = "qm_dft"
+vertical = "computational_chemistry"
+incumbent = "Psi4 / ORCA / Gaussian"
+kernel_or_api = "DFT total energy (small basis)"
+workload_class = "stub"
+oracle = "trusted_ffi"
+li_package = "chem.dft"
+bench_id = ""
+last_reviewed = "2026-05-21"
+notes = "Blocked on Wave A; trusted driver before native LKIR."
+
+[[vertical]]
+id = "drug_litl"
+vertical = "drug_design"
+incumbent = "Roche Lab-in-the-Loop (workflow)"
+kernel_or_api = "LITL stage machine + DFT hook"
+workload_class = "composable_only"
+oracle = "composable_only"
+li_package = "sim.drug_design"
+bench_id = "lab_loop_full_smoke"
+last_reviewed = "2026-05-21"
+notes = "Workflow parity; timed oracle TBD."
+
+[[vertical]]
+id = "bioeng_dbtl"
+vertical = "computational_biology"
+incumbent = "Benchling / Rosetta / ProteinMPNN"
+kernel_or_api = "DBTL loop + scorecard"
+workload_class = "stub"
+oracle = "composable_only"
+li_package = "bioeng"
+bench_id = "bioengineering.toml"
+last_reviewed = "2026-05-21"
+notes = "See competitive-bioengineering-plan.md."
+
+[[vertical]]
+id = "additive_thermal"
+vertical = "additive_manufacturing"
+incumbent = "Cura / PrusaSlicer / Bambu Studio"
+kernel_or_api = "thermal warp + export 3MF/gcode"
+workload_class = "stub"
+oracle = "cpp"
+li_package = "sim.additive"
+bench_id = "heat_equation_2d"
+last_reviewed = "2026-05-21"
+notes = "Slicer path geometry not benchmarked yet."
+
+[[vertical]]
+id = "cad_brep"
+vertical = "cad"
+incumbent = "OpenCascade / CGAL / Manifold"
+kernel_or_api = "mesh boolean / predicates"
+workload_class = "stub"
+oracle = "composable_only"
+li_package = ""
+bench_id = ""
+last_reviewed = "2026-05-21"
+notes = "cad-fundamentals gap doc; no PKG yet."
+
+[[vertical]]
+id = "cinematic_encode"
+vertical = "cinematic"
+incumbent = "DaVinci Resolve / Blender VSE / CapCut"
+kernel_or_api = "timeline render + encode preset"
+workload_class = "stub"
+oracle = "trusted_ffi"
+li_package = "studio.publish"
+bench_id = ""
+last_reviewed = "2026-05-21"
+notes = "UX intel in competitive-intel; encode RFC thin."
+
+[[vertical]]
+id = "dcc_mesh"
+vertical = "3d_modeling"
+incumbent = "Blender / Houdini"
+kernel_or_api = "glTF ingest + procedural mesh"
+workload_class = "stub"
+oracle = "composable_only"
+li_package = "assets"
+bench_id = ""
+last_reviewed = "2026-05-21"
+notes = "No DCC feature parity goal."
+
+[[vertical]]
+id = "robotics_twin"
+vertical = "robotics"
+incumbent = "Gazebo / Isaac Sim"
+kernel_or_api = "rigid articulation step"
+workload_class = "composable_only"
+oracle = "composable_only"
+li_package = "sim.robotics"
+bench_id = ""
+last_reviewed = "2026-05-21"
+notes = "ROS2 trusted bridge planned."

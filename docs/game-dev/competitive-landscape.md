@@ -1,7 +1,9 @@
 # Competitive landscape — Li World Studio / Li Engine
 
-**Status:** Planning snapshot  
-**Vision:** [world-studio-vision.md](world-studio-vision.md)
+**Status:** Planning snapshot (rev. 2026-05-21)  
+**Vision:** [world-studio-vision.md](world-studio-vision.md)  
+**Algorithms / libs schedule:** [algorithms-and-libraries-plan.md](../ecosystem/algorithms-and-libraries-plan.md)  
+**Layer B registry:** `benchmarks/competitive/verticals.toml`
 
 | Area | Incumbent | Li beat condition |
 |------|-----------|-------------------|
@@ -18,4 +20,22 @@
 | GPU lock-in | CUDA-only stacks | **ROCm/HIP** + LKIR |
 | Agents | Ad-hoc Copilot | MCP + `@cursor/sdk` + mandatory `lic build` |
 
-_Update quarterly._
+## Algorithm & library competitors (by vertical)
+
+High-level product rows are above; **kernel-level** tracking lives in `verticals.toml`. Gaps to fill next:
+
+| Vertical | Incumbent libs (algorithm layer) | Li package | Bench / oracle status |
+|----------|----------------------------------|------------|------------------------|
+| HPC MD | LAMMPS, GROMACS | `physics.particles` | tier-2 cpp; **external oracle TBD** |
+| CFD | OpenFOAM, Fluent solvers | `physics.fluids` | heat/wave proxies only |
+| QM | Psi4, ORCA, Gaussian, xTB | `chem.dft` | trusted FFI plan; stub |
+| FEA | CalculiX, FEniCS | *(PH-SCI — split RFC needed)* | none |
+| CAD | OCCT, CGAL, Manifold | *(PKG TBD)* | gap doc in li-language |
+| Slicer / AM | Cura, Prusa, Orca | `sim.additive` | thermal proxy; no toolpath oracle |
+| Protein | Rosetta, ProteinMPNN, RFdiffusion | `bioeng` | `bioengineering.toml` stub |
+| Cinematic encode | ffmpeg, Resolve export | `studio.publish` | stub; UX intel only |
+| DCC mesh | Blender bpy, Houdini HDK | `assets` | glTF stub |
+
+**HPC language competitors** (C++/Rust/Julia/NumPy): [registry.toml](../../benchmarks/competitive/registry.toml).
+
+_Update quarterly — sync `verticals.toml` `last_reviewed` and [algorithms-and-libraries-plan.md](../ecosystem/algorithms-and-libraries-plan.md)._

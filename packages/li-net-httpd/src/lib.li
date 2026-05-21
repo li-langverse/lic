@@ -1002,3 +1002,20 @@ def httpd_run_from_argv() raises Net, Alloc, IO -> int
     var bp: int = httpd_parse_port_i(backend_arg)
     return httpd_serve_port_root_proxy(p, r, bp)
   return httpd_serve_port_root(p, r)
+
+extern proc li_rt_httpd_serve_routed_once(port: int) -> int
+  requires 0 < port
+  requires port <= 65535
+  ensures -1 <= result
+  ensures result <= 2
+  decreases port
+
+# One-shot accept: match GET /health against loaded routes (M1 oracle; not production loop).
+def httpd_serve_routed_once(port: int) raises Net, IO -> int
+  requires 0 < port
+  requires port <= 65535
+  ensures -1 <= result
+  ensures result <= 2
+  decreases port
+=
+  return li_rt_httpd_serve_routed_once(port)

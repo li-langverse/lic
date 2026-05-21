@@ -292,6 +292,9 @@ struct EmitCtx {
       llvm::GlobalVariable* gv = emit_string_global(module, arg.str_value, str_counter);
       return string_ptr(*builder, gv);
     }
+    if (arg.is_float_literal) {
+      return llvm::ConstantFP::get(llvm::Type::getDoubleTy(context), arg.float_value);
+    }
     if (arg.is_literal) {
       return int32_val(*builder, context, arg.int_value);
     }
@@ -496,9 +499,25 @@ struct EmitCtx {
           if (ptr_param && val->getType() == i64_ty(context)) {
             val = builder->CreateIntToPtr(val, i8_ptr(context));
           }
+          if (ai < callee->arg_size()) {
+            llvm::Type* want = callee->getArg(ai)->getType();
+            if (want != val->getType()) {
+              if (want->isDoubleTy() && val->getType()->isIntegerTy(32)) {
+                val = builder->CreateSIToFP(val, want);
+              } else if (want->isIntegerTy(32) && val->getType()->isDoubleTy()) {
+                val = builder->CreateFPTrunc(val, llvm::Type::getFloatTy(context));
+                val = builder->CreateBitCast(val, want);
+              } else if (want->isIntegerTy(32) && val->getType()->isFloatTy()) {
+                val = builder->CreateBitCast(val, want);
+              }
+            }
+          }
           args.push_back(val);
         }
         llvm::CallInst* call = builder->CreateCall(callee, args);
+        if (callee->getReturnType()->isVoidTy()) {
+          return true;
+        }
         if (!ins.object_layout.empty() && callee->getReturnType()->isStructTy()) {
           llvm::Value* agg = call;
           auto* st = llvm::cast<llvm::StructType>(callee->getReturnType());

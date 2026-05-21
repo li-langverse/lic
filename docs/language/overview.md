@@ -31,6 +31,7 @@ def name(arg: T) -> R
 | Topic | Page |
 |-------|------|
 | Philosophy & naming | [Philosophy](philosophy.md) |
+| Naming conventions (PascalCase types) | [Naming conventions](naming-conventions.md) |
 | Full OOP roadmap (methods, traits) | [OOP roadmap](../superpowers/plans/2026-05-20-li-oop-roadmap.md) |
 | Imports | [Import style](import-style.md) |
 | Types & data | [Types and data](types-and-data.md) |

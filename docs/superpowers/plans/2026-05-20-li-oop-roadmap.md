@@ -50,7 +50,7 @@
 | Cross-module | `private` fields not accessible via import merge (E02xx) |
 | CI | `private_field_cross_module.li` compile_fail; `private_method_use.li` compile_fail |
 
-**Exit:** encapsulation suite ≥ 18 tests; **G-def** → **Partial+** in [provability-gaps](../../verification/provability-gaps.md).
+**Exit:** private **methods** + module visibility tests; **G-def** → **Partial+** in [provability-gaps](../../verification/provability-gaps.md). (Cross-module **field** privacy: `leak_imported_vault.li` already green.)
 
 ### 2j-c — Object semantics (mutation + call conventions)
 

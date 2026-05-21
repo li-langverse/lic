@@ -651,6 +651,11 @@ outcome = "verify_ok"
 
 [[tests]]
 suite = "math_linalg"
+file = "math_linalg/elementwise_mul_float10.li"
+outcome = "verify_ok"
+
+[[tests]]
+suite = "math_linalg"
 file = "math_linalg/sum_elementwise_product.li"
 outcome = "verify_ok"
 

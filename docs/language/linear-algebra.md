@@ -9,7 +9,7 @@ User code should express numerical kernels as **math**, not compiler intrinsics.
 | `a @ b` / `dot(a, b)` | `array[N, float]` × `array[N, float]` → `float` | `ArrayDotF64` (4-wide SIMD gather when `N ≥ 4`) |
 | `C = A @ B` | `array[M, array[K, float]]` × `array[K, array[N, float]]` → `array[M, array[N, float]]` | `ArrayMatMul2DF64` |
 | `sum(a)` | `array[N, int]` or `array[N, float]` | `ArraySumF64` / `ArraySumI64` |
-| `a + b`, `a - b`, `a * b`, `a / b` | matching 1d numeric arrays | `ArrayBinOpF64` / `ArrayBinOpI64` |
+| `a + b`, `a - b`, `a * b`, `a / b` | matching 1d numeric arrays | `ArrayBinOpF64` (4-wide SIMD gather/scatter when `N ≥ 4`) / `ArrayBinOpI64` |
 | `sum(a * b)` | product array then reduce | element-wise + `ArraySumF64` |
 
 Inner-dimension mismatches on `@` fail at compile time (`li-tests/math_linalg/matmul_dim_mismatch.li`, `array_dot_mismatch.li`).

@@ -158,6 +158,20 @@ struct EmitCtx {
     return vec;
   }
 
+  void scatter_array_f64x4(llvm::AllocaInst* alloca, unsigned start, llvm::Value* vec) {
+    llvm::Type* f64 = llvm::Type::getDoubleTy(context);
+    llvm::Value* zero = llvm::ConstantInt::get(builder->getInt32Ty(), 0);
+    llvm::Type* arr_ty = alloca->getAllocatedType();
+    for (unsigned lane = 0; lane < 4; ++lane) {
+      llvm::Value* idx = llvm::ConstantInt::get(i32_ty(context), start + lane);
+      llvm::Value* gep_idx[] = {zero, idx};
+      llvm::Value* ptr = builder->CreateInBoundsGEP(arr_ty, alloca, gep_idx);
+      llvm::Value* scalar = builder->CreateExtractElement(
+          vec, llvm::ConstantInt::get(i32_ty(context), lane));
+      builder->CreateStore(scalar, ptr);
+    }
+  }
+
   llvm::AllocaInst* ensure_int_local(const std::string& name) {
     auto it = int_locals.find(name);
     if (it != int_locals.end()) {
@@ -771,8 +785,15 @@ struct EmitCtx {
         }
         llvm::Type* f64 = llvm::Type::getDoubleTy(context);
         const auto n = static_cast<unsigned>(ins.int_value);
+        const unsigned simd_end = (n / 4) * 4;
+        for (unsigned i = 0; i < simd_end; i += 4) {
+          llvm::Value* av = gather_array_f64x4(a_it->second.alloca, i);
+          llvm::Value* bv = gather_array_f64x4(b_it->second.alloca, i);
+          llvm::Value* rv = emit_fbinop(ins.bin_op, av, bv);
+          scatter_array_f64x4(d_it->second.alloca, i, rv);
+        }
         llvm::Value* zero = llvm::ConstantInt::get(builder->getInt32Ty(), 0);
-        for (unsigned i = 0; i < n; ++i) {
+        for (unsigned i = simd_end; i < n; ++i) {
           llvm::Value* idx = llvm::ConstantInt::get(i32_ty(context), i);
           llvm::Value* gep_idx[] = {zero, idx};
           llvm::Value* ap = builder->CreateInBoundsGEP(

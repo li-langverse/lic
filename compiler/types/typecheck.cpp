@@ -91,6 +91,17 @@ TyPtr make_protocol(std::string name) {
   return t;
 }
 
+std::string object_type_name_for_method(const TyPtr& ty) {
+  if (ty && ty->kind == TyKind::Object && !ty->name.empty()) {
+    return ty->name;
+  }
+  return {};
+}
+
+std::string mangle_method_name(const std::string& type_name, const std::string& method) {
+  return type_name + "_" + method;
+}
+
 struct AliasEntry {
   AliasKind alias_kind = AliasKind::Type;
   std::vector<std::string> type_params;
@@ -738,6 +749,53 @@ struct Ctx {
       }
       case Expr::Kind::UnaryNot:
         return make_bool();
+      case Expr::Kind::MethodCall: {
+        if (!e.base) {
+          diags.error(loc(e.span), "method call missing receiver");
+          return make_int();
+        }
+        const TyPtr recv_ty = type_of(*e.base);
+        const std::string type_name = object_type_name_for_method(recv_ty);
+        if (type_name.empty()) {
+          diags.error(loc(e.span), "method call requires an object receiver");
+          return make_int();
+        }
+        const std::string callee = mangle_method_name(type_name, e.field_name);
+        const auto pit = procs.find(callee);
+        if (pit == procs.end()) {
+          diag_error(diags, loc(e.span), ErrorCode::E0202,
+                     "No method `" + e.field_name + "` on `" + type_name +
+                         "` (expected `def " + callee + "(self: var " + type_name + ", ...)`)",
+                     "Define the method with that name, or fix the call spelling.");
+          return make_int();
+        }
+        const ProcDecl& callee_proc = *pit->second;
+        if (callee_proc.params.empty()) {
+          diags.error(loc(e.span),
+                      "method `" + callee + "` must declare `self` as the first parameter");
+          return make_int();
+        }
+        const TyPtr self_ty = resolve_type_expr(callee_proc.params[0].type);
+        if (!assignable(recv_ty, self_ty)) {
+          diags.error(loc(e.span), "receiver type mismatch for method `" + e.field_name + "`");
+          return make_int();
+        }
+        if (1 + e.args.size() != callee_proc.params.size()) {
+          diags.error(loc(e.span), "argument count mismatch in method call `" + e.field_name + "'");
+          return make_int();
+        }
+        for (std::size_t n = 0; n < e.args.size(); ++n) {
+          const TyPtr arg_ty = type_of(*e.args[n]);
+          const TyPtr param_ty = resolve_type_expr(callee_proc.params[n + 1].type);
+          if (!assignable(arg_ty, param_ty)) {
+            diags.error(loc(e.span), "argument type mismatch in method call `" + e.field_name + "'");
+          }
+        }
+        if (callee_proc.ret_type) {
+          return resolve_type_expr(*callee_proc.ret_type);
+        }
+        return make_int();
+      }
       case Expr::Kind::FieldAccess: {
         const TyPtr base = type_of(*e.base);
         if (base->kind != TyKind::Object && base->kind != TyKind::TypedDict) {

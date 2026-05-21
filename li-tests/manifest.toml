@@ -787,6 +787,25 @@ outcome = "compile_fail"
 expected_substr = "cannot access private field"
 note = "2j-b: private fields on imported types"
 
+[[tests]]
+suite = "encapsulation"
+file = "encapsulation/def_method_call.li"
+outcome = "verify_ok"
+note = "2j-a: obj.method(args) desugars to Type_method(self, ...)"
+
+[[tests]]
+suite = "encapsulation"
+file = "encapsulation/def_method_parse.li"
+outcome = "verify_ok"
+note = "2j-a: method def with self + float param parses and verifies"
+
+[[tests]]
+suite = "encapsulation"
+file = "encapsulation/def_method_missing.li"
+outcome = "compile_fail"
+expected_substr = "No method"
+note = "2j-a: missing method on type"
+
 # --- modules (2g placeholder — single file, no import graph) ---
 
 [[tests]]

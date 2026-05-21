@@ -19,7 +19,7 @@
 | Free `def` + `import` | **Done** | `encapsulation/`, `modules/` |
 | Object MIR lowering (scalars, arrays) | **Done** | `object_*` tests, composable physics smoke |
 | `var T` object params | **Partial** | Call-by-expanded-scalars; **no write-back** to caller |
-| Methods on types | **Missing** | No `self` in parser |
+| Methods on types | **Partial (2j-a)** | `obj.method(args)` → `Type_method(self, …)`; `def_method_*.li` |
 | Private **methods** | **Missing** | Only field visibility |
 | Inheritance / `override` | **Missing** | Spec mentions; not parsed |
 | Traits (`Hash`, …) | **Spec only** | [language design § Hash](../specs/2026-05-14-li-language-design.md) |

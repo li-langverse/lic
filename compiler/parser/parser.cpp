@@ -250,6 +250,24 @@ std::unique_ptr<Expr> Parser::parse_primary() {
   return nullptr;
 }
 
+namespace {
+
+bool peel_method_receiver(Expr* field_access, std::string* method_name,
+                          std::unique_ptr<Expr>* receiver_out) {
+  if (!field_access || field_access->kind != Expr::Kind::FieldAccess || !method_name ||
+      !receiver_out) {
+    return false;
+  }
+  *method_name = field_access->field_name;
+  if (field_access->base->kind == Expr::Kind::FieldAccess) {
+    return peel_method_receiver(field_access->base.get(), method_name, receiver_out);
+  }
+  *receiver_out = std::move(field_access->base);
+  return true;
+}
+
+}  // namespace
+
 std::unique_ptr<Expr> Parser::parse_postfix(std::unique_ptr<Expr> base) {
   while (accept(TokenKind::Dot)) {
     if (!at(TokenKind::Ident)) {
@@ -276,6 +294,27 @@ std::unique_ptr<Expr> Parser::parse_postfix(std::unique_ptr<Expr> base) {
     node->base = std::move(base);
     node->index = std::move(idx);
     base = std::move(node);
+  }
+  if (base && base->kind == Expr::Kind::FieldAccess && accept(TokenKind::LParen)) {
+    std::string method_name;
+    std::unique_ptr<Expr> receiver;
+    if (peel_method_receiver(base.get(), &method_name, &receiver)) {
+      auto call = std::make_unique<Expr>();
+      call->kind = Expr::Kind::MethodCall;
+      call->span = base->span;
+      call->field_name = method_name;
+      call->base = std::move(receiver);
+      if (!at(TokenKind::RParen)) {
+        do {
+          call->args.push_back(parse_expr());
+        } while (accept(TokenKind::Comma));
+      }
+      if (!expect(TokenKind::RParen, "')'")) {
+        return nullptr;
+      }
+      call->span.end = tokens[i - 1].end;
+      return parse_postfix(std::move(call));
+    }
   }
   return base;
 }

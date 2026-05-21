@@ -67,6 +67,7 @@ struct Expr {
     UnaryNot,
     Index,
     FieldAccess,
+    MethodCall,
     Await,
   };
   Kind kind = Kind::IntLit;

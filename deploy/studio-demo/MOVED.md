@@ -1,29 +1,16 @@
-# Moved → `li-world-studio` repo
+# Moved → `li-studio-app` repo
 
-**Studio demo, mockups, and demo video** belong in the **product repo**, not `lic`:
+**Li World Studio** (brand) lives in the **`li-studio-app`** repo — not `lic`, and not to be confused with the **`li-studio`** package.
 
-**Target:** [github.com/li-langverse/li-world-studio](https://github.com/li-langverse/li-world-studio)  
-**Path after split:** `li-world-studio/demo/` (was `lic/deploy/studio-demo/`)
-
-## Bootstrap locally
+| | |
+|--|--|
+| **App repo** | [github.com/li-langverse/li-studio-app](https://github.com/li-langverse/li-studio-app) |
+| **Path** | `li-studio-app/demo/` (was `lic/deploy/studio-demo/`) |
+| **Naming guide** | [studio-naming.md](../../docs/ecosystem/studio-naming.md) |
 
 ```bash
 cd lic
-./scripts/bootstrap-li-world-studio-repo.sh ../li-world-studio
-cd ../li-world-studio
-python3 -m http.server 8765 --directory demo
-# http://localhost:8765/preview.html
+./scripts/bootstrap-li-studio-app-repo.sh ../li-studio-app
 ```
 
-## Why
-
-| Repo | Role |
-|------|------|
-| **lic** | Compiler, std, composable gates, monorepo integration |
-| **li-studio** | `studio` package (shell API) |
-| **li-studio-ai** | `studio.ai` package |
-| **li-world-studio** | App + HTML demo + UX mocks + video |
-
-See [docs/ecosystem/li-studio-repos.md](../../docs/ecosystem/li-studio-repos.md).
-
-**Until the GitHub repo exists:** files remain here on `feat/agent-first-gui` for convenience.
+**Deprecated repo slug:** `li-world-studio` → use **`li-studio-app`**.

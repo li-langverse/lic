@@ -23,12 +23,12 @@ Do **not** use `lic` as the home for World Studio product work, UX galleries, or
 
 | Off-limits | Put it here instead |
 |------------|---------------------|
-| HTML/JS studio showcase, mockup PNGs, demo WebM | **`li-world-studio`** → `demo/` ([bootstrap](../../scripts/bootstrap-li-world-studio-repo.sh)) |
-| `deploy/studio-demo/`, new `deploy/*` product sites | **`li-world-studio`** — see `deploy/studio-demo/MOVED.md` |
-| Product UX canon, planned UI galleries | **`li-world-studio/docs/`** or **`li-studio`** issues |
+| HTML/JS studio showcase, mockup PNGs, demo WebM | **`li-studio-app`** → `demo/` ([bootstrap](../../scripts/bootstrap-li-studio-app-repo.sh)) |
+| `deploy/studio-demo/`, new `deploy/*` product sites | **`li-studio-app`** — see `deploy/studio-demo/MOVED.md` |
+| Product UX canon, planned UI galleries | **`li-studio-app/docs/`** — not **`li-studio`** (that's the package) |
 | Competitive-intel media blobs | Gitignored paths only; analysis may stay in docs if harness-relevant |
-| New marketing / preview / `preview.html` pages | **`li-world-studio`** |
-| App shell, native Studio binary wiring | **`li-world-studio`** + **`li-gui`** |
+| New marketing / preview / `preview.html` pages | **`li-studio-app`** |
+| App shell, native binary (`studio-app`) | **`li-studio-app`** + **`li-gui`** |
 
 **Package mirrors** (`packages/li-studio`, …) may remain in the monorepo **only** for composable `lic check` integration — do **not** grow new product UI, demos, or deploy trees under `lic/`.
 
@@ -36,6 +36,6 @@ Do **not** use `lic` as the home for World Studio product work, UX galleries, or
 
 1. Is this change required for **compiler, std, proof, or lic harness**? If no → **other repo**.
 2. Am I adding files under `deploy/` (except existing MMO/spin-up until migrated)? → **stop**.
-3. Am I adding images/video/HTML for humans to preview Studio? → **`li-world-studio/demo/`**.
+3. Am I adding images/video/HTML for humans to preview Studio? → **`li-studio-app/demo/`**.
 
-**Map:** `docs/ecosystem/li-studio-repos.md`
+**Naming:** `docs/ecosystem/studio-naming.md` · **Map:** `docs/ecosystem/li-studio-repos.md`

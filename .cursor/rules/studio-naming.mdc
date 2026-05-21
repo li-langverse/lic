@@ -1,0 +1,26 @@
+---
+description: Studio naming — li-studio-app (app) vs li-studio (package) vs li-world
+globs:
+  - docs/game-dev/**
+  - docs/ecosystem/**
+  - deploy/studio-demo/**
+  - packages/li-studio/**
+  - packages/li-studio-ai/**
+alwaysApply: false
+---
+
+# Studio naming (do not confuse repos)
+
+| You mean | Use | Never call it |
+|----------|-----|----------------|
+| **Li World Studio** (product brand) | User-facing name in docs | A repo slug |
+| **Editor / demo / mockups** | Repo **`li-studio-app`** | `li-world-studio`, “the studio repo” |
+| **`import studio`** API | Repo **`li-studio`** (package) | The application |
+| **`import world`** ECS | Repo **`li-world`** | The editor |
+
+```bash
+# Bootstrap application repo from lic (one-time)
+./scripts/bootstrap-li-studio-app-repo.sh ../li-studio-app
+```
+
+**Canonical doc:** `docs/ecosystem/studio-naming.md`

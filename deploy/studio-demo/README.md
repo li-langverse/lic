@@ -1,6 +1,6 @@
 # Li World Studio — demo showcase
 
-> **Repo home (target):** [`li-world-studio`](https://github.com/li-langverse/li-world-studio) — see [MOVED.md](MOVED.md) · [li-studio-repos.md](../../docs/ecosystem/li-studio-repos.md).  
+> **Repo home (target):** [`li-studio-app`](https://github.com/li-langverse/li-studio-app) — see [MOVED.md](MOVED.md) · [studio-naming.md](../../docs/ecosystem/studio-naming.md).  
 > This copy under **`lic/deploy/`** is temporary until the product repo is created.
 
 Interactive **agent-first studio shell** (outliner, viewport, **Agent chat dock**) with animated verticals:

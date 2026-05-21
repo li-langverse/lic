@@ -1,29 +1,18 @@
-# Li World Studio — planned UI mockups
+# Li World Studio — UI mockups
 
-**Status:** v2 concept art (teal agent · navy shell · no violet) — [unified-studio-ux-vision.md](../../../docs/game-dev/unified-studio-ux-vision.md) · [planned-ui-mockups.md](../../../docs/game-dev/planned-ui-mockups.md)
-
-Native `li-ui` targets; HTML demo: [../index.html](../index.html).
-
-## v2 set (current — check these)
+**v3 (current)** — teal agent dock · navy shell · import-aligned naming (`studio`, `studio.ai`, `studio-app`).
 
 | Preview | File | Workspace |
 |---------|------|-----------|
-| Game + agent dock | [li-studio-viewport-game-v2.png](li-studio-viewport-game-v2.png) | 3D viewport · rocket |
-| Agent chat (detail) | [li-studio-agent-chat-v2.png](li-studio-agent-chat-v2.png) | Right-rail hero |
-| Scientific + agent | [li-studio-scientific-sim-v2.png](li-studio-scientific-sim-v2.png) | Field viz · validity |
-| Cinematic NLE | [li-studio-cinematic-nle-v2.png](li-studio-cinematic-nle-v2.png) | 4-panel video |
-| Agentic canvas | [li-studio-agentic-canvas-v2.png](li-studio-agentic-canvas-v2.png) | Spatial graph |
-| Publish | [li-studio-publish-v2.png](li-studio-publish-v2.png) | Figures · bundle hash |
+| Game + agent | [studio-viewport-game-v3.png](studio-viewport-game-v3.png) | 3D viewport |
+| Agent chat | [studio-agent-chat-v3.png](studio-agent-chat-v3.png) | Right-rail detail |
+| Scientific | [studio-scientific-sim-v3.png](studio-scientific-sim-v3.png) | Field + validity |
+| Cinematic | [studio-cinematic-nle-v3.png](studio-cinematic-nle-v3.png) | 4-panel NLE |
+| Canvas | [studio-agentic-canvas-v3.png](studio-agentic-canvas-v3.png) | Spatial graph |
+| Publish | [studio-publish-v3.png](studio-publish-v3.png) | Figures + hash |
 
-**Tokens:** `#0f1219` bg · `#161b26` panels · `#2dd4bf` agent · `#5b9cf5` workspace · `#34d399` PASS
+**Gallery:** [../preview.html](../preview.html) · **Interactive:** [../index.html](../index.html)
 
-## v1 (legacy)
+**v2 / v1:** `*-v2.png`, `li-studio-*.png` — legacy filenames.
 
-| File | Note |
-|------|------|
-| `li-studio-viewport-game.png` | Pre–agent-dock layout |
-| `li-studio-cinematic-nle.png` | Pre–teal palette |
-| `li-studio-agentic-canvas.png` | Pre–agent-dock |
-| `li-studio-scientific-sim.png` | Pre–agent-dock |
-
-**Chrome in all v2 mocks:** gate chip · agent chat dock · ⌘K · proof/validity where relevant.
+**Tokens:** `#0f1219` · `#161b26` · `#2dd4bf` agent · `#34d399` PASS

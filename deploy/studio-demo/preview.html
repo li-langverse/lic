@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Li World Studio — mockups & demo</title>
+  <title>Li World Studio — mockups v3</title>
   <style>
     :root {
       --bg: #0f1219;
@@ -21,6 +21,8 @@
       color: var(--text);
       line-height: 1.5;
       padding: 1.5rem;
+      max-width: 1400px;
+      margin-inline: auto;
     }
     h1 { font-size: 1.4rem; margin: 0 0 0.25rem; }
     .sub { color: var(--muted); margin-bottom: 1.5rem; font-size: 0.9rem; }
@@ -42,8 +44,8 @@
     }
     .grid {
       display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
-      gap: 1rem;
+      grid-template-columns: repeat(auto-fill, minmax(360px, 1fr));
+      gap: 1.25rem;
     }
     figure {
       margin: 0;
@@ -53,14 +55,16 @@
       overflow: hidden;
     }
     figcaption {
-      padding: 0.5rem 0.75rem;
-      font-size: 0.8rem;
+      padding: 0.6rem 0.85rem;
+      font-size: 0.82rem;
       color: var(--muted);
     }
+    figcaption strong { color: var(--text); }
     img {
       width: 100%;
       display: block;
       height: auto;
+      cursor: zoom-in;
     }
     .actions {
       display: flex;
@@ -86,50 +90,51 @@
   </style>
 </head>
 <body>
-  <h1>Li World Studio — preview</h1>
-  <p class="sub">v2 mocks (teal agent · no violet) + interactive demo reel</p>
+  <h1>Li World Studio — mockups v3</h1>
+  <p class="sub">
+    Teal agent dock · <code>studio</code> / <code>studio.ai</code> packages · product shell <code>studio-app</code>
+  </p>
 
   <div class="actions">
     <a class="btn" href="index.html">▶ Interactive demo</a>
-    <a class="btn secondary" href="mockups/">Mockup files</a>
+    <a class="btn secondary" href="mockups/">PNG files</a>
     <a class="btn secondary" href="../../docs/game-dev/planned-ui-mockups.md">Docs</a>
   </div>
 
   <section>
-    <h2>Demo video (auto-cycles verticals)</h2>
-    <video controls playsinline poster="mockups/li-studio-viewport-game-v2.png">
+    <h2>Demo video</h2>
+    <video controls playsinline poster="mockups/studio-viewport-game-v3.png">
       <source src="videos/world-studio-demo-reel.webm" type="video/webm" />
-      Your browser does not support WebM. Open <code>videos/world-studio-demo-reel.webm</code> locally.
     </video>
-    <p class="sub">Re-record: <code>./scripts/record-studio-demo.sh</code></p>
+    <p class="sub"><code>./scripts/record-studio-demo.sh</code></p>
   </section>
 
   <section>
-    <h2>v2 concept art</h2>
+    <h2>v3 concept art (May 2026)</h2>
     <div class="grid">
       <figure>
-        <img src="mockups/li-studio-viewport-game-v2.png" alt="Game viewport" loading="lazy" />
-        <figcaption>Game · viewport + agent dock</figcaption>
+        <a href="mockups/studio-viewport-game-v3.png"><img src="mockups/studio-viewport-game-v3.png" alt="Game viewport" loading="lazy" /></a>
+        <figcaption><strong>Game</strong> — viewport + agent dock</figcaption>
       </figure>
       <figure>
-        <img src="mockups/li-studio-agent-chat-v2.png" alt="Agent chat" loading="lazy" />
-        <figcaption>Agent dock detail</figcaption>
+        <a href="mockups/studio-agent-chat-v3.png"><img src="mockups/studio-agent-chat-v3.png" alt="Agent chat" loading="lazy" /></a>
+        <figcaption><strong>Agent</strong> — chat · plan · Apply/Reject</figcaption>
       </figure>
       <figure>
-        <img src="mockups/li-studio-scientific-sim-v2.png" alt="Scientific" loading="lazy" />
-        <figcaption>Scientific · validity</figcaption>
+        <a href="mockups/studio-scientific-sim-v3.png"><img src="mockups/studio-scientific-sim-v3.png" alt="Scientific" loading="lazy" /></a>
+        <figcaption><strong>Scientific</strong> — field + validity</figcaption>
       </figure>
       <figure>
-        <img src="mockups/li-studio-cinematic-nle-v2.png" alt="Cinematic" loading="lazy" />
-        <figcaption>Cinematic · 4-panel NLE</figcaption>
+        <a href="mockups/studio-cinematic-nle-v3.png"><img src="mockups/studio-cinematic-nle-v3.png" alt="Cinematic" loading="lazy" /></a>
+        <figcaption><strong>Cinematic</strong> — 4-panel NLE</figcaption>
       </figure>
       <figure>
-        <img src="mockups/li-studio-agentic-canvas-v2.png" alt="Canvas" loading="lazy" />
-        <figcaption>Agentic canvas</figcaption>
+        <a href="mockups/studio-agentic-canvas-v3.png"><img src="mockups/studio-agentic-canvas-v3.png" alt="Canvas" loading="lazy" /></a>
+        <figcaption><strong>Canvas</strong> — studio.ai graph</figcaption>
       </figure>
       <figure>
-        <img src="mockups/li-studio-publish-v2.png" alt="Publish" loading="lazy" />
-        <figcaption>Publish · bundle hash</figcaption>
+        <a href="mockups/studio-publish-v3.png"><img src="mockups/studio-publish-v3.png" alt="Publish" loading="lazy" /></a>
+        <figcaption><strong>Publish</strong> — bundle hash</figcaption>
       </figure>
     </div>
   </section>

@@ -1,27 +1,27 @@
 # Planned UI mockups (concept art)
 
-Visual targets for **Li World Studio** native shell — v2 uses **teal agent dock** + navy shell (no violet).
+Visual targets for **Li World Studio** — **v3** teal agent dock, import names (`studio`, `studio.ai`, `studio-app`).
 
-**Folder:** `lic/deploy/studio-demo/mockups/` · **Live prototype:** [deploy/studio-demo/](../../deploy/studio-demo/)
+**Gallery:** [preview.html](../../deploy/studio-demo/preview.html) · **Folder:** `deploy/studio-demo/mockups/`
 
 ---
 
-## v2 gallery (current)
+## v3 gallery (current — May 2026)
 
 | | Workspace |
 |---|-----------|
-| ![Game viewport v2](../../deploy/studio-demo/mockups/li-studio-viewport-game-v2.png) | **Game** — outliner · 3D viewport · **agent dock** |
-| ![Agent chat v2](../../deploy/studio-demo/mockups/li-studio-agent-chat-v2.png) | **Agent dock** — chat · plan · Apply/Reject |
-| ![Scientific v2](../../deploy/studio-demo/mockups/li-studio-scientific-sim-v2.png) | **Scientific** — heat field · validity · agent |
-| ![Cinematic v2](../../deploy/studio-demo/mockups/li-studio-cinematic-nle-v2.png) | **Cinematic** — 4-panel NLE + agent |
-| ![Canvas v2](../../deploy/studio-demo/mockups/li-studio-agentic-canvas-v2.png) | **Canvas** — spatial graph · AgentPlan |
-| ![Publish v2](../../deploy/studio-demo/mockups/li-studio-publish-v2.png) | **Publish** — figures · bundle hash |
+| ![Game v3](../../deploy/studio-demo/mockups/studio-viewport-game-v3.png) | **Game** — viewport + agent dock |
+| ![Agent v3](../../deploy/studio-demo/mockups/studio-agent-chat-v3.png) | **Agent** — chat · plan · Apply/Reject |
+| ![Scientific v3](../../deploy/studio-demo/mockups/studio-scientific-sim-v3.png) | **Scientific** — field + validity |
+| ![Cinematic v3](../../deploy/studio-demo/mockups/studio-cinematic-nle-v3.png) | **Cinematic** — 4-panel NLE |
+| ![Canvas v3](../../deploy/studio-demo/mockups/studio-agentic-canvas-v3.png) | **Canvas** — `studio` / `studio.ai` graph |
+| ![Publish v3](../../deploy/studio-demo/mockups/studio-publish-v3.png) | **Publish** — bundle hash |
 
 ---
 
 ## 1. Game / viewport workspace
 
-![Game viewport v2](../../deploy/studio-demo/mockups/li-studio-viewport-game-v2.png)
+![Game viewport v3](../../deploy/studio-demo/mockups/studio-viewport-game-v3.png)
 
 - Outliner + **3D viewport** + **agent dock** (right, ~380px)  
 - Toolbar: workspace, **gate PASS** (emerald), Play, ⌘K  
@@ -82,7 +82,7 @@ Visual targets for **Li World Studio** native shell — v2 uses **teal agent doc
 
 ## 6. Publish
 
-![Publish v2](../../deploy/studio-demo/mockups/li-studio-publish-v2.png)
+![Publish v3](../../deploy/studio-demo/mockups/studio-publish-v3.png)
 
 - Figure canvas + **PublishBundle** hash  
 - Agent: export plan + repro gate  

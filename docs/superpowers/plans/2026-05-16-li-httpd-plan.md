@@ -32,6 +32,12 @@ todos:
   - id: m1-toml-desugar
     content: Simple TOML desugar + config_desugar golden tests + explain-config CLI
     status: in_progress
+  - id: m1-validate-flatten
+    content: validate-httpd-config.py + flatten-httpd-config.py + lic validate-httpd-config alias
+    status: completed
+  - id: m1-bearer-auth
+    content: "[auth] TOML Bearer gate + test-auth-bearer.sh (runtime C)"
+    status: in_progress
   - id: m1-explain-config-cli
     content: "lic httpd explain-config + check-httpd-explain-config.sh golden"
     status: completed
@@ -55,7 +61,7 @@ todos:
     status: pending
   - id: li-log-package
     content: "packages/li-log: rotation, RFC3339 timestamps, redact-by-default; li-httpd access/audit/error sinks"
-    status: in_progress
+    status: completed
   - id: m15-tls-auto
     content: "TLS auto: self-signed dev certs on setup; ACME Let's Encrypt obtain+renew; secure TOML modes"
     status: pending

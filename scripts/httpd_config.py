@@ -89,12 +89,12 @@ def desugar_config(data: dict[str, Any]) -> list[CanonicalRoute]:
 def routes_overlap(a: CanonicalRoute, b: CanonicalRoute) -> bool:
     if a.method != b.method and a.method != "*" and b.method != "*":
         return False
-    if a.path_kind == "exact" and b.path_kind == "exact":
-        return a.path == b.path
-    if a.path_kind in ("prefix", "prefix_strip") and b.path_kind in ("prefix", "prefix_strip"):
-        pa, pb = a.path.rstrip("/"), b.path.rstrip("/")
-        return pa == pb or pa.startswith(pb + "/") or pb.startswith(pa + "/")
-    return a.path == b.path
+    pa, pb = a.path.rstrip("/"), b.path.rstrip("/")
+    if pa == pb:
+        return True
+    if pa.startswith(pb + "/") or pb.startswith(pa + "/"):
+        return True
+    return False
 
 
 def validate_routes(routes: list[CanonicalRoute]) -> None:

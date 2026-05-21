@@ -10,7 +10,8 @@ trap 'rm -f "$BIN"' EXIT
 
 "$ROOT/scripts/li-httpd-explain-config.sh" "$CFG" >"${BIN}.py"
 "$CC" -Wno-override-module -x c "$ROOT/runtime/li_rt.c" -x c "$ROOT/runtime/li_rt_net.c" \
-  -x c "$ROOT/runtime/li_rt_httpd.c" -x c "$ROOT/scripts/httpd_explain_main.c" \
+  -x c "$ROOT/runtime/li_rt_log.c" -x c "$ROOT/runtime/li_rt_httpd.c" \
+  -x c "$ROOT/scripts/httpd_explain_main.c" \
   -I"$ROOT/runtime" -lm -o "$BIN"
 "$BIN" "$CFG" >"${BIN}.c"
 if ! diff -u "$GOLDEN" "${BIN}.c" >/dev/null; then

@@ -10,6 +10,9 @@ for f in "$ROOT/li-tests/config_desugar/good"/*.toml; do
   python3 "$PY/httpd_config.py" "$f"
 done
 
+echo "== routing overlap (same priority must reject) =="
+python3 "$PY/check-httpd-overlap-reject.py"
+
 echo "== httpd config reject =="
 for rej in "$ROOT/li-tests/config_desugar/reject"/*.toml; do
   name="$(basename "$rej")"
@@ -31,17 +34,20 @@ export LI_ALLOW_OPEN_VC=1
 export LI_REPO_ROOT="$ROOT"
 "$LIC" build "$ROOT/li-tests/routing/match_routes.li" -o /tmp/li_match_routes
 /tmp/li_match_routes
-test "$(/tmp/li_match_routes; echo $?)" -eq 0
+rc=$?
+test "$rc" -eq 0
 
 echo "== routing (Li serve_routed_once oracle) =="
 "$LIC" build "$ROOT/li-tests/httpd/serve_routed_once.li" -o /tmp/li_serve_routed_once
 /tmp/li_serve_routed_once
-test "$(/tmp/li_serve_routed_once; echo $?)" -eq 0
+rc=$?
+test "$rc" -eq 0
 
 echo "== routing (Li TOML loader) =="
 "$LIC" build "$ROOT/li-tests/routing/match_routes_toml.li" -o /tmp/li_match_routes_toml
 /tmp/li_match_routes_toml
-test "$(/tmp/li_match_routes_toml; echo $?)" -eq 0
+rc=$?
+test "$rc" -eq 0
 
 echo "== validate-config (lic CLI) =="
 "$LIC" httpd validate-config "$ROOT/li-tests/config_desugar/good/agent_gateway.toml"
@@ -53,6 +59,9 @@ for rej in "$ROOT/li-tests/config_desugar/reject"/*.toml; do
   fi
   echo "validate-config $name: rejected OK"
 done
+
+echo "== validate-httpd-config (Python M1 schema) =="
+"$ROOT/scripts/lic-validate-httpd-config.sh" "$ROOT/packages/li-net-httpd/examples/auth_bearer.toml"
 
 echo "== explain-config (lic CLI + C/Python parity) =="
 CFG="$ROOT/li-tests/config_desugar/good/agent_gateway.toml"

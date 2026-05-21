@@ -186,6 +186,12 @@ static double g_rate_last_ts = 0.0;
 static int g_health_max_fails = 1;
 static int g_health_fail_timeout_sec = 10;
 
+#define HTTPD_MAX_AUTH_KEYS 8
+#define HTTPD_AUTH_KEY_LEN 128
+static int g_auth_required = 0;
+static int g_auth_key_count = 0;
+static char g_auth_keys[HTTPD_MAX_AUTH_KEYS][HTTPD_AUTH_KEY_LEN];
+
 #define HTTPD_MAX_UPSTREAM_PEERS 8
 #define HTTPD_POOL_PER_PEER 32
 
@@ -1007,6 +1013,93 @@ static int count_content_length_c(const char* buf, int hdr_end) {
     }
   }
   return count;
+}
+
+static int httpd_header_name_eq_ci(const char* line, int line_len, const char* name) {
+  int nlen = (int)strlen(name);
+  if (line_len < nlen + 1) {
+    return 0;
+  }
+  for (int i = 0; i < nlen; i++) {
+    char a = line[i];
+    char b = name[i];
+    if (a >= 'A' && a <= 'Z') {
+      a = (char)(a + ('a' - 'A'));
+    }
+    if (b >= 'A' && b <= 'Z') {
+      b = (char)(b + ('a' - 'A'));
+    }
+    if (a != b) {
+      return 0;
+    }
+  }
+  return line[nlen] == ':';
+}
+
+static int httpd_extract_bearer_token_c(const char* buf, int hdr_end, char* out, int cap) {
+  if (!out || cap <= 0) {
+    return -1;
+  }
+  out[0] = '\0';
+  int i = 0;
+  while (i < hdr_end) {
+    int line_start = i;
+    while (i < hdr_end && buf[i] != '\n') {
+      i++;
+    }
+    int line_len = i - line_start;
+    int eff = line_len;
+    if (eff > 0 && buf[line_start + eff - 1] == '\r') {
+      eff--;
+    }
+    if (httpd_header_name_eq_ci(buf + line_start, eff, "Authorization")) {
+      const char* val = buf + line_start;
+      int j = 0;
+      while (j < eff && val[j] != ':') {
+        j++;
+      }
+      if (j >= eff) {
+        return -1;
+      }
+      j++;
+      while (j < eff && (val[j] == ' ' || val[j] == '\t')) {
+        j++;
+      }
+      const char* prefix = "Bearer ";
+      int plen = (int)strlen(prefix);
+      if (eff - j < plen || memcmp(val + j, prefix, (size_t)plen) != 0) {
+        return -1;
+      }
+      j += plen;
+      int tlen = eff - j;
+      if (tlen <= 0 || tlen >= cap) {
+        return -1;
+      }
+      memcpy(out, val + j, (size_t)tlen);
+      out[tlen] = '\0';
+      return tlen;
+    }
+    if (i < hdr_end && buf[i] == '\n') {
+      i++;
+    }
+  }
+  return -1;
+}
+
+static int httpd_auth_request_ok_c(const char* buf, int hdr_end) {
+  if (!g_auth_required || g_auth_key_count <= 0) {
+    return 1;
+  }
+  char token[HTTPD_AUTH_KEY_LEN];
+  if (httpd_extract_bearer_token_c(buf, hdr_end, token, (int)sizeof(token)) < 0) {
+    return 0;
+  }
+  for (int k = 0; k < g_auth_key_count; k++) {
+    if (strcmp(token, g_auth_keys[k]) == 0) {
+      return 1;
+    }
+  }
+  return 0;
 }
 
 /* Smuggling class only — duplicate CL and CL+TE conflict; chunked alone is allowed with limits. */
@@ -2074,6 +2167,15 @@ static int32_t httpd_try_drain_once(int32_t conn, int32_t slot) {
       return -2;
     }
     httpd_access_log(&req, 429, 0);
+    net_slot_consume(slot, hdr_end);
+    return keep ? 1 : -1;
+  }
+  if (!httpd_auth_request_ok_c(g_slots[slot].buf, hdr_end)) {
+    if (httpd_send_status(conn, 401, "Unauthorized",
+                          "WWW-Authenticate: Bearer\r\n", keep) < 0) {
+      return -2;
+    }
+    httpd_access_log(&req, 401, 0);
     net_slot_consume(slot, hdr_end);
     return keep ? 1 : -1;
   }
@@ -3708,6 +3810,8 @@ int32_t httpd_load_runtime_config_i(intptr_t path) {
   g_rate_last_ts = 0.0;
   g_health_max_fails = 1;
   g_health_fail_timeout_sec = 10;
+  g_auth_required = 0;
+  g_auth_key_count = 0;
   char line[4096];
   while (fgets(line, sizeof(line), f)) {
     trim_line(line);
@@ -3751,6 +3855,16 @@ int32_t httpd_load_runtime_config_i(intptr_t path) {
       g_health_fail_timeout_sec = atoi(val);
       if (g_health_fail_timeout_sec < 1) {
         g_health_fail_timeout_sec = 1;
+      }
+    } else if (strcmp(key, "auth_required") == 0) {
+      g_auth_required = (strcmp(val, "0") == 0 || strcmp(val, "false") == 0) ? 0 : 1;
+    } else if (strcmp(key, "auth_key") == 0) {
+      if (g_auth_key_count < HTTPD_MAX_AUTH_KEYS) {
+        size_t klen = strlen(val);
+        if (klen > 0 && klen < HTTPD_AUTH_KEY_LEN) {
+          memcpy(g_auth_keys[g_auth_key_count], val, klen + 1);
+          g_auth_key_count++;
+        }
       }
     } else if (strcmp(key, "route") == 0 && g_route_count < HTTPD_MAX_ROUTES) {
       char method[16] = "";

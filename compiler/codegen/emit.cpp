@@ -957,7 +957,8 @@ struct EmitCtx {
         }
         llvm::Type* f64 = llvm::Type::getDoubleTy(context);
         const auto n = static_cast<unsigned>(ins.int_value);
-        const bool simd_ok = array_simd_enabled() && ins.bin_op != BinOp::Pow;
+        const bool simd_ok = array_simd_enabled() && ins.bin_op != BinOp::Pow &&
+                             !ins.array_broadcast_lhs_len1 && !ins.array_broadcast_rhs_len1;
         const unsigned simd_end = simd_ok ? (n / 4) * 4 : 0;
         for (unsigned i = 0; i < simd_end; i += 4) {
           llvm::Value* av = gather_array_f64x4(a_it->second.alloca, i);
@@ -966,6 +967,20 @@ struct EmitCtx {
           scatter_array_f64x4(d_it->second.alloca, i, rv);
         }
         llvm::Value* zero = llvm::ConstantInt::get(builder->getInt32Ty(), 0);
+        llvm::Value* b_broadcast = nullptr;
+        if (ins.array_broadcast_rhs_len1) {
+          llvm::Value* gep0[] = {zero, zero};
+          llvm::Value* bp0 = builder->CreateInBoundsGEP(
+              b_it->second.alloca->getAllocatedType(), b_it->second.alloca, gep0);
+          b_broadcast = builder->CreateLoad(f64, bp0);
+        }
+        llvm::Value* a_broadcast = nullptr;
+        if (ins.array_broadcast_lhs_len1) {
+          llvm::Value* gep0[] = {zero, zero};
+          llvm::Value* ap0 = builder->CreateInBoundsGEP(
+              a_it->second.alloca->getAllocatedType(), a_it->second.alloca, gep0);
+          a_broadcast = builder->CreateLoad(f64, ap0);
+        }
         for (unsigned i = simd_end; i < n; ++i) {
           llvm::Value* idx = llvm::ConstantInt::get(i32_ty(context), i);
           llvm::Value* gep_idx[] = {zero, idx};
@@ -975,8 +990,10 @@ struct EmitCtx {
               b_it->second.alloca->getAllocatedType(), b_it->second.alloca, gep_idx);
           llvm::Value* dp = builder->CreateInBoundsGEP(
               d_it->second.alloca->getAllocatedType(), d_it->second.alloca, gep_idx);
-          llvm::Value* av = builder->CreateLoad(f64, ap);
-          llvm::Value* bv = builder->CreateLoad(f64, bp);
+          llvm::Value* av =
+              ins.array_broadcast_lhs_len1 ? a_broadcast : builder->CreateLoad(f64, ap);
+          llvm::Value* bv =
+              ins.array_broadcast_rhs_len1 ? b_broadcast : builder->CreateLoad(f64, bp);
           llvm::Value* rv = emit_fbinop(ins.bin_op, av, bv);
           builder->CreateStore(rv, dp);
         }
@@ -991,6 +1008,20 @@ struct EmitCtx {
         }
         const auto n = static_cast<unsigned>(ins.int_value);
         llvm::Value* zero = llvm::ConstantInt::get(builder->getInt32Ty(), 0);
+        llvm::Value* b_broadcast = nullptr;
+        if (ins.array_broadcast_rhs_len1) {
+          llvm::Value* gep0[] = {zero, zero};
+          llvm::Value* bp0 = builder->CreateInBoundsGEP(
+              b_it->second.alloca->getAllocatedType(), b_it->second.alloca, gep0);
+          b_broadcast = builder->CreateLoad(i32_ty(context), bp0);
+        }
+        llvm::Value* a_broadcast = nullptr;
+        if (ins.array_broadcast_lhs_len1) {
+          llvm::Value* gep0[] = {zero, zero};
+          llvm::Value* ap0 = builder->CreateInBoundsGEP(
+              a_it->second.alloca->getAllocatedType(), a_it->second.alloca, gep0);
+          a_broadcast = builder->CreateLoad(i32_ty(context), ap0);
+        }
         for (unsigned i = 0; i < n; ++i) {
           llvm::Value* idx = llvm::ConstantInt::get(i32_ty(context), i);
           llvm::Value* gep_idx[] = {zero, idx};
@@ -1000,8 +1031,12 @@ struct EmitCtx {
               b_it->second.alloca->getAllocatedType(), b_it->second.alloca, gep_idx);
           llvm::Value* dp = builder->CreateInBoundsGEP(
               d_it->second.alloca->getAllocatedType(), d_it->second.alloca, gep_idx);
-          llvm::Value* av = builder->CreateLoad(i32_ty(context), ap);
-          llvm::Value* bv = builder->CreateLoad(i32_ty(context), bp);
+          llvm::Value* av = ins.array_broadcast_lhs_len1
+                                ? a_broadcast
+                                : builder->CreateLoad(i32_ty(context), ap);
+          llvm::Value* bv = ins.array_broadcast_rhs_len1
+                                ? b_broadcast
+                                : builder->CreateLoad(i32_ty(context), bp);
           llvm::Value* rv = emit_binop(ins.bin_op, av, bv);
           builder->CreateStore(rv, dp);
         }

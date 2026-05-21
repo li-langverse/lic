@@ -770,6 +770,16 @@ outcome = "verify_ok"
 
 [[tests]]
 suite = "math_linalg"
+file = "math_linalg/broadcast_len1_add_float4.li"
+outcome = "compile_ok"
+
+[[tests]]
+suite = "math_linalg"
+file = "math_linalg/broadcast_len1_mul_int4.li"
+outcome = "compile_ok"
+
+[[tests]]
+suite = "math_linalg"
 file = "math_linalg/sum_elementwise_product.li"
 outcome = "verify_ok"
 
@@ -777,7 +787,7 @@ outcome = "verify_ok"
 suite = "math_linalg"
 file = "math_linalg/elementwise_len_mismatch.li"
 outcome = "compile_fail"
-expected_substr = "same length"
+expected_substr = "matching lengths"
 
 [[tests]]
 suite = "math_linalg"

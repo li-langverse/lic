@@ -89,7 +89,9 @@ llvm::Value* string_ptr(llvm::IRBuilder<>& builder, llvm::GlobalVariable* gv) {
 struct ArraySlot {
   llvm::AllocaInst* alloca = nullptr;
   std::int64_t size = 0;
+  std::int64_t cols = 0;
   bool is_float = false;
+  bool is_matrix = false;
 };
 
 struct EmitCtx {
@@ -614,12 +616,23 @@ struct EmitCtx {
         return true;
       }
       case MirOp::ArrayAlloc: {
-        llvm::Type* elem_ty = ins.array_is_float ? llvm::Type::getDoubleTy(context)
-                                                 : i32_ty(context);
-        llvm::ArrayType* arr_ty =
-            llvm::ArrayType::get(elem_ty, static_cast<unsigned>(ins.int_value));
-        llvm::AllocaInst* slot = builder->CreateAlloca(arr_ty, nullptr, ins.ident);
-        arrays[ins.ident] = ArraySlot{slot, ins.int_value, ins.array_is_float};
+        llvm::AllocaInst* slot = nullptr;
+        if (ins.array_is_matrix) {
+          llvm::Type* f64 = llvm::Type::getDoubleTy(context);
+          llvm::ArrayType* row_ty =
+              llvm::ArrayType::get(f64, static_cast<unsigned>(ins.rhs_int));
+          llvm::ArrayType* mat_ty =
+              llvm::ArrayType::get(row_ty, static_cast<unsigned>(ins.int_value));
+          slot = builder->CreateAlloca(mat_ty, nullptr, ins.ident);
+          arrays[ins.ident] = ArraySlot{slot, ins.int_value, ins.rhs_int, true, true};
+        } else {
+          llvm::Type* elem_ty = ins.array_is_float ? llvm::Type::getDoubleTy(context)
+                                                   : i32_ty(context);
+          llvm::ArrayType* arr_ty =
+              llvm::ArrayType::get(elem_ty, static_cast<unsigned>(ins.int_value));
+          slot = builder->CreateAlloca(arr_ty, nullptr, ins.ident);
+          arrays[ins.ident] = ArraySlot{slot, ins.int_value, 0, ins.array_is_float, false};
+        }
         return true;
       }
       case MirOp::ArrayStoreInt:
@@ -720,6 +733,89 @@ struct EmitCtx {
           acc = builder->CreateAdd(acc, av);
         }
         builder->CreateStore(acc, ensure_int_local(ins.ident));
+        return true;
+      }
+      case MirOp::ArrayLoad2DF64: {
+        auto it = arrays.find(ins.ident);
+        if (it == arrays.end() || !it->second.is_matrix) {
+          return true;
+        }
+        llvm::Type* f64 = llvm::Type::getDoubleTy(context);
+        llvm::Value* row = ins.index_is_literal
+                               ? int32_val(*builder, context, ins.int_value)
+                               : load_int(ins.index_ident);
+        llvm::Value* col = ins.rhs_is_literal
+                               ? int32_val(*builder, context, ins.rhs_int)
+                               : load_int(ins.rhs_ident);
+        llvm::Value* zero = llvm::ConstantInt::get(builder->getInt32Ty(), 0);
+        llvm::Value* gep_idx[] = {zero, row, col};
+        llvm::Value* ptr = builder->CreateInBoundsGEP(
+            it->second.alloca->getAllocatedType(), it->second.alloca, gep_idx);
+        llvm::Value* loaded = builder->CreateLoad(f64, ptr);
+        if (!ins.lhs_ident.empty()) {
+          builder->CreateStore(loaded, ensure_float_local(ins.lhs_ident));
+        }
+        return true;
+      }
+      case MirOp::ArrayStore2DF64: {
+        auto it = arrays.find(ins.ident);
+        if (it == arrays.end() || !it->second.is_matrix) {
+          return true;
+        }
+        llvm::Type* f64 = llvm::Type::getDoubleTy(context);
+        llvm::Value* row = ins.index_is_literal
+                               ? int32_val(*builder, context, ins.int_value)
+                               : load_int(ins.index_ident);
+        llvm::Value* col = ins.rhs_is_literal
+                               ? int32_val(*builder, context, ins.rhs_int)
+                               : load_int(ins.rhs_ident);
+        llvm::Value* val =
+            ins.lhs_is_literal
+                ? llvm::ConstantFP::get(f64, ins.float_value)
+                : load_float(ins.lhs_ident);
+        llvm::Value* zero = llvm::ConstantInt::get(builder->getInt32Ty(), 0);
+        llvm::Value* gep_idx[] = {zero, row, col};
+        llvm::Value* ptr = builder->CreateInBoundsGEP(
+            it->second.alloca->getAllocatedType(), it->second.alloca, gep_idx);
+        builder->CreateStore(val, ptr);
+        return true;
+      }
+      case MirOp::ArrayMatMul2DF64: {
+        auto c_it = arrays.find(ins.ident);
+        auto a_it = arrays.find(ins.lhs_ident);
+        auto b_it = arrays.find(ins.rhs_ident);
+        if (c_it == arrays.end() || a_it == arrays.end() || b_it == arrays.end()) {
+          return true;
+        }
+        llvm::Type* f64 = llvm::Type::getDoubleTy(context);
+        const unsigned m = static_cast<unsigned>(ins.int_value);
+        const unsigned k = static_cast<unsigned>(ins.rhs_int);
+        const unsigned n = static_cast<unsigned>(ins.lhs_int);
+        llvm::Value* zero = llvm::ConstantInt::get(builder->getInt32Ty(), 0);
+        llvm::Value* zf = llvm::ConstantFP::get(f64, 0.0);
+        for (unsigned i = 0; i < m; ++i) {
+          llvm::Value* ri = llvm::ConstantInt::get(i32_ty(context), i);
+          for (unsigned j = 0; j < n; ++j) {
+            llvm::Value* rj = llvm::ConstantInt::get(i32_ty(context), j);
+            llvm::Value* sum = zf;
+            for (unsigned t = 0; t < k; ++t) {
+              llvm::Value* rt = llvm::ConstantInt::get(i32_ty(context), t);
+              llvm::Value* a_idx[] = {zero, ri, rt};
+              llvm::Value* ap = builder->CreateInBoundsGEP(
+                  a_it->second.alloca->getAllocatedType(), a_it->second.alloca, a_idx);
+              llvm::Value* av = builder->CreateLoad(f64, ap);
+              llvm::Value* b_idx[] = {zero, rt, rj};
+              llvm::Value* bp = builder->CreateInBoundsGEP(
+                  b_it->second.alloca->getAllocatedType(), b_it->second.alloca, b_idx);
+              llvm::Value* bv = builder->CreateLoad(f64, bp);
+              sum = builder->CreateFAdd(sum, builder->CreateFMul(av, bv));
+            }
+            llvm::Value* c_idx[] = {zero, ri, rj};
+            llvm::Value* cp = builder->CreateInBoundsGEP(
+                c_it->second.alloca->getAllocatedType(), c_it->second.alloca, c_idx);
+            builder->CreateStore(sum, cp);
+          }
+        }
         return true;
       }
       case MirOp::ArrayDotF64: {
@@ -942,7 +1038,7 @@ bool emit_llvm_ir(const MirModule& mir, const std::string& out_path, std::string
         if (mp.fixed_array_elems > 0) {
           llvm::Type* arr_ty = llvm_type_for_mir_param(context, mp);
           llvm::AllocaInst* ap = builder.CreateAlloca(arr_ty, nullptr, mp.name);
-          ctx.arrays[mp.name] = ArraySlot{ap, mp.fixed_array_elems, mp.is_float};
+          ctx.arrays[mp.name] = ArraySlot{ap, mp.fixed_array_elems, 0, mp.is_float, false};
           builder.CreateStore(&arg, ap);
         } else if (mp.is_string) {
           builder.CreateStore(&arg, ctx.ensure_ptr_local(mp.name));

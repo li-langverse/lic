@@ -77,6 +77,37 @@ TyPtr make_binary() {
 }
 TyPtr make_i64() { return std::make_shared<Ty>(Ty{TyKind::Int64}); }
 
+bool ty_is_2d_float_matrix(const TyPtr& t, std::int64_t* rows, std::int64_t* cols) {
+  if (!t || t->kind != TyKind::Array || !t->elem) {
+    return false;
+  }
+  if (t->elem->kind != TyKind::Array || !t->elem->elem) {
+    return false;
+  }
+  if (t->elem->elem->kind != TyKind::Float) {
+    return false;
+  }
+  if (rows) {
+    *rows = t->array_size;
+  }
+  if (cols) {
+    *cols = t->elem->array_size;
+  }
+  return true;
+}
+
+TyPtr make_2d_float_matrix(const std::int64_t rows, const std::int64_t cols) {
+  auto inner = std::make_shared<Ty>();
+  inner->kind = TyKind::Array;
+  inner->array_size = cols;
+  inner->elem = make_float();
+  auto outer = std::make_shared<Ty>();
+  outer->kind = TyKind::Array;
+  outer->array_size = rows;
+  outer->elem = inner;
+  return outer;
+}
+
 TyPtr make_type_var(std::string name) {
   auto t = std::make_shared<Ty>();
   t->kind = TyKind::TypeVar;
@@ -761,13 +792,27 @@ struct Ctx {
         const TyPtr l = type_of(*e.lhs);
         const TyPtr r = type_of(*e.rhs);
         if (e.bin_op == BinOp::MatMul) {
+          std::int64_t m = 0;
+          std::int64_t k_a = 0;
+          std::int64_t k_b = 0;
+          std::int64_t n = 0;
+          if (ty_is_2d_float_matrix(l, &m, &k_a) && ty_is_2d_float_matrix(r, &k_b, &n) &&
+              k_a == k_b) {
+            return make_2d_float_matrix(m, n);
+          }
           if (l->kind == TyKind::Array && r->kind == TyKind::Array && l->array_size == r->array_size &&
               l->elem && r->elem && same_kind(l->elem, r->elem) &&
               l->elem->kind == TyKind::Float) {
             return make_float();
           }
-          diags.error(loc(e.span),
-                      "matrix multiply '@' requires matching float arrays (1d dot in v1)");
+          if (ty_is_2d_float_matrix(l, nullptr, nullptr) || ty_is_2d_float_matrix(r, nullptr, nullptr)) {
+            diags.error(loc(e.span),
+                        "matrix multiply '@' inner dimension mismatch (expected A[M,K] @ B[K,N])");
+          } else {
+            diags.error(loc(e.span),
+                        "matrix multiply '@' requires matching float arrays (1d dot) or 2d "
+                        "array[M, array[K, float]] operands");
+          }
           return make_float();
         }
         if (e.bin_op == BinOp::Add || e.bin_op == BinOp::Sub || e.bin_op == BinOp::Mul ||

@@ -14,10 +14,17 @@ namespace {
 int temp_counter = 0;
 int par_counter = 0;
 
+struct MatrixDims {
+  std::int64_t rows = 0;
+  std::int64_t cols = 0;
+};
+
 struct LowerArrayCtx {
   std::unordered_map<std::string, std::int64_t> float_array_sizes;
   std::unordered_map<std::string, std::int64_t> int_array_sizes;
+  std::unordered_map<std::string, MatrixDims> matrix_dims;
   std::unordered_set<std::string>* float_array_names = nullptr;
+  std::unordered_set<std::string>* matrix_names = nullptr;
 };
 
 LowerArrayCtx* g_arr_ctx = nullptr;
@@ -46,6 +53,58 @@ bool is_simd_type(const TypeExpr& t) {
 
 bool is_float_array_type(const TypeExpr& t) {
   return t.kind == TypeKind::Array && t.elem && is_float_type_name(t.elem->name);
+}
+
+bool is_2d_float_matrix_type(const TypeExpr& t, std::int64_t* rows, std::int64_t* cols) {
+  if (t.kind != TypeKind::Array || !t.elem || t.elem->kind != TypeKind::Array) {
+    return false;
+  }
+  if (!is_float_array_type(*t.elem)) {
+    return false;
+  }
+  if (rows) {
+    *rows = t.array_size;
+  }
+  if (cols) {
+    *cols = t.elem->array_size;
+  }
+  return true;
+}
+
+bool matrix_slot_dims(const std::string& name, MatrixDims* out) {
+  if (!g_arr_ctx) {
+    return false;
+  }
+  const auto it = g_arr_ctx->matrix_dims.find(name);
+  if (it == g_arr_ctx->matrix_dims.end()) {
+    return false;
+  }
+  if (out) {
+    *out = it->second;
+  }
+  return true;
+}
+
+bool parse_matrix_index_pair(const Expr& row_index, const Expr& col_index, MirInsn& ins) {
+  if (row_index.kind == Expr::Kind::IntLit) {
+    ins.index_is_literal = true;
+    ins.int_value = row_index.int_value;
+  } else if (row_index.kind == Expr::Kind::Ident) {
+    ins.index_is_literal = false;
+    ins.index_ident = row_index.ident;
+  } else {
+    return false;
+  }
+  if (col_index.kind == Expr::Kind::IntLit) {
+    ins.rhs_is_literal = true;
+    ins.rhs_int = col_index.int_value;
+  } else if (col_index.kind == Expr::Kind::Ident) {
+    ins.rhs_is_literal = false;
+    ins.rhs_ident = col_index.ident;
+  } else {
+    return false;
+  }
+  return true;
 }
 
 std::int64_t simd_lanes_from_type(const TypeExpr& t) {
@@ -718,24 +777,55 @@ std::string lower_expr_to(const Expr& e, const Module& module, std::vector<MirIn
     }
     case Expr::Kind::BinOp: {
       if (e.bin_op == BinOp::MatMul && e.lhs && e.lhs->kind == Expr::Kind::Ident && e.rhs &&
-          e.rhs->kind == Expr::Kind::Ident && g_arr_ctx &&
-          g_arr_ctx->float_array_names) {
-        const auto& names = *g_arr_ctx->float_array_names;
-        const auto sz_a = g_arr_ctx->float_array_sizes.find(e.lhs->ident);
-        const auto sz_b = g_arr_ctx->float_array_sizes.find(e.rhs->ident);
-        if (names.count(e.lhs->ident) > 0 && names.count(e.rhs->ident) > 0 &&
-            sz_a != g_arr_ctx->float_array_sizes.end() &&
-            sz_b != g_arr_ctx->float_array_sizes.end() && sz_a->second == sz_b->second) {
+          e.rhs->kind == Expr::Kind::Ident && g_arr_ctx) {
+        MatrixDims da;
+        MatrixDims db;
+        if (g_arr_ctx->matrix_names && g_arr_ctx->matrix_names->count(e.lhs->ident) > 0 &&
+            g_arr_ctx->matrix_names->count(e.rhs->ident) > 0 &&
+            matrix_slot_dims(e.lhs->ident, &da) && matrix_slot_dims(e.rhs->ident, &db) &&
+            da.cols == db.rows) {
           const std::string dest = fresh_temp();
-          MirInsn dot;
-          dot.op = MirOp::ArrayDotF64;
-          dot.ident = dest;
-          dot.lhs_ident = e.lhs->ident;
-          dot.rhs_ident = e.rhs->ident;
-          dot.int_value = sz_a->second;
-          out.push_back(std::move(dot));
-          float_names.insert(dest);
+          MirInsn alloc;
+          alloc.op = MirOp::ArrayAlloc;
+          alloc.ident = dest;
+          alloc.int_value = da.rows;
+          alloc.rhs_int = db.cols;
+          alloc.array_is_matrix = true;
+          alloc.array_is_float = true;
+          out.push_back(std::move(alloc));
+          if (g_arr_ctx->matrix_names) {
+            g_arr_ctx->matrix_names->insert(dest);
+          }
+          g_arr_ctx->matrix_dims[dest] = MatrixDims{da.rows, db.cols};
+          MirInsn mm;
+          mm.op = MirOp::ArrayMatMul2DF64;
+          mm.ident = dest;
+          mm.lhs_ident = e.lhs->ident;
+          mm.rhs_ident = e.rhs->ident;
+          mm.int_value = da.rows;
+          mm.rhs_int = da.cols;
+          mm.lhs_int = db.cols;
+          out.push_back(std::move(mm));
           return dest;
+        }
+        if (g_arr_ctx->float_array_names) {
+          const auto& names = *g_arr_ctx->float_array_names;
+          const auto sz_a = g_arr_ctx->float_array_sizes.find(e.lhs->ident);
+          const auto sz_b = g_arr_ctx->float_array_sizes.find(e.rhs->ident);
+          if (names.count(e.lhs->ident) > 0 && names.count(e.rhs->ident) > 0 &&
+              sz_a != g_arr_ctx->float_array_sizes.end() &&
+              sz_b != g_arr_ctx->float_array_sizes.end() && sz_a->second == sz_b->second) {
+            const std::string dest = fresh_temp();
+            MirInsn dot;
+            dot.op = MirOp::ArrayDotF64;
+            dot.ident = dest;
+            dot.lhs_ident = e.lhs->ident;
+            dot.rhs_ident = e.rhs->ident;
+            dot.int_value = sz_a->second;
+            out.push_back(std::move(dot));
+            float_names.insert(dest);
+            return dest;
+          }
         }
       }
       const std::string lhs = lower_expr_to(*e.lhs, module, out, float_names, simd_names, i64_locals);
@@ -915,6 +1005,29 @@ std::string lower_expr_to(const Expr& e, const Module& module, std::vector<MirIn
       return fresh_temp();
     }
     case Expr::Kind::Index: {
+      if (e.index && e.base && e.base->kind == Expr::Kind::Index && e.base->base &&
+          e.base->index) {
+        std::string mat_ident;
+        if (e.base->base->kind == Expr::Kind::Ident) {
+          mat_ident = e.base->base->ident;
+        } else if (e.base->base->kind == Expr::Kind::FieldAccess) {
+          mat_ident = mir_field_slot_for_expr(*e.base->base);
+        }
+        if (!mat_ident.empty() && g_arr_ctx && g_arr_ctx->matrix_names &&
+            g_arr_ctx->matrix_names->count(mat_ident) > 0) {
+          MirInsn load;
+          load.op = MirOp::ArrayLoad2DF64;
+          load.ident = mat_ident;
+          if (!parse_matrix_index_pair(*e.base->index, *e.index, load)) {
+            return fresh_temp();
+          }
+          const std::string dest = fresh_temp();
+          load.lhs_ident = dest;
+          out.push_back(std::move(load));
+          float_names.insert(dest);
+          return dest;
+        }
+      }
       if (e.index) {
         std::string arr_ident;
         if (e.base && e.base->kind == Expr::Kind::Ident) {
@@ -1038,20 +1151,59 @@ void lower_stmt(const Stmt& stmt, LowerCtx& ctx, bool returns_float, std::vector
         out.push_back(std::move(ins));
         simd_names.insert(stmt.var_name);
       } else if (stmt.var_type.kind == TypeKind::Array && stmt.var_type.elem) {
-        MirInsn ins;
-        ins.op = MirOp::ArrayAlloc;
-        ins.ident = stmt.var_name;
-        ins.int_value = stmt.var_type.array_size;
-        ins.array_is_float = is_float_array_type(stmt.var_type);
-        out.push_back(std::move(ins));
-        if (ins.array_is_float) {
-          float_array_names.insert(stmt.var_name);
+        std::int64_t m_rows = 0;
+        std::int64_t m_cols = 0;
+        if (is_2d_float_matrix_type(stmt.var_type, &m_rows, &m_cols)) {
+          MirInsn ins;
+          ins.op = MirOp::ArrayAlloc;
+          ins.ident = stmt.var_name;
+          ins.int_value = m_rows;
+          ins.rhs_int = m_cols;
+          ins.array_is_matrix = true;
+          ins.array_is_float = true;
+          out.push_back(std::move(ins));
           if (g_arr_ctx) {
-            g_arr_ctx->float_array_sizes[stmt.var_name] = stmt.var_type.array_size;
+            if (g_arr_ctx->matrix_names) {
+              g_arr_ctx->matrix_names->insert(stmt.var_name);
+            }
+            g_arr_ctx->matrix_dims[stmt.var_name] = MatrixDims{m_rows, m_cols};
           }
-        } else if (stmt.var_type.elem && stmt.var_type.elem->kind == TypeKind::Named &&
-                   stmt.var_type.elem->name == "int" && g_arr_ctx) {
-          g_arr_ctx->int_array_sizes[stmt.var_name] = stmt.var_type.array_size;
+          if (stmt.init && stmt.init->kind == Expr::Kind::BinOp &&
+              stmt.init->bin_op == BinOp::MatMul && stmt.init->lhs &&
+              stmt.init->lhs->kind == Expr::Kind::Ident && stmt.init->rhs &&
+              stmt.init->rhs->kind == Expr::Kind::Ident) {
+            MatrixDims da;
+            MatrixDims db;
+            if (matrix_slot_dims(stmt.init->lhs->ident, &da) &&
+                matrix_slot_dims(stmt.init->rhs->ident, &db) && da.cols == db.rows &&
+                da.rows == m_rows && db.cols == m_cols) {
+              MirInsn mm;
+              mm.op = MirOp::ArrayMatMul2DF64;
+              mm.ident = stmt.var_name;
+              mm.lhs_ident = stmt.init->lhs->ident;
+              mm.rhs_ident = stmt.init->rhs->ident;
+              mm.int_value = m_rows;
+              mm.rhs_int = da.cols;
+              mm.lhs_int = m_cols;
+              out.push_back(std::move(mm));
+            }
+          }
+        } else {
+          MirInsn ins;
+          ins.op = MirOp::ArrayAlloc;
+          ins.ident = stmt.var_name;
+          ins.int_value = stmt.var_type.array_size;
+          ins.array_is_float = is_float_array_type(stmt.var_type);
+          out.push_back(std::move(ins));
+          if (ins.array_is_float) {
+            float_array_names.insert(stmt.var_name);
+            if (g_arr_ctx) {
+              g_arr_ctx->float_array_sizes[stmt.var_name] = stmt.var_type.array_size;
+            }
+          } else if (stmt.var_type.elem && stmt.var_type.elem->kind == TypeKind::Named &&
+                     stmt.var_type.elem->name == "int" && g_arr_ctx) {
+            g_arr_ctx->int_array_sizes[stmt.var_name] = stmt.var_type.array_size;
+          }
         }
       } else if (is_i64_type_name(stmt.var_type.name)) {
         MirInsn ins;
@@ -1147,6 +1299,37 @@ void lower_stmt(const Stmt& stmt, LowerCtx& ctx, bool returns_float, std::vector
     }
     case Stmt::Kind::Assign:
       if (stmt.init && stmt.init->kind == Expr::Kind::Index && stmt.init->index && stmt.expr) {
+        if (stmt.init->base && stmt.init->base->kind == Expr::Kind::Index &&
+            stmt.init->base->index && stmt.init->base->base) {
+          std::string mat_slot;
+          if (stmt.init->base->base->kind == Expr::Kind::Ident) {
+            mat_slot = stmt.init->base->base->ident;
+          } else if (stmt.init->base->base->kind == Expr::Kind::FieldAccess) {
+            mat_slot = mir_field_slot_for_expr(*stmt.init->base->base);
+          }
+          if (!mat_slot.empty() && g_arr_ctx && g_arr_ctx->matrix_names &&
+              g_arr_ctx->matrix_names->count(mat_slot) > 0) {
+            MirInsn ins;
+            ins.op = MirOp::ArrayStore2DF64;
+            ins.ident = mat_slot;
+            if (!parse_matrix_index_pair(*stmt.init->base->index, *stmt.init->index, ins)) {
+              break;
+            }
+            if (stmt.expr->kind == Expr::Kind::FloatLit) {
+              ins.lhs_is_literal = true;
+              ins.float_value = stmt.expr->float_value;
+            } else if (stmt.expr->kind == Expr::Kind::Ident) {
+              ins.lhs_is_literal = false;
+              ins.lhs_ident = stmt.expr->ident;
+            } else {
+              ins.lhs_ident =
+                  lower_expr_to(*stmt.expr, module, out, float_names, simd_names, i64_locals);
+              ins.lhs_is_literal = false;
+            }
+            out.push_back(std::move(ins));
+            break;
+          }
+        }
         std::string arr_slot;
         if (stmt.init->base && stmt.init->base->kind == Expr::Kind::Ident) {
           arr_slot = stmt.init->base->ident;
@@ -1180,6 +1363,30 @@ void lower_stmt(const Stmt& stmt, LowerCtx& ctx, bool returns_float, std::vector
             ins.rhs_is_literal = false;
           }
           out.push_back(std::move(ins));
+        }
+      } else if (stmt.init && stmt.init->kind == Expr::Kind::Ident && stmt.expr &&
+                 stmt.expr->kind == Expr::Kind::BinOp && stmt.expr->bin_op == BinOp::MatMul &&
+                 g_arr_ctx && g_arr_ctx->matrix_names &&
+                 g_arr_ctx->matrix_names->count(stmt.init->ident) > 0 && stmt.expr->lhs &&
+                 stmt.expr->lhs->kind == Expr::Kind::Ident && stmt.expr->rhs &&
+                 stmt.expr->rhs->kind == Expr::Kind::Ident) {
+        MatrixDims dc;
+        MatrixDims da;
+        MatrixDims db;
+        if (matrix_slot_dims(stmt.init->ident, &dc) &&
+            matrix_slot_dims(stmt.expr->lhs->ident, &da) &&
+            matrix_slot_dims(stmt.expr->rhs->ident, &db) && da.cols == db.rows &&
+            dc.rows == da.rows && dc.cols == db.cols) {
+          MirInsn mm;
+          mm.op = MirOp::ArrayMatMul2DF64;
+          mm.ident = stmt.init->ident;
+          mm.lhs_ident = stmt.expr->lhs->ident;
+          mm.rhs_ident = stmt.expr->rhs->ident;
+          mm.int_value = dc.rows;
+          mm.rhs_int = da.cols;
+          mm.lhs_int = dc.cols;
+          out.push_back(std::move(mm));
+          break;
         }
       } else if (stmt.init && stmt.init->kind == Expr::Kind::FieldAccess && stmt.expr) {
         const std::string slot = mir_field_slot_for_expr(*stmt.init);
@@ -1503,9 +1710,11 @@ MirModule lower_to_mir(const Module& module) {
       std::unordered_set<std::string> float_names;
       std::unordered_set<std::string> simd_names;
       std::unordered_set<std::string> float_array_names;
+      std::unordered_set<std::string> matrix_array_names;
       std::unordered_set<std::string> i64_locals;
       LowerArrayCtx arr_ctx;
       arr_ctx.float_array_names = &float_array_names;
+      arr_ctx.matrix_names = &matrix_array_names;
       g_arr_ctx = &arr_ctx;
       seed_float_params(fn, float_names);
       seed_i64_params(fn, i64_locals);

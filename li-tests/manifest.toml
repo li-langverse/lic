@@ -647,6 +647,17 @@ expected_substr = "matrix multiply"
 
 [[tests]]
 suite = "math_linalg"
+file = "math_linalg/matmul_2x3_ok.li"
+outcome = "verify_ok"
+
+[[tests]]
+suite = "math_linalg"
+file = "math_linalg/matmul_dim_mismatch.li"
+outcome = "compile_fail"
+expected_substr = "inner dimension mismatch"
+
+[[tests]]
+suite = "math_linalg"
 file = "math_linalg/array_sum.li"
 outcome = "verify_ok"
 

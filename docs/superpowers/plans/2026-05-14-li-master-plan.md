@@ -379,7 +379,7 @@ Track in phase **Doc** until each is checked:
 - [x] Phase 2g — `def`, `object` + field `private`/`public`, minimal `import` (`encapsulation` suite green; import parse-only; **not** full OOP)
 - [ ] Phase 2j — Full OOP — **in progress:** **2j-a…f done** (method call-site `requires` + AutoVC); traits/Lean method `ensures` sugar deferred — [OOP roadmap](2026-05-20-li-oop-roadmap.md)
 - [x] Phase 2h — Python-math operators `%`, `//`, `**` (`math_syntax` suite); `for`/`range` deferred
-- [ ] Phase 2i — Math / linalg surface — **partial:** 1d `float` `@`, `sum(array)`; matrix `@` deferred
+- [ ] Phase 2i — Math / linalg surface — **partial:** 1d `float` `@`, `sum(array)`, 2d `array[M,array[K,float]] @` (**2i-c**); SIMD matmul (**7e**) deferred
 - [x] Phase 3 — MIR + LLVM codegen (`lic build`, minimal lower/emit; CFG/bounds IR deferred)
 - [x] Phase 4 — Runtime + stdlib
 - [x] Phase 4s — Stdlib seal (prelude/`std/` names cannot be shadowed; `stdlib_seal/` CI)

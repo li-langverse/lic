@@ -7,7 +7,9 @@
 
 ## What this is
 
-The **killer GUI** is not yet the native Li Studio binary — it is an **HTML5 showcase** that mirrors the studio shell (outliner, viewport, adaptive panels) and animates each competitive vertical:
+The **killer GUI** is not yet the native Li Studio binary — it is an **HTML5 showcase** that mirrors the studio shell (outliner, viewport, **agent chat dock**, adaptive inspector) and animates each competitive vertical:
+
+**Agent-first chrome (v2):** right-rail chat with plan cards, Apply/Reject, gate chips, and ⌘K palette — see [planned-ui-mockups.md](planned-ui-mockups.md#5-agent-dock-v2--hero-chat).
 
 | Tab | Vertical | Engine packages |
 |-----|----------|-----------------|

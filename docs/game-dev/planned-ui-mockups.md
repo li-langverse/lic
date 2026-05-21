@@ -57,15 +57,35 @@ Visual targets for **Li World Studio** native shell — generated from [unified-
 
 ---
 
-## Design tokens (target)
+## 5. Agent dock (v2 — hero chat)
 
-| Token | Value (mock) |
-|-------|----------------|
-| Background | `#1a1d23` charcoal |
-| Accent | `#2dd4bf` teal |
-| Pass | Green pill |
-| Fail | Red pill (not shown) |
-| Typography | System sans, 11–13px chrome |
+![Agent chat v2 mockup](../../deploy/studio-demo/mockups/li-studio-agent-chat-v2.png)
+
+- **Right rail = Agent first** (380px) — not a footnote in inspector  
+- **Chat bubbles** — user / agent / system roles + timestamps  
+- **Plan card** — steps before apply (Roblox Assistant / Cursor class)  
+- **Gate inline** — `lic build · PASS` inside transcript + top chip  
+- **Apply / Reject** — human-in-the-loop after diagnose  
+- **Composer** — `/build` `/bench` `/patch` hint chips  
+
+**Live prototype:** `deploy/studio-demo/` — open in browser; agent dock matches this mock.
+
+**Maps to:** G3 `dock.agent` · [studio-ux-design-system-rfc](specs/studio-ux-design-system-rfc.md) `ui_layout_agent_first`
+
+---
+
+## Design tokens (v2 target)
+
+| Token | Value |
+|-------|--------|
+| `--bg-deep` | `#0f1219` |
+| `--bg-surface` | `#161b26` |
+| `--bg-elevated` | `#1c2233` |
+| `--accent-agent` | `#8b7cf7` |
+| `--accent-workspace` | `#5b9cf5` |
+| `--pass` | `#34d399` |
+| `--fail` | `#f87171` |
+| Typography | IBM Plex Sans / Mono · 12–13px chrome |
 
 Formalize in `specs/studio-ux-design-system-rfc.md` when native `li-ui` paint lands.
 

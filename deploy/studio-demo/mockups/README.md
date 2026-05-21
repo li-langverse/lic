@@ -10,6 +10,9 @@ These are **design targets** for native Li chrome (not shipped UI). HTML demo re
 | [li-studio-cinematic-nle.png](li-studio-cinematic-nle.png) | Cinematic 4-panel NLE | G7 `li-seq` |
 | [li-studio-agentic-canvas.png](li-studio-agentic-canvas.png) | Infinite agentic canvas | G5 canvas |
 | [li-studio-scientific-sim.png](li-studio-scientific-sim.png) | Scientific + validity | G3 + bench panel |
+| [li-studio-agent-chat-v2.png](li-studio-agent-chat-v2.png) | **Agent dock + chat** (hero right rail) | G3 `dock.agent` |
+
+**v2 agent mock** supersedes burying transcript in inspector — see live `../index.html`.
 
 **Chrome called out in all mocks:**
 

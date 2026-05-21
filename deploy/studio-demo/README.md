@@ -1,6 +1,12 @@
 # Li World Studio — demo showcase
 
-Interactive **studio shell prototype** (outliner, viewport, adaptive panels) with animated verticals:
+Interactive **agent-first studio shell** (outliner, viewport, **Agent chat dock**) with animated verticals:
+
+- **Agent dock** — chat bubbles, plan card, Apply/Reject, `/build` hints (right rail)  
+- **Gate chip** — `lic build · PASS` in toolbar + inline in transcript  
+- **⌘K palette** — same `ui_cmd_*` IDs as native plan  
+
+Other verticals:
 
 - **Rocket** — custom / inverse gravity + Lorentz factor  
 - **Racing** — automotive LiDAR loop  

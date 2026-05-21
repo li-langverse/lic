@@ -83,6 +83,21 @@ const meta = {
   },
 };
 
+const WORKSPACE_LABELS = {
+  rocket: "Game · viewport",
+  racing: "Automotive · viewport",
+  robot: "Robotics · viewport",
+  drug: "LITL · adaptive",
+  bioeng: "Bio · DBTL",
+  mmo: "MMO · shards",
+  unphysical: "Game · arbitrary laws",
+  scientific: "Sim · field view",
+  publish: "Publish · figures",
+  additive: "Additive · voxel",
+  agent: "Agent · diagnose",
+  play: "Play · session",
+};
+
 function setDemo(name) {
   active = name;
   document.querySelectorAll(".tab").forEach((b) => {
@@ -90,10 +105,19 @@ function setDemo(name) {
   });
   const m = meta[name];
   document.getElementById("demo-title").textContent = m.title;
-  document.getElementById("profile-tag").textContent = m.profile;
-  document.getElementById("panel-content").textContent = m.panel;
+  const profileEl = document.getElementById("profile-tag");
+  if (profileEl) profileEl.textContent = m.profile;
+  const profileCode = document.getElementById("profile-code");
+  if (profileCode) profileCode.textContent = m.profile;
+  const panel = document.getElementById("panel-content");
+  if (panel) panel.textContent = m.panel;
+  const ws = document.getElementById("workspace-label");
+  if (ws) ws.textContent = WORKSPACE_LABELS[name] || "Studio";
+  const ctx = document.getElementById("agent-context");
+  if (ctx) ctx.textContent = `world.li · ${m.nodes[0] || "World"}`;
   const list = document.getElementById("outliner-list");
   list.innerHTML = m.nodes.map((n, i) => `<li class="${i === 0 ? "active" : ""}">${n}</li>`).join("");
+  if (name === "agent" || name === "scientific") switchRail("agent");
 }
 
 function drawRocket(t) {
@@ -506,17 +530,101 @@ const COMMANDS = [
 const paletteEl = document.getElementById("command-palette");
 const paletteInput = document.getElementById("palette-input");
 const paletteList = document.getElementById("palette-list");
-const agentTranscript = document.getElementById("agent-transcript");
+const agentChat = document.getElementById("agent-chat");
 
-function appendTranscript(role, text) {
-  if (!agentTranscript) return;
-  const div = document.createElement("div");
-  div.className =
-    role === "user" ? "line-user" : role === "agent" ? "line-agent" : "line-system";
-  div.textContent = `[${role}] ${text}`;
-  agentTranscript.appendChild(div);
-  agentTranscript.scrollTop = agentTranscript.scrollHeight;
+function nowLabel() {
+  const d = new Date();
+  return `${String(d.getHours()).padStart(2, "0")}:${String(d.getMinutes()).padStart(2, "0")}`;
 }
+
+function renderPlanCard(steps) {
+  const items = steps
+    .map((s) => {
+      const cls = s.state === "done" ? "done" : s.state === "active" ? "active" : "";
+      const icon = s.state === "done" ? "✓" : s.state === "active" ? "◎" : "○";
+      return `<li class="${cls}"><span class="step-icon">${icon}</span><span>${s.text}</span></li>`;
+    })
+    .join("");
+  return `<div class="plan-card"><h4>Plan</h4><ul class="plan-steps">${items}</ul></div>`;
+}
+
+function renderMessage({ role, text, time, plan, actions, gate }) {
+  const wrap = document.createElement("article");
+  wrap.className = `msg msg-${role}`;
+  const meta = document.createElement("div");
+  meta.className = "msg-meta";
+  if (role !== "system") {
+    meta.innerHTML = `<span class="msg-role">${role}</span><span>${time || nowLabel()}</span>`;
+  }
+  const bubble = document.createElement("div");
+  bubble.className = "msg-bubble";
+  bubble.textContent = text;
+  wrap.appendChild(meta);
+  wrap.appendChild(bubble);
+  if (plan && plan.length) {
+    const planEl = document.createElement("div");
+    planEl.innerHTML = renderPlanCard(plan);
+    wrap.appendChild(planEl.firstElementChild);
+  }
+  if (gate) {
+    const g = document.createElement("div");
+    g.className = "gate-inline";
+    g.textContent = gate;
+    wrap.appendChild(g);
+  }
+  if (actions && actions.length) {
+    const row = document.createElement("div");
+    row.className = "msg-actions";
+    actions.forEach((a) => {
+      const btn = document.createElement("button");
+      btn.type = "button";
+      btn.textContent = a.label;
+      btn.className = a.kind === "apply" ? "btn-apply" : a.kind === "reject" ? "btn-reject" : "btn-secondary";
+      if (a.cmd) btn.addEventListener("click", () => runCommand(a.cmd));
+      row.appendChild(btn);
+    });
+    wrap.appendChild(row);
+  }
+  return wrap;
+}
+
+function appendTranscript(role, text, extras = {}) {
+  if (!agentChat) return;
+  agentChat.appendChild(renderMessage({ role, text, ...extras }));
+  agentChat.scrollTop = agentChat.scrollHeight;
+}
+
+function switchRail(which) {
+  document.querySelectorAll(".rail-tab").forEach((t) => {
+    const on = t.dataset.rail === which;
+    t.classList.toggle("active", on);
+    t.setAttribute("aria-selected", on ? "true" : "false");
+  });
+  const agentDock = document.getElementById("agent-dock");
+  const inspectorDock = document.getElementById("inspector-dock");
+  if (agentDock) {
+    agentDock.classList.toggle("hidden", which !== "agent");
+    agentDock.hidden = which !== "agent";
+  }
+  if (inspectorDock) {
+    inspectorDock.classList.toggle("hidden", which !== "inspector");
+    inspectorDock.hidden = which !== "inspector";
+  }
+}
+
+document.querySelectorAll(".rail-tab").forEach((btn) => {
+  btn.addEventListener("click", () => switchRail(btn.dataset.rail));
+});
+
+document.querySelectorAll(".hint-chip").forEach((chip) => {
+  chip.addEventListener("click", () => {
+    const input = document.getElementById("agent-input");
+    if (input) {
+      input.value = chip.dataset.hint + " ";
+      input.focus();
+    }
+  });
+});
 
 function renderPalette(filter) {
   const q = (filter || "").toLowerCase();
@@ -545,10 +653,40 @@ function runCommand(id) {
   const c = COMMANDS.find((x) => x.id === id);
   if (!c) return;
   closePalette();
-  appendTranscript("system", `execute ui_cmd_${id} → ${c.hint}`);
-  if (id === 1) appendTranscript("agent", "gate: lic build OK (stub) · viewport play");
-  if (id === 3) appendTranscript("agent", "gate: composable compile_ok (stub)");
-  if (id === 4) appendTranscript("agent", "diagnose ok=1 · patch_id=2 applied (stub)");
+  appendTranscript("system", `ui_cmd_${id} · ${c.name} → ${c.hint}`);
+  if (id === 1) {
+    appendTranscript("agent", "Play session armed. Viewport tick started after gate.", {
+      gate: "lic build · PASS · composable compile_ok",
+    });
+    setDemo("play");
+  }
+  if (id === 3) {
+    appendTranscript("agent", "Build finished — 112 composable gates green (stub).", {
+      gate: "lic build · PASS",
+      plan: [
+        { text: "Resolve packages/world", state: "done" },
+        { text: "Link sim + physics.runtime", state: "done" },
+        { text: "Emit compile_ok smoke", state: "active" },
+      ],
+    });
+    const chip = document.getElementById("gate-chip");
+    if (chip) chip.innerHTML = '<span class="chip-dot"></span>lic build · PASS';
+  }
+  if (id === 4) {
+    appendTranscript("agent", "Diagnose clean. Patch touches world.li spawn + sim profile.", {
+      plan: [
+        { text: "studio.ai diagnose", state: "done" },
+        { text: "Preview diff (patch_id=2)", state: "done" },
+        { text: "Await human apply", state: "active" },
+      ],
+      actions: [
+        { label: "Apply patch", kind: "apply", cmd: 4 },
+        { label: "Reject", kind: "reject" },
+        { label: "Show diff", kind: "secondary" },
+      ],
+      gate: "lic_gate=1 · target_hash=8f2a…",
+    });
+  }
   if (id === 5) setDemo("play");
 }
 
@@ -582,12 +720,57 @@ document.getElementById("agent-form").addEventListener("submit", (e) => {
   if (!msg) return;
   appendTranscript("user", msg);
   input.value = "";
-  appendTranscript("agent", "Plan: search world.li → patch → lic build → bench (stub)");
-  appendTranscript("system", "UiAgentAction target_hash=… lic_gate=1");
+  const lower = msg.toLowerCase();
+  if (lower.startsWith("/build") || lower.includes("lic build")) {
+    runCommand(3);
+    return;
+  }
+  if (lower.startsWith("/patch") || lower.includes("apply")) {
+    runCommand(4);
+    return;
+  }
+  appendTranscript("agent", "I'll search world.li, propose a patch, then run lic build and bench.", {
+    plan: [
+      { text: "Read world.li + manifests", state: "done" },
+      { text: "Draft patch (studio.ai)", state: "active" },
+      { text: "lic build + tier-2 bench", state: "pending" },
+      { text: "Surface validity in chrome", state: "pending" },
+    ],
+    actions: [
+      { label: "Apply patch", kind: "apply", cmd: 4 },
+      { label: "Reject", kind: "reject" },
+    ],
+    gate: "awaiting lic_gate",
+  });
+  appendTranscript("system", "UiAgentAction · panel_slot=agent_dock · replay=typed");
 });
 
-appendTranscript("system", "Agent-first layout · ui_layout_agent_first · 173+ gates");
-appendTranscript("agent", "Try ⌘K: Play, Build, Apply patch");
+function seedAgentChat() {
+  appendTranscript("system", "ui_layout_agent_first · transcript roles enabled");
+  appendTranscript("agent", "Ready. I can edit Li packages, run gates, and show proof in the toolbar.", {
+    plan: [
+      { text: "⌘K or /build — lic build gate", state: "done" },
+      { text: "Chat plan → apply with PASS chip", state: "active" },
+      { text: "Bench + validity on engineering profiles", state: "pending" },
+    ],
+  });
+  appendTranscript("user", "Bump rocket spawn height and verify composable build.");
+  appendTranscript("agent", "Found RocketBody in world.li. Proposing +12m on spawn Z.", {
+    plan: [
+      { text: "Parse world.li hierarchy", state: "done" },
+      { text: "Generate patch_id=2", state: "done" },
+      { text: "Run lic build (stub)", state: "active" },
+    ],
+    actions: [
+      { label: "Apply patch", kind: "apply", cmd: 4 },
+      { label: "Reject", kind: "reject" },
+      { label: "Open diff", kind: "secondary" },
+    ],
+    gate: "diagnose ok=1",
+  });
+}
+
+seedAgentChat();
 
 const params = new URLSearchParams(location.search);
 if (params.get("autoreel") === "1") {

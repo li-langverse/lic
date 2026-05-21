@@ -3,27 +3,55 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Li World Studio — Demo Showcase</title>
+  <title>Li World Studio — Agent-first demo</title>
   <link rel="stylesheet" href="studio.css" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet" />
 </head>
 <body>
   <header class="topbar">
-    <div class="logo">◇ Li World Studio</div>
-    <span class="badge">feat/world-studio-impl-1</span>
-    <span class="gates" id="gate-count">112 composable gates</span>
-    <button id="btn-palette" type="button" title="Command palette (⌘K)">⌘K</button>
-    <button id="btn-auto" type="button">▶ Demo reel</button>
-    <span class="status ok" id="lic-status">lic check ✓</span>
+    <div class="brand">
+      <span class="logo-mark" aria-hidden="true">◇</span>
+      <div class="brand-text">
+        <span class="logo">Li World Studio</span>
+        <span class="workspace" id="workspace-label">Game · viewport</span>
+      </div>
+    </div>
+    <div class="topbar-center">
+      <span class="chip chip-pass" id="gate-chip" title="lic build composable gate">
+        <span class="chip-dot"></span>
+        lic build · PASS
+      </span>
+      <span class="chip chip-muted" id="validity-chip">bench OK · 1.02×</span>
+    </div>
+    <div class="topbar-actions">
+      <span class="badge">feat/agent-first-gui</span>
+      <span class="gates" id="gate-count">composable gates</span>
+      <button id="btn-palette" type="button" class="btn-ghost" title="Command palette (⌘K)">⌘K</button>
+      <button id="btn-auto" type="button" class="btn-primary">▶ Demo reel</button>
+      <span class="status ok" id="lic-status">lic ✓</span>
+    </div>
   </header>
+
   <div id="command-palette" class="palette hidden" role="dialog" aria-label="Command palette">
-    <input id="palette-input" type="text" placeholder="Type a command (agent: use ui_cmd_id)…" autocomplete="off" />
+    <div class="palette-head">
+      <span class="palette-label">Command palette</span>
+      <kbd>esc</kbd>
+    </div>
+    <input id="palette-input" type="text" placeholder="Commands & agent intents (ui_cmd_id)…" autocomplete="off" />
     <ul id="palette-list"></ul>
   </div>
-  <div class="shell">
+
+  <div class="shell shell--agent-first">
     <aside class="outliner">
-      <h2>Outliner</h2>
+      <div class="panel-head">
+        <h2>Outliner</h2>
+        <button type="button" class="icon-btn" title="Filter">⌕</button>
+      </div>
       <ul id="outliner-list"></ul>
     </aside>
+
     <main class="viewport-wrap">
       <div class="toolbar">
         <button class="tab active" data-demo="rocket">Rocket</button>
@@ -32,35 +60,66 @@
         <button class="tab" data-demo="drug">Drug LITL</button>
         <button class="tab" data-demo="bioeng">Bioeng</button>
         <button class="tab" data-demo="mmo">MMO</button>
-        <button class="tab" data-demo="unphysical">Unphysical</button>
         <button class="tab" data-demo="scientific">Scientific</button>
-        <button class="tab" data-demo="publish">Publish</button>
-        <button class="tab" data-demo="additive">Additive</button>
         <button class="tab" data-demo="agent">Agent</button>
+        <button class="tab" data-demo="publish">Publish</button>
         <button class="tab" data-demo="play">Play</button>
       </div>
       <canvas id="viewport" width="1280" height="720"></canvas>
       <div class="hud">
         <span id="demo-title">Rocket — custom physics + relativity</span>
-        <span id="tick">tick 0</span>
+        <span class="hud-meta">
+          <span id="profile-tag" class="mono">sim_profile_scientific</span>
+          <span id="tick">tick 0</span>
+        </span>
       </div>
     </main>
-    <aside class="inspector">
-      <h2>Adaptive panel</h2>
-      <div id="panel-content"></div>
-      <h2>Sim profile</h2>
-      <code id="profile-tag">sim_profile_scientific</code>
-      <h2>Agent</h2>
-      <div id="agent-transcript" class="agent-transcript"></div>
-      <form id="agent-form" class="agent-form">
-        <input id="agent-input" type="text" placeholder="Ask agent: edit world.li, lic build…" />
-        <button type="submit">Send</button>
-      </form>
+
+    <aside class="right-rail" aria-label="Agent and inspector">
+      <nav class="rail-tabs" role="tablist">
+        <button type="button" class="rail-tab active" data-rail="agent" role="tab" aria-selected="true">Agent</button>
+        <button type="button" class="rail-tab" data-rail="inspector" role="tab">Inspector</button>
+      </nav>
+
+      <section class="agent-dock" id="agent-dock" role="tabpanel">
+        <header class="agent-dock-head">
+          <div class="agent-identity">
+            <span class="agent-avatar" aria-hidden="true">✦</span>
+            <div>
+              <span class="agent-name">Studio Agent</span>
+              <span class="agent-context mono" id="agent-context">world.li · packages/world</span>
+            </div>
+          </div>
+          <span class="agent-mode">Plan → gate → apply</span>
+        </header>
+
+        <div id="agent-chat" class="agent-chat" aria-live="polite"></div>
+
+        <div class="agent-composer">
+          <div class="composer-hints">
+            <button type="button" class="hint-chip" data-hint="/build">/build</button>
+            <button type="button" class="hint-chip" data-hint="/bench">/bench</button>
+            <button type="button" class="hint-chip" data-hint="/patch">/patch</button>
+          </div>
+          <form id="agent-form" class="agent-form">
+            <textarea id="agent-input" rows="2" placeholder="Ask to edit world.li, run lic build, apply patch…"></textarea>
+            <button type="submit" class="btn-send" aria-label="Send">↑</button>
+          </form>
+        </div>
+      </section>
+
+      <section class="inspector-dock hidden" id="inspector-dock" role="tabpanel" hidden>
+        <h2>Adaptive panel</h2>
+        <div id="panel-content" class="panel-body"></div>
+        <h2>Sim profile</h2>
+        <code id="profile-code" class="mono block">sim_profile_scientific</code>
+      </section>
     </aside>
   </div>
+
   <footer>
-    <p>Prototype showcase — engine APIs are Li package stubs; visuals are illustrative.</p>
-    <p><code>./scripts/record-studio-demo.sh</code> · <a href="../../docs/game-dev/demo-showcase.md">docs</a></p>
+    <p>Prototype showcase — native <code>li-ui</code> / <code>li-gui</code> is canonical; agent dock maps to <code>ui_layout_agent_first</code>.</p>
+    <p><code>./scripts/record-studio-demo.sh</code> · <a href="../../docs/game-dev/demo-showcase.md">docs</a> · <a href="mockups/">mockups</a></p>
   </footer>
   <script src="studio.js"></script>
 </body>

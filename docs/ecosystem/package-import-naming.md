@@ -71,7 +71,7 @@ github_repo = "studio"
 - [x] `import_repo_names.py` — repo slug = import path
 - [x] `align-package-repo-names.py --metadata-only --apply` — `li.toml` + `PUBLISH.md`
 - [x] `align-package-repo-names.py --apply` — rename `packages/<import>/`
-- [ ] `push-import-aligned-mirrors.sh --create` — org repos on GitHub (maintainer)
+- [x] `push-import-aligned-mirrors.sh --create` — World Studio engine packages on GitHub
 - [ ] Register in roadmap **official-packages**
 
 **World Studio import table:** [world-studio-packages.md](world-studio-packages.md)

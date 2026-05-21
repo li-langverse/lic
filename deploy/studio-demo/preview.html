@@ -3,140 +3,28 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Li World Studio — mockups v3</title>
+  <title>Li World Studio — design preview</title>
+  <meta http-equiv="refresh" content="0; url=index.html" />
   <style>
-    :root {
-      --bg: #0f1219;
-      --panel: #161b26;
-      --border: #2a3348;
-      --text: #e8ecf4;
-      --muted: #8b95a8;
-      --teal: #2dd4bf;
-    }
-    * { box-sizing: border-box; }
     body {
-      margin: 0;
       font-family: system-ui, sans-serif;
-      background: var(--bg);
-      color: var(--text);
-      line-height: 1.5;
-      padding: 1.5rem;
-      max-width: 1400px;
-      margin-inline: auto;
+      background: #0f1219;
+      color: #e8ecf4;
+      padding: 2rem;
+      max-width: 42rem;
+      line-height: 1.6;
     }
-    h1 { font-size: 1.4rem; margin: 0 0 0.25rem; }
-    .sub { color: var(--muted); margin-bottom: 1.5rem; font-size: 0.9rem; }
-    a { color: var(--teal); }
-    section { margin-bottom: 2.5rem; }
-    h2 {
-      font-size: 0.75rem;
-      text-transform: uppercase;
-      letter-spacing: 0.1em;
-      color: var(--muted);
-      margin: 0 0 1rem;
-    }
-    video {
-      width: 100%;
-      max-width: 960px;
-      border-radius: 8px;
-      border: 1px solid var(--border);
-      background: #000;
-    }
-    .grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(360px, 1fr));
-      gap: 1.25rem;
-    }
-    figure {
-      margin: 0;
-      background: var(--panel);
-      border: 1px solid var(--border);
-      border-radius: 8px;
-      overflow: hidden;
-    }
-    figcaption {
-      padding: 0.6rem 0.85rem;
-      font-size: 0.82rem;
-      color: var(--muted);
-    }
-    figcaption strong { color: var(--text); }
-    img {
-      width: 100%;
-      display: block;
-      height: auto;
-      cursor: zoom-in;
-    }
-    .actions {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 0.75rem;
-      margin-bottom: 2rem;
-    }
-    .btn {
-      display: inline-block;
-      padding: 0.5rem 1rem;
-      background: var(--teal);
-      color: #0f1219;
-      text-decoration: none;
-      border-radius: 6px;
-      font-weight: 600;
-      font-size: 0.85rem;
-    }
-    .btn.secondary {
-      background: var(--panel);
-      color: var(--text);
-      border: 1px solid var(--border);
-    }
+    a { color: #2dd4bf; }
+    code { background: #161b26; padding: 0.15rem 0.4rem; border-radius: 4px; }
   </style>
 </head>
 <body>
-  <h1>Li World Studio — mockups v3</h1>
-  <p class="sub">
-    Teal agent dock · <code>studio</code> / <code>studio.ai</code> packages · product shell <code>studio-app</code>
-  </p>
-
-  <div class="actions">
-    <a class="btn" href="index.html">▶ Interactive demo</a>
-    <a class="btn secondary" href="mockups/">PNG files</a>
-    <a class="btn secondary" href="../../docs/game-dev/planned-ui-mockups.md">Docs</a>
-  </div>
-
-  <section>
-    <h2>Demo video</h2>
-    <video controls playsinline poster="mockups/studio-viewport-game-v3.png">
-      <source src="videos/world-studio-demo-reel.webm" type="video/webm" />
-    </video>
-    <p class="sub"><code>./scripts/record-studio-demo.sh</code></p>
-  </section>
-
-  <section>
-    <h2>v3 concept art (May 2026)</h2>
-    <div class="grid">
-      <figure>
-        <a href="mockups/studio-viewport-game-v3.png"><img src="mockups/studio-viewport-game-v3.png" alt="Game viewport" loading="lazy" /></a>
-        <figcaption><strong>Game</strong> — viewport + agent dock</figcaption>
-      </figure>
-      <figure>
-        <a href="mockups/studio-agent-chat-v3.png"><img src="mockups/studio-agent-chat-v3.png" alt="Agent chat" loading="lazy" /></a>
-        <figcaption><strong>Agent</strong> — chat · plan · Apply/Reject</figcaption>
-      </figure>
-      <figure>
-        <a href="mockups/studio-scientific-sim-v3.png"><img src="mockups/studio-scientific-sim-v3.png" alt="Scientific" loading="lazy" /></a>
-        <figcaption><strong>Scientific</strong> — field + validity</figcaption>
-      </figure>
-      <figure>
-        <a href="mockups/studio-cinematic-nle-v3.png"><img src="mockups/studio-cinematic-nle-v3.png" alt="Cinematic" loading="lazy" /></a>
-        <figcaption><strong>Cinematic</strong> — 4-panel NLE</figcaption>
-      </figure>
-      <figure>
-        <a href="mockups/studio-agentic-canvas-v3.png"><img src="mockups/studio-agentic-canvas-v3.png" alt="Canvas" loading="lazy" /></a>
-        <figcaption><strong>Canvas</strong> — studio.ai graph</figcaption>
-      </figure>
-      <figure>
-        <a href="mockups/studio-publish-v3.png"><img src="mockups/studio-publish-v3.png" alt="Publish" loading="lazy" /></a>
-        <figcaption><strong>Publish</strong> — bundle hash</figcaption>
-      </figure>
-    </div>
-  </section>
+  <h1>Li World Studio — preview</h1>
+  <p>Mockup PNGs are <strong>not stored in this repo</strong>. Redirecting to the interactive prototype…</p>
+  <p><a href="index.html">Open interactive demo</a></p>
+  <h2>Local screenshots (gitignored)</h2>
+  <pre><code>./scripts/capture-studio-mockup-screenshots.sh
+./scripts/open-studio-design-preview.sh --gallery</code></pre>
+  <p>Output: <code>.artifacts/studio-mockups/</code></p>
 </body>
 </html>

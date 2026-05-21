@@ -23,7 +23,7 @@ Do **not** use `lic` as the home for World Studio product work, UX galleries, or
 
 | Off-limits | Put it here instead |
 |------------|---------------------|
-| HTML/JS studio showcase, mockup PNGs, demo WebM | **`studio-app`** → `demo/` ([bootstrap](../../scripts/bootstrap-li-studio-app-repo.sh)) |
+| HTML/JS studio showcase (no PNG/WebM in git) | **`studio-app`** → `demo/` · capture: `scripts/capture-studio-mockup-screenshots.sh` → `.artifacts/` |
 | `deploy/studio-demo/`, new `deploy/*` product sites | **`studio-app`** — see `deploy/studio-demo/MOVED.md` |
 | Product UX canon, planned UI galleries | **`studio-app/docs/`** — not **`studio`** (that's `import studio`) |
 | Competitive-intel media blobs | Gitignored paths only; analysis may stay in docs if harness-relevant |

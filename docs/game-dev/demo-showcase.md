@@ -9,7 +9,7 @@
 
 The **killer GUI** is not yet the native Li Studio binary — it is an **HTML5 showcase** that mirrors the studio shell (outliner, viewport, **agent chat dock**, adaptive inspector) and animates each competitive vertical:
 
-**Agent-first chrome (v2):** right-rail chat with plan cards, Apply/Reject, gate chips, and ⌘K palette — see [planned-ui-mockups.md](planned-ui-mockups.md#5-agent-dock-v2--hero-chat).
+**Agent-first chrome:** right-rail chat, plan cards, Apply/Reject, gate chips, ⌘K — see [planned-ui-mockups.md](planned-ui-mockups.md). **No PNG mockups in git** — open the HTML prototype or run `capture-studio-mockup-screenshots.sh` → `.artifacts/`.
 
 | Tab | Vertical | Engine packages |
 |-----|----------|-----------------|
@@ -39,8 +39,8 @@ Refresh after tests:
 
 ```bash
 cd lic
-./scripts/gen-studio-demo-status.sh
-./scripts/open-studio-demo.sh
+./scripts/open-studio-design-preview.sh
+# PNG gallery (local, gitignored): ./scripts/open-studio-design-preview.sh --capture
 # or: python3 -m http.server 8765 --directory deploy/studio-demo
 # Publish tab: http://127.0.0.1:8765/?demo=publish
 # Play tab: http://127.0.0.1:8765/?demo=play

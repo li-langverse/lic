@@ -26,8 +26,13 @@ compile_commands.json
 docs/game-dev/competitive-intel/media/local/**
 !docs/game-dev/competitive-intel/media/local/.gitkeep
 
-# Studio demo capture artifacts
+# Studio demo — no binary mockups/video in git (generate locally)
+deploy/studio-demo/mockups/*.png
+deploy/studio-demo/mockups/**/*.png
+deploy/studio-demo/videos/*.webm
+deploy/studio-demo/videos/*.mp4
 deploy/studio-demo/videos/frames/
+.artifacts/
 scripts/studio-demo-pkg/node_modules/
 
 # Native build products

@@ -21,22 +21,17 @@ Other verticals:
 ## Quick start
 
 ```bash
-python3 -m http.server 8765 --directory deploy/studio-demo
-# http://localhost:8765/preview.html   ← all v2 images + demo video
-# http://localhost:8765                ← interactive studio
+./scripts/open-studio-design-preview.sh              # interactive (canonical)
+./scripts/open-studio-design-preview.sh --capture  # PNG gallery → .artifacts/ (gitignored)
 ```
 
-**v2 mockups:** `mockups/*-v2.png` · **Demo reel:** `videos/world-studio-demo-reel.webm`
-
-## Demo video
-
-Pre-rendered reel: [videos/world-studio-demo-reel.webm](videos/world-studio-demo-reel.webm)
-
-Re-record:
+Or:
 
 ```bash
-./scripts/record-studio-demo.sh
-# DURATION=30 FPS=12 ./scripts/record-studio-demo.sh
+python3 -m http.server 8765 --directory deploy/studio-demo
+# http://localhost:8765/
 ```
+
+**No PNG/WebM in git** — see `mockups/README.md`. Demo reel: `./scripts/record-studio-demo.sh` → `videos/` (gitignored).
 
 Docs: [docs/game-dev/demo-showcase.md](../../docs/game-dev/demo-showcase.md)

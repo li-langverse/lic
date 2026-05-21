@@ -87,6 +87,7 @@ nav:
       - Hello world: guide/hello-world.md
       - Install tools: guide/getting-started-tools.md
       - Fast math & parallelism: guide/fast-math-and-parallelism.md
+      - Math-first HPC examples: guide/math-hpc-examples.md
       - Examples gallery: guide/examples-gallery.md
       - Creating packages: guide/creating-packages.md
       - Package layout: guide/package-layout-reference.md

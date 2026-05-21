@@ -13,7 +13,7 @@ Li is a language for **programs you can trust in production**: contracts checked
 
     ---
 
-    Start with [Hello world](guide/hello-world.md) and the [Examples gallery](guide/examples-gallery.md).
+    Start with [Hello world](guide/hello-world.md), [Math-first HPC examples](guide/math-hpc-examples.md), and the [Examples gallery](guide/examples-gallery.md).
 
 -   :material-book-open-variant:{ .lg .middle } **Learn the language**
 

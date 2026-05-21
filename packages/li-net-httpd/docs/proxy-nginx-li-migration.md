@@ -22,7 +22,7 @@ flowchart LR
     C[proxy_handle_client_in]
   end
   subgraph C_runtime["li_rt_net.c (retire incrementally)"]
-    D[httpd_li_proxy_start_i]
+    D[httpd_li_proxy_init_req_i + pump_send]
     E[httpd_proxy_* relay / parse / splice]
     F[upstream pool + compact hdr]
   end
@@ -33,7 +33,7 @@ flowchart LR
   E --> F
 ```
 
-- **`httpd_set_li_proxy_mode_i(1)`** — C `httpd_try_drain_once` skips starting proxy; Li calls `httpd_li_proxy_start_i` after header parse.
+- **`httpd_set_li_proxy_mode_i(1)`** — C `httpd_try_drain_once` skips starting proxy; Li uses `proxy_li_start` (no `httpd_proxy_start_async` fallback).
 - **Epoll tags** — `HTTPD_EPOLL_CLIENT_TAG` / `HTTPD_EPOLL_UP_TAG` (high 32 bits `0x80000000` / `0xc0000000`); matched in Li via `proxy_epoll_tag_is_*` without repeated extern tag helpers (borrow-safe).
 - **Event batch** — `net_events_tagged_load_i` + `net_events_loaded_*_i` scratch (one `var ptr` pass per slot).
 
@@ -46,7 +46,8 @@ flowchart LR
 - [x] Full request/response relay in Li (`lib.li`) when `LI_HTTPD_PROXY_LI=1` (GET + CL; chunked req → C fallback)
 - [ ] Remove `httpd_epoll_serve_i` proxy branches from `httpd_try_drain_once` (default path still C)
 - [ ] Delete static `httpd_proxy_forward` and unused C recv helpers
-- [x] `LI_HTTPD_PROXY_LI=1` → Li epoll loop; default → `httpd_epoll_serve_proxy_i` (C + snap)
+- [x] **Default** Li epoll loop; `LI_HTTPD_PROXY_C=1` → legacy C `httpd_epoll_serve_proxy_i`
+- [x] No C async fallback — CL/chunked request bodies via `proxy_li_pump_send` + `httpd_li_proxy_init_req_i`
 - [x] GET response **snap** in Li loop (`httpd_li_proxy_try_snap_i` + recording on `mark_active`)
 - [x] **Epoll spin-drain** after blocking wait (`epoll_wait_tagged_spin_i`, mirrors C `httpd_epoll_serve_i`)
 - [x] Li `finish_drain` no longer starts C async proxy (`httpd_li_try_start_proxy_i` defers to Li dispatch)
@@ -73,9 +74,7 @@ LI_REPO_ROOT=$PWD ./build/compiler/lic/lic build packages/li-net-httpd/src/lib.l
 LI_HTTPD_BIN=$PWD/build/li-httpd python3 <benchmarks>/vendor/lis-tier5/benchmarks/tier5_http/harness/bench_http.py proxy_loopback --profile ci
 ```
 
-**Evidence (2026-05-22, C epoll + snap):** `proxy_loopback` ci 5-run mean ~160k li vs ~78k nginx (~**2.05×**). Default `httpd_serve_port_root_proxy` → `httpd_epoll_serve_proxy_i`; set `LI_HTTPD_PROXY_LI=1` for Li epoll path with snap + spin (bench after warm-up snap).
-
-**Evidence (2026-05-22, Li epoll P5):** `LI_HTTPD_PROXY_LI=1` uses same snap buffer as C path; first request warms snap, steady GET serves from `httpd_li_proxy_try_snap_i`.
+**Evidence (2026-05-22):** Default `httpd_serve_port_root_proxy` → Li epoll + snap (~154k vs ~74k nginx `proxy_loopback` ci). Legacy C path: `LI_HTTPD_PROXY_C=1`.
 
 ## References
 

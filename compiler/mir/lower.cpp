@@ -1359,8 +1359,10 @@ void lower_stmt(const Stmt& stmt, LowerCtx& ctx, bool returns_float, std::vector
       }
       break;
     case Stmt::Kind::Expr:
-      if (stmt.expr && stmt.expr->kind == Expr::Kind::Call) {
-        if (stmt.expr->ident == "echo" && !stmt.expr->args.empty()) {
+      if (stmt.expr &&
+          (stmt.expr->kind == Expr::Kind::Call || stmt.expr->kind == Expr::Kind::MethodCall)) {
+        if (stmt.expr->kind == Expr::Kind::Call && stmt.expr->ident == "echo" &&
+            !stmt.expr->args.empty()) {
           lower_echo_arg(*stmt.expr->args[0], out);
         } else {
           (void)lower_expr_to(*stmt.expr, module, out, float_names, simd_names, i64_locals);

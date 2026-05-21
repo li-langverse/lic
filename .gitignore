@@ -40,3 +40,4 @@ benchmarks/tier2_physics/**/target/
 # Multi-agent coordination (local only, parent dir)
 .li-agent-coord.json
 ../.li-agent-coord.json
+build-asan/

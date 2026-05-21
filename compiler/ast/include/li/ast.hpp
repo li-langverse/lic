@@ -160,6 +160,7 @@ struct ErrorDecl {
 struct ProcDecl {
   Span span;
   std::string name;
+  Visibility visibility = Visibility::Public;
   bool is_extern = false;
   bool is_async = false;
   std::vector<Decorator> decorators;

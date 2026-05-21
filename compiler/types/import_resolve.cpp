@@ -404,7 +404,9 @@ void merge_module(Module& into, Module&& from) {
     into.types.push_back(std::move(t));
   }
   for (auto& p : from.procs) {
-    into.procs.push_back(std::move(p));
+    if (p.visibility == Visibility::Public) {
+      into.procs.push_back(std::move(p));
+    }
   }
 }
 

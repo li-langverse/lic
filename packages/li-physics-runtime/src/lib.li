@@ -27,9 +27,9 @@ def li_std_physics_runtime_version() -> int
 =
   return 1
 
-def rigid_integrate_semi_implicit(b: var RigidBody, fx: float, fy: float, fz: float, dt: float) -> unit
+def rigid_integrate_semi_implicit(b: var RigidBody, fx: float, fy: float, fz: float, dt: float) -> RigidBody
   requires dt > 0.0
-  ensures true
+  ensures result.pz == b.pz + b.vz * dt
   decreases 0
 =
   if b.inv_mass > 0.0:
@@ -39,6 +39,7 @@ def rigid_integrate_semi_implicit(b: var RigidBody, fx: float, fy: float, fz: fl
   b.px = b.px + b.vx * dt
   b.py = b.py + b.vy * dt
   b.pz = b.pz + b.vz * dt
+  return b
 def physics_world_new(tier: int) -> PhysicsWorld
   requires tier >= 0
   requires tier <= 3
@@ -82,7 +83,7 @@ def physics_rigid_substep(world: var PhysicsWorld, sub_dt: float) -> unit
 =
   if world.rigid_enabled == 0:
     return
-  rigid_integrate_semi_implicit(world.body, 0.0, 0.0, world.gravity_z, sub_dt)
+  world.body = rigid_integrate_semi_implicit(world.body, 0.0, 0.0, world.gravity_z, sub_dt)
 
 def physics_step(world: var PhysicsWorld, frame_dt: float) -> unit
   requires frame_dt > 0.0

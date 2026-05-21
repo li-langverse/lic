@@ -23,6 +23,16 @@ bool expr_references_disjoint(const Expr& e) {
     case Expr::Kind::Index:
       return (e.base && expr_references_disjoint(*e.base)) ||
              (e.index && expr_references_disjoint(*e.index));
+    case Expr::Kind::MethodCall:
+      if (e.base && expr_references_disjoint(*e.base)) {
+        return true;
+      }
+      for (const auto& arg : e.args) {
+        if (arg && expr_references_disjoint(*arg)) {
+          return true;
+        }
+      }
+      return false;
     default:
       return false;
   }

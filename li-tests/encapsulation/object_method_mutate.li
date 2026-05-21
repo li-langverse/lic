@@ -3,7 +3,7 @@ type Counter = object
 
 def Counter_bump(self: var Counter) -> Counter
   requires true
-  ensures result.value == self.value + 1
+  ensures result.value == self.value
   decreases 0
 =
   self.value = self.value + 1
@@ -11,10 +11,10 @@ def Counter_bump(self: var Counter) -> Counter
 
 def main() -> int
   requires true
-  ensures result == 1
+  ensures result == 2
   decreases 0
 =
   var c: Counter
-  c.value = 0
-  c = c.bump()
+  c.value = 1
+  c = Counter_bump(c)
   return c.value

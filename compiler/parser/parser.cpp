@@ -128,6 +128,14 @@ struct Parser {
         proc.decorators = std::move(decos);
         out.procs.push_back(std::move(proc));
         skip_newlines();
+      } else if (at(TokenKind::KwPrivate) || at(TokenKind::KwPublic)) {
+        if (peek(1).kind == TokenKind::KwDef || at_fn_kw()) {
+          out.procs.push_back(parse_proc(false));
+        } else {
+          diags.error(loc(cur()), "expected 'def' after visibility");
+          return false;
+        }
+        skip_newlines();
       } else if (at(TokenKind::KwDef)) {
         out.procs.push_back(parse_proc(false));
         skip_newlines();
@@ -999,8 +1007,16 @@ Stmt Parser::parse_stmt() {
 ProcDecl Parser::parse_proc(bool is_extern) {
   ProcDecl proc;
   proc.is_extern = is_extern;
-  if (!is_extern && !accept_def_kw()) {
-    diags.error(loc(cur()), "expected 'def'");
+  if (!is_extern) {
+    if (at(TokenKind::KwPrivate)) {
+      proc.visibility = Visibility::Private;
+      i++;
+    } else if (at(TokenKind::KwPublic)) {
+      i++;
+    }
+    if (!accept_def_kw()) {
+      diags.error(loc(cur()), "expected 'def'");
+    }
   }
   const Token name = cur();
   proc.span = {name.start, name.end};
@@ -1156,6 +1172,10 @@ std::vector<TypeField> Parser::parse_type_fields() {
   skip_newlines();
   while (at(TokenKind::KwPrivate) || at(TokenKind::KwPublic) ||
          (at(TokenKind::Ident) && peek(1).kind == TokenKind::Colon)) {
+    if ((at(TokenKind::KwPrivate) || at(TokenKind::KwPublic)) &&
+        (peek(1).kind == TokenKind::KwDef || at_fn_kw())) {
+      break;
+    }
     TypeField field;
     field.visibility = Visibility::Public;
     if (at(TokenKind::KwPrivate)) {

@@ -20,7 +20,8 @@
 | Object MIR lowering (scalars, arrays) | **Done** | `object_*` tests, composable physics smoke |
 | `var T` object params | **Partial** | Call-by-expanded-scalars; **no write-back** to caller |
 | Methods on types | **Partial (2j-a)** | `obj.method(args)` → `Type_method(self, …)`; `def_method_*.li` |
-| Private **methods** | **Missing** | Only field visibility |
+| Private **methods** | **Partial (2j-b)** | `private def` not merged on import; `private_method_use.li` |
+| Object mutation to caller | **Partial (2j-c)** | `body = integrate(...)` / `c = c.bump()`; MIR in-out slots deferred |
 | Inheritance / `override` | **Missing** | Spec mentions; not parsed |
 | Traits (`Hash`, …) | **Spec only** | [language design § Hash](../specs/2026-05-14-li-language-design.md) |
 | Cross-module private **fields** | **Done** | `leak_imported_vault.li` compile_fail |

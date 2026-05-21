@@ -53,6 +53,11 @@ outcome = "verify_ok"
 
 [[tests]]
 suite = "decorators"
+file = "decorators/vectorized_dot_proc_ok.li"
+outcome = "verify_ok"
+
+[[tests]]
+suite = "decorators"
 file = "decorators/no_vectorize_dot_ok.li"
 outcome = "verify_ok"
 

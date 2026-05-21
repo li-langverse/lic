@@ -68,6 +68,8 @@ struct MirArg {
   std::string ident;
   bool is_string = false;
   std::string str_value;
+  /** Pass `ident` array alloca by address (CallProc array param). */
+  bool is_array_ident = false;
 };
 
 struct MirParam {

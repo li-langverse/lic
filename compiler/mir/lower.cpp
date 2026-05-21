@@ -721,6 +721,10 @@ void push_mir_args_for_object_value_r(const Module& module, const TypeExpr& te,
     } else {
       MirArg ma;
       ma.ident = sub;
+      const TypeExpr* ut = unwrap_refinement_type(fld.type.get());
+      if (ut && ut->kind == TypeKind::Array && ut->array_size > 0) {
+        ma.is_array_ident = true;
+      }
       args_out.push_back(std::move(ma));
     }
   });
@@ -818,6 +822,10 @@ std::string lower_callproc_with_optional_inout(
       ma.float_value = arg->float_value;
     } else if (arg->kind == Expr::Kind::Ident) {
       ma.ident = arg->ident;
+      const TypeExpr* fpt = unwrap_refinement_type(&fp.type);
+      if (fpt && fpt->kind == TypeKind::Array && fpt->array_size > 0) {
+        ma.is_array_ident = true;
+      }
     } else {
       ma.ident = lower_expr_to(*arg, module, out, float_names, simd_names, i64_locals);
     }
@@ -1839,7 +1847,16 @@ MirModule lower_to_mir(const Module& module) {
       } else {
         MirParam mp;
         mp.name = p.name;
-        mp.is_float = is_float_type_name(p.type.name);
+        const TypeExpr* ut = unwrap_refinement_type(&p.type);
+        if (ut && ut->kind == TypeKind::Array && ut->array_size > 0 && ut->elem) {
+          const TypeExpr* el = unwrap_refinement_type(ut->elem.get());
+          if (el && el->kind == TypeKind::Named) {
+            mp.fixed_array_elems = ut->array_size;
+            mp.is_float = is_float_type_name(el->name);
+          }
+        } else {
+          mp.is_float = is_float_type_name(p.type.name);
+        }
         mp.is_string = mir_ptr_param_type_name(p.type.name);
         mp.is_i64 = is_i64_type_name(p.type.name) || is_string_type_name(p.type.name);
         fn.params.push_back(std::move(mp));

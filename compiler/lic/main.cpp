@@ -484,7 +484,7 @@ int main(int argc, char** argv) {
     }
     li::reset_proof_cli_flags();
     warn_deprecated_proof_env();
-    const char* input = argv[2];
+    const char* input = nullptr;
     const char* output = li::null_output_path();
     li::CompileOptions opts;
     bool coverage = false;
@@ -494,10 +494,12 @@ int main(int argc, char** argv) {
         env_stable && *env_stable && env_stable[0] != '0') {
       opts.fp_numerically_stable = true;
     }
-    for (int i = 3; i < argc; ++i) {
+    for (int i = 2; i < argc; ++i) {
       const std::string_view arg = argv[i];
       if (arg == "-o" && i + 1 < argc) {
         output = argv[++i];
+      } else if (!input && arg[0] != '-' && arg != "--release") {
+        input = argv[i];
       } else if (arg == "--release") {
         opts.release = true;
       } else if (arg == "--numerically-stable") {
@@ -519,6 +521,9 @@ int main(int argc, char** argv) {
     }
     if (coverage) {
       extra_flags += "-fprofile-instr-generate -fcoverage-mapping ";
+    }
+    if (!input) {
+      return usage();
     }
     const std::string source = read_file(input);
     li::Module module;

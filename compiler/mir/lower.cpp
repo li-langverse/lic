@@ -1121,15 +1121,34 @@ std::string lower_expr_to(const Expr& e, const Module& module, std::vector<MirIn
           return dest;
         }
       }
-      const std::string lhs = lower_expr_to(*e.lhs, module, out, float_names, simd_names, i64_locals);
-      const std::string rhs = lower_expr_to(*e.rhs, module, out, float_names, simd_names, i64_locals);
       const std::string dest = fresh_temp();
       MirInsn ins;
       const bool flt = is_float_expr(e, float_names);
       ins.op = flt ? MirOp::BinOpFloat : MirOp::BinOpInt;
       ins.ident = dest;
-      ins.lhs_ident = lhs;
-      ins.rhs_ident = rhs;
+      ins.rhs_is_literal = false;
+      ins.lhs_is_literal = false;
+      if (flt) {
+        ins.lhs_ident =
+            lower_expr_to(*e.lhs, module, out, float_names, simd_names, i64_locals);
+        ins.rhs_ident =
+            lower_expr_to(*e.rhs, module, out, float_names, simd_names, i64_locals);
+      } else {
+        if (e.lhs && e.lhs->kind == Expr::Kind::IntLit) {
+          ins.lhs_is_literal = true;
+          ins.lhs_int = e.lhs->int_value;
+        } else {
+          ins.lhs_ident =
+              lower_expr_to(*e.lhs, module, out, float_names, simd_names, i64_locals);
+        }
+        if (e.rhs && e.rhs->kind == Expr::Kind::IntLit) {
+          ins.rhs_is_literal = true;
+          ins.rhs_int = e.rhs->int_value;
+        } else {
+          ins.rhs_ident =
+              lower_expr_to(*e.rhs, module, out, float_names, simd_names, i64_locals);
+        }
+      }
       ins.bin_op = e.bin_op;
       out.push_back(std::move(ins));
       if (flt) {

@@ -1,6 +1,7 @@
 #include "li/compile.hpp"
 #include "li/emit.hpp"
 #include "li/mir.hpp"
+#include "li/mir_abi.hpp"
 #include "li/num_stable.hpp"
 #include "li/platform.hpp"
 
@@ -31,6 +32,13 @@ bool compile_module(const Module& module, const std::string& output_path,
   MirModule mir = lower_to_mir(module);
   mir.fp_numerically_stable = opts.fp_numerically_stable;
   apply_numerical_stability(mir);
+  std::string abi_err;
+  if (!verify_mir_extern_abi(module, mir, &abi_err)) {
+    if (error) {
+      *error = abi_err;
+    }
+    return false;
+  }
   const std::string ll_path = unique_temp_ll_path();
 
   if (!emit_llvm_ir(mir, ll_path, error)) {

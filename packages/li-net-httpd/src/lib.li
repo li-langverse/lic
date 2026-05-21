@@ -429,6 +429,20 @@ def httpd_serve_port_root(port: var int, root: var ptr) raises Net, Alloc, IO ->
 =
   return httpd_serve_static_blocking(port, root)
 
+def proxy_phase_send_req() -> int
+  requires true
+  ensures true
+  decreases 0
+=
+  return 1
+
+def proxy_phase_send_body() -> int
+  requires true
+  ensures true
+  decreases 0
+=
+  return 2
+
 def proxy_phase_relay() -> int
   requires true
   ensures true
@@ -634,6 +648,11 @@ def proxy_li_on_up(epfd: var int, slot: var int, rev: int) raises Net, Alloc, IO
 =
   if net_epoll_hangup(rev) == 1:
     return proxy_li_finish_err(epfd, slot)
+  var phase: int = httpd_li_proxy_phase_i(slot)
+  if phase == proxy_phase_send_req():
+    return proxy_li_pump_send(epfd, slot)
+  if phase == proxy_phase_send_body():
+    return proxy_li_pump_send(epfd, slot)
   var parsing: int = httpd_li_proxy_get_resp_parsing_i(slot)
   if parsing == 0:
     if httpd_li_proxy_get_resp_body_mode_i(slot) == proxy_body_cl():
@@ -656,11 +675,31 @@ def proxy_li_on_up(epfd: var int, slot: var int, rev: int) raises Net, Alloc, IO
     return proxy_li_on_up_recv_cached(epfd, slot, chunk)
   return proxy_li_on_up_recv_parse(epfd, slot, chunk)
 
+def proxy_li_pump_send(epfd: var int, slot: var int) raises Net, Alloc, IO -> int
+  requires epfd >= 0
+  ensures true
+  decreases 0
+=
+  var sent: int = httpd_li_proxy_send_request_i(epfd, slot)
+  if sent < 0:
+    return proxy_li_finish_err(epfd, slot)
+  if httpd_li_proxy_active_i(slot) == 0:
+    return -1
+  if sent == 1:
+    var er: int = proxy_li_enter_relay(epfd, slot)
+    if er < 0:
+      return er
+    return proxy_li_on_up(epfd, slot, 1)
+  return 0
+
 def proxy_li_on_client(epfd: var int, slot: var int) raises Net, Alloc, IO -> int
   requires epfd >= 0
   ensures true
   decreases 0
 =
+  var phase: int = httpd_li_proxy_phase_i(slot)
+  if phase == proxy_phase_send_body():
+    return proxy_li_pump_send(epfd, slot)
   return 0
 
 def proxy_li_start(epfd: var int, slot: var int, hdr_end: int, keep: int) raises Net, Alloc, IO -> int
@@ -677,15 +716,10 @@ def proxy_li_start(epfd: var int, slot: var int, hdr_end: int, keep: int) raises
     var reuse: int = 0
     httpd_upstream_release_i(up, reuse)
     return -1
-  var sent: int = httpd_li_proxy_send_request_i(epfd, slot)
-  if sent < 0:
+  var init: int = httpd_li_proxy_init_req_i(slot, he)
+  if init < 0:
     return proxy_li_finish_err(epfd, slot)
-  if sent == 0:
-    return 0
-  var er: int = proxy_li_enter_relay(epfd, slot)
-  if er < 0:
-    return er
-  return proxy_li_on_up(epfd, slot, 1)
+  return proxy_li_pump_send(epfd, slot)
 
 def proxy_accept_batch(epfd: var int, listen_fd: var int) raises Net, Alloc, IO -> int
   requires epfd >= 0
@@ -747,11 +781,6 @@ def proxy_handle_client_in(epfd: var int, slot: var int) raises Net, Alloc, IO -
         return 0
       if snap < 0:
         return -1
-  if filled2 > hdr_end:
-    var st: int = httpd_li_proxy_start_i(epfd, conn, slot, hdr_end, keep)
-    if st < 0:
-      return -1
-    return 0
   var st2: int = proxy_li_start(epfd, slot, hdr_end, keep)
   if st2 < 0:
     return -1

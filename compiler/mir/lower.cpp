@@ -387,31 +387,42 @@ bool emit_array_elementwise_binop(const std::string& dest, const std::string& lh
     const auto sz_b = g_arr_ctx->float_array_sizes.find(rhs_ident);
     if (names.count(lhs_ident) > 0 && names.count(rhs_ident) > 0 &&
         sz_a != g_arr_ctx->float_array_sizes.end() &&
-        sz_b != g_arr_ctx->float_array_sizes.end() && sz_a->second == sz_b->second) {
-      MirInsn ins;
-      ins.op = MirOp::ArrayBinOpF64;
-      ins.ident = dest;
-      ins.lhs_ident = lhs_ident;
-      ins.rhs_ident = rhs_ident;
-      ins.int_value = sz_a->second;
-      ins.bin_op = op;
-      out.push_back(std::move(ins));
-      return true;
+        sz_b != g_arr_ctx->float_array_sizes.end()) {
+      const std::int64_t na = sz_a->second;
+      const std::int64_t nb = sz_b->second;
+      if (na == nb || (na == 1 && nb > 1) || (nb == 1 && na > 1)) {
+        MirInsn ins;
+        ins.op = MirOp::ArrayBinOpF64;
+        ins.ident = dest;
+        ins.lhs_ident = lhs_ident;
+        ins.rhs_ident = rhs_ident;
+        ins.int_value = na >= nb ? na : nb;
+        ins.bin_op = op;
+        ins.array_broadcast_lhs_len1 = (na == 1 && nb > 1);
+        ins.array_broadcast_rhs_len1 = (nb == 1 && na > 1);
+        out.push_back(std::move(ins));
+        return true;
+      }
     }
   }
   const auto sz_a = g_arr_ctx->int_array_sizes.find(lhs_ident);
   const auto sz_b = g_arr_ctx->int_array_sizes.find(rhs_ident);
-  if (sz_a != g_arr_ctx->int_array_sizes.end() && sz_b != g_arr_ctx->int_array_sizes.end() &&
-      sz_a->second == sz_b->second) {
-    MirInsn ins;
-    ins.op = MirOp::ArrayBinOpI64;
-    ins.ident = dest;
-    ins.lhs_ident = lhs_ident;
-    ins.rhs_ident = rhs_ident;
-    ins.int_value = sz_a->second;
-    ins.bin_op = op;
-    out.push_back(std::move(ins));
-    return true;
+  if (sz_a != g_arr_ctx->int_array_sizes.end() && sz_b != g_arr_ctx->int_array_sizes.end()) {
+    const std::int64_t na = sz_a->second;
+    const std::int64_t nb = sz_b->second;
+    if (na == nb || (na == 1 && nb > 1) || (nb == 1 && na > 1)) {
+      MirInsn ins;
+      ins.op = MirOp::ArrayBinOpI64;
+      ins.ident = dest;
+      ins.lhs_ident = lhs_ident;
+      ins.rhs_ident = rhs_ident;
+      ins.int_value = na >= nb ? na : nb;
+      ins.bin_op = op;
+      ins.array_broadcast_lhs_len1 = (na == 1 && nb > 1);
+      ins.array_broadcast_rhs_len1 = (nb == 1 && na > 1);
+      out.push_back(std::move(ins));
+      return true;
+    }
   }
   return false;
 }
@@ -428,34 +439,43 @@ std::string lower_array_elementwise_binop_expr(const std::string& lhs_ident,
     const auto sz_b = g_arr_ctx->float_array_sizes.find(rhs_ident);
     if (names.count(lhs_ident) > 0 && names.count(rhs_ident) > 0 &&
         sz_a != g_arr_ctx->float_array_sizes.end() &&
-        sz_b != g_arr_ctx->float_array_sizes.end() && sz_a->second == sz_b->second) {
-      const std::string dest = fresh_temp();
-      MirInsn alloc;
-      alloc.op = MirOp::ArrayAlloc;
-      alloc.ident = dest;
-      alloc.int_value = sz_a->second;
-      alloc.array_is_float = true;
-      out.push_back(std::move(alloc));
-      g_arr_ctx->float_array_names->insert(dest);
-      g_arr_ctx->float_array_sizes[dest] = sz_a->second;
-      emit_array_elementwise_binop(dest, lhs_ident, rhs_ident, op, out);
-      return dest;
+        sz_b != g_arr_ctx->float_array_sizes.end()) {
+      const std::int64_t na = sz_a->second;
+      const std::int64_t nb = sz_b->second;
+      if (na == nb || (na == 1 && nb > 1) || (nb == 1 && na > 1)) {
+        const std::int64_t n_out = na >= nb ? na : nb;
+        const std::string dest = fresh_temp();
+        MirInsn alloc;
+        alloc.op = MirOp::ArrayAlloc;
+        alloc.ident = dest;
+        alloc.int_value = n_out;
+        alloc.array_is_float = true;
+        out.push_back(std::move(alloc));
+        g_arr_ctx->float_array_names->insert(dest);
+        g_arr_ctx->float_array_sizes[dest] = n_out;
+        emit_array_elementwise_binop(dest, lhs_ident, rhs_ident, op, out);
+        return dest;
+      }
     }
   }
   const auto ia = g_arr_ctx->int_array_sizes.find(lhs_ident);
   const auto ib = g_arr_ctx->int_array_sizes.find(rhs_ident);
-  if (ia != g_arr_ctx->int_array_sizes.end() && ib != g_arr_ctx->int_array_sizes.end() &&
-      ia->second == ib->second) {
-    const std::string dest = fresh_temp();
-    MirInsn alloc;
-    alloc.op = MirOp::ArrayAlloc;
-    alloc.ident = dest;
-    alloc.int_value = ia->second;
-    alloc.array_is_float = false;
-    out.push_back(std::move(alloc));
-    g_arr_ctx->int_array_sizes[dest] = ia->second;
-    emit_array_elementwise_binop(dest, lhs_ident, rhs_ident, op, out);
-    return dest;
+  if (ia != g_arr_ctx->int_array_sizes.end() && ib != g_arr_ctx->int_array_sizes.end()) {
+    const std::int64_t na = ia->second;
+    const std::int64_t nb = ib->second;
+    if (na == nb || (na == 1 && nb > 1) || (nb == 1 && na > 1)) {
+      const std::int64_t n_out = na >= nb ? na : nb;
+      const std::string dest = fresh_temp();
+      MirInsn alloc;
+      alloc.op = MirOp::ArrayAlloc;
+      alloc.ident = dest;
+      alloc.int_value = n_out;
+      alloc.array_is_float = false;
+      out.push_back(std::move(alloc));
+      g_arr_ctx->int_array_sizes[dest] = n_out;
+      emit_array_elementwise_binop(dest, lhs_ident, rhs_ident, op, out);
+      return dest;
+    }
   }
   return {};
 }

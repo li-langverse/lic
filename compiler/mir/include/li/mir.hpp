@@ -118,6 +118,9 @@ struct MirInsn {
   bool array_is_float = false;
   /** `array[M, array[K, float]]` row-major tile; cols in rhs_int when true. */
   bool array_is_matrix = false;
+  /** Element-wise op: other operand is `array[1, *]` — use its index 0 at every lane. */
+  bool array_broadcast_lhs_len1 = false;
+  bool array_broadcast_rhs_len1 = false;
   std::int64_t simd_lanes = 0;
   std::vector<MirArg> args;
   /** Layout entries under object root (`name` paths). Used for ReturnObject pack and CallProc

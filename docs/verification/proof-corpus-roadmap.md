@@ -70,7 +70,7 @@
 | `contracts_discharge_corpus.sh` | **ok** | Trivial/const/index/caller-requires/**linalg closed**; `sqrt_open_bound` + loop dot intentionally open |
 | `run_httpd_config.sh` | **ok** | Python oracle + Li `match_routes.li` binary exit 0 |
 | `contracts_verify_lean.sh` | **partial** | Needs Lean 4 + lake; may stop on specimens with open user `ensures` |
-| `lake build` | **env-dependent** | `LI_BUILD_VERIFY_LEAN=1` on CI when lake present |
+| `lake build` | **default on `lic build`** | `--no-lean-verify` to skip; CI runs lake directly + tooling scripts |
 
 ## Master-plan backlog (research: what to prove next)
 

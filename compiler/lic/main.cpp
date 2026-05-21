@@ -12,6 +12,7 @@
 #include "li/vc_witness.hpp"
 #include "li/terminal.hpp"
 #include "li/error_codes.hpp"
+#include "li/proof_cli.hpp"
 
 #include "li_rt.h"
 
@@ -34,11 +35,13 @@ int usage() {
             << "  lic parse <file>       parse and validate syntax\n"
             << "  lic check <file> [--format=json]  parse + typecheck\n"
             << "  lic diagnose <file>    agent-oriented JSON diagnostics\n"
-            << "  lic verify <file>      VC summary; --lean runs semantics; --strict-lean fails open VCs\n"
+            << "  lic verify <file>      VC summary; --lean lake; --strict-lean fails open VCs\n"
+            << "                       [--allow-open-vc] [--no-lean-verify]\n"
             << "  lic build <file> -o <out> [--release] [--numerically-stable]\n"
-            << "                       [--strict-lean]  (alias) lake + open-VC check when installed\n"
-            << "                       default: lake typecheck AutoVC when installed; --strict-lean for open goals\n"
-            << "                       LI_BUILD_VERIFY_LEAN=0 to skip; LI_BUILD_VERIFY_LEAN_STRICT=1 for open goals\n"
+            << "                       [--strict-lean]  fail on open AutoVC goals + lake strict check\n"
+            << "                       [--allow-open-vc]  allow obligations without Lean proof (dev only)\n"
+            << "                       [--no-lean-verify] skip lake / AutoVC typecheck\n"
+            << "                       default: fail on open goals; lake typecheck when installed\n"
             << "                       [--threads=N] [--jobs=N] [--max-memory=MB]\n"
             << "                       [--coverage-instrument]\n"
             << "  lic smoke-llvm         verify LLVM can emit main returning 0\n"
@@ -214,34 +217,35 @@ int check_file(const char* path, DiagOutput output, std::string_view json_comman
   return 0;
 }
 
-bool lean_verify_opted_out() {
-  const char* v = std::getenv("LI_BUILD_VERIFY_LEAN");
-  return v != nullptr && v[0] == '0';
+void warn_deprecated_proof_env() {
+  if (std::getenv("LI_ALLOW_OPEN_VC") != nullptr) {
+    std::cerr << "lic: warning — LI_ALLOW_OPEN_VC is ignored; use --allow-open-vc on the command line\n";
+  }
+  if (const char* v = std::getenv("LI_BUILD_VERIFY_LEAN"); v != nullptr && v[0] == '0') {
+    std::cerr << "lic: warning — LI_BUILD_VERIFY_LEAN=0 is ignored; use --no-lean-verify\n";
+  }
+  if (std::getenv("LI_BUILD_VERIFY_LEAN_STRICT") != nullptr) {
+    std::cerr << "lic: warning — LI_BUILD_VERIFY_LEAN_STRICT is ignored; use --strict-lean\n";
+  }
+}
+
+bool parse_proof_cli_flag(std::string_view arg) {
+  if (arg == "--allow-open-vc") {
+    li::proof_cli_flags().allow_open_vc = true;
+    return true;
+  }
+  if (arg == "--no-lean-verify") {
+    li::proof_cli_flags().no_lean_verify = true;
+    return true;
+  }
+  return false;
 }
 
 bool lake_available() {
   return std::system("command -v lake >/dev/null 2>&1") == 0;
 }
 
-void configure_default_lean_verify_env(bool strict_lean_flag) {
-  if (lean_verify_opted_out()) {
-    return;
-  }
-  setenv("LI_BUILD_VERIFY_LEAN", "1", 1);
-  if (strict_lean_flag) {
-    setenv("LI_BUILD_VERIFY_LEAN_STRICT", "1", 1);
-  }
-}
-
-int run_lean_verify_after_build() {
-  if (lean_verify_opted_out()) {
-    std::cerr << "lic build: warning — Lean verify skipped (LI_BUILD_VERIFY_LEAN=0)\n";
-    return 0;
-  }
-  if (std::getenv("LI_BUILD_VERIFY_LEAN") == nullptr &&
-      std::getenv("LI_BUILD_VERIFY_LEAN_STRICT") == nullptr) {
-    return 0;
-  }
+int run_lean_verify_script(bool check_open_goals) {
   const char* root = std::getenv("LI_REPO_ROOT");
   std::string script = "scripts/lean-verify-stub.sh";
   if (root != nullptr) {
@@ -252,7 +256,10 @@ int run_lean_verify_after_build() {
                  "(install elan for full 2f gate)\n";
     return 0;
   }
-  const std::string cmd = "bash " + script;
+  std::string cmd = "bash " + script;
+  if (check_open_goals) {
+    cmd += " --check-open-goals";
+  }
   const int rc = std::system(cmd.c_str());
   if (rc != 0) {
     std::cerr << "lic build: Lean semantics verification failed (see docs/semantics)\n";
@@ -349,22 +356,14 @@ int verify_file(const char* path, bool run_lean, bool strict_lean) {
     const int open = count_open_autovc_goals();
     if (open >= 0) {
       std::cout << "verify: open_vc_goals=" << open << '\n';
-      if (strict_lean && open > 0) {
+      if (strict_lean && open > 0 && !li::allow_open_vc()) {
         std::cerr << "verify: strict-lean failed (" << open << " open obligations)\n";
         return 1;
       }
     }
-    if (strict_lean) {
-      setenv("LI_BUILD_VERIFY_LEAN_STRICT", "1", 1);
+    if (!li::no_lean_verify()) {
+      return run_lean_verify_script(strict_lean);
     }
-    setenv("LI_BUILD_VERIFY_LEAN", "1", 1);
-    std::string script = "scripts/lean-verify-stub.sh";
-    if (const char* root = std::getenv("LI_REPO_ROOT")) {
-      script = std::string(root) + "/" + script;
-    }
-    const std::string cmd = "bash " + script;
-    const int lean_rc = std::system(cmd.c_str());
-    return lean_rc == 0 ? 0 : 1;
   }
   return 0;
 }
@@ -453,6 +452,8 @@ int main(int argc, char** argv) {
     if (argc < 3) {
       return usage();
     }
+    li::reset_proof_cli_flags();
+    warn_deprecated_proof_env();
     bool run_lean = false;
     bool strict_lean = false;
     for (int i = 3; i < argc; ++i) {
@@ -461,6 +462,8 @@ int main(int argc, char** argv) {
       } else if (std::string_view(argv[i]) == "--strict-lean") {
         run_lean = true;
         strict_lean = true;
+      } else if (parse_proof_cli_flag(argv[i])) {
+        continue;
       }
     }
     return verify_file(argv[2], run_lean, strict_lean);
@@ -479,7 +482,9 @@ int main(int argc, char** argv) {
     if (argc < 3) {
       return usage();
     }
-    const char* input = argv[2];
+    li::reset_proof_cli_flags();
+    warn_deprecated_proof_env();
+    const char* input = nullptr;
     const char* output = li::null_output_path();
     li::CompileOptions opts;
     bool coverage = false;
@@ -489,10 +494,12 @@ int main(int argc, char** argv) {
         env_stable && *env_stable && env_stable[0] != '0') {
       opts.fp_numerically_stable = true;
     }
-    for (int i = 3; i < argc; ++i) {
+    for (int i = 2; i < argc; ++i) {
       const std::string_view arg = argv[i];
       if (arg == "-o" && i + 1 < argc) {
         output = argv[++i];
+      } else if (!input && arg[0] != '-' && arg != "--release") {
+        input = argv[i];
       } else if (arg == "--release") {
         opts.release = true;
       } else if (arg == "--numerically-stable") {
@@ -501,6 +508,8 @@ int main(int argc, char** argv) {
         coverage = true;
       } else if (arg == "--strict-lean") {
         strict_lean = true;
+      } else if (parse_proof_cli_flag(arg)) {
+        continue;
       } else if (arg.rfind("--threads=", 0) == 0) {
         setenv("LI_OMP_THREADS", std::string(arg.substr(10)).c_str(), 1);
       } else if (apply_resource_flag(arg)) {
@@ -512,6 +521,9 @@ int main(int argc, char** argv) {
     }
     if (coverage) {
       extra_flags += "-fprofile-instr-generate -fcoverage-mapping ";
+    }
+    if (!input) {
+      return usage();
     }
     const std::string source = read_file(input);
     li::Module module;
@@ -538,7 +550,7 @@ int main(int argc, char** argv) {
     if (!li::write_vcs_lean(module, vc_lean, &err)) {
       std::cerr << "vc emit: " << err << '\n';
     }
-    if (std::getenv("LI_ALLOW_OPEN_VC") == nullptr) {
+    if (!li::allow_open_vc()) {
       const int open = count_open_autovc_goals();
       if (open > 0) {
         std::cerr << "lic build: " << open
@@ -546,20 +558,16 @@ int main(int argc, char** argv) {
                      "(see build/generated/AutoVC.lean)\n";
         std::cerr << "hint: a `requires` or `ensures` on your code created a goal the compiler "
                      "could not close automatically — prove it in Lean, simplify the "
-                     "contract, or set LI_ALLOW_OPEN_VC=1 only for emergency bypass\n";
+                     "contract, or pass --allow-open-vc only for documented dev/tests\n";
         return 1;
       }
     }
-    configure_default_lean_verify_env(strict_lean);
-    if (!lean_verify_opted_out()) {
-      if (lake_available()) {
-        if (const int lean_rc = run_lean_verify_after_build(); lean_rc != 0) {
-          return lean_rc;
-        }
-      } else {
-        std::cerr << "lic build: warning — install Lean 4 (elan) for semantics typecheck "
-                     "(see docs/semantics)\n";
+    if (!li::no_lean_verify()) {
+      if (const int lean_rc = run_lean_verify_script(strict_lean); lean_rc != 0) {
+        return lean_rc;
       }
+    } else {
+      std::cerr << "lic build: warning — Lean verify skipped (--no-lean-verify)\n";
     }
     return 0;
   }

@@ -146,6 +146,11 @@ suite = "typecheck"
 file = "typecheck/binary_literal_ok.li"
 outcome = "compile_ok"
 
+[[tests]]
+suite = "compile_ok"
+file = "compile_ok/int_ne_literal.li"
+outcome = "compile_ok"
+
 # --- prove_reject (pillar 1) ---
 
 [[tests]]

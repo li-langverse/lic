@@ -73,7 +73,7 @@ bool compile_module(const Module& module, const std::string& output_path,
   }
   cmd << " -o \"" << output_path << "\"";
   if (opts.release) {
-    cmd << " -O2";
+    cmd << " -O3 -march=native";
     if (!opts.fp_numerically_stable) {
       cmd << " -ffast-math -ffp-contract=fast";
     }

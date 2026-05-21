@@ -111,7 +111,9 @@ std::string lean_type_name(const TypeExpr& ty, const Module& module) {
       return "Int";
     case TypeKind::Array:
       if (ty.elem) {
-        return "LiArray " + lean_type_name(*ty.elem, module) + " " +
+        const std::string elem = lean_type_name(*ty.elem, module);
+        const bool wrap_elem = ty.elem->kind == TypeKind::Array;
+        return "LiArray " + (wrap_elem ? "(" + elem + ")" : elem) + " " +
                std::to_string(ty.array_size);
       }
       return "LiArray Unit 0";
@@ -272,10 +274,33 @@ void emit_contract_def(std::ostream& out, const Module& module, const ProcDecl& 
 
   std::string prop = "True";
   const CallerProofFacts caller_facts = collect_caller_proof_facts(proc);
+  bool loop_witness_real_prop = false;
+  bool mat2_discharge_theorem = false;
+  if (c.kind == ContractKind::Ensures && c.expr) {
+    const Expr* rhs = ensures_rhs_eq_result(*c.expr);
+    if (rhs != nullptr && ctx.proc != nullptr &&
+        witness_dot4_int_loop(*ctx.proc, *rhs)) {
+      loop_witness_real_prop = true;
+    }
+    if (ctx.proc != nullptr && witness_mat2_int_at2_spec(*ctx.proc, *c.expr)) {
+      mat2_discharge_theorem = true;
+    }
+  }
   const bool witnessed =
       contract_witnessed_trivial(proc, c, &module, &caller_facts);
-  if (witnessed) {
+  if (witnessed && !loop_witness_real_prop && !mat2_discharge_theorem) {
     prop = "True";
+  } else if (mat2_discharge_theorem && c.kind == ContractKind::Ensures) {
+    prop = "Li.Discharge.mat2_at2_float_spec";
+    for (const auto& p : proc.params) {
+      prop += ' ';
+      prop += p.name;
+    }
+    prop += " result";
+  } else if (loop_witness_real_prop && c.expr) {
+    if (auto lean = expr_to_lean(*c.expr, ctx)) {
+      prop = *lean;
+    }
   } else if (c.expr) {
     if (auto lean = expr_to_lean(*c.expr, ctx)) {
       prop = *lean;
@@ -314,7 +339,30 @@ void emit_contract_def(std::ostream& out, const Module& module, const ProcDecl& 
       out << "/-! Phase 2f: return expression matches ensures (static witness) -/\n";
     }
   }
-  if (prop == "True") {
+  if (mat2_discharge_theorem && c.kind == ContractKind::Ensures) {
+    out << "theorem " << name << "_proved";
+    for (const auto& p : proc.params) {
+      out << ' ' << '(' << p.name << " : " << lean_type_name(p.type, module) << ')';
+    }
+    if (proc.ret_type) {
+      out << " (result : " << lean_type_name(*proc.ret_type, module) << ')';
+    }
+    out << " : " << name;
+    for (const auto& p : proc.params) {
+      out << ' ' << p.name;
+    }
+    if (proc.ret_type) {
+      out << " result";
+    }
+    out << " := Li.Discharge.mat2_at2_float_spec_proved";
+    for (const auto& p : proc.params) {
+      out << ' ' << p.name;
+    }
+    if (proc.ret_type) {
+      out << " result";
+    }
+    out << '\n';
+  } else if (prop == "True") {
     out << "theorem " << name << "_proved";
     for (const auto& p : proc.params) {
       out << ' ' << '(' << p.name << " : " << lean_type_name(p.type, module) << ')';
@@ -485,7 +533,7 @@ bool write_vcs_lean(const Module& module, const std::string& path, std::string* 
     return false;
   }
   out << "-- Auto-generated VC obligations (Phase 2e). Props typecheck in Lean; discharge in 2f.\n";
-  out << "import Init.Data.Float\nimport Core\n\nopen Li\n\nnamespace AutoVC\n\n";
+  out << "import Init.Data.Float\nimport Core\nimport Discharge\n\nopen Li\n\nnamespace AutoVC\n\n";
   for (const auto& proc : module.procs) {
     if (proc.is_extern) {
       continue;

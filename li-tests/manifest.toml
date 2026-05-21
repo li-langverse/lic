@@ -326,6 +326,12 @@ note = "P-linalg: float dot via prelude dot() — static witness"
 
 [[tests]]
 suite = "contracts_verify"
+file = "contracts_verify/linalg_mat2_at2_float_closed.li"
+outcome = "verify_ok"
+note = "P-linalg: full 2×2 float @ — Li.Discharge.mat2_at2_float_spec"
+
+[[tests]]
+suite = "contracts_verify"
 file = "contracts_verify/linalg_mat2_callproc_float_closed.li"
 outcome = "verify_ok"
 note = "P-linalg: 2×2 float @ via CallProc nested arrays"

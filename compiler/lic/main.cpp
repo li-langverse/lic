@@ -36,7 +36,8 @@ int usage() {
             << "  lic diagnose <file>    agent-oriented JSON diagnostics\n"
             << "  lic verify <file>      VC summary; --lean runs semantics; --strict-lean fails open VCs\n"
             << "  lic build <file> -o <out> [--release] [--numerically-stable]\n"
-            << "                       [--strict-lean]  AutoVC + lake semantics when installed\n"
+            << "                       [--strict-lean]  (alias) lake + open-VC check when installed\n"
+            << "                       default: lake build when installed; LI_BUILD_VERIFY_LEAN=0 to skip\n"
             << "                       [--threads=N] [--jobs=N] [--max-memory=MB]\n"
             << "                       [--coverage-instrument]\n"
             << "  lic smoke-llvm         verify LLVM can emit main returning 0\n"
@@ -212,7 +213,35 @@ int check_file(const char* path, DiagOutput output, std::string_view json_comman
   return 0;
 }
 
+bool lean_verify_opted_out() {
+  const char* v = std::getenv("LI_BUILD_VERIFY_LEAN");
+  return v != nullptr && v[0] == '0';
+}
+
+bool lake_available() {
+  return std::system("command -v lake >/dev/null 2>&1") == 0;
+}
+
+void configure_default_lean_verify_env(bool strict_lean_flag) {
+  if (lean_verify_opted_out()) {
+    return;
+  }
+  setenv("LI_BUILD_VERIFY_LEAN", "1", 1);
+  if (strict_lean_flag) {
+    setenv("LI_BUILD_VERIFY_LEAN_STRICT", "1", 1);
+    return;
+  }
+  if (std::getenv("LI_BUILD_VERIFY_LEAN_STRICT") == nullptr &&
+      std::getenv("LI_ALLOW_OPEN_VC") == nullptr) {
+    setenv("LI_BUILD_VERIFY_LEAN_STRICT", "1", 1);
+  }
+}
+
 int run_lean_verify_after_build() {
+  if (lean_verify_opted_out()) {
+    std::cerr << "lic build: warning — Lean verify skipped (LI_BUILD_VERIFY_LEAN=0)\n";
+    return 0;
+  }
   if (std::getenv("LI_BUILD_VERIFY_LEAN") == nullptr &&
       std::getenv("LI_BUILD_VERIFY_LEAN_STRICT") == nullptr) {
     return 0;
@@ -222,9 +251,9 @@ int run_lean_verify_after_build() {
   if (root != nullptr) {
     script = std::string(root) + "/" + script;
   }
-  if (std::system("command -v lake >/dev/null 2>&1") != 0) {
+  if (!lake_available()) {
     std::cerr << "lic build: warning — Lean 4 / lake not installed; skipping semantics proof "
-                 "(install for full 2f gate)\n";
+                 "(install elan for full 2f gate)\n";
     return 0;
   }
   const std::string cmd = "bash " + script;
@@ -525,15 +554,16 @@ int main(int argc, char** argv) {
         return 1;
       }
     }
-    if (strict_lean) {
-      setenv("LI_BUILD_VERIFY_LEAN", "1", 1);
-      setenv("LI_BUILD_VERIFY_LEAN_STRICT", "1", 1);
-    }
-    if (const int lean_rc = run_lean_verify_after_build(); lean_rc != 0) {
-      return lean_rc;
-    }
-    if (std::getenv("LI_BUILD_VERIFY_LEAN") != nullptr) {
-      return verify_file(input, true, strict_lean);
+    configure_default_lean_verify_env(strict_lean);
+    if (!lean_verify_opted_out()) {
+      if (lake_available()) {
+        if (const int lean_rc = run_lean_verify_after_build(); lean_rc != 0) {
+          return lean_rc;
+        }
+      } else {
+        std::cerr << "lic build: warning — install Lean 4 (elan) for semantics typecheck "
+                     "(see docs/semantics)\n";
+      }
     }
     return 0;
   }

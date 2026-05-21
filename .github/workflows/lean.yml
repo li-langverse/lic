@@ -27,8 +27,6 @@ jobs:
       - name: Discharge corpus + P-linalg AutoVC lake typecheck
         env:
           LI_REPO_ROOT: ${{ github.workspace }}
-          LI_BUILD_VERIFY_LEAN: "1"
-          LI_BUILD_VERIFY_LEAN_STRICT: "1"
         run: |
           chmod +x scripts/check-autovc-open-goals.sh scripts/lean-verify-stub.sh \
             li-tests/tooling/discharge_trivial_lean.sh \

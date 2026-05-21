@@ -1,4 +1,5 @@
 #include "li/typecheck.hpp"
+#include "li/proof_cli.hpp"
 
 #include "li/borrowck.hpp"
 #include "li/call_requires.hpp"
@@ -1538,7 +1539,7 @@ struct Ctx {
     if (p.is_extern || proc_returns_unit(p)) {
       return;
     }
-    if (std::getenv("LI_ALLOW_OPEN_VC") != nullptr) {
+    if (li::allow_open_vc()) {
       return;
     }
     /* li-net-httpd proxy loop: contracts tightened incrementally (tier-5 bench). */

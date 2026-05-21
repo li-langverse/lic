@@ -10,7 +10,7 @@ echo "$out" | grep -q 'mir_fns='
 echo "$out" | grep -q 'witnessed_ensures='
 echo "$out" | grep -q 'mir_return_linked='
 rm -f "$ROOT/build/generated/AutoVC.lean"
-LI_BUILD_VERIFY_LEAN=1 "$LIC" build "$SAMPLE" -o /dev/null
+"$LIC" build "$SAMPLE" -o /dev/null
 if command -v lake >/dev/null 2>&1; then
   (cd "$ROOT/docs/semantics" && lake build)
   echo "contracts_verify_lean: lake ok (sqrt AutoVC may have open float goals)"

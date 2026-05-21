@@ -18,6 +18,7 @@ patterns=(
   '\bunsafe\b'
   'gates\.proof[[:space:]]*=[[:space:]]*false'
   'proof\.lean[[:space:]]*=[[:space:]]*"off"'
+  'LI_ALLOW_OPEN_VC=1'
   'LI_BUILD_VERIFY_LEAN=0'
   '--no-verify'
   'check_stdlib_seal'

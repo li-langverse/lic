@@ -36,11 +36,7 @@ li_phase "generate AutoVC (2e)"
 
 if command -v lake >/dev/null 2>&1; then
   li_phase "semantics (2f lake + AutoVC strict)"
-  (
-    export LI_BUILD_VERIFY_LEAN=1
-    export LI_BUILD_VERIFY_LEAN_STRICT=1
-    cd "$ROOT/docs/semantics" && lake build
-  ) || exit 1
+  (cd "$ROOT/docs/semantics" && lake build) || exit 1
   "$ROOT/scripts/check-autovc-open-goals.sh" "$ROOT/build/generated/AutoVC.lean" || exit 1
 fi
 

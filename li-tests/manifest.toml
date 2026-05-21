@@ -780,6 +780,13 @@ file = "encapsulation/private_field_access.li"
 outcome = "compile_fail"
 expected_substr = "cannot access private field"
 
+[[tests]]
+suite = "encapsulation"
+file = "encapsulation/leak_imported_vault.li"
+outcome = "compile_fail"
+expected_substr = "cannot access private field"
+note = "2j-b: private fields on imported types"
+
 # --- modules (2g placeholder — single file, no import graph) ---
 
 [[tests]]

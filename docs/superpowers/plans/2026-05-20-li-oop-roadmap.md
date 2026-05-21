@@ -23,7 +23,7 @@
 | Private **methods** | **Missing** | Only field visibility |
 | Inheritance / `override` | **Missing** | Spec mentions; not parsed |
 | Traits (`Hash`, …) | **Spec only** | [language design § Hash](../specs/2026-05-14-li-language-design.md) |
-| Cross-module private fields | **Missing** | No `li-tests` row |
+| Cross-module private **fields** | **Done** | `leak_imported_vault.li` compile_fail |
 
 **Honest label:** **2g = records + field privacy**, not full OOP. This plan is **2j**.
 

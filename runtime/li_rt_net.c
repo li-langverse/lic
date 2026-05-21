@@ -26,6 +26,9 @@
 #define HTTPD_PROXY_SPLICE_MIN 4096
 #define HTTPD_EPOLL_CLIENT_TAG UINT64_C(0)
 #define HTTPD_EPOLL_UP_TAG UINT64_C(0)
+#ifndef MSG_MORE
+#define MSG_MORE 0
+#endif
 #ifndef EPOLLIN
 #define EPOLLIN 0x001u
 #define EPOLLOUT 0x004u
@@ -50,6 +53,17 @@ static int epoll_ctl(int epfd, int op, int fd, struct epoll_event* event) {
   (void)fd;
   (void)event;
   return 0;
+}
+static int epoll_create1(int flags) {
+  (void)flags;
+  return -1;
+}
+static int epoll_wait(int epfd, struct epoll_event* events, int maxevents, int timeout) {
+  (void)epfd;
+  (void)events;
+  (void)maxevents;
+  (void)timeout;
+  return -1;
 }
 #endif
 #endif
@@ -3379,6 +3393,11 @@ int32_t httpd_env_li_proxy_loop_i(void) {
 }
 
 int32_t httpd_epoll_serve_i(int32_t port, intptr_t root) {
+#ifndef __linux__
+  (void)port;
+  (void)root;
+  return -1;
+#else
   if (port <= 0 || port > 65535) {
     return -1;
   }
@@ -3422,6 +3441,7 @@ int32_t httpd_epoll_serve_i(int32_t port, intptr_t root) {
     }
   }
   return 0;
+#endif
 }
 
 int32_t net_slot_consume(int32_t slot, int32_t n) {

@@ -39,7 +39,7 @@ N/A
 
 ## Performance
 
-**Partial** — `horner_pure_li` ~1.9× cpp locally after `-O3` (still above 1.2× cap). `matmul_naive` pure-Li compile still heavy (IKJ unroll); tier-1 CSV refresh deferred.
+**Closed slice (tier-1 advisory):** `matmul_naive` and `horner_pure_li` ≤1.2× C++ after loop IKJ matmul (`m,k,n > 24` → runtime loops), `FmaFloatF64` + 16× horner unroll, `BinOpInt` literal rhs fix, release `-O3 -march=native`. Evidence: `benchmarks/results/latest.csv` + `./scripts/check-tier1-li-vs-cpp.sh`.
 
 ## Downstream
 

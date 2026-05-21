@@ -8,6 +8,7 @@ All notable changes to Li are documented here. The format follows
 
 ### Added
 
+- **PH-7e:** Loop-based `ArrayMatMul2DF64` (large tiles); `FmaFloatF64` + 16× horner while unroll; tier-1 `matmul_naive` / `horner_pure_li` ≤1.2× C++ (`check-tier1-li-vs-cpp.sh`).
 - **G-lean default:** `lic build` runs lake + AutoVC typecheck when `lake` is installed (`LI_BUILD_VERIFY_LEAN=0` to skip); see `docs/release-notes/2026-05-21-glean-default-lean-2i-7e.md`.
 - **2i:** `linalg_mat2_at2_float_closed.li` — full 2×2 `@` as `Li.Discharge.mat2_at2_float_spec`; loop-dot emits real Lean `Prop`.
 - **2i-b / 7e / 2f slice:** prelude `axpy`, array `**`, reductions; `dot()` VC witness; 2D matrix **CallProc**; `linalg_mat2_callproc_float_closed`; `lic build --strict-lean`; IKJ matmul + release `-ffp-contract=fast`; see `docs/release-notes/2026-05-21-2i-7e-2f-math-surface.md`.

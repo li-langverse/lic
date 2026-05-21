@@ -330,6 +330,46 @@ bool is_arith_binop(BinOp op) {
          op == BinOp::Mod || op == BinOp::FloorDiv || op == BinOp::Pow;
 }
 
+bool try_emit_fma_float_assign(const Expr& e, const std::string& dest,
+                               std::vector<MirInsn>& out) {
+  if (e.kind != Expr::Kind::BinOp || e.bin_op != BinOp::Add || !e.lhs || !e.rhs) {
+    return false;
+  }
+  double addend = 0.0;
+  if (e.rhs->kind == Expr::Kind::FloatLit) {
+    addend = e.rhs->float_value;
+  } else if (e.rhs->kind == Expr::Kind::IntLit) {
+    addend = static_cast<double>(e.rhs->int_value);
+  } else {
+    return false;
+  }
+  const Expr& mul = *e.lhs;
+  if (mul.kind != Expr::Kind::BinOp || mul.bin_op != BinOp::Mul || !mul.lhs || !mul.rhs) {
+    return false;
+  }
+  std::string acc;
+  std::string factor;
+  if (mul.lhs->kind == Expr::Kind::Ident && mul.lhs->ident == dest &&
+      mul.rhs->kind == Expr::Kind::Ident) {
+    acc = dest;
+    factor = mul.rhs->ident;
+  } else if (mul.rhs->kind == Expr::Kind::Ident && mul.rhs->ident == dest &&
+             mul.lhs->kind == Expr::Kind::Ident) {
+    acc = dest;
+    factor = mul.lhs->ident;
+  } else {
+    return false;
+  }
+  MirInsn ins;
+  ins.op = MirOp::FmaFloatF64;
+  ins.ident = dest;
+  ins.lhs_ident = factor;
+  ins.rhs_ident = acc;
+  ins.float_value = addend;
+  out.push_back(std::move(ins));
+  return true;
+}
+
 bool is_array_elementwise_binop(BinOp op) {
   return op == BinOp::Add || op == BinOp::Sub || op == BinOp::Mul || op == BinOp::Div ||
          op == BinOp::Pow;
@@ -1806,6 +1846,10 @@ void lower_stmt(const Stmt& stmt, LowerCtx& ctx, bool returns_float, std::vector
           break;
         }
         const bool flt = float_names.count(stmt.init->ident) > 0;
+        if (flt && stmt.expr->kind == Expr::Kind::BinOp &&
+            try_emit_fma_float_assign(*stmt.expr, stmt.init->ident, out)) {
+          break;
+        }
         MirInsn ins;
         ins.op = flt ? MirOp::StoreFloat : MirOp::StoreInt;
         ins.ident = stmt.init->ident;
@@ -1948,6 +1992,97 @@ void lower_stmt(const Stmt& stmt, LowerCtx& ctx, bool returns_float, std::vector
     case Stmt::Kind::While: {
       if (!stmt.cond) {
         break;
+      }
+      auto parse_i_lt_limit = [](const Expr& cond, std::string& iter,
+                                 std::int64_t& limit) -> bool {
+        if (cond.kind != Expr::Kind::BinOp || cond.bin_op != BinOp::Lt || !cond.lhs ||
+            !cond.rhs) {
+          return false;
+        }
+        if (cond.lhs->kind != Expr::Kind::Ident || cond.rhs->kind != Expr::Kind::IntLit) {
+          return false;
+        }
+        iter = cond.lhs->ident;
+        limit = cond.rhs->int_value;
+        return limit > 0;
+      };
+      auto is_horner_fma_step = [](const Stmt& s, const std::string& acc_name,
+                                   std::string& factor) -> bool {
+        if (s.kind != Stmt::Kind::Assign || !s.init || !s.expr ||
+            s.init->kind != Expr::Kind::Ident || s.init->ident != acc_name) {
+          return false;
+        }
+        if (s.expr->kind != Expr::Kind::BinOp || s.expr->bin_op != BinOp::Add || !s.expr->lhs ||
+            !s.expr->rhs) {
+          return false;
+        }
+        const Expr& mul = *s.expr->lhs;
+        if (mul.kind != Expr::Kind::BinOp || mul.bin_op != BinOp::Mul || !mul.lhs || !mul.rhs) {
+          return false;
+        }
+        if (mul.lhs->kind == Expr::Kind::Ident && mul.lhs->ident == acc_name &&
+            mul.rhs->kind == Expr::Kind::Ident) {
+          factor = mul.rhs->ident;
+          return true;
+        }
+        if (mul.rhs->kind == Expr::Kind::Ident && mul.rhs->ident == acc_name &&
+            mul.lhs->kind == Expr::Kind::Ident) {
+          factor = mul.lhs->ident;
+          return true;
+        }
+        return false;
+      };
+      std::string iter_name;
+      std::int64_t trip = 0;
+      constexpr int kHornerUnroll = 16;
+      if (parse_i_lt_limit(*stmt.cond, iter_name, trip) && trip >= kHornerUnroll &&
+          (trip % kHornerUnroll) == 0 && stmt.while_body.size() == 2) {
+        std::string acc_name;
+        std::string factor;
+        std::string step_factor;
+        bool horner_ok = false;
+        for (const auto& s : stmt.while_body) {
+          if (s.kind == Stmt::Kind::Assign && s.init && s.init->kind == Expr::Kind::Ident &&
+              is_horner_fma_step(s, s.init->ident, step_factor)) {
+            acc_name = s.init->ident;
+            factor = step_factor;
+            horner_ok = true;
+          }
+        }
+        if (horner_ok && float_names.count(acc_name) > 0) {
+          const std::string head_label = fresh_label("while_head_");
+          const std::string exit_label = fresh_label("while_exit_");
+          if (ctx.loop_stack) {
+            ctx.loop_stack->push_back(LoopLabels{head_label, exit_label});
+          }
+          push_label(out, head_label);
+          const std::string cond_tmp =
+              lower_expr_to(*stmt.cond, module, out, float_names, simd_names, i64_locals);
+          push_branch_if_zero(out, cond_tmp, exit_label);
+          for (int u = 0; u < kHornerUnroll; ++u) {
+            MirInsn fma;
+            fma.op = MirOp::FmaFloatF64;
+            fma.ident = acc_name;
+            fma.lhs_ident = factor;
+            fma.rhs_ident = acc_name;
+            fma.float_value = 1.0;
+            out.push_back(std::move(fma));
+          }
+          MirInsn inc;
+          inc.op = MirOp::BinOpInt;
+          inc.ident = iter_name;
+          inc.lhs_ident = iter_name;
+          inc.bin_op = BinOp::Add;
+          inc.rhs_is_literal = true;
+          inc.rhs_int = kHornerUnroll;
+          out.push_back(std::move(inc));
+          push_jump(out, head_label);
+          push_label(out, exit_label);
+          if (ctx.loop_stack) {
+            ctx.loop_stack->pop_back();
+          }
+          break;
+        }
       }
       const std::string head_label = fresh_label("while_head_");
       const std::string exit_label = fresh_label("while_exit_");

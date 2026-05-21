@@ -12,6 +12,8 @@
 #include <llvm/Support/FileSystem.h>
 #include <llvm/Support/raw_ostream.h>
 
+#include <cstdint>
+#include <functional>
 #include <map>
 #include <memory>
 #include <string>
@@ -177,6 +179,110 @@ struct EmitCtx {
           vec, scalar, llvm::ConstantInt::get(i32_ty(context), lane));
     }
     return vec;
+  }
+
+  llvm::Value* matmul_gep2d(llvm::AllocaInst* mat, llvm::Value* row, llvm::Value* col) {
+    llvm::Value* zero = llvm::ConstantInt::get(i32_ty(context), 0);
+    llvm::Value* idx[] = {zero, row, col};
+    return builder->CreateInBoundsGEP(mat->getAllocatedType(), mat, idx);
+  }
+
+  void emit_idx_for(llvm::AllocaInst* iv, llvm::Value* limit,
+                    const std::function<void(llvm::Value*)>& body) {
+    llvm::Type* i32t = i32_ty(context);
+    llvm::BasicBlock* head = llvm::BasicBlock::Create(context, "for_head", func);
+    llvm::BasicBlock* body_bb = llvm::BasicBlock::Create(context, "for_body", func);
+    llvm::BasicBlock* exit_bb = llvm::BasicBlock::Create(context, "for_exit", func);
+    builder->CreateStore(llvm::ConstantInt::get(i32t, 0), iv);
+    builder->CreateBr(head);
+    builder->SetInsertPoint(head);
+    llvm::Value* i = builder->CreateLoad(i32t, iv);
+    llvm::Value* cond = builder->CreateICmpULT(i, limit);
+    builder->CreateCondBr(cond, body_bb, exit_bb);
+    builder->SetInsertPoint(body_bb);
+    body(i);
+    llvm::Value* next = builder->CreateAdd(i, llvm::ConstantInt::get(i32t, 1));
+    builder->CreateStore(next, iv);
+    builder->CreateBr(head);
+    builder->SetInsertPoint(exit_bb);
+  }
+
+  void emit_matmul2d_ijk_loops(llvm::AllocaInst* c_mat, llvm::AllocaInst* a_mat,
+                               llvm::AllocaInst* b_mat, unsigned m, unsigned k,
+                               unsigned n) {
+    llvm::Type* f64 = llvm::Type::getDoubleTy(context);
+    llvm::Type* i32t = i32_ty(context);
+    llvm::Value* lim_m = llvm::ConstantInt::get(i32t, m);
+    llvm::Value* lim_k = llvm::ConstantInt::get(i32t, k);
+    llvm::Value* lim_n = llvm::ConstantInt::get(i32t, n);
+    llvm::Value* zf = llvm::ConstantFP::get(f64, 0.0);
+    llvm::AllocaInst* i_s = builder->CreateAlloca(i32t, nullptr, "mm_i");
+    llvm::AllocaInst* j_s = builder->CreateAlloca(i32t, nullptr, "mm_j");
+    llvm::AllocaInst* t_s = builder->CreateAlloca(i32t, nullptr, "mm_t");
+
+    emit_idx_for(i_s, lim_m, [&](llvm::Value* i) {
+      emit_idx_for(j_s, lim_n, [&](llvm::Value* j) {
+        builder->CreateStore(zf, matmul_gep2d(c_mat, i, j));
+      });
+    });
+
+    llvm::Function* fma_fn = nullptr;
+    if (!fp_numerically_stable) {
+      fma_fn = llvm::Intrinsic::getDeclaration(module, llvm::Intrinsic::fmuladd, {f64});
+    }
+
+    emit_idx_for(i_s, lim_m, [&](llvm::Value* i) {
+      emit_idx_for(t_s, lim_k, [&](llvm::Value* t) {
+        llvm::Value* aik = builder->CreateLoad(f64, matmul_gep2d(a_mat, i, t));
+        emit_idx_for(j_s, lim_n, [&](llvm::Value* j) {
+          llvm::Value* cp = matmul_gep2d(c_mat, i, j);
+          llvm::Value* cv = builder->CreateLoad(f64, cp);
+          llvm::Value* bv = builder->CreateLoad(f64, matmul_gep2d(b_mat, t, j));
+          if (fma_fn != nullptr) {
+            builder->CreateStore(builder->CreateCall(fma_fn, {aik, bv, cv}), cp);
+          } else {
+            builder->CreateStore(builder->CreateFAdd(cv, builder->CreateFMul(aik, bv)), cp);
+          }
+        });
+      });
+    });
+  }
+
+  void emit_matmul2d_ijk_unrolled(llvm::AllocaInst* c_mat, llvm::AllocaInst* a_mat,
+                                  llvm::AllocaInst* b_mat, unsigned m, unsigned k,
+                                  unsigned n) {
+    llvm::Type* f64 = llvm::Type::getDoubleTy(context);
+    llvm::Value* zero = llvm::ConstantInt::get(builder->getInt32Ty(), 0);
+    llvm::Value* zf = llvm::ConstantFP::get(f64, 0.0);
+    for (unsigned i = 0; i < m; ++i) {
+      llvm::Value* ri = llvm::ConstantInt::get(i32_ty(context), i);
+      for (unsigned j = 0; j < n; ++j) {
+        llvm::Value* rj = llvm::ConstantInt::get(i32_ty(context), j);
+        builder->CreateStore(zf, matmul_gep2d(c_mat, ri, rj));
+      }
+    }
+    llvm::Function* fma_fn = nullptr;
+    if (!fp_numerically_stable) {
+      fma_fn = llvm::Intrinsic::getDeclaration(module, llvm::Intrinsic::fmuladd, {f64});
+    }
+    for (unsigned i = 0; i < m; ++i) {
+      llvm::Value* ri = llvm::ConstantInt::get(i32_ty(context), i);
+      for (unsigned t = 0; t < k; ++t) {
+        llvm::Value* rt = llvm::ConstantInt::get(i32_ty(context), t);
+        llvm::Value* av = builder->CreateLoad(f64, matmul_gep2d(a_mat, ri, rt));
+        for (unsigned j = 0; j < n; ++j) {
+          llvm::Value* rj = llvm::ConstantInt::get(i32_ty(context), j);
+          llvm::Value* cp = matmul_gep2d(c_mat, ri, rj);
+          llvm::Value* cv = builder->CreateLoad(f64, cp);
+          llvm::Value* bv = builder->CreateLoad(f64, matmul_gep2d(b_mat, rt, rj));
+          if (fma_fn != nullptr) {
+            builder->CreateStore(builder->CreateCall(fma_fn, {av, bv, cv}), cp);
+          } else {
+            builder->CreateStore(builder->CreateFAdd(cv, builder->CreateFMul(av, bv)), cp);
+          }
+        }
+      }
+    }
   }
 
   void scatter_array_f64x4(llvm::AllocaInst* alloca, unsigned start, llvm::Value* vec) {
@@ -506,10 +612,23 @@ struct EmitCtx {
         return true;
       }
       case MirOp::BinOpInt: {
-        llvm::Value* lhs = load_int(ins.lhs_ident);
-        llvm::Value* rhs = load_int(ins.rhs_ident);
+        llvm::Value* lhs = ins.lhs_is_literal ? int32_val(*builder, context, ins.lhs_int)
+                                              : load_int(ins.lhs_ident);
+        llvm::Value* rhs = ins.rhs_is_literal ? int32_val(*builder, context, ins.rhs_int)
+                                              : load_int(ins.rhs_ident);
         llvm::Value* result = emit_binop(ins.bin_op, lhs, rhs);
         builder->CreateStore(result, ensure_int_local(ins.ident));
+        return true;
+      }
+      case MirOp::FmaFloatF64: {
+        llvm::Type* f64 = llvm::Type::getDoubleTy(context);
+        llvm::Value* factor = load_float(ins.lhs_ident);
+        llvm::Value* acc = load_float(ins.rhs_ident);
+        llvm::Value* addend = llvm::ConstantFP::get(f64, ins.float_value);
+        llvm::Function* fma_fn =
+            llvm::Intrinsic::getDeclaration(module, llvm::Intrinsic::fmuladd, {f64});
+        llvm::Value* result = builder->CreateCall(fma_fn, {factor, acc, addend});
+        builder->CreateStore(result, ensure_float_local(ins.ident));
         return true;
       }
       case MirOp::BinOpFloat: {
@@ -969,45 +1088,18 @@ struct EmitCtx {
         if (c_it == arrays.end() || a_it == arrays.end() || b_it == arrays.end()) {
           return true;
         }
-        llvm::Type* f64 = llvm::Type::getDoubleTy(context);
         const unsigned m = static_cast<unsigned>(ins.int_value);
         const unsigned k = static_cast<unsigned>(ins.rhs_int);
         const unsigned n = static_cast<unsigned>(ins.lhs_int);
-        llvm::Value* zero = llvm::ConstantInt::get(builder->getInt32Ty(), 0);
-        llvm::Value* zf = llvm::ConstantFP::get(f64, 0.0);
-        // IKJ (i-k-j): reuse A[i,t] across j — better locality than i-j-k for naive @ lowering.
-        for (unsigned i = 0; i < m; ++i) {
-          llvm::Value* ri = llvm::ConstantInt::get(i32_ty(context), i);
-          for (unsigned j = 0; j < n; ++j) {
-            llvm::Value* rj = llvm::ConstantInt::get(i32_ty(context), j);
-            llvm::Value* c_idx[] = {zero, ri, rj};
-            llvm::Value* cp = builder->CreateInBoundsGEP(
-                c_it->second.alloca->getAllocatedType(), c_it->second.alloca, c_idx);
-            builder->CreateStore(zf, cp);
-          }
-        }
-        for (unsigned i = 0; i < m; ++i) {
-          llvm::Value* ri = llvm::ConstantInt::get(i32_ty(context), i);
-          for (unsigned t = 0; t < k; ++t) {
-            llvm::Value* rt = llvm::ConstantInt::get(i32_ty(context), t);
-            llvm::Value* a_idx[] = {zero, ri, rt};
-            llvm::Value* ap = builder->CreateInBoundsGEP(
-                a_it->second.alloca->getAllocatedType(), a_it->second.alloca, a_idx);
-            llvm::Value* av = builder->CreateLoad(f64, ap);
-            for (unsigned j = 0; j < n; ++j) {
-              llvm::Value* rj = llvm::ConstantInt::get(i32_ty(context), j);
-              llvm::Value* b_idx[] = {zero, rt, rj};
-              llvm::Value* bp = builder->CreateInBoundsGEP(
-                  b_it->second.alloca->getAllocatedType(), b_it->second.alloca, b_idx);
-              llvm::Value* bv = builder->CreateLoad(f64, bp);
-              llvm::Value* c_idx[] = {zero, ri, rj};
-              llvm::Value* cp = builder->CreateInBoundsGEP(
-                  c_it->second.alloca->getAllocatedType(), c_it->second.alloca, c_idx);
-              llvm::Value* cv = builder->CreateLoad(f64, cp);
-              llvm::Value* prod = builder->CreateFMul(av, bv);
-              builder->CreateStore(builder->CreateFAdd(cv, prod), cp);
-            }
-          }
+        constexpr unsigned kUnrollMax = 24;
+        const bool use_loops = m > kUnrollMax || k > kUnrollMax || n > kUnrollMax ||
+                               static_cast<std::uint64_t>(m) * k * n > 4096;
+        if (use_loops) {
+          emit_matmul2d_ijk_loops(c_it->second.alloca, a_it->second.alloca, b_it->second.alloca,
+                                  m, k, n);
+        } else {
+          emit_matmul2d_ijk_unrolled(c_it->second.alloca, a_it->second.alloca,
+                                     b_it->second.alloca, m, k, n);
         }
         return true;
       }
@@ -1234,10 +1326,15 @@ bool emit_llvm_ir(const MirModule& mir, const std::string& out_path, std::string
 
     llvm::BasicBlock* entry = llvm::BasicBlock::Create(context, "entry", func);
     llvm::IRBuilder<> builder(entry);
-    llvm::FastMathFlags saved_fmf;
+    llvm::FastMathFlags saved_fmf = builder.getFastMathFlags();
     if (mir.fp_numerically_stable) {
-      saved_fmf = builder.getFastMathFlags();
       builder.setFastMathFlags(llvm::FastMathFlags());
+    } else {
+      llvm::FastMathFlags fmf;
+      fmf.setFast();
+      fmf.setAllowContract(true);
+      fmf.setAllowReassoc(true);
+      builder.setFastMathFlags(fmf);
     }
 
     EmitCtx ctx{context,
@@ -1309,9 +1406,7 @@ bool emit_llvm_ir(const MirModule& mir, const std::string& out_path, std::string
     for (const auto& ins : fn.body) {
       ctx.emit_insn(ins);
     }
-    if (mir.fp_numerically_stable) {
-      builder.setFastMathFlags(saved_fmf);
-    }
+    builder.setFastMathFlags(saved_fmf);
   }
 
   if (user_main && user_main_argv_wrapper) {

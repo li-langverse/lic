@@ -48,6 +48,8 @@ enum class MirOp {
   LoadIntToIdent,
   BinOpInt,
   BinOpFloat,
+  /** `ident = lhs_ident * rhs_ident + float_value` (LLVM fmuladd) — horner / FMA chains */
+  FmaFloatF64,
   LocalAllocFloat,
   LocalAllocSimdF64,
   SimdSplatF64,

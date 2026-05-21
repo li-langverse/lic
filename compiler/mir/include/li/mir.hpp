@@ -97,6 +97,7 @@ struct MirInsn {
   std::string label;
   BinOp bin_op = BinOp::Add;
   bool ret_is_float = false;
+  bool ret_is_i64 = false;
   bool index_is_literal = true;
   std::string index_ident;
   bool use_loaded_int = false;
@@ -124,6 +125,8 @@ struct MirDecorator {
 struct MirFn {
   std::string name;
   bool returns_float = false;
+  /** When true, LLVM return type is i8* (ptr / int64 ABI). */
+  bool returns_i64 = false;
   bool returns_void = false;
   /** When true, LLVM return type is a struct; `return_object_layout` lists leaf fields. */
   bool returns_object = false;

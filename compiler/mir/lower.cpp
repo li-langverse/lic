@@ -2197,7 +2197,8 @@ MirModule lower_to_mir(const Module& module) {
     if (proc.ret_type) {
       fn.returns_float = is_float_type_name(proc.ret_type->name);
       fn.returns_i64 = mir_ptr_param_type_name(proc.ret_type->name) ||
-                        is_i64_type_name(proc.ret_type->name);
+                        is_i64_type_name(proc.ret_type->name) ||
+                        proc.ret_type->name == "StringView";
       fn.returns_void = proc.ret_type->name == "unit";
       if (object_alias_for_named_type(module, *proc.ret_type)) {
         fn.returns_object = true;

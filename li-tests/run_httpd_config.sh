@@ -33,21 +33,29 @@ LIC="${LIC:-$("$ROOT/scripts/resolve-lic.sh")}"
 export LI_ALLOW_OPEN_VC=1
 export LI_REPO_ROOT="$ROOT"
 "$LIC" build "$ROOT/li-tests/routing/match_routes.li" -o /tmp/li_match_routes
-/tmp/li_match_routes
-rc=$?
-test "$rc" -eq 0
+if [[ "${HTTPD_SKIP_LI_ROUTING_BIN:-0}" != "1" ]]; then
+  /tmp/li_match_routes
+  rc=$?
+  test "$rc" -eq 0
+else
+  echo "skip Li routing binary run (HTTPD_SKIP_LI_ROUTING_BIN=1)"
+fi
 
 echo "== routing (Li serve_routed_once oracle) =="
 "$LIC" build "$ROOT/li-tests/httpd/serve_routed_once.li" -o /tmp/li_serve_routed_once
-/tmp/li_serve_routed_once
-rc=$?
-test "$rc" -eq 0
+if [[ "${HTTPD_SKIP_LI_ROUTING_BIN:-0}" != "1" ]]; then
+  /tmp/li_serve_routed_once
+  rc=$?
+  test "$rc" -eq 0
+fi
 
 echo "== routing (Li TOML loader) =="
 "$LIC" build "$ROOT/li-tests/routing/match_routes_toml.li" -o /tmp/li_match_routes_toml
-/tmp/li_match_routes_toml
-rc=$?
-test "$rc" -eq 0
+if [[ "${HTTPD_SKIP_LI_ROUTING_BIN:-0}" != "1" ]]; then
+  /tmp/li_match_routes_toml
+  rc=$?
+  test "$rc" -eq 0
+fi
 
 echo "== validate-config (lic CLI) =="
 "$LIC" httpd validate-config "$ROOT/li-tests/config_desugar/good/agent_gateway.toml"

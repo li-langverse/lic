@@ -36,6 +36,7 @@
 | `linalg_dot4_int_loop_open.li` | Loop dot — real `Prop`, not static witness | **Intentionally open** — `verify_open_ok` |
 | `linalg_norm4_int_closed.li` | Int norm (sum of squares) | Fully discharged |
 | `linalg_axpy4_int_closed.li` | Scalar axpy `alpha*x+y` | Fully discharged |
+| `linalg_dot4_float_closed.li` | Float dot via prelude | Fully discharged |
 
 **Tooling entrypoints:**
 

@@ -36,6 +36,7 @@ int usage() {
             << "  lic diagnose <file>    agent-oriented JSON diagnostics\n"
             << "  lic verify <file>      VC summary; --lean runs semantics; --strict-lean fails open VCs\n"
             << "  lic build <file> -o <out> [--release] [--numerically-stable]\n"
+            << "                       [--strict-lean]  AutoVC + lake semantics when installed\n"
             << "                       [--threads=N] [--jobs=N] [--max-memory=MB]\n"
             << "                       [--coverage-instrument]\n"
             << "  lic smoke-llvm         verify LLVM can emit main returning 0\n"
@@ -457,6 +458,7 @@ int main(int argc, char** argv) {
     const char* output = li::null_output_path();
     li::CompileOptions opts;
     bool coverage = false;
+    bool strict_lean = false;
     std::string extra_flags;
     if (const char* env_stable = std::getenv("LI_FP_NUMERICALLY_STABLE");
         env_stable && *env_stable && env_stable[0] != '0') {
@@ -472,6 +474,8 @@ int main(int argc, char** argv) {
         opts.fp_numerically_stable = true;
       } else if (arg == "--coverage-instrument") {
         coverage = true;
+      } else if (arg == "--strict-lean") {
+        strict_lean = true;
       } else if (arg.rfind("--threads=", 0) == 0) {
         setenv("LI_OMP_THREADS", std::string(arg.substr(10)).c_str(), 1);
       } else if (apply_resource_flag(arg)) {
@@ -521,11 +525,15 @@ int main(int argc, char** argv) {
         return 1;
       }
     }
+    if (strict_lean) {
+      setenv("LI_BUILD_VERIFY_LEAN", "1", 1);
+      setenv("LI_BUILD_VERIFY_LEAN_STRICT", "1", 1);
+    }
     if (const int lean_rc = run_lean_verify_after_build(); lean_rc != 0) {
       return lean_rc;
     }
     if (std::getenv("LI_BUILD_VERIFY_LEAN") != nullptr) {
-      return verify_file(input, true, false);
+      return verify_file(input, true, strict_lean);
     }
     return 0;
   }

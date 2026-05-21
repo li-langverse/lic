@@ -318,6 +318,12 @@ file = "contracts_verify/linalg_axpy4_int_closed.li"
 outcome = "verify_ok"
 note = "P-linalg: axpy scalar closed form (alpha*x+y)"
 
+[[tests]]
+suite = "contracts_verify"
+file = "contracts_verify/linalg_dot4_float_closed.li"
+outcome = "verify_ok"
+note = "P-linalg: float dot via prelude — closed static witness"
+
 # --- borrow ---
 
 [[tests]]

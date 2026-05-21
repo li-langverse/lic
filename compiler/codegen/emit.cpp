@@ -972,27 +972,38 @@ struct EmitCtx {
         const unsigned n = static_cast<unsigned>(ins.lhs_int);
         llvm::Value* zero = llvm::ConstantInt::get(builder->getInt32Ty(), 0);
         llvm::Value* zf = llvm::ConstantFP::get(f64, 0.0);
+        // IKJ (i-k-j): reuse A[i,t] across j — better locality than i-j-k for naive @ lowering.
         for (unsigned i = 0; i < m; ++i) {
           llvm::Value* ri = llvm::ConstantInt::get(i32_ty(context), i);
           for (unsigned j = 0; j < n; ++j) {
             llvm::Value* rj = llvm::ConstantInt::get(i32_ty(context), j);
-            llvm::Value* sum = zf;
-            for (unsigned t = 0; t < k; ++t) {
-              llvm::Value* rt = llvm::ConstantInt::get(i32_ty(context), t);
-              llvm::Value* a_idx[] = {zero, ri, rt};
-              llvm::Value* ap = builder->CreateInBoundsGEP(
-                  a_it->second.alloca->getAllocatedType(), a_it->second.alloca, a_idx);
-              llvm::Value* av = builder->CreateLoad(f64, ap);
+            llvm::Value* c_idx[] = {zero, ri, rj};
+            llvm::Value* cp = builder->CreateInBoundsGEP(
+                c_it->second.alloca->getAllocatedType(), c_it->second.alloca, c_idx);
+            builder->CreateStore(zf, cp);
+          }
+        }
+        for (unsigned i = 0; i < m; ++i) {
+          llvm::Value* ri = llvm::ConstantInt::get(i32_ty(context), i);
+          for (unsigned t = 0; t < k; ++t) {
+            llvm::Value* rt = llvm::ConstantInt::get(i32_ty(context), t);
+            llvm::Value* a_idx[] = {zero, ri, rt};
+            llvm::Value* ap = builder->CreateInBoundsGEP(
+                a_it->second.alloca->getAllocatedType(), a_it->second.alloca, a_idx);
+            llvm::Value* av = builder->CreateLoad(f64, ap);
+            for (unsigned j = 0; j < n; ++j) {
+              llvm::Value* rj = llvm::ConstantInt::get(i32_ty(context), j);
               llvm::Value* b_idx[] = {zero, rt, rj};
               llvm::Value* bp = builder->CreateInBoundsGEP(
                   b_it->second.alloca->getAllocatedType(), b_it->second.alloca, b_idx);
               llvm::Value* bv = builder->CreateLoad(f64, bp);
-              sum = builder->CreateFAdd(sum, builder->CreateFMul(av, bv));
+              llvm::Value* c_idx[] = {zero, ri, rj};
+              llvm::Value* cp = builder->CreateInBoundsGEP(
+                  c_it->second.alloca->getAllocatedType(), c_it->second.alloca, c_idx);
+              llvm::Value* cv = builder->CreateLoad(f64, cp);
+              llvm::Value* prod = builder->CreateFMul(av, bv);
+              builder->CreateStore(builder->CreateFAdd(cv, prod), cp);
             }
-            llvm::Value* c_idx[] = {zero, ri, rj};
-            llvm::Value* cp = builder->CreateInBoundsGEP(
-                c_it->second.alloca->getAllocatedType(), c_it->second.alloca, c_idx);
-            builder->CreateStore(sum, cp);
           }
         }
         return true;

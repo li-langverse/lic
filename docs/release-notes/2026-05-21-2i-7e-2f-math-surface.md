@@ -2,7 +2,7 @@
 
 ## Summary
 
-Closes the **2i-b** math surface slice (prelude `axpy`, same-length `**`, scalar×float-array, `math_linalg/reductions/`), grows **P-linalg** with `linalg_axpy4_int_closed`, and adds **`check-tier1-li-vs-cpp.sh`** to report tier-1 pure-Li vs C++ gaps (strict ≤1.2× optional).
+Closes the **2i-b** math surface slice (prelude `axpy`, same-length `**`, scalar×float-array, `math_linalg/reductions/`), grows **P-linalg** (`linalg_axpy4_int_closed`, `linalg_dot4_float_closed`), adds **`lic build --strict-lean`** (G-lean tier B), IKJ **`ArrayMatMul2DF64`** codegen, and **`check-tier1-li-vs-cpp.sh`** for tier-1 gaps.
 
 ## Agent continuation
 
@@ -16,14 +16,15 @@ Closes the **2i-b** math surface slice (prelude `axpy`, same-length `**`, scalar
 | Area | Paths / evidence |
 |------|------------------|
 | **2i-b** | `compiler/mir/lower.cpp` (`ArrayScaleF64`, `ArrayAxpyF64`, `**` in `ArrayBinOpF64`); `compiler/types/typecheck.cpp`, `prelude.cpp`; `li-tests/math_linalg/{elementwise_pow_float4,scale_float4,axpy_float4}.li`, `reductions/*.li` |
-| **2f** | `li-tests/contracts_verify/linalg_axpy4_int_closed.li`; `discharge_linalg_int_lean.sh` |
-| **7e** | `scripts/check-tier1-li-vs-cpp.sh`, `li-tests/tooling/tier1_li_vs_cpp.sh`; wired in `check-master-plan-gates.sh` (advisory) |
+| **2f** | `linalg_axpy4_int_closed`, `linalg_dot4_float_closed`; `lic build --strict-lean`; `glean_strict_build_smoke.sh` |
+| **7e** | IKJ matmul in `emit.cpp`; `check-tier1-li-vs-cpp.sh` (advisory; strict env for CI fail) |
 | **Docs** | `provability-gaps.md`, master plan, `proof-corpus-roadmap.md`, math-linalg plan |
 
 ## Not changed
 
-- No default **`lic build`** Lean kernel failure on open Props (**G-lean**).
-- No float `vec3_dot` / 2D matmul **CallProc** proof specimens.
+- **G-lean** default kernel gate still off (use `--strict-lean` when lake is installed).
+- 2D float **CallProc** `@` still broken at LLVM link (specimen removed; **G-math** open).
+- `horner_pure_li` tier-1 gap unchanged (scalar Horner loop).
 - No `@parallel` MIR elaboration (**G-dec**).
 - No org **benchmarks** catalog ingest (lic-local tier-1 CSV only).
 
@@ -37,7 +38,7 @@ N/A — no trusted surface or CVE rows.
 
 ## Performance
 
-Advisory tier-1 reporter only; does not change codegen. Known gaps vs C++ remain until PH-7e lowering work (see script output).
+`ArrayMatMul2DF64` uses IKJ accumulation (expected `matmul_naive` speedup; re-run `bench.py --tier 1` to refresh CSV). `horner_pure_li` still open. Tier-1 reporter unchanged (advisory by default).
 
 ## Downstream
 

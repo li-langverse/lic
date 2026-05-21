@@ -47,8 +47,15 @@ chmod +x "$ROOT/scripts/ci-security.sh"
 li_phase "httpd config + routing (M1 prep)"
 chmod +x "$ROOT/li-tests/run_httpd_config.sh" \
   "$ROOT/scripts/li-httpd-explain-config.sh" \
-  "$ROOT/scripts/check-httpd-explain-config.sh"
+  "$ROOT/scripts/check-httpd-explain-config.sh" \
+  "$ROOT/scripts/lic-validate-httpd-config.sh" \
+  "$ROOT/scripts/flatten-httpd-config.py" \
+  "$ROOT/scripts/validate-httpd-config.py"
 "$ROOT/li-tests/run_httpd_config.sh"
+if [[ -x "$ROOT/build/li-httpd" ]]; then
+  chmod +x "$ROOT/scripts/test-auth-bearer.sh"
+  "$ROOT/scripts/test-auth-bearer.sh"
+fi
 
 li_phase "E2E li-tests (full manifest)"
 "$ROOT/li-tests/run_all.sh"

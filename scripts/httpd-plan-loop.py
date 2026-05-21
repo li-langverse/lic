@@ -1,0 +1,273 @@
+#!/usr/bin/env python3
+"""Autonomous loop: drive li-httpd master plan until todos complete or max iterations.
+
+Uses li-cursor-agents + Cursor SDK (local) when CURSOR_API_KEY is set; otherwise
+prints the next instruction for a human/Cloud Agent session.
+
+Usage:
+  export CURSOR_API_KEY=cursor_...
+  export LI_CURSOR_AGENTS_ROOT=/path/to/li-cursor-agents
+  export BENCHMARKS_ROOT=/path/to/benchmarks   # optional, for preflight
+  ./scripts/httpd-plan-loop.py --once          # single iteration
+  ./scripts/httpd-plan-loop.py --max 50        # up to 50 agent runs
+  ./scripts/httpd-plan-loop.py --dry-run         # pick todo + print prompt only
+
+State: data/httpd-plan-loop/state.json
+Logs:  data/httpd-plan-loop/iter-*.log
+"""
+from __future__ import annotations
+
+import argparse
+import json
+import os
+import re
+import subprocess
+import sys
+from datetime import datetime, timezone
+from pathlib import Path
+
+ROOT = Path(__file__).resolve().parents[1]
+PLAN = ROOT / "docs/superpowers/plans/2026-05-16-li-httpd-plan.md"
+BASELINE = ROOT / "docs/ecosystem/httpd-m1-baseline.md"
+STATE_DIR = ROOT / "data/httpd-plan-loop"
+STATE_FILE = STATE_DIR / "state.json"
+GATES = ROOT / "scripts/httpd-plan-gates.sh"
+
+TODO_RE = re.compile(
+    r"^\s+-\s+id:\s+(\S+)\s*\n"
+    r"(?:\s+content:\s+\"([^\"]+)\"|\s+content:\s+(.+?))\s*\n"
+    r"\s+status:\s+(\w+)\s*$",
+    re.MULTILINE,
+)
+
+
+def load_plan_todos() -> list[dict]:
+    text = PLAN.read_text(encoding="utf-8")
+    m = re.search(r"^todos:\s*\n(.*)^---\s*$", text, re.MULTILINE | re.DOTALL)
+    block = m.group(1) if m else ""
+    todos: list[dict] = []
+    for match in re.finditer(
+        r"- id: (\S+)\n\s+content: \"?([^\"\n]+)\"?\n\s+status: (\w+)",
+        block,
+    ):
+        todos.append(
+            {"id": match.group(1), "content": match.group(2).strip(), "status": match.group(3)}
+        )
+    return todos
+
+
+def pick_next(todos: list[dict], state: dict) -> dict | None:
+    completed = set(state.get("completed_ids", []))
+
+    def order_key(t: dict) -> tuple[int, int, str]:
+        # Prefer M1 httpd todos over language-wide blockers (w0/w1).
+        m1 = 0 if t["id"].startswith("m1") else 1
+        status_rank = 0 if t["status"] == "in_progress" else 1
+        return (status_rank, m1, t["id"])
+
+    open_todos = [
+        t
+        for t in todos
+        if t["status"] in ("in_progress", "pending") and t["id"] not in completed
+    ]
+    if not open_todos:
+        return None
+    open_todos.sort(key=order_key)
+    return open_todos[0]
+
+
+def run_gates() -> tuple[bool, str]:
+    if not GATES.is_file():
+        return False, f"missing gates script: {GATES}"
+    env = {**os.environ, "LI_REPO_ROOT": str(ROOT)}
+    proc = subprocess.run(
+        ["bash", str(GATES)],
+        cwd=ROOT,
+        env=env,
+        capture_output=True,
+        text=True,
+    )
+    out = (proc.stdout or "") + (proc.stderr or "")
+    return proc.returncode == 0, out[-8000:]
+
+
+def agents_root() -> Path | None:
+    for candidate in [
+        os.environ.get("LI_CURSOR_AGENTS_ROOT"),
+        ROOT.parent / "li-cursor-agents",
+        Path("/workspace/li-cursor-agents"),
+    ]:
+        if not candidate:
+            continue
+        p = Path(candidate)
+        if (p / "package.json").is_file():
+            return p
+    return None
+
+
+def run_cursor_agent(todo: dict, dry_run: bool) -> tuple[int, str]:
+    root = agents_root()
+    if not root:
+        return 2, "li-cursor-agents not found (clone next to lic or set LI_CURSOR_AGENTS_ROOT)"
+
+    instruction = build_instruction(todo)
+    if dry_run:
+        return 0, instruction
+
+    if not os.environ.get("CURSOR_API_KEY") and not os.environ.get("CURSOR_SDK_KEY"):
+        return 2, "CURSOR_API_KEY not set — export key or use Cloud Agent with pasted instruction"
+
+    dist = root / "dist/cli/run-agent.js"
+    if not dist.is_file():
+        subprocess.run(["npm", "ci"], cwd=root, check=False)
+        subprocess.run(["npm", "run", "build"], cwd=root, check=True)
+
+    benchmarks = os.environ.get("BENCHMARKS_ROOT")
+    if benchmarks and not Path(benchmarks, "scripts/agent-briefing.py").is_file():
+        benchmarks = None
+    if not benchmarks:
+        for c in [ROOT.parent / "benchmarks", Path("/workspace")]:
+            if (c / "scripts/agent-briefing.py").is_file():
+                benchmarks = str(c)
+                break
+
+    env = {
+        **os.environ,
+        "LI_REPO_WORKFLOW_REPO": "lic",
+        "LIC_ROOT": str(ROOT),
+        "LI_AGENT_EXTRA_INSTRUCTION": instruction,
+    }
+    cmd = ["node", str(dist), "--agent", "httpd_implementer", "--cwd", str(ROOT)]
+    if benchmarks:
+        cmd.extend(["--benchmarks", benchmarks])
+
+    STATE_DIR.mkdir(parents=True, exist_ok=True)
+    log_path = STATE_DIR / f"iter-{datetime.now(timezone.utc).strftime('%Y%m%d-%H%M%S')}.log"
+    proc = subprocess.run(cmd, cwd=root, env=env, capture_output=True, text=True)
+    log_path.write_text(
+        (proc.stdout or "") + "\n--- stderr ---\n" + (proc.stderr or ""),
+        encoding="utf-8",
+    )
+    tail = (proc.stdout or "")[-4000:] + (proc.stderr or "")[-2000:]
+    return proc.returncode, f"log={log_path}\n{tail}"
+
+
+def build_instruction(todo: dict) -> str:
+    baseline = ""
+    if BASELINE.is_file():
+        baseline = BASELINE.read_text(encoding="utf-8")[:6000]
+    return f"""# httpd plan iteration — todo `{todo['id']}`
+
+**Plan:** `{PLAN.relative_to(ROOT)}`
+**Status in plan frontmatter:** update to `completed` when this todo is fully done.
+
+## Current todo
+- **id:** {todo['id']}
+- **content:** {todo['content']}
+
+## Rules (mandatory)
+1. Work only in **lic** on branch `cursor/httpd-plan-loop-54aa` (or continue existing httpd PR branch).
+2. PR-only: commit, push, open/update PR — do **not** merge to main yourself.
+3. Run `./scripts/httpd-plan-gates.sh` before finishing; fix failures.
+4. Write release notes (`docs/release-notes/`, `CHANGELOG.md`) per li-release-notes policy.
+5. After tier-5 httpd runtime changes, refresh HTTP bench matrix per `.cursor/rules/li-httpd-bench-matrix.mdc`.
+6. Close stale httpd PRs (#87, #84, #130) only with comment — do not merge wholesale.
+
+## Baseline record
+{baseline}
+
+## Deliverable
+- Implement the todo slice with tests.
+- Update plan YAML todo status for `{todo['id']}` when done.
+- PR URL + test commands in final summary.
+"""
+
+
+def load_state() -> dict:
+    if STATE_FILE.is_file():
+        return json.loads(STATE_FILE.read_text(encoding="utf-8"))
+    return {"completed_ids": [], "iterations": 0, "history": []}
+
+
+def save_state(state: dict) -> None:
+    STATE_DIR.mkdir(parents=True, exist_ok=True)
+    STATE_FILE.write_text(json.dumps(state, indent=2) + "\n", encoding="utf-8")
+
+
+def main() -> int:
+    parser = argparse.ArgumentParser(description="Autonomous li-httpd plan loop")
+    parser.add_argument("--max", type=int, default=0, help="Max agent iterations (0 = until done)")
+    parser.add_argument("--once", action="store_true", help="Single iteration")
+    parser.add_argument("--dry-run", action="store_true", help="No SDK call; print instruction only")
+    parser.add_argument("--skip-agent", action="store_true", help="Only run gates")
+    parser.add_argument("--mark-done", metavar="ID", help="Record todo id completed in state")
+    args = parser.parse_args()
+
+    if args.mark_done:
+        state = load_state()
+        if args.mark_done not in state.setdefault("completed_ids", []):
+            state["completed_ids"].append(args.mark_done)
+        save_state(state)
+        print(f"marked done: {args.mark_done}")
+        return 0
+
+    if not PLAN.is_file():
+        print(f"error: plan missing: {PLAN}", file=sys.stderr)
+        return 1
+
+    todos = load_plan_todos()
+    state = load_state()
+    pending = [t for t in todos if t["status"] in ("pending", "in_progress")]
+    done_count = len([t for t in todos if t["status"] == "completed"])
+    print(f"plan todos: {len(todos)} total, {done_count} completed in plan, {len(pending)} open")
+
+    max_iter = 1 if args.once else (args.max or 999)
+    iteration = 0
+    while iteration < max_iter:
+        todo = pick_next(todos, state)
+        if not todo:
+            print("All actionable todos complete (or none in pending/in_progress).")
+            return 0
+
+        print(f"\n=== iteration {iteration + 1}: {todo['id']} ===")
+        print(f"    {todo['content']}")
+
+        ok, gate_out = run_gates()
+        if not ok:
+            print("gates: FAIL (agent should fix first)")
+            print(gate_out[-2000:])
+        else:
+            print("gates: OK")
+
+        if args.skip_agent:
+            return 0 if ok else 1
+
+        code, msg = run_cursor_agent(todo, args.dry_run)
+        print(msg[-3000:] if len(msg) > 3000 else msg)
+        if args.dry_run:
+            return 0
+
+        state["iterations"] = state.get("iterations", 0) + 1
+        state.setdefault("history", []).append(
+            {
+                "at": datetime.now(timezone.utc).isoformat(),
+                "todo_id": todo["id"],
+                "agent_exit": code,
+                "gates_ok": ok,
+            }
+        )
+        save_state(state)
+
+        if code != 0:
+            print(f"agent exit {code} — stopping loop (fix and re-run)", file=sys.stderr)
+            return code
+
+        iteration += 1
+        todos = load_plan_todos()
+
+    print("max iterations reached")
+    return 0
+
+
+if __name__ == "__main__":
+    raise SystemExit(main())

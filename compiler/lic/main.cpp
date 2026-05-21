@@ -47,6 +47,7 @@ int usage() {
             << "  lic smoke-llvm         verify LLVM can emit main returning 0\n"
             << "  lic httpd explain-config <file.toml>  desugar [routes] to canonical form\n"
             << "  lic httpd validate-config <file.toml>  validate [routes] (E0501–E0504)\n"
+            << "  lic validate-httpd-config <file.toml>  M1 TOML schema + overlap (Python)\n"
             << "  lic --version          print version\n"
             << "\n"
             << "resource defaults (override via flags or env):\n"
@@ -114,6 +115,26 @@ int httpd_validate_config(int argc, char** argv) {
   }
   std::cout << "OK: " << li_rt_httpd_route_count() << " routes\n";
   return 0;
+}
+
+int validate_httpd_config_cmd(int argc, char** argv) {
+  if (argc < 3) {
+    std::cerr << "usage: lic validate-httpd-config <config.toml>\n";
+    return 1;
+  }
+  std::filesystem::path repo = std::filesystem::current_path();
+  if (const char* root = std::getenv("LI_REPO_ROOT")) {
+    repo = root;
+  }
+  const std::filesystem::path script = repo / "scripts/validate-httpd-config.py";
+  if (!std::filesystem::is_regular_file(script)) {
+    std::cerr << "validate-httpd-config: missing " << script << " (set LI_REPO_ROOT)\n";
+    return 1;
+  }
+  std::ostringstream cmd;
+  cmd << "python3 " << script.string() << " " << argv[2];
+  const int st = std::system(cmd.str().c_str());
+  return st != 0 ? 1 : 0;
 }
 
 int httpd_explain_config(int argc, char** argv) {
@@ -467,6 +488,9 @@ int main(int argc, char** argv) {
       }
     }
     return verify_file(argv[2], run_lean, strict_lean);
+  }
+  if (cmd == "validate-httpd-config") {
+    return validate_httpd_config_cmd(argc, argv);
   }
   if (cmd == "httpd") {
     if (argc >= 3 && std::string_view(argv[2]) == "validate-config") {

@@ -58,7 +58,7 @@ ui_command_palette_execute(cmd)
 | Phase | Deliverable |
 |-------|-------------|
 | **UX-0** ✅ | Types + smokes + composable gates |
-| **UX-1** ✅ | HTML demo: **hero agent dock** (chat bubbles, plan, Apply/Reject) + ⌘K palette · tokens `#0f1219` / `#8b7cf7` / `#34d399` |
+| **UX-1** ✅ | HTML demo: **hero agent dock** (chat bubbles, plan, Apply/Reject) + ⌘K palette · tokens `#0f1219` / `#2dd4bf` / `#34d399` |
 | **UX-2** | **Li-only native GUI** — [li-native-gui-plan.md](../plans/li-native-gui-plan.md) (iterate there) |
 | **UX-3** | `packages/li-gui` + `world-studio` target + `lic` |
 | **UX-4** | In-game creator UI — [li-gui-schema-rfc.md](li-gui-schema-rfc.md) |

@@ -81,7 +81,7 @@ Visual targets for **Li World Studio** native shell — generated from [unified-
 | `--bg-deep` | `#0f1219` |
 | `--bg-surface` | `#161b26` |
 | `--bg-elevated` | `#1c2233` |
-| `--accent-agent` | `#8b7cf7` |
+| `--accent-agent` | `#2dd4bf` (teal — not violet) |
 | `--accent-workspace` | `#5b9cf5` |
 | `--pass` | `#34d399` |
 | `--fail` | `#f87171` |

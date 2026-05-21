@@ -68,6 +68,7 @@ TIER1_BENCHES: tuple[BenchSpec, ...] = (
         "common/matmul_core.c",
         "li/main.li",
         flops_per_run=2.0 * 256**3,
+        li_pure=True,
     ),
     BenchSpec(
         "matmul_blocked",

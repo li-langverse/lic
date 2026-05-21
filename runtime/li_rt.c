@@ -120,6 +120,11 @@ double li_rt_expm1(double x) {
 
 double li_rt_log1p(double x) { return log1p(x); }
 
+void li_rt_volatile_sink_f64(double v) {
+  volatile double sink = v;
+  (void)sink;
+}
+
 int32_t bytes_len(const char* b) {
   if (b == NULL) {
     return 0;

@@ -521,6 +521,12 @@ file = "runtime/tcp_stub_link.li"
 outcome = "compile_ok"
 note = "li-net tcp_* externs link against runtime/li_rt_net.c"
 
+[[tests]]
+suite = "runtime"
+file = "runtime/argv_ptr_abi.li"
+outcome = "verify_open_ok"
+note = "E0360 guard: extern -> ptr / li_rt_argv_i links; open VC on argv contracts only"
+
 # --- tetris ---
 
 [[tests]]

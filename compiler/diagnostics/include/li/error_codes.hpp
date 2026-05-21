@@ -25,6 +25,7 @@ enum class ErrorCode {
   E0330,  // policy.stdlib_shadow
   E0340,  // policy.forbidden_any
   E0350,  // policy.parallel_overlap
+  E0360,  // codegen.extern_ptr_abi
   E0401,  // control.break_outside_loop
   E0402,  // control.continue_outside_loop
   E0501,  // httpd.config.io

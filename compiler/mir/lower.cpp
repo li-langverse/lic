@@ -1159,6 +1159,7 @@ std::string lower_expr_to(const Expr& e, const Module& module, std::vector<MirIn
                                 callee->ret_type->name == "StringView" ||
                                 callee->ret_type->name == "int64" || callee->ret_type->name == "i64"))) {
           ins.is_i64 = true;
+          ins.ret_is_i64 = true;
           i64_locals.insert(dest);
         } else if (callee && callee->ret_type && is_float_type_name(callee->ret_type->name)) {
           ins.ret_is_float = true;
@@ -1288,6 +1289,9 @@ void lower_return_expr(const Expr& e, const LowerCtx& ctx, bool returns_float,
       ins.op = MirOp::ReturnIdent;
       ins.ident = e.ident;
       ins.ret_is_float = returns_float || float_names.count(e.ident) > 0;
+      ins.ret_is_i64 =
+          i64_locals.count(e.ident) > 0 ||
+          (ctx.proc && ctx.proc->ret_type && is_i64_type_name(ctx.proc->ret_type->name));
     }
   } else if (e.kind == Expr::Kind::Call || e.kind == Expr::Kind::MethodCall ||
              e.kind == Expr::Kind::BinOp || e.kind == Expr::Kind::Index ||
@@ -1301,6 +1305,9 @@ void lower_return_expr(const Expr& e, const LowerCtx& ctx, bool returns_float,
       ins.op = MirOp::ReturnIdent;
       ins.ident = tmp;
       ins.ret_is_float = returns_float || is_float_expr(e, float_names);
+      ins.ret_is_i64 =
+          i64_locals.count(tmp) > 0 ||
+          (ctx.proc && ctx.proc->ret_type && is_i64_type_name(ctx.proc->ret_type->name));
     }
   } else {
     ins.op = MirOp::ReturnVoid;

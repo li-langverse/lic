@@ -109,6 +109,7 @@ struct EmitCtx {
   llvm::IRBuilder<>* builder;
   llvm::Type* ret_ty = nullptr;
   bool returns_float = false;
+  bool returns_i64 = false;
   bool returns_object = false;
   bool fp_numerically_stable = false;
   bool enable_array_simd = true;
@@ -424,6 +425,13 @@ struct EmitCtx {
       case MirOp::ReturnIdent:
         if (ins.ret_is_float || returns_float || float_locals.count(ins.ident) > 0) {
           builder->CreateRet(load_float(ins.ident));
+        } else if (ins.ret_is_i64 || returns_i64 || i64_locals.count(ins.ident) > 0) {
+          llvm::Value* wide = load_i64(ins.ident);
+          if (ret_ty->isPointerTy()) {
+            builder->CreateRet(builder->CreateIntToPtr(wide, ret_ty));
+          } else {
+            builder->CreateRet(wide);
+          }
         } else {
           builder->CreateRet(load_int(ins.ident));
         }
@@ -1140,6 +1148,8 @@ bool emit_llvm_ir(const MirModule& mir, const std::string& out_path, std::string
       ret_ty = llvm::Type::getVoidTy(context);
     } else if (fn.returns_object && !fn.return_object_layout.empty()) {
       ret_ty = llvm_struct_from_layout(context, fn.return_object_layout);
+    } else if (fn.returns_i64) {
+      ret_ty = i8_ptr(context);
     } else {
       ret_ty = llvm_scalar(context, fn.returns_float, false);
     }
@@ -1189,6 +1199,7 @@ bool emit_llvm_ir(const MirModule& mir, const std::string& out_path, std::string
                 &builder,
                 ret_ty,
                 fn.returns_float,
+                fn.returns_i64,
                 fn.returns_object,
                 mir.fp_numerically_stable,
                 !fn.no_vectorize,

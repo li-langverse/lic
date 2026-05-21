@@ -48,6 +48,8 @@ std::string_view error_code_string(ErrorCode code) {
       return "E0340";
     case ErrorCode::E0350:
       return "E0350";
+    case ErrorCode::E0360:
+      return "E0360";
     case ErrorCode::E0401:
       return "E0401";
     case ErrorCode::E0402:

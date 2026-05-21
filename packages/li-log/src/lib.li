@@ -1,0 +1,8 @@
+# M1 stub — access/error log API (implementation in wave 5+).
+
+def log_access_line(method: ptr, path: ptr, status: int, bytes_out: int) -> int
+  # Placeholder: C runtime writes stderr until li-log ships.
+  return 0
+
+def log_error_line(msg: ptr) -> int
+  return 0

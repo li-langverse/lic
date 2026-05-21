@@ -43,7 +43,7 @@ todos:
     status: in_progress
   - id: m1-routing-tests
     content: li-tests/routing/ table cases + overlap config_reject; proved match_route
-    status: in_progress
+    status: completed
   - id: m1-toml-desugar
     content: Simple TOML desugar + config_desugar golden tests + explain-config CLI
     status: completed
@@ -58,7 +58,7 @@ todos:
     status: pending
   - id: li-log-package
     content: "packages/li-log: rotation, RFC3339 timestamps, redact-by-default; li-httpd access/audit/error sinks"
-    status: pending
+    status: in_progress
   - id: m15-tls-auto
     content: "TLS auto: self-signed dev certs on setup; ACME Let's Encrypt obtain+renew; secure TOML modes"
     status: pending
@@ -104,6 +104,7 @@ isProject: false
 | **2** (done) | Loopback reverse proxy + keep-alive pool | `proxy_loopback` in ci | verify + rps vs nginx |
 | **3** (done) | LB RR/least_conn/peer_down, runtime config loader | `lb_round_robin`, `lb_least_conn`, `lb_peer_down` in ci | failover verify row |
 | **4** (done) | Global rate limit 429; runtime routes via `flatten-httpd-config.py`; `explain-httpd-config.py` | `scripts/test-rate-limit-429.sh`; tier5 `rate_limit_429` (benchmarks catalog) | exploit nightly smuggling still M2 prep |
+| **5** (in progress) | Routing table cases + strict overlap reject; `packages/li-log` stub | `rate_limit_429` tier5 verify row; `li-tests/routing/*` | Wire li-log into C hot path; per-route limits |
 
 ---
 

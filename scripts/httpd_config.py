@@ -96,24 +96,32 @@ def routes_overlap(a: CanonicalRoute, b: CanonicalRoute) -> bool:
     if a.path_kind in ("prefix", "prefix_strip") and b.path_kind in ("prefix", "prefix_strip"):
         pa, pb = a.path.rstrip("/"), b.path.rstrip("/")
         return pa == pb or pa.startswith(pb + "/") or pb.startswith(pa + "/")
+    # exact vs prefix on same anchor (e.g. GET /health + GET /health/*)
+    for ex, px in ((a, b), (b, a)):
+        if ex.path_kind == "exact" and px.path_kind in ("prefix", "prefix_strip"):
+            base = px.path.rstrip("/") or "/"
+            ep = ex.path.rstrip("/") or "/"
+            if ep == base or ep.startswith(base + "/"):
+                return True
     return a.path == b.path
 
 
-def validate_routes(routes: list[CanonicalRoute]) -> None:
+def validate_routes(routes: list[CanonicalRoute], *, strict_overlap: bool = False) -> None:
     for i, a in enumerate(routes):
         for b in routes[i + 1 :]:
-            if routes_overlap(a, b) and a.priority != b.priority:
+            if not routes_overlap(a, b):
                 continue
-            if routes_overlap(a, b):
+            if strict_overlap or a.priority == b.priority:
                 raise ConfigError(
-                    f"overlapping routes at same priority: {a.name} vs {b.name}"
+                    f"overlapping routes: {a.name} vs {b.name}"
+                    + ("" if strict_overlap else " (same priority)")
                 )
 
 
-def load_httpd_config(path: Path) -> list[CanonicalRoute]:
+def load_httpd_config(path: Path, *, strict_overlap: bool = False) -> list[CanonicalRoute]:
     data = tomllib.loads(path.read_text(encoding="utf-8"))
     routes = desugar_config(data)
-    validate_routes(routes)
+    validate_routes(routes, strict_overlap=strict_overlap)
     return routes
 
 
@@ -136,10 +144,14 @@ def explain(routes: list[CanonicalRoute]) -> str:
 
 def main() -> int:
     if len(sys.argv) < 2:
-        print("usage: httpd_config.py <config.toml> [--explain]", file=sys.stderr)
+        print(
+            "usage: httpd_config.py <config.toml> [--explain] [--strict-overlap]",
+            file=sys.stderr,
+        )
         return 2
     path = Path(sys.argv[1])
-    routes = load_httpd_config(path)
+    strict = "--strict-overlap" in sys.argv
+    routes = load_httpd_config(path, strict_overlap=strict)
     if "--explain" in sys.argv:
         print(explain(routes), end="")
     else:

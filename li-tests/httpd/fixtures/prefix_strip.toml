@@ -1,0 +1,10 @@
+[server]
+listen = ":8080"
+host = "cdn.example.com"
+
+[limits]
+max_body = "1m"
+
+[routes]
+"GET /assets/**" = "static:cdn"
+"GET /index.html" = "static:root"

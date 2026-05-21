@@ -1,0 +1,9 @@
+[package]
+name = "li-log"
+version = "0.0.1"
+description = "Structured logging for li-httpd (access, audit, error)"
+license = "Apache-2.0"
+maintainer = "li-langverse"
+
+[package.metadata]
+repository = "https://github.com/li-langverse/lic"

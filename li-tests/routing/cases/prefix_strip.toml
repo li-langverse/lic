@@ -1,0 +1,9 @@
+[[case]]
+id = "assets_nested"
+request = { method = "GET", host = "cdn.example.com", path = "/assets/js/app.js" }
+expect = { route = "get_assets_wildwild", action = "static" }
+
+[[case]]
+id = "index"
+request = { method = "GET", host = "cdn.example.com", path = "/index.html" }
+expect = { route = "get_index_html", action = "static" }

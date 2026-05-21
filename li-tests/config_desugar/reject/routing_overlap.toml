@@ -1,0 +1,10 @@
+# Overlapping routes at same priority — must be rejected by httpd_config.py
+[server]
+listen = ":8080"
+
+[limits]
+max_body = "1m"
+
+[routes]
+"GET /health" = "static:healthcheck"
+"GET /health/*" = "proxy:api"

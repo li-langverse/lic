@@ -1,0 +1,9 @@
+[[case]]
+id = "exact_only"
+request = { method = "GET", host = "api.example.com", path = "/health" }
+expect = { route = "get_health", action = "static" }
+
+[[case]]
+id = "prefix_not_exact"
+request = { method = "GET", host = "api.example.com", path = "/health/extra" }
+expect = { status = 404 }

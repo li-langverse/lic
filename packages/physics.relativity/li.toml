@@ -1,0 +1,23 @@
+[package]
+name = "physics.relativity"
+version = "0.1.0"
+edition = "2026"
+license = "Apache-2.0 OR MIT"
+description = "Li package li-physics-relativity"
+
+[dependencies]
+li-physics-core = { path = "../physics.core" }
+li-math = { path = "../math" }
+# registry = "1.0.0"             # lip 8d+
+
+[package.metadata.li]
+github_repo = "physics.relativity"
+import_name = "physics.relativity"
+min_lic = "0.1.0"
+maintainer = "li-langverse"
+pkg_id = "PKG-physics-relativity"
+
+[package.repository]
+url = "https://github.com/li-langverse/physics.relativity"
+documentation = "https://li-langverse.github.io/li-language/ecosystem/physics.relativity/"
+changelog = "https://github.com/li-langverse/physics.relativity/blob/main/CHANGELOG.md"

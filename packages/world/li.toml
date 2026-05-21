@@ -1,0 +1,22 @@
+[package]
+name = "world"
+version = "0.1.0"
+edition = "2026"
+license = "Apache-2.0 OR MIT"
+description = "World snapshots and save/load for Li Engine / World Studio (PH-GD-2)"
+
+[dependencies]
+# path = { path = "../other" }   # lip 8b+
+# registry = "1.0.0"             # lip 8d+
+
+[package.metadata.li]
+github_repo = "world"
+import_name = "world"
+min_lic = "0.1.0"
+maintainer = "li-langverse"
+pkg_id = "PKG-world"
+
+[package.repository]
+url = "https://github.com/li-langverse/world"
+documentation = "https://li-langverse.github.io/li-language/ecosystem/world/"
+changelog = "https://github.com/li-langverse/world/blob/main/CHANGELOG.md"

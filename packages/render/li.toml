@@ -1,0 +1,22 @@
+[package]
+name = "render"
+version = "0.1.0"
+edition = "2026"
+license = "Apache-2.0 OR MIT"
+description = "PBR-lite viewport rendering stub (PH-GD-5)"
+
+[dependencies]
+# path = { path = "../other" }   # lip 8b+
+# registry = "1.0.0"             # lip 8d+
+
+[package.metadata.li]
+github_repo = "render"
+import_name = "render"
+min_lic = "0.1.0"
+maintainer = "li-langverse"
+pkg_id = "PKG-render"
+
+[package.repository]
+url = "https://github.com/li-langverse/render"
+documentation = "https://li-langverse.github.io/li-language/ecosystem/render/"
+changelog = "https://github.com/li-langverse/render/blob/main/CHANGELOG.md"

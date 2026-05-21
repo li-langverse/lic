@@ -1,5 +1,5 @@
 # std/studio — World Studio shell facade (PH-GD).
-# Prefer: import studio  |  workspace packages/li-studio.
+# Prefer: import studio  |  workspace packages/studio.
 
 def studio_std_tag() -> int
   requires true

@@ -30,7 +30,7 @@ Do **not** use `lic` as the home for World Studio product work, UX galleries, or
 | New marketing / preview / `preview.html` pages | **`studio-app`** |
 | App shell, native binary | **`studio-app`** + **`gui`** |
 
-**Package mirrors** (`packages/li-studio`, …) may remain in the monorepo **only** for composable `lic check` integration — do **not** grow new product UI, demos, or deploy trees under `lic/`.
+**Package mirrors** (`packages/studio`, …) may remain in the monorepo **only** for composable `lic check` integration — do **not** grow new product UI, demos, or deploy trees under `lic/`.
 
 ## Agent checklist (before committing)
 

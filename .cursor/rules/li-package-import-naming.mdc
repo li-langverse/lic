@@ -32,9 +32,9 @@ alwaysApply: true
 | **Std slices** | `li-std-*` registry convention | See roadmap official-packages |
 | **Application** (binary, demo, mocks) | Product suffix OK | **`studio-app`** — not imported as `import studio-app` |
 
-## Monorepo (`lic/packages/li-studio`)
+## Monorepo (`lic/packages/studio`)
 
-Paths like `packages/li-studio/` are **integration mirrors** only. When publishing or creating the org repo:
+Paths like `packages/studio/` are **integration mirrors** only. When publishing or creating the org repo:
 
 - Set `import_name` / publish target to **`studio`**
 - Do **not** register new official packages as `li-studio` on lip

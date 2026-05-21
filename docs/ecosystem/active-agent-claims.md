@@ -14,7 +14,7 @@
 |----------|-------|-------------|--------|-------|--------------|
 | `httpd-p0-bench` | lic agent | `benchmarks/harness/bench_ecosystem.py`, `tier3_ecosystem/` | `dev` | Tier-3 CSV for dashboard ingest | `benchmarks/results/*.csv` format |
 | `httpd-p0-async-codegen` | lic agent | `compiler/mir`, `compiler/codegen`, `runtime/li_rt.*` | `dev` | MIR `AsyncAwait`, `li_async_*` reactor stubs | Same paths without coordinating |
-| `httpd-p0-net` | lic agent | `packages/li-net/` | `dev` | Trusted TCP `extern` surface (stable) | `packages/li-net` API changes |
+| `httpd-p0-net` | lic agent | `packages/net/` | `dev` | Trusted TCP `extern` surface (stable) | `packages/net` API changes |
 | `httpd-p0-org` | lic agent | `scripts/push-official-package-repo.sh` | `dev` | **Done** — org mirrors pushed (see table below) | `gh repo delete`, uncoordinated force-push |
 | `httpd-p0-docs` | lic agent | `docs/ecosystem/httpd-prerequisites.md`, this file | `dev` | Status tables for P0 gates | Rewriting httpd plan |
 
@@ -35,10 +35,10 @@ Monorepo path stays source until **lip** publish; org repo is the **public home*
 
 | Package | Org repo | PKG id | Monorepo | Push script |
 |---------|----------|--------|----------|-------------|
-| li-net | `li-langverse/li-net` | `PKG-li-net` | `packages/li-net/` | `./scripts/push-official-package-repo.sh li-net --create` |
+| li-net | `li-langverse/li-net` | `PKG-li-net` | `packages/net/` | `./scripts/push-official-package-repo.sh li-net --create` |
 | li-std-core | `li-langverse/li-std-core` | `PKG-li-std-core` | `packages/li-std-core/` | same pattern |
 | li-std-math | `li-langverse/li-std-math` | `PKG-li-std-math` | `packages/li-std-math/` | same pattern |
-| li-demo | `li-langverse/li-demo` | `PKG-li-demo` | `packages/li-demo/` | template only |
+| li-demo | `li-langverse/li-demo` | `PKG-li-demo` | `packages/demo/` | template only |
 
 **Human:** Add rows to [roadmap `official-packages.md`](https://github.com/li-langverse/roadmap/blob/main/docs/ecosystem/official-packages.md) via PR (agents do not merge governance there).
 

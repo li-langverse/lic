@@ -129,7 +129,7 @@ Follow **[Phase Pkg — package scaffold](2026-05-16-li-package-scaffold.md)** a
 **Standard layout** (scaffold output — same as lip):
 
 ```text
-packages/li-net/
+packages/net/
   li.toml              # lip § A3 (edition, metadata.lip.min_coverage, …)
   li.lock              # lip install (8b+)
   README.md
@@ -884,7 +884,7 @@ allow = ["openai_sk", "pem_private", "jwt_bearer"]   # enum IDs only
 | `include_generated = true` | Merge paths from setup (below) |
 | `profile = production` + `enabled = false` | **Warn** in validate-config; allow if `ack_disable_censor = true` |
 
-Detectors are **built-in enums** in `packages/li-http/leak_detect.li` — not user regex.
+Detectors are **built-in enums** in `packages/http/leak_detect.li` — not user regex.
 
 #### `li-httpd setup-censor` — schema from migrations (server setup)
 
@@ -959,7 +959,7 @@ Explicit marker always generates `$.api_keys[*].token` (and table-qualified vari
 
 **vs nginx:** nginx has no schema-driven scrub; li-httpd generates policy from **your migrations** at setup time.
 
-**Packages:** `packages/li-http/leak_censor.li`, `leak_detect.li`, `packages/li-schema/` (migration parser); tests `li-tests/leak_censor/`, `li-tests/schema_catalog/`, `benchmarks/tier5_http/exploits/leak_*.toml`.
+**Packages:** `packages/http/leak_censor.li`, `leak_detect.li`, `packages/li-schema/` (migration parser); tests `li-tests/leak_censor/`, `li-tests/schema_catalog/`, `benchmarks/tier5_http/exploits/leak_*.toml`.
 
 **CLI:** `li-httpd setup` orchestrates `setup-tls` → **`setup-censor`** → write default `li-httpd.toml` stub with `# include generated censor file`.
 
@@ -2234,7 +2234,7 @@ If Li proof passes but nginx-src audit shows a missing check → **incomplete po
 - `packages/` — workspace above; each subdir has `li.toml`, `src/`, `PUBLISH.md`, `li-tests/` or re-exports tests from root
 - `packages/li-log/` — sinks, rotation, redaction, `raises Log`
 - `packages/li-schema/` — SQL migration + OpenAPI → `SchemaCatalog` for setup-censor
-- `packages/li-httpd/` — binary + CLI (not `examples/` only)
+- `packages/httpd/` — binary + CLI (not `examples/` only)
 - `docs/superpowers/specs/li-log.md`
 - `li-tests/log/` — rotation + redaction goldens
 - `docs/superpowers/specs/li-httpd.md` — minimal architecture, LOC budget, threat model, `li_invariant` list, package dependency graph

@@ -21,10 +21,11 @@ WORKSPACE = PACKAGES / "li.toml"
 
 sys.path.insert(0, str(ROOT / "scripts"))
 from import_repo_names import (  # noqa: E402
-    LEGACY_FOLDER_IMPORT,
     canonical_folder_name,
+    folder_import_map,
     import_name_to_github_repo,
     patch_package_toml,
+    patch_publish_md,
 )
 
 
@@ -60,8 +61,9 @@ def main() -> int:
     if args.apply:
         args.dry_run = False
 
+    fmap = folder_import_map()
     renames: dict[str, str] = {}
-    for folder in LEGACY_FOLDER_IMPORT:
+    for folder in sorted(fmap.keys()):
         target = canonical_folder_name(folder)
         if folder != target and (PACKAGES / folder).is_dir():
             renames[folder] = target
@@ -70,19 +72,25 @@ def main() -> int:
         print("align-package-repo-names: folders already aligned")
     else:
         for old, new in sorted(renames.items()):
-            imp = LEGACY_FOLDER_IMPORT[old]
+            imp = fmap[old]
             print(f"  {old} -> {new}  (import {imp}, github {import_name_to_github_repo(imp)})")
 
-    for folder, imp in LEGACY_FOLDER_IMPORT.items():
+    for folder, imp in sorted(fmap.items()):
         pkg = PACKAGES / folder
-        if not pkg.is_dir() and renames.get(folder):
-            pkg = PACKAGES / renames[folder]
+        if not pkg.is_dir():
+            pkg = PACKAGES / renames.get(folder, folder)
+        if not pkg.is_dir():
+            continue
         toml = pkg / "li.toml"
+        pub = pkg / "PUBLISH.md"
         if toml.is_file():
             if args.dry_run:
                 print(f"  would patch metadata: {toml.relative_to(ROOT)}")
             elif patch_package_toml(toml, imp):
                 print(f"  patched metadata: {toml.relative_to(ROOT)}")
+        if pub.is_file() and not args.dry_run:
+            if patch_publish_md(pub, imp):
+                print(f"  patched PUBLISH: {pub.relative_to(ROOT)}")
 
     if args.metadata_only:
         return 0
@@ -113,7 +121,7 @@ def main() -> int:
             )
             text = replace_path_deps(text, renames)
             toml.write_text(text, encoding="utf-8")
-            patch_package_toml(toml, LEGACY_FOLDER_IMPORT[old])
+            patch_package_toml(toml, fmap[old])
 
     for pkg_dir in PACKAGES.iterdir():
         if not pkg_dir.is_dir():
@@ -136,7 +144,40 @@ def main() -> int:
         WORKSPACE.write_text(new_text, encoding="utf-8")
         print(f"updated {WORKSPACE.relative_to(ROOT)}")
 
+    if renames and args.apply:
+        replace_repo_paths(ROOT, renames)
+
     return 0
+
+
+SKIP_REPLACE_DIRS = {".git", "build", "node_modules", "studio-demo-pkg"}
+
+
+def replace_repo_paths(root: Path, renames: dict[str, str]) -> None:
+    """Rewrite packages/<old>/ paths across the repo after directory renames."""
+    exts = {
+        ".md", ".mdc", ".toml", ".li", ".sh", ".yml", ".yaml", ".json",
+        ".py", ".rs", ".c", ".h", ".txt",
+    }
+    for old, new in sorted(renames.items(), key=lambda x: -len(x[0])):
+        for path in root.rglob("*"):
+            if not path.is_file():
+                continue
+            if any(s in path.parts for s in SKIP_REPLACE_DIRS):
+                continue
+            if path.suffix not in exts and path.name not in ("AGENTS.md", "CHANGELOG.md"):
+                continue
+            try:
+                text = path.read_text(encoding="utf-8")
+            except (UnicodeDecodeError, OSError):
+                continue
+            needle = f"packages/{old}"
+            if needle not in text:
+                continue
+            text = text.replace(needle, f"packages/{new}")
+            text = text.replace(f"packages/{old}/", f"packages/{new}/")
+            path.write_text(text, encoding="utf-8")
+            print(f"  paths: {path.relative_to(root)}")
 
 
 if __name__ == "__main__":

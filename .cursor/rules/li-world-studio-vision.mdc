@@ -3,18 +3,18 @@ description: World Studio + Li Engine — unified sim, UX, agents, AMD, chem, vo
 globs:
   - docs/game-dev/**
   - docs/physics/GAME_DEV.md
-  - packages/li-scene/**
-  - packages/li-ui/**
+  - packages/scene/**
+  - packages/ui/**
   - packages/li-physics-*/
-  - packages/li-physics-custom/**
-  - packages/li-sim/**
-  - packages/li-chem/**
-  - packages/li-bioeng/**
-  - packages/li-sim-drug-design/**
-  - packages/li-mmo/**
-  - packages/li-store-realtime/**
+  - packages/physics.custom/**
+  - packages/sim/**
+  - packages/chem/**
+  - packages/bioeng/**
+  - packages/sim.drug_design/**
+  - packages/mmo/**
+  - packages/store.realtime/**
   - deploy/mmo/**
-  - packages/li-voxel/**
+  - packages/voxel/**
 alwaysApply: false
 ---
 

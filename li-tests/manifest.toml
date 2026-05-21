@@ -441,7 +441,7 @@ expected_substr = "raises Alloc"
 suite = "composable"
 file = "composable/import_httpd_lib.li"
 outcome = "verify_ok"
-note = "imports packages/li-httpd/src/lib.li via workspace li_httpd"
+note = "imports packages/httpd/src/lib.li via workspace li_httpd"
 
 [[tests]]
 suite = "composable"
@@ -1762,43 +1762,43 @@ note = "Vertical demo MMO"
 
 [[tests]]
 suite = "vertical_demos"
-file = "../packages/li-physics-custom/src/demo_rocket_main.li"
+file = "../packages/physics.custom/src/demo_rocket_main.li"
 outcome = "compile_ok"
 note = "Vertical demo rocket build"
 
 [[tests]]
 suite = "vertical_demos"
-file = "../packages/li-sim-automotive/src/demo_racing_main.li"
+file = "../packages/sim.automotive/src/demo_racing_main.li"
 outcome = "compile_ok"
 note = "Vertical demo racing build"
 
 [[tests]]
 suite = "vertical_demos"
-file = "../packages/li-sim-robotics/src/demo_robot_main.li"
+file = "../packages/sim.robotics/src/demo_robot_main.li"
 outcome = "compile_ok"
 note = "Vertical demo robot build"
 
 [[tests]]
 suite = "vertical_demos"
-file = "../packages/li-sim-drug-design/src/demo_drug_main.li"
+file = "../packages/sim.drug_design/src/demo_drug_main.li"
 outcome = "compile_ok"
 note = "Vertical demo drug build"
 
 [[tests]]
 suite = "vertical_demos"
-file = "../packages/li-bioeng/src/demo_bioeng_main.li"
+file = "../packages/bioeng/src/demo_bioeng_main.li"
 outcome = "compile_ok"
 note = "Vertical demo bioeng build"
 
 [[tests]]
 suite = "vertical_demos"
-file = "../packages/li-mmo/src/demo_mmo_main.li"
+file = "../packages/mmo/src/demo_mmo_main.li"
 outcome = "compile_ok"
 note = "Vertical demo mmo build"
 
 [[tests]]
 suite = "vertical_demos"
-file = "../packages/li-studio/src/studio_main.li"
+file = "../packages/studio/src/studio_main.li"
 outcome = "compile_ok"
 note = "Native studio shell main build"
 

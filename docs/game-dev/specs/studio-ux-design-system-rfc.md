@@ -43,7 +43,7 @@ Game/sim editors (UE, Unity, Blender) optimize for human muscle memory. Agent-na
 | 4 | Apply patch | `studio.ai` diagnose + apply |
 | 5 | Open world | `world.li` focus |
 
-## Li API (implemented in `packages/li-ui/src/lib.li`)
+## Li API (implemented in `packages/ui/src/lib.li`)
 
 ```li
 import ui

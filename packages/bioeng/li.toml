@@ -1,0 +1,22 @@
+[package]
+name = "bioeng"
+version = "0.1.0"
+edition = "2026"
+license = "Apache-2.0 OR MIT"
+description = "Competitive bioengineering DBTL on drug-design LITL spine (PH-BIOENG)"
+
+[dependencies]
+# path = { path = "../other" }   # lip 8b+
+# registry = "1.0.0"             # lip 8d+
+
+[package.metadata.li]
+github_repo = "bioeng"
+import_name = "bioeng"
+min_lic = "0.1.0"
+maintainer = "li-langverse"
+pkg_id = "PKG-bioeng"
+
+[package.repository]
+url = "https://github.com/li-langverse/bioeng"
+documentation = "https://li-langverse.github.io/li-language/ecosystem/bioeng/"
+changelog = "https://github.com/li-langverse/bioeng/blob/main/CHANGELOG.md"

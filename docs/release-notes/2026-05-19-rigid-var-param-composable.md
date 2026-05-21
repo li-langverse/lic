@@ -18,7 +18,7 @@ Records why `li-tests/composable/import_physics_runtime.li` stays a version smok
 
 ## Not changed
 
-- `packages/li-physics-rigid` / `li-physics-runtime` APIs (no `var RigidBody` param in this PR)
+- `packages/physics.rigid` / `li-physics-runtime` APIs (no `var RigidBody` param in this PR)
 - Import resolver, `std/` facades, mirror repos
 
 ## Breaking

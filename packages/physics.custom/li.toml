@@ -1,0 +1,22 @@
+[package]
+name = "physics.custom"
+version = "0.1.0"
+edition = "2026"
+license = "Apache-2.0 OR MIT"
+description = "Arbitrary and unphysical custom physics laws for games and research (PH-PHYS-CUSTOM)"
+
+[dependencies]
+# path = { path = "../other" }   # lip 8b+
+# registry = "1.0.0"             # lip 8d+
+
+[package.metadata.li]
+github_repo = "physics.custom"
+import_name = "physics.custom"
+min_lic = "0.1.0"
+maintainer = "li-langverse"
+pkg_id = "PKG-physics-custom"
+
+[package.repository]
+url = "https://github.com/li-langverse/physics.custom"
+documentation = "https://li-langverse.github.io/li-language/ecosystem/physics.custom/"
+changelog = "https://github.com/li-langverse/physics.custom/blob/main/CHANGELOG.md"

@@ -1,9 +1,9 @@
 ---
 description: Agentic World Studio development — UE parity measurement path
 globs:
-  - packages/li-world/**
-  - packages/li-studio/**
-  - packages/li-sim/**
+  - packages/world/**
+  - packages/studio/**
+  - packages/sim/**
   - samples/ue5-li-baseline/**
   - benchmarks/tier2_world/**
   - scripts/run-ue-samples.sh

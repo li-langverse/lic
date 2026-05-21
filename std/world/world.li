@@ -1,5 +1,5 @@
 # std/world — world save/load facade (PH-GD-2).
-# Prefer: import world  |  workspace packages/li-world.
+# Prefer: import world  |  workspace packages/world.
 
 def world_std_tag() -> int
   requires true

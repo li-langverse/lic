@@ -28,7 +28,7 @@ studio-app  →  depends on studio, studio.ai, ui, gui, world, render, …
 
 ## Monorepo mirrors (`lic/packages/li-*`)
 
-Integration copies under `lic/packages/li-studio/` are **temporary**; published org repos use **import names** (`studio`, `studio.ai`).
+Integration copies under `lic/packages/studio/` are **temporary**; published org repos use **import names** (`studio`, `studio.ai`).
 
 ---
 

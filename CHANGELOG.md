@@ -8,11 +8,11 @@ All notable changes to Li are documented here. The format follows
 
 ### Added
 
-- **`packages/li-http`** workspace package (`import http`) — `parse_request` + GET method-line probe via `li_rt_str_byte_at`.
+- **`packages/http`** workspace package (`import http`) — `parse_request` + GET method-line probe via `li_rt_str_byte_at`.
 - Phase H P0 runtime: `bytes_len`/`bytes_slice` in `runtime/li_rt.c`, stub `tcp_*` in `runtime/li_rt_net.c`, `li_rt_str_byte_at` for bounded ASCII inspection.
 - Fixed-width scalars: `float4`–`float512`, `int4`–`int512` (and aliases); width mismatch is a type error; see `docs/language/scalar-precision.md`.
 - Literal suffixes: `3.14f32`, `42i32`, `42u`, `255u8`; binary type + `0b…` literals; `std/binary/binary.li`.
-- Documentation: [docs/language/scalar-precision.md](docs/language/scalar-precision.md) (canonical), `packages/li-physics-core/docs/scalar-precision.md`, `std/binary/README.md`; mkdocs + handbook nav.
+- Documentation: [docs/language/scalar-precision.md](docs/language/scalar-precision.md) (canonical), `packages/physics.core/docs/scalar-precision.md`, `std/binary/README.md`; mkdocs + handbook nav.
 - `physics.core`: `ScalarPrecision` (`weights_encoding` for binary weights) and profile bit-width metadata (not org-enforced).
 
 ### Changed
@@ -22,7 +22,7 @@ All notable changes to Li are documented here. The format follows
 - Docs: `composable-by-default.md`, `import-style.md`, `li-net-httpd` README — `def` + `import net.httpd` (not `li_httpd`).
 - Physics docs use monorepo package paths (`li-physics-*`, `import physics.*`); philosophy example uses `def`.
 - Composable `import_physics_runtime.li` integrates `physics.rigid` semi-implicit step; `rigid_integrate_semi_implicit` takes `b: var RigidBody`.
-- `packages/li-net-httpd`: path deps on `li-http` + `li-net`; `httpd_serve` calls `tcp_listen` (stub).
+- `packages/net.httpd`: path deps on `li-http` + `li-net`; `httpd_serve` calls `tcp_listen` (stub).
 
 ### Fixed
 
@@ -35,11 +35,11 @@ All notable changes to Li are documented here. The format follows
 - MIR: whole-object assignment `dst = src` and `dst = foo()` when `dst` is an `object`-typed local/param and `src`/`foo` match (`collect_object_local_types`, `emit_copy_object_slots_r`); regression `li-tests/objects/object_whole_assign.li`.
 - MIR: `emit_copy_object_slots_r` copies fixed `array[N, int]` / `array[N, float]` fields element-wise; nested object array slots register in `g_arr_ctx` for index/assign; `Index` / array `Assign` accept `FieldAccess` array bases; regression `li-tests/objects/object_array_field_copy.li`.
 - MIR + codegen: `return_object_layout` / LLVM struct returns include fixed `array[N, int|float]` as `[N x T]` members; `ReturnObject` / `CallProc` unpack and expanded params use aggregates; regressions `li-tests/objects/object_array_return_call.li`, `li-tests/objects/object_mixed_scalar_array_return.li`, `li-tests/objects/object_mixed_param_pass.li`.
-- Workspace import: `parse_workspace_members` no longer treats `[workspace]` as the `members` array — `import physics.rigid` loads `packages/li-physics-rigid` instead of the std facade stub.
+- Workspace import: `parse_workspace_members` no longer treats `[workspace]` as the `members` array — `import physics.rigid` loads `packages/physics.rigid` instead of the std facade stub.
 - Parser: multiline `def` parameter lists (indent after `(` / between parameters); bare `return` for `-> unit` procs.
 - Windows CI discovers `LLVM_DIR` via `llvm-config` or `find` when Chocolatey layout differs.
-- `packages/li-math-numerics`: remove duplicate `extern proc` contract clauses.
-- `packages/li-physics-runtime`: `substep_inv` field and `var PhysicsWorld` step APIs (typecheck; codegen crash on full lib build is a known follow-up).
+- `packages/math.numerics`: remove duplicate `extern proc` contract clauses.
+- `packages/physics.runtime`: `substep_inv` field and `var PhysicsWorld` step APIs (typecheck; codegen crash on full lib build is a known follow-up).
 
 ### Changed
 

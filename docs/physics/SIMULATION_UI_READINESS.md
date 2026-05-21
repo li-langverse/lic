@@ -38,9 +38,9 @@ Fixed timestep: `physics_world_game_default()` → `physics_step(world, 1.0/60.0
 
 ```bash
 cd lic
-lic check packages/li-ui/src/lib.li
-lic check packages/li-scene/src/lib.li
-lic check packages/li-physics-runtime/src/lib.li
+lic check packages/ui/src/lib.li
+lic check packages/scene/src/lib.li
+lic check packages/physics.runtime/src/lib.li
 lic check std/io/io.li std/ui/ui.li
 ./scripts/check-li-def-syntax.sh packages
 ```

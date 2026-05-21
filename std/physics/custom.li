@@ -1,5 +1,5 @@
 # std/physics/custom — arbitrary law facade (PH-PHYS-CUSTOM).
-# Prefer: import physics.custom  |  workspace packages/li-physics-custom.
+# Prefer: import physics.custom  |  workspace packages/physics.custom.
 
 def physics_custom_std_tag() -> int
   requires true

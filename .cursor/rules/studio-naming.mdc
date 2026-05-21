@@ -4,8 +4,8 @@ globs:
   - docs/game-dev/**
   - docs/ecosystem/**
   - deploy/studio-demo/**
-  - packages/li-studio/**
-  - packages/li-studio-ai/**
+  - packages/studio/**
+  - packages/studio.ai/**
 alwaysApply: false
 ---
 

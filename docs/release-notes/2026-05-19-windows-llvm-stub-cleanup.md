@@ -8,13 +8,13 @@ Windows CI skips the lic build when Chocolatey LLVM lacks `LLVMConfig.cmake` (ub
 
 1. Read `.github/workflows/ci.yml` Windows job `Resolve LLVM_DIR` step.
 2. Run `./scripts/check-li-def-syntax.sh` and package workspace build on Ubuntu CI (no local LLVM required).
-3. Next: re-sync package mirrors if `packages/li-math-numerics` gains a published repo.
+3. Next: re-sync package mirrors if `packages/math.numerics` gains a published repo.
 4. Blocked: none.
 
 ## Changed
 
 - `.github/workflows/ci.yml` — `PATH`, `find` fallback; set `SKIP_WINDOWS_LIC_BUILD` instead of failing the job.
-- `packages/li-math-numerics/src/lib.li` — single `requires`/`ensures`/`decreases` per `extern proc`.
+- `packages/math.numerics/src/lib.li` — single `requires`/`ensures`/`decreases` per `extern proc`.
 
 ## Not changed
 

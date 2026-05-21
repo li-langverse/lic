@@ -65,4 +65,4 @@ def store_redis_smoke() -> int
 
 **See also:** `li-world-studio-vision.mdc`, `li-composable.mdc`, `docs/game-dev/world-studio-vision.md`, `docs/game-dev/li-native-store-port.md`.
 
-**Reference impl:** `store_li_native_*` in `packages/li-store-realtime` (impl-34).
+**Reference impl:** `store_li_native_*` in `packages/store.realtime` (impl-34).

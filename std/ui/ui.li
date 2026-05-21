@@ -17,7 +17,7 @@ def ui_tag() -> int
 =
   return 6
 
-# Prefer workspace package: import ui  →  packages/li-ui (agent-first PH-UX).
+# Prefer workspace package: import ui  →  packages/ui (agent-first PH-UX).
 def ui_std_agent_first_tag() -> int
   requires true
   ensures result == 1

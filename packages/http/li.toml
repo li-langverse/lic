@@ -1,0 +1,21 @@
+[package]
+name = "http"
+version = "0.1.0"
+edition = "2026"
+license = "Apache-2.0 OR MIT"
+description = "Li package li-http"
+
+[dependencies]
+# registry = "1.0.0"             # lip 8d+
+
+[package.metadata.li]
+github_repo = "http"
+import_name = "http"
+min_lic = "0.1.0"
+maintainer = "li-langverse"
+pkg_id = "PKG-http"
+
+[package.repository]
+url = "https://github.com/li-langverse/http"
+documentation = "https://li-langverse.github.io/li-language/ecosystem/http/"
+changelog = "https://github.com/li-langverse/http/blob/main/CHANGELOG.md"

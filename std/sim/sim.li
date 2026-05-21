@@ -1,5 +1,5 @@
 # std/sim — Li Engine step API facade (PH-SIM).
-# Prefer: import sim  |  workspace packages/li-sim until std re-exports land.
+# Prefer: import sim  |  workspace packages/sim until std re-exports land.
 
 def sim_std_tag() -> int
   requires true

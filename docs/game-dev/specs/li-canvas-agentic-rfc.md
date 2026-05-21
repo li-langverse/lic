@@ -22,7 +22,7 @@ Linear outliner + single viewport is not how agents (or creators) **reason** abo
 
 - `CanvasDocument`, `CanvasCamera`, `CanvasNode`, `CanvasLink`, `CanvasTileKey`
 - `CanvasNodeKind`: World, GuiScreen, SimField, AgentPlan, Note, BenchRef, Realm, **Sequence**, **Shot**, **Camera**, **AnimationClip**, **VideoExport**, **Scene3D**
-- `CanvasLinkKind`: Spawns, Binds, Replicates, Documents, DependsOn, AgentEdited
+- `CanvasLinkKind`: Spawns, Binds, Replicates, Documents, DependsOn, AgentEdited, **Plays**, **CutsTo**, **Animates**, **Renders**
 
 ### Authoring
 

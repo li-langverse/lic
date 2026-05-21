@@ -30,7 +30,7 @@ Anti-pattern: all logic in `main.li`, no importable module, or a C-only entry wi
 
 When building inside the `lic` workspace (`packages/li.toml`):
 
-1. **`import_name` from `li.toml`** — e.g. `import net.httpd` → `packages/li-net-httpd/src/lib.li`
+1. **`import_name` from `li.toml`** — e.g. `import net.httpd` → `packages/net.httpd/src/lib.li`
 2. **`std/` facades** — e.g. `import std.physics.relativity` or ergonomic `import physics.relativity` when no workspace member matches
 3. Legacy snake / folder names — generated code only
 
@@ -48,7 +48,7 @@ See [import-style.md](../language/import-style.md) and `li-tests/composable/`.
 
 ## httpd example (stubs today)
 
-**M1 is not complete** — the shapes below match `packages/li-net-httpd/src/lib.li` (org mirror: `li-httpd`):
+**M1 is not complete** — the shapes below match `packages/net.httpd/src/lib.li` (org mirror: `li-httpd`):
 
 ```li
 import net.httpd
@@ -67,7 +67,7 @@ def main() -> int
   return 0
 ```
 
-**Import:** `net.httpd` (`import_name` in `packages/li-net-httpd/li.toml`). Network I/O remains behind `raises Net` / `raises Async` until P0 gates in [httpd-prerequisites.md](httpd-prerequisites.md) land.
+**Import:** `net.httpd` (`import_name` in `packages/net.httpd/li.toml`). Network I/O remains behind `raises Net` / `raises Async` until P0 gates in [httpd-prerequisites.md](httpd-prerequisites.md) land.
 
 **Smoke test:** `li-tests/composable/import_httpd_lib.li` (`verify_ok`).
 
@@ -78,7 +78,7 @@ import physics.relativity
 import physics.rigid
 ```
 
-In the monorepo these resolve to `packages/li-physics-relativity` and `packages/li-physics-rigid`. Composable smokes: `li-tests/composable/import_physics_relativity.li`, `import_physics_runtime.li`.
+In the monorepo these resolve to `packages/physics.relativity` and `packages/physics.rigid`. Composable smokes: `li-tests/composable/import_physics_relativity.li`, `import_physics_runtime.li`.
 
 ## Gates for new packages
 

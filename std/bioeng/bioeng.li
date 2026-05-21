@@ -1,5 +1,5 @@
 # std/bioeng — competitive bioengineering facade (PH-BIOENG).
-# Prefer: import bioeng  |  workspace packages/li-bioeng.
+# Prefer: import bioeng  |  workspace packages/bioeng.
 
 def bioeng_std_tag() -> int
   requires true

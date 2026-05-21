@@ -5,7 +5,7 @@
 Li exposes **explicit** integer and float widths for HPC, quantization, and per-domain accuracy. The org **does not** enforce one global float width — each package and simulation chooses.
 
 **Normative registry (compiler):** `compiler/types/numeric_types.cpp`  
-**Physics metadata API:** `packages/li-physics-core/src/lib.li` (`ScalarPrecision`, `PhysicsProfile`)
+**Physics metadata API:** `packages/physics.core/src/lib.li` (`ScalarPrecision`, `PhysicsProfile`)
 
 ---
 
@@ -244,7 +244,7 @@ def configure_arcade_fast() -> PhysicsProfile
   return p
 ```
 
-Package README: [packages/li-physics-core/docs/scalar-precision.md](../../packages/li-physics-core/docs/scalar-precision.md)
+Package README: [packages/physics.core/docs/scalar-precision.md](../../packages/physics.core/docs/scalar-precision.md)
 
 ---
 

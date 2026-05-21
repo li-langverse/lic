@@ -66,8 +66,8 @@ Clients ──► Gateway (net.httpd / WS) ──► Shard (mmo.tick) ──► 
 **Artifact pipeline:**
 
 ```bash
-lic build packages/li-mmo/src/shard_main.li -o mmo-shard --release
-lic build packages/li-mmo/src/gateway_main.li -o mmo-gateway --release
+lic build packages/mmo/src/shard_main.li -o mmo-shard --release
+lic build packages/mmo/src/gateway_main.li -o mmo-gateway --release
 # Images: deploy/mmo/Dockerfile (planned MMO-3)
 ```
 

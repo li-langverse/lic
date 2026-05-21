@@ -15,7 +15,7 @@ Align composable/httpd documentation and package README with workspace import re
 
 - `docs/ecosystem/composable-by-default.md` — resolution order, `def`, `net.httpd`, physics composable tests.
 - `docs/language/import-style.md` — resolver order, legacy import warnings.
-- `packages/li-net-httpd/README.md` — `import net.httpd`, Li example syntax.
+- `packages/net.httpd/README.md` — `import net.httpd`, Li example syntax.
 
 ## Not changed
 

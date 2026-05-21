@@ -49,9 +49,9 @@ See [studio-naming.md](studio-naming.md) for brand vs **`studio-app`** product r
 
 | Where | Path / name today | Published target |
 |-------|-------------------|------------------|
-| `lic` integration | `packages/li-studio/` | Repo **`studio`** |
-| `lic` integration | `packages/li-studio-ai/` | Repo **`studio.ai`** |
-| `lic` integration | `packages/li-world/` | Repo **`world`** |
+| `lic` integration | `packages/studio/` | Repo **`studio`** |
+| `lic` integration | `packages/studio.ai/` | Repo **`studio.ai`** |
+| `lic` integration | `packages/world/` | Repo **`world`** |
 
 `li.toml` should converge:
 
@@ -68,8 +68,10 @@ github_repo = "studio"
 
 ## Migration (tracking)
 
-- [ ] Rename GitHub mirrors `li-studio` → `studio`, `li-studio-ai` → `studio.ai`, …
-- [ ] Update `PUBLISH.md` registry names to match imports
-- [ ] Register in roadmap **official-packages** with import-aligned slugs
+- [x] `import_repo_names.py` — repo slug = import path
+- [x] `align-package-repo-names.py --metadata-only --apply` — `li.toml` + `PUBLISH.md`
+- [x] `align-package-repo-names.py --apply` — rename `packages/<import>/`
+- [ ] `push-import-aligned-mirrors.sh --create` — org repos on GitHub (maintainer)
+- [ ] Register in roadmap **official-packages**
 
 **World Studio import table:** [world-studio-packages.md](world-studio-packages.md)

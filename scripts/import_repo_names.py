@@ -1,17 +1,19 @@
 #!/usr/bin/env python3
-"""Map ergonomic import paths to canonical GitHub repo names (li-langverse org).
+"""Map import paths to official GitHub repo names (same string as import).
 
-Convention: import `physics.relativity` → repo `li-physics-relativity`
-(dots → hyphens, `li-` prefix). Monorepo folder should match the repo name.
+Convention: `import studio` → repo `studio`; `import studio.ai` → repo `studio.ai`.
+Monorepo folder under packages/ should match the import path.
 
-See docs/language/import-style.md and docs/ecosystem/repo-naming.md
+See docs/ecosystem/package-import-naming.md
 """
 from __future__ import annotations
 
 import re
 from pathlib import Path
 
-# Monorepo folder (packages/*) → ergonomic import_name
+PACKAGES = Path(__file__).resolve().parents[1] / "packages"
+
+# Legacy monorepo folder → import (pre-rename)
 LEGACY_FOLDER_IMPORT: dict[str, str] = {
     "li-std-math": "math",
     "li-std-numerics": "math.numerics",
@@ -37,31 +39,42 @@ LEGACY_FOLDER_IMPORT: dict[str, str] = {
 
 
 def import_name_to_github_repo(import_name: str) -> str:
-    """`physics.relativity` → `li-physics-relativity`."""
-    slug = import_name.strip().replace(".", "-")
-    if not slug:
+    """Repo slug = import path (dots allowed on GitHub)."""
+    name = import_name.strip()
+    if not name:
         raise ValueError("empty import_name")
-    return f"li-{slug}"
+    return name
 
 
-def github_repo_to_import_name(repo: str) -> str | None:
-    """`li-physics-relativity` → `physics.relativity` (inverse when prefixed)."""
-    if not repo.startswith("li-"):
-        return None
-    return repo[3:].replace("-", ".")
+def pkg_id_for_import(import_name: str) -> str:
+    """PKG-studio, PKG-studio-ai (dots → hyphen in id only)."""
+    slug = import_name.replace(".", "-")
+    return f"PKG-{slug}"
 
 
-def legacy_folder_to_github_repo(folder: str) -> str:
-    if folder in LEGACY_FOLDER_IMPORT:
-        return import_name_to_github_repo(LEGACY_FOLDER_IMPORT[folder])
-    if folder.startswith("li-"):
-        return folder
-    return import_name_to_github_repo(folder.replace("_", "."))
+def folder_import_map() -> dict[str, str]:
+    """Every packages/<folder>/ with li.toml → import_name."""
+    m = dict(LEGACY_FOLDER_IMPORT)
+    for toml in sorted(PACKAGES.glob("*/li.toml")):
+        folder = toml.parent.name
+        text = toml.read_text(encoding="utf-8")
+        imp = read_toml_field(text, "import_name")
+        if imp:
+            m[folder] = imp
+        elif folder.startswith("li-"):
+            # Heuristic: li-foo-bar → foo.bar (legacy folders without metadata)
+            rest = folder[3:].replace("-", ".")
+            if rest:
+                m.setdefault(folder, rest)
+    return m
 
 
 def canonical_folder_name(folder: str) -> str:
-    """Target monorepo directory name (same as GitHub repo)."""
-    return legacy_folder_to_github_repo(folder)
+    """Target packages/<name>/ directory (= import path)."""
+    m = folder_import_map()
+    if folder in m:
+        return import_name_to_github_repo(m[folder])
+    return folder
 
 
 def read_toml_field(text: str, key: str) -> str | None:
@@ -69,18 +82,10 @@ def read_toml_field(text: str, key: str) -> str | None:
     return m.group(1) if m else None
 
 
-def read_github_repo_from_toml(path: Path) -> str | None:
-    if not path.is_file():
-        return None
-    text = path.read_text(encoding="utf-8")
-    return read_toml_field(text, "github_repo") or read_toml_field(text, "import_name") and (
-        import_name_to_github_repo(read_toml_field(text, "import_name") or "")
-    )
-
-
 def patch_package_toml(path: Path, import_name: str) -> bool:
     text = path.read_text(encoding="utf-8")
     github_repo = import_name_to_github_repo(import_name)
+    pkg_id = pkg_id_for_import(import_name)
     orig = text
 
     def upsert(key: str, value: str) -> None:
@@ -96,8 +101,10 @@ def patch_package_toml(path: Path, import_name: str) -> bool:
         else:
             text += f"\n[package.metadata.li]\n{line}\n"
 
+    text = re.sub(r'^name\s*=\s*"[^"]*"', f'name = "{import_name}"', text, count=1, flags=re.M)
     upsert("import_name", import_name)
     upsert("github_repo", github_repo)
+    upsert("pkg_id", pkg_id)
 
     text = re.sub(
         r'^url\s*=\s*"https://github\.com/li-langverse/[^"]*"',
@@ -122,7 +129,36 @@ def patch_package_toml(path: Path, import_name: str) -> bool:
     return False
 
 
+def patch_publish_md(path: Path, import_name: str) -> bool:
+    if not path.is_file():
+        return False
+    github_repo = import_name_to_github_repo(import_name)
+    pkg_id = pkg_id_for_import(import_name)
+    text = path.read_text(encoding="utf-8")
+    orig = text
+    text = re.sub(r"\*\*PKG id\*\* \| `[^`]*`", f"**PKG id** | `{pkg_id}`", text, count=1)
+    text = re.sub(
+        r"\*\*Registry name\*\* \| `[^`]+`",
+        f"**Registry name** | `{import_name}`",
+        text,
+        count=1,
+    )
+    text = re.sub(
+        r"https://github\.com/li-langverse/[^\s|]+",
+        f"https://github.com/li-langverse/{github_repo}",
+        text,
+    )
+    if text != orig:
+        path.write_text(text, encoding="utf-8")
+        return True
+    return False
+
+
 if __name__ == "__main__":
-    for folder, imp in sorted(LEGACY_FOLDER_IMPORT.items()):
+    for folder in sorted(p.name for p in PACKAGES.iterdir() if p.is_dir()):
+        imp = folder_import_map().get(folder)
+        if not imp:
+            continue
+        target = canonical_folder_name(folder)
         repo = import_name_to_github_repo(imp)
-        print(f"{folder:32} import={imp:22} github={repo}")
+        print(f"{folder:28} → {target:22} import={imp:20} github={repo}")

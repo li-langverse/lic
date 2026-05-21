@@ -26,7 +26,7 @@ The compiler **always** checks that widths are not mixed silently. Polymorphism 
 Pick one width for the whole file. This is the simplest “syntactic sugar” that already works.
 
 ```nim
-# packages/li-physics-relativity — hypothetical FP32 build
+# packages/physics.relativity — hypothetical FP32 build
 type Real = float32
 
 type Vec3r = object
@@ -206,4 +206,4 @@ def integrate_step(profile: PhysicsProfile, dt: float) -> float
 
 - [Scalar precision](scalar-precision.md)
 - [Collections and generics](collections-generics.md)
-- [packages/li-physics-core/docs/scalar-precision.md](../../packages/li-physics-core/docs/scalar-precision.md)
+- [packages/physics.core/docs/scalar-precision.md](../../packages/physics.core/docs/scalar-precision.md)

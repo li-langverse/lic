@@ -8,7 +8,7 @@ Adds workspace package **`li-http`** (`import http`) with `parse_request` and a 
 
 1. Read `docs/ecosystem/httpd-prerequisites.md` for remaining P0 rows (epoll, full HTTP header FSM, strict Lean).
 2. Run `export CC=clang-18 LI_REPO_ROOT=$PWD && cmake --build build && ./li-tests/run_all.sh runtime composable httpd && ./scripts/lic-workspace-build.sh`.
-3. Next: header field parsing + `Content-Length` duplicate detection in `packages/li-http`; keep contracts int-first.
+3. Next: header field parsing + `Content-Length` duplicate detection in `packages/http`; keep contracts int-first.
 4. Blocked: production sockets until trusted-net RFC + real `li_rt_net` syscalls.
 
 ## Changed
@@ -17,8 +17,8 @@ Adds workspace package **`li-http`** (`import http`) with `parse_request` and a 
 - `compiler/mir/lower.cpp`, `compiler/codegen/emit.cpp`, `compiler/codegen/compile.cpp` — std extern MIR + LLVM decls + `li_rt_net.c` link.
 - `runtime/li_rt.c`, `runtime/li_rt.h` — `bytes_len`, `bytes_slice`, `li_rt_str_byte_at`.
 - `runtime/li_rt_net.c`, `runtime/li_rt_net.h` — TCP stubs.
-- `packages/li-http/**` — new package; `packages/li.toml` — workspace member.
-- `packages/li-net-httpd/**` — deps + `httpd_serve` / `httpd_tag` / `httpd_stop`.
+- `packages/http/**` — new package; `packages/li.toml` — workspace member.
+- `packages/net.httpd/**` — deps + `httpd_serve` / `httpd_tag` / `httpd_stop`.
 - `li-tests/**` — runtime link tests, `parse_request_smoke`, `import_http_lib`, manifest; `run_all.sh` exports `LI_REPO_ROOT`.
 - `security/trusted-c-audit.toml`, `docs/ecosystem/httpd-prerequisites.md`, `CHANGELOG.md`.
 

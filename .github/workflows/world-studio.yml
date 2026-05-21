@@ -3,14 +3,14 @@ name: World Studio
 on:
   pull_request:
     paths:
-      - "packages/li-studio/**"
-      - "packages/li-world/**"
-      - "packages/li-sim/**"
-      - "packages/li-sim-scientific/**"
-      - "packages/li-render/**"
-      - "packages/li-mmo/**"
-      - "packages/li-store-realtime/**"
-      - "packages/li-net-httpd/**"
+      - "packages/studio/**"
+      - "packages/world/**"
+      - "packages/sim/**"
+      - "packages/sim.scientific/**"
+      - "packages/render/**"
+      - "packages/mmo/**"
+      - "packages/store.realtime/**"
+      - "packages/net.httpd/**"
       - "deploy/world-studio-spinup/**"
       - "deploy/studio-demo/**"
       - "li-tests/composable/**"
@@ -23,8 +23,8 @@ on:
     branches:
       - "feat/world-studio-impl-1"
     paths:
-      - "packages/li-studio/**"
-      - "packages/li-world/**"
+      - "packages/studio/**"
+      - "packages/world/**"
       - "deploy/world-studio-spinup/**"
       - "li-tests/composable/**"
       - "scripts/ci-world-studio.sh"

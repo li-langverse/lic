@@ -31,14 +31,17 @@ Optional **local PNG gallery** (gitignored under `.artifacts/studio-mockups/`):
 
 ---
 
-## Tokens (v3)
+## Tokens (v4 — theme picker in prototype)
 
-| Token | Value |
-|-------|--------|
-| `--bg-deep` | `#0f1219` |
-| `--bg-surface` | `#161b26` |
-| `--accent-agent` | `#2dd4bf` (teal) |
-| `--pass` | `#34d399` |
+Three palettes via `data-theme` on `<html>` (top bar swatches):
+
+| Theme | Use | Agent accent | Pass |
+|-------|-----|--------------|------|
+| **aurora** (default) | Balanced studio | `#6ee7d4` mint | `#5ee0a8` |
+| **ember** | Gaming / warm | `#ffb86c` amber | `#7dd9a0` |
+| **slate** | Scientific / pro | `#8ec8ff` sky | `#62c995` |
+
+Shared surfaces (aurora): `--bg-deep` `#0b0d12`, `--bg-surface` `#12151c`, `--accent` `#7c9cff`
 
 See `deploy/studio-demo/studio.css` and [studio-ux-design-system-rfc](specs/studio-ux-design-system-rfc.md).
 

@@ -8,6 +8,42 @@ let autoReel = false;
 let reelIndex = 0;
 let reelTimer = null;
 
+/** Canvas palette — synced from CSS --canvas-* tokens per theme. */
+let C = {};
+
+function syncCanvasColors() {
+  const s = getComputedStyle(document.documentElement);
+  const g = (v) => s.getPropertyValue(v).trim();
+  C = {
+    bg: g("--canvas-bg"),
+    elevated: g("--canvas-elevated"),
+    surface2: g("--canvas-surface2"),
+    border: g("--canvas-border"),
+    muted: g("--canvas-muted"),
+    text: g("--canvas-text"),
+    accent: g("--canvas-accent"),
+    pass: g("--canvas-pass"),
+    violet: g("--canvas-violet"),
+    coral: g("--canvas-coral"),
+    greenDark: g("--canvas-green-dark"),
+    fail: g("--fail"),
+    warn: g("--warn"),
+  };
+}
+
+function applyTheme(id) {
+  document.documentElement.dataset.theme = id;
+  syncCanvasColors();
+  try {
+    localStorage.setItem("li-studio-theme", id);
+  } catch (_) {}
+  document.querySelectorAll(".theme-btn").forEach((b) => {
+    const on = b.dataset.theme === id;
+    b.classList.toggle("active", on);
+    b.setAttribute("aria-pressed", on ? "true" : "false");
+  });
+}
+
 const meta = {
   rocket: {
     title: "Rocket — inverse gravity + Lorentz boost",
@@ -123,7 +159,7 @@ function setDemo(name) {
 function drawRocket(t) {
   const w = canvas.width;
   const h = canvas.height;
-  ctx.fillStyle = "#010409";
+  ctx.fillStyle = C.bg;
   ctx.fillRect(0, 0, w, h);
   const stars = 80;
   ctx.fillStyle = "#fff";
@@ -139,21 +175,21 @@ function drawRocket(t) {
   ctx.save();
   ctx.translate(x, y);
   ctx.rotate(-0.05);
-  ctx.fillStyle = "#8b949e";
+  ctx.fillStyle = C.elevated;
   ctx.fillRect(-18, -50, 36, 70);
-  ctx.fillStyle = "#f85149";
+  ctx.fillStyle = C.fail;
   ctx.beginPath();
   ctx.moveTo(0, 30);
   ctx.lineTo(-14, 55);
   ctx.lineTo(14, 55);
   ctx.fill();
-  ctx.fillStyle = "#ffa657";
+  ctx.fillStyle = C.warn;
   ctx.globalAlpha = 0.7 + 0.3 * Math.sin(t * 0.3);
   ctx.beginPath();
   ctx.ellipse(0, 42, 10, 18 + Math.sin(t * 0.4) * 6, 0, 0, Math.PI * 2);
   ctx.fill();
   ctx.restore();
-  ctx.fillStyle = "#58a6ff";
+  ctx.fillStyle = C.accent;
   ctx.font = "14px monospace";
   ctx.fillText(`γ ≈ ${(1.02 + 0.01 * Math.sin(t * 0.05)).toFixed(3)}`, 24, h - 40);
 }
@@ -162,11 +198,11 @@ function drawRacing(t) {
   const w = canvas.width;
   const h = canvas.height;
   const grad = ctx.createLinearGradient(0, 0, 0, h);
-  grad.addColorStop(0, "#1a472a");
-  grad.addColorStop(1, "#0d1117");
+  grad.addColorStop(0, C.greenDark);
+  grad.addColorStop(1, C.bg);
   ctx.fillStyle = grad;
   ctx.fillRect(0, 0, w, h);
-  ctx.strokeStyle = "#30363d";
+  ctx.strokeStyle = C.border;
   ctx.lineWidth = 4;
   for (let i = 0; i < 12; i++) {
     const y = h * 0.35 + i * 28;
@@ -176,11 +212,11 @@ function drawRacing(t) {
     ctx.stroke();
   }
   const carX = (t * 4) % (w + 100) - 50;
-  ctx.fillStyle = "#ff6b6b";
+  ctx.fillStyle = C.fail;
   ctx.fillRect(carX, h * 0.55, 90, 28);
-  ctx.fillStyle = "#21262d";
+  ctx.fillStyle = C.surface2;
   ctx.fillRect(carX + 15, h * 0.52, 40, 18);
-  ctx.fillStyle = "#3fb950";
+  ctx.fillStyle = C.pass;
   ctx.font = "12px monospace";
   ctx.fillText(`LiDAR frame ${Math.floor(t / 10) % 1000}`, 24, 32);
 }
@@ -188,11 +224,11 @@ function drawRacing(t) {
 function drawRobot(t) {
   const w = canvas.width;
   const h = canvas.height;
-  ctx.fillStyle = "#161b22";
+  ctx.fillStyle = C.elevated;
   ctx.fillRect(0, 0, w, h);
   const bx = w * 0.35;
   const by = h * 0.7;
-  ctx.strokeStyle = "#58a6ff";
+  ctx.strokeStyle = C.accent;
   ctx.lineWidth = 8;
   ctx.lineCap = "round";
   let angle = Math.sin(t * 0.03) * 0.8;
@@ -210,11 +246,11 @@ function drawRobot(t) {
     y = ny;
     angle += 0.6 + Math.sin(t * 0.02) * 0.2;
   }
-  ctx.fillStyle = "#f0883e";
+  ctx.fillStyle = C.coral;
   ctx.beginPath();
   ctx.arc(x, y, 14, 0, Math.PI * 2);
   ctx.fill();
-  ctx.fillStyle = "#8b949e";
+  ctx.fillStyle = C.elevated;
   ctx.font = "13px sans-serif";
   ctx.fillText("6-DOF · mobile base", 24, h - 30);
 }
@@ -222,7 +258,7 @@ function drawRobot(t) {
 function drawDrug(t) {
   const w = canvas.width;
   const h = canvas.height;
-  ctx.fillStyle = "#0d1117";
+  ctx.fillStyle = C.bg;
   ctx.fillRect(0, 0, w, h);
   const cx = w / 2;
   const cy = h / 2;
@@ -230,9 +266,9 @@ function drawDrug(t) {
   const stage = Math.floor(t / 90) % 4;
   stages.forEach((s, i) => {
     const x = 80 + i * ((w - 160) / 3);
-    ctx.fillStyle = i === stage ? "#58a6ff" : "#30363d";
+    ctx.fillStyle = i === stage ? C.accent : C.border;
     ctx.fillRect(x - 40, 40, 80, 36);
-    ctx.fillStyle = "#e6edf3";
+    ctx.fillStyle = "#fff";
     ctx.font = "12px sans-serif";
     ctx.textAlign = "center";
     ctx.fillText(s, x, 64);
@@ -242,17 +278,17 @@ function drawDrug(t) {
   for (let i = 0; i < n; i++) {
     const a = (i / n) * Math.PI * 2 + t * 0.02;
     const r = 60 + Math.sin(t * 0.05 + i) * 10;
-    ctx.fillStyle = i % 2 ? "#3fb950" : "#a371f7";
+    ctx.fillStyle = i % 2 ? C.pass : C.violet;
     ctx.beginPath();
     ctx.arc(cx + Math.cos(a) * r, cy + Math.sin(a) * r * 0.6, 12, 0, Math.PI * 2);
     ctx.fill();
   }
-  ctx.strokeStyle = "#58a6ff";
+  ctx.strokeStyle = C.accent;
   ctx.lineWidth = 2;
   ctx.beginPath();
   ctx.arc(cx, cy, 100, 0, Math.PI * 2);
   ctx.stroke();
-  ctx.fillStyle = "#8b949e";
+  ctx.fillStyle = C.elevated;
   ctx.fillText(`E = ${(-124.5 - Math.sin(t * 0.01) * 2).toFixed(2)} Ha (stub)`, 24, h - 24);
 }
 
@@ -260,9 +296,9 @@ function drawBioeng(t) {
   const w = canvas.width;
   const h = canvas.height;
   drawDrug(t);
-  ctx.fillStyle = "rgba(63, 185, 80, 0.15)";
+  ctx.fillStyle = "rgba(94, 224, 168, 0.15)";
   ctx.fillRect(0, h * 0.75, w, h * 0.25);
-  ctx.fillStyle = "#3fb950";
+  ctx.fillStyle = C.pass;
   ctx.font = "13px monospace";
   ctx.fillText("Bioreactor T=37°C · DBTL iteration " + Math.floor(t / 60), 24, h - 50);
 }
@@ -270,7 +306,7 @@ function drawBioeng(t) {
 function drawScientific(t) {
   const w = canvas.width;
   const h = canvas.height;
-  ctx.fillStyle = "#0d1117";
+  ctx.fillStyle = C.bg;
   ctx.fillRect(0, 0, w, h);
   const cols = 16;
   const rows = 10;
@@ -285,7 +321,7 @@ function drawScientific(t) {
       ctx.fillRect(40 + c * cw, 60 + r * ch, cw - 2, ch - 2);
     }
   }
-  ctx.fillStyle = "#58a6ff";
+  ctx.fillStyle = C.accent;
   ctx.font = "13px monospace";
   ctx.fillText(`T=37.${(t % 10)}°C · timestep ${Math.floor(t / 3)}`, 24, h - 36);
 }
@@ -294,47 +330,47 @@ function drawUnphysical(t) {
   const w = canvas.width;
   const h = canvas.height;
   const grad = ctx.createLinearGradient(0, h, 0, 0);
-  grad.addColorStop(0, "#161b22");
-  grad.addColorStop(1, "#0d1117");
+  grad.addColorStop(0, C.elevated);
+  grad.addColorStop(1, C.bg);
   ctx.fillStyle = grad;
   ctx.fillRect(0, 0, w, h);
-  ctx.strokeStyle = "#30363d";
+  ctx.strokeStyle = C.border;
   ctx.setLineDash([8, 8]);
   ctx.strokeRect(40, h * 0.72, w - 80, 2);
   ctx.setLineDash([]);
-  ctx.fillStyle = "#8b949e";
+  ctx.fillStyle = C.elevated;
   ctx.font = "12px monospace";
   ctx.fillText("ground (objects fall up)", 48, h * 0.72 - 8);
   const n = 24;
   for (let i = 0; i < n; i++) {
     const px = 60 + (i * 47 + t * 3) % (w - 120);
     const py = h * 0.65 - ((t * 2 + i * 31) % 280);
-    ctx.fillStyle = i % 4 === 0 ? "#a371f7" : "#58a6ff";
+    ctx.fillStyle = i % 4 === 0 ? C.violet : C.accent;
     ctx.beginPath();
     ctx.arc(px, py, 6 + (i % 3), 0, Math.PI * 2);
     ctx.fill();
   }
-  ctx.fillStyle = "#f0883e";
+  ctx.fillStyle = C.coral;
   ctx.fillRect(w * 0.5 - 40, h * 0.25, 80, 50);
   ctx.fillStyle = "#fff";
   ctx.font = "11px sans-serif";
   ctx.textAlign = "center";
   ctx.fillText("TELEPORT", w * 0.5, h * 0.25 + 30);
   ctx.textAlign = "left";
-  ctx.fillStyle = "#3fb950";
+  ctx.fillStyle = C.pass;
   ctx.fillText(`law_mode=arbitrary · custom_law_id=1`, 24, h - 40);
 }
 
 function drawPlay(t) {
   const w = canvas.width;
   const h = canvas.height;
-  ctx.fillStyle = "#0d1117";
+  ctx.fillStyle = C.bg;
   ctx.fillRect(0, 0, w, h);
   const n = 24;
   for (let i = 0; i < n; i++) {
     const px = 80 + (i % 6) * 90 + Math.sin(t * 0.03 + i) * 12;
     const py = 140 + Math.floor(i / 6) * 70 + Math.cos(t * 0.04 + i) * 8;
-    ctx.fillStyle = i % 4 === 0 ? "#58a6ff" : "#3fb950";
+    ctx.fillStyle = i % 4 === 0 ? C.accent : C.pass;
     ctx.beginPath();
     ctx.arc(px, py, 10, 0, Math.PI * 2);
     ctx.fill();
@@ -344,13 +380,13 @@ function drawPlay(t) {
   const gw = w * 0.28;
   const gh = h * 0.45;
   const grad = ctx.createLinearGradient(gx, gy, gx + gw, gy + gh);
-  grad.addColorStop(0, "#1f6feb");
-  grad.addColorStop(1, "#a371f7");
+  grad.addColorStop(0, C.accent);
+  grad.addColorStop(1, C.violet);
   ctx.fillStyle = grad;
   ctx.fillRect(gx, gy, gw, gh);
-  ctx.strokeStyle = "#30363d";
+  ctx.strokeStyle = C.border;
   ctx.strokeRect(gx, gy, gw, gh);
-  ctx.fillStyle = "#f0883e";
+  ctx.fillStyle = C.coral;
   ctx.beginPath();
   ctx.arc(w * 0.5, h * 0.72, 36, 0, Math.PI * 2);
   ctx.fill();
@@ -359,7 +395,7 @@ function drawPlay(t) {
   ctx.textAlign = "center";
   ctx.fillText("▶", w * 0.5, h * 0.72 + 6);
   ctx.textAlign = "left";
-  ctx.fillStyle = "#8b949e";
+  ctx.fillStyle = C.elevated;
   ctx.font = "13px monospace";
   ctx.fillText("new_game_world · new_field · start_playing", 24, h - 48);
   ctx.fillText(`tick ${Math.floor(t / 2)} · spin-up: play_mode`, 24, h - 28);
@@ -368,11 +404,11 @@ function drawPlay(t) {
 function drawAgent(t) {
   const w = canvas.width;
   const h = canvas.height;
-  ctx.fillStyle = "#0d1117";
+  ctx.fillStyle = C.bg;
   ctx.fillRect(0, 0, w, h);
-  ctx.fillStyle = "#161b22";
+  ctx.fillStyle = C.elevated;
   ctx.fillRect(60, 80, w - 120, h - 200);
-  ctx.strokeStyle = "#3fb950";
+  ctx.strokeStyle = C.pass;
   ctx.strokeRect(60, 80, w - 120, h - 200);
   const lines = [
     "{ \"ok\": true, \"errors\": 0 }",
@@ -382,17 +418,17 @@ function drawAgent(t) {
   ];
   ctx.font = "14px monospace";
   lines.forEach((line, i) => {
-    ctx.fillStyle = i === 0 ? "#3fb950" : "#8b949e";
+    ctx.fillStyle = i === 0 ? C.pass : C.muted;
     ctx.fillText(line, 80, 120 + i * 28);
   });
-  ctx.fillStyle = "#58a6ff";
+  ctx.fillStyle = C.accent;
   ctx.fillText(`tick ${Math.floor(t / 2)} · agent gate clear`, 80, h - 120);
 }
 
 function drawAdditive(t) {
   const w = canvas.width;
   const h = canvas.height;
-  ctx.fillStyle = "#0d1117";
+  ctx.fillStyle = C.bg;
   ctx.fillRect(0, 0, w, h);
   const size = 4;
   const cell = 36;
@@ -411,7 +447,7 @@ function drawAdditive(t) {
       }
     }
   }
-  ctx.fillStyle = "#8b949e";
+  ctx.fillStyle = C.elevated;
   ctx.font = "13px monospace";
   ctx.fillText("voxel 4³ · profile=sim_profile_additive", 24, h - 36);
 }
@@ -419,25 +455,25 @@ function drawAdditive(t) {
 function drawPublish(t) {
   const w = canvas.width;
   const h = canvas.height;
-  ctx.fillStyle = "#0d1117";
+  ctx.fillStyle = C.bg;
   ctx.fillRect(0, 0, w, h);
-  ctx.fillStyle = "#161b22";
+  ctx.fillStyle = C.elevated;
   ctx.fillRect(80, 80, w - 160, h - 160);
-  ctx.strokeStyle = "#30363d";
+  ctx.strokeStyle = C.border;
   ctx.strokeRect(80, 80, w - 160, h - 160);
-  ctx.fillStyle = "#58a6ff";
+  ctx.fillStyle = C.accent;
   ctx.font = "bold 18px sans-serif";
   ctx.fillText("Figure 1 — World Studio export", 120, 120);
   const bars = 8;
   for (let i = 0; i < bars; i++) {
     const bh = 40 + Math.sin(t * 0.04 + i) * 30 + 80;
-    ctx.fillStyle = i % 2 === 0 ? "#3fb950" : "#a371f7";
+    ctx.fillStyle = i % 2 === 0 ? C.pass : C.violet;
     ctx.fillRect(140 + i * 110, h - 180 - bh, 70, bh);
   }
-  ctx.fillStyle = "#8b949e";
+  ctx.fillStyle = C.elevated;
   ctx.font = "13px monospace";
   ctx.fillText(`PublishBundle hash=3291 · dpi=300 · files=3`, 120, h - 100);
-  ctx.fillStyle = "#f0883e";
+  ctx.fillStyle = C.coral;
   ctx.fillRect(w - 200, 100, 120, 36);
   ctx.fillStyle = "#000";
   ctx.font = "12px sans-serif";
@@ -449,31 +485,31 @@ function drawPublish(t) {
 function drawMmo(t) {
   const w = canvas.width;
   const h = canvas.height;
-  ctx.fillStyle = "#0d1117";
+  ctx.fillStyle = C.bg;
   ctx.fillRect(0, 0, w, h);
   const shards = 2;
   for (let s = 0; s < shards; s++) {
     const ox = s * (w / 2);
-    ctx.strokeStyle = "#30363d";
+    ctx.strokeStyle = C.border;
     ctx.strokeRect(ox + 20, 60, w / 2 - 40, h - 120);
-    ctx.fillStyle = "#58a6ff";
+    ctx.fillStyle = C.accent;
     ctx.font = "bold 14px sans-serif";
     ctx.fillText(`Shard ${s}`, ox + 32, 88);
     for (let p = 0; p < 12; p++) {
       const px = ox + 40 + (p % 4) * 70;
       const py = 120 + Math.floor(p / 4) * 50 + Math.sin(t * 0.05 + p + s) * 5;
-      ctx.fillStyle = p % 3 === 0 ? "#3fb950" : "#8b949e";
+      ctx.fillStyle = p % 3 === 0 ? C.pass : C.muted;
       ctx.fillRect(px, py, 20, 20);
     }
   }
-  ctx.fillStyle = "#f0883e";
+  ctx.fillStyle = C.coral;
   ctx.fillRect(w / 2 - 50, 20, 100, 30);
   ctx.fillStyle = "#000";
   ctx.font = "12px sans-serif";
   ctx.textAlign = "center";
   ctx.fillText("Gateway", w / 2, 40);
   ctx.textAlign = "left";
-  ctx.fillStyle = "#8b949e";
+  ctx.fillStyle = C.elevated;
   ctx.fillText(`tick ${Math.floor(t / 2)} · realm dev-realm-1`, 24, h - 24);
 }
 
@@ -771,6 +807,23 @@ function seedAgentChat() {
 }
 
 seedAgentChat();
+
+syncCanvasColors();
+const savedTheme = (() => {
+  try {
+    return localStorage.getItem("li-studio-theme");
+  } catch (_) {
+    return null;
+  }
+})();
+if (savedTheme && ["aurora", "ember", "slate"].includes(savedTheme)) {
+  applyTheme(savedTheme);
+} else {
+  syncCanvasColors();
+}
+document.querySelectorAll(".theme-btn").forEach((btn) => {
+  btn.addEventListener("click", () => applyTheme(btn.dataset.theme));
+});
 
 const params = new URLSearchParams(location.search);
 if (params.get("autoreel") === "1") {

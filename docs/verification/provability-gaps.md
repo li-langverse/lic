@@ -33,11 +33,11 @@ This page is the **honest inventory** of what is **not** fully proved or not yet
 
 | ID | Status | What remains |
 |----|--------|----------------|
-| **G-lean** | Partial | Default `lic build` must fail on open non-trivial Props; kernel discharge, not only `trivial` |
+| **G-lean** | Partial | **Tier B (default when lake installed):** `lic build` runs `lake build AutoVC` (typecheck only; `LI_BUILD_VERIFY_LEAN=0` opt-out). **Strict** open goals: `--strict-lean` or `LI_BUILD_VERIFY_LEAN_STRICT=1`. **`LiArray`** + fib/recursive call-site + parallel `_par*` VCs typecheck. **Still open:** kernel proofs for intentional open specimens (`sqrt_open_bound`, loop dot); `sorry` on `mat2_at2_float_spec` |
 | **G-vc** | Partial | Float/`abs` ensures; opaque `vec3_dot`-style returns; loop implementations vs closed-form `ensures` |
 | **G-par** | Partial | AST `policy_module` rejects missing disjoint, false `disjoint_row`, mut capture, borrow-in-par; Lean proofs open |
 | **G-dec** | Partial | Decorator elaboration to MIR; `decorator_exploits` proofs |
-| **G-math** | Partial | **Open:** float `@`/`dot` Lean Props, 2D **CallProc**; tier-1 **≤1.2× C++**. **Closed slice:** prelude `norm`, loop-dot witness, P-linalg corpus |
+| **G-math** | Partial | **Closed slice (tier-1):** `matmul_naive`, `horner_pure_li` ≤1.2× C++ (`check-tier1-li-vs-cpp.sh`, loop matmul + FMA horner). **Closed slice:** full 2×2 float `@` Lean Prop (`linalg_mat2_at2_float_closed`, `mat2_at2_float_spec`). **Closed slice:** `linalg_dot4_float_closed` (prelude `dot`), `linalg_mat2_callproc_float_closed`, prelude `norm`/`axpy`/**, IKJ `ArrayMatMul2DF64` enforced only with `LI_TIER1_PERF_STRICT=1` (`check-tier1-li-vs-cpp.sh` reports gaps by default). **Closed slice:** prelude `norm`, `axpy`, same-length `**`, scalar×array, `math_linalg/reductions/`, loop-dot witness, P-linalg corpus |
 | **G-bnd** | Partial | Release path without `li_bounds_fail` for proved indices |
 | **G-def** | Partial+ | Cross-module method privacy proofs; virtual dispatch deferred |
 | **G-oop** | Partial | Lean `ensures` on methods; trait laws in kernel |

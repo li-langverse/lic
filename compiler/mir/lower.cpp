@@ -241,13 +241,138 @@ std::string lower_float_array_dot_f64(const std::string& lhs_ident, const std::s
   return dest;
 }
 
+bool float_array_slot_n(const std::string& ident, std::int64_t* out_n) {
+  if (!g_arr_ctx || !g_arr_ctx->float_array_names ||
+      g_arr_ctx->float_array_names->count(ident) == 0) {
+    return false;
+  }
+  const auto sz = g_arr_ctx->float_array_sizes.find(ident);
+  if (sz == g_arr_ctx->float_array_sizes.end()) {
+    return false;
+  }
+  if (out_n) {
+    *out_n = sz->second;
+  }
+  return true;
+}
+
+bool emit_float_array_scale(const std::string& dest, const std::string& arr_ident,
+                            bool scale_lit, double scale_val, const std::string& scale_ident,
+                            std::vector<MirInsn>& out) {
+  std::int64_t n = 0;
+  if (!float_array_slot_n(arr_ident, &n)) {
+    return false;
+  }
+  MirInsn ins;
+  ins.op = MirOp::ArrayScaleF64;
+  ins.ident = dest;
+  ins.lhs_ident = arr_ident;
+  ins.int_value = n;
+  if (scale_lit) {
+    ins.rhs_is_literal = true;
+    ins.float_value = scale_val;
+  } else {
+    ins.rhs_is_literal = false;
+    ins.rhs_ident = scale_ident;
+  }
+  out.push_back(std::move(ins));
+  return true;
+}
+
+std::string lower_float_array_scale_expr(const std::string& arr_ident, bool scale_lit,
+                                         double scale_val, const std::string& scale_ident,
+                                         std::vector<MirInsn>& out) {
+  std::int64_t n = 0;
+  if (!float_array_slot_n(arr_ident, &n) || !g_arr_ctx || !g_arr_ctx->float_array_names) {
+    return {};
+  }
+  const std::string dest = fresh_temp();
+  MirInsn alloc;
+  alloc.op = MirOp::ArrayAlloc;
+  alloc.ident = dest;
+  alloc.int_value = n;
+  alloc.array_is_float = true;
+  out.push_back(std::move(alloc));
+  g_arr_ctx->float_array_names->insert(dest);
+  g_arr_ctx->float_array_sizes[dest] = n;
+  if (!emit_float_array_scale(dest, arr_ident, scale_lit, scale_val, scale_ident, out)) {
+    return {};
+  }
+  return dest;
+}
+
+bool emit_float_array_axpy(bool alpha_lit, double alpha_val, const std::string& alpha_ident,
+                           const std::string& x_ident, const std::string& y_ident,
+                           std::vector<MirInsn>& out) {
+  std::int64_t n = 0;
+  if (!float_array_slot_n(x_ident, &n) || !float_array_slot_n(y_ident, nullptr) ||
+      g_arr_ctx->float_array_sizes.at(x_ident) != g_arr_ctx->float_array_sizes.at(y_ident)) {
+    return false;
+  }
+  MirInsn ins;
+  ins.op = MirOp::ArrayAxpyF64;
+  ins.lhs_ident = x_ident;
+  ins.rhs_ident = y_ident;
+  ins.int_value = n;
+  if (alpha_lit) {
+    ins.rhs_is_literal = true;
+    ins.float_value = alpha_val;
+  } else {
+    ins.rhs_is_literal = false;
+    ins.ident = alpha_ident;
+  }
+  out.push_back(std::move(ins));
+  return true;
+}
+
 bool is_arith_binop(BinOp op) {
   return op == BinOp::Add || op == BinOp::Sub || op == BinOp::Mul || op == BinOp::Div ||
          op == BinOp::Mod || op == BinOp::FloorDiv || op == BinOp::Pow;
 }
 
+bool try_emit_fma_float_assign(const Expr& e, const std::string& dest,
+                               std::vector<MirInsn>& out) {
+  if (e.kind != Expr::Kind::BinOp || e.bin_op != BinOp::Add || !e.lhs || !e.rhs) {
+    return false;
+  }
+  double addend = 0.0;
+  if (e.rhs->kind == Expr::Kind::FloatLit) {
+    addend = e.rhs->float_value;
+  } else if (e.rhs->kind == Expr::Kind::IntLit) {
+    addend = static_cast<double>(e.rhs->int_value);
+  } else {
+    return false;
+  }
+  const Expr& mul = *e.lhs;
+  if (mul.kind != Expr::Kind::BinOp || mul.bin_op != BinOp::Mul || !mul.lhs || !mul.rhs) {
+    return false;
+  }
+  std::string acc;
+  std::string factor;
+  if (mul.lhs->kind == Expr::Kind::Ident && mul.lhs->ident == dest &&
+      mul.rhs->kind == Expr::Kind::Ident) {
+    acc = dest;
+    factor = mul.rhs->ident;
+  } else if (mul.rhs->kind == Expr::Kind::Ident && mul.rhs->ident == dest &&
+             mul.lhs->kind == Expr::Kind::Ident) {
+    acc = dest;
+    factor = mul.lhs->ident;
+  } else {
+    return false;
+  }
+  MirInsn ins;
+  ins.op = MirOp::FmaFloatF64;
+  ins.ident = dest;
+  ins.lhs_ident = factor;
+  ins.rhs_ident = acc;
+  ins.float_value = addend;
+  out.push_back(std::move(ins));
+  return true;
+}
+
 bool is_array_elementwise_binop(BinOp op) {
-  return op == BinOp::Add || op == BinOp::Sub || op == BinOp::Mul || op == BinOp::Div;
+  return op == BinOp::Add || op == BinOp::Sub || op == BinOp::Mul || op == BinOp::Div ||
+         op == BinOp::Pow;
 }
 
 bool emit_array_elementwise_binop(const std::string& dest, const std::string& lhs_ident,
@@ -966,6 +1091,28 @@ std::string lower_expr_to(const Expr& e, const Module& module, std::vector<MirIn
           return dest;
         }
       }
+      if (e.bin_op == BinOp::Mul && e.lhs && e.rhs) {
+        auto try_scale = [&](const Expr& scale, const Expr& arr) -> std::string {
+          if (arr.kind != Expr::Kind::Ident) {
+            return {};
+          }
+          if (scale.kind == Expr::Kind::FloatLit) {
+            return lower_float_array_scale_expr(arr.ident, true, scale.float_value, {}, out);
+          }
+          if (scale.kind == Expr::Kind::Ident) {
+            return lower_float_array_scale_expr(arr.ident, false, 0.0, scale.ident, out);
+          }
+          return {};
+        };
+        if (std::string dest = try_scale(*e.lhs, *e.rhs); !dest.empty()) {
+          float_names.insert(dest);
+          return dest;
+        }
+        if (std::string dest = try_scale(*e.rhs, *e.lhs); !dest.empty()) {
+          float_names.insert(dest);
+          return dest;
+        }
+      }
       if (is_array_elementwise_binop(e.bin_op) && e.lhs && e.lhs->kind == Expr::Kind::Ident &&
           e.rhs && e.rhs->kind == Expr::Kind::Ident) {
         const std::string dest =
@@ -1030,6 +1177,25 @@ std::string lower_expr_to(const Expr& e, const Module& module, std::vector<MirIn
         out.push_back(std::move(ins));
         simd_names.insert(dest);
         return dest;
+      }
+      if (e.ident == "axpy" && e.args.size() == 3 && e.args[1]->kind == Expr::Kind::Ident &&
+          e.args[2]->kind == Expr::Kind::Ident && g_arr_ctx) {
+        const std::string& x = e.args[1]->ident;
+        const std::string& y = e.args[2]->ident;
+        bool lit = false;
+        double fv = 0.0;
+        std::string alpha_id;
+        if (e.args[0]->kind == Expr::Kind::FloatLit) {
+          lit = true;
+          fv = e.args[0]->float_value;
+        } else if (e.args[0]->kind == Expr::Kind::Ident) {
+          alpha_id = lower_expr_to(*e.args[0], module, out, float_names, simd_names, i64_locals);
+        } else {
+          alpha_id = lower_expr_to(*e.args[0], module, out, float_names, simd_names, i64_locals);
+        }
+        if (emit_float_array_axpy(lit, fv, alpha_id, x, y, out)) {
+          return fresh_temp();
+        }
       }
       if (e.ident == "dot" && e.args.size() == 2 && e.args[0]->kind == Expr::Kind::Ident &&
           e.args[1]->kind == Expr::Kind::Ident) {
@@ -1408,6 +1574,30 @@ void lower_stmt(const Stmt& stmt, LowerCtx& ctx, bool returns_float, std::vector
               stmt.init->rhs->kind == Expr::Kind::Ident) {
             emit_array_elementwise_binop(stmt.var_name, stmt.init->lhs->ident,
                                          stmt.init->rhs->ident, stmt.init->bin_op, out);
+          } else if (stmt.init && stmt.init->kind == Expr::Kind::BinOp &&
+                     stmt.init->bin_op == BinOp::Mul && ins.array_is_float) {
+            auto try_init_scale = [&](const Expr& scale, const Expr& arr) -> bool {
+              if (arr.kind != Expr::Kind::Ident) {
+                return false;
+              }
+              if (scale.kind == Expr::Kind::FloatLit) {
+                return emit_float_array_scale(stmt.var_name, arr.ident, true, scale.float_value, {},
+                                              out);
+              }
+              if (scale.kind == Expr::Kind::Ident) {
+                return emit_float_array_scale(stmt.var_name, arr.ident, false, 0.0, scale.ident,
+                                              out);
+              }
+              return false;
+            };
+            if (stmt.init->lhs && stmt.init->rhs &&
+                (try_init_scale(*stmt.init->lhs, *stmt.init->rhs) ||
+                 try_init_scale(*stmt.init->rhs, *stmt.init->lhs))) {
+            } else if (stmt.init) {
+              (void)lower_expr_to(*stmt.init, module, out, float_names, simd_names, i64_locals);
+            }
+          } else if (stmt.init) {
+            (void)lower_expr_to(*stmt.init, module, out, float_names, simd_names, i64_locals);
           }
         }
       } else if (is_i64_type_name(stmt.var_type.name)) {
@@ -1668,6 +1858,10 @@ void lower_stmt(const Stmt& stmt, LowerCtx& ctx, bool returns_float, std::vector
           break;
         }
         const bool flt = float_names.count(stmt.init->ident) > 0;
+        if (flt && stmt.expr->kind == Expr::Kind::BinOp &&
+            try_emit_fma_float_assign(*stmt.expr, stmt.init->ident, out)) {
+          break;
+        }
         MirInsn ins;
         ins.op = flt ? MirOp::StoreFloat : MirOp::StoreInt;
         ins.ident = stmt.init->ident;
@@ -1811,6 +2005,97 @@ void lower_stmt(const Stmt& stmt, LowerCtx& ctx, bool returns_float, std::vector
       if (!stmt.cond) {
         break;
       }
+      auto parse_i_lt_limit = [](const Expr& cond, std::string& iter,
+                                 std::int64_t& limit) -> bool {
+        if (cond.kind != Expr::Kind::BinOp || cond.bin_op != BinOp::Lt || !cond.lhs ||
+            !cond.rhs) {
+          return false;
+        }
+        if (cond.lhs->kind != Expr::Kind::Ident || cond.rhs->kind != Expr::Kind::IntLit) {
+          return false;
+        }
+        iter = cond.lhs->ident;
+        limit = cond.rhs->int_value;
+        return limit > 0;
+      };
+      auto is_horner_fma_step = [](const Stmt& s, const std::string& acc_name,
+                                   std::string& factor) -> bool {
+        if (s.kind != Stmt::Kind::Assign || !s.init || !s.expr ||
+            s.init->kind != Expr::Kind::Ident || s.init->ident != acc_name) {
+          return false;
+        }
+        if (s.expr->kind != Expr::Kind::BinOp || s.expr->bin_op != BinOp::Add || !s.expr->lhs ||
+            !s.expr->rhs) {
+          return false;
+        }
+        const Expr& mul = *s.expr->lhs;
+        if (mul.kind != Expr::Kind::BinOp || mul.bin_op != BinOp::Mul || !mul.lhs || !mul.rhs) {
+          return false;
+        }
+        if (mul.lhs->kind == Expr::Kind::Ident && mul.lhs->ident == acc_name &&
+            mul.rhs->kind == Expr::Kind::Ident) {
+          factor = mul.rhs->ident;
+          return true;
+        }
+        if (mul.rhs->kind == Expr::Kind::Ident && mul.rhs->ident == acc_name &&
+            mul.lhs->kind == Expr::Kind::Ident) {
+          factor = mul.lhs->ident;
+          return true;
+        }
+        return false;
+      };
+      std::string iter_name;
+      std::int64_t trip = 0;
+      constexpr int kHornerUnroll = 16;
+      if (parse_i_lt_limit(*stmt.cond, iter_name, trip) && trip >= kHornerUnroll &&
+          (trip % kHornerUnroll) == 0 && stmt.while_body.size() == 2) {
+        std::string acc_name;
+        std::string factor;
+        std::string step_factor;
+        bool horner_ok = false;
+        for (const auto& s : stmt.while_body) {
+          if (s.kind == Stmt::Kind::Assign && s.init && s.init->kind == Expr::Kind::Ident &&
+              is_horner_fma_step(s, s.init->ident, step_factor)) {
+            acc_name = s.init->ident;
+            factor = step_factor;
+            horner_ok = true;
+          }
+        }
+        if (horner_ok && float_names.count(acc_name) > 0) {
+          const std::string head_label = fresh_label("while_head_");
+          const std::string exit_label = fresh_label("while_exit_");
+          if (ctx.loop_stack) {
+            ctx.loop_stack->push_back(LoopLabels{head_label, exit_label});
+          }
+          push_label(out, head_label);
+          const std::string cond_tmp =
+              lower_expr_to(*stmt.cond, module, out, float_names, simd_names, i64_locals);
+          push_branch_if_zero(out, cond_tmp, exit_label);
+          for (int u = 0; u < kHornerUnroll; ++u) {
+            MirInsn fma;
+            fma.op = MirOp::FmaFloatF64;
+            fma.ident = acc_name;
+            fma.lhs_ident = factor;
+            fma.rhs_ident = acc_name;
+            fma.float_value = 1.0;
+            out.push_back(std::move(fma));
+          }
+          MirInsn inc;
+          inc.op = MirOp::BinOpInt;
+          inc.ident = iter_name;
+          inc.lhs_ident = iter_name;
+          inc.bin_op = BinOp::Add;
+          inc.rhs_is_literal = true;
+          inc.rhs_int = kHornerUnroll;
+          out.push_back(std::move(inc));
+          push_jump(out, head_label);
+          push_label(out, exit_label);
+          if (ctx.loop_stack) {
+            ctx.loop_stack->pop_back();
+          }
+          break;
+        }
+      }
       const std::string head_label = fresh_label("while_head_");
       const std::string exit_label = fresh_label("while_exit_");
       if (ctx.loop_stack) {
@@ -1845,6 +2130,18 @@ void lower_stmt(const Stmt& stmt, LowerCtx& ctx, bool returns_float, std::vector
         if (stmt.expr->kind == Expr::Kind::Call && stmt.expr->ident == "echo" &&
             !stmt.expr->args.empty()) {
           lower_echo_arg(*stmt.expr->args[0], out);
+        } else if (stmt.expr->kind == Expr::Kind::Call && stmt.expr->ident == "axpy" &&
+                   stmt.expr->args.size() == 3 && stmt.expr->args[1]->kind == Expr::Kind::Ident &&
+                   stmt.expr->args[2]->kind == Expr::Kind::Ident) {
+          bool lit = stmt.expr->args[0]->kind == Expr::Kind::FloatLit;
+          double fv = lit ? stmt.expr->args[0]->float_value : 0.0;
+          std::string alpha_id;
+          if (!lit) {
+            alpha_id = lower_expr_to(*stmt.expr->args[0], module, out, float_names, simd_names,
+                                     i64_locals);
+          }
+          (void)emit_float_array_axpy(lit, fv, alpha_id, stmt.expr->args[1]->ident,
+                                      stmt.expr->args[2]->ident, out);
         } else {
           (void)lower_expr_to(*stmt.expr, module, out, float_names, simd_names, i64_locals);
         }
@@ -1900,7 +2197,8 @@ MirModule lower_to_mir(const Module& module) {
     if (proc.ret_type) {
       fn.returns_float = is_float_type_name(proc.ret_type->name);
       fn.returns_i64 = mir_ptr_param_type_name(proc.ret_type->name) ||
-                        is_i64_type_name(proc.ret_type->name);
+                        is_i64_type_name(proc.ret_type->name) ||
+                        proc.ret_type->name == "StringView";
       fn.returns_void = proc.ret_type->name == "unit";
       if (object_alias_for_named_type(module, *proc.ret_type)) {
         fn.returns_object = true;
@@ -1920,10 +2218,19 @@ MirModule lower_to_mir(const Module& module) {
         mp.name = p.name;
         const TypeExpr* ut = unwrap_refinement_type(&p.type);
         if (ut && ut->kind == TypeKind::Array && ut->array_size > 0 && ut->elem) {
-          const TypeExpr* el = unwrap_refinement_type(ut->elem.get());
-          if (el && el->kind == TypeKind::Named) {
-            mp.fixed_array_elems = ut->array_size;
-            mp.is_float = is_float_type_name(el->name);
+          std::int64_t m_rows = 0;
+          std::int64_t m_cols = 0;
+          if (is_2d_float_matrix_type(*ut, &m_rows, &m_cols)) {
+            mp.fixed_array_elems = m_rows;
+            mp.matrix_cols = m_cols;
+            mp.is_matrix = true;
+            mp.is_float = true;
+          } else {
+            const TypeExpr* el = unwrap_refinement_type(ut->elem.get());
+            if (el && el->kind == TypeKind::Named) {
+              mp.fixed_array_elems = ut->array_size;
+              mp.is_float = is_float_type_name(el->name);
+            }
           }
         } else {
           mp.is_float = is_float_type_name(p.type.name);

@@ -312,6 +312,30 @@ file = "contracts_verify/linalg_norm4_int_closed.li"
 outcome = "verify_ok"
 note = "P-linalg: int norm (sum of squares) via prelude norm"
 
+[[tests]]
+suite = "contracts_verify"
+file = "contracts_verify/linalg_axpy4_int_closed.li"
+outcome = "verify_ok"
+note = "P-linalg: axpy scalar closed form (alpha*x+y)"
+
+[[tests]]
+suite = "contracts_verify"
+file = "contracts_verify/linalg_dot4_float_closed.li"
+outcome = "verify_ok"
+note = "P-linalg: float dot via prelude dot() — static witness"
+
+[[tests]]
+suite = "contracts_verify"
+file = "contracts_verify/linalg_mat2_at2_float_closed.li"
+outcome = "verify_ok"
+note = "P-linalg: full 2×2 float @ — Li.Discharge.mat2_at2_float_spec"
+
+[[tests]]
+suite = "contracts_verify"
+file = "contracts_verify/linalg_mat2_callproc_float_closed.li"
+outcome = "verify_ok"
+note = "P-linalg: 2×2 float @ via CallProc nested arrays"
+
 # --- borrow ---
 
 [[tests]]
@@ -773,6 +797,31 @@ outcome = "verify_ok"
 [[tests]]
 suite = "math_linalg"
 file = "math_linalg/vec3_ops.li"
+outcome = "verify_ok"
+
+[[tests]]
+suite = "math_linalg"
+file = "math_linalg/elementwise_pow_float4.li"
+outcome = "verify_ok"
+
+[[tests]]
+suite = "math_linalg"
+file = "math_linalg/scale_float4.li"
+outcome = "verify_ok"
+
+[[tests]]
+suite = "math_linalg"
+file = "math_linalg/axpy_float4.li"
+outcome = "verify_ok"
+
+[[tests]]
+suite = "math_linalg"
+file = "math_linalg/reductions/sum_float4.li"
+outcome = "verify_ok"
+
+[[tests]]
+suite = "math_linalg"
+file = "math_linalg/reductions/dot_via_sum_product.li"
 outcome = "verify_ok"
 
 # --- physics (packages + profiles) ---

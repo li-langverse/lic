@@ -41,3 +41,6 @@ benchmarks/tier2_physics/**/target/
 .li-agent-coord.json
 ../.li-agent-coord.json
 build-asan/
+
+# Lean 4 (docs/semantics)
+docs/semantics/.lake/

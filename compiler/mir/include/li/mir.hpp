@@ -36,6 +36,10 @@ enum class MirOp {
   /** Element-wise binop into `ident` from `lhs_ident` and `rhs_ident` (length `int_value`). */
   ArrayBinOpF64,
   ArrayBinOpI64,
+  /** `dest[i] = scale * lhs[i]` — scale in `rhs_ident` (float local) or `float_value` if literal. */
+  ArrayScaleF64,
+  /** `rhs[i] = scale * lhs[i] + rhs[i]` — scale in `ident`, lhs=x, rhs=y. */
+  ArrayAxpyF64,
   LocalAllocInt,
   LocalAllocI64,
   StoreInt,
@@ -44,6 +48,8 @@ enum class MirOp {
   LoadIntToIdent,
   BinOpInt,
   BinOpFloat,
+  /** `ident = lhs_ident * rhs_ident + float_value` (LLVM fmuladd) — horner / FMA chains */
+  FmaFloatF64,
   LocalAllocFloat,
   LocalAllocSimdF64,
   SimdSplatF64,
@@ -83,6 +89,9 @@ struct MirParam {
   std::int64_t simd_lanes = 0;
   /** When >0, slot is `ident + "_" + name` as ArrayAlloc; LLVM uses `[N x scalar]` in structs. */
   std::int64_t fixed_array_elems = 0;
+  /** `array[M, array[K, float]]` param: rows in fixed_array_elems, cols here. */
+  bool is_matrix = false;
+  std::int64_t matrix_cols = 0;
 };
 
 struct MirInsn {

@@ -1251,6 +1251,14 @@ bool emit_llvm_ir(const MirModule& mir, const std::string& out_path, std::string
       "li_rt_str_byte_at",
       llvm::FunctionType::get(i32_ty(context), {i8_ptr(context), i32_ty(context)}, false));
   module->getOrInsertFunction(
+      "li_rt_str_prefix_is_get",
+      llvm::FunctionType::get(i32_ty(context), {i8_ptr(context)}, false));
+  module->getOrInsertFunction(
+      "li_rt_http_parse_request_len_tag",
+      llvm::FunctionType::get(i32_ty(context),
+                              {i8_ptr(context), i32_ty(context), i32_ty(context)},
+                              false));
+  module->getOrInsertFunction(
       "li_rt_str_eq",
       llvm::FunctionType::get(i32_ty(context), {i8_ptr(context), i8_ptr(context)}, false));
   module->getOrInsertFunction(

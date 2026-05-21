@@ -136,6 +136,30 @@ int32_t li_rt_str_byte_at(const char* s, int32_t i) {
   return (int32_t)(unsigned char)s[i];
 }
 
+int32_t li_rt_str_prefix_is_get(const char* s) {
+  if (s == NULL) {
+    return 0;
+  }
+  const unsigned char* p = (const unsigned char*)s;
+  return (p[0] == (unsigned char)'G' && p[1] == (unsigned char)'E' && p[2] == (unsigned char)'T') ? 1 : 0;
+}
+
+int32_t li_rt_http_parse_request_len_tag(const char* s, int32_t max_header_block, int32_t max_body) {
+  (void)max_body;
+  if (s == NULL || max_header_block <= 0) {
+    return 0;
+  }
+  const size_t len = strlen(s);
+  if (len > (size_t)max_header_block) {
+    return 0;
+  }
+  const int32_t n = (int32_t)len;
+  if (n < 3) {
+    return n;
+  }
+  return n + li_rt_str_prefix_is_get(s);
+}
+
 int32_t li_rt_str_len(const char* s) {
   if (s == NULL) {
     return 0;

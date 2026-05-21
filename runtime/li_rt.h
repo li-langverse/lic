@@ -31,6 +31,8 @@ void li_rt_volatile_sink_f64(double v);
 
 /* HTTP routing + config (li_rt_httpd.c — M1 validate-config / routing tests). */
 int32_t li_rt_str_byte_at(const char* s, int32_t i);
+int32_t li_rt_str_prefix_is_get(const char* s);
+int32_t li_rt_http_parse_request_len_tag(const char* s, int32_t max_header_block, int32_t max_body);
 int32_t li_rt_str_eq(const char* a, const char* b);
 int32_t li_rt_path_exact(const char* path, const char* want);
 int32_t li_rt_path_prefix(const char* path, const char* prefix);

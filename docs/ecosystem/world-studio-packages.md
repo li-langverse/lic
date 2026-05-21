@@ -17,3 +17,5 @@
 | `studio.ai` | li-studio-ai | Agent diagnose / patch |
 
 Register in roadmap **official-packages** when publishing mirror repos.
+
+**Repo layout (product vs packages):** [li-studio-repos.md](li-studio-repos.md) — `li-world-studio` for demo/mocks; `li-studio` / `li-studio-ai` for libraries.

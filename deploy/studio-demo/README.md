@@ -1,5 +1,8 @@
 # Li World Studio — demo showcase
 
+> **Repo home (target):** [`li-world-studio`](https://github.com/li-langverse/li-world-studio) — see [MOVED.md](MOVED.md) · [li-studio-repos.md](../../docs/ecosystem/li-studio-repos.md).  
+> This copy under **`lic/deploy/`** is temporary until the product repo is created.
+
 Interactive **agent-first studio shell** (outliner, viewport, **Agent chat dock**) with animated verticals:
 
 - **Agent dock** — chat bubbles, plan card, Apply/Reject, `/build` hints (right rail)  

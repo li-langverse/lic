@@ -131,6 +131,33 @@ struct EmitCtx {
     return builder->CreateLoad(vec4_f64(), ensure_simd_f64x4(name));
   }
 
+  llvm::Value* horiz_sum_f64x4(llvm::Value* vec) {
+    llvm::Type* f64 = llvm::Type::getDoubleTy(context);
+    llvm::Value* sum = llvm::ConstantFP::get(f64, 0.0);
+    for (unsigned lane = 0; lane < 4; ++lane) {
+      llvm::Value* elt = builder->CreateExtractElement(
+          vec, llvm::ConstantInt::get(i32_ty(context), lane));
+      sum = builder->CreateFAdd(sum, elt);
+    }
+    return sum;
+  }
+
+  llvm::Value* gather_array_f64x4(llvm::AllocaInst* alloca, unsigned start) {
+    llvm::Type* f64 = llvm::Type::getDoubleTy(context);
+    llvm::Value* zero = llvm::ConstantInt::get(builder->getInt32Ty(), 0);
+    llvm::Type* arr_ty = alloca->getAllocatedType();
+    llvm::Value* vec = llvm::UndefValue::get(vec4_f64());
+    for (unsigned lane = 0; lane < 4; ++lane) {
+      llvm::Value* idx = llvm::ConstantInt::get(i32_ty(context), start + lane);
+      llvm::Value* gep_idx[] = {zero, idx};
+      llvm::Value* ptr = builder->CreateInBoundsGEP(arr_ty, alloca, gep_idx);
+      llvm::Value* scalar = builder->CreateLoad(f64, ptr);
+      vec = builder->CreateInsertElement(
+          vec, scalar, llvm::ConstantInt::get(i32_ty(context), lane));
+    }
+    return vec;
+  }
+
   llvm::AllocaInst* ensure_int_local(const std::string& name) {
     auto it = int_locals.find(name);
     if (it != int_locals.end()) {
@@ -878,9 +905,20 @@ struct EmitCtx {
         llvm::Type* f64 = llvm::Type::getDoubleTy(context);
         llvm::Value* acc = llvm::ConstantFP::get(f64, 0.0);
         const auto n = static_cast<unsigned>(ins.int_value);
-        for (unsigned i = 0; i < n; ++i) {
+        const unsigned simd_end = (n / 4) * 4;
+        if (simd_end > 0) {
+          llvm::Value* v_acc =
+              builder->CreateVectorSplat(4, llvm::ConstantFP::get(f64, 0.0));
+          for (unsigned i = 0; i < simd_end; i += 4) {
+            llvm::Value* av = gather_array_f64x4(a_it->second.alloca, i);
+            llvm::Value* bv = gather_array_f64x4(b_it->second.alloca, i);
+            v_acc = builder->CreateFAdd(v_acc, builder->CreateFMul(av, bv));
+          }
+          acc = horiz_sum_f64x4(v_acc);
+        }
+        llvm::Value* zero = llvm::ConstantInt::get(builder->getInt32Ty(), 0);
+        for (unsigned i = simd_end; i < n; ++i) {
           llvm::Value* idx = llvm::ConstantInt::get(i32_ty(context), i);
-          llvm::Value* zero = llvm::ConstantInt::get(builder->getInt32Ty(), 0);
           llvm::Value* gep_idx[] = {zero, idx};
           llvm::Value* ap = builder->CreateInBoundsGEP(
               a_it->second.alloca->getAllocatedType(), a_it->second.alloca, gep_idx);

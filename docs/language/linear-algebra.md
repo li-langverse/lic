@@ -6,7 +6,7 @@ User code should express numerical kernels as **math**, not compiler intrinsics.
 
 | Form | Types | Lowering |
 |------|-------|----------|
-| `a @ b` / `dot(a, b)` | `array[N, float]` × `array[N, float]` → `float` | `ArrayDotF64` |
+| `a @ b` / `dot(a, b)` | `array[N, float]` × `array[N, float]` → `float` | `ArrayDotF64` (4-wide SIMD gather when `N ≥ 4`) |
 | `C = A @ B` | `array[M, array[K, float]]` × `array[K, array[N, float]]` → `array[M, array[N, float]]` | `ArrayMatMul2DF64` |
 | `sum(a)` | `array[N, int]` or `array[N, float]` | `ArraySumF64` / `ArraySumI64` |
 | `a + b`, `a - b`, `a * b`, `a / b` | matching 1d numeric arrays | `ArrayBinOpF64` / `ArrayBinOpI64` |

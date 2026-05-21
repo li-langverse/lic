@@ -962,6 +962,9 @@ def httpd_run_from_runtime_config(path: var ptr) raises Net, Alloc, IO -> int
   var r: ptr = httpd_config_doc_root_i()
   if p <= 0:
     return 1
+  if httpd_proxy_configured_i() == 1:
+    var bp: int = httpd_proxy_upstream_port_i()
+    return httpd_serve_port_root_proxy(p, r, bp)
   return httpd_serve_port_root(p, r)
 
 def httpd_run_from_argv() raises Net, Alloc, IO -> int

@@ -168,6 +168,10 @@ extern proc httpd_set_epfd_i(epfd: var int) raises Net -> int
 extern proc httpd_proxy_configured_i() -> int
   requires true
   ensures true
+
+extern proc httpd_proxy_upstream_port_i() -> int
+  requires true
+  ensures true
   decreases 0
 
 extern proc httpd_proxy_compact_req_hdr_i(slot: var int, hdr_end: var int) -> int

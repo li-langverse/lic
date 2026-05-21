@@ -16,6 +16,7 @@
 #include <sys/stat.h>
 #include <unistd.h>
 #include <stdint.h>
+#include <time.h>
 
 #ifdef __linux__
 #define HTTPD_EPOLL_CLIENT_TAG UINT64_C(0x8000000000000000)
@@ -118,6 +119,23 @@ static size_t g_doc_root_len = 0;
 static char g_proxy_host[64] = "127.0.0.1";
 static int32_t g_proxy_port = 0;
 static int g_proxy_all = 0;
+
+#define HTTPD_MAX_ROUTES 16
+typedef struct {
+  char method[16];
+  char path_prefix[512];
+  int path_len;
+  int is_prefix;
+  int is_proxy;
+} httpd_route_t;
+
+static httpd_route_t g_routes[HTTPD_MAX_ROUTES];
+static int g_route_count = 0;
+
+static int g_rate_limit_rps = 0;
+static int g_rate_limit_burst = 0;
+static double g_rate_tokens = 0.0;
+static double g_rate_last_ts = 0.0;
 
 #define HTTPD_MAX_UPSTREAM_PEERS 8
 #define HTTPD_POOL_PER_PEER 32
@@ -1405,9 +1423,80 @@ static int httpd_proxy_compact_req_hdr(int32_t slot, int hdr_end) {
   return w;
 }
 
-static int path_proxy_match(const char* path, int plen) {
+static int path_prefix_match(const char* path, int plen, const httpd_route_t* r) {
+  if (plen < r->path_len) {
+    return 0;
+  }
+  if (memcmp(path, r->path_prefix, (size_t)r->path_len) != 0) {
+    return 0;
+  }
+  if (!r->is_prefix) {
+    return plen == r->path_len;
+  }
+  if (plen == r->path_len) {
+    return 1;
+  }
+  return path[r->path_len] == '/';
+}
+
+static int route_method_match(const httpd_route_t* r, const httpd_req_info_t* req) {
+  if (r->method[0] == '*') {
+    return 1;
+  }
+  int rl = (int)strlen(r->method);
+  return req->method_len == rl && memcmp(req->method, r->method, (size_t)rl) == 0;
+}
+
+static int path_proxy_match_route(const char* path, int plen, const httpd_req_info_t* req) {
+  for (int i = 0; i < g_route_count; i++) {
+    const httpd_route_t* r = &g_routes[i];
+    if (!r->is_proxy) {
+      continue;
+    }
+    if (!route_method_match(r, req)) {
+      continue;
+    }
+    if (path_prefix_match(path, plen, r)) {
+      return 1;
+    }
+  }
+  return 0;
+}
+
+static int httpd_rate_limit_allow(void) {
+  if (g_rate_limit_rps <= 0) {
+    return 1;
+  }
+  struct timespec ts;
+  if (clock_gettime(CLOCK_MONOTONIC, &ts) != 0) {
+    return 1;
+  }
+  double now = (double)ts.tv_sec + (double)ts.tv_nsec * 1e-9;
+  if (g_rate_last_ts <= 0.0) {
+    g_rate_last_ts = now;
+    g_rate_tokens = (double)g_rate_limit_burst;
+  }
+  double elapsed = now - g_rate_last_ts;
+  g_rate_last_ts = now;
+  if (elapsed > 0.0) {
+    g_rate_tokens += elapsed * (double)g_rate_limit_rps;
+  }
+  if (g_rate_tokens > (double)g_rate_limit_burst) {
+    g_rate_tokens = (double)g_rate_limit_burst;
+  }
+  if (g_rate_tokens < 1.0) {
+    return 0;
+  }
+  g_rate_tokens -= 1.0;
+  return 1;
+}
+
+static int path_proxy_match(const char* path, int plen, const httpd_req_info_t* req) {
   if (g_proxy_port <= 0) {
     return 0;
+  }
+  if (path_proxy_match_route(path, plen, req)) {
+    return 1;
   }
   if (g_proxy_all) {
     return 1;
@@ -1782,7 +1871,15 @@ static int32_t httpd_try_drain_once(int32_t conn, int32_t slot) {
     return keep ? 1 : -1;
   }
   int keep = !wants_connection_close(g_slots[slot].buf, hdr_end);
-  if (path_proxy_match(req.path, req.path_len)) {
+  if (!httpd_rate_limit_allow()) {
+    if (httpd_send_status(conn, 429, "Too Many Requests",
+                          "Retry-After: 1\r\n", keep) < 0) {
+      return -2;
+    }
+    net_slot_consume(slot, hdr_end);
+    return keep ? 1 : -1;
+  }
+  if (path_proxy_match(req.path, req.path_len, &req)) {
     if (g_li_proxy_mode) {
       return 0;
     }
@@ -3377,6 +3474,11 @@ int32_t httpd_load_runtime_config_i(intptr_t path) {
   g_config_listen_port = 0;
   g_doc_root_len = 0;
   g_proxy_all = 0;
+  g_route_count = 0;
+  g_rate_limit_rps = 0;
+  g_rate_limit_burst = 0;
+  g_rate_tokens = 0.0;
+  g_rate_last_ts = 0.0;
   char line[4096];
   while (fgets(line, sizeof(line), f)) {
     trim_line(line);
@@ -3407,7 +3509,31 @@ int32_t httpd_load_runtime_config_i(intptr_t path) {
         httpd_add_upstream_peer_i(port);
         g_proxy_port = port;
       }
+    } else if (strcmp(key, "rate_limit_rps") == 0) {
+      g_rate_limit_rps = atoi(val);
+    } else if (strcmp(key, "rate_limit_burst") == 0) {
+      g_rate_limit_burst = atoi(val);
+    } else if (strcmp(key, "route") == 0 && g_route_count < HTTPD_MAX_ROUTES) {
+      char method[16] = "";
+      char path[512] = "";
+      char kind[16] = "";
+      char action[16] = "";
+      if (sscanf(val, "%15[^|]|%511[^|]|%15[^|]|%15s", method, path, kind, action) == 4) {
+        httpd_route_t* r = &g_routes[g_route_count++];
+        memset(r, 0, sizeof(*r));
+        snprintf(r->method, sizeof(r->method), "%s", method);
+        snprintf(r->path_prefix, sizeof(r->path_prefix), "%s", path);
+        r->path_len = (int)strlen(r->path_prefix);
+        r->is_prefix = (strcmp(kind, "prefix") == 0 || strcmp(kind, "prefix_strip") == 0) ? 1 : 0;
+        r->is_proxy = (strcmp(action, "proxy") == 0) ? 1 : 0;
+        if (r->is_proxy) {
+          g_proxy_all = 0;
+        }
+      }
     }
+  }
+  if (g_rate_limit_rps > 0 && g_rate_limit_burst <= 0) {
+    g_rate_limit_burst = g_rate_limit_rps;
   }
   fclose(f);
   if (g_doc_root_len == 0) {
@@ -3434,6 +3560,8 @@ int32_t httpd_set_epfd_i(int32_t epfd) {
 }
 
 int32_t httpd_proxy_configured_i(void) { return g_proxy_port > 0 ? 1 : 0; }
+
+int32_t httpd_proxy_upstream_port_i(void) { return g_proxy_port; }
 
 int32_t httpd_proxy_compact_req_hdr_i(int32_t slot, int32_t hdr_end) {
   return httpd_proxy_compact_req_hdr(slot, (int)hdr_end);
@@ -3743,7 +3871,7 @@ int32_t httpd_li_proxy_try_snap_i(int32_t conn, int32_t slot, int32_t hdr_end, i
   if (parse_request_line_c(g_slots[slot].buf, hdr_end, &req) != 0) {
     return -2;
   }
-  if (!path_proxy_match(req.path, req.path_len)) {
+  if (!path_proxy_match(req.path, req.path_len, &req)) {
     return 0;
   }
   size_t off = 0;
@@ -3775,7 +3903,7 @@ static int32_t httpd_li_try_start_proxy_i(int32_t epfd, int32_t conn, int32_t sl
   if (parse_request_line_c(g_slots[slot].buf, hdr_end, &req) != 0) {
     return -1;
   }
-  if (!path_proxy_match(req.path, req.path_len)) {
+  if (!path_proxy_match(req.path, req.path_len, &req)) {
     return 0;
   }
   if (g_slots[slot].len > hdr_end) {

@@ -1,0 +1,12 @@
+# M1 wave 4 — rate limit on static server (no proxy)
+[server]
+listen = ":29195"
+document_root = "./public"
+
+[limits]
+max_body = "1m"
+max_header = "16k"
+rate_limit_rps = 2
+rate_limit_burst = 1
+
+[routes]

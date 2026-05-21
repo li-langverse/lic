@@ -35,15 +35,18 @@ todos:
   - id: rng-exploit-suite
     content: Tier F RNG exploits (BadRng/SimRng inject via bench.toml); PR gate when touching li-rng/li-tls
     status: pending
+  - id: m1-wave4-rate-route
+    content: "M1 wave 4: global rate limit 429, runtime route table from flatten, explain-config"
+    status: completed
   - id: m1-core
     content: "M1: parser, route DSL (no regex), static, LB, validate-config, headers, rate limits"
-    status: pending
+    status: in_progress
   - id: m1-routing-tests
     content: li-tests/routing/ table cases + overlap config_reject; proved match_route
-    status: pending
+    status: in_progress
   - id: m1-toml-desugar
     content: Simple TOML desugar + config_desugar golden tests + explain-config CLI
-    status: pending
+    status: completed
   - id: m15-agent
     content: "M1.5: SSE streaming, stream timeouts, model routing, cancel on disconnect, OTel headers"
     status: pending
@@ -87,7 +90,8 @@ isProject: false
 | **Static HTTP** | GET `/` + `/index.html` cached; **generic GET** under doc root via sendfile/coalesce in C | `static_many`, path canonicalization tests |
 | **Harness** | `bench_http.py` + 2 scenarios in `suite.toml` ci/nightly | `static_large`, `[load].url_path`, fixture generator |
 | **Config** | CLI `port` + doc root only | `examples/minimal.toml` + `scripts/validate-httpd-config.py` |
-| **Proxy / LB** | Keep-alive upstream pool, RR LB (`httpd_set_upstream_ports_csv_i`), runtime `.conf` from TOML | Passive health, `lic validate-config` in-process, Li route table |
+| **Proxy / LB** | Keep-alive pool, RR/least_conn LB, runtime `.conf` + **route=** rows from flatten | Passive health, `lic validate-config` in-process (still script), per-route rate keys M1.5 |
+| **Rate limit** | Global token bucket → **HTTP 429** + `Retry-After` (`rate_limit_rps` / `burst` in `.conf`) | Per-route / per-key limits; `rate_limit_429` tier5 bench row |
 | **TLS / H2 / SSE** | M1.5 / M2 per table below | Do not block M1 static + proxy on proof gate |
 
 **Nginx remains oracle only** — no `nginx.conf` compatibility target. Each new capability gets a **tier5_http scenario** before merge (correctness `[verify]` in CI profile; RPS in nightly).
@@ -98,8 +102,8 @@ isProject: false
 | ---- | ---- | ----------------- | ---- |
 | **1** (done) | Generic static files; validate-config subset; harness `url_path` | `static_large` in ci + nightly | `lic build` + `bench_http.py --profile ci` |
 | **2** (done) | Loopback reverse proxy + keep-alive pool | `proxy_loopback` in ci | verify + rps vs nginx |
-| **3** (active) | LB RR (`httpd_lb_pick_port`), runtime config loader | `lb_round_robin` in ci; `lb_least_conn`, `lb_peer_down` next | failover verify row |
-| **4** | Rate limit 429; route DSL; exploit A+B on li-httpd | `rate_limit_429`; `exploit_http.py` wired | stricter-than-nginx `[expect]` ok |
+| **3** (done) | LB RR/least_conn/peer_down, runtime config loader | `lb_round_robin`, `lb_least_conn`, `lb_peer_down` in ci | failover verify row |
+| **4** (done) | Global rate limit 429; runtime routes via `flatten-httpd-config.py`; `explain-httpd-config.py` | `scripts/test-rate-limit-429.sh`; tier5 `rate_limit_429` (benchmarks catalog) | exploit nightly smuggling still M2 prep |
 
 ---
 

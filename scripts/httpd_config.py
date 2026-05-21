@@ -40,9 +40,11 @@ def slug_route_name(method: str, path: str) -> str:
 
 def parse_path_kind(path: str) -> tuple[str, str]:
     if path.endswith("/**"):
-        return path[:-3], "prefix_strip"
+        base = path[:-3]
+        return (base if base else "/"), "prefix_strip"
     if path.endswith("/*"):
-        return path[:-2], "prefix"
+        base = path[:-2]
+        return (base if base else "/"), "prefix"
     return path, "exact"
 
 

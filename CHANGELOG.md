@@ -8,6 +8,10 @@ All notable changes to Li are documented here. The format follows
 
 ### Added
 
+- **li-httpd M1 wave 4:** global rate limit (HTTP 429), runtime `route=` table from flattened TOML, `explain-httpd-config.py`, `test-rate-limit-429.sh` — [2026-05-22-httpd-m1-wave4-rate-route.md](docs/release-notes/2026-05-22-httpd-m1-wave4-rate-route.md).
+
+### Added
+
 - **li-httpd Li proxy default (no C fallback):** default Li epoll loop; CL/chunked bodies via `proxy_li_pump_send`; `LI_HTTPD_PROXY_C=1` for legacy C — [2026-05-22-httpd-li-proxy-no-c-fallback.md](docs/release-notes/2026-05-22-httpd-li-proxy-no-c-fallback.md).
 - **li-httpd Li proxy P5:** GET snap fast path + epoll spin-drain in Li epoll loop when `LI_HTTPD_PROXY_LI=1` — [2026-05-22-httpd-li-proxy-p5-snap-spin.md](docs/release-notes/2026-05-22-httpd-li-proxy-p5-snap-spin.md).
 - **li-httpd Li proxy P2–P4:** response parse, CL splice relay, upstream pool in `lib.li` when `LI_HTTPD_PROXY_LI=1` — [2026-05-22-httpd-li-proxy-p2-p4.md](docs/release-notes/2026-05-22-httpd-li-proxy-p2-p4.md).

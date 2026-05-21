@@ -120,6 +120,7 @@ const std::set<std::string>& runtime_manifest_symbols() {
       "httpd_set_li_proxy_mode_i",
       "httpd_set_epfd_i",
       "httpd_proxy_configured_i",
+      "httpd_proxy_upstream_port_i",
       "httpd_proxy_compact_req_hdr_i",
       "httpd_upstream_acquire_i",
       "httpd_upstream_release_i",

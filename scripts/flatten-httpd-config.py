@@ -18,6 +18,8 @@ try:
 except ModuleNotFoundError:
     import tomli as tomllib  # type: ignore
 
+from httpd_config import ConfigError, load_httpd_config
+
 
 def parse_listen(raw: str) -> int:
     raw = raw.strip()
@@ -35,29 +37,38 @@ def peer_port(url: str) -> int:
     return int(m.group(1))
 
 
-def flatten(cfg: dict) -> list[str]:
+def flatten(cfg_path: Path) -> list[str]:
+    data = tomllib.loads(cfg_path.read_text(encoding="utf-8"))
     lines: list[str] = []
-    server = cfg.get("server") or {}
+    server = data.get("server") or {}
     listen = server.get("listen")
     if listen:
         lines.append(f"listen_port={parse_listen(str(listen))}")
     root = server.get("document_root")
     if root:
-        lines.append(f"document_root={root}")
+        rp = Path(str(root))
+        if not rp.is_absolute():
+            rp = (cfg_path.parent / rp).resolve()
+        lines.append(f"document_root={rp}")
 
-    limits = cfg.get("limits") or {}
-    if limits:
-        lines.append("# limits validated in TOML")
+    limits = data.get("limits") or {}
+    if limits.get("rate_limit_rps") is not None:
+        lines.append(f"rate_limit_rps={int(limits['rate_limit_rps'])}")
+    if limits.get("rate_limit_burst") is not None:
+        lines.append(f"rate_limit_burst={int(limits['rate_limit_burst'])}")
 
-    routes = cfg.get("routes") or {}
-    proxy_all = 0
+    routes = load_httpd_config(cfg_path)
+    proxy_any = False
     upstream_ids: set[str] = set()
-    for _key, action in routes.items():
-        if isinstance(action, str) and action.startswith("proxy:"):
-            proxy_all = 1
-            upstream_ids.add(action.split(":", 1)[1])
+    for r in routes:
+        kind = r.path_kind if r.path_kind in ("exact", "prefix", "prefix_strip") else "prefix"
+        action = "proxy" if r.action.startswith("proxy:") else "static"
+        if action == "proxy":
+            proxy_any = True
+            upstream_ids.add(r.action.split(":", 1)[1])
+        lines.append(f"route={r.method}|{r.path}|{kind}|{action}")
 
-    nested = cfg.get("upstreams") or {}
+    nested = data.get("upstreams") or {}
     if isinstance(nested, dict):
         for pool_id, val in nested.items():
             if isinstance(val, dict):
@@ -65,12 +76,14 @@ def flatten(cfg: dict) -> list[str]:
                     lines.append(f"upstream_peer={peer_port(str(peer))}")
                     upstream_ids.discard(str(pool_id))
 
-    for key, val in cfg.items():
+    for key, val in data.items():
         if key.startswith("upstreams.") and isinstance(val, dict):
             for peer in val.get("peers") or []:
                 lines.append(f"upstream_peer={peer_port(str(peer))}")
 
-    if proxy_all or upstream_ids:
+    if proxy_any and not routes:
+        lines.append("proxy_all=1")
+    elif proxy_any and not any(l.startswith("upstream_peer=") for l in lines):
         lines.append("proxy_all=1")
 
     return lines
@@ -84,8 +97,11 @@ def main() -> int:
     if not args.config.is_file():
         print(f"flatten-httpd-config: missing {args.config}", file=sys.stderr)
         return 1
-    cfg = tomllib.loads(args.config.read_text(encoding="utf-8"))
-    lines = flatten(cfg)
+    try:
+        lines = flatten(args.config)
+    except (ConfigError, ValueError) as e:
+        print(f"flatten-httpd-config: {e}", file=sys.stderr)
+        return 1
     if not any(l.startswith("listen_port=") for l in lines):
         print("flatten-httpd-config: server.listen required", file=sys.stderr)
         return 1
@@ -93,7 +109,7 @@ def main() -> int:
         print("flatten-httpd-config: server.document_root required", file=sys.stderr)
         return 1
     args.output.write_text("\n".join(lines) + "\n", encoding="utf-8")
-    print(f"flatten-httpd-config: wrote {args.output}")
+    print(f"flatten-httpd-config: wrote {args.output} ({len(lines)} lines)")
     return 0
 
 

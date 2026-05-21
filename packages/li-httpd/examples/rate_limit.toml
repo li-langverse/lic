@@ -1,0 +1,16 @@
+# M1 wave 4 — global rate limit (token bucket in runtime.conf)
+[server]
+listen = ":18195"
+document_root = "./public"
+
+[limits]
+max_body = "1m"
+max_header = "16k"
+rate_limit_rps = 5
+rate_limit_burst = 3
+
+[upstreams.backend]
+peers = ["http://127.0.0.1:18196"]
+
+[routes]
+"GET /*" = "proxy:backend"

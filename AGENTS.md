@@ -1,5 +1,7 @@
 # Agent instructions (Li compiler / `lic`)
 
+**Repo boundary:** `lic` is **compiler-only** — no Studio demos, mockups, or product deploy trees. See `.cursor/rules/lic-compiler-repo-boundary.mdc` and `docs/ecosystem/li-studio-repos.md`.
+
 1. Read [strict-by-default](docs/ecosystem/strict-by-default.md) — proof, security, performance **always on**; **no optional provability**.
 2. Read [engineering-standards](https://github.com/li-langverse/roadmap/blob/main/docs/ecosystem/engineering-standards.md) — **functionality, security, performance** (strict).
 3. Read [vision-and-roadmap](https://github.com/li-langverse/roadmap/blob/main/docs/ecosystem/vision-and-roadmap.md) — governance + milestones.

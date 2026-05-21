@@ -37,7 +37,7 @@ Learn from other systems’ **failure modes**; don’t treat their stacks as man
 |-------|---------|--------|
 | **`lic` compiler** | C++ bootstrap | Existing; don’t grow new product features in C++. |
 | **CI / scaffolding** | Small shell scripts | `li-tests`, gates, spin-up — keep thin; prefer Li for new tooling when practical. |
-| **Demo showcase** | HTML/JS **prototype** | Illustrative only; native shell is `studio_main.li` + `li-render` — don’t expand into a second engine. |
+| **Demo showcase** | — | **Do not add** under `lic/` — use sibling **`li-world-studio`** (`demo/`). See `.cursor/rules/lic-compiler-repo-boundary.mdc`. |
 
 ## Examples
 

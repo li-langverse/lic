@@ -1,0 +1,41 @@
+---
+description: Keep lic compiler-only — never add Studio/product/demo cruft here
+alwaysApply: true
+---
+
+# `lic` repo boundary (compiler only)
+
+**`lic` = the Li compiler, std library, language/verification docs, and harnesses that prove the toolchain.**  
+Do **not** use `lic` as the home for World Studio product work, UX galleries, or deployable app demos.
+
+## Belongs in `lic`
+
+| Area | Examples |
+|------|----------|
+| Compiler | `compiler/`, bootstrap, codegen, `lic build` / `lic check` |
+| Standard library | `std/**` |
+| Language & proof | `docs/language/`, `docs/verification/`, `docs/semantics/` |
+| Toolchain tests | `li-tests/` (compiler + composable gates **as harness**) |
+| Tier benchmarks | `benchmarks/` on **lic** (physics/numerics kernels under test) |
+| Build/CI for **lic** | `scripts/build.sh`, agent-kit sync, repo CI |
+
+## Do **not** add to `lic`
+
+| Off-limits | Put it here instead |
+|------------|---------------------|
+| HTML/JS studio showcase, mockup PNGs, demo WebM | **`li-world-studio`** → `demo/` ([bootstrap](../../scripts/bootstrap-li-world-studio-repo.sh)) |
+| `deploy/studio-demo/`, new `deploy/*` product sites | **`li-world-studio`** — see `deploy/studio-demo/MOVED.md` |
+| Product UX canon, planned UI galleries | **`li-world-studio/docs/`** or **`li-studio`** issues |
+| Competitive-intel media blobs | Gitignored paths only; analysis may stay in docs if harness-relevant |
+| New marketing / preview / `preview.html` pages | **`li-world-studio`** |
+| App shell, native Studio binary wiring | **`li-world-studio`** + **`li-gui`** |
+
+**Package mirrors** (`packages/li-studio`, …) may remain in the monorepo **only** for composable `lic check` integration — do **not** grow new product UI, demos, or deploy trees under `lic/`.
+
+## Agent checklist (before committing)
+
+1. Is this change required for **compiler, std, proof, or lic harness**? If no → **other repo**.
+2. Am I adding files under `deploy/` (except existing MMO/spin-up until migrated)? → **stop**.
+3. Am I adding images/video/HTML for humans to preview Studio? → **`li-world-studio/demo/`**.
+
+**Map:** `docs/ecosystem/li-studio-repos.md`

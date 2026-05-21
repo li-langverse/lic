@@ -19,16 +19,29 @@ Inner-dimension mismatches on `@` fail at compile time (`li-tests/math_linalg/ma
 - Handbook: [Math-first HPC examples](../guide/math-hpc-examples.md)
 - Tier 1 pure-Li: `benchmarks/tier1_micro/simd_dot/li/main.li`, `matmul_naive/li/main.li`
 
+## Design: no implicit broadcast
+
+Li does **not** plan NumPy-style broadcasting (repeating a shorter array/scalar shape to match a longer one without saying so). Reasons:
+
+1. **Clarity** — mismatched lengths are not the same mathematical object; silent promotion confuses readers and agents.
+2. **Provability** — same-dimension operations are easy to state in `requires`/`ensures`; implicit repetition is not.
+
+Use instead:
+
+- **Matching-length** element-wise ops (`a * b` when `len(a) == len(b)`).
+- **Explicit loops** for AXPY and similar — e.g. `for i in 0..<N: y[i] = alpha * x[i] + y[i]` with optional `@vectorized` / `@parallel`.
+- **Named functions** when the pattern is standard (`dot`, `sum`; future `axpy`, `norm`, `scale`).
+
 ## Planned
 
 ```li
-# target (Phase 2i / 7e)
-C += A @ B
-y[i] = alpha * x[i] + y[i]   # AXPY via index loop until `@vectorized`
+# AXPY — explicit and readable (not broadcast sugar)
+for i in 0..<N
+  y[i] = alpha * x[i] + y[i]
 ```
 
-- `**` on arrays; broadcast rules beyond matching lengths
-- `@vectorized` / `@parallel` lowering on math loops (**7d** / **7e-a**)
+- Same-length `**` on arrays (optional); named reductions (`norm`, `axpy` proc)
+- Deeper `@vectorized` / `@parallel` on math loops (**7d** / **7e**)
 - `tensor[(M,N), f64]` when Phase 3 lands
 
 See [math/linalg spec](../superpowers/specs/2026-05-16-li-math-linalg-surface.md) and **G-math** in [provability-gaps](../verification/provability-gaps.md).

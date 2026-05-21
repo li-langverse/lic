@@ -80,7 +80,7 @@ Slice + infix `@` desugar to proved index loops; inner micro-kernel gets `@vecto
 flowchart LR
   math[Math surface expr]
   deco[Decorators placement]
-  elab[Shape + broadcast check]
+  elab[Shape check same-length / matmul dims]
   core[Core loops + simd MIR]
   omp[OpenMP / LLVM vectorize]
 
@@ -94,7 +94,7 @@ flowchart LR
 | `a * b` on compatible arrays/tensors | element-wise loop → `@vectorized` → `simd` lanes |
 | `sum(expr)` / `dot(x,y)` | reduction with proved associativity where needed |
 | `A @ B` | ikj/ikj-blocked loops + SIMD inner + optional `@parallel` on outer |
-| `alpha * x + y` | AXPY → FMA vectorized loop |
+| `alpha * x + y` | explicit index loop or `axpy(α,x,y)` proc — not implicit broadcast |
 
 **Proofs:** shape/dimension errors at compile time; `A @ B` requires inner dim match; parallel outer loops still need `disjoint=`.
 
@@ -104,7 +104,8 @@ flowchart LR
 
 | Sub | Deliverable | Exit |
 |-----|-------------|------|
-| **2i-a** | Infix `*`, `+`, `-`, `/`, `**` on numeric arrays; `sum`; parse + types | `li-tests/math_linalg/scalar_elementwise/` |
+| **2i-a** | Infix `+ - * /` on **matching** 1d arrays; `sum`; parse + types (**done** on `main`) | `li-tests/math_linalg/scalar_elementwise/` |
+| **2i-a+** | Optional same-length `**`; named `axpy`/`scale` — **no** broadcast | `li-tests/math_linalg/` |
 | **2i-b** | `dot`, `norm`; reduction lowering | `li-tests/math_linalg/reductions/` |
 | **2i-c** | Binary `@` for 2D matmul desugar (fixed small shapes + `tensor` when ready) | `li-tests/math_linalg/matmul/` |
 | **7e-a** | Connect math expr lowering to existing 7a SIMD MIR | `simd_dot` Li source has **zero** `__li_simd_*` in user file |
@@ -130,7 +131,7 @@ flowchart LR
 | Suite | Role |
 |-------|------|
 | `li-tests/math_syntax/` | Scalar `**`, `//`, `%` (Phase **2h**) |
-| `li-tests/math_linalg/` | Shape errors, broadcast rules, `A @ B` dim mismatch **fail** |
+| `li-tests/math_linalg/` | Same-length element-wise; dim mismatch on `@` **fail** |
 | `li-tests/math_linalg/golden/` | Optional MIR/LLVM snapshot for `dot` / small `matmul` |
 | Harness | Tier 1 `simd_dot`, `matmul_naive`, `matmul_blocked` — **Li column uses math-only sources** |
 

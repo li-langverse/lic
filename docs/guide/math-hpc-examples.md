@@ -6,8 +6,9 @@ Write numerical kernels as **ordinary math** on fixed-size `array` tiles. The co
 |---------------------|----------------------|--------------|
 | `dot(a, b)` / `a @ b` on `array[N, float]` | Implemented | [`simd_dot`](../../benchmarks/tier1_micro/simd_dot/li/main.li) |
 | `C = A @ B` on `array[M, array[K, float]]` | Implemented (fixed shapes) | [`matmul_naive`](../../benchmarks/tier1_micro/matmul_naive/li/main.li) |
+| Blocked IKJ `C[i][j] += …` on tiles | Implemented (manual loops) | [`matmul_blocked`](../../benchmarks/tier1_micro/matmul_blocked/li/main.li) |
 | `sum(a)` on `array[N, int\|float]` | Implemented | — |
-| Element-wise `a * b` on arrays | Planned (**2i-a**) | — |
+| Element-wise `a * b` on arrays | Implemented (**2i-a**) | — |
 | `@vectorized` / `@parallel` on `def` | Parse only (**7d**) | — |
 
 See also: [Linear algebra](../language/linear-algebra.md), [Fast math & parallelism](fast-math-and-parallelism.md), [math/linalg plan](../superpowers/plans/2026-05-16-li-math-linalg-surface.md).
@@ -104,7 +105,7 @@ def main() -> int
 
 **Inner dimension mismatch** fails at compile time — `li-tests/math_linalg/matmul_dim_mismatch.li`.
 
-**Benchmark note:** `matmul_naive` uses many **64×64** tiles in `matmul_tile_f64()` so stack size stays bounded; see `benchmarks/tier1_micro/matmul_naive/li/main.li`.
+**Benchmark note:** `matmul_naive` and `matmul_blocked` use many **64×64** tiles so stack size stays bounded; blocked variant uses **BK=16** IKJ micro-blocks (`matmul_blocked_tile_f64`, 512 reps ≈ 512³ flops).
 
 ---
 

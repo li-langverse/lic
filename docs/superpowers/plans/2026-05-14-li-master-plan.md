@@ -390,7 +390,7 @@ Track in phase **Doc** until each is checked:
 - [x] Phase 2f — Lean 4 verify — **partial (PR #83):** `lic build` + `check-autovc-open-goals.sh`; `LI_BUILD_VERIFY_LEAN=1` → semantics `lake build`; `contracts_verify/` 16/16; `sqrt_open_bound` = `verify_open_ok`; full kernel certificate still **G-lean** partial
 - [x] Phase 7 — Native HPC — **v1 gate:** simd + parallel for + OpenMP + `check-master-plan-gates.sh` (tier 1/2 perf advisory)
 - [ ] Phase 7d — Execution decorators — **partial (7d-a/b/d/e/c):** AST `check_module_policies` for disjoint; proof builtins `disjoint_elem`/`disjoint_row`/`row_ok` in typecheck; string heuristics for race exploits (**7d-c** structured `disjoint=` still open)
-- [ ] Phase 7e — Math → SIMD/parallel lowering — **partial:** math benches + docs (**7e-a/b/c** partial); **7e-d:** safe `ArrayDotF64` f64×4 gather codegen; `@vectorized` + element-wise SIMD deferred
+- [ ] Phase 7e — Math → SIMD/parallel lowering — **partial:** math benches + docs (**7e-a/b/c/d** partial); **7e-b:** `matmul_naive` + `matmul_blocked` pure-Li; `@vectorized` + element-wise SIMD deferred
 - [x] Phase H — li-httpd infra — **`lis`** harness, mitigations, CI, workspace stubs ([implementation-status](https://github.com/li-langverse/lis/blob/main/docs/implementation-status.md))
 - [x] Phase H — li-httpd M1 `.li` — **partial:** TOML `match_route`, explain/validate-config, `httpd_serve_routed_once` oracle; **in flight:** [httpd-m1-impl](https://github.com/li-langverse/lic/pull/87), [httpd-m1-perf](https://github.com/li-langverse/lic/pull/84); **next:** merge reactor + real recv ([httpd-prerequisites](../ecosystem/httpd-prerequisites.md))
 - [x] Phase Pkg — Package scaffold + governance stubs ([scaffold](2026-05-16-li-package-scaffold.md), [governance](2026-05-16-li-ecosystem-governance.md); `li.toml` = [lip § A3](2026-05-16-li-package-manager-lip.md))
@@ -426,7 +426,7 @@ Runnable on `dev` after `./scripts/build.sh`:
 - Phases **0–6**, **2g**, **2h**, **7** (core), **Pkg**, **Doc**, **8-sync**, **8e-li**
 - **77+** `li-tests` suites (simd, parallel, decorators, stdlib_seal, math, CVE, encapsulation, …)
 - **2e partial:** `build/generated/AutoVC.lean` every `lic build`
-- **7e partial:** 1d float `@` → `ArrayDotF64`
+- **7e partial:** 1d float `@` → `ArrayDotF64` (4-wide gather SIMD when N≥4)
 - **7d partial:** parse, policy, `MirFn.decorators`, `std/execution/decorators.li`
 
 ### Full master plan — **not complete** (v2 backlog)

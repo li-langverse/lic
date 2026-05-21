@@ -822,19 +822,21 @@ int32_t httpd_prepare_root_i(intptr_t root) {
   if (n < 0 || n >= (int)sizeof(path)) {
     return -1;
   }
+  g_cache_ready = 0;
+  g_cached_sz = 0;
   int fd = open(path, O_RDONLY);
   if (fd < 0) {
-    return -1;
+    return 0;
   }
   struct stat st;
   if (fstat(fd, &st) < 0 || !S_ISREG(st.st_mode) || st.st_size > HTTPD_IO_BUF) {
     close(fd);
-    return -1;
+    return 0;
   }
   ssize_t rd = read(fd, g_cached_body, (size_t)st.st_size);
   close(fd);
   if (rd < 0) {
-    return -1;
+    return 0;
   }
   g_cached_sz = (int32_t)rd;
   g_cached_blob_ka_len = snprintf(g_cached_blob_ka, sizeof(g_cached_blob_ka),
@@ -875,7 +877,7 @@ intptr_t httpd_cached_body_i(void) { return iptr(g_cached_body); }
 int32_t httpd_cached_sz_i(void) { return g_cached_sz; }
 
 int32_t httpd_reply_cached_index_i(int32_t conn, int32_t slot, int32_t keep_alive) {
-  if (!g_cache_ready || slot < 0 || slot >= HTTPD_MAX_CONN) {
+  if (!g_cache_ready || g_cached_sz <= 0 || slot < 0 || slot >= HTTPD_MAX_CONN) {
     return -1;
   }
   (void)slot;
@@ -2022,7 +2024,7 @@ static ssize_t httpd_send_nb(int fd, const char* data, size_t total, size_t* off
 /* 0 = need bytes; 1 = served keep-alive; -1 = close after reply; -2 = I/O error */
 static int32_t httpd_try_drain_once(int32_t conn, int32_t slot) {
   slots_init_once();
-  if (!g_cache_ready || slot < 0 || slot >= HTTPD_MAX_CONN || g_slots[slot].fd != conn) {
+  if (g_doc_root_len == 0 || slot < 0 || slot >= HTTPD_MAX_CONN || g_slots[slot].fd != conn) {
     return -2;
   }
   if (g_slots[slot].proxy_active) {
@@ -3250,7 +3252,7 @@ static void httpd_serve_conn_epoll(int epfd, int32_t slot) {
   if (slot < 0 || slot >= HTTPD_MAX_CONN || g_slots[slot].fd < 0) {
     return;
   }
-  if (!g_cache_ready) {
+  if (g_doc_root_len == 0) {
     return;
   }
   if (g_slots[slot].proxy_active) {
@@ -3804,7 +3806,9 @@ int32_t httpd_set_epfd_i(int32_t epfd) {
   return 0;
 }
 
-int32_t httpd_proxy_configured_i(void) { return g_proxy_port > 0 ? 1 : 0; }
+int32_t httpd_proxy_configured_i(void) {
+  return (g_proxy_port > 0 || g_up_peer_count > 0) ? 1 : 0;
+}
 
 int32_t httpd_proxy_upstream_port_i(void) { return g_proxy_port; }
 
@@ -4133,7 +4137,7 @@ int32_t httpd_li_proxy_try_snap_i(int32_t conn, int32_t slot, int32_t hdr_end, i
 
 static int32_t httpd_li_try_start_proxy_i(int32_t epfd, int32_t conn, int32_t slot) {
   (void)epfd;
-  if (!g_li_proxy_mode || !g_cache_ready || g_slots[slot].proxy_active) {
+  if (!g_li_proxy_mode || g_doc_root_len == 0 || g_slots[slot].proxy_active) {
     return 0;
   }
   int len = g_slots[slot].len;

@@ -981,7 +981,7 @@ def httpd_run_from_runtime_config(path: var ptr) raises Net, Alloc, IO -> int
   if p <= 0:
     return 1
   if httpd_proxy_configured_i() == 1:
-    return httpd_serve_static_blocking(p, r)
+    return httpd_upstream_proxy_epoll_loop(p, r)
   return httpd_serve_port_root(p, r)
 
 def httpd_run_from_argv() raises Net, Alloc, IO -> int

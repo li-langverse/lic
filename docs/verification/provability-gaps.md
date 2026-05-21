@@ -1,6 +1,6 @@
 # Provability gaps (current compiler)
 
-**Last updated:** 2026-05-20  
+**Last updated:** 2026-05-21  
 **Audience:** contributors, package authors, anyone relying on `lic build` as a proof certificate  
 
 Li’s **north star** is: user logic is proved before ship; runtime failures for proved programs → **~0%**. That is the **target**, not a complete description of **`lic` today**.
@@ -25,6 +25,38 @@ This page is the **honest inventory** of what is **not** fully proved or not yet
 | **Math / linalg surface** | Static shapes, compile-time lowering | **Partial** — shape tests + **P-linalg** closed VCs (2i / 7e) |
 | **Zero user runtime errors** | All above + 2f gate | **In progress** — see table below |
 
+---
+
+## Still open (report every session)
+
+**Done (none of these):** no **G-*** row is **Done** yet. **Closed slices** exist inside **Partial** rows (e.g. P-linalg closed specimens, static `ensures` witnesses).
+
+| ID | Status | What remains |
+|----|--------|----------------|
+| **G-lean** | Partial | Default `lic build` must fail on open non-trivial Props; kernel discharge, not only `trivial` |
+| **G-vc** | Partial | Float/`abs` ensures; opaque `vec3_dot`-style returns; loop implementations vs closed-form `ensures` |
+| **G-par** | Partial | Structured `disjoint=` + Lean (**7d-c**); not `policy.cpp` strings |
+| **G-dec** | Partial | Decorator elaboration to MIR; `decorator_exploits` proofs |
+| **G-math** | Partial | **Open:** loop dot proof, float `@`/`dot` Props, 2D `array` **CallProc**; **2i-b** `norm`/reductions; tier-1 **≤1.2× C++** |
+| **G-bnd** | Partial | Release path without `li_bounds_fail` for proved indices |
+| **G-def** | Partial+ | Cross-module method privacy proofs; virtual dispatch deferred |
+| **G-oop** | Partial | Lean `ensures` on methods; trait laws in kernel |
+| **G-math-syn** | Partial | `for` / `range` surface |
+| **G-stdlib** | Partial | Full workspace cycle + seal edge cases |
+| **G-narrow** | Partial | Proved width narrowing (beyond `cast[` reject) |
+| **G-async** | Partial | `await` + structured concurrency proofs |
+| **G-net** | Partial | Net effect codegen + proofs |
+| **G-trust** | Stub | `Core.lean` / `MIR.lean` semantics, not placeholder |
+| **G-ann** | Missing | PEP 649 deferred annotations |
+| **G-gpu** | Missing | `@gpu` address-space proofs + codegen |
+| **G-meta** | Missing | Compiler ↔ Lean equivalence (research) |
+| **G-authz** | Missing | Capability / IDOR (OS phase) |
+| **G-test-verify** | Partial | Split `verify_ok` vs `prove_lean_ok` in manifest |
+| **G-hw** | Axiomatic | FP/hardware model limit (documented, not closable) |
+| **G-wrong-spec** | Social | User theorem quality (not tool-closable) |
+
+**Proof backlog still open:** **P-refine**, **P-ensures-witness**, **P-float**, **P-loop**, **P-linalg** (loop ≡ closed form; float matmul), **P-par**, **P-dec**, **P-bnd**, **P-http**, **P-narrow**, **P-meta** — see [proof-corpus-roadmap](proof-corpus-roadmap.md). **P-linalg partial (PR #151):** closed `linalg_dot4_int_closed`, `linalg_sum4_int_closed`, `linalg_mat2_entry00_int_closed`; open `linalg_dot4_int_loop_open`.
+
 !!! warning "Do not overclaim in docs or packages"
     Until **Phase 2f** lands, saying “`lic build` proves your program in Lean” is **aspirational**. Prefer: “`lic build` runs the current static gate; see [provability gaps](provability-gaps.md).”
 
@@ -36,15 +68,15 @@ Status legend: **Missing** · **Stub** · **Partial** · **CI only** · **Done**
 
 | ID | Area | Spec / promise | Current state | Phase | How we know |
 |----|------|----------------|---------------|-------|-------------|
-| **G-lean** | Lean 4 gate | `lic build` fails if any VC open | **Partial** — auto `_proved` for `True`, literal `decreases`, MIR-witnessed `ensures` (incl. `index_refinement`); `sqrt_contract` float VCs open | **2f** | `contracts_discharge_corpus.sh`, `check-autovc-open-goals.sh` |
+| **G-lean** | Lean 4 gate | `lic build` fails if any VC open | **Partial** — static witnesses + **P-linalg** closed corpus (#151); `sqrt_open_bound` + `linalg_dot4_int_loop_open` intentional open; kernel not default gate | **2f** | `contracts_discharge_corpus.sh`, `discharge_linalg_int_lean.sh`, `check-autovc-open-goals.sh` |
 | **G-vc** | VC generation | Contracts → proof obligations | **Partial** — auto `_proved` + `lic verify witnessed_ensures=` / `mir_return_linked=`; **E0303** rejects `ensures true` on value returns; **call-site callee `requires`** + **refinement param VCs** in `AutoVC.lean` (literal / const-local discharge); `sqrt_open_bound` float `abs` open | **2e** | `vc_emit_lean.cpp`, `vc_witness.cpp`, `call_requires.cpp`, `contracts_discharge_corpus.sh` |
 | **G-par** | `parallel for` safety | Proved iteration independence | **Partial** — AST `check_module_policies` + string exploit patterns in `policy.cpp` | **7b**, **7d-c** | `race_shared_memory`, `decorator_exploits` |
 | **G-stdlib** | Prelude / std seal | User cannot shadow builtin or `std/` names | **Partial** — `check_stdlib_seal` + `resolve_imports` for `std.*` / workspace; cycle detect at load | **4s** | `li-tests/stdlib_seal/`, `li-tests/modules/` |
-| **G-dec** | Execution decorators | Static elaboration; reserved names; no runtime | **Partial** — parse + policy + `MirFn.decorators` tags; prelude table shared | **7d** | `decorator_exploits/`, `decorators/` |
+| **G-dec** | Execution decorators | Static elaboration; reserved names; no runtime | **Partial** — parse + policy + `MirFn.decorators`; **7d-c** `@vectorized` on `for` → `ArraySimdScope` (#150); `@parallel` elaboration open | **7d** | `decorator_exploits/`, `decorators/` |
 | **G-math** | Math / `A @ B` | Shape errors at compile time; no user `simd(...)` | **Partial** — 1d/2d `@` lowering + **P-linalg** proof corpus (`linalg_*_closed.li`, loop dot open) | **2i**, **7e**, **2f** | `li-tests/math_linalg/`, `li-tests/contracts_verify/linalg_*` |
 | **G-bnd** | Bounds in release | No reliance on `li_bounds_fail` for proved indices | **Partial** — architecture lists MIR bounds; not full refinement | **2e**, **3** | [Architecture](../architecture/overview.md); codegen paths |
 | **G-def** | `def` / `object` / visibility | Handbook surface | **Partial+** — methods/`self`, `private def`, MIR in-out write-back (**2j-a/b/c**); inheritance/traits open (**2j-d–f**) | **2j** | `li-tests/encapsulation/`, `composable/import_physics_runtime.li` |
-| **G-oop** | Full OOP | Methods, traits, inheritance, cross-module encapsulation | **Partial** — traits + bounds (**2j-e**); method VCs (**2j-f**) open | **2j** | `li-tests/encapsulation/trait_*.li`, `inheritance_*.li` |
+| **G-oop** | Full OOP | Methods, traits, inheritance, cross-module encapsulation | **Partial** — **2j-a…f** surface done; Lean `ensures` on methods / trait laws open | **2j** | `li-tests/encapsulation/trait_*.li`, `method_call_requires_*.li` |
 | **G-math-syn** | Python-math (`**`, `for`, …) | Ergonomic surface | **Partial** — `%`, `//`, `**` on `int`; `for`/`range` open | **2h** | `li-tests/math_syntax/` |
 | **G-ann** | Deferred annotations (PEP 649) | Lazy resolve at check | **Missing** — shown in pipeline diagram as planned | **4** | Not in compiler tree |
 | **G-gpu** | `@gpu` / device buffers | Separate address space proofs | **Missing** | **3+**, **7d** | Spec Phase 3+ |

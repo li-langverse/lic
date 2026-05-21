@@ -96,8 +96,10 @@ def main() -> int =
 
 ---
 
+**Proof gaps (Doc-c):** [G-bnd](../../verification/provability-gaps.md#g-bnd) · [G-meta](../../verification/provability-gaps.md#g-meta)
+
 ### Phase 3 exit gate
 
-- [ ] Native binary from minimal proc
+- [x] Native binary from minimal proc
 - [ ] `-O2` flag forwarded to clang in `--release`
 - [ ] Bounds check calls present in IR for dynamic index

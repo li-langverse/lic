@@ -166,7 +166,7 @@ bool is_bytes_type_name(const std::string& n) {
 
 /// Types passed as i8* in LLVM (string literals and byte buffers).
 bool mir_ptr_param_type_name(const std::string& n) {
-  return is_string_type_name(n) || is_bytes_type_name(n);
+  return is_string_type_name(n) || is_bytes_type_name(n) || n == "StringView";
 }
 
 bool is_i64_type_name(const std::string& n) {

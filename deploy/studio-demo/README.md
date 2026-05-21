@@ -19,8 +19,11 @@ Other verticals:
 
 ```bash
 python3 -m http.server 8765 --directory deploy/studio-demo
-# http://localhost:8765
+# http://localhost:8765/preview.html   ← all v2 images + demo video
+# http://localhost:8765                ← interactive studio
 ```
+
+**v2 mockups:** `mockups/*-v2.png` · **Demo reel:** `videos/world-studio-demo-reel.webm`
 
 ## Demo video
 

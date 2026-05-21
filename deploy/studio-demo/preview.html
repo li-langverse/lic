@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Li World Studio — mockups & demo</title>
+  <style>
+    :root {
+      --bg: #0f1219;
+      --panel: #161b26;
+      --border: #2a3348;
+      --text: #e8ecf4;
+      --muted: #8b95a8;
+      --teal: #2dd4bf;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: system-ui, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.5;
+      padding: 1.5rem;
+    }
+    h1 { font-size: 1.4rem; margin: 0 0 0.25rem; }
+    .sub { color: var(--muted); margin-bottom: 1.5rem; font-size: 0.9rem; }
+    a { color: var(--teal); }
+    section { margin-bottom: 2.5rem; }
+    h2 {
+      font-size: 0.75rem;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      color: var(--muted);
+      margin: 0 0 1rem;
+    }
+    video {
+      width: 100%;
+      max-width: 960px;
+      border-radius: 8px;
+      border: 1px solid var(--border);
+      background: #000;
+    }
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+      gap: 1rem;
+    }
+    figure {
+      margin: 0;
+      background: var(--panel);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      overflow: hidden;
+    }
+    figcaption {
+      padding: 0.5rem 0.75rem;
+      font-size: 0.8rem;
+      color: var(--muted);
+    }
+    img {
+      width: 100%;
+      display: block;
+      height: auto;
+    }
+    .actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.75rem;
+      margin-bottom: 2rem;
+    }
+    .btn {
+      display: inline-block;
+      padding: 0.5rem 1rem;
+      background: var(--teal);
+      color: #0f1219;
+      text-decoration: none;
+      border-radius: 6px;
+      font-weight: 600;
+      font-size: 0.85rem;
+    }
+    .btn.secondary {
+      background: var(--panel);
+      color: var(--text);
+      border: 1px solid var(--border);
+    }
+  </style>
+</head>
+<body>
+  <h1>Li World Studio — preview</h1>
+  <p class="sub">v2 mocks (teal agent · no violet) + interactive demo reel</p>
+
+  <div class="actions">
+    <a class="btn" href="index.html">▶ Interactive demo</a>
+    <a class="btn secondary" href="mockups/">Mockup files</a>
+    <a class="btn secondary" href="../../docs/game-dev/planned-ui-mockups.md">Docs</a>
+  </div>
+
+  <section>
+    <h2>Demo video (auto-cycles verticals)</h2>
+    <video controls playsinline poster="mockups/li-studio-viewport-game-v2.png">
+      <source src="videos/world-studio-demo-reel.webm" type="video/webm" />
+      Your browser does not support WebM. Open <code>videos/world-studio-demo-reel.webm</code> locally.
+    </video>
+    <p class="sub">Re-record: <code>./scripts/record-studio-demo.sh</code></p>
+  </section>
+
+  <section>
+    <h2>v2 concept art</h2>
+    <div class="grid">
+      <figure>
+        <img src="mockups/li-studio-viewport-game-v2.png" alt="Game viewport" loading="lazy" />
+        <figcaption>Game · viewport + agent dock</figcaption>
+      </figure>
+      <figure>
+        <img src="mockups/li-studio-agent-chat-v2.png" alt="Agent chat" loading="lazy" />
+        <figcaption>Agent dock detail</figcaption>
+      </figure>
+      <figure>
+        <img src="mockups/li-studio-scientific-sim-v2.png" alt="Scientific" loading="lazy" />
+        <figcaption>Scientific · validity</figcaption>
+      </figure>
+      <figure>
+        <img src="mockups/li-studio-cinematic-nle-v2.png" alt="Cinematic" loading="lazy" />
+        <figcaption>Cinematic · 4-panel NLE</figcaption>
+      </figure>
+      <figure>
+        <img src="mockups/li-studio-agentic-canvas-v2.png" alt="Canvas" loading="lazy" />
+        <figcaption>Agentic canvas</figcaption>
+      </figure>
+      <figure>
+        <img src="mockups/li-studio-publish-v2.png" alt="Publish" loading="lazy" />
+        <figcaption>Publish · bundle hash</figcaption>
+      </figure>
+    </div>
+  </section>
+</body>
+</html>

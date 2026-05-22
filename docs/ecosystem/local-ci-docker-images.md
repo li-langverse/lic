@@ -42,6 +42,31 @@ After the first publish, `docker pull ghcr.io/li-langverse/lic-ci:ubuntu24-llvm2
 | `./scripts/local-ci.sh` (native) | Host OS (Linux or macOS) |
 | GHA `macos-14` / `windows-latest` | Not in this image — still need GHA or real runners |
 
+### Can you add macOS / Windows images and run them on Linux?
+
+**No — not for real GHA parity.**
+
+| Target | Docker on Linux devbox |
+|--------|-------------------------|
+| **Linux** (`ubuntu-24.04`) | Yes — `ghcr.io/li-langverse/lic-ci:ubuntu24-llvm22` |
+| **macOS** (`macos-14`) | No official macOS container OS; Apple license + no Docker-equivalent macOS runner image |
+| **Windows** (`windows-latest`) | Windows *containers* need a **Windows Docker host** (different engine than Linux containers). They do not run on normal Linux Docker and are not the same as GHA’s bash+LLVM Windows VM |
+
+What people sometimes confuse:
+
+- **Linux image on a Mac/Windows laptop** — works (Docker runs the same Ubuntu image). That is still **Linux CI**, not macOS/Windows CI.
+- **`act -P macos-14=...` on Linux** — still executes **Linux** runner images; macOS workflow jobs are skipped or fail unless you use a real Mac host.
+- **Cross-compile to Windows from Linux** — optional extra; lic’s Windows job is “build on Windows with MSVC/clang + LLVM CMake,” not fully replaceable by a Linux container.
+
+**Practical matrix for lic:**
+
+1. **Linux devbox** — native `local-ci.sh` or `--docker` (Ubuntu image).
+2. **Mac dev machine** — native `local-ci.sh` (Homebrew LLVM; matches `build-and-test-macos` toolchain choices).
+3. **Windows dev machine** — native bash CI or GHA.
+4. **All three OS jobs green** — GitHub Actions (or self-hosted runners on real Mac/Win hardware).
+
+Publishing more GHCR tags only helps for **Linux** variants (e.g. `ubuntu24-llvm22`, optional slim vs full). macOS/Windows “images” for local Actions are not a supported substitute on Linux.
+
 ## li-local-ci
 
 Set `LI_LOCAL_CI_IMAGE=ghcr.io/li-langverse/lic-ci:ubuntu24-llvm22` in profile `lic-docker` (see `li-local-ci` repo) for act/profile docker runs.

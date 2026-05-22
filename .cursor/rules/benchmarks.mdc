@@ -10,6 +10,8 @@ Plan: `docs/superpowers/plans/2026-05-14-benchmarks-and-simulations.md`
 
 ## Before timing
 
+See **`li-benchmark-correctness.mdc`** — correct results first (normative `reference.py` + small/large goldens); cross-lang parity is a sanity check only.
+
 1. Shared `params.toml` across li and reference impls (C++, Rust, Julia, Python)
 2. `verify.py` must pass (energy drift, momentum, trajectory hash)
 3. **`lic build` must pass Lean** on all `benchmarks/tier2_physics/` li sources

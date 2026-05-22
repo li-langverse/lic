@@ -1,8 +1,9 @@
 #!/usr/bin/env python3
 """Autonomous loop: drive li-httpd master plan until todos complete or max iterations.
 
-Uses li-cursor-agents + Cursor SDK (local) when CURSOR_API_KEY is set; otherwise
-prints the next instruction for a human/Cloud Agent session.
+Uses li-cursor-agents + Cursor SDK (local) when CURSOR_API_KEY is set. Invokes a
+**reusable** registry agent (default ``code_implementer``) with the todo slice as
+``--goal`` / ``LI_AGENT_EXTRA_INSTRUCTION`` — not a dedicated httpd agent id.
 
 Usage:
   export CURSOR_API_KEY=cursor_...
@@ -23,6 +24,7 @@ import os
 import re
 import subprocess
 import sys
+import threading
 from datetime import datetime, timezone
 from pathlib import Path
 
@@ -105,6 +107,71 @@ def agents_root() -> Path | None:
     return None
 
 
+def _tee_stream(pipe, logf, out) -> None:
+    """Copy subprocess line-by-line to terminal and log (live, unbuffered)."""
+    for line in iter(pipe.readline, ""):
+        out.write(line)
+        out.flush()
+        logf.write(line)
+        logf.flush()
+
+
+def agent_timeout_sec() -> int | None:
+    raw = os.environ.get("LI_HTTPD_PLAN_AGENT_TIMEOUT_SEC", "2700").strip()
+    if raw in ("0", "none", "off"):
+        return None
+    try:
+        return max(60, int(raw))
+    except ValueError:
+        return 2700
+
+
+def run_subprocess_streaming(cmd: list[str], cwd: Path, env: dict[str, str], log_path: Path) -> int:
+    """Run child with stdout/stderr streamed to this terminal and log_path."""
+    timeout = agent_timeout_sec()
+    with log_path.open("w", encoding="utf-8") as logf:
+        logf.write(f"# cmd: {' '.join(cmd)}\n# cwd: {cwd}\n\n")
+        logf.flush()
+        hint = f", timeout={timeout}s" if timeout else ""
+        print(f"==> agent subprocess (live; also {log_path}{hint})", flush=True)
+        proc = subprocess.Popen(
+            cmd,
+            cwd=str(cwd),
+            env=env,
+            stdout=subprocess.PIPE,
+            stderr=subprocess.PIPE,
+            text=True,
+            bufsize=1,
+        )
+        threads = [
+            threading.Thread(
+                target=_tee_stream,
+                args=(proc.stdout, logf, sys.stdout),
+                daemon=True,
+            ),
+            threading.Thread(
+                target=_tee_stream,
+                args=(proc.stderr, logf, sys.stderr),
+                daemon=True,
+            ),
+        ]
+        for t in threads:
+            t.start()
+        try:
+            rc = proc.wait(timeout=timeout)
+        except subprocess.TimeoutExpired:
+            proc.kill()
+            rc = proc.wait()
+            msg = f"agent timed out after {timeout}s — killed\n"
+            sys.stderr.write(msg)
+            logf.write(msg)
+            return 124
+        finally:
+            for t in threads:
+                t.join(timeout=2)
+        return rc
+
+
 def run_cursor_agent(todo: dict, dry_run: bool) -> tuple[int, str]:
     root = agents_root()
     if not root:
@@ -131,25 +198,40 @@ def run_cursor_agent(todo: dict, dry_run: bool) -> tuple[int, str]:
                 benchmarks = str(c)
                 break
 
+    agent = os.environ.get("LI_HTTPD_PLAN_AGENT", "code_implementer")
+    goal_path = STATE_DIR / f"goal-{datetime.now(timezone.utc).strftime('%Y%m%d-%H%M%S')}.md"
+    goal_path.write_text(instruction, encoding="utf-8")
+
     env = {
         **os.environ,
+        "PYTHONUNBUFFERED": "1",
+        "LI_SDK_TERMINAL_STREAM": os.environ.get("LI_SDK_TERMINAL_STREAM", "1"),
+        "LI_AGENT_MINIMAL_PROMPT": "1",
+        "LI_HTTPD_PLAN_LOOP": "1",
         "LI_REPO_WORKFLOW_REPO": "lic",
         "LIC_ROOT": str(ROOT),
         "LI_AGENT_EXTRA_INSTRUCTION": instruction,
+        "LI_AGENT_GOAL": instruction,
     }
-    cmd = ["node", str(dist), "--agent", "httpd_implementer", "--cwd", str(ROOT)]
+    cmd = [
+        "node",
+        str(dist),
+        "--agent",
+        agent,
+        "--cwd",
+        str(ROOT),
+        "--workflow-repo",
+        "lic",
+        "--goal-file",
+        str(goal_path),
+    ]
     if benchmarks:
         cmd.extend(["--benchmarks", benchmarks])
 
     STATE_DIR.mkdir(parents=True, exist_ok=True)
     log_path = STATE_DIR / f"iter-{datetime.now(timezone.utc).strftime('%Y%m%d-%H%M%S')}.log"
-    proc = subprocess.run(cmd, cwd=root, env=env, capture_output=True, text=True)
-    log_path.write_text(
-        (proc.stdout or "") + "\n--- stderr ---\n" + (proc.stderr or ""),
-        encoding="utf-8",
-    )
-    tail = (proc.stdout or "")[-4000:] + (proc.stderr or "")[-2000:]
-    return proc.returncode, f"log={log_path}\n{tail}"
+    rc = run_subprocess_streaming(cmd, root, env, log_path)
+    return rc, f"log={log_path} (streamed above)"
 
 
 def build_instruction(todo: dict) -> str:
@@ -243,7 +325,7 @@ def main() -> int:
             return 0 if ok else 1
 
         code, msg = run_cursor_agent(todo, args.dry_run)
-        print(msg[-3000:] if len(msg) > 3000 else msg)
+        print(msg, flush=True)
         if args.dry_run:
             return 0
 
@@ -261,6 +343,14 @@ def main() -> int:
         if code != 0:
             print(f"agent exit {code} — stopping loop (fix and re-run)", file=sys.stderr)
             return code
+
+        tid = todo["id"]
+        if tid not in state.setdefault("completed_ids", []):
+            state["completed_ids"].append(tid)
+            save_state(state)
+            print(f"todo {tid}: agent exit 0 — advancing loop (marked done in state.json)", flush=True)
+        else:
+            print(f"todo {tid}: agent exit 0 (already marked done)", flush=True)
 
         iteration += 1
         todos = load_plan_todos()

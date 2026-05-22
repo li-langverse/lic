@@ -1,0 +1,30 @@
+{
+  "completed_ids": ["m1-bearer-auth"],
+  "iterations": 4,
+  "history": [
+    {
+      "at": "2026-05-22T09:42:43.457238+00:00",
+      "todo_id": "m1-bearer-auth",
+      "agent_exit": 2,
+      "gates_ok": true
+    },
+    {
+      "at": "2026-05-22T09:43:13.805877+00:00",
+      "todo_id": "m1-bearer-auth",
+      "agent_exit": 1,
+      "gates_ok": true
+    },
+    {
+      "at": "2026-05-22T10:04:29.372153+00:00",
+      "todo_id": "m1-bearer-auth",
+      "agent_exit": 1,
+      "gates_ok": true
+    },
+    {
+      "at": "2026-05-22T10:13:38.964450+00:00",
+      "todo_id": "m1-bearer-auth",
+      "agent_exit": 0,
+      "gates_ok": true
+    }
+  ]
+}

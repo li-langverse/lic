@@ -2,7 +2,7 @@
 
 ## Summary
 
-Adds `scripts/httpd-plan-loop.py` and `httpd_implementer` Cursor SDK agent so Phase H httpd work can run in a loop without manual nudges every 30 minutes.
+Adds `scripts/httpd-plan-loop.py` and goal-directed loop (`code_implementer` + per-todo goal file) so Phase H httpd work can run in a loop without manual nudges every 30 minutes.
 
 ## Agent continuation
 
@@ -15,14 +15,14 @@ Adds `scripts/httpd-plan-loop.py` and `httpd_implementer` Cursor SDK agent so Ph
 
 | Path | Change |
 |------|--------|
-| `scripts/httpd-plan-loop.py` | Parse plan todos, run gates, invoke `httpd_implementer` via li-cursor-agents |
+| `scripts/httpd-plan-loop.py` | Parse plan todos, run gates, invoke `code_implementer` with todo goal via li-cursor-agents |
 | `scripts/httpd-plan-gates.sh` | Build + `run_httpd_config.sh` subset |
 | `docs/ecosystem/httpd-m1-baseline.md` | Merged/stale PR record |
 | `.cursor/automations/httpd-plan-loop.md` | Automation doc |
 | `packages/li-http/src/lib.li` | `li_rt_str_prefix_is_get`, single-call `parse_request` (E0311) |
 | `runtime/li_rt.c`, `li_rt.h` | C helpers for GET probe + parse tag |
 | `li-tests/run_httpd_config.sh` | `HTTPD_SKIP_LI_ROUTING_BIN` for compile-only gate |
-| `li-cursor-agents` | `httpd_implementer` agent + `lic` default repo |
+| `li-cursor-agents` | `run-agent --goal-file` + `scripts/goal-directed-loop.sh` (`LI_REPO_WORKFLOW_REPO=lic`) |
 
 ## Not changed
 

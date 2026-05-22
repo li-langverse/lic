@@ -29,7 +29,7 @@
 | Branch / PR | Content |
 |-------------|---------|
 | `cursor/httpd-plan-continue-54aa` (#160) | Overlap reject, validate/flatten, Bearer auth |
-| Plan loop | `scripts/httpd-plan-loop.py` + `httpd_implementer` agent |
+| Plan loop | `scripts/httpd-plan-loop.py` + goal-directed `code_implementer` (li-cursor-agents) |
 
 ## Next todos (plan loop order)
 

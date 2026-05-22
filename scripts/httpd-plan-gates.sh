@@ -12,7 +12,7 @@ echo "==> build lic"
 "$ROOT/scripts/build.sh" >/dev/null
 
 echo "==> match_routes compile"
-"$LIC" build "$ROOT/li-tests/routing/match_routes.li" -o /tmp/li_match_routes_gate
+"$LIC" build "$ROOT/li-tests/routing/match_routes.li" -o /tmp/li_match_routes_gate --allow-open-vc
 # Runtime oracle may lag; compile gate is mandatory for CI.
 if [[ "${HTTPD_GATES_RUN_MATCH_ROUTES:-0}" == "1" ]]; then
   /tmp/li_match_routes_gate

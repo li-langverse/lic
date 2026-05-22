@@ -75,7 +75,7 @@ todos:
     status: completed
   - id: pkg-workspace
     content: "Align packages/* via scripts/li-new-package + lip § A3 li.toml; workspace root; re-scaffold lis stubs when Pkg lands"
-    status: pending
+    status: completed
   - id: rng-concepts
     content: li-rng + probabilistic Hoare (prob_ensures), OsRng uniform contract, Prng-on-TLS allowed with profile gates
     status: pending

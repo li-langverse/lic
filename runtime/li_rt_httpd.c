@@ -29,9 +29,15 @@ typedef struct {
   LiPathKind path_kind;
   char action[LI_HTTPD_ACTION_MAX];
   char headers[LI_HTTPD_HEADERS_MAX]; /* space-separated key=value (lowercase keys) */
+  int32_t require_traceparent;        /* M1.5 OTel — route extra require=traceparent */
   int32_t priority;
   int32_t route_id; /* 1-based id after load */
 } LiHttpdRoute;
+
+/* M1.5 oracle / validate-config state (set when [limits] stream keys present). */
+static int32_t g_m15_stream_idle_sec = 0;
+static int32_t g_m15_stream_max_sec = 0;
+static int32_t g_m15_concurrent_streams = 0;
 
 static LiHttpdRoute g_routes[LI_HTTPD_MAX_ROUTES];
 static int32_t g_route_count = 0;
@@ -247,6 +253,14 @@ static int parse_route_extras(const char* extras, LiHttpdRoute* out) {
       httpd_set_error(2, "invalid route extra: expected key=value");
       return -1;
     }
+    if (strcmp(key, "require") == 0) {
+      if (strcmp(val, "traceparent") != 0) {
+        httpd_set_error(2, "unsupported require= value (M1.5: traceparent only)");
+        return -1;
+      }
+      out->require_traceparent = 1;
+      continue;
+    }
     if (validate_ingress_header_name(key) != 0) {
       return -1;
     }
@@ -368,6 +382,104 @@ static void trim_line(char* line) {
 }
 
 /* M1: proxy routes require global limits.rate_limit_rps (agent gateway policy). */
+static int parse_duration_sec_value(const char* raw, int* out_sec) {
+  if (raw == NULL || out_sec == NULL) {
+    return -1;
+  }
+  while (*raw && isspace((unsigned char)*raw)) {
+    raw++;
+  }
+  char* end = NULL;
+  long n = strtol(raw, &end, 10);
+  if (n < 1 || n > 86400) {
+    return -1;
+  }
+  if (end && (*end == 's' || *end == 'S')) {
+    end++;
+  }
+  while (end && *end && isspace((unsigned char)*end)) {
+    end++;
+  }
+  if (end && *end != '\0') {
+    return -1;
+  }
+  *out_sec = (int)n;
+  return 0;
+}
+
+static int parse_limits_m15_stream(const char* text) {
+  const char* sec = strstr(text, "[limits]");
+  if (sec == NULL) {
+    return 0;
+  }
+  char line[256];
+  const char* p = strchr(sec, '\n');
+  int idle = 0;
+  int max_d = 0;
+  int conc = 0;
+  if (p == NULL) {
+    return 0;
+  }
+  while (*p) {
+    const char* line_end = strchr(p, '\n');
+    size_t len = line_end ? (size_t)(line_end - p) : strlen(p);
+    if (len >= sizeof(line)) {
+      return -1;
+    }
+    memcpy(line, p, len);
+    line[len] = '\0';
+    trim_line(line);
+    p = line_end ? line_end + 1 : p + len;
+    if (line[0] == '[') {
+      break;
+    }
+    if (line[0] == '\0' || line[0] == '#') {
+      continue;
+    }
+    const char* eq = strchr(line, '=');
+    if (eq == NULL) {
+      continue;
+    }
+    char key[64];
+    size_t klen = (size_t)(eq - line);
+    if (klen >= sizeof(key)) {
+      return -1;
+    }
+    memcpy(key, line, klen);
+    key[klen] = '\0';
+    trim_line(key);
+    eq++;
+    while (*eq && isspace((unsigned char)*eq)) {
+      eq++;
+    }
+    if (strcmp(key, "stream_idle_timeout") == 0) {
+      if (parse_duration_sec_value(eq, &idle) != 0) {
+        return -1;
+      }
+    } else if (strcmp(key, "stream_max_duration") == 0) {
+      if (parse_duration_sec_value(eq, &max_d) != 0) {
+        return -1;
+      }
+    } else if (strcmp(key, "concurrent_streams") == 0) {
+      conc = atoi(eq);
+    }
+  }
+  if (idle > 0 || conc > 0) {
+    if (idle <= 0 || max_d <= 0 || conc <= 0) {
+      httpd_set_error(5, "M1.5 limits require stream_idle_timeout, stream_max_duration, concurrent_streams");
+      return -1;
+    }
+    if (max_d < idle) {
+      httpd_set_error(5, "limits.stream_max_duration must be >= stream_idle_timeout");
+      return -1;
+    }
+    g_m15_stream_idle_sec = idle;
+    g_m15_stream_max_sec = max_d;
+    g_m15_concurrent_streams = conc;
+  }
+  return 0;
+}
+
 static int parse_limits_rate_limit_rps(const char* text, int* out_rps) {
   *out_rps = 0;
   const char* sec = strstr(text, "[limits]");
@@ -597,7 +709,13 @@ int32_t li_rt_httpd_load_config(const char* path) {
     return -1;
   }
   buf[n] = '\0';
-  int rc = parse_routes_table(buf);
+  g_m15_stream_idle_sec = 0;
+  g_m15_stream_max_sec = 0;
+  g_m15_concurrent_streams = 0;
+  int rc = parse_limits_m15_stream(buf);
+  if (rc == 0) {
+    rc = parse_routes_table(buf);
+  }
   if (rc == 0) {
     rc = validate_proxy_rate_limits(buf);
   }
@@ -809,4 +927,49 @@ int32_t li_rt_httpd_route_action_kind(int32_t route_id) {
     return 2;
   }
   return 0;
+}
+
+int32_t li_rt_httpd_parse_duration_sec(const char* raw) {
+  int sec = 0;
+  if (parse_duration_sec_value(raw, &sec) != 0) {
+    return -1;
+  }
+  return (int32_t)sec;
+}
+
+int32_t li_rt_httpd_m15_stream_idle_sec(void) { return g_m15_stream_idle_sec; }
+
+int32_t li_rt_httpd_m15_stream_max_sec(void) { return g_m15_stream_max_sec; }
+
+int32_t li_rt_httpd_m15_concurrent_streams(void) { return g_m15_concurrent_streams; }
+
+int32_t li_rt_httpd_route_requires_traceparent(int32_t route_id) {
+  if (route_id <= 0 || route_id > g_route_count) {
+    return 0;
+  }
+  return g_routes[route_id - 1].require_traceparent;
+}
+
+int32_t li_rt_httpd_is_sse_content_type(const char* ctype) {
+  if (ctype == NULL) {
+    return 0;
+  }
+  return strstr(ctype, "text/event-stream") != NULL ? 1 : 0;
+}
+
+static int header_has_traceparent_c(const char* buf, int hdr_end) {
+  for (int i = 0; i + 14 < hdr_end; i++) {
+    if ((buf[i] == 't' || buf[i] == 'T') && (buf[i + 1] == 'r' || buf[i + 1] == 'R') &&
+        strncmp(buf + i, "traceparent:", 12) == 0) {
+      return 1;
+    }
+  }
+  return 0;
+}
+
+int32_t li_rt_httpd_traceparent_ok(const char* buf, int32_t hdr_end) {
+  if (buf == NULL || hdr_end <= 0) {
+    return 0;
+  }
+  return header_has_traceparent_c(buf, hdr_end) ? 1 : 0;
 }

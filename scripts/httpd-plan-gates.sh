@@ -16,6 +16,15 @@ else
 
   echo "==> match_routes compile"
   "$LIC" build "$ROOT/li-tests/routing/match_routes.li" -o /tmp/li_match_routes_gate --allow-open-vc
+
+  if command -v clang >/dev/null 2>&1; then
+    echo "==> m15_agent_oracle compile"
+    "$LIC" build "$ROOT/li-tests/httpd/m15_agent_oracle.li" -o /tmp/li_m15_agent_oracle --allow-open-vc
+    /tmp/li_m15_agent_oracle
+    test "$(/tmp/li_m15_agent_oracle; echo $?)" -eq 0
+  else
+    echo "==> skip m15_agent_oracle (clang not in PATH)"
+  fi
 fi
 # Runtime oracle may lag; compile gate is mandatory for CI.
 if [[ "${HTTPD_GATES_RUN_MATCH_ROUTES:-0}" == "1" ]]; then
@@ -38,6 +47,11 @@ if [[ -f "$ROOT/scripts/validate-httpd-config.py" ]]; then
   echo "==> validate-httpd-config.py (good config)"
   python3 "$ROOT/scripts/validate-httpd-config.py" \
     "$ROOT/packages/li-net-httpd/examples/auth_bearer.toml"
+fi
+
+if [[ -x "$ROOT/scripts/check-httpd-m15-config.sh" ]]; then
+  echo "==> check-httpd-m15-config.sh"
+  "$ROOT/scripts/check-httpd-m15-config.sh"
 fi
 
 if [[ "${HTTPD_GATES_SKIP_LIC_BUILD:-0}" != "1" && "${HTTPD_RUN_BEARER_TEST:-0}" == "1" && -f "$ROOT/scripts/test-auth-bearer.sh" && -x "$ROOT/build/li-httpd" ]]; then

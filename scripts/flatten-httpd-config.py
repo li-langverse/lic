@@ -19,6 +19,7 @@ except ModuleNotFoundError:
     import tomli as tomllib  # type: ignore
 
 from httpd_config import ConfigError, load_httpd_config
+from httpd_m15 import ConfigError as M15Error, parse_duration, validate_route_match
 
 
 def parse_listen(raw: str) -> int:
@@ -79,6 +80,12 @@ def flatten(cfg_path: Path) -> list[str]:
         lines.append(f"rate_limit_rps={int(limits['rate_limit_rps'])}")
     if limits.get("rate_limit_burst") is not None:
         lines.append(f"rate_limit_burst={int(limits['rate_limit_burst'])}")
+    if limits.get("stream_idle_timeout") is not None:
+        lines.append(f"stream_idle_timeout_sec={parse_duration(limits['stream_idle_timeout'], 'limits.stream_idle_timeout')}")
+    if limits.get("stream_max_duration") is not None:
+        lines.append(f"stream_max_duration_sec={parse_duration(limits['stream_max_duration'], 'limits.stream_max_duration')}")
+    if limits.get("concurrent_streams") is not None:
+        lines.append(f"concurrent_streams={int(limits['concurrent_streams'])}")
 
     routes = load_httpd_config(cfg_path)
     proxy_any = False
@@ -95,18 +102,32 @@ def flatten(cfg_path: Path) -> list[str]:
             lines.append(f"route={r.method}|{r.path}|{kind}|{action}|{rps}|{burst}")
         else:
             lines.append(f"route={r.method}|{r.path}|{kind}|{action}")
+        for req in getattr(r, "requires", []):
+            lines.append(f"route_require={r.method}|{r.path}|{req}")
 
+    pool_ports: dict[str, int] = {}
     nested = data.get("upstreams") or {}
     if isinstance(nested, dict):
-        for val in nested.values():
+        for pool_id, val in nested.items():
             if isinstance(val, dict):
                 for peer in val.get("peers") or []:
-                    lines.append(f"upstream_peer={peer_port(str(peer))}")
+                    p = peer_port(str(peer))
+                    pool_ports[str(pool_id)] = p
+                    lines.append(f"upstream_peer={p}")
 
     for key, val in data.items():
         if key.startswith("upstreams.") and isinstance(val, dict):
+            pool_id = key.split(".", 1)[1]
             for peer in val.get("peers") or []:
-                lines.append(f"upstream_peer={peer_port(str(peer))}")
+                p = peer_port(str(peer))
+                pool_ports[pool_id] = p
+                lines.append(f"upstream_peer={p}")
+
+    for _hdr, model, pool in validate_route_match(data):
+        port = pool_ports.get(pool)
+        if port is None:
+            raise ValueError(f"route.match proxy {pool!r} has no peer port")
+        lines.append(f"model_match={model}|{port}")
 
     if proxy_any and not any(l.startswith("upstream_peer=") for l in lines):
         lines.append("proxy_all=1")
@@ -124,7 +145,7 @@ def main() -> int:
         return 1
     try:
         lines = flatten(args.config)
-    except (ConfigError, ValueError) as e:
+    except (ConfigError, M15Error, ValueError) as e:
         print(f"flatten-httpd-config: {e}", file=sys.stderr)
         return 1
     if not any(l.startswith("listen_port=") for l in lines):

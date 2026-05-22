@@ -144,6 +144,9 @@ typedef struct {
   int proxy_resp_hdr_len;
   uint32_t proxy_client_epoll_events;
   uint32_t proxy_up_epoll_events;
+  int proxy_is_sse;
+  double proxy_last_chunk_ts;
+  double proxy_stream_start_ts;
 } httpd_slot_t;
 
 static httpd_slot_t g_slots[HTTPD_MAX_CONN];
@@ -171,9 +174,23 @@ typedef struct {
   int is_proxy;
   int rate_limit_rps;
   int rate_limit_burst;
+  int require_traceparent;
   double rate_tokens;
   double rate_last_ts;
 } httpd_route_t;
+
+#define HTTPD_MAX_MODEL_MATCH 16
+typedef struct {
+  char model[64];
+  int32_t port;
+} httpd_model_match_t;
+
+static httpd_model_match_t g_model_matches[HTTPD_MAX_MODEL_MATCH];
+static int g_model_match_count = 0;
+static int g_stream_idle_sec = 0;
+static int g_stream_max_sec = 0;
+static int g_concurrent_streams_max = 0;
+static int g_active_proxy_streams = 0;
 
 static httpd_route_t g_routes[HTTPD_MAX_ROUTES];
 static int g_route_count = 0;
@@ -1398,6 +1415,17 @@ int32_t httpd_mark_upstream_peer_down_i(int32_t port) {
   return 0;
 }
 
+static int32_t httpd_model_peer_port(const char* buf, int hdr_end);
+static int32_t httpd_lb_pick_port(void);
+
+static int32_t httpd_lb_pick_port_for_request(const char* buf, int hdr_end) {
+  int32_t model_port = httpd_model_peer_port(buf, hdr_end);
+  if (model_port > 0) {
+    return model_port;
+  }
+  return httpd_lb_pick_port();
+}
+
 static int32_t httpd_lb_pick_port(void) {
   if (g_up_peer_count <= 0) {
     return g_proxy_port;
@@ -1689,6 +1717,93 @@ static int path_proxy_match_route(const char* path, int plen, const httpd_req_in
   return 0;
 }
 
+static int httpd_req_header_value(const char* buf, int hdr_end, const char* name, char* out, int cap) {
+  int nlen = (int)strlen(name);
+  for (int line_start = 0; line_start < hdr_end;) {
+    int i = line_start;
+    while (i + 1 < hdr_end && !(buf[i] == '\r' && buf[i + 1] == '\n')) {
+      i++;
+    }
+    int eff = i - line_start;
+    if (eff > nlen && httpd_header_name_eq_ci(buf + line_start, eff, name)) {
+      int j = line_start + nlen;
+      while (j < i && (buf[j] == ' ' || buf[j] == ':')) {
+        j++;
+      }
+      int vlen = i - j;
+      if (vlen <= 0 || vlen >= cap) {
+        return -1;
+      }
+      memcpy(out, buf + j, (size_t)vlen);
+      out[vlen] = '\0';
+      return vlen;
+    }
+    line_start = i + 2;
+  }
+  return -1;
+}
+
+static int32_t httpd_model_peer_port(const char* buf, int hdr_end) {
+  char model[64];
+  if (httpd_req_header_value(buf, hdr_end, "x-model", model, (int)sizeof(model)) < 0) {
+    return 0;
+  }
+  for (int i = 0; i < g_model_match_count; i++) {
+    if (strcmp(g_model_matches[i].model, model) == 0) {
+      return g_model_matches[i].port;
+    }
+  }
+  return 0;
+}
+
+static int httpd_route_requires_traceparent_for(const httpd_req_info_t* req, const char* path, int plen) {
+  for (int i = 0; i < g_route_count; i++) {
+    const httpd_route_t* r = &g_routes[i];
+    if (!r->is_proxy || !r->require_traceparent) {
+      continue;
+    }
+    if (!route_method_match(r, req)) {
+      continue;
+    }
+    if (path_prefix_match(path, plen, r)) {
+      return 1;
+    }
+  }
+  return 0;
+}
+
+static int httpd_traceparent_present(const char* buf, int hdr_end) {
+  char tp[128];
+  return httpd_req_header_value(buf, hdr_end, "traceparent", tp, (int)sizeof(tp)) >= 0 ? 1 : 0;
+}
+
+static int httpd_inject_traceparent_if_missing(int32_t slot, int hdr_end) {
+  if (slot < 0 || slot >= HTTPD_MAX_CONN || hdr_end <= 0) {
+    return hdr_end;
+  }
+  if (httpd_traceparent_present(g_slots[slot].buf, hdr_end)) {
+    return hdr_end;
+  }
+  static const char k_tp[] = "traceparent: 00-4bf92f3577b34da6a3ce929d0e0e4736-00f067aa0ba902b7-01\r\n";
+  int add = (int)sizeof(k_tp) - 1;
+  int tail = g_slots[slot].len - hdr_end;
+  if (g_slots[slot].len + add >= HTTPD_IO_BUF) {
+    return hdr_end;
+  }
+  memmove(g_slots[slot].buf + hdr_end + add, g_slots[slot].buf + hdr_end, (size_t)tail);
+  memcpy(g_slots[slot].buf + hdr_end, k_tp, (size_t)add);
+  g_slots[slot].len += add;
+  return hdr_end + add;
+}
+
+static int httpd_client_wants_sse(const char* buf, int hdr_end) {
+  char accept[128];
+  if (httpd_req_header_value(buf, hdr_end, "accept", accept, (int)sizeof(accept)) < 0) {
+    return 0;
+  }
+  return strstr(accept, "text/event-stream") != NULL ? 1 : 0;
+}
+
 static int httpd_rate_bucket_allow(int rps, int burst, double* tokens, double* last_ts) {
   if (rps <= 0) {
     return 1;
@@ -1966,7 +2081,7 @@ static int httpd_proxy_relay_response(int conn, int up) {
 }
 
 static int32_t httpd_proxy_forward(int32_t conn, int32_t slot, int hdr_end, const httpd_req_info_t* req) {
-  int32_t peer_port = httpd_lb_pick_port();
+  int32_t peer_port = httpd_lb_pick_port_for_request(g_slots[slot].buf, hdr_end);
   if (peer_port <= 0) {
     return -1;
   }
@@ -2109,6 +2224,9 @@ static void httpd_serve_conn_epoll(int epfd, int32_t slot);
 static void httpd_conn_close_slot(int epfd, int32_t slot);
 static void httpd_proxy_client_epoll_mod(int epfd, int32_t slot, uint32_t events);
 static void httpd_proxy_pump_relay(int epfd, int32_t slot);
+static int conn_from_slot(int32_t slot);
+static int httpd_proxy_check_stream_policy(int epfd, int32_t slot, int hdr_end, const httpd_req_info_t* req,
+                                         const char* path, int plen);
 static int httpd_proxy_start_async(int epfd, int32_t conn, int32_t slot, int hdr_end, const httpd_req_info_t* req,
                                    int keep);
 
@@ -2199,6 +2317,11 @@ static int32_t httpd_try_drain_once(int32_t conn, int32_t slot) {
       return -2;
     }
 #ifdef __linux__
+    if (httpd_proxy_check_stream_policy(g_httpd_epfd, slot, hdr_end, &req, req.path, req.path_len) < 0) {
+      return keep ? 1 : -1;
+    }
+    hdr_end = httpd_inject_traceparent_if_missing(slot, hdr_end);
+    hdr_end = httpd_proxy_compact_req_hdr(slot, hdr_end);
     httpd_proxy_client_epoll_mod(g_httpd_epfd, slot, EPOLLIN | EPOLLET);
     if (httpd_proxy_start_async(g_httpd_epfd, conn, slot, hdr_end, &req, keep) < 0) {
       return -2;
@@ -2291,6 +2414,9 @@ static void httpd_proxy_clear(int epfd, int32_t slot) {
   if (slot < 0 || slot >= HTTPD_MAX_CONN) {
     return;
   }
+  if (g_slots[slot].proxy_active && g_active_proxy_streams > 0) {
+    g_active_proxy_streams--;
+  }
   if (g_slots[slot].proxy_up_fd >= 0) {
 #ifdef __linux__
     if (epfd >= 0) {
@@ -2303,6 +2429,9 @@ static void httpd_proxy_clear(int epfd, int32_t slot) {
   }
   g_slots[slot].proxy_active = 0;
   g_slots[slot].proxy_phase = HTTPD_PROXY_PHASE_IDLE;
+  g_slots[slot].proxy_is_sse = 0;
+  g_slots[slot].proxy_last_chunk_ts = 0.0;
+  g_slots[slot].proxy_stream_start_ts = 0.0;
   g_slots[slot].proxy_rbuf_len = 0;
   g_slots[slot].proxy_rbuf_sent = 0;
   g_slots[slot].proxy_send_off = 0;
@@ -3108,6 +3237,20 @@ static void httpd_proxy_flush_client_out(int epfd, int32_t slot) {
 
 static void httpd_proxy_pump_relay(int epfd, int32_t slot) {
   httpd_slot_t* s = &g_slots[slot];
+  if (s->proxy_is_sse && g_stream_idle_sec > 0 && s->proxy_last_chunk_ts > 0.0) {
+    double now = httpd_monotonic_now();
+    if (now - s->proxy_last_chunk_ts > (double)g_stream_idle_sec) {
+      httpd_send_status(s->fd, 504, "Gateway Timeout", "Content-Type: application/json\r\n", 0);
+      httpd_proxy_finish_err(epfd, slot);
+      return;
+    }
+    if (g_stream_max_sec > 0 && s->proxy_stream_start_ts > 0.0 &&
+        now - s->proxy_stream_start_ts > (double)g_stream_max_sec) {
+      httpd_send_status(s->fd, 504, "Gateway Timeout", "Content-Type: application/json\r\n", 0);
+      httpd_proxy_finish_err(epfd, slot);
+      return;
+    }
+  }
   httpd_proxy_flush_client_out(epfd, slot);
   if (!s->proxy_active) {
     return;
@@ -3173,6 +3316,9 @@ static void httpd_proxy_pump_relay(int epfd, int32_t slot) {
     if (httpd_proxy_resp_feed(epfd, slot, s->proxy_rbuf, (size_t)r) < 0) {
       httpd_proxy_finish_err(epfd, slot);
       return;
+    }
+    if (s->proxy_is_sse && r > 0) {
+      s->proxy_last_chunk_ts = httpd_monotonic_now();
     }
     httpd_proxy_relay_maybe_done(epfd, slot);
     if (!g_slots[slot].proxy_active) {
@@ -3251,9 +3397,33 @@ static void httpd_proxy_client_handler(int epfd, int32_t slot, uint32_t events) 
   }
 }
 
+static int conn_from_slot(int32_t slot) {
+  if (slot < 0 || slot >= HTTPD_MAX_CONN) {
+    return -1;
+  }
+  return g_slots[slot].fd;
+}
+
+static int httpd_proxy_check_stream_policy(int epfd, int32_t slot, int hdr_end, const httpd_req_info_t* req,
+                                         const char* path, int plen) {
+  if (g_concurrent_streams_max > 0 && g_active_proxy_streams >= g_concurrent_streams_max) {
+    httpd_send_status(conn_from_slot(slot), 429, "Too Many Requests", "Retry-After: 1\r\n", 0);
+    return -1;
+  }
+  if (httpd_route_requires_traceparent_for(req, path, plen) &&
+      !httpd_traceparent_present(g_slots[slot].buf, hdr_end)) {
+    httpd_send_status(conn_from_slot(slot), 400, "Bad Request",
+                      "Content-Type: application/json\r\n", 0);
+    return -1;
+  }
+  (void)epfd;
+  return 0;
+}
+
 static int httpd_proxy_start_async(int epfd, int32_t conn, int32_t slot, int hdr_end, const httpd_req_info_t* req,
                                    int keep) {
-  int32_t peer_port = httpd_lb_pick_port();
+  (void)conn;
+  int32_t peer_port = httpd_lb_pick_port_for_request(g_slots[slot].buf, hdr_end);
   if (peer_port <= 0) {
     return -1;
   }
@@ -3303,6 +3473,12 @@ static int httpd_proxy_start_async(int epfd, int32_t conn, int32_t slot, int hdr
   s->proxy_resp_hdr_len = 0;
   s->proxy_client_epoll_events = 0;
   s->proxy_up_epoll_events = 0;
+  s->proxy_is_sse = httpd_client_wants_sse(g_slots[slot].buf, hdr_end);
+  s->proxy_last_chunk_ts = 0.0;
+  s->proxy_stream_start_ts = s->proxy_is_sse ? httpd_monotonic_now() : 0.0;
+  if (g_concurrent_streams_max > 0) {
+    g_active_proxy_streams++;
+  }
   g_proxy_snap_recording = 0;
   if (method_is(req, "GET") && !g_proxy_snap_ready) {
     g_proxy_snap_recording = 1;
@@ -3817,6 +3993,13 @@ int32_t httpd_load_runtime_config_i(intptr_t path) {
   g_health_fail_timeout_sec = 10;
   g_auth_required = 0;
   g_auth_key_count = 0;
+  g_model_match_count = 0;
+  g_stream_idle_sec = 0;
+  g_stream_max_sec = 0;
+  g_concurrent_streams_max = 0;
+  g_active_proxy_streams = 0;
+  char pending_require[16][600];
+  int pending_require_n = 0;
   char line[4096];
   while (fgets(line, sizeof(line), f)) {
     trim_line(line);
@@ -3871,6 +4054,25 @@ int32_t httpd_load_runtime_config_i(intptr_t path) {
           g_auth_key_count++;
         }
       }
+    } else if (strcmp(key, "stream_idle_timeout_sec") == 0) {
+      g_stream_idle_sec = atoi(val);
+    } else if (strcmp(key, "stream_max_duration_sec") == 0) {
+      g_stream_max_sec = atoi(val);
+    } else if (strcmp(key, "concurrent_streams") == 0) {
+      g_concurrent_streams_max = atoi(val);
+    } else if (strcmp(key, "model_match") == 0 && g_model_match_count < HTTPD_MAX_MODEL_MATCH) {
+      char model[64];
+      int port = 0;
+      if (sscanf(val, "%63[^|]|%d", model, &port) == 2 && port > 0) {
+        snprintf(g_model_matches[g_model_match_count].model, sizeof(g_model_matches[0].model), "%s",
+                 model);
+        g_model_matches[g_model_match_count].port = port;
+        g_model_match_count++;
+      }
+    } else if (strcmp(key, "route_require") == 0 && pending_require_n < 16) {
+      strncpy(pending_require[pending_require_n], val, sizeof(pending_require[0]) - 1);
+      pending_require[pending_require_n][sizeof(pending_require[0]) - 1] = '\0';
+      pending_require_n++;
     } else if (strcmp(key, "route") == 0 && g_route_count < HTTPD_MAX_ROUTES) {
       char method[16] = "";
       char path[512] = "";
@@ -3904,6 +4106,21 @@ int32_t httpd_load_runtime_config_i(intptr_t path) {
   fclose(f);
   if (g_doc_root_len == 0) {
     return -1;
+  }
+  for (int pi = 0; pi < pending_require_n; pi++) {
+    char method[16] = "";
+    char path[512] = "";
+    char reqname[32] = "";
+    if (sscanf(pending_require[pi], "%15[^|]|%511[^|]|%31s", method, path, reqname) != 3) {
+      continue;
+    }
+    for (int ri = 0; ri < g_route_count; ri++) {
+      if (strcmp(g_routes[ri].method, method) == 0 && strcmp(g_routes[ri].path_prefix, path) == 0) {
+        if (strcmp(reqname, "traceparent") == 0) {
+          g_routes[ri].require_traceparent = 1;
+        }
+      }
+    }
   }
   if (g_up_peer_count > 0) {
     upstream_pool_prewarm_all();

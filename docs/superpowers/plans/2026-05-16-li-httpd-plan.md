@@ -69,7 +69,7 @@ todos:
     status: completed
   - id: m2-tls-h2
     content: "M2: TLS1.3 terminate, HTTP/2, WebSocket, circuit breaker, queue 429, webhook allowlist"
-    status: pending
+    status: completed
   - id: m3-optional
     content: "M3 optional: L4 stream, token-budget hooks—RFC + LOC"
     status: pending

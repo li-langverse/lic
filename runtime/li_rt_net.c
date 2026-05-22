@@ -175,6 +175,7 @@ typedef struct {
   int rate_limit_rps;
   int rate_limit_burst;
   int require_traceparent;
+  int require_websocket;
   double rate_tokens;
   double rate_last_ts;
 } httpd_route_t;
@@ -191,6 +192,16 @@ static int g_stream_idle_sec = 0;
 static int g_stream_max_sec = 0;
 static int g_concurrent_streams_max = 0;
 static int g_active_proxy_streams = 0;
+
+/* M2 queue / circuit breaker (flattened runtime.conf). */
+static int g_m2_enabled = 0;
+static int g_m2_queue_max_depth = 0;
+static int g_m2_queue_retry_after_sec = 1;
+static int g_m2_cb_error_threshold = 0;
+static int g_m2_cb_window_sec = 30;
+static int g_m2_cb_open_duration_sec = 15;
+static int g_m2_cb_half_open_probes = 1;
+static int g_queue_depth = 0;
 
 static httpd_route_t g_routes[HTTPD_MAX_ROUTES];
 static int g_route_count = 0;
@@ -230,6 +241,10 @@ typedef struct {
   int down;
   int fail_count;
   double down_until;
+  int circuit_failures;
+  int circuit_open;
+  double circuit_open_until;
+  int circuit_half_open_left;
 } httpd_upstream_peer_t;
 
 static httpd_upstream_peer_t g_up_peers[HTTPD_MAX_UPSTREAM_PEERS];
@@ -1373,6 +1388,86 @@ static void httpd_upstream_close_pool_fds(httpd_upstream_peer_t* p) {
   }
 }
 
+static void httpd_m2_circuit_maybe_recover(httpd_upstream_peer_t* p) {
+  if (!p || !p->circuit_open) {
+    return;
+  }
+  double now = httpd_monotonic_now();
+  if (p->circuit_open_until > 0.0 && now >= p->circuit_open_until) {
+    p->circuit_open = 0;
+    p->circuit_failures = 0;
+    p->circuit_open_until = 0.0;
+    p->circuit_half_open_left = g_m2_cb_half_open_probes > 0 ? g_m2_cb_half_open_probes : 1;
+  }
+}
+
+static int httpd_m2_circuit_allows_peer(httpd_upstream_peer_t* p) {
+  if (!p || g_m2_cb_error_threshold <= 0) {
+    return 1;
+  }
+  httpd_m2_circuit_maybe_recover(p);
+  if (!p->circuit_open) {
+    return 1;
+  }
+  if (p->circuit_half_open_left > 0) {
+    p->circuit_half_open_left--;
+    return 1;
+  }
+  return 0;
+}
+
+static void httpd_m2_circuit_note_failure(httpd_upstream_peer_t* p) {
+  if (!p || g_m2_cb_error_threshold <= 0) {
+    return;
+  }
+  p->circuit_failures++;
+  if (p->circuit_failures >= g_m2_cb_error_threshold) {
+    p->circuit_open = 1;
+    p->circuit_open_until =
+        httpd_monotonic_now() + (double)(g_m2_cb_open_duration_sec > 0 ? g_m2_cb_open_duration_sec : 15);
+    p->circuit_half_open_left = 0;
+  }
+}
+
+static void httpd_m2_circuit_note_success(httpd_upstream_peer_t* p) {
+  if (!p) {
+    return;
+  }
+  p->circuit_failures = 0;
+  p->circuit_open = 0;
+  p->circuit_open_until = 0.0;
+  p->circuit_half_open_left = 0;
+}
+
+static int httpd_m2_any_peer_available(void) {
+  if (g_up_peer_count <= 0) {
+    return g_proxy_port > 0;
+  }
+  for (int i = 0; i < g_up_peer_count; i++) {
+    httpd_upstream_peer_maybe_recover(&g_up_peers[i]);
+    httpd_m2_circuit_maybe_recover(&g_up_peers[i]);
+    if (!g_up_peers[i].down && httpd_m2_circuit_allows_peer(&g_up_peers[i])) {
+      return 1;
+    }
+  }
+  return 0;
+}
+
+static int httpd_m2_queue_saturated(void) {
+  if (g_m2_queue_max_depth <= 0) {
+    return !httpd_m2_any_peer_available();
+  }
+  if (g_queue_depth >= g_m2_queue_max_depth) {
+    return 1;
+  }
+  return !httpd_m2_any_peer_available();
+}
+
+static int httpd_m2_format_retry_after(char* buf, size_t cap) {
+  int sec = g_m2_queue_retry_after_sec > 0 ? g_m2_queue_retry_after_sec : 1;
+  return snprintf(buf, cap, "Retry-After: %d\r\n", sec);
+}
+
 static void httpd_upstream_peer_maybe_recover(httpd_upstream_peer_t* p) {
   if (!p || !p->down) {
     return;
@@ -1383,6 +1478,7 @@ static void httpd_upstream_peer_maybe_recover(httpd_upstream_peer_t* p) {
     p->fail_count = 0;
     p->down_until = 0.0;
   }
+  httpd_m2_circuit_maybe_recover(p);
 }
 
 static void httpd_upstream_peer_mark_down(httpd_upstream_peer_t* p) {
@@ -1400,6 +1496,7 @@ static void httpd_upstream_peer_note_failure(int32_t port) {
     return;
   }
   p->fail_count++;
+  httpd_m2_circuit_note_failure(p);
   if (p->fail_count >= g_health_max_fails) {
     httpd_upstream_peer_mark_down(p);
   }
@@ -1411,6 +1508,7 @@ static void httpd_upstream_peer_note_success(int32_t port) {
     return;
   }
   p->fail_count = 0;
+  httpd_m2_circuit_note_success(p);
   if (p->down && p->down_until > 0.0) {
     httpd_upstream_peer_maybe_recover(p);
   }
@@ -1447,7 +1545,7 @@ static int32_t httpd_lb_pick_port(void) {
     for (int tries = 0; tries < g_up_peer_count; tries++) {
       int idx = g_lb_rr % g_up_peer_count;
       g_lb_rr++;
-      if (!g_up_peers[idx].down) {
+      if (!g_up_peers[idx].down && httpd_m2_circuit_allows_peer(&g_up_peers[idx])) {
         return g_up_peers[idx].port;
       }
     }
@@ -1456,7 +1554,7 @@ static int32_t httpd_lb_pick_port(void) {
   int best = -1;
   int min_act = 2147483647;
   for (int i = 0; i < g_up_peer_count; i++) {
-    if (g_up_peers[i].down) {
+    if (g_up_peers[i].down || !httpd_m2_circuit_allows_peer(&g_up_peers[i])) {
       continue;
     }
     if (g_up_peers[i].active < min_act) {
@@ -2426,6 +2524,9 @@ static void httpd_proxy_clear(int epfd, int32_t slot) {
   }
   if (g_slots[slot].proxy_active && g_active_proxy_streams > 0) {
     g_active_proxy_streams--;
+  }
+  if (g_slots[slot].proxy_active && g_m2_queue_max_depth > 0 && g_queue_depth > 0) {
+    g_queue_depth--;
   }
   if (g_slots[slot].proxy_up_fd >= 0) {
 #ifdef __linux__
@@ -3513,6 +3614,12 @@ static int conn_from_slot(int32_t slot) {
 
 static int httpd_proxy_check_stream_policy(int epfd, int32_t slot, int hdr_end, const httpd_req_info_t* req,
                                          const char* path, int plen) {
+  if (g_m2_enabled && httpd_m2_queue_saturated()) {
+    char retry_hdr[48];
+    httpd_m2_format_retry_after(retry_hdr, sizeof(retry_hdr));
+    httpd_send_status(conn_from_slot(slot), 429, "Too Many Requests", retry_hdr, 0);
+    return -1;
+  }
   if (g_concurrent_streams_max > 0 && g_active_proxy_streams >= g_concurrent_streams_max) {
     httpd_send_status(conn_from_slot(slot), 429, "Too Many Requests", "Retry-After: 1\r\n", 0);
     return -1;
@@ -3585,6 +3692,9 @@ static int httpd_proxy_start_async(int epfd, int32_t conn, int32_t slot, int hdr
   s->proxy_stream_start_ts = s->proxy_is_sse ? httpd_monotonic_now() : 0.0;
   if (g_concurrent_streams_max > 0) {
     g_active_proxy_streams++;
+  }
+  if (g_m2_queue_max_depth > 0) {
+    g_queue_depth++;
   }
   g_proxy_snap_recording = 0;
   if (method_is(req, "GET") && !g_proxy_snap_ready) {
@@ -4105,6 +4215,14 @@ int32_t httpd_load_runtime_config_i(intptr_t path) {
   g_stream_max_sec = 0;
   g_concurrent_streams_max = 0;
   g_active_proxy_streams = 0;
+  g_m2_enabled = 0;
+  g_m2_queue_max_depth = 0;
+  g_m2_queue_retry_after_sec = 1;
+  g_m2_cb_error_threshold = 0;
+  g_m2_cb_window_sec = 30;
+  g_m2_cb_open_duration_sec = 15;
+  g_m2_cb_half_open_probes = 1;
+  g_queue_depth = 0;
   g_leak_censor_enabled = 0;
   g_leak_censor_block_502 = 0;
   g_leak_censor_pattern_openai = 1;
@@ -4173,6 +4291,23 @@ int32_t httpd_load_runtime_config_i(intptr_t path) {
       g_stream_max_sec = atoi(val);
     } else if (strcmp(key, "concurrent_streams") == 0) {
       g_concurrent_streams_max = atoi(val);
+    } else if (strcmp(key, "m2_enabled") == 0) {
+      g_m2_enabled = (strcmp(val, "0") == 0 || strcmp(val, "false") == 0) ? 0 : 1;
+    } else if (strcmp(key, "m2_queue_max_depth") == 0) {
+      g_m2_queue_max_depth = atoi(val);
+    } else if (strcmp(key, "m2_queue_retry_after_sec") == 0) {
+      g_m2_queue_retry_after_sec = atoi(val);
+      if (g_m2_queue_retry_after_sec < 1) {
+        g_m2_queue_retry_after_sec = 1;
+      }
+    } else if (strcmp(key, "m2_cb_error_threshold") == 0) {
+      g_m2_cb_error_threshold = atoi(val);
+    } else if (strcmp(key, "m2_cb_window_sec") == 0) {
+      g_m2_cb_window_sec = atoi(val);
+    } else if (strcmp(key, "m2_cb_open_duration_sec") == 0) {
+      g_m2_cb_open_duration_sec = atoi(val);
+    } else if (strcmp(key, "m2_cb_half_open_probes") == 0) {
+      g_m2_cb_half_open_probes = atoi(val);
     } else if (strcmp(key, "leak_censor_enabled") == 0) {
       g_leak_censor_enabled = (strcmp(val, "0") == 0 || strcmp(val, "false") == 0) ? 0 : 1;
     } else if (strcmp(key, "leak_censor_on_detect") == 0) {
@@ -4244,8 +4379,15 @@ int32_t httpd_load_runtime_config_i(intptr_t path) {
       if (strcmp(g_routes[ri].method, method) == 0 && strcmp(g_routes[ri].path_prefix, path) == 0) {
         if (strcmp(reqname, "traceparent") == 0) {
           g_routes[ri].require_traceparent = 1;
+        } else if (strcmp(reqname, "websocket") == 0) {
+          g_routes[ri].require_websocket = 1;
         }
       }
+    }
+  }
+  if (g_m2_cb_error_threshold > 0) {
+    for (int i = 0; i < g_up_peer_count; i++) {
+      g_up_peers[i].circuit_half_open_left = g_m2_cb_half_open_probes > 0 ? g_m2_cb_half_open_probes : 1;
     }
   }
   if (g_up_peer_count > 0) {

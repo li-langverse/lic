@@ -60,7 +60,7 @@ def validate_ingress_header_name(name: str) -> None:
         )
 
 
-ROUTE_REQUIRE_ALLOW = frozenset({"traceparent"})
+ROUTE_REQUIRE_ALLOW = frozenset({"traceparent", "websocket"})
 
 
 @dataclass
@@ -244,6 +244,8 @@ def load_httpd_config(path: Path) -> list[CanonicalRoute]:
     from httpd_leak_censor import validate_leak_censor
     from httpd_m15 import ConfigError as M15Error
     from httpd_m15 import validate_inference_require, validate_m15_limits, validate_route_match
+    from httpd_m2 import ConfigError as M2Error
+    from httpd_m2 import validate_m2_config
     from httpd_tls import ConfigError as TlsError
     from httpd_tls import validate_tls_config
 
@@ -255,7 +257,8 @@ def load_httpd_config(path: Path) -> list[CanonicalRoute]:
         validate_inference_require(data)
         validate_leak_censor(data, path)
         validate_tls_config(data, path)
-    except (M15Error, LeakError, TlsError) as e:
+        validate_m2_config(data, path)
+    except (M15Error, LeakError, TlsError, M2Error) as e:
         raise ConfigError(str(e)) from e
     routes = desugar_config(data)
     validate_routes(routes)

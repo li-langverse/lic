@@ -29,6 +29,8 @@ else
     "$LIC" build "$ROOT/li-tests/httpd/m15_leak_censor_oracle.li" -o /tmp/li_m15_leak_censor_oracle --allow-open-vc
     echo "==> m15_tls_oracle compile"
     "$LIC" build "$ROOT/li-tests/httpd/m15_tls_oracle.li" -o /tmp/li_m15_tls_oracle --allow-open-vc
+    echo "==> m2_tls_h2_oracle compile"
+    "$LIC" build "$ROOT/li-tests/httpd/m2_tls_h2_oracle.li" -o /tmp/li_m2_tls_h2_oracle --allow-open-vc
     if [[ "${HTTPD_RUN_M15_ORACLE_RUNTIME:-0}" == "1" ]]; then
       m15_rc="$(cd "$ROOT" && /tmp/li_m15_agent_oracle >/dev/null; echo $?)"
       test "$m15_rc" -eq 0
@@ -83,6 +85,11 @@ fi
 if [[ -x "$ROOT/scripts/check-httpd-tls-auto.sh" ]]; then
   echo "==> check-httpd-tls-auto.sh"
   "$ROOT/scripts/check-httpd-tls-auto.sh"
+fi
+
+if [[ -x "$ROOT/scripts/check-httpd-m2-config.sh" ]]; then
+  echo "==> check-httpd-m2-config.sh"
+  "$ROOT/scripts/check-httpd-m2-config.sh"
 fi
 
 if [[ -x "$ROOT/scripts/check-tier5-http-harness.sh" ]]; then

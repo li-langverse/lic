@@ -25,6 +25,7 @@ from httpd_leak_censor import (
     leak_censor_enabled,
 )
 from httpd_m15 import ConfigError as M15Error, parse_duration, validate_route_match
+from httpd_m2 import ConfigError as M2Error, m2_flatten_lines
 from httpd_tls import ConfigError as TlsError, tls_flatten_lines
 
 
@@ -171,6 +172,10 @@ def flatten(cfg_path: Path) -> list[str]:
         lines.extend(tls_flatten_lines(data, cfg_path))
     except TlsError as e:
         raise ConfigError(str(e)) from e
+    try:
+        lines.extend(m2_flatten_lines(data, cfg_path))
+    except M2Error as e:
+        raise ConfigError(str(e)) from e
 
     return lines
 
@@ -185,7 +190,7 @@ def main() -> int:
         return 1
     try:
         lines = flatten(args.config)
-    except (ConfigError, M15Error, TlsError, ValueError) as e:
+    except (ConfigError, M15Error, M2Error, TlsError, ValueError) as e:
         print(f"flatten-httpd-config: {e}", file=sys.stderr)
         return 1
     if not any(l.startswith("listen_port=") for l in lines):

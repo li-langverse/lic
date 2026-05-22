@@ -72,6 +72,17 @@ int32_t li_rt_httpd_tls_renew_before_days(void);
 int32_t li_rt_httpd_tls_self_signed_dev(void);
 const char* li_rt_httpd_tls_le_email(void);
 int32_t li_rt_httpd_tls_selftest(void);
+int32_t li_rt_httpd_m2_enabled(void);
+int32_t li_rt_httpd_m2_tls_terminate(void);
+int32_t li_rt_httpd_m2_http2_enabled(void);
+int32_t li_rt_httpd_m2_http2_max_streams(void);
+int32_t li_rt_httpd_m2_queue_max_depth(void);
+int32_t li_rt_httpd_m2_queue_retry_after_sec(void);
+int32_t li_rt_httpd_m2_cb_error_threshold(void);
+int32_t li_rt_httpd_m2_webhook_allow_count(void);
+int32_t li_rt_httpd_route_requires_websocket(int32_t route_id);
+int32_t li_rt_httpd_m2_webhook_url_allowed(const char* url);
+int32_t li_rt_httpd_m2_selftest(void);
 
 void li_async_frame_enter(void);
 void li_async_frame_leave(void);

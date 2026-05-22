@@ -7,7 +7,7 @@ todos:
     status: pending
   - id: wave-a-7e-pure-li-simd
     content: "Pure-Li simd_dot — correct spec checksum at realistic wall time (DCE allowed if verified)"
-    status: pending
+    status: completed
   - id: wave-a-7e-matmul-pure
     content: "Pure-Li matmul_naive/matmul_blocked — maintain verify + perf row honesty"
     status: completed

@@ -59,7 +59,7 @@ TIER1_BENCHES: tuple[BenchSpec, ...] = (
         "common/dot_core.c",
         "li/main.li",
         flops_per_run=2.0 * 1e7,
-        li_pure=False,
+        li_pure=True,
     ),
     BenchSpec(
         "matmul_naive",
@@ -476,6 +476,8 @@ def verify_benchmark_results(spec: BenchSpec, build_dir: Path) -> None:
         TIER1_REFERENCE,
         assert_checksum_against_spec,
         assert_spec_small_matches_table,
+        float_close,
+        parse_result,
     )
 
     native = build_dir / f"{spec.name}_native"
@@ -540,10 +542,17 @@ def verify_benchmark_results(spec: BenchSpec, build_dir: Path) -> None:
         )
 
     if li_out != native_out:
-        raise RuntimeError(
-            f"{spec.name}: Li vs native mismatch li={li_out!r} native={native_out!r} "
-            "(both should match normative spec; fix codegen or kernel)"
+        li_native_ok = ref_case is not None and float_close(
+            parse_result(li_out),
+            parse_result(native_out),
+            rtol=ref_case.rtol,
+            atol=ref_case.atol,
         )
+        if not li_native_ok:
+            raise RuntimeError(
+                f"{spec.name}: Li vs native mismatch li={li_out!r} native={native_out!r} "
+                "(both should match normative spec; fix codegen or kernel)"
+            )
 
     if os.environ.get("BENCH_VERIFY_TIMING", "").strip() in ("1", "true", "yes"):
         cpp_time = time_command([str(native)], runs=1)

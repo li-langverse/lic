@@ -10,6 +10,10 @@ for f in "$ROOT/li-tests/config_desugar/good"/*.toml; do
   python3 "$PY/httpd_config.py" "$f"
 done
 
+echo "== httpd m15 config =="
+chmod +x "$ROOT/scripts/check-httpd-m15-config.sh"
+"$ROOT/scripts/check-httpd-m15-config.sh"
+
 echo "== httpd config reject =="
 for rej in "$ROOT/li-tests/config_desugar/reject"/*.toml; do
   name="$(basename "$rej")"

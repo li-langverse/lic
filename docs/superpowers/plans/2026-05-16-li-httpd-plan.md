@@ -54,7 +54,7 @@ todos:
     status: completed
   - id: m15-agent
     content: "M1.5: SSE streaming, stream timeouts, model routing, cancel on disconnect, OTel headers"
-    status: pending
+    status: completed
   - id: m15-leak-censor
     content: "M1.5: optional leak_censor; setup-censor from DB migrations/schema; Tier G when enabled"
     status: pending

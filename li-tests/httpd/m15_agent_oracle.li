@@ -1,0 +1,62 @@
+# M1.5 agent gateway oracle — stream limits, OTel traceparent, SSE content-type (C runtime).
+import http
+
+extern proc li_rt_httpd_parse_duration_sec(raw: str) -> int
+  requires true
+  ensures -1 <= result
+
+extern proc li_rt_httpd_m15_stream_idle_sec() -> int
+  requires true
+  ensures 0 <= result
+
+extern proc li_rt_httpd_m15_stream_max_sec() -> int
+  requires true
+  ensures 0 <= result
+
+extern proc li_rt_httpd_m15_concurrent_streams() -> int
+  requires true
+  ensures 0 <= result
+
+extern proc li_rt_httpd_route_requires_traceparent(route_id: int) -> int
+  requires 0 <= route_id
+  requires route_id <= 64
+  ensures 0 <= result
+  ensures result <= 1
+
+extern proc li_rt_httpd_is_sse_content_type(ctype: str) -> int
+  requires true
+  ensures 0 <= result
+  ensures result <= 1
+
+extern proc li_rt_httpd_traceparent_ok(buf: str, hdr_end: int) -> int
+  requires 0 <= hdr_end
+  ensures 0 <= result
+  ensures result <= 1
+
+def main() raises IO, Alloc -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  var cfg: str = "li-tests/config_desugar/good/agent_m15.toml"
+  if load_routes_from_toml(cfg) != 0:
+    return 1
+  if li_rt_httpd_parse_duration_sec("120s") != 120:
+    return 2
+  if li_rt_httpd_m15_stream_idle_sec() != 120:
+    return 3
+  if li_rt_httpd_m15_stream_max_sec() != 600:
+    return 4
+  if li_rt_httpd_m15_concurrent_streams() != 100:
+    return 5
+  var rid: int = match_route("POST", "/v1/chat/completions")
+  if rid <= 0:
+    return 6
+  if li_rt_httpd_route_requires_traceparent(rid) != 1:
+    return 7
+  if li_rt_httpd_is_sse_content_type("text/event-stream") != 1:
+    return 8
+  var hdr: str = "POST /x HTTP/1.1\r\ntraceparent: 00-abc-def-01\r\n\r\n"
+  if li_rt_httpd_traceparent_ok(hdr, 52) != 1:
+    return 9
+  return 0

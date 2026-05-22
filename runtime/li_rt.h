@@ -50,6 +50,13 @@ int32_t li_rt_str_char_at(const char* s, int32_t i);
 int32_t li_rt_httpd_load_routing_fixture(void);
 int32_t li_rt_httpd_match_route(const char* method, const char* path);
 int32_t li_rt_httpd_route_action_kind(int32_t route_id);
+int32_t li_rt_httpd_parse_duration_sec(const char* raw);
+int32_t li_rt_httpd_m15_stream_idle_sec(void);
+int32_t li_rt_httpd_m15_stream_max_sec(void);
+int32_t li_rt_httpd_m15_concurrent_streams(void);
+int32_t li_rt_httpd_route_requires_traceparent(int32_t route_id);
+int32_t li_rt_httpd_is_sse_content_type(const char* ctype);
+int32_t li_rt_httpd_traceparent_ok(const char* buf, int32_t hdr_end);
 
 void li_async_frame_enter(void);
 void li_async_frame_leave(void);

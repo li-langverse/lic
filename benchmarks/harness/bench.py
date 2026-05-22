@@ -471,19 +471,42 @@ def li_result_checksum(li_bin: Path, *, try_argv_verify: bool) -> str:
 
 
 def verify_benchmark_results(spec: BenchSpec, build_dir: Path) -> None:
-    """Verify numerical results: Li output must match native --verify when parity applies."""
+    """Verify results against normative spec (reference.py), then Li vs native when applicable."""
+    from reference import (
+        TIER1_REFERENCE,
+        assert_checksum_against_spec,
+        assert_spec_small_matches_table,
+    )
+
     native = build_dir / f"{spec.name}_native"
     li_bin = build_dir / f"{spec.name}_li"
     build_native(spec, native)
     build_li(spec, li_bin)
-    native_out = native_result_checksum(native)
 
-    if spec.name == "horner_pure_li":
-        ref_out = format_horner_checksum(horner_reference_acc())
-        if native_out != ref_out:
-            raise RuntimeError(
-                f"{spec.name}: native checksum {native_out!r} != python ref {ref_out!r}"
-            )
+    ref_case = TIER1_REFERENCE.get(spec.name)
+    if ref_case is not None and os.environ.get("BENCH_VERIFY_REFERENCE", "1").strip() not in (
+        "0",
+        "false",
+        "no",
+    ):
+        assert_spec_small_matches_table(spec.name, ref_case)
+        small_expected = format_horner_checksum(ref_case.compute_small())
+        print(f"{spec.name} spec small ok: {small_expected}")
+
+    native_out = native_result_checksum(native)
+    if ref_case is not None and os.environ.get("BENCH_VERIFY_REFERENCE", "1").strip() not in (
+        "0",
+        "false",
+        "no",
+    ):
+        assert_checksum_against_spec(
+            spec.name,
+            native_out,
+            label="native",
+            size="full",
+            ref=ref_case,
+            use_small=False,
+        )
 
     if spec.name in SKIP_LI_NATIVE_RESULT_PARITY:
         native_b = build_dir / f"{spec.name}_native_b"
@@ -494,10 +517,32 @@ def verify_benchmark_results(spec: BenchSpec, build_dir: Path) -> None:
         print(f"{spec.name} verify ok (native only): checksum={native_out}")
         return
 
+    t0 = time.perf_counter()
     li_out = li_result_checksum(li_bin, try_argv_verify=not spec.li_pure)
+    li_elapsed = time.perf_counter() - t0
+    if ref_case is not None and os.environ.get("BENCH_VERIFY_REFERENCE", "1").strip() not in (
+        "0",
+        "false",
+        "no",
+    ):
+        if spec.li_pure and li_elapsed < ref_case.min_li_seconds:
+            raise RuntimeError(
+                f"{spec.name}: Li ran in {li_elapsed:.4f}s < "
+                f"{ref_case.min_li_seconds}s (likely DCE / wrong problem size)"
+            )
+        assert_checksum_against_spec(
+            spec.name,
+            li_out,
+            label="Li",
+            size="full",
+            ref=ref_case,
+            use_small=False,
+        )
+
     if li_out != native_out:
         raise RuntimeError(
-            f"{spec.name}: result mismatch li={li_out!r} native={native_out!r}"
+            f"{spec.name}: Li vs native mismatch li={li_out!r} native={native_out!r} "
+            "(both should match normative spec; fix codegen or kernel)"
         )
 
     if os.environ.get("BENCH_VERIFY_TIMING", "").strip() in ("1", "true", "yes"):

@@ -1,6 +1,6 @@
 # Pure-Li dot (7e-a): 800× dot(array[40000,float]) via `a @ b`; no LI_EXTRA_C / __li_simd_*.
 
-extern proc li_rt_volatile_sink_f64(v: float) raises IO -> unit
+extern proc li_rt_volatile_sink_f64(v: float) -> unit
   requires true
   ensures true
 

@@ -1,6 +1,6 @@
 # Pure-Li matmul (2i-c): 64× (64×64) @ tiles ≡ 256³ flops; init once, hot loop is `@` only.
 
-extern proc li_rt_volatile_sink_f64(v: float) raises IO -> unit
+extern proc li_rt_volatile_sink_f64(v: float) -> unit
   requires true
   ensures true
 

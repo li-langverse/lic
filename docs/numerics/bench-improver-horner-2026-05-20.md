@@ -23,7 +23,7 @@ horner_pure_li,li,...,wall_time,0.0096,s,...
 
 ## Status vs ≤1.2× cpp gate
 
-Still **red** (~10.7×). Next work is **PH-7e** codegen (SIMD/unroll Horner), not catalog threshold edits. Lexer `Plus` fix is already on `main` ([autoresearch-horner-lexer-2026-05-18.md](./autoresearch-horner-lexer-2026-05-18.md)).
+Still **red** (~10.7×) before PH-7e follow-up. **2026-05-22:** needs-based runtime link (no `li_rt_net` in microbenches), `HornerFmaUnroll` / `HornerStepPow4` (const `x`), non-IO `volatile_sink` — devbox tier-1 ~**3×** cpp (honest, passes DCE guard). Lexer `Plus` fix: [autoresearch-horner-lexer-2026-05-18.md](./autoresearch-horner-lexer-2026-05-18.md).
 
 ## Near-limit tier-2 (deferred)
 

@@ -57,7 +57,7 @@ chmod +x "$ROOT/scripts/check-doc-provability-claims.sh" \
 "$ROOT/li-tests/tooling/vc_emit_contracts.sh"
 "$ROOT/li-tests/tooling/discharge_trivial_lean.sh"
 "$ROOT/li-tests/tooling/discharge_sqrt_contract_lean.sh"
-"$ROOT/li-tests/tooling/contracts_discharge_corpus.sh"
+"$ROOT/li-tests/tooling/contracts_verify_lean.sh"
 "$ROOT/li-tests/tooling/diagnose_json_smoke.sh"
 
 li_phase "hpc competitive registry (optional advisory)"

@@ -19,7 +19,7 @@ todos:
     status: completed
   - id: wave-a-2f-vc-corpus
     content: "contracts_discharge_corpus + contracts_verify_lean; close sqrt_open_bound or document"
-    status: pending
+    status: completed
   - id: wave-a-2i-explicit-math
     content: "2i — explicit math only (dot, matmul, sum, element-wise on matching shapes); reject NumPy broadcast; document tensor/quaternion path"
     status: pending

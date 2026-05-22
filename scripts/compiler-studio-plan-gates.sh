@@ -28,9 +28,11 @@ else
     li_warn "skip tier-1 verify (no clang)"
   fi
   if command -v lake >/dev/null 2>&1; then
-    li_phase "Lean AutoVC smoke"
-    chmod +x "$ROOT/li-tests/tooling/autovc_lake_typecheck.sh" \
+    li_phase "2f VC corpus (discharge + verify lean)"
+    chmod +x "$ROOT/li-tests/tooling/contracts_verify_lean.sh" \
+      "$ROOT/li-tests/tooling/autovc_lake_typecheck.sh" \
       "$ROOT/li-tests/tooling/glean_strict_build_smoke.sh"
+    "$ROOT/li-tests/tooling/contracts_verify_lean.sh" || fail "contracts_verify_lean"
     "$ROOT/li-tests/tooling/autovc_lake_typecheck.sh" || fail "autovc lake"
     "$ROOT/li-tests/tooling/glean_strict_build_smoke.sh" || fail "glean strict"
   fi

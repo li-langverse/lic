@@ -1,6 +1,6 @@
 # Provability gaps (current compiler)
 
-**Last updated:** 2026-05-21  
+**Last updated:** 2026-05-22  
 **Audience:** contributors, package authors, anyone relying on `lic build` as a proof certificate  
 
 Li’s **north star** is: user logic is proved before ship; runtime failures for proved programs → **~0%**. That is the **target**, not a complete description of **`lic` today**.
@@ -33,7 +33,7 @@ This page is the **honest inventory** of what is **not** fully proved or not yet
 
 | ID | Status | What remains |
 |----|--------|----------------|
-| **G-lean** | Partial | **Tier B (default when lake installed):** `lic build` runs `lake build AutoVC` (typecheck only; `--no-lean-verify` opt-out). **Strict** open goals: `--strict-lean`. Open obligations: fail unless `--allow-open-vc` (CLI only; env bypass removed). **`LiArray`** + fib/recursive call-site + parallel `_par*` VCs typecheck. **Still open:** `sqrt_open_bound` (P-float); `mat2_at2_eval` trusted vs MIR `@` (semantic closed in `Discharge.lean`) |
+| **G-lean** | Partial | **Tier B (default when lake installed):** `lic build` runs `lake build AutoVC` (typecheck only; `--no-lean-verify` opt-out). **Strict** open goals: `--strict-lean`. Open obligations: fail unless `--allow-open-vc` (CLI only; env bypass removed). **`LiArray`** + fib/recursive call-site + parallel `_par*` VCs typecheck. **Still open:** `sqrt_open_bound` (P-float — [documented](sqrt-open-bound.md)); `mat2_at2_eval` trusted vs MIR `@` (semantic closed in `Discharge.lean`) |
 | **G-vc** | Partial | Float/`abs` ensures; opaque `vec3_dot`-style returns; loop implementations vs closed-form `ensures` |
 | **G-par** | Partial | AST `policy_module` rejects missing disjoint, false `disjoint_row`, mut capture, borrow-in-par; Lean proofs open |
 | **G-dec** | Partial | Decorator elaboration to MIR; `decorator_exploits` proofs |

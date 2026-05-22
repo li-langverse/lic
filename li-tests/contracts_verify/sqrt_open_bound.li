@@ -1,4 +1,5 @@
 # P-float: real sqrt call; abs(error) postcondition stays open until Float lemmas land.
+# Policy + closure criteria: docs/verification/sqrt-open-bound.md
 extern proc li_rt_sqrt(x: float) -> float
   requires true
   ensures true

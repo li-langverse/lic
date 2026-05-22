@@ -57,7 +57,7 @@ theorem mat2_at2_float_spec_proved (A B : LiArray (LiArray Float 2) 2) :
   unfold mat2_at2_float_spec mat2_at2_eval
   refine And.intro rfl (And.intro rfl (And.intro rfl rfl))
 
-/-- Intentionally open float bound (`sqrt_open_bound.li`) — prove in a later P-float pass. -/
+/-- Intentionally open float bound (`sqrt_open_bound.li`) — see `docs/verification/sqrt-open-bound.md`. -/
 theorem sqrt_open_bound_placeholder : True := trivial
 
 end Li.Discharge

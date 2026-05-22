@@ -54,5 +54,5 @@ Tier-2 benchmark honesty change. `cd benchmarks/harness && python3 bench.py --ti
 
 ```markdown
 ### Fixed
-- **Tier-2 `three_body_pure` bench honesty:** use scalar state, align pure-Li workload with native Verlet steps, and sink final energy via `li_rt_volatile_sink_f64` so LLVM cannot delete the hot loop — `docs/release-notes/2026-05-22-three-body-pure-sink.md`.
+- **Tier-2 `three_body_pure` bench honesty:** use scalar state, mirror native Verlet work scale, and sink final energy via `li_rt_volatile_sink_f64` so LLVM cannot delete the hot loop — `docs/release-notes/2026-05-22-three-body-pure-sink.md`.
 ```

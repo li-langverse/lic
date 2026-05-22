@@ -16,7 +16,7 @@ todos:
     status: completed
   - id: wave-a-2f-lean-strict
     content: "G-lean — autovc_lake_typecheck + glean_strict_build_smoke green on lic build"
-    status: pending
+    status: completed
   - id: wave-a-2f-vc-corpus
     content: "contracts_discharge_corpus + contracts_verify_lean; close sqrt_open_bound or document"
     status: pending

@@ -1,6 +1,11 @@
-# Pure-Li three-body mini kernel (library-aligned, reduced steps for CI).
+# Pure-Li three-body mini kernel aligned with the native Verlet workload.
 
 extern proc li_rt_sqrt(x: float) -> float
+  requires true
+  ensures true
+  decreases 0
+
+extern proc li_rt_volatile_sink_f64(v: float) raises IO -> unit
   requires true
   ensures true
   decreases 0
@@ -57,16 +62,48 @@ def main() raises IO -> int
   py[1] = -0.5
   px[2] = 0.8660254037844386
   py[2] = -0.5
+  var i: int = 0
+  while i < 3
+    vx[i] = 0.0
+    vy[i] = 0.0
+    i = i + 1
+  three_body_forces(px, py, fx, fy)
+  var dt: float = 0.01
   var step: int = 0
-  while step < 1000
-    three_body_forces(px, py, fx, fy)
-    var i: int = 0
-    var dt: float = 0.01
+  while step < 10000000
+    i = 0
     while i < 3
-      vx[i] = vx[i] + fx[i] * dt
-      vy[i] = vy[i] + fy[i] * dt
+      vx[i] = vx[i] + 0.5 * dt * fx[i]
+      vy[i] = vy[i] + 0.5 * dt * fy[i]
+      i = i + 1
+    i = 0
+    while i < 3
       px[i] = px[i] + vx[i] * dt
       py[i] = py[i] + vy[i] * dt
       i = i + 1
+    three_body_forces(px, py, fx, fy)
+    i = 0
+    while i < 3
+      vx[i] = vx[i] + 0.5 * dt * fx[i]
+      vy[i] = vy[i] + 0.5 * dt * fy[i]
+      i = i + 1
     step = step + 1
+  var ke: float = 0.0
+  i = 0
+  while i < 3
+    ke = ke + 0.5 * (vx[i] * vx[i] + vy[i] * vy[i])
+    i = i + 1
+  var pe: float = 0.0
+  var eps2: float = 0.000000001 * 0.000000001
+  i = 0
+  while i < 3
+    var j: int = i + 1
+    while j < 3
+      var dx: float = px[j] - px[i]
+      var dy: float = py[j] - py[i]
+      var r: float = li_rt_sqrt(dx * dx + dy * dy + eps2)
+      pe = pe - 1.0 / r
+      j = j + 1
+    i = i + 1
+  li_rt_volatile_sink_f64(ke + pe)
   return 0

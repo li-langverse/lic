@@ -40,6 +40,12 @@ Do **not** start large domain/studio features while **2e/2f** or core **7e** cor
 - **Correct per published spec, as fast as possible** — cross-lang = sanity only; beating others while correct is the win.
 - **DCE allowed** — must pass **our** goldens/spec/timing checks (`reference.py`, verify scripts), not assumed from a green build alone.
 
+## Math (no broadcasting)
+
+- Allow standard **vector algebra**: `dot`, matmul (`@`), `sum`, element-wise ops on **matching** shapes, quaternions, explicit tensors.
+- **Do not** add or extend NumPy-style **broadcasting** (length-1 → N, rank promotion, etc.) — confusing and error-prone.
+- Shape mismatches → **compile error**; users must write explicit loops or reshape operations when they intend promotion.
+
 ## Where code lives
 
 | Layer | Path |

@@ -54,6 +54,10 @@ else
     echo "==> check-w0-bytes-io.sh (w0-bytes-io)"
     "$ROOT/scripts/check-w0-bytes-io.sh" || fail "check-w0-bytes-io.sh failed"
   fi
+  if [[ -x "$ROOT/scripts/check-w1-async-reactor.sh" ]]; then
+    echo "==> check-w1-async-reactor.sh (w1-async-reactor)"
+    "$ROOT/scripts/check-w1-async-reactor.sh" || fail "check-w1-async-reactor.sh failed"
+  fi
   if [[ -x "$ROOT/scripts/verify-math-physics-goldens.sh" ]]; then
     echo "==> verify-math-physics-goldens.sh"
     "$ROOT/scripts/verify-math-physics-goldens.sh" || fail "math/physics golden verify failed"

@@ -241,13 +241,3 @@ int32_t li_rt_match_route_fixture(const char* method, const char* path) {
 void li_async_frame_enter(void) {}
 
 void li_async_frame_leave(void) {}
-
-int32_t li_async_await_i32(int32_t pending) {
-  (void)li_async_poll(0u);
-  return pending;
-}
-
-int32_t li_async_poll(uint32_t slot) {
-  (void)slot;
-  return 1;
-}

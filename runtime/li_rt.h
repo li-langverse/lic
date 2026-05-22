@@ -98,6 +98,9 @@ void li_async_frame_enter(void);
 void li_async_frame_leave(void);
 int32_t li_async_await_i32(int32_t pending);
 int32_t li_async_poll(uint32_t slot);
+int32_t li_async_reactor_register_i(int32_t fd, int32_t slot);
+int32_t li_async_reactor_selftest_i(void);
+int32_t tcp_echo_epoll_once_i(int32_t port);
 
 /* Net trusted seam (li_rt_net.c) — syscalls + I/O buffers; HTTP in Li packages. */
 int32_t net_ping(void);

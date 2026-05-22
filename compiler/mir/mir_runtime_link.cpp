@@ -18,7 +18,8 @@ void note_one(std::string_view callee, MirModule& mir) {
   if (starts_with(callee, "net_") || starts_with(callee, "tcp_") || starts_with(callee, "epoll_") ||
       starts_with(callee, "hdr_") || starts_with(callee, "buf_") || starts_with(callee, "bytes_") ||
       callee == "path_ends_with_conf" || callee == "net_ping" ||
-      starts_with(callee, "li_rt_net")) {
+      starts_with(callee, "li_rt_net") || starts_with(callee, "li_async_") ||
+      starts_with(callee, "tcp_echo_")) {
     mir.needs_rt_net = true;
   }
 }
@@ -44,6 +45,10 @@ void mir_collect_runtime_link_needs(const MirModule& mir, MirModule& out_flags) 
     for (const auto& ins : fn.body) {
       if (ins.op == MirOp::CallExtern && !ins.callee.empty()) {
         mir_note_runtime_callee(ins.callee, out_flags);
+      }
+      if (ins.op == MirOp::AsyncAwait || ins.op == MirOp::AsyncFrameEnter ||
+          ins.op == MirOp::AsyncFrameLeave) {
+        out_flags.needs_rt_net = true;
       }
     }
   }

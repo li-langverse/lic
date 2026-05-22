@@ -12,6 +12,7 @@ All notable changes to Li are documented here. The format follows
 
 ### Added
 
+- **w1-async-reactor:** epoll/kqueue `li_async_poll` reactor, `tcp_echo_epoll_once_i`, tier5 `tcp_echo` bench row, `check-w1-async-reactor.sh` — [2026-05-22-httpd-w1-async-reactor.md](docs/release-notes/2026-05-22-httpd-w1-async-reactor.md).
 - **w0-bytes-io:** `std/bytes` Reader/Writer + stringview helpers, `raises Net` policy tests, accepted trusted-net RFC + Lean axioms — [2026-05-22-w0-bytes-io.md](docs/release-notes/2026-05-22-w0-bytes-io.md).
 - **rng-concepts:** `packages/li-rng` Prng surface, `prob_ensures` IV oracles (`OsRngUniform` / `PrngSeed`), Prng-on-TLS profile gates — [2026-05-22-rng-concepts.md](docs/release-notes/2026-05-22-rng-concepts.md).
 - **prob-hoare (P2):** `prob_ensures` contracts, `lic build --prob-check` Monte Carlo gate, `Probability.lean` stub — [2026-05-22-prob-hoare-p2.md](docs/release-notes/2026-05-22-prob-hoare-p2.md).

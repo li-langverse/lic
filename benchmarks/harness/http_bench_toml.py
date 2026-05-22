@@ -172,7 +172,7 @@ def validate_merged(cfg: dict[str, Any]) -> list[str]:
         errors.append("missing [server] table")
     else:
         kind = server.get("kind")
-        if kind not in ("static", "proxy", "li_config"):
+        if kind not in ("static", "proxy", "li_config", "tcp_echo"):
             errors.append(f"unsupported server.kind={kind!r}")
     verify = cfg.get("verify")
     if verify is not None and not isinstance(verify, dict):

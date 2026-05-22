@@ -5138,3 +5138,298 @@ int32_t net_diag(int32_t tag) {
   (void)tag;
   return tag;
 }
+
+/* --- w1-async-reactor: epoll/kqueue readiness behind li_async_poll --- */
+#define LI_ASYNC_MAX_SLOTS 256
+
+static int g_async_epfd = -1;
+static int g_async_fd[LI_ASYNC_MAX_SLOTS];
+static int g_async_ready[LI_ASYNC_MAX_SLOTS];
+
+#if defined(__APPLE__)
+#include <sys/event.h>
+#endif
+
+static void async_reactor_init_once(void) {
+  if (g_async_epfd >= 0) {
+    return;
+  }
+#if defined(__linux__)
+  g_async_epfd = epoll_create1(0);
+#elif defined(__APPLE__)
+  g_async_epfd = kqueue();
+#else
+  g_async_epfd = 0;
+#endif
+  for (int i = 0; i < LI_ASYNC_MAX_SLOTS; i++) {
+    g_async_fd[i] = -1;
+    g_async_ready[i] = 0;
+  }
+}
+
+static void async_reactor_mark_ready(uint32_t slot) {
+  if (slot < LI_ASYNC_MAX_SLOTS) {
+    g_async_ready[slot] = 1;
+  }
+}
+
+static void async_reactor_drain_events(int block_ms) {
+#if defined(__linux__)
+  if (g_async_epfd < 0) {
+    return;
+  }
+  struct epoll_event evs[32];
+  int n = epoll_wait(g_async_epfd, evs, 32, block_ms);
+  if (n < 0) {
+    return;
+  }
+  for (int i = 0; i < n; i++) {
+    async_reactor_mark_ready(evs[i].data.u32);
+  }
+#elif defined(__APPLE__)
+  if (g_async_epfd < 0) {
+    return;
+  }
+  struct kevent chlist[32];
+  struct timespec ts;
+  struct timespec* tsp = NULL;
+  if (block_ms >= 0) {
+    ts.tv_sec = block_ms / 1000;
+    ts.tv_nsec = (long)(block_ms % 1000) * 1000000L;
+    tsp = &ts;
+  }
+  int n = kevent(g_async_epfd, NULL, 0, chlist, 32, tsp);
+  if (n < 0) {
+    return;
+  }
+  for (int i = 0; i < n; i++) {
+    async_reactor_mark_ready((uint32_t)(uintptr_t)chlist[i].udata);
+  }
+#else
+  (void)block_ms;
+#endif
+}
+
+int32_t li_async_reactor_register_i(int32_t fd, int32_t slot) {
+  if (slot < 0 || slot >= LI_ASYNC_MAX_SLOTS || fd < 0) {
+    return -1;
+  }
+  async_reactor_init_once();
+  g_async_fd[slot] = (int)fd;
+  g_async_ready[slot] = 0;
+#if defined(__linux__)
+  if (g_async_epfd < 0) {
+    return -1;
+  }
+  struct epoll_event ev;
+  memset(&ev, 0, sizeof(ev));
+  ev.events = EPOLLIN;
+  ev.data.u32 = (uint32_t)slot;
+  return epoll_ctl(g_async_epfd, EPOLL_CTL_ADD, (int)fd, &ev) < 0 ? -1 : 0;
+#elif defined(__APPLE__)
+  if (g_async_epfd < 0) {
+    return -1;
+  }
+  struct kevent ke;
+  EV_SET(&ke, fd, EVFILT_READ, EV_ADD, 0, 0, (void*)(uintptr_t)(uint32_t)slot);
+  return kevent(g_async_epfd, &ke, 1, NULL, 0, NULL) < 0 ? -1 : 0;
+#else
+  g_async_ready[slot] = 1;
+  return 0;
+#endif
+}
+
+int32_t li_async_poll(uint32_t slot) {
+  if (slot >= LI_ASYNC_MAX_SLOTS) {
+    return 1;
+  }
+#if !defined(__linux__) && !defined(__APPLE__)
+  return 1;
+#else
+  async_reactor_init_once();
+  if (g_async_ready[slot]) {
+    return 1;
+  }
+  async_reactor_drain_events(0);
+  return g_async_ready[slot] ? 1 : 0;
+#endif
+}
+
+int32_t li_async_await_i32(int32_t pending) {
+  uint32_t slot = (uint32_t)pending;
+#if !defined(__linux__) && !defined(__APPLE__)
+  return pending;
+#else
+  async_reactor_init_once();
+  while (!li_async_poll(slot)) {
+    async_reactor_drain_events(-1);
+  }
+  g_async_ready[slot] = 0;
+  return pending;
+#endif
+}
+
+int32_t li_async_reactor_selftest_i(void) {
+#if defined(__linux__) || defined(__APPLE__)
+  int sv[2];
+  if (socketpair(AF_UNIX, SOCK_STREAM, 0, sv) < 0) {
+    return -1;
+  }
+  net_set_nonblock(sv[0]);
+  net_set_nonblock(sv[1]);
+  if (li_async_reactor_register_i((int32_t)sv[1], 0) < 0) {
+    close(sv[0]);
+    close(sv[1]);
+    return -2;
+  }
+  const char msg[] = "a";
+  if (send(sv[0], msg, 1, 0) != 1) {
+    close(sv[0]);
+    close(sv[1]);
+    return -3;
+  }
+  if (li_async_poll(0u) != 1) {
+    close(sv[0]);
+    close(sv[1]);
+    return -4;
+  }
+  close(sv[0]);
+  close(sv[1]);
+  return 0;
+#else
+  return 0;
+#endif
+}
+
+int32_t tcp_echo_epoll_once_i(int32_t port) {
+#if !defined(__linux__) && !defined(__APPLE__)
+  (void)port;
+  return -1;
+#else
+  if (port <= 0 || port > 65535) {
+    return -1;
+  }
+  int listen_fd = (int)tcp_listen(port);
+  net_set_nonblock(listen_fd);
+#if defined(__linux__)
+  int epfd = epoll_create1(0);
+#elif defined(__APPLE__)
+  int epfd = kqueue();
+#endif
+  if (epfd < 0) {
+    tcp_close(listen_fd);
+    return -2;
+  }
+#if defined(__linux__)
+  struct epoll_event lev;
+  memset(&lev, 0, sizeof(lev));
+  lev.events = EPOLLIN;
+  lev.data.fd = listen_fd;
+  if (epoll_ctl(epfd, EPOLL_CTL_ADD, listen_fd, &lev) < 0) {
+    close(epfd);
+    tcp_close(listen_fd);
+    return -3;
+  }
+#elif defined(__APPLE__)
+  struct kevent ke;
+  EV_SET(&ke, listen_fd, EVFILT_READ, EV_ADD, 0, 0, NULL);
+  if (kevent(epfd, &ke, 1, NULL, 0, NULL) < 0) {
+    close(epfd);
+    tcp_close(listen_fd);
+    return -3;
+  }
+#endif
+
+  int echoed = 0;
+  int conn = -1;
+  char buf[4096];
+  for (int iter = 0; iter < 256; iter++) {
+#if defined(__linux__)
+    struct epoll_event evs[8];
+    int n = epoll_wait(epfd, evs, 8, 200);
+    if (n < 0 && errno != EINTR) {
+      break;
+    }
+    for (int i = 0; i < n; i++) {
+      int fd = evs[i].data.fd;
+      if (fd == listen_fd) {
+        int c = (int)tcp_accept_nb(listen_fd);
+        if (c >= 0) {
+          net_set_nonblock(c);
+          if (conn >= 0) {
+            tcp_close(conn);
+          }
+          conn = c;
+          struct epoll_event cev;
+          memset(&cev, 0, sizeof(cev));
+          cev.events = EPOLLIN | EPOLLOUT | EPOLLET;
+          cev.data.fd = c;
+          epoll_ctl(epfd, EPOLL_CTL_ADD, c, &cev);
+        }
+        continue;
+      }
+      if (conn < 0 || fd != conn) {
+        continue;
+      }
+      if (evs[i].events & (EPOLLERR | EPOLLHUP)) {
+        goto done;
+      }
+      if (evs[i].events & EPOLLIN) {
+        ssize_t r = recv(conn, buf, sizeof(buf), 0);
+        if (r <= 0) {
+          goto done;
+        }
+        ssize_t w = send(conn, buf, (size_t)r, 0);
+        if (w > 0) {
+          echoed += (int)w;
+        }
+      }
+    }
+#elif defined(__APPLE__)
+    struct kevent chlist[8];
+    struct timespec ts = {.tv_sec = 0, .tv_nsec = 200000000L};
+    int n = kevent(epfd, NULL, 0, chlist, 8, &ts);
+    for (int i = 0; i < n; i++) {
+      int fd = (int)chlist[i].ident;
+      if (fd == listen_fd && (chlist[i].filter == EVFILT_READ)) {
+        int c = (int)tcp_accept_nb(listen_fd);
+        if (c >= 0) {
+          net_set_nonblock(c);
+          if (conn >= 0) {
+            tcp_close(conn);
+          }
+          conn = c;
+          struct kevent cke;
+          EV_SET(&cke, c, EVFILT_READ, EV_ADD, 0, 0, NULL);
+          kevent(epfd, &cke, 1, NULL, 0, NULL);
+        }
+        continue;
+      }
+      if (conn < 0 || fd != conn) {
+        continue;
+      }
+      if (chlist[i].flags & EV_EOF) {
+        goto done;
+      }
+      if (chlist[i].filter == EVFILT_READ) {
+        ssize_t r = recv(conn, buf, sizeof(buf), 0);
+        if (r <= 0) {
+          goto done;
+        }
+        ssize_t w = send(conn, buf, (size_t)r, 0);
+        if (w > 0) {
+          echoed += (int)w;
+        }
+      }
+    }
+#endif
+  }
+done:
+  if (conn >= 0) {
+    tcp_close(conn);
+  }
+  tcp_close(listen_fd);
+  close(epfd);
+  return echoed > 0 ? echoed : -4;
+#endif
+}

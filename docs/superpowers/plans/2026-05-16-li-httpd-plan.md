@@ -10,7 +10,7 @@ todos:
     status: completed
   - id: w1-async-reactor
     content: Implement async/await + epoll/kqueue reactor; TCP echo benchmark
-    status: pending
+    status: completed
   - id: bench-harness
     content: tier5_http TOML-driven harness (suite.toml + per-scenario bench.toml); bench_http.py reads only TOML
     status: completed
@@ -148,7 +148,7 @@ Li today is optimized for **proved HPC kernels** (Tetris/SDL, physics benchmarks
 | Proof gate | **2e–2f httpd path gated (w0):** `check-httpd-lean-gate.sh`, closed `http_parse_forward_closed.li`, callee-ensures witness; composite smokes ≤8 open VC; full kernel still **G-lean** ([proof-corpus-roadmap](docs/verification/proof-corpus-roadmap.md)) | Every server module must pass `lic build` with discharged goals (target) |
 | Trusted IO | [trusted.lean](docs/semantics/trusted.lean): SDL/frame axioms only                                                                                                               | Syscalls, sockets, timers, process spawn — **RFC-reviewed axioms only** |
 | Stdlib     | `std/` effectively empty; heap `str`/`bytes`/`list` mostly **spec** ([data structures roadmap](docs/superpowers/specs/2026-05-14-li-language-design.md#data-structures-roadmap)) | Full bytes I/O, config, containers, regex, compression                  |
-| Async      | Spec: `async`/`await` + `raises Async` — **not shipped**                                                                                                                         | Event loop driving 100k+ connections                                    |
+| Async      | **w1 shipped:** `async`/`await` + `li_async_poll` epoll/kqueue reactor; tier5 `tcp_echo` scenario (timing off in CI)                                                          | Full task scheduler + 100k+ connections (M1.5+)                         |
 | Networking | **None** in repo                                                                                                                                                                 | TCP/UDP, DNS, TLS, HTTP/1.1–3, stream proxy                             |
 
 

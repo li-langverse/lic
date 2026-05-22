@@ -669,6 +669,16 @@ file = "async/await_codegen_ok.li"
 outcome = "compile_open_ok"
 note = "open VC until 2f full (Lean gate on devbox)"
 [[tests]]
+suite = "async"
+file = "async/reactor_selftest_link.li"
+outcome = "compile_open_ok"
+note = "w1 epoll/kqueue li_async_reactor_selftest_i"
+[[tests]]
+suite = "async"
+file = "async/tcp_echo_smoke.li"
+outcome = "compile_open_ok"
+note = "w1 tcp_echo_epoll_once_i (Linux runtime in check-w1)"
+[[tests]]
 suite = "effects"
 file = "effects/await_outside_async.li"
 outcome = "compile_fail"

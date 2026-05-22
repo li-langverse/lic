@@ -229,6 +229,11 @@ static char g_leak_scrub_buf[HTTPD_LEAK_SCRUB_BUF];
 
 static int g_health_max_fails = 1;
 static int g_health_fail_timeout_sec = 10;
+#define HTTPD_HEALTH_ACTIVE_PATH_MAX 256
+static int g_health_active_enabled = 0;
+static char g_health_active_path[HTTPD_HEALTH_ACTIVE_PATH_MAX] = "/";
+static int g_health_active_interval_sec = 5;
+static double g_health_last_probe_ts = 0.0;
 
 #define HTTPD_MAX_AUTH_KEYS 8
 #define HTTPD_AUTH_KEY_LEN 128
@@ -1530,6 +1535,127 @@ static void httpd_upstream_peer_note_success(int32_t port) {
   if (p->down && p->down_until > 0.0) {
     httpd_upstream_peer_maybe_recover(p);
   }
+}
+
+static void httpd_upstream_peer_mark_up(httpd_upstream_peer_t* p) {
+  if (!p) {
+    return;
+  }
+  p->down = 0;
+  p->fail_count = 0;
+  p->down_until = 0.0;
+}
+
+static int httpd_health_active_path_valid(const char* path) {
+  if (!path || path[0] != '/') {
+    return 0;
+  }
+  if (strstr(path, "://") != NULL || strstr(path, "..") != NULL) {
+    return 0;
+  }
+  size_t n = strlen(path);
+  if (n == 0 || n >= HTTPD_HEALTH_ACTIVE_PATH_MAX) {
+    return 0;
+  }
+  for (size_t i = 0; i < n; i++) {
+    unsigned char c = (unsigned char)path[i];
+    if (c < 32 || c == 127 || c == '%') {
+      return 0;
+    }
+  }
+  return 1;
+}
+
+static int httpd_upstream_active_probe_peer(httpd_upstream_peer_t* peer) {
+  if (!peer || peer->port <= 0 || !g_health_active_enabled || g_health_active_path[0] != '/') {
+    return -1;
+  }
+  int fd = tcp_connect_loopback_port((int)peer->port);
+  if (fd < 0) {
+    httpd_upstream_peer_note_failure(peer->port);
+    return -1;
+  }
+  struct timeval tv;
+  tv.tv_sec = 2;
+  tv.tv_usec = 0;
+  setsockopt(fd, SOL_SOCKET, SO_RCVTIMEO, &tv, sizeof(tv));
+  setsockopt(fd, SOL_SOCKET, SO_SNDTIMEO, &tv, sizeof(tv));
+
+  char req[512];
+  int req_len = snprintf(req, sizeof(req),
+                         "GET %s HTTP/1.1\r\n"
+                         "Host: 127.0.0.1\r\n"
+                         "Connection: close\r\n"
+                         "\r\n",
+                         g_health_active_path);
+  if (req_len <= 0 || req_len >= (int)sizeof(req)) {
+    close(fd);
+    httpd_upstream_peer_note_failure(peer->port);
+    return -1;
+  }
+  ssize_t sent = 0;
+  while (sent < req_len) {
+    ssize_t w = send(fd, req + sent, (size_t)(req_len - sent), 0);
+    if (w <= 0) {
+      close(fd);
+      httpd_upstream_peer_note_failure(peer->port);
+      return -1;
+    }
+    sent += w;
+  }
+
+  char resp[1024];
+  size_t total = 0;
+  int hdr_done = 0;
+  while (total < sizeof(resp) - 1) {
+    ssize_t r = recv(fd, resp + total, sizeof(resp) - 1 - total, 0);
+    if (r <= 0) {
+      break;
+    }
+    total += (size_t)r;
+    resp[total] = '\0';
+    if (!hdr_done && strstr(resp, "\r\n\r\n") != NULL) {
+      hdr_done = 1;
+      break;
+    }
+  }
+  close(fd);
+
+  int ok = 0;
+  if (hdr_done && total >= 12) {
+    if (memcmp(resp, "HTTP/1.", 7) == 0) {
+      const char* sp = strchr(resp, ' ');
+      if (sp && sp + 4 < resp + total && sp[1] == '2' && sp[2] == '0' && sp[3] == '0') {
+        ok = 1;
+      }
+    }
+  }
+  if (ok) {
+    if (peer->down) {
+      httpd_upstream_peer_mark_up(peer);
+    }
+    httpd_upstream_peer_note_success(peer->port);
+    return 0;
+  }
+  httpd_upstream_peer_note_failure(peer->port);
+  return -1;
+}
+
+int32_t httpd_tick_active_health_probes_i(void) {
+  if (!g_health_active_enabled || g_health_active_path[0] != '/' || g_up_peer_count <= 0) {
+    return 0;
+  }
+  double now = httpd_monotonic_now();
+  if (g_health_last_probe_ts > 0.0 &&
+      (now - g_health_last_probe_ts) < (double)g_health_active_interval_sec) {
+    return 0;
+  }
+  g_health_last_probe_ts = now;
+  for (int i = 0; i < g_up_peer_count; i++) {
+    httpd_upstream_peer_maybe_recover(&g_up_peers[i]);
+    httpd_upstream_active_probe_peer(&g_up_peers[i]);
+  }
+  return 0;
 }
 
 int32_t httpd_mark_upstream_peer_down_i(int32_t port) {
@@ -3983,6 +4109,7 @@ int32_t httpd_epoll_serve_i(int32_t port, intptr_t root) {
 
   struct epoll_event events[256];
   for (;;) {
+    httpd_tick_active_health_probes_i();
     int n = epoll_wait(epfd, events, 256, -1);
     if (n < 0) {
       if (errno == EINTR) {
@@ -4274,6 +4401,11 @@ int32_t httpd_load_runtime_config_i(intptr_t path) {
   g_rate_last_ts = 0.0;
   g_health_max_fails = 1;
   g_health_fail_timeout_sec = 10;
+  g_health_active_enabled = 0;
+  g_health_active_path[0] = '/';
+  g_health_active_path[1] = '\0';
+  g_health_active_interval_sec = 5;
+  g_health_last_probe_ts = 0.0;
   g_auth_required = 0;
   g_auth_key_count = 0;
   g_model_match_count = 0;
@@ -4345,6 +4477,19 @@ int32_t httpd_load_runtime_config_i(intptr_t path) {
       g_health_fail_timeout_sec = atoi(val);
       if (g_health_fail_timeout_sec < 1) {
         g_health_fail_timeout_sec = 1;
+      }
+    } else if (strcmp(key, "health_active") == 0) {
+      g_health_active_enabled = (strcmp(val, "0") == 0 || strcmp(val, "false") == 0) ? 0 : 1;
+    } else if (strcmp(key, "health_active_path") == 0) {
+      if (httpd_health_active_path_valid(val)) {
+        strncpy(g_health_active_path, val, sizeof(g_health_active_path) - 1);
+        g_health_active_path[sizeof(g_health_active_path) - 1] = '\0';
+        g_health_active_enabled = 1;
+      }
+    } else if (strcmp(key, "health_active_interval_sec") == 0) {
+      int sec = atoi(val);
+      if (sec >= 1 && sec <= 300) {
+        g_health_active_interval_sec = sec;
       }
     } else if (strcmp(key, "auth_required") == 0) {
       g_auth_required = (strcmp(val, "0") == 0 || strcmp(val, "false") == 0) ? 0 : 1;

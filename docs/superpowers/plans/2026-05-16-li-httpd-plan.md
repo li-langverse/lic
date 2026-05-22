@@ -91,7 +91,7 @@ todos:
     status: pending
   - id: m1-active-health
     content: "Active health probes on upstream peers; remove dead peers from rotation"
-    status: pending
+    status: completed
   - id: m1-nginx-bench-parity
     content: "tier5_http bench — agent-gateway scenarios meet or beat nginx on RPS/latency (dashboard ratios)"
     status: pending

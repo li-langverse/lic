@@ -82,6 +82,16 @@ def flatten(cfg_path: Path) -> list[str]:
             s = str(ft).strip().rstrip("s")
             if s.isdigit():
                 lines.append(f"health_fail_timeout_sec={int(s)}")
+        active = health.get("active")
+        if isinstance(active, dict) and active.get("path"):
+            path = str(active["path"]).strip()
+            if path.startswith("/"):
+                lines.append("health_active=1")
+                lines.append(f"health_active_path={path}")
+                iv = active.get("interval") or active.get("interval_sec") or "5s"
+                s = str(iv).strip().rstrip("s")
+                if s.isdigit():
+                    lines.append(f"health_active_interval_sec={int(s)}")
 
     limits = data.get("limits") or {}
     if limits.get("rate_limit_rps") is not None:

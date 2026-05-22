@@ -162,4 +162,13 @@ if [[ "${HTTPD_GATES_SKIP_LIC_BUILD:-0}" != "1" && "${HTTPD_RUN_BEARER_TEST:-1}"
   fi
 fi
 
+if [[ "${HTTPD_GATES_SKIP_LIC_BUILD:-0}" != "1" && "${HTTPD_RUN_ACTIVE_HEALTH_TEST:-1}" == "1" ]]; then
+  if [[ -x "$ROOT/scripts/test-active-upstream-health.sh" && -x "$ROOT/build/li-httpd" ]]; then
+    echo "==> test-active-upstream-health.sh (m1-active-health)"
+    "$ROOT/scripts/test-active-upstream-health.sh" || fail "test-active-upstream-health.sh failed"
+  else
+    fail "m1-active-health: build/li-httpd missing (run build-li-httpd.sh)"
+  fi
+fi
+
 echo "httpd-plan-gates: OK"

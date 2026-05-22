@@ -153,6 +153,7 @@ int32_t httpd_lb_mode_from_arg_i(intptr_t s);
 int32_t httpd_mark_upstream_peer_down_i(int32_t port);
 int32_t httpd_add_upstream_peer_i(int32_t port);
 void httpd_clear_upstream_peers_i(void);
+int32_t httpd_tick_active_health_probes_i(void);
 int32_t httpd_load_runtime_config_i(intptr_t path);
 int32_t httpd_config_listen_port_i(void);
 intptr_t httpd_config_doc_root_i(void);

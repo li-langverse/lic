@@ -905,6 +905,7 @@ def httpd_upstream_proxy_epoll_loop(port: var int, root: var ptr) raises Net, Al
   var evbuf: ptr = net_buf_alloc(768)
   var running: int = 1
   while running == 1:
+    httpd_tick_active_health_probes_i()
     var n: int = epoll_wait_tagged_i(epfd, evbuf, 256)
     if n <= 0:
       running = 1

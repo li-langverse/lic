@@ -567,6 +567,11 @@ extern proc httpd_load_runtime_config_i(path: var ptr) -> int
   ensures true
   decreases 0
 
+extern proc httpd_tick_active_health_probes_i() -> int
+  requires true
+  ensures true
+  decreases 0
+
 extern proc httpd_config_listen_port_i() -> int
   requires true
   ensures true

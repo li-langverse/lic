@@ -31,12 +31,18 @@ run_docker_ci() {
   local stage="/tmp/li-local-ci-$$"
   # shellcheck disable=SC2064
   trap "rm -rf '$stage'" EXIT
-  rsync -a \
-    --exclude build \
-    --exclude .git \
-    --exclude .venv-plot \
-    --exclude benchmarks/results \
-    "$ROOT/" "$stage/"
+  if command -v rsync >/dev/null 2>&1; then
+    rsync -a \
+      --exclude build \
+      --exclude .git \
+      --exclude .venv-plot \
+      --exclude benchmarks/results \
+      "$ROOT/" "$stage/"
+  else
+    mkdir -p "$stage"
+    cp -a "$ROOT/." "$stage/"
+    rm -rf "$stage/build" "$stage/.git" "$stage/.venv-plot" "$stage/benchmarks/results"
+  fi
   docker run --rm -v "$stage:/src" -w /src ubuntu:24.04 bash -lc '
     set -euo pipefail
     export DEBIAN_FRONTEND=noninteractive

@@ -28,4 +28,23 @@ grep -q 'leak_censor_deny_path=\$\.api_key' "$tmp"
 grep -q 'leak_censor_deny_path=\$\.api_keys\[\*\]\.token' "$tmp"
 rm -f "$tmp"
 
+echo "== leak_censor disabled (production + ack) =="
+out="$(python3 "$ROOT/scripts/httpd_config.py" \
+  "$ROOT/li-tests/config_desugar/good/leak_censor_disabled.toml" 2>&1)"
+echo "$out" | grep -q 'OK:'
+if echo "$out" | grep -q 'production profile with leak_censor.enabled=false'; then
+  echo "unexpected warn with ack_disable_censor=true" >&2
+  exit 1
+fi
+tmp="$(mktemp)"
+python3 "$ROOT/scripts/flatten-httpd-config.py" \
+  "$ROOT/li-tests/config_desugar/good/leak_censor_disabled.toml" -o "$tmp"
+grep -q 'leak_censor_enabled=0' "$tmp"
+rm -f "$tmp"
+
+echo "== leak_censor disabled warns without ack =="
+python3 "$ROOT/scripts/httpd_config.py" \
+  "$ROOT/li-tests/config_desugar/good/leak_censor_disabled_warn.toml" 2>&1 \
+  | grep -q 'ack_disable_censor'
+
 echo "check-httpd-leak-censor: OK"

@@ -8,7 +8,7 @@ import sys
 from pathlib import Path
 
 from httpd_leak_censor import write_generated_toml
-from schema_catalog import merge_catalog, parse_migrations_dir
+from schema_catalog import load_applied_manifest, merge_catalog, parse_migrations_dir
 
 
 def main() -> int:
@@ -27,6 +27,12 @@ def main() -> int:
         help="Directory for leak_censor.generated.toml (default: cwd)",
     )
     p.add_argument(
+        "--migrations-applied",
+        type=Path,
+        default=None,
+        help="Optional migrations_applied.toml — only SQL files listed as applied in prod",
+    )
+    p.add_argument(
         "--openapi",
         type=Path,
         default=None,
@@ -38,7 +44,24 @@ def main() -> int:
         print(f"setup-censor: missing migrations dir {args.migrations}", file=sys.stderr)
         return 1
 
-    catalog = merge_catalog(parse_migrations_dir(args.migrations))
+    applied_only: list[str] | None = None
+    if args.migrations_applied is not None:
+        if not args.migrations_applied.is_file():
+            print(
+                f"setup-censor: missing applied manifest {args.migrations_applied}",
+                file=sys.stderr,
+            )
+            return 1
+        try:
+            applied_only = load_applied_manifest(args.migrations_applied)
+        except ValueError as e:
+            print(f"setup-censor: {e}", file=sys.stderr)
+            return 1
+        if not applied_only:
+            print("setup-censor: applied manifest is empty", file=sys.stderr)
+            return 1
+
+    catalog = merge_catalog(parse_migrations_dir(args.migrations, applied_only))
     if args.openapi and args.openapi.is_file():
         catalog.sources.append(args.openapi.name)
 

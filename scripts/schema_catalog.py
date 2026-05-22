@@ -6,6 +6,12 @@ from __future__ import annotations
 import re
 from dataclasses import dataclass, field
 from pathlib import Path
+from typing import Any
+
+try:
+    import tomllib
+except ModuleNotFoundError:
+    import tomli as tomllib  # type: ignore
 
 SENSITIVE_COLUMN_NAMES = frozenset(
     {
@@ -144,11 +150,37 @@ def parse_sql_text(text: str, source: str = "") -> SchemaCatalog:
     return catalog
 
 
-def parse_migrations_dir(migrations_dir: Path) -> SchemaCatalog:
+def load_applied_manifest(manifest_path: Path) -> list[str]:
+    """Return migration basenames listed in migrations_applied.toml."""
+    data: dict[str, Any] = tomllib.loads(manifest_path.read_text(encoding="utf-8"))
+    applied = data.get("applied")
+    if applied is None:
+        block = data.get("migrations")
+        if isinstance(block, dict):
+            applied = block.get("applied")
+    if not isinstance(applied, list):
+        raise ValueError(
+            f"{manifest_path}: expected applied = [\"001_init.sql\", ...] or [migrations] applied = [...]"
+        )
+    out: list[str] = []
+    for item in applied:
+        name = Path(str(item).strip()).name
+        if name:
+            out.append(name)
+    return out
+
+
+def parse_migrations_dir(
+    migrations_dir: Path,
+    applied_only: list[str] | None = None,
+) -> SchemaCatalog:
     merged = SchemaCatalog()
     if not migrations_dir.is_dir():
         return merged
+    allowed = {Path(n).name for n in applied_only} if applied_only else None
     for path in sorted(migrations_dir.glob("*.sql")):
+        if allowed is not None and path.name not in allowed:
+            continue
         part = parse_sql_file(path)
         for p in part.json_paths:
             if p not in merged.json_paths:

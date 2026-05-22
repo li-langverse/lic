@@ -16,6 +16,7 @@ All notable changes to Li are documented here. The format follows
 - **prob-hoare (P2):** `prob_ensures` contracts, `lic build --prob-check` Monte Carlo gate, `Probability.lean` stub — [2026-05-22-prob-hoare-p2.md](docs/release-notes/2026-05-22-prob-hoare-p2.md).
 - **HTTPd M3 optional:** L4 stream + token-budget hooks RFC, config gates, ingress 429 cap — [2026-05-22-httpd-m3-optional.md](docs/release-notes/2026-05-22-httpd-m3-optional.md).
 - **HTTPd M2 TLS/H2 scale:** TLS 1.3 terminate profile, HTTP/2 config gate, WebSocket `require=websocket`, queue 429, circuit breaker, webhook allowlist — [2026-05-22-httpd-m2-tls-h2.md](docs/release-notes/2026-05-22-httpd-m2-tls-h2.md).
+- **HTTPd setup-censor-schema:** `--migrations-applied` filters prod-applied SQL; `ack_disable_censor` for disabled production censorship — [2026-05-22-httpd-setup-censor-schema.md](docs/release-notes/2026-05-22-httpd-setup-censor-schema.md).
 - **HTTPd M1.5 leak_censor:** `setup-censor-httpd.py`, migration `SchemaCatalog`, optional proxy egress scrub, Tier G exploit TOML rows — [2026-05-22-httpd-m15-leak-censor.md](docs/release-notes/2026-05-22-httpd-m15-leak-censor.md).
 - **Ecosystem phase 0:** `algorithms-and-libraries-plan.md`, `lic-ecosystem-baseline.md`, agent skill `run-local-ci-gha-quota` — `docs/release-notes/2026-05-22-lic-ecosystem-phase0-baseline.md`.
 - **2i broadcast (partial):** `array[1, T]` element-wise broadcast to `array[N, T]` — `docs/release-notes/2026-05-22-2i-broadcast-len1.md`.

@@ -259,7 +259,8 @@ def load_httpd_config(path: Path) -> list[CanonicalRoute]:
         validate_m15_limits(data)
         validate_route_match(data)
         validate_inference_require(data)
-        validate_leak_censor(data, path)
+        for warn in validate_leak_censor(data, path):
+            print(f"warning: {warn}", file=sys.stderr)
         validate_tls_config(data, path)
         validate_m2_config(data, path)
         validate_m3_config(data, path)

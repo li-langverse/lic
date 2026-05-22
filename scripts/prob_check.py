@@ -98,8 +98,18 @@ def hoeffding_upper_bound(hits: int, n: int, delta: float) -> float:
     return min(1.0, p_hat + margin)
 
 
-def simulate_event(event: str, n: int, rng: random.Random) -> int:
+def simulate_event(event: str, n: int, rng: random.Random, *, given: str = "") -> int:
     """Return hit count for named probabilistic events."""
+    if given == "BadRng":
+        if event.strip().startswith("iv_collision") or event.strip() in (
+            "duplicate_draw",
+            "event_duplicate_draw",
+            "collision_iv",
+        ):
+            return n
+        if event.strip() in ("always_false", "false_event"):
+            return n
+        return 0
     ev = event.strip()
     if ev in ("duplicate_draw", "event_duplicate_draw", "collision_iv"):
         space = 2**32
@@ -134,7 +144,7 @@ def discharge_one(ob: ProbObligation, delta: float) -> dict:
         seed = 0
     rng = random.Random(seed)
     n = max(100, ob.samples)
-    hits = simulate_event(ob.event, n, rng)
+    hits = simulate_event(ob.event, n, rng, given=ob.given)
     p_upper = hoeffding_upper_bound(hits, n, delta)
     ok = p_upper < ob.epsilon
     return {

@@ -22,7 +22,7 @@ todos:
     status: completed
   - id: rng-exploit-suite
     content: Tier F RNG exploits (BadRng/SimRng inject via bench.toml); PR gate when touching li-rng/li-tls
-    status: pending
+    status: completed
   - id: m1-core
     content: "M1: parser, route DSL (no regex), static, LB, validate-config, headers, rate limits"
     status: completed

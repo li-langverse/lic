@@ -89,6 +89,46 @@ exploit = ""
 li_invariant = "HTTP/2 stream creation and reset bounded"
 
 [[mitigation]]
+id = "tls_record_iv_unique"
+cve = ["CWE-330"]
+nginx_version_fixed = ""
+src = "src/event/ngx_event_openssl.c"
+symbol = "ngx_ssl_create_connection"
+notes = "OpenSSL RAND_bytes for record IV; Li Tier F BadRng inject via bench.toml"
+exploit = "exploits/rng_constant_bytes.toml"
+li_invariant = "AEAD IV unique per record under fixed key; BadRng must not yield valid duplicates"
+
+[[mitigation]]
+id = "rng_no_partial_read"
+cve = []
+nginx_version_fixed = ""
+src = "docs/superpowers/specs/li-rng.md"
+symbol = "fill_bytes"
+notes = "Li fill_bytes rejects partial read without error (no nginx port)"
+exploit = "exploits/rng_partial_fill.toml"
+li_invariant = "fill_bytes errors if fewer than requested bytes"
+
+[[mitigation]]
+id = "config_prng_tls_production_gate"
+cve = []
+nginx_version_fixed = ""
+src = "scripts/httpd_rng.py"
+symbol = "validate_rng_config"
+notes = "validate-config rejects prng-on-TLS for production profile"
+exploit = "exploits/rng_prng_on_tls_prod.toml"
+li_invariant = "HttpdConfig rejects mode=prng for TLS on production profile unless allow_insecure_rng"
+
+[[mitigation]]
+id = "prob_iv_collision_bound"
+cve = []
+nginx_version_fixed = ""
+src = "li-tests/rng/iv_collision_oracle.li"
+symbol = "mc_iv_collision_os"
+notes = "prob_ensures iv_collision < epsilon given OsRngUniform; BadRng fails MC"
+exploit = "exploits/rng_repeat_iv.toml"
+li_invariant = "prob_ensures iv_collision < epsilon given OsRngUniform"
+
+[[mitigation]]
 id = "dns_resolver_limits"
 cve = ["CVE-2021-23017", "CVE-2016-0747"]
 nginx_version_fixed = "1.9.13"

@@ -116,12 +116,24 @@ def _tee_stream(pipe, logf, out) -> None:
         logf.flush()
 
 
+def agent_timeout_sec() -> int | None:
+    raw = os.environ.get("LI_HTTPD_PLAN_AGENT_TIMEOUT_SEC", "2700").strip()
+    if raw in ("0", "none", "off"):
+        return None
+    try:
+        return max(60, int(raw))
+    except ValueError:
+        return 2700
+
+
 def run_subprocess_streaming(cmd: list[str], cwd: Path, env: dict[str, str], log_path: Path) -> int:
     """Run child with stdout/stderr streamed to this terminal and log_path."""
+    timeout = agent_timeout_sec()
     with log_path.open("w", encoding="utf-8") as logf:
         logf.write(f"# cmd: {' '.join(cmd)}\n# cwd: {cwd}\n\n")
         logf.flush()
-        print(f"==> agent subprocess (live; also {log_path})", flush=True)
+        hint = f", timeout={timeout}s" if timeout else ""
+        print(f"==> agent subprocess (live; also {log_path}{hint})", flush=True)
         proc = subprocess.Popen(
             cmd,
             cwd=str(cwd),
@@ -145,9 +157,18 @@ def run_subprocess_streaming(cmd: list[str], cwd: Path, env: dict[str, str], log
         ]
         for t in threads:
             t.start()
-        rc = proc.wait()
-        for t in threads:
-            t.join(timeout=2)
+        try:
+            rc = proc.wait(timeout=timeout)
+        except subprocess.TimeoutExpired:
+            proc.kill()
+            rc = proc.wait()
+            msg = f"agent timed out after {timeout}s — killed\n"
+            sys.stderr.write(msg)
+            logf.write(msg)
+            return 124
+        finally:
+            for t in threads:
+                t.join(timeout=2)
         return rc
 
 
@@ -185,6 +206,8 @@ def run_cursor_agent(todo: dict, dry_run: bool) -> tuple[int, str]:
         **os.environ,
         "PYTHONUNBUFFERED": "1",
         "LI_SDK_TERMINAL_STREAM": os.environ.get("LI_SDK_TERMINAL_STREAM", "1"),
+        "LI_AGENT_MINIMAL_PROMPT": "1",
+        "LI_HTTPD_PLAN_LOOP": "1",
         "LI_REPO_WORKFLOW_REPO": "lic",
         "LIC_ROOT": str(ROOT),
         "LI_AGENT_EXTRA_INSTRUCTION": instruction,
@@ -320,6 +343,14 @@ def main() -> int:
         if code != 0:
             print(f"agent exit {code} — stopping loop (fix and re-run)", file=sys.stderr)
             return code
+
+        tid = todo["id"]
+        if tid not in state.setdefault("completed_ids", []):
+            state["completed_ids"].append(tid)
+            save_state(state)
+            print(f"todo {tid}: agent exit 0 — advancing loop (marked done in state.json)", flush=True)
+        else:
+            print(f"todo {tid}: agent exit 0 (already marked done)", flush=True)
 
         iteration += 1
         todos = load_plan_todos()

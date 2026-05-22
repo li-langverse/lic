@@ -24,7 +24,7 @@ Override image:
 export LI_CI_DOCKER_IMAGE=ghcr.io/li-langverse/lic-ci:ubuntu24-llvm22
 ```
 
-**Container runtime:** scripts auto-pick `docker` (if socket works) or **`podman`** (rootless). Override with `CONTAINER_RUNTIME=podman`.
+**Container runtime:** scripts prefer **`podman`** when `podman info` works, else `docker`. Override with `CONTAINER_RUNTIME=docker` if needed.
 
 **Docker group:** for Docker Engine, user must access `/var/run/docker.sock` (e.g. `sudo usermod -aG docker $USER` then re-login). No tokens are stored in the repo.
 

@@ -14,24 +14,11 @@ ROOT="$(cd "$(dirname "$0")/.." && pwd)"
 IMAGE="${LI_CI_DOCKER_IMAGE:-ghcr.io/li-langverse/lic-ci:ubuntu24-llvm22}"
 MODE="${1:-}"
 
-resolve_container_runtime() {
-  if [[ -n "${CONTAINER_RUNTIME:-}" ]]; then
-    echo "$CONTAINER_RUNTIME"
-    return 0
-  fi
-  if command -v docker >/dev/null 2>&1 && docker info >/dev/null 2>&1; then
-    echo docker
-    return 0
-  fi
-  if command -v podman >/dev/null 2>&1 && podman info >/dev/null 2>&1; then
-    echo podman
-    return 0
-  fi
-  return 1
-}
+# shellcheck source=lib/container-runtime.sh
+source "$ROOT/scripts/lib/container-runtime.sh"
 
 CTR="$(resolve_container_runtime)" || {
-  echo "prepare-docker-ci-image: need docker or podman (socket access / rootless ok)" >&2
+  echo "prepare-docker-ci-image: need podman or docker (podman preferred when available)" >&2
   exit 1
 }
 

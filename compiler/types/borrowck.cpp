@@ -399,7 +399,13 @@ void borrow_check_module(const Module& module, DiagnosticBag& diags) {
 }
 
 bool extern_call_skips_io_effect(const std::string& callee) {
-  return callee == "li_rt_volatile_sink_f64";
+  if (callee == "li_rt_volatile_sink_f64") {
+    return true;
+  }
+  if (callee.rfind("li_reduce_sum_", 0) == 0) {
+    return true;
+  }
+  return false;
 }
 
 bool proc_mentions_extern_call(const ProcDecl& p,

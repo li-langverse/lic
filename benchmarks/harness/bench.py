@@ -683,6 +683,7 @@ def run_verify_results(
     specs: tuple[BenchSpec, ...], *, label: str
 ) -> int:
     """Verify numerical results only (no timing CSV update)."""
+    failures: list[str] = []
     for spec in specs:
         build_dir = REPO / "build" / "bench" / spec.name
         build_dir.mkdir(parents=True, exist_ok=True)
@@ -694,8 +695,11 @@ def run_verify_results(
         try:
             verify_benchmark_results(spec, build_dir)
         except RuntimeError as exc:
+            failures.append(f"{spec.name}: {exc}")
             print(f"FAIL verify {spec.name}: {exc}", file=sys.stderr)
-            return 1
+    if failures:
+        print(f"result verify: {len(failures)} failure(s) in {label}", file=sys.stderr)
+        return 1
     print(f"result verify ok ({label}, {len(specs)} benchmarks)")
     return 0
 

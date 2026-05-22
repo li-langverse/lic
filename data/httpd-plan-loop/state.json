@@ -12,9 +12,10 @@
     "m15-agent",
     "m15-leak-censor",
     "m15-tls-auto",
-    "w0-lean-gate"
+    "w0-lean-gate",
+    "bench-harness"
   ],
-  "iterations": 4,
+  "iterations": 5,
   "history": [
     {
       "at": "2026-05-22T17:24:28.325124+00:00",
@@ -37,6 +38,12 @@
     {
       "at": "2026-05-22T18:01:33.790364+00:00",
       "todo_id": "w0-lean-gate",
+      "agent_exit": 0,
+      "gates_ok": true
+    },
+    {
+      "at": "2026-05-22T18:08:39.958600+00:00",
+      "todo_id": "bench-harness",
       "agent_exit": 0,
       "gates_ok": true
     }

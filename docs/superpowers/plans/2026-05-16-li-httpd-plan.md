@@ -72,7 +72,7 @@ todos:
     status: completed
   - id: m3-optional
     content: "M3 optional: L4 stream, token-budget hooks—RFC + LOC"
-    status: pending
+    status: completed
   - id: pkg-workspace
     content: "Align packages/* via scripts/li-new-package + lip § A3 li.toml; workspace root; re-scaffold lis stubs when Pkg lands"
     status: pending

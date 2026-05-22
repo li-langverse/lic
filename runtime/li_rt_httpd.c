@@ -70,6 +70,19 @@ static int32_t g_m2_cb_half_open_probes = 0;
 static int32_t g_m2_webhook_allow_count = 0;
 static char g_m2_webhook_allow[8][256];
 
+/* M3 optional — L4 stream config + token-budget hooks (RFC; relay deferred). */
+static int32_t g_m3_enabled = 0;
+static int32_t g_m3_l4_enabled = 0;
+static int32_t g_m3_l4_listen_port = 0;
+static int32_t g_m3_l4_upstream_port = 0;
+static int32_t g_m3_l4_max_connections = 0;
+static char g_m3_l4_listen_host[128];
+static char g_m3_l4_upstream_host[128];
+static int32_t g_m3_token_budget_enabled = 0;
+static int32_t g_m3_token_budget_max = 0;
+static int32_t g_m3_token_budget_reject_over = 1;
+static char g_m3_token_budget_header[64] = "x-token-budget";
+
 static LiHttpdRoute g_routes[LI_HTTPD_MAX_ROUTES];
 static int32_t g_route_count = 0;
 
@@ -775,6 +788,75 @@ static int parse_m2_config(const char* text) {
   return rc;
 }
 
+static int m3_l4_line(const char* key, const char* val, void* ctx) {
+  (void)ctx;
+  if (strcmp(key, "enabled") == 0) {
+    if (val[0] == '1' || strcasecmp(val, "true") == 0 || strcasecmp(val, "yes") == 0) {
+      g_m3_l4_enabled = 1;
+      g_m3_enabled = 1;
+    }
+  } else if (strcmp(key, "listen") == 0) {
+    const char* colon = strrchr(val, ':');
+    if (colon != NULL && colon > val) {
+      size_t hlen = (size_t)(colon - val);
+      if (hlen < sizeof(g_m3_l4_listen_host)) {
+        memcpy(g_m3_l4_listen_host, val, hlen);
+        g_m3_l4_listen_host[hlen] = '\0';
+      }
+      g_m3_l4_listen_port = parse_int_field(colon + 1);
+    }
+  } else if (strcmp(key, "upstream_host") == 0) {
+    strncpy(g_m3_l4_upstream_host, val, sizeof(g_m3_l4_upstream_host) - 1);
+    g_m3_l4_upstream_host[sizeof(g_m3_l4_upstream_host) - 1] = '\0';
+  } else if (strcmp(key, "upstream_port") == 0) {
+    g_m3_l4_upstream_port = parse_int_field(val);
+  } else if (strcmp(key, "max_connections") == 0) {
+    g_m3_l4_max_connections = parse_int_field(val);
+  }
+  return 0;
+}
+
+static int m3_token_budget_line(const char* key, const char* val, void* ctx) {
+  (void)ctx;
+  if (strcmp(key, "enabled") == 0) {
+    if (val[0] == '1' || strcasecmp(val, "true") == 0 || strcasecmp(val, "yes") == 0) {
+      g_m3_token_budget_enabled = 1;
+      g_m3_enabled = 1;
+    }
+  } else if (strcmp(key, "header") == 0) {
+    strncpy(g_m3_token_budget_header, val, sizeof(g_m3_token_budget_header) - 1);
+    g_m3_token_budget_header[sizeof(g_m3_token_budget_header) - 1] = '\0';
+  } else if (strcmp(key, "max_per_request") == 0) {
+    g_m3_token_budget_max = parse_int_field(val);
+  } else if (strcmp(key, "reject_over_cap") == 0) {
+    g_m3_token_budget_reject_over =
+        (val[0] == '0' || strcasecmp(val, "false") == 0 || strcasecmp(val, "no") == 0) ? 0 : 1;
+  }
+  return 0;
+}
+
+static int parse_m3_config(const char* text) {
+  g_m3_enabled = 0;
+  g_m3_l4_enabled = 0;
+  g_m3_l4_listen_port = 0;
+  g_m3_l4_upstream_port = 0;
+  g_m3_l4_max_connections = 0;
+  g_m3_l4_listen_host[0] = '\0';
+  g_m3_l4_upstream_host[0] = '\0';
+  g_m3_token_budget_enabled = 0;
+  g_m3_token_budget_max = 0;
+  g_m3_token_budget_reject_over = 1;
+  strncpy(g_m3_token_budget_header, "x-token-budget", sizeof(g_m3_token_budget_header) - 1);
+  g_m3_token_budget_header[sizeof(g_m3_token_budget_header) - 1] = '\0';
+
+  int rc = parse_m2_section_table(text, "[server.l4_stream]", m3_l4_line, NULL);
+  if (rc != 0) {
+    return rc;
+  }
+  rc = parse_m2_section_table(text, "[limits.token_budget]", m3_token_budget_line, NULL);
+  return rc;
+}
+
 static int tls_mode_from_str(const char* eq) {
   if (eq == NULL) {
     return 0;
@@ -1299,7 +1381,10 @@ int32_t li_rt_httpd_load_config(const char* path) {
   g_tls_renew_before_days = 30;
   g_tls_self_signed_dev = 0;
   g_tls_le_email[0] = '\0';
-  int rc = parse_m2_config(buf);
+  int rc = parse_m3_config(buf);
+  if (rc == 0) {
+    rc = parse_m2_config(buf);
+  }
   if (rc == 0) {
     rc = parse_limits_m15_stream(buf);
   }
@@ -1658,6 +1743,78 @@ int32_t li_rt_httpd_m2_selftest(void) {
   }
   if (g_m2_webhook_allow_count > 0 && !li_rt_httpd_m2_webhook_url_allowed(g_m2_webhook_allow[0])) {
     return -6;
+  }
+  return 0;
+}
+
+int32_t li_rt_httpd_m3_enabled(void) { return g_m3_enabled; }
+
+int32_t li_rt_httpd_m3_l4_enabled(void) { return g_m3_l4_enabled; }
+
+int32_t li_rt_httpd_m3_l4_listen_port(void) { return g_m3_l4_listen_port; }
+
+int32_t li_rt_httpd_m3_l4_upstream_port(void) { return g_m3_l4_upstream_port; }
+
+int32_t li_rt_httpd_m3_l4_max_connections(void) { return g_m3_l4_max_connections; }
+
+int32_t li_rt_httpd_m3_token_budget_enabled(void) { return g_m3_token_budget_enabled; }
+
+int32_t li_rt_httpd_m3_token_budget_max(void) { return g_m3_token_budget_max; }
+
+static int m3_parse_nonneg_int(const char* s, int64_t* out) {
+  if (s == NULL || !s[0]) {
+    return -1;
+  }
+  int64_t v = 0;
+  for (const char* p = s; *p; p++) {
+    if (*p < '0' || *p > '9') {
+      return -1;
+    }
+    v = v * 10 + (*p - '0');
+    if (v > 10000000000LL) {
+      return -1;
+    }
+  }
+  *out = v;
+  return 0;
+}
+
+int32_t li_rt_httpd_m3_token_budget_check(const char* header_val) {
+  if (!g_m3_token_budget_enabled || header_val == NULL) {
+    return 1;
+  }
+  int64_t v = 0;
+  if (m3_parse_nonneg_int(header_val, &v) != 0) {
+    return -2;
+  }
+  if (v == 0) {
+    return 0;
+  }
+  if (g_m3_token_budget_reject_over && v > (int64_t)g_m3_token_budget_max) {
+    return 0;
+  }
+  return 1;
+}
+
+int32_t li_rt_httpd_m3_selftest(void) {
+  if (g_m3_enabled == 0) {
+    return -1;
+  }
+  if (g_m3_l4_enabled) {
+    if (g_m3_l4_listen_port <= 0 || g_m3_l4_upstream_port <= 0 || g_m3_l4_upstream_host[0] == '\0') {
+      return -2;
+    }
+    if (g_m3_l4_max_connections <= 0) {
+      return -3;
+    }
+  }
+  if (g_m3_token_budget_enabled) {
+    if (g_m3_token_budget_max <= 0) {
+      return -4;
+    }
+    if (li_rt_httpd_m3_token_budget_check("1") != 1) {
+      return -5;
+    }
   }
   return 0;
 }

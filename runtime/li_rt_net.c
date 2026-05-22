@@ -203,6 +203,12 @@ static int g_m2_cb_open_duration_sec = 15;
 static int g_m2_cb_half_open_probes = 1;
 static int g_queue_depth = 0;
 
+/* M3 optional — token-budget ingress hook (flattened runtime.conf). */
+static int g_m3_token_budget_enabled = 0;
+static int g_m3_token_budget_max = 0;
+static int g_m3_token_budget_reject_over = 1;
+static char g_m3_token_budget_header[64] = "x-token-budget";
+
 static httpd_route_t g_routes[HTTPD_MAX_ROUTES];
 static int g_route_count = 0;
 
@@ -1961,6 +1967,45 @@ static int httpd_match_route_index(const char* path, int plen, const httpd_req_i
   return -1;
 }
 
+static int httpd_m3_parse_budget_int(const char* s, long long* out) {
+  if (s == NULL || !s[0]) {
+    return -1;
+  }
+  long long v = 0;
+  for (const char* p = s; *p; p++) {
+    if (*p < '0' || *p > '9') {
+      return -1;
+    }
+    v = v * 10 + (*p - '0');
+    if (v > 10000000000LL) {
+      return -1;
+    }
+  }
+  *out = v;
+  return 0;
+}
+
+static int httpd_token_budget_allow_c(const char* buf, int hdr_end) {
+  if (!g_m3_token_budget_enabled) {
+    return 1;
+  }
+  char val[32];
+  if (httpd_req_header_value(buf, hdr_end, g_m3_token_budget_header, val, (int)sizeof(val)) < 0) {
+    return 1;
+  }
+  long long v = 0;
+  if (httpd_m3_parse_budget_int(val, &v) != 0) {
+    return 0;
+  }
+  if (v == 0) {
+    return 0;
+  }
+  if (g_m3_token_budget_reject_over && v > (long long)g_m3_token_budget_max) {
+    return 0;
+  }
+  return 1;
+}
+
 static int httpd_rate_limit_allow_request(const char* path, int plen, const httpd_req_info_t* req) {
   int idx = httpd_match_route_index(path, plen, req);
   if (idx >= 0) {
@@ -2387,6 +2432,15 @@ static int32_t httpd_try_drain_once(int32_t conn, int32_t slot) {
     return keep ? 1 : -1;
   }
   int keep = !wants_connection_close(g_slots[slot].buf, hdr_end);
+  if (!httpd_token_budget_allow_c(g_slots[slot].buf, hdr_end)) {
+    if (httpd_send_status(conn, 429, "Token Budget Exceeded",
+                          "Retry-After: 1\r\n", keep) < 0) {
+      return -2;
+    }
+    httpd_access_log(&req, 429, 0);
+    net_slot_consume(slot, hdr_end);
+    return keep ? 1 : -1;
+  }
   if (!httpd_rate_limit_allow_request(req.path, req.path_len, &req)) {
     if (httpd_send_status(conn, 429, "Too Many Requests",
                           "Retry-After: 1\r\n", keep) < 0) {
@@ -4223,6 +4277,11 @@ int32_t httpd_load_runtime_config_i(intptr_t path) {
   g_m2_cb_open_duration_sec = 15;
   g_m2_cb_half_open_probes = 1;
   g_queue_depth = 0;
+  g_m3_token_budget_enabled = 0;
+  g_m3_token_budget_max = 0;
+  g_m3_token_budget_reject_over = 1;
+  strncpy(g_m3_token_budget_header, "x-token-budget", sizeof(g_m3_token_budget_header) - 1);
+  g_m3_token_budget_header[sizeof(g_m3_token_budget_header) - 1] = '\0';
   g_leak_censor_enabled = 0;
   g_leak_censor_block_502 = 0;
   g_leak_censor_pattern_openai = 1;
@@ -4308,6 +4367,17 @@ int32_t httpd_load_runtime_config_i(intptr_t path) {
       g_m2_cb_open_duration_sec = atoi(val);
     } else if (strcmp(key, "m2_cb_half_open_probes") == 0) {
       g_m2_cb_half_open_probes = atoi(val);
+    } else if (strcmp(key, "m3_token_budget_enabled") == 0) {
+      g_m3_token_budget_enabled =
+          (strcmp(val, "0") == 0 || strcmp(val, "false") == 0) ? 0 : 1;
+    } else if (strcmp(key, "m3_token_budget_max") == 0) {
+      g_m3_token_budget_max = atoi(val);
+    } else if (strcmp(key, "m3_token_budget_header") == 0) {
+      strncpy(g_m3_token_budget_header, val, sizeof(g_m3_token_budget_header) - 1);
+      g_m3_token_budget_header[sizeof(g_m3_token_budget_header) - 1] = '\0';
+    } else if (strcmp(key, "m3_token_budget_reject_over_cap") == 0) {
+      g_m3_token_budget_reject_over =
+          (strcmp(val, "0") == 0 || strcmp(val, "false") == 0) ? 0 : 1;
     } else if (strcmp(key, "leak_censor_enabled") == 0) {
       g_leak_censor_enabled = (strcmp(val, "0") == 0 || strcmp(val, "false") == 0) ? 0 : 1;
     } else if (strcmp(key, "leak_censor_on_detect") == 0) {

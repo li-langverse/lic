@@ -83,6 +83,15 @@ int32_t li_rt_httpd_m2_webhook_allow_count(void);
 int32_t li_rt_httpd_route_requires_websocket(int32_t route_id);
 int32_t li_rt_httpd_m2_webhook_url_allowed(const char* url);
 int32_t li_rt_httpd_m2_selftest(void);
+int32_t li_rt_httpd_m3_enabled(void);
+int32_t li_rt_httpd_m3_l4_enabled(void);
+int32_t li_rt_httpd_m3_l4_listen_port(void);
+int32_t li_rt_httpd_m3_l4_upstream_port(void);
+int32_t li_rt_httpd_m3_l4_max_connections(void);
+int32_t li_rt_httpd_m3_token_budget_enabled(void);
+int32_t li_rt_httpd_m3_token_budget_max(void);
+int32_t li_rt_httpd_m3_token_budget_check(const char* header_val);
+int32_t li_rt_httpd_m3_selftest(void);
 
 void li_async_frame_enter(void);
 void li_async_frame_leave(void);

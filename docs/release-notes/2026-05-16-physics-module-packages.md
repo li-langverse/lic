@@ -30,5 +30,5 @@ New under `benchmarks/tier2_physics/`: `rigid_body_stack`, `three_body_pure`, `w
 
 ## Verification
 
-- `lic build` on packages when LLVM 18 toolchain available
+- `lic build` on packages when LLVM 22 toolchain available
 - `./benchmarks/harness/bench.py --tier 2 --ci` after compiler build

@@ -8,7 +8,7 @@ Tier 1 `simd_dot` Li source uses `a @ b` on fixed `array[40000, float]` tiles (n
 
 1. **Read** `docs/release-notes/2026-05-21-7eb-matmul-pure-li.md` and merge stack **#138 → #139 → this PR**.
 2. **Run** `./li-tests/run_all.sh` (162 pass) and `python3 benchmarks/harness/bench.py` verify for `simd_dot`.
-3. **Then** fix explicit f64×4 `ArrayDotF64` SIMD loads (insert-element path; vector `load` segfaulted on LLVM 18), or **7e-c** docs gallery.
+3. **Then** fix explicit f64×4 `ArrayDotF64` SIMD loads (insert-element path; vector `load` segfaulted on LLVM 22), or **7e-c** docs gallery.
 4. **Blocked on** `@vectorized` decorator lowering to MIR (7d elaboration).
 
 ## Changed

@@ -32,12 +32,14 @@ todos:
   - id: m1-toml-desugar
     content: Simple TOML desugar + config_desugar golden tests + explain-config CLI
     status: completed
+    status: in_progress
   - id: m1-validate-flatten
     content: validate-httpd-config.py + flatten-httpd-config.py + lic validate-httpd-config alias
     status: completed
   - id: m1-bearer-auth
     content: "[auth] TOML Bearer gate + test-auth-bearer.sh (runtime C)"
     status: completed
+    status: in_progress
   - id: m1-explain-config-cli
     content: "lic httpd explain-config + check-httpd-explain-config.sh golden"
     status: completed

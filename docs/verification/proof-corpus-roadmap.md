@@ -27,7 +27,7 @@
 | `extern_call_requires_ok.li` | Imported callee `requires` | Discharged |
 | `index_refinement.li` | Index refinement type + array access | Build + autovc check in corpus |
 | `sqrt_contract.li` | Float `requires`/`ensures` (toy `sqrt`) | Emits real Props; float goals may stay open |
-| `sqrt_open_bound.li` | `abs(result² - x) < ε` | **Intentionally open** — `verify_open_ok` |
+| `sqrt_open_bound.li` | `abs(result² - x) < ε` with `li_rt_sqrt` body | **Intentionally open** — `verify_open_ok` / `--allow-open-vc` |
 | `refinement_*_ok.li` | Refinement types at call/init | **Partial** — refinement VCs often `True`; user `ensures` may stay open |
 | `refinement_guard_ok.li` | `if n >= 0` branch discharge | Same |
 | `linalg_dot4_int_closed.li` | Fixed 4-term int dot — return matches ensures | Fully discharged (`discharge_linalg_int_lean.sh`) |

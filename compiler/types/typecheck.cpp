@@ -858,11 +858,18 @@ struct Ctx {
                           "cannot mix int and float arrays in element-wise arithmetic");
               return make_int();
             }
-            if (ln != rn) {
-              diags.error(loc(e.span),
-                          "element-wise arithmetic requires arrays of the same length");
+            if (ln == rn) {
               return l;
             }
+            if (ln == 1 && rn > 1) {
+              return r;
+            }
+            if (rn == 1 && ln > 1) {
+              return l;
+            }
+            diags.error(loc(e.span),
+                        "element-wise arithmetic requires matching lengths or length-1 "
+                        "broadcast to a longer array");
             return l;
           }
           {

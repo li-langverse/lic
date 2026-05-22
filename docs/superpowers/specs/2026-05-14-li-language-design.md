@@ -69,7 +69,7 @@ Every compiling module must have:
 |-------------|----------------|
 | **Pillar 1 — Provability** | **Highest priority**; see checklist above; Lean 4 kernel is mandatory for `build` |
 | **Pillar 2 — Easy syntax** | Nim-like surface; Python 3.14 types; sugar elaborates to provable Core |
-| **Pillar 3 — Fast execution** | LLVM 18, SIMD, `parallel for` v1; no release binary without Pillar 1 |
+| **Pillar 3 — Fast execution** | LLVM 22, SIMD, `parallel for` v1; no release binary without Pillar 1 |
 | **Provable-only** | No compile without discharged Lean proofs; reject partial or untotal user code |
 | Python 3.14 type baseline | All relevant PEP constructs **except `Any`** and gradual escapes |
 | Nim-like syntax | Indentation, `def`, `type`, `object`, `enum`, `import` |
@@ -93,7 +93,7 @@ Every compiling module must have:
 | **Typechecker** | C++ module `li_types/` | Python 3.14 + refinements + contract well-formedness |
 | **Verifier** | `li_verify/` + **Lean 4** | VC generation; Lean kernel checks proofs (Coq-level standard) |
 | **Middle-end** | Custom MIR (SSA) | Borrow lowering, **parallel regions**, simd, bounds |
-| **Backend** | **LLVM 18 only** | Single codegen path; HPC peak perf, vectorization, LTO |
+| **Backend** | **LLVM 22 only** | Single codegen path; HPC peak perf, vectorization, LTO |
 | **Incremental** | Per-module cache + thinLTO split | Fast rebuild; proof cache keyed by VC hash |
 | **Formal semantics** | **Lean 4** (canonical) | Core calculus, typing rules, contract semantics, MIR preservation |
 | **Runtime** | Minimal C (`li_rt.c`) | Panic, bounds, contract failure hooks in debug |

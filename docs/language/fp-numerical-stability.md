@@ -2,7 +2,7 @@
 
 ## Summary
 
-**LLVM 18 does not provide a general “make this expression numerically stable” optimization pass.** It optimizes for speed when you enable fast-math (`-ffast-math`, `reassoc`, `contract`, etc.) and otherwise mostly preserves IEEE-754 evaluation order for scalar FP.
+**LLVM 22 does not provide a general “make this expression numerically stable” optimization pass.** It optimizes for speed when you enable fast-math (`-ffast-math`, `reassoc`, `contract`, etc.) and otherwise mostly preserves IEEE-754 evaluation order for scalar FP.
 
 Li therefore implements an **optional compiler mode** that runs **before** LLVM:
 

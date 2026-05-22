@@ -29,15 +29,14 @@
 | Branch / PR | Content |
 |-------------|---------|
 | `cursor/httpd-plan-continue-54aa` (#160) | Overlap reject, validate/flatten, Bearer auth |
-| Plan loop | `scripts/httpd-plan-loop.py` + `code_implementer` (`--goal-file`) — PR #172 |
-| Implementation | `cursor/httpd-plan-loop-54aa` → PR #173 |
+| Plan loop | `scripts/httpd-plan-loop.py` + goal-directed `code_implementer` (li-cursor-agents) |
 
 ## Next todos (plan loop order)
 
-1. ~~**m1-routing-tests**~~ — done (`run_routing.sh`, table cases, overlap `config_reject`)  
-2. ~~**m1-bearer-auth**~~ — `test-auth-bearer.sh` on real `build/li-httpd` (done; use `./scripts/build-li-httpd.sh`)  
-3. ~~**m1-toml-desugar**~~ — desugar golden + explain-config (`check-httpd-config-desugar.sh`)  
-4. ~~**m1-core**~~ — `limits.rate_limit_rps` for `proxy:` routes (Python + `lic httpd validate-config`); LB enum Li wrapper (`lb_mode_from_name`)  
+1. **m1-routing-tests** — `match_routes.li` compile + oracle green; overlap reject CI  
+2. **m1-bearer-auth** — `test-auth-bearer.sh` on real `build/li-httpd`  
+3. **m1-toml-desugar** — desugar golden + explain-config  
+4. **m1-core** — remaining M1 parser/LB/rate-limit Li surface  
 5. **w1-async-reactor** — blocked on language async (post-M1)
 
 ## Autonomous loop

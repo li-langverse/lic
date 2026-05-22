@@ -58,7 +58,7 @@
 ## Exit gate
 
 ```bash
-export LLVM_DIR="$(brew --prefix llvm@18)/lib/cmake/llvm"
+export LLVM_DIR="$(brew --prefix llvm@22)/lib/cmake/llvm"
 ./scripts/build.sh
 ./scripts/bootstrap_lic.sh
 LIC=./build/compiler/lic/lic ./li-tests/run_all.sh

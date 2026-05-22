@@ -16,7 +16,7 @@ Autonomous workflow for implementing Li per `docs/superpowers/plans/2026-05-14-l
 
 0. Read [strict-by-default.md](../../../docs/ecosystem/strict-by-default.md) and [engineering-standards.md](../../../docs/ecosystem/engineering-standards.md) (functionality, security, performance gates — always on).
 1. Read the **phase completion tracker** in the master plan; pick the **first unchecked** phase.
-2. Read that phase's plan file (table in master plan). If marked **Stale**, rewrite it for **C++17 + CMake + Ninja + LLVM 18** before coding.
+2. Read that phase's plan file (table in master plan). If marked **Stale**, rewrite it for **C++17 + CMake + Ninja + LLVM 22** before coding.
 3. Read canonical context only as needed:
    - `docs/superpowers/specs/2026-05-14-li-language-design.md` (pillars, types, contracts)
    - `.cursor/rules/li-project.mdc`, `compiler-cpp.mdc`, `li-tests.mdc`
@@ -31,7 +31,7 @@ Autonomous workflow for implementing Li per `docs/superpowers/plans/2026-05-14-l
 |----------|------|
 | 0 | **Strict by default** — no optional provability; explicit `li.toml` `[gates]` or documented env only to relax |
 | 1 | **Provability** — no user-facing feature that bypasses Lean/contracts gate |
-| 2 | **Stack** — C++ compiler only in `compiler/`; **LLVM 18** sole backend; no Rust/Zig host |
+| 2 | **Stack** — C++ compiler only in `compiler/`; **LLVM 22** sole backend; no Rust/Zig host |
 | 3 | **Tests** — new behavior → fixture in `li-tests/` + `manifest.toml` entry |
 | 4 | **Truth** — update master plan checkboxes only after verification commands pass |
 | 5 | **Provability honesty** — if the PR touches proof surface (Lean, VC, parallel, decorators, math, bounds), update `docs/verification/provability-gaps.md` (**G-*** rows) and linked handbook pages in the **same PR** (master plan § Doc) |
@@ -62,11 +62,11 @@ READ phase plan
 
 Stop only when:
 
-- LLVM 18 / CMake missing and cannot be installed in the environment
+- LLVM 22 / CMake missing and cannot be installed in the environment
 - Plan instruction is ambiguous on a design decision that affects pillars
 - `li-tests` or phase gate fails after **two** distinct fix attempts
 
-Report: what was done, exact error, what the user must provide (e.g. `brew install llvm@18 cmake`).
+Report: what was done, exact error, what the user must provide (e.g. `brew install llvm@22 cmake`).
 
 ## Phase → plan file map
 

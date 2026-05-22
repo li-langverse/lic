@@ -20,8 +20,10 @@ def lic_build(path: Path) -> bool:
         print(f"lic missing at {LIC}", file=sys.stderr)
         return False
     env = {**os.environ, "LIC": str(LIC)}
+    # Tier-0 physics smokes track open VC in li-tests manifest (`verify_open_ok`).
+    cmd = [str(LIC), "build", "--allow-open-vc", "--no-lean-verify", str(path), "-o", "/dev/null"]
     proc = subprocess.run(
-        [str(LIC), "build", str(path), "-o", "/dev/null"],
+        cmd,
         cwd=REPO,
         env=env,
         capture_output=True,

@@ -29,7 +29,6 @@ from datetime import datetime, timezone
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
-HTTPD_PR_BRANCH = os.environ.get("HTTPD_PLAN_PR_BRANCH", "cursor/httpd-plan-loop-54aa")
 PLAN = ROOT / "docs/superpowers/plans/2026-05-16-li-httpd-plan.md"
 BASELINE = ROOT / "docs/ecosystem/httpd-m1-baseline.md"
 STATE_DIR = ROOT / "data/httpd-plan-loop"
@@ -75,11 +74,6 @@ def pick_next(todos: list[dict], state: dict) -> dict | None:
     ]
     if not open_todos:
         return None
-    # Prefer M1 httpd work over language-wide blockers (w0/w1) unless opted in.
-    if os.environ.get("LI_HTTPD_PLAN_INCLUDE_BLOCKERS", "").strip() not in ("1", "true", "yes"):
-        m1_open = [t for t in open_todos if t["id"].startswith("m1")]
-        if m1_open:
-            open_todos = m1_open
     open_todos.sort(key=order_key)
     return open_todos[0]
 
@@ -120,85 +114,6 @@ def _tee_stream(pipe, logf, out) -> None:
         out.flush()
         logf.write(line)
         logf.flush()
-
-
-def httpd_workflow_env() -> dict[str, str]:
-    """Env for li-cursor-agents: track PR branch, push+open PR after each step."""
-    branch = HTTPD_PR_BRANCH
-    return {
-        "LI_HTTPD_PLAN_LOOP": "1",
-        "LI_REPO_WORKFLOW_REPO": "lic",
-        "LI_REPO_WORKFLOW_BRANCH": branch,
-        "LI_REPO_WORKFLOW_TRACK_REMOTE": "1",
-        "LI_REPO_WORKFLOW_OPEN_PR": "1",
-        "HTTPD_PLAN_PR_BRANCH": branch,
-    }
-
-
-def _git(cwd: Path, *args: str) -> subprocess.CompletedProcess[str]:
-    return subprocess.run(
-        ["git", *args],
-        cwd=cwd,
-        capture_output=True,
-        text=True,
-        check=False,
-    )
-
-
-def recover_unpushed_work(lic_root: Path, agents_root: Path | None, branch: str) -> None:
-    """After agent exit: commit+push dirty lic checkout and latest workspace clones."""
-    token = os.environ.get("GH_TOKEN") or os.environ.get("GITHUB_TOKEN")
-    if not token:
-        print("recover: skip (no GH_TOKEN)", flush=True)
-        return
-
-    def push_repo(repo_dir: Path, label: str) -> None:
-        if not (repo_dir / ".git").is_dir():
-            return
-        cur = _git(repo_dir, "branch", "--show-current").stdout.strip()
-        if cur and cur != branch:
-            print(f"recover: skip {label} (branch {cur!r} != {branch!r})", flush=True)
-            return
-        if cur != branch:
-            _git(repo_dir, "checkout", "-B", branch, f"origin/{branch}")
-        dirty = _git(repo_dir, "status", "--porcelain").stdout.strip()
-        if dirty:
-            _git(repo_dir, "add", "-A")
-            _git(
-                repo_dir,
-                "commit",
-                "-m",
-                f"chore(httpd): plan loop recovery ({label})",
-            )
-        ahead = _git(repo_dir, "rev-list", "--count", f"origin/{branch}..HEAD")
-        if ahead.returncode == 0 and ahead.stdout.strip() not in ("", "0"):
-            push = _git(repo_dir, "push", "-u", "origin", branch)
-            if push.returncode == 0:
-                print(f"recover: pushed {label}", flush=True)
-            else:
-                print(f"recover: push failed {label}: {push.stderr[-500:]}", flush=True)
-
-    push_repo(lic_root, "lic checkout")
-
-    if not agents_root:
-        return
-    ws = agents_root / "data" / "workspaces"
-    if not ws.is_dir():
-        return
-    clones: list[Path] = []
-    for org_dir in ws.iterdir():
-        if not org_dir.is_dir():
-            continue
-        lic_dir = org_dir / "lic"
-        if not lic_dir.is_dir():
-            continue
-        for run_dir in lic_dir.iterdir():
-            repo = run_dir / "repo"
-            if (repo / ".git").is_dir():
-                clones.append(repo)
-    clones.sort(key=lambda p: p.stat().st_mtime, reverse=True)
-    for repo in clones[:3]:
-        push_repo(repo, repo.parent.name)
 
 
 def agent_timeout_sec() -> int | None:
@@ -289,10 +204,11 @@ def run_cursor_agent(todo: dict, dry_run: bool) -> tuple[int, str]:
 
     env = {
         **os.environ,
-        **httpd_workflow_env(),
         "PYTHONUNBUFFERED": "1",
         "LI_SDK_TERMINAL_STREAM": os.environ.get("LI_SDK_TERMINAL_STREAM", "1"),
         "LI_AGENT_MINIMAL_PROMPT": "1",
+        "LI_HTTPD_PLAN_LOOP": "1",
+        "LI_REPO_WORKFLOW_REPO": "lic",
         "LIC_ROOT": str(ROOT),
         "LI_AGENT_EXTRA_INSTRUCTION": instruction,
         "LI_AGENT_GOAL": instruction,
@@ -315,7 +231,6 @@ def run_cursor_agent(todo: dict, dry_run: bool) -> tuple[int, str]:
     STATE_DIR.mkdir(parents=True, exist_ok=True)
     log_path = STATE_DIR / f"iter-{datetime.now(timezone.utc).strftime('%Y%m%d-%H%M%S')}.log"
     rc = run_subprocess_streaming(cmd, root, env, log_path)
-    recover_unpushed_work(ROOT, root, HTTPD_PR_BRANCH)
     return rc, f"log={log_path} (streamed above)"
 
 
@@ -333,13 +248,12 @@ def build_instruction(todo: dict) -> str:
 - **content:** {todo['content']}
 
 ## Rules (mandatory)
-1. Work only in **lic** on branch `{HTTPD_PR_BRANCH}` (isolated workspace tracks `origin/{HTTPD_PR_BRANCH}`).
-2. **Push before you stop:** commit, `git push -u origin {HTTPD_PR_BRANCH}`, open/update PR — do **not** leave work only on disk. Post-hook also pushes, but you must not rely on it alone.
-3. PR-only — do **not** merge to main yourself.
-4. Run `./scripts/httpd-plan-gates.sh` before finishing; fix failures.
-5. Write release notes (`docs/release-notes/`, `CHANGELOG.md`) per li-release-notes policy.
-6. After tier-5 httpd runtime changes, refresh HTTP bench matrix per `.cursor/rules/li-httpd-bench-matrix.mdc`.
-7. Close stale httpd PRs (#87, #84, #130) only with comment — do not merge wholesale.
+1. Work only in **lic** on branch `cursor/httpd-plan-loop-54aa` (or continue existing httpd PR branch).
+2. PR-only: commit, push, open/update PR — do **not** merge to main yourself.
+3. Run `./scripts/httpd-plan-gates.sh` before finishing; fix failures.
+4. Write release notes (`docs/release-notes/`, `CHANGELOG.md`) per li-release-notes policy.
+5. After tier-5 httpd runtime changes, refresh HTTP bench matrix per `.cursor/rules/li-httpd-bench-matrix.mdc`.
+6. Close stale httpd PRs (#87, #84, #130) only with comment — do not merge wholesale.
 
 ## Baseline record
 {baseline}

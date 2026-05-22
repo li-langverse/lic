@@ -2,6 +2,7 @@
 #include "li/emit.hpp"
 #include "li/mir.hpp"
 #include "li/mir_abi.hpp"
+#include "li/mir_runtime_link.hpp"
 #include "li/num_stable.hpp"
 #include "li/platform.hpp"
 
@@ -70,18 +71,30 @@ bool compile_module(const Module& module, const std::string& output_path,
   const std::filesystem::path rt_log_path = resolve_runtime_c("li_rt_log.c");
   const std::filesystem::path rt_net_path = resolve_runtime_c("li_rt_net.c");
 
+  MirModule rt_needs;
+  mir_collect_runtime_link_needs(mir, rt_needs);
+  mir_finalize_runtime_link_needs(rt_needs);
+  const bool link_runtime_full =
+      std::getenv("LI_LINK_RUNTIME_FULL") != nullptr && *std::getenv("LI_LINK_RUNTIME_FULL") != '0';
+
   std::ostringstream cmd;
   const char* cc_env = std::getenv("CC");
   const char* cc = (cc_env && *cc_env) ? cc_env : "clang";
   cmd << cc << " -Wno-override-module -x ir \"" << ll_path << "\" -x c \"" << rt_path.string() << "\"";
-  if (std::filesystem::exists(rt_httpd_path)) {
-    cmd << " -x c \"" << rt_httpd_path.string() << "\"";
+  if (link_runtime_full || rt_needs.needs_rt_httpd) {
+    if (std::filesystem::exists(rt_httpd_path)) {
+      cmd << " -x c \"" << rt_httpd_path.string() << "\"";
+    }
   }
-  if (std::filesystem::exists(rt_log_path)) {
-    cmd << " -x c \"" << rt_log_path.string() << "\"";
+  if (link_runtime_full || rt_needs.needs_rt_log) {
+    if (std::filesystem::exists(rt_log_path)) {
+      cmd << " -x c \"" << rt_log_path.string() << "\"";
+    }
   }
-  if (std::filesystem::exists(rt_net_path)) {
-    cmd << " -x c \"" << rt_net_path.string() << "\"";
+  if (link_runtime_full || rt_needs.needs_rt_net) {
+    if (std::filesystem::exists(rt_net_path)) {
+      cmd << " -x c \"" << rt_net_path.string() << "\"";
+    }
   }
   cmd << " -o \"" << output_path << "\"";
   if (opts.release) {

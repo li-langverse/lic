@@ -1,4 +1,5 @@
 #include "li/mir.hpp"
+#include "li/mir_runtime_link.hpp"
 #include "li/numeric_types.hpp"
 #include "li/prelude.hpp"
 
@@ -151,6 +152,7 @@ struct LowerCtx {
   const ProcDecl* proc = nullptr;
   std::vector<LoopLabels>* loop_stack = nullptr;
   const std::unordered_map<std::string, const TypeExpr*>* object_locals = nullptr;
+  std::unordered_map<std::string, double>* const_floats = nullptr;
 };
 std::string fresh_label(const std::string& prefix) {
   return prefix + std::to_string(temp_counter++);
@@ -1333,6 +1335,9 @@ std::string lower_expr_to(const Expr& e, const Module& module, std::vector<MirIn
       MirInsn ins;
       ins.op = MirOp::CallExtern;
       ins.callee = e.ident;
+      if (ctx.mir) {
+        mir_note_runtime_callee(e.ident, *ctx.mir);
+      }
       for (const auto& arg : e.args) {
         MirArg ma;
         if (arg->kind == Expr::Kind::StringLit) {
@@ -1675,6 +1680,9 @@ void lower_stmt(const Stmt& stmt, LowerCtx& ctx, bool returns_float, std::vector
           if (stmt.init->kind == Expr::Kind::FloatLit) {
             store.rhs_is_literal = true;
             store.float_value = stmt.init->float_value;
+            if (ctx.const_floats) {
+              (*ctx.const_floats)[stmt.var_name] = stmt.init->float_value;
+            }
           } else if (stmt.init->kind == Expr::Kind::Ident) {
             store.rhs_is_literal = false;
             store.rhs_ident = stmt.init->ident;
@@ -2085,9 +2093,11 @@ void lower_stmt(const Stmt& stmt, LowerCtx& ctx, bool returns_float, std::vector
       };
       std::string iter_name;
       std::int64_t trip = 0;
-      constexpr int kHornerUnroll = 16;
-      if (parse_i_lt_limit(*stmt.cond, iter_name, trip) && trip >= kHornerUnroll &&
-          (trip % kHornerUnroll) == 0 && stmt.while_body.size() == 2) {
+      constexpr int kHornerScalarSteps = 64;
+      constexpr int kHornerPow4Steps = 4;
+      constexpr int kHornerSuperSteps = kHornerScalarSteps / kHornerPow4Steps;
+      if (parse_i_lt_limit(*stmt.cond, iter_name, trip) && trip >= kHornerScalarSteps &&
+          (trip % kHornerScalarSteps) == 0 && stmt.while_body.size() == 2) {
         std::string acc_name;
         std::string factor;
         std::string step_factor;

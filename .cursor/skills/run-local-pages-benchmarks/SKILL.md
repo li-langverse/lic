@@ -39,7 +39,7 @@ Env:
 
 ```bash
 cd benchmarks
-LIC_ROOT=../lic ./scripts/run-full-benchmark-suite.sh   # full CSV (slow)
+LIC_ROOT=../lic ./scripts/run-full-benchmark-suite.sh   # tiers 0–4 (tier 5 ecosystem off by default)
 # or after lic CI produced CSV:
 LIC_ROOT=../lic ./scripts/ingest/ingest-lic.sh
 ./scripts/deploy-pages-local.sh --build

@@ -144,8 +144,39 @@ def validate_routes(routes: list[CanonicalRoute]) -> None:
                 )
 
 
+def validate_rate_limits_cfg(data: dict[str, Any]) -> None:
+    """Require limits.rate_limit_rps when any proxy: route exists (M1 agent gateway)."""
+    limits = data.get("limits") or {}
+    routes = data.get("routes")
+    has_proxy = isinstance(routes, dict) and any(
+        isinstance(a, str) and a.strip().startswith("proxy:") for a in routes.values()
+    )
+    if not has_proxy:
+        return
+    rps = limits.get("rate_limit_rps")
+    if rps is None:
+        raise ConfigError(
+            "limits.rate_limit_rps is required when routes include proxy: (M1 public/agent gate)"
+        )
+    try:
+        n = int(rps)
+    except (TypeError, ValueError) as e:
+        raise ConfigError("limits.rate_limit_rps must be a positive integer") from e
+    if n < 1 or n > 100_000:
+        raise ConfigError("limits.rate_limit_rps must be in [1, 100000]")
+    burst = limits.get("rate_limit_burst")
+    if burst is not None:
+        try:
+            b = int(burst)
+        except (TypeError, ValueError) as e:
+            raise ConfigError("limits.rate_limit_burst must be a positive integer") from e
+        if b < n:
+            raise ConfigError("limits.rate_limit_burst must be >= limits.rate_limit_rps")
+
+
 def load_httpd_config(path: Path) -> list[CanonicalRoute]:
     data = tomllib.loads(path.read_text(encoding="utf-8"))
+    validate_rate_limits_cfg(data)
     routes = desugar_config(data)
     validate_routes(routes)
     return routes

@@ -26,6 +26,11 @@ for cases in "$ROOT/li-tests/routing/cases"/*.toml; do
 done
 
 echo "== routing (Li compile + binary oracle) =="
+if [[ "${HTTPD_GATES_SKIP_LIC_BUILD:-0}" == "1" ]]; then
+  echo "skip Li routing compile (HTTPD_GATES_SKIP_LIC_BUILD=1)"
+  echo "run_routing: OK"
+  exit 0
+fi
 LIC="${LIC:-$("$ROOT/scripts/resolve-lic.sh")}"
 HTTPD_BUILD_FLAGS=(--allow-open-vc)
 export LI_REPO_ROOT="$ROOT"

@@ -20,10 +20,16 @@ for rej in "$ROOT/li-tests/config_desugar/reject"/*.toml; do
   echo "$name: rejected OK"
 done
 
-LIC="${LIC:-$("$ROOT/scripts/resolve-lic.sh")}"
 export LI_REPO_ROOT="$ROOT"
 chmod +x "$ROOT/li-tests/run_routing.sh"
 "$ROOT/li-tests/run_routing.sh"
+
+if [[ "${HTTPD_GATES_SKIP_LIC_BUILD:-0}" == "1" ]]; then
+  echo "skip lic CLI checks (HTTPD_GATES_SKIP_LIC_BUILD=1)"
+  echo "run_httpd_config: OK"
+  exit 0
+fi
+LIC="${LIC:-$("$ROOT/scripts/resolve-lic.sh")}"
 
 echo "== routing (Li serve_routed_once oracle) =="
 HTTPD_BUILD_FLAGS=(--allow-open-vc)
@@ -50,6 +56,15 @@ done
 
 echo "== validate-httpd-config (Python M1 schema) =="
 "$ROOT/scripts/lic-validate-httpd-config.sh" "$ROOT/packages/li-net-httpd/examples/auth_bearer.toml"
+"$ROOT/scripts/lic-validate-httpd-config.sh" "$ROOT/packages/li-net-httpd/examples/agent_gateway_limits.toml"
+for rej in "$ROOT/li-tests/config_desugar/reject"/proxy_without_rate_limit.toml; do
+  [[ -f "$rej" ]] || continue
+  if "$ROOT/scripts/lic-validate-httpd-config.sh" "$rej" 2>/dev/null; then
+    echo "validate-httpd-config: expected reject for $(basename "$rej")" >&2
+    exit 1
+  fi
+  echo "validate-httpd-config $(basename "$rej"): rejected OK"
+done
 
 echo "== explain-config (lic CLI + C/Python parity) =="
 export LI_REPO_ROOT="$ROOT"

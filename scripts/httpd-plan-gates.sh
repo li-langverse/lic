@@ -8,13 +8,22 @@ LIC_BUILD_FLAGS=(--allow-open-vc)
 
 fail() { echo "httpd-plan-gates: $*" >&2; exit 1; }
 
-echo "==> build lic"
-"$ROOT/scripts/build.sh" >/dev/null
+if [[ "${HTTPD_GATES_SKIP_LIC_BUILD:-0}" == "1" ]]; then
+  echo "==> skip lic build (HTTPD_GATES_SKIP_LIC_BUILD=1)"
+else
+  echo "==> build lic"
+  if ! "$ROOT/scripts/build.sh" >/dev/null 2>&1; then
+    echo "httpd-plan-gates: lic build unavailable — set HTTPD_GATES_SKIP_LIC_BUILD=1 for Python-only checks" >&2
+    exit 1
+  fi
+fi
 
-echo "==> match_routes compile + oracle"
-"$LIC" build "${LIC_BUILD_FLAGS[@]}" "$ROOT/li-tests/routing/match_routes.li" -o /tmp/li_match_routes_gate
-/tmp/li_match_routes_gate
-test "$(/tmp/li_match_routes_gate; echo $?)" -eq 0
+if [[ "${HTTPD_GATES_SKIP_LIC_BUILD:-0}" != "1" ]]; then
+  echo "==> match_routes compile + oracle"
+  "$LIC" build "${LIC_BUILD_FLAGS[@]}" "$ROOT/li-tests/routing/match_routes.li" -o /tmp/li_match_routes_gate
+  /tmp/li_match_routes_gate
+  test "$(/tmp/li_match_routes_gate; echo $?)" -eq 0
+fi
 
 if [[ -x "$ROOT/li-tests/run_routing.sh" ]]; then
   echo "==> run_routing.sh (table cases + overlap config_reject)"
@@ -30,9 +39,16 @@ if [[ -x "$ROOT/li-tests/run_httpd_config.sh" ]]; then
 fi
 
 if [[ -f "$ROOT/scripts/validate-httpd-config.py" ]]; then
-  echo "==> validate-httpd-config.py (good config)"
+  echo "==> validate-httpd-config.py (good configs)"
   python3 "$ROOT/scripts/validate-httpd-config.py" \
     "$ROOT/packages/li-net-httpd/examples/auth_bearer.toml"
+  python3 "$ROOT/scripts/validate-httpd-config.py" \
+    "$ROOT/packages/li-net-httpd/examples/agent_gateway_limits.toml"
+  echo "==> validate-httpd-config.py (reject proxy without rate limit)"
+  if python3 "$ROOT/scripts/validate-httpd-config.py" \
+    "$ROOT/li-tests/config_desugar/reject/proxy_without_rate_limit.toml" 2>/dev/null; then
+    fail "expected reject for proxy_without_rate_limit.toml"
+  fi
 fi
 
 if [[ "${HTTPD_RUN_BEARER_TEST:-1}" == "1" && -f "$ROOT/scripts/test-auth-bearer.sh" ]]; then

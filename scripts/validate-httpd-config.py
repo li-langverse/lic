@@ -19,6 +19,9 @@ except ModuleNotFoundError:
 
 FORBIDDEN_SUBSTRINGS = ("..", "include ", "load_module", "proxy_pass http://")
 
+RATE_LIMIT_RPS_MAX = 100_000
+RATE_LIMIT_RPS_MIN = 1
+
 
 def load(path: Path) -> dict:
     return tomllib.loads(path.read_text(encoding="utf-8"))
@@ -42,6 +45,46 @@ def collect_upstreams(cfg: dict) -> dict[str, list[str]]:
             if isinstance(peers, list):
                 pools[pool_id] = [str(p) for p in peers]
     return pools
+
+
+def parse_positive_int(val: object, field: str) -> tuple[int | None, str | None]:
+    if val is None:
+        return None, None
+    try:
+        n = int(val)
+    except (TypeError, ValueError):
+        return None, f"{field} must be a positive integer"
+    if n < RATE_LIMIT_RPS_MIN or n > RATE_LIMIT_RPS_MAX:
+        return None, f"{field} must be in [{RATE_LIMIT_RPS_MIN}, {RATE_LIMIT_RPS_MAX}]"
+    return n, None
+
+
+def validate_rate_limits(cfg: dict, routes: object) -> list[str]:
+    """M1: proxy/public routes require global token-bucket limits (runtime keys)."""
+    errs: list[str] = []
+    limits = cfg.get("limits") or {}
+    rps, err = parse_positive_int(limits.get("rate_limit_rps"), "limits.rate_limit_rps")
+    if err:
+        errs.append(err)
+    burst, err = parse_positive_int(limits.get("rate_limit_burst"), "limits.rate_limit_burst")
+    if err:
+        errs.append(err)
+
+    has_proxy = False
+    if isinstance(routes, dict):
+        for _key, action in routes.items():
+            if isinstance(action, str) and action.strip().startswith("proxy:"):
+                has_proxy = True
+                break
+
+    if has_proxy:
+        if rps is None:
+            errs.append(
+                "limits.rate_limit_rps is required when routes include proxy: (M1 public/agent gate)"
+            )
+        elif burst is not None and burst < rps:
+            errs.append("limits.rate_limit_burst must be >= limits.rate_limit_rps")
+    return errs
 
 
 def validate_peer_url(url: str) -> str | None:
@@ -75,6 +118,7 @@ def validate(cfg: dict) -> list[str]:
         errs.append("limits.max_header is required")
 
     routes = cfg.get("routes")
+    errs.extend(validate_rate_limits(cfg, routes))
     if routes is None:
         errs.append("routes table is required (may be empty in tests)")
 

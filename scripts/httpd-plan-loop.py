@@ -1,8 +1,9 @@
 #!/usr/bin/env python3
 """Autonomous loop: drive li-httpd master plan until todos complete or max iterations.
 
-Uses li-cursor-agents + Cursor SDK (local) when CURSOR_API_KEY is set; otherwise
-prints the next instruction for a human/Cloud Agent session.
+Uses li-cursor-agents + Cursor SDK (local) when CURSOR_API_KEY is set. Invokes a
+**reusable** registry agent (default ``code_implementer``) with the todo slice as
+``--goal`` / ``LI_AGENT_EXTRA_INSTRUCTION`` — not a dedicated httpd agent id.
 
 Usage:
   export CURSOR_API_KEY=cursor_...
@@ -23,6 +24,7 @@ import os
 import re
 import subprocess
 import sys
+import threading
 from datetime import datetime, timezone
 from pathlib import Path
 
@@ -72,6 +74,11 @@ def pick_next(todos: list[dict], state: dict) -> dict | None:
     ]
     if not open_todos:
         return None
+    # Prefer M1 httpd work over language-wide blockers (w0/w1) unless opted in.
+    if os.environ.get("LI_HTTPD_PLAN_INCLUDE_BLOCKERS", "").strip() not in ("1", "true", "yes"):
+        m1_open = [t for t in open_todos if t["id"].startswith("m1")]
+        if m1_open:
+            open_todos = m1_open
     open_todos.sort(key=order_key)
     return open_todos[0]
 
@@ -105,29 +112,69 @@ def agents_root() -> Path | None:
     return None
 
 
-def probe_cursor_key() -> tuple[bool, str]:
-    key = (os.environ.get("CURSOR_API_KEY") or os.environ.get("CURSOR_SDK_KEY") or "").strip()
-    sdk = (os.environ.get("CURSOR_SDK") or "").strip()
-    if sdk.startswith("http"):
-        key = key or ""
-    if not key:
-        return False, "CURSOR_API_KEY not set"
-    try:
-        import base64
-        import urllib.error
-        import urllib.request
+def _tee_stream(pipe, logf, out) -> None:
+    """Copy subprocess line-by-line to terminal and log (live, unbuffered)."""
+    for line in iter(pipe.readline, ""):
+        out.write(line)
+        out.flush()
+        logf.write(line)
+        logf.flush()
 
-        auth = base64.b64encode(f"{key}:".encode()).decode()
-        req = urllib.request.Request(
-            "https://api.cursor.com/v1/me",
-            headers={"Authorization": f"Basic {auth}", "Accept": "application/json"},
+
+def agent_timeout_sec() -> int | None:
+    raw = os.environ.get("LI_HTTPD_PLAN_AGENT_TIMEOUT_SEC", "2700").strip()
+    if raw in ("0", "none", "off"):
+        return None
+    try:
+        return max(60, int(raw))
+    except ValueError:
+        return 2700
+
+
+def run_subprocess_streaming(cmd: list[str], cwd: Path, env: dict[str, str], log_path: Path) -> int:
+    """Run child with stdout/stderr streamed to this terminal and log_path."""
+    timeout = agent_timeout_sec()
+    with log_path.open("w", encoding="utf-8") as logf:
+        logf.write(f"# cmd: {' '.join(cmd)}\n# cwd: {cwd}\n\n")
+        logf.flush()
+        hint = f", timeout={timeout}s" if timeout else ""
+        print(f"==> agent subprocess (live; also {log_path}{hint})", flush=True)
+        proc = subprocess.Popen(
+            cmd,
+            cwd=str(cwd),
+            env=env,
+            stdout=subprocess.PIPE,
+            stderr=subprocess.PIPE,
+            text=True,
+            bufsize=1,
         )
-        with urllib.request.urlopen(req, timeout=20) as resp:
-            return resp.status == 200, f"HTTP {resp.status}"
-    except urllib.error.HTTPError as e:
-        return False, f"HTTP {e.code} (restart Cloud Agent VM after updating Secrets)"
-    except OSError as e:
-        return False, str(e)
+        threads = [
+            threading.Thread(
+                target=_tee_stream,
+                args=(proc.stdout, logf, sys.stdout),
+                daemon=True,
+            ),
+            threading.Thread(
+                target=_tee_stream,
+                args=(proc.stderr, logf, sys.stderr),
+                daemon=True,
+            ),
+        ]
+        for t in threads:
+            t.start()
+        try:
+            rc = proc.wait(timeout=timeout)
+        except subprocess.TimeoutExpired:
+            proc.kill()
+            rc = proc.wait()
+            msg = f"agent timed out after {timeout}s — killed\n"
+            sys.stderr.write(msg)
+            logf.write(msg)
+            return 124
+        finally:
+            for t in threads:
+                t.join(timeout=2)
+        return rc
 
 
 def run_cursor_agent(todo: dict, dry_run: bool) -> tuple[int, str]:
@@ -138,17 +185,6 @@ def run_cursor_agent(todo: dict, dry_run: bool) -> tuple[int, str]:
     instruction = build_instruction(todo)
     if dry_run:
         return 0, instruction
-
-    reload_sh = ROOT / "scripts/reload-cursor-env.sh"
-    if reload_sh.is_file():
-        subprocess.run(["bash", str(reload_sh)], cwd=ROOT, check=False)
-
-    ok, detail = probe_cursor_key()
-    if not ok:
-        return 2, (
-            f"Cursor API key probe failed: {detail}. "
-            "Unset CURSOR_SDK if it is a dashboard URL; use Integrations API key (crsr_…)."
-        )
 
     if not os.environ.get("CURSOR_API_KEY") and not os.environ.get("CURSOR_SDK_KEY"):
         return 2, "CURSOR_API_KEY not set — export key or use Cloud Agent with pasted instruction"
@@ -167,27 +203,40 @@ def run_cursor_agent(todo: dict, dry_run: bool) -> tuple[int, str]:
                 benchmarks = str(c)
                 break
 
+    agent = os.environ.get("LI_HTTPD_PLAN_AGENT", "code_implementer")
+    goal_path = STATE_DIR / f"goal-{datetime.now(timezone.utc).strftime('%Y%m%d-%H%M%S')}.md"
+    goal_path.write_text(instruction, encoding="utf-8")
+
     env = {
         **os.environ,
+        "PYTHONUNBUFFERED": "1",
+        "LI_SDK_TERMINAL_STREAM": os.environ.get("LI_SDK_TERMINAL_STREAM", "1"),
+        "LI_AGENT_MINIMAL_PROMPT": "1",
+        "LI_HTTPD_PLAN_LOOP": "1",
         "LI_REPO_WORKFLOW_REPO": "lic",
         "LIC_ROOT": str(ROOT),
         "LI_AGENT_EXTRA_INSTRUCTION": instruction,
-        # Cloud VMs often lack Supabase; disk store is enough for plan loop.
-        "LI_CONTROL_PLANE_STORE": os.environ.get("LI_CONTROL_PLANE_STORE", "disk"),
+        "LI_AGENT_GOAL": instruction,
     }
-    cmd = ["node", str(dist), "--agent", "httpd_implementer", "--cwd", str(ROOT)]
+    cmd = [
+        "node",
+        str(dist),
+        "--agent",
+        agent,
+        "--cwd",
+        str(ROOT),
+        "--workflow-repo",
+        "lic",
+        "--goal-file",
+        str(goal_path),
+    ]
     if benchmarks:
         cmd.extend(["--benchmarks", benchmarks])
 
     STATE_DIR.mkdir(parents=True, exist_ok=True)
     log_path = STATE_DIR / f"iter-{datetime.now(timezone.utc).strftime('%Y%m%d-%H%M%S')}.log"
-    proc = subprocess.run(cmd, cwd=root, env=env, capture_output=True, text=True)
-    log_path.write_text(
-        (proc.stdout or "") + "\n--- stderr ---\n" + (proc.stderr or ""),
-        encoding="utf-8",
-    )
-    tail = (proc.stdout or "")[-4000:] + (proc.stderr or "")[-2000:]
-    return proc.returncode, f"log={log_path}\n{tail}"
+    rc = run_subprocess_streaming(cmd, root, env, log_path)
+    return rc, f"log={log_path} (streamed above)"
 
 
 def build_instruction(todo: dict) -> str:
@@ -281,7 +330,7 @@ def main() -> int:
             return 0 if ok else 1
 
         code, msg = run_cursor_agent(todo, args.dry_run)
-        print(msg[-3000:] if len(msg) > 3000 else msg)
+        print(msg, flush=True)
         if args.dry_run:
             return 0
 
@@ -296,14 +345,17 @@ def main() -> int:
         )
         save_state(state)
 
-    if code != 0:
-        print(
-            f"agent exit {code} — stopping loop. "
-            "If log shows AuthenticationError 401, set a valid user API key from "
-            "https://cursor.com/dashboard/cloud-agents (not a GitHub PAT).",
-            file=sys.stderr,
-        )
-        return code
+        if code != 0:
+            print(f"agent exit {code} — stopping loop (fix and re-run)", file=sys.stderr)
+            return code
+
+        tid = todo["id"]
+        if tid not in state.setdefault("completed_ids", []):
+            state["completed_ids"].append(tid)
+            save_state(state)
+            print(f"todo {tid}: agent exit 0 — advancing loop (marked done in state.json)", flush=True)
+        else:
+            print(f"todo {tid}: agent exit 0 (already marked done)", flush=True)
 
         iteration += 1
         todos = load_plan_todos()

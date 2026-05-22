@@ -1,0 +1,16 @@
+{
+  "completed_ids": [
+    "m1-bearer-auth",
+    "m1-routing-tests",
+    "m1-toml-desugar"
+  ],
+  "iterations": 4,
+  "history": [
+    {
+      "at": "2026-05-22T10:13:38.964450+00:00",
+      "todo_id": "m1-bearer-auth",
+      "agent_exit": 0,
+      "gates_ok": true
+    }
+  ]
+}

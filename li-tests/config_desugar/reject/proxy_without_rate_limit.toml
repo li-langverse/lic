@@ -1,18 +1,14 @@
+# Proxy route without limits.rate_limit_rps — must reject (M1 agent gateway policy)
 [server]
 listen = ":443"
-host = "api.example.com"
 document_root = "./public"
-tls = "lets_encrypt"
 
 [limits]
 max_body = "1m"
 max_header = "16k"
-rate_limit_rps = 120
-rate_limit_burst = 240
 
 [upstreams.api]
 peers = ["http://127.0.0.1:3000"]
 
 [routes]
-"GET /health" = "static:healthcheck"
 "POST /v1/*" = "proxy:api"

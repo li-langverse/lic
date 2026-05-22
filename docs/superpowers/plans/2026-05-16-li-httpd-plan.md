@@ -19,7 +19,7 @@ todos:
     status: pending
   - id: exploit-harness
     content: Exploit/bench TOML vs nginx baseline + li-httpd; li may be stricter than nginx on [expect]
-    status: pending
+    status: completed
   - id: rng-exploit-suite
     content: Tier F RNG exploits (BadRng/SimRng inject via bench.toml); PR gate when touching li-rng/li-tls
     status: pending

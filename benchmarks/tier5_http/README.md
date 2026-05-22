@@ -34,7 +34,18 @@ TIER5_HTTP_STUB=1 ./benchmarks/harness/bench_http.py --profile ci
 | `../harness/verify_http.py` | `[verify]` gate |
 | `params_schema.toml` | Key reference |
 
-Exploit manifests: `suite_exploits.toml`, `exploits/*.toml` (wired by `exploit_http.py` in a later todo).
+Exploit manifests: `suite_exploits.toml`, `exploits/*.toml`, `nginx_mitigations.toml`.
+
+```bash
+# CI / plan gates (stub — no nginx required)
+TIER5_EXPLOIT_STUB=1 ./benchmarks/harness/exploit_http.py --profile pr
+
+# Merge/validate only
+./benchmarks/harness/exploit_http.py --dry-run
+
+# Nginx baseline vs li-httpd (needs nginx + build/li-httpd)
+./benchmarks/harness/exploit_http.py duplicate_content_length --compare-nginx
+```
 
 ## Gates
 

@@ -35,3 +35,5 @@ Same URL set, body sizes, worker model, and TLS labels across `lang` rows. Docum
 Same columns as `benchmarks/harness/bench.py`: `benchmark, lang, variant, threads, metric, value, unit, git_sha, cpu_model, flags`.
 
 Optional `benchmarks/results/verify_http.csv` from `verify_http.py`.
+
+Exploit harness: `exploit_http.py` + `suite_exploits.toml` — see [security-http-exploits.md](security-http-exploits.md).

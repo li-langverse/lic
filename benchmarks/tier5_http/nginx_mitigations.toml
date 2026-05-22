@@ -1,0 +1,12 @@
+# Machine-readable nginx audit checklist (subset — human review fills notes).
+
+[[mitigation]]
+id = "duplicate_content_length"
+cve = ["CVE-2019-20372"]
+nginx_version_fixed = "1.17.7"
+src = "src/http/ngx_http_parse.c"
+symbol = "ngx_http_parse_header_line"
+notes = "reject duplicate Content-Length"
+exploit = "exploits/duplicate_content_length.toml"
+li_invariant = "single parser rejects duplicate Content-Length"
+li_done = true

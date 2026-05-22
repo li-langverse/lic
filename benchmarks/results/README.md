@@ -21,6 +21,7 @@ Tracked ecosystems live in `benchmarks/competitive/registry.toml` (`cpp`, `rust`
 ## Policy
 
 - **Tier 0 (stability):** strict invariants must pass for all backends.
+- **Result verify (tier 1/2):** before timings (or standalone), each benchmark compares **native `--verify`** to **Li** (`LI_PRINT_SINK_F64` or `li --verify`). Mismatch fails the run. Optional timing anti-DCE: `BENCH_VERIFY_TIMING=1`.
 - **Tier 2 (physics):** shared-kernel target **≤ 1.2×** C++ on reference hardware (advisory MSD rows until harness fixed).
 - **Tier 1 (micro):** pure-Li rows tracked separately; not gated at parity until **2i/7e** complete.
 
@@ -28,5 +29,6 @@ Tracked ecosystems live in `benchmarks/competitive/registry.toml` (`cpp`, `rust`
 
 ```bash
 python3 benchmarks/harness/bench.py --tier 0
+./scripts/bench-verify-results.sh 1    # results only, tier 1
 python3 benchmarks/harness/bench.py --tier 12 --runs 5
 ```

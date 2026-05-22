@@ -22,3 +22,5 @@ python3 scripts/local-ci-sweep.py --repo lic --pr N
 Merge gate in benchmarks reads `data/latest/local-ci-results.json`. Do not merge without GHA green **or** a fresh local-ci pass.
 
 See also `../benchmarks/.cursor/rules/li-local-actions-quota.mdc` when both repos are checked out.
+
+**Skill:** `run-local-ci-gha-quota` (agent-kit / `li-local-ci`) — full commands for `li-local-ci run-pr`, sweep, and merge gate.

@@ -14,7 +14,7 @@
 
 **Honest status (docs):** [Provability gaps (today)](../verification/provability-gaps.md) — living register of what is **not** proved/wired yet (Lean gate, heuristic parallel policy, decorator parse-only, …). Update that file when closing a phase gate.
 
-**Architecture:** C++ compiler → MIR → LLVM 18 (sole backend). Bootstrap to self-host later. No VM, no JIT for user code, no runtime decorator dispatch.
+**Architecture:** C++ compiler → MIR → LLVM 22 (sole backend). Bootstrap to self-host later. No VM, no JIT for user code, no runtime decorator dispatch.
 
 **GitHub org ([`li-langverse`](https://github.com/li-langverse)) — three repos (locked):**
 
@@ -201,6 +201,7 @@ When **`lic`**, **`lit`**, **`lip`**, or any **`li-std-*` / `li-*`** package rel
 | **8c** | **Signatures + proof digests** | same § 8c | **`lip`**: ed25519; `proof_digest` in `li.lock` |
 | **8d** | **Registry + `lip publish`** | same § 8d | **`lip`**: hybrid git + registry; CI runs **`lit`** + `lic build` |
 | **8-sync** | **Upstream dependency notifications** | [governance § Cross-repo notifications](2026-05-16-li-ecosystem-governance.md#cross-repo-dependency-notifications) | Dependabot + `lic` release dispatch; every official repo |
+| **8p** | **Parallel compile + CI throughput** | [§ 8p below](#phase-8p--parallel-compile--ci-throughput) | `li-tests` / workspace / `lic build` use host cores; local-ci ≲½ wall time on 8+ cores |
 | **Doc** | **Documentation + provability honesty** | [§ Doc below](#documentation--provability-honesty-cross-cutting) | Gap register current; handbook matches `lic`; no overclaim |
 
 **Old 2-week schedule is void.** Type parity alone is ~6 months part-time.
@@ -263,6 +264,49 @@ Li maximizes **reliability** by eliminating **user-visible runtime failure modes
 **Implication for 7d / 7e / 2i:** decorators and math are **static sugar** only; performance and correctness are fixed at compile time.
 
 The table above describes the **target**. Where **`lic` has not established mathematical provability yet**, see [Provability gaps](../verification/provability-gaps.md) and [compiler task → gap map](#compiler-tasks-vs-proof-gaps) below.
+
+---
+
+## Phase 8p — Parallel compile & CI throughput
+
+**Problem:** Full `li-tests` + `scripts/local-ci.sh` often take **5–15+ minutes** on a devbox because almost every gate runs **`lic build` sequentially**, even when the machine has many idle cores. Only the **C++ compiler** build (`./scripts/build.sh` → Ninja `-j`) uses parallelism today.
+
+**Goal:** Use **all host cores** for orchestration and compilation where proofs and determinism allow — so agents and humans do not wait “ages” on every green gate.
+
+**Not the same as runtime `parallel for`:** Phase **8p** speeds up **building and verifying** Li programs. User-code multi-core execution stays in phases **7** / **7d** / **7e** (`--threads=N`, OpenMP).
+
+### Layers (what can run in parallel)
+
+| Layer | Today | 8p target |
+|-------|--------|-----------|
+| **C++ `lic` binary** (CMake/Ninja) | **Done** — `LI_BUILD_JOBS` / `nproc` in `scripts/build.sh` | Keep; document in getting-started |
+| **`li-tests/run_all.sh`** | One `lic build` at a time (~200 invocations) | **`LI_TEST_JOBS`** (default: host cores); pool over manifest rows |
+| **`lic-workspace-build.sh`** | Sequential workspace members | Parallel member builds when isolated |
+| **`benchmarks/harness/bench.py` tier 0** | Runs full `run_all` then `verify.py` | Reuse parallel runner; avoid duplicate full sweeps where possible |
+| **Single `lic build file.li`** | Single-threaded frontend pipeline | **`lic build --jobs=N`** / `LI_COMPILE_JOBS` — wire reserved flag in `compiler/lic/main.cpp` |
+| **Lean / AutoVC** | Shared `build/generated/AutoVC.lean` races parallel jobs | Per-job `LI_BUILD_DIR` or VC-hash cache; `lake -j` for package builds |
+
+### Sub-phases & exit gates
+
+| Sub | Task | Exit gate |
+|-----|------|-----------|
+| **8p-a** | **Parallel test orchestration** — `run_all.sh` accepts `-j N` / `LI_TEST_JOBS`; each worker gets isolated `build/` subtree (or temp dir) so AutoVC/Lean do not stomp | **196/196** manifest green with `-j8` on Linux; `LI_TEST_JOBS=1` reproduces current sequential logs |
+| **8p-b** | **Parallel workspace + package smoke** — `lic-workspace-build.sh`, `lit` manifest runner (when split) use same job pool | Workspace build wall time ∝ `members / cores` (within ~1.3× ideal) |
+| **8p-c** | **Compiler frontend jobs** — implement `--jobs` / `LI_COMPILE_JOBS` for independent MIR/LLVM units inside one TU where safe; document vs LLVM’s own threading | Measurable speedup on large `packages/li-net-httpd/src/lib.li` smoke |
+| **8p-d** | **CI policy** — `scripts/ci.sh` exports sensible defaults; GHA `ubuntu-latest` sets `LI_TEST_JOBS`; skill `run-local-ci-gha-quota` mentions `-j`; optional wall-time budget in baseline | `local-ci.sh` logged “wall_s” in ecosystem baseline; target **≤50%** vs sequential on 8-core devbox |
+
+### Safety & determinism rules
+
+1. **Default parallelism = host cores**; **`LI_TEST_JOBS=1`** / **`LI_BUILD_JOBS=1`** for bisect and golden logs.
+2. **No shared `build/generated/AutoVC.lean`** across concurrent workers without isolation — race caused flaky Lean failures in parallel experiments.
+3. **Proof surface unchanged** — parallel builds must not skip Lean or open-VC policy; only schedule work faster.
+4. **GHA quota:** parallel local CI is the primary win when Actions minutes are exhausted; same gates, shorter wall clock.
+
+### Agent priority
+
+Implement **8p-a** before **8p-c** (largest CI win for least compiler risk). Track in [provability-gaps](../verification/provability-gaps.md) only if parallel scheduling changes what “green” means.
+
+**Learned from:** Cargo `build -j`, Ninja, Bazel remote/local pools — adopt **job pool + hermetic per-task `target/`**, not distributed compilation in v1.
 
 ---
 
@@ -334,7 +378,7 @@ Track in phase **Doc** until each is checked:
 |----------|--------|----------|
 | Execution model | **AOT compile** + proved native code | VM, JIT user code, runtime eval |
 | Compiler host | **C++** | Zig (rejected), Rust v0 (slow link) |
-| Codegen | **LLVM 18 only** | Cranelift, interpreted fallback |
+| Codegen | **LLVM 22 only** | Cranelift, interpreted fallback |
 | Type baseline | **Python 3.14** (static only) | `Any`, gradual typing, runtime `isinstance` |
 | Syntax | **Nim-like core** + **mathematical surface** (`def`, `for`, infix `*`, matrix `@`, reductions) | User-facing `simd(...)` / `__li_simd_*`; Java `class` |
 | License | **MIT OR Apache-2.0** | Proprietary |
@@ -362,6 +406,7 @@ Track in phase **Doc** until each is checked:
 | `.cursor/plans/li_execution_decorators_7c6e3b42.plan.md` | Phase **7d** — `@` decorators on `def`/`for`/`while`; reserved stdlib names; `decorator_exploits` suite |
 | [2026-05-16-li-math-linalg-surface.md](2026-05-16-li-math-linalg-surface.md) | Phase **2i** + **7e** — math notation in source; compiler lowers to SIMD/OpenMP; Tier 1 cross-lang benches |
 | [provability-gaps.md](../verification/provability-gaps.md) | **Doc-a** — living **G-*** register; update on every proof-surface PR |
+| [2026-05-22-parallel-compile-ci.md](2026-05-22-parallel-compile-ci.md) | Phase **8p** — parallel `li-tests`, workspace builds, `--jobs` frontend |
 
 **2g / 2h / 2i:** After **2d**, run **2g** + **2h** in parallel; then **2i** (linalg surface). User-facing functions are **`def` only**; numerics read like **math** (`C += A @ B`, `y[i] = alpha * x[i] + y[i]`), not `simd(...)`. Finish **2g–2i** before widening **2e** method VCs. `simd[T,N]` / `__li_simd_*` only in compiler appendix.
 
@@ -403,6 +448,7 @@ Track in phase **Doc** until each is checked:
 - [x] Phase 8c — ed25519 + `proof_digest` in lock — **v1:** lock fields + optional `publisher.key` signing
 - [x] Phase 8d — Registry + `lip publish` — **v1:** local `registry/index.json` + publish gate (`lit` + `lic`)
 - [x] Phase 8-sync — cross-repo workflows; optional PAT scope fix for `repository_dispatch`
+- [ ] Phase 8p — Parallel compile + CI throughput — **partial:** Ninja `-j` for C++ only; `lic --jobs` reserved not wired; `run_all.sh` / workspace sequential ([§ 8p](#phase-8p--parallel-compile--ci-throughput))
 - [x] Phase Doc-a — Gap register current + site links ([provability-gaps](../verification/provability-gaps.md))
 - [x] Phase Doc-b — Handbook stubs (decorators, linear-algebra); audit partial
 - [x] Phase Doc-c — Phase 02 plan links **G-*** IDs (expand to 03/07 as those land)
@@ -441,6 +487,7 @@ Runnable on `dev` after `./scripts/build.sh`:
 | **H** | — | M1 ship gate (exploits A+B, li-log, full Lean on server); M1.5 SSE/TLS |
 | **8b–8d v2** | — | Remote registry, full trust store |
 | **Vision-LLM** | — | Agent JSON diagnostics completion |
+| **8p** | — | Parallel `li-tests` / workspace / `lic --jobs`; CI wall-time SLO |
 
 **Open G-* register:** every row in [provability-gaps.md](../verification/provability-gaps.md#still-open-report-every-session) — **none Done**; **Partial** is the best current status.
 

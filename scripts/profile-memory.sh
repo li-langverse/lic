@@ -35,9 +35,9 @@ done
 
 detect_llvm_dir() {
   if [[ -n "${LLVM_DIR:-}" && -d "$LLVM_DIR" ]]; then return 0; fi
-  for d in /opt/homebrew/opt/llvm@18/lib/cmake/llvm \
-           /usr/local/opt/llvm@18/lib/cmake/llvm \
-           /usr/lib/llvm-18/lib/cmake/llvm; do
+  for d in /opt/homebrew/opt/llvm@22/lib/cmake/llvm \
+           /usr/local/opt/llvm@22/lib/cmake/llvm \
+           /usr/lib/llvm-22/lib/cmake/llvm; do
     if [[ -d "$d" ]]; then export LLVM_DIR="$d"; return 0; fi
   done
   echo "profile-memory: set LLVM_DIR" >&2

@@ -31,20 +31,30 @@ run_docker_ci() {
   local stage="/tmp/li-local-ci-$$"
   # shellcheck disable=SC2064
   trap "rm -rf '$stage'" EXIT
-  rsync -a \
-    --exclude build \
-    --exclude .git \
-    --exclude .venv-plot \
-    --exclude benchmarks/results \
-    "$ROOT/" "$stage/"
+  if command -v rsync >/dev/null 2>&1; then
+    rsync -a \
+      --exclude build \
+      --exclude .git \
+      --exclude .venv-plot \
+      --exclude benchmarks/results \
+      "$ROOT/" "$stage/"
+  else
+    mkdir -p "$stage"
+    cp -a "$ROOT/." "$stage/"
+    rm -rf "$stage/build" "$stage/.git" "$stage/.venv-plot" "$stage/benchmarks/results"
+  fi
   docker run --rm -v "$stage:/src" -w /src ubuntu:24.04 bash -lc '
     set -euo pipefail
     export DEBIAN_FRONTEND=noninteractive
     apt-get update -qq
-    apt-get install -y -qq cmake ninja-build clang-18 llvm-18-dev zlib1g-dev libzstd-dev python3 rsync
-    export LLVM_DIR=/usr/lib/llvm-18/lib/cmake/llvm
-    export CC=clang-18
-    export CXX=clang++-18
+    apt-get install -y -qq cmake ninja-build wget gnupg zlib1g-dev libzstd-dev python3 rsync
+    wget -qO /tmp/llvm.sh https://apt.llvm.org/llvm.sh
+    chmod +x /tmp/llvm.sh
+    /tmp/llvm.sh 22
+    apt-get install -y -qq clang-22 llvm-22-dev lld-22
+    export LLVM_DIR=/usr/lib/llvm-22/lib/cmake/llvm
+    export CC=clang-22
+    export CXX=clang++-22
     chmod +x scripts/ci.sh scripts/build.sh scripts/local-ci.sh
     ./scripts/ci.sh
   '
@@ -55,9 +65,9 @@ detect_llvm_dir() {
     return 0
   fi
   local candidates=(
-    /opt/homebrew/opt/llvm@18/lib/cmake/llvm
-    /usr/local/opt/llvm@18/lib/cmake/llvm
-    /usr/lib/llvm-18/lib/cmake/llvm
+    /opt/homebrew/opt/llvm@22/lib/cmake/llvm
+    /usr/local/opt/llvm@22/lib/cmake/llvm
+    /usr/lib/llvm-22/lib/cmake/llvm
   )
   for d in "${candidates[@]}"; do
     if [[ -d "$d" ]]; then
@@ -65,21 +75,21 @@ detect_llvm_dir() {
       return 0
     fi
   done
-  echo "local-ci: set LLVM_DIR to LLVM 18 CMake package" >&2
-  echo "  macOS: export LLVM_DIR=\$(brew --prefix llvm@18)/lib/cmake/llvm" >&2
-  echo "  Ubuntu: export LLVM_DIR=/usr/lib/llvm-18/lib/cmake/llvm" >&2
+  echo "local-ci: set LLVM_DIR to LLVM 22 CMake package" >&2
+  echo "  macOS: export LLVM_DIR=\$(brew --prefix llvm@22)/lib/cmake/llvm" >&2
+  echo "  Ubuntu: export LLVM_DIR=/usr/lib/llvm-22/lib/cmake/llvm" >&2
   return 1
 }
 
 detect_compilers() {
   if [[ -z "${CC:-}" ]]; then
     if [[ "$(uname -s)" == "Darwin" ]]; then
-      # Homebrew llvm@18 clang++ mixes libc++ with Xcode SDK headers badly.
+      # Homebrew llvm@22 clang++ mixes libc++ with Xcode SDK headers badly.
       export CC=clang
       export CXX=clang++
-    elif command -v clang-18 >/dev/null 2>&1; then
-      export CC=clang-18
-      export CXX=clang++-18
+    elif command -v clang-22 >/dev/null 2>&1; then
+      export CC=clang-22
+      export CXX=clang++-22
     else
       export CC=clang
       export CXX=clang++
@@ -97,9 +107,9 @@ check_native_prereqs() {
   if ((${#missing[@]} > 0)); then
     echo "local-ci: missing tools: ${missing[*]}" >&2
     if [[ "$(uname -s)" == "Linux" ]]; then
-      echo "  sudo apt install cmake ninja-build clang-18 llvm-18-dev zlib1g-dev libzstd-dev python3" >&2
+      echo "  sudo apt install cmake ninja-build clang-22 llvm-22-dev zlib1g-dev libzstd-dev python3" >&2
     else
-      echo "  brew install llvm@18 cmake ninja python3" >&2
+      echo "  brew install llvm@22 cmake ninja python3" >&2
     fi
     return 1
   fi

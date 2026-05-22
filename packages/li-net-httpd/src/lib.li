@@ -1012,9 +1012,23 @@ def httpd_run_from_argv() raises Net, Alloc, IO -> int
     return httpd_serve_port_root_proxy(p, r, bp)
   return httpd_serve_port_root(p, r)
 
-def main() raises Net, Alloc, IO -> int
+# M1 composable surface (no second `main` — use packages/li-net-httpd/src/main.li for CLI).
+extern proc li_rt_httpd_serve_once(port: int) -> int
+  requires 1024 <= port
+  requires port <= 65535
+  ensures true
+
+def httpd_tag() -> int
   requires true
-  ensures result == 0
+  ensures result == 1
   decreases 0
 =
-  return httpd_run_from_argv()
+  return 1
+
+def httpd_serve_once(port: int) raises Net, Alloc, IO -> int
+  requires 1024 <= port
+  requires port <= 65535
+  ensures true
+  decreases 0
+=
+  return li_rt_httpd_serve_once(port)

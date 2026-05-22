@@ -1,5 +1,5 @@
-
-import net.httpd
+import http
+import net
 
 def main() raises Net, IO, Alloc -> int
   requires true

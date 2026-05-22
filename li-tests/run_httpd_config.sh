@@ -64,6 +64,14 @@ for rej in "$ROOT/li-tests/config_desugar/reject"/*.toml; do
     leak_censor_bad_pattern.toml \
     | m15_inference_no_traceparent.toml \
     | m15_missing_stream_limits.toml \
+    | m2_http2_no_tls.toml \
+    | m2_queue_depth_excess.toml \
+    | m2_webhook_private_ip.toml \
+    | m3_l4_no_upstream.toml \
+    | m3_l4_private_upstream.toml \
+    | m3_token_budget_bad_header.toml \
+    | m3_token_cap_excess.toml \
+    | rng_prng_production.toml \
     | tls_le_missing_email.toml \
     | tls_public_no_tls.toml \
     | tls_public_self_signed.toml)

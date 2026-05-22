@@ -437,12 +437,21 @@ static int parse_duration_sec_value(const char* raw, int* out_sec) {
   while (*raw && isspace((unsigned char)*raw)) {
     raw++;
   }
+  if (*raw == '"') {
+    raw++;
+  }
   char* end = NULL;
   long n = strtol(raw, &end, 10);
   if (n < 1 || n > 86400) {
     return -1;
   }
   if (end && (*end == 's' || *end == 'S')) {
+    end++;
+  }
+  while (end && *end && isspace((unsigned char)*end)) {
+    end++;
+  }
+  if (end && *end == '"') {
     end++;
   }
   while (end && *end && isspace((unsigned char)*end)) {
@@ -1571,8 +1580,25 @@ int32_t li_rt_httpd_explain_config(const char* path) {
     fprintf(stdout, "method = \"%s\"\n", r->method);
     fprintf(stdout, "path = \"%s\"\n", r->path);
     fprintf(stdout, "path_kind = \"%s\"\n", path_kind_name(r->path_kind));
-    if (r->headers[0] != '\0') {
-      fprintf(stdout, "action = \"%s\" [%s]\n", r->action, r->headers);
+    if (r->headers[0] != '\0' || r->require_traceparent || r->require_websocket) {
+      char extras[LI_HTTPD_HEADERS_MAX + 64];
+      extras[0] = '\0';
+      if (r->require_traceparent) {
+        strcat(extras, "require=traceparent");
+      }
+      if (r->require_websocket) {
+        if (extras[0] != '\0') {
+          strcat(extras, " ");
+        }
+        strcat(extras, "require=websocket");
+      }
+      if (r->headers[0] != '\0') {
+        if (extras[0] != '\0') {
+          strcat(extras, " ");
+        }
+        strcat(extras, r->headers);
+      }
+      fprintf(stdout, "action = \"%s\" [%s]\n", r->action, extras);
     } else {
       fprintf(stdout, "action = \"%s\"\n", r->action);
     }

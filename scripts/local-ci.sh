@@ -35,9 +35,34 @@ done
 
 LI_CI_DOCKER_IMAGE="${LI_CI_DOCKER_IMAGE:-ghcr.io/li-langverse/lic-ci:ubuntu24-llvm22}"
 
+resolve_container_runtime() {
+  if [[ -n "${CONTAINER_RUNTIME:-}" ]]; then
+    echo "$CONTAINER_RUNTIME"
+    return 0
+  fi
+  if command -v docker >/dev/null 2>&1 && docker info >/dev/null 2>&1; then
+    echo docker
+    return 0
+  fi
+  if command -v podman >/dev/null 2>&1 && podman info >/dev/null 2>&1; then
+    echo podman
+    return 0
+  fi
+  return 1
+}
+
+require_container_runtime() {
+  CTR="$(resolve_container_runtime)" || {
+    echo "local-ci: need docker or podman (add user to docker group, or use rootless podman)" >&2
+    exit 1
+  }
+  export CTR
+}
+
 run_docker_ci() {
+  require_container_runtime
   chmod +x "$ROOT/scripts/prepare-docker-ci-image.sh"
-  LI_CI_DOCKER_IMAGE="$LI_CI_DOCKER_IMAGE" "$ROOT/scripts/prepare-docker-ci-image.sh"
+  CONTAINER_RUNTIME="$CTR" LI_CI_DOCKER_IMAGE="$LI_CI_DOCKER_IMAGE" "$ROOT/scripts/prepare-docker-ci-image.sh"
 
   local stage="/tmp/li-local-ci-$$"
   # shellcheck disable=SC2064
@@ -54,12 +79,14 @@ run_docker_ci() {
     cp -a "$ROOT/." "$stage/"
     rm -rf "$stage/build" "$stage/.git" "$stage/.venv-plot" "$stage/benchmarks/results"
   fi
-  echo "==> docker run $LI_CI_DOCKER_IMAGE"
-  docker run --rm \
+  echo "==> $CTR run $LI_CI_DOCKER_IMAGE"
+  "$CTR" run --rm \
     -e LLVM_DIR=/usr/lib/llvm-22/lib/cmake/llvm \
     -e CC=clang-22 \
     -e CXX=clang++-22 \
     -e LI_REPO_ROOT=/src \
+    -e HTTPD_SKIP_LI_ROUTING_BIN="${HTTPD_SKIP_LI_ROUTING_BIN:-0}" \
+    -e HTTPD_SKIP_AUTH_BEARER_SMOKE=1 \
     -v "$stage:/src" \
     -w /src \
     "$LI_CI_DOCKER_IMAGE" \
@@ -123,22 +150,16 @@ check_native_prereqs() {
 }
 
 if [[ "$PREPARE_DOCKER" -eq 1 ]]; then
-  if ! command -v docker >/dev/null 2>&1; then
-    echo "local-ci: docker not found" >&2
-    exit 1
-  fi
+  require_container_runtime
   chmod +x "$ROOT/scripts/prepare-docker-ci-image.sh"
-  LI_CI_DOCKER_IMAGE="$LI_CI_DOCKER_IMAGE" "$ROOT/scripts/prepare-docker-ci-image.sh"
+  CONTAINER_RUNTIME="$CTR" LI_CI_DOCKER_IMAGE="$LI_CI_DOCKER_IMAGE" "$ROOT/scripts/prepare-docker-ci-image.sh"
   echo "local-ci: image ready ($LI_CI_DOCKER_IMAGE)"
   exit 0
 fi
 
 if [[ "$USE_DOCKER" -eq 1 ]]; then
-  if ! command -v docker >/dev/null 2>&1; then
-    echo "local-ci: docker not found" >&2
-    exit 1
-  fi
-  echo "==> local-ci (docker $LI_CI_DOCKER_IMAGE)"
+  require_container_runtime
+  echo "==> local-ci ($CTR / $LI_CI_DOCKER_IMAGE)"
   run_docker_ci
   echo "local-ci: ok (docker)"
   exit 0

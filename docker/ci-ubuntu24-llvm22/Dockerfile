@@ -4,7 +4,8 @@ FROM ubuntu:24.04
 ENV DEBIAN_FRONTEND=noninteractive
 RUN apt-get update \
   && apt-get install -y --no-install-recommends \
-    cmake ninja-build wget gnupg ca-certificates curl pkg-config \
+    cmake ninja-build wget gnupg ca-certificates curl pkg-config lsb-release \
+    software-properties-common \
     zlib1g-dev libzstd-dev python3 python3-pip git rsync \
   && wget -qO /tmp/llvm.sh https://apt.llvm.org/llvm.sh \
   && chmod +x /tmp/llvm.sh \

@@ -14,24 +14,40 @@ ROOT="$(cd "$(dirname "$0")/.." && pwd)"
 IMAGE="${LI_CI_DOCKER_IMAGE:-ghcr.io/li-langverse/lic-ci:ubuntu24-llvm22}"
 MODE="${1:-}"
 
-if ! command -v docker >/dev/null 2>&1; then
-  echo "prepare-docker-ci-image: docker not found" >&2
+resolve_container_runtime() {
+  if [[ -n "${CONTAINER_RUNTIME:-}" ]]; then
+    echo "$CONTAINER_RUNTIME"
+    return 0
+  fi
+  if command -v docker >/dev/null 2>&1 && docker info >/dev/null 2>&1; then
+    echo docker
+    return 0
+  fi
+  if command -v podman >/dev/null 2>&1 && podman info >/dev/null 2>&1; then
+    echo podman
+    return 0
+  fi
+  return 1
+}
+
+CTR="$(resolve_container_runtime)" || {
+  echo "prepare-docker-ci-image: need docker or podman (socket access / rootless ok)" >&2
   exit 1
-fi
+}
 
 image_ready() {
-  docker image inspect "$IMAGE" >/dev/null 2>&1
+  "$CTR" image inspect "$IMAGE" >/dev/null 2>&1
 }
 
 if image_ready; then
   echo "prepare-docker-ci-image: already present $IMAGE"
-  docker image inspect "$IMAGE" --format '  size={{.Size}} created={{.Created}}'
+  "$CTR" image inspect "$IMAGE" --format '  size={{.Size}} created={{.Created}}'
   exit 0
 fi
 
 if [[ "$MODE" != "--build" ]]; then
   echo "prepare-docker-ci-image: pulling $IMAGE"
-  if docker pull "$IMAGE"; then
+  if "$CTR" pull "$IMAGE"; then
     echo "prepare-docker-ci-image: ok (pulled)"
     exit 0
   fi
@@ -43,6 +59,6 @@ if [[ "$MODE" != "--build" ]]; then
 fi
 
 echo "prepare-docker-ci-image: building $IMAGE"
-docker build -t "$IMAGE" "$ROOT/docker/ci-ubuntu24-llvm22"
-echo "prepare-docker-ci-image: ok (built)"
-docker image inspect "$IMAGE" --format '  size={{.Size}}'
+"$CTR" build -t "$IMAGE" "$ROOT/docker/ci-ubuntu24-llvm22"
+echo "prepare-docker-ci-image: ok (built via $CTR)"
+"$CTR" image inspect "$IMAGE" --format '  size={{.Size}}'

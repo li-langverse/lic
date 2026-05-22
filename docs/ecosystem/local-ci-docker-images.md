@@ -24,7 +24,11 @@ Override image:
 export LI_CI_DOCKER_IMAGE=ghcr.io/li-langverse/lic-ci:ubuntu24-llvm22
 ```
 
-**Docker group:** user must access `/var/run/docker.sock` (e.g. `sudo usermod -aG docker $USER` then re-login). No tokens are stored in the repo.
+**Container runtime:** scripts auto-pick `docker` (if socket works) or **`podman`** (rootless). Override with `CONTAINER_RUNTIME=podman`.
+
+**Docker group:** for Docker Engine, user must access `/var/run/docker.sock` (e.g. `sudo usermod -aG docker $USER` then re-login). No tokens are stored in the repo.
+
+**In-container note:** `local-ci.sh --docker` sets `HTTPD_SKIP_AUTH_BEARER_SMOKE=1` (TCP smoke to `127.0.0.1` is unreliable in containers). Config/routing gates still run via `run_httpd_config.sh`.
 
 ## Publish (maintainers)
 

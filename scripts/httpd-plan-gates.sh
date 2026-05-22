@@ -3,8 +3,8 @@
 set -euo pipefail
 ROOT="$(cd "$(dirname "$0")/.." && pwd)"
 export LI_REPO_ROOT="$ROOT"
-export LI_ALLOW_OPEN_VC="${LI_ALLOW_OPEN_VC:-1}"
 export LIC="$("$ROOT/scripts/resolve-lic.sh")"
+LIC_BUILD_FLAGS=(--allow-open-vc)
 
 fail() { echo "httpd-plan-gates: $*" >&2; exit 1; }
 
@@ -12,7 +12,7 @@ echo "==> build lic"
 "$ROOT/scripts/build.sh" >/dev/null
 
 echo "==> match_routes compile"
-"$LIC" build "$ROOT/li-tests/routing/match_routes.li" -o /tmp/li_match_routes_gate
+"$LIC" build "${LIC_BUILD_FLAGS[@]}" "$ROOT/li-tests/routing/match_routes.li" -o /tmp/li_match_routes_gate
 # Runtime oracle may lag; compile gate is mandatory for CI.
 if [[ "${HTTPD_GATES_RUN_MATCH_ROUTES:-0}" == "1" ]]; then
   /tmp/li_match_routes_gate

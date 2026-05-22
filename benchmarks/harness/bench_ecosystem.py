@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Tier-3 ecosystem benchmarks: compile time, security gates, async/httpd prep.
+"""Tier-5 ecosystem benchmarks (deferred): compile time, security gates, async/httpd prep.
 
 Writes rows compatible with li-langverse/benchmarks ingest (latest.csv + security.csv).
 """

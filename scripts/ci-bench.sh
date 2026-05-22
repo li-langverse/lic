@@ -19,5 +19,5 @@ export LI_HPC_COMPETITIVE_STRICT=0
 
 python3 "$ROOT/benchmarks/harness/bench.py" --tier 1 --runs 1 --skip-verify
 python3 "$ROOT/benchmarks/harness/bench.py" --tier 2 --ci
-python3 "$ROOT/benchmarks/harness/bench_ecosystem.py" --runs 1 --skip-security
+# Tier 5 ecosystem (optional): RUN_TIER5_ECOSYSTEM=1 python3 benchmarks/harness/bench_ecosystem.py --runs 1
 echo "ci-bench: ok"

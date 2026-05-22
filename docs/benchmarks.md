@@ -12,7 +12,9 @@ the same `.c` file through `lic` (`LI_EXTRA_C`).
 | 0 | `li-tests` + verify + MD stability (strict) | `./scripts/ci.sh` |
 | 1 | Micro kernels (`simd_dot`, matmul, horner) | `./scripts/ci-bench.sh` |
 | 2 | Physics sims (MD, N-body, wave, heat, pendulum) | manual / weekly workflow |
-| 3 | Ecosystem: compile time, async stub runtime, security gate timing | `./scripts/ci-bench.sh` (smoke) · weekly workflow |
+| 3 | HTTP / li-httpd vs nginx, apache, node, … | `benchmarks/scripts/run-full-benchmark-suite.sh` |
+| 4 | HTTP exploit grid (CVE-style harness) | same suite (`SKIP_EXPLOITS=1` to skip) |
+| 5 | Ecosystem: compile time, lip/lit smoke, security timing | **deferred** — `RUN_TIER5_ECOSYSTEM=1` |
 
 ## Stability vs speed
 
@@ -24,7 +26,8 @@ the same `.c` file through `lic` (`LI_EXTRA_C`).
 ```bash
 python3 benchmarks/harness/stability.py
 python3 benchmarks/harness/bench.py --tier 12 --runs 3 --skip-verify
-python3 benchmarks/harness/bench_ecosystem.py --runs 3
+# Optional when ecosystem benches are ready:
+# RUN_TIER5_ECOSYSTEM=1 python3 benchmarks/harness/bench_ecosystem.py --runs 3
 ./scripts/plot_shareables.sh
 ```
 

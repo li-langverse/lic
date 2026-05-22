@@ -31,10 +31,6 @@ jobs:
           ./scripts/ci.sh
           ./scripts/ci-bench.sh
 
-      - name: Tier-3 ecosystem benchmarks (compile, async, security timing)
-        run: |
-          python3 benchmarks/harness/bench_ecosystem.py --runs 2
-
       - name: Upload benchmark CSV
         uses: actions/upload-artifact@v4
         with:

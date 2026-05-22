@@ -10,6 +10,7 @@ python3 "$ROOT/scripts/httpd_config.py" "$ROOT/li-tests/config_desugar/good/m3_o
 echo "== m3 reject configs =="
 for rej in \
   "$ROOT/li-tests/config_desugar/reject/m3_l4_no_upstream.toml" \
+  "$ROOT/li-tests/config_desugar/reject/m3_l4_private_upstream.toml" \
   "$ROOT/li-tests/config_desugar/reject/m3_token_budget_bad_header.toml" \
   "$ROOT/li-tests/config_desugar/reject/m3_token_cap_excess.toml"; do
   name="$(basename "$rej")"

@@ -18,7 +18,7 @@ M3 optional agent-gateway hooks: RFC for L4 TCP stream proxy and `x-token-budget
 
 - `docs/superpowers/specs/2026-05-22-li-httpd-m3-l4-token-budget.md` — L4 + token-budget RFC
 - `scripts/httpd_m3.py`, `scripts/check-httpd-m3-config.sh`, `scripts/httpd-plan-gates.sh`
-- `li-tests/config_desugar/good/m3_optional.toml`, `reject/m3_*.toml`
+- `li-tests/config_desugar/good/m3_optional.toml`, `reject/m3_*.toml` (incl. SSRF reject for loopback upstream)
 - `li-tests/httpd/m3_optional_oracle.li`
 - `runtime/li_rt_httpd.c`, `runtime/li_rt.h`, `runtime/li_rt_net.c` — M3 parse + token-budget 429 hook
 - `scripts/httpd_config.py`, `scripts/flatten-httpd-config.py`

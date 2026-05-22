@@ -24,6 +24,7 @@ Nginx remains the bench/CVE oracle; Li proves policy in config + bounded runtime
 | `upstream_host` | hostname | required; no userinfo; no private/loopback unless `allow_private_upstream = true` |
 | `upstream_port` | 1..65535 | required |
 | `max_connections` | int | schema cap 10_000; default 256 |
+| `allow_private_upstream` | bool | default `false`; set `true` for dev/oracle loopback upstream |
 
 ### Semantics (target)
 

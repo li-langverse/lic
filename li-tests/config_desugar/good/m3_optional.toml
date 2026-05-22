@@ -19,6 +19,7 @@ listen = "127.0.0.1:9443"
 upstream_host = "127.0.0.1"
 upstream_port = 11435
 max_connections = 512
+allow_private_upstream = true
 
 [limits]
 max_body = "1m"

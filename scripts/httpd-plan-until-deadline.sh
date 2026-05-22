@@ -30,7 +30,9 @@ export LI_HTTPD_PLAN_AGENT="${LI_HTTPD_PLAN_AGENT:-code_implementer}"
 export LI_HTTPD_PLAN_AGENT_TIMEOUT_SEC="${LI_HTTPD_PLAN_AGENT_TIMEOUT_SEC:-2700}"
 export LI_CONTROL_PLANE_STORE="${LI_CONTROL_PLANE_STORE:-disk}"
 
-# Local wall-clock deadline, e.g. 08:00 (today if still ahead, else tomorrow).
+# Wall-clock deadline in operator TZ (server may be US/Eastern; set Europe/Berlin etc.).
+HTTPD_PLAN_TZ="${HTTPD_PLAN_TZ:-Europe/Berlin}"
+export TZ="$HTTPD_PLAN_TZ"
 DEADLINE_LOCAL="${HTTPD_PLAN_UNTIL_LOCAL:-08:00}"
 BATCH_CAP="${HTTPD_PLAN_BATCH_CAP:-30}"
 MIN_BATCH="${HTTPD_PLAN_MIN_BATCH:-1}"
@@ -59,7 +61,8 @@ log() { echo "$@" | tee -a "$LOG"; }
 DEADLINE_TS="$(deadline_epoch "$DEADLINE_LOCAL")"
 
 log "==> httpd-plan-until-deadline $(date -Iseconds)"
-log "    deadline local=${DEADLINE_LOCAL} → $(date -d "@${DEADLINE_TS}" -Iseconds)"
+log "    TZ=${TZ} deadline=${DEADLINE_LOCAL} → $(date -d "@${DEADLINE_TS}" -Iseconds)"
+log "    server_utc=$(date -u -Iseconds)"
 log "    batch_cap=$BATCH_CAP min_per_iter=${MIN_PER_ITER}m log=$LOG"
 
 if [[ "$WAIT_FOR_LOOP" == "1" ]]; then

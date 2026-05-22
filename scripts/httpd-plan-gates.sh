@@ -54,6 +54,10 @@ else
     echo "==> check-w0-bytes-io.sh (w0-bytes-io)"
     "$ROOT/scripts/check-w0-bytes-io.sh" || fail "check-w0-bytes-io.sh failed"
   fi
+  if [[ -x "$ROOT/scripts/verify-math-physics-goldens.sh" ]]; then
+    echo "==> verify-math-physics-goldens.sh"
+    "$ROOT/scripts/verify-math-physics-goldens.sh" || fail "math/physics golden verify failed"
+  fi
 fi
 # Runtime oracle may lag; compile gate is mandatory for CI.
 if [[ "${HTTPD_GATES_RUN_MATCH_ROUTES:-0}" == "1" ]]; then

@@ -21,9 +21,11 @@ export HTTPD_PLAN_PR_BRANCH=cursor/httpd-plan-continue   # feature branch
 
 ./scripts/httpd-plan-loop.py --dry-run
 ./scripts/httpd-plan-loop.py --once
-./scripts/httpd-plan-overnight.sh          # --max 30, then until 08:00 local
+HTTPD_PLAN_TZ=Europe/Berlin ./scripts/httpd-plan-overnight.sh   # --max 30, then until 08:00 in TZ
 ./scripts/httpd-plan-until-deadline.sh       # extension only (waits for in-flight loop)
 ```
+
+**Deadline math:** `until-deadline` uses `MIN_PER_ITER` (default 12m) and remaining wall time in `TZ` to pick each batch `--max`. From 21:34 → 08:00 next day ≈ 10.5h → ~52 iterations at 12m (capped by `HTTPD_PLAN_BATCH_CAP`).
 
 Secrets: `~/Documents/Cursor/.env` → `CURSOR_API_KEY`, `GH_TOKEN`.
 
@@ -33,7 +35,8 @@ Secrets: `~/Documents/Cursor/.env` → `CURSOR_API_KEY`, `GH_TOKEN`.
 |---------|--------|
 | Agent | `code_implementer` |
 | First batch | 30 iterations |
-| Until | `08:00` local (more batches if time left) |
+| Until | `08:00` in `HTTPD_PLAN_TZ` (default `Europe/Berlin`; server clock may differ) |
+| TZ | `export HTTPD_PLAN_TZ=Europe/Berlin` — **not** server local (e.g. US/Eastern is −6h vs CEST) |
 | Gates | `HTTPD_GATES_SKIP_LIC_BUILD=1` when no clang |
 | Pages | `refresh-live-sites.sh` after each success (`SKIP_BENCH=1` ok) |
 

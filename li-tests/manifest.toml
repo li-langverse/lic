@@ -898,6 +898,24 @@ suite = "physics"
 file = "physics/three_body_mini.li"
 outcome = "compile_ok"
 
+[[tests]]
+suite = "math_linalg"
+file = "math_linalg/golden_dot4_ones_twos.li"
+outcome = "compile_ok"
+note = "small golden 8.0; runtime via verify-math-physics-goldens.sh"
+
+[[tests]]
+suite = "math_linalg"
+file = "math_linalg/golden_tier1_dot8.li"
+outcome = "compile_ok"
+note = "tier-1 dot spec N=8; runtime via verify-math-physics-goldens.sh"
+
+[[tests]]
+suite = "physics"
+file = "physics/golden_positions_sum.li"
+outcome = "compile_ok"
+note = "small golden 3.0; runtime via verify-math-physics-goldens.sh"
+
 # --- math_syntax (2h — %, //, **) ---
 
 [[tests]]

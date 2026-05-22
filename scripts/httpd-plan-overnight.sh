@@ -30,6 +30,8 @@ export LI_HTTPD_PLAN_AGENT="${LI_HTTPD_PLAN_AGENT:-code_implementer}"
 export LI_HTTPD_PLAN_AGENT_TIMEOUT_SEC="${LI_HTTPD_PLAN_AGENT_TIMEOUT_SEC:-2700}"
 export LI_CONTROL_PLANE_STORE="${LI_CONTROL_PLANE_STORE:-disk}"
 
+HTTPD_PLAN_TZ="${HTTPD_PLAN_TZ:-Europe/Berlin}"
+export TZ="$HTTPD_PLAN_TZ"
 MAX="${HTTPD_PLAN_OVERNIGHT_MAX:-30}"
 # Set HTTPD_PLAN_NO_UNTIL_DEADLINE=1 to run only the first --max batch.
 RUN_UNTIL="${HTTPD_PLAN_NO_UNTIL_DEADLINE:-0}"
@@ -37,7 +39,7 @@ RUN_UNTIL="${HTTPD_PLAN_NO_UNTIL_DEADLINE:-0}"
 {
   echo "==> httpd-plan-overnight start $(date -Iseconds)"
   echo "    branch=$HTTPD_PLAN_PR_BRANCH max=$MAX log=$LOG"
-  echo "    until_local=${HTTPD_PLAN_UNTIL_LOCAL:-08:00} (unless NO_UNTIL_DEADLINE=1)"
+  echo "    TZ=${TZ} until_local=${HTTPD_PLAN_UNTIL_LOCAL:-08:00} (unless NO_UNTIL_DEADLINE=1)"
   echo "    agents=$LI_CURSOR_AGENTS_ROOT benchmarks=$BENCHMARKS_ROOT"
   cd "$ROOT"
   git branch --show-current || true

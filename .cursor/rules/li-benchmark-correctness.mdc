@@ -1,5 +1,5 @@
 ---
-description: Benchmark correctness first, speed second — normative specs, scaled goldens, anti-DCE
+description: Benchmark correctness first, speed second — normative specs, scaled goldens
 globs: benchmarks/**/*
 alwaysApply: false
 ---
@@ -14,9 +14,10 @@ alwaysApply: false
 - **Two scales:**
   - **Small N:** exact checksum (`%.17g`) — tight numerics, easy to reason about by hand.
   - **Large N:** same spec at production size; compare with small `rtol`/`atol` (e.g. `-ffast-math` reordering).
-- **Harness guards we own** (do not rely on LLVM DCE you did not write):
-  - `|result|` floor per benchmark (catches summed-to-zero / empty kernels).
+- **Harness guards we own** (explicit verification, not accidental compiler behavior):
+  - `|result|` floor per benchmark where the spec is non-zero.
   - Min **pure-Li** wall time where DCE is a risk (`min_li_seconds` in `reference.py`).
+  - **DCE is allowed** when documented and verified (spec + small/large goldens + optional timing); never assumed from silence.
   - Optional: `BENCH_VERIFY_TIMING=1` for Li vs native timing sanity.
 
 ## Other languages (C++, Rust, Julia, Python)
@@ -29,13 +30,8 @@ alwaysApply: false
 
 ```bash
 ./scripts/bench-verify-results.sh 1   # tier-1; spec checks on by default
+./scripts/verify-math-physics-goldens.sh
 # BENCH_VERIFY_REFERENCE=0  — only to debug harness, not for release claims
 ```
 
 When changing init, size, or reduction in a kernel: update **`reference.py`** and the shared `common/*_core.c` together, then re-run verify.
-
-## Anti-patterns
-
-- Passing verify only because Li and native both print `0` or `nan`.
-- Declaring victory from a 1 ms “10M element” run (DCE / wrong problem size).
-- Weakening `reference.py` floors to greenwash a broken pure-Li build.

@@ -20,6 +20,14 @@ from http.server import SimpleHTTPRequestHandler, ThreadingHTTPServer
 from pathlib import Path
 from typing import Any
 
+from http_bench_servers import (
+    pick_free_port,
+    resolve_nginx_binary,
+    start_li_httpd,
+    start_nginx,
+    stop_proc,
+    wait_port,
+)
 from http_bench_toml import (
     REPO,
     ensure_fixtures,
@@ -31,10 +39,6 @@ from http_bench_toml import (
 )
 
 RESULTS = REPO / "benchmarks" / "results"
-
-
-def _pick_port(base: int, offset: int) -> int:
-    return int(base) + offset
 
 
 def _http_request(host: str, port: int, method: str, path: str, timeout: float = 5.0) -> tuple[int, bytes]:
@@ -99,47 +103,6 @@ def _start_stub_static(doc_root: Path, port: int) -> ThreadingHTTPServer:
     return server
 
 
-def _wait_port(port: int, timeout: float = 10.0) -> bool:
-    deadline = time.time() + timeout
-    while time.time() < deadline:
-        try:
-            with closing(socket.create_connection(("127.0.0.1", port), timeout=0.2)):
-                return True
-        except OSError:
-            time.sleep(0.05)
-    return False
-
-
-def _start_nginx(conf_path: Path, prefix: Path) -> subprocess.Popen[object] | None:
-    nginx = shutil.which("nginx")
-    if not nginx:
-        return None
-    prefix.mkdir(parents=True, exist_ok=True)
-    logs = prefix / "logs"
-    logs.mkdir(exist_ok=True)
-    proc = subprocess.Popen(
-        [nginx, "-c", str(conf_path), "-p", str(prefix)],
-        stdout=subprocess.DEVNULL,
-        stderr=subprocess.PIPE,
-        text=True,
-    )
-    time.sleep(0.3)
-    if proc.poll() is not None:
-        err = proc.stderr.read() if proc.stderr else ""
-        raise RuntimeError(f"nginx failed to start: {err}")
-    return proc
-
-
-def _stop_proc(proc: subprocess.Popen[object] | None) -> None:
-    if proc is None:
-        return
-    proc.terminate()
-    try:
-        proc.wait(timeout=3)
-    except subprocess.TimeoutExpired:
-        proc.kill()
-
-
 def verify_scenario(
     name: str,
     *,
@@ -158,9 +121,8 @@ def verify_scenario(
     if not doc_root.is_dir():
         return False, f"document_root missing: {doc_root}"
 
-    global_tbl = cfg.get("global") or {}
-    port_base = int(global_tbl.get("port_base", 18080))
-    port = _pick_port(port_base, hash(name) % 200)
+    port_base = int((cfg.get("global") or {}).get("port_base", 18080))
+    port = pick_free_port(port_base, sum(ord(c) for c in name) % 200)
 
     langs = profile_langs(profile, cfg)
     if use_stub:
@@ -170,34 +132,30 @@ def verify_scenario(
     for lang in langs:
         proc: subprocess.Popen[object] | None = None
         server: ThreadingHTTPServer | None = None
-        conf_tmp: Path | None = None
-        prefix: Path | None = None
+        work_dir: Path | None = None
         try:
-            if lang == "nginx" and shutil.which("nginx"):
-                from http_bench_toml import render_nginx_conf
-
-                conf_tmp = Path(tempfile.mkdtemp()) / "nginx.conf"
-                prefix = Path(tempfile.mkdtemp(prefix="tier5_nginx_"))
-                conf_tmp.write_text(render_nginx_conf(cfg, port=port), encoding="utf-8")
-                proc = _start_nginx(conf_tmp, prefix)
-                if not _wait_port(port):
-                    return False, f"nginx did not listen on {port}"
+            if lang == "nginx" and resolve_nginx_binary():
+                proc, work_dir = start_nginx(cfg, port)
+            elif lang == "li":
+                proc, work_dir = start_li_httpd(name, port)
             else:
                 server = _start_stub_static(doc_root, port)
-                if not _wait_port(port):
+                if not wait_port(port):
                     return False, f"stub server did not listen on {port}"
+            if proc is not None and not wait_port(port):
+                return False, f"{lang} did not listen on {port}"
             ok, msg = _run_verify_requests(cfg, host="127.0.0.1", port=port, doc_root=doc_root)
             last_msg = f"{lang}: {msg}"
             if not ok:
                 return False, last_msg
+        except RuntimeError as exc:
+            return False, str(exc)
         finally:
-            _stop_proc(proc)
+            stop_proc(proc)
             if server is not None:
                 server.shutdown()
-            if conf_tmp and conf_tmp.parent.exists():
-                shutil.rmtree(conf_tmp.parent, ignore_errors=True)
-            if prefix and prefix.exists():
-                shutil.rmtree(prefix, ignore_errors=True)
+            if work_dir and work_dir.exists():
+                shutil.rmtree(work_dir, ignore_errors=True)
     return True, last_msg or "ok"
 
 
@@ -219,7 +177,7 @@ def main() -> int:
         print("verify_http: no scenarios resolved from suite.toml", file=sys.stderr)
         return 1
 
-    use_stub = args.stub or not shutil.which("nginx")
+    use_stub = args.stub or not resolve_nginx_binary()
     if os.environ.get("TIER5_HTTP_STUB", "").strip() in ("1", "true", "yes"):
         use_stub = True
 

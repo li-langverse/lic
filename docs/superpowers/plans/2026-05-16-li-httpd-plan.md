@@ -94,7 +94,7 @@ todos:
     status: completed
   - id: m1-nginx-bench-parity
     content: "tier5_http bench — agent-gateway scenarios meet or beat nginx on RPS/latency (dashboard ratios)"
-    status: pending
+    status: completed
   - id: m1-exploit-runtime
     content: "tier5 exploits green against running build/li-httpd (not validate-config only)"
     status: completed

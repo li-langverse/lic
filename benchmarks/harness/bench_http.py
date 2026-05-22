@@ -15,6 +15,15 @@ from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any
 
+from bench_http_parity import check_parity_ratios
+from http_bench_servers import (
+    pick_free_port,
+    resolve_nginx_binary,
+    scenario_port,
+    start_li_httpd,
+    start_nginx,
+    stop_proc,
+)
 from http_bench_toml import (
     REPO,
     TIER5,
@@ -85,6 +94,18 @@ def write_csv(path: Path, rows: list[dict[str, object]]) -> None:
             w.writerow({k: row.get(k, "") for k in CSV_HEADER})
 
 
+def wrk_supports_pipeline() -> bool:
+    wrk = shutil.which("wrk")
+    if not wrk:
+        return False
+    try:
+        proc = subprocess.run([wrk, "--help"], capture_output=True, text=True, timeout=5)
+        help_text = (proc.stdout or "") + (proc.stderr or "")
+        return "-P" in help_text or "--pipeline" in help_text
+    except (subprocess.TimeoutExpired, FileNotFoundError):
+        return False
+
+
 def run_wrk(
     url: str,
     *,
@@ -101,10 +122,11 @@ def run_wrk(
         f"-t{threads}",
         f"-c{connections}",
         f"-d{duration_sec}s",
-        f"-P{pipeline}",
         "--latency",
         url,
     ]
+    if pipeline > 1 and wrk_supports_pipeline():
+        cmd.insert(-2, f"-P{pipeline}")
     proc = subprocess.run(cmd, capture_output=True, text=True)
     if proc.returncode != 0:
         print(proc.stderr or proc.stdout, file=sys.stderr)
@@ -239,6 +261,11 @@ def main() -> int:
         action="store_true",
         help="run verify_http.py for profile (no timing)",
     )
+    parser.add_argument(
+        "--check-parity",
+        action="store_true",
+        help="after timing, require li RPS/latency ratios vs nginx (parity profile)",
+    )
     args = parser.parse_args()
 
     profile = args.profile
@@ -292,20 +319,23 @@ def main() -> int:
         ]
         for spec in args.overrides:
             cmd.extend(["--set", spec])
-        if os.environ.get("TIER5_HTTP_STUB", "").strip() in ("1", "true", "yes") or not shutil.which(
-            "nginx"
-        ):
+        if os.environ.get("TIER5_HTTP_STUB", "").strip() in ("1", "true", "yes") or not resolve_nginx_binary():
             cmd.append("--stub")
         return subprocess.call(cmd)
 
-    # Timing path: requires nginx + wrk; delegate verify first
+    # Timing path: nginx + li-httpd vs wrk
     verify_script = Path(__file__).with_name("verify_http.py")
-    vcmd = [sys.executable, str(verify_script), "--profile", profile or "baseline", *names]
+    vcmd = [sys.executable, str(verify_script), "--profile", profile or "parity", *names]
+    for spec in args.overrides:
+        vcmd.extend(["--set", spec])
     if subprocess.call(vcmd) != 0:
         return 1
 
     if not shutil.which("wrk"):
         print("bench_http: wrk not in PATH — skipping load timing", file=sys.stderr)
+        return 0
+    if not resolve_nginx_binary():
+        print("bench_http: nginx missing — skipping load timing", file=sys.stderr)
         return 0
 
     all_rows: list[dict[str, object]] = []
@@ -316,55 +346,47 @@ def main() -> int:
             continue
         ensure_fixtures(cfg)
         langs = profile_langs(profile, cfg)
-        if "nginx" not in langs:
-            langs = ["nginx"]
         global_tbl = cfg.get("global") or {}
         port_base = int(global_tbl.get("port_base", 18080))
-        port = port_base + (hash(name) % 200)
+        port = pick_free_port(port_base, sum(ord(c) for c in name) % 200)
         server = cfg.get("server") or {}
         variant = "sendfile_on" if server.get("sendfile", True) else "sendfile_off"
         for lang in langs:
-            if lang != "nginx":
-                print(f"skip load for {lang} (not wired in harness yet)", file=sys.stderr)
-                continue
-            conf_dir = Path(tempfile.mkdtemp(prefix="tier5_bench_"))
-            conf_path = conf_dir / "nginx.conf"
-            prefix = conf_dir / "prefix"
-            conf_path.write_text(render_nginx_conf(cfg, port=port), encoding="utf-8")
-            nginx = shutil.which("nginx")
-            if not nginx:
-                print("bench_http: nginx missing", file=sys.stderr)
-                return 1
-            prefix.mkdir(parents=True)
-            (prefix / "logs").mkdir(exist_ok=True)
-            proc = subprocess.Popen(
-                [nginx, "-c", str(conf_path), "-p", str(prefix)],
-                stderr=subprocess.PIPE,
-                text=True,
-            )
+            proc = None
+            work_dir: Path | None = None
             try:
-                import time
-
-                time.sleep(0.4)
-                if proc.poll() is not None:
-                    err = proc.stderr.read() if proc.stderr else ""
-                    print(f"nginx failed: {err}", file=sys.stderr)
-                    return 1
+                if lang == "nginx":
+                    proc, work_dir = start_nginx(cfg, port)
+                elif lang == "li":
+                    proc, work_dir = start_li_httpd(name, port)
+                else:
+                    print(f"skip load for {lang!r}", file=sys.stderr)
+                    continue
                 rows = run_load_for_lang(cfg, lang, port=port, variant=variant)
                 all_rows.extend(rows)
+            except RuntimeError as exc:
+                print(f"bench_http {name} {lang}: {exc}", file=sys.stderr)
+                return 1
             finally:
-                proc.terminate()
-                try:
-                    proc.wait(timeout=3)
-                except subprocess.TimeoutExpired:
-                    proc.kill()
-                shutil.rmtree(conf_dir, ignore_errors=True)
+                stop_proc(proc)
+                if work_dir and work_dir.exists():
+                    shutil.rmtree(work_dir, ignore_errors=True)
 
     if all_rows:
         write_csv(args.out, all_rows)
         print(f"bench_http: wrote {len(all_rows)} rows -> {args.out}")
     else:
         print("bench_http: no timing rows produced", file=sys.stderr)
+        return 1
+
+    if args.check_parity or profile == "parity":
+        ok, notes = check_parity_ratios(all_rows, names)
+        for line in notes:
+            print(line)
+        if not ok:
+            print("bench_http: parity check FAILED", file=sys.stderr)
+            return 1
+        print("bench_http: parity check OK")
     return 0
 
 

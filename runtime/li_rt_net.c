@@ -159,6 +159,14 @@ static char g_cached_blob_ka[512 + HTTPD_IO_BUF];
 static int32_t g_cached_blob_ka_len = 0;
 static char g_cached_blob_close[512 + HTTPD_IO_BUF];
 static int32_t g_cached_blob_close_len = 0;
+/* tier5 static_small hot path: GET /file.bin (prebuilt at prepare_root). */
+static char g_cached_file_body[HTTPD_IO_BUF];
+static int32_t g_cached_file_sz = 0;
+static int g_cache_file_ready = 0;
+static char g_cached_file_blob_ka[512 + HTTPD_IO_BUF];
+static int32_t g_cached_file_blob_ka_len = 0;
+static char g_cached_file_blob_close[512 + HTTPD_IO_BUF];
+static int32_t g_cached_file_blob_close_len = 0;
 static char g_doc_root[4096];
 static size_t g_doc_root_len = 0;
 static char g_proxy_host[64] = "127.0.0.1";
@@ -212,6 +220,7 @@ static char g_m3_token_budget_header[64] = "x-token-budget";
 static httpd_route_t g_routes[HTTPD_MAX_ROUTES];
 static int g_route_count = 0;
 
+static int g_access_log_enabled = 1;
 static int g_rate_limit_rps = 0;
 static int g_rate_limit_burst = 0;
 static double g_rate_tokens = 0.0;
@@ -936,6 +945,53 @@ int32_t httpd_prepare_root_i(intptr_t root) {
   g_cached_blob_close_len += g_cached_sz;
 
   g_cache_ready = 1;
+
+  g_cache_file_ready = 0;
+  g_cached_file_sz = 0;
+  n = snprintf(path, sizeof(path), "%s/file.bin", r);
+  if (n > 0 && n < (int)sizeof(path)) {
+    fd = open(path, O_RDONLY);
+    if (fd >= 0) {
+      if (fstat(fd, &st) == 0 && S_ISREG(st.st_mode) && st.st_size > 0 &&
+          st.st_size <= HTTPD_IO_BUF) {
+        ssize_t frd = read(fd, g_cached_file_body, (size_t)st.st_size);
+        if (frd == (ssize_t)st.st_size) {
+          g_cached_file_sz = (int32_t)frd;
+          g_cached_file_blob_ka_len = snprintf(
+              g_cached_file_blob_ka, sizeof(g_cached_file_blob_ka),
+              "HTTP/1.1 200 OK\r\n"
+              "Content-Type: application/octet-stream\r\n"
+              "Content-Length: %d\r\n"
+              "Connection: keep-alive\r\n"
+              "\r\n",
+              (int)g_cached_file_sz);
+          if (g_cached_file_blob_ka_len >= 0 &&
+              g_cached_file_blob_ka_len < (int32_t)sizeof(g_cached_file_blob_ka) - g_cached_file_sz) {
+            memcpy(g_cached_file_blob_ka + g_cached_file_blob_ka_len, g_cached_file_body,
+                   (size_t)g_cached_file_sz);
+            g_cached_file_blob_ka_len += g_cached_file_sz;
+            g_cached_file_blob_close_len = snprintf(
+                g_cached_file_blob_close, sizeof(g_cached_file_blob_close),
+                "HTTP/1.1 200 OK\r\n"
+                "Content-Type: application/octet-stream\r\n"
+                "Content-Length: %d\r\n"
+                "Connection: close\r\n"
+                "\r\n",
+                (int)g_cached_file_sz);
+            if (g_cached_file_blob_close_len >= 0 &&
+                g_cached_file_blob_close_len <
+                    (int32_t)sizeof(g_cached_file_blob_close) - g_cached_file_sz) {
+              memcpy(g_cached_file_blob_close + g_cached_file_blob_close_len, g_cached_file_body,
+                     (size_t)g_cached_file_sz);
+              g_cached_file_blob_close_len += g_cached_file_sz;
+              g_cache_file_ready = 1;
+            }
+          }
+        }
+      }
+      close(fd);
+    }
+  }
   return 0;
 }
 
@@ -958,6 +1014,24 @@ int32_t httpd_reply_cached_index_i(int32_t conn, int32_t slot, int32_t keep_aliv
     return 0;
   }
   if (send_all_nb((int)conn, g_cached_blob_close, (size_t)g_cached_blob_close_len) < 0) {
+    return -1;
+  }
+  return 0;
+}
+
+int32_t httpd_reply_cached_file_bin_i(int32_t conn, int32_t slot, int32_t keep_alive) {
+  if (!g_cache_file_ready || g_cached_file_sz <= 0 || slot < 0 || slot >= HTTPD_MAX_CONN) {
+    return -1;
+  }
+  (void)slot;
+  tcp_ack_now(conn);
+  if (keep_alive) {
+    if (send_all_nb((int)conn, g_cached_file_blob_ka, (size_t)g_cached_file_blob_ka_len) < 0) {
+      return -1;
+    }
+    return 0;
+  }
+  if (send_all_nb((int)conn, g_cached_file_blob_close, (size_t)g_cached_file_blob_close_len) < 0) {
     return -1;
   }
   return 0;
@@ -999,6 +1073,23 @@ static int is_index_get(const char* buf, int hdr_end) {
     return 1;
   }
   return 0;
+}
+
+static int is_file_bin_get(const char* buf, int hdr_end) {
+  if (hdr_end < 14 || memcmp(buf, "GET ", 4) != 0) {
+    return 0;
+  }
+  if (hdr_end >= 14 && memcmp(buf + 4, "/file.bin ", 10) == 0) {
+    return 1;
+  }
+  if (memcmp(buf + 4, "/file.bin HTTP", 14) == 0) {
+    return 1;
+  }
+  return 0;
+}
+
+static int path_is_file_bin_c(const char* path, int plen) {
+  return plen == 9 && memcmp(path, "/file.bin", 9) == 0;
 }
 
 static int parse_request_line_c(const char* buf, int hdr_end, httpd_req_info_t* info) {
@@ -2157,6 +2248,9 @@ static int httpd_rate_limit_allow_request(const char* path, int plen, const http
 }
 
 static void httpd_access_log(const httpd_req_info_t* req, int status, int bytes_out) {
+  if (!g_access_log_enabled) {
+    return;
+  }
   struct timespec ts;
   if (clock_gettime(CLOCK_REALTIME, &ts) != 0) {
     return;
@@ -2540,6 +2634,14 @@ static int32_t httpd_try_drain_once(int32_t conn, int32_t slot) {
   if (hdr_end < 0) {
     return 0;
   }
+  int keep_early = !wants_connection_close(g_slots[slot].buf, hdr_end);
+  if (g_cache_file_ready && g_rate_limit_rps == 0 && !g_auth_required && g_proxy_port <= 0 &&
+      g_route_count == 0 && is_file_bin_get(g_slots[slot].buf, hdr_end)) {
+    if (httpd_reply_cached_file_bin_i(conn, slot, keep_early) >= 0) {
+      net_slot_consume(slot, hdr_end);
+      return keep_early ? 1 : -1;
+    }
+  }
   httpd_req_info_t req;
   memset(&req, 0, sizeof(req));
   if (request_headers_unsafe_c(g_slots[slot].buf, hdr_end)) {
@@ -2648,6 +2750,20 @@ static int32_t httpd_try_drain_once(int32_t conn, int32_t slot) {
       return -2;
     }
     httpd_access_log(&req, 200, 0);
+  } else if (method_is(&req, "GET") &&
+             (path_is_file_bin_c(req.path, req.path_len) || is_file_bin_get(g_slots[slot].buf, hdr_end))) {
+    if (httpd_reply_cached_file_bin_i(conn, slot, keep) < 0) {
+      if (httpd_send_static_path(conn, slot, req.path, req.path_len, keep) < 0) {
+        if (httpd_send_status(conn, 404, "Not Found", NULL, keep) < 0) {
+          return -2;
+        }
+        httpd_access_log(&req, 404, 0);
+      } else {
+        httpd_access_log(&req, 200, 0);
+      }
+    } else {
+      httpd_access_log(&req, 200, 0);
+    }
   } else if (method_is(&req, "GET")) {
     if (httpd_send_static_path(conn, slot, req.path, req.path_len, keep) < 0) {
       if (httpd_send_status(conn, 404, "Not Found", NULL, keep) < 0) {
@@ -4107,9 +4223,17 @@ int32_t httpd_epoll_serve_i(int32_t port, intptr_t root) {
     net_fail("epoll_ctl listen");
   }
 
+  const char* access_log_env = getenv("LI_HTTPD_ACCESS_LOG");
+  if (access_log_env &&
+      (access_log_env[0] == '0' || access_log_env[0] == 'n' || access_log_env[0] == 'N')) {
+    g_access_log_enabled = 0;
+  }
+
   struct epoll_event events[256];
   for (;;) {
-    httpd_tick_active_health_probes_i();
+    if (g_health_active_enabled || g_up_peer_count > 0) {
+      httpd_tick_active_health_probes_i();
+    }
     int n = epoll_wait(epfd, events, 256, -1);
     if (n < 0) {
       if (errno == EINTR) {

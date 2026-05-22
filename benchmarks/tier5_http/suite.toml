@@ -11,6 +11,11 @@ scenarios = ["static_small", "static_large"]
 timing = true
 langs = ["nginx"]
 
+[profiles.parity]
+scenarios = ["static_small", "keepalive_pipelining"]
+timing = true
+langs = ["nginx", "li"]
+
 [profiles.default]
 scenarios = ["static_small", "keepalive_pipelining"]
 timing = false

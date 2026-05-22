@@ -181,4 +181,15 @@ if [[ "${HTTPD_GATES_SKIP_LIC_BUILD:-0}" != "1" && "${HTTPD_RUN_EXPLOIT_RUNTIME:
   fi
 fi
 
+# m1-nginx-bench-parity: tier5 verify + optional wrk ratios (HTTPD_BENCH_SKIP_TIMING=1 in lean CI).
+if [[ "${HTTPD_GATES_SKIP_LIC_BUILD:-0}" != "1" && "${HTTPD_RUN_BENCH_PARITY:-1}" == "1" ]]; then
+  if [[ -x "$ROOT/scripts/check-tier5-nginx-bench-parity.sh" && -x "$ROOT/build/li-httpd" ]]; then
+    echo "==> check-tier5-nginx-bench-parity.sh (m1-nginx-bench-parity)"
+    HTTPD_BENCH_SKIP_TIMING="${HTTPD_BENCH_SKIP_TIMING:-1}" \
+      "$ROOT/scripts/check-tier5-nginx-bench-parity.sh" || fail "check-tier5-nginx-bench-parity.sh failed"
+  else
+    fail "m1-nginx-bench-parity: build/li-httpd missing (run build-li-httpd.sh)"
+  fi
+fi
+
 echo "httpd-plan-gates: OK"

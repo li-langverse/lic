@@ -88,7 +88,7 @@ todos:
     status: completed
   - id: m1-upstream-keepalive
     content: "Upstream HTTP keepalive pool to inference backends (no stale-connection 502s)"
-    status: pending
+    status: completed
   - id: m1-active-health
     content: "Active health probes on upstream peers; remove dead peers from rotation"
     status: completed

@@ -181,6 +181,16 @@ if [[ "${HTTPD_GATES_SKIP_LIC_BUILD:-0}" != "1" && "${HTTPD_RUN_EXPLOIT_RUNTIME:
   fi
 fi
 
+# m1-upstream-keepalive: pooled upstream fds; stale reconnect (opt-out HTTPD_RUN_UPSTREAM_KEEPALIVE_TEST=0).
+if [[ "${HTTPD_GATES_SKIP_LIC_BUILD:-0}" != "1" && "${HTTPD_RUN_UPSTREAM_KEEPALIVE_TEST:-1}" == "1" ]]; then
+  if [[ -x "$ROOT/scripts/test-upstream-keepalive.sh" && -x "$ROOT/build/li-httpd" ]]; then
+    echo "==> test-upstream-keepalive.sh (m1-upstream-keepalive)"
+    "$ROOT/scripts/test-upstream-keepalive.sh" || fail "test-upstream-keepalive.sh failed"
+  else
+    fail "m1-upstream-keepalive: build/li-httpd missing (run build-li-httpd.sh)"
+  fi
+fi
+
 # m1-serve-production: long-lived daemon, keep-alive, static+proxy, workers (opt-out HTTPD_RUN_SERVE_PRODUCTION_TEST=0).
 if [[ "${HTTPD_GATES_SKIP_LIC_BUILD:-0}" != "1" && "${HTTPD_RUN_SERVE_PRODUCTION_TEST:-1}" == "1" ]]; then
   if [[ -x "$ROOT/scripts/test-serve-production.sh" && -x "$ROOT/build/li-httpd" ]]; then

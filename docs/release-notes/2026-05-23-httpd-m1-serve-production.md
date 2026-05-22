@@ -22,8 +22,11 @@ Completes plan todo **m1-serve-production**: long-lived `build/li-httpd` with **
 
 ## Not changed
 
-- Upstream keepalive pool (`m1-upstream-keepalive` remains pending).
 - Tier-5 bench matrix / live Pages (no new CSV).
+
+## Follow-up
+
+- **m1-upstream-keepalive** completed in `docs/release-notes/2026-05-23-httpd-m1-upstream-keepalive.md`.
 
 ## Breaking
 

@@ -1,11 +1,15 @@
 # Pure-Li three-body mini kernel (library-aligned, reduced steps for CI).
 
 extern proc li_rt_sqrt(x: float) -> float
+  requires true
+  ensures true
+  decreases 0
 
 def three_body_forces(
     px: array[3, float], py: array[3, float],
     fx: array[3, float], fy: array[3, float]) -> unit
   requires true
+  ensures true
   decreases 0
 =
   var i: int = 0
@@ -36,7 +40,7 @@ def three_body_forces(
       j = j + 1
     i = i + 1
 
-def main() -> int
+def main() raises IO -> int
   requires true
   ensures result == 0
   decreases 0

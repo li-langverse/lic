@@ -6,6 +6,10 @@ All notable changes to Li are documented here. The format follows
 
 ## [Unreleased]
 
+### Fixed
+
+- **Tier-2 physics benches:** `extern proc` `requires`/`ensures` + `main` `raises IO` on ten shared-kernel drivers (`rigid_body_stack`, game-dev stubs, `three_body_pure`) — unblocks `bench.py --tier 2` — `docs/release-notes/2026-05-22-tier2-physics-extern-contracts.md`.
+
 ### Added
 
 - **2i broadcast (partial):** `array[1, T]` element-wise broadcast to `array[N, T]` — `docs/release-notes/2026-05-22-2i-broadcast-len1.md`.

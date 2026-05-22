@@ -16,7 +16,7 @@ todos:
     status: completed
   - id: nginx-src-audit
     content: nginx submodule + nginx_mitigations.toml (read-only checklist); no Li port tracking
-    status: pending
+    status: completed
   - id: exploit-harness
     content: Exploit/bench TOML vs nginx baseline + li-httpd; li may be stricter than nginx on [expect]
     status: completed

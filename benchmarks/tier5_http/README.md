@@ -36,6 +36,8 @@ TIER5_HTTP_STUB=1 ./benchmarks/harness/bench_http.py --profile ci
 
 Exploit manifests: `suite_exploits.toml`, `exploits/*.toml`, `nginx_mitigations.toml`.
 
+Nginx oracle (read-only): `third_party/nginx` submodule + `../harness/audit_nginx_src.py` — see `docs/security-nginx-src-audit.md`.
+
 ```bash
 # CI / plan gates (stub — no nginx required)
 TIER5_EXPLOIT_STUB=1 ./benchmarks/harness/exploit_http.py --profile pr
@@ -51,5 +53,6 @@ TIER5_EXPLOIT_STUB=1 ./benchmarks/harness/exploit_http.py --profile pr
 
 ```bash
 ./scripts/check-tier5-http-harness.sh
+./scripts/check-tier5-nginx-src-audit.sh
 ./scripts/httpd-plan-gates.sh   # includes harness smoke when present
 ```

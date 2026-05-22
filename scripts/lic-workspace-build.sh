@@ -1,5 +1,6 @@
 #!/usr/bin/env bash
-# Phase 8a: build smoke entrypoints for all [workspace].members in packages/li.toml
+# Phase 8a: build smoke entrypoints for [workspace].members in packages/li.toml.
+# Some members (e.g. li-demo) are mirrored app/demo packages — they do not gate lic CI.
 set -euo pipefail
 ROOT="$(cd "$(dirname "$0")/.." && pwd)"
 export LI_REPO_ROOT="${LI_REPO_ROOT:-$ROOT}"
@@ -27,6 +28,12 @@ if [[ ${#members[@]} -eq 0 ]]; then
   exit 0
 fi
 for m in "${members[@]}"; do
+  case "$m" in
+    li-demo)
+      echo "workspace build: skip $m (demo package — own repo CI, not a lic compiler gate)"
+      continue
+      ;;
+  esac
   entry="$ROOT/packages/$m/src/lib.li"
   smoke="$ROOT/packages/$m/li-tests/smoke/builds.li"
   # Prefer smoke: package libs may use extern stubs not yet proof-complete (8a).

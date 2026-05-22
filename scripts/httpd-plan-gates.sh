@@ -171,4 +171,14 @@ if [[ "${HTTPD_GATES_SKIP_LIC_BUILD:-0}" != "1" && "${HTTPD_RUN_ACTIVE_HEALTH_TE
   fi
 fi
 
+# m1-exploit-runtime: tier5 exploits on running build/li-httpd (opt-out with HTTPD_RUN_EXPLOIT_RUNTIME=0).
+if [[ "${HTTPD_GATES_SKIP_LIC_BUILD:-0}" != "1" && "${HTTPD_RUN_EXPLOIT_RUNTIME:-1}" == "1" ]]; then
+  if [[ -x "$ROOT/scripts/check-tier5-exploit-runtime.sh" && -x "$ROOT/build/li-httpd" ]]; then
+    echo "==> check-tier5-exploit-runtime.sh (m1-exploit-runtime)"
+    "$ROOT/scripts/check-tier5-exploit-runtime.sh" || fail "check-tier5-exploit-runtime.sh failed"
+  else
+    fail "m1-exploit-runtime: build/li-httpd missing (run build-li-httpd.sh)"
+  fi
+fi
+
 echo "httpd-plan-gates: OK"

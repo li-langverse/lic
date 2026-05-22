@@ -97,7 +97,7 @@ todos:
     status: pending
   - id: m1-exploit-runtime
     content: "tier5 exploits green against running build/li-httpd (not validate-config only)"
-    status: pending
+    status: completed
   - id: m15-sse-runtime
     content: "SSE/streaming on live li-httpd; idle-between-chunks timeout cancels upstream"
     status: pending

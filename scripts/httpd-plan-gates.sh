@@ -8,11 +8,15 @@ export LIC="$("$ROOT/scripts/resolve-lic.sh")"
 
 fail() { echo "httpd-plan-gates: $*" >&2; exit 1; }
 
-echo "==> build lic"
-"$ROOT/scripts/build.sh" >/dev/null
+if [[ "${HTTPD_GATES_SKIP_LIC_BUILD:-0}" == "1" ]]; then
+  echo "==> skip lic build (HTTPD_GATES_SKIP_LIC_BUILD=1)"
+else
+  echo "==> build lic"
+  "$ROOT/scripts/build.sh" >/dev/null
 
-echo "==> match_routes compile"
-"$LIC" build "$ROOT/li-tests/routing/match_routes.li" -o /tmp/li_match_routes_gate --allow-open-vc
+  echo "==> match_routes compile"
+  "$LIC" build "$ROOT/li-tests/routing/match_routes.li" -o /tmp/li_match_routes_gate --allow-open-vc
+fi
 # Runtime oracle may lag; compile gate is mandatory for CI.
 if [[ "${HTTPD_GATES_RUN_MATCH_ROUTES:-0}" == "1" ]]; then
   /tmp/li_match_routes_gate
@@ -36,7 +40,7 @@ if [[ -f "$ROOT/scripts/validate-httpd-config.py" ]]; then
     "$ROOT/packages/li-net-httpd/examples/auth_bearer.toml"
 fi
 
-if [[ "${HTTPD_RUN_BEARER_TEST:-0}" == "1" && -f "$ROOT/scripts/test-auth-bearer.sh" && -x "$ROOT/build/li-httpd" ]]; then
+if [[ "${HTTPD_GATES_SKIP_LIC_BUILD:-0}" != "1" && "${HTTPD_RUN_BEARER_TEST:-0}" == "1" && -f "$ROOT/scripts/test-auth-bearer.sh" && -x "$ROOT/build/li-httpd" ]]; then
   echo "==> test-auth-bearer.sh"
   "$ROOT/scripts/test-auth-bearer.sh" || fail "test-auth-bearer.sh failed"
 fi

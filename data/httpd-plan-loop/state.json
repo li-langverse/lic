@@ -8,8 +8,23 @@
     "m1-explain-config-cli",
     "m1-validate-config-cli",
     "m1-serve-once-stub",
-    "m1-serve-routed-oracle"
+    "m1-serve-routed-oracle",
+    "m15-agent",
+    "m15-leak-censor"
   ],
-  "iterations": 0,
-  "history": []
+  "iterations": 2,
+  "history": [
+    {
+      "at": "2026-05-22T17:24:28.325124+00:00",
+      "todo_id": "m15-agent",
+      "agent_exit": 0,
+      "gates_ok": true
+    },
+    {
+      "at": "2026-05-22T17:35:28.946461+00:00",
+      "todo_id": "m15-leak-censor",
+      "agent_exit": 0,
+      "gates_ok": true
+    }
+  ]
 }

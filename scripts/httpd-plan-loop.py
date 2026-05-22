@@ -1,8 +1,10 @@
 #!/usr/bin/env python3
 """Autonomous loop: drive li-httpd master plan until todos complete or max iterations.
 
-Uses li-cursor-agents + Cursor SDK (local) when CURSOR_API_KEY is set; otherwise
-prints the next instruction for a human/Cloud Agent session.
+Uses li-cursor-agents + Cursor SDK (local) when CURSOR_API_KEY is set. Invokes a
+**reusable** registry agent (default ``code_implementer``) with the todo slice as
+``--goal-file`` — not a dedicated httpd agent id. Otherwise prints instruction for
+a human/Cloud Agent session.
 
 Usage:
   export CURSOR_API_KEY=cursor_...
@@ -131,13 +133,29 @@ def run_cursor_agent(todo: dict, dry_run: bool) -> tuple[int, str]:
                 benchmarks = str(c)
                 break
 
+    agent = os.environ.get("LI_HTTPD_PLAN_AGENT", "code_implementer")
+    goal_path = STATE_DIR / f"goal-{datetime.now(timezone.utc).strftime('%Y%m%d-%H%M%S')}.md"
+    goal_path.write_text(instruction, encoding="utf-8")
+
     env = {
         **os.environ,
         "LI_REPO_WORKFLOW_REPO": "lic",
         "LIC_ROOT": str(ROOT),
         "LI_AGENT_EXTRA_INSTRUCTION": instruction,
+        "LI_AGENT_GOAL": instruction,
     }
-    cmd = ["node", str(dist), "--agent", "httpd_implementer", "--cwd", str(ROOT)]
+    cmd = [
+        "node",
+        str(dist),
+        "--agent",
+        agent,
+        "--cwd",
+        str(ROOT),
+        "--workflow-repo",
+        "lic",
+        "--goal-file",
+        str(goal_path),
+    ]
     if benchmarks:
         cmd.extend(["--benchmarks", benchmarks])
 

@@ -78,7 +78,7 @@ todos:
     status: completed
   - id: rng-concepts
     content: li-rng + probabilistic Hoare (prob_ensures), OsRng uniform contract, Prng-on-TLS allowed with profile gates
-    status: pending
+    status: completed
   - id: prob-hoare
     content: "P2: prob_ensures + Monte Carlo/Lean measure obligations; lic build --prob-check for P(event)<ε"
     status: completed

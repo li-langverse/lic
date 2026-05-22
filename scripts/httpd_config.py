@@ -248,6 +248,8 @@ def load_httpd_config(path: Path) -> list[CanonicalRoute]:
     from httpd_m2 import validate_m2_config
     from httpd_m3 import ConfigError as M3Error
     from httpd_m3 import validate_m3_config
+    from httpd_rng import ConfigError as RngError
+    from httpd_rng import validate_rng_config_raise
     from httpd_tls import ConfigError as TlsError
     from httpd_tls import validate_tls_config
 
@@ -261,7 +263,9 @@ def load_httpd_config(path: Path) -> list[CanonicalRoute]:
         validate_tls_config(data, path)
         validate_m2_config(data, path)
         validate_m3_config(data, path)
-    except (M15Error, LeakError, TlsError, M2Error, M3Error) as e:
+        for warn in validate_rng_config_raise(data):
+            print(f"warning: {warn}", file=sys.stderr)
+    except (M15Error, LeakError, TlsError, M2Error, M3Error, RngError) as e:
         raise ConfigError(str(e)) from e
     routes = desugar_config(data)
     validate_routes(routes)

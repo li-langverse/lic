@@ -11,6 +11,7 @@ from pathlib import Path
 from urllib.parse import urlparse
 
 from httpd_config import ConfigError, load_httpd_config
+from httpd_rng import validate_rng_config
 
 try:
     import tomllib
@@ -153,6 +154,8 @@ def validate(cfg: dict) -> list[str]:
                     if not str(k).strip():
                         errs.append("auth.keys must not contain empty strings")
 
+    rng_errs, _rng_warns = validate_rng_config(cfg)
+    errs.extend(rng_errs)
     return errs
 
 

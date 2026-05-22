@@ -15,7 +15,7 @@ Ships `prob_ensures` contracts, Monte Carlo discharge via `lic build --prob-chec
 
 1. Read: `docs/superpowers/specs/li-prob.md`, `li-tests/prob/collision_oracle.li`, `scripts/prob_check.py`
 2. Run: `./scripts/check-prob-hoare.sh` and `./scripts/httpd-plan-gates.sh`
-3. Then: `rng-concepts` todo (OsRng uniform contract + li-rng surface) on same branch or fresh branch from `main` after merge
+3. ~~`rng-concepts`~~ — completed on `cursor/httpd-plan-continue` (`docs/release-notes/2026-05-22-rng-concepts.md`)
 4. Blocked on: **none** for P2 slice; full Mathlib `ProbabilityTheory` remains G-lean
 
 ## Changed (specific)

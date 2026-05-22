@@ -27,3 +27,7 @@ prob_ensures <event> < ε
 ## CI
 
 `scripts/check-prob-hoare.sh` — `li-tests/prob/collision_oracle.li` + `--prob-check`.
+
+## RNG hypotheses
+
+See `docs/superpowers/specs/li-rng.md` — `given OsRngUniform`, `given PrngSeed`, `given BadRng` (Tier F).

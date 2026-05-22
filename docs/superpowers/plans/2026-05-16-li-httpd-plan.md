@@ -7,7 +7,7 @@ todos:
     status: completed
   - id: w0-bytes-io
     content: Ship std bytes/stringview/Reader/Writer + raises Net effect + trusted syscall RFC
-    status: pending
+    status: completed
   - id: w1-async-reactor
     content: Implement async/await + epoll/kqueue reactor; TCP echo benchmark
     status: pending

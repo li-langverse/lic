@@ -100,6 +100,7 @@ int32_t li_async_await_i32(int32_t pending);
 int32_t li_async_poll(uint32_t slot);
 
 /* Net trusted seam (li_rt_net.c) — syscalls + I/O buffers; HTTP in Li packages. */
+int32_t net_ping(void);
 int32_t tcp_listen(int32_t port);
 int32_t tcp_accept(int32_t listen_fd);
 int32_t tcp_send(int32_t conn_fd, const char* data);
@@ -110,6 +111,8 @@ void tcp_tune_client(int32_t fd);
 int32_t bytes_len(const char* b);
 const char* bytes_slice(const char* b, int32_t off, int32_t n);
 const char* bytes_append(const char* a, const char* b);
+int32_t bytes_byte_at(const char* b, int32_t off);
+const char* bytes_push_byte(const char* buf, int32_t byte);
 int32_t net_byte_at(const char* b, int32_t off);
 int32_t net_atoi(const char* s);
 

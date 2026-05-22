@@ -559,7 +559,13 @@ outcome = "verify_ok"
 suite = "runtime"
 file = "runtime/bytes_len_slice_link.li"
 outcome = "compile_open_ok"
-note = "std/bytes externs link against runtime/li_rt.c"
+note = "std/bytes externs link against runtime/li_rt_net.c"
+
+[[tests]]
+suite = "bytes"
+file = "bytes/reader_writer_smoke.li"
+outcome = "compile_open_ok"
+note = "w0-bytes-io Reader/Writer incremental parse over std.bytes"
 
 [[tests]]
 suite = "runtime"
@@ -629,6 +635,18 @@ outcome = "compile_ok"
 [[tests]]
 suite = "effects"
 file = "effects/net_missing_raises.li"
+outcome = "compile_fail"
+expected_substr = "raises Net"
+
+[[tests]]
+suite = "net_trusted"
+file = "net_trusted/seam_policy_ok.li"
+outcome = "compile_open_ok"
+note = "w0-bytes-io trusted Net seam — tcp_listen requires raises Net"
+
+[[tests]]
+suite = "net_trusted"
+file = "net_trusted/seam_missing_net.li"
 outcome = "compile_fail"
 expected_substr = "raises Net"
 

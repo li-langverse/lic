@@ -470,6 +470,9 @@ const char* tcp_recv(int32_t conn_fd, int32_t max_bytes) {
   return buf;
 }
 
+/* Policy-test stub for li-tests/effects/net_*.li (raises Net compile gate). */
+int32_t net_ping(void) { return 0; }
+
 int32_t bytes_len(const char* b) {
   if (!b) {
     return 0;
@@ -519,6 +522,13 @@ int32_t net_byte_at(const char* b, int32_t off) {
     return -1;
   }
   return (int32_t)(unsigned char)b[off];
+}
+
+int32_t bytes_byte_at(const char* b, int32_t off) { return net_byte_at(b, off); }
+
+const char* bytes_push_byte(const char* buf, int32_t byte) {
+  char ch[2] = {(char)((unsigned char)byte & 0xffu), '\0'};
+  return bytes_append(buf, ch);
 }
 
 int32_t net_atoi(const char* s) {

@@ -1,0 +1,13 @@
+import std.bytes
+
+def main() raises Alloc, IO -> int
+  requires true
+  ensures result == 5
+  decreases 0
+=
+  var buf: bytes = "hello"
+  var r: Reader = reader_new()
+  var w: Writer = writer_new()
+  if writer_len(w) != 0:
+    return -1
+  return reader_remaining(r, buf)

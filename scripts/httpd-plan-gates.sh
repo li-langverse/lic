@@ -50,6 +50,10 @@ else
     echo "==> check-httpd-lean-gate.sh (w0-lean-gate)"
     "$ROOT/scripts/check-httpd-lean-gate.sh" || fail "check-httpd-lean-gate.sh failed"
   fi
+  if [[ -x "$ROOT/scripts/check-w0-bytes-io.sh" ]]; then
+    echo "==> check-w0-bytes-io.sh (w0-bytes-io)"
+    "$ROOT/scripts/check-w0-bytes-io.sh" || fail "check-w0-bytes-io.sh failed"
+  fi
 fi
 # Runtime oracle may lag; compile gate is mandatory for CI.
 if [[ "${HTTPD_GATES_RUN_MATCH_ROUTES:-0}" == "1" ]]; then

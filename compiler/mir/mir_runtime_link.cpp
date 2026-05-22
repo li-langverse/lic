@@ -16,8 +16,9 @@ void note_one(std::string_view callee, MirModule& mir) {
     mir.needs_rt_httpd = true;
   }
   if (starts_with(callee, "net_") || starts_with(callee, "tcp_") || starts_with(callee, "epoll_") ||
-      starts_with(callee, "hdr_") || starts_with(callee, "buf_") ||
-      callee == "path_ends_with_conf" || starts_with(callee, "li_rt_net")) {
+      starts_with(callee, "hdr_") || starts_with(callee, "buf_") || starts_with(callee, "bytes_") ||
+      callee == "path_ends_with_conf" || callee == "net_ping" ||
+      starts_with(callee, "li_rt_net")) {
     mir.needs_rt_net = true;
   }
 }

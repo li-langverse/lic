@@ -45,8 +45,8 @@ This page is the **honest inventory** of what is **not** fully proved or not yet
 | **G-stdlib** | Partial | Full workspace cycle + seal edge cases |
 | **G-narrow** | Partial | Proved width narrowing (beyond `cast[` reject) |
 | **G-async** | Partial | `await` + structured concurrency proofs |
-| **G-net** | Partial | Net effect codegen + proofs |
-| **G-trust** | Stub | `Core.lean` / `MIR.lean` semantics, not placeholder |
+| **G-net** | Partial | Net effect codegen + proofs; **w0-bytes-io:** `raises Net` propagation + `check-w0-bytes-io.sh` |
+| **G-trust** | Partial | `trusted.lean` Net v1 axioms + accepted trusted-net RFC; `Core.lean` / `MIR.lean` still planned |
 | **G-ann** | Missing | PEP 649 deferred annotations |
 | **G-gpu** | Missing | `@gpu` address-space proofs + codegen |
 | **G-meta** | Missing | Compiler ↔ Lean equivalence (research) |
@@ -81,8 +81,8 @@ Status legend: **Missing** · **Stub** · **Partial** · **CI only** · **Done**
 | **G-ann** | Deferred annotations (PEP 649) | Lazy resolve at check | **Missing** — shown in pipeline diagram as planned | **4** | Not in compiler tree |
 | **G-gpu** | `@gpu` / device buffers | Separate address space proofs | **Missing** | **3+**, **7d** | Spec Phase 3+ |
 | **G-async** | `@async` / `raises Async` | Structured concurrency proofs | **Partial** — `@async` requires `raises Async`; await not parsed | **2+**, **7d** | `li-tests/effects/` |
-| **G-net** | `raises Net` | Trusted syscall surface | **Partial** — effect propagation + `trusted.lean` axioms; no codegen | **H**, **2f** | `li-tests/effects/net_*.li` |
-| **G-trust** | Trusted base growth | Only `trusted.lean` | **Stub** — file exists; `Core.lean` / `MIR.lean` **planned** | **2f** | [semantics/README.md](../semantics/README.md) |
+| **G-net** | `raises Net` | Trusted syscall surface | **Partial** — effect propagation + `trusted.lean` v1 TcpListen/TcpConn; C seam in `li_rt_net.c` | **H**, **2f** | `li-tests/effects/net_*.li`, `li-tests/net_trusted/`, `check-w0-bytes-io.sh` |
+| **G-trust** | Trusted base growth | Only `trusted.lean` | **Partial** — Net axioms + [trusted-net RFC](../superpowers/specs/2026-05-16-li-trusted-net-rfc.md); `Core.lean` / `MIR.lean` **planned** | **2f** | [semantics/README.md](../semantics/README.md) |
 | **G-meta** | Compiler correctness | C++ compiler ≡ Lean semantics | **Missing** (research) | long-term | Not started |
 | **G-hw** | Hardware / FP | Model vs IEEE / CPU bugs | **Axiomatic** | — | Documented limit |
 | **G-wrong-spec** | User contracts | Correct theorem | **Social** — tool cannot fix | — | Review culture |

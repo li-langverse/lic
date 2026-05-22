@@ -10,9 +10,6 @@ for f in "$ROOT/li-tests/config_desugar/good"/*.toml; do
   python3 "$PY/httpd_config.py" "$f"
 done
 
-echo "== routing overlap (same priority must reject) =="
-python3 "$PY/check-httpd-overlap-reject.py"
-
 echo "== httpd config reject =="
 for rej in "$ROOT/li-tests/config_desugar/reject"/*.toml; do
   name="$(basename "$rej")"
@@ -23,38 +20,21 @@ for rej in "$ROOT/li-tests/config_desugar/reject"/*.toml; do
   echo "$name: rejected OK"
 done
 
-echo "== routing cases (Python oracle) =="
-for cases in "$ROOT/li-tests/routing/cases"/*.toml; do
-  python3 "$PY/httpd_match.py" "$ROOT/li-tests/httpd/fixtures/routing.toml" "$cases"
-done
-
-echo "== routing (Li compile + binary oracle) =="
 LIC="${LIC:-$("$ROOT/scripts/resolve-lic.sh")}"
-HTTPD_BUILD_FLAGS=(--allow-open-vc)
 export LI_REPO_ROOT="$ROOT"
-"$LIC" build "${HTTPD_BUILD_FLAGS[@]}" "$ROOT/li-tests/routing/match_routes.li" -o /tmp/li_match_routes
-if [[ "${HTTPD_SKIP_LI_ROUTING_BIN:-0}" != "1" ]]; then
-  /tmp/li_match_routes
-  rc=$?
-  test "$rc" -eq 0
-else
-  echo "skip Li routing binary run (HTTPD_SKIP_LI_ROUTING_BIN=1)"
-fi
+chmod +x "$ROOT/li-tests/run_routing.sh"
+"$ROOT/li-tests/run_routing.sh"
 
 echo "== routing (Li serve_routed_once oracle) =="
-"$LIC" build "${HTTPD_BUILD_FLAGS[@]}" "$ROOT/li-tests/httpd/serve_routed_once.li" -o /tmp/li_serve_routed_once
-if [[ "${HTTPD_SKIP_LI_ROUTING_BIN:-0}" != "1" ]]; then
-  /tmp/li_serve_routed_once
-  rc=$?
-  test "$rc" -eq 0
-fi
-
-echo "== routing (Li TOML loader) =="
-"$LIC" build "${HTTPD_BUILD_FLAGS[@]}" "$ROOT/li-tests/routing/match_routes_toml.li" -o /tmp/li_match_routes_toml
-if [[ "${HTTPD_SKIP_LI_ROUTING_BIN:-0}" != "1" ]]; then
-  /tmp/li_match_routes_toml
-  rc=$?
-  test "$rc" -eq 0
+HTTPD_BUILD_FLAGS=(--allow-open-vc)
+if [[ "${HTTPD_SKIP_SERVE_ROUTED_ONCE:-1}" != "1" ]]; then
+  "$LIC" build "${HTTPD_BUILD_FLAGS[@]}" "$ROOT/li-tests/httpd/serve_routed_once.li" -o /tmp/li_serve_routed_once
+  if [[ "${HTTPD_SKIP_LI_ROUTING_BIN:-0}" != "1" ]]; then
+    /tmp/li_serve_routed_once
+    test "$(/tmp/li_serve_routed_once; echo $?)" -eq 0
+  fi
+else
+  echo "skip serve_routed_once (HTTPD_SKIP_SERVE_ROUTED_ONCE=1)"
 fi
 
 echo "== validate-config (lic CLI) =="

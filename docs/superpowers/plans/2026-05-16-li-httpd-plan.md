@@ -28,7 +28,7 @@ todos:
     status: pending
   - id: m1-routing-tests
     content: li-tests/routing/ table cases + overlap config_reject; proved match_route
-    status: in_progress
+    status: completed
   - id: m1-toml-desugar
     content: Simple TOML desugar + config_desugar golden tests + explain-config CLI
     status: in_progress

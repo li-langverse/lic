@@ -74,12 +74,43 @@ def parse_route_key(key: str, action: str, priority: int) -> CanonicalRoute:
     )
 
 
+def parse_canonical_routes(rows: list[Any]) -> list[CanonicalRoute]:
+    out: list[CanonicalRoute] = []
+    for row in rows:
+        if not isinstance(row, dict):
+            raise ConfigError("[[routes]] entry must be a table")
+        method = str(row.get("method", "")).strip()
+        path = str(row.get("path", "")).strip()
+        action = str(row.get("action", "")).strip()
+        if not method or not path or not action:
+            raise ConfigError("[[routes]] requires method, path, action")
+        if ".." in path or "//" in path.replace("://", ""):
+            raise ConfigError(f"path must not contain .. or //: {path}")
+        kind = str(row.get("path_kind", "exact")).strip()
+        if kind not in ("exact", "prefix", "prefix_strip"):
+            raise ConfigError(f"invalid path_kind: {kind!r}")
+        out.append(
+            CanonicalRoute(
+                name=str(row.get("name") or slug_route_name(method, path)),
+                method=method,
+                path=path,
+                path_kind=kind,
+                action=action,
+                headers={},
+                priority=int(row.get("priority", 0)),
+            )
+        )
+    return out
+
+
 def desugar_config(data: dict[str, Any]) -> list[CanonicalRoute]:
     routes_tbl = data.get("routes")
     if routes_tbl is None:
         return []
+    if isinstance(routes_tbl, list):
+        return parse_canonical_routes(routes_tbl)
     if not isinstance(routes_tbl, dict):
-        raise ConfigError("[routes] must be a table (map)")
+        raise ConfigError("[routes] must be a table (map) or [[routes]] array")
     out: list[CanonicalRoute] = []
     for i, (key, action) in enumerate(routes_tbl.items()):
         out.append(parse_route_key(str(key), str(action), priority=i))

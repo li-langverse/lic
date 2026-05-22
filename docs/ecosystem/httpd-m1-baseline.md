@@ -33,7 +33,7 @@
 
 ## Next todos (plan loop order)
 
-1. **m1-routing-tests** — `match_routes.li` compile + oracle green; overlap reject CI  
+1. ~~**m1-routing-tests**~~ — done (`run_routing.sh`, table cases, overlap `config_reject`)  
 2. ~~**m1-bearer-auth**~~ — `test-auth-bearer.sh` on real `build/li-httpd` (done; use `./scripts/build-li-httpd.sh`)  
 3. **m1-toml-desugar** — desugar golden + explain-config  
 4. **m1-core** — remaining M1 parser/LB/rate-limit Li surface  

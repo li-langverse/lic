@@ -38,7 +38,7 @@ With **`--release -O3 -ffast-math -march=native`** (harness default for tier-1 L
 
 1. LLVM treated the hot loop as **dead** or **foldable to zero** (unsafe math assumptions + no observable side effect on the reduction until the final sink).
 2. **`li_rt_volatile_sink_f64(acc)`** on the **final** `acc` alone was **not enough** to keep the whole 10M-term reduction alive when intermediate array fills and partial sums were provably unused or folded.
-3. This is **not** the DCE we document in verification policy — it is **unverified elimination** of the benchmark body.
+3. This was **unverified** elimination — not forbidden DCE. **Allowed DCE** must still pass our spec, goldens, and timing guards (see policy below).
 
 Isolated tests (e.g. `dot_lut_a(42)` returning `0.042`) still worked; the **full `main` + fast-math** path did not.
 
@@ -62,7 +62,7 @@ Our first verify pass was **Li checksum vs native `--verify`**. That catches **d
 1. **`benchmarks/harness/reference.py`** — float64 reference loops mirroring `*_core.c`; **small-N exact** and **large-N** with tolerance.
 2. **`verify_benchmark_results`** — native and Li must match spec; **`|result|` floors**; **min Li wall time** on pure-Li rows; optional `BENCH_VERIFY_TIMING`.
 3. **`scripts/verify-math-physics-goldens.sh`** — library-scale small goldens (math `@` / `sum`, physics mini checksums).
-4. **Cursor rule** `li-benchmark-correctness.mdc` — correct-first policy; **DCE allowed only when verified**.
+4. **Cursor rule** `li-benchmark-correctness.mdc` — correct-first policy; **DCE allowed, verification required**.
 
 ## Recommendations (product / compiler)
 

@@ -3,6 +3,9 @@
 Correctness means matching these specs (init + reduction order from tier1 ``common/*_core.c``),
 not matching another language runtime. Python evaluates the same loops in float64.
 
+Compiler DCE and fast-math folds are **allowed**; a build is valid only after **our** checks
+(spec, small/large goldens, magnitude floors, optional min Li wall time) pass.
+
 Optional ``decimal`` high-precision checks are used only to validate the spec on small sizes.
 """
 

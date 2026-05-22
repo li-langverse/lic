@@ -38,7 +38,7 @@ Do **not** start large domain/studio features while **2e/2f** or core **7e** cor
 ## Philosophy
 
 - **Correct per published spec, as fast as possible** — cross-lang = sanity only; beating others while correct is the win.
-- **Small + large goldens**; **DCE allowed only when verified** (harness-owned checks).
+- **DCE allowed** — must pass **our** goldens/spec/timing checks (`reference.py`, verify scripts), not assumed from a green build alone.
 
 ## Where code lives
 

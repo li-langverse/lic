@@ -31,7 +31,7 @@ todos:
     status: completed
   - id: m1-toml-desugar
     content: Simple TOML desugar + config_desugar golden tests + explain-config CLI
-    status: in_progress
+    status: completed
   - id: m1-validate-flatten
     content: validate-httpd-config.py + flatten-httpd-config.py + lic validate-httpd-config alias
     status: completed

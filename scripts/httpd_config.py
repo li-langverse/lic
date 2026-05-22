@@ -33,7 +33,12 @@ class CanonicalRoute:
 
 
 def slug_route_name(method: str, path: str) -> str:
-    s = f"{method.lower()}_{path.strip('/')}".replace("/", "_").replace("*", "wild")
+    p = path
+    if p.endswith("/**"):
+        p = p[:-3] + "_rest"
+    elif p.endswith("/*"):
+        p = p[:-2] + "_wild"
+    s = f"{method.lower()}_{p.strip('/')}".replace("/", "_").replace("*", "wild")
     s = re.sub(r"[^a-z0-9_]+", "_", s).strip("_")
     return s or "route"
 

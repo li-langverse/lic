@@ -8,7 +8,7 @@ Completes plan todo **m1-routing-tests**: table-driven `match_route` cases under
 
 1. Read `li-tests/routing/manifest.toml`, `scripts/httpd_match.py`, `scripts/httpd_config.py` (`[[routes]]` loader).
 2. Run `./scripts/httpd-plan-gates.sh` and `./li-tests/run_routing.sh`.
-3. **Next:** `m1-bearer-auth` — `test-auth-bearer.sh` on real `build/li-httpd`; then `m1-toml-desugar`.
+3. **Next:** ~~`m1-toml-desugar`~~ (done); then **m1-core**.
 4. **Blocked:** full `li-net-httpd` Li build without `import std.runtime.seam` (E0202 proxy externs).
 
 ## Changed

@@ -13,6 +13,7 @@
 #define LI_HTTPD_PATH_MAX 512
 #define LI_HTTPD_ACTION_MAX 128
 #define LI_HTTPD_NAME_MAX 64
+#define LI_HTTPD_HEADERS_MAX 128
 #define LI_HTTPD_FILE_MAX (256 * 1024)
 
 typedef enum {
@@ -27,6 +28,7 @@ typedef struct {
   char path[LI_HTTPD_PATH_MAX];
   LiPathKind path_kind;
   char action[LI_HTTPD_ACTION_MAX];
+  char headers[LI_HTTPD_HEADERS_MAX]; /* space-separated key=value (lowercase keys) */
   int32_t priority;
   int32_t route_id; /* 1-based id after load */
 } LiHttpdRoute;
@@ -60,6 +62,16 @@ static void httpd_clear_routes(void) {
 }
 
 static void slug_route_name(const char* method, const char* path, char* out, size_t out_len) {
+  char path_work[LI_HTTPD_PATH_MAX];
+  const char* slug_path = path;
+  size_t plen = strlen(path);
+  if (plen >= 3 && strcmp(path + plen - 3, "/**") == 0) {
+    snprintf(path_work, sizeof(path_work), "%.*s_rest", (int)(plen - 3), path);
+    slug_path = path_work;
+  } else if (plen >= 2 && strcmp(path + plen - 2, "/*") == 0) {
+    snprintf(path_work, sizeof(path_work), "%.*s_wild", (int)(plen - 2), path);
+    slug_path = path_work;
+  }
   size_t n = 0;
   const char* p = method;
   while (*p && n + 1 < out_len) {
@@ -76,7 +88,7 @@ static void slug_route_name(const char* method, const char* path, char* out, siz
   if (n + 1 < out_len) {
     out[n++] = '_';
   }
-  for (p = path; *p && n + 1 < out_len; p++) {
+  for (p = slug_path; *p && n + 1 < out_len; p++) {
     char c = *p;
     if (c == '/') {
       if (n > 0 && out[n - 1] != '_') {
@@ -146,6 +158,67 @@ static int path_has_traversal(const char* raw_path) {
   return 0;
 }
 
+static int append_route_header(LiHttpdRoute* out, const char* key, const char* val) {
+  char pair[96];
+  int n = snprintf(pair, sizeof(pair), "%s=%s", key, val);
+  if (n < 0 || (size_t)n >= sizeof(pair)) {
+    return -1;
+  }
+  size_t cur = strlen(out->headers);
+  if (cur > 0) {
+    if (cur + 1 >= sizeof(out->headers)) {
+      return -1;
+    }
+    out->headers[cur++] = ' ';
+    out->headers[cur] = '\0';
+  }
+  if (cur + (size_t)n + 1 >= sizeof(out->headers)) {
+    return -1;
+  }
+  strcat(out->headers, pair);
+  return 0;
+}
+
+static int parse_route_extras(const char* extras, LiHttpdRoute* out) {
+  char buf[LI_HTTPD_HEADERS_MAX];
+  char key[64];
+  char val[64];
+  size_t n = strlen(extras);
+  if (n == 0) {
+    return 0;
+  }
+  if (n >= sizeof(buf)) {
+    return -1;
+  }
+  memcpy(buf, extras, n + 1);
+  char* save = NULL;
+  for (char* tok = strtok_r(buf, " \t", &save); tok != NULL; tok = strtok_r(NULL, " \t", &save)) {
+    char* eq = strchr(tok, '=');
+    if (eq == NULL || eq == tok) {
+      httpd_set_error(2, "invalid route extra: expected key=value");
+      return -1;
+    }
+    *eq = '\0';
+    strncpy(key, tok, sizeof(key) - 1);
+    key[sizeof(key) - 1] = '\0';
+    strncpy(val, eq + 1, sizeof(val) - 1);
+    val[sizeof(val) - 1] = '\0';
+    for (char* k = key; *k; k++) {
+      if (*k >= 'A' && *k <= 'Z') {
+        *k = (char)(*k - 'A' + 'a');
+      }
+    }
+    if (key[0] == '\0' || val[0] == '\0') {
+      httpd_set_error(2, "invalid route extra: expected key=value");
+      return -1;
+    }
+    if (append_route_header(out, key, val) != 0) {
+      return -1;
+    }
+  }
+  return 0;
+}
+
 static int parse_route_key_value(const char* key, const char* action, int32_t priority, LiHttpdRoute* out) {
   char method[LI_HTTPD_METHOD_MAX];
   char raw_path[LI_HTTPD_PATH_MAX];
@@ -168,7 +241,7 @@ static int parse_route_key_value(const char* key, const char* action, int32_t pr
     return -1;
   }
   sp = p;
-  while (*p && *p != '#') {
+  while (*p && *p != '#' && !isspace((unsigned char)*p)) {
     p++;
   }
   size_t plen = (size_t)(p - sp);
@@ -177,9 +250,6 @@ static int parse_route_key_value(const char* key, const char* action, int32_t pr
   }
   memcpy(raw_path, sp, plen);
   raw_path[plen] = '\0';
-  while (plen > 0 && isspace((unsigned char)raw_path[plen - 1])) {
-    raw_path[--plen] = '\0';
-  }
   if (path_has_traversal(raw_path)) {
     httpd_set_error(3, "path must not contain .. or //");
     return -1;
@@ -192,6 +262,14 @@ static int parse_route_key_value(const char* key, const char* action, int32_t pr
   strncpy(out->action, action, sizeof(out->action) - 1);
   slug_route_name(method, raw_path, out->name, sizeof(out->name));
   out->priority = priority;
+  while (*p && isspace((unsigned char)*p)) {
+    p++;
+  }
+  if (*p != '\0' && *p != '#') {
+    if (parse_route_extras(p, out) != 0) {
+      return -1;
+    }
+  }
   return 0;
 }
 
@@ -582,7 +660,11 @@ int32_t li_rt_httpd_explain_config(const char* path) {
     fprintf(stdout, "method = \"%s\"\n", r->method);
     fprintf(stdout, "path = \"%s\"\n", r->path);
     fprintf(stdout, "path_kind = \"%s\"\n", path_kind_name(r->path_kind));
-    fprintf(stdout, "action = \"%s\"\n", r->action);
+    if (r->headers[0] != '\0') {
+      fprintf(stdout, "action = \"%s\" [%s]\n", r->action, r->headers);
+    } else {
+      fprintf(stdout, "action = \"%s\"\n", r->action);
+    }
   }
   if (g_route_count > 0) {
     fputc('\n', stdout);

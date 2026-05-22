@@ -52,10 +52,13 @@ echo "== validate-httpd-config (Python M1 schema) =="
 "$ROOT/scripts/lic-validate-httpd-config.sh" "$ROOT/packages/li-net-httpd/examples/auth_bearer.toml"
 
 echo "== explain-config (lic CLI + C/Python parity) =="
-CFG="$ROOT/li-tests/config_desugar/good/agent_gateway.toml"
 export LI_REPO_ROOT="$ROOT"
-"$LIC" httpd explain-config "$CFG" | diff -u "$ROOT/li-tests/config_desugar/good/agent_gateway.explained.golden" -
-chmod +x "$ROOT/scripts/check-httpd-explain-config.sh" "$ROOT/scripts/li-httpd-explain-config.sh"
-"$ROOT/scripts/check-httpd-explain-config.sh" "$CFG"
+for cfg in "$ROOT/li-tests/config_desugar/good"/*.toml; do
+  base="$(basename "$cfg" .toml)"
+  golden="$ROOT/li-tests/config_desugar/good/${base}.explained.golden"
+  "$LIC" httpd explain-config "$cfg" | diff -u "$golden" -
+done
+chmod +x "$ROOT/scripts/check-httpd-config-desugar.sh"
+"$ROOT/scripts/check-httpd-config-desugar.sh"
 
 echo "run_httpd_config: OK"

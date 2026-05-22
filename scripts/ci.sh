@@ -48,6 +48,7 @@ li_phase "httpd config + routing (M1 prep)"
 chmod +x "$ROOT/li-tests/run_httpd_config.sh" \
   "$ROOT/scripts/li-httpd-explain-config.sh" \
   "$ROOT/scripts/check-httpd-explain-config.sh" \
+  "$ROOT/scripts/check-httpd-config-desugar.sh" \
   "$ROOT/scripts/lic-validate-httpd-config.sh" \
   "$ROOT/scripts/flatten-httpd-config.py" \
   "$ROOT/scripts/validate-httpd-config.py"

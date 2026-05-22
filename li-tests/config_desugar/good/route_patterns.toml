@@ -1,0 +1,3 @@
+[routes]
+"POST /v1/*  x-model=gpt-4" = "proxy:pool_gpt4"
+"GET /files/**" = "static:files"

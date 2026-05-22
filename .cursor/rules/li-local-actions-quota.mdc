@@ -25,4 +25,6 @@ See also `../benchmarks/.cursor/rules/li-local-actions-quota.mdc` when both repo
 
 **Skill:** `run-local-ci-gha-quota` (agent-kit / `li-local-ci`) — full commands for `li-local-ci run-pr`, sweep, and merge gate.
 
+**Shell:** See `li-shell-visibility.mdc` — no redirect-and-grep for local CI; run foreground with `echo "… exit=$?"`.
+
 **Skill:** `run-local-pages-benchmarks` — refresh https://li-langverse.github.io/benchmarks/ and roadmap overview without Actions (`benchmarks/scripts/refresh-live-sites.sh`).

@@ -59,6 +59,13 @@ def flatten(cfg_path: Path) -> list[str]:
         if not rp.is_absolute():
             rp = (cfg_path.parent / rp).resolve()
         lines.append(f"document_root={rp}")
+    workers = server.get("workers")
+    if workers is not None:
+        w = str(workers).strip().lower()
+        if w in ("auto", ""):
+            lines.append("workers=auto")
+        else:
+            lines.append(f"workers={int(workers)}")
 
     auth = data.get("auth") or {}
     if isinstance(auth, dict):

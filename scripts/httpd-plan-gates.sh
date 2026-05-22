@@ -181,6 +181,16 @@ if [[ "${HTTPD_GATES_SKIP_LIC_BUILD:-0}" != "1" && "${HTTPD_RUN_EXPLOIT_RUNTIME:
   fi
 fi
 
+# m1-serve-production: long-lived daemon, keep-alive, static+proxy, workers (opt-out HTTPD_RUN_SERVE_PRODUCTION_TEST=0).
+if [[ "${HTTPD_GATES_SKIP_LIC_BUILD:-0}" != "1" && "${HTTPD_RUN_SERVE_PRODUCTION_TEST:-1}" == "1" ]]; then
+  if [[ -x "$ROOT/scripts/test-serve-production.sh" && -x "$ROOT/build/li-httpd" ]]; then
+    echo "==> test-serve-production.sh (m1-serve-production)"
+    "$ROOT/scripts/test-serve-production.sh" || fail "test-serve-production.sh failed"
+  else
+    fail "m1-serve-production: build/li-httpd missing (run build-li-httpd.sh)"
+  fi
+fi
+
 # m1-nginx-bench-parity: tier5 verify + optional wrk ratios (HTTPD_BENCH_SKIP_TIMING=1 in lean CI).
 if [[ "${HTTPD_GATES_SKIP_LIC_BUILD:-0}" != "1" && "${HTTPD_RUN_BENCH_PARITY:-1}" == "1" ]]; then
   if [[ -x "$ROOT/scripts/check-tier5-nginx-bench-parity.sh" && -x "$ROOT/build/li-httpd" ]]; then

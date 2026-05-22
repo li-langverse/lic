@@ -155,6 +155,8 @@ int32_t httpd_add_upstream_peer_i(int32_t port);
 void httpd_clear_upstream_peers_i(void);
 int32_t httpd_tick_active_health_probes_i(void);
 int32_t httpd_load_runtime_config_i(intptr_t path);
+int32_t httpd_fork_workers_i(void);
+int32_t httpd_config_workers_i(void);
 int32_t httpd_config_listen_port_i(void);
 intptr_t httpd_config_doc_root_i(void);
 intptr_t net_lit_loopback_i(void);

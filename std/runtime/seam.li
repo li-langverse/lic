@@ -522,6 +522,16 @@ extern proc tcp_send_nb_i(conn: var int, buf: var ptr, off: var int, n: var int)
   ensures true
   decreases 0
 
+extern proc httpd_fork_workers_i() -> int
+  requires true
+  ensures true
+  decreases 0
+
+extern proc httpd_config_workers_i() -> int
+  requires true
+  ensures true
+  decreases 0
+
 extern proc httpd_epoll_serve_i(port: var int, root: var ptr) -> int
   requires 0 < port
   ensures true

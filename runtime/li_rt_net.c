@@ -16,6 +16,8 @@
 #include <sys/stat.h>
 #include <unistd.h>
 #include <stdint.h>
+#include <signal.h>
+#include <sys/wait.h>
 #include <time.h>
 
 #ifdef __linux__
@@ -272,6 +274,8 @@ static int g_up_peer_count = 0;
 static int g_lb_rr = 0;
 static int g_lb_mode = 0; /* 0=round_robin, 1=least_conn */
 static int32_t g_config_listen_port = 0;
+static int32_t g_config_workers = 1; /* 0 = auto (CPU count); overridden by LI_HTTPD_WORKERS */
+static int g_httpd_workers_forked = 0;
 static int g_httpd_epfd = -1;
 static int g_li_proxy_mode = 0;
 #ifdef __linux__
@@ -412,6 +416,68 @@ static void tcp_ack_now(int32_t fd) {
   (void)fd;
 }
 
+static int httpd_cpu_count(void) {
+  long n = sysconf(_SC_NPROCESSORS_ONLN);
+  if (n < 1) {
+    return 1;
+  }
+  if (n > 64) {
+    return 64;
+  }
+  return (int)n;
+}
+
+static int httpd_resolve_workers(void) {
+  const char* env = getenv("LI_HTTPD_WORKERS");
+  int32_t n = g_config_workers;
+  if (env && env[0]) {
+    if (strcmp(env, "auto") == 0) {
+      n = 0;
+    } else {
+      n = (int32_t)atoi(env);
+    }
+  }
+  if (n <= 0) {
+    n = (int32_t)httpd_cpu_count();
+  }
+  if (n < 1) {
+    n = 1;
+  }
+  if (n > 64) {
+    n = 64;
+  }
+  return (int)n;
+}
+
+int32_t httpd_fork_workers_i(void) {
+#ifndef __linux__
+  return 1;
+#else
+  if (g_httpd_workers_forked) {
+    return (int32_t)httpd_resolve_workers();
+  }
+  int n = httpd_resolve_workers();
+  if (n <= 1) {
+    g_httpd_workers_forked = 1;
+    return 1;
+  }
+  for (int i = 1; i < n; i++) {
+    pid_t pid = fork();
+    if (pid < 0) {
+      return -1;
+    }
+    if (pid == 0) {
+      g_httpd_workers_forked = 1;
+      return (int32_t)n;
+    }
+  }
+  g_httpd_workers_forked = 1;
+  return (int32_t)n;
+#endif
+}
+
+int32_t httpd_config_workers_i(void) { return (int32_t)httpd_resolve_workers(); }
+
 int32_t tcp_listen(int32_t port) {
   int fd = socket(AF_INET, SOCK_STREAM, 0);
   if (fd < 0) {
@@ -419,6 +485,11 @@ int32_t tcp_listen(int32_t port) {
   }
   int one = 1;
   setsockopt(fd, SOL_SOCKET, SO_REUSEADDR, &one, sizeof(one));
+#ifdef SO_REUSEPORT
+  if (httpd_resolve_workers() > 1) {
+    setsockopt(fd, SOL_SOCKET, SO_REUSEPORT, &one, sizeof(one));
+  }
+#endif
   struct sockaddr_in addr;
   memset(&addr, 0, sizeof(addr));
   addr.sin_family = AF_INET;
@@ -4516,6 +4587,7 @@ int32_t httpd_load_runtime_config_i(intptr_t path) {
   }
   httpd_clear_upstream_peers_i();
   g_config_listen_port = 0;
+  g_config_workers = 1;
   g_doc_root_len = 0;
   g_proxy_all = 0;
   g_route_count = 0;
@@ -4575,6 +4647,12 @@ int32_t httpd_load_runtime_config_i(intptr_t path) {
     trim_line(val);
     if (strcmp(key, "listen_port") == 0) {
       g_config_listen_port = (int32_t)atoi(val);
+    } else if (strcmp(key, "workers") == 0) {
+      if (strcmp(val, "auto") == 0) {
+        g_config_workers = 0;
+      } else {
+        g_config_workers = (int32_t)atoi(val);
+      }
     } else if (strcmp(key, "document_root") == 0) {
       g_doc_root_len = strlen(val);
       if (g_doc_root_len > 0 && g_doc_root_len < sizeof(g_doc_root)) {

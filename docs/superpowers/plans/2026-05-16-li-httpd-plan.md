@@ -85,7 +85,7 @@ todos:
     status: completed
   - id: m1-serve-production
     content: "Production HTTP/1.1 daemon (workers, keep-alive, static+proxy) — beyond serve-once stub/oracle"
-    status: pending
+    status: completed
   - id: m1-upstream-keepalive
     content: "Upstream HTTP keepalive pool to inference backends (no stale-connection 502s)"
     status: pending

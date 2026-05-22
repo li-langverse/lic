@@ -34,8 +34,10 @@ GitHub Actions may be **skipped, queued forever, or red** when org minutes are c
 ```bash
 # lic — mirrors scripts/ci.sh (build, li-tests, tier-0, security, …)
 cd lic && ./scripts/local-ci.sh
-# Optional Ubuntu 24.04 container parity:
+# Optional Ubuntu 24.04 container parity (prebuilt image — no apt/llvm each run):
+cd lic && ./scripts/local-ci.sh --prepare-docker
 cd lic && ./scripts/local-ci.sh --docker
+# Image: ghcr.io/li-langverse/lic-ci:ubuntu24-llvm22 (see docs/ecosystem/local-ci-docker-images.md)
 
 # benchmarks
 cd benchmarks && ./scripts/ci.sh   # if present; else see repo README

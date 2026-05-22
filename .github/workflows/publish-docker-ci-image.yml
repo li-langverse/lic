@@ -1,0 +1,58 @@
+# Build and push the prebuilt lic CI image to GitHub Container Registry.
+# Consumers: ./scripts/prepare-docker-ci-image.sh && ./scripts/local-ci.sh --docker
+# Auth: GITHUB_TOKEN only (no repo secrets required for public packages).
+name: Publish CI Docker image
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - docker/ci-ubuntu24-llvm22/**
+      - scripts/ci-install-llvm.sh
+      - .github/workflows/publish-docker-ci-image.yml
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  packages: write
+
+env:
+  REGISTRY: ghcr.io
+  IMAGE_NAME: li-langverse/lic-ci
+
+jobs:
+  publish:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Log in to GHCR
+        uses: docker/login-action@v3
+        with:
+          registry: ${{ env.REGISTRY }}
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Extract metadata
+        id: meta
+        uses: docker/metadata-action@v5
+        with:
+          images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
+          tags: |
+            type=raw,value=ubuntu24-llvm22
+            type=raw,value=latest,enable={{is_default_branch}}
+
+      - name: Build and push
+        uses: docker/build-push-action@v6
+        with:
+          context: docker/ci-ubuntu24-llvm22
+          push: true
+          tags: ${{ steps.meta.outputs.tags }}
+          labels: ${{ steps.meta.outputs.labels }}
+
+      - name: Usage hint
+        run: |
+          echo "Pull on a dev machine:"
+          echo "  docker pull ghcr.io/li-langverse/lic-ci:ubuntu24-llvm22"
+          echo "  cd lic && ./scripts/prepare-docker-ci-image.sh"
+          echo "  ./scripts/local-ci.sh --docker"

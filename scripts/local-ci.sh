@@ -4,7 +4,11 @@
 # Usage:
 #   ./scripts/local-ci.sh              # native (macOS or Linux)
 #   ./scripts/local-ci.sh --memory       # after ci.sh: leak/RSS + security corpus
-#   ./scripts/local-ci.sh --docker     # Ubuntu 24.04 container (closest to GHA linux job)
+#   ./scripts/local-ci.sh --docker     # prebuilt GHCR image (ubuntu24 + LLVM 22)
+#   ./scripts/local-ci.sh --prepare-docker  # pull/build image only, then exit
+#
+# Env: LI_CI_DOCKER_IMAGE (default ghcr.io/li-langverse/lic-ci:ubuntu24-llvm22)
+# See docs/ecosystem/local-ci-docker-images.md
 #
 # Exits non-zero on the same failures as scripts/ci.sh.
 set -euo pipefail
@@ -12,22 +16,29 @@ set -euo pipefail
 ROOT="$(cd "$(dirname "$0")/.." && pwd)"
 USE_DOCKER=0
 RUN_MEMORY=0
+PREPARE_DOCKER=0
 for arg in "$@"; do
   case "$arg" in
     --docker) USE_DOCKER=1 ;;
     --memory) RUN_MEMORY=1 ;;
+    --prepare-docker) PREPARE_DOCKER=1 ;;
     -h|--help)
-      sed -n '2,12p' "$0"
+      sed -n '2,14p' "$0"
       exit 0
       ;;
     *)
-      echo "unknown arg: $arg (try --docker, --memory, or --help)" >&2
+      echo "unknown arg: $arg (try --docker, --prepare-docker, --memory, or --help)" >&2
       exit 2
       ;;
   esac
 done
 
+LI_CI_DOCKER_IMAGE="${LI_CI_DOCKER_IMAGE:-ghcr.io/li-langverse/lic-ci:ubuntu24-llvm22}"
+
 run_docker_ci() {
+  chmod +x "$ROOT/scripts/prepare-docker-ci-image.sh"
+  LI_CI_DOCKER_IMAGE="$LI_CI_DOCKER_IMAGE" "$ROOT/scripts/prepare-docker-ci-image.sh"
+
   local stage="/tmp/li-local-ci-$$"
   # shellcheck disable=SC2064
   trap "rm -rf '$stage'" EXIT
@@ -43,21 +54,16 @@ run_docker_ci() {
     cp -a "$ROOT/." "$stage/"
     rm -rf "$stage/build" "$stage/.git" "$stage/.venv-plot" "$stage/benchmarks/results"
   fi
-  docker run --rm -v "$stage:/src" -w /src ubuntu:24.04 bash -lc '
-    set -euo pipefail
-    export DEBIAN_FRONTEND=noninteractive
-    apt-get update -qq
-    apt-get install -y -qq cmake ninja-build wget gnupg zlib1g-dev libzstd-dev python3 rsync
-    wget -qO /tmp/llvm.sh https://apt.llvm.org/llvm.sh
-    chmod +x /tmp/llvm.sh
-    /tmp/llvm.sh 22
-    apt-get install -y -qq clang-22 llvm-22-dev lld-22
-    export LLVM_DIR=/usr/lib/llvm-22/lib/cmake/llvm
-    export CC=clang-22
-    export CXX=clang++-22
-    chmod +x scripts/ci.sh scripts/build.sh scripts/local-ci.sh
-    ./scripts/ci.sh
-  '
+  echo "==> docker run $LI_CI_DOCKER_IMAGE"
+  docker run --rm \
+    -e LLVM_DIR=/usr/lib/llvm-22/lib/cmake/llvm \
+    -e CC=clang-22 \
+    -e CXX=clang++-22 \
+    -e LI_REPO_ROOT=/src \
+    -v "$stage:/src" \
+    -w /src \
+    "$LI_CI_DOCKER_IMAGE" \
+    bash -lc 'chmod +x scripts/ci.sh scripts/build.sh scripts/local-ci.sh; ./scripts/ci.sh'
 }
 
 detect_llvm_dir() {
@@ -116,12 +122,23 @@ check_native_prereqs() {
   detect_llvm_dir
 }
 
+if [[ "$PREPARE_DOCKER" -eq 1 ]]; then
+  if ! command -v docker >/dev/null 2>&1; then
+    echo "local-ci: docker not found" >&2
+    exit 1
+  fi
+  chmod +x "$ROOT/scripts/prepare-docker-ci-image.sh"
+  LI_CI_DOCKER_IMAGE="$LI_CI_DOCKER_IMAGE" "$ROOT/scripts/prepare-docker-ci-image.sh"
+  echo "local-ci: image ready ($LI_CI_DOCKER_IMAGE)"
+  exit 0
+fi
+
 if [[ "$USE_DOCKER" -eq 1 ]]; then
   if ! command -v docker >/dev/null 2>&1; then
     echo "local-ci: docker not found" >&2
     exit 1
   fi
-  echo "==> local-ci (docker / ubuntu-24.04)"
+  echo "==> local-ci (docker $LI_CI_DOCKER_IMAGE)"
   run_docker_ci
   echo "local-ci: ok (docker)"
   exit 0

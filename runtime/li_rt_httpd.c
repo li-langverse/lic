@@ -158,6 +158,41 @@ static int path_has_traversal(const char* raw_path) {
   return 0;
 }
 
+/* M1 ingress allowlist — must match scripts/httpd_config.py */
+static const char* const k_ingress_header_allow[] = {
+    "authorization", "content-type", "accept", "traceparent", "x-request-id",
+    "x-agent-id", "x-model", "idempotency-key", NULL};
+
+static int header_name_allowed(const char* name) {
+  for (size_t i = 0; k_ingress_header_allow[i] != NULL; i++) {
+    if (strcmp(name, k_ingress_header_allow[i]) == 0) {
+      return 1;
+    }
+  }
+  return 0;
+}
+
+static int validate_ingress_header_name(const char* name) {
+  static const char* const hop_by_hop[] = {
+      "connection", "keep-alive", "proxy-authenticate", "proxy-authorization",
+      "te", "trailer", "transfer-encoding", "upgrade", NULL};
+  for (size_t i = 0; hop_by_hop[i] != NULL; i++) {
+    if (strcmp(name, hop_by_hop[i]) == 0) {
+      httpd_set_error(2, "hop-by-hop header not allowed in route extras");
+      return -1;
+    }
+  }
+  if (strncmp(name, "x-upstream-", 11) == 0 || strncmp(name, "x-route-", 8) == 0) {
+    httpd_set_error(2, "forbidden header prefix in route extras");
+    return -1;
+  }
+  if (!header_name_allowed(name)) {
+    httpd_set_error(2, "header not in ingress allowlist (M1 route extras)");
+    return -1;
+  }
+  return 0;
+}
+
 static int append_route_header(LiHttpdRoute* out, const char* key, const char* val) {
   char pair[96];
   int n = snprintf(pair, sizeof(pair), "%s=%s", key, val);
@@ -210,6 +245,9 @@ static int parse_route_extras(const char* extras, LiHttpdRoute* out) {
     }
     if (key[0] == '\0' || val[0] == '\0') {
       httpd_set_error(2, "invalid route extra: expected key=value");
+      return -1;
+    }
+    if (validate_ingress_header_name(key) != 0) {
       return -1;
     }
     if (append_route_header(out, key, val) != 0) {

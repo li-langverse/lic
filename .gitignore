@@ -44,4 +44,9 @@ build-asan/
 
 # Lean 4 (docs/semantics)
 docs/semantics/.lake/
+# Autonomous plan-loop (agent logs, goals, overnight tee — local only)
 data/httpd-plan-loop/
+!data/httpd-plan-loop/state.json.example
+
+# Local CI sweep output (benchmarks local-ci)
+data/local-ci*.log

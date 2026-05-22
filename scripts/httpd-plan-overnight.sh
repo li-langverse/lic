@@ -29,7 +29,7 @@ export LI_HTTPD_PLAN_AGENT="${LI_HTTPD_PLAN_AGENT:-code_implementer}"
 export LI_HTTPD_PLAN_AGENT_TIMEOUT_SEC="${LI_HTTPD_PLAN_AGENT_TIMEOUT_SEC:-2700}"
 export LI_CONTROL_PLANE_STORE="${LI_CONTROL_PLANE_STORE:-disk}"
 
-MAX="${HTTPD_PLAN_OVERNIGHT_MAX:-4}"
+MAX="${HTTPD_PLAN_OVERNIGHT_MAX:-30}"
 
 {
   echo "==> httpd-plan-overnight start $(date -u -Iseconds)"

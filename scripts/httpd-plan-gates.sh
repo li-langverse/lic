@@ -62,6 +62,12 @@ else
     echo "==> verify-math-physics-goldens.sh"
     "$ROOT/scripts/verify-math-physics-goldens.sh" || fail "math/physics golden verify failed"
   fi
+  if have_clang && [[ -x "$ROOT/scripts/build-li-httpd.sh" ]]; then
+    echo "==> build-li-httpd.sh (m0 ship gate)"
+    "$ROOT/scripts/build-li-httpd.sh" || fail "build-li-httpd.sh failed"
+  else
+    echo "==> skip build-li-httpd (clang not in PATH)"
+  fi
 fi
 # Runtime oracle may lag; compile gate is mandatory for CI.
 if [[ "${HTTPD_GATES_RUN_MATCH_ROUTES:-0}" == "1" ]]; then
@@ -146,9 +152,14 @@ if [[ -x "$ROOT/scripts/check-rng-exploit-suite.sh" ]]; then
   "$ROOT/scripts/check-rng-exploit-suite.sh"
 fi
 
-if [[ "${HTTPD_GATES_SKIP_LIC_BUILD:-0}" != "1" && "${HTTPD_RUN_BEARER_TEST:-0}" == "1" && -f "$ROOT/scripts/test-auth-bearer.sh" && -x "$ROOT/build/li-httpd" ]]; then
-  echo "==> test-auth-bearer.sh"
-  "$ROOT/scripts/test-auth-bearer.sh" || fail "test-auth-bearer.sh failed"
+# m0-ship-gate-full: bearer smoke on running build/li-httpd (opt-out with HTTPD_RUN_BEARER_TEST=0).
+if [[ "${HTTPD_GATES_SKIP_LIC_BUILD:-0}" != "1" && "${HTTPD_RUN_BEARER_TEST:-1}" == "1" ]]; then
+  if [[ -f "$ROOT/scripts/test-auth-bearer.sh" && -x "$ROOT/build/li-httpd" ]]; then
+    echo "==> test-auth-bearer.sh"
+    "$ROOT/scripts/test-auth-bearer.sh" || fail "test-auth-bearer.sh failed"
+  else
+    fail "m0 ship gate: build/li-httpd missing (run build-li-httpd.sh)"
+  fi
 fi
 
 echo "httpd-plan-gates: OK"

@@ -28,6 +28,7 @@ All notable changes to Li are documented here. The format follows
 
 ### Fixed
 
+- **HTTPd M0 ship gate:** `build-li-httpd.sh` builds `main.li` with LLVM env; `httpd-plan-gates.sh` builds `build/li-httpd` and runs `test-auth-bearer.sh` by default — [2026-05-22-httpd-m0-ship-gate-full.md](docs/release-notes/2026-05-22-httpd-m0-ship-gate-full.md).
 - **w0-lean-gate (httpd):** `check-httpd-lean-gate.sh`, callee-ensures VC witness, `li_rt_log` link with `li_rt_net`, closed `http_parse_forward_closed.li` — [2026-05-22-w0-lean-gate-httpd.md](docs/release-notes/2026-05-22-w0-lean-gate-httpd.md).
 - **HTTPd M1 bearer auth gate:** non-Linux `epoll_ctl_add_listen_i` stub, `build-li-httpd.sh`, plan gates run `test-auth-bearer.sh` on `build/li-httpd` — [2026-05-22-httpd-m1-bearer-auth-gate.md](docs/release-notes/2026-05-22-httpd-m1-bearer-auth-gate.md).
 - **HTTPd routing CI:** rebase plan-loop branch on `main`; `run_httpd_config.sh` — `--allow-open-vc` + `HTTPD_SKIP_LI_ROUTING_BIN` — `docs/release-notes/2026-05-22-httpd-rebase-main-post-164.md`.

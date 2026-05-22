@@ -82,7 +82,7 @@ todos:
     status: completed
   - id: m0-ship-gate-full
     content: "Ship gate: lic build + li-httpd binary; httpd-plan-gates without SKIP; test-auth-bearer.sh on running server"
-    status: pending
+    status: completed
   - id: m1-serve-production
     content: "Production HTTP/1.1 daemon (workers, keep-alive, static+proxy) — beyond serve-once stub/oracle"
     status: pending

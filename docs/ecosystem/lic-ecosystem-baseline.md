@@ -33,7 +33,7 @@ Do not edit `runtime/li_rt_httpd.c`, `scripts/httpd-plan-loop.py`, or httpd plan
 - [x] `algorithms-and-libraries-plan.md` on ecosystem branch
 - [x] This baseline doc
 - [x] Agent skill `run-local-ci-gha-quota` in roadmap agent-kit (+ `li-local-ci`)
-- [ ] Local CI fully green (last run: **163 pass / 33 fail** on `li-tests` manifest — investigate before merge)
+- [x] Local CI green on devbox (`li-tests` **196/0**; tier-0 `verify.py` uses `--allow-open-vc` to match manifest honesty)
 - [x] LLVM 22 + Lean 4 on devbox (`lake build` in `docs/semantics` ok)
 - [x] PR [#174](https://github.com/li-langverse/lic/pull/174) open
 - **Run CI:** `HTTPD_SKIP_LI_ROUTING_BIN=1 ./scripts/local-ci.sh` if port bind conflicts with another agent

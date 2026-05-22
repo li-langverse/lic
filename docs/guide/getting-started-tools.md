@@ -12,13 +12,19 @@ export CC=clang CXX=clang++
 ./build/compiler/lic/lic --version
 ```
 
-## Linux (Ubuntu)
+## Linux (Debian 12 / Ubuntu)
 
 ```bash
-sudo apt-get install cmake ninja-build clang-18 llvm-18-dev
+sudo apt-get install cmake ninja-build clang-18 llvm-18-dev lld-18
 export LLVM_DIR=/usr/lib/llvm-18/lib/cmake/llvm
 export CC=clang-18 CXX=clang++-18
 ./scripts/build.sh
+```
+
+**Dedicated dev box (e.g. `engine`):** use the idempotent script and agent-oriented guide — [devbox Li development](devbox-li-development.md).
+
+```bash
+sudo bash scripts/setup-li-devbox.sh --full
 ```
 
 ## Windows

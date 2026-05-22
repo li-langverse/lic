@@ -22,7 +22,7 @@ proc main() -> int
   return 0
 ```
 
-Build and run (after [installing the tools](docs/guide/getting-started-tools.md) once):
+Build and run (after [installing the tools](docs/guide/getting-started-tools.md) once; dev box: [devbox Li development](docs/guide/devbox-li-development.md)):
 
 ```bash
 ./scripts/build.sh

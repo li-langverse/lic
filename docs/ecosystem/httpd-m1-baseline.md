@@ -8,28 +8,31 @@
 
 | PR | What |
 |----|------|
-| #153 | Proxy EPOLLOUT, seam ABI, ptr codegen |
-| #156 | E0360 extern pointer-width ABI guard |
-| #157 | Static recv without index cache; config proxy epoll |
-| #158 | `packages/li-log`, access sink, redaction tests |
+| #153–#158 | Proxy/runtime M1, li-log, E0360 ABI |
+| #162 | Autonomous plan loop seed + routing compile fix |
+| #172 | Goal-directed `httpd-plan-loop.py` (`code_implementer`, stream fixes) |
+| #174 | Ecosystem phase 0: LLVM 22, Lean CI, `li-tests` manifest honesty, phase **8p** plan |
 
 **Runtime:** `runtime/li_rt_net.c`, `runtime/li_rt_httpd.c`, `runtime/li_rt_log.c`  
 **Packages:** `packages/li-net-httpd`, `packages/li-http`, `packages/li-log`  
-**Scripts:** `httpd_config.py`, overlap/validate/flatten tooling (see open PR #160)
+**Scripts:** `httpd_config.py`, overlap/validate/flatten, `scripts/httpd-plan-loop.py`
 
-## Stale PRs — close, do not merge wholesale
+## Closed / superseded (2026-05-22 hygiene)
 
 | PR | Reason |
 |----|--------|
-| #87, #84, #130, #119 | Parallel history; C/proxy paths superseded by #153–#158 |
-| #149 | Docs-only; fold into baseline or close |
+| #87, #84, #119, #130, #160, #149 | Absorbed by #173 or already on `main` via #153–#162 |
+| Old httpd drafts | C/proxy experiments superseded by merged runtime work |
 
-## Open integration (target one PR)
+**Branches left on GitHub for archaeology** — do not reopen PRs; cherry-pick onto a fresh branch from `main` if needed.
+
+## Active integration (one PR)
 
 | Branch / PR | Content |
 |-------------|---------|
-| `cursor/httpd-plan-continue-54aa` (#160) | Overlap reject, validate/flatten, Bearer auth |
-| Plan loop | `scripts/httpd-plan-loop.py` + goal-directed `code_implementer` (li-cursor-agents) |
+| **`cursor/httpd-plan-loop-54aa` (#173)** | M1 routing, Bearer auth, TOML desugar, rate-limit/LB smokes — **rebased on `main` after #172+#174** |
+
+Ecosystem gap loop: **`cursor/lic-ecosystem-plan-loop-54aa`** — merged (#174); continue phase 1 on a **new branch from `main`**.
 
 ## Next todos (plan loop order)
 
@@ -45,8 +48,8 @@
 export CURSOR_API_KEY=cursor_...
 export LI_CURSOR_AGENTS_ROOT=/path/to/li-cursor-agents
 cd lic
-./scripts/httpd-plan-loop.py --once    # one SDK iteration
-./scripts/httpd-plan-loop.py --max 20 # overnight-style
+./scripts/httpd-plan-gates.sh
+./scripts/httpd-plan-loop.py --once
 ```
 
 Preflight (optional): `cd ../benchmarks && ./scripts/agent-preflight.sh`
@@ -56,5 +59,5 @@ Preflight (optional): `cd ../benchmarks && ./scripts/agent-preflight.sh`
 1. Read this file + plan YAML todos.  
 2. Run `./scripts/httpd-plan-gates.sh`.  
 3. `./scripts/httpd-plan-loop.py --once` (or implement todo manually).  
-4. Push PR; human merges after CI + review.  
-5. **Blocked:** full `li-net-httpd` Li build without `import std.runtime.seam` (E0202 proxy externs).
+4. Push to **#173** only; human merges after CI green.  
+5. **Do not** stack new httpd PRs until #173 lands or is split.

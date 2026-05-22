@@ -698,6 +698,13 @@ def main() -> int:
         return run_tier2_all(runs=args.runs, out=args.out, verify=not args.skip_verify)
 
     if args.tier == 3:
+        print(
+            "tier 3 is HTTP (run from li-langverse/benchmarks: run-tier5-http-bench.sh)",
+            file=sys.stderr,
+        )
+        return 0
+
+    if args.tier == 5:
         script = REPO / "benchmarks" / "harness" / "bench_ecosystem.py"
         return subprocess.call([sys.executable, str(script), "--runs", str(args.runs)])
 

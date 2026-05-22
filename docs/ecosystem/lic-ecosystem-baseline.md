@@ -8,9 +8,9 @@
 
 | Item | Value |
 |------|--------|
-| Implementation branch | `cursor/lic-ecosystem-plan-loop-54aa` (from `main`) |
-| Docs import | `algorithms-and-libraries-plan.md` from `cursor/httpd-plan-loop-goal-directed` (PR #172) — merged here for agents without waiting on httpd PR stack |
-| Loop driver | `scripts/lic-ecosystem-plan-loop.py` (phase 1; not started until dry-run approved) |
+| Implementation branch | **New branch from `main`** after [#174](https://github.com/li-langverse/lic/pull/174) merge (phase 0 landed) |
+| Phase 0 on `main` | [#174](https://github.com/li-langverse/lic/pull/174) — algorithms plan, LLVM 22, Lean CI, manifest honesty, phase **8p** |
+| Loop driver | `scripts/lic-ecosystem-plan-loop.py` (phase 1; start on fresh branch) |
 
 ## CI while GHA quota exhausted
 
@@ -23,7 +23,7 @@
 | Track | Branch | Owner |
 |-------|--------|--------|
 | **httpd M1** | `cursor/httpd-plan-loop-54aa` (#173) | Webserver agent |
-| **httpd loop infra** | `cursor/httpd-plan-loop-goal-directed` (#172) | Merge to `main` when ready |
+| **httpd loop infra** | — | **Merged** [#172](https://github.com/li-langverse/lic/pull/172) to `main` |
 | **Ecosystem gaps** | `cursor/lic-ecosystem-plan-loop-54aa` | This loop |
 
 Do not edit `runtime/li_rt_httpd.c`, `scripts/httpd-plan-loop.py`, or httpd plan YAML on the ecosystem branch unless fixing a **shared** gate (build/CI only).
@@ -36,7 +36,7 @@ Do not edit `runtime/li_rt_httpd.c`, `scripts/httpd-plan-loop.py`, or httpd plan
 - [x] Local CI green on devbox (`li-tests` **196/0**; tier-0 `verify.py` uses `--allow-open-vc` to match manifest honesty)
 - [ ] **8p** parallel CI — master plan §8p; today sequential `run_all` (~5–10 min); target `LI_TEST_JOBS` + isolated build dirs
 - [x] LLVM 22 + Lean 4 on devbox (`lake build` in `docs/semantics` ok)
-- [x] PR [#174](https://github.com/li-langverse/lic/pull/174) open
+- [x] PR [#174](https://github.com/li-langverse/lic/pull/174) **merged** to `main`
 - **Run CI:** `HTTPD_SKIP_LI_ROUTING_BIN=1 ./scripts/local-ci.sh` if port bind conflicts with another agent
 - [ ] PR opened; human `merge-approved` after review
 - [ ] Phase 1: `lic-ecosystem-plan-loop.py` + `data/lic-ecosystem-plan-loop/state.json`

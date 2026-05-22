@@ -310,6 +310,22 @@ Implement **8p-a** before **8p-c** (largest CI win for least compiler risk). Tra
 
 ---
 
+## Deferred — GHCR release images (prebuilt `lic`)
+
+**Today:** `ghcr.io/li-langverse/lic-ci:*` images are **development/CI toolchain only** (OS + LLVM 22 + cmake/ninja/python). They do **not** ship a built `lic` binary; `./scripts/local-ci.sh --docker` mounts the repo and runs `scripts/build.sh` + `ci.sh` so the compiler always matches the branch under test.
+
+**Later (after compiler stabilizes):** publish **release** container tags that include a **pinned `lic` release** (and optionally `lit`/`lip` smoke tools) for consumers who should not compile from source. **Not started** while `lic` still changes frequently (httpd, contracts, LLVM pins, manifest gates).
+
+| When | Deliverable |
+|------|-------------|
+| **Now** | `debian12-llvm22` / `ubuntu24-llvm22` toolchain images; podman preferred locally |
+| **After stable `lic` cadence** | e.g. `lic-vX.Y.Z` image with baked binary + documented `LI_LIC_VERSION` |
+| **Gate to start** | Few breaking changes per month; release tags drive downstream pins; CI green without rebuilding compiler on every small change |
+
+See [local-ci-docker-images.md](../ecosystem/local-ci-docker-images.md).
+
+---
+
 ## Documentation & provability honesty (cross-cutting)
 
 **Problem:** Handbook and specs must not read as if Lean, full disjoint proofs, decorators, or math lowering already ship when they do not. Contributors need a **single gap register** and **compiler-task linkage**.
@@ -488,6 +504,7 @@ Runnable on `dev` after `./scripts/build.sh`:
 | **8b–8d v2** | — | Remote registry, full trust store |
 | **Vision-LLM** | — | Agent JSON diagnostics completion |
 | **8p** | — | Parallel `li-tests` / workspace / `lic --jobs`; CI wall-time SLO |
+| **Release containers** | — | GHCR images with **prebuilt `lic`** (toolchain-only images exist now; [§ deferred](#deferred--ghcr-release-images-prebuilt-lic)) |
 
 **Open G-* register:** every row in [provability-gaps.md](../verification/provability-gaps.md#still-open-report-every-session) — **none Done**; **Partial** is the best current status.
 

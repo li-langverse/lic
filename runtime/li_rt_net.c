@@ -3656,6 +3656,11 @@ int32_t epoll_ctl_add_i(int32_t epfd, int32_t fd) {
   (void)fd;
   return -1;
 }
+int32_t epoll_ctl_add_listen_i(int32_t epfd, int32_t fd) {
+  (void)epfd;
+  (void)fd;
+  return -1;
+}
 int32_t epoll_ctl_del_i(int32_t epfd, int32_t fd) {
   (void)epfd;
   (void)fd;

@@ -20,6 +20,44 @@ ROUTE_KEY_RE = re.compile(
 )
 HEADER_EXTRA_RE = re.compile(r"^([a-zA-Z0-9_-]+)=([^\s]+)$")
 
+# M1 ingress allowlist (plan § header controls — route-key extras are client→gateway hints)
+INGRESS_HEADER_ALLOW = frozenset(
+    {
+        "authorization",
+        "content-type",
+        "accept",
+        "traceparent",
+        "x-request-id",
+        "x-agent-id",
+        "x-model",
+        "idempotency-key",
+    }
+)
+HOP_BY_HOP_HEADERS = frozenset(
+    {
+        "connection",
+        "keep-alive",
+        "proxy-authenticate",
+        "proxy-authorization",
+        "te",
+        "trailer",
+        "transfer-encoding",
+        "upgrade",
+    }
+)
+
+
+def validate_ingress_header_name(name: str) -> None:
+    n = name.lower().strip()
+    if n in HOP_BY_HOP_HEADERS:
+        raise ConfigError(f"hop-by-hop header not allowed in route extras: {name!r}")
+    if n.startswith("x-upstream-") or n.startswith("x-route-"):
+        raise ConfigError(f"forbidden header prefix in route extras: {name!r}")
+    if n not in INGRESS_HEADER_ALLOW:
+        raise ConfigError(
+            f"header {name!r} not in ingress allowlist (M1: {sorted(INGRESS_HEADER_ALLOW)})"
+        )
+
 
 @dataclass
 class CanonicalRoute:
@@ -33,7 +71,12 @@ class CanonicalRoute:
 
 
 def slug_route_name(method: str, path: str) -> str:
-    s = f"{method.lower()}_{path.strip('/')}".replace("/", "_").replace("*", "wild")
+    p = path
+    if p.endswith("/**"):
+        p = p[:-3] + "_rest"
+    elif p.endswith("/*"):
+        p = p[:-2] + "_wild"
+    s = f"{method.lower()}_{p.strip('/')}".replace("/", "_").replace("*", "wild")
     s = re.sub(r"[^a-z0-9_]+", "_", s).strip("_")
     return s or "route"
 
@@ -59,7 +102,9 @@ def parse_route_key(key: str, action: str, priority: int) -> CanonicalRoute:
             hm = HEADER_EXTRA_RE.match(part)
             if not hm:
                 raise ConfigError(f"invalid route extra: {part!r} in {key!r}")
-            headers[hm.group(1).lower()] = hm.group(2)
+            hname = hm.group(1).lower()
+            validate_ingress_header_name(hname)
+            headers[hname] = hm.group(2)
     if ".." in raw_path or "//" in raw_path.replace("://", ""):
         raise ConfigError(f"path must not contain .. or //: {raw_path}")
     norm_path, kind = parse_path_kind(raw_path)
@@ -74,12 +119,52 @@ def parse_route_key(key: str, action: str, priority: int) -> CanonicalRoute:
     )
 
 
+def parse_canonical_routes(rows: list[Any]) -> list[CanonicalRoute]:
+    out: list[CanonicalRoute] = []
+    for row in rows:
+        if not isinstance(row, dict):
+            raise ConfigError("[[routes]] entry must be a table")
+        method = str(row.get("method", "")).strip()
+        path = str(row.get("path", "")).strip()
+        action = str(row.get("action", "")).strip()
+        if not method or not path or not action:
+            raise ConfigError("[[routes]] requires method, path, action")
+        if ".." in path or "//" in path.replace("://", ""):
+            raise ConfigError(f"path must not contain .. or //: {path}")
+        kind = str(row.get("path_kind", "exact")).strip()
+        if kind not in ("exact", "prefix", "prefix_strip"):
+            raise ConfigError(f"invalid path_kind: {kind!r}")
+        row_headers = row.get("headers") or {}
+        if isinstance(row_headers, dict):
+            for hk, hv in row_headers.items():
+                validate_ingress_header_name(str(hk))
+                if not str(hv).strip():
+                    raise ConfigError(f"empty header value for {hk!r}")
+        out.append(
+            CanonicalRoute(
+                name=str(row.get("name") or slug_route_name(method, path)),
+                method=method,
+                path=path,
+                path_kind=kind,
+                action=action,
+                headers={
+                    str(k).lower(): str(v)
+                    for k, v in (row_headers.items() if isinstance(row_headers, dict) else [])
+                },
+                priority=int(row.get("priority", 0)),
+            )
+        )
+    return out
+
+
 def desugar_config(data: dict[str, Any]) -> list[CanonicalRoute]:
     routes_tbl = data.get("routes")
     if routes_tbl is None:
         return []
+    if isinstance(routes_tbl, list):
+        return parse_canonical_routes(routes_tbl)
     if not isinstance(routes_tbl, dict):
-        raise ConfigError("[routes] must be a table (map)")
+        raise ConfigError("[routes] must be a table (map) or [[routes]] array")
     out: list[CanonicalRoute] = []
     for i, (key, action) in enumerate(routes_tbl.items()):
         out.append(parse_route_key(str(key), str(action), priority=i))
@@ -108,8 +193,39 @@ def validate_routes(routes: list[CanonicalRoute]) -> None:
                 )
 
 
+def validate_rate_limits_cfg(data: dict[str, Any]) -> None:
+    """Require limits.rate_limit_rps when any proxy: route exists (M1 agent gateway)."""
+    limits = data.get("limits") or {}
+    routes = data.get("routes")
+    has_proxy = isinstance(routes, dict) and any(
+        isinstance(a, str) and a.strip().startswith("proxy:") for a in routes.values()
+    )
+    if not has_proxy:
+        return
+    rps = limits.get("rate_limit_rps")
+    if rps is None:
+        raise ConfigError(
+            "limits.rate_limit_rps is required when routes include proxy: (M1 public/agent gate)"
+        )
+    try:
+        n = int(rps)
+    except (TypeError, ValueError) as e:
+        raise ConfigError("limits.rate_limit_rps must be a positive integer") from e
+    if n < 1 or n > 100_000:
+        raise ConfigError("limits.rate_limit_rps must be in [1, 100000]")
+    burst = limits.get("rate_limit_burst")
+    if burst is not None:
+        try:
+            b = int(burst)
+        except (TypeError, ValueError) as e:
+            raise ConfigError("limits.rate_limit_burst must be a positive integer") from e
+        if b < n:
+            raise ConfigError("limits.rate_limit_burst must be >= limits.rate_limit_rps")
+
+
 def load_httpd_config(path: Path) -> list[CanonicalRoute]:
     data = tomllib.loads(path.read_text(encoding="utf-8"))
+    validate_rate_limits_cfg(data)
     routes = desugar_config(data)
     validate_routes(routes)
     return routes

@@ -1,4 +1,12 @@
 {
+  "completed_ids": [
+    "m1-bearer-auth",
+    "m1-routing-tests",
+    "m1-toml-desugar"
+  ],
+  "iterations": 4,
+  "history": [
+    {
   "completed_ids": ["m1-bearer-auth"],
   "iterations": 4,
   "history": [

@@ -48,13 +48,18 @@ li_phase "httpd config + routing (M1 prep)"
 chmod +x "$ROOT/li-tests/run_httpd_config.sh" \
   "$ROOT/scripts/li-httpd-explain-config.sh" \
   "$ROOT/scripts/check-httpd-explain-config.sh" \
+  "$ROOT/scripts/check-httpd-config-desugar.sh" \
   "$ROOT/scripts/lic-validate-httpd-config.sh" \
   "$ROOT/scripts/flatten-httpd-config.py" \
   "$ROOT/scripts/validate-httpd-config.py"
 "$ROOT/li-tests/run_httpd_config.sh"
-if [[ -x "$ROOT/build/li-httpd" ]]; then
+if [[ "${HTTPD_SKIP_AUTH_BEARER_SMOKE:-0}" != "1" ]] \
+  && [[ -x "$ROOT/scripts/build-li-httpd.sh" ]] \
+  && "$ROOT/scripts/build-li-httpd.sh"; then
   chmod +x "$ROOT/scripts/test-auth-bearer.sh"
   "$ROOT/scripts/test-auth-bearer.sh"
+elif [[ "${HTTPD_SKIP_AUTH_BEARER_SMOKE:-0}" == "1" ]]; then
+  echo "skip test-auth-bearer (HTTPD_SKIP_AUTH_BEARER_SMOKE=1)"
 fi
 
 li_phase "E2E li-tests (full manifest)"

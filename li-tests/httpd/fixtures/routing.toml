@@ -4,6 +4,9 @@ host = "api.example.com"
 
 [limits]
 max_body = "1m"
+max_header = "16k"
+rate_limit_rps = 100
+rate_limit_burst = 200
 
 [upstreams.api]
 peers = ["http://127.0.0.1:3000"]

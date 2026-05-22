@@ -13,6 +13,7 @@
 #define LI_HTTPD_PATH_MAX 512
 #define LI_HTTPD_ACTION_MAX 128
 #define LI_HTTPD_NAME_MAX 64
+#define LI_HTTPD_HEADERS_MAX 128
 #define LI_HTTPD_FILE_MAX (256 * 1024)
 
 typedef enum {
@@ -27,6 +28,7 @@ typedef struct {
   char path[LI_HTTPD_PATH_MAX];
   LiPathKind path_kind;
   char action[LI_HTTPD_ACTION_MAX];
+  char headers[LI_HTTPD_HEADERS_MAX]; /* space-separated key=value (lowercase keys) */
   int32_t priority;
   int32_t route_id; /* 1-based id after load */
 } LiHttpdRoute;
@@ -60,6 +62,16 @@ static void httpd_clear_routes(void) {
 }
 
 static void slug_route_name(const char* method, const char* path, char* out, size_t out_len) {
+  char path_work[LI_HTTPD_PATH_MAX];
+  const char* slug_path = path;
+  size_t plen = strlen(path);
+  if (plen >= 3 && strcmp(path + plen - 3, "/**") == 0) {
+    snprintf(path_work, sizeof(path_work), "%.*s_rest", (int)(plen - 3), path);
+    slug_path = path_work;
+  } else if (plen >= 2 && strcmp(path + plen - 2, "/*") == 0) {
+    snprintf(path_work, sizeof(path_work), "%.*s_wild", (int)(plen - 2), path);
+    slug_path = path_work;
+  }
   size_t n = 0;
   const char* p = method;
   while (*p && n + 1 < out_len) {
@@ -76,7 +88,7 @@ static void slug_route_name(const char* method, const char* path, char* out, siz
   if (n + 1 < out_len) {
     out[n++] = '_';
   }
-  for (p = path; *p && n + 1 < out_len; p++) {
+  for (p = slug_path; *p && n + 1 < out_len; p++) {
     char c = *p;
     if (c == '/') {
       if (n > 0 && out[n - 1] != '_') {
@@ -146,6 +158,105 @@ static int path_has_traversal(const char* raw_path) {
   return 0;
 }
 
+/* M1 ingress allowlist — must match scripts/httpd_config.py */
+static const char* const k_ingress_header_allow[] = {
+    "authorization", "content-type", "accept", "traceparent", "x-request-id",
+    "x-agent-id", "x-model", "idempotency-key", NULL};
+
+static int header_name_allowed(const char* name) {
+  for (size_t i = 0; k_ingress_header_allow[i] != NULL; i++) {
+    if (strcmp(name, k_ingress_header_allow[i]) == 0) {
+      return 1;
+    }
+  }
+  return 0;
+}
+
+static int validate_ingress_header_name(const char* name) {
+  static const char* const hop_by_hop[] = {
+      "connection", "keep-alive", "proxy-authenticate", "proxy-authorization",
+      "te", "trailer", "transfer-encoding", "upgrade", NULL};
+  for (size_t i = 0; hop_by_hop[i] != NULL; i++) {
+    if (strcmp(name, hop_by_hop[i]) == 0) {
+      httpd_set_error(2, "hop-by-hop header not allowed in route extras");
+      return -1;
+    }
+  }
+  if (strncmp(name, "x-upstream-", 11) == 0 || strncmp(name, "x-route-", 8) == 0) {
+    httpd_set_error(2, "forbidden header prefix in route extras");
+    return -1;
+  }
+  if (!header_name_allowed(name)) {
+    httpd_set_error(2, "header not in ingress allowlist (M1 route extras)");
+    return -1;
+  }
+  return 0;
+}
+
+static int append_route_header(LiHttpdRoute* out, const char* key, const char* val) {
+  char pair[96];
+  int n = snprintf(pair, sizeof(pair), "%s=%s", key, val);
+  if (n < 0 || (size_t)n >= sizeof(pair)) {
+    return -1;
+  }
+  size_t cur = strlen(out->headers);
+  if (cur > 0) {
+    if (cur + 1 >= sizeof(out->headers)) {
+      return -1;
+    }
+    out->headers[cur++] = ' ';
+    out->headers[cur] = '\0';
+  }
+  if (cur + (size_t)n + 1 >= sizeof(out->headers)) {
+    return -1;
+  }
+  strcat(out->headers, pair);
+  return 0;
+}
+
+static int parse_route_extras(const char* extras, LiHttpdRoute* out) {
+  char buf[LI_HTTPD_HEADERS_MAX];
+  char key[64];
+  char val[64];
+  size_t n = strlen(extras);
+  if (n == 0) {
+    return 0;
+  }
+  if (n >= sizeof(buf)) {
+    return -1;
+  }
+  memcpy(buf, extras, n + 1);
+  char* save = NULL;
+  for (char* tok = strtok_r(buf, " \t", &save); tok != NULL; tok = strtok_r(NULL, " \t", &save)) {
+    char* eq = strchr(tok, '=');
+    if (eq == NULL || eq == tok) {
+      httpd_set_error(2, "invalid route extra: expected key=value");
+      return -1;
+    }
+    *eq = '\0';
+    strncpy(key, tok, sizeof(key) - 1);
+    key[sizeof(key) - 1] = '\0';
+    strncpy(val, eq + 1, sizeof(val) - 1);
+    val[sizeof(val) - 1] = '\0';
+    for (char* k = key; *k; k++) {
+      if (*k >= 'A' && *k <= 'Z') {
+        *k = (char)(*k - 'A' + 'a');
+      }
+    }
+    if (key[0] == '\0' || val[0] == '\0') {
+      httpd_set_error(2, "invalid route extra: expected key=value");
+      return -1;
+    }
+    if (validate_ingress_header_name(key) != 0) {
+      return -1;
+    }
+    if (append_route_header(out, key, val) != 0) {
+      return -1;
+    }
+  }
+  return 0;
+}
+
 static int parse_route_key_value(const char* key, const char* action, int32_t priority, LiHttpdRoute* out) {
   char method[LI_HTTPD_METHOD_MAX];
   char raw_path[LI_HTTPD_PATH_MAX];
@@ -168,7 +279,7 @@ static int parse_route_key_value(const char* key, const char* action, int32_t pr
     return -1;
   }
   sp = p;
-  while (*p && *p != '#') {
+  while (*p && *p != '#' && !isspace((unsigned char)*p)) {
     p++;
   }
   size_t plen = (size_t)(p - sp);
@@ -177,9 +288,6 @@ static int parse_route_key_value(const char* key, const char* action, int32_t pr
   }
   memcpy(raw_path, sp, plen);
   raw_path[plen] = '\0';
-  while (plen > 0 && isspace((unsigned char)raw_path[plen - 1])) {
-    raw_path[--plen] = '\0';
-  }
   if (path_has_traversal(raw_path)) {
     httpd_set_error(3, "path must not contain .. or //");
     return -1;
@@ -192,6 +300,14 @@ static int parse_route_key_value(const char* key, const char* action, int32_t pr
   strncpy(out->action, action, sizeof(out->action) - 1);
   slug_route_name(method, raw_path, out->name, sizeof(out->name));
   out->priority = priority;
+  while (*p && isspace((unsigned char)*p)) {
+    p++;
+  }
+  if (*p != '\0' && *p != '#') {
+    if (parse_route_extras(p, out) != 0) {
+      return -1;
+    }
+  }
   return 0;
 }
 
@@ -249,6 +365,77 @@ static void trim_line(char* line) {
   if (p != line) {
     memmove(line, p, strlen(p) + 1);
   }
+}
+
+/* M1: proxy routes require global limits.rate_limit_rps (agent gateway policy). */
+static int parse_limits_rate_limit_rps(const char* text, int* out_rps) {
+  *out_rps = 0;
+  const char* sec = strstr(text, "[limits]");
+  if (sec == NULL) {
+    return 0;
+  }
+  char line[512];
+  const char* p = strchr(sec, '\n');
+  if (p == NULL) {
+    return 0;
+  }
+  while (*p) {
+    const char* line_end = strchr(p, '\n');
+    size_t len = line_end ? (size_t)(line_end - p) : strlen(p);
+    if (len >= sizeof(line)) {
+      return -1;
+    }
+    memcpy(line, p, len);
+    line[len] = '\0';
+    trim_line(line);
+    p = line_end ? line_end + 1 : p + len;
+    if (line[0] == '[') {
+      break;
+    }
+    if (line[0] == '\0' || line[0] == '#') {
+      continue;
+    }
+    if (strncmp(line, "rate_limit_rps", 14) == 0) {
+      const char* eq = strchr(line, '=');
+      if (eq == NULL) {
+        continue;
+      }
+      eq++;
+      while (*eq && isspace((unsigned char)*eq)) {
+        eq++;
+      }
+      int n = atoi(eq);
+      if (n > 0) {
+        *out_rps = n;
+      }
+      return 0;
+    }
+  }
+  return 0;
+}
+
+static int validate_proxy_rate_limits(const char* text) {
+  int has_proxy = 0;
+  for (int32_t i = 0; i < g_route_count; i++) {
+    if (strncmp(g_routes[i].action, "proxy:", 6) == 0) {
+      has_proxy = 1;
+      break;
+    }
+  }
+  if (!has_proxy) {
+    return 0;
+  }
+  int rps = 0;
+  if (parse_limits_rate_limit_rps(text, &rps) != 0) {
+    httpd_set_error(5, "invalid [limits] table");
+    return -1;
+  }
+  if (rps <= 0) {
+    httpd_set_error(
+        5, "limits.rate_limit_rps is required when routes include proxy: (M1 public/agent gate)");
+    return -1;
+  }
+  return 0;
 }
 
 static int parse_quoted(const char** pp, char* out, size_t out_len) {
@@ -411,6 +598,9 @@ int32_t li_rt_httpd_load_config(const char* path) {
   }
   buf[n] = '\0';
   int rc = parse_routes_table(buf);
+  if (rc == 0) {
+    rc = validate_proxy_rate_limits(buf);
+  }
   free(buf);
   if (rc != 0 && g_httpd_last_kind == 0) {
     httpd_set_error(5, "invalid [routes] table");
@@ -582,7 +772,11 @@ int32_t li_rt_httpd_explain_config(const char* path) {
     fprintf(stdout, "method = \"%s\"\n", r->method);
     fprintf(stdout, "path = \"%s\"\n", r->path);
     fprintf(stdout, "path_kind = \"%s\"\n", path_kind_name(r->path_kind));
-    fprintf(stdout, "action = \"%s\"\n", r->action);
+    if (r->headers[0] != '\0') {
+      fprintf(stdout, "action = \"%s\" [%s]\n", r->action, r->headers);
+    } else {
+      fprintf(stdout, "action = \"%s\"\n", r->action);
+    }
   }
   if (g_route_count > 0) {
     fputc('\n', stdout);

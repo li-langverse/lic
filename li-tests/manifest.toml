@@ -792,7 +792,19 @@ outcome = "verify_ok"
 suite = "math_linalg"
 file = "math_linalg/elementwise_len_mismatch.li"
 outcome = "compile_fail"
-expected_substr = "matching lengths"
+expected_substr = "NumPy-style"
+
+[[tests]]
+suite = "math_linalg"
+file = "math_linalg/broadcast_numpy_reject_len2.li"
+outcome = "compile_fail"
+expected_substr = "NumPy-style"
+
+[[tests]]
+suite = "math_linalg"
+file = "math_linalg/broadcast_numpy_reject_pow_len2.li"
+outcome = "compile_fail"
+expected_substr = "NumPy-style"
 
 [[tests]]
 suite = "math_linalg"

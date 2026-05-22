@@ -22,7 +22,7 @@ todos:
     status: completed
   - id: wave-a-2i-explicit-math
     content: "2i — explicit math only (dot, matmul, sum, element-wise on matching shapes); reject NumPy broadcast; document tensor/quaternion path"
-    status: pending
+    status: completed
   - id: wave-a-7d-vectorized
     content: "7d — @vectorized on def + Lean G-par disjoint roadmap note"
     status: pending

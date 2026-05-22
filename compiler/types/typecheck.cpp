@@ -868,8 +868,8 @@ struct Ctx {
               return l;
             }
             diags.error(loc(e.span),
-                        "element-wise arithmetic requires matching lengths or length-1 "
-                        "broadcast to a longer array");
+                        "element-wise arithmetic requires matching lengths, scalar×array, or "
+                        "length-1 array broadcast; NumPy-style rank broadcast is not supported");
             return l;
           }
           {

@@ -76,4 +76,12 @@ done
 chmod +x "$ROOT/scripts/check-httpd-config-desugar.sh"
 "$ROOT/scripts/check-httpd-config-desugar.sh"
 
+echo "== httpd LB mode smoke (Li) =="
+HTTPD_BUILD_FLAGS=(--allow-open-vc)
+"$LIC" build "${HTTPD_BUILD_FLAGS[@]}" "$ROOT/li-tests/httpd/lb_mode_smoke.li" -o /tmp/li_lb_mode_smoke
+if [[ "${HTTPD_SKIP_LI_ROUTING_BIN:-0}" != "1" ]]; then
+  /tmp/li_lb_mode_smoke
+  test "$(/tmp/li_lb_mode_smoke; echo $?)" -eq 0
+fi
+
 echo "run_httpd_config: OK"

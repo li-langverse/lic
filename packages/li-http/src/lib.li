@@ -173,3 +173,18 @@ def route_key_valid(key: str) raises IO, Alloc -> int
   decreases 0
 =
   return li_rt_httpd_route_key_valid(key)
+
+extern proc httpd_lb_mode_from_arg_i(arg: var ptr) -> int
+  requires true
+  ensures 0 <= result
+  ensures result <= 1
+  decreases 0
+
+# M1 LB enum: round_robin -> 0, least_conn -> 1 (no user string hash).
+def lb_mode_from_name(name: str) raises IO, Alloc -> int
+  requires true
+  ensures 0 <= result
+  ensures result <= 1
+  decreases 0
+=
+  return httpd_lb_mode_from_arg_i(name)

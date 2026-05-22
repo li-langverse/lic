@@ -329,6 +329,77 @@ static void trim_line(char* line) {
   }
 }
 
+/* M1: proxy routes require global limits.rate_limit_rps (agent gateway policy). */
+static int parse_limits_rate_limit_rps(const char* text, int* out_rps) {
+  *out_rps = 0;
+  const char* sec = strstr(text, "[limits]");
+  if (sec == NULL) {
+    return 0;
+  }
+  char line[512];
+  const char* p = strchr(sec, '\n');
+  if (p == NULL) {
+    return 0;
+  }
+  while (*p) {
+    const char* line_end = strchr(p, '\n');
+    size_t len = line_end ? (size_t)(line_end - p) : strlen(p);
+    if (len >= sizeof(line)) {
+      return -1;
+    }
+    memcpy(line, p, len);
+    line[len] = '\0';
+    trim_line(line);
+    p = line_end ? line_end + 1 : p + len;
+    if (line[0] == '[') {
+      break;
+    }
+    if (line[0] == '\0' || line[0] == '#') {
+      continue;
+    }
+    if (strncmp(line, "rate_limit_rps", 14) == 0) {
+      const char* eq = strchr(line, '=');
+      if (eq == NULL) {
+        continue;
+      }
+      eq++;
+      while (*eq && isspace((unsigned char)*eq)) {
+        eq++;
+      }
+      int n = atoi(eq);
+      if (n > 0) {
+        *out_rps = n;
+      }
+      return 0;
+    }
+  }
+  return 0;
+}
+
+static int validate_proxy_rate_limits(const char* text) {
+  int has_proxy = 0;
+  for (int32_t i = 0; i < g_route_count; i++) {
+    if (strncmp(g_routes[i].action, "proxy:", 6) == 0) {
+      has_proxy = 1;
+      break;
+    }
+  }
+  if (!has_proxy) {
+    return 0;
+  }
+  int rps = 0;
+  if (parse_limits_rate_limit_rps(text, &rps) != 0) {
+    httpd_set_error(5, "invalid [limits] table");
+    return -1;
+  }
+  if (rps <= 0) {
+    httpd_set_error(
+        5, "limits.rate_limit_rps is required when routes include proxy: (M1 public/agent gate)");
+    return -1;
+  }
+  return 0;
+}
+
 static int parse_quoted(const char** pp, char* out, size_t out_len) {
   const char* p = *pp;
   if (*p != '"') {
@@ -489,6 +560,9 @@ int32_t li_rt_httpd_load_config(const char* path) {
   }
   buf[n] = '\0';
   int rc = parse_routes_table(buf);
+  if (rc == 0) {
+    rc = validate_proxy_rate_limits(buf);
+  }
   free(buf);
   if (rc != 0 && g_httpd_last_kind == 0) {
     httpd_set_error(5, "invalid [routes] table");

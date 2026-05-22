@@ -25,7 +25,7 @@ todos:
     status: pending
   - id: m1-core
     content: "M1: parser, route DSL (no regex), static, LB, validate-config, headers, rate limits"
-    status: in_progress
+    status: completed
   - id: m1-routing-tests
     content: li-tests/routing/ table cases + overlap config_reject; proved match_route
     status: completed

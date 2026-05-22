@@ -37,7 +37,7 @@
 1. ~~**m1-routing-tests**~~ — done (`run_routing.sh`, table cases, overlap `config_reject`)  
 2. ~~**m1-bearer-auth**~~ — `test-auth-bearer.sh` on real `build/li-httpd` (done; use `./scripts/build-li-httpd.sh`)  
 3. ~~**m1-toml-desugar**~~ — desugar golden + explain-config (`check-httpd-config-desugar.sh`)  
-4. **m1-core** (in progress) — global `limits.rate_limit_rps` required for `proxy:` routes (Python validator + examples); remaining LB/parser Li surface  
+4. ~~**m1-core**~~ — `limits.rate_limit_rps` for `proxy:` routes (Python + `lic httpd validate-config`); LB enum Li wrapper (`lb_mode_from_name`)  
 5. **w1-async-reactor** — blocked on language async (post-M1)
 
 ## Autonomous loop

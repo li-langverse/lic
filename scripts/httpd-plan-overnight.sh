@@ -1,5 +1,6 @@
 #!/usr/bin/env bash
-# Overnight goal-directed httpd plan loop (bounded iterations, live log).
+# Overnight goal-directed httpd plan loop.
+# Default: first batch (HTTPD_PLAN_OVERNIGHT_MAX), then more batches until 08:00 local.
 set -euo pipefail
 
 ROOT="$(cd "$(dirname "$0")/.." && pwd)"
@@ -30,14 +31,25 @@ export LI_HTTPD_PLAN_AGENT_TIMEOUT_SEC="${LI_HTTPD_PLAN_AGENT_TIMEOUT_SEC:-2700}
 export LI_CONTROL_PLANE_STORE="${LI_CONTROL_PLANE_STORE:-disk}"
 
 MAX="${HTTPD_PLAN_OVERNIGHT_MAX:-30}"
+# Set HTTPD_PLAN_NO_UNTIL_DEADLINE=1 to run only the first --max batch.
+RUN_UNTIL="${HTTPD_PLAN_NO_UNTIL_DEADLINE:-0}"
 
 {
-  echo "==> httpd-plan-overnight start $(date -u -Iseconds)"
+  echo "==> httpd-plan-overnight start $(date -Iseconds)"
   echo "    branch=$HTTPD_PLAN_PR_BRANCH max=$MAX log=$LOG"
+  echo "    until_local=${HTTPD_PLAN_UNTIL_LOCAL:-08:00} (unless NO_UNTIL_DEADLINE=1)"
   echo "    agents=$LI_CURSOR_AGENTS_ROOT benchmarks=$BENCHMARKS_ROOT"
   cd "$ROOT"
   git branch --show-current || true
-  exec python3 "$ROOT/scripts/httpd-plan-loop.py" --max "$MAX"
+  python3 "$ROOT/scripts/httpd-plan-loop.py" --max "$MAX"
 } 2>&1 | tee -a "$LOG"
 
-echo "==> done $(date -u -Iseconds) — log: $LOG"
+echo "==> first batch done $(date -u -Iseconds) — log: $LOG"
+
+if [[ "$RUN_UNTIL" == "1" ]]; then
+  echo "==> HTTPD_PLAN_NO_UNTIL_DEADLINE=1 — skipping until-deadline extension"
+  exit 0
+fi
+
+export HTTPD_PLAN_WAIT_FOR_LOOP=0
+exec "$ROOT/scripts/httpd-plan-until-deadline.sh" 2>&1 | tee -a "$LOG"

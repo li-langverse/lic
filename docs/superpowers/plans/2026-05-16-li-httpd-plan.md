@@ -81,7 +81,7 @@ todos:
     status: pending
   - id: prob-hoare
     content: "P2: prob_ensures + Monte Carlo/Lean measure obligations; lic build --prob-check for P(event)<ε"
-    status: pending
+    status: completed
 isProject: false
 ---
 

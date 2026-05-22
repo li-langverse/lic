@@ -614,6 +614,9 @@ void walk_contracts(std::ostream& out, const Module& module, const ProcDecl& pro
       case ContractKind::Invariant:
         emit_contract_def(out, module, proc, "invariant", inv++, c, vc_suffix, loop_iter);
         break;
+      case ContractKind::ProbEnsures:
+        emit_contract_def(out, module, proc, "prob_ensures", ens++, c, vc_suffix, loop_iter);
+        break;
     }
   }
 }

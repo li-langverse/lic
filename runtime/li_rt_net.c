@@ -1445,6 +1445,8 @@ static void httpd_m2_circuit_note_success(httpd_upstream_peer_t* p) {
   p->circuit_half_open_left = 0;
 }
 
+static void httpd_upstream_peer_maybe_recover(httpd_upstream_peer_t* p);
+
 static int httpd_m2_any_peer_available(void) {
   if (g_up_peer_count <= 0) {
     return g_proxy_port > 0;

@@ -7,7 +7,7 @@ Adds workspace package **`li-http`** (`import http`) with `parse_request` and a 
 ## Agent continuation
 
 1. Read `docs/ecosystem/httpd-prerequisites.md` for remaining P0 rows (epoll, full HTTP header FSM, strict Lean).
-2. Run `export CC=clang-18 LI_REPO_ROOT=$PWD && cmake --build build && ./li-tests/run_all.sh runtime composable httpd && ./scripts/lic-workspace-build.sh`.
+2. Run `export CC=clang-22 LI_REPO_ROOT=$PWD && cmake --build build && ./li-tests/run_all.sh runtime composable httpd && ./scripts/lic-workspace-build.sh`.
 3. Next: header field parsing + `Content-Length` duplicate detection in `packages/li-http`; keep contracts int-first.
 4. Blocked: production sockets until trusted-net RFC + real `li_rt_net` syscalls.
 

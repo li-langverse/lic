@@ -14,7 +14,7 @@
 
 **Honest status (docs):** [Provability gaps (today)](../verification/provability-gaps.md) — living register of what is **not** proved/wired yet (Lean gate, heuristic parallel policy, decorator parse-only, …). Update that file when closing a phase gate.
 
-**Architecture:** C++ compiler → MIR → LLVM 18 (sole backend). Bootstrap to self-host later. No VM, no JIT for user code, no runtime decorator dispatch.
+**Architecture:** C++ compiler → MIR → LLVM 22 (sole backend). Bootstrap to self-host later. No VM, no JIT for user code, no runtime decorator dispatch.
 
 **GitHub org ([`li-langverse`](https://github.com/li-langverse)) — three repos (locked):**
 
@@ -334,7 +334,7 @@ Track in phase **Doc** until each is checked:
 |----------|--------|----------|
 | Execution model | **AOT compile** + proved native code | VM, JIT user code, runtime eval |
 | Compiler host | **C++** | Zig (rejected), Rust v0 (slow link) |
-| Codegen | **LLVM 18 only** | Cranelift, interpreted fallback |
+| Codegen | **LLVM 22 only** | Cranelift, interpreted fallback |
 | Type baseline | **Python 3.14** (static only) | `Any`, gradual typing, runtime `isinstance` |
 | Syntax | **Nim-like core** + **mathematical surface** (`def`, `for`, infix `*`, matrix `@`, reductions) | User-facing `simd(...)` / `__li_simd_*`; Java `class` |
 | License | **MIT OR Apache-2.0** | Proprietary |

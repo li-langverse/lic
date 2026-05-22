@@ -2,11 +2,11 @@
 
 > **For agentic workers:** Use `.cursor/skills/build-li-master-plan/SKILL.md` — continue through exit gate without per-step user prompts.
 
-**Goal:** CMake + Ninja workspace, C++ compiler library skeleton, LLVM 18 smoke test, `lic` CLI, C runtime stubs.
+**Goal:** CMake + Ninja workspace, C++ compiler library skeleton, LLVM 22 smoke test, `lic` CLI, C runtime stubs.
 
 **Architecture:** Static libs under `compiler/` (`lexer` → … → `codegen`); thin `lic` executable; `runtime/li_rt.c`.
 
-**Tech stack:** C++17, CMake 3.20+, Ninja, **LLVM 18** (sole backend)
+**Tech stack:** C++17, CMake 3.20+, Ninja, **LLVM 22** (sole backend)
 
 **Depends on:** Nothing  
 **Blocks:** Phase 1
@@ -68,8 +68,8 @@ Expected: `smoke-llvm: ok (main returns 0)`
 ## Prerequisites
 
 ```bash
-brew install llvm@18 cmake ninja
-export LLVM_DIR="$(brew --prefix llvm@18)/lib/cmake/llvm"
+brew install llvm@22 cmake ninja
+export LLVM_DIR="$(brew --prefix llvm@22)/lib/cmake/llvm"
 ```
 
-On Linux, install `llvm-18-dev` and set `LLVM_DIR` to the CMake package path.
+On Linux, install `llvm-22-dev` and set `LLVM_DIR` to the CMake package path.

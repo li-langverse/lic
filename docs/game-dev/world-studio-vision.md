@@ -43,7 +43,7 @@ Classic engine contrast:
 | Physics | `li-physics-*`, `li-physics-runtime` | Tier-2 benches |
 | Scene / UI | `li-scene`, `li-ui` | Stubs → studio chrome |
 | Gameplay chem | `physics.chem` | Reactions stub — **not** QM |
-| Compiler | `lic` | Proof, MIR, LLVM 18; `def` + `proc` parse (`def` preferred) |
+| Compiler | `lic` | Proof, MIR, LLVM 22; `def` + `proc` parse (`def` preferred) |
 | Agents | `li-httpd`, `lis`, `.cursor` rules | Wire to studio MCP |
 
 **Gaps:** `li-studio`, `li-sim`, `li-chem`, `li-voxel`, `li-render`, viewport, MCP `li-engine`, export/print pipelines.

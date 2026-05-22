@@ -36,10 +36,10 @@ jobs:
         with:
           fetch-depth: 0
 
-      - name: Install LLVM 18
+      - name: Install LLVM 22
         run: |
           sudo apt-get update -qq
-          sudo apt-get install -y -qq cmake ninja-build clang-18 llvm-18-dev zlib1g-dev libzstd-dev
+          sudo apt-get install -y -qq cmake ninja-build clang-22 llvm-22-dev zlib1g-dev libzstd-dev
 
       - name: Download prior corpus artifact
         uses: actions/download-artifact@v4
@@ -50,10 +50,10 @@ jobs:
 
       - name: Build parse_fuzz
         env:
-          LLVM_DIR: /usr/lib/llvm-18/lib/cmake/llvm
+          LLVM_DIR: /usr/lib/llvm-22/lib/cmake/llvm
         run: |
           cmake -B build-fuzz -G Ninja -DLI_BUILD_FUZZ=ON -DLLVM_DIR="$LLVM_DIR" \
-            -DCMAKE_C_COMPILER=clang-18 -DCMAKE_CXX_COMPILER=clang++-18
+            -DCMAKE_C_COMPILER=clang-22 -DCMAKE_CXX_COMPILER=clang++-22
           cmake --build build-fuzz --target parse_fuzz check_fuzz
 
       - name: Prepare corpus workspace
@@ -67,7 +67,7 @@ jobs:
       - name: Run fuzz
         id: fuzz_run
         env:
-          LLVM_DIR: /usr/lib/llvm-18/lib/cmake/llvm
+          LLVM_DIR: /usr/lib/llvm-22/lib/cmake/llvm
         run: |
           FUZZ=build-fuzz/compiler/fuzz/parse_fuzz
           CORPUS=build-fuzz/corpus-work

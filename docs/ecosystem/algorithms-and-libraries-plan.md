@@ -362,7 +362,7 @@ Copy this block into the agent prompt on a new checkout.
 4. `lic/docs/game-dev/world-studio-vision.md` — Studio profiles (if product-facing)
 
 **Build `lic` (macOS example):**
-export LLVM_DIR="$(brew --prefix llvm@18)/lib/cmake/llvm"
+export LLVM_DIR="$(brew --prefix llvm@22)/lib/cmake/llvm"
 export CC=clang CXX=clang++
 cd lic && ./scripts/build.sh
 ./build/compiler/lic/lic --version

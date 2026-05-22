@@ -8,7 +8,7 @@ All notable changes to Li are documented here. The format follows
 
 ### Fixed
 
-- **Tier-2 `three_body_pure` bench honesty:** use scalar state, align pure-Li workload with native Verlet steps, and sink final energy via `li_rt_volatile_sink_f64` so LLVM cannot delete the hot loop — `docs/release-notes/2026-05-22-three-body-pure-sink.md`.
+- **Tier-2 `three_body_pure` bench honesty:** use scalar state, mirror native Verlet work scale, and sink final energy via `li_rt_volatile_sink_f64` so LLVM cannot delete the hot loop — `docs/release-notes/2026-05-22-three-body-pure-sink.md`.
 - **Tier-2 physics benches:** `extern proc` `requires`/`ensures` + `main` `raises IO` on nine shared-kernel drivers plus `three_body_pure` — unblocks `bench.py --tier 2` — `docs/release-notes/2026-05-22-tier2-physics-extern-contracts.md`.
 
 ### Added

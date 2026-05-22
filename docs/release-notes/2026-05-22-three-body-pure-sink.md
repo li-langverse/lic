@@ -10,7 +10,7 @@
 
 ## Summary
 
-`three_body_pure` now uses scalar state, matches the native Verlet workload, and sinks final energy so tier-2 timings measure the Li loop instead of dead-code elimination.
+`three_body_pure` now uses scalar state, mirrors the native Verlet work scale, and sinks final energy so tier-2 timings measure the Li loop instead of dead-code elimination.
 
 ## Agent continuation
 
@@ -23,12 +23,13 @@
 
 | Area | What | Evidence |
 |------|------|----------|
-| `benchmarks/tier2_physics/three_body_pure/li/main.li` | Added `li_rt_volatile_sink_f64`, rewrote the driver to scalar state, matched the native `10000000`-step velocity-Verlet loop, initialized velocities, and sank final energy. | Red check: Li/native ratio was `0.004x` before the change; first array-state fix remained too fast at `0.167x`; scalar-state run is `0.939x`. |
+| `benchmarks/tier2_physics/three_body_pure/li/main.li` | Added `li_rt_volatile_sink_f64`, rewrote the driver to scalar state, mirrored the native `10000000`-step velocity-Verlet work scale, initialized velocities, and sank final energy. | Red check: Li/native ratio was `0.004x` before the change; first array-state fix remained too fast at `0.167x`; scalar-state run is `0.939x`. |
 
 ## Not changed
 
 - `li_rt_sqrt` and `sqrt_open_bound` proof policy remain unchanged.
 - Shared-C tier-2 drivers and dashboard ingest are not changed here.
+- A Li checksum/`--verify` oracle is not added; the pure-Li harness path remains timing-honesty only.
 - Full NumPy broadcast and G-par Lean proofs remain open.
 
 ## Breaking changes
@@ -37,7 +38,7 @@ None — benchmark driver only.
 
 ## Security
 
-N/A — no trusted surface, stdlib seal, or policy code changed.
+N/A — this uses the existing runtime volatile sink; no runtime/trusted implementation, stdlib seal, or policy code changed.
 
 ## Performance
 

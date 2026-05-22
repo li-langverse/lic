@@ -105,6 +105,31 @@ def agents_root() -> Path | None:
     return None
 
 
+def probe_cursor_key() -> tuple[bool, str]:
+    key = (os.environ.get("CURSOR_API_KEY") or os.environ.get("CURSOR_SDK_KEY") or "").strip()
+    sdk = (os.environ.get("CURSOR_SDK") or "").strip()
+    if sdk.startswith("http"):
+        key = key or ""
+    if not key:
+        return False, "CURSOR_API_KEY not set"
+    try:
+        import base64
+        import urllib.error
+        import urllib.request
+
+        auth = base64.b64encode(f"{key}:".encode()).decode()
+        req = urllib.request.Request(
+            "https://api.cursor.com/v1/me",
+            headers={"Authorization": f"Basic {auth}", "Accept": "application/json"},
+        )
+        with urllib.request.urlopen(req, timeout=20) as resp:
+            return resp.status == 200, f"HTTP {resp.status}"
+    except urllib.error.HTTPError as e:
+        return False, f"HTTP {e.code} (restart Cloud Agent VM after updating Secrets)"
+    except OSError as e:
+        return False, str(e)
+
+
 def run_cursor_agent(todo: dict, dry_run: bool) -> tuple[int, str]:
     root = agents_root()
     if not root:
@@ -113,6 +138,17 @@ def run_cursor_agent(todo: dict, dry_run: bool) -> tuple[int, str]:
     instruction = build_instruction(todo)
     if dry_run:
         return 0, instruction
+
+    reload_sh = ROOT / "scripts/reload-cursor-env.sh"
+    if reload_sh.is_file():
+        subprocess.run(["bash", str(reload_sh)], cwd=ROOT, check=False)
+
+    ok, detail = probe_cursor_key()
+    if not ok:
+        return 2, (
+            f"Cursor API key probe failed: {detail}. "
+            "Unset CURSOR_SDK if it is a dashboard URL; use Integrations API key (crsr_…)."
+        )
 
     if not os.environ.get("CURSOR_API_KEY") and not os.environ.get("CURSOR_SDK_KEY"):
         return 2, "CURSOR_API_KEY not set — export key or use Cloud Agent with pasted instruction"

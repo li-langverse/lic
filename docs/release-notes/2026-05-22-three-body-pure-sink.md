@@ -23,7 +23,7 @@
 
 | Area | What | Evidence |
 |------|------|----------|
-| `benchmarks/tier2_physics/three_body_pure/li/main.li` | Added `li_rt_volatile_sink_f64`, rewrote the driver to scalar state, matched the native `10000000`-step velocity-Verlet loop, initialized velocities, and sank final energy. | Red check: Li/native ratio was `0.004x` before the change; first array-state fix remained too fast at `0.167x`. |
+| `benchmarks/tier2_physics/three_body_pure/li/main.li` | Added `li_rt_volatile_sink_f64`, rewrote the driver to scalar state, matched the native `10000000`-step velocity-Verlet loop, initialized velocities, and sank final energy. | Red check: Li/native ratio was `0.004x` before the change; first array-state fix remained too fast at `0.167x`; scalar-state run is `0.939x`. |
 
 ## Not changed
 
@@ -41,7 +41,7 @@ N/A — no trusted surface, stdlib seal, or policy code changed.
 
 ## Performance
 
-Tier-2 benchmark honesty change. Reproduce with `cd benchmarks/harness && python3 bench.py --tier 2 --runs 1`; expected outcome is that `three_body_pure` Li is no longer implausibly faster than native.
+Tier-2 benchmark honesty change. `cd benchmarks/harness && python3 bench.py --tier 2 --runs 1` reports `three_body_pure li=0.2291s`, `cpp=0.2440s`, ratio `0.939x` on this runner.
 
 ## Downstream
 

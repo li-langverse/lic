@@ -10,9 +10,10 @@
     "m1-serve-once-stub",
     "m1-serve-routed-oracle",
     "m15-agent",
-    "m15-leak-censor"
+    "m15-leak-censor",
+    "m15-tls-auto"
   ],
-  "iterations": 2,
+  "iterations": 3,
   "history": [
     {
       "at": "2026-05-22T17:24:28.325124+00:00",
@@ -23,6 +24,12 @@
     {
       "at": "2026-05-22T17:35:28.946461+00:00",
       "todo_id": "m15-leak-censor",
+      "agent_exit": 0,
+      "gates_ok": true
+    },
+    {
+      "at": "2026-05-22T17:42:14.679657+00:00",
+      "todo_id": "m15-tls-auto",
       "agent_exit": 0,
       "gates_ok": true
     }

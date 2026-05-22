@@ -439,11 +439,12 @@ def verify_checksum(spec: BenchSpec, build_dir: Path) -> None:
     build_native(spec, native)
     build_li(spec, li_bin)
     native_out = subprocess.check_output([str(native), "--verify"], text=True).strip()
-    ref_out = format_horner_checksum(horner_reference_acc())
-    if native_out != ref_out:
-        raise RuntimeError(
-            f"{spec.name}: native checksum {native_out!r} != python ref {ref_out!r}"
-        )
+    if spec.name == "horner_pure_li":
+        ref_out = format_horner_checksum(horner_reference_acc())
+        if native_out != ref_out:
+            raise RuntimeError(
+                f"{spec.name}: native checksum {native_out!r} != python ref {ref_out!r}"
+            )
     cpp_time = time_command([str(native)], runs=1)
     li_time = time_command([str(li_bin)], runs=1)
     if spec.li_pure:
@@ -465,7 +466,7 @@ def verify_checksum(spec: BenchSpec, build_dir: Path) -> None:
         if li_checksum != native_out:
             raise RuntimeError(
                 f"{spec.name}: pure_li checksum mismatch li={li_checksum!r} "
-                f"native={native_out!r} (ref={ref_out!r}) — bad codegen or DCE"
+                f"native={native_out!r} — bad codegen or DCE"
             )
         if li_time < cpp_time * 0.45:
             raise RuntimeError(

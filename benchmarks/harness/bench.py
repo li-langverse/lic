@@ -59,7 +59,7 @@ TIER1_BENCHES: tuple[BenchSpec, ...] = (
         "common/dot_core.c",
         "li/main.li",
         flops_per_run=2.0 * 1e7,
-        li_pure=True,
+        li_pure=False,
     ),
     BenchSpec(
         "matmul_naive",

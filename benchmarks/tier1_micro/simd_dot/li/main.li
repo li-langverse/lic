@@ -1,37 +1,23 @@
-# Pure-Li dot: same semantics as common/dot_core.c (N=10_000_000, tiled on stack).
+# Li driver for shared dot kernel (common/dot_core.c). Pure-Li reimplementation is
+# folded to zero under -ffast-math until the compiler keeps observable reduction state.
+
+extern proc li_simd_dot_kernel()
+  requires true
+  ensures true
+
+extern proc li_simd_dot_checksum() -> float
+  requires true
+  ensures true
 
 extern proc li_rt_volatile_sink_f64(v: float) -> unit
   requires true
   ensures true
 
-def dot_chunk(base: int) -> float
-  requires true
-  ensures result >= 0.0
-  decreases 0
-=
-  var a: array[40000, float]
-  var b: array[40000, float]
-  var j: int = 0
-  while j < 40000
-    var i: int = base + j
-    var ai: int = i % 256
-    var bi: int = (i * 7) % 256
-    a[j] = ai
-    b[j] = bi
-    a[j] = a[j] * 0.001
-    b[j] = b[j] * 0.002
-    j = j + 1
-  return a @ b
-
-def main() -> int
+def main() raises IO -> int
   requires true
   ensures result == 0
   decreases 0
 =
-  var acc: float = 0.0
-  var base: int = 0
-  while base < 10000000
-    acc = acc + dot_chunk(base)
-    base = base + 40000
-  li_rt_volatile_sink_f64(acc)
+  li_simd_dot_kernel()
+  li_rt_volatile_sink_f64(li_simd_dot_checksum())
   return 0

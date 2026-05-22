@@ -183,6 +183,8 @@ def run_cursor_agent(todo: dict, dry_run: bool) -> tuple[int, str]:
 
     env = {
         **os.environ,
+        "PYTHONUNBUFFERED": "1",
+        "LI_SDK_TERMINAL_STREAM": os.environ.get("LI_SDK_TERMINAL_STREAM", "1"),
         "LI_REPO_WORKFLOW_REPO": "lic",
         "LIC_ROOT": str(ROOT),
         "LI_AGENT_EXTRA_INSTRUCTION": instruction,

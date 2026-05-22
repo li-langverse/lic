@@ -33,8 +33,10 @@ Do not edit `runtime/li_rt_httpd.c`, `scripts/httpd-plan-loop.py`, or httpd plan
 - [x] `algorithms-and-libraries-plan.md` on ecosystem branch
 - [x] This baseline doc
 - [x] Agent skill `run-local-ci-gha-quota` in roadmap agent-kit (+ `li-local-ci`)
-- [ ] Local CI green on `cursor/lic-ecosystem-plan-loop-54aa` (`./scripts/local-ci.sh`)
-- **Devbox needs:** LLVM 22 (`scripts/ci-install-llvm.sh` or apt.llvm.org), Lean 4 (`scripts/ci-install-lean.sh`, `PATH="$HOME/.elan/bin:$PATH"`), codegen fix for LLVM 22 intrinsics (`getOrInsertDeclaration`)
+- [ ] Local CI fully green (last run: **163 pass / 33 fail** on `li-tests` manifest — investigate before merge)
+- [x] LLVM 22 + Lean 4 on devbox (`lake build` in `docs/semantics` ok)
+- [x] PR [#174](https://github.com/li-langverse/lic/pull/174) open
+- **Run CI:** `HTTPD_SKIP_LI_ROUTING_BIN=1 ./scripts/local-ci.sh` if port bind conflicts with another agent
 - [ ] PR opened; human `merge-approved` after review
 - [ ] Phase 1: `lic-ecosystem-plan-loop.py` + `data/lic-ecosystem-plan-loop/state.json`
 

@@ -24,3 +24,5 @@ Merge gate in benchmarks reads `data/latest/local-ci-results.json`. Do not merge
 See also `../benchmarks/.cursor/rules/li-local-actions-quota.mdc` when both repos are checked out.
 
 **Skill:** `run-local-ci-gha-quota` (agent-kit / `li-local-ci`) — full commands for `li-local-ci run-pr`, sweep, and merge gate.
+
+**Skill:** `run-local-pages-benchmarks` — refresh https://li-langverse.github.io/benchmarks/ and roadmap overview without Actions (`benchmarks/scripts/refresh-live-sites.sh`).

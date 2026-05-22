@@ -136,6 +136,8 @@ def run_cursor_agent(todo: dict, dry_run: bool) -> tuple[int, str]:
         "LI_REPO_WORKFLOW_REPO": "lic",
         "LIC_ROOT": str(ROOT),
         "LI_AGENT_EXTRA_INSTRUCTION": instruction,
+        # Cloud VMs often lack Supabase; disk store is enough for plan loop.
+        "LI_CONTROL_PLANE_STORE": os.environ.get("LI_CONTROL_PLANE_STORE", "disk"),
     }
     cmd = ["node", str(dist), "--agent", "httpd_implementer", "--cwd", str(ROOT)]
     if benchmarks:
@@ -258,9 +260,14 @@ def main() -> int:
         )
         save_state(state)
 
-        if code != 0:
-            print(f"agent exit {code} — stopping loop (fix and re-run)", file=sys.stderr)
-            return code
+    if code != 0:
+        print(
+            f"agent exit {code} — stopping loop. "
+            "If log shows AuthenticationError 401, set a valid user API key from "
+            "https://cursor.com/dashboard/cloud-agents (not a GitHub PAT).",
+            file=sys.stderr,
+        )
+        return code
 
         iteration += 1
         todos = load_plan_todos()

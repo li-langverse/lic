@@ -87,11 +87,12 @@ def flatten(cfg_path: Path) -> list[str]:
         action = "proxy" if r.action.startswith("proxy:") else "static"
         if action == "proxy":
             proxy_any = True
-        if r.rate_limit_rps > 0:
-            burst = r.rate_limit_burst if r.rate_limit_burst > 0 else r.rate_limit_rps
-            lines.append(
-                f"route={r.method}|{r.path}|{kind}|{action}|{r.rate_limit_rps}|{burst}"
-            )
+        rps = int(getattr(r, "rate_limit_rps", 0) or 0)
+        if rps > 0:
+            burst = int(getattr(r, "rate_limit_burst", 0) or 0)
+            if burst <= 0:
+                burst = rps
+            lines.append(f"route={r.method}|{r.path}|{kind}|{action}|{rps}|{burst}")
         else:
             lines.append(f"route={r.method}|{r.path}|{kind}|{action}")
 

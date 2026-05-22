@@ -22,6 +22,10 @@ else
     "$LIC" build "$ROOT/li-tests/httpd/m15_agent_oracle.li" -o /tmp/li_m15_agent_oracle --allow-open-vc
     /tmp/li_m15_agent_oracle
     test "$(/tmp/li_m15_agent_oracle; echo $?)" -eq 0
+    echo "==> m15_leak_censor_oracle compile"
+    "$LIC" build "$ROOT/li-tests/httpd/m15_leak_censor_oracle.li" -o /tmp/li_m15_leak_censor_oracle --allow-open-vc
+    /tmp/li_m15_leak_censor_oracle
+    test "$(/tmp/li_m15_leak_censor_oracle; echo $?)" -eq 0
   else
     echo "==> skip m15_agent_oracle (clang not in PATH)"
   fi
@@ -52,6 +56,11 @@ fi
 if [[ -x "$ROOT/scripts/check-httpd-m15-config.sh" ]]; then
   echo "==> check-httpd-m15-config.sh"
   "$ROOT/scripts/check-httpd-m15-config.sh"
+fi
+
+if [[ -x "$ROOT/scripts/check-httpd-leak-censor.sh" ]]; then
+  echo "==> check-httpd-leak-censor.sh"
+  "$ROOT/scripts/check-httpd-leak-censor.sh"
 fi
 
 if [[ "${HTTPD_GATES_SKIP_LIC_BUILD:-0}" != "1" && "${HTTPD_RUN_BEARER_TEST:-0}" == "1" && -f "$ROOT/scripts/test-auth-bearer.sh" && -x "$ROOT/build/li-httpd" ]]; then

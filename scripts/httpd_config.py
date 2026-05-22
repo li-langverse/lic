@@ -240,6 +240,8 @@ def validate_rate_limits_cfg(data: dict[str, Any]) -> None:
 
 
 def load_httpd_config(path: Path) -> list[CanonicalRoute]:
+    from httpd_leak_censor import ConfigError as LeakError
+    from httpd_leak_censor import validate_leak_censor
     from httpd_m15 import ConfigError as M15Error
     from httpd_m15 import validate_inference_require, validate_m15_limits, validate_route_match
 
@@ -249,7 +251,8 @@ def load_httpd_config(path: Path) -> list[CanonicalRoute]:
         validate_m15_limits(data)
         validate_route_match(data)
         validate_inference_require(data)
-    except M15Error as e:
+        validate_leak_censor(data, path)
+    except (M15Error, LeakError) as e:
         raise ConfigError(str(e)) from e
     routes = desugar_config(data)
     validate_routes(routes)

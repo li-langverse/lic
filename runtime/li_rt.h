@@ -57,6 +57,14 @@ int32_t li_rt_httpd_m15_concurrent_streams(void);
 int32_t li_rt_httpd_route_requires_traceparent(int32_t route_id);
 int32_t li_rt_httpd_is_sse_content_type(const char* ctype);
 int32_t li_rt_httpd_traceparent_ok(const char* buf, int32_t hdr_end);
+int32_t li_rt_httpd_leak_censor_enabled(void);
+int32_t li_rt_httpd_leak_censor_deny_path_count(void);
+int32_t li_rt_httpd_leak_censor_pattern_openai(void);
+int32_t li_rt_httpd_leak_censor_pattern_jwt(void);
+int32_t li_rt_httpd_leak_censor_pattern_pem(void);
+int32_t li_rt_httpd_leak_scrub(const char* data, int32_t len, intptr_t out_buf, int32_t out_cap);
+int32_t li_rt_httpd_leak_scrub_hit_count(void);
+int32_t li_rt_httpd_leak_scrub_selftest(void);
 
 void li_async_frame_enter(void);
 void li_async_frame_leave(void);

@@ -14,6 +14,10 @@ echo "== httpd m15 config =="
 chmod +x "$ROOT/scripts/check-httpd-m15-config.sh"
 "$ROOT/scripts/check-httpd-m15-config.sh"
 
+echo "== httpd leak_censor (M1.5) =="
+chmod +x "$ROOT/scripts/check-httpd-leak-censor.sh"
+"$ROOT/scripts/check-httpd-leak-censor.sh"
+
 echo "== httpd config reject =="
 for rej in "$ROOT/li-tests/config_desugar/reject"/*.toml; do
   name="$(basename "$rej")"

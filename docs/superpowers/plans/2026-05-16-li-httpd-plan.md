@@ -57,10 +57,10 @@ todos:
     status: completed
   - id: m15-leak-censor
     content: "M1.5: optional leak_censor; setup-censor from DB migrations/schema; Tier G when enabled"
-    status: pending
+    status: completed
   - id: setup-censor-schema
     content: "li-httpd setup-censor reads applied migrations → generated deny_paths; user can disable censorship"
-    status: pending
+    status: completed
   - id: li-log-package
     content: "packages/li-log: rotation, RFC3339 timestamps, redact-by-default; li-httpd access/audit/error sinks"
     status: completed

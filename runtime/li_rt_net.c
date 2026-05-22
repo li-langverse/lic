@@ -200,6 +200,16 @@ static int g_rate_limit_burst = 0;
 static double g_rate_tokens = 0.0;
 static double g_rate_last_ts = 0.0;
 
+/* M1.5 leak_censor — optional upstream egress scrub (flattened runtime.conf). */
+static int g_leak_censor_enabled = 0;
+static int g_leak_censor_block_502 = 0;
+static int g_leak_censor_pattern_openai = 1;
+static int g_leak_censor_pattern_jwt = 1;
+static int g_leak_censor_pattern_pem = 1;
+static int32_t g_leak_scrub_hit_count = 0;
+#define HTTPD_LEAK_SCRUB_BUF 65536
+static char g_leak_scrub_buf[HTTPD_LEAK_SCRUB_BUF];
+
 static int g_health_max_fails = 1;
 static int g_health_fail_timeout_sec = 10;
 
@@ -2923,27 +2933,124 @@ static void httpd_proxy_try_send_body(int epfd, int32_t slot) {
   }
 }
 
+static int leak_pattern_hit(const char* data, size_t len) {
+  if (!g_leak_censor_enabled || len == 0) {
+    return 0;
+  }
+  if (g_leak_censor_pattern_openai) {
+    const char* p = data;
+    const char* end = data + len;
+    while (p < end - 3) {
+      if (p[0] == 's' && p[1] == 'k' && p[2] == '-') {
+        return 1;
+      }
+      p++;
+    }
+  }
+  if (g_leak_censor_pattern_jwt && memmem(data, len, "Bearer ", 7) != NULL) {
+    return 1;
+  }
+  if (g_leak_censor_pattern_pem &&
+      (memmem(data, len, "BEGIN RSA PRIVATE KEY", 21) != NULL ||
+       memmem(data, len, "BEGIN PRIVATE KEY", 17) != NULL)) {
+    return 1;
+  }
+  return 0;
+}
+
+static size_t leak_redact_copy(const char* data, size_t len, char* out, size_t cap) {
+  static const char red[] = "[REDACTED]";
+  const size_t red_len = sizeof(red) - 1;
+  size_t o = 0;
+  size_t i = 0;
+  while (i < len && o + red_len < cap) {
+    int hit = 0;
+    if (g_leak_censor_pattern_openai && i + 3 <= len && data[i] == 's' && data[i + 1] == 'k' &&
+        data[i + 2] == '-') {
+      hit = 1;
+      while (i < len && data[i] != ' ' && data[i] != '\n' && data[i] != '\r' && data[i] != '"' &&
+             data[i] != ',' && data[i] != '}') {
+        i++;
+      }
+    } else if (g_leak_censor_pattern_jwt && i + 7 <= len && memcmp(data + i, "Bearer ", 7) == 0) {
+      hit = 1;
+      i += 7;
+      while (i < len && data[i] != ' ' && data[i] != '\n' && data[i] != '\r') {
+        i++;
+      }
+    } else if (g_leak_censor_pattern_pem && i + 17 <= len &&
+               memcmp(data + i, "BEGIN PRIVATE KEY", 17) == 0) {
+      hit = 1;
+      while (i < len && !(i + 25 <= len && memcmp(data + i, "END PRIVATE KEY", 15) == 0)) {
+        i++;
+      }
+      if (i < len) {
+        i += 15;
+      }
+    }
+    if (hit) {
+      memcpy(out + o, red, red_len);
+      o += red_len;
+      g_leak_scrub_hit_count++;
+      continue;
+    }
+    out[o++] = data[i++];
+  }
+  return o;
+}
+
+static const char* leak_censor_prepare(const char* data, size_t len, size_t* out_len) {
+  *out_len = len;
+  if (!g_leak_censor_enabled || len == 0) {
+    return data;
+  }
+  if (!leak_pattern_hit(data, len)) {
+    return data;
+  }
+  if (g_leak_censor_block_502) {
+    return NULL;
+  }
+  size_t n = leak_redact_copy(data, len, g_leak_scrub_buf, HTTPD_LEAK_SCRUB_BUF);
+  *out_len = n;
+  return g_leak_scrub_buf;
+}
+
 static int httpd_proxy_relay_to_client(int epfd, int32_t slot, const char* data, size_t len) {
   httpd_slot_t* s = &g_slots[slot];
   if (len == 0) {
     return 0;
   }
-  if (g_proxy_snap_recording && g_proxy_snap_len + (int)len <= HTTPD_PROXY_SNAP_MAX) {
-    memcpy(g_proxy_snap + g_proxy_snap_len, data, len);
-    g_proxy_snap_len += (int)len;
+  size_t send_len = len;
+  const char* send_data = leak_censor_prepare(data, len, &send_len);
+  if (send_data == NULL) {
+    const char* body = "{\"error\":\"upstream_leak_blocked\"}";
+    char resp[256];
+    int n = snprintf(resp, sizeof(resp),
+                     "HTTP/1.1 502 Bad Gateway\r\nContent-Type: application/json\r\n"
+                     "Content-Length: %zu\r\nConnection: close\r\n\r\n%s",
+                     strlen(body), body);
+    if (n > 0) {
+      size_t off = 0;
+      httpd_send_nb(s->fd, resp, (size_t)n, &off);
+    }
+    return -1;
+  }
+  if (g_proxy_snap_recording && g_proxy_snap_len + (int)send_len <= HTTPD_PROXY_SNAP_MAX) {
+    memcpy(g_proxy_snap + g_proxy_snap_len, send_data, send_len);
+    g_proxy_snap_len += (int)send_len;
   }
   s->proxy_relay_got_data = 1;
   size_t off = 0;
-  ssize_t rc = httpd_send_nb(s->fd, data, len, &off);
+  ssize_t rc = httpd_send_nb(s->fd, send_data, send_len, &off);
   if (rc < 0) {
     return -1;
   }
-  if (rc == 0 && off < len) {
-    size_t left = len - off;
+  if (rc == 0 && off < send_len) {
+    size_t left = send_len - off;
     if (left > sizeof(s->proxy_rbuf)) {
       return -1;
     }
-    memcpy(s->proxy_rbuf, data + off, left);
+    memcpy(s->proxy_rbuf, send_data + off, left);
     s->proxy_rbuf_len = (int)left;
     s->proxy_rbuf_sent = 0;
     httpd_proxy_client_epoll_mod(epfd, slot, EPOLLIN | EPOLLOUT | EPOLLET);
@@ -3998,6 +4105,12 @@ int32_t httpd_load_runtime_config_i(intptr_t path) {
   g_stream_max_sec = 0;
   g_concurrent_streams_max = 0;
   g_active_proxy_streams = 0;
+  g_leak_censor_enabled = 0;
+  g_leak_censor_block_502 = 0;
+  g_leak_censor_pattern_openai = 1;
+  g_leak_censor_pattern_jwt = 1;
+  g_leak_censor_pattern_pem = 1;
+  g_leak_scrub_hit_count = 0;
   char pending_require[16][600];
   int pending_require_n = 0;
   char line[4096];
@@ -4060,6 +4173,19 @@ int32_t httpd_load_runtime_config_i(intptr_t path) {
       g_stream_max_sec = atoi(val);
     } else if (strcmp(key, "concurrent_streams") == 0) {
       g_concurrent_streams_max = atoi(val);
+    } else if (strcmp(key, "leak_censor_enabled") == 0) {
+      g_leak_censor_enabled = (strcmp(val, "0") == 0 || strcmp(val, "false") == 0) ? 0 : 1;
+    } else if (strcmp(key, "leak_censor_on_detect") == 0) {
+      g_leak_censor_block_502 =
+          (strcmp(val, "block_502") == 0 || strcmp(val, "abort_stream") == 0) ? 1 : 0;
+    } else if (strcmp(key, "leak_censor_pattern") == 0) {
+      if (strcmp(val, "openai_sk") == 0) {
+        g_leak_censor_pattern_openai = 1;
+      } else if (strcmp(val, "jwt_bearer") == 0) {
+        g_leak_censor_pattern_jwt = 1;
+      } else if (strcmp(val, "pem_private") == 0) {
+        g_leak_censor_pattern_pem = 1;
+      }
     } else if (strcmp(key, "model_match") == 0 && g_model_match_count < HTTPD_MAX_MODEL_MATCH) {
       char model[64];
       int port = 0;
@@ -4126,6 +4252,53 @@ int32_t httpd_load_runtime_config_i(intptr_t path) {
     upstream_pool_prewarm_all();
   }
   return 0;
+}
+
+int32_t li_rt_httpd_leak_scrub_hit_count(void) { return g_leak_scrub_hit_count; }
+
+int32_t li_rt_httpd_leak_scrub_selftest(void) {
+  const char* sample = "data: {\"k\":\"sk-testkey\"}\n\n";
+  int prev_en = g_leak_censor_enabled;
+  int prev_hits = g_leak_scrub_hit_count;
+  g_leak_censor_enabled = 1;
+  g_leak_censor_block_502 = 0;
+  g_leak_censor_pattern_openai = 1;
+  g_leak_scrub_hit_count = 0;
+  size_t out_len = 0;
+  const char* out = leak_censor_prepare(sample, strlen(sample), &out_len);
+  g_leak_censor_enabled = prev_en;
+  if (out == NULL || out_len == 0) {
+    return -1;
+  }
+  if (g_leak_scrub_hit_count < 1) {
+    return -2;
+  }
+  if (strstr(out, "[REDACTED]") == NULL) {
+    return -3;
+  }
+  g_leak_scrub_hit_count = prev_hits;
+  return 0;
+}
+
+int32_t li_rt_httpd_leak_scrub(const char* data, int32_t len, intptr_t out_buf, int32_t out_cap) {
+  if (data == NULL || len <= 0 || out_buf == 0 || out_cap <= 0) {
+    return 0;
+  }
+  int prev = g_leak_censor_enabled;
+  g_leak_censor_enabled = 1;
+  size_t out_len = 0;
+  const char* scrubbed = leak_censor_prepare(data, (size_t)len, &out_len);
+  g_leak_censor_enabled = prev;
+  if (scrubbed == NULL) {
+    return -1;
+  }
+  if ((int32_t)out_len >= out_cap) {
+    return -2;
+  }
+  char* out = (char*)out_buf;
+  memcpy(out, scrubbed, out_len);
+  out[out_len] = '\0';
+  return (int32_t)out_len;
 }
 
 int32_t httpd_config_listen_port_i(void) { return g_config_listen_port; }

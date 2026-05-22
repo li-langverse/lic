@@ -39,6 +39,13 @@ static int32_t g_m15_stream_idle_sec = 0;
 static int32_t g_m15_stream_max_sec = 0;
 static int32_t g_m15_concurrent_streams = 0;
 
+/* M1.5 leak_censor oracle state ([leak_censor] in TOML). */
+static int32_t g_leak_censor_enabled = 0;
+static int32_t g_leak_censor_deny_path_count = 0;
+static int32_t g_leak_censor_pattern_openai = 0;
+static int32_t g_leak_censor_pattern_jwt = 0;
+static int32_t g_leak_censor_pattern_pem = 0;
+
 static LiHttpdRoute g_routes[LI_HTTPD_MAX_ROUTES];
 static int32_t g_route_count = 0;
 
@@ -480,6 +487,91 @@ static int parse_limits_m15_stream(const char* text) {
   return 0;
 }
 
+static int parse_leak_censor_table(const char* text) {
+  int enabled = 0;
+  int deny_count = 0;
+  int pat_openai = 0;
+  int pat_jwt = 0;
+  int pat_pem = 0;
+  const char* scan = text;
+  while (scan && *scan) {
+    const char* sec = strstr(scan, "[leak_censor");
+    if (sec == NULL) {
+      break;
+    }
+    const char* close = strchr(sec, ']');
+    if (close == NULL) {
+      break;
+    }
+    char line[256];
+    const char* p = strchr(close, '\n');
+    if (p == NULL) {
+      break;
+    }
+    while (*p) {
+      const char* line_end = strchr(p, '\n');
+      size_t len = line_end ? (size_t)(line_end - p) : strlen(p);
+      if (len >= sizeof(line)) {
+        return -1;
+      }
+      memcpy(line, p, len);
+      line[len] = '\0';
+      trim_line(line);
+      p = line_end ? line_end + 1 : p + len;
+      if (line[0] == '[') {
+        break;
+      }
+      if (line[0] == '\0' || line[0] == '#') {
+        continue;
+      }
+      const char* eq = strchr(line, '=');
+      if (eq == NULL) {
+        continue;
+      }
+      char key[64];
+      size_t klen = (size_t)(eq - line);
+      if (klen >= sizeof(key)) {
+        return -1;
+      }
+      memcpy(key, line, klen);
+      key[klen] = '\0';
+      trim_line(key);
+      eq++;
+      while (*eq && isspace((unsigned char)*eq)) {
+        eq++;
+      }
+      if (strcmp(key, "enabled") == 0) {
+        if (strcmp(eq, "true") == 0 || strcmp(eq, "1") == 0) {
+          enabled = 1;
+        }
+      } else if (strcmp(key, "deny_paths") == 0) {
+        const char* q = eq;
+        while ((q = strchr(q, '"')) != NULL) {
+          deny_count++;
+          q++;
+        }
+      } else if (strcmp(key, "allow") == 0) {
+        if (strstr(eq, "openai_sk") != NULL) {
+          pat_openai = 1;
+        }
+        if (strstr(eq, "jwt_bearer") != NULL) {
+          pat_jwt = 1;
+        }
+        if (strstr(eq, "pem_private") != NULL) {
+          pat_pem = 1;
+        }
+      }
+    }
+    scan = p;
+  }
+  g_leak_censor_enabled = enabled;
+  g_leak_censor_deny_path_count = deny_count;
+  g_leak_censor_pattern_openai = pat_openai;
+  g_leak_censor_pattern_jwt = pat_jwt;
+  g_leak_censor_pattern_pem = pat_pem;
+  return 0;
+}
+
 static int parse_limits_rate_limit_rps(const char* text, int* out_rps) {
   *out_rps = 0;
   const char* sec = strstr(text, "[limits]");
@@ -712,7 +804,15 @@ int32_t li_rt_httpd_load_config(const char* path) {
   g_m15_stream_idle_sec = 0;
   g_m15_stream_max_sec = 0;
   g_m15_concurrent_streams = 0;
+  g_leak_censor_enabled = 0;
+  g_leak_censor_deny_path_count = 0;
+  g_leak_censor_pattern_openai = 0;
+  g_leak_censor_pattern_jwt = 0;
+  g_leak_censor_pattern_pem = 0;
   int rc = parse_limits_m15_stream(buf);
+  if (rc == 0) {
+    rc = parse_leak_censor_table(buf);
+  }
   if (rc == 0) {
     rc = parse_routes_table(buf);
   }
@@ -973,3 +1073,13 @@ int32_t li_rt_httpd_traceparent_ok(const char* buf, int32_t hdr_end) {
   }
   return header_has_traceparent_c(buf, hdr_end) ? 1 : 0;
 }
+
+int32_t li_rt_httpd_leak_censor_enabled(void) { return g_leak_censor_enabled; }
+
+int32_t li_rt_httpd_leak_censor_deny_path_count(void) { return g_leak_censor_deny_path_count; }
+
+int32_t li_rt_httpd_leak_censor_pattern_openai(void) { return g_leak_censor_pattern_openai; }
+
+int32_t li_rt_httpd_leak_censor_pattern_jwt(void) { return g_leak_censor_pattern_jwt; }
+
+int32_t li_rt_httpd_leak_censor_pattern_pem(void) { return g_leak_censor_pattern_pem; }

@@ -19,6 +19,11 @@ except ModuleNotFoundError:
     import tomli as tomllib  # type: ignore
 
 from httpd_config import ConfigError, load_httpd_config
+from httpd_leak_censor import (
+    PATTERN_IDS,
+    generated_paths_for_config,
+    leak_censor_enabled,
+)
 from httpd_m15 import ConfigError as M15Error, parse_duration, validate_route_match
 
 
@@ -131,6 +136,35 @@ def flatten(cfg_path: Path) -> list[str]:
 
     if proxy_any and not any(l.startswith("upstream_peer=") for l in lines):
         lines.append("proxy_all=1")
+
+    lc = data.get("leak_censor") or {}
+    if isinstance(lc, dict) and leak_censor_enabled(data):
+        lines.append("leak_censor_enabled=1")
+        on_detect = str(lc.get("on_detect") or "redact")
+        if on_detect in ("block_502", "abort_stream"):
+            lines.append(f"leak_censor_on_detect={on_detect}")
+        json_block = lc.get("json") if isinstance(lc.get("json"), dict) else data.get("leak_censor.json") or {}
+        if not isinstance(json_block, dict):
+            json_block = {}
+        user_paths = json_block.get("deny_paths") or []
+        include_gen = json_block.get("include_generated", False)
+        include_gen = str(include_gen).lower() not in ("0", "false", "no")
+        gen_paths, gen_hdrs = generated_paths_for_config(cfg_path.parent, include_gen)
+        for p in list(dict.fromkeys([*(str(x) for x in user_paths), *gen_paths])):
+            lines.append(f"leak_censor_deny_path={p}")
+        pat_block = lc.get("patterns") if isinstance(lc.get("patterns"), dict) else data.get("leak_censor.patterns") or {}
+        if isinstance(pat_block, dict):
+            for pid in pat_block.get("allow") or []:
+                if str(pid) in PATTERN_IDS:
+                    lines.append(f"leak_censor_pattern={pid}")
+        hdr_block = lc.get("headers") if isinstance(lc.get("headers"), dict) else data.get("leak_censor.headers") or {}
+        if isinstance(hdr_block, dict):
+            for name in hdr_block.get("deny_names") or []:
+                lines.append(f"leak_censor_deny_header={name}")
+        for name in gen_hdrs:
+            lines.append(f"leak_censor_deny_header={name}")
+    else:
+        lines.append("leak_censor_enabled=0")
 
     return lines
 

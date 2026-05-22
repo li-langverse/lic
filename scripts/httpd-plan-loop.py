@@ -3,8 +3,7 @@
 
 Uses li-cursor-agents + Cursor SDK (local) when CURSOR_API_KEY is set. Invokes a
 **reusable** registry agent (default ``code_implementer``) with the todo slice as
-``--goal-file`` — not a dedicated httpd agent id. Otherwise prints instruction for
-a human/Cloud Agent session.
+``--goal`` / ``LI_AGENT_EXTRA_INSTRUCTION`` — not a dedicated httpd agent id.
 
 Usage:
   export CURSOR_API_KEY=cursor_...
@@ -25,6 +24,7 @@ import os
 import re
 import subprocess
 import sys
+import threading
 from datetime import datetime, timezone
 from pathlib import Path
 
@@ -107,6 +107,50 @@ def agents_root() -> Path | None:
     return None
 
 
+def _tee_stream(pipe, logf, out) -> None:
+    """Copy subprocess line-by-line to terminal and log (live, unbuffered)."""
+    for line in iter(pipe.readline, ""):
+        out.write(line)
+        out.flush()
+        logf.write(line)
+        logf.flush()
+
+
+def run_subprocess_streaming(cmd: list[str], cwd: Path, env: dict[str, str], log_path: Path) -> int:
+    """Run child with stdout/stderr streamed to this terminal and log_path."""
+    with log_path.open("w", encoding="utf-8") as logf:
+        logf.write(f"# cmd: {' '.join(cmd)}\n# cwd: {cwd}\n\n")
+        logf.flush()
+        print(f"==> agent subprocess (live; also {log_path})", flush=True)
+        proc = subprocess.Popen(
+            cmd,
+            cwd=str(cwd),
+            env=env,
+            stdout=subprocess.PIPE,
+            stderr=subprocess.PIPE,
+            text=True,
+            bufsize=1,
+        )
+        threads = [
+            threading.Thread(
+                target=_tee_stream,
+                args=(proc.stdout, logf, sys.stdout),
+                daemon=True,
+            ),
+            threading.Thread(
+                target=_tee_stream,
+                args=(proc.stderr, logf, sys.stderr),
+                daemon=True,
+            ),
+        ]
+        for t in threads:
+            t.start()
+        rc = proc.wait()
+        for t in threads:
+            t.join(timeout=2)
+        return rc
+
+
 def run_cursor_agent(todo: dict, dry_run: bool) -> tuple[int, str]:
     root = agents_root()
     if not root:
@@ -161,13 +205,8 @@ def run_cursor_agent(todo: dict, dry_run: bool) -> tuple[int, str]:
 
     STATE_DIR.mkdir(parents=True, exist_ok=True)
     log_path = STATE_DIR / f"iter-{datetime.now(timezone.utc).strftime('%Y%m%d-%H%M%S')}.log"
-    proc = subprocess.run(cmd, cwd=root, env=env, capture_output=True, text=True)
-    log_path.write_text(
-        (proc.stdout or "") + "\n--- stderr ---\n" + (proc.stderr or ""),
-        encoding="utf-8",
-    )
-    tail = (proc.stdout or "")[-4000:] + (proc.stderr or "")[-2000:]
-    return proc.returncode, f"log={log_path}\n{tail}"
+    rc = run_subprocess_streaming(cmd, root, env, log_path)
+    return rc, f"log={log_path} (streamed above)"
 
 
 def build_instruction(todo: dict) -> str:
@@ -261,7 +300,7 @@ def main() -> int:
             return 0 if ok else 1
 
         code, msg = run_cursor_agent(todo, args.dry_run)
-        print(msg[-3000:] if len(msg) > 3000 else msg)
+        print(msg, flush=True)
         if args.dry_run:
             return 0
 

@@ -258,3 +258,18 @@ def assert_spec_small_matches_table(bench: str, ref: Tier1Reference) -> None:
 
 def tier1_has_reference(bench: str) -> bool:
     return bench in TIER1_REFERENCE
+
+
+def verify_all_tier1_specs() -> None:
+    """Self-check: small goldens match normative compute_small for every tier-1 bench."""
+    for bench, ref in TIER1_REFERENCE.items():
+        assert_spec_small_matches_table(bench, ref)
+
+
+if __name__ == "__main__":
+    verify_all_tier1_specs()
+    parts = [
+        f"{name}({ref.small_n})={format_result(ref.compute_small())}"
+        for name, ref in TIER1_REFERENCE.items()
+    ]
+    print("tier1 reference specs ok:", ", ".join(parts))

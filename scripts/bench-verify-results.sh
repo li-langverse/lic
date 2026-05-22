@@ -16,5 +16,8 @@ fi
 
 TIER="${1:-12}"
 li_phase "benchmark result verify (tier ${TIER}, no timing)"
+if [[ "$TIER" == "1" ]]; then
+  python3 "$ROOT/benchmarks/harness/reference.py"
+fi
 python3 "$ROOT/benchmarks/harness/bench.py" --verify-results --tier "$TIER"
 li_ok "benchmark result verify finished"

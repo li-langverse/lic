@@ -4,7 +4,7 @@ overview: Autonomous loop — Wave A compiler milestones (2e/2f, 2i, 7d/7e) firs
 todos:
   - id: wave-a-7e-verify
     content: "Tier-1 result verify — reference.py + bench-verify-results.sh 1; all checksums pass"
-    status: pending
+    status: completed
   - id: wave-a-7e-pure-li-simd
     content: "Pure-Li simd_dot — correct spec checksum at realistic wall time (DCE allowed if verified)"
     status: completed

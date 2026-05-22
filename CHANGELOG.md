@@ -17,6 +17,7 @@ All notable changes to Li are documented here. The format follows
 - **P-float (partial):** `sqrt_open_bound.li` calls `li_rt_sqrt`; tight `abs` ensures still open — `docs/release-notes/2026-05-22-p-float-sqrt-runtime.md`.
 - **7d/7e (partial):** `@parallel(disjoint=)` on `def` inherits to inner `parallel for`; tier-1 `bench.py` uses `--allow-open-vc` — `docs/release-notes/2026-05-22-7d-7e-bench-parallel.md`.
 - **Tier-1 matmul benches:** hoist `A`/`B` init out of hot loop in `matmul_naive` / `matmul_blocked` Li drivers — `docs/release-notes/2026-05-22-tier1-matmul-bench-hotloop.md`.
+- **Tier-1 result verify:** `reference.py` self-check + `bench-verify-results.sh 1` — all five tier-1 checksums — `docs/release-notes/2026-05-22-wave-a-7e-verify.md`.
 
 ### Fixed
 

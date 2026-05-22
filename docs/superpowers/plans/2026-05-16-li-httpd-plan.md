@@ -1,6 +1,6 @@
 ---
 name: Li secure webserver
-overview: li-httpd — AI/agent gateway with easy TOML, streaming, limits, LB, auto-TLS. All code in-repo as publishable packages (path deps until you publish separately). M1 core; M1.5 agent+TLS; M2 scale. Nginx = bench/CVE oracle only.
+overview: li-httpd — AI/agent gateway with easy TOML, streaming, limits, LB, auto-TLS. M1/M1.5/M2 config done; parity milestones (m0/m1/m15/m2 *-runtime, w0/w1) close nginx-class agent-gateway behavior. Nginx = bench/CVE oracle, not nginx.conf clone.
 todos:
   - id: w0-lean-gate
     content: "P0 blocker: 2e–2f VC+Lean on lic build — unlocks spec-first li-httpd"
@@ -32,14 +32,12 @@ todos:
   - id: m1-toml-desugar
     content: Simple TOML desugar + config_desugar golden tests + explain-config CLI
     status: completed
-    status: in_progress
   - id: m1-validate-flatten
     content: validate-httpd-config.py + flatten-httpd-config.py + lic validate-httpd-config alias
     status: completed
   - id: m1-bearer-auth
     content: "[auth] TOML Bearer gate + test-auth-bearer.sh (runtime C)"
     status: completed
-    status: in_progress
   - id: m1-explain-config-cli
     content: "lic httpd explain-config + check-httpd-explain-config.sh golden"
     status: completed
@@ -82,10 +80,63 @@ todos:
   - id: prob-hoare
     content: "P2: prob_ensures + Monte Carlo/Lean measure obligations; lic build --prob-check for P(event)<ε"
     status: completed
+  - id: m0-ship-gate-full
+    content: "Ship gate: lic build + li-httpd binary; httpd-plan-gates without SKIP; test-auth-bearer.sh on running server"
+    status: pending
+  - id: m1-serve-production
+    content: "Production HTTP/1.1 daemon (workers, keep-alive, static+proxy) — beyond serve-once stub/oracle"
+    status: pending
+  - id: m1-upstream-keepalive
+    content: "Upstream HTTP keepalive pool to inference backends (no stale-connection 502s)"
+    status: pending
+  - id: m1-active-health
+    content: "Active health probes on upstream peers; remove dead peers from rotation"
+    status: pending
+  - id: m1-nginx-bench-parity
+    content: "tier5_http bench — agent-gateway scenarios meet or beat nginx on RPS/latency (dashboard ratios)"
+    status: pending
+  - id: m1-exploit-runtime
+    content: "tier5 exploits green against running build/li-httpd (not validate-config only)"
+    status: pending
+  - id: m15-sse-runtime
+    content: "SSE/streaming on live li-httpd; idle-between-chunks timeout cancels upstream"
+    status: pending
+  - id: m15-inference-live
+    content: "OpenAI-compatible /v1 routes live with rate limits, OTel, cancel-on-disconnect"
+    status: pending
+  - id: m2-tls-h2-runtime
+    content: "TLS1.3 terminate + HTTP/2 (ALPN) on li-httpd — runtime, not config oracle only"
+    status: pending
+  - id: m2-websocket-runtime
+    content: "WebSocket upgrade + bidirectional proxy on li-httpd"
+    status: pending
+  - id: m2-circuit-queue-runtime
+    content: "Circuit breaker + queue depth 429 + Retry-After when peers saturated (runtime)"
+    status: pending
+  - id: m2-webhook-egress-runtime
+    content: "Webhook/callback egress SSRF allowlist enforced on outbound requests"
+    status: pending
+  - id: h-lean-server-modules
+    content: "Lean/VC on server packages (li-net-httpd, runtime httpd modules) — lic build without lean skip"
+    status: pending
 isProject: false
 ---
 
 # li-httpd — minimal, proved, nginx-competitive
+
+## Parity milestones (agent-gateway vs nginx oracle)
+
+Config/oracle todos may be `completed` while **runtime parity** rows stay `pending` until `build/li-httpd` passes full gates, tier5 bench/exploit vs nginx, and live SSE/TLS/H2/WS.
+
+| Tier | Todo ids | Delivers |
+|------|----------|----------|
+| Language | `w0-bytes-io`, `w1-async-reactor` | Bytes I/O + event loop (concurrency) |
+| Ship | `m0-ship-gate-full`, `h-lean-server-modules` | Full build + Lean on server code |
+| M1 runtime | `m1-serve-production`, `m1-upstream-keepalive`, `m1-active-health`, `m1-nginx-bench-parity`, `m1-exploit-runtime` | Production HTTP/1.1 + bench/security vs nginx |
+| M1.5 runtime | `m15-sse-runtime`, `m15-inference-live` | Live streaming + `/v1` agent routes |
+| M2 runtime | `m2-tls-h2-runtime`, `m2-websocket-runtime`, `m2-circuit-queue-runtime`, `m2-webhook-egress-runtime` | TLS/H2/WS + saturation policy |
+
+**Non-goals (unchanged):** nginx.conf drop-in, regex `location`, Lua/modules, HTTP/3, mail.
 
 ## Honest starting point
 

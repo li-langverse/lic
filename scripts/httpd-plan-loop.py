@@ -59,14 +59,46 @@ def load_plan_todos() -> list[dict]:
     return todos
 
 
+def is_server_milestone(todo_id: str) -> bool:
+    """Server/httpd plan todos for parity loop (excludes prob-hoare, pkg-workspace-only)."""
+    if todo_id in ("prob-hoare", "pkg-workspace", "rng-concepts"):
+        return False
+    prefixes = ("w0", "w1", "m0-", "m1", "m15", "m2", "m3", "bench-harness", "nginx-", "exploit-", "rng-exploit", "setup-censor", "li-log")
+    return todo_id.startswith(prefixes) or todo_id in ("setup-censor-schema",)
+
+
+def server_tier(todo_id: str) -> int:
+    if todo_id.startswith("w0"):
+        return 0
+    if todo_id.startswith("w1"):
+        return 1
+    if todo_id.startswith("m0"):
+        return 2
+    if todo_id.startswith("m1"):
+        return 3
+    if todo_id.startswith("m15"):
+        return 4
+    if todo_id.startswith("m2"):
+        return 5
+    if todo_id.startswith("m3"):
+        return 6
+    if todo_id.startswith("h-"):
+        return 7
+    return 8
+
+
 def pick_next(todos: list[dict], state: dict) -> dict | None:
     completed = set(state.get("completed_ids", []))
+    close_server = os.environ.get("LI_HTTPD_PLAN_CLOSE_SERVER_MILESTONES", "1").strip() not in (
+        "0",
+        "false",
+        "no",
+        "off",
+    )
 
     def order_key(t: dict) -> tuple[int, int, str]:
-        # Prefer M1 httpd todos over language-wide blockers (w0/w1).
-        m1 = 0 if t["id"].startswith("m1") else 1
         status_rank = 0 if t["status"] == "in_progress" else 1
-        return (status_rank, m1, t["id"])
+        return (status_rank, server_tier(t["id"]), t["id"])
 
     open_todos = [
         t
@@ -75,7 +107,11 @@ def pick_next(todos: list[dict], state: dict) -> dict | None:
     ]
     if not open_todos:
         return None
-    if os.environ.get("LI_HTTPD_PLAN_INCLUDE_BLOCKERS", "").strip() not in ("1", "true", "yes"):
+    if close_server:
+        scoped = [t for t in open_todos if is_server_milestone(t["id"])]
+        if scoped:
+            open_todos = scoped
+    elif os.environ.get("LI_HTTPD_PLAN_INCLUDE_BLOCKERS", "").strip() not in ("1", "true", "yes"):
         m1_open = [t for t in open_todos if t["id"].startswith("m1")]
         if m1_open:
             open_todos = m1_open
@@ -334,11 +370,20 @@ def build_instruction(todo: dict) -> str:
     baseline = ""
     if BASELINE.is_file():
         baseline = BASELINE.read_text(encoding="utf-8")[:6000]
+    mission = ""
+    if os.environ.get("LI_HTTPD_PLAN_CLOSE_SERVER_MILESTONES", "1").strip() not in ("0", "false", "no", "off"):
+        mission = """
+## Loop mission (server parity — close all pending)
+
+Work through **every pending server milestone** in the plan (`w0`/`w1` → `m0` → `m1*` → `m15*` → `m2*` runtime rows).
+**Oracle/config-only is not enough** for `*-runtime` and `m0-ship-gate-full` todos — require running `build/li-httpd`, tier5 bench/exploit vs nginx where cited.
+See plan section **Parity milestones (agent-gateway vs nginx oracle)**.
+"""
     return f"""# httpd plan iteration — todo `{todo['id']}`
 
 **Plan:** `{PLAN.relative_to(ROOT)}`
 **Status in plan frontmatter:** update to `completed` when this todo is fully done.
-
+{mission}
 ## Current todo
 - **id:** {todo['id']}
 - **content:** {todo['content']}

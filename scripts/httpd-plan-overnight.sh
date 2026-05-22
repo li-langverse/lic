@@ -1,6 +1,5 @@
 #!/usr/bin/env bash
-# Overnight goal-directed httpd plan loop.
-# Default: first batch (HTTPD_PLAN_OVERNIGHT_MAX), then more batches until 08:00 local.
+# Overnight: close all server parity milestones until 08:00 in HTTPD_PLAN_TZ (default Europe/Berlin).
 set -euo pipefail
 
 ROOT="$(cd "$(dirname "$0")/.." && pwd)"
@@ -29,29 +28,18 @@ export HTTPD_PAGES_SKIP_BENCH="${HTTPD_PAGES_SKIP_BENCH:-1}"
 export LI_HTTPD_PLAN_AGENT="${LI_HTTPD_PLAN_AGENT:-code_implementer}"
 export LI_HTTPD_PLAN_AGENT_TIMEOUT_SEC="${LI_HTTPD_PLAN_AGENT_TIMEOUT_SEC:-2700}"
 export LI_CONTROL_PLANE_STORE="${LI_CONTROL_PLANE_STORE:-disk}"
+export LI_HTTPD_PLAN_CLOSE_SERVER_MILESTONES="${LI_HTTPD_PLAN_CLOSE_SERVER_MILESTONES:-1}"
 
 HTTPD_PLAN_TZ="${HTTPD_PLAN_TZ:-Europe/Berlin}"
 export TZ="$HTTPD_PLAN_TZ"
-MAX="${HTTPD_PLAN_OVERNIGHT_MAX:-30}"
-# Set HTTPD_PLAN_NO_UNTIL_DEADLINE=1 to run only the first --max batch.
-RUN_UNTIL="${HTTPD_PLAN_NO_UNTIL_DEADLINE:-0}"
 
-{
-  echo "==> httpd-plan-overnight start $(date -Iseconds)"
-  echo "    branch=$HTTPD_PLAN_PR_BRANCH max=$MAX log=$LOG"
-  echo "    TZ=${TZ} until_local=${HTTPD_PLAN_UNTIL_LOCAL:-08:00} (unless NO_UNTIL_DEADLINE=1)"
-  echo "    agents=$LI_CURSOR_AGENTS_ROOT benchmarks=$BENCHMARKS_ROOT"
-  cd "$ROOT"
-  git branch --show-current || true
-  python3 "$ROOT/scripts/httpd-plan-loop.py" --max "$MAX"
-} 2>&1 | tee -a "$LOG"
+echo "==> httpd-plan-overnight $(date -Iseconds) TZ=$TZ → until ${HTTPD_PLAN_UNTIL_LOCAL:-08:00}"
+echo "    close_server_milestones=$LI_HTTPD_PLAN_CLOSE_SERVER_MILESTONES log=$LOG"
 
-echo "==> first batch done $(date -u -Iseconds) — log: $LOG"
-
-if [[ "$RUN_UNTIL" == "1" ]]; then
-  echo "==> HTTPD_PLAN_NO_UNTIL_DEADLINE=1 — skipping until-deadline extension"
-  exit 0
+if [[ "${HTTPD_PLAN_NO_UNTIL_DEADLINE:-0}" == "1" ]]; then
+  MAX="${HTTPD_PLAN_OVERNIGHT_MAX:-30}"
+  exec python3 "$ROOT/scripts/httpd-plan-loop.py" --max "$MAX" 2>&1 | tee -a "$LOG"
 fi
 
-export HTTPD_PLAN_WAIT_FOR_LOOP=0
+export HTTPD_PLAN_WAIT_FOR_LOOP="${HTTPD_PLAN_WAIT_FOR_LOOP:-0}"
 exec "$ROOT/scripts/httpd-plan-until-deadline.sh" 2>&1 | tee -a "$LOG"

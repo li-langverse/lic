@@ -29,8 +29,9 @@ export HTTPD_PAGES_SKIP_BENCH="${HTTPD_PAGES_SKIP_BENCH:-1}"
 export LI_HTTPD_PLAN_AGENT="${LI_HTTPD_PLAN_AGENT:-code_implementer}"
 export LI_HTTPD_PLAN_AGENT_TIMEOUT_SEC="${LI_HTTPD_PLAN_AGENT_TIMEOUT_SEC:-2700}"
 export LI_CONTROL_PLANE_STORE="${LI_CONTROL_PLANE_STORE:-disk}"
+export LI_HTTPD_PLAN_CLOSE_SERVER_MILESTONES="${LI_HTTPD_PLAN_CLOSE_SERVER_MILESTONES:-1}"
 
-# Wall-clock deadline in operator TZ (server may be US/Eastern; set Europe/Berlin etc.).
+# Wall-clock deadline in operator TZ (default Europe/Berlin for 08:00 operator time).
 HTTPD_PLAN_TZ="${HTTPD_PLAN_TZ:-Europe/Berlin}"
 export TZ="$HTTPD_PLAN_TZ"
 DEADLINE_LOCAL="${HTTPD_PLAN_UNTIL_LOCAL:-08:00}"
@@ -63,6 +64,7 @@ DEADLINE_TS="$(deadline_epoch "$DEADLINE_LOCAL")"
 log "==> httpd-plan-until-deadline $(date -Iseconds)"
 log "    TZ=${TZ} deadline=${DEADLINE_LOCAL} → $(date -d "@${DEADLINE_TS}" -Iseconds)"
 log "    server_utc=$(date -u -Iseconds)"
+log "    close_server_milestones=$LI_HTTPD_PLAN_CLOSE_SERVER_MILESTONES"
 log "    batch_cap=$BATCH_CAP min_per_iter=${MIN_PER_ITER}m log=$LOG"
 
 if [[ "$WAIT_FOR_LOOP" == "1" ]]; then

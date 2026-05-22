@@ -6,9 +6,10 @@
 
 | Registry | Tag | Contents |
 |----------|-----|----------|
-| `ghcr.io/li-langverse/lic-ci` | `ubuntu24-llvm22`, `latest` | Ubuntu 24.04, LLVM 22, cmake, ninja, python3, zlib/zstd dev |
+| `ghcr.io/li-langverse/lic-ci` | **`debian12-llvm22`**, `latest` | **Debian 12 (bookworm)** — preferred for local/podman |
+| `ghcr.io/li-langverse/lic-ci` | `ubuntu24-llvm22` | Ubuntu 24.04 — optional GHA `ubuntu-24.04` base parity |
 
-Built from `docker/ci-ubuntu24-llvm22/Dockerfile` (same toolchain as `scripts/ci-install-llvm.sh`).
+Built from `docker/ci-debian12-llvm22/` or `docker/ci-ubuntu24-llvm22/` (LLVM 22 via apt or apt.llvm.org, same as `scripts/ci-install-llvm.sh`).
 
 ## On a new machine
 
@@ -21,7 +22,8 @@ cd lic
 Override image:
 
 ```bash
-export LI_CI_DOCKER_IMAGE=ghcr.io/li-langverse/lic-ci:ubuntu24-llvm22
+export LI_CI_DOCKER_IMAGE=ghcr.io/li-langverse/lic-ci:debian12-llvm22
+# GHA parity: .../lic-ci:ubuntu24-llvm22
 ```
 
 **Container runtime:** scripts prefer **`podman`** when `podman info` works, else `docker`. Override with `CONTAINER_RUNTIME=docker` if needed.
@@ -36,13 +38,14 @@ Workflow `.github/workflows/publish-docker-ci-image.yml` pushes to GHCR using **
 
 Trigger manually: **Actions → Publish CI Docker image → Run workflow**.
 
-After the first publish, `docker pull ghcr.io/li-langverse/lic-ci:ubuntu24-llvm22` works without login for public packages.
+After the first publish, `podman pull ghcr.io/li-langverse/lic-ci:debian12-llvm22` works without login for public packages.
 
 ## OS coverage
 
 | Layer | Coverage |
 |-------|----------|
-| This image | Linux / GHA `ubuntu-24.04` job only |
+| `debian12-llvm22` (default) | Linux dev boxes / podman (Debian 12) |
+| `ubuntu24-llvm22` | Closer to GHA `ubuntu-24.04` job base image |
 | `./scripts/local-ci.sh` (native) | Host OS (Linux or macOS) |
 | GHA `macos-14` / `windows-latest` | Not in this image — still need GHA or real runners |
 
@@ -52,7 +55,8 @@ After the first publish, `docker pull ghcr.io/li-langverse/lic-ci:ubuntu24-llvm2
 
 | Target | Docker on Linux devbox |
 |--------|-------------------------|
-| **Linux** (`ubuntu-24.04`) | Yes — `ghcr.io/li-langverse/lic-ci:ubuntu24-llvm22` |
+| **Linux** (Debian 12 default) | Yes — `ghcr.io/li-langverse/lic-ci:debian12-llvm22` |
+| **Linux** (GHA ubuntu job) | Optional — `ghcr.io/li-langverse/lic-ci:ubuntu24-llvm22` |
 | **macOS** (`macos-14`) | No official macOS container OS; Apple license + no Docker-equivalent macOS runner image |
 | **Windows** (`windows-latest`) | Windows *containers* need a **Windows Docker host** (different engine than Linux containers). They do not run on normal Linux Docker and are not the same as GHA’s bash+LLVM Windows VM |
 
@@ -73,4 +77,4 @@ Publishing more GHCR tags only helps for **Linux** variants (e.g. `ubuntu24-llvm
 
 ## li-local-ci
 
-Set `LI_LOCAL_CI_IMAGE=ghcr.io/li-langverse/lic-ci:ubuntu24-llvm22` in profile `lic-docker` (see `li-local-ci` repo) for act/profile docker runs.
+Set `LI_LOCAL_CI_IMAGE=ghcr.io/li-langverse/lic-ci:debian12-llvm22` in profile `lic-docker` (see `li-local-ci` repo) for act/profile container runs.

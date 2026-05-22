@@ -7,7 +7,7 @@
 #   ./scripts/local-ci.sh --docker     # prebuilt GHCR image (ubuntu24 + LLVM 22)
 #   ./scripts/local-ci.sh --prepare-docker  # pull/build image only, then exit
 #
-# Env: LI_CI_DOCKER_IMAGE (default ghcr.io/li-langverse/lic-ci:ubuntu24-llvm22)
+# Env: LI_CI_DOCKER_IMAGE (default ghcr.io/li-langverse/lic-ci:debian12-llvm22)
 # See docs/ecosystem/local-ci-docker-images.md
 #
 # Exits non-zero on the same failures as scripts/ci.sh.
@@ -33,7 +33,7 @@ for arg in "$@"; do
   esac
 done
 
-LI_CI_DOCKER_IMAGE="${LI_CI_DOCKER_IMAGE:-ghcr.io/li-langverse/lic-ci:ubuntu24-llvm22}"
+LI_CI_DOCKER_IMAGE="${LI_CI_DOCKER_IMAGE:-ghcr.io/li-langverse/lic-ci:debian12-llvm22}"
 
 # shellcheck source=lib/container-runtime.sh
 source "$ROOT/scripts/lib/container-runtime.sh"

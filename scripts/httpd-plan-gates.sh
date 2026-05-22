@@ -51,7 +51,7 @@ if [[ -f "$ROOT/scripts/validate-httpd-config.py" ]]; then
   fi
 fi
 
-if [[ "${HTTPD_RUN_BEARER_TEST:-1}" == "1" && -f "$ROOT/scripts/test-auth-bearer.sh" ]]; then
+if [[ "${HTTPD_GATES_SKIP_LIC_BUILD:-0}" != "1" && "${HTTPD_RUN_BEARER_TEST:-1}" == "1" && -f "$ROOT/scripts/test-auth-bearer.sh" ]]; then
   if [[ ! -x "$ROOT/build/li-httpd" ]]; then
     echo "==> build-li-httpd.sh"
     chmod +x "$ROOT/scripts/build-li-httpd.sh"

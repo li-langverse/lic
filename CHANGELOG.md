@@ -8,7 +8,7 @@ All notable changes to Li are documented here. The format follows
 
 ### Fixed
 
-- **Tier-2 physics benches:** `extern proc` `requires`/`ensures` + `main` `raises IO` on ten shared-kernel drivers (`rigid_body_stack`, game-dev stubs, `three_body_pure`) — unblocks `bench.py --tier 2` — `docs/release-notes/2026-05-22-tier2-physics-extern-contracts.md`.
+- **Tier-2 physics benches:** `extern proc` `requires`/`ensures` + `main` `raises IO` on nine shared-kernel drivers plus `three_body_pure` — unblocks `bench.py --tier 2` — `docs/release-notes/2026-05-22-tier2-physics-extern-contracts.md`.
 
 ### Added
 

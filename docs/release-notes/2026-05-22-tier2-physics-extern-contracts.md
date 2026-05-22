@@ -2,7 +2,7 @@
 
 ## Summary
 
-Ten tier-2 shared-kernel `main.li` drivers now declare `requires`/`ensures` on `extern proc` and `raises IO` on `main`, unblocking `bench.py --tier 2` (including `rigid_body_stack`).
+Nine tier-2 shared-kernel drivers plus `three_body_pure` now declare `requires`/`ensures` on `extern proc` and `raises IO` on `main`, unblocking `bench.py --tier 2` (including `rigid_body_stack`).
 
 ## Agent continuation
 
@@ -18,7 +18,8 @@ Ten tier-2 shared-kernel `main.li` drivers now declare `requires`/`ensures` on `
 | `benchmarks/tier2_physics/rigid_body_stack/li/main.li` | `lic build` + tier-2 sweep green |
 | `benchmarks/tier2_physics/{cloth_swing,combustion_passive,euler_fluid_2d,fdtd_waveguide_2d,orbit_two_body,ragdoll_chain,schrodinger_1d_barrier,wind_field_bc}/li/main.li` | same contract pattern |
 | `benchmarks/tier2_physics/three_body_pure/li/main.li` | `li_rt_sqrt` contracts + `ensures` on `three_body_forces` |
-| `benchmarks/results/latest.csv` | tier-2 timings (local sweep at `229ecc7` + this branch) |
+| `docs/verification/p-float-sqrt-open.md` | documents why `sqrt_open_bound` must remain open |
+| `docs/verification/provability-gaps.md` | notes proc-level `@parallel(disjoint=)` inheritance while Lean proofs remain open |
 
 ## Not changed
 
@@ -31,6 +32,6 @@ Ten tier-2 shared-kernel `main.li` drivers now declare `requires`/`ensures` on `
 | Topic | Status |
 |-------|--------|
 | **Breaking** | N/A — bench drivers only |
-| **Security** | N/A |
+| **Security** | N/A — no trusted surface or runtime policy changed |
 | **Performance** | N/A — no kernel change |
 | **Downstream** | **benchmarks** ingest after merge; `catalog.toml` `rigid_body_stack` row unchanged |

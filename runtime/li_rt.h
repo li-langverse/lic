@@ -27,6 +27,7 @@ double li_rt_log(double x);
 double li_rt_hypot(double x, double y);
 double li_rt_expm1(double x);
 double li_rt_log1p(double x);
+void li_rt_print_f64(double v);
 void li_rt_volatile_sink_f64(double v);
 
 /* HTTP routing + config (li_rt_httpd.c — M1 validate-config / routing tests). */

@@ -5,6 +5,7 @@ from __future__ import annotations
 
 import argparse
 import csv
+import math
 import os
 import platform
 import shutil
@@ -57,8 +58,8 @@ TIER1_BENCHES: tuple[BenchSpec, ...] = (
         "cpp/main.c",
         "common/dot_core.c",
         "li/main.li",
-        flops_per_run=8.0 * 1e7,
-        li_pure=True,
+        flops_per_run=2.0 * 1e7,
+        li_pure=False,
     ),
     BenchSpec(
         "matmul_naive",
@@ -415,28 +416,149 @@ def build_li(spec: BenchSpec, bin_path: Path) -> None:
     )
 
 
-def verify_checksum(spec: BenchSpec, build_dir: Path) -> None:
-    """Native and Li must run the same reference kernel (checksum + timing sanity)."""
+def horner_reference_acc(*, steps: int = 5_000_000, x: float = 1.1) -> float:
+    acc = 0.0
+    for _ in range(steps):
+        acc = acc * x + 1.0
+    return acc
+
+
+def format_horner_checksum(value: float) -> str:
+    """Match C `printf(\"%.17g\\n\", checksum)` used by horner --verify."""
+    if math.isinf(value):
+        return "inf" if value > 0 else "-inf"
+    if math.isnan(value):
+        return "nan"
+    return f"{value:.17g}"
+
+
+# Li and native are different programs (e.g. reduced steps); only check native reproducibility.
+SKIP_LI_NATIVE_RESULT_PARITY: frozenset[str] = frozenset({"three_body_pure"})
+
+
+def native_result_checksum(native_bin: Path) -> str:
+    return subprocess.check_output([str(native_bin), "--verify"], text=True).strip()
+
+
+def li_result_checksum(li_bin: Path, *, try_argv_verify: bool) -> str:
+    """Read benchmark result via --verify or LI_PRINT_SINK_F64 (last line of stdout)."""
+    if try_argv_verify:
+        proc = subprocess.run(
+            [str(li_bin), "--verify"],
+            capture_output=True,
+            text=True,
+            check=False,
+        )
+        if proc.returncode == 0 and (proc.stdout or "").strip():
+            lines = (proc.stdout or "").strip().splitlines()
+            return lines[-1].strip()
+    env = {**os.environ, "LI_PRINT_SINK_F64": "1"}
+    proc = subprocess.run(
+        [str(li_bin)],
+        capture_output=True,
+        text=True,
+        env=env,
+        check=False,
+    )
+    if proc.returncode != 0:
+        raise RuntimeError(
+            f"Li result run failed (rc={proc.returncode}, stderr={(proc.stderr or '')!r})"
+        )
+    lines = (proc.stdout or "").strip().splitlines()
+    if not lines:
+        raise RuntimeError("Li result run produced no stdout (set li_rt_volatile_sink_f64 on final value)")
+    return lines[-1].strip()
+
+
+def verify_benchmark_results(spec: BenchSpec, build_dir: Path) -> None:
+    """Verify results against normative spec (reference.py), then Li vs native when applicable."""
+    from reference import (
+        TIER1_REFERENCE,
+        assert_checksum_against_spec,
+        assert_spec_small_matches_table,
+    )
+
     native = build_dir / f"{spec.name}_native"
     li_bin = build_dir / f"{spec.name}_li"
     build_native(spec, native)
     build_li(spec, li_bin)
-    native_out = subprocess.check_output([str(native), "--verify"], text=True).strip()
-    cpp_time = time_command([str(native)], runs=1)
-    li_time = time_command([str(li_bin)], runs=1)
-    if spec.li_pure:
+
+    ref_case = TIER1_REFERENCE.get(spec.name)
+    if ref_case is not None and os.environ.get("BENCH_VERIFY_REFERENCE", "1").strip() not in (
+        "0",
+        "false",
+        "no",
+    ):
+        assert_spec_small_matches_table(spec.name, ref_case)
+        small_expected = format_horner_checksum(ref_case.compute_small())
+        print(f"{spec.name} spec small ok: {small_expected}")
+
+    native_out = native_result_checksum(native)
+    if ref_case is not None and os.environ.get("BENCH_VERIFY_REFERENCE", "1").strip() not in (
+        "0",
+        "false",
+        "no",
+    ):
+        assert_checksum_against_spec(
+            spec.name,
+            native_out,
+            label="native",
+            size="full",
+            ref=ref_case,
+            use_small=False,
+        )
+
+    if spec.name in SKIP_LI_NATIVE_RESULT_PARITY:
+        native_b = build_dir / f"{spec.name}_native_b"
+        build_native(spec, native_b)
+        native_b_out = native_result_checksum(native_b)
+        if native_out != native_b_out:
+            raise RuntimeError(f"{spec.name}: native checksum not reproducible")
+        print(f"{spec.name} verify ok (native only): checksum={native_out}")
+        return
+
+    t0 = time.perf_counter()
+    li_out = li_result_checksum(li_bin, try_argv_verify=not spec.li_pure)
+    li_elapsed = time.perf_counter() - t0
+    if ref_case is not None and os.environ.get("BENCH_VERIFY_REFERENCE", "1").strip() not in (
+        "0",
+        "false",
+        "no",
+    ):
+        if spec.li_pure and li_elapsed < ref_case.min_li_seconds:
+            raise RuntimeError(
+                f"{spec.name}: Li ran in {li_elapsed:.4f}s < "
+                f"{ref_case.min_li_seconds}s (likely DCE / wrong problem size)"
+            )
+        assert_checksum_against_spec(
+            spec.name,
+            li_out,
+            label="Li",
+            size="full",
+            ref=ref_case,
+            use_small=False,
+        )
+
+    if li_out != native_out:
+        raise RuntimeError(
+            f"{spec.name}: Li vs native mismatch li={li_out!r} native={native_out!r} "
+            "(both should match normative spec; fix codegen or kernel)"
+        )
+
+    if os.environ.get("BENCH_VERIFY_TIMING", "").strip() in ("1", "true", "yes"):
+        cpp_time = time_command([str(native)], runs=1)
+        li_time = time_command([str(li_bin)], runs=1)
         if li_time < cpp_time * 0.45:
             raise RuntimeError(
-                f"{spec.name}: pure_li too fast ({li_time:.4f}s vs native {cpp_time:.4f}s) "
-                "— loop likely DCE'd; observe accumulator in main.li"
+                f"{spec.name}: suspiciously fast Li ({li_time:.4f}s vs native {cpp_time:.4f}s)"
             )
-        print(f"{spec.name} verify ok (pure Li): native checksum={native_out} li/native time={li_time:.4f}/{cpp_time:.4f}s")
-        return
-    if li_time < cpp_time * 0.45:
-        raise RuntimeError(
-            f"{spec.name}: li too fast ({li_time:.4f}s vs native {cpp_time:.4f}s) — kernel not linked"
-        )
-    print(f"{spec.name} verify ok: checksum={native_out} li/native time={li_time:.4f}/{cpp_time:.4f}s")
+
+    variant = "pure Li" if spec.li_pure else "shared C kernel"
+    print(f"{spec.name} verify ok ({variant}): result={li_out}")
+
+
+def verify_checksum(spec: BenchSpec, build_dir: Path) -> None:
+    verify_benchmark_results(spec, build_dir)
 
 
 def verify_md_refs() -> None:
@@ -577,7 +699,8 @@ def run_tier_benches(
             try:
                 verify_checksum(spec, build_dir)
             except RuntimeError as exc:
-                print(f"warn: {exc} — continuing with timing", file=sys.stderr)
+                print(f"FAIL verify {spec.name}: {exc}", file=sys.stderr)
+                return 1
 
     merged: list[dict[str, object]] = read_csv(out)
     for spec in specs:
@@ -598,29 +721,32 @@ def run_tier2_all(*, runs: int, out: Path, verify: bool) -> int:
 
 
 def verify_checksum_match(spec: BenchSpec, build_dir: Path) -> None:
-    """Native and Li must share the same reference kernel checksum when supported."""
-    native = build_dir / f"{spec.name}_native"
-    li_bin = build_dir / f"{spec.name}_li"
-    build_native(spec, native)
-    build_li(spec, li_bin)
-    native_out = subprocess.check_output([str(native), "--verify"], text=True).strip()
-    if spec.li_pure:
-        print(f"{spec.name} smoke ok (pure Li): native={native_out}")
-        return
-    li_proc = subprocess.run(
-        [str(li_bin), "--verify"],
-        capture_output=True,
-        text=True,
-    )
-    li_out = (li_proc.stdout or "").strip()
-    if li_proc.returncode != 0 or not li_out:
-        subprocess.check_call([str(native)])
-        subprocess.check_call([str(li_bin)])
-        print(f"{spec.name} smoke ok (kernel only): native checksum={native_out}")
-        return
-    if native_out != li_out:
-        raise RuntimeError(f"{spec.name}: checksum mismatch native={native_out} li={li_out}")
-    print(f"{spec.name} smoke ok: checksum={native_out}")
+    verify_benchmark_results(spec, build_dir)
+
+
+def run_verify_results(
+    specs: tuple[BenchSpec, ...], *, label: str
+) -> int:
+    """Verify numerical results only (no timing CSV update)."""
+    failures: list[str] = []
+    for spec in specs:
+        build_dir = REPO / "build" / "bench" / spec.name
+        build_dir.mkdir(parents=True, exist_ok=True)
+        if spec.name == "md_lennard_jones":
+            try:
+                verify_md_refs()
+            except RuntimeError as exc:
+                print(f"warn: {exc}", file=sys.stderr)
+        try:
+            verify_benchmark_results(spec, build_dir)
+        except RuntimeError as exc:
+            failures.append(f"{spec.name}: {exc}")
+            print(f"FAIL verify {spec.name}: {exc}", file=sys.stderr)
+    if failures:
+        print(f"result verify: {len(failures)} failure(s) in {label}", file=sys.stderr)
+        return 1
+    print(f"result verify ok ({label}, {len(specs)} benchmarks)")
+    return 0
 
 
 def run_tier2_ci_smoke() -> int:
@@ -659,6 +785,11 @@ def main() -> int:
     parser.add_argument("--runs", type=int, default=3, help="timing repetitions (median)")
     parser.add_argument("--skip-verify", action="store_true")
     parser.add_argument(
+        "--verify-results",
+        action="store_true",
+        help="verify numerical results only (no timing CSV); tier 1, 2, or 12",
+    )
+    parser.add_argument(
         "--out",
         type=Path,
         default=RESULTS / "latest.csv",
@@ -675,6 +806,21 @@ def main() -> int:
 
     if args.ci and args.tier == 2:
         return run_tier2_ci_smoke()
+
+    if args.verify_results:
+        if args.tier in (1, 12):
+            rc = run_verify_results(TIER1_BENCHES, label="tier-1")
+            if rc != 0:
+                return rc
+            if args.tier == 1:
+                return 0
+        if args.tier in (2, 12):
+            return run_verify_results(TIER2_BENCHES, label="tier-2")
+        if args.tier == 0:
+            print("verify-results: use --tier 1, 2, or 12", file=sys.stderr)
+            return 1
+        print(f"verify-results: use --tier 1, 2, or 12 (got {args.tier})", file=sys.stderr)
+        return 1
 
     if args.tier == 0:
         rc = run_tier0()

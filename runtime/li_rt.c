@@ -120,7 +120,13 @@ double li_rt_expm1(double x) {
 
 double li_rt_log1p(double x) { return log1p(x); }
 
+void li_rt_print_f64(double v) { printf("%.17g\n", v); }
+
 void li_rt_volatile_sink_f64(double v) {
+  const char* emit = getenv("LI_PRINT_SINK_F64");
+  if (emit != NULL && emit[0] == '1' && emit[1] == '\0') {
+    printf("%.17g\n", v);
+  }
   volatile double sink = v;
   (void)sink;
 }

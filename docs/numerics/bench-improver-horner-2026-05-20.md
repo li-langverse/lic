@@ -20,6 +20,7 @@ horner_pure_li,li,...,wall_time,0.0096,s,...
 1. **`li_rt_volatile_sink_f64`** — runtime volatile store (matches cpp `volatile` checksum sink).
 2. **`horner_pure_li/li/main.li`** — call sink after loop; `raises IO` on `main`.
 3. **`bench.py`** — pure_li verify fails if `li_time < 0.45 × native` (DCE guard).
+4. **`bench.py` (2026-05-22)** — `horner_pure_li` also requires Li checksum == native == Python ref (`LI_PRINT_SINK_F64=1`); tier-1 verify errors abort the run (no warn-and-continue).
 
 ## Status vs ≤1.2× cpp gate
 

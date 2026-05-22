@@ -5,6 +5,7 @@ from __future__ import annotations
 
 import argparse
 import csv
+import math
 import os
 import platform
 import shutil
@@ -415,6 +416,22 @@ def build_li(spec: BenchSpec, bin_path: Path) -> None:
     )
 
 
+def horner_reference_acc(*, steps: int = 5_000_000, x: float = 1.1) -> float:
+    acc = 0.0
+    for _ in range(steps):
+        acc = acc * x + 1.0
+    return acc
+
+
+def format_horner_checksum(value: float) -> str:
+    """Match C `printf(\"%.17g\\n\", checksum)` used by horner --verify."""
+    if math.isinf(value):
+        return "inf" if value > 0 else "-inf"
+    if math.isnan(value):
+        return "nan"
+    return f"{value:.17g}"
+
+
 def verify_checksum(spec: BenchSpec, build_dir: Path) -> None:
     """Native and Li must run the same reference kernel (checksum + timing sanity)."""
     native = build_dir / f"{spec.name}_native"
@@ -422,15 +439,43 @@ def verify_checksum(spec: BenchSpec, build_dir: Path) -> None:
     build_native(spec, native)
     build_li(spec, li_bin)
     native_out = subprocess.check_output([str(native), "--verify"], text=True).strip()
+    ref_out = format_horner_checksum(horner_reference_acc())
+    if native_out != ref_out:
+        raise RuntimeError(
+            f"{spec.name}: native checksum {native_out!r} != python ref {ref_out!r}"
+        )
     cpp_time = time_command([str(native)], runs=1)
     li_time = time_command([str(li_bin)], runs=1)
     if spec.li_pure:
+        li_env = {**os.environ, "LI_PRINT_SINK_F64": "1"}
+        li_proc = subprocess.run(
+            [str(li_bin)],
+            capture_output=True,
+            text=True,
+            env=li_env,
+            check=False,
+        )
+        li_out = (li_proc.stdout or "").strip().splitlines()
+        li_checksum = li_out[-1].strip() if li_out else ""
+        if li_proc.returncode != 0 or not li_checksum:
+            raise RuntimeError(
+                f"{spec.name}: pure_li verify run failed (rc={li_proc.returncode}, "
+                f"stderr={li_proc.stderr!r})"
+            )
+        if li_checksum != native_out:
+            raise RuntimeError(
+                f"{spec.name}: pure_li checksum mismatch li={li_checksum!r} "
+                f"native={native_out!r} (ref={ref_out!r}) — bad codegen or DCE"
+            )
         if li_time < cpp_time * 0.45:
             raise RuntimeError(
                 f"{spec.name}: pure_li too fast ({li_time:.4f}s vs native {cpp_time:.4f}s) "
                 "— loop likely DCE'd; observe accumulator in main.li"
             )
-        print(f"{spec.name} verify ok (pure Li): native checksum={native_out} li/native time={li_time:.4f}/{cpp_time:.4f}s")
+        print(
+            f"{spec.name} verify ok (pure Li): checksum={li_checksum} "
+            f"li/native time={li_time:.4f}/{cpp_time:.4f}s"
+        )
         return
     if li_time < cpp_time * 0.45:
         raise RuntimeError(
@@ -577,7 +622,8 @@ def run_tier_benches(
             try:
                 verify_checksum(spec, build_dir)
             except RuntimeError as exc:
-                print(f"warn: {exc} — continuing with timing", file=sys.stderr)
+                print(f"FAIL verify {spec.name}: {exc}", file=sys.stderr)
+                return 1
 
     merged: list[dict[str, object]] = read_csv(out)
     for spec in specs:
@@ -605,6 +651,30 @@ def verify_checksum_match(spec: BenchSpec, build_dir: Path) -> None:
     build_li(spec, li_bin)
     native_out = subprocess.check_output([str(native), "--verify"], text=True).strip()
     if spec.li_pure:
+        if spec.name == "horner_pure_li":
+            ref_out = format_horner_checksum(horner_reference_acc())
+            if native_out != ref_out:
+                raise RuntimeError(
+                    f"{spec.name}: native checksum {native_out!r} != python ref {ref_out!r}"
+                )
+            li_env = {**os.environ, "LI_PRINT_SINK_F64": "1"}
+            li_proc = subprocess.run(
+                [str(li_bin)],
+                capture_output=True,
+                text=True,
+                env=li_env,
+                check=False,
+            )
+            li_out = (li_proc.stdout or "").strip().splitlines()
+            li_checksum = li_out[-1].strip() if li_out else ""
+            if li_proc.returncode != 0 or not li_checksum:
+                raise RuntimeError(f"{spec.name}: pure_li verify run failed")
+            if li_checksum != native_out:
+                raise RuntimeError(
+                    f"{spec.name}: checksum mismatch li={li_checksum!r} native={native_out!r}"
+                )
+            print(f"{spec.name} smoke ok (pure Li): checksum={li_checksum}")
+            return
         print(f"{spec.name} smoke ok (pure Li): native={native_out}")
         return
     li_proc = subprocess.run(

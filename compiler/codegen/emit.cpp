@@ -1294,6 +1294,9 @@ bool emit_llvm_ir(const MirModule& mir, const std::string& out_path, std::string
   module->getOrInsertFunction(
       "li_rt_volatile_sink_f64",
       llvm::FunctionType::get(llvm::Type::getVoidTy(context), {f64}, false));
+  module->getOrInsertFunction("li_rt_print_f64",
+                              llvm::FunctionType::get(llvm::Type::getVoidTy(context), {f64},
+                                                      false));
   module->getOrInsertFunction(
       "li_omp_parallel_for_i64",
       llvm::FunctionType::get(llvm::Type::getVoidTy(context),

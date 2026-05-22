@@ -224,6 +224,12 @@ outcome = "verify_ok"
 
 [[tests]]
 suite = "contracts_verify"
+file = "contracts_verify/http_parse_forward_closed.li"
+outcome = "verify_ok"
+note = "w0-lean-gate: extern forward inherits callee ensures (zero open AutoVC)"
+
+[[tests]]
+suite = "contracts_verify"
 file = "contracts_verify/discharge_const.li"
 outcome = "verify_ok"
 

@@ -32,6 +32,10 @@ void mir_finalize_runtime_link_needs(MirModule& mir) {
   if (mir.needs_rt_httpd) {
     mir.needs_rt_net = true;
   }
+  // li_rt_net.c (httpd access log, proxy) calls li_rt_log_* in li_rt_log.c.
+  if (mir.needs_rt_net) {
+    mir.needs_rt_log = true;
+  }
 }
 
 void mir_collect_runtime_link_needs(const MirModule& mir, MirModule& out_flags) {

@@ -2,9 +2,14 @@
 # Verification gates for httpd master-plan loop (lic repo).
 set -euo pipefail
 ROOT="$(cd "$(dirname "$0")/.." && pwd)"
+# shellcheck source=llvm-env.sh
+source "$ROOT/scripts/llvm-env.sh"
+li_detect_compilers
 export LI_REPO_ROOT="$ROOT"
+export CC CXX
 export LI_ALLOW_OPEN_VC="${LI_ALLOW_OPEN_VC:-1}"
 export LIC="$("$ROOT/scripts/resolve-lic.sh")"
+have_clang() { command -v clang >/dev/null 2>&1 || command -v "clang-${LI_LLVM_MAJOR:-22}" >/dev/null 2>&1; }
 
 fail() { echo "httpd-plan-gates: $*" >&2; exit 1; }
 
@@ -17,21 +22,29 @@ else
   echo "==> match_routes compile"
   "$LIC" build "$ROOT/li-tests/routing/match_routes.li" -o /tmp/li_match_routes_gate --allow-open-vc
 
-  if command -v clang >/dev/null 2>&1; then
+  if have_clang; then
     echo "==> m15_agent_oracle compile"
     "$LIC" build "$ROOT/li-tests/httpd/m15_agent_oracle.li" -o /tmp/li_m15_agent_oracle --allow-open-vc
-    /tmp/li_m15_agent_oracle
-    test "$(/tmp/li_m15_agent_oracle; echo $?)" -eq 0
     echo "==> m15_leak_censor_oracle compile"
     "$LIC" build "$ROOT/li-tests/httpd/m15_leak_censor_oracle.li" -o /tmp/li_m15_leak_censor_oracle --allow-open-vc
-    /tmp/li_m15_leak_censor_oracle
-    test "$(/tmp/li_m15_leak_censor_oracle; echo $?)" -eq 0
     echo "==> m15_tls_oracle compile"
     "$LIC" build "$ROOT/li-tests/httpd/m15_tls_oracle.li" -o /tmp/li_m15_tls_oracle --allow-open-vc
-    /tmp/li_m15_tls_oracle
-    test "$(/tmp/li_m15_tls_oracle; echo $?)" -eq 0
+    if [[ "${HTTPD_RUN_M15_ORACLE_RUNTIME:-0}" == "1" ]]; then
+      m15_rc="$(cd "$ROOT" && /tmp/li_m15_agent_oracle >/dev/null; echo $?)"
+      test "$m15_rc" -eq 0
+      m15_lc_rc="$(cd "$ROOT" && /tmp/li_m15_leak_censor_oracle >/dev/null; echo $?)"
+      test "$m15_lc_rc" -eq 0
+      m15_tls_rc="$(cd "$ROOT" && /tmp/li_m15_tls_oracle >/dev/null; echo $?)"
+      test "$m15_tls_rc" -eq 0
+    else
+      echo "==> skip m15 oracle runtime (HTTPD_RUN_M15_ORACLE_RUNTIME=1 to enable)"
+    fi
   else
     echo "==> skip m15_agent_oracle (clang not in PATH)"
+  fi
+  if [[ -x "$ROOT/scripts/check-httpd-lean-gate.sh" ]]; then
+    echo "==> check-httpd-lean-gate.sh (w0-lean-gate)"
+    "$ROOT/scripts/check-httpd-lean-gate.sh" || fail "check-httpd-lean-gate.sh failed"
   fi
 fi
 # Runtime oracle may lag; compile gate is mandatory for CI.

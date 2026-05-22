@@ -4,7 +4,7 @@ overview: li-httpd — AI/agent gateway with easy TOML, streaming, limits, LB, a
 todos:
   - id: w0-lean-gate
     content: "P0 blocker: 2e–2f VC+Lean on lic build — unlocks spec-first li-httpd"
-    status: in_progress
+    status: completed
   - id: w0-bytes-io
     content: Ship std bytes/stringview/Reader/Writer + raises Net effect + trusted syscall RFC
     status: pending
@@ -94,7 +94,7 @@ Li today is optimized for **proved HPC kernels** (Tetris/SDL, physics benchmarks
 
 | Area       | Today                                                                                                                                                                            | Needed for nginx-class                                                  |
 | ---------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------- |
-| Proof gate | **2e–2f partial on `main` (PR #83):** AutoVC + open-VC gate; `contracts_verify` 16/16; full Lean kernel still **G-lean** ([proof-corpus-roadmap](docs/verification/proof-corpus-roadmap.md)) | Every server module must pass `lic build` with discharged goals (target) |
+| Proof gate | **2e–2f httpd path gated (w0):** `check-httpd-lean-gate.sh`, closed `http_parse_forward_closed.li`, callee-ensures witness; composite smokes ≤8 open VC; full kernel still **G-lean** ([proof-corpus-roadmap](docs/verification/proof-corpus-roadmap.md)) | Every server module must pass `lic build` with discharged goals (target) |
 | Trusted IO | [trusted.lean](docs/semantics/trusted.lean): SDL/frame axioms only                                                                                                               | Syscalls, sockets, timers, process spawn — **RFC-reviewed axioms only** |
 | Stdlib     | `std/` effectively empty; heap `str`/`bytes`/`list` mostly **spec** ([data structures roadmap](docs/superpowers/specs/2026-05-14-li-language-design.md#data-structures-roadmap)) | Full bytes I/O, config, containers, regex, compression                  |
 | Async      | Spec: `async`/`await` + `raises Async` — **not shipped**                                                                                                                         | Event loop driving 100k+ connections                                    |

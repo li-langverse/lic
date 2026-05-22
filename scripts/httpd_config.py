@@ -298,6 +298,9 @@ def main() -> int:
 if __name__ == "__main__":
     try:
         sys.exit(main())
+    except BrokenPipeError:
+        # diff/head may close stdout early (explain-config golden checks).
+        sys.exit(0)
     except ConfigError as e:
         print(f"config error: {e}", file=sys.stderr)
         sys.exit(1)

@@ -10,7 +10,7 @@ See also: [Getting started — tools](getting-started-tools.md) (generic macOS/L
 |------|---------|
 | **LLVM 18** + clang-18 | Build `lic` (`./scripts/build.sh`) |
 | **cmake**, **ninja** | Li compiler build |
-| **Node 20+**, **npm** | `li-cursor-agents` SDK / httpd plan loop |
+| **Node 24.16** (LTS), **npm** | `li-cursor-agents` SDK / httpd plan loop — pin via `LI_DEVBOX_NODE_VERSION` or `.node-version` in agents repo |
 | **Python 3** | httpd TOML validators, routing oracles |
 | **git**, **gh** | PR workflow |
 

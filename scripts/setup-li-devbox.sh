@@ -5,7 +5,7 @@
 set -euo pipefail
 
 ROOT="$(cd "$(dirname "$0")/.." && pwd)"
-NODE_VERSION="${LI_DEVBOX_NODE_VERSION:-20.18.2}"
+NODE_VERSION="${LI_DEVBOX_NODE_VERSION:-24.16.0}"
 NODE_PREFIX="${LI_DEVBOX_NODE_PREFIX:-/home/s4il0r/.local/node}"
 ENV_SNIPPET="/etc/profile.d/li-dev.sh"
 USER_ENV="${HOME}/.config/environment.d/99-li-dev.conf"

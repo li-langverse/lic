@@ -10,7 +10,7 @@
 
 ## Summary
 
-`three_body_pure` now matches the native Verlet workload and sinks final energy so tier-2 timings measure the Li loop instead of dead-code elimination.
+`three_body_pure` now uses scalar state, matches the native Verlet workload, and sinks final energy so tier-2 timings measure the Li loop instead of dead-code elimination.
 
 ## Agent continuation
 
@@ -23,7 +23,7 @@
 
 | Area | What | Evidence |
 |------|------|----------|
-| `benchmarks/tier2_physics/three_body_pure/li/main.li` | Added `li_rt_volatile_sink_f64`, matched the native `10000000`-step velocity-Verlet loop, initialized velocities, and sank final energy. | Red check: Li/native ratio was `0.004x` before the change. |
+| `benchmarks/tier2_physics/three_body_pure/li/main.li` | Added `li_rt_volatile_sink_f64`, rewrote the driver to scalar state, matched the native `10000000`-step velocity-Verlet loop, initialized velocities, and sank final energy. | Red check: Li/native ratio was `0.004x` before the change; first array-state fix remained too fast at `0.167x`. |
 
 ## Not changed
 
@@ -53,5 +53,5 @@ Tier-2 benchmark honesty change. Reproduce with `cd benchmarks/harness && python
 
 ```markdown
 ### Fixed
-- **Tier-2 `three_body_pure` bench honesty:** align pure-Li workload with native Verlet steps and sink final energy via `li_rt_volatile_sink_f64` so LLVM cannot delete the hot loop — `docs/release-notes/2026-05-22-three-body-pure-sink.md`.
+- **Tier-2 `three_body_pure` bench honesty:** use scalar state, align pure-Li workload with native Verlet steps, and sink final energy via `li_rt_volatile_sink_f64` so LLVM cannot delete the hot loop — `docs/release-notes/2026-05-22-three-body-pure-sink.md`.
 ```

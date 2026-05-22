@@ -85,6 +85,11 @@ if [[ -x "$ROOT/scripts/check-httpd-tls-auto.sh" ]]; then
   "$ROOT/scripts/check-httpd-tls-auto.sh"
 fi
 
+if [[ -x "$ROOT/scripts/check-tier5-http-harness.sh" ]]; then
+  echo "==> check-tier5-http-harness.sh"
+  "$ROOT/scripts/check-tier5-http-harness.sh"
+fi
+
 if [[ "${HTTPD_GATES_SKIP_LIC_BUILD:-0}" != "1" && "${HTTPD_RUN_BEARER_TEST:-0}" == "1" && -f "$ROOT/scripts/test-auth-bearer.sh" && -x "$ROOT/build/li-httpd" ]]; then
   echo "==> test-auth-bearer.sh"
   "$ROOT/scripts/test-auth-bearer.sh" || fail "test-auth-bearer.sh failed"

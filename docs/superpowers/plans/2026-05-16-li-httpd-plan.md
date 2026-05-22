@@ -13,7 +13,7 @@ todos:
     status: pending
   - id: bench-harness
     content: tier5_http TOML-driven harness (suite.toml + per-scenario bench.toml); bench_http.py reads only TOML
-    status: pending
+    status: completed
   - id: nginx-src-audit
     content: nginx submodule + nginx_mitigations.toml (read-only checklist); no Li port tracking
     status: pending

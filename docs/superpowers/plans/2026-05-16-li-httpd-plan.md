@@ -37,7 +37,7 @@ todos:
     status: completed
   - id: m1-bearer-auth
     content: "[auth] TOML Bearer gate + test-auth-bearer.sh (runtime C)"
-    status: in_progress
+    status: completed
   - id: m1-explain-config-cli
     content: "lic httpd explain-config + check-httpd-explain-config.sh golden"
     status: completed

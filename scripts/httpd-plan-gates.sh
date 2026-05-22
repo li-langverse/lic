@@ -36,9 +36,17 @@ if [[ -f "$ROOT/scripts/validate-httpd-config.py" ]]; then
     "$ROOT/packages/li-net-httpd/examples/auth_bearer.toml"
 fi
 
-if [[ "${HTTPD_RUN_BEARER_TEST:-0}" == "1" && -f "$ROOT/scripts/test-auth-bearer.sh" && -x "$ROOT/build/li-httpd" ]]; then
-  echo "==> test-auth-bearer.sh"
-  "$ROOT/scripts/test-auth-bearer.sh" || fail "test-auth-bearer.sh failed"
+if [[ "${HTTPD_RUN_BEARER_TEST:-1}" == "1" && -f "$ROOT/scripts/test-auth-bearer.sh" ]]; then
+  if [[ ! -x "$ROOT/build/li-httpd" ]]; then
+    echo "==> build-li-httpd.sh"
+    chmod +x "$ROOT/scripts/build-li-httpd.sh"
+    "$ROOT/scripts/build-li-httpd.sh" || fail "build-li-httpd.sh failed"
+  fi
+  if [[ -x "$ROOT/build/li-httpd" ]]; then
+    echo "==> test-auth-bearer.sh"
+    chmod +x "$ROOT/scripts/test-auth-bearer.sh"
+    "$ROOT/scripts/test-auth-bearer.sh" || fail "test-auth-bearer.sh failed"
+  fi
 fi
 
 echo "httpd-plan-gates: OK"

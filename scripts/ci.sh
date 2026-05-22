@@ -52,6 +52,9 @@ chmod +x "$ROOT/li-tests/run_httpd_config.sh" \
   "$ROOT/scripts/flatten-httpd-config.py" \
   "$ROOT/scripts/validate-httpd-config.py"
 "$ROOT/li-tests/run_httpd_config.sh"
+if [[ -x "$ROOT/scripts/build-li-httpd.sh" ]]; then
+  "$ROOT/scripts/build-li-httpd.sh" || true
+fi
 if [[ -x "$ROOT/build/li-httpd" ]]; then
   chmod +x "$ROOT/scripts/test-auth-bearer.sh"
   "$ROOT/scripts/test-auth-bearer.sh"

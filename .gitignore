@@ -44,3 +44,4 @@ build-asan/
 
 # Lean 4 (docs/semantics)
 docs/semantics/.lake/
+data/httpd-plan-loop/

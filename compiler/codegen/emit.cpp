@@ -4,6 +4,7 @@
 #include <llvm/IR/Constants.h>
 #include <llvm/IR/Function.h>
 #include <llvm/IR/GlobalVariable.h>
+#include <llvm/IR/Intrinsics.h>
 #include <llvm/IR/IRBuilder.h>
 #include <llvm/IR/LLVMContext.h>
 #include <llvm/IR/Module.h>
@@ -229,7 +230,7 @@ struct EmitCtx {
 
     llvm::Function* fma_fn = nullptr;
     if (!fp_numerically_stable) {
-      fma_fn = llvm::Intrinsic::getDeclaration(module, llvm::Intrinsic::fmuladd, {f64});
+      fma_fn = llvm::Intrinsic::getOrInsertDeclaration(module, llvm::Intrinsic::fmuladd, {f64});
     }
 
     emit_idx_for(i_s, lim_m, [&](llvm::Value* i) {
@@ -264,7 +265,7 @@ struct EmitCtx {
     }
     llvm::Function* fma_fn = nullptr;
     if (!fp_numerically_stable) {
-      fma_fn = llvm::Intrinsic::getDeclaration(module, llvm::Intrinsic::fmuladd, {f64});
+      fma_fn = llvm::Intrinsic::getOrInsertDeclaration(module, llvm::Intrinsic::fmuladd, {f64});
     }
     for (unsigned i = 0; i < m; ++i) {
       llvm::Value* ri = llvm::ConstantInt::get(i32_ty(context), i);
@@ -456,7 +457,7 @@ struct EmitCtx {
       case BinOp::Pow: {
         llvm::Type* f64 = llvm::Type::getDoubleTy(context);
         llvm::Function* pow_fn =
-            llvm::Intrinsic::getDeclaration(module, llvm::Intrinsic::pow, {f64});
+            llvm::Intrinsic::getOrInsertDeclaration(module, llvm::Intrinsic::pow, {f64});
         return builder->CreateCall(pow_fn, {lhs, rhs});
       }
       default:
@@ -634,7 +635,7 @@ struct EmitCtx {
         llvm::Value* acc = load_float(ins.rhs_ident);
         llvm::Value* addend = llvm::ConstantFP::get(f64, ins.float_value);
         llvm::Function* fma_fn =
-            llvm::Intrinsic::getDeclaration(module, llvm::Intrinsic::fmuladd, {f64});
+            llvm::Intrinsic::getOrInsertDeclaration(module, llvm::Intrinsic::fmuladd, {f64});
         llvm::Value* result = builder->CreateCall(fma_fn, {factor, acc, addend});
         builder->CreateStore(result, ensure_float_local(ins.ident));
         return true;

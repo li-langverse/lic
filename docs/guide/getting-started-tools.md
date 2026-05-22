@@ -51,6 +51,16 @@ Or `./scripts/build.sh` after `export LLVM_DIR=...` — it auto-detects via `scr
 
 Use the GitHub Actions recipe as a reference: LLVM 22 via Chocolatey, then `cmake -B build` with `LLVM_DIR` pointing at the install.
 
+## Lean 4 (proof gate — optional for quick builds, required for full CI)
+
+```bash
+bash /home/s4il0r/Documents/Cursor/li-langverse/lic/scripts/ci-install-lean.sh
+export PATH="$HOME/.elan/bin:$PATH"
+cd /home/s4il0r/Documents/Cursor/li-langverse/lic/docs/semantics && lake build
+```
+
+Without `lake`, `lic build` still runs but skips semantics verification (see [provability-gaps.md](../verification/provability-gaps.md)).
+
 ## Your first build
 
 ```bash

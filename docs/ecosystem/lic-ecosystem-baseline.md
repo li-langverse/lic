@@ -33,8 +33,8 @@ Do not edit `runtime/li_rt_httpd.c`, `scripts/httpd-plan-loop.py`, or httpd plan
 - [x] `algorithms-and-libraries-plan.md` on ecosystem branch
 - [x] This baseline doc
 - [x] Agent skill `run-local-ci-gha-quota` in roadmap agent-kit (+ `li-local-ci`)
-- [ ] Local CI green on `cursor/lic-ecosystem-plan-loop-54aa` (`./scripts/local-ci.sh` or `--docker` if host lacks LLVM)
-- **2026-05-22 devbox:** `check-doc-provability-claims.sh` ok; full `local-ci.sh` blocked (no host LLVM-18; docker socket permission denied). Run `sudo bash scripts/setup-li-devbox.sh` then `./scripts/local-ci.sh` before merge.
+- [ ] Local CI green on `cursor/lic-ecosystem-plan-loop-54aa` (`./scripts/local-ci.sh`)
+- **Devbox needs:** LLVM 22 (`scripts/ci-install-llvm.sh` or apt.llvm.org), Lean 4 (`scripts/ci-install-lean.sh`, `PATH="$HOME/.elan/bin:$PATH"`), codegen fix for LLVM 22 intrinsics (`getOrInsertDeclaration`)
 - [ ] PR opened; human `merge-approved` after review
 - [ ] Phase 1: `lic-ecosystem-plan-loop.py` + `data/lic-ecosystem-plan-loop/state.json`
 

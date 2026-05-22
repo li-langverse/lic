@@ -46,6 +46,14 @@ static int32_t g_leak_censor_pattern_openai = 0;
 static int32_t g_leak_censor_pattern_jwt = 0;
 static int32_t g_leak_censor_pattern_pem = 0;
 
+/* M1.5 TLS auto oracle ([server.tls] in TOML). */
+static int32_t g_tls_enabled = 0;
+static int32_t g_tls_mode = 0; /* 1=manual 2=self_signed 3=lets_encrypt */
+static int32_t g_tls_le_domain_count = 0;
+static int32_t g_tls_renew_before_days = 30;
+static int32_t g_tls_self_signed_dev = 0;
+static char g_tls_le_email[128];
+
 static LiHttpdRoute g_routes[LI_HTTPD_MAX_ROUTES];
 static int32_t g_route_count = 0;
 
@@ -572,6 +580,287 @@ static int parse_leak_censor_table(const char* text) {
   return 0;
 }
 
+static int tls_mode_from_str(const char* eq) {
+  if (eq == NULL) {
+    return 0;
+  }
+  if (strstr(eq, "manual") != NULL) {
+    return 1;
+  }
+  if (strstr(eq, "self_signed") != NULL) {
+    return 2;
+  }
+  if (strstr(eq, "lets_encrypt") != NULL) {
+    return 3;
+  }
+  return 0;
+}
+
+static int parse_server_tls(const char* text) {
+  int mode = 0;
+  int renew_days = 30;
+  int dev = 0;
+  int domain_count = 0;
+  char email[128];
+  email[0] = '\0';
+
+  const char* sec = strstr(text, "[server]");
+  if (sec != NULL) {
+    const char* close = strchr(sec, ']');
+    if (close != NULL) {
+      char line[256];
+      const char* p = strchr(close, '\n');
+      if (p != NULL) {
+        while (*p) {
+          const char* line_end = strchr(p, '\n');
+          size_t len = line_end ? (size_t)(line_end - p) : strlen(p);
+          if (len >= sizeof(line)) {
+            return -1;
+          }
+          memcpy(line, p, len);
+          line[len] = '\0';
+          trim_line(line);
+          p = line_end ? line_end + 1 : p + len;
+          if (line[0] == '[') {
+            break;
+          }
+          if (line[0] == '\0' || line[0] == '#') {
+            continue;
+          }
+          const char* eq = strchr(line, '=');
+          if (eq == NULL) {
+            continue;
+          }
+          char key[64];
+          size_t klen = (size_t)(eq - line);
+          if (klen >= sizeof(key)) {
+            return -1;
+          }
+          memcpy(key, line, klen);
+          key[klen] = '\0';
+          trim_line(key);
+          eq++;
+          while (*eq && isspace((unsigned char)*eq)) {
+            eq++;
+          }
+          if (strcmp(key, "tls") == 0) {
+            int m = tls_mode_from_str(eq);
+            if (m > 0) {
+              mode = m;
+            }
+          } else if (strcmp(key, "email") == 0) {
+            strncpy(email, eq, sizeof(email) - 1);
+            email[sizeof(email) - 1] = '\0';
+            trim_line(email);
+            if (email[0] == '"') {
+              size_t el = strlen(email);
+              if (el >= 2 && email[el - 1] == '"') {
+                email[el - 1] = '\0';
+                memmove(email, email + 1, el - 1);
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+
+  const char* scan = text;
+  while (scan && *scan) {
+    const char* tls_sec = strstr(scan, "[server.tls");
+    if (tls_sec == NULL) {
+      break;
+    }
+    const char* close = strchr(tls_sec, ']');
+    if (close == NULL) {
+      break;
+    }
+    char line[256];
+    const char* p = strchr(close, '\n');
+    if (p == NULL) {
+      break;
+    }
+    while (*p) {
+      const char* line_end = strchr(p, '\n');
+      size_t len = line_end ? (size_t)(line_end - p) : strlen(p);
+      if (len >= sizeof(line)) {
+        return -1;
+      }
+      memcpy(line, p, len);
+      line[len] = '\0';
+      trim_line(line);
+      p = line_end ? line_end + 1 : p + len;
+      if (line[0] == '[') {
+        break;
+      }
+      if (line[0] == '\0' || line[0] == '#') {
+        continue;
+      }
+      const char* eq = strchr(line, '=');
+      if (eq == NULL) {
+        continue;
+      }
+      char key[64];
+      size_t klen = (size_t)(eq - line);
+      if (klen >= sizeof(key)) {
+        return -1;
+      }
+      memcpy(key, line, klen);
+      key[klen] = '\0';
+      trim_line(key);
+      eq++;
+      while (*eq && isspace((unsigned char)*eq)) {
+        eq++;
+      }
+      if (strcmp(key, "mode") == 0) {
+        int m = tls_mode_from_str(eq);
+        if (m > 0) {
+          mode = m;
+        }
+      } else if (strcmp(key, "renew_before") == 0) {
+        renew_days = atoi(eq);
+        if (renew_days <= 0) {
+          const char* d = eq;
+          while (*d && !isdigit((unsigned char)*d)) {
+            d++;
+          }
+          renew_days = atoi(d);
+        }
+      }
+    }
+    scan = p;
+  }
+
+  const char* le_sec = strstr(text, "[server.tls.lets_encrypt]");
+  if (le_sec == NULL) {
+    le_sec = strstr(text, "server.tls.lets_encrypt");
+  }
+  if (le_sec != NULL) {
+    const char* close = strchr(le_sec, ']');
+    if (close != NULL) {
+      char line[256];
+      const char* p = strchr(close, '\n');
+      if (p != NULL) {
+        while (*p) {
+          const char* line_end = strchr(p, '\n');
+          size_t len = line_end ? (size_t)(line_end - p) : strlen(p);
+          if (len >= sizeof(line)) {
+            return -1;
+          }
+          memcpy(line, p, len);
+          line[len] = '\0';
+          trim_line(line);
+          p = line_end ? line_end + 1 : p + len;
+          if (line[0] == '[') {
+            break;
+          }
+          if (line[0] == '\0' || line[0] == '#') {
+            continue;
+          }
+          const char* eq = strchr(line, '=');
+          if (eq == NULL) {
+            continue;
+          }
+          char key[64];
+          size_t klen = (size_t)(eq - line);
+          if (klen >= sizeof(key)) {
+            return -1;
+          }
+          memcpy(key, line, klen);
+          key[klen] = '\0';
+          trim_line(key);
+          eq++;
+          while (*eq && isspace((unsigned char)*eq)) {
+            eq++;
+          }
+          if (strcmp(key, "email") == 0 && email[0] == '\0') {
+            strncpy(email, eq, sizeof(email) - 1);
+            email[sizeof(email) - 1] = '\0';
+            trim_line(email);
+          } else if (strcmp(key, "domains") == 0) {
+            const char* q = eq;
+            while ((q = strchr(q, '"')) != NULL) {
+              domain_count++;
+              q++;
+            }
+          }
+        }
+      }
+    }
+  }
+
+  const char* ss_sec = strstr(text, "[server.tls.self_signed]");
+  if (ss_sec != NULL) {
+    const char* close = strchr(ss_sec, ']');
+    if (close != NULL) {
+      char line[256];
+      const char* p = strchr(close, '\n');
+      if (p != NULL) {
+        while (*p) {
+          const char* line_end = strchr(p, '\n');
+          size_t len = line_end ? (size_t)(line_end - p) : strlen(p);
+          if (len >= sizeof(line)) {
+            return -1;
+          }
+          memcpy(line, p, len);
+          line[len] = '\0';
+          trim_line(line);
+          p = line_end ? line_end + 1 : p + len;
+          if (line[0] == '[') {
+            break;
+          }
+          if (line[0] == '\0' || line[0] == '#') {
+            continue;
+          }
+          const char* eq = strchr(line, '=');
+          if (eq == NULL) {
+            continue;
+          }
+          char key[64];
+          size_t klen = (size_t)(eq - line);
+          if (klen >= sizeof(key)) {
+            return -1;
+          }
+          memcpy(key, line, klen);
+          key[klen] = '\0';
+          trim_line(key);
+          eq++;
+          while (*eq && isspace((unsigned char)*eq)) {
+            eq++;
+          }
+          if (strcmp(key, "dev") == 0) {
+            if (strcmp(eq, "true") == 0 || strcmp(eq, "1") == 0) {
+              dev = 1;
+            }
+          }
+        }
+      }
+    }
+  }
+
+  if (mode == 0) {
+    g_tls_enabled = 0;
+    g_tls_mode = 0;
+    g_tls_le_domain_count = 0;
+    g_tls_renew_before_days = renew_days;
+    g_tls_self_signed_dev = 0;
+    g_tls_le_email[0] = '\0';
+    return 0;
+  }
+
+  g_tls_enabled = 1;
+  g_tls_mode = mode;
+  g_tls_le_domain_count = domain_count;
+  if (g_tls_le_domain_count == 0 && strstr(text, "host") != NULL) {
+    g_tls_le_domain_count = 1;
+  }
+  g_tls_renew_before_days = renew_days > 0 ? renew_days : 30;
+  g_tls_self_signed_dev = dev;
+  strncpy(g_tls_le_email, email, sizeof(g_tls_le_email) - 1);
+  g_tls_le_email[sizeof(g_tls_le_email) - 1] = '\0';
+  return 0;
+}
+
 static int parse_limits_rate_limit_rps(const char* text, int* out_rps) {
   *out_rps = 0;
   const char* sec = strstr(text, "[limits]");
@@ -809,9 +1098,18 @@ int32_t li_rt_httpd_load_config(const char* path) {
   g_leak_censor_pattern_openai = 0;
   g_leak_censor_pattern_jwt = 0;
   g_leak_censor_pattern_pem = 0;
+  g_tls_enabled = 0;
+  g_tls_mode = 0;
+  g_tls_le_domain_count = 0;
+  g_tls_renew_before_days = 30;
+  g_tls_self_signed_dev = 0;
+  g_tls_le_email[0] = '\0';
   int rc = parse_limits_m15_stream(buf);
   if (rc == 0) {
     rc = parse_leak_censor_table(buf);
+  }
+  if (rc == 0) {
+    rc = parse_server_tls(buf);
   }
   if (rc == 0) {
     rc = parse_routes_table(buf);
@@ -1083,3 +1381,28 @@ int32_t li_rt_httpd_leak_censor_pattern_openai(void) { return g_leak_censor_patt
 int32_t li_rt_httpd_leak_censor_pattern_jwt(void) { return g_leak_censor_pattern_jwt; }
 
 int32_t li_rt_httpd_leak_censor_pattern_pem(void) { return g_leak_censor_pattern_pem; }
+
+int32_t li_rt_httpd_tls_enabled(void) { return g_tls_enabled; }
+
+int32_t li_rt_httpd_tls_mode(void) { return g_tls_mode; }
+
+int32_t li_rt_httpd_tls_le_domain_count(void) { return g_tls_le_domain_count; }
+
+int32_t li_rt_httpd_tls_renew_before_days(void) { return g_tls_renew_before_days; }
+
+int32_t li_rt_httpd_tls_self_signed_dev(void) { return g_tls_self_signed_dev; }
+
+const char* li_rt_httpd_tls_le_email(void) { return g_tls_le_email; }
+
+int32_t li_rt_httpd_tls_selftest(void) {
+  if (g_tls_enabled == 0) {
+    return -1;
+  }
+  if (g_tls_mode == 3 && g_tls_le_email[0] == '\0') {
+    return -2;
+  }
+  if (g_tls_mode == 3 && g_tls_le_domain_count < 1) {
+    return -3;
+  }
+  return 0;
+}

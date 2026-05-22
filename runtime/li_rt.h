@@ -65,6 +65,13 @@ int32_t li_rt_httpd_leak_censor_pattern_pem(void);
 int32_t li_rt_httpd_leak_scrub(const char* data, int32_t len, intptr_t out_buf, int32_t out_cap);
 int32_t li_rt_httpd_leak_scrub_hit_count(void);
 int32_t li_rt_httpd_leak_scrub_selftest(void);
+int32_t li_rt_httpd_tls_enabled(void);
+int32_t li_rt_httpd_tls_mode(void);
+int32_t li_rt_httpd_tls_le_domain_count(void);
+int32_t li_rt_httpd_tls_renew_before_days(void);
+int32_t li_rt_httpd_tls_self_signed_dev(void);
+const char* li_rt_httpd_tls_le_email(void);
+int32_t li_rt_httpd_tls_selftest(void);
 
 void li_async_frame_enter(void);
 void li_async_frame_leave(void);

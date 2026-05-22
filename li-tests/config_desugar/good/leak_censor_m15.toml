@@ -1,6 +1,6 @@
 # M1.5 leak_censor — optional egress scrub + setup-censor generated paths
 [server]
-listen = ":39224"
+listen = "127.0.0.1:39224"
 document_root = "./public"
 
 [limits]

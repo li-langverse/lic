@@ -1,0 +1,57 @@
+# M1.5 TLS auto oracle — TOML load + runtime TLS profile selftest (C).
+import http
+
+extern proc li_rt_httpd_tls_enabled() -> int
+  requires true
+  ensures 0 <= result
+  ensures result <= 1
+
+extern proc li_rt_httpd_tls_mode() -> int
+  requires true
+  ensures 0 <= result
+  ensures result <= 3
+
+extern proc li_rt_httpd_tls_le_domain_count() -> int
+  requires true
+  ensures 0 <= result
+
+extern proc li_rt_httpd_tls_renew_before_days() -> int
+  requires true
+  ensures 0 <= result
+
+extern proc li_rt_httpd_tls_self_signed_dev() -> int
+  requires true
+  ensures 0 <= result
+  ensures result <= 1
+
+extern proc li_rt_httpd_tls_selftest() -> int
+  requires true
+  ensures -3 <= result
+  ensures result <= 0
+
+def main() raises IO, Alloc -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  var cfg: str = "li-tests/config_desugar/good/tls_lets_encrypt_staging.toml"
+  if load_routes_from_toml(cfg) != 0:
+    return 1
+  if li_rt_httpd_tls_enabled() != 1:
+    return 2
+  if li_rt_httpd_tls_mode() != 3:
+    return 3
+  if li_rt_httpd_tls_le_domain_count() < 1:
+    return 4
+  if li_rt_httpd_tls_renew_before_days() != 30:
+    return 5
+  if li_rt_httpd_tls_selftest() != 0:
+    return 6
+  var dev_cfg: str = "li-tests/config_desugar/good/tls_self_signed_dev.toml"
+  if load_routes_from_toml(dev_cfg) != 0:
+    return 7
+  if li_rt_httpd_tls_mode() != 2:
+    return 8
+  if li_rt_httpd_tls_self_signed_dev() != 0:
+    return 9
+  return 0

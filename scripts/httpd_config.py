@@ -244,6 +244,8 @@ def load_httpd_config(path: Path) -> list[CanonicalRoute]:
     from httpd_leak_censor import validate_leak_censor
     from httpd_m15 import ConfigError as M15Error
     from httpd_m15 import validate_inference_require, validate_m15_limits, validate_route_match
+    from httpd_tls import ConfigError as TlsError
+    from httpd_tls import validate_tls_config
 
     data = tomllib.loads(path.read_text(encoding="utf-8"))
     validate_rate_limits_cfg(data)
@@ -252,7 +254,8 @@ def load_httpd_config(path: Path) -> list[CanonicalRoute]:
         validate_route_match(data)
         validate_inference_require(data)
         validate_leak_censor(data, path)
-    except (M15Error, LeakError) as e:
+        validate_tls_config(data, path)
+    except (M15Error, LeakError, TlsError) as e:
         raise ConfigError(str(e)) from e
     routes = desugar_config(data)
     validate_routes(routes)

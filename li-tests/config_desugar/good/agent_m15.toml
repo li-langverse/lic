@@ -1,6 +1,6 @@
 # M1.5 agent gateway — SSE stream limits, model routing, OTel traceparent
 [server]
-listen = ":39223"
+listen = "127.0.0.1:39223"
 document_root = "./public"
 
 [limits]

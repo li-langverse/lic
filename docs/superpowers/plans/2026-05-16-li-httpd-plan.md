@@ -66,7 +66,7 @@ todos:
     status: completed
   - id: m15-tls-auto
     content: "TLS auto: self-signed dev certs on setup; ACME Let's Encrypt obtain+renew; secure TOML modes"
-    status: pending
+    status: completed
   - id: m2-tls-h2
     content: "M2: TLS1.3 terminate, HTTP/2, WebSocket, circuit breaker, queue 429, webhook allowlist"
     status: pending

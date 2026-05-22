@@ -103,7 +103,7 @@ todos:
     status: pending
   - id: m15-inference-live
     content: "OpenAI-compatible /v1 routes live with rate limits, OTel, cancel-on-disconnect"
-    status: pending
+    status: completed
   - id: m2-tls-h2-runtime
     content: "TLS1.3 terminate + HTTP/2 (ALPN) on li-httpd — runtime, not config oracle only"
     status: pending

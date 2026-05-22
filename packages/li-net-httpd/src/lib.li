@@ -710,7 +710,8 @@ def proxy_li_start(epfd: var int, slot: var int, hdr_end: int, keep: int) raises
   var up: int = httpd_upstream_acquire_i()
   if up < 0:
     return -1
-  var he: int = httpd_proxy_compact_req_hdr_i(slot, hdr_end)
+  var he0: int = httpd_inject_traceparent_slot_i(slot, hdr_end)
+  var he: int = httpd_proxy_compact_req_hdr_i(slot, he0)
   var ok: int = httpd_li_proxy_mark_active_i(epfd, slot, up, he, keep)
   if ok < 0:
     var reuse: int = 0
@@ -825,6 +826,10 @@ def proxy_dispatch_hangup_loaded(epfd: var int) raises Net, Alloc, IO -> int
     return 0
   if proxy_epoll_tag_is_client(net_events_loaded_hi_i()) == 1:
     var slot_c: int = net_events_loaded_lo_i()
+    if httpd_li_proxy_active_i(slot_c) == 1:
+      var ec: int = epfd
+      httpd_li_proxy_finish_err_i(ec, slot_c)
+      return 0
     var conn_h: int = httpd_slot_conn_i(slot_c)
     epoll_ctl_del_i(epfd, conn_h)
     tcp_close(conn_h)

@@ -201,6 +201,16 @@ if [[ "${HTTPD_GATES_SKIP_LIC_BUILD:-0}" != "1" && "${HTTPD_RUN_SERVE_PRODUCTION
   fi
 fi
 
+# m15-inference-live: /v1 proxy with rate limits, OTel traceparent, cancel-on-disconnect (opt-out HTTPD_RUN_INFERENCE_LIVE_TEST=0).
+if [[ "${HTTPD_GATES_SKIP_LIC_BUILD:-0}" != "1" && "${HTTPD_RUN_INFERENCE_LIVE_TEST:-1}" == "1" ]]; then
+  if [[ -x "$ROOT/scripts/test-m15-inference-live.sh" && -x "$ROOT/build/li-httpd" ]]; then
+    echo "==> test-m15-inference-live.sh (m15-inference-live)"
+    "$ROOT/scripts/test-m15-inference-live.sh" || fail "test-m15-inference-live.sh failed"
+  else
+    fail "m15-inference-live: build/li-httpd missing (run build-li-httpd.sh)"
+  fi
+fi
+
 # m1-nginx-bench-parity: tier5 verify + optional wrk ratios (HTTPD_BENCH_SKIP_TIMING=1 in lean CI).
 if [[ "${HTTPD_GATES_SKIP_LIC_BUILD:-0}" != "1" && "${HTTPD_RUN_BENCH_PARITY:-1}" == "1" ]]; then
   if [[ -x "$ROOT/scripts/check-tier5-nginx-bench-parity.sh" && -x "$ROOT/build/li-httpd" ]]; then

@@ -2862,6 +2862,10 @@ static int32_t httpd_try_drain_once(int32_t conn, int32_t slot) {
   }
   if (path_proxy_match(req.path, req.path_len, &req)) {
     if (g_li_proxy_mode) {
+      if (httpd_proxy_check_stream_policy(g_httpd_epfd, slot, hdr_end, &req, req.path, req.path_len) < 0) {
+        net_slot_consume(slot, hdr_end);
+        return keep ? 1 : -1;
+      }
       return 0;
     }
     if (g_proxy_snap_ready && method_is(&req, "GET")) {
@@ -2972,6 +2976,13 @@ int32_t httpd_drain_slot_i(int32_t conn, int32_t slot) {
   for (;;) {
     int32_t rc = httpd_try_drain_once(conn, slot);
     if (rc <= 0) {
+      return rc;
+    }
+    /* Served one response (e.g. 400/429); stop unless pipelined bytes remain. */
+    if (g_slots[slot].len <= 0) {
+      return rc;
+    }
+    if (hdr_end_at_c(g_slots[slot].buf, g_slots[slot].len) < 0) {
       return rc;
     }
   }
@@ -5057,6 +5068,10 @@ int32_t httpd_proxy_compact_req_hdr_i(int32_t slot, int32_t hdr_end) {
   return httpd_proxy_compact_req_hdr(slot, (int)hdr_end);
 }
 
+int32_t httpd_inject_traceparent_slot_i(int32_t slot, int32_t hdr_end) {
+  return (int32_t)httpd_inject_traceparent_if_missing(slot, (int)hdr_end);
+}
+
 int32_t httpd_lb_pick_port_i(void) { return httpd_lb_pick_port(); }
 
 int32_t httpd_upstream_acquire_i(void) {
@@ -5541,6 +5556,9 @@ int32_t httpd_li_proxy_mark_active_i(int32_t epfd, int32_t slot, int32_t up_fd, 
   s->proxy_resp_hdr_len = 0;
   s->proxy_resp_body_mode = PROXY_RESP_BODY_NONE;
   s->proxy_resp_body_left = 0;
+  s->proxy_is_sse = httpd_client_wants_sse(s->buf, hdr_end);
+  s->proxy_last_chunk_ts = 0.0;
+  s->proxy_stream_start_ts = s->proxy_is_sse ? httpd_monotonic_now() : 0.0;
   g_lp_up_fd[slot] = up_fd;
   g_lp_hdr_end[slot] = hdr_end;
   g_lp_keep[slot] = keep ? 1 : 0;

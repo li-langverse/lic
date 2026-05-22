@@ -1,4 +1,5 @@
-# Prebuilt toolchain for lic local-ci (Debian 12 — preferred on dev boxes).
+# Dev/CI toolchain only — NOT a release image with a baked-in `lic` binary.
+# The repo is mounted at /src; ./scripts/build.sh (or ci.sh) builds lic inside the container.
 # Publish: .github/workflows/publish-docker-ci-image.yml → ghcr.io/li-langverse/lic-ci:debian12-llvm22
 FROM debian:bookworm-slim
 ENV DEBIAN_FRONTEND=noninteractive

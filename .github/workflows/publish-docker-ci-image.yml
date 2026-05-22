@@ -1,5 +1,6 @@
-# Build and push prebuilt lic CI images to GitHub Container Registry.
+# Build and push lic CI *toolchain* images (LLVM/cmake — no baked-in lic binary).
 # Default tag debian12-llvm22 (Debian bookworm); ubuntu24-llvm22 for GHA runner parity.
+# Release images with a pinned lic compiler: deferred (master plan § deferred release containers).
 # Auth: GITHUB_TOKEN only (no repo secrets required for public packages).
 name: Publish CI Docker image
 

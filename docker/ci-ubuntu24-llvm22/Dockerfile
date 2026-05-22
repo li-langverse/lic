@@ -1,4 +1,4 @@
-# Prebuilt toolchain for lic local-ci / GHA ubuntu-24.04 parity.
+# Dev/CI toolchain only — no prebuilt `lic` (see ci-debian12-llvm22/Dockerfile header).
 # Publish: .github/workflows/publish-docker-ci-image.yml → ghcr.io/li-langverse/lic-ci
 FROM ubuntu:24.04
 ENV DEBIAN_FRONTEND=noninteractive

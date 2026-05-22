@@ -2,7 +2,18 @@
 
 **Goal:** New machines run `./scripts/local-ci.sh --docker` without apt/llvm install on every run.
 
-## Image
+## What is in the image (today)
+
+- OS base (Debian 12 or Ubuntu 24.04)
+- **LLVM 22**, clang, cmake, ninja, python3, git, rsync — enough to **build `lic` from source**
+
+## What is not in the image (by design)
+
+- **No pinned or prebuilt `lic` compiler** — version comes from the mounted checkout; `ci.sh` runs `scripts/build.sh` every time.
+- No Lean/elan (optional on host; GHA installs lake separately)
+- Future **release images** with a baked `lic` + runtime are **deferred** until the compiler is stable (see master plan § deferred release containers).
+
+## Image tags
 
 | Registry | Tag | Contents |
 |----------|-----|----------|

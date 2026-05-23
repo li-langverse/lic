@@ -14,6 +14,7 @@ Agents: cite vertical `id` and `workload_class` in PRs. Do **not** claim GROMACS
 | `fea_linear_elasticity` | `stub` | `sim.scientific` | none (PH-CAE CAE-1) |
 | `cfd_lid_driven_cavity` | `stub` | `sim.scientific` | none (PH-CAE CAE-2) |
 | `drug_litl` | `stub` | `sim.drug_design` | composable_only |
+| `bio_litl` | `stub` | `bioeng` | composable `import_bioeng_litl_workflow.li` + [bioengineering.toml](../../benchmarks/competitive/bioengineering.toml) |
 | `am_slicer` | `stub` | `sim.additive` | composable_only |
 | `scientific_viz` | `stub` | `sim.viz` | composable_only |
 | `cinematic_encode` | `stub` | `studio` | none (PH-CIN CIN-2) |
@@ -176,7 +177,7 @@ PDE smoke proves stencil checksum only — **not** OpenFOAM-scale CFD. FEA/CFD t
 |--------|--------|----------|---------------|
 | Stage chrome (hypothesis → clinic) | LITL loop panels | `adaptive_layout_hd()` roles on `li-ui` | composable `import_ui_adaptive_layout.li` |
 | QM job queue panel | Schrödinger-class dispatch | **stub** — package composables | none |
-| ML retrain loop | Recursion LOWE | **stub** | `bioengineering.toml` composable hooks |
+| ML retrain loop | Recursion LOWE | **stub** | composable `import_bioeng_litl_workflow.li` + [bioengineering.toml](../../benchmarks/competitive/bioengineering.toml) |
 
 ### References
 
@@ -187,6 +188,32 @@ PDE smoke proves stencil checksum only — **not** OpenFOAM-scale CFD. FEA/CFD t
 ### Honesty
 
 Workflow **UI patterns only** — no Roche/Schrödinger algorithm parity.
+
+---
+
+## bio_litl
+
+**Incumbent:** Benchling / Rosetta / ProteinMPNN / RFdiffusion  
+**Kernel / API:** DBTL stage workflow + assay score witness  
+**`workload_class`:** `stub` · **`oracle`:** `composable_only` · **`li_package`:** `bioeng`
+
+### Kernel families
+
+| Family | Target | Li today | Proof / bench |
+|--------|--------|----------|---------------|
+| DBTL stage advance | Design → Build → Test → Learn | `litl_workflow_*` in `bioeng` | composable `import_bioeng_litl_workflow.li` |
+| Assay score witness | Lab readout stub | `litl_workflow_advance` at Test→Learn | composable smoke |
+| ML retrain loop | Recursion LOWE | **stub** — no trusted driver | none |
+
+### References
+
+- Plan: [algorithms-and-libraries-plan.md](algorithms-and-libraries-plan.md) PH-BIOENG
+- Bench: [bioengineering.toml](../../benchmarks/competitive/bioengineering.toml)
+- UX: [UX-07](../game-dev/competitive-intel/ui-ux-by-dimension.md#ux-07--drug-discovery-stage-workflow-litl) (shared LITL chrome)
+
+### Honesty
+
+**No Benchling/Rosetta/ProteinMPNN parity claims.** `workload_class=stub` until domain oracle rows land.
 
 ---
 

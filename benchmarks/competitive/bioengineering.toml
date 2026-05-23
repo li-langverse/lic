@@ -1,0 +1,29 @@
+# Bioengineering vertical bench registry (comp. biology slice — wave-d-22).
+# Validate: ./scripts/check-bioengineering-bench.sh
+# Layer B: benchmarks/competitive/verticals.toml id=bio_litl
+
+[meta]
+schema = 1
+version = 1
+track = "PH-BIOENG"
+plan = "docs/ecosystem/algorithms-and-libraries-plan.md"
+updated = "2026-05-23"
+
+# workload_class: stub | full — honesty per algorithms-and-libraries-plan.md
+# oracle: composable_only | external_binary
+# status: stub | active
+
+[[benchmark]]
+id = "bio_litl"
+vertical_id = "bio_litl"
+name = "LITL/DBTL workflow stage advance smoke"
+profile = "sim_drug_design"
+workload_class = "stub"
+oracle = "composable_only"
+status = "stub"
+tier = "composable"
+li_package = "bioeng"
+composable = "import_bioeng_litl_workflow"
+workflow = "dbtl_design_build_test_learn"
+last_reviewed = "2026-05-23"
+notes = "Native DBTL stage stub via import_bioeng_litl_workflow.li — not Benchling/Rosetta/ProteinMPNN parity; ML retrain oracle TBD."

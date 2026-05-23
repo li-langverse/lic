@@ -1,0 +1,37 @@
+import bioeng
+
+def main() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  if li_std_bioeng_version() < 1:
+    return 1
+  if bioeng_workload_class_stub() != 0:
+    return 2
+  var s0: LitlWorkflowState = litl_workflow_init()
+  if s0.stage_id != litl_stage_design():
+    return 3
+  if s0.cycle_count != 0:
+    return 4
+  var s1: LitlWorkflowState = litl_workflow_advance(s0, litl_event_complete_stage())
+  if s1.stage_id != litl_stage_build():
+    return 5
+  var s2: LitlWorkflowState = litl_workflow_advance(s1, litl_event_complete_stage())
+  if s2.stage_id != litl_stage_test():
+    return 6
+  var s3: LitlWorkflowState = litl_workflow_advance(s2, litl_event_complete_stage())
+  if s3.stage_id != litl_stage_learn():
+    return 7
+  if s3.assay_score < 0.41 or s3.assay_score > 0.43:
+    return 8
+  var s4: LitlWorkflowState = litl_workflow_advance(s3, litl_event_complete_stage())
+  if s4.stage_id != litl_stage_design():
+    return 9
+  if s4.cycle_count != 1:
+    return 10
+  if litl_workflow_smoke_cycle_count() != 1:
+    return 11
+  if litl_smoke_entry() != 1042:
+    return 12
+  return 0

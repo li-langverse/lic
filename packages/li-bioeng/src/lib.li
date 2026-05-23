@@ -1,0 +1,116 @@
+
+# PH-BIOENG / wave-d-22 — LITL/DBTL workflow stub (bio_litl vertical; workload_class=stub).
+# Stage chrome + cycle counter only — NOT Benchling/Rosetta/ProteinMPNN parity.
+
+type LitlWorkflowState = object
+  public stage_id: int
+  public cycle_count: int
+  public assay_score: float
+
+def li_std_bioeng_version() -> int
+  requires true
+  ensures result == 1
+  decreases 0
+=
+  return 1
+
+def bioeng_workload_class_stub() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0
+
+def litl_stage_design() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0
+
+def litl_stage_build() -> int
+  requires true
+  ensures result == 1
+  decreases 0
+=
+  return 1
+
+def litl_stage_test() -> int
+  requires true
+  ensures result == 2
+  decreases 0
+=
+  return 2
+
+def litl_stage_learn() -> int
+  requires true
+  ensures result == 3
+  decreases 0
+=
+  return 3
+
+def litl_event_complete_stage() -> int
+  requires true
+  ensures result == 1
+  decreases 0
+=
+  return 1
+
+def litl_workflow_init() -> LitlWorkflowState
+  requires true
+  ensures result.stage_id == litl_stage_design()
+  ensures result.cycle_count == 0
+  ensures result.assay_score == 0.0
+  decreases 0
+=
+  var s: LitlWorkflowState
+  s.stage_id = litl_stage_design()
+  s.cycle_count = 0
+  s.assay_score = 0.0
+  return s
+
+def litl_workflow_advance(state: LitlWorkflowState, event_id: int) -> LitlWorkflowState
+  requires state.stage_id >= litl_stage_design()
+  requires state.stage_id <= litl_stage_learn()
+  requires state.cycle_count >= 0
+  requires event_id == litl_event_complete_stage()
+  ensures result.cycle_count >= state.cycle_count
+  decreases 0
+=
+  var next: LitlWorkflowState
+  next.cycle_count = state.cycle_count
+  next.assay_score = state.assay_score
+  next.stage_id = state.stage_id
+  if state.stage_id == litl_stage_learn():
+    next.stage_id = litl_stage_design()
+    next.cycle_count = state.cycle_count + 1
+  if state.stage_id == litl_stage_design():
+    next.stage_id = litl_stage_build()
+  if state.stage_id == litl_stage_build():
+    next.stage_id = litl_stage_test()
+  if state.stage_id == litl_stage_test():
+    next.stage_id = litl_stage_learn()
+    next.assay_score = 0.42
+  return next
+
+def litl_workflow_smoke_cycle_count() -> int
+  requires true
+  ensures result == 1
+  decreases 0
+=
+  var s0: LitlWorkflowState = litl_workflow_init()
+  var s1: LitlWorkflowState = litl_workflow_advance(s0, litl_event_complete_stage())
+  var s2: LitlWorkflowState = litl_workflow_advance(s1, litl_event_complete_stage())
+  var s3: LitlWorkflowState = litl_workflow_advance(s2, litl_event_complete_stage())
+  var s4: LitlWorkflowState = litl_workflow_advance(s3, litl_event_complete_stage())
+  return s4.cycle_count
+
+def litl_smoke_entry() -> int
+  requires true
+  ensures result == 1042
+  decreases 0
+=
+  var cycles: int = litl_workflow_smoke_cycle_count()
+  if cycles != 1:
+    return 0
+  return 1000 + cycles * 42

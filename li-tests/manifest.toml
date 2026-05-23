@@ -798,6 +798,12 @@ note = "wave-d-21: import chem; qm_dft vertical — H2 RKS stub energy smoke (op
 
 [[tests]]
 suite = "composable"
+file = "composable/import_bioeng_litl_workflow.li"
+outcome = "compile_open_ok"
+note = "wave-d-22: import bioeng; bio_litl vertical — DBTL stage advance smoke (open VC on float branch ensures)"
+
+[[tests]]
+suite = "composable"
 file = "composable/import_linalg_matmul_smoke.li"
 outcome = "compile_open_ok"
 note = "AL-10: import linalg; matmul_2x2/2x3 smoke via explicit @ (open VC on float branch ensures)"

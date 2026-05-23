@@ -66,6 +66,16 @@ last_reviewed = "2026-05-23"
 notes = "studio.adaptive layout stub on li-ui; see competitive-intel/ui-ux-by-dimension.md UX-07."
 
 [[vertical]]
+id = "bio_litl"
+incumbent = "Benchling / Rosetta / ProteinMPNN / RFdiffusion"
+kernel_or_api = "DBTL stage workflow + assay score witness"
+workload_class = "stub"
+oracle = "composable_only"
+li_package = "bioeng"
+last_reviewed = "2026-05-23"
+notes = "bioengineering.toml composable import_bioeng_litl_workflow.li; design→build→test→learn stub — not Benchling/Rosetta parity."
+
+[[vertical]]
 id = "am_slicer"
 incumbent = "PrusaSlicer / Cura / Bambu Studio"
 kernel_or_api = "slice → preview → export G-code/3MF"

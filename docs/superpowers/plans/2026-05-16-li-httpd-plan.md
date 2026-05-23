@@ -106,7 +106,7 @@ todos:
     status: completed
   - id: m2-tls-h2-runtime
     content: "TLS1.3 terminate + HTTP/2 (ALPN) on li-httpd — runtime, not config oracle only"
-    status: pending
+    status: completed
   - id: m2-websocket-runtime
     content: "WebSocket upgrade + bidirectional proxy on li-httpd"
     status: pending

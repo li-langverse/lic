@@ -159,6 +159,11 @@ int32_t httpd_sse_idle_epoll_timeout_ms_i(void);
 int32_t epoll_wait_tagged_timeout_ms_i(int32_t epfd, intptr_t events, int32_t max_events,
                                         int32_t timeout_ms);
 int32_t httpd_load_runtime_config_i(intptr_t path);
+int32_t httpd_tls_enabled_i(void);
+int32_t httpd_tls_handshake_slot_i(int32_t slot, int32_t fd);
+int32_t httpd_tls_slot_h2_i(int32_t slot);
+int32_t httpd_h2_serve_slot_i(int32_t epfd, int32_t slot);
+void httpd_client_force_close_i(int32_t epfd, int32_t slot);
 int32_t httpd_fork_workers_i(void);
 int32_t httpd_config_workers_i(void);
 int32_t httpd_config_listen_port_i(void);

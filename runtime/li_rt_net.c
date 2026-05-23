@@ -1,6 +1,8 @@
 /* Trusted Net seam — POSIX syscalls and I/O buffers only; HTTP lives in Li. */
 #define _GNU_SOURCE
 #include "li_rt.h"
+#include "li_rt_h2.h"
+#include "li_rt_tls.h"
 
 #include <arpa/inet.h>
 #include <errno.h>
@@ -204,6 +206,12 @@ static int g_stream_max_sec = 0;
 static int g_concurrent_streams_max = 0;
 static int g_active_proxy_streams = 0;
 
+/* M2 TLS/H2 terminate (flattened runtime.conf). */
+static int g_tls_enabled_flat = 0;
+static int g_m2_tls_terminate = 0;
+static int g_m2_http2_enabled = 0;
+static char g_tls_cert_dir[4096];
+
 /* M2 queue / circuit breaker (flattened runtime.conf). */
 static int g_m2_enabled = 0;
 static int g_m2_queue_max_depth = 0;
@@ -376,7 +384,7 @@ static int wait_writable(int conn) {
   }
 }
 
-static ssize_t send_all_nb(int conn, const void* data, size_t len) {
+static ssize_t send_all_nb_plain(int conn, const void* data, size_t len) {
   const char* p = (const char*)data;
   size_t off = 0;
   while (off < len) {
@@ -399,6 +407,15 @@ static ssize_t send_all_nb(int conn, const void* data, size_t len) {
     off += (size_t)n;
   }
   return (ssize_t)off;
+}
+
+static ssize_t send_all_nb(int conn, const void* data, size_t len) {
+  int32_t slot = httpd_slot_find_fd((int32_t)conn);
+  if (slot >= 0 && httpd_tls_slot_proto(slot) == 1) {
+    ssize_t w = httpd_tls_write_slot(slot, data, len);
+    return w;
+  }
+  return send_all_nb_plain(conn, data, len);
 }
 
 void tcp_tune_client(int32_t fd) {
@@ -774,8 +791,15 @@ int32_t tcp_recv_slot(int32_t conn, int32_t slot, int32_t max_bytes) {
     return -2;
   }
   tcp_ack_now(conn);
-  ssize_t r = recv((int)conn, g_slots[slot].buf + g_slots[slot].len,
-                   (size_t)(HTTPD_IO_BUF - g_slots[slot].len), 0);
+  ssize_t r;
+  if (httpd_tls_slot_proto(slot) == 1) {
+    r = httpd_tls_read_slot(slot, g_slots[slot].buf + g_slots[slot].len,
+                            (size_t)(HTTPD_IO_BUF - g_slots[slot].len));
+  } else if (httpd_tls_slot_proto(slot) == 2) {
+    return 0;
+  } else {
+    r = recv((int)conn, g_slots[slot].buf + g_slots[slot].len, (size_t)(HTTPD_IO_BUF - g_slots[slot].len), 0);
+  }
   if (r < 0) {
     if (errno == EAGAIN || errno == EWOULDBLOCK) {
       return -1;
@@ -4346,6 +4370,7 @@ static void httpd_conn_close_slot(int epfd, int32_t slot) {
   if (g_slots[slot].proxy_active) {
     httpd_proxy_clear(epfd, slot);
   }
+  httpd_tls_free_slot(slot);
   if (g_slots[slot].fd >= 0) {
 #ifdef __linux__
     if (epfd >= 0) {
@@ -4357,6 +4382,8 @@ static void httpd_conn_close_slot(int epfd, int32_t slot) {
     g_slots[slot].len = 0;
   }
 }
+
+void httpd_client_force_close_i(int32_t epfd, int32_t slot) { httpd_conn_close_slot((int)epfd, slot); }
 
 static void httpd_serve_conn_epoll(int epfd, int32_t slot) {
   slots_init_once();
@@ -4610,6 +4637,7 @@ void httpd_slot_free(int32_t slot) {
   if (slot < 0 || slot >= HTTPD_MAX_CONN) {
     return;
   }
+  httpd_tls_free_slot(slot);
   g_slots[slot].fd = -1;
   g_slots[slot].len = 0;
 }
@@ -4848,6 +4876,10 @@ int32_t httpd_load_runtime_config_i(intptr_t path) {
   g_stream_max_sec = 0;
   g_concurrent_streams_max = 0;
   g_active_proxy_streams = 0;
+  g_tls_enabled_flat = 0;
+  g_m2_tls_terminate = 0;
+  g_m2_http2_enabled = 0;
+  g_tls_cert_dir[0] = '\0';
   g_m2_enabled = 0;
   g_m2_queue_max_depth = 0;
   g_m2_queue_retry_after_sec = 1;
@@ -4948,6 +4980,15 @@ int32_t httpd_load_runtime_config_i(intptr_t path) {
       g_stream_max_sec = atoi(val);
     } else if (strcmp(key, "concurrent_streams") == 0) {
       g_concurrent_streams_max = atoi(val);
+    } else if (strcmp(key, "tls_enabled") == 0) {
+      g_tls_enabled_flat = (strcmp(val, "0") == 0 || strcmp(val, "false") == 0) ? 0 : 1;
+    } else if (strcmp(key, "tls_cert_dir") == 0) {
+      strncpy(g_tls_cert_dir, val, sizeof(g_tls_cert_dir) - 1);
+      g_tls_cert_dir[sizeof(g_tls_cert_dir) - 1] = '\0';
+    } else if (strcmp(key, "m2_tls_terminate") == 0) {
+      g_m2_tls_terminate = (strcmp(val, "0") == 0 || strcmp(val, "false") == 0) ? 0 : 1;
+    } else if (strcmp(key, "m2_http2_enabled") == 0) {
+      g_m2_http2_enabled = (strcmp(val, "0") == 0 || strcmp(val, "false") == 0) ? 0 : 1;
     } else if (strcmp(key, "m2_enabled") == 0) {
       g_m2_enabled = (strcmp(val, "0") == 0 || strcmp(val, "false") == 0) ? 0 : 1;
     } else if (strcmp(key, "m2_queue_max_depth") == 0) {
@@ -5086,8 +5127,24 @@ int32_t httpd_load_runtime_config_i(intptr_t path) {
   if (g_up_peer_count > 0) {
     upstream_pool_prewarm_all();
   }
+  if (g_m2_tls_terminate && g_tls_enabled_flat && g_tls_cert_dir[0]) {
+    if (httpd_tls_global_init(g_tls_cert_dir, g_m2_http2_enabled) != 0) {
+      fprintf(stderr, "li-httpd: TLS terminate init failed\n");
+      return -1;
+    }
+  }
   return 0;
 }
+
+int32_t httpd_tls_enabled_i(void) {
+  return (g_m2_tls_terminate && g_tls_enabled_flat && httpd_tls_runtime_ready()) ? 1 : 0;
+}
+
+int32_t httpd_tls_handshake_slot_i(int32_t slot, int32_t fd) { return httpd_tls_handshake_slot(slot, fd); }
+
+int32_t httpd_tls_slot_h2_i(int32_t slot) { return httpd_tls_slot_proto(slot) == 2 ? 1 : 0; }
+
+int32_t httpd_h2_serve_slot_i(int32_t epfd, int32_t slot) { return httpd_h2_serve_slot(epfd, slot); }
 
 int32_t li_rt_httpd_leak_scrub_hit_count(void) { return g_leak_scrub_hit_count; }
 

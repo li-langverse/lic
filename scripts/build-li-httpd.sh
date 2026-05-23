@@ -9,6 +9,7 @@ export LI_REPO_ROOT="$ROOT"
 export CC CXX
 LIC="$("$ROOT/scripts/resolve-lic.sh")"
 mkdir -p "$ROOT/build"
+export LI_LINK_RUNTIME_FULL=1
 "$LIC" build --allow-open-vc --no-lean-verify \
   "$ROOT/packages/li-net-httpd/src/main.li" -o "$ROOT/build/li-httpd"
 echo "build-li-httpd: ok → $ROOT/build/li-httpd"

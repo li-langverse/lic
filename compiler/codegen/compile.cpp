@@ -70,6 +70,8 @@ bool compile_module(const Module& module, const std::string& output_path,
   const std::filesystem::path rt_httpd_path = resolve_runtime_c("li_rt_httpd.c");
   const std::filesystem::path rt_log_path = resolve_runtime_c("li_rt_log.c");
   const std::filesystem::path rt_net_path = resolve_runtime_c("li_rt_net.c");
+  const std::filesystem::path rt_tls_path = resolve_runtime_c("li_rt_tls.c");
+  const std::filesystem::path rt_h2_path = resolve_runtime_c("li_rt_h2.c");
 
   MirModule rt_needs;
   mir_collect_runtime_link_needs(mir, rt_needs);
@@ -94,6 +96,12 @@ bool compile_module(const Module& module, const std::string& output_path,
   if (link_runtime_full || rt_needs.needs_rt_net) {
     if (std::filesystem::exists(rt_net_path)) {
       cmd << " -x c \"" << rt_net_path.string() << "\"";
+    }
+    if (std::filesystem::exists(rt_tls_path)) {
+      cmd << " -x c \"" << rt_tls_path.string() << "\"";
+    }
+    if (std::filesystem::exists(rt_h2_path)) {
+      cmd << " -x c \"" << rt_h2_path.string() << "\"";
     }
   }
   cmd << " -o \"" << output_path << "\"";
@@ -149,7 +157,7 @@ bool compile_module(const Module& module, const std::string& output_path,
     }
   }
 #if defined(__linux__)
-  cmd << " -lm";
+  cmd << " -lm -ldl";
 #endif
   const int rc = std::system(cmd.str().c_str());
   std::filesystem::remove(ll_path);

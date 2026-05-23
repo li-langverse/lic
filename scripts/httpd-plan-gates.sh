@@ -221,6 +221,16 @@ if [[ "${HTTPD_GATES_SKIP_LIC_BUILD:-0}" != "1" && "${HTTPD_RUN_SSE_RUNTIME_TEST
   fi
 fi
 
+# m2-tls-h2-runtime: TLS 1.3 terminate + HTTP/2 ALPN on live li-httpd (opt-out HTTPD_RUN_M2_TLS_H2_TEST=0).
+if [[ "${HTTPD_GATES_SKIP_LIC_BUILD:-0}" != "1" && "${HTTPD_RUN_M2_TLS_H2_TEST:-1}" == "1" ]]; then
+  if [[ -x "$ROOT/scripts/test-m2-tls-h2-runtime.sh" && -x "$ROOT/build/li-httpd" ]]; then
+    echo "==> test-m2-tls-h2-runtime.sh (m2-tls-h2-runtime)"
+    "$ROOT/scripts/test-m2-tls-h2-runtime.sh" || fail "test-m2-tls-h2-runtime.sh failed"
+  else
+    fail "m2-tls-h2-runtime: build/li-httpd missing (run build-li-httpd.sh)"
+  fi
+fi
+
 # m2-circuit-queue-runtime: queue depth 429 + Retry-After; circuit opens when peers saturated (opt-out HTTPD_RUN_M2_CIRCUIT_QUEUE_TEST=0).
 if [[ "${HTTPD_GATES_SKIP_LIC_BUILD:-0}" != "1" && "${HTTPD_RUN_M2_CIRCUIT_QUEUE_TEST:-1}" == "1" ]]; then
   if [[ -x "$ROOT/scripts/test-m2-circuit-queue-runtime.sh" && -x "$ROOT/build/li-httpd" ]]; then

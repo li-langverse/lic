@@ -406,3 +406,164 @@ def studio_chrome_attach_hook(chrome: StudioChrome, hook: StudioChromeHook) -> u
   decreases chrome.hook_count
 =
   chrome.hook_count = chrome.hook_count + 1
+
+# wave-d-11 / UX-02 — dock zones + workspace chrome (Blender sub-panels, UE dock tabs).
+# Maps `layout_role_*` stage tabs to `adaptive_layout_hd()` regions; advanced stages default collapsed.
+def dock_zone_sidebar() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0
+
+def dock_zone_main() -> int
+  requires true
+  ensures result == 1
+  decreases 0
+=
+  return 1
+
+def dock_zone_inspector() -> int
+  requires true
+  ensures result == 2
+  decreases 0
+=
+  return 2
+
+def dock_zone_ml() -> int
+  requires true
+  ensures result == 3
+  decreases 0
+=
+  return 3
+
+def dock_zone_count() -> int
+  requires true
+  ensures result == 4
+  decreases 0
+=
+  return 4
+
+def dock_panel_root_parent() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0
+
+def dock_panel_collapsed_open() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0
+
+def dock_panel_collapsed_closed() -> int
+  requires true
+  ensures result == 1
+  decreases 0
+=
+  return 1
+
+type DockPanel = object
+  public panel_id: int
+  public parent_id: int
+  public zone_id: int
+  public layout_role: int
+  public bounds: Rect
+  public collapsed: int
+
+type WorkspaceChrome = object
+  public layout: AdaptiveLayout
+  public panel_count: int
+
+def dock_panel_default_collapsed_for_role(role: int) -> int
+  requires role >= 0
+  requires role < 5
+  ensures result >= 0
+  ensures result <= 1
+  decreases role
+=
+  if role >= layout_role_lab():
+    return dock_panel_collapsed_closed()
+  return dock_panel_collapsed_open()
+
+def dock_panel_new(panel_id: int, parent_id: int, zone_id: int, layout_role: int, bounds: Rect, collapsed: int) -> DockPanel
+  requires panel_id >= 0
+  requires parent_id >= 0
+  requires zone_id >= 0
+  requires zone_id < 4
+  requires layout_role >= 0
+  requires layout_role < 5
+  requires collapsed >= 0
+  requires collapsed <= 1
+  requires bounds.w >= 0.0
+  requires bounds.h >= 0.0
+  ensures result.panel_id == panel_id
+  ensures result.parent_id == parent_id
+  ensures result.zone_id == zone_id
+  ensures result.layout_role == layout_role
+  ensures result.collapsed == collapsed
+  decreases panel_id
+=
+  var p: DockPanel
+  p.panel_id = panel_id
+  p.parent_id = parent_id
+  p.zone_id = zone_id
+  p.layout_role = layout_role
+  p.bounds = bounds
+  p.collapsed = collapsed
+  return p
+
+def workspace_dock_rect_for_zone(layout: AdaptiveLayout, zone_id: int) -> Rect
+  requires zone_id >= 0
+  requires zone_id < 4
+  ensures result.w >= 0.0
+  ensures result.h >= 0.0
+  decreases zone_id
+=
+  if zone_id == dock_zone_sidebar():
+    return layout.sidebar
+  if zone_id == dock_zone_main():
+    return layout.main
+  if zone_id == dock_zone_inspector():
+    return layout.inspector
+  return adaptive_panel_rect_ml()
+
+def workspace_dock_panel_stage(panel_id: int, role: int) -> DockPanel
+  requires panel_id >= 0
+  requires role >= 0
+  requires role < 5
+  ensures result.layout_role == role
+  ensures result.zone_id == dock_zone_sidebar()
+  decreases role
+=
+  var layout: AdaptiveLayout = adaptive_layout_hd()
+  var bounds: Rect = workspace_dock_rect_for_zone(layout, dock_zone_sidebar())
+  var collapsed: int = dock_panel_collapsed_open()
+  if role >= layout_role_lab():
+    collapsed = dock_panel_collapsed_closed()
+  return dock_panel_new(panel_id, dock_panel_root_parent(), dock_zone_sidebar(), role, bounds, collapsed)
+
+def workspace_chrome_hd() -> WorkspaceChrome
+  requires true
+  ensures result.layout.sidebar.w == 281.0
+  ensures result.layout.main.w == 716.0
+  ensures result.layout.inspector.w == 283.0
+  ensures result.panel_count == 0
+  decreases 0
+=
+  var out: WorkspaceChrome
+  out.layout = adaptive_layout_hd()
+  out.panel_count = 0
+  return out
+
+def workspace_chrome_attach_panel(chrome: WorkspaceChrome, panel: DockPanel) -> unit
+  requires chrome.panel_count >= 0
+  requires panel.panel_id >= 0
+  requires panel.zone_id >= 0
+  requires panel.zone_id < 4
+  ensures true
+  decreases chrome.panel_count
+=
+  chrome.panel_count = chrome.panel_count + 1

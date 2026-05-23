@@ -9,7 +9,7 @@ def main() -> int
 =
   if li_std_studio_version() < 1:
     return 1
-  var entry: int = studio_wire_smoke_entry()
+  var entry: int = studio_wire_gui_hd()
   if entry != 0:
     return 2
   var shell: StudioShell = studio_shell_layout_hd()
@@ -28,10 +28,18 @@ def main() -> int
   studio_chrome_attach_hook(chrome, toolbar)
   if chrome.hook_count != 1:
     return 7
+  var ws: WorkspaceChrome = workspace_chrome_hd()
+  var tab: DockTab = gui_dock_tab_new(0, layout_role_hypothesis(), gui_dock_zone_sidebar())
+  if tab.layout_role != layout_role_hypothesis():
+    return 8
+  var stage: DockPanel = workspace_dock_panel_stage(1, layout_role_generate())
+  workspace_chrome_attach_panel(ws, stage)
+  if ws.panel_count != 1:
+    return 9
   var doc: UiDocument = ui_document_new()
   var panel: GuiRect = shell.inspector
   var stroke: PaintCmd = paint_rect(0, panel)
   ui_document_attach_paint(doc, stroke)
   if doc.paint_count != 1:
-    return 8
+    return 10
   return 0

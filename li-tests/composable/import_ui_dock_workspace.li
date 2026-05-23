@@ -1,0 +1,30 @@
+import ui
+
+def main() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  if dock_zone_count() != 4:
+    return 1
+  var ws: WorkspaceChrome = workspace_chrome_hd()
+  if ws.panel_count != 0:
+    return 2
+  var layout_side: AdaptiveLayout = adaptive_layout_hd()
+  var side: Rect = workspace_dock_rect_for_zone(layout_side, dock_zone_sidebar())
+  if side.w != 281.0:
+    return 3
+  var layout_ml: AdaptiveLayout = adaptive_layout_hd()
+  var ml: Rect = workspace_dock_rect_for_zone(layout_ml, dock_zone_ml())
+  if ml.w != 283.0:
+    return 4
+  var hyp: DockPanel = workspace_dock_panel_stage(0, layout_role_hypothesis())
+  if hyp.collapsed != dock_panel_collapsed_open():
+    return 5
+  var lab: DockPanel = workspace_dock_panel_stage(3, layout_role_lab())
+  if lab.collapsed != dock_panel_collapsed_closed():
+    return 6
+  workspace_chrome_attach_panel(ws, hyp)
+  if ws.panel_count != 1:
+    return 7
+  return 0

@@ -2,7 +2,7 @@
 
 **Status:** Active (2026-05-23)  
 **Li target:** [world-studio-vision.md](../world-studio-vision.md) PH-UX (≥60 fps viewport, &lt;100 ms panel switch, ≤3 clicks AM export, WCAG 2.2 AA)  
-**Implementation today:** `packages/li-ui` composables + `adaptive_layout_hd()` + `studio_chrome_*` hooks; `packages/li-gui` studio shell; `packages/li-studio` wires `import gui` + chrome (`studio_wire_gui_hd`)
+**Implementation today:** `packages/li-ui` composables + `adaptive_layout_hd()` + `studio_chrome_*` + `workspace_chrome_hd()` / `DockPanel`; `packages/li-gui` studio shell + `DockTab`; `packages/li-studio` wires `import gui` + dock chrome (`studio_wire_gui_hd`)
 
 Agents: when changing Studio shell, cite dimension IDs in PR body (`UX-02: …`). Steal **patterns**, not pixels — Li uses `studio.design` tokens (RFC stub).
 
@@ -56,7 +56,7 @@ Agents: when changing Studio shell, cite dimension IDs in PR body (`UX-02: …`)
 - Parent/child panel hierarchy for stage-specific detail
 - Fixed chrome ratios: sidebar ~22%, main ~56%, inspector ~22% (see `adaptive_layout_hd()` in `li-ui`)
 
-**Li today:** `AdaptiveLayout`, `adaptive_panel_rect_ml()`, role helpers (`layout_role_*`); `studio_shell_layout_hd()` on `import gui`.  
+**Li today:** `AdaptiveLayout`, `adaptive_panel_rect_ml()`, role helpers (`layout_role_*`); `WorkspaceChrome`, `DockPanel`, `dock_zone_*` on `import ui`; `DockTab`, `studio_shell_dock_zone_rect()` on `import gui`; `studio_wire_gui_hd()` on `import studio`.  
 **Next:** Parameterized viewport layout (blocked on float move semantics — use int or copy API).
 
 **Offline:** `downloads/blender-panel-api.html`, `downloads/prusa-ui-overview.html`

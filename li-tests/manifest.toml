@@ -720,9 +720,15 @@ note = "AL-9: import gui; studio shell UX-02/04 (open VC on gui_hit_test_rect br
 
 [[tests]]
 suite = "composable"
+file = "composable/import_ui_dock_workspace.li"
+outcome = "compile_open_ok"
+note = "wave-d-11 UX-02: import ui; dock zones + workspace chrome (open VC on workspace_dock_panel_stage ensures)"
+
+[[tests]]
+suite = "composable"
 file = "composable/import_studio_gui_wire.li"
 outcome = "compile_open_ok"
-note = "wave-d-10: import studio; ui chrome hooks + gui wire (open VC on studio_wire_gui_hd branch ensures)"
+note = "wave-d-11: import studio; dock/workspace + gui wire (open VC on studio_wire_gui_hd branch ensures)"
 
 [[tests]]
 suite = "composable"
@@ -803,6 +809,12 @@ suite = "studio_wire"
 file = "studio_wire/import_studio_gui_wire_entry.li"
 outcome = "verify_open_ok"
 note = "wave-d-10: import studio; studio_wire_smoke_entry closed witness (open VC on wire ensures)"
+
+[[tests]]
+suite = "studio_wire"
+file = "studio_wire/import_studio_dock_wire_entry.li"
+outcome = "verify_open_ok"
+note = "wave-d-11 UX-02: import studio; studio_wire_gui_hd closed witness (open VC on dock wire ensures)"
 
 # stdlib_coverage/build_std_csv — enable when std.csv module resolves (PH-IO-4)
 

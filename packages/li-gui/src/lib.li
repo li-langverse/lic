@@ -183,3 +183,93 @@ def inspector_row_new(label_id: int, value_id: int, advanced: int) -> InspectorR
   row.value_id = value_id
   row.advanced = advanced
   return row
+
+# wave-d-11 / UX-02 — dock tab IDs aligned with `layout_role_*` on `import ui`.
+def gui_dock_zone_sidebar() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0
+
+def gui_dock_zone_main() -> int
+  requires true
+  ensures result == 1
+  decreases 0
+=
+  return 1
+
+def gui_dock_zone_inspector() -> int
+  requires true
+  ensures result == 2
+  decreases 0
+=
+  return 2
+
+def gui_dock_zone_ml() -> int
+  requires true
+  ensures result == 3
+  decreases 0
+=
+  return 3
+
+def gui_dock_zone_count() -> int
+  requires true
+  ensures result == 4
+  decreases 0
+=
+  return 4
+
+def studio_dock_tab_count() -> int
+  requires true
+  ensures result == 5
+  decreases 0
+=
+  return 5
+
+type DockTab = object
+  public tab_id: int
+  public layout_role: int
+  public zone_id: int
+
+def gui_dock_tab_new(tab_id: int, layout_role: int, zone_id: int) -> DockTab
+  requires tab_id >= 0
+  requires tab_id < 5
+  requires layout_role >= 0
+  requires layout_role < 5
+  requires zone_id >= 0
+  requires zone_id < 4
+  ensures result.tab_id == tab_id
+  ensures result.layout_role == layout_role
+  ensures result.zone_id == zone_id
+  decreases tab_id
+=
+  var t: DockTab
+  t.tab_id = tab_id
+  t.layout_role = layout_role
+  t.zone_id = zone_id
+  return t
+
+# Bottom-right ML stage panel — matches `adaptive_panel_rect_ml()` on `import ui`.
+def gui_dock_rect_ml() -> GuiRect
+  requires true
+  ensures result.w == 283.0
+  ensures result.h == 360.0
+  decreases 0
+=
+  return gui_rect_at(997.0, 360.0, 283.0, 360.0)
+
+def studio_shell_dock_zone_rect(shell: StudioShell, zone_id: int) -> GuiRect
+  requires zone_id >= 0
+  requires zone_id < 4
+  ensures result.w >= 0.0
+  ensures result.h >= 0.0
+  decreases zone_id
+=
+  if zone_id == gui_dock_zone_sidebar():
+    return shell.sidebar
+  if zone_id == gui_dock_zone_main():
+    return shell.main
+  if zone_id == gui_dock_zone_inspector():
+    return shell.inspector
+  return gui_dock_rect_ml()

@@ -82,7 +82,7 @@ todos:
     status: completed
   - id: wave-d-11-ux-dock-ux02
     content: "PH-UX dock/workspace chrome from competitive-intel UX-02 + adaptive_layout"
-    status: pending
+    status: completed
   - id: wave-d-12-ux-command-palette
     content: "PH-UX command palette / agent cmd IDs stub (UX-01 patterns)"
     status: pending

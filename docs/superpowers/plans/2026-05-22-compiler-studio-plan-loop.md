@@ -151,6 +151,8 @@ isProject: false
 
 **Weekend driver:** `./scripts/compiler-studio-plan-overnight.sh` → runs until **next Monday 08:00** `Europe/Berlin` (`COMPILER_STUDIO_WEEKEND_MODE=1`). Waits for in-flight `--once`, then batches `--max` until deadline.
 
+**Survive reboot:** `./scripts/install-plan-loop-systemd.sh` — user systemd + `loginctl enable-linger` so loops resume after power loss/reboot until deadline. Stop: `./scripts/install-plan-loop-systemd.sh --disable` or `touch data/compiler-studio-plan-loop/DISABLE_AUTOSTART`.
+
 **Philosophy:** [li-benchmark-correctness.mdc](../../../.cursor/rules/li-benchmark-correctness.mdc) — correct per spec, fast as possible; **DCE allowed, our harness must verify**.
 
 **Math surface:** explicit shapes only — **no NumPy broadcasting**.

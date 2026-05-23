@@ -137,6 +137,24 @@ Mark a todo done in loop state without running the agent:
 ./scripts/httpd-plan-loop.py --mark-done m1-routing-tests
 ```
 
+### Plan loops — autostart after reboot
+
+Install **user** systemd units (needs `loginctl enable-linger` so they run without an SSH login):
+
+```bash
+cd ~/Documents/Cursor/li-langverse/lic
+./scripts/compiler-studio-plan-setup.sh
+./scripts/install-plan-loop-systemd.sh    # compiler + httpd loops
+```
+
+After a reboot, services start again until the configured deadline (compiler: next Monday 08:00 Berlin when `COMPILER_STUDIO_WEEKEND_MODE=1`).
+
+```bash
+journalctl --user -u li-compiler-studio-plan-loop -f
+journalctl --user -u li-httpd-plan-loop -f
+./scripts/install-plan-loop-systemd.sh --disable   # stop + disable autostart
+```
+
 ## Agent rules (httpd)
 
 1. Work on **`cursor/httpd-plan-loop-54aa`**; open/update **PR #173** — do **not** self-merge.

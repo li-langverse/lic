@@ -59,10 +59,9 @@ log() { echo "$@" | tee -a "$LOG"; }
 
 DEADLINE_TS="$(deadline_epoch "$DEADLINE_LOCAL")"
 
-log "==> httpd-plan-until-deadline $(date -Iseconds)"
+log "==> compiler-studio-plan-until-deadline $(date -Iseconds)"
 log "    TZ=${TZ} deadline=${DEADLINE_LOCAL} → $(date -d "@${DEADLINE_TS}" -Iseconds)"
 log "    server_utc=$(date -u -Iseconds)"
-log "    close_server_milestones=$LI_HTTPD_PLAN_CLOSE_SERVER_MILESTONES"
 log "    batch_cap=$BATCH_CAP min_per_iter=${MIN_PER_ITER}m log=$LOG"
 
 if [[ "$WAIT_FOR_LOOP" == "1" ]]; then

@@ -50,6 +50,15 @@ todos:
   - id: wave-c-ui-rect-vc
     content: "li-ui rect_contains single-return VC + composable compile_ok"
     status: completed
+  - id: wave-d-gui-scaffold
+    content: "AL-9 packages/gui scaffold + composable import gui (studio shell; use competitive-intel UX-02/04)"
+    status: pending
+  - id: wave-d-al2-catalog
+    content: "AL-2 expand vertical-algorithm-catalog.md from verticals.toml + Tavily intel"
+    status: pending
+  - id: wave-d-ux-inspector
+    content: "PH-UX inspector/properties panel stub in li-ui per UX-04 + downloads/research-scientific-editor-ui.md"
+    status: pending
 isProject: false
 ---
 

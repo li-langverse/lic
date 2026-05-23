@@ -736,6 +736,12 @@ file = "composable/import_scene_transform3_math.li"
 outcome = "compile_open_ok"
 note = "AL-11: import scene; Transform3 uses math.Quat/Vec3 (open VC on transform_rotation_dot)"
 
+[[tests]]
+suite = "composable"
+file = "composable/import_linalg_matmul_smoke.li"
+outcome = "compile_open_ok"
+note = "AL-10: import linalg; matmul_2x2/2x3 smoke via explicit @ (open VC on float branch ensures)"
+
 # stdlib_coverage/build_std_csv — enable when std.csv module resolves (PH-IO-4)
 
 # --- httpd (Phase H placeholder) ---
@@ -909,6 +915,12 @@ outcome = "verify_ok"
 suite = "math_linalg"
 file = "math_linalg/reductions/dot_via_sum_product.li"
 outcome = "verify_ok"
+
+[[tests]]
+suite = "math_linalg"
+file = "math_linalg/import_linalg_matmul_2x2.li"
+outcome = "verify_open_ok"
+note = "AL-10: import linalg package; matmul_2x2_smoke_entry00 (open VC on matmul_2x2_f32 ensures)"
 
 # --- physics (packages + profiles) ---
 

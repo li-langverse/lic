@@ -64,7 +64,7 @@ todos:
     status: completed
   - id: wave-d-05-linalg-scaffold
     content: "AL-10 packages/linalg scaffold + composable matmul smoke + math_linalg test"
-    status: pending
+    status: completed
   - id: wave-d-06-gpu-wgpu-smoke
     content: "gpu package — device enum + wgpu smoke composable (LKIR stub ok)"
     status: pending

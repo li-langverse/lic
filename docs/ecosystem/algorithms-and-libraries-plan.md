@@ -214,7 +214,7 @@ flowchart TB
 |----------|--------|--------|--------|------|---------|
 | `math` | `packages/math` | exists-partial | **extend** — full quat + `Mat4` ops (see below) | A→D | `lic` 2i for array `@` |
 | `math.numerics` | `packages/math.numerics` | exists-partial | **extend** — ODE/integrators; not quats | D | `math` |
-| `linalg` | — | **missing** | **new package** `packages/linalg` — N×M, solve, decompositions, `tensor @` | B→D | compiler **2i/7e**, [math-linalg plan](../superpowers/plans/2026-05-16-li-math-linalg-surface.md) |
+| `linalg` | `packages/li-linalg` | **stub** | **extend** — N×M, solve, decompositions; matmul smoke on `@` | B→D | compiler **2i/7e**, [math-linalg plan](../superpowers/plans/2026-05-16-li-math-linalg-surface.md) |
 
 **Quaternions:** do **not** add `quaternion` or `li-quat` package. `math` already has `Quat`, `quat_identity`, `quat_mul`. Add in `math`:
 
@@ -303,7 +303,7 @@ P4  deepen physics.* / sim.* / chem per verticals.toml
 | AL-7 | Quarterly **SOTA review** ritual — update `last_reviewed` in registries | `roadmap` | Stale intel |
 | AL-8 | **`li` language repo** tracker honesty — unchecked 2e/2f/7 | `li-language` | Contributor confusion |
 | AL-9 | **`packages/gui`** scaffold + composable `import gui` | `lic` | Native Studio |
-| AL-10 | **`packages/linalg`** scaffold + `math_linalg` tests | `lic` | Tier-1 matmul |
+| AL-10 | **`packages/linalg`** scaffold + `math_linalg` tests | `lic` | **Done (2026-05-23)** — `import linalg` matmul smoke |
 | AL-11 | **`math` quaternion + Mat4** completion + `scene` wire-up | `lic` | Games/robotics/camera |
 | AL-12 | **`packages/anim`**, **`packages/seq`** scaffolds | `lic` | Cinematic vertical |
 | AL-13 | **`packages/geometry`** scaffold | `lic` | CAD/AM |

@@ -1,0 +1,31 @@
+import linalg
+
+def main() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  if li_std_linalg_version() < 1:
+    return 1
+  if linalg_workload_class_stub() != 0:
+    return 2
+  var e22: float = matmul_2x2_smoke_entry00()
+  if e22 < 18.99 or e22 > 19.01:
+    return 3
+  var e23: float = matmul_2x3_smoke_entry00()
+  if e23 < 57.99 or e23 > 58.01:
+    return 4
+  var A: array[2, array[2, float]]
+  var B: array[2, array[2, float]]
+  A[0][0] = 1.0
+  A[0][1] = 0.0
+  A[1][0] = 0.0
+  A[1][1] = 1.0
+  B[0][0] = 2.0
+  B[0][1] = 0.0
+  B[1][0] = 0.0
+  B[1][1] = 2.0
+  var C: array[2, array[2, float]] = matmul_2x2_f32(A, B)
+  if C[0][0] < 1.99 or C[0][0] > 2.01:
+    return 5
+  return 0

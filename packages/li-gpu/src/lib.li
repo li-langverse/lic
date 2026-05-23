@@ -1,0 +1,190 @@
+
+# PH-HW / wave-d-06 — device enum + wgpu smoke composable (LKIR stub until codegen).
+# workload_class=stub; no CUDA-only user kernels — use LKIR or gpu.* APIs (li-gpu-lkir-rfc).
+
+type LkirKernel = object
+  public kernel_id: int
+  public tile_m: int
+  public tile_n: int
+
+type LkirModule = object
+  public module_id: int
+  public kernel_count: int
+
+type GpuDevice = object
+  public backend: int
+  public device_id: int
+  public vendor_id: int
+
+type WgpuSurfaceDesc = object
+  public width: int
+  public height: int
+  public format_id: int
+
+def li_std_gpu_version() -> int
+  requires true
+  ensures result == 1
+  decreases 0
+=
+  return 1
+
+def gpu_workload_class_stub() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0
+
+def gpu_backend_cuda() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0
+
+def gpu_backend_rocm() -> int
+  requires true
+  ensures result == 1
+  decreases 0
+=
+  return 1
+
+def gpu_backend_metal() -> int
+  requires true
+  ensures result == 2
+  decreases 0
+=
+  return 2
+
+def gpu_backend_wgpu() -> int
+  requires true
+  ensures result == 3
+  decreases 0
+=
+  return 3
+
+def gpu_backend_count() -> int
+  requires true
+  ensures result == 4
+  decreases 0
+=
+  return 4
+
+def gpu_backend_is_known(backend: int) -> int
+  requires backend >= 0
+  ensures result >= 0
+  ensures result <= 1
+  decreases backend
+=
+  var ok: int = 0
+  if backend == gpu_backend_cuda():
+    ok = 1
+  if backend == gpu_backend_rocm():
+    ok = 1
+  if backend == gpu_backend_metal():
+    ok = 1
+  if backend == gpu_backend_wgpu():
+    ok = 1
+  return ok
+
+def gpu_device_new(backend: int, device_id: int, vendor_id: int) -> GpuDevice
+  requires backend >= 0
+  requires backend < gpu_backend_count()
+  requires device_id >= 0
+  requires vendor_id >= 0
+  ensures result.backend == backend
+  ensures result.device_id == device_id
+  ensures result.vendor_id == vendor_id
+  decreases 0
+=
+  var d: GpuDevice
+  d.backend = backend
+  d.device_id = device_id
+  d.vendor_id = vendor_id
+  return d
+
+def lkir_module_empty() -> LkirModule
+  requires true
+  ensures result.module_id == 0
+  ensures result.kernel_count == 0
+  decreases 0
+=
+  var m: LkirModule
+  m.module_id = 0
+  m.kernel_count = 0
+  return m
+
+def lkir_kernel_stub(kernel_id: int, tile_m: int, tile_n: int) -> LkirKernel
+  requires kernel_id >= 0
+  requires tile_m >= 1
+  requires tile_n >= 1
+  ensures result.kernel_id == kernel_id
+  ensures result.tile_m == tile_m
+  ensures result.tile_n == tile_n
+  decreases 0
+=
+  var k: LkirKernel
+  k.kernel_id = kernel_id
+  k.tile_m = tile_m
+  k.tile_n = tile_n
+  return k
+
+def lkir_module_attach_kernel(mod: LkirModule, k: LkirKernel) -> unit
+  requires mod.kernel_count >= 0
+  requires k.kernel_id >= 0
+  ensures true
+  decreases mod.kernel_count
+=
+  mod.kernel_count = mod.kernel_count + 1
+
+# wgpu smoke — host-side stub until trusted wgpu FFI (wave-d-07 render present).
+def wgpu_smoke_default_backend() -> int
+  requires true
+  ensures result == gpu_backend_wgpu()
+  decreases 0
+=
+  return gpu_backend_wgpu()
+
+def wgpu_smoke_surface_desc() -> WgpuSurfaceDesc
+  requires true
+  ensures result.width == 640
+  ensures result.height == 480
+  ensures result.format_id == 0
+  decreases 0
+=
+  var s: WgpuSurfaceDesc
+  s.width = 640
+  s.height = 480
+  s.format_id = 0
+  return s
+
+def wgpu_smoke_instance_ok() -> int
+  requires true
+  ensures result == 1
+  decreases 0
+=
+  return 1
+
+def wgpu_smoke_present_hash() -> int
+  requires true
+  ensures result == 687682
+  decreases 0
+=
+  return 687682
+
+def wgpu_smoke_entry() -> int
+  requires true
+  ensures result == 687682
+  decreases 0
+=
+  var dev: GpuDevice = gpu_device_new(wgpu_smoke_default_backend(), 0, 0)
+  if gpu_backend_is_known(dev.backend) != 1:
+    return 0
+  if wgpu_smoke_instance_ok() != 1:
+    return 0
+  var surf: WgpuSurfaceDesc = wgpu_smoke_surface_desc()
+  if surf.width != 640:
+    return 0
+  if surf.height != 480:
+    return 0
+  return wgpu_smoke_present_hash()

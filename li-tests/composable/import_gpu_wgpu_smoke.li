@@ -1,0 +1,32 @@
+import gpu
+
+def main() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  if li_std_gpu_version() < 1:
+    return 1
+  if gpu_workload_class_stub() != 0:
+    return 2
+  if gpu_backend_count() != 4:
+    return 3
+  if wgpu_smoke_default_backend() != gpu_backend_wgpu():
+    return 4
+  var dev: GpuDevice = gpu_device_new(gpu_backend_wgpu(), 0, 0)
+  if gpu_backend_is_known(dev.backend) != 1:
+    return 5
+  if wgpu_smoke_instance_ok() != 1:
+    return 6
+  var surf: WgpuSurfaceDesc = wgpu_smoke_surface_desc()
+  if surf.width != 640 or surf.height != 480:
+    return 7
+  var hash: int = wgpu_smoke_entry()
+  if hash != 687682:
+    return 8
+  var mod: LkirModule = lkir_module_empty()
+  var k: LkirKernel = lkir_kernel_stub(0, 16, 16)
+  lkir_module_attach_kernel(mod, k)
+  if mod.kernel_count != 1:
+    return 9
+  return 0

@@ -226,7 +226,7 @@ flowchart TB
 
 | `import` | Folder | Status | Action | Wave | Depends |
 |----------|--------|--------|--------|------|---------|
-| `gpu` | `packages/gpu` | exists-stub | **implement** — LKIR/device/backends (wgpu first) | D→E | `lic` codegen |
+| `gpu` | `packages/li-gpu` | **stub** | **extend** — LKIR codegen + trusted wgpu FFI (device enum + smoke landed) | D→E | `lic` codegen |
 | `render` | `packages/render` | exists-stub | **implement** — swapchain, draw lists, PBR-lite | D→E | `gpu`, `math` |
 | `scene` | `packages/scene` | exists-stub | **extend** — hierarchy, picks, transforms via `math` | D | `math` |
 | `assets` | `packages/assets` | exists-stub | **implement** — glTF + image ingest (trusted decode at edge) | D | `render` |

@@ -742,6 +742,20 @@ file = "composable/import_linalg_matmul_smoke.li"
 outcome = "compile_open_ok"
 note = "AL-10: import linalg; matmul_2x2/2x3 smoke via explicit @ (open VC on float branch ensures)"
 
+[[tests]]
+suite = "composable"
+file = "composable/import_gpu_wgpu_smoke.li"
+outcome = "compile_open_ok"
+note = "wave-d-06: import gpu; device enum + wgpu smoke + LKIR stub (open VC on gpu_backend_is_known branch ensures)"
+
+# --- gpu_wgpu (PH-HW — wgpu smoke composable) ---
+
+[[tests]]
+suite = "gpu_wgpu"
+file = "gpu_wgpu/import_gpu_wgpu_smoke_entry.li"
+outcome = "verify_open_ok"
+note = "wave-d-06: import gpu; wgpu_smoke_entry closed witness (open VC on wgpu_smoke_entry ensures)"
+
 # stdlib_coverage/build_std_csv — enable when std.csv module resolves (PH-IO-4)
 
 # --- httpd (Phase H placeholder) ---

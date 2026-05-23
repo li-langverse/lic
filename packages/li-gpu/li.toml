@@ -1,0 +1,22 @@
+[package]
+name = "li-gpu"
+version = "0.1.0"
+edition = "2026"
+license = "Apache-2.0 OR MIT"
+description = "PH-HW GPU — device backends, LKIR stub, wgpu smoke composable (stub until codegen)"
+
+[dependencies]
+# path = { path = "../other" }   # lip 8b+
+# registry = "1.0.0"             # lip 8d+
+
+[package.metadata.li]
+github_repo = "li-gpu"
+import_name = "gpu"
+min_lic = "0.1.0"
+maintainer = "li-langverse"
+pkg_id = "PKG-li-gpu"
+
+[package.repository]
+url = "https://github.com/li-langverse/li-gpu"
+documentation = "https://li-langverse.github.io/li-language/ecosystem/li-gpu/"
+changelog = "https://github.com/li-langverse/li-gpu/blob/main/CHANGELOG.md"

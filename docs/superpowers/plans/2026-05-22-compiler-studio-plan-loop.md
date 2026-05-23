@@ -67,7 +67,7 @@ todos:
     status: completed
   - id: wave-d-06-gpu-wgpu-smoke
     content: "gpu package — device enum + wgpu smoke composable (LKIR stub ok)"
-    status: pending
+    status: completed
   - id: wave-d-07-render-present
     content: "render — present/swapchain stub + import render composable"
     status: pending

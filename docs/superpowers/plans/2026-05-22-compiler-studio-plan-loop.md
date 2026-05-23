@@ -1,6 +1,6 @@
 ---
 name: Compiler + Studio plan loop
-overview: Autonomous loop — Wave A compiler milestones (2e/2f, 2i, 7d/7e) first, then sim/physics/chem/bio/Studio. Not httpd.
+overview: Weekend autonomous loop — Wave D/E package+vertical+Studio backlog from algorithms-and-libraries-plan §7–8 until next Monday 08:00. Not httpd.
 todos:
   - id: wave-a-7e-verify
     content: "Tier-1 result verify — reference.py + bench-verify-results.sh 1; all checksums pass"
@@ -51,13 +51,94 @@ todos:
     content: "li-ui rect_contains single-return VC + composable compile_ok"
     status: completed
   - id: wave-d-gui-scaffold
-    content: "AL-9 packages/gui scaffold + composable import gui (studio shell; use competitive-intel UX-02/04)"
+    content: "AL-9 packages/gui scaffold + composable import gui (studio shell; UX-02/04)"
     status: in_progress
-  - id: wave-d-al2-catalog
-    content: "AL-2 expand vertical-algorithm-catalog.md from verticals.toml + Tavily intel"
+  - id: wave-d-02-al2-catalog
+    content: "AL-2 vertical-algorithm-catalog.md — one kernel section per verticals.toml row"
     status: pending
-  - id: wave-d-ux-inspector
-    content: "PH-UX inspector/properties panel stub in li-ui per UX-04 + downloads/research-scientific-editor-ui.md"
+  - id: wave-d-03-ux-inspector
+    content: "PH-UX inspector/properties panel stub in li-ui (UX-04, scientific-editor intel)"
+    status: pending
+  - id: wave-d-04-math-quat-mat4
+    content: "AL-11 math quat_dot/slerp/mat4_mul + scene.Transform3 wire-up + li-tests"
+    status: pending
+  - id: wave-d-05-linalg-scaffold
+    content: "AL-10 packages/linalg scaffold + composable matmul smoke + math_linalg test"
+    status: pending
+  - id: wave-d-06-gpu-wgpu-smoke
+    content: "gpu package — device enum + wgpu smoke composable (LKIR stub ok)"
+    status: pending
+  - id: wave-d-07-render-present
+    content: "render — present/swapchain stub + import render composable"
+    status: pending
+  - id: wave-d-08-scene-hierarchy
+    content: "scene — hierarchy + transform via math.Quat + composable"
+    status: pending
+  - id: wave-d-09-assets-gltf
+    content: "assets — glTF ingest stub + composable import"
+    status: pending
+  - id: wave-d-10-ui-studio-wire
+    content: "ui extend — studio chrome hooks + wire gui import in packages/studio"
+    status: pending
+  - id: wave-d-11-ux-dock-ux02
+    content: "PH-UX dock/workspace chrome from competitive-intel UX-02 + adaptive_layout"
+    status: pending
+  - id: wave-d-12-ux-command-palette
+    content: "PH-UX command palette / agent cmd IDs stub (UX-01 patterns)"
+    status: pending
+  - id: wave-d-13-anim-scaffold
+    content: "AL-12 packages/anim — keyframe/clip types + composable"
+    status: pending
+  - id: wave-d-14-seq-scaffold
+    content: "AL-12 packages/seq — shot/timeline types + composable"
+    status: pending
+  - id: wave-d-15-geometry-scaffold
+    content: "AL-13 packages/geometry — mesh predicates stub + composable"
+    status: pending
+  - id: wave-d-16-cad-fundamentals
+    content: "AL-4 docs/ecosystem/cad-fundamentals.md merge + link geometry PH"
+    status: pending
+  - id: wave-d-17-cae-rfc
+    content: "AL-5 engineering/CAE RFC stub (FEA/CFD split from PH-SCI)"
+    status: pending
+  - id: wave-d-18-cinematic-rfc
+    content: "AL-6 cinematic algorithm RFC (encode/color/audio; not UX-only)"
+    status: pending
+  - id: wave-d-19-vertical-gaming
+    content: "gaming — physics.rigid composable + verticals.toml notes + bench row"
+    status: pending
+  - id: wave-d-20-vertical-md-oracle
+    content: "MD — md_oracle driver stub doc + verticals.toml LAMMPS column plan"
+    status: pending
+  - id: wave-d-21-vertical-chem
+    content: "chem — DFT composable smoke + qm_dft vertical row honesty"
+    status: pending
+  - id: wave-d-22-vertical-bioeng
+    content: "bioeng — LITL workflow composable + bioengineering.toml hook"
+    status: pending
+  - id: wave-d-23-vertical-robo
+    content: "sim.robotics — workspace composable + PH-ROBO cross-link"
+    status: pending
+  - id: wave-d-24-vertical-am
+    content: "sim.additive — slicer workflow composable + am_slicer vertical"
+    status: pending
+  - id: wave-d-25-vertical-viz
+    content: "sim.viz — pipeline source/display stub (ParaView UX-03 patterns)"
+    status: pending
+  - id: wave-d-26-vertical-mmo
+    content: "mmo — shard composable + mmorpg.toml bench stub row"
+    status: pending
+  - id: wave-d-27-physics-deepen
+    content: "physics.* — one tier-2 kernel harden (rigid or soft) + verify.py note"
+    status: pending
+  - id: wave-d-28-studio-compose
+    content: "studio — compose ui+gui+render+world public API + composable"
+    status: pending
+  - id: wave-e-01-rect-vc-close
+    content: "li-ui rect_contains VC close → composable compile_ok (was wave-c)"
+    status: pending
+  - id: wave-e-02-player-hud
+    content: "player — load gui HUD composable + import test"
     status: pending
 isProject: false
 ---
@@ -66,10 +147,12 @@ isProject: false
 
 **Not in scope:** `li-httpd`, tier5 HTTP — use `httpd-plan-loop.py` in a separate process.
 
-**Priority:** [master plan](2026-05-14-li-master-plan.md) open **2e/2f/2i/7d/7e** → [algorithms-and-libraries-plan](../../ecosystem/algorithms-and-libraries-plan.md) Wave B/C.
+**Priority:** [algorithms-and-libraries-plan](../../ecosystem/algorithms-and-libraries-plan.md) Wave **D→E** (packages, verticals, Studio) — Wave A–C rows in plan YAML are **completed**; keep gates green.
+
+**Weekend driver:** `./scripts/compiler-studio-plan-overnight.sh` → runs until **next Monday 08:00** `Europe/Berlin` (`COMPILER_STUDIO_WEEKEND_MODE=1`). Waits for in-flight `--once`, then batches `--max` until deadline.
 
 **Philosophy:** [li-benchmark-correctness.mdc](../../../.cursor/rules/li-benchmark-correctness.mdc) — correct per spec, fast as possible; **DCE allowed, our harness must verify**.
 
-**Math surface:** vector algebra, matrices, quaternions, tensors — **explicit** operations only. **No NumPy-style broadcasting** (no silent shape promotion); mismatched shapes are compile errors unless written out explicitly in code.
+**Math surface:** explicit shapes only — **no NumPy broadcasting**.
 
-**Loop:** `./scripts/compiler-studio-plan-loop.py` · gates: `./scripts/compiler-studio-plan-gates.sh`
+**Loop:** `./scripts/compiler-studio-plan-loop.py` · gates: `./scripts/compiler-studio-plan-gates.sh` · PR [#176](https://github.com/li-langverse/lic/pull/176)

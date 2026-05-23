@@ -66,9 +66,11 @@ def compiler_wave_tier(todo_id: str) -> tuple[int, int]:
         return (2, 0)
     if todo_id.startswith("wave-d-"):
         return (3, 0)
-    if todo_id.startswith("studio-"):
+    if todo_id.startswith("wave-e-"):
         return (4, 0)
-    return (5, 0)
+    if todo_id.startswith("studio-"):
+        return (5, 0)
+    return (6, 0)
 
 
 def pick_next(todos: list[dict], state: dict) -> dict | None:
@@ -347,10 +349,11 @@ def build_instruction(todo: dict) -> str:
 **Plan:** `{PLAN.relative_to(ROOT)}`
 **Master plan:** `docs/superpowers/plans/2026-05-14-li-master-plan.md`
 
-## Loop mission
-- **Wave A first** (`wave-a-*`): 2e/2f/2i/7d/7e, tier-1 verify, pure-Li correctness.
-- **Then** `wave-b-*` / `studio-*` (physics, chem, Studio UI).
-- **Not httpd** — separate process.
+## Loop mission (weekend sprint)
+- **Backlog:** `docs/ecosystem/algorithms-and-libraries-plan.md` §7 package gap register + §3 vertical matrix.
+- **Wave D/E** (`wave-d-*`, `wave-e-*`): packages, vertical composables, Studio UX, RFC/docs — **interface landed** is OK; label `stub` in docs where Wave A not Done.
+- **Honesty:** no “GROMACS/Gaussian parity” claims; cite `verticals.toml` + `workload_class=stub` where applicable.
+- **Not httpd** — separate process; do not kill httpd-plan-loop.
 
 ## Current todo
 - **id:** {todo['id']}

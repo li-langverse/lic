@@ -1,0 +1,43 @@
+import anim
+import scene
+import math
+
+def main() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  if li_std_anim_version() < 1:
+    return 1
+  if anim_workload_class_stub() != 0:
+    return 2
+  var id_xform: Transform3 = transform_identity()
+  var k0: AnimKeyframe = keyframe_new(0.0, id_xform)
+  if k0.time != 0.0:
+    return 3
+  var end: Transform3 = transform_identity()
+  var half_z: Quat
+  half_z.w = 0.70710678
+  half_z.x = 0.0
+  half_z.y = 0.0
+  half_z.z = 0.70710678
+  end.rotation = half_z
+  var k1: AnimKeyframe = keyframe_new(1.0, end)
+  var clip: AnimClip = clip_new_two_key(7, k0, k1)
+  if clip.duration < 0.99 or clip.duration > 1.01:
+    return 4
+  var dur_in: float = clip.duration
+  var dur_out: float = clip.duration
+  var inside: int = anim_clip_contains_time(dur_in, 0.5)
+  if inside != 1:
+    return 5
+  var mid_w: float = anim_sample_clip_smoke_mid_w()
+  if mid_w < 0.91 or mid_w > 0.94:
+    return 6
+  var sampled: Transform3 = anim_sample_clip(clip, 0.5)
+  if sampled.rotation.w < 0.91 or sampled.rotation.w > 0.94:
+    return 7
+  var outside: int = anim_clip_contains_time(dur_out, 2.0)
+  if outside != 0:
+    return 8
+  return 0

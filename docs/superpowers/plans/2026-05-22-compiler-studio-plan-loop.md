@@ -88,7 +88,7 @@ todos:
     status: completed
   - id: wave-d-13-anim-scaffold
     content: "AL-12 packages/anim — keyframe/clip types + composable"
-    status: pending
+    status: completed
   - id: wave-d-14-seq-scaffold
     content: "AL-12 packages/seq — shot/timeline types + composable"
     status: pending

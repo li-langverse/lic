@@ -241,7 +241,7 @@ flowchart TB
 
 | `import` | Folder | Status | Action | Wave | Depends |
 |----------|--------|--------|--------|------|---------|
-| `anim` | — | **missing** | **new** — keyframes, clips, blend trees (`anim/*.li`) | D | `math` quats, `scene` |
+| `anim` | `packages/li-anim` | **stub** | **landed** — keyframes, clips; blend trees later (`anim/*.li`) | D | `math` quats, `scene` |
 | `seq` | — | **missing** | **new** — shots, cameras, timeline (`seq/*.li`) | D→E | `scene`, `studio.publish` |
 | `studio.publish` | in `studio` | exists-stub | **extend** — encode presets; trusted ffmpeg FFI | E | `seq` |
 
@@ -305,7 +305,7 @@ P4  deepen physics.* / sim.* / chem per verticals.toml
 | AL-9 | **`packages/gui`** scaffold + composable `import gui` | `lic` | Native Studio |
 | AL-10 | **`packages/linalg`** scaffold + `math_linalg` tests | `lic` | **Done (2026-05-23)** — `import linalg` matmul smoke |
 | AL-11 | **`math` quaternion + Mat4** completion + `scene` wire-up | `lic` | Games/robotics/camera |
-| AL-12 | **`packages/anim`**, **`packages/seq`** scaffolds | `lic` | Cinematic vertical |
+| AL-12 | **`packages/anim`**, **`packages/seq`** scaffolds | `lic` | **anim Done (2026-05-23)** — `import anim` keyframe/clip; seq pending |
 | AL-13 | **`packages/geometry`** scaffold | `lic` | CAD/AM |
 
 ---

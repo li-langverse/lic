@@ -762,6 +762,12 @@ note = "wave-d-08: scene hierarchy + transform_compose via math.Quat (open VC on
 
 [[tests]]
 suite = "composable"
+file = "composable/import_anim_keyframe_clip.li"
+outcome = "compile_open_ok"
+note = "AL-12: import anim; keyframe/clip sample via scene.Transform3 + quat_slerp (open VC on anim_clip_contains_time ensures)"
+
+[[tests]]
+suite = "composable"
 file = "composable/import_linalg_matmul_smoke.li"
 outcome = "compile_open_ok"
 note = "AL-10: import linalg; matmul_2x2/2x3 smoke via explicit @ (open VC on float branch ensures)"

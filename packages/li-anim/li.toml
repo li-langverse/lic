@@ -1,0 +1,22 @@
+[package]
+name = "li-anim"
+version = "0.1.0"
+edition = "2026"
+license = "Apache-2.0 OR MIT"
+description = "Cinematic vertical — keyframes, clips, transform sampling (stub; blend trees later)"
+
+[dependencies]
+li-math = { path = "../li-math" }
+li-scene = { path = "../li-scene" }
+
+[package.metadata.li]
+github_repo = "li-anim"
+import_name = "anim"
+min_lic = "0.1.0"
+maintainer = "li-langverse"
+pkg_id = "PKG-li-anim"
+
+[package.repository]
+url = "https://github.com/li-langverse/li-anim"
+documentation = "https://li-langverse.github.io/li-language/ecosystem/li-anim/"
+changelog = "https://github.com/li-langverse/li-anim/blob/main/CHANGELOG.md"

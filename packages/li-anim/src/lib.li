@@ -1,0 +1,175 @@
+import scene
+import math
+
+# AL-12 / cinematic vertical — keyframes + clips (workload_class=stub).
+# Blend trees deferred; samples Transform3 via explicit quat_slerp + vec3 lerp.
+
+type AnimKeyframe = object
+  public time: float
+  public transform: Transform3
+
+type AnimClip = object
+  public clip_id: int
+  public duration: float
+  public keyframe_a: AnimKeyframe
+  public keyframe_b: AnimKeyframe
+
+def li_std_anim_version() -> int
+  requires true
+  ensures result == 1
+  decreases 0
+=
+  return 1
+
+def anim_workload_class_stub() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0
+
+def anim_channel_transform() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0
+
+def keyframe_new(time: float, transform: Transform3) -> AnimKeyframe
+  requires time >= 0.0
+  ensures result.time == time
+  decreases 0
+=
+  var k: AnimKeyframe
+  k.time = time
+  k.transform = transform
+  return k
+
+def clip_new_two_key(
+    clip_id: int,
+    k0: AnimKeyframe,
+    k1: AnimKeyframe) -> AnimClip
+  requires k1.time >= k0.time
+  ensures result.clip_id == clip_id
+  ensures result.duration == k1.time
+  ensures result.keyframe_a.time == k0.time
+  ensures result.keyframe_b.time == k1.time
+  decreases 0
+=
+  var c: AnimClip
+  c.clip_id = clip_id
+  c.duration = k1.time
+  c.keyframe_a = k0
+  c.keyframe_b = k1
+  return c
+
+def anim_lerp_float(a: float, b: float, t: float) -> float
+  requires t >= 0.0
+  requires t <= 1.0
+  ensures result == a + (b - a) * t
+  decreases 0
+=
+  return a + (b - a) * t
+
+def anim_lerp_vec3(a: Vec3, b: Vec3, t: float) -> Vec3
+  requires t >= 0.0
+  requires t <= 1.0
+  ensures result.x == a.x + (b.x - a.x) * t
+  ensures result.y == a.y + (b.y - a.y) * t
+  ensures result.z == a.z + (b.z - a.z) * t
+  decreases 0
+=
+  return vec3(a.x + (b.x - a.x) * t, a.y + (b.y - a.y) * t, a.z + (b.z - a.z) * t)
+
+def anim_blend_param(duration: float, t: float) -> float
+  requires t >= 0.0
+  requires duration >= 0.0
+  ensures result >= 0.0
+  ensures result <= 1.0
+  decreases 0
+=
+  if duration <= 0.0:
+    return 0.0
+  var u: float = t / duration
+  if u < 0.0:
+    u = 0.0
+  if u > 1.0:
+    u = 1.0
+  return u
+
+def anim_clamp01(u: float) -> float
+  requires true
+  ensures result >= 0.0
+  ensures result <= 1.0
+  decreases 0
+=
+  var out: float = u
+  if out < 0.0:
+    out = 0.0
+  if out > 1.0:
+    out = 1.0
+  return out
+
+def anim_sample_clip(clip: AnimClip, t: float) -> Transform3
+  requires t >= 0.0
+  requires clip.duration >= 0.0
+  ensures result.rotation.w >= -1.0
+  ensures result.rotation.w <= 1.0
+  decreases 0
+=
+  var dur_pos: float = clip.duration
+  var dur_rot: float = clip.duration
+  var dur_scl: float = clip.duration
+  var ka_pos: Vec3 = clip.keyframe_a.transform.position
+  var ka_rot: Quat = clip.keyframe_a.transform.rotation
+  var ka_scl: Vec3 = clip.keyframe_a.transform.scale
+  var kb_pos: Vec3 = clip.keyframe_b.transform.position
+  var kb_rot: Quat = clip.keyframe_b.transform.rotation
+  var kb_scl: Vec3 = clip.keyframe_b.transform.scale
+  var u_pos: float = 0.0
+  var u_rot: float = 0.0
+  var u_scl: float = 0.0
+  if dur_pos > 0.0:
+    u_pos = anim_clamp01(t / dur_pos)
+  if dur_rot > 0.0:
+    u_rot = anim_clamp01(t / dur_rot)
+  if dur_scl > 0.0:
+    u_scl = anim_clamp01(t / dur_scl)
+  var out: Transform3
+  out.position = anim_lerp_vec3(ka_pos, kb_pos, u_pos)
+  out.rotation = quat_slerp(ka_rot, kb_rot, u_rot)
+  out.scale = anim_lerp_vec3(ka_scl, kb_scl, u_scl)
+  return out
+
+def anim_clip_contains_time(duration: float, t: float) -> int
+  requires duration >= 0.0
+  ensures result >= 0
+  ensures result <= 1
+  decreases 0
+=
+  var inside: int = 1
+  if t < 0.0:
+    inside = 0
+  if t > duration:
+    inside = 0
+  return inside
+
+def anim_sample_clip_smoke_mid_w() -> float
+  requires true
+  ensures result >= 0.91
+  ensures result <= 0.94
+  decreases 0
+=
+  var id_xform: Transform3 = transform_identity()
+  var k0: AnimKeyframe = keyframe_new(0.0, id_xform)
+  var end: Transform3 = transform_identity()
+  var half_z: Quat
+  half_z.w = 0.70710678
+  half_z.x = 0.0
+  half_z.y = 0.0
+  half_z.z = 0.70710678
+  end.rotation = half_z
+  var k1: AnimKeyframe = keyframe_new(1.0, end)
+  var clip: AnimClip = clip_new_two_key(1, k0, k1)
+  var mid: Transform3 = anim_sample_clip(clip, 0.5)
+  return mid.rotation.w

@@ -1,0 +1,34 @@
+{
+  "version": 1,
+  "last_fetched": "2026-05-23",
+  "fetches": [
+    {
+      "id": "paraview-properties-panel",
+      "url": "https://docs.paraview.org/en/latest/ReferenceManual/propertiesPanel.html",
+      "local": "downloads/paraview-properties-panel.html",
+      "dimensions": ["UX-04", "UX-06"]
+    },
+    {
+      "id": "prusa-ui-overview",
+      "url": "https://help.prusa3d.com/article/ui-overview_1766",
+      "local": "downloads/prusa-ui-overview.html",
+      "dimensions": ["UX-08", "UX-09"]
+    },
+    {
+      "id": "blender-panel-api",
+      "url": "https://docs.blender.org/api/current/bpy.types.Panel.html",
+      "local": "downloads/blender-panel-api.html",
+      "dimensions": ["UX-01", "UX-02"]
+    }
+  ],
+  "web_research_notes": [
+    {
+      "topic": "Roche Lab in a Loop / Recursion LOWE",
+      "dimensions": ["UX-07"],
+      "urls": [
+        "https://www.roche.com/stories/ai-revolutionising-drug-discovery-and-transforming-patient-care",
+        "https://www.valencelabs.com/lowe-an-llm-orchestrated-workflow-engine-unleashing-the-full-power-of-recursions-data-and-tools/"
+      ]
+    }
+  ]
+}

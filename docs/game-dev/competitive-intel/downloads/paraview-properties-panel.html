@@ -1,0 +1,262 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../">
+<head>
+  <meta charset="utf-8" />
+  <meta name="readthedocs-addons-api-version" content="1"><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>1. Properties Panel &mdash; ParaView Documentation 6.1.0 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=03e43079" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=9edc463e" />
+      <link rel="stylesheet" type="text/css" href="../_static/exercise.css" />
+      <link rel="stylesheet" type="text/css" href="../_static/copybutton.css?v=76b2166b" />
+
+  
+    <link rel="canonical" href="https://docs.paraview.org/en/latest/ReferenceManual/propertiesPanel.html" />
+      <script src="../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../_static/documentation_options.js?v=6340cb70"></script>
+      <script src="../_static/doctools.js?v=fd6eb6e6"></script>
+      <script src="../_static/sphinx_highlight.js?v=6ffebe34"></script>
+      <script src="../_static/clipboard.min.js?v=a7894cd8"></script>
+      <script src="../_static/copybutton.js?v=f281be69"></script>
+    <script src="../_static/js/theme.js"></script>
+    <script src="../_static/js/versions.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="2. Object Shading Properties" href="objectShadingProperties.html" />
+    <link rel="prev" title="ParaView Reference Manual" href="index.html" /> 
+<script async type="text/javascript" src="/_/static/javascript/readthedocs-addons.js"></script><meta name="readthedocs-project-slug" content="paraview" /><meta name="readthedocs-version-slug" content="latest" /><meta name="readthedocs-resolver-filename" content="/ReferenceManual/propertiesPanel.html" /><meta name="readthedocs-http-status" content="200" /></head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../index.html" class="icon icon-home">
+            ParaView Documentation
+          </a>
+              <div class="switch-menus">
+                <div class="version-switch"></div>
+                <div class="language-switch"></div>
+              </div>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">ParaView User's Guide</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../UsersGuide/index.html">ParaView User’s Guide</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">ParaView Reference Manual</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="reference internal" href="index.html">ParaView Reference Manual</a><ul class="current">
+<li class="toctree-l2 current"><a class="current reference internal" href="#">1. Properties Panel</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#anatomy-of-the-properties-panel">1.1. Anatomy of the <code class="docutils literal notranslate"><span class="pre">Properties</span></code> panel</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#buttons">1.1.1. Buttons</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#search-box">1.1.2. Search box</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#properties">1.1.3. Properties</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#customizing-the-layout">1.2. Customizing the layout</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="objectShadingProperties.html">2. Object Shading Properties</a></li>
+<li class="toctree-l2"><a class="reference internal" href="lightInspector.html">3. Light Inspector</a></li>
+<li class="toctree-l2"><a class="reference internal" href="colorMapping.html">4. Color maps and transfer functions</a></li>
+<li class="toctree-l2"><a class="reference internal" href="comparativeViews.html">5. Comparative visualization</a></li>
+<li class="toctree-l2"><a class="reference internal" href="pythonProgrammableFilter.html">6. <code class="docutils literal notranslate"><span class="pre">Programmable</span> <span class="pre">Filter</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="vtkNumPyIntegration.html">7. Using NumPy for processing data</a></li>
+<li class="toctree-l2"><a class="reference internal" href="parallelDataVisualization.html">8. Remote and parallel visualization</a></li>
+<li class="toctree-l2"><a class="reference internal" href="restartFiles.html">9. Restarted Simulation Readers</a></li>
+<li class="toctree-l2"><a class="reference internal" href="memoryInspector.html">10. Memory Inspector</a></li>
+<li class="toctree-l2"><a class="reference internal" href="multiblockInspector.html">11. Multiblock Inspector</a></li>
+<li class="toctree-l2"><a class="reference internal" href="annotations.html">12. Annotations</a></li>
+<li class="toctree-l2"><a class="reference internal" href="axesGrid.html">13. Axes Grid</a></li>
+<li class="toctree-l2"><a class="reference internal" href="customizingParaView.html">14. Customizing ParaView</a></li>
+<li class="toctree-l2"><a class="reference internal" href="advancedRendering.html">15. Advanced rendering</a></li>
+</ul>
+</li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Catalyst</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../Catalyst/index.html">Catalyst</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">ParaView Tutorials</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../Tutorials/index.html">ParaView Tutorials</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Appendix</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../references.html">References</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">ParaView Documentation</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="index.html">ParaView Reference Manual</a></li>
+      <li class="breadcrumb-item active"><span class="section-number">1. </span>Properties Panel</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../_sources/ReferenceManual/propertiesPanel.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="properties-panel">
+<span id="chapter-propertiespanel"></span><h1><span class="section-number">1. </span>Properties Panel<a class="headerlink" href="#properties-panel" title="Link to this heading"></a></h1>
+<p>The <code class="docutils literal notranslate"><span class="pre">Properties</span></code>   panel is perhaps the most often used panel in
+<code class="docutils literal notranslate"><span class="pre">paraview</span></code>. This is the panel you would use to change properties
+on modules in the visualization pipeline, including sources and filters, to control how
+they are displayed in views using the  <code class="docutils literal notranslate"><span class="pre">Display</span></code>   properties, and
+to customize the view itself. In this chapter, we take a closer look at the
+<code class="docutils literal notranslate"><span class="pre">Properties</span></code>   panel to understand how it works.</p>
+<figure class="align-center" id="fig-propertiespanel">
+<a class="reference internal image-reference" href="../_images/PropertiesPanelComponents.png"><img alt="../_images/PropertiesPanelComponents.png" src="../_images/PropertiesPanelComponents.png" style="width: 70%;" />
+</a>
+<figcaption>
+<p><span class="caption-number">Fig. 1.8 </span><span class="caption-text"><code class="docutils literal notranslate"><span class="pre">Properties</span></code>   Panel in <code class="docutils literal notranslate"><span class="pre">paraview</span></code></span><a class="headerlink" href="#fig-propertiespanel" title="Link to this image"></a></p>
+</figcaption>
+</figure>
+<section id="anatomy-of-the-properties-panel">
+<h2><span class="section-number">1.1. </span>Anatomy of the <code class="docutils literal notranslate"><span class="pre">Properties</span></code> panel<a class="headerlink" href="#anatomy-of-the-properties-panel" title="Link to this heading"></a></h2>
+<p>Before we start dissecting the  <code class="docutils literal notranslate"><span class="pre">Properties</span></code>  , remember that the  <code class="docutils literal notranslate"><span class="pre">Properties</span></code>
+panel works on <em>active</em> objects, i.e., it shows the properties for the active
+source and active view, as well as the display properties, if any, for active source in the active view.</p>
+<section id="buttons">
+<h3><span class="section-number">1.1.1. </span>Buttons<a class="headerlink" href="#buttons" title="Link to this heading"></a></h3>
+<p><a class="reference internal" href="#fig-propertiespanel"><span class="std std-numref">Fig. 1.8</span></a> shows the various parts of the
+<code class="docutils literal notranslate"><span class="pre">Properties</span></code>   panel. At the top is the group of buttons that let you  <code class="docutils literal notranslate"><span class="pre">Apply</span></code>  the changes
+you made,  <code class="docutils literal notranslate"><span class="pre">Reset</span></code>  the changes you made to their previous values, or  <code class="docutils literal notranslate"><span class="pre">Delete</span></code>
+the active source.</p>
+<div class="tip admonition">
+<p class="admonition-title"><strong>Did you know?</strong></p>
+<p>You can delete multiple sources by selecting them using the
+<kbd class="kbd docutils literal notranslate">CTRL</kbd> (or <kbd class="kbd docutils literal notranslate">⌘</kbd>) key when selecting in the  <code class="docutils literal notranslate"><span class="pre">Pipeline</span>
+<span class="pre">Browser</span></code>   and then clicking on the  <code class="docutils literal notranslate"><span class="pre">Delete</span></code>   button.
+Sometimes, the  <code class="docutils literal notranslate"><span class="pre">Delete</span></code>   button may be disabled. That happens when the
+selected source(s) have other filters connected to them. You will need to
+delete those filters first.</p>
+</div>
+</section>
+<section id="search-box">
+<span id="sec-propertiespanel-searchbox"></span><h3><span class="section-number">1.1.2. </span>Search box<a class="headerlink" href="#search-box" title="Link to this heading"></a></h3>
+<p>The  <code class="docutils literal notranslate"><span class="pre">Search</span></code>   box allows you to search for a property by using the name or the
+label for the property. Simply start typing text in the  <code class="docutils literal notranslate"><span class="pre">Search</span></code>   box, and the
+panel will update to show widgets for the properties matching the text.</p>
+<p>The  <code class="docutils literal notranslate"><span class="pre">Properties</span></code>   panel has two modes that control the verbosity of the panel:
+default and advanced. In the default mode, a smaller subset of the available
+properties is shown. These are generally the frequently used properties for the
+pipeline modules. In advanced mode, you can see all the available properties.
+You can toggle between default and advanced modes using the
+<a class="reference internal" href="../_images/pqAdvanced.svg"><img alt="pqAdvanced" src="../_images/pqAdvanced.svg" style="width: 20px;" /></a>  button next the  <code class="docutils literal notranslate"><span class="pre">Search</span></code>   box.</p>
+<p>When you start searching for a property by typing text in the  <code class="docutils literal notranslate"><span class="pre">Search</span></code>   box,
+irrespective of the current mode of the panel (i.e., default or advanced), all
+properties that match the search text will be shown.</p>
+<div class="tip admonition">
+<p class="admonition-title"><strong>Did you know?</strong></p>
+<p>The  <code class="docutils literal notranslate"><span class="pre">Search</span></code>   box is a recurring widget in <code class="docutils literal notranslate"><span class="pre">paraview</span></code>. Several other panels
+and dialog boxes, including the  <code class="docutils literal notranslate"><span class="pre">Settings</span></code>   dialog and the  <code class="docutils literal notranslate"><span class="pre">Color</span> <span class="pre">Map</span> <span class="pre">Editor</span></code>  ,
+show a similar widget. Its behavior is also exactly the same as in the case of the
+<code class="docutils literal notranslate"><span class="pre">Properties</span></code>   panel. Don’t forget that the <a class="reference internal" href="../_images/pqAdvanced.svg"><img alt="pqAdvanced" src="../_images/pqAdvanced.svg" style="width: 20px;" /></a>
+button can be used to toggle between default and advanced modes.</p>
+</div>
+</section>
+<section id="properties">
+<h3><span class="section-number">1.1.3. </span>Properties<a class="headerlink" href="#properties" title="Link to this heading"></a></h3>
+<p>The  <code class="docutils literal notranslate"><span class="pre">Properties</span></code>  ,  <code class="docutils literal notranslate"><span class="pre">Display</span></code>  , and  <code class="docutils literal notranslate"><span class="pre">View</span></code>   sections in the panel
+show widgets for properties on the active source, its display
+properties in the active view, and the properties for the active view,
+respectively. You can collapse/expand each of these sections by
+clicking on the section name.</p>
+<p>To the right of each section name is a set of four buttons. Clicking the
+<a class="reference internal" href="../_images/pqCopy.svg"><img alt="pqCopy" src="../_images/pqCopy.svg" style="width: 20px;" /></a> copies the current set of property values to the
+clipboard while clicking the <a class="reference internal" href="../_images/pqPaste.svg"><img alt="pqPaste" src="../_images/pqPaste.svg" style="width: 20px;" /></a> will paste those
+property values into another compatible panel section. Note that the paste icon
+is enabled only for panel sections where the copied properties can be pasted.</p>
+<p>The next two buttons <a class="reference internal" href="../_images/pqReset.svg"><img alt="pqReset" src="../_images/pqReset.svg" style="width: 20px;" /></a> and
+<a class="reference internal" href="../_images/SaveAsDefaultButton.png"><img alt="SaveAsDefaultButton" src="../_images/SaveAsDefaultButton.png" style="height: 20px;" /></a> enable customizing the default values
+used for those properties. Refer to <a class="reference internal" href="customizingParaView.html#sec-customdefaultsettings"><span class="std std-numref">Section 14.2</span></a>
+to learn more about customizing default property values.</p>
+</section>
+</section>
+<section id="customizing-the-layout">
+<span id="sec-propertiespanellayoutsettings"></span><h2><span class="section-number">1.2. </span>Customizing the layout<a class="headerlink" href="#customizing-the-layout" title="Link to this heading"></a></h2>
+<figure class="align-center" id="fig-propertiespanelsettings">
+<a class="reference internal image-reference" href="../_images/PropertiesPanelSettings.png"><img alt="../_images/PropertiesPanelSettings.png" src="../_images/PropertiesPanelSettings.png" style="width: 80%;" />
+</a>
+<figcaption>
+<p><span class="caption-number">Fig. 1.9 </span><span class="caption-text">Options for customizing the  <code class="docutils literal notranslate"><span class="pre">Properties</span></code>   panel layout using the
+<code class="docutils literal notranslate"><span class="pre">Settings</span></code>   (left). View properties in a separate dock panel (right).</span><a class="headerlink" href="#fig-propertiespanelsettings" title="Link to this image"></a></p>
+</figcaption>
+</figure>
+<p>The  <code class="docutils literal notranslate"><span class="pre">Properties</span></code>   panel, by default, is set up to show the source, display, and
+view properties on the same panel. You may, however, prefer to have each of these
+sections in a separate dockable panel. You can indeed do so using the
+<code class="docutils literal notranslate"><span class="pre">Settings</span></code>   dialog accessible from the <span class="guilabel">Edit &gt; Settings</span> menu.</p>
+<p>On the  <code class="docutils literal notranslate"><span class="pre">General</span></code>   tab search of the <code class="docutils literal notranslate"><span class="pre">properties</span> <span class="pre">panel</span></code> using the
+<code class="docutils literal notranslate"><span class="pre">Search</span></code>   box, you should see the setting that lets you pick whether to
+combine all the sections in one (default), to separate out either the
+<code class="docutils literal notranslate"><span class="pre">Display</span></code>   or <code class="docutils literal notranslate"><span class="pre">View</span></code>
+sections in a  panel, or to create separate panels
+for each of the sections. You will need to restart <code class="docutils literal notranslate"><span class="pre">paraview</span></code> for
+this change to take effect. Also, since the  <code class="docutils literal notranslate"><span class="pre">Apply</span></code>   and  <code class="docutils literal notranslate"><span class="pre">Reset</span></code>   buttons only
+apply to the  <code class="docutils literal notranslate"><span class="pre">Properties</span></code>   section, they will only be shown in the dock panel
+that houses it.</p>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="index.html" class="btn btn-neutral float-left" title="ParaView Reference Manual" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="objectShadingProperties.html" class="btn btn-neutral float-right" title="2. Object Shading Properties" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2026, ParaView Developers.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

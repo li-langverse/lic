@@ -1,0 +1,18 @@
+@cpu
+@parallel(disjoint=disjoint_rw)
+proc f() -> int
+  requires true
+  ensures(true
+  decreases 5
+=
+  rpu
+@parallearallel(disjoint=disjoint_row)
+proc f() -> int
+  requires true
+  ensures(t
+  requires true
+  ensures(trurue
+  decreases 5
+=
+  rpu
+@paralleetueturn 0

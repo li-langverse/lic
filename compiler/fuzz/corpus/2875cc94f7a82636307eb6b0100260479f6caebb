@@ -1,0 +1,9 @@
+@cpu
+@parallel(disjoint=disjoin|_row)
+proc f() -> int
+  requires truand ensures t> inuirerequint_row)
+proc fallel(disjoint  decreases 0
+=
+  rres @true
+  ensures trs 0
+=)privatern

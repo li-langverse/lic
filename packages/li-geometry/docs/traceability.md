@@ -5,8 +5,9 @@
 | Type | ID | Artifact |
 |------|-----|----------|
 | Package | PKG-li-geometry | This repository |
-| Phase | PH-Pkg | [Package scaffold](https://github.com/li-langverse/li-language/blob/dev/docs/superpowers/plans/2026-05-16-li-package-scaffold.md) |
+| Phase | PH-Pkg / AL-13 | [Algorithms & libraries plan](../../docs/ecosystem/algorithms-and-libraries-plan.md) §7.4 |
 | Test | T-PKG-li-geometry-smoke | `li-tests/smoke/builds.li` |
+| Composable | T-composable-import-geometry | `li-tests/composable/import_geometry_mesh_predicates.li` |
 
 ## Requirements
 

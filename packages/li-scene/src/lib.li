@@ -1,18 +1,12 @@
+import math
 
 type EntityId = object
   public value: int
 
 type Transform3 = object
-  public px: float
-  public py: float
-  public pz: float
-  public qx: float
-  public qy: float
-  public qz: float
-  public qw: float
-  public sx: float
-  public sy: float
-  public sz: float
+  public position: Vec3
+  public rotation: Quat
+  public scale: Vec3
 
 type SceneNode = object
   public id: EntityId
@@ -25,10 +19,10 @@ type Scene = object
   public root_id: int
 def li_std_scene_version() -> int
   requires true
-  ensures result == 1
+  ensures result == 2
   decreases 0
 =
-  return 1
+  return 2
 def entity_id_new(v: int) -> EntityId
   requires v >= 0
   ensures result.value == v
@@ -39,25 +33,23 @@ def entity_id_new(v: int) -> EntityId
   return e
 def transform_identity() -> Transform3
   requires true
-  ensures result.px == 0.0
-  ensures result.py == 0.0
-  ensures result.pz == 0.0
-  ensures result.qw == 1.0
-  ensures result.sx == 1.0
+  ensures result.rotation.w == 1.0
+  ensures result.scale.x == 1.0
   decreases 0
 =
   var t: Transform3
-  t.px = 0.0
-  t.py = 0.0
-  t.pz = 0.0
-  t.qx = 0.0
-  t.qy = 0.0
-  t.qz = 0.0
-  t.qw = 1.0
-  t.sx = 1.0
-  t.sy = 1.0
-  t.sz = 1.0
+  t.position = vec3(0.0, 0.0, 0.0)
+  t.rotation = quat_identity()
+  t.scale = vec3(1.0, 1.0, 1.0)
   return t
+def transform_rotation_dot(a: Transform3, b: Transform3) -> float
+  requires true
+  ensures true
+  decreases 0
+=
+  var ra: Quat = a.rotation
+  var rb: Quat = b.rotation
+  return quat_dot(ra, rb)
 def scene_new() -> Scene
   requires true
   ensures result.node_count == 0

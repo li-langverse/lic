@@ -69,10 +69,10 @@ def math_tag() -> int
   return 2
 def li_std_math_version() -> int
   requires true
-  ensures result == 1
+  ensures result == 2
   decreases 0
 =
-  return 1
+  return 2
 def vec2(x: float, y: float) -> Vec2
   requires true
   ensures result.x == x
@@ -207,6 +207,118 @@ def quat_mul(a: Quat, b: Quat) -> Quat
   q.y = a.w * b.y - a.x * b.z + a.y * b.w + a.z * b.x
   q.z = a.w * b.z + a.x * b.y - a.y * b.x + a.z * b.w
   return q
+def quat_dot(a: Quat, b: Quat) -> float
+  requires true
+  ensures true
+  decreases 0
+=
+  var aw: float = a.w
+  var ax: float = a.x
+  var ay: float = a.y
+  var az: float = a.z
+  var bw: float = b.w
+  var bx: float = b.x
+  var by: float = b.y
+  var bz: float = b.z
+  return aw * bw + ax * bx + ay * by + az * bz
+def quat_conj(a: Quat) -> Quat
+  requires true
+  ensures true
+  decreases 0
+=
+  var aw: float = a.w
+  var ax: float = a.x
+  var ay: float = a.y
+  var az: float = a.z
+  var q: Quat
+  q.w = aw
+  q.x = -ax
+  q.y = -ay
+  q.z = -az
+  return q
+def quat_len_sq(a: Quat) -> float
+  requires true
+  ensures true
+  decreases 0
+=
+  var aw: float = a.w
+  var ax: float = a.x
+  var ay: float = a.y
+  var az: float = a.z
+  return aw * aw + ax * ax + ay * ay + az * az
+def quat_normalize(a: Quat) -> Quat
+  requires true
+  ensures result.w >= -1.0
+  ensures result.w <= 1.0
+  decreases 0
+=
+  var aw: float = a.w
+  var ax: float = a.x
+  var ay: float = a.y
+  var az: float = a.z
+  var l: float = li_rt_sqrt(aw * aw + ax * ax + ay * ay + az * az)
+  if l == 0.0:
+    return quat_identity()
+  var q: Quat
+  q.w = aw / l
+  q.x = ax / l
+  q.y = ay / l
+  q.z = az / l
+  return q
+def quat_slerp(a: Quat, b: Quat, t: float) -> Quat
+  requires true
+  ensures result.w >= -1.0
+  ensures result.w <= 1.0
+  decreases 0
+=
+  var aw: float = a.w
+  var ax: float = a.x
+  var ay: float = a.y
+  var az: float = a.z
+  var bw: float = b.w
+  var bx: float = b.x
+  var by: float = b.y
+  var bz: float = b.z
+  var dot: float = aw * bw + ax * bx + ay * by + az * bz
+  if dot < 0.0:
+    dot = -dot
+    bw = -bw
+    bx = -bx
+    by = -by
+    bz = -bz
+  if dot > 0.9995:
+    var one_t: float = 1.0 - t
+    var q: Quat
+    q.w = aw * one_t + bw * t
+    q.x = ax * one_t + bx * t
+    q.y = ay * one_t + by * t
+    q.z = az * one_t + bz * t
+    return quat_normalize(q)
+  var dot_chk: float = dot
+  var sin_sq: float = 1.0 - dot_chk * dot_chk
+  if sin_sq < 1.0e-16:
+    var n: Quat
+    n.w = aw
+    n.x = ax
+    n.y = ay
+    n.z = az
+    return quat_normalize(n)
+  var sin_atan: float = li_rt_sqrt(sin_sq)
+  var dot_atan: float = dot_chk
+  var theta: float = li_rt_atan2(sin_atan, dot_atan)
+  var dot_inv: float = dot_chk
+  var sin_inv: float = 1.0 / li_rt_sqrt(1.0 - dot_inv * dot_inv)
+  var t0: float = 1.0 - t
+  var th0: float = t0 * theta
+  var th1: float = t * theta
+  var w0: float = li_rt_sin(th0) * sin_inv
+  var w1: float = li_rt_sin(th1) * sin_inv
+  var r: Quat
+  r.w = aw * w0 + bw * w1
+  r.x = ax * w0 + bx * w1
+  r.y = ay * w0 + by * w1
+  r.z = az * w0 + bz * w1
+  return r
 def mat4_identity() -> Mat4
   requires true
   ensures result.m00 == 1.0
@@ -240,6 +352,61 @@ def mat4_mul_point(m: Mat4, p: Vec3) -> Vec3
   var y: float = m.m10 * p.x + m.m11 * p.y + m.m12 * p.z + m.m13
   var z: float = m.m20 * p.x + m.m21 * p.y + m.m22 * p.z + m.m23
   return vec3(x, y, z)
+def mat4_mul(a: Mat4, b: Mat4) -> Mat4
+  requires true
+  ensures true
+  decreases 0
+=
+  var a00: float = a.m00
+  var a01: float = a.m01
+  var a02: float = a.m02
+  var a03: float = a.m03
+  var a10: float = a.m10
+  var a11: float = a.m11
+  var a12: float = a.m12
+  var a13: float = a.m13
+  var a20: float = a.m20
+  var a21: float = a.m21
+  var a22: float = a.m22
+  var a23: float = a.m23
+  var a30: float = a.m30
+  var a31: float = a.m31
+  var a32: float = a.m32
+  var a33: float = a.m33
+  var b00: float = b.m00
+  var b01: float = b.m01
+  var b02: float = b.m02
+  var b03: float = b.m03
+  var b10: float = b.m10
+  var b11: float = b.m11
+  var b12: float = b.m12
+  var b13: float = b.m13
+  var b20: float = b.m20
+  var b21: float = b.m21
+  var b22: float = b.m22
+  var b23: float = b.m23
+  var b30: float = b.m30
+  var b31: float = b.m31
+  var b32: float = b.m32
+  var b33: float = b.m33
+  var r: Mat4
+  r.m00 = a00 * b00 + a01 * b10 + a02 * b20 + a03 * b30
+  r.m01 = a00 * b01 + a01 * b11 + a02 * b21 + a03 * b31
+  r.m02 = a00 * b02 + a01 * b12 + a02 * b22 + a03 * b32
+  r.m03 = a00 * b03 + a01 * b13 + a02 * b23 + a03 * b33
+  r.m10 = a10 * b00 + a11 * b10 + a12 * b20 + a13 * b30
+  r.m11 = a10 * b01 + a11 * b11 + a12 * b21 + a13 * b31
+  r.m12 = a10 * b02 + a11 * b12 + a12 * b22 + a13 * b32
+  r.m13 = a10 * b03 + a11 * b13 + a12 * b23 + a13 * b33
+  r.m20 = a20 * b00 + a21 * b10 + a22 * b20 + a23 * b30
+  r.m21 = a20 * b01 + a21 * b11 + a22 * b21 + a23 * b31
+  r.m22 = a20 * b02 + a21 * b12 + a22 * b22 + a23 * b32
+  r.m23 = a20 * b03 + a21 * b13 + a22 * b23 + a23 * b33
+  r.m30 = a30 * b00 + a31 * b10 + a32 * b20 + a33 * b30
+  r.m31 = a30 * b01 + a31 * b11 + a32 * b21 + a33 * b31
+  r.m32 = a30 * b02 + a31 * b12 + a32 * b22 + a33 * b32
+  r.m33 = a30 * b03 + a31 * b13 + a32 * b23 + a33 * b33
+  return r
 def array_dot_f64(a: array[4, float], b: array[4, float]) -> float
   requires true
   ensures result == a @ b

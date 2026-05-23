@@ -724,6 +724,18 @@ file = "composable/import_ui_inspector_panel.li"
 outcome = "compile_open_ok"
 note = "PH-UX UX-04: import ui; inspector/properties panel stub (scientific-editor intel)"
 
+[[tests]]
+suite = "composable"
+file = "composable/import_math_quat_mat4.li"
+outcome = "compile_open_ok"
+note = "AL-11: import math; quat_dot/quat_slerp/mat4_mul (open VC on slerp branch ensures)"
+
+[[tests]]
+suite = "composable"
+file = "composable/import_scene_transform3_math.li"
+outcome = "compile_open_ok"
+note = "AL-11: import scene; Transform3 uses math.Quat/Vec3 (open VC on transform_rotation_dot)"
+
 # stdlib_coverage/build_std_csv — enable when std.csv module resolves (PH-IO-4)
 
 # --- httpd (Phase H placeholder) ---

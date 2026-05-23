@@ -61,7 +61,7 @@ todos:
     status: completed
   - id: wave-d-04-math-quat-mat4
     content: "AL-11 math quat_dot/slerp/mat4_mul + scene.Transform3 wire-up + li-tests"
-    status: pending
+    status: completed
   - id: wave-d-05-linalg-scaffold
     content: "AL-10 packages/linalg scaffold + composable matmul smoke + math_linalg test"
     status: pending

@@ -1,0 +1,94 @@
+import math
+
+def main() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  if li_std_math_version() < 2:
+    return 1
+  var id_a: Quat = quat_identity()
+  var id_b: Quat = quat_identity()
+  var dot_id: float = quat_dot(id_a, id_b)
+  if dot_id < 0.99 or dot_id > 1.01:
+    return 2
+  var half_z_dot: Quat
+  half_z_dot.w = 0.70710678
+  half_z_dot.x = 0.0
+  half_z_dot.y = 0.0
+  half_z_dot.z = 0.70710678
+  var id_c: Quat = quat_identity()
+  var dot_orth: float = quat_dot(id_c, half_z_dot)
+  if dot_orth < -0.01 or dot_orth > 0.01:
+    return 3
+  var half_z_s0: Quat
+  half_z_s0.w = 0.70710678
+  half_z_s0.x = 0.0
+  half_z_s0.y = 0.0
+  half_z_s0.z = 0.70710678
+  var id_d: Quat = quat_identity()
+  var at0: Quat = quat_slerp(id_d, half_z_s0, 0.0)
+  if at0.w < 0.99 or at0.w > 1.01:
+    return 4
+  var id_e: Quat = quat_identity()
+  var half_z_b: Quat
+  half_z_b.w = 0.70710678
+  half_z_b.x = 0.0
+  half_z_b.y = 0.0
+  half_z_b.z = 0.70710678
+  var at1: Quat = quat_slerp(id_e, half_z_b, 1.0)
+  if at1.z < 0.69 or at1.z > 0.72:
+    return 5
+  var id_f: Quat = quat_identity()
+  var half_z_c: Quat
+  half_z_c.w = 0.70710678
+  half_z_c.x = 0.0
+  half_z_c.y = 0.0
+  half_z_c.z = 0.70710678
+  var mid: Quat = quat_slerp(id_f, half_z_c, 0.5)
+  if mid.w < 0.91 or mid.w > 0.94:
+    return 6
+  var i4: Mat4 = mat4_identity()
+  var t4: Mat4
+  t4.m00 = 1.0
+  t4.m01 = 0.0
+  t4.m02 = 0.0
+  t4.m03 = 2.0
+  t4.m10 = 0.0
+  t4.m11 = 1.0
+  t4.m12 = 0.0
+  t4.m13 = 0.0
+  t4.m20 = 0.0
+  t4.m21 = 0.0
+  t4.m22 = 1.0
+  t4.m23 = 0.0
+  t4.m30 = 0.0
+  t4.m31 = 0.0
+  t4.m32 = 0.0
+  t4.m33 = 1.0
+  var p: Vec3 = vec3(1.0, 0.0, 0.0)
+  var tp: Vec3 = mat4_mul_point(t4, p)
+  if tp.x < 2.99 or tp.x > 3.01:
+    return 7
+  var i4_b: Mat4 = mat4_identity()
+  var t4_b: Mat4
+  t4_b.m00 = 1.0
+  t4_b.m01 = 0.0
+  t4_b.m02 = 0.0
+  t4_b.m03 = 2.0
+  t4_b.m10 = 0.0
+  t4_b.m11 = 1.0
+  t4_b.m12 = 0.0
+  t4_b.m13 = 0.0
+  t4_b.m20 = 0.0
+  t4_b.m21 = 0.0
+  t4_b.m22 = 1.0
+  t4_b.m23 = 0.0
+  t4_b.m30 = 0.0
+  t4_b.m31 = 0.0
+  t4_b.m32 = 0.0
+  t4_b.m33 = 1.0
+  var prod: Mat4 = mat4_mul(i4_b, t4_b)
+  if prod.m03 < 1.99 or prod.m03 > 2.01:
+    return 8
+  return 0

@@ -5,7 +5,7 @@ Spatial math for physics and rendering: `Vec2/3/4`, `Quat`, `Mat4`, `AABB`, arra
 ## API highlights
 
 - `vec3`, `vec3_dot`, `vec3_cross`, `vec3_normalize`, `vec3_lerp`
-- `quat_mul`, `mat4_mul_point`
+- `quat_dot`, `quat_slerp`, `quat_mul`, `mat4_mul`, `mat4_mul_point`
 - `array_dot_f64` / `array_sum_f64` (compiler `@` / `sum`)
 
 ## Build

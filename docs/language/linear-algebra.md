@@ -47,7 +47,7 @@ Prefer **explicit loops** when semantics are not a pure element-wise map: `for i
 |---------|------------|---------|
 | Dense linear algebra | `array[N, float]`, nested `array[M, array[K, float]]` for `@` | `tensor[(M,N), f64]` — shape in type ([language design](../superpowers/specs/2026-05-14-li-language-design.md) Phase 3) |
 | 3-vectors / MD | `array[N, float]` or `li-math` `Vec3` | `tensor[(N,3), f64]` for SoA layouts |
-| Quaternions | `packages/li-math` — `Quat`, `quat_mul`, `quat_identity` (object ops, not `@`) | `quat_dot`, `quat_rotate_vec3`, `quat_to_mat4` per [algorithms plan](../ecosystem/algorithms-and-libraries-plan.md) AL-11 |
+| Quaternions | `packages/li-math` — `Quat`, `quat_dot`, `quat_slerp`, `quat_mul`, `mat4_mul` (object ops, not `@`) | `quat_rotate_vec3`, `quat_to_mat4` per [algorithms plan](../ecosystem/algorithms-and-libraries-plan.md) AL-11 |
 | Scene transforms | wire `Transform3` to `math.Quat` | no `quaternion` package fork |
 
 Quaternions stay in **`li-math`** named functions — not element-wise array operators. Tensors get compile-time shape checks like `@` today; no implicit NumPy broadcast at any rank.

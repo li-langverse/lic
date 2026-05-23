@@ -80,3 +80,16 @@
 2026-05-23T11:33:28Z info - GET /trip 429 0
 2026-05-23T11:33:28Z info - GET /trip 429 0
 2026-05-23T11:33:32Z info - POST /dispatch 403 0
+2026-05-23T12:00:19Z info - GET / 200 0
+2026-05-23T12:00:21Z info - GET / 200 0
+2026-05-23T12:00:21Z info - GET / 200 0
+2026-05-23T12:00:29Z info - GET /index.html 200 0
+2026-05-23T12:00:29Z info - GET /index.html 200 0
+2026-05-23T12:00:29Z info - GET /index.html 200 0
+2026-05-23T12:00:31Z info - GET / 200 0
+2026-05-23T12:00:37Z info - POST /v1/chat/completions 429 0
+2026-05-23T12:00:58Z info - GET /health 404 0
+2026-05-23T12:01:00Z info - GET /queued 429 0
+2026-05-23T12:01:01Z info - GET /trip 429 0
+2026-05-23T12:01:01Z info - GET /trip 429 0
+2026-05-23T12:01:05Z info - POST /dispatch 403 0

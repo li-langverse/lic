@@ -52,7 +52,7 @@ todos:
     status: completed
   - id: wave-d-gui-scaffold
     content: "AL-9 packages/gui scaffold + composable import gui (studio shell; use competitive-intel UX-02/04)"
-    status: pending
+    status: in_progress
   - id: wave-d-al2-catalog
     content: "AL-2 expand vertical-algorithm-catalog.md from verticals.toml + Tavily intel"
     status: pending

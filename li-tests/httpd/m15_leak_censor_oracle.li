@@ -25,8 +25,7 @@ def main() raises IO, Alloc -> int
   ensures result == 0
   decreases 0
 =
-  var cfg: str = "li-tests/config_desugar/good/leak_censor_m15.toml"
-  if load_routes_from_toml(cfg) != 0:
+  if load_routes_from_m15_leak_censor_fixture() != 0:
     return 1
   if li_rt_httpd_leak_censor_enabled() != 1:
     return 2

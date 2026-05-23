@@ -33,15 +33,18 @@ else
     "$LIC" build "$ROOT/li-tests/httpd/m2_tls_h2_oracle.li" -o /tmp/li_m2_tls_h2_oracle --allow-open-vc
     echo "==> m3_optional_oracle compile"
     "$LIC" build "$ROOT/li-tests/httpd/m3_optional_oracle.li" -o /tmp/li_m3_optional_oracle --allow-open-vc
-    if [[ "${HTTPD_RUN_M15_ORACLE_RUNTIME:-0}" == "1" ]]; then
+    if [[ "${HTTPD_RUN_M15_ORACLE_RUNTIME:-1}" == "1" ]]; then
+      echo "==> m15_agent_oracle runtime (m15-agent)"
       m15_rc="$(cd "$ROOT" && /tmp/li_m15_agent_oracle >/dev/null; echo $?)"
-      test "$m15_rc" -eq 0
-      m15_lc_rc="$(cd "$ROOT" && /tmp/li_m15_leak_censor_oracle >/dev/null; echo $?)"
-      test "$m15_lc_rc" -eq 0
-      m15_tls_rc="$(cd "$ROOT" && /tmp/li_m15_tls_oracle >/dev/null; echo $?)"
-      test "$m15_tls_rc" -eq 0
+      test "$m15_rc" -eq 0 || fail "m15_agent_oracle runtime failed (rc=$m15_rc)"
+      if [[ "${HTTPD_RUN_M15_EXTRA_ORACLE_RUNTIME:-1}" == "1" ]]; then
+        m15_lc_rc="$(cd "$ROOT" && /tmp/li_m15_leak_censor_oracle >/dev/null; echo $?)"
+        test "$m15_lc_rc" -eq 0 || fail "m15_leak_censor_oracle runtime failed (rc=$m15_lc_rc)"
+        m15_tls_rc="$(cd "$ROOT" && /tmp/li_m15_tls_oracle >/dev/null; echo $?)"
+        test "$m15_tls_rc" -eq 0 || fail "m15_tls_oracle runtime failed (rc=$m15_tls_rc)"
+      fi
     else
-      echo "==> skip m15 oracle runtime (HTTPD_RUN_M15_ORACLE_RUNTIME=1 to enable)"
+      echo "==> skip m15 oracle runtime (HTTPD_RUN_M15_ORACLE_RUNTIME=0)"
     fi
   else
     echo "==> skip m15_agent_oracle (clang not in PATH)"

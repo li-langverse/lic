@@ -614,6 +614,18 @@ static int parse_leak_censor_table(const char* text) {
     }
     scan = p;
   }
+  if (deny_count == 0) {
+    const char* dp = strstr(text, "deny_paths");
+    if (dp != NULL) {
+      const char* eq = strchr(dp, '=');
+      if (eq != NULL) {
+        while ((eq = strchr(eq, '"')) != NULL) {
+          deny_count++;
+          eq++;
+        }
+      }
+    }
+  }
   g_leak_censor_enabled = enabled;
   g_leak_censor_deny_path_count = deny_count;
   g_leak_censor_pattern_openai = pat_openai;
@@ -1609,17 +1621,37 @@ int32_t li_rt_httpd_explain_config(const char* path) {
   return 0;
 }
 
-int32_t li_rt_httpd_load_routing_fixture(void) {
+static int32_t httpd_load_config_under_repo(const char* rel) {
   const char* root = getenv("LI_REPO_ROOT");
-  if (root == NULL || root[0] == '\0') {
+  if (root == NULL || root[0] == '\0' || rel == NULL || rel[0] == '\0') {
     return -1;
   }
   char path[4096];
-  int n = snprintf(path, sizeof(path), "%s/li-tests/httpd/fixtures/routing.toml", root);
+  int n = snprintf(path, sizeof(path), "%s/%s", root, rel);
   if (n < 0 || (size_t)n >= sizeof(path)) {
     return -1;
   }
   return li_rt_httpd_load_config(path);
+}
+
+int32_t li_rt_httpd_load_routing_fixture(void) {
+  return httpd_load_config_under_repo("li-tests/httpd/fixtures/routing.toml");
+}
+
+int32_t li_rt_httpd_load_m15_agent_fixture(void) {
+  return httpd_load_config_under_repo("li-tests/config_desugar/good/agent_m15.toml");
+}
+
+int32_t li_rt_httpd_load_m15_leak_censor_fixture(void) {
+  return httpd_load_config_under_repo("li-tests/config_desugar/good/leak_censor_m15.toml");
+}
+
+int32_t li_rt_httpd_load_m15_tls_le_fixture(void) {
+  return httpd_load_config_under_repo("li-tests/config_desugar/good/tls_lets_encrypt_staging.toml");
+}
+
+int32_t li_rt_httpd_load_m15_tls_dev_fixture(void) {
+  return httpd_load_config_under_repo("li-tests/config_desugar/good/tls_self_signed_dev.toml");
 }
 
 int32_t li_rt_httpd_route_action_kind(int32_t route_id) {
@@ -1679,6 +1711,15 @@ int32_t li_rt_httpd_traceparent_ok(const char* buf, int32_t hdr_end) {
     return 0;
   }
   return header_has_traceparent_c(buf, hdr_end) ? 1 : 0;
+}
+
+int32_t li_rt_httpd_traceparent_selftest(void) {
+  static const char hdr[] =
+      "POST /x HTTP/1.1\r\n"
+      "traceparent: 00-abc-def-01\r\n"
+      "\r\n";
+  const int hdr_end = (int)(sizeof(hdr) - 1);
+  return header_has_traceparent_c(hdr, hdr_end) ? 0 : -1;
 }
 
 int32_t li_rt_httpd_leak_censor_enabled(void) { return g_leak_censor_enabled; }

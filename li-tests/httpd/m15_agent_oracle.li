@@ -1,4 +1,5 @@
 # M1.5 agent gateway oracle — stream limits, OTel traceparent, SSE content-type (C runtime).
+# Config via LI_REPO_ROOT fixture (CallProc string path ABI is not reliable for load_config).
 import http
 
 extern proc li_rt_httpd_parse_duration_sec(raw: str) -> int
@@ -28,18 +29,17 @@ extern proc li_rt_httpd_is_sse_content_type(ctype: str) -> int
   ensures 0 <= result
   ensures result <= 1
 
-extern proc li_rt_httpd_traceparent_ok(buf: str, hdr_end: int) -> int
-  requires 0 <= hdr_end
-  ensures 0 <= result
-  ensures result <= 1
+extern proc li_rt_httpd_traceparent_selftest() -> int
+  requires true
+  ensures -1 <= result
+  ensures result <= 0
 
 def main() raises IO, Alloc -> int
   requires true
   ensures result == 0
   decreases 0
 =
-  var cfg: str = "li-tests/config_desugar/good/agent_m15.toml"
-  if load_routes_from_toml(cfg) != 0:
+  if load_routes_from_m15_agent_fixture() != 0:
     return 1
   if li_rt_httpd_parse_duration_sec("120s") != 120:
     return 2
@@ -56,7 +56,6 @@ def main() raises IO, Alloc -> int
     return 7
   if li_rt_httpd_is_sse_content_type("text/event-stream") != 1:
     return 8
-  var hdr: str = "POST /x HTTP/1.1\r\ntraceparent: 00-abc-def-01\r\n\r\n"
-  if li_rt_httpd_traceparent_ok(hdr, 52) != 1:
+  if li_rt_httpd_traceparent_selftest() != 0:
     return 9
   return 0

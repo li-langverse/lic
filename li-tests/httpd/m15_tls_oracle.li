@@ -34,8 +34,7 @@ def main() raises IO, Alloc -> int
   ensures result == 0
   decreases 0
 =
-  var cfg: str = "li-tests/config_desugar/good/tls_lets_encrypt_staging.toml"
-  if load_routes_from_toml(cfg) != 0:
+  if load_routes_from_m15_tls_le_fixture() != 0:
     return 1
   if li_rt_httpd_tls_enabled() != 1:
     return 2
@@ -47,8 +46,7 @@ def main() raises IO, Alloc -> int
     return 5
   if li_rt_httpd_tls_selftest() != 0:
     return 6
-  var dev_cfg: str = "li-tests/config_desugar/good/tls_self_signed_dev.toml"
-  if load_routes_from_toml(dev_cfg) != 0:
+  if load_routes_from_m15_tls_dev_fixture() != 0:
     return 7
   if li_rt_httpd_tls_mode() != 2:
     return 8

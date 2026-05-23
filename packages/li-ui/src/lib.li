@@ -184,3 +184,133 @@ def rect_at_f(x: float, y: float, w: float, h: float) -> Rect
   r.w = w
   r.h = h
   return r
+
+# PH-UX / UX-04 — Properties inspector stub (ParaView Properties / Display / View;
+# scientific-editor intel: default vs advanced, localized Apply vs instant view apply).
+type PropertyRow = object
+  public label_id: int
+  public value_id: int
+  public advanced: int
+
+type InspectorPanel = object
+  public bounds: Rect
+  public active_section: int
+  public property_mode: int
+  public apply_mode: int
+  public row_count: int
+
+def ui_inspector_section_properties() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0
+
+def ui_inspector_section_display() -> int
+  requires true
+  ensures result == 1
+  decreases 0
+=
+  return 1
+
+def ui_inspector_section_view() -> int
+  requires true
+  ensures result == 2
+  decreases 0
+=
+  return 2
+
+def ui_inspector_section_count() -> int
+  requires true
+  ensures result == 3
+  decreases 0
+=
+  return 3
+
+def ui_property_mode_default() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0
+
+def ui_property_mode_advanced() -> int
+  requires true
+  ensures result == 1
+  decreases 0
+=
+  return 1
+
+# Deferred Apply/Reset (Properties); instant apply for View (ParaView View section).
+def ui_apply_mode_deferred() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0
+
+def ui_apply_mode_instant() -> int
+  requires true
+  ensures result == 1
+  decreases 0
+=
+  return 1
+
+def property_row_new(label_id: int, value_id: int, advanced: int) -> PropertyRow
+  requires label_id >= 0
+  requires value_id >= 0
+  requires advanced >= 0
+  requires advanced <= 1
+  ensures result.label_id == label_id
+  ensures result.value_id == value_id
+  ensures result.advanced == advanced
+  decreases 0
+=
+  var row: PropertyRow
+  row.label_id = label_id
+  row.value_id = value_id
+  row.advanced = advanced
+  return row
+
+def inspector_panel_new(active_section: int, property_mode: int, apply_mode: int) -> InspectorPanel
+  requires active_section >= 0
+  requires active_section < 3
+  requires property_mode >= 0
+  requires property_mode <= 1
+  requires apply_mode >= 0
+  requires apply_mode <= 1
+  ensures result.active_section == active_section
+  ensures result.property_mode == property_mode
+  ensures result.apply_mode == apply_mode
+  ensures result.row_count == 0
+  decreases 0
+=
+  var panel: InspectorPanel
+  panel.bounds = rect_at_f(0.0, 0.0, 0.0, 0.0)
+  panel.active_section = active_section
+  panel.property_mode = property_mode
+  panel.apply_mode = apply_mode
+  panel.row_count = 0
+  return panel
+
+def inspector_panel_at_layout() -> InspectorPanel
+  requires true
+  ensures result.bounds.w == 283.0
+  ensures result.bounds.h == 360.0
+  ensures result.active_section == 0
+  ensures result.property_mode == 0
+  ensures result.apply_mode == 0
+  decreases 0
+=
+  var chrome: AdaptiveLayout = adaptive_layout_hd()
+  var panel: InspectorPanel = inspector_panel_new(ui_inspector_section_properties(), ui_property_mode_default(), ui_apply_mode_deferred())
+  panel.bounds = chrome.inspector
+  return panel
+
+def inspector_panel_attach_row(panel: InspectorPanel, row: PropertyRow) -> unit
+  requires panel.row_count >= 0
+  requires row.label_id >= 0
+  ensures true
+  decreases panel.row_count
+=
+  panel.row_count = panel.row_count + 1

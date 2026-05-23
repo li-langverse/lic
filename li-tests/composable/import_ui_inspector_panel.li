@@ -1,0 +1,27 @@
+import ui
+
+def main() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  if ui_inspector_section_count() != 3:
+    return 1
+  var panel: InspectorPanel = inspector_panel_at_layout()
+  var chrome: AdaptiveLayout = adaptive_layout_hd()
+  if panel.bounds.w != chrome.inspector.w:
+    return 2
+  if panel.bounds.x != chrome.inspector.x:
+    return 3
+  if panel.apply_mode != ui_apply_mode_deferred():
+    return 4
+  if panel.active_section != ui_inspector_section_properties():
+    return 5
+  var row: PropertyRow = property_row_new(10, 20, 0)
+  inspector_panel_attach_row(panel, row)
+  if panel.row_count != 1:
+    return 6
+  var view_panel: InspectorPanel = inspector_panel_new(ui_inspector_section_view(), ui_property_mode_default(), ui_apply_mode_instant())
+  if view_panel.apply_mode != ui_apply_mode_instant():
+    return 7
+  return 0

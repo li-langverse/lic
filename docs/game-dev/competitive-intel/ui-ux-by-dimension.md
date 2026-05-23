@@ -87,7 +87,7 @@ Agents: when changing Studio shell, cite dimension IDs in PR body (`UX-02: …`)
 - **Apply / Reset** for heavy pipeline edits; **instant apply** for view options (ParaView View section)
 - **Auto Apply** toggle for power users
 
-**Li today:** `InspectorRow`, `inspector_section_count()` on `import gui` (stub).  
+**Li today:** `InspectorPanel`, `PropertyRow`, `ui_inspector_section_count()` on `import ui`; `InspectorRow` on `import gui` (stubs).  
 **Li gap:** No generated inspector from Li types yet.  
 **Next:** Map `lic check --format=json` diagnostics into inspector rows (PH-AGENT).
 

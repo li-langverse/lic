@@ -718,6 +718,12 @@ file = "composable/import_gui_studio_shell.li"
 outcome = "compile_open_ok"
 note = "AL-9: import gui; studio shell UX-02/04 (open VC on gui_hit_test_rect branch ensures)"
 
+[[tests]]
+suite = "composable"
+file = "composable/import_ui_inspector_panel.li"
+outcome = "compile_open_ok"
+note = "PH-UX UX-04: import ui; inspector/properties panel stub (scientific-editor intel)"
+
 # stdlib_coverage/build_std_csv — enable when std.csv module resolves (PH-IO-4)
 
 # --- httpd (Phase H placeholder) ---

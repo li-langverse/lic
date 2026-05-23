@@ -58,7 +58,7 @@ todos:
     status: pending
   - id: wave-d-03-ux-inspector
     content: "PH-UX inspector/properties panel stub in li-ui (UX-04, scientific-editor intel)"
-    status: pending
+    status: completed
   - id: wave-d-04-math-quat-mat4
     content: "AL-11 math quat_dot/slerp/mat4_mul + scene.Transform3 wire-up + li-tests"
     status: pending

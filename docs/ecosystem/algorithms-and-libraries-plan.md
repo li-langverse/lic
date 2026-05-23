@@ -153,7 +153,7 @@ Each vertical needs a maintained row in **`benchmarks/competitive/verticals.toml
 | Tier-2 physics verify | **Partial** — `verify.py` green on `md_lennard_jones` + `heat_equation_2d` (PR **#176**) |
 | Tier-2 external MD oracle | **Stub** (`md_oracle.toml`, `run_oracle_stub.sh`; LAMMPS/GROMACS columns documented) |
 | `std/` production numerics | Partial / facades |
-| Studio / PH-UX | **Stub** — `li-ui` adaptive layout + `li-gui` studio shell composable (`import gui`) |
+| Studio / PH-UX | **Stub** — `li-ui` adaptive layout + inspector panel + `li-gui` studio shell composables |
 | Domain QM/CAD kernels | Stubs + trusted FFI plan only |
 
 **Honesty rule:** [PH-world-studio-program.md](../game-dev/PH-world-studio-program.md) “Done” on stubs ≠ algorithm parity. Rename mentally to **“interface landed”** until Wave A passes.

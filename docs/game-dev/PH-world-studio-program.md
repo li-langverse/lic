@@ -16,6 +16,7 @@ Cross-cutting program IDs. Implementation order respects dependencies in the vis
 | **PH-DRUG** | DRUG-0…7 | PH-SCI-2, PH-GD-1, PH-AGENT |
 | **PH-QM** | QM-0…7 | PH-HW, PH-COMPLY |
 | **PH-VOXEL** | VOXEL-0…5 | PH-GD-5 |
+| **PH-GEO** | GEO-0…5 | `math`, PH-GD-1; [cad-fundamentals.md](../ecosystem/cad-fundamentals.md) |
 | **PH-PUB** | PUB-0…5 | PH-UX, `sim.viz` |
 | **PH-ML** | ML-0…5 | PH-HW-1 |
 | **PH-AGENT** | AGENT-0…6 | `lic check --format=json` |

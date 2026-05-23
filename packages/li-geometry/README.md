@@ -4,6 +4,8 @@ CAD/AM mesh predicates — explicit `orient2d` / `orient3d` / `incircle2d` deter
 
 **Status:** stub (`geometry_workload_class_stub` → 0) until CGAL-class exact arithmetic.
 
+**Program:** [PH-GEO](../../docs/game-dev/world-studio-vision.md#145-cad--mesh-geometry-ph-geo) · [cad-fundamentals.md](../../docs/ecosystem/cad-fundamentals.md)
+
 **Import:** `import geometry` — `mesh_orient2d`, `mesh_orient3d`, `mesh_incircle2d`, smoke helpers.
 
 Li package li-geometry

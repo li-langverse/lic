@@ -97,7 +97,7 @@ todos:
     status: completed
   - id: wave-d-16-cad-fundamentals
     content: "AL-4 docs/ecosystem/cad-fundamentals.md merge + link geometry PH"
-    status: pending
+    status: completed
   - id: wave-d-17-cae-rfc
     content: "AL-5 engineering/CAE RFC stub (FEA/CFD split from PH-SCI)"
     status: pending

@@ -38,7 +38,7 @@ This page is the **algorithms-and-libraries** layer under World Studio — not t
 | Physics packages | `packages/physics.*` | Tier-2 kernels, not full CAE/QM |
 | UX competitive intel | `docs/game-dev/competitive-intel/` | 14 dimensions; steal patterns for Studio |
 | Bio/drug plans | `competitive-bioengineering-plan.md`, `drug-design-lab-loop-rfc.md` | Best vertical example of competitor + bench rows |
-| CAD (Li repo) | `li-language/docs/ecosystem/cad-fundamentals.md` | Gap analysis only — no kernel |
+| CAD fundamentals | [cad-fundamentals.md](cad-fundamentals.md) | Gap analysis + PH-GEO; `import geometry` stub |
 
 ---
 
@@ -57,7 +57,7 @@ This page is the **algorithms-and-libraries** layer under World Studio — not t
 | **Robotics** | `sim_robotics` | `sim.robotics`, `physics.rigid` | Gazebo, Isaac Sim, MoveIt, Drake | RFC (PH-ROBO) | composable only |
 | **Automotive** | `sim_automotive` | `sim.automotive` | CARLA, AirSim | RFC | composable only |
 | **Additive manufacturing** | `sim_additive` | `sim.additive`, `voxel`, heat | Cura, Prusa, Bambu, OpenFOAM thermal | RFC (PH-AM) | heat tier-2; no slicer oracle |
-| **CAD / mechanical** | import → AM/sim | future `geometry.*` | OCCT, CGAL, Fusion, Onshape | Gap doc only (li-language) | none |
+| **CAD / mechanical** | import → AM/sim | `geometry` | OCCT, CGAL, Fusion, Onshape | [cad-fundamentals.md](cad-fundamentals.md) + PH-GEO | composable predicates only |
 | **3D modeling / DCC** | `li-scene` + assets | `assets`, `render`, `scene` | Blender, Maya, Houdini | Creative RFC | none (UX intel only) |
 | **Cinematic / animation** | `seq` workspace | `studio.publish`, scene/anim | UE Sequencer, Blender VSE, Resolve, CapCut | RFC (creative) | frame hash stub |
 | **ML / RL** | `sim_rl` | `ml`, `gpu` | PyTorch, JAX, Ray, Triton | RFC (PH-ML) | tier-3 MLP planned |
@@ -254,7 +254,7 @@ Start `anim` under `scene` if package count is a concern; split when `import ani
 | `geometry` | `li-geometry` | **stub** | mesh predicates (`orient2d`/`orient3d`/`incircle2d`); booleans later | D | `math`, `voxel` |
 | `voxel` | `packages/voxel` | exists-stub | **extend** — grids for AM/games/science | D | `math` |
 
-CAD gap doc (li-language): merge into `lic/docs/ecosystem/cad-fundamentals.md` — **AL-4**.
+CAD gap doc: [cad-fundamentals.md](cad-fundamentals.md) — **AL-4 done (2026-05-23)** · `check-cad-fundamentals.sh`.
 
 ### 7.5 Already exist — deepen in place (no new package name)
 
@@ -297,7 +297,7 @@ P4  deepen physics.* / sim.* / chem per verticals.toml
 | AL-1 | **`benchmarks/competitive/verticals.toml`** — Layer B registry | `lic` | **Done (2026-05-23)** — initial rows; expand quarterly |
 | AL-2 | **`docs/ecosystem/vertical-algorithm-catalog.md`** — one page per vertical (kernel list) | `lic` | **Done (2026-05-23)** — `check-vertical-algorithm-catalog.sh` |
 | AL-3 | **Phase 2e/2f plan files** (replace TBD in master plan) | `lic` | Wave A |
-| AL-4 | **CAD fundamentals** merge into `lic` + link `geometry` PH | `lic` | CAD vertical |
+| AL-4 | **CAD fundamentals** merge into `lic` + link `geometry` PH | `lic` | **Done (2026-05-23)** — `check-cad-fundamentals.sh` |
 | AL-5 | **Engineering/CAE RFC** (split from PH-SCI) | `lic` | FEA/CFD clarity |
 | AL-6 | **Cinematic algorithm RFC** (encode, color, audio) | `lic` | Not only UX-6 |
 | AL-7 | Quarterly **SOTA review** ritual — update `last_reviewed` in registries | `roadmap` | Stale intel |
@@ -340,7 +340,7 @@ P4  deepen physics.* / sim.* / chem per verticals.toml
 
 - [Engineering standards](engineering-standards.md)  
 - [Official packages](official-packages.md)  
-- [CAD fundamentals (li-language)](https://github.com/li-langverse/li-language/blob/dev/docs/ecosystem/cad-fundamentals.md)  
+- [CAD fundamentals](cad-fundamentals.md) (merged from li-language 2026-05-23)  
 - [Master plan phase map](../superpowers/plans/2026-05-14-li-master-plan.md)
 
 **Maintainers:** Update §7 when adding/removing `packages/*` members. Bump `updated` in `verticals.toml` / `registry.toml` on quarterly SOTA review.

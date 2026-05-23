@@ -152,6 +152,7 @@ def game_step(world: GameWorld, input: InputState) -> unit
 | `sim.drug_design` | `li-sim-drug-design` | PH-DRUG |
 | `chem` / `chem.dft` | `li-chem` | PH-QM |
 | `voxel` | `li-voxel` | PH-VOXEL |
+| `geometry` | `li-geometry` | PH-GEO |
 | `ml` | `li-ml` | PH-ML |
 | `gpu` | `li-gpu` | PH-HW |
 
@@ -237,6 +238,23 @@ Backends: native Li → GPU/LKIR → trusted ORCA/Psi4. RFC: [li-chem-qm-rfc.md]
 Unified **`VoxelGrid`** for games (blocks), AM (powder bed), engineering grids, scientific fields, QM density.
 
 RFC: [voxel-engine-rfc.md](specs/voxel-engine-rfc.md)
+
+---
+
+## 14.5 CAD & mesh geometry (PH-GEO)
+
+Thin **`import geometry`** package for mesh predicates and future booleans — **not** a full OCCT port. **`workload_class=stub`** until exact arithmetic and bench oracles land.
+
+| Phase | ID | Deliverable |
+|-------|-----|-------------|
+| 0 | GEO-0 | [cad-fundamentals.md](../ecosystem/cad-fundamentals.md) + PH tracker |
+| 1 | GEO-1 | `mesh_orient2d` / `mesh_orient3d` / `mesh_incircle2d` (AL-13) |
+| 2 | GEO-2 | Mesh boolean API stub |
+| 3 | GEO-3 | `voxel` / PH-AM mesh bridge |
+| 4 | GEO-4 | Trusted OCCT/CGAL FFI pilot (Wave E) |
+| 5 | GEO-5 | STEP/IGES import (deferred) |
+
+Proof today: `li-tests/composable/import_geometry_mesh_predicates.li`. No CAD vertical row in [verticals.toml](../../benchmarks/competitive/verticals.toml) yet.
 
 ---
 
@@ -366,6 +384,7 @@ CRITICAL: traceability `PKG-*`, SBOM, export audit log. RFC: [critical-package-c
 | [drug-design-lab-loop-rfc.md](specs/drug-design-lab-loop-rfc.md) | PH-DRUG |
 | [li-chem-qm-rfc.md](specs/li-chem-qm-rfc.md) | PH-QM |
 | [voxel-engine-rfc.md](specs/voxel-engine-rfc.md) | PH-VOXEL |
+| [cad-fundamentals.md](../ecosystem/cad-fundamentals.md) | PH-GEO |
 | [publication-export-rfc.md](specs/publication-export-rfc.md) | PH-PUB |
 | [ml-async-parallel-rfc.md](specs/ml-async-parallel-rfc.md) | PH-ML |
 | [portable-targets-rfc.md](specs/portable-targets-rfc.md) | PH-PORT |

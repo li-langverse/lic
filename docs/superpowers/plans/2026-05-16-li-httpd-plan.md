@@ -100,7 +100,7 @@ todos:
     status: completed
   - id: m15-sse-runtime
     content: "SSE/streaming on live li-httpd; idle-between-chunks timeout cancels upstream"
-    status: pending
+    status: completed
   - id: m15-inference-live
     content: "OpenAI-compatible /v1 routes live with rate limits, OTel, cancel-on-disconnect"
     status: completed

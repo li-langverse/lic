@@ -211,6 +211,16 @@ if [[ "${HTTPD_GATES_SKIP_LIC_BUILD:-0}" != "1" && "${HTTPD_RUN_INFERENCE_LIVE_T
   fi
 fi
 
+# m15-sse-runtime: SSE relay + idle-between-chunks 504 cancels upstream (opt-out HTTPD_RUN_SSE_RUNTIME_TEST=0).
+if [[ "${HTTPD_GATES_SKIP_LIC_BUILD:-0}" != "1" && "${HTTPD_RUN_SSE_RUNTIME_TEST:-1}" == "1" ]]; then
+  if [[ -x "$ROOT/scripts/test-m15-sse-runtime.sh" && -x "$ROOT/build/li-httpd" ]]; then
+    echo "==> test-m15-sse-runtime.sh (m15-sse-runtime)"
+    "$ROOT/scripts/test-m15-sse-runtime.sh" || fail "test-m15-sse-runtime.sh failed"
+  else
+    fail "m15-sse-runtime: build/li-httpd missing (run build-li-httpd.sh)"
+  fi
+fi
+
 # m1-nginx-bench-parity: tier5 verify + optional wrk ratios (HTTPD_BENCH_SKIP_TIMING=1 in lean CI).
 if [[ "${HTTPD_GATES_SKIP_LIC_BUILD:-0}" != "1" && "${HTTPD_RUN_BENCH_PARITY:-1}" == "1" ]]; then
   if [[ -x "$ROOT/scripts/check-tier5-nginx-bench-parity.sh" && -x "$ROOT/build/li-httpd" ]]; then

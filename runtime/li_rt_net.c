@@ -147,6 +147,7 @@ typedef struct {
   uint32_t proxy_client_epoll_events;
   uint32_t proxy_up_epoll_events;
   int proxy_is_sse;
+  int proxy_sse_hdr_done;
   double proxy_last_chunk_ts;
   double proxy_stream_start_ts;
 } httpd_slot_t;
@@ -3021,6 +3022,7 @@ static void httpd_proxy_clear(int epfd, int32_t slot) {
   g_slots[slot].proxy_active = 0;
   g_slots[slot].proxy_phase = HTTPD_PROXY_PHASE_IDLE;
   g_slots[slot].proxy_is_sse = 0;
+  g_slots[slot].proxy_sse_hdr_done = 0;
   g_slots[slot].proxy_last_chunk_ts = 0.0;
   g_slots[slot].proxy_stream_start_ts = 0.0;
   g_slots[slot].proxy_rbuf_len = 0;
@@ -3680,7 +3682,13 @@ static int httpd_proxy_relay_to_client(int epfd, int32_t slot, const char* data,
     s->proxy_rbuf_len = (int)left;
     s->proxy_rbuf_sent = 0;
     httpd_proxy_client_epoll_mod(epfd, slot, EPOLLIN | EPOLLOUT | EPOLLET);
+    if (s->proxy_is_sse && s->proxy_phase == HTTPD_PROXY_PHASE_RELAY && s->proxy_sse_hdr_done && off > 0) {
+      s->proxy_last_chunk_ts = httpd_monotonic_now();
+    }
     return 0;
+  }
+  if (s->proxy_is_sse && s->proxy_phase == HTTPD_PROXY_PHASE_RELAY && s->proxy_sse_hdr_done && send_len > 0) {
+    s->proxy_last_chunk_ts = httpd_monotonic_now();
   }
   return 1;
 }
@@ -3729,6 +3737,9 @@ static int httpd_proxy_resp_finish_headers(int epfd, int32_t slot) {
   }
   if (httpd_proxy_relay_to_client(epfd, slot, s->proxy_resp_hdr_acc, (size_t)hdr_end) < 0) {
     return -1;
+  }
+  if (s->proxy_is_sse) {
+    s->proxy_sse_hdr_done = 1;
   }
   int tail = s->proxy_resp_hdr_len - hdr_end;
   if (tail > 0) {
@@ -3963,25 +3974,100 @@ static void httpd_proxy_flush_client_out(int epfd, int32_t slot) {
   if (s->proxy_rbuf_sent < (size_t)s->proxy_rbuf_len) {
     httpd_proxy_client_epoll_mod(epfd, slot, EPOLLIN | EPOLLOUT | EPOLLET);
   } else {
+    if (s->proxy_is_sse && s->proxy_phase == HTTPD_PROXY_PHASE_RELAY && s->proxy_sse_hdr_done &&
+        s->proxy_rbuf_len > 0) {
+      s->proxy_last_chunk_ts = httpd_monotonic_now();
+    }
     s->proxy_rbuf_len = 0;
     s->proxy_rbuf_sent = 0;
     httpd_proxy_relay_maybe_done(epfd, slot);
   }
 }
 
+static int httpd_sse_idle_watch_active(void) {
+  if (g_stream_idle_sec <= 0 && g_stream_max_sec <= 0) {
+    return 0;
+  }
+  slots_init_once();
+  for (int i = 0; i < HTTPD_MAX_CONN; i++) {
+    httpd_slot_t* s = &g_slots[i];
+    if (!s->proxy_active || !s->proxy_is_sse || s->proxy_phase != HTTPD_PROXY_PHASE_RELAY) {
+      continue;
+    }
+    if (g_stream_idle_sec > 0) {
+      return 1;
+    }
+    if (g_stream_max_sec > 0 && s->proxy_stream_start_ts > 0.0) {
+      return 1;
+    }
+    if (httpd_proxy_relay_pending_client(s)) {
+      return 1;
+    }
+  }
+  return 0;
+}
+
+static void httpd_tick_sse_stream_idle(int epfd) {
+  if (g_stream_idle_sec <= 0 && g_stream_max_sec <= 0) {
+    return;
+  }
+  double now = httpd_monotonic_now();
+  slots_init_once();
+  for (int i = 0; i < HTTPD_MAX_CONN; i++) {
+    httpd_slot_t* s = &g_slots[i];
+    if (!s->proxy_active || !s->proxy_is_sse || s->proxy_phase != HTTPD_PROXY_PHASE_RELAY) {
+      continue;
+    }
+    int stall = 0;
+    if (g_stream_idle_sec > 0 && s->proxy_last_chunk_ts > 0.0 &&
+        now - s->proxy_last_chunk_ts > (double)g_stream_idle_sec) {
+      stall = 1;
+    }
+    if (!stall && g_stream_max_sec > 0 && s->proxy_stream_start_ts > 0.0 &&
+        now - s->proxy_stream_start_ts > (double)g_stream_max_sec) {
+      stall = 1;
+    }
+    if (!stall) {
+      continue;
+    }
+    httpd_proxy_flush_client_out(epfd, (int32_t)i);
+    if (!s->proxy_relay_got_data) {
+      httpd_send_status(s->fd, 504, "Gateway Timeout", "Content-Type: application/json\r\n", 0);
+    }
+    httpd_proxy_finish_err(epfd, (int32_t)i);
+  }
+}
+
+int32_t httpd_tick_sse_stream_idle_i(int32_t epfd) {
+  httpd_tick_sse_stream_idle((int)epfd);
+  return 0;
+}
+
+int32_t httpd_sse_idle_epoll_timeout_ms_i(void) {
+  return httpd_sse_idle_watch_active() ? 250 : -1;
+}
+
+static void httpd_proxy_sse_timeout_finish(int epfd, int32_t slot) {
+  httpd_slot_t* s = &g_slots[slot];
+  httpd_proxy_flush_client_out(epfd, slot);
+  if (!s->proxy_relay_got_data) {
+    httpd_send_status(s->fd, 504, "Gateway Timeout", "Content-Type: application/json\r\n", 0);
+  }
+  httpd_proxy_finish_err(epfd, slot);
+}
+
 static void httpd_proxy_pump_relay(int epfd, int32_t slot) {
   httpd_slot_t* s = &g_slots[slot];
-  if (s->proxy_is_sse && g_stream_idle_sec > 0 && s->proxy_last_chunk_ts > 0.0) {
+  if (s->proxy_is_sse && s->proxy_phase == HTTPD_PROXY_PHASE_RELAY) {
     double now = httpd_monotonic_now();
-    if (now - s->proxy_last_chunk_ts > (double)g_stream_idle_sec) {
-      httpd_send_status(s->fd, 504, "Gateway Timeout", "Content-Type: application/json\r\n", 0);
-      httpd_proxy_finish_err(epfd, slot);
+    if (g_stream_idle_sec > 0 && s->proxy_last_chunk_ts > 0.0 &&
+        now - s->proxy_last_chunk_ts > (double)g_stream_idle_sec) {
+      httpd_proxy_sse_timeout_finish(epfd, slot);
       return;
     }
     if (g_stream_max_sec > 0 && s->proxy_stream_start_ts > 0.0 &&
         now - s->proxy_stream_start_ts > (double)g_stream_max_sec) {
-      httpd_send_status(s->fd, 504, "Gateway Timeout", "Content-Type: application/json\r\n", 0);
-      httpd_proxy_finish_err(epfd, slot);
+      httpd_proxy_sse_timeout_finish(epfd, slot);
       return;
     }
   }
@@ -4051,14 +4137,13 @@ static void httpd_proxy_pump_relay(int epfd, int32_t slot) {
       httpd_proxy_finish_err(epfd, slot);
       return;
     }
-    if (s->proxy_is_sse && r > 0) {
-      s->proxy_last_chunk_ts = httpd_monotonic_now();
-    }
+    httpd_proxy_flush_client_out(epfd, slot);
     httpd_proxy_relay_maybe_done(epfd, slot);
     if (!g_slots[slot].proxy_active) {
       return;
     }
   }
+  httpd_proxy_flush_client_out(epfd, slot);
 }
 
 static void httpd_proxy_up_handler(int epfd, int32_t slot, uint32_t events) {
@@ -4111,22 +4196,11 @@ static void httpd_proxy_client_handler(int epfd, int32_t slot, uint32_t events) 
   }
   if (s->proxy_phase == HTTPD_PROXY_PHASE_RELAY) {
     if (events & EPOLLOUT) {
-      if (s->proxy_rbuf_sent < (size_t)s->proxy_rbuf_len) {
-        size_t off = s->proxy_rbuf_sent;
-        ssize_t rc = httpd_send_nb(s->fd, s->proxy_rbuf, (size_t)s->proxy_rbuf_len, &off);
-        if (rc < 0) {
-          httpd_proxy_finish_err(epfd, slot);
-          return;
-        }
-        s->proxy_rbuf_sent = off;
-        if (s->proxy_rbuf_sent >= (size_t)s->proxy_rbuf_len) {
-          s->proxy_rbuf_len = 0;
-          s->proxy_rbuf_sent = 0;
-          httpd_proxy_client_epoll_mod(epfd, slot, EPOLLIN | EPOLLET);
-          httpd_proxy_up_mod(epfd, slot, EPOLLIN | EPOLLET);
-          httpd_proxy_relay_maybe_done(epfd, slot);
-        }
-      }
+      httpd_proxy_flush_client_out(epfd, slot);
+      httpd_proxy_pump_relay(epfd, slot);
+    }
+    if (events & EPOLLIN) {
+      httpd_proxy_pump_relay(epfd, slot);
     }
   }
 }
@@ -4214,6 +4288,7 @@ static int httpd_proxy_start_async(int epfd, int32_t conn, int32_t slot, int hdr
   s->proxy_client_epoll_events = 0;
   s->proxy_up_epoll_events = 0;
   s->proxy_is_sse = httpd_client_wants_sse(g_slots[slot].buf, hdr_end);
+  s->proxy_sse_hdr_done = 0;
   s->proxy_last_chunk_ts = 0.0;
   s->proxy_stream_start_ts = s->proxy_is_sse ? httpd_monotonic_now() : 0.0;
   if (g_concurrent_streams_max > 0) {
@@ -4452,7 +4527,9 @@ int32_t httpd_epoll_serve_i(int32_t port, intptr_t root) {
     if (g_health_active_enabled || g_up_peer_count > 0) {
       httpd_tick_active_health_probes_i();
     }
-    int n = epoll_wait(epfd, events, 256, -1);
+    httpd_tick_sse_stream_idle(epfd);
+    int wait_ms = httpd_sse_idle_watch_active() ? 250 : -1;
+    int n = epoll_wait(epfd, events, 256, wait_ms);
     if (n < 0) {
       if (errno == EINTR) {
         continue;
@@ -5163,6 +5240,11 @@ int32_t epoll_wait_tagged_i(int32_t epfd, intptr_t events, int32_t max_events) {
 
 int32_t epoll_wait_tagged_spin_i(int32_t epfd, intptr_t events, int32_t max_events) {
   return epoll_wait_tagged_timeout_impl(epfd, events, max_events, 0);
+}
+
+int32_t epoll_wait_tagged_timeout_ms_i(int32_t epfd, intptr_t events, int32_t max_events,
+                                        int32_t timeout_ms) {
+  return epoll_wait_tagged_timeout_impl(epfd, events, max_events, (int)timeout_ms);
 }
 
 int32_t httpd_epoll_register_up_i(int32_t epfd, int32_t up_fd, int32_t slot) {

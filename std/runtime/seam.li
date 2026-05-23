@@ -587,6 +587,21 @@ extern proc httpd_tick_active_health_probes_i() -> int
   ensures true
   decreases 0
 
+extern proc httpd_tick_sse_stream_idle_i(epfd: var int) -> int
+  requires epfd >= 0
+  ensures true
+  decreases 0
+
+extern proc httpd_sse_idle_epoll_timeout_ms_i() -> int
+  requires true
+  ensures true
+  decreases 0
+
+extern proc epoll_wait_tagged_timeout_ms_i(epfd: var int, events: var ptr, max_events: var int, timeout_ms: var int) -> int
+  requires epfd >= 0
+  ensures true
+  decreases 0
+
 extern proc httpd_config_listen_port_i() -> int
   requires true
   ensures true

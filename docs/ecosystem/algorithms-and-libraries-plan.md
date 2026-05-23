@@ -17,7 +17,7 @@ This page is the **algorithms-and-libraries** layer under World Studio — not t
 | **Vision breadth** | Strong | [world-studio-vision.md](../game-dev/world-studio-vision.md) covers gaming → AM → drug/bio → QM → cinematic → MMO |
 | **Vertical RFC depth** | Medium | Per-domain RFCs exist; many are API/stub-level, not algorithm SOTA tables |
 | **HPC language competitor intel** | Strong | `registry.toml`, tier-12 harness, ≤1.2× C++ policy, NumPy BLAS labeled |
-| **Domain-tool competitor intel** | Medium | [competitive-landscape.md](../game-dev/competitive-landscape.md) + [ui-ux-by-dimension.md](../game-dev/competitive-intel/ui-ux-by-dimension.md); thin on **library/API** parity per vertical |
+| **Domain-tool competitor intel** | Medium+ | [competitive-landscape.md](../game-dev/competitive-landscape.md) + [ui-ux-by-dimension.md](../game-dev/competitive-intel/ui-ux-by-dimension.md) + offline `downloads/` (2026-05-23); thin on **library/API** parity per vertical |
 | **Algorithm implementation map** | Weak | No single table tying vertical → kernel family → incumbent library → Li package → bench id |
 | **`lic` maturity honesty** | Critical gap | Master tracker overstates proof gate; **2e/2f** open ([G-VERIFY-01](../verification/provability-gaps.md)) |
 | **Large-scale library build** | **Blocked** | Do not scale domain code until Wave A gates below |
@@ -294,7 +294,7 @@ P4  deepen physics.* / sim.* / chem per verticals.toml
 
 | ID | Deliverable | Owner repo | Blocks |
 |----|-------------|------------|--------|
-| AL-1 | **`benchmarks/competitive/verticals.toml`** — Layer B registry | `lic` | Honest on-par claims |
+| AL-1 | **`benchmarks/competitive/verticals.toml`** — Layer B registry | `lic` | **Done (2026-05-23)** — initial rows; expand quarterly |
 | AL-2 | **`docs/ecosystem/vertical-algorithm-catalog.md`** — one page per vertical (kernel list) | `lic` | Agent implementation |
 | AL-3 | **Phase 2e/2f plan files** (replace TBD in master plan) | `lic` | Wave A |
 | AL-4 | **CAD fundamentals** merge into `lic` + link `geometry` PH | `lic` | CAD vertical |

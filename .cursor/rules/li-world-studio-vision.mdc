@@ -16,7 +16,8 @@ alwaysApply: false
 
 **Canonical:** `docs/game-dev/world-studio-vision.md`  
 **Tracker:** `docs/game-dev/PH-world-studio-program.md`  
-**RFCs:** `docs/game-dev/specs/`
+**RFCs:** `docs/game-dev/specs/`  
+**UX intel (14 dimensions):** `docs/game-dev/competitive-intel/ui-ux-by-dimension.md` · refresh `./scripts/fetch-competitive-intel.sh`
 
 ## Syntax
 

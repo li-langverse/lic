@@ -1,0 +1,76 @@
+# Layer B — domain tool & algorithm registry (algorithms-and-libraries-plan §4).
+# Agents: update last_reviewed when SOTA review runs; cite rows in Studio/RFC claims.
+
+[meta]
+version = 1
+updated = "2026-05-23"
+
+[[vertical]]
+id = "gaming_rigid"
+incumbent = "Unreal Engine 5 / Unity / Godot + Jolt/Bullet"
+kernel_or_api = "rigid body integrate, collision broadphase"
+workload_class = "v0_gaming"
+oracle = "composable_only"
+li_package = "physics.rigid"
+last_reviewed = "2026-05-23"
+notes = "Tier-2 proxies in world-studio.toml; not full game engine parity."
+
+[[vertical]]
+id = "md_lennard_jones"
+incumbent = "LAMMPS / GROMACS"
+kernel_or_api = "LJ cutoff force + energy drift"
+workload_class = "stub"
+oracle = "cpp"
+li_package = "sim.scientific"
+last_reviewed = "2026-05-23"
+notes = "tier-2 verify green; md_oracle.toml stub for external binaries."
+
+[[vertical]]
+id = "pde_heat_2d"
+incumbent = "OpenFOAM / PETSc"
+kernel_or_api = "explicit heat step, CFL stability"
+workload_class = "stub"
+oracle = "cpp"
+li_package = "sim.scientific"
+last_reviewed = "2026-05-23"
+notes = "heat_equation_2d in verify.py; FEA/CFD kernels open."
+
+[[vertical]]
+id = "drug_litl"
+incumbent = "Roche Lab-in-the-Loop / Recursion LOWE"
+kernel_or_api = "stage workflow UI + QM job queue"
+workload_class = "stub"
+oracle = "composable_only"
+li_package = "sim.drug_design"
+last_reviewed = "2026-05-23"
+notes = "studio.adaptive layout stub on li-ui; see competitive-intel/ui-ux-by-dimension.md UX-07."
+
+[[vertical]]
+id = "am_slicer"
+incumbent = "PrusaSlicer / Cura / Bambu Studio"
+kernel_or_api = "slice → preview → export G-code/3MF"
+workload_class = "stub"
+oracle = "composable_only"
+li_package = "sim.additive"
+last_reviewed = "2026-05-23"
+notes = "Target ≤3 clicks export (PH-UX); downloads/prusa-ui-overview.html."
+
+[[vertical]]
+id = "scientific_viz"
+incumbent = "ParaView / VTK / MATLAB"
+kernel_or_api = "pipeline source + display + view properties"
+workload_class = "stub"
+oracle = "composable_only"
+li_package = "sim.viz"
+last_reviewed = "2026-05-23"
+notes = "Properties/Display/View panel pattern; downloads/paraview-properties-panel.html."
+
+[[vertical]]
+id = "qm_dft"
+incumbent = "Gaussian / ORCA / Psi4"
+kernel_or_api = "DFT single-point energy"
+workload_class = "stub"
+oracle = "external_binary"
+li_package = "chem"
+last_reviewed = "2026-05-23"
+notes = "Trusted FFI plan; no external oracle column in CI yet."

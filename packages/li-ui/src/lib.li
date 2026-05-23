@@ -57,15 +57,16 @@ def rect_contains(r: Rect, px: float, py: float) -> int
   ensures result <= 1
   decreases 0
 =
+  var hit: int = 1
   if px < r.x:
-    return 0
+    hit = 0
   if py < r.y:
-    return 0
+    hit = 0
   if px > r.x + r.w:
-    return 0
+    hit = 0
   if py > r.y + r.h:
-    return 0
-  return 1
+    hit = 0
+  return hit
 def ui_frame_begin(w: float, h: float, dt: float) -> UiFrame
   requires w > 0.0
   requires h > 0.0

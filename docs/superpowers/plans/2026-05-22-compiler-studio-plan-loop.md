@@ -41,6 +41,15 @@ todos:
   - id: studio-ph-ux-slice
     content: "PH-UX — one adaptive layout composable + li-tests compile_ok (no httpd)"
     status: completed
+  - id: wave-c-competitive-intel
+    content: "Download Layer C UX intel — competitive-intel/ + fetch script + ui-ux-by-dimension.md"
+    status: completed
+  - id: wave-c-verticals-toml
+    content: "AL-1 benchmarks/competitive/verticals.toml + vertical-algorithm-catalog stub"
+    status: completed
+  - id: wave-c-ui-rect-vc
+    content: "li-ui rect_contains single-return VC + composable compile_ok"
+    status: completed
 isProject: false
 ---
 

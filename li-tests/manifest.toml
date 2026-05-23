@@ -708,6 +708,12 @@ note = "2j-c: var RigidBody in-out write-back after rigid_integrate_semi_implici
 
 [[tests]]
 suite = "composable"
+file = "composable/import_physics_rigid_gaming.li"
+outcome = "verify_open_ok"
+note = "wave-d-19: gaming_rigid vertical — integrate + AABB/sphere overlap; v0_gaming workload"
+
+[[tests]]
+suite = "composable"
 file = "composable/import_ui_adaptive_layout.li"
 outcome = "compile_open_ok"
 note = "PH-UX: import ui; studio.adaptive layout composable (open VC on rect_contains branch ensures)"

@@ -8,7 +8,7 @@ Agents: cite vertical `id` and `workload_class` in PRs. Do **not** claim GROMACS
 
 | Vertical `id` | `workload_class` | `li_package` | Bench / verify today |
 |---------------|------------------|--------------|----------------------|
-| `gaming_rigid` | `v0_gaming` | `physics.rigid` | composable `import_physics_runtime.li` |
+| `gaming_rigid` | `v0_gaming` | `physics.rigid` | composable `import_physics_rigid_gaming.li` + [world-studio.toml](../../benchmarks/competitive/world-studio.toml) |
 | `md_lennard_jones` | `stub` | `sim.scientific` | tier-2 `md_lennard_jones` + `verify.py` |
 | `pde_heat_2d` | `stub` | `sim.scientific` | tier-2 `heat_equation_2d` + `verify.py` |
 | `fea_linear_elasticity` | `stub` | `sim.scientific` | none (PH-CAE CAE-1) |
@@ -35,8 +35,8 @@ Gate: `./scripts/check-vertical-algorithm-catalog.sh` (sync with `verticals.toml
 
 | Family | Target (incumbent) | Li today | Proof / bench |
 |--------|-------------------|----------|---------------|
-| Semi-implicit integrate | Bullet/PhysX step | `rigid_integrate_semi_implicit` in `physics.rigid` | composable `li-tests/composable/import_physics_runtime.li` |
-| Collision broadphase | SAP / BVH | **stub** — types only | none |
+| Semi-implicit integrate | Bullet/PhysX step | `rigid_integrate_semi_implicit` in `physics.rigid` | composable `li-tests/composable/import_physics_rigid_gaming.li` |
+| Collision broadphase | SAP / BVH | `aabb_overlap`, `sphere_sphere_overlap` | composable `import_physics_rigid_gaming.li` (scalar stubs) |
 | Constraint solve | joints, contacts | **stub** | none |
 
 ### Studio / UX
@@ -46,7 +46,7 @@ Gate: `./scripts/check-vertical-algorithm-catalog.sh` (sync with `verticals.toml
 
 ### Honesty
 
-Tier-2 proxies in `world-studio.toml` composables — **not** full game-engine parity. No UE5 perf claims in CI.
+[`world-studio.toml`](../../benchmarks/competitive/world-studio.toml) `gaming_rigid` row (`workload_class=v0_gaming`, `oracle=composable_only`) + tier-2 `rigid_body_stack` proxy — **not** full game-engine parity. No UE5 perf claims in CI.
 
 ---
 

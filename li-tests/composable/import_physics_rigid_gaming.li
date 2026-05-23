@@ -1,0 +1,30 @@
+import physics.rigid
+
+def main() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  if li_std_physics_rigid_version() < 1:
+    return 1
+  if physics_rigid_workload_class_v0_gaming() != 0:
+    return 2
+  var body: RigidBody
+  body.px = 0.0
+  body.py = 0.0
+  body.pz = 1.0
+  body.vx = 0.0
+  body.vy = 0.0
+  body.vz = 0.0
+  body.inv_mass = 1.0
+  body.radius = 0.5
+  rigid_integrate_semi_implicit(body, 0.0, 0.0, -9.81, 0.016)
+  if body.pz >= 1.0:
+    return 3
+  var aabb_hit: int = aabb_overlap(0.0, 0.0, 1.0, 1.0, 0.5, 0.5, 1.5, 1.5)
+  if aabb_hit != 1:
+    return 4
+  var sphere_hit: int = sphere_sphere_overlap(0.0, 0.0, 0.0, 0.5, 0.8, 0.0, 0.0, 0.5)
+  if sphere_hit != 1:
+    return 5
+  return 0

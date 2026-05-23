@@ -106,7 +106,7 @@ todos:
     status: completed
   - id: wave-d-19-vertical-gaming
     content: "gaming — physics.rigid composable + verticals.toml notes + bench row"
-    status: pending
+    status: completed
   - id: wave-d-20-vertical-md-oracle
     content: "MD — md_oracle driver stub doc + verticals.toml LAMMPS column plan"
     status: pending

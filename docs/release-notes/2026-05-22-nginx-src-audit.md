@@ -17,9 +17,12 @@ Read-only nginx security oracle: submodule pin `release-1.26.2`, `nginx_mitigati
 ## Test commands
 
 ```bash
+git submodule update --init benchmarks/tier5_http/third_party/nginx
 ./scripts/check-tier5-nginx-src-audit.sh
-HTTPD_GATES_SKIP_LIC_BUILD=1 ./scripts/httpd-plan-gates.sh
+HTTPD_BENCH_SKIP_TIMING=1 ./scripts/httpd-plan-gates.sh
 ```
+
+`audit_nginx_src.py` validates `src/http/…` paths against the nginx submodule when checked out; Li-only rows (`docs/`, `scripts/`, `li-tests/`) resolve under the lic repo root.
 
 ## Not changed
 

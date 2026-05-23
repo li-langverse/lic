@@ -12,6 +12,7 @@ All notable changes to Li are documented here. The format follows
 
 ### Added
 
+- **tier5_http nginx-src-audit:** nginx `release-1.26.2` submodule + read-only `nginx_mitigations.toml` (no `li_done`); `audit_nginx_src.py` + `check-tier5-nginx-src-audit.sh` — [2026-05-22-nginx-src-audit.md](docs/release-notes/2026-05-22-nginx-src-audit.md).
 - **tier5_http bench harness (bench-harness):** TOML-driven `suite.toml` + per-scenario `bench.toml`; `bench_http.py` / `verify_http.py` resolve scenarios from suite only — [2026-05-22-tier5-http-bench-harness.md](docs/release-notes/2026-05-22-tier5-http-bench-harness.md).
 - **tier5_http exploit harness (exploit-harness):** `exploit_http.py` + `suite_exploits.toml` / `exploits/*.toml` vs nginx baseline and `build/li-httpd`; `[expect].li_behavior = "stricter"` and `--compare-nginx` — [2026-05-22-tier5-http-exploit-harness.md](docs/release-notes/2026-05-22-tier5-http-exploit-harness.md).
 - **HTTPd M1 nginx bench parity:** tier5 `parity` profile runs live `build/li-httpd` vs nginx verify + optional wrk ratios — [2026-05-23-httpd-nginx-bench-parity.md](docs/release-notes/2026-05-23-httpd-nginx-bench-parity.md).

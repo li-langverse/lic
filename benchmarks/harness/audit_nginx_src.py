@@ -34,6 +34,8 @@ NGINX_PIN_VERSION = "1.26.2"
 REQUIRED_MITIGATION_KEYS = ("id", "src", "notes", "li_invariant")
 CVE_RE = re.compile(r"CVE-\d{4}-\d+", re.IGNORECASE)
 SECURITY_RE = re.compile(r"\*\)\s*Security:", re.IGNORECASE)
+# nginx C tree only — Li-only rows use docs/, scripts/, li-tests/ under REPO.
+NGINX_SRC_PREFIX = "src/"
 
 # Curated keyword → default src hint when matching CHANGES text to checklist ids.
 KEYWORD_SRC: dict[str, tuple[str, str]] = {
@@ -128,9 +130,13 @@ def validate_mitigations(
                 errs.append(f"{mid}: missing required field {key}")
         if "li_done" in row:
             errs.append(f"{mid}: li_done is not allowed (read-only checklist)")
-        src = str(row.get("src", ""))
-        if nginx_src_ok and src and not (NGINX_ROOT / src).is_file():
-            errs.append(f"{mid}: src path missing in submodule: {src}")
+        src = str(row.get("src", "")).strip()
+        if src:
+            if src.startswith(NGINX_SRC_PREFIX):
+                if nginx_src_ok and not (NGINX_ROOT / src).is_file():
+                    errs.append(f"{mid}: src path missing in submodule: {src}")
+            elif not (REPO / src).is_file():
+                errs.append(f"{mid}: src path missing in repo: {src}")
         exploit = str(row.get("exploit", "")).strip()
         if exploit:
             path = TIER5 / exploit

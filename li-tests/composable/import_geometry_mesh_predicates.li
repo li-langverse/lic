@@ -1,0 +1,27 @@
+import geometry
+
+def main() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  if li_std_geometry_version() < 1:
+    return 1
+  if geometry_workload_class_stub() != 0:
+    return 2
+  var det2: float = mesh_orient2d_smoke_det()
+  if det2 < 0.99 or det2 > 1.01:
+    return 3
+  var vol6: float = mesh_orient3d_smoke_vol6()
+  if vol6 < 0.99 or vol6 > 1.01:
+    return 4
+  var inside: int = mesh_incircle2d_smoke_inside()
+  if inside != 1:
+    return 5
+  var tri: MeshTriangle2 = mesh_triangle2_new(0.0, 0.0, 1.0, 0.0, 0.0, 1.0)
+  if tri.b.x < 0.99 or tri.b.x > 1.01:
+    return 6
+  var tet: MeshTet3 = mesh_tet3_new(0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 1.0)
+  if tet.d.z < 0.99 or tet.d.z > 1.01:
+    return 7
+  return 0

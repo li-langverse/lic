@@ -251,7 +251,7 @@ Start `anim` under `scene` if package count is a concern; split when `import ani
 
 | `import` | Folder | Status | Action | Wave | Depends |
 |----------|--------|--------|--------|------|---------|
-| `geometry` | — | **missing** | **new** — mesh predicates, booleans (Manifold-class); thin B-rep later | D | `math`, `voxel` |
+| `geometry` | `li-geometry` | **stub** | mesh predicates (`orient2d`/`orient3d`/`incircle2d`); booleans later | D | `math`, `voxel` |
 | `voxel` | `packages/voxel` | exists-stub | **extend** — grids for AM/games/science | D | `math` |
 
 CAD gap doc (li-language): merge into `lic/docs/ecosystem/cad-fundamentals.md` — **AL-4**.
@@ -306,7 +306,7 @@ P4  deepen physics.* / sim.* / chem per verticals.toml
 | AL-10 | **`packages/linalg`** scaffold + `math_linalg` tests | `lic` | **Done (2026-05-23)** — `import linalg` matmul smoke |
 | AL-11 | **`math` quaternion + Mat4** completion + `scene` wire-up | `lic` | Games/robotics/camera |
 | AL-12 | **`packages/anim`**, **`packages/seq`** scaffolds | `lic` | **Done (2026-05-23)** — `import anim` keyframe/clip; `import seq` shot/timeline |
-| AL-13 | **`packages/geometry`** scaffold | `lic` | CAD/AM |
+| AL-13 | **`packages/geometry`** scaffold | `lic` | **Done (2026-05-23)** — `import geometry` mesh predicates smoke |
 
 ---
 

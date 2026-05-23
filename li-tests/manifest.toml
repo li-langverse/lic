@@ -774,6 +774,12 @@ note = "AL-12: import seq; shot/timeline resolve (open VC on seq_timeline_contai
 
 [[tests]]
 suite = "composable"
+file = "composable/import_geometry_mesh_predicates.li"
+outcome = "compile_open_ok"
+note = "AL-13: import geometry; orient2d/3d + incircle2d smoke (open VC on mesh_incircle2d ensures)"
+
+[[tests]]
+suite = "composable"
 file = "composable/import_linalg_matmul_smoke.li"
 outcome = "compile_open_ok"
 note = "AL-10: import linalg; matmul_2x2/2x3 smoke via explicit @ (open VC on float branch ensures)"

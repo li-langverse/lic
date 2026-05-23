@@ -94,7 +94,7 @@ todos:
     status: completed
   - id: wave-d-15-geometry-scaffold
     content: "AL-13 packages/geometry — mesh predicates stub + composable"
-    status: pending
+    status: completed
   - id: wave-d-16-cad-fundamentals
     content: "AL-4 docs/ecosystem/cad-fundamentals.md merge + link geometry PH"
     status: pending

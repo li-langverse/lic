@@ -1,0 +1,241 @@
+
+# AL-13 / CAD+AM vertical — mesh predicates (workload_class=stub).
+# Exact arithmetic / Shewchuk filters deferred; explicit float determinants only.
+
+type GeoVec2 = object
+  public x: float
+  public y: float
+
+type GeoVec3 = object
+  public x: float
+  public y: float
+  public z: float
+
+type MeshTriangle2 = object
+  public a: GeoVec2
+  public b: GeoVec2
+  public c: GeoVec2
+
+type MeshTet3 = object
+  public a: GeoVec3
+  public b: GeoVec3
+  public c: GeoVec3
+  public d: GeoVec3
+
+def li_std_geometry_version() -> int
+  requires true
+  ensures result == 1
+  decreases 0
+=
+  return 1
+
+def geometry_workload_class_stub() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0
+
+def geo_vec2(x: float, y: float) -> GeoVec2
+  requires true
+  ensures result.x == x
+  ensures result.y == y
+  decreases 0
+=
+  var v: GeoVec2
+  v.x = x
+  v.y = y
+  return v
+
+def geo_vec3(x: float, y: float, z: float) -> GeoVec3
+  requires true
+  ensures result.x == x
+  ensures result.y == y
+  ensures result.z == z
+  decreases 0
+=
+  var v: GeoVec3
+  v.x = x
+  v.y = y
+  v.z = z
+  return v
+
+def mesh_triangle2_new(ax: float, ay: float, bx: float, by: float, cx: float, cy: float) -> MeshTriangle2
+  requires true
+  ensures result.a.x == ax
+  ensures result.a.y == ay
+  ensures result.b.x == bx
+  ensures result.b.y == by
+  ensures result.c.x == cx
+  ensures result.c.y == cy
+  decreases 0
+=
+  var t: MeshTriangle2
+  t.a.x = ax
+  t.a.y = ay
+  t.b.x = bx
+  t.b.y = by
+  t.c.x = cx
+  t.c.y = cy
+  return t
+
+def mesh_tet3_new(
+    ax: float, ay: float, az: float,
+    bx: float, by: float, bz: float,
+    cx: float, cy: float, cz: float,
+    dx: float, dy: float, dz: float) -> MeshTet3
+  requires true
+  ensures result.a.x == ax
+  ensures result.d.z == dz
+  decreases 0
+=
+  var t: MeshTet3
+  t.a.x = ax
+  t.a.y = ay
+  t.a.z = az
+  t.b.x = bx
+  t.b.y = by
+  t.b.z = bz
+  t.c.x = cx
+  t.c.y = cy
+  t.c.z = cz
+  t.d.x = dx
+  t.d.y = dy
+  t.d.z = dz
+  return t
+
+def mesh_orient2d(a: GeoVec2, b: GeoVec2, c: GeoVec2) -> float
+  requires true
+  ensures result == (b.x - a.x) * (c.y - a.y) - (b.y - a.y) * (c.x - a.x)
+  decreases 0
+=
+  var abx: float = b.x - a.x
+  var aby: float = b.y - a.y
+  var acx: float = c.x - a.x
+  var acy: float = c.y - a.y
+  return abx * acy - aby * acx
+
+def mesh_orient3d(a: GeoVec3, b: GeoVec3, c: GeoVec3, d: GeoVec3) -> float
+  requires true
+  ensures result >= -1.0e12
+  ensures result <= 1.0e12
+  decreases 0
+=
+  var ax: float = a.x
+  var ay: float = a.y
+  var az: float = a.z
+  var abx: float = b.x - ax
+  var aby: float = b.y - ay
+  var abz: float = b.z - az
+  var acx: float = c.x - ax
+  var acy: float = c.y - ay
+  var acz: float = c.z - az
+  var adx: float = d.x - ax
+  var ady: float = d.y - ay
+  var adz: float = d.z - az
+  var cx: float = acy * adz - acz * ady
+  var cy: float = acz * adx - acx * adz
+  var cz: float = acx * ady - acy * adx
+  return abx * cx + aby * cy + abz * cz
+
+def mesh_incircle2d(a: GeoVec2, b: GeoVec2, c: GeoVec2, p: GeoVec2) -> float
+  requires true
+  ensures result >= -1.0e12
+  ensures result <= 1.0e12
+  decreases 0
+=
+  var ax: float = a.x
+  var ay: float = a.y
+  var bx: float = b.x
+  var by: float = b.y
+  var cx: float = c.x
+  var cy: float = c.y
+  var px: float = p.x
+  var py: float = p.y
+  var a2: float = ax * ax + ay * ay
+  var b2: float = bx * bx + by * by
+  var c2: float = cx * cx + cy * cy
+  var p2: float = px * px + py * py
+  var m11: float = ax - px
+  var m12: float = ay - py
+  var m13: float = a2 - p2
+  var m21: float = bx - px
+  var m22: float = by - py
+  var m23: float = b2 - p2
+  var m31: float = cx - px
+  var m32: float = cy - py
+  var m33: float = c2 - p2
+  var det: float = m11 * (m22 * m33 - m23 * m32) - m12 * (m21 * m33 - m23 * m31) + m13 * (m21 * m32 - m22 * m31)
+  return det
+
+def mesh_predicate_sign(v: float) -> int
+  requires true
+  ensures result >= -1
+  ensures result <= 1
+  decreases 0
+=
+  var s: int = 0
+  if v > 0.0:
+    s = 1
+  if v < 0.0:
+    s = -1
+  return s
+
+def mesh_orient2d_ccw(a: GeoVec2, b: GeoVec2, c: GeoVec2) -> int
+  requires true
+  ensures result >= -1
+  ensures result <= 1
+  decreases 0
+=
+  var det: float = mesh_orient2d(a, b, c)
+  return mesh_predicate_sign(det)
+
+def mesh_orient3d_positive(a: GeoVec3, b: GeoVec3, c: GeoVec3, d: GeoVec3) -> int
+  requires true
+  ensures result >= -1
+  ensures result <= 1
+  decreases 0
+=
+  var vol6: float = mesh_orient3d(a, b, c, d)
+  return mesh_predicate_sign(vol6)
+
+def mesh_incircle2d_inside(a: GeoVec2, b: GeoVec2, c: GeoVec2, p: GeoVec2) -> int
+  requires true
+  ensures result >= -1
+  ensures result <= 1
+  decreases 0
+=
+  var det: float = mesh_incircle2d(a, b, c, p)
+  return mesh_predicate_sign(det)
+
+def mesh_orient2d_smoke_det() -> float
+  requires true
+  ensures result == 1.0
+  decreases 0
+=
+  var a: GeoVec2 = geo_vec2(0.0, 0.0)
+  var b: GeoVec2 = geo_vec2(1.0, 0.0)
+  var c: GeoVec2 = geo_vec2(0.0, 1.0)
+  return mesh_orient2d(a, b, c)
+
+def mesh_orient3d_smoke_vol6() -> float
+  requires true
+  ensures result == 1.0
+  decreases 0
+=
+  var a: GeoVec3 = geo_vec3(0.0, 0.0, 0.0)
+  var b: GeoVec3 = geo_vec3(1.0, 0.0, 0.0)
+  var c: GeoVec3 = geo_vec3(0.0, 1.0, 0.0)
+  var d: GeoVec3 = geo_vec3(0.0, 0.0, 1.0)
+  return mesh_orient3d(a, b, c, d)
+
+def mesh_incircle2d_smoke_inside() -> int
+  requires true
+  ensures result == 1
+  decreases 0
+=
+  var a: GeoVec2 = geo_vec2(0.0, 0.0)
+  var b: GeoVec2 = geo_vec2(1.0, 0.0)
+  var c: GeoVec2 = geo_vec2(0.0, 1.0)
+  var p: GeoVec2 = geo_vec2(0.25, 0.25)
+  return mesh_incircle2d_inside(a, b, c, p)

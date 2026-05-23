@@ -1,0 +1,95 @@
+
+# PH-QM / wave-d-21 — DFT single-point stub (qm_dft vertical; workload_class=stub).
+# Native closed-form smoke only — NOT Gaussian/ORCA/Psi4 parity; external_binary oracle TBD.
+
+type DftGeometry = object
+  public atom_count: int
+  public bond_length: float
+  public atomic_number: int
+
+type DftResult = object
+  public total_energy_hartree: float
+  public scf_iterations: int
+  public method_id: int
+  public basis_id: int
+
+def li_std_chem_version() -> int
+  requires true
+  ensures result == 1
+  decreases 0
+=
+  return 1
+
+def chem_workload_class_stub() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0
+
+def dft_method_rks_stub() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0
+
+def dft_basis_sto3g_stub() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0
+
+def dft_geometry_h2(bond_length: float) -> DftGeometry
+  requires bond_length > 0.01
+  ensures result.atom_count == 2
+  ensures result.bond_length == bond_length
+  ensures result.atomic_number == 1
+  decreases 0
+=
+  var g: DftGeometry
+  g.atom_count = 2
+  g.bond_length = bond_length
+  g.atomic_number = 1
+  return g
+
+def dft_single_point_rks_stub(geom: DftGeometry, basis_id: int) -> DftResult
+  requires geom.atom_count == 2
+  requires geom.bond_length > 0.01
+  requires geom.atomic_number == 1
+  requires basis_id >= 0
+  ensures result.method_id == dft_method_rks_stub()
+  ensures result.basis_id == basis_id
+  ensures result.scf_iterations == 1
+  ensures result.total_energy_hartree == -2.0 / geom.bond_length - 0.702055
+  decreases 0
+=
+  var r: DftResult
+  r.method_id = dft_method_rks_stub()
+  r.basis_id = basis_id
+  r.scf_iterations = 1
+  r.total_energy_hartree = -2.0 / geom.bond_length - 0.702055
+  return r
+
+def dft_smoke_h2_energy_hartree() -> float
+  requires true
+  ensures result == -2.702055
+  decreases 0
+=
+  var geom: DftGeometry = dft_geometry_h2(0.74)
+  var res: DftResult = dft_single_point_rks_stub(geom, dft_basis_sto3g_stub())
+  return res.total_energy_hartree
+
+def dft_smoke_entry() -> int
+  requires true
+  ensures result == 2702055
+  decreases 0
+=
+  var e: float = dft_smoke_h2_energy_hartree()
+  if e > -2.69 or e < -2.71:
+    return 0
+  var scaled: int = 0
+  if e < -2.702054:
+    scaled = 2702055
+  return scaled

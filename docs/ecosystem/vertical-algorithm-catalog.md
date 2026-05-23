@@ -19,7 +19,7 @@ Agents: cite vertical `id` and `workload_class` in PRs. Do **not** claim GROMACS
 | `cinematic_encode` | `stub` | `studio` | none (PH-CIN CIN-2) |
 | `cinematic_color_grade` | `stub` | `studio` | composable `import_studio_cinematic_algorithms.li` |
 | `cinematic_audio_sync` | `stub` | `studio` | composable `import_studio_cinematic_algorithms.li` |
-| `qm_dft` | `stub` | `chem` | external oracle TBD |
+| `qm_dft` | `stub` | `chem` | composable `import_chem_dft_smoke.li` + [qm_dft.toml](../../benchmarks/competitive/qm_dft.toml) |
 
 Gate: `./scripts/check-vertical-algorithm-catalog.sh` (sync with `verticals.toml`).
 
@@ -329,18 +329,20 @@ Inspector layout is **stub**; no VTK render path in `li-ui` yet.
 
 | Family | Target | Li today | Proof / bench |
 |--------|--------|----------|---------------|
-| DFT SCF energy | Gaussian/ORCA SP | **stub** — composable smoke | no external oracle in CI |
-| Basis / functional selection | Psi4 driver API | **open** | trusted FFI plan (T5) |
+| DFT SCF energy | Gaussian/ORCA SP | `dft_single_point_rks_stub` in `chem` | composable `li-tests/composable/import_chem_dft_smoke.li` + [qm_dft.toml](../../benchmarks/competitive/qm_dft.toml) |
+| Basis / functional selection | Psi4 driver API | **open** — `dft_basis_sto3g_stub` id only | trusted FFI plan (T5) |
 | Job queue + I/O | HPC chemistry schedulers | **stub** | none |
 
 ### References
 
+- Bench: [qm_dft.toml](../../benchmarks/competitive/qm_dft.toml) · composable `import_chem_dft_smoke`
+- RFC: [li-chem-qm-rfc.md](../game-dev/specs/li-chem-qm-rfc.md)
 - UX: [UX-07](../game-dev/competitive-intel/ui-ux-by-dimension.md#ux-07--drug-discovery-stage-workflow-litl) (QM panel in LITL chrome)
 - Master plan: Wave A before scaling domain chem ([provability-gaps.md](../verification/provability-gaps.md))
 
 ### Honesty
 
-**No Gaussian/ORCA parity.** `external_binary` oracle not wired; `workload_class=stub`.
+**No Gaussian/ORCA/Psi4 parity.** Native closed-form H2 stub only; `verticals.toml` target oracle is `external_binary` (not wired in CI); `workload_class=stub`.
 
 ---
 

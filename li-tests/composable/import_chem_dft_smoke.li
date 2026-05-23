@@ -1,0 +1,29 @@
+import chem
+
+def main() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  if li_std_chem_version() < 1:
+    return 1
+  if chem_workload_class_stub() != 0:
+    return 2
+  var geom: DftGeometry = dft_geometry_h2(0.74)
+  if geom.atom_count != 2:
+    return 3
+  if geom.atomic_number != 1:
+    return 4
+  var res: DftResult = dft_single_point_rks_stub(geom, dft_basis_sto3g_stub())
+  if res.method_id != dft_method_rks_stub():
+    return 5
+  if res.scf_iterations != 1:
+    return 6
+  if res.total_energy_hartree > -2.69 or res.total_energy_hartree < -2.71:
+    return 7
+  var e: float = dft_smoke_h2_energy_hartree()
+  if e > -2.69 or e < -2.71:
+    return 8
+  if dft_smoke_entry() != 2702055:
+    return 9
+  return 0

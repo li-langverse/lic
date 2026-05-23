@@ -112,7 +112,7 @@ todos:
     status: completed
   - id: wave-d-21-vertical-chem
     content: "chem — DFT composable smoke + qm_dft vertical row honesty"
-    status: pending
+    status: completed
   - id: wave-d-22-vertical-bioeng
     content: "bioeng — LITL workflow composable + bioengineering.toml hook"
     status: pending

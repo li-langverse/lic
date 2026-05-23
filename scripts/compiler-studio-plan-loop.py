@@ -301,6 +301,7 @@ def run_cursor_agent(todo: dict, dry_run: bool) -> tuple[int, str]:
                 break
 
     agent = os.environ.get("LI_COMPILER_STUDIO_PLAN_AGENT", "code_implementer")
+    STATE_DIR.mkdir(parents=True, exist_ok=True)
     goal_path = STATE_DIR / f"goal-{datetime.now(timezone.utc).strftime('%Y%m%d-%H%M%S')}.md"
     goal_path.write_text(instruction, encoding="utf-8")
 
@@ -330,7 +331,6 @@ def run_cursor_agent(todo: dict, dry_run: bool) -> tuple[int, str]:
     if benchmarks:
         cmd.extend(["--benchmarks", benchmarks])
 
-    STATE_DIR.mkdir(parents=True, exist_ok=True)
     log_path = STATE_DIR / f"iter-{datetime.now(timezone.utc).strftime('%Y%m%d-%H%M%S')}.log"
     rc = run_subprocess_streaming(cmd, root, env, log_path)
     recover_unpushed_work(ROOT, root, LOOP_BRANCH)

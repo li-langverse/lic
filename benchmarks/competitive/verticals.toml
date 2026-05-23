@@ -76,6 +76,16 @@ last_reviewed = "2026-05-23"
 notes = "bioengineering.toml composable import_bioeng_litl_workflow.li; design→build→test→learn stub — not Benchling/Rosetta parity."
 
 [[vertical]]
+id = "robo_workspace"
+incumbent = "Gazebo / Isaac Sim / MoveIt / Drake"
+kernel_or_api = "sim_robotics workspace profile + PH-ROBO phase chrome"
+workload_class = "stub"
+oracle = "composable_only"
+li_package = "sim.robotics"
+last_reviewed = "2026-05-23"
+notes = "robotics.toml composable import_sim_robotics_workspace.li; sim_robotics profile + tick stub — not Gazebo/Isaac Sim/MoveIt/Drake parity."
+
+[[vertical]]
 id = "am_slicer"
 incumbent = "PrusaSlicer / Cura / Bambu Studio"
 kernel_or_api = "slice → preview → export G-code/3MF"

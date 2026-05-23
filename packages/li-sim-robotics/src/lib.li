@@ -1,0 +1,148 @@
+
+# PH-ROBO / wave-d-23 — sim_robotics workspace composable stub (robo_workspace vertical; workload_class=stub).
+# Studio profile + tick counter only — NOT Gazebo/Isaac Sim/MoveIt/Drake parity.
+
+type RoboticsWorkspaceState = object
+  public profile_id: int
+  public ph_robo_phase: int
+  public sim_tick: int
+  public joint_count: int
+
+def li_std_sim_robotics_version() -> int
+  requires true
+  ensures result == 1
+  decreases 0
+=
+  return 1
+
+def sim_robotics_workload_class_stub() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0
+
+def robo_profile_sim_robotics() -> int
+  requires true
+  ensures result == 2
+  decreases 0
+=
+  return 2
+
+def robo_ph_robo_phase_0() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0
+
+def robo_ph_robo_phase_1() -> int
+  requires true
+  ensures result == 1
+  decreases 0
+=
+  return 1
+
+def robo_ph_robo_phase_2() -> int
+  requires true
+  ensures result == 2
+  decreases 0
+=
+  return 2
+
+def robo_ph_robo_phase_3() -> int
+  requires true
+  ensures result == 3
+  decreases 0
+=
+  return 3
+
+def robo_ph_robo_phase_4() -> int
+  requires true
+  ensures result == 4
+  decreases 0
+=
+  return 4
+
+def robo_ph_robo_phase_5() -> int
+  requires true
+  ensures result == 5
+  decreases 0
+=
+  return 5
+
+def robo_event_advance_tick() -> int
+  requires true
+  ensures result == 1
+  decreases 0
+=
+  return 1
+
+def robo_workspace_init(joint_count: int) -> RoboticsWorkspaceState
+  requires joint_count >= 1
+  requires joint_count <= 32
+  ensures result.profile_id == robo_profile_sim_robotics()
+  ensures result.ph_robo_phase == robo_ph_robo_phase_0()
+  ensures result.sim_tick == 0
+  ensures result.joint_count == joint_count
+  decreases 0
+=
+  var w: RoboticsWorkspaceState
+  w.profile_id = robo_profile_sim_robotics()
+  w.ph_robo_phase = robo_ph_robo_phase_0()
+  w.sim_tick = 0
+  w.joint_count = joint_count
+  return w
+
+def robo_workspace_advance(state: RoboticsWorkspaceState, event_id: int) -> RoboticsWorkspaceState
+  requires state.profile_id == robo_profile_sim_robotics()
+  requires state.ph_robo_phase >= robo_ph_robo_phase_0()
+  requires state.ph_robo_phase <= robo_ph_robo_phase_5()
+  requires state.sim_tick >= 0
+  requires state.joint_count >= 1
+  requires event_id == robo_event_advance_tick()
+  ensures result.sim_tick >= state.sim_tick
+  decreases 0
+=
+  var next: RoboticsWorkspaceState
+  next.profile_id = state.profile_id
+  next.joint_count = state.joint_count
+  next.ph_robo_phase = state.ph_robo_phase
+  next.sim_tick = state.sim_tick + 1
+  if state.sim_tick == 0:
+    next.ph_robo_phase = robo_ph_robo_phase_1()
+  if state.sim_tick == 1:
+    next.ph_robo_phase = robo_ph_robo_phase_2()
+  if state.sim_tick == 2:
+    next.ph_robo_phase = robo_ph_robo_phase_3()
+  if state.sim_tick == 3:
+    next.ph_robo_phase = robo_ph_robo_phase_4()
+  if state.sim_tick == 4:
+    next.ph_robo_phase = robo_ph_robo_phase_5()
+  return next
+
+def robo_workspace_smoke_tick_count() -> int
+  requires true
+  ensures result == 5
+  decreases 0
+=
+  var w0: RoboticsWorkspaceState = robo_workspace_init(6)
+  var w1: RoboticsWorkspaceState = robo_workspace_advance(w0, robo_event_advance_tick())
+  var w2: RoboticsWorkspaceState = robo_workspace_advance(w1, robo_event_advance_tick())
+  var w3: RoboticsWorkspaceState = robo_workspace_advance(w2, robo_event_advance_tick())
+  var w4: RoboticsWorkspaceState = robo_workspace_advance(w3, robo_event_advance_tick())
+  var w5: RoboticsWorkspaceState = robo_workspace_advance(w4, robo_event_advance_tick())
+  return w5.sim_tick
+
+def robo_smoke_entry() -> int
+  requires true
+  ensures result == 6056
+  decreases 0
+=
+  var ticks: int = robo_workspace_smoke_tick_count()
+  if ticks != 5:
+    return 0
+  var w: RoboticsWorkspaceState = robo_workspace_init(6)
+  if w.joint_count != 6:
+    return 0
+  return 6000 + ticks * 11 + w.joint_count

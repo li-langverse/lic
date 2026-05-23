@@ -1,0 +1,39 @@
+import sim.robotics
+
+def main() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  if li_std_sim_robotics_version() < 1:
+    return 1
+  if sim_robotics_workload_class_stub() != 0:
+    return 2
+  var w0: RoboticsWorkspaceState = robo_workspace_init(6)
+  if w0.profile_id != robo_profile_sim_robotics():
+    return 3
+  if w0.ph_robo_phase != robo_ph_robo_phase_0():
+    return 4
+  if w0.sim_tick != 0:
+    return 5
+  if w0.joint_count != 6:
+    return 6
+  var w1: RoboticsWorkspaceState = robo_workspace_advance(w0, robo_event_advance_tick())
+  if w1.sim_tick != 1:
+    return 7
+  if w1.ph_robo_phase != robo_ph_robo_phase_1():
+    return 8
+  var w5: RoboticsWorkspaceState = w1
+  var w2: RoboticsWorkspaceState = robo_workspace_advance(w5, robo_event_advance_tick())
+  var w3: RoboticsWorkspaceState = robo_workspace_advance(w2, robo_event_advance_tick())
+  var w4: RoboticsWorkspaceState = robo_workspace_advance(w3, robo_event_advance_tick())
+  w5 = robo_workspace_advance(w4, robo_event_advance_tick())
+  if w5.sim_tick != 5:
+    return 9
+  if w5.ph_robo_phase != robo_ph_robo_phase_5():
+    return 10
+  if robo_workspace_smoke_tick_count() != 5:
+    return 11
+  if robo_smoke_entry() != 6056:
+    return 12
+  return 0

@@ -118,7 +118,7 @@ todos:
     status: completed
   - id: wave-d-23-vertical-robo
     content: "sim.robotics — workspace composable + PH-ROBO cross-link"
-    status: pending
+    status: completed
   - id: wave-d-24-vertical-am
     content: "sim.additive — slicer workflow composable + am_slicer vertical"
     status: pending

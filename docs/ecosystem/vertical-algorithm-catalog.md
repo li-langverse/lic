@@ -15,6 +15,7 @@ Agents: cite vertical `id` and `workload_class` in PRs. Do **not** claim GROMACS
 | `cfd_lid_driven_cavity` | `stub` | `sim.scientific` | none (PH-CAE CAE-2) |
 | `drug_litl` | `stub` | `sim.drug_design` | composable_only |
 | `bio_litl` | `stub` | `bioeng` | composable `import_bioeng_litl_workflow.li` + [bioengineering.toml](../../benchmarks/competitive/bioengineering.toml) |
+| `robo_workspace` | `stub` | `sim.robotics` | composable `import_sim_robotics_workspace.li` + [robotics.toml](../../benchmarks/competitive/robotics.toml) |
 | `am_slicer` | `stub` | `sim.additive` | composable_only |
 | `scientific_viz` | `stub` | `sim.viz` | composable_only |
 | `cinematic_encode` | `stub` | `studio` | none (PH-CIN CIN-2) |
@@ -214,6 +215,33 @@ Workflow **UI patterns only** — no Roche/Schrödinger algorithm parity.
 ### Honesty
 
 **No Benchling/Rosetta/ProteinMPNN parity claims.** `workload_class=stub` until domain oracle rows land.
+
+---
+
+## robo_workspace
+
+**Incumbent:** Gazebo / Isaac Sim / MoveIt / Drake  
+**Kernel / API:** `sim_robotics` workspace profile + PH-ROBO phase chrome  
+**`workload_class`:** `stub` · **`oracle`:** `composable_only` · **`li_package`:** `sim.robotics`
+
+### Kernel families
+
+| Family | Target | Li today | Proof / bench |
+|--------|--------|----------|---------------|
+| Studio workspace profile | `sim_robotics` spin-up | `robo_workspace_*` in `sim.robotics` | composable `import_sim_robotics_workspace.li` |
+| PH-ROBO phase tracker | ROBO-0…5 milestones | `robo_ph_robo_phase_*` + tick advance | composable smoke |
+| Rigid-body sim step | Gazebo/Drake integrate | reuse `physics.rigid` tier-2 | **stub** — no timed oracle row |
+
+### References
+
+- Program: [PH-world-studio-program.md](../game-dev/PH-world-studio-program.md) PH-ROBO (depends PH-SIM-1)
+- RFC: [li-sim-robotics-rfc.md](../game-dev/specs/li-sim-robotics-rfc.md)
+- Bench: [robotics.toml](../../benchmarks/competitive/robotics.toml)
+- Vision: [world-studio-vision.md](../game-dev/world-studio-vision.md) §10 Robotics
+
+### Honesty
+
+**No Gazebo/Isaac Sim/MoveIt/Drake parity claims.** `workload_class=stub` until physics.rigid bench oracle lands.
 
 ---
 

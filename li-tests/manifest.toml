@@ -804,6 +804,12 @@ note = "wave-d-22: import bioeng; bio_litl vertical — DBTL stage advance smoke
 
 [[tests]]
 suite = "composable"
+file = "composable/import_sim_robotics_workspace.li"
+outcome = "compile_open_ok"
+note = "wave-d-23: import sim.robotics; robo_workspace vertical — sim_robotics profile tick + PH-ROBO phase smoke"
+
+[[tests]]
+suite = "composable"
 file = "composable/import_linalg_matmul_smoke.li"
 outcome = "compile_open_ok"
 note = "AL-10: import linalg; matmul_2x2/2x3 smoke via explicit @ (open VC on float branch ensures)"

@@ -726,6 +726,12 @@ note = "wave-d-11 UX-02: import ui; dock zones + workspace chrome (open VC on wo
 
 [[tests]]
 suite = "composable"
+file = "composable/import_ui_command_palette.li"
+outcome = "compile_open_ok"
+note = "wave-d-12 UX-03/11: import ui; command palette contexts + PH-AGENT cmd IDs (open VC on command_palette_entry_agent ensures)"
+
+[[tests]]
+suite = "composable"
 file = "composable/import_studio_gui_wire.li"
 outcome = "compile_open_ok"
 note = "wave-d-11: import studio; dock/workspace + gui wire (open VC on studio_wire_gui_hd branch ensures)"

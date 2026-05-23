@@ -85,7 +85,7 @@ todos:
     status: completed
   - id: wave-d-12-ux-command-palette
     content: "PH-UX command palette / agent cmd IDs stub (UX-01 patterns)"
-    status: pending
+    status: completed
   - id: wave-d-13-anim-scaffold
     content: "AL-12 packages/anim — keyframe/clip types + composable"
     status: pending

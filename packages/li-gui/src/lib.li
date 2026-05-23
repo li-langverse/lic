@@ -273,3 +273,75 @@ def studio_shell_dock_zone_rect(shell: StudioShell, zone_id: int) -> GuiRect
   if zone_id == gui_dock_zone_inspector():
     return shell.inspector
   return gui_dock_rect_ml()
+
+# wave-d-12 / UX-03 + UX-11 — palette + agent cmd IDs aligned with `import ui` (no runtime search).
+def gui_palette_context_viewport() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0
+
+def gui_palette_context_graph() -> int
+  requires true
+  ensures result == 1
+  decreases 0
+=
+  return 1
+
+def gui_palette_context_sim() -> int
+  requires true
+  ensures result == 2
+  decreases 0
+=
+  return 2
+
+def gui_palette_context_count() -> int
+  requires true
+  ensures result == 3
+  decreases 0
+=
+  return 3
+
+def gui_agent_cmd_lic_build() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0
+
+def gui_agent_cmd_lic_check() -> int
+  requires true
+  ensures result == 1
+  decreases 0
+=
+  return 1
+
+def gui_agent_cmd_adaptive_layout() -> int
+  requires true
+  ensures result == 2
+  decreases 0
+=
+  return 2
+
+def gui_agent_cmd_mcp_invoke() -> int
+  requires true
+  ensures result == 3
+  decreases 0
+=
+  return 3
+
+def gui_agent_cmd_count() -> int
+  requires true
+  ensures result == 4
+  decreases 0
+=
+  return 4
+
+def gui_command_palette_rect_hd() -> GuiRect
+  requires true
+  ensures result.w == 430.0
+  ensures result.h == 48.0
+  decreases 0
+=
+  return gui_rect_at(424.0, 368.0, 430.0, 48.0)

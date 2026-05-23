@@ -42,6 +42,14 @@ def studio_wire_smoke_entry() -> int
     return 8
   if studio_dock_tab_count() != 5:
     return 9
+  if command_palette_context_count() != 3:
+    return 10
+  if agent_cmd_count() != 4:
+    return 11
+  if gui_palette_context_count() != command_palette_context_count():
+    return 12
+  if gui_agent_cmd_count() != agent_cmd_count():
+    return 13
   return 0
 
 # wave-d-11 — cross-package dock/workspace wire (UX-02); widths + zone rects only (no struct ABI).
@@ -57,31 +65,49 @@ def studio_wire_gui_hd() -> int
   var layout: AdaptiveLayout = adaptive_layout_hd()
   var side_w: float = shell.sidebar.w
   if side_w != layout.sidebar.w:
-    return 10
+    return 20
   if shell.main.w != layout.main.w:
-    return 11
+    return 21
   if shell.inspector.w != layout.inspector.w:
-    return 12
+    return 22
   var ws: WorkspaceChrome = workspace_chrome_hd()
   if ws.layout.sidebar.w != layout.sidebar.w:
-    return 13
+    return 23
   var shell_side: StudioShell = studio_shell_layout_hd()
   var side_rect: GuiRect = studio_shell_dock_zone_rect(shell_side, gui_dock_zone_sidebar())
   if side_rect.w != side_w:
-    return 14
+    return 24
   var shell_ml: StudioShell = studio_shell_layout_hd()
   var ml_gui: GuiRect = studio_shell_dock_zone_rect(shell_ml, gui_dock_zone_ml())
   var layout_ml: AdaptiveLayout = adaptive_layout_hd()
   var ml_ui: Rect = workspace_dock_rect_for_zone(layout_ml, dock_zone_ml())
   if ml_gui.w != ml_ui.w:
-    return 15
+    return 25
   var stage: DockPanel = workspace_dock_panel_stage(0, layout_role_hypothesis())
   if stage.collapsed != dock_panel_collapsed_open():
-    return 16
+    return 26
   var advanced: DockPanel = workspace_dock_panel_stage(4, layout_role_ml())
   if advanced.collapsed != dock_panel_collapsed_closed():
-    return 17
+    return 27
   workspace_chrome_attach_panel(ws, stage)
   if ws.panel_count != 1:
-    return 18
+    return 28
+  var pal_ui: Rect = command_palette_region_hd()
+  var pal_gui: GuiRect = gui_command_palette_rect_hd()
+  if pal_gui.w != pal_ui.w:
+    return 29
+  if pal_gui.h != pal_ui.h:
+    return 30
+  var palette: CommandPalette = command_palette_hd()
+  if palette.hook_id != studio_chrome_hook_command_palette():
+    return 31
+  var build: PaletteEntry = command_palette_entry_agent(command_palette_context_sim(), agent_cmd_lic_build(), 1)
+  if build.cmd_id != gui_agent_cmd_lic_build():
+    return 32
+  var viewport_action: PaletteEntry = command_palette_entry_action(command_palette_context_viewport(), 2)
+  if command_palette_context_matches(palette.context_id, viewport_action) != 1:
+    return 33
+  command_palette_attach_entry(palette, build)
+  if palette.entry_count != 1:
+    return 34
   return 0

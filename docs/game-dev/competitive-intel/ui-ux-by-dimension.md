@@ -14,7 +14,7 @@ Agents: when changing Studio shell, cite dimension IDs in PR body (`UX-02: …`)
 |----|-----------|-------------------|------------------|
 | UX-01 | Viewport & 3D navigation | Blender, UE, Unity | `render`, wgpu |
 | UX-02 | Panel layout & docking | Blender N-panel, UE dock tabs | `ui`, `gui`, `studio.adaptive` |
-| UX-03 | Command palette & shortcuts | Blender search, VS Code | `li-studio` (planned) |
+| UX-03 | Command palette & shortcuts | Blender search, VS Code | `ui` palette contexts + `studio` wire (stub) |
 | UX-04 | Properties / inspector | ParaView Properties | `gui`, `ui` + sim inspectors |
 | UX-05 | Timeline & playback | UE Sequencer, Blender Dope Sheet | `seq` (stub) |
 | UX-06 | Scientific visualization | ParaView, VTK, MATLAB | `sim.viz` |
@@ -72,7 +72,9 @@ Agents: when changing Studio shell, cite dimension IDs in PR body (`UX-02: …`)
 - Single fuzzy-search entry for actions + recent files
 - Context-sensitive command sets (viewport vs graph vs sim)
 
-**Li gap:** Not implemented — document in `studio-ux-design-system-rfc.md` when PH-GD-1 lands.
+**Li today:** `CommandPalette`, `PaletteEntry`, `command_palette_context_*()`, `agent_cmd_*()` on `import ui`; `gui_command_palette_rect_hd()` on `import gui` (stub; no fuzzy search runtime).  
+**Li gap:** No fuzzy search, shortcuts registry, or recent-files backend.  
+**Next:** Wire palette entries to `lic` CLI actions when PH-GD-1 lands.
 
 ---
 
@@ -206,6 +208,7 @@ Agents: when changing Studio shell, cite dimension IDs in PR body (`UX-02: …`)
 - Every agent mutation ends in `lic build` / `lic check` with surfaced errors
 - `studio_adaptive_layout` tool (vision §18) → call `adaptive_layout_hd` / future parametric API
 
+**Li today:** `agent_cmd_lic_build()`, `agent_cmd_lic_check()`, `agent_cmd_adaptive_layout()`, `agent_cmd_mcp_invoke()` on `import ui` (palette entry kind `palette_entry_kind_agent()`).  
 **Li gap:** PH-AGENT RFC stub; cursor-sdk wiring in separate repo overlay.
 
 ---

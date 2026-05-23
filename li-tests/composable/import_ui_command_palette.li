@@ -1,0 +1,34 @@
+import ui
+
+def main() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  if command_palette_context_count() != 3:
+    return 1
+  if agent_cmd_count() != 4:
+    return 2
+  if command_palette_hook_id() != studio_chrome_hook_command_palette():
+    return 3
+  var pal: CommandPalette = command_palette_hd()
+  if pal.context_id != command_palette_context_viewport():
+    return 4
+  var region: Rect = command_palette_region_hd()
+  if region.w != 430.0:
+    return 5
+  var build: PaletteEntry = command_palette_entry_agent(command_palette_context_sim(), agent_cmd_lic_check(), 1)
+  if build.kind != palette_entry_kind_agent():
+    return 6
+  if build.cmd_id != agent_cmd_lic_check():
+    return 7
+  var action: PaletteEntry = command_palette_entry_action(command_palette_context_viewport(), 2)
+  if command_palette_context_matches(pal.context_id, action) != 1:
+    return 8
+  var graph_action: PaletteEntry = command_palette_entry_action(command_palette_context_graph(), 3)
+  if command_palette_context_matches(pal.context_id, graph_action) != 0:
+    return 9
+  command_palette_attach_entry(pal, build)
+  if pal.entry_count != 1:
+    return 10
+  return 0

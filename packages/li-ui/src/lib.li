@@ -567,3 +567,212 @@ def workspace_chrome_attach_panel(chrome: WorkspaceChrome, panel: DockPanel) -> 
   decreases chrome.panel_count
 =
   chrome.panel_count = chrome.panel_count + 1
+
+# wave-d-12 / UX-03 + UX-11 — command palette contexts + PH-AGENT cmd IDs (⌘K stub; no fuzzy runtime).
+# Context sets filter entries (viewport vs graph vs sim); agent cmds map to `lic build` / `lic check` (IDs only).
+def command_palette_context_viewport() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0
+
+def command_palette_context_graph() -> int
+  requires true
+  ensures result == 1
+  decreases 0
+=
+  return 1
+
+def command_palette_context_sim() -> int
+  requires true
+  ensures result == 2
+  decreases 0
+=
+  return 2
+
+def command_palette_context_count() -> int
+  requires true
+  ensures result == 3
+  decreases 0
+=
+  return 3
+
+def palette_entry_kind_action() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0
+
+def palette_entry_kind_agent() -> int
+  requires true
+  ensures result == 1
+  decreases 0
+=
+  return 1
+
+def palette_entry_kind_recent() -> int
+  requires true
+  ensures result == 2
+  decreases 0
+=
+  return 2
+
+def studio_shortcut_palette_open() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0
+
+def agent_cmd_lic_build() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0
+
+def agent_cmd_lic_check() -> int
+  requires true
+  ensures result == 1
+  decreases 0
+=
+  return 1
+
+def agent_cmd_adaptive_layout() -> int
+  requires true
+  ensures result == 2
+  decreases 0
+=
+  return 2
+
+def agent_cmd_mcp_invoke() -> int
+  requires true
+  ensures result == 3
+  decreases 0
+=
+  return 3
+
+def agent_cmd_count() -> int
+  requires true
+  ensures result == 4
+  decreases 0
+=
+  return 4
+
+type PaletteEntry = object
+  public entry_id: int
+  public context_id: int
+  public kind: int
+  public cmd_id: int
+  public label_id: int
+
+type CommandPalette = object
+  public hook_id: int
+  public context_id: int
+  public entry_count: int
+  public recent_count: int
+
+def command_palette_hook_id() -> int
+  requires true
+  ensures result == 3
+  decreases 0
+=
+  return studio_chrome_hook_command_palette()
+
+def command_palette_region_hd() -> Rect
+  requires true
+  ensures result.w == 430.0
+  ensures result.h == 48.0
+  decreases 0
+=
+  return rect_at_f(424.0, 368.0, 430.0, 48.0)
+
+def palette_entry_new(entry_id: int, context_id: int, kind: int, cmd_id: int, label_id: int) -> PaletteEntry
+  requires entry_id >= 0
+  requires context_id >= 0
+  requires context_id < 3
+  requires kind >= 0
+  requires kind < 3
+  requires cmd_id >= 0
+  requires label_id >= 0
+  ensures result.entry_id == entry_id
+  ensures result.context_id == context_id
+  ensures result.kind == kind
+  ensures result.cmd_id == cmd_id
+  ensures result.label_id == label_id
+  decreases entry_id
+=
+  var e: PaletteEntry
+  e.entry_id = entry_id
+  e.context_id = context_id
+  e.kind = kind
+  e.cmd_id = cmd_id
+  e.label_id = label_id
+  return e
+
+def command_palette_hd() -> CommandPalette
+  requires true
+  ensures result.hook_id == 3
+  ensures result.context_id == command_palette_context_viewport()
+  ensures result.entry_count == 0
+  ensures result.recent_count == 0
+  decreases 0
+=
+  var out: CommandPalette
+  out.hook_id = command_palette_hook_id()
+  out.context_id = command_palette_context_viewport()
+  out.entry_count = 0
+  out.recent_count = 0
+  return out
+
+def command_palette_attach_entry(palette: CommandPalette, entry: PaletteEntry) -> unit
+  requires palette.entry_count >= 0
+  requires entry.context_id >= 0
+  requires entry.context_id < 3
+  requires entry.kind >= 0
+  requires entry.kind < 3
+  ensures true
+  decreases palette.entry_count
+=
+  palette.entry_count = palette.entry_count + 1
+  if entry.kind == palette_entry_kind_recent():
+    palette.recent_count = palette.recent_count + 1
+
+def command_palette_entry_action(context_id: int, label_id: int) -> PaletteEntry
+  requires context_id >= 0
+  requires context_id < 3
+  requires label_id >= 0
+  ensures result.context_id == context_id
+  ensures result.kind == palette_entry_kind_action()
+  ensures result.cmd_id == 0
+  decreases context_id
+=
+  return palette_entry_new(0, context_id, palette_entry_kind_action(), 0, label_id)
+
+def command_palette_entry_agent(context_id: int, agent_cmd_id: int, label_id: int) -> PaletteEntry
+  requires context_id >= 0
+  requires context_id < 3
+  requires agent_cmd_id >= 0
+  requires agent_cmd_id < 4
+  requires label_id >= 0
+  ensures result.context_id == context_id
+  ensures result.kind == palette_entry_kind_agent()
+  ensures result.cmd_id == agent_cmd_id
+  decreases agent_cmd_id
+=
+  return palette_entry_new(0, context_id, palette_entry_kind_agent(), agent_cmd_id, label_id)
+
+def command_palette_context_matches(context_id: int, entry: PaletteEntry) -> int
+  requires context_id >= 0
+  requires context_id < 3
+  requires entry.context_id >= 0
+  requires entry.context_id < 3
+  ensures result >= 0
+  ensures result <= 1
+  decreases entry.context_id
+=
+  if entry.context_id == context_id:
+    return 1
+  return 0

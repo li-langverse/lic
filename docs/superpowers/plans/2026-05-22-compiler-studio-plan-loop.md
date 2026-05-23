@@ -73,7 +73,7 @@ todos:
     status: completed
   - id: wave-d-08-scene-hierarchy
     content: "scene — hierarchy + transform via math.Quat + composable"
-    status: pending
+    status: completed
   - id: wave-d-09-assets-gltf
     content: "assets — glTF ingest stub + composable import"
     status: pending

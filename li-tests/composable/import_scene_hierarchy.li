@@ -1,0 +1,53 @@
+import scene
+import math
+
+def main() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  if li_std_scene_version() < 3:
+    return 1
+  if scene_workload_class_stub() != 0:
+    return 2
+  var parent: Transform3 = transform_identity()
+  parent.position = vec3(10.0, 0.0, 0.0)
+  var child_local: Transform3 = transform_identity()
+  child_local.position = vec3(0.0, 5.0, 0.0)
+  var hz_w: float = 0.70710678
+  var hz_z: float = 0.70710678
+  var half_z: Quat
+  half_z.w = hz_w
+  half_z.x = 0.0
+  half_z.y = 0.0
+  half_z.z = hz_z
+  child_local.rotation = half_z
+  var world: Transform3 = scene_world_transform(parent, child_local)
+  if world.position.x < 9.99 or world.position.x > 10.01:
+    return 3
+  if world.position.y < 4.99 or world.position.y > 5.01:
+    return 4
+  if world.position.z != 0.0:
+    return 5
+  var rot_d: float = world.rotation.w * hz_w + world.rotation.z * hz_z
+  if rot_d < 0.99 or rot_d > 1.01:
+    return 6
+  var root: SceneNode = scene_node_new(0, scene_parent_none())
+  var child_xform: Transform3 = transform_identity()
+  child_xform.position = vec3(0.0, 5.0, 0.0)
+  var half_z_node: Quat
+  half_z_node.w = hz_w
+  half_z_node.x = 0.0
+  half_z_node.y = 0.0
+  half_z_node.z = hz_z
+  child_xform.rotation = half_z_node
+  var child: SceneNode = scene_node_new(1, 0)
+  scene_node_set_transform(child, child_xform)
+  if child.parent != 0:
+    return 7
+  if root.parent != scene_parent_none():
+    return 8
+  var hash: int = scene_hierarchy_smoke_entry()
+  if hash != 1005:
+    return 9
+  return 0

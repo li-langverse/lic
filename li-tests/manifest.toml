@@ -738,6 +738,12 @@ note = "AL-11: import scene; Transform3 uses math.Quat/Vec3 (open VC on transfor
 
 [[tests]]
 suite = "composable"
+file = "composable/import_scene_hierarchy.li"
+outcome = "compile_open_ok"
+note = "wave-d-08: scene hierarchy + transform_compose via math.Quat (open VC on compose/rotate)"
+
+[[tests]]
+suite = "composable"
 file = "composable/import_linalg_matmul_smoke.li"
 outcome = "compile_open_ok"
 note = "AL-10: import linalg; matmul_2x2/2x3 smoke via explicit @ (open VC on float branch ensures)"

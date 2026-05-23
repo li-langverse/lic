@@ -1,5 +1,8 @@
 import math
 
+# wave-d-08 — scene hierarchy + TRS compose via math.Quat (workload_class=stub).
+# Picks / full graph storage deferred; parent id + transform_compose for Studio hooks.
+
 type EntityId = object
   public value: int
 
@@ -17,12 +20,27 @@ type SceneNode = object
 type Scene = object
   public node_count: int
   public root_id: int
+
 def li_std_scene_version() -> int
   requires true
-  ensures result == 2
+  ensures result == 3
   decreases 0
 =
-  return 2
+  return 3
+
+def scene_workload_class_stub() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0
+
+def scene_parent_none() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0
 def entity_id_new(v: int) -> EntityId
   requires v >= 0
   ensures result.value == v
@@ -44,12 +62,178 @@ def transform_identity() -> Transform3
   return t
 def transform_rotation_dot(a: Transform3, b: Transform3) -> float
   requires true
-  ensures true
+  ensures result >= -1.0
+  ensures result <= 1.0
   decreases 0
 =
   var ra: Quat = a.rotation
   var rb: Quat = b.rotation
   return quat_dot(ra, rb)
+
+def transform_scale_mul(a: Vec3, b: Vec3) -> Vec3
+  requires true
+  ensures result.x == a.x * b.x
+  ensures result.y == a.y * b.y
+  ensures result.z == a.z * b.z
+  decreases 0
+=
+  return vec3(a.x * b.x, a.y * b.y, a.z * b.z)
+
+def quat_rotate_vec3(q: Quat, v: Vec3) -> Vec3
+  requires true
+  ensures result.x >= -1e6
+  ensures result.x <= 1e6
+  ensures result.y >= -1e6
+  ensures result.y <= 1e6
+  ensures result.z >= -1e6
+  ensures result.z <= 1e6
+  decreases 0
+=
+  var qx: float = q.x
+  var qy: float = q.y
+  var qz: float = q.z
+  var qw: float = q.w
+  var vx: float = v.x
+  var vy: float = v.y
+  var vz: float = v.z
+  var tx: float = 2.0 * (qy * vz - qz * vy)
+  var ty: float = 2.0 * (qz * vx - qx * vz)
+  var tz: float = 2.0 * (qx * vy - qy * vx)
+  var t2x: float = qy * tz - qz * ty
+  var t2y: float = qz * tx - qx * tz
+  var t2z: float = qx * ty - qy * tx
+  return vec3(vx + qw * tx + t2x, vy + qw * ty + t2y, vz + qw * tz + t2z)
+
+def transform_compose(parent: Transform3, child: Transform3) -> Transform3
+  requires true
+  ensures result.rotation.w >= -1.0
+  ensures result.rotation.w <= 1.0
+  decreases 0
+=
+  var out: Transform3
+  var psx: float = parent.scale.x
+  var psy: float = parent.scale.y
+  var psz: float = parent.scale.z
+  var lpx: float = child.position.x
+  var lpy: float = child.position.y
+  var lpz: float = child.position.z
+  var lsx: float = child.scale.x
+  var lsy: float = child.scale.y
+  var lsz: float = child.scale.z
+  var prw: float = parent.rotation.w
+  var prx: float = parent.rotation.x
+  var pry: float = parent.rotation.y
+  var prz: float = parent.rotation.z
+  var lrw: float = child.rotation.w
+  var lrx: float = child.rotation.x
+  var lry: float = child.rotation.y
+  var lrz: float = child.rotation.z
+  var ppx: float = parent.position.x
+  var ppy: float = parent.position.y
+  var ppz: float = parent.position.z
+  var sx: float = psx * lpx
+  var sy: float = psy * lpy
+  var sz: float = psz * lpz
+  var tx: float = 2.0 * (pry * sz - prz * sy)
+  var ty: float = 2.0 * (prz * sx - prx * sz)
+  var tz: float = 2.0 * (prx * sy - pry * sx)
+  var t2x: float = pry * tz - prz * ty
+  var t2y: float = prz * tx - prx * tz
+  var t2z: float = prx * ty - pry * tx
+  var pos: Vec3 = vec3(ppx, ppy, ppz)
+  var rot: Vec3 = vec3(sx + prw * tx + t2x, sy + prw * ty + t2y, sz + prw * tz + t2z)
+  out.position = vec3_add(pos, rot)
+  out.rotation.w = prw * lrw - prx * lrx - pry * lry - prz * lrz
+  out.rotation.x = prw * lrx + prx * lrw + pry * lrz - prz * lry
+  out.rotation.y = prw * lry - prx * lrz + pry * lrw + prz * lrx
+  out.rotation.z = prw * lrz + prx * lry - pry * lrx + prz * lrw
+  out.scale = vec3(psx * lsx, psy * lsy, psz * lsz)
+  return out
+
+def scene_node_new(id: int, parent: int) -> SceneNode
+  requires id >= 0
+  requires parent >= 0
+  ensures result.id.value == id
+  ensures result.parent == parent
+  ensures result.physics_body == 0
+  decreases id
+=
+  var n: SceneNode
+  n.id = entity_id_new(id)
+  n.parent = parent
+  n.transform = transform_identity()
+  n.physics_body = 0
+  return n
+
+def scene_node_set_transform(node: SceneNode, child: Transform3) -> unit
+  requires true
+  ensures true
+  decreases 0
+=
+  node.transform = child
+  return
+
+def scene_world_transform(parent: Transform3, child: Transform3) -> Transform3
+  requires true
+  ensures result.rotation.w >= -1.0
+  ensures result.rotation.w <= 1.0
+  decreases 0
+=
+  return transform_compose(parent, child)
+
+def scene_hierarchy_smoke_entry() -> int
+  requires true
+  ensures result == 1005
+  decreases 0
+=
+  if scene_workload_class_stub() != 0:
+    return 0
+  if li_std_scene_version() < 3:
+    return 0
+  var parent: Transform3 = transform_identity()
+  parent.position = vec3(10.0, 0.0, 0.0)
+  var child_local: Transform3 = transform_identity()
+  child_local.position = vec3(0.0, 5.0, 0.0)
+  var hz_w: float = 0.70710678
+  var hz_z: float = 0.70710678
+  var half_z: Quat
+  half_z.w = hz_w
+  half_z.x = 0.0
+  half_z.y = 0.0
+  half_z.z = hz_z
+  child_local.rotation = half_z
+  var d: float = hz_w * hz_w + hz_z * hz_z
+  if d < 0.99 or d > 1.01:
+    return 0
+  var world: Transform3 = scene_world_transform(parent, child_local)
+  if world.position.x < 9.99 or world.position.x > 10.01:
+    return 0
+  if world.position.y < 4.99 or world.position.y > 5.01:
+    return 0
+  if world.position.z != 0.0:
+    return 0
+  var wr_w: float = world.rotation.w
+  var wr_z: float = world.rotation.z
+  var rot_d: float = wr_w * hz_w + wr_z * hz_z
+  if rot_d < 0.99 or rot_d > 1.01:
+    return 0
+  var root: SceneNode = scene_node_new(0, scene_parent_none())
+  var child_xform: Transform3 = transform_identity()
+  child_xform.position = vec3(0.0, 5.0, 0.0)
+  var half_z_node: Quat
+  half_z_node.w = hz_w
+  half_z_node.x = 0.0
+  half_z_node.y = 0.0
+  half_z_node.z = hz_z
+  child_xform.rotation = half_z_node
+  var child: SceneNode = scene_node_new(1, 0)
+  scene_node_set_transform(child, child_xform)
+  if child.parent != 0:
+    return 0
+  if root.parent != scene_parent_none():
+    return 0
+  return 1005
+
 def scene_new() -> Scene
   requires true
   ensures result.node_count == 0

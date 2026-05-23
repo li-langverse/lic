@@ -23,7 +23,7 @@ workload_class = "stub"
 oracle = "cpp"
 li_package = "sim.scientific"
 last_reviewed = "2026-05-23"
-notes = "tier-2 verify green; md_oracle.toml stub for external binaries."
+notes = "tier-2 verify green; Layer B csv_lang lammps/gromacs (lammps_lj_micro, gromacs_lj_micro) in md_oracle.toml — stub via external/run_oracle_stub.sh + README; B1/B2 validity rows — not LAMMPS/GROMACS parity."
 
 [[vertical]]
 id = "pde_heat_2d"

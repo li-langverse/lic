@@ -9,7 +9,7 @@ Agents: cite vertical `id` and `workload_class` in PRs. Do **not** claim GROMACS
 | Vertical `id` | `workload_class` | `li_package` | Bench / verify today |
 |---------------|------------------|--------------|----------------------|
 | `gaming_rigid` | `v0_gaming` | `physics.rigid` | composable `import_physics_rigid_gaming.li` + [world-studio.toml](../../benchmarks/competitive/world-studio.toml) |
-| `md_lennard_jones` | `stub` | `sim.scientific` | tier-2 `md_lennard_jones` + `verify.py` |
+| `md_lennard_jones` | `stub` | `sim.scientific` | tier-2 + `md_external_oracle_stub.sh` + [external/README.md](../../benchmarks/tier2_physics/md_lennard_jones/external/README.md) |
 | `pde_heat_2d` | `stub` | `sim.scientific` | tier-2 `heat_equation_2d` + `verify.py` |
 | `fea_linear_elasticity` | `stub` | `sim.scientific` | none (PH-CAE CAE-1) |
 | `cfd_lid_driven_cavity` | `stub` | `sim.scientific` | none (PH-CAE CAE-2) |
@@ -62,12 +62,23 @@ Gate: `./scripts/check-vertical-algorithm-catalog.sh` (sync with `verticals.toml
 |--------|--------|----------|---------------|
 | LJ pair force + cutoff | LAMMPS `pair_style lj/cut` | Shared `md_core.c` + Li driver | `benchmarks/tier2_physics/md_lennard_jones/` |
 | NVE energy drift | GROMACS validity | Checksum vs native in `verify.py` | tier-2 smoke green |
-| External MD oracle | LAMMPS/GROMACS columns | **stub** — `md_oracle.toml`, `run_oracle_stub.sh` | `li-tests/tooling/md_external_oracle_stub.sh` |
+| External MD oracle | LAMMPS/GROMACS columns | **stub** — `lammps_lj_micro`, `gromacs_lj_micro` | `li-tests/tooling/md_external_oracle_stub.sh` |
+
+### LAMMPS / GROMACS column plan (B0–B2)
+
+| Phase | `csv_lang` | Oracle id | Status |
+|-------|------------|-----------|--------|
+| B0 | `lammps`, `gromacs` | `lammps_lj_micro`, `gromacs_lj_micro` | **stub** — native drift manifest only |
+| B1 | `lammps` | `lammps_lj_micro` | deck matches `md_core.c` IC |
+| B2 | `gromacs` | `gromacs_lj_micro` | `gmx mdrun` on pinned release |
+
+Driver doc: [external/README.md](../../benchmarks/tier2_physics/md_lennard_jones/external/README.md) · stub: `run_oracle_stub.sh`.
 
 ### References
 
 - Harness: [competitive-engines-plan.md](../benchmarks/competitive-engines-plan.md)
 - Registry: [md_oracle.toml](../../benchmarks/competitive/md_oracle.toml)
+- Driver: [external/README.md](../../benchmarks/tier2_physics/md_lennard_jones/external/README.md)
 - UX: [UX-06](../game-dev/competitive-intel/ui-ux-by-dimension.md#ux-06--scientific-visualization)
 
 ### Honesty

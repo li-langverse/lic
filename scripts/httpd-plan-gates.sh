@@ -241,6 +241,26 @@ if [[ "${HTTPD_GATES_SKIP_LIC_BUILD:-0}" != "1" && "${HTTPD_RUN_M2_CIRCUIT_QUEUE
   fi
 fi
 
+# m2-websocket-runtime: WebSocket upgrade + bidirectional proxy (opt-out HTTPD_RUN_M2_WEBSOCKET_TEST=0).
+if [[ "${HTTPD_GATES_SKIP_LIC_BUILD:-0}" != "1" && "${HTTPD_RUN_M2_WEBSOCKET_TEST:-1}" == "1" ]]; then
+  if [[ -x "$ROOT/scripts/test-m2-websocket-runtime.sh" && -x "$ROOT/build/li-httpd" ]]; then
+    echo "==> test-m2-websocket-runtime.sh (m2-websocket-runtime)"
+    "$ROOT/scripts/test-m2-websocket-runtime.sh" || fail "test-m2-websocket-runtime.sh failed"
+  else
+    fail "m2-websocket-runtime: build/li-httpd missing (run build-li-httpd.sh)"
+  fi
+fi
+
+# m2-webhook-egress-runtime: webhook SSRF allowlist on outbound X-Li-Webhook-Url (opt-out HTTPD_RUN_M2_WEBHOOK_TEST=0).
+if [[ "${HTTPD_GATES_SKIP_LIC_BUILD:-0}" != "1" && "${HTTPD_RUN_M2_WEBHOOK_TEST:-1}" == "1" ]]; then
+  if [[ -x "$ROOT/scripts/test-m2-webhook-egress-runtime.sh" && -x "$ROOT/build/li-httpd" ]]; then
+    echo "==> test-m2-webhook-egress-runtime.sh (m2-webhook-egress-runtime)"
+    "$ROOT/scripts/test-m2-webhook-egress-runtime.sh" || fail "test-m2-webhook-egress-runtime.sh failed"
+  else
+    fail "m2-webhook-egress-runtime: build/li-httpd missing (run build-li-httpd.sh)"
+  fi
+fi
+
 # m1-nginx-bench-parity: tier5 verify + optional wrk ratios (HTTPD_BENCH_SKIP_TIMING=1 in lean CI).
 if [[ "${HTTPD_GATES_SKIP_LIC_BUILD:-0}" != "1" && "${HTTPD_RUN_BENCH_PARITY:-1}" == "1" ]]; then
   if [[ -x "$ROOT/scripts/check-tier5-nginx-bench-parity.sh" && -x "$ROOT/build/li-httpd" ]]; then

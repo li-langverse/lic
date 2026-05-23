@@ -109,13 +109,13 @@ todos:
     status: completed
   - id: m2-websocket-runtime
     content: "WebSocket upgrade + bidirectional proxy on li-httpd"
-    status: pending
+    status: completed
   - id: m2-circuit-queue-runtime
     content: "Circuit breaker + queue depth 429 + Retry-After when peers saturated (runtime)"
     status: completed
   - id: m2-webhook-egress-runtime
     content: "Webhook/callback egress SSRF allowlist enforced on outbound requests"
-    status: pending
+    status: completed
   - id: h-lean-server-modules
     content: "Lean/VC on server packages (li-net-httpd, runtime httpd modules) — lic build without lean skip"
     status: pending

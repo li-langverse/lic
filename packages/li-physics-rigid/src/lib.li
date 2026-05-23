@@ -77,20 +77,66 @@ def sphere_sphere_overlap(
 # One PGS iteration for normal impulse (scalar, 1D constraint)
 def pgs_resolve_normal(
     vn: float, impulse: float, bias: float, mass_inv: float) -> float
-  requires mass_inv >= 0.0
-  ensures result == impulse + lambda_n
+  requires mass_inv > 0.0
+  ensures result >= impulse
   decreases 0
 =
   var lambda_n: float = -(vn + bias) / mass_inv
   if lambda_n < 0.0:
     lambda_n = 0.0
   return impulse + lambda_n
-def broadphase_cell_index(x: float, cell_size: float) -> int
-  requires cell_size > 0.0
-  ensures result == c
+
+# Floor contact — matches tier-2 rigid_body_stack C kernel (y clamp + zero normal velocity).
+def rigid_floor_clamp_y(py: var float, vy: var float, floor_y: float) -> unit
+  requires true
+  ensures true
   decreases 0
 =
+  if py < floor_y:
+    py = floor_y
+    vy = 0.0
+
+# Pure functional gravity+floor land height — composable/runtime oracle without var struct write-back.
+def rigid_gravity_land_py(initial_py: float, g: float, dt: float, steps: int, floor_y: float) -> float
+  requires steps >= 0
+  requires dt > 0.0
+  requires g >= 0.0
+  ensures result >= floor_y
+  decreases steps
+=
+  var vy: float = 0.0
+  var py: float = initial_py
+  var i: int = 0
+  while i < steps:
+    vy = vy - g * dt
+    py = py + vy * dt
+    if py < floor_y:
+      py = floor_y
+      vy = 0.0
+    i = i + 1
+  return py
+
+# One semi-implicit gravity step with floor — tier-2 rigid_body_stack proxy semantics.
+def rigid_gravity_step_1d(py: var float, vy: var float, g: float, dt: float, floor_y: float) -> unit
+  requires dt > 0.0
+  requires g >= 0.0
+  ensures true
+  decreases 0
+=
+  vy = vy - g * dt
+  py = py + vy * dt
+  rigid_floor_clamp_y(py, vy, floor_y)
+
+def broadphase_cell_index(x: float, cell_size: float) -> int
+  requires cell_size > 0.0
+  ensures result >= 0
+  decreases 0
+=
+  if x < 0.0:
+    return 0
   var c: int = 0
-  if x >= 0.0:
-    c = 0
+  var rem: float = x
+  while rem >= cell_size:
+    rem = rem - cell_size
+    c = c + 1
   return c

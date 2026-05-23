@@ -15,7 +15,13 @@ LIC = REPO / "build" / "compiler" / "lic" / "lic"
 RESULTS = REPO / "benchmarks" / "results"
 
 # Wave B tier-2 verify: Lennard-Jones MD + one PDE (heat 2D).
-TIER2_SMOKE: tuple[str, ...] = ("md_lennard_jones", "heat_equation_2d")
+# Wave D tier-2 verify: rigid_body_stack (gaming_rigid proxy; physics.rigid floor+gravity).
+#   Not UE5/Bullet parity — checksum vs native rigid_stack_core.c only.
+TIER2_SMOKE: tuple[str, ...] = (
+    "md_lennard_jones",
+    "heat_equation_2d",
+    "rigid_body_stack",
+)
 
 
 def lic_build(path: Path) -> bool:
@@ -43,7 +49,7 @@ def tier0_sources() -> list[Path]:
 
 
 def tier2_smoke_verify() -> list[tuple[str, bool, str]]:
-    """Build native+Li checksum parity for md_lennard_jones and heat_equation_2d."""
+    """Build native+Li checksum parity for md_lennard_jones, heat_equation_2d, rigid_body_stack."""
     if not LIC.is_file():
         print(f"lic missing at {LIC}", file=sys.stderr)
         return [(name, False, "lic missing") for name in TIER2_SMOKE]
@@ -77,7 +83,7 @@ def main() -> int:
     parser.add_argument(
         "--tier0-only",
         action="store_true",
-        help="skip tier-2 physics smokes (md_lennard_jones, heat_equation_2d)",
+        help="skip tier-2 physics smokes (md_lennard_jones, heat_equation_2d, rigid_body_stack)",
     )
     args = parser.parse_args()
 

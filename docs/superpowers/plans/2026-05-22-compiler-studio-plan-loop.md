@@ -130,7 +130,7 @@ todos:
     status: completed
   - id: wave-d-27-physics-deepen
     content: "physics.* — one tier-2 kernel harden (rigid or soft) + verify.py note"
-    status: pending
+    status: completed
   - id: wave-d-28-studio-compose
     content: "studio — compose ui+gui+render+world public API + composable"
     status: pending

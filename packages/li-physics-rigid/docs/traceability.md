@@ -9,6 +9,7 @@
 | Test | T-PKG-li-std-physics-rigid-smoke | `li-tests/smoke/builds.li` |
 | Composable | T-composable-import-physics-rigid-gaming | `li-tests/composable/import_physics_rigid_gaming.li` |
 | Vertical | `gaming_rigid` | [verticals.toml](../../../benchmarks/competitive/verticals.toml) · [world-studio.toml](../../../benchmarks/competitive/world-studio.toml) |
+| Tier-2 verify | `rigid_body_stack` | [verify.py](../../../benchmarks/harness/verify.py) · `rigid_stack_core.c` |
 
 ## Requirements
 

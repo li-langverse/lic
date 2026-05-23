@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Gate: tier-2 physics verify.py smokes (md_lennard_jones + heat_equation_2d PDE).
+# Gate: tier-2 physics verify.py smokes (md_lennard_jones + heat_equation_2d + rigid_body_stack).
 set -euo pipefail
 ROOT="$(cd "$(dirname "$0")/../.." && pwd)"
 # shellcheck source=scripts/lib/li-ui.sh

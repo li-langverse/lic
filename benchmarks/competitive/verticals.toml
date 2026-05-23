@@ -13,7 +13,7 @@ workload_class = "v0_gaming"
 oracle = "composable_only"
 li_package = "physics.rigid"
 last_reviewed = "2026-05-23"
-notes = "world-studio.toml gaming_rigid row; composable import_physics_rigid_gaming.li; tier-2 rigid_body_stack proxy — not UE5/Bullet parity."
+notes = "world-studio.toml gaming_rigid row; composable import_physics_rigid_gaming.li; tier-2 rigid_body_stack in verify.py (checksum vs rigid_stack_core.c) — not UE5/Bullet parity."
 
 [[vertical]]
 id = "md_lennard_jones"

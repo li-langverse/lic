@@ -13,6 +13,7 @@ All notable changes to Li are documented here. The format follows
 ### Added
 
 - **Wave B tier-2 verify:** `verify.py` green on `md_lennard_jones` + `heat_equation_2d` PDE smoke — `docs/release-notes/2026-05-23-wave-b-tier2-verify.md`.
+- **Wave D physics deepen:** `physics.rigid` gravity/floor kernels + `rigid_body_stack` in `verify.py` — `docs/release-notes/2026-05-23-wave-d-physics-deepen.md`.
 - **Wave A 7d (`@vectorized` on `def`):** `MirFn.vectorized_lanes`, E0323 def conflict, G-par Lean roadmap note — `docs/release-notes/2026-05-23-wave-a-7d-vectorized-def.md`.
 - **Wave A 2i (explicit math):** document dot/matmul/sum/element-wise policy; reject NumPy-style broadcast; tensor/quaternion path — `docs/release-notes/2026-05-23-wave-a-2i-explicit-math.md`.
 - **Ecosystem phase 0:** `algorithms-and-libraries-plan.md`, `lic-ecosystem-baseline.md`, agent skill `run-local-ci-gha-quota` — `docs/release-notes/2026-05-22-lic-ecosystem-phase0-baseline.md`.

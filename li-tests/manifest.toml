@@ -710,7 +710,7 @@ note = "2j-c: var RigidBody in-out write-back after rigid_integrate_semi_implici
 suite = "composable"
 file = "composable/import_physics_rigid_gaming.li"
 outcome = "verify_open_ok"
-note = "wave-d-19: gaming_rigid vertical — integrate + AABB/sphere overlap; v0_gaming workload"
+note = "wave-d-27: gaming_rigid — integrate + gravity/floor step + broadphase; tier-2 rigid_body_stack verify.py"
 
 [[tests]]
 suite = "composable"

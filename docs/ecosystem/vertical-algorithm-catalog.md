@@ -16,7 +16,7 @@ Agents: cite vertical `id` and `workload_class` in PRs. Do **not** claim GROMACS
 | `drug_litl` | `stub` | `sim.drug_design` | composable_only |
 | `bio_litl` | `stub` | `bioeng` | composable `import_bioeng_litl_workflow.li` + [bioengineering.toml](../../benchmarks/competitive/bioengineering.toml) |
 | `robo_workspace` | `stub` | `sim.robotics` | composable `import_sim_robotics_workspace.li` + [robotics.toml](../../benchmarks/competitive/robotics.toml) |
-| `am_slicer` | `stub` | `sim.additive` | composable_only |
+| `am_slicer` | `stub` | `sim.additive` | composable `import_sim_additive_slicer_workflow.li` + [additive.toml](../../benchmarks/competitive/additive.toml) |
 | `scientific_viz` | `stub` | `sim.viz` | composable_only |
 | `cinematic_encode` | `stub` | `studio` | none (PH-CIN CIN-2) |
 | `cinematic_color_grade` | `stub` | `studio` | composable `import_studio_cinematic_algorithms.li` |
@@ -255,19 +255,21 @@ Workflow **UI patterns only** — no Roche/Schrödinger algorithm parity.
 
 | Family | Target | Li today | Proof / bench |
 |--------|--------|----------|---------------|
-| Mesh slice + layer preview | Prusa plater TAB | **stub** — composable API | none |
+| Slicer stage advance | Slice → preview → export | `slicer_workflow_*` in `sim.additive` | composable `import_sim_additive_slicer_workflow.li` |
+| Mesh slice + layer preview | Prusa plater TAB | **stub** — stage chrome only | [additive.toml](../../benchmarks/competitive/additive.toml) |
 | Toolpath / infill | Cura engine | **open** | none |
 | Thermal compensation | OpenFOAM-class heat | reuse `pde_heat_2d` tier-2 | `heat_equation_2d` (shared numerics) |
-| Export G-code/3MF | ≤3 clicks (PH-UX) | **stub** — `studio.publish` plan | none |
+| Export G-code/3MF | ≤3 clicks (PH-UX) | **stub** — `export_clicks` counter | composable smoke (3 clicks per cycle) |
 
 ### References
 
 - UX: [UX-08](../game-dev/competitive-intel/ui-ux-by-dimension.md#ux-08--am--slicer-workflow), [UX-09](../game-dev/competitive-intel/ui-ux-by-dimension.md#ux-09--export--handoff)
+- RFC: [li-sim-additive-rfc.md](../game-dev/specs/li-sim-additive-rfc.md)
 - Offline: `competitive-intel/downloads/prusa-ui-overview.html`
 
 ### Honesty
 
-No slicer oracle column — interface landed, kernels **stub**.
+No slicer oracle column — interface landed, kernels **stub**. Not PrusaSlicer/Cura/Bambu parity.
 
 ---
 

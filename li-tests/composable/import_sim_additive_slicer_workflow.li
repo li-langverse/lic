@@ -1,0 +1,40 @@
+import sim.additive
+
+def main() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  if li_std_sim_additive_version() < 1:
+    return 1
+  if sim_additive_workload_class_stub() != 0:
+    return 2
+  var s0: SlicerWorkflowState = slicer_workflow_init(12)
+  if s0.profile_id != am_profile_sim_additive():
+    return 3
+  if s0.stage_id != am_stage_slice():
+    return 4
+  if s0.export_clicks != 0:
+    return 5
+  if s0.layer_count != 12:
+    return 6
+  var s1: SlicerWorkflowState = slicer_workflow_advance(s0, am_event_complete_stage())
+  if s1.stage_id != am_stage_preview():
+    return 7
+  if s1.export_clicks != 1:
+    return 8
+  var s2: SlicerWorkflowState = slicer_workflow_advance(s1, am_event_complete_stage())
+  if s2.stage_id != am_stage_export():
+    return 9
+  if s2.export_clicks != 2:
+    return 10
+  var s3: SlicerWorkflowState = slicer_workflow_advance(s2, am_event_complete_stage())
+  if s3.stage_id != am_stage_slice():
+    return 11
+  if s3.export_clicks != 3:
+    return 12
+  if slicer_workflow_smoke_export_clicks() != 3:
+    return 13
+  if slicer_smoke_entry() != 3045:
+    return 14
+  return 0

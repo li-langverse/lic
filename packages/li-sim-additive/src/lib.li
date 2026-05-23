@@ -1,0 +1,121 @@
+
+# PH-AM / wave-d-24 — slicer workflow stub (am_slicer vertical; workload_class=stub).
+# slice → preview → export stage chrome + export click counter — NOT PrusaSlicer/Cura/Bambu parity.
+
+type SlicerWorkflowState = object
+  public profile_id: int
+  public stage_id: int
+  public export_clicks: int
+  public layer_count: int
+
+def li_std_sim_additive_version() -> int
+  requires true
+  ensures result == 1
+  decreases 0
+=
+  return 1
+
+def sim_additive_workload_class_stub() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0
+
+def am_profile_sim_additive() -> int
+  requires true
+  ensures result == 3
+  decreases 0
+=
+  return 3
+
+def am_stage_slice() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0
+
+def am_stage_preview() -> int
+  requires true
+  ensures result == 1
+  decreases 0
+=
+  return 1
+
+def am_stage_export() -> int
+  requires true
+  ensures result == 2
+  decreases 0
+=
+  return 2
+
+def am_event_complete_stage() -> int
+  requires true
+  ensures result == 1
+  decreases 0
+=
+  return 1
+
+def slicer_workflow_init(layer_count: int) -> SlicerWorkflowState
+  requires layer_count >= 1
+  requires layer_count <= 4096
+  ensures result.profile_id == am_profile_sim_additive()
+  ensures result.stage_id == am_stage_slice()
+  ensures result.export_clicks == 0
+  ensures result.layer_count == layer_count
+  decreases 0
+=
+  var s: SlicerWorkflowState
+  s.profile_id = am_profile_sim_additive()
+  s.stage_id = am_stage_slice()
+  s.export_clicks = 0
+  s.layer_count = layer_count
+  return s
+
+def slicer_workflow_advance(state: SlicerWorkflowState, event_id: int) -> SlicerWorkflowState
+  requires state.profile_id == am_profile_sim_additive()
+  requires state.stage_id >= am_stage_slice()
+  requires state.stage_id <= am_stage_export()
+  requires state.export_clicks >= 0
+  requires state.layer_count >= 1
+  requires event_id == am_event_complete_stage()
+  ensures result.export_clicks >= state.export_clicks
+  decreases 0
+=
+  var next: SlicerWorkflowState
+  next.profile_id = state.profile_id
+  next.layer_count = state.layer_count
+  next.stage_id = state.stage_id
+  next.export_clicks = state.export_clicks + 1
+  if state.stage_id == am_stage_slice():
+    next.stage_id = am_stage_preview()
+  if state.stage_id == am_stage_preview():
+    next.stage_id = am_stage_export()
+  if state.stage_id == am_stage_export():
+    next.stage_id = am_stage_slice()
+  return next
+
+def slicer_workflow_smoke_export_clicks() -> int
+  requires true
+  ensures result == 3
+  decreases 0
+=
+  var s0: SlicerWorkflowState = slicer_workflow_init(12)
+  var s1: SlicerWorkflowState = slicer_workflow_advance(s0, am_event_complete_stage())
+  var s2: SlicerWorkflowState = slicer_workflow_advance(s1, am_event_complete_stage())
+  var s3: SlicerWorkflowState = slicer_workflow_advance(s2, am_event_complete_stage())
+  return s3.export_clicks
+
+def slicer_smoke_entry() -> int
+  requires true
+  ensures result == 3045
+  decreases 0
+=
+  var clicks: int = slicer_workflow_smoke_export_clicks()
+  if clicks != 3:
+    return 0
+  var s: SlicerWorkflowState = slicer_workflow_init(12)
+  if s.layer_count != 12:
+    return 0
+  return 3000 + clicks * 11 + s.layer_count

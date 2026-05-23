@@ -121,7 +121,7 @@ todos:
     status: completed
   - id: wave-d-24-vertical-am
     content: "sim.additive — slicer workflow composable + am_slicer vertical"
-    status: pending
+    status: completed
   - id: wave-d-25-vertical-viz
     content: "sim.viz — pipeline source/display stub (ParaView UX-03 patterns)"
     status: pending

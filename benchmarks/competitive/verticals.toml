@@ -93,7 +93,7 @@ workload_class = "stub"
 oracle = "composable_only"
 li_package = "sim.additive"
 last_reviewed = "2026-05-23"
-notes = "Target ≤3 clicks export (PH-UX); downloads/prusa-ui-overview.html."
+notes = "additive.toml composable import_sim_additive_slicer_workflow.li; slice→preview→export stub — not PrusaSlicer/Cura/Bambu parity; ≤3 clicks export (PH-UX)."
 
 [[vertical]]
 id = "scientific_viz"

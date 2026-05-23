@@ -1,0 +1,29 @@
+# Additive manufacturing vertical bench registry (am_slicer slicer workflow — wave-d-24).
+# Validate: ./scripts/check-additive-bench.sh
+# Layer B: benchmarks/competitive/verticals.toml id=am_slicer
+
+[meta]
+schema = 1
+version = 1
+track = "PH-AM"
+plan = "docs/game-dev/specs/li-sim-additive-rfc.md"
+updated = "2026-05-23"
+
+# workload_class: stub | full — honesty per algorithms-and-libraries-plan.md
+# oracle: composable_only | external_binary
+# status: stub | active
+
+[[benchmark]]
+id = "am_slicer"
+vertical_id = "am_slicer"
+name = "sim_additive slicer slice→preview→export smoke"
+profile = "sim_additive"
+workload_class = "stub"
+oracle = "composable_only"
+status = "stub"
+tier = "composable"
+li_package = "sim.additive"
+composable = "import_sim_additive_slicer_workflow"
+workflow = "slicer_slice_preview_export"
+last_reviewed = "2026-05-23"
+notes = "Native slicer stage stub via import_sim_additive_slicer_workflow.li — not PrusaSlicer/Cura/Bambu parity; thermal oracle reuses pde_heat_2d; G-code/3MF export oracle TBD."

@@ -26,6 +26,7 @@ All notable changes to Li are documented here. The format follows
 - **HTTPd M1.5 inference live:** `/v1` proxy on live `li-httpd` with rate limits, OTel, upstream cancel — [2026-05-23-httpd-m15-inference-live.md](docs/release-notes/2026-05-23-httpd-m15-inference-live.md).
 - **HTTPd M1.5 SSE runtime:** idle-between-chunks timeout cancels stalled upstream (504) — [2026-05-23-httpd-m15-sse-runtime.md](docs/release-notes/2026-05-23-httpd-m15-sse-runtime.md).
 - **HTTPd M1.5 leak_censor:** `setup-censor-httpd.py`, migration `SchemaCatalog`, optional proxy egress scrub, Tier G exploit TOML rows — [2026-05-22-httpd-m15-leak-censor.md](docs/release-notes/2026-05-22-httpd-m15-leak-censor.md).
+- **HTTPd M1.5 TLS auto (m15-tls-auto):** `manual` / `self_signed` / `lets_encrypt` TOML modes, `setup-tls-httpd.py` (dev certs + ACME staging obtain/renew), `check-httpd-tls-auto.sh`, `m15_tls_oracle.li` — [2026-05-22-httpd-m15-tls-auto.md](docs/release-notes/2026-05-22-httpd-m15-tls-auto.md).
 - **Ecosystem phase 0:** `algorithms-and-libraries-plan.md`, `lic-ecosystem-baseline.md`, agent skill `run-local-ci-gha-quota` — `docs/release-notes/2026-05-22-lic-ecosystem-phase0-baseline.md`.
 - **2i broadcast (partial):** `array[1, T]` element-wise broadcast to `array[N, T]` — `docs/release-notes/2026-05-22-2i-broadcast-len1.md`.
 - **P-float (partial):** `sqrt_open_bound.li` calls `li_rt_sqrt`; tight `abs` ensures still open — `docs/release-notes/2026-05-22-p-float-sqrt-runtime.md`.

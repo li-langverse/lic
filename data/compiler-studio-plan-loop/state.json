@@ -1,11 +1,19 @@
 {
-  "completed_ids": [],
-  "iterations": 1,
+  "completed_ids": [
+    "wave-d-gui-scaffold"
+  ],
+  "iterations": 2,
   "history": [
     {
       "at": "2026-05-23T09:02:50.508081+00:00",
       "todo_id": "wave-d-gui-scaffold",
       "agent_exit": 1,
+      "gates_ok": true
+    },
+    {
+      "at": "2026-05-23T09:08:34.335255+00:00",
+      "todo_id": "wave-d-gui-scaffold",
+      "agent_exit": 0,
       "gates_ok": true
     }
   ]

@@ -1,7 +1,7 @@
 # Fast math and parallelism
 
 !!! note "Status"
-    **Math surface** (`dot`, `a @ b`, 2d `C = A @ B`, `sum`, element-wise ops) is **implemented** on fixed `array` tiles. **`@vectorized(lanes=4)`** on `def` is validated; **`@no_vectorize`** disables f64×4 array SIMD in codegen. **`@vectorized` on `for`** parses but does not elaborate loops yet. **`@parallel`** requires `disjoint=`. See **[Provability gaps](../verification/provability-gaps.md)**.
+    **Math surface** (`dot`, `a @ b`, 2d `C = A @ B`, `sum`, element-wise ops) is **implemented** on fixed `array` tiles. **`@vectorized(lanes=4)`** on `def` sets **`MirFn.vectorized_lanes`** (default 4); **`@no_vectorize`** disables f64×4 array SIMD; both on the same `def` is **E0323**. **`@vectorized` on `for`** emits scoped **`ArraySimdScope`**. **`@parallel`** requires `disjoint=` (Lean discharge — **[P-par](../verification/proof-corpus-roadmap.md)**). See **[Provability gaps](../verification/provability-gaps.md)**.
 
 Li is built for **scientific and high-performance** work. Prefer:
 

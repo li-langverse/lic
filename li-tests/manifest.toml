@@ -82,6 +82,18 @@ file = "decorators/vectorized_lanes8_fail.li"
 outcome = "compile_fail"
 expected_substr = "lanes=4"
 
+[[tests]]
+suite = "decorators"
+file = "decorators/vectorized_def_default_lanes_ok.li"
+outcome = "verify_open_ok"
+note = "dot4 ensures >= 0.0 open until 2f float Props"
+
+[[tests]]
+suite = "decorators"
+file = "decorators/vectorized_def_no_vectorize_conflict_fail.li"
+outcome = "compile_fail"
+expected_substr = "E0323"
+
 # --- decorator_exploits (7d-e — must reject) ---
 
 [[tests]]

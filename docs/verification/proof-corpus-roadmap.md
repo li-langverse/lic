@@ -84,7 +84,7 @@ Priority order aligned with [provability-gaps](provability-gaps.md) and **2e →
 | **P-float** | `Float.abs`, sqrt error bounds | **G-vc** open (`sqrt_open_bound`) | `sqrt_open_bound.li` + `Li.Discharge` lemmas |
 | **P-loop** | `while` invariant preservation | Few loop specimens | New `contracts_verify/loop_invariant_*.li` |
 | **P-linalg** | Matrix/vector shapes (`@`, slices) | **Partial** — closed dot/sum/matmul-entry/norm/axpy + loop witness. **Open:** float `vec3_dot` Props, 2D array CallProc | `contracts_verify/linalg_*`, `math_linalg/*` |
-| **P-par** | `parallel for` disjointness | **G-par** string heuristics only | Lean specs for `disjoint=` (7d-c) |
+| **P-par** | `parallel for` disjointness | **G-par** AST policy only (`policy_module`, `policy.cpp` exploits); no kernel discharge | **Lean G-par roadmap (wave-a-7d, disjoint from 7d `@vectorized`):** (1) `Li.Parallel.Disjoint` — interpret `disjoint_elem` / `disjoint_row` / proc `@parallel(disjoint=…)` as structured `Prop`, not strings; (2) `contracts_verify/par_disjoint_*.li` — closed 1D index + tile specimens mirroring `parallel_with_disjoint.li` / `parallel_def_disjoint_inherit.li`; (3) wire `ParallelFor` MIR indices into AutoVC (`_par*` obligations today typecheck only); (4) reject false `disjoint_row` + mut-capture in Lean, not only AST; (5) **open:** cross-TU / nested `parallel for` — after (1)–(3). **Not in 7d vectorized slice:** SIMD decorators (**P-dec**). |
 | **P-dec** | Decorators never run at runtime | **G-dec** no MIR lowering | `decorator_exploits/` + elaboration proofs |
 | **P-bnd** | Release builds omit `li_bounds_fail` | **G-bnd** | Refined indices + codegen proof |
 | **P-http** | Parser/route config safety | Phase **H** | `httpd/*`, TOML desugar invariants |

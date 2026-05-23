@@ -25,7 +25,7 @@ todos:
     status: completed
   - id: wave-a-7d-vectorized
     content: "7d — @vectorized on def + Lean G-par disjoint roadmap note"
-    status: pending
+    status: completed
   - id: wave-b-tier2-verify
     content: "Tier-2 physics — verify.py green on md_lennard_jones + one PDE smoke"
     status: pending

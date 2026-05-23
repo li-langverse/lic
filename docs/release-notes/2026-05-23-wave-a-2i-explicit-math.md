@@ -8,7 +8,7 @@ Wave A closes the **2i** policy slice: `dot`, `sum`, 1d/2d `@`, element-wise `+ 
 
 1. **Read:** `docs/language/linear-algebra.md` (broadcast policy + tensor/quaternion path), `compiler/types/typecheck.cpp`.
 2. **Run:** `./scripts/compiler-studio-plan-gates.sh`; `./scripts/verify-math-physics-goldens.sh`; `./scripts/bench-verify-results.sh 1`.
-3. **Next:** `wave-a-7d-vectorized`; full `tensor[(M,N), f64]` types (Phase 3).
+3. **Next:** full `tensor[(M,N), f64]` types (Phase 3); **7e** auto-SIMD on math loops.
 
 ## Changed
 

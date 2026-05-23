@@ -5,6 +5,12 @@ set -euo pipefail
 ROOT="$(cd "$(dirname "$0")/.." && pwd)"
 LOG_DIR="$ROOT/data/compiler-studio-plan-loop"
 mkdir -p "$LOG_DIR"
+LOCK="$LOG_DIR/.systemd.lock"
+exec 8>"$LOCK"
+if ! flock -n 8; then
+  echo "compiler-studio-plan-overnight: another instance running (flock $LOCK) — exit" >&2
+  exit 0
+fi
 STAMP="$(date -u +%Y%m%d-%H%M%S)"
 LOG="$LOG_DIR/overnight-${STAMP}.log"
 

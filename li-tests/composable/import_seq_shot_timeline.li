@@ -1,0 +1,39 @@
+import seq
+
+def main() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  if li_std_seq_version() < 1:
+    return 1
+  if seq_workload_class_stub() != 0:
+    return 2
+  var s0: SeqShot = shot_new(1, 0.0, 2.0, 10)
+  if s0.shot_id != 1:
+    return 3
+  var s1: SeqShot = shot_new(2, 2.0, 4.0, 11)
+  var tl: SeqTimeline = timeline_new_two_shots(7, s0, s1)
+  if tl.duration < 3.99 or tl.duration > 4.01:
+    return 4
+  var dur_in: float = tl.duration
+  var dur_out: float = tl.duration
+  var inside: int = seq_timeline_contains_time(dur_in, 0.5)
+  if inside != 1:
+    return 5
+  var mid_shot: int = seq_timeline_smoke_mid_shot_id()
+  if mid_shot != 2:
+    return 6
+  var active: int = seq_active_shot_at(1, 0.0, 2.0, 2, 2.0, 4.0, 2.5)
+  if active != 2:
+    return 7
+  var local: float = seq_local_time_in_span(2.0, 4.0, 2.5)
+  if local < 0.49 or local > 0.51:
+    return 8
+  var outside: int = seq_timeline_contains_time(dur_out, 5.0)
+  if outside != 0:
+    return 9
+  var hash: int = seq_timeline_smoke_entry()
+  if hash != 1010:
+    return 10
+  return 0

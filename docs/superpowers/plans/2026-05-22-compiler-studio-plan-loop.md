@@ -91,7 +91,7 @@ todos:
     status: completed
   - id: wave-d-14-seq-scaffold
     content: "AL-12 packages/seq — shot/timeline types + composable"
-    status: pending
+    status: completed
   - id: wave-d-15-geometry-scaffold
     content: "AL-13 packages/geometry — mesh predicates stub + composable"
     status: pending

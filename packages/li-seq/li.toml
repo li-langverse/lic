@@ -1,0 +1,20 @@
+[package]
+name = "li-seq"
+version = "0.1.0"
+edition = "2026"
+license = "Apache-2.0 OR MIT"
+description = "Cinematic vertical — shots, timeline, clip scheduling (stub; encode later)"
+
+[dependencies]
+
+[package.metadata.li]
+github_repo = "li-seq"
+import_name = "seq"
+min_lic = "0.1.0"
+maintainer = "li-langverse"
+pkg_id = "PKG-li-seq"
+
+[package.repository]
+url = "https://github.com/li-langverse/li-seq"
+documentation = "https://li-langverse.github.io/li-language/ecosystem/li-seq/"
+changelog = "https://github.com/li-langverse/li-seq/blob/main/CHANGELOG.md"

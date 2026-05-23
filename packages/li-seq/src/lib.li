@@ -1,0 +1,177 @@
+# AL-12 / cinematic vertical — shots + timeline (workload_class=stub).
+# Encode / studio.publish deferred; clip_id links `import anim` by convention only.
+
+type SeqShot = object
+  public shot_id: int
+  public in_time: float
+  public out_time: float
+  public clip_id: int
+
+type SeqTimeline = object
+  public timeline_id: int
+  public duration: float
+  public shot_a: SeqShot
+  public shot_b: SeqShot
+
+def li_std_seq_version() -> int
+  requires true
+  ensures result == 1
+  decreases 0
+=
+  return 1
+
+def seq_workload_class_stub() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0
+
+def seq_channel_timeline() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0
+
+def shot_new(shot_id: int, in_time: float, out_time: float, clip_id: int) -> SeqShot
+  requires in_time >= 0.0
+  requires out_time >= in_time
+  ensures result.shot_id == shot_id
+  ensures result.in_time == in_time
+  ensures result.out_time == out_time
+  ensures result.clip_id == clip_id
+  decreases 0
+=
+  var s: SeqShot
+  s.shot_id = shot_id
+  s.in_time = in_time
+  s.out_time = out_time
+  s.clip_id = clip_id
+  return s
+
+def seq_shot_length_span(in_time: float, out_time: float) -> float
+  requires out_time >= in_time
+  ensures result == out_time - in_time
+  decreases 0
+=
+  return out_time - in_time
+
+def timeline_new_two_shots(
+    timeline_id: int,
+    s0: SeqShot,
+    s1: SeqShot) -> SeqTimeline
+  requires s1.in_time >= s0.in_time
+  requires s1.out_time >= s0.out_time
+  ensures result.timeline_id == timeline_id
+  ensures result.shot_a.shot_id == s0.shot_id
+  ensures result.shot_b.shot_id == s1.shot_id
+  ensures result.duration == s1.out_time
+  decreases 0
+=
+  var tl: SeqTimeline
+  tl.timeline_id = timeline_id
+  tl.shot_a = s0
+  tl.shot_b = s1
+  tl.duration = s1.out_time
+  return tl
+
+def seq_timeline_contains_time(duration: float, t: float) -> int
+  requires duration >= 0.0
+  ensures result >= 0
+  ensures result <= 1
+  decreases 0
+=
+  var inside: int = 1
+  if t < 0.0:
+    inside = 0
+  if t > duration:
+    inside = 0
+  return inside
+
+def seq_shot_contains_span(in_time: float, out_time: float, t: float) -> int
+  requires out_time >= in_time
+  ensures result >= 0
+  ensures result <= 1
+  decreases 0
+=
+  var inside: int = 1
+  if t < in_time:
+    inside = 0
+  if t > out_time:
+    inside = 0
+  return inside
+
+def seq_local_time_in_span(in_time: float, out_time: float, global_t: float) -> float
+  requires out_time >= in_time
+  ensures result >= 0.0
+  decreases 0
+=
+  var local: float = global_t - in_time
+  if local < 0.0:
+    local = 0.0
+  var span: float = seq_shot_length_span(in_time, out_time)
+  if span > 0.0:
+    if local > span:
+      local = span
+  return local
+
+def seq_active_shot_at(
+    shot_a_id: int,
+    a_in: float,
+    a_out: float,
+    shot_b_id: int,
+    b_in: float,
+    b_out: float,
+    t: float) -> int
+  requires a_out >= a_in
+  requires b_out >= b_in
+  ensures result >= 0
+  decreases 0
+=
+  var t_a: float = t
+  var t_b: float = t
+  if seq_shot_contains_span(a_in, a_out, t_a) == 1:
+    return shot_a_id
+  if seq_shot_contains_span(b_in, b_out, t_b) == 1:
+    return shot_b_id
+  return 0
+
+def seq_timeline_smoke_mid_shot_id() -> int
+  requires true
+  ensures result == 2
+  decreases 0
+=
+  return seq_active_shot_at(1, 0.0, 2.0, 2, 2.0, 4.0, 2.5)
+
+def seq_timeline_smoke_entry() -> int
+  requires true
+  ensures result == 1010
+  decreases 0
+=
+  if seq_workload_class_stub() != 0:
+    return 0
+  if li_std_seq_version() < 1:
+    return 0
+  var s0: SeqShot = shot_new(1, 0.0, 2.0, 10)
+  var s1: SeqShot = shot_new(2, 2.0, 4.0, 11)
+  var tl: SeqTimeline = timeline_new_two_shots(7, s0, s1)
+  var dur_chk: float = tl.duration
+  if dur_chk < 3.99 or dur_chk > 4.01:
+    return 0
+  var dur_in: float = tl.duration
+  var dur_out: float = tl.duration
+  if seq_timeline_contains_time(dur_in, 0.5) != 1:
+    return 0
+  if seq_active_shot_at(1, 0.0, 2.0, 2, 2.0, 4.0, 0.5) != 1:
+    return 0
+  if seq_active_shot_at(1, 0.0, 2.0, 2, 2.0, 4.0, 2.5) != 2:
+    return 0
+  var local_b: float = seq_local_time_in_span(2.0, 4.0, 2.5)
+  if local_b < 0.49 or local_b > 0.51:
+    return 0
+  if seq_timeline_contains_time(dur_out, 5.0) != 0:
+    return 0
+  if seq_timeline_smoke_mid_shot_id() != 2:
+    return 0
+  return 1010

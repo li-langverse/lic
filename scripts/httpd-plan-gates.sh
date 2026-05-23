@@ -140,19 +140,27 @@ if [[ -x "$ROOT/scripts/check-pkg-workspace.sh" ]]; then
   "$ROOT/scripts/check-pkg-workspace.sh"
 fi
 
-if [[ -x "$ROOT/scripts/check-prob-hoare.sh" ]]; then
-  echo "==> check-prob-hoare.sh"
-  "$ROOT/scripts/check-prob-hoare.sh"
-fi
+have_lic() {
+  [[ -x "${LIC:-}" ]] || LIC="$("$ROOT/scripts/resolve-lic.sh" 2>/dev/null)" && [[ -x "$LIC" ]]
+}
 
-if [[ -x "$ROOT/scripts/check-rng-concepts.sh" ]]; then
-  echo "==> check-rng-concepts.sh"
-  "$ROOT/scripts/check-rng-concepts.sh"
-fi
+if have_lic; then
+  if [[ -x "$ROOT/scripts/check-prob-hoare.sh" ]]; then
+    echo "==> check-prob-hoare.sh"
+    "$ROOT/scripts/check-prob-hoare.sh"
+  fi
 
-if [[ -x "$ROOT/scripts/check-rng-exploit-suite.sh" ]]; then
-  echo "==> check-rng-exploit-suite.sh"
-  "$ROOT/scripts/check-rng-exploit-suite.sh"
+  if [[ -x "$ROOT/scripts/check-rng-concepts.sh" ]]; then
+    echo "==> check-rng-concepts.sh"
+    "$ROOT/scripts/check-rng-concepts.sh"
+  fi
+
+  if [[ -x "$ROOT/scripts/check-rng-exploit-suite.sh" ]]; then
+    echo "==> check-rng-exploit-suite.sh"
+    "$ROOT/scripts/check-rng-exploit-suite.sh"
+  fi
+else
+  echo "==> skip prob/rng gates (build lic with ./scripts/build.sh)"
 fi
 
 # m0-ship-gate-full: bearer smoke on running build/li-httpd (opt-out with HTTPD_RUN_BEARER_TEST=0).

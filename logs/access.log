@@ -23,3 +23,8 @@
 2026-05-23T10:36:26Z info - GET /trip 429 0
 2026-05-23T10:36:26Z info - GET /trip 429 0
 2026-05-23T10:36:28Z info - POST /dispatch 403 0
+2026-05-23T10:53:18Z info - GET /health 404 0
+2026-05-23T10:53:21Z info - GET /queued 429 0
+2026-05-23T10:53:21Z info - GET /trip 429 0
+2026-05-23T10:53:22Z info - GET /trip 429 0
+2026-05-23T10:53:25Z info - POST /dispatch 403 0

@@ -720,6 +720,12 @@ note = "AL-9: import gui; studio shell UX-02/04 (open VC on gui_hit_test_rect br
 
 [[tests]]
 suite = "composable"
+file = "composable/import_studio_gui_wire.li"
+outcome = "compile_open_ok"
+note = "wave-d-10: import studio; ui chrome hooks + gui wire (open VC on studio_wire_gui_hd branch ensures)"
+
+[[tests]]
+suite = "composable"
 file = "composable/import_ui_inspector_panel.li"
 outcome = "compile_open_ok"
 note = "PH-UX UX-04: import ui; inspector/properties panel stub (scientific-editor intel)"
@@ -789,6 +795,14 @@ suite = "assets_gltf"
 file = "assets_gltf/import_assets_gltf_smoke_entry.li"
 outcome = "verify_open_ok"
 note = "wave-d-09: import assets; assets_gltf_import_smoke_entry closed witness (open VC on smoke_entry ensures)"
+
+# --- studio_wire (wave-d-10 — ui chrome + gui wire composable) ---
+
+[[tests]]
+suite = "studio_wire"
+file = "studio_wire/import_studio_gui_wire_entry.li"
+outcome = "verify_open_ok"
+note = "wave-d-10: import studio; studio_wire_smoke_entry closed witness (open VC on wire ensures)"
 
 # stdlib_coverage/build_std_csv — enable when std.csv module resolves (PH-IO-4)
 

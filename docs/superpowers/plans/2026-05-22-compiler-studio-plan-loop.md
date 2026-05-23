@@ -79,7 +79,7 @@ todos:
     status: completed
   - id: wave-d-10-ui-studio-wire
     content: "ui extend — studio chrome hooks + wire gui import in packages/studio"
-    status: pending
+    status: completed
   - id: wave-d-11-ux-dock-ux02
     content: "PH-UX dock/workspace chrome from competitive-intel UX-02 + adaptive_layout"
     status: pending

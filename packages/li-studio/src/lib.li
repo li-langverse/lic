@@ -1,0 +1,39 @@
+import gui
+import ui
+
+# wave-d-10 — `import studio` resolves `gui` + `ui` for World Studio shell wiring.
+# Object-level compose (StudioWire) lives in composables until cross-pkg struct ABI lands.
+
+def li_std_studio_version() -> int
+  requires true
+  ensures result == 1
+  decreases 0
+=
+  return 1
+
+def studio_workload_class_stub() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0
+
+# Primitive smoke — no cross-package struct args (codegen-safe).
+def studio_wire_smoke_entry() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  if li_std_gui_version() < 1:
+    return 1
+  if li_std_ui_version() < 1:
+    return 2
+  if inspector_section_count() != 3:
+    return 3
+  if ui_inspector_section_count() != 3:
+    return 4
+  if studio_chrome_hook_count() != 5:
+    return 5
+  if adaptive_layout_role_count() != 5:
+    return 6
+  return 0

@@ -314,3 +314,95 @@ def inspector_panel_attach_row(panel: InspectorPanel, row: PropertyRow) -> unit
   decreases panel.row_count
 =
   panel.row_count = panel.row_count + 1
+
+# wave-d-10 — Studio chrome hooks (UX-02/03/11; editor chrome IDs, no pixels).
+# Consumed by `import studio` when wiring `import gui` shell + adaptive layout.
+def studio_chrome_hook_menubar() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0
+
+def studio_chrome_hook_toolbar() -> int
+  requires true
+  ensures result == 1
+  decreases 0
+=
+  return 1
+
+def studio_chrome_hook_statusbar() -> int
+  requires true
+  ensures result == 2
+  decreases 0
+=
+  return 2
+
+def studio_chrome_hook_command_palette() -> int
+  requires true
+  ensures result == 3
+  decreases 0
+=
+  return 3
+
+def studio_chrome_hook_agent_panel() -> int
+  requires true
+  ensures result == 4
+  decreases 0
+=
+  return 4
+
+def studio_chrome_hook_count() -> int
+  requires true
+  ensures result == 5
+  decreases 0
+=
+  return 5
+
+type StudioChromeHook = object
+  public hook_id: int
+  public region: Rect
+  public enabled: int
+
+type StudioChrome = object
+  public layout: AdaptiveLayout
+  public hook_count: int
+
+def studio_chrome_hook_new(hook_id: int, region: Rect, enabled: int) -> StudioChromeHook
+  requires hook_id >= 0
+  requires hook_id < 5
+  requires enabled >= 0
+  requires enabled <= 1
+  requires region.w >= 0.0
+  requires region.h >= 0.0
+  ensures result.hook_id == hook_id
+  ensures result.enabled == enabled
+  decreases hook_id
+=
+  var h: StudioChromeHook
+  h.hook_id = hook_id
+  h.region = region
+  h.enabled = enabled
+  return h
+
+def studio_chrome_hd() -> StudioChrome
+  requires true
+  ensures result.layout.sidebar.w == 281.0
+  ensures result.layout.main.w == 716.0
+  ensures result.layout.inspector.w == 283.0
+  ensures result.hook_count == 0
+  decreases 0
+=
+  var out: StudioChrome
+  out.layout = adaptive_layout_hd()
+  out.hook_count = 0
+  return out
+
+def studio_chrome_attach_hook(chrome: StudioChrome, hook: StudioChromeHook) -> unit
+  requires chrome.hook_count >= 0
+  requires hook.hook_id >= 0
+  requires hook.hook_id < 5
+  ensures true
+  decreases chrome.hook_count
+=
+  chrome.hook_count = chrome.hook_count + 1

@@ -6,11 +6,15 @@
 
 TOML-driven tier-5 HTTP benchmark harness: `defaults.toml`, `suite.toml`, per-scenario `bench.toml`, and Python drivers that resolve scenarios from suite config only (no hardcoded scenario lists).
 
+## Verification (2026-05-23)
+
+- `./scripts/check-tier5-http-harness.sh` — OK
+- `HTTPD_BENCH_SKIP_TIMING=1 ./scripts/httpd-plan-gates.sh` — OK (includes harness smoke)
+
 ## Agent continuation
 
-1. **Run** `./scripts/check-tier5-http-harness.sh` and `./scripts/httpd-plan-gates.sh`.
-2. **Next plan todos:** `nginx-src-audit`, `exploit_http.py` (exploit-harness), wire li-httpd load paths when `build/li-httpd` is stable on CI.
-3. **Benchmarks repo:** refresh HTTP matrix via `../benchmarks` when nginx+wrk timing rows are captured (`SKIP_BENCH=1` for docs-only).
+1. **Done:** `nginx-src-audit`, `exploit-harness`, `m1-nginx-bench-parity` on plan branch.
+2. **Benchmarks repo:** refresh HTTP matrix via `../benchmarks` when nginx+wrk timing rows are captured (`SKIP_BENCH=1` for docs-only).
 
 ## Changed
 

@@ -12,6 +12,8 @@ All notable changes to Li are documented here. The format follows
 
 ### Added
 
+- **tier5_http bench harness (bench-harness):** TOML-driven `suite.toml` + per-scenario `bench.toml`; `bench_http.py` / `verify_http.py` resolve scenarios from suite only — [2026-05-22-tier5-http-bench-harness.md](docs/release-notes/2026-05-22-tier5-http-bench-harness.md).
+- **HTTPd M1 nginx bench parity:** tier5 `parity` profile runs live `build/li-httpd` vs nginx verify + optional wrk ratios — [2026-05-23-httpd-nginx-bench-parity.md](docs/release-notes/2026-05-23-httpd-nginx-bench-parity.md).
 - **HTTPd M1 serve-production:** multi-worker fork + `SO_REUSEPORT`, config `workers=`, `test-serve-production.sh` gate (keep-alive, static, proxy) — [2026-05-23-httpd-m1-serve-production.md](docs/release-notes/2026-05-23-httpd-m1-serve-production.md).
 - **w1-async-reactor:** epoll/kqueue `li_async_poll` reactor, `tcp_echo_epoll_once_i`, tier5 `tcp_echo` bench row, `check-w1-async-reactor.sh` — [2026-05-22-httpd-w1-async-reactor.md](docs/release-notes/2026-05-22-httpd-w1-async-reactor.md).
 - **w0-bytes-io:** `std/bytes` Reader/Writer + stringview helpers, `raises Net` policy tests, accepted trusted-net RFC + Lean axioms — [2026-05-22-w0-bytes-io.md](docs/release-notes/2026-05-22-w0-bytes-io.md).

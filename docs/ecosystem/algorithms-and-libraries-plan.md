@@ -295,7 +295,7 @@ P4  deepen physics.* / sim.* / chem per verticals.toml
 | ID | Deliverable | Owner repo | Blocks |
 |----|-------------|------------|--------|
 | AL-1 | **`benchmarks/competitive/verticals.toml`** — Layer B registry | `lic` | **Done (2026-05-23)** — initial rows; expand quarterly |
-| AL-2 | **`docs/ecosystem/vertical-algorithm-catalog.md`** — one page per vertical (kernel list) | `lic` | Agent implementation |
+| AL-2 | **`docs/ecosystem/vertical-algorithm-catalog.md`** — one page per vertical (kernel list) | `lic` | **Done (2026-05-23)** — `check-vertical-algorithm-catalog.sh` |
 | AL-3 | **Phase 2e/2f plan files** (replace TBD in master plan) | `lic` | Wave A |
 | AL-4 | **CAD fundamentals** merge into `lic` + link `geometry` PH | `lic` | CAD vertical |
 | AL-5 | **Engineering/CAE RFC** (split from PH-SCI) | `lic` | FEA/CFD clarity |

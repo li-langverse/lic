@@ -1,0 +1,27 @@
+import render
+
+def main() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  if li_std_render_version() < 1:
+    return 1
+  if render_workload_class_stub() != 0:
+    return 2
+  var chain: SwapchainDesc = render_swapchain_desc_default()
+  if chain.width != 640 or chain.height != 480:
+    return 3
+  if chain.format_id != render_swapchain_format_rgba8():
+    return 4
+  if chain.image_count != 2:
+    return 5
+  var frame: PresentFrame = render_swapchain_acquire(chain)
+  if frame.acquired != 1:
+    return 6
+  if render_present_submit(frame) != 1:
+    return 7
+  var hash: int = render_present_swapchain_smoke_entry()
+  if hash != 480640:
+    return 8
+  return 0

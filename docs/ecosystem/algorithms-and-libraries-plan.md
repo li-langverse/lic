@@ -227,7 +227,7 @@ flowchart TB
 | `import` | Folder | Status | Action | Wave | Depends |
 |----------|--------|--------|--------|------|---------|
 | `gpu` | `packages/li-gpu` | **stub** | **extend** — LKIR codegen + trusted wgpu FFI (device enum + smoke landed) | D→E | `lic` codegen |
-| `render` | `packages/render` | exists-stub | **implement** — swapchain, draw lists, PBR-lite | D→E | `gpu`, `math` |
+| `render` | `packages/li-render` | **stub** | **extend** — draw lists, PBR-lite (swapchain/present smoke landed) | D→E | `gpu`, `math` |
 | `scene` | `packages/scene` | exists-stub | **extend** — hierarchy, picks, transforms via `math` | D | `math` |
 | `assets` | `packages/assets` | exists-stub | **implement** — glTF + image ingest (trusted decode at edge) | D | `render` |
 | `ui` | `packages/ui` | exists-stub | **extend** — Studio chrome, ⌘K, agent cmds (no pixels) | D | — |

@@ -137,7 +137,7 @@ def lkir_module_attach_kernel(mod: LkirModule, k: LkirKernel) -> unit
 =
   mod.kernel_count = mod.kernel_count + 1
 
-# wgpu smoke — host-side stub until trusted wgpu FFI (wave-d-07 render present).
+# wgpu smoke — host-side stub until trusted wgpu FFI (present/swapchain: `import render`).
 def wgpu_smoke_default_backend() -> int
   requires true
   ensures result == gpu_backend_wgpu()

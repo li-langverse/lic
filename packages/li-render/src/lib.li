@@ -1,0 +1,108 @@
+
+# PH-GD-5 / wave-d-07 — present + swapchain stub (host-side until trusted wgpu FFI).
+# workload_class=stub; pairs with `import gpu` wgpu device smoke — no PBR/draw lists yet.
+
+type SwapchainDesc = object
+  public width: int
+  public height: int
+  public format_id: int
+  public image_count: int
+
+type PresentFrame = object
+  public frame_index: int
+  public acquired: int
+
+def li_std_render_version() -> int
+  requires true
+  ensures result == 1
+  decreases 0
+=
+  return 1
+
+def render_workload_class_stub() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0
+
+def render_swapchain_format_rgba8() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0
+
+def render_swapchain_format_bgra8() -> int
+  requires true
+  ensures result == 1
+  decreases 0
+=
+  return 1
+
+def render_swapchain_desc_default() -> SwapchainDesc
+  requires true
+  ensures result.width == 640
+  ensures result.height == 480
+  ensures result.format_id == render_swapchain_format_rgba8()
+  ensures result.image_count == 2
+  decreases 0
+=
+  var d: SwapchainDesc
+  d.width = 640
+  d.height = 480
+  d.format_id = render_swapchain_format_rgba8()
+  d.image_count = 2
+  return d
+
+def render_swapchain_acquire(desc: SwapchainDesc) -> PresentFrame
+  requires desc.width >= 1
+  requires desc.height >= 1
+  requires desc.image_count >= 1
+  ensures result.frame_index == 0
+  ensures result.acquired == 1
+  decreases desc.image_count
+=
+  var f: PresentFrame
+  f.frame_index = 0
+  f.acquired = 1
+  return f
+
+def render_present_submit(frame: PresentFrame) -> int
+  requires frame.acquired == 1
+  ensures result == 1
+  decreases frame.frame_index
+=
+  if frame.acquired != 1:
+    return 0
+  return 1
+
+def render_present_swapchain_hash() -> int
+  requires true
+  ensures result == 480640
+  decreases 0
+=
+  return 480640
+
+def render_present_swapchain_smoke_entry() -> int
+  requires true
+  ensures result == 480640
+  decreases 0
+=
+  if render_workload_class_stub() != 0:
+    return 0
+  var chain: SwapchainDesc = render_swapchain_desc_default()
+  if chain.width != 640:
+    return 0
+  if chain.height != 480:
+    return 0
+  if chain.format_id != render_swapchain_format_rgba8():
+    return 0
+  if chain.image_count != 2:
+    return 0
+  var frame: PresentFrame = render_swapchain_acquire(chain)
+  if frame.acquired != 1:
+    return 0
+  if render_present_submit(frame) != 1:
+    return 0
+  return render_present_swapchain_hash()

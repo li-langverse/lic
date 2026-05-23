@@ -1,0 +1,11 @@
+import render
+
+def main() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  var h: int = render_present_swapchain_smoke_entry()
+  if h != 480640:
+    return 1
+  return 0

@@ -70,7 +70,7 @@ todos:
     status: completed
   - id: wave-d-07-render-present
     content: "render — present/swapchain stub + import render composable"
-    status: pending
+    status: completed
   - id: wave-d-08-scene-hierarchy
     content: "scene — hierarchy + transform via math.Quat + composable"
     status: pending

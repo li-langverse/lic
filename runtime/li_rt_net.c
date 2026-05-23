@@ -819,11 +819,20 @@ int32_t tcp_recv_slot(int32_t conn, int32_t slot, int32_t max_bytes) {
   if (httpd_tls_slot_proto(slot) == 1) {
     r = httpd_tls_read_slot(slot, g_slots[slot].buf + g_slots[slot].len,
                             (size_t)(HTTPD_IO_BUF - g_slots[slot].len));
-  } else if (httpd_tls_slot_proto(slot) == 2) {
-    return 0;
-  } else {
-    r = recv((int)conn, g_slots[slot].buf + g_slots[slot].len, (size_t)(HTTPD_IO_BUF - g_slots[slot].len), 0);
+    /* httpd_tls_read_slot returns 0 on WANT_READ/WRITE — not EOF (see li_rt_h2.c). */
+    if (r == 0) {
+      return -1;
+    }
+    if (r < 0) {
+      return -2;
+    }
+    g_slots[slot].len += (int)r;
+    return (int32_t)r;
   }
+  if (httpd_tls_slot_proto(slot) == 2) {
+    return 0;
+  }
+  r = recv((int)conn, g_slots[slot].buf + g_slots[slot].len, (size_t)(HTTPD_IO_BUF - g_slots[slot].len), 0);
   if (r < 0) {
     if (errno == EAGAIN || errno == EWOULDBLOCK) {
       return -1;
@@ -854,6 +863,18 @@ int32_t tcp_send_coalesce_i(int32_t conn, intptr_t a, int32_t la, intptr_t b, in
   }
   if (la == 0 && lb == 0) {
     return 0;
+  }
+  {
+    int32_t slot = httpd_slot_find_fd(conn);
+    if (slot >= 0 && httpd_tls_slot_proto(slot) != 0) {
+      if (la > 0 && a && send_all_nb((int)conn, ptr_i(a), (size_t)la) < 0) {
+        return -1;
+      }
+      if (lb > 0 && b && send_all_nb((int)conn, ptr_i(b), (size_t)lb) < 0) {
+        return -1;
+      }
+      return 0;
+    }
   }
 #ifdef __linux__
   struct iovec iov[2];

@@ -86,6 +86,7 @@ Adds orthogonal dimension to `[route.rate_limit]` keys (`api_key`, `agent_id`):
 - [x] `li-tests/config_desugar/good/m3_optional.toml` + `reject/m3_*.toml`
 - [x] `li-tests/httpd/m3_optional_oracle.li` + `check-httpd-m3-config.sh`
 - [x] Runtime oracle getters + ingress 429 hook (cap only)
+- [x] `scripts/test-m3-token-budget-runtime.sh` on live `build/li-httpd`
 - [ ] L4 byte relay on wire (M3.1)
 - [ ] tier5 `stream_tcp` scenario enabled (needs `tcpkali` + relay)
 

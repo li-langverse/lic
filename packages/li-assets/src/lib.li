@@ -1,0 +1,159 @@
+
+# PH-GD-4 / wave-d-09 — glTF ingest stub (trusted decode at edge deferred).
+# workload_class=stub; pairs with `import scene` / `import render` — no Blender/Maya parity.
+
+type GltfIngestDesc = object
+  public uri_hash: int
+  public format_id: int
+  public byte_len: int
+
+type GltfMeshStub = object
+  public vertex_count: int
+  public index_count: int
+  public primitive_count: int
+
+type GltfIngestResult = object
+  public status: int
+  public mesh: GltfMeshStub
+  public content_hash: int
+
+def li_std_assets_version() -> int
+  requires true
+  ensures result == 1
+  decreases 0
+=
+  return 1
+
+def assets_workload_class_stub() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0
+
+def assets_gltf_format_glb() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0
+
+def assets_gltf_format_json() -> int
+  requires true
+  ensures result == 1
+  decreases 0
+=
+  return 1
+
+def assets_gltf_magic_glb() -> int
+  requires true
+  ensures result == 1179937895
+  decreases 0
+=
+  return 1179937895
+
+def assets_gltf_version_major() -> int
+  requires true
+  ensures result == 2
+  decreases 0
+=
+  return 2
+
+def assets_gltf_mesh_stub_triangle() -> GltfMeshStub
+  requires true
+  ensures result.vertex_count == 3
+  ensures result.index_count == 3
+  ensures result.primitive_count == 1
+  decreases 0
+=
+  var m: GltfMeshStub
+  m.vertex_count = 3
+  m.index_count = 3
+  m.primitive_count = 1
+  return m
+
+def assets_gltf_content_hash(vertex_count: int, index_count: int, primitive_count: int) -> int
+  requires vertex_count >= 0
+  requires index_count >= 0
+  requires primitive_count >= 0
+  ensures result == 1009
+  decreases vertex_count
+=
+  if vertex_count != 3:
+    return 0
+  if index_count != 3:
+    return 0
+  if primitive_count != 1:
+    return 0
+  return 1009
+
+def assets_gltf_ingest_stub(desc: GltfIngestDesc, magic: int) -> GltfIngestResult
+  requires desc.uri_hash >= 0
+  requires desc.byte_len >= 0
+  ensures result.status >= 0
+  decreases desc.byte_len
+=
+  var out: GltfIngestResult
+  out.status = 0
+  out.mesh = assets_gltf_mesh_stub_triangle()
+  out.content_hash = 0
+  if assets_workload_class_stub() != 0:
+    return out
+  if li_std_assets_version() < 1:
+    return out
+  if desc.format_id == assets_gltf_format_glb():
+    if magic != assets_gltf_magic_glb():
+      return out
+    if desc.byte_len < 12:
+      return out
+    out.status = 1
+    out.mesh = assets_gltf_mesh_stub_triangle()
+    out.content_hash = assets_gltf_content_hash(out.mesh.vertex_count, out.mesh.index_count, out.mesh.primitive_count)
+    return out
+  if desc.format_id == assets_gltf_format_json():
+    if desc.byte_len < 1:
+      return out
+    if desc.uri_hash < 1:
+      return out
+    out.status = 1
+    out.mesh = assets_gltf_mesh_stub_triangle()
+    out.content_hash = assets_gltf_content_hash(out.mesh.vertex_count, out.mesh.index_count, out.mesh.primitive_count)
+    return out
+  return out
+
+def assets_gltf_import_smoke_entry() -> int
+  requires true
+  ensures result == 1009
+  decreases 0
+=
+  if assets_workload_class_stub() != 0:
+    return 0
+  if li_std_assets_version() < 1:
+    return 0
+  var glb_desc: GltfIngestDesc
+  glb_desc.uri_hash = 42
+  glb_desc.format_id = assets_gltf_format_glb()
+  glb_desc.byte_len = 64
+  var glb: GltfIngestResult = assets_gltf_ingest_stub(glb_desc, assets_gltf_magic_glb())
+  if glb.status != 1:
+    return 0
+  if glb.mesh.vertex_count != 3:
+    return 0
+  if glb.mesh.index_count != 3:
+    return 0
+  if glb.mesh.primitive_count != 1:
+    return 0
+  if glb.content_hash != 1009:
+    return 0
+  var json_desc: GltfIngestDesc
+  json_desc.uri_hash = 7
+  json_desc.format_id = assets_gltf_format_json()
+  json_desc.byte_len = 128
+  var json: GltfIngestResult = assets_gltf_ingest_stub(json_desc, 0)
+  if json.status != 1:
+    return 0
+  if json.content_hash != 1009:
+    return 0
+  if assets_gltf_version_major() != 2:
+    return 0
+  return 1009

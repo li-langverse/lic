@@ -1,0 +1,33 @@
+import assets
+
+def main() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  if li_std_assets_version() < 1:
+    return 1
+  if assets_workload_class_stub() != 0:
+    return 2
+  var glb_desc: GltfIngestDesc
+  glb_desc.uri_hash = 42
+  glb_desc.format_id = assets_gltf_format_glb()
+  glb_desc.byte_len = 64
+  var glb: GltfIngestResult = assets_gltf_ingest_stub(glb_desc, assets_gltf_magic_glb())
+  if glb.status != 1:
+    return 3
+  if glb.mesh.vertex_count != 3:
+    return 4
+  if glb.content_hash != 1009:
+    return 5
+  var json_desc: GltfIngestDesc
+  json_desc.uri_hash = 7
+  json_desc.format_id = assets_gltf_format_json()
+  json_desc.byte_len = 128
+  var json: GltfIngestResult = assets_gltf_ingest_stub(json_desc, 0)
+  if json.status != 1:
+    return 6
+  var hash: int = assets_gltf_import_smoke_entry()
+  if hash != 1009:
+    return 7
+  return 0

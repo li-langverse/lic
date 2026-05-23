@@ -776,6 +776,20 @@ file = "render_present/import_render_present_smoke_entry.li"
 outcome = "verify_open_ok"
 note = "wave-d-07: import render; render_present_swapchain_smoke_entry closed witness (open VC on smoke_entry ensures)"
 
+[[tests]]
+suite = "composable"
+file = "composable/import_assets_gltf_ingest_smoke.li"
+outcome = "compile_open_ok"
+note = "wave-d-09: import assets; glTF GLB/JSON ingest stub (open VC on assets_gltf_ingest_stub branch ensures)"
+
+# --- assets_gltf (PH-GD-4 — glTF ingest composable) ---
+
+[[tests]]
+suite = "assets_gltf"
+file = "assets_gltf/import_assets_gltf_smoke_entry.li"
+outcome = "verify_open_ok"
+note = "wave-d-09: import assets; assets_gltf_import_smoke_entry closed witness (open VC on smoke_entry ensures)"
+
 # stdlib_coverage/build_std_csv — enable when std.csv module resolves (PH-IO-4)
 
 # --- httpd (Phase H placeholder) ---

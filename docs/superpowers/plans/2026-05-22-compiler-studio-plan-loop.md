@@ -76,7 +76,7 @@ todos:
     status: completed
   - id: wave-d-09-assets-gltf
     content: "assets — glTF ingest stub + composable import"
-    status: pending
+    status: completed
   - id: wave-d-10-ui-studio-wire
     content: "ui extend — studio chrome hooks + wire gui import in packages/studio"
     status: pending

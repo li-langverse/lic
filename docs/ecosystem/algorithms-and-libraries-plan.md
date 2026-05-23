@@ -229,7 +229,7 @@ flowchart TB
 | `gpu` | `packages/li-gpu` | **stub** | **extend** — LKIR codegen + trusted wgpu FFI (device enum + smoke landed) | D→E | `lic` codegen |
 | `render` | `packages/li-render` | **stub** | **extend** — draw lists, PBR-lite (swapchain/present smoke landed) | D→E | `gpu`, `math` |
 | `scene` | `packages/scene` | exists-stub | **extend** — hierarchy, picks, transforms via `math` | D | `math` |
-| `assets` | `packages/assets` | exists-stub | **implement** — glTF + image ingest (trusted decode at edge) | D | `render` |
+| `assets` | `packages/li-assets` | **stub** | **extend** — glTF ingest smoke landed; image ingest + trusted decode at edge | D→E | `render` |
 | `ui` | `packages/ui` | exists-stub | **extend** — Studio chrome, ⌘K, agent cmds (no pixels) | D | — |
 | `gui` | `packages/li-gui` | **stub** | **extend** — paint IR + render wire-up | D→E | [li-native-gui plan](../game-dev/plans/li-native-gui-plan.md) |
 | `studio` | `packages/studio` | exists-stub | **wire** — compose `ui` + `gui` + `render` + `world` | E | `gui`, `render` |

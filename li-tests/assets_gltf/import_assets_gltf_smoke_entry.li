@@ -1,0 +1,11 @@
+import assets
+
+def main() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  var h: int = assets_gltf_import_smoke_entry()
+  if h != 1009:
+    return 1
+  return 0

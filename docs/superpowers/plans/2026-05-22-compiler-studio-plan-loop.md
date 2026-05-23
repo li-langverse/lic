@@ -31,7 +31,7 @@ todos:
     status: pending
   - id: wave-b-md-oracle
     content: "md_lennard_jones — external oracle column plan in competitive-engines (doc + stub driver)"
-    status: pending
+    status: completed
   - id: studio-math-goldens
     content: "verify-math-physics-goldens.sh in CI gates; li-math golden procs documented"
     status: completed

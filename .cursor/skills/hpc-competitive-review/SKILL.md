@@ -16,6 +16,7 @@ Use when editing `benchmarks/**`, SIMD/parallel codegen, or publishing performan
 2. `benchmarks/results/README.md` (shared_c_kernel vs pure_li)
 3. `.cursor/rules/li-hpc-competitive.mdc`
 4. `docs/benchmarks/competitive-landscape.md`
+5. `docs/benchmarks/competitive-engines-plan.md` (LAMMPS/GROMACS MD oracles)
 
 ## Workflow
 

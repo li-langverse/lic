@@ -110,3 +110,23 @@ csv_lang = ""
 kernel_honesty = "n/a"
 last_reviewed = "2026-05-16"
 notes = "Tier-0 stability + race rejects gate CI; not wall-time competitive."
+
+[[ecosystem]]
+id = "lammps_lj_micro"
+track = "watch"
+repo_url = "https://github.com/lammps/lammps"
+compare = ["md_lennard_jones"]
+csv_lang = "lammps"
+kernel_honesty = "external_binary"
+last_reviewed = "2026-05-23"
+notes = "Domain MD oracle (validity); stub driver — see md_oracle.toml and competitive-engines-plan.md."
+
+[[ecosystem]]
+id = "gromacs_lj_micro"
+track = "watch"
+repo_url = "https://gitlab.com/gromacs/gromacs"
+compare = ["md_lennard_jones"]
+csv_lang = "gromacs"
+kernel_honesty = "external_binary"
+last_reviewed = "2026-05-23"
+notes = "Domain MD oracle (validity); B2 gmx driver — stub until workload matches md_core."

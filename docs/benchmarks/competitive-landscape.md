@@ -14,6 +14,17 @@ Li’s pillar order applies: **provability before speed**. Competitive intel inf
 | Li | bench_tier2 | `li` | Same fixtures | mixed (pure_li vs shared) |
 | OpenMP / races | bench_tier0 | — | Tier-0 correctness, race rejects | CI strict |
 
+## Domain MD oracles (external_binary)
+
+Planned **`lammps`** / **`gromacs`** validity columns for `md_lennard_jones` — not language runtimes. Registry: `benchmarks/competitive/md_oracle.toml`. Plan: [competitive-engines-plan.md](competitive-engines-plan.md). CI stub: `benchmarks/tier2_physics/md_lennard_jones/external/run_oracle_stub.sh`.
+
+| Engine | CSV `lang` | Status |
+|--------|------------|--------|
+| LAMMPS | `lammps` | stub (B1 deck) |
+| GROMACS | `gromacs` | stub (B2 mdrun) |
+
+Do not compare Li/cpp wall time to LAMMPS until workloads match `md_core.c` IC and LJ parameters.
+
 ## Watch list (manual review)
 
 | Ecosystem | Why track | Li implication |

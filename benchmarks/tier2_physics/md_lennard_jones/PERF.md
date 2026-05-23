@@ -1,5 +1,7 @@
 # md_lennard_jones performance & stability
 
+**External oracles (LAMMPS/GROMACS):** [competitive-engines-plan.md](../../../docs/benchmarks/competitive-engines-plan.md) · stub: `external/run_oracle_stub.sh` · registry: `benchmarks/competitive/md_oracle.toml`.
+
 ## Speed (perf kernel)
 
 | Issue | Old C++ | Fix in `common/md_core.h` |

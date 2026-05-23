@@ -16,6 +16,8 @@ benchmarks/results/share/*.png
 benchmarks/results/share/*.gif
 benchmarks/results/md_lennard_jones/traj_*.txt
 benchmarks/results/md_lennard_jones/*.csv
+benchmarks/results/md_lennard_jones/oracle_stub.json
+benchmarks/tier2_physics/md_lennard_jones/external/pins.env
 build/bench/
 
 compile_commands.json

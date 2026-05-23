@@ -1,0 +1,52 @@
+# Domain MD external oracle registry (Layer B).
+# Validate: ./scripts/check-hpc-competitive.sh
+# Driver: benchmarks/tier2_physics/md_lennard_jones/external/run_oracle_stub.sh
+# Plan: docs/benchmarks/competitive-engines-plan.md
+
+[meta]
+version = 1
+benchmark = "md_lennard_jones"
+updated = "2026-05-23"
+registry_review_days_warn = 90
+
+# status: stub | active | retired
+# workload_class: v0_micro | full (per BENCH_WORKLOADS honesty)
+# oracle: external_binary (domain executable, not shared C kernel)
+
+[[oracle]]
+id = "lammps_lj_micro"
+incumbent = "LAMMPS"
+repo_url = "https://github.com/lammps/lammps"
+pinned_version = "2024.06.27"
+pinned_tag = "stable_22Jun2024"
+csv_lang = "lammps"
+track = "oracle_stub"
+workload_class = "v0_micro"
+kernel_or_api = "LJ NVE micro — 256 particles, 10k steps, reduced units"
+oracle = "external_binary"
+compare_metric = "energy_drift"
+reference = "md_core.c --verify (cpp native)"
+driver = "benchmarks/tier2_physics/md_lennard_jones/external/run_oracle_stub.sh"
+input_stub = "benchmarks/tier2_physics/md_lennard_jones/external/lammps_mdlj.lammps"
+status = "stub"
+last_reviewed = "2026-05-23"
+notes = "B0: stub records native reference; LAMMPS deck skeleton only. B1: align FCC+MB IC with md_core."
+
+[[oracle]]
+id = "gromacs_lj_micro"
+incumbent = "GROMACS"
+repo_url = "https://gitlab.com/gromacs/gromacs"
+pinned_version = "2024.2"
+pinned_tag = "v2024.2"
+csv_lang = "gromacs"
+track = "oracle_stub"
+workload_class = "v0_micro"
+kernel_or_api = "LJ NVE micro — same contract as lammps_lj_micro"
+oracle = "external_binary"
+compare_metric = "energy_drift"
+reference = "md_core.c --verify (cpp native)"
+driver = "benchmarks/tier2_physics/md_lennard_jones/external/run_oracle_stub.sh"
+input_stub = "benchmarks/tier2_physics/md_lennard_jones/external/gromacs_mdlj.mdp"
+status = "stub"
+last_reviewed = "2026-05-23"
+notes = "B0: stub only. B2: gmx mdrun after mdp matches reduced LJ + MIC box."

@@ -76,7 +76,7 @@ This page is the **algorithms-and-libraries** layer under World Studio — not t
 | C++/OpenMP | tier-1/2 kernels | Keep ≤1.2×; add Chapel/Kokkos drivers or stay on watch list with quarterly review |
 | Rust/Julia | shared C oracle | Same |
 | NumPy/BLAS | matmul, reductions | Label BLAS; add explicit “no BLAS” Li column for fair dot |
-| **LAMMPS/GROMACS** | **Missing** | Add **external oracle** column for `md_lennard_jones` (pinned version) — roadmap item in competitive-engines-plan |
+| **LAMMPS/GROMACS** | **Stub (B0)** | [competitive-engines-plan.md](../benchmarks/competitive-engines-plan.md) + `md_oracle.toml` + stub driver; B1/B2 real validity rows |
 
 ### Layer B — Domain tools & algorithm libraries (incomplete)
 
@@ -147,7 +147,7 @@ Each vertical needs a maintained row in **`benchmarks/competitive/verticals.toml
 | `li-tests` pass count | ~47–92 composable (lic); language repo smaller |
 | Lean on `lic build` | **Not wired** (G-VERIFY-01 open) |
 | `std/` production numerics | Partial / facades |
-| Tier-2 external MD oracle | **Not yet** |
+| Tier-2 external MD oracle | **Stub** (`md_oracle.toml`, `run_oracle_stub.sh`) |
 | Studio HTML demo | Strong UX/agent story |
 | Domain QM/CAD kernels | Stubs + trusted FFI plan only |
 

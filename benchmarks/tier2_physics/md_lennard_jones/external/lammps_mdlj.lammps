@@ -1,0 +1,17 @@
+# LAMMPS input skeleton for md_lennard_jones external oracle (B1).
+# Not executed in CI stub mode — documents target workload mapping.
+# Canonical params: N=256, steps=10000, dt=0.004, rc=2.5, box=10, LJ 12-6, NVE.
+
+units           lj
+atom_style      atomic
+boundary        p p p
+
+# B1 TODO: create_box + FCC lattice matching md_core.c (seed=7, T=1.0 reduced)
+# B1 TODO: velocity create with zero total momentum + MB scale
+# B1 TODO: pair_style lj/cut 2.5 (no long-range, no shift until AT-grade conservation)
+
+variable        nsteps equal 10000
+timestep        0.004
+run             ${nsteps}
+
+# B1 TODO: print final pe+ke; harness compares |dE|/E to md_main --verify

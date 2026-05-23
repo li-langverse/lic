@@ -224,6 +224,16 @@ if [[ "${HTTPD_GATES_SKIP_LIC_BUILD:-0}" != "1" && "${HTTPD_RUN_SSE_RUNTIME_TEST
   fi
 fi
 
+# m15-leak-censor-runtime: proxy egress scrub when leak_censor.enabled (opt-out HTTPD_RUN_LEAK_CENSOR_RUNTIME_TEST=0).
+if [[ "${HTTPD_GATES_SKIP_LIC_BUILD:-0}" != "1" && "${HTTPD_RUN_LEAK_CENSOR_RUNTIME_TEST:-1}" == "1" ]]; then
+  if [[ -x "$ROOT/scripts/test-m15-leak-censor-runtime.sh" && -x "$ROOT/build/li-httpd" ]]; then
+    echo "==> test-m15-leak-censor-runtime.sh (m15-leak-censor)"
+    "$ROOT/scripts/test-m15-leak-censor-runtime.sh" || fail "test-m15-leak-censor-runtime.sh failed"
+  else
+    fail "m15-leak-censor: build/li-httpd missing (run build-li-httpd.sh)"
+  fi
+fi
+
 # m2-tls-h2-runtime: TLS 1.3 terminate + HTTP/2 ALPN on live li-httpd (opt-out HTTPD_RUN_M2_TLS_H2_TEST=0).
 if [[ "${HTTPD_GATES_SKIP_LIC_BUILD:-0}" != "1" && "${HTTPD_RUN_M2_TLS_H2_TEST:-1}" == "1" ]]; then
   if [[ -x "$ROOT/scripts/test-m2-tls-h2-runtime.sh" && -x "$ROOT/build/li-httpd" ]]; then

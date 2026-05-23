@@ -37,6 +37,8 @@ def leak_censor_enabled_in_flatten(server_config: Path) -> bool:
 
 def run_oracle(name: str) -> bool:
     path = REPO / "build" / name
+    if not path.is_file():
+        path = Path(f"/tmp/{name}")
     if not path.is_file() or not path.stat().st_mode & 0o111:
         return False
     proc = subprocess.run([str(path)], cwd=REPO, capture_output=True)

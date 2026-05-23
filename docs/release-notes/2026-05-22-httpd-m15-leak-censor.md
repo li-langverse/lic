@@ -22,12 +22,13 @@ built-in patterns (`openai_sk`, `jwt_bearer`, `pem_private`) when `[leak_censor]
 - `runtime/li_rt_httpd.c`, `runtime/li_rt_net.c` — parse + proxy scrub + selftest
 - `li-tests/schema_catalog/`, `li-tests/config_desugar/good/leak_censor_m15.toml`
 - `li-tests/httpd/m15_leak_censor_oracle.li`
+- `scripts/test-m15-leak-censor-runtime.sh`, `packages/li-net-httpd/examples/leak_censor_proxy.toml`
 - `benchmarks/tier5_http/exploits/leak_*.toml` (Tier G manifest rows)
 - `packages/li-http/src/leak_*.li`, `packages/li-schema/`
 
 ## Not changed
 
-- TLS ACME (`m15-tls-auto`), full `exploit_http.py` harness execution, live Pages bench refresh.
+- TLS ACME (`m15-tls-auto`), live Pages bench refresh (`SKIP_BENCH=1`).
 
 ## Breaking / Security / Performance / Downstream
 
@@ -36,7 +37,7 @@ built-in patterns (`openai_sk`, `jwt_bearer`, `pem_private`) when `[leak_censor]
 | Breaking | N/A — opt-in `leak_censor.enabled` |
 | Security | Redacts known secret patterns on proxy egress; not a guarantee for unknown formats |
 | Performance | Bounded scrub buffer 64KiB per relay chunk |
-| Downstream | Tier G TOML rows documented; harness drivers still stubs |
+| Downstream | Tier G TOML + live proxy smoke (`test-m15-leak-censor-runtime.sh`); exploit drivers use oracle |
 
 ## Test plan
 
@@ -44,8 +45,9 @@ built-in patterns (`openai_sk`, `jwt_bearer`, `pem_private`) when `[leak_censor]
 export PYTHONPATH=scripts
 chmod +x scripts/check-httpd-leak-censor.sh scripts/check-schema-catalog.sh
 ./scripts/check-httpd-leak-censor.sh
-HTTPD_GATES_SKIP_LIC_BUILD=1 ./scripts/httpd-plan-gates.sh
-./scripts/build.sh && ./scripts/httpd-plan-gates.sh
+./scripts/build.sh && ./scripts/build-li-httpd.sh
+./scripts/test-m15-leak-censor-runtime.sh
+./scripts/httpd-plan-gates.sh
 ```
 
 Live sites: `SKIP_BENCH=1` (no new CSV).

@@ -1,0 +1,20 @@
+import ui
+
+def main() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  if adaptive_layout_role_count() != 5:
+    return 1
+  var layout: AdaptiveLayout = adaptive_layout_hd()
+  if layout.sidebar.w <= 0.0:
+    return 2
+  if layout.main.w <= 0.0:
+    return 3
+  if layout.inspector.w <= 0.0:
+    return 4
+  var panel: Rect = adaptive_panel_rect_ml()
+  if panel.w < 283.0:
+    return 5
+  return 0

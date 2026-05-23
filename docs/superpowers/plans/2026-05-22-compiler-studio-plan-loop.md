@@ -37,10 +37,10 @@ todos:
     status: completed
   - id: studio-algo-wave-a-doc
     content: "algorithms-and-libraries-plan Wave A table synced to provability-gaps"
-    status: in_progress
+    status: completed
   - id: studio-ph-ux-slice
     content: "PH-UX — one adaptive layout composable + li-tests compile_ok (no httpd)"
-    status: pending
+    status: completed
 isProject: false
 ---
 

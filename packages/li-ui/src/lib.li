@@ -101,3 +101,85 @@ def input_default() -> InputState
   s.pointer_y = 0.0
   s.key_escape = 0
   return s
+
+# PH-UX / studio.adaptive — drug-discovery stage chrome (composable stub; no viewport runtime)
+def layout_role_hypothesis() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0
+def layout_role_generate() -> int
+  requires true
+  ensures result == 1
+  decreases 0
+=
+  return 1
+def layout_role_dft() -> int
+  requires true
+  ensures result == 2
+  decreases 0
+=
+  return 2
+def layout_role_lab() -> int
+  requires true
+  ensures result == 3
+  decreases 0
+=
+  return 3
+def layout_role_ml() -> int
+  requires true
+  ensures result == 4
+  decreases 0
+=
+  return 4
+
+type AdaptiveLayout = object
+  public sidebar: Rect
+  public main: Rect
+  public inspector: Rect
+
+def adaptive_layout_role_count() -> int
+  requires true
+  ensures result == 5
+  decreases 0
+=
+  return 5
+
+# 1280x720 drug-discovery chrome (fixed stub until float copy for multi-use viewport params)
+def adaptive_layout_hd() -> AdaptiveLayout
+  requires true
+  ensures result.sidebar.w == 281.0
+  ensures result.main.w == 716.0
+  ensures result.inspector.w == 283.0
+  decreases 0
+=
+  var out: AdaptiveLayout
+  out.sidebar = rect_at_f(0.0, 0.0, 281.0, 720.0)
+  out.main = rect_at_f(281.0, 360.0, 716.0, 360.0)
+  out.inspector = rect_at_f(997.0, 0.0, 283.0, 360.0)
+  return out
+
+def adaptive_panel_rect_ml() -> Rect
+  requires true
+  ensures result.w == 283.0
+  ensures result.h == 360.0
+  decreases 0
+=
+  return rect_at_f(997.0, 360.0, 283.0, 360.0)
+
+def rect_at_f(x: float, y: float, w: float, h: float) -> Rect
+  requires w >= 0.0
+  requires h >= 0.0
+  ensures result.x == x
+  ensures result.y == y
+  ensures result.w == w
+  ensures result.h == h
+  decreases 0
+=
+  var r: Rect
+  r.x = x
+  r.y = y
+  r.w = w
+  r.h = h
+  return r

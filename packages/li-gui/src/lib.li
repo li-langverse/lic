@@ -1,0 +1,185 @@
+
+# AL-9 / native Studio shell — widgets + paint IR (UX-02 docking, UX-04 inspector).
+# Editor chrome stays on `import ui`; `import gui` is consumed by `render` / `studio`.
+
+type GuiRect = object
+  public x: float
+  public y: float
+  public w: float
+  public h: float
+
+type PaintCmd = object
+  public kind: int
+  public x: float
+  public y: float
+  public w: float
+  public h: float
+  public layer: int
+
+type UiDocument = object
+  public doc_id: int
+  public paint_count: int
+  public layout_role: int
+
+type StudioShell = object
+  public sidebar: GuiRect
+  public main: GuiRect
+  public inspector: GuiRect
+
+type InspectorRow = object
+  public label_id: int
+  public value_id: int
+  public advanced: int
+
+def li_std_gui_version() -> int
+  requires true
+  ensures result == 1
+  decreases 0
+=
+  return 1
+
+def gui_paint_kind_rect() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0
+
+def gui_paint_kind_text() -> int
+  requires true
+  ensures result == 1
+  decreases 0
+=
+  return 1
+
+def gui_inspector_section_properties() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0
+
+def gui_inspector_section_display() -> int
+  requires true
+  ensures result == 1
+  decreases 0
+=
+  return 1
+
+def gui_inspector_section_view() -> int
+  requires true
+  ensures result == 2
+  decreases 0
+=
+  return 2
+
+def inspector_section_count() -> int
+  requires true
+  ensures result == 3
+  decreases 0
+=
+  return 3
+
+def gui_rect_at(x: float, y: float, w: float, h: float) -> GuiRect
+  requires w >= 0.0
+  requires h >= 0.0
+  ensures result.x == x
+  ensures result.y == y
+  ensures result.w == w
+  ensures result.h == h
+  decreases 0
+=
+  var r: GuiRect
+  r.x = x
+  r.y = y
+  r.w = w
+  r.h = h
+  return r
+
+# UX-02 — 1280×720 chrome (~22% / ~56% / ~22%); matches `adaptive_layout_hd()` on li-ui.
+def studio_shell_layout_hd() -> StudioShell
+  requires true
+  ensures result.sidebar.w == 281.0
+  ensures result.main.w == 716.0
+  ensures result.inspector.w == 283.0
+  decreases 0
+=
+  var out: StudioShell
+  out.sidebar = gui_rect_at(0.0, 0.0, 281.0, 720.0)
+  out.main = gui_rect_at(281.0, 0.0, 716.0, 720.0)
+  out.inspector = gui_rect_at(997.0, 0.0, 283.0, 720.0)
+  return out
+
+def ui_document_new() -> UiDocument
+  requires true
+  ensures result.doc_id == 0
+  ensures result.paint_count == 0
+  ensures result.layout_role == 0
+  decreases 0
+=
+  var d: UiDocument
+  d.doc_id = 0
+  d.paint_count = 0
+  d.layout_role = 0
+  return d
+
+def ui_document_attach_paint(doc: UiDocument, cmd: PaintCmd) -> unit
+  requires doc.paint_count >= 0
+  requires cmd.kind >= 0
+  ensures true
+  decreases doc.paint_count
+=
+  doc.paint_count = doc.paint_count + 1
+
+def paint_rect(layer: int, r: GuiRect) -> PaintCmd
+  requires layer >= 0
+  requires r.w >= 0.0
+  requires r.h >= 0.0
+  ensures result.kind == 0
+  ensures result.layer == layer
+  ensures result.w == r.w
+  ensures result.h == r.h
+  decreases 0
+=
+  var c: PaintCmd
+  c.kind = gui_paint_kind_rect()
+  c.x = r.x
+  c.y = r.y
+  c.w = r.w
+  c.h = r.h
+  c.layer = layer
+  return c
+
+def gui_hit_test_rect(r: GuiRect, px: float, py: float) -> int
+  requires r.w >= 0.0
+  requires r.h >= 0.0
+  ensures result >= 0
+  ensures result <= 1
+  decreases 0
+=
+  var hit: int = 1
+  if px < r.x:
+    hit = 0
+  if py < r.y:
+    hit = 0
+  if px > r.x + r.w:
+    hit = 0
+  if py > r.y + r.h:
+    hit = 0
+  return hit
+
+def inspector_row_new(label_id: int, value_id: int, advanced: int) -> InspectorRow
+  requires label_id >= 0
+  requires value_id >= 0
+  requires advanced >= 0
+  requires advanced <= 1
+  ensures result.label_id == label_id
+  ensures result.value_id == value_id
+  ensures result.advanced == advanced
+  decreases 0
+=
+  var row: InspectorRow
+  row.label_id = label_id
+  row.value_id = value_id
+  row.advanced = advanced
+  return row

@@ -153,7 +153,7 @@ Each vertical needs a maintained row in **`benchmarks/competitive/verticals.toml
 | Tier-2 physics verify | **Partial** — `verify.py` green on `md_lennard_jones` + `heat_equation_2d` (PR **#176**) |
 | Tier-2 external MD oracle | **Stub** (`md_oracle.toml`, `run_oracle_stub.sh`; LAMMPS/GROMACS columns documented) |
 | `std/` production numerics | Partial / facades |
-| Studio / PH-UX | **Stub** — `li-ui` adaptive layout composable + composable import test |
+| Studio / PH-UX | **Stub** — `li-ui` adaptive layout + `li-gui` studio shell composable (`import gui`) |
 | Domain QM/CAD kernels | Stubs + trusted FFI plan only |
 
 **Honesty rule:** [PH-world-studio-program.md](../game-dev/PH-world-studio-program.md) “Done” on stubs ≠ algorithm parity. Rename mentally to **“interface landed”** until Wave A passes.
@@ -231,7 +231,7 @@ flowchart TB
 | `scene` | `packages/scene` | exists-stub | **extend** — hierarchy, picks, transforms via `math` | D | `math` |
 | `assets` | `packages/assets` | exists-stub | **implement** — glTF + image ingest (trusted decode at edge) | D | `render` |
 | `ui` | `packages/ui` | exists-stub | **extend** — Studio chrome, ⌘K, agent cmds (no pixels) | D | — |
-| `gui` | — | **missing** | **new package** `packages/gui` — `UiDocument`, layout, hit-test, paint IR | D→E | [li-native-gui plan](../game-dev/plans/li-native-gui-plan.md) |
+| `gui` | `packages/li-gui` | **stub** | **extend** — paint IR + render wire-up | D→E | [li-native-gui plan](../game-dev/plans/li-native-gui-plan.md) |
 | `studio` | `packages/studio` | exists-stub | **wire** — compose `ui` + `gui` + `render` + `world` | E | `gui`, `render` |
 | `player` | `packages/player` | exists-stub | **wire** — load `gui/*.li` HUD | E | `gui`, `render` |
 

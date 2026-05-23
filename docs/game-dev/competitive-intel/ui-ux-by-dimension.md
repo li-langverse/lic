@@ -2,7 +2,7 @@
 
 **Status:** Active (2026-05-23)  
 **Li target:** [world-studio-vision.md](../world-studio-vision.md) PH-UX (≥60 fps viewport, &lt;100 ms panel switch, ≤3 clicks AM export, WCAG 2.2 AA)  
-**Implementation today:** `packages/li-ui` composables + `adaptive_layout_hd()` drug-discovery chrome stub
+**Implementation today:** `packages/li-ui` composables + `adaptive_layout_hd()`; `packages/li-gui` studio shell + `import gui` composable
 
 Agents: when changing Studio shell, cite dimension IDs in PR body (`UX-02: …`). Steal **patterns**, not pixels — Li uses `studio.design` tokens (RFC stub).
 
@@ -13,9 +13,9 @@ Agents: when changing Studio shell, cite dimension IDs in PR body (`UX-02: …`)
 | ID | Dimension | Primary incumbents | Li package / API |
 |----|-----------|-------------------|------------------|
 | UX-01 | Viewport & 3D navigation | Blender, UE, Unity | `render`, wgpu |
-| UX-02 | Panel layout & docking | Blender N-panel, UE dock tabs | `ui`, `studio.adaptive` |
+| UX-02 | Panel layout & docking | Blender N-panel, UE dock tabs | `ui`, `gui`, `studio.adaptive` |
 | UX-03 | Command palette & shortcuts | Blender search, VS Code | `li-studio` (planned) |
-| UX-04 | Properties / inspector | ParaView Properties | `ui` + sim inspectors |
+| UX-04 | Properties / inspector | ParaView Properties | `gui`, `ui` + sim inspectors |
 | UX-05 | Timeline & playback | UE Sequencer, Blender Dope Sheet | `seq` (stub) |
 | UX-06 | Scientific visualization | ParaView, VTK, MATLAB | `sim.viz` |
 | UX-07 | Drug-discovery stages | Roche LITL, Recursion LOWE | `studio.adaptive`, `sim.drug_design` |
@@ -56,7 +56,7 @@ Agents: when changing Studio shell, cite dimension IDs in PR body (`UX-02: …`)
 - Parent/child panel hierarchy for stage-specific detail
 - Fixed chrome ratios: sidebar ~22%, main ~56%, inspector ~22% (see `adaptive_layout_hd()` in `li-ui`)
 
-**Li today:** `AdaptiveLayout`, `adaptive_panel_rect_ml()`, role helpers (`layout_role_*`).  
+**Li today:** `AdaptiveLayout`, `adaptive_panel_rect_ml()`, role helpers (`layout_role_*`); `studio_shell_layout_hd()` on `import gui`.  
 **Next:** Parameterized viewport layout (blocked on float move semantics — use int or copy API).
 
 **Offline:** `downloads/blender-panel-api.html`, `downloads/prusa-ui-overview.html`
@@ -87,6 +87,7 @@ Agents: when changing Studio shell, cite dimension IDs in PR body (`UX-02: …`)
 - **Apply / Reset** for heavy pipeline edits; **instant apply** for view options (ParaView View section)
 - **Auto Apply** toggle for power users
 
+**Li today:** `InspectorRow`, `inspector_section_count()` on `import gui` (stub).  
 **Li gap:** No generated inspector from Li types yet.  
 **Next:** Map `lic check --format=json` diagnostics into inspector rows (PH-AGENT).
 

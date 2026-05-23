@@ -1,0 +1,22 @@
+[package]
+name = "li-gui"
+version = "0.1.0"
+edition = "2026"
+license = "Apache-2.0 OR MIT"
+description = "Native Studio GUI — UiDocument, layout, hit-test, paint IR (widgets for render)"
+
+[dependencies]
+li-ui = { path = "../li-ui" }
+# registry = "1.0.0"             # lip 8d+
+
+[package.metadata.li]
+github_repo = "li-gui"
+import_name = "gui"
+min_lic = "0.1.0"
+maintainer = "li-langverse"
+pkg_id = "PKG-li-gui"
+
+[package.repository]
+url = "https://github.com/li-langverse/li-gui"
+documentation = "https://li-langverse.github.io/li-language/ecosystem/li-gui/"
+changelog = "https://github.com/li-langverse/li-gui/blob/main/CHANGELOG.md"

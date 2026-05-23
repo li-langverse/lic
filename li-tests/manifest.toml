@@ -712,6 +712,12 @@ file = "composable/import_ui_adaptive_layout.li"
 outcome = "compile_open_ok"
 note = "PH-UX: import ui; studio.adaptive layout composable (open VC on rect_contains branch ensures)"
 
+[[tests]]
+suite = "composable"
+file = "composable/import_gui_studio_shell.li"
+outcome = "compile_open_ok"
+note = "AL-9: import gui; studio shell UX-02/04 (open VC on gui_hit_test_rect branch ensures)"
+
 # stdlib_coverage/build_std_csv — enable when std.csv module resolves (PH-IO-4)
 
 # --- httpd (Phase H placeholder) ---

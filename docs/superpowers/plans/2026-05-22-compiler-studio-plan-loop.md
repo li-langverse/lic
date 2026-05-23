@@ -52,7 +52,7 @@ todos:
     status: completed
   - id: wave-d-gui-scaffold
     content: "AL-9 packages/gui scaffold + composable import gui (studio shell; UX-02/04)"
-    status: in_progress
+    status: completed
   - id: wave-d-02-al2-catalog
     content: "AL-2 vertical-algorithm-catalog.md — one kernel section per verticals.toml row"
     status: pending

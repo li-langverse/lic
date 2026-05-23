@@ -21,6 +21,7 @@ Agents: cite vertical `id` and `workload_class` in PRs. Do **not** claim GROMACS
 | `cinematic_encode` | `stub` | `studio` | none (PH-CIN CIN-2) |
 | `cinematic_color_grade` | `stub` | `studio` | composable `import_studio_cinematic_algorithms.li` |
 | `cinematic_audio_sync` | `stub` | `studio` | composable `import_studio_cinematic_algorithms.li` |
+| `mmo_shard` | `stub` | `mmo` | composable `import_mmo_shard.li` + [mmorpg.toml](../../benchmarks/competitive/mmorpg.toml) |
 | `qm_dft` | `stub` | `chem` | composable `import_chem_dft_smoke.li` + [qm_dft.toml](../../benchmarks/competitive/qm_dft.toml) |
 
 Gate: `./scripts/check-vertical-algorithm-catalog.sh` (sync with `verticals.toml`).
@@ -376,6 +377,32 @@ Pipeline + inspector layout is **stub**; no VTK render path or scalar color map 
 ### Honesty
 
 **No broadcast audio parity.** Integer rational stub — not floating pull-up tables.
+
+---
+
+## mmo_shard
+
+**Incumbent:** Photon / Spatial / custom shard servers  
+**Kernel / API:** `mmo` profile shard tick + zone handoff witness  
+**`workload_class`:** `stub` · **`oracle`:** `composable_only` · **`li_package`:** `mmo`
+
+### Kernel families
+
+| Family | Target | Li today | Proof / bench |
+|--------|--------|----------|---------------|
+| Studio `mmo` profile | Shard spin-up | `mmo_shard_*` in `mmo` | composable `import_mmo_shard.li` |
+| PH-MMO phase tracker | MMO-0…4 zone handoff milestones | `mmo_ph_mmo_phase_*` + tick advance | composable smoke |
+| Realtime store sync | `store.realtime` replication | **stub** — no trusted driver | none |
+
+### References
+
+- Plan: [algorithms-and-libraries-plan.md](algorithms-and-libraries-plan.md) MMO row
+- Bench: [mmorpg.toml](../../benchmarks/competitive/mmorpg.toml)
+- Vision: [world-studio-vision.md](../game-dev/world-studio-vision.md) MMO profile
+
+### Honesty
+
+**No Photon/Spatial/custom-shard parity claims.** `workload_class=stub` until store.realtime bench oracle lands.
 
 ---
 

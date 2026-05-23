@@ -1,0 +1,146 @@
+
+# PH-MMO / wave-d-26 — mmo profile shard composable stub (mmo_shard vertical; workload_class=stub).
+# Shard tick + zone handoff chrome only — NOT Photon/Spatial/custom-shard parity.
+
+type ShardState = object
+  public profile_id: int
+  public shard_id: int
+  public ph_mmo_phase: int
+  public sim_tick: int
+  public zone_count: int
+
+def li_std_mmo_version() -> int
+  requires true
+  ensures result == 1
+  decreases 0
+=
+  return 1
+
+def mmo_workload_class_stub() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0
+
+def mmo_profile_mmo() -> int
+  requires true
+  ensures result == 3
+  decreases 0
+=
+  return 3
+
+def mmo_ph_mmo_phase_0() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0
+
+def mmo_ph_mmo_phase_1() -> int
+  requires true
+  ensures result == 1
+  decreases 0
+=
+  return 1
+
+def mmo_ph_mmo_phase_2() -> int
+  requires true
+  ensures result == 2
+  decreases 0
+=
+  return 2
+
+def mmo_ph_mmo_phase_3() -> int
+  requires true
+  ensures result == 3
+  decreases 0
+=
+  return 3
+
+def mmo_ph_mmo_phase_4() -> int
+  requires true
+  ensures result == 4
+  decreases 0
+=
+  return 4
+
+def mmo_event_advance_tick() -> int
+  requires true
+  ensures result == 1
+  decreases 0
+=
+  return 1
+
+def mmo_shard_init(shard_id: int, zone_count: int) -> ShardState
+  requires shard_id >= 0
+  requires shard_id <= 255
+  requires zone_count >= 1
+  requires zone_count <= 64
+  ensures result.profile_id == mmo_profile_mmo()
+  ensures result.shard_id == shard_id
+  ensures result.ph_mmo_phase == mmo_ph_mmo_phase_0()
+  ensures result.sim_tick == 0
+  ensures result.zone_count == zone_count
+  decreases 0
+=
+  var s: ShardState
+  s.profile_id = mmo_profile_mmo()
+  s.shard_id = shard_id
+  s.ph_mmo_phase = mmo_ph_mmo_phase_0()
+  s.sim_tick = 0
+  s.zone_count = zone_count
+  return s
+
+def mmo_shard_advance(state: ShardState, event_id: int) -> ShardState
+  requires state.profile_id == mmo_profile_mmo()
+  requires state.ph_mmo_phase >= mmo_ph_mmo_phase_0()
+  requires state.ph_mmo_phase <= mmo_ph_mmo_phase_4()
+  requires state.sim_tick >= 0
+  requires state.zone_count >= 1
+  requires event_id == mmo_event_advance_tick()
+  ensures result.sim_tick >= state.sim_tick
+  decreases 0
+=
+  var next: ShardState
+  next.profile_id = state.profile_id
+  next.shard_id = state.shard_id
+  next.zone_count = state.zone_count
+  next.ph_mmo_phase = state.ph_mmo_phase
+  next.sim_tick = state.sim_tick + 1
+  if state.sim_tick == 0:
+    next.ph_mmo_phase = mmo_ph_mmo_phase_1()
+  if state.sim_tick == 1:
+    next.ph_mmo_phase = mmo_ph_mmo_phase_2()
+  if state.sim_tick == 2:
+    next.ph_mmo_phase = mmo_ph_mmo_phase_3()
+  if state.sim_tick == 3:
+    next.ph_mmo_phase = mmo_ph_mmo_phase_4()
+  return next
+
+def mmo_shard_smoke_tick_count() -> int
+  requires true
+  ensures result == 4
+  decreases 0
+=
+  var s0: ShardState = mmo_shard_init(1, 8)
+  var s1: ShardState = mmo_shard_advance(s0, mmo_event_advance_tick())
+  var s2: ShardState = mmo_shard_advance(s1, mmo_event_advance_tick())
+  var s3: ShardState = mmo_shard_advance(s2, mmo_event_advance_tick())
+  var s4: ShardState = mmo_shard_advance(s3, mmo_event_advance_tick())
+  return s4.sim_tick
+
+def mmo_smoke_entry() -> int
+  requires true
+  ensures result == 7060
+  decreases 0
+=
+  var ticks: int = mmo_shard_smoke_tick_count()
+  if ticks != 4:
+    return 0
+  var s: ShardState = mmo_shard_init(1, 8)
+  if s.zone_count != 8:
+    return 0
+  if s.shard_id != 1:
+    return 0
+  return 7000 + ticks * 13 + s.zone_count

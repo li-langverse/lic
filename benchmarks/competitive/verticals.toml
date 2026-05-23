@@ -136,6 +136,16 @@ last_reviewed = "2026-05-23"
 notes = "PH-CIN audio track; mux with cinematic_encode at CIN-4."
 
 [[vertical]]
+id = "mmo_shard"
+incumbent = "Photon / Spatial / custom shard servers"
+kernel_or_api = "mmo profile shard tick + zone handoff witness"
+workload_class = "stub"
+oracle = "composable_only"
+li_package = "mmo"
+last_reviewed = "2026-05-23"
+notes = "mmorpg.toml composable import_mmo_shard.li; mmo profile shard stub — not Photon/Spatial/custom-shard parity; store.realtime oracle TBD."
+
+[[vertical]]
 id = "qm_dft"
 incumbent = "Gaussian / ORCA / Psi4"
 kernel_or_api = "DFT single-point energy"

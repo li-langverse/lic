@@ -1,0 +1,40 @@
+import mmo
+
+def main() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  if li_std_mmo_version() < 1:
+    return 1
+  if mmo_workload_class_stub() != 0:
+    return 2
+  var s0: ShardState = mmo_shard_init(1, 8)
+  if s0.profile_id != mmo_profile_mmo():
+    return 3
+  if s0.shard_id != 1:
+    return 4
+  if s0.ph_mmo_phase != mmo_ph_mmo_phase_0():
+    return 5
+  if s0.sim_tick != 0:
+    return 6
+  if s0.zone_count != 8:
+    return 7
+  var s1: ShardState = mmo_shard_advance(s0, mmo_event_advance_tick())
+  if s1.sim_tick != 1:
+    return 8
+  if s1.ph_mmo_phase != mmo_ph_mmo_phase_1():
+    return 9
+  var s4: ShardState = s1
+  var s2: ShardState = mmo_shard_advance(s1, mmo_event_advance_tick())
+  var s3: ShardState = mmo_shard_advance(s2, mmo_event_advance_tick())
+  s4 = mmo_shard_advance(s3, mmo_event_advance_tick())
+  if s4.sim_tick != 4:
+    return 10
+  if s4.ph_mmo_phase != mmo_ph_mmo_phase_4():
+    return 11
+  if mmo_shard_smoke_tick_count() != 4:
+    return 12
+  if mmo_smoke_entry() != 7060:
+    return 13
+  return 0

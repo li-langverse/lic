@@ -1,0 +1,29 @@
+# MMORPG vertical bench registry (mmo shard slice — wave-d-26).
+# Validate: ./scripts/check-mmorpg-bench.sh
+# Layer B: benchmarks/competitive/verticals.toml id=mmo_shard
+
+[meta]
+schema = 1
+version = 1
+track = "PH-MMO"
+plan = "docs/ecosystem/algorithms-and-libraries-plan.md"
+updated = "2026-05-23"
+
+# workload_class: stub | full — honesty per algorithms-and-libraries-plan.md
+# oracle: composable_only | external_binary
+# status: stub | active
+
+[[benchmark]]
+id = "mmo_shard"
+vertical_id = "mmo_shard"
+name = "mmo profile shard tick + zone handoff smoke"
+profile = "mmo"
+workload_class = "stub"
+oracle = "composable_only"
+status = "stub"
+tier = "composable"
+li_package = "mmo"
+composable = "import_mmo_shard"
+workflow = "shard_zone_handoff"
+last_reviewed = "2026-05-23"
+notes = "Native mmo profile shard stub via import_mmo_shard.li — not Photon/Spatial/custom-shard parity; store.realtime oracle TBD."

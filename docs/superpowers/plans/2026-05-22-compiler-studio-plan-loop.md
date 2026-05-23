@@ -127,7 +127,7 @@ todos:
     status: completed
   - id: wave-d-26-vertical-mmo
     content: "mmo — shard composable + mmorpg.toml bench stub row"
-    status: pending
+    status: completed
   - id: wave-d-27-physics-deepen
     content: "physics.* — one tier-2 kernel harden (rigid or soft) + verify.py note"
     status: pending

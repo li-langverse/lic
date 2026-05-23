@@ -822,6 +822,12 @@ note = "wave-d-25: import sim.viz; scientific_viz vertical — pipeline source/d
 
 [[tests]]
 suite = "composable"
+file = "composable/import_mmo_shard.li"
+outcome = "compile_open_ok"
+note = "wave-d-26: import mmo; mmo_shard vertical — mmo profile shard tick + zone handoff smoke"
+
+[[tests]]
+suite = "composable"
 file = "composable/import_linalg_matmul_smoke.li"
 outcome = "compile_open_ok"
 note = "AL-10: import linalg; matmul_2x2/2x3 smoke via explicit @ (open VC on float branch ensures)"

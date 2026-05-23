@@ -149,9 +149,9 @@ isProject: false
 
 **Priority:** [algorithms-and-libraries-plan](../../ecosystem/algorithms-and-libraries-plan.md) Wave **D→E** (packages, verticals, Studio) — Wave A–C rows in plan YAML are **completed**; keep gates green.
 
-**Weekend driver:** `./scripts/compiler-studio-plan-overnight.sh` → runs until **next Monday 08:00** `Europe/Berlin` (`COMPILER_STUDIO_WEEKEND_MODE=1`). Waits for in-flight `--once`, then batches `--max` until deadline.
+**Continuous driver:** `./scripts/compiler-studio-plan-continuous.sh` — runs agent batches while plan todos are `pending`/`in_progress`; **sleeps 30 min** when idle (nothing to implement). Add new todos to the plan YAML to resume work.
 
-**Survive reboot:** `./scripts/install-plan-loop-systemd.sh` — user systemd + `loginctl enable-linger` so loops resume after power loss/reboot until deadline. Stop: `./scripts/install-plan-loop-systemd.sh --disable` or `touch data/compiler-studio-plan-loop/DISABLE_AUTOSTART`.
+**Autostart + reboot:** `./scripts/install-plan-loop-systemd.sh` — user systemd + linger. Stop: `./scripts/install-plan-loop-systemd.sh --disable` or `touch data/compiler-studio-plan-loop/DISABLE_AUTOSTART`.
 
 **Philosophy:** [li-benchmark-correctness.mdc](../../../.cursor/rules/li-benchmark-correctness.mdc) — correct per spec, fast as possible; **DCE allowed, our harness must verify**.
 

@@ -402,6 +402,11 @@ def main() -> int:
     parser.add_argument("--dry-run", action="store_true", help="No SDK call; print instruction only")
     parser.add_argument("--skip-agent", action="store_true", help="Only run gates")
     parser.add_argument("--mark-done", metavar="ID", help="Record todo id completed in state")
+    parser.add_argument(
+        "--status",
+        action="store_true",
+        help="Exit 0 if a todo is actionable, 1 if idle (for continuous supervisor)",
+    )
     args = parser.parse_args()
 
     if args.mark_done:
@@ -418,6 +423,15 @@ def main() -> int:
 
     todos = load_plan_todos()
     state = load_state()
+
+    if args.status:
+        nxt = pick_next(todos, state)
+        if nxt:
+            print(f"open=1 next={nxt['id']}")
+            return 0
+        print("open=0")
+        return 1
+
     pending = [t for t in todos if t["status"] in ("pending", "in_progress")]
     done_count = len([t for t in todos if t["status"] == "completed"])
     print(f"plan todos: {len(todos)} total, {done_count} completed in plan, {len(pending)} open")

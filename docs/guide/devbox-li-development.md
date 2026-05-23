@@ -147,7 +147,7 @@ cd ~/Documents/Cursor/li-langverse/lic
 ./scripts/install-plan-loop-systemd.sh    # compiler + httpd loops
 ```
 
-After a reboot, services start again until the configured deadline (compiler: next Monday 08:00 Berlin when `COMPILER_STUDIO_WEEKEND_MODE=1`).
+After a reboot, services start again and keep running. When all plan todos are done, they **idle** (sleep `PLAN_LOOP_IDLE_SEC`, default 30 min) and poll for new todos.
 
 ```bash
 journalctl --user -u li-compiler-studio-plan-loop -f

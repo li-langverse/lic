@@ -62,10 +62,17 @@ def pick_next(todos: list[dict], state: dict) -> dict | None:
     completed = set(state.get("completed_ids", []))
 
     def order_key(t: dict) -> tuple[int, int, str]:
-        # Prefer M1 httpd todos over language-wide blockers (w0/w1).
-        m1 = 0 if t["id"].startswith("m1") else 1
+        tid = t["id"]
+        if tid.startswith("m2"):
+            tier = 0
+        elif tid.startswith("m1"):
+            tier = 1
+        elif tid.startswith("h-"):
+            tier = 2
+        else:
+            tier = 3
         status_rank = 0 if t["status"] == "in_progress" else 1
-        return (status_rank, m1, t["id"])
+        return (status_rank, tier, tid)
 
     open_todos = [
         t
@@ -202,6 +209,7 @@ def run_cursor_agent(todo: dict, dry_run: bool) -> tuple[int, str]:
     goal_path = STATE_DIR / f"goal-{datetime.now(timezone.utc).strftime('%Y%m%d-%H%M%S')}.md"
     goal_path.write_text(instruction, encoding="utf-8")
 
+    pr_branch = os.environ.get("HTTPD_PLAN_PR_BRANCH", "cursor/httpd-plan-continue")
     env = {
         **os.environ,
         "PYTHONUNBUFFERED": "1",
@@ -209,7 +217,10 @@ def run_cursor_agent(todo: dict, dry_run: bool) -> tuple[int, str]:
         "LI_AGENT_MINIMAL_PROMPT": "1",
         "LI_HTTPD_PLAN_LOOP": "1",
         "LI_REPO_WORKFLOW_REPO": "lic",
+        "LI_REPO_WORKFLOW_BRANCH": os.environ.get("LI_REPO_WORKFLOW_BRANCH", pr_branch),
+        "LI_REPO_WORKFLOW_TRACK_REMOTE": os.environ.get("LI_REPO_WORKFLOW_TRACK_REMOTE", "1"),
         "LIC_ROOT": str(ROOT),
+        "HTTPD_PLAN_PR_BRANCH": pr_branch,
         "LI_AGENT_EXTRA_INSTRUCTION": instruction,
         "LI_AGENT_GOAL": instruction,
     }
@@ -238,6 +249,7 @@ def build_instruction(todo: dict) -> str:
     baseline = ""
     if BASELINE.is_file():
         baseline = BASELINE.read_text(encoding="utf-8")[:6000]
+    branch = os.environ.get("HTTPD_PLAN_PR_BRANCH", "cursor/httpd-plan-continue")
     return f"""# httpd plan iteration — todo `{todo['id']}`
 
 **Plan:** `{PLAN.relative_to(ROOT)}`
@@ -248,8 +260,8 @@ def build_instruction(todo: dict) -> str:
 - **content:** {todo['content']}
 
 ## Rules (mandatory)
-1. Work only in **lic** on branch `cursor/httpd-plan-loop-54aa` (or continue existing httpd PR branch).
-2. PR-only: commit, push, open/update PR — do **not** merge to main yourself.
+1. Work only in **lic** on branch `{branch}` (tracks `origin/{branch}`).
+2. **Push before you stop:** commit, `git push -u origin {branch}`, open/update PR #175 — do **not** merge to main yourself.
 3. Run `./scripts/httpd-plan-gates.sh` before finishing; fix failures.
 4. Write release notes (`docs/release-notes/`, `CHANGELOG.md`) per li-release-notes policy.
 5. After tier-5 httpd runtime changes, refresh HTTP bench matrix per `.cursor/rules/li-httpd-bench-matrix.mdc`.
@@ -283,6 +295,11 @@ def main() -> int:
     parser.add_argument("--dry-run", action="store_true", help="No SDK call; print instruction only")
     parser.add_argument("--skip-agent", action="store_true", help="Only run gates")
     parser.add_argument("--mark-done", metavar="ID", help="Record todo id completed in state")
+    parser.add_argument(
+        "--status",
+        action="store_true",
+        help="Exit 0 if a todo is actionable, 1 if idle (for continuous supervisor)",
+    )
     args = parser.parse_args()
 
     if args.mark_done:
@@ -299,6 +316,15 @@ def main() -> int:
 
     todos = load_plan_todos()
     state = load_state()
+
+    if args.status:
+        nxt = pick_next(todos, state)
+        if nxt:
+            print(f"open=1 next={nxt['id']}")
+            return 0
+        print("open=0")
+        return 1
+
     pending = [t for t in todos if t["status"] in ("pending", "in_progress")]
     done_count = len([t for t in todos if t["status"] == "completed"])
     print(f"plan todos: {len(todos)} total, {done_count} completed in plan, {len(pending)} open")

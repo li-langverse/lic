@@ -2,7 +2,7 @@
 
 Cinematic / sequencing package — shots, master timeline, clip scheduling (`workload_class=stub`).
 
-**Status:** stub (`seq_workload_class_stub` → 0); encode and `studio.publish` parity deferred.
+**Status:** stub (`seq_workload_class_stub` → 0); encode/color/audio algorithms → [cinematic-algorithm-fundamentals.md](../../docs/ecosystem/cinematic-algorithm-fundamentals.md) (PH-CIN).
 
 **Import:** `import seq` — `SeqShot`, `SeqTimeline`, `shot_new`, `timeline_new_two_shots`, `seq_active_shot_at`, `seq_local_time_in_span`.
 

@@ -1,0 +1,31 @@
+import studio
+
+def main() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  if li_std_studio_version() < 1:
+    return 1
+  if studio_workload_class_stub() != 0:
+    return 2
+  if publish_encode_preset_h264() != 1:
+    return 3
+  if publish_encode_preset_vp9() != 2:
+    return 4
+  var lo: float = publish_color_linear_to_rec709(0.0)
+  if lo < -0.001 or lo > 0.001:
+    return 5
+  var hi: float = publish_color_linear_to_rec709(1.0)
+  if hi < 0.99 or hi > 1.01:
+    return 6
+  var s24: int = publish_audio_sample_index_for_frame(24, 24, 1, 48000)
+  if s24 != 48000:
+    return 7
+  var s1: int = publish_audio_sample_index_for_frame(1, 24, 1, 48000)
+  if s1 != 2000:
+    return 8
+  var hash: int = publish_cinematic_smoke_entry()
+  if hash != 2026:
+    return 9
+  return 0

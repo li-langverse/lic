@@ -774,6 +774,12 @@ note = "AL-12: import seq; shot/timeline resolve (open VC on seq_timeline_contai
 
 [[tests]]
 suite = "composable"
+file = "composable/import_studio_cinematic_algorithms.li"
+outcome = "compile_open_ok"
+note = "AL-6: import studio; PH-CIN encode/color/audio stubs (publish_* smoke)"
+
+[[tests]]
+suite = "composable"
 file = "composable/import_geometry_mesh_predicates.li"
 outcome = "compile_open_ok"
 note = "AL-13: import geometry; orient2d/3d + incircle2d smoke (open VC on mesh_incircle2d ensures)"

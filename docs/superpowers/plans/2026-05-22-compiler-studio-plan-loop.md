@@ -103,7 +103,7 @@ todos:
     status: completed
   - id: wave-d-18-cinematic-rfc
     content: "AL-6 cinematic algorithm RFC (encode/color/audio; not UX-only)"
-    status: pending
+    status: completed
   - id: wave-d-19-vertical-gaming
     content: "gaming — physics.rigid composable + verticals.toml notes + bench row"
     status: pending

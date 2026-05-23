@@ -86,6 +86,36 @@ last_reviewed = "2026-05-23"
 notes = "Properties/Display/View panel pattern; downloads/paraview-properties-panel.html."
 
 [[vertical]]
+id = "cinematic_encode"
+incumbent = "ffmpeg / DaVinci Resolve export / UE movie render queue"
+kernel_or_api = "H.264/MP4 mux presets, deterministic pre-encode frame queue"
+workload_class = "stub"
+oracle = "external_binary"
+li_package = "studio"
+last_reviewed = "2026-05-23"
+notes = "PH-CIN encode track; cinematic-algorithm-fundamentals.md; trusted ffmpeg T5 at CIN-2."
+
+[[vertical]]
+id = "cinematic_color_grade"
+incumbent = "ACES / OCIO / Resolve color science"
+kernel_or_api = "1D LUT + display transfer (Rec.709 segment)"
+workload_class = "stub"
+oracle = "composable_only"
+li_package = "studio"
+last_reviewed = "2026-05-23"
+notes = "PH-CIN color track; explicit per-channel ops; no OCIO FFI yet."
+
+[[vertical]]
+id = "cinematic_audio_sync"
+incumbent = "ffmpeg aresample / Pro Tools pull-up"
+kernel_or_api = "sample index from seq timeline time + fps rational"
+workload_class = "stub"
+oracle = "composable_only"
+li_package = "studio"
+last_reviewed = "2026-05-23"
+notes = "PH-CIN audio track; mux with cinematic_encode at CIN-4."
+
+[[vertical]]
 id = "qm_dft"
 incumbent = "Gaussian / ORCA / Psi4"
 kernel_or_api = "DFT single-point energy"

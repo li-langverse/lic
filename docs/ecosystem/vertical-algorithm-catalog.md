@@ -16,6 +16,9 @@ Agents: cite vertical `id` and `workload_class` in PRs. Do **not** claim GROMACS
 | `drug_litl` | `stub` | `sim.drug_design` | composable_only |
 | `am_slicer` | `stub` | `sim.additive` | composable_only |
 | `scientific_viz` | `stub` | `sim.viz` | composable_only |
+| `cinematic_encode` | `stub` | `studio` | none (PH-CIN CIN-2) |
+| `cinematic_color_grade` | `stub` | `studio` | composable `import_studio_cinematic_algorithms.li` |
+| `cinematic_audio_sync` | `stub` | `studio` | composable `import_studio_cinematic_algorithms.li` |
 | `qm_dft` | `stub` | `chem` | external oracle TBD |
 
 Gate: `./scripts/check-vertical-algorithm-catalog.sh` (sync with `verticals.toml`).
@@ -226,6 +229,82 @@ No slicer oracle column — interface landed, kernels **stub**.
 ### Honesty
 
 Inspector layout is **stub**; no VTK render path in `li-ui` yet.
+
+---
+
+## cinematic_encode
+
+**Incumbent:** ffmpeg / DaVinci Resolve export / UE movie render queue  
+**Kernel / API:** H.264/MP4 mux presets, deterministic pre-encode frame queue  
+**`workload_class`:** `stub` · **`oracle`:** `external_binary` · **`li_package`:** `studio`
+
+### Kernel families
+
+| Family | Target | Li today | Proof / bench |
+|--------|--------|----------|---------------|
+| Codec preset table | x264 / VP9 / AV1 profiles | `publish_encode_preset_h264` ID stub | composable smoke |
+| Container mux | MP4/MKV | **open** — CIN-2 ffmpeg T5 | none |
+| Pre-encode frame queue | Deterministic bake from `seq` | **open** — CIN-1 frame hash | none |
+
+### References
+
+- RFC: [li-cinematic-rfc.md](../game-dev/specs/li-cinematic-rfc.md)
+- Fundamentals: [cinematic-algorithm-fundamentals.md](cinematic-algorithm-fundamentals.md)
+- Timeline: `import seq` — [import_seq_shot_timeline.li](../../li-tests/composable/import_seq_shot_timeline.li)
+
+### Honesty
+
+**No Resolve/UE encode parity.** `workload_class=stub` until CIN-2 ffmpeg oracle lands.
+
+---
+
+## cinematic_color_grade
+
+**Incumbent:** ACES / OCIO / Resolve color science  
+**Kernel / API:** 1D LUT + display transfer (Rec.709 segment)  
+**`workload_class`:** `stub` · **`oracle`:** `composable_only` · **`li_package`:** `studio`
+
+### Kernel families
+
+| Family | Target | Li today | Proof / bench |
+|--------|--------|----------|---------------|
+| Display transfer | Rec.709 OETF segment | `publish_color_linear_to_rec709` | composable bounds check |
+| 1D LUT | OCIO FileTransform | **open** — CIN-3 | none |
+| 3×3 matrix | ACEScg → Rec.709 | **open** — explicit `linalg` | none |
+
+### References
+
+- RFC: [li-cinematic-rfc.md](../game-dev/specs/li-cinematic-rfc.md)
+- UX: [UX-05](../game-dev/competitive-intel/ui-ux-by-dimension.md#ux-05--timeline--playback) (preview only — not color science)
+
+### Honesty
+
+**No ACES/OCIO production parity.** Per-channel scalar stubs only.
+
+---
+
+## cinematic_audio_sync
+
+**Incumbent:** ffmpeg aresample / Pro Tools pull-up  
+**Kernel / API:** sample index from seq timeline time + fps rational  
+**`workload_class`:** `stub` · **`oracle`:** `composable_only` · **`li_package`:** `studio`
+
+### Kernel families
+
+| Family | Target | Li today | Proof / bench |
+|--------|--------|----------|---------------|
+| Sample index from frame | `frame * sample_rate * fps_den / fps_num` | `publish_audio_sample_index_for_frame` | composable at 24fps |
+| Resample / drift guard | ffmpeg aresample | **open** — CIN-4 | none |
+| Mux A/V | ffmpeg map | **open** — pairs with `cinematic_encode` | none |
+
+### References
+
+- RFC: [li-cinematic-rfc.md](../game-dev/specs/li-cinematic-rfc.md)
+- `seq` clock: `seq_local_time_in_span`, `seq_timeline_contains_time`
+
+### Honesty
+
+**No broadcast audio parity.** Integer rational stub — not floating pull-up tables.
 
 ---
 

@@ -218,6 +218,23 @@ Registry: `fea_linear_elasticity`, `cfd_lid_driven_cavity` in [verticals.toml](.
 
 ---
 
+## 11.6 Cinematic & animation (PH-CIN)
+
+Deterministic **`seq`** timeline → **encode** (ffmpeg-class T5), **color** (LUT/transfer), **audio** (sample-clock sync). **`workload_class=stub`** until CIN-2 encode oracle.
+
+| Phase | ID | Deliverable |
+|-------|-----|-------------|
+| 0 | CIN-0 | [cinematic-algorithm-fundamentals.md](../ecosystem/cinematic-algorithm-fundamentals.md) + `verticals.toml` encode/color/audio rows |
+| 1 | CIN-1 | Pre-encode frame hash bench stub |
+| 2 | CIN-2 | Trusted ffmpeg encode smoke |
+| 3 | CIN-3 | 3×3 color matrix + LUT chain |
+| 4 | CIN-4 | Audio mux + drift guard |
+| 5 | CIN-5 | HDR10 / HLG presets (Wave E) |
+
+Registry: `cinematic_encode`, `cinematic_color_grade`, `cinematic_audio_sync`. RFC: [li-cinematic-rfc.md](specs/li-cinematic-rfc.md). UX timeline chrome: UX-05 (not algorithm parity).
+
+---
+
 ## 12. AI drug design (PH-DRUG)
 
 Roche **Lab-in-the-Loop**–class workflow: hypothesis → generate → **DFT/TDDFT** (`li-chem`) → lab ingest → retrain. **`studio.adaptive`** panels by stage/role.
@@ -400,6 +417,8 @@ CRITICAL: traceability `PKG-*`, SBOM, export audit log. RFC: [critical-package-c
 | [sim-viz-scientific-rfc.md](specs/sim-viz-scientific-rfc.md) | PH-SCI |
 | [li-sim-cae-rfc.md](specs/li-sim-cae-rfc.md) | PH-CAE |
 | [engineering-cae-fundamentals.md](../ecosystem/engineering-cae-fundamentals.md) | PH-CAE |
+| [li-cinematic-rfc.md](specs/li-cinematic-rfc.md) | PH-CIN |
+| [cinematic-algorithm-fundamentals.md](../ecosystem/cinematic-algorithm-fundamentals.md) | PH-CIN |
 | [drug-design-lab-loop-rfc.md](specs/drug-design-lab-loop-rfc.md) | PH-DRUG |
 | [li-chem-qm-rfc.md](specs/li-chem-qm-rfc.md) | PH-QM |
 | [voxel-engine-rfc.md](specs/voxel-engine-rfc.md) | PH-VOXEL |

@@ -100,7 +100,7 @@ Each vertical needs a maintained row in **`benchmarks/competitive/verticals.toml
 - Computational chemistry (basis sets, DFT functionals — beyond stub API)
 - CAD/B-rep (predicates, booleans)
 - Slicer / toolpath (infill, support, thermal compensation)
-- Cinematic (encode pipeline, color, audio sync)
+- ~~Cinematic (encode pipeline, color, audio sync)~~ — **tracked** (`cinematic_encode`, `cinematic_color_grade`, `cinematic_audio_sync`, PH-CIN)
 - DCC mesh ops (subdiv, UV, rig skinning)
 
 **Template:** copy structure from [competitive-bioengineering-plan.md](../game-dev/competitive-bioengineering-plan.md) §5 (benchmark registry slice).
@@ -299,7 +299,7 @@ P4  deepen physics.* / sim.* / chem per verticals.toml
 | AL-3 | **Phase 2e/2f plan files** (replace TBD in master plan) | `lic` | Wave A |
 | AL-4 | **CAD fundamentals** merge into `lic` + link `geometry` PH | `lic` | **Done (2026-05-23)** — `check-cad-fundamentals.sh` |
 | AL-5 | **Engineering/CAE RFC** (split from PH-SCI) | `lic` | **Done (2026-05-23)** — `check-engineering-cae-rfc.sh` |
-| AL-6 | **Cinematic algorithm RFC** (encode, color, audio) | `lic` | Not only UX-6 |
+| AL-6 | **Cinematic algorithm RFC** (encode, color, audio) | `lic` | **Done (2026-05-23)** — `check-cinematic-rfc.sh` |
 | AL-7 | Quarterly **SOTA review** ritual — update `last_reviewed` in registries | `roadmap` | Stale intel |
 | AL-8 | **`li` language repo** tracker honesty — unchecked 2e/2f/7 | `li-language` | Contributor confusion |
 | AL-9 | **`packages/gui`** scaffold + composable `import gui` | `lic` | Native Studio |
@@ -342,6 +342,7 @@ P4  deepen physics.* / sim.* / chem per verticals.toml
 - [Official packages](official-packages.md)  
 - [CAD fundamentals](cad-fundamentals.md) (merged from li-language 2026-05-23)  
 - [Engineering / CAE fundamentals](engineering-cae-fundamentals.md) (AL-5, 2026-05-23)  
+- [Cinematic algorithm fundamentals](cinematic-algorithm-fundamentals.md) (AL-6, 2026-05-23)  
 - [Master plan phase map](../superpowers/plans/2026-05-14-li-master-plan.md)
 
 **Maintainers:** Update §7 when adding/removing `packages/*` members. Bump `updated` in `verticals.toml` / `registry.toml` on quarterly SOTA review.

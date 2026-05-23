@@ -53,7 +53,7 @@ This page is the **algorithms-and-libraries** layer under World Studio — not t
 | **Computational chemistry** | `sim_scientific` / drug | `chem`, `chem.dft` | Psi4, ORCA, Gaussian, xTB, ASE | RFC (PH-QM) | DFT smoke stub; no external oracle column |
 | **Drug design** | `sim_drug_design` | `sim.drug_design`, `chem`, `studio.adaptive` | Roche LITL, Schrödinger, DiffDock-class | Strong (PH-DRUG) | LITL composables |
 | **Comp. biology / bioeng** | `sim_drug_design` + `bioeng` | `bioeng`, `chem`, `ml` | Benchling, Rosetta, ProteinMPNN, RFdiffusion | Strong (PH-BIOENG) | `bioengineering.toml` stub |
-| **Engineering / CAE** | `sim_scientific` | `sim.scientific`, `voxel`, `math` | COMSOL, ANSYS, SimScale, CalculiX | Thin (folded into PH-SCI) | PDE proxies only |
+| **Engineering / CAE** | `sim_scientific` | `sim.scientific`, `voxel`, `math` | COMSOL, ANSYS, SimScale, CalculiX | [engineering-cae-fundamentals.md](engineering-cae-fundamentals.md) + PH-CAE | `fea_linear_elasticity`, `cfd_lid_driven_cavity` stub rows |
 | **Robotics** | `sim_robotics` | `sim.robotics`, `physics.rigid` | Gazebo, Isaac Sim, MoveIt, Drake | RFC (PH-ROBO) | composable only |
 | **Automotive** | `sim_automotive` | `sim.automotive` | CARLA, AirSim | RFC | composable only |
 | **Additive manufacturing** | `sim_additive` | `sim.additive`, `voxel`, heat | Cura, Prusa, Bambu, OpenFOAM thermal | RFC (PH-AM) | heat tier-2; no slicer oracle |
@@ -95,8 +95,8 @@ Each vertical needs a maintained row in **`benchmarks/competitive/verticals.toml
 
 ### Verticals missing Layer B tables (add in rev. 2)
 
-- Engineering FEA (mesh solve, linear elasticity)
-- CFD (pressure-velocity coupling, turbulence models)
+- ~~Engineering FEA~~ — **tracked** (`fea_linear_elasticity`, PH-CAE)
+- ~~CFD~~ — **tracked** (`cfd_lid_driven_cavity`, PH-CAE)
 - Computational chemistry (basis sets, DFT functionals — beyond stub API)
 - CAD/B-rep (predicates, booleans)
 - Slicer / toolpath (infill, support, thermal compensation)
@@ -298,7 +298,7 @@ P4  deepen physics.* / sim.* / chem per verticals.toml
 | AL-2 | **`docs/ecosystem/vertical-algorithm-catalog.md`** — one page per vertical (kernel list) | `lic` | **Done (2026-05-23)** — `check-vertical-algorithm-catalog.sh` |
 | AL-3 | **Phase 2e/2f plan files** (replace TBD in master plan) | `lic` | Wave A |
 | AL-4 | **CAD fundamentals** merge into `lic` + link `geometry` PH | `lic` | **Done (2026-05-23)** — `check-cad-fundamentals.sh` |
-| AL-5 | **Engineering/CAE RFC** (split from PH-SCI) | `lic` | FEA/CFD clarity |
+| AL-5 | **Engineering/CAE RFC** (split from PH-SCI) | `lic` | **Done (2026-05-23)** — `check-engineering-cae-rfc.sh` |
 | AL-6 | **Cinematic algorithm RFC** (encode, color, audio) | `lic` | Not only UX-6 |
 | AL-7 | Quarterly **SOTA review** ritual — update `last_reviewed` in registries | `roadmap` | Stale intel |
 | AL-8 | **`li` language repo** tracker honesty — unchecked 2e/2f/7 | `li-language` | Contributor confusion |
@@ -341,6 +341,7 @@ P4  deepen physics.* / sim.* / chem per verticals.toml
 - [Engineering standards](engineering-standards.md)  
 - [Official packages](official-packages.md)  
 - [CAD fundamentals](cad-fundamentals.md) (merged from li-language 2026-05-23)  
+- [Engineering / CAE fundamentals](engineering-cae-fundamentals.md) (AL-5, 2026-05-23)  
 - [Master plan phase map](../superpowers/plans/2026-05-14-li-master-plan.md)
 
 **Maintainers:** Update §7 when adding/removing `packages/*` members. Bump `updated` in `verticals.toml` / `registry.toml` on quarterly SOTA review.

@@ -10,6 +10,7 @@
 | [li-sim-additive-rfc.md](li-sim-additive-rfc.md) | PH-AM |
 | [li-sim-robotics-rfc.md](li-sim-robotics-rfc.md) | PH-ROBO |
 | [sim-viz-scientific-rfc.md](sim-viz-scientific-rfc.md) | PH-SCI |
+| [li-sim-cae-rfc.md](li-sim-cae-rfc.md) | PH-CAE |
 | [drug-design-lab-loop-rfc.md](drug-design-lab-loop-rfc.md) | PH-DRUG |
 | [li-chem-qm-rfc.md](li-chem-qm-rfc.md) | PH-QM |
 | [voxel-engine-rfc.md](voxel-engine-rfc.md) | PH-VOXEL |

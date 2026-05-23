@@ -33,7 +33,27 @@ workload_class = "stub"
 oracle = "cpp"
 li_package = "sim.scientific"
 last_reviewed = "2026-05-23"
-notes = "heat_equation_2d in verify.py; FEA/CFD kernels open."
+notes = "heat_equation_2d in verify.py; FEA/CFD split to fea_linear_elasticity + cfd_lid_driven_cavity (PH-CAE)."
+
+[[vertical]]
+id = "fea_linear_elasticity"
+incumbent = "CalculiX / ANSYS Mechanical / SimScale"
+kernel_or_api = "linear elasticity stiffness assembly + solve"
+workload_class = "stub"
+oracle = "cpp"
+li_package = "sim.scientific"
+last_reviewed = "2026-05-23"
+notes = "PH-CAE FEA track; engineering-cae-fundamentals.md; no bench oracle yet."
+
+[[vertical]]
+id = "cfd_lid_driven_cavity"
+incumbent = "OpenFOAM / COMSOL CFD / PETSc"
+kernel_or_api = "incompressible Navier-Stokes, lid-driven cavity"
+workload_class = "stub"
+oracle = "cpp"
+li_package = "sim.scientific"
+last_reviewed = "2026-05-23"
+notes = "PH-CAE CFD track; canonical cavity target; no bench oracle yet."
 
 [[vertical]]
 id = "drug_litl"

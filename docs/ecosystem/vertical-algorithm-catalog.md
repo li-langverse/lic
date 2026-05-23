@@ -11,6 +11,8 @@ Agents: cite vertical `id` and `workload_class` in PRs. Do **not** claim GROMACS
 | `gaming_rigid` | `v0_gaming` | `physics.rigid` | composable `import_physics_runtime.li` |
 | `md_lennard_jones` | `stub` | `sim.scientific` | tier-2 `md_lennard_jones` + `verify.py` |
 | `pde_heat_2d` | `stub` | `sim.scientific` | tier-2 `heat_equation_2d` + `verify.py` |
+| `fea_linear_elasticity` | `stub` | `sim.scientific` | none (PH-CAE CAE-1) |
+| `cfd_lid_driven_cavity` | `stub` | `sim.scientific` | none (PH-CAE CAE-2) |
 | `drug_litl` | `stub` | `sim.drug_design` | composable_only |
 | `am_slicer` | `stub` | `sim.additive` | composable_only |
 | `scientific_viz` | `stub` | `sim.viz` | composable_only |
@@ -83,16 +85,68 @@ Tier-2 proxies in `world-studio.toml` composables — **not** full game-engine p
 |--------|--------|----------|---------------|
 | Explicit 2D heat stencil | FVM explicit step | `heat_equation_2d` Li + C reference | `benchmarks/tier2_physics/heat_equation_2d/` |
 | CFL / stability guard | OpenFOAM time controls | documented in params; partial | `verify.py` checksum smoke |
-| FEA / CFD coupling | pressure–velocity, turbulence | **open** | none |
 
 ### References
 
 - UX: [UX-06](../game-dev/competitive-intel/ui-ux-by-dimension.md#ux-06--scientific-visualization)
 - Additive thermal path reuses heat kernel ([algorithms-and-libraries-plan.md](algorithms-and-libraries-plan.md) §3 AM row)
+- Engineering FEA/CFD: [engineering-cae-fundamentals.md](engineering-cae-fundamentals.md) (**PH-CAE**)
 
 ### Honesty
 
-PDE smoke proves stencil checksum only — **not** OpenFOAM-scale CFD.
+PDE smoke proves stencil checksum only — **not** OpenFOAM-scale CFD. FEA/CFD tracked under `fea_linear_elasticity` and `cfd_lid_driven_cavity`.
+
+---
+
+## fea_linear_elasticity
+
+**Incumbent:** CalculiX / ANSYS Mechanical / SimScale  
+**Kernel / API:** linear elasticity stiffness assembly + solve  
+**`workload_class`:** `stub` · **`oracle`:** `cpp` · **`li_package`:** `sim.scientific`
+
+### Kernel families
+
+| Family | Target | Li today | Proof / bench |
+|--------|--------|----------|---------------|
+| Stiffness assembly | CalculiX `*STATIC` | **open** — `linalg` explicit small systems | none |
+| Linear solve | sparse direct / iterative | **open** | none |
+| Post-process stress | field export | **stub** — `sim.viz` | composable_only |
+
+### References
+
+- RFC: [li-sim-cae-rfc.md](../game-dev/specs/li-sim-cae-rfc.md)
+- Fundamentals: [engineering-cae-fundamentals.md](engineering-cae-fundamentals.md)
+- UX: [UX-06](../game-dev/competitive-intel/ui-ux-by-dimension.md#ux-06--scientific-visualization)
+
+### Honesty
+
+**No COMSOL/ANSYS parity claims.** `workload_class=stub` until CAE-1 bench + oracle land.
+
+---
+
+## cfd_lid_driven_cavity
+
+**Incumbent:** OpenFOAM / COMSOL CFD / PETSc  
+**Kernel / API:** incompressible Navier-Stokes, lid-driven cavity  
+**`workload_class`:** `stub` · **`oracle`:** `cpp` · **`li_package`:** `sim.scientific`
+
+### Kernel families
+
+| Family | Target | Li today | Proof / bench |
+|--------|--------|----------|---------------|
+| Lid-driven cavity | OpenFOAM `cavity` tutorial | **open** | none |
+| Pressure–velocity coupling | SIMPLE / PISO | **open** | none |
+| Turbulence (RANS) | k–ε / SST | **stub** — CAE-4 API | none |
+
+### References
+
+- RFC: [li-sim-cae-rfc.md](../game-dev/specs/li-sim-cae-rfc.md)
+- Fundamentals: [engineering-cae-fundamentals.md](engineering-cae-fundamentals.md)
+- Shared numerics: `pde_heat_2d` explicit stencil discipline only
+
+### Honesty
+
+**No OpenFOAM-scale CFD parity claims.** `workload_class=stub` until CAE-2 bench lands.
 
 ---
 

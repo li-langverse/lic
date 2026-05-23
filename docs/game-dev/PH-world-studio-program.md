@@ -13,6 +13,7 @@ Cross-cutting program IDs. Implementation order respects dependencies in the vis
 | **PH-ROBO** | ROBO-0…5 | PH-SIM-1 |
 | **PH-AM** | AM-0…9 | PH-SCI-2, PH-UX-3 |
 | **PH-SCI** | SCI-0…7 | tier-2 physics |
+| **PH-CAE** | CAE-0…5 | PH-SCI-2; [engineering-cae-fundamentals.md](../ecosystem/engineering-cae-fundamentals.md) |
 | **PH-DRUG** | DRUG-0…7 | PH-SCI-2, PH-GD-1, PH-AGENT |
 | **PH-QM** | QM-0…7 | PH-HW, PH-COMPLY |
 | **PH-VOXEL** | VOXEL-0…5 | PH-GD-5 |

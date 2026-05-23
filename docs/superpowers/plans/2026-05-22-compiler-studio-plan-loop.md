@@ -100,7 +100,7 @@ todos:
     status: completed
   - id: wave-d-17-cae-rfc
     content: "AL-5 engineering/CAE RFC stub (FEA/CFD split from PH-SCI)"
-    status: pending
+    status: completed
   - id: wave-d-18-cinematic-rfc
     content: "AL-6 cinematic algorithm RFC (encode/color/audio; not UX-only)"
     status: pending

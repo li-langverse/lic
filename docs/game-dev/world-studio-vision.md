@@ -148,7 +148,7 @@ def game_step(world: GameWorld, input: InputState) -> unit
 | `sim.automotive` | `li-sim-automotive` | PH-SIM |
 | `sim.robotics` | `li-sim-robotics` | PH-ROBO |
 | `sim.additive` | `li-sim-additive` | PH-AM |
-| `sim.scientific` | `li-sim-scientific` | PH-SCI |
+| `sim.scientific` | `li-sim-scientific` | PH-SCI, PH-CAE |
 | `sim.drug_design` | `li-sim-drug-design` | PH-DRUG |
 | `chem` / `chem.dft` | `li-chem` | PH-QM |
 | `voxel` | `li-voxel` | PH-VOXEL |
@@ -193,11 +193,28 @@ RFC: [li-sim-robotics-rfc.md](specs/li-sim-robotics-rfc.md)
 
 ---
 
-## 11. Scientific & engineering sim (PH-SCI)
+## 11. Scientific sim (PH-SCI)
 
-Graphical CFD, MD (`md_lennard_jones`), heat, fluids, orbital — `li-physics-*` + `sim.viz`. Tier-2 benches run **in** the engine viewport.
+MD (`md_lennard_jones`), generic heat PDE (`pde_heat_2d`), orbital — `li-physics-*` + `sim.viz`. Tier-2 benches run **in** the engine viewport. **FEA/CFD engineering** → **PH-CAE** (§11.5).
 
 RFC: [sim-viz-scientific-rfc.md](specs/sim-viz-scientific-rfc.md)
+
+---
+
+## 11.5 Engineering & CAE (PH-CAE)
+
+Structural **FEA** and incompressible **CFD** split from PH-SCI. **`workload_class=stub`** until tier-2 FEA/CFD benches and Wave A exit.
+
+| Phase | ID | Deliverable |
+|-------|-----|-------------|
+| 0 | CAE-0 | [engineering-cae-fundamentals.md](../ecosystem/engineering-cae-fundamentals.md) + `verticals.toml` FEA/CFD rows |
+| 1 | CAE-1 | `fea_linear_elasticity` bench stub |
+| 2 | CAE-2 | `cfd_lid_driven_cavity` bench stub |
+| 3 | CAE-3 | Mesh + BC types (`voxel` / `geometry`) |
+| 4 | CAE-4 | Turbulence model API stub |
+| 5 | CAE-5 | Trusted CalculiX / OpenFOAM FFI (Wave E) |
+
+Registry: `fea_linear_elasticity`, `cfd_lid_driven_cavity` in [verticals.toml](../../benchmarks/competitive/verticals.toml). RFC: [li-sim-cae-rfc.md](specs/li-sim-cae-rfc.md).
 
 ---
 
@@ -381,6 +398,8 @@ CRITICAL: traceability `PKG-*`, SBOM, export audit log. RFC: [critical-package-c
 | [li-sim-additive-rfc.md](specs/li-sim-additive-rfc.md) | PH-AM |
 | [li-sim-robotics-rfc.md](specs/li-sim-robotics-rfc.md) | PH-ROBO |
 | [sim-viz-scientific-rfc.md](specs/sim-viz-scientific-rfc.md) | PH-SCI |
+| [li-sim-cae-rfc.md](specs/li-sim-cae-rfc.md) | PH-CAE |
+| [engineering-cae-fundamentals.md](../ecosystem/engineering-cae-fundamentals.md) | PH-CAE |
 | [drug-design-lab-loop-rfc.md](specs/drug-design-lab-loop-rfc.md) | PH-DRUG |
 | [li-chem-qm-rfc.md](specs/li-chem-qm-rfc.md) | PH-QM |
 | [voxel-engine-rfc.md](specs/voxel-engine-rfc.md) | PH-VOXEL |

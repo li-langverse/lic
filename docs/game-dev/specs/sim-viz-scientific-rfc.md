@@ -2,11 +2,13 @@
 
 **Status:** Draft stub  
 **Date:** 2026-05  
+**Track:** PH-SCI (MD, heat PDE, orbital, scientific viz — **not** engineering FEA/CFD)  
+**CAE split:** [li-sim-cae-rfc.md](li-sim-cae-rfc.md) · [engineering-cae-fundamentals.md](../../ecosystem/engineering-cae-fundamentals.md) (**PH-CAE**)  
 **Vision:** [world-studio-vision.md](../world-studio-vision.md)
 
 ## Problem
 
-<!-- TODO: one paragraph -->
+Scientific simulation in World Studio spans molecular dynamics, generic heat/PDE proxies, and viewport visualization. **Engineering FEA and CFD** are tracked under **PH-CAE** with separate `verticals.toml` rows — do not fold COMSOL/OpenFOAM-class claims into this RFC.
 
 ## Proposal
 

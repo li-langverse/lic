@@ -62,6 +62,22 @@ This page is the **honest inventory** of what is **not** fully proved or not yet
 
 ---
 
+## Wave A ↔ algorithms plan (sync)
+
+The [algorithms-and-libraries-plan §5 Wave A](../ecosystem/algorithms-and-libraries-plan.md#wave-a--compiler-proof-gate-blocking-all-production-domain-libs) table is kept aligned with the **G-*** rows below. When a gap moves **Partial → Done**, update **both** files in the same PR.
+
+| Master phase | Primary gap IDs | Plan-loop evidence (2026-05-23) |
+|--------------|-----------------|----------------------------------|
+| **2e** | G-vc, G-bnd | `contracts_discharge_corpus.sh`, VC emit + witness paths |
+| **2f** | G-lean, G-trust | `autovc_lake_typecheck.sh`, `contracts_verify_lean.sh`, `glean_strict_build_smoke.sh` |
+| **2i / 7e** | G-math | `li-tests/math_linalg/`, tier-1 `reference.py` + bench verify |
+| **7d** | G-dec, G-par | `@vectorized` on `def`, decorator exploits, G-par roadmap in [proof-corpus-roadmap](proof-corpus-roadmap.md) |
+| **7b** | G-par | AST policy checks; structured `disjoint=` open |
+
+Wave A is **not closed** until every row in that table is **Done** — partial progress does not unblock production domain libraries ([algorithms plan honesty rule](../ecosystem/algorithms-and-libraries-plan.md#wave-a--compiler-proof-gate-blocking-all-production-domain-libs)).
+
+---
+
 ## Gap register
 
 Status legend: **Missing** · **Stub** · **Partial** · **CI only** · **Done**

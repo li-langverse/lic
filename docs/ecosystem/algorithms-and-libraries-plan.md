@@ -113,16 +113,19 @@ Each vertical needs a maintained row in **`benchmarks/competitive/verticals.toml
 
 ### Wave A — compiler proof gate (blocking all “production” domain libs)
 
-| Gate | Master phase | Gap ID | Exit evidence |
-|------|--------------|--------|---------------|
-| VC generation | **2e** | G-CONTRACT-01+ | `requires`/`ensures` checked beyond presence |
-| Lean in `lic build` | **2f** | G-VERIFY-01 | `lic build` fails on open goals; not `verify_ok` ≡ compile |
-| Loop proofs | **2e** | G-CONTRACT-02 | `invariant`/`decreases` enforced |
-| Parallel disjointness | **7b** | G-POLICY-01 | AST-based disjoint, not pattern-only |
-| Math → SIMD | **2i + 7e** | G-math | Tier-1 math-only Li ≤1.2× C++ |
-| `import` + workspace | **8a** | — | Packages build via `lip` path (after **8b**) |
+**Synced with** [provability-gaps.md](../verification/provability-gaps.md) gap register (**2026-05-23**, branch `cursor/compiler-studio-plan-loop` / PR **#176**). Status here mirrors **G-*** rows — not marketing “Wave A done.”
 
-**Until Wave A:** domain packages stay **stub/composable**, `workload_class = stub`, no “on-par with GROMACS/Gaussian” marketing.
+| Gate | Master phase | Gap ID | Exit evidence | Tracker (2026-05-23) |
+|------|--------------|--------|---------------|----------------------|
+| VC generation | **2e** | **G-vc** | `requires`/`ensures` → proof obligations; discharge corpus | **Partial** — `contracts_discharge_corpus.sh`, call-site `requires`, `sqrt_open_bound` documented open |
+| Lean in `lic build` | **2f** | **G-lean** | `lic build` fails on open goals; not `verify_ok` ≡ compile | **Partial** — `autovc_lake_typecheck`, `glean_strict_build_smoke`, `contracts_verify_lean`; kernel not default on every `lic build` |
+| Loop proofs | **2e** | **G-vc** / **G-bnd** | `invariant`/`decreases` enforced | **Partial** — presence + corpus; full loop refinement open |
+| Parallel disjointness | **7b** | **G-par** | AST-based disjoint, not pattern-only | **Partial** — `check_module_policies`; `@parallel` MIR open |
+| Math → SIMD | **2i + 7e** | **G-math** | Tier-1 math-only Li ≤1.2× C++; explicit shapes | **Partial** — broadcast rejected; tier-1 `reference.py` + `bench.py --verify-results`; pure-Li `simd_dot` / matmul verified |
+| Decorators | **7d** | **G-dec** | `@vectorized` / `@parallel` elaboration | **Partial** — `@vectorized` on `def` → `MirFn.vectorized_lanes`; `@parallel` open |
+| `import` + workspace | **8a** | **G-stdlib** | Packages build via `lip` path (after **8b**) | **Partial** — workspace `packages/*` + composable imports |
+
+**Until Wave A (all rows Done):** domain packages stay **stub/composable**, `workload_class = stub`, no “on-par with GROMACS/Gaussian” marketing.
 
 ### Wave B — runtime perf gate (parallel Wave A tail)
 
@@ -145,10 +148,12 @@ Each vertical needs a maintained row in **`benchmarks/competitive/verticals.toml
 | Signal | State |
 |--------|--------|
 | `li-tests` pass count | ~47–92 composable (lic); language repo smaller |
-| Lean on `lic build` | **Not wired** (G-VERIFY-01 open) |
+| Lean / VC gate | **Partial** ([G-lean](../verification/provability-gaps.md), [G-vc](../verification/provability-gaps.md)) — plan-loop + CI scripts; not full `lic build` kernel gate |
+| Tier-1 benchmark honesty | **Partial** — `benchmarks/harness/reference.py`, magnitude + timing guards ([DCE whitepaper](../numerics/benchmark-fastmath-dce-2026-05-22.md)) |
+| Tier-2 physics verify | **Partial** — `verify.py` green on `md_lennard_jones` + `heat_equation_2d` (PR **#176**) |
+| Tier-2 external MD oracle | **Stub** (`md_oracle.toml`, `run_oracle_stub.sh`; LAMMPS/GROMACS columns documented) |
 | `std/` production numerics | Partial / facades |
-| Tier-2 external MD oracle | **Stub** (`md_oracle.toml`, `run_oracle_stub.sh`) |
-| Studio HTML demo | Strong UX/agent story |
+| Studio / PH-UX | **Stub** — `li-ui` adaptive layout composable + composable import test |
 | Domain QM/CAD kernels | Stubs + trusted FFI plan only |
 
 **Honesty rule:** [PH-world-studio-program.md](../game-dev/PH-world-studio-program.md) “Done” on stubs ≠ algorithm parity. Rename mentally to **“interface landed”** until Wave A passes.

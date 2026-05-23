@@ -28,7 +28,7 @@ todos:
     status: completed
   - id: wave-b-tier2-verify
     content: "Tier-2 physics — verify.py green on md_lennard_jones + one PDE smoke"
-    status: pending
+    status: completed
   - id: wave-b-md-oracle
     content: "md_lennard_jones — external oracle column plan in competitive-engines (doc + stub driver)"
     status: completed

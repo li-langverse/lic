@@ -26,6 +26,8 @@ else
     python3 "$ROOT/benchmarks/harness/reference.py" || fail "reference.py tier-1 specs"
     li_phase "tier-1 result verify"
     python3 "$ROOT/benchmarks/harness/bench.py" --verify-results --tier 1 || fail "bench verify tier 1"
+    li_phase "tier-2 physics smokes (verify.py)"
+    python3 "$ROOT/benchmarks/harness/verify.py" || fail "verify.py tier-2 smokes"
   else
     li_warn "skip tier-1 verify (no clang)"
   fi

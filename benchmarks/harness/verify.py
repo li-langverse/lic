@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Correctness gate for benchmark sources (Tier 0 / Tier 2 invariants)."""
+"""Correctness gate for benchmark sources (Tier 0 compile + Tier 2 physics smokes)."""
 
 from __future__ import annotations
 
@@ -13,6 +13,9 @@ from pathlib import Path
 REPO = Path(__file__).resolve().parents[2]
 LIC = REPO / "build" / "compiler" / "lic" / "lic"
 RESULTS = REPO / "benchmarks" / "results"
+
+# Wave B tier-2 verify: Lennard-Jones MD + one PDE (heat 2D).
+TIER2_SMOKE: tuple[str, ...] = ("md_lennard_jones", "heat_equation_2d")
 
 
 def lic_build(path: Path) -> bool:
@@ -39,9 +42,43 @@ def tier0_sources() -> list[Path]:
     return sorted(root.glob("*.li"))
 
 
+def tier2_smoke_verify() -> list[tuple[str, bool, str]]:
+    """Build native+Li checksum parity for md_lennard_jones and heat_equation_2d."""
+    if not LIC.is_file():
+        print(f"lic missing at {LIC}", file=sys.stderr)
+        return [(name, False, "lic missing") for name in TIER2_SMOKE]
+
+    os.environ.setdefault("CC", "clang-22")
+    os.environ.setdefault("CXX", "clang++-22")
+
+    sys.path.insert(0, str(REPO / "benchmarks" / "harness"))
+    from bench import TIER2_BENCHES, verify_benchmark_results, verify_md_refs
+
+    out: list[tuple[str, bool, str]] = []
+    for name in TIER2_SMOKE:
+        spec = next(b for b in TIER2_BENCHES if b.name == name)
+        build_dir = REPO / "build" / "bench" / spec.name
+        build_dir.mkdir(parents=True, exist_ok=True)
+        try:
+            if name == "md_lennard_jones":
+                verify_md_refs()
+            verify_benchmark_results(spec, build_dir)
+            out.append((name, True, "checksum ok"))
+            print(f"PASS verify tier2 {name}")
+        except Exception as exc:
+            out.append((name, False, str(exc)))
+            print(f"FAIL verify tier2 {name}: {exc}", file=sys.stderr)
+    return out
+
+
 def main() -> int:
     parser = argparse.ArgumentParser()
     parser.add_argument("--write-csv", type=Path, default=RESULTS / "verify.csv")
+    parser.add_argument(
+        "--tier0-only",
+        action="store_true",
+        help="skip tier-2 physics smokes (md_lennard_jones, heat_equation_2d)",
+    )
     args = parser.parse_args()
 
     rows: list[list[object]] = []
@@ -66,6 +103,25 @@ def main() -> int:
         )
         status = "PASS" if passed else "FAIL"
         print(f"{status} verify {src.relative_to(REPO)}")
+
+    if not args.tier0_only:
+        for name, passed, detail in tier2_smoke_verify():
+            ok = ok and passed
+            rows.append(
+                [
+                    name,
+                    "li",
+                    "verify",
+                    1,
+                    "checksum",
+                    1 if passed else 0,
+                    "bool",
+                    "",
+                    "",
+                    detail,
+                    passed,
+                ]
+            )
 
     args.write_csv.parent.mkdir(parents=True, exist_ok=True)
     with args.write_csv.open("w", newline="") as f:

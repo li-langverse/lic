@@ -1,0 +1,45 @@
+{
+  "query": "NVIDIA Isaac Sim UI viewport robotics simulation 2024",
+  "follow_up_questions": null,
+  "answer": null,
+  "images": [],
+  "results": [
+    {
+      "url": "https://forums.developer.nvidia.com/t/how-to-convert-an-isaacsim-project-into-a-viewport-only-display-application/333563",
+      "title": "How to convert an IsaacSim project into a viewport-only display ...",
+      "content": "I have built a simple robot and a scene through IsaacSim GUI, and used OmniGraphs to enable me to control the robot's movement behavior via",
+      "score": 0.99984646,
+      "raw_content": null
+    },
+    {
+      "url": "https://www.marvik.ai/blog/exploring-nvidia-omniverse-and-isaac-sim",
+      "title": "Exploring NVIDIA Omniverse and Isaac Sim - Marvik.ai",
+      "content": "In the viewport, users can move through the simulation, change camera angles, zoom in and out, and adjust objects. It allows for detailed",
+      "score": 0.99953806,
+      "raw_content": null
+    },
+    {
+      "url": "https://forums.developer.nvidia.com/t/multiple-viewports-in-v2022-2-0/242241",
+      "title": "Multiple Viewports in V2022.2.0 - Isaac Sim",
+      "content": "Isaac Sim 2022.2.0 is built on top of Kit SDK 104.1 which introduces a new menu to open the viewport windows.",
+      "score": 0.99923277,
+      "raw_content": null
+    },
+    {
+      "url": "https://www.youtube.com/watch?v=bDPIF_Z5goE",
+      "title": "Isaac Sim Tutorial: How to Setup Physically Accurate Robots, Scene ...",
+      "content": "NVIDIA Omniverse Isaac Sim project about Digital Twins (scene & robots). Guest: Dr. Pascalis Trentsios",
+      "score": 0.99854493,
+      "raw_content": null
+    },
+    {
+      "url": "https://www.youtube.com/watch?v=dCwNkjkzJcY",
+      "title": "Robot Programming With NOVA & NVIDIA Isaac Sim - YouTube",
+      "content": "Join us for an exclusive livestream as we explore how Wandelbots' NOVA integration with NVIDIA's Isaac Sim advanced simulation capability is",
+      "score": 0.99657035,
+      "raw_content": null
+    }
+  ],
+  "response_time": 0.62,
+  "request_id": "4f864be2-8de2-4056-8682-5fd4e20dc459"
+}

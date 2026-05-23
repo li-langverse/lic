@@ -90,7 +90,8 @@ Agents: when changing Studio shell, cite dimension IDs in PR body (`UX-02: …`)
 **Li gap:** No generated inspector from Li types yet.  
 **Next:** Map `lic check --format=json` diagnostics into inspector rows (PH-AGENT).
 
-**Offline:** `downloads/paraview-properties-panel.html`
+**Offline:** `downloads/paraview-properties-panel.html`  
+**Tavily:** `downloads/research-scientific-editor-ui.md` (dock persist, tab stacks, pane-set presets, localized Apply)
 
 ---
 
@@ -138,6 +139,15 @@ Agents: when changing Studio shell, cite dimension IDs in PR body (`UX-02: …`)
 **Next:** Wire stages to `sim.drug_design` composables; QM job queue panel.
 
 **Sources:** Roche digi-day 2024 PDF (web), [LOWE blog](https://www.valencelabs.com/lowe-an-llm-orchestrated-workflow-engine-unleashing-the-full-power-of-recursions-data-and-tools/)
+
+**Tavily report (2026-05-23):** `downloads/research-drug-discovery-ui.md` — steal list:
+
+| Incumbent | Layout pattern | Li mapping |
+|-----------|----------------|------------|
+| Benchling | Left nav + notebook + Automation Designer DAG | `layout_role_*` + future workflow graph |
+| LiveDesign | LiveReport spreadsheet + KNIME canvas | Inspector tables bound to sim/chem rows |
+| Recursion OS | Phase map (biology → design → clinic) | Extend `adaptive_layout_hd` to phase tabs |
+| LOWE | NL console + inline charts | PH-AGENT MCP + `lic build` errors in-panel |
 
 ---
 

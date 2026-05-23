@@ -19,10 +19,22 @@
 Refresh with:
 
 ```bash
+source ~/Documents/Cursor/.env   # TAVILY_API_KEY
 ./scripts/fetch-competitive-intel.sh
+./scripts/fetch-competitive-intel.sh --tavily   # AI reports + search JSON
 ```
 
-Optional deep research: install [Tavily CLI](https://docs.tavily.com) (`tvly login`) and run `tvly research "..." -o docs/game-dev/competitive-intel/downloads/report.md`.
+First-time Tavily on this machine:
+
+```bash
+./scripts/setup-tavily-cli.sh    # uv + tavily-cli; needs TAVILY_API_KEY
+```
+
+| Tavily artifact | Content |
+|-----------------|--------|
+| `downloads/research-drug-discovery-ui.md` | Benchling / LiveDesign / Recursion / LOWE comparison (JSON body) |
+| `downloads/research-scientific-editor-ui.md` | Docking & properties-panel guidelines |
+| `downloads/search-*.json` | Isaac Sim, Unreal dock UX snippets |
 
 ## Maintenance
 

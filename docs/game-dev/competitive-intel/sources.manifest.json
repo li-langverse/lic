@@ -1,6 +1,7 @@
 {
   "version": 1,
   "last_fetched": "2026-05-23",
+  "last_tavily": "2026-05-23",
   "fetches": [
     {
       "id": "paraview-properties-panel",
@@ -19,6 +20,28 @@
       "url": "https://docs.blender.org/api/current/bpy.types.Panel.html",
       "local": "downloads/blender-panel-api.html",
       "dimensions": ["UX-01", "UX-02"]
+    }
+  ],
+  "tavily_artifacts": [
+    {
+      "file": "downloads/research-drug-discovery-ui.md",
+      "command": "tvly research (drug-discovery UI)",
+      "dimensions": ["UX-07", "UX-11"]
+    },
+    {
+      "file": "downloads/research-scientific-editor-ui.md",
+      "command": "tvly research (dockable panels)",
+      "dimensions": ["UX-01", "UX-02", "UX-04"]
+    },
+    {
+      "file": "downloads/search-isaac-sim-ui.json",
+      "command": "tvly search",
+      "dimensions": ["UX-10"]
+    },
+    {
+      "file": "downloads/search-unreal-dock-ui.json",
+      "command": "tvly search",
+      "dimensions": ["UX-02"]
     }
   ],
   "web_research_notes": [

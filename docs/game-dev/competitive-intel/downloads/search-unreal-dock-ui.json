@@ -1,0 +1,45 @@
+{
+  "query": "Unreal Engine editor dock tab layout UX",
+  "follow_up_questions": null,
+  "answer": null,
+  "images": [],
+  "results": [
+    {
+      "url": "https://forums.unrealengine.com/t/feature-request-re-allow-to-dock-tabs-at-the-very-top-of-the-screen-ue4-style/257052",
+      "title": "[Feature request] Re-allow to dock tabs at the very top of the screen ...",
+      "content": "UE4 allowed quick movement of tabs from one window to another by grabbing the tab, and then just slamming your mouse to the top of the screen where you want it.",
+      "score": 0.644248,
+      "raw_content": null
+    },
+    {
+      "url": "https://forums.unrealengine.com/t/slate-tab-docking-and-toolbar-question/368924",
+      "title": "[Slate] Tab Docking and Toolbar question - UI",
+      "content": "My tabs aren't docked to the editor window by default (they just spawn as floating tabs). · My Toolbar is completely missing.",
+      "score": 0.614464,
+      "raw_content": null
+    },
+    {
+      "url": "https://forums.unrealengine.com/t/feature-request-re-allow-to-dock-tabs-at-the-very-top-of-the-screen-ue4-style/257052/3",
+      "title": "[Feature request] Re-allow to dock tabs at the very top of the screen ...",
+      "content": "Is there any plans to re-allow docking of tabs on the very very top of the screen? Lemme explain: The new UI has the menu bar above the tabs",
+      "score": 0.5553635,
+      "raw_content": null
+    },
+    {
+      "url": "https://www.versluis.com/2024/01/how-to-auto-dock-new-windows-next-to-the-main-viewport-in-unreal-engine",
+      "title": "How to auto-dock new windows next to the main viewport in Unreal ...",
+      "content": "Under Editor Preferences – Asset Editor Open Location. Change this from Default to Main Window and new windows will open as tabs next to the viewport.",
+      "score": 0.4671622,
+      "raw_content": null
+    },
+    {
+      "url": "https://www.youtube.com/watch?v=wZOdok4_vVE",
+      "title": "Dock In Layout Issue in Unreal Engine 5.2 - YouTube",
+      "content": "Quick look at a slight issue with the Content Browser and the Dock In Layout function in UE Version 5.2 See this video if this solution",
+      "score": 0.45420644,
+      "raw_content": null
+    }
+  ],
+  "response_time": 0.84,
+  "request_id": "e0e54d17-934c-4e4f-8b56-04a85220316f"
+}

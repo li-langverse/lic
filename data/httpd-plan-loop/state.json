@@ -7,10 +7,6 @@
   "iterations": 4,
   "history": [
     {
-  "completed_ids": ["m1-bearer-auth"],
-  "iterations": 4,
-  "history": [
-    {
       "at": "2026-05-22T09:42:43.457238+00:00",
       "todo_id": "m1-bearer-auth",
       "agent_exit": 2,

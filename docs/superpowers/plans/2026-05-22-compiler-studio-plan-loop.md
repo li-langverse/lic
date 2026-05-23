@@ -52,10 +52,10 @@ todos:
     status: completed
   - id: wave-d-gui-scaffold
     content: "AL-9 packages/gui scaffold + composable import gui (studio shell; UX-02/04)"
-    status: completed
+    status: in_progress
   - id: wave-d-02-al2-catalog
     content: "AL-2 vertical-algorithm-catalog.md — one kernel section per verticals.toml row"
-    status: completed
+    status: pending
   - id: wave-d-03-ux-inspector
     content: "PH-UX inspector/properties panel stub in li-ui (UX-04, scientific-editor intel)"
     status: pending

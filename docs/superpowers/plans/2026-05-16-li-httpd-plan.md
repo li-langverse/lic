@@ -112,7 +112,7 @@ todos:
     status: pending
   - id: m2-circuit-queue-runtime
     content: "Circuit breaker + queue depth 429 + Retry-After when peers saturated (runtime)"
-    status: pending
+    status: completed
   - id: m2-webhook-egress-runtime
     content: "Webhook/callback egress SSRF allowlist enforced on outbound requests"
     status: pending

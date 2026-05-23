@@ -816,6 +816,12 @@ note = "wave-d-24: import sim.additive; am_slicer vertical — slice→preview�
 
 [[tests]]
 suite = "composable"
+file = "composable/import_sim_viz_pipeline_source_display.li"
+outcome = "compile_open_ok"
+note = "wave-d-25: import sim.viz; scientific_viz vertical — pipeline source/display/view + deferred Apply smoke"
+
+[[tests]]
+suite = "composable"
 file = "composable/import_linalg_matmul_smoke.li"
 outcome = "compile_open_ok"
 note = "AL-10: import linalg; matmul_2x2/2x3 smoke via explicit @ (open VC on float branch ensures)"

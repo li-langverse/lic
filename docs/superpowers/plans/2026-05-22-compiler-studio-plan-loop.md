@@ -124,7 +124,7 @@ todos:
     status: completed
   - id: wave-d-25-vertical-viz
     content: "sim.viz — pipeline source/display stub (ParaView UX-03 patterns)"
-    status: pending
+    status: completed
   - id: wave-d-26-vertical-mmo
     content: "mmo — shard composable + mmorpg.toml bench stub row"
     status: pending

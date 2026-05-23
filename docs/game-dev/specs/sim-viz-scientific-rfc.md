@@ -12,7 +12,12 @@ Scientific simulation in World Studio spans molecular dynamics, generic heat/PDE
 
 ## Proposal
 
-<!-- TODO: API, packages, phases -->
+| Layer | Package | Status |
+|-------|---------|--------|
+| Viz pipeline | `sim.viz` ([li-sim-viz-rfc.md](li-sim-viz-rfc.md)) | **stub** — source/display/view composable |
+| MD / heat / orbital | `sim.scientific`, `physics.*` | tier-2 benches |
+
+<!-- TODO: numerics API, phases -->
 
 ## Li syntax
 

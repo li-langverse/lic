@@ -17,7 +17,7 @@ Agents: cite vertical `id` and `workload_class` in PRs. Do **not** claim GROMACS
 | `bio_litl` | `stub` | `bioeng` | composable `import_bioeng_litl_workflow.li` + [bioengineering.toml](../../benchmarks/competitive/bioengineering.toml) |
 | `robo_workspace` | `stub` | `sim.robotics` | composable `import_sim_robotics_workspace.li` + [robotics.toml](../../benchmarks/competitive/robotics.toml) |
 | `am_slicer` | `stub` | `sim.additive` | composable `import_sim_additive_slicer_workflow.li` + [additive.toml](../../benchmarks/competitive/additive.toml) |
-| `scientific_viz` | `stub` | `sim.viz` | composable_only |
+| `scientific_viz` | `stub` | `sim.viz` | composable `import_sim_viz_pipeline_source_display.li` |
 | `cinematic_encode` | `stub` | `studio` | none (PH-CIN CIN-2) |
 | `cinematic_color_grade` | `stub` | `studio` | composable `import_studio_cinematic_algorithms.li` |
 | `cinematic_audio_sync` | `stub` | `studio` | composable `import_studio_cinematic_algorithms.li` |
@@ -284,19 +284,22 @@ No slicer oracle column — interface landed, kernels **stub**. Not PrusaSlicer/
 | Family | Target | Li today | Proof / bench |
 |--------|--------|----------|---------------|
 | Field → color map | VTK lookup tables | **stub** | tier-2 field data via sim benches only |
-| Pipeline browser | ParaView sources/filters | **stub** | none |
-| Properties / Display / View | ParaView panel model | `gui` inspector section IDs | `import gui` composable |
+| Pipeline browser | ParaView sources/filters | **stub** — `viz_pipeline_add_source` | composable `import_sim_viz_pipeline_source_display.li` |
+| Properties / Display / View | ParaView panel model | **stub** — `viz_inspector_section_*` | composable + `gui` section IDs |
 | Linked split views | ParaView camera sync | **open** | none |
 
 ### References
 
+- RFC: [li-sim-viz-rfc.md](../game-dev/specs/li-sim-viz-rfc.md)
+- Bench: [viz.toml](../../benchmarks/competitive/viz.toml) id=`scientific_viz`
+- Composable: `import_sim_viz_pipeline_source_display.li`
 - UX: [UX-04](../game-dev/competitive-intel/ui-ux-by-dimension.md#ux-04--properties--inspector), [UX-06](../game-dev/competitive-intel/ui-ux-by-dimension.md#ux-06--scientific-visualization)
 - Offline: `competitive-intel/downloads/paraview-properties-panel.html`
 - Bench hooks: `md_lennard_jones`, `heat_equation_2d` for field visualization smoke
 
 ### Honesty
 
-Inspector layout is **stub**; no VTK render path in `li-ui` yet.
+Pipeline + inspector layout is **stub**; no VTK render path or scalar color map UI yet.
 
 ---
 

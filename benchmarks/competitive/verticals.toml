@@ -103,7 +103,7 @@ workload_class = "stub"
 oracle = "composable_only"
 li_package = "sim.viz"
 last_reviewed = "2026-05-23"
-notes = "Properties/Display/View panel pattern; downloads/paraview-properties-panel.html."
+notes = "viz.toml composable import_sim_viz_pipeline_source_display.li; Properties/Display/View panel stub — not ParaView/VTK/MATLAB parity; downloads/paraview-properties-panel.html."
 
 [[vertical]]
 id = "cinematic_encode"

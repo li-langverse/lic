@@ -8,3 +8,12 @@
 2026-05-23T08:54:26Z info - GET /health 404 0
 2026-05-23T08:56:09Z info - GET /health 404 0
 2026-05-23T08:56:49Z info - GET /health 404 0
+2026-05-23T09:35:10Z info - GET / 200 0
+2026-05-23T09:35:12Z info - GET / 200 0
+2026-05-23T09:35:12Z info - GET / 200 0
+2026-05-23T09:35:20Z info - GET /index.html 200 0
+2026-05-23T09:35:20Z info - GET /index.html 200 0
+2026-05-23T09:35:20Z info - GET /index.html 200 0
+2026-05-23T09:35:22Z info - GET / 200 0
+2026-05-23T09:35:28Z info - POST /v1/chat/completions 429 0
+2026-05-23T09:35:35Z info - GET /health 404 0

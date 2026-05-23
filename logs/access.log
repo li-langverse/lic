@@ -4,3 +4,7 @@
 2026-05-22T11:04:08Z info - GET /index.html 401 0
 2026-05-22T11:04:08Z info - GET /index.html 401 0
 2026-05-22T11:04:08Z info - GET /index.html 200 0
+2026-05-23T08:54:18Z info - GET /health 404 0
+2026-05-23T08:54:26Z info - GET /health 404 0
+2026-05-23T08:56:09Z info - GET /health 404 0
+2026-05-23T08:56:49Z info - GET /health 404 0

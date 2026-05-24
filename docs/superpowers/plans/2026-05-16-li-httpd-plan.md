@@ -148,7 +148,7 @@ todos:
     status: pending
   - id: gap-phase2-exploit-nginx-regression
     content: "Every enabled tier5 exploit row — live li-httpd vs nginx, --fail-on-regression; no nginx-pass/li-fail; document in release note"
-    status: pending
+    status: completed
 isProject: false
 ---
 

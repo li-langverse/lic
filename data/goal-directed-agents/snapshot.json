@@ -1,13 +1,13 @@
 {
-  "generated_at": "2026-05-24T21:31:42.100178+00:00",
+  "generated_at": "2026-05-24T21:34:44.401474+00:00",
   "tz": "Europe/Berlin",
-  "agents_live": 4,
+  "agents_live": 3,
   "runners": [
     {
       "id": "httpd",
       "name": "li-httpd gap parity",
       "branch": "cursor/httpd-plan-continue",
-      "head": "5b6cf0e",
+      "head": "7ac2b2d",
       "running": true,
       "process": "systemd:li-httpd-plan-loop.service (active)",
       "log_path": "/home/s4il0r/Documents/Cursor/li-langverse/lic/data/httpd-plan-loop/until-deadline-20260524-154617.log",
@@ -60,16 +60,15 @@
         {
           "id": "gap-phase2-exploit-nginx-regression",
           "content": "Every enabled tier5 exploit row \u2014 live li-httpd vs nginx, --fail-on-regression; no nginx-pass/li-fail; document in release note",
-          "status": "pending"
+          "status": "completed"
         }
       ],
-      "plan_completed": 6,
+      "plan_completed": 7,
       "plan_total": 10,
       "plan_pending": [
         "gap-phase2-perf-wrk-soak",
         "gap-phase2-mitigation-exploits",
-        "gap-phase2-streaming-wrk",
-        "gap-phase2-exploit-nginx-regression"
+        "gap-phase2-streaming-wrk"
       ],
       "state": {
         "completed_ids": [
@@ -78,9 +77,10 @@
           "gap-lb-sticky-sessions",
           "gap-llvm22-build-warnings",
           "gap-nginx-perf-regression-gate",
-          "gap-tier5-streaming-soak"
+          "gap-tier5-streaming-soak",
+          "gap-phase2-exploit-nginx-regression"
         ],
-        "iterations": 18,
+        "iterations": 19,
         "history": [
           {
             "at": "2026-05-24T12:57:17.198584+00:00",
@@ -189,30 +189,36 @@
             "todo_id": "gap-phase2-exploit-nginx-regression",
             "agent_exit": 0,
             "gates_ok": false
+          },
+          {
+            "at": "2026-05-24T21:31:51.739161+00:00",
+            "todo_id": "gap-phase2-exploit-nginx-regression",
+            "agent_exit": 0,
+            "gates_ok": true
           }
         ]
       },
-      "state_iterations": 18,
+      "state_iterations": 19,
       "agent_live": true,
       "agent": "code_implementer",
-      "goal_file": "goal-20260524-212211.md",
-      "log_age_sec": 29,
-      "last_state_at": "2026-05-24T21:20:36.529835+00:00",
+      "goal_file": "goal-20260524-213217.md",
+      "log_age_sec": 26,
+      "last_state_at": "2026-05-24T21:31:51.739161+00:00",
       "last_state_todo": "gap-phase2-exploit-nginx-regression",
-      "last_state_gates": false,
-      "current_iteration": "=== iteration 1: gap-phase2-exploit-nginx-regression ===",
+      "last_state_gates": true,
+      "current_iteration": "=== iteration 2: gap-phase2-mitigation-exploits ===",
       "activity": [
-        "[sdk] \u2713 shell cd /home/s4il0r/Documents/Cursor/li-langverse/li-cursor-agents/data/workspaces/l",
-        "[sdk] \u2717 tool",
         "[sdk] thinking\u2026",
-        "[sdk] \u25b6 tool",
-        "[sdk] \u2713 shell cd /home/s4il0r/Documents/Cursor/li-langverse/li-cursor-agents/data/workspaces/l",
-        "[sdk] \u2717 tool",
-        "[sdk] thinking\u2026",
-        "[sdk] assistant reply"
+        "[sdk] assistant reply",
+        "gates: OK after agent",
+        "=== iteration 2: gap-phase2-mitigation-exploits ===",
+        "gates: OK",
+        "SDK tool activity streams to stderr ([sdk] \u25b6/\u2713 lines). Set LI_SDK_TERMINAL_STREAM=0 to disable.",
+        "i-cursor-agents/data/workspaces/li-langverse/lic/code_implementer-1779658435778/repo) \u2014 tool lines only; LI_SDK_TERMINAL_STREAM=0 to disable",
+        "[sdk] \u2026 still running (17s \u2014 waiting for model/tools)"
       ],
       "status_note": "agent coding (code_implementer)",
-      "active_todo_id": "gap-phase2-exploit-nginx-regression"
+      "active_todo_id": "gap-phase2-mitigation-exploits"
     },
     {
       "id": "compiler-studio",
@@ -485,7 +491,7 @@
           "wave-d-04-math-quat-mat4",
           "wave-d-05-linalg-scaffold"
         ],
-        "iterations": 10,
+        "iterations": 11,
         "history": [
           {
             "at": "2026-05-23T09:02:50.508081+00:00",
@@ -546,40 +552,45 @@
             "todo_id": "wave-d-gui-scaffold",
             "agent_exit": 124,
             "gates_ok": false
+          },
+          {
+            "at": "2026-05-24T21:32:13.473435+00:00",
+            "todo_id": "wave-d-gui-scaffold",
+            "agent_exit": -15,
+            "gates_ok": false
           }
         ],
         "note": "2026-05-24: cleared premature completed_ids for wave-a-llvm22-typecheck-warnings and wave-d-gui-scaffold (plan still open; gates had failed or plan YAML not updated)"
       },
-      "state_iterations": 10,
-      "agent_live": true,
-      "agent": "code_implementer",
-      "goal_file": "goal-20260524-213003.md",
-      "log_age_sec": 98,
-      "last_state_at": "2026-05-24T21:28:33.788765+00:00",
+      "state_iterations": 11,
+      "agent_live": false,
+      "agent": "",
+      "goal_file": "",
+      "log_age_sec": 60,
+      "last_state_at": "2026-05-24T21:32:13.473435+00:00",
       "last_state_todo": "wave-d-gui-scaffold",
       "last_state_gates": false,
-      "current_iteration": "=== iteration 1: wave-d-gui-scaffold ===",
+      "current_iteration": "==> batch 644 @ 2026-05-24T23:33:43+02:00 \u2014 --max 30 (~506m until deadline)",
       "activity": [
-        "[sdk] \u2717 tool",
-        "[sdk] assistant reply",
-        "agent exit 124 \u2014 stopping loop (fix and re-run)",
         "==> batch 642 exit 124 @ 2026-05-24T23:28:33+02:00",
         "==> batch 643 @ 2026-05-24T23:30:03+02:00 \u2014 --max 30 (~509m until deadline)",
         "=== iteration 1: wave-d-gui-scaffold ===",
         "gates: FAIL (agent should fix first)",
-        "SDK tool activity streams to stderr ([sdk] \u25b6/\u2713 lines). Set LI_SDK_TERMINAL_STREAM=0 to disable."
+        "SDK tool activity streams to stderr ([sdk] \u25b6/\u2713 lines). Set LI_SDK_TERMINAL_STREAM=0 to disable.",
+        "agent exit -15 \u2014 stopping loop (fix and re-run)",
+        "==> batch 643 exit 241 @ 2026-05-24T23:32:13+02:00",
+        "==> batch 644 @ 2026-05-24T23:33:43+02:00 \u2014 --max 30 (~506m until deadline)"
       ],
-      "status_note": "agent coding (code_implementer)",
-      "active_todo_id": "wave-d-gui-scaffold"
+      "status_note": "supervisor up, between agent runs"
     },
     {
       "id": "sim",
       "name": "Sim / algo registry",
       "branch": "cursor/sim-algo-plan-loop",
-      "head": "1aaa8f1",
+      "head": "77b1727",
       "running": true,
       "process": "systemd:li-sim-algo-plan-loop.service (active)",
-      "log_path": "/home/s4il0r/Documents/Cursor/li-langverse/lic-worktrees/sim-algo/data/sim-plan-loop/iter-20260524-212541.log",
+      "log_path": "/home/s4il0r/Documents/Cursor/li-langverse/lic-worktrees/sim-algo/data/sim-plan-loop/iter-20260524-213414.log",
       "todos": [
         {
           "id": "sim-p0-md-lj-li-parity",
@@ -589,7 +600,7 @@
         {
           "id": "sim-p0-heat-li-smoke",
           "content": "Pure-Li heat_equation_2d smoke with harness verify row",
-          "status": "pending"
+          "status": "completed"
         },
         {
           "id": "sim-p1-num-dot-axpy",
@@ -607,17 +618,16 @@
           "status": "pending"
         }
       ],
-      "plan_completed": 1,
+      "plan_completed": 2,
       "plan_total": 5,
       "plan_pending": [
-        "sim-p0-heat-li-smoke",
         "sim-p1-num-dot-axpy",
         "sim-p1-md-neighbor-cell",
         "sim-p2-qm-dft-scf"
       ],
       "state": {
         "completed_ids": [],
-        "iterations": 34,
+        "iterations": 35,
         "history": [
           {
             "at": "2026-05-24T15:02:54.490019+00:00",
@@ -822,6 +832,12 @@
             "todo_id": "sim-p0-heat-li-smoke",
             "agent_exit": 0,
             "gates_ok": false
+          },
+          {
+            "at": "2026-05-24T21:32:14.346517+00:00",
+            "todo_id": "sim-p0-heat-li-smoke",
+            "agent_exit": -15,
+            "gates_ok": false
           }
         ],
         "registry": {
@@ -829,27 +845,20 @@
           "total": 126
         }
       },
-      "state_iterations": 34,
+      "state_iterations": 35,
       "agent_live": true,
       "agent": "code_implementer",
-      "goal_file": "goal-20260524-212541.md",
-      "log_age_sec": 0,
-      "last_state_at": "2026-05-24T21:23:41.262072+00:00",
+      "goal_file": "goal-20260524-213414.md",
+      "log_age_sec": 29,
+      "last_state_at": "2026-05-24T21:32:14.346517+00:00",
       "last_state_todo": "sim-p0-heat-li-smoke",
       "last_state_gates": false,
       "current_iteration": "",
       "activity": [
-        "[sdk] \u2717 tool",
-        "[sdk] \u25b6 tool",
-        "sdk] \u2713 grep /home/s4il0r/Documents/Cursor/li-langverse/li-cursor-agents/data/workspaces/li-langverse/lic/code_implementer-1779658039581/repo",
-        "[sdk] \u2717 tool",
-        "[sdk] \u25b6 tool",
-        "sdk] \u2713 grep /home/s4il0r/Documents/Cursor/li-langverse/li-cursor-agents/data/workspaces/li-langverse/lic/code_implementer-1779658039581/repo",
-        "[sdk] \u2717 tool",
-        "[sdk] \u25b6 tool"
+        "SDK tool activity streams to stderr ([sdk] \u25b6/\u2713 lines). Set LI_SDK_TERMINAL_STREAM=0 to disable."
       ],
       "status_note": "agent coding (code_implementer)",
-      "active_todo_id": "sim-p0-heat-li-smoke"
+      "active_todo_id": "sim-p1-num-dot-axpy"
     },
     {
       "id": "studio-ui-ux",
@@ -858,7 +867,7 @@
       "head": "ca1b091",
       "running": true,
       "process": "systemd:li-studio-ui-ux-plan-loop.service (active)",
-      "log_path": "/home/s4il0r/Documents/Cursor/li-langverse/lic-studio-ui/data/studio-ui-ux-plan-loop/iter-20260524-203954.log",
+      "log_path": "/home/s4il0r/Documents/Cursor/li-langverse/lic-studio-ui/data/studio-ui-ux-plan-loop/iter-20260524-213413.log",
       "todos": [
         {
           "id": "studio-ux-00-design-system",
@@ -959,27 +968,41 @@
       "state_iterations": 3,
       "agent_live": true,
       "agent": "studio_ui_ux_builder",
-      "goal_file": "goal-20260524-203954.md",
-      "log_age_sec": 2599,
+      "goal_file": "goal-20260524-213413.md",
+      "log_age_sec": 30,
       "last_state_at": "2026-05-24T18:23:10+00:00",
       "last_state_todo": "studio-ux-02-gui-viewport-stub",
       "last_state_gates": true,
       "current_iteration": "",
       "activity": [
-        "[sdk] \u25b6 tool",
-        "[sdk] \u2713 shell gh api repos/li-langverse/lic/issues/180/comments --jq '.[-1].html_url' 2>&1",
-        "[sdk] \u2717 tool",
-        "[sdk] \u25b6 tool",
-        "[sdk] \u2713 shell cd /home/s4il0r/Documents/Cursor/li-langverse/li-cursor-agents/data/workspaces/l",
-        "[sdk] \u2717 tool",
-        "[sdk] thinking\u2026",
-        "[sdk] assistant reply"
+        "SDK tool activity streams to stderr ([sdk] \u25b6/\u2713 lines). Set LI_SDK_TERMINAL_STREAM=0 to disable."
       ],
       "status_note": "agent coding (studio_ui_ux_builder)",
       "active_todo_id": "studio-ux-03-render-wgpu-smoke"
     }
   ],
   "history": [
+    {
+      "runner": "sim",
+      "at": "2026-05-24T21:32:14.346517+00:00",
+      "todo_id": "sim-p0-heat-li-smoke",
+      "agent_exit": -15,
+      "gates_ok": false
+    },
+    {
+      "runner": "compiler-studio",
+      "at": "2026-05-24T21:32:13.473435+00:00",
+      "todo_id": "wave-d-gui-scaffold",
+      "agent_exit": -15,
+      "gates_ok": false
+    },
+    {
+      "runner": "httpd",
+      "at": "2026-05-24T21:31:51.739161+00:00",
+      "todo_id": "gap-phase2-exploit-nginx-regression",
+      "agent_exit": 0,
+      "gates_ok": true
+    },
     {
       "runner": "compiler-studio",
       "at": "2026-05-24T21:28:33.788765+00:00",
@@ -1039,27 +1062,6 @@
     {
       "runner": "httpd",
       "at": "2026-05-24T20:46:45.500752+00:00",
-      "todo_id": "gap-phase2-exploit-nginx-regression",
-      "agent_exit": 0,
-      "gates_ok": false
-    },
-    {
-      "runner": "compiler-studio",
-      "at": "2026-05-24T20:42:03.743213+00:00",
-      "todo_id": "wave-d-gui-scaffold",
-      "agent_exit": 0,
-      "gates_ok": false
-    },
-    {
-      "runner": "sim",
-      "at": "2026-05-24T20:39:56.047293+00:00",
-      "todo_id": "sim-p0-heat-li-smoke",
-      "agent_exit": 1,
-      "gates_ok": false
-    },
-    {
-      "runner": "httpd",
-      "at": "2026-05-24T20:32:16.959163+00:00",
       "todo_id": "gap-phase2-exploit-nginx-regression",
       "agent_exit": 0,
       "gates_ok": false

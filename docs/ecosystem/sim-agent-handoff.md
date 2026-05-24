@@ -95,5 +95,5 @@ Full table: `benchmarks/manifest.toml`.
 ## Blockers before “production sim” claims
 
 1. Replace registry stubs with proved kernels (Wave A: 2e/2f VC gates per [algorithms-and-libraries-plan.md](algorithms-and-libraries-plan.md)).
-2. Tier-2 Li vs native checksum parity for `md_lennard_jones`.
+2. ~~Tier-2 Li vs native checksum parity for `md_lennard_jones`~~ — **done** (PR #179; shared `md_core.c` + runtime sink; pure-Li kernel still future).
 3. External oracle column (LAMMPS/GROMACS) for MD — competitive plan item.

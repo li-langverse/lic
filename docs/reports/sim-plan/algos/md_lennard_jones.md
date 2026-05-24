@@ -41,3 +41,7 @@ From `latest.csv` after gates: Li wall_time ≈ 1.16s (median of 3), on par with
 
 - **Pure-Li MD kernel** (no `LI_EXTRA_C`) remains a separate Wave B item; this slice only restores harness parity via the reference C kernel.
 - External oracle (LAMMPS/GROMACS) column — see `docs/benchmarks/competitive-engines-plan.md`.
+
+## Agent iteration (2026-05-24)
+
+Re-ran `./scripts/sim-plan-gates.sh` on `cursor/sim-algo-plan-loop` @ `0305ba5`: Li/native checksum `0.6892536936825765`, scoped timing Li ≈ 1.12s. Report: [iterations/20260524-163113.md](../iterations/20260524-163113.md).

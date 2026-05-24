@@ -25,8 +25,18 @@ git checkout -B cursor/studio-ui-ux-plan-loop
 
 ```bash
 ./scripts/studio-ui-ux-plan-loop.py --once
-./scripts/studio-ui-ux-plan-continuous.sh
+./scripts/studio-ui-ux-run-until-done.sh
 ```
+
+## Survive reboot (systemd + linger)
+
+```bash
+./scripts/install-studio-ui-ux-plan-loop-systemd.sh
+# enables user unit, loginctl linger, 08:00 daily cron, starts service
+systemctl --user status li-studio-ui-ux-plan-loop
+```
+
+Stop without disabling autostart on next boot: `touch data/studio-ui-ux-plan-loop/DISABLE_AUTOSTART && systemctl --user stop li-studio-ui-ux-plan-loop`
 
 ## Agent
 

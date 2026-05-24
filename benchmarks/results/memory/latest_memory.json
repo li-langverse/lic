@@ -1,0 +1,25 @@
+{
+  "schema": "li_sim_memory_v1",
+  "samples": [
+    {
+      "benchmark": "double_pendulum",
+      "peak_rss_kb": 0
+    },
+    {
+      "benchmark": "heat_equation_2d",
+      "peak_rss_kb": 0
+    },
+    {
+      "benchmark": "md_lennard_jones",
+      "peak_rss_kb": 0
+    },
+    {
+      "benchmark": "nbody_gravity",
+      "peak_rss_kb": 0
+    },
+    {
+      "benchmark": "three_body",
+      "peak_rss_kb": 0
+    }
+  ]
+}

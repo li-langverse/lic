@@ -1,6 +1,14 @@
 # Li three_body — driver over shared C reference kernel.
 
+extern proc li_rt_volatile_sink_f64(v: float) -> unit
+  requires true
+  ensures true
+
 extern proc li_three_body_kernel()
+  requires true
+  ensures true
+
+extern proc li_three_body_checksum() -> float
   requires true
   ensures true
 
@@ -10,4 +18,5 @@ def main() raises IO -> int
   decreases 0
 =
   li_three_body_kernel()
+  li_rt_volatile_sink_f64(li_three_body_checksum())
   return 0

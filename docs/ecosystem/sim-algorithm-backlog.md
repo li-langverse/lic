@@ -9,7 +9,7 @@ todos:
 
 - id: sim-p0-md-lj-li-parity
   content: "Tier-2 Li md_lennard_jones checksum parity vs native (fix runtime sink / driver)"
-  status: pending
+  status: completed
 
 - id: sim-p0-heat-li-smoke
   content: "Pure-Li heat_equation_2d smoke with harness verify row"

@@ -16,7 +16,7 @@
 | Machine-readable summaries | **Yes** | `sim_summary.py`, `sim-write-summary.py`, `sim_li_run_summary.sh` |
 | **Modular bench/verify** | **Yes** | `bench-package.sh`, `bench_sim.py`, `bench_scope.py` — no full tier-12 on package edits |
 | Real algorithm kernels | **No** | Most ids are `registry_stub`; only MD/heat/rigid smokes are substantive |
-| Tier-2 Li parity gate | **No** | Native C++ verify passes; full Li MD checksum parity still blocked on runtime sink |
+| Tier-2 Li parity gate | **Yes** (MD smoke) | `md_lennard_jones` Li driver sinks `li_md_checksum()` via `LI_PRINT_SINK_F64`; pure-Li kernel still future work |
 | Autonomous plan loop | **Partial** | `scripts/sim-plan-loop.py` + `sim-plan-gates.sh` (mirror httpd loop); needs `CURSOR_API_KEY` |
 
 **Verdict:** The agent can **implement, bench, and verify incrementally** per package without rerunning all Li benchmarks. It should **not** claim production parity or full 126-kernel coverage until stubs are replaced and tier-2 Li verify is green.

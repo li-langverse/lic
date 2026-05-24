@@ -37,7 +37,7 @@ li_detect_llvm_dir() {
     return 0
   fi
   local v dir
-  for v in "$LI_LLVM_MAJOR" 21 20; do
+  for v in "$LI_LLVM_MAJOR" 22 21 20; do
     dir="$(li_llvm_cmake_dir "$v" || true)"
     if [[ -n "$dir" ]]; then
       export LLVM_DIR="$dir"

@@ -35,6 +35,7 @@ if [[ -f "$ENV_FILE" ]]; then
   set +a
 fi
 
+export LI_LLVM_MAJOR="${LI_LLVM_MAJOR:-22}"
 export PATH="${HOME}/.local/node/bin:${PATH:-/usr/bin:/bin}"
 export LI_CURSOR_AGENTS_ROOT="${LI_CURSOR_AGENTS_ROOT:-$ROOT/../li-cursor-agents}"
 export LIC_ROOT="$ROOT"

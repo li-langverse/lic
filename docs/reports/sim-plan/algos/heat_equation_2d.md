@@ -52,3 +52,5 @@ Re-ran `./scripts/sim-plan-gates.sh` on `cursor/sim-algo-plan-loop`: tier-2 Li/n
 **2026-05-24 (code_implementer, sim-p0-heat-li-smoke):** Gates green on isolated clone (`LIC_ROOT=$PWD`); tier-2 verify `-3387.6965976796632`, composable pure-Li `6606.4384`, Li wall_time ≈ 0.093s. Iteration: [20260524-200758](../iterations/20260524-200758.md).
 
 **2026-05-24 (code_implementer, gate refresh @ `e790ceb`):** Re-ran `./scripts/sim-plan-gates.sh`; harness verify row `heat_equation_2d/cpp.summary.json` **ok**; tier-2 Li/native `-3387.6965976796632`; composable pure-Li `6606.4384`; Li wall_time ≈ 0.094s. Iteration: [20260524-210033](../iterations/20260524-210033.md).
+
+**2026-05-24 (code_implementer, sim-p0-heat-li-smoke @ `c0782af`):** Gates green on isolated clone (`LIC_ROOT=$PWD`); tier-2 verify `-3387.6965976796632`, composable pure-Li `6606.4384`, Li wall_time ≈ 0.093s. Iteration: [20260524-211124](../iterations/20260524-211124.md).

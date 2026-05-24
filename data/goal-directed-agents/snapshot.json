@@ -1,12 +1,12 @@
 {
-  "generated_at": "2026-05-24T16:36:52.967644+00:00",
+  "generated_at": "2026-05-24T17:22:17.197233+00:00",
   "tz": "Europe/Berlin",
   "runners": [
     {
       "id": "httpd",
       "name": "li-httpd gap parity",
       "branch": "cursor/httpd-plan-continue",
-      "head": "7853c6c",
+      "head": "e350991",
       "running": true,
       "process": "systemd:li-httpd-plan-loop.service (active)",
       "log_path": "/home/s4il0r/Documents/Cursor/li-langverse/lic/../lic/data/httpd-plan-loop/gap-until-done.log",
@@ -19,7 +19,12 @@
         {
           "id": "gap-lb-sticky-sessions",
           "content": "Upstream ip_hash (or cookie affinity) for multi-backend stickiness \u2014 config schema + runtime + gate",
-          "status": "pending"
+          "status": "completed"
+        },
+        {
+          "id": "gap-llvm22-build-warnings",
+          "content": "LLVM 22 clean ./scripts/build.sh \u2014 runtime/li_rt_net.c (-Wcast-qual: ptr_mut_i vs ptr_i, iov/read/memcpy/free; drop or use unused httpd helpers); compiler/types/typecheck.cpp (-Wmissing-field-initializers on Ty{}); gate: rebuild with CC=clang-22 and no warnings from those sites",
+          "status": "in_progress"
         },
         {
           "id": "gap-tier5-streaming-soak",
@@ -29,7 +34,7 @@
         {
           "id": "gap-nextjs-toy-bench",
           "content": "Next.js toy app (API/SSR/SSE/WS) + tier5 scenarios; check-tier5-nextjs-parity.sh \u2014 li RPS/TTFB >= 0.85x nginx (document variants)",
-          "status": "pending"
+          "status": "completed"
         },
         {
           "id": "gap-nginx-perf-regression-gate",
@@ -37,20 +42,19 @@
           "status": "pending"
         }
       ],
-      "plan_completed": 1,
-      "plan_total": 5,
+      "plan_completed": 3,
+      "plan_total": 6,
       "plan_pending": [
-        "gap-lb-sticky-sessions",
         "gap-tier5-streaming-soak",
-        "gap-nextjs-toy-bench",
         "gap-nginx-perf-regression-gate"
       ],
       "state": {
         "completed_ids": [
           "h-lean-server-modules",
-          "gap-exploit-owasp-cwe-suite"
+          "gap-exploit-owasp-cwe-suite",
+          "gap-lb-sticky-sessions"
         ],
-        "iterations": 4,
+        "iterations": 5,
         "history": [
           {
             "at": "2026-05-24T12:57:17.198584+00:00",
@@ -75,6 +79,12 @@
             "todo_id": "gap-lb-sticky-sessions",
             "agent_exit": 124,
             "gates_ok": true
+          },
+          {
+            "at": "2026-05-24T16:36:56.980658+00:00",
+            "todo_id": "gap-lb-sticky-sessions",
+            "agent_exit": 0,
+            "gates_ok": true
           }
         ]
       },
@@ -95,7 +105,7 @@
       "id": "compiler-studio",
       "name": "Compiler + Studio",
       "branch": "cursor/compiler-studio-plan-loop",
-      "head": "33d32de",
+      "head": "ae72fca",
       "running": true,
       "process": "systemd:li-compiler-studio-plan-loop.service (active)",
       "log_path": "/home/s4il0r/Documents/Cursor/li-langverse/lic/../lic-worktrees/compiler-studio/data/compiler-studio-plan-loop/runner.log",
@@ -129,6 +139,11 @@
           "id": "wave-a-2f-vc-corpus",
           "content": "contracts_discharge_corpus + contracts_verify_lean; close sqrt_open_bound or document",
           "status": "completed"
+        },
+        {
+          "id": "wave-a-llvm22-typecheck-warnings",
+          "content": "LLVM 22 \u2014 fix -Wmissing-field-initializers in compiler/types/typecheck.cpp (make_bool/make_str/make_i64 Ty initializers); verify ./scripts/build.sh clean",
+          "status": "pending"
         },
         {
           "id": "wave-a-2i-explicit-math",
@@ -188,7 +203,7 @@
         {
           "id": "wave-d-02-al2-catalog",
           "content": "AL-2 vertical-algorithm-catalog.md \u2014 one kernel section per verticals.toml row",
-          "status": "pending"
+          "status": "completed"
         },
         {
           "id": "wave-d-03-ux-inspector",
@@ -331,17 +346,17 @@
           "status": "completed"
         }
       ],
-      "plan_completed": 44,
-      "plan_total": 46,
+      "plan_completed": 45,
+      "plan_total": 47,
       "plan_pending": [
-        "wave-d-02-al2-catalog"
+        "wave-a-llvm22-typecheck-warnings"
       ],
       "state": {
         "completed_ids": [
           "wave-d-gui-scaffold",
-          "wave-d-02-al2-catalog"
+          "wave-a-llvm22-typecheck-warnings"
         ],
-        "iterations": 8,
+        "iterations": 4,
         "history": [
           {
             "at": "2026-05-23T09:02:50.508081+00:00",
@@ -356,38 +371,14 @@
             "gates_ok": true
           },
           {
-            "at": "2026-05-24T15:03:42.859736+00:00",
-            "todo_id": "wave-d-02-al2-catalog",
+            "at": "2026-05-24T17:08:31.389794+00:00",
+            "todo_id": "wave-a-llvm22-typecheck-warnings",
             "agent_exit": 1,
             "gates_ok": false
           },
           {
-            "at": "2026-05-24T15:16:42.507814+00:00",
-            "todo_id": "wave-d-02-al2-catalog",
-            "agent_exit": 1,
-            "gates_ok": false
-          },
-          {
-            "at": "2026-05-24T15:29:45.786257+00:00",
-            "todo_id": "wave-d-02-al2-catalog",
-            "agent_exit": 1,
-            "gates_ok": false
-          },
-          {
-            "at": "2026-05-24T15:42:34.963225+00:00",
-            "todo_id": "wave-d-02-al2-catalog",
-            "agent_exit": 1,
-            "gates_ok": false
-          },
-          {
-            "at": "2026-05-24T15:58:38.356567+00:00",
-            "todo_id": "wave-d-02-al2-catalog",
-            "agent_exit": 1,
-            "gates_ok": false
-          },
-          {
-            "at": "2026-05-24T16:18:17.909303+00:00",
-            "todo_id": "wave-d-02-al2-catalog",
+            "at": "2026-05-24T17:19:56.590015+00:00",
+            "todo_id": "wave-a-llvm22-typecheck-warnings",
             "agent_exit": 0,
             "gates_ok": false
           }
@@ -395,13 +386,13 @@
       },
       "current_iteration": "",
       "activity": [],
-      "active_todo_id": "wave-d-02-al2-catalog"
+      "active_todo_id": "wave-a-llvm22-typecheck-warnings"
     },
     {
       "id": "sim",
       "name": "Sim / algo registry",
       "branch": "cursor/sim-algo-plan-loop",
-      "head": "b64027c",
+      "head": "cb8edd6",
       "running": true,
       "process": "systemd:li-sim-algo-plan-loop.service (active)",
       "log_path": "/home/s4il0r/Documents/Cursor/li-langverse/lic/../lic-worktrees/sim-algo/data/sim-plan-loop/runner.log",
@@ -409,7 +400,7 @@
         {
           "id": "sim-p0-md-lj-li-parity",
           "content": "Tier-2 Li md_lennard_jones checksum parity vs native (fix runtime sink / driver)",
-          "status": "pending"
+          "status": "completed"
         },
         {
           "id": "sim-p0-heat-li-smoke",
@@ -432,10 +423,9 @@
           "status": "pending"
         }
       ],
-      "plan_completed": 0,
+      "plan_completed": 1,
       "plan_total": 5,
       "plan_pending": [
-        "sim-p0-md-lj-li-parity",
         "sim-p0-heat-li-smoke",
         "sim-p1-num-dot-axpy",
         "sim-p1-md-neighbor-cell",
@@ -443,7 +433,7 @@
       ],
       "state": {
         "completed_ids": [],
-        "iterations": 8,
+        "iterations": 10,
         "history": [
           {
             "at": "2026-05-24T15:02:54.490019+00:00",
@@ -492,6 +482,18 @@
             "todo_id": "sim-p0-md-lj-li-parity",
             "agent_exit": 0,
             "gates_ok": false
+          },
+          {
+            "at": "2026-05-24T17:12:10.136689+00:00",
+            "todo_id": "sim-p0-heat-li-smoke",
+            "agent_exit": 0,
+            "gates_ok": false
+          },
+          {
+            "at": "2026-05-24T17:22:12.298471+00:00",
+            "todo_id": "sim-p0-heat-li-smoke",
+            "agent_exit": 0,
+            "gates_ok": false
           }
         ],
         "registry": {
@@ -499,18 +501,18 @@
           "total": 126
         }
       },
-      "current_iteration": "=== iteration 1: sim-p0-md-lj-li-parity ===",
+      "current_iteration": "=== iteration 1: sim-p0-heat-li-smoke ===",
       "activity": [
-        "[sdk] \u25b6 tool",
-        "or/li-langverse/li-cursor-agents/data/workspaces/li-langverse/lic/code_implementer-1779640576541/repo/li-tests/tooling/sim_li_run_summary.sh",
-        "[sdk] \u2717 tool",
         "[sdk] thinking\u2026",
         "[sdk] \u25b6 tool",
-        "uments/Cursor/li-langverse/li-cursor-agents/data/workspaces/li-langverse/lic/code_implementer-1779640576541/repo/benchmarks/harness/bench.py",
+        "[sdk] \u2713 shell cd /home/s4il0r/Documents/Cursor/li-langverse/li-cursor-agents/data/workspaces/l",
         "[sdk] \u2717 tool",
-        "[sdk] \u25b6 tool"
+        "[sdk] thinking\u2026",
+        "[sdk] assistant reply",
+        "=== iteration 1: sim-p0-heat-li-smoke ===",
+        "gates: FAIL"
       ],
-      "active_todo_id": "sim-p0-md-lj-li-parity"
+      "active_todo_id": "sim-p0-heat-li-smoke"
     },
     {
       "id": "studio-ui-ux",
@@ -610,19 +612,54 @@
       },
       "current_iteration": "",
       "activity": [
-        "[sdk] thinking\u2026",
-        "[sdk] \u25b6 tool",
-        "[sdk] \u2713 shell gh pr view 177 --repo li-langverse/lic --json body,url 2>&1 | head -5",
         "[sdk] \u2717 tool",
         "[sdk] \u25b6 tool",
-        "[sdk] \u2713 shell gh api -X PATCH repos/li-langverse/lic/pulls/177 -f body=\"$(cat <<'EOF'",
+        "[sdk] \u25b6 tool",
+        "erse/li-cursor-agents/data/workspaces/li-langverse/lic/studio_ui_ux_builder-1779643101320/repo/data/studio-ui-ux-plan-loop/latest-bench.json",
         "[sdk] \u2717 tool",
-        "[sdk] assistant reply"
+        "[sdk] \u25b6 tool",
+        "[sdk] \u2713 shell cd /home/s4il0r/Documents/Cursor/li-langverse/li-cursor-agents/data/workspaces/l",
+        "[sdk] \u2717 tool"
       ],
       "active_todo_id": "studio-ux-02-gui-viewport-stub"
     }
   ],
   "history": [
+    {
+      "runner": "sim",
+      "at": "2026-05-24T17:22:12.298471+00:00",
+      "todo_id": "sim-p0-heat-li-smoke",
+      "agent_exit": 0,
+      "gates_ok": false
+    },
+    {
+      "runner": "compiler-studio",
+      "at": "2026-05-24T17:19:56.590015+00:00",
+      "todo_id": "wave-a-llvm22-typecheck-warnings",
+      "agent_exit": 0,
+      "gates_ok": false
+    },
+    {
+      "runner": "sim",
+      "at": "2026-05-24T17:12:10.136689+00:00",
+      "todo_id": "sim-p0-heat-li-smoke",
+      "agent_exit": 0,
+      "gates_ok": false
+    },
+    {
+      "runner": "compiler-studio",
+      "at": "2026-05-24T17:08:31.389794+00:00",
+      "todo_id": "wave-a-llvm22-typecheck-warnings",
+      "agent_exit": 1,
+      "gates_ok": false
+    },
+    {
+      "runner": "httpd",
+      "at": "2026-05-24T16:36:56.980658+00:00",
+      "todo_id": "gap-lb-sticky-sessions",
+      "agent_exit": 0,
+      "gates_ok": true
+    },
     {
       "runner": "sim",
       "at": "2026-05-24T16:32:27.410480+00:00",
@@ -645,13 +682,6 @@
       "gates_ok": false
     },
     {
-      "runner": "compiler-studio",
-      "at": "2026-05-24T16:18:17.909303+00:00",
-      "todo_id": "wave-d-02-al2-catalog",
-      "agent_exit": 0,
-      "gates_ok": false
-    },
-    {
       "runner": "sim",
       "at": "2026-05-24T16:13:05.985211+00:00",
       "todo_id": "sim-p0-md-lj-li-parity",
@@ -662,20 +692,6 @@
       "runner": "sim",
       "at": "2026-05-24T15:59:15.531627+00:00",
       "todo_id": "sim-p0-md-lj-li-parity",
-      "agent_exit": 1,
-      "gates_ok": false
-    },
-    {
-      "runner": "compiler-studio",
-      "at": "2026-05-24T15:58:38.356567+00:00",
-      "todo_id": "wave-d-02-al2-catalog",
-      "agent_exit": 1,
-      "gates_ok": false
-    },
-    {
-      "runner": "compiler-studio",
-      "at": "2026-05-24T15:42:34.963225+00:00",
-      "todo_id": "wave-d-02-al2-catalog",
       "agent_exit": 1,
       "gates_ok": false
     },
@@ -692,20 +708,6 @@
       "todo_id": "gap-lb-sticky-sessions",
       "agent_exit": 124,
       "gates_ok": true
-    },
-    {
-      "runner": "sim",
-      "at": "2026-05-24T15:29:49.379145+00:00",
-      "todo_id": "sim-p0-md-lj-li-parity",
-      "agent_exit": 1,
-      "gates_ok": false
-    },
-    {
-      "runner": "compiler-studio",
-      "at": "2026-05-24T15:29:45.786257+00:00",
-      "todo_id": "wave-d-02-al2-catalog",
-      "agent_exit": 1,
-      "gates_ok": false
     }
   ]
 }

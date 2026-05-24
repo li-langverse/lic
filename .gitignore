@@ -10,6 +10,7 @@ __pycache__/
 .mypy_cache/
 
 # Benchmark / plot artifacts (regenerated locally)
+benchmarks/tier5_http/.nginx-prefix/
 benchmarks/competitive/snapshots/latest.env
 benchmarks/results/**/*.csv
 benchmarks/results/share/*.png

@@ -2892,6 +2892,13 @@ static int32_t httpd_try_drain_once(int32_t conn, int32_t slot) {
     return 0;
   }
   int keep_early = !wants_connection_close(g_slots[slot].buf, hdr_end);
+  if (request_headers_unsafe_c(g_slots[slot].buf, hdr_end)) {
+    if (httpd_send_status(conn, 400, "Bad Request", NULL, keep_early) < 0) {
+      return -2;
+    }
+    net_slot_consume(slot, hdr_end);
+    return keep_early ? 1 : -1;
+  }
   if (g_cache_file_ready && g_rate_limit_rps == 0 && !g_auth_required && g_proxy_port <= 0 &&
       g_route_count == 0 && is_file_bin_get(g_slots[slot].buf, hdr_end)) {
     if (httpd_reply_cached_file_bin_i(conn, slot, keep_early) >= 0) {
@@ -2901,13 +2908,6 @@ static int32_t httpd_try_drain_once(int32_t conn, int32_t slot) {
   }
   httpd_req_info_t req;
   memset(&req, 0, sizeof(req));
-  if (request_headers_unsafe_c(g_slots[slot].buf, hdr_end)) {
-    int keep = !wants_connection_close(g_slots[slot].buf, hdr_end);
-    if (httpd_send_status(conn, 400, "Bad Request", NULL, keep) < 0) {
-      return -2;
-    }
-    return keep ? 1 : -1;
-  }
   if (parse_request_line_c(g_slots[slot].buf, hdr_end, &req) != 0) {
     return -2;
   }

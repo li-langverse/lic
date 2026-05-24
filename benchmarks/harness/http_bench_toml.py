@@ -217,6 +217,12 @@ def ensure_fixtures(cfg: dict[str, Any], tier5_root: Path | None = None) -> Path
         path.parent.mkdir(parents=True, exist_ok=True)
         if not path.is_file() or path.stat().st_size != size:
             path.write_bytes(b"\x00" * size)
+    server = cfg.get("server") or {}
+    if server.get("kind", "static") == "static":
+        doc = resolve_document_root(cfg, tier5_root)
+        index = doc / "index.html"
+        if not index.is_file():
+            index.write_text("ok\n", encoding="utf-8")
     return fix_root
 
 

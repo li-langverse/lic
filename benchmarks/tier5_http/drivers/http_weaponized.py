@@ -133,7 +133,27 @@ def attack_post_method_override(host: str, port: int, attack: dict[str, Any]) ->
     }
 
 
+def attack_h2_rapid_reset(host: str, port: int, attack: dict[str, Any]) -> dict[str, Any]:
+    """HTTP/2 connection preface on HTTP/1.1 port — must close or 4xx (no stream reset abuse)."""
+    _ = attack
+    data = _raw(host, port, b"PRI * HTTP/2.0\r\n\r\nSM\r\n\r\n", timeout=2.0)
+    status = data.split(b"\r\n", 1)[0] if data else b""
+    rejected = (
+        len(data) == 0
+        or b"400" in status
+        or b"505" in status
+        or b"444" in status
+        or b"408" in status
+    )
+    return {
+        "no_crash": True,
+        "reject_or_close_attack": rejected,
+        "li_stricter": rejected,
+    }
+
+
 WEAPONIZED_DRIVERS = {
+    "h2_rapid_reset": attack_h2_rapid_reset,
     "chunked_encoding_bomb": attack_chunked_encoding_bomb,
     "oversized_headers": attack_oversized_headers,
     "cache_poisoning_forwarded": attack_cache_poisoning_forwarded,

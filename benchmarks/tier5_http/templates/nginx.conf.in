@@ -18,7 +18,8 @@ http {
     root {{document_root}};
 
     location / {
-      try_files $uri =404;
+      index index.html;
+      try_files $uri $uri/ =404;
     }
   }
 }

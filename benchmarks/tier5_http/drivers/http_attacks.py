@@ -233,6 +233,35 @@ def attack_connection_flood(host: str, port: int, attack: dict[str, Any]) -> dic
     }
 
 
+def attack_oversized_body(host: str, port: int, attack: dict[str, Any]) -> dict[str, Any]:
+    """POST body larger than typical client_max_body_size (nginx default 1m)."""
+    body_len = int(attack.get("body_bytes") or 1048576)
+    if body_len <= 1024 * 1024:
+        body_len = 1024 * 1024 + 1
+    body = b"X" * body_len
+    req = (
+        b"POST / HTTP/1.1\r\n"
+        + f"Host: {host}:{port}\r\n".encode()
+        + b"Content-Length: " + str(body_len).encode() + b"\r\n"
+        + b"Connection: close\r\n\r\n"
+        + body
+    )
+    data = _raw_request(host, port, req, timeout=5.0)
+    status = data.split(b"\r\n", 1)[0] if data else b""
+    rejected = (
+        b"413" in status
+        or b"400" in status
+        or b"404" in status
+        or len(data) == 0
+    )
+    legit = legitimate_get(host, port)
+    return {
+        "reject_or_close_attack": rejected,
+        "legitimate_client_ok": legit,
+        "no_crash": True,
+    }
+
+
 def attack_bad_method(host: str, port: int, attack: dict[str, Any]) -> dict[str, Any]:
     req = b"FOO / HTTP/1.1\r\nHost: x\r\nConnection: close\r\n\r\n"
     try:
@@ -546,6 +575,7 @@ DRIVERS = {
     "duplicate_content_length": attack_duplicate_content_length,
     "connection_flood": attack_connection_flood,
     "bad_method": attack_bad_method,
+    "oversized_body": attack_oversized_body,
     "sensitive_file_read": attack_sensitive_file_read,
     "shellshock_user_agent": attack_shellshock_user_agent,
     "reverse_shell_canary": attack_reverse_shell_canary,

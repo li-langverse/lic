@@ -24,6 +24,7 @@ from http_bench_toml import (
 )
 
 NGINX_CANDIDATES = (
+    str(TIER5 / ".nginx-prefix" / "sbin" / "nginx"),
     "nginx",
     "/usr/sbin/nginx",
     "/usr/local/sbin/nginx",

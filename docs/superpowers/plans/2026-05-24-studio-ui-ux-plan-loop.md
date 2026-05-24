@@ -4,7 +4,7 @@ overview: Goal-directed agent implements native Li Studio UI (ui/gui/render) and
 todos:
   - id: studio-ux-00-design-system
     content: "Design system — studio-ui-ux-generate-design-system.sh + tokens + demo HTML refresh"
-    status: pending
+    status: done
   - id: studio-ux-01-ui-composables
     content: "li-ui — layout + paint IR composables; li-tests compile_ok for studio shell"
     status: pending

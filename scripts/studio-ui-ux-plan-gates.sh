@@ -14,6 +14,12 @@ li_phase "studio-ui-ux scripts"
 [[ -f "$ROOT/scripts/studio-ui-ux-capture-progress.sh" ]] || fail "missing studio-ui-ux-capture-progress.sh"
 [[ -f "$ROOT/scripts/bench-studio-viewport-perf.sh" ]] || fail "missing bench-studio-viewport-perf.sh"
 
+li_phase "design system (tokens + demo CSS)"
+"$ROOT/scripts/studio-ui-ux-generate-design-system.sh" || fail "studio-ui-ux-generate-design-system"
+[[ -f "$ROOT/docs/design/studio-design-tokens.toml" ]] || fail "studio-design-tokens.toml"
+[[ -f "$ROOT/deploy/studio-demo/screenshots/studio-tokens.css" ]] || fail "studio-tokens.css"
+[[ -f "$ROOT/deploy/studio-demo/screenshots/01-studio-workspace.html" ]] || fail "studio workspace mock"
+
 li_phase "competitive intel doc"
 [[ -f "$ROOT/docs/game-dev/competitive-intel/ui-ux-by-dimension.md" ]] || fail "ui-ux-by-dimension.md"
 

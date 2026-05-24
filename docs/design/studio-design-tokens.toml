@@ -19,7 +19,10 @@ accent_mint = "#2ee6a8"
 accent_amber = "#ffb347"
 accent_rose = "#ff5c7a"
 agent_running = "#238636"
+agent_idle = "#8b949e"
 agent_error = "#da3633"
+focus_ring = "#3dd6ff"
+viewport_grid = "#21262d"
 
 [spacing]
 dock_width_px = 56
@@ -33,6 +36,10 @@ hover_transition_ms = 200
 [typography]
 ui = "Inter, system-ui, sans-serif"
 mono = "ui-monospace, monospace"
+
+[semantic]
+mock_banner = "MARKETING MOCK — HTML preview only; native Li Studio uses li-ui/li-gui"
+command_palette_hint = "⌘K Command palette"
 
 [ph_ux]
 viewport_fps_target = 60

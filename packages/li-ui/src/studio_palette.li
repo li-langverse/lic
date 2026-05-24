@@ -1,0 +1,78 @@
+# Studio design tokens — docs/design/studio-design-tokens.toml (HUD / Sci-Fi + agent chrome)
+
+def studio_color_bg_primary() -> Color
+  requires true
+  ensures result.r >= 0.0
+  decreases 0
+=
+  return color_rgb(0.051, 0.067, 0.090, 1.0)
+
+def studio_color_bg_elevated() -> Color
+  requires true
+  ensures result.r >= 0.0
+  decreases 0
+=
+  return color_rgb(0.086, 0.106, 0.133, 1.0)
+
+def studio_color_accent_cyan() -> Color
+  requires true
+  ensures result.g >= 0.0
+  decreases 0
+=
+  return color_rgb(0.239, 0.839, 1.0, 1.0)
+
+def studio_color_accent_violet() -> Color
+  requires true
+  ensures result.b >= 0.0
+  decreases 0
+=
+  return color_rgb(0.486, 0.361, 1.0, 1.0)
+
+def studio_color_accent_mint() -> Color
+  requires true
+  ensures result.g >= 0.0
+  decreases 0
+=
+  return color_rgb(0.180, 0.902, 0.659, 1.0)
+
+def studio_color_agent_running() -> Color
+  requires true
+  ensures result.g >= 0.0
+  decreases 0
+=
+  return color_rgb(0.137, 0.525, 0.212, 1.0)
+
+def studio_color_agent_error() -> Color
+  requires true
+  ensures result.r >= 0.0
+  decreases 0
+=
+  return color_rgb(0.855, 0.212, 0.200, 1.0)
+
+def studio_dock_width_px() -> float
+  requires true
+  ensures result == 56.0
+  decreases 0
+=
+  return 56.0
+
+def studio_topbar_height_px() -> float
+  requires true
+  ensures result == 44.0
+  decreases 0
+=
+  return 44.0
+
+def studio_inspector_width_px() -> float
+  requires true
+  ensures result == 320.0
+  decreases 0
+=
+  return 320.0
+
+def studio_panel_transition_ms() -> float
+  requires true
+  ensures result == 100.0
+  decreases 0
+=
+  return 100.0

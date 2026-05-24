@@ -76,3 +76,9 @@ else
   write_li_default
   echo "studio-ui-ux-generate-design-system: wrote $OUT_MD (Li default)"
 fi
+
+python3 "${ROOT}/scripts/studio-ui-ux-emit-demo-css.py"
+STAMP="${ROOT}/data/studio-ui-ux-plan-loop/design-system-stamp.txt"
+mkdir -p "$(dirname "$STAMP")"
+date -u +%Y-%m-%dT%H:%M:%SZ >"$STAMP"
+echo "studio-ui-ux-generate-design-system: tokens → deploy/studio-demo/screenshots/studio-tokens.css"

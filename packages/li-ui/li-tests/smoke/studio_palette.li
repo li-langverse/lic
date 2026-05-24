@@ -1,0 +1,17 @@
+def main() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  var c: Color
+  c = studio_color_bg_primary()
+  if c.r <= 0.0:
+    return 1
+  c = studio_color_accent_cyan()
+  if c.g <= 0.0:
+    return 1
+  if studio_dock_width_px() != 56.0:
+    return 1
+  if studio_panel_transition_ms() > 100.0:
+    return 1
+  return 0

@@ -32,6 +32,17 @@ git checkout -B cursor/studio-ui-ux-plan-loop
 
 `studio_ui_ux_builder` — implements + scores UX-01…14 + runs capture/bench.
 
+## UI/UX skills (read in agent runs)
+
+| Skill | Purpose |
+|-------|---------|
+| `studio-design-review` | Screenshots/video each iteration, anti-slop |
+| `studio-agentic-ux` | Agent task status, cancel, palette patterns |
+| `studio-accessibility-web-quality` | WCAG, keyboard, PH-UX perf gates |
+| `studio-ui-ux-rubric` | UX-01…14 scoring |
+
+Sources: `docs/agent-skills/awesome-ui-ux-sources.md` (from [awesome-agent-skills](https://github.com/VoltAgent/awesome-agent-skills)).
+
 ## Artifacts (not in git)
 
 - `data/studio-ui-ux-plan-loop/latest-bench.json`

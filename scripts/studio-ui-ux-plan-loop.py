@@ -269,6 +269,13 @@ def build_instruction(todo: dict) -> str:
 - **id:** {todo['id']}
 - **content:** {todo['content']}
 
+## Skills (read first)
+- `.cursor/skills/studio-design-review/SKILL.md`
+- `.cursor/skills/studio-agentic-ux/SKILL.md`
+- `.cursor/skills/studio-accessibility-web-quality/SKILL.md`
+- `.cursor/skills/studio-ui-ux-rubric/SKILL.md`
+- Sources: `docs/agent-skills/awesome-ui-ux-sources.md`
+
 ## Mandatory every iteration
 1. Implement the todo in **lic** on `{branch}`; push; PR only.
 2. Run `./scripts/studio-ui-ux-plan-gates.sh`.

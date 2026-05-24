@@ -1,12 +1,12 @@
 {
-  "generated_at": "2026-05-24T17:22:17.197233+00:00",
+  "generated_at": "2026-05-24T17:37:40.647725+00:00",
   "tz": "Europe/Berlin",
   "runners": [
     {
       "id": "httpd",
       "name": "li-httpd gap parity",
       "branch": "cursor/httpd-plan-continue",
-      "head": "e350991",
+      "head": "be1d8fe",
       "running": true,
       "process": "systemd:li-httpd-plan-loop.service (active)",
       "log_path": "/home/s4il0r/Documents/Cursor/li-langverse/lic/../lic/data/httpd-plan-loop/gap-until-done.log",
@@ -54,7 +54,7 @@
           "gap-lb-sticky-sessions",
           "gap-nginx-perf-regression-gate"
         ],
-        "iterations": 5,
+        "iterations": 6,
         "history": [
           {
             "at": "2026-05-24T12:57:17.198584+00:00",
@@ -84,6 +84,12 @@
             "at": "2026-05-24T16:36:56.980658+00:00",
             "todo_id": "gap-lb-sticky-sessions",
             "agent_exit": 0,
+            "gates_ok": true
+          },
+          {
+            "at": "2026-05-24T17:22:22.312204+00:00",
+            "todo_id": "gap-nextjs-toy-bench",
+            "agent_exit": 124,
             "gates_ok": true
           }
         ]
@@ -392,7 +398,7 @@
       "id": "sim",
       "name": "Sim / algo registry",
       "branch": "cursor/sim-algo-plan-loop",
-      "head": "cb8edd6",
+      "head": "88245b1",
       "running": true,
       "process": "systemd:li-sim-algo-plan-loop.service (active)",
       "log_path": "/home/s4il0r/Documents/Cursor/li-langverse/lic/../lic-worktrees/sim-algo/data/sim-plan-loop/runner.log",
@@ -433,7 +439,7 @@
       ],
       "state": {
         "completed_ids": [],
-        "iterations": 10,
+        "iterations": 11,
         "history": [
           {
             "at": "2026-05-24T15:02:54.490019+00:00",
@@ -494,6 +500,12 @@
             "todo_id": "sim-p0-heat-li-smoke",
             "agent_exit": 0,
             "gates_ok": false
+          },
+          {
+            "at": "2026-05-24T17:35:36.186316+00:00",
+            "todo_id": "sim-p0-heat-li-smoke",
+            "agent_exit": 0,
+            "gates_ok": false
           }
         ],
         "registry": {
@@ -503,14 +515,14 @@
       },
       "current_iteration": "=== iteration 1: sim-p0-heat-li-smoke ===",
       "activity": [
-        "[sdk] thinking\u2026",
+        "[sdk] \u2717 tool",
         "[sdk] \u25b6 tool",
         "[sdk] \u2713 shell cd /home/s4il0r/Documents/Cursor/li-langverse/li-cursor-agents/data/workspaces/l",
         "[sdk] \u2717 tool",
-        "[sdk] thinking\u2026",
         "[sdk] assistant reply",
         "=== iteration 1: sim-p0-heat-li-smoke ===",
-        "gates: FAIL"
+        "gates: FAIL",
+        "SDK tool activity streams to stderr ([sdk] \u25b6/\u2713 lines). Set LI_SDK_TERMINAL_STREAM=0 to disable."
       ],
       "active_todo_id": "sim-p0-heat-li-smoke"
     },
@@ -614,17 +626,31 @@
       "activity": [
         "[sdk] \u2717 tool",
         "[sdk] \u25b6 tool",
-        "[sdk] \u25b6 tool",
-        "erse/li-cursor-agents/data/workspaces/li-langverse/lic/studio_ui_ux_builder-1779643101320/repo/data/studio-ui-ux-plan-loop/latest-bench.json",
+        "[sdk] \u2713 shell gh pr view 177 --repo li-langverse/lic --json title,body 2>&1 | python3 -c \"impo",
         "[sdk] \u2717 tool",
         "[sdk] \u25b6 tool",
         "[sdk] \u2713 shell cd /home/s4il0r/Documents/Cursor/li-langverse/li-cursor-agents/data/workspaces/l",
-        "[sdk] \u2717 tool"
+        "[sdk] \u2717 tool",
+        "[sdk] assistant reply"
       ],
       "active_todo_id": "studio-ux-02-gui-viewport-stub"
     }
   ],
   "history": [
+    {
+      "runner": "sim",
+      "at": "2026-05-24T17:35:36.186316+00:00",
+      "todo_id": "sim-p0-heat-li-smoke",
+      "agent_exit": 0,
+      "gates_ok": false
+    },
+    {
+      "runner": "httpd",
+      "at": "2026-05-24T17:22:22.312204+00:00",
+      "todo_id": "gap-nextjs-toy-bench",
+      "agent_exit": 124,
+      "gates_ok": true
+    },
     {
       "runner": "sim",
       "at": "2026-05-24T17:22:12.298471+00:00",
@@ -694,20 +720,6 @@
       "todo_id": "sim-p0-md-lj-li-parity",
       "agent_exit": 1,
       "gates_ok": false
-    },
-    {
-      "runner": "sim",
-      "at": "2026-05-24T15:40:57.682346+00:00",
-      "todo_id": "sim-p0-md-lj-li-parity",
-      "agent_exit": 0,
-      "gates_ok": false
-    },
-    {
-      "runner": "httpd",
-      "at": "2026-05-24T15:35:27.740040+00:00",
-      "todo_id": "gap-lb-sticky-sessions",
-      "agent_exit": 124,
-      "gates_ok": true
     }
   ]
 }

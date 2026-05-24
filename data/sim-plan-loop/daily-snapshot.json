@@ -1,0 +1,69 @@
+{
+  "report_date": "2026-05-24",
+  "generated_at": "2026-05-24T15:29:46.694347+00:00",
+  "tz": "Europe/Berlin",
+  "branch": "cursor/sim-algo-plan-loop",
+  "head": "c558a86",
+  "total_algos": 126,
+  "implemented": 43,
+  "remaining": 83,
+  "families": [
+    "md",
+    "pde",
+    "rigid",
+    "robo",
+    "num",
+    "qm",
+    "drug",
+    "bio",
+    "ml",
+    "am",
+    "viz",
+    "auto"
+  ],
+  "impl_by_family": {
+    "md": 17,
+    "pde": 16,
+    "rigid": 5,
+    "robo": 5,
+    "num": 0,
+    "qm": 0,
+    "drug": 0,
+    "bio": 0,
+    "ml": 0,
+    "am": 0,
+    "viz": 0,
+    "auto": 0
+  },
+  "rem_by_family": {
+    "md": 0,
+    "pde": 0,
+    "rigid": 0,
+    "robo": 0,
+    "num": 19,
+    "qm": 32,
+    "drug": 5,
+    "bio": 4,
+    "ml": 3,
+    "am": 10,
+    "viz": 7,
+    "auto": 3
+  },
+  "history": [
+    {
+      "at": "2026-05-24T15:02:54.490019+00:00",
+      "todo_id": "sim-p0-md-lj-li-parity",
+      "agent_exit": 1,
+      "gates_ok": false
+    },
+    {
+      "at": "2026-05-24T15:16:27.411191+00:00",
+      "todo_id": "sim-p0-md-lj-li-parity",
+      "agent_exit": 1,
+      "gates_ok": false
+    }
+  ],
+  "running": true,
+  "perf_rows": [],
+  "runner_log": "data/sim-plan-loop/runner.log"
+}

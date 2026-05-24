@@ -1,0 +1,49 @@
+# Studio UI/UX competitive bench registry (PH-UX).
+# Harness: ./scripts/bench-studio-viewport-perf.sh
+# Agent: studio_ui_ux_builder plan loop
+
+[meta]
+version = 1
+updated = "2026-05-24"
+review_days_warn = 30
+
+[[gate]]
+id = "viewport_fps"
+target = 60
+unit = "fps"
+notes = "Sustained viewport; native HUD when available"
+
+[[gate]]
+id = "panel_switch_ms"
+target = 100
+unit = "ms"
+notes = "Inspector/profile/palette panel transitions"
+
+[[gate]]
+id = "studio_load_ms"
+target = 2000
+unit = "ms"
+notes = "Cold start to interactive shell"
+
+[[particle_tier]]
+id = "md_1k"
+particles = 1000
+fps_target = 60
+kernel = "md_lennard_jones"
+
+[[particle_tier]]
+id = "md_10k"
+particles = 10000
+fps_target = 60
+kernel = "md_lennard_jones"
+
+[[particle_tier]]
+id = "md_100k"
+particles = 100000
+fps_target = 30
+kernel = "md_lennard_jones"
+
+[[memory]]
+id = "animate_md_import"
+script = "scripts/profile-animate-memory.sh"
+warn_peak_mib = 512

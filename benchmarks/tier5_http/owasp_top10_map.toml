@@ -21,5 +21,9 @@ id = "A05:2021-Security Misconfiguration"
 cwe_examples = ["CWE-20", "CWE-200"]
 
 [[category]]
+id = "A06:2021-Vulnerable and Outdated Components"
+cwe_examples = ["CVE-2019-9511", "CVE-2019-9513", "CVE-2019-9516"]
+
+[[category]]
 id = "A10:2021-Server-Side Request Forgery"
 cwe_examples = ["CWE-918"]

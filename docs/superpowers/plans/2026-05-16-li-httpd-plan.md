@@ -125,6 +125,9 @@ todos:
   - id: gap-lb-sticky-sessions
     content: "Upstream ip_hash (or cookie affinity) for multi-backend stickiness — config schema + runtime + gate"
     status: completed
+  - id: gap-llvm22-build-warnings
+    content: "LLVM 22 clean ./scripts/build.sh — runtime/li_rt_net.c (-Wcast-qual: ptr_mut_i vs ptr_i, iov/read/memcpy/free; drop or use unused httpd helpers); compiler/types/typecheck.cpp (-Wmissing-field-initializers on Ty{}); gate: rebuild with CC=clang-22 and no warnings from those sites"
+    status: in_progress
   - id: gap-tier5-streaming-soak
     content: "tier5 scenarios sse_long_stream + ws_fanout + suite profile parity_streaming; live li-httpd vs nginx"
     status: pending

@@ -28,7 +28,20 @@
 1. **Pick** `algo_id` from `algo_registry.json` (or plan slice).
 2. **Implement** in the owning package (`li-sim-scientific`, `li-physics-*`, …).
 3. **Wire** `run_algo` branch (replace stub) and set `implemented_smoke = true` in registry when a real smoke exists.
-4. **Gate** (package-scoped only):
+4. **Toolchain** (native C++ reference for tier-2 verify — not for compiling Li):
+
+```bash
+# Usually enough on this dev box (clang-22, not plain `clang`):
+source ../../lic/scripts/lib/ensure-bench-deps.sh && ensure_bench_deps
+
+# One-time host setup (human or root):
+sudo bash ../../lic/scripts/setup-li-devbox.sh && bash ../../lic/scripts/setup-li-devbox.sh --user
+
+# Opt-in auto-apt when agents run gates (needs passwordless sudo — do not hand agents unrestricted root):
+export LI_AGENT_INSTALL_DEPS=1
+```
+
+5. **Gate** (package-scoped only):
 
 ```bash
 export LIC=build/compiler/lic/lic
@@ -38,7 +51,7 @@ export LIC=build/compiler/lic/lic
 ./scripts/sim-plan-gates.sh   # full sim agent gate set
 ```
 
-5. **Emit summary** for CI/agents:
+6. **Emit summary** for CI/agents:
 
 ```bash
 LI_SIM_ALGO_ID=418 LI_SIM_OK=1 LI_SIM_CHECKSUM=0.42 LI_SIM_VERTICAL_ID=4 \

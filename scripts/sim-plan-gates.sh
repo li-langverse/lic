@@ -3,7 +3,19 @@
 set -euo pipefail
 ROOT="$(cd "$(dirname "$0")/.." && pwd)"
 export LI_REPO_ROOT="$ROOT"
-export LIC="$("$ROOT/scripts/resolve-lic.sh")"
+export LIC_ROOT="${LIC_ROOT:-$(cd "$ROOT/../.." && pwd)/lic}"
+export LIC="$("$ROOT/scripts/resolve-lic.sh" 2>/dev/null || true)"
+if [[ -z "${LIC:-}" || ! -x "$LIC" ]]; then
+  LIC="${LIC_ROOT}/build/compiler/lic/lic"
+fi
+
+# Native C++ reference kernels need clang (often clang-22 on PATH, not plain `clang`).
+# shellcheck source=/dev/null
+source "${LIC_ROOT}/scripts/lib/ensure-bench-deps.sh"
+ensure_bench_deps || {
+  echo "sim-plan-gates: bench deps missing — set LI_AGENT_INSTALL_DEPS=1 if passwordless sudo is configured" >&2
+  exit 1
+}
 
 fail() { echo "sim-plan-gates: $*" >&2; exit 1; }
 

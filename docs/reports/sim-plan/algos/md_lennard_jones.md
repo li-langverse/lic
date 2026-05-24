@@ -44,4 +44,4 @@ From `latest.csv` after gates: Li wall_time ≈ 1.16s (median of 3), on par with
 
 ## Agent iteration (2026-05-24)
 
-Re-ran `./scripts/sim-plan-gates.sh` on `cursor/sim-algo-plan-loop` @ `0305ba5`: Li/native checksum `0.6892536936825765`, scoped timing Li ≈ 1.12s. Report: [iterations/20260524-163113.md](../iterations/20260524-163113.md).
+Re-ran `./scripts/sim-plan-gates.sh` on `cursor/sim-algo-plan-loop` @ `d852c43`: Li/native checksum `0.6892536936825765`, scoped timing Li ≈ 1.15s. Report: [iterations/20260524-163825.md](../iterations/20260524-163825.md).

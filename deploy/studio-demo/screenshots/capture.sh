@@ -13,9 +13,13 @@ mkdir -p "$OUT"
 for f in "$DIR"/[0-9]*.html; do
   [[ -f "$f" ]] || continue
   base=$(basename "$f" .html)
-  "$CHROME" --headless --disable-gpu --hide-scrollbars \
+  timeout "${CAPTURE_CHROME_TIMEOUT_SEC:-30}" \
+    "$CHROME" --headless --disable-gpu --hide-scrollbars \
     --window-size=1920,1080 \
     --screenshot="$OUT/${base}.png" \
-    "file://${f}"
+    "file://${f}" || {
+    echo "capture.sh: chrome timeout/fail for ${base}" >&2
+    continue
+  }
   echo "  $OUT/${base}.png"
 done

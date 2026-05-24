@@ -8,7 +8,15 @@
 #   STUDIO_UI_UX_ITERATION=id      — label for artifact folder
 set -euo pipefail
 ROOT="$(cd "$(dirname "$0")/.." && pwd)"
-AGENTS_ROOT="${LI_CURSOR_AGENTS_ROOT:-$ROOT/../li-cursor-agents}"
+if [[ -n "${LI_CURSOR_AGENTS_ROOT:-}" ]]; then
+  AGENTS_ROOT="$LI_CURSOR_AGENTS_ROOT"
+elif [[ -d "$ROOT/../li-cursor-agents/ux-harness" ]]; then
+  AGENTS_ROOT="$(cd "$ROOT/../li-cursor-agents" && pwd)"
+elif [[ -d "$ROOT/../../li-cursor-agents/ux-harness" ]]; then
+  AGENTS_ROOT="$(cd "$ROOT/../../li-cursor-agents" && pwd)"
+else
+  AGENTS_ROOT="$ROOT/../li-cursor-agents"
+fi
 STATE_DIR="$ROOT/data/studio-ui-ux-plan-loop"
 ITER="${STUDIO_UI_UX_ITERATION:-$(date -u +%Y%m%dT%H%M%SZ)}"
 ART="$STATE_DIR/artifacts/iter-$ITER"
@@ -20,23 +28,35 @@ RELEASE_TAG="${STUDIO_UI_UX_RELEASE_TAG:-studio-ui-ux-progress}"
 ISSUE_FILE="$STATE_DIR/tracking-issue.txt"
 
 capture_html() {
+  if [[ "${STUDIO_UI_UX_CAPTURE_SKIP_HTML:-0}" == "1" ]]; then
+    echo "capture: STUDIO_UI_UX_CAPTURE_SKIP_HTML=1 — skip PNG"
+    return 0
+  fi
   local demo="$ROOT/deploy/studio-demo/screenshots"
   if [[ ! -d "$demo" ]]; then
     echo "capture: no deploy/studio-demo/screenshots — skip HTML"
     return 0
   fi
-  local chrome="${CHROME:-}"
-  for c in google-chrome chromium chromium-browser; do
-    if command -v "$c" >/dev/null 2>&1; then chrome="$c"; break; fi
-  done
+  local chrome=""
+  if [[ -n "${CHROME:-}" ]]; then
+    chrome="$CHROME"
+  else
+    for c in google-chrome chromium chromium-browser; do
+      if command -v "$c" >/dev/null 2>&1; then chrome="$c"; break; fi
+    done
+  fi
   if [[ -z "$chrome" ]]; then
     echo "capture: no headless chrome — skip PNG"
     return 0
   fi
   export CHROME="$chrome"
   if [[ -x "$demo/capture.sh" ]]; then
-    OUT="$demo/png" bash "$demo/capture.sh"
-    cp -a "$demo/png/"*.png "$PNG/" 2>/dev/null || true
+    local html_timeout="${STUDIO_UI_UX_CAPTURE_HTML_TIMEOUT_SEC:-45}"
+    if timeout "$html_timeout" env OUT="$demo/png" bash "$demo/capture.sh"; then
+      cp -a "$demo/png/"*.png "$PNG/" 2>/dev/null || true
+    else
+      echo "capture: HTML screenshot timed out or failed (${html_timeout}s) — gap documented"
+    fi
   fi
 }
 

@@ -24,7 +24,8 @@ Explicit 5-point Jacobi needs neighbor indices (`u[i±1][j]`, `u[i][j±1]`). Tod
 | Native reproducibility | checksum `-3387.6965976796632` |
 | Li vs native (`--verify-results --tier 2`) | **match** `-3387.6965976796632` (shared C kernel) |
 | Composable `import_sim_scientific_run.li` | **ok** (pure-Li init-sum smoke) |
-| `./scripts/sim-plan-gates.sh` | **ok** (2026-05-24, `a16f2d2`, iter `20260524-173445`) |
+| `./scripts/sim-plan-gates.sh` | **ok** (2026-05-24, `7b1b14c`, iter `20260524-174136`) |
+| Harness verify row (`heat_equation_2d/cpp.summary.json`) | **ok** checksum `-3387.6965976796632` |
 
 ```bash
 export CC=clang-22 CXX=clang++-22
@@ -39,3 +40,7 @@ Li wall_time ≈ 0.09s (package-scoped gates; on par with cpp/rust/julia).
 ## Memory
 
 Native peak RSS recorded by `sim-bench-memory.sh` in `benchmarks/results/memory/latest_memory.json`.
+
+## Agent iteration (2026-05-24)
+
+Re-ran `./scripts/sim-plan-gates.sh` on `cursor/sim-algo-plan-loop`: tier-2 Li/native checksum `-3387.6965976796632`, composable pure-Li smoke `6606.4384`. Fixed `bench_sim.py` to emit tier-2 `cpp.summary.json` verify rows when `--write-summary` (was `--tier0-only`, leaving stale `ok: false`). Report: [iterations/20260524-174136.md](../iterations/20260524-174136.md).

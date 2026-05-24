@@ -136,7 +136,7 @@ todos:
     status: completed
   - id: gap-nginx-perf-regression-gate
     content: "CI/nightly gate — all tier5 parity + nextjs scenarios; fail if li p99 > 2x nginx or exploit row regresses"
-    status: pending
+    status: completed
 isProject: false
 ---
 

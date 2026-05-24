@@ -39,20 +39,20 @@
         {
           "id": "gap-nginx-perf-regression-gate",
           "content": "CI/nightly gate \u2014 all tier5 parity + nextjs scenarios; fail if li p99 > 2x nginx or exploit row regresses",
-          "status": "pending"
+          "status": "completed"
         }
       ],
-      "plan_completed": 3,
+      "plan_completed": 4,
       "plan_total": 6,
       "plan_pending": [
-        "gap-tier5-streaming-soak",
-        "gap-nginx-perf-regression-gate"
+        "gap-tier5-streaming-soak"
       ],
       "state": {
         "completed_ids": [
           "h-lean-server-modules",
           "gap-exploit-owasp-cwe-suite",
-          "gap-lb-sticky-sessions"
+          "gap-lb-sticky-sessions",
+          "gap-nginx-perf-regression-gate"
         ],
         "iterations": 5,
         "history": [

@@ -311,25 +311,15 @@ if [[ "${HTTPD_GATES_SKIP_LIC_BUILD:-0}" != "1" && "${HTTPD_RUN_M3_TOKEN_BUDGET_
   fi
 fi
 
-# m1-nginx-bench-parity: tier5 verify + optional wrk ratios (HTTPD_BENCH_SKIP_TIMING=1 in lean CI).
-if [[ "${HTTPD_GATES_SKIP_LIC_BUILD:-0}" != "1" && "${HTTPD_RUN_BENCH_PARITY:-1}" == "1" ]]; then
-  if [[ -x "$ROOT/scripts/check-tier5-nginx-bench-parity.sh" && -x "$ROOT/build/li-httpd" ]]; then
-    echo "==> check-tier5-nginx-bench-parity.sh (m1-nginx-bench-parity)"
+# gap-nginx-perf-regression-gate: tier5 parity + nextjs + exploit compare (verify lean; timing when wrk/nginx/node).
+if [[ "${HTTPD_GATES_SKIP_LIC_BUILD:-0}" != "1" && "${HTTPD_RUN_PERF_REGRESSION_GATE:-1}" == "1" ]]; then
+  if [[ -x "$ROOT/scripts/check-tier5-nginx-perf-regression-gate.sh" && -x "$ROOT/build/li-httpd" ]]; then
+    echo "==> check-tier5-nginx-perf-regression-gate.sh (gap-nginx-perf-regression-gate)"
     HTTPD_BENCH_SKIP_TIMING="${HTTPD_BENCH_SKIP_TIMING:-1}" \
-      "$ROOT/scripts/check-tier5-nginx-bench-parity.sh" || fail "check-tier5-nginx-bench-parity.sh failed"
+      "$ROOT/scripts/check-tier5-nginx-perf-regression-gate.sh" \
+      || fail "check-tier5-nginx-perf-regression-gate.sh failed"
   else
-    fail "m1-nginx-bench-parity: build/li-httpd missing (run build-li-httpd.sh)"
-  fi
-fi
-
-# gap-nextjs-toy-bench: nextjs-toy proxy scenarios (verify always; timing when wrk/nginx/node present).
-if [[ "${HTTPD_GATES_SKIP_LIC_BUILD:-0}" != "1" && "${HTTPD_RUN_NEXTJS_PARITY:-1}" == "1" ]]; then
-  if [[ -x "$ROOT/scripts/check-tier5-nextjs-parity.sh" && -x "$ROOT/build/li-httpd" ]]; then
-    echo "==> check-tier5-nextjs-parity.sh (gap-nextjs-toy-bench)"
-    HTTPD_BENCH_SKIP_TIMING="${HTTPD_BENCH_SKIP_TIMING:-1}" \
-      "$ROOT/scripts/check-tier5-nextjs-parity.sh" || fail "check-tier5-nextjs-parity.sh failed"
-  else
-    fail "gap-nextjs-toy-bench: build/li-httpd missing (run build-li-httpd.sh)"
+    fail "gap-nginx-perf-regression-gate: build/li-httpd missing (run build-li-httpd.sh)"
   fi
 fi
 

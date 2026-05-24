@@ -29,7 +29,7 @@ jobs:
           LI_REPO_ROOT: ${{ github.workspace }}
         run: |
           chmod +x scripts/check-autovc-open-goals.sh scripts/lean-verify-stub.sh \
-            scripts/check-httpd-lean-gate.sh \
+            scripts/check-httpd-lean-gate.sh scripts/check-httpd-server-lean-gate.sh \
             li-tests/tooling/discharge_trivial_lean.sh \
             li-tests/tooling/discharge_linalg_int_lean.sh \
             li-tests/tooling/discharge_http_forward_lean.sh \
@@ -37,6 +37,7 @@ jobs:
             li-tests/tooling/glean_strict_build_smoke.sh
           ./li-tests/tooling/discharge_http_forward_lean.sh
           ./scripts/check-httpd-lean-gate.sh
+          ./scripts/check-httpd-server-lean-gate.sh
           ./li-tests/tooling/discharge_trivial_lean.sh
           LIC="${{ github.workspace }}/build/compiler/lic/lic"
           "$LIC" build li-tests/contracts_verify/sqrt_contract.li -o /dev/null

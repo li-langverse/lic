@@ -53,6 +53,10 @@ else
     echo "==> check-httpd-lean-gate.sh (w0-lean-gate)"
     "$ROOT/scripts/check-httpd-lean-gate.sh" || fail "check-httpd-lean-gate.sh failed"
   fi
+  if [[ -x "$ROOT/scripts/check-httpd-server-lean-gate.sh" ]]; then
+    echo "==> check-httpd-server-lean-gate.sh (h-lean-server-modules)"
+    "$ROOT/scripts/check-httpd-server-lean-gate.sh" || fail "check-httpd-server-lean-gate.sh failed"
+  fi
   if [[ -x "$ROOT/scripts/check-w0-bytes-io.sh" ]]; then
     echo "==> check-w0-bytes-io.sh (w0-bytes-io)"
     "$ROOT/scripts/check-w0-bytes-io.sh" || fail "check-w0-bytes-io.sh failed"

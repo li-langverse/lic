@@ -38,12 +38,14 @@ All notable changes to Li are documented here. The format follows
 - **P-float (partial):** `sqrt_open_bound.li` calls `li_rt_sqrt`; tight `abs` ensures still open — `docs/release-notes/2026-05-22-p-float-sqrt-runtime.md`.
 - **7d/7e (partial):** `@parallel(disjoint=)` on `def` inherits to inner `parallel for`; tier-1 `bench.py` uses `--allow-open-vc` — `docs/release-notes/2026-05-22-7d-7e-bench-parallel.md`.
 - **Tier-1 matmul benches:** hoist `A`/`B` init out of hot loop in `matmul_naive` / `matmul_blocked` Li drivers — `docs/release-notes/2026-05-22-tier1-matmul-bench-hotloop.md`.
+- **HTTPd h-lean-server-modules:** Lean typecheck on `li-net-httpd` lib + main; server lean gate — [2026-05-24-httpd-h-lean-server-modules.md](docs/release-notes/2026-05-24-httpd-h-lean-server-modules.md).
 
 ### Fixed
 
 - **HTTPd M0 ship gate:** `build-li-httpd.sh` builds `main.li` with LLVM env; `httpd-plan-gates.sh` builds `build/li-httpd` and runs `test-auth-bearer.sh` by default — [2026-05-22-httpd-m0-ship-gate-full.md](docs/release-notes/2026-05-22-httpd-m0-ship-gate-full.md).
 - **w0-lean-gate (httpd):** `check-httpd-lean-gate.sh`, callee-ensures VC witness, `li_rt_log` link with `li_rt_net`, closed `http_parse_forward_closed.li` — [2026-05-22-w0-lean-gate-httpd.md](docs/release-notes/2026-05-22-w0-lean-gate-httpd.md).
 - **w0-lean-gate (TLS link):** explain-config C link includes `li_rt_tls`/`li_rt_h2`; Lean CI runs httpd VC gate — [2026-05-23-w0-lean-gate-tls-link.md](docs/release-notes/2026-05-23-w0-lean-gate-tls-link.md).
+- **VC emit (call-site requires):** Lean formals include caller locals used in callee `requires` after substitution (fixes `Unknown identifier` on `i` / `n` in httpd AutoVC) — [2026-05-24-httpd-h-lean-server-modules.md](docs/release-notes/2026-05-24-httpd-h-lean-server-modules.md).
 - **HTTPd M1 bearer auth gate:** non-Linux `epoll_ctl_add_listen_i` stub, `build-li-httpd.sh`, plan gates run `test-auth-bearer.sh` on `build/li-httpd` — [2026-05-22-httpd-m1-bearer-auth-gate.md](docs/release-notes/2026-05-22-httpd-m1-bearer-auth-gate.md).
 - **HTTPd routing CI:** rebase plan-loop branch on `main`; `run_httpd_config.sh` — `--allow-open-vc` + `HTTPD_SKIP_LI_ROUTING_BIN` — `docs/release-notes/2026-05-22-httpd-rebase-main-post-164.md`.
 - **G-lean / P-linalg:** `mat2_at2_float_spec_proved` — closed via `mat2_at2_eval` + `rfl` (no `sorry`); AutoVC ensures use eval not free `result` — `docs/release-notes/2026-05-22-mat2-float-spec-closed.md`.

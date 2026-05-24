@@ -118,7 +118,7 @@ todos:
     status: completed
   - id: h-lean-server-modules
     content: "Lean/VC on server packages (li-net-httpd, runtime httpd modules) — lic build without lean skip"
-    status: pending
+    status: completed
   - id: gap-exploit-owasp-cwe-suite
     content: "Expand tier5 exploits + nginx_mitigations.toml — OWASP Top 10 / CWE-class coverage; li stricter-or-equal vs nginx on every row; gate in httpd-plan-gates"
     status: pending

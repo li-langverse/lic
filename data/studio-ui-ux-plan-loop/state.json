@@ -2,9 +2,10 @@
   "completed_ids": [
     "studio-ux-00-design-system",
     "studio-ux-01-ui-composables",
-    "studio-ux-02-gui-viewport-stub"
+    "studio-ux-02-gui-viewport-stub",
+    "studio-ux-03-render-wgpu-smoke"
   ],
-  "iterations": 3,
+  "iterations": 4,
   "history": [
     {
       "at": "2026-05-24T14:53:41+00:00",
@@ -23,6 +24,15 @@
       "gates_ok": true,
       "ux_pass": true,
       "note": "li-gui viewport + panel switch hooks; gates/capture/bench verified"
+    },
+    {
+      "at": "2026-05-24T19:36:50+00:00",
+      "todo_id": "studio-ux-03-render-wgpu-smoke",
+      "agent_exit": 0,
+      "capture_exit": 0,
+      "gates_ok": true,
+      "ux_pass": true,
+      "note": "li-gpu wgpu smoke + li-render FPS counter bench hooks"
     }
   ]
 }

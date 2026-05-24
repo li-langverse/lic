@@ -13,7 +13,7 @@ todos:
     status: done
   - id: studio-ux-03-render-wgpu-smoke
     content: "li-render/gpu — wgpu smoke + FPS counter hook for bench harness"
-    status: pending
+    status: done
   - id: studio-ux-04-particle-display
     content: "Scene path — MD particle draw tiers (1k/10k/100k) with honest FPS reporting"
     status: pending

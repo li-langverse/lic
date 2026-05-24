@@ -6,7 +6,7 @@ Expand `docs/ecosystem/vertical-algorithm-catalog.md` from stub index to one ker
 
 ## Changes
 
-- `docs/ecosystem/vertical-algorithm-catalog.md` — seven vertical sections (`gaming_rigid` … `qm_dft`)
+- `docs/ecosystem/vertical-algorithm-catalog.md` — fifteen vertical sections (one per `verticals.toml` row)
 - `scripts/check-vertical-algorithm-catalog.sh` — sync gate (wired in `hpc_competitive_registry.sh`)
 - `docs/ecosystem/algorithms-and-libraries-plan.md` — AL-2 marked done
 

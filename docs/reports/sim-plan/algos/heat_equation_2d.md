@@ -24,7 +24,7 @@ Explicit 5-point Jacobi needs neighbor indices (`u[i±1][j]`, `u[i][j±1]`). Tod
 | Native reproducibility | checksum `-3387.6965976796632` |
 | Li vs native (`--verify-results --tier 2`) | **match** `-3387.6965976796632` (shared C kernel) |
 | Composable `import_sim_scientific_run.li` | **ok** (pure-Li init-sum smoke) |
-| `./scripts/sim-plan-gates.sh` | run in iteration |
+| `./scripts/sim-plan-gates.sh` | **ok** (2026-05-24, `edecfb3`, iter `20260524-172123`) |
 
 ```bash
 export CC=clang-22 CXX=clang++-22

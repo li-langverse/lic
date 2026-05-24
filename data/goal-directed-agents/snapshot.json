@@ -1,15 +1,15 @@
 {
-  "generated_at": "2026-05-24T16:31:20.683498+00:00",
+  "generated_at": "2026-05-24T16:36:52.967644+00:00",
   "tz": "Europe/Berlin",
   "runners": [
     {
       "id": "httpd",
       "name": "li-httpd gap parity",
       "branch": "cursor/httpd-plan-continue",
-      "head": "947d774",
+      "head": "7853c6c",
       "running": true,
       "process": "systemd:li-httpd-plan-loop.service (active)",
-      "log_path": "/home/s4il0r/Documents/Cursor/li-langverse/lic/data/httpd-plan-loop/gap-until-done.log",
+      "log_path": "/home/s4il0r/Documents/Cursor/li-langverse/lic/../lic/data/httpd-plan-loop/gap-until-done.log",
       "todos": [
         {
           "id": "gap-exploit-owasp-cwe-suite",
@@ -50,7 +50,7 @@
           "h-lean-server-modules",
           "gap-exploit-owasp-cwe-suite"
         ],
-        "iterations": 3,
+        "iterations": 4,
         "history": [
           {
             "at": "2026-05-24T12:57:17.198584+00:00",
@@ -66,6 +66,12 @@
           },
           {
             "at": "2026-05-24T15:35:27.740040+00:00",
+            "todo_id": "gap-lb-sticky-sessions",
+            "agent_exit": 124,
+            "gates_ok": true
+          },
+          {
+            "at": "2026-05-24T16:31:24.966765+00:00",
             "todo_id": "gap-lb-sticky-sessions",
             "agent_exit": 124,
             "gates_ok": true
@@ -92,7 +98,7 @@
       "head": "33d32de",
       "running": true,
       "process": "systemd:li-compiler-studio-plan-loop.service (active)",
-      "log_path": "/home/s4il0r/Documents/Cursor/li-langverse/lic-worktrees/compiler-studio/data/compiler-studio-plan-loop/runner.log",
+      "log_path": "/home/s4il0r/Documents/Cursor/li-langverse/lic/../lic-worktrees/compiler-studio/data/compiler-studio-plan-loop/runner.log",
       "todos": [
         {
           "id": "wave-a-7e-verify",
@@ -395,10 +401,10 @@
       "id": "sim",
       "name": "Sim / algo registry",
       "branch": "cursor/sim-algo-plan-loop",
-      "head": "47b3e72",
+      "head": "b64027c",
       "running": true,
       "process": "systemd:li-sim-algo-plan-loop.service (active)",
-      "log_path": "/home/s4il0r/Documents/Cursor/li-langverse/lic-worktrees/sim-algo/data/sim-plan-loop/runner.log",
+      "log_path": "/home/s4il0r/Documents/Cursor/li-langverse/lic/../lic-worktrees/sim-algo/data/sim-plan-loop/runner.log",
       "todos": [
         {
           "id": "sim-p0-md-lj-li-parity",
@@ -437,7 +443,7 @@
       ],
       "state": {
         "completed_ids": [],
-        "iterations": 7,
+        "iterations": 8,
         "history": [
           {
             "at": "2026-05-24T15:02:54.490019+00:00",
@@ -480,6 +486,12 @@
             "todo_id": "sim-p0-md-lj-li-parity",
             "agent_exit": 0,
             "gates_ok": false
+          },
+          {
+            "at": "2026-05-24T16:32:27.410480+00:00",
+            "todo_id": "sim-p0-md-lj-li-parity",
+            "agent_exit": 0,
+            "gates_ok": false
           }
         ],
         "registry": {
@@ -489,14 +501,14 @@
       },
       "current_iteration": "=== iteration 1: sim-p0-md-lj-li-parity ===",
       "activity": [
-        "[sdk] \u2713 shell cd /home/s4il0r/Documents/Cursor/li-langverse/li-cursor-agents/data/workspaces/l",
-        "[sdk] \u2717 tool",
         "[sdk] \u25b6 tool",
-        "[sdk] \u25b6 tool",
-        "[sdk] \u2713 shell gh pr view 179 --json body,title,url 2>&1 | head -80",
+        "or/li-langverse/li-cursor-agents/data/workspaces/li-langverse/lic/code_implementer-1779640576541/repo/li-tests/tooling/sim_li_run_summary.sh",
         "[sdk] \u2717 tool",
-        "r/li-langverse/li-cursor-agents/data/workspaces/li-langverse/lic/code_implementer-1779639891358/repo/docs/ecosystem/sim-algorithm-backlog.md",
-        "[sdk] \u2717 tool"
+        "[sdk] thinking\u2026",
+        "[sdk] \u25b6 tool",
+        "uments/Cursor/li-langverse/li-cursor-agents/data/workspaces/li-langverse/lic/code_implementer-1779640576541/repo/benchmarks/harness/bench.py",
+        "[sdk] \u2717 tool",
+        "[sdk] \u25b6 tool"
       ],
       "active_todo_id": "sim-p0-md-lj-li-parity"
     },
@@ -507,7 +519,7 @@
       "head": "c0fe73c",
       "running": true,
       "process": "systemd:li-studio-ui-ux-plan-loop.service (active)",
-      "log_path": "/home/s4il0r/Documents/Cursor/li-langverse/lic-studio-ui/data/studio-ui-ux-plan-loop/runner.log",
+      "log_path": "/home/s4il0r/Documents/Cursor/li-langverse/lic/../lic-studio-ui/data/studio-ui-ux-plan-loop/runner.log",
       "todos": [
         {
           "id": "studio-ux-00-design-system",
@@ -613,6 +625,20 @@
   "history": [
     {
       "runner": "sim",
+      "at": "2026-05-24T16:32:27.410480+00:00",
+      "todo_id": "sim-p0-md-lj-li-parity",
+      "agent_exit": 0,
+      "gates_ok": false
+    },
+    {
+      "runner": "httpd",
+      "at": "2026-05-24T16:31:24.966765+00:00",
+      "todo_id": "gap-lb-sticky-sessions",
+      "agent_exit": 124,
+      "gates_ok": true
+    },
+    {
+      "runner": "sim",
       "at": "2026-05-24T16:21:16.339757+00:00",
       "todo_id": "sim-p0-md-lj-li-parity",
       "agent_exit": 0,
@@ -678,20 +704,6 @@
       "runner": "compiler-studio",
       "at": "2026-05-24T15:29:45.786257+00:00",
       "todo_id": "wave-d-02-al2-catalog",
-      "agent_exit": 1,
-      "gates_ok": false
-    },
-    {
-      "runner": "compiler-studio",
-      "at": "2026-05-24T15:16:42.507814+00:00",
-      "todo_id": "wave-d-02-al2-catalog",
-      "agent_exit": 1,
-      "gates_ok": false
-    },
-    {
-      "runner": "sim",
-      "at": "2026-05-24T15:16:27.411191+00:00",
-      "todo_id": "sim-p0-md-lj-li-parity",
       "agent_exit": 1,
       "gates_ok": false
     }

@@ -22,7 +22,7 @@ todos:
     status: completed
   - id: wave-a-llvm22-typecheck-warnings
     content: "LLVM 22 — fix -Wmissing-field-initializers in compiler/types/typecheck.cpp (make_bool/make_str/make_i64 Ty initializers); verify ./scripts/build.sh clean"
-    status: pending
+    status: completed
   - id: wave-a-2i-explicit-math
     content: "2i — explicit math only (dot, matmul, sum, element-wise on matching shapes); reject NumPy broadcast; document tensor/quaternion path"
     status: completed

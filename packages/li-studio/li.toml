@@ -3,11 +3,13 @@ name = "li-studio"
 version = "0.1.0"
 edition = "2026"
 license = "Apache-2.0 OR MIT"
-description = "World Studio shell — compose ui chrome hooks + gui paint IR (stub until PH-GD-1)"
+description = "World Studio shell — compose ui+gui+render+world public API (stub until PH-GD-1)"
 
 [dependencies]
 li-ui = { path = "../li-ui" }
 li-gui = { path = "../li-gui" }
+li-render = { path = "../li-render" }
+li-world = { path = "../li-world" }
 # registry = "1.0.0"             # lip 8d+
 
 [package.metadata.li]

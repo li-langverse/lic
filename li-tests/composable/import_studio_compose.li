@@ -1,0 +1,27 @@
+import studio
+
+def main() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  if li_std_studio_version() < 2:
+    return 1
+  if studio_workload_class_stub() != 0:
+    return 2
+  var compose_code: int = studio_compose_ui_gui_render_world()
+  if compose_code != 0:
+    return 3
+  var c: StudioCompose = studio_compose_default()
+  if c.viewport_w != 716:
+    return 4
+  if c.viewport_h != 720:
+    return 5
+  if c.swapchain_w != c.viewport_w:
+    return 6
+  if c.swapchain_h != c.viewport_h:
+    return 7
+  var hash: int = studio_compose_smoke_entry()
+  if hash != 1280720:
+    return 8
+  return 0

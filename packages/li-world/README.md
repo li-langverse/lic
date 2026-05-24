@@ -1,11 +1,11 @@
-# li-studio
+# li-world
 
-World Studio shell — composes `import ui` chrome hooks, `import gui` paint IR, `import render` viewport swapchain, and `import world` GameWorld (`studio_compose_ui_gui_render_world`).
+PH-GD-2 GameWorld stub — scene graph hooks for World Studio compose (`workload_class=stub`; save/load text deferred).
 
 ## Build
 
 ```bash
-lic build src/lib.li -o li-studio
+lic build src/lib.li -o li-world
 ```
 
 From the monorepo root, ensure `lic` is built: `./scripts/build.sh`.
@@ -14,8 +14,8 @@ From the monorepo root, ensure `lic` is built: `./scripts/build.sh`.
 
 | ID | Link |
 |----|------|
-| Package | `PKG-li-studio` |
-| Org repo | https://github.com/li-langverse/li-studio |
+| Package | `PKG-li-world` |
+| Org repo | https://github.com/li-langverse/li-world |
 | Governance | [Ecosystem governance](https://li-langverse.github.io/li-language/ecosystem/governance/) |
 
 See `PUBLISH.md` and `docs/traceability.md`.

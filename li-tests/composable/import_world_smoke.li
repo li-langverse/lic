@@ -1,0 +1,35 @@
+import world
+import scene
+
+def main() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  if li_std_world_version() < 1:
+    return 1
+  if world_workload_class_stub() != 0:
+    return 2
+  if li_std_scene_version() < 3:
+    return 3
+  var w: GameWorld = world_new()
+  if w.tick_budget != 60:
+    return 4
+  world_scene_attach(w)
+  if w.node_count != 1:
+    return 5
+  var root: SceneNode = scene_node_new(0, scene_parent_none())
+  if root.id.value != 0:
+    return 6
+  if root.parent != scene_parent_none():
+    return 7
+  var scene_hash: int = scene_hierarchy_smoke_entry()
+  if scene_hash != 1005:
+    return 8
+  world_step(w)
+  if w.tick_budget != 59:
+    return 9
+  var hash: int = world_smoke_entry()
+  if hash != 716720:
+    return 10
+  return 0

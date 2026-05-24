@@ -133,7 +133,7 @@ todos:
     status: completed
   - id: wave-d-28-studio-compose
     content: "studio — compose ui+gui+render+world public API + composable"
-    status: pending
+    status: completed
   - id: wave-e-01-rect-vc-close
     content: "li-ui rect_contains VC close → composable compile_ok (was wave-c)"
     status: pending

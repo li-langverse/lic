@@ -1,15 +1,27 @@
 import gui
+import render
 import ui
+import world
 
 # wave-d-10 — `import studio` resolves `gui` + `ui` for World Studio shell wiring.
-# Object-level compose (StudioWire) lives in composables until cross-pkg struct ABI lands.
+# wave-d-28 — compose `render` viewport swapchain + `world` GameWorld with ui/gui chrome.
+# Object-level StudioCompose struct is local; cross-pkg wiring uses primitive dims/counts only.
+
+type StudioCompose = object
+  public viewport_w: int
+  public viewport_h: int
+  public swapchain_w: int
+  public swapchain_h: int
+  public paint_count: int
+  public world_nodes: int
+  public present_ok: int
 
 def li_std_studio_version() -> int
   requires true
-  ensures result == 1
+  ensures result == 2
   decreases 0
 =
-  return 1
+  return 2
 
 def studio_workload_class_stub() -> int
   requires true
@@ -111,6 +123,131 @@ def studio_wire_gui_hd() -> int
   if palette.entry_count != 1:
     return 34
   return 0
+
+# wave-d-28 — public compose API: ui chrome + gui paint IR + render present + world tick.
+def studio_compose_viewport_width_hd() -> int
+  requires true
+  ensures result == 716
+  decreases 0
+=
+  return world_viewport_width_hd()
+
+def studio_compose_viewport_height_hd() -> int
+  requires true
+  ensures result == 720
+  decreases 0
+=
+  return world_viewport_height_hd()
+
+def studio_compose_default() -> StudioCompose
+  requires true
+  ensures result.viewport_w == 716
+  ensures result.viewport_h == 720
+  ensures result.swapchain_w == 716
+  ensures result.swapchain_h == 720
+  ensures result.paint_count == 0
+  ensures result.world_nodes == 0
+  ensures result.present_ok == 0
+  decreases 0
+=
+  var c: StudioCompose
+  c.viewport_w = studio_compose_viewport_width_hd()
+  c.viewport_h = studio_compose_viewport_height_hd()
+  c.swapchain_w = c.viewport_w
+  c.swapchain_h = c.viewport_h
+  c.paint_count = 0
+  c.world_nodes = 0
+  c.present_ok = 0
+  return c
+
+def studio_compose_ui_gui_render_world() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  var wire: int = studio_wire_gui_hd()
+  if wire != 0:
+    return wire
+  if li_std_render_version() < 1:
+    return 40
+  if li_std_world_version() < 1:
+    return 41
+  if render_workload_class_stub() != 0:
+    return 42
+  if world_workload_class_stub() != 0:
+    return 43
+  var shell: StudioShell = studio_shell_layout_hd()
+  var main_rect: GuiRect = shell.main
+  var vp_w: int = studio_compose_viewport_width_hd()
+  var vp_h: int = studio_compose_viewport_height_hd()
+  if main_rect.w < 715.0 or main_rect.w > 717.0:
+    return 44
+  if main_rect.h < 719.0 or main_rect.h > 721.0:
+    return 45
+  var chain: SwapchainDesc = render_swapchain_desc_viewport(716, 720)
+  if chain.width != vp_w:
+    return 46
+  if chain.height != vp_h:
+    return 47
+  var frame: PresentFrame = render_swapchain_acquire(chain)
+  if frame.acquired != 1:
+    return 48
+  var present: int = render_present_submit(frame)
+  if present != 1:
+    return 49
+  var doc: UiDocument = ui_document_new()
+  var viewport_paint: PaintCmd = paint_rect(0, main_rect)
+  ui_document_attach_paint(doc, viewport_paint)
+  if doc.paint_count != 1:
+    return 50
+  var chrome: StudioChrome = studio_chrome_hd()
+  var region: Rect = rect_at_f(0.0, 0.0, main_rect.w, 32.0)
+  var toolbar: StudioChromeHook = studio_chrome_hook_new(studio_chrome_hook_toolbar(), region, 1)
+  studio_chrome_attach_hook(chrome, toolbar)
+  if chrome.hook_count != 1:
+    return 51
+  var gw: GameWorld = world_new()
+  world_scene_attach(gw)
+  if gw.node_count != 1:
+    return 52
+  world_step(gw)
+  if gw.tick_budget != 59:
+    return 53
+  var compose: StudioCompose = studio_compose_default()
+  compose.paint_count = doc.paint_count
+  compose.world_nodes = gw.node_count
+  compose.present_ok = present
+  if compose.swapchain_w != compose.viewport_w:
+    return 54
+  if compose.swapchain_h != compose.viewport_h:
+    return 55
+  return 0
+
+def studio_compose_smoke_entry() -> int
+  requires true
+  ensures result == 1280720
+  decreases 0
+=
+  if studio_workload_class_stub() != 0:
+    return 0
+  if li_std_studio_version() < 2:
+    return 0
+  var compose_code: int = studio_compose_ui_gui_render_world()
+  if compose_code != 0:
+    return 0
+  var world_hash: int = world_smoke_entry()
+  if world_hash != 716720:
+    return 0
+  var render_hash: int = render_present_swapchain_smoke_entry()
+  if render_hash != 480640:
+    return 0
+  var vp_w: int = studio_compose_viewport_width_hd()
+  var vp_h: int = studio_compose_viewport_height_hd()
+  if vp_w != 716:
+    return 0
+  if vp_h != 720:
+    return 0
+  return 1280720
 
 # AL-6 / PH-CIN — cinematic encode, color, audio algorithm stubs (workload_class=stub).
 # Trusted ffmpeg mux deferred to CIN-2; explicit scalar ops only.

@@ -55,6 +55,22 @@ def render_swapchain_desc_default() -> SwapchainDesc
   d.image_count = 2
   return d
 
+def render_swapchain_desc_viewport(width: int, height: int) -> SwapchainDesc
+  requires width >= 1
+  requires height >= 1
+  ensures result.width == width
+  ensures result.height == height
+  ensures result.format_id == render_swapchain_format_rgba8()
+  ensures result.image_count == 2
+  decreases height
+=
+  var d: SwapchainDesc
+  d.width = width
+  d.height = height
+  d.format_id = render_swapchain_format_rgba8()
+  d.image_count = 2
+  return d
+
 def render_swapchain_acquire(desc: SwapchainDesc) -> PresentFrame
   requires desc.width >= 1
   requires desc.height >= 1

@@ -1,0 +1,102 @@
+# PH-GD-2 / wave-d-28 — GameWorld stub (workload_class=stub; save/load text deferred).
+# Scene graph hooks wired at composable boundary — no `import scene` here (avoids math/ui Vec2 clash in studio).
+
+type GameWorld = object
+  public time: float
+  public tick_budget: int
+  public game_over: int
+  public node_count: int
+  public dt: float
+
+def li_std_world_version() -> int
+  requires true
+  ensures result == 1
+  decreases 0
+=
+  return 1
+
+def world_workload_class_stub() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0
+
+def world_new() -> GameWorld
+  requires true
+  ensures result.time == 0.0
+  ensures result.tick_budget == 60
+  ensures result.game_over == 0
+  ensures result.node_count == 0
+  ensures result.dt == 1.0 / 60.0
+  decreases 0
+=
+  var w: GameWorld
+  w.time = 0.0
+  w.tick_budget = 60
+  w.game_over = 0
+  w.node_count = 0
+  w.dt = 1.0 / 60.0
+  return w
+
+def world_step(world: var GameWorld) -> unit
+  requires world.tick_budget > 0
+  requires world.game_over == 0
+  ensures world.tick_budget >= 0
+  decreases world.tick_budget
+=
+  world.time = world.time + world.dt
+  world.tick_budget = world.tick_budget - 1
+  return
+
+def world_scene_attach(world: var GameWorld) -> unit
+  requires world.node_count >= 0
+  ensures world.node_count >= 1
+  decreases world.node_count
+=
+  world.node_count = world.node_count + 1
+  return
+
+def world_viewport_width_hd() -> int
+  requires true
+  ensures result == 716
+  decreases 0
+=
+  return 716
+
+def world_viewport_height_hd() -> int
+  requires true
+  ensures result == 720
+  decreases 0
+=
+  return 720
+
+def world_smoke_entry() -> int
+  requires true
+  ensures result == 716720
+  decreases 0
+=
+  if world_workload_class_stub() != 0:
+    return 0
+  if li_std_world_version() < 1:
+    return 0
+  var w: GameWorld = world_new()
+  if w.tick_budget != 60:
+    return 0
+  if w.dt < 0.016 or w.dt > 0.017:
+    return 0
+  world_scene_attach(w)
+  if w.node_count != 1:
+    return 0
+  world_step(w)
+  if w.tick_budget != 59:
+    return 0
+  if w.time < 0.016 or w.time > 0.017:
+    return 0
+  var vw: int = world_viewport_width_hd()
+  var vh: int = world_viewport_height_hd()
+  if vw != 716:
+    return 0
+  if vh != 720:
+    return 0
+  return 716720

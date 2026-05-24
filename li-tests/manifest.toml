@@ -888,6 +888,34 @@ file = "studio_wire/import_studio_dock_wire_entry.li"
 outcome = "verify_open_ok"
 note = "wave-d-11 UX-02: import studio; studio_wire_gui_hd closed witness (open VC on dock wire ensures)"
 
+[[tests]]
+suite = "composable"
+file = "composable/import_studio_compose.li"
+outcome = "compile_open_ok"
+note = "wave-d-28: import studio; compose ui+gui+render+world (open VC on studio_compose_ui_gui_render_world ensures)"
+
+[[tests]]
+suite = "composable"
+file = "composable/import_world_smoke.li"
+outcome = "compile_open_ok"
+note = "wave-d-28: import world; GameWorld + scene hooks (open VC on world_step ensures)"
+
+# --- studio_compose (wave-d-28 — ui+gui+render+world compose composable) ---
+
+[[tests]]
+suite = "studio_compose"
+file = "studio_compose/import_studio_compose_entry.li"
+outcome = "verify_open_ok"
+note = "wave-d-28: import studio; studio_compose_smoke_entry closed witness (open VC on compose ensures)"
+
+# --- world_smoke (PH-GD-2 — GameWorld stub composable) ---
+
+[[tests]]
+suite = "world_smoke"
+file = "world_smoke/import_world_smoke_entry.li"
+outcome = "verify_open_ok"
+note = "wave-d-28: import world; world_smoke_entry closed witness (open VC on world_step ensures)"
+
 # stdlib_coverage/build_std_csv — enable when std.csv module resolves (PH-IO-4)
 
 # --- httpd (Phase H placeholder) ---

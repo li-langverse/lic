@@ -124,7 +124,21 @@ def pick_next(todos: list[dict], state: dict) -> dict | None:
     ]
     if not open_todos:
         return None
-    if close_server:
+    gap_open = [t for t in open_todos if t["id"].startswith("gap-")]
+    gap_only = os.environ.get("LI_HTTPD_PLAN_GAP_ONLY", "").strip().lower() in (
+        "1",
+        "true",
+        "yes",
+        "on",
+    )
+    if gap_only:
+        if not gap_open:
+            return None
+        open_todos = gap_open
+    elif gap_open:
+        # Phase-2 nginx gaps: always feed agents gap-* before other milestones.
+        open_todos = gap_open
+    elif close_server:
         scoped = [t for t in open_todos if is_server_milestone(t["id"])]
         if scoped:
             open_todos = scoped
@@ -404,6 +418,16 @@ See plan section **Parity milestones (agent-gateway vs nginx oracle)**.
 - **Performance:** tier5 + Next.js toy scenarios — publish ratios in `benchmarks/results/`; default pass bar **li RPS ≥ 0.85× nginx** and **p99 ≤ 2× nginx** unless documented variant.
 - **LB / proxy / streaming:** runtime tests, not config-only; include sticky sessions (`ip_hash` or cookie) where multi-backend Next.js needs affinity.
 """
+        if todo["id"].startswith("gap-phase2-"):
+            mission += """
+## Phase-2 strict nginx oracle (close remaining gaps)
+
+- Run gates with `HTTPD_RUN_PHASE2_GATES=1` after your changes (loop sets this for gap-phase2 todos).
+- **Perf:** `check-tier5-perf-wrk-soak.sh` needs wrk+nginx; 30s soak, no `HTTPD_BENCH_SKIP_TIMING`.
+- **Mitigations:** every `nginx_mitigations.toml` row must link a real exploit TOML + driver; enable disabled rows when runtime exists.
+- **Streaming:** `check-tier5-streaming-soak.sh` with timing, not verify-only.
+- Mark plan YAML `status: completed` only when gates pass; push to `cursor/httpd-plan-continue`.
+"""
     return f"""# httpd plan iteration — todo `{todo['id']}`
 
 **Plan:** `{PLAN.relative_to(ROOT)}`
@@ -489,6 +513,11 @@ def main() -> int:
 
         print(f"\n=== iteration {iteration + 1}: {todo['id']} ===")
         print(f"    {todo['content']}")
+
+        if todo["id"].startswith("gap-phase2-"):
+            os.environ["HTTPD_RUN_PHASE2_GATES"] = "1"
+        else:
+            os.environ.pop("HTTPD_RUN_PHASE2_GATES", None)
 
         ok, gate_out = run_gates()
         if not ok:

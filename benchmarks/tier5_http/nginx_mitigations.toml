@@ -46,7 +46,7 @@ nginx_version_fixed = "0.1.0"
 src = "src/http/ngx_http_request_body.c"
 symbol = "ngx_http_read_client_request_body"
 notes = "body size limited before buffering to disk/upstream"
-exploit = ""
+exploit = "exploits/client_max_body_size.toml"
 li_invariant = "body_len ≤ configured max before proxy"
 
 [[mitigation]]
@@ -96,7 +96,7 @@ nginx_version_fixed = "1.17.6"
 src = "src/http/v2/ngx_http_v2.c"
 symbol = "ngx_http_v2_read_handler"
 notes = "HTTP/2 flood controls; stream reset rate limits (M2 gate)"
-exploit = ""
+exploit = "exploits/h2_rapid_reset.toml"
 li_invariant = "HTTP/2 stream creation and reset bounded"
 
 [[mitigation]]
@@ -146,7 +146,7 @@ nginx_version_fixed = "1.9.13"
 src = "src/core/ngx_resolver.c"
 symbol = "ngx_resolver_create_name_query"
 notes = "resolver answer size and CNAME chain depth capped"
-exploit = ""
+exploit = "exploits/dns_resolver_limits.toml"
 li_invariant = "DNS response parsing bounded; no unbounded CNAME chains"
 
 [[mitigation]]

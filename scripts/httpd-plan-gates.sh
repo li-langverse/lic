@@ -335,4 +335,26 @@ if [[ "${HTTPD_GATES_SKIP_LIC_BUILD:-0}" != "1" && "${HTTPD_RUN_PERF_REGRESSION_
   fi
 fi
 
+# gap-phase2-* (nginx strict parity — run when plan todo pending or HTTPD_RUN_PHASE2_GATES=1).
+if [[ "${HTTPD_GATES_SKIP_LIC_BUILD:-0}" != "1" && "${HTTPD_RUN_PHASE2_GATES:-0}" == "1" && -x "$ROOT/build/li-httpd" ]]; then
+  for hook in \
+    check-tier5-mitigation-exploits-complete.sh \
+    check-tier5-exploit-nginx-regression.sh \
+    check-tier5-streaming-soak.sh \
+    check-tier5-perf-wrk-soak.sh; do
+    if [[ -x "$ROOT/scripts/$hook" ]]; then
+      echo "==> $hook (gap-phase2)"
+      case "$hook" in
+        check-tier5-streaming-soak.sh)
+          HTTPD_BENCH_SKIP_TIMING=0 HTTPD_BENCH_DURATION_SEC="${HTTPD_BENCH_DURATION_SEC:-30}" \
+            "$ROOT/scripts/$hook" || fail "$hook failed"
+          ;;
+        *)
+          "$ROOT/scripts/$hook" || fail "$hook failed"
+          ;;
+      esac
+    fi
+  done
+fi
+
 echo "httpd-plan-gates: OK"

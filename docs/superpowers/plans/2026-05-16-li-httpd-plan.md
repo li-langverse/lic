@@ -137,6 +137,18 @@ todos:
   - id: gap-nginx-perf-regression-gate
     content: "CI/nightly gate — all tier5 parity + nextjs scenarios; fail if li p99 > 2x nginx or exploit row regresses"
     status: completed
+  - id: gap-phase2-perf-wrk-soak
+    content: "Full wrk soak vs nginx — HTTPD_BENCH_SKIP_TIMING=0, ≥30s on parity + parity_streaming + nextjs; li RPS/TTFB bars in perf-regression gate; gate check-tier5-perf-wrk-soak.sh"
+    status: pending
+  - id: gap-phase2-mitigation-exploits
+    content: "Close nginx_mitigations.toml rows with empty exploit — client_max_body_size, h2_rapid_reset, dns_resolver_limits; tier5 TOML + live li-httpd vs nginx compare; gate check-tier5-mitigation-exploits-complete.sh"
+    status: pending
+  - id: gap-phase2-streaming-wrk
+    content: "Streaming wrk parity — sse_long_stream + ws_fanout with timing (not verify-only); check-tier5-streaming-soak.sh with HTTPD_BENCH_SKIP_TIMING=0"
+    status: pending
+  - id: gap-phase2-exploit-nginx-regression
+    content: "Every enabled tier5 exploit row — live li-httpd vs nginx, --fail-on-regression; no nginx-pass/li-fail; document in release note"
+    status: pending
 isProject: false
 ---
 

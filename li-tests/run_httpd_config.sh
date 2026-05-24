@@ -95,8 +95,8 @@ done
 echo "== validate-httpd-config (Python M1 schema) =="
 "$ROOT/scripts/lic-validate-httpd-config.sh" "$ROOT/packages/li-net-httpd/examples/auth_bearer.toml"
 "$ROOT/scripts/lic-validate-httpd-config.sh" "$ROOT/packages/li-net-httpd/examples/agent_gateway_limits.toml"
-for rej in "$ROOT/li-tests/config_desugar/reject"/proxy_without_rate_limit.toml \
-  "$ROOT/li-tests/config_desugar/reject/lb_bad_balance.toml; do
+for rej in "$ROOT/li-tests/config_desugar/reject/proxy_without_rate_limit.toml" \
+  "$ROOT/li-tests/config_desugar/reject/lb_bad_balance.toml"; do
   [[ -f "$rej" ]] || continue
   if "$ROOT/scripts/lic-validate-httpd-config.sh" "$rej" 2>/dev/null; then
     echo "validate-httpd-config: expected reject for $(basename "$rej")" >&2

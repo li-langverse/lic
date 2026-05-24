@@ -95,6 +95,22 @@ static li::ErrorCode httpd_error_kind_to_code(int32_t kind) {
   }
 }
 
+int run_validate_httpd_config_py(const char* path) {
+  std::filesystem::path repo = std::filesystem::current_path();
+  if (const char* root = std::getenv("LI_REPO_ROOT")) {
+    repo = root;
+  }
+  const std::filesystem::path script = repo / "scripts/validate-httpd-config.py";
+  if (!std::filesystem::is_regular_file(script)) {
+    std::cerr << "validate-httpd-config: missing " << script << " (set LI_REPO_ROOT)\n";
+    return 1;
+  }
+  std::ostringstream cmd;
+  cmd << "python3 \"" << script.string() << "\" \"" << path << "\"";
+  const int st = std::system(cmd.str().c_str());
+  return st != 0 ? 1 : 0;
+}
+
 int httpd_validate_config(int argc, char** argv) {
   if (argc < 4 || std::string_view(argv[2]) != "validate-config") {
     std::cerr << "usage: lic httpd validate-config <config.toml>\n";
@@ -114,6 +130,9 @@ int httpd_validate_config(int argc, char** argv) {
     std::cerr << '\n';
     return 1;
   }
+  if (run_validate_httpd_config_py(path) != 0) {
+    return 1;
+  }
   std::cout << "OK: " << li_rt_httpd_route_count() << " routes\n";
   return 0;
 }
@@ -123,19 +142,7 @@ int validate_httpd_config_cmd(int argc, char** argv) {
     std::cerr << "usage: lic validate-httpd-config <config.toml>\n";
     return 1;
   }
-  std::filesystem::path repo = std::filesystem::current_path();
-  if (const char* root = std::getenv("LI_REPO_ROOT")) {
-    repo = root;
-  }
-  const std::filesystem::path script = repo / "scripts/validate-httpd-config.py";
-  if (!std::filesystem::is_regular_file(script)) {
-    std::cerr << "validate-httpd-config: missing " << script << " (set LI_REPO_ROOT)\n";
-    return 1;
-  }
-  std::ostringstream cmd;
-  cmd << "python3 " << script.string() << " " << argv[2];
-  const int st = std::system(cmd.str().c_str());
-  return st != 0 ? 1 : 0;
+  return run_validate_httpd_config_py(argv[2]);
 }
 
 int httpd_explain_config(int argc, char** argv) {

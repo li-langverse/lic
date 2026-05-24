@@ -715,8 +715,8 @@ note = "wave-d-27: gaming_rigid — integrate + gravity/floor step + broadphase;
 [[tests]]
 suite = "composable"
 file = "composable/import_ui_adaptive_layout.li"
-outcome = "compile_open_ok"
-note = "PH-UX: import ui; studio.adaptive layout composable (open VC on rect_contains branch ensures)"
+outcome = "compile_ok"
+note = "wave-e-01: import ui; adaptive_layout_hd + rect_contains hit-test VC closed"
 
 [[tests]]
 suite = "composable"

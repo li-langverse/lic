@@ -57,16 +57,15 @@ def rect_contains(r: Rect, px: float, py: float) -> int
   ensures result <= 1
   decreases 0
 =
-  var hit: int = 1
   if px < r.x:
-    hit = 0
+    return 0
   if py < r.y:
-    hit = 0
+    return 0
   if px > r.x + r.w:
-    hit = 0
+    return 0
   if py > r.y + r.h:
-    hit = 0
-  return hit
+    return 0
+  return 1
 def ui_frame_begin(w: float, h: float, dt: float) -> UiFrame
   requires w > 0.0
   requires h > 0.0
@@ -679,7 +678,7 @@ def command_palette_hook_id() -> int
   ensures result == 3
   decreases 0
 =
-  return studio_chrome_hook_command_palette()
+  return 3
 
 def command_palette_region_hd() -> Rect
   requires true

@@ -136,7 +136,7 @@ todos:
     status: completed
   - id: wave-e-01-rect-vc-close
     content: "li-ui rect_contains VC close → composable compile_ok (was wave-c)"
-    status: pending
+    status: completed
   - id: wave-e-02-player-hud
     content: "player — load gui HUD composable + import test"
     status: pending

@@ -5,7 +5,7 @@
 | Id | Closes |
 |----|--------|
 | `gap-phase2-perf-wrk-soak` | Full wrk timing vs nginx (parity + nextjs + regression gate) |
-| `gap-phase2-mitigation-exploits` | All `nginx_mitigations.toml` rows linked to exploit TOMLs + drivers |
+| `gap-phase2-mitigation-exploits` | All `nginx_mitigations.toml` rows linked to exploit TOMLs + drivers (**completed**) |
 | `gap-phase2-streaming-wrk` | SSE/WS streaming soak with timing, not verify-only |
 | `gap-phase2-exploit-nginx-regression` | Live exploit compare — no nginx-pass / li-fail regressions (**completed**) |
 
@@ -21,7 +21,7 @@
 - `./scripts/build-tier5-nginx-oracle.sh` then `./scripts/check-tier5-exploit-nginx-regression.sh`
 - Harness: per-lang free ports, nginx `daemon off`, `--fail-on-regression` counts **li** failures and nginx-pass/li-fail only
 - Runtime: duplicate `Content-Length` checked before `/file.bin` fast path
-- Drivers: `oversized_body`, `h2_rapid_reset`; static fixtures get `index.html` for legitimate GET probes
+- Drivers: `oversized_body`, `h2_rapid_reset`, `dns_validate_config` (external upstream peer reject); static fixtures get `index.html` for legitimate GET probes
 
 ## Loop behavior
 

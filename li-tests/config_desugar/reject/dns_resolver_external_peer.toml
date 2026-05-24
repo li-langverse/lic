@@ -1,0 +1,16 @@
+# Reject non-loopback upstream peers (M1) — blocks external DNS resolution at config gate.
+[server]
+listen = "127.0.0.1:8080"
+document_root = "./public"
+
+[limits]
+max_body = "1m"
+max_header = "8k"
+rate_limit_rps = 100
+rate_limit_burst = 200
+
+[upstreams.external]
+peers = ["http://resolver-evil.example:8080/"]
+
+[routes]
+"GET /api/*" = "proxy:external"

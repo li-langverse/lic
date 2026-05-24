@@ -41,7 +41,7 @@ Gate: `./scripts/check-vertical-algorithm-catalog.sh` (sync with `verticals.toml
 | Semi-implicit integrate | Bullet/PhysX step | `rigid_integrate_semi_implicit` in `physics.rigid` | composable `li-tests/composable/import_physics_rigid_gaming.li` |
 | Gravity + floor step | rigid stack proxy | `rigid_gravity_step_1d`, `rigid_floor_clamp_y` | tier-2 `rigid_body_stack` + `verify.py` checksum smoke |
 | Collision broadphase | SAP / BVH | `aabb_overlap`, `sphere_sphere_overlap`, `broadphase_cell_index` | composable `import_physics_rigid_gaming.li` |
-| Constraint solve | joints, contacts | `pgs_resolve_normal` (scalar) | composable only — not full PGS |
+| Constraint solve | joints, contacts | `pgs_resolve_normal` (scalar) | composable **stub** — not full PGS |
 
 ### Studio / UX
 

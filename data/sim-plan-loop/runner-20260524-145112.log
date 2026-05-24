@@ -11,3 +11,28 @@ Error: sdk-session.lock: timeout waiting for cross-process slot (1/1 held; in-pr
     at async runAgentBody (file:///home/s4il0r/Documents/Cursor/li-langverse/li-cursor-agents/dist/runner.js:283:18)
     at async withRunAgentTracking (file:///home/s4il0r/Documents/Cursor/li-langverse/li-cursor-agents/dist/runner.js:59:24)
     at async main (file:///home/s4il0r/Documents/Cursor/li-langverse/li-cursor-agents/dist/cli/run-agent.js:106:20)
+registry: 43/126 implemented_smoke
+
+=== iteration 1: sim-p0-md-lj-li-parity ===
+    Tier-2 Li md_lennard_jones checksum parity vs native (fix runtime sink / driver)
+log=/home/s4il0r/Documents/Cursor/li-langverse/lic-worktrees/sim-algo/data/sim-plan-loop/iter-20260524-145112.log
+gates: FAIL
+==> sim-plan-gates package=li-sim-scientific benches=[double_pendulum,heat_equation_2d,md_lennard_jones,nbody_gravity,three_body]
+==> build lic
+==> validity (composable + summaries + registry)
+resolve-lic: no executable under build/compiler/lic/
+bench_sim: lic missing at .
+sim-plan-gates: bench_sim validity
+
+agent exit 1 — stopping
+==> iteration failed (streak=1)
+==> remaining registry smokes: 83
+backend: cursor-sdk agent: code_implementer
+SDK tool activity streams to stderr ([sdk] ▶/✓ lines). Set LI_SDK_TERMINAL_STREAM=0 to disable.
+2026-05-24T15:04:54.581Z [heartbeat] info: worker_status → Supabase: 1 active run(s) code_implementer
+Error: sdk-session.lock: timeout waiting for cross-process slot (1/1 held; in-process=0)
+    at acquireFileSlot (file:///home/s4il0r/Documents/Cursor/li-langverse/li-cursor-agents/dist/backends/sdk-session-lock.js:203:19)
+    at async withGlobalSdkSessionLock (file:///home/s4il0r/Documents/Cursor/li-langverse/li-cursor-agents/dist/backends/sdk-session-lock.js:269:22)
+    at async runAgentBody (file:///home/s4il0r/Documents/Cursor/li-langverse/li-cursor-agents/dist/runner.js:283:18)
+    at async withRunAgentTracking (file:///home/s4il0r/Documents/Cursor/li-langverse/li-cursor-agents/dist/runner.js:59:24)
+    at async main (file:///home/s4il0r/Documents/Cursor/li-langverse/li-cursor-agents/dist/cli/run-agent.js:106:20)

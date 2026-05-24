@@ -1,0 +1,16 @@
+{
+  "completed_ids": [],
+  "iterations": 1,
+  "history": [
+    {
+      "at": "2026-05-24T15:02:54.490019+00:00",
+      "todo_id": "sim-p0-md-lj-li-parity",
+      "agent_exit": 1,
+      "gates_ok": false
+    }
+  ],
+  "registry": {
+    "implemented": 43,
+    "total": 126
+  }
+}

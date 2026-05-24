@@ -233,8 +233,8 @@ export default function GoalDirectedAgentsLive() {{
         />
       </Grid>
 
-      <Row gap={{12}} style={{ alignItems: "center", justifyContent: "space-between" }}>
-        <Row gap={{8}} style={{ alignItems: "center" }}>
+      <Row gap={{12}} style={{{{ alignItems: "center", justifyContent: "space-between" }}}}>
+        <Row gap={{8}} style={{{{ alignItems: "center" }}}}>
           <IconButton title="Previous agent" onClick={{goPrev}}>
             ←
           </IconButton>

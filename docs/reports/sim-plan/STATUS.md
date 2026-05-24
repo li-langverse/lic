@@ -1,11 +1,11 @@
 # Simulation algorithm plan — live status
 
-_Updated 2026-05-24T19:24:37.821826+00:00Z_
+_Updated 2026-05-24T19:39:40.344457+00:00Z_
 
 **Registry:** 43 / 126 smokes (34.1%) · **remaining:** 83
 
 **Branch:** `cursor/sim-algo-plan-loop`
-**HEAD:** `f7a6266`
+**HEAD:** `d42baf4`
 
-**Last iteration report:** [docs/reports/sim-plan/iterations/20260524-192437.md](docs/reports/sim-plan/iterations/20260524-192437.md)
+**Last iteration report:** [docs/reports/sim-plan/iterations/20260524-193940.md](docs/reports/sim-plan/iterations/20260524-193940.md)
 

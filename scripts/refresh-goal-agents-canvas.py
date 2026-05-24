@@ -218,8 +218,8 @@ export default function GoalDirectedAgentsLive() {{
 
       <Grid columns={{3}} gap={{12}}>
         <Stat
-          value={{`${{RUNNING_LOOPS}}`}}
-          label="Loops running"
+          value={{`${{RUNNING_LOOPS}}/${{RUNNER_PANELS.length}}`}}
+          label="Loops active"
           tone={{RUNNING_LOOPS > 0 ? "success" : "warning"}}
         />
         <Stat

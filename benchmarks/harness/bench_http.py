@@ -5,24 +5,31 @@ from __future__ import annotations
 
 import argparse
 import csv
+import http.client
 import os
 import platform
 import shutil
+import statistics
 import subprocess
 import sys
 import tempfile
+import time
 from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any
 
 from bench_http_parity import check_parity_ratios
 from http_bench_servers import (
+    is_proxy_scenario,
     pick_free_port,
     resolve_nginx_binary,
+    resolve_node_binary,
     scenario_port,
     start_li_httpd,
     start_nginx,
+    start_proxy_front,
     stop_proc,
+    stop_proxy_stack,
 )
 from http_bench_toml import (
     REPO,
@@ -152,6 +159,32 @@ def run_wrk(
     return metrics or None
 
 
+def sample_ttfb_ms(url: str, *, samples: int = 24) -> float | None:
+    from urllib.parse import urlparse
+
+    times: list[float] = []
+    parsed = urlparse(url)
+    for _ in range(samples):
+        host = parsed.hostname or "127.0.0.1"
+        port = parsed.port or 80
+        path = parsed.path or "/"
+        conn = http.client.HTTPConnection(host, port, timeout=5.0)
+        try:
+            t0 = time.perf_counter()
+            conn.request("GET", path)
+            resp = conn.getresponse()
+            resp.read(1)
+            times.append((time.perf_counter() - t0) * 1000.0)
+            resp.read()
+        except OSError:
+            continue
+        finally:
+            conn.close()
+    if not times:
+        return None
+    return float(statistics.median(times))
+
+
 def run_load_for_lang(
     cfg: dict[str, Any],
     lang: str,
@@ -200,7 +233,12 @@ def run_load_for_lang(
         )
         if not metrics:
             continue
-        unit_map = {"rps": "req/s", "p50_latency_ms": "ms", "p99_latency_ms": "ms"}
+        collect = (cfg.get("metrics") or {}).get("collect") or []
+        if isinstance(collect, list) and "ttfb_ms" in collect:
+            ttfb = sample_ttfb_ms(url, samples=int(os.environ.get("HTTPD_BENCH_TTFB_SAMPLES", "20")))
+            if ttfb is not None:
+                metrics["ttfb_ms"] = ttfb
+        unit_map = {"rps": "req/s", "p50_latency_ms": "ms", "p99_latency_ms": "ms", "ttfb_ms": "ms"}
         for metric, value in metrics.items():
             rows.append(
                 {
@@ -351,14 +389,23 @@ def main() -> int:
         port = pick_free_port(port_base, sum(ord(c) for c in name) % 200)
         server = cfg.get("server") or {}
         variant = "sendfile_on" if server.get("sendfile", True) else "sendfile_off"
+        parity_tbl = cfg.get("parity") or {}
+        if parity_tbl.get("verify_only"):
+            continue
+        if is_proxy_scenario(cfg) and not resolve_node_binary():
+            print(f"bench_http {name}: skip timing (node missing for nextjs-toy)", file=sys.stderr)
+            continue
         for lang in langs:
             proc = None
+            backend_proc = None
             work_dir: Path | None = None
             try:
-                if lang == "nginx":
+                if is_proxy_scenario(cfg):
+                    proc, work_dir, backend_proc = start_proxy_front(cfg, name, port, lang)
+                elif lang == "nginx":
                     proc, work_dir = start_nginx(cfg, port)
                 elif lang == "li":
-                    proc, work_dir = start_li_httpd(name, port)
+                    proc, work_dir = start_li_httpd(name, port, cfg=cfg)
                 else:
                     print(f"skip load for {lang!r}", file=sys.stderr)
                     continue
@@ -368,9 +415,12 @@ def main() -> int:
                 print(f"bench_http {name} {lang}: {exc}", file=sys.stderr)
                 return 1
             finally:
-                stop_proc(proc)
-                if work_dir and work_dir.exists():
-                    shutil.rmtree(work_dir, ignore_errors=True)
+                if is_proxy_scenario(cfg):
+                    stop_proxy_stack(proc, work_dir, backend_proc)
+                else:
+                    stop_proc(proc)
+                    if work_dir and work_dir.exists():
+                        shutil.rmtree(work_dir, ignore_errors=True)
 
     if all_rows:
         write_csv(args.out, all_rows)
@@ -379,8 +429,8 @@ def main() -> int:
         print("bench_http: no timing rows produced", file=sys.stderr)
         return 1
 
-    if args.check_parity or profile == "parity":
-        ok, notes = check_parity_ratios(all_rows, names)
+    if args.check_parity or profile in ("parity", "nextjs_parity"):
+        ok, notes = check_parity_ratios(all_rows, names, cfg_by_name={n: merge_scenario(n, overrides=args.overrides, profile=profile) for n in names})
         for line in notes:
             print(line)
         if not ok:

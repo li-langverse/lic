@@ -6,6 +6,7 @@ import os
 import shutil
 import socket
 import subprocess
+import sys
 import tempfile
 import time
 from pathlib import Path
@@ -18,6 +19,8 @@ from http_bench_toml import (
     merge_scenario,
     render_nginx_conf,
     resolve_document_root,
+    scenario_backend_port,
+    write_scenario_httpd_toml,
 )
 
 NGINX_CANDIDATES = (
@@ -118,21 +121,76 @@ def start_nginx(cfg: dict[str, Any], port: int) -> tuple[subprocess.Popen[object
     return proc, conf_dir
 
 
-def prepare_li_httpd_conf(name: str, port: int) -> tuple[Path, Path]:
-    merged = merge_scenario(name, profile="ci", overrides=None)
+def nextjs_toy_script() -> Path:
+    return TIER5 / "fixtures" / "nextjs-toy" / "server.mjs"
+
+
+def resolve_node_binary() -> str | None:
+    return shutil.which("node") or shutil.which("nodejs")
+
+
+def start_nextjs_toy_backend(cfg: dict[str, Any], name: str) -> tuple[subprocess.Popen[object] | None, int]:
+    server = cfg.get("server") or {}
+    if server.get("backend") != "nextjs_toy":
+        return None, scenario_backend_port(cfg, name)
+    node = resolve_node_binary()
+    script = nextjs_toy_script()
+    backend_port = scenario_backend_port(cfg, name)
+    if not node or not script.is_file():
+        return None, backend_port
+    proc = subprocess.Popen(
+        [node, str(script), str(backend_port)],
+        stdout=subprocess.DEVNULL,
+        stderr=subprocess.PIPE,
+        text=True,
+    )
+    if not wait_port(backend_port, timeout=8.0):
+        err = proc.stderr.read() if proc.stderr else ""
+        stop_proc(proc)
+        raise RuntimeError(f"nextjs-toy failed on {backend_port}: {err.strip() or 'no listen'}")
+    if proc.poll() is not None:
+        err = proc.stderr.read() if proc.stderr else ""
+        raise RuntimeError(f"nextjs-toy exited: {err.strip() or 'unknown'}")
+    return proc, backend_port
+
+
+def prepare_li_httpd_conf(name: str, port: int, *, cfg: dict[str, Any] | None = None) -> tuple[Path, Path]:
+    merged = cfg if cfg is not None else merge_scenario(name, profile="ci", overrides=None)
     ensure_fixtures(merged)
-    doc_root = resolve_document_root(merged)
     work = Path(tempfile.mkdtemp(prefix="tier5_bench_li_"))
+    server = merged.get("server") or {}
+    if server.get("kind") == "proxy":
+        backend_port = scenario_backend_port(merged, name)
+        toml_path = work / "httpd.toml"
+        write_scenario_httpd_toml(merged, front_port=port, backend_port=backend_port, out_path=toml_path)
+        conf = work / "runtime.conf"
+        flatten = REPO / "scripts" / "flatten-httpd-config.py"
+        proc = subprocess.run(
+            [sys.executable, str(flatten), str(toml_path), "-o", str(conf)],
+            cwd=REPO,
+            capture_output=True,
+            text=True,
+        )
+        if proc.returncode != 0:
+            shutil.rmtree(work, ignore_errors=True)
+            raise RuntimeError(f"flatten-httpd-config failed: {proc.stderr.strip() or proc.stdout}")
+        return conf, work
+    doc_root = resolve_document_root(merged)
     conf = work / "runtime.conf"
     conf.write_text(f"listen_port={port}\ndocument_root={doc_root}\n", encoding="utf-8")
     return conf, work
 
 
-def start_li_httpd(name: str, port: int) -> tuple[subprocess.Popen[object] | None, Path | None]:
+def start_li_httpd(
+    name: str,
+    port: int,
+    *,
+    cfg: dict[str, Any] | None = None,
+) -> tuple[subprocess.Popen[object] | None, Path | None]:
     bin_path = os.environ.get("LI_HTTPD_BIN", str(REPO / "build" / "li-httpd"))
     if not os.path.isfile(bin_path) or not os.access(bin_path, os.X_OK):
         return None, None
-    conf_path, work_dir = prepare_li_httpd_conf(name, port)
+    conf_path, work_dir = prepare_li_httpd_conf(name, port, cfg=cfg)
     env = os.environ.copy()
     env.setdefault("LI_HTTPD_ACCESS_LOG", "0")
     proc = subprocess.Popen(
@@ -156,3 +214,38 @@ def start_li_httpd(name: str, port: int) -> tuple[subprocess.Popen[object] | Non
 
 def bench_scenario_dir(name: str) -> Path:
     return TIER5 / "scenarios" / name
+
+
+def is_proxy_scenario(cfg: dict[str, Any]) -> bool:
+    server = cfg.get("server") or {}
+    return server.get("kind") == "proxy"
+
+
+def start_proxy_front(
+    cfg: dict[str, Any],
+    name: str,
+    port: int,
+    lang: str,
+) -> tuple[subprocess.Popen[object] | None, Path | None, subprocess.Popen[object] | None]:
+    """Start nextjs-toy backend (if configured) and nginx or li-httpd front."""
+    backend_proc: subprocess.Popen[object] | None = None
+    if is_proxy_scenario(cfg):
+        backend_proc, _ = start_nextjs_toy_backend(cfg, name)
+    if lang == "nginx":
+        front_proc, work_dir = start_nginx(cfg, port)
+    elif lang == "li":
+        front_proc, work_dir = start_li_httpd(name, port, cfg=cfg)
+    else:
+        raise RuntimeError(f"unsupported proxy front lang {lang!r}")
+    return front_proc, work_dir, backend_proc
+
+
+def stop_proxy_stack(
+    front_proc: subprocess.Popen[object] | None,
+    work_dir: Path | None,
+    backend_proc: subprocess.Popen[object] | None,
+) -> None:
+    stop_proc(front_proc)
+    stop_proc(backend_proc)
+    if work_dir and work_dir.exists():
+        shutil.rmtree(work_dir, ignore_errors=True)

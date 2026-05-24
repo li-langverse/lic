@@ -21,11 +21,16 @@ from pathlib import Path
 from typing import Any
 
 from http_bench_servers import (
+    is_proxy_scenario,
     pick_free_port,
     resolve_nginx_binary,
+    resolve_node_binary,
     start_li_httpd,
+    start_nextjs_toy_backend,
     start_nginx,
+    start_proxy_front,
     stop_proc,
+    stop_proxy_stack,
     wait_port,
 )
 from http_bench_toml import (
@@ -46,7 +51,10 @@ def _http_request(host: str, port: int, method: str, path: str, timeout: float =
     try:
         conn.request(method, path)
         resp = conn.getresponse()
-        body = resp.read()
+        try:
+            body = resp.read()
+        except http.client.IncompleteRead as exc:
+            body = exc.partial
         return resp.status, body
     finally:
         conn.close()
@@ -118,23 +126,58 @@ def verify_scenario(
         return True, "disabled"
     ensure_fixtures(cfg)
     doc_root = resolve_document_root(cfg)
-    if not doc_root.is_dir():
+    if not is_proxy_scenario(cfg) and not doc_root.is_dir():
         return False, f"document_root missing: {doc_root}"
+    if is_proxy_scenario(cfg) and not resolve_node_binary():
+        return False, "proxy scenario requires node for nextjs-toy backend"
 
     port_base = int((cfg.get("global") or {}).get("port_base", 18080))
     port = pick_free_port(port_base, sum(ord(c) for c in name) % 200)
 
     langs = profile_langs(profile, cfg)
     if use_stub:
-        langs = ["stub"]
+        if is_proxy_scenario(cfg):
+            # Proxy benches need a real edge; prefer li-httpd when nginx is absent.
+            langs = ["li"] if os.path.isfile(
+                os.environ.get("LI_HTTPD_BIN", str(REPO / "build" / "li-httpd"))
+            ) else []
+            if not langs:
+                return False, "proxy scenario requires nginx or build/li-httpd"
+        else:
+            langs = ["stub"]
+
+    verify_tbl = cfg.get("verify") or {}
+    verify_target = str(verify_tbl.get("target", "edge")).lower()
+    if verify_target == "backend" and is_proxy_scenario(cfg):
+        backend_proc: subprocess.Popen[object] | None = None
+        try:
+            backend_proc, backend_port = start_nextjs_toy_backend(cfg, name)
+            ok, msg = _run_verify_requests(
+                cfg, host="127.0.0.1", port=backend_port, doc_root=doc_root
+            )
+            return ok, f"backend: {msg}"
+        except RuntimeError as exc:
+            return False, str(exc)
+        finally:
+            stop_proc(backend_proc)
 
     last_msg = ""
     for lang in langs:
         proc: subprocess.Popen[object] | None = None
+        backend_proc: subprocess.Popen[object] | None = None
         server: ThreadingHTTPServer | None = None
         work_dir: Path | None = None
         try:
-            if lang == "nginx" and resolve_nginx_binary():
+            if is_proxy_scenario(cfg):
+                if lang == "nginx" and not resolve_nginx_binary():
+                    return False, "nginx required for proxy verify"
+                if lang == "li":
+                    proc, work_dir, backend_proc = start_proxy_front(cfg, name, port, "li")
+                elif lang == "nginx":
+                    proc, work_dir, backend_proc = start_proxy_front(cfg, name, port, "nginx")
+                else:
+                    return False, f"unsupported lang {lang!r} for proxy"
+            elif lang == "nginx" and resolve_nginx_binary():
                 proc, work_dir = start_nginx(cfg, port)
             elif lang == "li":
                 proc, work_dir = start_li_httpd(name, port)
@@ -151,11 +194,14 @@ def verify_scenario(
         except RuntimeError as exc:
             return False, str(exc)
         finally:
-            stop_proc(proc)
-            if server is not None:
-                server.shutdown()
-            if work_dir and work_dir.exists():
-                shutil.rmtree(work_dir, ignore_errors=True)
+            if is_proxy_scenario(cfg):
+                stop_proxy_stack(proc, work_dir, backend_proc)
+            else:
+                stop_proc(proc)
+                if server is not None:
+                    server.shutdown()
+                if work_dir and work_dir.exists():
+                    shutil.rmtree(work_dir, ignore_errors=True)
     return True, last_msg or "ok"
 
 

@@ -1,0 +1,24 @@
+# Documented pass-bar variants for gap-nextjs-toy-bench (see check-tier5-nextjs-parity.sh).
+#
+# Default (nightly): li RPS >= 0.85× nginx, li TTFB >= 0.85× nginx (lower ms is better),
+# li p99 <= 2× nginx.
+#
+# Variants:
+#   verify_only  — HTTPD_BENCH_SKIP_TIMING=1 or missing wrk/nginx/node
+#   sse_relaxed  — nextjs_sse: verify required; wrk timing best-effort
+#   ws_verify    — nextjs_ws: upgrade smoke only (no RPS bar)
+
+[default]
+rps_ratio_min = 0.85
+ttfb_ratio_min = 0.85
+p99_ratio_max = 2.0
+scenarios = ["nextjs_api", "nextjs_ssr", "nextjs_sse"]
+
+[verify_only]
+timing = false
+scenarios = ["nextjs_api", "nextjs_ssr", "nextjs_sse", "nextjs_ws"]
+
+[sse_relaxed]
+scenarios = ["nextjs_sse"]
+rps_ratio_min = 0.70
+ttfb_ratio_min = 0.70

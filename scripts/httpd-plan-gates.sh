@@ -322,4 +322,15 @@ if [[ "${HTTPD_GATES_SKIP_LIC_BUILD:-0}" != "1" && "${HTTPD_RUN_BENCH_PARITY:-1}
   fi
 fi
 
+# gap-nextjs-toy-bench: nextjs-toy proxy scenarios (verify always; timing when wrk/nginx/node present).
+if [[ "${HTTPD_GATES_SKIP_LIC_BUILD:-0}" != "1" && "${HTTPD_RUN_NEXTJS_PARITY:-1}" == "1" ]]; then
+  if [[ -x "$ROOT/scripts/check-tier5-nextjs-parity.sh" && -x "$ROOT/build/li-httpd" ]]; then
+    echo "==> check-tier5-nextjs-parity.sh (gap-nextjs-toy-bench)"
+    HTTPD_BENCH_SKIP_TIMING="${HTTPD_BENCH_SKIP_TIMING:-1}" \
+      "$ROOT/scripts/check-tier5-nextjs-parity.sh" || fail "check-tier5-nextjs-parity.sh failed"
+  else
+    fail "gap-nextjs-toy-bench: build/li-httpd missing (run build-li-httpd.sh)"
+  fi
+fi
+
 echo "httpd-plan-gates: OK"

@@ -130,7 +130,7 @@ todos:
     status: pending
   - id: gap-nextjs-toy-bench
     content: "Next.js toy app (API/SSR/SSE/WS) + tier5 scenarios; check-tier5-nextjs-parity.sh — li RPS/TTFB >= 0.85x nginx (document variants)"
-    status: pending
+    status: completed
   - id: gap-nginx-perf-regression-gate
     content: "CI/nightly gate — all tier5 parity + nextjs scenarios; fail if li p99 > 2x nginx or exploit row regresses"
     status: pending

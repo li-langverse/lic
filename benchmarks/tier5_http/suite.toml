@@ -16,10 +16,19 @@ scenarios = ["static_small", "keepalive_pipelining"]
 timing = true
 langs = ["nginx", "li"]
 
+[profiles.nextjs_parity]
+scenarios = ["nextjs_api", "nextjs_ssr", "nextjs_sse"]
+timing = true
+langs = ["nginx", "li"]
+
+[profiles.nextjs_ci]
+scenarios = ["nextjs_api", "nextjs_ssr", "nextjs_sse", "nextjs_ws"]
+timing = false
+
 [profiles.default]
 scenarios = ["static_small", "keepalive_pipelining"]
 timing = false
 
 [default]
 include = ["static_small", "static_large", "keepalive_pipelining"]
-exclude = ["h2_static", "tcp_echo", "proxy_loopback"]
+exclude = ["h2_static", "tcp_echo", "proxy_loopback", "nextjs_api", "nextjs_ssr", "nextjs_sse", "nextjs_ws"]

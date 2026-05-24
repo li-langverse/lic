@@ -1,4 +1,5 @@
 # Read-only nginx security checklist (oracle for li-httpd proofs/exploits).
+# OWASP Top 10 / CWE-class rows linked via exploits/*.toml — li stricter-or-equal vs nginx.
 # Updated via benchmarks/harness/audit_nginx_src.py — no Li port tracking (no li_done).
 
 [audit]
@@ -25,7 +26,7 @@ nginx_version_fixed = "0.5.0"
 src = "src/http/ngx_http_request.c"
 symbol = "ngx_http_process_request_header"
 notes = "slowloris: client_header_timeout closes idle header readers"
-exploit = ""
+exploit = "exploits/slowloris.toml"
 li_invariant = "header read bounded by configured timeout"
 
 [[mitigation]]
@@ -35,7 +36,7 @@ nginx_version_fixed = "1.5.6"
 src = "src/http/ngx_http_request.c"
 symbol = "ngx_http_process_request_line"
 notes = "oversized request line/headers rejected via large_client_header_buffers"
-exploit = ""
+exploit = "exploits/oversized_request_line.toml"
 li_invariant = "request line and header aggregate size capped"
 
 [[mitigation]]
@@ -49,13 +50,23 @@ exploit = ""
 li_invariant = "body_len ≤ configured max before proxy"
 
 [[mitigation]]
+id = "worker_connections_limit"
+cve = []
+nginx_version_fixed = "0.1.0"
+src = "src/events/ngx_event.c"
+symbol = "ngx_process_events_and_timers"
+notes = "connection exhaustion — worker_connections / accept queue"
+exploit = "exploits/connection_flood.toml"
+li_invariant = "max connections bounded; server stays responsive"
+
+[[mitigation]]
 id = "request_smuggling_cl_te"
 cve = []
 nginx_version_fixed = "1.17.0"
 src = "src/http/ngx_http_parse.c"
 symbol = "ngx_http_parse_header_line"
 notes = "reject requests with both Content-Length and Transfer-Encoding"
-exploit = ""
+exploit = "exploits/request_smuggling_cl_te.toml"
 li_invariant = "mutually exclusive CL and TE on one request"
 
 [[mitigation]]
@@ -64,8 +75,8 @@ cve = []
 nginx_version_fixed = "0.7.0"
 src = "src/http/ngx_http_core_module.c"
 symbol = "ngx_http_merge_slashes"
-notes = "normalize URI slashes; blocks some traversal via // and dot segments"
-exploit = ""
+notes = "normalize URI slashes; blocks traversal via // and dot segments"
+exploit = "exploits/path_traversal.toml"
 li_invariant = "canonical path before static/proxy dispatch"
 
 [[mitigation]]
@@ -75,7 +86,7 @@ nginx_version_fixed = "1.7.5"
 src = "src/http/ngx_http_upstream.c"
 symbol = "ngx_http_upstream_process_headers"
 notes = "upstream duplicate Content-Length / TE rejected at proxy seam"
-exploit = ""
+exploit = "exploits/cache_poisoning_forwarded.toml"
 li_invariant = "at most one Content-Length from upstream"
 
 [[mitigation]]
@@ -137,3 +148,33 @@ symbol = "ngx_resolver_create_name_query"
 notes = "resolver answer size and CNAME chain depth capped"
 exploit = ""
 li_invariant = "DNS response parsing bounded; no unbounded CNAME chains"
+
+[[mitigation]]
+id = "upstream_leak_censor"
+cve = []
+nginx_version_fixed = ""
+src = "packages/li-net-httpd/src/lib.li"
+symbol = "leak_censor"
+notes = "Tier G — SSE/JSON egress scrub when leak_censor.enabled"
+exploit = "exploits/leak_openai_key_in_sse.toml"
+li_invariant = "leak patterns redacted on egress when enabled"
+
+[[mitigation]]
+id = "no_cgi_exec"
+cve = ["CVE-2014-6271", "CVE-2014-6278"]
+nginx_version_fixed = ""
+src = "runtime/li_rt_httpd.c"
+symbol = "static_handler"
+notes = "No CGI/shell execution on User-Agent or path; Shellshock class"
+exploit = "exploits/shellshock_user_agent.toml"
+li_invariant = "static server never invokes shell from headers"
+
+[[mitigation]]
+id = "no_reverse_shell_callback"
+cve = []
+nginx_version_fixed = ""
+src = "runtime/li_rt_httpd.c"
+symbol = "static_handler"
+notes = "RCE must not open loopback callback (reverse-shell class)"
+exploit = "exploits/reverse_shell_canary.toml"
+li_invariant = "no outbound connect from worker on exploit probes"

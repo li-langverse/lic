@@ -134,6 +134,11 @@ if [[ -x "$ROOT/scripts/check-tier5-exploit-harness.sh" ]]; then
   "$ROOT/scripts/check-tier5-exploit-harness.sh"
 fi
 
+if [[ -x "$ROOT/scripts/check-tier5-exploit-owasp-cwe-suite.sh" ]]; then
+  echo "==> check-tier5-exploit-owasp-cwe-suite.sh (gap-exploit-owasp-cwe-suite)"
+  "$ROOT/scripts/check-tier5-exploit-owasp-cwe-suite.sh"
+fi
+
 if [[ -x "$ROOT/scripts/check-tier5-nginx-src-audit.sh" ]]; then
   echo "==> check-tier5-nginx-src-audit.sh"
   "$ROOT/scripts/check-tier5-nginx-src-audit.sh"

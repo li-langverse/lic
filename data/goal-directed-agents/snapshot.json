@@ -24,7 +24,7 @@
         {
           "id": "gap-llvm22-build-warnings",
           "content": "LLVM 22 clean ./scripts/build.sh \u2014 runtime/li_rt_net.c (-Wcast-qual: ptr_mut_i vs ptr_i, iov/read/memcpy/free; drop or use unused httpd helpers); compiler/types/typecheck.cpp (-Wmissing-field-initializers on Ty{}); gate: rebuild with CC=clang-22 and no warnings from those sites",
-          "status": "in_progress"
+          "status": "completed"
         },
         {
           "id": "gap-tier5-streaming-soak",

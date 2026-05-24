@@ -201,6 +201,16 @@ if [[ "${HTTPD_GATES_SKIP_LIC_BUILD:-0}" != "1" && "${HTTPD_RUN_EXPLOIT_RUNTIME:
   fi
 fi
 
+# gap-lb-sticky-sessions: ip_hash + cookie affinity on multi-backend pool (opt-out HTTPD_RUN_STICKY_LB_TEST=0).
+if [[ "${HTTPD_GATES_SKIP_LIC_BUILD:-0}" != "1" && "${HTTPD_RUN_STICKY_LB_TEST:-1}" == "1" ]]; then
+  if [[ -x "$ROOT/scripts/test-lb-sticky-sessions.sh" && -x "$ROOT/build/li-httpd" ]]; then
+    echo "==> test-lb-sticky-sessions.sh (gap-lb-sticky-sessions)"
+    "$ROOT/scripts/test-lb-sticky-sessions.sh" || fail "test-lb-sticky-sessions.sh failed"
+  else
+    fail "gap-lb-sticky-sessions: build/li-httpd missing (run build-li-httpd.sh)"
+  fi
+fi
+
 # m1-upstream-keepalive: pooled upstream fds; stale reconnect (opt-out HTTPD_RUN_UPSTREAM_KEEPALIVE_TEST=0).
 if [[ "${HTTPD_GATES_SKIP_LIC_BUILD:-0}" != "1" && "${HTTPD_RUN_UPSTREAM_KEEPALIVE_TEST:-1}" == "1" ]]; then
   if [[ -x "$ROOT/scripts/test-upstream-keepalive.sh" && -x "$ROOT/build/li-httpd" ]]; then

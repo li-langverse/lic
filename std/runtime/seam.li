@@ -472,6 +472,11 @@ extern proc httpd_upstream_acquire_i() -> int
   ensures true
   decreases 0
 
+extern proc httpd_upstream_acquire_for_slot_i(slot: var int) -> int
+  requires 0 <= slot
+  ensures true
+  decreases 0
+
 extern proc httpd_upstream_release_i(fd: var int, keep: int) -> unit
   requires fd >= 0
   ensures true

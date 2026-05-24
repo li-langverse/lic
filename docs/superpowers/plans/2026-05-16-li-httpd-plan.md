@@ -124,7 +124,7 @@ todos:
     status: completed
   - id: gap-lb-sticky-sessions
     content: "Upstream ip_hash (or cookie affinity) for multi-backend stickiness — config schema + runtime + gate"
-    status: pending
+    status: completed
   - id: gap-tier5-streaming-soak
     content: "tier5 scenarios sse_long_stream + ws_fanout + suite profile parity_streaming; live li-httpd vs nginx"
     status: pending

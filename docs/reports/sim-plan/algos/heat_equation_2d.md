@@ -24,7 +24,7 @@ Explicit 5-point Jacobi needs neighbor indices (`u[i±1][j]`, `u[i][j±1]`). Tod
 | Native reproducibility | checksum `-3387.6965976796632` |
 | Li vs native (`--verify-results --tier 2`) | **match** `-3387.6965976796632` (shared C kernel) |
 | Composable `import_sim_scientific_run.li` | **ok** (pure-Li init-sum smoke) |
-| `./scripts/sim-plan-gates.sh` | **ok** (2026-05-24, `9d26208`, iter `20260524-180703`) |
+| `./scripts/sim-plan-gates.sh` | **ok** (2026-05-24, iter `20260524-182121`) |
 | Harness verify row (`heat_equation_2d/cpp.summary.json`) | **ok** checksum `-3387.6965976796632` |
 
 ```bash
@@ -43,6 +43,4 @@ Native peak RSS recorded by `sim-bench-memory.sh` in `benchmarks/results/memory/
 
 ## Agent iteration (2026-05-24)
 
-Re-ran `./scripts/sim-plan-gates.sh` on `cursor/sim-algo-plan-loop`: tier-2 Li/native checksum `-3387.6965976796632`, composable pure-Li smoke `6606.4384`. Fixed `bench_sim.py` to emit tier-2 `cpp.summary.json` verify rows when `--write-summary` (was `--tier0-only`, leaving stale `ok: false`). Reports: [20260524-174136](../iterations/20260524-174136.md), [20260524-174846](../iterations/20260524-174846.md), [20260524-175919](../iterations/20260524-175919.md), [20260524-180703](../iterations/20260524-180703.md) (code_implementer gate refresh).
-
-**2026-05-24 (code_implementer):** Harness `resolve_lic()` in `bench.py` / `verify.py` and `export LIC` fallback in `sim-plan-gates.sh` so isolated agent workspaces run tier-2 heat verify without a local `build/compiler/lic`. Gate evidence: [20260524-181446](../iterations/20260524-181446.md).
+Re-ran `./scripts/sim-plan-gates.sh` on `cursor/sim-algo-plan-loop`: tier-2 Li/native checksum `-3387.6965976796632`, composable pure-Li smoke `6606.4384`. Fixed `bench_sim.py` to emit tier-2 `cpp.summary.json` verify rows when `--write-summary` (was `--tier0-only`, leaving stale `ok: false`). Reports: [20260524-174136](../iterations/20260524-174136.md), [20260524-174846](../iterations/20260524-174846.md), [20260524-175919](../iterations/20260524-175919.md), [20260524-180703](../iterations/20260524-180703.md), [20260524-181446](../iterations/20260524-181446.md), [20260524-182121](../iterations/20260524-182121.md) (code_implementer `sim-p0-heat-li-smoke` gate refresh).

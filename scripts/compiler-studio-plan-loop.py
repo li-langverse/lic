@@ -84,7 +84,8 @@ def pick_next(todos: list[dict], state: dict) -> dict | None:
     open_todos = [
         t
         for t in todos
-        if t["status"] in ("in_progress", "pending") and t["id"] not in completed
+        if t["status"] in ("in_progress", "pending")
+        and (t["id"] not in completed or t["status"] == "in_progress")
     ]
     if not open_todos:
         return None
@@ -462,6 +463,27 @@ def main() -> int:
         if args.dry_run:
             return 0
 
+        if code != 0:
+            state["iterations"] = state.get("iterations", 0) + 1
+            state.setdefault("history", []).append(
+                {
+                    "at": datetime.now(timezone.utc).isoformat(),
+                    "todo_id": todo["id"],
+                    "agent_exit": code,
+                    "gates_ok": False,
+                }
+            )
+            save_state(state)
+            print(f"agent exit {code} — stopping loop (fix and re-run)", file=sys.stderr)
+            return code
+
+        ok, gate_out = run_gates()
+        if not ok:
+            print("gates: FAIL after agent (not marking done)", file=sys.stderr)
+            print(gate_out[-2000:], file=sys.stderr)
+        else:
+            print("gates: OK after agent")
+
         state["iterations"] = state.get("iterations", 0) + 1
         state.setdefault("history", []).append(
             {
@@ -473,9 +495,8 @@ def main() -> int:
         )
         save_state(state)
 
-        if code != 0:
-            print(f"agent exit {code} — stopping loop (fix and re-run)", file=sys.stderr)
-            return code
+        if not ok:
+            return 1
 
         refresh_live_pages()
 
@@ -483,9 +504,9 @@ def main() -> int:
         if tid not in state.setdefault("completed_ids", []):
             state["completed_ids"].append(tid)
             save_state(state)
-            print(f"todo {tid}: agent exit 0 — advancing loop (marked done in state.json)", flush=True)
+            print(f"todo {tid}: gates OK — advancing loop (marked done in state.json)", flush=True)
         else:
-            print(f"todo {tid}: agent exit 0 (already marked done)", flush=True)
+            print(f"todo {tid}: gates OK (already marked done)", flush=True)
 
         iteration += 1
         todos = load_plan_todos()

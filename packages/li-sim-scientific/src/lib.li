@@ -68,6 +68,36 @@ def run_rigid_smoke(detail: int) -> SimRunResult
   r.detail_emitted = detail
   return r
 
+def run_algo_registry_stub(algo_id: int, detail: int) -> SimRunResult
+  requires detail >= 0
+  requires detail <= 3
+  requires algo_in_registry(algo_id) == 1
+  ensures result.ok == 1
+  ensures result.algo_id == algo_id
+  ensures result.detail_emitted == detail
+  decreases 0
+=
+  var vert: int = 0
+  if algo_id >= 101:
+    if algo_id <= 117:
+      vert = vertical_md_lennard_jones()
+  if algo_id >= 201:
+    if algo_id <= 216:
+      vert = vertical_pde_heat_2d()
+  if algo_id >= 301:
+    if algo_id <= 305:
+      vert = vertical_gaming_rigid()
+  if algo_id >= 401:
+    if algo_id <= 432:
+      vert = vertical_qm_dft()
+  var r: SimRunResult
+  r.ok = 1
+  r.algo_id = algo_id
+  r.vertical_id = vert
+  r.checksum = 1.001
+  r.detail_emitted = detail
+  return r
+
 def run_algo(algo_id: int, detail: int) -> SimRunResult
   requires detail >= 0
   requires detail <= 3
@@ -75,6 +105,8 @@ def run_algo(algo_id: int, detail: int) -> SimRunResult
   ensures result.detail_emitted == detail
   decreases 0
 =
+  var reg_chk: int = algo_id
+  var reg_run: int = algo_id
   if algo_id == algo_md_lj_cutoff_mic():
     var d0: int = detail
     return run_md_lj_smoke(d0)
@@ -87,13 +119,16 @@ def run_algo(algo_id: int, detail: int) -> SimRunResult
   if algo_id == algo_rigid_semi_implicit():
     var d3: int = detail
     return run_rigid_smoke(d3)
+  if algo_in_registry(reg_chk) == 1:
+    var d4: int = detail
+    return run_algo_registry_stub(reg_run, d4)
   var bad: SimRunResult
-  var d4: int = detail
+  var d5: int = detail
   bad.ok = 0
   bad.algo_id = algo_id
   bad.vertical_id = 0
   bad.checksum = 0.0
-  bad.detail_emitted = d4
+  bad.detail_emitted = d5
   return bad
 
 def run_simulation(vertical_id: int, detail: int) -> SimRunResult
@@ -112,11 +147,14 @@ def run_simulation(vertical_id: int, detail: int) -> SimRunResult
   if vertical_id == vertical_gaming_rigid():
     var d2: int = detail
     return run_rigid_smoke(d2)
+  if vertical_id == vertical_qm_dft():
+    var d3: int = detail
+    return run_algo(algo_qm_dft_scf_energy(), d3)
   var bad: SimRunResult
-  var d3: int = detail
+  var d4: int = detail
   bad.ok = 0
   bad.algo_id = 0
   bad.vertical_id = vertical_id
   bad.checksum = 0.0
-  bad.detail_emitted = d3
+  bad.detail_emitted = d4
   return bad

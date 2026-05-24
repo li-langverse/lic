@@ -45,6 +45,7 @@ def tier2_smoke_verify(
     *,
     write_summary: bool = False,
     output_detail: str = "summary",
+    summary_format: str = "json",
 ) -> list[tuple[str, bool, str]]:
     """Build native+Li checksum parity for md_lennard_jones and heat_equation_2d."""
     if not LIC.is_file():
@@ -79,7 +80,11 @@ def tier2_smoke_verify(
                     passed=True,
                     detail=output_detail,
                 )
-                path = write_summary(default_summary_path(name, "cpp"), summary)
+                path = write_summary(
+                    default_summary_path(name, "cpp", summary_format),  # type: ignore[arg-type]
+                    summary,
+                    summary_format,  # type: ignore[arg-type]
+                )
                 detail = f"checksum ok; wrote {path.relative_to(REPO)}"
             out.append((name, True, detail))
             print(f"PASS verify tier2 {name}")
@@ -93,13 +98,20 @@ def tier2_smoke_verify(
                     passed=False,
                     detail=output_detail,
                 )
-                write_summary(default_summary_path(name, "cpp"), summary)
+                write_summary(
+                    default_summary_path(name, "cpp", summary_format),  # type: ignore[arg-type]
+                    summary,
+                    summary_format,  # type: ignore[arg-type]
+                )
             out.append((name, False, str(exc)))
             print(f"FAIL verify tier2 {name}: {exc}", file=sys.stderr)
     return out
 
 
 def main() -> int:
+    sys.path.insert(0, str(REPO / "benchmarks" / "harness"))
+    from sim_summary import SUMMARY_FORMATS
+
     parser = argparse.ArgumentParser()
     parser.add_argument("--write-csv", type=Path, default=RESULTS / "verify.csv")
     parser.add_argument(
@@ -117,6 +129,12 @@ def main() -> int:
         choices=("summary", "fields", "debug", "repro"),
         default=os.environ.get("LI_SIM_OUTPUT_DETAIL", "summary"),
         help="artifact tier; higher levels add paths in summary JSON (files optional)",
+    )
+    parser.add_argument(
+        "--summary-format",
+        choices=SUMMARY_FORMATS,
+        default=os.environ.get("LI_SIM_SUMMARY_FORMAT", "json"),
+        help="summary serialization: json (pretty), json_min, yaml",
     )
     args = parser.parse_args()
 
@@ -147,6 +165,7 @@ def main() -> int:
         for name, passed, detail in tier2_smoke_verify(
             write_summary=args.write_summary,
             output_detail=args.output_detail,
+            summary_format=args.summary_format,
         ):
             ok = ok and passed
             rows.append(

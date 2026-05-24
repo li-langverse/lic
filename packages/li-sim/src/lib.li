@@ -1,6 +1,7 @@
 
 # Core simulation API: adjustable output detail, algorithm ids, composable entry points.
 # Machine-readable summaries: benchmarks/harness/sim_summary.py (li_sim_summary_v1).
+# Registry: benchmarks/competitive/algo_registry.json (126 algo_ids).
 # See docs/ecosystem/sim-output-contract.md
 
 def li_sim_version() -> int
@@ -38,9 +39,31 @@ def output_detail_repro() -> int
 =
   return 3
 
+def summary_format_json() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0
+
+def summary_format_json_min() -> int
+  requires true
+  ensures result == 1
+  decreases 0
+=
+  return 1
+
+def summary_format_yaml() -> int
+  requires true
+  ensures result == 2
+  decreases 0
+=
+  return 2
+
 type SimOutputSpec = object
   public detail: int
   public write_json: int
+  public summary_format: int
 
 type SimRunResult = object
   public ok: int
@@ -53,11 +76,13 @@ def output_spec_default() -> SimOutputSpec
   requires true
   ensures result.detail == 0
   ensures result.write_json == 1
+  ensures result.summary_format == 1
   decreases 0
 =
   var s: SimOutputSpec
   s.detail = 0
   s.write_json = 1
+  s.summary_format = summary_format_json_min()
   return s
 
 def output_spec_from_detail(detail: int) -> SimOutputSpec
@@ -70,6 +95,7 @@ def output_spec_from_detail(detail: int) -> SimOutputSpec
   var s: SimOutputSpec
   s.detail = detail
   s.write_json = 1
+  s.summary_format = summary_format_json_min()
   return s
 
 def vertical_md_lennard_jones() -> int
@@ -99,6 +125,115 @@ def vertical_qm_dft() -> int
   decreases 0
 =
   return 4
+
+def algo_registry_count() -> int
+  requires true
+  ensures result == 126
+  decreases 0
+=
+  return 126
+
+def algo_id_min() -> int
+  requires true
+  ensures result == 1
+  decreases 0
+=
+  return 1
+
+def algo_id_max() -> int
+  requires true
+  ensures result == 903
+  decreases 0
+=
+  return 903
+
+def algo_in_registry(algo_id: int) -> int
+  requires true
+  ensures result >= 0
+  ensures result <= 1
+  decreases 0
+=
+  if algo_id < 1:
+    return 0
+  if algo_id <= 19:
+    return 1
+  if algo_id >= 101:
+    if algo_id <= 117:
+      return 1
+  if algo_id >= 201:
+    if algo_id <= 216:
+      return 1
+  if algo_id >= 301:
+    if algo_id <= 305:
+      return 1
+  if algo_id >= 401:
+    if algo_id <= 432:
+      return 1
+  if algo_id >= 501:
+    if algo_id <= 505:
+      return 1
+  if algo_id >= 511:
+    if algo_id <= 514:
+      return 1
+  if algo_id >= 521:
+    if algo_id <= 523:
+      return 1
+  if algo_id >= 601:
+    if algo_id <= 610:
+      return 1
+  if algo_id >= 701:
+    if algo_id <= 707:
+      return 1
+  if algo_id >= 801:
+    if algo_id <= 805:
+      return 1
+  if algo_id >= 901:
+    if algo_id <= 903:
+      return 1
+  return 0
+
+def algo_family_num(algo_id: int) -> int
+  requires true
+  ensures result >= 0
+  decreases 0
+=
+  if algo_id >= 1:
+    if algo_id <= 19:
+      return 1
+  if algo_id >= 101:
+    if algo_id <= 117:
+      return 2
+  if algo_id >= 201:
+    if algo_id <= 216:
+      return 3
+  if algo_id >= 301:
+    if algo_id <= 305:
+      return 4
+  if algo_id >= 401:
+    if algo_id <= 432:
+      return 5
+  if algo_id >= 501:
+    if algo_id <= 505:
+      return 6
+  if algo_id >= 511:
+    if algo_id <= 514:
+      return 7
+  if algo_id >= 521:
+    if algo_id <= 523:
+      return 8
+  if algo_id >= 601:
+    if algo_id <= 610:
+      return 9
+  if algo_id >= 701:
+    if algo_id <= 707:
+      return 10
+  if algo_id >= 801:
+    if algo_id <= 805:
+      return 11
+  if algo_id >= 901:
+    if algo_id <= 903:
+      return 12
+  return 0
 
 def algo_md_lj_cutoff_mic() -> int
   requires true
@@ -130,10 +265,17 @@ def algo_rigid_semi_implicit() -> int
 
 def algo_qm_dft_scf_energy() -> int
   requires true
-  ensures result == 401
+  ensures result == 418
   decreases 0
 =
-  return 401
+  return 418
+
+def algo_robo_multibody_step() -> int
+  requires true
+  ensures result == 801
+  decreases 0
+=
+  return 801
 
 def run_result_ok(r: SimRunResult) -> int
   requires true

@@ -12,7 +12,9 @@ All `sim.*` runs and tier-2 physics benches should emit **structured, parser-fri
 
 | Format | Use for | CI parse? | Notes |
 |--------|---------|-----------|-------|
-| **JSON** (`.json`) | Tier **S** summaries, oracle manifests, API responses | **Yes** — default | Strict RFC 8259; `jq`, Python `json`, agents |
+| **JSON** (`.summary.json`, pretty) | Tier **S** summaries, oracle manifests, API responses | **Yes** — default for `verify.py` | Strict RFC 8259; `jq`, Python `json`, agents |
+| **JSON minified** (`.summary.min.json`) | Same schema, fewer bytes / tokens | **Yes** | `json.dumps(..., separators=(",", ":"))`; default for Li `sim-write-summary.py` |
+| **YAML** (`.summary.yaml`) | Human skim, compact agents that prefer YAML | **Yes** (optional) | Same keys as JSON; not the primary CI default |
 | **JSONC** (`.jsonc`) | Tier **R** repro bundles only (hand-edited) | After strip-comments | Comments for humans; **never** the only gate artifact |
 | **CSV** | Perf sweep rows (`latest.csv`) | Yes | Keep for [benchmarks dashboard](https://li-langverse.github.io/benchmarks/); one row per lang/run |
 | **TOML** | **Inputs** (`params.toml`) | N/A | Not simulation output |
@@ -21,7 +23,7 @@ All `sim.*` runs and tier-2 physics benches should emit **structured, parser-fri
 
 **Recommendation:** Prefer **plain JSON** for anything CI or agents must consume. Use **JSONC** only inside `publish.zip`-style repro bundles where a scientist may annotate `// basis: def2-svp`. Provide `scripts/validate-sim-summary.sh` that parses JSON (and optionally JSONC via `strip-json-comments` or `jq` with a preprocess step).
 
-Do **not** use YAML as the primary sim output (ambiguous typing, footguns in CI). Do **not** rely on stdout prose or multi‑MB `.traj` text for gates.
+Use **YAML summaries only when explicitly requested** (`--summary-format yaml` / `LI_SIM_SUMMARY_FORMAT=yaml`). CI gates should prefer **JSON** or **minified JSON**. Do **not** rely on stdout prose or multi‑MB `.traj` text for gates.
 
 ---
 
@@ -29,7 +31,15 @@ Do **not** use YAML as the primary sim output (ambiguous typing, footguns in CI)
 
 One file per run (or per bench×lang verify):
 
-**Path:** `benchmarks/results/<benchmark_id>/<lang>.summary.json`  
+**Paths (same schema, different serializers):**
+
+| Format | Path pattern |
+|--------|----------------|
+| Pretty JSON | `benchmarks/results/<benchmark_id>/<lang>.summary.json` |
+| Minified JSON | `benchmarks/results/<benchmark_id>/<lang>.summary.min.json` |
+| YAML | `benchmarks/results/<benchmark_id>/<lang>.summary.yaml` |
+| Li composable runs | `benchmarks/results/li_runs/<algo_name>.li.summary.*` |
+
 **Also:** aggregate `benchmarks/results/<benchmark_id>/summary.json` when a single canonical run exists.
 
 ```json
@@ -118,16 +128,22 @@ publish/
 ```bash
 # Tier-2 smokes → machine-readable summaries
 python3 benchmarks/harness/verify.py --write-summary --output-detail summary
-python3 benchmarks/harness/verify.py --write-summary --output-detail debug
+python3 benchmarks/harness/verify.py --write-summary --summary-format json_min
+python3 benchmarks/harness/verify.py --write-summary --summary-format yaml --output-detail debug
 
+./li-tests/tooling/sim_li_run_summary.sh
 ./scripts/validate-sim-summary.sh
 ```
 
 | Flag / env | Purpose |
 |------------|---------|
-| `--write-summary` | Write `benchmarks/results/<bench>/cpp.summary.json` |
+| `--write-summary` | Write tier-2 summary under `benchmarks/results/<bench>/` |
+| `--summary-format {json,json_min,yaml}` | Serializer (default `json` for verify, `json_min` for Li helper) |
+| `LI_SIM_SUMMARY_FORMAT` | Same as `--summary-format` |
 | `--output-detail {summary,fields,debug,repro}` | Sets `output_detail` + `artifacts.*` hints in JSON |
 | `LI_SIM_OUTPUT_DETAIL` | Same as `--output-detail` for `verify.py` / `bench.py` |
+| `scripts/sim-write-summary.py` | Li run → same `build_summary_from_li_run()` as verify |
+| `LI_SIM_ALGO_ID`, `LI_SIM_OK`, `LI_SIM_CHECKSUM`, `LI_SIM_VERTICAL_ID` | Env inputs for `sim-write-summary.py --from-env` |
 | `output_detail_summary()` … `repro()` | Li API: pass int to `run_simulation` / `run_algo` (0–3) |
 | `LI_MD_DUMP_TRAJ=1` | Tier D only — existing trajectory export |
 
@@ -170,9 +186,11 @@ Composable smoke: `li-tests/composable/import_sim_scientific_run.li`.
 
 ## Harness integration
 
-1. **Done:** `verify.py --write-summary` → `li_sim_summary_v1` per tier-2 smoke.  
-2. **Open:** `bench.py` merge `wall_time_s` into summary.  
-3. **Done:** `./scripts/validate-sim-summary.sh` — schema check.  
+1. **Done:** `verify.py --write-summary` → `li_sim_summary_v1` per tier-2 smoke (`json` / `json_min` / `yaml`).  
+2. **Done:** `sim_summary.py` + `sim-write-summary.py` + `sim_li_run_summary.sh` for Li runs.  
+3. **Done:** `benchmarks/competitive/algo_registry.json` (126 ids); `run_algo` dispatches registry stubs.  
+4. **Open:** `bench.py` merge `wall_time_s` into summary.  
+5. **Done:** `./scripts/validate-sim-summary.sh` — schema check (JSON + min JSON + YAML).  
 4. **Open:** `SimResult` JSON serialize from Li when string I/O exists in `lic`.
 
 ---

@@ -27,14 +27,16 @@ Tracked ecosystems live in `benchmarks/competitive/registry.toml` (`cpp`, `rust`
 
 ## Machine-readable summaries (`li_sim_summary_v1`)
 
-Per-bench JSON (not CSV): `benchmarks/results/<bench>/<lang>.summary.json`
+Per-bench summaries (not CSV): pretty JSON, minified JSON, or YAML — same schema.
 
 ```bash
-python3 benchmarks/harness/verify.py --write-summary --output-detail summary
+python3 benchmarks/harness/verify.py --write-summary --summary-format json
+python3 benchmarks/harness/verify.py --write-summary --summary-format json_min
+./li-tests/tooling/sim_li_run_summary.sh   # Li composable → benchmarks/results/li_runs/
 ./scripts/validate-sim-summary.sh
 ```
 
-See [sim-output-contract.md](../../docs/ecosystem/sim-output-contract.md). Detail levels: `summary` | `fields` | `debug` | `repro` (CLI or `LI_SIM_OUTPUT_DETAIL`).
+See [sim-output-contract.md](../../docs/ecosystem/sim-output-contract.md). Detail: `summary` | `fields` | `debug` | `repro`. Format: `LI_SIM_SUMMARY_FORMAT` or `--summary-format`.
 
 ## Regenerate
 

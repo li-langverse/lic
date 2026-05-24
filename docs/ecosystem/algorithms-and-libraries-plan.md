@@ -303,7 +303,7 @@ P4  deepen physics.* / sim.* / chem per verticals.toml
 | AL-6 | **Cinematic algorithm RFC** (encode, color, audio) | `lic` | **Done (2026-05-23)** — `check-cinematic-rfc.sh` |
 | AL-7 | Quarterly **SOTA review** ritual — update `last_reviewed` in registries | `roadmap` | Stale intel |
 | AL-8 | **`li` language repo** tracker honesty — unchecked 2e/2f/7 | `li-language` | Contributor confusion |
-| AL-9 | **`packages/gui`** scaffold + composable `import gui` | `lic` | Native Studio |
+| AL-9 | **`packages/gui`** scaffold + composable `import gui` | `lic` | **Done (2026-05-23)** — `import_gui_studio_shell.li` |
 | AL-10 | **`packages/linalg`** scaffold + `math_linalg` tests | `lic` | **Done (2026-05-23)** — `import linalg` matmul smoke |
 | AL-11 | **`math` quaternion + Mat4** completion + `scene` wire-up | `lic` | Games/robotics/camera |
 | AL-12 | **`packages/anim`**, **`packages/seq`** scaffolds | `lic` | **Done (2026-05-23)** — `import anim` keyframe/clip; `import seq` shot/timeline |

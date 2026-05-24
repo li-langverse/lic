@@ -16,6 +16,7 @@
     "wave-c-competitive-intel",
     "wave-c-verticals-toml",
     "wave-c-ui-rect-vc",
+    "wave-d-gui-scaffold",
     "wave-d-02-al2-catalog",
     "wave-d-03-ux-inspector",
     "wave-d-04-math-quat-mat4",
@@ -48,5 +49,5 @@
       "gates_ok": false
     }
   ],
-  "note": "2026-05-24: cleared premature completed_ids for wave-a-llvm22-typecheck-warnings and wave-d-gui-scaffold (plan still open; gates had failed or plan YAML not updated)"
+  "note": "2026-05-24: wave-d-gui-scaffold re-verified (gates green, plan YAML completed); wave-a-llvm22-typecheck-warnings still open"
 }

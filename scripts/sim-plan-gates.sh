@@ -6,7 +6,7 @@ export LI_REPO_ROOT="$ROOT"
 export LIC_ROOT="${LIC_ROOT:-$(cd "$ROOT/../.." && pwd)/lic}"
 export LIC="$("$ROOT/scripts/resolve-lic.sh" 2>/dev/null || true)"
 if [[ -z "${LIC:-}" || ! -x "$LIC" ]]; then
-  LIC="${LIC_ROOT}/build/compiler/lic/lic"
+  export LIC="${LIC_ROOT}/build/compiler/lic/lic"
 fi
 
 # Native C++ reference kernels need clang (often clang-22 on PATH, not plain `clang`).

@@ -11,19 +11,26 @@ import sys
 from pathlib import Path
 
 REPO = Path(__file__).resolve().parents[2]
-LIC = REPO / "build" / "compiler" / "lic" / "lic"
 RESULTS = REPO / "benchmarks" / "results"
+
+
+def resolve_lic() -> Path:
+    env = os.environ.get("LIC")
+    if env:
+        return Path(env)
+    return REPO / "build" / "compiler" / "lic" / "lic"
 
 # Wave B tier-2 verify: Lennard-Jones MD + one PDE (heat 2D).
 TIER2_SMOKE: tuple[str, ...] = ("md_lennard_jones", "heat_equation_2d")
 
 
 def lic_build(path: Path) -> bool:
-    if not LIC.is_file():
-        print(f"lic missing at {LIC}", file=sys.stderr)
+    lic = resolve_lic()
+    if not lic.is_file():
+        print(f"lic missing at {lic}", file=sys.stderr)
         return False
-    env = {**os.environ, "LIC": str(LIC)}
-    cmd = [str(LIC), "build", "--allow-open-vc", "--no-lean-verify", str(path), "-o", "/dev/null"]
+    env = {**os.environ, "LIC": str(lic)}
+    cmd = [str(lic), "build", "--allow-open-vc", "--no-lean-verify", str(path), "-o", "/dev/null"]
     proc = subprocess.run(
         cmd,
         cwd=REPO,
@@ -48,8 +55,9 @@ def tier2_smoke_verify(
     summary_format: str = "json",
 ) -> list[tuple[str, bool, str]]:
     """Build native+Li checksum parity for md_lennard_jones and heat_equation_2d."""
-    if not LIC.is_file():
-        print(f"lic missing at {LIC}", file=sys.stderr)
+    lic = resolve_lic()
+    if not lic.is_file():
+        print(f"lic missing at {lic}", file=sys.stderr)
         return [(name, False, "lic missing") for name in TIER2_SMOKE]
 
     os.environ.setdefault("CC", "clang-22")

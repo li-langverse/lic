@@ -29,6 +29,8 @@ STATE_DIR = ROOT / "data/studio-ui-ux-plan-loop"
 STATE_FILE = STATE_DIR / "state.json"
 GATES = ROOT / "scripts/studio-ui-ux-plan-gates.sh"
 CAPTURE = ROOT / "scripts/studio-ui-ux-capture-progress.sh"
+COMMIT = ROOT / "scripts/studio-ui-ux-commit-push.sh"
+UX_FILE = STATE_DIR / "latest-ux-assessment.json"
 
 
 def load_plan_todos() -> list[dict]:
@@ -78,6 +80,26 @@ def run_gates() -> tuple[bool, str]:
     )
     out = (proc.stdout or "") + (proc.stderr or "")
     return proc.returncode == 0, out[-8000:]
+
+
+def read_ux_pass() -> bool:
+    if not UX_FILE.is_file():
+        return False
+    try:
+        data = json.loads(UX_FILE.read_text(encoding="utf-8"))
+        return bool(data.get("pass"))
+    except json.JSONDecodeError:
+        return False
+
+
+def commit_push(todo_id: str) -> None:
+    if not COMMIT.is_file():
+        return
+    subprocess.run(
+        ["bash", str(COMMIT), todo_id, f"feat(studio-ui): {todo_id} — iteration"],
+        cwd=ROOT,
+        check=False,
+    )
 
 
 def post_capture(todo_id: str) -> int:
@@ -282,7 +304,21 @@ def build_instruction(todo: dict) -> str:
 3. Score **UX-01 … UX-14** (0–3) in PR body — see rubric below.
 4. Run `./scripts/studio-ui-ux-capture-progress.sh` with `STUDIO_UI_UX_ITERATION={todo['id']}`.
 5. Run `./scripts/bench-studio-viewport-perf.sh` — cite `latest-bench.json` (load, particles, memory).
-6. **Do not** commit PNG/MP4 to git.
+6. Write **`data/studio-ui-ux-plan-loop/latest-ux-assessment.json`** (see schema below).
+7. **Do not** commit PNG/MP4 to git.
+
+### latest-ux-assessment.json
+```json
+{{
+  "pass": true,
+  "avg_score": 2.1,
+  "min_score": 1.8,
+  "dimensions": {{ "UX-01": {{ "score": 2, "note": "..." }}, "...": {{}} }},
+  "honest_native_viewport": false,
+  "notes": "What improved; what is still mock-only"
+}}
+```
+**pass** = all UX-01…14 scored, avg ≥ 2.0, min ≥ 1.5, no P0 regressions vs last iteration.
 
 ## PH-UX targets
 - Viewport ≥ 60 fps (when native path exists)
@@ -340,12 +376,9 @@ def main() -> int:
             return 0
 
         print(f"\n=== studio-ui-ux iteration {iteration + 1}: {todo['id']} ===")
-        ok, gate_out = run_gates()
-        print("gates: OK" if ok else "gates: FAIL")
-        if not ok:
-            print(gate_out[-1500:])
 
         if args.skip_agent:
+            ok, gate_out = run_gates()
             return 0 if ok else 1
 
         code, msg = run_cursor_agent(todo, args.dry_run)
@@ -353,9 +386,27 @@ def main() -> int:
         if args.dry_run:
             return 0
 
+        if code != 0:
+            return code
+
+        ok, gate_out = run_gates()
+        print("gates: OK" if ok else "gates: FAIL")
+        if not ok:
+            print(gate_out[-1500:], file=sys.stderr)
+
         cap_rc = post_capture(todo["id"])
         print(f"capture: exit {cap_rc}", flush=True)
 
+        subprocess.run(
+            [sys.executable, str(ROOT / "scripts/studio-ui-ux-iteration-report.py"), todo["id"]],
+            cwd=ROOT,
+            check=False,
+        )
+
+        if ok:
+            commit_push(todo["id"])
+
+        ux_ok = read_ux_pass()
         state["iterations"] = state.get("iterations", 0) + 1
         state.setdefault("history", []).append(
             {
@@ -364,12 +415,13 @@ def main() -> int:
                 "agent_exit": code,
                 "capture_exit": cap_rc,
                 "gates_ok": ok,
+                "ux_pass": ux_ok,
             }
         )
         save_state(state)
 
-        if code != 0:
-            return code
+        if not ok:
+            return 1
 
         tid = todo["id"]
         if tid not in state.setdefault("completed_ids", []):

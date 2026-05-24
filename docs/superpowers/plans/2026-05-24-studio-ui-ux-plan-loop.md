@@ -2,6 +2,9 @@
 name: Studio UI/UX plan loop
 overview: Goal-directed agent implements native Li Studio UI (ui/gui/render) and assesses UX + perf every iteration via capture/bench. Progress on GitHub issues/releases only — no large assets in repo.
 todos:
+  - id: studio-ux-00-design-system
+    content: "Design system — studio-ui-ux-generate-design-system.sh + tokens + demo HTML refresh"
+    status: pending
   - id: studio-ux-01-ui-composables
     content: "li-ui — layout + paint IR composables; li-tests compile_ok for studio shell"
     status: pending

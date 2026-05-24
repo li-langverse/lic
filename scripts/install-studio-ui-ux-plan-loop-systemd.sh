@@ -16,7 +16,7 @@ Type=simple
 WorkingDirectory=$ROOT
 Environment=LI_CURSOR_AGENTS_ROOT=$ROOT/../li-cursor-agents
 EnvironmentFile=-$HOME/Documents/Cursor/.env
-ExecStart=$ROOT/scripts/studio-ui-ux-plan-continuous.sh
+ExecStart=$ROOT/scripts/studio-ui-ux-run-until-done.sh
 Restart=on-failure
 RestartSec=60
 

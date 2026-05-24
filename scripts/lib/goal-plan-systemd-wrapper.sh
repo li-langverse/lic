@@ -49,8 +49,14 @@ run_cwd="$ROOT"
 if [[ -n "${GOAL_PLAN_WORKTREE:-}" ]]; then
   run_cwd="$GOAL_PLAN_WORKTREE"
   branch="${GOAL_PLAN_BRANCH:-}"
-  mkdir -p "$(dirname "$run_cwd")"
-  if [[ ! -d "$run_cwd/.git" ]]; then
+  if git -C "$run_cwd" rev-parse --git-dir >/dev/null 2>&1; then
+    echo "goal-plan-systemd[$GOAL_PLAN_ID]: using checkout $run_cwd"
+  else
+    mkdir -p "$(dirname "$run_cwd")"
+    if [[ -e "$run_cwd" ]]; then
+      echo "goal-plan-systemd[$GOAL_PLAN_ID]: $run_cwd exists but is not a git repo — exit 1" >&2
+      exit 1
+    fi
     echo "goal-plan-systemd[$GOAL_PLAN_ID]: creating worktree $run_cwd"
     if [[ -n "$branch" ]]; then
       git -C "$ROOT" fetch origin "$branch" 2>/dev/null || true

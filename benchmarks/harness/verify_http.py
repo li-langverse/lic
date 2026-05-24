@@ -23,10 +23,10 @@ from typing import Any
 from http_bench_servers import (
     is_proxy_scenario,
     pick_free_port,
+    proxy_backend_available,
     resolve_nginx_binary,
-    resolve_node_binary,
     start_li_httpd,
-    start_nextjs_toy_backend,
+    start_proxy_backend,
     start_nginx,
     start_proxy_front,
     stop_proc,
@@ -49,10 +49,14 @@ RESULTS = REPO / "benchmarks" / "results"
 def _http_request(host: str, port: int, method: str, path: str, timeout: float = 5.0) -> tuple[int, bytes]:
     conn = http.client.HTTPConnection(host, port, timeout=timeout)
     try:
-        conn.request(method, path)
+        conn.request(method, path, headers={"Connection": "close"})
         resp = conn.getresponse()
         try:
-            body = resp.read()
+            clen = resp.getheader("Content-Length")
+            if clen is not None:
+                body = resp.read(int(clen))
+            else:
+                body = resp.read(65536)
         except http.client.IncompleteRead as exc:
             body = exc.partial
         return resp.status, body
@@ -77,7 +81,10 @@ def _run_verify_requests(
         method = str(item.get("method", "GET")).upper()
         path = str(item.get("path", "/"))
         expect_status = int(item.get("expect_status", 200))
-        status, body = _http_request(host, port, method, path)
+        timeout = float(item.get("timeout_sec", 5.0))
+        if "/stream/sse" in path:
+            timeout = max(timeout, 30.0)
+        status, body = _http_request(host, port, method, path, timeout=timeout)
         if status != expect_status:
             return False, f"{method} {path}: status {status} != {expect_status}"
         expect_sha = item.get("body_sha256")
@@ -128,8 +135,8 @@ def verify_scenario(
     doc_root = resolve_document_root(cfg)
     if not is_proxy_scenario(cfg) and not doc_root.is_dir():
         return False, f"document_root missing: {doc_root}"
-    if is_proxy_scenario(cfg) and not resolve_node_binary():
-        return False, "proxy scenario requires node for nextjs-toy backend"
+    if is_proxy_scenario(cfg) and not proxy_backend_available(cfg):
+        return False, "proxy scenario backend unavailable (node or streaming-soak fixture)"
 
     port_base = int((cfg.get("global") or {}).get("port_base", 18080))
     port = pick_free_port(port_base, sum(ord(c) for c in name) % 200)
@@ -151,7 +158,7 @@ def verify_scenario(
     if verify_target == "backend" and is_proxy_scenario(cfg):
         backend_proc: subprocess.Popen[object] | None = None
         try:
-            backend_proc, backend_port = start_nextjs_toy_backend(cfg, name)
+            backend_proc, backend_port = start_proxy_backend(cfg, name)
             ok, msg = _run_verify_requests(
                 cfg, host="127.0.0.1", port=backend_port, doc_root=doc_root
             )

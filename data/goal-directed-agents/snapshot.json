@@ -29,7 +29,7 @@
         {
           "id": "gap-tier5-streaming-soak",
           "content": "tier5 scenarios sse_long_stream + ws_fanout + suite profile parity_streaming; live li-httpd vs nginx",
-          "status": "pending"
+          "status": "completed"
         },
         {
           "id": "gap-nextjs-toy-bench",
@@ -44,9 +44,7 @@
       ],
       "plan_completed": 5,
       "plan_total": 6,
-      "plan_pending": [
-        "gap-tier5-streaming-soak"
-      ],
+      "plan_pending": [],
       "state": {
         "completed_ids": [
           "h-lean-server-modules",

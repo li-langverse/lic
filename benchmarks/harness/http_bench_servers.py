@@ -125,8 +125,22 @@ def nextjs_toy_script() -> Path:
     return TIER5 / "fixtures" / "nextjs-toy" / "server.mjs"
 
 
+def streaming_soak_script() -> Path:
+    return TIER5 / "fixtures" / "streaming-soak" / "server.py"
+
+
 def resolve_node_binary() -> str | None:
     return shutil.which("node") or shutil.which("nodejs")
+
+
+def proxy_backend_available(cfg: dict[str, Any]) -> bool:
+    server = cfg.get("server") or {}
+    backend = server.get("backend")
+    if backend == "nextjs_toy":
+        return bool(resolve_node_binary() and nextjs_toy_script().is_file())
+    if backend == "streaming_soak":
+        return streaming_soak_script().is_file()
+    return True
 
 
 def start_nextjs_toy_backend(cfg: dict[str, Any], name: str) -> tuple[subprocess.Popen[object] | None, int]:
@@ -152,6 +166,40 @@ def start_nextjs_toy_backend(cfg: dict[str, Any], name: str) -> tuple[subprocess
         err = proc.stderr.read() if proc.stderr else ""
         raise RuntimeError(f"nextjs-toy exited: {err.strip() or 'unknown'}")
     return proc, backend_port
+
+
+def start_streaming_soak_backend(cfg: dict[str, Any], name: str) -> tuple[subprocess.Popen[object] | None, int]:
+    server = cfg.get("server") or {}
+    if server.get("backend") != "streaming_soak":
+        return None, scenario_backend_port(cfg, name)
+    script = streaming_soak_script()
+    backend_port = scenario_backend_port(cfg, name)
+    if not script.is_file():
+        return None, backend_port
+    load = cfg.get("load") or {}
+    ws_frames = int(load.get("messages_min", 3)) if str(load.get("kind", "")) == "ws" else 3
+    proc = subprocess.Popen(
+        [sys.executable, str(script), str(backend_port), "--ws-frames", str(ws_frames)],
+        stdout=subprocess.DEVNULL,
+        stderr=subprocess.PIPE,
+        text=True,
+    )
+    if not wait_port(backend_port, timeout=10.0):
+        err = proc.stderr.read() if proc.stderr else ""
+        stop_proc(proc)
+        raise RuntimeError(f"streaming-soak failed on {backend_port}: {err.strip() or 'no listen'}")
+    if proc.poll() is not None:
+        err = proc.stderr.read() if proc.stderr else ""
+        raise RuntimeError(f"streaming-soak exited: {err.strip() or 'unknown'}")
+    return proc, backend_port
+
+
+def start_proxy_backend(cfg: dict[str, Any], name: str) -> tuple[subprocess.Popen[object] | None, int]:
+    server = cfg.get("server") or {}
+    backend = server.get("backend")
+    if backend == "streaming_soak":
+        return start_streaming_soak_backend(cfg, name)
+    return start_nextjs_toy_backend(cfg, name)
 
 
 def prepare_li_httpd_conf(name: str, port: int, *, cfg: dict[str, Any] | None = None) -> tuple[Path, Path]:
@@ -227,10 +275,10 @@ def start_proxy_front(
     port: int,
     lang: str,
 ) -> tuple[subprocess.Popen[object] | None, Path | None, subprocess.Popen[object] | None]:
-    """Start nextjs-toy backend (if configured) and nginx or li-httpd front."""
+    """Start proxy backend (nextjs-toy or streaming-soak) and nginx or li-httpd front."""
     backend_proc: subprocess.Popen[object] | None = None
     if is_proxy_scenario(cfg):
-        backend_proc, _ = start_nextjs_toy_backend(cfg, name)
+        backend_proc, _ = start_proxy_backend(cfg, name)
     if lang == "nginx":
         front_proc, work_dir = start_nginx(cfg, port)
     elif lang == "li":

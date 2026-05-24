@@ -130,7 +130,7 @@ todos:
     status: completed
   - id: gap-tier5-streaming-soak
     content: "tier5 scenarios sse_long_stream + ws_fanout + suite profile parity_streaming; live li-httpd vs nginx"
-    status: pending
+    status: completed
   - id: gap-nextjs-toy-bench
     content: "Next.js toy app (API/SSR/SSE/WS) + tier5 scenarios; check-tier5-nextjs-parity.sh — li RPS/TTFB >= 0.85x nginx (document variants)"
     status: completed

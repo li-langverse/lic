@@ -311,6 +311,18 @@ if [[ "${HTTPD_GATES_SKIP_LIC_BUILD:-0}" != "1" && "${HTTPD_RUN_M3_TOKEN_BUDGET_
   fi
 fi
 
+# gap-tier5-streaming-soak: SSE long stream + WS fanout vs nginx on live li-httpd.
+if [[ "${HTTPD_GATES_SKIP_LIC_BUILD:-0}" != "1" && "${HTTPD_RUN_STREAMING_SOAK_TEST:-1}" == "1" ]]; then
+  if [[ -x "$ROOT/scripts/check-tier5-streaming-soak.sh" && -x "$ROOT/build/li-httpd" ]]; then
+    echo "==> check-tier5-streaming-soak.sh (gap-tier5-streaming-soak)"
+    HTTPD_BENCH_SKIP_TIMING="${HTTPD_BENCH_SKIP_TIMING:-1}" \
+      "$ROOT/scripts/check-tier5-streaming-soak.sh" \
+      || fail "check-tier5-streaming-soak.sh failed"
+  else
+    fail "gap-tier5-streaming-soak: build/li-httpd missing (run build-li-httpd.sh)"
+  fi
+fi
+
 # gap-nginx-perf-regression-gate: tier5 parity + nextjs + exploit compare (verify lean; timing when wrk/nginx/node).
 if [[ "${HTTPD_GATES_SKIP_LIC_BUILD:-0}" != "1" && "${HTTPD_RUN_PERF_REGRESSION_GATE:-1}" == "1" ]]; then
   if [[ -x "$ROOT/scripts/check-tier5-nginx-perf-regression-gate.sh" && -x "$ROOT/build/li-httpd" ]]; then

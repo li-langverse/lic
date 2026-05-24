@@ -22,8 +22,8 @@ from bench_http_parity import check_parity_ratios
 from http_bench_servers import (
     is_proxy_scenario,
     pick_free_port,
+    proxy_backend_available,
     resolve_nginx_binary,
-    resolve_node_binary,
     scenario_port,
     start_li_httpd,
     start_nginx,
@@ -31,6 +31,7 @@ from http_bench_servers import (
     stop_proc,
     stop_proxy_stack,
 )
+from streaming_soak_load import run_streaming_soak_load
 from http_bench_toml import (
     REPO,
     TIER5,
@@ -194,6 +195,32 @@ def run_load_for_lang(
 ) -> list[dict[str, object]]:
     load = cfg.get("load") or {}
     tool = str(load.get("tool", "wrk"))
+    if tool == "streaming_soak":
+        metrics = run_streaming_soak_load(cfg, port=port)
+        if not metrics:
+            return []
+        sha = git_sha()
+        cpu = cpu_model()
+        flags = f"profile={cfg.get('_profile', '')};tool=streaming_soak"
+        unit_map = {"rps": "events/s", "p99_latency_ms": "ms", "stream_ok_ratio": "ratio"}
+        rows: list[dict[str, object]] = []
+        threads = int(load.get("concurrent", 16))
+        for metric, value in metrics.items():
+            rows.append(
+                {
+                    "benchmark": cfg["name"],
+                    "lang": lang,
+                    "variant": variant,
+                    "threads": threads,
+                    "metric": metric,
+                    "value": value,
+                    "unit": unit_map.get(metric, ""),
+                    "git_sha": sha,
+                    "cpu_model": cpu,
+                    "flags": flags,
+                }
+            )
+        return rows
     if tool != "wrk":
         print(f"warn: load tool {tool!r} not implemented", file=sys.stderr)
         return []
@@ -369,9 +396,14 @@ def main() -> int:
     if subprocess.call(vcmd) != 0:
         return 1
 
-    if not shutil.which("wrk"):
-        print("bench_http: wrk not in PATH — skipping load timing", file=sys.stderr)
-        return 0
+    names_need_wrk = [
+        n
+        for n in names
+        if str((merge_scenario(n, overrides=args.overrides, profile=profile).get("load") or {}).get("tool", "wrk"))
+        != "streaming_soak"
+    ]
+    if names_need_wrk and not shutil.which("wrk"):
+        print("bench_http: wrk not in PATH — skipping wrk load timing", file=sys.stderr)
     if not resolve_nginx_binary():
         print("bench_http: nginx missing — skipping load timing", file=sys.stderr)
         return 0
@@ -392,8 +424,15 @@ def main() -> int:
         parity_tbl = cfg.get("parity") or {}
         if parity_tbl.get("verify_only"):
             continue
-        if is_proxy_scenario(cfg) and not resolve_node_binary():
-            print(f"bench_http {name}: skip timing (node missing for nextjs-toy)", file=sys.stderr)
+        if is_proxy_scenario(cfg) and not proxy_backend_available(cfg):
+            print(f"bench_http {name}: skip timing (proxy backend unavailable)", file=sys.stderr)
+            continue
+        load_tool = str((cfg.get("load") or {}).get("tool", "wrk"))
+        if load_tool == "streaming_soak":
+            # Streaming soak uses custom driver; wrk not required.
+            pass
+        elif not shutil.which("wrk"):
+            print(f"bench_http {name}: skip timing (wrk missing)", file=sys.stderr)
             continue
         for lang in langs:
             proc = None
@@ -429,7 +468,7 @@ def main() -> int:
         print("bench_http: no timing rows produced", file=sys.stderr)
         return 1
 
-    if args.check_parity or profile in ("parity", "nextjs_parity"):
+    if args.check_parity or profile in ("parity", "nextjs_parity", "parity_streaming"):
         ok, notes = check_parity_ratios(all_rows, names, cfg_by_name={n: merge_scenario(n, overrides=args.overrides, profile=profile) for n in names})
         for line in notes:
             print(line)

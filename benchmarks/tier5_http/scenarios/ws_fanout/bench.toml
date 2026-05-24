@@ -1,0 +1,28 @@
+name = "ws_fanout"
+phase = "m2"
+enabled = true
+
+[server]
+kind = "proxy"
+backend = "streaming_soak"
+backend_port = 19102
+
+[verify]
+target = "edge"
+requests = [
+  { method = "GET", path = "/stream/ws", expect_status = 426 },
+]
+
+[load]
+tool = "streaming_soak"
+kind = "ws"
+concurrent = 16
+messages_min = 2
+duration_sec = 5
+
+[metrics]
+collect = ["rps", "stream_ok_ratio"]
+
+[parity]
+rps_ratio_min = 0.85
+p99_ratio_max = 2.0

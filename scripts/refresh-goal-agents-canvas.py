@@ -20,13 +20,65 @@ def todo_status(runner: dict, todo_id: str, plan_status: str) -> str:
     return "pending"
 
 
+def build_panel(runner: dict) -> dict:
+    todos_out: list[dict] = []
+    for t in runner.get("todos") or []:
+        st = todo_status(runner, t["id"], t.get("status", "pending"))
+        todos_out.append(
+            {
+                "id": t["id"],
+                "content": (t.get("content") or "")[:120],
+                "status": st,
+            }
+        )
+    if not todos_out:
+        todos_out = [
+            {
+                "id": "—",
+                "content": "No plan todos in snapshot for this loop",
+                "status": "pending",
+            }
+        ]
+    return {
+        "id": runner.get("id", ""),
+        "name": runner.get("name", ""),
+        "branch": runner.get("branch", ""),
+        "done": runner.get("plan_completed", 0),
+        "total": runner.get("plan_total", 0),
+        "running": bool(runner.get("running")),
+        "iteration": runner.get("current_iteration") or "",
+        "active_todo_id": runner.get("active_todo_id") or "",
+        "todos": todos_out,
+    }
+
+
 def main() -> int:
     if not SNAP.is_file():
         print("refresh-goal-agents-canvas: run goal-directed-agents-snapshot.py first")
         return 1
     s = json.loads(SNAP.read_text(encoding="utf-8"))
     runners = s.get("runners") or []
-    httpd = next((r for r in runners if r["id"] == "httpd"), None)
+    panels = [build_panel(r) for r in runners]
+    if not panels:
+        panels = [
+            {
+                "id": "none",
+                "name": "No runners",
+                "branch": "",
+                "done": 0,
+                "total": 0,
+                "running": False,
+                "iteration": "",
+                "active_todo_id": "",
+                "todos": [
+                    {
+                        "id": "—",
+                        "content": "Run goal-directed-agents-snapshot.py",
+                        "status": "pending",
+                    }
+                ],
+            }
+        ]
 
     runner_rows: list[str] = []
     for r in runners:
@@ -47,20 +99,28 @@ def main() -> int:
         )
     hist_table = "\n".join(hist_rows) if hist_rows else '          ["—", "—", "—", "—", "—"],'
 
-    gap_todos: list[dict] = []
-    if httpd:
-        for t in httpd.get("todos") or []:
-            st = todo_status(httpd, t["id"], t.get("status", "pending"))
-            gap_todos.append(
-                {"id": t["id"], "content": t.get("content", "")[:100], "status": st}
-            )
-
-    gap_items = ",\n".join(
-        f'    {{ id: {json.dumps(t["id"])}, content: {json.dumps(t["content"])}, status: {json.dumps(t["status"])} }}'
-        for t in gap_todos
-    )
-    if not gap_items:
-        gap_items = '    { id: "—", content: "No gap todos in snapshot", status: "pending" }'
+    panel_blocks: list[str] = []
+    for p in panels:
+        todo_items = ",\n".join(
+            f'        {{ id: {json.dumps(t["id"])}, content: {json.dumps(t["content"])}, status: {json.dumps(t["status"])} }}'
+            for t in p["todos"]
+        )
+        panel_blocks.append(
+            f"""  {{
+    id: {json.dumps(p["id"])},
+    name: {json.dumps(p["name"])},
+    branch: {json.dumps(p["branch"])},
+    done: {p["done"]},
+    total: {p["total"]},
+    running: {json.dumps(p["running"])},
+    iteration: {json.dumps(p["iteration"])},
+    activeTodoId: {json.dumps(p["active_todo_id"])},
+    todos: [
+{todo_items}
+    ],
+  }}"""
+        )
+    panels_const = ",\n".join(panel_blocks)
 
     activity_parts: list[str] = []
     for r in runners:
@@ -72,10 +132,6 @@ def main() -> int:
         activity_parts = ["No active agent log lines."]
     activity_const = ",\n".join(f"  {json.dumps(p)}" for p in activity_parts)
 
-    httpd_done = httpd.get("plan_completed", 0) if httpd else 0
-    httpd_total = httpd.get("plan_total", 0) if httpd else 0
-    httpd_running = "yes" if httpd and httpd.get("running") else "no"
-    httpd_iter = httpd.get("current_iteration", "") if httpd else ""
     running_count = sum(1 for r in runners if r.get("running"))
 
     content = f'''import {{
@@ -84,21 +140,20 @@ def main() -> int:
   Grid,
   H1,
   H2,
+  IconButton,
+  Row,
   Stack,
   Stat,
   Table,
   Text,
   TodoListCard,
   UsageBar,
+  useCanvasState,
 }} from "cursor/canvas";
 
 const GENERATED_AT = {json.dumps(s.get("generated_at", ""))};
 const TZ = {json.dumps(s.get("tz", "UTC"))};
 const RUNNING_LOOPS = {running_count};
-const HTTPD_DONE = {httpd_done};
-const HTTPD_TOTAL = {httpd_total};
-const HTTPD_RUNNING = {json.dumps(httpd_running)};
-const HTTPD_ITERATION = {json.dumps(httpd_iter)};
 
 const RUNNER_ROWS: string[][] = [
 {runner_table}
@@ -108,8 +163,20 @@ const HIST_ROWS: string[][] = [
 {hist_table}
 ];
 
-const GAP_TODOS = [
-{gap_items}
+type AgentPanel = {{
+  id: string;
+  name: string;
+  branch: string;
+  done: number;
+  total: number;
+  running: boolean;
+  iteration: string;
+  activeTodoId: string;
+  todos: ReadonlyArray<{{ id: string; content: string; status: "pending" | "in_progress" | "completed" }}>;
+}};
+
+const RUNNER_PANELS: readonly AgentPanel[] = [
+{panels_const}
 ] as const;
 
 const ACTIVITY_LINES: string[] = [
@@ -117,8 +184,25 @@ const ACTIVITY_LINES: string[] = [
 ];
 
 export default function GoalDirectedAgentsLive() {{
-  const httpdPct =
-    HTTPD_TOTAL > 0 ? Math.round((HTTPD_DONE / HTTPD_TOTAL) * 1000) / 10 : 0;
+  const [agentIndex, setAgentIndex] = useCanvasState("goal-agents-runner-index", 0);
+  const safeIndex =
+    RUNNER_PANELS.length === 0
+      ? 0
+      : ((agentIndex % RUNNER_PANELS.length) + RUNNER_PANELS.length) % RUNNER_PANELS.length;
+  const panel = RUNNER_PANELS[safeIndex] ?? RUNNER_PANELS[0];
+  const pct =
+    panel.total > 0 ? Math.round((panel.done / panel.total) * 1000) / 10 : 0;
+
+  const goPrev = () =>
+    setAgentIndex((i) =>
+      RUNNER_PANELS.length === 0
+        ? 0
+        : (i - 1 + RUNNER_PANELS.length) % RUNNER_PANELS.length,
+    );
+  const goNext = () =>
+    setAgentIndex((i) =>
+      RUNNER_PANELS.length === 0 ? 0 : (i + 1) % RUNNER_PANELS.length,
+    );
 
   return (
     <Stack gap={{20}}>
@@ -129,7 +213,6 @@ export default function GoalDirectedAgentsLive() {{
         </Text>
         <Text tone="secondary" size="small">
           Source: lic/data/goal-directed-agents/snapshot.json · live refresh every 15s
-          via scripts/agent-canvases-watch.sh
         </Text>
       </Stack>
 
@@ -140,31 +223,56 @@ export default function GoalDirectedAgentsLive() {{
           tone={{RUNNING_LOOPS > 0 ? "success" : "warning"}}
         />
         <Stat
-          value={{`${{HTTPD_DONE}}/${{HTTPD_TOTAL}}`}}
-          label="httpd gap todos"
+          value={{`${{panel.done}}/${{panel.total}}`}}
+          label={{`${{panel.name}} todos`}}
         />
         <Stat
-          value={{HTTPD_RUNNING === "yes" ? "active" : "idle"}}
-          label="httpd loop"
-          tone={{HTTPD_RUNNING === "yes" ? "success" : undefined}}
+          value={{panel.running ? "active" : "idle"}}
+          label="Selected loop"
+          tone={{panel.running ? "success" : undefined}}
         />
       </Grid>
 
+      <Row gap={{12}} style={{ alignItems: "center", justifyContent: "space-between" }}>
+        <Row gap={{8}} style={{ alignItems: "center" }}>
+          <IconButton title="Previous agent" onClick={{goPrev}}>
+            ←
+          </IconButton>
+          <Stack gap={{2}}>
+            <Text weight="medium">{{panel.name}}</Text>
+            <Text tone="secondary" size="small">
+              Agent {{safeIndex + 1}} of {{RUNNER_PANELS.length}} · {{panel.branch}}
+            </Text>
+          </Stack>
+          <IconButton title="Next agent" onClick={{goNext}}>
+            →
+          </IconButton>
+        </Row>
+        <Text tone="secondary" size="small">
+          Use arrows to switch plan todos
+        </Text>
+      </Row>
+
       <Callout
-        tone={{HTTPD_RUNNING === "yes" ? "info" : "warning"}}
-        title={{HTTPD_RUNNING === "yes" ? "Agent working" : "httpd loop idle"}}
+        tone={{panel.running ? "info" : "warning"}}
+        title={{panel.running ? "Agent working" : "Loop idle"}}
       >
-        <Text>{{HTTPD_ITERATION || "No iteration line in gap-until-done.log"}}</Text>
+        <Text>
+          {{panel.iteration ||
+            (panel.activeTodoId
+              ? `Active: ${{panel.activeTodoId}}`
+              : "No iteration line in runner log")}}
+        </Text>
       </Callout>
 
       <UsageBar
-        total={{HTTPD_TOTAL}}
-        topLeftLabel={{`${{httpdPct}}% gap track complete`}}
-        topRightLabel={{`${{HTTPD_TOTAL - HTTPD_DONE}} remaining`}}
-        segments={{[{{ id: "done", value: HTTPD_DONE, color: "green" }}]}}
+        total={{panel.total}}
+        topLeftLabel={{`${{pct}}% complete (${{panel.name}})`}}
+        topRightLabel={{`${{panel.total - panel.done}} remaining`}}
+        segments={{[{{ id: "done", value: panel.done, color: "green" }}]}}
       />
 
-      <TodoListCard todos={{[...GAP_TODOS]}} defaultExpanded />
+      <TodoListCard todos={{[...panel.todos]}} defaultExpanded />
 
       <Divider />
 

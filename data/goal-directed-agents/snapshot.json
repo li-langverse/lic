@@ -1,0 +1,527 @@
+{
+  "generated_at": "2026-05-24T15:35:23.317739+00:00",
+  "tz": "Europe/Berlin",
+  "runners": [
+    {
+      "id": "httpd",
+      "name": "li-httpd gap parity",
+      "branch": "cursor/httpd-plan-continue",
+      "head": "c00b84d",
+      "running": true,
+      "process": "13496 python3 scripts/httpd-plan-loop.py --max 0",
+      "log_path": "/home/s4il0r/Documents/Cursor/li-langverse/lic/data/httpd-plan-loop/gap-until-done.log",
+      "todos": [
+        {
+          "id": "gap-exploit-owasp-cwe-suite",
+          "content": "Expand tier5 exploits + nginx_mitigations.toml \u2014 OWASP Top 10 / CWE-class coverage; li stricter-or-equal vs nginx on every row; gate in httpd-plan-gates",
+          "status": "completed"
+        },
+        {
+          "id": "gap-lb-sticky-sessions",
+          "content": "Upstream ip_hash (or cookie affinity) for multi-backend stickiness \u2014 config schema + runtime + gate",
+          "status": "pending"
+        },
+        {
+          "id": "gap-tier5-streaming-soak",
+          "content": "tier5 scenarios sse_long_stream + ws_fanout + suite profile parity_streaming; live li-httpd vs nginx",
+          "status": "pending"
+        },
+        {
+          "id": "gap-nextjs-toy-bench",
+          "content": "Next.js toy app (API/SSR/SSE/WS) + tier5 scenarios; check-tier5-nextjs-parity.sh \u2014 li RPS/TTFB >= 0.85x nginx (document variants)",
+          "status": "pending"
+        },
+        {
+          "id": "gap-nginx-perf-regression-gate",
+          "content": "CI/nightly gate \u2014 all tier5 parity + nextjs scenarios; fail if li p99 > 2x nginx or exploit row regresses",
+          "status": "pending"
+        }
+      ],
+      "plan_completed": 1,
+      "plan_total": 5,
+      "plan_pending": [
+        "gap-lb-sticky-sessions",
+        "gap-tier5-streaming-soak",
+        "gap-nextjs-toy-bench",
+        "gap-nginx-perf-regression-gate"
+      ],
+      "state": {
+        "completed_ids": [
+          "h-lean-server-modules",
+          "gap-exploit-owasp-cwe-suite"
+        ],
+        "iterations": 2,
+        "history": [
+          {
+            "at": "2026-05-24T12:57:17.198584+00:00",
+            "todo_id": "h-lean-server-modules",
+            "agent_exit": 0,
+            "gates_ok": true
+          },
+          {
+            "at": "2026-05-24T13:18:08.570188+00:00",
+            "todo_id": "gap-exploit-owasp-cwe-suite",
+            "agent_exit": 1,
+            "gates_ok": true
+          }
+        ]
+      },
+      "current_iteration": "=== iteration 1: gap-lb-sticky-sessions ===",
+      "activity": [
+        "rse/li-cursor-agents/data/workspaces/li-langverse/lic/code_implementer-1779634316118/repo/li-tests/config_desugar/reject/lb_bad_balance.toml",
+        "[sdk] \u2717 tool",
+        "[sdk] \u25b6 tool",
+        "s/Cursor/li-langverse/li-cursor-agents/data/workspaces/li-langverse/lic/code_implementer-1779634316118/repo/scripts/validate-httpd-config.py",
+        "[sdk] \u2717 tool",
+        "[sdk] \u25b6 tool",
+        "uments/Cursor/li-langverse/li-cursor-agents/data/workspaces/li-langverse/lic/code_implementer-1779634316118/repo/scripts/httpd-plan-gates.sh",
+        "[sdk] \u2717 tool"
+      ],
+      "active_todo_id": "gap-lb-sticky-sessions"
+    },
+    {
+      "id": "compiler-studio",
+      "name": "Compiler + Studio",
+      "branch": "cursor/compiler-studio-plan-loop",
+      "head": "33d32de",
+      "running": true,
+      "process": "86105 python3 /home/s4il0r/Documents/Cursor/li-langverse/lic-worktrees/compiler-studio/scripts/compiler-studio-plan-loop",
+      "log_path": "/home/s4il0r/Documents/Cursor/li-langverse/lic-worktrees/compiler-studio/data/compiler-studio-plan-loop/runner.log",
+      "todos": [
+        {
+          "id": "wave-a-7e-verify",
+          "content": "Tier-1 result verify \u2014 reference.py + bench-verify-results.sh 1; all checksums pass",
+          "status": "completed"
+        },
+        {
+          "id": "wave-a-7e-pure-li-simd",
+          "content": "Pure-Li simd_dot \u2014 correct spec checksum at realistic wall time (DCE allowed if verified)",
+          "status": "completed"
+        },
+        {
+          "id": "wave-a-7e-matmul-pure",
+          "content": "Pure-Li matmul_naive/matmul_blocked \u2014 maintain verify + perf row honesty",
+          "status": "completed"
+        },
+        {
+          "id": "wave-a-7e-horner",
+          "content": "horner_pure_li \u2014 volatile sink + reference; no unverified fast-math DCE",
+          "status": "completed"
+        },
+        {
+          "id": "wave-a-2f-lean-strict",
+          "content": "G-lean \u2014 autovc_lake_typecheck + glean_strict_build_smoke green on lic build",
+          "status": "completed"
+        },
+        {
+          "id": "wave-a-2f-vc-corpus",
+          "content": "contracts_discharge_corpus + contracts_verify_lean; close sqrt_open_bound or document",
+          "status": "completed"
+        },
+        {
+          "id": "wave-a-2i-explicit-math",
+          "content": "2i \u2014 explicit math only (dot, matmul, sum, element-wise on matching shapes); reject NumPy broadcast; document tensor/quaternion path",
+          "status": "completed"
+        },
+        {
+          "id": "wave-a-7d-vectorized",
+          "content": "7d \u2014 @vectorized on def + Lean G-par disjoint roadmap note",
+          "status": "completed"
+        },
+        {
+          "id": "wave-b-tier2-verify",
+          "content": "Tier-2 physics \u2014 verify.py green on md_lennard_jones + one PDE smoke",
+          "status": "completed"
+        },
+        {
+          "id": "wave-b-md-oracle",
+          "content": "md_lennard_jones \u2014 external oracle column plan in competitive-engines (doc + stub driver)",
+          "status": "completed"
+        },
+        {
+          "id": "studio-math-goldens",
+          "content": "verify-math-physics-goldens.sh in CI gates; li-math golden procs documented",
+          "status": "completed"
+        },
+        {
+          "id": "studio-algo-wave-a-doc",
+          "content": "algorithms-and-libraries-plan Wave A table synced to provability-gaps",
+          "status": "completed"
+        },
+        {
+          "id": "studio-ph-ux-slice",
+          "content": "PH-UX \u2014 one adaptive layout composable + li-tests compile_ok (no httpd)",
+          "status": "completed"
+        },
+        {
+          "id": "wave-c-competitive-intel",
+          "content": "Download Layer C UX intel \u2014 competitive-intel/ + fetch script + ui-ux-by-dimension.md",
+          "status": "completed"
+        },
+        {
+          "id": "wave-c-verticals-toml",
+          "content": "AL-1 benchmarks/competitive/verticals.toml + vertical-algorithm-catalog stub",
+          "status": "completed"
+        },
+        {
+          "id": "wave-c-ui-rect-vc",
+          "content": "li-ui rect_contains single-return VC + composable compile_ok",
+          "status": "completed"
+        },
+        {
+          "id": "wave-d-gui-scaffold",
+          "content": "AL-9 packages/gui scaffold + composable import gui (studio shell; UX-02/04)",
+          "status": "in_progress"
+        },
+        {
+          "id": "wave-d-02-al2-catalog",
+          "content": "AL-2 vertical-algorithm-catalog.md \u2014 one kernel section per verticals.toml row",
+          "status": "pending"
+        },
+        {
+          "id": "wave-d-03-ux-inspector",
+          "content": "PH-UX inspector/properties panel stub in li-ui (UX-04, scientific-editor intel)",
+          "status": "completed"
+        },
+        {
+          "id": "wave-d-04-math-quat-mat4",
+          "content": "AL-11 math quat_dot/slerp/mat4_mul + scene.Transform3 wire-up + li-tests",
+          "status": "completed"
+        },
+        {
+          "id": "wave-d-05-linalg-scaffold",
+          "content": "AL-10 packages/linalg scaffold + composable matmul smoke + math_linalg test",
+          "status": "completed"
+        },
+        {
+          "id": "wave-d-06-gpu-wgpu-smoke",
+          "content": "gpu package \u2014 device enum + wgpu smoke composable (LKIR stub ok)",
+          "status": "completed"
+        },
+        {
+          "id": "wave-d-07-render-present",
+          "content": "render \u2014 present/swapchain stub + import render composable",
+          "status": "completed"
+        },
+        {
+          "id": "wave-d-08-scene-hierarchy",
+          "content": "scene \u2014 hierarchy + transform via math.Quat + composable",
+          "status": "completed"
+        },
+        {
+          "id": "wave-d-09-assets-gltf",
+          "content": "assets \u2014 glTF ingest stub + composable import",
+          "status": "completed"
+        },
+        {
+          "id": "wave-d-10-ui-studio-wire",
+          "content": "ui extend \u2014 studio chrome hooks + wire gui import in packages/studio",
+          "status": "completed"
+        },
+        {
+          "id": "wave-d-11-ux-dock-ux02",
+          "content": "PH-UX dock/workspace chrome from competitive-intel UX-02 + adaptive_layout",
+          "status": "completed"
+        },
+        {
+          "id": "wave-d-12-ux-command-palette",
+          "content": "PH-UX command palette / agent cmd IDs stub (UX-01 patterns)",
+          "status": "completed"
+        },
+        {
+          "id": "wave-d-13-anim-scaffold",
+          "content": "AL-12 packages/anim \u2014 keyframe/clip types + composable",
+          "status": "completed"
+        },
+        {
+          "id": "wave-d-14-seq-scaffold",
+          "content": "AL-12 packages/seq \u2014 shot/timeline types + composable",
+          "status": "completed"
+        },
+        {
+          "id": "wave-d-15-geometry-scaffold",
+          "content": "AL-13 packages/geometry \u2014 mesh predicates stub + composable",
+          "status": "completed"
+        },
+        {
+          "id": "wave-d-16-cad-fundamentals",
+          "content": "AL-4 docs/ecosystem/cad-fundamentals.md merge + link geometry PH",
+          "status": "completed"
+        },
+        {
+          "id": "wave-d-17-cae-rfc",
+          "content": "AL-5 engineering/CAE RFC stub (FEA/CFD split from PH-SCI)",
+          "status": "completed"
+        },
+        {
+          "id": "wave-d-18-cinematic-rfc",
+          "content": "AL-6 cinematic algorithm RFC (encode/color/audio; not UX-only)",
+          "status": "completed"
+        },
+        {
+          "id": "wave-d-19-vertical-gaming",
+          "content": "gaming \u2014 physics.rigid composable + verticals.toml notes + bench row",
+          "status": "completed"
+        },
+        {
+          "id": "wave-d-20-vertical-md-oracle",
+          "content": "MD \u2014 md_oracle driver stub doc + verticals.toml LAMMPS column plan",
+          "status": "completed"
+        },
+        {
+          "id": "wave-d-21-vertical-chem",
+          "content": "chem \u2014 DFT composable smoke + qm_dft vertical row honesty",
+          "status": "completed"
+        },
+        {
+          "id": "wave-d-22-vertical-bioeng",
+          "content": "bioeng \u2014 LITL workflow composable + bioengineering.toml hook",
+          "status": "completed"
+        },
+        {
+          "id": "wave-d-23-vertical-robo",
+          "content": "sim.robotics \u2014 workspace composable + PH-ROBO cross-link",
+          "status": "completed"
+        },
+        {
+          "id": "wave-d-24-vertical-am",
+          "content": "sim.additive \u2014 slicer workflow composable + am_slicer vertical",
+          "status": "completed"
+        },
+        {
+          "id": "wave-d-25-vertical-viz",
+          "content": "sim.viz \u2014 pipeline source/display stub (ParaView UX-03 patterns)",
+          "status": "completed"
+        },
+        {
+          "id": "wave-d-26-vertical-mmo",
+          "content": "mmo \u2014 shard composable + mmorpg.toml bench stub row",
+          "status": "completed"
+        },
+        {
+          "id": "wave-d-27-physics-deepen",
+          "content": "physics.* \u2014 one tier-2 kernel harden (rigid or soft) + verify.py note",
+          "status": "completed"
+        },
+        {
+          "id": "wave-d-28-studio-compose",
+          "content": "studio \u2014 compose ui+gui+render+world public API + composable",
+          "status": "completed"
+        },
+        {
+          "id": "wave-e-01-rect-vc-close",
+          "content": "li-ui rect_contains VC close \u2192 composable compile_ok (was wave-c)",
+          "status": "completed"
+        },
+        {
+          "id": "wave-e-02-player-hud",
+          "content": "player \u2014 load gui HUD composable + import test",
+          "status": "completed"
+        }
+      ],
+      "plan_completed": 44,
+      "plan_total": 46,
+      "plan_pending": [
+        "wave-d-02-al2-catalog"
+      ],
+      "state": {
+        "completed_ids": [
+          "wave-d-gui-scaffold"
+        ],
+        "iterations": 5,
+        "history": [
+          {
+            "at": "2026-05-23T09:02:50.508081+00:00",
+            "todo_id": "wave-d-gui-scaffold",
+            "agent_exit": 1,
+            "gates_ok": true
+          },
+          {
+            "at": "2026-05-23T09:08:34.335255+00:00",
+            "todo_id": "wave-d-gui-scaffold",
+            "agent_exit": 0,
+            "gates_ok": true
+          },
+          {
+            "at": "2026-05-24T15:03:42.859736+00:00",
+            "todo_id": "wave-d-02-al2-catalog",
+            "agent_exit": 1,
+            "gates_ok": false
+          },
+          {
+            "at": "2026-05-24T15:16:42.507814+00:00",
+            "todo_id": "wave-d-02-al2-catalog",
+            "agent_exit": 1,
+            "gates_ok": false
+          },
+          {
+            "at": "2026-05-24T15:29:45.786257+00:00",
+            "todo_id": "wave-d-02-al2-catalog",
+            "agent_exit": 1,
+            "gates_ok": false
+          }
+        ]
+      },
+      "current_iteration": "",
+      "activity": [],
+      "active_todo_id": "wave-d-02-al2-catalog"
+    },
+    {
+      "id": "sim",
+      "name": "Sim / algo registry",
+      "branch": "cursor/sim-algo-plan-loop",
+      "head": "826418f",
+      "running": true,
+      "process": "88770 python3 /home/s4il0r/Documents/Cursor/li-langverse/lic-worktrees/sim-algo/scripts/sim-plan-loop.py --once",
+      "log_path": "/home/s4il0r/Documents/Cursor/li-langverse/lic-worktrees/sim-algo/data/sim-plan-loop/runner.log",
+      "todos": [
+        {
+          "id": "sim-p0-md-lj-li-parity",
+          "content": "Tier-2 Li md_lennard_jones checksum parity vs native (fix runtime sink / driver)",
+          "status": "pending"
+        },
+        {
+          "id": "sim-p0-heat-li-smoke",
+          "content": "Pure-Li heat_equation_2d smoke with harness verify row",
+          "status": "pending"
+        },
+        {
+          "id": "sim-p1-num-dot-axpy",
+          "content": "Implement algo_id=1 num_dot_axpy in li-math-numerics + bench-package gate",
+          "status": "pending"
+        },
+        {
+          "id": "sim-p1-md-neighbor-cell",
+          "content": "Implement algo_id=105 md_neighbor_cell_list stub\u2192smoke in li-physics-particles",
+          "status": "pending"
+        },
+        {
+          "id": "sim-p2-qm-dft-scf",
+          "content": "Implement algo_id=418 qm_dft_scf_energy minimal SCF stub with summary metrics",
+          "status": "pending"
+        }
+      ],
+      "plan_completed": 0,
+      "plan_total": 5,
+      "plan_pending": [
+        "sim-p0-md-lj-li-parity",
+        "sim-p0-heat-li-smoke",
+        "sim-p1-num-dot-axpy",
+        "sim-p1-md-neighbor-cell",
+        "sim-p2-qm-dft-scf"
+      ],
+      "state": {
+        "completed_ids": [],
+        "iterations": 3,
+        "history": [
+          {
+            "at": "2026-05-24T15:02:54.490019+00:00",
+            "todo_id": "sim-p0-md-lj-li-parity",
+            "agent_exit": 1,
+            "gates_ok": false
+          },
+          {
+            "at": "2026-05-24T15:16:27.411191+00:00",
+            "todo_id": "sim-p0-md-lj-li-parity",
+            "agent_exit": 1,
+            "gates_ok": false
+          },
+          {
+            "at": "2026-05-24T15:29:49.379145+00:00",
+            "todo_id": "sim-p0-md-lj-li-parity",
+            "agent_exit": 1,
+            "gates_ok": false
+          }
+        ],
+        "registry": {
+          "implemented": 43,
+          "total": 126
+        }
+      },
+      "current_iteration": "=== iteration 1: sim-p0-md-lj-li-parity ===",
+      "activity": [
+        "=== iteration 1: sim-p0-md-lj-li-parity ===",
+        "gates: FAIL",
+        "agent exit 1 \u2014 stopping",
+        "SDK tool activity streams to stderr ([sdk] \u25b6/\u2713 lines). Set LI_SDK_TERMINAL_STREAM=0 to disable.",
+        "=== iteration 1: sim-p0-md-lj-li-parity ===",
+        "gates: FAIL",
+        "agent exit 1 \u2014 stopping",
+        "SDK tool activity streams to stderr ([sdk] \u25b6/\u2713 lines). Set LI_SDK_TERMINAL_STREAM=0 to disable."
+      ],
+      "active_todo_id": "sim-p0-md-lj-li-parity"
+    }
+  ],
+  "history": [
+    {
+      "runner": "sim",
+      "at": "2026-05-24T15:29:49.379145+00:00",
+      "todo_id": "sim-p0-md-lj-li-parity",
+      "agent_exit": 1,
+      "gates_ok": false
+    },
+    {
+      "runner": "compiler-studio",
+      "at": "2026-05-24T15:29:45.786257+00:00",
+      "todo_id": "wave-d-02-al2-catalog",
+      "agent_exit": 1,
+      "gates_ok": false
+    },
+    {
+      "runner": "compiler-studio",
+      "at": "2026-05-24T15:16:42.507814+00:00",
+      "todo_id": "wave-d-02-al2-catalog",
+      "agent_exit": 1,
+      "gates_ok": false
+    },
+    {
+      "runner": "sim",
+      "at": "2026-05-24T15:16:27.411191+00:00",
+      "todo_id": "sim-p0-md-lj-li-parity",
+      "agent_exit": 1,
+      "gates_ok": false
+    },
+    {
+      "runner": "compiler-studio",
+      "at": "2026-05-24T15:03:42.859736+00:00",
+      "todo_id": "wave-d-02-al2-catalog",
+      "agent_exit": 1,
+      "gates_ok": false
+    },
+    {
+      "runner": "sim",
+      "at": "2026-05-24T15:02:54.490019+00:00",
+      "todo_id": "sim-p0-md-lj-li-parity",
+      "agent_exit": 1,
+      "gates_ok": false
+    },
+    {
+      "runner": "httpd",
+      "at": "2026-05-24T13:18:08.570188+00:00",
+      "todo_id": "gap-exploit-owasp-cwe-suite",
+      "agent_exit": 1,
+      "gates_ok": true
+    },
+    {
+      "runner": "httpd",
+      "at": "2026-05-24T12:57:17.198584+00:00",
+      "todo_id": "h-lean-server-modules",
+      "agent_exit": 0,
+      "gates_ok": true
+    },
+    {
+      "runner": "compiler-studio",
+      "at": "2026-05-23T09:08:34.335255+00:00",
+      "todo_id": "wave-d-gui-scaffold",
+      "agent_exit": 0,
+      "gates_ok": true
+    },
+    {
+      "runner": "compiler-studio",
+      "at": "2026-05-23T09:02:50.508081+00:00",
+      "todo_id": "wave-d-gui-scaffold",
+      "agent_exit": 1,
+      "gates_ok": true
+    }
+  ]
+}

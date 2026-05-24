@@ -684,9 +684,22 @@ def run_benchmark(spec: BenchSpec, *, runs: int) -> list[dict[str, object]]:
     return rows
 
 
+def filter_specs(
+    specs: tuple[BenchSpec, ...], only: set[str] | None
+) -> tuple[BenchSpec, ...]:
+    if not only:
+        return specs
+    filtered = tuple(s for s in specs if s.name in only)
+    if not filtered:
+        print(f"bench: no benchmarks in scope for --only {sorted(only)}", file=sys.stderr)
+    return filtered
+
+
 def run_tier_benches(
     specs: tuple[BenchSpec, ...], *, runs: int, out: Path, verify: bool, label: str
 ) -> int:
+    if not specs:
+        return 1
     if verify:
         for spec in specs:
             build_dir = REPO / "build" / "bench" / spec.name
@@ -712,12 +725,18 @@ def run_tier_benches(
     return 0
 
 
-def run_tier1_all(*, runs: int, out: Path, verify: bool) -> int:
-    return run_tier_benches(TIER1_BENCHES, runs=runs, out=out, verify=verify, label="tier-1")
+def run_tier1_all(
+    *, runs: int, out: Path, verify: bool, only: set[str] | None = None
+) -> int:
+    specs = filter_specs(TIER1_BENCHES, only)
+    return run_tier_benches(specs, runs=runs, out=out, verify=verify, label="tier-1")
 
 
-def run_tier2_all(*, runs: int, out: Path, verify: bool) -> int:
-    return run_tier_benches(TIER2_BENCHES, runs=runs, out=out, verify=verify, label="tier-2")
+def run_tier2_all(
+    *, runs: int, out: Path, verify: bool, only: set[str] | None = None
+) -> int:
+    specs = filter_specs(TIER2_BENCHES, only)
+    return run_tier_benches(specs, runs=runs, out=out, verify=verify, label="tier-2")
 
 
 def verify_checksum_match(spec: BenchSpec, build_dir: Path) -> None:
@@ -725,8 +744,9 @@ def verify_checksum_match(spec: BenchSpec, build_dir: Path) -> None:
 
 
 def run_verify_results(
-    specs: tuple[BenchSpec, ...], *, label: str
+    specs: tuple[BenchSpec, ...], *, label: str, only: set[str] | None = None
 ) -> int:
+    specs = filter_specs(specs, only)
     """Verify numerical results only (no timing CSV update)."""
     failures: list[str] = []
     for spec in specs:
@@ -749,9 +769,10 @@ def run_verify_results(
     return 0
 
 
-def run_tier2_ci_smoke() -> int:
+def run_tier2_ci_smoke(*, only: set[str] | None = None) -> int:
     """Build + checksum verify all Tier-2 kernels (no timing sweep)."""
-    for spec in TIER2_BENCHES:
+    specs = filter_specs(TIER2_BENCHES, only)
+    for spec in specs:
         build_dir = REPO / "build" / "bench" / spec.name
         build_dir.mkdir(parents=True, exist_ok=True)
         try:
@@ -759,7 +780,7 @@ def run_tier2_ci_smoke() -> int:
         except RuntimeError as exc:
             print(f"FAIL {spec.name}: {exc}", file=sys.stderr)
             return 1
-    print(f"tier-2 CI smoke ok ({len(TIER2_BENCHES)} benchmarks)")
+    print(f"tier-2 CI smoke ok ({len(specs)} benchmarks)")
     return 0
 
 
@@ -795,7 +816,37 @@ def main() -> int:
         default=RESULTS / "latest.csv",
         help="CSV output path",
     )
+    parser.add_argument(
+        "--only",
+        default="",
+        help="comma-separated benchmark ids (subset of tier list)",
+    )
+    parser.add_argument(
+        "--package",
+        action="append",
+        default=[],
+        help="workspace package(s) from benchmarks/manifest.toml",
+    )
+    parser.add_argument(
+        "--changed",
+        action="store_true",
+        help="scope benches to packages touched in git worktree",
+    )
     args = parser.parse_args()
+
+    only: set[str] | None = None
+    if args.only.strip():
+        only = {x.strip() for x in args.only.split(",") if x.strip()}
+    elif args.package or args.changed:
+        sys.path.insert(0, str(REPO / "benchmarks" / "harness"))
+        from bench_scope import resolve_scope
+
+        scope = resolve_scope(packages=args.package or None, changed=args.changed)
+        if scope["benches"]:
+            only = set(scope["benches"])
+        else:
+            print("bench: no benches for scope (nothing to time)", file=sys.stderr)
+            return 0
 
     if args.sample:
         write_sample_csv(args.out)
@@ -805,15 +856,15 @@ def main() -> int:
         write_sample_csv(args.out)
 
     if args.ci and args.tier == 2:
-        return run_tier2_ci_smoke()
+        return run_tier2_ci_smoke(only=only)
 
     if args.verify_results:
         if args.tier in (1, 12):
-            rc = run_verify_results(TIER1_BENCHES, label="tier-1")
+            rc = run_verify_results(TIER1_BENCHES, label="tier-1", only=only)
             if rc != 0:
                 return rc
         if args.tier in (2, 12):
-            return run_verify_results(TIER2_BENCHES, label="tier-2")
+            return run_verify_results(TIER2_BENCHES, label="tier-2", only=only)
         if args.tier == 0:
             print("verify-results: use --tier 1, 2, or 12", file=sys.stderr)
             return 1
@@ -830,16 +881,24 @@ def main() -> int:
         return subprocess.call([sys.executable, str(REPO / "benchmarks" / "harness" / "stability.py")])
 
     if args.tier == 1:
-        return run_tier1_all(runs=args.runs, out=args.out, verify=not args.skip_verify)
+        return run_tier1_all(
+            runs=args.runs, out=args.out, verify=not args.skip_verify, only=only
+        )
 
     if args.tier == 2:
-        return run_tier2_all(runs=args.runs, out=args.out, verify=not args.skip_verify)
+        return run_tier2_all(
+            runs=args.runs, out=args.out, verify=not args.skip_verify, only=only
+        )
 
     if args.tier == 12:
-        rc = run_tier1_all(runs=args.runs, out=args.out, verify=not args.skip_verify)
+        rc = run_tier1_all(
+            runs=args.runs, out=args.out, verify=not args.skip_verify, only=only
+        )
         if rc != 0:
             return rc
-        return run_tier2_all(runs=args.runs, out=args.out, verify=not args.skip_verify)
+        return run_tier2_all(
+            runs=args.runs, out=args.out, verify=not args.skip_verify, only=only
+        )
 
     if args.tier == 3:
         print(

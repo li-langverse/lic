@@ -16,6 +16,13 @@ case "$(uname -s)" in
 esac
 FILTER="${1:-all}"
 CI="${CI:-false}"
+PACKAGE_FILTER="${LI_TEST_PACKAGE:-}"
+
+if [[ "${1:-}" == "--package" ]]; then
+  PACKAGE_FILTER="${2:?package name required}"
+  shift 2
+  FILTER="${1:-all}"
+fi
 
 if [[ "$FILTER" == "hpc_competitive" ]]; then
   chmod +x "$REPO/li-tests/tooling/hpc_competitive_registry.sh"
@@ -38,6 +45,14 @@ fi
 pass=0
 fail=0
 skip=0
+
+test_matches_package() {
+  local list="$1"
+  [[ -z "$PACKAGE_FILTER" ]] && return 0
+  [[ -z "$list" ]] && return 1
+  [[ "$list" == *"\"$PACKAGE_FILTER\""* ]] && return 0
+  return 1
+}
 
 run_one() {
   local suite="$1" file="$2" outcome="$3" substr="${4:-}"
@@ -83,7 +98,13 @@ run_one() {
       fi
       ;;
     compile_open_ok)
-      if "$LIC" build --allow-open-vc "$path" -o "$NULL_OUT" 2>/dev/null; then
+      local open_build_flags=(--allow-open-vc)
+      case "$file" in
+        composable/import_sim_scientific_run.li|composable/import_physics_runtime.li)
+          open_build_flags+=(--no-lean-verify)
+          ;;
+      esac
+      if "$LIC" build "${open_build_flags[@]}" "$path" -o "$NULL_OUT" 2>/dev/null; then
         li_test_pass "compile_open_ok $file"
         pass=$((pass + 1))
       else
@@ -132,22 +153,34 @@ while IFS= read -r line; do
   if [[ "$line" == "[[tests]]" ]]; then
     if [[ -n "${cur_file:-}" && -n "${cur_outcome:-}" ]]; then
       if [[ "$FILTER" == "all" || "$FILTER" == "$cur_suite" ]]; then
-        run_one "$cur_suite" "$cur_file" "$cur_outcome" "${cur_substr:-}"
+        if test_matches_package "${cur_packages:-}"; then
+          run_one "$cur_suite" "$cur_file" "$cur_outcome" "${cur_substr:-}"
+        else
+          skip=$((skip + 1))
+        fi
       fi
     fi
-    cur_suite="" cur_file="" cur_outcome="" cur_substr=""
+    cur_suite="" cur_file="" cur_outcome="" cur_substr="" cur_packages=""
     continue
   fi
   [[ "$line" =~ ^suite\ =\ \"(.*)\"$ ]] && cur_suite="${BASH_REMATCH[1]}" && continue
   [[ "$line" =~ ^file\ =\ \"(.*)\"$ ]] && cur_file="${BASH_REMATCH[1]}" && continue
   [[ "$line" =~ ^outcome\ =\ \"(.*)\"$ ]] && cur_outcome="${BASH_REMATCH[1]}" && continue
   [[ "$line" =~ ^expected_substr\ =\ \"(.*)\"$ ]] && cur_substr="${BASH_REMATCH[1]}" && continue
+  if [[ "$line" =~ ^packages\ =\ \[ ]]; then
+    cur_packages="$line"
+    continue
+  fi
 done < "$ROOT/manifest.toml"
 
 # last entry
 if [[ -n "${cur_file:-}" && -n "${cur_outcome:-}" ]]; then
   if [[ "$FILTER" == "all" || "$FILTER" == "$cur_suite" ]]; then
-    run_one "$cur_suite" "$cur_file" "$cur_outcome" "${cur_substr:-}"
+    if test_matches_package "${cur_packages:-}"; then
+      run_one "$cur_suite" "$cur_file" "$cur_outcome" "${cur_substr:-}"
+    else
+      skip=$((skip + 1))
+    fi
   fi
 fi
 

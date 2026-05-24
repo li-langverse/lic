@@ -737,6 +737,7 @@ note = "2j-c: var RigidBody in-out write-back after rigid_integrate_semi_implici
 [[tests]]
 suite = "composable"
 file = "composable/import_sim_scientific_run.li"
+packages = ["li-sim-scientific", "li-sim"]
 outcome = "compile_open_ok"
 note = "sim.scientific: run_simulation + run_algo; detail 0–3; open VC via physics.rigid import"
 

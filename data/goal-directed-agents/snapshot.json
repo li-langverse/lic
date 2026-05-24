@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-05-24T19:56:44.107335+00:00",
+  "generated_at": "2026-05-24T20:18:07.537088+00:00",
   "tz": "Europe/Berlin",
   "agents_live": 4,
   "runners": [
@@ -7,7 +7,7 @@
       "id": "httpd",
       "name": "li-httpd gap parity",
       "branch": "cursor/httpd-plan-continue",
-      "head": "a360e98",
+      "head": "a01d151",
       "running": true,
       "process": "systemd:li-httpd-plan-loop.service (active)",
       "log_path": "/home/s4il0r/Documents/Cursor/li-langverse/lic/../lic/data/httpd-plan-loop/until-deadline-20260524-154617.log",
@@ -80,7 +80,7 @@
           "gap-nginx-perf-regression-gate",
           "gap-tier5-streaming-soak"
         ],
-        "iterations": 11,
+        "iterations": 12,
         "history": [
           {
             "at": "2026-05-24T12:57:17.198584+00:00",
@@ -147,22 +147,28 @@
             "todo_id": "gap-phase2-exploit-nginx-regression",
             "agent_exit": 0,
             "gates_ok": false
+          },
+          {
+            "at": "2026-05-24T19:56:56.323154+00:00",
+            "todo_id": "gap-phase2-exploit-nginx-regression",
+            "agent_exit": 0,
+            "gates_ok": false
           }
         ]
       },
-      "state_iterations": 11,
+      "state_iterations": 12,
       "agent_live": true,
       "agent": "code_implementer",
-      "goal_file": "goal-20260524-194707.md",
-      "log_age_sec": 23,
-      "last_state_at": "2026-05-24T19:45:32.285445+00:00",
+      "goal_file": "goal-20260524-195831.md",
+      "log_age_sec": 16,
+      "last_state_at": "2026-05-24T19:56:56.323154+00:00",
       "last_state_todo": "gap-phase2-exploit-nginx-regression",
       "last_state_gates": false,
       "current_iteration": "=== iteration 1: gap-phase2-exploit-nginx-regression ===",
       "activity": [
-        "[sdk] \u2713 shell gh pr view 175 --repo li-langverse/lic --json body -q .body 2>&1 | head -25",
+        "[sdk] \u25b6 tool",
+        "[sdk] \u2713 shell cd /home/s4il0r/Documents/Cursor/li-langverse/li-cursor-agents/data/workspaces/l",
         "[sdk] \u2717 tool",
-        "[sdk] thinking\u2026",
         "[sdk] \u25b6 tool",
         "[sdk] \u2713 shell cd /home/s4il0r/Documents/Cursor/li-langverse/li-cursor-agents/data/workspaces/l",
         "[sdk] \u2717 tool",
@@ -443,7 +449,7 @@
           "wave-d-04-math-quat-mat4",
           "wave-d-05-linalg-scaffold"
         ],
-        "iterations": 6,
+        "iterations": 7,
         "history": [
           {
             "at": "2026-05-23T09:02:50.508081+00:00",
@@ -480,28 +486,34 @@
             "todo_id": "wave-d-gui-scaffold",
             "agent_exit": 0,
             "gates_ok": false
+          },
+          {
+            "at": "2026-05-24T20:06:02.114368+00:00",
+            "todo_id": "wave-d-gui-scaffold",
+            "agent_exit": 0,
+            "gates_ok": false
           }
         ],
         "note": "2026-05-24: cleared premature completed_ids for wave-a-llvm22-typecheck-warnings and wave-d-gui-scaffold (plan still open; gates had failed or plan YAML not updated)"
       },
-      "state_iterations": 6,
+      "state_iterations": 7,
       "agent_live": true,
       "agent": "code_implementer",
-      "goal_file": "goal-20260524-195504.md",
-      "log_age_sec": 99,
-      "last_state_at": "2026-05-24T19:53:34.860479+00:00",
+      "goal_file": "goal-20260524-200732.md",
+      "log_age_sec": 0,
+      "last_state_at": "2026-05-24T20:06:02.114368+00:00",
       "last_state_todo": "wave-d-gui-scaffold",
       "last_state_gates": false,
       "current_iteration": "=== iteration 1: wave-d-gui-scaffold ===",
       "activity": [
-        "[sdk] thinking\u2026",
-        "[sdk] assistant reply",
-        "gates: FAIL after agent (not marking done)",
-        "==> batch 638 exit 1 @ 2026-05-24T21:53:34+02:00",
-        "==> batch 639 @ 2026-05-24T21:55:04+02:00 \u2014 --max 30 (~604m until deadline)",
-        "=== iteration 1: wave-d-gui-scaffold ===",
-        "gates: FAIL (agent should fix first)",
-        "SDK tool activity streams to stderr ([sdk] \u25b6/\u2713 lines). Set LI_SDK_TERMINAL_STREAM=0 to disable."
+        "[sdk] \u25b6 tool",
+        "r-agents/data/workspaces/li-langverse/lic/code_implementer-1779653371989/repo/docs/superpowers/plans/2026-05-22-compiler-studio-plan-loop.md",
+        "[sdk] \u2717 tool",
+        "[sdk] \u2713 glob",
+        "[sdk] \u2717 tool",
+        "[sdk] \u25b6 tool",
+        "[sdk] \u2713 shell cd /home/save/s4il0r/Documents/Cursor/li-langverse/li-cursor-agents/data/workspa",
+        "[sdk] \u2717 tool"
       ],
       "status_note": "agent coding (code_implementer)",
       "active_todo_id": "wave-d-gui-scaffold"
@@ -510,10 +522,10 @@
       "id": "sim",
       "name": "Sim / algo registry",
       "branch": "cursor/sim-algo-plan-loop",
-      "head": "510ea11",
+      "head": "2e0fdd7",
       "running": true,
       "process": "systemd:li-sim-algo-plan-loop.service (active)",
-      "log_path": "/home/s4il0r/Documents/Cursor/li-langverse/lic/../lic-worktrees/sim-algo/data/sim-plan-loop/iter-20260524-195615.log",
+      "log_path": "/home/s4il0r/Documents/Cursor/li-langverse/lic/../lic-worktrees/sim-algo/data/sim-plan-loop/iter-20260524-201412.log",
       "todos": [
         {
           "id": "sim-p0-md-lj-li-parity",
@@ -551,7 +563,7 @@
       ],
       "state": {
         "completed_ids": [],
-        "iterations": 27,
+        "iterations": 28,
         "history": [
           {
             "at": "2026-05-24T15:02:54.490019+00:00",
@@ -714,6 +726,12 @@
             "todo_id": "sim-p0-heat-li-smoke",
             "agent_exit": 1,
             "gates_ok": false
+          },
+          {
+            "at": "2026-05-24T20:09:11.853593+00:00",
+            "todo_id": "sim-p0-heat-li-smoke",
+            "agent_exit": 0,
+            "gates_ok": false
           }
         ],
         "registry": {
@@ -721,12 +739,12 @@
           "total": 126
         }
       },
-      "state_iterations": 27,
+      "state_iterations": 28,
       "agent_live": true,
       "agent": "code_implementer",
-      "goal_file": "goal-20260524-195615.md",
-      "log_age_sec": 28,
-      "last_state_at": "2026-05-24T19:54:15.348570+00:00",
+      "goal_file": "goal-20260524-201412.md",
+      "log_age_sec": 234,
+      "last_state_at": "2026-05-24T20:09:11.853593+00:00",
       "last_state_todo": "sim-p0-heat-li-smoke",
       "last_state_gates": false,
       "current_iteration": "",
@@ -845,7 +863,7 @@
       "agent_live": true,
       "agent": "studio_ui_ux_builder",
       "goal_file": "goal-20260524-192343.md",
-      "log_age_sec": 1142,
+      "log_age_sec": 2426,
       "last_state_at": "2026-05-24T18:23:10+00:00",
       "last_state_todo": "studio-ux-02-gui-viewport-stub",
       "last_state_gates": true,
@@ -865,6 +883,27 @@
     }
   ],
   "history": [
+    {
+      "runner": "sim",
+      "at": "2026-05-24T20:09:11.853593+00:00",
+      "todo_id": "sim-p0-heat-li-smoke",
+      "agent_exit": 0,
+      "gates_ok": false
+    },
+    {
+      "runner": "compiler-studio",
+      "at": "2026-05-24T20:06:02.114368+00:00",
+      "todo_id": "wave-d-gui-scaffold",
+      "agent_exit": 0,
+      "gates_ok": false
+    },
+    {
+      "runner": "httpd",
+      "at": "2026-05-24T19:56:56.323154+00:00",
+      "todo_id": "gap-phase2-exploit-nginx-regression",
+      "agent_exit": 0,
+      "gates_ok": false
+    },
     {
       "runner": "sim",
       "at": "2026-05-24T19:54:15.348570+00:00",
@@ -924,27 +963,6 @@
     {
       "runner": "sim",
       "at": "2026-05-24T19:08:39.614535+00:00",
-      "todo_id": "sim-p0-heat-li-smoke",
-      "agent_exit": 0,
-      "gates_ok": false
-    },
-    {
-      "runner": "sim",
-      "at": "2026-05-24T19:01:58.197709+00:00",
-      "todo_id": "sim-p0-heat-li-smoke",
-      "agent_exit": 0,
-      "gates_ok": false
-    },
-    {
-      "runner": "sim",
-      "at": "2026-05-24T18:55:12.900099+00:00",
-      "todo_id": "sim-p0-heat-li-smoke",
-      "agent_exit": 0,
-      "gates_ok": false
-    },
-    {
-      "runner": "sim",
-      "at": "2026-05-24T18:48:23.381886+00:00",
       "todo_id": "sim-p0-heat-li-smoke",
       "agent_exit": 0,
       "gates_ok": false

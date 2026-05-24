@@ -1,6 +1,6 @@
 {
   "completed_ids": [],
-  "iterations": 3,
+  "iterations": 4,
   "history": [
     {
       "at": "2026-05-24T15:02:54.490019+00:00",
@@ -18,6 +18,12 @@
       "at": "2026-05-24T15:29:49.379145+00:00",
       "todo_id": "sim-p0-md-lj-li-parity",
       "agent_exit": 1,
+      "gates_ok": false
+    },
+    {
+      "at": "2026-05-24T15:40:57.682346+00:00",
+      "todo_id": "sim-p0-md-lj-li-parity",
+      "agent_exit": 0,
       "gates_ok": false
     }
   ],

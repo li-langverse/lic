@@ -1,0 +1,28 @@
+goal-plan-systemd[sim-algo]: creating worktree /home/s4il0r/Documents/Cursor/li-langverse/lic/../lic-worktrees/sim-algo
+Preparing worktree (checking out 'cursor/sim-algo-plan-loop')
+fatal: '/home/s4il0r/Documents/Cursor/li-langverse/lic/../lic-worktrees/sim-algo' already exists
+goal-plan-systemd[sim-algo]: using checkout /home/s4il0r/Documents/Cursor/li-langverse/lic/../lic-worktrees/sim-algo
+==> sim-plan-run-until-done 2026-05-24T11:47:02-04:00
+    branch=cursor/sim-algo-plan-loop package=li-sim-scientific
+    log=/home/s4il0r/Documents/Cursor/li-langverse/lic-worktrees/sim-algo/data/sim-plan-loop/runner-20260524-154702.log
+Reset branch 'cursor/sim-algo-plan-loop'
+M	benchmarks/results/li_runs/md_lj_cutoff_mic.li.summary.min.json
+M	benchmarks/results/li_runs/pde_heat_explicit_2d.li.summary.min.json
+M	benchmarks/results/li_runs/robo_multibody_step.li.summary.min.json
+M	data/sim-plan-loop/daily-snapshot.json
+M	data/sim-plan-loop/runner-20260524-145112.log
+M	data/sim-plan-loop/runner.log
+M	data/sim-plan-loop/state.json
+Your branch and 'origin/cursor/sim-algo-plan-loop' have diverged,
+and have 1 and 1 different commits each, respectively.
+  (use "git pull" if you want to integrate the remote branch with yours)
+==> remaining registry smokes: 83
+backend: cursor-sdk agent: code_implementer
+SDK tool activity streams to stderr ([sdk] ▶/✓ lines). Set LI_SDK_TERMINAL_STREAM=0 to disable.
+2026-05-24T15:47:03.379Z [heartbeat] info: worker_status → Supabase: 1 active run(s) code_implementer
+Error: sdk-session.lock: timeout waiting for cross-process slot (1/1 held; in-process=0)
+    at acquireFileSlot (file:///home/s4il0r/Documents/Cursor/li-langverse/li-cursor-agents/dist/backends/sdk-session-lock.js:203:19)
+    at async withGlobalSdkSessionLock (file:///home/s4il0r/Documents/Cursor/li-langverse/li-cursor-agents/dist/backends/sdk-session-lock.js:269:22)
+    at async runAgentBody (file:///home/s4il0r/Documents/Cursor/li-langverse/li-cursor-agents/dist/runner.js:283:18)
+    at async withRunAgentTracking (file:///home/s4il0r/Documents/Cursor/li-langverse/li-cursor-agents/dist/runner.js:59:24)
+    at async main (file:///home/s4il0r/Documents/Cursor/li-langverse/li-cursor-agents/dist/cli/run-agent.js:106:20)

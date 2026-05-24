@@ -1,9 +1,9 @@
 {
   "report_date": "2026-05-24",
-  "generated_at": "2026-05-24T15:40:53.641413+00:00",
+  "generated_at": "2026-05-24T15:59:03.283364+00:00",
   "tz": "Europe/Berlin",
   "branch": "cursor/sim-algo-plan-loop",
-  "head": "826418f",
+  "head": "c5d5a40",
   "total_algos": 126,
   "implemented": 43,
   "remaining": 83,
@@ -66,6 +66,12 @@
       "at": "2026-05-24T15:29:49.379145+00:00",
       "todo_id": "sim-p0-md-lj-li-parity",
       "agent_exit": 1,
+      "gates_ok": false
+    },
+    {
+      "at": "2026-05-24T15:40:57.682346+00:00",
+      "todo_id": "sim-p0-md-lj-li-parity",
+      "agent_exit": 0,
       "gates_ok": false
     }
   ],

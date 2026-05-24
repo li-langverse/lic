@@ -27,6 +27,7 @@ RUNNERS: list[dict] = [
             "httpd-plan-loop.py",
             "httpd-plan-loop-systemd",
             "gap-until-done",
+            "httpd-plan-until-deadline",
         ],
         "systemd_unit": "li-httpd-plan-loop.service",
         "todo_filter": "gap-",
@@ -175,6 +176,29 @@ def detect_loop_running(cfg: dict, log_path: Path) -> tuple[bool, str]:
     return False, ""
 
 
+def resolve_runner_log(repo: Path, configured: str) -> Path:
+    """Pick the freshest plan-loop log in the data dir (not a stale one-shot file)."""
+    log_p = repo / configured
+    log_dir = log_p.parent
+    if not log_dir.is_dir():
+        return log_p
+    patterns = (
+        "until-deadline-*.log",
+        "iter-*.log",
+        "runner.log",
+        "gap-until-done.log",
+        "gap-parity-*.log",
+    )
+    candidates: list[Path] = []
+    for pat in patterns:
+        candidates.extend(log_dir.glob(pat))
+    if log_p.is_file():
+        candidates.append(log_p)
+    if not candidates:
+        return log_p
+    return max(candidates, key=lambda p: p.stat().st_mtime)
+
+
 def tail_activity(log_path: Path, limit: int = 8) -> list[str]:
     if not log_path.is_file():
         return []
@@ -183,7 +207,9 @@ def tail_activity(log_path: Path, limit: int = 8) -> list[str]:
     for line in reversed(lines):
         if (
             line.startswith("=== iteration")
+            or line.startswith("==> batch ")
             or "agent exit" in line
+            or "All actionable todos" in line
             or line.startswith("gates:")
             or "[sdk]" in line
         ):
@@ -197,9 +223,71 @@ def current_iteration_line(log_path: Path) -> str:
     if not log_path.is_file():
         return ""
     for line in reversed(log_path.read_text(encoding="utf-8", errors="replace").splitlines()):
-        if line.startswith("=== iteration"):
-            return line
+        if line.startswith("=== iteration") or line.startswith("==> batch "):
+            return line.strip()
     return ""
+
+
+def detect_agent(repo: Path) -> dict:
+    proc = subprocess.run(
+        ["pgrep", "-af", "run-agent.js"],
+        capture_output=True,
+        text=True,
+    )
+    repo_s = str(repo.resolve())
+    for line in (proc.stdout or "").splitlines():
+        cwd_m = re.search(r"--cwd\s+(\S+)", line)
+        if not cwd_m:
+            continue
+        cwd = str(Path(cwd_m.group(1)).resolve())
+        if cwd != repo_s:
+            continue
+        agent_m = re.search(r"--agent\s+(\S+)", line)
+        goal_m = re.search(r"goal-file\s+(\S+)", line)
+        goal_path = goal_m.group(1) if goal_m else ""
+        goal_name = Path(goal_path).name if goal_path else ""
+        return {
+            "agent_live": True,
+            "agent": agent_m.group(1) if agent_m else "",
+            "goal_file": goal_name,
+        }
+    return {"agent_live": False, "agent": "", "goal_file": ""}
+
+
+def log_age_sec(log_path: Path) -> int | None:
+    if not log_path.is_file():
+        return None
+    return int(max(0, time.time() - log_path.stat().st_mtime))
+
+
+def last_state_event(state: dict | None) -> dict:
+    if not state:
+        return {}
+    hist = state.get("history") or []
+    return hist[-1] if hist else {}
+
+
+def plan_complete_polling(runner: dict) -> bool:
+    texts = [runner.get("current_iteration") or "", *(runner.get("activity") or [])]
+    return any("All actionable todos complete" in t for t in texts)
+
+
+def status_note(runner: dict) -> str:
+    if runner.get("agent_live"):
+        return f"agent coding ({runner.get('agent', '')})"
+    if not runner.get("running"):
+        return "supervisor off"
+    if plan_complete_polling(runner):
+        return "plan complete — supervisor polling until deadline (no agent)"
+    act = runner.get("activity") or []
+    age = runner.get("log_age_sec")
+    if age is not None and age > 300:
+        return f"supervisor idle (log {age}s stale — check log_path)"
+    if act and "agent exit" in act[-1]:
+        return "loop stopped after agent exit — retry pending"
+    if act and act[-1].startswith("gates:"):
+        return act[-1]
+    return "supervisor up, between agent runs"
 
 
 def git_head(repo: Path) -> str:
@@ -217,7 +305,7 @@ def build_runner(cfg: dict) -> dict:
     repo: Path = cfg["repo"]
     plan_p = repo / cfg["plan"]
     state_p = repo / cfg["state"]
-    log_p = repo / cfg["log"]
+    log_p = resolve_runner_log(repo, cfg["log"])
     running, process = detect_loop_running(cfg, log_p)
     entry: dict = {
         "id": cfg["id"],
@@ -240,15 +328,29 @@ def build_runner(cfg: dict) -> dict:
         entry["plan_completed"] = sum(1 for t in todos if t["status"] == "completed")
         entry["plan_total"] = len(todos)
         entry["plan_pending"] = [t["id"] for t in todos if t["status"] == "pending"]
+    state_data: dict | None = None
     if state_p.is_file():
-        entry["state"] = json.loads(state_p.read_text(encoding="utf-8"))
+        state_data = json.loads(state_p.read_text(encoding="utf-8"))
+        entry["state"] = state_data
+        entry["state_iterations"] = state_data.get("iterations", 0)
+    entry.update(detect_agent(repo))
+    entry["log_age_sec"] = log_age_sec(log_p)
+    last_ev = last_state_event(state_data)
+    entry["last_state_at"] = last_ev.get("at", "")
+    entry["last_state_todo"] = last_ev.get("todo_id", "")
+    entry["last_state_gates"] = last_ev.get("gates_ok", "")
     iter_line = current_iteration_line(log_p)
     entry["current_iteration"] = iter_line
     entry["activity"] = tail_activity(log_p)
+    entry["status_note"] = status_note(entry)
     if running and iter_line:
         m = re.search(r"=== iteration \d+: (\S+) ===", iter_line)
         if m:
             entry["active_todo_id"] = m.group(1)
+        elif "All actionable todos complete" in iter_line or any(
+            "All actionable todos complete" in a for a in entry.get("activity") or []
+        ):
+            entry["active_todo_id"] = "(plan complete — polling)"
     elif entry.get("plan_pending"):
         entry["active_todo_id"] = entry["plan_pending"][0]
     return entry
@@ -271,9 +373,11 @@ def main() -> int:
             )
     history.sort(key=lambda x: x.get("at", ""), reverse=True)
 
+    agents_live = sum(1 for r in runners if r.get("agent_live"))
     snap = {
         "generated_at": datetime.now(timezone.utc).isoformat(),
         "tz": os.environ.get("HTTPD_PLAN_TZ", "Europe/Berlin"),
+        "agents_live": agents_live,
         "runners": runners,
         "history": history[:12],
     }

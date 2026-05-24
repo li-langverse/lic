@@ -1,11 +1,23 @@
 #!/usr/bin/env bash
 # Install user systemd unit + linger so Studio UI/UX loop survives reboot.
 set -euo pipefail
-ROOT="$(cd "$(dirname "$0")/.." && pwd)"
+SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
+# Prefer dedicated worktree when main lic checkout is on another branch.
+if [[ -n "${STUDIO_UI_UX_LIC_ROOT:-}" ]]; then
+  ROOT="$STUDIO_UI_UX_LIC_ROOT"
+elif [[ -f "$SCRIPT_DIR/../docs/superpowers/plans/2026-05-24-studio-ui-ux-plan-loop.md" ]]; then
+  ROOT="$(cd "$SCRIPT_DIR/.." && pwd)"
+elif [[ -f "$(dirname "$SCRIPT_DIR")/../lic-studio-ui/docs/superpowers/plans/2026-05-24-studio-ui-ux-plan-loop.md" ]]; then
+  ROOT="$(cd "$(dirname "$SCRIPT_DIR")/../lic-studio-ui" && pwd)"
+else
+  ROOT="$(cd "$SCRIPT_DIR/.." && pwd)"
+fi
+
 UNIT_NAME="li-studio-ui-ux-plan-loop"
 SERVICE_DIR="${XDG_CONFIG_HOME:-$HOME/.config}/systemd/user"
 WRAPPER="$ROOT/scripts/studio-ui-ux-plan-loop-systemd.sh"
 ENV_FILE="${LI_CURSOR_ENV_FILE:-$HOME/Documents/Cursor/.env}"
+AGENTS_ROOT="${LI_CURSOR_AGENTS_ROOT:-$(dirname "$ROOT")/li-cursor-agents}"
 
 chmod +x "$WRAPPER" "$ROOT/scripts/studio-ui-ux-run-until-done.sh"
 
@@ -25,7 +37,10 @@ Type=simple
 WorkingDirectory=$ROOT
 Environment=HOME=$HOME
 Environment=LI_CURSOR_ENV_FILE=$ENV_FILE
-Environment=LI_CURSOR_AGENTS_ROOT=$ROOT/../li-cursor-agents
+Environment=LI_CURSOR_AGENTS_ROOT=$AGENTS_ROOT
+Environment=LI_CONTROL_PLANE_STORE=disk
+Environment=LI_STACK_SKIP_SUPABASE=1
+Environment=LI_EXPORT_DISK_CACHE=1
 ExecStart=$WRAPPER
 Restart=on-failure
 RestartSec=90
@@ -39,10 +54,8 @@ StandardError=append:${ROOT}/data/studio-ui-ux-plan-loop/systemd.log
 WantedBy=default.target
 EOF
 
-# Daily report cron (08:00) if not already installed
 "$ROOT/scripts/studio-ui-ux-install-cron.sh" 2>/dev/null || true
 
-# User services must run when logged out
 if command -v loginctl >/dev/null 2>&1; then
   loginctl enable-linger "$(whoami)" 2>/dev/null || true
 fi
@@ -53,12 +66,7 @@ systemctl --user restart "${UNIT_NAME}.service" || systemctl --user start "${UNI
 
 echo ""
 echo "Installed: ${UNIT_NAME}.service"
-echo "  ExecStart: $WRAPPER"
+echo "  LIC_ROOT:  $ROOT"
+echo "  Agents:    $AGENTS_ROOT"
 echo "  Log:       ${ROOT}/data/studio-ui-ux-plan-loop/systemd.log"
-echo "  Runner:    ${ROOT}/data/studio-ui-ux-plan-loop/runner.log"
-echo ""
-systemctl --user status "${UNIT_NAME}.service" --no-pager -l 2>/dev/null | head -15 || true
-echo ""
-echo "Stop:    systemctl --user stop ${UNIT_NAME}"
-echo "Disable: touch ${ROOT}/data/studio-ui-ux-plan-loop/DISABLE_AUTOSTART && systemctl --user stop ${UNIT_NAME}"
-echo "Linger:  $(loginctl show-user "$(whoami)" -p Linger 2>/dev/null || echo 'check loginctl')"
+systemctl --user status "${UNIT_NAME}.service" --no-pager -l 2>/dev/null | head -12 || true

@@ -49,6 +49,7 @@ data/httpd-plan-loop/
 !data/httpd-plan-loop/state.json.example
 data/studio-ui-ux-plan-loop/*
 !data/studio-ui-ux-plan-loop/state.json.example
+!data/studio-ui-ux-plan-loop/state.json
 !data/studio-ui-ux-plan-loop/latest-ux-assessment.json
 deploy/studio-demo/screenshots/png/
 deploy/studio-demo/**/*.mp4

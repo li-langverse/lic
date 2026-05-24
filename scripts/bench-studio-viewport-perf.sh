@@ -53,7 +53,7 @@ if lic.is_file() and bench_py.is_file():
                     str(bench_py),
                     "--tier",
                     "0",
-                    "--filter",
+                    "--only",
                     "md_lennard_jones",
                 ],
                 cwd=root,

@@ -38,6 +38,17 @@ fi
 export PATH="${HOME}/.local/node/bin:${PATH:-/usr/bin:/bin}"
 export LI_CURSOR_AGENTS_ROOT="${LI_CURSOR_AGENTS_ROOT:-$ROOT/../li-cursor-agents}"
 export LIC_ROOT="$ROOT"
+# LLVM/clang for sim + compiler gates (clang-22 etc. on PATH as CC)
+if [[ -f "$ROOT/scripts/llvm-env.sh" ]]; then
+  # shellcheck disable=SC1091
+  source "$ROOT/scripts/llvm-env.sh"
+  li_detect_llvm_dir 2>/dev/null || true
+  li_detect_compilers 2>/dev/null || true
+fi
+if [[ -f /etc/profile.d/li-dev.sh ]]; then
+  # shellcheck disable=SC1091
+  source /etc/profile.d/li-dev.sh
+fi
 
 exec 9>"$LOCK"
 if ! flock -n 9; then

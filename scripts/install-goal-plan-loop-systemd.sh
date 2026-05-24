@@ -72,7 +72,8 @@ Environment=HOME=$HOME
 Environment=LI_CURSOR_ENV_FILE=$ENV_FILE
 Environment=LI_CURSOR_AGENTS_ROOT=$ROOT/../li-cursor-agents
 Environment=LIC_ROOT=$ROOT
-Environment=LI_CONTROL_PLANE_STORE=disk${extra_env}
+Environment=LI_CONTROL_PLANE_STORE=disk
+Environment=LI_AGENT_INSTALL_DEPS=${LI_AGENT_INSTALL_DEPS:-0}${extra_env}
 ExecStart=$wrapper_path
 Restart=on-failure
 RestartSec=90

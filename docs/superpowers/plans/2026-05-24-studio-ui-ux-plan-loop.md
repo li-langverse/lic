@@ -7,7 +7,7 @@ todos:
     status: done
   - id: studio-ux-01-ui-composables
     content: "li-ui — layout + paint IR composables; li-tests compile_ok for studio shell"
-    status: pending
+    status: done
   - id: studio-ux-02-gui-viewport-stub
     content: "li-gui — viewport region + panel switch timing hooks (<100ms target)"
     status: pending

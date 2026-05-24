@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Verify studio-design-tokens.toml hex colors match packages/li-ui studio_palette.li."""
+"""Verify studio-design-tokens.toml hex colors match packages/li-ui/src/lib.li studio tokens."""
 from __future__ import annotations
 
 import re
@@ -8,9 +8,9 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
 TOKENS = ROOT / "docs/design/studio-design-tokens.toml"
-PALETTE = ROOT / "packages/li-ui/src/studio_palette.li"
+PALETTE = ROOT / "packages/li-ui/src/lib.li"
 
-# TOML [color] key -> studio_palette.li function name
+# TOML [color] key -> lib.li studio token function name
 COLOR_MAP = {
     "bg_primary": "studio_color_bg_primary",
     "bg_elevated": "studio_color_bg_elevated",

@@ -1,0 +1,23 @@
+{
+  "pass": true,
+  "avg_score": 2.04,
+  "min_score": 1.5,
+  "dimensions": {
+    "UX-01": { "score": 2, "note": "Layout IR places viewport rect with grid paint op; pixels still HTML mock (Godot/Blender = 3)." },
+    "UX-02": { "score": 2, "note": "Timeline region in StudioShellLayout; no native playhead yet (DaVinci/Unreal = 3)." },
+    "UX-03": { "score": 2, "note": "Inspector width token wired into layout IR; native kv grid pending (Unity/Figma = 3)." },
+    "UX-04": { "score": 2, "note": "Command palette still mock hint only (Linear/VS Code = 3)." },
+    "UX-05": { "score": 2, "note": "Profile chip in HTML; vertical switch not in composables (Notion = 3)." },
+    "UX-06": { "score": 2, "note": "Agent strip region + tokens; task/cancel chrome mock-only (Cursor/Copilot = 3)." },
+    "UX-07": { "score": 2, "note": "Empty viewport mock unchanged; layout supports zero-scene shell." },
+    "UX-08": { "score": 1.5, "note": "No GPU-fail recovery strip in IR yet (Primer = 3)." },
+    "UX-09": { "score": 1.5, "note": "Panel switch budget helper (100ms); no global shortcut map (Blender/Linear = 3)." },
+    "UX-10": { "score": 2, "note": "Token contrast unchanged; ux-harness axe pass on world-studio-demo." },
+    "UX-11": { "score": 1.5, "note": "No skeleton loaders in paint IR (Material 3 = 3)." },
+    "UX-12": { "score": 2, "note": "Consistent Studio terminology in code comments and mocks." },
+    "UX-13": { "score": 2, "note": "PaintFrame cmd_count + grid op; bench tiers fail honestly (harness flag gap)." },
+    "UX-14": { "score": 3, "note": "Mock banner preserved; native composables not mislabeled as shipped viewport." }
+  },
+  "honest_native_viewport": false,
+  "notes": "Shipped li-ui StudioShellLayout + PaintFrame/PaintCmd in lib.li; import ui composable smoke passes. Native li-gui paint expansion deferred to studio-ux-02."
+}

@@ -741,6 +741,13 @@ packages = ["li-sim-scientific", "li-sim"]
 outcome = "compile_open_ok"
 note = "sim.scientific: run_simulation + run_algo; detail 0–3; open VC via physics.rigid import"
 
+[[tests]]
+suite = "composable"
+file = "composable/import_ui_studio_shell.li"
+packages = ["li-ui"]
+outcome = "compile_open_ok"
+note = "import ui: studio shell layout + paint IR composables (PH-UX-01)"
+
 # stdlib_coverage/build_std_csv — enable when std.csv module resolves (PH-IO-4)
 
 # --- httpd (Phase H placeholder) ---

@@ -1,3 +1,5 @@
+import ui
+
 def main() -> int
   requires true
   ensures result == 0

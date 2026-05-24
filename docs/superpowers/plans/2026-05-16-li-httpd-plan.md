@@ -119,6 +119,21 @@ todos:
   - id: h-lean-server-modules
     content: "Lean/VC on server packages (li-net-httpd, runtime httpd modules) — lic build without lean skip"
     status: pending
+  - id: gap-exploit-owasp-cwe-suite
+    content: "Expand tier5 exploits + nginx_mitigations.toml — OWASP Top 10 / CWE-class coverage; li stricter-or-equal vs nginx on every row; gate in httpd-plan-gates"
+    status: pending
+  - id: gap-lb-sticky-sessions
+    content: "Upstream ip_hash (or cookie affinity) for multi-backend stickiness — config schema + runtime + gate"
+    status: pending
+  - id: gap-tier5-streaming-soak
+    content: "tier5 scenarios sse_long_stream + ws_fanout + suite profile parity_streaming; live li-httpd vs nginx"
+    status: pending
+  - id: gap-nextjs-toy-bench
+    content: "Next.js toy app (API/SSR/SSE/WS) + tier5 scenarios; check-tier5-nextjs-parity.sh — li RPS/TTFB >= 0.85x nginx (document variants)"
+    status: pending
+  - id: gap-nginx-perf-regression-gate
+    content: "CI/nightly gate — all tier5 parity + nextjs scenarios; fail if li p99 > 2x nginx or exploit row regresses"
+    status: pending
 isProject: false
 ---
 

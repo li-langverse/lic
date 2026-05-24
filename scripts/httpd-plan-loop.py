@@ -63,7 +63,22 @@ def is_server_milestone(todo_id: str) -> bool:
     """Server/httpd plan todos for parity loop (excludes prob-hoare, pkg-workspace-only)."""
     if todo_id in ("prob-hoare", "pkg-workspace", "rng-concepts"):
         return False
-    prefixes = ("w0", "w1", "m0-", "m1", "m15", "m2", "m3", "bench-harness", "nginx-", "exploit-", "rng-exploit", "setup-censor", "li-log")
+    prefixes = (
+        "w0",
+        "w1",
+        "m0-",
+        "m1",
+        "m15",
+        "m2",
+        "m3",
+        "gap-",
+        "bench-harness",
+        "nginx-",
+        "exploit-",
+        "rng-exploit",
+        "setup-censor",
+        "li-log",
+    )
     return todo_id.startswith(prefixes) or todo_id in ("setup-censor-schema",)
 
 
@@ -84,7 +99,9 @@ def server_tier(todo_id: str) -> int:
         return 6
     if todo_id.startswith("h-"):
         return 7
-    return 8
+    if todo_id.startswith("gap-"):
+        return 8
+    return 9
 
 
 def pick_next(todos: list[dict], state: dict) -> dict | None:
@@ -378,6 +395,14 @@ def build_instruction(todo: dict) -> str:
 Work through **every pending server milestone** in the plan (`w0`/`w1` → `m0` → `m1*` → `m15*` → `m2*` runtime rows).
 **Oracle/config-only is not enough** for `*-runtime` and `m0-ship-gate-full` todos — require running `build/li-httpd`, tier5 bench/exploit vs nginx where cited.
 See plan section **Parity milestones (agent-gateway vs nginx oracle)**.
+"""
+        if todo["id"].startswith("gap-"):
+            mission += """
+## Gap parity targets (measurable)
+
+- **Security:** every `tier5_http/exploits/*.toml` row passes on **running** `build/li-httpd`; map each exploit to OWASP/CWE in file header; li must be **stricter-or-equal** vs nginx (`[expect]` / `li_stricter`).
+- **Performance:** tier5 + Next.js toy scenarios — publish ratios in `benchmarks/results/`; default pass bar **li RPS ≥ 0.85× nginx** and **p99 ≤ 2× nginx** unless documented variant.
+- **LB / proxy / streaming:** runtime tests, not config-only; include sticky sessions (`ip_hash` or cookie) where multi-backend Next.js needs affinity.
 """
     return f"""# httpd plan iteration — todo `{todo['id']}`
 

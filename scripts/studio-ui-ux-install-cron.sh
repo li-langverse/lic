@@ -1,4 +1,5 @@
 #!/usr/bin/env bash
+# Optional: daily markdown archive at 08:00. Live canvases use agent-canvases-watch (systemd).
 # Crontab: daily Studio UI/UX report + canvas refresh at 08:00 (STUDIO_UI_UX_TZ).
 set -euo pipefail
 ROOT="$(cd "$(dirname "$0")/.." && pwd)"

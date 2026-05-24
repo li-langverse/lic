@@ -12,72 +12,29 @@ OUT="${REPORT_DIR}/${DAY}.md"
 SNAP="${ROOT}/data/studio-ui-ux-plan-loop/daily-snapshot.json"
 mkdir -p "$REPORT_DIR" "$(dirname "$SNAP")"
 
+python3 "${ROOT}/scripts/studio-ui-ux-write-snapshot.py"
 python3 - "$ROOT" "$DAY" "$SNAP" <<'PY' >"$OUT"
 import json
-import subprocess
 import sys
-from datetime import datetime, timezone
 from pathlib import Path
 
 root = Path(sys.argv[1])
 day = sys.argv[2]
 snap_path = Path(sys.argv[3])
-
-plan = root / "docs/superpowers/plans/2026-05-24-studio-ui-ux-plan-loop.md"
-state_path = root / "data/studio-ui-ux-plan-loop/state.json"
-bench_path = root / "data/studio-ui-ux-plan-loop/latest-bench.json"
-ux_path = root / "data/studio-ui-ux-plan-loop/latest-ux-assessment.json"
-
-todos_total = todos_done = 0
-if plan.is_file():
-    import re
-    text = plan.read_text()
-    todos_total = len(re.findall(r"- id: studio-ux-", text))
-    todos_done = len(re.findall(r"status: completed", text))
-
-state = json.loads(state_path.read_text()) if state_path.is_file() else {}
-completed = state.get("completed_ids", [])
-bench = json.loads(bench_path.read_text()) if bench_path.is_file() else {}
-ux = json.loads(ux_path.read_text()) if ux_path.is_file() else {}
-history = state.get("history", [])[-8:]
-
-branch = subprocess.run(
-    ["git", "-C", str(root), "branch", "--show-current"],
-    capture_output=True,
-    text=True,
-).stdout.strip() or "unknown"
-sha = subprocess.run(
-    ["git", "-C", str(root), "rev-parse", "--short", "HEAD"],
-    capture_output=True,
-    text=True,
-).stdout.strip() or "unknown"
-
-issue = ""
-ti = root / "data/studio-ui-ux-plan-loop/tracking-issue.txt"
-if ti.is_file():
-    issue = ti.read_text().strip()
-
-snap = {
-    "report_date": day,
-    "generated_at": datetime.now(timezone.utc).isoformat(),
-    "tz": __import__("os").environ.get("TZ", "Europe/Berlin"),
-    "branch": branch,
-    "head": sha,
-    "plan_todos_total": todos_total,
-    "plan_todos_completed_yaml": todos_done,
-    "state_completed_count": len(completed),
-    "state_completed_ids": completed,
-    "state_iterations": state.get("iterations", 0),
-    "ux_pass": ux.get("pass", False),
-    "ux_avg_score": ux.get("avg_score"),
-    "ux_min_score": ux.get("min_score"),
-    "ux_dimensions": ux.get("dimensions", {}),
-    "bench": bench,
-    "history": history,
-    "tracking_issue": issue,
-    "runner_log": "data/studio-ui-ux-plan-loop/runner.log",
+snap = json.loads(snap_path.read_text(encoding="utf-8"))
+state = {"completed_ids": snap.get("state_completed_ids", []), "iterations": snap.get("state_iterations", 0)}
+completed = state["completed_ids"]
+ux = {
+    "pass": snap.get("ux_pass", False),
+    "avg_score": snap.get("ux_avg_score"),
+    "min_score": snap.get("ux_min_score"),
+    "dimensions": snap.get("ux_dimensions", {}),
 }
-snap_path.write_text(json.dumps(snap, indent=2) + "\n")
+bench = snap.get("bench") or {}
+history = snap.get("history") or []
+branch = snap.get("branch", "unknown")
+sha = snap.get("head", "unknown")
+issue = snap.get("tracking_issue", "")
 
 lines = [
     f"# Studio UI/UX — daily report {day}",
@@ -124,7 +81,7 @@ lines.extend([
     "",
     "## Canvas",
     "",
-    "Open `canvases/studio-ui-ux-daily-report.canvas.tsx` in Cursor (refreshed by cron).",
+    "Open `canvases/studio-ui-ux-daily-report.canvas.tsx` in Cursor (live refresh via agent-canvases-watch).",
     "",
     "## Gates per iteration",
     "",

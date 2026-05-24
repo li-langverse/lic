@@ -33,6 +33,17 @@ COMMIT = ROOT / "scripts/studio-ui-ux-commit-push.sh"
 UX_FILE = STATE_DIR / "latest-ux-assessment.json"
 
 
+def _refresh_agent_canvases() -> None:
+    langverse = Path(os.environ.get("LI_LANGVERSE_ROOT", ROOT.parent))
+    lic = Path(os.environ.get("LIC_ROOT", langverse / "lic"))
+    script = lic / "scripts/refresh-all-agent-canvases.sh"
+    if script.is_file():
+        subprocess.run(["bash", str(script)], check=False)
+        return
+    subprocess.run([sys.executable, str(ROOT / "scripts/studio-ui-ux-write-snapshot.py")], check=False)
+    subprocess.run([sys.executable, str(ROOT / "scripts/studio-ui-ux-refresh-canvas.py")], check=False)
+
+
 def load_plan_todos() -> list[dict]:
     text = PLAN.read_text(encoding="utf-8")
     m = re.search(r"^todos:\s*\n(.*)^---\s*$", text, re.MULTILINE | re.DOTALL)
@@ -422,6 +433,7 @@ def main() -> int:
             }
         )
         save_state(state)
+        _refresh_agent_canvases()
 
         if not ok:
             return 1

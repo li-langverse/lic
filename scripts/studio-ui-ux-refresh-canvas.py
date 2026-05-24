@@ -100,7 +100,8 @@ export default function StudioUiUxDailyReport() {{
           {{REPORT_DATE}} · generated {{GENERATED_AT}}
         </Text>
         <Text tone="secondary" size="small">
-          Source: docs/reports/studio-ui-ux/daily/LATEST.md · cron 08:00 Europe/Berlin
+          Source: data/studio-ui-ux-plan-loop/daily-snapshot.json · live refresh every 15s
+          via scripts/agent-canvases-watch.sh
         </Text>
       </Stack>
 

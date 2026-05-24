@@ -1,12 +1,12 @@
 {
-  "generated_at": "2026-05-24T17:48:52.515987+00:00",
+  "generated_at": "2026-05-24T17:56:54.909390+00:00",
   "tz": "Europe/Berlin",
   "runners": [
     {
       "id": "httpd",
       "name": "li-httpd gap parity",
       "branch": "cursor/httpd-plan-continue",
-      "head": "eb729b2",
+      "head": "883c294",
       "running": true,
       "process": "systemd:li-httpd-plan-loop.service (active)",
       "log_path": "/home/s4il0r/Documents/Cursor/li-langverse/lic/data/httpd-plan-loop/gap-until-done.log",
@@ -409,7 +409,7 @@
       "id": "sim",
       "name": "Sim / algo registry",
       "branch": "cursor/sim-algo-plan-loop",
-      "head": "e1db4eb",
+      "head": "6293017",
       "running": true,
       "process": "systemd:li-sim-algo-plan-loop.service (active)",
       "log_path": "/home/s4il0r/Documents/Cursor/li-langverse/lic-worktrees/sim-algo/data/sim-plan-loop/runner.log",
@@ -450,7 +450,7 @@
       ],
       "state": {
         "completed_ids": [],
-        "iterations": 12,
+        "iterations": 13,
         "history": [
           {
             "at": "2026-05-24T15:02:54.490019+00:00",
@@ -523,6 +523,12 @@
             "todo_id": "sim-p0-heat-li-smoke",
             "agent_exit": 0,
             "gates_ok": false
+          },
+          {
+            "at": "2026-05-24T17:49:39.417934+00:00",
+            "todo_id": "sim-p0-heat-li-smoke",
+            "agent_exit": 0,
+            "gates_ok": false
           }
         ],
         "registry": {
@@ -530,16 +536,9 @@
           "total": 126
         }
       },
-      "current_iteration": "=== iteration 1: sim-p0-heat-li-smoke ===",
+      "current_iteration": "",
       "activity": [
-        "[sdk] \u2713 shell cd /home/s4il0r/Documents/Cursor/li-langverse/li-cursor-agents/data/workspaces/l",
-        "[sdk] \u2717 tool",
-        "[sdk] \u25b6 tool",
-        "se/li-cursor-agents/data/workspaces/li-langverse/lic/code_implementer-1779644790434/repo/docs/reports/sim-plan/iterations/20260524-174846.md",
-        "[sdk] \u2717 tool",
-        "[sdk] \u25b6 tool",
-        "ts/Cursor/li-langverse/li-cursor-agents/data/workspaces/li-langverse/lic/code_implementer-1779644790434/repo/scripts/sim-plan-commit-push.sh",
-        "[sdk] \u2717 tool"
+        "SDK tool activity streams to stderr ([sdk] \u25b6/\u2713 lines). Set LI_SDK_TERMINAL_STREAM=0 to disable."
       ],
       "active_todo_id": "sim-p0-heat-li-smoke"
     },
@@ -655,6 +654,13 @@
   ],
   "history": [
     {
+      "runner": "sim",
+      "at": "2026-05-24T17:49:39.417934+00:00",
+      "todo_id": "sim-p0-heat-li-smoke",
+      "agent_exit": 0,
+      "gates_ok": false
+    },
+    {
       "runner": "httpd",
       "at": "2026-05-24T17:44:52.221370+00:00",
       "todo_id": "gap-nginx-perf-regression-gate",
@@ -730,13 +736,6 @@
       "todo_id": "sim-p0-md-lj-li-parity",
       "agent_exit": 0,
       "gates_ok": false
-    },
-    {
-      "runner": "httpd",
-      "at": "2026-05-24T16:31:24.966765+00:00",
-      "todo_id": "gap-lb-sticky-sessions",
-      "agent_exit": 124,
-      "gates_ok": true
     }
   ]
 }

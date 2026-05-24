@@ -13,7 +13,7 @@ todos:
 
 - id: sim-p0-heat-li-smoke
   content: "Pure-Li heat_equation_2d smoke with harness verify row"
-  status: pending
+  status: completed
 
 - id: sim-p1-num-dot-axpy
   content: "Implement algo_id=1 num_dot_axpy in li-math-numerics + bench-package gate"

@@ -33,7 +33,7 @@ emit() {
 
 # Matches import_sim_scientific_run.li: run_simulation(md) + run_algo(heat)
 emit 101 1 1.0 1 md_lj_cutoff_mic
-emit 201 1 1.0 2 pde_heat_explicit_2d
+emit 201 1 6606.4384 2 pde_heat_explicit_2d
 
 # Registry stub spot-check (robo family)
 emit 801 1 0.801 0 robo_multibody_step

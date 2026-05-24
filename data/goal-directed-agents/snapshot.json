@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-05-24T21:09:35.460599+00:00",
+  "generated_at": "2026-05-24T21:20:18.797640+00:00",
   "tz": "Europe/Berlin",
   "agents_live": 4,
   "runners": [
@@ -7,10 +7,10 @@
       "id": "httpd",
       "name": "li-httpd gap parity",
       "branch": "cursor/httpd-plan-continue",
-      "head": "fc8b596",
+      "head": "67ee5d9",
       "running": true,
       "process": "systemd:li-httpd-plan-loop.service (active)",
-      "log_path": "/home/s4il0r/Documents/Cursor/li-langverse/lic/../lic/data/httpd-plan-loop/until-deadline-20260524-154617.log",
+      "log_path": "/home/s4il0r/Documents/Cursor/li-langverse/lic/data/httpd-plan-loop/until-deadline-20260524-154617.log",
       "todos": [
         {
           "id": "gap-exploit-owasp-cwe-suite",
@@ -80,7 +80,7 @@
           "gap-nginx-perf-regression-gate",
           "gap-tier5-streaming-soak"
         ],
-        "iterations": 16,
+        "iterations": 17,
         "history": [
           {
             "at": "2026-05-24T12:57:17.198584+00:00",
@@ -177,26 +177,32 @@
             "todo_id": "gap-phase2-exploit-nginx-regression",
             "agent_exit": 1,
             "gates_ok": false
+          },
+          {
+            "at": "2026-05-24T21:09:47.585657+00:00",
+            "todo_id": "gap-phase2-exploit-nginx-regression",
+            "agent_exit": 0,
+            "gates_ok": false
           }
         ]
       },
-      "state_iterations": 16,
+      "state_iterations": 17,
       "agent_live": true,
       "agent": "code_implementer",
-      "goal_file": "goal-20260524-210158.md",
-      "log_age_sec": 24,
-      "last_state_at": "2026-05-24T21:00:23.470462+00:00",
+      "goal_file": "goal-20260524-211122.md",
+      "log_age_sec": 17,
+      "last_state_at": "2026-05-24T21:09:47.585657+00:00",
       "last_state_todo": "gap-phase2-exploit-nginx-regression",
       "last_state_gates": false,
       "current_iteration": "=== iteration 1: gap-phase2-exploit-nginx-regression ===",
       "activity": [
-        "[sdk] \u2713 shell cd /home/s4il0r/Documents/Cursor/li-langverse/li-cursor-agents/data/workspaces/l",
+        "[sdk] \u25b6 tool",
+        "Cursor/li-langverse/li-cursor-agents/data/workspaces/li-langverse/lic/code_implementer-1779657197296/repo/benchmarks/harness/exploit_http.py",
         "[sdk] \u2717 tool",
         "[sdk] thinking\u2026",
         "[sdk] \u25b6 tool",
         "[sdk] \u2713 shell cd /home/s4il0r/Documents/Cursor/li-langverse/li-cursor-agents/data/workspaces/l",
         "[sdk] \u2717 tool",
-        "[sdk] thinking\u2026",
         "[sdk] assistant reply"
       ],
       "status_note": "agent coding (code_implementer)",
@@ -209,7 +215,7 @@
       "head": "3b2953b",
       "running": true,
       "process": "systemd:li-compiler-studio-plan-loop.service (active)",
-      "log_path": "/home/s4il0r/Documents/Cursor/li-langverse/lic/../lic-worktrees/compiler-studio/data/compiler-studio-plan-loop/until-deadline-20260524-154702.log",
+      "log_path": "/home/s4il0r/Documents/Cursor/li-langverse/lic-worktrees/compiler-studio/data/compiler-studio-plan-loop/until-deadline-20260524-154702.log",
       "todos": [
         {
           "id": "wave-a-7e-verify",
@@ -536,7 +542,7 @@
       "agent_live": true,
       "agent": "code_implementer",
       "goal_file": "goal-20260524-204333.md",
-      "log_age_sec": 680,
+      "log_age_sec": 1323,
       "last_state_at": "2026-05-24T20:42:03.743213+00:00",
       "last_state_todo": "wave-d-gui-scaffold",
       "last_state_gates": false,
@@ -558,10 +564,10 @@
       "id": "sim",
       "name": "Sim / algo registry",
       "branch": "cursor/sim-algo-plan-loop",
-      "head": "3e71527",
+      "head": "fdda6f6",
       "running": true,
       "process": "systemd:li-sim-algo-plan-loop.service (active)",
-      "log_path": "/home/s4il0r/Documents/Cursor/li-langverse/lic/../lic-worktrees/sim-algo/data/sim-plan-loop/iter-20260524-210335.log",
+      "log_path": "/home/s4il0r/Documents/Cursor/li-langverse/lic-worktrees/sim-algo/data/sim-plan-loop/iter-20260524-211726.log",
       "todos": [
         {
           "id": "sim-p0-md-lj-li-parity",
@@ -599,7 +605,7 @@
       ],
       "state": {
         "completed_ids": [],
-        "iterations": 32,
+        "iterations": 33,
         "history": [
           {
             "at": "2026-05-24T15:02:54.490019+00:00",
@@ -792,6 +798,12 @@
             "todo_id": "sim-p0-heat-li-smoke",
             "agent_exit": 0,
             "gates_ok": false
+          },
+          {
+            "at": "2026-05-24T21:12:25.406231+00:00",
+            "todo_id": "sim-p0-heat-li-smoke",
+            "agent_exit": 0,
+            "gates_ok": false
           }
         ],
         "registry": {
@@ -799,20 +811,20 @@
           "total": 126
         }
       },
-      "state_iterations": 32,
+      "state_iterations": 33,
       "agent_live": true,
       "agent": "code_implementer",
-      "goal_file": "goal-20260524-210335.md",
+      "goal_file": "goal-20260524-211726.md",
       "log_age_sec": 0,
-      "last_state_at": "2026-05-24T21:01:35.750917+00:00",
+      "last_state_at": "2026-05-24T21:12:25.406231+00:00",
       "last_state_todo": "sim-p0-heat-li-smoke",
       "last_state_gates": false,
       "current_iteration": "",
       "activity": [
-        "sdk] \u2713 grep /home/s4il0r/Documents/Cursor/li-langverse/li-cursor-agents/data/workspaces/li-langverse/lic/code_implementer-1779656721518/repo",
+        "[sdk] \u2713 shell cd /home/s4il0r/Documents/Cursor/li-langverse/li-cursor-agents/data/workspaces/l",
         "[sdk] \u2717 tool",
         "[sdk] \u25b6 tool",
-        "li-langverse/li-cursor-agents/data/workspaces/li-langverse/lic/code_implementer-1779656721518/repo/benchmarks/competitive/algo_registry.json",
+        "sdk] \u2713 grep /home/s4il0r/Documents/Cursor/li-langverse/li-cursor-agents/data/workspaces/li-langverse/lic/code_implementer-1779657559904/repo",
         "[sdk] \u2717 tool",
         "[sdk] \u25b6 tool",
         "[sdk] \u2713 glob",
@@ -828,7 +840,7 @@
       "head": "ca1b091",
       "running": true,
       "process": "systemd:li-studio-ui-ux-plan-loop.service (active)",
-      "log_path": "/home/s4il0r/Documents/Cursor/li-langverse/lic/../lic-studio-ui/data/studio-ui-ux-plan-loop/iter-20260524-203954.log",
+      "log_path": "/home/s4il0r/Documents/Cursor/li-langverse/lic-studio-ui/data/studio-ui-ux-plan-loop/iter-20260524-203954.log",
       "todos": [
         {
           "id": "studio-ux-00-design-system",
@@ -930,7 +942,7 @@
       "agent_live": true,
       "agent": "studio_ui_ux_builder",
       "goal_file": "goal-20260524-203954.md",
-      "log_age_sec": 1272,
+      "log_age_sec": 1916,
       "last_state_at": "2026-05-24T18:23:10+00:00",
       "last_state_todo": "studio-ux-02-gui-viewport-stub",
       "last_state_gates": true,
@@ -950,6 +962,20 @@
     }
   ],
   "history": [
+    {
+      "runner": "sim",
+      "at": "2026-05-24T21:12:25.406231+00:00",
+      "todo_id": "sim-p0-heat-li-smoke",
+      "agent_exit": 0,
+      "gates_ok": false
+    },
+    {
+      "runner": "httpd",
+      "at": "2026-05-24T21:09:47.585657+00:00",
+      "todo_id": "gap-phase2-exploit-nginx-regression",
+      "agent_exit": 0,
+      "gates_ok": false
+    },
     {
       "runner": "sim",
       "at": "2026-05-24T21:01:35.750917+00:00",
@@ -1017,20 +1043,6 @@
       "runner": "httpd",
       "at": "2026-05-24T20:18:26.551405+00:00",
       "todo_id": "gap-phase2-exploit-nginx-regression",
-      "agent_exit": 0,
-      "gates_ok": false
-    },
-    {
-      "runner": "sim",
-      "at": "2026-05-24T20:09:11.853593+00:00",
-      "todo_id": "sim-p0-heat-li-smoke",
-      "agent_exit": 0,
-      "gates_ok": false
-    },
-    {
-      "runner": "compiler-studio",
-      "at": "2026-05-24T20:06:02.114368+00:00",
-      "todo_id": "wave-d-gui-scaffold",
       "agent_exit": 0,
       "gates_ok": false
     }

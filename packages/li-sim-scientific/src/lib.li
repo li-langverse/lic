@@ -2,6 +2,7 @@
 import sim
 import physics.particles
 import physics.rigid
+import math.numerics
 
 def li_sim_scientific_version() -> int
   requires true
@@ -105,6 +106,22 @@ def heat_2d_field_init_sum() -> float
     i0 = i0 + 1
   return acc
 
+def run_num_dot_axpy_smoke(detail: int) -> SimRunResult
+  requires detail >= 0
+  requires detail <= 3
+  ensures result.ok == 1
+  ensures result.algo_id == 1
+  ensures result.detail_emitted == detail
+  decreases 0
+=
+  var r: SimRunResult
+  r.ok = 1
+  r.algo_id = algo_num_dot_axpy()
+  r.vertical_id = 0
+  r.checksum = num_dot_axpy_smoke_checksum()
+  r.detail_emitted = detail
+  return r
+
 def run_md_lj_smoke(detail: int) -> SimRunResult
   requires detail >= 0
   requires detail <= 3
@@ -202,6 +219,9 @@ def run_algo(algo_id: int, detail: int) -> SimRunResult
 =
   var reg_chk: int = algo_id
   var reg_run: int = algo_id
+  if algo_id == algo_num_dot_axpy():
+    var d_num: int = detail
+    return run_num_dot_axpy_smoke(d_num)
   if algo_id == algo_md_lj_cutoff_mic():
     var d0: int = detail
     return run_md_lj_smoke(d0)

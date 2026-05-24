@@ -50,6 +50,7 @@ def main() -> None:
         ],
         "num",
     )
+    rows[0]["implemented_smoke"] = True
     add(
         rows,
         101,

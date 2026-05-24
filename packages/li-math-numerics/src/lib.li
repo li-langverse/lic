@@ -121,6 +121,78 @@ def cg_iteration(
     p[i] = r[i] + beta * p[i]
     i = i + 1
 
+# BLAS-style dot product on fixed 8-vectors (num_dot_axpy smoke kernel).
+def dot_f64_8(a: array[8, float], b: array[8, float]) -> float
+  requires true
+  ensures true
+  decreases 0
+=
+  var acc: float = 0.0
+  var i: int = 0
+  while i < 8
+    acc = acc + a[i] * b[i]
+    i = i + 1
+  return acc
+
+# y <- alpha * x + y on 8-vectors (in-place).
+def axpy_f64_8(alpha: float, x: array[8, float], y: array[8, float]) -> unit
+  requires true
+  ensures true
+  decreases 0
+=
+  var i: int = 0
+  while i < 8
+    y[i] = alpha * x[i] + y[i]
+    i = i + 1
+
+# Smoke checksum: dot(a,b) + sum(y) after axpy(2, a, y); golden = 98.0.
+def num_dot_axpy_smoke_checksum() -> float
+  requires true
+  ensures true
+  decreases 0
+=
+  var a: array[8, float]
+  var b: array[8, float]
+  var y: array[8, float]
+  var i: int = 0
+  while i < 8
+    var fi: float = 0.0
+    if i == 0:
+      fi = 1.0
+    if i == 1:
+      fi = 2.0
+    if i == 2:
+      fi = 3.0
+    if i == 3:
+      fi = 4.0
+    if i == 4:
+      fi = 5.0
+    if i == 5:
+      fi = 6.0
+    if i == 6:
+      fi = 7.0
+    if i == 7:
+      fi = 8.0
+    a[i] = fi
+    b[i] = 0.5
+    y[i] = 1.0
+    i = i + 1
+  var d: float = 0.0
+  i = 0
+  while i < 8
+    d = d + a[i] * b[i]
+    i = i + 1
+  i = 0
+  while i < 8
+    y[i] = 2.0 * a[i] + y[i]
+    i = i + 1
+  var s: float = 0.0
+  i = 0
+  while i < 8
+    s = s + y[i]
+    i = i + 1
+  return d + s
+
 # Three-body gravity forces (2D, N=3) — pure-Li reference matching tier2 bench
 def three_body_forces_2d(
     px: array[3, float], py: array[3, float],
@@ -203,5 +275,38 @@ def three_body_step_mini(
   ensures true
   decreases 0
 =
-  three_body_forces_2d(px, py, fx, fy, 1.0, 1.0, 0.000000001)
-  verlet_step_vec2(px, py, vx, vy, fx, fy, 1.0, dt)
+  var i: int = 0
+  while i < 3
+    fx[i] = 0.0
+    fy[i] = 0.0
+    i = i + 1
+  var eps2: float = 0.000000001 * 0.000000001
+  i = 0
+  while i < 3
+    var j: int = i + 1
+    while j < 3
+      var dx: float = px[j] - px[i]
+      var dy: float = py[j] - py[i]
+      var r2: float = dx * dx + dy * dy + eps2
+      var inv_r: float = 1.0 / li_rt_sqrt(r2)
+      var inv_r3: float = inv_r * inv_r * inv_r
+      var scale: float = inv_r3
+      var fxi: float = scale * dx
+      var fyi: float = scale * dy
+      fx[i] = fx[i] + fxi
+      fy[i] = fy[i] + fyi
+      fx[j] = fx[j] - fxi
+      fy[j] = fy[j] - fyi
+      j = j + 1
+    i = i + 1
+  var half: float = 0.5 * dt
+  i = 0
+  while i < 3
+    px[i] = px[i] + vx[i] * dt + fx[i] * half * dt
+    py[i] = py[i] + vy[i] * dt + fy[i] * half * dt
+    i = i + 1
+  i = 0
+  while i < 3
+    vx[i] = vx[i] + fx[i] * dt
+    vy[i] = vy[i] + fy[i] * dt
+    i = i + 1

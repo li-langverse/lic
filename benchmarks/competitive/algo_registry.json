@@ -6,7 +6,7 @@
       "id": 1,
       "name": "num_dot_axpy",
       "family": "num",
-      "implemented_smoke": false
+      "implemented_smoke": true
     },
     {
       "id": 2,

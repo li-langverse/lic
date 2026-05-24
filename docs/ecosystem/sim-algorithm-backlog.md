@@ -17,7 +17,7 @@ todos:
 
 - id: sim-p1-num-dot-axpy
   content: "Implement algo_id=1 num_dot_axpy in li-math-numerics + bench-package gate"
-  status: pending
+  status: completed
 
 - id: sim-p1-md-neighbor-cell
   content: "Implement algo_id=105 md_neighbor_cell_list stub→smoke in li-physics-particles"

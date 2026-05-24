@@ -60,7 +60,7 @@ composable = []
 name = "li-math-numerics"
 paths = ["packages/li-math-numerics/", "packages/li-math/"]
 benches = ["simd_dot", "matmul_naive", "matmul_blocked", "reduce_sum", "horner_pure_li"]
-composable = []
+composable = ["composable/import_math_numerics_dot_axpy.li"]
 
 [[package]]
 name = "li-math"

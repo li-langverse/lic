@@ -10,7 +10,7 @@ todos:
     status: done
   - id: studio-ux-02-gui-viewport-stub
     content: "li-gui — viewport region + panel switch timing hooks (<100ms target)"
-    status: pending
+    status: done
   - id: studio-ux-03-render-wgpu-smoke
     content: "li-render/gpu — wgpu smoke + FPS counter hook for bench harness"
     status: pending

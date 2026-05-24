@@ -10,6 +10,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 
 - Studio shell **layout IR** (`studio_layout.li`): adaptive dock/topbar/viewport/inspector/timeline/agent-strip rects aligned to design tokens.
+- `layout_panel_switch_within_budget_ms` — PH-UX gate helper (≤100 ms token).
+
 - Studio **paint IR** (`studio_paint.li`): fill/stroke/grid ops + `paint_studio_shell_chrome` composable for li-gui bridge.
 - `li-tests/composable/import_ui_studio_shell.li` — monorepo `compile_ok` for `import ui`.
 - Initial scaffold via `scripts/li-new-package` (PKG-li-std-ui).

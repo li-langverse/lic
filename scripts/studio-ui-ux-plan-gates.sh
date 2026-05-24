@@ -34,9 +34,11 @@ if [[ "${STUDIO_UI_UX_GATES_SKIP_BUILD:-0}" != "1" ]]; then
   if [[ -d "$ROOT/li-tests" ]]; then
     li_phase "li-tests studio packages (compile_ok)"
     for pkg in li-ui li-gui li-render li-studio; do
-      if [[ -d "$ROOT/$pkg" ]]; then
-        if ! "$ROOT/li-tests/run_all.sh" "$pkg" 2>/dev/null; then
-          li_warn "skip or soft-fail $pkg tests (package may be stub)"
+      pkg_root="$ROOT/packages/$pkg"
+      [[ -d "$pkg_root" ]] || pkg_root="$ROOT/$pkg"
+      if [[ -d "$pkg_root" ]]; then
+        if ! "$ROOT/li-tests/run_all.sh" --package "$pkg" composable 2>/dev/null; then
+          li_warn "skip or soft-fail $pkg composable tests (package may be stub)"
         fi
       fi
     done

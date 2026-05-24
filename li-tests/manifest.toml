@@ -748,6 +748,13 @@ packages = ["li-ui"]
 outcome = "compile_open_ok"
 note = "import ui: studio shell layout + paint IR composables (PH-UX-01)"
 
+[[tests]]
+suite = "composable"
+file = "composable/import_gui_viewport_panel_switch.li"
+packages = ["li-gui", "li-ui"]
+outcome = "compile_open_ok"
+note = "import gui: viewport region + panel switch timing + paint expansion (PH-UX-02)"
+
 # stdlib_coverage/build_std_csv — enable when std.csv module resolves (PH-IO-4)
 
 # --- httpd (Phase H placeholder) ---

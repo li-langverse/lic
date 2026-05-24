@@ -1,0 +1,135 @@
+
+import ui
+
+# li-gui — Studio viewport region + panel switch timing (PH-UX panel_switch_ms < 100).
+
+def li_std_gui_version() -> int
+  requires true
+  ensures result == 1
+  decreases 0
+=
+  return 1
+
+def gui_panel_switch_budget_ms() -> float
+  requires true
+  ensures result == studio_panel_transition_ms()
+  decreases 0
+=
+  return studio_panel_transition_ms()
+
+type ViewportRegion = object
+  public rect: Rect
+  public w: float
+  public h: float
+  public grid_enabled: int
+
+def gui_viewport_region_from_layout(layout: StudioShellLayout) -> ViewportRegion
+  requires layout.viewport.w >= 0.0
+  requires layout.viewport.h >= 0.0
+  ensures result.rect.w == layout.viewport.w
+  ensures result.rect.h == layout.viewport.h
+  ensures result.w == layout.viewport.w
+  ensures result.h == layout.viewport.h
+  decreases 0
+=
+  var vp: ViewportRegion
+  vp.rect = layout.viewport
+  vp.w = layout.viewport.w
+  vp.h = layout.viewport.h
+  vp.grid_enabled = 1
+  return vp
+
+type PanelSwitchTiming = object
+  public from_region: int
+  public to_region: int
+  public elapsed_ms: float
+  public budget_ms: float
+  public within_budget: int
+
+def gui_panel_switch_timing(from_region: int, to_region: int, elapsed_ms: float) -> PanelSwitchTiming
+  requires from_region >= 1
+  requires from_region <= 6
+  requires to_region >= 1
+  requires to_region <= 6
+  requires elapsed_ms >= 0.0
+  ensures result.budget_ms == gui_panel_switch_budget_ms()
+  ensures result.within_budget >= 0
+  ensures result.within_budget <= 1
+  decreases 0
+=
+  var t: PanelSwitchTiming
+  t.from_region = from_region
+  t.to_region = to_region
+  t.elapsed_ms = elapsed_ms
+  t.budget_ms = gui_panel_switch_budget_ms()
+  if elapsed_ms <= t.budget_ms:
+    t.within_budget = 1
+  else:
+    t.within_budget = 0
+  return t
+
+type GuiPanelState = object
+  public active_region: int
+  public last_switch_ms: float
+  public switch_count: int
+
+def gui_panel_state_new() -> GuiPanelState
+  requires true
+  ensures result.active_region == studio_region_viewport()
+  ensures result.switch_count == 0
+  decreases 0
+=
+  var s: GuiPanelState
+  s.active_region = studio_region_viewport()
+  s.last_switch_ms = 0.0
+  s.switch_count = 0
+  return s
+
+def gui_panel_switch_to(state: var GuiPanelState, region: int, elapsed_ms: float) -> PanelSwitchTiming
+  requires region >= 1
+  requires region <= 6
+  requires elapsed_ms >= 0.0
+  requires state.switch_count >= 0
+  ensures state.active_region == region
+  ensures state.switch_count == old(state.switch_count) + 1
+  decreases 0
+=
+  var timing: PanelSwitchTiming = gui_panel_switch_timing(state.active_region, region, elapsed_ms)
+  state.last_switch_ms = elapsed_ms
+  state.active_region = region
+  state.switch_count = state.switch_count + 1
+  return timing
+
+def gui_panel_switch_within_budget(timing: PanelSwitchTiming) -> int
+  requires true
+  ensures result >= 0
+  ensures result <= 1
+  decreases 0
+=
+  return timing.within_budget
+
+def gui_paint_studio_shell_chrome(frame: var PaintFrame, layout: var StudioShellLayout) -> unit
+  requires frame.cmd_count >= 0
+  ensures frame.cmd_count == paint_studio_shell_chrome_count()
+  ensures frame.last_kind == paint_op_viewport_grid()
+  ensures frame.last_rect.w == layout.viewport.w
+  decreases 0
+=
+  paint_frame_push(frame, paint_cmd_fill(layout.dock, studio_color_bg_elevated()))
+  paint_frame_push(frame, paint_cmd_fill(layout.topbar, studio_color_bg_elevated()))
+  paint_frame_push(frame, paint_cmd_viewport_grid(layout.viewport))
+  paint_frame_push(frame, paint_cmd_stroke(layout.inspector, studio_color_accent_violet(), 1.0))
+  paint_frame_push(frame, paint_cmd_fill(layout.timeline, studio_color_bg_primary()))
+  paint_frame_push(frame, paint_cmd_stroke(layout.timeline, studio_color_accent_cyan(), 1.0))
+  paint_frame_push(frame, paint_cmd_fill(layout.agent_strip, studio_color_bg_elevated()))
+
+def gui_studio_shell_frame(w: float, h: float) -> PaintFrame
+  requires w > 0.0
+  requires h > 0.0
+  ensures result.cmd_count == paint_studio_shell_chrome_count()
+  decreases 0
+=
+  var layout: StudioShellLayout = layout_studio_shell_adaptive(w, h)
+  var frame: PaintFrame = paint_frame_new()
+  gui_paint_studio_shell_chrome(frame, layout)
+  return frame

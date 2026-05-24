@@ -30,8 +30,15 @@ report = {
 
 # Cold-load proxy: import/check key packages via lit if present
 t0 = time.perf_counter()
+def pkg_dir(name: str) -> Path | None:
+    for rel in (name, f"packages/{name}"):
+        p = root / rel
+        if p.is_dir():
+            return p
+    return None
+
 for pkg in ("li-ui", "li-gui", "li-render", "li-studio"):
-    if (root / pkg).is_dir():
+    if pkg_dir(pkg) is not None:
         report["notes"].append(f"present:{pkg}")
 report["load_ms"] = round((time.perf_counter() - t0) * 1000, 2)
 

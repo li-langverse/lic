@@ -3,7 +3,7 @@
 **Todo:** `sim-p0-heat-li-smoke`  
 **Bench:** `benchmarks/tier2_physics/heat_equation_2d`  
 **Registry algo:** `pde_heat_explicit_2d` (id=201)  
-**Status:** composable pure-Li smoke **partial**; tier-2 verify **green** (shared C kernel)
+**Status:** `implemented_smoke: true` (composable pure-Li init-sum); tier-2 verify **green** (shared C kernel)
 
 ## Slice (2026-05-24)
 
@@ -24,7 +24,7 @@ Explicit 5-point Jacobi needs neighbor indices (`u[i±1][j]`, `u[i][j±1]`). Tod
 | Native reproducibility | checksum `-3387.6965976796632` |
 | Li vs native (`--verify-results --tier 2`) | **match** `-3387.6965976796632` (shared C kernel) |
 | Composable `import_sim_scientific_run.li` | **ok** (pure-Li init-sum smoke) |
-| `./scripts/sim-plan-gates.sh` | **ok** (2026-05-24, `edecfb3`, iter `20260524-172123`) |
+| `./scripts/sim-plan-gates.sh` | **ok** (2026-05-24, `a16f2d2`, iter `20260524-173445`) |
 
 ```bash
 export CC=clang-22 CXX=clang++-22

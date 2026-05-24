@@ -234,7 +234,7 @@ flowchart TB
 | `gui` | `packages/li-gui` | **stub** | **extend** — paint IR + render wire-up | D→E | [li-native-gui plan](../game-dev/plans/li-native-gui-plan.md) |
 | `studio` | `packages/li-studio` | **stub** | **wire** — `ui`+`gui`+`render`+`world` compose landed (wave-d-28) | D→E | `gui`, `render`, `world` |
 | `world` | `packages/li-world` | **stub** | **extend** — GameWorld + scene hooks (save/load deferred) | D→E | `scene` |
-| `player` | `packages/player` | exists-stub | **wire** — load `gui/*.li` HUD | E | `gui`, `render` |
+| `player` | `packages/li-player` | **stub** | **landed** — load `gui` HUD overlay + render viewport smoke | E | `gui`, `render` |
 
 **Rule:** `ui` = editor chrome / MCP IDs; `gui` = widgets + draw lists consumed by `render`. Do not merge into one package.
 

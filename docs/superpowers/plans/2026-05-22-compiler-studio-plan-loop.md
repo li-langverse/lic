@@ -139,7 +139,7 @@ todos:
     status: completed
   - id: wave-e-02-player-hud
     content: "player — load gui HUD composable + import test"
-    status: pending
+    status: completed
 isProject: false
 ---
 

@@ -1,0 +1,27 @@
+# li-player
+
+PH-GD-7 game ship profile — loads **`import gui`** HUD overlay paint IR and pairs with **`import render`** viewport swapchain (`workload_class=stub`).
+
+**Import:** `import player` — `player_load_gui_hud_hd`, `player_load_gui_hud_smoke_entry`.
+
+## Build
+
+```bash
+lic build src/lib.li -o li-player
+```
+
+From the monorepo root, ensure `lic` is built: `./scripts/build.sh`.
+
+## Traceability
+
+| ID | Link |
+|----|------|
+| Package | `PKG-li-player` |
+| Org repo | https://github.com/li-langverse/li-player |
+| Governance | [Ecosystem governance](https://li-langverse.github.io/li-language/ecosystem/governance/) |
+
+See `PUBLISH.md` and `docs/traceability.md`.
+
+## License
+
+Apache-2.0 OR MIT

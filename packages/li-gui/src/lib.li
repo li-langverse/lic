@@ -345,3 +345,97 @@ def gui_command_palette_rect_hd() -> GuiRect
   decreases 0
 =
   return gui_rect_at(424.0, 368.0, 430.0, 48.0)
+
+# wave-e-02 / PH-GD-7 — in-game HUD overlay rects (1280×720; consumed by `import player`).
+type PlayerHudLayout = object
+  public health_bar: GuiRect
+  public minimap: GuiRect
+  public ammo: GuiRect
+  public crosshair: GuiRect
+
+def gui_hud_zone_health() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0
+
+def gui_hud_zone_minimap() -> int
+  requires true
+  ensures result == 1
+  decreases 0
+=
+  return 1
+
+def gui_hud_zone_ammo() -> int
+  requires true
+  ensures result == 2
+  decreases 0
+=
+  return 2
+
+def gui_hud_zone_crosshair() -> int
+  requires true
+  ensures result == 3
+  decreases 0
+=
+  return 3
+
+def gui_hud_zone_count() -> int
+  requires true
+  ensures result == 4
+  decreases 0
+=
+  return 4
+
+def gui_hud_paint_layer_overlay() -> int
+  requires true
+  ensures result == 10
+  decreases 0
+=
+  return 10
+
+# 1280×720 game viewport — health top-left, minimap bottom-right, ammo bottom-left, crosshair center.
+def gui_hud_layout_hd() -> PlayerHudLayout
+  requires true
+  ensures result.health_bar.w == 220.0
+  ensures result.health_bar.h == 28.0
+  ensures result.minimap.w == 180.0
+  ensures result.minimap.h == 180.0
+  ensures result.ammo.w == 160.0
+  ensures result.ammo.h == 28.0
+  ensures result.crosshair.w == 8.0
+  ensures result.crosshair.h == 8.0
+  decreases 0
+=
+  var out: PlayerHudLayout
+  out.health_bar = gui_rect_at(24.0, 24.0, 220.0, 28.0)
+  out.minimap = gui_rect_at(1076.0, 516.0, 180.0, 180.0)
+  out.ammo = gui_rect_at(24.0, 668.0, 160.0, 28.0)
+  out.crosshair = gui_rect_at(636.0, 356.0, 8.0, 8.0)
+  return out
+
+def gui_hud_paint_smoke_entry() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  var layout: PlayerHudLayout = gui_hud_layout_hd()
+  if layout.health_bar.w != 220.0:
+    return 1
+  if layout.minimap.w != 180.0:
+    return 2
+  var health: GuiRect = layout.health_bar
+  var doc: UiDocument = ui_document_new()
+  var stroke: PaintCmd = paint_rect(gui_hud_paint_layer_overlay(), health)
+  ui_document_attach_paint(doc, stroke)
+  if gui_hud_zone_count() != 4:
+    return 3
+  return 0
+
+def gui_hud_smoke_hash() -> int
+  requires true
+  ensures result == 1280724
+  decreases 0
+=
+  return 1280724

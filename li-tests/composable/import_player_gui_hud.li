@@ -1,0 +1,23 @@
+import player
+
+def main() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  if li_std_player_version() < 1:
+    return 1
+  if player_workload_class_stub() != 0:
+    return 2
+  var load_code: int = player_load_gui_hud_hd()
+  if load_code != 0:
+    return 3
+  var state: PlayerHudState = player_hud_state_default()
+  if state.viewport_w != 1280:
+    return 4
+  if state.viewport_h != 720:
+    return 5
+  var hash: int = player_load_gui_hud_smoke_entry()
+  if hash != 1280724:
+    return 6
+  return 0

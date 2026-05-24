@@ -916,6 +916,20 @@ file = "world_smoke/import_world_smoke_entry.li"
 outcome = "verify_open_ok"
 note = "wave-d-28: import world; world_smoke_entry closed witness (open VC on world_step ensures)"
 
+[[tests]]
+suite = "composable"
+file = "composable/import_player_gui_hud.li"
+outcome = "compile_open_ok"
+note = "wave-e-02: import player; load gui HUD + render viewport (open VC on player_load_gui_hud_hd branch ensures)"
+
+# --- player_hud (PH-GD-7 — game HUD composable) ---
+
+[[tests]]
+suite = "player_hud"
+file = "player_hud/import_player_gui_hud_smoke_entry.li"
+outcome = "verify_open_ok"
+note = "wave-e-02: import player; player_load_gui_hud_smoke_entry closed witness (open VC on smoke_entry ensures)"
+
 # stdlib_coverage/build_std_csv — enable when std.csv module resolves (PH-IO-4)
 
 # --- httpd (Phase H placeholder) ---

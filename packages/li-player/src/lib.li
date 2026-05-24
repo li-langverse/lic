@@ -1,0 +1,113 @@
+import gui
+import render
+
+# PH-GD-7 / wave-e-02 — game ship profile: load `import gui` HUD overlay + `import render` viewport.
+# workload_class=stub; no UE/Godot player parity.
+
+type PlayerHudState = object
+  public loaded: int
+  public paint_count: int
+  public viewport_w: int
+  public viewport_h: int
+  public present_ok: int
+
+def li_std_player_version() -> int
+  requires true
+  ensures result == 1
+  decreases 0
+=
+  return 1
+
+def player_workload_class_stub() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0
+
+def player_viewport_width_hd() -> int
+  requires true
+  ensures result == 1280
+  decreases 0
+=
+  return 1280
+
+def player_viewport_height_hd() -> int
+  requires true
+  ensures result == 720
+  decreases 0
+=
+  return 720
+
+def player_hud_state_default() -> PlayerHudState
+  requires true
+  ensures result.loaded == 0
+  ensures result.paint_count == 0
+  ensures result.viewport_w == player_viewport_width_hd()
+  ensures result.viewport_h == player_viewport_height_hd()
+  ensures result.present_ok == 0
+  decreases 0
+=
+  var s: PlayerHudState
+  s.loaded = 0
+  s.paint_count = 0
+  s.viewport_w = player_viewport_width_hd()
+  s.viewport_h = player_viewport_height_hd()
+  s.present_ok = 0
+  return s
+
+# Load gui HUD layout + paint IR; pair with render swapchain for game viewport (1280×720).
+def player_load_gui_hud_hd() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  if li_std_gui_version() < 1:
+    return 1
+  if li_std_render_version() < 1:
+    return 2
+  if render_workload_class_stub() != 0:
+    return 3
+  if gui_hud_zone_count() != 4:
+    return 4
+  var gui_paint: int = gui_hud_paint_smoke_entry()
+  if gui_paint != 0:
+    return 5
+  var chain: SwapchainDesc = render_swapchain_desc_viewport(1280, 720)
+  if chain.width != player_viewport_width_hd():
+    return 10
+  if chain.height != player_viewport_height_hd():
+    return 11
+  var frame: PresentFrame = render_swapchain_acquire(chain)
+  if frame.acquired != 1:
+    return 12
+  if render_present_submit(frame) != 1:
+    return 13
+  return 0
+
+def player_gui_hud_smoke_hash() -> int
+  requires true
+  ensures result == 1280724
+  decreases 0
+=
+  return 1280724
+
+def player_load_gui_hud_smoke_entry() -> int
+  requires true
+  ensures result == 1280724
+  decreases 0
+=
+  if player_workload_class_stub() != 0:
+    return 0
+  if li_std_player_version() < 1:
+    return 0
+  var load_code: int = player_load_gui_hud_hd()
+  if load_code != 0:
+    return 0
+  if player_viewport_width_hd() != 1280:
+    return 0
+  if player_viewport_height_hd() != 720:
+    return 0
+  if gui_hud_smoke_hash() != player_gui_hud_smoke_hash():
+    return 0
+  return player_gui_hud_smoke_hash()

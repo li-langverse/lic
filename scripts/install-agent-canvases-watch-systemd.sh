@@ -16,6 +16,7 @@ After=network.target
 Type=simple
 WorkingDirectory=${ROOT}
 Environment=LI_LANGVERSE_ROOT=${ROOT}/..
+Environment=LIC_ROOT=${ROOT}
 Environment=AGENT_CANVASES_INTERVAL_SEC=${INTERVAL}
 ExecStart=${ROOT}/scripts/agent-canvases-watch.sh
 Restart=always

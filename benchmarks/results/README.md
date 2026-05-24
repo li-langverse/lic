@@ -25,6 +25,17 @@ Tracked ecosystems live in `benchmarks/competitive/registry.toml` (`cpp`, `rust`
 - **Tier 2 (physics):** shared-kernel target **≤ 1.2×** C++ on reference hardware (advisory MSD rows until harness fixed).
 - **Tier 1 (micro):** pure-Li rows tracked separately; not gated at parity until **2i/7e** complete.
 
+## Machine-readable summaries (`li_sim_summary_v1`)
+
+Per-bench JSON (not CSV): `benchmarks/results/<bench>/<lang>.summary.json`
+
+```bash
+python3 benchmarks/harness/verify.py --write-summary --output-detail summary
+./scripts/validate-sim-summary.sh
+```
+
+See [sim-output-contract.md](../../docs/ecosystem/sim-output-contract.md). Detail levels: `summary` | `fields` | `debug` | `repro` (CLI or `LI_SIM_OUTPUT_DETAIL`).
+
 ## Regenerate
 
 ```bash

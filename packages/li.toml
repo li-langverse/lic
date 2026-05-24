@@ -1,6 +1,6 @@
 # Li monorepo workspace — Phase-H httpd + numerics; validated by scripts/check-pkg-workspace.py
 [workspace]
-members = [
+members = ["li-sim", "li-sim-scientific",
   "li-acme", "li-bytes", "li-core", "li-crypto", "li-demo", "li-http", "li-log",
   "li-math", "li-math-numerics", "li-net", "li-net-httpd", "li-physics-aero",
   "li-physics-chem", "li-physics-core", "li-physics-em", "li-physics-fluids",

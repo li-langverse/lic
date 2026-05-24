@@ -1,0 +1,146 @@
+
+# Core simulation API: adjustable output detail, algorithm ids, composable entry points.
+# Machine-readable summaries: benchmarks/harness/sim_summary.py (li_sim_summary_v1).
+# See docs/ecosystem/sim-output-contract.md
+
+def li_sim_version() -> int
+  requires true
+  ensures result == 1
+  decreases 0
+=
+  return 1
+
+def output_detail_summary() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0
+
+def output_detail_fields() -> int
+  requires true
+  ensures result == 1
+  decreases 0
+=
+  return 1
+
+def output_detail_debug() -> int
+  requires true
+  ensures result == 2
+  decreases 0
+=
+  return 2
+
+def output_detail_repro() -> int
+  requires true
+  ensures result == 3
+  decreases 0
+=
+  return 3
+
+type SimOutputSpec = object
+  public detail: int
+  public write_json: int
+
+type SimRunResult = object
+  public ok: int
+  public algo_id: int
+  public vertical_id: int
+  public checksum: float
+  public detail_emitted: int
+
+def output_spec_default() -> SimOutputSpec
+  requires true
+  ensures result.detail == 0
+  ensures result.write_json == 1
+  decreases 0
+=
+  var s: SimOutputSpec
+  s.detail = 0
+  s.write_json = 1
+  return s
+
+def output_spec_from_detail(detail: int) -> SimOutputSpec
+  requires detail >= 0
+  requires detail <= 3
+  ensures result.detail == detail
+  ensures result.write_json == 1
+  decreases 0
+=
+  var s: SimOutputSpec
+  s.detail = detail
+  s.write_json = 1
+  return s
+
+def vertical_md_lennard_jones() -> int
+  requires true
+  ensures result == 1
+  decreases 0
+=
+  return 1
+
+def vertical_pde_heat_2d() -> int
+  requires true
+  ensures result == 2
+  decreases 0
+=
+  return 2
+
+def vertical_gaming_rigid() -> int
+  requires true
+  ensures result == 3
+  decreases 0
+=
+  return 3
+
+def vertical_qm_dft() -> int
+  requires true
+  ensures result == 4
+  decreases 0
+=
+  return 4
+
+def algo_md_lj_cutoff_mic() -> int
+  requires true
+  ensures result == 101
+  decreases 0
+=
+  return 101
+
+def algo_md_integrator_verlet() -> int
+  requires true
+  ensures result == 102
+  decreases 0
+=
+  return 102
+
+def algo_pde_heat_explicit_2d() -> int
+  requires true
+  ensures result == 201
+  decreases 0
+=
+  return 201
+
+def algo_rigid_semi_implicit() -> int
+  requires true
+  ensures result == 301
+  decreases 0
+=
+  return 301
+
+def algo_qm_dft_scf_energy() -> int
+  requires true
+  ensures result == 401
+  decreases 0
+=
+  return 401
+
+def run_result_ok(r: SimRunResult) -> int
+  requires true
+  ensures result >= 0
+  ensures result <= 1
+  decreases 0
+=
+  if r.ok == 1:
+    return 1
+  return 0

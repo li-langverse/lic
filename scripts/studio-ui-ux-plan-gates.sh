@@ -33,7 +33,7 @@ if [[ "${STUDIO_UI_UX_GATES_SKIP_BUILD:-0}" != "1" ]]; then
   fi
   if [[ -d "$ROOT/li-tests" ]]; then
     li_phase "li-tests studio packages (compile_ok)"
-    for pkg in li-ui li-gui li-render li-studio; do
+    for pkg in li-ui li-gui li-render li-scene li-studio; do
       pkg_root="$ROOT/packages/$pkg"
       [[ -d "$pkg_root" ]] || pkg_root="$ROOT/$pkg"
       if [[ -d "$pkg_root" ]]; then

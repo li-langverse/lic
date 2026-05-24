@@ -30,6 +30,7 @@ id = "md_1k"
 particles = 1000
 fps_target = 60
 kernel = "md_lennard_jones"
+scene_hook = "packages/li-scene/bench/particle_tiers.toml"
 
 [[particle_tier]]
 id = "md_10k"

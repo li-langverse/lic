@@ -1,8 +1,10 @@
 
 import gpu
 import gui
+import scene
 
 # li-render — viewport FPS counter + wgpu smoke bridge (PH-UX viewport_fps ≥ 60).
+# Scene path: MD particle draw tiers with honest FPS/particle HUD (native_pixels=0 until wgpu draws).
 
 def li_std_render_version() -> int
   requires true
@@ -147,3 +149,51 @@ def render_bench_fps_counter_simulate() -> RenderFpsCounter
     render_fps_counter_tick(c, render_bench_fps_sample_dt_ms())
     i = i + 1
   return c
+
+type RenderMdParticleViewport = object
+  public smoke: RenderViewportSmoke
+  public draw: SceneParticleDraw
+  public fps_display: int
+  public particle_count: int
+  public tier_fps_target: float
+
+def render_scene_md_particle_viewport(vp: ViewportRegion, tier_id: int) -> RenderMdParticleViewport
+  requires vp.w >= 0.0
+  requires vp.h >= 0.0
+  requires tier_id >= 0
+  requires tier_id <= 2
+  ensures result.draw.tier.tier_id == tier_id
+  ensures result.draw.native_pixels == 0
+  ensures result.particle_count == result.draw.tier.particles
+  ensures result.fps_display >= 0
+  decreases tier_id
+=
+  var out: RenderMdParticleViewport
+  out.smoke = render_wgpu_viewport_smoke(vp)
+  out.draw = scene_bench_particle_tier_simulate(tier_id)
+  out.fps_display = scene_md_particle_display_fps(out.draw)
+  out.particle_count = out.draw.tier.particles
+  out.tier_fps_target = out.draw.tier.fps_target
+  return out
+
+def render_scene_md_particle_viewport_ok(view: RenderMdParticleViewport) -> int
+  requires true
+  ensures result >= 0
+  ensures result <= 1
+  decreases 0
+=
+  if render_viewport_smoke_ok(view.smoke) != 1:
+    return 0
+  if scene_md_particle_draw_meets_target(view.draw) != 1:
+    return 0
+  if view.draw.native_pixels != 0:
+    return 0
+  return 1
+
+def render_bench_all_md_particle_tiers() -> int
+  requires true
+  ensures result >= 0
+  ensures result <= 1
+  decreases 0
+=
+  return scene_bench_all_particle_tiers_pass()

@@ -3,9 +3,10 @@
     "studio-ux-00-design-system",
     "studio-ux-01-ui-composables",
     "studio-ux-02-gui-viewport-stub",
-    "studio-ux-03-render-wgpu-smoke"
+    "studio-ux-03-render-wgpu-smoke",
+    "studio-ux-04-particle-display"
   ],
-  "iterations": 4,
+  "iterations": 5,
   "history": [
     {
       "at": "2026-05-24T14:53:41+00:00",
@@ -42,6 +43,15 @@
       "gates_ok": true,
       "ux_pass": true,
       "note": "re-verified gates/capture; issue #181 comment"
+    },
+    {
+      "at": "2026-05-24T23:05:00+00:00",
+      "todo_id": "studio-ux-04-particle-display",
+      "agent_exit": 0,
+      "capture_exit": 0,
+      "gates_ok": true,
+      "ux_pass": true,
+      "note": "li-scene MD tiers + li-render scene path; issue #181 comment"
     }
   ]
 }

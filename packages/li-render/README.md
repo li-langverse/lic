@@ -1,6 +1,6 @@
 # li-render
 
-Li Studio viewport render layer: **wgpu smoke** bridge (`li-gpu`) and **FPS counter** hooks for the bench harness (PH-UX viewport ≥ 60 fps target).
+Li Studio viewport render layer: **wgpu smoke** bridge (`li-gpu`), **FPS counter** hooks, and **scene MD particle draw** path (`li-scene` tiers 1k/10k/100k) for the bench harness (PH-UX viewport ≥ 60 fps; particles 10k@60 / 100k@30).
 
 ## FPS counter
 

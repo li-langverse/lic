@@ -9,6 +9,7 @@ description = "Li Studio viewport render — wgpu smoke bridge + FPS counter for
 li-gpu = { path = "../li-gpu" }
 li-gui = { path = "../li-gui" }
 li-ui = { path = "../li-ui" }
+li-scene = { path = "../li-scene" }
 
 [package.metadata.li]
 github_repo = "li-render"

@@ -16,7 +16,7 @@ todos:
     status: done
   - id: studio-ux-04-particle-display
     content: "Scene path — MD particle draw tiers (1k/10k/100k) with honest FPS reporting"
-    status: pending
+    status: done
   - id: studio-ux-05-studio-compose
     content: "li-studio — compose dock + timeline + inspector from composables"
     status: pending

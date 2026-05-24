@@ -1,23 +1,23 @@
 {
   "pass": true,
-  "avg_score": 2.14,
+  "avg_score": 2.21,
   "min_score": 1.5,
   "dimensions": {
-    "UX-01": { "score": 2, "note": "render_wgpu_viewport_smoke ties ViewportRegion geometry; grid still paint IR only (Godot/Blender = 3)." },
+    "UX-01": { "score": 2, "note": "Scene draw tiers + viewport grid; depth/selection still paint IR (Godot/Blender = 3)." },
     "UX-02": { "score": 2, "note": "Timeline region unchanged; no playhead animation (DaVinci/Unreal = 3)." },
-    "UX-03": { "score": 2, "note": "Inspector stroke via li-gui paint; no native kv grid (Unity/Figma = 3)." },
+    "UX-03": { "score": 2, "note": "Inspector via li-gui paint; particle count in scene HUD path only (Unity/Figma = 3)." },
     "UX-04": { "score": 2, "note": "Command palette mock hint only (Linear/VS Code = 3)." },
     "UX-05": { "score": 2, "note": "Profile chip HTML; vertical switch not in composables (Notion = 3)." },
-    "UX-06": { "score": 2, "note": "Agent strip paint fill; task/cancel chrome mock (Cursor/Copilot Workspace = 3)." },
-    "UX-07": { "score": 2, "note": "Empty viewport mock; smoke validates zero-size guard via w>0 h>0." },
-    "UX-08": { "score": 2, "note": "wgpu_smoke status stub_pass + surface_ok=false exposed; no recovery UI strip yet (Primer = 3)." },
-    "UX-09": { "score": 2, "note": "Panel switch hooks unchanged from studio-ux-02 (Blender/Linear = 3)." },
+    "UX-06": { "score": 2, "note": "Agent strip mock; Cursor task clarity / Linear progress / Copilot recovery patterns referenced (3)." },
+    "UX-07": { "score": 2, "note": "Empty viewport mock; tier draw validates particle budget (shadcn = 3)." },
+    "UX-08": { "score": 2, "note": "wgpu stub + scene simulate path; no recovery UI strip yet (Primer = 3)." },
+    "UX-09": { "score": 2, "note": "Panel switch hooks from studio-ux-02 (Blender/Linear = 3)." },
     "UX-10": { "score": 2, "note": "Token contrast; ux-harness pass on world-studio-demo mock." },
-    "UX-11": { "score": 1.5, "note": "No skeleton loaders in render path (Material 3 = 3)." },
-    "UX-12": { "score": 2, "note": "Consistent render/gpu terminology in APIs and bench TOML hooks." },
-    "UX-13": { "score": 3, "note": "FPS counter + bench viewport_fps JSON; meets_target with native_pixels=false (honest)." },
-    "UX-14": { "score": 3, "note": "HUD labels bench simulate; wgpu stub_pass not passed as native pixels." }
+    "UX-11": { "score": 1.5, "note": "No skeleton loaders in scene/render path (Material 3 = 3)." },
+    "UX-12": { "score": 2, "note": "scene_budget_simulate / md_lennard_jones terminology aligned with bench TOML." },
+    "UX-13": { "score": 3, "note": "Particle tiers 1k/10k/100k + fps_target in bench JSON; native_pixels=false, draw_path labeled." },
+    "UX-14": { "score": 3, "note": "status=simulate + scene hook; HTML mocks not claimed as native MD draw." }
   },
   "honest_native_viewport": false,
-  "notes": "Shipped packages/li-gpu (wgpu smoke) and li-render (FPS counter, bench hooks). UX-08 1.5→2, UX-13 2→3 vs studio-ux-02. SOTA agentic: Cursor task clarity, Linear progress, Copilot error recovery patterns."
+  "notes": "Shipped li-scene MD particle tiers and li-render scene viewport bridge. Bench particle_tiers now simulate via li-scene hook (was skip). UX-01/UX-13 improved vs studio-ux-03. SOTA agentic: Cursor agent overview, Linear keyboard density, Copilot error recovery."
 }

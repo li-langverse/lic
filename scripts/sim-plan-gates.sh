@@ -3,7 +3,13 @@
 set -euo pipefail
 ROOT="$(cd "$(dirname "$0")/.." && pwd)"
 export LI_REPO_ROOT="$ROOT"
-export LIC_ROOT="${LIC_ROOT:-$(cd "$ROOT/../.." && pwd)/lic}"
+if [[ -z "${LIC_ROOT:-}" ]]; then
+  if [[ -f "$ROOT/scripts/lib/ensure-bench-deps.sh" ]]; then
+    export LIC_ROOT="$ROOT"
+  else
+    export LIC_ROOT="$(cd "$ROOT/../.." && pwd)/lic"
+  fi
+fi
 export LIC="$("$ROOT/scripts/resolve-lic.sh" 2>/dev/null || true)"
 if [[ -z "${LIC:-}" || ! -x "$LIC" ]]; then
   export LIC="${LIC_ROOT}/build/compiler/lic/lic"

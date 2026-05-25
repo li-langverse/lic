@@ -4,13 +4,11 @@
 #include "li/mir_abi.hpp"
 #include "li/num_stable.hpp"
 #include "li/platform.hpp"
-#include "li/resource_options.hpp"
 
 #include <atomic>
 #include <chrono>
 #include <cstdlib>
 #include <filesystem>
-#include <iostream>
 #include <sstream>
 
 namespace li {
@@ -21,15 +19,11 @@ std::string unique_temp_ll_path() {
   const auto tick =
       static_cast<std::uint64_t>(std::chrono::steady_clock::now().time_since_epoch().count());
   const auto n = seq.fetch_add(1, std::memory_order_relaxed);
-  const std::string name = "li_build_" + std::to_string(tick) + "_" + std::to_string(n) + ".ll";
-  const std::string prefix = repo_build_prefix();
-  if (!prefix.empty()) {
-    std::error_code ec;
-    std::filesystem::create_directories(prefix, ec);
-    return prefix + "/" + name;
-  }
-  return (std::filesystem::temp_directory_path() / name).string();
+  return (std::filesystem::temp_directory_path() /
+          ("li_build_" + std::to_string(tick) + "_" + std::to_string(n) + ".ll"))
+      .string();
 }
+
 
 void maybe_keep_emit_ll(const std::string& ll_path) {
   if (const char* keep = std::getenv("LI_KEEP_LL"); keep == nullptr || keep[0] != '1' ||
@@ -51,20 +45,6 @@ void maybe_keep_emit_ll(const std::string& ll_path) {
 bool compile_module(const Module& module, const std::string& output_path,
                   const CompileOptions& opts, const std::string& extra_clang_flags,
                   std::string* error) {
-  const ResourceOptions& ro = resource_options();
-  if (const unsigned jobs = ro.effective_jobs(); jobs > 1) {
-    static bool mir_jobs_note = false;
-    if (!mir_jobs_note) {
-      std::cerr
-          << "lic: note: --jobs=" << jobs
-          << " — MIR partition parallelism is not implemented yet; lowering single-threaded\n";
-      mir_jobs_note = true;
-    }
-  }
-  if (ro.threads > 0) {
-    const std::string ts = std::to_string(ro.threads);
-    setenv("LI_OMP_THREADS", ts.c_str(), 1);
-  }
   MirModule mir = lower_to_mir(module);
   mir.fp_numerically_stable = opts.fp_numerically_stable;
   apply_numerical_stability(mir);
@@ -77,7 +57,7 @@ bool compile_module(const Module& module, const std::string& output_path,
   }
   const std::string ll_path = unique_temp_ll_path();
 
-  if (!emit_llvm_ir(mir, ll_path, opts.runtime_threads, error)) {
+  if (!emit_llvm_ir(mir, ll_path, error)) {
     return false;
   }
 
@@ -106,7 +86,6 @@ bool compile_module(const Module& module, const std::string& output_path,
   const std::filesystem::path rt_httpd_path = resolve_runtime_c("li_rt_httpd.c");
   const std::filesystem::path rt_log_path = resolve_runtime_c("li_rt_log.c");
   const std::filesystem::path rt_net_path = resolve_runtime_c("li_rt_net.c");
-  const std::filesystem::path rt_lig_path = resolve_runtime_c("li_rt_lig.c");
 
   std::ostringstream cmd;
   const char* cc_env = std::getenv("CC");
@@ -120,9 +99,6 @@ bool compile_module(const Module& module, const std::string& output_path,
   }
   if (std::filesystem::exists(rt_net_path)) {
     cmd << " -x c \"" << rt_net_path.string() << "\"";
-  }
-  if (std::filesystem::exists(rt_lig_path)) {
-    cmd << " -x c \"" << rt_lig_path.string() << "\"";
   }
   cmd << " -o \"" << output_path << "\"";
   if (opts.release) {
@@ -138,8 +114,19 @@ bool compile_module(const Module& module, const std::string& output_path,
     cmd << " " << extra_clang_flags;
   }
   if (mir.uses_openmp) {
-#if defined(__linux__) || defined(__APPLE__)
-    cmd << " -pthread";
+#if defined(__linux__)
+    if (std::filesystem::exists("/usr/include/omp.h")) {
+      cmd << " -fopenmp";
+    }
+#elif defined(__APPLE__)
+    if (std::filesystem::exists("/opt/homebrew/opt/libomp/lib/libomp.dylib")) {
+      cmd << " -Xpreprocessor -fopenmp -I/opt/homebrew/opt/libomp/include"
+          << " -L/opt/homebrew/opt/libomp/lib -lomp";
+    }
+#else
+    if (const char* omp = std::getenv("LI_OPENMP_FLAGS")) {
+      cmd << " " << omp;
+    }
 #endif
   }
   if (const char* extra_c = std::getenv("LI_EXTRA_C")) {

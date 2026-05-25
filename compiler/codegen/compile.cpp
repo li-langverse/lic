@@ -25,6 +25,22 @@ std::string unique_temp_ll_path() {
       .string();
 }
 
+
+void maybe_keep_emit_ll(const std::string& ll_path) {
+  if (const char* keep = std::getenv("LI_KEEP_LL"); keep == nullptr || keep[0] != '1' ||
+      keep[1] != '\0') {
+    return;
+  }
+  const std::string prefix = repo_build_prefix();
+  if (prefix.empty()) {
+    return;
+  }
+  std::error_code ec;
+  std::filesystem::create_directories(prefix, ec);
+  const std::filesystem::path dest = std::filesystem::path(prefix) / "last_emit.ll";
+  std::filesystem::copy_file(ll_path, dest, std::filesystem::copy_options::overwrite_existing, ec);
+}
+
 }  // namespace
 
 bool compile_module(const Module& module, const std::string& output_path,
@@ -47,6 +63,7 @@ bool compile_module(const Module& module, const std::string& output_path,
   }
 
   if (is_null_output_path(output_path)) {
+    maybe_keep_emit_ll(ll_path);
     std::filesystem::remove(ll_path);
     return true;
   }
@@ -164,6 +181,7 @@ bool compile_module(const Module& module, const std::string& output_path,
   cmd << " -lm -ldl";
 #endif
   const int rc = std::system(cmd.str().c_str());
+  maybe_keep_emit_ll(ll_path);
   std::filesystem::remove(ll_path);
   if (rc != 0) {
     if (error) {

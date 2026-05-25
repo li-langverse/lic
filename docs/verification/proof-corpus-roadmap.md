@@ -93,7 +93,7 @@ Priority order aligned with [provability-gaps](provability-gaps.md) and **2e →
 | **P-linalg** | Matrix/vector shapes (`@`, slices) | **Partial** — closed dot/sum/matmul-entry/norm/axpy + loop witness. **Open:** float `vec3_dot` Props, 2D array CallProc | `contracts_verify/linalg_*`, `math_linalg/*` |
 | **P-par** | `parallel for` disjointness | **G-par** string heuristics only | Lean specs for `disjoint=` (7d-c) |
 | **P-dec** | Decorators never run at runtime | **G-dec** no MIR lowering | `decorator_exploits/` + elaboration proofs |
-| **P-bnd** | Release builds omit `li_bounds_fail` | **G-bnd** | Refined indices + codegen proof |
+| **P-bnd** | Release builds omit `li_bounds_fail` | **Partial** — `check_release_bounds_ir.sh` | [bounds-release-path](bounds-release-path.md) |
 | **P-http** | Parser/route config safety | Phase **H** | `httpd/*`, TOML desugar invariants |
 | **P-narrow** | Width-narrowing / casts | **G-narrow** partial | Ariane-style `prove_reject` + proved narrowing |
 | **P-meta** | Compiler ↔ `Core.lean` | **G-meta** research | Long-term; cite Dafny/CakeML VCG literature |

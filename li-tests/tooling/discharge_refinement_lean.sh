@@ -3,12 +3,12 @@ set -euo pipefail
 ROOT="$(cd "$(dirname "$0")/../.." && pwd)"
 export LI_REPO_ROOT="$ROOT"
 LIC="${LIC:-$("$ROOT/scripts/resolve-lic.sh")}"
-SAMPLE="$ROOT/li-tests/contracts_verify/refinement_call_ok.li"
 AUTOVC="$ROOT/build/generated/AutoVC.lean"
 rm -f "$AUTOVC"
-"$LIC" build "$SAMPLE" -o /dev/null
+"$LIC" build "$ROOT/li-tests/contracts_verify/refinement_call_ok.li" -o /dev/null
+test -f "$AUTOVC"
+grep -q 'P-refine folded:' "$AUTOVC"
+grep -q '_refine_.*_proved' "$AUTOVC"
 chmod +x "$ROOT/scripts/check-autovc-open-goals.sh"
 "$ROOT/scripts/check-autovc-open-goals.sh" "$AUTOVC"
-grep -q 'Li.Discharge.refinement_nonneg_spec' "$AUTOVC"
-grep -q 'refinement_nonneg_lit_proved' "$AUTOVC"
-echo discharge_refinement_lean: ok
+echo "discharge_refinement_lean: ok"

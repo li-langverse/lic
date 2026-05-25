@@ -2,6 +2,7 @@
 import gui
 import ui
 import sim
+import lig.present
 
 # li-studio — compose dock + timeline + inspector + agent chrome (PH-UX-05/06/07).
 
@@ -31,6 +32,46 @@ extern proc li_rt_studio_viewport_error_retry() raises IO -> int
   requires true
   ensures result >= 0
   decreases 0
+
+# PH-HW WP3 — shell input + present host bridge (SDL/wgpu on aarch64-apple-darwin).
+extern proc li_rt_studio_shell_input_pointer_down() -> int
+  requires true
+  ensures result >= 0
+  ensures result <= 1
+  decreases 0
+
+extern proc li_rt_studio_shell_input_pointer_x() -> float
+  requires true
+  decreases 0
+
+extern proc li_rt_studio_shell_input_pointer_y() -> float
+  requires true
+  decreases 0
+
+extern proc li_rt_studio_shell_input_key_escape() -> int
+  requires true
+  ensures result >= 0
+  ensures result <= 1
+  decreases 0
+
+extern proc li_rt_studio_shell_input_key_cmd_k() -> int
+  requires true
+  ensures result >= 0
+  ensures result <= 1
+  decreases 0
+
+extern proc li_rt_studio_shell_input_key_digit() -> int
+  requires true
+  ensures result >= 0
+  ensures result <= 5
+  decreases 0
+
+extern proc li_rt_studio_host_present_tick(viewport_w: int, viewport_h: int) -> int
+  requires viewport_w >= 0
+  requires viewport_h >= 0
+  ensures result >= 0
+  ensures result <= 1
+  decreases viewport_w
 
 
 # PH-AGENT — MCP tool ID table (contracts only; lis server in AGENT-1).
@@ -380,10 +421,10 @@ def studio_agent_tool_request_none() -> StudioAgentToolRequest
 
 def li_std_studio_version() -> int
   requires true
-  ensures result == 5
+  ensures result == 6
   decreases 0
 =
-  return 5
+  return 6
 
 def studio_agent_context_none() -> int
   requires true
@@ -2500,4 +2541,62 @@ def studio_shell_viewport_error_visible(compose: StudioShellCompose) -> int
   decreases 0
 =
   return compose.viewport_error.visible
+
+# PH-HW WP3 — InputState from studio-shell-input-bridge runtime (SDL or mock).
+def studio_shell_input_from_host() -> InputState
+  requires true
+  ensures result.pointer_down >= 0
+  ensures result.pointer_down <= 1
+  ensures result.key_escape >= 0
+  ensures result.key_escape <= 1
+  ensures result.key_cmd_k >= 0
+  ensures result.key_cmd_k <= 1
+  ensures result.key_digit >= 0
+  ensures result.key_digit <= 5
+  decreases 0
+=
+  var s: InputState = input_default()
+  s.pointer_down = li_rt_studio_shell_input_pointer_down()
+  s.pointer_x = li_rt_studio_shell_input_pointer_x()
+  s.pointer_y = li_rt_studio_shell_input_pointer_y()
+  s.key_escape = li_rt_studio_shell_input_key_escape()
+  s.key_cmd_k = li_rt_studio_shell_input_key_cmd_k()
+  s.key_digit = li_rt_studio_shell_input_key_digit()
+  return s
+
+def studio_shell_host_present_loop_tick(vp_w: float, vp_h: float, frame_id: int) -> LigPresentFrame
+  requires vp_w >= 0.0
+  requires vp_h >= 0.0
+  requires frame_id >= 0
+  ensures result.frame_id == frame_id
+  decreases frame_id
+=
+  var iw: int = 1280
+  var ih: int = 720
+  if vp_w < 64.0:
+    iw = 0
+  if vp_h < 36.0:
+    ih = 0
+  var _host: int = li_rt_studio_host_present_tick(iw, ih)
+  var swap: LigSwapchain = lig_present_swapchain_create(vp_w, vp_h)
+  return lig_present_frame(swap, frame_id)
+
+def studio_shell_host_frame(compose: StudioShellCompose, frame_id: int) -> int
+  requires frame_id >= 0
+  requires frame_id <= 4
+  ensures result >= 0
+  decreases frame_id
+=
+  var input: InputState = studio_shell_input_from_host()
+  var key_compose: StudioShellCompose = compose
+  var _action: int = studio_handle_studio_key(key_compose, input)
+  var vp: ViewportRegion = gui_viewport_region_from_layout(compose.layout)
+  var _presented: LigPresentFrame = studio_shell_host_present_loop_tick(vp.w, vp.h, frame_id)
+  if _presented.presented != 1:
+    return 20 + frame_id
+  var frame: PaintFrame = paint_frame_new()
+  studio_paint_shell_chrome(frame, compose)
+  if frame.cmd_count < 1:
+    return 30 + frame_id
+  return 0
 

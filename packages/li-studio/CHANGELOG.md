@@ -4,6 +4,7 @@
 
 ### Added
 
+- **PH-HW WP3 host present** — `studio_shell_input_from_host`, `studio_shell_host_frame`, `studio_shell_host_present_loop_tick`; `li_std_studio_version` → 6; smoke `studio_host_present.li`.
 - **PH-SIM SIM-0** — `studio_apply_profile_to_sim` (read-only `SimSessionStub`); `li-sim` path dependency; robotics profile id `4`.
 
 ### Changed

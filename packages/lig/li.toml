@@ -3,7 +3,7 @@ name = "lig"
 version = "0.2.0"
 edition = "2026"
 license = "Apache-2.0 OR MIT"
-description = "Li GPU device layer — backend probe, TOML backend line, wgpu smoke (PH-HW HW-0)"
+description = "Li GPU device + present layer (PH-HW HW-0/1)"
 
 [package.metadata.li]
 github_repo = "lig"
@@ -14,7 +14,8 @@ pkg_id = "PKG-lig"
 
 [package.metadata.studio]
 device_probe = "bench/device_probe.toml"
-bench_hook = "packages/lig/bench/device_probe.toml"
+wgpu_smoke = "host_or_stub"
+bench_hook = "packages/lig/bench/wgpu_smoke.toml"
 
 [package.repository]
 url = "https://github.com/li-langverse/lig"

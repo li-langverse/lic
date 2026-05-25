@@ -5,7 +5,7 @@
 
 [meta]
 version = 1
-updated = "2026-05-24"
+updated = "2026-05-25"
 review_days_warn = 30
 schema = "li_studio_ui_bench_v1"
 
@@ -14,6 +14,7 @@ script = "scripts/bench-studio-viewport-perf.sh"
 output_latest = "data/studio-ui-ux-plan-loop/latest-bench.json"
 output_competitive = "benchmarks/results/bench-studio-viewport-perf.json"
 memory_script = "scripts/profile-animate-memory.sh"
+memory_profile_latest = "data/studio-ui-ux-plan-loop/latest-memory-profile.json"
 
 [[hook]]
 id = "viewport_fps"

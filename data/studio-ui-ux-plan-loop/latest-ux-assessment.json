@@ -1,6 +1,6 @@
 {
   "pass": true,
-  "avg_score": 2.36,
+  "avg_score": 2.39,
   "min_score": 1.5,
   "dimensions": {
     "UX-01": { "score": 2, "note": "HTML mocks + bench hooks; viewport_fps simulate meets 60 (Godot/Blender = 3)." },
@@ -8,16 +8,16 @@
     "UX-03": { "score": 2, "note": "Inspector density in mocks; studio_compose bench hook wired (Figma = 3)." },
     "UX-04": { "score": 2, "note": "Palette hint in HTML; no native palette latency measure (VS Code = 3)." },
     "UX-05": { "score": 2, "note": "Profile chip in mocks; registry documents vertical profiles (Notion = 3)." },
-    "UX-06": { "score": 2.5, "note": "Agent chrome + 03-error mock; SOTA Cursor/Linear/Copilot task+cancel patterns." },
+    "UX-06": { "score": 2.5, "note": "Agent chrome + error mock; SOTA Cursor/Linear/Copilot task status + cancel." },
     "UX-07": { "score": 2.5, "note": "02 empty viewport mock + capture journeys (shadcn = 3)." },
-    "UX-08": { "score": 2.5, "note": "GPU/agent error mock + wgpu_smoke hook status in bench JSON." },
+    "UX-08": { "score": 2.5, "note": "GPU/agent error mock + wgpu_smoke hook in bench JSON." },
     "UX-09": { "score": 2, "note": "Focus in HTML; panel_switch hook documents keyboard regions (Blender = 3)." },
-    "UX-10": { "score": 2, "note": "Design tokens synced; ux-harness on demo HTML." },
-    "UX-11": { "score": 1.5, "note": "load_ms in registry gates; no skeleton loaders (Material 3 = 3)." },
-    "UX-12": { "score": 2, "note": "studio-ui.toml + README document simulate vs native paths." },
-    "UX-13": { "score": 3, "note": "bench-studio-viewport-perf.json gates table with honest_simulate flags per tier." },
-    "UX-14": { "score": 3, "note": "native_pixels=false everywhere; competitive JSON not committed to git." }
+    "UX-10": { "score": 2, "note": "Design tokens synced; ux-harness pass on demo HTML." },
+    "UX-11": { "score": 1.5, "note": "load_ms gate wired; no skeleton loaders (Material 3 = 3)." },
+    "UX-12": { "score": 2, "note": "Memory budget table in ui-ux-by-dimension + registry warn_peak_mib." },
+    "UX-13": { "score": 3, "note": "animate_md_import gate in bench JSON; peak_observed_mib vs 512 MiB warn ceiling documented." },
+    "UX-14": { "score": 3, "note": "native_pixels=false; memory honest_simulate when RSS not measured." }
   },
   "honest_native_viewport": false,
-  "notes": "studio-ux-08: studio-ui.toml registry + verify-bench-registry; panel_switch.toml hook; dual JSON output. panel_switch worst 150ms flagged in gates (honest). SOTA agentic: Cursor agent overview, Linear, GitHub Copilot."
+  "notes": "studio-ux-09: profile-animate-memory writes latest-memory-profile.json; bench gates.animate_md_import; ui-ux-by-dimension memory budget section. peak_import ~0.46 MiB (import-only); RSS run when GNU time available. SOTA agentic: cursor-agent, linear-app, github-copilot-workspace."
 }

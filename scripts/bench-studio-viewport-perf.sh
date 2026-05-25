@@ -46,6 +46,7 @@ meta = registry.get("meta") or {}
 harness_meta = registry.get("harness") or {}
 gate_defs = {g["id"]: g for g in registry.get("gate") or [] if isinstance(g, dict) and "id" in g}
 tier_defs = {t["id"]: t for t in registry.get("particle_tier") or [] if isinstance(t, dict) and "id" in t}
+memory_defs = {m["id"]: m for m in registry.get("memory") or [] if isinstance(m, dict) and "id" in m}
 
 report = {
     "generated_at": time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime()),
@@ -224,6 +225,7 @@ elif not report["particle_tiers"]:
         )
 
 mem_script = root / (harness_meta.get("memory_script") or "scripts/profile-animate-memory.sh")
+mem_latest = root / "data/studio-ui-ux-plan-loop/latest-memory-profile.json"
 if mem_script.is_file():
     proc = subprocess.run(
         ["bash", str(mem_script)],
@@ -233,8 +235,30 @@ if mem_script.is_file():
     )
     report["memory_mib"]["profile_exit"] = proc.returncode
     for line in (proc.stdout or "").splitlines():
-        if "MiB" in line:
+        if "MiB" in line or "budget" in line:
             report["memory_mib"].setdefault("lines", []).append(line.strip())
+        if line.startswith("STUDIO_MEMORY_JSON="):
+            try:
+                report["memory_mib"]["profile"] = json.loads(line.split("=", 1)[1])
+            except json.JSONDecodeError:
+                report["notes"].append("memory_json_parse_fail")
+if mem_latest.is_file() and "profile" not in report["memory_mib"]:
+    try:
+        report["memory_mib"]["profile"] = json.loads(mem_latest.read_text(encoding="utf-8"))
+    except json.JSONDecodeError:
+        report["notes"].append("memory_latest_parse_fail")
+
+mem_prof = report["memory_mib"].get("profile") or {}
+mem_reg = memory_defs.get("animate_md_import") or {}
+warn_mib = float(mem_prof.get("warn_peak_mib") or mem_reg.get("warn_peak_mib") or 512)
+peak_mib = mem_prof.get("peak_observed_mib")
+if peak_mib is None and mem_prof.get("peak_import_mib") is not None:
+    peak_mib = mem_prof["peak_import_mib"]
+report["memory_mib"]["warn_peak_mib"] = warn_mib
+report["memory_mib"]["peak_observed_mib"] = peak_mib
+report["memory_mib"]["meets_budget"] = bool(
+    mem_prof.get("meets_budget", peak_mib is not None and peak_mib <= warn_mib)
+)
 
 # Gate evaluation vs registry targets
 vf = report.get("viewport_fps") or {}
@@ -274,8 +298,22 @@ for tier in report["particle_tiers"]:
         "honest_simulate": tier.get("status") == "simulate",
     }
 
+mid = "animate_md_import"
+report["gates"][mid] = {
+    "target": warn_mib,
+    "value": peak_mib,
+    "unit": "mib",
+    "meets_target": bool(report["memory_mib"].get("meets_budget", False)),
+    "honest_simulate": mem_prof.get("rss_status", "skip") != "linux_time_v",
+    "peak_import_mib": mem_prof.get("peak_import_mib"),
+    "peak_rss_mib": mem_prof.get("peak_rss_mib"),
+}
+
+memory_gate_ids = set(memory_defs)
 report["gates_pass"] = all(
-    g.get("meets_target") for gid, g in report["gates"].items() if gid in gate_defs or gid in tier_defs
+    g.get("meets_target")
+    for gid, g in report["gates"].items()
+    if gid in gate_defs or gid in tier_defs or gid in memory_gate_ids
 )
 
 payload = json.dumps(report, indent=2) + "\n"

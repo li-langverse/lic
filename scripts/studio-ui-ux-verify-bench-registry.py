@@ -46,6 +46,16 @@ def main() -> None:
         if required not in tier_ids:
             fail(f"missing [[particle_tier]] id={required}")
 
+    memory_ids = {m["id"] for m in reg.get("memory") or [] if isinstance(m, dict) and "id" in m}
+    if "animate_md_import" not in memory_ids:
+        fail("missing [[memory]] id=animate_md_import")
+    mem_script = (reg.get("harness") or {}).get("memory_script", "")
+    if mem_script and not (ROOT / mem_script).is_file():
+        fail(f"harness.memory_script missing: {mem_script}")
+    mem_latest = ROOT / "data/studio-ui-ux-plan-loop/latest-memory-profile.json"
+    if not mem_latest.is_file():
+        fail("missing latest-memory-profile.json — run ./scripts/profile-animate-memory.sh")
+
     for hook in reg.get("hook") or []:
         if not isinstance(hook, dict):
             continue
@@ -67,10 +77,19 @@ def main() -> None:
             fail(f"{label}: particle_tiers empty")
         if data.get("load_ms") is None:
             fail(f"{label}: load_ms missing")
+        mem = data.get("memory_mib") or {}
+        if mem.get("peak_observed_mib") is None and not (mem.get("profile") or {}).get("peak_observed_mib"):
+            fail(f"{label}: memory_mib.peak_observed_mib missing")
+        if "animate_md_import" not in gates:
+            fail(f"{label}: gates.animate_md_import missing")
+        mg = gates.get("animate_md_import") or {}
+        if mg.get("unit") != "mib":
+            fail(f"{label}: gates.animate_md_import.unit must be mib")
 
     print(
         "studio-ui-ux-verify-bench-registry: ok "
-        f"(registry v{meta.get('version', '?')}, gates={len(gate_ids)}, tiers={len(tier_ids)})"
+        f"(registry v{meta.get('version', '?')}, gates={len(gate_ids)}, tiers={len(tier_ids)}, "
+        f"memory={len(memory_ids)})"
     )
 
 

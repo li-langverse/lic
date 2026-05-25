@@ -31,7 +31,7 @@ todos:
     status: done
   - id: studio-ux-09-memory-budget
     content: "profile-animate-memory in loop gates; document peak MiB budget in ui-ux-by-dimension"
-    status: pending
+    status: done
   - id: studio-ux-10-native-capture
     content: "Extend ux-harness native_gui for Xvfb SDL capture when viewport draws pixels"
     status: pending

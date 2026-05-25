@@ -57,6 +57,8 @@ fi
 
 li_phase "memory profile smoke"
 "$ROOT/scripts/profile-animate-memory.sh" || fail "profile-animate-memory"
+[[ -f "$ROOT/data/studio-ui-ux-plan-loop/latest-memory-profile.json" ]] \
+  || fail "latest-memory-profile.json missing after profile-animate-memory"
 
 if [[ "${STUDIO_UI_UX_GATES_CAPTURE:-0}" == "1" ]]; then
   li_phase "capture progress (dry)"

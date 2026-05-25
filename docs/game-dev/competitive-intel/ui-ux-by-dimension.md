@@ -12,6 +12,20 @@
 | MD particles (display) | 10k @ 60 fps; 100k @ 30 fps (tiered) | `md_lennard_jones` + scene path |
 | Memory (animate MD) | Document peak MiB; no unbounded growth | `profile-animate-memory.sh` |
 
+### Memory budget (animate MD / Studio timeline)
+
+Registry: `benchmarks/competitive/studio-ui.toml` → `[[memory]] id = animate_md_import`.
+
+| Measure | Source | Current baseline (plan loop) |
+|---------|--------|----------------------------|
+| Import peak | `tracemalloc` after `import animate_md` | ~5 MiB (matplotlib stack) |
+| Short-run RSS | `/usr/bin/time -v` with `--skip-export --max-frames 4` | Linux CI when harness runs |
+| Warn ceiling | `warn_peak_mib` in registry | **512 MiB** (gate fails above) |
+
+**Artifacts:** `data/studio-ui-ux-plan-loop/latest-memory-profile.json` (gates + bench embed `memory_mib.profile`). Bench gate `animate_md_import` compares `peak_observed_mib` (RSS when measured, else import peak) to the warn ceiling.
+
+**Growth policy:** `animate_md.py` streams trajectory frames from disk; full 3D GIF export can spike RAM at the matplotlib layer — document peaks honestly (UX-13) and cap preview frames in Studio (`--max-frames`). No unbounded in-memory retention of full trajectories in the harness path.
+
 ## UX dimensions (score 0–3 each iteration)
 
 | ID | Dimension | SOTA refs |

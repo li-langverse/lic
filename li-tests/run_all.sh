@@ -19,11 +19,12 @@ esac
 FILTER="${1:-all}"
 CI="${CI:-false}"
 TEST_JOBS="$(li_test_jobs)"
+MAX_MEMORY_FLAG=()
 
 usage_run_all() {
-  echo "usage: $0 [--ci] [-j N] [suite|all]" >&2
+  echo "usage: $0 [--ci] [-j N] [--max-memory=MB] [suite|all]" >&2
   echo "  LI_TEST_JOBS — parallel manifest workers (default 1; host cores when CI=true)" >&2
-  echo "  Each worker runs lic build --build-dir=<build-root>/li-test-<id>/" >&2
+  echo "  Each worker runs lic build --build-dir=<build-root>/li-test-<id>/ [--max-memory=MB]" >&2
 }
 
 while [[ $# -gt 0 ]]; do
@@ -35,6 +36,14 @@ while [[ $# -gt 0 ]]; do
     -j*)
       TEST_JOBS="${1#-j}"
       shift
+      ;;
+    --max-memory=*)
+      MAX_MEMORY_FLAG=(--max-memory="${1#--max-memory=}")
+      shift
+      ;;
+    --max-memory)
+      MAX_MEMORY_FLAG=(--max-memory="${2:?--max-memory requires MB}")
+      shift 2
       ;;
     --ci)
       CI=true
@@ -87,9 +96,9 @@ li_autovc_path() {
 
 run_one() {
   local suite="$1" file="$2" outcome="$3" substr="${4:-}"
-  local -a build_dir_flag=()
+  local -a build_dir_flag=("${MAX_MEMORY_FLAG[@]}")
   if [[ -n "${WORKER_BUILD_DIR:-}" ]]; then
-    build_dir_flag=(--build-dir="$WORKER_BUILD_DIR")
+    build_dir_flag=(--build-dir="$WORKER_BUILD_DIR" "${MAX_MEMORY_FLAG[@]}")
     mkdir -p "$WORKER_BUILD_DIR/generated"
   fi
 

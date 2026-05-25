@@ -1,0 +1,9 @@
+[[entry]]
+id = "P-AX-MECH-001"
+kind = "axiom"
+field = "physics"
+statement = "Newton first law."
+proof_status = "open"
+gap_id = "G-proof-db"
+lean_module = "docs/semantics/Discharge.lean"
+last_verified_lic_commit = "main"

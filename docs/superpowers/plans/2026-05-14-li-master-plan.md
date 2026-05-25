@@ -336,6 +336,7 @@ See [local-ci-docker-images.md](../ecosystem/local-ci-docker-images.md).
 
 | Sub | Task | Exit gate |
 |-----|------|-----------|
+| **Doc-f** | **Proof database** — [proof-database/README.md](../verification/proof-database/README.md); **G-proof-db** Partial | `proof-db.py verify-slice` schema-green |
 | **Doc-a** | **Gap register** — keep `provability-gaps.md` current; link from index, overview, master plan, mkdocs | Register lists every open **G-*** row; last-updated date |
 | **Doc-b** | **Handbook audit** — every `docs/language/*`, `docs/guide/*`, `docs/compiler/*` uses *target vs today* where spec ≠ `lic` | No page implies Lean runs on `lic build` without a status note |
 | **Doc-c** | **Spec stubs** — decorator, math, language design cross-link gaps | `2026-05-16-li-execution-decorators.md`, `2026-05-16-li-math-linalg-surface.md` point at **G-*** |
@@ -369,6 +370,7 @@ Maps **master plan phases** to gap IDs and what “mathematical provability esta
 | 2i | Math surface types | **G-math** | `A @ B` / `dot` shape errors at typecheck; **P-linalg** closed VCs (#151) | linear-algebra.md, math spec, `contracts_verify/linalg_*` |
 | 7e | Math → SIMD MIR | **G-math** | Tier 1 Li sources math-only; lowering proved or documented | gaps, benchmarks plan, `discharge_linalg_int_lean.sh` |
 | 2f | P-linalg corpus | **G-lean**, **G-math** | Closed dot/sum/matmul-entry; loop dot open | [proof-corpus-roadmap](../verification/proof-corpus-roadmap.md) |
+| Doc | Proof database | **G-proof-db** | TOML + CLI | [proof-database](../verification/proof-database/README.md), `scripts/proof-db/proof-db.py` |
 | 2g / 2h | `def`, math syntax | — | Syntax only unless tied to VC | language overview |
 | 4 | Deferred annotations | **G-ann** | PEP 649 resolve at check time | architecture diagram |
 | H / GPU | Device / async | **G-gpu**, **G-async** | Device laws in Lean + codegen | decorator spec, effects |

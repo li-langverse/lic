@@ -1,9 +1,3 @@
-# proof-db
+# `proof-db/`
 
-Release-regression manifest: **axioms → lemmas → Li specimens → Lean artifacts**.
-
-**Spec:** [docs/verification/proof-database.md](../docs/verification/proof-database.md)
-
-```bash
-./scripts/check-proof-db.sh
-```
+Lemma pin directory (`corpus_root` in [schema.toml](../docs/verification/proof-database/schema.toml)). Hub: [proof-database README](../docs/verification/proof-database/README.md).

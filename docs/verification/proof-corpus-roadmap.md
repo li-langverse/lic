@@ -1,6 +1,7 @@
 # Proof corpus and verification roadmap
 
 **Audience:** agents extending **2e/2f**, reviewers judging “is `lic build` a proof certificate?”  
+**Related:** [Provability gaps](provability-gaps.md) · [Proof database](proof-database/README.md) · [Contracts and proofs](../language/contracts-and-proofs.md) · [Master plan § 2e–2f](../superpowers/plans/2026-05-14-li-master-plan.md)
 **Related:** [Provability gaps](provability-gaps.md) · [Proof database](proof-database.md) (`proof-db/manifest.toml`) · [Contracts and proofs](../language/contracts-and-proofs.md) · [Master plan § 2e–2f](../superpowers/plans/2026-05-14-li-master-plan.md)
 
 ## Release regression manifest (v0)

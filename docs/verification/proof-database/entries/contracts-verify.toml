@@ -1,0 +1,11 @@
+[[entry]]
+id = "P-linalg-dot4-int-closed"
+kind = "lemma"
+field = "linalg"
+gap_id = "G-math"
+backlog_id = "P-linalg"
+statement = "4-term int dot closed-form ensures."
+proof_status = "proved"
+lean_module = "build/generated/AutoVC.lean"
+li_specimen = "li-tests/contracts_verify/linalg_dot4_int_closed.li"
+last_verified_lic_commit = "main"

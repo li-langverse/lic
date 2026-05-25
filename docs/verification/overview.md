@@ -19,7 +19,7 @@ Li is **compiled ahead of time**, not interpreted. The product goal is to drive 
 The only unproved surface is **`trusted.lean`** (minimal `IO`). Decorators, math notation, and parallelism are **designed** to lower statically — see master plan § *Compile-time reliability*.
 
 !!! important "Current gaps"
-    **`lic build` does not yet run Lean 4** or full VC discharge. Parallel disjointness uses **heuristic** policy checks; decorators are **parse-only**. See **[Provability gaps (today)](provability-gaps.md)** before claiming a full proof certificate.
+    **`lic build` does not yet run Lean 4** or full VC discharge. Parallel disjointness uses **heuristic** policy checks; decorators are **parse-only**. See **[Provability gaps (today)](provability-gaps.md)** and the **[proof database](proof-database/README.md)** before claiming a full proof certificate.
 
 ## The proof gate
 

@@ -5,6 +5,8 @@
   <meta name="viewport" content="width=1920, height=1080" />
   <title>Li World Studio — workspace (marketing mock)</title>
   <link rel="stylesheet" href="studio-tokens.css" />
+  <link rel="stylesheet" href="studio-mock-chrome.css" />
+  <link rel="stylesheet" href="studio-agent-mock.css" />
   <style>
     * { box-sizing: border-box; }
     body {
@@ -176,11 +178,19 @@
         <div class="mock-metric">wgpu smoke stub_pass · li-render FPS hook · surface_ok=false</div>
       </div>
     </main>
-    <aside class="agent-strip" aria-label="Agent copilot">
-      <span class="agent-status">Running · Optimize binding pose</span>
-      <span>Last: placed water molecule at site A</span>
-      <button type="button" class="agent-cancel">Cancel</button>
-    </aside>
+    <div class="agent-block" data-mode="running" aria-label="Agent copilot">
+      <div class="agent-strip">
+        <div class="agent-invoke">
+          <input class="agent-task-input" type="text" placeholder="Describe a task for the agent…" aria-label="Agent task" value="Optimize binding pose" />
+          <button type="button" class="agent-send">Send</button>
+          <span class="agent-status is-running">Running · Optimize binding pose</span>
+          <span class="agent-tool-trace" role="status">lic_build · task <code>tsk-7f3a</code></span>
+          <a class="agent-mcp-hint" href="../../docs/game-dev/studio-mcp-tools.md">MCP · Cursor</a>
+          <span class="agent-last-action">Last: placed water molecule at site A</span>
+          <button type="button" class="agent-cancel">Cancel</button>
+        </div>
+      </div>
+    </div>
     <section class="timeline" aria-label="Timeline">
       <div style="display:flex;justify-content:space-between;align-items:center;">
         <strong>Timeline</strong>
@@ -199,5 +209,6 @@
       <div class="empty-hint">Select a bond or atom to edit constraints. No GPU error.</div>
     </aside>
   </div>
+  <script src="studio-agent-mock.js"></script>
 </body>
 </html>

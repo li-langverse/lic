@@ -789,6 +789,24 @@ packages = ["li-studio", "li-gui", "li-ui"]
 outcome = "compile_open_ok"
 note = "import studio: compose dock + timeline + inspector from composables (PH-UX-05)"
 
+[[tests]]
+suite = "composable"
+file = "composable/import_lig_kernel.li"
+outcome = "compile_open_ok"
+note = "PH-HW WP4 lig kernel"
+
+[[tests]]
+suite = "composable"
+file = "composable/import_lig_chem_backend.li"
+outcome = "compile_open_ok"
+note = "PH-HW WP4 chem lig backend"
+
+[[tests]]
+suite = "smoke"
+file = "packages/lig/li-tests/smoke/kernel_matmul_parity.li"
+outcome = "compile_open_ok"
+note = "T-PKG-lig-kernel-matmul-parity"
+
 # stdlib_coverage/build_std_csv — enable when std.csv module resolves (PH-IO-4)
 
 # --- httpd (Phase H placeholder) ---

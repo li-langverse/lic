@@ -312,3 +312,61 @@ def lig_wgpu_smoke_surface_ready(smoke: LigWgpuSmoke) -> int
   decreases 0
 =
   return smoke.surface_ok
+
+extern proc li_rt_lig_kernel_run(kernel_id: int, backend_id: int) -> int
+  requires kernel_id >= 1
+  requires backend_id >= 1
+  requires backend_id <= 4
+  ensures result >= -1
+  ensures result <= 4
+  decreases kernel_id
+
+extern proc li_rt_lig_kernel_last_validity_ratio() -> float
+  requires true
+  ensures result >= 0.0
+  ensures result <= 1.0
+  decreases 0
+
+def lig_kernel_matmul_f32() -> int
+  requires true
+  ensures result == 1
+  decreases 0
+=
+  return 1
+
+def lig_kernel_run(kernel_id: int, backend_id: int) -> int raises IO
+  requires kernel_id >= 1
+  requires backend_id >= 1
+  requires backend_id <= 4
+  ensures result >= -1
+  ensures result <= 4
+  decreases kernel_id
+=
+  return li_rt_lig_kernel_run(kernel_id, backend_id)
+
+def lig_kernel_last_validity_ratio() -> float raises IO
+  requires true
+  ensures result >= 0.0
+  ensures result <= 1.0
+  decreases 0
+=
+  return li_rt_lig_kernel_last_validity_ratio()
+
+def lig_kernel_run_auto(kernel_id: int) -> int raises IO
+  requires kernel_id >= 1
+  ensures result >= -1
+  ensures result <= 4
+  decreases kernel_id
+=
+  return lig_kernel_run(kernel_id, lig_backend_select_auto())
+
+def lig_validity_gate_pass(min_ratio: float) -> int raises IO
+  requires min_ratio >= 0.0
+  requires min_ratio <= 1.0
+  ensures result >= 0
+  ensures result <= 1
+  decreases 0
+=
+  if lig_kernel_last_validity_ratio() + 0.0001 >= min_ratio:
+    return 1
+  return 0

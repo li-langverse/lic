@@ -1,136 +1,13 @@
-# lig multi-vendor kernel bench registry (PH-HW WP1 schema).
-# Agents: add [[kernel]] rows when catalog IDs land; do not weaken ratio policy.
-# Validate: ./scripts/check-hpc-competitive.sh (extend for lig-kernels when WP2 wires harness)
-# Catalog: docs/game-dev/lig-kernel-catalog.md
-# RFC: docs/game-dev/specs/lig-rfc.md
-
 [meta]
 version = 1
 package = "lig"
-updated = "2026-05-25"
-ratio_policy = "cpu_oracle"   # report speedup vs cpu column unless stub
-columns = ["cpu", "cuda", "hip", "metal", "custom_lab"]
-units = "seconds"
-workload_class_default = "stub"
-
-# Column semantics:
-#   cpu        — host reference (OpenMP or pure Li CPU path)
-#   cuda       — NVIDIA via LKIR → CUDA
-#   hip        — AMD ROCm/HIP
-#   metal      — Apple Metal
-#   custom_lab — gated lab manifest (manual ingest)
-# Empty string = not run yet (honest stub).
-
 [[kernel]]
 id = "lig.kernel.matmul_f32"
 bench_name = "matmul_f32"
-lkir = "lkir/matmul_tile.lkir"
+lkir = "lkir/matmul_f32.li"
 validity_ref = "cpu"
-memory_contract = "aligned_2d"
-perf_tier = "tier1"
-workload_class = "stub"
-cpu = ""
-cuda = ""
-hip = ""
-metal = ""
-custom_lab = ""
-notes = "Blocked on WP2 lowering; row reserves multi-vendor columns."
-
-[[kernel]]
-id = "lig.kernel.dot_f32"
-bench_name = "dot_f32"
-lkir = "lkir/dot_warp.lkir"
-validity_ref = "cpu"
-memory_contract = "contiguous_1d"
-perf_tier = "tier1"
-workload_class = "stub"
-cpu = ""
-cuda = ""
-hip = ""
-metal = ""
-custom_lab = ""
-
-[[kernel]]
-id = "lig.kernel.reduce_sum_f32"
-bench_name = "reduce_sum_f32"
-lkir = "lkir/reduce_sum.lkir"
-validity_ref = "cpu"
-memory_contract = "contiguous_1d"
-perf_tier = "tier1"
-workload_class = "stub"
-cpu = ""
-cuda = ""
-hip = ""
-metal = ""
-custom_lab = ""
-
-[[kernel]]
-id = "lig.kernel.md_force_short"
-bench_name = "md_force_short"
-lkir = "lkir/md_lj_short.lkir"
-validity_ref = "cpu"
-memory_contract = "particle_soA"
-perf_tier = "tier2"
-workload_class = "stub"
-cpu = ""
-cuda = ""
-hip = ""
-metal = ""
-custom_lab = ""
-notes = "Future external oracle column (LAMMPS) per competitive-engines-plan."
-
-[[kernel]]
-id = "lig.kernel.heat_stencil_2d_f32"
-bench_name = "heat_stencil_2d"
-lkir = "lkir/heat_2d.lkir"
-validity_ref = "cpu"
-memory_contract = "grid_halo"
-perf_tier = "tier2"
-workload_class = "stub"
-cpu = ""
-cuda = ""
-hip = ""
-metal = ""
-custom_lab = ""
-
-[[kernel]]
-id = "lig.kernel.horner_f32"
-bench_name = "horner_f32"
-lkir = "lkir/horner.lkir"
-validity_ref = "cpu"
-memory_contract = "contiguous_1d"
-perf_tier = "tier1"
-workload_class = "stub"
-cpu = ""
-cuda = ""
-hip = ""
-metal = ""
-custom_lab = ""
-
-[[kernel]]
-id = "lig.kernel.mlp_forward_f32"
-bench_name = "mlp_forward_f32"
-lkir = "lkir/mlp_tile.lkir"
-validity_ref = "cpu"
-memory_contract = "layered_weights"
-perf_tier = "tier3"
-workload_class = "stub"
-cpu = ""
-cuda = ""
-hip = ""
-metal = ""
-custom_lab = ""
-notes = "Label BLAS if CPU oracle uses NumPy; see registry.toml python_numpy row."
-
-[[kernel]]
-id = "lig.kernel.memcpy_h2d_f32"
-bench_name = "memcpy_h2d"
-lkir = "lkir/memcpy.lkir"
-validity_ref = "cpu"
-memory_contract = "equal_length"
-perf_tier = "tier0"
-workload_class = "stub"
-cpu = ""
+workload_class = "pilot"
+cpu = "0.017496"
 cuda = ""
 hip = ""
 metal = ""

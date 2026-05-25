@@ -21,3 +21,8 @@ bench_hook = "packages/lig/bench/wgpu_smoke.toml"
 url = "https://github.com/li-langverse/lig"
 documentation = "https://li-langverse.github.io/li-language/ecosystem/lig/"
 changelog = "https://github.com/li-langverse/lig/blob/main/CHANGELOG.md"
+version = "0.1.0"
+edition = "2026"
+[package.metadata.li]
+import_name = "lig"
+pkg_id = "PKG-lig"

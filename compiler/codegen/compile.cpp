@@ -78,6 +78,7 @@ bool compile_module(const Module& module, const std::string& output_path,
   mir_finalize_runtime_link_needs(rt_needs);
   const bool link_runtime_full =
       std::getenv("LI_LINK_RUNTIME_FULL") != nullptr && *std::getenv("LI_LINK_RUNTIME_FULL") != '0';
+  const std::filesystem::path rt_lig_path = resolve_runtime_c("li_rt_lig.c");
 
   std::ostringstream cmd;
   const char* cc_env = std::getenv("CC");
@@ -103,6 +104,9 @@ bool compile_module(const Module& module, const std::string& output_path,
     if (std::filesystem::exists(rt_h2_path)) {
       cmd << " -x c \"" << rt_h2_path.string() << "\"";
     }
+  }
+  if (std::filesystem::exists(rt_lig_path)) {
+    cmd << " -x c \"" << rt_lig_path.string() << "\"";
   }
   cmd << " -o \"" << output_path << "\"";
   if (opts.release) {

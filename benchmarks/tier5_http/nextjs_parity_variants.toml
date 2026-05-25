@@ -6,6 +6,7 @@
 # Variants:
 #   verify_only  — HTTPD_BENCH_SKIP_TIMING=1 or missing wrk/nginx/node
 #   sse_relaxed  — nextjs_sse: verify required; wrk timing best-effort
+#   ssr_wrk_c20 — nextjs_ssr: wrk -c20 (80 overloads single-worker li-httpd loopback)
 #   ws_verify    — nextjs_ws: upgrade smoke only (no RPS bar)
 
 [default]

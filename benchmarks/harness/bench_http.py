@@ -177,7 +177,7 @@ def sample_ttfb_ms(url: str, *, samples: int = 24) -> float | None:
             resp.read(1)
             times.append((time.perf_counter() - t0) * 1000.0)
             resp.read()
-        except OSError:
+        except (OSError, http.client.HTTPException):
             continue
         finally:
             conn.close()

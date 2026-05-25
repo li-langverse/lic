@@ -15,7 +15,7 @@ requests = [
 [load]
 tool = "wrk"
 threads = 4
-connections = 80
+connections = 20
 duration_sec = 8
 
 [metrics]

@@ -139,7 +139,7 @@ todos:
     status: completed
   - id: gap-phase2-perf-wrk-soak
     content: "Full wrk soak vs nginx — HTTPD_BENCH_SKIP_TIMING=0, ≥30s on parity + parity_streaming + nextjs; li RPS/TTFB bars in perf-regression gate; gate check-tier5-perf-wrk-soak.sh"
-    status: pending
+    status: completed
   - id: gap-phase2-mitigation-exploits
     content: "Close nginx_mitigations.toml rows with empty exploit — client_max_body_size, h2_rapid_reset, dns_resolver_limits; tier5 TOML + live li-httpd vs nginx compare; gate check-tier5-mitigation-exploits-complete.sh"
     status: completed

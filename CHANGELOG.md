@@ -9,10 +9,10 @@ All notable changes to Li are documented here. The format follows
 ### Added
 
 - **li-world PH-GD-2 scaffold** — text `world_v1` line save/load, `WorldSnapshot`, in-memory buffer round-trip — [2026-05-25-li-world-scaffold.md](docs/release-notes/2026-05-25-li-world-scaffold.md).
-- **Studio UX-08 viewport error (lib)** — `studio_err_gpu` / `studio_err_missing_asset`, overlay compose/paint, 6-arg chrome count — [2026-05-25-studio-ux08-viewport-error-lib.md](docs/release-notes/2026-05-25-studio-ux08-viewport-error-lib.md).
 - **Studio UX-04/07 gap-close** — native command palette overlay + empty inspector/viewport composables in `li-studio`/`li-ui`/`li-gui`; smokes `studio_command_palette.li`, `studio_empty_states.li`, `studio_palette.li`.
 - **Studio MCP tool contracts (PH-AGENT / AGENT-0)** — `packages/li-studio` tool IDs, agent chrome `StudioAgentToolRequest`, `docs/game-dev/studio-mcp-tools.md` — [2026-05-25-studio-mcp-tool-contracts.md](docs/release-notes/2026-05-25-studio-mcp-tool-contracts.md).
 - **Studio UX-09 keyboard-first** — `gui_handle_studio_key`, `StudioKeyBinding`, `InputState.key_cmd_k` / `key_digit`, smoke `studio_keyboard.li` — [2026-05-25-studio-keyboard-ux09.md](docs/release-notes/2026-05-25-studio-keyboard-ux09.md).
+- **Studio UX-09 SDL ingest stub** — `studio_shell_input_probe.c`, `studio-shell-sdl-tick.sh`, `studio-shell-input-bridge.md`, smoke `studio_keyboard_input_json.li` — [2026-05-25-studio-shell-input-bridge-ux09.md](docs/release-notes/2026-05-25-studio-shell-input-bridge-ux09.md).
 
 ### Changed
 

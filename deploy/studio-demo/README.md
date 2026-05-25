@@ -24,6 +24,17 @@ Static previews for the Studio UI/UX plan loop. **Not** the shipped native app (
 
 `ux-harness` target `world-studio-native` invokes the same script via `native_gui` adapter.
 
+## Native keyboard ingest (UX-09)
+
+`native/studio_shell_input_probe.c` polls SDL keyboard/mouse once (or `--mock cmd_k,digit=3`) and prints `InputState` JSON for hosts. **Not** the full `li-studio` binary.
+
+```bash
+./scripts/studio-shell-sdl-tick.sh
+STUDIO_SHELL_INPUT_MOCK=cmd_k,digit=3 ./scripts/studio-shell-sdl-tick.sh
+```
+
+See [studio-shell-input-bridge.md](../../docs/game-dev/studio-shell-input-bridge.md).
+
 ## Capture harness
 
 ```bash

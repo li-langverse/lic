@@ -346,4 +346,13 @@ void check_module_policies(const Module& module, const std::string& file,
   }
 }
 
+bool parallel_for_disjoint_witness(const Stmt& stmt,
+                                   const std::vector<Decorator>* proc_decorators) {
+  if (stmt.kind != Stmt::Kind::ParallelFor) return false;
+  const bool proc_disjoint =
+      proc_decorators && decorator_parallel_has_disjoint(*proc_decorators);
+  return contract_has_disjoint(stmt.par_contracts) ||
+         decorator_parallel_has_disjoint(stmt.decorators) || proc_disjoint;
+}
+
 }  // namespace li

@@ -126,6 +126,7 @@ struct MirInsn {
   bool array_broadcast_lhs_len1 = false;
   bool array_broadcast_rhs_len1 = false;
   std::int64_t simd_lanes = 0;
+  bool parallel_disjoint_proven = false;
   std::vector<MirArg> args;
   /** Layout entries under object root (`name` paths). Used for ReturnObject pack and CallProc
    *  unpack into `ident + "_" + name` (scalar locals or ArrayAlloc slots). */

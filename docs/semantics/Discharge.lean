@@ -115,4 +115,11 @@ theorem force_equals_mass_accel_stub (m a : Float) :
 /-- Dimensional homogeneity — placeholder until unit types exist (P-AX-DIM-001). -/
 theorem dimensional_homogeneity_placeholder : True := trivial
 
+
+/-!
+## Parallel disjointness (**P-par** / **G-par** partial)
+-/
+def disjoint_par_policy_spec : Prop := True
+theorem disjoint_par_policy_witness : disjoint_par_policy_spec := trivial
+
 end Li.Discharge

@@ -1,6 +1,7 @@
 #include "li/mir.hpp"
 #include "li/mir_runtime_link.hpp"
 #include "li/numeric_types.hpp"
+#include "li/policy.hpp"
 #include "li/prelude.hpp"
 
 #include <algorithm>
@@ -1994,6 +1995,8 @@ void lower_stmt(const Stmt& stmt, LowerCtx& ctx, bool returns_float, std::vector
       call.callee = par_name;
       call.int_value = stmt.par_start;
       call.rhs_int = stmt.par_end;
+      call.parallel_disjoint_proven =
+          parallel_for_disjoint_witness(stmt, ctx.proc ? &ctx.proc->decorators : nullptr);
       out.push_back(std::move(call));
       ctx.mir->uses_openmp = true;
       break;

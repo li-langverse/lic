@@ -23,9 +23,9 @@ PH-GD-2 scaffold: new `packages/li-world` with `world_v1` text line serialize/pa
 
 | Area | What | Evidence |
 |------|------|----------|
-| `packages/li-world` | `WorldSnapshot`, `world_format_version`, serialize/parse/buffer APIs | `li-tests/smoke/world_roundtrip.li`, `builds.li` |
+| `packages/li-world` | `WorldSnapshot` (`name` slot id), `world_format_version`, serialize/parse/buffer APIs | `lic check` + `world_roundtrip.li` |
 | `packages/li.toml` | workspace member `li-world` | `scripts/check-pkg-workspace.py` N/A (httpd-only gate) |
-| `runtime/li_rt.c` | `li_rt_world_*` parse/serialize (`world_v1 name=… tick=… entity_count=…`) | round-trip smoke |
+| `runtime/li_rt.c` | `li_rt_world_serialize_slot`, parse, `roundtrip_fields`, `snapshot_eq_fields` | round-trip smoke |
 | `compiler/codegen/emit.cpp` | declare `li_rt_world_*` | link with world package |
 
 ## Not changed (scope fence)

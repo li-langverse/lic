@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-05-25T09:34:02.899988+00:00",
+  "generated_at": "2026-05-25T10:20:41.100211+00:00",
   "tz": "Europe/Berlin",
   "agents_live": 3,
   "runners": [
@@ -7,7 +7,7 @@
       "id": "httpd",
       "name": "li-httpd gap parity",
       "branch": "cursor/httpd-plan-continue",
-      "head": "c30cf82",
+      "head": "927ae74",
       "running": true,
       "process": "systemd:li-httpd-plan-loop.service (active)",
       "log_path": "/home/s4il0r/Documents/Cursor/li-langverse/lic/../lic/data/httpd-plan-loop/until-deadline-20260525-063746.log",
@@ -81,7 +81,7 @@
           "gap-phase2-exploit-nginx-regression",
           "gap-phase2-mitigation-exploits"
         ],
-        "iterations": 41,
+        "iterations": 42,
         "history": [
           {
             "at": "2026-05-24T12:57:17.198584+00:00",
@@ -328,26 +328,32 @@
             "todo_id": "gap-phase2-perf-wrk-soak",
             "agent_exit": 124,
             "gates_ok": false
+          },
+          {
+            "at": "2026-05-25T09:34:18.507802+00:00",
+            "todo_id": "gap-phase2-perf-wrk-soak",
+            "agent_exit": 124,
+            "gates_ok": false
           }
         ]
       },
-      "state_iterations": 41,
+      "state_iterations": 42,
       "agent_live": true,
       "agent": "code_implementer",
-      "goal_file": "goal-20260525-084917.md",
-      "log_age_sec": 119,
-      "last_state_at": "2026-05-25T08:47:41.423421+00:00",
+      "goal_file": "goal-20260525-093554.md",
+      "log_age_sec": 291,
+      "last_state_at": "2026-05-25T09:34:18.507802+00:00",
       "last_state_todo": "gap-phase2-perf-wrk-soak",
       "last_state_gates": false,
       "current_iteration": "=== iteration 1: gap-phase2-perf-wrk-soak ===",
       "activity": [
-        "[sdk] \u25b6 tool",
-        "/li-langverse/li-cursor-agents/data/workspaces/li-langverse/lic/code_implementer-1779699053768/repo/benchmarks/harness/http_bench_servers.py",
-        "[sdk] \u2717 tool",
-        "[sdk] \u25b6 tool",
-        "[sdk] \u2713 shell cd /home/s4il0r/Documents/Cursor/li-langverse/li-cursor-agents/data/workspaces/l",
         "[sdk] \u2717 tool",
         "[sdk] thinking\u2026",
+        "[sdk] \u25b6 tool",
+        "[sdk] \u2713 shell pkill -f \"nextjs-toy/server.mjs\" 2>/dev/null; pkill -f \"build/li-httpd\" 2>/dev/n",
+        "[sdk] \u2717 tool",
+        "[sdk] thinking\u2026",
+        "[sdk] \u25b6 tool",
         "[sdk] \u25b6 tool"
       ],
       "status_note": "agent coding (code_implementer)",
@@ -625,7 +631,7 @@
           "wave-d-05-linalg-scaffold",
           "wave-d-gui-scaffold"
         ],
-        "iterations": 53,
+        "iterations": 55,
         "history": [
           {
             "at": "2026-05-23T09:02:50.508081+00:00",
@@ -944,16 +950,28 @@
             "todo_id": "wave-d-gui-scaffold",
             "agent_exit": 1,
             "gates_ok": false
+          },
+          {
+            "at": "2026-05-25T09:49:23.050358+00:00",
+            "todo_id": "wave-d-gui-scaffold",
+            "agent_exit": 0,
+            "gates_ok": true
+          },
+          {
+            "at": "2026-05-25T10:07:03.429984+00:00",
+            "todo_id": "wave-d-gui-scaffold",
+            "agent_exit": 1,
+            "gates_ok": false
           }
         ],
         "note": "2026-05-24: cleared premature completed_ids for wave-a-llvm22-typecheck-warnings and wave-d-gui-scaffold (plan still open; gates had failed or plan YAML not updated)"
       },
-      "state_iterations": 53,
+      "state_iterations": 55,
       "agent_live": true,
       "agent": "code_implementer",
-      "goal_file": "goal-20260525-093337.md",
-      "log_age_sec": 25,
-      "last_state_at": "2026-05-25T09:30:58.836382+00:00",
+      "goal_file": "goal-20260525-100942.md",
+      "log_age_sec": 658,
+      "last_state_at": "2026-05-25T10:07:03.429984+00:00",
       "last_state_todo": "wave-d-gui-scaffold",
       "last_state_gates": false,
       "current_iteration": "=== iteration 1: wave-d-gui-scaffold ===",
@@ -961,8 +979,8 @@
         "gates: OK",
         "SDK tool activity streams to stderr ([sdk] \u25b6/\u2713 lines). Set LI_SDK_TERMINAL_STREAM=0 to disable.",
         "agent exit 1 \u2014 stopping loop (fix and re-run)",
-        "==> batch 26 exit 1 @ 2026-05-25T11:30:58+02:00",
-        "==> batch 27 @ 2026-05-25T11:32:28+02:00 \u2014 --max 30 (~9867m until deadline)",
+        "==> batch 27 exit 1 @ 2026-05-25T12:07:03+02:00",
+        "==> batch 28 @ 2026-05-25T12:08:33+02:00 \u2014 --max 30 (~9831m until deadline)",
         "=== iteration 1: wave-d-gui-scaffold ===",
         "gates: OK",
         "SDK tool activity streams to stderr ([sdk] \u25b6/\u2713 lines). Set LI_SDK_TERMINAL_STREAM=0 to disable."
@@ -974,10 +992,10 @@
       "id": "sim",
       "name": "Sim / algo registry",
       "branch": "cursor/sim-algo-plan-loop",
-      "head": "3dc03bb",
+      "head": "77e9f6a",
       "running": true,
       "process": "systemd:li-sim-algo-plan-loop.service (active)",
-      "log_path": "/home/s4il0r/Documents/Cursor/li-langverse/lic/../lic-worktrees/sim-algo/data/sim-plan-loop/iter-20260525-092258.log",
+      "log_path": "/home/s4il0r/Documents/Cursor/li-langverse/lic/../lic-worktrees/sim-algo/data/sim-plan-loop/iter-20260525-101347.log",
       "todos": [
         {
           "id": "sim-p0-md-lj-li-parity",
@@ -1014,7 +1032,7 @@
       ],
       "state": {
         "completed_ids": [],
-        "iterations": 87,
+        "iterations": 90,
         "history": [
           {
             "at": "2026-05-24T15:02:54.490019+00:00",
@@ -1537,6 +1555,24 @@
             "todo_id": "sim-p1-num-dot-axpy",
             "agent_exit": 1,
             "gates_ok": false
+          },
+          {
+            "at": "2026-05-25T09:36:35.290573+00:00",
+            "todo_id": "sim-p1-num-dot-axpy",
+            "agent_exit": 0,
+            "gates_ok": false
+          },
+          {
+            "at": "2026-05-25T09:50:58.439886+00:00",
+            "todo_id": "sim-p1-num-dot-axpy",
+            "agent_exit": 1,
+            "gates_ok": false
+          },
+          {
+            "at": "2026-05-25T10:11:47.816744+00:00",
+            "todo_id": "sim-p1-num-dot-axpy",
+            "agent_exit": 1,
+            "gates_ok": false
           }
         ],
         "registry": {
@@ -1544,12 +1580,12 @@
           "total": 126
         }
       },
-      "state_iterations": 87,
+      "state_iterations": 90,
       "agent_live": true,
       "agent": "code_implementer",
-      "goal_file": "goal-20260525-092258.md",
-      "log_age_sec": 664,
-      "last_state_at": "2026-05-25T09:20:58.661359+00:00",
+      "goal_file": "goal-20260525-101347.md",
+      "log_age_sec": 413,
+      "last_state_at": "2026-05-25T10:11:47.816744+00:00",
       "last_state_todo": "sim-p1-num-dot-axpy",
       "last_state_gates": false,
       "current_iteration": "",
@@ -1749,17 +1785,59 @@
       "agent_live": false,
       "agent": "",
       "goal_file": "",
-      "log_age_sec": 37,
+      "log_age_sec": 1035,
       "last_state_at": "2026-05-25T06:32:37.228062+00:00",
       "last_state_todo": "studio-ux-10-native-capture",
       "last_state_gates": true,
       "current_iteration": "",
       "activity": [],
-      "status_note": "supervisor up, between agent runs",
+      "status_note": "supervisor idle (log 1035s stale \u2014 check log_path)",
       "active_todo_id": "studio-ux-04-particle-display"
     }
   ],
   "history": [
+    {
+      "runner": "sim",
+      "at": "2026-05-25T10:11:47.816744+00:00",
+      "todo_id": "sim-p1-num-dot-axpy",
+      "agent_exit": 1,
+      "gates_ok": false
+    },
+    {
+      "runner": "compiler-studio",
+      "at": "2026-05-25T10:07:03.429984+00:00",
+      "todo_id": "wave-d-gui-scaffold",
+      "agent_exit": 1,
+      "gates_ok": false
+    },
+    {
+      "runner": "sim",
+      "at": "2026-05-25T09:50:58.439886+00:00",
+      "todo_id": "sim-p1-num-dot-axpy",
+      "agent_exit": 1,
+      "gates_ok": false
+    },
+    {
+      "runner": "compiler-studio",
+      "at": "2026-05-25T09:49:23.050358+00:00",
+      "todo_id": "wave-d-gui-scaffold",
+      "agent_exit": 0,
+      "gates_ok": true
+    },
+    {
+      "runner": "sim",
+      "at": "2026-05-25T09:36:35.290573+00:00",
+      "todo_id": "sim-p1-num-dot-axpy",
+      "agent_exit": 0,
+      "gates_ok": false
+    },
+    {
+      "runner": "httpd",
+      "at": "2026-05-25T09:34:18.507802+00:00",
+      "todo_id": "gap-phase2-perf-wrk-soak",
+      "agent_exit": 124,
+      "gates_ok": false
+    },
     {
       "runner": "compiler-studio",
       "at": "2026-05-25T09:30:58.836382+00:00",
@@ -1801,48 +1879,6 @@
       "todo_id": "sim-p1-num-dot-axpy",
       "agent_exit": 0,
       "gates_ok": false
-    },
-    {
-      "runner": "httpd",
-      "at": "2026-05-25T08:47:41.423421+00:00",
-      "todo_id": "gap-phase2-perf-wrk-soak",
-      "agent_exit": 124,
-      "gates_ok": false
-    },
-    {
-      "runner": "compiler-studio",
-      "at": "2026-05-25T08:42:07.674882+00:00",
-      "todo_id": "wave-d-gui-scaffold",
-      "agent_exit": 1,
-      "gates_ok": false
-    },
-    {
-      "runner": "sim",
-      "at": "2026-05-25T08:29:48.064107+00:00",
-      "todo_id": "sim-p1-num-dot-axpy",
-      "agent_exit": 1,
-      "gates_ok": false
-    },
-    {
-      "runner": "compiler-studio",
-      "at": "2026-05-25T08:26:54.100716+00:00",
-      "todo_id": "wave-d-gui-scaffold",
-      "agent_exit": 1,
-      "gates_ok": false
-    },
-    {
-      "runner": "sim",
-      "at": "2026-05-25T08:15:15.547814+00:00",
-      "todo_id": "sim-p1-num-dot-axpy",
-      "agent_exit": 0,
-      "gates_ok": false
-    },
-    {
-      "runner": "compiler-studio",
-      "at": "2026-05-25T08:12:58.898604+00:00",
-      "todo_id": "wave-d-gui-scaffold",
-      "agent_exit": 0,
-      "gates_ok": true
     }
   ]
 }

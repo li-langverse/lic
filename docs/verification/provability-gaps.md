@@ -40,7 +40,7 @@ This page is the **honest inventory** of what is **not** fully proved or not yet
 | **G-math** | Partial | **Closed slice (tier-1):** `matmul_naive`, `horner_pure_li` ≤1.2× C++ (`check-tier1-li-vs-cpp.sh`, loop matmul + FMA horner). **Closed slice:** full 2×2 float `@` Lean Prop (`linalg_mat2_at2_float_closed`, `mat2_at2_float_spec`). **Closed slice:** `linalg_dot4_float_closed` (prelude `dot`), `linalg_mat2_callproc_float_closed`, prelude `norm`/`axpy`/**, IKJ `ArrayMatMul2DF64` enforced only with `LI_TIER1_PERF_STRICT=1` (`check-tier1-li-vs-cpp.sh` reports gaps by default). **Closed slice:** prelude `norm`, `axpy`, same-length `**`, scalar×array, `math_linalg/reductions/`, loop-dot witness, P-linalg corpus |
 | **G-bnd** | Partial | Release path without `li_bounds_fail` for proved indices |
 | **G-def** | Partial+ | Cross-module method privacy proofs; virtual dispatch deferred |
-| **G-oop** | Partial | Lean `ensures` on methods; trait laws in kernel |
+| **G-oop** | Partial | **Closed slice:** method call-site `requires` + int-return `ensures` in `contracts_verify/` (`discharge_method_*_lean.sh`); trait laws / `old(self.field)` open |
 | **G-math-syn** | Partial | `for` / `range` surface |
 | **G-stdlib** | Partial | Full workspace cycle + seal edge cases |
 | **G-narrow** | Partial | Proved width narrowing (beyond `cast[` reject) |
@@ -76,7 +76,7 @@ Status legend: **Missing** · **Stub** · **Partial** · **CI only** · **Done**
 | **G-math** | Math / `A @ B` | Shape errors at compile time; no user `simd(...)` | **Partial** — **closed slice:** 9× `prove_lean_ok` linalg + `discharge_linalg_int_lean.sh`; `math_linalg/` compile tests; tier-1 `tier1_li_vs_cpp.sh` | **2i**, **7e**, **2f** | `li-tests/math_linalg/`, `li-tests/contracts_verify/linalg_*_closed.li`, `li-tests/tooling/discharge_linalg_int_lean.sh`, `li-tests/tooling/tier1_li_vs_cpp.sh` |
 | **G-bnd** | Bounds in release | No reliance on `li_bounds_fail` for proved indices | **Partial** — architecture lists MIR bounds; not full refinement | **2e**, **3** | [Architecture](../architecture/overview.md); codegen paths |
 | **G-def** | `def` / `object` / visibility | Handbook surface | **Partial+** — methods/`self`, `private def`, MIR in-out write-back (**2j-a/b/c**); inheritance/traits open (**2j-d–f**) | **2j** | `li-tests/encapsulation/`, `composable/import_physics_runtime.li` |
-| **G-oop** | Full OOP | Methods, traits, inheritance, cross-module encapsulation | **Partial** — **2j-a…f** surface done; Lean `ensures` on methods / trait laws open | **2j** | `li-tests/encapsulation/trait_*.li`, `method_call_requires_*.li` |
+| **G-oop** | Full OOP | Methods, traits, inheritance, cross-module encapsulation | **Partial** — **2j-a…f** surface + **P-oop partial:** folded method call-site `requires` + method `ensures` witnesses; trait laws / `old(self.field)` open | **2j** | `method_call_requires_*.li`, `method_ensures_return_ok.li`, `encapsulation/trait_*.li` |
 | **G-math-syn** | Python-math (`**`, `for`, …) | Ergonomic surface | **Partial** — `%`, `//`, `**` on `int`; `for`/`range` open | **2h** | `li-tests/math_syntax/` |
 | **G-ann** | Deferred annotations (PEP 649) | Lazy resolve at check | **Missing** — shown in pipeline diagram as planned | **4** | Not in compiler tree |
 | **G-gpu** | `@gpu` / device buffers | Separate address space proofs | **Missing** | **3+**, **7d** | Spec Phase 3+ |

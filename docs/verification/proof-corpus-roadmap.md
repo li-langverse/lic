@@ -23,7 +23,8 @@
 | `discharge_const.li` | Const-return witnesses | Discharged (`discharge_const_lean.sh`) |
 | `caller_requires_ok.li` | Call-site `requires` + literal arg | Discharged (`discharge_caller_requires_lean.sh`) |
 | `caller_requires_local_ok.li` | Const-local discharge | Discharged |
-| `method_call_requires_ok.li` | Method call-site `requires` on `Type_method` | Build + autovc (2j-f) |
+| `method_call_requires_ok.li` | Method call-site `requires` on `Type_method` (folded `self.balance`) | Fully discharged (`discharge_method_call_requires_lean.sh`) |
+| `method_ensures_return_ok.li` | Method `ensures result == 0` on int return | Fully discharged (`discharge_method_ensures_return_lean.sh`) |
 | `extern_call_requires_ok.li` | Imported callee `requires` | Discharged |
 | `index_refinement.li` | Index refinement type + array access | Build + autovc check in corpus |
 | `sqrt_contract.li` | Float `requires`/`ensures` (toy `sqrt`) | Emits real Props; float goals may stay open |
@@ -66,7 +67,7 @@
 
 | Suite | Result | Notes |
 |-------|--------|-------|
-| `run_all.sh contracts_verify` | **26 pass / 0 fail** (14 `prove_lean_ok` + 12 `verify_ok`/`verify_open_ok`) | `prove_lean_ok` runs lake when elan on PATH |
+| `run_all.sh contracts_verify` | **28 pass / 0 fail** (14 `prove_lean_ok` + 12 `verify_ok`/`verify_open_ok`) | `prove_lean_ok` runs lake when elan on PATH |
 | `contracts_discharge_corpus.sh` | **ok** | Trivial/const/index/caller-requires/**linalg closed**; `sqrt_open_bound` + loop dot intentionally open |
 | `run_httpd_config.sh` | **ok** | Python oracle + Li `match_routes.li` binary exit 0 |
 | `contracts_verify_lean.sh` | **partial** | Needs Lean 4 + lake; may stop on specimens with open user `ensures` |
@@ -89,6 +90,7 @@ Priority order aligned with [provability-gaps](provability-gaps.md) and **2e →
 | **P-http** | Parser/route config safety | Phase **H** | `httpd/*`, TOML desugar invariants |
 | **P-narrow** | Width-narrowing / casts | **G-narrow** partial | Ariane-style `prove_reject` + proved narrowing |
 | **P-meta** | Compiler ↔ `Core.lean` | **G-meta** research | Long-term; cite Dafny/CakeML VCG literature |
+| **P-oop** | Method/trait Lean VCs | **Partial** — call-site `requires` + static method `ensures`; trait dispatch + `old(self.field)` open | `method_call_requires_*.li`, `method_ensures_return_ok.li` |
 
 **Learned from (external):** Dafny `requires`/`ensures`/`decreases`; Lean 4 `mvcgen` / WP tactics; verified Dafny VCG (HOL4) for “what a finished pipeline proves.”
 

@@ -10,6 +10,7 @@
 #include <fstream>
 #include <map>
 #include <optional>
+#include <set>
 #include <sstream>
 #include <string>
 
@@ -430,52 +431,45 @@ void emit_contract_def(std::ostream& out, const Module& module, const ProcDecl& 
   }
 }
 
+bool is_caller_param(const ProcDecl& caller, const std::string& name) {
+  return std::any_of(caller.params.begin(), caller.params.end(),
+                     [&](const Param& p) { return p.name == name; });
+}
+
 void append_call_site_vc_formals(std::ostream& out, const Module& module, const ProcDecl& caller,
-                                 const std::vector<std::unique_ptr<Expr>>& args,
-                                 const std::string& prop) {
+                                 const std::set<std::string>& ref_idents) {
   std::map<std::string, const TypeExpr*> locals;
   for (const auto& p : caller.params) {
     locals[p.name] = &p.type;
     out << ' ' << '(' << lean_ident(p.name) << " : " << lean_type_name(p.type, module) << ')';
   }
   collect_local_types_in_stmts(caller.body, locals);
-  for (const auto& arg : args) {
-    if (arg == nullptr || arg->kind != Expr::Kind::Ident) {
+  for (const std::string& name : ref_idents) {
+    if (is_caller_param(caller, name)) {
       continue;
     }
-    if (prop.find(arg->ident) == std::string::npos) {
+    const auto it = locals.find(name);
+    if (it == locals.end() || it->second == nullptr) {
       continue;
     }
-    if (locals.find(arg->ident) == locals.end()) {
-      continue;
-    }
-    if (std::any_of(caller.params.begin(), caller.params.end(),
-                    [&](const Param& p) { return p.name == arg->ident; })) {
-      continue;
-    }
-    const TypeExpr* te = locals[arg->ident];
-    out << " (" << lean_ident(arg->ident) << " : " << lean_type_name(*te, module) << ')';
+    out << " (" << lean_ident(name) << " : " << lean_type_name(*it->second, module) << ')';
   }
 }
 
-void append_call_site_vc_args(std::ostream& out, const Module& module, const ProcDecl& caller,
-                              const std::vector<std::unique_ptr<Expr>>& args,
-                              const std::string& prop) {
+void append_call_site_vc_args(std::ostream& out, const ProcDecl& caller,
+                              const std::set<std::string>& ref_idents) {
   for (const auto& p : caller.params) {
     out << ' ' << lean_ident(p.name);
   }
-  for (const auto& arg : args) {
-    if (arg == nullptr || arg->kind != Expr::Kind::Ident) {
+  std::set<std::string> emitted;
+  for (const auto& p : caller.params) {
+    emitted.insert(p.name);
+  }
+  for (const std::string& name : ref_idents) {
+    if (!emitted.insert(name).second) {
       continue;
     }
-    if (prop.find(arg->ident) == std::string::npos) {
-      continue;
-    }
-    if (std::any_of(caller.params.begin(), caller.params.end(),
-                    [&](const Param& p) { return p.name == arg->ident; })) {
-      continue;
-    }
-    out << ' ' << lean_ident(arg->ident);
+    out << ' ' << lean_ident(name);
   }
 }
 
@@ -503,20 +497,26 @@ void emit_requires_vcs_for_call(std::ostream& out, const Module& module, const P
     VcCtx ctx;
     if (witnessed) {
       prop = "True";
+    } else if (auto lean = expr_to_lean(*folded, ctx)) {
+      prop = *lean;
     } else if (auto lean = expr_to_lean(*sub, ctx)) {
       prop = *lean;
     } else {
       out << "/-! VC call-site requires (opaque): callee '" << callee.name << "' at call "
           << call_idx << " -/\n";
     }
+    std::set<std::string> ref_idents;
+    if (!witnessed) {
+      collect_idents_in_expr(*folded, ref_idents);
+    }
     out << "def " << name;
-    append_call_site_vc_formals(out, module, caller, args, prop);
+    append_call_site_vc_formals(out, module, caller, ref_idents);
     out << " : Prop := " << prop << '\n';
-    if (prop == "True" && witnessed) {
+    if (witnessed) {
       out << "theorem " << name << "_proved";
-      append_call_site_vc_formals(out, module, caller, args, prop);
+      append_call_site_vc_formals(out, module, caller, ref_idents);
       out << " : " << name;
-      append_call_site_vc_args(out, module, caller, args, prop);
+      append_call_site_vc_args(out, caller, ref_idents);
       out << " := trivial\n";
     }
   }
@@ -571,14 +571,16 @@ void emit_call_site_requires(std::ostream& out, const Module& module, const Proc
         out << "/-! VC call-site refinement: param " << p << " of '" << callee->name
             << "' at call " << call_idx << " -/\n";
       }
+      std::set<std::string> ref_idents;
+      collect_idents_in_expr(*sub, ref_idents);
       out << "def " << name;
-      append_call_site_vc_formals(out, module, caller, call->args, prop);
+      append_call_site_vc_formals(out, module, caller, ref_idents);
       out << " : Prop := " << prop << '\n';
       if (prop == "True" && witnessed) {
         out << "theorem " << name << "_proved";
-        append_call_site_vc_formals(out, module, caller, call->args, prop);
+        append_call_site_vc_formals(out, module, caller, ref_idents);
         out << " : " << name;
-        append_call_site_vc_args(out, module, caller, call->args, prop);
+        append_call_site_vc_args(out, caller, ref_idents);
         out << " := trivial\n";
       }
     }
@@ -627,6 +629,9 @@ void walk_contracts(std::ostream& out, const Module& module, const ProcDecl& pro
         break;
       case ContractKind::Invariant:
         emit_contract_def(out, module, proc, "invariant", inv++, c, vc_suffix, loop_iter);
+        break;
+      case ContractKind::ProbEnsures:
+        emit_contract_def(out, module, proc, "prob_ensures", ens++, c, vc_suffix, loop_iter);
         break;
     }
   }

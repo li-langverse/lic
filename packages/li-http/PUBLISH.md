@@ -10,7 +10,7 @@
 
 ## Exports (v1)
 
-HTTP/1.1 parser and routing surface (`import http`) — no sockets in this package.
+Document public `proc` names and types here as the API stabilizes.
 
 ## Proof / coverage tier
 

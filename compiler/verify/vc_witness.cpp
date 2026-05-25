@@ -545,6 +545,27 @@ bool witness_dot4_prelude_call_impl(const Expr& ret, const Expr& ensures_rhs) {
   return expr_is_dot4_int_spec(ensures_rhs, ret.args[0]->ident, ret.args[1]->ident);
 }
 
+bool witness_direct_call_inherits_callee_ensures(const ProcDecl& proc, const Contract& c,
+                                                 const Module& module) {
+  if (c.kind != ContractKind::Ensures || !c.expr) {
+    return false;
+  }
+  const Expr* ret = single_return_expr(proc);
+  if (ret == nullptr || ret->kind != Expr::Kind::Call) {
+    return false;
+  }
+  const ProcDecl* callee = find_proc_by_name(module, ret->ident);
+  if (callee == nullptr) {
+    return false;
+  }
+  for (const auto& rc : callee->contracts) {
+    if (rc.kind == ContractKind::Ensures && rc.expr && expr_same_shape(*c.expr, *rc.expr)) {
+      return true;
+    }
+  }
+  return false;
+}
+
 bool ensures_witnessed_for_return(const ProcDecl& proc, const Contract& c, const Expr& ret,
                                   const Module* module, const CallerProofFacts* caller_facts) {
   const Expr* rhs = ensures_rhs_eq_result(*c.expr);
@@ -593,6 +614,9 @@ bool contract_witnessed_trivial(const ProcDecl& proc, const Contract& c, const M
     return false;
   }
   if (is_true_literal(*c.expr)) {
+    return true;
+  }
+  if (module != nullptr && witness_direct_call_inherits_callee_ensures(proc, c, *module)) {
     return true;
   }
   if (c.kind != ContractKind::Ensures) {

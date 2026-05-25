@@ -50,6 +50,10 @@ enum class MirOp {
   BinOpFloat,
   /** `ident = lhs_ident * rhs_ident + float_value` (LLVM fmuladd) — horner / FMA chains */
   FmaFloatF64,
+  /** Chained fmuladd: ident = fma(lhs_ident, ident, float_value) repeated int_value times (SSA). */
+  HornerFmaUnroll,
+  /** acc = acc * x^4 + (1+x+x²+x³); lhs_is_literal, float_value = const x; int_value = supersteps. */
+  HornerStepPow4,
   LocalAllocFloat,
   LocalAllocSimdF64,
   SimdSplatF64,
@@ -159,6 +163,12 @@ struct MirModule {
   std::vector<MirFn> functions;
   bool uses_openmp = false;
   bool uses_async = false;
+  /** Link runtime/li_rt_httpd.c when MIR calls httpd routing/config symbols. */
+  bool needs_rt_httpd = false;
+  /** Link runtime/li_rt_net.c when MIR calls socket/epoll/proxy symbols. */
+  bool needs_rt_net = false;
+  /** Link runtime/li_rt_log.c when MIR calls li_log_* symbols. */
+  bool needs_rt_log = false;
   /** When true: MIR stability pass + strict FP codegen (no fast-math reassociation). */
   bool fp_numerically_stable = false;
 };

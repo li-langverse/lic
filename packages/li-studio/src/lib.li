@@ -107,6 +107,37 @@ extern proc li_rt_studio_timeline_playhead_pct() -> float
   decreases 0
 
 
+# UX-02 — timeline playback mock.
+extern proc li_rt_studio_timeline_playing() -> int
+  requires true
+  ensures result >= 0
+  ensures result <= 1
+  decreases 0
+
+extern proc li_rt_studio_timeline_toggle_play() -> int
+  requires true
+  ensures result >= 0
+  ensures result <= 1
+  decreases 0
+
+extern proc li_rt_studio_timeline_tick_frame() -> int
+  requires true
+  ensures result >= 0
+  ensures result <= 1
+  decreases 0
+
+extern proc li_rt_studio_timeline_reset_mock() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+
+extern proc li_rt_studio_timeline_playhead_pct() -> float
+  requires true
+  ensures result >= 0.0
+  ensures result <= 1.0
+  decreases 0
+
+
 # PH-AGENT — MCP tool ID table (contracts only; lis server in AGENT-1).
 extern proc li_rt_studio_mcp_tool_from_name(name: str) raises IO, Alloc -> int
   requires true

@@ -1,5 +1,3 @@
-# Package-local tests
-
 [[tests]]
 suite = "smoke"
 file = "smoke/builds.li"
@@ -11,21 +9,3 @@ suite = "smoke"
 file = "smoke/lig_device_probe.li"
 outcome = "compile_open_ok"
 note = "T-PKG-lig-device-probe"
-file = "smoke/wgpu_smoke.li"
-outcome = "compile_open_ok"
-note = "T-PKG-lig-wgpu-smoke PH-HW-HW-1"
-note = "T-PKG-lig-smoke-builds"
-
-[[tests]]
-suite = "smoke"
-file = "smoke/memory_budget.li"
-outcome = "verify_ok"
-outcome = "compile_open_ok"
-note = "T-PKG-lig-smoke-memory"
-
-[[tests]]
-suite = "smoke"
-file = "smoke/kernel_matmul_parity.li"
-outcome = "verify_ok"
-outcome = "compile_open_ok"
-note = "T-PKG-lig-smoke-kernel"

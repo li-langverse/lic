@@ -355,6 +355,7 @@ int32_t li_rt_studio_parse_toml_profile_line(const char* line) {
   return li_rt_studio_profile_match_name(buf);
 }
 
+
 /* PH-HW HW-0: lig device layer (was li-gpu stub). */
 #define LI_RT_LIG_BACKEND_CUDA 1
 #define LI_RT_LIG_BACKEND_ROCM 2
@@ -383,16 +384,29 @@ static int32_t li_rt_lig_backend_probe_available(int32_t backend_id) {
 }
 
 static int32_t li_rt_lig_backend_match_name(const char* name) {
-  if (name == NULL) return 0;
-  if (strcmp(name, "cuda") == 0) return LI_RT_LIG_BACKEND_CUDA;
-  if (strcmp(name, "rocm") == 0 || strcmp(name, "hip") == 0) return LI_RT_LIG_BACKEND_ROCM;
-  if (strcmp(name, "metal") == 0) return LI_RT_LIG_BACKEND_METAL;
-  if (strcmp(name, "webgpu") == 0 || strcmp(name, "wgpu") == 0) return LI_RT_LIG_BACKEND_WEBGPU;
+  if (name == NULL) {
+    return 0;
+  }
+  if (strcmp(name, "cuda") == 0) {
+    return LI_RT_LIG_BACKEND_CUDA;
+  }
+  if (strcmp(name, "rocm") == 0 || strcmp(name, "hip") == 0) {
+    return LI_RT_LIG_BACKEND_ROCM;
+  }
+  if (strcmp(name, "metal") == 0) {
+    return LI_RT_LIG_BACKEND_METAL;
+  }
+  if (strcmp(name, "webgpu") == 0 || strcmp(name, "wgpu") == 0) {
+    return LI_RT_LIG_BACKEND_WEBGPU;
+  }
   return 0;
 }
 
 int32_t li_rt_lig_device_kind(void) { return g_lig_selected_backend; }
-int32_t li_rt_lig_backend_available(int32_t backend_id) { return li_rt_lig_backend_probe_available(backend_id); }
+
+int32_t li_rt_lig_backend_available(int32_t backend_id) {
+  return li_rt_lig_backend_probe_available(backend_id);
+}
 
 int32_t li_rt_lig_backend_select_auto(void) {
 #if defined(__APPLE__)
@@ -413,137 +427,70 @@ int32_t li_rt_lig_backend_select_auto(void) {
   return LI_RT_LIG_BACKEND_WEBGPU;
 }
 
-/* PH-HW HW-1 — lig.present trusted edge. */
-static int32_t g_lig_host_present_active = 0;
-static int32_t g_lig_native_pixels = 0;
-static float g_lig_present_dt_ms = 16.667f;
-static int32_t g_lig_surface_ok = 0;
-
-static int32_t li_rt_lig_env_host_present(void) {
-  const char* v = getenv("LIG_HOST_PRESENT");
-  return (v != NULL && v[0] == '1' && v[1] == ' ') ? 1 : 0;
+int32_t li_rt_lig_present_surface_ok(void) {
+  return 0;
 }
-
-static void li_rt_lig_refresh_host_active(void) {
-  g_lig_host_present_active = li_rt_lig_env_host_present();
-}
-
-static int32_t g_studio_shell_pointer_down = 0;
-static float g_studio_shell_pointer_x = 0.0f;
-static float g_studio_shell_pointer_y = 0.0f;
-static int32_t g_studio_shell_key_escape = 0;
-static int32_t g_studio_shell_key_cmd_k = 0;
-static int32_t g_studio_shell_key_digit = 0;
-
-int32_t li_rt_lig_host_present_active(void) {
-  li_rt_lig_refresh_host_active();
-  return g_lig_host_present_active;
-}
-
-float li_rt_lig_host_present_dt_ms(void) {
-  li_rt_lig_refresh_host_active();
-  if (g_lig_host_present_active) {
-    return g_lig_present_dt_ms;
-  }
-  return 16.667f;
-}
-
-int32_t li_rt_lig_host_native_pixels(void) {
-  li_rt_lig_refresh_host_active();
-  if (!g_lig_host_present_active) {
-    return 0;
-  }
-  return g_lig_native_pixels;
-}
-
-int32_t li_rt_lig_wgpu_swapchain_create(int32_t viewport_w, int32_t viewport_h) {
-  li_rt_lig_refresh_host_active();
-  if (viewport_w <= 0 || viewport_h <= 0) {
-    g_lig_surface_ok = 0;
-    return 0;
-  }
-  if (g_lig_host_present_active) {
-    g_lig_surface_ok = 1;
-    return 1;
-  }
-  g_lig_surface_ok = 0;
-  return 1;
-}
-
-int32_t li_rt_lig_wgpu_present_frame(int32_t swapchain_ok) {
-  li_rt_lig_refresh_host_active();
-  if (!swapchain_ok) {
-    return 0;
-  }
-  if (g_lig_host_present_active && g_lig_surface_ok) {
-    g_lig_native_pixels = 1;
-    g_lig_present_dt_ms = 16.667f;
-    return 1;
-  }
-  g_lig_native_pixels = 0;
-  return 1;
-}
-
 
 static char li_rt_lig_cap_json_buf[192];
-int32_t li_rt_lig_present_surface_ok(void) {
-  li_rt_lig_refresh_host_active();
-  return g_lig_surface_ok;
-}
+
 const char* li_rt_lig_capability_json(void) {
   snprintf(li_rt_lig_cap_json_buf, sizeof(li_rt_lig_cap_json_buf),
            "{\"lig_version\":2,\"device_kind\":%d,\"surface_ok\":%d}",
            (int)g_lig_selected_backend, (int)li_rt_lig_present_surface_ok());
   return li_rt_lig_cap_json_buf;
 }
+
 int32_t li_rt_lig_parse_toml_backend_line(const char* line) {
-  if (line == NULL) return 0;
+  if (line == NULL) {
+    return 0;
+  }
   const char* key = "backend";
   const char* p = strstr(line, key);
-  if (p == NULL) return 0;
+  if (p == NULL) {
+    return 0;
+  }
   p += strlen(key);
-  while (*p == ' ' || *p == '	') p++;
-  if (*p != '=') return 0;
+  while (*p == ' ' || *p == '\t') {
+    p++;
+  }
+  if (*p != '=') {
+    return 0;
+  }
   p++;
-  while (*p == ' ' || *p == '	') p++;
+  while (*p == ' ' || *p == '\t') {
+    p++;
+  }
   char buf[32];
   const char* start = NULL;
   size_t n = 0;
-  if (*p == '"') { p++; start = p; while (*p && *p != '"') p++; if (*p != '"') return 0; n = (size_t)(p - start); }
-  else { start = p; while ((*p >= 'a' && *p <= 'z') || (*p >= '0' && *p <= '9') || *p == '_') p++; n = (size_t)(p - start); }
-  if (n == 0 || n >= sizeof(buf)) return 0;
-  memcpy(buf, start, n); buf[n] = ' ';
+  if (*p == '"') {
+    p++;
+    start = p;
+    while (*p != '\0' && *p != '"') {
+      p++;
+    }
+    if (*p != '"') {
+      return 0;
+    }
+    n = (size_t)(p - start);
+  } else {
+    start = p;
+    while ((*p >= 'a' && *p <= 'z') || (*p >= '0' && *p <= '9') || *p == '_') {
+      p++;
+    }
+    n = (size_t)(p - start);
+  }
+  if (n == 0 || n >= sizeof(buf)) {
+    return 0;
+  }
+  memcpy(buf, start, n);
+  buf[n] = '\0';
   const int32_t id = li_rt_lig_backend_match_name(buf);
-  if (id != 0) g_lig_selected_backend = id;
+  if (id != 0) {
+    g_lig_selected_backend = id;
+  }
   return id;
 }
-
-int32_t li_rt_studio_shell_input_pointer_down(void) { return g_studio_shell_pointer_down; }
-float li_rt_studio_shell_input_pointer_x(void) { return g_studio_shell_pointer_x; }
-float li_rt_studio_shell_input_pointer_y(void) { return g_studio_shell_pointer_y; }
-int32_t li_rt_studio_shell_input_key_escape(void) { return g_studio_shell_key_escape; }
-int32_t li_rt_studio_shell_input_key_cmd_k(void) { return g_studio_shell_key_cmd_k; }
-int32_t li_rt_studio_shell_input_key_digit(void) { return g_studio_shell_key_digit; }
-
-int32_t li_rt_studio_host_present_tick(int32_t viewport_w, int32_t viewport_h) {
-  const char* mock = getenv("STUDIO_SHELL_INPUT_MOCK");
-  if (mock != NULL && mock[0] != ' ') {
-    g_studio_shell_key_cmd_k = (strstr(mock, "cmd_k") != NULL) ? 1 : 0;
-    g_studio_shell_key_escape = (strstr(mock, "escape") != NULL) ? 1 : 0;
-    const char* digit = strstr(mock, "digit=");
-    if (digit != NULL) {
-      int d = atoi(digit + 6);
-      if (d >= 1 && d <= 5) {
-        g_studio_shell_key_digit = d;
-      }
-    }
-  }
-  (void)li_rt_lig_wgpu_swapchain_create(viewport_w, viewport_h);
-  return li_rt_lig_wgpu_present_frame(viewport_w > 0 && viewport_h > 0 ? 1 : 0);
-}
-
-
-
 
 /* PH-GD-2 li-world: world_v1 name=... tick=N entity_count=M (text line, no binary). */
 #define LI_RT_WORLD_NAME_MAX 64

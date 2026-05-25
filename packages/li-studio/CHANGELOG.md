@@ -2,6 +2,10 @@
 
 ## [Unreleased]
 
+### Fixed
+
+- **Gap-close wave1 smokes** — `packages/li-studio/src/lib.li` passes `lic check` with all `li-tests/smoke/*.li` (timeline extern, move/copy fixes, MCP/viewport `raises IO`, inspector ensures); see `docs/release-notes/2026-05-25-studio-gap-close-wave1-smokes.md`.
+
 ### Added
 
 - **PH-HW WP3 host present** — `studio_shell_input_from_host`, `studio_shell_host_frame`, `studio_shell_host_present_loop_tick`; `li_std_studio_version` → 6; smoke `studio_host_present.li`.

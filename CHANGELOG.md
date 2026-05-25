@@ -8,9 +8,9 @@ All notable changes to Li are documented here. The format follows
 
 ### Added
 
-- **PH-HW WP1:** `lig` governance RFC, kernel catalog (`lig.kernel.*`), and `benchmarks/competitive/lig-kernels.toml` schema — `docs/release-notes/2026-05-25-lig-ph-hw-work-packages.md`.
+- **PH-HW integration (`lig` + studio gap):** Rollup for multi-vendor GPU work packages WP1–WP5 ([#217](https://github.com/li-langverse/lic/pull/217), [#218](https://github.com/li-langverse/lic/pull/218), [#213](https://github.com/li-langverse/lic/pull/213), [#220](https://github.com/li-langverse/lic/pull/220), [#222](https://github.com/li-langverse/lic/pull/222)) and merged `studio-gap-close-wave1` (UX/MCP/sim/world) on `feat/ph-hw-multi-vendor` — [2026-05-25-lig-ph-hw-integration.md](docs/release-notes/2026-05-25-lig-ph-hw-integration.md).
 
-
+- **PH-HW WP1:** `lig` governance RFC, kernel catalog (`lig.kernel.*`), and `benchmarks/competitive/lig-kernels.toml` schema — [2026-05-25-lig-ph-hw-work-packages.md](docs/release-notes/2026-05-25-lig-ph-hw-work-packages.md).
 - **PH-HW HW-0 lig.device** — `packages/lig` (rename from `li-gpu`): `lig_device_kind`, `lig_backend_*`, `lig_parse_toml_backend_line`, `li_rt_lig_*`; `li-render` `native_pixels` via `lig_present_surface_ok()` — [2026-05-25-ph-hw-lig-device.md](docs/release-notes/2026-05-25-ph-hw-lig-device.md).
 
 - **PH-HW HW-1 lig.present** — `packages/lig` swapchain/present contracts, `li-render` host FPS ticks, `li-studio` shell present glue, `packages/lig/bench/wgpu_smoke.toml` — [2026-05-25-lig-present-hw1.md](docs/release-notes/2026-05-25-lig-present-hw1.md).

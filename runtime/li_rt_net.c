@@ -33,6 +33,9 @@
 #ifndef MSG_MORE
 #define MSG_MORE 0
 #endif
+#ifndef POLLRDHUP
+#define POLLRDHUP 0
+#endif
 #ifndef EPOLLIN
 #define EPOLLIN 0x001u
 #define EPOLLOUT 0x004u

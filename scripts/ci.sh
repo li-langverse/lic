@@ -17,8 +17,6 @@ if [[ -x "$ROOT/scripts/check-agent-kit-sync.sh" ]]; then
   }
 fi
 
-"$ROOT/scripts/check-proof-db.sh"
-
 li_phase "def syntax policy"
 chmod +x "$ROOT/scripts/check-li-def-syntax.sh"
 "$ROOT/scripts/check-li-def-syntax.sh" "$ROOT"

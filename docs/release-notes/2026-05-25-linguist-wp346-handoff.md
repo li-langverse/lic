@@ -31,8 +31,8 @@ Adds the Li → GitHub Linguist playbook, usage-evidence audit process, and upst
 
 Links to WP1/WP2 paths (on their branches until merged):
 
-- WP1 grammar: `contrib/li-grammar/` (`feat/linguist-wp1-grammar`)
-- WP2 samples: `contrib/linguist-samples/Li/` (`feat/linguist-wp2-samples`)
+- WP1 grammar: [`contrib/li-grammar/`](https://github.com/li-langverse/lic/tree/feat/linguist-wp1-grammar/contrib/li-grammar) (`feat/linguist-wp1-grammar`)
+- WP2 samples: [`contrib/linguist-samples/Li/`](https://github.com/li-langverse/lic/tree/feat/linguist-wp2-samples/contrib/linguist-samples/Li) (`feat/linguist-wp2-samples`)
 
 ## Not changed (scope fence)
 

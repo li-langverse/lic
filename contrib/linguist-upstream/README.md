@@ -9,4 +9,4 @@ Draft files for Julian's **github-linguist/linguist** fork. Not applied automati
 | [`PATCH_INSTRUCTIONS.md`](./PATCH_INSTRUCTIONS.md) | Exact fork commands |
 | [`JULIAN_HANDOFF.md`](./JULIAN_HANDOFF.md) | WP7 human checklist |
 
-Grammar submodule URL stays **TBD** until WP1 publishes `https://github.com/li-langverse/li-grammar`.
+Grammar source in lic (until publish): [contrib/li-grammar](https://github.com/li-langverse/lic/tree/feat/linguist-wp1-grammar/contrib/li-grammar) on `feat/linguist-wp1-grammar`. Samples: [contrib/linguist-samples/Li](https://github.com/li-langverse/lic/tree/feat/linguist-wp2-samples/contrib/linguist-samples/Li) on `feat/linguist-wp2-samples`. Submodule URL stays **TBD** until WP1 publishes `https://github.com/li-langverse/li-grammar`.

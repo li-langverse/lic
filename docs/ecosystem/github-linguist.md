@@ -10,8 +10,8 @@ End-to-end guide for adding **Li** (`.li`) to [github-linguist/linguist](https:/
 |------|-------|--------|
 | Ruby + Bundler + Docker | Julian (linguist fork) | [Linguist CONTRIBUTING](https://github.com/github-linguist/linguist/blob/main/CONTRIBUTING.md) — `script/bootstrap`, `bundle exec rake test` |
 | GitHub fork of linguist | Julian | `https://github.com/<julian-user>/linguist` — **never** push from lic CI or agent automation |
-| Grammar (redistributable license) | WP1 → human | [`contrib/li-grammar/`](../../contrib/li-grammar/) on branch `feat/linguist-wp1-grammar`; published repo **TBD** → `https://github.com/li-langverse/li-grammar` |
-| Samples (MIT, real code) | WP2 → human | [`contrib/linguist-samples/Li/`](../../contrib/linguist-samples/Li/) on branch `feat/linguist-wp2-samples`; manifest [`SAMPLES_LICENSES.md`](../../contrib/linguist-samples/SAMPLES_LICENSES.md) |
+| Grammar (redistributable license) | WP1 → human | [`contrib/li-grammar/`](../../contrib/li-grammar/) on branch `feat/linguist-wp1-grammar` ([tree](https://github.com/li-langverse/lic/tree/feat/linguist-wp1-grammar/contrib/li-grammar)); publish fork **TBD** → `https://github.com/li-langverse/li-grammar` for `script/add-grammar` |
+| Samples (MIT, real code) | WP2 → human | [`contrib/linguist-samples/Li/`](../../contrib/linguist-samples/Li/) on branch `feat/linguist-wp2-samples` ([tree](https://github.com/li-langverse/lic/tree/feat/linguist-wp2-samples/contrib/linguist-samples)); manifest [`SAMPLES_LICENSES.md`](../../contrib/linguist-samples/SAMPLES_LICENSES.md) |
 | Usage evidence | WP3 → **Julian only** | [github-linguist-usage-evidence.md](./github-linguist-usage-evidence.md) — ≥2000 indexed `.li` files with Li syntax, distributed across repos |
 | Patch bundle | WP6 (lic) | [`contrib/linguist-upstream/`](../../contrib/linguist-upstream/) — `languages.yml` snippet, `PATCH_INSTRUCTIONS.md`, optional `heuristics.yml` fragment |
 

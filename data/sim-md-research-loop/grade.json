@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-05-25T19:21:17Z",
+  "generated_at": "2026-05-25T19:40:57Z",
   "vertical": "md",
   "validity_ok": true,
   "perf_ok": true,
@@ -8,9 +8,9 @@
   "security_note": "skip",
   "stability_ok": true,
   "size_scaling_ok": true,
-  "study_only": true,
+  "study_only": false,
   "overall_ok": true,
   "package": "li-sim-scientific",
   "benches": "md_lennard_jones,heat_equation_2d",
-  "gate_log_tail": ""
+  "gate_log_tail": "li-langverse/lic/numerics_researcher-1779737855046/repo/li-tests/composable/import_physics_runtime.li -o /dev/null\nlic build: warning \u2014 Lean verify skipped (--no-lean-verify)\n+ /home/s4il0r/Documents/Cursor/li-langverse/li-cursor-agents/data/workspaces/li-langverse/lic/numerics_researcher-1779737855046/repo/build/compiler/lic/lic build --allow-open-vc --no-lean-verify /home/s4il0r/Documents/Cursor/li-langverse/li-cursor-agents/data/workspaces/li-langverse/lic/numerics_researcher-1779737855046/repo/li-tests/composable/import_sim_scientific_run.li -o /dev/null\nlic build: warning \u2014 Lean verify skipped (--no-lean-verify)\n+ /usr/bin/python3 /home/s4il0r/Documents/Cursor/li-langverse/li-cursor-agents/data/workspaces/li-langverse/lic/numerics_researcher-1779737855046/repo/benchmarks/harness/verify.py --tier0-only --write-summary --summary-format json_min\nPASS verify li-tests/benchmarks/tier0_correctness/float_binop.li\nPASS verify li-tests/benchmarks/tier0_correctness/md_energy_single_step.li\nPASS verify li-tests/benchmarks/tier0_correctness/three_body_invariants.li\nbench_sim: ok packages=['li-physics-particles', 'li-physics-rigid', 'li-sim', 'li-sim-scientific'] benches=['double_pendulum', 'heat_equation_2d', 'md_lennard_jones', 'nbody_gravity', 'three_body']\n--- li-tests: pass=0 fail=0 skip=6\n\n\u2500\u2500 li-tests \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\n  \u25c6 0 passed  \u00b7 6 skipped\n--- li-tests: pass=0 fail=0 skip=6\n\n\u2500\u2500 li-tests \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\n  \u25c6 0 passed  \u00b7 6 skipped\nPASS compile_open_ok composable/import_sim_scientific_run.li\n--- li-tests: pass=1 fail=0 skip=5\n\n\u2500\u2500 li-tests \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\n  \u25c6 1 passed  \u00b7 5 skipped\nPASS compile_open_ok composable/import_sim_scientific_run.li\n--- li-tests: pass=1 fail=0 skip=5\n\n\u2500\u2500 li-tests \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\n  \u25c6 1 passed  \u00b7 5 skipped\nbench-package: done\n==> algo registry\nalgo_registry: ok count=126\nbench_sim: ok packages=['li-sim'] benches=[]\n==> skip full tier-2 (set SIM_PLAN_FULL_TIER2=1 to enable)\nsim-plan-gates: ok\n"
 }

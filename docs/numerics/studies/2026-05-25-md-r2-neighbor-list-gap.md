@@ -140,6 +140,8 @@ Skin + rebuild per [md-r1-stability-matrix](./2026-05-25-md-r1-stability-matrix.
 
 ## Registry map (focused rows)
 
+Machine-readable fields: `benchmarks/competitive/algo_registry.json` → `research_map` keys **101**, **102**, **105**, **106**.
+
 | id | name | Incumbent | Li today | PH / G | Next action |
 |----|------|-----------|----------|--------|-------------|
 | 105 | `md_neighbor_cell_list` | LAMMPS `neighbor bin`; GROMACS grid | **stub** + brute tier-2 | **G-par** (later) | **`sim-p1-md-neighbor-cell`** — implement §Phase A–B |

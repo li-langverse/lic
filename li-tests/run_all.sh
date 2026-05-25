@@ -109,9 +109,10 @@ run_one() {
     build_dir_flag=("${MAX_MEMORY_FLAG[@]}")
   fi
   if [[ -n "${WORKER_BUILD_DIR:-}" ]]; then
-    build_dir_flag=(--build-dir="$WORKER_BUILD_DIR")
-    if ((${#MAX_MEMORY_FLAG[@]} > 0)); then
-      build_dir_flag+=("${MAX_MEMORY_FLAG[@]}")
+    if ((${#build_dir_flag[@]} > 0)); then
+      build_dir_flag=(--build-dir="$WORKER_BUILD_DIR" "${build_dir_flag[@]}")
+    else
+      build_dir_flag=(--build-dir="$WORKER_BUILD_DIR")
     fi
     mkdir -p "$WORKER_BUILD_DIR/generated"
   fi
@@ -245,6 +246,17 @@ run_one() {
         return 0
       fi
       li_test_fail "verify_open_ok $file"
+      return 1
+      ;;
+    script_ok)
+      if [[ ! -x "$path" ]]; then
+        chmod +x "$path" 2>/dev/null || true
+      fi
+      if "$path"; then
+        li_test_pass "script_ok $file"
+        return 0
+      fi
+      li_test_fail "script_ok $file"
       return 1
       ;;
     compile_fail|verify_fail)

@@ -1,0 +1,337 @@
+
+import gui
+import ui
+
+# li-studio — compose dock + timeline + inspector from li-ui layout + li-gui paint IR (PH-UX-05).
+
+def li_std_studio_version() -> int
+  requires true
+  ensures result == 1
+  decreases 0
+=
+  return 1
+
+def studio_dock_slot_count() -> int
+  requires true
+  ensures result == 5
+  decreases 0
+=
+  return 5
+
+def studio_dock_slot_size_px() -> float
+  requires true
+  ensures result == 36.0
+  decreases 0
+=
+  return 36.0
+
+def studio_dock_slot_gap_px() -> float
+  requires true
+  ensures result == 8.0
+  decreases 0
+=
+  return 8.0
+
+def studio_dock_padding_px() -> float
+  requires true
+  ensures result == 12.0
+  decreases 0
+=
+  return 12.0
+
+def studio_timeline_track_height_px() -> float
+  requires true
+  ensures result == 48.0
+  decreases 0
+=
+  return 48.0
+
+def studio_timeline_playhead_pct() -> float
+  requires true
+  ensures result == 0.35
+  decreases 0
+=
+  return 0.35
+
+def studio_inspector_header_height_px() -> float
+  requires true
+  ensures result == 32.0
+  decreases 0
+=
+  return 32.0
+
+def studio_inspector_field_rows() -> int
+  requires true
+  ensures result == 4
+  decreases 0
+=
+  return 4
+
+type StudioDockCompose = object
+  public rect: Rect
+  public slot_count: int
+  public active_slot: int
+  public active_slot_rect: Rect
+
+type StudioTimelineCompose = object
+  public rect: Rect
+  public track_rect: Rect
+  public playhead_rect: Rect
+  public playhead_pct: float
+
+type StudioInspectorCompose = object
+  public rect: Rect
+  public header_rect: Rect
+  public has_selection: int
+  public field_rows: int
+
+type StudioShellCompose = object
+  public layout: StudioShellLayout
+  public dock: StudioDockCompose
+  public timeline: StudioTimelineCompose
+  public inspector: StudioInspectorCompose
+  public panel: GuiPanelState
+
+def studio_dock_slot_offset_y(slot: int) -> float
+  requires slot >= 0
+  requires slot < studio_dock_slot_count()
+  ensures result >= 0.0
+  decreases slot
+=
+  var step: float = studio_dock_slot_size_px() + studio_dock_slot_gap_px()
+  if slot == 0:
+    return 0.0
+  if slot == 1:
+    return step
+  if slot == 2:
+    return step + step
+  if slot == 3:
+    return step + step + step
+  return step + step + step + step
+
+def studio_dock_slot_rect_at(dock_x: float, dock_y: float, dock_w: float, dock_h: float, slot: int) -> Rect
+  requires slot >= 0
+  requires slot < studio_dock_slot_count()
+  requires dock_w >= studio_dock_slot_size_px()
+  requires dock_h >= studio_dock_padding_px() + studio_dock_slot_size_px()
+  ensures result.w == studio_dock_slot_size_px()
+  ensures result.h == studio_dock_slot_size_px()
+  decreases slot
+=
+  var y: float = dock_y + studio_dock_padding_px() + studio_dock_slot_offset_y(slot)
+  var x: float = dock_x + (dock_w - studio_dock_slot_size_px()) / 2.0
+  return rect_make(x, y, studio_dock_slot_size_px(), studio_dock_slot_size_px())
+
+def studio_timeline_track_rect_at(tl_x: float, tl_y: float, tl_w: float, tl_h: float) -> Rect
+  requires tl_w >= 0.0
+  requires tl_h >= studio_timeline_track_height_px()
+  ensures result.w == tl_w
+  ensures result.h == studio_timeline_track_height_px()
+  decreases 0
+=
+  var track_y: float = tl_y + tl_h - studio_timeline_track_height_px() - 12.0
+  return rect_make(tl_x, track_y, tl_w, studio_timeline_track_height_px())
+
+def studio_timeline_playhead_rect_at(track_x: float, track_y: float, track_w: float, track_h: float, pct: float) -> Rect
+  requires track_w > 0.0
+  requires pct >= 0.0
+  requires pct <= 1.0
+  ensures result.w == 2.0
+  ensures result.h == track_h
+  decreases 0
+=
+  var px: float = track_x + (track_w * pct)
+  return rect_make(px, track_y, 2.0, track_h)
+
+def studio_inspector_header_rect_at(insp_x: float, insp_y: float, insp_w: float) -> Rect
+  requires insp_w >= 0.0
+  ensures result.w == insp_w
+  ensures result.h == studio_inspector_header_height_px()
+  decreases 0
+=
+  return rect_make(insp_x, insp_y, insp_w, studio_inspector_header_height_px())
+
+def studio_compose_shell(w: float, h: float, active_dock_slot: int, has_selection: int) -> StudioShellCompose
+  requires w > 0.0
+  requires h > 0.0
+  requires active_dock_slot >= 0
+  requires active_dock_slot < studio_dock_slot_count()
+  requires has_selection >= 0
+  requires has_selection <= 1
+  ensures result.layout.viewport_w > 0.0
+  ensures result.dock.active_slot == active_dock_slot
+  decreases active_dock_slot
+=
+  var out: StudioShellCompose
+  var layout: StudioShellLayout = layout_studio_shell_adaptive(w, h)
+  out.layout = layout
+  out.dock.rect = layout.dock
+  out.dock.slot_count = studio_dock_slot_count()
+  out.dock.active_slot = active_dock_slot
+  out.dock.active_slot_rect = studio_dock_slot_rect_at(layout.dock.x, layout.dock.y, layout.dock.w, layout.dock.h, active_dock_slot)
+  out.timeline.rect = layout.timeline
+  out.timeline.track_rect = studio_timeline_track_rect_at(layout.timeline.x, layout.timeline.y, layout.timeline.w, layout.timeline.h)
+  out.timeline.playhead_rect = studio_timeline_playhead_rect_at(out.timeline.track_rect.x, out.timeline.track_rect.y, out.timeline.track_rect.w, out.timeline.track_rect.h, studio_timeline_playhead_pct())
+  out.timeline.playhead_pct = studio_timeline_playhead_pct()
+  out.inspector.rect = layout.inspector
+  out.inspector.header_rect = studio_inspector_header_rect_at(layout.inspector.x, layout.inspector.y, layout.inspector.w)
+  out.inspector.has_selection = has_selection
+  out.inspector.field_rows = studio_inspector_field_rows()
+  out.panel = gui_panel_state_new()
+  return out
+
+def studio_paint_dock_cmds() -> int
+  requires true
+  ensures result == 2
+  decreases 0
+=
+  return 2
+
+def studio_paint_timeline_cmds() -> int
+  requires true
+  ensures result == 3
+  decreases 0
+=
+  return 3
+
+def studio_paint_inspector_cmds(has_selection: int) -> int
+  requires has_selection >= 0
+  requires has_selection <= 1
+  ensures result >= 2
+  ensures result <= 3
+  decreases has_selection
+=
+  if has_selection == 0:
+    return 2
+  return 3
+
+def studio_paint_dock(frame: var PaintFrame, dock: StudioDockCompose) -> unit
+  requires frame.cmd_count >= 0
+  ensures frame.cmd_count == old(frame.cmd_count) + studio_paint_dock_cmds()
+  ensures frame.last_kind == paint_op_stroke_rect()
+  ensures frame.last_rect.w == dock.active_slot_rect.w
+  decreases 0
+=
+  frame.cmd_count = frame.cmd_count + studio_paint_dock_cmds()
+  frame.last_kind = paint_op_stroke_rect()
+  frame.last_rect = dock.active_slot_rect
+  frame.last_color = studio_color_accent_cyan()
+
+def studio_paint_timeline(frame: var PaintFrame, timeline: StudioTimelineCompose) -> unit
+  requires frame.cmd_count >= 0
+  ensures frame.cmd_count == old(frame.cmd_count) + studio_paint_timeline_cmds()
+  ensures frame.last_kind == paint_op_stroke_rect()
+  decreases 0
+=
+  frame.cmd_count = frame.cmd_count + studio_paint_timeline_cmds()
+  frame.last_kind = paint_op_stroke_rect()
+  frame.last_rect = timeline.playhead_rect
+  frame.last_color = studio_color_accent_amber()
+
+def studio_paint_inspector(frame: var PaintFrame, inspector: StudioInspectorCompose) -> unit
+  requires frame.cmd_count >= 0
+  ensures frame.cmd_count == old(frame.cmd_count) + studio_paint_inspector_cmds(inspector.has_selection)
+  decreases inspector.has_selection
+=
+  frame.cmd_count = frame.cmd_count + studio_paint_inspector_cmds(inspector.has_selection)
+  frame.last_kind = paint_op_stroke_rect()
+  frame.last_rect = inspector.rect
+  frame.last_color = studio_color_accent_violet()
+
+def studio_paint_compose_panels(frame: var PaintFrame, dock: StudioDockCompose, timeline: StudioTimelineCompose, inspector: StudioInspectorCompose) -> unit
+  requires frame.cmd_count >= 0
+  ensures frame.cmd_count == old(frame.cmd_count) + studio_paint_compose_panels_count(inspector.has_selection)
+  decreases 0
+=
+  studio_paint_dock(frame, dock)
+  studio_paint_timeline(frame, timeline)
+  studio_paint_inspector(frame, inspector)
+
+def studio_paint_compose_panels_count(has_selection: int) -> int
+  requires has_selection >= 0
+  requires has_selection <= 1
+  ensures result == studio_paint_dock_cmds() + studio_paint_timeline_cmds() + studio_paint_inspector_cmds(has_selection)
+  decreases has_selection
+=
+  return studio_paint_dock_cmds() + studio_paint_timeline_cmds() + studio_paint_inspector_cmds(has_selection)
+
+def studio_shell_chrome_count(has_selection: int) -> int
+  requires has_selection >= 0
+  requires has_selection <= 1
+  ensures result >= studio_paint_compose_panels_count(has_selection)
+  decreases has_selection
+=
+  return studio_paint_compose_panels_count(has_selection) + 3
+
+def studio_paint_shell_chrome(frame: var PaintFrame, compose: StudioShellCompose) -> unit
+  requires frame.cmd_count >= 0
+  ensures frame.cmd_count == studio_shell_chrome_count(compose.inspector.has_selection)
+  ensures frame.last_kind == paint_op_viewport_grid()
+  ensures frame.last_rect.w == compose.layout.viewport.w
+  decreases 0
+=
+  frame.cmd_count = frame.cmd_count + studio_paint_dock_cmds()
+  frame.last_kind = paint_op_stroke_rect()
+  frame.last_rect = compose.dock.active_slot_rect
+  frame.last_color = studio_color_accent_cyan()
+  frame.cmd_count = frame.cmd_count + studio_paint_timeline_cmds()
+  frame.last_kind = paint_op_stroke_rect()
+  frame.last_rect = compose.timeline.playhead_rect
+  frame.last_color = studio_color_accent_amber()
+  frame.cmd_count = frame.cmd_count + studio_paint_inspector_cmds(compose.inspector.has_selection)
+  frame.last_kind = paint_op_stroke_rect()
+  frame.last_rect = compose.inspector.rect
+  frame.last_color = studio_color_accent_violet()
+  frame.cmd_count = frame.cmd_count + 1
+  frame.last_kind = paint_op_fill_rect()
+  frame.last_rect = compose.layout.topbar
+  frame.cmd_count = frame.cmd_count + 1
+  frame.last_kind = paint_op_viewport_grid()
+  frame.last_rect = compose.layout.viewport
+  frame.last_color = studio_color_accent_cyan()
+  frame.cmd_count = frame.cmd_count + 1
+  frame.last_kind = paint_op_fill_rect()
+  frame.last_rect = compose.layout.agent_strip
+
+def studio_shell_frame(w: float, h: float) -> PaintFrame
+  requires w > 0.0
+  requires h > 0.0
+  ensures result.cmd_count == studio_shell_chrome_count(1)
+  decreases 0
+=
+  var compose: StudioShellCompose = studio_compose_shell(w, h, 0, 1)
+  var frame: PaintFrame = paint_frame_new()
+  studio_paint_shell_chrome(frame, compose)
+  return frame
+
+def studio_panel_switch_inspector(panel: var GuiPanelState, elapsed_ms: float) -> PanelSwitchTiming
+  requires elapsed_ms >= 0.0
+  requires panel.switch_count >= 0
+  ensures panel.active_region == studio_region_inspector()
+  decreases 0
+=
+  return gui_panel_switch_to(panel, studio_region_inspector(), elapsed_ms)
+
+def studio_panel_switch_timeline(panel: var GuiPanelState, elapsed_ms: float) -> PanelSwitchTiming
+  requires elapsed_ms >= 0.0
+  requires panel.switch_count >= 0
+  ensures panel.active_region == studio_region_timeline()
+  decreases 0
+=
+  return gui_panel_switch_to(panel, studio_region_timeline(), elapsed_ms)
+
+def studio_compose_ok(compose: StudioShellCompose) -> int
+  requires true
+  ensures result >= 0
+  ensures result <= 1
+  decreases 0
+=
+  if compose.dock.rect.w != studio_dock_width_px():
+    return 0
+  if compose.timeline.rect.h != studio_timeline_height_px():
+    return 0
+  if compose.inspector.rect.w != studio_inspector_width_px():
+    return 0
+  if compose.layout.viewport.w <= 0.0:
+    return 0
+  return 1

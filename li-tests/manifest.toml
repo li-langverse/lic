@@ -762,6 +762,13 @@ packages = ["li-render", "li-gpu", "li-gui", "li-ui"]
 outcome = "compile_open_ok"
 note = "import render: wgpu smoke + FPS counter bench hook (PH-UX-03)"
 
+[[tests]]
+suite = "composable"
+file = "composable/import_studio_compose.li"
+packages = ["li-studio", "li-gui", "li-ui"]
+outcome = "compile_open_ok"
+note = "import studio: compose dock + timeline + inspector from composables (PH-UX-05)"
+
 # stdlib_coverage/build_std_csv — enable when std.csv module resolves (PH-IO-4)
 
 # --- httpd (Phase H placeholder) ---

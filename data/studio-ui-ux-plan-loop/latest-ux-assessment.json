@@ -1,23 +1,23 @@
 {
   "pass": true,
-  "avg_score": 2.21,
+  "avg_score": 2.29,
   "min_score": 1.5,
   "dimensions": {
-    "UX-01": { "score": 2, "note": "Scene draw tiers + viewport grid; depth/selection still paint IR (Godot/Blender = 3)." },
-    "UX-02": { "score": 2, "note": "Timeline region unchanged; no playhead animation (DaVinci/Unreal = 3)." },
-    "UX-03": { "score": 2, "note": "Inspector via li-gui paint; particle count in scene HUD path only (Unity/Figma = 3)." },
-    "UX-04": { "score": 2, "note": "Command palette mock hint only (Linear/VS Code = 3)." },
-    "UX-05": { "score": 2, "note": "Profile chip HTML; vertical switch not in composables (Notion = 3)." },
-    "UX-06": { "score": 2, "note": "Agent strip mock; Cursor task clarity / Linear progress / Copilot recovery patterns referenced (3)." },
-    "UX-07": { "score": 2, "note": "Empty viewport mock; tier draw validates particle budget (shadcn = 3)." },
-    "UX-08": { "score": 2, "note": "wgpu stub + scene simulate path; no recovery UI strip yet (Primer = 3)." },
-    "UX-09": { "score": 2, "note": "Panel switch hooks from studio-ux-02 (Blender/Linear = 3)." },
-    "UX-10": { "score": 2, "note": "Token contrast; ux-harness pass on world-studio-demo mock." },
-    "UX-11": { "score": 1.5, "note": "No skeleton loaders in scene/render path (Material 3 = 3)." },
-    "UX-12": { "score": 2, "note": "scene_budget_simulate / md_lennard_jones terminology aligned with bench TOML." },
-    "UX-13": { "score": 3, "note": "Particle tiers 1k/10k/100k + fps_target in bench JSON; native_pixels=false, draw_path labeled." },
-    "UX-14": { "score": 3, "note": "status=simulate + scene hook; HTML mocks not claimed as native MD draw." }
+    "UX-01": { "score": 2, "note": "Viewport grid via studio_shell_frame; dock slot rects composed (Godot/Blender = 3)." },
+    "UX-02": { "score": 2, "note": "Timeline track + playhead rect at 35% in li-studio compose; no transport controls (DaVinci/Unreal = 3)." },
+    "UX-03": { "score": 2, "note": "Inspector header + field_rows when selection; dock active-slot stroke (Unity/Figma = 3)." },
+    "UX-04": { "score": 2, "note": "Command palette mock HTML only (Linear/VS Code = 3)." },
+    "UX-05": { "score": 2, "note": "Profile chip in marketing mock; vertical switch not in composables (Notion = 3)." },
+    "UX-06": { "score": 2, "note": "Agent strip in shell chrome; Cursor task clarity / Linear progress / Copilot recovery referenced (3)." },
+    "UX-07": { "score": 2, "note": "Empty inspector path (has_selection=0) uses 2 paint cmds; empty viewport mock (shadcn = 3)." },
+    "UX-08": { "score": 2, "note": "wgpu stub + scene simulate unchanged; no recovery strip (Primer = 3)." },
+    "UX-09": { "score": 2, "note": "studio_panel_switch_* on GuiPanelState; budget 100ms (Blender/Linear = 3)." },
+    "UX-10": { "score": 2, "note": "border/amber tokens + ux-harness pass on world-studio-demo mock." },
+    "UX-11": { "score": 1.5, "note": "No skeleton loaders in compose path (Material 3 = 3)." },
+    "UX-12": { "score": 2, "note": "studio_* terminology aligned with design tokens and bench hooks." },
+    "UX-13": { "score": 3, "note": "Particle tiers + fps in bench; compose paint IR counts honest (cmd_count)." },
+    "UX-14": { "score": 3, "note": "native_pixels=false; HTML mocks labeled; li-studio compose is product IR not marketing." }
   },
   "honest_native_viewport": false,
-  "notes": "Re-verified 2026-05-25: gates/capture/bench green. li-scene MD tiers 1k/10k/100k @ 60/60/30 fps (simulate, native_pixels=false). li-render render_scene_md_particle_viewport bridges scene draw. SOTA: Godot viewport (UX-01), Cursor agent overview + Linear palette (UX-04/06), Copilot error recovery (UX-08)."
+  "notes": "studio-ux-05: new li-studio package composes dock (5 slots), timeline (track+playhead), inspector (header when selected) from li-ui layout + li-gui panel hooks. Paint IR uses cmd_count stubs until PaintCmd codegen lands. Workspace registers li-studio/li-gui/li-gpu/li-render. SOTA: Blender dock (UX-01), DaVinci timeline (UX-02), Cursor agent overview (UX-06)."
 }

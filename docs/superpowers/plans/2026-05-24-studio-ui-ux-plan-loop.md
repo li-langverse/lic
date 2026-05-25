@@ -19,7 +19,7 @@ todos:
     status: done
   - id: studio-ux-05-studio-compose
     content: "li-studio — compose dock + timeline + inspector from composables"
-    status: pending
+    status: done
   - id: studio-ux-06-agent-chrome
     content: "Agentic chrome — task status, cancel, error strip (PH UX-06)"
     status: pending

@@ -119,13 +119,13 @@ Templates: `scripts/templates/package/` — **generated from lip § A3** (single
 
 ## Exit gate (Pkg)
 
-- [ ] `li-new-package` emits li.toml valid against lip § A3
-- [ ] `create-li-package` skill committed (incl. `--official` + org checklist)
-- [ ] Guide + ecosystem overview + governance summary in mkdocs
-- [ ] `scripts/templates/github-repo/` for org repos
-- [ ] `docs/ecosystem/official-packages.md` stub with `PKG-li-language`
-- [ ] Smoke test in `scripts/ci.sh`
-- [ ] lip + governance + master plan cross-linked
+- [x] `li-new-package` emits li.toml valid against lip § A3 (`scripts/li-new-package`)
+- [x] `create-li-package` skill committed (incl. `--official` + org checklist)
+- [x] Guide + ecosystem overview + governance summary in mkdocs
+- [x] `scripts/templates/github-repo/` for org repos
+- [x] `docs/ecosystem/official-packages.md` stub with `PKG-li-language`
+- [x] Smoke test in `scripts/ci.sh`
+- [x] lip + governance + master plan cross-linked
 
 **Not in Pkg exit gate:** `import`, `li.lock`, registry (8a–8d).
 

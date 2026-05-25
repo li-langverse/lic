@@ -274,4 +274,4 @@ For each Tier 2+ benchmark, before claiming speed:
 - [ ] Reference energy/trajectory hash documented in `README.md`
 - [ ] C++ reference passes verify.py
 - [ ] Li reference passes `verify.py` and **`lic build`**
-- [ ] Timing runs separated from verification runs
+- [x] Timing runs separated from verification runs (`benchmarks/harness/bench.py` verify gate vs timing sweep)

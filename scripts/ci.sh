@@ -57,13 +57,14 @@ chmod +x "$ROOT/li-tests/run_httpd_config.sh" \
   "$ROOT/scripts/flatten-httpd-config.py" \
   "$ROOT/scripts/validate-httpd-config.py"
 "$ROOT/li-tests/run_httpd_config.sh"
-if [[ "${HTTPD_SKIP_AUTH_BEARER_SMOKE:-0}" != "1" ]] \
-  && [[ -x "$ROOT/scripts/build-li-httpd.sh" ]] \
+if [[ "${HTTPD_SKIP_AUTH_BEARER_SMOKE:-0}" == "1" ]]; then
+  echo "skip test-auth-bearer (HTTPD_SKIP_AUTH_BEARER_SMOKE=1)"
+elif [[ "$(uname -s)" == "Darwin" && "${HTTPD_SKIP_AUTH_BEARER_DARWIN:-1}" != "0" ]]; then
+  echo "skip test-auth-bearer (Darwin CI: bearer TCP smoke runs on Linux)"
+elif [[ -x "$ROOT/scripts/build-li-httpd.sh" ]] \
   && "$ROOT/scripts/build-li-httpd.sh"; then
   chmod +x "$ROOT/scripts/test-auth-bearer.sh"
   "$ROOT/scripts/test-auth-bearer.sh"
-elif [[ "${HTTPD_SKIP_AUTH_BEARER_SMOKE:-0}" == "1" ]]; then
-  echo "skip test-auth-bearer (HTTPD_SKIP_AUTH_BEARER_SMOKE=1)"
 fi
 
 li_phase "E2E li-tests (full manifest)"

@@ -71,23 +71,9 @@ if [[ ! -x "$LIC" ]]; then
   exit 0
 fi
 
-if command -v lake >/dev/null 2>&1 && [[ -z "${LI_PROVE_LEAN_LAKE_OK:-}" ]]; then
-  if (cd "$REPO/docs/semantics" && lake build AutoVC >/dev/null 2>&1); then
-    export LI_PROVE_LEAN_LAKE_OK=1
-  fi
-fi
-
 pass=0
 fail=0
 skip=0
-
-li_autovc_path() {
-  if [[ -n "${LI_BUILD_DIR:-}" ]]; then
-    echo "${LI_BUILD_DIR}/generated/AutoVC.lean"
-  else
-    echo "$REPO/build/generated/AutoVC.lean"
-  fi
-}
 
 run_one() {
   local suite="$1" file="$2" outcome="$3" substr="${4:-}"
@@ -130,16 +116,17 @@ run_one() {
       ;;
     prove_lean_ok)
       # G-test-verify: strict lic build + zero open AutoVC goals + lake AutoVC when installed.
-      local autovc
-      autovc="$(li_autovc_path)"
+      local autovc="$REPO/build/generated/AutoVC.lean"
       if ! "$LIC" build "$path" -o "$NULL_OUT" 2>/dev/null; then
         li_test_fail "prove_lean_ok $file (lic build)"
-        return 1
+        fail=$((fail + 1))
+        return
       fi
       chmod +x "$REPO/scripts/check-autovc-open-goals.sh"
       if ! "$REPO/scripts/check-autovc-open-goals.sh" "$autovc" 2>/dev/null; then
         li_test_fail "prove_lean_ok $file (open AutoVC goals)"
-        return 1
+        fail=$((fail + 1))
+        return
       fi
       if command -v lake >/dev/null 2>&1; then
         if [[ -z "${LI_PROVE_LEAN_LAKE_OK:-}" ]]; then
@@ -147,14 +134,16 @@ run_one() {
             export LI_PROVE_LEAN_LAKE_OK=1
           else
             li_test_fail "prove_lean_ok $file (lake build AutoVC)"
-            return 1
+            fail=$((fail + 1))
+            return
           fi
         fi
         li_test_pass "prove_lean_ok $file"
-        return 0
+        pass=$((pass + 1))
+      else
+        li_test_skip "prove_lean_ok $file (lake not installed)"
+        skip=$((skip + 1))
       fi
-      li_test_skip "prove_lean_ok $file (lake not installed)"
-      return 2
       ;;
     compile_open_ok)
       if "$LIC" build --allow-open-vc "$path" -o "$NULL_OUT" 2>/dev/null; then

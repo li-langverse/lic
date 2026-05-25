@@ -571,7 +571,7 @@ int main(int argc, char** argv) {
       if (open > 0) {
         std::cerr << "lic build: " << open
                   << " proof obligation(s) still need a Lean proof "
-                     "(see build/generated/AutoVC.lean)\n";
+                     "(see " << vc_lean << ")\n";
         std::cerr << "hint: a `requires` or `ensures` on your code created a goal the compiler "
                      "could not close automatically — prove it in Lean, simplify the "
                      "contract, or pass --allow-open-vc only for documented dev/tests\n";

@@ -15,7 +15,6 @@ li_host_jobs() {
   fi
 }
 
-# Parallel li-tests orchestration (8p-a). CI defaults to host cores; local default 1.
 li_test_jobs() {
   if [[ -n "${LI_TEST_JOBS:-}" ]]; then
     echo "$LI_TEST_JOBS"

@@ -30,6 +30,10 @@ source ~/Documents/Cursor/.env   # CURSOR_API_KEY, GH_TOKEN
 | `httpd` | `li-httpd-plan-loop` | `cursor/httpd-plan-continue` | `../lic-worktrees/httpd` |
 | `compiler-studio` | `li-compiler-studio-plan-loop` | `cursor/compiler-studio-plan-loop` | `../lic-worktrees/compiler-studio` |
 | `studio-ui-ux` | `li-studio-ui-ux-plan-loop` | (see studio script) | main repo |
+| `sim-md-research` | `li-sim-md-research-plan-loop` | `cursor/sim-md-research-loop` | `../lic-worktrees/sim-md-research` |
+| `sim-chem-research` | `li-sim-chem-research-plan-loop` | `cursor/sim-chem-research-loop` | `../lic-worktrees/sim-chem-research` |
+
+Research loops use `numerics_researcher` and `sim-algo-research-gates.sh` (validity hard gate). See `docs/ecosystem/sim-algo-research-grading.md`.
 
 ## Requirements
 

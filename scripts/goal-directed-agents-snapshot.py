@@ -78,6 +78,42 @@ RUNNERS: list[dict] = [
         "systemd_unit": "li-studio-ui-ux-plan-loop.service",
         "todo_id_prefix": "studio-ux-",
     },
+    {
+        "id": "sim-md-research",
+        "name": "MD algorithm research",
+        "repo": LANGVERSE / "lic-worktrees/sim-md-research",
+        "branch": "cursor/sim-md-research-loop",
+        "plan": "docs/ecosystem/sim-md-research-backlog.md",
+        "state": "data/sim-md-research-loop/state.json",
+        "log": "data/sim-md-research-loop/runner.log",
+        "pgrep_patterns": [
+            "sim-algo-research-plan-loop.py",
+            "sim-algo-research-run-until-done",
+            "sim-md-research-plan-loop",
+            "SIM_RESEARCH_VERTICAL=md",
+        ],
+        "systemd_unit": "li-sim-md-research-plan-loop.service",
+        "todo_id_prefix": "md-r",
+        "default_agent": "numerics_researcher",
+    },
+    {
+        "id": "sim-chem-research",
+        "name": "Chemistry algorithm research",
+        "repo": LANGVERSE / "lic-worktrees/sim-chem-research",
+        "branch": "cursor/sim-chem-research-loop",
+        "plan": "docs/ecosystem/sim-chem-research-backlog.md",
+        "state": "data/sim-chem-research-loop/state.json",
+        "log": "data/sim-chem-research-loop/runner.log",
+        "pgrep_patterns": [
+            "sim-algo-research-plan-loop.py",
+            "sim-algo-research-run-until-done",
+            "sim-chem-research-plan-loop",
+            "SIM_RESEARCH_VERTICAL=chem",
+        ],
+        "systemd_unit": "li-sim-chem-research-plan-loop.service",
+        "todo_id_prefix": "chem-r",
+        "default_agent": "numerics_researcher",
+    },
 ]
 
 

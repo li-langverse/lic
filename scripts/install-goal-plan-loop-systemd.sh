@@ -24,6 +24,12 @@ plan_def() {
     studio-ui-ux)
       echo "li-studio-ui-ux-plan-loop|scripts/studio-ui-ux-plan-loop-systemd.sh|../lic-studio-ui/data/studio-ui-ux-plan-loop|LI_CONTROL_PLANE_STORE=disk|LI_STACK_SKIP_SUPABASE=1|LI_EXPORT_DISK_CACHE=1"
       ;;
+    sim-md-research)
+      echo "li-sim-md-research-plan-loop|scripts/sim-md-research-plan-loop-systemd.sh|../lic-worktrees/sim-md-research/data/sim-md-research-loop|SIM_RESEARCH_VERTICAL=md"
+      ;;
+    sim-chem-research)
+      echo "li-sim-chem-research-plan-loop|scripts/sim-chem-research-plan-loop-systemd.sh|../lic-worktrees/sim-chem-research/data/sim-chem-research-loop|SIM_RESEARCH_VERTICAL=chem"
+      ;;
     *)
       return 1
       ;;
@@ -101,6 +107,8 @@ list_plans() {
   echo "  httpd             — lic (cursor/httpd-plan-continue)"
   echo "  compiler-studio   — lic-worktrees/compiler-studio"
   echo "  studio-ui-ux      — lic-studio-ui"
+  echo "  sim-md-research   — lic-worktrees/sim-md-research (numerics_researcher)"
+  echo "  sim-chem-research — lic-worktrees/sim-chem-research (numerics_researcher)"
   echo ""
   echo "Install all: $0 --all"
 }
@@ -114,7 +122,7 @@ if [[ "${1:-}" == "--all" ]]; then
   if command -v loginctl >/dev/null 2>&1; then
     loginctl enable-linger "$(whoami)" 2>/dev/null || true
   fi
-  for id in sim-algo httpd compiler-studio studio-ui-ux; do
+  for id in sim-algo sim-md-research sim-chem-research httpd compiler-studio studio-ui-ux; do
     install_one "$id" || true
     echo ""
   done

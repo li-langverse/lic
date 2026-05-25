@@ -9,6 +9,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- **Command palette (UX-04)** — `StudioCommandPaletteCompose`, `studio_palette_open` / `close` / `toggle`, `paint_studio_palette`; smoke `studio_palette.li`.
 - **Design tokens** — `studio_color_border`, `studio_color_accent_amber` (TOML sync for timeline playhead + borders).
 - Studio shell **layout IR** (`studio_layout.li`): adaptive dock/topbar/viewport/inspector/timeline/agent-strip rects aligned to design tokens.
 - `layout_panel_switch_within_budget_ms` — PH-UX gate helper (≤100 ms token).

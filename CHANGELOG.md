@@ -8,6 +8,7 @@ All notable changes to Li are documented here. The format follows
 
 ### Added
 
+- **Studio UX-04/07 gap-close** — native command palette overlay + empty inspector/viewport composables in `li-studio`/`li-ui`/`li-gui`; smokes `studio_command_palette.li`, `studio_empty_states.li`, `studio_palette.li`.
 - **Studio MCP tool contracts (PH-AGENT / AGENT-0)** — `packages/li-studio` tool IDs, agent chrome `StudioAgentToolRequest`, `docs/game-dev/studio-mcp-tools.md` — [2026-05-25-studio-mcp-tool-contracts.md](docs/release-notes/2026-05-25-studio-mcp-tool-contracts.md).
 - **Studio UX-09 keyboard-first** — `gui_handle_studio_key`, `StudioKeyBinding`, `InputState.key_cmd_k` / `key_digit`, smoke `studio_keyboard.li` — [2026-05-25-studio-keyboard-ux09.md](docs/release-notes/2026-05-25-studio-keyboard-ux09.md).
 

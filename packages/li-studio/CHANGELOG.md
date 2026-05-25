@@ -4,6 +4,7 @@
 
 ### Added
 
+- **Command palette (UX-04)** — `StudioCommandPaletteCompose` on `StudioShellCompose`; `studio_compose_shell_palette`, `studio_paint_palette_overlay`, `studio_handle_studio_key` / Cmd+K via `li-gui`; smoke `studio_command_palette.li` + `packages/li-ui` `studio_palette.li`.
 - **MCP tool contracts (PH-AGENT / AGENT-0)** — `studio_mcp_*` tool IDs, `studio_mcp_tool_name` / `from_name`, `StudioAgentToolRequest`, `docs/game-dev/studio-mcp-tools.md`, smoke `studio_mcp_tools.li`.
 - **Runtime profiles (UX-05 / PH-SIM scaffold)** — `studio_profile_*` constants, `studio_profile_from_name`, `studio_parse_toml_profile_line`, `StudioProjectConfig`, topbar profile chip paint, `fixtures/studio.toml`.
 - **Empty states (UX-07)** — `studio_compose_empty_inspector`, `studio_compose_empty_viewport`, `studio_empty_state_for_region`; muted placeholder paint with honest inspector/viewport cmd counts; shell wires empty paths when `has_selection == 0` or `scene_entity_count == 0`.

@@ -19,15 +19,12 @@ def main() -> int
   var engine_line: int = studio_parse_toml_profile_line("[engine] profile = game")
   if engine_line != studio_profile_game():
     return 5
-  var rl_chk: int = rl
-  var rl_paint: int = rl
-  var compose_chk: StudioShellCompose = studio_compose_shell_profile(1280.0, 720.0, 0, 0, rl_chk)
-  if studio_active_profile(compose_chk) != studio_profile_sim_rl():
+  var compose0: StudioShellCompose = studio_compose_shell_profile(1280.0, 720.0, 0, 0, rl)
+  var prof0: int = compose0.config.active_profile
+  if prof0 != studio_profile_sim_rl():
     return 6
-  var compose_paint: StudioShellCompose = studio_compose_shell_profile(1280.0, 720.0, 0, 0, rl_paint)
   var frame: PaintFrame = paint_frame_new()
-  var prof0: int = studio_active_profile(compose_paint)
-  var topbar0: Rect = compose_paint.layout.topbar
+  var topbar0: Rect = compose0.layout.topbar
   studio_paint_topbar_profile(frame, topbar0, prof0)
   if frame.last_rect.h != studio_profile_paint_tag_h(studio_profile_sim_rl()):
     return 7

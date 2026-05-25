@@ -2,6 +2,10 @@
 
 ## [Unreleased]
 
+### Fixed
+
+- **Gap-close wave1 smokes** — `packages/li-studio/src/lib.li` passes `lic check` with all `li-tests/smoke/*.li` (timeline extern, move/copy fixes, MCP/viewport `raises IO`, inspector ensures); see `docs/release-notes/2026-05-25-studio-gap-close-wave1-smokes.md`.
+
 ### Added
 
 - **PH-SIM SIM-0** — `studio_apply_profile_to_sim` (read-only `SimSessionStub`); `li-sim` path dependency; robotics profile id `4`.

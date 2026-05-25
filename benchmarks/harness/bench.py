@@ -28,6 +28,7 @@ from datetime import datetime, timezone
 from pathlib import Path
 
 REPO = Path(__file__).resolve().parents[2]
+HARNESS = Path(__file__).resolve().parent
 TIER1 = REPO / "benchmarks" / "tier1_micro"
 TIER2 = REPO / "benchmarks" / "tier2_physics"
 RESULTS = REPO / "benchmarks" / "results"
@@ -798,6 +799,24 @@ def run_verify() -> int:
     script = REPO / "benchmarks" / "harness" / "verify.py"
     return subprocess.call([sys.executable, str(script), "--write-csv", str(RESULTS / "verify.csv")])
 
+def emit_tier0_correctness_plot() -> int:
+    """Write correctness_tier0.png when verify.csv exists (bench.py --tier 0)."""
+    sys.path.insert(0, str(HARNESS))
+    try:
+        from plot import load_verify_df, plot_correctness_grid  # noqa: PLC0415
+    finally:
+        sys.path.pop(0)
+    verify_df = load_verify_df()
+    if verify_df is None or "passed" not in verify_df.columns:
+        print("tier-0 plot: skip (no verify.csv or passed column)", file=sys.stderr)
+        return 0
+    share = RESULTS / "share"
+    share.mkdir(parents=True, exist_ok=True)
+    out = share / "correctness_tier0.png"
+    plot_correctness_grid(verify_df, out)
+    print(f"wrote {out}")
+    return 0
+
 
 def run_tier0() -> int:
     script = REPO / "li-tests" / "run_all.sh"
@@ -886,6 +905,9 @@ def main() -> int:
         if rc != 0:
             return rc
         rc = run_verify()
+        if rc != 0:
+            return rc
+        rc = emit_tier0_correctness_plot()
         if rc != 0:
             return rc
         return subprocess.call([sys.executable, str(REPO / "benchmarks" / "harness" / "stability.py")])

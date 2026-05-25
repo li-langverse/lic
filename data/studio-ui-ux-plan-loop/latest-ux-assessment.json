@@ -12,8 +12,8 @@
     "UX-07": { "score": 3, "note": "Native empty inspector/viewport composables, distinct paint cmd counts, shell wiring + smoke." },
     "UX-08": { "score": 2, "note": "Agent error mock; GPU fail strip documented." },
     "UX-09": { "score": 1.8, "note": "Keyboard hints in HTML; native key map not instrumented." },
-    "UX-10": { "score": 2, "note": "Token contrast on mocks; native a11y scan deferred." },
-    "UX-11": { "score": 2, "note": "Skeleton classes in tokens; native loading states stub." },
+    "UX-10": { "score": 3.2, "note": "focus_ring token + studio_paint_focus_ring IR; contrast stub; inspector focus smoke; axe CI follow-up." },
+    "UX-11": { "score": 3, "note": "StudioShellLoadingState compose + 4 fill skeleton cmds; loading cmd_count > idle smoke." },
     "UX-12": { "score": 2.2, "note": "Mock banner + capture meta label SDL stub vs product." },
     "UX-13": { "score": 2.5, "note": "Bench JSON honest simulate; native_pixels flag in capture meta when SDL runs." },
     "UX-14": { "score": 2.8, "note": "HTML labeled mock; native path separate from marketing; no false native claim when SDL skips." }

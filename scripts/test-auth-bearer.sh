@@ -25,7 +25,21 @@ sleep 0.2
 
 timeout 15 "$HTTPD" "$CONF" >/dev/null 2>&1 &
 FE_PID=$!
-sleep 0.5
+
+# Wait for listen (CI runners can be slow; curl 000 = connection refused).
+ready=0
+for _ in $(seq 1 40); do
+  if curl -s -m 1 -o /dev/null "http://127.0.0.1:${FRONT_PORT}/index.html" 2>/dev/null; then
+    ready=1
+    break
+  fi
+  sleep 0.25
+done
+if [[ "$ready" -ne 1 ]]; then
+  echo "test-auth-bearer: FAIL server not listening on port ${FRONT_PORT}" >&2
+  kill "$FE_PID" 2>/dev/null || true
+  exit 1
+fi
 
 code_no=$(curl -s -m 3 -o /dev/null -w "%{http_code}" "http://127.0.0.1:${FRONT_PORT}/index.html" || echo "000")
 code_bad=$(curl -s -m 3 -o /dev/null -w "%{http_code}" \

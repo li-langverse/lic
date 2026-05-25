@@ -98,11 +98,20 @@ else
 fi
 cd "$CLONE"
 git checkout -B "$MIRROR_BRANCH" 2>/dev/null || git checkout -b "$MIRROR_BRANCH"
+
+# Merge package tree into mirror root without deleting repo scaffold (LICENSE, .github, etc.).
+PRESERVE=(
+  .git .github LICENSE PUBLISH.md SECURITY.md .gitignore
+  .github/PULL_REQUEST_TEMPLATE.md
+)
+RSYNC_EXCLUDE=()
+for p in "${PRESERVE[@]}"; do
+  RSYNC_EXCLUDE+=(--exclude="$p")
+done
 if command -v rsync >/dev/null 2>&1; then
-  rsync -a --delete --exclude='.git' "$TMP/packages/$PKG/" ./
+  rsync -a "${RSYNC_EXCLUDE[@]}" "$TMP/packages/$PKG/" ./
 else
-  find . -mindepth 1 -maxdepth 1 ! -name .git -exec rm -rf {} +
-  cp -a "$TMP/packages/$PKG/." ./
+  (cd "$TMP/packages/$PKG" && tar cf - .) | tar xf - -C .
 fi
 
 git add -A

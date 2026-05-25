@@ -85,7 +85,8 @@ li_phase "workspace build (8a)"
 chmod +x "$ROOT/scripts/lic-workspace-build.sh"
 "$ROOT/scripts/lic-workspace-build.sh" "$ROOT/packages/li.toml"
 
-# WP3 (lic check --workspace --jobs=8): skipped until workspace check merges on top of #205.
+li_phase "lic check workspace (WP3)"
+"$LIC" check --workspace="$ROOT/packages/li.toml" --jobs=8 --max-memory=8192
 
 li_phase "lip / lit (8b/8e)"
 chmod +x "$ROOT/scripts/lip" "$ROOT/scripts/lit" "$ROOT/li-tests/tooling/lip_lit_smoke.sh"

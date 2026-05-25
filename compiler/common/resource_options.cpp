@@ -25,16 +25,24 @@ void warn_env_ignored_once(const char* var) {
   std::cerr << "lic: warning: " << var << " is set but ignored because the matching flag was passed\n";
 }
 
-unsigned parse_positive(const char* s) {
+unsigned parse_positive_capped(const char* s, unsigned cap) {
   if (s == nullptr || *s == '\0') {
     return 0;
   }
-  const int n = std::atoi(s);
-  return n > 0 ? static_cast<unsigned>(n) : 0u;
+  const long long n = std::atoll(s);
+  if (n <= 0) {
+    return 0;
+  }
+  if (static_cast<unsigned long long>(n) > cap) {
+    std::cerr << "lic: warning: value " << n << " exceeds cap " << cap << "; using " << cap
+              << '\n';
+    return cap;
+  }
+  return static_cast<unsigned>(n);
 }
 
-std::size_t parse_positive_size(const char* s) {
-  const unsigned n = parse_positive(s);
+std::size_t parse_positive_size_capped(const char* s, std::size_t cap) {
+  const unsigned n = parse_positive_capped(s, cap > 0 ? static_cast<unsigned>(cap) : 0u);
   return n > 0 ? static_cast<std::size_t>(n) : 0u;
 }
 
@@ -60,17 +68,19 @@ unsigned ResourceOptions::effective_jobs(unsigned default_per_job_mb) const {
 
 bool apply_resource_flag(std::string_view arg, ResourceOptions& out) {
   if (arg.rfind("--jobs=", 0) == 0) {
-    out.jobs = parse_positive(arg.substr(7).data());
+    out.jobs = parse_positive_capped(arg.substr(7).data(), kMaxResourceJobs);
     out.jobs_from_flag = out.jobs > 0;
     return true;
   }
   if (arg.rfind("--max-memory=", 0) == 0) {
-    out.max_memory_mb = parse_positive_size(arg.substr(13).data());
+    out.max_memory_mb =
+        parse_positive_size_capped(arg.substr(13).data(), kMaxResourceMemoryMb);
     out.max_memory_from_flag = out.max_memory_mb > 0;
     return true;
   }
   if (arg.rfind("--job-memory-mb=", 0) == 0) {
-    out.job_memory_mb = parse_positive_size(arg.substr(16).data());
+    out.job_memory_mb =
+        parse_positive_size_capped(arg.substr(16).data(), kMaxResourceJobMemoryMb);
     out.job_memory_from_flag = out.job_memory_mb > 0;
     return true;
   }
@@ -80,7 +90,7 @@ bool apply_resource_flag(std::string_view arg, ResourceOptions& out) {
     return true;
   }
   if (arg.rfind("--threads=", 0) == 0) {
-    out.threads = parse_positive(arg.substr(10).data());
+    out.threads = parse_positive_capped(arg.substr(10).data(), kMaxResourceThreads);
     out.threads_from_flag = out.threads > 0;
     return true;
   }
@@ -89,7 +99,9 @@ bool apply_resource_flag(std::string_view arg, ResourceOptions& out) {
 
 void finalize_resource_options(ResourceOptions& opts) {
   if (!opts.jobs_from_flag && std::getenv("LI_COMPILE_JOBS")) {
-    if (const unsigned v = parse_positive(std::getenv("LI_COMPILE_JOBS")); v > 0) {
+    if (const unsigned v =
+            parse_positive_capped(std::getenv("LI_COMPILE_JOBS"), kMaxResourceJobs);
+        v > 0) {
       opts.jobs = v;
       warn_deprecated_env_once("LI_COMPILE_JOBS", "--jobs=N");
     }
@@ -97,7 +109,9 @@ void finalize_resource_options(ResourceOptions& opts) {
     warn_env_ignored_once("LI_COMPILE_JOBS");
   }
   if (!opts.max_memory_from_flag && std::getenv("LI_MAX_MEMORY_MB")) {
-    if (const std::size_t v = parse_positive_size(std::getenv("LI_MAX_MEMORY_MB")); v > 0) {
+    if (const std::size_t v = parse_positive_size_capped(std::getenv("LI_MAX_MEMORY_MB"),
+                                                         kMaxResourceMemoryMb);
+        v > 0) {
       opts.max_memory_mb = v;
       warn_deprecated_env_once("LI_MAX_MEMORY_MB", "--max-memory=MB");
     }
@@ -113,7 +127,9 @@ void finalize_resource_options(ResourceOptions& opts) {
     warn_env_ignored_once("LI_BUILD_DIR");
   }
   if (!opts.threads_from_flag && std::getenv("LI_OMP_THREADS")) {
-    if (const unsigned v = parse_positive(std::getenv("LI_OMP_THREADS")); v > 0) {
+    if (const unsigned v =
+            parse_positive_capped(std::getenv("LI_OMP_THREADS"), kMaxResourceThreads);
+        v > 0) {
       opts.threads = v;
       warn_deprecated_env_once("LI_OMP_THREADS", "--threads=N");
     }
@@ -122,6 +138,18 @@ void finalize_resource_options(ResourceOptions& opts) {
   }
   if (opts.jobs == 0) {
     opts.jobs = 1;
+  }
+  if (opts.jobs > kMaxResourceJobs) {
+    opts.jobs = kMaxResourceJobs;
+  }
+  if (opts.max_memory_mb > kMaxResourceMemoryMb) {
+    opts.max_memory_mb = kMaxResourceMemoryMb;
+  }
+  if (opts.job_memory_mb > kMaxResourceJobMemoryMb) {
+    opts.job_memory_mb = kMaxResourceJobMemoryMb;
+  }
+  if (opts.threads > kMaxResourceThreads) {
+    opts.threads = kMaxResourceThreads;
   }
 }
 

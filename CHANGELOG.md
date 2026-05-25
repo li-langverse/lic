@@ -8,6 +8,8 @@ All notable changes to Li are documented here. The format follows
 
 ### Added
 
+- **Check-cache security:** `v=1` cache entries, 1 MiB cap, import-graph cache keys, CLI resource caps, `li-tests/cache_exploits/check_cache_exploits.sh` — `docs/security/check-cache-threat-model.md`, `docs/release-notes/2026-05-25-check-cache-security.md`.
+
 - **WP3 check workspace + cache:** `lic check --workspace`, `--cache-dir`, `--cache-max-mb`, `--no-cache`; `workspace_check.cpp`, `check_cache.cpp` — `docs/release-notes/2026-05-25-check-workspace-cache-wp3.md`.
 
 - **WP0/WP2 (8p):** `ResourceOptions` CLI (`--jobs`, `--max-memory`, `--job-memory-mb`, `--build-dir`, `--threads`); `run_all.sh` parallel workers use `lic build --build-dir=…` — `docs/release-notes/2026-05-25-lic-resource-options-wp0-wp2.md`.

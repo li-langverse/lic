@@ -79,10 +79,11 @@ int check_file(const char* path, const CheckCommandOptions& opts, DiagOutput out
   const std::string config_hash = check_config_hash(cfg);
   const std::uint64_t content_hash = hash_file_content(file_path);
   const std::uint64_t import_hash = hash_direct_import_graph(path);
-  std::string key = make_check_cache_key(file_path, content_hash, config_hash,
-                                         check_cache_compiler_version(), import_hash);
-  key += '-';
-  key += (output == DiagOutput::Json) ? std::string(json_command) : "human";
+  const std::string_view mode_tag =
+      (output == DiagOutput::Json) ? json_command : std::string_view("human");
+  const std::string key = make_check_cache_key(
+      file_path, content_hash, config_hash, check_cache_compiler_version(), import_hash,
+      hash_bytes_fnv(mode_tag));
   const bool use_cache = opts.cache.enabled && !opts.cache.cache_dir.empty();
 
   if (use_cache) {

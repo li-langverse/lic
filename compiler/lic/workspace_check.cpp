@@ -169,6 +169,9 @@ int lic_workspace_check_main(int argc, char** argv, const char* lic_executable,
   }
 
   finalize_resource_options(resources);
+  CheckCacheOptions normalized_cache = child_cache;
+  normalize_check_cache_options(normalized_cache);
+  child_cache = normalized_cache;
   const unsigned jobs = resources.effective_jobs(128);
   const auto repo_root = repo_root_for_workspace(workspace_toml);
   const auto members = workspace_members(workspace_toml);

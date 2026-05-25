@@ -8,6 +8,10 @@ All notable changes to Li are documented here. The format follows
 
 ### Added
 
+- **PH-HW integration (`lig` + studio gap):** Rollup for multi-vendor GPU work packages WP1–WP5 ([#217](https://github.com/li-langverse/lic/pull/217), [#218](https://github.com/li-langverse/lic/pull/218), [#213](https://github.com/li-langverse/lic/pull/213), [#220](https://github.com/li-langverse/lic/pull/220), [#222](https://github.com/li-langverse/lic/pull/222)) and merged `studio-gap-close-wave1` (UX/MCP/sim/world) on `feat/ph-hw-multi-vendor` — [2026-05-25-lig-ph-hw-integration.md](docs/release-notes/2026-05-25-lig-ph-hw-integration.md).
+
+- **PH-HW WP1:** `lig` governance RFC, kernel catalog (`lig.kernel.*`), `benchmarks/competitive/lig-kernels.toml` multi-vendor schema — [2026-05-25-lig-ph-hw-work-packages.md](docs/release-notes/2026-05-25-lig-ph-hw-work-packages.md) (lands via [#217](https://github.com/li-langverse/lic/pull/217)).
+
 - **PH-SIM SIM-0 studio→sim profile bridge** — `li_sim_profile_from_studio_id`, `SimSessionStub`, `studio_apply_profile_to_sim`; smokes `studio_profile_bridge.li`, `import_studio_sim_profile_bridge.li` — [2026-05-25-studio-sim-profile-bridge.md](docs/release-notes/2026-05-25-studio-sim-profile-bridge.md).
 - **li-world PH-GD-2 scaffold** — text `world_v1` line save/load, `WorldSnapshot`, in-memory buffer round-trip — [2026-05-25-li-world-scaffold.md](docs/release-notes/2026-05-25-li-world-scaffold.md).
 - **Studio UX-04/07 gap-close** — native command palette overlay + empty inspector/viewport composables in `li-studio`/`li-ui`/`li-gui`; smokes `studio_command_palette.li`, `studio_empty_states.li`, `studio_palette.li`.

@@ -1,11 +1,13 @@
 #include "li_rt.h"
+#include "li_parallel.h"
 
 #include <math.h>
 #include <stdlib.h>
 #include <string.h>
 
-#if defined(_OPENMP)
-#include <omp.h>
+#if !defined(_WIN32)
+#include <pthread.h>
+#include <unistd.h>
 #endif
 
 void li_panic(const char* msg) {
@@ -36,29 +38,133 @@ const char* li_rt_argv(int index) {
   return li_argv[index];
 }
 
-void li_omp_parallel_for_i64(long long start, long long end,
-                             void (*body)(long long)) {
-#if defined(_OPENMP)
-  long long n = end - start;
-  if (n <= 0) {
-    return;
+typedef struct {
+  long long begin;
+  long long end;
+} LiParChunk;
+
+typedef struct {
+  void (*body)(long long);
+  LiParChunk chunk;
+} LiParWorkerArg;
+
+#if !defined(_WIN32)
+static void* li_par_worker(void* raw) {
+  LiParWorkerArg* arg = (LiParWorkerArg*)raw;
+  for (long long i = arg->chunk.begin; i < arg->chunk.end; ++i) {
+    arg->body(i);
+  }
+  return NULL;
+}
+#endif
+
+static int li_warn_omp_alias_once(void) {
+  static int warned = 0;
+  if (!warned) {
+    fprintf(stderr,
+            "lic: warning: li_omp_parallel_for_i64 is deprecated; use li_parallel_for_i64 "
+            "(native pthread pool)\n");
+    warned = 1;
+  }
+  return 0;
+}
+
+static int li_resolve_team_size(int team_size) {
+  if (team_size > 0) {
+    return team_size;
   }
   const char* nt = getenv("LI_OMP_THREADS");
   if (nt && *nt) {
     int threads = atoi(nt);
     if (threads > 0) {
-      omp_set_num_threads(threads);
+      return threads;
     }
   }
-#pragma omp parallel for schedule(static)
+#if defined(_WIN32)
+  return 1;
+#else
+  long cores = sysconf(_SC_NPROCESSORS_ONLN);
+  if (cores < 1) {
+    return 1;
+  }
+  if (cores > LI_MAX_THREADS) {
+    return LI_MAX_THREADS;
+  }
+  return (int)cores;
+#endif
+}
+
+static int li_clamp_team(int team_size, long long trip_count) {
+  team_size = li_resolve_team_size(team_size);
+  if (team_size > LI_MAX_THREADS) {
+    team_size = LI_MAX_THREADS;
+  }
+  if (trip_count < (long long)team_size) {
+    team_size = (int)trip_count;
+  }
+  if (team_size < 1) {
+    team_size = 1;
+  }
+  return team_size;
+}
+
+void li_parallel_for_i64(long long start, long long end, void (*body)(long long),
+                         int team_size) {
+  const long long trip = end - start;
+  if (trip <= 0 || body == NULL) {
+    return;
+  }
+  if (trip == 1) {
+    body(start);
+    return;
+  }
+
+  team_size = li_clamp_team(team_size, trip);
+  if (team_size <= 1) {
+    for (long long i = start; i < end; ++i) {
+      body(i);
+    }
+    return;
+  }
+
+#if defined(_WIN32)
+  (void)team_size;
   for (long long i = start; i < end; ++i) {
     body(i);
   }
 #else
-  for (long long i = start; i < end; ++i) {
-    body(i);
+  pthread_t threads[LI_MAX_THREADS];
+  LiParWorkerArg args[LI_MAX_THREADS];
+  const long long base = trip / team_size;
+  const long long rem = trip % team_size;
+  int launched = 0;
+  long long cur = start;
+  for (int w = 0; w < team_size; ++w) {
+    const long long len = base + (w < (int)rem ? 1 : 0);
+    if (len <= 0) {
+      continue;
+    }
+    args[launched].body = body;
+    args[launched].chunk.begin = cur;
+    args[launched].chunk.end = cur + len;
+    cur += len;
+    if (pthread_create(&threads[launched], NULL, li_par_worker, &args[launched]) != 0) {
+      for (long long i = args[launched].chunk.begin; i < args[launched].chunk.end; ++i) {
+        body(i);
+      }
+      continue;
+    }
+    ++launched;
+  }
+  for (int w = 0; w < launched; ++w) {
+    pthread_join(threads[w], NULL);
   }
 #endif
+}
+
+void li_omp_parallel_for_i64(long long start, long long end, void (*body)(long long)) {
+  (void)li_warn_omp_alias_once();
+  li_parallel_for_i64(start, end, body, 0);
 }
 
 int32_t li_rt_floor_div_i32(int32_t a, int32_t b) {

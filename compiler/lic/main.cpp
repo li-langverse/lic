@@ -465,6 +465,9 @@ int main(int argc, char** argv) {
     li::finalize_resource_options(li::resource_options());
     li::note_compile_jobs_reserved(li::resource_options());
     apply_resource_options_to_env();
+    if (li::resource_options().threads > 0) {
+      opts.runtime_threads = static_cast<int>(li::resource_options().threads);
+    }
     if (coverage) {
       extra_flags += "-fprofile-instr-generate -fcoverage-mapping ";
     }

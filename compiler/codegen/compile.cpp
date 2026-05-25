@@ -41,7 +41,7 @@ bool compile_module(const Module& module, const std::string& output_path,
   }
   const std::string ll_path = unique_temp_ll_path();
 
-  if (!emit_llvm_ir(mir, ll_path, error)) {
+  if (!emit_llvm_ir(mir, ll_path, opts.runtime_threads, error)) {
     return false;
   }
 
@@ -97,19 +97,8 @@ bool compile_module(const Module& module, const std::string& output_path,
     cmd << " " << extra_clang_flags;
   }
   if (mir.uses_openmp) {
-#if defined(__linux__)
-    if (std::filesystem::exists("/usr/include/omp.h")) {
-      cmd << " -fopenmp";
-    }
-#elif defined(__APPLE__)
-    if (std::filesystem::exists("/opt/homebrew/opt/libomp/lib/libomp.dylib")) {
-      cmd << " -Xpreprocessor -fopenmp -I/opt/homebrew/opt/libomp/include"
-          << " -L/opt/homebrew/opt/libomp/lib -lomp";
-    }
-#else
-    if (const char* omp = std::getenv("LI_OPENMP_FLAGS")) {
-      cmd << " " << omp;
-    }
+#if defined(__linux__) || defined(__APPLE__)
+    cmd << " -pthread";
 #endif
   }
   if (const char* extra_c = std::getenv("LI_EXTRA_C")) {

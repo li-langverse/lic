@@ -230,6 +230,15 @@ int32_t li_rt_studio_viewport_error_retry(void);
 int32_t li_rt_studio_mcp_tool_from_name(const char* name);
 const char* li_rt_studio_mcp_tool_name(int32_t tool_id);
 
+
+/* PH-HW HW-0: lig device layer. */
+int32_t li_rt_lig_device_kind(void);
+int32_t li_rt_lig_backend_available(int32_t backend_id);
+int32_t li_rt_lig_backend_select_auto(void);
+const char* li_rt_lig_capability_json(void);
+int32_t li_rt_lig_parse_toml_backend_line(const char* line);
+int32_t li_rt_lig_present_surface_ok(void);
+
 /* PH-GD-2: li-world text save/load seam (in-memory buffer; no filesystem I/O). */
 int32_t li_rt_world_format_version(void);
 const char* li_rt_world_serialize_slot(int32_t name_slot, int32_t tick, int32_t entity_count);

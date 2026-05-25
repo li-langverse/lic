@@ -6,10 +6,18 @@ All notable changes to Li are documented here. The format follows
 
 ## [Unreleased]
 
+### Changed
+
+- **P-float (corpus):** `discharge_sqrt_open_lean.sh` in `contracts_discharge_corpus.sh`; dedupe **#185** / G-test-verify notes — [2026-05-25-p-refine-init-gap2-proof.md](docs/release-notes/2026-05-25-p-refine-init-gap2-proof.md).
+
 ### Added
 
 - **PH-DB master plan cross-link:** phase map row + `ph-db-lidb-platform.md` appendix; **PH-8d-v2 → PH-DB-4** — [2026-05-25-ph-db-master-plan-crosslink.md](docs/release-notes/2026-05-25-ph-db-master-plan-crosslink.md).
-- **Studio UX Wave 2 P2 (HTML mocks 16–18):** command palette, reel motion, end CTA scenes — [2026-05-25-studio-ux-wave2-16-18.md](docs/release-notes/2026-05-25-studio-ux-wave2-16-18.md).
+
+- **Studio plan loop Wave 2 state:** `completed_ids` 11–19, UX-06/UX-08 assessment refresh — [2026-05-25-studio-plan-loop-wave2-state.md](docs/release-notes/2026-05-25-studio-plan-loop-wave2-state.md).
+
+- **Execution-resource bench + security:** cores×tpc sweep CSV, `execution_exploits` CI, `--cores`/`--threads-per-core` — [2026-05-25-execution-resource-bench-security.md](docs/release-notes/2026-05-25-execution-resource-bench-security.md).
+
 - **Studio UX Wave 2 P1 (HTML mocks):** outliner panel, consolidated viewport error strip, dock labels — [2026-05-25-studio-ux-wave2-p1-mocks.md](docs/release-notes/2026-05-25-studio-ux-wave2-p1-mocks.md).
 
 ### Fixed
@@ -17,6 +25,10 @@ All notable changes to Li are documented here. The format follows
 - **PH-UX vertical gap #1:** Studio UI bench registry and `bench-studio-viewport-perf.sh` reference `packages/lig` (`wgpu_smoke` hook) instead of removed `packages/li-gpu` — [2026-05-25-vertical-gap-bench-lig.md](docs/release-notes/2026-05-25-vertical-gap-bench-lig.md).
 
 ### Added
+
+- **PH-HW WP2:** LKIR matmul CPU oracle + `md_force_short` placeholder in `packages/lig`, `lig-kernels.toml` pilot rows, parity harness — [2026-05-25-ph-hw-wp2-lkir-matmul-md.md](docs/release-notes/2026-05-25-ph-hw-wp2-lkir-matmul-md.md).
+
+- **Tier-2 MD oracle (scientific viewport)** — `sim_scientific_tier2_tick`, `tier2_bench_row_md_lennard_jones`, `studio_scientific_viewport_tier_id`, smokes `studio_scientific_tier2_hook.li` / `import_studio_scientific_tier2_hook.li` — [2026-05-25-tier2-studio-scientific-oracle.md](docs/release-notes/2026-05-25-tier2-studio-scientific-oracle.md).
 
 - **Execution-resource bench + security:** cores×tpc sweep CSV, `execution_exploits` CI, `--cores`/`--threads-per-core` — [2026-05-25-execution-resource-bench-security.md](docs/release-notes/2026-05-25-execution-resource-bench-security.md).
 
@@ -51,8 +63,7 @@ All notable changes to Li are documented here. The format follows
 
 ### Fixed
 
- - **PH-UX vertical gap #1:** Studio UI bench registry and `bench-studio-viewport-perf.sh` reference `packages/lig` (`wgpu_smoke` hook) instead of removed `packages/li-gpu` — [2026-05-25-vertical-gap-bench-lig.md](docs/release-notes/2026-05-25-vertical-gap-bench-lig.md).
-- **WP4 execution resources:** `--cores=N`, `--threads-per-core=M`, runtime team baked into `li_parallel_for_i64`; `li-tests/execution_resources/` — [docs/release-notes/2026-05-25-lic-execution-resources-wp4.md](docs/release-notes/2026-05-25-lic-execution-resources-wp4.md).
+- **PH-UX vertical gap #1:** Studio UI bench registry and `bench-studio-viewport-perf.sh` reference `packages/lig` (`wgpu_smoke` hook) instead of removed `packages/li-gpu` — [2026-05-25-vertical-gap-bench-lig.md](docs/release-notes/2026-05-25-vertical-gap-bench-lig.md).
 
 ### Added
 
@@ -79,19 +90,9 @@ All notable changes to Li are documented here. The format follows
 - **P-physics proof database:** `docs/verification/proof-database/entries/physics-*.toml` (`P-AX-*`, `P-LM-*`); tier-2 bench refs; scalar lemmas in `Discharge.lean` — [2026-05-25-proof-db-physics-axioms.md](docs/release-notes/2026-05-25-proof-db-physics-axioms.md).
 - **G-trust (Partial+):** **T-GetElem** (`typing_getElem`) in `docs/semantics/Core.lean` — [2026-05-25-g-trust-core-getelem.md](docs/release-notes/2026-05-25-g-trust-core-getelem.md).
 
-### Added
-
-- **Proof DB (2f slice):** `proof-db/index.json` + `proof-db/lean/ProofDB.lean` — five standard lemmas (4 proved, 1 `sorry`); `lake build ProofDB` — [2026-05-25-proof-db-lean-bridge.md](docs/release-notes/2026-05-25-proof-db-lean-bridge.md).
-
-### Added
-
-- **Proof DB (2f slice):** `proof-db/index.json` + `proof-db/lean/ProofDB.lean` — five standard lemmas (4 proved, 1 `sorry`); `lake build ProofDB` — [2026-05-25-proof-db-lean-bridge.md](docs/release-notes/2026-05-25-proof-db-lean-bridge.md).
-
-### Added
-
-- **Proof DB (2f slice):** `proof-db/index.json` + `proof-db/lean/ProofDB.lean` — five standard lemmas (4 proved, 1 `sorry`); `lake build ProofDB` — [2026-05-25-proof-db-lean-bridge.md](docs/release-notes/2026-05-25-proof-db-lean-bridge.md).
-
 ### Changed
+
+- **P-float (corpus):** `discharge_sqrt_open_lean.sh` in `contracts_discharge_corpus.sh`; dedupe **#185** / G-test-verify changelog noise — [2026-05-25-p-refine-init-gap2-proof.md](docs/release-notes/2026-05-25-p-refine-init-gap2-proof.md).
 
 - **Plan checkboxes (wave):** sync `docs/superpowers/plans/*.md` exit gates with shipped Phases 0–5, Pkg, P-linalg loop witness, and C++ compiler evidence — [2026-05-25-plan-checkbox-audit-wave.md](docs/release-notes/2026-05-25-plan-checkbox-audit-wave.md).
 - **LLVM toolchain:** pin **22** (was 18) — `scripts/llvm-env.sh`, `scripts/ci-install-llvm.sh`, CMake gate — [2026-05-22-llvm-22-toolchain-bump.md](docs/release-notes/2026-05-22-llvm-22-toolchain-bump.md).

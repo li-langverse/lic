@@ -487,8 +487,8 @@ void emit_requires_vcs_for_call(std::ostream& out, const Module& module, const P
     const bool witnessed =
         expr_statically_true(*folded) || folded_discharged_by_proof_facts(*folded, facts);
     VcCtx ctx;
-    if (witnessed) {
-      prop = "True";
+    if (auto lean = expr_to_lean(*folded, ctx)) {
+      prop = *lean;
     } else if (auto lean = expr_to_lean(*sub, ctx)) {
       prop = *lean;
     } else {
@@ -498,7 +498,7 @@ void emit_requires_vcs_for_call(std::ostream& out, const Module& module, const P
     out << "def " << name;
     append_call_site_vc_formals(out, module, caller, args, prop);
     out << " : Prop := " << prop << '\n';
-    if (prop == "True" && witnessed) {
+    if (witnessed) {
       out << "theorem " << name << "_proved";
       append_call_site_vc_formals(out, module, caller, args, prop);
       out << " : " << name;

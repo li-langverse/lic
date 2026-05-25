@@ -144,6 +144,48 @@ run_one() {
       li_test_pass "parse_fail $file"
       return 0
       ;;
+    check_ok)
+      local out
+      out="$("$LIC" check "$path" 2>&1)" || true
+      if ! "$LIC" check "$path" >/dev/null 2>&1; then
+        li_test_fail "check_ok $file"
+        return 1
+      fi
+      if [[ -n "$substr" ]] && ! echo "$out" | grep -qi "$substr"; then
+        li_test_fail "check_ok $file (missing expected substring: $substr)"
+        return 1
+      fi
+      li_test_pass "check_ok $file"
+      return 0
+      ;;
+    check_deny_warn)
+      local out
+      out="$("$LIC" check --deny-warnings "$path" 2>&1)" || true
+      if "$LIC" check --deny-warnings "$path" >/dev/null 2>&1; then
+        li_test_fail "check_deny_warn $file (should reject)"
+        return 1
+      fi
+      if [[ -n "$substr" ]] && ! echo "$out" | grep -qi "$substr"; then
+        li_test_fail "check_deny_warn $file (missing expected substring: $substr)"
+        return 1
+      fi
+      li_test_pass "check_deny_warn $file"
+      return 0
+      ;;
+    check_fail)
+      local out
+      out="$("$LIC" check "$path" 2>&1)" || true
+      if "$LIC" check "$path" >/dev/null 2>&1; then
+        li_test_fail "check_fail $file (should reject)"
+        return 1
+      fi
+      if [[ -n "$substr" ]] && ! echo "$out" | grep -qi "$substr"; then
+        li_test_fail "check_fail $file (missing expected substring: $substr)"
+        return 1
+      fi
+      li_test_pass "check_fail $file"
+      return 0
+      ;;
     compile_ok|verify_ok)
       if li_lic_build "$path" -o "$NULL_OUT" 2>/dev/null; then
         li_test_pass "$outcome $file"

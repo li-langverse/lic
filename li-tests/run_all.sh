@@ -117,6 +117,9 @@ run_one() {
   fi
 
   local path="$ROOT/$file"
+  if [[ "$file" == packages/* ]]; then
+    path="$REPO/$file"
+  fi
   if [[ ! -f "$path" ]]; then
     li_test_skip "missing $file"
     return 2

@@ -6,6 +6,10 @@ All notable changes to Li are documented here. The format follows
 
 ## [Unreleased]
 
+### Added
+
+- **Proof-db math axioms (seed):** `proof-db/math/` — 9× `AX-MATH-*`, 3 target lemmas — [2026-05-25-proof-db-math-axioms.md](docs/release-notes/2026-05-25-proof-db-math-axioms.md).
+
 ### Changed
 
 - **Plan checkboxes (wave):** sync `docs/superpowers/plans/*.md` exit gates with shipped Phases 0–5, Pkg, P-linalg loop witness, and C++ compiler evidence — [2026-05-25-plan-checkbox-audit-wave.md](docs/release-notes/2026-05-25-plan-checkbox-audit-wave.md).

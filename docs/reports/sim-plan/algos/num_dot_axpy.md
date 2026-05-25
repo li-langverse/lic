@@ -54,3 +54,5 @@ Implemented `dot_f64_8`, `axpy_f64_8`, `num_dot_axpy_smoke_checksum()` in `math.
 **2026-05-25 (code_implementer, sim-p1-num-dot-axpy @ `a5f43e7b`):** Gates green (`SIM_PLAN_PACKAGE=li-math-numerics`); composable checksum ≈ 98.0; tier-1 verify all five benches pass; `simd_dot` Li ≈ 0.0186s, `matmul_naive` Li ≈ 0.0023s. Registry 44/126 smokes. Iteration: [20260525-182547](../iterations/20260525-182547.md).
 
 **2026-05-25 (code_implementer, sim-p1-num-dot-axpy gate refresh):** `./scripts/sim-plan-gates.sh` with `SIM_PLAN_PACKAGE=li-math-numerics` — composable **ok** (checksum ≈ 98.0); tier-1 verify all five benches pass; `simd_dot` Li ≈ 0.0178s, `matmul_naive` Li ≈ 0.0018s. Registry 44/126 smokes. Iteration: [20260525-183702](../iterations/20260525-183702.md).
+
+**2026-05-25 (code_implementer, sim-p1-num-dot-axpy @ isolated clone):** `LIC_ROOT=$PWD` `./scripts/sim-plan-gates.sh` with `SIM_PLAN_PACKAGE=li-math-numerics` — composable **ok** (checksum ≈ 98.0); tier-1 verify all five benches pass; `simd_dot` Li ≈ 0.0239s, `matmul_naive` Li ≈ 0.0020s. Registry 44/126 smokes. Iteration: [20260525-185046](../iterations/20260525-185046.md).

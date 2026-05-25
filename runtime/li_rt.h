@@ -242,6 +242,7 @@ int32_t li_rt_studio_shell_input_key_escape(void);
 int32_t li_rt_studio_shell_input_key_cmd_k(void);
 int32_t li_rt_studio_shell_input_key_digit(void);
 int32_t li_rt_studio_host_present_tick(int32_t viewport_w, int32_t viewport_h);
+int32_t li_rt_studio_demo_profile_from_env(void);
 
 
 /* PH-HW HW-0: lig device layer. */

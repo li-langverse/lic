@@ -1,8 +1,3 @@
-# Proof-db sweep discrepancy registry (template).
-# status = accepted suppresses exit-1 for matching auto (specimen, kind).
-# failure_mode: li_bug | wrong_spec | open_math | axiomatic_limit
-# See proof-db/reporter.md
-
 [[discrepancy]]
 id = "example-spec-lean-sqrt"
 specimen = "contracts_verify/sqrt_open_bound.li"

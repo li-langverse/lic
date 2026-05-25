@@ -1,42 +1,7 @@
 # Proof corpus and verification roadmap
 
 **Audience:** agents extending **2e/2f**, reviewers judging “is `lic build` a proof certificate?”  
-**Related:** [Provability gaps](provability-gaps.md) · [Proof database](proof-database.md) (`proof-db/manifest.toml` release pins) · [Contracts and proofs](../language/contracts-and-proofs.md) · [Master plan § 2e–2f](../superpowers/plans/2026-05-14-li-master-plan.md)
-
-## Release regression manifest (v0)
-
-| Artifact | Role |
-|----------|------|
-| [`proof-db/manifest.toml`](../../proof-db/manifest.toml) | `axioms/` + `lemmas/` rows with `release_pin` and `proof_status` |
-| [`scripts/check-proof-db.sh`](../../scripts/check-proof-db.sh) | CI smoke — `PROOF_DB_SKIP=1` to skip locally |
-
-A `proved` → `open` flip at a new `lic` release is usually a **proof tooling regression**, not invalid user Li. See [proof-database.md](proof-database.md).
-
-## Proof database — classical math (`M-AX-*` / `M-LM-*`)
-
-| Artifact | Role |
-|----------|------|
-| [`proof-database/entries/math-*.toml`](proof-database/entries/) | 9 axioms + 6 lemmas (5 proved, 1 discrepancy) |
-| [`docs/semantics/proof-db/math/`](../semantics/proof-db/math/) | `lake build ProofDbMath` |
-| [`proof-db/math/lemmas/`](../../proof-db/math/lemmas/) | `add_commutative.li` — **M-LM-FLOAT-ADD-COMM** (ℝ vs float / AutoVC) |
-
-## Proof database — Lean bridge (legacy index)
-
-| Artifact | Role |
-|----------|------|
-| [`proof-db/index.json`](../../proof-db/index.json) | Textbook → AutoVC name → Lean theorem → `proved` / `sorry` |
-| [`proof-db/lean/ProofDB.lean`](../../proof-db/lean/ProofDB.lean) | `cd docs/semantics && lake build ProofDB` |
-
-**Gaps:** `std_triangle_ineq_scalar` is `sorry` (**P-float**); `autovc_std_*` not emitted by `lic build` yet.
-
-## Proof database — Lean bridge (standard lemmas)
-
-| Artifact | Role |
-|----------|------|
-| [`proof-db/index.json`](../../proof-db/index.json) | Textbook → AutoVC name → Lean theorem → `proved` / `sorry` |
-| [`proof-db/lean/ProofDB.lean`](../../proof-db/lean/ProofDB.lean) | `cd docs/semantics && lake build ProofDB` |
-
-**Gaps:** `std_triangle_ineq_scalar` is `sorry` (**P-float**); `autovc_std_*` not emitted by `lic build` yet.
+**Related:** [Provability gaps](provability-gaps.md) · [Contracts and proofs](../language/contracts-and-proofs.md) · [Master plan § 2e–2f](../superpowers/plans/2026-05-14-li-master-plan.md)
 
 ## What “testing proofs” means in this repo
 
@@ -46,7 +11,6 @@ A `proved` → `open` flip at a new `lic` release is usually a **proof tooling r
 | **VC inventory** | `lic verify <file>` | Counts `requires`/`ensures`/witnesses — **not** Lean kernel |
 | **Lean discharge (real math)** | `li-tests/tooling/discharge_*_lean.sh`, `contracts_discharge_corpus.sh` | Regenerates AutoVC + **zero open goals**; optional `lake build` in `docs/semantics` |
 | **Manifest smoke** | `./li-tests/run_all.sh contracts_verify` | **`verify_ok`** = strict `lic build` (open VC fails). **`prove_lean_ok`** = build + `check-autovc-open-goals.sh` + `lake build AutoVC` when Lean installed (else skip). |
-| **Proof-db baseline** | `LI_PROOF_DB_STRICT=0 ./scripts/check-proof-db.sh` | JSONL pin vs `proof-db/baseline.jsonl` (`proved` / `placeholder` / `open`) |
 
 !!! note "Manifest outcomes (G-test-verify)"
     Closed P-linalg / discharge specimens use **`prove_lean_ok`**. Intentional open VCs use **`verify_open_ok`**. **`verify_ok`** remains for specimens that compile under strict build but are not in the closed Lean corpus yet.
@@ -80,7 +44,7 @@ A `proved` → `open` flip at a new `lic` release is usually a **proof tooling r
 ./scripts/proof-db-report.sh --baseline proof-db/expected.json --run <sweep.jsonl>
 ```
 
-See [proof-db/reporter.md](../../proof-db/reporter.md) for JSONL schema, failure modes, and `discrepancies.toml`.
+See [proof-db/reporter.md](../../proof-db/reporter.md).
 
 **Tooling entrypoints:**
 
@@ -133,7 +97,6 @@ Priority order aligned with [provability-gaps](provability-gaps.md) and **2e →
 | **P-http** | Parser/route config safety | Phase **H** | `httpd/*`, TOML desugar invariants |
 | **P-narrow** | Width-narrowing / casts | **G-narrow** partial | Ariane-style `prove_reject` + proved narrowing |
 | **P-meta** | Compiler ↔ `Core.lean` | **G-meta** research | Long-term; cite Dafny/CakeML VCG literature |
-| **P-physics** | Classical mechanics + conservation axioms | Tier-2 `extern` **modeling_gap**; scalar lemmas in `Discharge.lean` | `docs/verification/proof-database/entries/physics-*.toml`, `proof-db/physics/`, tier-2 `three_body` / `nbody_gravity` / `md_lennard_jones` |
 
 **Learned from (external):** Dafny `requires`/`ensures`/`decreases`; Lean 4 `mvcgen` / WP tactics; verified Dafny VCG (HOL4) for “what a finished pipeline proves.”
 

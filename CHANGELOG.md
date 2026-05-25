@@ -8,6 +8,15 @@ All notable changes to Li are documented here. The format follows
 
 ### Added
 
+<<<<<<< HEAD
+=======
+- **Linguist WP1 — Li TextMate grammar:** `contrib/li-grammar/` (`.li` syntax, VS Code/Cursor extension manifest, smoke script); install pointer `contrib/li-vscode/` — [2026-05-25-linguist-wp1-grammar.md](docs/release-notes/2026-05-25-linguist-wp1-grammar.md).
+
+- **Linguist WP2 samples (staging):** `contrib/linguist-samples/Li/` (10 `.li` files), license manifest, WP6 copy README — [2026-05-25-linguist-wp2-samples.md](docs/release-notes/2026-05-25-linguist-wp2-samples.md).
+
+- **Vertical gap #2 wgpu readback (phase A):** [2026-05-25-vertical-gap-wgpu-readback.md](docs/release-notes/2026-05-25-vertical-gap-wgpu-readback.md).
+
+>>>>>>> 141d6cc2 (feat(contrib): add Li TextMate grammar and VS Code scaffold (Linguist WP1))
 - **PH-DB master plan cross-link:** phase map row + `ph-db-lidb-platform.md` appendix; **PH-8d-v2 → PH-DB-4** — [2026-05-25-ph-db-master-plan-crosslink.md](docs/release-notes/2026-05-25-ph-db-master-plan-crosslink.md).
 - **Studio UX Wave 2 P2 (HTML mocks 16–18):** command palette, reel motion, end CTA scenes — [2026-05-25-studio-ux-wave2-16-18.md](docs/release-notes/2026-05-25-studio-ux-wave2-16-18.md).
 - **Studio UX Wave 2 P1 (HTML mocks):** outliner panel, consolidated viewport error strip, dock labels — [2026-05-25-studio-ux-wave2-p1-mocks.md](docs/release-notes/2026-05-25-studio-ux-wave2-p1-mocks.md).

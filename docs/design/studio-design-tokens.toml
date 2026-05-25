@@ -26,6 +26,7 @@ viewport_grid = "#21262d"
 
 [spacing]
 dock_width_px = 56
+outliner_width_px = 200
 topbar_height_px = 44
 inspector_width_px = 320
 
@@ -36,6 +37,7 @@ hover_transition_ms = 200
 [typography]
 ui = "Inter, system-ui, sans-serif"
 mono = "ui-monospace, monospace"
+dock_label_px = 9
 
 [semantic]
 mock_banner = "MARKETING MOCK — HTML preview only; native Li Studio uses li-ui/li-gui"

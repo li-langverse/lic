@@ -22,10 +22,10 @@ esac
 
 run_job() {
   local id="$1" file="$2"
-  export LI_BUILD_DIR="$ROOT/build/li-test-smoke-$id"
-  mkdir -p "$LI_BUILD_DIR/generated"
-  "$LIC" build "$ROOT/li-tests/$file" -o "$NULL_OUT" >/dev/null 2>&1 || return 1
-  [[ -f "$LI_BUILD_DIR/generated/AutoVC.lean" ]] || return 1
+  local build_dir="$ROOT/build/li-test-smoke-$id"
+  mkdir -p "$build_dir/generated"
+  "$LIC" build --build-dir="$build_dir" "$ROOT/li-tests/$file" -o "$NULL_OUT" >/dev/null 2>&1 || return 1
+  [[ -f "$build_dir/generated/AutoVC.lean" ]] || return 1
 }
 
 run_job 0 "typecheck/fib.li" &

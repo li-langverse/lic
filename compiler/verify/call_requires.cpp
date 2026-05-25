@@ -685,6 +685,33 @@ void collect_method_calls_in_expr(const Expr& e, std::vector<const Expr*>& out) 
   }
 }
 
+void collect_idents_in_expr(const Expr& e, std::set<std::string>& out) {
+  if (e.kind == Expr::Kind::Ident) {
+    out.insert(e.ident);
+    return;
+  }
+  if (e.lhs) {
+    collect_idents_in_expr(*e.lhs, out);
+  }
+  if (e.rhs) {
+    collect_idents_in_expr(*e.rhs, out);
+  }
+  if (e.operand) {
+    collect_idents_in_expr(*e.operand, out);
+  }
+  if (e.base) {
+    collect_idents_in_expr(*e.base, out);
+  }
+  if (e.index) {
+    collect_idents_in_expr(*e.index, out);
+  }
+  for (const auto& arg : e.args) {
+    if (arg) {
+      collect_idents_in_expr(*arg, out);
+    }
+  }
+}
+
 void collect_calls_in_expr(const Expr& e, std::vector<const Expr*>& out) {
   if (e.kind == Expr::Kind::Call) {
     out.push_back(&e);

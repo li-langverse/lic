@@ -93,7 +93,8 @@ outcome = "compile_fail"
 [[tests]]
 suite = "decorator_exploits"
 file = "decorator_exploits/typosquat_paralell.li"
-outcome = "compile_fail"
+outcome = "check_ok"
+expected_substr = "W0403"
 
 [[tests]]
 suite = "decorator_exploits"
@@ -104,6 +105,23 @@ outcome = "compile_fail"
 suite = "decorator_exploits"
 file = "decorator_exploits/missing_disjoint_at_parallel.li"
 outcome = "compile_fail"
+
+# --- advisory (WP1 check/diagnose warnings+notes) ---
+
+[[tests]]
+suite = "advisory"
+file = "advisory/check_ok.li"
+outcome = "check_ok"
+
+[[tests]]
+suite = "advisory"
+file = "advisory/check_deny_warn.li"
+outcome = "check_deny_warn"
+
+[[tests]]
+suite = "advisory"
+file = "advisory/deny/check_fail.li"
+outcome = "check_fail"
 
 # --- typecheck ---
 

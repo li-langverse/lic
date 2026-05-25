@@ -86,7 +86,8 @@ bool block_terminates(const std::vector<Stmt>& body) {
   return stmt_terminates(body.back());
 }
 
-void warn_unreachable(const std::vector<Stmt>& body, const std::string& file, DiagnosticBag& diags) {
+void warn_unreachable(const std::vector<Stmt>& body, const std::string& file,
+                      DiagnosticBag& diags) {
   bool seen_terminator = false;
   for (const auto& stmt : body) {
     if (seen_terminator) {
@@ -113,7 +114,8 @@ void warn_unreachable(const std::vector<Stmt>& body, const std::string& file, Di
 
 }  // namespace
 
-void run_advisory_passes(const Module& module, const std::string& file, DiagnosticBag& diags) {
+void run_advisory_passes(const Module& module, const std::string& file,
+                         DiagnosticBag& diags) {
   std::set<std::string> used_idents;
   for (const auto& proc : module.procs) {
     for (const auto& c : proc.contracts) {

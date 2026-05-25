@@ -180,8 +180,7 @@ std::string read_file(const char* path) {
 
 bool frontend(const char* path, const std::string& source, li::Module& out,
               li::DiagnosticBag& diags) {
-  li::FrontendCheckOptions opts;
-  return li::run_frontend_check(path, source, out, diags, opts);
+  return li::run_frontend_check(path, source, out, diags);
 }
 
 void warn_deprecated_proof_env() {

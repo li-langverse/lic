@@ -18,8 +18,10 @@ lean_lib Discharge where
   deps := #[`LiSemantics, `AutoVC]
 
 /-- Standard lemma registry (`proof-db/index.json`). -/
+/-- Standard lemma registry (`proof-db/index.json`). -/
 lean_lib ProofDB where
   srcDir := "../../proof-db/lean"
   roots := #[`ProofDB]
   deps := #[`LiSemantics]
+
 

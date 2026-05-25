@@ -8,6 +8,7 @@ All notable changes to Li are documented here. The format follows
 
 ### Added
 
+- **Proof-db CI gate:** `export-proof-db.sh` / `check-proof-db.sh` + `proof-db/baseline.jsonl` (advisory `LI_PROOF_DB_STRICT=0`) — [2026-05-25-proof-db-ci-gate.md](docs/release-notes/2026-05-25-proof-db-ci-gate.md).
 <<<<<<< Updated upstream
 - **Proof-db CI release gate:** `proof-db/baseline.json`, `check-proof-db-release.sh` — docs/release-notes/2026-05-25-proof-db-ci-gate.md.
 =======

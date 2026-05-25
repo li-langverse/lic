@@ -11,6 +11,7 @@
 | **VC inventory** | `lic verify <file>` | Counts `requires`/`ensures`/witnesses — **not** Lean kernel |
 | **Lean discharge (real math)** | `li-tests/tooling/discharge_*_lean.sh`, `contracts_discharge_corpus.sh` | Regenerates AutoVC + **zero open goals**; optional `lake build` in `docs/semantics` |
 | **Manifest smoke** | `./li-tests/run_all.sh contracts_verify` | **`verify_ok`** = strict `lic build` (open VC fails). **`prove_lean_ok`** = build + `check-autovc-open-goals.sh` + `lake build AutoVC` when Lean installed (else skip). |
+| **Proof-db baseline** | `LI_PROOF_DB_STRICT=0 ./scripts/check-proof-db.sh` | JSONL pin vs `proof-db/baseline.jsonl` (`proved` / `placeholder` / `open`) |
 
 !!! note "Manifest outcomes (G-test-verify)"
     Closed P-linalg / discharge specimens use **`prove_lean_ok`**. Intentional open VCs use **`verify_open_ok`**. **`verify_ok`** remains for specimens that compile under strict build but are not in the closed Lean corpus yet.

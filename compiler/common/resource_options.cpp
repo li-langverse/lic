@@ -2,6 +2,7 @@
 
 #include <cstdlib>
 #include <iostream>
+#include <unistd.h>
 
 namespace li {
 namespace {
@@ -9,6 +10,7 @@ namespace {
 ResourceOptions g_opts;
 bool g_env_warned = false;
 bool g_threads_cores_warned = false;
+bool g_invalid = false;
 
 void warn_deprecated_env_once(const char* var, const char* flag) {
   if (g_env_warned) {
@@ -34,12 +36,25 @@ void warn_threads_over_cores_once() {
   std::cerr << "lic: warning: --threads= wins over --cores/--threads-per-core= when both are set\n";
 }
 
-unsigned parse_positive(const char* s) {
+int parse_int(const char* s) {
   if (s == nullptr || *s == '\0') {
     return 0;
   }
-  const int n = std::atoi(s);
+  return std::atoi(s);
+}
+
+unsigned parse_positive(const char* s) {
+  const int n = parse_int(s);
   return n > 0 ? static_cast<unsigned>(n) : 0u;
+}
+
+unsigned host_logical_cores() {
+#ifdef _SC_NPROCESSORS_ONLN
+  const long n = sysconf(_SC_NPROCESSORS_ONLN);
+  return n > 0 ? static_cast<unsigned>(n) : 1u;
+#else
+  return 1u;
+#endif
 }
 
 std::size_t parse_positive_size(const char* s) {
@@ -55,7 +70,12 @@ void reset_resource_options() {
   g_opts = ResourceOptions{};
   g_env_warned = false;
   g_threads_cores_warned = false;
+  g_invalid = false;
 }
+
+bool resource_options_invalid() { return g_invalid; }
+
+void clear_resource_options_invalid() { g_invalid = false; }
 
 unsigned ResourceOptions::effective_jobs(unsigned default_per_job_mb) const {
   unsigned j = jobs > 0 ? jobs : 1u;
@@ -109,27 +129,44 @@ bool apply_resource_flag(std::string_view arg, ResourceOptions& out) {
     return true;
   }
   if (arg.rfind("--threads-per-core=", 0) == 0) {
-    out.threads_per_core = parse_positive(arg.substr(19).data());
-    if (out.threads_per_core == 0) {
-      out.threads_per_core = 1;
+    const int raw = parse_int(arg.substr(19).data());
+    if (raw <= 0) {
+      std::cerr << "lic: error: --threads-per-core must be a positive integer\n";
+      g_invalid = true;
+      return true;
     }
+    out.threads_per_core = static_cast<unsigned>(raw);
     out.threads_per_core_from_flag = true;
     return true;
   }
   if (arg.rfind("--cores=", 0) == 0) {
-    out.cores = parse_positive(arg.substr(8).data());
-    out.cores_from_flag = out.cores > 0;
+    const int raw = parse_int(arg.substr(8).data());
+    if (raw <= 0) {
+      std::cerr << "lic: error: --cores must be a positive integer\n";
+      g_invalid = true;
+      return true;
+    }
+    out.cores = static_cast<unsigned>(raw);
+    out.cores_from_flag = true;
     return true;
   }
   if (arg.rfind("--threads=", 0) == 0) {
-    out.threads = parse_positive(arg.substr(10).data());
-    out.threads_from_flag = out.threads > 0;
+    const int raw = parse_int(arg.substr(10).data());
+    if (raw <= 0) {
+      std::cerr << "lic: error: --threads must be a positive integer\n";
+      g_invalid = true;
+      return true;
+    }
+    out.threads = static_cast<unsigned>(raw);
+    out.threads_from_flag = true;
     return true;
   }
   return false;
 }
 
 void finalize_resource_options(ResourceOptions& opts) {
+  const unsigned host = host_logical_cores();
+
   if (!opts.jobs_from_flag && std::getenv("LI_COMPILE_JOBS")) {
     if (const unsigned v = parse_positive(std::getenv("LI_COMPILE_JOBS")); v > 0) {
       opts.jobs = v;
@@ -164,6 +201,11 @@ void finalize_resource_options(ResourceOptions& opts) {
   }
   if (opts.threads_from_flag && (opts.cores_from_flag || opts.threads_per_core_from_flag)) {
     warn_threads_over_cores_once();
+  }
+  if (opts.cores_from_flag && opts.cores > host) {
+    std::cerr << "lic: warning: --cores=" << opts.cores << " capped to host logical cores (" << host
+              << ")\n";
+    opts.cores = host;
   }
   if (opts.jobs == 0) {
     opts.jobs = 1;

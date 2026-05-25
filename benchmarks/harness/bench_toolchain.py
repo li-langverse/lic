@@ -16,7 +16,7 @@ def timed(cmd,runs=1):
 
 def main():
  a=argparse.ArgumentParser();a.add_argument("--smoke",action="store_true");a.add_argument("--runs",type=int,default=1);args=a.parse_args()
- if not LIC.is_file(): raise SystemExit(f"lic missing at {LIC}')
+ if not LIC.is_file(): raise SystemExit(f"lic missing at {LIC} — run ./scripts/build.sh")
  rows=[]
  for p in sorted(MICRO.glob("*.li")):
   cmd=[str(LIC),"check",str(p),"--format=json"];w,c=timed(cmd,runs=1)

@@ -33,9 +33,12 @@ Changing any of these invalidates the entry.
 ```text
 v=1
 exit=<int>
+content=<hex64 main-file fnv>
 ---
 <diagnostics payload>
 ```
+
+Loads reject entries whose `content=` line does not match the current file hash (blocks fake `exit=0` poison).
 
 Diagnostics-only JSON (no AST/MIR). Entries larger than **1 MiB** are not stored and are deleted on read.
 

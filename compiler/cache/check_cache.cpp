@@ -123,7 +123,8 @@ std::size_t dir_size_bytes(const std::filesystem::path& dir) {
   return total;
 }
 
-bool read_cache_file(const std::filesystem::path& path, CheckCacheHit& hit) {
+bool read_cache_file(const std::filesystem::path& path, std::uint64_t expected_content_hash,
+                     CheckCacheHit& hit) {
   std::error_code ec;
   if (is_symlink_path(path)) {
     return false;
@@ -146,6 +147,27 @@ bool read_cache_file(const std::filesystem::path& path, CheckCacheHit& hit) {
     return false;
   }
   hit.exit_code = std::atoi(line.c_str() + 5);
+  if (!std::getline(in, line) || line.rfind("content=", 0) != 0) {
+    return false;
+  }
+  const std::string content_hex = line.substr(8);
+  if (content_hex.size() != 16) {
+    return false;
+  }
+  std::uint64_t stored_content = 0;
+  for (char c : content_hex) {
+    stored_content <<= 4;
+    if (c >= '0' && c <= '9') {
+      stored_content |= static_cast<std::uint64_t>(c - '0');
+    } else if (c >= 'a' && c <= 'f') {
+      stored_content |= static_cast<std::uint64_t>(10 + c - 'a');
+    } else {
+      return false;
+    }
+  }
+  if (stored_content != expected_content_hash) {
+    return false;
+  }
   if (!std::getline(in, line) || line != "---") {
     return false;
   }
@@ -254,7 +276,8 @@ bool apply_check_cache_flag(std::string_view arg, CheckCacheOptions& out) {
   return false;
 }
 
-CheckCacheHit try_load_check_cache(const CheckCacheOptions& opts, const std::string& key) {
+CheckCacheHit try_load_check_cache(const CheckCacheOptions& opts, const std::string& key,
+                                   std::uint64_t expected_content_hash) {
   CheckCacheHit hit;
   if (!opts.enabled || opts.cache_dir.empty()) {
     return hit;
@@ -263,7 +286,7 @@ CheckCacheHit try_load_check_cache(const CheckCacheOptions& opts, const std::str
   if (!path_opt) {
     return hit;
   }
-  if (!read_cache_file(*path_opt, hit)) {
+  if (!read_cache_file(*path_opt, expected_content_hash, hit)) {
     hit.hit = false;
     hit.output.clear();
   }
@@ -271,7 +294,7 @@ CheckCacheHit try_load_check_cache(const CheckCacheOptions& opts, const std::str
 }
 
 void store_check_cache(const CheckCacheOptions& opts, const std::string& key, int exit_code,
-                       const std::string& output) {
+                       const std::string& output, std::uint64_t content_hash) {
   if (!opts.enabled || opts.cache_dir.empty() || output.size() > kCheckCacheMaxEntryBytes) {
     return;
   }
@@ -289,7 +312,8 @@ void store_check_cache(const CheckCacheOptions& opts, const std::string& key, in
   if (!out) {
     return;
   }
-  out << "v=" << kCacheFormatVersion << "\nexit=" << exit_code << "\n---\n" << output;
+  out << "v=" << kCacheFormatVersion << "\nexit=" << exit_code << "\ncontent=" << hex64(content_hash)
+      << "\n---\n" << output;
   out.close();
   evict_check_cache_lru(opts.cache_dir, opts.max_mb);
 }

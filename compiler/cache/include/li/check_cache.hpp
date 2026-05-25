@@ -35,9 +35,10 @@ std::string make_check_cache_key(const std::filesystem::path& path, std::uint64_
                                  std::uint64_t import_graph_hash,
                                  std::uint64_t output_mode_hash = 0);
 
-CheckCacheHit try_load_check_cache(const CheckCacheOptions& opts, const std::string& key);
+CheckCacheHit try_load_check_cache(const CheckCacheOptions& opts, const std::string& key,
+                                   std::uint64_t expected_content_hash);
 void store_check_cache(const CheckCacheOptions& opts, const std::string& key, int exit_code,
-                       const std::string& output);
+                       const std::string& output, std::uint64_t content_hash);
 void evict_check_cache_lru(const std::filesystem::path& cache_dir, std::size_t max_mb);
 
 bool apply_check_cache_flag(std::string_view arg, CheckCacheOptions& out);

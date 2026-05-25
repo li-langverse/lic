@@ -10,10 +10,10 @@
 | **Static gate** | `lic build` (default on branch with 2f) | Parse, typecheck, borrow, emit MIR/LLVM; emit `AutoVC.lean`; **fail if open Prop goals** (`check-autovc-open-goals.sh`) |
 | **VC inventory** | `lic verify <file>` | Counts `requires`/`ensures`/witnesses — **not** Lean kernel |
 | **Lean discharge (real math)** | `li-tests/tooling/discharge_*_lean.sh`, `contracts_discharge_corpus.sh` | Regenerates AutoVC + **zero open goals**; optional `lake build` in `docs/semantics` |
-| **Manifest smoke** | `./li-tests/run_all.sh contracts_verify` | Today: **`verify_ok` = `lic build` only** — see gap **G-test-verify** below |
+| **Manifest smoke** | `./li-tests/run_all.sh contracts_verify` | **`verify_ok`** = strict `lic build` (open VC fails). **`prove_lean_ok`** = build + `check-autovc-open-goals.sh` + `lake build AutoVC` when Lean installed (else skip). |
 
-!!! warning "Do not equate `verify_ok` with Lean QED"
-    Until manifest outcomes are split (`prove_compile_ok` vs `prove_lean_ok`), passing `run_all.sh contracts_verify` only means **build + autovc script**, not full kernel verification.
+!!! note "Manifest outcomes (G-test-verify)"
+    Closed P-linalg / discharge specimens use **`prove_lean_ok`**. Intentional open VCs use **`verify_open_ok`**. **`verify_ok`** remains for specimens that compile under strict build but are not in the closed Lean corpus yet.
 
 ## Corpus library (positives)
 
@@ -62,11 +62,11 @@
 | `prove_reject/weak_ensures_true.li` | reject | **E0303** |
 | `cve_patterns/cwe676_extern_no_contract.li` | reject | Extern must have contracts |
 
-## Run results (2026-05-21, `main` after PR **#151** P-linalg)
+## Run results (2026-05-25, `feat/g-items-wave`)
 
 | Suite | Result | Notes |
 |-------|--------|-------|
-| `run_all.sh contracts_verify` | **26 pass / 0 fail** | Includes **P-linalg** closed + loop dot `verify_ok` |
+| `run_all.sh contracts_verify` | **26 pass / 0 fail** (14 `prove_lean_ok` + 12 `verify_ok`/`verify_open_ok`) | `prove_lean_ok` runs lake when elan on PATH |
 | `contracts_discharge_corpus.sh` | **ok** | Trivial/const/index/caller-requires/**linalg closed**; `sqrt_open_bound` + loop dot intentionally open |
 | `run_httpd_config.sh` | **ok** | Python oracle + Li `match_routes.li` binary exit 0 |
 | `contracts_verify_lean.sh` | **partial** | Needs Lean 4 + lake; may stop on specimens with open user `ensures` |
@@ -96,8 +96,10 @@ Priority order aligned with [provability-gaps](provability-gaps.md) and **2e →
 
 | Today | Target |
 |-------|--------|
-| `verify_ok` runs `lic build` only | `prove_compile_ok` + `prove_lean_ok` (lake + zero open goals) |
-| Mixed open-VC policy on branch | Document per-file: closed / open-intentional / lean-handwritten |
+| **`prove_lean_ok`** in `run_all.sh` + 14 closed `contracts_verify` rows | **Done** for split; lake step skips when elan absent |
+| **`verify_ok`** = strict `lic build` (default open-VC gate) | Same as planned `prove_compile_ok` name |
+| Remaining corpus on `verify_ok` | Retag when `discharge_*_lean.sh` covers them |
+| CI without Lean | `prove_lean_ok` → skip (not fail) — install elan in semantics job for full gate |
 
 ## Agent checklist (before claiming “proofs pass”)
 

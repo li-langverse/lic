@@ -229,6 +229,35 @@ std::uint64_t hash_file_content(const std::filesystem::path& path) {
   return hash;
 }
 
+std::uint64_t hash_direct_import_graph(const std::filesystem::path& path) {
+  std::ifstream in(path);
+  if (!in) {
+    return 0;
+  }
+  std::uint64_t hash = 14695981039346656037ull;
+  std::string line;
+  while (std::getline(in, line)) {
+    std::size_t start = 0;
+    while (start < line.size() && std::isspace(static_cast<unsigned char>(line[start]))) {
+      ++start;
+    }
+    if (line.compare(start, 7, "import ") != 0) {
+      continue;
+    }
+    start += 7;
+    while (start < line.size() && std::isspace(static_cast<unsigned char>(line[start]))) {
+      ++start;
+    }
+    const std::size_t end = line.find_first_of(" ;\t\r\n", start);
+    const std::string_view spec(line.data() + start,
+                                (end == std::string::npos ? line.size() : end) - start);
+    if (!spec.empty()) {
+      hash = fnv1a64_update(hash, reinterpret_cast<const unsigned char*>(spec.data()), spec.size());
+    }
+  }
+  return hash;
+}
+
 std::uint64_t hash_bytes_fnv(std::string_view data) {
   return fnv1a64_update(0, reinterpret_cast<const unsigned char*>(data.data()), data.size());
 }

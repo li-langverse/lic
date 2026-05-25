@@ -29,9 +29,12 @@ struct CheckCacheHit {
 
 std::string check_config_hash(const CheckConfig& cfg);
 std::uint64_t hash_file_content(const std::filesystem::path& path);
+std::uint64_t hash_direct_import_graph(const std::filesystem::path& path);
+std::uint64_t hash_bytes_fnv(std::string_view data);
 std::string make_check_cache_key(const std::filesystem::path& path, std::uint64_t content_hash,
                                  const std::string& config_hash, const std::string& version,
-                                 std::uint64_t import_graph_hash);
+                                 std::uint64_t import_graph_hash,
+                                 std::uint64_t output_mode_hash = 0);
 
 CheckCacheHit try_load_check_cache(const CheckCacheOptions& opts, const std::string& key,
                                    std::uint64_t expected_content_hash);

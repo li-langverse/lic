@@ -1,0 +1,24 @@
+import sim
+import sim.scientific
+import scene
+import studio
+
+def smoke_studio_scientific_tier2() -> int
+  requires true
+  ensures result >= 0
+  ensures result <= 1
+  decreases 0
+=
+  if tier2_bench_row_md_lennard_jones() != 1:
+    return 1
+  if tier2_md_oracle_built(tier2_bench_row_md_lennard_jones()) != 0:
+    return 1
+  if studio_md_particle_tier_select_ok(studio_scientific_viewport_tier_id()) != 1:
+    return 1
+  var cfg: StudioProjectConfig = studio_project_config_new(studio_profile_sim_scientific())
+  var sess: SimSessionStub = sim_session_stub_default()
+  if studio_sim_step_hook(cfg, sess, 0.01) != sim_status_ok():
+    return 1
+  if sess.tick != 1:
+    return 1
+  return 0

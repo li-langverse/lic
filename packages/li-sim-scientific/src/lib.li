@@ -10,6 +10,51 @@ def li_sim_scientific_version() -> int
 =
   return 1
 
+# Tier-2 MD bench row ids — read-only link to `benchmarks/tier2_physics/*` harness paths.
+def tier2_bench_row_md_lennard_jones() -> int
+  requires true
+  ensures result == 1
+  decreases 0
+=
+  return 1
+
+def tier2_bench_row_params_tag(bench_row: int) -> int
+  requires bench_row == tier2_bench_row_md_lennard_jones()
+  ensures result == 101
+  decreases bench_row
+=
+  return 101
+
+def tier2_bench_row_results_tag(bench_row: int) -> int
+  requires bench_row == tier2_bench_row_md_lennard_jones()
+  ensures result == 201
+  decreases bench_row
+=
+  return 201
+
+def tier2_md_oracle_built(bench_row: int) -> int
+  requires bench_row == tier2_bench_row_md_lennard_jones()
+  ensures result >= 0
+  ensures result <= 1
+  decreases bench_row
+=
+  return 0
+
+def sim_scientific_tier2_tick(detail: int, bench_row: int) -> int
+  requires detail >= 0
+  requires detail <= 3
+  requires bench_row == tier2_bench_row_md_lennard_jones()
+  ensures result >= 0
+  ensures result <= 1
+  decreases bench_row
+=
+  if tier2_md_oracle_built(bench_row) != 1:
+    return sim_scientific_tick_stub(detail)
+  var r: SimRunResult = run_md_lj_smoke(detail)
+  if run_result_ok(r) != 1:
+    return 0
+  return 1
+
 # PH-SIM vertical gap #4 — one MD smoke step per studio tick (no full SimWorld).
 def sim_scientific_tick_stub(detail: int) -> int
   requires detail >= 0

@@ -1263,6 +1263,13 @@ def studio_md_particle_tier_select_ok(tier_id: int) -> int
     return 0
   return 1
 
+def studio_scientific_viewport_tier_id() -> int
+  requires true
+  ensures result == scene_md_tier_10k()
+  decreases 0
+=
+  return scene_md_tier_10k()
+
 # PH-SIM SIM-1 + vertical gap #4 — profile sync, domain tick stub, session counter.
 def studio_sim_step_hook(config: StudioProjectConfig, sim_out: var SimSessionStub, dt: float) -> int
   requires studio_profile_id_valid(config.active_profile) == 1
@@ -1275,10 +1282,14 @@ def studio_sim_step_hook(config: StudioProjectConfig, sim_out: var SimSessionStu
   studio_apply_profile_to_sim(config, sim_out)
   var prof: int = config.active_profile
   if prof == studio_profile_sim_scientific():
+    var tier_vp: int = studio_scientific_viewport_tier_id()
+    if studio_md_particle_tier_select_ok(tier_vp) != 1:
+      return sim_status_invalid_dt()
     var detail0: int = sim_out.output_detail
     if detail0 > 3:
       detail0 = 3
-    if sim_scientific_tick_stub(detail0) != 1:
+    var bench_row: int = tier2_bench_row_md_lennard_jones()
+    if sim_scientific_tier2_tick(detail0, bench_row) != 1:
       return sim_status_invalid_dt()
   if prof == studio_profile_game():
     if dt <= 0.0:

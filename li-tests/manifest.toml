@@ -826,6 +826,13 @@ note = "import ui: studio shell layout + paint IR composables (PH-UX-01)"
 
 [[tests]]
 suite = "composable"
+file = "composable/import_studio_scientific_tier2_hook.li"
+packages = ["li-sim", "li-sim-scientific", "li-studio", "li-scene", "li-physics-runtime", "li-gui", "li-ui"]
+outcome = "compile_open_ok"
+note = "PH-SCI tier-2 MD oracle: studio_sim_step_hook + tier2_bench_row_md_lennard_jones"
+
+[[tests]]
+suite = "composable"
 file = "composable/import_gui_viewport_panel_switch.li"
 packages = ["li-gui", "li-ui"]
 outcome = "compile_open_ok"

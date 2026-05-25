@@ -4,6 +4,8 @@
 
 ### Added
 
+- **Scientific viewport tier-2** — `studio_scientific_viewport_tier_id`; tier gate + `sim_scientific_tier2_tick` in `studio_sim_step_hook`.
+
 - **Vertical gap #4/#9 sim step physics** — `sim_scientific_tick_stub`, `studio_game_step_hook`, `studio_md_particle_tier_select_ok`, smokes `studio_sim_step_by_profile.li` / `import_studio_sim_step_by_profile.li` — [2026-05-25-vertical-gap-sim-step-physics.md](docs/release-notes/2026-05-25-vertical-gap-sim-step-physics.md).
 
 

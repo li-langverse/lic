@@ -8,6 +8,8 @@ All notable changes to Li are documented here. The format follows
 
 ### Added
 
+- **Tier-2 MD oracle (scientific viewport)** — `sim_scientific_tier2_tick`, `tier2_bench_row_md_lennard_jones`, `studio_scientific_viewport_tier_id`, smokes `studio_scientific_tier2_hook.li` — [2026-05-25-tier2-studio-scientific-oracle.md](docs/release-notes/2026-05-25-tier2-studio-scientific-oracle.md).
+
 - **Studio UX Wave 2 P2 (HTML mocks 16–18):** command palette, reel motion, end CTA scenes — [2026-05-25-studio-ux-wave2-16-18.md](docs/release-notes/2026-05-25-studio-ux-wave2-16-18.md).
 
 

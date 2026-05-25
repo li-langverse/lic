@@ -72,6 +72,12 @@ note = "T-PKG-li-studio-shell-loading-ux10-ux11"
 
 [[tests]]
 suite = "smoke"
+file = "smoke/studio_scientific_tier2_hook.li"
+outcome = "compile_open_ok"
+note = "PH-SCI tier-2 MD oracle viewport: tier select + bench row stub tick"
+
+[[tests]]
+suite = "smoke"
 file = "smoke/studio_shell_demo.li"
 outcome = "compile_open_ok"
 note = "T-PKG-li-studio-shell-demo PH-GD-1"

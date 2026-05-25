@@ -16,7 +16,11 @@ def classify(name, body):
         return "open"
     if PH.search(name) or name.endswith("_stub") or "stub" in name.lower():
         return "placeholder"
-    if ":= rfl" in body or ":= by" in body or ":= trivial" in body:
+    if ":= rfl" in body or ":= trivial" in body:
+        return "proved"
+    if re.search(r":=\s*(Int|Float|Li)\.", body):
+        return "proved"
+    if ":= by" in body:
         return "proved"
     return "open"
 

@@ -31,6 +31,8 @@ for rid in sorted(set(baseline) | set(live)):
         drifts.append(f"+ {rid}")
     elif rid not in live:
         drifts.append(f"- {rid}")
+    elif baseline[rid]["status"] == "proved" and live[rid]["status"] != "proved":
+        drifts.append(f"~ {rid}: {baseline[rid]['status']} -> {live[rid]['status']} (regression)")
     elif baseline[rid]["status"] != live[rid]["status"]:
         drifts.append(f"~ {rid}: {baseline[rid]['status']} -> {live[rid]['status']}")
 if drifts:

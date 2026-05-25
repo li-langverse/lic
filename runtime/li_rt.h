@@ -233,6 +233,8 @@ const char* li_rt_studio_mcp_tool_name(int32_t tool_id);
 int32_t li_rt_lig_host_present_active(void);
 float li_rt_lig_host_present_dt_ms(void);
 int32_t li_rt_lig_host_native_pixels(void);
+int32_t li_rt_lig_host_native_pixel_source(void);
+int32_t li_rt_lig_present_blit_rgba8(int32_t viewport_w, int32_t viewport_h, int32_t profile_id, int32_t paint_cmd_count, int32_t tag_h_px);
 int32_t li_rt_lig_wgpu_swapchain_create(int32_t viewport_w, int32_t viewport_h);
 int32_t li_rt_lig_wgpu_present_frame(int32_t swapchain_ok);
 int32_t li_rt_studio_shell_input_pointer_down(void);

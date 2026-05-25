@@ -2928,11 +2928,15 @@ def studio_vertical_demo_frame(profile_id: int, frame_id: int) -> int raises IO
     return 10 + frame_id
   if lig_present_host_active() == 1:
     var vp: ViewportRegion = gui_viewport_region_from_layout(compose.layout)
+    if lig_present_blit_paint_summary(vp.w, vp.h, profile_id, frame.cmd_count) != 1:
+      return 52 + frame_id
     var _presented: LigPresentFrame = studio_shell_host_present_loop_tick(vp.w, vp.h, frame_id)
     if _presented.presented != 1:
       return 50 + frame_id
     if _presented.native_pixels != 1:
       return 51 + frame_id
+    if _presented.native_pixel_source != lig_native_pixel_source_paint_blit():
+      return 53 + frame_id
   if frame_id == 0:
     return 0
   if frame_id == 1:

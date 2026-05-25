@@ -8,6 +8,9 @@ All notable changes to Li are documented here. The format follows
 
 ### Added
 
+- **Vertical gap #2 wgpu readback (phase A):** [2026-05-25-vertical-gap-wgpu-readback.md](docs/release-notes/2026-05-25-vertical-gap-wgpu-readback.md).
+
+
 - **Studio UX Wave 2 P2 (HTML mocks 16–18):** command palette, reel motion, end CTA scenes — [2026-05-25-studio-ux-wave2-16-18.md](docs/release-notes/2026-05-25-studio-ux-wave2-16-18.md).
 
 

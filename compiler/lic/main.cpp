@@ -1,11 +1,9 @@
+#include "li/check_cmd.hpp"
 #include "li/compile.hpp"
 #include "li/parser.hpp"
 #include "li/platform.hpp"
-#include "li/policy.hpp"
-#include "li/import_resolve.hpp"
 #include "li/prelude.hpp"
 #include "li/smoke_llvm.hpp"
-#include "li/typecheck.hpp"
 #include "li/vc_emit.hpp"
 #include "li/mir.hpp"
 #include "li/vc_summary.hpp"
@@ -34,7 +32,7 @@ int usage() {
   std::cerr << li::styled_accent("lic") << li::styled_dim(" — prove · write · run fast") << li::reset_style()
             << "\nusage:\n"
             << "  lic parse <file>       parse and validate syntax\n"
-            << "  lic check <file> [--format=json]  parse + typecheck\n"
+            << "  lic check <file> [--format=json] [--deny-warnings]  parse + typecheck + advisory\n"
             << "  lic diagnose <file>    agent-oriented JSON diagnostics\n"
             << "  lic verify <file>      VC summary; --lean lake; --strict-lean fails open VCs\n"
             << "                       [--allow-open-vc] [--no-lean-verify]\n"
@@ -180,65 +178,8 @@ std::string read_file(const char* path) {
 
 bool frontend(const char* path, const std::string& source, li::Module& out,
               li::DiagnosticBag& diags) {
-  li::check_source_policies(source, path, diags);
-  if (!diags.empty()) {
-    return false;
-  }
-  auto parsed = li::parse_module(source, path);
-  for (const auto& d : parsed.diagnostics.items()) {
-    diags.error(d.loc, d.message);
-  }
-  if (!parsed.module) {
-    return false;
-  }
-  li::check_stdlib_seal(*parsed.module, path, diags);
-  if (!diags.empty()) {
-    return false;
-  }
-  if (!li::resolve_imports(*parsed.module, path, diags)) {
-    return false;
-  }
-  li::check_module_policies(*parsed.module, path, diags);
-  if (!diags.empty()) {
-    return false;
-  }
-  li::check_duplicate_definitions(*parsed.module, path, diags);
-  if (!diags.empty()) {
-    return false;
-  }
-  auto checked = li::typecheck_module(*parsed.module);
-  for (const auto& d : checked.diagnostics.items()) {
-    if (!d.code.empty()) {
-      diags.error(d.loc, d.code, d.message, d.hint ? *d.hint : std::string{});
-    } else {
-      diags.error(d.loc, d.message);
-    }
-  }
-  if (!checked.ok) {
-    return false;
-  }
-  out = std::move(*parsed.module);
-  return true;
-}
-
-enum class DiagOutput { Human, Json };
-
-int check_file(const char* path, DiagOutput output, std::string_view json_command) {
-  const std::string source = read_file(path);
-  li::Module module;
-  li::DiagnosticBag diags;
-  if (!frontend(path, source, module, diags)) {
-    if (output == DiagOutput::Json) {
-      li::print_diagnostics_json(diags, std::cout, json_command);
-    } else {
-      li::print_diagnostics(diags);
-    }
-    return 1;
-  }
-  if (output == DiagOutput::Json) {
-    li::print_diagnostics_json(diags, std::cout, json_command);
-  }
-  return 0;
+  li::FrontendCheckOptions opts;
+  return li::run_frontend_check(path, source, out, diags, opts);
 }
 
 void warn_deprecated_proof_env() {
@@ -471,31 +412,10 @@ int main(int argc, char** argv) {
     return 0;
   }
   if (cmd == "check") {
-    if (argc < 3) {
-      return usage();
-    }
-    const char* path = nullptr;
-    DiagOutput output = DiagOutput::Human;
-    for (int i = 2; i < argc; ++i) {
-      const std::string_view arg = argv[i];
-      if (arg == "--format=json") {
-        output = DiagOutput::Json;
-      } else if (path == nullptr) {
-        path = argv[i];
-      } else {
-        return usage();
-      }
-    }
-    if (path == nullptr) {
-      return usage();
-    }
-    return check_file(path, output, "check");
+    return li::lic_check_main(argc, argv);
   }
   if (cmd == "diagnose") {
-    if (argc < 3) {
-      return usage();
-    }
-    return check_file(argv[2], DiagOutput::Json, "diagnose");
+    return li::lic_diagnose_main(argc, argv);
   }
   if (cmd == "verify") {
     if (argc < 3) {

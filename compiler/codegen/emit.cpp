@@ -119,6 +119,7 @@ struct EmitCtx {
   bool returns_i64 = false;
   bool returns_object = false;
   bool fp_numerically_stable = false;
+  int runtime_threads = 0;
   bool enable_array_simd = true;
   std::vector<bool> array_simd_scope_stack;
   std::map<std::string, llvm::AllocaInst*> int_locals;
@@ -818,15 +819,17 @@ struct EmitCtx {
         }
         llvm::FunctionType* iter_ty =
             llvm::FunctionType::get(llvm::Type::getVoidTy(context), {i64_ty(context)}, false);
-        llvm::FunctionType* omp_ty = llvm::FunctionType::get(
+        llvm::FunctionType* par_ty = llvm::FunctionType::get(
             llvm::Type::getVoidTy(context),
-            {i64_ty(context), i64_ty(context), iter_ty->getPointerTo()}, false);
-        llvm::FunctionCallee omp_rt =
-            module->getOrInsertFunction("li_omp_parallel_for_i64", omp_ty);
+            {i64_ty(context), i64_ty(context), iter_ty->getPointerTo(), i32_ty(context)},
+            false);
+        llvm::FunctionCallee par_rt =
+            module->getOrInsertFunction("li_parallel_for_i64", par_ty);
         builder->CreateCall(
-            omp_rt,
+            par_rt,
             {llvm::ConstantInt::get(i64_ty(context), ins.int_value),
-             llvm::ConstantInt::get(i64_ty(context), ins.rhs_int), par_fn});
+             llvm::ConstantInt::get(i64_ty(context), ins.rhs_int), par_fn,
+             llvm::ConstantInt::get(i32_ty(context), runtime_threads)});
         return true;
       }
       case MirOp::ArrayAlloc: {
@@ -1229,7 +1232,8 @@ struct EmitCtx {
 
 }  // namespace
 
-bool emit_llvm_ir(const MirModule& mir, const std::string& out_path, std::string* error) {
+bool emit_llvm_ir(const MirModule& mir, const std::string& out_path, int runtime_threads,
+                  std::string* error) {
   llvm::LLVMContext context;
   auto module = std::make_unique<llvm::Module>("li", context);
 
@@ -1262,11 +1266,12 @@ bool emit_llvm_ir(const MirModule& mir, const std::string& out_path, std::string
       "li_rt_volatile_sink_f64",
       llvm::FunctionType::get(llvm::Type::getVoidTy(context), {f64}, false));
   module->getOrInsertFunction(
-      "li_omp_parallel_for_i64",
+      "li_parallel_for_i64",
       llvm::FunctionType::get(llvm::Type::getVoidTy(context),
                               {i64_ty(context), i64_ty(context),
                                llvm::PointerType::getUnqual(llvm::FunctionType::get(
-                                   llvm::Type::getVoidTy(context), {i64_ty(context)}, false))},
+                                   llvm::Type::getVoidTy(context), {i64_ty(context)}, false)),
+                               i32_ty(context)},
                               false));
   module->getOrInsertFunction("li_async_frame_enter",
                               llvm::FunctionType::get(llvm::Type::getVoidTy(context), {}, false));
@@ -1415,6 +1420,7 @@ bool emit_llvm_ir(const MirModule& mir, const std::string& out_path, std::string
                 fn.returns_i64,
                 fn.returns_object,
                 mir.fp_numerically_stable,
+                runtime_threads,
                 !fn.no_vectorize,
                 {},
                 {},

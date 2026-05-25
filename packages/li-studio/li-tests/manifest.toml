@@ -24,6 +24,12 @@ note = "T-PKG-li-studio-compose-panels"
 
 [[tests]]
 suite = "smoke"
+file = "smoke/studio_outliner.li"
+outcome = "compile_open_ok"
+note = "T-PKG-li-studio-outliner PH-GD-1"
+
+[[tests]]
+suite = "smoke"
 file = "smoke/studio_agent_chrome.li"
 outcome = "compile_open_ok"
 note = "T-PKG-li-studio-agent-chrome"

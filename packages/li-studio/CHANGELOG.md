@@ -4,6 +4,8 @@
 
 ### Added
 
+- **Accessibility (UX-10)** — `studio_paint_focus_ring_for_panel` when `panel.active_region` matches; uses `li-ui` focus ring token.
+- **Loading / skeleton (UX-11)** — `StudioShellLoadingState`, `studio_compose_shell_loading`, `studio_paint_shell_loading` (4 fill cmds); smoke `studio_shell_loading.li`.
 - **Timeline playback (UX-02)** — `studio_timeline_playing`, `studio_timeline_toggle_play`, `studio_timeline_tick_frame` (+0.01 playhead/frame, cap 1.0); `play_btn_rect` + expanded timeline paint; smoke `studio_timeline_playback.li`.
 - **Inspector fields (UX-03)** — `StudioInspectorField` + `studio_compose_inspector_selected` (≥2 label/value rows); empty path uses `studio_compose_empty_inspector`; smoke `studio_inspector_fields.li`.
 - **Command palette (UX-04)** — `StudioCommandPaletteCompose` on `StudioShellCompose`; `studio_compose_shell_palette`, `studio_paint_palette_overlay`, `studio_handle_studio_key` / Cmd+K via `li-gui`; smoke `studio_command_palette.li` + `packages/li-ui` `studio_palette.li`.

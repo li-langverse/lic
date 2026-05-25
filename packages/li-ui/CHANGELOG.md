@@ -9,6 +9,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- **Accessibility (UX-10)** — `studio_color_focus_ring`, `studio_paint_focus_ring`, `studio_contrast_ratio_ok()` stub (WCAG AA 4.5:1 target in README); smoke `studio_accessibility.li`.
+- **Skeleton tokens (UX-11)** — `studio_color_skeleton_muted` / `highlight` for loading paint IR.
 - **Command palette (UX-04)** — `StudioCommandPaletteCompose`, `studio_palette_open` / `close` / `toggle`, `paint_studio_palette`; smoke `studio_palette.li`.
 - **Design tokens** — `studio_color_border`, `studio_color_accent_amber` (TOML sync for timeline playhead + borders).
 - Studio shell **layout IR** (`studio_layout.li`): adaptive dock/topbar/viewport/inspector/timeline/agent-strip rects aligned to design tokens.

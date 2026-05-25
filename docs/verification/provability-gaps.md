@@ -19,7 +19,7 @@ This page is the **honest inventory** of what is **not** fully proved or not yet
 |---|----------------|-------------------------|
 | **`lic build` = proof certificate** | Lean 4 kernel closes all VCs | **No** — parse, policy strings, typecheck, borrow, LLVM link only |
 | **`lic check`** | Fast IDE feedback | **Yes** — no Lean, not a certificate |
-| **Parallel disjointness** | Lean + structured proofs | **Partial** — substring heuristics in `policy.cpp` |
+| **Parallel disjointness** | Lean + structured proofs | **Partial** — AST `policy_module.cpp` (call-form `requires`; decorator `disjoint=` witness) |
 | **Index bounds (release)** | Refinement / proved → no user traps | **Partial** — MIR/runtime paths still evolving |
 | **Decorators (`@parallel`, …)** | Compile-time elaboration + proofs | **Partial** — parse + policy (7d-a/e); no MIR lowering yet |
 | **Math / linalg surface** | Static shapes, compile-time lowering | **Partial** — shape tests + **P-linalg** closed VCs (2i / 7e) |
@@ -35,7 +35,7 @@ This page is the **honest inventory** of what is **not** fully proved or not yet
 |----|--------|----------------|
 | **G-lean** | Partial | **Tier B (default when lake installed):** `lic build` runs `lake build AutoVC` (typecheck only; `--no-lean-verify` opt-out). **Strict** open goals: `--strict-lean`. Open obligations: fail unless `--allow-open-vc` (CLI only; env bypass removed). **`LiArray`** + fib/recursive call-site + parallel `_par*` VCs typecheck. **Still open:** `sqrt_open_bound` (P-float); `mat2_at2_eval` trusted vs MIR `@` (semantic closed in `Discharge.lean`) |
 | **G-vc** | Partial | Float/`abs` ensures; opaque `vec3_dot`-style returns; loop implementations vs closed-form `ensures` |
-| **G-par** | Partial | AST `policy_module` rejects missing disjoint, false `disjoint_row`, mut capture, borrow-in-par; Lean proofs open |
+| **G-par** | Partial | AST rejects missing/`requires true`/bare `disjoint_row`; false `disjoint_row` writes; `false_disjoint_requires_*.li`; Lean open |
 | **G-dec** | Partial | Decorator elaboration to MIR; `decorator_exploits` proofs |
 | **G-math** | Partial | **Closed slice (tier-1):** `matmul_naive`, `horner_pure_li` ≤1.2× C++ (`check-tier1-li-vs-cpp.sh`, loop matmul + FMA horner). **Closed slice:** full 2×2 float `@` Lean Prop (`linalg_mat2_at2_float_closed`, `mat2_at2_float_spec`). **Closed slice:** `linalg_dot4_float_closed` (prelude `dot`), `linalg_mat2_callproc_float_closed`, prelude `norm`/`axpy`/**, IKJ `ArrayMatMul2DF64` enforced only with `LI_TIER1_PERF_STRICT=1` (`check-tier1-li-vs-cpp.sh` reports gaps by default). **Closed slice:** prelude `norm`, `axpy`, same-length `**`, scalar×array, `math_linalg/reductions/`, loop-dot witness, P-linalg corpus |
 | **G-bnd** | Partial | Release path without `li_bounds_fail` for proved indices |
@@ -96,7 +96,7 @@ Status legend: **Missing** · **Stub** · **Partial** · **CI only** · **Done**
 
 What **`lic build`** runs **now** (see `compiler/lic/main.cpp`):
 
-1. `check_source_policies()` — string/heuristic policy  
+1. `check_source_policies()` — decorator/typosquat strings only (parallel races → AST below)  
 2. `parse_module()`  
 3. `typecheck_module()` + borrow  
 4. `compile_module()` → MIR → LLVM → link `li_rt`  
@@ -114,7 +114,7 @@ What **`lic build`** does **not** run yet (unless Lean 4 installed and not `--no
 ```mermaid
 flowchart LR
   subgraph today [lic build today]
-    pol[policy.cpp heuristics]
+    pol[policy.cpp + policy_module AST]
     par[parse]
     tc[typecheck + borrow]
     vc[AutoVC.lean Props]
@@ -138,7 +138,7 @@ flowchart LR
 | Mechanism | Intended end state | Today |
 |-----------|-------------------|--------|
 | Type / borrow errors | Compile-time only | **Mostly** at typecheck |
-| `parallel for` races | Compile-time reject | **Heuristic** policy + tests |
+| `parallel for` races | Compile-time reject | **AST** `policy_module` + `race_shared_memory/` (not Lean) |
 | Out-of-bounds | Compile-time proof | **May** still hit `li_bounds_fail` in debug paths |
 | Decorators | Never interpreted at run time | **N/A** — not executed; not elaborated yet |
 | `li_panic` / contract fail | No user path in proved release | **Runtime** hooks exist in `li_rt` |
@@ -153,7 +153,7 @@ flowchart LR
 
 | Suite | What it proves |
 |-------|----------------|
-| `li-tests/race_shared_memory/` | Policy + typecheck **reject** bad parallel patterns (not Lean) |
+| `li-tests/race_shared_memory/` | AST **reject** — 9 compile_fail + 1 verify_ok (weak `requires` / bare `disjoint=` / overlap) |
 | `li-tests/decorator_exploits/` | **Planned** — reserved names, macro hijack (7d-e) |
 | `li-tests/math_linalg/` | **Partial** — 1d/2d `@`, element-wise, matmul compile tests (2i/7e) |
 | `li-tests/contracts_verify/` | **Partial** — 14× `prove_lean_ok` closed corpus; `sqrt_open_bound` intentional open (`verify_open_ok`); refinements on `verify_ok` |

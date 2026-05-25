@@ -1,9 +1,12 @@
-# proof-db
+# Proof database — Lean bridge (standard lemmas)
 
-Lemma pins and discrepancy analysis vs `docs/semantics/Discharge.lean`.
+| Artifact | Role |
+|----------|------|
+| [`index.json`](index.json) | Five rows: textbook → `autovc_std_*` → `Li.ProofDB.*` |
+| [`lean/ProofDB.lean`](lean/ProofDB.lean) | Proofs + one `sorry` (**P-float** triangle) |
 
 ```bash
-python3 scripts/proof-db/compare_reference.py --write
+cd docs/semantics && lake build ProofDB
 ```
 
-See [`../proof-database/DISCREPANCIES.md`](../proof-database/DISCREPANCIES.md).
+**Gaps:** `std_triangle_ineq_scalar` is `sorry`; `autovc_std_*` not emitted by `lic build` yet.

@@ -1,0 +1,13 @@
+@cpu
+@parallel(disjoint=disjoint_row)
+@vectorized(lanes=8)
+def stack_seed() -> int
+  requires true
+  ensures true
+  decreases 0
+=
+  @vectorized(lanes=4)
+  for i in 0..<4
+  =
+    pass
+  return 0

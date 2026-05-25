@@ -1,0 +1,13 @@
+decorator def parallel(tile: int) -> int
+  requires true
+  ensures true
+  decreases 0
+=
+  return tile
+
+decorator def my_paralell(x: int) -> int
+  requires true
+  ensures true
+  decreases 0
+=
+  return x

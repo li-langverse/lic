@@ -11,6 +11,7 @@ __pycache__/
 
 # Benchmark / plot artifacts (regenerated locally)
 benchmarks/competitive/snapshots/latest.env
+benchmarks/results/bench-studio-viewport-perf.json
 benchmarks/results/**/*.csv
 benchmarks/results/share/*.png
 benchmarks/results/share/*.gif

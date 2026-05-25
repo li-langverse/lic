@@ -38,6 +38,18 @@ python3 benchmarks/harness/verify.py --write-summary --summary-format json_min
 
 See [sim-output-contract.md](../../docs/ecosystem/sim-output-contract.md). Detail: `summary` | `fields` | `debug` | `repro`. Format: `LI_SIM_SUMMARY_FORMAT` or `--summary-format`.
 
+## Studio UI/UX (PH-UX)
+
+Registry: `benchmarks/competitive/studio-ui.toml`. Harness writes:
+
+- `data/studio-ui-ux-plan-loop/latest-bench.json` (plan loop)
+- `benchmarks/results/bench-studio-viewport-perf.json` (competitive snapshot; regenerated, not committed)
+
+```bash
+./scripts/bench-studio-viewport-perf.sh
+python3 scripts/studio-ui-ux-verify-bench-registry.py
+```
+
 ## Regenerate
 
 ```bash

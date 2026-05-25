@@ -6,9 +6,11 @@
     "studio-ux-03-render-wgpu-smoke",
     "studio-ux-04-particle-display",
     "studio-ux-05-studio-compose",
-    "studio-ux-06-agent-chrome"
+    "studio-ux-06-agent-chrome",
+    "studio-ux-07-capture-harness",
+    "studio-ux-08-bench-registry"
   ],
-  "iterations": 7,
+  "iterations": 8,
   "history": [
     {
       "at": "2026-05-24T14:53:41+00:00",

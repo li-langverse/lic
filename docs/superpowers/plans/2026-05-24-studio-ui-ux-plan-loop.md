@@ -28,7 +28,7 @@ todos:
     status: done
   - id: studio-ux-08-bench-registry
     content: "benchmarks/competitive/studio-ui.toml + bench-studio-viewport-perf.json output"
-    status: pending
+    status: done
   - id: studio-ux-09-memory-budget
     content: "profile-animate-memory in loop gates; document peak MiB budget in ui-ux-by-dimension"
     status: pending

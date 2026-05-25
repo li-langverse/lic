@@ -29,6 +29,11 @@ python3 "$ROOT/scripts/studio-ui-ux-verify-tokens.py" || fail "studio token sync
 
 li_phase "competitive intel doc"
 [[ -f "$ROOT/docs/game-dev/competitive-intel/ui-ux-by-dimension.md" ]] || fail "ui-ux-by-dimension.md"
+[[ -f "$ROOT/benchmarks/competitive/studio-ui.toml" ]] || fail "studio-ui.toml bench registry"
+
+li_phase "studio-ui bench registry"
+"$ROOT/scripts/bench-studio-viewport-perf.sh" || fail "bench-studio-viewport-perf"
+python3 "$ROOT/scripts/studio-ui-ux-verify-bench-registry.py" || fail "studio-ui-ux-verify-bench-registry"
 
 if [[ "${STUDIO_UI_UX_GATES_SKIP_BUILD:-0}" != "1" ]]; then
   if [[ -x "$ROOT/build/compiler/lic/lic" ]] || [[ -x "$ROOT/scripts/build.sh" ]]; then
@@ -49,9 +54,6 @@ if [[ "${STUDIO_UI_UX_GATES_SKIP_BUILD:-0}" != "1" ]]; then
     done
   fi
 fi
-
-li_phase "viewport perf bench (json)"
-"$ROOT/scripts/bench-studio-viewport-perf.sh" || fail "bench-studio-viewport-perf"
 
 li_phase "memory profile smoke"
 "$ROOT/scripts/profile-animate-memory.sh" || fail "profile-animate-memory"

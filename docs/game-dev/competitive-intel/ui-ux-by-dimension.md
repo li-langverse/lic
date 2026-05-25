@@ -34,3 +34,5 @@
 **Competitors (design):** Blender, Unreal Editor, Unity, Houdini (viewport); **agentic:** Cursor, Linear, GitHub Copilot Workspace.
 
 **Evidence:** screenshots + short reel per iteration on GitHub (release `studio-ui-ux-progress`), not in git tree.
+
+**Bench registry:** `benchmarks/competitive/studio-ui.toml` → `./scripts/bench-studio-viewport-perf.sh` → `benchmarks/results/bench-studio-viewport-perf.json` (regenerated; plan loop also writes `data/studio-ui-ux-plan-loop/latest-bench.json`).

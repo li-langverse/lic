@@ -146,6 +146,6 @@ SIM_RESEARCH_REQUIRE_STUDY=docs/numerics/studies/2026-05-25-chem-r0-sota-survey.
 
 | id | Handoff |
 |----|---------|
-| `chem-r1-basis-size-scaling` | Measured Psi4/PySCF timings on same H₂O geometries |
+| `chem-r1-basis-size-scaling` | [completed](./2026-05-25-chem-r1-basis-size-scaling.md) — cost/accuracy table + PySCF repro script |
 | `chem-r2-dft-scf-gap` | `sim-p2-qm-dft-scf` implementer |
 | `chem-r3-package-placement` | `package_architect` |

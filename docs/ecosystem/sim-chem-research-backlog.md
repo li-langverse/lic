@@ -16,7 +16,7 @@ todos:
 
 - id: chem-r1-basis-size-scaling
   content: "STO-3G vs larger basis — cost/accuracy table for stub SCF"
-  status: pending
+  status: completed
   study_only: true
 
 - id: chem-r2-dft-scf-gap

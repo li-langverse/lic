@@ -41,6 +41,16 @@ Security research uses `security_auditor` and `security-research-gates.sh` (post
 
 **Swarm observer** uses `swarm_observer`, gap registry (`data/swarm-gap-registry/registry.yaml`), `swarm-gap-ingest.py` / `swarm-gap-apply-actions.py`, and `swarm-observer-plan-gates.sh` — orchestration only, no product code.
 
+**Ecosystem quality grade** (weekly timer, no plan loop):
+
+```bash
+cd lic
+./scripts/install-goal-plan-loop-systemd.sh ecosystem-quality-grade
+# or: ./scripts/ecosystem-quality-grade-systemd.sh
+```
+
+Writes `../benchmarks/data/latest/ecosystem-quality-report.json` via `ecosystem-quality-grade.py`. Meta-agents `ecosystem_grader`, `swarm_observer`, and `gap_explorer` read `ecosystem_quality_report` from that file.
+
 ## Requirements
 
 - `CURSOR_API_KEY` / `CURSOR_SDK_KEY` in `LI_CURSOR_ENV_FILE` (default `~/Documents/Cursor/.env`)

@@ -118,8 +118,15 @@ list_plans() {
   echo "  security-research — lic-worktrees/security-research (security_auditor)"
   echo "  swarm-observer    — lic (swarm_observer gap orchestration)"
   echo ""
+  echo "Quality grade timer (benchmarks, weekly):"
+  echo "  $0 ecosystem-quality-grade"
+  echo ""
   echo "Install all: $0 --all"
 }
+
+if [[ "${1:-}" == "ecosystem-quality-grade" ]]; then
+  exec "$ROOT/scripts/ecosystem-quality-grade-systemd.sh"
+fi
 
 if [[ "${1:-}" == "--list" ]]; then
   list_plans

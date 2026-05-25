@@ -75,6 +75,12 @@ if [[ "$FILTER" == "hpc_competitive" ]]; then
   exit $?
 fi
 
+if [[ "$FILTER" == "execution_exploits" ]]; then
+  chmod +x "$ROOT/execution_exploits/run.sh"
+  "$ROOT/execution_exploits/run.sh"
+  exit $?
+fi
+
 if [[ ! -x "$LIC" ]]; then
   echo "li-tests: skip (lic not executable at $LIC)"
   exit 0
@@ -315,6 +321,18 @@ run_parallel() {
     i=$((i + 1))
   done
 }
+
+if [[ "$FILTER" == "all" ]]; then
+  chmod +x "$ROOT/execution_exploits/run.sh"
+  set +e
+  "$ROOT/execution_exploits/run.sh"
+  rc_exec=$?
+  set -e
+  case "$rc_exec" in
+    0) pass=$((pass + 1)) ;;
+    *) fail=$((fail + 1)) ;;
+  esac
+fi
 
 ROWS="$(mktemp "${TMPDIR:-/tmp}/li-manifest-rows.XXXX")"
 collect_manifest_rows "$ROWS"

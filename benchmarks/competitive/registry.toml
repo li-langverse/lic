@@ -8,7 +8,7 @@ version = 1
 registry_review_days_warn = 90
 updated = "2026-05-16"
 
-# track: watch | bench_tier0 | bench_tier1 | bench_tier2
+# track: watch | bench_tier0 | bench_tier1 | bench_tier2 | execution_resource_sweep
 # csv_lang: column in benchmarks/results/latest.csv (must match bench.py LANGS when bench_*)
 
 [[ecosystem]]
@@ -100,6 +100,16 @@ csv_lang = ""
 kernel_honesty = "n/a"
 last_reviewed = "2026-05-16"
 notes = "Manual comptime/SIMD patterns; no harness column yet."
+
+[[ecosystem]]
+id = "execution_resource_sweep"
+track = "execution_resource_sweep"
+repo_url = "https://github.com/li-langverse/lic"
+compare = ["reduce_sum_parallel", "simd_dot"]
+csv_lang = ""
+kernel_honesty = "reference_native"
+last_reviewed = "2026-05-25"
+notes = "benchmarks/results/execution_resource_sweep.csv — cores×threads_per_core; li_native vs cpp_omp/cpp_pthread refs; simd_dot parallelism=simd_intrathread."
 
 [[ecosystem]]
 id = "openmp_spec"

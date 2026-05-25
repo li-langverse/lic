@@ -86,7 +86,7 @@ int check_file(const char* path, const CheckCommandOptions& opts, DiagOutput out
   const bool use_cache = opts.cache.enabled && !opts.cache.cache_dir.empty();
 
   if (use_cache) {
-    const CheckCacheHit hit = try_load_check_cache(opts.cache, key);
+    const CheckCacheHit hit = try_load_check_cache(opts.cache, key, content_hash);
     if (hit.hit) {
       if (!hit.output.empty()) {
         std::cout << hit.output;
@@ -121,7 +121,7 @@ int check_file(const char* path, const CheckCommandOptions& opts, DiagOutput out
   }
 
   if (use_cache) {
-    store_check_cache(opts.cache, key, exit_code, cache_payload);
+    store_check_cache(opts.cache, key, exit_code, cache_payload, content_hash);
   }
   return exit_code;
 }

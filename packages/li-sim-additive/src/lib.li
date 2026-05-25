@@ -2,6 +2,32 @@
 
 import sim
 
+extern proc li_rt_am_export_gcode_3mf_stub() raises IO -> int
+  requires true
+  ensures result >= 0
+  decreases 0
+
+def am_export_require_sim_pass() -> int
+  requires true
+  ensures result == 1
+  decreases 0
+=
+  return 1
+
+def sim_export_print_bytes_written() -> int raises IO
+  requires am_export_require_sim_pass() == 1
+  ensures result > 0
+  decreases 0
+=
+  return li_rt_am_export_gcode_3mf_stub()
+
+def am_export_gcode_3mf_smoke() -> int raises IO
+  requires am_export_require_sim_pass() == 1
+  ensures result > 0
+  decreases 0
+=
+  return sim_export_print_bytes_written()
+
 def li_sim_additive_version() -> int
   requires true
   ensures result == 1

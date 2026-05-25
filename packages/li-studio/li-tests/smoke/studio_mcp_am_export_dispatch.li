@@ -1,0 +1,11 @@
+import studio
+
+def main() -> int raises IO
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  var d: StudioAgentToolRequest = studio_mcp_tool_dispatch(studio_mcp_am_export_print())
+  if d.status != studio_mcp_tool_status_ok():
+    return 1
+  return 0

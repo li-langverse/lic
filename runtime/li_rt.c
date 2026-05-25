@@ -367,6 +367,28 @@ int32_t li_rt_studio_mcp_tool_from_name(const char* name) {
   return li_rt_studio_mcp_tool_match_name(name);
 }
 
+/* PH-AM: sim.export.print stub */
+int32_t li_rt_am_export_gcode_3mf_stub(void) {
+  const char* tmp = getenv("TMPDIR");
+  if (tmp == NULL || tmp[0] == '\0') { tmp = "/tmp"; }
+#if !defined(_WIN32)
+  const int pid = (int)getpid();
+#else
+  const int pid = 0;
+#endif
+  char gcode_path[512], mf_path[512];
+  snprintf(gcode_path, sizeof(gcode_path), "%s/li-am-export-%d.gcode", tmp, pid);
+  snprintf(mf_path, sizeof(mf_path), "%s/li-am-export-%d.3mf", tmp, pid);
+  static const char k_gcode[] = "; Li sim.export.print stub G-code\nG28 ; home\nM104 S200 ; preheat\n";
+  static const char k_3mf[] = "<?xml version=\"1.0\"?><model xmlns=\"http://schemas.microsoft.com/3dmanufacturing/core/2015/02\"></model>\n";
+  int32_t total = 0;
+  FILE* fg = fopen(gcode_path, "wb");
+  if (fg) { total += (int32_t)fwrite(k_gcode, 1, sizeof(k_gcode)-1, fg); fclose(fg); }
+  FILE* fm = fopen(mf_path, "wb");
+  if (fm) { total += (int32_t)fwrite(k_3mf, 1, sizeof(k_3mf)-1, fm); fclose(fm); }
+  return total;
+}
+
 const char* li_rt_studio_mcp_tool_name(int32_t tool_id) {
   switch (tool_id) {
     case 1:

@@ -6,6 +6,7 @@
   <title>Li World Studio — empty viewport (marketing mock)</title>
   <link rel="stylesheet" href="studio-tokens.css" />
   <link rel="stylesheet" href="studio-mock-chrome.css" />
+  <link rel="stylesheet" href="studio-agent-mock.css" />
   <style>
     * { box-sizing: border-box; }
     body {
@@ -129,6 +130,16 @@
         <button type="button">Open project…</button>
       </div>
     </main>
+    <div class="agent-block" data-mode="idle" aria-label="Agent copilot">
+      <div class="agent-strip">
+        <div class="agent-invoke">
+          <input class="agent-task-input" type="text" placeholder="Describe a task for the agent…" aria-label="Agent task" />
+          <button type="button" class="agent-send">Send</button>
+          <span class="agent-status is-idle">Idle — describe a task to start</span>
+          <a class="agent-mcp-hint" href="../../docs/game-dev/studio-mcp-tools.md">MCP · Cursor</a>
+        </div>
+      </div>
+    </div>
     <aside class="agent-strip" aria-label="Agent copilot">
       <span class="agent-status agent-status-idle">Idle — describe a task to start</span>
     </aside>
@@ -141,5 +152,6 @@
       <div class="empty-hint">Nothing selected. Pick an object in the viewport or outliner.</div>
     </aside>
   </div>
+  <script src="studio-agent-mock.js"></script>
 </body>
 </html>

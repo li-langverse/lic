@@ -160,8 +160,8 @@
   <div class="shell">
     <nav class="dock" aria-label="Tools">
       <div class="dock-item"><button type="button" class="active" title="Select" aria-label="Select">◇</button><span class="dock-label">Select</span></div>
-      <div class="dock-item"><button type="button" title="Move" aria-label="Move">✥</button><span class="dock-label">Move</span></div>
-      <div class="dock-item"><button type="button" title="Measure" aria-label="Measure">📐</button><span class="dock-label">Measure</span></div>
+      <div class="dock-item"><button type="button" title="Move" aria-label="Move">✥</button>
+      <button type="button" title="Measure" aria-label="Measure">📐</button>
     </nav>
     <aside class="outliner" aria-label="Scene hierarchy">
       <h2>Outliner</h2>
@@ -186,18 +186,6 @@
         <div class="mock-metric">wgpu smoke stub_pass · li-render FPS hook · surface_ok=false</div>
       </div>
     </main>
-    <div class="agent-block" data-mode="running" aria-label="Agent copilot">
-      <div class="agent-strip">
-        <div class="agent-invoke">
-          <input class="agent-task-input" type="text" placeholder="Describe a task for the agent…" aria-label="Agent task" value="Optimize binding pose" />
-          <button type="button" class="agent-send">Send</button>
-          <span class="agent-status is-running">Running · Optimize binding pose</span>
-          <span class="agent-tool-trace" role="status">lic_build · task <code>tsk-7f3a</code></span>
-          <a class="agent-mcp-hint" href="../../docs/game-dev/studio-mcp-tools.md">MCP · Cursor</a>
-          <span class="agent-last-action">Last: placed water molecule at site A</span>
-          <button type="button" class="agent-cancel">Cancel</button>
-        </div>
-      </div>
     <aside class="agent-strip" aria-label="Agent copilot">
       <span class="agent-status">Running · Optimize binding pose</span>
       <span>Last: placed water molecule at site A</span>
@@ -221,7 +209,5 @@
       <div class="empty-hint">Select a bond or atom to edit constraints. No GPU error.</div>
     </aside>
   </div>
-  <script src="studio-agent-mock.js"></script>
-  <script src="studio-reel-motion.js"></script>
 </body>
-</html>
+  <script src="studio-reel-motion.js"></script></html>

@@ -25,4 +25,12 @@ def main() -> int
     return 22
   if studio_md_particle_tier_select_ok(scene_md_tier_10k()) != 1:
     return 23
+  var auto_cfg: StudioProjectConfig = studio_project_config_new(studio_profile_sim_automotive())
+  var auto_sess: SimSessionStub = sim_session_stub_default()
+  if studio_sim_step_hook(auto_cfg, auto_sess, 0.02) != sim_status_ok():
+    return 30
+  if auto_sess.tick != 1:
+    return 31
+  if auto_sess.sim_contract_id != sim_contract_sim_automotive():
+    return 32
   return 0

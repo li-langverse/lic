@@ -9,6 +9,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- **Automotive drive smoke** — placeholders + `automotive_drive_tick_stub`, `automotive_drive_smoke.li`.
+
 - PH-SIM vertical gap **#3** — profile contract + studio id constants, `run_automotive_smoke()`, package smoke (`li-tests/smoke/builds.li`).
 
 ## [0.1.0] - 2026-05-26

@@ -1,0 +1,22 @@
+import sim.automotive
+
+def main() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  var m: AutomotiveMapPlaceholder = automotive_map_placeholder_default()
+  if m.loaded != 1:
+    return 1
+  if m.tile_count != 4:
+    return 2
+  var s: AutomotiveSensorPlaceholder = automotive_sensor_placeholder_default()
+  if s.camera_count != 2:
+    return 3
+  if s.lidar_count != 1:
+    return 4
+  if automotive_drive_tick_stub() != 1:
+    return 5
+  if run_automotive_smoke() != 0:
+    return 6
+  return 0

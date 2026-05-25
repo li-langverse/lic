@@ -3,6 +3,7 @@ import gui
 import ui
 import sim
 import sim.scientific
+import sim.automotive
 import scene
 import physics.runtime
 import lig
@@ -1279,6 +1280,9 @@ def studio_sim_step_hook(config: StudioProjectConfig, sim_out: var SimSessionStu
     if detail0 > 3:
       detail0 = 3
     if sim_scientific_tick_stub(detail0) != 1:
+      return sim_status_invalid_dt()
+  if prof == studio_profile_sim_automotive():
+    if automotive_drive_tick_stub() != 1:
       return sim_status_invalid_dt()
   if prof == studio_profile_game():
     if dt <= 0.0:

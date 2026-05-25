@@ -1,5 +1,4 @@
 
-
 import sim
 
 def li_sim_automotive_version() -> int
@@ -23,9 +22,70 @@ def li_sim_automotive_studio_profile_id() -> int
 =
   return 3
 
+type AutomotiveMapPlaceholder = object
+  public loaded: int
+  public tile_count: int
+  public lane_checksum: float
+
+type AutomotiveSensorPlaceholder = object
+  public rig_id: int
+  public camera_count: int
+  public lidar_count: int
+  public rig_checksum: float
+
+def automotive_map_placeholder_default() -> AutomotiveMapPlaceholder
+  requires true
+  ensures result.loaded == 1
+  ensures result.tile_count == 4
+  ensures result.lane_checksum == 1.0
+  decreases 0
+=
+  var m: AutomotiveMapPlaceholder
+  m.loaded = 1
+  m.tile_count = 4
+  m.lane_checksum = 1.0
+  return m
+
+def automotive_sensor_placeholder_default() -> AutomotiveSensorPlaceholder
+  requires true
+  ensures result.rig_id == 1
+  ensures result.camera_count == 2
+  ensures result.lidar_count == 1
+  ensures result.rig_checksum == 2.0
+  decreases 0
+=
+  var s: AutomotiveSensorPlaceholder
+  s.rig_id = 1
+  s.camera_count = 2
+  s.lidar_count = 1
+  s.rig_checksum = 2.0
+  return s
+
+def automotive_drive_tick_stub() -> int
+  requires true
+  ensures result >= 0
+  ensures result <= 1
+  decreases 0
+=
+  var m: AutomotiveMapPlaceholder = automotive_map_placeholder_default()
+  var s: AutomotiveSensorPlaceholder = automotive_sensor_placeholder_default()
+  if m.loaded != 1:
+    return 0
+  if m.tile_count <= 0:
+    return 0
+  if s.rig_id != 1:
+    return 0
+  if s.camera_count <= 0:
+    return 0
+  if s.lidar_count <= 0:
+    return 0
+  return 1
+
 def run_automotive_smoke() -> int
   requires true
   ensures result == 0
   decreases 0
 =
+  if automotive_drive_tick_stub() != 1:
+    return 1
   return 0

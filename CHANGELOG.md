@@ -8,6 +8,8 @@ All notable changes to Li are documented here. The format follows
 
 ### Added
 
+- **li-sim-automotive drive smoke** — `automotive_drive_tick_stub`, map/sensor placeholders, `studio_sim_step_hook` for `sim_automotive` — [2026-05-25-li-sim-automotive-drive-stub.md](docs/release-notes/2026-05-25-li-sim-automotive-drive-stub.md).
+
 - **Studio UX Wave 2 P2 (HTML mocks 16–18):** command palette, reel motion, end CTA scenes — [2026-05-25-studio-ux-wave2-16-18.md](docs/release-notes/2026-05-25-studio-ux-wave2-16-18.md).
 
 

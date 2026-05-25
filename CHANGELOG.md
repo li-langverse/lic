@@ -32,6 +32,9 @@ All notable changes to Li are documented here. The format follows
 
 ### Added
 
+- **2i / G-math:** length-1 broadcast plan tracker — , ;  — [2026-05-25-2i-broadcast-plan-tracker.md](docs/release-notes/2026-05-25-2i-broadcast-plan-tracker.md).
+
+- **G-test-verify Done:** `prove_lean_ok` in `li-tests/run_all.sh`; 14 closed `contracts_verify` specimens — `docs/release-notes/2026-05-25-g-test-verify-prove-lean-ok.md`.
 - **WP0/WP2 (8p):** `ResourceOptions` CLI and `run_all.sh` `--build-dir` workers — `docs/release-notes/2026-05-25-lic-resource-options-wp0-wp2.md`.
 
 - **G-par (7d partial):** AST rejects weak `parallel for` `requires` and bare `@parallel(disjoint=disjoint_row)`; `race_shared_memory/false_disjoint_requires_*.li` — `docs/release-notes/2026-05-25-g-par-disjoint-ast.md`.

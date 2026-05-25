@@ -135,6 +135,18 @@
       color: var(--color-text-primary); cursor: pointer;
     }
     .agent-cancel:focus-visible { outline: var(--focus-ring); }
+    .agent-error-strip {
+      display: none; width: 100%; margin-top: 4px; padding: 6px 10px;
+      border-radius: 4px; font-size: 11px;
+      background: rgba(218, 54, 51, 0.15); color: var(--color-agent-error);
+      border: 1px solid var(--color-agent-error);
+    }
+    .agent-strip.is-failed .agent-error-strip { display: block; }
+    .agent-strip.is-failed .agent-status {
+      background: rgba(218, 54, 51, 0.2); color: var(--color-agent-error);
+      border-color: var(--color-agent-error);
+    }
+    .agent-strip.is-failed .agent-status::before { background: var(--color-agent-error); animation: none; }
     .empty-hint {
       margin-top: 16px; padding: 12px; border-radius: 6px;
       border: 1px dashed var(--color-border); color: var(--color-text-muted);

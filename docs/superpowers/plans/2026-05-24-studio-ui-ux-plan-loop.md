@@ -22,7 +22,7 @@ todos:
     status: done
   - id: studio-ux-06-agent-chrome
     content: "Agentic chrome — task status, cancel, error strip (PH UX-06)"
-    status: pending
+    status: done
   - id: studio-ux-07-capture-harness
     content: "Wire studio-ui-ux-capture-progress.sh + demo HTML mocks; verify gh upload path"
     status: pending

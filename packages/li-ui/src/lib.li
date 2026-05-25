@@ -35,10 +35,10 @@ def li_std_ui_version() -> int
 
 def li_std_ui_studio_composables_version() -> int
   requires true
-  ensures result == 1
+  ensures result == 2
   decreases 0
 =
-  return 1
+  return 2
 def color_rgb(r: float, g: float, b: float, a: float) -> Color
   requires r >= 0.0
   requires g >= 0.0
@@ -173,6 +173,84 @@ def studio_color_agent_error() -> Color
   decreases 0
 =
   return color_rgb(0.855, 0.212, 0.200, 1.0)
+
+def studio_color_agent_idle() -> Color
+  requires true
+  ensures result.r >= 0.0
+  decreases 0
+=
+  return color_rgb(0.545, 0.580, 0.620, 1.0)
+
+def studio_color_agent_blocked() -> Color
+  requires true
+  ensures result.r >= 0.0
+  decreases 0
+=
+  return studio_color_accent_amber()
+
+def studio_color_agent_done() -> Color
+  requires true
+  ensures result.g >= 0.0
+  decreases 0
+=
+  return studio_color_accent_mint()
+
+# Agent task state (UX-06): idle / running / blocked / failed / done
+def studio_agent_task_idle() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0
+
+def studio_agent_task_running() -> int
+  requires true
+  ensures result == 1
+  decreases 0
+=
+  return 1
+
+def studio_agent_task_blocked() -> int
+  requires true
+  ensures result == 2
+  decreases 0
+=
+  return 2
+
+def studio_agent_task_failed() -> int
+  requires true
+  ensures result == 3
+  decreases 0
+=
+  return 3
+
+def studio_agent_task_done() -> int
+  requires true
+  ensures result == 4
+  decreases 0
+=
+  return 4
+
+def studio_agent_cancel_btn_width_px() -> float
+  requires true
+  ensures result == 72.0
+  decreases 0
+=
+  return 72.0
+
+def studio_agent_status_pad_px() -> float
+  requires true
+  ensures result == 12.0
+  decreases 0
+=
+  return 12.0
+
+def studio_agent_error_strip_height_px() -> float
+  requires true
+  ensures result == 22.0
+  decreases 0
+=
+  return 22.0
 
 def studio_dock_width_px() -> float
   requires true

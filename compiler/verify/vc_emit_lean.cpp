@@ -342,14 +342,17 @@ void emit_contract_def(std::ostream& out, const Module& module, const ProcDecl& 
   std::string prop = "True";
   const CallerProofFacts caller_facts = collect_caller_proof_facts(proc);
   bool mat2_discharge_theorem = false;
+  bool sqrt_discharge_theorem = false;
   if (c.kind == ContractKind::Ensures && c.expr) {
     if (ctx.proc != nullptr && witness_mat2_int_at2_spec(*ctx.proc, *c.expr)) {
       mat2_discharge_theorem = true;
+    } else if (ctx.proc != nullptr && witness_sqrt_open_bound_spec(*ctx.proc, *c.expr)) {
+      sqrt_discharge_theorem = true;
     }
   }
   const bool witnessed =
       contract_witnessed_trivial(proc, c, &module, &caller_facts);
-  if (witnessed && !mat2_discharge_theorem) {
+  if (witnessed && !mat2_discharge_theorem && !sqrt_discharge_theorem) {
     prop = "True";
   } else if (mat2_discharge_theorem && c.kind == ContractKind::Ensures) {
     prop = "Li.Discharge.mat2_at2_float_spec";
@@ -371,10 +374,10 @@ void emit_contract_def(std::ostream& out, const Module& module, const ProcDecl& 
     }
   }
 
-  const bool mat2_ensures =
-      mat2_discharge_theorem && c.kind == ContractKind::Ensures;
+  const bool semantic_ensures =
+      (mat2_discharge_theorem || sqrt_discharge_theorem) && c.kind == ContractKind::Ensures;
   out << "def " << name;
-  emit_formals(!mat2_ensures);
+  emit_formals(!semantic_ensures);
   out << " : Prop := " << prop << '\n';
 
   if (prop == "True" && witnessed && c.kind == ContractKind::Ensures) {
@@ -407,6 +410,17 @@ void emit_contract_def(std::ostream& out, const Module& module, const ProcDecl& 
       out << ' ' << lean_ident(p.name);
     }
     out << '\n';
+  } else if (sqrt_discharge_theorem && c.kind == ContractKind::Ensures) {
+    const std::string req_name = "vc_" + sec + "_requires_0";
+    out << "theorem " << name << "_proved";
+    emit_formals(false);
+    out << " : " << name;
+    emit_args(false);
+    out << " (hreq : " << req_name;
+    for (const auto& p : proc.params) { out << ' ' << lean_ident(p.name); }
+    out << ") := Li.Discharge.sqrt_open_bound_spec_proved";
+    for (const auto& p : proc.params) { out << ' ' << lean_ident(p.name); }
+    out << " hreq\n";
   } else if (prop == "True") {
     out << "theorem " << name << "_proved";
     emit_formals(true);

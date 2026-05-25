@@ -1062,6 +1062,12 @@ file = "math_linalg/reductions/sum_non_array.li"
 outcome = "compile_fail"
 expected_substr = "sum expects a fixed array argument"
 
+[[tests]]
+suite = "math_linalg"
+file = "math_linalg/reductions/norm_non_array.li"
+outcome = "compile_fail"
+expected_substr = "norm expects array"
+
 # --- physics (packages + profiles) ---
 
 [[tests]]

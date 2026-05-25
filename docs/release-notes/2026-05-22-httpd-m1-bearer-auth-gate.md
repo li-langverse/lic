@@ -6,7 +6,7 @@ Completes plan todo **m1-bearer-auth**: Darwin/non-Linux link stub for `epoll_ct
 
 ## Agent continuation
 
-1. **Run** `./scripts/httpd-plan-gates.sh` (includes bearer test by default).
+1. **Run** `./scripts/httpd-plan-gates.sh` (includes bearer test when `HTTPD_RUN_BEARER_TEST=1`, default on full build — see **m0-ship-gate-full**).
 2. **Run** `./scripts/test-auth-bearer.sh` after `./scripts/build-li-httpd.sh`.
 3. **CI** builds `li-httpd` when present; bearer test is optional until Linux CI builds the binary every run.
 

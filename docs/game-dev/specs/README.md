@@ -16,5 +16,6 @@
 | [publication-export-rfc.md](publication-export-rfc.md) | PH-PUB |
 | [ml-async-parallel-rfc.md](ml-async-parallel-rfc.md) | PH-ML |
 | [portable-targets-rfc.md](portable-targets-rfc.md) | PH-PORT |
-| [li-gpu-lkir-rfc.md](li-gpu-lkir-rfc.md) | PH-HW |
+| [lig-rfc.md](lig-rfc.md) | PH-HW |
+| [li-gpu-lkir-rfc.md](li-gpu-lkir-rfc.md) | PH-HW (redirect → lig-rfc) |
 | [critical-package-compliance-rfc.md](critical-package-compliance-rfc.md) | PH-COMPLY |

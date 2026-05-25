@@ -57,10 +57,20 @@ with open(manifest_path, encoding="utf-8") as f:
             continue
 flush()
 
+suite_counts: dict[str, int] = {}
+for row in rows:
+    name = row["suite"] or "(default)"
+    suite_counts[name] = suite_counts.get(name, 0) + 1
+suites = [
+    {"name": name, "count": count}
+    for name, count in sorted(suite_counts.items(), key=lambda x: x[0])
+]
+
 doc = {
     "schema": "li-tests-agent-manifest-v1",
     "source": "li-tests/manifest.toml",
     "count": len(rows),
+    "suites": suites,
     "tests": rows,
 }
 

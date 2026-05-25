@@ -398,12 +398,23 @@ void borrow_check_module(const Module& module, DiagnosticBag& diags) {
   }
 }
 
+bool extern_call_skips_io_effect(const std::string& callee) {
+  if (callee == "li_rt_volatile_sink_f64") {
+    return true;
+  }
+  if (callee.rfind("li_reduce_sum_", 0) == 0) {
+    return true;
+  }
+  return false;
+}
+
 bool proc_mentions_extern_call(const ProcDecl& p,
                                const std::map<std::string, const ProcDecl*>& proc_map) {
   for (const auto& s : p.body) {
     if (s.expr && s.expr->kind == Expr::Kind::Call && s.expr->ident != "echo") {
       const auto it = proc_map.find(s.expr->ident);
-      if (it != proc_map.end() && it->second->is_extern) {
+      if (it != proc_map.end() && it->second->is_extern &&
+          !extern_call_skips_io_effect(s.expr->ident)) {
         return true;
       }
     }

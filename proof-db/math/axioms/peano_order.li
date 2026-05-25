@@ -1,0 +1,11 @@
+extern proc proof_db_peano_zero_not_succ() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+
+def main() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0

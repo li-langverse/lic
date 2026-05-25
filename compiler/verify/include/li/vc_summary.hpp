@@ -7,6 +7,7 @@ namespace li {
 struct VcSummary {
   std::size_t requires_count = 0;
   std::size_t ensures_count = 0;
+  std::size_t prob_ensures_count = 0;
   std::size_t decreases_count = 0;
   std::size_t invariant_count = 0;
   std::size_t proc_count = 0;

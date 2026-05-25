@@ -1,5 +1,6 @@
 # li-tests manifest — single index of all tests
 # outcome: parse_ok | parse_fail | compile_ok | compile_fail | verify_ok | verify_fail
+#           verify_open_ok | compile_open_ok | prove_lean_ok (strict build + AutoVC + lake; G-test-verify)
 
 [config]
 lic = "../build/compiler/lic/lic"
@@ -214,22 +215,26 @@ outcome = "verify_ok"
 [[tests]]
 suite = "contracts_verify"
 file = "contracts_verify/discharge_trivial.li"
-outcome = "verify_ok"
+outcome = "prove_lean_ok"
+note = "P-closed: discharge_trivial_lean.sh"
 
 [[tests]]
 suite = "contracts_verify"
 file = "contracts_verify/discharge_const.li"
-outcome = "verify_ok"
+outcome = "prove_lean_ok"
+note = "P-closed: discharge_const_lean.sh"
 
 [[tests]]
 suite = "contracts_verify"
 file = "contracts_verify/caller_requires_ok.li"
-outcome = "verify_ok"
+outcome = "prove_lean_ok"
+note = "P-closed: discharge_caller_requires_lean.sh"
 
 [[tests]]
 suite = "contracts_verify"
 file = "contracts_verify/caller_requires_local_ok.li"
-outcome = "verify_ok"
+outcome = "prove_lean_ok"
+note = "P-closed: discharge_caller_requires_local_lean.sh"
 
 [[tests]]
 suite = "contracts_verify"
@@ -290,61 +295,62 @@ outcome = "verify_ok"
 [[tests]]
 suite = "contracts_verify"
 file = "contracts_verify/extern_call_requires_ok.li"
-outcome = "verify_ok"
+outcome = "prove_lean_ok"
+note = "P-closed: discharge_import_requires_lean.sh"
 
 [[tests]]
 suite = "contracts_verify"
 file = "contracts_verify/linalg_dot4_int_closed.li"
-outcome = "verify_ok"
-note = "P-linalg: fixed int dot — static witness, zero open AutoVC goals"
+outcome = "prove_lean_ok"
+note = "P-linalg closed: discharge_linalg_int_lean.sh"
 
 [[tests]]
 suite = "contracts_verify"
 file = "contracts_verify/linalg_sum4_int_closed.li"
-outcome = "verify_ok"
-note = "P-linalg: fixed int sum — static witness"
+outcome = "prove_lean_ok"
+note = "P-linalg closed"
 
 [[tests]]
 suite = "contracts_verify"
 file = "contracts_verify/linalg_mat2_entry00_int_closed.li"
-outcome = "verify_ok"
-note = "P-linalg: 2×2 matmul (0,0) entry via scalars — static witness"
+outcome = "prove_lean_ok"
+note = "P-linalg closed"
 
 [[tests]]
 suite = "contracts_verify"
 file = "contracts_verify/linalg_dot4_int_loop_open.li"
-outcome = "verify_ok"
-note = "P-linalg: loop dot — fixed-bound loop witness (4 iterations)"
+outcome = "prove_lean_ok"
+note = "P-loop closed: dot4_int_loop_eval_spec"
 
 [[tests]]
 suite = "contracts_verify"
 file = "contracts_verify/linalg_norm4_int_closed.li"
-outcome = "verify_ok"
-note = "P-linalg: int norm (sum of squares) via prelude norm"
+outcome = "prove_lean_ok"
+note = "P-linalg closed"
 
 [[tests]]
 suite = "contracts_verify"
 file = "contracts_verify/linalg_axpy4_int_closed.li"
-outcome = "verify_ok"
-note = "P-linalg: axpy scalar closed form (alpha*x+y)"
+outcome = "prove_lean_ok"
+note = "P-linalg closed"
 
 [[tests]]
 suite = "contracts_verify"
 file = "contracts_verify/linalg_dot4_float_closed.li"
-outcome = "verify_ok"
-note = "P-linalg: float dot via prelude dot() — static witness"
+outcome = "prove_lean_ok"
+note = "P-linalg closed"
 
 [[tests]]
 suite = "contracts_verify"
 file = "contracts_verify/linalg_mat2_at2_float_closed.li"
-outcome = "verify_ok"
-note = "P-linalg: full 2×2 float @ — Li.Discharge.mat2_at2_float_spec"
+outcome = "prove_lean_ok"
+note = "P-linalg closed: mat2_at2_float_spec_proved"
 
 [[tests]]
 suite = "contracts_verify"
 file = "contracts_verify/linalg_mat2_callproc_float_closed.li"
-outcome = "verify_ok"
-note = "P-linalg: 2×2 float @ via CallProc nested arrays"
+outcome = "prove_lean_ok"
+note = "P-linalg closed"
 
 # --- borrow ---
 

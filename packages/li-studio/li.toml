@@ -9,6 +9,7 @@ description = "Li World Studio — compose dock, timeline, and inspector from li
 li-gui = { path = "../li-gui" }
 li-ui = { path = "../li-ui" }
 li-sim = { path = "../li-sim" }
+lig = { path = "../lig" }
 
 [[bin]]
 name = "li-studio-demo"

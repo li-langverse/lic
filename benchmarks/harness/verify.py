@@ -1,5 +1,16 @@
 #!/usr/bin/env python3
+<<<<<<< HEAD
+"""Correctness gate for benchmark sources (Tier 0 Li reference smokes).
+
+Tier 0: every `li-tests/benchmarks/tier0_correctness/*.li` must `lic build` with
+`--allow-open-vc --no-lean-verify` (matches manifest `verify_open_ok` / `verify_ok`).
+Invoked from `bench.py --tier 0` after `run_all.sh`; writes `benchmarks/results/verify.csv`.
+
+Tier 2 native/Li checksum gates live in `bench.py` (`verify_checksum*`), not here.
+"""
+=======
 """Correctness gate for benchmark sources (Tier 0 compile + Tier 2 physics smokes)."""
+>>>>>>> origin/main
 
 from __future__ import annotations
 

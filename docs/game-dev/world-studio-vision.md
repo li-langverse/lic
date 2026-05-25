@@ -153,7 +153,7 @@ def game_step(world: GameWorld, input: InputState) -> unit
 | `chem` / `chem.dft` | `li-chem` | PH-QM |
 | `voxel` | `li-voxel` | PH-VOXEL |
 | `ml` | `li-ml` | PH-ML |
-| `gpu` | `li-gpu` | PH-HW |
+| `lig` | `lig` | PH-HW |
 
 ---
 
@@ -290,16 +290,19 @@ RFC: [studio-ux-design-system-rfc.md](specs/studio-ux-design-system-rfc.md)
 
 ---
 
-## 19. PH-HW — GPU, AMD, LKIR
+## 19. PH-HW — `lig`, multi-vendor GPU, LKIR
 
 | Backend | Use |
 |---------|-----|
-| wgpu | Viewport (all vendors) |
-| CUDA | NVIDIA |
+| `lig.present` / wgpu | Viewport (all vendors) |
+| CUDA | NVIDIA (`lig.device`) |
 | **ROCm/HIP** | AMD (peer, not afterthought) |
-| LKIR | Li kernel IR → CUDA/HIP/Triton |
+| Metal | Apple Silicon / macOS |
+| LKIR | Li Kernel IR under `packages/lig/lkir/` → CUDA/HIP/Metal/SPIR-V |
 
-**Portability:** `lic build --target <triple>` — RFC: [portable-targets-rfc.md](specs/portable-targets-rfc.md), [li-gpu-lkir-rfc.md](specs/li-gpu-lkir-rfc.md)
+**Import:** `import lig` (replaces `import gpu` / package `li-gpu`).
+
+**Portability:** `lic build --target <triple>` — RFC: [portable-targets-rfc.md](specs/portable-targets-rfc.md), [lig-rfc.md](specs/lig-rfc.md)
 
 ---
 
@@ -308,7 +311,7 @@ RFC: [studio-ux-design-system-rfc.md](specs/studio-ux-design-system-rfc.md)
 | Tier | Packages |
 |------|------------|
 | **CRITICAL** | `lic`, `li-chem`, `li-sim-drug-design`, `li-sim-additive`, `studio.publish` |
-| **IMPORTANT** | `li-ml`, `li-sim`, `li-gpu` |
+| **IMPORTANT** | `li-ml`, `li-sim`, `lig` |
 
 CRITICAL: traceability `PKG-*`, SBOM, export audit log. RFC: [critical-package-compliance-rfc.md](specs/critical-package-compliance-rfc.md)
 
@@ -369,7 +372,7 @@ CRITICAL: traceability `PKG-*`, SBOM, export audit log. RFC: [critical-package-c
 | [publication-export-rfc.md](specs/publication-export-rfc.md) | PH-PUB |
 | [ml-async-parallel-rfc.md](specs/ml-async-parallel-rfc.md) | PH-ML |
 | [portable-targets-rfc.md](specs/portable-targets-rfc.md) | PH-PORT |
-| [li-gpu-lkir-rfc.md](specs/li-gpu-lkir-rfc.md) | PH-HW |
+| [lig-rfc.md](specs/lig-rfc.md) | PH-HW |
 | [critical-package-compliance-rfc.md](specs/critical-package-compliance-rfc.md) | PH-COMPLY |
 
 **Maintainers:** Quarterly SOTA review; keep in sync with Cursor plan artifact `world_studio_amd_port_be6fdf4f.plan.md`.

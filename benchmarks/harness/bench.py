@@ -1,5 +1,15 @@
 #!/usr/bin/env python3
-"""Run benchmark tiers and write results/latest.csv."""
+"""Run benchmark tiers and write results/latest.csv.
+
+Correctness vs timing (do not mix publish rows with unverified kernels):
+
+- **Tier 0:** `run_all.sh` → `verify.py` (`lic build` on tier-0 physics smokes) → `stability.py`.
+- **Tier 1–2:** `run_tier_benches(..., verify=True)` runs checksum/native gates *before*
+  `run_benchmark` timing sweeps; `--skip-verify` skips only that pre-pass (CI bench timings).
+- **Tier 2 CI:** `--tier 2 --ci` → `run_tier2_ci_smoke()` (verify only, no CSV timing).
+
+Contract tests: `benchmarks/harness/test_harness_contract.py`.
+"""
 
 from __future__ import annotations
 

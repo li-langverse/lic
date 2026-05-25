@@ -5,7 +5,7 @@ def main() -> int
   ensures result == 0
   decreases 0
 =
-  if li_std_render_version() < 2:
+  if li_std_render_version() < 3:
     return 1
   if render_viewport_fps_target() != 60.0:
     return 2
@@ -19,6 +19,9 @@ def main() -> int
   var counter: RenderFpsCounter = render_fps_counter_shell_simulate()
   if render_fps_counter_meets_target(counter) != 1:
     return 5
+  var host_counter: RenderFpsCounter = render_viewport_host_fps_counter(4)
+  if host_counter.frame_count != 4:
+    return 9
   if render_fps_counter_display_fps(counter) < 60:
     return 6
   if counter.native_pixels != 0:

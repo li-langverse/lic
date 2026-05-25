@@ -61,9 +61,9 @@ Expected: `smoke-llvm: ok (main returns 0)`
 
 ## Phase 0 exit gate
 
-- [ ] `cmake --build build` succeeds
-- [ ] `./build/compiler/lic/lic smoke-llvm` succeeds
-- [ ] Master plan Phase 0 checkbox checked
+- [x] `cmake --build build` succeeds
+- [x] `./build/compiler/lic/lic smoke-llvm` succeeds
+- [x] Master plan Phase 0 checkbox checked
 
 ## Prerequisites
 

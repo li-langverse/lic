@@ -12,13 +12,12 @@ def ppm_to_png(ppm: Path, png: Path) -> None:
     data = ppm.read_bytes()
     if not data.startswith(b"P6\n"):
         raise ValueError(f"not P6 PPM: {ppm}")
-    header, rest = data.split(b"\n", 2)
-    dims, rgb = rest.split(b"\n", 1)
+    _magic, dims, rest = data.split(b"\n", 2)
+    maxval_line, rgb = rest.split(b"\n", 1)
     w_s, h_s = dims.split()
     w, h = int(w_s), int(h_s)
-    if rgb[:3] != b"255":
-        raise ValueError(f"expected maxval 255: {ppm}")
-    rgb = rgb[3:]
+    if maxval_line != b"255":
+        raise ValueError(f"expected maxval 255, got {maxval_line!r}: {ppm}")
     if len(rgb) != w * h * 3:
         raise ValueError(f"size mismatch {ppm}")
     # PNG RGB

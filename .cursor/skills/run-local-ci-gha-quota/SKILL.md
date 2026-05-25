@@ -49,7 +49,7 @@ cd li-cursor-agents && npm run ci:local
 Set LLVM on Linux/macOS before `lic` host CI:
 
 ```bash
-export LLVM_DIR=/usr/lib/llvm-22/lib/cmake/llvm   # Debian llvm-22
+export LLVM_DIR=/usr/lib/llvm-18/lib/cmake/llvm   # Debian llvm-18
 export CC=clang CXX=clang++
 ```
 

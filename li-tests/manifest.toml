@@ -1,5 +1,6 @@
 # li-tests manifest — single index of all tests
 # outcome: parse_ok | parse_fail | compile_ok | compile_fail | verify_ok | verify_fail
+#           verify_open_ok | compile_open_ok | prove_lean_ok (strict build + AutoVC + lake; G-test-verify)
 
 [config]
 lic = "../build/compiler/lic/lic"
@@ -210,7 +211,7 @@ outcome = "verify_ok"
 [[tests]]
 suite = "contracts_verify"
 file = "contracts_verify/sqrt_open_bound.li"
-outcome = "verify_open_ok"
+outcome = "prove_lean_ok"
 
 [[tests]]
 suite = "contracts_verify"
@@ -220,7 +221,8 @@ outcome = "verify_ok"
 [[tests]]
 suite = "contracts_verify"
 file = "contracts_verify/discharge_trivial.li"
-outcome = "verify_ok"
+outcome = "prove_lean_ok"
+note = "P-closed: discharge_trivial_lean.sh"
 
 [[tests]]
 suite = "contracts_verify"
@@ -231,17 +233,20 @@ note = "w0-lean-gate: extern forward inherits callee ensures (zero open AutoVC)"
 [[tests]]
 suite = "contracts_verify"
 file = "contracts_verify/discharge_const.li"
-outcome = "verify_ok"
+outcome = "prove_lean_ok"
+note = "P-closed: discharge_const_lean.sh"
 
 [[tests]]
 suite = "contracts_verify"
 file = "contracts_verify/caller_requires_ok.li"
-outcome = "verify_ok"
+outcome = "prove_lean_ok"
+note = "P-closed: discharge_caller_requires_lean.sh"
 
 [[tests]]
 suite = "contracts_verify"
 file = "contracts_verify/caller_requires_local_ok.li"
-outcome = "verify_ok"
+outcome = "prove_lean_ok"
+note = "P-closed: discharge_caller_requires_local_lean.sh"
 
 [[tests]]
 suite = "contracts_verify"
@@ -252,8 +257,14 @@ expected_substr = "E0304"
 [[tests]]
 suite = "contracts_verify"
 file = "contracts_verify/method_call_requires_ok.li"
-outcome = "verify_ok"
-note = "2j-f: method call-site requires on desugared Type_method"
+outcome = "prove_lean_ok"
+note = "G-oop: discharge_method_call_requires_lean.sh (folded balance requires)"
+
+[[tests]]
+suite = "contracts_verify"
+file = "contracts_verify/method_ensures_return_ok.li"
+outcome = "prove_lean_ok"
+note = "G-oop: method ensures on int return; discharge_method_ensures_return_lean.sh"
 
 [[tests]]
 suite = "contracts_verify"
@@ -265,7 +276,8 @@ note = "2j-f: violated method requires at call site"
 [[tests]]
 suite = "contracts_verify"
 file = "contracts_verify/refinement_call_ok.li"
-outcome = "verify_ok"
+outcome = "prove_lean_ok"
+note = "P-refine: discharge_refinement_lean.sh"
 
 [[tests]]
 suite = "contracts_verify"
@@ -302,61 +314,62 @@ outcome = "verify_ok"
 [[tests]]
 suite = "contracts_verify"
 file = "contracts_verify/extern_call_requires_ok.li"
-outcome = "verify_ok"
+outcome = "prove_lean_ok"
+note = "P-closed: discharge_import_requires_lean.sh"
 
 [[tests]]
 suite = "contracts_verify"
 file = "contracts_verify/linalg_dot4_int_closed.li"
-outcome = "verify_ok"
-note = "P-linalg: fixed int dot — static witness, zero open AutoVC goals"
+outcome = "prove_lean_ok"
+note = "P-linalg closed: discharge_linalg_int_lean.sh"
 
 [[tests]]
 suite = "contracts_verify"
 file = "contracts_verify/linalg_sum4_int_closed.li"
-outcome = "verify_ok"
-note = "P-linalg: fixed int sum — static witness"
+outcome = "prove_lean_ok"
+note = "P-linalg closed"
 
 [[tests]]
 suite = "contracts_verify"
 file = "contracts_verify/linalg_mat2_entry00_int_closed.li"
-outcome = "verify_ok"
-note = "P-linalg: 2×2 matmul (0,0) entry via scalars — static witness"
+outcome = "prove_lean_ok"
+note = "P-linalg closed"
 
 [[tests]]
 suite = "contracts_verify"
 file = "contracts_verify/linalg_dot4_int_loop_open.li"
-outcome = "verify_ok"
-note = "P-linalg: loop dot — fixed-bound loop witness (4 iterations)"
+outcome = "prove_lean_ok"
+note = "P-loop closed: dot4_int_loop_eval_spec"
 
 [[tests]]
 suite = "contracts_verify"
 file = "contracts_verify/linalg_norm4_int_closed.li"
-outcome = "verify_ok"
-note = "P-linalg: int norm (sum of squares) via prelude norm"
+outcome = "prove_lean_ok"
+note = "P-linalg closed"
 
 [[tests]]
 suite = "contracts_verify"
 file = "contracts_verify/linalg_axpy4_int_closed.li"
-outcome = "verify_ok"
-note = "P-linalg: axpy scalar closed form (alpha*x+y)"
+outcome = "prove_lean_ok"
+note = "P-linalg closed"
 
 [[tests]]
 suite = "contracts_verify"
 file = "contracts_verify/linalg_dot4_float_closed.li"
-outcome = "verify_ok"
-note = "P-linalg: float dot via prelude dot() — static witness"
+outcome = "prove_lean_ok"
+note = "P-linalg closed"
 
 [[tests]]
 suite = "contracts_verify"
 file = "contracts_verify/linalg_mat2_at2_float_closed.li"
-outcome = "verify_ok"
-note = "P-linalg: full 2×2 float @ — Li.Discharge.mat2_at2_float_spec"
+outcome = "prove_lean_ok"
+note = "P-linalg closed: mat2_at2_float_spec_proved"
 
 [[tests]]
 suite = "contracts_verify"
 file = "contracts_verify/linalg_mat2_callproc_float_closed.li"
-outcome = "verify_ok"
-note = "P-linalg: 2×2 float @ via CallProc nested arrays"
+outcome = "prove_lean_ok"
+note = "P-linalg closed"
 
 # --- borrow ---
 
@@ -441,6 +454,25 @@ expected_substr = "disjoint_row"
 
 [[tests]]
 suite = "race_shared_memory"
+
+[[tests]]
+suite = "race_shared_memory"
+file = "race_shared_memory/false_disjoint_requires_true.li"
+outcome = "compile_fail"
+expected_substr = "bare"
+
+[[tests]]
+suite = "race_shared_memory"
+file = "race_shared_memory/false_disjoint_requires_bare_row.li"
+outcome = "compile_fail"
+expected_substr = "bare"
+
+[[tests]]
+suite = "race_shared_memory"
+file = "race_shared_memory/false_disjoint_decorator_bare_row.li"
+outcome = "compile_fail"
+expected_substr = "disjoint_row"
+
 file = "race_shared_memory/good_disjoint_parallel.li"
 outcome = "verify_ok"
 
@@ -750,6 +782,13 @@ note = "PH-SIM SIM-0: studio_apply_profile_to_sim + li_sim_profile_from_studio_i
 
 [[tests]]
 suite = "composable"
+file = "composable/import_studio_sim_step_stub.li"
+packages = ["li-sim", "li-studio", "li-gui", "li-ui"]
+outcome = "compile_open_ok"
+note = "PH-SIM SIM-1: studio_sim_step_hook + sim_reset/sim_step tick stub"
+
+[[tests]]
+suite = "composable"
 file = "composable/import_ui_studio_shell.li"
 packages = ["li-ui"]
 outcome = "compile_open_ok"
@@ -782,6 +821,24 @@ file = "composable/import_studio_compose.li"
 packages = ["li-studio", "li-gui", "li-ui"]
 outcome = "compile_open_ok"
 note = "import studio: compose dock + timeline + inspector from composables (PH-UX-05)"
+
+[[tests]]
+suite = "composable"
+file = "composable/import_lig_kernel.li"
+outcome = "compile_open_ok"
+note = "PH-HW WP4 lig kernel"
+
+[[tests]]
+suite = "composable"
+file = "composable/import_lig_chem_backend.li"
+outcome = "compile_open_ok"
+note = "PH-HW WP4 chem lig backend"
+
+[[tests]]
+suite = "smoke"
+file = "packages/lig/li-tests/smoke/kernel_matmul_parity.li"
+outcome = "compile_open_ok"
+note = "T-PKG-lig-kernel-matmul-parity"
 
 # stdlib_coverage/build_std_csv — enable when std.csv module resolves (PH-IO-4)
 
@@ -874,6 +931,17 @@ outcome = "compile_ok"
 
 [[tests]]
 suite = "math_linalg"
+file = "math_linalg/broadcast_len1_pow_int4.li"
+outcome = "compile_ok"
+
+[[tests]]
+suite = "math_linalg"
+file = "math_linalg/broadcast_invalid_len2_vs_len4.li"
+outcome = "compile_fail"
+expected_substr = "length-1 broadcast"
+
+[[tests]]
+suite = "math_linalg"
 file = "math_linalg/sum_elementwise_product.li"
 outcome = "verify_ok"
 
@@ -945,6 +1013,18 @@ suite = "math_linalg"
 file = "math_linalg/reductions/dot_via_sum_product.li"
 outcome = "verify_ok"
 
+[[tests]]
+suite = "math_linalg"
+file = "math_linalg/reductions/dot_len_mismatch.li"
+outcome = "compile_fail"
+expected_substr = "dot expects two matching array"
+
+[[tests]]
+suite = "math_linalg"
+file = "math_linalg/reductions/sum_non_array.li"
+outcome = "compile_fail"
+expected_substr = "sum expects a fixed array argument"
+
 # --- physics (packages + profiles) ---
 
 [[tests]]
@@ -991,6 +1071,11 @@ note = "open VC until 2f full (Lean gate on devbox)"
 suite = "math_syntax"
 file = "math_syntax/int_pow.li"
 outcome = "verify_open_ok"
+[[tests]]
+suite = "math_syntax"
+file = "math_syntax/for_range_sum.li"
+outcome = "verify_open_ok"
+note = "G-math-syn: plain for i in start..<end (no range() helper)"
 
 # --- stdlib_coverage (8e — std/**/*.li instrumented build) ---
 note = "open VC until 2f full (Lean gate on devbox)"
@@ -1025,6 +1110,11 @@ outcome = "compile_fail"
 [[tests]]
 suite = "stdlib_seal"
 file = "stdlib_seal/shadow_std_symbol.li"
+outcome = "compile_fail"
+
+[[tests]]
+suite = "stdlib_seal"
+file = "stdlib_seal/shadow_echo_via_import.li"
 outcome = "compile_fail"
 
 # --- encapsulation (2g — def, object, visibility, import) ---
@@ -1194,6 +1284,11 @@ note = "open VC until 2f full (Lean gate on devbox)"
 suite = "modules"
 file = "modules/use_positive.li"
 outcome = "verify_ok"
+
+[[tests]]
+suite = "modules"
+file = "modules/import_cycle_a.li"
+outcome = "compile_fail"
 
 # --- cve_patterns (C memory-safety classes — must reject or prove safe) ---
 

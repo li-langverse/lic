@@ -69,7 +69,9 @@ report = {
 
 def bench_render_fps_hook() -> dict:
     hook_path = root / "packages/li-render/bench/viewport_fps.toml"
-    gpu_hook = root / "packages/li-gpu/bench/wgpu_smoke.toml"
+    gpu_hook = root / "packages/lig/bench/wgpu_smoke.toml"
+    if not gpu_hook.is_file():
+        gpu_hook = root / "packages/li-gpu/bench/wgpu_smoke.toml"
     viewport = load_toml(hook_path)
     wgpu = load_toml(gpu_hook)
     vp_sec = viewport.get("viewport") or {}

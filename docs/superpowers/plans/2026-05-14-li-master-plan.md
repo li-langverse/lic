@@ -440,7 +440,7 @@ Track in phase **Doc** until each is checked:
 - [x] Phase 2d — Borrow + effects (lexical borrowck, raises IO/Alloc)
 - [x] Phase 2g — `def`, `object` + field `private`/`public`, minimal `import` (`encapsulation` suite green; import parse-only; **not** full OOP)
 - [x] Phase 2j — Full OOP surface — **2j-a…f done** (#83+); Lean method/trait `ensures` sugar still **G-oop** open — [OOP roadmap](2026-05-20-li-oop-roadmap.md)
-- [x] Phase 2h — Python-math operators `%`, `//`, `**` (`math_syntax` suite); `for`/`range` deferred (**G-math-syn**)
+- [x] Phase 2h — Python-math operators `%`, `//`, `**` (`math_syntax` suite); **`for i in start..<end`** (`for_range_sum.li`); Python `range()` deferred (**G-math-syn**)
 - [ ] Phase 2i — Math / linalg surface — **partial:** **2i-a/c** (#148); **2i-b** `norm`, `sum`/`dot`, `reductions/`, same-length `**`, prelude `axpy`, scalar×array; **length-1 broadcast** (`array[1]`→`array[N]` element-wise); full NumPy rank broadcast still open; float `@` Props closed (`mat2_at2_eval`)
 - [x] Phase 3 — MIR + LLVM codegen (`lic build`, minimal lower/emit; CFG/bounds IR deferred)
 - [x] Phase 4 — Runtime + stdlib
@@ -464,7 +464,7 @@ Track in phase **Doc** until each is checked:
 - [x] Phase 8c — ed25519 + `proof_digest` in lock — **v1:** lock fields + optional `publisher.key` signing
 - [x] Phase 8d — Registry + `lip publish` — **v1:** local `registry/index.json` + publish gate (`lit` + `lic`)
 - [x] Phase 8-sync — cross-repo workflows; optional PAT scope fix for `repository_dispatch`
-- [ ] Phase 8p — Parallel compile + CI throughput — **partial:** Ninja `-j` for C++ only; `lic --jobs` reserved not wired; `run_all.sh` / workspace sequential ([§ 8p](#phase-8p--parallel-compile--ci-throughput))
+- [ ] Phase 8p — Parallel compile + CI throughput — **partial (8p-a/b/c/d):** 8p-a parallel `run_all` + isolated `LI_BUILD_DIR` ([#186](https://github.com/li-langverse/lic/pull/186), [#200](https://github.com/li-langverse/lic/pull/200)); 8p-c/d `ResourceOptions` + `lic build --jobs` reserved pass + CI test-job smokes (`compiler/common/`, `scripts/ci.sh`); **open:** 8p-b workspace pool, wall-time SLO ([§ 8p](#phase-8p--parallel-compile--ci-throughput))
 - [x] Phase Doc-a — Gap register current + site links ([provability-gaps](../verification/provability-gaps.md))
 - [x] Phase Doc-b — Handbook stubs (decorators, linear-algebra); audit partial
 - [x] Phase Doc-c — Phase 02 plan links **G-*** IDs (expand to 03/07 as those land)

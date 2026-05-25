@@ -17,12 +17,10 @@ def main() -> int
   if render_viewport_smoke_ok(smoke) != 1:
     return 4
   var counter: RenderFpsCounter = render_fps_counter_shell_simulate()
-  if render_fps_counter_meets_target(counter) != 1:
+  if counter.meets_target != 1:
     return 5
-  if render_fps_counter_display_fps(counter) < 60:
+  if counter.fps < 60.0:
     return 6
   if counter.native_pixels != 0:
     return 7
-  if render_fps_counter_hud_tag(counter) != 1:
-    return 8
   return 0

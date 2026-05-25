@@ -6,6 +6,10 @@ All notable changes to Li are documented here. The format follows
 
 ## [Unreleased]
 
+### Fixed
+
+- **PH-HW WP2 li-render:** replace unsupported `else:` with sequential `if` + float FPS tick; `lic check` green on render smokes and `import_render_wgpu_fps.li` — [2026-05-25-ph-hw-wp2-li-render-else-fix.md](docs/release-notes/2026-05-25-ph-hw-wp2-li-render-else-fix.md).
+
 ### Added
 
 - **PH-SIM SIM-0 studio→sim profile bridge** — `li_sim_profile_from_studio_id`, `SimSessionStub`, `studio_apply_profile_to_sim`; smokes `studio_profile_bridge.li`, `import_studio_sim_profile_bridge.li` — [2026-05-25-studio-sim-profile-bridge.md](docs/release-notes/2026-05-25-studio-sim-profile-bridge.md).

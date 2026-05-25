@@ -70,19 +70,19 @@ def scene_new() -> Scene
   return s
 def scene_attach_node(scene: Scene, node: SceneNode) -> unit
   requires scene.node_count >= 0
-  ensures true
+  ensures scene.node_count == old(scene.node_count) + 1
   decreases scene.node_count
 =
   scene.node_count = scene.node_count + 1
 def scene_sync_from_physics(scene: Scene) -> unit
   requires true
-  ensures true
+  ensures scene.node_count == old(scene.node_count)
   decreases 0
 =
   return
 def scene_sync_to_physics(scene: Scene) -> unit
   requires true
-  ensures true
+  ensures scene.node_count == old(scene.node_count)
   decreases 0
 =
   return
@@ -140,16 +140,14 @@ def scene_md_particle_tier_by_id(tier_id: int) -> SceneMdParticleTier
   var t: SceneMdParticleTier
   t.tier_id = tier_id
   t.kernel_tag = scene_md_kernel_lennard_jones()
+  t.particles = 100000
+  t.fps_target = 30.0
   if tier_id == scene_md_tier_1k():
     t.particles = 1000
     t.fps_target = 60.0
-  else:
-    if tier_id == scene_md_tier_10k():
-      t.particles = 10000
-      t.fps_target = 60.0
-    else:
-      t.particles = 100000
-      t.fps_target = 30.0
+  if tier_id == scene_md_tier_10k():
+    t.particles = 10000
+    t.fps_target = 60.0
   return t
 
 def scene_md_particle_tier_id_for_particles(n: int) -> int
@@ -214,18 +212,21 @@ def scene_md_particle_draw_tick(draw: var SceneParticleDraw, dt_ms: float) -> un
   ensures draw.native_pixels == 0
   decreases 0
 =
+  var prev_fps: float = draw.fps
+  var prev_ms: float = draw.elapsed_ms
   draw.frame_count = draw.frame_count + 1
   draw.elapsed_ms = draw.elapsed_ms + dt_ms
   draw.draw_points = draw.tier.particles
   draw.native_pixels = 0
+  draw.fps = 0.0
   if draw.elapsed_ms > 0.0:
-    draw.fps = (float(draw.frame_count) * 1000.0) / draw.elapsed_ms
-  else:
-    draw.fps = 0.0
+    if prev_ms <= 0.0:
+      draw.fps = 1000.0 / dt_ms
+    if prev_ms > 0.0:
+      draw.fps = (prev_fps * prev_ms + 1000.0) / draw.elapsed_ms
+  draw.meets_target = 0
   if draw.fps >= draw.tier.fps_target:
     draw.meets_target = 1
-  else:
-    draw.meets_target = 0
 
 def scene_md_particle_draw_meets_target(draw: SceneParticleDraw) -> int
   requires true

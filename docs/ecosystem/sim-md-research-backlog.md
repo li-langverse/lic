@@ -16,7 +16,7 @@ todos:
 
 - id: md-r1-stability-matrix
   content: "CFL / neighbor-skin / size scaling for md_lennard_jones; tier-0 stability row proposal"
-  status: pending
+  status: completed
   study_only: true
 
 - id: md-r2-neighbor-list-gap

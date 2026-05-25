@@ -11,6 +11,7 @@ All notable changes to Li are documented here. The format follows
 - **PH-DB master plan cross-link:** phase map row + `ph-db-lidb-platform.md` appendix; **PH-8d-v2 → PH-DB-4** — [2026-05-25-ph-db-master-plan-crosslink.md](docs/release-notes/2026-05-25-ph-db-master-plan-crosslink.md).
 - **Studio UX Wave 2 P2 (HTML mocks 16–18):** command palette, reel motion, end CTA scenes — [2026-05-25-studio-ux-wave2-16-18.md](docs/release-notes/2026-05-25-studio-ux-wave2-16-18.md).
 - **Studio UX Wave 2 P1 (HTML mocks):** outliner panel, consolidated viewport error strip, dock labels — [2026-05-25-studio-ux-wave2-p1-mocks.md](docs/release-notes/2026-05-25-studio-ux-wave2-p1-mocks.md).
+- **PH-AM sim.export.print pipeline:** `li_rt_am_export_gcode_3mf_stub` temp G-code/3MF writes; `am_export_gcode_3mf_smoke` bytes; MCP `am_export_print` dispatch — [2026-05-25-sim-export-print-pipeline.md](docs/release-notes/2026-05-25-sim-export-print-pipeline.md).
 
 ### Fixed
 

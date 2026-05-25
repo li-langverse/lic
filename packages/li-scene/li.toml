@@ -15,6 +15,10 @@ min_lic = "0.1.0"
 maintainer = "li-langverse"
 pkg_id = "PKG-li-scene"
 
+[package.metadata.studio]
+particle_tiers_hook = "packages/li-scene/bench/particle_tiers.toml"
+md_kernel = "md_lennard_jones"
+
 [package.repository]
 url = "https://github.com/li-langverse/li-scene"
 documentation = "https://li-langverse.github.io/li-language/ecosystem/li-scene/"

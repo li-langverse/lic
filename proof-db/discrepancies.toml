@@ -1,0 +1,15 @@
+[[discrepancy]]
+id = "example-spec-lean-sqrt"
+specimen = "contracts_verify/sqrt_open_bound.li"
+kind = "spec_vs_lean"
+status = "open"
+failure_mode = "open_math"
+description = "Intentional open float VC; spec may read proved under trusted discharge."
+
+[[discrepancy]]
+id = "example-lean-mir-witness"
+specimen = "contracts_verify/witnessed_ensures_ident.li"
+kind = "lean_vs_mir"
+status = "accepted"
+failure_mode = "li_bug"
+description = "Accepted template for mir_return_linked triage."

@@ -7,6 +7,39 @@
 
 namespace li {
 
+/// Repo root from LI_REPO_ROOT (may be empty).
+inline std::string repo_root_from_env() {
+  if (const char* root = std::getenv("LI_REPO_ROOT")) {
+    return root;
+  }
+  return {};
+}
+
+/// Build tree: LI_BUILD_DIR when set, else $LI_REPO_ROOT/build, else "build".
+inline std::string repo_build_prefix() {
+  if (const char* dir = std::getenv("LI_BUILD_DIR")) {
+    return dir;
+  }
+  const std::string root = repo_root_from_env();
+  if (!root.empty()) {
+    return root + "/build";
+  }
+  return "build";
+}
+
+/// Path under the active build tree (e.g. "generated/AutoVC.lean").
+inline std::string repo_build_path(const char* relative) {
+  std::string prefix = repo_build_prefix();
+  if (relative == nullptr || relative[0] == '\0') {
+    return prefix;
+  }
+  if (prefix.empty() || prefix.back() != '/') {
+    prefix += '/';
+  }
+  prefix += relative;
+  return prefix;
+}
+
 /// Host CPU count for tool defaults (LI_BUILD_JOBS / lic --jobs).
 inline unsigned default_host_jobs() {
   if (const char* env = std::getenv("LI_BUILD_JOBS")) {

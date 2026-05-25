@@ -30,6 +30,10 @@ chmod +x "$ROOT/scripts/check-stdlib-coverage.sh"
 
 export LI_REPO_ROOT="$ROOT"
 export LIC="$("$ROOT/scripts/resolve-lic.sh")"
+export CI=true
+# shellcheck source=lib/li-jobs.sh
+source "$ROOT/scripts/lib/li-jobs.sh"
+export LI_TEST_JOBS="${LI_TEST_JOBS:-$(li_test_jobs)}"
 
 li_phase "generate AutoVC (2e)"
 "$LIC" build "$ROOT/li-tests/modules/greeter/greeter.li" -o /dev/null
@@ -108,8 +112,14 @@ export LI_REPO_ROOT="$ROOT"
 "$ROOT/li-tests/tooling/contracts_verify_lean.sh"
 
 li_phase "lic JSON diagnostics (Vision-LLM)"
-chmod +x "$ROOT/li-tests/tooling/diagnose_json_smoke.sh" "$ROOT/scripts/lic-fix-suggest.sh"
+chmod +x "$ROOT/li-tests/tooling/diagnose_json_smoke.sh" \
+  "$ROOT/li-tests/tooling/run_all_parallel_smoke.sh" \
+  "$ROOT/li-tests/tooling/agent_manifest_smoke.sh" \
+  "$ROOT/scripts/export-li-tests-agent-slice.sh" \
+  "$ROOT/scripts/lic-fix-suggest.sh"
 "$ROOT/li-tests/tooling/diagnose_json_smoke.sh"
+"$ROOT/li-tests/tooling/run_all_parallel_smoke.sh"
+"$ROOT/li-tests/tooling/agent_manifest_smoke.sh"
 
 li_phase "8-sync toolchain"
 chmod +x "$ROOT/scripts/check-li-toolchain.sh"

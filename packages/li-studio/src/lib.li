@@ -6,7 +6,14 @@ import ui
 
 # PH-SIM / UX-05 — World Studio runtime profiles (world-studio-vision §5).
 extern proc li_rt_studio_profile_from_name(name: str) -> int
+  requires true
+  ensures result >= 0
+  decreases 0
+
 extern proc li_rt_studio_parse_toml_profile_line(line: str) -> int
+  requires true
+  ensures result >= 0
+  decreases 0
 
 def studio_profile_unknown() -> int
   requires true

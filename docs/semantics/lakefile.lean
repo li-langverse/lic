@@ -16,3 +16,8 @@ lean_lib AutoVC where
 lean_lib Discharge where
   roots := #[`Discharge]
   deps := #[`LiSemantics, `AutoVC]
+
+lean_lib ProofDB where
+  srcDir := "../../proof-db/lean"
+  roots := #[`ProofDB]
+  deps := #[`LiSemantics, `Discharge]

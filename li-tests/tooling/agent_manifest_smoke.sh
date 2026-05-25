@@ -15,5 +15,9 @@ import json, sys
 doc = json.load(open(sys.argv[1]))
 assert doc["count"] == len(doc["tests"])
 assert doc["count"] > 100
+suites = doc["suites"]
+assert isinstance(suites, list) and len(suites) >= 5
+assert sum(s["count"] for s in suites) == doc["count"]
+assert all("name" in s and "count" in s for s in suites)
 PY
 echo "agent_manifest_smoke: ok"

@@ -38,6 +38,14 @@
 | `linalg_axpy4_int_closed.li` | Scalar axpy `alpha*x+y` | Fully discharged |
 | `linalg_dot4_float_closed.li` | Float dot via prelude | Fully discharged |
 
+**Proof-db sweep reporter:**
+
+```bash
+./scripts/proof-db-report.sh --baseline proof-db/expected.json --run <sweep.jsonl>
+```
+
+See [proof-db/reporter.md](../../proof-db/reporter.md).
+
 **Tooling entrypoints:**
 
 ```bash

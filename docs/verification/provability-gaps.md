@@ -41,7 +41,7 @@ This page is the **honest inventory** of what is **not** fully proved or not yet
 | **G-bnd** | Partial | **Closed slice:** `bounds_refinement_release_ok.li` + `check_release_bounds_ir.sh`; `discharge_refinement_lean.sh` |
 | **G-def** | Partial+ | Cross-module method privacy proofs; virtual dispatch deferred |
 | **G-oop** | Partial | Lean `ensures` on methods; trait laws in kernel |
-| **G-math-syn** | Partial | `for` / `range` surface |
+| **G-math-syn** | Partial | **Closed slice:** `for i in start..<end` (`math_syntax/for_range_sum.li`); Python `range()` / dynamic bounds open |
 | **G-stdlib** | Partial | Full workspace cycle + seal edge cases |
 | **G-narrow** | Partial | Proved width narrowing (beyond `cast[` reject) |
 | **G-async** | Partial | `await` + structured concurrency proofs |
@@ -52,10 +52,20 @@ This page is the **honest inventory** of what is **not** fully proved or not yet
 | **G-meta** | Missing | Compiler ↔ Lean equivalence (research) |
 | **G-authz** | Missing | Capability / IDOR (OS phase) |
 | **G-test-verify** | **Done** | `prove_lean_ok` in `run_all.sh`; 14 closed `contracts_verify` specimens |
+| **G-proof-db** | Partial | [Proof database](proof-database.md): register at `docs/verification/proof-database/entries/physics-*.toml` (`P-AX-*`, `P-LM-*`) |
+| **G-physics** | Partial | **P-physics** slice: 7× `P-AX-*` + 3× `P-LM-*`; 2× proved scalar lemmas in `Discharge.lean`; tier-2 **modeling_gap** on extern stubs |
 | **G-hw** | Axiomatic | FP/hardware model limit (documented, not closable) |
 | **G-wrong-spec** | Social | User theorem quality (not tool-closable) |
 
-**Proof backlog still open:** **P-refine**, **P-ensures-witness**, **P-float**, **P-linalg** (float `@` Props; full matmul), **P-par**, **P-dec**, **P-bnd**, **P-http**, **P-narrow**, **P-meta** — see [proof-corpus-roadmap](proof-corpus-roadmap.md). **P-linalg partial:** closed dot/sum/matmul-entry + **loop dot** (`linalg_dot4_int_loop_open`, `dot4_int_loop_eval_spec`); open float `vec3_dot`, 2D CallProc.
+**Proof backlog still open:** **P-refine**, **P-ensures-witness**, **P-float**, **P-linalg** (float `@` Props; full matmul), **P-par**, **P-dec**, **P-bnd**, **P-http**, **P-narrow**, **P-meta**, **P-physics** — see [proof-corpus-roadmap](proof-corpus-roadmap.md). **P-linalg partial:** closed dot/sum/matmul-entry + **loop dot** (`linalg_dot4_int_loop_open`, `dot4_int_loop_eval_spec`); open float `vec3_dot`, 2D CallProc. **P-physics partial:** [proof-database.md](proof-database.md) index + `docs/verification/proof-database/entries/physics-*.toml` (`P-AX-*`, `P-LM-*`, pin `a9542bfc`); tier-2 wrappers still **modeling_gap** (`ensures true` on extern kernels).
+
+### Proof-db discrepancy appendix
+
+[`../../proof-database/DISCREPANCIES.md`](../../proof-database/DISCREPANCIES.md) — `python3 scripts/proof-db/compare_reference.py --write`. Kinds: `missing_lemma`, `open_vc`, `spec_drift`, `trusted_axiom`, `hardware_axiom` (**G-hw**).
+
+### Proof-db discrepancy appendix
+
+[`../../proof-database/DISCREPANCIES.md`](../../proof-database/DISCREPANCIES.md) — `python3 scripts/proof-db/compare_reference.py --write`. Kinds: `missing_lemma`, `open_vc`, `spec_drift`, `trusted_axiom`, `hardware_axiom` (**G-hw**).
 
 !!! warning "Do not overclaim in docs or packages"
     Until **Phase 2f** lands, saying “`lic build` proves your program in Lean” is **aspirational**. Prefer: “`lic build` runs the current static gate; see [provability gaps](provability-gaps.md).”
@@ -77,7 +87,7 @@ Status legend: **Missing** · **Stub** · **Partial** · **CI only** · **Done**
 | **G-bnd** | Bounds in release | No reliance on `li_bounds_fail` for proved indices | **Partial** — [bounds-release-path](bounds-release-path.md) | **2e**, **3** | `check_release_bounds_ir.sh` |
 | **G-def** | `def` / `object` / visibility | Handbook surface | **Partial+** — methods/`self`, `private def`, MIR in-out write-back (**2j-a/b/c**); inheritance/traits open (**2j-d–f**) | **2j** | `li-tests/encapsulation/`, `composable/import_physics_runtime.li` |
 | **G-oop** | Full OOP | Methods, traits, inheritance, cross-module encapsulation | **Partial** — **2j-a…f** surface done; Lean `ensures` on methods / trait laws open | **2j** | `li-tests/encapsulation/trait_*.li`, `method_call_requires_*.li` |
-| **G-math-syn** | Python-math (`**`, `for`, …) | Ergonomic surface | **Partial** — `%`, `//`, `**` on `int`; `for`/`range` open | **2h** | `li-tests/math_syntax/` |
+| **G-math-syn** | Python-math (`**`, `for`, …) | Ergonomic surface | **Partial** — `%`, `//`, `**` on `int`; **`for i in 0..<n`** (`for_range_sum.li`); `range()` helper + dynamic bounds open | **2h** | `li-tests/math_syntax/` |
 | **G-ann** | Deferred annotations (PEP 649) | Lazy resolve at check | **Missing** — shown in pipeline diagram as planned | **4** | Not in compiler tree |
 | **G-gpu** | `@gpu` / device buffers | Separate address space proofs | **Missing** | **3+**, **7d** | Spec Phase 3+ |
 | **G-async** | `@async` / `raises Async` | Structured concurrency proofs | **Partial** — `@async` requires `raises Async`; await not parsed | **2+**, **7d** | `li-tests/effects/` |
@@ -89,6 +99,8 @@ Status legend: **Missing** · **Stub** · **Partial** · **CI only** · **Done**
 | **G-narrow** | Narrowing conversions | Ariane-class truncations rejected without proof | **Partial** — policy rejects `cast[`; width types + proved narrowing pending | **2e** | `historic_ariane5_narrowing.li` |
 | **G-authz** | Capability / IDOR | Object capabilities in OS services | **Missing** | OS phase | `historic-bugs.toml` firefly-iii-idor |
 | **G-test-verify** | Manifest honesty | `verify_ok` vs Lean QED | **Done** — `prove_lean_ok` outcome; 14 closed `contracts_verify` rows | **2f** | `li-tests/run_all.sh`, `li-tests/manifest.toml`, `contracts_discharge_corpus.sh` |
+| **G-proof-db** | Proof database | Axiom → lemma → discharge status vs `lic` commit | **Partial** — physics TOML under `docs/verification/proof-database/entries/physics-*.toml` | **Doc**, **2f**, **5b** | [proof-database.md](proof-database.md) |
+| **G-physics** | Classical physics proofs | Newton + conservation linked to tier-2 benches | **Partial** — `entries/physics-*.toml`; 2× `proved` + 1× open `P-LM-*` in `Discharge.lean` | **Doc**, **2f**, **5b** | [proof-database/entries/physics-*.toml](proof-database/entries/physics-mechanics.toml), `benchmarks/tier2_physics/`, `Discharge.lean` |
 
 ---
 
@@ -166,6 +178,10 @@ flowchart LR
 Passing **`./li-tests/run_all.sh`** means the **current** gate holds — not the full spec gate.
 
 **Corpus inventory, run commands, and proof backlog for the master plan:** [proof-corpus-roadmap.md](proof-corpus-roadmap.md).
+
+### Proof-db discrepancy appendix
+
+[`../../proof-database/DISCREPANCIES.md`](../../proof-database/DISCREPANCIES.md) — `python3 scripts/proof-db/compare_reference.py --write`. Kinds: `missing_lemma`, `open_vc`, `spec_drift`, `trusted_axiom`, `hardware_axiom` (**G-hw**).
 
 ---
 

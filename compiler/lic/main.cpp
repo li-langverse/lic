@@ -13,6 +13,7 @@
 #include "li/terminal.hpp"
 #include "li/error_codes.hpp"
 #include "li/proof_cli.hpp"
+#include "li/resource_options.hpp"
 
 #include "li_rt.h"
 
@@ -40,6 +41,7 @@ int usage() {
             << "  lic build <file> -o <out> [--release] [--numerically-stable]\n"
             << "                       [--strict-lean]  fail on open AutoVC goals + lake strict check\n"
             << "                       [--allow-open-vc]  allow obligations without Lean proof (dev only)\n"
+            << "                       [--prob-check]     Monte Carlo discharge for prob_ensures P(event)<ε\n"
             << "                       [--no-lean-verify] skip lake / AutoVC typecheck\n"
             << "                       default: fail on open goals; lake typecheck when installed\n"
             << "                       [--threads=N] [--jobs=N] [--max-memory=MB]\n"
@@ -50,11 +52,11 @@ int usage() {
             << "  lic validate-httpd-config <file.toml>  M1 TOML schema + overlap (Python)\n"
             << "  lic --version          print version\n"
             << "\n"
-            << "resource defaults (override via flags or env):\n"
-            << "  --jobs=N / LI_COMPILE_JOBS / LI_BUILD_JOBS (host=" << jobs
-            << ") — reserved for parallel frontend\n"
-            << "  --max-memory=MB / LI_MAX_MEMORY_MB — reserved memory budget\n"
-            << "  --threads=N / LI_OMP_THREADS — OpenMP team size at run time\n"
+            << "resource flags (preferred; LI_* env deprecated):\n"
+            << "  --jobs=N — parallel compile workers (default 1; host=" << jobs << ")\n"
+            << "  --max-memory=MB --job-memory-mb=N — cap effective --jobs\n"
+            << "  --build-dir=PATH — isolated build tree (AutoVC, temps)\n"
+            << "  --threads=N — runtime parallel team size\n"
             << "  --numerically-stable / LI_FP_NUMERICALLY_STABLE=1 — cancellation-safe FP\n";
   return 1;
 }
@@ -156,16 +158,17 @@ int httpd_explain_config(int argc, char** argv) {
   return 0;
 }
 
-bool apply_resource_flag(std::string_view arg) {
-  if (arg.rfind("--jobs=", 0) == 0) {
-    setenv("LI_COMPILE_JOBS", std::string(arg.substr(7)).c_str(), 1);
-    return true;
+void apply_resource_options_to_env() {
+  const auto& opts = li::resource_options();
+  if (!opts.build_dir.empty()) {
+    setenv("LI_BUILD_DIR", opts.build_dir.c_str(), 1);
   }
-  if (arg.rfind("--max-memory=", 0) == 0) {
-    setenv("LI_MAX_MEMORY_MB", std::string(arg.substr(13)).c_str(), 1);
-    return true;
+  if (opts.threads > 0) {
+    setenv("LI_OMP_THREADS", std::to_string(opts.threads).c_str(), 1);
   }
-  return false;
+  if (opts.max_memory_mb > 0) {
+    setenv("LI_MAX_MEMORY_MB", std::to_string(opts.max_memory_mb).c_str(), 1);
+  }
 }
 
 std::string read_file(const char* path) {
@@ -259,7 +262,31 @@ bool parse_proof_cli_flag(std::string_view arg) {
     li::proof_cli_flags().no_lean_verify = true;
     return true;
   }
+  if (arg == "--prob-check") {
+    li::proof_cli_flags().prob_check = true;
+    return true;
+  }
   return false;
+}
+
+int run_prob_check_script(const char* input_path) {
+  const char* root = std::getenv("LI_REPO_ROOT");
+  std::string script = "scripts/prob_check.py";
+  if (root != nullptr) {
+    script = std::string(root) + "/" + script;
+  }
+  if (!std::filesystem::exists(script)) {
+    std::cerr << "lic build: --prob-check requires " << script << "\n";
+    return 1;
+  }
+  const std::string cmd =
+      "python3 " + script + " \"" + std::string(input_path) + "\"";
+  const int rc = std::system(cmd.c_str());
+  if (rc != 0) {
+    std::cerr << "lic build: probabilistic contract check failed (prob_ensures)\n";
+    return 1;
+  }
+  return 0;
 }
 
 bool lake_available() {
@@ -333,11 +360,14 @@ int verify_file(const char* path, bool run_lean, bool strict_lean) {
   const li::VcWitnessStats witness = li::compute_vc_witness_stats(module, &mir);
   vc.ensures_witnessed = witness.ensures_witnessed;
   vc.mir_return_linked = witness.mir_return_linked;
+  const std::size_t mir_vectorized_proc = li::count_mir_vectorized_proc(mir);
   std::cout << "verify: procs=" << vc.proc_count << " mir_fns=" << vc.mir_fn_count
             << " requires=" << vc.requires_count << " ensures=" << vc.ensures_count
+            << " prob_ensures=" << vc.prob_ensures_count
             << " decreases=" << vc.decreases_count << " invariant=" << vc.invariant_count
             << " witnessed_ensures=" << vc.ensures_witnessed
-            << " mir_return_linked=" << vc.mir_return_linked << '\n';
+            << " mir_return_linked=" << vc.mir_return_linked
+            << " mir_vectorized_proc=" << mir_vectorized_proc << '\n';
   if (li::terminal_color_enabled()) {
     std::cout << li::styled_success("verify") << li::styled_dim(" telemetry") << li::reset_style()
               << '\n';
@@ -349,6 +379,8 @@ int verify_file(const char* path, bool run_lean, bool strict_lean) {
                                std::to_string(vc.ensures_witnessed));
     li::print_verify_telemetry(std::cout, "mir_return_linked",
                                std::to_string(vc.mir_return_linked));
+    li::print_verify_telemetry(std::cout, "mir_vectorized_proc",
+                               std::to_string(mir_vectorized_proc));
   }
   if (vc.requires_count == 0 && vc.ensures_count == 0) {
     std::cerr << li::styled_warning("verify") << li::styled_dim(" — no procedure contracts (G-vc partial)")
@@ -403,6 +435,7 @@ int build_file(const char* path, const char* output, const li::CompileOptions& o
 }  // namespace
 
 int main(int argc, char** argv) {
+  li::reset_resource_options();
   if (argc < 2) {
     return usage();
   }
@@ -478,10 +511,14 @@ int main(int argc, char** argv) {
       } else if (std::string_view(argv[i]) == "--strict-lean") {
         run_lean = true;
         strict_lean = true;
+      } else if (li::apply_resource_flag(argv[i], li::resource_options())) {
+        continue;
       } else if (parse_proof_cli_flag(argv[i])) {
         continue;
       }
     }
+    li::finalize_resource_options(li::resource_options());
+    apply_resource_options_to_env();
     return verify_file(argv[2], run_lean, strict_lean);
   }
   if (cmd == "validate-httpd-config") {
@@ -529,15 +566,16 @@ int main(int argc, char** argv) {
         strict_lean = true;
       } else if (parse_proof_cli_flag(arg)) {
         continue;
-      } else if (arg.rfind("--threads=", 0) == 0) {
-        setenv("LI_OMP_THREADS", std::string(arg.substr(10)).c_str(), 1);
-      } else if (apply_resource_flag(arg)) {
+      } else if (li::apply_resource_flag(arg, li::resource_options())) {
         continue;
       } else {
         extra_flags.append(argv[i]);
         extra_flags.push_back(' ');
       }
     }
+    li::finalize_resource_options(li::resource_options());
+    li::note_compile_jobs_reserved(li::resource_options());
+    apply_resource_options_to_env();
     if (coverage) {
       extra_flags += "-fprofile-instr-generate -fcoverage-mapping ";
     }
@@ -584,6 +622,11 @@ int main(int argc, char** argv) {
       }
     } else {
       std::cerr << "lic build: warning — Lean verify skipped (--no-lean-verify)\n";
+    }
+    if (li::prob_check()) {
+      if (const int prob_rc = run_prob_check_script(input); prob_rc != 0) {
+        return prob_rc;
+      }
     }
     return 0;
   }

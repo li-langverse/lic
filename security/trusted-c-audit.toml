@@ -95,7 +95,7 @@ cve_refs = []
 path = "runtime/li_rt_net.c"
 status = "active"
 asan_in_ci = false
-notes = "P0 li-httpd syscall seam stubs (in-process fds; no epoll yet)"
+notes = "P0 li-httpd syscall seam + w1 async reactor (epoll/kqueue li_async_poll; tcp_echo)"
 
 [[file.functions]]
 name = "tcp_listen"

@@ -31,9 +31,8 @@ chmod +x "$ROOT/scripts/check-stdlib-coverage.sh"
 export LI_REPO_ROOT="$ROOT"
 export LIC="$("$ROOT/scripts/resolve-lic.sh")"
 export CI=true
-# shellcheck source=lib/li-jobs.sh
-source "$ROOT/scripts/lib/li-jobs.sh"
-export LI_TEST_JOBS="${LI_TEST_JOBS:-$(li_test_jobs)}"
+# Wave 2 integrator (8p-d): explicit parallel flags — do not export LI_TEST_JOBS.
+RUN_ALL_FLAGS=(-j8 --max-memory=8192)
 
 li_phase "generate AutoVC (2e)"
 "$LIC" build "$ROOT/li-tests/modules/greeter/greeter.li" -o /dev/null
@@ -68,33 +67,35 @@ elif [[ -x "$ROOT/scripts/build-li-httpd.sh" ]] \
 fi
 
 li_phase "E2E li-tests (full manifest)"
-"$ROOT/li-tests/run_all.sh"
+"$ROOT/li-tests/run_all.sh" "${RUN_ALL_FLAGS[@]}"
 
 li_phase "tier 0 physics (strict stability)"
 python3 "$ROOT/benchmarks/harness/bench.py" --tier 0
 
 li_phase "race_shared_memory"
-"$ROOT/li-tests/run_all.sh" race_shared_memory
+"$ROOT/li-tests/run_all.sh" "${RUN_ALL_FLAGS[@]}" race_shared_memory
 
 li_phase "math_syntax (2h)"
-"$ROOT/li-tests/run_all.sh" math_syntax
+"$ROOT/li-tests/run_all.sh" "${RUN_ALL_FLAGS[@]}" math_syntax
 
 li_phase "math_linalg (2i)"
-"$ROOT/li-tests/run_all.sh" math_linalg
+"$ROOT/li-tests/run_all.sh" "${RUN_ALL_FLAGS[@]}" math_linalg
 
 li_phase "workspace build (8a)"
 chmod +x "$ROOT/scripts/lic-workspace-build.sh"
 "$ROOT/scripts/lic-workspace-build.sh" "$ROOT/packages/li.toml"
+
+# WP3 (lic check --workspace --jobs=8): skipped until workspace check merges on top of #205.
 
 li_phase "lip / lit (8b/8e)"
 chmod +x "$ROOT/scripts/lip" "$ROOT/scripts/lit" "$ROOT/li-tests/tooling/lip_lit_smoke.sh"
 "$ROOT/li-tests/tooling/lip_lit_smoke.sh"
 
 li_phase "encapsulation (2g)"
-"$ROOT/li-tests/run_all.sh" encapsulation
+"$ROOT/li-tests/run_all.sh" "${RUN_ALL_FLAGS[@]}" encapsulation
 
 li_phase "decorators (7d)"
-"$ROOT/li-tests/run_all.sh" decorator_exploits decorators
+"$ROOT/li-tests/run_all.sh" "${RUN_ALL_FLAGS[@]}" decorator_exploits decorators
 
 li_phase "stdlib coverage (8e)"
 chmod +x "$ROOT/scripts/check-stdlib-coverage.sh"
@@ -121,6 +122,12 @@ chmod +x "$ROOT/li-tests/tooling/diagnose_json_smoke.sh" \
 "$ROOT/li-tests/tooling/diagnose_json_smoke.sh"
 "$ROOT/li-tests/tooling/run_all_parallel_smoke.sh"
 "$ROOT/li-tests/tooling/agent_manifest_smoke.sh"
+
+li_phase "8p parallel smokes"
+chmod +x "$ROOT/li-tests/tooling/ci_test_jobs_smoke.sh"   "$ROOT/li-tests/tooling/resource_flags_smoke.sh"   "$ROOT/li-tests/tooling/parallel_run_all_smoke.sh"
+"$ROOT/li-tests/tooling/ci_test_jobs_smoke.sh"
+"$ROOT/li-tests/tooling/resource_flags_smoke.sh"
+"$ROOT/li-tests/tooling/parallel_run_all_smoke.sh"
 
 li_phase "8-sync toolchain"
 chmod +x "$ROOT/scripts/check-li-toolchain.sh"

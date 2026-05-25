@@ -12,6 +12,8 @@ All notable changes to Li are documented here. The format follows
 
 ### Added
 
+- **Benchmark package-release:** `.github/workflows/benchmark-release.yml` on tag `v*` — conditional `benchmarks/**` rebuild, `benchmark-csv` artifact, `package-release` dispatch to benchmarks — [2026-05-25-lic-package-release-dispatch.md](docs/release-notes/2026-05-25-lic-package-release-dispatch.md).
+
 - **Studio MCP gap #6/#7 (contracts):** eight tool IDs (`am_export_print`, `chem_dft_run`, `studio_adaptive_layout`), `studio_mcp_tool_dispatch` stub, `li-chem` `chem_dft_run_smoke`, smokes `studio_mcp_extended.li` / composable chem — [2026-05-25-vertical-gap-mcp-chem.md](docs/release-notes/2026-05-25-vertical-gap-mcp-chem.md).
 
 - **Vertical gap #4/#9 sim step physics** — `sim_scientific_tick_stub`, `studio_game_step_hook`, `studio_md_particle_tier_select_ok`, smokes `studio_sim_step_by_profile.li` / `import_studio_sim_step_by_profile.li` — [2026-05-25-vertical-gap-sim-step-physics.md](docs/release-notes/2026-05-25-vertical-gap-sim-step-physics.md).

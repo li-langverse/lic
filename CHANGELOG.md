@@ -6,6 +6,10 @@ All notable changes to Li are documented here. The format follows
 
 ## [Unreleased]
 
+### Fixed
+
+- Main CI: `typosquat_paralell` manifest (`compile_fail` + W0403), `bounds_refinement_release_ok` AutoVC witnesses, `lic check` link without incomplete `resource_options_invalid` — [2026-05-25-main-ci-post-stack.md](docs/release-notes/2026-05-25-main-ci-post-stack.md).
+
 ### Added
 
 - **PH-DB master plan cross-link:** phase map row + `ph-db-lidb-platform.md` appendix; **PH-8d-v2 → PH-DB-4** — [2026-05-25-ph-db-master-plan-crosslink.md](docs/release-notes/2026-05-25-ph-db-master-plan-crosslink.md).

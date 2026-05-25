@@ -1,0 +1,24 @@
+import studio
+
+def main() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  if studio_mcp_tool_count() != 8:
+    return 1
+  if studio_mcp_tool_from_name("am_export_print") != studio_mcp_am_export_print():
+    return 2
+  var dispatched: StudioAgentToolRequest = studio_mcp_tool_dispatch(studio_mcp_am_export_print())
+  if dispatched.tool_id != studio_mcp_am_export_print():
+    return 3
+  if dispatched.status != studio_mcp_tool_status_ok():
+    return 4
+  if dispatched.result_code != studio_mcp_tool_result_ok():
+    return 5
+  var bad: StudioAgentToolRequest = studio_mcp_tool_dispatch(studio_mcp_tool_unknown())
+  if bad.status != studio_mcp_tool_status_failed():
+    return 6
+  if bad.result_code != studio_mcp_tool_result_err_io():
+    return 7
+  return 0

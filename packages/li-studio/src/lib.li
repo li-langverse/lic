@@ -3,6 +3,7 @@ import gui
 import ui
 import sim
 import sim.scientific
+import sim.additive
 import scene
 import physics.runtime
 import lig
@@ -497,6 +498,15 @@ def studio_mcp_tool_dispatch(tool_id: int) -> StudioAgentToolRequest
   var out: StudioAgentToolRequest = studio_agent_tool_request_none()
   out.tool_id = tool_id
   if studio_mcp_tool_id_valid(tool_id) != 1:
+    out.status = studio_mcp_tool_status_failed()
+    out.result_code = studio_mcp_tool_result_err_io()
+    return out
+  if tool_id == studio_mcp_am_export_print():
+    var smoke: int = am_export_gcode_3mf_smoke()
+    if smoke == 0:
+      out.status = studio_mcp_tool_status_ok()
+      out.result_code = studio_mcp_tool_result_ok()
+      return out
     out.status = studio_mcp_tool_status_failed()
     out.result_code = studio_mcp_tool_result_err_io()
     return out

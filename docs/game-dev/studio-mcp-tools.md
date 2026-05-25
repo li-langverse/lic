@@ -28,7 +28,7 @@ Any tool that mutates project state or ships artifacts must run **`lic build`** 
 | Symbol | Role |
 |--------|------|
 | `studio_mcp_tool_count()` | Returns `8` |
-| `studio_mcp_tool_dispatch(tool_id)` | Stub: valid ID → `status_ok`, invalid → `status_failed` + `result_err_io` |
+| `studio_mcp_tool_dispatch(tool_id)` | Stub: valid ID → `status_ok`; `am_export_print` calls `sim.additive` `am_export_gcode_3mf_smoke()` |
 | `studio_mcp_tool_name(id)` | Round-trip name via `li_rt` const table |
 | `studio_mcp_tool_from_name(name)` | Parse MCP tool name → ID |
 | `studio_mcp_tool_id_valid(id)` | Non-zero IDs only |
@@ -54,6 +54,8 @@ Any tool that mutates project state or ships artifacts must run **`lic build`** 
 
 - `packages/li-studio/li-tests/smoke/studio_mcp_tools.li` — wave-1 ID/name round-trip and agent chrome optional field.
 - `packages/li-studio/li-tests/smoke/studio_mcp_extended.li` — gap #6/#7 tool IDs, `studio_mcp_tool_dispatch`, adaptive layout hook.
+- `packages/li-studio/li-tests/smoke/studio_mcp_am_export_dispatch.li` — `am_export_print` dispatch calls additive export smoke.
+- `packages/li-sim-additive/li-tests/smoke/am_export_smoke.li` — `am_export_require_sim_pass`, `am_export_gcode_3mf_smoke`.
 - `li-tests/composable/import_lig_chem_backend.li` — `chem_dft_run_smoke()` stub energy (`-76.0` Hartree); `chem_lig_backend_auto` unchanged.
 
 ## Not in this slice

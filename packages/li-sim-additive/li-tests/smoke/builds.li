@@ -13,4 +13,8 @@ def main() -> int
     return 3
   if run_additive_smoke() != 0:
     return 4
+  if am_export_require_sim_pass() != 1:
+    return 5
+  if am_export_gcode_3mf_smoke() != 0:
+    return 6
   return 0

@@ -1,7 +1,15 @@
 # Proof corpus and verification roadmap
 
 **Audience:** agents extending **2e/2f**, reviewers judging “is `lic build` a proof certificate?”  
-**Related:** [Provability gaps](provability-gaps.md) · [Contracts and proofs](../language/contracts-and-proofs.md) · [Master plan § 2e–2f](../superpowers/plans/2026-05-14-li-master-plan.md)
+**Related:** [Provability gaps](provability-gaps.md) · [Proof database](proof-database.md) (`proof-db/manifest.toml`) · [Contracts and proofs](../language/contracts-and-proofs.md) · [Master plan § 2e–2f](../superpowers/plans/2026-05-14-li-master-plan.md)
+
+## Release regression manifest (v0)
+
+| Artifact | Role |
+|----------|------|
+| [`proof-db/manifest.toml`](../../proof-db/manifest.toml) | `release_pin` + `proof_status` per row |
+| [`scripts/check-proof-db.sh`](../../scripts/check-proof-db.sh) | CI smoke |
+
 
 ## What “testing proofs” means in this repo
 

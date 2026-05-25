@@ -30,6 +30,9 @@ plan_def() {
     sim-chem-research)
       echo "li-sim-chem-research-plan-loop|scripts/sim-chem-research-plan-loop-systemd.sh|../lic-worktrees/sim-chem-research/data/sim-chem-research-loop|SIM_RESEARCH_VERTICAL=chem"
       ;;
+    security-research)
+      echo "li-security-research-plan-loop|scripts/security-research-plan-loop-systemd.sh|../lic-worktrees/security-research/data/security-research-loop|LI_SECURITY_PLAN_AGENT=security_auditor"
+      ;;
     *)
       return 1
       ;;
@@ -109,6 +112,7 @@ list_plans() {
   echo "  studio-ui-ux      — lic-studio-ui"
   echo "  sim-md-research   — lic-worktrees/sim-md-research (numerics_researcher)"
   echo "  sim-chem-research — lic-worktrees/sim-chem-research (numerics_researcher)"
+  echo "  security-research — lic-worktrees/security-research (security_auditor)"
   echo ""
   echo "Install all: $0 --all"
 }
@@ -122,7 +126,7 @@ if [[ "${1:-}" == "--all" ]]; then
   if command -v loginctl >/dev/null 2>&1; then
     loginctl enable-linger "$(whoami)" 2>/dev/null || true
   fi
-  for id in sim-algo sim-md-research sim-chem-research httpd compiler-studio studio-ui-ux; do
+  for id in sim-algo sim-md-research sim-chem-research security-research httpd compiler-studio studio-ui-ux; do
     install_one "$id" || true
     echo ""
   done

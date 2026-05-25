@@ -32,8 +32,11 @@ source ~/Documents/Cursor/.env   # CURSOR_API_KEY, GH_TOKEN
 | `studio-ui-ux` | `li-studio-ui-ux-plan-loop` | (see studio script) | main repo |
 | `sim-md-research` | `li-sim-md-research-plan-loop` | `cursor/sim-md-research-loop` | `../lic-worktrees/sim-md-research` |
 | `sim-chem-research` | `li-sim-chem-research-plan-loop` | `cursor/sim-chem-research-loop` | `../lic-worktrees/sim-chem-research` |
+| `security-research` | `li-security-research-plan-loop` | `cursor/security-research-loop` | `../lic-worktrees/security-research` |
 
 Research loops use `numerics_researcher` and `sim-algo-research-gates.sh` (validity hard gate). See `docs/ecosystem/sim-algo-research-grading.md`.
+
+Security research uses `security_auditor` and `security-research-gates.sh` (posture + CWE feed hard gates). See `docs/ecosystem/security-research-grading.md`.
 
 ## Requirements
 

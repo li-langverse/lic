@@ -114,6 +114,24 @@ RUNNERS: list[dict] = [
         "todo_id_prefix": "chem-r",
         "default_agent": "numerics_researcher",
     },
+    {
+        "id": "security-research",
+        "name": "Offensive security research",
+        "repo": LANGVERSE / "lic-worktrees/security-research",
+        "branch": "cursor/security-research-loop",
+        "plan": "docs/ecosystem/security-research-backlog.md",
+        "state": "data/security-research-loop/state.json",
+        "log": "data/security-research-loop/runner.log",
+        "pgrep_patterns": [
+            "security-research-plan-loop.py",
+            "security-research-run-until-done",
+            "security-research-plan-loop-systemd",
+            "LI_SECURITY_PLAN_AGENT=security_auditor",
+        ],
+        "systemd_unit": "li-security-research-plan-loop.service",
+        "todo_id_prefix": "sec-r",
+        "default_agent": "security_auditor",
+    },
 ]
 
 

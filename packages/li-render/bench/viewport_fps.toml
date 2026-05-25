@@ -6,7 +6,7 @@ fps_counter_hook = "render_fps_counter_meets_target"
 bench_simulate_fn = "render_bench_fps_counter_simulate"
 
 [wgpu_smoke]
-package = "li-gpu"
+package = "lig"
 status = "stub_pass"
 surface_ok = false
 

@@ -7,7 +7,7 @@ def main() -> int
 =
   if li_std_render_version() < 1:
     return 1
-  if li_std_gpu_version() < 1:
+  if li_std_lig_version() < 2:
     return 2
   if li_std_gui_version() < 1:
     return 3

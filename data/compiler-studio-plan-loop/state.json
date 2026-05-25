@@ -47,7 +47,13 @@
       "todo_id": "wave-a-llvm22-typecheck-warnings",
       "agent_exit": 0,
       "gates_ok": false
+    },
+    {
+      "at": "2026-05-25T06:41:51.000000+00:00",
+      "todo_id": "wave-d-gui-scaffold",
+      "agent_exit": 0,
+      "gates_ok": true
     }
   ],
-  "note": "2026-05-24: wave-d-gui-scaffold re-verified (gates green, plan YAML completed); wave-a-llvm22-typecheck-warnings still open"
+  "note": "2026-05-25: wave-d-gui-scaffold re-verified (compiler-studio-plan-gates + bench/math green); wave-a-llvm22-typecheck-warnings still open"
 }

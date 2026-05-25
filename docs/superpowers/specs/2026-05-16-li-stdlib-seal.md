@@ -24,12 +24,17 @@ User modules cannot redefine or hijack names owned by the language prelude or sh
 
 ## Implementation
 
-- `li::check_stdlib_seal` in [compiler/types/prelude.cpp](../../../compiler/types/prelude.cpp), called from [compiler/lic/main.cpp](../../../compiler/lic/main.cpp) after parse, before typecheck.
+- `li::check_stdlib_seal` in [compiler/types/prelude.cpp](../../../compiler/types/prelude.cpp), called from [compiler/lic/main.cpp](../../../compiler/lic/main.cpp) on the entry module and from [compiler/types/import_resolve.cpp](../../../compiler/types/import_resolve.cpp) for each resolved import.
 - Manifest sync: [scripts/gen-stdlib-manifest.sh](../../../scripts/gen-stdlib-manifest.sh).
 
 ## Tests
 
 `li-tests/stdlib_seal/` — wired in CI security and master-plan gates.
+
+## Import graph (4s closed slice)
+
+- `check_stdlib_seal` runs on the entry module and on every file loaded by `resolve_imports` (`load_module_recursive` in `import_resolve.cpp`).
+- Cyclic imports fail with `import_cycle: <path>` (`li-tests/modules/import_cycle_a.li`).
 
 ## Future (8a)
 

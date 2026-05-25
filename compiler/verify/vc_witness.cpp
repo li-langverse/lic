@@ -2,6 +2,7 @@
 
 #include "li/call_requires.hpp"
 
+#include <cmath>
 #include <memory>
 
 namespace li {

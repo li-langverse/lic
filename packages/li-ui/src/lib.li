@@ -20,6 +20,8 @@ type InputState = object
   public pointer_x: float
   public pointer_y: float
   public key_escape: int
+  public key_cmd_k: int
+  public key_digit: int
 
 type UiFrame = object
   public frame_id: int
@@ -28,17 +30,17 @@ type UiFrame = object
   public viewport_h: float
 def li_std_ui_version() -> int
   requires true
-  ensures result == 2
+  ensures result == 3
   decreases 0
 =
-  return 2
+  return 3
 
 def li_std_ui_studio_composables_version() -> int
   requires true
-  ensures result == 2
+  ensures result == 4
   decreases 0
 =
-  return 2
+  return 4
 def color_rgb(r: float, g: float, b: float, a: float) -> Color
   requires r >= 0.0
   requires g >= 0.0
@@ -100,6 +102,9 @@ def input_default() -> InputState
   ensures result.pointer_down == 0
   ensures result.pointer_x == 0.0
   ensures result.pointer_y == 0.0
+  ensures result.key_escape == 0
+  ensures result.key_cmd_k == 0
+  ensures result.key_digit == 0
   decreases 0
 =
   var s: InputState
@@ -107,6 +112,8 @@ def input_default() -> InputState
   s.pointer_x = 0.0
   s.pointer_y = 0.0
   s.key_escape = 0
+  s.key_cmd_k = 0
+  s.key_digit = 0
   return s
 
 # --- studio design tokens (docs/design/studio-design-tokens.toml) ---
@@ -279,6 +286,236 @@ def studio_panel_transition_ms() -> float
   decreases 0
 =
   return 100.0
+
+# UX-04 command palette — docs/design/studio-design-tokens.toml [semantic] command_palette_hint
+def studio_command_palette_hint_len() -> int
+  requires true
+  ensures result == 22
+  decreases 0
+=
+  return 22
+
+def studio_palette_open_flag() -> int
+  requires true
+  ensures result == 1
+  decreases 0
+=
+  return 1
+
+def studio_palette_closed_flag() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0
+
+def studio_palette_panel_width_px() -> float
+  requires true
+  ensures result == 560.0
+  decreases 0
+=
+  return 560.0
+
+def studio_palette_panel_height_px() -> float
+  requires true
+  ensures result == 360.0
+  decreases 0
+=
+  return 360.0
+
+def studio_palette_search_bar_height_px() -> float
+  requires true
+  ensures result == 44.0
+  decreases 0
+=
+  return 44.0
+
+def studio_palette_result_count_stub() -> int
+  requires true
+  ensures result == 3
+  decreases 0
+=
+  return 3
+
+type StudioCommandPaletteCompose = object
+  public is_open: int
+  public backdrop_rect: Rect
+  public panel_rect: Rect
+  public search_rect: Rect
+  public result_count: int
+
+def studio_palette_backdrop_rect_at(w: float, h: float) -> Rect
+  requires w > 0.0
+  requires h > 0.0
+  ensures result.w == w
+  ensures result.h == h
+  decreases 0
+=
+  return rect_make(0.0, 0.0, w, h)
+
+def studio_palette_panel_rect_at(w: float, h: float) -> Rect
+  requires w > 0.0
+  requires h > 0.0
+  ensures result.w == studio_palette_panel_width_px()
+  ensures result.h == studio_palette_panel_height_px()
+  decreases 0
+=
+  var pw: float = studio_palette_panel_width_px()
+  var ph: float = studio_palette_panel_height_px()
+  var x: float = (w - pw) / 2.0
+  var y: float = (h - ph) / 2.0
+  if x < 0.0:
+    x = 0.0
+  if y < 0.0:
+    y = 0.0
+  return rect_make(x, y, pw, ph)
+
+def studio_palette_search_rect_at(panel: Rect) -> Rect
+  requires panel.w >= studio_palette_panel_width_px()
+  requires panel.h >= studio_palette_search_bar_height_px()
+  ensures result.w == panel.w - 32.0
+  ensures result.h == studio_palette_search_bar_height_px()
+  decreases 0
+=
+  var pad: float = 16.0
+  return rect_make(panel.x + pad, panel.y + pad, panel.w - (pad * 2.0), studio_palette_search_bar_height_px())
+
+def studio_compose_palette(w: float, h: float, is_open: int) -> StudioCommandPaletteCompose
+  requires w > 0.0
+  requires h > 0.0
+  requires is_open >= studio_palette_closed_flag()
+  requires is_open <= studio_palette_open_flag()
+  ensures result.is_open == is_open
+  ensures result.result_count >= 0
+  decreases is_open
+=
+  var out: StudioCommandPaletteCompose
+  out.is_open = is_open
+  out.backdrop_rect = rect_make(0.0, 0.0, 0.0, 0.0)
+  out.panel_rect = rect_make(0.0, 0.0, 0.0, 0.0)
+  out.search_rect = rect_make(0.0, 0.0, 0.0, 0.0)
+  out.result_count = 0
+  if is_open == studio_palette_open_flag():
+    var backdrop_w: float = w
+    var backdrop_h: float = h
+    out.backdrop_rect = studio_palette_backdrop_rect_at(backdrop_w, backdrop_h)
+    var panel_w: float = w
+    var panel_h: float = h
+    out.panel_rect = studio_palette_panel_rect_at(panel_w, panel_h)
+    var search_pad: float = 16.0
+    out.search_rect = rect_make(out.panel_rect.x + search_pad, out.panel_rect.y + search_pad, out.panel_rect.w - (search_pad * 2.0), studio_palette_search_bar_height_px())
+    out.result_count = studio_palette_result_count_stub()
+  return out
+
+def studio_palette_open(palette: var StudioCommandPaletteCompose, w: float, h: float) -> unit
+  requires w > 0.0
+  requires h > 0.0
+  requires palette.is_open == studio_palette_closed_flag()
+  ensures palette.is_open == studio_palette_open_flag()
+  ensures palette.result_count == studio_palette_result_count_stub()
+  ensures palette.backdrop_rect.w == w
+  decreases 0
+=
+  var open_w: float = w
+  var open_h: float = h
+  var opened: StudioCommandPaletteCompose = studio_compose_palette(open_w, open_h, studio_palette_open_flag())
+  palette.is_open = opened.is_open
+  palette.backdrop_rect = opened.backdrop_rect
+  palette.panel_rect = opened.panel_rect
+  palette.search_rect = opened.search_rect
+  palette.result_count = opened.result_count
+
+def studio_palette_close(palette: var StudioCommandPaletteCompose) -> unit
+  requires palette.is_open == studio_palette_open_flag()
+  ensures palette.is_open == studio_palette_closed_flag()
+  ensures palette.result_count == 0
+  decreases 0
+=
+  palette.is_open = studio_palette_closed_flag()
+  palette.result_count = 0
+  palette.backdrop_rect = rect_make(0.0, 0.0, 0.0, 0.0)
+  palette.panel_rect = rect_make(0.0, 0.0, 0.0, 0.0)
+  palette.search_rect = rect_make(0.0, 0.0, 0.0, 0.0)
+
+def studio_palette_toggle(palette: var StudioCommandPaletteCompose, w: float, h: float) -> unit
+  requires w > 0.0
+  requires h > 0.0
+  requires palette.is_open >= studio_palette_closed_flag()
+  requires palette.is_open <= studio_palette_open_flag()
+  ensures palette.is_open >= studio_palette_closed_flag()
+  ensures palette.is_open <= studio_palette_open_flag()
+  decreases palette.is_open
+=
+  if palette.is_open == studio_palette_open_flag():
+    studio_palette_close(palette)
+    return
+  var toggle_w: float = w
+  var toggle_h: float = h
+  studio_palette_open(palette, toggle_w, toggle_h)
+
+def studio_palette_ok(palette: StudioCommandPaletteCompose) -> int
+  requires palette.is_open >= studio_palette_closed_flag()
+  requires palette.is_open <= studio_palette_open_flag()
+  ensures result >= 0
+  ensures result <= 1
+  decreases palette.is_open
+=
+  if palette.is_open == studio_palette_closed_flag():
+    if palette.result_count != 0:
+      return 0
+    if palette.search_rect.w != 0.0:
+      return 0
+    return 1
+  if palette.backdrop_rect.w <= 0.0:
+    return 0
+  if palette.panel_rect.w != studio_palette_panel_width_px():
+    return 0
+  if palette.search_rect.h != studio_palette_search_bar_height_px():
+    return 0
+  if palette.result_count != studio_palette_result_count_stub():
+    return 0
+  return 1
+
+def studio_paint_palette_cmds(is_open: int) -> int
+  requires is_open >= studio_palette_closed_flag()
+  requires is_open <= studio_palette_open_flag()
+  ensures result >= 0
+  ensures result <= 3
+  decreases is_open
+=
+  if is_open == studio_palette_closed_flag():
+    return 0
+  return 3
+
+def paint_studio_palette(frame: var PaintFrame, palette: StudioCommandPaletteCompose) -> unit
+  requires frame.cmd_count >= 0
+  requires palette.is_open >= studio_palette_closed_flag()
+  requires palette.is_open <= studio_palette_open_flag()
+  ensures frame.cmd_count == old(frame.cmd_count) + studio_paint_palette_cmds(palette.is_open)
+  decreases palette.is_open
+=
+  if palette.is_open == studio_palette_closed_flag():
+    return
+  frame.cmd_count = frame.cmd_count + 1
+  frame.last_kind = paint_op_fill_rect()
+  frame.last_rect = palette.backdrop_rect
+  frame.last_color = color_rgb(0.051, 0.067, 0.090, 0.72)
+  frame.cmd_count = frame.cmd_count + 1
+  frame.last_kind = paint_op_fill_rect()
+  frame.last_rect = palette.panel_rect
+  frame.last_color = studio_color_bg_elevated()
+  frame.cmd_count = frame.cmd_count + 1
+  frame.last_kind = paint_op_stroke_rect()
+  frame.last_rect = palette.search_rect
+  frame.last_color = studio_color_accent_cyan()
+
+def paint_studio_palette_count(is_open: int) -> int
+  requires is_open >= studio_palette_closed_flag()
+  requires is_open <= studio_palette_open_flag()
+  ensures result == studio_paint_palette_cmds(is_open)
+  decreases is_open
+=
+  return studio_paint_palette_cmds(is_open)
 
 # --- studio shell layout IR ---
 
@@ -552,3 +789,11 @@ def paint_studio_shell_chrome_count() -> int
   decreases 0
 =
   return 7
+
+def paint_studio_shell_chrome_with_palette_count(palette_open: int) -> int
+  requires palette_open >= studio_palette_closed_flag()
+  requires palette_open <= studio_palette_open_flag()
+  ensures result == paint_studio_shell_chrome_count() + paint_studio_palette_count(palette_open)
+  decreases palette_open
+=
+  return paint_studio_shell_chrome_count() + paint_studio_palette_count(palette_open)

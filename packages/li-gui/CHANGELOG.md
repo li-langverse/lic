@@ -4,6 +4,7 @@
 
 ### Added
 
+- **UX-09 keyboard-first** — `StudioKeyBinding`, `gui_handle_studio_key`, `studio_handle_studio_key`; smoke `studio_keyboard.li`.
 - **UX-01 selection** — `ViewportSelection`, `gui_viewport_selection_none` / `gui_viewport_selection_rect`; `selection_active` on `ViewportRegion`.
 - **Viewport region** — `ViewportRegion` + `gui_viewport_region_from_layout` from `li-ui` shell layout IR.
 - **Panel switch timing** — `PanelSwitchTiming`, `GuiPanelState`, `gui_panel_switch_to` hooks with PH-UX budget (`studio_panel_transition_ms` ≤ 100).

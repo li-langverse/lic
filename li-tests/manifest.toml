@@ -757,6 +757,13 @@ note = "import gui: viewport region + panel switch timing + paint expansion (PH-
 
 [[tests]]
 suite = "composable"
+file = "composable/import_gui_studio_keyboard.li"
+packages = ["li-gui", "li-ui"]
+outcome = "compile_open_ok"
+note = "import gui: UX-09 keyboard-first Escape/Cmd+K/1-5 region focus"
+
+[[tests]]
+suite = "composable"
 file = "composable/import_render_wgpu_fps.li"
 packages = ["li-render", "li-gpu", "li-gui", "li-ui"]
 outcome = "compile_open_ok"

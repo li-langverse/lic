@@ -6,6 +6,10 @@ All notable changes to Li are documented here. The format follows
 
 ## [Unreleased]
 
+### Added
+
+- **Studio UX-09 keyboard-first** — `gui_handle_studio_key`, `StudioKeyBinding`, `InputState.key_cmd_k` / `key_digit`, smoke `studio_keyboard.li` — [2026-05-25-studio-keyboard-ux09.md](docs/release-notes/2026-05-25-studio-keyboard-ux09.md).
+
 ### Changed
 
 - **LLVM toolchain:** pin **22** (was 18) — `scripts/llvm-env.sh`, `scripts/ci-install-llvm.sh`, CMake gate — [2026-05-22-llvm-22-toolchain-bump.md](docs/release-notes/2026-05-22-llvm-22-toolchain-bump.md).

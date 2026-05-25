@@ -10,7 +10,7 @@ note = "T-PKG-li-std-ui-smoke"
 suite = "smoke"
 file = "smoke/studio_palette.li"
 outcome = "verify_ok"
-note = "T-PKG-li-ui-studio-palette-tokens"
+note = "T-PKG-li-ui-studio-palette-ux04"
 
 [[tests]]
 suite = "smoke"

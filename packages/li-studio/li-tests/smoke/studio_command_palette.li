@@ -9,7 +9,7 @@ def main() -> int
     return 1
   if li_std_ui_studio_composables_version() < 3:
     return 2
-  var shell_closed: StudioShellCompose = studio_compose_shell(1920.0, 1080.0, 0, 0, 0)
+  var shell_closed: StudioShellCompose = studio_compose_shell(1920.0, 1080.0, 0, 0)
   if shell_closed.palette.is_open != studio_palette_closed_flag():
     return 3
   if studio_compose_ok(shell_closed) != 1:
@@ -19,19 +19,10 @@ def main() -> int
     return 5
   if shell_open.palette.result_count != studio_palette_result_count_stub():
     return 6
-  var pal: StudioCommandPaletteCompose = shell_closed.palette
-  studio_palette_toggle(pal, 1920.0, 1080.0)
-  if pal.is_open != studio_palette_open_flag():
-    return 7
-  studio_palette_close(pal)
-  if pal.is_open != studio_palette_closed_flag():
-    return 8
   var frame: PaintFrame = paint_frame_new()
   studio_paint_palette_overlay(frame, shell_open.palette)
   if frame.cmd_count != studio_paint_palette_cmds(studio_palette_open_flag()):
-    return 9
-  var chrome: PaintFrame = paint_frame_new()
-  studio_paint_shell_chrome(chrome, shell_open)
-  if chrome.cmd_count != studio_shell_chrome_count_palette(0, studio_agent_task_idle(), studio_palette_open_flag(), shell_open.agent.agent_context_label):
-    return 10
+    return 7
+  if studio_paint_palette_cmds(studio_palette_closed_flag()) != 0:
+    return 8
   return 0

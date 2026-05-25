@@ -15,3 +15,9 @@ suite = "smoke"
 file = "smoke/viewport_selection.li"
 outcome = "compile_open_ok"
 note = "T-PKG-li-gui-viewport-selection"
+
+[[tests]]
+suite = "smoke"
+file = "smoke/studio_keyboard.li"
+outcome = "compile_open_ok"
+note = "T-PKG-li-gui-studio-keyboard-ux09"

@@ -4,6 +4,19 @@ Li World Studio product shell: composes **dock**, **timeline**, and **inspector*
 
 Import: `import studio`
 
+## Run demo (PH-GD-1)
+
+**Headless compose/paint contract demo** — not an SDL/wgpu window yet. The runnable entry exercises `studio_compose_shell_palette` → `studio_paint_shell_chrome` and one `studio_handle_studio_key` call per frame; a native host must wire input and present paint IR later.
+
+```bash
+cd packages/li-studio
+lic check src/main.li
+lic build src/main.li -o li-studio-demo
+./li-studio-demo   # exits 0 when 3-frame shell contract holds
+```
+
+Dimensions and frame budget: `examples/studio_shell_demo.toml` (1280×720, 3 frames). Smoke: `li-tests/smoke/studio_shell_demo.li`.
+
 ## Compose API
 
 - `studio_compose_shell` / `studio_compose_shell_profile` — layout + `StudioProjectConfig.active_profile`

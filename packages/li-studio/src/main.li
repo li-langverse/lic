@@ -1,0 +1,81 @@
+import studio
+import ui
+
+# PH-GD-1 — headless compose/paint shell demo entry (no SDL/wgpu host window yet).
+
+def studio_shell_demo_width() -> float
+  requires true
+  ensures result == 1280.0
+  decreases 0
+=
+  return 1280.0
+
+def studio_shell_demo_height() -> float
+  requires true
+  ensures result == 720.0
+  decreases 0
+=
+  return 720.0
+
+def studio_shell_demo_frame(w: float, h: float, frame_id: int) -> int
+  requires w > 0.0
+  requires h > 0.0
+  requires frame_id >= 0
+  requires frame_id <= 2
+  ensures result >= 0
+  decreases frame_id
+=
+  var palette_open: int = studio_palette_closed_flag()
+  var compose: StudioShellCompose = studio_compose_shell_palette(w, h, 0, 1, 1, palette_open)
+  var input: InputState = input_default()
+  if frame_id == 1:
+    if studio_timeline_playing() == 0:
+      var _play: int = studio_timeline_toggle_play()
+    var _tick: int = studio_timeline_tick_frame()
+  if frame_id == 2:
+    input.key_cmd_k = 1
+  var _key_action: int = studio_handle_studio_key(compose, input)
+  var frame: PaintFrame = paint_frame_new()
+  studio_paint_shell_chrome(frame, compose)
+  var expected: int = studio_shell_chrome_count_palette(
+    compose.inspector.has_selection,
+    compose.scene_entity_count,
+    compose.agent.task_state,
+    compose.palette.is_open,
+    compose.agent.agent_context_label)
+  if frame.cmd_count != expected:
+    return 10 + frame_id
+  if frame_id == 0:
+    return 0
+  if frame_id == 1:
+    if compose.timeline.playhead_pct != studio_timeline_playhead_pct():
+      return 21
+    return 0
+  if studio_compose_ok(compose) != 1:
+    return 32
+  return 0
+
+def main() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  if li_std_studio_version() < 5:
+    return 1
+  if li_std_gui_version() < 1:
+    return 2
+  if li_std_ui_studio_composables_version() < 3:
+    return 3
+  studio_timeline_reset_mock()
+  var w: float = studio_shell_demo_width()
+  var h: float = studio_shell_demo_height()
+  var r0: int = studio_shell_demo_frame(w, h, 0)
+  if r0 != 0:
+    return 4
+  var r1: int = studio_shell_demo_frame(w, h, 1)
+  if r1 != 0:
+    return 5
+  var r2: int = studio_shell_demo_frame(w, h, 2)
+  if r2 != 0:
+    return 6
+  return 0

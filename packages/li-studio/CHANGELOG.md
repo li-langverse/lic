@@ -4,6 +4,7 @@
 
 ### Added
 
+- **Runnable shell demo entry (PH-GD-1)** — `src/main.li` (`studio_shell_demo_frame`, `li-studio-demo` bin), `examples/studio_shell_demo.toml`, smoke `studio_shell_demo.li`; headless compose/paint + keyboard hook per frame (no SDL/wgpu window).
 - **Scene outliner (PH-GD-1)** — `StudioOutlinerNode`, `StudioOutlinerCompose`, `studio_compose_outliner`, `studio_paint_outliner`; demo hierarchy (Root, Camera, Mesh) in dock strip below slots; wired into `StudioShellCompose` and shell chrome counts; smoke `studio_outliner.li`.
 - **Accessibility (UX-10)** — `studio_paint_focus_ring_for_panel` when `panel.active_region` matches; uses `li-ui` focus ring token.
 - **Loading / skeleton (UX-11)** — `StudioShellLoadingState`, `studio_compose_shell_loading`, `studio_paint_shell_loading` (4 fill cmds); smoke `studio_shell_loading.li`.

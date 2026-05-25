@@ -6,6 +6,10 @@ All notable changes to Li are documented here. The format follows
 
 ## [Unreleased]
 
+### Added
+
+- **WP0/WP2 (8p):** `ResourceOptions` CLI (`--jobs`, `--max-memory`, `--job-memory-mb`, `--build-dir`, `--threads`); `run_all.sh` parallel workers use `lic build --build-dir=…` — `docs/release-notes/2026-05-25-lic-resource-options-wp0-wp2.md`.
+
 ### Changed
 
 - **Plan checkboxes (wave):** sync `docs/superpowers/plans/*.md` exit gates with shipped Phases 0–5, Pkg, P-linalg loop witness, and C++ compiler evidence — [2026-05-25-plan-checkbox-audit-wave.md](docs/release-notes/2026-05-25-plan-checkbox-audit-wave.md).
@@ -172,5 +176,3 @@ All notable changes to Li are documented here. The format follows
 - MkDocs documentation site and CI/local-ci tooling
 
 [0.1.0]: https://github.com/li-langverse/lic/releases/tag/v0.1.0
-
-- **WP0/WP2:** ResourceOptions CLI + run_all --build-dir workers.

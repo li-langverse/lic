@@ -4,8 +4,6 @@
 #include "li/mir_abi.hpp"
 #include "li/num_stable.hpp"
 #include "li/platform.hpp"
-#include "li/resource_options.hpp"
-#include <iostream>
 
 #include <atomic>
 #include <chrono>
@@ -21,10 +19,9 @@ std::string unique_temp_ll_path() {
   const auto tick =
       static_cast<std::uint64_t>(std::chrono::steady_clock::now().time_since_epoch().count());
   const auto n = seq.fetch_add(1, std::memory_order_relaxed);
-  std::string name="li_build_"+std::to_string(tick)+"_"+std::to_string(n)+".ll";
-  std::string prefix=repo_build_prefix();
-  if(!prefix.empty()){std::error_code ec;std::filesystem::create_directories(prefix,ec);return prefix+"/"+name;}
-  return (std::filesystem::temp_directory_path()/name).string();
+  return (std::filesystem::temp_directory_path() /
+          ("li_build_" + std::to_string(tick) + "_" + std::to_string(n) + ".ll"))
+      .string();
 }
 
 }  // namespace
@@ -32,9 +29,6 @@ std::string unique_temp_ll_path() {
 bool compile_module(const Module& module, const std::string& output_path,
                   const CompileOptions& opts, const std::string& extra_clang_flags,
                   std::string* error) {
-  const ResourceOptions& ro=resource_options();
-  if(ro.effective_jobs()>1){static bool n; if(!n){std::cerr<<"lic: note: --jobs>1 MIR partition not implemented; single-threaded\n";n=1;}}
-  if(ro.threads)setenv("LI_OMP_THREADS",std::to_string(ro.threads).c_str(),1);
   MirModule mir = lower_to_mir(module);
   mir.fp_numerically_stable = opts.fp_numerically_stable;
   apply_numerical_stability(mir);

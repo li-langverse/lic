@@ -17,6 +17,14 @@ void warn_deprecated_env_once(const char* var, const char* flag) {
   std::cerr << "lic: warning: " << var << " is deprecated; use " << flag << " on the command line\n";
 }
 
+void warn_env_ignored_once(const char* var) {
+  if (g_env_warned) {
+    return;
+  }
+  g_env_warned = true;
+  std::cerr << "lic: warning: " << var << " is set but ignored because the matching flag was passed\n";
+}
+
 unsigned parse_positive(const char* s) {
   if (s == nullptr || *s == '\0') {
     return 0;
@@ -37,6 +45,17 @@ ResourceOptions& resource_options() { return g_opts; }
 void reset_resource_options() {
   g_opts = ResourceOptions{};
   g_env_warned = false;
+}
+
+unsigned ResourceOptions::effective_jobs(unsigned default_per_job_mb) const {
+  unsigned j = jobs > 0 ? jobs : 1u;
+  const std::size_t per = job_memory_mb > 0 ? job_memory_mb : default_per_job_mb;
+  if (max_memory_mb == 0 || per == 0) {
+    return j;
+  }
+  const std::size_t cap = max_memory_mb / per;
+  const unsigned capped = cap < 1 ? 1u : static_cast<unsigned>(cap);
+  return j < capped ? j : capped;
 }
 
 bool apply_resource_flag(std::string_view arg, ResourceOptions& out) {
@@ -69,23 +88,40 @@ bool apply_resource_flag(std::string_view arg, ResourceOptions& out) {
 }
 
 void finalize_resource_options(ResourceOptions& opts) {
-  if (!opts.jobs_from_flag) {
-    if (const char* v = std::getenv("LI_COMPILE_JOBS")) {
+  if (!opts.jobs_from_flag && std::getenv("LI_COMPILE_JOBS")) {
+    if (const unsigned v = parse_positive(std::getenv("LI_COMPILE_JOBS")); v > 0) {
+      opts.jobs = v;
       warn_deprecated_env_once("LI_COMPILE_JOBS", "--jobs=N");
-      opts.jobs = parse_positive(v);
     }
+  } else if (opts.jobs_from_flag && std::getenv("LI_COMPILE_JOBS")) {
+    warn_env_ignored_once("LI_COMPILE_JOBS");
   }
-  if (!opts.max_memory_from_flag) {
-    if (const char* v = std::getenv("LI_MAX_MEMORY_MB")) {
+  if (!opts.max_memory_from_flag && std::getenv("LI_MAX_MEMORY_MB")) {
+    if (const std::size_t v = parse_positive_size(std::getenv("LI_MAX_MEMORY_MB")); v > 0) {
+      opts.max_memory_mb = v;
       warn_deprecated_env_once("LI_MAX_MEMORY_MB", "--max-memory=MB");
-      opts.max_memory_mb = parse_positive_size(v);
     }
+  } else if (opts.max_memory_from_flag && std::getenv("LI_MAX_MEMORY_MB")) {
+    warn_env_ignored_once("LI_MAX_MEMORY_MB");
   }
-  if (!opts.threads_from_flag) {
-    if (const char* v = std::getenv("LI_OMP_THREADS")) {
-      warn_deprecated_env_once("LI_OMP_THREADS", "--threads=N");
-      opts.threads = parse_positive(v);
+  if (!opts.build_dir_from_flag && std::getenv("LI_BUILD_DIR")) {
+    if (const char* env = std::getenv("LI_BUILD_DIR"); env && env[0]) {
+      opts.build_dir = env;
+      warn_deprecated_env_once("LI_BUILD_DIR", "--build-dir=PATH");
     }
+  } else if (opts.build_dir_from_flag && std::getenv("LI_BUILD_DIR")) {
+    warn_env_ignored_once("LI_BUILD_DIR");
+  }
+  if (!opts.threads_from_flag && std::getenv("LI_OMP_THREADS")) {
+    if (const unsigned v = parse_positive(std::getenv("LI_OMP_THREADS")); v > 0) {
+      opts.threads = v;
+      warn_deprecated_env_once("LI_OMP_THREADS", "--threads=N");
+    }
+  } else if (opts.threads_from_flag && std::getenv("LI_OMP_THREADS")) {
+    warn_env_ignored_once("LI_OMP_THREADS");
+  }
+  if (opts.jobs == 0) {
+    opts.jobs = 1;
   }
 }
 

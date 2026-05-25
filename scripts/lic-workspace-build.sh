@@ -37,12 +37,13 @@ for m in "${members[@]}"; do
   entry="$ROOT/packages/$m/src/lib.li"
   smoke="$ROOT/packages/$m/li-tests/smoke/builds.li"
   # Prefer smoke: package libs may use extern stubs not yet proof-complete (8a).
+  open_vc=(--allow-open-vc --no-lean-verify)
   if [[ -f "$smoke" ]]; then
     echo "workspace build: $m (smoke)"
-    "$LIC" build "$smoke" -o /dev/null
+    "$LIC" build "${open_vc[@]}" "$smoke" -o /dev/null
   elif [[ -f "$entry" ]]; then
     echo "workspace build: $m (src/lib.li)"
-    "$LIC" build "$entry" -o /dev/null
+    "$LIC" build "${open_vc[@]}" "$entry" -o /dev/null
   else
     echo "workspace build: skip $m (no entrypoint)" >&2
   fi

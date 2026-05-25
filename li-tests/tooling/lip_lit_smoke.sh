@@ -30,7 +30,12 @@ fix_pkg_ok_def_syntax
 "$LIT" --version
 
 if [[ -d "$ROOT/../lip/fixtures/pkg_ok" ]]; then
-  (cd "$ROOT/../lip/fixtures/pkg_ok" && "$LIT" test --coverage)
+  export LI_REPO_ROOT="$ROOT"
+  (cd "$ROOT/../lip/fixtures/pkg_ok" && "$LIT" test --coverage) || {
+    echo "lip_lit_smoke: lit failed; reproducing calls_tag:" >&2
+    (cd "$ROOT/../lip/fixtures/pkg_ok" && "$LIC" build li-tests/smoke/calls_tag.li -o /dev/null) 2>&1 || true
+    exit 1
+  }
   (cd "$ROOT/../lip/fixtures/pkg_ok" && "$LIP" publish --dry-run)
 else
   TMP="$(mktemp -d)"

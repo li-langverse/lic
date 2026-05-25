@@ -62,6 +62,7 @@ TokenKind Lexer::keyword_kind(std::string_view text) const {
   if (text == "is") return TokenKind::KwIs;
   if (text == "requires") return TokenKind::KwRequires;
   if (text == "ensures") return TokenKind::KwEnsures;
+  if (text == "prob_ensures") return TokenKind::KwProbEnsures;
   if (text == "decreases") return TokenKind::KwDecreases;
   if (text == "invariant") return TokenKind::KwInvariant;
   if (text == "result") return TokenKind::KwResult;

@@ -28,9 +28,17 @@ rm -f "$ROOT/build/generated/AutoVC.lean"
 "$LIC" build "$ROOT/li-tests/modules/greeter/greeter.li" -o /dev/null
 [[ -f "$ROOT/build/generated/AutoVC.lean" ]] || fail "AutoVC.lean not emitted"
 
+li_phase "proof-db release gate (advisory)"
+chmod +x "$ROOT/scripts/check-proof-db.sh"
+export LI_PROOF_DB_STRICT="${LI_PROOF_DB_STRICT:-0}"
+"$ROOT/scripts/check-proof-db.sh" || li_warn "proof-db drift — proof-db/baseline.jsonl"
+
 if command -v lake >/dev/null 2>&1; then
   li_phase "semantics lake"
   (cd "$ROOT/docs/semantics" && lake build) || fail "lake build"
+  "$ROOT/scripts/check-autovc-open-goals.sh" "$ROOT/build/generated/AutoVC.lean" || fail "autovc open goals"
+else
+  li_warn "semantics lake N/A — lake not on PATH"
 fi
 
 li_phase "tier 0 bench"
@@ -51,6 +59,7 @@ chmod +x "$ROOT/scripts/check-doc-provability-claims.sh" \
   "$ROOT/li-tests/tooling/mir_vc_witness.sh" \
   "$ROOT/li-tests/tooling/diagnose_json_smoke.sh"
 "$ROOT/scripts/check-doc-provability-claims.sh"
+"$ROOT/scripts/check-mir-vectorized-decorator.sh"
 "$ROOT/scripts/check-li-toolchain.sh"
 "$ROOT/li-tests/tooling/li_new_package_smoke.sh"
 "$ROOT/li-tests/tooling/lip_lit_smoke.sh"
@@ -78,5 +87,6 @@ li_phase "tier-1 Li vs C++ (advisory; strict via LI_TIER1_PERF_STRICT=1)"
 chmod +x "$ROOT/scripts/check-tier1-li-vs-cpp.sh" "$ROOT/li-tests/tooling/tier1_li_vs_cpp.sh"
 export LI_TIER1_PERF_STRICT="${LI_TIER1_PERF_STRICT:-0}"
 "$ROOT/li-tests/tooling/tier1_li_vs_cpp.sh" || li_warn "tier-1 perf gaps — see benchmarks/results/latest.csv"
+
 
 ok "lic monorepo v1 gates"

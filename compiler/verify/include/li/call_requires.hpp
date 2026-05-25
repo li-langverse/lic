@@ -79,6 +79,9 @@ void collect_calls_in_stmts(const std::vector<Stmt>& stmts,
 void collect_method_calls_in_stmts(const std::vector<Stmt>& stmts,
                                  std::vector<const Expr*>& out);
 
+/// Identifiers referenced in an expression (for Lean VC formals on call-site requires).
+void collect_idents_in_expr(const Expr& expr, std::set<std::string>& out);
+
 /// Resolved refinement on a parameter or variable type (`{x: int | …}` or alias).
 struct ResolvedRefinement {
   std::string bind_var;

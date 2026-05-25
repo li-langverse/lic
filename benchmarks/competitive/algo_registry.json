@@ -348,193 +348,193 @@
       "id": 401,
       "name": "qm_gto_eval",
       "family": "qm",
-      "implemented_smoke": false
+      "implemented_smoke": true
     },
     {
       "id": 402,
       "name": "qm_overlap_integrals",
       "family": "qm",
-      "implemented_smoke": false
+      "implemented_smoke": true
     },
     {
       "id": 403,
       "name": "qm_kinetic_integrals",
       "family": "qm",
-      "implemented_smoke": false
+      "implemented_smoke": true
     },
     {
       "id": 404,
       "name": "qm_nuclear_attraction",
       "family": "qm",
-      "implemented_smoke": false
+      "implemented_smoke": true
     },
     {
       "id": 405,
       "name": "qm_eri_os",
       "family": "qm",
-      "implemented_smoke": false
+      "implemented_smoke": true
     },
     {
       "id": 406,
       "name": "qm_eri_screening",
       "family": "qm",
-      "implemented_smoke": false
+      "implemented_smoke": true
     },
     {
       "id": 407,
       "name": "qm_eri_density_fitting",
       "family": "qm",
-      "implemented_smoke": false
+      "implemented_smoke": true
     },
     {
       "id": 408,
       "name": "qm_hf_fock_build",
       "family": "qm",
-      "implemented_smoke": false
+      "implemented_smoke": true
     },
     {
       "id": 409,
       "name": "qm_hf_diis",
       "family": "qm",
-      "implemented_smoke": false
+      "implemented_smoke": true
     },
     {
       "id": 410,
       "name": "qm_hf_canonical_ortho",
       "family": "qm",
-      "implemented_smoke": false
+      "implemented_smoke": true
     },
     {
       "id": 411,
       "name": "qm_scf_solver",
       "family": "qm",
-      "implemented_smoke": false
+      "implemented_smoke": true
     },
     {
       "id": 412,
       "name": "qm_dft_xc_lda",
       "family": "qm",
-      "implemented_smoke": false
+      "implemented_smoke": true
     },
     {
       "id": 413,
       "name": "qm_dft_xc_gga",
       "family": "qm",
-      "implemented_smoke": false
+      "implemented_smoke": true
     },
     {
       "id": 414,
       "name": "qm_dft_xc_mgga",
       "family": "qm",
-      "implemented_smoke": false
+      "implemented_smoke": true
     },
     {
       "id": 415,
       "name": "qm_dft_grid_becke",
       "family": "qm",
-      "implemented_smoke": false
+      "implemented_smoke": true
     },
     {
       "id": 416,
       "name": "qm_dft_grid_lebedev",
       "family": "qm",
-      "implemented_smoke": false
+      "implemented_smoke": true
     },
     {
       "id": 417,
       "name": "qm_dft_hybrid_exchange",
       "family": "qm",
-      "implemented_smoke": false
+      "implemented_smoke": true
     },
     {
       "id": 418,
       "name": "qm_dft_scf_energy",
       "family": "qm",
-      "implemented_smoke": false
+      "implemented_smoke": true
     },
     {
       "id": 419,
       "name": "qm_grad_analytical",
       "family": "qm",
-      "implemented_smoke": false
+      "implemented_smoke": true
     },
     {
       "id": 420,
       "name": "qm_geom_opt_internal",
       "family": "qm",
-      "implemented_smoke": false
+      "implemented_smoke": true
     },
     {
       "id": 421,
       "name": "qm_geom_opt_bfgs",
       "family": "qm",
-      "implemented_smoke": false
+      "implemented_smoke": true
     },
     {
       "id": 422,
       "name": "qm_mp2",
       "family": "qm",
-      "implemented_smoke": false
+      "implemented_smoke": true
     },
     {
       "id": 423,
       "name": "qm_ccsd",
       "family": "qm",
-      "implemented_smoke": false
+      "implemented_smoke": true
     },
     {
       "id": 424,
       "name": "qm_tddft_casida",
       "family": "qm",
-      "implemented_smoke": false
+      "implemented_smoke": true
     },
     {
       "id": 425,
       "name": "qm_tddft_rpa",
       "family": "qm",
-      "implemented_smoke": false
+      "implemented_smoke": true
     },
     {
       "id": 426,
       "name": "qm_xtb_gfn",
       "family": "qm",
-      "implemented_smoke": false
+      "implemented_smoke": true
     },
     {
       "id": 427,
       "name": "qm_dispersion_d3",
       "family": "qm",
-      "implemented_smoke": false
+      "implemented_smoke": true
     },
     {
       "id": 428,
       "name": "qm_ecp",
       "family": "qm",
-      "implemented_smoke": false
+      "implemented_smoke": true
     },
     {
       "id": 429,
       "name": "qm_ase_calculator",
       "family": "qm",
-      "implemented_smoke": false
+      "implemented_smoke": true
     },
     {
       "id": 430,
       "name": "qm_property_dipole",
       "family": "qm",
-      "implemented_smoke": false
+      "implemented_smoke": true
     },
     {
       "id": 431,
       "name": "qm_property_freq",
       "family": "qm",
-      "implemented_smoke": false
+      "implemented_smoke": true
     },
     {
       "id": 432,
       "name": "qm_job_queue_io",
       "family": "qm",
-      "implemented_smoke": false
+      "implemented_smoke": true
     },
     {
       "id": 501,
@@ -594,19 +594,19 @@
       "id": 521,
       "name": "ml_mlp_forward",
       "family": "ml",
-      "implemented_smoke": false
+      "implemented_smoke": true
     },
     {
       "id": 522,
       "name": "ml_mlp_train_step",
       "family": "ml",
-      "implemented_smoke": false
+      "implemented_smoke": true
     },
     {
       "id": 523,
       "name": "ml_conv2d_forward",
       "family": "ml",
-      "implemented_smoke": false
+      "implemented_smoke": true
     },
     {
       "id": 601,
@@ -672,43 +672,43 @@
       "id": 701,
       "name": "viz_colormap",
       "family": "viz",
-      "implemented_smoke": false
+      "implemented_smoke": true
     },
     {
       "id": 702,
       "name": "viz_marching_cubes",
       "family": "viz",
-      "implemented_smoke": false
+      "implemented_smoke": true
     },
     {
       "id": 703,
       "name": "viz_resample",
       "family": "viz",
-      "implemented_smoke": false
+      "implemented_smoke": true
     },
     {
       "id": 704,
       "name": "viz_decimate",
       "family": "viz",
-      "implemented_smoke": false
+      "implemented_smoke": true
     },
     {
       "id": 705,
       "name": "viz_pipeline_graph",
       "family": "viz",
-      "implemented_smoke": false
+      "implemented_smoke": true
     },
     {
       "id": 706,
       "name": "viz_inspector_panels",
       "family": "viz",
-      "implemented_smoke": false
+      "implemented_smoke": true
     },
     {
       "id": 707,
       "name": "viz_linked_views",
       "family": "viz",
-      "implemented_smoke": false
+      "implemented_smoke": true
     },
     {
       "id": 801,
@@ -744,19 +744,19 @@
       "id": 901,
       "name": "auto_bicycle_model",
       "family": "auto",
-      "implemented_smoke": false
+      "implemented_smoke": true
     },
     {
       "id": 902,
       "name": "auto_dyn_rk4",
       "family": "auto",
-      "implemented_smoke": false
+      "implemented_smoke": true
     },
     {
       "id": 903,
       "name": "auto_sensor_raycast",
       "family": "auto",
-      "implemented_smoke": false
+      "implemented_smoke": true
     }
   ]
 }

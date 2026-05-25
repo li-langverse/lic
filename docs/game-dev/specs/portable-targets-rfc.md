@@ -12,6 +12,10 @@ lic build --target aarch64-apple-darwin
 lic build --target-list
 ```
 
+## Li syntax
+
+Use **`def`** for all new APIs. Do not document bare **`proc`**. **`extern proc`** only for FFI. Every exported `def` (and each `extern proc`) needs `requires` / `ensures` / `decreases`. The parser still accepts legacy bare `proc` in old trees only — reject that syntax in new Studio/game-dev docs and package code.
+
 **`targets/manifest.toml`** — supported triples, CPU features, CI tier (required / optional).
 
 Tier-1 CI: `x86_64-linux`, `aarch64-linux`, `aarch64-darwin`.

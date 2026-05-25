@@ -103,12 +103,31 @@ static int save_ppm(const unsigned char* rgb, int w, int h, const char* path) {
   return 0;
 }
 
+
+static int profile_from_env_slug(const char** slug_out) {
+  const char* env = getenv("STUDIO_DEMO_PROFILE");
+  if (env == NULL || env[0] == '\0') {
+    return 0;
+  }
+  for (size_t i = 0; i < sizeof(k_profiles) / sizeof(k_profiles[0]); i++) {
+    if (strcmp(k_profiles[i].slug, env) == 0) {
+      *slug_out = k_profiles[i].slug;
+      return k_profiles[i].id;
+    }
+  }
+  return 0;
+}
+
 int main(int argc, char** argv) {
   int width = 1920;
   int height = 1080;
   int profile_id = 1;
   const char* out_dir = ".";
   const char* slug = "game";
+  const int env_pid = profile_from_env_slug(&slug);
+  if (env_pid > 0) {
+    profile_id = env_pid;
+  }
   for (int i = 1; i < argc; i++) {
     if (strcmp(argv[i], "--width") == 0 && i + 1 < argc) {
       width = atoi(argv[++i]);

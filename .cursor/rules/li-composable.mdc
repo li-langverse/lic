@@ -13,8 +13,8 @@ alwaysApply: false
 
 ## Required
 
-- **`src/lib.li`** exports composable `proc`s: start / stop / ready (or domain-equivalent verbs).
-- Every exported `proc` has `requires`, `ensures`, `decreases` (strict-by-default).
+- **`src/lib.li`** exports composable **`def`** APIs: start / stop / ready (or domain-equivalent verbs).
+- Every exported **`def`** (and each **`extern proc`**) has `requires`, `ensures`, `decreases` (strict-by-default).
 - **`src/main.li`** is a thin demo that imports the library — not the only entry point.
 - Package tests **import** `lib.li` (see `li-tests/composable/` and skill `composable-li-library`).
 

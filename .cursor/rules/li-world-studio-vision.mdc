@@ -20,8 +20,10 @@ alwaysApply: false
 
 ## Syntax
 
-- Use Python-style **`def`** for functions in new code and docs (not `proc`).
-- Keep `requires` / `ensures` / `decreases` on exported APIs.
+- Use **`def`** for all new APIs in code and docs. Do not document bare **`proc`**.
+- **`extern proc`** only for FFI/runtime stubs (C ABI), with full contracts.
+- Parser may still accept legacy bare `proc` in old trees — reject that syntax in new Studio/game-dev docs and package code.
+- Keep `requires` / `ensures` / `decreases` on every exported `def` and each `extern proc`.
 
 ## Product
 

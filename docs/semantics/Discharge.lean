@@ -60,4 +60,11 @@ theorem mat2_at2_float_spec_proved (A B : LiArray (LiArray Float 2) 2) :
 /-- Intentionally open float bound (`sqrt_open_bound.li`) — prove in a later P-float pass. -/
 theorem sqrt_open_bound_placeholder : True := trivial
 
+/-!
+## Refinement types (**P-refine** / **G-vc**)
+-/
+def refinement_nonneg_spec (n : Int) : Prop := n ≥ (0 : Int)
+
+theorem refinement_nonneg_lit_proved (n : Int) (hn : n ≥ (0 : Int)) : refinement_nonneg_spec n := hn
+
 end Li.Discharge

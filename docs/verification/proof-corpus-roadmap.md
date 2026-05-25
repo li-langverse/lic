@@ -78,7 +78,7 @@ Priority order aligned with [provability-gaps](provability-gaps.md) and **2e →
 
 | ID | Topic | Why unproven today | Suggested corpus |
 |----|-------|-------------------|------------------|
-| **P-refine** | Refinement types emit real Props | Call-site VCs stubbed `True`; user `ensures` still open | Extend `refinement_*` + Lean lemmas in `Discharge.lean` |
+| **P-refine** | Refinement types emit real Props | **Partial** — closed `refinement_call_ok.li` | `discharge_refinement_lean.sh` |
 | **P-ensures-witness** | MIR-linked `ensures` for non-literal returns | `witnessed_ensures` partial | `caller()`, `use_positive.li`, physics smokes |
 | **P-float** | `Float.abs`, sqrt error bounds | **G-vc** open (`sqrt_open_bound`) | `sqrt_open_bound.li` + `Li.Discharge` lemmas |
 | **P-loop** | `while` invariant preservation | Few loop specimens | New `contracts_verify/loop_invariant_*.li` |

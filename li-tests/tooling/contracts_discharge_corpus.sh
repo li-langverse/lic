@@ -7,7 +7,9 @@ chmod +x "$ROOT/li-tests/tooling/discharge_trivial_lean.sh" \
   "$ROOT/li-tests/tooling/discharge_const_lean.sh" \
   "$ROOT/li-tests/tooling/discharge_caller_requires_lean.sh" \
   "$ROOT/li-tests/tooling/discharge_caller_requires_local_lean.sh" \
-  "$ROOT/li-tests/tooling/discharge_linalg_int_lean.sh"
+  "$ROOT/li-tests/tooling/discharge_linalg_int_lean.sh" \
+  "$ROOT/li-tests/tooling/discharge_refinement_lean.sh"
+"$ROOT/li-tests/tooling/discharge_refinement_lean.sh"
 "$ROOT/li-tests/tooling/discharge_trivial_lean.sh"
 "$ROOT/li-tests/tooling/discharge_const_lean.sh"
 "$ROOT/li-tests/tooling/discharge_caller_requires_lean.sh"

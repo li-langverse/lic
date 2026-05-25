@@ -55,7 +55,7 @@ This page is the **honest inventory** of what is **not** fully proved or not yet
 | **G-hw** | Axiomatic | FP/hardware model limit (documented, not closable) |
 | **G-wrong-spec** | Social | User theorem quality (not tool-closable) |
 
-**Proof backlog still open:** **P-refine**, **P-ensures-witness**, **P-float**, **P-linalg** (float `@` Props; full matmul), **P-par**, **P-dec**, **P-bnd**, **P-http**, **P-narrow**, **P-meta** — see [proof-corpus-roadmap](proof-corpus-roadmap.md). **P-linalg partial:** closed dot/sum/matmul-entry + **loop dot** (`linalg_dot4_int_loop_open`, `dot4_int_loop_eval_spec`); open float `vec3_dot`, 2D CallProc.
+**Proof backlog still open:** **P-refine** (init/inline/guard), **P-ensures-witness**, **P-float**, **P-linalg** (float `@` Props; full matmul), **P-par**, **P-dec**, **P-bnd**, **P-http**, **P-narrow**, **P-meta** — see [proof-corpus-roadmap](proof-corpus-roadmap.md). **P-linalg partial:** closed dot/sum/matmul-entry + **loop dot** (`linalg_dot4_int_loop_open`, `dot4_int_loop_eval_spec`); open float `vec3_dot`, 2D CallProc.
 
 !!! warning "Do not overclaim in docs or packages"
     Until **Phase 2f** lands, saying “`lic build` proves your program in Lean” is **aspirational**. Prefer: “`lic build` runs the current static gate; see [provability gaps](provability-gaps.md).”
@@ -156,7 +156,7 @@ flowchart LR
 | `li-tests/race_shared_memory/` | Policy + typecheck **reject** bad parallel patterns (not Lean) |
 | `li-tests/decorator_exploits/` | **Planned** — reserved names, macro hijack (7d-e) |
 | `li-tests/math_linalg/` | **Partial** — 1d/2d `@`, element-wise, matmul compile tests (2i/7e) |
-| `li-tests/contracts_verify/` | **Partial** — 14× `prove_lean_ok` closed corpus; `sqrt_open_bound` intentional open (`verify_open_ok`); refinements on `verify_ok` |
+| `li-tests/contracts_verify/` | **Partial** — 14× `prove_lean_ok` closed corpus; `sqrt_open_bound` intentional open (`verify_open_ok`); `refinement_call_ok` `prove_lean_ok`; other refinements `verify_ok` |
 | `li-tests/tooling/discharge_linalg_int_lean.sh` | P-linalg closed specimens → zero open AutoVC goals |
 | `li-tests/tooling/vc_emit_contracts.sh` | `sqrt_contract` AutoVC uses `≥` / `Float.abs`, not `True` stubs |
 | `li-tests/tooling/discharge_trivial_lean.sh` | `discharge_trivial.li` → zero open Prop goals + `lake build` when Lean installed |

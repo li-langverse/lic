@@ -22,6 +22,7 @@ enum class ErrorCode {
   E0320,  // policy.parallel_disjoint
   E0321,  // policy.parallel_decorator_disjoint
   E0322,  // policy.vectorized_lanes_unsupported
+  E0323,  // policy.vectorized_no_vectorize_conflict
   E0330,  // policy.stdlib_shadow
   E0340,  // policy.forbidden_any
   E0350,  // policy.parallel_overlap

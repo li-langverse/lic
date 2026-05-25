@@ -48,7 +48,7 @@ void copy_decorators(const std::vector<Decorator>& src, std::vector<MirDecorator
 void apply_fn_decorator_codegen_flags(MirFn& fn) {
   for (const auto& d : fn.decorators) {
     if (d.name == "vectorized") {
-      (void)d.lanes;
+      fn.vectorized_lanes = d.lanes > 0 ? d.lanes : 4;
     }
     if (d.name == "no_vectorize") {
       fn.no_vectorize = true;

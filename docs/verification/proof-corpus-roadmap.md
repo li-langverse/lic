@@ -1,7 +1,15 @@
 # Proof corpus and verification roadmap
 
 **Audience:** agents extending **2e/2f**, reviewers judging “is `lic build` a proof certificate?”  
-**Related:** [Provability gaps](provability-gaps.md) · [Contracts and proofs](../language/contracts-and-proofs.md) · [Master plan § 2e–2f](../superpowers/plans/2026-05-14-li-master-plan.md)
+**Related:** [Provability gaps](provability-gaps.md) · [Proof database](proof-database.md) (`proof-db/manifest.toml`) · [Contracts and proofs](../language/contracts-and-proofs.md) · [Master plan § 2e–2f](../superpowers/plans/2026-05-14-li-master-plan.md)
+
+## Release regression manifest (v0)
+
+| Artifact | Role |
+|----------|------|
+| [`proof-db/manifest.toml`](../../proof-db/manifest.toml) | `release_pin` + `proof_status` per row |
+| [`scripts/check-proof-db.sh`](../../scripts/check-proof-db.sh) | CI smoke |
+
 
 ## What “testing proofs” means in this repo
 
@@ -68,7 +76,7 @@
 | Suite | Result | Notes |
 |-------|--------|-------|
 | `run_all.sh contracts_verify` | **28 pass / 0 fail** (16 `prove_lean_ok` + 12 `verify_ok`/`verify_open_ok`) | `prove_lean_ok` runs lake when elan on PATH |
-| `contracts_discharge_corpus.sh` | **ok** | Trivial/const/index/caller-requires/**linalg** + **P-float sqrt** closed |
+| `contracts_discharge_corpus.sh` | **ok** | Trivial/const/index/caller-requires/method-call/**linalg** + **P-float sqrt** closed; loop dot intentionally open |
 | `run_httpd_config.sh` | **ok** | Python oracle + Li `match_routes.li` binary exit 0 |
 | `contracts_verify_lean.sh` | **partial** | Needs Lean 4 + lake; may stop on specimens with open user `ensures` |
 | `lake build` | **default on `lic build`** | `--no-lean-verify` to skip; CI runs lake directly + tooling scripts |

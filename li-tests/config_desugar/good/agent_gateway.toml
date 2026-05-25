@@ -3,6 +3,7 @@ listen = ":443"
 host = "api.example.com"
 document_root = "./public"
 tls = "lets_encrypt"
+email = "ops@example.com"
 
 [limits]
 max_body = "1m"

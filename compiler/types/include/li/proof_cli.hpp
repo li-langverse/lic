@@ -6,6 +6,7 @@ namespace li {
 struct ProofCliFlags {
   bool allow_open_vc = false;
   bool no_lean_verify = false;
+  bool prob_check = false;
 };
 
 inline ProofCliFlags& proof_cli_flags() {
@@ -23,6 +24,10 @@ inline bool allow_open_vc() {
 
 inline bool no_lean_verify() {
   return proof_cli_flags().no_lean_verify;
+}
+
+inline bool prob_check() {
+  return proof_cli_flags().prob_check;
 }
 
 }  // namespace li

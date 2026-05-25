@@ -1,0 +1,8 @@
+[schema]
+version = 1
+
+[proof_status]
+values = ["proved", "open", "discrepancy", "axiomatic"]
+
+[kind]
+values = ["axiom", "lemma"]

@@ -1,0 +1,14 @@
+[meta]
+version = 1
+package = "lig"
+[[kernel]]
+id = "lig.kernel.matmul_f32"
+bench_name = "matmul_f32"
+lkir = "lkir/matmul_f32.li"
+validity_ref = "cpu"
+workload_class = "pilot"
+cpu = "0.017496"
+cuda = ""
+hip = ""
+metal = ""
+custom_lab = ""

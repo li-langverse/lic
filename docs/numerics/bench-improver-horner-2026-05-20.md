@@ -20,10 +20,11 @@ horner_pure_li,li,...,wall_time,0.0096,s,...
 1. **`li_rt_volatile_sink_f64`** — runtime volatile store (matches cpp `volatile` checksum sink).
 2. **`horner_pure_li/li/main.li`** — call sink after loop; `raises IO` on `main`.
 3. **`bench.py`** — pure_li verify fails if `li_time < 0.45 × native` (DCE guard).
+4. **`bench.py` (2026-05-22)** — `horner_pure_li` also requires Li checksum == native == Python ref (`LI_PRINT_SINK_F64=1`); tier-1 verify errors abort the run (no warn-and-continue).
 
 ## Status vs ≤1.2× cpp gate
 
-Still **red** (~10.7×). Next work is **PH-7e** codegen (SIMD/unroll Horner), not catalog threshold edits. Lexer `Plus` fix is already on `main` ([autoresearch-horner-lexer-2026-05-18.md](./autoresearch-horner-lexer-2026-05-18.md)).
+Still **red** (~10.7×) before PH-7e follow-up. **2026-05-22:** needs-based runtime link (no `li_rt_net` in microbenches), `HornerFmaUnroll` / `HornerStepPow4` (const `x`), non-IO `volatile_sink` — devbox tier-1 ~**3×** cpp (honest, passes DCE guard). Lexer `Plus` fix: [autoresearch-horner-lexer-2026-05-18.md](./autoresearch-horner-lexer-2026-05-18.md).
 
 ## Near-limit tier-2 (deferred)
 

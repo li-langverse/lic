@@ -3,7 +3,7 @@ name = "li-net"
 version = "0.1.0"
 edition = "2026"
 license = "Apache-2.0 OR MIT"
-description = "Li package li-net"
+description = "TCP/UDP sockets, DNS, epoll reactor surface"
 
 [dependencies]
 # path = { path = "../other" }   # lip 8b+

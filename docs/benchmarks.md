@@ -5,6 +5,26 @@ Every tier-2 physics simulation uses **one shared C kernel** per benchmark;
 `cpp`, `rust`, and `julia` labels run identical machine code, while `li` links
 the same `.c` file through `lic` (`LI_EXTRA_C`).
 
+## Modular scope (package-scoped runs)
+
+Changing one workspace package should **not** rerun the full tier-1/2 matrix.
+
+| Tool | Purpose |
+|------|---------|
+| `benchmarks/manifest.toml` | Maps `packages/*` → benchmark ids, composables, hooks |
+| `benchmarks/harness/bench_scope.py` | Resolve scope: `--package`, `--changed`, `--print-benches` |
+| `./scripts/bench-package.sh` | Run scoped verify, composables, optional `--timing` |
+| `bench.py --only` / `--package` / `--changed` | Merge timings for subset into `latest.csv` |
+| `bench_sim.py` | Sim registry + summaries + selective tier-2 smokes |
+
+```bash
+./scripts/bench-package.sh li-sim-scientific --write-summary
+./scripts/bench-package.sh --changed --timing --runs 1
+python3 benchmarks/harness/bench.py --tier 2 --only md_lennard_jones,heat_equation_2d
+```
+
+Sim agents: [sim-agent-handoff.md](ecosystem/sim-agent-handoff.md).
+
 ## Tiers
 
 | Tier | Scope | CI gate |

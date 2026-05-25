@@ -6,26 +6,140 @@ All notable changes to Li are documented here. The format follows
 
 ## [Unreleased]
 
+### Added
+
+- **PH-HW integration (`lig` + studio gap):** Rollup for multi-vendor GPU work packages WP1–WP5 ([#217](https://github.com/li-langverse/lic/pull/217), [#218](https://github.com/li-langverse/lic/pull/218), [#213](https://github.com/li-langverse/lic/pull/213), [#220](https://github.com/li-langverse/lic/pull/220), [#222](https://github.com/li-langverse/lic/pull/222)) and merged `studio-gap-close-wave1` (UX/MCP/sim/world) on `feat/ph-hw-multi-vendor` — [2026-05-25-lig-ph-hw-integration.md](docs/release-notes/2026-05-25-lig-ph-hw-integration.md).
+
+- **PH-HW WP1:** `lig` governance RFC, kernel catalog (`lig.kernel.*`), and `benchmarks/competitive/lig-kernels.toml` schema — [2026-05-25-lig-ph-hw-work-packages.md](docs/release-notes/2026-05-25-lig-ph-hw-work-packages.md).
+- **PH-HW HW-0 lig.device** — `packages/lig` (rename from `li-gpu`): `lig_device_kind`, `lig_backend_*`, `lig_parse_toml_backend_line`, `li_rt_lig_*`; `li-render` `native_pixels` via `lig_present_surface_ok()` — [2026-05-25-ph-hw-lig-device.md](docs/release-notes/2026-05-25-ph-hw-lig-device.md).
+
+- **PH-HW HW-1 lig.present** — `packages/lig` swapchain/present contracts, `li-render` host FPS ticks, `li-studio` shell present glue, `packages/lig/bench/wgpu_smoke.toml` — [2026-05-25-lig-present-hw1.md](docs/release-notes/2026-05-25-lig-present-hw1.md).
+- **PH-SIM SIM-0 studio→sim profile bridge** — `li_sim_profile_from_studio_id`, `SimSessionStub`, `studio_apply_profile_to_sim`; smokes `studio_profile_bridge.li`, `import_studio_sim_profile_bridge.li` — [2026-05-25-studio-sim-profile-bridge.md](docs/release-notes/2026-05-25-studio-sim-profile-bridge.md).
+- **li-world PH-GD-2 scaffold** — text `world_v1` line save/load, `WorldSnapshot`, in-memory buffer round-trip — [2026-05-25-li-world-scaffold.md](docs/release-notes/2026-05-25-li-world-scaffold.md).
+- **Studio UX-04/07 gap-close** — native command palette overlay + empty inspector/viewport composables in `li-studio`/`li-ui`/`li-gui`; smokes `studio_command_palette.li`, `studio_empty_states.li`, `studio_palette.li`.
+- **Studio MCP tool contracts (PH-AGENT / AGENT-0)** — `packages/li-studio` tool IDs, agent chrome `StudioAgentToolRequest`, `docs/game-dev/studio-mcp-tools.md` — [2026-05-25-studio-mcp-tool-contracts.md](docs/release-notes/2026-05-25-studio-mcp-tool-contracts.md).
+- **Studio UX-09 keyboard-first** — `gui_handle_studio_key`, `StudioKeyBinding`, `InputState.key_cmd_k` / `key_digit`, smoke `studio_keyboard.li` — [2026-05-25-studio-keyboard-ux09.md](docs/release-notes/2026-05-25-studio-keyboard-ux09.md).
+- **Studio UX-09 SDL ingest stub** — `studio_shell_input_probe.c`, `studio-shell-sdl-tick.sh`, `studio-shell-input-bridge.md`, smoke `studio_keyboard_input_json.li` — [2026-05-25-studio-shell-input-bridge-ux09.md](docs/release-notes/2026-05-25-studio-shell-input-bridge-ux09.md).
+
+### Fixed
+
+- **Runtime linker:** `li_rt_lig.c` exports only `kernel_run` / validity ratio; device/present/backend symbols remain in `li_rt.c` (fixes duplicate-symbol CI on user `lic build` links).
+
 ### Changed
 
-- **Plan checkboxes (wave):** sync `docs/superpowers/plans/*.md` exit gates with shipped Phases 0–5, Pkg, P-linalg loop witness, and C++ compiler evidence — [2026-05-25-plan-checkbox-audit-wave.md](docs/release-notes/2026-05-25-plan-checkbox-audit-wave.md).
 - **LLVM toolchain:** pin **22** (was 18) — `scripts/llvm-env.sh`, `scripts/ci-install-llvm.sh`, CMake gate — [2026-05-22-llvm-22-toolchain-bump.md](docs/release-notes/2026-05-22-llvm-22-toolchain-bump.md).
 
 ### Added
 
-- **G-test-verify Done:** `prove_lean_ok` in `li-tests/run_all.sh`; 14 closed `contracts_verify` specimens — `docs/release-notes/2026-05-25-g-test-verify-prove-lean-ok.md`.
 
+- **HTTPd pkg-workspace:** Phase-H httpd packages aligned via `scripts/li-new-package` + lip § A3; `packages/li.toml` workspace members; `check-pkg-workspace` gate — [2026-05-22-pkg-workspace-httpd.md](docs/release-notes/2026-05-22-pkg-workspace-httpd.md).
+- **tier5_http nginx-src-audit:** nginx `release-1.26.2` submodule + read-only `nginx_mitigations.toml` (no `li_done`); `audit_nginx_src.py` + `check-tier5-nginx-src-audit.sh` — [2026-05-22-nginx-src-audit.md](docs/release-notes/2026-05-22-nginx-src-audit.md).
+- **tier5_http bench harness (bench-harness):** TOML-driven `suite.toml` + per-scenario `bench.toml`; `bench_http.py` / `verify_http.py` resolve scenarios from suite only — [2026-05-22-tier5-http-bench-harness.md](docs/release-notes/2026-05-22-tier5-http-bench-harness.md).
+- **tier5_http exploit harness (exploit-harness):** `exploit_http.py` + `suite_exploits.toml` / `exploits/*.toml` vs nginx baseline and `build/li-httpd`; `[expect].li_behavior = "stricter"` and `--compare-nginx` — [2026-05-22-tier5-http-exploit-harness.md](docs/release-notes/2026-05-22-tier5-http-exploit-harness.md).
+- **HTTPd M1 nginx bench parity:** tier5 `parity` profile runs live `build/li-httpd` vs nginx verify + optional wrk ratios — [2026-05-23-httpd-nginx-bench-parity.md](docs/release-notes/2026-05-23-httpd-nginx-bench-parity.md).
+- **HTTPd M1 serve-production:** multi-worker fork + `SO_REUSEPORT`, config `workers=`, `test-serve-production.sh` gate (keep-alive, static, proxy) — [2026-05-23-httpd-m1-serve-production.md](docs/release-notes/2026-05-23-httpd-m1-serve-production.md).
+- **w1-async-reactor:** epoll/kqueue `li_async_poll` reactor, `tcp_echo_epoll_once_i`, tier5 `tcp_echo` bench row, `check-w1-async-reactor.sh` — [2026-05-22-httpd-w1-async-reactor.md](docs/release-notes/2026-05-22-httpd-w1-async-reactor.md).
+- **w0-bytes-io:** `std/bytes` Reader/Writer + stringview helpers, `raises Net` policy tests, accepted trusted-net RFC + Lean axioms — [2026-05-22-w0-bytes-io.md](docs/release-notes/2026-05-22-w0-bytes-io.md).
+- **rng-concepts:** `packages/li-rng` Prng surface, `prob_ensures` IV oracles (`OsRngUniform` / `PrngSeed`), Prng-on-TLS profile gates — [2026-05-22-rng-concepts.md](docs/release-notes/2026-05-22-rng-concepts.md).
+- **rng-exploit-suite (Tier F):** BadRng/SimRng inject via exploit `[server.rng]`; `li-tests/rng/exploits/` + `run_rng_exploits.sh`; GitHub workflow on `packages/li-rng` / `li-tls` — [2026-05-22-rng-exploit-suite.md](docs/release-notes/2026-05-22-rng-exploit-suite.md).
+- **prob-hoare (P2):** `prob_ensures` contracts, `lic build --prob-check` Monte Carlo gate, `Probability.lean` stub — [2026-05-22-prob-hoare-p2.md](docs/release-notes/2026-05-22-prob-hoare-p2.md).
+- **HTTPd M3 optional:** L4 stream + token-budget hooks RFC, config gates, ingress 429 cap — [2026-05-22-httpd-m3-optional.md](docs/release-notes/2026-05-22-httpd-m3-optional.md).
+- **HTTPd M2 circuit-queue runtime:** live queue-depth 429 + `Retry-After`; upstream circuit opens on peer failures — [2026-05-23-httpd-m2-circuit-queue-runtime.md](docs/release-notes/2026-05-23-httpd-m2-circuit-queue-runtime.md).
+- **HTTPd M2 TLS/H2 scale:** TLS 1.3 terminate profile, HTTP/2 config gate, WebSocket `require=websocket`, queue 429, circuit breaker, webhook allowlist — [2026-05-22-httpd-m2-tls-h2.md](docs/release-notes/2026-05-22-httpd-m2-tls-h2.md).
+- **HTTPd M2 runtime parity:** live WebSocket proxy tunnel, `X-Li-Webhook-Url` egress allowlist, queue/circuit 429 fix — [2026-05-23-httpd-m2-runtime-parity.md](docs/release-notes/2026-05-23-httpd-m2-runtime-parity.md).
+- **HTTPd setup-censor-schema:** `--migrations-applied` filters prod-applied SQL; `ack_disable_censor` for disabled production censorship — [2026-05-22-httpd-setup-censor-schema.md](docs/release-notes/2026-05-22-httpd-setup-censor-schema.md).
+- **HTTPd M1.5 agent gateway (m15-agent):** SSE stream caps, `x-model` routing, OTel `traceparent` require/inject, cancel-on-disconnect; Li oracles use `LI_REPO_ROOT` fixtures — [2026-05-22-httpd-m15-agent.md](docs/release-notes/2026-05-22-httpd-m15-agent.md).
+- **HTTPd M1.5 inference live:** `/v1` proxy on live `li-httpd` with rate limits, OTel, upstream cancel — [2026-05-23-httpd-m15-inference-live.md](docs/release-notes/2026-05-23-httpd-m15-inference-live.md).
+- **HTTPd M1.5 SSE runtime:** idle-between-chunks timeout cancels stalled upstream (504) — [2026-05-23-httpd-m15-sse-runtime.md](docs/release-notes/2026-05-23-httpd-m15-sse-runtime.md).
+- **HTTPd M1.5 leak_censor:** `setup-censor-httpd.py`, migration `SchemaCatalog`, optional proxy egress scrub, Tier G exploit TOML rows — [2026-05-22-httpd-m15-leak-censor.md](docs/release-notes/2026-05-22-httpd-m15-leak-censor.md).
+- **HTTPd M1.5 TLS auto (m15-tls-auto):** `manual` / `self_signed` / `lets_encrypt` TOML modes, `setup-tls-httpd.py` (dev certs + ACME staging obtain/renew), `check-httpd-tls-auto.sh`, `m15_tls_oracle.li` — [2026-05-22-httpd-m15-tls-auto.md](docs/release-notes/2026-05-22-httpd-m15-tls-auto.md).
 - **Ecosystem phase 0:** `algorithms-and-libraries-plan.md`, `lic-ecosystem-baseline.md`, agent skill `run-local-ci-gha-quota` — `docs/release-notes/2026-05-22-lic-ecosystem-phase0-baseline.md`.
+- **PH-HW WP5:**  memory ledger (HW-3),  (HW-4), , scene/render/studio MD 100k refusal,  — [2026-05-25-lig-memory-custom-hw34.md](docs/release-notes/2026-05-25-lig-memory-custom-hw34.md).
+
+- **PH-HW WP4:** `packages/lig` LKIR matmul pilot, `lig.kernel.run` / `last_validity_ratio`, `runtime/li_rt_lig.c`, `bench-lig-kernel-parity.sh`, `li-chem`/`li-ml` composable stubs — [2026-05-25-ph-hw-wp4-lig-kernel-lkir.md](docs/release-notes/2026-05-25-ph-hw-wp4-lig-kernel-lkir.md).
+
+- **PH-HW WP1:** `lig` governance RFC, kernel catalog (`lig.kernel.*`), and `benchmarks/competitive/lig-kernels.toml` schema (`cpu`/`cuda`/`hip`/`metal`/`custom_lab`) — `docs/release-notes/2026-05-25-lig-ph-hw-work-packages.md`.
+
+- **G-oop (partial):** Method call-site `requires` Lean Props (folded `self.field`), `method_ensures_return_ok.li`, `discharge_method_*_lean.sh` — `docs/release-notes/2026-05-25-g-oop-method-vc-corpus.md`.
+
+- **PH-HW WP1:** `lig` governance RFC, kernel catalog (`lig.kernel.*`), and `benchmarks/competitive/lig-kernels.toml` schema (`cpu`/`cuda`/`hip`/`metal`/`custom_lab`) — `docs/release-notes/2026-05-25-lig-ph-hw-work-packages.md`.
+
+- **PH-7e / G-math:** Tier-1 reporter fixture smoke (`li-tests/fixtures/tier1_math_perf_smoke.csv`, `tier1_li_vs_cpp.sh` fallback); `dot_len_mismatch.li`; restore `sum_non_array.li` (manifest was ahead of file) — `docs/release-notes/2026-05-25-7e-tier1-smoke-reductions.md`.
+
+- **8p-c/d (partial):** `lic build --jobs=N` reserved note via `ResourceOptions`; `ci_test_jobs_smoke.sh`; restore `resource_flags_smoke.sh` / `parallel_run_all_smoke.sh`; `ci.sh` exports `LI_TEST_JOBS` when `CI=true` — `docs/release-notes/2026-05-25-8p-cd-compile-jobs-ci-smokes.md`.
+
+- **WP3 check workspace + cache:** `lic check --workspace`, `--cache-dir`, `--cache-max-mb`, `--no-cache`; `run_frontend_check` in `check_cmd.cpp` — `docs/release-notes/2026-05-25-check-workspace-cache-wp3.md`.
+
+- **WP5 toolchain + runtime benches:** `bench_toolchain.py`, `benchmarks/toolchain/` trap corpus, `bench.py --runtime-sweep`, registry rows — `docs/release-notes/2026-05-25-toolchain-runtime-bench-wp5.md`.
+
+- **WP0/WP2 (8p):** `ResourceOptions` CLI (`--jobs`, `--max-memory`, `--job-memory-mb`, `--build-dir`, `--threads`); `run_all.sh` parallel `-j` with per-worker `lic build --build-dir=…`; `li_effective_jobs` — `docs/release-notes/2026-05-25-lic-resource-options-wp0-wp2.md`.
+
+### Changed
+
+- **Native parallel runtime (WP4):** `parallel for` uses `li_parallel_for_i64` (pthread static chunks, max 64 threads); removed `-fopenmp` from user link; `lic build --threads=N` — `docs/release-notes/2026-05-25-li-native-parallel-runtime.md`.
+
+### Added
+
+- **2i / G-math:** length-1 broadcast plan tracker — , ;  — [2026-05-25-2i-broadcast-plan-tracker.md](docs/release-notes/2026-05-25-2i-broadcast-plan-tracker.md).
+
+- **G-test-verify Done:** `prove_lean_ok` in `li-tests/run_all.sh`; 14 closed `contracts_verify` specimens — `docs/release-notes/2026-05-25-g-test-verify-prove-lean-ok.md`.
+- **WP0/WP2 (8p):** `ResourceOptions` CLI and `run_all.sh` `--build-dir` workers — `docs/release-notes/2026-05-25-lic-resource-options-wp0-wp2.md`.
+
+- **G-par (7d partial):** AST rejects weak `parallel for` `requires` and bare `@parallel(disjoint=disjoint_row)`; `race_shared_memory/false_disjoint_requires_*.li` — `docs/release-notes/2026-05-25-g-par-disjoint-ast.md`.
+
+### Added
+
+- **PH-7d:** Parser fuzz corpus seeds (`seed_decorator_stack`, `seed_reserved_typosquat`) + `fuzz_decorator_corpus_seeds.sh` — `docs/release-notes/2026-05-25-fuzz-decorator-corpus-seeds.md`.
+
+### Added
+
+- **2i (partial):** `sum` rejects non-array at typecheck — `li-tests/math_linalg/reductions/sum_non_array.li`; master plan **2i** / **G-math** tracker — `docs/release-notes/2026-05-25-2i-reduction-sum-shape.md`.
+
+### Added
+
+- **G-math-syn (partial):** `for i in start..<end` loop specimen `math_syntax/for_range_sum.li` (Python `range()` still open) — `docs/release-notes/2026-05-25-g-math-syn-for-range.md`.
+- **G-par (partial):** AST `disjoint=` validation — weak loop `requires` / bare `disjoint_row` decorator rejected; `race_shared_memory/false_disjoint_requires_*.li` — `docs/release-notes/2026-05-25-g-par-disjoint-ast.md`.
+- **7d tracker gap (partial):** `MirDecorator.disjoint_proven`, `lic verify mir_parallel_disjoint=`, `check-mir-parallel-decorator.sh` — `docs/release-notes/2026-05-25-tracker-gap-7d-mir-disjoint.md`.
+
+### Changed
+
+- **Studio docs (`def` not `proc`):** World Studio vision, game-dev RFC stubs, and agent rules/skills teach **`def`** only; bare **`proc`** documented as parser legacy — `docs/release-notes/2026-05-25-studio-def-not-proc-docs.md`.
+
+### Added
+
+- **Plan checkbox honesty:** 17 sub-plan exit gates marked `[x]` with evidence; 9 left `[ ]` with `**Open:**` reasons; fuzz decorator corpus seeds — `docs/release-notes/2026-05-25-plan-checkbox-gaps.md`.
+
+### Added
+
+- **2e/2f proofability (partial):** P-refine call-site refine Props; P-ensures-witness specimens; P-float `sqrt_open_bound` documented open; `prove_lean_ok` retags — `docs/release-notes/2026-05-25-proofability-pipeline-gaps.md`.
+
+### Added
+
+- **8p-b:** parallel `scripts/lic-workspace-build.sh` with `LI_WORKSPACE_JOBS` / `LI_TEST_JOBS` and per-member `LI_BUILD_DIR` — `docs/release-notes/2026-05-25-8p-b-workspace-parallel.md`.
+- **8p-a (partial):** parallel `li-tests/run_all.sh` with `LI_TEST_JOBS` / `-j` and per-worker `LI_BUILD_DIR` — `docs/release-notes/2026-05-25-plan-tracker-8p-vision-llm.md`.
+- **Vision-LLM (partial):** `scripts/export-li-tests-agent-slice.sh` → `li-tests/agent-manifest.json` for agent test discovery — same release note.
+- **G-* gap evidence (partial):** AST disjoint call-form; `MirDecorator.parallel`; `matmul_1x2_ok.li`; `linalg_scale4_int_closed.li`; witnessed-ensures tooling — `docs/release-notes/2026-05-25-g-items-gap-evidence.md`.
+
+### Added
+
+- **G-test-verify Done:** `prove_lean_ok` in `li-tests/run_all.sh`; 13 closed `contracts_verify` specimens retagged — `docs/release-notes/2026-05-25-g-test-verify-prove-lean-ok.md`.
+
+### Added
+
 - **2i broadcast (partial):** `array[1, T]` element-wise broadcast to `array[N, T]` — `docs/release-notes/2026-05-22-2i-broadcast-len1.md`.
 - **P-float (partial):** `sqrt_open_bound.li` calls `li_rt_sqrt`; tight `abs` ensures still open — `docs/release-notes/2026-05-22-p-float-sqrt-runtime.md`.
 - **7d/7e (partial):** `@parallel(disjoint=)` on `def` inherits to inner `parallel for`; tier-1 `bench.py` uses `--allow-open-vc` — `docs/release-notes/2026-05-22-7d-7e-bench-parallel.md`.
 - **Tier-1 matmul benches:** hoist `A`/`B` init out of hot loop in `matmul_naive` / `matmul_blocked` Li drivers — `docs/release-notes/2026-05-22-tier1-matmul-bench-hotloop.md`.
+- **HTTPd h-lean-server-modules:** Lean typecheck on `li-net-httpd` lib + main; server lean gate — [2026-05-24-httpd-h-lean-server-modules.md](docs/release-notes/2026-05-24-httpd-h-lean-server-modules.md).
 
 ### Fixed
 
-- **CI `test-auth-bearer`:** `build-li-httpd.sh` links `main.li` so `li-httpd` runs `httpd_run_from_argv` (was stub `main` returning 0) — [2026-05-25-ci-test-auth-bearer-main-li.md](docs/release-notes/2026-05-25-ci-test-auth-bearer-main-li.md).
-
+- **HTTPd M0 ship gate:** `build-li-httpd.sh` builds `main.li` with LLVM env; `httpd-plan-gates.sh` builds `build/li-httpd` and runs `test-auth-bearer.sh` by default — [2026-05-22-httpd-m0-ship-gate-full.md](docs/release-notes/2026-05-22-httpd-m0-ship-gate-full.md).
+- **w0-lean-gate (httpd):** `check-httpd-lean-gate.sh`, callee-ensures VC witness, `li_rt_log` link with `li_rt_net`, closed `http_parse_forward_closed.li` — [2026-05-22-w0-lean-gate-httpd.md](docs/release-notes/2026-05-22-w0-lean-gate-httpd.md).
+- **w0-lean-gate (TLS link):** explain-config C link includes `li_rt_tls`/`li_rt_h2`; Lean CI runs httpd VC gate — [2026-05-23-w0-lean-gate-tls-link.md](docs/release-notes/2026-05-23-w0-lean-gate-tls-link.md).
+- **VC emit (call-site requires):** Lean formals include caller locals used in callee `requires` after substitution (fixes `Unknown identifier` on `i` / `n` in httpd AutoVC) — [2026-05-24-httpd-h-lean-server-modules.md](docs/release-notes/2026-05-24-httpd-h-lean-server-modules.md).
 - **HTTPd M1 bearer auth gate:** non-Linux `epoll_ctl_add_listen_i` stub, `build-li-httpd.sh`, plan gates run `test-auth-bearer.sh` on `build/li-httpd` — [2026-05-22-httpd-m1-bearer-auth-gate.md](docs/release-notes/2026-05-22-httpd-m1-bearer-auth-gate.md).
+- **CI `test-auth-bearer`:** `build-li-httpd.sh` links `main.li` so `li-httpd` runs `httpd_run_from_argv` (was stub `main` returning 0) — [2026-05-25-ci-test-auth-bearer-main-li.md](docs/release-notes/2026-05-25-ci-test-auth-bearer-main-li.md).
 - **HTTPd routing CI:** rebase plan-loop branch on `main`; `run_httpd_config.sh` — `--allow-open-vc` + `HTTPD_SKIP_LI_ROUTING_BIN` — `docs/release-notes/2026-05-22-httpd-rebase-main-post-164.md`.
 - **G-lean / P-linalg:** `mat2_at2_float_spec_proved` — closed via `mat2_at2_eval` + `rfl` (no `sorry`); AutoVC ensures use eval not free `result` — `docs/release-notes/2026-05-22-mat2-float-spec-closed.md`.
 - **MIR BinOpInt literals:** `rhs_is_literal` default no longer makes `r != 1` compare to `0`; `lic build --allow-open-vc <file> -o <out>` accepts flags before the input path — `docs/release-notes/2026-05-22-binop-int-literal-ne-fix.md`.
@@ -36,12 +150,14 @@ All notable changes to Li are documented here. The format follows
 
 ### Added
 
+
 - **HTTPd autonomous plan loop:** `scripts/httpd-plan-loop.py`, `httpd-plan-gates.sh`, baseline doc, goal-directed `code_implementer` via li-cursor-agents — [2026-05-22-httpd-plan-autonomous-loop.md](docs/release-notes/2026-05-22-httpd-plan-autonomous-loop.md).
 - **HTTPd M1 core (rate limits):** `limits.rate_limit_rps` required for `proxy:` routes in Python validator + desugar; goal-directed `code_implementer` plan loop — [2026-05-22-httpd-m1-core-rate-limits.md](docs/release-notes/2026-05-22-httpd-m1-core-rate-limits.md).
 - **HTTPd M1 ingress headers:** route-key header extras must match ingress allowlist; reject `x-upstream-*` / hop-by-hop — [2026-05-22-httpd-m1-ingress-headers.md](docs/release-notes/2026-05-22-httpd-m1-ingress-headers.md).
 
 - **HTTPd M1 TOML desugar:** `li-tests/config_desugar/` goldens (prefix_strip, header extras), `check-httpd-config-desugar.sh`, C runtime route-key extras — [2026-05-22-httpd-m1-toml-desugar.md](docs/release-notes/2026-05-22-httpd-m1-toml-desugar.md).
 - **HTTPd M1 routing tests:** `li-tests/routing/` table cases, `config_reject/routing_overlap.toml`, `run_routing.sh`, green `match_routes.li` gate — [2026-05-22-httpd-m1-routing-tests.md](docs/release-notes/2026-05-22-httpd-m1-routing-tests.md).
+- **Runtime link + Horner (PH-7e):** `lic build` links `li_rt_net` / `li_rt_httpd` / `li_rt_log` only when MIR calls those symbols (`LI_LINK_RUNTIME_FULL` overrides); Horner uses `HornerStepPow4` + 64-step FMA chain; `volatile_sink` no longer requires `raises IO`; `scripts/check-runtime-link.sh`.
 - **HTTPd autonomous plan loop:** `scripts/httpd-plan-loop.py`, `httpd-plan-gates.sh`, baseline doc, `httpd_implementer` agent — [2026-05-22-httpd-plan-autonomous-loop.md](docs/release-notes/2026-05-22-httpd-plan-autonomous-loop.md).
 - **HTTPd M1 plan continue:** overlap reject, `validate-httpd-config` / `flatten-httpd-config`, Bearer 401 runtime + example — [2026-05-22-httpd-m1-plan-continue.md](docs/release-notes/2026-05-22-httpd-m1-plan-continue.md).
 - **P-loop (2f):** Close `linalg_dot4_int_loop_open` AutoVC via static loop witness; `Li.Discharge.dot4_int_loop_eval_spec` — `docs/release-notes/2026-05-22-p-loop-dot-closed.md`.
@@ -81,13 +197,12 @@ All notable changes to Li are documented here. The format follows
 
 ### Fixed
 
-- **CI `test-auth-bearer`:** `build-li-httpd.sh` links `main.li` so `li-httpd` runs `httpd_run_from_argv` (was stub `main` returning 0) — [2026-05-25-ci-test-auth-bearer-main-li.md](docs/release-notes/2026-05-25-ci-test-auth-bearer-main-li.md).
-
 - **G-lean (2f):** AutoVC emits `LiArray α n` (not Lean builtin `Array`); `docs/semantics/Core.lean` + `lake build AutoVC` in CI/`lean-verify-stub.sh`; see `docs/release-notes/2026-05-21-glean-liarray-lake.md`.
 - **`CallProc` codegen:** no store on `-> unit` calls; float literal args + f32/i32 coercion; generic return **E0202**; `str`→`ptr` for bootstrap `strcmp`.
 - **Composable physics smoke:** `import_physics_runtime.li` **verify_ok** with stmt-call integrate + post-step `pz` (MIR write-back, exit 0).
 
 ### Added
+
 
 - **`httpd_serve_routed_once`** — M1 one-shot accept + `match_route` for `GET /health` (oracle; parallel with httpd-m1-impl/perf PRs); see `docs/release-notes/2026-05-20-httpd-serve-routed-once.md`.
 
@@ -102,6 +217,7 @@ All notable changes to Li are documented here. The format follows
 - Docs: post-PR **#83** sync — [proof-corpus-roadmap](docs/verification/proof-corpus-roadmap.md) run results (16/16 `contracts_verify`); [httpd-prerequisites](docs/ecosystem/httpd-prerequisites.md) P0-lean partial; master plan + httpd plan tables; see [2026-05-20-post-83-docs-sync](docs/release-notes/2026-05-20-post-83-docs-sync.md).
 
 ### Added
+
 
 - Call-site callee **`requires`**: VCs for all resolved callees (incl. **`extern`** + imports); **E0304** with plain-language precondition text when provably false; const-local discharge (`var y = 5`); **`lic build` fails on open `AutoVC`** unless `LI_ALLOW_OPEN_VC=1`; see `docs/release-notes/2026-05-20-call-site-requires-full-gate.md`.
 - **Refinement types** at calls and `var` inits: `{x: int | …}` / aliases (e.g. `NonNeg`); **E0305** when provably outside the bound; **`if n >= 0`** branch discharge; call-site Lean VCs; see `docs/language/refinement-types.md` and `docs/release-notes/2026-05-20-refinement-call-check.md`.
@@ -125,8 +241,6 @@ All notable changes to Li are documented here. The format follows
 - `packages/li-net-httpd`: path deps on `li-http` + `li-net`; `httpd_serve` calls `tcp_listen` (stub).
 
 ### Fixed
-
-- **CI `test-auth-bearer`:** `build-li-httpd.sh` links `main.li` so `li-httpd` runs `httpd_run_from_argv` (was stub `main` returning 0) — [2026-05-25-ci-test-auth-bearer-main-li.md](docs/release-notes/2026-05-25-ci-test-auth-bearer-main-li.md).
 
 - **`horner_pure_li` harness honesty** — `li_rt_volatile_sink_f64` prevents LLVM from deleting the pure-Li Horner loop; tier-1 verify rejects pure_li timings < 0.45× native (DCE guard). See `docs/numerics/bench-improver-horner-2026-05-20.md`.
 - Proof witnesses: `return callee(lit)` / `return callee(ident)` / multi-return procedures discharge `ensures`; call-site refinement VCs use `collect_caller_proof_facts` (const locals + `if n >= 0`); stdlib coverage harness uses `LI_ALLOW_OPEN_VC=1`.
@@ -155,6 +269,7 @@ All notable changes to Li are documented here. The format follows
 
 ### Added
 
+
 - Agent-first JSON diagnostics: `lic check --format=json`, `lic diagnose` (`docs/schemas/diagnostic-v1.json`)
 - LLM-first design research stub, agent handover comparison, `li-agent-manifest.toml`
 - `scripts/lic-fix-suggest.sh`, `scripts/gen-li-agent-manifest.sh`, `li-tests/tooling/diagnose_json_smoke.sh`
@@ -163,6 +278,7 @@ All notable changes to Li are documented here. The format follows
 ## [0.1.0] - 2026-05-14
 
 ### Added
+
 
 - C++ `lic` compiler skeleton: lexer, parser, typechecker, MIR, LLVM codegen
 - Mandatory contracts gate (`requires` / `ensures` / `decreases`)

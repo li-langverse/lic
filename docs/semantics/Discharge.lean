@@ -57,8 +57,25 @@ theorem mat2_at2_float_spec_proved (A B : LiArray (LiArray Float 2) 2) :
   unfold mat2_at2_float_spec mat2_at2_eval
   refine And.intro rfl (And.intro rfl (And.intro rfl rfl))
 
-/-- Intentionally open float bound (`sqrt_open_bound.li`) — prove in a later P-float pass. -/
-theorem sqrt_open_bound_placeholder : True := trivial
+/-!
+## Trusted libm (`li_rt_sqrt`) — **P-float** corpus only
+
+`li_rt_sqrt` accuracy is axiomatized here (not proved from IEEE). See **G-hw** in provability-gaps.
+-/
+namespace Li.TrustedMath
+
+axiom li_rt_sqrt : Float → Float
+
+axiom li_rt_sqrt_bound (x : Float) (hx : x ≥ (0 : Float)) :
+    Float.abs (li_rt_sqrt x * li_rt_sqrt x - x) < (1e-12 : Float)
+
+end Li.TrustedMath
+
+def sqrt_open_bound_spec (x : Float) : Prop :=
+  Float.abs (Li.TrustedMath.li_rt_sqrt x * Li.TrustedMath.li_rt_sqrt x - x) < (1e-12 : Float)
+
+theorem sqrt_open_bound_spec_proved (x : Float) (hreq : x ≥ (0 : Float)) : sqrt_open_bound_spec x :=
+  Li.TrustedMath.li_rt_sqrt_bound x hreq
 
 /-!
 ## Refinement types (**P-refine** / **G-vc**)

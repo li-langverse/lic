@@ -9,10 +9,12 @@ BIN="${TMPDIR:-/tmp}/li_httpd_explain_$$"
 trap 'rm -f "$BIN"' EXIT
 
 "$ROOT/scripts/li-httpd-explain-config.sh" "$CFG" >"${BIN}.py"
+# li_rt_net.c calls httpd_tls_* / httpd_h2_* — link tls+h2 with net (mirrors compile.cpp).
 "$CC" -Wno-override-module -x c "$ROOT/runtime/li_rt.c" -x c "$ROOT/runtime/li_rt_net.c" \
   -x c "$ROOT/runtime/li_rt_log.c" -x c "$ROOT/runtime/li_rt_httpd.c" \
+  -x c "$ROOT/runtime/li_rt_tls.c" -x c "$ROOT/runtime/li_rt_h2.c" \
   -x c "$ROOT/scripts/httpd_explain_main.c" \
-  -I"$ROOT/runtime" -lm -o "$BIN"
+  -I"$ROOT/runtime" -lm -ldl -o "$BIN"
 "$BIN" "$CFG" >"${BIN}.c"
 if ! diff -u "$GOLDEN" "${BIN}.c" >/dev/null; then
   echo "check-httpd-explain-config: C vs golden mismatch" >&2

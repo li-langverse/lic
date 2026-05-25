@@ -1,28 +1,28 @@
 ---
 name: Li secure webserver
-overview: li-httpd — AI/agent gateway with easy TOML, streaming, limits, LB, auto-TLS. All code in-repo as publishable packages (path deps until you publish separately). M1 core; M1.5 agent+TLS; M2 scale. Nginx = bench/CVE oracle only.
+overview: li-httpd — AI/agent gateway with easy TOML, streaming, limits, LB, auto-TLS. M1/M1.5/M2 config done; parity milestones (m0/m1/m15/m2 *-runtime, w0/w1) close nginx-class agent-gateway behavior. Nginx = bench/CVE oracle, not nginx.conf clone.
 todos:
   - id: w0-lean-gate
     content: "P0 blocker: 2e–2f VC+Lean on lic build — unlocks spec-first li-httpd"
-    status: in_progress
+    status: completed
   - id: w0-bytes-io
     content: Ship std bytes/stringview/Reader/Writer + raises Net effect + trusted syscall RFC
-    status: pending
+    status: completed
   - id: w1-async-reactor
     content: Implement async/await + epoll/kqueue reactor; TCP echo benchmark
-    status: pending
+    status: completed
   - id: bench-harness
     content: tier5_http TOML-driven harness (suite.toml + per-scenario bench.toml); bench_http.py reads only TOML
-    status: pending
+    status: completed
   - id: nginx-src-audit
     content: nginx submodule + nginx_mitigations.toml (read-only checklist); no Li port tracking
-    status: pending
+    status: completed
   - id: exploit-harness
     content: Exploit/bench TOML vs nginx baseline + li-httpd; li may be stricter than nginx on [expect]
-    status: pending
+    status: completed
   - id: rng-exploit-suite
     content: Tier F RNG exploits (BadRng/SimRng inject via bench.toml); PR gate when touching li-rng/li-tls
-    status: pending
+    status: completed
   - id: m1-core
     content: "M1: parser, route DSL (no regex), static, LB, validate-config, headers, rate limits"
     status: completed
@@ -32,14 +32,12 @@ todos:
   - id: m1-toml-desugar
     content: Simple TOML desugar + config_desugar golden tests + explain-config CLI
     status: completed
-    status: in_progress
   - id: m1-validate-flatten
     content: validate-httpd-config.py + flatten-httpd-config.py + lic validate-httpd-config alias
     status: completed
   - id: m1-bearer-auth
     content: "[auth] TOML Bearer gate + test-auth-bearer.sh (runtime C)"
     status: completed
-    status: in_progress
   - id: m1-explain-config-cli
     content: "lic httpd explain-config + check-httpd-explain-config.sh golden"
     status: completed
@@ -54,38 +52,106 @@ todos:
     status: completed
   - id: m15-agent
     content: "M1.5: SSE streaming, stream timeouts, model routing, cancel on disconnect, OTel headers"
-    status: pending
+    status: completed
   - id: m15-leak-censor
     content: "M1.5: optional leak_censor; setup-censor from DB migrations/schema; Tier G when enabled"
-    status: pending
+    status: completed
   - id: setup-censor-schema
     content: "li-httpd setup-censor reads applied migrations → generated deny_paths; user can disable censorship"
-    status: pending
+    status: completed
   - id: li-log-package
     content: "packages/li-log: rotation, RFC3339 timestamps, redact-by-default; li-httpd access/audit/error sinks"
     status: completed
   - id: m15-tls-auto
     content: "TLS auto: self-signed dev certs on setup; ACME Let's Encrypt obtain+renew; secure TOML modes"
-    status: pending
+    status: completed
   - id: m2-tls-h2
     content: "M2: TLS1.3 terminate, HTTP/2, WebSocket, circuit breaker, queue 429, webhook allowlist"
-    status: pending
+    status: completed
   - id: m3-optional
     content: "M3 optional: L4 stream, token-budget hooks—RFC + LOC"
-    status: pending
+    status: completed
   - id: pkg-workspace
     content: "Align packages/* via scripts/li-new-package + lip § A3 li.toml; workspace root; re-scaffold lis stubs when Pkg lands"
-    status: pending
+    status: completed
   - id: rng-concepts
     content: li-rng + probabilistic Hoare (prob_ensures), OsRng uniform contract, Prng-on-TLS allowed with profile gates
-    status: pending
+    status: completed
   - id: prob-hoare
     content: "P2: prob_ensures + Monte Carlo/Lean measure obligations; lic build --prob-check for P(event)<ε"
+    status: completed
+  - id: m0-ship-gate-full
+    content: "Ship gate: lic build + li-httpd binary; httpd-plan-gates without SKIP; test-auth-bearer.sh on running server"
+    status: completed
+  - id: m1-serve-production
+    content: "Production HTTP/1.1 daemon (workers, keep-alive, static+proxy) — beyond serve-once stub/oracle"
+    status: completed
+  - id: m1-upstream-keepalive
+    content: "Upstream HTTP keepalive pool to inference backends (no stale-connection 502s)"
+    status: completed
+  - id: m1-active-health
+    content: "Active health probes on upstream peers; remove dead peers from rotation"
+    status: completed
+  - id: m1-nginx-bench-parity
+    content: "tier5_http bench — agent-gateway scenarios meet or beat nginx on RPS/latency (dashboard ratios)"
+    status: completed
+  - id: m1-exploit-runtime
+    content: "tier5 exploits green against running build/li-httpd (not validate-config only)"
+    status: completed
+  - id: m15-sse-runtime
+    content: "SSE/streaming on live li-httpd; idle-between-chunks timeout cancels upstream"
+    status: completed
+  - id: m15-inference-live
+    content: "OpenAI-compatible /v1 routes live with rate limits, OTel, cancel-on-disconnect"
+    status: completed
+  - id: m2-tls-h2-runtime
+    content: "TLS1.3 terminate + HTTP/2 (ALPN) on li-httpd — runtime, not config oracle only"
+    status: completed
+  - id: m2-websocket-runtime
+    content: "WebSocket upgrade + bidirectional proxy on li-httpd"
+    status: completed
+  - id: m2-circuit-queue-runtime
+    content: "Circuit breaker + queue depth 429 + Retry-After when peers saturated (runtime)"
+    status: completed
+  - id: m2-webhook-egress-runtime
+    content: "Webhook/callback egress SSRF allowlist enforced on outbound requests"
+    status: completed
+  - id: h-lean-server-modules
+    content: "Lean/VC on server packages (li-net-httpd, runtime httpd modules) — lic build without lean skip"
+    status: completed
+  - id: gap-exploit-owasp-cwe-suite
+    content: "Expand tier5 exploits + nginx_mitigations.toml — OWASP Top 10 / CWE-class coverage; li stricter-or-equal vs nginx on every row; gate in httpd-plan-gates"
+    status: pending
+  - id: gap-lb-sticky-sessions
+    content: "Upstream ip_hash (or cookie affinity) for multi-backend stickiness — config schema + runtime + gate"
+    status: pending
+  - id: gap-tier5-streaming-soak
+    content: "tier5 scenarios sse_long_stream + ws_fanout + suite profile parity_streaming; live li-httpd vs nginx"
+    status: pending
+  - id: gap-nextjs-toy-bench
+    content: "Next.js toy app (API/SSR/SSE/WS) + tier5 scenarios; check-tier5-nextjs-parity.sh — li RPS/TTFB >= 0.85x nginx (document variants)"
+    status: pending
+  - id: gap-nginx-perf-regression-gate
+    content: "CI/nightly gate — all tier5 parity + nextjs scenarios; fail if li p99 > 2x nginx or exploit row regresses"
     status: pending
 isProject: false
 ---
 
 # li-httpd — minimal, proved, nginx-competitive
+
+## Parity milestones (agent-gateway vs nginx oracle)
+
+Config/oracle todos may be `completed` while **runtime parity** rows stay `pending` until `build/li-httpd` passes full gates, tier5 bench/exploit vs nginx, and live SSE/TLS/H2/WS.
+
+| Tier | Todo ids | Delivers |
+|------|----------|----------|
+| Language | `w0-bytes-io`, `w1-async-reactor` | Bytes I/O + event loop (concurrency) |
+| Ship | `m0-ship-gate-full`, `h-lean-server-modules` | Full build + Lean on server code |
+| M1 runtime | `m1-serve-production`, `m1-upstream-keepalive`, `m1-active-health`, `m1-nginx-bench-parity`, `m1-exploit-runtime` | Production HTTP/1.1 + bench/security vs nginx |
+| M1.5 runtime | `m15-sse-runtime`, `m15-inference-live` | Live streaming + `/v1` agent routes |
+| M2 runtime | `m2-tls-h2-runtime`, `m2-websocket-runtime`, `m2-circuit-queue-runtime`, `m2-webhook-egress-runtime` | TLS/H2/WS + saturation policy |
+
+**Non-goals (unchanged):** nginx.conf drop-in, regex `location`, Lua/modules, HTTP/3, mail.
 
 ## Honest starting point
 
@@ -94,10 +160,10 @@ Li today is optimized for **proved HPC kernels** (Tetris/SDL, physics benchmarks
 
 | Area       | Today                                                                                                                                                                            | Needed for nginx-class                                                  |
 | ---------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------- |
-| Proof gate | **2e–2f partial on `main` (PR #83):** AutoVC + open-VC gate; `contracts_verify` 16/16; full Lean kernel still **G-lean** ([proof-corpus-roadmap](docs/verification/proof-corpus-roadmap.md)) | Every server module must pass `lic build` with discharged goals (target) |
+| Proof gate | **2e–2f httpd path gated (w0):** `check-httpd-lean-gate.sh`, closed `http_parse_forward_closed.li`, callee-ensures witness; composite smokes ≤8 open VC; full kernel still **G-lean** ([proof-corpus-roadmap](docs/verification/proof-corpus-roadmap.md)) | Every server module must pass `lic build` with discharged goals (target) |
 | Trusted IO | [trusted.lean](docs/semantics/trusted.lean): SDL/frame axioms only                                                                                                               | Syscalls, sockets, timers, process spawn — **RFC-reviewed axioms only** |
 | Stdlib     | `std/` effectively empty; heap `str`/`bytes`/`list` mostly **spec** ([data structures roadmap](docs/superpowers/specs/2026-05-14-li-language-design.md#data-structures-roadmap)) | Full bytes I/O, config, containers, regex, compression                  |
-| Async      | Spec: `async`/`await` + `raises Async` — **not shipped**                                                                                                                         | Event loop driving 100k+ connections                                    |
+| Async      | **w1 shipped:** `async`/`await` + `li_async_poll` epoll/kqueue reactor; tier5 `tcp_echo` scenario (timing off in CI)                                                          | Full task scheduler + 100k+ connections (M1.5+)                         |
 | Networking | **None** in repo                                                                                                                                                                 | TCP/UDP, DNS, TLS, HTTP/1.1–3, stream proxy                             |
 
 

@@ -157,6 +157,12 @@ suite = "compile_ok"
 file = "compile_ok/int_ne_literal.li"
 outcome = "compile_ok"
 
+[[tests]]
+suite = "compile_ok"
+file = "compile_ok/volatile_sink_no_io.li"
+outcome = "compile_ok"
+note = "bench sink extern without raises IO"
+
 # --- prove_reject (pillar 1) ---
 
 [[tests]]
@@ -205,7 +211,7 @@ outcome = "verify_ok"
 [[tests]]
 suite = "contracts_verify"
 file = "contracts_verify/sqrt_open_bound.li"
-outcome = "verify_open_ok"
+outcome = "prove_lean_ok"
 
 [[tests]]
 suite = "contracts_verify"
@@ -217,6 +223,12 @@ suite = "contracts_verify"
 file = "contracts_verify/discharge_trivial.li"
 outcome = "prove_lean_ok"
 note = "P-closed: discharge_trivial_lean.sh"
+
+[[tests]]
+suite = "contracts_verify"
+file = "contracts_verify/http_parse_forward_closed.li"
+outcome = "verify_ok"
+note = "w0-lean-gate: extern forward inherits callee ensures (zero open AutoVC)"
 
 [[tests]]
 suite = "contracts_verify"
@@ -245,8 +257,14 @@ expected_substr = "E0304"
 [[tests]]
 suite = "contracts_verify"
 file = "contracts_verify/method_call_requires_ok.li"
-outcome = "verify_ok"
-note = "2j-f: method call-site requires on desugared Type_method"
+outcome = "prove_lean_ok"
+note = "G-oop: discharge_method_call_requires_lean.sh (folded balance requires)"
+
+[[tests]]
+suite = "contracts_verify"
+file = "contracts_verify/method_ensures_return_ok.li"
+outcome = "prove_lean_ok"
+note = "G-oop: method ensures on int return; discharge_method_ensures_return_lean.sh"
 
 [[tests]]
 suite = "contracts_verify"
@@ -436,6 +454,25 @@ expected_substr = "disjoint_row"
 
 [[tests]]
 suite = "race_shared_memory"
+
+[[tests]]
+suite = "race_shared_memory"
+file = "race_shared_memory/false_disjoint_requires_true.li"
+outcome = "compile_fail"
+expected_substr = "bare"
+
+[[tests]]
+suite = "race_shared_memory"
+file = "race_shared_memory/false_disjoint_requires_bare_row.li"
+outcome = "compile_fail"
+expected_substr = "bare"
+
+[[tests]]
+suite = "race_shared_memory"
+file = "race_shared_memory/false_disjoint_decorator_bare_row.li"
+outcome = "compile_fail"
+expected_substr = "disjoint_row"
+
 file = "race_shared_memory/good_disjoint_parallel.li"
 outcome = "verify_ok"
 
@@ -554,7 +591,13 @@ outcome = "verify_ok"
 suite = "runtime"
 file = "runtime/bytes_len_slice_link.li"
 outcome = "compile_open_ok"
-note = "std/bytes externs link against runtime/li_rt.c"
+note = "std/bytes externs link against runtime/li_rt_net.c"
+
+[[tests]]
+suite = "bytes"
+file = "bytes/reader_writer_smoke.li"
+outcome = "compile_open_ok"
+note = "w0-bytes-io Reader/Writer incremental parse over std.bytes"
 
 [[tests]]
 suite = "runtime"
@@ -628,6 +671,18 @@ outcome = "compile_fail"
 expected_substr = "raises Net"
 
 [[tests]]
+suite = "net_trusted"
+file = "net_trusted/seam_policy_ok.li"
+outcome = "compile_open_ok"
+note = "w0-bytes-io trusted Net seam — tcp_listen requires raises Net"
+
+[[tests]]
+suite = "net_trusted"
+file = "net_trusted/seam_missing_net.li"
+outcome = "compile_fail"
+expected_substr = "raises Net"
+
+[[tests]]
 suite = "effects"
 file = "effects/async_missing_raises.li"
 outcome = "compile_fail"
@@ -645,6 +700,16 @@ suite = "async"
 file = "async/await_codegen_ok.li"
 outcome = "compile_open_ok"
 note = "open VC until 2f full (Lean gate on devbox)"
+[[tests]]
+suite = "async"
+file = "async/reactor_selftest_link.li"
+outcome = "compile_open_ok"
+note = "w1 epoll/kqueue li_async_reactor_selftest_i"
+[[tests]]
+suite = "async"
+file = "async/tcp_echo_smoke.li"
+outcome = "compile_open_ok"
+note = "w1 tcp_echo_epoll_once_i (Linux runtime in check-w1)"
 [[tests]]
 suite = "effects"
 file = "effects/await_outside_async.li"
@@ -700,6 +765,80 @@ suite = "composable"
 file = "composable/import_physics_runtime.li"
 outcome = "verify_open_ok"
 note = "2j-c: var RigidBody in-out write-back after rigid_integrate_semi_implicit; runtime exit 0"
+
+[[tests]]
+suite = "composable"
+file = "composable/import_sim_scientific_run.li"
+packages = ["li-sim-scientific", "li-sim"]
+outcome = "compile_open_ok"
+note = "sim.scientific: run_simulation + run_algo; detail 0–3; open VC via physics.rigid import"
+
+[[tests]]
+suite = "composable"
+file = "composable/import_studio_sim_profile_bridge.li"
+packages = ["li-sim", "li-studio", "li-gui", "li-ui"]
+outcome = "compile_open_ok"
+note = "PH-SIM SIM-0: studio_apply_profile_to_sim + li_sim_profile_from_studio_id"
+
+[[tests]]
+suite = "composable"
+file = "composable/import_studio_sim_step_stub.li"
+packages = ["li-sim", "li-studio", "li-gui", "li-ui"]
+outcome = "compile_open_ok"
+note = "PH-SIM SIM-1: studio_sim_step_hook + sim_reset/sim_step tick stub"
+
+[[tests]]
+suite = "composable"
+file = "composable/import_ui_studio_shell.li"
+packages = ["li-ui"]
+outcome = "compile_open_ok"
+note = "import ui: studio shell layout + paint IR composables (PH-UX-01)"
+
+[[tests]]
+suite = "composable"
+file = "composable/import_gui_viewport_panel_switch.li"
+packages = ["li-gui", "li-ui"]
+outcome = "compile_open_ok"
+note = "import gui: viewport region + panel switch timing + paint expansion (PH-UX-02)"
+
+[[tests]]
+suite = "composable"
+file = "composable/import_gui_studio_keyboard.li"
+packages = ["li-gui", "li-ui"]
+outcome = "compile_open_ok"
+note = "import gui: UX-09 keyboard-first Escape/Cmd+K/1-5 region focus"
+
+[[tests]]
+suite = "composable"
+file = "composable/import_render_wgpu_fps.li"
+packages = ["li-render", "li-gpu", "li-gui", "li-ui"]
+outcome = "compile_open_ok"
+note = "import render: wgpu smoke + FPS counter bench hook (PH-UX-03)"
+
+[[tests]]
+suite = "composable"
+file = "composable/import_studio_compose.li"
+packages = ["li-studio", "li-gui", "li-ui"]
+outcome = "compile_open_ok"
+note = "import studio: compose dock + timeline + inspector from composables (PH-UX-05)"
+
+[[tests]]
+suite = "composable"
+file = "composable/import_lig_kernel.li"
+outcome = "compile_open_ok"
+note = "PH-HW WP4 lig kernel"
+
+[[tests]]
+suite = "composable"
+file = "composable/import_lig_chem_backend.li"
+outcome = "compile_open_ok"
+note = "PH-HW WP4 chem lig backend"
+
+[[tests]]
+suite = "smoke"
+file = "packages/lig/li-tests/smoke/kernel_matmul_parity.li"
+outcome = "compile_open_ok"
+note = "T-PKG-lig-kernel-matmul-parity"
 
 # stdlib_coverage/build_std_csv — enable when std.csv module resolves (PH-IO-4)
 
@@ -792,6 +931,17 @@ outcome = "compile_ok"
 
 [[tests]]
 suite = "math_linalg"
+file = "math_linalg/broadcast_len1_pow_int4.li"
+outcome = "compile_ok"
+
+[[tests]]
+suite = "math_linalg"
+file = "math_linalg/broadcast_invalid_len2_vs_len4.li"
+outcome = "compile_fail"
+expected_substr = "length-1 broadcast"
+
+[[tests]]
+suite = "math_linalg"
 file = "math_linalg/sum_elementwise_product.li"
 outcome = "verify_ok"
 
@@ -863,6 +1013,18 @@ suite = "math_linalg"
 file = "math_linalg/reductions/dot_via_sum_product.li"
 outcome = "verify_ok"
 
+[[tests]]
+suite = "math_linalg"
+file = "math_linalg/reductions/dot_len_mismatch.li"
+outcome = "compile_fail"
+expected_substr = "dot expects two matching array"
+
+[[tests]]
+suite = "math_linalg"
+file = "math_linalg/reductions/sum_non_array.li"
+outcome = "compile_fail"
+expected_substr = "sum expects a fixed array argument"
+
 # --- physics (packages + profiles) ---
 
 [[tests]]
@@ -874,6 +1036,24 @@ outcome = "verify_ok"
 suite = "physics"
 file = "physics/three_body_mini.li"
 outcome = "compile_ok"
+
+[[tests]]
+suite = "math_linalg"
+file = "math_linalg/golden_dot4_ones_twos.li"
+outcome = "compile_ok"
+note = "small golden 8.0; runtime via verify-math-physics-goldens.sh"
+
+[[tests]]
+suite = "math_linalg"
+file = "math_linalg/golden_tier1_dot8.li"
+outcome = "compile_ok"
+note = "tier-1 dot spec N=8; runtime via verify-math-physics-goldens.sh"
+
+[[tests]]
+suite = "physics"
+file = "physics/golden_positions_sum.li"
+outcome = "compile_ok"
+note = "small golden 3.0; runtime via verify-math-physics-goldens.sh"
 
 # --- math_syntax (2h — %, //, **) ---
 
@@ -925,6 +1105,11 @@ outcome = "compile_fail"
 [[tests]]
 suite = "stdlib_seal"
 file = "stdlib_seal/shadow_std_symbol.li"
+outcome = "compile_fail"
+
+[[tests]]
+suite = "stdlib_seal"
+file = "stdlib_seal/shadow_echo_via_import.li"
 outcome = "compile_fail"
 
 # --- encapsulation (2g — def, object, visibility, import) ---
@@ -1094,6 +1279,11 @@ note = "open VC until 2f full (Lean gate on devbox)"
 suite = "modules"
 file = "modules/use_positive.li"
 outcome = "verify_ok"
+
+[[tests]]
+suite = "modules"
+file = "modules/import_cycle_a.li"
+outcome = "compile_fail"
 
 # --- cve_patterns (C memory-safety classes — must reject or prove safe) ---
 

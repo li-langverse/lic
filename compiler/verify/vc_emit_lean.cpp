@@ -10,6 +10,7 @@
 #include <fstream>
 #include <map>
 #include <optional>
+#include <set>
 #include <sstream>
 #include <string>
 
@@ -347,14 +348,17 @@ void emit_contract_def(std::ostream& out, const Module& module, const ProcDecl& 
   std::string prop = "True";
   const CallerProofFacts caller_facts = collect_caller_proof_facts(proc);
   bool mat2_discharge_theorem = false;
+  bool sqrt_discharge_theorem = false;
   if (c.kind == ContractKind::Ensures && c.expr) {
     if (ctx.proc != nullptr && witness_mat2_int_at2_spec(*ctx.proc, *c.expr)) {
       mat2_discharge_theorem = true;
+    } else if (ctx.proc != nullptr && witness_sqrt_open_bound_spec(*ctx.proc, *c.expr)) {
+      sqrt_discharge_theorem = true;
     }
   }
   const bool witnessed =
       contract_witnessed_trivial(proc, c, &module, &caller_facts);
-  if (witnessed && !mat2_discharge_theorem) {
+  if (witnessed && !mat2_discharge_theorem && !sqrt_discharge_theorem) {
     prop = "True";
   } else if (mat2_discharge_theorem && c.kind == ContractKind::Ensures) {
     prop = "Li.Discharge.mat2_at2_float_spec";
@@ -376,10 +380,10 @@ void emit_contract_def(std::ostream& out, const Module& module, const ProcDecl& 
     }
   }
 
-  const bool mat2_ensures =
-      mat2_discharge_theorem && c.kind == ContractKind::Ensures;
+  const bool semantic_ensures =
+      (mat2_discharge_theorem || sqrt_discharge_theorem) && c.kind == ContractKind::Ensures;
   out << "def " << name;
-  emit_formals(!mat2_ensures);
+  emit_formals(!semantic_ensures);
   out << " : Prop := " << prop << '\n';
 
   if (prop == "True" && witnessed && c.kind == ContractKind::Ensures) {
@@ -412,6 +416,17 @@ void emit_contract_def(std::ostream& out, const Module& module, const ProcDecl& 
       out << ' ' << lean_ident(p.name);
     }
     out << '\n';
+  } else if (sqrt_discharge_theorem && c.kind == ContractKind::Ensures) {
+    const std::string req_name = "vc_" + sec + "_requires_0";
+    out << "theorem " << name << "_proved";
+    emit_formals(false);
+    out << " : " << name;
+    emit_args(false);
+    out << " (hreq : " << req_name;
+    for (const auto& p : proc.params) { out << ' ' << lean_ident(p.name); }
+    out << ") := Li.Discharge.sqrt_open_bound_spec_proved";
+    for (const auto& p : proc.params) { out << ' ' << lean_ident(p.name); }
+    out << " hreq\n";
   } else if (prop == "True") {
     out << "theorem " << name << "_proved";
     emit_formals(true);
@@ -421,52 +436,45 @@ void emit_contract_def(std::ostream& out, const Module& module, const ProcDecl& 
   }
 }
 
+bool is_caller_param(const ProcDecl& caller, const std::string& name) {
+  return std::any_of(caller.params.begin(), caller.params.end(),
+                     [&](const Param& p) { return p.name == name; });
+}
+
 void append_call_site_vc_formals(std::ostream& out, const Module& module, const ProcDecl& caller,
-                                 const std::vector<std::unique_ptr<Expr>>& args,
-                                 const std::string& prop) {
+                                 const std::set<std::string>& ref_idents) {
   std::map<std::string, const TypeExpr*> locals;
   for (const auto& p : caller.params) {
     locals[p.name] = &p.type;
     out << ' ' << '(' << lean_ident(p.name) << " : " << lean_type_name(p.type, module) << ')';
   }
   collect_local_types_in_stmts(caller.body, locals);
-  for (const auto& arg : args) {
-    if (arg == nullptr || arg->kind != Expr::Kind::Ident) {
+  for (const std::string& name : ref_idents) {
+    if (is_caller_param(caller, name)) {
       continue;
     }
-    if (prop.find(arg->ident) == std::string::npos) {
+    const auto it = locals.find(name);
+    if (it == locals.end() || it->second == nullptr) {
       continue;
     }
-    if (locals.find(arg->ident) == locals.end()) {
-      continue;
-    }
-    if (std::any_of(caller.params.begin(), caller.params.end(),
-                    [&](const Param& p) { return p.name == arg->ident; })) {
-      continue;
-    }
-    const TypeExpr* te = locals[arg->ident];
-    out << " (" << lean_ident(arg->ident) << " : " << lean_type_name(*te, module) << ')';
+    out << " (" << lean_ident(name) << " : " << lean_type_name(*it->second, module) << ')';
   }
 }
 
-void append_call_site_vc_args(std::ostream& out, const Module& module, const ProcDecl& caller,
-                              const std::vector<std::unique_ptr<Expr>>& args,
-                              const std::string& prop) {
+void append_call_site_vc_args(std::ostream& out, const ProcDecl& caller,
+                              const std::set<std::string>& ref_idents) {
   for (const auto& p : caller.params) {
     out << ' ' << lean_ident(p.name);
   }
-  for (const auto& arg : args) {
-    if (arg == nullptr || arg->kind != Expr::Kind::Ident) {
+  std::set<std::string> emitted;
+  for (const auto& p : caller.params) {
+    emitted.insert(p.name);
+  }
+  for (const std::string& name : ref_idents) {
+    if (!emitted.insert(name).second) {
       continue;
     }
-    if (prop.find(arg->ident) == std::string::npos) {
-      continue;
-    }
-    if (std::any_of(caller.params.begin(), caller.params.end(),
-                    [&](const Param& p) { return p.name == arg->ident; })) {
-      continue;
-    }
-    out << ' ' << lean_ident(arg->ident);
+    out << ' ' << lean_ident(name);
   }
 }
 
@@ -494,20 +502,26 @@ void emit_requires_vcs_for_call(std::ostream& out, const Module& module, const P
     VcCtx ctx;
     if (witnessed) {
       prop = "True";
+    } else if (auto lean = expr_to_lean(*folded, ctx)) {
+      prop = *lean;
     } else if (auto lean = expr_to_lean(*sub, ctx)) {
       prop = *lean;
     } else {
       out << "/-! VC call-site requires (opaque): callee '" << callee.name << "' at call "
           << call_idx << " -/\n";
     }
+    std::set<std::string> ref_idents;
+    if (!witnessed) {
+      collect_idents_in_expr(*folded, ref_idents);
+    }
     out << "def " << name;
-    append_call_site_vc_formals(out, module, caller, args, prop);
+    append_call_site_vc_formals(out, module, caller, ref_idents);
     out << " : Prop := " << prop << '\n';
-    if (prop == "True" && witnessed) {
+    if (witnessed) {
       out << "theorem " << name << "_proved";
-      append_call_site_vc_formals(out, module, caller, args, prop);
+      append_call_site_vc_formals(out, module, caller, ref_idents);
       out << " : " << name;
-      append_call_site_vc_args(out, module, caller, args, prop);
+      append_call_site_vc_args(out, caller, ref_idents);
       out << " := trivial\n";
     }
   }
@@ -588,12 +602,14 @@ void emit_call_site_requires(std::ostream& out, const Module& module, const Proc
         out << "/-! VC call-site refinement: param " << p << " of '" << callee->name
             << "' at call " << call_idx << " -/\n";
       }
+      std::set<std::string> ref_idents;
+      collect_idents_in_expr(*sub, ref_idents);
       out << "def " << name;
-      append_call_site_vc_formals(out, module, caller, call->args, prop);
+      append_call_site_vc_formals(out, module, caller, ref_idents);
       out << " : Prop := " << prop << '\n';
       if (witnessed) {
         out << "theorem " << name << "_proved";
-        append_call_site_vc_formals(out, module, caller, call->args, prop);
+        append_call_site_vc_formals(out, module, caller, ref_idents);
         out << " : " << name;
         append_call_site_vc_args(out, module, caller, call->args, prop);
         if (refinement_discharge && lit_nonneg) {
@@ -649,6 +665,9 @@ void walk_contracts(std::ostream& out, const Module& module, const ProcDecl& pro
         break;
       case ContractKind::Invariant:
         emit_contract_def(out, module, proc, "invariant", inv++, c, vc_suffix, loop_iter);
+        break;
+      case ContractKind::ProbEnsures:
+        emit_contract_def(out, module, proc, "prob_ensures", ens++, c, vc_suffix, loop_iter);
         break;
     }
   }

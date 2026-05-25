@@ -16,3 +16,8 @@ lean_lib AutoVC where
 lean_lib Discharge where
   roots := #[`Discharge]
   deps := #[`LiSemantics, `AutoVC]
+
+/-- Probabilistic Hoare (prob_ensures) measure obligations — P2 httpd plan. -/
+lean_lib Probability where
+  roots := #[`Probability]
+  deps := #[`LiSemantics]

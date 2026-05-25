@@ -20,7 +20,9 @@ Cross-cutting program IDs. Implementation order respects dependencies in the vis
 | **PH-ML** | ML-0…5 | PH-HW-1 |
 | **PH-AGENT** | AGENT-0…6 | `lic check --format=json` |
 | **PH-PORT** | PORT-0…2 | LLVM triples |
-| **PH-HW** | HW-0…4 | `li-gpu` |
+| **PH-HW** | HW-0…4 | `lig` (WP1 governance; WP2+ `packages/lig`) |
 | **PH-COMPLY** | COMPLY-0…4 | governance |
 
-**Next execution milestones:** RFC stubs (landed) → `li-studio` scaffold (PH-GD-1) → `li-sim` step API (PH-SIM-1).
+**Next execution milestones:** RFC stubs (landed) → `li-studio` scaffold (PH-GD-1) → **PH-SIM SIM-1** tick stub (landed) → PH-SIM SIM-2 replay → SIM-3 RL `EnvPool` hookup.
+
+**PH-SIM SIM-1 (landed):** `sim_reset` / `sim_step` on `SimSessionStub` (deterministic `tick`, no physics); `studio_sim_step_hook` after SIM-0 profile bridge. Evidence: `packages/li-sim/li-tests/smoke/sim_step_stub.li`, `docs/release-notes/2026-05-25-sim-step-sim1-stub.md`.

@@ -1,7 +1,15 @@
 # Proof corpus and verification roadmap
 
 **Audience:** agents extending **2e/2f**, reviewers judging “is `lic build` a proof certificate?”  
-**Related:** [Provability gaps](provability-gaps.md) · [Contracts and proofs](../language/contracts-and-proofs.md) · [Master plan § 2e–2f](../superpowers/plans/2026-05-14-li-master-plan.md)
+**Related:** [Provability gaps](provability-gaps.md) · [Proof database](proof-database.md) (`proof-db/manifest.toml`) · [Contracts and proofs](../language/contracts-and-proofs.md) · [Master plan § 2e–2f](../superpowers/plans/2026-05-14-li-master-plan.md)
+
+## Release regression manifest (v0)
+
+| Artifact | Role |
+|----------|------|
+| [`proof-db/manifest.toml`](../../proof-db/manifest.toml) | `release_pin` + `proof_status` per row |
+| [`scripts/check-proof-db.sh`](../../scripts/check-proof-db.sh) | CI smoke |
+
 
 ## What “testing proofs” means in this repo
 
@@ -23,11 +31,12 @@
 | `discharge_const.li` | Const-return witnesses | Discharged (`discharge_const_lean.sh`) |
 | `caller_requires_ok.li` | Call-site `requires` + literal arg | Discharged (`discharge_caller_requires_lean.sh`) |
 | `caller_requires_local_ok.li` | Const-local discharge | Discharged |
-| `method_call_requires_ok.li` | Method call-site `requires` on `Type_method` | Build + autovc (2j-f) |
+| `method_call_requires_ok.li` | Method call-site `requires` on `Type_method` (folded `self.balance`) | Fully discharged (`discharge_method_call_requires_lean.sh`) |
+| `method_ensures_return_ok.li` | Method `ensures result == 0` on int return | Fully discharged (`discharge_method_ensures_return_lean.sh`) |
 | `extern_call_requires_ok.li` | Imported callee `requires` | Discharged |
 | `index_refinement.li` | Index refinement type + array access | Build + autovc check in corpus |
 | `sqrt_contract.li` | Float `requires`/`ensures` (toy `sqrt`) | Emits real Props; float goals may stay open |
-| `sqrt_open_bound.li` | `abs(result² - x) < ε` with `li_rt_sqrt` body | **Intentionally open** — `verify_open_ok` / `--allow-open-vc` |
+| `sqrt_open_bound.li` | `abs(result² - x) < ε` with `li_rt_sqrt` body | **Closed** — `prove_lean_ok` via `Li.Discharge.sqrt_open_bound_spec` + `discharge_sqrt_open_lean.sh` |
 | `refinement_*_ok.li` | Refinement types at call/init | **Partial** — refinement VCs often `True`; user `ensures` may stay open |
 | `refinement_guard_ok.li` | `if n >= 0` branch discharge | Same |
 | `linalg_dot4_int_closed.li` | Fixed 4-term int dot — return matches ensures | Fully discharged (`discharge_linalg_int_lean.sh`) |
@@ -66,8 +75,8 @@
 
 | Suite | Result | Notes |
 |-------|--------|-------|
-| `run_all.sh contracts_verify` | **26 pass / 0 fail** (14 `prove_lean_ok` + 12 `verify_ok`/`verify_open_ok`) | `prove_lean_ok` runs lake when elan on PATH |
-| `contracts_discharge_corpus.sh` | **ok** | Trivial/const/index/caller-requires/**linalg closed**; `sqrt_open_bound` + loop dot intentionally open |
+| `run_all.sh contracts_verify` | **28 pass / 0 fail** (16 `prove_lean_ok` + 12 `verify_ok`/`verify_open_ok`) | `prove_lean_ok` runs lake when elan on PATH |
+| `contracts_discharge_corpus.sh` | **ok** | Trivial/const/index/caller-requires/method-call/**linalg** + **P-float sqrt** closed; loop dot intentionally open |
 | `run_httpd_config.sh` | **ok** | Python oracle + Li `match_routes.li` binary exit 0 |
 | `contracts_verify_lean.sh` | **partial** | Needs Lean 4 + lake; may stop on specimens with open user `ensures` |
 | `lake build` | **default on `lic build`** | `--no-lean-verify` to skip; CI runs lake directly + tooling scripts |
@@ -80,7 +89,7 @@ Priority order aligned with [provability-gaps](provability-gaps.md) and **2e →
 |----|-------|-------------------|------------------|
 | **P-refine** | Refinement types emit real Props | **Partial** — closed `refinement_call_ok.li` | `discharge_refinement_lean.sh` |
 | **P-ensures-witness** | MIR-linked `ensures` for non-literal returns | `witnessed_ensures` partial | `caller()`, `use_positive.li`, physics smokes |
-| **P-float** | `Float.abs`, sqrt error bounds | **G-vc** open (`sqrt_open_bound`) | `sqrt_open_bound.li` + `Li.Discharge` lemmas |
+| **P-float** | `Float.abs`, sqrt error bounds | **Partial** — `sqrt_open_bound` closed (trusted `li_rt_sqrt_bound`); IEEE proof open | `discharge_sqrt_open_lean.sh` |
 | **P-loop** | `while` invariant preservation | Few loop specimens | New `contracts_verify/loop_invariant_*.li` |
 | **P-linalg** | Matrix/vector shapes (`@`, slices) | **Partial** — closed dot/sum/matmul-entry/norm/axpy + loop witness. **Open:** float `vec3_dot` Props, 2D array CallProc | `contracts_verify/linalg_*`, `math_linalg/*` |
 | **P-par** | `parallel for` disjointness | **G-par** string heuristics only | Lean specs for `disjoint=` (7d-c) |
@@ -89,6 +98,7 @@ Priority order aligned with [provability-gaps](provability-gaps.md) and **2e →
 | **P-http** | Parser/route config safety | Phase **H** | `httpd/*`, TOML desugar invariants |
 | **P-narrow** | Width-narrowing / casts | **G-narrow** partial | Ariane-style `prove_reject` + proved narrowing |
 | **P-meta** | Compiler ↔ `Core.lean` | **G-meta** research | Long-term; cite Dafny/CakeML VCG literature |
+| **P-oop** | Method/trait Lean VCs | **Partial** — call-site `requires` + static method `ensures`; trait dispatch + `old(self.field)` open | `method_call_requires_*.li`, `method_ensures_return_ok.li` |
 
 **Learned from (external):** Dafny `requires`/`ensures`/`decreases`; Lean 4 `mvcgen` / WP tactics; verified Dafny VCG (HOL4) for “what a finished pipeline proves.”
 
@@ -96,7 +106,7 @@ Priority order aligned with [provability-gaps](provability-gaps.md) and **2e →
 
 | Today | Target |
 |-------|--------|
-| **`prove_lean_ok`** in `run_all.sh` + 14 closed `contracts_verify` rows | **Done** for split; lake step skips when elan absent |
+| **`prove_lean_ok`** in `run_all.sh` + 15 closed `contracts_verify` rows | **Done** for split; lake step skips when elan absent |
 | **`verify_ok`** = strict `lic build` (default open-VC gate) | Same as planned `prove_compile_ok` name |
 | Remaining corpus on `verify_ok` | Retag when `discharge_*_lean.sh` covers them |
 | CI without Lean | `prove_lean_ok` → skip (not fail) — install elan in semantics job for full gate |

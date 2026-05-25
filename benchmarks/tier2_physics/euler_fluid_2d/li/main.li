@@ -1,5 +1,3 @@
-# euler_fluid_2d — shared C oracle via LI_EXTRA_C (WP3 smoke-scale).
-
 extern proc li_euler_fluid_2d_kernel()
   requires true
   ensures true

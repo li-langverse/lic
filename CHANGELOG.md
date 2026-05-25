@@ -6,8 +6,10 @@ All notable changes to Li are documented here. The format follows
 
 ## [Unreleased]
 
-<<<<<<< Updated upstream
-=======
+### Fixed
+
+- **WP-T2 tier-2 physics Li builds:** `cloth_swing`, `combustion_passive`, `euler_fluid_2d`, `rigid_body_stack`, `wind_field_bc` harness `main.li` extern contracts + checksum sink — [2026-05-25-tier2-physics-li-builds-wp-t2.md](docs/release-notes/2026-05-25-tier2-physics-li-builds-wp-t2.md).
+
 ### Added
 
 - **Registry benchmark harness fill:** family-template dirs + `bench_registry.py` tier-7 CSV aliases for dashboard catalog — [2026-05-25-bench-harness-fill-registry.md](docs/release-notes/2026-05-25-bench-harness-fill-registry.md).
@@ -20,7 +22,6 @@ All notable changes to Li are documented here. The format follows
 
 - **CI platform (WP-C1–C5):** Linux jobs consume `ghcr.io/li-langverse/lic-ci:ubuntu24-llvm22`, `actions/cache@v4` on `build/`, reusable `package-ci.yml`, GHA layer cache on lic-ci image publish — [2026-05-25-ci-lic-cache-wp-c.md](docs/release-notes/2026-05-25-ci-lic-cache-wp-c.md).
 
->>>>>>> Stashed changes
 ### Added
 
 - **Bench fill WP1:** tier-1 micro harnesses for all catalog `num_*` + `fft_1d_fixed` (`benchmarks/tier1_micro/`, `bench.py` `_WP1_NUM_IDS`, `scripts/gen_wp1_tier1_num_harnesses.py`) — [2026-05-25-tier1-num-fft-harnesses-wp1.md](docs/release-notes/2026-05-25-tier1-num-fft-harnesses-wp1.md).

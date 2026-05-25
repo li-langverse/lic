@@ -1,6 +1,7 @@
 #include "li_rt.h"
 
 #include <math.h>
+#include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 
@@ -352,6 +353,143 @@ int32_t li_rt_studio_parse_toml_profile_line(const char* line) {
   memcpy(buf, start, n);
   buf[n] = '\0';
   return li_rt_studio_profile_match_name(buf);
+}
+
+
+/* PH-HW HW-0: lig device layer (was li-gpu stub). */
+#define LI_RT_LIG_BACKEND_CUDA 1
+#define LI_RT_LIG_BACKEND_ROCM 2
+#define LI_RT_LIG_BACKEND_METAL 3
+#define LI_RT_LIG_BACKEND_WEBGPU 4
+
+static int32_t g_lig_selected_backend = LI_RT_LIG_BACKEND_WEBGPU;
+
+static int32_t li_rt_lig_backend_probe_available(int32_t backend_id) {
+  switch (backend_id) {
+    case LI_RT_LIG_BACKEND_CUDA:
+      return (getenv("CUDA_HOME") != NULL || getenv("CUDA_PATH") != NULL) ? 1 : 0;
+    case LI_RT_LIG_BACKEND_ROCM:
+      return (getenv("ROCM_PATH") != NULL || getenv("HIP_PATH") != NULL) ? 1 : 0;
+    case LI_RT_LIG_BACKEND_METAL:
+#if defined(__APPLE__)
+      return 1;
+#else
+      return 0;
+#endif
+    case LI_RT_LIG_BACKEND_WEBGPU:
+      return 1;
+    default:
+      return 0;
+  }
+}
+
+static int32_t li_rt_lig_backend_match_name(const char* name) {
+  if (name == NULL) {
+    return 0;
+  }
+  if (strcmp(name, "cuda") == 0) {
+    return LI_RT_LIG_BACKEND_CUDA;
+  }
+  if (strcmp(name, "rocm") == 0 || strcmp(name, "hip") == 0) {
+    return LI_RT_LIG_BACKEND_ROCM;
+  }
+  if (strcmp(name, "metal") == 0) {
+    return LI_RT_LIG_BACKEND_METAL;
+  }
+  if (strcmp(name, "webgpu") == 0 || strcmp(name, "wgpu") == 0) {
+    return LI_RT_LIG_BACKEND_WEBGPU;
+  }
+  return 0;
+}
+
+int32_t li_rt_lig_device_kind(void) { return g_lig_selected_backend; }
+
+int32_t li_rt_lig_backend_available(int32_t backend_id) {
+  return li_rt_lig_backend_probe_available(backend_id);
+}
+
+int32_t li_rt_lig_backend_select_auto(void) {
+#if defined(__APPLE__)
+  if (li_rt_lig_backend_probe_available(LI_RT_LIG_BACKEND_METAL)) {
+    g_lig_selected_backend = LI_RT_LIG_BACKEND_METAL;
+    return LI_RT_LIG_BACKEND_METAL;
+  }
+#endif
+  if (li_rt_lig_backend_probe_available(LI_RT_LIG_BACKEND_ROCM)) {
+    g_lig_selected_backend = LI_RT_LIG_BACKEND_ROCM;
+    return LI_RT_LIG_BACKEND_ROCM;
+  }
+  if (li_rt_lig_backend_probe_available(LI_RT_LIG_BACKEND_CUDA)) {
+    g_lig_selected_backend = LI_RT_LIG_BACKEND_CUDA;
+    return LI_RT_LIG_BACKEND_CUDA;
+  }
+  g_lig_selected_backend = LI_RT_LIG_BACKEND_WEBGPU;
+  return LI_RT_LIG_BACKEND_WEBGPU;
+}
+
+int32_t li_rt_lig_present_surface_ok(void) {
+  return 0;
+}
+
+static char li_rt_lig_cap_json_buf[192];
+
+const char* li_rt_lig_capability_json(void) {
+  snprintf(li_rt_lig_cap_json_buf, sizeof(li_rt_lig_cap_json_buf),
+           "{\"lig_version\":2,\"device_kind\":%d,\"surface_ok\":%d}",
+           (int)g_lig_selected_backend, (int)li_rt_lig_present_surface_ok());
+  return li_rt_lig_cap_json_buf;
+}
+
+int32_t li_rt_lig_parse_toml_backend_line(const char* line) {
+  if (line == NULL) {
+    return 0;
+  }
+  const char* key = "backend";
+  const char* p = strstr(line, key);
+  if (p == NULL) {
+    return 0;
+  }
+  p += strlen(key);
+  while (*p == ' ' || *p == '\t') {
+    p++;
+  }
+  if (*p != '=') {
+    return 0;
+  }
+  p++;
+  while (*p == ' ' || *p == '\t') {
+    p++;
+  }
+  char buf[32];
+  const char* start = NULL;
+  size_t n = 0;
+  if (*p == '"') {
+    p++;
+    start = p;
+    while (*p != '\0' && *p != '"') {
+      p++;
+    }
+    if (*p != '"') {
+      return 0;
+    }
+    n = (size_t)(p - start);
+  } else {
+    start = p;
+    while ((*p >= 'a' && *p <= 'z') || (*p >= '0' && *p <= '9') || *p == '_') {
+      p++;
+    }
+    n = (size_t)(p - start);
+  }
+  if (n == 0 || n >= sizeof(buf)) {
+    return 0;
+  }
+  memcpy(buf, start, n);
+  buf[n] = '\0';
+  const int32_t id = li_rt_lig_backend_match_name(buf);
+  if (id != 0) {
+    g_lig_selected_backend = id;
+  }
+  return id;
 }
 
 /* PH-GD-2 li-world: world_v1 name=... tick=N entity_count=M (text line, no binary). */

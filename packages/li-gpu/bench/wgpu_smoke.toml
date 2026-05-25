@@ -1,7 +1,0 @@
-# Bench harness hook — read by scripts/bench-studio-viewport-perf.sh
-[wgpu_smoke]
-hook_version = 1
-backend = "wgpu"
-status = "stub_pass"
-native_device = false
-notes = "Compile-time smoke; no wgpu-rs surface yet"

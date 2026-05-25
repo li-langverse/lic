@@ -1,5 +1,3 @@
-# proof-db
+# Proof database — Lean bridge
 
-## Sweep reporter
-
-`scripts/proof-db-report.sh`
+See index.json and lean/ProofDB.lean. Build: `cd docs/semantics && lake build ProofDB`.

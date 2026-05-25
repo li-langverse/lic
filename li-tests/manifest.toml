@@ -1322,6 +1322,10 @@ suite = "modules"
 file = "modules/use_positive.li"
 outcome = "verify_ok"
 
+# --- execution_exploits (resource CLI — shell harness, not .li rows) ---
+# Run: ./li-tests/run_all.sh execution_exploits
+# Wired in scripts/ci-security.sh and run_all.sh all.
+
 [[tests]]
 suite = "modules"
 file = "modules/import_cycle_a.li"
@@ -1380,6 +1384,18 @@ expected_substr = "goto is forbidden"
 suite = "codegen"
 file = "codegen/fp_numerically_stable.li"
 outcome = "compile_ok"
+
+# --- execution_resources (WP4 team_size + vectorized no parallel RT) ---
+
+[[tests]]
+suite = "execution_resources"
+file = "execution_resources/parallel_disjoint_ok.li"
+outcome = "compile_ok"
+
+[[tests]]
+suite = "execution_resources"
+file = "execution_resources/smoke.sh"
+outcome = "script_ok"
 
 # --- hpc_competitive (registry gate; ./li-tests/run_all.sh hpc_competitive) ---
 

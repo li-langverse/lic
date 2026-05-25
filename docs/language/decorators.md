@@ -15,3 +15,17 @@ Names such as `parallel`, `vectorized`, `async`, `cpu`, and `gpu` are reserved f
 ## Status
 
 Parsing and policy checks are implemented in `lic check`. MIR elaboration and codegen lowering are tracked as **G-dec** in [provability-gaps](../verification/provability-gaps.md).
+
+## Resource knobs (`lic build`)
+
+These are **CLI flags**, not decorators:
+
+| Flag | Role |
+|------|------|
+| `--jobs=N` | Parallel compile workers (isolated `--build-dir` trees) |
+| `--cores=N` | Hardware cores for the runtime parallel team |
+| `--threads-per-core=M` | Logical threads per core (default 1); team size = min(N×M, 64) |
+| `--threads=N` | Total runtime parallel team; wins over `--cores` when both are set |
+| `@vectorized(lanes=4)` | SIMD lane width inside one core — LLVM vectors only, no `li_parallel_for_i64` |
+
+Prefer flags over deprecated `LI_COMPILE_JOBS`, `LI_OMP_THREADS`, etc.

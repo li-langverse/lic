@@ -71,6 +71,7 @@ static int li_warn_omp_alias_once(void) {
 }
 
 static int li_resolve_team_size(int team_size) {
+  /* team_size > 0 is baked in at `lic build` from --threads/--cores (preferred). */
   if (team_size > 0) {
     return team_size;
   }

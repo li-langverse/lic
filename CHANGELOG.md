@@ -10,10 +10,8 @@ All notable changes to Li are documented here. The format follows
 
 - **Tier-2 MD oracle (scientific viewport)** — `sim_scientific_tier2_tick`, `tier2_bench_row_md_lennard_jones`, `studio_scientific_viewport_tier_id`, smokes `studio_scientific_tier2_hook.li` — [2026-05-25-tier2-studio-scientific-oracle.md](docs/release-notes/2026-05-25-tier2-studio-scientific-oracle.md).
 
+- **PH-DB master plan cross-link:** phase map row + `ph-db-lidb-platform.md` appendix; **PH-8d-v2 → PH-DB-4** — [2026-05-25-ph-db-master-plan-crosslink.md](docs/release-notes/2026-05-25-ph-db-master-plan-crosslink.md).
 - **Studio UX Wave 2 P2 (HTML mocks 16–18):** command palette, reel motion, end CTA scenes — [2026-05-25-studio-ux-wave2-16-18.md](docs/release-notes/2026-05-25-studio-ux-wave2-16-18.md).
-
-
-
 - **Studio UX Wave 2 P1 (HTML mocks):** outliner panel, consolidated viewport error strip, dock labels — [2026-05-25-studio-ux-wave2-p1-mocks.md](docs/release-notes/2026-05-25-studio-ux-wave2-p1-mocks.md).
 
 ### Fixed
@@ -21,6 +19,8 @@ All notable changes to Li are documented here. The format follows
 - **PH-UX vertical gap #1:** Studio UI bench registry and `bench-studio-viewport-perf.sh` reference `packages/lig` (`wgpu_smoke` hook) instead of removed `packages/li-gpu` — [2026-05-25-vertical-gap-bench-lig.md](docs/release-notes/2026-05-25-vertical-gap-bench-lig.md).
 
 ### Added
+
+- **Execution-resource bench + security:** cores×tpc sweep CSV, `execution_exploits` CI, `--cores`/`--threads-per-core` — [2026-05-25-execution-resource-bench-security.md](docs/release-notes/2026-05-25-execution-resource-bench-security.md).
 
 - **Studio MCP gap #6/#7 (contracts):** eight tool IDs (`am_export_print`, `chem_dft_run`, `studio_adaptive_layout`), `studio_mcp_tool_dispatch` stub, `li-chem` `chem_dft_run_smoke`, smokes `studio_mcp_extended.li` / composable chem — [2026-05-25-vertical-gap-mcp-chem.md](docs/release-notes/2026-05-25-vertical-gap-mcp-chem.md).
 
@@ -53,7 +53,8 @@ All notable changes to Li are documented here. The format follows
 
 ### Fixed
 
-- **PH-UX vertical gap #1:** Studio UI bench registry and `bench-studio-viewport-perf.sh` reference `packages/lig` (`wgpu_smoke` hook) instead of removed `packages/li-gpu` — [2026-05-25-vertical-gap-bench-lig.md](docs/release-notes/2026-05-25-vertical-gap-bench-lig.md).
+ - **PH-UX vertical gap #1:** Studio UI bench registry and `bench-studio-viewport-perf.sh` reference `packages/lig` (`wgpu_smoke` hook) instead of removed `packages/li-gpu` — [2026-05-25-vertical-gap-bench-lig.md](docs/release-notes/2026-05-25-vertical-gap-bench-lig.md).
+- **WP4 execution resources:** `--cores=N`, `--threads-per-core=M`, runtime team baked into `li_parallel_for_i64`; `li-tests/execution_resources/` — [docs/release-notes/2026-05-25-lic-execution-resources-wp4.md](docs/release-notes/2026-05-25-lic-execution-resources-wp4.md).
 
 ### Added
 

@@ -116,6 +116,7 @@ These three are **enough** until a row in [Future org repos](#future-org-repos-a
 |-----------------|-------------|--------------|-----|
 | Stdlib split | When `std/` outgrows **`lic`** or listed in `official-packages.md` | `li-std-<area>` e.g. `li-std-core`, `li-std-math` | Independent semver / second consumer; **register in `li-downstream-repos.txt`** |
 | Phase **H** (httpd stack) | Before httpd needs standalone publish | `li-http`, `li-net`, `li-tls`, … per [httpd plan](2026-05-16-li-httpd-plan.md) | Infra packages, own CI |
+| **PH-DB-1** (data platform) | Before `lidb` engine ships | **`lidb`** | Postgres-shaped engine + registry schema; [PH-DB plan](ph-db-lidb-platform.md); human creates repo |
 | Official package promotion | `li-new-package --official` + second consumer or **1.0.0** | `li-<name>` | [Governance](2026-05-16-li-ecosystem-governance.md) promotion |
 | Registry package (third-party) | **Never** in `li-langverse` unless adopted | author’s org | `lip publish` only |
 
@@ -200,6 +201,7 @@ When **`lic`**, **`lit`**, **`lip`**, or any **`li-std-*` / `li-*`** package rel
 | **8b** | **`lip` path/git + lockfile** | same § 8b | **`lip`**: `lip init` → scaffold; `lip install` reproducible |
 | **8c** | **Signatures + proof digests** | same § 8c | **`lip`**: ed25519; `proof_digest` in `li.lock` |
 | **8d** | **Registry + `lip publish`** | same § 8d | **`lip`**: hybrid git + registry; CI runs **`lit`** + `lic build` |
+| **PH-DB** | **Li data platform** (`lidb` + `lis`) | [ph-db-lidb-platform.md](ph-db-lidb-platform.md) | PH-DB-0..10; **`PH-8d-v2` → `PH-DB-4`** (registry v2 central DB) |
 | **8-sync** | **Upstream dependency notifications** | [governance § Cross-repo notifications](2026-05-16-li-ecosystem-governance.md#cross-repo-dependency-notifications) | Dependabot + `lic` release dispatch; every official repo |
 | **8p** | **Parallel compile + CI throughput** | [§ 8p below](#phase-8p--parallel-compile--ci-throughput) | `li-tests` / workspace / `lic build` use host cores; local-ci ≲½ wall time on 8+ cores |
 | **Doc** | **Documentation + provability honesty** | [§ Doc below](#documentation--provability-honesty-cross-cutting) | Gap register current; handbook matches `lic`; no overclaim |
@@ -423,6 +425,7 @@ Track in phase **Doc** until each is checked:
 | [2026-05-16-li-math-linalg-surface.md](2026-05-16-li-math-linalg-surface.md) | Phase **2i** + **7e** — math notation in source; compiler lowers to SIMD/OpenMP; Tier 1 cross-lang benches |
 | [provability-gaps.md](../verification/provability-gaps.md) | **Doc-a** — living **G-*** register; update on every proof-surface PR |
 | [2026-05-22-parallel-compile-ci.md](2026-05-22-parallel-compile-ci.md) | Phase **8p** — parallel `li-tests`, workspace builds, `--jobs` frontend |
+| [ph-db-lidb-platform.md](ph-db-lidb-platform.md) | Phase **PH-DB** — `lidb` + `lis` data platform; **PH-8d-v2 → PH-DB-4** |
 
 **2g / 2h / 2i:** After **2d**, run **2g** + **2h** in parallel; then **2i** (linalg surface). User-facing functions are **`def` only**; numerics read like **math** (`C += A @ B`, `y[i] = alpha * x[i] + y[i]`), not `simd(...)`. Finish **2g–2i** before widening **2e** method VCs. `simd[T,N]` / `__li_simd_*` only in compiler appendix.
 
@@ -440,7 +443,7 @@ Track in phase **Doc** until each is checked:
 - [x] Phase 2d — Borrow + effects (lexical borrowck, raises IO/Alloc)
 - [x] Phase 2g — `def`, `object` + field `private`/`public`, minimal `import` (`encapsulation` suite green; import parse-only; **not** full OOP)
 - [x] Phase 2j — Full OOP surface — **2j-a…f done** (#83+); Lean method/trait `ensures` sugar still **G-oop** open — [OOP roadmap](2026-05-20-li-oop-roadmap.md)
-- [x] Phase 2h — Python-math operators `%`, `//`, `**` (`math_syntax` suite); `for`/`range` deferred (**G-math-syn**)
+- [x] Phase 2h — Python-math operators `%`, `//`, `**` (`math_syntax` suite); **`for i in start..<end`** (`for_range_sum.li`); Python `range()` deferred (**G-math-syn**)
 - [ ] Phase 2i — Math / linalg surface — **partial:** **2i-a/c** (#148); **2i-b** `norm`, `sum`/`dot`, `reductions/`, same-length `**`, prelude `axpy`, scalar×array; **length-1 broadcast** (`array[1]`→`array[N]` element-wise); full NumPy rank broadcast still open; float `@` Props closed (`mat2_at2_eval`)
 - [x] Phase 3 — MIR + LLVM codegen (`lic build`, minimal lower/emit; CFG/bounds IR deferred)
 - [x] Phase 4 — Runtime + stdlib
@@ -464,7 +467,7 @@ Track in phase **Doc** until each is checked:
 - [x] Phase 8c — ed25519 + `proof_digest` in lock — **v1:** lock fields + optional `publisher.key` signing
 - [x] Phase 8d — Registry + `lip publish` — **v1:** local `registry/index.json` + publish gate (`lit` + `lic`)
 - [x] Phase 8-sync — cross-repo workflows; optional PAT scope fix for `repository_dispatch`
-- [ ] Phase 8p — Parallel compile + CI throughput — **partial:** Ninja `-j` for C++ only; `lic --jobs` reserved not wired; `run_all.sh` / workspace sequential ([§ 8p](#phase-8p--parallel-compile--ci-throughput))
+- [ ] Phase 8p — Parallel compile + CI throughput — **partial (8p-a/b/c/d):** 8p-a parallel `run_all` + isolated `LI_BUILD_DIR` ([#186](https://github.com/li-langverse/lic/pull/186), [#200](https://github.com/li-langverse/lic/pull/200)); 8p-c/d `ResourceOptions` + `lic build --jobs` reserved pass + CI test-job smokes (`compiler/common/`, `scripts/ci.sh`); **open:** 8p-b workspace pool, wall-time SLO ([§ 8p](#phase-8p--parallel-compile--ci-throughput))
 - [x] Phase Doc-a — Gap register current + site links ([provability-gaps](../verification/provability-gaps.md))
 - [x] Phase Doc-b — Handbook stubs (decorators, linear-algebra); audit partial
 - [x] Phase Doc-c — Phase 02 plan links **G-*** IDs (expand to 03/07 as those land)
@@ -501,7 +504,8 @@ Runnable on `dev` after `./scripts/build.sh`:
 | **7d** | **G-par**, **G-dec** | Structured `disjoint=`; decorator elaboration |
 | **2j proofs** | **G-oop** | Method/trait Lean `ensures` (surface done) |
 | **H** | — | M1 ship gate (exploits A+B, li-log, full Lean on server); M1.5 SSE/TLS |
-| **8b–8d v2** | — | Remote registry, full trust store |
+| **8b–8d v2** | — | Remote registry, full trust store; **blocked on PH-DB-4** ([PH-DB plan](ph-db-lidb-platform.md)) |
+| **PH-DB** | — | `lidb` engine + registry v2; phases 0–10 in [ph-db-lidb-platform.md](ph-db-lidb-platform.md) |
 | **Vision-LLM** | — | Agent JSON diagnostics completion |
 | **8p** | — | Parallel `li-tests` / workspace / `lic --jobs`; CI wall-time SLO |
 | **Release containers** | — | GHCR images with **prebuilt `lic`** (toolchain-only images exist now; [§ deferred](#deferred--ghcr-release-images-prebuilt-lic)) |

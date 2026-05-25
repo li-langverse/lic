@@ -8,30 +8,15 @@
 ---
 
 todos:
-- id: gap-sim-md-research-md-r1-stability-matrix
-  content: "sim-md-research: pending plan todo md-r1-stability-matrix"
-  status: pending
-  gap_orchestrator: true
-- id: gap-sim-md-research-md-r2-neighbor-list-gap
-  content: "sim-md-research: pending plan todo md-r2-neighbor-list-gap"
-  status: pending
-  gap_orchestrator: true
-- id: gap-sim-md-research-md-r3-oracle-plan
-  content: "sim-md-research: pending plan todo md-r3-oracle-plan"
-  status: pending
-  gap_orchestrator: true
-
-
-
 
 - id: md-r0-sota-survey
   content: "LAMMPS/GROMACS/OpenMM — integrators, neighbor lists, cutoffs; map to algo_registry 101–120"
-  status: pending
+  status: completed
   study_only: true
 
 - id: md-r1-stability-matrix
   content: "CFL / neighbor-skin / size scaling for md_lennard_jones; tier-0 stability row proposal"
-  status: pending
+  status: completed
   study_only: true
 
 - id: md-r2-neighbor-list-gap

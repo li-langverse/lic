@@ -28,7 +28,7 @@ bool is_ident_char(char c) {
 }
 
 void check_decorator_policies(const std::string& code, const std::string& file,
-                              DiagnosticBag& diags) {
+                              const CheckConfig& cfg, DiagnosticBag& diags) {
   struct Typosquat {
     const char* typo;
     const char* reserved;
@@ -55,7 +55,14 @@ void check_decorator_policies(const std::string& code, const std::string& file,
       for (const Typosquat* row = kTyposquat; row->typo != nullptr; ++row) {
         if (seg == row->typo) {
           SourceLoc loc{file, 1, 1, 0};
-          diags.error(loc, std::string("typosquat_reserved: ") + row->reserved);
+          const std::string message = std::string("typosquat_reserved: ") + row->reserved;
+          if (cfg.typosquat == CheckRuleLevel::Deny) {
+            diag_error(diags, loc, ErrorCode::E0330, message,
+                       "rename the decorator to avoid reserved-name typosquats");
+          } else {
+            diag_warning(diags, loc, WarningCode::W0403, message,
+                         "set [check].typosquat = \"deny\" in li.toml to make this an error");
+          }
         }
       }
     };
@@ -98,7 +105,7 @@ void check_decorator_policies(const std::string& code, const std::string& file,
 }  // namespace
 
 void check_source_policies(const std::string& source, const std::string& file,
-                           DiagnosticBag& diags) {
+                           const CheckConfig& cfg, DiagnosticBag& diags) {
   const std::string code = strip_comments(source);
   /* Parallel race patterns: AST checks in policy_module.cpp (7d-c). */
   if (code.find("-> Any") != std::string::npos ||
@@ -126,7 +133,7 @@ void check_source_policies(const std::string& source, const std::string& file,
     SourceLoc loc{file, 1, 1, 0};
     diags.error(loc, "goto is forbidden; use structured control flow with contracts");
   }
-  check_decorator_policies(code, file, diags);
+  check_decorator_policies(code, file, cfg, diags);
 }
 
 }  // namespace li

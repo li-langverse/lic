@@ -136,6 +136,10 @@ struct MirDecorator {
   std::string name;
   /** `@vectorized(lanes=N)` when name is vectorized; 0 if omitted. */
   std::int64_t lanes = 0;
+  /** `@vectorized` on the owning `def` (7d-b MIR proc tag); SIMD LLVM only, never `OmpParallelFor`. */
+  bool vectorized = false;
+  bool parallel = false;
+  bool disjoint_proven = false;
 };
 
 struct MirFn {
@@ -170,6 +174,10 @@ struct MirModule {
   /** When true: MIR stability pass + strict FP codegen (no fast-math reassociation). */
   bool fp_numerically_stable = false;
 };
+
+/** Count `def` decorators with {@link MirDecorator::vectorized}. */
+std::size_t count_mir_vectorized_proc(const MirModule& mir);
+std::size_t count_mir_parallel_disjoint_proven(const MirModule& mir);
 
 MirModule lower_to_mir(const Module& module);
 

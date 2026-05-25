@@ -9,6 +9,7 @@ This directory holds the **canonical mathematical definition** of Li Core and th
 | `trusted.lean` | **Only** unproved axioms (`IO`, extern hooks) — audited, minimal |
 | `Core.lean` | Phase **2f** stub (`core_stub_ok`); full rules planned |
 | `MIR.lean` (planned) | Preservation lemmas for lowering |
+| [`proof-db/`](../../proof-db/README.md) | Standard lemma registry + `ProofDB.lean` |
 
 ## Rule
 

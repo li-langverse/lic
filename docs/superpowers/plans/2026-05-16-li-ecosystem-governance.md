@@ -212,10 +212,10 @@ Third-party packages are **not** listed here; they appear only in the public `li
 
 ## Exit gate (governance slice)
 
-- [ ] Confirm org access: `gh api orgs/li-langverse` (or org owner invites bot/users)
-- [ ] `docs/ecosystem/official-packages.md` with `PKG-` table (all repos under `li-langverse`)
+- [x] Confirm org access: `gh api orgs/li-langverse` (or org owner invites bot/users)
+- [x] `docs/ecosystem/official-packages.md` with `PKG-` table (all repos under `li-langverse`)
 - [ ] On execute: align `mkdocs.yml` `repo_url` / GitHub Pages with `li-langverse/li-language` when repo home moves
-- [ ] `docs/ecosystem/governance.md` user-facing summary (links here)
-- [ ] `scripts/templates/github-repo/` + `scripts/check-traceability.sh`
-- [ ] `create-li-package` skill: `--official` → org checklist
-- [ ] At least one example package `PUBLISH.md` with full traceability block in monorepo
+- [x] `docs/ecosystem/governance.md` user-facing summary (links here)
+- [x] `scripts/templates/github-repo/` + `scripts/check-traceability.sh`
+- [x] `create-li-package` skill: `--official` → org checklist
+- [x] At least one example package `PUBLISH.md` with full traceability block in monorepo (`packages/li-demo/PUBLISH.md`, …)

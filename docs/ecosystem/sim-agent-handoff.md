@@ -54,17 +54,29 @@ LI_SIM_ALGO_ID=418 LI_SIM_OK=1 LI_SIM_CHECKSUM=0.42 LI_SIM_VERTICAL_ID=4 \
 
 ---
 
-## Plan loop (goal-directed)
+## Plan loop (goal-directed, runs until done)
 
-Same pattern as `httpd-plan-loop.py`:
+**Continuous runner** (commit + push each iteration):
 
 ```bash
-export CURSOR_API_KEY=cursor_...
-export LI_CURSOR_AGENTS_ROOT=/path/to/li-cursor-agents
-./scripts/sim-plan-loop.py --once
+export CURSOR_API_KEY=... GH_TOKEN=...
+export LI_CURSOR_AGENTS_ROOT=../li-cursor-agents
+./scripts/sim-plan-run-until-done.sh   # foreground
+# or: nohup ./scripts/sim-plan-run-until-done.sh >> data/sim-plan-loop/runner.log 2>&1 &
 ```
 
-Todos live in [sim-algorithm-backlog.md](sim-algorithm-backlog.md). Gates: `scripts/sim-plan-gates.sh` (scoped bench, not `./scripts/ci-bench.sh` whole tree).
+**Daily report (08:00, `SIM_PLAN_TZ`, default Europe/Berlin):**
+
+```bash
+./scripts/sim-plan-install-cron.sh    # once
+./scripts/sim-plan-daily-report.sh  # manual
+```
+
+Reports: `docs/reports/sim-plan/daily/YYYY-MM-DD.md`, live `docs/reports/sim-plan/STATUS.md`.
+
+Each iteration gates: **validity** + **performance** (`bench-package --timing`) + **memory** (`sim-bench-memory.sh`) + **docs** (`sim-plan-iteration-report.py`).
+
+Todos: [sim-algorithm-backlog.md](sim-algorithm-backlog.md); when empty, loop picks next `implemented_smoke: false` from the registry.
 
 ---
 

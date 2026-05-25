@@ -15,6 +15,7 @@ void li_rt_print_str(const char* s);
 void li_rt_set_args(int argc, char** argv);
 int li_rt_argc(void);
 const char* li_rt_argv(int index);
+void li_parallel_for_i64(long long start, long long end, void (*body)(long long), int team_size);
 void li_omp_parallel_for_i64(long long start, long long end, void (*body)(long long));
 int32_t li_rt_floor_div_i32(int32_t a, int32_t b);
 int32_t li_rt_pow_i32(int32_t base, int32_t exp);
@@ -217,3 +218,57 @@ int32_t li_rt_log_redact_ok(const char* in);
 #ifdef __cplusplus
 }
 #endif
+int32_t li_rt_studio_profile_from_name(const char* name);
+int32_t li_rt_studio_parse_toml_profile_line(const char* line);
+int32_t li_rt_studio_timeline_playing(void);
+int32_t li_rt_studio_timeline_toggle_play(void);
+int32_t li_rt_studio_timeline_tick_frame(void);
+float li_rt_studio_timeline_playhead_pct(void);
+int32_t li_rt_studio_timeline_reset_mock(void);
+int32_t li_rt_studio_viewport_error_kind(void);
+int32_t li_rt_studio_viewport_error_set_mock(int32_t kind);
+int32_t li_rt_studio_viewport_error_retry(void);
+int32_t li_rt_studio_mcp_tool_from_name(const char* name);
+const char* li_rt_studio_mcp_tool_name(int32_t tool_id);
+int32_t li_rt_lig_host_present_active(void);
+float li_rt_lig_host_present_dt_ms(void);
+int32_t li_rt_lig_host_native_pixels(void);
+int32_t li_rt_lig_wgpu_swapchain_create(int32_t viewport_w, int32_t viewport_h);
+int32_t li_rt_lig_wgpu_present_frame(int32_t swapchain_ok);
+int32_t li_rt_studio_shell_input_pointer_down(void);
+float li_rt_studio_shell_input_pointer_x(void);
+float li_rt_studio_shell_input_pointer_y(void);
+int32_t li_rt_studio_shell_input_key_escape(void);
+int32_t li_rt_studio_shell_input_key_cmd_k(void);
+int32_t li_rt_studio_shell_input_key_digit(void);
+int32_t li_rt_studio_host_present_tick(int32_t viewport_w, int32_t viewport_h);
+int32_t li_rt_studio_demo_profile_from_env(void);
+
+
+/* PH-HW HW-0: lig device layer. */
+int32_t li_rt_lig_device_kind(void);
+int32_t li_rt_lig_backend_available(int32_t backend_id);
+int32_t li_rt_lig_backend_select_auto(void);
+const char* li_rt_lig_capability_json(void);
+int32_t li_rt_lig_parse_toml_backend_line(const char* line);
+int32_t li_rt_lig_present_surface_ok(void);
+
+
+/* PH-HW HW-0: lig device layer. */
+int32_t li_rt_lig_device_kind(void);
+int32_t li_rt_lig_backend_available(int32_t backend_id);
+int32_t li_rt_lig_backend_select_auto(void);
+const char* li_rt_lig_capability_json(void);
+int32_t li_rt_lig_parse_toml_backend_line(const char* line);
+int32_t li_rt_lig_present_surface_ok(void);
+
+/* PH-GD-2: li-world text save/load seam (in-memory buffer; no filesystem I/O). */
+int32_t li_rt_world_format_version(void);
+const char* li_rt_world_serialize_slot(int32_t name_slot, int32_t tick, int32_t entity_count);
+int32_t li_rt_world_parse_line(const char* line);
+int32_t li_rt_world_parsed_name_slot(void);
+int32_t li_rt_world_parsed_tick(void);
+int32_t li_rt_world_parsed_entity_count(void);
+int32_t li_rt_world_snapshot_eq_fields(int32_t an, int32_t at, int32_t ae, int32_t bn, int32_t bt,
+                                       int32_t be);
+int32_t li_rt_world_roundtrip_fields(int32_t name_slot, int32_t tick, int32_t entity_count);

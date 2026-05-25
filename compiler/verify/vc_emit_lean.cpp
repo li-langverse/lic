@@ -17,6 +17,11 @@
 namespace li {
 namespace {
 
+std::optional<std::int64_t> int_lit_value(const Expr& e) {
+  if (e.kind == Expr::Kind::IntLit) return e.int_value;
+  return std::nullopt;
+}
+
 bool lean_reserved_ident(const std::string& name) {
   static const char* const kReserved[] = {
       "by",  "have", "let", "in",   "fun",  "if",   "then", "else", "match", "with",
@@ -343,14 +348,17 @@ void emit_contract_def(std::ostream& out, const Module& module, const ProcDecl& 
   std::string prop = "True";
   const CallerProofFacts caller_facts = collect_caller_proof_facts(proc);
   bool mat2_discharge_theorem = false;
+  bool sqrt_discharge_theorem = false;
   if (c.kind == ContractKind::Ensures && c.expr) {
     if (ctx.proc != nullptr && witness_mat2_int_at2_spec(*ctx.proc, *c.expr)) {
       mat2_discharge_theorem = true;
+    } else if (ctx.proc != nullptr && witness_sqrt_open_bound_spec(*ctx.proc, *c.expr)) {
+      sqrt_discharge_theorem = true;
     }
   }
   const bool witnessed =
       contract_witnessed_trivial(proc, c, &module, &caller_facts);
-  if (witnessed && !mat2_discharge_theorem) {
+  if (witnessed && !mat2_discharge_theorem && !sqrt_discharge_theorem) {
     prop = "True";
   } else if (mat2_discharge_theorem && c.kind == ContractKind::Ensures) {
     prop = "Li.Discharge.mat2_at2_float_spec";
@@ -372,10 +380,10 @@ void emit_contract_def(std::ostream& out, const Module& module, const ProcDecl& 
     }
   }
 
-  const bool mat2_ensures =
-      mat2_discharge_theorem && c.kind == ContractKind::Ensures;
+  const bool semantic_ensures =
+      (mat2_discharge_theorem || sqrt_discharge_theorem) && c.kind == ContractKind::Ensures;
   out << "def " << name;
-  emit_formals(!mat2_ensures);
+  emit_formals(!semantic_ensures);
   out << " : Prop := " << prop << '\n';
 
   if (prop == "True" && witnessed && c.kind == ContractKind::Ensures) {
@@ -408,6 +416,17 @@ void emit_contract_def(std::ostream& out, const Module& module, const ProcDecl& 
       out << ' ' << lean_ident(p.name);
     }
     out << '\n';
+  } else if (sqrt_discharge_theorem && c.kind == ContractKind::Ensures) {
+    const std::string req_name = "vc_" + sec + "_requires_0";
+    out << "theorem " << name << "_proved";
+    emit_formals(false);
+    out << " : " << name;
+    emit_args(false);
+    out << " (hreq : " << req_name;
+    for (const auto& p : proc.params) { out << ' ' << lean_ident(p.name); }
+    out << ") := Li.Discharge.sqrt_open_bound_spec_proved";
+    for (const auto& p : proc.params) { out << ' ' << lean_ident(p.name); }
+    out << " hreq\n";
   } else if (prop == "True") {
     out << "theorem " << name << "_proved";
     emit_formals(true);
@@ -485,6 +504,8 @@ void emit_requires_vcs_for_call(std::ostream& out, const Module& module, const P
       prop = "True";
     } else if (auto lean = expr_to_lean(*folded, ctx)) {
       prop = *lean;
+    } else if (auto lean = expr_to_lean(*sub, ctx)) {
+      prop = *lean;
     } else {
       out << "/-! VC call-site requires (opaque): callee '" << callee.name << "' at call "
           << call_idx << " -/\n";
@@ -496,7 +517,7 @@ void emit_requires_vcs_for_call(std::ostream& out, const Module& module, const P
     out << "def " << name;
     append_call_site_vc_formals(out, module, caller, ref_idents);
     out << " : Prop := " << prop << '\n';
-    if (prop == "True" && witnessed) {
+    if (witnessed) {
       out << "theorem " << name << "_proved";
       append_call_site_vc_formals(out, module, caller, ref_idents);
       out << " : " << name;
@@ -542,16 +563,42 @@ void emit_call_site_requires(std::ostream& out, const Module& module, const Proc
                                "_refine_" + std::to_string(ref_idx++);
       const auto sub = substitute_refinement_binding(*refinement->predicate, refinement->bind_var,
                                                      *call->args[p]);
-      std::string prop = "True";
       const bool witnessed =
           check_refinement_argument(*refinement, *call->args[p], facts) ==
               RequiresCheckResult::Satisfied;
+      const auto folded = fold_const_int_locals(*sub, facts.const_int_locals);
+      out << "/-! P-refine folded: " << expr_to_user_string(*folded) << " -/\n";
       VcCtx ctx;
-      if (witnessed) {
-        prop = "True";
-      } else if (auto lean = expr_to_lean(*sub, ctx)) {
+      std::string prop = "True";
+      bool refinement_discharge = false;
+      std::optional<std::int64_t> lit_nonneg;
+      if (folded->kind == Expr::Kind::BinOp && folded->bin_op == BinOp::Ge && folded->lhs &&
+          folded->rhs) {
+        if (const auto n = int_lit_value(*folded->lhs)) {
+          if (const auto z = int_lit_value(*folded->rhs); z && *z == 0) {
+            lit_nonneg = n;
+          }
+        } else if (const auto n = int_lit_value(*folded->rhs)) {
+          if (const auto z = int_lit_value(*folded->lhs); z && *z == 0) {
+            lit_nonneg = n;
+          }
+        }
+      }
+      if (lit_nonneg && witnessed) {
+        prop = "Li.Discharge.refinement_nonneg_spec " + std::to_string(*lit_nonneg);
+        refinement_discharge = true;
+      } else if (auto lean = expr_to_lean(*folded, ctx)) {
         prop = *lean;
-      } else {
+      } else if (folded->kind == Expr::Kind::BinOp && folded->lhs && folded->rhs) {
+        const auto li = int_lit_value(*folded->lhs);
+        const auto ri = int_lit_value(*folded->rhs);
+        if (li && ri) {
+          if (auto lean =
+                  expr_to_lean_bin(folded->bin_op, std::to_string(*li), std::to_string(*ri))) {
+            prop = *lean;
+          }
+        }
+      } else if (!witnessed) {
         out << "/-! VC call-site refinement: param " << p << " of '" << callee->name
             << "' at call " << call_idx << " -/\n";
       }
@@ -560,12 +607,17 @@ void emit_call_site_requires(std::ostream& out, const Module& module, const Proc
       out << "def " << name;
       append_call_site_vc_formals(out, module, caller, ref_idents);
       out << " : Prop := " << prop << '\n';
-      if (prop == "True" && witnessed) {
+      if (witnessed) {
         out << "theorem " << name << "_proved";
         append_call_site_vc_formals(out, module, caller, ref_idents);
         out << " : " << name;
         append_call_site_vc_args(out, caller, ref_idents);
-        out << " := trivial\n";
+        if (refinement_discharge && lit_nonneg) {
+          out << " := Li.Discharge.refinement_nonneg_lit_proved " << *lit_nonneg
+              << " (by decide)\n";
+        } else {
+          out << " := trivial\n";
+        }
       }
     }
     emit_requires_vcs_for_call(out, module, caller, *callee, call_idx, call->args, facts);

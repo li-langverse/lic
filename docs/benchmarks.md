@@ -29,7 +29,7 @@ Sim agents: [sim-agent-handoff.md](ecosystem/sim-agent-handoff.md).
 
 | Tier | Scope | CI gate |
 |------|-------|---------|
-| 0 | `li-tests` + verify + MD stability (strict) | `./scripts/ci.sh` |
+| 0 | `li-tests` + `verify.py` tier-0 `lic build` + MD stability (strict) | `./scripts/ci.sh` |
 | 1 | Micro kernels (`simd_dot`, matmul, horner) | `./scripts/ci-bench.sh` |
 | 2 | Physics sims (MD, N-body, wave, heat, pendulum) | manual / weekly workflow |
 | 3 | HTTP / li-httpd vs nginx, apache, node, … | `benchmarks/scripts/run-full-benchmark-suite.sh` |
@@ -44,6 +44,8 @@ Sim agents: [sim-agent-handoff.md](ecosystem/sim-agent-handoff.md).
 - Advisory gates: Allen–Tildesley energy MSD + timestep halving (not CI-blocking).
 
 ```bash
+./scripts/check-bench-harness-contract.sh   # verify/timing contract + tier-0 smoke (needs lic)
+python3 benchmarks/harness/verify.py        # tier-0 only (same smokes as bench --tier 0)
 python3 benchmarks/harness/stability.py
 python3 benchmarks/harness/bench.py --tier 12 --runs 3 --skip-verify
 # Optional when ecosystem benches are ready:

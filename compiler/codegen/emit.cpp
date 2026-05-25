@@ -119,6 +119,7 @@ struct EmitCtx {
   bool returns_i64 = false;
   bool returns_object = false;
   bool fp_numerically_stable = false;
+  int runtime_team_size = 0;
   bool enable_array_simd = true;
   std::vector<bool> array_simd_scope_stack;
   std::map<std::string, llvm::AllocaInst*> int_locals;
@@ -829,6 +830,7 @@ struct EmitCtx {
         builder->CreateStore(result, ensure_simd_f64x4(ins.ident));
         return true;
       }
+      // Vectorized codegen: LLVM <4 x double> lanes only — no li_parallel_for_i64.
       case MirOp::SimdHorizSumF64: {
         llvm::Value* vec = load_simd_f64x4(ins.lhs_ident);
         llvm::Value* sum = llvm::ConstantFP::get(llvm::Type::getDoubleTy(context), 0.0);
@@ -845,21 +847,25 @@ struct EmitCtx {
         return true;
       }
       case MirOp::OmpParallelFor: {
+        // `@parallel` / `parallel for` only — never emitted for `@vectorized` (SIMD uses
+        // llvm::VectorType + ArraySimdScope; MirDecorator.vectorized stays false here).
         llvm::Function* par_fn = module->getFunction(ins.callee);
         if (!par_fn) {
           return true;
         }
         llvm::FunctionType* iter_ty =
             llvm::FunctionType::get(llvm::Type::getVoidTy(context), {i64_ty(context)}, false);
-        llvm::FunctionType* omp_ty = llvm::FunctionType::get(
+        llvm::FunctionType* par_ty = llvm::FunctionType::get(
             llvm::Type::getVoidTy(context),
-            {i64_ty(context), i64_ty(context), iter_ty->getPointerTo()}, false);
-        llvm::FunctionCallee omp_rt =
-            module->getOrInsertFunction("li_omp_parallel_for_i64", omp_ty);
+            {i64_ty(context), i64_ty(context), iter_ty->getPointerTo(), i32_ty(context)},
+            false);
+        llvm::FunctionCallee par_rt =
+            module->getOrInsertFunction("li_parallel_for_i64", par_ty);
         builder->CreateCall(
-            omp_rt,
+            par_rt,
             {llvm::ConstantInt::get(i64_ty(context), ins.int_value),
-             llvm::ConstantInt::get(i64_ty(context), ins.rhs_int), par_fn});
+             llvm::ConstantInt::get(i64_ty(context), ins.rhs_int), par_fn,
+             llvm::ConstantInt::get(i32_ty(context), runtime_team_size)});
         return true;
       }
       case MirOp::ArrayAlloc: {
@@ -1262,7 +1268,8 @@ struct EmitCtx {
 
 }  // namespace
 
-bool emit_llvm_ir(const MirModule& mir, const std::string& out_path, std::string* error) {
+bool emit_llvm_ir(const MirModule& mir, const std::string& out_path, int runtime_team_size,
+                  std::string* error) {
   llvm::LLVMContext context;
   auto module = std::make_unique<llvm::Module>("li", context);
 
@@ -1298,11 +1305,12 @@ bool emit_llvm_ir(const MirModule& mir, const std::string& out_path, std::string
                               llvm::FunctionType::get(llvm::Type::getVoidTy(context), {f64},
                                                       false));
   module->getOrInsertFunction(
-      "li_omp_parallel_for_i64",
+      "li_parallel_for_i64",
       llvm::FunctionType::get(llvm::Type::getVoidTy(context),
                               {i64_ty(context), i64_ty(context),
                                llvm::PointerType::getUnqual(llvm::FunctionType::get(
-                                   llvm::Type::getVoidTy(context), {i64_ty(context)}, false))},
+                                   llvm::Type::getVoidTy(context), {i64_ty(context)}, false)),
+                               i32_ty(context)},
                               false));
   module->getOrInsertFunction("li_async_frame_enter",
                               llvm::FunctionType::get(llvm::Type::getVoidTy(context), {}, false));
@@ -1333,6 +1341,90 @@ bool emit_llvm_ir(const MirModule& mir, const std::string& out_path, std::string
   module->getOrInsertFunction(
       "li_rt_str_eq",
       llvm::FunctionType::get(i32_ty(context), {i8_ptr(context), i8_ptr(context)}, false));
+  module->getOrInsertFunction(
+      "li_rt_studio_profile_from_name",
+      llvm::FunctionType::get(i32_ty(context), {i8_ptr(context)}, false));
+  module->getOrInsertFunction(
+      "li_rt_studio_parse_toml_profile_line",
+      llvm::FunctionType::get(i32_ty(context), {i8_ptr(context)}, false));
+  module->getOrInsertFunction("li_rt_lig_device_kind",
+                              llvm::FunctionType::get(i32_ty(context), {}, false));
+  module->getOrInsertFunction("li_rt_lig_backend_available",
+                              llvm::FunctionType::get(i32_ty(context), {i32_ty(context)}, false));
+  module->getOrInsertFunction("li_rt_lig_backend_select_auto",
+                              llvm::FunctionType::get(i32_ty(context), {}, false));
+  module->getOrInsertFunction("li_rt_lig_capability_json",
+                              llvm::FunctionType::get(i8_ptr(context), {}, false));
+  module->getOrInsertFunction("li_rt_lig_parse_toml_backend_line",
+                              llvm::FunctionType::get(i32_ty(context), {i8_ptr(context)}, false));
+  module->getOrInsertFunction("li_rt_lig_present_surface_ok",
+                              llvm::FunctionType::get(i32_ty(context), {}, false));
+  module->getOrInsertFunction(
+      "li_rt_world_format_version",
+      llvm::FunctionType::get(i32_ty(context), {}, false));
+  module->getOrInsertFunction(
+      "li_rt_world_serialize_slot",
+      llvm::FunctionType::get(i8_ptr(context),
+                              {i32_ty(context), i32_ty(context), i32_ty(context)},
+                              false));
+  module->getOrInsertFunction(
+      "li_rt_world_parse_line",
+      llvm::FunctionType::get(i32_ty(context), {i8_ptr(context)}, false));
+  module->getOrInsertFunction(
+      "li_rt_world_parsed_name_slot",
+      llvm::FunctionType::get(i32_ty(context), {}, false));
+  module->getOrInsertFunction(
+      "li_rt_world_parsed_tick",
+      llvm::FunctionType::get(i32_ty(context), {}, false));
+  module->getOrInsertFunction(
+      "li_rt_world_parsed_entity_count",
+      llvm::FunctionType::get(i32_ty(context), {}, false));
+  module->getOrInsertFunction(
+      "li_rt_world_snapshot_eq_fields",
+      llvm::FunctionType::get(i32_ty(context),
+                              {i32_ty(context), i32_ty(context), i32_ty(context), i32_ty(context),
+                               i32_ty(context), i32_ty(context)},
+                              false));
+  module->getOrInsertFunction(
+      "li_rt_world_roundtrip_fields",
+      llvm::FunctionType::get(i32_ty(context),
+                              {i32_ty(context), i32_ty(context), i32_ty(context)},
+                              false));
+  module->getOrInsertFunction(
+      "li_rt_studio_timeline_playing", llvm::FunctionType::get(i32_ty(context), {}, false));
+  module->getOrInsertFunction(
+      "li_rt_studio_timeline_toggle_play", llvm::FunctionType::get(i32_ty(context), {}, false));
+  module->getOrInsertFunction(
+      "li_rt_studio_timeline_tick_frame", llvm::FunctionType::get(i32_ty(context), {}, false));
+  module->getOrInsertFunction(
+      "li_rt_studio_timeline_playhead_pct",
+      llvm::FunctionType::get(llvm::Type::getDoubleTy(context), {}, false));
+  module->getOrInsertFunction(
+      "li_rt_studio_timeline_reset_mock", llvm::FunctionType::get(i32_ty(context), {}, false));
+  module->getOrInsertFunction(
+      "li_rt_studio_viewport_error_kind", llvm::FunctionType::get(i32_ty(context), {}, false));
+  module->getOrInsertFunction("li_rt_studio_viewport_error_set_mock",
+                              llvm::FunctionType::get(i32_ty(context), {i32_ty(context)}, false));
+  module->getOrInsertFunction(
+      "li_rt_studio_viewport_error_retry", llvm::FunctionType::get(i32_ty(context), {}, false));
+  module->getOrInsertFunction(
+      "li_rt_studio_mcp_tool_from_name",
+      llvm::FunctionType::get(i32_ty(context), {i8_ptr(context)}, false));
+  module->getOrInsertFunction(
+      "li_rt_studio_mcp_tool_name",
+      llvm::FunctionType::get(i8_ptr(context), {i32_ty(context)}, false));
+  module->getOrInsertFunction("li_rt_lig_device_kind",
+                              llvm::FunctionType::get(i32_ty(context), {}, false));
+  module->getOrInsertFunction("li_rt_lig_backend_available",
+                              llvm::FunctionType::get(i32_ty(context), {i32_ty(context)}, false));
+  module->getOrInsertFunction("li_rt_lig_backend_select_auto",
+                              llvm::FunctionType::get(i32_ty(context), {}, false));
+  module->getOrInsertFunction("li_rt_lig_capability_json",
+                              llvm::FunctionType::get(i8_ptr(context), {}, false));
+  module->getOrInsertFunction("li_rt_lig_parse_toml_backend_line",
+                              llvm::FunctionType::get(i32_ty(context), {i8_ptr(context)}, false));
+  module->getOrInsertFunction("li_rt_lig_present_surface_ok",
+                              llvm::FunctionType::get(i32_ty(context), {}, false));
   module->getOrInsertFunction(
       "li_rt_path_exact",
       llvm::FunctionType::get(i32_ty(context), {i8_ptr(context), i8_ptr(context)}, false));
@@ -1451,6 +1543,7 @@ bool emit_llvm_ir(const MirModule& mir, const std::string& out_path, std::string
                 fn.returns_i64,
                 fn.returns_object,
                 mir.fp_numerically_stable,
+                runtime_team_size,
                 !fn.no_vectorize,
                 {},
                 {},

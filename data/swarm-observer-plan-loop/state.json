@@ -1,0 +1,14 @@
+{
+  "completed_ids": [
+    "orch-r0-ingest-snapshot"
+  ],
+  "iterations": 1,
+  "history": [
+    {
+      "at": "2026-05-25T19:09:59.208177+00:00",
+      "todo_id": "orch-r0-ingest-snapshot",
+      "agent_exit": 0,
+      "gates_ok": true
+    }
+  ]
+}

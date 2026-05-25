@@ -5,7 +5,7 @@
 path = "runtime/li_rt.c"
 status = "active"
 asan_in_ci = true
-notes = "Minimal runtime: panic, bounds fail, print, OpenMP dispatch"
+notes = "Minimal runtime: panic, bounds fail, print, native pthread parallel dispatch"
 
 [[file.functions]]
 name = "li_bounds_fail"
@@ -20,9 +20,9 @@ mitigation = "bounds check on index before argv access"
 cve_refs = ["CVE-2014-0160"]
 
 [[file.functions]]
-name = "li_omp_parallel_for_i64"
+name = "li_parallel_for_i64"
 cwe = "CWE-362"
-mitigation = "OpenMP static schedule; Li parallel policy enforces disjointness"
+mitigation = "Static chunks; LI_MAX_THREADS=64; G-par in compiler"
 cve_refs = []
 
 [[file.functions]]

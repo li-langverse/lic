@@ -28,3 +28,6 @@ All notable changes to this package will be documented in this file.
 ### Added
 
 - WP4 LKIR matmul pilot, `lig_kernel_run` / `lig_validity_gate_pass`, `runtime/li_rt_lig.c`.
+## [Unreleased]
+### Added
+- HW-3/4 memory+custom

@@ -111,3 +111,5 @@ lic check packages/lig/li-tests/smoke/kernel_matmul_parity.li
 ```
 
 See [docs/traceability.md](docs/traceability.md).
+## SBOM
+| runtime/li_rt_lig.c | Apache-2.0 OR MIT |

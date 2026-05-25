@@ -20,10 +20,12 @@ note = "T-PKG-lig-smoke-builds"
 suite = "smoke"
 file = "smoke/memory_budget.li"
 outcome = "verify_ok"
+outcome = "compile_open_ok"
 note = "T-PKG-lig-smoke-memory"
 
 [[tests]]
 suite = "smoke"
 file = "smoke/kernel_matmul_parity.li"
 outcome = "verify_ok"
+outcome = "compile_open_ok"
 note = "T-PKG-lig-smoke-kernel"

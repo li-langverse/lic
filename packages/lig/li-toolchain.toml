@@ -4,3 +4,6 @@ lic_version = "0.1.0"
 lit_version = "0.1.0"
 [toolchain]
 channel = "stable"
+[toolchain]
+lic_version = "0.1.0"
+lit_version = "0.1.0"

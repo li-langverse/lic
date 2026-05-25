@@ -9,3 +9,4 @@
 | Test | T-PKG-lig-smoke-builds | `li-tests/smoke/builds.li` |
 | Test | T-PKG-lig-smoke-memory | `li-tests/smoke/memory_budget.li` |
 | Test | T-PKG-lig-smoke-kernel | `li-tests/smoke/kernel_matmul_parity.li` |
+# PKG-lig traceability

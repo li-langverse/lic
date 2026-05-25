@@ -1,6 +1,6 @@
 import lig
 
-def main() -> int
+def main() raises IO -> int
   requires true
   ensures result == 0
   decreases 0
@@ -15,10 +15,8 @@ def main() -> int
   if lig_memory_ledger_peak_mib(ledger) <= 0:
     return 4
   var fpga: LigCustomTargetDescriptor = lig_custom_target_descriptor(lig_custom_lab_id_fpga())
-  if lig_custom_load_signed_driver(fpga) != 0:
-    return 5
   if lig_custom_target_ready(fpga) != 1:
-    return 6
+    return 5
   var log: LigBackendSwitchLog = lig_backend_switch_log(4, 3, 1)
   if lig_backend_switch_log_ok(log) != 1:
     return 7

@@ -50,6 +50,75 @@ All notable changes to Li are documented here. The format follows
 - **HTTPd M1.5 leak_censor:** `setup-censor-httpd.py`, migration `SchemaCatalog`, optional proxy egress scrub, Tier G exploit TOML rows — [2026-05-22-httpd-m15-leak-censor.md](docs/release-notes/2026-05-22-httpd-m15-leak-censor.md).
 - **HTTPd M1.5 TLS auto (m15-tls-auto):** `manual` / `self_signed` / `lets_encrypt` TOML modes, `setup-tls-httpd.py` (dev certs + ACME staging obtain/renew), `check-httpd-tls-auto.sh`, `m15_tls_oracle.li` — [2026-05-22-httpd-m15-tls-auto.md](docs/release-notes/2026-05-22-httpd-m15-tls-auto.md).
 - **Ecosystem phase 0:** `algorithms-and-libraries-plan.md`, `lic-ecosystem-baseline.md`, agent skill `run-local-ci-gha-quota` — `docs/release-notes/2026-05-22-lic-ecosystem-phase0-baseline.md`.
+- **PH-HW WP5:**  memory ledger (HW-3),  (HW-4), , scene/render/studio MD 100k refusal,  — [2026-05-25-lig-memory-custom-hw34.md](docs/release-notes/2026-05-25-lig-memory-custom-hw34.md).
+
+- **PH-HW WP4:** `packages/lig` LKIR matmul pilot, `lig.kernel.run` / `last_validity_ratio`, `runtime/li_rt_lig.c`, `bench-lig-kernel-parity.sh`, `li-chem`/`li-ml` composable stubs — [2026-05-25-ph-hw-wp4-lig-kernel-lkir.md](docs/release-notes/2026-05-25-ph-hw-wp4-lig-kernel-lkir.md).
+
+- **PH-HW WP1:** `lig` governance RFC, kernel catalog (`lig.kernel.*`), and `benchmarks/competitive/lig-kernels.toml` schema (`cpu`/`cuda`/`hip`/`metal`/`custom_lab`) — `docs/release-notes/2026-05-25-lig-ph-hw-work-packages.md`.
+
+- **G-oop (partial):** Method call-site `requires` Lean Props (folded `self.field`), `method_ensures_return_ok.li`, `discharge_method_*_lean.sh` — `docs/release-notes/2026-05-25-g-oop-method-vc-corpus.md`.
+
+- **PH-HW WP1:** `lig` governance RFC, kernel catalog (`lig.kernel.*`), and `benchmarks/competitive/lig-kernels.toml` schema (`cpu`/`cuda`/`hip`/`metal`/`custom_lab`) — `docs/release-notes/2026-05-25-lig-ph-hw-work-packages.md`.
+
+- **PH-7e / G-math:** Tier-1 reporter fixture smoke (`li-tests/fixtures/tier1_math_perf_smoke.csv`, `tier1_li_vs_cpp.sh` fallback); `dot_len_mismatch.li`; restore `sum_non_array.li` (manifest was ahead of file) — `docs/release-notes/2026-05-25-7e-tier1-smoke-reductions.md`.
+
+- **8p-c/d (partial):** `lic build --jobs=N` reserved note via `ResourceOptions`; `ci_test_jobs_smoke.sh`; restore `resource_flags_smoke.sh` / `parallel_run_all_smoke.sh`; `ci.sh` exports `LI_TEST_JOBS` when `CI=true` — `docs/release-notes/2026-05-25-8p-cd-compile-jobs-ci-smokes.md`.
+
+- **WP3 check workspace + cache:** `lic check --workspace`, `--cache-dir`, `--cache-max-mb`, `--no-cache`; `run_frontend_check` in `check_cmd.cpp` — `docs/release-notes/2026-05-25-check-workspace-cache-wp3.md`.
+
+- **WP5 toolchain + runtime benches:** `bench_toolchain.py`, `benchmarks/toolchain/` trap corpus, `bench.py --runtime-sweep`, registry rows — `docs/release-notes/2026-05-25-toolchain-runtime-bench-wp5.md`.
+
+- **WP0/WP2 (8p):** `ResourceOptions` CLI (`--jobs`, `--max-memory`, `--job-memory-mb`, `--build-dir`, `--threads`); `run_all.sh` parallel `-j` with per-worker `lic build --build-dir=…`; `li_effective_jobs` — `docs/release-notes/2026-05-25-lic-resource-options-wp0-wp2.md`.
+
+### Changed
+
+- **Native parallel runtime (WP4):** `parallel for` uses `li_parallel_for_i64` (pthread static chunks, max 64 threads); removed `-fopenmp` from user link; `lic build --threads=N` — `docs/release-notes/2026-05-25-li-native-parallel-runtime.md`.
+
+### Added
+
+- **WP0/WP2 (8p):** `ResourceOptions` CLI and `run_all.sh` `--build-dir` workers — `docs/release-notes/2026-05-25-lic-resource-options-wp0-wp2.md`.
+
+- **G-par (7d partial):** AST rejects weak `parallel for` `requires` and bare `@parallel(disjoint=disjoint_row)`; `race_shared_memory/false_disjoint_requires_*.li` — `docs/release-notes/2026-05-25-g-par-disjoint-ast.md`.
+
+### Added
+
+- **PH-7d:** Parser fuzz corpus seeds (`seed_decorator_stack`, `seed_reserved_typosquat`) + `fuzz_decorator_corpus_seeds.sh` — `docs/release-notes/2026-05-25-fuzz-decorator-corpus-seeds.md`.
+
+### Added
+
+- **2i (partial):** `sum` rejects non-array at typecheck — `li-tests/math_linalg/reductions/sum_non_array.li`; master plan **2i** / **G-math** tracker — `docs/release-notes/2026-05-25-2i-reduction-sum-shape.md`.
+
+### Added
+
+- **G-math-syn (partial):** `for i in start..<end` loop specimen `math_syntax/for_range_sum.li` (Python `range()` still open) — `docs/release-notes/2026-05-25-g-math-syn-for-range.md`.
+- **G-par (partial):** AST `disjoint=` validation — weak loop `requires` / bare `disjoint_row` decorator rejected; `race_shared_memory/false_disjoint_requires_*.li` — `docs/release-notes/2026-05-25-g-par-disjoint-ast.md`.
+- **7d tracker gap (partial):** `MirDecorator.disjoint_proven`, `lic verify mir_parallel_disjoint=`, `check-mir-parallel-decorator.sh` — `docs/release-notes/2026-05-25-tracker-gap-7d-mir-disjoint.md`.
+
+### Changed
+
+- **Studio docs (`def` not `proc`):** World Studio vision, game-dev RFC stubs, and agent rules/skills teach **`def`** only; bare **`proc`** documented as parser legacy — `docs/release-notes/2026-05-25-studio-def-not-proc-docs.md`.
+
+### Added
+
+- **Plan checkbox honesty:** 17 sub-plan exit gates marked `[x]` with evidence; 9 left `[ ]` with `**Open:**` reasons; fuzz decorator corpus seeds — `docs/release-notes/2026-05-25-plan-checkbox-gaps.md`.
+
+### Added
+
+- **2e/2f proofability (partial):** P-refine call-site refine Props; P-ensures-witness specimens; P-float `sqrt_open_bound` documented open; `prove_lean_ok` retags — `docs/release-notes/2026-05-25-proofability-pipeline-gaps.md`.
+
+### Added
+
+- **8p-b:** parallel `scripts/lic-workspace-build.sh` with `LI_WORKSPACE_JOBS` / `LI_TEST_JOBS` and per-member `LI_BUILD_DIR` — `docs/release-notes/2026-05-25-8p-b-workspace-parallel.md`.
+- **8p-a (partial):** parallel `li-tests/run_all.sh` with `LI_TEST_JOBS` / `-j` and per-worker `LI_BUILD_DIR` — `docs/release-notes/2026-05-25-plan-tracker-8p-vision-llm.md`.
+- **Vision-LLM (partial):** `scripts/export-li-tests-agent-slice.sh` → `li-tests/agent-manifest.json` for agent test discovery — same release note.
+- **G-* gap evidence (partial):** AST disjoint call-form; `MirDecorator.parallel`; `matmul_1x2_ok.li`; `linalg_scale4_int_closed.li`; witnessed-ensures tooling — `docs/release-notes/2026-05-25-g-items-gap-evidence.md`.
+
+### Added
+
+- **G-test-verify Done:** `prove_lean_ok` in `li-tests/run_all.sh`; 13 closed `contracts_verify` specimens retagged — `docs/release-notes/2026-05-25-g-test-verify-prove-lean-ok.md`.
+
+### Added
+
 - **2i broadcast (partial):** `array[1, T]` element-wise broadcast to `array[N, T]` — `docs/release-notes/2026-05-22-2i-broadcast-len1.md`.
 - **P-float (partial):** `sqrt_open_bound.li` calls `li_rt_sqrt`; tight `abs` ensures still open — `docs/release-notes/2026-05-22-p-float-sqrt-runtime.md`.
 - **7d/7e (partial):** `@parallel(disjoint=)` on `def` inherits to inner `parallel for`; tier-1 `bench.py` uses `--allow-open-vc` — `docs/release-notes/2026-05-22-7d-7e-bench-parallel.md`.
@@ -63,6 +132,7 @@ All notable changes to Li are documented here. The format follows
 - **w0-lean-gate (TLS link):** explain-config C link includes `li_rt_tls`/`li_rt_h2`; Lean CI runs httpd VC gate — [2026-05-23-w0-lean-gate-tls-link.md](docs/release-notes/2026-05-23-w0-lean-gate-tls-link.md).
 - **VC emit (call-site requires):** Lean formals include caller locals used in callee `requires` after substitution (fixes `Unknown identifier` on `i` / `n` in httpd AutoVC) — [2026-05-24-httpd-h-lean-server-modules.md](docs/release-notes/2026-05-24-httpd-h-lean-server-modules.md).
 - **HTTPd M1 bearer auth gate:** non-Linux `epoll_ctl_add_listen_i` stub, `build-li-httpd.sh`, plan gates run `test-auth-bearer.sh` on `build/li-httpd` — [2026-05-22-httpd-m1-bearer-auth-gate.md](docs/release-notes/2026-05-22-httpd-m1-bearer-auth-gate.md).
+- **CI `test-auth-bearer`:** `build-li-httpd.sh` links `main.li` so `li-httpd` runs `httpd_run_from_argv` (was stub `main` returning 0) — [2026-05-25-ci-test-auth-bearer-main-li.md](docs/release-notes/2026-05-25-ci-test-auth-bearer-main-li.md).
 - **HTTPd routing CI:** rebase plan-loop branch on `main`; `run_httpd_config.sh` — `--allow-open-vc` + `HTTPD_SKIP_LI_ROUTING_BIN` — `docs/release-notes/2026-05-22-httpd-rebase-main-post-164.md`.
 - **G-lean / P-linalg:** `mat2_at2_float_spec_proved` — closed via `mat2_at2_eval` + `rfl` (no `sorry`); AutoVC ensures use eval not free `result` — `docs/release-notes/2026-05-22-mat2-float-spec-closed.md`.
 - **MIR BinOpInt literals:** `rhs_is_literal` default no longer makes `r != 1` compare to `0`; `lic build --allow-open-vc <file> -o <out>` accepts flags before the input path — `docs/release-notes/2026-05-22-binop-int-literal-ne-fix.md`.

@@ -15,3 +15,21 @@ suite = "smoke"
 file = "smoke/studio_agent_chrome.li"
 outcome = "compile_open_ok"
 note = "T-PKG-li-studio-agent-chrome"
+
+[[tests]]
+suite = "smoke"
+file = "smoke/studio_empty_states.li"
+outcome = "compile_open_ok"
+note = "T-PKG-li-studio-empty-states"
+
+[[tests]]
+suite = "smoke"
+file = "smoke/studio_command_palette.li"
+outcome = "compile_open_ok"
+note = "T-PKG-li-studio-command-palette-ux04"
+
+[[tests]]
+suite = "smoke"
+file = "smoke/studio_profile_roundtrip.li"
+outcome = "compile_open_ok"
+note = "T-PKG-li-studio-profile-roundtrip PH-UX-05 PH-SIM"

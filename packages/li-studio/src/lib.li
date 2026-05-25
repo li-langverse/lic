@@ -516,10 +516,10 @@ def studio_mcp_tool_dispatch(tool_id: int) -> StudioAgentToolRequest
 
 def li_std_studio_version() -> int
   requires true
-  ensures result == 6
+  ensures result == 7
   decreases 0
 =
-  return 6
+  return 7
 
 def studio_agent_context_none() -> int
   requires true
@@ -562,6 +562,20 @@ def studio_agent_retry_hint_width_px() -> float
   decreases 0
 =
   return 88.0
+
+def studio_agent_send_btn_width_px() -> float
+  requires true
+  ensures result == 48.0
+  decreases 0
+=
+  return 48.0
+
+def studio_agent_tool_trace_width_px() -> float
+  requires true
+  ensures result == 140.0
+  decreases 0
+=
+  return 140.0
 
 def studio_agent_last_action_reversible() -> int
   requires true
@@ -992,6 +1006,11 @@ type StudioAgentChromeCompose = object
   public retry_hint_rect: Rect
   public retry_visible: int
   public tool_request: StudioAgentToolRequest
+  public task_input_rect: Rect
+  public send_rect: Rect
+  public tool_trace_rect: Rect
+  public invoke_input_visible: int
+  public tool_trace_visible: int
 
 type StudioProjectConfig = object
   public active_profile: int
@@ -1951,6 +1970,125 @@ def studio_agent_retry_hint_rect_at(error_strip: Rect) -> Rect
   var x: float = error_strip.x + error_strip.w - studio_agent_retry_hint_width_px() - 8.0
   return rect_make(x, error_strip.y, studio_agent_retry_hint_width_px(), error_strip.h)
 
+def studio_agent_invoke_input_visible(task_state: int) -> int
+  requires task_state >= studio_agent_task_idle()
+  requires task_state <= studio_agent_task_done()
+  ensures result >= 0
+  ensures result <= 1
+  decreases task_state
+=
+  if task_state == studio_agent_task_idle():
+    return 1
+  return 0
+
+def studio_agent_tool_trace_visible(task_state: int) -> int
+  requires task_state >= studio_agent_task_idle()
+  requires task_state <= studio_agent_task_done()
+  ensures result >= 0
+  ensures result <= 1
+  decreases task_state
+=
+  if task_state == studio_agent_task_running():
+    return 1
+  return 0
+
+def studio_agent_tool_trace_visible_for(task_state: int, tool_id: int) -> int
+  requires task_state >= studio_agent_task_idle()
+  requires task_state <= studio_agent_task_done()
+  ensures result >= 0
+  ensures result <= 1
+  decreases task_state
+=
+  if studio_agent_tool_trace_visible(task_state) != 1:
+    return 0
+  if studio_mcp_tool_id_valid(tool_id) != 1:
+    return 0
+  return 1
+
+def studio_agent_send_rect_at(strip_x: float, strip_y: float, strip_w: float, strip_h: float, cancel_visible: int) -> Rect
+  requires strip_w >= studio_agent_send_btn_width_px()
+  requires strip_h >= 0.0
+  requires cancel_visible >= 0
+  requires cancel_visible <= 1
+  ensures result.w == studio_agent_send_btn_width_px()
+  decreases cancel_visible
+=
+  var pad: float = studio_agent_status_pad_px()
+  var reserved: float = studio_agent_send_btn_width_px() + pad
+  if cancel_visible == 1:
+    reserved = reserved + studio_agent_cancel_btn_width_px() + pad
+  var x: float = strip_x + strip_w - reserved
+  var btn_h: float = strip_h - (pad * 2.0)
+  if btn_h < 20.0:
+    btn_h = 20.0
+  if btn_h > strip_h:
+    btn_h = strip_h
+  var y: float = strip_y + (strip_h - btn_h) / 2.0
+  return rect_make(x, y, studio_agent_send_btn_width_px(), btn_h)
+
+def studio_agent_task_input_rect_at(strip_x: float, strip_y: float, strip_w: float, strip_h: float, send_rect: Rect) -> Rect
+  requires strip_w >= studio_agent_send_btn_width_px()
+  requires strip_h >= 0.0
+  requires send_rect.w == studio_agent_send_btn_width_px()
+  ensures result.w >= 0.0
+  decreases 0
+=
+  var pad: float = studio_agent_status_pad_px()
+  var x: float = strip_x + pad
+  var w: float = send_rect.x - x - pad
+  if w < 0.0:
+    w = 0.0
+  var h: float = strip_h - (pad * 2.0)
+  if h < 20.0:
+    h = 20.0
+  if h > strip_h:
+    h = strip_h
+  var y: float = strip_y + (strip_h - h) / 2.0
+  return rect_make(x, y, w, h)
+
+def studio_agent_tool_trace_rect_at(strip_x: float, strip_y: float, strip_w: float, strip_h: float, cancel_visible: int) -> Rect
+  requires strip_w >= studio_agent_tool_trace_width_px()
+  requires strip_h >= 0.0
+  requires cancel_visible >= 0
+  requires cancel_visible <= 1
+  ensures result.w == studio_agent_tool_trace_width_px()
+  decreases cancel_visible
+=
+  var pad: float = studio_agent_status_pad_px()
+  var reserved: float = studio_agent_tool_trace_width_px() + pad
+  if cancel_visible == 1:
+    reserved = reserved + studio_agent_cancel_btn_width_px() + pad
+  var x: float = strip_x + strip_w - reserved
+  var h: float = strip_h - (pad * 2.0)
+  if h < 18.0:
+    h = 18.0
+  if h > strip_h:
+    h = strip_h
+  var y: float = strip_y + (strip_h - h) / 2.0
+  return rect_make(x, y, studio_agent_tool_trace_width_px(), h)
+
+def studio_compose_agent_invoke_fields(out: StudioAgentChromeCompose, layout: StudioShellLayout, task_state: int, tool_id: int) -> StudioAgentChromeCompose
+  requires task_state >= studio_agent_task_idle()
+  requires task_state <= studio_agent_task_done()
+  ensures result.invoke_input_visible == studio_agent_invoke_input_visible(task_state)
+  decreases task_state
+=
+  var agent: StudioAgentChromeCompose = out
+  var ts_invoke: int = task_state
+  var ts_trace: int = task_state
+  agent.invoke_input_visible = studio_agent_invoke_input_visible(ts_invoke)
+  agent.tool_trace_visible = studio_agent_tool_trace_visible_for(ts_trace, tool_id)
+  agent.task_input_rect = rect_make(0.0, 0.0, 0.0, 0.0)
+  agent.send_rect = rect_make(0.0, 0.0, 0.0, 0.0)
+  agent.tool_trace_rect = rect_make(0.0, 0.0, 0.0, 0.0)
+  if agent.invoke_input_visible == 1:
+    agent.send_rect = studio_agent_send_rect_at(layout.agent_strip.x, layout.agent_strip.y, layout.agent_strip.w, layout.agent_strip.h, agent.cancel_visible)
+    agent.task_input_rect = studio_agent_task_input_rect_at(layout.agent_strip.x, layout.agent_strip.y, layout.agent_strip.w, layout.agent_strip.h, agent.send_rect)
+  if agent.tool_trace_visible == 1:
+    agent.tool_trace_rect = studio_agent_tool_trace_rect_at(layout.agent_strip.x, layout.agent_strip.y, layout.agent_strip.w, layout.agent_strip.h, agent.cancel_visible)
+  return agent
+
+
 def studio_compose_agent_progress(task_state: int, status_rect: Rect) -> StudioAgentProgress
   requires task_state >= studio_agent_task_idle()
   requires task_state <= studio_agent_task_done()
@@ -1975,7 +2113,7 @@ def studio_paint_agent_cmds(task_state: int, agent_context_label: int) -> int
   requires agent_context_label >= studio_agent_context_none()
   requires agent_context_label <= studio_agent_context_selection()
   ensures result >= 2
-  ensures result <= 7
+  ensures result <= 9
   decreases task_state
 =
   var ctx0: int = agent_context_label
@@ -1983,6 +2121,8 @@ def studio_paint_agent_cmds(task_state: int, agent_context_label: int) -> int
   var ts_progress: int = task_state
   var ts_error: int = task_state
   var ts_retry: int = task_state
+  var ts_invoke: int = task_state
+  var ts_trace: int = task_state
   var n: int = 2
   if studio_agent_context_visible(ctx0) == 1:
     n = n + 1
@@ -2029,7 +2169,7 @@ def studio_compose_agent_chrome(layout: StudioShellLayout, task_state: int, agen
   if out.retry_visible == 1:
     out.retry_hint_rect = studio_agent_retry_hint_rect_at(out.error_strip_rect)
   out.tool_request = studio_agent_tool_request_none()
-  return out
+  return studio_compose_agent_invoke_fields(out, layout, task_state, studio_mcp_tool_unknown())
 
 def studio_compose_agent_chrome_with_tool(layout: StudioShellLayout, task_state: int, agent_context_label: int, tool_request: StudioAgentToolRequest) -> StudioAgentChromeCompose
   requires task_state >= studio_agent_task_idle()
@@ -2041,7 +2181,7 @@ def studio_compose_agent_chrome_with_tool(layout: StudioShellLayout, task_state:
 =
   var out: StudioAgentChromeCompose = studio_compose_agent_chrome(layout, task_state, agent_context_label)
   out.tool_request = tool_request
-  return out
+  return studio_compose_agent_invoke_fields(out, layout, task_state, tool_request.tool_id)
 
 def studio_compose_shell_profile(w: float, h: float, active_dock_slot: int, has_selection: int, active_profile: int) -> StudioShellCompose
   requires w > 0.0
@@ -2632,6 +2772,14 @@ def studio_agent_chrome_ok(agent: StudioAgentChromeCompose) -> int
       return 0
   if studio_agent_context_visible(agent.agent_context_label) == 1:
     if agent.context_rect.w != studio_agent_context_label_width_px():
+      return 0
+  if agent.invoke_input_visible == 1:
+    if agent.send_rect.w != studio_agent_send_btn_width_px():
+      return 0
+    if agent.task_input_rect.w <= 0.0:
+      return 0
+  if agent.tool_trace_visible == 1:
+    if agent.tool_trace_rect.w != studio_agent_tool_trace_width_px():
       return 0
   return 1
 

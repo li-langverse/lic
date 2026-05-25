@@ -44,6 +44,17 @@ std::int64_t mir_vectorized_lanes_from_decorator(const Decorator& d) {
   return 4;
 }
 
+bool mir_decorator_disjoint_proven(const Decorator& d) {
+  if (d.name != "parallel") return false;
+  for (const auto& arg : d.args) {
+    if (arg.name != "disjoint" || !arg.value) continue;
+    const Expr& e = *arg.value;
+    if (e.kind == Expr::Kind::Ident && (e.ident == "disjoint_elem" || e.ident == "disjoint_slice")) return true;
+    if (e.kind == Expr::Kind::Call && (e.ident == "disjoint_elem" || e.ident == "disjoint_row" || e.ident == "disjoint_slice")) return true;
+  }
+  return false;
+}
+
 void copy_decorators(const std::vector<Decorator>& src, std::vector<MirDecorator>& dst) {
   for (const auto& d : src) {
     MirDecorator md;
@@ -51,6 +62,10 @@ void copy_decorators(const std::vector<Decorator>& src, std::vector<MirDecorator
     if (d.name == "vectorized") {
       md.vectorized = true;
       md.lanes = mir_vectorized_lanes_from_decorator(d);
+    }
+    if (d.name == "parallel") {
+      md.parallel = true;
+      md.disjoint_proven = mir_decorator_disjoint_proven(d);
     }
     for (const auto& arg : d.args) {
       if (arg.name == "lanes" && arg.value && arg.value->kind == Expr::Kind::IntLit) {

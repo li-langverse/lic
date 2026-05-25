@@ -21,7 +21,9 @@
   --semantic-mock-banner: MARKETING MOCK — HTML preview only\3b  native Li Studio uses li-ui/li-gui;
   --spacing-dock-width-px: 56px;
   --spacing-inspector-width-px: 320px;
+  --spacing-outliner-width-px: 200px;
   --spacing-topbar-height-px: 44px;
+  --typography-dock-label-px: 9px;
   --typography-mono: ui-monospace, monospace;
   --typography-ui: Inter, system-ui, sans-serif;
   --focus-ring: 0 0 0 2px var(--color-accent-cyan);

@@ -206,6 +206,8 @@ Implementation: **`li-langverse/lip`** (`lip/` sources, Li), `scripts/bootstrap_
 
 REST index, `lip publish` (local `lic build` + `lit test --coverage`), registry CI attestation, yank/blocklist.
 
+**8d v2 (central DB):** registry v2 persistent store on **`lidb`** — see **PH-DB-4** ([`roadmap` proposal `lidb-li-data-platform`](https://github.com/li-langverse/roadmap/blob/main/proposals/lidb-li-data-platform.md)); blocked until PH-DB-1–3 land.
+
 **Do not ship** third-party `lip install` before **8a + 8c + 8e**.
 
 ---

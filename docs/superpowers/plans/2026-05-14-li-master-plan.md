@@ -118,6 +118,7 @@ These three are **enough** until a row in [Future org repos](#future-org-repos-a
 | Phase **H** (httpd stack) | Before httpd needs standalone publish | `li-http`, `li-net`, `li-tls`, … per [httpd plan](2026-05-16-li-httpd-plan.md) | Infra packages, own CI |
 | Official package promotion | `li-new-package --official` + second consumer or **1.0.0** | `li-<name>` | [Governance](2026-05-16-li-ecosystem-governance.md) promotion |
 | Registry package (third-party) | **Never** in `li-langverse` unless adopted | author’s org | `lip publish` only |
+| **PH-DB / registry v2 DB** | When **8d v2** central store ships | **`lidb`** | [`lidb-li-data-platform` ADR](https://github.com/li-langverse/roadmap/blob/main/proposals/lidb-li-data-platform.md); supervisor in **`lis`**; **registry v2 DB → PH-DB-4** |
 
 **Stay in `lic` monorepo** (`packages/<name>/`) when: experimental, single consumer, or blocked on **8a**/**8b** — document promotion in CHANGELOG when splitting out.
 
@@ -200,6 +201,7 @@ When **`lic`**, **`lit`**, **`lip`**, or any **`li-std-*` / `li-*`** package rel
 | **8b** | **`lip` path/git + lockfile** | same § 8b | **`lip`**: `lip init` → scaffold; `lip install` reproducible |
 | **8c** | **Signatures + proof digests** | same § 8c | **`lip`**: ed25519; `proof_digest` in `li.lock` |
 | **8d** | **Registry + `lip publish`** | same § 8d | **`lip`**: hybrid git + registry; CI runs **`lit`** + `lic build` |
+| **PH-DB** | **Li data platform (`lidb` + `lis`)** | [`roadmap` `lidb-li-data-platform`](https://github.com/li-langverse/roadmap/blob/main/proposals/lidb-li-data-platform.md) | **PH-DB-0** ADR → **PH-DB-4** registry v2 DB; **8d v2** depends on PH-DB-4 |
 | **8-sync** | **Upstream dependency notifications** | [governance § Cross-repo notifications](2026-05-16-li-ecosystem-governance.md#cross-repo-dependency-notifications) | Dependabot + `lic` release dispatch; every official repo |
 | **8p** | **Parallel compile + CI throughput** | [§ 8p below](#phase-8p--parallel-compile--ci-throughput) | `li-tests` / workspace / `lic build` use host cores; local-ci ≲½ wall time on 8+ cores |
 | **Doc** | **Documentation + provability honesty** | [§ Doc below](#documentation--provability-honesty-cross-cutting) | Gap register current; handbook matches `lic`; no overclaim |
@@ -501,7 +503,7 @@ Runnable on `dev` after `./scripts/build.sh`:
 | **7d** | **G-par**, **G-dec** | Structured `disjoint=`; decorator elaboration |
 | **2j proofs** | **G-oop** | Method/trait Lean `ensures` (surface done) |
 | **H** | — | M1 ship gate (exploits A+B, li-log, full Lean on server); M1.5 SSE/TLS |
-| **8b–8d v2** | — | Remote registry, full trust store |
+| **8b–8d v2** | — | Remote registry on **`lidb`** (**PH-DB-4**), full trust store |
 | **Vision-LLM** | — | Agent JSON diagnostics completion |
 | **8p** | — | Parallel `li-tests` / workspace / `lic --jobs`; CI wall-time SLO |
 | **Release containers** | — | GHCR images with **prebuilt `lic`** (toolchain-only images exist now; [§ deferred](#deferred--ghcr-release-images-prebuilt-lic)) |

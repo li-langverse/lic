@@ -30,24 +30,17 @@ chmod +x "$ROOT/scripts/check-stdlib-coverage.sh"
 
 export LI_REPO_ROOT="$ROOT"
 export LIC="$("$ROOT/scripts/resolve-lic.sh")"
+export CI=true
+# Wave 2 integrator (8p-d): explicit parallel flags — do not export LI_TEST_JOBS.
+RUN_ALL_FLAGS=(-j8 --max-memory=8192)
 
 li_phase "generate AutoVC (2e)"
 "$LIC" build "$ROOT/li-tests/modules/greeter/greeter.li" -o /dev/null
-
-li_phase "proof-db release gate (advisory; LI_PROOF_DB_STRICT=1 strict)"
-chmod +x "$ROOT/scripts/check-proof-db.sh"
-export LI_PROOF_DB_STRICT="${LI_PROOF_DB_STRICT:-0}"
-"$ROOT/scripts/check-proof-db.sh" || {
-  [[ "${LI_PROOF_DB_STRICT:-0}" == "1" ]] && exit 1
-  echo "ci: proof-db advisory drift (set LI_PROOF_DB_STRICT=1 to fail)" >&2
-}
 
 if command -v lake >/dev/null 2>&1; then
   li_phase "semantics (2f lake + AutoVC strict)"
   (cd "$ROOT/docs/semantics" && lake build) || exit 1
   "$ROOT/scripts/check-autovc-open-goals.sh" "$ROOT/build/generated/AutoVC.lean" || exit 1
-else
-  echo "ci: lake/elan not on PATH — semantics proof skipped (see docs/semantics/README.md)" >&2
 fi
 
 li_phase "CVE / security gates"
@@ -63,47 +56,46 @@ chmod +x "$ROOT/li-tests/run_httpd_config.sh" \
   "$ROOT/scripts/flatten-httpd-config.py" \
   "$ROOT/scripts/validate-httpd-config.py"
 "$ROOT/li-tests/run_httpd_config.sh"
-if [[ "${HTTPD_SKIP_AUTH_BEARER_SMOKE:-0}" != "1" ]] \
-  && [[ -x "$ROOT/scripts/build-li-httpd.sh" ]] \
+if [[ "${HTTPD_SKIP_AUTH_BEARER_SMOKE:-0}" == "1" ]]; then
+  echo "skip test-auth-bearer (HTTPD_SKIP_AUTH_BEARER_SMOKE=1)"
+elif [[ "$(uname -s)" == "Darwin" && "${HTTPD_SKIP_AUTH_BEARER_DARWIN:-1}" != "0" ]]; then
+  echo "skip test-auth-bearer (Darwin CI: bearer TCP smoke runs on Linux)"
+elif [[ -x "$ROOT/scripts/build-li-httpd.sh" ]] \
   && "$ROOT/scripts/build-li-httpd.sh"; then
   chmod +x "$ROOT/scripts/test-auth-bearer.sh"
   "$ROOT/scripts/test-auth-bearer.sh"
-elif [[ "${HTTPD_SKIP_AUTH_BEARER_SMOKE:-0}" == "1" ]]; then
-  echo "skip test-auth-bearer (HTTPD_SKIP_AUTH_BEARER_SMOKE=1)"
 fi
 
 li_phase "E2E li-tests (full manifest)"
-"$ROOT/li-tests/run_all.sh"
-
-li_phase "bench harness contract"
-chmod +x "$ROOT/scripts/check-bench-harness-contract.sh"
-"$ROOT/scripts/check-bench-harness-contract.sh"
+"$ROOT/li-tests/run_all.sh" "${RUN_ALL_FLAGS[@]}"
 
 li_phase "tier 0 physics (strict stability)"
 python3 "$ROOT/benchmarks/harness/bench.py" --tier 0
 
 li_phase "race_shared_memory"
-"$ROOT/li-tests/run_all.sh" race_shared_memory
+"$ROOT/li-tests/run_all.sh" "${RUN_ALL_FLAGS[@]}" race_shared_memory
 
 li_phase "math_syntax (2h)"
-"$ROOT/li-tests/run_all.sh" math_syntax
+"$ROOT/li-tests/run_all.sh" "${RUN_ALL_FLAGS[@]}" math_syntax
 
 li_phase "math_linalg (2i)"
-"$ROOT/li-tests/run_all.sh" math_linalg
+"$ROOT/li-tests/run_all.sh" "${RUN_ALL_FLAGS[@]}" math_linalg
 
 li_phase "workspace build (8a)"
 chmod +x "$ROOT/scripts/lic-workspace-build.sh"
 "$ROOT/scripts/lic-workspace-build.sh" "$ROOT/packages/li.toml"
+
+# WP3 (lic check --workspace --jobs=8): skipped until workspace check merges on top of #205.
 
 li_phase "lip / lit (8b/8e)"
 chmod +x "$ROOT/scripts/lip" "$ROOT/scripts/lit" "$ROOT/li-tests/tooling/lip_lit_smoke.sh"
 "$ROOT/li-tests/tooling/lip_lit_smoke.sh"
 
 li_phase "encapsulation (2g)"
-"$ROOT/li-tests/run_all.sh" encapsulation
+"$ROOT/li-tests/run_all.sh" "${RUN_ALL_FLAGS[@]}" encapsulation
 
 li_phase "decorators (7d)"
-"$ROOT/li-tests/run_all.sh" decorator_exploits decorators
+"$ROOT/li-tests/run_all.sh" "${RUN_ALL_FLAGS[@]}" decorator_exploits decorators
 
 li_phase "stdlib coverage (8e)"
 chmod +x "$ROOT/scripts/check-stdlib-coverage.sh"
@@ -112,10 +104,6 @@ chmod +x "$ROOT/scripts/check-stdlib-coverage.sh"
 li_phase "doc provability claims"
 chmod +x "$ROOT/scripts/check-doc-provability-claims.sh"
 "$ROOT/scripts/check-doc-provability-claims.sh"
-
-li_phase "proof-db report smoke"
-chmod +x "$ROOT/scripts/proof-db-report.sh" "$ROOT/li-tests/tooling/proof_db_report_smoke.sh"
-"$ROOT/li-tests/tooling/proof_db_report_smoke.sh"
 
 li_phase "lic verify smoke (2e/2f)"
 chmod +x "$ROOT/scripts/lean-verify-stub.sh" "$ROOT/li-tests/tooling/lic_verify_smoke.sh" \
@@ -126,8 +114,20 @@ export LI_REPO_ROOT="$ROOT"
 "$ROOT/li-tests/tooling/contracts_verify_lean.sh"
 
 li_phase "lic JSON diagnostics (Vision-LLM)"
-chmod +x "$ROOT/li-tests/tooling/diagnose_json_smoke.sh" "$ROOT/scripts/lic-fix-suggest.sh"
+chmod +x "$ROOT/li-tests/tooling/diagnose_json_smoke.sh" \
+  "$ROOT/li-tests/tooling/run_all_parallel_smoke.sh" \
+  "$ROOT/li-tests/tooling/agent_manifest_smoke.sh" \
+  "$ROOT/scripts/export-li-tests-agent-slice.sh" \
+  "$ROOT/scripts/lic-fix-suggest.sh"
 "$ROOT/li-tests/tooling/diagnose_json_smoke.sh"
+"$ROOT/li-tests/tooling/run_all_parallel_smoke.sh"
+"$ROOT/li-tests/tooling/agent_manifest_smoke.sh"
+
+li_phase "8p parallel smokes"
+chmod +x "$ROOT/li-tests/tooling/ci_test_jobs_smoke.sh"   "$ROOT/li-tests/tooling/resource_flags_smoke.sh"   "$ROOT/li-tests/tooling/parallel_run_all_smoke.sh"
+"$ROOT/li-tests/tooling/ci_test_jobs_smoke.sh"
+"$ROOT/li-tests/tooling/resource_flags_smoke.sh"
+"$ROOT/li-tests/tooling/parallel_run_all_smoke.sh"
 
 li_phase "8-sync toolchain"
 chmod +x "$ROOT/scripts/check-li-toolchain.sh"

@@ -13,6 +13,7 @@
 #include "li/terminal.hpp"
 #include "li/error_codes.hpp"
 #include "li/proof_cli.hpp"
+#include "li/resource_options.hpp"
 
 #include "li_rt.h"
 
@@ -51,11 +52,11 @@ int usage() {
             << "  lic validate-httpd-config <file.toml>  M1 TOML schema + overlap (Python)\n"
             << "  lic --version          print version\n"
             << "\n"
-            << "resource defaults (override via flags or env):\n"
-            << "  --jobs=N / LI_COMPILE_JOBS / LI_BUILD_JOBS (host=" << jobs
-            << ") — reserved for parallel frontend\n"
-            << "  --max-memory=MB / LI_MAX_MEMORY_MB — reserved memory budget\n"
-            << "  --threads=N / LI_OMP_THREADS — OpenMP team size at run time\n"
+            << "resource flags (preferred; LI_* env deprecated):\n"
+            << "  --jobs=N — parallel compile workers (default 1; host=" << jobs << ")\n"
+            << "  --max-memory=MB --job-memory-mb=N — cap effective --jobs\n"
+            << "  --build-dir=PATH — isolated build tree (AutoVC, temps)\n"
+            << "  --threads=N — runtime parallel team size\n"
             << "  --numerically-stable / LI_FP_NUMERICALLY_STABLE=1 — cancellation-safe FP\n";
   return 1;
 }
@@ -157,16 +158,17 @@ int httpd_explain_config(int argc, char** argv) {
   return 0;
 }
 
-bool apply_resource_flag(std::string_view arg) {
-  if (arg.rfind("--jobs=", 0) == 0) {
-    setenv("LI_COMPILE_JOBS", std::string(arg.substr(7)).c_str(), 1);
-    return true;
+void apply_resource_options_to_env() {
+  const auto& opts = li::resource_options();
+  if (!opts.build_dir.empty()) {
+    setenv("LI_BUILD_DIR", opts.build_dir.c_str(), 1);
   }
-  if (arg.rfind("--max-memory=", 0) == 0) {
-    setenv("LI_MAX_MEMORY_MB", std::string(arg.substr(13)).c_str(), 1);
-    return true;
+  if (opts.threads > 0) {
+    setenv("LI_OMP_THREADS", std::to_string(opts.threads).c_str(), 1);
   }
-  return false;
+  if (opts.max_memory_mb > 0) {
+    setenv("LI_MAX_MEMORY_MB", std::to_string(opts.max_memory_mb).c_str(), 1);
+  }
 }
 
 std::string read_file(const char* path) {
@@ -433,6 +435,7 @@ int build_file(const char* path, const char* output, const li::CompileOptions& o
 }  // namespace
 
 int main(int argc, char** argv) {
+  li::reset_resource_options();
   if (argc < 2) {
     return usage();
   }
@@ -508,10 +511,14 @@ int main(int argc, char** argv) {
       } else if (std::string_view(argv[i]) == "--strict-lean") {
         run_lean = true;
         strict_lean = true;
+      } else if (li::apply_resource_flag(argv[i], li::resource_options())) {
+        continue;
       } else if (parse_proof_cli_flag(argv[i])) {
         continue;
       }
     }
+    li::finalize_resource_options(li::resource_options());
+    apply_resource_options_to_env();
     return verify_file(argv[2], run_lean, strict_lean);
   }
   if (cmd == "validate-httpd-config") {
@@ -559,15 +566,16 @@ int main(int argc, char** argv) {
         strict_lean = true;
       } else if (parse_proof_cli_flag(arg)) {
         continue;
-      } else if (arg.rfind("--threads=", 0) == 0) {
-        setenv("LI_OMP_THREADS", std::string(arg.substr(10)).c_str(), 1);
-      } else if (apply_resource_flag(arg)) {
+      } else if (li::apply_resource_flag(arg, li::resource_options())) {
         continue;
       } else {
         extra_flags.append(argv[i]);
         extra_flags.push_back(' ');
       }
     }
+    li::finalize_resource_options(li::resource_options());
+    li::note_compile_jobs_reserved(li::resource_options());
+    apply_resource_options_to_env();
     if (coverage) {
       extra_flags += "-fprofile-instr-generate -fcoverage-mapping ";
     }

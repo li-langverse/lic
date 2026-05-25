@@ -6,6 +6,10 @@ All notable changes to Li are documented here. The format follows
 
 ## [Unreleased]
 
+### Fixed
+
+- Main CI: `typosquat_paralell` manifest (`compile_fail` + W0403), `bounds_refinement_release_ok` AutoVC witnesses, `lic check` link without incomplete `resource_options_invalid` — [2026-05-25-main-ci-post-stack.md](docs/release-notes/2026-05-25-main-ci-post-stack.md).
+
 ### Added
 
 - **Linguist WP1 — Li TextMate grammar:** `contrib/li-grammar/` (`.li` syntax, VS Code/Cursor extension manifest, smoke script); install pointer `contrib/li-vscode/` — [2026-05-25-linguist-wp1-grammar.md](docs/release-notes/2026-05-25-linguist-wp1-grammar.md).

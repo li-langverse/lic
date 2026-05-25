@@ -200,6 +200,65 @@ bool callee_ensures_result_equals_param(const ProcDecl& callee, std::size_t para
   return false;
 }
 
+
+bool callee_ensures_result_equals_array_index(const ProcDecl& callee, std::size_t param_idx) {
+  if (param_idx >= callee.params.size()) {
+    return false;
+  }
+  const std::string& pname = callee.params[param_idx].name;
+  for (const auto& rc : callee.contracts) {
+    if (rc.kind != ContractKind::Ensures || !rc.expr) {
+      continue;
+    }
+    const Expr* rhs = ensures_rhs_eq_result(*rc.expr);
+    if (rhs && rhs->kind == Expr::Kind::Index && rhs->index &&
+        rhs->index->kind == Expr::Kind::Ident && rhs->index->ident == pname) {
+      return true;
+    }
+  }
+  return false;
+}
+
+bool call_lit_array_index_matches_ensures(const Module& module, const Contract& c,
+                                          const Expr& ret, const CallerProofFacts& facts) {
+  if (c.kind != ContractKind::Ensures || !c.expr) {
+    return false;
+  }
+  const Expr* want = ensures_rhs_eq_result(*c.expr);
+  if (want == nullptr || want->kind != Expr::Kind::IntLit || ret.kind != Expr::Kind::Call) {
+    return false;
+  }
+  const ProcDecl* callee = find_proc_by_name(module, ret.ident);
+  if (callee == nullptr) {
+    return false;
+  }
+  for (std::size_t i = 0; i < ret.args.size() && i < callee->params.size(); ++i) {
+    if (!ret.args[i] || ret.args[i]->kind != Expr::Kind::IntLit) {
+      continue;
+    }
+    if (!callee_ensures_result_equals_array_index(*callee, i)) {
+      continue;
+    }
+    for (const auto& rc : callee->contracts) {
+      if (rc.kind != ContractKind::Ensures || !rc.expr) {
+        continue;
+      }
+      const Expr* ens_rhs = ensures_rhs_eq_result(*rc.expr);
+      if (!ens_rhs || ens_rhs->kind != Expr::Kind::Index || !ens_rhs->base ||
+          ens_rhs->base->kind != Expr::Kind::Ident) {
+        continue;
+      }
+      const std::string key =
+          ens_rhs->base->ident + "[" + std::to_string(ret.args[i]->int_value) + "]";
+      const auto it = facts.const_int_locals.find(key);
+      if (it != facts.const_int_locals.end() && it->second == want->int_value) {
+        return true;
+      }
+    }
+  }
+  return false;
+}
+
 bool call_ident_arg_matches_ensures(const Module& module, const Contract& c,
                                     const Expr& ret, const CallerProofFacts& facts) {
   if (c.kind != ContractKind::Ensures || !c.expr) {
@@ -582,6 +641,10 @@ bool ensures_witnessed_for_return(const ProcDecl& proc, const Contract& c, const
     return true;
   }
   if (module != nullptr && call_literal_return_matches_ensures(*module, c, ret)) {
+    return true;
+  }
+  if (module != nullptr && caller_facts != nullptr &&
+      call_lit_array_index_matches_ensures(*module, c, ret, *caller_facts)) {
     return true;
   }
   if (caller_facts != nullptr) {

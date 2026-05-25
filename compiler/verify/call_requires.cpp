@@ -193,6 +193,20 @@ std::unique_ptr<Expr> substitute_call_params(
   return out;
 }
 
+std::optional<std::string> array_index_const_key(const Expr& e) {
+  if (e.kind != Expr::Kind::Index || !e.base || !e.index) {
+    return std::nullopt;
+  }
+  if (e.base->kind != Expr::Kind::Ident) {
+    return std::nullopt;
+  }
+  const auto idx = int_lit_value(*e.index);
+  if (!idx) {
+    return std::nullopt;
+  }
+  return e.base->ident + "[" + std::to_string(*idx) + "]";
+}
+
 std::optional<std::string> object_field_const_key(const Expr& e) {
   if (e.kind != Expr::Kind::FieldAccess || !e.base) {
     return std::nullopt;
@@ -209,6 +223,18 @@ std::optional<std::string> object_field_const_key(const Expr& e) {
 
 void note_object_field_const_assign(const Expr& lhs, const Expr& rhs,
                                     std::map<std::string, std::int64_t>& const_int_locals) {
+  const auto arr_key = array_index_const_key(lhs);
+  if (arr_key) {
+    if (rhs.kind == Expr::Kind::IntLit) {
+      const_int_locals[*arr_key] = rhs.int_value;
+    } else if (rhs.kind == Expr::Kind::Ident) {
+      const auto it = const_int_locals.find(rhs.ident);
+      if (it != const_int_locals.end()) {
+        const_int_locals[*arr_key] = it->second;
+      }
+    }
+    return;
+  }
   const auto key = object_field_const_key(lhs);
   if (!key) {
     return;
@@ -234,6 +260,19 @@ void note_object_field_const_assign(const Expr& lhs, const Expr& rhs,
 
 std::unique_ptr<Expr> fold_const_int_locals(
     const Expr& expr, const std::map<std::string, std::int64_t>& const_int_locals) {
+  if (expr.kind == Expr::Kind::Index) {
+    const auto key = array_index_const_key(expr);
+    if (key) {
+      const auto it = const_int_locals.find(*key);
+      if (it != const_int_locals.end()) {
+        auto lit = std::make_unique<Expr>();
+        lit->kind = Expr::Kind::IntLit;
+        lit->span = expr.span;
+        lit->int_value = it->second;
+        return lit;
+      }
+    }
+  }
   if (expr.kind == Expr::Kind::FieldAccess) {
     const auto key = object_field_const_key(expr);
     if (key) {
@@ -285,6 +324,9 @@ std::unique_ptr<Expr> fold_const_int_locals(
 bool expr_statically_true(const Expr& e) {
   if (e.kind == Expr::Kind::Ident && e.ident == "true") {
     return true;
+  }
+  if (e.kind == Expr::Kind::BinOp && e.bin_op == BinOp::And && e.lhs && e.rhs) {
+    return expr_statically_true(*e.lhs) && expr_statically_true(*e.rhs);
   }
   if (e.kind != Expr::Kind::BinOp || !e.lhs || !e.rhs) {
     return false;

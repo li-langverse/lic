@@ -2,3 +2,7 @@
 **/*
 !.gitignore
 !nginx-1.26.2-CHANGES.txt
+!nextjs-toy/
+!nextjs-toy/**
+!streaming-soak/
+!streaming-soak/**

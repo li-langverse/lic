@@ -1,0 +1,85 @@
+# gap-nginx-perf-regression-gate: tier5 parity + nextjs + exploit vs nginx (PR verify; nightly timing).
+name: httpd-tier5-regression
+
+on:
+  pull_request:
+    branches: [main, dev]
+    paths:
+      - "runtime/li_rt_httpd.c"
+      - "runtime/li_rt_net.c"
+      - "runtime/li_rt_log.c"
+      - "packages/li-net-httpd/**"
+      - "packages/li-http/**"
+      - "packages/li-log/**"
+      - "benchmarks/tier5_http/**"
+      - "benchmarks/harness/**"
+      - "scripts/build-li-httpd.sh"
+      - "scripts/check-tier5-*.sh"
+      - "scripts/httpd-plan-gates.sh"
+      - ".github/workflows/httpd-tier5-regression.yml"
+  push:
+    branches: [main]
+    paths:
+      - "runtime/li_rt_httpd.c"
+      - "runtime/li_rt_net.c"
+      - "benchmarks/tier5_http/**"
+      - "benchmarks/harness/**"
+      - "scripts/check-tier5-nginx-perf-regression-gate.sh"
+  schedule:
+    - cron: "0 4 * * *"
+  workflow_dispatch:
+    inputs:
+      full_timing:
+        description: "Run wrk timing ratios (not verify-only)"
+        type: boolean
+        default: true
+
+concurrency:
+  group: httpd-tier5-regression-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  tier5-regression:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install LLVM 22, nginx, wrk, node
+        run: |
+          chmod +x scripts/ci-install-llvm.sh
+          sudo LI_LLVM_MAJOR=22 bash scripts/ci-install-llvm.sh
+          sudo apt-get update -qq
+          sudo apt-get install -y nginx wrk nodejs
+
+      - name: Build lic + li-httpd
+        env:
+          LLVM_DIR: /usr/lib/llvm-22/lib/cmake/llvm
+          CC: clang-22
+          CXX: clang++-22
+        run: |
+          chmod +x scripts/build.sh scripts/build-li-httpd.sh
+          ./scripts/build.sh
+          ./scripts/build-li-httpd.sh
+          test -x build/li-httpd
+
+      - name: Tier5 nginx perf regression gate
+        env:
+          HTTPD_BENCH_SKIP_TIMING: ${{ (github.event_name == 'schedule' || github.event_name == 'workflow_dispatch') && '0' || '1' }}
+          HTTPD_BENCH_DURATION_SEC: ${{ (github.event_name == 'schedule' || github.event_name == 'workflow_dispatch') && '30' || '8' }}
+        run: |
+          chmod +x scripts/check-tier5-nginx-perf-regression-gate.sh
+          if [[ "${{ github.event_name }}" == "workflow_dispatch" && "${{ inputs.full_timing }}" != "true" ]]; then
+            export HTTPD_BENCH_SKIP_TIMING=1
+          fi
+          ./scripts/check-tier5-nginx-perf-regression-gate.sh
+
+      - name: Upload tier5 regression CSVs
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: tier5-regression-csv
+          path: |
+            benchmarks/results/tier5_http_parity.csv
+            benchmarks/results/tier5_nextjs_parity.csv
+            benchmarks/results/tier5_exploit_regression.csv
+          if-no-files-found: ignore

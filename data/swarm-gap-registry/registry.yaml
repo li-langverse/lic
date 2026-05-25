@@ -1,0 +1,651 @@
+version: 1
+updated_at: '2026-05-25T19:07:51Z'
+gaps:
+- id: gap-line-profiler-001
+  gap_kind: missing_package
+  title: "li-line-profiler \u2014 line-level profiling package (seed)"
+  status: open
+  priority: 8
+  discovered_by: gap_explorer
+  evidence:
+  - No li-line-profiler / std profiling hooks for HPC agent loops (WP-B seed)
+  target_backlog: docs/ecosystem/ecosystem-package-backlog.md
+  target_todo_id: pkg-line-profiler
+  suggested_loop: null
+  handoff_to:
+  - issue_planner
+- id: gap-missing-std-std-io
+  gap_kind: missing_package
+  title: Missing std module std.io
+  status: open
+  priority: 6
+  discovered_by: gap_explorer
+  evidence:
+  - CSV/file ingest without Python
+  ph_id: PH-IO-4
+  target_backlog: docs/ecosystem/ecosystem-package-backlog.md
+  target_todo_id: pkg-std-io
+  suggested_loop: null
+  handoff_to:
+  - issue_planner
+  - package_architect
+- id: gap-missing-std-std-csv
+  gap_kind: missing_package
+  title: Missing std module std.csv
+  status: open
+  priority: 6
+  discovered_by: gap_explorer
+  evidence:
+  - Benchmark CSV parsing in Li
+  ph_id: PH-IO-4
+  target_backlog: docs/ecosystem/ecosystem-package-backlog.md
+  target_todo_id: pkg-std-csv
+  suggested_loop: null
+  handoff_to:
+  - issue_planner
+  - package_architect
+- id: gap-missing-std-std-summary
+  gap_kind: missing_package
+  title: Missing std module std.summary
+  status: open
+  priority: 6
+  discovered_by: gap_explorer
+  evidence:
+  - Build data/latest/summary.json in Li
+  ph_id: PH-IO-7
+  target_backlog: docs/ecosystem/ecosystem-package-backlog.md
+  target_todo_id: pkg-std-summary
+  suggested_loop: null
+  handoff_to:
+  - issue_planner
+  - package_architect
+- id: gap-missing-std-std-plot
+  gap_kind: missing_package
+  title: Missing std module std.plot
+  status: open
+  priority: 6
+  discovered_by: gap_explorer
+  evidence:
+  - Static dashboard without Node/Vite
+  ph_id: PH-IO-5
+  target_backlog: docs/ecosystem/ecosystem-package-backlog.md
+  target_todo_id: pkg-std-plot
+  suggested_loop: null
+  handoff_to:
+  - issue_planner
+  - package_architect
+- id: gap-plan-debt-lic-master-plan-doc-c-phase-plan-files-02-03-07-
+  gap_kind: plan_debt
+  title: "**Doc-c** \u2014 phase plan files (02, 03, 07) link **G-*** in exit gates"
+  status: open
+  priority: 5
+  discovered_by: plan_verifier
+  evidence:
+  - "lic:master_plan: **Doc-c** \u2014 phase plan files (02, 03, 07) link **G-***\
+    \ in exit gates"
+  target_backlog: null
+  suggested_loop: null
+  handoff_to:
+  - plan_verifier
+  - issue_planner
+- id: gap-plan-debt-lic-master-plan-phase-2i-math-linalg-surface-par
+  gap_kind: plan_debt
+  title: "Phase 2i \u2014 Math / linalg surface \u2014 **partial:** 1d `float` `@`,\
+    \ `sum(array)`; matrix `@` deferred"
+  status: open
+  priority: 5
+  discovered_by: plan_verifier
+  evidence:
+  - "lic:master_plan: Phase 2i \u2014 Math / linalg surface \u2014 **partial:** 1d\
+    \ `float` `@`, `sum(array)`; matrix `@` deferred"
+  target_backlog: null
+  suggested_loop: null
+  handoff_to:
+  - plan_verifier
+  - issue_planner
+- id: gap-plan-debt-lic-master-plan-phase-2e-contracts-refinements-p
+  gap_kind: plan_debt
+  title: "Phase 2e \u2014 Contracts + refinements \u2014 **partial:** typed `AutoVC.lean`;\
+    \ `lic verify` prints `witnessed_ensures=` + `mir_r"
+  status: open
+  priority: 5
+  discovered_by: plan_verifier
+  evidence:
+  - "lic:master_plan: Phase 2e \u2014 Contracts + refinements \u2014 **partial:**\
+    \ typed `AutoVC.lean`; `lic verify` prints `witnessed_ensures=` + `mir_r"
+  target_backlog: null
+  suggested_loop: null
+  handoff_to:
+  - plan_verifier
+  - issue_planner
+- id: gap-plan-debt-lic-master-plan-phase-2f-lean-4-verify-partial-a
+  gap_kind: plan_debt
+  title: "Phase 2f \u2014 Lean 4 verify \u2014 **partial:** auto-discharge (`True`,\
+    \ `decreases`, return/const/mirror `ensures`); `sqrt_contr"
+  status: open
+  priority: 5
+  discovered_by: plan_verifier
+  evidence:
+  - "lic:master_plan: Phase 2f \u2014 Lean 4 verify \u2014 **partial:** auto-discharge\
+    \ (`True`, `decreases`, return/const/mirror `ensures`); `sqrt_contr"
+  target_backlog: null
+  suggested_loop: null
+  handoff_to:
+  - plan_verifier
+  - issue_planner
+- id: gap-plan-debt-lic-master-plan-phase-7d-execution-decorators-pa
+  gap_kind: plan_debt
+  title: "Phase 7d \u2014 Execution decorators \u2014 **partial (7d-a/b/d/e/c):**\
+    \ AST `check_module_policies` for disjoint; string heuristic"
+  status: open
+  priority: 5
+  discovered_by: plan_verifier
+  evidence:
+  - "lic:master_plan: Phase 7d \u2014 Execution decorators \u2014 **partial (7d-a/b/d/e/c):**\
+    \ AST `check_module_policies` for disjoint; string heuristic"
+  target_backlog: null
+  suggested_loop: null
+  handoff_to:
+  - plan_verifier
+  - issue_planner
+- id: gap-plan-debt-lic-master-plan-phase-7e-math-simd-parallel-lowe
+  gap_kind: plan_debt
+  title: "Phase 7e \u2014 Math \u2192 SIMD/parallel lowering \u2014 **partial:** `ArrayDotF64`\
+    \ for 1d `float` `@`; SIMD matmul deferred"
+  status: open
+  priority: 5
+  discovered_by: plan_verifier
+  evidence:
+  - "lic:master_plan: Phase 7e \u2014 Math \u2192 SIMD/parallel lowering \u2014 **partial:**\
+    \ `ArrayDotF64` for 1d `float` `@`; SIMD matmul deferred"
+  target_backlog: null
+  suggested_loop: null
+  handoff_to:
+  - plan_verifier
+  - issue_planner
+- id: gap-plan-debt-lic-master-plan-phase-h-li-httpd-m1-li-after-2e-
+  gap_kind: plan_debt
+  title: "Phase H \u2014 li-httpd M1 `.li` \u2014 after **2e\u20132f** + bytes/async\
+    \ ([httpd-prerequisites](../ecosystem/httpd-prerequisites.md))"
+  status: open
+  priority: 5
+  discovered_by: plan_verifier
+  evidence:
+  - "lic:master_plan: Phase H \u2014 li-httpd M1 `.li` \u2014 after **2e\u20132f**\
+    \ + bytes/async ([httpd-prerequisites](../ecosystem/httpd-prerequisites.md))"
+  target_backlog: null
+  suggested_loop: null
+  handoff_to:
+  - plan_verifier
+  - issue_planner
+- id: gap-plan-debt-lic-master-plan-vision-llm-llm-first-agent-json-
+  gap_kind: plan_debt
+  title: "**Vision-LLM** \u2014 LLM-first + agent JSON diagnostics \u2014 **partial:**\
+    \ `lic check --format=json`, `lic diagnose`, `diagnosti"
+  status: open
+  priority: 5
+  discovered_by: plan_verifier
+  evidence:
+  - "lic:master_plan: **Vision-LLM** \u2014 LLM-first + agent JSON diagnostics \u2014\
+    \ **partial:** `lic check --format=json`, `lic diagnose`, `diagnosti"
+  target_backlog: null
+  suggested_loop: null
+  handoff_to:
+  - plan_verifier
+  - issue_planner
+- id: gap-plan-pending-httpd-gap-phase2-perf-wrk-soak
+  gap_kind: plan_debt
+  title: 'httpd: pending plan todo gap-phase2-perf-wrk-soak'
+  status: open
+  priority: 7
+  discovered_by: plan_verifier
+  evidence:
+  - snapshot runner=httpd plan_pending=gap-phase2-perf-wrk-soak
+  runner_id: httpd
+  plan_todo_id: gap-phase2-perf-wrk-soak
+  suggested_loop: httpd
+  handoff_to:
+  - swarm_observer
+- id: gap-plan-pending-httpd-gap-phase2-mitigation-exploits
+  gap_kind: plan_debt
+  title: 'httpd: pending plan todo gap-phase2-mitigation-exploits'
+  status: open
+  priority: 7
+  discovered_by: plan_verifier
+  evidence:
+  - snapshot runner=httpd plan_pending=gap-phase2-mitigation-exploits
+  runner_id: httpd
+  plan_todo_id: gap-phase2-mitigation-exploits
+  suggested_loop: httpd
+  handoff_to:
+  - swarm_observer
+- id: gap-plan-pending-httpd-gap-phase2-streaming-wrk
+  gap_kind: plan_debt
+  title: 'httpd: pending plan todo gap-phase2-streaming-wrk'
+  status: open
+  priority: 7
+  discovered_by: plan_verifier
+  evidence:
+  - snapshot runner=httpd plan_pending=gap-phase2-streaming-wrk
+  runner_id: httpd
+  plan_todo_id: gap-phase2-streaming-wrk
+  suggested_loop: httpd
+  handoff_to:
+  - swarm_observer
+- id: gap-plan-pending-sim-sim-p1-num-dot-axpy
+  gap_kind: plan_debt
+  title: 'sim: pending plan todo sim-p1-num-dot-axpy'
+  status: open
+  priority: 7
+  discovered_by: plan_verifier
+  evidence:
+  - snapshot runner=sim plan_pending=sim-p1-num-dot-axpy
+  runner_id: sim
+  plan_todo_id: sim-p1-num-dot-axpy
+  suggested_loop: sim
+  handoff_to:
+  - swarm_observer
+- id: gap-plan-pending-sim-sim-p1-md-neighbor-cell
+  gap_kind: plan_debt
+  title: 'sim: pending plan todo sim-p1-md-neighbor-cell'
+  status: open
+  priority: 7
+  discovered_by: plan_verifier
+  evidence:
+  - snapshot runner=sim plan_pending=sim-p1-md-neighbor-cell
+  runner_id: sim
+  plan_todo_id: sim-p1-md-neighbor-cell
+  suggested_loop: sim
+  handoff_to:
+  - swarm_observer
+- id: gap-plan-pending-sim-sim-p2-qm-dft-scf
+  gap_kind: plan_debt
+  title: 'sim: pending plan todo sim-p2-qm-dft-scf'
+  status: open
+  priority: 7
+  discovered_by: plan_verifier
+  evidence:
+  - snapshot runner=sim plan_pending=sim-p2-qm-dft-scf
+  runner_id: sim
+  plan_todo_id: sim-p2-qm-dft-scf
+  suggested_loop: sim
+  handoff_to:
+  - swarm_observer
+- id: gap-plan-pending-studio-ui-ux-studio-ux-04-particle-display
+  gap_kind: plan_debt
+  title: 'studio-ui-ux: pending plan todo studio-ux-04-particle-display'
+  status: open
+  priority: 7
+  discovered_by: plan_verifier
+  evidence:
+  - snapshot runner=studio-ui-ux plan_pending=studio-ux-04-particle-display
+  runner_id: studio-ui-ux
+  plan_todo_id: studio-ux-04-particle-display
+  suggested_loop: studio-ui-ux
+  handoff_to:
+  - swarm_observer
+- id: gap-plan-pending-studio-ui-ux-studio-ux-05-studio-compose
+  gap_kind: plan_debt
+  title: 'studio-ui-ux: pending plan todo studio-ux-05-studio-compose'
+  status: open
+  priority: 7
+  discovered_by: plan_verifier
+  evidence:
+  - snapshot runner=studio-ui-ux plan_pending=studio-ux-05-studio-compose
+  runner_id: studio-ui-ux
+  plan_todo_id: studio-ux-05-studio-compose
+  suggested_loop: studio-ui-ux
+  handoff_to:
+  - swarm_observer
+- id: gap-plan-pending-studio-ui-ux-studio-ux-06-agent-chrome
+  gap_kind: plan_debt
+  title: 'studio-ui-ux: pending plan todo studio-ux-06-agent-chrome'
+  status: open
+  priority: 7
+  discovered_by: plan_verifier
+  evidence:
+  - snapshot runner=studio-ui-ux plan_pending=studio-ux-06-agent-chrome
+  runner_id: studio-ui-ux
+  plan_todo_id: studio-ux-06-agent-chrome
+  suggested_loop: studio-ui-ux
+  handoff_to:
+  - swarm_observer
+- id: gap-plan-pending-studio-ui-ux-studio-ux-07-capture-harness
+  gap_kind: plan_debt
+  title: 'studio-ui-ux: pending plan todo studio-ux-07-capture-harness'
+  status: open
+  priority: 7
+  discovered_by: plan_verifier
+  evidence:
+  - snapshot runner=studio-ui-ux plan_pending=studio-ux-07-capture-harness
+  runner_id: studio-ui-ux
+  plan_todo_id: studio-ux-07-capture-harness
+  suggested_loop: studio-ui-ux
+  handoff_to:
+  - swarm_observer
+- id: gap-plan-pending-studio-ui-ux-studio-ux-08-bench-registry
+  gap_kind: plan_debt
+  title: 'studio-ui-ux: pending plan todo studio-ux-08-bench-registry'
+  status: open
+  priority: 7
+  discovered_by: plan_verifier
+  evidence:
+  - snapshot runner=studio-ui-ux plan_pending=studio-ux-08-bench-registry
+  runner_id: studio-ui-ux
+  plan_todo_id: studio-ux-08-bench-registry
+  suggested_loop: studio-ui-ux
+  handoff_to:
+  - swarm_observer
+- id: gap-plan-pending-studio-ui-ux-studio-ux-09-memory-budget
+  gap_kind: plan_debt
+  title: 'studio-ui-ux: pending plan todo studio-ux-09-memory-budget'
+  status: open
+  priority: 7
+  discovered_by: plan_verifier
+  evidence:
+  - snapshot runner=studio-ui-ux plan_pending=studio-ux-09-memory-budget
+  runner_id: studio-ui-ux
+  plan_todo_id: studio-ux-09-memory-budget
+  suggested_loop: studio-ui-ux
+  handoff_to:
+  - swarm_observer
+- id: gap-plan-pending-studio-ui-ux-studio-ux-10-native-capture
+  gap_kind: plan_debt
+  title: 'studio-ui-ux: pending plan todo studio-ux-10-native-capture'
+  status: open
+  priority: 7
+  discovered_by: plan_verifier
+  evidence:
+  - snapshot runner=studio-ui-ux plan_pending=studio-ux-10-native-capture
+  runner_id: studio-ui-ux
+  plan_todo_id: studio-ux-10-native-capture
+  suggested_loop: studio-ui-ux
+  handoff_to:
+  - swarm_observer
+- id: gap-plan-pending-sim-md-research-md-r1-stability-matrix
+  gap_kind: plan_debt
+  title: 'sim-md-research: pending plan todo md-r1-stability-matrix'
+  status: open
+  priority: 7
+  discovered_by: plan_verifier
+  evidence:
+  - snapshot runner=sim-md-research plan_pending=md-r1-stability-matrix
+  runner_id: sim-md-research
+  plan_todo_id: md-r1-stability-matrix
+  suggested_loop: sim-md-research
+  handoff_to:
+  - swarm_observer
+- id: gap-plan-pending-sim-md-research-md-r2-neighbor-list-gap
+  gap_kind: plan_debt
+  title: 'sim-md-research: pending plan todo md-r2-neighbor-list-gap'
+  status: open
+  priority: 7
+  discovered_by: plan_verifier
+  evidence:
+  - snapshot runner=sim-md-research plan_pending=md-r2-neighbor-list-gap
+  runner_id: sim-md-research
+  plan_todo_id: md-r2-neighbor-list-gap
+  suggested_loop: sim-md-research
+  handoff_to:
+  - swarm_observer
+- id: gap-plan-pending-sim-md-research-md-r3-oracle-plan
+  gap_kind: plan_debt
+  title: 'sim-md-research: pending plan todo md-r3-oracle-plan'
+  status: open
+  priority: 7
+  discovered_by: plan_verifier
+  evidence:
+  - snapshot runner=sim-md-research plan_pending=md-r3-oracle-plan
+  runner_id: sim-md-research
+  plan_todo_id: md-r3-oracle-plan
+  suggested_loop: sim-md-research
+  handoff_to:
+  - swarm_observer
+- id: gap-plan-pending-sim-chem-research-chem-r0-sota-survey
+  gap_kind: plan_debt
+  title: 'sim-chem-research: pending plan todo chem-r0-sota-survey'
+  status: open
+  priority: 7
+  discovered_by: plan_verifier
+  evidence:
+  - snapshot runner=sim-chem-research plan_pending=chem-r0-sota-survey
+  runner_id: sim-chem-research
+  plan_todo_id: chem-r0-sota-survey
+  suggested_loop: sim-chem-research
+  handoff_to:
+  - swarm_observer
+- id: gap-plan-pending-sim-chem-research-chem-r1-basis-size-scaling
+  gap_kind: plan_debt
+  title: 'sim-chem-research: pending plan todo chem-r1-basis-size-scaling'
+  status: open
+  priority: 7
+  discovered_by: plan_verifier
+  evidence:
+  - snapshot runner=sim-chem-research plan_pending=chem-r1-basis-size-scaling
+  runner_id: sim-chem-research
+  plan_todo_id: chem-r1-basis-size-scaling
+  suggested_loop: sim-chem-research
+  handoff_to:
+  - swarm_observer
+- id: gap-plan-pending-sim-chem-research-chem-r2-dft-scf-gap
+  gap_kind: plan_debt
+  title: 'sim-chem-research: pending plan todo chem-r2-dft-scf-gap'
+  status: open
+  priority: 7
+  discovered_by: plan_verifier
+  evidence:
+  - snapshot runner=sim-chem-research plan_pending=chem-r2-dft-scf-gap
+  runner_id: sim-chem-research
+  plan_todo_id: chem-r2-dft-scf-gap
+  suggested_loop: sim-chem-research
+  handoff_to:
+  - swarm_observer
+- id: gap-plan-pending-sim-chem-research-chem-r3-package-placement
+  gap_kind: plan_debt
+  title: 'sim-chem-research: pending plan todo chem-r3-package-placement'
+  status: open
+  priority: 7
+  discovered_by: plan_verifier
+  evidence:
+  - snapshot runner=sim-chem-research plan_pending=chem-r3-package-placement
+  runner_id: sim-chem-research
+  plan_todo_id: chem-r3-package-placement
+  suggested_loop: sim-chem-research
+  handoff_to:
+  - swarm_observer
+- id: gap-plan-pending-swarm-observer-orch-r0-ingest-snapshot
+  gap_kind: plan_debt
+  title: 'swarm-observer: pending plan todo orch-r0-ingest-snapshot'
+  status: closed
+  priority: 7
+  discovered_by: plan_verifier
+  evidence:
+  - snapshot runner=swarm-observer plan_pending=orch-r0-ingest-snapshot
+  - 'orch-r0 completed 2026-05-25: ingest+apply confirmed; note docs/ecosystem/orchestrator-notes/2026-05-25-orch-r0-ingest-snapshot.md'
+  runner_id: swarm-observer
+  plan_todo_id: orch-r0-ingest-snapshot
+  suggested_loop: swarm-observer
+  handoff_to:
+  - swarm_observer
+- id: gap-plan-pending-swarm-observer-orch-r1-plan-debt-sync
+  gap_kind: plan_debt
+  title: 'swarm-observer: pending plan todo orch-r1-plan-debt-sync'
+  status: open
+  priority: 7
+  discovered_by: plan_verifier
+  evidence:
+  - snapshot runner=swarm-observer plan_pending=orch-r1-plan-debt-sync
+  runner_id: swarm-observer
+  plan_todo_id: orch-r1-plan-debt-sync
+  suggested_loop: swarm-observer
+  handoff_to:
+  - swarm_observer
+- id: gap-plan-pending-swarm-observer-orch-r2-competitor-stubs
+  gap_kind: plan_debt
+  title: 'swarm-observer: pending plan todo orch-r2-competitor-stubs'
+  status: open
+  priority: 7
+  discovered_by: plan_verifier
+  evidence:
+  - snapshot runner=swarm-observer plan_pending=orch-r2-competitor-stubs
+  runner_id: swarm-observer
+  plan_todo_id: orch-r2-competitor-stubs
+  suggested_loop: swarm-observer
+  handoff_to:
+  - swarm_observer
+- id: gap-plan-pending-swarm-observer-orch-r3-missing-package-sweep
+  gap_kind: plan_debt
+  title: 'swarm-observer: pending plan todo orch-r3-missing-package-sweep'
+  status: open
+  priority: 7
+  discovered_by: plan_verifier
+  evidence:
+  - snapshot runner=swarm-observer plan_pending=orch-r3-missing-package-sweep
+  runner_id: swarm-observer
+  plan_todo_id: orch-r3-missing-package-sweep
+  suggested_loop: swarm-observer
+  handoff_to:
+  - swarm_observer
+- id: gap-plan-pending-swarm-observer-orch-r4-ui-ux-signals
+  gap_kind: plan_debt
+  title: 'swarm-observer: pending plan todo orch-r4-ui-ux-signals'
+  status: open
+  priority: 7
+  discovered_by: plan_verifier
+  evidence:
+  - snapshot runner=swarm-observer plan_pending=orch-r4-ui-ux-signals
+  runner_id: swarm-observer
+  plan_todo_id: orch-r4-ui-ux-signals
+  suggested_loop: swarm-observer
+  handoff_to:
+  - swarm_observer
+- id: gap-plan-pending-httpd-gap-httpd-gap-phase2-perf-wrk-soak
+  gap_kind: plan_debt
+  title: 'httpd: pending plan todo gap-httpd-gap-phase2-perf-wrk-soak'
+  status: open
+  priority: 7
+  discovered_by: plan_verifier
+  evidence:
+  - snapshot runner=httpd plan_pending=gap-httpd-gap-phase2-perf-wrk-soak
+  runner_id: httpd
+  plan_todo_id: gap-httpd-gap-phase2-perf-wrk-soak
+  suggested_loop: httpd
+  handoff_to:
+  - swarm_observer
+- id: gap-plan-pending-httpd-gap-httpd-gap-phase2-mitigation-exploits
+  gap_kind: plan_debt
+  title: 'httpd: pending plan todo gap-httpd-gap-phase2-mitigation-exploits'
+  status: open
+  priority: 7
+  discovered_by: plan_verifier
+  evidence:
+  - snapshot runner=httpd plan_pending=gap-httpd-gap-phase2-mitigation-exploits
+  runner_id: httpd
+  plan_todo_id: gap-httpd-gap-phase2-mitigation-exploits
+  suggested_loop: httpd
+  handoff_to:
+  - swarm_observer
+- id: gap-plan-pending-httpd-gap-httpd-gap-phase2-streaming-wrk
+  gap_kind: plan_debt
+  title: 'httpd: pending plan todo gap-httpd-gap-phase2-streaming-wrk'
+  status: open
+  priority: 7
+  discovered_by: plan_verifier
+  evidence:
+  - snapshot runner=httpd plan_pending=gap-httpd-gap-phase2-streaming-wrk
+  runner_id: httpd
+  plan_todo_id: gap-httpd-gap-phase2-streaming-wrk
+  suggested_loop: httpd
+  handoff_to:
+  - swarm_observer
+- id: gap-plan-pending-security-research-sec-r0-cwe-delta
+  gap_kind: plan_debt
+  title: 'security-research: pending plan todo sec-r0-cwe-delta'
+  status: open
+  priority: 7
+  discovered_by: plan_verifier
+  evidence:
+  - snapshot runner=security-research plan_pending=sec-r0-cwe-delta
+  runner_id: security-research
+  plan_todo_id: sec-r0-cwe-delta
+  suggested_loop: security-research
+  handoff_to:
+  - swarm_observer
+- id: gap-plan-pending-security-research-sec-r1-httpd-fuzz-smoke
+  gap_kind: plan_debt
+  title: 'security-research: pending plan todo sec-r1-httpd-fuzz-smoke'
+  status: open
+  priority: 7
+  discovered_by: plan_verifier
+  evidence:
+  - snapshot runner=security-research plan_pending=sec-r1-httpd-fuzz-smoke
+  runner_id: security-research
+  plan_todo_id: sec-r1-httpd-fuzz-smoke
+  suggested_loop: security-research
+  handoff_to:
+  - swarm_observer
+- id: gap-plan-pending-security-research-sec-r2-tier5-gap-exploit
+  gap_kind: plan_debt
+  title: 'security-research: pending plan todo sec-r2-tier5-gap-exploit'
+  status: open
+  priority: 7
+  discovered_by: plan_verifier
+  evidence:
+  - snapshot runner=security-research plan_pending=sec-r2-tier5-gap-exploit
+  runner_id: security-research
+  plan_todo_id: sec-r2-tier5-gap-exploit
+  suggested_loop: security-research
+  handoff_to:
+  - swarm_observer
+- id: gap-plan-pending-security-research-sec-r3-runtime-surface
+  gap_kind: plan_debt
+  title: 'security-research: pending plan todo sec-r3-runtime-surface'
+  status: open
+  priority: 7
+  discovered_by: plan_verifier
+  evidence:
+  - snapshot runner=security-research plan_pending=sec-r3-runtime-surface
+  runner_id: security-research
+  plan_todo_id: sec-r3-runtime-surface
+  suggested_loop: security-research
+  handoff_to:
+  - swarm_observer
+- id: gap-plan-pending-httpd-gap-httpd-gap-httpd-gap-phase2-perf-wrk-soak
+  gap_kind: plan_debt
+  title: 'httpd: pending plan todo gap-httpd-gap-httpd-gap-phase2-perf-wrk-soak'
+  status: open
+  priority: 7
+  discovered_by: plan_verifier
+  evidence:
+  - snapshot runner=httpd plan_pending=gap-httpd-gap-httpd-gap-phase2-perf-wrk-soak
+  runner_id: httpd
+  plan_todo_id: gap-httpd-gap-httpd-gap-phase2-perf-wrk-soak
+  suggested_loop: httpd
+  handoff_to:
+  - swarm_observer
+- id: gap-plan-pending-httpd-gap-httpd-gap-httpd-gap-phase2-mitigation-exploi
+  gap_kind: plan_debt
+  title: 'httpd: pending plan todo gap-httpd-gap-httpd-gap-phase2-mitigation-exploits'
+  status: open
+  priority: 7
+  discovered_by: plan_verifier
+  evidence:
+  - snapshot runner=httpd plan_pending=gap-httpd-gap-httpd-gap-phase2-mitigation-exploits
+  runner_id: httpd
+  plan_todo_id: gap-httpd-gap-httpd-gap-phase2-mitigation-exploits
+  suggested_loop: httpd
+  handoff_to:
+  - swarm_observer
+- id: gap-plan-pending-httpd-gap-httpd-gap-httpd-gap-phase2-streaming-wrk
+  gap_kind: plan_debt
+  title: 'httpd: pending plan todo gap-httpd-gap-httpd-gap-phase2-streaming-wrk'
+  status: open
+  priority: 7
+  discovered_by: plan_verifier
+  evidence:
+  - snapshot runner=httpd plan_pending=gap-httpd-gap-httpd-gap-phase2-streaming-wrk
+  runner_id: httpd
+  plan_todo_id: gap-httpd-gap-httpd-gap-phase2-streaming-wrk
+  suggested_loop: httpd
+  handoff_to:
+  - swarm_observer

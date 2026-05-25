@@ -230,11 +230,11 @@ def route_key_valid(key: str) raises IO, Alloc -> int
 =
   return li_rt_httpd_route_key_valid(key)
 
-# M1 LB enum: round_robin -> 0, least_conn -> 1 (uses seam extern httpd_lb_mode_from_arg_i).
+# M1 LB enum: round_robin=0, least_conn=1, ip_hash=2, cookie=3 (httpd_lb_mode_from_arg_i).
 def lb_mode_from_name(name: str) raises IO, Alloc -> int
   requires true
   ensures 0 <= result
-  ensures result <= 1
+  ensures result <= 3
   decreases 0
 =
   return httpd_lb_mode_from_arg_i(name)

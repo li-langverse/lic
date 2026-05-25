@@ -22,6 +22,7 @@ FORBIDDEN_SUBSTRINGS = ("..", "include ", "load_module", "proxy_pass http://")
 
 RATE_LIMIT_RPS_MAX = 100_000
 RATE_LIMIT_RPS_MIN = 1
+UPSTREAM_BALANCE_ALLOW = frozenset({"round_robin", "least_conn", "ip_hash", "cookie"})
 
 
 def load(path: Path) -> dict:
@@ -123,7 +124,33 @@ def validate(cfg: dict) -> list[str]:
     if routes is None:
         errs.append("routes table is required (may be empty in tests)")
 
+    def pool_balance(pool_id: str, block: dict) -> str | None:
+        bal = block.get("balance")
+        if bal is None:
+            return None
+        name = str(bal).strip()
+        if name not in UPSTREAM_BALANCE_ALLOW:
+            return (
+                f"upstreams.{pool_id}.balance must be one of "
+                f"{sorted(UPSTREAM_BALANCE_ALLOW)} (got {name!r})"
+            )
+        return None
+
     pools = collect_upstreams(cfg)
+    nested = cfg.get("upstreams")
+    if isinstance(nested, dict):
+        for pool_id, val in nested.items():
+            if isinstance(val, dict):
+                err = pool_balance(str(pool_id), val)
+                if err:
+                    errs.append(err)
+    for key, val in cfg.items():
+        if key.startswith("upstreams.") and isinstance(val, dict):
+            pool_id = key.split(".", 1)[1]
+            err = pool_balance(pool_id, val)
+            if err:
+                errs.append(err)
+
     for pool_id, peers in pools.items():
         if not peers:
             errs.append(f"upstreams.{pool_id}: peers must be non-empty")

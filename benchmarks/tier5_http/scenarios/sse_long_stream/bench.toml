@@ -1,0 +1,29 @@
+name = "sse_long_stream"
+phase = "m15"
+enabled = true
+
+[server]
+kind = "proxy"
+backend = "streaming_soak"
+backend_port = 19101
+
+[verify]
+target = "edge"
+requests = [
+  { method = "GET", path = "/stream/sse?count=30&interval_ms=20", expect_status = 200, body_contains = "event: tick" },
+  { method = "GET", path = "/stream/sse?count=30&interval_ms=20", expect_status = 200, body_contains = "data:" },
+]
+
+[load]
+tool = "streaming_soak"
+kind = "sse"
+concurrent = 12
+events_min = 25
+duration_sec = 6
+
+[metrics]
+collect = ["rps", "stream_ok_ratio"]
+
+[parity]
+rps_ratio_min = 0.85
+p99_ratio_max = 2.0

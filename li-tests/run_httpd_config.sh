@@ -25,7 +25,14 @@ chmod +x "$ROOT/scripts/check-httpd-tls-auto.sh" "$ROOT/li-tests/tls_setup/run_s
 echo "== httpd config reject =="
 for rej in "$ROOT/li-tests/config_desugar/reject"/*.toml; do
   name="$(basename "$rej")"
-  if python3 "$PY/httpd_config.py" "$rej" 2>/dev/null; then
+  rejected=0
+  if ! python3 "$PY/httpd_config.py" "$rej" 2>/dev/null; then
+    rejected=1
+  fi
+  if ! python3 "$ROOT/scripts/validate-httpd-config.py" "$rej" 2>/dev/null; then
+    rejected=1
+  fi
+  if [[ "$rejected" -eq 0 ]]; then
     echo "expected reject to fail: $name" >&2
     exit 1
   fi
@@ -88,7 +95,8 @@ done
 echo "== validate-httpd-config (Python M1 schema) =="
 "$ROOT/scripts/lic-validate-httpd-config.sh" "$ROOT/packages/li-net-httpd/examples/auth_bearer.toml"
 "$ROOT/scripts/lic-validate-httpd-config.sh" "$ROOT/packages/li-net-httpd/examples/agent_gateway_limits.toml"
-for rej in "$ROOT/li-tests/config_desugar/reject"/proxy_without_rate_limit.toml; do
+for rej in "$ROOT/li-tests/config_desugar/reject"/proxy_without_rate_limit.toml \
+  "$ROOT/li-tests/config_desugar/reject/lb_bad_balance.toml; do
   [[ -f "$rej" ]] || continue
   if "$ROOT/scripts/lic-validate-httpd-config.sh" "$rej" 2>/dev/null; then
     echo "validate-httpd-config: expected reject for $(basename "$rej")" >&2

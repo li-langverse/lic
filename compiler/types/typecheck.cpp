@@ -69,15 +69,27 @@ TyPtr make_numeric_scalar(const NumericScalarDesc& desc) {
   t->unsigned_scalar = desc.kind == NumericScalarKind::IntUnsigned;
   return t;
 }
-TyPtr make_bool() { return std::make_shared<Ty>(Ty{TyKind::Bool}); }
-TyPtr make_str() { return std::make_shared<Ty>(Ty{TyKind::Str}); }
+TyPtr make_bool() {
+  auto t = std::make_shared<Ty>();
+  t->kind = TyKind::Bool;
+  return t;
+}
+TyPtr make_str() {
+  auto t = std::make_shared<Ty>();
+  t->kind = TyKind::Str;
+  return t;
+}
 TyPtr make_binary() {
   auto t = std::make_shared<Ty>();
   t->kind = TyKind::Binary;
   t->name = "binary";
   return t;
 }
-TyPtr make_i64() { return std::make_shared<Ty>(Ty{TyKind::Int64}); }
+TyPtr make_i64() {
+  auto t = std::make_shared<Ty>();
+  t->kind = TyKind::Int64;
+  return t;
+}
 
 bool ty_is_2d_float_matrix(const TyPtr& t, std::int64_t* rows, std::int64_t* cols) {
   if (!t || t->kind != TyKind::Array || !t->elem) {

@@ -707,7 +707,7 @@ def proxy_li_start(epfd: var int, slot: var int, hdr_end: int, keep: int) raises
   ensures true
   decreases 0
 =
-  var up: int = httpd_upstream_acquire_i()
+  var up: int = httpd_upstream_acquire_for_slot_i(slot)
   if up < 0:
     return -1
   var he0: int = httpd_inject_traceparent_slot_i(slot, hdr_end)

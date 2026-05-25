@@ -111,6 +111,7 @@ typedef struct {
 
 typedef struct {
   int fd;
+  uint32_t client_ipv4; /* network order; 0 = unknown (ip_hash falls back to RR) */
   char buf[HTTPD_IO_BUF];
   char hdr[512];
   int len;
@@ -289,7 +290,12 @@ typedef struct {
 static httpd_upstream_peer_t g_up_peers[HTTPD_MAX_UPSTREAM_PEERS];
 static int g_up_peer_count = 0;
 static int g_lb_rr = 0;
-static int g_lb_mode = 0; /* 0=round_robin, 1=least_conn */
+/* 0=round_robin, 1=least_conn, 2=ip_hash, 3=cookie (server-set li_route) */
+static int g_lb_mode = 0;
+#define HTTPD_LB_MODE_ROUND_ROBIN 0
+#define HTTPD_LB_MODE_LEAST_CONN 1
+#define HTTPD_LB_MODE_IP_HASH 2
+#define HTTPD_LB_MODE_COOKIE 3
 static int32_t g_config_listen_port = 0;
 static int32_t g_config_workers = 1; /* 0 = auto (CPU count); overridden by LI_HTTPD_WORKERS */
 static int g_httpd_workers_forked = 0;
@@ -334,7 +340,6 @@ static int httpd_m2_policy_blocks_proxy_snap(void);
 static int httpd_m2_webhook_url_allowed(const char* url);
 static void httpd_proxy_snap_reset(void);
 static void httpd_drain_upstream_fd(int fd);
-static int httpd_fd_readable(int fd);
 
 static void slots_init_once(void) {
   if (g_slots_inited) {
@@ -355,8 +360,20 @@ static void net_fail(const char* msg) {
   li_panic("Net effect failed");
 }
 
-static const char* ptr_i(intptr_t p) { return (const char*)p; }
+static const char* ptr_i(intptr_t p) { return (const char*)(intptr_t)p; }
+static char* ptr_mut_i(intptr_t p) { return (char*)(intptr_t)p; }
 static intptr_t iptr(const char* p) { return (intptr_t)p; }
+
+static void li_rt_free_owned_buf(const char* p) {
+  if (!p) {
+    return;
+  }
+  union {
+    const char* c;
+    void* v;
+  } u = {.c = p};
+  free(u.v);
+}
 
 static char* li_rt_strdup_buf(const char* src, size_t n) {
   char* out = (char*)malloc(n + 1);
@@ -626,7 +643,7 @@ const char* bytes_append(const char* a, const char* b) {
   }
   out[la + lb] = '\0';
   if (a && la > 0) {
-    free((void*)a);
+    li_rt_free_owned_buf(a);
   }
   return out;
 }
@@ -701,6 +718,10 @@ static void httpd_proxy_snap_reset(void) {
 
 static int httpd_m2_policy_blocks_proxy_snap(void) {
   return g_m2_enabled && (g_m2_queue_max_depth > 0 || g_m2_cb_error_threshold > 0);
+}
+
+static int httpd_proxy_snap_disabled(void) {
+  return httpd_m2_policy_blocks_proxy_snap() || g_lb_mode == HTTPD_LB_MODE_COOKIE;
 }
 
 static int httpd_m2_webhook_url_allowed(const char* url) {
@@ -883,12 +904,12 @@ int32_t tcp_send_coalesce_i(int32_t conn, intptr_t a, int32_t la, intptr_t b, in
   struct iovec iov[2];
   int iovcnt = 0;
   if (la > 0 && a) {
-    iov[iovcnt].iov_base = ptr_i(a);
+    iov[iovcnt].iov_base = ptr_mut_i(a);
     iov[iovcnt].iov_len = (size_t)la;
     iovcnt++;
   }
   if (lb > 0 && b) {
-    iov[iovcnt].iov_base = ptr_i(b);
+    iov[iovcnt].iov_base = ptr_mut_i(b);
     iov[iovcnt].iov_len = (size_t)lb;
     iovcnt++;
   }
@@ -945,29 +966,29 @@ int32_t tcp_send_coalesce_i(int32_t conn, intptr_t a, int32_t la, intptr_t b, in
 }
 
 int32_t net_events_fd(intptr_t events, int32_t index) {
-  return ((int32_t*)ptr_i(events))[index * 2];
+  return ((int32_t*)ptr_mut_i(events))[index * 2];
 }
 
 int32_t net_events_revents(intptr_t events, int32_t index) {
-  return ((int32_t*)ptr_i(events))[index * 2 + 1];
+  return ((int32_t*)ptr_mut_i(events))[index * 2 + 1];
 }
 
 int32_t net_events_tagged_lo(intptr_t events, int32_t index) {
-  return ((int32_t*)ptr_i(events))[index * 3];
+  return ((int32_t*)ptr_mut_i(events))[index * 3];
 }
 
 int32_t net_events_tagged_hi(intptr_t events, int32_t index) {
-  return ((int32_t*)ptr_i(events))[index * 3 + 1];
+  return ((int32_t*)ptr_mut_i(events))[index * 3 + 1];
 }
 
 int32_t net_events_tagged_revents(intptr_t events, int32_t index) {
-  return ((int32_t*)ptr_i(events))[index * 3 + 2];
+  return ((int32_t*)ptr_mut_i(events))[index * 3 + 2];
 }
 
 static int32_t g_net_events_loaded[3];
 
 void net_events_tagged_load_i(intptr_t events, int32_t index) {
-  int32_t* e = (int32_t*)ptr_i(events);
+  int32_t* e = (int32_t*)ptr_mut_i(events);
   g_net_events_loaded[0] = e[index * 3];
   g_net_events_loaded[1] = e[index * 3 + 1];
   g_net_events_loaded[2] = e[index * 3 + 2];
@@ -1001,7 +1022,7 @@ int32_t net_fill_not_found_i(intptr_t p) {
   if (!p) {
     return 0;
   }
-  memcpy(ptr_i(p), "not found", 9);
+  memcpy(ptr_mut_i(p), "not found", 9);
   return 9;
 }
 
@@ -1275,22 +1296,6 @@ static int parse_request_line_c(const char* buf, int hdr_end, httpd_req_info_t* 
     }
   }
   return 0;
-}
-
-static int parse_get_path_c(const char* buf, int hdr_end, char* out, int out_cap) {
-  httpd_req_info_t info;
-  if (parse_request_line_c(buf, hdr_end, &info) != 0) {
-    return -1;
-  }
-  if (info.method_len != 3 || memcmp(info.method, "GET", 3) != 0) {
-    return -1;
-  }
-  if (info.path_len <= 0 || info.path_len >= out_cap) {
-    return -1;
-  }
-  memcpy(out, info.path, (size_t)info.path_len);
-  out[info.path_len] = '\0';
-  return info.path_len;
 }
 
 static int hdr_has_token_c(const char* buf, int hdr_end, const char* token) {
@@ -1608,19 +1613,29 @@ void httpd_clear_upstream_peers_i(void) {
 }
 
 int32_t httpd_set_lb_mode_i(int32_t mode) {
-  g_lb_mode = mode ? 1 : 0;
+  if (mode < HTTPD_LB_MODE_ROUND_ROBIN || mode > HTTPD_LB_MODE_COOKIE) {
+    g_lb_mode = HTTPD_LB_MODE_ROUND_ROBIN;
+  } else {
+    g_lb_mode = mode;
+  }
   return 0;
 }
 
 int32_t httpd_lb_mode_from_arg_i(intptr_t s) {
   const char* p = ptr_i(s);
   if (!p) {
-    return 0;
+    return HTTPD_LB_MODE_ROUND_ROBIN;
   }
   if (strcmp(p, "least_conn") == 0) {
-    return 1;
+    return HTTPD_LB_MODE_LEAST_CONN;
   }
-  return 0;
+  if (strcmp(p, "ip_hash") == 0) {
+    return HTTPD_LB_MODE_IP_HASH;
+  }
+  if (strcmp(p, "cookie") == 0) {
+    return HTTPD_LB_MODE_COOKIE;
+  }
+  return HTTPD_LB_MODE_ROUND_ROBIN;
 }
 
 static double httpd_monotonic_now(void) {
@@ -1934,12 +1949,106 @@ int32_t httpd_mark_upstream_peer_down_i(int32_t port) {
 }
 
 static int32_t httpd_model_peer_port(const char* buf, int hdr_end);
+static int httpd_req_header_value(const char* buf, int hdr_end, const char* name, char* out, int cap);
 static int32_t httpd_lb_pick_port(void);
+static int32_t httpd_lb_pick_port_for_request(int slot, const char* buf, int hdr_end);
+static int httpd_lb_peer_usable(int idx);
+static int32_t httpd_lb_sticky_cookie_port(const char* buf, int hdr_end);
+static uint32_t httpd_lb_ip_hash_mix(uint32_t ip);
+static int httpd_lb_ip_hash_index(uint32_t ip);
 
-static int32_t httpd_lb_pick_port_for_request(const char* buf, int hdr_end) {
+static int httpd_lb_peer_usable(int idx) {
+  if (idx < 0 || idx >= g_up_peer_count) {
+    return 0;
+  }
+  return !g_up_peers[idx].down && httpd_m2_circuit_allows_peer(&g_up_peers[idx]) ? 1 : 0;
+}
+
+static uint32_t httpd_lb_ip_hash_mix(uint32_t ip) {
+  uint32_t h = ip;
+  h ^= h >> 16;
+  h *= 0x7feb352du;
+  h ^= h >> 15;
+  h *= 0x846ca68bu;
+  h ^= h >> 16;
+  return h;
+}
+
+static int httpd_lb_ip_hash_index(uint32_t ip) {
+  if (g_up_peer_count <= 0) {
+    return -1;
+  }
+  if (ip == 0) {
+    return g_lb_rr % g_up_peer_count;
+  }
+  return (int)(httpd_lb_ip_hash_mix(ip) % (uint32_t)g_up_peer_count);
+}
+
+static int32_t httpd_lb_peer_port_valid(int32_t port) {
+  if (port <= 0) {
+    return 0;
+  }
+  httpd_upstream_peer_t* p = upstream_peer_find(port);
+  if (!p) {
+    return 0;
+  }
+  httpd_upstream_peer_maybe_recover(p);
+  return httpd_lb_peer_usable((int)(p - g_up_peers)) ? port : 0;
+}
+
+static int32_t httpd_lb_sticky_cookie_port(const char* buf, int hdr_end) {
+  char cookie[2048];
+  if (httpd_req_header_value(buf, hdr_end, "cookie", cookie, (int)sizeof(cookie)) < 0) {
+    return 0;
+  }
+  const char* key = "li_route=";
+  const char* p = cookie;
+  for (;;) {
+    p = strstr(p, key);
+    if (!p) {
+      return 0;
+    }
+    if (p == cookie || p[-1] == ' ' || p[-1] == ';' || p[-1] == '\t') {
+      break;
+    }
+    p += strlen(key);
+  }
+  p += strlen(key);
+  int32_t port = (int32_t)atoi(p);
+  return httpd_lb_peer_port_valid(port);
+}
+
+static int32_t httpd_lb_pick_port_ip_hash(uint32_t client_ip) {
+  int start = httpd_lb_ip_hash_index(client_ip);
+  if (start < 0) {
+    return g_proxy_port;
+  }
+  for (int t = 0; t < g_up_peer_count; t++) {
+    int idx = (start + t) % g_up_peer_count;
+    if (httpd_lb_peer_usable(idx)) {
+      return g_up_peers[idx].port;
+    }
+  }
+  return g_proxy_port;
+}
+
+static int32_t httpd_lb_pick_port_for_request(int slot, const char* buf, int hdr_end) {
   int32_t model_port = httpd_model_peer_port(buf, hdr_end);
   if (model_port > 0) {
     return model_port;
+  }
+  if (g_lb_mode == HTTPD_LB_MODE_COOKIE) {
+    int32_t sticky = httpd_lb_sticky_cookie_port(buf, hdr_end);
+    if (sticky > 0) {
+      return sticky;
+    }
+  }
+  if (g_lb_mode == HTTPD_LB_MODE_IP_HASH) {
+    uint32_t ip = 0;
+    if (slot >= 0 && slot < HTTPD_MAX_CONN) {
+      ip = g_slots[slot].client_ipv4;
+    }
+    return httpd_lb_pick_port_ip_hash(ip);
   }
   return httpd_lb_pick_port();
 }
@@ -1951,11 +2060,12 @@ static int32_t httpd_lb_pick_port(void) {
   for (int i = 0; i < g_up_peer_count; i++) {
     httpd_upstream_peer_maybe_recover(&g_up_peers[i]);
   }
-  if (g_lb_mode == 0) {
+  if (g_lb_mode == HTTPD_LB_MODE_ROUND_ROBIN || g_lb_mode == HTTPD_LB_MODE_IP_HASH ||
+      g_lb_mode == HTTPD_LB_MODE_COOKIE) {
     for (int tries = 0; tries < g_up_peer_count; tries++) {
       int idx = g_lb_rr % g_up_peer_count;
       g_lb_rr++;
-      if (!g_up_peers[idx].down && httpd_m2_circuit_allows_peer(&g_up_peers[idx])) {
+      if (httpd_lb_peer_usable(idx)) {
         return g_up_peers[idx].port;
       }
     }
@@ -1964,7 +2074,7 @@ static int32_t httpd_lb_pick_port(void) {
   int best = -1;
   int min_act = 2147483647;
   for (int i = 0; i < g_up_peer_count; i++) {
-    if (g_up_peers[i].down || !httpd_m2_circuit_allows_peer(&g_up_peers[i])) {
+    if (!httpd_lb_peer_usable(i)) {
       continue;
     }
     if (g_up_peers[i].active < min_act) {
@@ -2116,17 +2226,6 @@ static void upstream_pool_release(int32_t port, int fd, int reuse) {
   close(fd);
 }
 
-static int httpd_fd_readable(int fd) {
-  if (fd < 0) {
-    return 0;
-  }
-  int pending = 0;
-  if (ioctl(fd, FIONREAD, &pending) < 0) {
-    return 0;
-  }
-  return pending;
-}
-
 static void httpd_drain_upstream_fd(int fd) {
   if (fd < 0) {
     return;
@@ -2211,25 +2310,6 @@ static int parse_resp_content_length(const char* hdr, int hdr_len, int* out_keep
     }
   }
   return cl;
-}
-
-static ssize_t read_blocking(int fd, void* buf, size_t n) {
-  char* p = (char*)buf;
-  size_t off = 0;
-  while (off < n) {
-    ssize_t r = read(fd, p + off, n - off);
-    if (r < 0) {
-      if (errno == EINTR) {
-        continue;
-      }
-      return -1;
-    }
-    if (r == 0) {
-      return (ssize_t)off;
-    }
-    off += (size_t)r;
-  }
-  return (ssize_t)off;
 }
 
 /* Nginx proxy_set_header Connection "" — drop Connection / Proxy-Connection lines to upstream. */
@@ -2620,35 +2700,6 @@ static int httpd_read_more_client(int conn, char* dst, int want) {
   return got;
 }
 
-static int httpd_forward_body_cl(int conn, int up, int32_t slot, int hdr_end, int body_left) {
-  if (body_left <= 0) {
-    return 0;
-  }
-  if (body_left > HTTPD_MAX_BODY) {
-    return -1;
-  }
-  int in_slot = g_slots[slot].len - hdr_end;
-  if (in_slot > 0) {
-    int n = in_slot > body_left ? body_left : in_slot;
-    if (send_all_nb(up, g_slots[slot].buf + hdr_end, (size_t)n) < 0) {
-      return -1;
-    }
-    body_left -= n;
-  }
-  char tmp[8192];
-  while (body_left > 0) {
-    int chunk = body_left > (int)sizeof(tmp) ? (int)sizeof(tmp) : body_left;
-    if (httpd_read_more_client(conn, tmp, chunk) < 0) {
-      return -1;
-    }
-    if (send_all_nb(up, tmp, (size_t)chunk) < 0) {
-      return -1;
-    }
-    body_left -= chunk;
-  }
-  return 0;
-}
-
 static int httpd_forward_body_chunked(int conn, int up);
 
 static int httpd_discard_request_body(int conn, int32_t slot, int hdr_end, const httpd_req_info_t* req) {
@@ -2724,102 +2775,6 @@ static int httpd_forward_body_chunked(int conn, int up) {
       return -1;
     }
   }
-}
-
-static int httpd_proxy_relay_response(int conn, int up) {
-  char buf[HTTPD_PROXY_RELAY_BUF];
-  size_t total = 0;
-  set_nonblocking(up);
-  for (;;) {
-    struct pollfd pfd = {.fd = up, .events = POLLIN};
-    int pr = poll(&pfd, 1, 30000);
-    if (pr < 0 && errno == EINTR) {
-      continue;
-    }
-    if (pr <= 0) {
-      return -1;
-    }
-    ssize_t r = recv(up, buf, sizeof(buf), 0);
-    if (r < 0) {
-      if (errno == EAGAIN || errno == EWOULDBLOCK) {
-        continue;
-      }
-      return -1;
-    }
-    if (r == 0) {
-      break;
-    }
-    if (send_all_nb(conn, buf, (size_t)r) < 0) {
-      return -1;
-    }
-    total += (size_t)r;
-    if (total > (size_t)(HTTPD_MAX_BODY + HTTPD_PROXY_RELAY_BUF)) {
-      return -1;
-    }
-    pfd.events = POLLIN;
-    if (poll(&pfd, 1, 0) <= 0) {
-      break;
-    }
-  }
-  return 0;
-}
-
-static int32_t httpd_proxy_forward(int32_t conn, int32_t slot, int hdr_end, const httpd_req_info_t* req) {
-  int32_t peer_port = httpd_lb_pick_port_for_request(g_slots[slot].buf, hdr_end);
-  if (peer_port <= 0) {
-    return -1;
-  }
-  for (int attempt = 0; attempt < 2; attempt++) {
-    int up = upstream_pool_acquire(peer_port);
-    if (up < 0 && g_up_peer_count > 1) {
-      for (int i = 0; i < g_up_peer_count; i++) {
-        if (g_up_peers[i].down || g_up_peers[i].port == peer_port) {
-          continue;
-        }
-        peer_port = g_up_peers[i].port;
-        up = upstream_pool_acquire(peer_port);
-        if (up >= 0) {
-          break;
-        }
-      }
-    }
-    if (up < 0) {
-      return -1;
-    }
-    tcp_tune_client(up);
-    if (send_all_nb(up, g_slots[slot].buf, (size_t)hdr_end) < 0) {
-      upstream_pool_release(peer_port, up, 0);
-      if (attempt == 0 && httpd_upstream_send_errno_stale()) {
-        continue;
-      }
-      return -1;
-    }
-    if (req->body_mode == 1) {
-      if (httpd_forward_body_cl(conn, up, slot, hdr_end, req->content_length) < 0) {
-        upstream_pool_release(peer_port, up, 0);
-        return -1;
-      }
-    } else if (req->body_mode == 2) {
-      int in_slot = g_slots[slot].len - hdr_end;
-      if (in_slot > 0) {
-        if (send_all_nb(up, g_slots[slot].buf + hdr_end, (size_t)in_slot) < 0) {
-          upstream_pool_release(peer_port, up, 0);
-          return -1;
-        }
-      }
-      if (httpd_forward_body_chunked(conn, up) < 0) {
-        upstream_pool_release(peer_port, up, 0);
-        return -1;
-      }
-    }
-    if (httpd_proxy_relay_response(conn, up) < 0) {
-      upstream_pool_release(peer_port, up, 0);
-      return -1;
-    }
-    upstream_pool_release(peer_port, up, 1);
-    return 0;
-  }
-  return -1;
 }
 
 static int is_index_path_c(const char* path, int plen) {
@@ -3012,7 +2967,7 @@ static int32_t httpd_try_drain_once(int32_t conn, int32_t slot) {
       }
       return 0;
     }
-    if (g_proxy_snap_ready && !httpd_m2_policy_blocks_proxy_snap() && method_is(&req, "GET")) {
+    if (g_proxy_snap_ready && !httpd_proxy_snap_disabled() && method_is(&req, "GET")) {
       size_t off = 0;
       ssize_t rc = httpd_send_nb(conn, g_proxy_snap, (size_t)g_proxy_snap_len, &off);
       if (rc < 0) {
@@ -3294,27 +3249,6 @@ static ssize_t httpd_send_nb_flags(int fd, const char* data, size_t total, size_
 
 static ssize_t httpd_send_nb(int fd, const char* data, size_t total, size_t* off) {
   return httpd_send_nb_flags(fd, data, total, off, 0);
-}
-
-static ssize_t httpd_recv_nb(int fd, char* dst, size_t cap, size_t* got) {
-  if (*got >= cap) {
-    return 1;
-  }
-  ssize_t n = recv(fd, dst + *got, cap - *got, 0);
-  if (n < 0) {
-    if (errno == EINTR) {
-      return 0;
-    }
-    if (errno == EAGAIN || errno == EWOULDBLOCK) {
-      return 0;
-    }
-    return -1;
-  }
-  if (n == 0) {
-    return -1;
-  }
-  *got += (size_t)n;
-  return 0;
 }
 
 static void httpd_proxy_up_mod(int epfd, int32_t slot, uint32_t events) {
@@ -3862,11 +3796,63 @@ static int httpd_proxy_resp_headers_complete(httpd_slot_t* s) {
   return hdr_end_at_c(s->proxy_resp_hdr_acc, s->proxy_resp_hdr_len);
 }
 
+static int httpd_proxy_resp_blank_insert_at(const httpd_slot_t* s, int* insert_at) {
+  for (int i = 0; i + 3 < s->proxy_resp_hdr_len; i++) {
+    if (s->proxy_resp_hdr_acc[i] == '\r' && s->proxy_resp_hdr_acc[i + 1] == '\n' &&
+        s->proxy_resp_hdr_acc[i + 2] == '\r' && s->proxy_resp_hdr_acc[i + 3] == '\n') {
+      /* i points at the final header line's CRLF; insert before the blank line CRLF. */
+      *insert_at = i + 2;
+      return i + 4;
+    }
+  }
+  return -1;
+}
+
+static int httpd_proxy_resp_inject_sticky_cookie(httpd_slot_t* s) {
+  if (g_lb_mode != HTTPD_LB_MODE_COOKIE || s->proxy_peer_port <= 0) {
+    return 0;
+  }
+  int insert_at = 0;
+  int hdr_term = httpd_proxy_resp_blank_insert_at(s, &insert_at);
+  if (hdr_term < 4) {
+    return -1;
+  }
+  if (hdr_has_token_c(s->proxy_resp_hdr_acc, hdr_term, "Set-Cookie:") &&
+      strstr(s->proxy_resp_hdr_acc, "li_route=") != NULL) {
+    return 0;
+  }
+  if (insert_at + 3 >= s->proxy_resp_hdr_len || s->proxy_resp_hdr_acc[insert_at] != '\r' ||
+      s->proxy_resp_hdr_acc[insert_at + 1] != '\n') {
+    return -1;
+  }
+  char line[128];
+  int llen = snprintf(line, sizeof(line), "Set-Cookie: li_route=%d; Path=/; HttpOnly; SameSite=Lax\r\n",
+                      (int)s->proxy_peer_port);
+  if (llen <= 0 || llen >= (int)sizeof(line)) {
+    return -1;
+  }
+  if (s->proxy_resp_hdr_len + llen >= (int)sizeof(s->proxy_resp_hdr_acc)) {
+    return -1;
+  }
+  memmove(s->proxy_resp_hdr_acc + insert_at + llen, s->proxy_resp_hdr_acc + insert_at,
+          (size_t)(s->proxy_resp_hdr_len - insert_at));
+  memcpy(s->proxy_resp_hdr_acc + insert_at, line, (size_t)llen);
+  s->proxy_resp_hdr_len += llen;
+  return 0;
+}
+
 static int httpd_proxy_resp_feed(int epfd, int32_t slot, const char* data, size_t len);
 
 static int httpd_proxy_resp_finish_headers(int epfd, int32_t slot) {
   httpd_slot_t* s = &g_slots[slot];
   int hdr_end = hdr_end_at_c(s->proxy_resp_hdr_acc, s->proxy_resp_hdr_len);
+  if (hdr_end < 0) {
+    return -1;
+  }
+  if (httpd_proxy_resp_inject_sticky_cookie(s) < 0) {
+    return -1;
+  }
+  hdr_end = hdr_end_at_c(s->proxy_resp_hdr_acc, s->proxy_resp_hdr_len);
   if (hdr_end < 0) {
     return -1;
   }
@@ -4512,7 +4498,7 @@ static int httpd_proxy_check_stream_policy(int epfd, int32_t slot, int hdr_end, 
 static int httpd_proxy_start_async(int epfd, int32_t conn, int32_t slot, int hdr_end, const httpd_req_info_t* req,
                                    int keep) {
   (void)conn;
-  int32_t peer_port = httpd_lb_pick_port_for_request(g_slots[slot].buf, hdr_end);
+  int32_t peer_port = httpd_lb_pick_port_for_request(slot, g_slots[slot].buf, hdr_end);
   if (peer_port <= 0) {
     return -1;
   }
@@ -4576,7 +4562,7 @@ static int httpd_proxy_start_async(int epfd, int32_t conn, int32_t slot, int hdr
     g_queue_depth++;
   }
   g_proxy_snap_recording = 0;
-  if (method_is(req, "GET") && !g_proxy_snap_ready && !httpd_m2_policy_blocks_proxy_snap() && !s->proxy_is_ws) {
+  if (method_is(req, "GET") && !g_proxy_snap_ready && !httpd_proxy_snap_disabled() && !s->proxy_is_ws) {
     g_proxy_snap_recording = 1;
     g_proxy_snap_len = 0;
   }
@@ -4855,6 +4841,12 @@ int32_t httpd_slot_alloc(int32_t fd) {
     if (g_slots[i].fd < 0) {
       g_slots[i].fd = (int)fd;
       g_slots[i].len = 0;
+      g_slots[i].client_ipv4 = 0;
+      struct sockaddr_in peer;
+      socklen_t plen = sizeof(peer);
+      if (getpeername((int)fd, (struct sockaddr*)&peer, &plen) == 0 && peer.sin_family == AF_INET) {
+        g_slots[i].client_ipv4 = peer.sin_addr.s_addr;
+      }
       return i;
     }
   }
@@ -4879,6 +4871,7 @@ void httpd_slot_free(int32_t slot) {
   httpd_tls_free_slot(slot);
   g_slots[slot].fd = -1;
   g_slots[slot].len = 0;
+  g_slots[slot].client_ipv4 = 0;
 }
 
 #ifdef __linux__
@@ -4929,7 +4922,7 @@ int32_t epoll_wait_events_i(int32_t epfd, intptr_t events, int32_t max_events) {
     }
     net_fail("epoll_wait");
   }
-  int32_t* out = (int32_t*)ptr_i(events);
+  int32_t* out = (int32_t*)ptr_mut_i(events);
   for (int i = 0; i < n; i++) {
     out[i * 2] = evs[i].data.fd;
     out[i * 2 + 1] = (int32_t)evs[i].events;
@@ -4984,7 +4977,7 @@ int32_t net_read_fd(int32_t fd, intptr_t buf, int32_t max_bytes) {
   if (!buf || max_bytes <= 0) {
     return 0;
   }
-  ssize_t n = read((int)fd, ptr_i(buf), (size_t)max_bytes);
+  ssize_t n = read((int)fd, ptr_mut_i(buf), (size_t)max_bytes);
   if (n < 0) {
     return -1;
   }
@@ -5039,7 +5032,7 @@ intptr_t net_buf_alloc(int32_t size) {
 
 void net_buf_free(intptr_t p) {
   if (p) {
-    free((void*)ptr_i(p));
+    free(ptr_mut_i(p));
   }
 }
 
@@ -5047,7 +5040,7 @@ int32_t net_buf_fill_i(intptr_t dst, intptr_t src, int32_t off, int32_t n) {
   if (!dst || !src || n < 0) {
     return -1;
   }
-  memcpy(ptr_i(dst) + off, ptr_i(src), (size_t)n);
+  memcpy(ptr_mut_i(dst) + off, ptr_i(src), (size_t)n);
   return n;
 }
 
@@ -5055,7 +5048,7 @@ int32_t httpd_write_response_hdr_i(intptr_t buf, int32_t cap, int32_t status, in
                                    int32_t keep_alive) {
   const char* status_line = status == 404 ? "HTTP/1.1 404 Not Found\r\n" : "HTTP/1.1 200 OK\r\n";
   const char* conn_hdr = keep_alive ? "keep-alive" : "close";
-  int n = snprintf(ptr_i(buf), (size_t)cap,
+  int n = snprintf(ptr_mut_i(buf), (size_t)cap,
                    "%s"
                    "Content-Type: text/html\r\n"
                    "Content-Length: %d\r\n"
@@ -5177,6 +5170,8 @@ int32_t httpd_load_runtime_config_i(intptr_t path) {
         httpd_add_upstream_peer_i(port);
         g_proxy_port = port;
       }
+    } else if (strcmp(key, "upstream_balance") == 0) {
+      httpd_set_lb_mode_i(httpd_lb_mode_from_arg_i(iptr(val)));
     } else if (strcmp(key, "rate_limit_rps") == 0) {
       g_rate_limit_rps = atoi(val);
     } else if (strcmp(key, "rate_limit_burst") == 0) {
@@ -5485,6 +5480,40 @@ int32_t httpd_upstream_acquire_i(void) {
   return up;
 }
 
+int32_t httpd_upstream_acquire_for_slot_i(int32_t slot) {
+  if (slot < 0 || slot >= HTTPD_MAX_CONN) {
+    return -1;
+  }
+  int hdr_end = hdr_end_at_c(g_slots[slot].buf, g_slots[slot].len);
+  if (hdr_end < 0) {
+    return -1;
+  }
+  int32_t peer_port = httpd_lb_pick_port_for_request(slot, g_slots[slot].buf, hdr_end);
+  if (peer_port <= 0) {
+    return -1;
+  }
+  int up = upstream_pool_acquire(peer_port);
+  if (up < 0 && g_up_peer_count > 1) {
+    for (int i = 0; i < g_up_peer_count; i++) {
+      if (g_up_peers[i].down || g_up_peers[i].port == peer_port) {
+        continue;
+      }
+      peer_port = g_up_peers[i].port;
+      up = upstream_pool_acquire(peer_port);
+      if (up >= 0) {
+        break;
+      }
+    }
+  }
+  if (up < 0) {
+    return -1;
+  }
+  g_slots[slot].proxy_peer_port = peer_port;
+  set_nonblocking(up);
+  tcp_tune_client(up);
+  return up;
+}
+
 void httpd_upstream_release_i(int32_t fd, int32_t reuse) {
   if (fd < 0) {
     return;
@@ -5500,7 +5529,7 @@ int32_t tcp_recv_nb_i(int32_t fd, intptr_t buf, int32_t cap) {
   if (fd < 0 || !buf || cap <= 0) {
     return -1;
   }
-  ssize_t r = recv((int)fd, ptr_i(buf), (size_t)cap, 0);
+  ssize_t r = recv((int)fd, ptr_mut_i(buf), (size_t)cap, 0);
   if (r < 0) {
     if (errno == EAGAIN || errno == EWOULDBLOCK) {
       return -1;
@@ -5544,7 +5573,7 @@ static int32_t epoll_wait_tagged_timeout_impl(int32_t epfd, intptr_t events, int
     }
     net_fail("epoll_wait");
   }
-  int32_t* out = (int32_t*)ptr_i(events);
+  int32_t* out = (int32_t*)ptr_mut_i(events);
   for (int i = 0; i < n; i++) {
     uint64_t d = evs[i].data.u64;
     out[i * 3] = (int32_t)(d & 0xffffffffu);
@@ -5920,6 +5949,9 @@ int32_t httpd_li_proxy_store_resp_cache_i(int32_t slot) {
     return 0;
   }
   httpd_slot_t* s = &g_slots[slot];
+  if (httpd_proxy_resp_inject_sticky_cookie(s) < 0) {
+    return -1;
+  }
   int he = hdr_end_at_c(s->proxy_resp_hdr_acc, s->proxy_resp_hdr_len);
   if (he < 0) {
     return -1;

@@ -37,6 +37,12 @@ chmod +x "$HARNESS/bench_http.py" "$HARNESS/verify_http.py" "$HARNESS/plot_http.
 echo "== bench_http.py --dry-run =="
 python3 "$HARNESS/bench_http.py" --profile ci --dry-run
 
+echo "== bench_http.py --dry-run nextjs_ci =="
+python3 "$HARNESS/bench_http.py" --profile nextjs_ci --dry-run
+
+echo "== bench_http.py --dry-run streaming_ci =="
+python3 "$HARNESS/bench_http.py" --profile streaming_ci --dry-run
+
 echo "== verify_http.py (stub) =="
 python3 "$HARNESS/verify_http.py" --profile ci --stub
 

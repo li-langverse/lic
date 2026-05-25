@@ -130,23 +130,26 @@ def flatten(cfg_path: Path) -> list[str]:
         for req in getattr(r, "requires", []):
             lines.append(f"route_require={r.method}|{r.path}|{req}")
 
+    def flatten_upstream_pool(pool_id: str, val: dict) -> None:
+        for peer in val.get("peers") or []:
+            p = peer_port(str(peer))
+            pool_ports[pool_id] = p
+            lines.append(f"upstream_peer={p}")
+        bal = val.get("balance")
+        if bal is not None and str(bal).strip():
+            lines.append(f"upstream_balance={str(bal).strip()}")
+
     pool_ports: dict[str, int] = {}
     nested = data.get("upstreams") or {}
     if isinstance(nested, dict):
         for pool_id, val in nested.items():
             if isinstance(val, dict):
-                for peer in val.get("peers") or []:
-                    p = peer_port(str(peer))
-                    pool_ports[str(pool_id)] = p
-                    lines.append(f"upstream_peer={p}")
+                flatten_upstream_pool(str(pool_id), val)
 
     for key, val in data.items():
         if key.startswith("upstreams.") and isinstance(val, dict):
             pool_id = key.split(".", 1)[1]
-            for peer in val.get("peers") or []:
-                p = peer_port(str(peer))
-                pool_ports[pool_id] = p
-                lines.append(f"upstream_peer={p}")
+            flatten_upstream_pool(pool_id, val)
 
     for _hdr, model, pool in validate_route_match(data):
         port = pool_ports.get(pool)

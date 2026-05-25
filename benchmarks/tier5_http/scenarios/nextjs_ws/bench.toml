@@ -1,0 +1,24 @@
+name = "nextjs_ws"
+phase = "m2"
+enabled = true
+
+[server]
+kind = "proxy"
+backend = "nextjs_toy"
+backend_port = 19004
+
+[verify]
+target = "backend"
+requests = [
+  { method = "GET", path = "/api/ws", expect_status = 426 },
+]
+
+[load]
+timing = false
+
+[metrics]
+collect = []
+
+[parity]
+# WebSocket upgrade is correctness-only for this toy (no wrk parity bar)
+verify_only = true

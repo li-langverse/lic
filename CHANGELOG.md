@@ -6,6 +6,46 @@ All notable changes to Li are documented here. The format follows
 
 ## [Unreleased]
 
+### Added
+
+<<<<<<< Updated upstream
+- **Proof-db CI release gate:** `proof-db/baseline.json`, `check-proof-db-release.sh` — docs/release-notes/2026-05-25-proof-db-ci-gate.md.
+=======
+- **Proof-db sweep reporter:** `scripts/proof-db-report.sh`, `proof-db/expected.json`, `discrepancies.toml`, `reporter.md` — [2026-05-25-proof-db-sweep-reporter.md](docs/release-notes/2026-05-25-proof-db-sweep-reporter.md).
+
+### Added
+
+- **Proof DB lemma rebuild:** `scripts/proof-db/rebuild_lemmas.sh` → `data/proof-db/latest-report.{json,md}` from `docs/verification/proof-database/entries/` — [2026-05-25-proof-db-rebuild-pipeline.md](docs/release-notes/2026-05-25-proof-db-rebuild-pipeline.md).
+- **Proof-db discrepancy analyzer:** `scripts/proof-db/compare_reference.py`, `proof-database/DISCREPANCIES.md` — [2026-05-25-proof-db-discrepancies.md](docs/release-notes/2026-05-25-proof-db-discrepancies.md).
+- **Proof-db CI release gate:** `proof-db/baseline.json`, `scripts/check-proof-db-release.sh`, advisory `LI_PROOF_DB_STRICT` in `scripts/ci.sh` — [2026-05-25-proof-db-ci-gate.md](docs/release-notes/2026-05-25-proof-db-ci-gate.md).
+- **Proof-db sweep reporter:** `scripts/proof-db-report.sh`, `proof-db/expected.json`, `discrepancies.toml`, `reporter.md` — [2026-05-25-proof-db-sweep-reporter.md](docs/release-notes/2026-05-25-proof-db-sweep-reporter.md).
+
+### Added
+
+- **Classical math proof database:** `docs/semantics/proof-db/math/`, `docs/verification/proof-database/entries/math-*.toml` (`M-AX-*`, `M-LM-*`), `lake build ProofDbMath` — [2026-05-25-proof-db-math-axioms.md](docs/release-notes/2026-05-25-proof-db-math-axioms.md).
+
+### Added
+
+- **Execution surface docs:** specs `2026-05-25-li-execution-surface.md`, `2026-05-25-li-execution-resources.md`; handbook `docs/language/parallelism.md` — [2026-05-25-execution-surface-docs.md](docs/release-notes/2026-05-25-execution-surface-docs.md).
+- **Proof DB lemma rebuild:** `scripts/proof-db/rebuild_lemmas.sh` → `data/proof-db/latest-report.{json,md}` — [2026-05-25-proof-db-rebuild-pipeline.md](docs/release-notes/2026-05-25-proof-db-rebuild-pipeline.md).
+- **Proof-db discrepancy analyzer:** `scripts/proof-db/compare_reference.py`, `proof-database/DISCREPANCIES.md` — [2026-05-25-proof-db-discrepancies.md](docs/release-notes/2026-05-25-proof-db-discrepancies.md).
+- **Proof database (v0):** `docs/verification/proof-database.md`, `proof-db/` manifest (axioms/lemmas + `release_pin`), `scripts/check-proof-db.sh` CI smoke — [2026-05-25-proof-database-arch.md](docs/release-notes/2026-05-25-proof-database-arch.md).
+- **P-physics proof database:** `docs/verification/proof-database/entries/physics-*.toml` (`P-AX-*`, `P-LM-*`); tier-2 bench refs; scalar lemmas in `Discharge.lean` — [2026-05-25-proof-db-physics-axioms.md](docs/release-notes/2026-05-25-proof-db-physics-axioms.md).
+- **G-trust (Partial+):** **T-GetElem** (`typing_getElem`) in `docs/semantics/Core.lean` — [2026-05-25-g-trust-core-getelem.md](docs/release-notes/2026-05-25-g-trust-core-getelem.md).
+
+### Added
+
+- **Proof DB (2f slice):** `proof-db/index.json` + `proof-db/lean/ProofDB.lean` — five standard lemmas (4 proved, 1 `sorry`); `lake build ProofDB` — [2026-05-25-proof-db-lean-bridge.md](docs/release-notes/2026-05-25-proof-db-lean-bridge.md).
+
+### Added
+
+- **Proof DB (2f slice):** `proof-db/index.json` + `proof-db/lean/ProofDB.lean` — five standard lemmas (4 proved, 1 `sorry`); `lake build ProofDB` — [2026-05-25-proof-db-lean-bridge.md](docs/release-notes/2026-05-25-proof-db-lean-bridge.md).
+>>>>>>> Stashed changes
+
+### Added
+
+- **Proof DB (2f slice):** `proof-db/index.json` + `proof-db/lean/ProofDB.lean` — five standard lemmas (4 proved, 1 `sorry`); `lake build ProofDB` — [2026-05-25-proof-db-lean-bridge.md](docs/release-notes/2026-05-25-proof-db-lean-bridge.md).
+
 ### Changed
 
 - **Plan checkboxes (wave):** sync `docs/superpowers/plans/*.md` exit gates with shipped Phases 0–5, Pkg, P-linalg loop witness, and C++ compiler evidence — [2026-05-25-plan-checkbox-audit-wave.md](docs/release-notes/2026-05-25-plan-checkbox-audit-wave.md).
@@ -29,6 +69,10 @@ All notable changes to Li are documented here. The format follows
 - **HTTPd routing CI:** rebase plan-loop branch on `main`; `run_httpd_config.sh` — `--allow-open-vc` + `HTTPD_SKIP_LI_ROUTING_BIN` — `docs/release-notes/2026-05-22-httpd-rebase-main-post-164.md`.
 - **G-lean / P-linalg:** `mat2_at2_float_spec_proved` — closed via `mat2_at2_eval` + `rfl` (no `sorry`); AutoVC ensures use eval not free `result` — `docs/release-notes/2026-05-22-mat2-float-spec-closed.md`.
 - **MIR BinOpInt literals:** `rhs_is_literal` default no longer makes `r != 1` compare to `0`; `lic build --allow-open-vc <file> -o <out>` accepts flags before the input path — `docs/release-notes/2026-05-22-binop-int-literal-ne-fix.md`.
+
+### Added
+
+- **Proof DB (2f slice):** `proof-db/index.json` + `proof-db/lean/ProofDB.lean` — five standard lemmas (4 proved, 1 `sorry`); `lake build ProofDB` — [2026-05-25-proof-db-lean-bridge.md](docs/release-notes/2026-05-25-proof-db-lean-bridge.md).
 
 ### Changed
 
@@ -97,6 +141,10 @@ All notable changes to Li are documented here. The format follows
 
 - **Phase H M1:** TOML `[routes]` loader — `load_routes_from_toml`, `match_route`, `load_routes_from_routing_fixture` in `packages/li-http`; `runtime/li_rt_httpd.c`; `li-tests/routing/match_routes_toml.li`; see `docs/release-notes/2026-05-20-httpd-toml-route-loader.md`.
 
+### Added
+
+- **Proof DB (2f slice):** `proof-db/index.json` + `proof-db/lean/ProofDB.lean` — five standard lemmas (4 proved, 1 `sorry`); `lake build ProofDB` — [2026-05-25-proof-db-lean-bridge.md](docs/release-notes/2026-05-25-proof-db-lean-bridge.md).
+
 ### Changed
 
 - Docs: post-PR **#83** sync — [proof-corpus-roadmap](docs/verification/proof-corpus-roadmap.md) run results (16/16 `contracts_verify`); [httpd-prerequisites](docs/ecosystem/httpd-prerequisites.md) P0-lean partial; master plan + httpd plan tables; see [2026-05-20-post-83-docs-sync](docs/release-notes/2026-05-20-post-83-docs-sync.md).
@@ -113,6 +161,10 @@ All notable changes to Li are documented here. The format follows
 - Literal suffixes: `3.14f32`, `42i32`, `42u`, `255u8`; binary type + `0b…` literals; `std/binary/binary.li`.
 - Documentation: [docs/language/scalar-precision.md](docs/language/scalar-precision.md) (canonical), `packages/li-physics-core/docs/scalar-precision.md`, `std/binary/README.md`; mkdocs + handbook nav.
 - `physics.core`: `ScalarPrecision` (`weights_encoding` for binary weights) and profile bit-width metadata (not org-enforced).
+
+### Added
+
+- **Proof DB (2f slice):** `proof-db/index.json` + `proof-db/lean/ProofDB.lean` — five standard lemmas (4 proved, 1 `sorry`); `lake build ProofDB` — [2026-05-25-proof-db-lean-bridge.md](docs/release-notes/2026-05-25-proof-db-lean-bridge.md).
 
 ### Changed
 
@@ -145,6 +197,10 @@ All notable changes to Li are documented here. The format follows
 - Windows CI discovers `LLVM_DIR` via `llvm-config` or `find` when Chocolatey layout differs.
 - `packages/li-math-numerics`: remove duplicate `extern proc` contract clauses.
 - `packages/li-physics-runtime`: `substep_inv` field and `var PhysicsWorld` step APIs (typecheck; codegen crash on full lib build is a known follow-up).
+
+### Added
+
+- **Proof DB (2f slice):** `proof-db/index.json` + `proof-db/lean/ProofDB.lean` — five standard lemmas (4 proved, 1 `sorry`); `lake build ProofDB` — [2026-05-25-proof-db-lean-bridge.md](docs/release-notes/2026-05-25-proof-db-lean-bridge.md).
 
 ### Changed
 

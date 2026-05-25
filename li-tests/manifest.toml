@@ -440,7 +440,7 @@ suite = "race_shared_memory"
 suite = "race_shared_memory"
 file = "race_shared_memory/false_disjoint_requires_true.li"
 outcome = "compile_fail"
-expected_substr = "bare"
+expected_substr = "Parallel"
 
 [[tests]]
 suite = "race_shared_memory"

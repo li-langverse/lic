@@ -7,6 +7,6 @@
 {"file": "docs/semantics/Discharge.lean", "id": "docs/semantics/Discharge.lean:mat2_at2_float_spec_proved", "name": "mat2_at2_float_spec_proved", "source": "Li.Discharge", "status": "proved"}
 {"file": "docs/semantics/Discharge.lean", "id": "docs/semantics/Discharge.lean:sqrt_open_bound_placeholder", "name": "sqrt_open_bound_placeholder", "source": "Li.Discharge", "status": "placeholder"}
 {"file": "proof-db/lean/ProofDB.lean", "id": "proof-db/lean/ProofDB.lean:proof_db_release_gate_stub", "name": "proof_db_release_gate_stub", "source": "Li.ProofDB", "status": "placeholder"}
-{"file": "proof-db/lean/ProofDB.lean", "id": "proof-db/lean/ProofDB.lean:std_add_comm_int", "name": "std_add_comm_int", "source": "Li.ProofDB", "status": "open"}
-{"file": "proof-db/lean/ProofDB.lean", "id": "proof-db/lean/ProofDB.lean:std_mul_assoc_int", "name": "std_mul_assoc_int", "source": "Li.ProofDB", "status": "open"}
+{"file": "proof-db/lean/ProofDB.lean", "id": "proof-db/lean/ProofDB.lean:std_add_comm_int", "name": "std_add_comm_int", "source": "Li.ProofDB", "status": "proved"}
+{"file": "proof-db/lean/ProofDB.lean", "id": "proof-db/lean/ProofDB.lean:std_mul_assoc_int", "name": "std_mul_assoc_int", "source": "Li.ProofDB", "status": "proved"}
 {"file": "proof-db/lean/ProofDB.lean", "id": "proof-db/lean/ProofDB.lean:std_triangle_ineq_float_scalar", "name": "std_triangle_ineq_float_scalar", "source": "Li.ProofDB", "status": "open"}

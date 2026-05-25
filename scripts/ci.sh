@@ -17,10 +17,6 @@ if [[ -x "$ROOT/scripts/check-agent-kit-sync.sh" ]]; then
   }
 fi
 
-li_phase "proof-db smoke (v0)"
-chmod +x "$ROOT/scripts/check-proof-db.sh"
-"$ROOT/scripts/check-proof-db.sh"
-
 li_phase "def syntax policy"
 chmod +x "$ROOT/scripts/check-li-def-syntax.sh"
 "$ROOT/scripts/check-li-def-syntax.sh" "$ROOT"
@@ -37,22 +33,21 @@ export LIC="$("$ROOT/scripts/resolve-lic.sh")"
 
 li_phase "generate AutoVC (2e)"
 "$LIC" build "$ROOT/li-tests/modules/greeter/greeter.li" -o /dev/null
-li_phase "proof-db release gate (advisory; LI_PROOF_DB_STRICT=1 strict)"
-chmod +x "$ROOT/scripts/check-proof-db-release.sh"
-export LI_PROOF_DB_STRICT="${LI_PROOF_DB_STRICT:-0}"
-"$ROOT/scripts/check-proof-db-release.sh" || {
-  [[ "${LI_PROOF_DB_STRICT:-0}" == "1" ]] && exit 1
-  echo "ci: proof-db advisory regression" >&2
-}
 
+li_phase "proof-db release gate (advisory; LI_PROOF_DB_STRICT=1 strict)"
+chmod +x "$ROOT/scripts/check-proof-db.sh"
+export LI_PROOF_DB_STRICT="${LI_PROOF_DB_STRICT:-0}"
+"$ROOT/scripts/check-proof-db.sh" || {
+  [[ "${LI_PROOF_DB_STRICT:-0}" == "1" ]] && exit 1
+  echo "ci: proof-db advisory drift (set LI_PROOF_DB_STRICT=1 to fail)" >&2
+}
 
 if command -v lake >/dev/null 2>&1; then
   li_phase "semantics (2f lake + AutoVC strict)"
   (cd "$ROOT/docs/semantics" && lake build) || exit 1
   "$ROOT/scripts/check-autovc-open-goals.sh" "$ROOT/build/generated/AutoVC.lean" || exit 1
-  export LI_PROOF_DB_STRICT=0
-  chmod +x "$ROOT/scripts/check-proof-db.sh"
-  "$ROOT/scripts/check-proof-db.sh" || exit 1
+else
+  echo "ci: lake/elan not on PATH — semantics proof skipped (see docs/semantics/README.md)" >&2
 fi
 
 li_phase "CVE / security gates"

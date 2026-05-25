@@ -104,6 +104,10 @@ li_phase "doc provability claims"
 chmod +x "$ROOT/scripts/check-doc-provability-claims.sh"
 "$ROOT/scripts/check-doc-provability-claims.sh"
 
+li_phase "proof-db report smoke"
+chmod +x "$ROOT/scripts/proof-db-report.sh" "$ROOT/li-tests/tooling/proof_db_report_smoke.sh"
+"$ROOT/li-tests/tooling/proof_db_report_smoke.sh"
+
 li_phase "lic verify smoke (2e/2f)"
 chmod +x "$ROOT/scripts/lean-verify-stub.sh" "$ROOT/li-tests/tooling/lic_verify_smoke.sh" \
   "$ROOT/li-tests/tooling/vc_emit_contracts.sh" "$ROOT/li-tests/tooling/contracts_verify_lean.sh"

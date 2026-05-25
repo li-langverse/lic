@@ -5,6 +5,7 @@
 **Bench registry:** [lig-kernels.toml](../../benchmarks/competitive/lig-kernels.toml)
 
 Stable kernel IDs use the prefix **`lig.kernel.`**. Agents add rows here **and** in `lig-kernels.toml` before claiming perf parity.
+**Vendor columns (honest stubs):** `cuda`, `hip`, and `metal` are **`N/A`** until emit env (`LIG_EMIT_CUDA=1`, `LIG_EMIT_HIP=1`, `LIG_EMIT_METAL=1`). `./scripts/bench-lig-kernel-parity.sh` emits all catalog `kernel_ids` in JSON.
 
 ## Naming
 
@@ -52,7 +53,7 @@ def launch_matmul(a: tensor[f32], b: tensor[f32]) -> tensor[f32]
 | Validity | `validity` in TOML | `validity_ref` |
 | Security | `trusted_ffi` flag | N/A |
 | Memory | `memory_contract` | sanitizer smoke id |
-| Performance | `perf_tier` | `cpu`, `cuda`, `hip`, `metal`, `custom_lab` columns |
+| Performance | `perf_tier` | `cpu` stub/pilot; `cuda`/`hip`/`metal` = `N/A` until emit env |
 
 ## Adding a kernel
 

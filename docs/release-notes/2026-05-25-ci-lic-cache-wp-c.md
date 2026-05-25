@@ -1,6 +1,6 @@
 # Release notes: 2026-05-25 — ci-lic-cache-wp-c
 
-**Status:** Ready for review  
+**Status:** Ready for review (CI fix follow-up)  
 **Repo:** li-langverse/lic  
 **PR:** (open on `feat/ci-lic-ci-cache-wp-c`)  
 **PH / REQ:** org-hygiene plan WP-C1–C5  
@@ -31,6 +31,7 @@ Linux `lic` CI consumes `ghcr.io/li-langverse/lic-ci:ubuntu24-llvm22`, caches `b
 | LLVM 22 | Ubuntu jobs use image env (`clang-22`, `/usr/lib/llvm-22/...`); fuzz header comment fixed | workflows listed above |
 | Docker publish | `cache-from`/`cache-to` `type=gha` on both image builds | `.github/workflows/publish-docker-ci-image.yml` |
 | Docs | GHA cache key table | `docs/ecosystem/local-ci-docker-images.md` |
+| CI fix | lip/lit via `actions/checkout` → `ecosystem/` (container cannot write parent of workspace); `git safe.directory`; repair `lean.yml` job schema | `.github/workflows/ci.yml`, `scripts/lib/ecosystem-siblings.sh` |
 
 ## Not changed (scope fence)
 

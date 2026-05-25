@@ -19,8 +19,14 @@ jobs:
       LLVM_DIR: /usr/lib/llvm-22/lib/cmake/llvm
       CC: clang-22
       CXX: clang++-22
+    permissions:
+      contents: read
+      packages: read
     steps:
       - uses: actions/checkout@v4
+
+      - name: Git safe.directory (container)
+        run: git config --global --add safe.directory "$GITHUB_WORKSPACE"
 
       - name: Install valgrind (not in lic-ci image)
         run: apt-get update && apt-get install -y -qq valgrind

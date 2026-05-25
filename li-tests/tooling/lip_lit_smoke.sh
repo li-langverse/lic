@@ -4,19 +4,25 @@ ROOT="$(cd "$(dirname "$0")/../.." && pwd)"
 export LIC="${LIC:-$ROOT/build/compiler/lic/lic}"
 export LI_REPO_ROOT="$ROOT"
 
+# shellcheck source=../../scripts/lib/ecosystem-siblings.sh
+source "$ROOT/scripts/lib/ecosystem-siblings.sh"
 LIP="$ROOT/scripts/lip"
 LIT="$ROOT/scripts/lit"
-if [[ -x "$ROOT/../lip/scripts/lip" ]]; then
-  LIP="$ROOT/../lip/scripts/lip"
+if lip_dir="$(_li_ecosystem_lip_dir "$ROOT" 2>/dev/null)" && [[ -x "$lip_dir/scripts/lip" ]]; then
+  LIP="$lip_dir/scripts/lip"
 fi
-if [[ -x "$ROOT/../lit/scripts/lit" ]]; then
-  LIT="$ROOT/../lit/scripts/lit"
+if lit_dir="$(_li_ecosystem_lit_dir "$ROOT" 2>/dev/null)" && [[ -x "$lit_dir/scripts/lit" ]]; then
+  LIT="$lit_dir/scripts/lit"
 fi
 chmod +x "$LIP" "$LIT"
 
 # lip@main pkg_ok fixture may still use proc; lic requires def (see lip#10).
 fix_pkg_ok_def_syntax() {
-  local d="$ROOT/../lip/fixtures/pkg_ok"
+  local d=""
+  if lip_dir="$(_li_ecosystem_lip_dir "$ROOT" 2>/dev/null)"; then
+    d="$lip_dir/fixtures/pkg_ok"
+  fi
+  [[ -n "$d" ]] || d="$ROOT/../lip/fixtures/pkg_ok"
   [[ -d "$d" ]] || return 0
   local f
   for f in "$d/src/lib.li" "$d"/li-tests/smoke/*.li; do
@@ -48,14 +54,20 @@ lic_allow_open_vc_wrap
 "$LIP" --version
 "$LIT" --version
 
-if [[ -d "$ROOT/../lip/fixtures/pkg_ok" ]]; then
+PKG_OK=""
+if lip_dir="$(_li_ecosystem_lip_dir "$ROOT" 2>/dev/null)" && [[ -d "$lip_dir/fixtures/pkg_ok" ]]; then
+  PKG_OK="$lip_dir/fixtures/pkg_ok"
+elif [[ -d "$ROOT/../lip/fixtures/pkg_ok" ]]; then
+  PKG_OK="$ROOT/../lip/fixtures/pkg_ok"
+fi
+if [[ -n "$PKG_OK" ]]; then
   export LI_REPO_ROOT="$ROOT"
-  (cd "$ROOT/../lip/fixtures/pkg_ok" && "$LIT" test --coverage) || {
+  (cd "$PKG_OK" && "$LIT" test --coverage) || {
     echo "lip_lit_smoke: lit failed; reproducing calls_tag:" >&2
-    (cd "$ROOT/../lip/fixtures/pkg_ok" && "$LIC" build li-tests/smoke/calls_tag.li -o /dev/null) 2>&1 || true
+    (cd "$PKG_OK" && "$LIC" build li-tests/smoke/calls_tag.li -o /dev/null) 2>&1 || true
     exit 1
   }
-  (cd "$ROOT/../lip/fixtures/pkg_ok" && "$LIP" publish --dry-run)
+  (cd "$PKG_OK" && "$LIP" publish --dry-run)
 else
   TMP="$(mktemp -d)"
   trap 'rm -rf "$TMP"' EXIT

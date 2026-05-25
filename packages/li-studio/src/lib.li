@@ -4,12 +4,193 @@ import ui
 
 # li-studio — compose dock + timeline + inspector + agent chrome (PH-UX-05/06).
 
-def li_std_studio_version() -> int
+# PH-SIM / UX-05 — World Studio runtime profiles (world-studio-vision §5).
+extern proc li_rt_studio_profile_from_name(name: str) -> int
+extern proc li_rt_studio_parse_toml_profile_line(line: str) -> int
+
+def studio_profile_unknown() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0
+
+def studio_profile_game() -> int
+  requires true
+  ensures result == 1
+  decreases 0
+=
+  return 1
+
+def studio_profile_sim_rl() -> int
+  requires true
+  ensures result == 2
+  decreases 0
+=
+  return 2
+
+def studio_profile_sim_automotive() -> int
   requires true
   ensures result == 3
   decreases 0
 =
   return 3
+
+def studio_profile_sim_robotics() -> int
+  requires true
+  ensures result == 4
+  decreases 0
+=
+  return 4
+
+def studio_profile_sim_additive() -> int
+  requires true
+  ensures result == 5
+  decreases 0
+=
+  return 5
+
+def studio_profile_sim_scientific() -> int
+  requires true
+  ensures result == 6
+  decreases 0
+=
+  return 6
+
+def studio_profile_sim_drug_design() -> int
+  requires true
+  ensures result == 7
+  decreases 0
+=
+  return 7
+
+def studio_profile_id_valid(profile_id: int) -> int
+  requires true
+  ensures result >= 0
+  ensures result <= 1
+  decreases profile_id
+=
+  if profile_id == studio_profile_unknown():
+    return 1
+  if profile_id == studio_profile_game():
+    return 1
+  if profile_id == studio_profile_sim_rl():
+    return 1
+  if profile_id == studio_profile_sim_automotive():
+    return 1
+  if profile_id == studio_profile_sim_robotics():
+    return 1
+  if profile_id == studio_profile_sim_additive():
+    return 1
+  if profile_id == studio_profile_sim_scientific():
+    return 1
+  if profile_id == studio_profile_sim_drug_design():
+    return 1
+  return 0
+
+def studio_profile_from_name(name: str) -> int
+  requires true
+  ensures studio_profile_id_valid(result) == 1
+  decreases 0
+=
+  return li_rt_studio_profile_from_name(name)
+
+def studio_parse_toml_profile_line(line: str) -> int
+  requires true
+  ensures studio_profile_id_valid(result) == 1
+  decreases 0
+=
+  return li_rt_studio_parse_toml_profile_line(line)
+
+def studio_profile_chip_width_px() -> float
+  requires true
+  ensures result == 88.0
+  decreases 0
+=
+  return 88.0
+
+def studio_profile_chip_height_px() -> float
+  requires true
+  ensures result == 24.0
+  decreases 0
+=
+  return 24.0
+
+def studio_profile_paint_tag_h(profile_id: int) -> float
+  requires studio_profile_id_valid(profile_id) == 1
+  ensures result >= 20.0
+  ensures result <= 28.0
+  decreases profile_id
+=
+  if profile_id == studio_profile_game():
+    return 21.0
+  if profile_id == studio_profile_sim_rl():
+    return 22.0
+  if profile_id == studio_profile_sim_automotive():
+    return 23.0
+  if profile_id == studio_profile_sim_robotics():
+    return 24.0
+  if profile_id == studio_profile_sim_additive():
+    return 25.0
+  if profile_id == studio_profile_sim_scientific():
+    return 26.0
+  if profile_id == studio_profile_sim_drug_design():
+    return 27.0
+  return 20.0
+
+def studio_profile_chip_rect_at(topbar: Rect, profile_id: int) -> Rect
+  requires topbar.w >= studio_profile_chip_width_px() + 16.0
+  requires topbar.h >= studio_profile_chip_height_px()
+  requires studio_profile_id_valid(profile_id) == 1
+  ensures result.w == studio_profile_chip_width_px()
+  ensures result.h == studio_profile_paint_tag_h(profile_id)
+  decreases profile_id
+=
+  var pad: float = 12.0
+  var x: float = topbar.x + topbar.w - studio_profile_chip_width_px() - pad
+  var y: float = topbar.y + (topbar.h - studio_profile_chip_height_px()) / 2.0
+  return rect_make(x, y, studio_profile_chip_width_px(), studio_profile_paint_tag_h(profile_id))
+
+def studio_profile_color(profile_id: int) -> Color
+  requires studio_profile_id_valid(profile_id) == 1
+  ensures result.r >= 0.0
+  decreases profile_id
+=
+  if profile_id == studio_profile_game():
+    return studio_color_accent_cyan()
+  if profile_id == studio_profile_sim_rl():
+    return studio_color_accent_mint()
+  if profile_id == studio_profile_sim_drug_design():
+    return studio_color_accent_violet()
+  return studio_color_accent_amber()
+
+def studio_paint_topbar_profile_cmds() -> int
+  requires true
+  ensures result == 1
+  decreases 0
+=
+  return 1
+
+def studio_paint_topbar_profile(frame: var PaintFrame, topbar: Rect, profile_id: int) -> unit
+  requires frame.cmd_count >= 0
+  requires studio_profile_id_valid(profile_id) == 1
+  ensures frame.cmd_count == old(frame.cmd_count) + studio_paint_topbar_profile_cmds()
+  ensures frame.last_kind == paint_op_stroke_rect()
+  ensures frame.last_rect.h == studio_profile_paint_tag_h(profile_id)
+  decreases profile_id
+=
+  frame.cmd_count = frame.cmd_count + studio_paint_topbar_profile_cmds()
+  frame.last_kind = paint_op_stroke_rect()
+  frame.last_rect = studio_profile_chip_rect_at(topbar, profile_id)
+  frame.last_color = studio_profile_color(profile_id)
+
+
+def li_std_studio_version() -> int
+  requires true
+  ensures result == 4
+  decreases 0
+=
+  return 4
 
 def studio_agent_context_none() -> int
   requires true
@@ -154,14 +335,34 @@ type StudioAgentChromeCompose = object
   public retry_hint_rect: Rect
   public retry_visible: int
 
+type StudioProjectConfig = object
+  public active_profile: int
+
 type StudioShellCompose = object
   public layout: StudioShellLayout
+  public config: StudioProjectConfig
   public dock: StudioDockCompose
   public timeline: StudioTimelineCompose
   public inspector: StudioInspectorCompose
   public agent: StudioAgentChromeCompose
   public palette: StudioCommandPaletteCompose
   public panel: GuiPanelState
+
+def studio_active_profile(compose: StudioShellCompose) -> int
+  requires studio_profile_id_valid(compose.config.active_profile) == 1
+  ensures result == compose.config.active_profile
+  decreases 0
+=
+  return compose.config.active_profile
+
+def studio_project_config_new(active_profile: int) -> StudioProjectConfig
+  requires studio_profile_id_valid(active_profile) == 1
+  ensures result.active_profile == active_profile
+  decreases 0
+=
+  var cfg: StudioProjectConfig
+  cfg.active_profile = active_profile
+  return cfg
 
 def studio_dock_slot_offset_y(slot: int) -> float
   requires slot >= 0
@@ -497,20 +698,23 @@ def studio_compose_agent_chrome(layout: StudioShellLayout, task_state: int, agen
     out.retry_hint_rect = studio_agent_retry_hint_rect_at(out.error_strip_rect)
   return out
 
-def studio_compose_shell(w: float, h: float, active_dock_slot: int, has_selection: int) -> StudioShellCompose
+def studio_compose_shell_profile(w: float, h: float, active_dock_slot: int, has_selection: int, active_profile: int) -> StudioShellCompose
   requires w > 0.0
   requires h > 0.0
   requires active_dock_slot >= 0
   requires active_dock_slot < studio_dock_slot_count()
   requires has_selection >= 0
   requires has_selection <= 1
+  requires studio_profile_id_valid(active_profile) == 1
   ensures result.layout.viewport_w > 0.0
   ensures result.dock.active_slot == active_dock_slot
+  ensures result.config.active_profile == active_profile
   decreases active_dock_slot
 =
   var out: StudioShellCompose
   var layout: StudioShellLayout = layout_studio_shell_adaptive(w, h)
   out.layout = layout
+  out.config = studio_project_config_new(active_profile)
   out.dock.rect = layout.dock
   out.dock.slot_count = studio_dock_slot_count()
   out.dock.active_slot = active_dock_slot
@@ -527,6 +731,18 @@ def studio_compose_shell(w: float, h: float, active_dock_slot: int, has_selectio
   out.palette = studio_compose_palette(w, h, studio_palette_closed_flag())
   out.panel = gui_panel_state_new()
   return out
+
+def studio_compose_shell(w: float, h: float, active_dock_slot: int, has_selection: int) -> StudioShellCompose
+  requires w > 0.0
+  requires h > 0.0
+  requires active_dock_slot >= 0
+  requires active_dock_slot < studio_dock_slot_count()
+  requires has_selection >= 0
+  requires has_selection <= 1
+  ensures result.config.active_profile == studio_profile_game()
+  decreases active_dock_slot
+=
+  return studio_compose_shell_profile(w, h, active_dock_slot, has_selection, studio_profile_game())
 
 def studio_compose_shell_palette(w: float, h: float, active_dock_slot: int, has_selection: int, palette_open: int) -> StudioShellCompose
   requires w > 0.0
@@ -718,6 +934,7 @@ def studio_paint_shell_chrome(frame: var PaintFrame, compose: StudioShellCompose
   frame.cmd_count = frame.cmd_count + 1
   frame.last_kind = paint_op_fill_rect()
   frame.last_rect = compose.layout.topbar
+  studio_paint_topbar_profile(frame, compose.layout.topbar, studio_active_profile(compose))
   frame.cmd_count = frame.cmd_count + 1
   frame.last_kind = paint_op_viewport_grid()
   frame.last_rect = compose.layout.viewport

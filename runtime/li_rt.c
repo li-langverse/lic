@@ -191,6 +191,80 @@ int32_t li_rt_str_eq(const char* a, const char* b) {
   return strcmp(a, b) == 0 ? 1 : 0;
 }
 
+
+static int32_t li_rt_studio_profile_match_name(const char* name) {
+  if (name == NULL) {
+    return 0;
+  }
+  if (li_rt_str_eq(name, "game")) {
+    return 1;
+  }
+  if (li_rt_str_eq(name, "sim_rl")) {
+    return 2;
+  }
+  if (li_rt_str_eq(name, "sim_automotive")) {
+    return 3;
+  }
+  if (li_rt_str_eq(name, "sim_robotics")) {
+    return 4;
+  }
+  if (li_rt_str_eq(name, "sim_additive")) {
+    return 5;
+  }
+  if (li_rt_str_eq(name, "sim_scientific")) {
+    return 6;
+  }
+  if (li_rt_str_eq(name, "sim_drug_design")) {
+    return 7;
+  }
+  return 0;
+}
+
+int32_t li_rt_studio_profile_from_name(const char* name) {
+  return li_rt_studio_profile_match_name(name);
+}
+
+int32_t li_rt_studio_parse_toml_profile_line(const char* line) {
+  if (line == NULL) {
+    return 0;
+  }
+  const char* key = "profile";
+  const char* p = strstr(line, key);
+  if (p == NULL) {
+    return 0;
+  }
+  p += strlen(key);
+  while (*p == ' ' || *p == '\t') {
+    p++;
+  }
+  if (*p != '=') {
+    return 0;
+  }
+  p++;
+  while (*p == ' ' || *p == '\t') {
+    p++;
+  }
+  if (*p != '"') {
+    return 0;
+  }
+  p++;
+  const char* start = p;
+  while (*p != '\0' && *p != '"') {
+    p++;
+  }
+  if (*p != '"') {
+    return 0;
+  }
+  char buf[64];
+  const size_t n = (size_t)(p - start);
+  if (n == 0 || n >= sizeof(buf)) {
+    return 0;
+  }
+  memcpy(buf, start, n);
+  buf[n] = '\0';
+  return li_rt_studio_profile_match_name(buf);
+}
+
 int32_t li_rt_path_exact(const char* path, const char* want) {
   return li_rt_str_eq(path, want);
 }

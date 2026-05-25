@@ -7,7 +7,7 @@
     "UX-02": { "score": 2, "note": "Timeline in HTML mocks + compose hooks; native playback still stub." },
     "UX-03": { "score": 2.2, "note": "Inspector density in mocks; native inspector paint not wired." },
     "UX-04": { "score": 2, "note": "Palette in HTML; native latency not measured." },
-    "UX-05": { "score": 2, "note": "Profile chips in demo HTML; native profile switch stub." },
+    "UX-05": { "score": 3, "note": "Li studio_profile_* + compose topbar chip paint; TOML line parse stub; no full sim stepping." },
     "UX-06": { "score": 2.3, "note": "Agent chrome composables + Cursor/Linear SOTA refs in harness." },
     "UX-07": { "score": 2.5, "note": "Empty viewport mock + harness journeys." },
     "UX-08": { "score": 2, "note": "Agent error mock; GPU fail strip documented." },

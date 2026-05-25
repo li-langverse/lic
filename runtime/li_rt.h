@@ -217,3 +217,5 @@ int32_t li_rt_log_redact_ok(const char* in);
 #ifdef __cplusplus
 }
 #endif
+int32_t li_rt_studio_profile_from_name(const char* name);
+int32_t li_rt_studio_parse_toml_profile_line(const char* line);

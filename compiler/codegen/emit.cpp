@@ -1334,6 +1334,12 @@ bool emit_llvm_ir(const MirModule& mir, const std::string& out_path, std::string
       "li_rt_str_eq",
       llvm::FunctionType::get(i32_ty(context), {i8_ptr(context), i8_ptr(context)}, false));
   module->getOrInsertFunction(
+      "li_rt_studio_profile_from_name",
+      llvm::FunctionType::get(i32_ty(context), {i8_ptr(context)}, false));
+  module->getOrInsertFunction(
+      "li_rt_studio_parse_toml_profile_line",
+      llvm::FunctionType::get(i32_ty(context), {i8_ptr(context)}, false));
+  module->getOrInsertFunction(
       "li_rt_path_exact",
       llvm::FunctionType::get(i32_ty(context), {i8_ptr(context), i8_ptr(context)}, false));
   module->getOrInsertFunction(

@@ -1453,3 +1453,9 @@ expected_substr = "array index must be constant"
 # --- security (malformed inputs; run via ./li-tests/run_security.sh) ---
 # Wired in scripts/ci.sh: parse/check must exit 0/1, never signal (SIGSEGV etc.).
 # Also: compiler/fuzz/parse_fuzz (libFuzzer, optional CI on Linux).
+
+[[tests]]
+suite = "smoke"
+file = "packages/lig/li-tests/smoke/present_blit_rgba8.li"
+outcome = "compile_open_ok"
+note = "T-PKG-lig-present-blit"

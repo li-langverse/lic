@@ -17,7 +17,7 @@
 | Check | Result |
 |-------|--------|
 | Composable `import_math_numerics_dot_axpy.li` | **ok** (checksum ≈ 98.0) |
-| `SIM_PLAN_PACKAGE=li-math-numerics ./scripts/sim-plan-gates.sh` | **ok** (2026-05-25, iter `20260525-084911`) |
+| `SIM_PLAN_PACKAGE=li-math-numerics ./scripts/sim-plan-gates.sh` | **ok** (2026-05-25, iter `20260525-093518`) |
 | Registry `implemented_smoke` | **true** (id=1) |
 
 ```bash
@@ -41,4 +41,6 @@ Native peak RSS recorded by `sim-bench-memory.sh` in `benchmarks/results/memory/
 
 ## Agent iteration (2026-05-24)
 
-Implemented `dot_f64_8`, `axpy_f64_8`, `num_dot_axpy_smoke_checksum()` in `math.numerics` (smoke inlines dot/axpy because array args move on call); composable + `run_algo` dispatch for algo_id=1. Gates green on isolated clone (`LIC_ROOT=$PWD`, `SIM_PLAN_PACKAGE=li-math-numerics`). Iterations: [20260524-220836](../iterations/20260524-220836.md), [20260525-084911](../iterations/20260525-084911.md) (code implementer `sim-p1-num-dot-axpy` gate refresh @ `49afc33`).
+Implemented `dot_f64_8`, `axpy_f64_8`, `num_dot_axpy_smoke_checksum()` in `math.numerics` (smoke inlines dot/axpy because array args move on call); composable + `run_algo` dispatch for algo_id=1. Gates green on isolated clone (`LIC_ROOT=$PWD`, `SIM_PLAN_PACKAGE=li-math-numerics`). Iterations: [20260524-220836](../iterations/20260524-220836.md), [20260525-084911](../iterations/20260525-084911.md), [20260525-093518](../iterations/20260525-093518.md) (code implementer `sim-p1-num-dot-axpy` gate refresh @ `634b2505`).
+
+**2026-05-25 (code_implementer, gate refresh):** Re-ran `./scripts/sim-plan-gates.sh`; composable `import_math_numerics_dot_axpy.li` **ok** (checksum ≈ 98.0); scoped timing: `simd_dot` Li ≈ 0.0155s, `matmul_naive` Li ≈ 0.0016s; memory peaks recorded in `latest_memory.json`.

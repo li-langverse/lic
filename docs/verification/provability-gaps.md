@@ -9,7 +9,7 @@ Li’s **north star** is: user logic is proved before ship; runtime failures for
 
 This page is the **honest inventory** of what is **not** fully proved or not yet wired. When a gap closes, update this file in the **same PR** as the implementation.
 
-**Related:** [Verification overview](overview.md) · [Master plan — Doc phase & compiler task map](../superpowers/plans/2026-05-14-li-master-plan.md#documentation--provability-honesty-cross-cutting) · [Trusted axioms](../semantics/README.md)
+**Related:** [Verification overview](overview.md) · [Proof database](proof-database/README.md) · [Proof corpus roadmap](proof-corpus-roadmap.md) · [Master plan — Doc phase & compiler task map](../superpowers/plans/2026-05-14-li-master-plan.md#documentation--provability-honesty-cross-cutting) · [Trusted axioms](../semantics/README.md)
 
 ---
 
@@ -52,6 +52,7 @@ This page is the **honest inventory** of what is **not** fully proved or not yet
 | **G-meta** | Missing | Compiler ↔ Lean equivalence (research) |
 | **G-authz** | Missing | Capability / IDOR (OS phase) |
 | **G-test-verify** | **Done** | `prove_lean_ok` in `run_all.sh`; 14 closed `contracts_verify` specimens |
+| **G-proof-db** | Partial | [Proof database](proof-database/README.md): schema, entries, `scripts/proof-db/proof-db.py` |
 | **G-hw** | Axiomatic | FP/hardware model limit (documented, not closable) |
 | **G-wrong-spec** | Social | User theorem quality (not tool-closable) |
 
@@ -89,6 +90,7 @@ Status legend: **Missing** · **Stub** · **Partial** · **CI only** · **Done**
 | **G-narrow** | Narrowing conversions | Ariane-class truncations rejected without proof | **Partial** — policy rejects `cast[`; width types + proved narrowing pending | **2e** | `historic_ariane5_narrowing.li` |
 | **G-authz** | Capability / IDOR | Object capabilities in OS services | **Missing** | OS phase | `historic-bugs.toml` firefly-iii-idor |
 | **G-test-verify** | Manifest honesty | `verify_ok` vs Lean QED | **Done** — `prove_lean_ok` outcome; 14 closed `contracts_verify` rows | **2f** | `li-tests/run_all.sh`, `li-tests/manifest.toml`, `contracts_discharge_corpus.sh` |
+| **G-proof-db** | Proof database | Axiom → lemma pins vs commit | **Partial** — TOML + CLI; verify-slice stub | **Doc**, **2f** | [proof-database/README.md](proof-database/README.md), `scripts/proof-db/proof-db.py` |
 
 ---
 

@@ -1,17 +1,10 @@
-# proof-db/math
+# Classical math (proof-db/math/)
 
-Classical math vertical for the Li proof database.
+| Path | Role |
+|------|------|
+| discrepancy-policy.md | Textbook / AutoVC mismatch |
+| lemmas/add_commutative.li | M-LM-FLOAT-ADD-COMM (L-MATH-ADD-COMM) |
+| lemmas/order_transitive.li | M-LM-ORDER-TRANS (L-MATH-ORDER-TRANS) |
+| lemmas/mul_distrib_instance.li | M-LM-MUL-DIST-INST (L-MATH-MUL-DIST-INST) |
 
-| Area | Path | Catalog ids |
-|------|------|-------------|
-| Peano + order axioms | [axioms/peano_order.li](axioms/peano_order.li) | `M-AX-PEANO-*`, `M-AX-ORDER-*` |
-| ℝ field axioms | [axioms/reals_field.li](axioms/reals_field.li) | `M-AX-REAL-*` |
-| Lean stub module | [axioms/MathAxioms.lean](axioms/MathAxioms.lean) | `Li.ProofDb.Math.*` |
-| Lemma specimens | [lemmas/](lemmas/) | `M-LM-*` |
-
-**TOML source of truth:** `docs/verification/proof-database/entries/math-*.toml`.
-
-```bash
-python3 scripts/proof-db/proof-db.py list --field math
-python3 scripts/proof-db/proof-db.py verify-slice
-```
+Catalog: docs/verification/proof-database/entries/math-*.toml

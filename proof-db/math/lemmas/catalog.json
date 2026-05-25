@@ -1,30 +1,15 @@
 {
   "version": 1,
+  "vertical": "math",
   "entries": [
-    {
-      "id": "L-MATH-ADD-COMM",
-      "status": "target",
-      "requires_axioms": [
-        "AX-MATH-REAL-ADD-COMM"
-      ],
-      "li_file": "proof-db/math/lemmas/add_commutative.li"
-    },
-    {
-      "id": "L-MATH-ORDER-TRANS",
-      "status": "target",
-      "requires_axioms": [
-        "AX-MATH-ORDER-TRICHOTOMY",
-        "AX-MATH-ORDER-ANTISYM"
-      ],
-      "li_file": "proof-db/math/lemmas/order_transitive.li"
-    },
-    {
-      "id": "L-MATH-MUL-DIST-INST",
-      "status": "target",
-      "requires_axioms": [
-        "AX-MATH-REAL-MUL-DIST"
-      ],
-      "li_file": "proof-db/math/lemmas/mul_distrib_instance.li"
-    }
+    {"id": "L-MATH-ADD-COMM", "catalog_entry": "M-LM-FLOAT-ADD-COMM", "status": "registered",
+     "requires_axioms": ["M-AX-REAL-ADD-COMM"], "li_file": "proof-db/math/lemmas/add_commutative.li",
+     "statement": "float add_commutative = b + a"},
+    {"id": "L-MATH-ORDER-TRANS", "catalog_entry": "M-LM-ORDER-TRANS", "status": "registered",
+     "requires_axioms": ["M-AX-ORDER-TRICHOTOMY", "M-AX-ORDER-ANTISYM"], "li_file": "proof-db/math/lemmas/order_transitive.li",
+     "statement": "order transitivity on int stand-in"},
+    {"id": "L-MATH-MUL-DIST-INST", "catalog_entry": "M-LM-MUL-DIST-INST", "status": "registered",
+     "requires_axioms": ["M-AX-REAL-MUL-DIST"], "li_file": "proof-db/math/lemmas/mul_distrib_instance.li",
+     "statement": "mul_distrib_instance at call site"}
   ]
 }

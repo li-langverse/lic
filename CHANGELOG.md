@@ -13,6 +13,7 @@ All notable changes to Li are documented here. The format follows
 
 ### Added
 
+- **8p-c/d (partial):** `ResourceOptions` + `note_compile_jobs_reserved` on `lic build`; CI **8p parallel smokes** — [2026-05-25-8p-cd-compile-jobs-ci-smokes.md](docs/release-notes/2026-05-25-8p-cd-compile-jobs-ci-smokes.md).
 - **G-test-verify Done:** `prove_lean_ok` in `li-tests/run_all.sh`; 14 closed `contracts_verify` specimens — `docs/release-notes/2026-05-25-g-test-verify-prove-lean-ok.md`.
 
 - **Ecosystem phase 0:** `algorithms-and-libraries-plan.md`, `lic-ecosystem-baseline.md`, agent skill `run-local-ci-gha-quota` — `docs/release-notes/2026-05-22-lic-ecosystem-phase0-baseline.md`.
@@ -36,6 +37,7 @@ All notable changes to Li are documented here. The format follows
 
 ### Added
 
+- **8p-c/d (partial):** `ResourceOptions` + `note_compile_jobs_reserved` on `lic build`; CI **8p parallel smokes** — [2026-05-25-8p-cd-compile-jobs-ci-smokes.md](docs/release-notes/2026-05-25-8p-cd-compile-jobs-ci-smokes.md).
 - **HTTPd autonomous plan loop:** `scripts/httpd-plan-loop.py`, `httpd-plan-gates.sh`, baseline doc, goal-directed `code_implementer` via li-cursor-agents — [2026-05-22-httpd-plan-autonomous-loop.md](docs/release-notes/2026-05-22-httpd-plan-autonomous-loop.md).
 - **HTTPd M1 core (rate limits):** `limits.rate_limit_rps` required for `proxy:` routes in Python validator + desugar; goal-directed `code_implementer` plan loop — [2026-05-22-httpd-m1-core-rate-limits.md](docs/release-notes/2026-05-22-httpd-m1-core-rate-limits.md).
 - **HTTPd M1 ingress headers:** route-key header extras must match ingress allowlist; reject `x-upstream-*` / hop-by-hop — [2026-05-22-httpd-m1-ingress-headers.md](docs/release-notes/2026-05-22-httpd-m1-ingress-headers.md).
@@ -89,6 +91,7 @@ All notable changes to Li are documented here. The format follows
 
 ### Added
 
+- **8p-c/d (partial):** `ResourceOptions` + `note_compile_jobs_reserved` on `lic build`; CI **8p parallel smokes** — [2026-05-25-8p-cd-compile-jobs-ci-smokes.md](docs/release-notes/2026-05-25-8p-cd-compile-jobs-ci-smokes.md).
 - **`httpd_serve_routed_once`** — M1 one-shot accept + `match_route` for `GET /health` (oracle; parallel with httpd-m1-impl/perf PRs); see `docs/release-notes/2026-05-20-httpd-serve-routed-once.md`.
 
 - **`lic httpd validate-config`** — **E0501–E0504** for io/route key/traversal/overlap; `httpd_serve_once` + `route_key_valid`; see `docs/release-notes/2026-05-20-httpd-validate-serve.md`.
@@ -103,6 +106,7 @@ All notable changes to Li are documented here. The format follows
 
 ### Added
 
+- **8p-c/d (partial):** `ResourceOptions` + `note_compile_jobs_reserved` on `lic build`; CI **8p parallel smokes** — [2026-05-25-8p-cd-compile-jobs-ci-smokes.md](docs/release-notes/2026-05-25-8p-cd-compile-jobs-ci-smokes.md).
 - Call-site callee **`requires`**: VCs for all resolved callees (incl. **`extern`** + imports); **E0304** with plain-language precondition text when provably false; const-local discharge (`var y = 5`); **`lic build` fails on open `AutoVC`** unless `LI_ALLOW_OPEN_VC=1`; see `docs/release-notes/2026-05-20-call-site-requires-full-gate.md`.
 - **Refinement types** at calls and `var` inits: `{x: int | …}` / aliases (e.g. `NonNeg`); **E0305** when provably outside the bound; **`if n >= 0`** branch discharge; call-site Lean VCs; see `docs/language/refinement-types.md` and `docs/release-notes/2026-05-20-refinement-call-check.md`.
 - **2f (branch):** `LI_BUILD_VERIFY_LEAN=1` runs `lean-verify-stub.sh` after build; CI uses `LI_BUILD_VERIFY_LEAN_STRICT=1`.
@@ -155,6 +159,7 @@ All notable changes to Li are documented here. The format follows
 
 ### Added
 
+- **8p-c/d (partial):** `ResourceOptions` + `note_compile_jobs_reserved` on `lic build`; CI **8p parallel smokes** — [2026-05-25-8p-cd-compile-jobs-ci-smokes.md](docs/release-notes/2026-05-25-8p-cd-compile-jobs-ci-smokes.md).
 - Agent-first JSON diagnostics: `lic check --format=json`, `lic diagnose` (`docs/schemas/diagnostic-v1.json`)
 - LLM-first design research stub, agent handover comparison, `li-agent-manifest.toml`
 - `scripts/lic-fix-suggest.sh`, `scripts/gen-li-agent-manifest.sh`, `li-tests/tooling/diagnose_json_smoke.sh`
@@ -164,6 +169,7 @@ All notable changes to Li are documented here. The format follows
 
 ### Added
 
+- **8p-c/d (partial):** `ResourceOptions` + `note_compile_jobs_reserved` on `lic build`; CI **8p parallel smokes** — [2026-05-25-8p-cd-compile-jobs-ci-smokes.md](docs/release-notes/2026-05-25-8p-cd-compile-jobs-ci-smokes.md).
 - C++ `lic` compiler skeleton: lexer, parser, typechecker, MIR, LLVM codegen
 - Mandatory contracts gate (`requires` / `ensures` / `decreases`)
 - `li-tests` manifest harness (47 cases)

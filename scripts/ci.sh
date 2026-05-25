@@ -122,6 +122,12 @@ chmod +x "$ROOT/li-tests/tooling/diagnose_json_smoke.sh" \
 "$ROOT/li-tests/tooling/run_all_parallel_smoke.sh"
 "$ROOT/li-tests/tooling/agent_manifest_smoke.sh"
 
+li_phase "8p parallel smokes"
+chmod +x "$ROOT/li-tests/tooling/ci_test_jobs_smoke.sh"   "$ROOT/li-tests/tooling/resource_flags_smoke.sh"   "$ROOT/li-tests/tooling/parallel_run_all_smoke.sh"
+"$ROOT/li-tests/tooling/ci_test_jobs_smoke.sh"
+"$ROOT/li-tests/tooling/resource_flags_smoke.sh"
+"$ROOT/li-tests/tooling/parallel_run_all_smoke.sh"
+
 li_phase "8-sync toolchain"
 chmod +x "$ROOT/scripts/check-li-toolchain.sh"
 "$ROOT/scripts/check-li-toolchain.sh"

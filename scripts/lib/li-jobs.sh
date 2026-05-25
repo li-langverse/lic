@@ -26,3 +26,11 @@ li_test_jobs() {
   fi
   echo 1
 }
+
+li_workspace_jobs() {
+  if [[ -n "${LI_WORKSPACE_JOBS:-}" ]]; then
+    echo "$LI_WORKSPACE_JOBS"
+    return
+  fi
+  li_test_jobs
+}

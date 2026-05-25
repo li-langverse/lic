@@ -366,6 +366,12 @@ void emit_contract_def(std::ostream& out, const Module& module, const ProcDecl& 
       prop += p.name;
     }
     prop += ')';
+  } else if (sqrt_discharge_theorem && c.kind == ContractKind::Ensures) {
+    prop = "Li.Discharge.sqrt_open_bound_spec";
+    for (const auto& p : proc.params) {
+      prop += ' ';
+      prop += lean_ident(p.name);
+    }
   } else if (c.expr) {
     if (auto lean = expr_to_lean(*c.expr, ctx)) {
       prop = *lean;
@@ -414,11 +420,11 @@ void emit_contract_def(std::ostream& out, const Module& module, const ProcDecl& 
     const std::string req_name = "vc_" + sec + "_requires_0";
     out << "theorem " << name << "_proved";
     emit_formals(false);
-    out << " : " << name;
-    emit_args(false);
     out << " (hreq : " << req_name;
     for (const auto& p : proc.params) { out << ' ' << lean_ident(p.name); }
-    out << ") := Li.Discharge.sqrt_open_bound_spec_proved";
+    out << ") : " << name;
+    emit_args(false);
+    out << " := Li.Discharge.sqrt_open_bound_spec_proved";
     for (const auto& p : proc.params) { out << ' ' << lean_ident(p.name); }
     out << " hreq\n";
   } else if (prop == "True") {

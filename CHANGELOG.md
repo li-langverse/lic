@@ -14,6 +14,8 @@ All notable changes to Li are documented here. The format follows
 
 ### Fixed
 
+- ** gap (PR #251):** flatten present into ;  +  use  — [2026-05-25-gap-lig-present-import.md](docs/release-notes/2026-05-25-gap-lig-present-import.md).
+
 - **PH-UX vertical gap #1:** Studio UI bench registry and `bench-studio-viewport-perf.sh` reference `packages/lig` (`wgpu_smoke` hook) instead of removed `packages/li-gpu` — [2026-05-25-vertical-gap-bench-lig.md](docs/release-notes/2026-05-25-vertical-gap-bench-lig.md).
 
 ### Added

@@ -29,7 +29,7 @@ This page is the **honest inventory** of what is **not** fully proved or not yet
 
 ## Still open (report every session)
 
-**Done (none of these):** no **G-*** row is **Done** yet. **Closed slices** exist inside **Partial** rows (e.g. P-linalg closed specimens, static `ensures` witnesses).
+**Done:** **G-test-verify** (manifest `prove_lean_ok`). **Closed slices** inside **Partial** rows (e.g. P-linalg closed specimens, static `ensures` witnesses). All other **G-*** rows remain **Partial** or **Missing**.
 
 | ID | Status | What remains |
 |----|--------|----------------|
@@ -51,7 +51,7 @@ This page is the **honest inventory** of what is **not** fully proved or not yet
 | **G-gpu** | Missing | `@gpu` address-space proofs + codegen |
 | **G-meta** | Missing | Compiler ↔ Lean equivalence (research) |
 | **G-authz** | Missing | Capability / IDOR (OS phase) |
-| **G-test-verify** | Partial | Split `verify_ok` vs `prove_lean_ok` in manifest |
+| **G-test-verify** | **Done** | `prove_lean_ok` in `run_all.sh`; 14 closed `contracts_verify` specimens |
 | **G-hw** | Axiomatic | FP/hardware model limit (documented, not closable) |
 | **G-wrong-spec** | Social | User theorem quality (not tool-closable) |
 
@@ -68,12 +68,12 @@ Status legend: **Missing** · **Stub** · **Partial** · **CI only** · **Done**
 
 | ID | Area | Spec / promise | Current state | Phase | How we know |
 |----|------|----------------|---------------|-------|-------------|
-| **G-lean** | Lean 4 gate | `lic build` fails if any VC open | **Partial** — static witnesses + **P-linalg** closed corpus (#151); `sqrt_open_bound` intentional open; kernel not default gate | **2f** | `contracts_discharge_corpus.sh`, `discharge_linalg_int_lean.sh`, `check-autovc-open-goals.sh` |
-| **G-vc** | VC generation | Contracts → proof obligations | **Partial** — auto `_proved` + `lic verify witnessed_ensures=` / `mir_return_linked=`; **E0303** rejects `ensures true` on value returns; **call-site callee `requires`** + **refinement param VCs** in `AutoVC.lean` (literal / const-local discharge); `sqrt_open_bound` float `abs` open | **2e** | `vc_emit_lean.cpp`, `vc_witness.cpp`, `call_requires.cpp`, `contracts_discharge_corpus.sh` |
-| **G-par** | `parallel for` safety | Proved iteration independence | **Partial** — AST `check_module_policies` + string exploit patterns in `policy.cpp` | **7b**, **7d-c** | `race_shared_memory`, `decorator_exploits` |
+| **G-lean** | Lean 4 gate | `lic build` fails if any VC open | **Partial** — Tier B `lake build AutoVC` when installed; **closed slice:** 14× `prove_lean_ok` corpus; `sqrt_open_bound` intentional open; kernel not universal certificate | **2f** | `discharge_trivial_lean.sh`, `discharge_linalg_int_lean.sh`, `contracts_discharge_corpus.sh`, `check-autovc-open-goals.sh`, `li-tests/run_all.sh` `prove_lean_ok` |
+| **G-vc** | VC generation | Contracts → proof obligations | **Partial** — **closed slice:** call-site `requires`, const-local discharge, E0303/E0304/E0305; open: float `abs`, opaque returns | **2e** | `vc_emit_contracts.sh`, `mir_vc_witness.sh`, `discharge_caller_requires_lean.sh`, `discharge_caller_requires_local_lean.sh`, `contracts_discharge_corpus.sh`, `prove_reject/weak_ensures_true.li` |
+| **G-par** | `parallel for` safety | Proved iteration independence | **Partial** — **closed slice:** 6× `compile_fail` + `good_disjoint_parallel.li` `verify_ok`; Lean disjoint proofs open | **7b**, **7d-c** | `li-tests/race_shared_memory/`, `decorator_exploits/missing_disjoint_at_parallel.li`, `run_all.sh` suite `race_shared_memory` |
 | **G-stdlib** | Prelude / std seal | User cannot shadow builtin or `std/` names | **Partial** — `check_stdlib_seal` + `resolve_imports` for `std.*` / workspace; cycle detect at load | **4s** | `li-tests/stdlib_seal/`, `li-tests/modules/` |
-| **G-dec** | Execution decorators | Static elaboration; reserved names; no runtime | **Partial** — parse + policy + `MirFn.decorators`; **7d-c** `@vectorized` on `for` → `ArraySimdScope` (#150); `@parallel` elaboration open | **7d** | `decorator_exploits/`, `decorators/` |
-| **G-math** | Math / `A @ B` | Shape errors at compile time; no user `simd(...)` | **Partial** — 1d/2d `@` lowering + **P-linalg** proof corpus (`linalg_*_closed.li`, loop dot open) | **2i**, **7e**, **2f** | `li-tests/math_linalg/`, `li-tests/contracts_verify/linalg_*` |
+| **G-dec** | Execution decorators | Static elaboration; reserved names; no runtime | **Partial** — **closed slice:** 4× `decorator_exploits` `compile_fail`; `@vectorized` on `for` (`vectorized_for_scope_ok.li`); `@parallel` MIR elaboration open | **7d** | `li-tests/decorator_exploits/`, `li-tests/decorators/vectorized_for_scope_ok.li`, `run_all.sh` suites `decorator_exploits`, `decorators` |
+| **G-math** | Math / `A @ B` | Shape errors at compile time; no user `simd(...)` | **Partial** — **closed slice:** 9× `prove_lean_ok` linalg + `discharge_linalg_int_lean.sh`; `math_linalg/` compile tests; tier-1 `tier1_li_vs_cpp.sh` | **2i**, **7e**, **2f** | `li-tests/math_linalg/`, `li-tests/contracts_verify/linalg_*_closed.li`, `li-tests/tooling/discharge_linalg_int_lean.sh`, `li-tests/tooling/tier1_li_vs_cpp.sh` |
 | **G-bnd** | Bounds in release | No reliance on `li_bounds_fail` for proved indices | **Partial** — architecture lists MIR bounds; not full refinement | **2e**, **3** | [Architecture](../architecture/overview.md); codegen paths |
 | **G-def** | `def` / `object` / visibility | Handbook surface | **Partial+** — methods/`self`, `private def`, MIR in-out write-back (**2j-a/b/c**); inheritance/traits open (**2j-d–f**) | **2j** | `li-tests/encapsulation/`, `composable/import_physics_runtime.li` |
 | **G-oop** | Full OOP | Methods, traits, inheritance, cross-module encapsulation | **Partial** — **2j-a…f** surface done; Lean `ensures` on methods / trait laws open | **2j** | `li-tests/encapsulation/trait_*.li`, `method_call_requires_*.li` |
@@ -88,6 +88,7 @@ Status legend: **Missing** · **Stub** · **Partial** · **CI only** · **Done**
 | **G-wrong-spec** | User contracts | Correct theorem | **Social** — tool cannot fix | — | Review culture |
 | **G-narrow** | Narrowing conversions | Ariane-class truncations rejected without proof | **Partial** — policy rejects `cast[`; width types + proved narrowing pending | **2e** | `historic_ariane5_narrowing.li` |
 | **G-authz** | Capability / IDOR | Object capabilities in OS services | **Missing** | OS phase | `historic-bugs.toml` firefly-iii-idor |
+| **G-test-verify** | Manifest honesty | `verify_ok` vs Lean QED | **Done** — `prove_lean_ok` outcome; 14 closed `contracts_verify` rows | **2f** | `li-tests/run_all.sh`, `li-tests/manifest.toml`, `contracts_discharge_corpus.sh` |
 
 ---
 
@@ -155,7 +156,7 @@ flowchart LR
 | `li-tests/race_shared_memory/` | Policy + typecheck **reject** bad parallel patterns (not Lean) |
 | `li-tests/decorator_exploits/` | **Planned** — reserved names, macro hijack (7d-e) |
 | `li-tests/math_linalg/` | **Partial** — 1d/2d `@`, element-wise, matmul compile tests (2i/7e) |
-| `li-tests/contracts_verify/` | **Partial** — `sqrt_contract` float Props; **P-linalg** closed int dot/sum/matmul entry; `linalg_dot4_int_loop_open` intentional open |
+| `li-tests/contracts_verify/` | **Partial** — 14× `prove_lean_ok` closed corpus; `sqrt_open_bound` intentional open (`verify_open_ok`); refinements on `verify_ok` |
 | `li-tests/tooling/discharge_linalg_int_lean.sh` | P-linalg closed specimens → zero open AutoVC goals |
 | `li-tests/tooling/vc_emit_contracts.sh` | `sqrt_contract` AutoVC uses `≥` / `Float.abs`, not `True` stubs |
 | `li-tests/tooling/discharge_trivial_lean.sh` | `discharge_trivial.li` → zero open Prop goals + `lake build` when Lean installed |

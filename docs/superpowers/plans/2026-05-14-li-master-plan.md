@@ -464,7 +464,7 @@ Track in phase **Doc** until each is checked:
 - [x] Phase 8c — ed25519 + `proof_digest` in lock — **v1:** lock fields + optional `publisher.key` signing
 - [x] Phase 8d — Registry + `lip publish` — **v1:** local `registry/index.json` + publish gate (`lit` + `lic`)
 - [x] Phase 8-sync — cross-repo workflows; optional PAT scope fix for `repository_dispatch`
-- [ ] Phase 8p — Parallel compile + CI throughput — **partial:** Ninja `-j` for C++ only; `lic --jobs` reserved not wired; `run_all.sh` / workspace sequential ([§ 8p](#phase-8p--parallel-compile--ci-throughput))
+- [ ] Phase 8p — Parallel compile + CI throughput — **partial (8p-a):** `LI_TEST_JOBS` / `run_all.sh -j` + per-worker `LI_BUILD_DIR` (`scripts/lib/li-jobs.sh`, `platform.hpp`); CI sets parallel default; **open:** 8p-b workspace pool, 8p-c frontend `--jobs`, wall-time SLO ([§ 8p](#phase-8p--parallel-compile--ci-throughput))
 - [x] Phase Doc-a — Gap register current + site links ([provability-gaps](../verification/provability-gaps.md))
 - [x] Phase Doc-b — Handbook stubs (decorators, linear-algebra); audit partial
 - [x] Phase Doc-c — Phase 02 plan links **G-*** IDs (expand to 03/07 as those land)

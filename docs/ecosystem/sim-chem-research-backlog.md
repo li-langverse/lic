@@ -11,7 +11,7 @@ todos:
 
 - id: chem-r0-sota-survey
   content: "Gaussian/ORCA/Psi4/PySCF minimal workflows; map to QM registry 401–432"
-  status: pending
+  status: completed
   study_only: true
 
 - id: chem-r1-basis-size-scaling

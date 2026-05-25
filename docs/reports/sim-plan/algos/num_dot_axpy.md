@@ -46,3 +46,5 @@ Implemented `dot_f64_8`, `axpy_f64_8`, `num_dot_axpy_smoke_checksum()` in `math.
 **2026-05-25 (code_implementer, gate refresh):** Re-ran `./scripts/sim-plan-gates.sh`; composable `import_math_numerics_dot_axpy.li` **ok** (checksum ≈ 98.0); `matmul_naive` pure-Li verify **ok** (result=161055.19); scoped timing: `simd_dot` Li ≈ 0.0170s, `matmul_naive` Li ≈ 0.0017s. Relaxed `min_li_seconds` for `matmul_naive` (0.002→0.0015) so faster pure-Li codegen does not false-fail the anti-DCE guard.
 
 **2026-05-25 (code_implementer, sim-p1-num-dot-axpy @ `cdba8dd7`):** Gates green on isolated clone (`LIC_ROOT=$PWD`, `SIM_PLAN_PACKAGE=li-math-numerics`); composable checksum ≈ 98.0; tier-1 verify all five benches pass; `simd_dot` Li ≈ 0.0170s, `matmul_naive` Li ≈ 0.0016s. Iteration: [20260525-122048](../iterations/20260525-122048.md).
+
+**2026-05-25 (code_implementer, gate refresh @ `995ff71e`):** `./scripts/sim-plan-gates.sh` with `SIM_PLAN_PACKAGE=li-math-numerics` — composable **ok**, tier-1 timing/memory recorded; registry 44/126 smokes. Iteration: [20260525-124239](../iterations/20260525-124239.md).

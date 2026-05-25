@@ -6,10 +6,6 @@ All notable changes to Li are documented here. The format follows
 
 ## [Unreleased]
 
-### Fixed
-
-- **PH-HW WP2 li-render:** replace unsupported `else:` with sequential `if` + float FPS tick; `lic check` green on render smokes and `import_render_wgpu_fps.li` — [2026-05-25-ph-hw-wp2-li-render-else-fix.md](docs/release-notes/2026-05-25-ph-hw-wp2-li-render-else-fix.md).
-
 ### Added
 
 - **PH-HW integration (`lig` + studio gap):** Rollup for multi-vendor GPU work packages WP1–WP5 ([#217](https://github.com/li-langverse/lic/pull/217), [#218](https://github.com/li-langverse/lic/pull/218), [#213](https://github.com/li-langverse/lic/pull/213), [#220](https://github.com/li-langverse/lic/pull/220), [#222](https://github.com/li-langverse/lic/pull/222)) and merged `studio-gap-close-wave1` (UX/MCP/sim/world) on `feat/ph-hw-multi-vendor` — [2026-05-25-lig-ph-hw-integration.md](docs/release-notes/2026-05-25-lig-ph-hw-integration.md).
@@ -18,16 +14,16 @@ All notable changes to Li are documented here. The format follows
 - **PH-HW HW-0 lig.device** — `packages/lig` (rename from `li-gpu`): `lig_device_kind`, `lig_backend_*`, `lig_parse_toml_backend_line`, `li_rt_lig_*`; `li-render` `native_pixels` via `lig_present_surface_ok()` — [2026-05-25-ph-hw-lig-device.md](docs/release-notes/2026-05-25-ph-hw-lig-device.md).
 
 - **PH-HW HW-1 lig.present** — `packages/lig` swapchain/present contracts, `li-render` host FPS ticks, `li-studio` shell present glue, `packages/lig/bench/wgpu_smoke.toml` — [2026-05-25-lig-present-hw1.md](docs/release-notes/2026-05-25-lig-present-hw1.md).
-- **PH-SIM SIM-1 sim step stub** — `sim_reset` / `sim_step` on `SimSessionStub`, `studio_sim_step_hook`; smokes `sim_step_stub.li`, `import_studio_sim_step_stub.li` — [2026-05-25-sim-step-sim1-stub.md](docs/release-notes/2026-05-25-sim-step-sim1-stub.md).
-- **Studio per-vertical demos (UX-14)** — `packages/li-studio/examples/verticals/`, native-only `docs/demo/media/studio-verticals-demo.mp4` via `studio-verticals-capture-native.sh` (HTML mocks archived under `deploy/studio-demo/archive/`), smoke `studio_vertical_profile_roundtrip.li` — [2026-05-25-studio-vertical-demos.md](docs/release-notes/2026-05-25-studio-vertical-demos.md).
-
-
 - **PH-SIM SIM-0 studio→sim profile bridge** — `li_sim_profile_from_studio_id`, `SimSessionStub`, `studio_apply_profile_to_sim`; smokes `studio_profile_bridge.li`, `import_studio_sim_profile_bridge.li` — [2026-05-25-studio-sim-profile-bridge.md](docs/release-notes/2026-05-25-studio-sim-profile-bridge.md).
 - **li-world PH-GD-2 scaffold** — text `world_v1` line save/load, `WorldSnapshot`, in-memory buffer round-trip — [2026-05-25-li-world-scaffold.md](docs/release-notes/2026-05-25-li-world-scaffold.md).
 - **Studio UX-04/07 gap-close** — native command palette overlay + empty inspector/viewport composables in `li-studio`/`li-ui`/`li-gui`; smokes `studio_command_palette.li`, `studio_empty_states.li`, `studio_palette.li`.
 - **Studio MCP tool contracts (PH-AGENT / AGENT-0)** — `packages/li-studio` tool IDs, agent chrome `StudioAgentToolRequest`, `docs/game-dev/studio-mcp-tools.md` — [2026-05-25-studio-mcp-tool-contracts.md](docs/release-notes/2026-05-25-studio-mcp-tool-contracts.md).
 - **Studio UX-09 keyboard-first** — `gui_handle_studio_key`, `StudioKeyBinding`, `InputState.key_cmd_k` / `key_digit`, smoke `studio_keyboard.li` — [2026-05-25-studio-keyboard-ux09.md](docs/release-notes/2026-05-25-studio-keyboard-ux09.md).
 - **Studio UX-09 SDL ingest stub** — `studio_shell_input_probe.c`, `studio-shell-sdl-tick.sh`, `studio-shell-input-bridge.md`, smoke `studio_keyboard_input_json.li` — [2026-05-25-studio-shell-input-bridge-ux09.md](docs/release-notes/2026-05-25-studio-shell-input-bridge-ux09.md).
+
+### Fixed
+
+- **Runtime linker:** `li_rt_lig.c` exports only `kernel_run` / validity ratio; device/present/backend symbols remain in `li_rt.c` (fixes duplicate-symbol CI on user `lic build` links).
 
 ### Changed
 

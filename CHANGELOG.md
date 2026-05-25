@@ -12,6 +12,8 @@ All notable changes to Li are documented here. The format follows
 
 ### Added
 
+- **Bench fill WP1:** tier-1 micro harnesses for all catalog `num_*` + `fft_1d_fixed` (`benchmarks/tier1_micro/`, `bench.py` `_WP1_NUM_IDS`, `scripts/gen_wp1_tier1_num_harnesses.py`) — [2026-05-25-tier1-num-fft-harnesses-wp1.md](docs/release-notes/2026-05-25-tier1-num-fft-harnesses-wp1.md).
+
 - **Bench fill WP4:** compile smokes for `qm_*`, `auto_*`, `ml_*`, `viz_*` catalog rows (`catalog_smoke.py`, 45× `li/main.li`) — [2026-05-25-bench-fill-wp4-qm-auto-ml-viz.md](docs/release-notes/2026-05-25-bench-fill-wp4-qm-auto-ml-viz.md).
 - **PH-DB master plan cross-link:** phase map row + `ph-db-lidb-platform.md` appendix; **PH-8d-v2 → PH-DB-4** — [2026-05-25-ph-db-master-plan-crosslink.md](docs/release-notes/2026-05-25-ph-db-master-plan-crosslink.md).
 - **Studio UX Wave 2 P2 (HTML mocks 16–18):** command palette, reel motion, end CTA scenes — [2026-05-25-studio-ux-wave2-16-18.md](docs/release-notes/2026-05-25-studio-ux-wave2-16-18.md).

@@ -1,7 +1,9 @@
-# proof-db — compiler release regression
-See [docs/verification/proof-database.md](../docs/verification/proof-database.md).
+# proof-db
+
+Lemma pins and discrepancy analysis vs `docs/semantics/Discharge.lean`.
+
 ```bash
-./scripts/check-proof-db.sh
-./scripts/check-proof-db-release.sh
-LI_PROOF_DB_STRICT=1 ./scripts/check-proof-db-release.sh
+python3 scripts/proof-db/compare_reference.py --write
 ```
+
+See [`../proof-database/DISCREPANCIES.md`](../proof-database/DISCREPANCIES.md).

@@ -1,3 +1,7 @@
-# `proof-db/`
+# Proof database
 
-Lemma pin directory (`corpus_root` in [schema.toml](../docs/verification/proof-database/schema.toml)). Hub: [proof-database README](../docs/verification/proof-database/README.md).
+| Vertical | Path | IDs |
+|----------|------|-----|
+| Classical physics | [physics/](physics/) | AX-PHYS-*, LEM-PHYS-* |
+
+Hub: [proof-database.md](../docs/verification/proof-database.md).

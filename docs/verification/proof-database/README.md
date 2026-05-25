@@ -1,43 +1,41 @@
-# Proof database
+# Proof database entries (`docs/verification/proof-database/`)
 
-**Schema:** [schema.toml](schema.toml) · **CLI:** `scripts/proof-db/proof-db.py`
+**Audience:** agents extending **P-physics** and tier-2 bench oracles without weakening discharge honesty.
 
-## Purpose
+**Index:** [proof-database.md](../proof-database.md) · [Provability gaps](../provability-gaps.md) (**G-physics**, **G-proof-db**) · [Proof corpus roadmap](../proof-corpus-roadmap.md) · **Schema:** [schema.toml](schema.toml)
 
-Versioned **axiom → lemma → discharge status** vs `last_verified_lic_commit`. Complements [provability gaps](../provability-gaps.md) (`G-*`) and [proof corpus roadmap](../proof-corpus-roadmap.md) (`P-*`). `discrepancy` = triage gap, not “Li is wrong”.
+## Discrepancy taxonomy (`gap_kind`)
 
-## Entry fields
+| `gap_kind` | Meaning | Typical action |
+|------------|---------|----------------|
+| **`proof_gap`** | Statement is in scope for Lean/`contracts_verify`; specimen or `Discharge.lean` stub exists but kernel discharge is incomplete | Add lemma, wire `li_specimen`, run `discharge_*_lean.sh` |
+| **`modeling_gap`** | Tier-2 `extern` or numeric driver uses weak `ensures` / wrong abstraction vs textbook claim | Fix kernel spec or bench oracle first; do **not** mark `proved` on `ensures true` alone |
+| **`none`** | Row matches `Discharge.lean` or closed specimen | Refresh `last_verified_lic_commit` on compiler change |
 
-| Field | Required |
-|-------|----------|
-| `id`, `kind`, `field`, `statement`, `proof_status` | yes |
-| `lean_module`, `last_verified_lic_commit` | yes |
-| `li_specimen`, `lean_thm`, `gap_id`, `backlog_id`, `evidence`, `notes` | optional |
-
-`proof_status`: `proved` | `open` | `discrepancy` | `axiomatic`.  
-`kind`: `axiom` | `lemma`.  
-`field`: `math` | `physics` | `compiler` | `linalg` | `trust`.
+`proof_status = discrepancy` (schema) means catalog vs spec/Lean/MIR disagree — triage before blaming the compiler.
 
 ## Layout
 
-- `entries/*.toml` — bulk `[[entry]]` tables  
-- `proof-db/lemmas/*.toml` — optional single-row pins (`corpus_root`)
+| Path | Role |
+|------|------|
+| [entries/physics-mechanics.toml](entries/physics-mechanics.toml) | `P-AX-MECH-001` … `003` |
+| [entries/physics-conservation.toml](entries/physics-conservation.toml) | `P-AX-CONS-001` … `002` |
+| [entries/physics-dimensions.toml](entries/physics-dimensions.toml) | `P-AX-DIM-001` … `002` |
+| [entries/physics-lemmas.toml](entries/physics-lemmas.toml) | `P-LM-*` |
 
-## Agents
+## Tier-2 bench refs
 
-```bash
-python3 scripts/proof-db/proof-db.py list
-python3 scripts/proof-db/proof-db.py verify-slice
-python3 scripts/proof-db/proof-db.py add-entry --kind lemma --id P-new \
-  --field linalg --status open --statement "..." \
-  --lean-module build/generated/AutoVC.lean \
-  --li-specimen li-tests/contracts_verify/foo.li --gap-id G-math
-```
+| Bench id | Path under `lic` |
+|----------|------------------|
+| `three_body` | `benchmarks/tier2_physics/three_body/` |
+| `nbody_gravity` | `benchmarks/tier2_physics/nbody_gravity/` |
+| `md_lennard_jones` | `benchmarks/tier2_physics/md_lennard_jones/` |
 
-Update **G-proof-db** in provability-gaps in the same PR.
+**Harness:** `benchmarks/harness/bench.py` → `TIER2_BENCHES`. **Org catalog:** `li-langverse/benchmarks` `catalog.toml`.
 
-## Learned from
+## Agent workflow
 
-- **Lean mathlib** — stable ids + theorem naming  
-- **Coq stdlib** — axiom/lemma layering  
-- **Dafny corpus** — specimen + evidence scripts per row  
+1. Read [proof-database.md](../proof-database.md) and the relevant `entries/physics-*.toml`.
+2. Edit `docs/semantics/Discharge.lean` only for scalar lemmas; keep **modeling_gap** on axiom rows until kernels export real `ensures`.
+3. Run `python3 scripts/proof-db/proof-db.py verify-slice` when CLI is on the branch.
+4. Update **G-physics** in [provability-gaps.md](../provability-gaps.md) in the same PR.

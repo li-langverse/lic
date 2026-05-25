@@ -84,4 +84,35 @@ def refinement_nonneg_spec (n : Int) : Prop := n ≥ (0 : Int)
 
 theorem refinement_nonneg_lit_proved (n : Int) (hn : n ≥ (0 : Int)) : refinement_nonneg_spec n := hn
 
+/-!
+## Classical physics (**P-physics** / proof-database)
+
+Scalar point-mass stubs aligned with `docs/verification/proof-database/entries/physics-*.toml`.
+Tier-2 drivers remain **modeling_gap** until extern kernels export real `ensures`.
+-/
+
+/-- Kinetic energy T = ½ m v² (P-LM-ENERGY-001). -/
+def kinetic_energy_spec (m v T : Float) : Prop :=
+  T = (0.5 : Float) * m * v * v
+
+theorem kinetic_energy_def_consistent (m v : Float) :
+    kinetic_energy_spec m v ((0.5 : Float) * m * v * v) := rfl
+
+/-- Linear momentum p = m v (P-LM-MOM-001). -/
+def linear_momentum_spec (m v p : Float) : Prop :=
+  p = m * v
+
+theorem linear_momentum_linear_stub (m v : Float) :
+    linear_momentum_spec m v (m * v) := rfl
+
+/-- Newton second law scalar stub (P-AX-MECH-002 witness). -/
+def force_equals_mass_accel_spec (m a F : Float) : Prop :=
+  F = m * a
+
+theorem force_equals_mass_accel_stub (m a : Float) :
+    force_equals_mass_accel_spec m a (m * a) := rfl
+
+/-- Dimensional homogeneity — placeholder until unit types exist (P-AX-DIM-001). -/
+theorem dimensional_homogeneity_placeholder : True := trivial
+
 end Li.Discharge

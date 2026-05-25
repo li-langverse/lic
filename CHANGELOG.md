@@ -8,6 +8,8 @@ All notable changes to Li are documented here. The format follows
 
 ### Added
 
+- **PH-HW WP1:** `lig` governance RFC, kernel catalog (`lig.kernel.*`), and `benchmarks/competitive/lig-kernels.toml` schema — `docs/release-notes/2026-05-25-lig-ph-hw-work-packages.md`.
+
 - **PH-SIM SIM-0 studio→sim profile bridge** — `li_sim_profile_from_studio_id`, `SimSessionStub`, `studio_apply_profile_to_sim`; smokes `studio_profile_bridge.li`, `import_studio_sim_profile_bridge.li` — [2026-05-25-studio-sim-profile-bridge.md](docs/release-notes/2026-05-25-studio-sim-profile-bridge.md).
 - **li-world PH-GD-2 scaffold** — text `world_v1` line save/load, `WorldSnapshot`, in-memory buffer round-trip — [2026-05-25-li-world-scaffold.md](docs/release-notes/2026-05-25-li-world-scaffold.md).
 - **Studio UX-04/07 gap-close** — native command palette overlay + empty inspector/viewport composables in `li-studio`/`li-ui`/`li-gui`; smokes `studio_command_palette.li`, `studio_empty_states.li`, `studio_palette.li`.
@@ -20,6 +22,7 @@ All notable changes to Li are documented here. The format follows
 - **LLVM toolchain:** pin **22** (was 18) — `scripts/llvm-env.sh`, `scripts/ci-install-llvm.sh`, CMake gate — [2026-05-22-llvm-22-toolchain-bump.md](docs/release-notes/2026-05-22-llvm-22-toolchain-bump.md).
 
 ### Added
+
 
 - **HTTPd pkg-workspace:** Phase-H httpd packages aligned via `scripts/li-new-package` + lip § A3; `packages/li.toml` workspace members; `check-pkg-workspace` gate — [2026-05-22-pkg-workspace-httpd.md](docs/release-notes/2026-05-22-pkg-workspace-httpd.md).
 - **tier5_http nginx-src-audit:** nginx `release-1.26.2` submodule + read-only `nginx_mitigations.toml` (no `li_done`); `audit_nginx_src.py` + `check-tier5-nginx-src-audit.sh` — [2026-05-22-nginx-src-audit.md](docs/release-notes/2026-05-22-nginx-src-audit.md).
@@ -65,6 +68,7 @@ All notable changes to Li are documented here. The format follows
 - **Proof CLI flags:** `lic build` / `lic verify` use `--allow-open-vc` and `--no-lean-verify` instead of `LI_ALLOW_OPEN_VC` / `LI_BUILD_VERIFY_LEAN*` env bypasses (env vars ignored with warning).
 
 ### Added
+
 
 - **HTTPd autonomous plan loop:** `scripts/httpd-plan-loop.py`, `httpd-plan-gates.sh`, baseline doc, goal-directed `code_implementer` via li-cursor-agents — [2026-05-22-httpd-plan-autonomous-loop.md](docs/release-notes/2026-05-22-httpd-plan-autonomous-loop.md).
 - **HTTPd M1 core (rate limits):** `limits.rate_limit_rps` required for `proxy:` routes in Python validator + desugar; goal-directed `code_implementer` plan loop — [2026-05-22-httpd-m1-core-rate-limits.md](docs/release-notes/2026-05-22-httpd-m1-core-rate-limits.md).
@@ -118,6 +122,7 @@ All notable changes to Li are documented here. The format follows
 
 ### Added
 
+
 - **`httpd_serve_routed_once`** — M1 one-shot accept + `match_route` for `GET /health` (oracle; parallel with httpd-m1-impl/perf PRs); see `docs/release-notes/2026-05-20-httpd-serve-routed-once.md`.
 
 - **`lic httpd validate-config`** — **E0501–E0504** for io/route key/traversal/overlap; `httpd_serve_once` + `route_key_valid`; see `docs/release-notes/2026-05-20-httpd-validate-serve.md`.
@@ -131,6 +136,7 @@ All notable changes to Li are documented here. The format follows
 - Docs: post-PR **#83** sync — [proof-corpus-roadmap](docs/verification/proof-corpus-roadmap.md) run results (16/16 `contracts_verify`); [httpd-prerequisites](docs/ecosystem/httpd-prerequisites.md) P0-lean partial; master plan + httpd plan tables; see [2026-05-20-post-83-docs-sync](docs/release-notes/2026-05-20-post-83-docs-sync.md).
 
 ### Added
+
 
 - Call-site callee **`requires`**: VCs for all resolved callees (incl. **`extern`** + imports); **E0304** with plain-language precondition text when provably false; const-local discharge (`var y = 5`); **`lic build` fails on open `AutoVC`** unless `LI_ALLOW_OPEN_VC=1`; see `docs/release-notes/2026-05-20-call-site-requires-full-gate.md`.
 - **Refinement types** at calls and `var` inits: `{x: int | …}` / aliases (e.g. `NonNeg`); **E0305** when provably outside the bound; **`if n >= 0`** branch discharge; call-site Lean VCs; see `docs/language/refinement-types.md` and `docs/release-notes/2026-05-20-refinement-call-check.md`.
@@ -182,6 +188,7 @@ All notable changes to Li are documented here. The format follows
 
 ### Added
 
+
 - Agent-first JSON diagnostics: `lic check --format=json`, `lic diagnose` (`docs/schemas/diagnostic-v1.json`)
 - LLM-first design research stub, agent handover comparison, `li-agent-manifest.toml`
 - `scripts/lic-fix-suggest.sh`, `scripts/gen-li-agent-manifest.sh`, `li-tests/tooling/diagnose_json_smoke.sh`
@@ -190,6 +197,7 @@ All notable changes to Li are documented here. The format follows
 ## [0.1.0] - 2026-05-14
 
 ### Added
+
 
 - C++ `lic` compiler skeleton: lexer, parser, typechecker, MIR, LLVM codegen
 - Mandatory contracts gate (`requires` / `ensures` / `decreases`)

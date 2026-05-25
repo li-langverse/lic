@@ -20,7 +20,7 @@ Cross-cutting program IDs. Implementation order respects dependencies in the vis
 | **PH-ML** | ML-0…5 | PH-HW-1 |
 | **PH-AGENT** | AGENT-0…6 | `lic check --format=json` |
 | **PH-PORT** | PORT-0…2 | LLVM triples |
-| **PH-HW** | HW-0…4 | `li-gpu` |
+| **PH-HW** | HW-0…4 | `lig` (WP1 governance; WP2+ `packages/lig`) |
 | **PH-COMPLY** | COMPLY-0…4 | governance |
 
 **Next execution milestones:** RFC stubs (landed) → `li-studio` scaffold (PH-GD-1) → `li-sim` step API (PH-SIM-1).

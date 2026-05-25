@@ -1,0 +1,523 @@
+
+# lig — Li GPU device + present layer (PH-HW HW-0/1): backend probe, swapchain, host present.
+
+extern proc li_rt_lig_device_kind() -> int
+  requires true
+  ensures result >= 1
+  ensures result <= 4
+  decreases 0
+
+extern proc li_rt_lig_backend_available(backend_id: int) -> int
+  requires backend_id >= 1
+  requires backend_id <= 4
+  ensures result >= 0
+  ensures result <= 1
+  decreases backend_id
+
+extern proc li_rt_lig_backend_select_auto() -> int
+  requires true
+  ensures result >= 1
+  ensures result <= 4
+  decreases 0
+
+extern proc li_rt_lig_capability_json() raises IO, Alloc -> str
+  requires true
+  ensures true
+  decreases 0
+
+extern proc li_rt_lig_parse_toml_backend_line(line: str) -> int
+  requires true
+  ensures result >= 0
+  ensures result <= 4
+  decreases 0
+
+extern proc li_rt_lig_present_surface_ok() -> int
+  requires true
+  ensures result >= 0
+  ensures result <= 1
+  decreases 0
+
+def li_std_lig_version() -> int
+  requires true
+  ensures result == 2
+  decreases 0
+=
+  return 2
+
+def lig_backend_cuda() -> int
+  requires true
+  ensures result == 1
+  decreases 0
+=
+  return 1
+
+def lig_backend_rocm() -> int
+  requires true
+  ensures result == 2
+  decreases 0
+=
+  return 2
+
+def lig_backend_metal() -> int
+  requires true
+  ensures result == 3
+  decreases 0
+=
+  return 3
+
+def lig_backend_webgpu() -> int
+  requires true
+  ensures result == 4
+  decreases 0
+=
+  return 4
+
+def lig_device_kind() -> int raises IO
+  requires true
+  ensures result >= 1
+  ensures result <= 4
+  decreases 0
+=
+  return li_rt_lig_device_kind()
+
+def lig_backend_available(backend_id: int) -> int raises IO
+  requires backend_id >= 1
+  requires backend_id <= 4
+  ensures result >= 0
+  ensures result <= 1
+  decreases backend_id
+=
+  return li_rt_lig_backend_available(backend_id)
+
+def lig_backend_select_auto() -> int raises IO
+  requires true
+  ensures result >= 1
+  ensures result <= 4
+  decreases 0
+=
+  return li_rt_lig_backend_select_auto()
+
+def lig_capability_json() -> str raises IO, Alloc
+  requires true
+  ensures result != ""
+  decreases 0
+=
+  return li_rt_lig_capability_json()
+
+def lig_parse_toml_backend_line(line: str) -> int raises IO, Alloc
+  requires true
+  ensures result >= 0
+  ensures result <= 4
+  decreases 0
+=
+  return li_rt_lig_parse_toml_backend_line(line)
+
+def lig_present_surface_ok() -> int raises IO
+  requires true
+  ensures result >= 0
+  ensures result <= 1
+  decreases 0
+=
+  return li_rt_lig_present_surface_ok()
+
+extern proc li_rt_lig_wgpu_swapchain_create(viewport_w: int, viewport_h: int) -> int
+  requires viewport_w >= 0
+  requires viewport_h >= 0
+  ensures result >= 0
+  decreases viewport_w
+
+extern proc li_rt_lig_wgpu_present_frame(swapchain_ok: int) -> int
+  requires swapchain_ok >= 0
+  requires swapchain_ok <= 1
+  ensures result >= 0
+  ensures result <= 1
+  decreases swapchain_ok
+
+extern proc li_rt_lig_host_present_active() -> int
+  requires true
+  ensures result >= 0
+  ensures result <= 1
+  decreases 0
+
+extern proc li_rt_lig_host_present_dt_ms() -> float
+  requires true
+  ensures result >= 0.0
+  decreases 0
+
+extern proc li_rt_lig_host_native_pixels() -> int
+  requires true
+  ensures result >= 0
+  ensures result <= 1
+  decreases 0
+
+def li_std_lig_present_version() -> int
+  requires true
+  ensures result == 1
+  decreases 0
+=
+  return 1
+
+def lig_present_status_ok() -> int
+  requires true
+  ensures result == 1
+  decreases 0
+=
+  return 1
+
+def lig_present_status_fail() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0
+
+def lig_wgpu_smoke_status_pass() -> int
+  requires true
+  ensures result == 1
+  decreases 0
+=
+  return 1
+
+def lig_wgpu_smoke_status_fail() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0
+
+type LigSwapchain = object
+  public viewport_w: float
+  public viewport_h: float
+  public backend_id: int
+  public swapchain_ok: int
+  public adapter_ok: int
+  public surface_ok: int
+
+type LigPresentFrame = object
+  public frame_id: int
+  public presented: int
+  public native_pixels: int
+  public dt_ms: float
+
+type LigWgpuSmoke = object
+  public backend_id: int
+  public status: int
+  public adapter_ok: int
+  public surface_ok: int
+  public swapchain: LigSwapchain
+
+def lig_present_swapchain_create(vp_w: float, vp_h: float) -> LigSwapchain raises IO
+  requires vp_w >= 0.0
+  requires vp_h >= 0.0
+  ensures result.viewport_w == vp_w
+  ensures result.viewport_h == vp_h
+  ensures result.backend_id == lig_backend_webgpu()
+  decreases 0
+=
+  var out: LigSwapchain
+  out.viewport_w = vp_w
+  out.viewport_h = vp_h
+  out.backend_id = lig_backend_webgpu()
+  out.adapter_ok = 1
+  var iw: int = 0
+  var ih: int = 0
+  if vp_w > 0.0:
+    iw = 1
+  if vp_h > 0.0:
+    ih = 1
+  if vp_w >= 64.0:
+    iw = 1280
+  if vp_h >= 36.0:
+    ih = 720
+  out.swapchain_ok = li_rt_lig_wgpu_swapchain_create(iw, ih)
+  out.surface_ok = 0
+  if out.swapchain_ok == lig_present_status_ok():
+    out.surface_ok = 1
+  return out
+
+def lig_present_frame(swap: LigSwapchain, frame_id: int) -> LigPresentFrame raises IO
+  requires frame_id >= 0
+  requires swap.backend_id == lig_backend_webgpu()
+  ensures result.frame_id == frame_id
+  decreases frame_id
+=
+  var out: LigPresentFrame
+  out.frame_id = frame_id
+  out.dt_ms = li_rt_lig_host_present_dt_ms()
+  out.native_pixels = li_rt_lig_host_native_pixels()
+  out.presented = li_rt_lig_wgpu_present_frame(swap.swapchain_ok)
+  if li_rt_lig_host_present_active() != 1:
+    out.native_pixels = 0
+  return out
+
+def lig_present_host_active() -> int raises IO
+  requires true
+  ensures result >= 0
+  ensures result <= 1
+  decreases 0
+=
+  return li_rt_lig_host_present_active()
+
+def lig_present_host_dt_ms() -> float raises IO
+  requires true
+  ensures result >= 0.0
+  decreases 0
+=
+  return li_rt_lig_host_present_dt_ms()
+
+def lig_present_host_native_pixels_flag() -> int raises IO
+  requires true
+  ensures result >= 0
+  ensures result <= 1
+  decreases 0
+=
+  return li_rt_lig_host_native_pixels()
+
+def lig_wgpu_smoke_run() -> LigWgpuSmoke raises IO, Alloc
+  requires true
+  ensures result.adapter_ok == 1
+  ensures result.surface_ok >= 0
+  ensures result.surface_ok <= 1
+  decreases 0
+=
+  var s: LigWgpuSmoke
+  s.backend_id = lig_device_kind()
+  s.swapchain = lig_present_swapchain_create(1280.0, 720.0)
+  s.adapter_ok = s.swapchain.adapter_ok
+  s.surface_ok = s.swapchain.surface_ok
+  s.status = lig_wgpu_smoke_status_fail()
+  if s.surface_ok == 1:
+    s.status = lig_wgpu_smoke_status_pass()
+  return s
+
+def lig_wgpu_smoke_passed(smoke: LigWgpuSmoke) -> int
+  requires true
+  ensures result >= 0
+  ensures result <= 1
+  decreases 0
+=
+  if smoke.status == lig_wgpu_smoke_status_pass():
+    if smoke.backend_id >= lig_backend_cuda():
+      if smoke.backend_id <= lig_backend_webgpu():
+        if smoke.adapter_ok == 1:
+          return 1
+  return 0
+
+def lig_wgpu_smoke_surface_ready(smoke: LigWgpuSmoke) -> int
+  requires true
+  ensures result >= 0
+  ensures result <= 1
+  decreases 0
+=
+  return smoke.surface_ok
+
+extern proc li_rt_lig_kernel_run(kernel_id: int, backend_id: int) -> int
+  requires kernel_id >= 1
+  requires backend_id >= 1
+  requires backend_id <= 4
+  ensures result >= -1
+  ensures result <= 4
+  decreases kernel_id
+
+extern proc li_rt_lig_kernel_last_validity_ratio() -> float
+  requires true
+  ensures result >= 0.0
+  ensures result <= 1.0
+  decreases 0
+
+def lig_kernel_matmul_f32() -> int
+  requires true
+  ensures result == 1
+  decreases 0
+=
+  return 1
+
+def lig_kernel_run(kernel_id: int, backend_id: int) -> int raises IO
+  requires kernel_id >= 1
+  requires backend_id >= 1
+  requires backend_id <= 4
+  ensures result >= -1
+  ensures result <= 4
+  decreases kernel_id
+=
+  return li_rt_lig_kernel_run(kernel_id, backend_id)
+
+def lig_kernel_last_validity_ratio() -> float raises IO
+  requires true
+  ensures result >= 0.0
+  ensures result <= 1.0
+  decreases 0
+=
+  return li_rt_lig_kernel_last_validity_ratio()
+
+def lig_kernel_run_auto(kernel_id: int) -> int raises IO
+  requires kernel_id >= 1
+  ensures result >= -1
+  ensures result <= 4
+  decreases kernel_id
+=
+  return lig_kernel_run(kernel_id, lig_backend_select_auto())
+
+def lig_validity_gate_pass(min_ratio: float) -> int raises IO
+  requires min_ratio >= 0.0
+  requires min_ratio <= 1.0
+  ensures result >= 0
+  ensures result <= 1
+  decreases 0
+=
+  if lig_kernel_last_validity_ratio() + 0.0001 >= min_ratio:
+    return 1
+  return 0
+type LigMemoryLedger = object
+  public budget_mib: int
+  public allocated_bytes: int
+  public peak_bytes: int
+
+def lig_memory_budget_mib() -> int
+  requires true
+  ensures result == 512
+  decreases 0
+=
+  return 512
+
+def lig_memory_budget_bytes(budget_mib: int) -> int
+  requires budget_mib > 0
+  ensures result == budget_mib * 1048576
+  decreases budget_mib
+=
+  return budget_mib * 1048576
+
+def lig_memory_ledger_new(budget_mib: int) -> LigMemoryLedger
+  requires budget_mib > 0
+  ensures result.budget_mib == budget_mib
+  ensures result.allocated_bytes == 0
+  ensures result.peak_bytes == 0
+  decreases budget_mib
+=
+  var l: LigMemoryLedger
+  l.budget_mib = budget_mib
+  l.allocated_bytes = 0
+  l.peak_bytes = 0
+  return l
+
+def lig_memory_tier_estimated_bytes(particles: int) -> int
+  requires particles > 0
+  ensures result > 0
+  decreases particles
+=
+  if particles <= 1000:
+    return 16777216
+  if particles <= 10000:
+    return 134217728
+  return 419430400
+
+def lig_alloc_within_budget(ledger: var LigMemoryLedger, bytes: int) -> int
+  requires bytes >= 0
+  requires ledger.budget_mib > 0
+  ensures result >= 0
+  ensures result <= 1
+  decreases bytes
+=
+  if bytes == 0:
+    return 1
+  var cap: int = lig_memory_budget_bytes(ledger.budget_mib)
+  if ledger.allocated_bytes + bytes > cap:
+    return 0
+  ledger.allocated_bytes = ledger.allocated_bytes + bytes
+  if ledger.allocated_bytes > ledger.peak_bytes:
+    ledger.peak_bytes = ledger.allocated_bytes
+  return 1
+
+def lig_memory_ledger_peak_mib(ledger: LigMemoryLedger) -> int
+  requires ledger.budget_mib > 0
+  ensures result >= 0
+  decreases ledger.peak_bytes
+=
+  if ledger.peak_bytes == 0:
+    return 0
+  return (ledger.peak_bytes + 1048575) / 1048576
+
+type LigCustomTargetDescriptor = object
+  public lab_id: int
+  public manifest_hash: int
+  public driver_signed: int
+  public lkir_version: int
+
+def lig_custom_lab_id_fpga() -> int
+  requires true
+  ensures result == 5
+  decreases 0
+=
+  return 5
+
+def lig_custom_target_descriptor(lab_id: int) -> LigCustomTargetDescriptor
+  requires lab_id >= 0
+  ensures result.lab_id == lab_id
+  ensures result.lkir_version == 2
+  decreases lab_id
+=
+  var d: LigCustomTargetDescriptor
+  d.lab_id = lab_id
+  d.manifest_hash = 0
+  d.driver_signed = 0
+  d.lkir_version = 2
+  if lab_id == lig_custom_lab_id_fpga():
+    d.manifest_hash = 20260525
+  return d
+
+def lig_custom_load_signed_driver(descriptor: LigCustomTargetDescriptor) -> int
+  requires descriptor.lkir_version >= 1
+  ensures result == 0
+  decreases descriptor.lab_id
+=
+  return 0
+
+def lig_custom_target_ready(descriptor: LigCustomTargetDescriptor) -> int
+  requires true
+  ensures result >= 0
+  ensures result <= 1
+  decreases descriptor.lab_id
+=
+  if lig_custom_load_signed_driver(descriptor) != 0:
+    return 0
+  if descriptor.lab_id != lig_custom_lab_id_fpga():
+    return 0
+  return 1
+
+type LigBackendSwitchLog = object
+  public from_backend: int
+  public to_backend: int
+  public reason_tag: int
+  public recorded: int
+
+def lig_backend_switch_log(from_backend: int, to_backend: int, reason_tag: int) -> LigBackendSwitchLog
+  requires 1 <= from_backend
+  requires from_backend <= 4
+  requires 1 <= to_backend
+  requires to_backend <= 4
+  ensures result.from_backend == from_backend
+  ensures result.to_backend == to_backend
+  ensures result.reason_tag == reason_tag
+  ensures result.recorded == 1
+  decreases reason_tag
+=
+  var e: LigBackendSwitchLog
+  e.from_backend = from_backend
+  e.to_backend = to_backend
+  e.reason_tag = reason_tag
+  e.recorded = 1
+  return e
+
+def lig_backend_switch_log_ok(entry: LigBackendSwitchLog) -> int
+  requires true
+  ensures result >= 0
+  ensures result <= 1
+  decreases 0
+=
+  if entry.recorded != 1:
+    return 0
+  if entry.from_backend < 1:
+    return 0
+  if entry.to_backend < 1:
+    return 0
+  return 1

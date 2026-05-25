@@ -43,7 +43,7 @@ Capture how Li language, tooling, and docs should minimize **token cost** for LL
 | `lic check --format=json` | **Implemented** — `docs/schemas/diagnostic-v1.json` |
 | `lic diagnose` | **Implemented** — JSON to stdout |
 | `scripts/lic-fix-suggest.sh` | **Stub** — jq hints from JSON |
-| Compact test manifest slice for agents | **Planned** — export from `li-tests/manifest.toml` |
+| Compact test manifest slice for agents | **Implemented** — `scripts/export-li-tests-agent-slice.sh` → `li-tests/agent-manifest.json` |
 | `lic edit --patch=json` | **Spec only** — compact edit IR |
 
 ### Docs & rules

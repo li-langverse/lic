@@ -710,7 +710,8 @@ def proxy_li_start(epfd: var int, slot: var int, hdr_end: int, keep: int) raises
   var up: int = httpd_upstream_acquire_i()
   if up < 0:
     return -1
-  var he: int = httpd_proxy_compact_req_hdr_i(slot, hdr_end)
+  var he0: int = httpd_inject_traceparent_slot_i(slot, hdr_end)
+  var he: int = httpd_proxy_compact_req_hdr_i(slot, he0)
   var ok: int = httpd_li_proxy_mark_active_i(epfd, slot, up, he, keep)
   if ok < 0:
     var reuse: int = 0
@@ -738,6 +739,12 @@ def proxy_accept_batch(epfd: var int, listen_fd: var int) raises Net, Alloc, IO 
     if slot < 0:
       tcp_close(conn)
       return accepted
+    if httpd_tls_enabled_i() == 1:
+      var tls_ok: int = httpd_tls_handshake_slot_i(slot, conn)
+      if tls_ok < 0:
+        tcp_close(conn)
+        httpd_slot_free(slot)
+        return accepted
     if httpd_epoll_add_client_i(epfd, conn, slot) < 0:
       tcp_close(conn)
       httpd_slot_free(slot)
@@ -752,6 +759,11 @@ def proxy_handle_client_in(epfd: var int, slot: var int) raises Net, Alloc, IO -
   ensures true
   decreases 0
 =
+  if httpd_tls_slot_h2_i(slot) == 1:
+    var h2_rc: int = httpd_h2_serve_slot_i(epfd, slot)
+    if h2_rc < 0:
+      return -1
+    return 0
   if httpd_li_proxy_active_i(slot) == 1:
     return 0
   var conn: int = httpd_slot_conn_i(slot)
@@ -774,6 +786,13 @@ def proxy_handle_client_in(epfd: var int, slot: var int) raises Net, Alloc, IO -
   var keep: int = 1
   if buf_has_connection_close(buf, hdr_end) == 1:
     keep = 0
+  var drained: int = httpd_drain_slot_i(conn, slot)
+  if drained == -2:
+    return -1
+  if drained == -1:
+    return -1
+  if drained == 1:
+    return 0
   var filled2: int = net_buf_len(slot)
   if filled2 <= hdr_end:
     if httpd_li_proxy_snap_ready_i() == 1:
@@ -818,6 +837,10 @@ def proxy_dispatch_hangup_loaded(epfd: var int) raises Net, Alloc, IO -> int
     return 0
   if proxy_epoll_tag_is_client(net_events_loaded_hi_i()) == 1:
     var slot_c: int = net_events_loaded_lo_i()
+    if httpd_li_proxy_active_i(slot_c) == 1:
+      var ec: int = epfd
+      httpd_li_proxy_finish_err_i(ec, slot_c)
+      return 0
     var conn_h: int = httpd_slot_conn_i(slot_c)
     epoll_ctl_del_i(epfd, conn_h)
     tcp_close(conn_h)
@@ -889,8 +912,10 @@ def httpd_upstream_proxy_epoll_loop(port: var int, root: var ptr) raises Net, Al
   decreases 0
 =
   if httpd_proxy_configured_i() != 1:
-    return 1
-  httpd_set_li_proxy_mode_i(1)
+    if httpd_tls_enabled_i() != 1:
+      return 1
+  if httpd_proxy_configured_i() == 1:
+    httpd_set_li_proxy_mode_i(1)
   httpd_prepare_root_i(root)
   var epfd: int = epoll_create1_i()
   if epfd < 0:
@@ -905,7 +930,10 @@ def httpd_upstream_proxy_epoll_loop(port: var int, root: var ptr) raises Net, Al
   var evbuf: ptr = net_buf_alloc(768)
   var running: int = 1
   while running == 1:
-    var n: int = epoll_wait_tagged_i(epfd, evbuf, 256)
+    httpd_tick_active_health_probes_i()
+    httpd_tick_sse_stream_idle_i(epfd)
+    var wait_ms: int = httpd_sse_idle_epoll_timeout_ms_i()
+    var n: int = epoll_wait_tagged_timeout_ms_i(epfd, evbuf, 256, wait_ms)
     if n <= 0:
       running = 1
     if n > 0:
@@ -968,6 +996,16 @@ def path_ends_with_conf(path: var ptr) raises IO -> int
     return 0
   return 1
 
+def httpd_begin_worker_pool() raises Net, Alloc, IO -> int
+  requires true
+  ensures true
+  decreases 0
+=
+  var n: int = httpd_fork_workers_i()
+  if n < 1:
+    return 1
+  return 0
+
 def httpd_run_from_runtime_config(path: var ptr) raises Net, Alloc, IO -> int
   requires true
   ensures true
@@ -980,6 +1018,10 @@ def httpd_run_from_runtime_config(path: var ptr) raises Net, Alloc, IO -> int
   var r: ptr = httpd_config_doc_root_i()
   if p <= 0:
     return 1
+  if httpd_begin_worker_pool() != 0:
+    return 1
+  if httpd_tls_enabled_i() == 1:
+    return httpd_upstream_proxy_epoll_loop(p, r)
   if httpd_proxy_configured_i() == 1:
     return httpd_upstream_proxy_epoll_loop(p, r)
   return httpd_serve_port_root(p, r)
@@ -998,6 +1040,8 @@ def httpd_run_from_argv() raises Net, Alloc, IO -> int
   var port_arg: ptr = li_rt_argv_i(1)
   var p: int = httpd_parse_port_i(port_arg)
   var r: ptr = li_rt_argv_i(2)
+  if httpd_begin_worker_pool() != 0:
+    return 1
   if li_rt_argc() >= 4:
     var backend_arg: ptr = li_rt_argv_i(3)
     var all_paths: int = 1

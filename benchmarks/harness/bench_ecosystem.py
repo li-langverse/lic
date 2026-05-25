@@ -170,7 +170,7 @@ def bench_async_runtime(*, runs: int, sha: str, cpu: str) -> list[dict[str, obje
             unit="s",
             sha=sha,
             cpu=cpu,
-            flags="async await chain d10 (sync reactor stub)",
+            flags="async await chain d10 (epoll/kqueue reactor)",
         )
     ]
 

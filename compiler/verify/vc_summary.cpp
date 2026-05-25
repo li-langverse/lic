@@ -12,6 +12,9 @@ void count_contracts(const std::vector<Contract>& contracts, VcSummary& out) {
       case ContractKind::Ensures:
         ++out.ensures_count;
         break;
+      case ContractKind::ProbEnsures:
+        ++out.prob_ensures_count;
+        break;
       case ContractKind::Decreases:
         ++out.decreases_count;
         break;

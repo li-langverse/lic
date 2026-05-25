@@ -611,7 +611,7 @@ void emit_call_site_requires(std::ostream& out, const Module& module, const Proc
         out << "theorem " << name << "_proved";
         append_call_site_vc_formals(out, module, caller, ref_idents);
         out << " : " << name;
-        append_call_site_vc_args(out, module, caller, call->args, prop);
+        append_call_site_vc_args(out, caller, ref_idents);
         if (refinement_discharge && lit_nonneg) {
           out << " := Li.Discharge.refinement_nonneg_lit_proved " << *lit_nonneg
               << " (by decide)\n";

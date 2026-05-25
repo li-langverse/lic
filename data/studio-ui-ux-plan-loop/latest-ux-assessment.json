@@ -1,23 +1,23 @@
 {
   "pass": true,
-  "avg_score": 2.36,
+  "avg_score": 2.39,
   "min_score": 1.5,
   "dimensions": {
-    "UX-01": { "score": 2, "note": "Viewport grid via studio_shell_frame; dock slot rects composed (Godot/Blender = 3)." },
-    "UX-02": { "score": 2, "note": "Timeline track + playhead rect at 35% in li-studio compose; no transport controls (DaVinci/Unreal = 3)." },
-    "UX-03": { "score": 2, "note": "Inspector header + field_rows when selection; dock active-slot stroke (Unity/Figma = 3)." },
-    "UX-04": { "score": 2, "note": "Command palette mock HTML only (Linear/VS Code = 3)." },
-    "UX-05": { "score": 2, "note": "Profile chip in marketing mock; vertical switch not in composables (Notion = 3)." },
-    "UX-06": { "score": 2.5, "note": "StudioAgentChromeCompose: idle/running/blocked/failed/done, cancel_rect, error_strip; paint IR per state (Cursor/Linear/Copilot = 3)." },
-    "UX-07": { "score": 2, "note": "Idle agent status in empty mock; empty inspector path unchanged (shadcn = 3)." },
-    "UX-08": { "score": 2.5, "note": "Failed task shows error_strip_rect + actionable HTML mock CSS; wgpu stub unchanged (Primer = 3)." },
-    "UX-09": { "score": 2, "note": "studio_panel_switch_* on GuiPanelState; budget 100ms (Blender/Linear = 3)." },
-    "UX-10": { "score": 2, "note": "border/amber tokens + ux-harness pass on world-studio-demo mock." },
+    "UX-01": { "score": 2, "note": "Three HTML mocks + PNG capture; viewport grid in workspace mock (Godot/Blender = 3)." },
+    "UX-02": { "score": 2, "note": "Timeline in mocks; empty timeline state in 02 (DaVinci/Unreal = 3)." },
+    "UX-03": { "score": 2, "note": "Inspector density in mocks; native compose unchanged (Unity/Figma = 3)." },
+    "UX-04": { "score": 2, "note": "Command palette hint in HTML only (Linear/VS Code = 3)." },
+    "UX-05": { "score": 2, "note": "Profile chip in 01/03 mocks (Notion = 3)." },
+    "UX-06": { "score": 2.5, "note": "03-agent-error mock + native StudioAgentChromeCompose; capture documents states (Cursor/Linear/Copilot = 3)." },
+    "UX-07": { "score": 2.5, "note": "02 empty viewport/inspector/timeline; capture harness includes all empty journeys (shadcn = 3)." },
+    "UX-08": { "score": 2.5, "note": "03 GPU/agent error strip with retry affordances; Primer patterns in mock CSS." },
+    "UX-09": { "score": 2, "note": "Focus rings in HTML mocks; panel switch hook unchanged (Blender/Linear = 3)." },
+    "UX-10": { "score": 2, "note": "ux-harness pass on world-studio-demo; contrast tokens synced." },
     "UX-11": { "score": 1.5, "note": "No skeleton loaders in compose path (Material 3 = 3)." },
-    "UX-12": { "score": 2, "note": "studio_agent_* task state naming aligned with design tokens." },
-    "UX-13": { "score": 3, "note": "Particle tiers + fps in bench; paint cmd_count varies by agent task_state honestly." },
-    "UX-14": { "score": 3, "note": "native_pixels=false; HTML mocks labeled; li-studio agent chrome is product IR." }
+    "UX-12": { "score": 2, "note": "manifest.json + README document mock naming vs native product." },
+    "UX-13": { "score": 3, "note": "Bench JSON + HUD mock metrics labeled simulate; latest-capture.json records png_count honestly." },
+    "UX-14": { "score": 3, "note": "verify-capture + mock banners; release/issue URLs in latest-capture.json; native_pixels=false." }
   },
   "honest_native_viewport": false,
-  "notes": "studio-ux-06: li-ui agent task states + colors; li-studio StudioAgentChromeCompose with cancel/error strip rects and studio_paint_agent. Default shell uses running state. HTML mocks gain error-strip CSS. SOTA: Cursor agent overview, Linear, GitHub Copilot."
+  "notes": "studio-ux-07: verify-capture.py gates dry capture; 03-agent-error HTML; latest-capture.json; gh release upload verified; issue #182 comment URL. SOTA agentic: Cursor agent overview, Linear, GitHub Copilot."
 }

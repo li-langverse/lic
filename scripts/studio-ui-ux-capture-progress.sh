@@ -118,39 +118,84 @@ write_report() {
   echo "$report"
 }
 
+write_capture_meta() {
+  local issue="${1:-}" comment_url="${2:-}" upload_count="${3:-0}" dry="${4:-0}"
+  local meta="$STATE_DIR/latest-capture.json"
+  local png_count
+  png_count="$(ls -1 "$PNG"/*.png 2>/dev/null | wc -l | tr -d ' ')"
+  python3 - "$meta" "$ITER" "$REPO" "$RELEASE_TAG" "$issue" "$comment_url" \
+    "$png_count" "$upload_count" "$dry" "$ART" <<'PY'
+import json, sys
+from pathlib import Path
+meta, iteration, repo, tag, issue, comment_url = sys.argv[1:7]
+png_count, upload_count, dry, art = int(sys.argv[7]), int(sys.argv[8]), sys.argv[9], sys.argv[10]
+Path(meta).write_text(json.dumps({
+    "iteration": iteration,
+    "artifact_dir": art,
+    "repo": repo,
+    "release_tag": tag,
+    "tracking_issue": int(issue) if issue.isdigit() else None,
+    "issue_url": f"https://github.com/{repo}/issues/{issue}" if issue.isdigit() else None,
+    "issue_comment_url": comment_url or None,
+    "release_url": f"https://github.com/{repo}/releases/tag/{tag}",
+    "png_count": png_count,
+    "upload_count": upload_count,
+    "has_reel": (Path(art) / "iter-reel.mp4").is_file(),
+    "dry_run": dry == "1",
+    "native_pixels": False,
+}, indent=2) + "\n", encoding="utf-8")
+PY
+}
+
 publish_github() {
-  if [[ "${STUDIO_UI_UX_CAPTURE_DRY:-0}" == "1" ]]; then
+  local dry="${STUDIO_UI_UX_CAPTURE_DRY:-0}"
+  local issue="" comment_url="" upload_count=0
+
+  if [[ "$dry" == "1" ]]; then
     echo "capture: dry run — skip GitHub publish"
+    write_report >/dev/null
+    write_capture_meta "" "" 0 1
     return 0
   fi
   if ! command -v gh >/dev/null 2>&1; then
     echo "capture: gh CLI missing"
+    write_capture_meta "" "" 0 0
     return 0
   fi
   local token="${GH_TOKEN:-${GITHUB_TOKEN:-}}"
   if [[ -z "$token" ]]; then
     echo "capture: no GH_TOKEN — skip publish"
+    write_capture_meta "" "" 0 0
     return 0
   fi
 
-  local issue="${STUDIO_UI_UX_TRACKING_ISSUE:-}"
+  issue="${STUDIO_UI_UX_TRACKING_ISSUE:-}"
   if [[ -z "$issue" && -f "$ISSUE_FILE" ]]; then
     issue="$(tr -d '[:space:]' <"$ISSUE_FILE")"
   fi
   if [[ -z "$issue" ]]; then
     echo "capture: creating tracking issue"
-    issue="$(gh issue create --repo "$REPO" \
+    local created
+    created="$(gh issue create --repo "$REPO" \
       --title "Studio UI/UX plan loop — progress tracker" \
       --body "Automated progress from \`studio-ui-ux-capture-progress.sh\`. Do not attach large binaries to PRs — assets go to release \`$RELEASE_TAG\`." \
-      --label "studio-ui-ux" 2>/dev/null | grep -oE '[0-9]+$' || true)"
+      --label "studio-ui-ux" 2>/dev/null || \
+      gh issue create --repo "$REPO" \
+        --title "Studio UI/UX plan loop — progress tracker" \
+        --body "Automated progress from \`studio-ui-ux-capture-progress.sh\`. Do not attach large binaries to PRs — assets go to release \`$RELEASE_TAG\`." 2>/dev/null || true)"
+    issue="$(echo "$created" | grep -oE '[0-9]+$' || true)"
     [[ -n "$issue" ]] && echo "$issue" >"$ISSUE_FILE"
   fi
 
   local report
   report="$(write_report)"
   if [[ -n "$issue" ]]; then
-    gh issue comment "$issue" --repo "$REPO" --body-file "$report" || true
-    echo "capture: commented on issue #$issue"
+    comment_url="$(gh issue comment "$issue" --repo "$REPO" --body-file "$report" 2>/dev/null || true)"
+    if [[ -n "$comment_url" ]]; then
+      echo "capture: issue comment → $comment_url"
+    else
+      echo "capture: commented on issue #$issue (https://github.com/$REPO/issues/$issue)"
+    fi
   fi
 
   if gh release view "$RELEASE_TAG" --repo "$REPO" >/dev/null 2>&1; then
@@ -164,9 +209,14 @@ publish_github() {
   local uploads=("$PNG"/*.png)
   [[ -f "$ART/iter-reel.mp4" ]] && uploads+=("$ART/iter-reel.mp4")
   if [[ ${#uploads[@]} -gt 0 ]]; then
-    gh release upload "$RELEASE_TAG" "${uploads[@]}" --repo "$REPO" --clobber 2>/dev/null || true
-    echo "capture: uploaded ${#uploads[@]} file(s) to release $RELEASE_TAG"
+    if gh release upload "$RELEASE_TAG" "${uploads[@]}" --repo "$REPO" --clobber 2>/dev/null; then
+      upload_count=${#uploads[@]}
+      echo "capture: uploaded ${upload_count} file(s) to https://github.com/$REPO/releases/tag/$RELEASE_TAG"
+    else
+      echo "capture: release upload failed (see gh auth / repo permissions)"
+    fi
   fi
+  write_capture_meta "$issue" "$comment_url" "$upload_count" 0
 }
 
 echo "==> studio-ui-ux capture ($ITER)"

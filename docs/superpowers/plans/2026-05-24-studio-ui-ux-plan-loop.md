@@ -25,7 +25,7 @@ todos:
     status: done
   - id: studio-ux-07-capture-harness
     content: "Wire studio-ui-ux-capture-progress.sh + demo HTML mocks; verify gh upload path"
-    status: pending
+    status: done
   - id: studio-ux-08-bench-registry
     content: "benchmarks/competitive/studio-ui.toml + bench-studio-viewport-perf.json output"
     status: pending

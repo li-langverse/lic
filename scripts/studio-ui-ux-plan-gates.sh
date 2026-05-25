@@ -20,6 +20,11 @@ li_phase "design system (tokens + demo CSS)"
 [[ -f "$ROOT/deploy/studio-demo/screenshots/studio-tokens.css" ]] || fail "studio-tokens.css"
 [[ -f "$ROOT/deploy/studio-demo/screenshots/01-studio-workspace.html" ]] || fail "studio workspace mock"
 [[ -f "$ROOT/deploy/studio-demo/screenshots/02-studio-empty-viewport.html" ]] || fail "studio empty viewport mock"
+[[ -f "$ROOT/deploy/studio-demo/screenshots/03-studio-agent-error.html" ]] || fail "studio agent error mock"
+[[ -f "$ROOT/deploy/studio-demo/screenshots/manifest.json" ]] || fail "studio demo manifest"
+[[ -x "$ROOT/deploy/studio-demo/screenshots/capture.sh" ]] || chmod +x "$ROOT/deploy/studio-demo/screenshots/capture.sh"
+chmod +x "$ROOT/scripts/studio-ui-ux-capture-progress.sh" 2>/dev/null || true
+python3 "$ROOT/scripts/studio-ui-ux-verify-capture.py" || fail "studio-ui-ux-verify-capture"
 python3 "$ROOT/scripts/studio-ui-ux-verify-tokens.py" || fail "studio token sync (TOML ↔ li-ui)"
 
 li_phase "competitive intel doc"

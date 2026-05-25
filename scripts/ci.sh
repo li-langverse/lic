@@ -17,6 +17,10 @@ if [[ -x "$ROOT/scripts/check-agent-kit-sync.sh" ]]; then
   }
 fi
 
+li_phase "proof-db smoke (v0)"
+chmod +x "$ROOT/scripts/check-proof-db.sh"
+"$ROOT/scripts/check-proof-db.sh"
+
 li_phase "def syntax policy"
 chmod +x "$ROOT/scripts/check-li-def-syntax.sh"
 "$ROOT/scripts/check-li-def-syntax.sh" "$ROOT"
@@ -37,6 +41,14 @@ export LI_TEST_JOBS="${LI_TEST_JOBS:-$(li_test_jobs)}"
 
 li_phase "generate AutoVC (2e)"
 "$LIC" build "$ROOT/li-tests/modules/greeter/greeter.li" -o /dev/null
+li_phase "proof-db release gate (advisory; LI_PROOF_DB_STRICT=1 strict)"
+chmod +x "$ROOT/scripts/check-proof-db-release.sh"
+export LI_PROOF_DB_STRICT="${LI_PROOF_DB_STRICT:-0}"
+"$ROOT/scripts/check-proof-db-release.sh" || {
+  [[ "${LI_PROOF_DB_STRICT:-0}" == "1" ]] && exit 1
+  echo "ci: proof-db advisory regression" >&2
+}
+
 
 if command -v lake >/dev/null 2>&1; then
   li_phase "semantics (2f lake + AutoVC strict)"

@@ -1,0 +1,1 @@
+(function(){var r=new URLSearchParams(location.search).get("reel_frame");if(!r)return;var f=Math.min(2,parseInt(r,10)||0);document.documentElement.setAttribute("data-reel-frame",String(f));var h=document.querySelector(".playhead");if(h)h.style.left=(35+f*10)+"%";})();

@@ -1,0 +1,1 @@
+html.reel-frozen *,html[data-reel-motion] *{animation-play-state:paused!important}html[data-reel-frame="1"] .playhead{left:45%}html[data-reel-frame="2"] .playhead{left:55%}

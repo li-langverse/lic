@@ -1374,6 +1374,18 @@ suite = "codegen"
 file = "codegen/fp_numerically_stable.li"
 outcome = "compile_ok"
 
+# --- execution_resources (WP4 team_size + vectorized no parallel RT) ---
+
+[[tests]]
+suite = "execution_resources"
+file = "execution_resources/parallel_disjoint_ok.li"
+outcome = "compile_ok"
+
+[[tests]]
+suite = "execution_resources"
+file = "execution_resources/smoke.sh"
+outcome = "script_ok"
+
 # --- hpc_competitive (registry gate; ./li-tests/run_all.sh hpc_competitive) ---
 
 # --- security (malformed inputs; run via ./li-tests/run_security.sh) ---

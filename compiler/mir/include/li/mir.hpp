@@ -136,7 +136,7 @@ struct MirDecorator {
   std::string name;
   /** `@vectorized(lanes=N)` when name is vectorized; 0 if omitted. */
   std::int64_t lanes = 0;
-  /** `@vectorized` on the owning `def` (7d-b MIR proc tag). */
+  /** `@vectorized` on the owning `def` (7d-b MIR proc tag); SIMD LLVM only, never `OmpParallelFor`. */
   bool vectorized = false;
   bool parallel = false;
   bool disjoint_proven = false;

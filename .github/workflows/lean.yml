@@ -43,5 +43,6 @@ jobs:
           "$LIC" build li-tests/contracts_verify/sqrt_contract.li -o /dev/null
           ./li-tests/tooling/discharge_linalg_int_lean.sh
           "$LIC" build li-tests/contracts_verify/linalg_dot4_float_closed.li -o /dev/null
-          (cd docs/semantics && lake build AutoVC Discharge)
+          (cd docs/semantics && lake build AutoVC Discharge ProofDbMath)
+          python3 scripts/proof-db/proof-db.py verify-slice
           ./li-tests/tooling/glean_strict_build_smoke.sh

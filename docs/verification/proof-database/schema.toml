@@ -2,7 +2,7 @@
 [schema]
 version = 1
 entries_root = "docs/verification/proof-database/entries"
-corpus_root = "proof-db/lemmas"
+corpus_root = "proof-db/math"
 
 [entry_types.axiom]
 required = ["id", "kind", "field", "statement", "proof_status", "lean_module", "last_verified_lic_commit"]

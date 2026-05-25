@@ -1,7 +1,5 @@
 # Proof database
 
-| Vertical | Path | IDs |
-|----------|------|-----|
-| Classical physics | [physics/](physics/) | AX-PHYS-*, LEM-PHYS-* |
+Classical math: [math/](math/) — nine AX-MATH-* axioms, three target lemmas.
 
-Hub: [proof-database.md](../docs/verification/proof-database.md).
+Discrepancy policy: [math/discrepancy-policy.md](math/discrepancy-policy.md). Not trusted.lean.

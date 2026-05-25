@@ -5,7 +5,7 @@
 hook_version = 2
 backend = "wgpu"
 package = "lig"
-import = "lig.present"
+import = "lig"
 status = "host_or_stub"
 native_device = false
 surface_ok_when_host = true

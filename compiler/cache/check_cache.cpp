@@ -12,13 +12,7 @@
 namespace li {
 namespace {
 
-const char* check_cache_compiler_version() {
-#ifdef LI_VERSION
-  return LI_VERSION;
-#else
-  return "dev";
-#endif
-}
+constexpr const char* kCacheFormatVersion = "1";
 
 std::uint64_t fnv1a64_update(std::uint64_t hash, const unsigned char* data, std::size_t len) {
   constexpr std::uint64_t prime = 1099511628211ull;
@@ -40,9 +34,80 @@ std::string hex64(std::uint64_t value) {
   return out;
 }
 
-std::filesystem::path cache_entry_path(const std::filesystem::path& cache_dir,
-                                       const std::string& key) {
-  return cache_dir / (key + ".json");
+bool is_safe_cache_key(const std::string& key) {
+  if (key.empty() || key.size() > 160) {
+    return false;
+  }
+  for (const char c : key) {
+    if (!((c >= '0' && c <= '9') || (c >= 'a' && c <= 'f') || c == '-')) {
+      return false;
+    }
+  }
+  return true;
+}
+
+std::filesystem::path weakly_canonical_path(const std::filesystem::path& path) {
+  std::error_code ec;
+  std::filesystem::path canon = std::filesystem::weakly_canonical(path, ec);
+  if (!ec && !canon.empty()) {
+    return canon;
+  }
+  canon = std::filesystem::absolute(path, ec);
+  return ec ? path : canon;
+}
+
+bool path_within_root(const std::filesystem::path& root, const std::filesystem::path& candidate) {
+  const auto root_canon = weakly_canonical_path(root);
+  const auto cand_canon = weakly_canonical_path(candidate);
+  if (root_canon.empty() || cand_canon.empty()) {
+    return false;
+  }
+  auto root_str = root_canon.lexically_normal().string();
+  auto cand_str = cand_canon.lexically_normal().string();
+  if (root_str.empty() || cand_str.empty()) {
+    return false;
+  }
+#if defined(_WIN32)
+  auto norm = [](std::string s) {
+    for (char& c : s) {
+      if (c == '\\') {
+        c = '/';
+      }
+    }
+    while (!s.empty() && s.back() == '/') {
+      s.pop_back();
+    }
+    return s;
+  };
+  root_str = norm(root_str);
+  cand_str = norm(cand_str);
+#endif
+  if (cand_str == root_str) {
+    return true;
+  }
+  const char sep = '/';
+  if (root_str.back() != sep) {
+    root_str.push_back(sep);
+  }
+  return cand_str.rfind(root_str, 0) == 0;
+}
+
+bool is_symlink_path(const std::filesystem::path& path) {
+  std::error_code ec;
+  const auto st = std::filesystem::symlink_status(path, ec);
+  return !ec && std::filesystem::is_symlink(st);
+}
+
+std::optional<std::filesystem::path> resolve_cache_entry_path(const std::filesystem::path& cache_dir,
+                                                              const std::string& key) {
+  if (!is_safe_cache_key(key)) {
+    return std::nullopt;
+  }
+  const auto path = cache_dir / (key + ".json");
+  if (!path_within_root(cache_dir, path)) {
+    return std::nullopt;
+  }
+  return path;
 }
 
 std::size_t dir_size_bytes(const std::filesystem::path& dir) {
@@ -58,7 +123,52 @@ std::size_t dir_size_bytes(const std::filesystem::path& dir) {
   return total;
 }
 
+bool read_cache_file(const std::filesystem::path& path, CheckCacheHit& hit) {
+  std::error_code ec;
+  if (is_symlink_path(path)) {
+    return false;
+  }
+  const auto size = std::filesystem::file_size(path, ec);
+  if (ec || size > kCheckCacheMaxEntryBytes) {
+    std::filesystem::remove(path, ec);
+    return false;
+  }
+
+  std::ifstream in(path);
+  if (!in) {
+    return false;
+  }
+  std::string line;
+  if (!std::getline(in, line) || line != std::string("v=") + kCacheFormatVersion) {
+    return false;
+  }
+  if (!std::getline(in, line) || line.rfind("exit=", 0) != 0) {
+    return false;
+  }
+  hit.exit_code = std::atoi(line.c_str() + 5);
+  if (!std::getline(in, line) || line != "---") {
+    return false;
+  }
+  std::ostringstream body;
+  body << in.rdbuf();
+  hit.output = body.str();
+  if (hit.output.size() > kCheckCacheMaxEntryBytes) {
+    hit.output.clear();
+    return false;
+  }
+  hit.hit = true;
+  return true;
+}
+
 }  // namespace
+
+const char* check_cache_compiler_version() {
+#ifdef LI_VERSION
+  return LI_VERSION;
+#else
+  return "dev";
+#endif
+}
 
 std::string check_config_hash(const CheckConfig& cfg) {
   std::ostringstream ss;
@@ -97,16 +207,29 @@ std::uint64_t hash_file_content(const std::filesystem::path& path) {
   return hash;
 }
 
+std::uint64_t hash_bytes_fnv(std::string_view data) {
+  return fnv1a64_update(0, reinterpret_cast<const unsigned char*>(data.data()), data.size());
+}
+
 std::string make_check_cache_key(const std::filesystem::path& path, std::uint64_t content_hash,
-                                 const std::string& config_hash, const std::string& version) {
-  std::ostringstream ss;
-  ss << hex64(content_hash) << '-' << hex64(fnv1a64_update(0,
-      reinterpret_cast<const unsigned char*>(config_hash.data()), config_hash.size()))
-     << '-' << hex64(fnv1a64_update(0,
-      reinterpret_cast<const unsigned char*>(path.string().data()), path.string().size()))
-     << '-' << hex64(fnv1a64_update(
-          0, reinterpret_cast<const unsigned char*>(version.data()), version.size()));
-  return ss.str();
+                                 const std::string& config_hash, const std::string& version,
+                                 std::uint64_t import_graph_hash, std::uint64_t output_mode_hash) {
+  std::ostringstream combined;
+  combined << path.string() << '|' << content_hash << '|' << config_hash << '|' << version << '|'
+           << import_graph_hash << '|' << output_mode_hash;
+  return hex64(hash_bytes_fnv(combined.str()));
+}
+
+void normalize_check_cache_options(CheckCacheOptions& opts) {
+  if (opts.max_mb == 0) {
+    opts.max_mb = kCheckCacheDefaultMaxMb;
+  }
+  if (opts.max_mb > kCheckCacheMaxDirMb) {
+    opts.max_mb = kCheckCacheMaxDirMb;
+  }
+  if (!opts.cache_dir.empty()) {
+    opts.cache_dir = weakly_canonical_path(opts.cache_dir);
+  }
 }
 
 bool apply_check_cache_flag(std::string_view arg, CheckCacheOptions& out) {
@@ -122,6 +245,9 @@ bool apply_check_cache_flag(std::string_view arg, CheckCacheOptions& out) {
     const int n = std::atoi(arg.substr(15).data());
     if (n > 0) {
       out.max_mb = static_cast<std::size_t>(n);
+      if (out.max_mb > kCheckCacheMaxDirMb) {
+        out.max_mb = kCheckCacheMaxDirMb;
+      }
     }
     return true;
   }
@@ -133,39 +259,37 @@ CheckCacheHit try_load_check_cache(const CheckCacheOptions& opts, const std::str
   if (!opts.enabled || opts.cache_dir.empty()) {
     return hit;
   }
-  const auto path = cache_entry_path(opts.cache_dir, key);
-  std::ifstream in(path);
-  if (!in) {
+  const auto path_opt = resolve_cache_entry_path(opts.cache_dir, key);
+  if (!path_opt) {
     return hit;
   }
-  std::string line;
-  if (!std::getline(in, line) || line.rfind("exit=", 0) != 0) {
-    return hit;
+  if (!read_cache_file(*path_opt, hit)) {
+    hit.hit = false;
+    hit.output.clear();
   }
-  hit.exit_code = std::atoi(line.c_str() + 5);
-  if (!std::getline(in, line) || line != "---") {
-    return hit;
-  }
-  std::ostringstream body;
-  body << in.rdbuf();
-  hit.output = body.str();
-  hit.hit = true;
   return hit;
 }
 
 void store_check_cache(const CheckCacheOptions& opts, const std::string& key, int exit_code,
                        const std::string& output) {
-  if (!opts.enabled || opts.cache_dir.empty()) {
+  if (!opts.enabled || opts.cache_dir.empty() || output.size() > kCheckCacheMaxEntryBytes) {
+    return;
+  }
+  const auto path_opt = resolve_cache_entry_path(opts.cache_dir, key);
+  if (!path_opt) {
+    return;
+  }
+  const auto path = *path_opt;
+  if (is_symlink_path(path)) {
     return;
   }
   std::error_code ec;
   std::filesystem::create_directories(opts.cache_dir, ec);
-  const auto path = cache_entry_path(opts.cache_dir, key);
   std::ofstream out(path, std::ios::trunc);
   if (!out) {
     return;
   }
-  out << "exit=" << exit_code << "\n---\n" << output;
+  out << "v=" << kCacheFormatVersion << "\nexit=" << exit_code << "\n---\n" << output;
   out.close();
   evict_check_cache_lru(opts.cache_dir, opts.max_mb);
 }
@@ -185,8 +309,14 @@ void evict_check_cache_lru(const std::filesystem::path& cache_dir, std::size_t m
     if (!item.is_regular_file()) {
       continue;
     }
+    const auto sz = item.file_size();
+    if (sz > kCheckCacheMaxEntryBytes) {
+      std::error_code ec;
+      std::filesystem::remove(item.path(), ec);
+      continue;
+    }
     entries.push_back(
-        Entry{item.path(), std::filesystem::last_write_time(item.path()), item.file_size()});
+        Entry{item.path(), std::filesystem::last_write_time(item.path()), sz});
   }
   auto total = dir_size_bytes(cache_dir);
   std::sort(entries.begin(), entries.end(),
@@ -197,7 +327,9 @@ void evict_check_cache_lru(const std::filesystem::path& cache_dir, std::size_t m
     }
     std::error_code ec;
     std::filesystem::remove(entry.path, ec);
-    total -= static_cast<std::size_t>(entry.size);
+    if (!ec) {
+      total -= static_cast<std::size_t>(entry.size);
+    }
   }
 }
 

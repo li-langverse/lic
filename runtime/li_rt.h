@@ -229,6 +229,18 @@ int32_t li_rt_studio_viewport_error_set_mock(int32_t kind);
 int32_t li_rt_studio_viewport_error_retry(void);
 int32_t li_rt_studio_mcp_tool_from_name(const char* name);
 const char* li_rt_studio_mcp_tool_name(int32_t tool_id);
+int32_t li_rt_lig_host_present_active(void);
+float li_rt_lig_host_present_dt_ms(void);
+int32_t li_rt_lig_host_native_pixels(void);
+int32_t li_rt_lig_wgpu_swapchain_create(int32_t viewport_w, int32_t viewport_h);
+int32_t li_rt_lig_wgpu_present_frame(int32_t swapchain_ok);
+int32_t li_rt_studio_shell_input_pointer_down(void);
+float li_rt_studio_shell_input_pointer_x(void);
+float li_rt_studio_shell_input_pointer_y(void);
+int32_t li_rt_studio_shell_input_key_escape(void);
+int32_t li_rt_studio_shell_input_key_cmd_k(void);
+int32_t li_rt_studio_shell_input_key_digit(void);
+int32_t li_rt_studio_host_present_tick(int32_t viewport_w, int32_t viewport_h);
 
 /* PH-GD-2: li-world text save/load seam (in-memory buffer; no filesystem I/O). */
 int32_t li_rt_world_format_version(void);

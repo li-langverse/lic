@@ -20,7 +20,7 @@ Each frame the host:
 1. Polls SDL (or injects mock keys in CI).
 2. Fills `InputState` (or parses probe JSON into those fields).
 3. Calls `studio_handle_studio_key(compose, input)` **before** paint when shortcuts should affect compose (palette open, region focus).
-4. Runs `studio_paint_shell_chrome` / present path with updated compose.
+4. Runs `studio_paint_shell_chrome` / present path with updated compose (`studio_shell_host_frame` → `lig.present` when `LIG_HOST_PRESENT=1`; see [2026-05-25-lig-present-hw1.md](../release-notes/2026-05-25-lig-present-hw1.md)).
 
 ```text
 SDL_PollEvent / GetKeyboardState
@@ -41,6 +41,8 @@ studio_paint_shell_chrome(frame, compose)
 | `deploy/studio-demo/native/studio_shell_input_probe.c` | One tick: SDL keyboard + mouse **or** `--mock cmd_k,digit=3` |
 | `deploy/studio-demo/native/input_capture.sh` | Build probe; Xvfb when `DISPLAY` unset |
 | `scripts/studio-shell-sdl-tick.sh` | CI/host entry: exports `STUDIO_SHELL_INPUT_JSON`, `STUDIO_SHELL_KEY_*` |
+| `deploy/studio-demo/native/studio_shell_present_host.c` | One SDL present tick (`LIG_HOST_PRESENT=1`) for PH-HW WP3 |
+| `scripts/studio-shell-present-tick.sh` | Build/run present host or mock JSON |
 
 ### Run
 

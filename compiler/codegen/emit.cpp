@@ -1394,6 +1394,36 @@ bool emit_llvm_ir(const MirModule& mir, const std::string& out_path, std::string
       "li_rt_studio_mcp_tool_name",
       llvm::FunctionType::get(i8_ptr(context), {i32_ty(context)}, false));
   module->getOrInsertFunction(
+      "li_rt_lig_host_present_active", llvm::FunctionType::get(i32_ty(context), {}, false));
+  module->getOrInsertFunction(
+      "li_rt_lig_host_present_dt_ms",
+      llvm::FunctionType::get(llvm::Type::getDoubleTy(context), {}, false));
+  module->getOrInsertFunction(
+      "li_rt_lig_host_native_pixels", llvm::FunctionType::get(i32_ty(context), {}, false));
+  module->getOrInsertFunction("li_rt_lig_wgpu_swapchain_create",
+                              llvm::FunctionType::get(i32_ty(context),
+                                                      {i32_ty(context), i32_ty(context)}, false));
+  module->getOrInsertFunction("li_rt_lig_wgpu_present_frame",
+                              llvm::FunctionType::get(i32_ty(context), {i32_ty(context)}, false));
+  module->getOrInsertFunction(
+      "li_rt_studio_shell_input_pointer_down",
+      llvm::FunctionType::get(i32_ty(context), {}, false));
+  module->getOrInsertFunction(
+      "li_rt_studio_shell_input_pointer_x",
+      llvm::FunctionType::get(llvm::Type::getDoubleTy(context), {}, false));
+  module->getOrInsertFunction(
+      "li_rt_studio_shell_input_pointer_y",
+      llvm::FunctionType::get(llvm::Type::getDoubleTy(context), {}, false));
+  module->getOrInsertFunction(
+      "li_rt_studio_shell_input_key_escape", llvm::FunctionType::get(i32_ty(context), {}, false));
+  module->getOrInsertFunction(
+      "li_rt_studio_shell_input_key_cmd_k", llvm::FunctionType::get(i32_ty(context), {}, false));
+  module->getOrInsertFunction(
+      "li_rt_studio_shell_input_key_digit", llvm::FunctionType::get(i32_ty(context), {}, false));
+  module->getOrInsertFunction("li_rt_studio_host_present_tick",
+                              llvm::FunctionType::get(i32_ty(context),
+                                                      {i32_ty(context), i32_ty(context)}, false));
+  module->getOrInsertFunction(
       "li_rt_path_exact",
       llvm::FunctionType::get(i32_ty(context), {i8_ptr(context), i8_ptr(context)}, false));
   module->getOrInsertFunction(

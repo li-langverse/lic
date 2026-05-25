@@ -1,0 +1,25 @@
+[package]
+name = "lig"
+version = "0.1.0"
+edition = "2026"
+license = "Apache-2.0 OR MIT"
+description = "Li GPU present layer — swapchain create/present contracts (PH-HW HW-1)"
+
+[dependencies]
+li-gpu = { path = "../li-gpu" }
+
+[package.metadata.li]
+github_repo = "lig"
+import_name = "lig.present"
+min_lic = "0.1.0"
+maintainer = "li-langverse"
+pkg_id = "PKG-lig"
+
+[package.metadata.studio]
+wgpu_smoke = "host_or_stub"
+bench_hook = "packages/lig/bench/wgpu_smoke.toml"
+
+[package.repository]
+url = "https://github.com/li-langverse/lig"
+documentation = "https://li-langverse.github.io/li-language/ecosystem/lig/"
+changelog = "https://github.com/li-langverse/lig/blob/main/CHANGELOG.md"

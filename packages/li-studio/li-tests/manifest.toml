@@ -69,3 +69,9 @@ suite = "smoke"
 file = "smoke/studio_shell_demo.li"
 outcome = "compile_open_ok"
 note = "T-PKG-li-studio-shell-demo PH-GD-1"
+
+[[tests]]
+suite = "smoke"
+file = "smoke/studio_host_present.li"
+outcome = "compile_open_ok"
+note = "T-PKG-li-studio-host-present PH-HW-HW-1"

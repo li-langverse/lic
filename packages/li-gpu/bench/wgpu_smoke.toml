@@ -4,4 +4,5 @@ hook_version = 1
 backend = "wgpu"
 status = "stub_pass"
 native_device = false
-notes = "Compile-time smoke; no wgpu-rs surface yet"
+notes = "Deprecated hook — use packages/lig/bench/wgpu_smoke.toml (PH-HW HW-1)"
+redirect = "packages/lig/bench/wgpu_smoke.toml"

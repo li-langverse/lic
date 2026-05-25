@@ -14,6 +14,18 @@ if [[ -x "$ROOT/../lit/scripts/lit" ]]; then
 fi
 chmod +x "$LIP" "$LIT"
 
+# lip@main pkg_ok fixture may still use proc; lic requires def (see lip#10).
+fix_pkg_ok_def_syntax() {
+  local d="$ROOT/../lip/fixtures/pkg_ok"
+  [[ -d "$d" ]] || return 0
+  local f
+  for f in "$d/src/lib.li" "$d"/li-tests/smoke/*.li; do
+    [[ -f "$f" ]] || continue
+    sed 's/^proc /def /g' "$f" > "${f}.tmp" && mv "${f}.tmp" "$f"
+  done
+}
+fix_pkg_ok_def_syntax
+
 "$LIP" --version
 "$LIT" --version
 

@@ -6,20 +6,20 @@ BASELINE="" RUN="" RUN_A="" RUN_B=""
 REGISTRY="${ROOT}/proof-db/discrepancies.toml"
 FORMAT="markdown" OUT_DIR="" ALLOW_DISCREPANCIES=0
 usage(){ cat<<'EOF'
-usage: proof-db-report.sh (--baseline PATH --run PATH | --run-a PATH --run-b PATH) [options]
+usage: proof-db-report.sh (--baseline PATH --run PATH | --a PATH --b PATH) [options]
   --format markdown|html|both  --out DIR  --registry PATH  --allow-discrepancies
 Policy: proof-db/reporter.md
 EOF
  exit "${1:-0}"; }
 while [[ $# -gt 0 ]]; do case $1 in
  --baseline) BASELINE="$2";shift 2;; --run) RUN="$2";shift 2;;
- --run-a) RUN_A="$2";shift 2;; --run-b) RUN_B="$2";shift 2;;
+ --a|--run-a) RUN_A="$2";shift 2;; --b|--run-b) RUN_B="$2";shift 2;;
  --registry) REGISTRY="$2";shift 2;; --format) FORMAT="$2";shift 2;;
  --out) OUT_DIR="$2";shift 2;; --allow-discrepancies) ALLOW_DISCREPANCIES=1;shift;;
  -h|--help) usage 0;; *) echo "unknown: $1" >&2; usage 1;; esac; done
 [[ -n "$BASELINE" && -n "$RUN" && -z "$RUN_A" ]] && M=baseline || true
 [[ -z "$BASELINE" && -n "$RUN_A" && -n "$RUN_B" ]] && M=ab || true
-[[ -z "${M:-}" ]] && { echo "need (--baseline --run) or (--run-a --run-b)" >&2; exit 1; }
+[[ -z "${M:-}" ]] && { echo "need (--baseline --run) or (--run-a --b|--run-b)" >&2; exit 1; }
 export PROOF_DB_MODE=$M PROOF_DB_BASELINE=$BASELINE PROOF_DB_RUN=$RUN PROOF_DB_RUN_A=$RUN_A PROOF_DB_RUN_B=$RUN_B
 export PROOF_DB_REGISTRY=$REGISTRY PROOF_DB_FORMAT=$FORMAT PROOF_DB_OUT_DIR=$OUT_DIR PROOF_DB_ALLOW=$ALLOW_DISCREPANCIES PROOF_DB_ROOT=$ROOT
 python3 <<'PY'

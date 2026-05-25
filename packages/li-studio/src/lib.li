@@ -1081,6 +1081,18 @@ def studio_apply_profile_to_sim(config: StudioProjectConfig, sim_out: var SimSes
   var prof0: int = config.active_profile
   sim_session_apply_studio_profile(prof0, sim_out)
 
+# PH-SIM SIM-1 — sync studio profile then advance stub tick (no duplicate physics).
+def studio_sim_step_hook(config: StudioProjectConfig, sim_out: var SimSessionStub, dt: float) -> int
+  requires studio_profile_id_valid(config.active_profile) == 1
+  requires sim_out.tick >= 0
+  ensures sim_out.studio_profile_id == config.active_profile
+  ensures sim_out.sim_contract_id == li_sim_profile_from_studio_id(config.active_profile)
+  ensures sim_out.output_detail == sim_output_detail_for_studio_profile(config.active_profile)
+  decreases config.active_profile
+=
+  studio_apply_profile_to_sim(config, sim_out)
+  return sim_step(sim_out, dt)
+
 def studio_scene_is_empty(scene_entity_count: int) -> int
   requires scene_entity_count >= 0
   ensures result >= 0

@@ -4,6 +4,7 @@
 
 ### Added
 
+- **PH-SIM SIM-1** — `studio_sim_step_hook` (profile sync + `sim_step` tick stub).
 - **PH-SIM SIM-0** — `studio_apply_profile_to_sim` (read-only `SimSessionStub`); `li-sim` path dependency; robotics profile id `4`.
 
 ### Changed

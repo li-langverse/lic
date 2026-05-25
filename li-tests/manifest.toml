@@ -756,6 +756,13 @@ note = "PH-SIM SIM-0: studio_apply_profile_to_sim + li_sim_profile_from_studio_i
 
 [[tests]]
 suite = "composable"
+file = "composable/import_studio_sim_step_stub.li"
+packages = ["li-sim", "li-studio", "li-gui", "li-ui"]
+outcome = "compile_open_ok"
+note = "PH-SIM SIM-1: studio_sim_step_hook + sim_reset/sim_step tick stub"
+
+[[tests]]
+suite = "composable"
 file = "composable/import_ui_studio_shell.li"
 packages = ["li-ui"]
 outcome = "compile_open_ok"

@@ -24,6 +24,11 @@ All notable changes to Li are documented here. The format follows
 ### Fixed
 
 - **Runtime linker:** `li_rt_lig.c` exports only `kernel_run` / validity ratio; device/present/backend symbols remain in `li_rt.c` (fixes duplicate-symbol CI on user `lic build` links).
+- **WP3 check workspace + cache:** `lic check --workspace`, `--cache-dir`, `--cache-max-mb`, `--no-cache`; `workspace_check.cpp`, `check_cache.cpp` — `docs/release-notes/2026-05-25-check-workspace-cache-wp3.md`.
+- **WP4 execution resources:** `--cores=N`, `--threads-per-core=M`, runtime team baked into `li_parallel_for_i64`; `li-tests/execution_resources/` — `docs/release-notes/2026-05-25-lic-execution-resources-wp4.md`.
+
+- **WP0/WP2 (8p):** `ResourceOptions` CLI (`--jobs`, `--max-memory`, `--job-memory-mb`, `--build-dir`, `--threads`); `run_all.sh` parallel workers use `lic build --build-dir=…` — `docs/release-notes/2026-05-25-lic-resource-options-wp0-wp2.md`.
+- **8p-d integrator:** `scripts/ci.sh` passes `run_all.sh -j8 --max-memory=8192` (no `LI_TEST_JOBS` export); baseline `wall_s` / `peak_rss` rows — `docs/release-notes/2026-05-25-lic-parallel-integration-8p-d.md`.
 
 ### Changed
 

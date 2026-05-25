@@ -11,7 +11,7 @@ todos:
 
 - id: md-r0-sota-survey
   content: "LAMMPS/GROMACS/OpenMM — integrators, neighbor lists, cutoffs; map to algo_registry 101–120"
-  status: pending
+  status: completed
   study_only: true
 
 - id: md-r1-stability-matrix

@@ -1,9 +1,11 @@
 ---
 name: goal-plan-loop-persistent
-description: Installs and manages goal-directed plan loops (sim, httpd, compiler-studio, studio-ui-ux) as user systemd services that survive reboot. Use when the user wants autonomous agents to keep running, restart after reboot, install plan-loop systemd units, enable linger, or manage DISABLE_AUTOSTART for plan loops.
+description: DEPRECATED — lic systemd plan loops are retired in favor of the li-cursor-agents async swarm. Use install-agents-swarm-systemd.sh and config/research-goals.yaml / implement-goals.yaml instead. Only reference this skill for migrating or disabling old li-*-plan-loop units.
 ---
 
-# Goal-directed plan loops (persistent)
+> **Deprecated (2026-05):** Autonomous work runs in **li-cursor-agents** (async swarm + YAML goals), not lic systemd plan loops. See [swarm-architecture.md](https://github.com/li-langverse/li-cursor-agents/blob/main/docs/ecosystem/swarm-architecture.md) (or `li-cursor-agents/docs/ecosystem/swarm-architecture.md` locally). Retire old units with `lic/scripts/retire-goal-plan-loops.sh` (dry-run by default).
+
+# Goal-directed plan loops (persistent) — deprecated
 
 Autonomous plan loops use `li-cursor-agents` + `code_implementer` (or a named agent). **User systemd + linger** keeps them running after logout and reboot.
 

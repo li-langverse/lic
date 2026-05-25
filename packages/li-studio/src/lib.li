@@ -7,7 +7,6 @@ import ml.rl
 import scene
 import physics.runtime
 import lig
-import lig.present
 
 # li-studio — compose dock + timeline + inspector + agent chrome (PH-UX-05/06/07).
 

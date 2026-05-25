@@ -51,7 +51,7 @@ This page is the **honest inventory** of what is **not** fully proved or not yet
 | **G-gpu** | Missing | `@gpu` address-space proofs + codegen |
 | **G-meta** | Missing | Compiler ↔ Lean equivalence (research) |
 | **G-authz** | Missing | Capability / IDOR (OS phase) |
-| **G-test-verify** | Partial | Split `verify_ok` vs `prove_lean_ok` in manifest |
+| **G-test-verify** | **Done** | `prove_lean_ok` in `run_all.sh`; 13 closed `contracts_verify` rows retagged |
 | **G-hw** | Axiomatic | FP/hardware model limit (documented, not closable) |
 | **G-wrong-spec** | Social | User theorem quality (not tool-closable) |
 

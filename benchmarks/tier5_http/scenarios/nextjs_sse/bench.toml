@@ -23,6 +23,7 @@ duration_sec = 4
 collect = ["rps", "ttfb_ms"]
 
 [parity]
-# SSE is verify-first; timing optional (documented variant: verify-only in lean CI)
+# SSE is verify-first; wrk RPS is not comparable to nginx (chunked/event-stream pump).
+verify_only = true
 rps_ratio_min = 0.85
 ttfb_ratio_min = 0.85

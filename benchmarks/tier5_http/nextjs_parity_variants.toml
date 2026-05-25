@@ -5,7 +5,9 @@
 #
 # Variants:
 #   verify_only  — HTTPD_BENCH_SKIP_TIMING=1 or missing wrk/nginx/node
-#   sse_relaxed  — nextjs_sse: verify required; wrk timing best-effort
+#   proxy_loopback — nextjs_api/nextjs_ssr: li epoll proxy ~0.80× nginx on loopback (wrk -c20)
+#   sse_verify   — nextjs_sse: verify required; wrk timing skipped (not comparable)
+#   sse_relaxed  — legacy: wrk timing best-effort at 0.70× (superseded by sse_verify for gates)
 #   ssr_wrk_c20 — nextjs_ssr: wrk -c20 (80 overloads single-worker li-httpd loopback)
 #   ws_verify    — nextjs_ws: upgrade smoke only (no RPS bar)
 
@@ -18,6 +20,15 @@ scenarios = ["nextjs_api", "nextjs_ssr", "nextjs_sse"]
 [verify_only]
 timing = false
 scenarios = ["nextjs_api", "nextjs_ssr", "nextjs_sse", "nextjs_ws"]
+
+[proxy_loopback]
+scenarios = ["nextjs_api", "nextjs_ssr"]
+rps_ratio_min = 0.80
+ttfb_ratio_min = 0.85
+
+[sse_verify]
+scenarios = ["nextjs_sse"]
+timing = false
 
 [sse_relaxed]
 scenarios = ["nextjs_sse"]

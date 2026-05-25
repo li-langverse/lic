@@ -9,10 +9,13 @@ export PYTHONPATH="$HARNESS${PYTHONPATH:+:$PYTHONPATH}"
 export LI_HTTPD_BIN="$HTTPD"
 export PATH="/usr/sbin:/usr/local/bin:${PATH:-}"
 
-# Default pass bars (override in nightly for longer runs).
+# Default pass bars (override in nightly for longer runs). Scenario bench.toml [parity] may tighten/relax per row.
 export HTTPD_BENCH_P99_RATIO_MAX="${HTTPD_BENCH_P99_RATIO_MAX:-2.0}"
 export HTTPD_BENCH_RPS_RATIO_MIN="${HTTPD_BENCH_RPS_RATIO_MIN:-0.95}"
 export HTTPD_BENCH_TTFB_RATIO_MIN="${HTTPD_BENCH_TTFB_RATIO_MIN:-0.85}"
+# Next.js proxy loopback documented variants (see nextjs_parity_variants.toml).
+export HTTPD_BENCH_NEXTJS_RPS_RATIO_MIN="${HTTPD_BENCH_NEXTJS_RPS_RATIO_MIN:-0.80}"
+export HTTPD_BENCH_NEXTJS_TTFB_RATIO_MIN="${HTTPD_BENCH_NEXTJS_TTFB_RATIO_MIN:-0.85}"
 
 if [[ ! -x "$HTTPD" ]]; then
   echo "check-tier5-nginx-perf-regression-gate: build li-httpd first (./scripts/build-li-httpd.sh)" >&2

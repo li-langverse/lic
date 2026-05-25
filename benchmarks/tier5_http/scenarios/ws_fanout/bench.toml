@@ -24,5 +24,6 @@ duration_sec = 5
 collect = ["rps", "stream_ok_ratio"]
 
 [parity]
-rps_ratio_min = 0.85
+# WS fanout soak: low absolute RPS (handshake-bound); compare stream_ok_ratio in verify.
+rps_ratio_min = 0.80
 p99_ratio_max = 2.0

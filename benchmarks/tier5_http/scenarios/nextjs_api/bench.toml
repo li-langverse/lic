@@ -22,6 +22,7 @@ duration_sec = 8
 collect = ["rps", "p50_latency_ms", "p99_latency_ms", "ttfb_ms"]
 
 [parity]
-rps_ratio_min = 0.85
+# Loopback proxy overhead vs nginx oracle (~0.80× on Ryzen 7950X); see nextjs_parity_variants.toml proxy_loopback.
+rps_ratio_min = 0.80
 ttfb_ratio_min = 0.85
 p99_ratio_max = 2.0

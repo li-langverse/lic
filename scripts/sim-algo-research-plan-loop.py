@@ -362,8 +362,7 @@ def main() -> int:
         print(f"    {work['content']}")
 
         if args.dry_run:
-            _, msg = run_agent_streaming(work, dry_run=True)
-            print(msg)
+            print(build_instruction(work))
             return 0
 
         if args.skip_agent:

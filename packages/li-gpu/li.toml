@@ -1,0 +1,22 @@
+[package]
+name = "li-gpu"
+version = "0.1.0"
+edition = "2026"
+license = "Apache-2.0 OR MIT"
+description = "Li GPU backends — wgpu smoke and LKIR device hooks (PH-HW stub)"
+
+[package.metadata.li]
+github_repo = "li-gpu"
+import_name = "gpu"
+min_lic = "0.1.0"
+maintainer = "li-langverse"
+pkg_id = "PKG-li-gpu"
+
+[package.metadata.studio]
+wgpu_smoke = "stub_pass"
+bench_hook = "packages/li-gpu/bench/wgpu_smoke.toml"
+
+[package.repository]
+url = "https://github.com/li-langverse/li-gpu"
+documentation = "https://li-langverse.github.io/li-language/ecosystem/li-gpu/"
+changelog = "https://github.com/li-langverse/li-gpu/blob/main/CHANGELOG.md"

@@ -11,6 +11,7 @@ __pycache__/
 
 # Benchmark / plot artifacts (regenerated locally)
 benchmarks/competitive/snapshots/latest.env
+benchmarks/results/bench-studio-viewport-perf.json
 benchmarks/results/**/*.csv
 benchmarks/results/share/*.png
 benchmarks/results/share/*.gif
@@ -44,3 +45,17 @@ build-asan/
 
 # Lean 4 (docs/semantics)
 docs/semantics/.lake/
+# Autonomous plan-loop (agent logs, goals, overnight tee — local only)
+data/httpd-plan-loop/
+!data/httpd-plan-loop/state.json.example
+data/studio-ui-ux-plan-loop/*
+!data/studio-ui-ux-plan-loop/state.json.example
+!data/studio-ui-ux-plan-loop/state.json
+!data/studio-ui-ux-plan-loop/latest-ux-assessment.json
+!data/studio-ui-ux-plan-loop/latest-capture.json
+!data/studio-ui-ux-plan-loop/tracking-issue.txt
+deploy/studio-demo/screenshots/png/
+deploy/studio-demo/**/*.mp4
+
+# Local CI sweep output (benchmarks local-ci)
+data/local-ci*.log

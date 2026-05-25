@@ -27,6 +27,7 @@ double li_rt_log(double x);
 double li_rt_hypot(double x, double y);
 double li_rt_expm1(double x);
 double li_rt_log1p(double x);
+void li_rt_print_f64(double v);
 void li_rt_volatile_sink_f64(double v);
 
 /* HTTP routing + config (li_rt_httpd.c — M1 validate-config / routing tests). */
@@ -48,15 +49,66 @@ int32_t li_rt_httpd_serve_routed_once(int32_t port);
 int32_t li_rt_str_len(const char* s);
 int32_t li_rt_str_char_at(const char* s, int32_t i);
 int32_t li_rt_httpd_load_routing_fixture(void);
+int32_t li_rt_httpd_load_m15_agent_fixture(void);
+int32_t li_rt_httpd_load_m15_leak_censor_fixture(void);
+int32_t li_rt_httpd_load_m15_tls_le_fixture(void);
+int32_t li_rt_httpd_load_m15_tls_dev_fixture(void);
 int32_t li_rt_httpd_match_route(const char* method, const char* path);
 int32_t li_rt_httpd_route_action_kind(int32_t route_id);
+int32_t li_rt_httpd_parse_duration_sec(const char* raw);
+int32_t li_rt_httpd_m15_stream_idle_sec(void);
+int32_t li_rt_httpd_m15_stream_max_sec(void);
+int32_t li_rt_httpd_m15_concurrent_streams(void);
+int32_t li_rt_httpd_route_requires_traceparent(int32_t route_id);
+int32_t li_rt_httpd_is_sse_content_type(const char* ctype);
+int32_t li_rt_httpd_traceparent_ok(const char* buf, int32_t hdr_end);
+int32_t li_rt_httpd_traceparent_selftest(void);
+int32_t li_rt_httpd_leak_censor_enabled(void);
+int32_t li_rt_httpd_leak_censor_deny_path_count(void);
+int32_t li_rt_httpd_leak_censor_pattern_openai(void);
+int32_t li_rt_httpd_leak_censor_pattern_jwt(void);
+int32_t li_rt_httpd_leak_censor_pattern_pem(void);
+int32_t li_rt_httpd_leak_scrub(const char* data, int32_t len, intptr_t out_buf, int32_t out_cap);
+int32_t li_rt_httpd_leak_scrub_hit_count(void);
+int32_t li_rt_httpd_leak_scrub_selftest(void);
+int32_t li_rt_httpd_tls_enabled(void);
+int32_t li_rt_httpd_tls_mode(void);
+int32_t li_rt_httpd_tls_le_domain_count(void);
+int32_t li_rt_httpd_tls_renew_before_days(void);
+int32_t li_rt_httpd_tls_self_signed_dev(void);
+const char* li_rt_httpd_tls_le_email(void);
+int32_t li_rt_httpd_tls_selftest(void);
+int32_t li_rt_httpd_m2_enabled(void);
+int32_t li_rt_httpd_m2_tls_terminate(void);
+int32_t li_rt_httpd_m2_http2_enabled(void);
+int32_t li_rt_httpd_m2_http2_max_streams(void);
+int32_t li_rt_httpd_m2_queue_max_depth(void);
+int32_t li_rt_httpd_m2_queue_retry_after_sec(void);
+int32_t li_rt_httpd_m2_cb_error_threshold(void);
+int32_t li_rt_httpd_m2_webhook_allow_count(void);
+int32_t li_rt_httpd_route_requires_websocket(int32_t route_id);
+int32_t li_rt_httpd_m2_webhook_url_allowed(const char* url);
+int32_t li_rt_httpd_m2_selftest(void);
+int32_t li_rt_httpd_m3_enabled(void);
+int32_t li_rt_httpd_m3_l4_enabled(void);
+int32_t li_rt_httpd_m3_l4_listen_port(void);
+int32_t li_rt_httpd_m3_l4_upstream_port(void);
+int32_t li_rt_httpd_m3_l4_max_connections(void);
+int32_t li_rt_httpd_m3_token_budget_enabled(void);
+int32_t li_rt_httpd_m3_token_budget_max(void);
+int32_t li_rt_httpd_m3_token_budget_check(const char* header_val);
+int32_t li_rt_httpd_m3_selftest(void);
 
 void li_async_frame_enter(void);
 void li_async_frame_leave(void);
 int32_t li_async_await_i32(int32_t pending);
 int32_t li_async_poll(uint32_t slot);
+int32_t li_async_reactor_register_i(int32_t fd, int32_t slot);
+int32_t li_async_reactor_selftest_i(void);
+int32_t tcp_echo_epoll_once_i(int32_t port);
 
 /* Net trusted seam (li_rt_net.c) — syscalls + I/O buffers; HTTP in Li packages. */
+int32_t net_ping(void);
 int32_t tcp_listen(int32_t port);
 int32_t tcp_accept(int32_t listen_fd);
 int32_t tcp_send(int32_t conn_fd, const char* data);
@@ -67,6 +119,8 @@ void tcp_tune_client(int32_t fd);
 int32_t bytes_len(const char* b);
 const char* bytes_slice(const char* b, int32_t off, int32_t n);
 const char* bytes_append(const char* a, const char* b);
+int32_t bytes_byte_at(const char* b, int32_t off);
+const char* bytes_push_byte(const char* buf, int32_t byte);
 int32_t net_byte_at(const char* b, int32_t off);
 int32_t net_atoi(const char* s);
 
@@ -104,7 +158,19 @@ int32_t httpd_lb_mode_from_arg_i(intptr_t s);
 int32_t httpd_mark_upstream_peer_down_i(int32_t port);
 int32_t httpd_add_upstream_peer_i(int32_t port);
 void httpd_clear_upstream_peers_i(void);
+int32_t httpd_tick_active_health_probes_i(void);
+int32_t httpd_tick_sse_stream_idle_i(int32_t epfd);
+int32_t httpd_sse_idle_epoll_timeout_ms_i(void);
+int32_t epoll_wait_tagged_timeout_ms_i(int32_t epfd, intptr_t events, int32_t max_events,
+                                        int32_t timeout_ms);
 int32_t httpd_load_runtime_config_i(intptr_t path);
+int32_t httpd_tls_enabled_i(void);
+int32_t httpd_tls_handshake_slot_i(int32_t slot, int32_t fd);
+int32_t httpd_tls_slot_h2_i(int32_t slot);
+int32_t httpd_h2_serve_slot_i(int32_t epfd, int32_t slot);
+void httpd_client_force_close_i(int32_t epfd, int32_t slot);
+int32_t httpd_fork_workers_i(void);
+int32_t httpd_config_workers_i(void);
 int32_t httpd_config_listen_port_i(void);
 intptr_t httpd_config_doc_root_i(void);
 intptr_t net_lit_loopback_i(void);
@@ -151,3 +217,26 @@ int32_t li_rt_log_redact_ok(const char* in);
 #ifdef __cplusplus
 }
 #endif
+int32_t li_rt_studio_profile_from_name(const char* name);
+int32_t li_rt_studio_parse_toml_profile_line(const char* line);
+int32_t li_rt_studio_timeline_playing(void);
+int32_t li_rt_studio_timeline_toggle_play(void);
+int32_t li_rt_studio_timeline_tick_frame(void);
+float li_rt_studio_timeline_playhead_pct(void);
+int32_t li_rt_studio_timeline_reset_mock(void);
+int32_t li_rt_studio_viewport_error_kind(void);
+int32_t li_rt_studio_viewport_error_set_mock(int32_t kind);
+int32_t li_rt_studio_viewport_error_retry(void);
+int32_t li_rt_studio_mcp_tool_from_name(const char* name);
+const char* li_rt_studio_mcp_tool_name(int32_t tool_id);
+
+/* PH-GD-2: li-world text save/load seam (in-memory buffer; no filesystem I/O). */
+int32_t li_rt_world_format_version(void);
+const char* li_rt_world_serialize_slot(int32_t name_slot, int32_t tick, int32_t entity_count);
+int32_t li_rt_world_parse_line(const char* line);
+int32_t li_rt_world_parsed_name_slot(void);
+int32_t li_rt_world_parsed_tick(void);
+int32_t li_rt_world_parsed_entity_count(void);
+int32_t li_rt_world_snapshot_eq_fields(int32_t an, int32_t at, int32_t ae, int32_t bn, int32_t bt,
+                                       int32_t be);
+int32_t li_rt_world_roundtrip_fields(int32_t name_slot, int32_t tick, int32_t entity_count);

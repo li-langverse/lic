@@ -120,7 +120,13 @@ double li_rt_expm1(double x) {
 
 double li_rt_log1p(double x) { return log1p(x); }
 
+void li_rt_print_f64(double v) { printf("%.17g\n", v); }
+
 void li_rt_volatile_sink_f64(double v) {
+  const char* emit = getenv("LI_PRINT_SINK_F64");
+  if (emit != NULL && emit[0] == '1' && emit[1] == '\0') {
+    printf("%.17g\n", v);
+  }
   volatile double sink = v;
   (void)sink;
 }
@@ -185,6 +191,279 @@ int32_t li_rt_str_eq(const char* a, const char* b) {
   return strcmp(a, b) == 0 ? 1 : 0;
 }
 
+
+static int32_t li_rt_studio_profile_match_name(const char* name) {
+  if (name == NULL) {
+    return 0;
+  }
+  if (li_rt_str_eq(name, "game")) {
+    return 1;
+  }
+  if (li_rt_str_eq(name, "sim_rl")) {
+    return 2;
+  }
+  if (li_rt_str_eq(name, "sim_automotive")) {
+    return 3;
+  }
+  if (li_rt_str_eq(name, "sim_robotics")) {
+    return 4;
+  }
+  if (li_rt_str_eq(name, "sim_additive")) {
+    return 5;
+  }
+  if (li_rt_str_eq(name, "sim_scientific")) {
+    return 6;
+  }
+  if (li_rt_str_eq(name, "sim_drug_design")) {
+    return 7;
+  }
+  return 0;
+}
+
+int32_t li_rt_studio_profile_from_name(const char* name) {
+  return li_rt_studio_profile_match_name(name);
+}
+
+static int32_t li_rt_studio_mcp_tool_match_name(const char* name) {
+  if (name == NULL) {
+    return 0;
+  }
+  if (li_rt_str_eq(name, "world_scaffold")) {
+    return 1;
+  }
+  if (li_rt_str_eq(name, "sim_set_profile")) {
+    return 2;
+  }
+  if (li_rt_str_eq(name, "lic_check")) {
+    return 3;
+  }
+  if (li_rt_str_eq(name, "lic_build")) {
+    return 4;
+  }
+  if (li_rt_str_eq(name, "publish_bundle")) {
+    return 5;
+  }
+  return 0;
+}
+
+int32_t li_rt_studio_mcp_tool_from_name(const char* name) {
+  return li_rt_studio_mcp_tool_match_name(name);
+}
+
+const char* li_rt_studio_mcp_tool_name(int32_t tool_id) {
+  switch (tool_id) {
+    case 1:
+      return "world_scaffold";
+    case 2:
+      return "sim_set_profile";
+    case 3:
+      return "lic_check";
+    case 4:
+      return "lic_build";
+    case 5:
+      return "publish_bundle";
+    default:
+      return "";
+  }
+}
+
+static int32_t g_studio_timeline_playing = 0;
+static float g_studio_timeline_playhead_pct = 0.35f;
+
+int32_t li_rt_studio_timeline_playing(void) { return g_studio_timeline_playing; }
+
+int32_t li_rt_studio_timeline_toggle_play(void) {
+  g_studio_timeline_playing = g_studio_timeline_playing ? 0 : 1;
+  return g_studio_timeline_playing;
+}
+
+int32_t li_rt_studio_timeline_tick_frame(void) {
+  if (!g_studio_timeline_playing) {
+    return 0;
+  }
+  g_studio_timeline_playhead_pct += 0.01f;
+  if (g_studio_timeline_playhead_pct > 1.0f) {
+    g_studio_timeline_playhead_pct = 1.0f;
+  }
+  return 1;
+}
+
+float li_rt_studio_timeline_playhead_pct(void) { return g_studio_timeline_playhead_pct; }
+
+int32_t li_rt_studio_timeline_reset_mock(void) {
+  g_studio_timeline_playing = 0;
+  g_studio_timeline_playhead_pct = 0.35f;
+  return 0;
+}
+
+static int32_t g_studio_viewport_error_kind = 0;
+
+int32_t li_rt_studio_viewport_error_kind(void) { return g_studio_viewport_error_kind; }
+
+int32_t li_rt_studio_viewport_error_set_mock(int32_t kind) {
+  if (kind < 0 || kind > 2) {
+    return g_studio_viewport_error_kind;
+  }
+  g_studio_viewport_error_kind = kind;
+  return kind;
+}
+
+int32_t li_rt_studio_viewport_error_retry(void) {
+  g_studio_viewport_error_kind = 0;
+  return 0;
+}
+
+int32_t li_rt_studio_parse_toml_profile_line(const char* line) {
+  if (line == NULL) {
+    return 0;
+  }
+  const char* key = "profile";
+  const char* p = strstr(line, key);
+  if (p == NULL) {
+    return 0;
+  }
+  p += strlen(key);
+  while (*p == ' ' || *p == '\t') {
+    p++;
+  }
+  if (*p != '=') {
+    return 0;
+  }
+  p++;
+  while (*p == ' ' || *p == '\t') {
+    p++;
+  }
+  if (*p != '"') {
+    return 0;
+  }
+  p++;
+  const char* start = p;
+  while (*p != '\0' && *p != '"') {
+    p++;
+  }
+  if (*p != '"') {
+    return 0;
+  }
+  char buf[64];
+  const size_t n = (size_t)(p - start);
+  if (n == 0 || n >= sizeof(buf)) {
+    return 0;
+  }
+  memcpy(buf, start, n);
+  buf[n] = '\0';
+  return li_rt_studio_profile_match_name(buf);
+}
+
+/* PH-GD-2 li-world: world_v1 name=... tick=N entity_count=M (text line, no binary). */
+#define LI_RT_WORLD_NAME_MAX 64
+#define LI_RT_WORLD_LINE_MAX 256
+
+static char li_rt_world_line_buf[LI_RT_WORLD_LINE_MAX];
+static struct {
+  int32_t name_slot;
+  int32_t tick;
+  int32_t entity_count;
+  int32_t valid;
+} li_rt_world_parsed;
+
+static const char* li_rt_world_token_for_slot(int32_t slot) {
+  if (slot == 1) {
+    return "arena";
+  }
+  return "default";
+}
+
+static int32_t li_rt_world_slot_for_token(const char* name) {
+  if (name != NULL && strcmp(name, "arena") == 0) {
+    return 1;
+  }
+  return 0;
+}
+
+int32_t li_rt_world_format_version(void) { return 1; }
+
+const char* li_rt_world_serialize_slot(int32_t name_slot, int32_t tick, int32_t entity_count) {
+  if (name_slot < 0 || name_slot > 1) {
+    name_slot = 0;
+  }
+  if (tick < 0) {
+    tick = 0;
+  }
+  if (entity_count < 0) {
+    entity_count = 0;
+  }
+  snprintf(li_rt_world_line_buf, sizeof(li_rt_world_line_buf), "world_v1 name=%s tick=%d entity_count=%d",
+           li_rt_world_token_for_slot(name_slot), (int)tick, (int)entity_count);
+  return li_rt_world_line_buf;
+}
+
+int32_t li_rt_world_parse_line(const char* line) {
+  li_rt_world_parsed.valid = 0;
+  li_rt_world_parsed.name_slot = 0;
+  li_rt_world_parsed.tick = 0;
+  li_rt_world_parsed.entity_count = 0;
+  if (line == NULL) {
+    return 0;
+  }
+  char name[LI_RT_WORLD_NAME_MAX];
+  int tick = 0;
+  int entity_count = 0;
+  if (sscanf(line, "world_v1 name=%63s tick=%d entity_count=%d", name, &tick, &entity_count) != 3) {
+    return 0;
+  }
+  if (tick < 0 || entity_count < 0) {
+    return 0;
+  }
+  li_rt_world_parsed.name_slot = li_rt_world_slot_for_token(name);
+  li_rt_world_parsed.tick = (int32_t)tick;
+  li_rt_world_parsed.entity_count = (int32_t)entity_count;
+  li_rt_world_parsed.valid = 1;
+  return 1;
+}
+
+int32_t li_rt_world_parsed_name_slot(void) {
+  if (li_rt_world_parsed.valid == 0) {
+    return 0;
+  }
+  return li_rt_world_parsed.name_slot;
+}
+
+int32_t li_rt_world_parsed_tick(void) {
+  if (li_rt_world_parsed.valid == 0) {
+    return 0;
+  }
+  return li_rt_world_parsed.tick;
+}
+
+int32_t li_rt_world_parsed_entity_count(void) {
+  if (li_rt_world_parsed.valid == 0) {
+    return 0;
+  }
+  return li_rt_world_parsed.entity_count;
+}
+
+int32_t li_rt_world_snapshot_eq_fields(int32_t an, int32_t at, int32_t ae, int32_t bn, int32_t bt,
+                                     int32_t be) {
+  return (an == bn && at == bt && ae == be) ? 1 : 0;
+}
+
+int32_t li_rt_world_roundtrip_fields(int32_t name_slot, int32_t tick, int32_t entity_count) {
+  const char* line = li_rt_world_serialize_slot(name_slot, tick, entity_count);
+  if (li_rt_world_parse_line(line) != 1) {
+    return 0;
+  }
+  if (li_rt_world_parsed.name_slot != name_slot) {
+    return 0;
+  }
+  if (li_rt_world_parsed.tick != tick) {
+    return 0;
+  }
+  if (li_rt_world_parsed.entity_count != entity_count) {
+    return 0;
+  }
+  return 1;
+}
+
 int32_t li_rt_path_exact(const char* path, const char* want) {
   return li_rt_str_eq(path, want);
 }
@@ -235,13 +514,3 @@ int32_t li_rt_match_route_fixture(const char* method, const char* path) {
 void li_async_frame_enter(void) {}
 
 void li_async_frame_leave(void) {}
-
-int32_t li_async_await_i32(int32_t pending) {
-  (void)li_async_poll(0u);
-  return pending;
-}
-
-int32_t li_async_poll(uint32_t slot) {
-  (void)slot;
-  return 1;
-}

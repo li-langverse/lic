@@ -1,4 +1,12 @@
-# Li monorepo workspace — members added by scripts/li-new-package
+# Li monorepo workspace — Phase-H httpd + numerics; validated by scripts/check-pkg-workspace.py
 [workspace]
-members = ["li-log", "li-core", "li-demo", "li-http", "li-math", "li-math-numerics", "li-net", "li-net-httpd", "li-physics-aero", "li-physics-chem", "li-physics-core", "li-physics-em", "li-physics-fluids", "li-physics-hep", "li-physics-particles", "li-physics-quantum", "li-physics-relativity", "li-physics-rigid", "li-physics-runtime", "li-physics-weather", "li-scene", "li-ui"]
+members = ["li-sim", "li-sim-scientific",
+  "li-acme", "li-bytes", "li-core", "li-crypto", "li-demo", "li-http", "li-log",
+  "li-math", "li-math-numerics", "li-net", "li-net-httpd", "li-physics-aero",
+  "li-physics-chem", "li-physics-core", "li-physics-em", "li-physics-fluids",
+  "li-physics-hep", "li-physics-particles", "li-physics-quantum",
+  "li-physics-relativity", "li-physics-rigid", "li-physics-runtime",
+  "li-physics-weather", "li-prob", "li-rng", "li-schema", "li-scene", "li-tls",
+  "li-ui", "li-gui", "li-gpu", "li-render", "li-studio", "li-world",
+]
 resolver = "path"

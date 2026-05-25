@@ -1,4 +1,5 @@
 #include "li/mir.hpp"
+#include "li/mir_runtime_link.hpp"
 #include "li/numeric_types.hpp"
 #include "li/prelude.hpp"
 
@@ -29,6 +30,7 @@ struct LowerArrayCtx {
 
 LowerArrayCtx* g_arr_ctx = nullptr;
 const std::unordered_map<std::string, const TypeExpr*>* g_object_locals = nullptr;
+MirModule* g_mir_module = nullptr;
 
 std::string fresh_temp() { return "__t" + std::to_string(temp_counter++); }
 
@@ -144,6 +146,15 @@ struct LoopLabels {
   std::string exit;
 };
 
+const double* lookup_const_float(const std::unordered_map<std::string, double>& m,
+                                 const std::string& name) {
+  const auto it = m.find(name);
+  if (it == m.end()) {
+    return nullptr;
+  }
+  return &it->second;
+}
+
 struct LowerCtx {
   const Module* module = nullptr;
   MirModule* mir = nullptr;
@@ -151,6 +162,7 @@ struct LowerCtx {
   const ProcDecl* proc = nullptr;
   std::vector<LoopLabels>* loop_stack = nullptr;
   const std::unordered_map<std::string, const TypeExpr*>* object_locals = nullptr;
+  std::unordered_map<std::string, double>* const_floats = nullptr;
 };
 std::string fresh_label(const std::string& prefix) {
   return prefix + std::to_string(temp_counter++);
@@ -1333,6 +1345,9 @@ std::string lower_expr_to(const Expr& e, const Module& module, std::vector<MirIn
       MirInsn ins;
       ins.op = MirOp::CallExtern;
       ins.callee = e.ident;
+      if (g_mir_module) {
+        mir_note_runtime_callee(e.ident, *g_mir_module);
+      }
       for (const auto& arg : e.args) {
         MirArg ma;
         if (arg->kind == Expr::Kind::StringLit) {
@@ -1675,6 +1690,9 @@ void lower_stmt(const Stmt& stmt, LowerCtx& ctx, bool returns_float, std::vector
           if (stmt.init->kind == Expr::Kind::FloatLit) {
             store.rhs_is_literal = true;
             store.float_value = stmt.init->float_value;
+            if (ctx.const_floats) {
+              (*ctx.const_floats)[stmt.var_name] = stmt.init->float_value;
+            }
           } else if (stmt.init->kind == Expr::Kind::Ident) {
             store.rhs_is_literal = false;
             store.rhs_ident = stmt.init->ident;
@@ -2085,9 +2103,11 @@ void lower_stmt(const Stmt& stmt, LowerCtx& ctx, bool returns_float, std::vector
       };
       std::string iter_name;
       std::int64_t trip = 0;
-      constexpr int kHornerUnroll = 16;
-      if (parse_i_lt_limit(*stmt.cond, iter_name, trip) && trip >= kHornerUnroll &&
-          (trip % kHornerUnroll) == 0 && stmt.while_body.size() == 2) {
+      constexpr int kHornerScalarSteps = 64;
+      constexpr int kHornerPow4Steps = 4;
+      constexpr int kHornerSuperSteps = kHornerScalarSteps / kHornerPow4Steps;
+      if (parse_i_lt_limit(*stmt.cond, iter_name, trip) && trip >= kHornerScalarSteps &&
+          (trip % kHornerScalarSteps) == 0 && stmt.while_body.size() == 2) {
         std::string acc_name;
         std::string factor;
         std::string step_factor;
@@ -2110,14 +2130,24 @@ void lower_stmt(const Stmt& stmt, LowerCtx& ctx, bool returns_float, std::vector
           const std::string cond_tmp =
               lower_expr_to(*stmt.cond, module, out, float_names, simd_names, i64_locals);
           push_branch_if_zero(out, cond_tmp, exit_label);
-          for (int u = 0; u < kHornerUnroll; ++u) {
-            MirInsn fma;
-            fma.op = MirOp::FmaFloatF64;
-            fma.ident = acc_name;
-            fma.lhs_ident = factor;
-            fma.rhs_ident = acc_name;
-            fma.float_value = 1.0;
-            out.push_back(std::move(fma));
+          const double* const_x =
+              ctx.const_floats ? lookup_const_float(*ctx.const_floats, factor) : nullptr;
+          if (const_x != nullptr) {
+            MirInsn step;
+            step.op = MirOp::HornerStepPow4;
+            step.ident = acc_name;
+            step.lhs_is_literal = true;
+            step.float_value = *const_x;
+            step.int_value = kHornerSuperSteps;
+            out.push_back(std::move(step));
+          } else {
+            MirInsn block;
+            block.op = MirOp::HornerFmaUnroll;
+            block.ident = acc_name;
+            block.lhs_ident = factor;
+            block.float_value = 1.0;
+            block.int_value = kHornerScalarSteps;
+            out.push_back(std::move(block));
           }
           MirInsn inc;
           inc.op = MirOp::BinOpInt;
@@ -2125,7 +2155,7 @@ void lower_stmt(const Stmt& stmt, LowerCtx& ctx, bool returns_float, std::vector
           inc.lhs_ident = iter_name;
           inc.bin_op = BinOp::Add;
           inc.rhs_is_literal = true;
-          inc.rhs_int = kHornerUnroll;
+          inc.rhs_int = kHornerScalarSteps;
           out.push_back(std::move(inc));
           push_jump(out, head_label);
           push_label(out, exit_label);
@@ -2299,16 +2329,20 @@ MirModule lower_to_mir(const Module& module) {
       arr_ctx.float_array_names = &float_array_names;
       arr_ctx.matrix_names = &matrix_array_names;
       g_arr_ctx = &arr_ctx;
+      g_mir_module = &mir;
       seed_float_params(fn, float_names);
       seed_i64_params(fn, i64_locals);
       std::vector<LoopLabels> loop_stack;
+      std::unordered_map<std::string, double> const_floats;
       std::unordered_map<std::string, const TypeExpr*> object_local_types =
           collect_object_local_types(module, proc);
-      LowerCtx ctx{&module, &mir, proc.name, &proc, &loop_stack, &object_local_types};
+      LowerCtx ctx{&module,       &mir,     proc.name, &proc,
+                   &loop_stack,   &object_local_types, &const_floats};
       g_object_locals = &object_local_types;
       lower_stmts(proc.body, ctx, fn.returns_float, fn.body, float_names, simd_names,
                   float_array_names, i64_locals);
       g_object_locals = nullptr;
+      g_mir_module = nullptr;
       if (is_async_fn) {
         MirInsn leave;
         leave.op = MirOp::AsyncFrameLeave;

@@ -40,6 +40,7 @@ int usage() {
             << "  lic build <file> -o <out> [--release] [--numerically-stable]\n"
             << "                       [--strict-lean]  fail on open AutoVC goals + lake strict check\n"
             << "                       [--allow-open-vc]  allow obligations without Lean proof (dev only)\n"
+            << "                       [--prob-check]     Monte Carlo discharge for prob_ensures P(event)<ε\n"
             << "                       [--no-lean-verify] skip lake / AutoVC typecheck\n"
             << "                       default: fail on open goals; lake typecheck when installed\n"
             << "                       [--threads=N] [--jobs=N] [--max-memory=MB]\n"
@@ -259,7 +260,31 @@ bool parse_proof_cli_flag(std::string_view arg) {
     li::proof_cli_flags().no_lean_verify = true;
     return true;
   }
+  if (arg == "--prob-check") {
+    li::proof_cli_flags().prob_check = true;
+    return true;
+  }
   return false;
+}
+
+int run_prob_check_script(const char* input_path) {
+  const char* root = std::getenv("LI_REPO_ROOT");
+  std::string script = "scripts/prob_check.py";
+  if (root != nullptr) {
+    script = std::string(root) + "/" + script;
+  }
+  if (!std::filesystem::exists(script)) {
+    std::cerr << "lic build: --prob-check requires " << script << "\n";
+    return 1;
+  }
+  const std::string cmd =
+      "python3 " + script + " \"" + std::string(input_path) + "\"";
+  const int rc = std::system(cmd.c_str());
+  if (rc != 0) {
+    std::cerr << "lic build: probabilistic contract check failed (prob_ensures)\n";
+    return 1;
+  }
+  return 0;
 }
 
 bool lake_available() {
@@ -335,6 +360,7 @@ int verify_file(const char* path, bool run_lean, bool strict_lean) {
   vc.mir_return_linked = witness.mir_return_linked;
   std::cout << "verify: procs=" << vc.proc_count << " mir_fns=" << vc.mir_fn_count
             << " requires=" << vc.requires_count << " ensures=" << vc.ensures_count
+            << " prob_ensures=" << vc.prob_ensures_count
             << " decreases=" << vc.decreases_count << " invariant=" << vc.invariant_count
             << " witnessed_ensures=" << vc.ensures_witnessed
             << " mir_return_linked=" << vc.mir_return_linked << '\n';
@@ -584,6 +610,11 @@ int main(int argc, char** argv) {
       }
     } else {
       std::cerr << "lic build: warning — Lean verify skipped (--no-lean-verify)\n";
+    }
+    if (li::prob_check()) {
+      if (const int prob_rc = run_prob_check_script(input); prob_rc != 0) {
+        return prob_rc;
+      }
     }
     return 0;
   }

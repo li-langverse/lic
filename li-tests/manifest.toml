@@ -157,6 +157,12 @@ suite = "compile_ok"
 file = "compile_ok/int_ne_literal.li"
 outcome = "compile_ok"
 
+[[tests]]
+suite = "compile_ok"
+file = "compile_ok/volatile_sink_no_io.li"
+outcome = "compile_ok"
+note = "bench sink extern without raises IO"
+
 # --- prove_reject (pillar 1) ---
 
 [[tests]]
@@ -217,6 +223,12 @@ suite = "contracts_verify"
 file = "contracts_verify/discharge_trivial.li"
 outcome = "prove_lean_ok"
 note = "P-closed: discharge_trivial_lean.sh"
+
+[[tests]]
+suite = "contracts_verify"
+file = "contracts_verify/http_parse_forward_closed.li"
+outcome = "verify_ok"
+note = "w0-lean-gate: extern forward inherits callee ensures (zero open AutoVC)"
 
 [[tests]]
 suite = "contracts_verify"
@@ -553,7 +565,13 @@ outcome = "verify_ok"
 suite = "runtime"
 file = "runtime/bytes_len_slice_link.li"
 outcome = "compile_open_ok"
-note = "std/bytes externs link against runtime/li_rt.c"
+note = "std/bytes externs link against runtime/li_rt_net.c"
+
+[[tests]]
+suite = "bytes"
+file = "bytes/reader_writer_smoke.li"
+outcome = "compile_open_ok"
+note = "w0-bytes-io Reader/Writer incremental parse over std.bytes"
 
 [[tests]]
 suite = "runtime"
@@ -627,6 +645,18 @@ outcome = "compile_fail"
 expected_substr = "raises Net"
 
 [[tests]]
+suite = "net_trusted"
+file = "net_trusted/seam_policy_ok.li"
+outcome = "compile_open_ok"
+note = "w0-bytes-io trusted Net seam — tcp_listen requires raises Net"
+
+[[tests]]
+suite = "net_trusted"
+file = "net_trusted/seam_missing_net.li"
+outcome = "compile_fail"
+expected_substr = "raises Net"
+
+[[tests]]
 suite = "effects"
 file = "effects/async_missing_raises.li"
 outcome = "compile_fail"
@@ -644,6 +674,16 @@ suite = "async"
 file = "async/await_codegen_ok.li"
 outcome = "compile_open_ok"
 note = "open VC until 2f full (Lean gate on devbox)"
+[[tests]]
+suite = "async"
+file = "async/reactor_selftest_link.li"
+outcome = "compile_open_ok"
+note = "w1 epoll/kqueue li_async_reactor_selftest_i"
+[[tests]]
+suite = "async"
+file = "async/tcp_echo_smoke.li"
+outcome = "compile_open_ok"
+note = "w1 tcp_echo_epoll_once_i (Linux runtime in check-w1)"
 [[tests]]
 suite = "effects"
 file = "effects/await_outside_async.li"
@@ -699,6 +739,55 @@ suite = "composable"
 file = "composable/import_physics_runtime.li"
 outcome = "verify_open_ok"
 note = "2j-c: var RigidBody in-out write-back after rigid_integrate_semi_implicit; runtime exit 0"
+
+[[tests]]
+suite = "composable"
+file = "composable/import_sim_scientific_run.li"
+packages = ["li-sim-scientific", "li-sim"]
+outcome = "compile_open_ok"
+note = "sim.scientific: run_simulation + run_algo; detail 0–3; open VC via physics.rigid import"
+
+[[tests]]
+suite = "composable"
+file = "composable/import_studio_sim_profile_bridge.li"
+packages = ["li-sim", "li-studio", "li-gui", "li-ui"]
+outcome = "compile_open_ok"
+note = "PH-SIM SIM-0: studio_apply_profile_to_sim + li_sim_profile_from_studio_id"
+
+[[tests]]
+suite = "composable"
+file = "composable/import_ui_studio_shell.li"
+packages = ["li-ui"]
+outcome = "compile_open_ok"
+note = "import ui: studio shell layout + paint IR composables (PH-UX-01)"
+
+[[tests]]
+suite = "composable"
+file = "composable/import_gui_viewport_panel_switch.li"
+packages = ["li-gui", "li-ui"]
+outcome = "compile_open_ok"
+note = "import gui: viewport region + panel switch timing + paint expansion (PH-UX-02)"
+
+[[tests]]
+suite = "composable"
+file = "composable/import_gui_studio_keyboard.li"
+packages = ["li-gui", "li-ui"]
+outcome = "compile_open_ok"
+note = "import gui: UX-09 keyboard-first Escape/Cmd+K/1-5 region focus"
+
+[[tests]]
+suite = "composable"
+file = "composable/import_render_wgpu_fps.li"
+packages = ["li-render", "li-gpu", "li-gui", "li-ui"]
+outcome = "compile_open_ok"
+note = "import render: wgpu smoke + FPS counter bench hook (PH-UX-03)"
+
+[[tests]]
+suite = "composable"
+file = "composable/import_studio_compose.li"
+packages = ["li-studio", "li-gui", "li-ui"]
+outcome = "compile_open_ok"
+note = "import studio: compose dock + timeline + inspector from composables (PH-UX-05)"
 
 # stdlib_coverage/build_std_csv — enable when std.csv module resolves (PH-IO-4)
 
@@ -873,6 +962,24 @@ outcome = "verify_ok"
 suite = "physics"
 file = "physics/three_body_mini.li"
 outcome = "compile_ok"
+
+[[tests]]
+suite = "math_linalg"
+file = "math_linalg/golden_dot4_ones_twos.li"
+outcome = "compile_ok"
+note = "small golden 8.0; runtime via verify-math-physics-goldens.sh"
+
+[[tests]]
+suite = "math_linalg"
+file = "math_linalg/golden_tier1_dot8.li"
+outcome = "compile_ok"
+note = "tier-1 dot spec N=8; runtime via verify-math-physics-goldens.sh"
+
+[[tests]]
+suite = "physics"
+file = "physics/golden_positions_sum.li"
+outcome = "compile_ok"
+note = "small golden 3.0; runtime via verify-math-physics-goldens.sh"
 
 # --- math_syntax (2h — %, //, **) ---
 

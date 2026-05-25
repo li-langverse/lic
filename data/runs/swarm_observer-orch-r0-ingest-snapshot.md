@@ -41,6 +41,6 @@ Failing CI on 64 open PRs, missing CI on 32 repos, governance merges. Confirm `C
 - [x] Orchestrator note + registry reconcile
 - [x] Gates: `swarm-observer-plan-gates.sh`
 - [x] Branch `cursor/swarm-observer-plan-loop` commit + push
-- [ ] PR URL (after `gh pr create`)
+- [x] PR: https://github.com/li-langverse/lic/pull/314
 
 **Orchestrator note:** [2026-05-25-orch-r0-ingest-snapshot.md](../docs/ecosystem/orchestrator-notes/2026-05-25-orch-r0-ingest-snapshot.md)

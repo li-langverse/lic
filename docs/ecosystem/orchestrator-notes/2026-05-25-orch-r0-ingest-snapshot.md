@@ -113,6 +113,6 @@ No product code in lic. No new agent registry IDs.
 - [x] Registry updated (`orch-r0` closed)
 - [x] Orchestrator note written (this file)
 - [x] `swarm-observer-plan-gates.sh` (with note env)
-- [ ] PR opened on `cursor/swarm-observer-plan-loop` (push after commit)
+- [x] PR https://github.com/li-langverse/lic/pull/314 on `cursor/swarm-observer-plan-loop`
 
 **Report:** `lic/data/runs/swarm_observer-orch-r0-ingest-snapshot.md`

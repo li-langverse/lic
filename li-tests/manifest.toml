@@ -93,7 +93,7 @@ outcome = "compile_fail"
 [[tests]]
 suite = "decorator_exploits"
 file = "decorator_exploits/typosquat_paralell.li"
-outcome = "check_ok"
+outcome = "compile_fail"
 expected_substr = "W0403"
 
 [[tests]]

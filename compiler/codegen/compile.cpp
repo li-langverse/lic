@@ -70,7 +70,9 @@ bool compile_module(const Module& module, const std::string& output_path,
 
   if (is_null_output_path(output_path)) {
     maybe_keep_emit_ll(ll_path);
-    std::filesystem::remove(ll_path);
+    if (!emit_ll || !emit_ll[0]) {
+      std::filesystem::remove(ll_path);
+    }
     return true;
   }
 
@@ -181,7 +183,9 @@ bool compile_module(const Module& module, const std::string& output_path,
 #endif
   const int rc = std::system(cmd.str().c_str());
   maybe_keep_emit_ll(ll_path);
-  std::filesystem::remove(ll_path);
+  if (!emit_ll || !emit_ll[0]) {
+    std::filesystem::remove(ll_path);
+  }
   if (rc != 0) {
     if (error) {
       *error = "clang link failed";

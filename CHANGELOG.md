@@ -8,6 +8,8 @@ All notable changes to Li are documented here. The format follows
 
 ### Added
 
+- **Studio plan loop Wave 2 state:** `completed_ids` 11–19, UX-06/UX-08 assessment refresh — [2026-05-25-studio-plan-loop-wave2-state.md](docs/release-notes/2026-05-25-studio-plan-loop-wave2-state.md).
+
 - **Studio UX Wave 2 P2 (HTML mocks 16–18):** command palette, reel motion, end CTA scenes — [2026-05-25-studio-ux-wave2-16-18.md](docs/release-notes/2026-05-25-studio-ux-wave2-16-18.md).
 
 

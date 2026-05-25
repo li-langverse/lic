@@ -10,9 +10,18 @@
     "studio-ux-07-capture-harness",
     "studio-ux-08-bench-registry",
     "studio-ux-09-memory-budget",
-    "studio-ux-10-native-capture"
+    "studio-ux-10-native-capture",
+    "studio-ux-11-agent-invoke-surface",
+    "studio-ux-12-error-recovery-actions",
+    "studio-ux-13-outliner-hierarchy",
+    "studio-ux-14-error-ui-consolidation",
+    "studio-ux-15-dock-a11y-labels",
+    "studio-ux-16-palette-open-scene",
+    "studio-ux-17-demo-motion-x",
+    "studio-ux-18-end-cta-frame",
+    "studio-ux-19-reel-refresh"
   ],
-  "iterations": 9,
+  "iterations": 10,
   "history": [
     {
       "at": "2026-05-24T14:53:41+00:00",

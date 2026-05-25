@@ -19,6 +19,10 @@
 backend = "rocm"   # cuda | rocm | metal | webgpu
 ```
 
+## Li syntax
+
+Use **`def`** for all new APIs. Do not document bare **`proc`**. **`extern proc`** only for FFI. Every exported `def` (and each `extern proc`) needs `requires` / `ensures` / `decreases`. The parser still accepts legacy bare `proc` in old trees only — reject that syntax in new Studio/game-dev docs and package code.
+
 ## ROCm
 
 - Probe `hipcc`, `ROCM_PATH`, `gfx*` arch  

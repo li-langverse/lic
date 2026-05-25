@@ -16,8 +16,8 @@ if [[ ! -f "$lib" ]]; then
   echo "  skill: composable-li-library" >&2
   exit 0
 fi
-if ! grep -qE '^proc ' "$lib" 2>/dev/null; then
-  echo "composable: $lib has no exported proc — move logic out of main.li" >&2
+if ! grep -qE '^def ' "$lib" 2>/dev/null; then
+  echo "composable: $lib has no exported def — move logic out of main.li" >&2
   exit 0
 fi
 exit 0

@@ -3,7 +3,7 @@ name = "li-log"
 version = "0.1.0"
 edition = "2026"
 license = "Apache-2.0 OR MIT"
-description = "Li package li-log"
+description = "RFC3339 logging, rotation, redact-by-default access/audit"
 
 [dependencies]
 # path = { path = "../other" }   # lip 8b+

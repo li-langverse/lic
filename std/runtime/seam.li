@@ -184,6 +184,16 @@ extern proc epoll_wait_events_i(epfd: var int, events: var ptr, max_events: int)
   ensures true
   decreases 0
 
+extern proc li_async_reactor_selftest_i() raises Async -> int
+  requires true
+  ensures true
+  decreases 0
+
+extern proc tcp_echo_epoll_once_i(port: var int) raises Net -> int
+  requires port > 0
+  ensures true
+  decreases 0
+
 extern proc net_events_fd(events: var ptr, index: int) -> int
   requires true
   ensures true
@@ -512,6 +522,16 @@ extern proc tcp_send_nb_i(conn: var int, buf: var ptr, off: var int, n: var int)
   ensures true
   decreases 0
 
+extern proc httpd_fork_workers_i() -> int
+  requires true
+  ensures true
+  decreases 0
+
+extern proc httpd_config_workers_i() -> int
+  requires true
+  ensures true
+  decreases 0
+
 extern proc httpd_epoll_serve_i(port: var int, root: var ptr) -> int
   requires 0 < port
   ensures true
@@ -537,6 +557,11 @@ extern proc httpd_proxy_compact_req_hdr_i(slot: var int, hdr_end: var int) -> in
   ensures true
   decreases 0
 
+extern proc httpd_inject_traceparent_slot_i(slot: var int, hdr_end: var int) -> int
+  requires 0 <= slot
+  ensures true
+  decreases 0
+
 extern proc httpd_epoll_add_client_i(epfd: var int, conn: var int, slot: var int) -> int
   requires epfd >= 0
   ensures true
@@ -554,6 +579,48 @@ extern proc httpd_env_li_proxy_loop_i() -> int
 
 extern proc httpd_load_runtime_config_i(path: var ptr) -> int
   requires true
+  ensures true
+  decreases 0
+
+extern proc httpd_tls_enabled_i() -> int
+  requires true
+  ensures true
+  decreases 0
+
+extern proc httpd_tls_handshake_slot_i(slot: var int, fd: var int) -> int
+  requires 0 <= slot
+  requires fd >= 0
+  ensures true
+  decreases 0
+
+extern proc httpd_tls_slot_h2_i(slot: var int) -> int
+  requires 0 <= slot
+  ensures true
+  decreases 0
+
+extern proc httpd_h2_serve_slot_i(epfd: var int, slot: var int) -> int
+  requires epfd >= 0
+  requires 0 <= slot
+  ensures true
+  decreases 0
+
+extern proc httpd_tick_active_health_probes_i() -> int
+  requires true
+  ensures true
+  decreases 0
+
+extern proc httpd_tick_sse_stream_idle_i(epfd: var int) -> int
+  requires epfd >= 0
+  ensures true
+  decreases 0
+
+extern proc httpd_sse_idle_epoll_timeout_ms_i() -> int
+  requires true
+  ensures true
+  decreases 0
+
+extern proc epoll_wait_tagged_timeout_ms_i(epfd: var int, events: var ptr, max_events: var int, timeout_ms: var int) -> int
+  requires epfd >= 0
   ensures true
   decreases 0
 

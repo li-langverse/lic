@@ -7,14 +7,19 @@
 namespace li {
 namespace {
 
+bool expr_is_disjoint_builtin_call(const Expr& e) {
+  return e.kind == Expr::Kind::Call &&
+         (e.ident == "disjoint_elem" || e.ident == "disjoint_row" ||
+          e.ident == "disjoint_slice");
+}
+
 bool expr_references_disjoint(const Expr& e) {
   switch (e.kind) {
     case Expr::Kind::Ident:
       return e.ident == "disjoint_elem" || e.ident == "disjoint_row" ||
              e.ident == "disjoint_slice";
     case Expr::Kind::Call:
-      return e.ident == "disjoint_elem" || e.ident == "disjoint_row" ||
-             e.ident == "disjoint_slice";
+      return expr_is_disjoint_builtin_call(e);
     case Expr::Kind::BinOp:
       return (e.lhs && expr_references_disjoint(*e.lhs)) ||
              (e.rhs && expr_references_disjoint(*e.rhs));
@@ -38,13 +43,52 @@ bool expr_references_disjoint(const Expr& e) {
   }
 }
 
+bool contract_expr_is_disjoint_proof(const Expr& e) {
+  if (expr_is_disjoint_builtin_call(e)) {
+    return true;
+  }
+  if (e.kind == Expr::Kind::BinOp && e.lhs && e.rhs) {
+    return contract_expr_is_disjoint_proof(*e.lhs) && contract_expr_is_disjoint_proof(*e.rhs);
+  }
+  return false;
+}
+
 bool contract_has_disjoint(const std::vector<Contract>& contracts) {
   for (const auto& c : contracts) {
-    if (c.kind == ContractKind::Requires && c.expr && expr_references_disjoint(*c.expr)) {
+    if (c.kind == ContractKind::Requires && c.expr &&
+        contract_expr_is_disjoint_proof(*c.expr)) {
       return true;
     }
   }
   return false;
+}
+
+bool decorator_disjoint_value_ok(const Expr& e) {
+  if (expr_is_disjoint_builtin_call(e)) {
+    return true;
+  }
+  if (e.kind == Expr::Kind::Ident) {
+    return e.ident == "disjoint_elem" || e.ident == "disjoint_slice";
+  }
+  if (e.kind == Expr::Kind::BinOp && e.lhs && e.rhs) {
+    return decorator_disjoint_value_ok(*e.lhs) && decorator_disjoint_value_ok(*e.rhs);
+  }
+  return false;
+}
+
+bool contract_requires_is_weak_parallel_witness(const Expr& e) {
+  if (e.kind == Expr::Kind::Ident) {
+    return e.ident == "true" || e.ident == "disjoint_elem" || e.ident == "disjoint_row" ||
+           e.ident == "disjoint_slice";
+  }
+  return false;
+}
+
+void diag_weak_parallel_witness(const Stmt& stmt, const std::string& file, DiagnosticBag& diags) {
+  diag_error(diags, SourceLoc{file, 1, 1, stmt.span.start}, ErrorCode::E0350,
+             "Parallel `requires` must call disjoint_elem/row/slice(...), not `true` or a bare "
+             "builtin name.",
+             "Use e.g. `requires disjoint_elem(i, buf)` matching the memory you write.");
 }
 
 bool decorator_has_disjoint_arg(const Decorator& d) {
@@ -52,7 +96,7 @@ bool decorator_has_disjoint_arg(const Decorator& d) {
     return false;
   }
   for (const auto& arg : d.args) {
-    if (arg.name == "disjoint" && arg.value && expr_references_disjoint(*arg.value)) {
+    if (arg.name == "disjoint" && arg.value && decorator_disjoint_value_ok(*arg.value)) {
       return true;
     }
   }
@@ -154,6 +198,25 @@ std::int64_t decorator_vectorized_lanes(const Decorator& d) {
 
 void check_stmt_decorators(const Stmt& stmt, const std::string& file, DiagnosticBag& diags) {
   for (const auto& d : stmt.decorators) {
+    if (d.name == "parallel") {
+      if (!decorator_has_disjoint_arg(d)) {
+        diag_error(diags, SourceLoc{file, 1, 1, d.span.start}, ErrorCode::E0321,
+                   "parallel_requires_disjoint: `@parallel` must include a `disjoint=` proof "
+                   "argument.",
+                   "Use `@parallel(disjoint=disjoint_elem)` or `disjoint=disjoint_row(i, grid)`.");
+      } else {
+        for (const auto& arg : d.args) {
+          if (arg.name == "disjoint" && arg.value &&
+              !decorator_disjoint_value_ok(*arg.value)) {
+            diag_error(diags, SourceLoc{file, 1, 1, d.span.start}, ErrorCode::E0321,
+                       "`@parallel(disjoint=...)` must be a disjoint_* call or `disjoint_elem` / "
+                       "`disjoint_slice` proof function.",
+                       "Use `disjoint=disjoint_elem` or `disjoint=disjoint_row(i, buf)`; bare "
+                       "`disjoint_row` is not a proof.");
+          }
+        }
+      }
+    }
     if (d.name == "vectorized") {
       const std::int64_t lanes = decorator_vectorized_lanes(d);
       if (lanes != 4) {
@@ -170,6 +233,13 @@ void check_stmt_parallel(const Stmt& stmt, const std::string& file, DiagnosticBa
   check_stmt_decorators(stmt, file, diags);
   if (stmt.kind != Stmt::Kind::ParallelFor) {
     return;
+  }
+  for (const auto& c : stmt.par_contracts) {
+    if (c.kind == ContractKind::Requires && c.expr &&
+        contract_requires_is_weak_parallel_witness(*c.expr)) {
+      diag_weak_parallel_witness(stmt, file, diags);
+      return;
+    }
   }
   const bool disjoint = contract_has_disjoint(stmt.par_contracts) ||
                         decorator_parallel_has_disjoint(stmt.decorators) ||
@@ -233,11 +303,26 @@ void walk_stmts(const std::vector<Stmt>& stmts, const std::vector<std::string>& 
 void check_proc_decorators(const std::vector<Decorator>& decos, const std::string& file,
                            DiagnosticBag& diags) {
   for (const auto& d : decos) {
-    if (d.name == "parallel" && !decorator_has_disjoint_arg(d)) {
-      diag_error(diags, SourceLoc{file, 1, 1, d.span.start}, ErrorCode::E0321,
-                 "parallel_requires_disjoint: `@parallel` must include a `disjoint=` proof "
-                 "argument.",
-                 "Use `@parallel(disjoint=disjoint_elem(...))`.");
+    if (d.name == "parallel") {
+      bool saw_disjoint_kw = false;
+      for (const auto& arg : d.args) {
+        if (arg.name == "disjoint") {
+          saw_disjoint_kw = true;
+          if (arg.value && !decorator_disjoint_value_ok(*arg.value)) {
+            diag_error(diags, SourceLoc{file, 1, 1, d.span.start}, ErrorCode::E0321,
+                       "`@parallel(disjoint=...)` must be a disjoint_* call or `disjoint_elem` / "
+                       "`disjoint_slice` proof function.",
+                       "Use `disjoint=disjoint_elem` or `disjoint=disjoint_row(i, buf)`; bare "
+                       "`disjoint_row` is not a proof.");
+          }
+        }
+      }
+      if (!decorator_has_disjoint_arg(d) && !saw_disjoint_kw) {
+        diag_error(diags, SourceLoc{file, 1, 1, d.span.start}, ErrorCode::E0321,
+                   "parallel_requires_disjoint: `@parallel` must include a `disjoint=` proof "
+                   "argument.",
+                   "Use `@parallel(disjoint=disjoint_elem)` or `disjoint=disjoint_row(i, grid)`.");
+      }
     }
     if (d.name == "vectorized") {
       const std::int64_t lanes = decorator_vectorized_lanes(d);

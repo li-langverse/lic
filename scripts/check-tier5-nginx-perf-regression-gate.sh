@@ -23,11 +23,28 @@ chmod +x \
   "$ROOT/scripts/check-tier5-nginx-bench-parity.sh" \
   "$ROOT/scripts/check-tier5-nextjs-parity.sh" \
   "$ROOT/scripts/check-tier5-exploit-runtime.sh" \
+  "$HARNESS/bench_http.py" \
+  "$HARNESS/verify_http.py" \
   "$HARNESS/exploit_http.py" 2>/dev/null || true
+chmod +x "$ROOT/benchmarks/tier5_http/fixtures/streaming-soak/server.py" 2>/dev/null || true
 
 echo "==> tier5 agent-gateway parity (m1-nginx-bench-parity)"
-HTTPD_BENCH_RPS_RATIO_MIN="${HTTPD_BENCH_RPS_RATIO_MIN:-0.95}" \
+HTTPD_BENCH_RPS_RATIO_MIN="${HTTPD_BENCH_PARITY_RPS_RATIO_MIN:-${HTTPD_BENCH_RPS_RATIO_MIN:-0.95}}" \
   "$ROOT/scripts/check-tier5-nginx-bench-parity.sh"
+
+if [[ "${HTTPD_BENCH_SKIP_TIMING:-0}" != "1" ]] && command -v wrk >/dev/null 2>&1; then
+  NGINX_BIN="$(PYTHONPATH="$HARNESS" python3 -c 'from http_bench_servers import resolve_nginx_binary; print(resolve_nginx_binary() or "")')"
+  if [[ -n "$NGINX_BIN" ]]; then
+    DUR="${HTTPD_BENCH_DURATION_SEC:-8}"
+    echo "==> tier5 streaming wrk parity (parity_streaming, ${DUR}s)"
+    HTTPD_BENCH_RPS_RATIO_MIN="${HTTPD_BENCH_STREAMING_RPS_RATIO_MIN:-0.85}" \
+      HTTPD_BENCH_TTFB_RATIO_MIN="${HTTPD_BENCH_STREAMING_TTFB_RATIO_MIN:-0.85}" \
+      HTTPD_BENCH_P99_RATIO_MAX="${HTTPD_BENCH_P99_RATIO_MAX:-2.0}" \
+      python3 "$HARNESS/bench_http.py" --profile parity_streaming --check-parity \
+        --set "load.duration_sec=${DUR}" \
+        --out "$ROOT/benchmarks/results/tier5_streaming_parity.csv"
+  fi
+fi
 
 echo "==> tier5 nextjs proxy parity (gap-nextjs-toy-bench)"
 HTTPD_BENCH_RPS_RATIO_MIN="${HTTPD_BENCH_NEXTJS_RPS_RATIO_MIN:-0.85}" \

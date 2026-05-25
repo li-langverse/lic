@@ -22,11 +22,19 @@ def _sse_once(host: str, port: int, path: str, *, events_min: int, timeout: floa
         t0 = time.perf_counter()
         conn.request("GET", path)
         resp = conn.getresponse()
-        body = resp.read()
-        elapsed = time.perf_counter() - t0
         if resp.status != 200:
-            return False, elapsed
-        ticks = body.count(b"event: tick")
+            return False, time.perf_counter() - t0
+        deadline = t0 + timeout
+        ticks = 0
+        while ticks < events_min and time.perf_counter() < deadline:
+            try:
+                chunk = resp.read(4096)
+            except http.client.IncompleteRead as exc:
+                chunk = exc.partial
+            if not chunk:
+                break
+            ticks += chunk.count(b"event: tick")
+        elapsed = time.perf_counter() - t0
         return ticks >= events_min, elapsed
     except OSError:
         return False, 0.0

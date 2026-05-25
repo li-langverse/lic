@@ -13,6 +13,7 @@
 #include "li/terminal.hpp"
 #include "li/error_codes.hpp"
 #include "li/proof_cli.hpp"
+#include "li/resource_options.hpp"
 
 #include "li_rt.h"
 
@@ -42,19 +43,21 @@ int usage() {
             << "                       [--allow-open-vc]  allow obligations without Lean proof (dev only)\n"
             << "                       [--no-lean-verify] skip lake / AutoVC typecheck\n"
             << "                       default: fail on open goals; lake typecheck when installed\n"
-            << "                       [--threads=N] [--jobs=N] [--max-memory=MB]\n"
-            << "                       [--coverage-instrument]\n"
+            << "                       [--threads=N] [--cores=N] [--threads-per-core=N]\n"
+            << "                       [--jobs=N] [--max-memory=MB] [--job-memory-mb=MB]\n"
+            << "                       [--build-dir=PATH] [--coverage-instrument]\n"
             << "  lic smoke-llvm         verify LLVM can emit main returning 0\n"
             << "  lic httpd explain-config <file.toml>  desugar [routes] to canonical form\n"
             << "  lic httpd validate-config <file.toml>  validate [routes] (E0501–E0504)\n"
             << "  lic validate-httpd-config <file.toml>  M1 TOML schema + overlap (Python)\n"
             << "  lic --version          print version\n"
             << "\n"
-            << "resource defaults (override via flags or env):\n"
-            << "  --jobs=N / LI_COMPILE_JOBS / LI_BUILD_JOBS (host=" << jobs
-            << ") — reserved for parallel frontend\n"
-            << "  --max-memory=MB / LI_MAX_MEMORY_MB — reserved memory budget\n"
-            << "  --threads=N / LI_OMP_THREADS — OpenMP team size at run time\n"
+            << "resource flags (preferred; LI_* env deprecated):\n"
+            << "  --jobs=N (host=" << jobs << ") — parallel compile workers (memory-capped)\n"
+            << "  --max-memory=MB / --job-memory-mb=MB — cap effective --jobs\n"
+            << "  --cores=N / --threads-per-core=N — capped to host; sets LI_OMP_THREADS\n"
+            << "  --threads=N — explicit OpenMP team (overrides cores×tpc)\n"
+            << "  --build-dir=PATH — per-invocation build tree\n"
             << "  --numerically-stable / LI_FP_NUMERICALLY_STABLE=1 — cancellation-safe FP\n";
   return 1;
 }
@@ -156,16 +159,21 @@ int httpd_explain_config(int argc, char** argv) {
   return 0;
 }
 
-bool apply_resource_flag(std::string_view arg) {
-  if (arg.rfind("--jobs=", 0) == 0) {
-    setenv("LI_COMPILE_JOBS", std::string(arg.substr(7)).c_str(), 1);
-    return true;
+void apply_resource_options_to_env() {
+  const auto& opts = li::resource_options();
+  if (!opts.build_dir.empty()) {
+    setenv("LI_BUILD_DIR", opts.build_dir.c_str(), 1);
   }
-  if (arg.rfind("--max-memory=", 0) == 0) {
-    setenv("LI_MAX_MEMORY_MB", std::string(arg.substr(13)).c_str(), 1);
-    return true;
+  const unsigned omp = opts.effective_omp_threads();
+  if (omp > 0) {
+    setenv("LI_OMP_THREADS", std::to_string(omp).c_str(), 1);
   }
-  return false;
+  if (opts.jobs > 0) {
+    setenv("LI_COMPILE_JOBS", std::to_string(opts.effective_jobs()).c_str(), 1);
+  }
+  if (opts.max_memory_mb > 0) {
+    setenv("LI_MAX_MEMORY_MB", std::to_string(opts.max_memory_mb).c_str(), 1);
+  }
 }
 
 std::string read_file(const char* path) {
@@ -403,6 +411,7 @@ int build_file(const char* path, const char* output, const li::CompileOptions& o
 }  // namespace
 
 int main(int argc, char** argv) {
+  li::reset_resource_options();
   if (argc < 2) {
     return usage();
   }
@@ -447,6 +456,8 @@ int main(int argc, char** argv) {
       const std::string_view arg = argv[i];
       if (arg == "--format=json") {
         output = DiagOutput::Json;
+      } else if (li::apply_resource_flag(arg, li::resource_options())) {
+        continue;
       } else if (path == nullptr) {
         path = argv[i];
       } else {
@@ -456,6 +467,11 @@ int main(int argc, char** argv) {
     if (path == nullptr) {
       return usage();
     }
+    li::finalize_resource_options(li::resource_options());
+    if (li::resource_options_invalid()) {
+      return 1;
+    }
+    apply_resource_options_to_env();
     return check_file(path, output, "check");
   }
   if (cmd == "diagnose") {
@@ -529,15 +545,18 @@ int main(int argc, char** argv) {
         strict_lean = true;
       } else if (parse_proof_cli_flag(arg)) {
         continue;
-      } else if (arg.rfind("--threads=", 0) == 0) {
-        setenv("LI_OMP_THREADS", std::string(arg.substr(10)).c_str(), 1);
-      } else if (apply_resource_flag(arg)) {
+      } else if (li::apply_resource_flag(arg, li::resource_options())) {
         continue;
       } else {
         extra_flags.append(argv[i]);
         extra_flags.push_back(' ');
       }
     }
+    li::finalize_resource_options(li::resource_options());
+    if (li::resource_options_invalid()) {
+      return 1;
+    }
+    apply_resource_options_to_env();
     if (coverage) {
       extra_flags += "-fprofile-instr-generate -fcoverage-mapping ";
     }

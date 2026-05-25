@@ -708,6 +708,13 @@ def main() -> int:
         script = REPO / "benchmarks" / "harness" / "bench_ecosystem.py"
         return subprocess.call([sys.executable, str(script), "--runs", str(args.runs)])
 
+    if args.tier == 6:
+        script = REPO / "benchmarks" / "harness" / "execution_resource_sweep.py"
+        sweep_args = [sys.executable, str(script), "--runs", str(args.runs)]
+        if args.ci:
+            sweep_args.append("--smoke")
+        return subprocess.call(sweep_args)
+
     if args.tier >= 1:
         print(f"tier {args.tier} benchmarks: not implemented", file=sys.stderr)
     return 0

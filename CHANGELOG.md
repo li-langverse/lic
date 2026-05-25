@@ -13,7 +13,9 @@ All notable changes to Li are documented here. The format follows
 
 ### Added
 
-- **WP5 toolchain bench:** , toolchain corpora, runtime refs — .
+- **Execution-resource bench + security:** cores×tpc sweep CSV, `execution_exploits` CI, `--cores`/`--threads-per-core` — [2026-05-25-execution-resource-bench-security.md](docs/release-notes/2026-05-25-execution-resource-bench-security.md).
+
+- **WP5 toolchain bench:** toolchain corpora, runtime refs — PR #206.
 
 - **G-test-verify Done:** `prove_lean_ok` in `li-tests/run_all.sh`; 14 closed `contracts_verify` specimens — `docs/release-notes/2026-05-25-g-test-verify-prove-lean-ok.md`.
 

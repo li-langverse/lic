@@ -186,11 +186,12 @@ def studio_paint_topbar_profile(frame: var PaintFrame, topbar: Rect, profile_id:
   ensures frame.last_kind == paint_op_stroke_rect()
   decreases profile_id
 =
-  var pid0: int = profile_id
+  var pid_chip: int = profile_id
+  var pid_color: int = profile_id
   frame.cmd_count = frame.cmd_count + studio_paint_topbar_profile_cmds()
   frame.last_kind = paint_op_stroke_rect()
-  frame.last_rect = studio_profile_chip_rect_at(topbar, pid0)
-  frame.last_color = studio_profile_color(pid0)
+  frame.last_rect = studio_profile_chip_rect_at(topbar, pid_chip)
+  frame.last_color = studio_profile_color(pid_color)
 
 
 def li_std_studio_version() -> int
@@ -1054,10 +1055,13 @@ def studio_compose_agent_progress(task_state: int, status_rect: Rect) -> StudioA
   ensures result.visible == studio_agent_progress_visible(task_state)
   decreases task_state
 =
+  var ts_vis: int = task_state
+  var ts_idx: int = task_state
+  var ts_tot: int = task_state
   var out: StudioAgentProgress
-  out.visible = studio_agent_progress_visible(task_state)
-  out.step_index = studio_agent_mock_step_index(task_state)
-  out.step_total = studio_agent_mock_step_total(task_state)
+  out.visible = studio_agent_progress_visible(ts_vis)
+  out.step_index = studio_agent_mock_step_index(ts_idx)
+  out.step_total = studio_agent_mock_step_total(ts_tot)
   out.progress_rect = rect_make(0.0, 0.0, 0.0, 0.0)
   if out.visible == 1:
     out.progress_rect = studio_agent_progress_rect_at(status_rect, out.step_index, out.step_total)
@@ -1072,18 +1076,21 @@ def studio_paint_agent_cmds(task_state: int, agent_context_label: int) -> int
   ensures result <= 7
   decreases task_state
 =
-  var ts0: int = task_state
   var ctx0: int = agent_context_label
+  var ts_cancel: int = task_state
+  var ts_progress: int = task_state
+  var ts_error: int = task_state
+  var ts_retry: int = task_state
   var n: int = 2
   if studio_agent_context_visible(ctx0) == 1:
     n = n + 1
-  if studio_agent_cancel_visible(ts0) == 1:
+  if studio_agent_cancel_visible(ts_cancel) == 1:
     n = n + 1
-  if studio_agent_progress_visible(ts0) == 1:
+  if studio_agent_progress_visible(ts_progress) == 1:
     n = n + 1
-  if studio_agent_error_visible(ts0) == 1:
+  if studio_agent_error_visible(ts_error) == 1:
     n = n + 2
-  if studio_agent_retry_visible(ts0) == 1:
+  if studio_agent_retry_visible(ts_retry) == 1:
     n = n + 1
   return n
 
@@ -1097,19 +1104,22 @@ def studio_compose_agent_chrome(layout: StudioShellLayout, task_state: int, agen
   ensures result.agent_context_label == agent_context_label
   decreases task_state
 =
-  var ts0: int = task_state
+  var ts_cancel: int = task_state
+  var ts_error: int = task_state
+  var ts_retry: int = task_state
+  var ts_prog: int = task_state
   var ctx0: int = agent_context_label
   var out: StudioAgentChromeCompose
   out.rect = layout.agent_strip
-  out.task_state = ts0
+  out.task_state = ts_cancel
   out.agent_context_label = ctx0
-  out.cancel_visible = studio_agent_cancel_visible(ts0)
-  out.error_visible = studio_agent_error_visible(ts0)
-  out.retry_visible = studio_agent_retry_visible(ts0)
+  out.cancel_visible = studio_agent_cancel_visible(ts_cancel)
+  out.error_visible = studio_agent_error_visible(ts_error)
+  out.retry_visible = studio_agent_retry_visible(ts_retry)
   out.cancel_rect = studio_agent_cancel_rect_at(layout.agent_strip.x, layout.agent_strip.y, layout.agent_strip.w, layout.agent_strip.h)
   out.status_rect = studio_agent_status_rect_at(layout.agent_strip.x, layout.agent_strip.y, layout.agent_strip.w, layout.agent_strip.h, out.cancel_visible)
   out.error_strip_rect = studio_agent_error_strip_rect_at(layout.agent_strip.x, layout.agent_strip.y, layout.agent_strip.w, layout.agent_strip.h)
-  out.progress = studio_compose_agent_progress(ts0, out.status_rect)
+  out.progress = studio_compose_agent_progress(ts_prog, out.status_rect)
   out.context_rect = rect_make(0.0, 0.0, 0.0, 0.0)
   if studio_agent_context_visible(ctx0) == 1:
     out.context_rect = studio_agent_context_rect_at(out.status_rect)
@@ -1137,9 +1147,11 @@ def studio_compose_shell_profile(w: float, h: float, active_dock_slot: int, has_
   out.config = studio_project_config_new(active_profile)
   out.dock.rect = layout.dock
   out.dock.slot_count = studio_dock_slot_count()
-  out.dock.active_slot = active_dock_slot
-  out.dock.active_slot_rect = studio_dock_slot_rect_at(layout.dock.x, layout.dock.y, layout.dock.w, layout.dock.h, active_dock_slot)
-  out.outliner = studio_compose_outliner(layout.dock, active_dock_slot)
+  var slot_dock: int = active_dock_slot
+  var slot_outliner: int = active_dock_slot
+  out.dock.active_slot = slot_dock
+  out.dock.active_slot_rect = studio_dock_slot_rect_at(layout.dock.x, layout.dock.y, layout.dock.w, layout.dock.h, slot_dock)
+  out.outliner = studio_compose_outliner(layout.dock, slot_outliner)
   out.timeline.rect = layout.timeline
   out.timeline.track_rect = studio_timeline_track_rect_at(layout.timeline.x, layout.timeline.y, layout.timeline.w, layout.timeline.h)
   out.timeline.playhead_rect = studio_timeline_playhead_rect_at(out.timeline.track_rect.x, out.timeline.track_rect.y, out.timeline.track_rect.w, out.timeline.track_rect.h, studio_timeline_playhead_pct())
@@ -1187,7 +1199,8 @@ def studio_compose_shell(w: float, h: float, active_dock_slot: int, has_selectio
 =
   var w0: float = w
   var h0: float = h
-  var slot0: int = active_dock_slot
+  var slot_dock: int = active_dock_slot
+  var slot_outliner: int = active_dock_slot
   var sel0: int = has_selection
   var scene0: int = scene_entity_count
   var out: StudioShellCompose
@@ -1196,9 +1209,9 @@ def studio_compose_shell(w: float, h: float, active_dock_slot: int, has_selectio
   out.config = studio_project_config_new(studio_profile_game())
   out.dock.rect = out.layout.dock
   out.dock.slot_count = studio_dock_slot_count()
-  out.dock.active_slot = slot0
-  out.dock.active_slot_rect = studio_dock_slot_rect_at(out.layout.dock.x, out.layout.dock.y, out.layout.dock.w, out.layout.dock.h, slot0)
-  out.outliner = studio_compose_outliner(out.layout.dock, slot0)
+  out.dock.active_slot = slot_dock
+  out.dock.active_slot_rect = studio_dock_slot_rect_at(out.layout.dock.x, out.layout.dock.y, out.layout.dock.w, out.layout.dock.h, slot_dock)
+  out.outliner = studio_compose_outliner(out.layout.dock, slot_outliner)
   out.timeline.rect = out.layout.timeline
   out.timeline.track_rect = studio_timeline_track_rect_at(out.layout.timeline.x, out.layout.timeline.y, out.layout.timeline.w, out.layout.timeline.h)
   out.timeline.playhead_rect = studio_timeline_playhead_rect_at(out.timeline.track_rect.x, out.timeline.track_rect.y, out.timeline.track_rect.w, out.timeline.track_rect.h, studio_timeline_playhead_pct())
@@ -1248,7 +1261,8 @@ def studio_compose_shell_palette(w: float, h: float, active_dock_slot: int, has_
   ensures result.palette.is_open == palette_open
   decreases palette_open
 =
-  var out: StudioShellCompose = studio_compose_shell(w, h, active_dock_slot, has_selection, 0)
+  var slot_shell: int = active_dock_slot
+  var out: StudioShellCompose = studio_compose_shell(w, h, slot_shell, has_selection, 0)
   out.palette = studio_compose_palette(out.layout.viewport_w, out.layout.viewport_h, palette_open)
   return out
 
@@ -1270,7 +1284,8 @@ def studio_compose_shell_agent(w: float, h: float, active_dock_slot: int, has_se
   var task0: int = task_state
   var ctx_sel0: int = has_selection
   var ctx_task0: int = task_state
-  var out: StudioShellCompose = studio_compose_shell(w, h, active_dock_slot, sel0, scene0)
+  var slot_shell: int = active_dock_slot
+  var out: StudioShellCompose = studio_compose_shell(w, h, slot_shell, sel0, scene0)
   out.agent = studio_compose_agent_chrome(out.layout, task0, studio_agent_context_for_shell(ctx_sel0, ctx_task0))
   return out
 
@@ -1480,12 +1495,16 @@ def studio_paint_compose_panels_count(has_selection: int) -> int
 =
   return studio_paint_dock_cmds() + studio_paint_outliner_cmds(studio_outliner_demo_node_count()) + studio_paint_timeline_cmds() + studio_paint_inspector_cmds(has_selection)
 
-def studio_shell_viewport_cmds(scene_entity_count: int) -> int
+def studio_shell_viewport_cmds(scene_entity_count: int, viewport_error_kind: int) -> int
   requires scene_entity_count >= 0
+  requires viewport_error_kind >= studio_viewport_error_none()
+  requires viewport_error_kind <= studio_err_missing_asset()
   ensures result >= 1
   ensures result <= 3
-  decreases scene_entity_count
+  decreases viewport_error_kind
 =
+  if studio_viewport_error_visible(viewport_error_kind) == 1:
+    return studio_paint_viewport_error_cmds()
   if scene_entity_count == 0:
     return studio_paint_viewport_empty_cmds()
   return studio_paint_viewport_scene_cmds()
@@ -1499,12 +1518,13 @@ def studio_shell_chrome_count(has_selection: int, scene_entity_count: int, task_
   ensures result >= studio_paint_compose_panels_count(has_selection)
   decreases task_state
 =
-  var sel0: int = has_selection
+  var sel_palette: int = has_selection
+  var sel_ctx: int = has_selection
   var scene0: int = scene_entity_count
   var ts0: int = task_state
-  return studio_shell_chrome_count_palette(sel0, scene0, ts0, studio_palette_closed_flag(), studio_agent_context_for_shell(sel0, ts0))
+  return studio_shell_chrome_count_palette(sel_palette, scene0, ts0, studio_palette_closed_flag(), studio_agent_context_for_shell(sel_ctx, ts0))
 
-def studio_shell_chrome_count_palette(has_selection: int, scene_entity_count: int, task_state: int, palette_open: int, agent_context_label: int) -> int
+def studio_shell_chrome_count_palette(has_selection: int, scene_entity_count: int, task_state: int, palette_open: int, agent_context_label: int, viewport_error_kind: int) -> int
   requires has_selection >= 0
   requires has_selection <= 1
   requires scene_entity_count >= 0
@@ -1514,6 +1534,8 @@ def studio_shell_chrome_count_palette(has_selection: int, scene_entity_count: in
   requires palette_open <= studio_palette_open_flag()
   requires agent_context_label >= studio_agent_context_none()
   requires agent_context_label <= studio_agent_context_selection()
+  requires viewport_error_kind >= studio_viewport_error_none()
+  requires viewport_error_kind <= studio_err_missing_asset()
   ensures result >= studio_paint_compose_panels_count(has_selection)
   decreases task_state
 =
@@ -1522,7 +1544,7 @@ def studio_shell_chrome_count_palette(has_selection: int, scene_entity_count: in
   var ts0: int = task_state
   var pal0: int = palette_open
   var ctx0: int = agent_context_label
-  return studio_paint_compose_panels_count(sel0) + 1 + studio_paint_topbar_profile_cmds() + studio_shell_viewport_cmds(scene0) + studio_paint_agent_cmds(ts0, ctx0) + studio_paint_palette_cmds(pal0)
+  return studio_paint_compose_panels_count(sel0) + 1 + studio_paint_topbar_profile_cmds() + studio_shell_viewport_cmds(scene0, viewport_error_kind) + studio_paint_agent_cmds(ts0, ctx0) + studio_paint_palette_cmds(pal0)
 
 def studio_paint_viewport_empty(frame: var PaintFrame, viewport_empty: StudioViewportEmptyCompose) -> unit
   requires frame.cmd_count >= 0
@@ -1544,7 +1566,7 @@ def studio_paint_viewport_empty(frame: var PaintFrame, viewport_empty: StudioVie
 
 def studio_paint_shell_chrome(frame: var PaintFrame, compose: StudioShellCompose) -> unit
   requires frame.cmd_count >= 0
-  ensures frame.cmd_count == studio_shell_chrome_count_palette(compose.inspector.has_selection, compose.scene_entity_count, compose.agent.task_state, compose.palette.is_open, compose.agent.agent_context_label)
+  ensures frame.cmd_count == studio_shell_chrome_count_palette(compose.inspector.has_selection, compose.scene_entity_count, compose.agent.task_state, compose.palette.is_open, compose.agent.agent_context_label, compose.viewport_error.error_kind)
   decreases compose.agent.task_state
 =
   frame.cmd_count = frame.cmd_count + studio_paint_dock_cmds()
@@ -1563,13 +1585,16 @@ def studio_paint_shell_chrome(frame: var PaintFrame, compose: StudioShellCompose
   frame.last_color = studio_color_bg_elevated()
   var prof0: int = compose.config.active_profile
   studio_paint_topbar_profile(frame, compose.layout.topbar, prof0)
-  if compose.scene_entity_count == 0:
-    studio_paint_viewport_empty(frame, compose.viewport_empty)
-  if compose.scene_entity_count > 0:
-    frame.cmd_count = frame.cmd_count + studio_paint_viewport_scene_cmds()
-    frame.last_kind = paint_op_viewport_grid()
-    frame.last_rect = compose.layout.viewport
-    frame.last_color = studio_color_accent_cyan()
+  if compose.viewport_error.visible == 1:
+    studio_paint_viewport_error(frame, compose.viewport_error)
+  if compose.viewport_error.visible == 0:
+    if compose.scene_entity_count == 0:
+      studio_paint_viewport_empty(frame, compose.viewport_empty)
+    if compose.scene_entity_count > 0:
+      frame.cmd_count = frame.cmd_count + studio_paint_viewport_scene_cmds()
+      frame.last_kind = paint_op_viewport_grid()
+      frame.last_rect = compose.layout.viewport
+      frame.last_color = studio_color_accent_cyan()
   studio_paint_agent(frame, compose.agent)
   paint_studio_palette(frame, compose.palette)
 
@@ -1695,3 +1720,33 @@ def studio_handle_studio_key(compose: var StudioShellCompose, input: InputState)
   var key_w: float = compose.layout.viewport_w
   var key_h: float = compose.layout.viewport_h
   return gui_handle_studio_key_palette(compose.panel, compose.palette, key_w, key_h, input)
+
+def studio_viewport_error_overlay_visible_flag(overlay: StudioViewportErrorOverlay) -> int
+  requires true
+  ensures result == overlay.visible
+  ensures result >= 0
+  ensures result <= 1
+  decreases 0
+=
+  return overlay.visible
+
+def studio_shell_viewport_error_kind_is(compose: StudioShellCompose, kind: int) -> int
+  requires kind >= studio_viewport_error_none()
+  requires kind <= studio_err_missing_asset()
+  ensures result >= 0
+  ensures result <= 1
+  decreases kind
+=
+  if compose.viewport_error.error_kind != kind:
+    return 0
+  return 1
+
+def studio_shell_viewport_error_visible(compose: StudioShellCompose) -> int
+  requires true
+  ensures result == compose.viewport_error.visible
+  ensures result >= 0
+  ensures result <= 1
+  decreases 0
+=
+  return compose.viewport_error.visible
+

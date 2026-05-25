@@ -224,13 +224,16 @@ int32_t li_rt_studio_timeline_toggle_play(void);
 int32_t li_rt_studio_timeline_tick_frame(void);
 float li_rt_studio_timeline_playhead_pct(void);
 int32_t li_rt_studio_timeline_reset_mock(void);
+int32_t li_rt_studio_viewport_error_kind(void);
+int32_t li_rt_studio_viewport_error_set_mock(int32_t kind);
+int32_t li_rt_studio_viewport_error_retry(void);
 int32_t li_rt_studio_mcp_tool_from_name(const char* name);
 const char* li_rt_studio_mcp_tool_name(int32_t tool_id);
 
 /* PH-GD-2: li-world text save/load seam (in-memory buffer; no filesystem I/O). */
 int32_t li_rt_world_format_version(void);
-const char* li_rt_world_serialize_fields(const char* name, int32_t tick, int32_t entity_count);
+const char* li_rt_world_serialize_slot(int32_t name_slot, int32_t tick, int32_t entity_count);
 int32_t li_rt_world_parse_line(const char* line);
-const char* li_rt_world_parsed_name(void);
+int32_t li_rt_world_parsed_name_slot(void);
 int32_t li_rt_world_parsed_tick(void);
 int32_t li_rt_world_parsed_entity_count(void);

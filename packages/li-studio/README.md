@@ -25,6 +25,7 @@ Dimensions and frame budget: `examples/studio_shell_demo.toml` (1280×720, 3 fra
 - `studio_compose_outliner` / `studio_paint_outliner` — scene hierarchy stub (Root, Camera, Mesh) in dock strip below slots (PH-GD-1)
 - `studio_paint_compose_panels` — paint dock slots, outliner rows, timeline track/playhead, inspector chrome
 - `studio_shell_frame` — full editor chrome (panels + topbar + viewport grid + agent chrome)
+- **UX-08** — `studio_err_gpu` / `studio_err_missing_asset`, `StudioViewportErrorOverlay`, `studio_viewport_error_retry()` (mock; native wgpu probe not wired)
 - `studio_compose_agent_chrome` / `studio_paint_agent` — task status, step progress, context label, cancel, error strip, retry hint (UX-06)
 - `studio_panel_switch_inspector` / `studio_panel_switch_timeline` — PH-UX panel switch hooks
 - `studio_compose_shell_loading` / `studio_paint_shell_loading` — UX-11 skeleton rects (viewport + inspector fields); no spinner paint IR

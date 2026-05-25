@@ -1343,16 +1343,16 @@ bool emit_llvm_ir(const MirModule& mir, const std::string& out_path, std::string
       "li_rt_world_format_version",
       llvm::FunctionType::get(i32_ty(context), {}, false));
   module->getOrInsertFunction(
-      "li_rt_world_serialize_fields",
+      "li_rt_world_serialize_slot",
       llvm::FunctionType::get(i8_ptr(context),
-                              {i8_ptr(context), i32_ty(context), i32_ty(context)},
+                              {i32_ty(context), i32_ty(context), i32_ty(context)},
                               false));
   module->getOrInsertFunction(
       "li_rt_world_parse_line",
       llvm::FunctionType::get(i32_ty(context), {i8_ptr(context)}, false));
   module->getOrInsertFunction(
-      "li_rt_world_parsed_name",
-      llvm::FunctionType::get(i8_ptr(context), {}, false));
+      "li_rt_world_parsed_name_slot",
+      llvm::FunctionType::get(i32_ty(context), {}, false));
   module->getOrInsertFunction(
       "li_rt_world_parsed_tick",
       llvm::FunctionType::get(i32_ty(context), {}, false));
@@ -1370,6 +1370,12 @@ bool emit_llvm_ir(const MirModule& mir, const std::string& out_path, std::string
       llvm::FunctionType::get(llvm::Type::getDoubleTy(context), {}, false));
   module->getOrInsertFunction(
       "li_rt_studio_timeline_reset_mock", llvm::FunctionType::get(i32_ty(context), {}, false));
+  module->getOrInsertFunction(
+      "li_rt_studio_viewport_error_kind", llvm::FunctionType::get(i32_ty(context), {}, false));
+  module->getOrInsertFunction("li_rt_studio_viewport_error_set_mock",
+                              llvm::FunctionType::get(i32_ty(context), {i32_ty(context)}, false));
+  module->getOrInsertFunction(
+      "li_rt_studio_viewport_error_retry", llvm::FunctionType::get(i32_ty(context), {}, false));
   module->getOrInsertFunction(
       "li_rt_studio_mcp_tool_from_name",
       llvm::FunctionType::get(i32_ty(context), {i8_ptr(context)}, false));

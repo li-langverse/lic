@@ -4,6 +4,7 @@
 
 ### Added
 
+- **Viewport error recovery (UX-08)** — `studio_viewport_error_none`, `studio_err_gpu`, `studio_err_missing_asset`; `StudioViewportErrorOverlay` compose + stroke-only message/retry paint; `studio_viewport_error_retry()` mock via `li_rt_studio_viewport_error_*` (no wgpu failure probe); smoke `studio_viewport_error.li`.
 - **Runnable shell demo entry (PH-GD-1)** — `src/main.li` (`studio_shell_demo_frame`, `li-studio-demo` bin), `examples/studio_shell_demo.toml`, smoke `studio_shell_demo.li`; headless compose/paint + keyboard hook per frame (no SDL/wgpu window).
 - **Scene outliner (PH-GD-1)** — `StudioOutlinerNode`, `StudioOutlinerCompose`, `studio_compose_outliner`, `studio_paint_outliner`; demo hierarchy (Root, Camera, Mesh) in dock strip below slots; wired into `StudioShellCompose` and shell chrome counts; smoke `studio_outliner.li`.
 - **Accessibility (UX-10)** — `studio_paint_focus_ring_for_panel` when `panel.active_region` matches; uses `li-ui` focus ring token.

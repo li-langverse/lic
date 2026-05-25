@@ -3,7 +3,8 @@ set -euo pipefail
 ROOT="$(cd "$(dirname "$0")/../.." && pwd)"
 # shellcheck source=../../scripts/lib/li-jobs.sh
 source "$ROOT/scripts/lib/li-jobs.sh"
-[[ "$(li_test_jobs)" == "1" ]]
+# Default jobs=1 only when CI is unset (ci.sh exports CI=true before this smoke).
+CI=false li_test_jobs | grep -qx 1
 export CI=true
 [[ "$(li_test_jobs)" -ge 1 ]]
 export LI_TEST_JOBS=2

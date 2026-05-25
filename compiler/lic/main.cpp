@@ -32,7 +32,8 @@ int usage() {
   std::cerr << li::styled_accent("lic") << li::styled_dim(" — prove · write · run fast") << li::reset_style()
             << "\nusage:\n"
             << "  lic parse <file>       parse and validate syntax\n"
-            << "  lic check <file> [--format=json] [--deny-warnings]  parse + typecheck + advisory\n"
+            << "  lic check <file>|--workspace [li.toml] [--format=json] [--deny-warnings]\n"
+            << "                       [--cache-dir=DIR] [--cache-max-mb=N] [--no-cache] [--jobs=N]\n"
             << "  lic diagnose <file>    agent-oriented JSON diagnostics\n"
             << "  lic verify <file>      VC summary; --lean lake; --strict-lean fails open VCs\n"
             << "                       [--allow-open-vc] [--no-lean-verify]\n"
@@ -384,7 +385,7 @@ int main(int argc, char** argv) {
     return 0;
   }
   if (cmd == "check") {
-    return li::lic_check_main(argc, argv);
+    return li::lic_check_main(argc, argv, argv[0]);
   }
   if (cmd == "diagnose") {
     return li::lic_diagnose_main(argc, argv);

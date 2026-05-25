@@ -114,11 +114,13 @@ export LI_REPO_ROOT="$ROOT"
 
 li_phase "lic JSON diagnostics (Vision-LLM)"
 chmod +x "$ROOT/li-tests/tooling/diagnose_json_smoke.sh" \
+  "$ROOT/li-tests/tooling/check_workspace_cache_smoke.sh" \
   "$ROOT/li-tests/tooling/run_all_parallel_smoke.sh" \
   "$ROOT/li-tests/tooling/agent_manifest_smoke.sh" \
   "$ROOT/scripts/export-li-tests-agent-slice.sh" \
   "$ROOT/scripts/lic-fix-suggest.sh"
 "$ROOT/li-tests/tooling/diagnose_json_smoke.sh"
+"$ROOT/li-tests/tooling/check_workspace_cache_smoke.sh"
 "$ROOT/li-tests/tooling/run_all_parallel_smoke.sh"
 "$ROOT/li-tests/tooling/agent_manifest_smoke.sh"
 

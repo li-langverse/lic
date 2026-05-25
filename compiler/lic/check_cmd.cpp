@@ -1,13 +1,18 @@
 #include "li/check_cmd.hpp"
+#include "li/workspace_check.hpp"
 
 #include "li/advisory.hpp"
+#include "li/check_cache.hpp"
+#include "li/resource_options.hpp"
 #include "li/check_config.hpp"
 #include "li/import_resolve.hpp"
 #include "li/parser.hpp"
+#include "li/platform.hpp"
 #include "li/policy.hpp"
 #include "li/prelude.hpp"
 #include "li/typecheck.hpp"
 
+#include <filesystem>
 #include <fstream>
 #include <iostream>
 #include <sstream>
@@ -17,6 +22,12 @@ namespace li {
 namespace {
 
 enum class DiagOutput { Human, Json };
+
+#ifdef LI_VERSION
+constexpr const char* kCompilerVersion = LI_VERSION;
+#else
+constexpr const char* kCompilerVersion = "dev";
+#endif
 
 std::string read_file(const char* path) {
   std::ifstream in(path);
@@ -50,25 +61,65 @@ int check_exit_code(const DiagnosticBag& diags, bool deny_warnings) {
   return 0;
 }
 
-int check_file(const char* path, DiagOutput output, std::string_view json_command,
-               bool deny_warnings) {
+void finalize_check_cache(CheckCacheOptions& cache) {
+  if (cache.enabled && cache.cache_dir.empty()) {
+    cache.cache_dir = std::filesystem::path(repo_build_path("check-cache"));
+  }
+}
+
+bool is_workspace_flag(std::string_view arg) {
+  return arg == "--workspace" || arg.rfind("--workspace=", 0) == 0;
+}
+
+int check_file(const char* path, const CheckCommandOptions& opts, DiagOutput output,
+               std::string_view json_command) {
+  const std::filesystem::path file_path(path);
+  const CheckConfig cfg = load_check_config(file_path);
+  const std::string config_hash = check_config_hash(cfg);
+  const std::uint64_t content_hash = hash_file_content(file_path);
+  const std::string key =
+      make_check_cache_key(file_path, content_hash, config_hash, kCompilerVersion);
+  const bool use_cache = opts.cache.enabled && !opts.cache.cache_dir.empty();
+
+  if (use_cache) {
+    const CheckCacheHit hit = try_load_check_cache(opts.cache, key);
+    if (hit.hit) {
+      if (!hit.output.empty()) {
+        std::cout << hit.output;
+        if (hit.output.back() != '\n') {
+          std::cout << '\n';
+        }
+      }
+      return hit.exit_code;
+    }
+  }
+
   const std::string source = read_file(path);
   Module module;
   DiagnosticBag diags;
-  FrontendCheckOptions options;
-  options.deny_warnings = deny_warnings;
-  if (!run_frontend_check(path, source, module, diags, options)) {
-    if (output == DiagOutput::Json) {
-      print_diagnostics_json(diags, std::cout, json_command);
-    } else {
-      print_diagnostics(diags);
-    }
-    return 1;
-  }
+  FrontendCheckOptions frontend;
+  frontend.deny_warnings = opts.deny_warnings;
+
+  const bool ok = run_frontend_check(path, source, module, diags, frontend);
+  int exit_code = ok ? check_exit_code(diags, opts.deny_warnings) : 1;
+  std::string cache_payload;
+
   if (output == DiagOutput::Json) {
-    print_diagnostics_json(diags, std::cout, json_command);
+    std::ostringstream json_out;
+    print_diagnostics_json(diags, json_out, json_command);
+    cache_payload = json_out.str();
+    std::cout << cache_payload;
+    if (!cache_payload.empty() && cache_payload.back() != '\n') {
+      std::cout << '\n';
+    }
+  } else if (!ok) {
+    print_diagnostics(diags);
   }
-  return check_exit_code(diags, deny_warnings);
+
+  if (use_cache) {
+    store_check_cache(opts.cache, key, exit_code, cache_payload);
+  }
+  return exit_code;
 }
 
 }  // namespace
@@ -124,57 +175,93 @@ bool run_frontend_check(const char* path, const std::string& source, Module& out
   return true;
 }
 
-int lic_check_main(int argc, char** argv) {
+int lic_check_main(int argc, char** argv, const char* lic_executable) {
   if (argc < 3) {
-    std::cerr << "usage: lic check <file> [--format=json] [--deny-warnings]\n";
+    std::cerr << "usage: lic check <file> | --workspace[=li.toml] [--jobs=N] [--max-memory=MB] "
+                 "[--cache-dir=PATH] [--cache-max-mb=N] [--no-cache] [--format=json] "
+                 "[--deny-warnings]\n";
     return 1;
   }
+
+  CheckCommandOptions opts;
+  finalize_check_cache(opts.cache);
   const char* path = nullptr;
   DiagOutput output = DiagOutput::Human;
-  bool deny_warnings = false;
+  bool has_workspace = false;
+
   for (int i = 2; i < argc; ++i) {
     const std::string_view arg = argv[i];
+    if (is_workspace_flag(arg)) {
+      has_workspace = true;
+      continue;
+    }
     if (arg == "--format=json") {
       output = DiagOutput::Json;
-    } else if (arg == "--deny-warnings") {
-      deny_warnings = true;
-    } else if (path == nullptr) {
-      path = argv[i];
-    } else {
-      std::cerr << "usage: lic check <file> [--format=json] [--deny-warnings]\n";
-      return 1;
+      continue;
     }
-  }
-  if (path == nullptr) {
-    std::cerr << "usage: lic check <file> [--format=json] [--deny-warnings]\n";
+    if (arg == "--deny-warnings") {
+      opts.deny_warnings = true;
+      continue;
+    }
+    if (apply_check_cache_flag(arg, opts.cache)) {
+      continue;
+    }
+    if (apply_resource_flag(arg, resource_options())) {
+      continue;
+    }
+    if (path == nullptr && !arg.empty() && arg[0] != '-') {
+      path = argv[i];
+      continue;
+    }
+    std::cerr << "usage: lic check <file> | --workspace[=li.toml] [--jobs=N] [--max-memory=MB] "
+                 "[--cache-dir=PATH] [--cache-max-mb=N] [--no-cache] [--format=json] "
+                 "[--deny-warnings]\n";
     return 1;
   }
-  return check_file(path, output, "check", deny_warnings);
+
+  if (has_workspace) {
+    finalize_resource_options(resource_options());
+    return lic_workspace_check_main(argc, argv, lic_executable, opts.cache);
+  }
+
+  finalize_resource_options(resource_options());
+
+  if (path == nullptr) {
+    std::cerr << "usage: lic check <file> | --workspace[=li.toml] ...\n";
+    return 1;
+  }
+  return check_file(path, opts, output, "check");
 }
 
 int lic_diagnose_main(int argc, char** argv) {
   if (argc < 3) {
-    std::cerr << "usage: lic diagnose <file> [--deny-warnings]\n";
+    std::cerr << "usage: lic diagnose <file> [--deny-warnings] [--cache-dir=PATH] [--no-cache]\n";
     return 1;
   }
+  CheckCommandOptions opts;
+  finalize_check_cache(opts.cache);
   const char* path = nullptr;
-  bool deny_warnings = false;
   for (int i = 2; i < argc; ++i) {
     const std::string_view arg = argv[i];
     if (arg == "--deny-warnings") {
-      deny_warnings = true;
-    } else if (path == nullptr) {
+      opts.deny_warnings = true;
+      continue;
+    }
+    if (apply_check_cache_flag(arg, opts.cache)) {
+      continue;
+    }
+    if (path == nullptr) {
       path = argv[i];
     } else {
-      std::cerr << "usage: lic diagnose <file> [--deny-warnings]\n";
+      std::cerr << "usage: lic diagnose <file> [--deny-warnings] [--cache-dir=PATH] [--no-cache]\n";
       return 1;
     }
   }
   if (path == nullptr) {
-    std::cerr << "usage: lic diagnose <file> [--deny-warnings]\n";
+    std::cerr << "usage: lic diagnose <file> [--deny-warnings] [--cache-dir=PATH] [--no-cache]\n";
     return 1;
   }
-  return check_file(path, DiagOutput::Json, "diagnose", deny_warnings);
+  return check_file(path, opts, DiagOutput::Json, "diagnose");
 }
 
 }  // namespace li

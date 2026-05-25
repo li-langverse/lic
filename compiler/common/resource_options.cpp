@@ -2,6 +2,7 @@
 
 #include <cstdlib>
 #include <iostream>
+#include <unistd.h>
 
 namespace li {
 namespace {
@@ -10,6 +11,7 @@ ResourceOptions g_opts;
 bool g_env_warned = false;
 bool g_threads_cores_warned = false;
 bool g_invalid = false;
+<<<<<<< HEAD
 
 int parse_int(const char* s) {
   if (s == nullptr || *s == '\0') {
@@ -17,6 +19,8 @@ int parse_int(const char* s) {
   }
   return std::atoi(s);
 }
+=======
+>>>>>>> origin/main
 
 void warn_deprecated_env_once(const char* var, const char* flag) {
   if (g_env_warned) {
@@ -42,17 +46,30 @@ void warn_threads_over_cores_once() {
   std::cerr << "lic: warning: --threads= wins over --cores/--threads-per-core= when both are set\n";
 }
 
-unsigned parse_positive(const char* s) {
+int parse_int(const char* s) {
   if (s == nullptr || *s == '\0') {
     return 0;
   }
-  const int n = std::atoi(s);
+  return std::atoi(s);
+}
+
+unsigned parse_positive(const char* s) {
+  const int n = parse_int(s);
   return n > 0 ? static_cast<unsigned>(n) : 0u;
 }
 
 std::size_t parse_positive_size(const char* s) {
   const unsigned n = parse_positive(s);
   return n > 0 ? static_cast<std::size_t>(n) : 0u;
+}
+
+unsigned host_logical_cores() {
+#ifdef _SC_NPROCESSORS_ONLN
+  const long n = sysconf(_SC_NPROCESSORS_ONLN);
+  return n > 0 ? static_cast<unsigned>(n) : 1u;
+#else
+  return 1u;
+#endif
 }
 
 }  // namespace
@@ -192,6 +209,12 @@ void finalize_resource_options(ResourceOptions& opts) {
   }
   if (opts.threads_from_flag && (opts.cores_from_flag || opts.threads_per_core_from_flag)) {
     warn_threads_over_cores_once();
+  }
+  const unsigned host = host_logical_cores();
+  if (opts.cores_from_flag && opts.cores > host) {
+    std::cerr << "lic: warning: --cores=" << opts.cores << " capped to host logical cores (" << host
+              << ")\n";
+    opts.cores = host;
   }
   if (opts.jobs == 0) {
     opts.jobs = 1;

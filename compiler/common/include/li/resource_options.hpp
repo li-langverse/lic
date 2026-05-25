@@ -37,7 +37,10 @@ ResourceOptions& resource_options();
 void reset_resource_options();
 bool apply_resource_flag(std::string_view arg, ResourceOptions& out);
 void finalize_resource_options(ResourceOptions& opts);
+<<<<<<< HEAD
 /** True after apply_resource_flag saw a non-positive --threads/--cores/--threads-per-core. */
+=======
+>>>>>>> origin/main
 bool resource_options_invalid();
 void clear_resource_options_invalid();
 void note_compile_jobs_reserved(const ResourceOptions& opts);

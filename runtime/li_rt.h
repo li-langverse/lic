@@ -219,5 +219,18 @@ int32_t li_rt_log_redact_ok(const char* in);
 #endif
 int32_t li_rt_studio_profile_from_name(const char* name);
 int32_t li_rt_studio_parse_toml_profile_line(const char* line);
+int32_t li_rt_studio_timeline_playing(void);
+int32_t li_rt_studio_timeline_toggle_play(void);
+int32_t li_rt_studio_timeline_tick_frame(void);
+float li_rt_studio_timeline_playhead_pct(void);
+int32_t li_rt_studio_timeline_reset_mock(void);
 int32_t li_rt_studio_mcp_tool_from_name(const char* name);
 const char* li_rt_studio_mcp_tool_name(int32_t tool_id);
+
+/* PH-GD-2: li-world text save/load seam (in-memory buffer; no filesystem I/O). */
+int32_t li_rt_world_format_version(void);
+const char* li_rt_world_serialize_fields(const char* name, int32_t tick, int32_t entity_count);
+int32_t li_rt_world_parse_line(const char* line);
+const char* li_rt_world_parsed_name(void);
+int32_t li_rt_world_parsed_tick(void);
+int32_t li_rt_world_parsed_entity_count(void);

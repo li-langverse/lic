@@ -267,6 +267,35 @@ const char* li_rt_studio_mcp_tool_name(int32_t tool_id) {
   }
 }
 
+static int32_t g_studio_timeline_playing = 0;
+static float g_studio_timeline_playhead_pct = 0.35f;
+
+int32_t li_rt_studio_timeline_playing(void) { return g_studio_timeline_playing; }
+
+int32_t li_rt_studio_timeline_toggle_play(void) {
+  g_studio_timeline_playing = g_studio_timeline_playing ? 0 : 1;
+  return g_studio_timeline_playing;
+}
+
+int32_t li_rt_studio_timeline_tick_frame(void) {
+  if (!g_studio_timeline_playing) {
+    return 0;
+  }
+  g_studio_timeline_playhead_pct += 0.01f;
+  if (g_studio_timeline_playhead_pct > 1.0f) {
+    g_studio_timeline_playhead_pct = 1.0f;
+  }
+  return 1;
+}
+
+float li_rt_studio_timeline_playhead_pct(void) { return g_studio_timeline_playhead_pct; }
+
+int32_t li_rt_studio_timeline_reset_mock(void) {
+  g_studio_timeline_playing = 0;
+  g_studio_timeline_playhead_pct = 0.35f;
+  return 0;
+}
+
 int32_t li_rt_studio_parse_toml_profile_line(const char* line) {
   if (line == NULL) {
     return 0;
@@ -306,6 +335,81 @@ int32_t li_rt_studio_parse_toml_profile_line(const char* line) {
   memcpy(buf, start, n);
   buf[n] = '\0';
   return li_rt_studio_profile_match_name(buf);
+}
+
+/* PH-GD-2 li-world: world_v1 name=... tick=N entity_count=M (text line, no binary). */
+#define LI_RT_WORLD_NAME_MAX 64
+#define LI_RT_WORLD_LINE_MAX 256
+
+static char li_rt_world_line_buf[LI_RT_WORLD_LINE_MAX];
+static struct {
+  char name[LI_RT_WORLD_NAME_MAX];
+  int32_t tick;
+  int32_t entity_count;
+  int32_t valid;
+} li_rt_world_parsed;
+
+int32_t li_rt_world_format_version(void) { return 1; }
+
+const char* li_rt_world_serialize_fields(const char* name, int32_t tick, int32_t entity_count) {
+  if (name == NULL) {
+    name = "";
+  }
+  if (tick < 0) {
+    tick = 0;
+  }
+  if (entity_count < 0) {
+    entity_count = 0;
+  }
+  snprintf(li_rt_world_line_buf, sizeof(li_rt_world_line_buf),
+           "world_v1 name=%s tick=%d entity_count=%d", name, (int)tick, (int)entity_count);
+  return li_rt_world_line_buf;
+}
+
+int32_t li_rt_world_parse_line(const char* line) {
+  li_rt_world_parsed.valid = 0;
+  li_rt_world_parsed.name[0] = '\0';
+  li_rt_world_parsed.tick = 0;
+  li_rt_world_parsed.entity_count = 0;
+  if (line == NULL) {
+    return 0;
+  }
+  char name[LI_RT_WORLD_NAME_MAX];
+  int tick = 0;
+  int entity_count = 0;
+  if (sscanf(line, "world_v1 name=%63s tick=%d entity_count=%d", name, &tick, &entity_count) != 3) {
+    return 0;
+  }
+  if (tick < 0 || entity_count < 0) {
+    return 0;
+  }
+  memcpy(li_rt_world_parsed.name, name, sizeof(li_rt_world_parsed.name));
+  li_rt_world_parsed.name[sizeof(li_rt_world_parsed.name) - 1] = '\0';
+  li_rt_world_parsed.tick = (int32_t)tick;
+  li_rt_world_parsed.entity_count = (int32_t)entity_count;
+  li_rt_world_parsed.valid = 1;
+  return 1;
+}
+
+const char* li_rt_world_parsed_name(void) {
+  if (li_rt_world_parsed.valid == 0) {
+    return "";
+  }
+  return li_rt_world_parsed.name;
+}
+
+int32_t li_rt_world_parsed_tick(void) {
+  if (li_rt_world_parsed.valid == 0) {
+    return 0;
+  }
+  return li_rt_world_parsed.tick;
+}
+
+int32_t li_rt_world_parsed_entity_count(void) {
+  if (li_rt_world_parsed.valid == 0) {
+    return 0;
+  }
+  return li_rt_world_parsed.entity_count;
 }
 
 int32_t li_rt_path_exact(const char* path, const char* want) {

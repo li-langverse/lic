@@ -5,7 +5,7 @@ def main() -> int
   ensures result == 0
   decreases 0
 =
-  if li_std_studio_version() < 4:
+  if li_std_studio_version() < 5:
     return 1
   if li_std_ui_studio_composables_version() < 3:
     return 2
@@ -14,7 +14,7 @@ def main() -> int
     return 3
   if studio_compose_ok(shell_closed) != 1:
     return 4
-  var shell_open: StudioShellCompose = studio_compose_shell_palette(1920.0, 1080.0, 0, 0, studio_palette_open_flag())
+  var shell_open: StudioShellCompose = studio_compose_shell_palette(1920.0, 1080.0, 0, 0, 1, studio_palette_open_flag())
   if studio_palette_shell_ok(shell_open) != 1:
     return 5
   if shell_open.palette.result_count != studio_palette_result_count_stub():

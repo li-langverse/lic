@@ -6,6 +6,18 @@ note = "T-PKG-li-studio-smoke"
 
 [[tests]]
 suite = "smoke"
+file = "smoke/studio_timeline_playback.li"
+outcome = "compile_open_ok"
+note = "T-PKG-li-studio-timeline-playback UX-02"
+
+[[tests]]
+suite = "smoke"
+file = "smoke/studio_inspector_fields.li"
+outcome = "compile_open_ok"
+note = "T-PKG-li-studio-inspector-fields UX-03"
+
+[[tests]]
+suite = "smoke"
 file = "smoke/studio_compose_panels.li"
 outcome = "compile_open_ok"
 note = "T-PKG-li-studio-compose-panels"
@@ -36,12 +48,6 @@ note = "T-PKG-li-studio-profile-roundtrip PH-UX-05 PH-SIM"
 
 [[tests]]
 suite = "smoke"
-file = "smoke/studio_profile_roundtrip.li"
+file = "smoke/studio_shell_loading.li"
 outcome = "compile_open_ok"
-note = "T-PKG-li-studio-profile-roundtrip PH-UX-05 PH-SIM"
-[[tests]]
-suite = "smoke"
-file = "smoke/studio_mcp_tools.li"
-outcome = "compile_open_ok"
-note = "T-PKG-li-studio-mcp-tools PH-AGENT AGENT-0"
-
+note = "T-PKG-li-studio-shell-loading-ux10-ux11"

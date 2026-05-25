@@ -8,6 +8,8 @@ All notable changes to Li are documented here. The format follows
 
 ### Added
 
+- **Bench harness (tier 0):** `verify.py` Li smokes + contract tests (`test_harness_contract.py`, `check-bench-harness-contract.sh`); benchmarks plan Li reference row `[x]` — [2026-05-25-bench-verify-tier0-smoke.md](docs/release-notes/2026-05-25-bench-verify-tier0-smoke.md).
+
 - **PH-HW WP4:** `packages/lig` LKIR matmul pilot, `lig.kernel.run` / `last_validity_ratio`, `runtime/li_rt_lig.c`, `bench-lig-kernel-parity.sh`, `li-chem`/`li-ml` composable stubs — [2026-05-25-ph-hw-wp4-lig-kernel-lkir.md](docs/release-notes/2026-05-25-ph-hw-wp4-lig-kernel-lkir.md).
 
 - **PH-HW WP1:** `lig` governance RFC, kernel catalog (`lig.kernel.*`), and `benchmarks/competitive/lig-kernels.toml` schema (`cpu`/`cuda`/`hip`/`metal`/`custom_lab`) — `docs/release-notes/2026-05-25-lig-ph-hw-work-packages.md`.
@@ -32,48 +34,6 @@ All notable changes to Li are documented here. The format follows
 
 ### Added
 
-- **WP0/WP2 (8p):** `ResourceOptions` CLI and `run_all.sh` `--build-dir` workers — `docs/release-notes/2026-05-25-lic-resource-options-wp0-wp2.md`.
-
-- **G-par (7d partial):** AST rejects weak `parallel for` `requires` and bare `@parallel(disjoint=disjoint_row)`; `race_shared_memory/false_disjoint_requires_*.li` — `docs/release-notes/2026-05-25-g-par-disjoint-ast.md`.
-
-### Added
-
-- **PH-7d:** Parser fuzz corpus seeds (`seed_decorator_stack`, `seed_reserved_typosquat`) + `fuzz_decorator_corpus_seeds.sh` — `docs/release-notes/2026-05-25-fuzz-decorator-corpus-seeds.md`.
-
-### Added
-
-- **2i (partial):** `sum` rejects non-array at typecheck — `li-tests/math_linalg/reductions/sum_non_array.li`; master plan **2i** / **G-math** tracker — `docs/release-notes/2026-05-25-2i-reduction-sum-shape.md`.
-
-### Added
-
-- **G-math-syn (partial):** `for i in start..<end` loop specimen `math_syntax/for_range_sum.li` (Python `range()` still open) — `docs/release-notes/2026-05-25-g-math-syn-for-range.md`.
-- **G-par (partial):** AST `disjoint=` validation — weak loop `requires` / bare `disjoint_row` decorator rejected; `race_shared_memory/false_disjoint_requires_*.li` — `docs/release-notes/2026-05-25-g-par-disjoint-ast.md`.
-- **7d tracker gap (partial):** `MirDecorator.disjoint_proven`, `lic verify mir_parallel_disjoint=`, `check-mir-parallel-decorator.sh` — `docs/release-notes/2026-05-25-tracker-gap-7d-mir-disjoint.md`.
-
-### Changed
-
-- **Studio docs (`def` not `proc`):** World Studio vision, game-dev RFC stubs, and agent rules/skills teach **`def`** only; bare **`proc`** documented as parser legacy — `docs/release-notes/2026-05-25-studio-def-not-proc-docs.md`.
-
-### Added
-
-- **Plan checkbox honesty:** 17 sub-plan exit gates marked `[x]` with evidence; 9 left `[ ]` with `**Open:**` reasons; fuzz decorator corpus seeds — `docs/release-notes/2026-05-25-plan-checkbox-gaps.md`.
-
-### Added
-
-- **2e/2f proofability (partial):** P-refine call-site refine Props; P-ensures-witness specimens; P-float `sqrt_open_bound` documented open; `prove_lean_ok` retags — `docs/release-notes/2026-05-25-proofability-pipeline-gaps.md`.
-
-### Added
-
-- **8p-b:** parallel `scripts/lic-workspace-build.sh` with `LI_WORKSPACE_JOBS` / `LI_TEST_JOBS` and per-member `LI_BUILD_DIR` — `docs/release-notes/2026-05-25-8p-b-workspace-parallel.md`.
-- **8p-a (partial):** parallel `li-tests/run_all.sh` with `LI_TEST_JOBS` / `-j` and per-worker `LI_BUILD_DIR` — `docs/release-notes/2026-05-25-plan-tracker-8p-vision-llm.md`.
-- **Vision-LLM (partial):** `scripts/export-li-tests-agent-slice.sh` → `li-tests/agent-manifest.json` for agent test discovery — same release note.
-- **G-* gap evidence (partial):** AST disjoint call-form; `MirDecorator.parallel`; `matmul_1x2_ok.li`; `linalg_scale4_int_closed.li`; witnessed-ensures tooling — `docs/release-notes/2026-05-25-g-items-gap-evidence.md`.
-
-### Added
-
-- **G-test-verify Done:** `prove_lean_ok` in `li-tests/run_all.sh`; 13 closed `contracts_verify` specimens retagged — `docs/release-notes/2026-05-25-g-test-verify-prove-lean-ok.md`.
-
-### Added
 
 - **2i broadcast (partial):** `array[1, T]` element-wise broadcast to `array[N, T]` — `docs/release-notes/2026-05-22-2i-broadcast-len1.md`.
 - **P-float (partial):** `sqrt_open_bound.li` calls `li_rt_sqrt`; tight `abs` ensures still open — `docs/release-notes/2026-05-22-p-float-sqrt-runtime.md`.

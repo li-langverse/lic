@@ -105,7 +105,7 @@ flowchart LR
 | Sub | Deliverable | Exit |
 |-----|-------------|------|
 | **2i-a** | Infix `*`, `+`, `-`, `/`, `**` on numeric arrays; `sum`; parse + types | `li-tests/math_linalg/scalar_elementwise/` |
-| **2i-b** | `dot`, `norm`, `axpy`, `**`, reductions | **partial** — prelude `dot`/`norm`/`axpy`; `math_linalg/reductions/`; float Lean Props open |
+| **2i-b** | `dot`, `norm`, `axpy`, `**`, reductions | **partial** — prelude `dot`/`norm`/`axpy`; `math_linalg/reductions/` (+ `sum_non_array.li` compile_fail); float Lean Props open |
 | **2i-c** | Binary `@` for 2D matmul desugar (fixed small shapes + `tensor` when ready) | **done** — `matmul_*.li` on `main` |
 | **2f / P-linalg** | `requires`/`ensures` on fixed dot/sum/matmul entry | **partial (#151)** — closed int specimens; loop dot open |
 | **7e-a** | Connect math expr lowering to existing 7a SIMD MIR | `simd_dot` Li source has **zero** `__li_simd_*` in user file |

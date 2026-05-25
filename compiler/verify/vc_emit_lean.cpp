@@ -286,17 +286,6 @@ const Expr* ensures_rhs_eq_result(const Expr& e) {
   return nullptr;
 }
 
-std::optional<std::string> par_disjoint_policy_witness(const Expr& e) {
-  if (e.kind != Expr::Kind::Call || e.args.size() != 2) {
-    return std::nullopt;
-  }
-  if (e.ident == "disjoint_elem" || e.ident == "disjoint_row" || e.ident == "disjoint_slice" ||
-      e.ident == "row_ok") {
-    return std::string{"policy"};
-  }
-  return std::nullopt;
-}
-
 }  // namespace
 
 void emit_contract_def(std::ostream& out, const Module& module, const ProcDecl& proc,
@@ -360,9 +349,6 @@ void emit_contract_def(std::ostream& out, const Module& module, const ProcDecl& 
   const CallerProofFacts caller_facts = collect_caller_proof_facts(proc);
   bool mat2_discharge_theorem = false;
   bool sqrt_discharge_theorem = false;
-  const bool par_policy =
-      c.expr && (c.kind == ContractKind::Requires || c.kind == ContractKind::Invariant) &&
-      par_disjoint_policy_witness(*c.expr).has_value();
   if (c.kind == ContractKind::Ensures && c.expr) {
     if (ctx.proc != nullptr && witness_mat2_int_at2_spec(*ctx.proc, *c.expr)) {
       mat2_discharge_theorem = true;
@@ -372,9 +358,7 @@ void emit_contract_def(std::ostream& out, const Module& module, const ProcDecl& 
   }
   const bool witnessed =
       contract_witnessed_trivial(proc, c, &module, &caller_facts);
-  if (par_policy) {
-    prop = "True";
-  } else if (witnessed && !mat2_discharge_theorem && !sqrt_discharge_theorem) {
+  if (witnessed && !mat2_discharge_theorem && !sqrt_discharge_theorem) {
     prop = "True";
   } else if (mat2_discharge_theorem && c.kind == ContractKind::Ensures) {
     prop = "Li.Discharge.mat2_at2_float_spec";
@@ -433,23 +417,16 @@ void emit_contract_def(std::ostream& out, const Module& module, const ProcDecl& 
     }
     out << '\n';
   } else if (sqrt_discharge_theorem && c.kind == ContractKind::Ensures) {
-    out << "/-! Phase 2f: P-float sqrt_open_bound — Li.Discharge.sqrt_open_bound_spec (trusted libm) -/\n";
+    const std::string req_name = "vc_" + sec + "_requires_0";
     out << "theorem " << name << "_proved";
     emit_formals(false);
     out << " : " << name;
     emit_args(false);
-    out << " := Li.Discharge.sqrt_open_bound_spec_proved";
-    for (const auto& p : proc.params) {
-      out << ' ' << lean_ident(p.name);
-    }
-    out << '\n';
-  } else if (par_policy) {
-    out << "/-! Phase 2f: P-par disjoint policy witness (**G-par**) -/\n";
-    out << "theorem " << name << "_proved";
-    emit_formals(c.kind != ContractKind::Requires);
-    out << " : " << name;
-    emit_args(c.kind != ContractKind::Requires);
-    out << " := trivial\n";
+    out << " (hreq : " << req_name;
+    for (const auto& p : proc.params) { out << ' ' << lean_ident(p.name); }
+    out << ") := Li.Discharge.sqrt_open_bound_spec_proved";
+    for (const auto& p : proc.params) { out << ' ' << lean_ident(p.name); }
+    out << " hreq\n";
   } else if (prop == "True") {
     out << "theorem " << name << "_proved";
     emit_formals(true);
@@ -607,8 +584,17 @@ void emit_call_site_requires(std::ostream& out, const Module& module, const Proc
           }
         }
       }
+      std::optional<std::string> guard_nonneg_ident;
+      if (witnessed && !lit_nonneg && folded_discharged_by_proof_facts(*folded, facts) &&
+          folded->lhs && folded->lhs->kind == Expr::Kind::Ident &&
+          facts.assum_nonneg_ints.count(folded->lhs->ident) > 0) {
+        guard_nonneg_ident = folded->lhs->ident;
+      }
       if (lit_nonneg && witnessed) {
         prop = "Li.Discharge.refinement_nonneg_spec " + std::to_string(*lit_nonneg);
+        refinement_discharge = true;
+      } else if (guard_nonneg_ident) {
+        prop = "Li.Discharge.refinement_nonneg_spec " + lean_ident(*guard_nonneg_ident);
         refinement_discharge = true;
       } else if (auto lean = expr_to_lean(*folded, ctx)) {
         prop = *lean;
@@ -625,9 +611,6 @@ void emit_call_site_requires(std::ostream& out, const Module& module, const Proc
         out << "/-! VC call-site refinement: param " << p << " of '" << callee->name
             << "' at call " << call_idx << " -/\n";
       }
-      if (witnessed && !refinement_discharge) {
-        prop = "True";
-      }
       std::set<std::string> ref_idents;
       collect_idents_in_expr(*sub, ref_idents);
       out << "def " << name;
@@ -636,15 +619,21 @@ void emit_call_site_requires(std::ostream& out, const Module& module, const Proc
       if (witnessed) {
         out << "theorem " << name << "_proved";
         append_call_site_vc_formals(out, module, caller, ref_idents);
+        const std::string hguard =
+            guard_nonneg_ident ? "hguard_" + proc_section(*guard_nonneg_ident) : "";
+        if (guard_nonneg_ident && refinement_discharge) {
+          out << " (" << hguard << " : " << lean_ident(*guard_nonneg_ident) << " ≥ (0 : Int))";
+        }
         out << " : " << name;
         append_call_site_vc_args(out, caller, ref_idents);
         if (refinement_discharge && lit_nonneg) {
           out << " := Li.Discharge.refinement_nonneg_lit_proved " << *lit_nonneg
               << " (by decide)\n";
-        } else if (prop == "True") {
-          out << " := trivial\n";
+        } else if (refinement_discharge && guard_nonneg_ident) {
+          out << " := Li.Discharge.refinement_nonneg_lit_proved " << lean_ident(*guard_nonneg_ident)
+              << ' ' << hguard << '\n';
         } else {
-          out << " := by decide\n";
+          out << " := trivial\n";
         }
       }
     }

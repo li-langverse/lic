@@ -6,6 +6,10 @@ All notable changes to Li are documented here. The format follows
 
 ## [Unreleased]
 
+### Changed
+
+- **Plan checkbox (plots):** `bench.py --tier 0` writes `benchmarks/results/share/correctness_tier0.png` after tier-0 verify CSV — [2026-05-25-gap-close-checkbox-tier0-plot.md](docs/release-notes/2026-05-25-gap-close-checkbox-tier0-plot.md).
+
 ### Added
 
 - **Proof-db catalog lemmas (2b):** `L-MATH-*` entries + rebuild report — [2026-05-25-gap-close-proof-db.md](docs/release-notes/2026-05-25-gap-close-proof-db.md).

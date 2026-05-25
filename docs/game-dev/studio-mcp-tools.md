@@ -19,12 +19,16 @@ Any tool that mutates project state or ships artifacts must run **`lic build`** 
 | `studio_mcp_lic_check` | `lic_check` | `paths: str[]` (optional) | Run `lic check --format=json`; return diagnostics |
 | `studio_mcp_lic_build` | `lic_build` | `target: str` (optional triple) | Run `lic build`; **required** before publish/export |
 | `studio_mcp_publish_bundle` | `publish_bundle` | `out_path: str` | Write repro bundle (SVG/HDF5/manifest) after proof pass |
+| `studio_mcp_am_export_print` | `am_export_print` | `job_path: str`, `printer_id: str` (optional) | Export slice/mesh to printer pipeline (stub) |
+| `studio_mcp_chem_dft_run` | `chem_dft_run` | `input_path: str`, `method: str` (optional) | Queue QM/DFT job via `li-chem` (stub) |
+| `studio_mcp_studio_adaptive_layout` | `studio_adaptive_layout` | `role: str`, `stage: str` | Drug/role adaptive shell layout (`layout_studio_shell_adaptive`) |
 
 ## Runtime API (`import studio`)
 
 | Symbol | Role |
 |--------|------|
-| `studio_mcp_tool_count()` | Returns `5` |
+| `studio_mcp_tool_count()` | Returns `8` |
+| `studio_mcp_tool_dispatch(tool_id)` | Stub: valid ID → `status_ok`, invalid → `status_failed` + `result_err_io` |
 | `studio_mcp_tool_name(id)` | Round-trip name via `li_rt` const table |
 | `studio_mcp_tool_from_name(name)` | Parse MCP tool name → ID |
 | `studio_mcp_tool_id_valid(id)` | Non-zero IDs only |
@@ -48,10 +52,12 @@ Any tool that mutates project state or ships artifacts must run **`lic build`** 
 
 ## Smoke
 
-`packages/li-studio/li-tests/smoke/studio_mcp_tools.li` — ID/name round-trip and agent chrome optional field.
+- `packages/li-studio/li-tests/smoke/studio_mcp_tools.li` — wave-1 ID/name round-trip and agent chrome optional field.
+- `packages/li-studio/li-tests/smoke/studio_mcp_extended.li` — gap #6/#7 tool IDs, `studio_mcp_tool_dispatch`, adaptive layout hook.
+- `li-tests/composable/import_lig_chem_backend.li` — `chem_dft_run_smoke()` stub energy (`-76.0` Hartree); `chem_lig_backend_auto` unchanged.
 
-## Not in AGENT-0
+## Not in this slice
 
 - `lis` HTTP MCP server implementation
 - `@cursor/sdk` agent session wiring
-- Tools from vision not in wave-1 set: `am_export_print`, `chem_dft_run`, `studio_adaptive_layout`
+- Real `am_export_print` / `chem_dft_run` / adaptive layout execution (contracts + dispatch stub only)

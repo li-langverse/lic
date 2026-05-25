@@ -1,4 +1,5 @@
 add_subdirectory(common)
+add_subdirectory(cache)
 add_subdirectory(config)
 add_subdirectory(analyze)
 add_subdirectory(diagnostics)

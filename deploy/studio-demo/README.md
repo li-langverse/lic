@@ -11,6 +11,8 @@ Static previews for the Studio UI/UX plan loop. **Not** the shipped native app (
 | `screenshots/03-studio-agent-error.html` | Agent failed + error strip (recovery UX) |
 | `screenshots/studio-tokens.css` | Generated from `docs/design/studio-design-tokens.toml` |
 | `screenshots/capture.sh` | Headless Chrome PNG capture (1920×1080) |
+| `screenshots/verticals/` | Per-profile HTML mocks (`game`, `sim_*`) + `manifest.json` |
+| `scripts/record-studio-verticals-demo.sh` | Vertical tour MP4 → `docs/demo/media/studio-verticals-demo.mp4` |
 
 ## Native viewport capture (SDL + Xvfb)
 

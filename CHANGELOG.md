@@ -8,7 +8,7 @@ All notable changes to Li are documented here. The format follows
 
 ### Added
 
-- **Studio per-vertical demos (UX-14)** — `packages/li-studio/examples/verticals/`, HTML mocks under `deploy/studio-demo/screenshots/verticals/`, smoke `studio_vertical_profile_roundtrip.li`, `scripts/record-studio-verticals-demo.sh` — [2026-05-25-studio-vertical-demos.md](docs/release-notes/2026-05-25-studio-vertical-demos.md).
+- **Studio per-vertical demos (UX-14)** — `packages/li-studio/examples/verticals/`, native-only `docs/demo/media/studio-verticals-demo.mp4` via `studio-verticals-capture-native.sh` (HTML mocks archived under `deploy/studio-demo/archive/`), smoke `studio_vertical_profile_roundtrip.li` — [2026-05-25-studio-vertical-demos.md](docs/release-notes/2026-05-25-studio-vertical-demos.md).
 - **PH-HW HW-1 lig.present** — `packages/lig` swapchain/present contracts, `li-render` host FPS ticks, `li-studio` shell present glue, `packages/lig/bench/wgpu_smoke.toml` — [2026-05-25-lig-present-hw1.md](docs/release-notes/2026-05-25-lig-present-hw1.md).
 - **PH-SIM SIM-0 studio→sim profile bridge** — `li_sim_profile_from_studio_id`, `SimSessionStub`, `studio_apply_profile_to_sim`; smokes `studio_profile_bridge.li`, `import_studio_sim_profile_bridge.li` — [2026-05-25-studio-sim-profile-bridge.md](docs/release-notes/2026-05-25-studio-sim-profile-bridge.md).
 - **li-world PH-GD-2 scaffold** — text `world_v1` line save/load, `WorldSnapshot`, in-memory buffer round-trip — [2026-05-25-li-world-scaffold.md](docs/release-notes/2026-05-25-li-world-scaffold.md).

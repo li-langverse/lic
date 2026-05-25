@@ -56,6 +56,11 @@ data/studio-ui-ux-plan-loop/*
 !data/studio-ui-ux-plan-loop/tracking-issue.txt
 deploy/studio-demo/screenshots/png/
 deploy/studio-demo/screenshots/verticals/png/
+docs/demo/media/native-verticals/png/
+docs/demo/media/studio-verticals-demo.mp4
+deploy/studio-demo/native/studio_verticals_present_host
+deploy/studio-demo/native/studio_shell_present_host
+deploy/studio-demo/native/studio_viewport_capture
 deploy/studio-demo/**/*.mp4
 docs/demo/media/*.mp4
 docs/demo/media/ffmpeg-*.txt

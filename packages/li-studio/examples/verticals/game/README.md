@@ -10,4 +10,4 @@ lic check packages/li-studio/li-tests/smoke/studio_vertical_profile_roundtrip.li
 
 ## Mock
 
-`deploy/studio-demo/screenshots/verticals/game.html`
+`deploy/studio-demo/archive/verticals-html-mocks/game.html`

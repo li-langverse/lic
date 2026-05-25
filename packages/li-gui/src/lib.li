@@ -5,10 +5,10 @@ import ui
 
 def li_std_gui_version() -> int
   requires true
-  ensures result == 1
+  ensures result == 2
   decreases 0
 =
-  return 1
+  return 2
 
 def gui_panel_switch_budget_ms() -> float
   requires true
@@ -17,19 +17,59 @@ def gui_panel_switch_budget_ms() -> float
 =
   return studio_panel_transition_ms()
 
+# Optional marquee selection in viewport (UX-01). active=0 means none.
+type ViewportSelection = object
+  public active: int
+  public rect: Rect
+  public depth_cue: int
+
+def gui_viewport_selection_none() -> ViewportSelection
+  requires true
+  ensures result.active == 0
+  ensures result.depth_cue == 0
+  decreases 0
+=
+  var s: ViewportSelection
+  s.active = 0
+  s.rect = rect_make(0.0, 0.0, 0.0, 0.0)
+  s.depth_cue = 0
+  return s
+
+def gui_viewport_selection_rect(x: float, y: float, w: float, h: float) -> ViewportSelection
+  requires w > 0.0
+  requires h > 0.0
+  ensures result.active == 1
+  ensures result.depth_cue == 1
+  ensures result.rect.w == w
+  ensures result.rect.h == h
+  decreases 0
+=
+  var s: ViewportSelection
+  s.active = 1
+  s.rect = rect_make(x, y, w, h)
+  s.depth_cue = 1
+  return s
+
 type ViewportRegion = object
   public rect: Rect
   public w: float
   public h: float
   public grid_enabled: int
+  public selection_active: int
+  public selection_rect: Rect
+  public depth_cue: int
 
-def gui_viewport_region_from_layout(layout: StudioShellLayout) -> ViewportRegion
+def gui_viewport_region_from_layout_with_selection(layout: StudioShellLayout, selection: ViewportSelection) -> ViewportRegion
   requires layout.viewport.w >= 0.0
   requires layout.viewport.h >= 0.0
+  requires selection.active >= 0
+  requires selection.active <= 1
   ensures result.rect.w == layout.viewport.w
   ensures result.rect.h == layout.viewport.h
   ensures result.w == layout.viewport.w
   ensures result.h == layout.viewport.h
+  ensures result.selection_active == selection.active
+  ensures result.depth_cue == selection.depth_cue
   decreases 0
 =
   var vp: ViewportRegion
@@ -37,7 +77,18 @@ def gui_viewport_region_from_layout(layout: StudioShellLayout) -> ViewportRegion
   vp.w = layout.viewport.w
   vp.h = layout.viewport.h
   vp.grid_enabled = 1
+  vp.selection_active = selection.active
+  vp.selection_rect = selection.rect
+  vp.depth_cue = selection.depth_cue
   return vp
+
+def gui_viewport_region_from_layout(layout: StudioShellLayout) -> ViewportRegion
+  requires layout.viewport.w >= 0.0
+  requires layout.viewport.h >= 0.0
+  ensures result.selection_active == 0
+  decreases 0
+=
+  return gui_viewport_region_from_layout_with_selection(layout, gui_viewport_selection_none())
 
 type PanelSwitchTiming = object
   public from_region: int

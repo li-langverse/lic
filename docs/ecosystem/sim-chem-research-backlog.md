@@ -40,12 +40,12 @@ todos:
   study_only: true
 
 - id: chem-r2-dft-scf-gap
-  content: "Minimal SCF recipe vs Li stub — hand off sim-p2-qm-dft-scf"
+  content: "sim-chem-research: pending plan todo chem-r2-dft-scf-gap — gap orchestrator"
   status: pending
   handoff_implement: sim-p2-qm-dft-scf
 
 - id: chem-r3-package-placement
-  content: "chem package placement (lic vs sim.drug_design bridge) for package_architect"
+  content: "sim-chem-research: pending plan todo chem-r3-package-placement — gap orchestrator"
   status: pending
   study_only: true
 

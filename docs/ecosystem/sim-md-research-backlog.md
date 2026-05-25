@@ -35,12 +35,12 @@ todos:
   study_only: true
 
 - id: md-r2-neighbor-list-gap
-  content: "SOTA vs Li stub for md_neighbor_cell_list (algo 105) — hand off sim-p1-md-neighbor-cell"
+  content: "sim-md-research: pending plan todo md-r2-neighbor-list-gap — gap orchestrator"
   status: pending
   handoff_implement: sim-p1-md-neighbor-cell
 
 - id: md-r3-oracle-plan
-  content: "External LAMMPS/GROMACS oracle column plan; update verticals.toml honesty"
+  content: "sim-md-research: pending plan todo md-r3-oracle-plan — gap orchestrator"
   status: pending
   study_only: true
 

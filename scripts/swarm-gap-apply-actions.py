@@ -111,10 +111,18 @@ def _ensure_todo_in_backlog(
     return f"appended {todo_id} to {backlog_path.name}"
 
 
+def _normalize_plan_todo_id(todo_id: str, runner_id: str) -> str:
+    tid = str(todo_id).strip()
+    prefix = f"gap-{runner_id}-"
+    while tid.startswith(prefix):
+        tid = tid[len(prefix) :]
+    return tid or str(todo_id)
+
+
 def _plan_debt_todo_id(gap: dict) -> str:
     runner = gap.get("runner_id") or gap.get("suggested_loop") or "plan"
-    todo = gap.get("plan_todo_id") or _slug(gap.get("title", "debt"))
-    return f"gap-{runner}-{_slug(str(todo))}"[:64]
+    raw = gap.get("plan_todo_id") or _slug(gap.get("title", "debt"))
+    return _normalize_plan_todo_id(str(raw), runner)
 
 
 def _slug(s: str) -> str:
@@ -149,7 +157,8 @@ def apply_gaps(gaps: list[dict], *, dry_run: bool) -> dict[str, Any]:
         elif kind == "plan_debt":
             runner = gap.get("runner_id") or gap.get("suggested_loop")
             if runner and runner in RUNNER_BACKLOGS:
-                bp = ROOT / RUNNER_BACKLOGS[runner]
+                rel = RUNNER_BACKLOGS[runner]
+                bp = Path(rel) if Path(rel).is_absolute() else ROOT / rel
                 todo_id = _plan_debt_todo_id(gap)
                 msg = _ensure_todo_in_backlog(bp, todo_id, title, dry_run=dry_run)
                 action["patch"] = msg

@@ -16,7 +16,7 @@ todos:
 
 - id: orch-r1-plan-debt-sync
   content: "Map goal-directed snapshot plan_pending per runner → registry plan_debt; patch loop backlogs where stale"
-  status: pending
+  status: completed
 
 - id: orch-r2-competitor-stubs
   content: "Ingest verticals.toml stubs + ecosystem explorer catalog gaps as competitor_feature rows"

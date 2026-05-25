@@ -1541,22 +1541,6 @@ def studio_paint_viewport_empty(frame: var PaintFrame, viewport_empty: StudioVie
   frame.last_rect = viewport_empty.cta_rect
   frame.last_color = studio_color_border()
 
-def studio_paint_viewport_empty(frame: var PaintFrame, viewport_empty: StudioViewportEmptyCompose) -> unit
-  requires frame.cmd_count >= 0
-  requires viewport_empty.empty_visible == 1
-  ensures frame.cmd_count == old(frame.cmd_count) + studio_paint_viewport_empty_cmds()
-  decreases 0
-=
-  frame.cmd_count = frame.cmd_count + studio_paint_viewport_empty_cmds()
-  frame.last_kind = paint_op_stroke_rect()
-  frame.last_rect = viewport_empty.frame_rect
-  frame.last_color = studio_color_border()
-  frame.last_kind = paint_op_fill_rect()
-  frame.last_rect = viewport_empty.title_rect
-  frame.last_color = studio_color_border()
-  frame.last_kind = paint_op_stroke_rect()
-  frame.last_rect = viewport_empty.cta_rect
-  frame.last_color = studio_color_border()
 
 def studio_paint_shell_chrome(frame: var PaintFrame, compose: StudioShellCompose) -> unit
   requires frame.cmd_count >= 0

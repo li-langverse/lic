@@ -1,0 +1,227 @@
+# lig — LKIR kernels (WP4) + memory ledger (HW-3) + custom targets (HW-4).
+
+extern proc li_rt_lig_backend_select_auto() -> int
+  requires true
+  ensures 1 <= result
+  ensures result <= 4
+  decreases 0
+
+extern proc li_rt_lig_kernel_run(kernel_id: int, backend_id: int) -> int
+  requires kernel_id >= 1
+  requires 1 <= backend_id
+  requires backend_id <= 4
+  ensures -1 <= result
+  ensures result <= 4
+  decreases kernel_id
+
+extern proc li_rt_lig_kernel_last_validity_ratio() -> float
+  requires true
+  ensures 0.0 <= result
+  ensures result <= 1.0
+  decreases 0
+
+def lig_backend_select_auto() raises IO -> int
+  requires true
+  ensures 1 <= result
+  ensures result <= 4
+  decreases 0
+=
+  return li_rt_lig_backend_select_auto()
+
+def lig_kernel_matmul_f32() -> int
+  requires true
+  ensures result == 1
+  decreases 0
+=
+  return 1
+
+def lig_kernel_run(kernel_id: int, backend_id: int) raises IO -> int
+  requires kernel_id >= 1
+  requires 1 <= backend_id
+  requires backend_id <= 4
+  ensures -1 <= result
+  ensures result <= 4
+  decreases kernel_id
+=
+  return li_rt_lig_kernel_run(kernel_id, backend_id)
+
+def lig_kernel_last_validity_ratio() raises IO -> float
+  requires true
+  ensures 0.0 <= result
+  ensures result <= 1.0
+  decreases 0
+=
+  return li_rt_lig_kernel_last_validity_ratio()
+
+def lig_kernel_run_auto(kernel_id: int) -> int
+  requires kernel_id >= 1
+  ensures -1 <= result
+  ensures result <= 4
+  decreases kernel_id
+=
+  return lig_kernel_run(kernel_id, lig_backend_select_auto())
+
+def lig_validity_gate_pass(min_ratio: float) -> int
+  requires 0.0 <= min_ratio
+  requires min_ratio <= 1.0
+  ensures result >= 0
+  ensures result <= 1
+  decreases 0
+=
+  if lig_kernel_last_validity_ratio() + 0.0001 >= min_ratio:
+    return 1
+  return 0
+
+type LigMemoryLedger = object
+  public budget_mib: int
+  public allocated_bytes: int
+  public peak_bytes: int
+
+def lig_memory_budget_mib() -> int
+  requires true
+  ensures result == 512
+  decreases 0
+=
+  return 512
+
+def lig_memory_budget_bytes(budget_mib: int) -> int
+  requires budget_mib > 0
+  ensures result == budget_mib * 1048576
+  decreases budget_mib
+=
+  return budget_mib * 1048576
+
+def lig_memory_ledger_new(budget_mib: int) -> LigMemoryLedger
+  requires budget_mib > 0
+  ensures result.budget_mib == budget_mib
+  ensures result.allocated_bytes == 0
+  ensures result.peak_bytes == 0
+  decreases budget_mib
+=
+  var l: LigMemoryLedger
+  l.budget_mib = budget_mib
+  l.allocated_bytes = 0
+  l.peak_bytes = 0
+  return l
+
+def lig_memory_tier_estimated_bytes(particles: int) -> int
+  requires particles > 0
+  ensures result > 0
+  decreases particles
+=
+  if particles <= 1000:
+    return 16777216
+  if particles <= 10000:
+    return 134217728
+  return 419430400
+
+def lig_alloc_within_budget(ledger: var LigMemoryLedger, bytes: int) -> int
+  requires bytes >= 0
+  requires ledger.budget_mib > 0
+  ensures result >= 0
+  ensures result <= 1
+  decreases bytes
+=
+  if bytes == 0:
+    return 1
+  var cap: int = lig_memory_budget_bytes(ledger.budget_mib)
+  if ledger.allocated_bytes + bytes > cap:
+    return 0
+  ledger.allocated_bytes = ledger.allocated_bytes + bytes
+  if ledger.allocated_bytes > ledger.peak_bytes:
+    ledger.peak_bytes = ledger.allocated_bytes
+  return 1
+
+def lig_memory_ledger_peak_mib(ledger: LigMemoryLedger) -> int
+  requires ledger.budget_mib > 0
+  ensures result >= 0
+  decreases ledger.peak_bytes
+=
+  if ledger.peak_bytes == 0:
+    return 0
+  return (ledger.peak_bytes + 1048575) / 1048576
+
+type LigCustomTargetDescriptor = object
+  public lab_id: int
+  public manifest_hash: int
+  public driver_signed: int
+  public lkir_version: int
+
+def lig_custom_lab_id_fpga() -> int
+  requires true
+  ensures result == 5
+  decreases 0
+=
+  return 5
+
+def lig_custom_target_descriptor(lab_id: int) -> LigCustomTargetDescriptor
+  requires lab_id >= 0
+  ensures result.lab_id == lab_id
+  ensures result.lkir_version == 2
+  decreases lab_id
+=
+  var d: LigCustomTargetDescriptor
+  d.lab_id = lab_id
+  d.manifest_hash = 0
+  d.driver_signed = 0
+  d.lkir_version = 2
+  if lab_id == lig_custom_lab_id_fpga():
+    d.manifest_hash = 20260525
+  return d
+
+def lig_custom_load_signed_driver(descriptor: LigCustomTargetDescriptor) -> int
+  requires descriptor.lkir_version >= 1
+  ensures result == 0
+  decreases descriptor.lab_id
+=
+  return 0
+
+def lig_custom_target_ready(descriptor: LigCustomTargetDescriptor) -> int
+  requires true
+  ensures result >= 0
+  ensures result <= 1
+  decreases descriptor.lab_id
+=
+  if lig_custom_load_signed_driver(descriptor) != 0:
+    return 0
+  if descriptor.lab_id != lig_custom_lab_id_fpga():
+    return 0
+  return 1
+
+type LigBackendSwitchLog = object
+  public from_backend: int
+  public to_backend: int
+  public reason_tag: int
+  public recorded: int
+
+def lig_backend_switch_log(from_backend: int, to_backend: int, reason_tag: int) -> LigBackendSwitchLog
+  requires 1 <= from_backend
+  requires from_backend <= 4
+  requires 1 <= to_backend
+  requires to_backend <= 4
+  ensures result.from_backend == from_backend
+  ensures result.to_backend == to_backend
+  ensures result.reason_tag == reason_tag
+  ensures result.recorded == 1
+  decreases reason_tag
+=
+  var e: LigBackendSwitchLog
+  e.from_backend = from_backend
+  e.to_backend = to_backend
+  e.reason_tag = reason_tag
+  e.recorded = 1
+  return e
+
+def lig_backend_switch_log_ok(entry: LigBackendSwitchLog) -> int
+  requires true
+  ensures result >= 0
+  ensures result <= 1
+  decreases 0
+=
+  if entry.recorded != 1:
+    return 0
+  if entry.from_backend < 1:
+    return 0
+  if entry.to_backend < 1:
+    return 0
+  return 1

@@ -1,0 +1,9 @@
+[package]
+name = "lig"
+version = "0.1.1"
+edition = "2026"
+license = "Apache-2.0 OR MIT"
+description = "Li GPU — LKIR kernels, memory ledger, custom_lab (PH-HW WP4–5)"
+[package.metadata.li]
+import_name = "lig"
+pkg_id = "PKG-lig"

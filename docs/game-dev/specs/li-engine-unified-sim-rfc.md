@@ -23,10 +23,12 @@ def sim_step(world: SimWorld, dt: float) -> unit
 
 `ml.rl.EnvPool` calls `sim_step` — no duplicate Gym physics.
 
+**SIM-3 (partial):** `packages/li-ml-rl` — `EnvPoolStub`, `env_pool_step` → `sim_step`; `sim_rl` studio route.
+
 ## Li syntax
 
 Use **`def`** for all new APIs. Do not document bare **`proc`**. **`extern proc`** only for FFI. Every exported `def` (and each `extern proc`) needs `requires` / `ensures` / `decreases`. The parser still accepts legacy bare `proc` in old trees only — reject that syntax in new Studio/game-dev docs and package code.
 
 ## Phases
 
-SIM-0 (this RFC) → SIM-1 step/reset → SIM-2 replay → SIM-3 RL hookup.
+SIM-0 (this RFC) → SIM-1 step/reset → SIM-2 replay → SIM-3 RL hookup (partial).

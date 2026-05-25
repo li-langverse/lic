@@ -1,0 +1,12 @@
+[package]
+name = "li-ml-rl"
+version = "0.1.0"
+edition = "2026"
+license = "Apache-2.0 OR MIT"
+description = "RL env pools for World Studio sim_rl (SIM-3 partial)"
+[dependencies]
+li-sim = { path = "../li-sim" }
+[package.metadata.li]
+import_name = "ml.rl"
+min_lic = "0.1.0"
+pkg_id = "PKG-li-ml-rl"

@@ -1,0 +1,58 @@
+
+import sim
+
+type EnvPoolStub = object
+  public active: int
+  public pool_steps: int
+
+def env_pool_stub_default() -> EnvPoolStub
+  requires true
+  ensures result.active == 0
+  ensures result.pool_steps == 0
+  decreases 0
+=
+  var p: EnvPoolStub
+  p.active = 0
+  p.pool_steps = 0
+  return p
+
+def env_pool_activate(pool: var EnvPoolStub) -> int
+  requires true
+  ensures pool.active == 1
+  ensures result == 0
+  decreases 0
+=
+  pool.active = 1
+  return 0
+
+def env_pool_deactivate(pool: var EnvPoolStub) -> int
+  requires true
+  ensures pool.active == 0
+  ensures result == 0
+  decreases 0
+=
+  pool.active = 0
+  return 0
+
+def env_pool_is_active(pool: EnvPoolStub) -> int
+  requires true
+  ensures result >= 0
+  ensures result <= 1
+  decreases 0
+=
+  if pool.active == 1:
+    return 1
+  return 0
+
+def env_pool_step(pool: var EnvPoolStub, session: var SimSessionStub, dt: float) -> int
+  requires session.tick >= 0
+  ensures result >= 0
+  ensures result <= 1
+  decreases pool.pool_steps
+=
+  if env_pool_is_active(pool) != 1:
+    return sim_status_invalid_dt()
+  var st: int = sim_step(session, dt)
+  if st == sim_status_ok():
+    pool.pool_steps = pool.pool_steps + 1
+  return st

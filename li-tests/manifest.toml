@@ -816,6 +816,13 @@ file = "composable/import_studio_sim_step_by_profile.li"
 packages = ["li-sim", "li-sim-scientific", "li-studio", "li-scene", "li-physics-runtime", "li-gui", "li-ui"]
 outcome = "compile_open_ok"
 note = "PH-SIM vertical gap #4: studio_sim_step_hook game + sim_scientific"
+[[tests]]
+suite = "composable"
+file = "composable/import_studio_sim_rl_env_pool.li"
+packages = ["li-sim", "li-ml-rl", "li-studio", "li-gui", "li-ui"]
+outcome = "compile_open_ok"
+note = "PH-SIM SIM-3 partial"
+
 
 [[tests]]
 suite = "composable"

@@ -93,3 +93,9 @@ note = "T-PKG-li-studio-mcp-extended PH-AGENT gap-6-7"
 file = "smoke/studio_vertical_demo_env.li"
 tier = "smoke"
 note = "STUDIO_DEMO_PROFILE vertical demo frames + optional LIG_HOST_PRESENT"
+
+[[tests]]
+suite = "smoke"
+file = "smoke/studio_sim_rl_env_pool.li"
+outcome = "compile_open_ok"
+note = "PH-SIM SIM-3 partial"

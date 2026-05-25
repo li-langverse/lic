@@ -3,6 +3,7 @@ import gui
 import ui
 import sim
 import sim.scientific
+import ml.rl
 import scene
 import physics.runtime
 import lig
@@ -1285,6 +1286,10 @@ def studio_sim_step_hook(config: StudioProjectConfig, sim_out: var SimSessionStu
       return sim_status_invalid_dt()
     if studio_game_step_hook(dt) != sim_status_ok():
       return sim_status_invalid_dt()
+  if prof == studio_profile_sim_rl():
+    var pool: EnvPoolStub = env_pool_stub_default()
+    env_pool_activate(pool)
+    return env_pool_step(pool, sim_out, dt)
   return sim_step(sim_out, dt)
 
 def studio_scene_is_empty(scene_entity_count: int) -> int

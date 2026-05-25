@@ -276,7 +276,8 @@ note = "2j-f: violated method requires at call site"
 [[tests]]
 suite = "contracts_verify"
 file = "contracts_verify/refinement_call_ok.li"
-outcome = "verify_ok"
+outcome = "prove_lean_ok"
+note = "P-refine: discharge_refinement_lean.sh"
 
 [[tests]]
 suite = "contracts_verify"

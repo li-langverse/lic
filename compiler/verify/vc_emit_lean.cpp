@@ -17,6 +17,11 @@
 namespace li {
 namespace {
 
+std::optional<std::int64_t> int_lit_value(const Expr& e) {
+  if (e.kind == Expr::Kind::IntLit) return e.int_value;
+  return std::nullopt;
+}
+
 bool lean_reserved_ident(const std::string& name) {
   static const char* const kReserved[] = {
       "by",  "have", "let", "in",   "fun",  "if",   "then", "else", "match", "with",
@@ -558,16 +563,42 @@ void emit_call_site_requires(std::ostream& out, const Module& module, const Proc
                                "_refine_" + std::to_string(ref_idx++);
       const auto sub = substitute_refinement_binding(*refinement->predicate, refinement->bind_var,
                                                      *call->args[p]);
-      std::string prop = "True";
       const bool witnessed =
           check_refinement_argument(*refinement, *call->args[p], facts) ==
               RequiresCheckResult::Satisfied;
+      const auto folded = fold_const_int_locals(*sub, facts.const_int_locals);
+      out << "/-! P-refine folded: " << expr_to_user_string(*folded) << " -/\n";
       VcCtx ctx;
-      if (witnessed) {
-        prop = "True";
-      } else if (auto lean = expr_to_lean(*sub, ctx)) {
+      std::string prop = "True";
+      bool refinement_discharge = false;
+      std::optional<std::int64_t> lit_nonneg;
+      if (folded->kind == Expr::Kind::BinOp && folded->bin_op == BinOp::Ge && folded->lhs &&
+          folded->rhs) {
+        if (const auto n = int_lit_value(*folded->lhs)) {
+          if (const auto z = int_lit_value(*folded->rhs); z && *z == 0) {
+            lit_nonneg = n;
+          }
+        } else if (const auto n = int_lit_value(*folded->rhs)) {
+          if (const auto z = int_lit_value(*folded->lhs); z && *z == 0) {
+            lit_nonneg = n;
+          }
+        }
+      }
+      if (lit_nonneg && witnessed) {
+        prop = "Li.Discharge.refinement_nonneg_spec " + std::to_string(*lit_nonneg);
+        refinement_discharge = true;
+      } else if (auto lean = expr_to_lean(*folded, ctx)) {
         prop = *lean;
-      } else {
+      } else if (folded->kind == Expr::Kind::BinOp && folded->lhs && folded->rhs) {
+        const auto li = int_lit_value(*folded->lhs);
+        const auto ri = int_lit_value(*folded->rhs);
+        if (li && ri) {
+          if (auto lean =
+                  expr_to_lean_bin(folded->bin_op, std::to_string(*li), std::to_string(*ri))) {
+            prop = *lean;
+          }
+        }
+      } else if (!witnessed) {
         out << "/-! VC call-site refinement: param " << p << " of '" << callee->name
             << "' at call " << call_idx << " -/\n";
       }
@@ -576,12 +607,17 @@ void emit_call_site_requires(std::ostream& out, const Module& module, const Proc
       out << "def " << name;
       append_call_site_vc_formals(out, module, caller, ref_idents);
       out << " : Prop := " << prop << '\n';
-      if (prop == "True" && witnessed) {
+      if (witnessed) {
         out << "theorem " << name << "_proved";
         append_call_site_vc_formals(out, module, caller, ref_idents);
         out << " : " << name;
-        append_call_site_vc_args(out, caller, ref_idents);
-        out << " := trivial\n";
+        append_call_site_vc_args(out, module, caller, call->args, prop);
+        if (refinement_discharge && lit_nonneg) {
+          out << " := Li.Discharge.refinement_nonneg_lit_proved " << *lit_nonneg
+              << " (by decide)\n";
+        } else {
+          out << " := trivial\n";
+        }
       }
     }
     emit_requires_vcs_for_call(out, module, caller, *callee, call_idx, call->args, facts);

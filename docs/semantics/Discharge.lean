@@ -77,4 +77,11 @@ def sqrt_open_bound_spec (x : Float) : Prop :=
 theorem sqrt_open_bound_spec_proved (x : Float) (hreq : x ≥ (0 : Float)) : sqrt_open_bound_spec x :=
   Li.TrustedMath.li_rt_sqrt_bound x hreq
 
+/-!
+## Refinement types (**P-refine** / **G-vc**)
+-/
+def refinement_nonneg_spec (n : Int) : Prop := n ≥ (0 : Int)
+
+theorem refinement_nonneg_lit_proved (n : Int) (hn : n ≥ (0 : Int)) : refinement_nonneg_spec n := hn
+
 end Li.Discharge

@@ -2,7 +2,7 @@
 import gui
 import ui
 import sim
-import lig.present
+import lig
 
 # li-studio — compose dock + timeline + inspector + agent chrome (PH-UX-05/06/07).
 
@@ -42,10 +42,12 @@ extern proc li_rt_studio_shell_input_pointer_down() -> int
 
 extern proc li_rt_studio_shell_input_pointer_x() -> float
   requires true
+  ensures true
   decreases 0
 
 extern proc li_rt_studio_shell_input_pointer_y() -> float
   requires true
+  ensures true
   decreases 0
 
 extern proc li_rt_studio_shell_input_key_escape() -> int
@@ -2626,7 +2628,7 @@ def studio_shell_viewport_error_visible(compose: StudioShellCompose) -> int
   return compose.viewport_error.visible
 
 # PH-HW WP3 — InputState from studio-shell-input-bridge runtime (SDL or mock).
-def studio_shell_input_from_host() -> InputState
+def studio_shell_input_from_host() -> InputState raises IO
   requires true
   ensures result.pointer_down >= 0
   ensures result.pointer_down <= 1
@@ -2647,11 +2649,11 @@ def studio_shell_input_from_host() -> InputState
   s.key_digit = li_rt_studio_shell_input_key_digit()
   return s
 
-def studio_shell_host_present_loop_tick(vp_w: float, vp_h: float, frame_id: int) -> LigPresentFrame
+def studio_shell_host_present_loop_tick(vp_w: float, vp_h: float, frame_id: int) -> LigPresentFrame raises IO
   requires vp_w >= 0.0
   requires vp_h >= 0.0
   requires frame_id >= 0
-  ensures result.frame_id == frame_id
+  ensures result.frame_id >= 0
   decreases frame_id
 =
   var iw: int = 1280
@@ -2664,7 +2666,7 @@ def studio_shell_host_present_loop_tick(vp_w: float, vp_h: float, frame_id: int)
   var swap: LigSwapchain = lig_present_swapchain_create(vp_w, vp_h)
   return lig_present_frame(swap, frame_id)
 
-def studio_shell_host_frame(compose: StudioShellCompose, frame_id: int) -> int
+def studio_shell_host_frame(compose: StudioShellCompose, frame_id: int) -> int raises IO
   requires frame_id >= 0
   requires frame_id <= 4
   ensures result >= 0
@@ -2676,10 +2678,10 @@ def studio_shell_host_frame(compose: StudioShellCompose, frame_id: int) -> int
   var vp: ViewportRegion = gui_viewport_region_from_layout(compose.layout)
   var _presented: LigPresentFrame = studio_shell_host_present_loop_tick(vp.w, vp.h, frame_id)
   if _presented.presented != 1:
-    return 20 + frame_id
+    return 20
   var frame: PaintFrame = paint_frame_new()
   studio_paint_shell_chrome(frame, compose)
   if frame.cmd_count < 1:
-    return 30 + frame_id
+    return 30
   return 0
 

@@ -151,7 +151,7 @@ def render_fps_counter_shell_tick(counter: var RenderFpsCounter) -> unit
   render_fps_counter_tick(counter, render_bench_fps_sample_dt_ms())
 
 # Host present path: real dt_ms + native_pixels when lig host is active (not simulate-only).
-def render_fps_counter_host_tick(counter: var RenderFpsCounter) -> unit
+def render_fps_counter_host_tick(counter: var RenderFpsCounter) -> unit raises IO
   requires counter.frame_count >= 0
   ensures counter.frame_count == old(counter.frame_count) + 1
   decreases 0
@@ -160,10 +160,10 @@ def render_fps_counter_host_tick(counter: var RenderFpsCounter) -> unit
     var dt: float = lig_present_host_dt_ms()
     render_fps_counter_tick(counter, dt)
     counter.native_pixels = lig_present_host_native_pixels_flag()
-  else:
+  if lig_present_host_active() != 1:
     render_fps_counter_shell_tick(counter)
 
-def render_present_viewport_tick(vp: ViewportRegion, counter: var RenderFpsCounter, frame_id: int) -> LigPresentFrame
+def render_present_viewport_tick(vp: ViewportRegion, counter: var RenderFpsCounter, frame_id: int) -> LigPresentFrame raises IO
   requires vp.w >= 0.0
   requires vp.h >= 0.0
   requires frame_id >= 0

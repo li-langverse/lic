@@ -77,6 +77,10 @@ fi
 li_phase "E2E li-tests (full manifest)"
 "$ROOT/li-tests/run_all.sh"
 
+li_phase "bench harness contract"
+chmod +x "$ROOT/scripts/check-bench-harness-contract.sh"
+"$ROOT/scripts/check-bench-harness-contract.sh"
+
 li_phase "tier 0 physics (strict stability)"
 python3 "$ROOT/benchmarks/harness/bench.py" --tier 0
 

@@ -5,5 +5,6 @@ ROOT="$(cd "$(dirname "$0")/.." && pwd)"
 export LI_REPO_ROOT="$ROOT"
 LIC="$("$ROOT/scripts/resolve-lic.sh")"
 mkdir -p "$ROOT/build"
-"$LIC" build --allow-open-vc "$ROOT/packages/li-net-httpd/src/lib.li" -o "$ROOT/build/li-httpd"
+# CLI entry is main.li (lib.li alone links a stub main that returns 0).
+"$LIC" build --allow-open-vc "$ROOT/packages/li-net-httpd/src/main.li" -o "$ROOT/build/li-httpd"
 echo "build-li-httpd: ok → $ROOT/build/li-httpd"

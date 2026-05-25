@@ -295,7 +295,8 @@ int count_open_autovc_goals() {
   if (root != nullptr) {
     script = std::string(root) + "/" + script;
   }
-  const std::string cmd = "bash " + script + " 2>&1";
+  const std::string autovc = li::repo_build_path("generated/AutoVC.lean");
+  const std::string cmd = "bash \"" + script + "\" \"" + autovc + "\" 2>&1";
   FILE* pipe = popen(cmd.c_str(), "r");
   if (pipe == nullptr) {
     return -1;
@@ -354,10 +355,7 @@ int verify_file(const char* path, bool run_lean, bool strict_lean) {
               << li::reset_style() << '\n';
   }
   if (std::getenv("LI_EMIT_VCS") != nullptr) {
-    std::string vc_path = "build/vcs.json";
-    if (const char* root = std::getenv("LI_REPO_ROOT")) {
-      vc_path = std::string(root) + "/build/vcs.json";
-    }
+    std::string vc_path = li::repo_build_path("vcs.json");
     std::string vc_err;
     if (!li::write_vcs_json(module, vc_path, &vc_err)) {
       std::cerr << "verify: " << vc_err << '\n';
@@ -366,10 +364,7 @@ int verify_file(const char* path, bool run_lean, bool strict_lean) {
     }
   }
   if (run_lean) {
-    std::string vc_lean = "build/generated/AutoVC.lean";
-    if (const char* root = std::getenv("LI_REPO_ROOT")) {
-      vc_lean = std::string(root) + "/" + vc_lean;
-    }
+    const std::string vc_lean = li::repo_build_path("generated/AutoVC.lean");
     std::error_code fs_err;
     std::filesystem::create_directories(std::filesystem::path(vc_lean).parent_path(), fs_err);
     std::string vc_err;
@@ -565,10 +560,7 @@ int main(int argc, char** argv) {
       std::cout << li::styled_success("build") << li::styled_dim(" ok → ") << li::styled_accent(output)
                 << li::reset_style() << '\n';
     }
-    std::string vc_lean = "build/generated/AutoVC.lean";
-    if (const char* root = std::getenv("LI_REPO_ROOT")) {
-      vc_lean = std::string(root) + "/" + vc_lean;
-    }
+    const std::string vc_lean = li::repo_build_path("generated/AutoVC.lean");
     std::error_code fs_err;
     std::filesystem::create_directories(std::filesystem::path(vc_lean).parent_path(), fs_err);
     if (!li::write_vcs_lean(module, vc_lean, &err)) {
@@ -579,7 +571,7 @@ int main(int argc, char** argv) {
       if (open > 0) {
         std::cerr << "lic build: " << open
                   << " proof obligation(s) still need a Lean proof "
-                     "(see build/generated/AutoVC.lean)\n";
+                     "(see " << vc_lean << ")\n";
         std::cerr << "hint: a `requires` or `ensures` on your code created a goal the compiler "
                      "could not close automatically — prove it in Lean, simplify the "
                      "contract, or pass --allow-open-vc only for documented dev/tests\n";

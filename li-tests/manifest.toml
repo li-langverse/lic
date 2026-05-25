@@ -890,6 +890,11 @@ note = "open VC until 2f full (Lean gate on devbox)"
 suite = "math_syntax"
 file = "math_syntax/int_pow.li"
 outcome = "verify_open_ok"
+[[tests]]
+suite = "math_syntax"
+file = "math_syntax/for_range_sum.li"
+outcome = "verify_open_ok"
+note = "G-math-syn: plain for i in start..<end (no range() helper)"
 
 # --- stdlib_coverage (8e — std/**/*.li instrumented build) ---
 note = "open VC until 2f full (Lean gate on devbox)"

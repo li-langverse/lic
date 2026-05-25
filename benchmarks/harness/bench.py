@@ -796,7 +796,16 @@ def run_tier2_ci_smoke(*, only: set[str] | None = None) -> int:
 
 def run_verify() -> int:
     script = REPO / "benchmarks" / "harness" / "verify.py"
-    return subprocess.call([sys.executable, str(script), "--write-csv", str(RESULTS / "verify.csv")])
+    # Tier-0 CI gate: compile smokes only; tier-2 checksum parity runs via `bench.py --tier 2 --ci`.
+    return subprocess.call(
+        [
+            sys.executable,
+            str(script),
+            "--write-csv",
+            str(RESULTS / "verify.csv"),
+            "--tier0-only",
+        ]
+    )
 
 
 def run_tier0() -> int:

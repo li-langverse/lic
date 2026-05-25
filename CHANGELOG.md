@@ -6,6 +6,10 @@ All notable changes to Li are documented here. The format follows
 
 ## [Unreleased]
 
+### Added
+
+- **8p-b (plan tracker):** parallel `lic-workspace-build.sh` job pool (`LI_WORKSPACE_JOBS`, `-j`, per-member `--build-dir`) — [2026-05-25-gap2-tracker-8p-b.md](docs/release-notes/2026-05-25-gap2-tracker-8p-b.md).
+
 ### Fixed
 
 - **PH-UX vertical gap #1:** Studio UI bench registry and `bench-studio-viewport-perf.sh` reference `packages/lig` (`wgpu_smoke` hook) instead of removed `packages/li-gpu` — [2026-05-25-vertical-gap-bench-lig.md](docs/release-notes/2026-05-25-vertical-gap-bench-lig.md).

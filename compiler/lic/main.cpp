@@ -1,11 +1,9 @@
+#include "li/check_cmd.hpp"
 #include "li/compile.hpp"
 #include "li/parser.hpp"
 #include "li/platform.hpp"
-#include "li/policy.hpp"
-#include "li/import_resolve.hpp"
 #include "li/prelude.hpp"
 #include "li/smoke_llvm.hpp"
-#include "li/typecheck.hpp"
 #include "li/vc_emit.hpp"
 #include "li/mir.hpp"
 #include "li/vc_summary.hpp"
@@ -13,6 +11,9 @@
 #include "li/terminal.hpp"
 #include "li/error_codes.hpp"
 #include "li/proof_cli.hpp"
+#include "li/resource_options.hpp"
+
+#include "workspace_check.hpp"
 
 #include "li_rt.h"
 
@@ -33,7 +34,7 @@ int usage() {
   std::cerr << li::styled_accent("lic") << li::styled_dim(" — prove · write · run fast") << li::reset_style()
             << "\nusage:\n"
             << "  lic parse <file>       parse and validate syntax\n"
-            << "  lic check <file> [--format=json]  parse + typecheck\n"
+            << "  lic check <file> [--format=json] [--deny-warnings]  parse + typecheck + advisory\n"
             << "  lic diagnose <file>    agent-oriented JSON diagnostics\n"
             << "  lic verify <file>      VC summary; --lean lake; --strict-lean fails open VCs\n"
             << "                       [--allow-open-vc] [--no-lean-verify]\n"
@@ -43,6 +44,7 @@ int usage() {
             << "                       [--no-lean-verify] skip lake / AutoVC typecheck\n"
             << "                       default: fail on open goals; lake typecheck when installed\n"
             << "                       [--threads=N] [--jobs=N] [--max-memory=MB]\n"
+            << "                       [--job-memory-mb=N] [--build-dir=PATH]\n"
             << "                       [--coverage-instrument]\n"
             << "  lic smoke-llvm         verify LLVM can emit main returning 0\n"
             << "  lic httpd explain-config <file.toml>  desugar [routes] to canonical form\n"
@@ -50,11 +52,12 @@ int usage() {
             << "  lic validate-httpd-config <file.toml>  M1 TOML schema + overlap (Python)\n"
             << "  lic --version          print version\n"
             << "\n"
-            << "resource defaults (override via flags or env):\n"
-            << "  --jobs=N / LI_COMPILE_JOBS / LI_BUILD_JOBS (host=" << jobs
-            << ") — reserved for parallel frontend\n"
-            << "  --max-memory=MB / LI_MAX_MEMORY_MB — reserved memory budget\n"
-            << "  --threads=N / LI_OMP_THREADS — OpenMP team size at run time\n"
+            << "resource flags (preferred; LI_* env deprecated):\n"
+            << "  --jobs=N — compile worker budget (default 1; host=" << jobs
+            << "; Phase 8p-c: recorded, frontend still 1 worker)\n"
+            << "  --max-memory=MB --job-memory-mb=N — cap effective --jobs\n"
+            << "  --build-dir=PATH — isolated build tree (AutoVC, temps)\n"
+            << "  --threads=N — runtime parallel team size (OpenMP when linked)\n"
             << "  --numerically-stable / LI_FP_NUMERICALLY_STABLE=1 — cancellation-safe FP\n";
   return 1;
 }
@@ -156,18 +159,6 @@ int httpd_explain_config(int argc, char** argv) {
   return 0;
 }
 
-bool apply_resource_flag(std::string_view arg) {
-  if (arg.rfind("--jobs=", 0) == 0) {
-    setenv("LI_COMPILE_JOBS", std::string(arg.substr(7)).c_str(), 1);
-    return true;
-  }
-  if (arg.rfind("--max-memory=", 0) == 0) {
-    setenv("LI_MAX_MEMORY_MB", std::string(arg.substr(13)).c_str(), 1);
-    return true;
-  }
-  return false;
-}
-
 std::string read_file(const char* path) {
   std::ifstream in(path);
   std::ostringstream ss;
@@ -175,67 +166,10 @@ std::string read_file(const char* path) {
   return ss.str();
 }
 
-bool frontend(const char* path, const std::string& source, li::Module& out,
+bool frontend(const char* path, const std::string& /*source*/, li::Module& out,
               li::DiagnosticBag& diags) {
-  li::check_source_policies(source, path, diags);
-  if (!diags.empty()) {
-    return false;
-  }
-  auto parsed = li::parse_module(source, path);
-  for (const auto& d : parsed.diagnostics.items()) {
-    diags.error(d.loc, d.message);
-  }
-  if (!parsed.module) {
-    return false;
-  }
-  li::check_stdlib_seal(*parsed.module, path, diags);
-  if (!diags.empty()) {
-    return false;
-  }
-  if (!li::resolve_imports(*parsed.module, path, diags)) {
-    return false;
-  }
-  li::check_module_policies(*parsed.module, path, diags);
-  if (!diags.empty()) {
-    return false;
-  }
-  li::check_duplicate_definitions(*parsed.module, path, diags);
-  if (!diags.empty()) {
-    return false;
-  }
-  auto checked = li::typecheck_module(*parsed.module);
-  for (const auto& d : checked.diagnostics.items()) {
-    if (!d.code.empty()) {
-      diags.error(d.loc, d.code, d.message, d.hint ? *d.hint : std::string{});
-    } else {
-      diags.error(d.loc, d.message);
-    }
-  }
-  if (!checked.ok) {
-    return false;
-  }
-  out = std::move(*parsed.module);
-  return true;
-}
-
-enum class DiagOutput { Human, Json };
-
-int check_file(const char* path, DiagOutput output, std::string_view json_command) {
-  const std::string source = read_file(path);
-  li::Module module;
-  li::DiagnosticBag diags;
-  if (!frontend(path, source, module, diags)) {
-    if (output == DiagOutput::Json) {
-      li::print_diagnostics_json(diags, std::cout, json_command);
-    } else {
-      li::print_diagnostics(diags);
-    }
-    return 1;
-  }
-  if (output == DiagOutput::Json) {
-    li::print_diagnostics_json(diags, std::cout, json_command);
-  }
-  return 0;
+  li::CheckOptions opts;
+  return li::run_frontend_check(path, opts, diags, &out);
 }
 
 void warn_deprecated_proof_env() {
@@ -333,11 +267,13 @@ int verify_file(const char* path, bool run_lean, bool strict_lean) {
   const li::VcWitnessStats witness = li::compute_vc_witness_stats(module, &mir);
   vc.ensures_witnessed = witness.ensures_witnessed;
   vc.mir_return_linked = witness.mir_return_linked;
+  const std::size_t mir_parallel_disjoint = li::count_mir_parallel_disjoint_proven(mir);
   std::cout << "verify: procs=" << vc.proc_count << " mir_fns=" << vc.mir_fn_count
             << " requires=" << vc.requires_count << " ensures=" << vc.ensures_count
             << " decreases=" << vc.decreases_count << " invariant=" << vc.invariant_count
             << " witnessed_ensures=" << vc.ensures_witnessed
-            << " mir_return_linked=" << vc.mir_return_linked << '\n';
+            << " mir_return_linked=" << vc.mir_return_linked
+            << " mir_parallel_disjoint=" << mir_parallel_disjoint << '\n';
   if (li::terminal_color_enabled()) {
     std::cout << li::styled_success("verify") << li::styled_dim(" telemetry") << li::reset_style()
               << '\n';
@@ -349,6 +285,8 @@ int verify_file(const char* path, bool run_lean, bool strict_lean) {
                                std::to_string(vc.ensures_witnessed));
     li::print_verify_telemetry(std::cout, "mir_return_linked",
                                std::to_string(vc.mir_return_linked));
+    li::print_verify_telemetry(std::cout, "mir_parallel_disjoint",
+                               std::to_string(mir_parallel_disjoint));
   }
   if (vc.requires_count == 0 && vc.ensures_count == 0) {
     std::cerr << li::styled_warning("verify") << li::styled_dim(" — no procedure contracts (G-vc partial)")
@@ -403,6 +341,7 @@ int build_file(const char* path, const char* output, const li::CompileOptions& o
 }  // namespace
 
 int main(int argc, char** argv) {
+  li::reset_resource_options();
   if (argc < 2) {
     return usage();
   }
@@ -441,33 +380,22 @@ int main(int argc, char** argv) {
     if (argc < 3) {
       return usage();
     }
-    const char* path = nullptr;
-    DiagOutput output = DiagOutput::Human;
     for (int i = 2; i < argc; ++i) {
       const std::string_view arg = argv[i];
-      if (arg == "--format=json") {
-        output = DiagOutput::Json;
-      } else if (path == nullptr) {
-        path = argv[i];
-      } else {
-        return usage();
+      if (arg == "--workspace" || arg.rfind("--workspace=", 0) == 0) {
+        return run_workspace_check(argc, argv);
       }
     }
-    if (path == nullptr) {
-      return usage();
-    }
-    return check_file(path, output, "check");
+    return li::lic_check_main(argc, argv);
   }
   if (cmd == "diagnose") {
-    if (argc < 3) {
-      return usage();
-    }
-    return check_file(argv[2], DiagOutput::Json, "diagnose");
+    return li::lic_diagnose_main(argc, argv);
   }
   if (cmd == "verify") {
     if (argc < 3) {
       return usage();
     }
+    li::reset_resource_options();
     li::reset_proof_cli_flags();
     warn_deprecated_proof_env();
     bool run_lean = false;
@@ -478,10 +406,13 @@ int main(int argc, char** argv) {
       } else if (std::string_view(argv[i]) == "--strict-lean") {
         run_lean = true;
         strict_lean = true;
+      } else if (li::apply_resource_flag(argv[i], li::resource_options())) {
+        continue;
       } else if (parse_proof_cli_flag(argv[i])) {
         continue;
       }
     }
+    li::finalize_resource_options(li::resource_options());
     return verify_file(argv[2], run_lean, strict_lean);
   }
   if (cmd == "validate-httpd-config") {
@@ -501,6 +432,7 @@ int main(int argc, char** argv) {
     if (argc < 3) {
       return usage();
     }
+    li::reset_resource_options();
     li::reset_proof_cli_flags();
     warn_deprecated_proof_env();
     const char* input = nullptr;
@@ -529,17 +461,23 @@ int main(int argc, char** argv) {
         strict_lean = true;
       } else if (parse_proof_cli_flag(arg)) {
         continue;
-      } else if (arg.rfind("--threads=", 0) == 0) {
-        setenv("LI_OMP_THREADS", std::string(arg.substr(10)).c_str(), 1);
-      } else if (apply_resource_flag(arg)) {
+      } else if (li::apply_resource_flag(arg, li::resource_options())) {
         continue;
       } else {
         extra_flags.append(argv[i]);
         extra_flags.push_back(' ');
       }
     }
+    li::finalize_resource_options(li::resource_options());
+    li::note_compile_jobs_reserved();
     if (coverage) {
       extra_flags += "-fprofile-instr-generate -fcoverage-mapping ";
+    }
+    if (!li::resource_options().build_dir.empty()) {
+      setenv("LI_BUILD_DIR", li::resource_options().build_dir.c_str(), 1);
+    }
+    if (li::resource_options().threads > 0) {
+      setenv("LI_OMP_THREADS", std::to_string(li::resource_options().threads).c_str(), 1);
     }
     if (!input) {
       return usage();
@@ -571,7 +509,7 @@ int main(int argc, char** argv) {
       if (open > 0) {
         std::cerr << "lic build: " << open
                   << " proof obligation(s) still need a Lean proof "
-                     "(see " << vc_lean << ")\n";
+                     "(see build/generated/AutoVC.lean)\n";
         std::cerr << "hint: a `requires` or `ensures` on your code created a goal the compiler "
                      "could not close automatically — prove it in Lean, simplify the "
                      "contract, or pass --allow-open-vc only for documented dev/tests\n";

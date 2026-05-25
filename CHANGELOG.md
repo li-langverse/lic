@@ -172,3 +172,5 @@ All notable changes to Li are documented here. The format follows
 - MkDocs documentation site and CI/local-ci tooling
 
 [0.1.0]: https://github.com/li-langverse/lic/releases/tag/v0.1.0
+
+- **WP0/WP2:** ResourceOptions CLI + run_all --build-dir workers.

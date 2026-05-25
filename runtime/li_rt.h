@@ -237,3 +237,6 @@ int32_t li_rt_world_parse_line(const char* line);
 int32_t li_rt_world_parsed_name_slot(void);
 int32_t li_rt_world_parsed_tick(void);
 int32_t li_rt_world_parsed_entity_count(void);
+int32_t li_rt_world_snapshot_eq_fields(int32_t an, int32_t at, int32_t ae, int32_t bn, int32_t bt,
+                                       int32_t be);
+int32_t li_rt_world_roundtrip_fields(int32_t name_slot, int32_t tick, int32_t entity_count);

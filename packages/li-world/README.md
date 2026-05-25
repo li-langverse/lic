@@ -11,7 +11,7 @@ Import: `import world`
 ## API
 
 - `world_format_version` — format id (`1`)
-- `WorldSnapshot` — `name`, `tick`, `entity_count` (stubs)
+- `WorldSnapshot` — `name` (stub slot id: 0=`default`, 1=`arena`), `tick`, `entity_count`
 - `world_serialize` / `world_parse_line` — line ↔ snapshot
 - `world_save_to_buffer` / `world_load_from_buffer` — in-memory string round-trip
 

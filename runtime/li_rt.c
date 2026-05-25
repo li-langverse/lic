@@ -442,6 +442,28 @@ int32_t li_rt_world_parsed_entity_count(void) {
   return li_rt_world_parsed.entity_count;
 }
 
+int32_t li_rt_world_snapshot_eq_fields(int32_t an, int32_t at, int32_t ae, int32_t bn, int32_t bt,
+                                     int32_t be) {
+  return (an == bn && at == bt && ae == be) ? 1 : 0;
+}
+
+int32_t li_rt_world_roundtrip_fields(int32_t name_slot, int32_t tick, int32_t entity_count) {
+  const char* line = li_rt_world_serialize_slot(name_slot, tick, entity_count);
+  if (li_rt_world_parse_line(line) != 1) {
+    return 0;
+  }
+  if (li_rt_world_parsed.name_slot != name_slot) {
+    return 0;
+  }
+  if (li_rt_world_parsed.tick != tick) {
+    return 0;
+  }
+  if (li_rt_world_parsed.entity_count != entity_count) {
+    return 0;
+  }
+  return 1;
+}
+
 int32_t li_rt_path_exact(const char* path, const char* want) {
   return li_rt_str_eq(path, want);
 }

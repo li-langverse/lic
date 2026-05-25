@@ -1360,6 +1360,17 @@ bool emit_llvm_ir(const MirModule& mir, const std::string& out_path, std::string
       "li_rt_world_parsed_entity_count",
       llvm::FunctionType::get(i32_ty(context), {}, false));
   module->getOrInsertFunction(
+      "li_rt_world_snapshot_eq_fields",
+      llvm::FunctionType::get(i32_ty(context),
+                              {i32_ty(context), i32_ty(context), i32_ty(context), i32_ty(context),
+                               i32_ty(context), i32_ty(context)},
+                              false));
+  module->getOrInsertFunction(
+      "li_rt_world_roundtrip_fields",
+      llvm::FunctionType::get(i32_ty(context),
+                              {i32_ty(context), i32_ty(context), i32_ty(context)},
+                              false));
+  module->getOrInsertFunction(
       "li_rt_studio_timeline_playing", llvm::FunctionType::get(i32_ty(context), {}, false));
   module->getOrInsertFunction(
       "li_rt_studio_timeline_toggle_play", llvm::FunctionType::get(i32_ty(context), {}, false));

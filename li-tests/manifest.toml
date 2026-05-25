@@ -104,6 +104,12 @@ suite = "decorator_exploits"
 file = "decorator_exploits/missing_disjoint_at_parallel.li"
 outcome = "compile_fail"
 
+[[tests]]
+suite = "decorator_exploits"
+file = "decorator_exploits/false_disjoint_parallel_true.li"
+outcome = "compile_fail"
+expected_substr = "parallel_requires_disjoint"
+
 # --- typecheck ---
 
 [[tests]]
@@ -289,7 +295,17 @@ outcome = "verify_ok"
 
 [[tests]]
 suite = "contracts_verify"
-file = "contracts_verify/extern_call_requires_ok.li"
+file = "contracts_verify/[[tests]]
+suite = "contracts_verify"
+file = "contracts_verify/witnessed_ensures_ident.li"
+outcome = "prove_lean_ok"
+
+[[tests]]
+suite = "contracts_verify"
+file = "contracts_verify/discharge_identity.li"
+outcome = "prove_lean_ok"
+
+extern_call_requires_ok.li"
 outcome = "verify_ok"
 
 [[tests]]
@@ -426,6 +442,12 @@ suite = "race_shared_memory"
 file = "race_shared_memory/false_disjoint_proof.li"
 outcome = "compile_fail"
 expected_substr = "disjoint_row"
+
+[[tests]]
+suite = "race_shared_memory"
+file = "race_shared_memory/false_disjoint_requires_true.li"
+outcome = "compile_fail"
+expected_substr = "disjoint"
 
 [[tests]]
 suite = "race_shared_memory"
@@ -803,6 +825,11 @@ expected_substr = "matrix multiply"
 [[tests]]
 suite = "math_linalg"
 file = "math_linalg/matmul_2x3_ok.li"
+outcome = "verify_ok"
+
+[[tests]]
+suite = "math_linalg"
+file = "math_linalg/matmul_1x2_ok.li"
 outcome = "verify_ok"
 
 [[tests]]

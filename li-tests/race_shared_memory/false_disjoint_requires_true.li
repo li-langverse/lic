@@ -1,0 +1,12 @@
+
+def bad_requires_true() -> unit
+  requires true
+  ensures true
+  decreases 0
+=
+  var buf: array[8, array[8, f64]]
+  parallel for i in 0..<8
+    requires true
+    decreases 8 - i
+  =
+    buf[i][0] = buf[i][0] + 1.0

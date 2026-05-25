@@ -1,0 +1,14 @@
+def main() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  var A: array[1, array[2, float]]
+  var B: array[2, array[1, float]]
+  var C: array[1, array[1, float]]
+  A[0][0] = 1.0
+  A[0][1] = 2.0
+  B[0][0] = 3.0
+  B[1][0] = 4.0
+  C = A @ B
+  return 0

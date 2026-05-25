@@ -1,0 +1,19 @@
+def scale4_int(s: int, a: array[4, int]) -> int
+  requires true
+  ensures result == s * a[0] + s * a[1] + s * a[2] + s * a[3]
+  decreases 0
+=
+  return s * a[0] + s * a[1] + s * a[2] + s * a[3]
+
+def main() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  var a: array[4, int]
+  a[0] = 1
+  a[1] = 2
+  a[2] = 3
+  a[3] = 4
+  var t: int = scale4_int(2, a)
+  return 0

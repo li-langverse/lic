@@ -7,14 +7,19 @@
 namespace li {
 namespace {
 
+bool expr_is_disjoint_builtin_call(const Expr& e) {
+  return e.kind == Expr::Kind::Call &&
+         (e.ident == "disjoint_elem" || e.ident == "disjoint_row" ||
+          e.ident == "disjoint_slice");
+}
+
 bool expr_references_disjoint(const Expr& e) {
   switch (e.kind) {
     case Expr::Kind::Ident:
       return e.ident == "disjoint_elem" || e.ident == "disjoint_row" ||
              e.ident == "disjoint_slice";
     case Expr::Kind::Call:
-      return e.ident == "disjoint_elem" || e.ident == "disjoint_row" ||
-             e.ident == "disjoint_slice";
+      return expr_is_disjoint_builtin_call(e);
     case Expr::Kind::BinOp:
       return (e.lhs && expr_references_disjoint(*e.lhs)) ||
              (e.rhs && expr_references_disjoint(*e.rhs));
@@ -38,11 +43,36 @@ bool expr_references_disjoint(const Expr& e) {
   }
 }
 
+bool contract_expr_is_disjoint_proof(const Expr& e) {
+  if (expr_is_disjoint_builtin_call(e)) {
+    return true;
+  }
+  if (e.kind == Expr::Kind::BinOp && e.lhs && e.rhs) {
+    return contract_expr_is_disjoint_proof(*e.lhs) && contract_expr_is_disjoint_proof(*e.rhs);
+  }
+  return false;
+}
+
 bool contract_has_disjoint(const std::vector<Contract>& contracts) {
   for (const auto& c : contracts) {
-    if (c.kind == ContractKind::Requires && c.expr && expr_references_disjoint(*c.expr)) {
+    if (c.kind == ContractKind::Requires && c.expr &&
+        contract_expr_is_disjoint_proof(*c.expr)) {
       return true;
     }
+  }
+  return false;
+}
+
+bool decorator_disjoint_value_ok(const Expr& e) {
+  if (expr_is_disjoint_builtin_call(e)) {
+    return true;
+  }
+  if (e.kind == Expr::Kind::Ident) {
+    return e.ident == "disjoint_elem" || e.ident == "disjoint_row" ||
+           e.ident == "disjoint_slice";
+  }
+  if (e.kind == Expr::Kind::BinOp && e.lhs && e.rhs) {
+    return decorator_disjoint_value_ok(*e.lhs) && decorator_disjoint_value_ok(*e.rhs);
   }
   return false;
 }
@@ -52,7 +82,7 @@ bool decorator_has_disjoint_arg(const Decorator& d) {
     return false;
   }
   for (const auto& arg : d.args) {
-    if (arg.name == "disjoint" && arg.value && expr_references_disjoint(*arg.value)) {
+    if (arg.name == "disjoint" && arg.value && decorator_disjoint_value_ok(*arg.value)) {
       return true;
     }
   }

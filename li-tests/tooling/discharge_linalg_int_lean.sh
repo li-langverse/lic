@@ -11,6 +11,7 @@ for sample in \
   "$ROOT/li-tests/contracts_verify/linalg_mat2_entry00_int_closed.li" \
   "$ROOT/li-tests/contracts_verify/linalg_norm4_int_closed.li" \
   "$ROOT/li-tests/contracts_verify/linalg_axpy4_int_closed.li" \
+  "$ROOT/li-tests/contracts_verify/linalg_scale4_int_closed.li" \
   "$ROOT/li-tests/contracts_verify/linalg_dot4_float_closed.li" \
   "$ROOT/li-tests/contracts_verify/linalg_mat2_at2_float_closed.li" \
   "$ROOT/li-tests/contracts_verify/linalg_dot4_int_loop_open.li" \

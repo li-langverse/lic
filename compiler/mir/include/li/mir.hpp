@@ -132,6 +132,7 @@ struct MirDecorator {
   std::string name;
   /** `@vectorized(lanes=N)` when name is vectorized; 0 if omitted. */
   std::int64_t lanes = 0;
+  bool parallel = false;
 };
 
 struct MirFn {

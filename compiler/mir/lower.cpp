@@ -36,6 +36,7 @@ void copy_decorators(const std::vector<Decorator>& src, std::vector<MirDecorator
   for (const auto& d : src) {
     MirDecorator md;
     md.name = d.name;
+    if (d.name == "parallel") { md.parallel = true; }
     for (const auto& arg : d.args) {
       if (arg.name == "lanes" && arg.value && arg.value->kind == Expr::Kind::IntLit) {
         md.lanes = arg.value->int_value;

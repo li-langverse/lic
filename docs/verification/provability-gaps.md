@@ -195,3 +195,7 @@ Rough order from [master plan](../superpowers/plans/2026-05-14-li-master-plan.md
 5. **2i / 7e** — math surface (**G-math**)  
 
 **Documentation:** Phase **Doc** (Doc-a … Doc-e) in the master plan — update this file and handbook pages in the **same PR** as each compiler row moves to **Partial** or **Done**.
+
+
+| **G-trust** | Partial+ | **T-GetElem** in `Core.lean`; `MIR.lean` preservation open |
+| **G-trust** | Trusted base growth | Only `trusted.lean` | **Partial+** — **T-GetElem** (`typing_getElem`) in `Core.lean`; `MIR.lean` preservation **planned** | **2f** | `docs/semantics/Core.lean`, [semantics/README.md](../semantics/README.md) |

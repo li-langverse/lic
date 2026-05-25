@@ -33,7 +33,6 @@ All notable changes to Li are documented here. The format follows
 
 ### Added
 
-- **G-test-verify Done:** `prove_lean_ok` in `li-tests/run_all.sh`; 13 closed `contracts_verify` specimens retagged — `docs/release-notes/2026-05-25-g-test-verify-prove-lean-ok.md`.
 
 - **HTTPd autonomous plan loop:** `scripts/httpd-plan-loop.py`, `httpd-plan-gates.sh`, baseline doc, goal-directed `code_implementer` via li-cursor-agents — [2026-05-22-httpd-plan-autonomous-loop.md](docs/release-notes/2026-05-22-httpd-plan-autonomous-loop.md).
 - **HTTPd M1 core (rate limits):** `limits.rate_limit_rps` required for `proxy:` routes in Python validator + desugar; goal-directed `code_implementer` plan loop — [2026-05-22-httpd-m1-core-rate-limits.md](docs/release-notes/2026-05-22-httpd-m1-core-rate-limits.md).
@@ -86,7 +85,6 @@ All notable changes to Li are documented here. The format follows
 
 ### Added
 
-- **G-test-verify Done:** `prove_lean_ok` in `li-tests/run_all.sh`; 13 closed `contracts_verify` specimens retagged — `docs/release-notes/2026-05-25-g-test-verify-prove-lean-ok.md`.
 
 - **`httpd_serve_routed_once`** — M1 one-shot accept + `match_route` for `GET /health` (oracle; parallel with httpd-m1-impl/perf PRs); see `docs/release-notes/2026-05-20-httpd-serve-routed-once.md`.
 
@@ -102,7 +100,6 @@ All notable changes to Li are documented here. The format follows
 
 ### Added
 
-- **G-test-verify Done:** `prove_lean_ok` in `li-tests/run_all.sh`; 13 closed `contracts_verify` specimens retagged — `docs/release-notes/2026-05-25-g-test-verify-prove-lean-ok.md`.
 
 - Call-site callee **`requires`**: VCs for all resolved callees (incl. **`extern`** + imports); **E0304** with plain-language precondition text when provably false; const-local discharge (`var y = 5`); **`lic build` fails on open `AutoVC`** unless `LI_ALLOW_OPEN_VC=1`; see `docs/release-notes/2026-05-20-call-site-requires-full-gate.md`.
 - **Refinement types** at calls and `var` inits: `{x: int | …}` / aliases (e.g. `NonNeg`); **E0305** when provably outside the bound; **`if n >= 0`** branch discharge; call-site Lean VCs; see `docs/language/refinement-types.md` and `docs/release-notes/2026-05-20-refinement-call-check.md`.
@@ -154,7 +151,6 @@ All notable changes to Li are documented here. The format follows
 
 ### Added
 
-- **G-test-verify Done:** `prove_lean_ok` in `li-tests/run_all.sh`; 13 closed `contracts_verify` specimens retagged — `docs/release-notes/2026-05-25-g-test-verify-prove-lean-ok.md`.
 
 - Agent-first JSON diagnostics: `lic check --format=json`, `lic diagnose` (`docs/schemas/diagnostic-v1.json`)
 - LLM-first design research stub, agent handover comparison, `li-agent-manifest.toml`
@@ -165,7 +161,6 @@ All notable changes to Li are documented here. The format follows
 
 ### Added
 
-- **G-test-verify Done:** `prove_lean_ok` in `li-tests/run_all.sh`; 13 closed `contracts_verify` specimens retagged — `docs/release-notes/2026-05-25-g-test-verify-prove-lean-ok.md`.
 
 - C++ `lic` compiler skeleton: lexer, parser, typechecker, MIR, LLVM codegen
 - Mandatory contracts gate (`requires` / `ensures` / `decreases`)

@@ -1,13 +1,13 @@
 {
-  "generated_at": "2026-05-25T18:46:09.354079+00:00",
+  "generated_at": "2026-05-25T19:09:51.413924+00:00",
   "tz": "Europe/Berlin",
-  "agents_live": 4,
+  "agents_live": 7,
   "runners": [
     {
       "id": "httpd",
       "name": "li-httpd gap parity",
       "branch": "cursor/httpd-plan-continue",
-      "head": "1b9e7ccd",
+      "head": "e1b54f70",
       "running": true,
       "process": "systemd:li-httpd-plan-loop.service (active)",
       "log_path": "/home/s4il0r/Documents/Cursor/li-langverse/lic/../lic/data/httpd-plan-loop/until-deadline-20260525-180023.log",
@@ -76,17 +76,53 @@
           "id": "gap-httpd-gap-phase2-streaming-wrk",
           "content": "httpd: pending plan todo gap-phase2-streaming-wrk",
           "status": "pending"
+        },
+        {
+          "id": "gap-httpd-gap-httpd-gap-phase2-perf-wrk-soak",
+          "content": "httpd: pending plan todo gap-httpd-gap-phase2-perf-wrk-soak",
+          "status": "pending"
+        },
+        {
+          "id": "gap-httpd-gap-httpd-gap-phase2-mitigation-exploits",
+          "content": "httpd: pending plan todo gap-httpd-gap-phase2-mitigation-exploits",
+          "status": "pending"
+        },
+        {
+          "id": "gap-httpd-gap-httpd-gap-phase2-streaming-wrk",
+          "content": "httpd: pending plan todo gap-httpd-gap-phase2-streaming-wrk",
+          "status": "pending"
+        },
+        {
+          "id": "gap-httpd-gap-httpd-gap-httpd-gap-phase2-perf-wrk-",
+          "content": "httpd: pending plan todo gap-httpd-gap-httpd-gap-phase2-perf-wrk-soak",
+          "status": "pending"
+        },
+        {
+          "id": "gap-httpd-gap-httpd-gap-httpd-gap-phase2-mitigatio",
+          "content": "httpd: pending plan todo gap-httpd-gap-httpd-gap-phase2-mitigation-exploits",
+          "status": "pending"
+        },
+        {
+          "id": "gap-httpd-gap-httpd-gap-httpd-gap-phase2-streaming",
+          "content": "httpd: pending plan todo gap-httpd-gap-httpd-gap-phase2-streaming-wrk",
+          "status": "pending"
         }
       ],
       "plan_completed": 7,
-      "plan_total": 13,
+      "plan_total": 19,
       "plan_pending": [
         "gap-phase2-perf-wrk-soak",
         "gap-phase2-mitigation-exploits",
         "gap-phase2-streaming-wrk",
         "gap-httpd-gap-phase2-perf-wrk-soak",
         "gap-httpd-gap-phase2-mitigation-exploits",
-        "gap-httpd-gap-phase2-streaming-wrk"
+        "gap-httpd-gap-phase2-streaming-wrk",
+        "gap-httpd-gap-httpd-gap-phase2-perf-wrk-soak",
+        "gap-httpd-gap-httpd-gap-phase2-mitigation-exploits",
+        "gap-httpd-gap-httpd-gap-phase2-streaming-wrk",
+        "gap-httpd-gap-httpd-gap-httpd-gap-phase2-perf-wrk-",
+        "gap-httpd-gap-httpd-gap-httpd-gap-phase2-mitigatio",
+        "gap-httpd-gap-httpd-gap-httpd-gap-phase2-streaming"
       ],
       "state": {
         "completed_ids": [
@@ -97,9 +133,10 @@
           "gap-nginx-perf-regression-gate",
           "gap-tier5-streaming-soak",
           "gap-phase2-exploit-nginx-regression",
-          "gap-phase2-mitigation-exploits"
+          "gap-phase2-mitigation-exploits",
+          "gap-httpd-gap-phase2-mitigation-exploits"
         ],
-        "iterations": 54,
+        "iterations": 55,
         "history": [
           {
             "at": "2026-05-24T12:57:17.198584+00:00",
@@ -424,29 +461,36 @@
             "todo_id": "gap-phase2-perf-wrk-soak",
             "agent_exit": 124,
             "gates_ok": false
+          },
+          {
+            "at": "2026-05-25T19:01:06.075781+00:00",
+            "todo_id": "gap-httpd-gap-phase2-mitigation-exploits",
+            "agent_exit": 0,
+            "gates_ok": true
           }
         ]
       },
-      "state_iterations": 54,
-      "agent_live": false,
-      "agent": "",
-      "goal_file": "",
-      "log_age_sec": 38,
-      "last_state_at": "2026-05-25T18:45:30.759723+00:00",
-      "last_state_todo": "gap-phase2-perf-wrk-soak",
-      "last_state_gates": false,
-      "current_iteration": "==> batch 1 exit 124 @ 2026-05-25T20:45:30+02:00",
+      "state_iterations": 55,
+      "agent_live": true,
+      "agent": "swarm_observer",
+      "goal_file": "goal-20260525-184836.md",
+      "log_age_sec": 492,
+      "last_state_at": "2026-05-25T19:01:06.075781+00:00",
+      "last_state_todo": "gap-httpd-gap-phase2-mitigation-exploits",
+      "last_state_gates": true,
+      "current_iteration": "=== iteration 2: gap-httpd-gap-httpd-gap-phase2-mitigation-exploits ===",
       "activity": [
-        "[sdk] \u2717 tool",
         "[sdk] \u25b6 tool",
-        "il0r/Documents/Cursor/li-langverse/li-cursor-agents/data/workspaces/li-langverse/lic/code_implementer-1779733348875/repo/runtime/li_rt_net.c",
+        "[sdk] \u2713 shell cd /home/s4il0r/Documents/Cursor/li-langverse/li-cursor-agents/data/workspaces/l",
         "[sdk] \u2717 tool",
-        "[sdk] thinking\u2026",
-        "[sdk] \u25b6 tool",
-        "agent exit 124 \u2014 stopping loop (fix and re-run)",
-        "==> batch 1 exit 124 @ 2026-05-25T20:45:30+02:00"
+        "[sdk] assistant reply",
+        "gates: OK after agent",
+        "=== iteration 2: gap-httpd-gap-httpd-gap-phase2-mitigation-exploits ===",
+        "gates: OK",
+        "SDK tool activity streams to stderr ([sdk] \u25b6/\u2713 lines). Set LI_SDK_TERMINAL_STREAM=0 to disable."
       ],
-      "status_note": "supervisor up, between agent runs"
+      "status_note": "agent coding (swarm_observer)",
+      "active_todo_id": "gap-httpd-gap-httpd-gap-phase2-mitigation-exploits"
     },
     {
       "id": "compiler-studio",
@@ -720,7 +764,7 @@
           "wave-d-05-linalg-scaffold",
           "wave-d-gui-scaffold"
         ],
-        "iterations": 72,
+        "iterations": 73,
         "history": [
           {
             "at": "2026-05-23T09:02:50.508081+00:00",
@@ -1153,28 +1197,34 @@
             "todo_id": "wave-d-gui-scaffold",
             "agent_exit": 0,
             "gates_ok": true
+          },
+          {
+            "at": "2026-05-25T18:56:44.778223+00:00",
+            "todo_id": "wave-d-gui-scaffold",
+            "agent_exit": 0,
+            "gates_ok": true
           }
         ],
         "note": "2026-05-24: cleared premature completed_ids for wave-a-llvm22-typecheck-warnings and wave-d-gui-scaffold (plan still open; gates had failed or plan YAML not updated)"
       },
-      "state_iterations": 72,
+      "state_iterations": 73,
       "agent_live": true,
       "agent": "code_implementer",
-      "goal_file": "goal-20260525-183833.md",
-      "log_age_sec": 2,
-      "last_state_at": "2026-05-25T18:37:22.299597+00:00",
+      "goal_file": "goal-20260525-185757.md",
+      "log_age_sec": 714,
+      "last_state_at": "2026-05-25T18:56:44.778223+00:00",
       "last_state_todo": "wave-d-gui-scaffold",
       "last_state_gates": true,
-      "current_iteration": "=== iteration 2: wave-d-gui-scaffold ===",
+      "current_iteration": "=== iteration 3: wave-d-gui-scaffold ===",
       "activity": [
-        "[sdk] \u25b6 tool",
-        "sdk] \u2713 grep /home/s4il0r/Documents/Cursor/li-langverse/li-cursor-agents/data/workspaces/li-langverse/lic/code_implementer-1779734752004/repo",
-        "[sdk] \u2717 tool",
-        "[sdk] \u2713 glob",
-        "[sdk] \u2717 tool",
-        "[sdk] \u25b6 tool",
         "[sdk] \u2713 shell cd /home/s4il0r/Documents/Cursor/li-langverse/li-cursor-agents/data/workspaces/l",
-        "[sdk] \u2717 tool"
+        "[sdk] \u2717 tool",
+        "[sdk] thinking\u2026",
+        "[sdk] assistant reply",
+        "gates: OK after agent",
+        "=== iteration 3: wave-d-gui-scaffold ===",
+        "gates: OK",
+        "SDK tool activity streams to stderr ([sdk] \u25b6/\u2713 lines). Set LI_SDK_TERMINAL_STREAM=0 to disable."
       ],
       "status_note": "agent coding (code_implementer)",
       "active_todo_id": "wave-d-gui-scaffold"
@@ -1183,10 +1233,10 @@
       "id": "sim",
       "name": "Sim / algo registry",
       "branch": "cursor/sim-algo-plan-loop",
-      "head": "8483fba2",
+      "head": "e56ff964",
       "running": true,
       "process": "systemd:li-sim-algo-plan-loop.service (active)",
-      "log_path": "/home/s4il0r/Documents/Cursor/li-langverse/lic/../lic-worktrees/sim-algo/data/sim-plan-loop/iter-20260525-184003.log",
+      "log_path": "/home/s4il0r/Documents/Cursor/li-langverse/lic/../lic-worktrees/sim-algo/data/sim-plan-loop/iter-20260525-185354.log",
       "todos": [
         {
           "id": "sim-p0-md-lj-li-parity",
@@ -1223,7 +1273,7 @@
       ],
       "state": {
         "completed_ids": [],
-        "iterations": 112,
+        "iterations": 113,
         "history": [
           {
             "at": "2026-05-24T15:02:54.490019+00:00",
@@ -1896,6 +1946,12 @@
             "todo_id": "sim-p1-num-dot-axpy",
             "agent_exit": 0,
             "gates_ok": false
+          },
+          {
+            "at": "2026-05-25T18:51:54.308801+00:00",
+            "todo_id": "sim-p1-num-dot-axpy",
+            "agent_exit": 0,
+            "gates_ok": false
           }
         ],
         "registry": {
@@ -1903,12 +1959,12 @@
           "total": 126
         }
       },
-      "state_iterations": 112,
+      "state_iterations": 113,
       "agent_live": true,
       "agent": "code_implementer",
-      "goal_file": "goal-20260525-184003.md",
-      "log_age_sec": 365,
-      "last_state_at": "2026-05-25T18:38:03.635209+00:00",
+      "goal_file": "goal-20260525-185354.md",
+      "log_age_sec": 956,
+      "last_state_at": "2026-05-25T18:51:54.308801+00:00",
       "last_state_todo": "sim-p1-num-dot-axpy",
       "last_state_gates": false,
       "current_iteration": "",
@@ -2108,23 +2164,23 @@
       "agent_live": false,
       "agent": "",
       "goal_file": "",
-      "log_age_sec": 944,
+      "log_age_sec": 566,
       "last_state_at": "2026-05-25T06:32:37.228062+00:00",
       "last_state_todo": "studio-ux-10-native-capture",
       "last_state_gates": true,
       "current_iteration": "",
       "activity": [],
-      "status_note": "supervisor idle (log 944s stale \u2014 check log_path)",
+      "status_note": "supervisor idle (log 566s stale \u2014 check log_path)",
       "active_todo_id": "studio-ux-04-particle-display"
     },
     {
       "id": "sim-md-research",
       "name": "MD algorithm research",
       "branch": "cursor/sim-md-research-loop",
-      "head": "23ac0571",
+      "head": "c961be92",
       "running": true,
       "process": "systemd:li-sim-md-research-plan-loop.service (active)",
-      "log_path": "/home/s4il0r/Documents/Cursor/li-langverse/lic/../lic-worktrees/sim-md-research/data/sim-md-research-loop/iter-20260525-184449.log",
+      "log_path": "/home/s4il0r/Documents/Cursor/li-langverse/lic/../lic-worktrees/sim-md-research/data/sim-md-research-loop/iter-20260525-185600.log",
       "todos": [
         {
           "id": "md-r0-sota-survey",
@@ -2134,7 +2190,7 @@
         {
           "id": "md-r1-stability-matrix",
           "content": "CFL / neighbor-skin / size scaling for md_lennard_jones; tier-0 stability row proposal",
-          "status": "pending"
+          "status": "completed"
         },
         {
           "id": "md-r2-neighbor-list-gap",
@@ -2147,61 +2203,67 @@
           "status": "pending"
         }
       ],
-      "plan_completed": 1,
+      "plan_completed": 2,
       "plan_total": 4,
       "plan_pending": [
-        "md-r1-stability-matrix",
         "md-r2-neighbor-list-gap",
         "md-r3-oracle-plan"
       ],
       "state": {
         "completed_ids": [
-          "md-r0-sota-survey"
+          "md-r0-sota-survey",
+          "md-r1-stability-matrix"
         ],
-        "iterations": 1,
+        "iterations": 2,
         "history": [
           {
             "at": "2026-05-25T18:44:18.938689+00:00",
             "todo_id": "md-r0-sota-survey",
             "agent_exit": 0,
             "gates_ok": true
+          },
+          {
+            "at": "2026-05-25T18:55:29.188178+00:00",
+            "todo_id": "md-r1-stability-matrix",
+            "agent_exit": 0,
+            "gates_ok": true
           }
         ],
         "vertical": "md"
       },
-      "state_iterations": 1,
+      "state_iterations": 2,
       "agent_live": true,
       "agent": "numerics_researcher",
-      "goal_file": "goal-20260525-184449.md",
-      "log_age_sec": 79,
-      "last_state_at": "2026-05-25T18:44:18.938689+00:00",
-      "last_state_todo": "md-r0-sota-survey",
+      "goal_file": "goal-20260525-185600.md",
+      "log_age_sec": 831,
+      "last_state_at": "2026-05-25T18:55:29.188178+00:00",
+      "last_state_todo": "md-r1-stability-matrix",
       "last_state_gates": true,
       "current_iteration": "",
       "activity": [
         "SDK tool activity streams to stderr ([sdk] \u25b6/\u2713 lines). Set LI_SDK_TERMINAL_STREAM=0 to disable."
       ],
       "status_note": "agent coding (numerics_researcher)",
-      "active_todo_id": "md-r1-stability-matrix"
+      "active_todo_id": "md-r2-neighbor-list-gap"
     },
     {
       "id": "sim-chem-research",
       "name": "Chemistry algorithm research",
       "branch": "cursor/sim-chem-research-loop",
-      "head": "0641c0c8",
+      "head": "a6881697",
       "running": true,
       "process": "systemd:li-sim-chem-research-plan-loop.service (active)",
-      "log_path": "/home/s4il0r/Documents/Cursor/li-langverse/lic/../lic-worktrees/sim-chem-research/data/sim-chem-research-loop/iter-20260525-183357.log",
+      "log_path": "/home/s4il0r/Documents/Cursor/li-langverse/lic/../lic-worktrees/sim-chem-research/data/sim-chem-research-loop/iter-20260525-190356.log",
       "todos": [
         {
           "id": "chem-r0-sota-survey",
           "content": "Gaussian/ORCA/Psi4/PySCF minimal workflows; map to QM registry 401\u2013432",
-          "status": "pending"
+          "status": "completed"
         },
         {
           "id": "chem-r1-basis-size-scaling",
           "content": "STO-3G vs larger basis \u2014 cost/accuracy table for stub SCF",
-          "status": "pending"
+          "status": "completed"
         },
         {
           "id": "chem-r2-dft-scf-gap",
@@ -2214,48 +2276,62 @@
           "status": "pending"
         }
       ],
-      "plan_completed": 0,
+      "plan_completed": 2,
       "plan_total": 4,
       "plan_pending": [
-        "chem-r0-sota-survey",
-        "chem-r1-basis-size-scaling",
         "chem-r2-dft-scf-gap",
         "chem-r3-package-placement"
       ],
+      "state": {
+        "completed_ids": [
+          "chem-r0-sota-survey",
+          "chem-r1-basis-size-scaling"
+        ],
+        "iterations": 2,
+        "history": [
+          {
+            "at": "2026-05-25T18:47:25.514244+00:00",
+            "todo_id": "chem-r0-sota-survey",
+            "agent_exit": 0,
+            "gates_ok": true
+          },
+          {
+            "at": "2026-05-25T19:03:25.678512+00:00",
+            "todo_id": "chem-r1-basis-size-scaling",
+            "agent_exit": 0,
+            "gates_ok": true
+          }
+        ],
+        "vertical": "chem"
+      },
+      "state_iterations": 2,
       "agent_live": true,
       "agent": "numerics_researcher",
-      "goal_file": "goal-20260525-183357.md",
-      "log_age_sec": 3,
-      "last_state_at": "",
-      "last_state_todo": "",
-      "last_state_gates": "",
+      "goal_file": "goal-20260525-190356.md",
+      "log_age_sec": 354,
+      "last_state_at": "2026-05-25T19:03:25.678512+00:00",
+      "last_state_todo": "chem-r1-basis-size-scaling",
+      "last_state_gates": true,
       "current_iteration": "",
       "activity": [
-        "[sdk] \u2717 tool",
-        "[sdk] thinking\u2026",
-        "[sdk] \u25b6 tool",
-        "ngverse/li-cursor-agents/data/workspaces/li-langverse/lic/numerics_researcher-1779734474608/repo/docs/ecosystem/sim-chem-research-backlog.md",
-        "[sdk] \u2717 tool",
-        "[sdk] \u25b6 tool",
-        "[sdk] \u2713 glob",
-        "[sdk] \u2717 tool"
+        "SDK tool activity streams to stderr ([sdk] \u25b6/\u2713 lines). Set LI_SDK_TERMINAL_STREAM=0 to disable."
       ],
       "status_note": "agent coding (numerics_researcher)",
-      "active_todo_id": "chem-r0-sota-survey"
+      "active_todo_id": "chem-r2-dft-scf-gap"
     },
     {
       "id": "security-research",
       "name": "Offensive security research",
       "branch": "cursor/security-research-loop",
-      "head": "1b9e7ccd",
-      "running": false,
-      "process": "",
-      "log_path": "/home/s4il0r/Documents/Cursor/li-langverse/lic/../lic-worktrees/security-research/data/security-research-loop/runner.log",
+      "head": "9a0e1b01",
+      "running": true,
+      "process": "systemd:li-security-research-plan-loop.service (active)",
+      "log_path": "/home/s4il0r/Documents/Cursor/li-langverse/lic/../lic-worktrees/security-research/data/security-research-loop/iter-20260525-190839.log",
       "todos": [
         {
           "id": "sec-r0-cwe-delta",
           "content": "CWE Top 25 feed sync vs cve-catalog.json \u2014 map new CWEs to catalog_gaps and li-tests",
-          "status": "pending"
+          "status": "completed"
         },
         {
           "id": "sec-r1-httpd-fuzz-smoke",
@@ -2273,39 +2349,55 @@
           "status": "pending"
         }
       ],
-      "plan_completed": 0,
+      "plan_completed": 1,
       "plan_total": 4,
       "plan_pending": [
-        "sec-r0-cwe-delta",
         "sec-r1-httpd-fuzz-smoke",
         "sec-r2-tier5-gap-exploit",
         "sec-r3-runtime-surface"
       ],
-      "agent_live": false,
-      "agent": "",
-      "goal_file": "",
-      "log_age_sec": null,
-      "last_state_at": "",
-      "last_state_todo": "",
-      "last_state_gates": "",
+      "state": {
+        "completed_ids": [
+          "sec-r0-cwe-delta"
+        ],
+        "iterations": 1,
+        "history": [
+          {
+            "at": "2026-05-25T19:08:08.544345+00:00",
+            "todo_id": "sec-r0-cwe-delta",
+            "agent_exit": 0,
+            "gates_ok": true
+          }
+        ]
+      },
+      "state_iterations": 1,
+      "agent_live": true,
+      "agent": "security_auditor",
+      "goal_file": "goal-20260525-190839.md",
+      "log_age_sec": 71,
+      "last_state_at": "2026-05-25T19:08:08.544345+00:00",
+      "last_state_todo": "sec-r0-cwe-delta",
+      "last_state_gates": true,
       "current_iteration": "",
-      "activity": [],
-      "status_note": "supervisor off",
-      "active_todo_id": "sec-r0-cwe-delta"
+      "activity": [
+        "SDK tool activity streams to stderr ([sdk] \u25b6/\u2713 lines). Set LI_SDK_TERMINAL_STREAM=0 to disable."
+      ],
+      "status_note": "agent coding (security_auditor)",
+      "active_todo_id": "sec-r1-httpd-fuzz-smoke"
     },
     {
       "id": "swarm-observer",
       "name": "Swarm gap orchestrator",
       "branch": "cursor/swarm-observer-plan-loop",
-      "head": "1b9e7ccd",
+      "head": "e1b54f70",
       "running": true,
-      "process": "1561 bash /home/s4il0r/Documents/Cursor/li-langverse/lic/scripts/httpd-plan-until-deadline.sh",
-      "log_path": "/home/s4il0r/Documents/Cursor/li-langverse/lic/../lic/data/swarm-observer-plan-loop/runner.log",
+      "process": "systemd:li-swarm-observer-plan-loop.service (active)",
+      "log_path": "/home/s4il0r/Documents/Cursor/li-langverse/lic/../lic/data/swarm-observer-plan-loop/iter-20260525-184836.log",
       "todos": [
         {
           "id": "orch-r0-ingest-snapshot",
           "content": "Run swarm-gap-ingest.py; reconcile registry with snapshot + audits; confirm apply-actions dry-run",
-          "status": "pending"
+          "status": "completed"
         },
         {
           "id": "orch-r1-plan-debt-sync",
@@ -2328,29 +2420,86 @@
           "status": "pending"
         }
       ],
-      "plan_completed": 0,
+      "plan_completed": 1,
       "plan_total": 5,
       "plan_pending": [
-        "orch-r0-ingest-snapshot",
         "orch-r1-plan-debt-sync",
         "orch-r2-competitor-stubs",
         "orch-r3-missing-package-sweep",
         "orch-r4-ui-ux-signals"
       ],
-      "agent_live": false,
-      "agent": "",
-      "goal_file": "",
-      "log_age_sec": null,
+      "agent_live": true,
+      "agent": "swarm_observer",
+      "goal_file": "goal-20260525-184836.md",
+      "log_age_sec": 22,
       "last_state_at": "",
       "last_state_todo": "",
       "last_state_gates": "",
       "current_iteration": "",
-      "activity": [],
-      "status_note": "supervisor up, between agent runs",
-      "active_todo_id": "orch-r0-ingest-snapshot"
+      "activity": [
+        "[sdk] \u2717 tool",
+        "[sdk] \u25b6 tool",
+        "[sdk] \u2713 edit /home/s4il0r/Documents/Cursor/li-langverse/lic/docs/ecosystem/orchestrator-notes/2026-05-25-orch-r0-ingest-snapshot.md",
+        "[sdk] \u2717 tool",
+        "[sdk] \u25b6 tool",
+        "[sdk] \u2713 shell cd /home/s4il0r/Documents/Cursor/li-langverse/lic && git add data/runs/swarm_obs",
+        "[sdk] \u2717 tool",
+        "[sdk] assistant reply"
+      ],
+      "status_note": "agent coding (swarm_observer)",
+      "active_todo_id": "orch-r1-plan-debt-sync"
     }
   ],
   "history": [
+    {
+      "runner": "security-research",
+      "at": "2026-05-25T19:08:08.544345+00:00",
+      "todo_id": "sec-r0-cwe-delta",
+      "agent_exit": 0,
+      "gates_ok": true
+    },
+    {
+      "runner": "sim-chem-research",
+      "at": "2026-05-25T19:03:25.678512+00:00",
+      "todo_id": "chem-r1-basis-size-scaling",
+      "agent_exit": 0,
+      "gates_ok": true
+    },
+    {
+      "runner": "httpd",
+      "at": "2026-05-25T19:01:06.075781+00:00",
+      "todo_id": "gap-httpd-gap-phase2-mitigation-exploits",
+      "agent_exit": 0,
+      "gates_ok": true
+    },
+    {
+      "runner": "compiler-studio",
+      "at": "2026-05-25T18:56:44.778223+00:00",
+      "todo_id": "wave-d-gui-scaffold",
+      "agent_exit": 0,
+      "gates_ok": true
+    },
+    {
+      "runner": "sim-md-research",
+      "at": "2026-05-25T18:55:29.188178+00:00",
+      "todo_id": "md-r1-stability-matrix",
+      "agent_exit": 0,
+      "gates_ok": true
+    },
+    {
+      "runner": "sim",
+      "at": "2026-05-25T18:51:54.308801+00:00",
+      "todo_id": "sim-p1-num-dot-axpy",
+      "agent_exit": 0,
+      "gates_ok": false
+    },
+    {
+      "runner": "sim-chem-research",
+      "at": "2026-05-25T18:47:25.514244+00:00",
+      "todo_id": "chem-r0-sota-survey",
+      "agent_exit": 0,
+      "gates_ok": true
+    },
     {
       "runner": "httpd",
       "at": "2026-05-25T18:45:30.759723+00:00",
@@ -2384,55 +2533,6 @@
       "at": "2026-05-25T18:26:46.226090+00:00",
       "todo_id": "sim-p1-num-dot-axpy",
       "agent_exit": 0,
-      "gates_ok": false
-    },
-    {
-      "runner": "httpd",
-      "at": "2026-05-25T17:52:34.546608+00:00",
-      "todo_id": "gap-phase2-perf-wrk-soak",
-      "agent_exit": 124,
-      "gates_ok": false
-    },
-    {
-      "runner": "sim",
-      "at": "2026-05-25T17:51:19.672048+00:00",
-      "todo_id": "sim-p1-num-dot-axpy",
-      "agent_exit": 1,
-      "gates_ok": false
-    },
-    {
-      "runner": "compiler-studio",
-      "at": "2026-05-25T17:45:50.263799+00:00",
-      "todo_id": "wave-d-gui-scaffold",
-      "agent_exit": 1,
-      "gates_ok": false
-    },
-    {
-      "runner": "sim",
-      "at": "2026-05-25T17:29:37.295719+00:00",
-      "todo_id": "sim-p1-num-dot-axpy",
-      "agent_exit": 1,
-      "gates_ok": false
-    },
-    {
-      "runner": "compiler-studio",
-      "at": "2026-05-25T17:26:44.196325+00:00",
-      "todo_id": "wave-d-gui-scaffold",
-      "agent_exit": 1,
-      "gates_ok": false
-    },
-    {
-      "runner": "httpd",
-      "at": "2026-05-25T17:05:55.950503+00:00",
-      "todo_id": "gap-phase2-perf-wrk-soak",
-      "agent_exit": 124,
-      "gates_ok": false
-    },
-    {
-      "runner": "sim",
-      "at": "2026-05-25T16:58:21.961986+00:00",
-      "todo_id": "sim-p1-num-dot-axpy",
-      "agent_exit": 1,
       "gates_ok": false
     }
   ]

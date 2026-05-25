@@ -1,0 +1,11 @@
+{
+  "generated_at": "2026-05-25T18:45:27Z",
+  "posture_ok": true,
+  "cwe_feed_ok": true,
+  "tier5_ok": true,
+  "asan_ok": true,
+  "study_only": true,
+  "overall_ok": true,
+  "security_note": "skip",
+  "gate_log": "study-only iteration"
+}

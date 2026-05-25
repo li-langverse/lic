@@ -32,10 +32,24 @@ const std::unordered_map<std::string, const TypeExpr*>* g_object_locals = nullpt
 
 std::string fresh_temp() { return "__t" + std::to_string(temp_counter++); }
 
+std::int64_t mir_vectorized_lanes_from_decorator(const Decorator& d) {
+  if (d.name != "vectorized") return 0;
+  for (const auto& arg : d.args) {
+    if (arg.name == "lanes" && arg.value && arg.value->kind == Expr::Kind::IntLit) {
+      return arg.value->int_value;
+    }
+  }
+  return 4;
+}
+
 void copy_decorators(const std::vector<Decorator>& src, std::vector<MirDecorator>& dst) {
   for (const auto& d : src) {
     MirDecorator md;
     md.name = d.name;
+    if (d.name == "vectorized") {
+      md.vectorized = true;
+      md.lanes = mir_vectorized_lanes_from_decorator(d);
+    }
     for (const auto& arg : d.args) {
       if (arg.name == "lanes" && arg.value && arg.value->kind == Expr::Kind::IntLit) {
         md.lanes = arg.value->int_value;
@@ -47,7 +61,7 @@ void copy_decorators(const std::vector<Decorator>& src, std::vector<MirDecorator
 
 void apply_fn_decorator_codegen_flags(MirFn& fn) {
   for (const auto& d : fn.decorators) {
-    if (d.name == "vectorized") {
+    if (d.vectorized) {
       (void)d.lanes;
     }
     if (d.name == "no_vectorize") {

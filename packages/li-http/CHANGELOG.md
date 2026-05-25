@@ -9,11 +9,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
-- `li-http` workspace package (`import http`): request-line / header parsing helpers (Phase-H scaffold).
-- Smoke test `li-tests/smoke/builds.li`.
+- Initial scaffold via `scripts/li-new-package` (PKG-li-http).
 
-## [0.1.0] - 2026-05-20
+## [0.1.0] - 2026-05-22
 
 ### Added
 
-- Package skeleton in `lic` monorepo (`packages/li-http`).
+- Package skeleton.

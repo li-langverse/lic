@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=1920, height=1080" />
+  <title>Li World Studio — agent error (marketing mock)</title>
+  <link rel="stylesheet" href="studio-tokens.css" />
+  <style>
+    * { box-sizing: border-box; }
+    body {
+      width: 1920px; height: 1080px; margin: 0;
+      background: var(--color-bg-primary);
+      color: var(--color-text-primary);
+      font-family: var(--typography-ui);
+      overflow: hidden;
+    }
+    .mock-banner {
+      position: absolute; top: 0; left: 0; right: 0; z-index: 100;
+      background: var(--mock-banner-bg, #3d1f00);
+      color: #ffdf9e; font-size: 11px; letter-spacing: 0.04em;
+      text-align: center; padding: 4px 8px;
+      border-bottom: 1px solid var(--color-accent-amber);
+    }
+    .shell { position: absolute; inset: 24px 0 0 0; }
+    .dock {
+      position: absolute; left: 0; top: 0; bottom: 0;
+      width: var(--spacing-dock-width-px);
+      background: var(--color-bg-elevated);
+      border-right: 1px solid var(--color-border);
+      display: flex; flex-direction: column; align-items: center;
+      padding: 12px 0; gap: 8px;
+    }
+    .dock button {
+      width: 36px; height: 36px; border: 1px solid var(--color-border);
+      border-radius: 6px; background: transparent; color: var(--color-text-muted);
+    }
+    .topbar {
+      position: absolute; left: var(--spacing-dock-width-px); right: 0; top: 0;
+      height: var(--spacing-topbar-height-px);
+      background: var(--color-bg-elevated);
+      border-bottom: 1px solid var(--color-border);
+      display: flex; align-items: center; gap: 16px; padding: 0 16px;
+    }
+    .profile-chip {
+      font-size: 12px; padding: 4px 10px; border-radius: 999px;
+      border: 1px solid var(--color-accent-violet); color: var(--color-accent-violet);
+    }
+    .viewport {
+      position: absolute;
+      left: var(--spacing-dock-width-px); top: var(--spacing-topbar-height-px);
+      right: var(--spacing-inspector-width-px); bottom: 220px;
+      background: radial-gradient(circle at 50% 42%, #1a2332, var(--color-bg-primary));
+      border-right: 1px solid var(--color-border);
+    }
+    .viewport-grid {
+      position: absolute; inset: 0;
+      background-image:
+        linear-gradient(var(--color-viewport-grid) 1px, transparent 1px),
+        linear-gradient(90deg, var(--color-viewport-grid) 1px, transparent 1px);
+      background-size: 48px 48px; opacity: 0.35;
+    }
+    .agent-block {
+      position: absolute;
+      left: var(--spacing-dock-width-px); right: var(--spacing-inspector-width-px);
+      bottom: 180px;
+      display: flex; flex-direction: column;
+      background: rgba(22, 27, 34, 0.98);
+      border-top: 1px solid var(--color-border);
+    }
+    .agent-strip {
+      display: flex; align-items: center; gap: 12px; padding: 8px 16px;
+      font-size: 12px; min-height: 40px;
+    }
+    .agent-strip.is-failed .agent-status {
+      background: rgba(218, 54, 51, 0.2); color: var(--color-agent-error);
+      border-color: var(--color-agent-error);
+    }
+    .agent-status {
+      display: inline-flex; align-items: center; gap: 6px;
+      padding: 4px 10px; border-radius: 4px;
+      border: 1px solid var(--color-agent-error);
+      color: var(--color-agent-error);
+    }
+    .agent-cancel {
+      margin-left: auto; padding: 4px 12px; border-radius: 4px;
+      border: 1px solid var(--color-border); background: transparent;
+      color: var(--color-text-primary); cursor: pointer;
+    }
+    .agent-error-strip {
+      padding: 8px 16px 10px;
+      font-size: 11px;
+      background: rgba(218, 54, 51, 0.15);
+      color: var(--color-agent-error);
+      border-top: 1px solid var(--color-agent-error);
+    }
+    .agent-error-strip button {
+      margin-left: 12px; padding: 4px 10px; border-radius: 4px;
+      border: 1px solid var(--color-accent-cyan); background: transparent;
+      color: var(--color-accent-cyan); cursor: pointer;
+    }
+    .timeline {
+      position: absolute;
+      left: var(--spacing-dock-width-px); right: var(--spacing-inspector-width-px); bottom: 0;
+      height: 180px; background: var(--color-bg-elevated);
+      border-top: 1px solid var(--color-border); padding: 12px 16px;
+    }
+    .inspector {
+      position: absolute; right: 0; top: var(--spacing-topbar-height-px);
+      width: var(--spacing-inspector-width-px); bottom: 0;
+      background: var(--color-bg-elevated);
+      border-left: 1px solid var(--color-border); padding: 16px;
+      font-size: 13px;
+    }
+    .gpu-warn {
+      margin-top: 12px; padding: 10px; border-radius: 6px;
+      border: 1px solid var(--color-agent-error);
+      background: rgba(218, 54, 51, 0.1);
+      font-size: 12px;
+    }
+  </style>
+</head>
+<body>
+  <div class="mock-banner" role="note">MARKETING MOCK — HTML preview only; native Li Studio uses li-ui/li-gui</div>
+  <div class="shell">
+    <nav class="dock" aria-label="Tools">
+      <button type="button" title="Select" aria-label="Select">◇</button>
+    </nav>
+    <header class="topbar">
+      <strong>Li World Studio</strong>
+      <span class="profile-chip">Drug design</span>
+    </header>
+    <main class="viewport" aria-label="3D viewport">
+      <div class="viewport-grid" aria-hidden="true"></div>
+    </main>
+    <div class="agent-block" aria-label="Agent copilot">
+      <div class="agent-strip is-failed">
+        <span class="agent-status">Failed · GPU surface unavailable</span>
+        <button type="button" class="agent-cancel">Dismiss</button>
+      </div>
+      <div class="agent-error-strip" role="alert">
+        wgpu surface_ok=false — retry with software fallback or check drivers.
+        <button type="button">Retry render</button>
+        <button type="button">Report logs</button>
+      </div>
+    </div>
+    <section class="timeline" aria-label="Timeline">
+      <strong>Timeline</strong>
+      <p style="margin-top:8px;font-size:12px;color:var(--color-text-muted);">Playback paused — fix agent error to continue.</p>
+    </section>
+    <aside class="inspector" aria-label="Inspector">
+      <h2>Inspector</h2>
+      <div class="gpu-warn">
+        <strong>Render error</strong><br />
+        Viewport using bench simulate path; no native pixels this iteration.
+      </div>
+    </aside>
+  </div>
+</body>
+</html>

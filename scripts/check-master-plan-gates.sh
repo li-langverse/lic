@@ -55,6 +55,7 @@ chmod +x "$ROOT/scripts/check-doc-provability-claims.sh" \
   "$ROOT/li-tests/tooling/mir_vc_witness.sh" \
   "$ROOT/li-tests/tooling/diagnose_json_smoke.sh"
 "$ROOT/scripts/check-doc-provability-claims.sh"
+"$ROOT/scripts/check-mir-vectorized-decorator.sh"
 "$ROOT/scripts/check-li-toolchain.sh"
 "$ROOT/li-tests/tooling/li_new_package_smoke.sh"
 "$ROOT/li-tests/tooling/lip_lit_smoke.sh"
@@ -82,5 +83,11 @@ li_phase "tier-1 Li vs C++ (advisory; strict via LI_TIER1_PERF_STRICT=1)"
 chmod +x "$ROOT/scripts/check-tier1-li-vs-cpp.sh" "$ROOT/li-tests/tooling/tier1_li_vs_cpp.sh"
 export LI_TIER1_PERF_STRICT="${LI_TIER1_PERF_STRICT:-0}"
 "$ROOT/li-tests/tooling/tier1_li_vs_cpp.sh" || li_warn "tier-1 perf gaps — see benchmarks/results/latest.csv"
+
+
+li_phase "proof-db release gate (advisory; LI_PROOF_DB_STRICT=1 strict)"
+chmod +x "$ROOT/scripts/check-proof-db-release.sh"
+export LI_PROOF_DB_STRICT="${LI_PROOF_DB_STRICT:-0}"
+"$ROOT/scripts/check-proof-db-release.sh" || li_warn "proof-db release regressions"
 
 ok "lic monorepo v1 gates"

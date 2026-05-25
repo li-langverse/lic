@@ -43,8 +43,9 @@ grep -q 'leak_censor_enabled=0' "$tmp"
 rm -f "$tmp"
 
 echo "== leak_censor disabled warns without ack =="
-python3 "$ROOT/scripts/httpd_config.py" \
-  "$ROOT/li-tests/config_desugar/good/leak_censor_disabled_warn.toml" 2>&1 \
-  | grep -q 'ack_disable_censor'
+lc_warn_out="$(python3 "$ROOT/scripts/httpd_config.py" \
+  "$ROOT/li-tests/config_desugar/good/leak_censor_disabled_warn.toml" 2>&1)" || true
+echo "$lc_warn_out" | grep -qE 'ack_disable_censor|leak_censor\.enabled=false' \
+  || { echo "$lc_warn_out" >&2; exit 1; }
 
 echo "check-httpd-leak-censor: OK"

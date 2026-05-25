@@ -1,6 +1,6 @@
 # M1 agent gateway — proxy routes with global rate_limit_rps (maps to runtime token bucket)
 [server]
-listen = ":39221"
+listen = "127.0.0.1:39221"
 document_root = "./public"
 
 [limits]

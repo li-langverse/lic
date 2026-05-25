@@ -16,3 +16,11 @@ lean_lib AutoVC where
 lean_lib Discharge where
   roots := #[`Discharge]
   deps := #[`LiSemantics, `AutoVC]
+
+-- Proof-db registry (proof-db/index.json)
+lean_lib ProofDB where
+  srcDir := "../../proof-db/lean"
+  roots := #[`ProofDB]
+  deps := #[`LiSemantics]
+
+

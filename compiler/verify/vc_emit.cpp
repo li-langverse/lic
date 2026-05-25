@@ -17,6 +17,7 @@ bool write_vcs_json(const Module& module, const std::string& path, std::string* 
       << "  \"procs\": " << vc.proc_count << ",\n"
       << "  \"requires\": " << vc.requires_count << ",\n"
       << "  \"ensures\": " << vc.ensures_count << ",\n"
+      << "  \"prob_ensures\": " << vc.prob_ensures_count << ",\n"
       << "  \"decreases\": " << vc.decreases_count << ",\n"
       << "  \"invariant\": " << vc.invariant_count << ",\n"
       << "  \"ensures_witnessed\": " << vc.ensures_witnessed << ",\n"

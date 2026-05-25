@@ -1,30 +1,13 @@
-# RFC: li-gpu, LKIR, AMD ROCm parity (PH-HW)
+# RFC: li-gpu, LKIR (deprecated stub)
 
-**Status:** Draft  
-**Track:** PH-HW  
-**Vision:** [world-studio-vision.md](../world-studio-vision.md)
+**Status:** Redirect — use [lig-rfc.md](lig-rfc.md)
 
-## Proposal
+The **`li-gpu`** package and **`import gpu`** surface are renamed to **`lig`** (`import lig`) under PH-HW WP1.
 
-| Layer | Role |
-|-------|------|
-| **LKIR** | Li Kernel IR — tiled GPU kernels; map to CUDA, **HIP/ROCm**, Metal, SPIR-V |
-| **li-gpu** | `gpu.cuda`, `gpu.rocm`, `gpu.wgpu` backends |
-| **Triton interop** | Optional emit/import Triton-IR for autotune (PH-ML) |
+| Former doc | Canonical doc |
+|------------|----------------|
+| li-gpu-lkir-rfc.md (this file) | [lig-rfc.md](lig-rfc.md) |
+| `packages/li-gpu` | `packages/lig` (see `git mv` in lig-rfc.md) |
+| Kernel catalog (TBD) | [lig-kernel-catalog.md](../lig-kernel-catalog.md) |
 
-**No CUDA-only user kernels** — use LKIR or `gpu.*` APIs.
-
-```toml
-[engine.gpu]
-backend = "rocm"   # cuda | rocm | metal | webgpu
-```
-
-## ROCm
-
-- Probe `hipcc`, `ROCM_PATH`, `gfx*` arch  
-- CI smoke: HIP matmul vs CUDA reference  
-- Triton-distributed patterns for multi-GPU overlap (PH-ML)
-
-## Proof
-
-GPU bodies trusted until Lean device calculus; host launch preconditions proved.
+Do not add new content here; edit **lig-rfc.md** only.

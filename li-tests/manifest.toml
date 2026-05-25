@@ -214,6 +214,11 @@ outcome = "verify_ok"
 
 [[tests]]
 suite = "contracts_verify"
+file = "contracts_verify/bounds_refinement_release_ok.li"
+outcome = "verify_ok"
+
+[[tests]]
+suite = "contracts_verify"
 file = "contracts_verify/discharge_trivial.li"
 outcome = "prove_lean_ok"
 note = "P-closed: discharge_trivial_lean.sh"

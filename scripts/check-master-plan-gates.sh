@@ -46,6 +46,7 @@ chmod +x "$ROOT/scripts/check-doc-provability-claims.sh" \
   "$ROOT/li-tests/tooling/discharge_trivial_lean.sh" \
   "$ROOT/li-tests/tooling/discharge_const_lean.sh" \
   "$ROOT/li-tests/tooling/discharge_sqrt_contract_lean.sh" \
+  "$ROOT/li-tests/tooling/check_release_bounds_ir.sh" \
   "$ROOT/li-tests/tooling/contracts_discharge_corpus.sh" \
   "$ROOT/li-tests/tooling/contracts_verify_lean.sh" \
   "$ROOT/li-tests/tooling/mir_vc_witness.sh" \

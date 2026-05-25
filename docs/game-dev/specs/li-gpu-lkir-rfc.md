@@ -10,4 +10,4 @@ The **`li-gpu`** package and **`import gpu`** surface are renamed to **`lig`** (
 | `packages/li-gpu` | `packages/lig` (see `git mv` in lig-rfc.md) |
 | Kernel catalog (TBD) | [lig-kernel-catalog.md](../lig-kernel-catalog.md) |
 
-Do not add new content here; edit **lig-rfc.md** only.
+Do not add new content here; edit **lig-rfc.md** only. Li syntax policy (`def` only in new docs, no bare `proc`) lives in **lig-rfc.md** and the game-dev RFC index.

@@ -12,16 +12,16 @@ description: >-
 
 ## Before merge
 
-1. **`src/lib.li` exists** and exports the feature as small `proc`s (not only `main`).
+1. **`src/lib.li` exists** and exports the feature as small **`def`** APIs (not only `main`).
 2. **Lifecycle documented** in README: start, stop, ready (or domain equivalents).
 3. **`src/main.li`** (if present) only demos — imports `lib`, no business logic duplication.
-4. **Contracts** on every new/changed `proc` (`requires` / `ensures` / `decreases`).
+4. **Contracts** on every new/changed **`def`** and each **`extern proc`** (`requires` / `ensures` / `decreases`).
 5. **`li-tests` imports lib** — add or extend `li-tests/composable/` (or package `li-tests/`) with `verify_ok` / `compile_ok` that `import`s the module; do not rely on exec-only smoke.
 6. **No false ship claims** — stubs are fine; say “aspirational API” if P0 gates block real I/O.
 
 ## Review questions
 
-- Can another `proc main` in a different package `import` this module and call `serve` / `stop` without copy-paste?
+- Can another package `import` this module and call `serve` / `stop` from its own `def main` without copy-paste?
 - Is there an explicit handle (or config + result type) instead of a hidden global?
 - Would an agent find spawn/teardown from README + `lib.li` in one pass?
 

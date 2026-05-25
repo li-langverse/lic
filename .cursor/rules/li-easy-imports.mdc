@@ -38,7 +38,7 @@ Full table: `docs/language/import-style.md`
 
 1. Run `./scripts/li-new-package li-std-physics-foo --official`
 2. Add `import_name = "physics.foo"` under `[package.metadata.li]` (or run `scripts/apply-import-names.py`)
-3. Add `std/physics/foo.li` facade (tag proc or re-export)
+3. Add `std/physics/foo.li` facade (tag `def` export or re-export)
 4. Register in `packages/li.toml` workspace `members`
 
 ## Agents

@@ -69,6 +69,7 @@ bool compile_module(const Module& module, const std::string& output_path,
   const std::filesystem::path rt_httpd_path = resolve_runtime_c("li_rt_httpd.c");
   const std::filesystem::path rt_log_path = resolve_runtime_c("li_rt_log.c");
   const std::filesystem::path rt_net_path = resolve_runtime_c("li_rt_net.c");
+  const std::filesystem::path rt_lig_path = resolve_runtime_c("li_rt_lig.c");
 
   std::ostringstream cmd;
   const char* cc_env = std::getenv("CC");
@@ -82,6 +83,9 @@ bool compile_module(const Module& module, const std::string& output_path,
   }
   if (std::filesystem::exists(rt_net_path)) {
     cmd << " -x c \"" << rt_net_path.string() << "\"";
+  }
+  if (std::filesystem::exists(rt_lig_path)) {
+    cmd << " -x c \"" << rt_lig_path.string() << "\"";
   }
   cmd << " -o \"" << output_path << "\"";
   if (opts.release) {

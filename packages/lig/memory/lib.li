@@ -1,0 +1,66 @@
+# lig.memory — device/host budget ledger (PH-HW HW-3).
+
+type LigMemoryLedger = object
+  public budget_mib: int
+  public allocated_bytes: int
+  public peak_bytes: int
+
+def lig_memory_budget_mib() -> int
+  requires true
+  ensures result == 96
+  decreases 0
+=
+  return 96
+
+def lig_memory_budget_bytes(budget_mib: int) -> int
+  requires budget_mib > 0
+  ensures result == budget_mib * 1048576
+  decreases budget_mib
+=
+  return budget_mib * 1048576
+
+def lig_memory_ledger_new(budget_mib: int) -> LigMemoryLedger
+  requires budget_mib > 0
+  ensures result.budget_mib == budget_mib
+  ensures result.allocated_bytes == 0
+  ensures result.peak_bytes == 0
+  decreases budget_mib
+=
+  var l: LigMemoryLedger
+  l.budget_mib = budget_mib
+  l.allocated_bytes = 0
+  l.peak_bytes = 0
+  return l
+
+def lig_memory_tier_estimated_bytes(particles: int) -> int
+  requires particles > 0
+  ensures result == particles * 1024
+  decreases particles
+=
+  return particles * 1024
+
+def lig_alloc_within_budget(ledger: var LigMemoryLedger, bytes: int) -> int
+  requires bytes >= 0
+  requires ledger.budget_mib > 0
+  ensures result >= 0
+  ensures result <= 1
+  decreases bytes
+=
+  if bytes == 0:
+    return 1
+  var cap: int = lig_memory_budget_bytes(ledger.budget_mib)
+  if ledger.allocated_bytes + bytes > cap:
+    return 0
+  ledger.allocated_bytes = ledger.allocated_bytes + bytes
+  if ledger.allocated_bytes > ledger.peak_bytes:
+    ledger.peak_bytes = ledger.allocated_bytes
+  return 1
+
+def lig_memory_ledger_peak_mib(ledger: LigMemoryLedger) -> int
+  requires ledger.budget_mib > 0
+  ensures result >= 0
+  decreases ledger.peak_bytes
+=
+  if ledger.peak_bytes == 0:
+    return 0
+  return (ledger.peak_bytes + 1048575) / 1048576

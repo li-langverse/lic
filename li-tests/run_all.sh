@@ -94,11 +94,25 @@ li_autovc_path() {
   fi
 }
 
+li_lic_build() {
+  if ((${#build_dir_flag[@]} > 0)); then
+    "$LIC" build "${build_dir_flag[@]}" "$@"
+  else
+    "$LIC" build "$@"
+  fi
+}
+
 run_one() {
   local suite="$1" file="$2" outcome="$3" substr="${4:-}"
-  local -a build_dir_flag=("${MAX_MEMORY_FLAG[@]}")
+  local -a build_dir_flag=()
+  if ((${#MAX_MEMORY_FLAG[@]} > 0)); then
+    build_dir_flag=("${MAX_MEMORY_FLAG[@]}")
+  fi
   if [[ -n "${WORKER_BUILD_DIR:-}" ]]; then
-    build_dir_flag=(--build-dir="$WORKER_BUILD_DIR" "${MAX_MEMORY_FLAG[@]}")
+    build_dir_flag=(--build-dir="$WORKER_BUILD_DIR")
+    if ((${#MAX_MEMORY_FLAG[@]} > 0)); then
+      build_dir_flag+=("${MAX_MEMORY_FLAG[@]}")
+    fi
     mkdir -p "$WORKER_BUILD_DIR/generated"
   fi
 
@@ -131,7 +145,7 @@ run_one() {
       return 0
       ;;
     compile_ok|verify_ok)
-      if "$LIC" build "${build_dir_flag[@]}" "$path" -o "$NULL_OUT" 2>/dev/null; then
+      if li_lic_build "$path" -o "$NULL_OUT" 2>/dev/null; then
         li_test_pass "$outcome $file"
         return 0
       fi
@@ -142,16 +156,14 @@ run_one() {
       # G-test-verify: strict lic build + zero open AutoVC goals + lake AutoVC when installed.
       local autovc
       autovc="$(li_autovc_path "${WORKER_BUILD_DIR:-}")"
-      if ! "$LIC" build "${build_dir_flag[@]}" "$path" -o "$NULL_OUT" 2>/dev/null; then
+      if ! li_lic_build "$path" -o "$NULL_OUT" 2>/dev/null; then
         li_test_fail "prove_lean_ok $file (lic build)"
-        fail=$((fail + 1))
-        return
+        return 1
       fi
       chmod +x "$REPO/scripts/check-autovc-open-goals.sh"
       if ! "$REPO/scripts/check-autovc-open-goals.sh" "$autovc" 2>/dev/null; then
         li_test_fail "prove_lean_ok $file (open AutoVC goals)"
-        fail=$((fail + 1))
-        return
+        return 1
       fi
       if command -v lake >/dev/null 2>&1; then
         if [[ -z "${LI_PROVE_LEAN_LAKE_OK:-}" ]]; then
@@ -159,19 +171,17 @@ run_one() {
             export LI_PROVE_LEAN_LAKE_OK=1
           else
             li_test_fail "prove_lean_ok $file (lake build AutoVC)"
-            fail=$((fail + 1))
-            return
+            return 1
           fi
         fi
         li_test_pass "prove_lean_ok $file"
-        pass=$((pass + 1))
-      else
-        li_test_skip "prove_lean_ok $file (lake not installed)"
-        skip=$((skip + 1))
+        return 0
       fi
+      li_test_skip "prove_lean_ok $file (lake not installed)"
+      return 2
       ;;
     compile_open_ok)
-      if "$LIC" build "${build_dir_flag[@]}" --allow-open-vc "$path" -o "$NULL_OUT" 2>/dev/null; then
+      if li_lic_build --allow-open-vc "$path" -o "$NULL_OUT" 2>/dev/null; then
         li_test_pass "compile_open_ok $file"
         return 0
       fi
@@ -185,7 +195,7 @@ run_one() {
           open_flags+=(--no-lean-verify)
           ;;
       esac
-      if "$LIC" build "${build_dir_flag[@]}" "${open_flags[@]}" "$path" -o "$NULL_OUT" 2>/dev/null; then
+      if li_lic_build "${open_flags[@]}" "$path" -o "$NULL_OUT" 2>/dev/null; then
         li_test_pass "verify_open_ok $file"
         return 0
       fi
@@ -194,8 +204,8 @@ run_one() {
       ;;
     compile_fail|verify_fail)
       local err
-      err="$("$LIC" build "${build_dir_flag[@]}" "$path" -o "$NULL_OUT" 2>&1)" || true
-      if "$LIC" build "${build_dir_flag[@]}" "$path" -o "$NULL_OUT" 2>/dev/null; then
+      err="$(li_lic_build "$path" -o "$NULL_OUT" 2>&1)" || true
+      if li_lic_build "$path" -o "$NULL_OUT" 2>/dev/null; then
         li_test_fail "$outcome $file (should reject)"
         return 1
       fi
@@ -222,7 +232,6 @@ run_one_worker() {
   set +e
   run_one "$suite" "$file" "$outcome" "$substr" >"$log" 2>&1
   local rc=$?
-  set -e
   cat "$log"
   rm -f "$log"
   return "$rc"
@@ -273,18 +282,24 @@ run_sequential() {
 run_parallel() {
   local rows_file="$1" jobs="$2"
   local id=0
+  local -a pids=()
   while IFS=$'\t' read -r suite file outcome substr; do
     [[ -z "$suite" ]] && continue
     while [[ "$(jobs -pr | wc -l | tr -d ' ')" -ge "$jobs" ]]; do
       sleep 0.05
     done
     (
+      set +e
       run_one_worker "$id" "$suite" "$file" "$outcome" "$substr"
       echo $? >"$REPO/build/li-test-$id.rc"
     ) &
+    pids+=($!)
     id=$((id + 1))
   done <"$rows_file"
-  wait || true
+  local pid
+  for pid in "${pids[@]}"; do
+    wait "$pid" 2>/dev/null || true
+  done
   local i=0
   while [[ "$i" -lt "$id" ]]; do
     if [[ -f "$REPO/build/li-test-$i.rc" ]]; then

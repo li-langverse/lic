@@ -19,5 +19,5 @@
     "UX-14": { "score": 3, "note": "status=simulate + scene hook; HTML mocks not claimed as native MD draw." }
   },
   "honest_native_viewport": false,
-  "notes": "Shipped li-scene MD particle tiers and li-render scene viewport bridge. Bench particle_tiers now simulate via li-scene hook (was skip). UX-01/UX-13 improved vs studio-ux-03. SOTA agentic: Cursor agent overview, Linear keyboard density, Copilot error recovery."
+  "notes": "Re-verified 2026-05-25: gates/capture/bench green. li-scene MD tiers 1k/10k/100k @ 60/60/30 fps (simulate, native_pixels=false). li-render render_scene_md_particle_viewport bridges scene draw. SOTA: Godot viewport (UX-01), Cursor agent overview + Linear palette (UX-04/06), Copilot error recovery (UX-08)."
 }

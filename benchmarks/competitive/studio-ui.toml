@@ -24,8 +24,8 @@ gates = ["viewport_fps"]
 
 [[hook]]
 id = "wgpu_smoke"
-package = "li-gpu"
-path = "packages/li-gpu/bench/wgpu_smoke.toml"
+package = "lig"
+path = "packages/lig/bench/wgpu_smoke.toml"
 gates = []
 
 [[hook]]

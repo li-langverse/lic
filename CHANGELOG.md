@@ -8,6 +8,8 @@ All notable changes to Li are documented here. The format follows
 
 ### Added
 
+- **Proof database (v0):** `docs/verification/proof-database.md`, `proof-db/manifest.toml` + axioms/lemmas pins, `scripts/check-proof-db.sh` — [2026-05-25-proof-database-arch.md](docs/release-notes/2026-05-25-proof-database-arch.md).
+
 - **Proof-db CI release gate:** `proof-db/baseline.json`, `check-proof-db-release.sh` — docs/release-notes/2026-05-25-proof-db-ci-gate.md.
 
 ### Added

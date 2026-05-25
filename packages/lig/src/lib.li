@@ -167,6 +167,7 @@ def lig_wgpu_smoke_passed(smoke: LigWgpuSmoke) -> int
         return 1
   return 0
 
+
 extern proc li_rt_lig_kernel_run(kernel_id: int, backend_id: int) -> int
   requires kernel_id >= 1
   requires backend_id >= 1
@@ -174,21 +175,27 @@ extern proc li_rt_lig_kernel_run(kernel_id: int, backend_id: int) -> int
   ensures -1 <= result
   ensures result <= 4
   decreases kernel_id
+
 extern proc li_rt_lig_kernel_last_validity_ratio() -> float
   requires true
   ensures 0.0 <= result
   ensures result <= 1.0
   decreases 0
+
 def lig_kernel_matmul_f32() -> int
   requires true
   ensures result == 1
   decreases 0
-= return 1
+=
+  return 1
+
 def lig_kernel_md_force_short() -> int
   requires true
   ensures result == 2
   decreases 0
-= return 2
+=
+  return 2
+
 def lig_kernel_run(kernel_id: int, backend_id: int) raises IO -> int
   requires kernel_id >= 1
   requires backend_id >= 1
@@ -196,24 +203,32 @@ def lig_kernel_run(kernel_id: int, backend_id: int) raises IO -> int
   ensures -1 <= result
   ensures result <= 4
   decreases kernel_id
-= return li_rt_lig_kernel_run(kernel_id, backend_id)
+=
+  return li_rt_lig_kernel_run(kernel_id, backend_id)
+
 def lig_kernel_last_validity_ratio() raises IO -> float
   requires true
   ensures 0.0 <= result
   ensures result <= 1.0
   decreases 0
-= return li_rt_lig_kernel_last_validity_ratio()
+=
+  return li_rt_lig_kernel_last_validity_ratio()
+
 def lig_kernel_run_auto(kernel_id: int) raises IO -> int
   requires kernel_id >= 1
   ensures -1 <= result
   ensures result <= 4
   decreases kernel_id
-= return lig_kernel_run(kernel_id, lig_backend_select_auto())
+=
+  return lig_kernel_run(kernel_id, lig_backend_select_auto())
+
 def lig_validity_gate_pass(min_ratio: float) raises IO -> int
   requires 0.0 <= min_ratio
   requires min_ratio <= 1.0
   ensures result >= 0
   ensures result <= 1
   decreases 0
-= if lig_kernel_last_validity_ratio() + 0.0001 >= min_ratio: return 1
+=
+  if lig_kernel_last_validity_ratio() + 0.0001 >= min_ratio:
+    return 1
   return 0

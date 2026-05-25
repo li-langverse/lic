@@ -6,6 +6,17 @@ All notable changes to Li are documented here. The format follows
 
 ## [Unreleased]
 
+<<<<<<< Updated upstream
+=======
+### Added
+
+- **WP2 md_* tier2 fill:** 13 catalog `md_*` harness stubs from `md_lennard_jones` template, `bench.py` `TIER2_BENCHES` rows, runnable fixes for `three_body_pure` / `schrodinger_1d_barrier` / `ragdoll_chain` / `orbit_two_body` / `fdtd_waveguide_2d` — [2026-05-25-bench-fill-wp2-md.md](docs/release-notes/2026-05-25-bench-fill-wp2-md.md).
+
+### Changed
+
+- **CI platform (WP-C1–C5):** Linux jobs consume `ghcr.io/li-langverse/lic-ci:ubuntu24-llvm22`, `actions/cache@v4` on `build/`, reusable `package-ci.yml`, GHA layer cache on lic-ci image publish — [2026-05-25-ci-lic-cache-wp-c.md](docs/release-notes/2026-05-25-ci-lic-cache-wp-c.md).
+
+>>>>>>> Stashed changes
 ### Added
 
 - **Registry benchmark harness fill:** family-template dirs + `bench_registry.py` tier-7 CSV aliases for dashboard catalog — [2026-05-25-bench-harness-fill-registry.md](docs/release-notes/2026-05-25-bench-harness-fill-registry.md).

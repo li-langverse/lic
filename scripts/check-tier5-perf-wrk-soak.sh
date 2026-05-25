@@ -38,15 +38,24 @@ export PATH="$TIER5/.wrk-bin:$TIER5/.nginx-prefix/sbin:/usr/sbin:/usr/local/bin:
 
 echo "==> perf wrk soak (${DUR}s, HTTPD_BENCH_SKIP_TIMING=0) — parity + parity_streaming + nextjs"
 
+soak_settle() {
+  local sec="${HTTPD_BENCH_SETTLE_SEC:-3}"
+  if [[ "$sec" =~ ^[0-9]+$ ]] && [[ "$sec" -gt 0 ]]; then
+    sleep "$sec"
+  fi
+}
+
 echo "==> tier5 agent-gateway parity (m1-nginx-bench-parity)"
 HTTPD_BENCH_RPS_RATIO_MIN="${HTTPD_BENCH_PARITY_RPS_RATIO_MIN:-0.95}" \
   HTTPD_BENCH_TTFB_RATIO_MIN="${HTTPD_BENCH_PARITY_TTFB_RATIO_MIN:-0.85}" \
   "$ROOT/scripts/check-tier5-nginx-bench-parity.sh"
+soak_settle
 
 echo "==> tier5 streaming parity (parity_streaming)"
 HTTPD_BENCH_RPS_RATIO_MIN="${HTTPD_BENCH_STREAMING_RPS_RATIO_MIN:-0.85}" \
   HTTPD_BENCH_TTFB_RATIO_MIN="${HTTPD_BENCH_STREAMING_TTFB_RATIO_MIN:-0.85}" \
   "$ROOT/scripts/check-tier5-streaming-soak.sh"
+soak_settle
 
 echo "==> tier5 nextjs proxy parity (gap-nextjs-toy-bench; scenario bench.toml parity bars)"
 HTTPD_BENCH_RPS_RATIO_MIN="${HTTPD_BENCH_NEXTJS_RPS_RATIO_MIN:-0.80}" \

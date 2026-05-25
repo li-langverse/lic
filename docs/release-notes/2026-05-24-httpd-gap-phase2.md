@@ -11,7 +11,7 @@
 
 ## Gates
 
-- `check-tier5-perf-wrk-soak.sh` — `HTTPD_BENCH_SKIP_TIMING=0`, `HTTPD_BENCH_DURATION_SEC=30`, parity + `parity_streaming` + nextjs (documented `proxy_loopback` / `sse_verify` bars in scenario `bench.toml`)
+- `check-tier5-perf-wrk-soak.sh` — `HTTPD_BENCH_SKIP_TIMING=0`, `HTTPD_BENCH_DURATION_SEC=30`, parity + `parity_streaming` + nextjs (documented `proxy_loopback` / `sse_verify` bars in scenario `bench.toml`); `HTTPD_BENCH_SETTLE_SEC=3` between wrk phases; WS fanout uses `stream_ok_ratio` when `rps_handshake_bound`
 - `check-tier5-mitigation-exploits-complete.sh`
 - `check-tier5-exploit-nginx-regression.sh`
 - Phase-2 hooks run when `HTTPD_RUN_PHASE2_GATES=1` (set by `httpd-plan-loop.py` on `gap-phase2-*` todos).

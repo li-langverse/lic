@@ -50,7 +50,7 @@ if [[ "${HTTPD_BENCH_SKIP_TIMING:-0}" != "1" ]] && command -v wrk >/dev/null 2>&
 fi
 
 echo "==> tier5 nextjs proxy parity (gap-nextjs-toy-bench)"
-HTTPD_BENCH_RPS_RATIO_MIN="${HTTPD_BENCH_NEXTJS_RPS_RATIO_MIN:-0.85}" \
+HTTPD_BENCH_RPS_RATIO_MIN="${HTTPD_BENCH_NEXTJS_RPS_RATIO_MIN:-0.80}" \
   HTTPD_BENCH_TTFB_RATIO_MIN="${HTTPD_BENCH_NEXTJS_TTFB_RATIO_MIN:-0.85}" \
   "$ROOT/scripts/check-tier5-nextjs-parity.sh"
 

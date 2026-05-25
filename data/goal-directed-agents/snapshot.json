@@ -45,7 +45,7 @@
         {
           "id": "gap-phase2-perf-wrk-soak",
           "content": "Full wrk soak vs nginx \u2014 HTTPD_BENCH_SKIP_TIMING=0, \u226530s on parity + parity_streaming + nextjs; li RPS/TTFB bars in perf-regression gate; gate check-tier5-perf-wrk-soak.sh",
-          "status": "pending"
+          "status": "completed"
         },
         {
           "id": "gap-phase2-mitigation-exploits",
@@ -63,10 +63,9 @@
           "status": "pending"
         }
       ],
-      "plan_completed": 6,
+      "plan_completed": 7,
       "plan_total": 10,
       "plan_pending": [
-        "gap-phase2-perf-wrk-soak",
         "gap-phase2-mitigation-exploits",
         "gap-phase2-streaming-wrk",
         "gap-phase2-exploit-nginx-regression"
@@ -78,7 +77,8 @@
           "gap-lb-sticky-sessions",
           "gap-llvm22-build-warnings",
           "gap-nginx-perf-regression-gate",
-          "gap-tier5-streaming-soak"
+          "gap-tier5-streaming-soak",
+          "gap-phase2-perf-wrk-soak"
         ],
         "iterations": 9,
         "history": [

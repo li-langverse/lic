@@ -15,6 +15,11 @@ from urllib.parse import urlparse
 
 MAGIC = b"258EAFA5-E914-47DA-95CA-C5AB0DC85B11"
 
+# Per-request cap: soak window may be 30s+; do not tie read timeout to full window (starves workers).
+def _stream_request_timeout(duration_sec: int, *, events_min: int = 20, messages_min: int = 2) -> float:
+    need = max(events_min, messages_min) * 0.05 + 3.0
+    return min(float(duration_sec + 5), max(8.0, need))
+
 
 def _sse_once(host: str, port: int, path: str, *, events_min: int, timeout: float) -> tuple[bool, float]:
     conn = http.client.HTTPConnection(host, port, timeout=timeout)
@@ -59,10 +64,11 @@ def run_sse_soak(
     latencies: list[float] = []
     lock = threading.Lock()
 
+    req_timeout = _stream_request_timeout(duration_sec, events_min=events_min)
     def worker() -> None:
         nonlocal ok_count, total
         while time.time() < deadline:
-            ok, elapsed = _sse_once(host, port, path, events_min=events_min, timeout=float(duration_sec + 5))
+            ok, elapsed = _sse_once(host, port, path, events_min=events_min, timeout=req_timeout)
             with lock:
                 total += 1
                 if ok:
@@ -95,7 +101,10 @@ def _ws_handshake(host: str, port: int, path: str, *, frames_min: int, timeout: 
         "\r\n"
     ).encode()
     t0 = time.perf_counter()
-    conn = socket.create_connection((host, port), timeout=timeout)
+    try:
+        conn = socket.create_connection((host, port), timeout=timeout)
+    except OSError:
+        return False, time.perf_counter() - t0
     try:
         conn.sendall(req)
         data = b""
@@ -141,11 +150,12 @@ def run_ws_fanout(
     latencies: list[float] = []
     lock = threading.Lock()
 
+    req_timeout = _stream_request_timeout(duration_sec, messages_min=messages_min)
     def worker() -> None:
         nonlocal ok_count, total
         while time.time() < deadline:
             ok, elapsed = _ws_handshake(
-                host, port, path, frames_min=messages_min, timeout=float(duration_sec + 5)
+                host, port, path, frames_min=messages_min, timeout=req_timeout
             )
             with lock:
                 total += 1

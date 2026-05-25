@@ -16,7 +16,7 @@ NULL_OUT="/dev/null"
 case "$(uname -s)" in
   MINGW*|MSYS*|CYGWIN*) NULL_OUT="NUL" ;;
 esac
-FILTER="${1:-all}"
+FILTER="all"
 CI="${CI:-false}"
 TEST_JOBS="$(li_test_jobs)"
 MAX_MEMORY_FLAG=()
@@ -282,7 +282,7 @@ run_sequential() {
 run_parallel() {
   local rows_file="$1" jobs="$2"
   local id=0
-  local -a pids=()
+  pids=""
   while IFS=$'\t' read -r suite file outcome substr; do
     [[ -z "$suite" ]] && continue
     while [[ "$(jobs -pr | wc -l | tr -d ' ')" -ge "$jobs" ]]; do
@@ -293,11 +293,11 @@ run_parallel() {
       run_one_worker "$id" "$suite" "$file" "$outcome" "$substr"
       echo $? >"$REPO/build/li-test-$id.rc"
     ) &
-    pids+=($!)
+    pids="$pids $!"
     id=$((id + 1))
   done <"$rows_file"
-  local pid
-  for pid in "${pids[@]}"; do
+  for pid in $pids; do
+    [[ -n "$pid" ]] || continue
     wait "$pid" 2>/dev/null || true
   done
   local i=0

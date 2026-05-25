@@ -56,15 +56,23 @@ bool compile_module(const Module& module, const std::string& output_path,
     }
     return false;
   }
-  const std::string ll_path = unique_temp_ll_path();
+  std::string ll_path;
+  const char* emit_ll = std::getenv("LI_EMIT_LL");
+  if (emit_ll && emit_ll[0]) {
+    ll_path = emit_ll;
+  } else {
+    ll_path = unique_temp_ll_path();
+  }
 
-  if (!emit_llvm_ir(mir, ll_path, opts.runtime_threads, error)) {
+  if (!emit_llvm_ir(mir, ll_path, opts.runtime_team_size, error)) {
     return false;
   }
 
   if (is_null_output_path(output_path)) {
     maybe_keep_emit_ll(ll_path);
-    std::filesystem::remove(ll_path);
+    if (!emit_ll || !emit_ll[0]) {
+      std::filesystem::remove(ll_path);
+    }
     return true;
   }
 
@@ -72,7 +80,9 @@ bool compile_module(const Module& module, const std::string& output_path,
     if (error) {
       *error = "unsafe characters in output path";
     }
-    std::filesystem::remove(ll_path);
+    if (!emit_ll || !emit_ll[0]) {
+      std::filesystem::remove(ll_path);
+    }
     return false;
   }
 
@@ -155,7 +165,9 @@ bool compile_module(const Module& module, const std::string& output_path,
           if (error) {
             *error = "unsafe characters in LI_EXTRA_C path";
           }
-          std::filesystem::remove(ll_path);
+          if (!emit_ll || !emit_ll[0]) {
+            std::filesystem::remove(ll_path);
+          }
           return false;
         }
         cmd << " -x c \"" << path << "\"";
@@ -171,7 +183,9 @@ bool compile_module(const Module& module, const std::string& output_path,
 #endif
   const int rc = std::system(cmd.str().c_str());
   maybe_keep_emit_ll(ll_path);
-  std::filesystem::remove(ll_path);
+  if (!emit_ll || !emit_ll[0]) {
+    std::filesystem::remove(ll_path);
+  }
   if (rc != 0) {
     if (error) {
       *error = "clang link failed";

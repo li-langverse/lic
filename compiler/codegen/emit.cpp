@@ -119,7 +119,7 @@ struct EmitCtx {
   bool returns_i64 = false;
   bool returns_object = false;
   bool fp_numerically_stable = false;
-  int runtime_threads = 0;
+  int runtime_team_size = 0;
   bool enable_array_simd = true;
   std::vector<bool> array_simd_scope_stack;
   std::map<std::string, llvm::AllocaInst*> int_locals;
@@ -830,6 +830,7 @@ struct EmitCtx {
         builder->CreateStore(result, ensure_simd_f64x4(ins.ident));
         return true;
       }
+      // Vectorized codegen: LLVM <4 x double> lanes only — no li_parallel_for_i64.
       case MirOp::SimdHorizSumF64: {
         llvm::Value* vec = load_simd_f64x4(ins.lhs_ident);
         llvm::Value* sum = llvm::ConstantFP::get(llvm::Type::getDoubleTy(context), 0.0);
@@ -846,6 +847,8 @@ struct EmitCtx {
         return true;
       }
       case MirOp::OmpParallelFor: {
+        // `@parallel` / `parallel for` only — never emitted for `@vectorized` (SIMD uses
+        // llvm::VectorType + ArraySimdScope; MirDecorator.vectorized stays false here).
         llvm::Function* par_fn = module->getFunction(ins.callee);
         if (!par_fn) {
           return true;
@@ -862,7 +865,7 @@ struct EmitCtx {
             par_rt,
             {llvm::ConstantInt::get(i64_ty(context), ins.int_value),
              llvm::ConstantInt::get(i64_ty(context), ins.rhs_int), par_fn,
-             llvm::ConstantInt::get(i32_ty(context), runtime_threads)});
+             llvm::ConstantInt::get(i32_ty(context), runtime_team_size)});
         return true;
       }
       case MirOp::ArrayAlloc: {
@@ -1265,7 +1268,7 @@ struct EmitCtx {
 
 }  // namespace
 
-bool emit_llvm_ir(const MirModule& mir, const std::string& out_path, int runtime_threads,
+bool emit_llvm_ir(const MirModule& mir, const std::string& out_path, int runtime_team_size,
                   std::string* error) {
   llvm::LLVMContext context;
   auto module = std::make_unique<llvm::Module>("li", context);
@@ -1540,7 +1543,7 @@ bool emit_llvm_ir(const MirModule& mir, const std::string& out_path, int runtime
                 fn.returns_i64,
                 fn.returns_object,
                 mir.fp_numerically_stable,
-                runtime_threads,
+                runtime_team_size,
                 !fn.no_vectorize,
                 {},
                 {},

@@ -43,4 +43,11 @@ li_phase "codegen path injection"
 chmod +x "$ROOT/li-tests/security/codegen_path_injection.sh"
 "$ROOT/li-tests/security/codegen_path_injection.sh"
 
+li_phase "execution_exploits"
+"$ROOT/li-tests/run_all.sh" execution_exploits
+
+li_phase "check cache exploits"
+chmod +x "$ROOT/li-tests/cache_exploits/check_cache_exploits.sh"
+"$ROOT/li-tests/cache_exploits/check_cache_exploits.sh"
+
 li_gate_ok "security ($(uname -s 2>/dev/null || echo unknown))"

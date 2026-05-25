@@ -75,6 +75,12 @@ if [[ "$FILTER" == "hpc_competitive" ]]; then
   exit $?
 fi
 
+if [[ "$FILTER" == "execution_exploits" ]]; then
+  chmod +x "$ROOT/execution_exploits/run.sh"
+  "$ROOT/execution_exploits/run.sh"
+  exit $?
+fi
+
 if [[ ! -x "$LIC" ]]; then
   echo "li-tests: skip (lic not executable at $LIC)"
   exit 0
@@ -109,9 +115,10 @@ run_one() {
     build_dir_flag=("${MAX_MEMORY_FLAG[@]}")
   fi
   if [[ -n "${WORKER_BUILD_DIR:-}" ]]; then
-    build_dir_flag=(--build-dir="$WORKER_BUILD_DIR")
-    if ((${#MAX_MEMORY_FLAG[@]} > 0)); then
-      build_dir_flag+=("${MAX_MEMORY_FLAG[@]}")
+    if ((${#build_dir_flag[@]} > 0)); then
+      build_dir_flag=(--build-dir="$WORKER_BUILD_DIR" "${build_dir_flag[@]}")
+    else
+      build_dir_flag=(--build-dir="$WORKER_BUILD_DIR")
     fi
     mkdir -p "$WORKER_BUILD_DIR/generated"
   fi
@@ -247,6 +254,17 @@ run_one() {
       li_test_fail "verify_open_ok $file"
       return 1
       ;;
+    script_ok)
+      if [[ ! -x "$path" ]]; then
+        chmod +x "$path" 2>/dev/null || true
+      fi
+      if "$path"; then
+        li_test_pass "script_ok $file"
+        return 0
+      fi
+      li_test_fail "script_ok $file"
+      return 1
+      ;;
     compile_fail|verify_fail)
       local err
       err="$(li_lic_build "$path" -o "$NULL_OUT" 2>&1)" || true
@@ -360,6 +378,18 @@ run_parallel() {
     i=$((i + 1))
   done
 }
+
+if [[ "$FILTER" == "all" ]]; then
+  chmod +x "$ROOT/execution_exploits/run.sh"
+  set +e
+  "$ROOT/execution_exploits/run.sh"
+  rc_exec=$?
+  set -e
+  case "$rc_exec" in
+    0) pass=$((pass + 1)) ;;
+    *) fail=$((fail + 1)) ;;
+  esac
+fi
 
 ROWS="$(mktemp "${TMPDIR:-/tmp}/li-manifest-rows.XXXX")"
 collect_manifest_rows "$ROWS"

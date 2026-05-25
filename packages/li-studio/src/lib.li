@@ -15,6 +15,22 @@ extern proc li_rt_studio_parse_toml_profile_line(line: str) -> int
   ensures result >= 0
   decreases 0
 
+# UX-08 — viewport error mock (no wgpu surface probe; native host wires later).
+extern proc li_rt_studio_viewport_error_kind() -> int
+  requires true
+  ensures result >= 0
+  decreases 0
+
+extern proc li_rt_studio_viewport_error_set_mock(kind: int) -> int
+  requires kind >= 0
+  ensures result >= 0
+  decreases kind
+
+extern proc li_rt_studio_viewport_error_retry() -> int
+  requires true
+  ensures result >= 0
+  decreases 0
+
 def studio_profile_unknown() -> int
   requires true
   ensures result == 0
@@ -145,18 +161,18 @@ def studio_profile_paint_tag_h(profile_id: int) -> float
     return 27.0
   return 20.0
 
-def studio_profile_chip_rect_at(topbar: Rect, profile_id: int) -> Rect
-  requires topbar.w >= studio_profile_chip_width_px() + 16.0
-  requires topbar.h >= studio_profile_chip_height_px()
+def studio_profile_chip_rect_at(top_x: float, top_y: float, top_w: float, top_h: float, profile_id: int) -> Rect
+  requires top_w >= studio_profile_chip_width_px() + 16.0
+  requires top_h >= studio_profile_chip_height_px()
   requires studio_profile_id_valid(profile_id) == 1
   ensures result.w == studio_profile_chip_width_px()
   decreases profile_id
 =
-  var pid0: int = profile_id
-  var tag_h: float = studio_profile_paint_tag_h(pid0)
+  var pid_tag: int = profile_id
+  var tag_h: float = studio_profile_paint_tag_h(pid_tag)
   var pad: float = 12.0
-  var x: float = topbar.x + topbar.w - studio_profile_chip_width_px() - pad
-  var y: float = topbar.y + (topbar.h - studio_profile_chip_height_px()) / 2.0
+  var x: float = top_x + top_w - studio_profile_chip_width_px() - pad
+  var y: float = top_y + (top_h - studio_profile_chip_height_px()) / 2.0
   return rect_make(x, y, studio_profile_chip_width_px(), tag_h)
 
 def studio_profile_color(profile_id: int) -> Color
@@ -190,7 +206,12 @@ def studio_paint_topbar_profile(frame: var PaintFrame, topbar: Rect, profile_id:
   var pid_color: int = profile_id
   frame.cmd_count = frame.cmd_count + studio_paint_topbar_profile_cmds()
   frame.last_kind = paint_op_stroke_rect()
-  frame.last_rect = studio_profile_chip_rect_at(topbar, pid_chip)
+  var top_copy: Rect = topbar
+  var top_x: float = top_copy.x
+  var top_y: float = top_copy.y
+  var top_w: float = top_copy.w
+  var top_h: float = top_copy.h
+  frame.last_rect = studio_profile_chip_rect_at(top_x, top_y, top_w, top_h, pid_chip)
   frame.last_color = studio_profile_color(pid_color)
 
 
@@ -386,10 +407,10 @@ def studio_inspector_header_height_px() -> float
 
 def studio_inspector_field_rows() -> int
   requires true
-  ensures result == 4
+  ensures result == 5
   decreases 0
 =
-  return 4
+  return 5
 
 def studio_empty_hint_line_height_px() -> float
   requires true
@@ -432,6 +453,108 @@ def studio_viewport_empty_cta_width_px() -> float
   decreases 0
 =
   return 140.0
+
+def studio_viewport_error_none() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0
+
+def studio_err_gpu() -> int
+  requires true
+  ensures result == 1
+  decreases 0
+=
+  return 1
+
+def studio_err_missing_asset() -> int
+  requires true
+  ensures result == 2
+  decreases 0
+=
+  return 2
+
+def studio_viewport_error_message_height_px() -> float
+  requires true
+  ensures result == 48.0
+  decreases 0
+=
+  return 48.0
+
+def studio_viewport_error_retry_width_px() -> float
+  requires true
+  ensures result == 100.0
+  decreases 0
+=
+  return 100.0
+
+def studio_viewport_error_retry_height_px() -> float
+  requires true
+  ensures result == 32.0
+  decreases 0
+=
+  return 32.0
+
+def studio_viewport_error_kind() -> int
+  requires true
+  ensures result >= studio_viewport_error_none()
+  ensures result <= studio_err_missing_asset()
+  decreases 0
+=
+  return li_rt_studio_viewport_error_kind()
+
+def studio_viewport_error_set_mock(kind: int) -> int
+  requires kind >= studio_viewport_error_none()
+  requires kind <= studio_err_missing_asset()
+  ensures result == kind
+  decreases kind
+=
+  return li_rt_studio_viewport_error_set_mock(kind)
+
+def studio_viewport_error_retry() -> int
+  requires true
+  ensures result == studio_viewport_error_none()
+  ensures studio_viewport_error_kind() == studio_viewport_error_none()
+  decreases 0
+=
+  return li_rt_studio_viewport_error_retry()
+
+def studio_viewport_error_visible(error_kind: int) -> int
+  requires error_kind >= studio_viewport_error_none()
+  requires error_kind <= studio_err_missing_asset()
+  ensures result >= 0
+  ensures result <= 1
+  decreases error_kind
+=
+  if error_kind == studio_viewport_error_none():
+    return 0
+  return 1
+
+def studio_viewport_error_message_rect_at(vp_x: float, vp_y: float, vp_w: float, vp_h: float) -> Rect
+  requires vp_w >= studio_viewport_error_retry_width_px()
+  requires vp_h >= studio_viewport_error_message_height_px() + studio_viewport_error_retry_height_px() + 32.0
+  ensures result.w >= studio_viewport_error_retry_width_px()
+  ensures result.h == studio_viewport_error_message_height_px()
+  decreases 0
+=
+  var msg_w: float = studio_viewport_error_retry_width_px() + 120.0
+  if msg_w > vp_w - 32.0:
+    msg_w = vp_w - 32.0
+  var x: float = vp_x + (vp_w - msg_w) / 2.0
+  var y: float = vp_y + (vp_h * 0.40)
+  return rect_make(x, y, msg_w, studio_viewport_error_message_height_px())
+
+def studio_viewport_error_retry_rect_at(vp_x: float, vp_y: float, vp_w: float, vp_h: float) -> Rect
+  requires vp_w >= studio_viewport_error_retry_width_px()
+  requires vp_h >= studio_viewport_error_retry_height_px() + 32.0
+  ensures result.w == studio_viewport_error_retry_width_px()
+  ensures result.h == studio_viewport_error_retry_height_px()
+  decreases 0
+=
+  var x: float = vp_x + (vp_w - studio_viewport_error_retry_width_px()) / 2.0
+  var y: float = vp_y + (vp_h * 0.52)
+  return rect_make(x, y, studio_viewport_error_retry_width_px(), studio_viewport_error_retry_height_px())
 
 type StudioDockCompose = object
   public rect: Rect
@@ -479,6 +602,13 @@ type StudioViewportEmptyCompose = object
   public title_rect: Rect
   public cta_rect: Rect
 
+type StudioViewportErrorOverlay = object
+  public frame_rect: Rect
+  public error_kind: int
+  public visible: int
+  public message_rect: Rect
+  public retry_rect: Rect
+
 type StudioAgentProgress = object
   public step_index: int
   public step_total: int
@@ -510,6 +640,7 @@ type StudioShellCompose = object
   public timeline: StudioTimelineCompose
   public inspector: StudioInspectorCompose
   public viewport_empty: StudioViewportEmptyCompose
+  public viewport_error: StudioViewportErrorOverlay
   public agent: StudioAgentChromeCompose
   public palette: StudioCommandPaletteCompose
   public panel: GuiPanelState
@@ -658,6 +789,55 @@ def studio_compose_empty_viewport(layout: StudioShellLayout) -> StudioViewportEm
   out.title_rect = studio_viewport_empty_title_rect_at(layout.viewport.x, layout.viewport.y, layout.viewport.w, layout.viewport.h)
   out.cta_rect = studio_viewport_empty_cta_rect_at(layout.viewport.x, layout.viewport.y, layout.viewport.w, layout.viewport.h)
   return out
+
+
+def studio_compose_viewport_error_overlay(layout: StudioShellLayout, error_kind: int) -> StudioViewportErrorOverlay
+  requires layout.viewport.w > 0.0
+  requires layout.viewport.h > 0.0
+  requires error_kind >= studio_viewport_error_none()
+  requires error_kind <= studio_err_missing_asset()
+  ensures result.error_kind == error_kind
+  ensures result.visible == studio_viewport_error_visible(error_kind)
+  decreases error_kind
+=
+  var lay_copy: StudioShellLayout = layout
+  var vp: Rect = lay_copy.viewport
+  var vp_x0: float = vp.x
+  var vp_y0: float = vp.y
+  var vp_w0: float = vp.w
+  var vp_h0: float = vp.h
+  var vp_x1: float = vp.x
+  var vp_y1: float = vp.y
+  var vp_w1: float = vp.w
+  var vp_h1: float = vp.h
+  var out: StudioViewportErrorOverlay
+  out.frame_rect = vp
+  out.error_kind = error_kind
+  out.visible = studio_viewport_error_visible(error_kind)
+  out.message_rect = rect_make(0.0, 0.0, 0.0, 0.0)
+  out.retry_rect = rect_make(0.0, 0.0, 0.0, 0.0)
+  if out.visible == 1:
+    out.message_rect = studio_viewport_error_message_rect_at(vp_x0, vp_y0, vp_w0, vp_h0)
+    out.retry_rect = studio_viewport_error_retry_rect_at(vp_x1, vp_y1, vp_w1, vp_h1)
+  return out
+
+def studio_viewport_error_ok(overlay: StudioViewportErrorOverlay) -> int
+  requires true
+  ensures result >= 0
+  ensures result <= 1
+  decreases 0
+=
+  if overlay.visible == 0:
+    if overlay.error_kind != studio_viewport_error_none():
+      return 0
+    return 1
+  if overlay.error_kind == studio_viewport_error_none():
+    return 0
+  if overlay.message_rect.h != studio_viewport_error_message_height_px():
+    return 0
+  if overlay.retry_rect.w != studio_viewport_error_retry_width_px():
+    return 0
+  return 1
 
 def studio_dock_slot_offset_y(slot: int) -> float
   requires slot >= 0
@@ -1179,6 +1359,7 @@ def studio_compose_shell_profile(w: float, h: float, active_dock_slot: int, has_
   out.viewport_empty.empty_visible = 1
   out.viewport_empty.title_rect = studio_viewport_empty_title_rect_at(layout.viewport.x, layout.viewport.y, layout.viewport.w, layout.viewport.h)
   out.viewport_empty.cta_rect = studio_viewport_empty_cta_rect_at(layout.viewport.x, layout.viewport.y, layout.viewport.w, layout.viewport.h)
+  out.viewport_error = studio_compose_viewport_error_overlay(layout, studio_viewport_error_kind())
   out.agent = studio_compose_agent_chrome(layout, studio_agent_task_idle(), studio_agent_context_none())
   out.palette = studio_compose_palette(layout.viewport_w, layout.viewport_h, studio_palette_closed_flag())
   out.panel = gui_panel_state_new()
@@ -1243,6 +1424,7 @@ def studio_compose_shell(w: float, h: float, active_dock_slot: int, has_selectio
     out.viewport_empty.empty_visible = 0
     out.viewport_empty.title_rect = rect_make(0.0, 0.0, 0.0, 0.0)
     out.viewport_empty.cta_rect = rect_make(0.0, 0.0, 0.0, 0.0)
+  out.viewport_error = studio_compose_viewport_error_overlay(out.layout, studio_viewport_error_kind())
   out.agent = studio_compose_agent_chrome(out.layout, studio_agent_task_idle(), studio_agent_context_none())
   out.palette = studio_compose_palette(out.layout.viewport_w, out.layout.viewport_h, studio_palette_closed_flag())
   out.panel = gui_panel_state_new()
@@ -1347,10 +1529,10 @@ def studio_paint_timeline_cmds() -> int
 
 def studio_paint_inspector_empty_cmds() -> int
   requires true
-  ensures result == 4
+  ensures result == 5
   decreases 0
 =
-  return 4
+  return 5
 
 def studio_paint_inspector_selected_cmds() -> int
   requires true
@@ -1369,6 +1551,45 @@ def studio_paint_inspector_cmds(has_selection: int) -> int
   if has_selection == 0:
     return studio_paint_inspector_empty_cmds()
   return studio_paint_inspector_selected_cmds()
+
+def studio_paint_viewport_error_cmds() -> int
+  requires true
+  ensures result == 2
+  decreases 0
+=
+  return 2
+
+def studio_paint_viewport_error(frame: var PaintFrame, overlay: StudioViewportErrorOverlay) -> unit
+  requires frame.cmd_count >= 0
+  requires overlay.visible == 1
+  ensures frame.cmd_count == old(frame.cmd_count) + studio_paint_viewport_error_cmds()
+  ensures frame.last_kind == paint_op_stroke_rect()
+  decreases overlay.error_kind
+=
+  frame.cmd_count = frame.cmd_count + studio_paint_viewport_error_cmds()
+  frame.last_kind = paint_op_stroke_rect()
+  frame.last_rect = overlay.message_rect
+  frame.last_color = studio_color_agent_error()
+  frame.last_kind = paint_op_stroke_rect()
+  frame.last_rect = overlay.retry_rect
+  frame.last_color = studio_color_accent_cyan()
+
+def studio_paint_viewport_empty(frame: var PaintFrame, viewport_empty: StudioViewportEmptyCompose) -> unit
+  requires frame.cmd_count >= 0
+  requires viewport_empty.empty_visible == 1
+  ensures frame.cmd_count == old(frame.cmd_count) + studio_paint_viewport_empty_cmds()
+  decreases 0
+=
+  frame.cmd_count = frame.cmd_count + studio_paint_viewport_empty_cmds()
+  frame.last_kind = paint_op_stroke_rect()
+  frame.last_rect = viewport_empty.frame_rect
+  frame.last_color = studio_color_border()
+  frame.last_kind = paint_op_fill_rect()
+  frame.last_rect = viewport_empty.title_rect
+  frame.last_color = studio_color_border()
+  frame.last_kind = paint_op_stroke_rect()
+  frame.last_rect = viewport_empty.cta_rect
+  frame.last_color = studio_color_border()
 
 def studio_paint_viewport_empty_cmds() -> int
   requires true
@@ -1522,7 +1743,7 @@ def studio_shell_chrome_count(has_selection: int, scene_entity_count: int, task_
   var sel_ctx: int = has_selection
   var scene0: int = scene_entity_count
   var ts0: int = task_state
-  return studio_shell_chrome_count_palette(sel_palette, scene0, ts0, studio_palette_closed_flag(), studio_agent_context_for_shell(sel_ctx, ts0))
+  return studio_shell_chrome_count_palette(sel_palette, scene0, ts0, studio_palette_closed_flag(), studio_agent_context_for_shell(sel_ctx, ts0), studio_viewport_error_none())
 
 def studio_shell_chrome_count_palette(has_selection: int, scene_entity_count: int, task_state: int, palette_open: int, agent_context_label: int, viewport_error_kind: int) -> int
   requires has_selection >= 0
@@ -1545,23 +1766,6 @@ def studio_shell_chrome_count_palette(has_selection: int, scene_entity_count: in
   var pal0: int = palette_open
   var ctx0: int = agent_context_label
   return studio_paint_compose_panels_count(sel0) + 1 + studio_paint_topbar_profile_cmds() + studio_shell_viewport_cmds(scene0, viewport_error_kind) + studio_paint_agent_cmds(ts0, ctx0) + studio_paint_palette_cmds(pal0)
-
-def studio_paint_viewport_empty(frame: var PaintFrame, viewport_empty: StudioViewportEmptyCompose) -> unit
-  requires frame.cmd_count >= 0
-  requires viewport_empty.empty_visible == 1
-  ensures frame.cmd_count == old(frame.cmd_count) + studio_paint_viewport_empty_cmds()
-  decreases 0
-=
-  frame.cmd_count = frame.cmd_count + studio_paint_viewport_empty_cmds()
-  frame.last_kind = paint_op_stroke_rect()
-  frame.last_rect = viewport_empty.frame_rect
-  frame.last_color = studio_color_border()
-  frame.last_kind = paint_op_fill_rect()
-  frame.last_rect = viewport_empty.title_rect
-  frame.last_color = studio_color_border()
-  frame.last_kind = paint_op_stroke_rect()
-  frame.last_rect = viewport_empty.cta_rect
-  frame.last_color = studio_color_border()
 
 
 def studio_paint_shell_chrome(frame: var PaintFrame, compose: StudioShellCompose) -> unit

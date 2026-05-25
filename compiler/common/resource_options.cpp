@@ -9,6 +9,7 @@ namespace {
 ResourceOptions g_opts;
 bool g_env_warned = false;
 bool g_threads_cores_warned = false;
+bool g_invalid = false;
 
 void warn_deprecated_env_once(const char* var, const char* flag) {
   if (g_env_warned) {
@@ -34,11 +35,15 @@ void warn_threads_over_cores_once() {
   std::cerr << "lic: warning: --threads= wins over --cores/--threads-per-core= when both are set\n";
 }
 
-unsigned parse_positive(const char* s) {
+int parse_int(const char* s) {
   if (s == nullptr || *s == '\0') {
     return 0;
   }
-  const int n = std::atoi(s);
+  return std::atoi(s);
+}
+
+unsigned parse_positive(const char* s) {
+  const int n = parse_int(s);
   return n > 0 ? static_cast<unsigned>(n) : 0u;
 }
 
@@ -55,7 +60,12 @@ void reset_resource_options() {
   g_opts = ResourceOptions{};
   g_env_warned = false;
   g_threads_cores_warned = false;
+  g_invalid = false;
 }
+
+bool resource_options_invalid() { return g_invalid; }
+
+void clear_resource_options_invalid() { g_invalid = false; }
 
 unsigned ResourceOptions::effective_jobs(unsigned default_per_job_mb) const {
   unsigned j = jobs > 0 ? jobs : 1u;
@@ -109,21 +119,36 @@ bool apply_resource_flag(std::string_view arg, ResourceOptions& out) {
     return true;
   }
   if (arg.rfind("--threads-per-core=", 0) == 0) {
-    out.threads_per_core = parse_positive(arg.substr(19).data());
-    if (out.threads_per_core == 0) {
-      out.threads_per_core = 1;
+    const int raw = parse_int(arg.substr(19).data());
+    if (raw <= 0) {
+      std::cerr << "lic: error: --threads-per-core must be a positive integer\n";
+      g_invalid = true;
+      return true;
     }
+    out.threads_per_core = static_cast<unsigned>(raw);
     out.threads_per_core_from_flag = true;
     return true;
   }
   if (arg.rfind("--cores=", 0) == 0) {
-    out.cores = parse_positive(arg.substr(8).data());
-    out.cores_from_flag = out.cores > 0;
+    const int raw = parse_int(arg.substr(8).data());
+    if (raw <= 0) {
+      std::cerr << "lic: error: --cores must be a positive integer\n";
+      g_invalid = true;
+      return true;
+    }
+    out.cores = static_cast<unsigned>(raw);
+    out.cores_from_flag = true;
     return true;
   }
   if (arg.rfind("--threads=", 0) == 0) {
-    out.threads = parse_positive(arg.substr(10).data());
-    out.threads_from_flag = out.threads > 0;
+    const int raw = parse_int(arg.substr(10).data());
+    if (raw <= 0) {
+      std::cerr << "lic: error: --threads must be a positive integer\n";
+      g_invalid = true;
+      return true;
+    }
+    out.threads = static_cast<unsigned>(raw);
+    out.threads_from_flag = true;
     return true;
   }
   return false;

@@ -841,7 +841,7 @@ note = "import gui: UX-09 keyboard-first Escape/Cmd+K/1-5 region focus"
 [[tests]]
 suite = "composable"
 file = "composable/import_render_wgpu_fps.li"
-packages = ["li-render", "li-gpu", "li-gui", "li-ui"]
+packages = ["li-render", "lig", "li-gui", "li-ui"]
 outcome = "compile_open_ok"
 note = "import render: wgpu smoke + FPS counter bench hook (PH-UX-03)"
 

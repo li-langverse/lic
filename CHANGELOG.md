@@ -8,6 +8,15 @@ All notable changes to Li are documented here. The format follows
 
 ### Added
 
+- **Master plan vertical gates:** `docs/verification/GAP_CLOSURE_QUEUE.md`, `scripts/check-master-plan-vertical-gates.sh`, open-issue ↔ queue map, gate script dedupe — [2026-05-25-master-plan-gates-verticals.md](docs/release-notes/2026-05-25-master-plan-gates-verticals.md).
+
+### Fixed
+
+- **CI:** declare `resource_options_invalid()` for `lic check --cores` / `--threads` validation (fixes main build after execution-resources merge).
+- **Manifest:** `import_render_wgpu_fps.li` package list `li-gpu` → `lig` (PH-UX vertical #1 bench alignment).
+
+### Added
+
 - **PH-DB master plan cross-link:** phase map row + `ph-db-lidb-platform.md` appendix; **PH-8d-v2 → PH-DB-4** — [2026-05-25-ph-db-master-plan-crosslink.md](docs/release-notes/2026-05-25-ph-db-master-plan-crosslink.md).
 - **Studio UX Wave 2 P2 (HTML mocks 16–18):** command palette, reel motion, end CTA scenes — [2026-05-25-studio-ux-wave2-16-18.md](docs/release-notes/2026-05-25-studio-ux-wave2-16-18.md).
 - **Studio UX Wave 2 P1 (HTML mocks):** outliner panel, consolidated viewport error strip, dock labels — [2026-05-25-studio-ux-wave2-p1-mocks.md](docs/release-notes/2026-05-25-studio-ux-wave2-p1-mocks.md).

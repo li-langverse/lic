@@ -58,9 +58,9 @@ chmod +x "$ROOT/scripts/check-doc-provability-claims.sh" \
   "$ROOT/li-tests/tooling/contracts_discharge_corpus.sh" \
   "$ROOT/li-tests/tooling/contracts_verify_lean.sh" \
   "$ROOT/li-tests/tooling/mir_vc_witness.sh" \
-  "$ROOT/li-tests/tooling/diagnose_json_smoke.sh"
+  "$ROOT/li-tests/tooling/diagnose_json_smoke.sh" \
+  "$ROOT/scripts/check-master-plan-vertical-gates.sh"
 "$ROOT/scripts/check-doc-provability-claims.sh"
-"$ROOT/scripts/check-mir-parallel-decorator.sh"
 "$ROOT/scripts/check-mir-vectorized-decorator.sh"
 "$ROOT/scripts/check-li-toolchain.sh"
 "$ROOT/li-tests/tooling/li_new_package_smoke.sh"
@@ -70,6 +70,9 @@ chmod +x "$ROOT/scripts/check-doc-provability-claims.sh" \
 "$ROOT/li-tests/tooling/discharge_sqrt_contract_lean.sh"
 "$ROOT/li-tests/tooling/contracts_discharge_corpus.sh"
 "$ROOT/li-tests/tooling/diagnose_json_smoke.sh"
+
+li_phase "PH-HW / Studio / MCP vertical gates"
+"$ROOT/scripts/check-master-plan-vertical-gates.sh" || fail "vertical gates"
 
 li_phase "hpc competitive registry (optional advisory)"
 chmod +x "$ROOT/li-tests/tooling/hpc_competitive_registry.sh"

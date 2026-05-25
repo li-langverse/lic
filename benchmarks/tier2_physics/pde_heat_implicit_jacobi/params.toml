@@ -1,0 +1,5 @@
+# WP3 harness: pde_heat_implicit_jacobi
+nx = 64
+ny = 64
+steps = 12_000
+jacobi_iters = 6

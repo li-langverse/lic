@@ -32,7 +32,8 @@ Stable kernel IDs use the prefix **`lig.kernel.`**. Agents add rows here **and**
 | `lig.kernel.memcpy_h2d_f32` | mem | `dst.len == src.len` | `lkir/memcpy.lkir` | `memcpy_h2d` |
 | `lig.kernel.memcpy_d2h_f32` | mem | same | `lkir/memcpy.lkir` | `memcpy_d2h` |
 | `lig.kernel.quat_rotate_vec3` | graphics | unit quaternion | `lkir/quat_rotate.lkir` | stub |
-| `lig.kernel.present_blit_rgba8` | present | surface valid | `lkir/blit.lkir` | stub |
+| `lig.kernel.present_blit_rgba8` | present | surface valid | `lkir/blit.lkir` | stub (phase A #288) |
+| `lig.kernel.present_wgpu_readback_rgba8` | present | `LIG_WGPU_READBACK=1` | `lkir/readback.lkir` | stub; wgpu-rs N/A |
 
 ## Launch API (WP2)
 

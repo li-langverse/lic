@@ -1,0 +1,7 @@
+; lig.kernel.present_wgpu_readback_rgba8 — stub LKIR (runtime li_rt_lig_wgpu_readback_rgba8).
+kernel present_wgpu_readback_rgba8 {
+  surface_valid: bool
+  viewport_w: i32
+  viewport_h: i32
+  swapchain_ok: bool
+}

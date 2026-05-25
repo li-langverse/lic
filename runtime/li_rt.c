@@ -491,14 +491,32 @@ int32_t li_rt_studio_demo_profile_from_env(void) {
 }
 
 /* PH-HW HW-1 — lig.present trusted edge (SDL host; wgpu-rs readback not in-tree). */
+#define LI_RT_LIG_PIXEL_SOURCE_NONE 0
+#define LI_RT_LIG_PIXEL_SOURCE_HOST_CPU 1
+#define LI_RT_LIG_PIXEL_SOURCE_PAINT_BLIT 2
+#define LI_RT_LIG_PIXEL_SOURCE_WGPU_READBACK 3
+
 static int32_t g_lig_host_present_active = 0;
 static int32_t g_lig_native_pixels = 0;
+static int32_t g_lig_native_pixel_source = LI_RT_LIG_PIXEL_SOURCE_NONE;
 static float g_lig_present_dt_ms = 16.667f;
 static int32_t g_lig_surface_ok = 0;
 
 static int32_t li_rt_lig_env_host_present(void) {
   const char* v = getenv("LIG_HOST_PRESENT");
   return (v != NULL && v[0] == '1' && v[1] == '\0') ? 1 : 0;
+}
+
+/* Phase B scaffold: default off (unset or `0`); `1` opts in when wgpu-rs lands. */
+static int32_t li_rt_lig_env_wgpu_readback(void) {
+  const char* v = getenv("LIG_WGPU_READBACK");
+  if (v == NULL || v[0] == '\0') {
+    return 0;
+  }
+  if (v[0] == '0' && v[1] == '\0') {
+    return 0;
+  }
+  return (v[0] == '1' && v[1] == '\0') ? 1 : 0;
 }
 
 static void li_rt_lig_refresh_host_active(void) {
@@ -526,6 +544,7 @@ static int32_t li_rt_lig_try_sdl_present_host(int32_t viewport_w, int32_t viewpo
     return 0;
   }
   g_lig_native_pixels = 1;
+  g_lig_native_pixel_source = LI_RT_LIG_PIXEL_SOURCE_HOST_CPU;
   g_lig_surface_ok = 1;
   g_lig_present_dt_ms = 16.667f;
   return 1;
@@ -550,6 +569,27 @@ int32_t li_rt_lig_host_native_pixels(void) {
     return 0;
   }
   return g_lig_native_pixels;
+}
+
+int32_t li_rt_lig_host_native_pixel_source(void) {
+  li_rt_lig_refresh_host_active();
+  if (!g_lig_host_present_active) {
+    return LI_RT_LIG_PIXEL_SOURCE_NONE;
+  }
+  return g_lig_native_pixel_source;
+}
+
+int32_t li_rt_lig_wgpu_readback_rgba8(int32_t viewport_w, int32_t viewport_h, int32_t swapchain_ok) {
+  li_rt_lig_refresh_host_active();
+  if (!li_rt_lig_env_wgpu_readback()) {
+    return 0;
+  }
+  if (!swapchain_ok || viewport_w <= 0 || viewport_h <= 0) {
+    return 0;
+  }
+  /* native_pixel_source=3 path — wgpu-rs crate not in-tree; honest no-op until phase B+1. */
+  (void)g_lig_surface_ok;
+  return 0;
 }
 
 int32_t li_rt_lig_wgpu_swapchain_create(int32_t viewport_w, int32_t viewport_h) {

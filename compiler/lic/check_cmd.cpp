@@ -228,16 +228,10 @@ int lic_check_main(int argc, char** argv, const char* lic_executable) {
 
   if (has_workspace) {
     finalize_resource_options(resource_options());
-    if (resource_options_invalid()) {
-      return 1;
-    }
     return lic_workspace_check_main(argc, argv, lic_executable, opts.cache);
   }
 
   finalize_resource_options(resource_options());
-  if (resource_options_invalid()) {
-    return 1;
-  }
 
   if (path == nullptr) {
     std::cerr << "usage: lic check <file> | --workspace[=li.toml] ...\n";

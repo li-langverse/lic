@@ -6,6 +6,10 @@ All notable changes to Li are documented here. The format follows
 
 ## [Unreleased]
 
+### Added
+
+- **Vision-LLM (partial):** `agent-manifest.json` `suites` index; stricter `diagnose_json_smoke.sh` envelope checks — `docs/release-notes/2026-05-25-vision-llm-diag-manifest.md`.
+
 ### Changed
 
 - **Plan checkboxes (wave):** sync `docs/superpowers/plans/*.md` exit gates with shipped Phases 0–5, Pkg, P-linalg loop witness, and C++ compiler evidence — [2026-05-25-plan-checkbox-audit-wave.md](docs/release-notes/2026-05-25-plan-checkbox-audit-wave.md).

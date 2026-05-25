@@ -29,9 +29,59 @@ typedef struct {
   LiPathKind path_kind;
   char action[LI_HTTPD_ACTION_MAX];
   char headers[LI_HTTPD_HEADERS_MAX]; /* space-separated key=value (lowercase keys) */
+  int32_t require_traceparent;        /* M1.5 OTel — route extra require=traceparent */
+  int32_t require_websocket;          /* M2 — route extra require=websocket */
   int32_t priority;
   int32_t route_id; /* 1-based id after load */
 } LiHttpdRoute;
+
+/* M1.5 oracle / validate-config state (set when [limits] stream keys present). */
+static int32_t g_m15_stream_idle_sec = 0;
+static int32_t g_m15_stream_max_sec = 0;
+static int32_t g_m15_concurrent_streams = 0;
+
+/* M1.5 leak_censor oracle state ([leak_censor] in TOML). */
+static int32_t g_leak_censor_enabled = 0;
+static int32_t g_leak_censor_deny_path_count = 0;
+static int32_t g_leak_censor_pattern_openai = 0;
+static int32_t g_leak_censor_pattern_jwt = 0;
+static int32_t g_leak_censor_pattern_pem = 0;
+
+/* M1.5 TLS auto oracle ([server.tls] in TOML). */
+static int32_t g_tls_enabled = 0;
+static int32_t g_tls_mode = 0; /* 1=manual 2=self_signed 3=lets_encrypt */
+static int32_t g_tls_le_domain_count = 0;
+static int32_t g_tls_renew_before_days = 30;
+static int32_t g_tls_self_signed_dev = 0;
+static char g_tls_le_email[128];
+
+/* M2 scale oracle ([server.http2], [route.queue], [circuit_breaker], [webhooks]). */
+static int32_t g_m2_enabled = 0;
+static int32_t g_m2_tls_terminate = 0;
+static int32_t g_m2_http2_enabled = 0;
+static int32_t g_m2_http2_max_streams = 0;
+static int32_t g_m2_queue_max_depth = 0;
+static int32_t g_m2_queue_max_wait_sec = 0;
+static int32_t g_m2_queue_retry_after_sec = 1;
+static int32_t g_m2_cb_error_threshold = 0;
+static int32_t g_m2_cb_window_sec = 0;
+static int32_t g_m2_cb_open_duration_sec = 0;
+static int32_t g_m2_cb_half_open_probes = 0;
+static int32_t g_m2_webhook_allow_count = 0;
+static char g_m2_webhook_allow[8][256];
+
+/* M3 optional — L4 stream config + token-budget hooks (RFC; relay deferred). */
+static int32_t g_m3_enabled = 0;
+static int32_t g_m3_l4_enabled = 0;
+static int32_t g_m3_l4_listen_port = 0;
+static int32_t g_m3_l4_upstream_port = 0;
+static int32_t g_m3_l4_max_connections = 0;
+static char g_m3_l4_listen_host[128];
+static char g_m3_l4_upstream_host[128];
+static int32_t g_m3_token_budget_enabled = 0;
+static int32_t g_m3_token_budget_max = 0;
+static int32_t g_m3_token_budget_reject_over = 1;
+static char g_m3_token_budget_header[64] = "x-token-budget";
 
 static LiHttpdRoute g_routes[LI_HTTPD_MAX_ROUTES];
 static int32_t g_route_count = 0;
@@ -247,6 +297,18 @@ static int parse_route_extras(const char* extras, LiHttpdRoute* out) {
       httpd_set_error(2, "invalid route extra: expected key=value");
       return -1;
     }
+    if (strcmp(key, "require") == 0) {
+      if (strcmp(val, "traceparent") == 0) {
+        out->require_traceparent = 1;
+        continue;
+      }
+      if (strcmp(val, "websocket") == 0) {
+        out->require_websocket = 1;
+        continue;
+      }
+      httpd_set_error(2, "unsupported require= value (allowed: traceparent, websocket)");
+      return -1;
+    }
     if (validate_ingress_header_name(key) != 0) {
       return -1;
     }
@@ -368,6 +430,735 @@ static void trim_line(char* line) {
 }
 
 /* M1: proxy routes require global limits.rate_limit_rps (agent gateway policy). */
+static int parse_duration_sec_value(const char* raw, int* out_sec) {
+  if (raw == NULL || out_sec == NULL) {
+    return -1;
+  }
+  while (*raw && isspace((unsigned char)*raw)) {
+    raw++;
+  }
+  if (*raw == '"') {
+    raw++;
+  }
+  char* end = NULL;
+  long n = strtol(raw, &end, 10);
+  if (n < 1 || n > 86400) {
+    return -1;
+  }
+  if (end && (*end == 's' || *end == 'S')) {
+    end++;
+  }
+  while (end && *end && isspace((unsigned char)*end)) {
+    end++;
+  }
+  if (end && *end == '"') {
+    end++;
+  }
+  while (end && *end && isspace((unsigned char)*end)) {
+    end++;
+  }
+  if (end && *end != '\0') {
+    return -1;
+  }
+  *out_sec = (int)n;
+  return 0;
+}
+
+static int parse_limits_m15_stream(const char* text) {
+  const char* sec = strstr(text, "[limits]");
+  if (sec == NULL) {
+    return 0;
+  }
+  char line[256];
+  const char* p = strchr(sec, '\n');
+  int idle = 0;
+  int max_d = 0;
+  int conc = 0;
+  if (p == NULL) {
+    return 0;
+  }
+  while (*p) {
+    const char* line_end = strchr(p, '\n');
+    size_t len = line_end ? (size_t)(line_end - p) : strlen(p);
+    if (len >= sizeof(line)) {
+      return -1;
+    }
+    memcpy(line, p, len);
+    line[len] = '\0';
+    trim_line(line);
+    p = line_end ? line_end + 1 : p + len;
+    if (line[0] == '[') {
+      break;
+    }
+    if (line[0] == '\0' || line[0] == '#') {
+      continue;
+    }
+    const char* eq = strchr(line, '=');
+    if (eq == NULL) {
+      continue;
+    }
+    char key[64];
+    size_t klen = (size_t)(eq - line);
+    if (klen >= sizeof(key)) {
+      return -1;
+    }
+    memcpy(key, line, klen);
+    key[klen] = '\0';
+    trim_line(key);
+    eq++;
+    while (*eq && isspace((unsigned char)*eq)) {
+      eq++;
+    }
+    if (strcmp(key, "stream_idle_timeout") == 0) {
+      if (parse_duration_sec_value(eq, &idle) != 0) {
+        return -1;
+      }
+    } else if (strcmp(key, "stream_max_duration") == 0) {
+      if (parse_duration_sec_value(eq, &max_d) != 0) {
+        return -1;
+      }
+    } else if (strcmp(key, "concurrent_streams") == 0) {
+      conc = atoi(eq);
+    }
+  }
+  if (idle > 0 || conc > 0) {
+    if (idle <= 0 || max_d <= 0 || conc <= 0) {
+      httpd_set_error(5, "M1.5 limits require stream_idle_timeout, stream_max_duration, concurrent_streams");
+      return -1;
+    }
+    if (max_d < idle) {
+      httpd_set_error(5, "limits.stream_max_duration must be >= stream_idle_timeout");
+      return -1;
+    }
+    g_m15_stream_idle_sec = idle;
+    g_m15_stream_max_sec = max_d;
+    g_m15_concurrent_streams = conc;
+  }
+  return 0;
+}
+
+static int parse_leak_censor_table(const char* text) {
+  int enabled = 0;
+  int deny_count = 0;
+  int pat_openai = 0;
+  int pat_jwt = 0;
+  int pat_pem = 0;
+  const char* scan = text;
+  while (scan && *scan) {
+    const char* sec = strstr(scan, "[leak_censor");
+    if (sec == NULL) {
+      break;
+    }
+    const char* close = strchr(sec, ']');
+    if (close == NULL) {
+      break;
+    }
+    char line[256];
+    const char* p = strchr(close, '\n');
+    if (p == NULL) {
+      break;
+    }
+    while (*p) {
+      const char* line_end = strchr(p, '\n');
+      size_t len = line_end ? (size_t)(line_end - p) : strlen(p);
+      if (len >= sizeof(line)) {
+        return -1;
+      }
+      memcpy(line, p, len);
+      line[len] = '\0';
+      trim_line(line);
+      p = line_end ? line_end + 1 : p + len;
+      if (line[0] == '[') {
+        break;
+      }
+      if (line[0] == '\0' || line[0] == '#') {
+        continue;
+      }
+      const char* eq = strchr(line, '=');
+      if (eq == NULL) {
+        continue;
+      }
+      char key[64];
+      size_t klen = (size_t)(eq - line);
+      if (klen >= sizeof(key)) {
+        return -1;
+      }
+      memcpy(key, line, klen);
+      key[klen] = '\0';
+      trim_line(key);
+      eq++;
+      while (*eq && isspace((unsigned char)*eq)) {
+        eq++;
+      }
+      if (strcmp(key, "enabled") == 0) {
+        if (strcmp(eq, "true") == 0 || strcmp(eq, "1") == 0) {
+          enabled = 1;
+        }
+      } else if (strcmp(key, "deny_paths") == 0) {
+        const char* q = eq;
+        while ((q = strchr(q, '"')) != NULL) {
+          deny_count++;
+          q++;
+        }
+      } else if (strcmp(key, "allow") == 0) {
+        if (strstr(eq, "openai_sk") != NULL) {
+          pat_openai = 1;
+        }
+        if (strstr(eq, "jwt_bearer") != NULL) {
+          pat_jwt = 1;
+        }
+        if (strstr(eq, "pem_private") != NULL) {
+          pat_pem = 1;
+        }
+      }
+    }
+    scan = p;
+  }
+  if (deny_count == 0) {
+    const char* dp = strstr(text, "deny_paths");
+    if (dp != NULL) {
+      const char* eq = strchr(dp, '=');
+      if (eq != NULL) {
+        while ((eq = strchr(eq, '"')) != NULL) {
+          deny_count++;
+          eq++;
+        }
+      }
+    }
+  }
+  g_leak_censor_enabled = enabled;
+  g_leak_censor_deny_path_count = deny_count;
+  g_leak_censor_pattern_openai = pat_openai;
+  g_leak_censor_pattern_jwt = pat_jwt;
+  g_leak_censor_pattern_pem = pat_pem;
+  return 0;
+}
+
+static int parse_int_field(const char* eq) {
+  while (*eq && isspace((unsigned char)*eq)) {
+    eq++;
+  }
+  return atoi(eq);
+}
+
+static int parse_m2_section_table(const char* text, const char* section,
+                                  int (*on_line)(const char* key, const char* val, void* ctx), void* ctx) {
+  const char* sec = strstr(text, section);
+  if (sec == NULL) {
+    return 0;
+  }
+  const char* close = strchr(sec, ']');
+  if (close == NULL) {
+    return 0;
+  }
+  char line[512];
+  const char* p = strchr(close, '\n');
+  if (p == NULL) {
+    return 0;
+  }
+  while (*p) {
+    const char* line_end = strchr(p, '\n');
+    size_t len = line_end ? (size_t)(line_end - p) : strlen(p);
+    if (len >= sizeof(line)) {
+      return -1;
+    }
+    memcpy(line, p, len);
+    line[len] = '\0';
+    trim_line(line);
+    p = line_end ? line_end + 1 : p + len;
+    if (line[0] == '[') {
+      break;
+    }
+    if (line[0] == '\0' || line[0] == '#') {
+      continue;
+    }
+    const char* eq = strchr(line, '=');
+    if (eq == NULL) {
+      continue;
+    }
+    char key[64];
+    size_t klen = (size_t)(eq - line);
+    if (klen >= sizeof(key)) {
+      return -1;
+    }
+    memcpy(key, line, klen);
+    key[klen] = '\0';
+    trim_line(key);
+    eq++;
+    if (on_line(key, eq, ctx) != 0) {
+      return -1;
+    }
+  }
+  return 0;
+}
+
+static int m2_http2_line(const char* key, const char* val, void* ctx) {
+  (void)ctx;
+  if (strcmp(key, "enabled") == 0) {
+    if (strcmp(val, "true") == 0 || strcmp(val, "1") == 0) {
+      g_m2_http2_enabled = 1;
+      g_m2_enabled = 1;
+    }
+  } else if (strcmp(key, "max_concurrent_streams") == 0) {
+    g_m2_http2_max_streams = parse_int_field(val);
+    if (g_m2_http2_max_streams <= 0) {
+      g_m2_http2_max_streams = 256;
+    }
+  }
+  return 0;
+}
+
+static int m2_queue_line(const char* key, const char* val, void* ctx) {
+  (void)ctx;
+  if (strcmp(key, "max_depth") == 0) {
+    g_m2_queue_max_depth = parse_int_field(val);
+    g_m2_enabled = 1;
+  } else if (strcmp(key, "max_wait") == 0) {
+    g_m2_queue_max_wait_sec = li_rt_httpd_parse_duration_sec(val);
+  } else if (strcmp(key, "retry_after") == 0) {
+    int s = li_rt_httpd_parse_duration_sec(val);
+    if (s > 0) {
+      g_m2_queue_retry_after_sec = s;
+    }
+  }
+  return 0;
+}
+
+static int m2_cb_line(const char* key, const char* val, void* ctx) {
+  (void)ctx;
+  if (strcmp(key, "error_threshold") == 0) {
+    g_m2_cb_error_threshold = parse_int_field(val);
+    g_m2_enabled = 1;
+  } else if (strcmp(key, "window_sec") == 0) {
+    g_m2_cb_window_sec = parse_int_field(val);
+  } else if (strcmp(key, "open_duration_sec") == 0) {
+    g_m2_cb_open_duration_sec = parse_int_field(val);
+  } else if (strcmp(key, "half_open_probes") == 0) {
+    g_m2_cb_half_open_probes = parse_int_field(val);
+  }
+  return 0;
+}
+
+static int m2_tls_line(const char* key, const char* val, void* ctx) {
+  (void)ctx;
+  if (strcmp(key, "terminate") == 0) {
+    if (strcmp(val, "true") == 0 || strcmp(val, "1") == 0) {
+      g_m2_tls_terminate = 1;
+      g_m2_enabled = 1;
+    }
+  }
+  return 0;
+}
+
+static int m2_webhooks_line(const char* key, const char* val, void* ctx) {
+  (void)ctx;
+  if (strcmp(key, "allow") != 0) {
+    return 0;
+  }
+  const char* q = val;
+  while (g_m2_webhook_allow_count < 8 && (q = strchr(q, '"')) != NULL) {
+    q++;
+    const char* end = strchr(q, '"');
+    if (end == NULL) {
+      break;
+    }
+    size_t n = (size_t)(end - q);
+    if (n >= sizeof(g_m2_webhook_allow[0])) {
+      return -1;
+    }
+    memcpy(g_m2_webhook_allow[g_m2_webhook_allow_count], q, n);
+    g_m2_webhook_allow[g_m2_webhook_allow_count][n] = '\0';
+    g_m2_webhook_allow_count++;
+    g_m2_enabled = 1;
+    q = end + 1;
+  }
+  return 0;
+}
+
+static int parse_m2_config(const char* text) {
+  g_m2_enabled = 0;
+  g_m2_tls_terminate = 0;
+  g_m2_http2_enabled = 0;
+  g_m2_http2_max_streams = 0;
+  g_m2_queue_max_depth = 0;
+  g_m2_queue_max_wait_sec = 0;
+  g_m2_queue_retry_after_sec = 1;
+  g_m2_cb_error_threshold = 0;
+  g_m2_cb_window_sec = 0;
+  g_m2_cb_open_duration_sec = 0;
+  g_m2_cb_half_open_probes = 0;
+  g_m2_webhook_allow_count = 0;
+
+  int rc = parse_m2_section_table(text, "[server.tls]", m2_tls_line, NULL);
+  if (rc != 0) {
+    return rc;
+  }
+  rc = parse_m2_section_table(text, "[server.http2]", m2_http2_line, NULL);
+  if (rc != 0) {
+    return rc;
+  }
+  rc = parse_m2_section_table(text, "[route.queue]", m2_queue_line, NULL);
+  if (rc != 0) {
+    return rc;
+  }
+  rc = parse_m2_section_table(text, "[circuit_breaker]", m2_cb_line, NULL);
+  if (rc != 0) {
+    return rc;
+  }
+  rc = parse_m2_section_table(text, "[webhooks]", m2_webhooks_line, NULL);
+  return rc;
+}
+
+static int m3_l4_line(const char* key, const char* val, void* ctx) {
+  (void)ctx;
+  if (strcmp(key, "enabled") == 0) {
+    if (val[0] == '1' || strcasecmp(val, "true") == 0 || strcasecmp(val, "yes") == 0) {
+      g_m3_l4_enabled = 1;
+      g_m3_enabled = 1;
+    }
+  } else if (strcmp(key, "listen") == 0) {
+    const char* colon = strrchr(val, ':');
+    if (colon != NULL && colon > val) {
+      size_t hlen = (size_t)(colon - val);
+      if (hlen < sizeof(g_m3_l4_listen_host)) {
+        memcpy(g_m3_l4_listen_host, val, hlen);
+        g_m3_l4_listen_host[hlen] = '\0';
+      }
+      g_m3_l4_listen_port = parse_int_field(colon + 1);
+    }
+  } else if (strcmp(key, "upstream_host") == 0) {
+    strncpy(g_m3_l4_upstream_host, val, sizeof(g_m3_l4_upstream_host) - 1);
+    g_m3_l4_upstream_host[sizeof(g_m3_l4_upstream_host) - 1] = '\0';
+  } else if (strcmp(key, "upstream_port") == 0) {
+    g_m3_l4_upstream_port = parse_int_field(val);
+  } else if (strcmp(key, "max_connections") == 0) {
+    g_m3_l4_max_connections = parse_int_field(val);
+  }
+  return 0;
+}
+
+static int m3_token_budget_line(const char* key, const char* val, void* ctx) {
+  (void)ctx;
+  if (strcmp(key, "enabled") == 0) {
+    if (val[0] == '1' || strcasecmp(val, "true") == 0 || strcasecmp(val, "yes") == 0) {
+      g_m3_token_budget_enabled = 1;
+      g_m3_enabled = 1;
+    }
+  } else if (strcmp(key, "header") == 0) {
+    strncpy(g_m3_token_budget_header, val, sizeof(g_m3_token_budget_header) - 1);
+    g_m3_token_budget_header[sizeof(g_m3_token_budget_header) - 1] = '\0';
+  } else if (strcmp(key, "max_per_request") == 0) {
+    g_m3_token_budget_max = parse_int_field(val);
+  } else if (strcmp(key, "reject_over_cap") == 0) {
+    g_m3_token_budget_reject_over =
+        (val[0] == '0' || strcasecmp(val, "false") == 0 || strcasecmp(val, "no") == 0) ? 0 : 1;
+  }
+  return 0;
+}
+
+static int parse_m3_config(const char* text) {
+  g_m3_enabled = 0;
+  g_m3_l4_enabled = 0;
+  g_m3_l4_listen_port = 0;
+  g_m3_l4_upstream_port = 0;
+  g_m3_l4_max_connections = 0;
+  g_m3_l4_listen_host[0] = '\0';
+  g_m3_l4_upstream_host[0] = '\0';
+  g_m3_token_budget_enabled = 0;
+  g_m3_token_budget_max = 0;
+  g_m3_token_budget_reject_over = 1;
+  strncpy(g_m3_token_budget_header, "x-token-budget", sizeof(g_m3_token_budget_header) - 1);
+  g_m3_token_budget_header[sizeof(g_m3_token_budget_header) - 1] = '\0';
+
+  int rc = parse_m2_section_table(text, "[server.l4_stream]", m3_l4_line, NULL);
+  if (rc != 0) {
+    return rc;
+  }
+  rc = parse_m2_section_table(text, "[limits.token_budget]", m3_token_budget_line, NULL);
+  return rc;
+}
+
+static int tls_mode_from_str(const char* eq) {
+  if (eq == NULL) {
+    return 0;
+  }
+  if (strstr(eq, "manual") != NULL) {
+    return 1;
+  }
+  if (strstr(eq, "self_signed") != NULL) {
+    return 2;
+  }
+  if (strstr(eq, "lets_encrypt") != NULL) {
+    return 3;
+  }
+  return 0;
+}
+
+static int parse_server_tls(const char* text) {
+  int mode = 0;
+  int renew_days = 30;
+  int dev = 0;
+  int domain_count = 0;
+  char email[128];
+  email[0] = '\0';
+
+  const char* sec = strstr(text, "[server]");
+  if (sec != NULL) {
+    const char* close = strchr(sec, ']');
+    if (close != NULL) {
+      char line[256];
+      const char* p = strchr(close, '\n');
+      if (p != NULL) {
+        while (*p) {
+          const char* line_end = strchr(p, '\n');
+          size_t len = line_end ? (size_t)(line_end - p) : strlen(p);
+          if (len >= sizeof(line)) {
+            return -1;
+          }
+          memcpy(line, p, len);
+          line[len] = '\0';
+          trim_line(line);
+          p = line_end ? line_end + 1 : p + len;
+          if (line[0] == '[') {
+            break;
+          }
+          if (line[0] == '\0' || line[0] == '#') {
+            continue;
+          }
+          const char* eq = strchr(line, '=');
+          if (eq == NULL) {
+            continue;
+          }
+          char key[64];
+          size_t klen = (size_t)(eq - line);
+          if (klen >= sizeof(key)) {
+            return -1;
+          }
+          memcpy(key, line, klen);
+          key[klen] = '\0';
+          trim_line(key);
+          eq++;
+          while (*eq && isspace((unsigned char)*eq)) {
+            eq++;
+          }
+          if (strcmp(key, "tls") == 0) {
+            int m = tls_mode_from_str(eq);
+            if (m > 0) {
+              mode = m;
+            }
+          } else if (strcmp(key, "email") == 0) {
+            strncpy(email, eq, sizeof(email) - 1);
+            email[sizeof(email) - 1] = '\0';
+            trim_line(email);
+            if (email[0] == '"') {
+              size_t el = strlen(email);
+              if (el >= 2 && email[el - 1] == '"') {
+                email[el - 1] = '\0';
+                memmove(email, email + 1, el - 1);
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+
+  const char* scan = text;
+  while (scan && *scan) {
+    const char* tls_sec = strstr(scan, "[server.tls");
+    if (tls_sec == NULL) {
+      break;
+    }
+    const char* close = strchr(tls_sec, ']');
+    if (close == NULL) {
+      break;
+    }
+    char line[256];
+    const char* p = strchr(close, '\n');
+    if (p == NULL) {
+      break;
+    }
+    while (*p) {
+      const char* line_end = strchr(p, '\n');
+      size_t len = line_end ? (size_t)(line_end - p) : strlen(p);
+      if (len >= sizeof(line)) {
+        return -1;
+      }
+      memcpy(line, p, len);
+      line[len] = '\0';
+      trim_line(line);
+      p = line_end ? line_end + 1 : p + len;
+      if (line[0] == '[') {
+        break;
+      }
+      if (line[0] == '\0' || line[0] == '#') {
+        continue;
+      }
+      const char* eq = strchr(line, '=');
+      if (eq == NULL) {
+        continue;
+      }
+      char key[64];
+      size_t klen = (size_t)(eq - line);
+      if (klen >= sizeof(key)) {
+        return -1;
+      }
+      memcpy(key, line, klen);
+      key[klen] = '\0';
+      trim_line(key);
+      eq++;
+      while (*eq && isspace((unsigned char)*eq)) {
+        eq++;
+      }
+      if (strcmp(key, "mode") == 0) {
+        int m = tls_mode_from_str(eq);
+        if (m > 0) {
+          mode = m;
+        }
+      } else if (strcmp(key, "renew_before") == 0) {
+        renew_days = atoi(eq);
+        if (renew_days <= 0) {
+          const char* d = eq;
+          while (*d && !isdigit((unsigned char)*d)) {
+            d++;
+          }
+          renew_days = atoi(d);
+        }
+      }
+    }
+    scan = p;
+  }
+
+  const char* le_sec = strstr(text, "[server.tls.lets_encrypt]");
+  if (le_sec == NULL) {
+    le_sec = strstr(text, "server.tls.lets_encrypt");
+  }
+  if (le_sec != NULL) {
+    const char* close = strchr(le_sec, ']');
+    if (close != NULL) {
+      char line[256];
+      const char* p = strchr(close, '\n');
+      if (p != NULL) {
+        while (*p) {
+          const char* line_end = strchr(p, '\n');
+          size_t len = line_end ? (size_t)(line_end - p) : strlen(p);
+          if (len >= sizeof(line)) {
+            return -1;
+          }
+          memcpy(line, p, len);
+          line[len] = '\0';
+          trim_line(line);
+          p = line_end ? line_end + 1 : p + len;
+          if (line[0] == '[') {
+            break;
+          }
+          if (line[0] == '\0' || line[0] == '#') {
+            continue;
+          }
+          const char* eq = strchr(line, '=');
+          if (eq == NULL) {
+            continue;
+          }
+          char key[64];
+          size_t klen = (size_t)(eq - line);
+          if (klen >= sizeof(key)) {
+            return -1;
+          }
+          memcpy(key, line, klen);
+          key[klen] = '\0';
+          trim_line(key);
+          eq++;
+          while (*eq && isspace((unsigned char)*eq)) {
+            eq++;
+          }
+          if (strcmp(key, "email") == 0 && email[0] == '\0') {
+            strncpy(email, eq, sizeof(email) - 1);
+            email[sizeof(email) - 1] = '\0';
+            trim_line(email);
+          } else if (strcmp(key, "domains") == 0) {
+            const char* q = eq;
+            while ((q = strchr(q, '"')) != NULL) {
+              domain_count++;
+              q++;
+            }
+          }
+        }
+      }
+    }
+  }
+
+  const char* ss_sec = strstr(text, "[server.tls.self_signed]");
+  if (ss_sec != NULL) {
+    const char* close = strchr(ss_sec, ']');
+    if (close != NULL) {
+      char line[256];
+      const char* p = strchr(close, '\n');
+      if (p != NULL) {
+        while (*p) {
+          const char* line_end = strchr(p, '\n');
+          size_t len = line_end ? (size_t)(line_end - p) : strlen(p);
+          if (len >= sizeof(line)) {
+            return -1;
+          }
+          memcpy(line, p, len);
+          line[len] = '\0';
+          trim_line(line);
+          p = line_end ? line_end + 1 : p + len;
+          if (line[0] == '[') {
+            break;
+          }
+          if (line[0] == '\0' || line[0] == '#') {
+            continue;
+          }
+          const char* eq = strchr(line, '=');
+          if (eq == NULL) {
+            continue;
+          }
+          char key[64];
+          size_t klen = (size_t)(eq - line);
+          if (klen >= sizeof(key)) {
+            return -1;
+          }
+          memcpy(key, line, klen);
+          key[klen] = '\0';
+          trim_line(key);
+          eq++;
+          while (*eq && isspace((unsigned char)*eq)) {
+            eq++;
+          }
+          if (strcmp(key, "dev") == 0) {
+            if (strcmp(eq, "true") == 0 || strcmp(eq, "1") == 0) {
+              dev = 1;
+            }
+          }
+        }
+      }
+    }
+  }
+
+  if (mode == 0) {
+    g_tls_enabled = 0;
+    g_tls_mode = 0;
+    g_tls_le_domain_count = 0;
+    g_tls_renew_before_days = renew_days;
+    g_tls_self_signed_dev = 0;
+    g_tls_le_email[0] = '\0';
+    return 0;
+  }
+
+  g_tls_enabled = 1;
+  g_tls_mode = mode;
+  g_tls_le_domain_count = domain_count;
+  if (g_tls_le_domain_count == 0 && strstr(text, "host") != NULL) {
+    g_tls_le_domain_count = 1;
+  }
+  g_tls_renew_before_days = renew_days > 0 ? renew_days : 30;
+  g_tls_self_signed_dev = dev;
+  strncpy(g_tls_le_email, email, sizeof(g_tls_le_email) - 1);
+  g_tls_le_email[sizeof(g_tls_le_email) - 1] = '\0';
+  return 0;
+}
+
 static int parse_limits_rate_limit_rps(const char* text, int* out_rps) {
   *out_rps = 0;
   const char* sec = strstr(text, "[limits]");
@@ -597,7 +1388,36 @@ int32_t li_rt_httpd_load_config(const char* path) {
     return -1;
   }
   buf[n] = '\0';
-  int rc = parse_routes_table(buf);
+  g_m15_stream_idle_sec = 0;
+  g_m15_stream_max_sec = 0;
+  g_m15_concurrent_streams = 0;
+  g_leak_censor_enabled = 0;
+  g_leak_censor_deny_path_count = 0;
+  g_leak_censor_pattern_openai = 0;
+  g_leak_censor_pattern_jwt = 0;
+  g_leak_censor_pattern_pem = 0;
+  g_tls_enabled = 0;
+  g_tls_mode = 0;
+  g_tls_le_domain_count = 0;
+  g_tls_renew_before_days = 30;
+  g_tls_self_signed_dev = 0;
+  g_tls_le_email[0] = '\0';
+  int rc = parse_m3_config(buf);
+  if (rc == 0) {
+    rc = parse_m2_config(buf);
+  }
+  if (rc == 0) {
+    rc = parse_limits_m15_stream(buf);
+  }
+  if (rc == 0) {
+    rc = parse_leak_censor_table(buf);
+  }
+  if (rc == 0) {
+    rc = parse_server_tls(buf);
+  }
+  if (rc == 0) {
+    rc = parse_routes_table(buf);
+  }
   if (rc == 0) {
     rc = validate_proxy_rate_limits(buf);
   }
@@ -772,8 +1592,25 @@ int32_t li_rt_httpd_explain_config(const char* path) {
     fprintf(stdout, "method = \"%s\"\n", r->method);
     fprintf(stdout, "path = \"%s\"\n", r->path);
     fprintf(stdout, "path_kind = \"%s\"\n", path_kind_name(r->path_kind));
-    if (r->headers[0] != '\0') {
-      fprintf(stdout, "action = \"%s\" [%s]\n", r->action, r->headers);
+    if (r->headers[0] != '\0' || r->require_traceparent || r->require_websocket) {
+      char extras[LI_HTTPD_HEADERS_MAX + 64];
+      extras[0] = '\0';
+      if (r->require_traceparent) {
+        strcat(extras, "require=traceparent");
+      }
+      if (r->require_websocket) {
+        if (extras[0] != '\0') {
+          strcat(extras, " ");
+        }
+        strcat(extras, "require=websocket");
+      }
+      if (r->headers[0] != '\0') {
+        if (extras[0] != '\0') {
+          strcat(extras, " ");
+        }
+        strcat(extras, r->headers);
+      }
+      fprintf(stdout, "action = \"%s\" [%s]\n", r->action, extras);
     } else {
       fprintf(stdout, "action = \"%s\"\n", r->action);
     }
@@ -784,17 +1621,37 @@ int32_t li_rt_httpd_explain_config(const char* path) {
   return 0;
 }
 
-int32_t li_rt_httpd_load_routing_fixture(void) {
+static int32_t httpd_load_config_under_repo(const char* rel) {
   const char* root = getenv("LI_REPO_ROOT");
-  if (root == NULL || root[0] == '\0') {
+  if (root == NULL || root[0] == '\0' || rel == NULL || rel[0] == '\0') {
     return -1;
   }
   char path[4096];
-  int n = snprintf(path, sizeof(path), "%s/li-tests/httpd/fixtures/routing.toml", root);
+  int n = snprintf(path, sizeof(path), "%s/%s", root, rel);
   if (n < 0 || (size_t)n >= sizeof(path)) {
     return -1;
   }
   return li_rt_httpd_load_config(path);
+}
+
+int32_t li_rt_httpd_load_routing_fixture(void) {
+  return httpd_load_config_under_repo("li-tests/httpd/fixtures/routing.toml");
+}
+
+int32_t li_rt_httpd_load_m15_agent_fixture(void) {
+  return httpd_load_config_under_repo("li-tests/config_desugar/good/agent_m15.toml");
+}
+
+int32_t li_rt_httpd_load_m15_leak_censor_fixture(void) {
+  return httpd_load_config_under_repo("li-tests/config_desugar/good/leak_censor_m15.toml");
+}
+
+int32_t li_rt_httpd_load_m15_tls_le_fixture(void) {
+  return httpd_load_config_under_repo("li-tests/config_desugar/good/tls_lets_encrypt_staging.toml");
+}
+
+int32_t li_rt_httpd_load_m15_tls_dev_fixture(void) {
+  return httpd_load_config_under_repo("li-tests/config_desugar/good/tls_self_signed_dev.toml");
 }
 
 int32_t li_rt_httpd_route_action_kind(int32_t route_id) {
@@ -807,6 +1664,224 @@ int32_t li_rt_httpd_route_action_kind(int32_t route_id) {
   }
   if (strncmp(action, "proxy:", 6) == 0) {
     return 2;
+  }
+  return 0;
+}
+
+int32_t li_rt_httpd_parse_duration_sec(const char* raw) {
+  int sec = 0;
+  if (parse_duration_sec_value(raw, &sec) != 0) {
+    return -1;
+  }
+  return (int32_t)sec;
+}
+
+int32_t li_rt_httpd_m15_stream_idle_sec(void) { return g_m15_stream_idle_sec; }
+
+int32_t li_rt_httpd_m15_stream_max_sec(void) { return g_m15_stream_max_sec; }
+
+int32_t li_rt_httpd_m15_concurrent_streams(void) { return g_m15_concurrent_streams; }
+
+int32_t li_rt_httpd_route_requires_traceparent(int32_t route_id) {
+  if (route_id <= 0 || route_id > g_route_count) {
+    return 0;
+  }
+  return g_routes[route_id - 1].require_traceparent;
+}
+
+int32_t li_rt_httpd_is_sse_content_type(const char* ctype) {
+  if (ctype == NULL) {
+    return 0;
+  }
+  return strstr(ctype, "text/event-stream") != NULL ? 1 : 0;
+}
+
+static int header_has_traceparent_c(const char* buf, int hdr_end) {
+  for (int i = 0; i + 14 < hdr_end; i++) {
+    if ((buf[i] == 't' || buf[i] == 'T') && (buf[i + 1] == 'r' || buf[i + 1] == 'R') &&
+        strncmp(buf + i, "traceparent:", 12) == 0) {
+      return 1;
+    }
+  }
+  return 0;
+}
+
+int32_t li_rt_httpd_traceparent_ok(const char* buf, int32_t hdr_end) {
+  if (buf == NULL || hdr_end <= 0) {
+    return 0;
+  }
+  return header_has_traceparent_c(buf, hdr_end) ? 1 : 0;
+}
+
+int32_t li_rt_httpd_traceparent_selftest(void) {
+  static const char hdr[] =
+      "POST /x HTTP/1.1\r\n"
+      "traceparent: 00-abc-def-01\r\n"
+      "\r\n";
+  const int hdr_end = (int)(sizeof(hdr) - 1);
+  return header_has_traceparent_c(hdr, hdr_end) ? 0 : -1;
+}
+
+int32_t li_rt_httpd_leak_censor_enabled(void) { return g_leak_censor_enabled; }
+
+int32_t li_rt_httpd_leak_censor_deny_path_count(void) { return g_leak_censor_deny_path_count; }
+
+int32_t li_rt_httpd_leak_censor_pattern_openai(void) { return g_leak_censor_pattern_openai; }
+
+int32_t li_rt_httpd_leak_censor_pattern_jwt(void) { return g_leak_censor_pattern_jwt; }
+
+int32_t li_rt_httpd_leak_censor_pattern_pem(void) { return g_leak_censor_pattern_pem; }
+
+int32_t li_rt_httpd_tls_enabled(void) { return g_tls_enabled; }
+
+int32_t li_rt_httpd_tls_mode(void) { return g_tls_mode; }
+
+int32_t li_rt_httpd_tls_le_domain_count(void) { return g_tls_le_domain_count; }
+
+int32_t li_rt_httpd_tls_renew_before_days(void) { return g_tls_renew_before_days; }
+
+int32_t li_rt_httpd_tls_self_signed_dev(void) { return g_tls_self_signed_dev; }
+
+const char* li_rt_httpd_tls_le_email(void) { return g_tls_le_email; }
+
+int32_t li_rt_httpd_tls_selftest(void) {
+  if (g_tls_enabled == 0) {
+    return -1;
+  }
+  if (g_tls_mode == 3 && g_tls_le_email[0] == '\0') {
+    return -2;
+  }
+  if (g_tls_mode == 3 && g_tls_le_domain_count < 1) {
+    return -3;
+  }
+  return 0;
+}
+
+int32_t li_rt_httpd_m2_enabled(void) { return g_m2_enabled; }
+
+int32_t li_rt_httpd_m2_tls_terminate(void) { return g_m2_tls_terminate; }
+
+int32_t li_rt_httpd_m2_http2_enabled(void) { return g_m2_http2_enabled; }
+
+int32_t li_rt_httpd_m2_http2_max_streams(void) { return g_m2_http2_max_streams; }
+
+int32_t li_rt_httpd_m2_queue_max_depth(void) { return g_m2_queue_max_depth; }
+
+int32_t li_rt_httpd_m2_queue_retry_after_sec(void) { return g_m2_queue_retry_after_sec; }
+
+int32_t li_rt_httpd_m2_cb_error_threshold(void) { return g_m2_cb_error_threshold; }
+
+int32_t li_rt_httpd_m2_webhook_allow_count(void) { return g_m2_webhook_allow_count; }
+
+int32_t li_rt_httpd_route_requires_websocket(int32_t route_id) {
+  if (route_id <= 0 || route_id > g_route_count) {
+    return 0;
+  }
+  return g_routes[route_id - 1].require_websocket;
+}
+
+int32_t li_rt_httpd_m2_webhook_url_allowed(const char* url) {
+  if (url == NULL || g_m2_webhook_allow_count == 0) {
+    return 0;
+  }
+  for (int i = 0; i < g_m2_webhook_allow_count; i++) {
+    if (strcmp(url, g_m2_webhook_allow[i]) == 0) {
+      return 1;
+    }
+  }
+  return 0;
+}
+
+int32_t li_rt_httpd_m2_selftest(void) {
+  if (g_m2_enabled == 0) {
+    return -1;
+  }
+  if (g_m2_http2_enabled && !g_m2_tls_terminate) {
+    return -2;
+  }
+  if (g_m2_tls_terminate && g_tls_enabled == 0) {
+    return -3;
+  }
+  if (g_m2_queue_max_depth > 0 && g_m2_queue_retry_after_sec < 1) {
+    return -4;
+  }
+  if (g_m2_cb_error_threshold > 0 && g_m2_cb_window_sec < 1) {
+    return -5;
+  }
+  if (g_m2_webhook_allow_count > 0 && !li_rt_httpd_m2_webhook_url_allowed(g_m2_webhook_allow[0])) {
+    return -6;
+  }
+  return 0;
+}
+
+int32_t li_rt_httpd_m3_enabled(void) { return g_m3_enabled; }
+
+int32_t li_rt_httpd_m3_l4_enabled(void) { return g_m3_l4_enabled; }
+
+int32_t li_rt_httpd_m3_l4_listen_port(void) { return g_m3_l4_listen_port; }
+
+int32_t li_rt_httpd_m3_l4_upstream_port(void) { return g_m3_l4_upstream_port; }
+
+int32_t li_rt_httpd_m3_l4_max_connections(void) { return g_m3_l4_max_connections; }
+
+int32_t li_rt_httpd_m3_token_budget_enabled(void) { return g_m3_token_budget_enabled; }
+
+int32_t li_rt_httpd_m3_token_budget_max(void) { return g_m3_token_budget_max; }
+
+static int m3_parse_nonneg_int(const char* s, int64_t* out) {
+  if (s == NULL || !s[0]) {
+    return -1;
+  }
+  int64_t v = 0;
+  for (const char* p = s; *p; p++) {
+    if (*p < '0' || *p > '9') {
+      return -1;
+    }
+    v = v * 10 + (*p - '0');
+    if (v > 10000000000LL) {
+      return -1;
+    }
+  }
+  *out = v;
+  return 0;
+}
+
+int32_t li_rt_httpd_m3_token_budget_check(const char* header_val) {
+  if (!g_m3_token_budget_enabled || header_val == NULL) {
+    return 1;
+  }
+  int64_t v = 0;
+  if (m3_parse_nonneg_int(header_val, &v) != 0) {
+    return -2;
+  }
+  if (v == 0) {
+    return 0;
+  }
+  if (g_m3_token_budget_reject_over && v > (int64_t)g_m3_token_budget_max) {
+    return 0;
+  }
+  return 1;
+}
+
+int32_t li_rt_httpd_m3_selftest(void) {
+  if (g_m3_enabled == 0) {
+    return -1;
+  }
+  if (g_m3_l4_enabled) {
+    if (g_m3_l4_listen_port <= 0 || g_m3_l4_upstream_port <= 0 || g_m3_l4_upstream_host[0] == '\0') {
+      return -2;
+    }
+    if (g_m3_l4_max_connections <= 0) {
+      return -3;
+    }
+  }
+  if (g_m3_token_budget_enabled) {
+    if (g_m3_token_budget_max <= 0) {
+      return -4;
+    }
+    if (li_rt_httpd_m3_token_budget_check("1") != 1) {
+      return -5;
+    }
   }
   return 0;
 }

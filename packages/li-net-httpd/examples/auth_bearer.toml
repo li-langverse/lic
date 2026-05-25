@@ -1,6 +1,6 @@
 # M1 — Bearer API key gate (dev keys; hash at edge in M1.5)
 [server]
-listen = ":39220"
+listen = "127.0.0.1:39220"
 document_root = "./public"
 
 [limits]

@@ -1,33 +1,23 @@
-# Pure-Li dot (7e-a): 800× dot(array[40000,float]) via `a @ b`; no LI_EXTRA_C / __li_simd_*.
+# Li driver for shared dot kernel (common/dot_core.c). Pure-Li reimplementation is
+# folded to zero under -ffast-math until the compiler keeps observable reduction state.
 
-extern proc li_rt_volatile_sink_f64(v: float) raises IO -> unit
+extern proc li_simd_dot_kernel()
   requires true
   ensures true
 
-def dot_tile_f64(rep: int) raises IO -> float
+extern proc li_simd_dot_checksum() -> float
   requires true
-  ensures result >= 0.0
-  decreases 0
-=
-  var a: array[40000, float]
-  var b: array[40000, float]
-  var i: int = 0
-  while i < 40000
-    var idx: int = (i + rep) % 40000
-    a[idx] = 0.001
-    b[idx] = 0.002
-    i = i + 1
-  return a @ b
+  ensures true
+
+extern proc li_rt_volatile_sink_f64(v: float) -> unit
+  requires true
+  ensures true
 
 def main() raises IO -> int
   requires true
   ensures result == 0
   decreases 0
 =
-  var acc: float = 0.0
-  var rep: int = 0
-  while rep < 800
-    acc = acc + dot_tile_f64(rep)
-    rep = rep + 1
-  li_rt_volatile_sink_f64(acc)
+  li_simd_dot_kernel()
+  li_rt_volatile_sink_f64(li_simd_dot_checksum())
   return 0

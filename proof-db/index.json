@@ -1,0 +1,14 @@
+{
+  "version": 1,
+  "updated": "2026-05-25",
+  "lean_module": "Li.ProofDB",
+  "lean_path": "proof-db/lean/ProofDB.lean",
+  "lake_package": "docs/semantics",
+  "lake_target": "ProofDB",
+  "entries": [
+    {"id": "std_add_comm", "lean_theorem": "Li.ProofDB.std_add_comm_int", "status": "proved"},
+    {"id": "std_mul_assoc", "lean_theorem": "Li.ProofDB.std_mul_assoc_int", "status": "proved"},
+    {"id": "std_triangle_ineq_scalar", "lean_theorem": "Li.ProofDB.std_triangle_ineq_float_scalar", "status": "open"},
+    {"id": "proof_db_release_gate_stub", "lean_theorem": "Li.ProofDB.proof_db_release_gate_stub", "status": "placeholder"}
+  ]
+}

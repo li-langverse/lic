@@ -51,13 +51,13 @@ This page is the **honest inventory** of what is **not** fully proved or not yet
 | **G-gpu** | Missing | `@gpu` address-space proofs + codegen |
 | **G-meta** | Missing | Compiler ↔ Lean equivalence (research) |
 | **G-authz** | Missing | Capability / IDOR (OS phase) |
-| **G-test-verify** | **Done** | `prove_lean_ok` in `run_all.sh`; 14 closed `contracts_verify` specimens |
+| **G-test-verify** | **Done** | `prove_lean_ok` in `li-tests/run_all.sh`; 18 closed `contracts_verify` specimens (incl. `sqrt_open_bound`, `refinement_{call,inline,local,guard}_ok`); `verify_ok` = strict build; lake skips when elan absent |
 | **G-proof-db** | Partial | [Proof database](proof-database.md): register at `docs/verification/proof-database/entries/physics-*.toml` (`P-AX-*`, `P-LM-*`) |
 | **G-physics** | Partial | **P-physics** slice: 7× `P-AX-*` + 3× `P-LM-*`; 2× proved scalar lemmas in `Discharge.lean`; tier-2 **modeling_gap** on extern stubs |
 | **G-hw** | Axiomatic | FP/hardware model limit (documented, not closable) |
 | **G-wrong-spec** | Social | User theorem quality (not tool-closable) |
 
-**Proof backlog still open:** **P-refine**, **P-ensures-witness**, **P-float**, **P-linalg** (float `@` Props; full matmul), **P-par**, **P-dec**, **P-bnd**, **P-http**, **P-narrow**, **P-meta**, **P-physics** — see [proof-corpus-roadmap](proof-corpus-roadmap.md). **P-linalg partial:** closed dot/sum/matmul-entry + **loop dot** (`linalg_dot4_int_loop_open`, `dot4_int_loop_eval_spec`); open float `vec3_dot`, 2D CallProc. **P-physics partial:** [proof-database.md](proof-database.md) index + `docs/verification/proof-database/entries/physics-*.toml` (`P-AX-*`, `P-LM-*`, pin `a9542bfc`); tier-2 wrappers still **modeling_gap** (`ensures true` on extern kernels).
+**Proof backlog still open:** **P-refine** (`refinement_init_ok` init typing only), **P-ensures-witness**, **P-float** (universal float/`abs` beyond trusted `sqrt_open_bound`), **P-linalg** (float `@` Props; full matmul), **P-par**, **P-dec**, **P-bnd**, **P-http**, **P-narrow**, **P-meta**, **P-physics** — see [proof-corpus-roadmap](proof-corpus-roadmap.md). **P-linalg partial:** closed dot/sum/matmul-entry + **loop dot** (`linalg_dot4_int_loop_open`, `dot4_int_loop_eval_spec`); open float `vec3_dot`, 2D CallProc. **P-physics partial:** [proof-database.md](proof-database.md) index + `docs/verification/proof-database/entries/physics-*.toml` (`P-AX-*`, `P-LM-*`, pin `a9542bfc`); tier-2 wrappers still **modeling_gap** (`ensures true` on extern kernels).
 
 ### Proof-db discrepancy appendix
 
@@ -98,7 +98,7 @@ Status legend: **Missing** · **Stub** · **Partial** · **CI only** · **Done**
 | **G-wrong-spec** | User contracts | Correct theorem | **Social** — tool cannot fix | — | Review culture |
 | **G-narrow** | Narrowing conversions | Ariane-class truncations rejected without proof | **Partial** — policy rejects `cast[`; width types + proved narrowing pending | **2e** | `historic_ariane5_narrowing.li` |
 | **G-authz** | Capability / IDOR | Object capabilities in OS services | **Missing** | OS phase | `historic-bugs.toml` firefly-iii-idor |
-| **G-test-verify** | Manifest honesty | `verify_ok` vs Lean QED | **Done** — `prove_lean_ok` outcome; 14 closed `contracts_verify` rows | **2f** | `li-tests/run_all.sh`, `li-tests/manifest.toml`, `contracts_discharge_corpus.sh` |
+| **G-test-verify** | Manifest honesty | `verify_ok` vs Lean QED | **Done** — `prove_lean_ok` outcome; 18 closed `contracts_verify` rows | **2f** | `li-tests/run_all.sh`, `li-tests/manifest.toml`, `contracts_discharge_corpus.sh` |
 | **G-proof-db** | Proof database | Axiom → lemma → discharge status vs `lic` commit | **Partial** — physics TOML under `docs/verification/proof-database/entries/physics-*.toml` | **Doc**, **2f**, **5b** | [proof-database.md](proof-database.md) |
 | **G-physics** | Classical physics proofs | Newton + conservation linked to tier-2 benches | **Partial** — `entries/physics-*.toml`; 2× `proved` + 1× open `P-LM-*` in `Discharge.lean` | **Doc**, **2f**, **5b** | [proof-database/entries/physics-*.toml](proof-database/entries/physics-mechanics.toml), `benchmarks/tier2_physics/`, `Discharge.lean` |
 

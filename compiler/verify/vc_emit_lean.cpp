@@ -584,8 +584,17 @@ void emit_call_site_requires(std::ostream& out, const Module& module, const Proc
           }
         }
       }
+      std::optional<std::string> guard_nonneg_ident;
+      if (witnessed && !lit_nonneg && folded_discharged_by_proof_facts(*folded, facts) &&
+          folded->lhs && folded->lhs->kind == Expr::Kind::Ident &&
+          facts.assum_nonneg_ints.count(folded->lhs->ident) > 0) {
+        guard_nonneg_ident = folded->lhs->ident;
+      }
       if (lit_nonneg && witnessed) {
         prop = "Li.Discharge.refinement_nonneg_spec " + std::to_string(*lit_nonneg);
+        refinement_discharge = true;
+      } else if (guard_nonneg_ident) {
+        prop = "Li.Discharge.refinement_nonneg_spec " + lean_ident(*guard_nonneg_ident);
         refinement_discharge = true;
       } else if (auto lean = expr_to_lean(*folded, ctx)) {
         prop = *lean;
@@ -610,11 +619,19 @@ void emit_call_site_requires(std::ostream& out, const Module& module, const Proc
       if (witnessed) {
         out << "theorem " << name << "_proved";
         append_call_site_vc_formals(out, module, caller, ref_idents);
+        const std::string hguard =
+            guard_nonneg_ident ? "hguard_" + proc_section(*guard_nonneg_ident) : "";
+        if (guard_nonneg_ident && refinement_discharge) {
+          out << " (" << hguard << " : " << lean_ident(*guard_nonneg_ident) << " ≥ (0 : Int))";
+        }
         out << " : " << name;
         append_call_site_vc_args(out, caller, ref_idents);
         if (refinement_discharge && lit_nonneg) {
           out << " := Li.Discharge.refinement_nonneg_lit_proved " << *lit_nonneg
               << " (by decide)\n";
+        } else if (refinement_discharge && guard_nonneg_ident) {
+          out << " := Li.Discharge.refinement_nonneg_lit_proved " << lean_ident(*guard_nonneg_ident)
+              << ' ' << hguard << '\n';
         } else {
           out << " := trivial\n";
         }

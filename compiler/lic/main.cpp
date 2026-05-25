@@ -301,6 +301,7 @@ int verify_file(const char* path, bool run_lean, bool strict_lean) {
   const li::VcWitnessStats witness = li::compute_vc_witness_stats(module, &mir);
   vc.ensures_witnessed = witness.ensures_witnessed;
   vc.mir_return_linked = witness.mir_return_linked;
+  const std::size_t mir_parallel_disjoint = li::count_mir_parallel_disjoint_proven(mir);
   const std::size_t mir_vectorized_proc = li::count_mir_vectorized_proc(mir);
   std::cout << "verify: procs=" << vc.proc_count << " mir_fns=" << vc.mir_fn_count
             << " requires=" << vc.requires_count << " ensures=" << vc.ensures_count
@@ -308,6 +309,7 @@ int verify_file(const char* path, bool run_lean, bool strict_lean) {
             << " decreases=" << vc.decreases_count << " invariant=" << vc.invariant_count
             << " witnessed_ensures=" << vc.ensures_witnessed
             << " mir_return_linked=" << vc.mir_return_linked
+            << " mir_parallel_disjoint=" << mir_parallel_disjoint
             << " mir_vectorized_proc=" << mir_vectorized_proc << '\n';
   if (li::terminal_color_enabled()) {
     std::cout << li::styled_success("verify") << li::styled_dim(" telemetry") << li::reset_style()

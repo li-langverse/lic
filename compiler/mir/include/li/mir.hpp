@@ -138,6 +138,8 @@ struct MirDecorator {
   std::int64_t lanes = 0;
   /** `@vectorized` on the owning `def` (7d-b MIR proc tag). */
   bool vectorized = false;
+  bool parallel = false;
+  bool disjoint_proven = false;
 };
 
 struct MirFn {
@@ -175,6 +177,7 @@ struct MirModule {
 
 /** Count `def` decorators with {@link MirDecorator::vectorized}. */
 std::size_t count_mir_vectorized_proc(const MirModule& mir);
+std::size_t count_mir_parallel_disjoint_proven(const MirModule& mir);
 
 MirModule lower_to_mir(const Module& module);
 

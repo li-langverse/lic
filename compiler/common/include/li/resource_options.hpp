@@ -6,6 +6,12 @@
 
 namespace li {
 
+// Documented caps — refuse unbounded fork / memory DoS via CLI (see check-cache-threat-model).
+inline constexpr unsigned kMaxResourceJobs = 256;
+inline constexpr std::size_t kMaxResourceMemoryMb = 65536;  // 64 GiB
+inline constexpr std::size_t kMaxResourceJobMemoryMb = 8192;
+inline constexpr unsigned kMaxResourceThreads = 256;
+
 struct ResourceOptions {
   unsigned jobs = 0;
   std::size_t max_memory_mb = 0;

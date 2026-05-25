@@ -3,7 +3,9 @@
 #include "li/parser.hpp"
 #include "li/prelude.hpp"
 
+#include <algorithm>
 #include <cstdlib>
+#include <cstdint>
 #include <filesystem>
 #include <fstream>
 #include <optional>
@@ -19,6 +21,35 @@ std::string read_file(const std::filesystem::path& path) {
   std::ostringstream ss;
   ss << in.rdbuf();
   return ss.str();
+}
+
+std::uint64_t fnv1a64_update(std::uint64_t hash, const unsigned char* data, std::size_t len) {
+  constexpr std::uint64_t prime = 1099511628211ull;
+  constexpr std::uint64_t offset = 14695981039346656037ull;
+  for (std::size_t i = 0; i < len; ++i) {
+    hash ^= static_cast<std::uint64_t>(data[i]);
+    hash *= prime;
+  }
+  return hash == 0 ? offset : hash;
+}
+
+std::uint64_t hash_path_file(const std::filesystem::path& path) {
+  std::ifstream in(path, std::ios::binary);
+  if (!in) {
+    return 0;
+  }
+  std::uint64_t hash = 14695981039346656037ull;
+  std::vector<unsigned char> buf(65536);
+  while (in) {
+    in.read(reinterpret_cast<char*>(buf.data()),
+            static_cast<std::streamsize>(buf.size()));
+    const auto got = static_cast<std::size_t>(in.gcount());
+    if (got == 0) {
+      break;
+    }
+    hash = fnv1a64_update(hash, buf.data(), got);
+  }
+  return hash;
 }
 
 std::filesystem::path repo_root() {
@@ -463,6 +494,39 @@ bool load_module_recursive(const std::filesystem::path& mod_path, Module& out,
 }
 
 }  // namespace
+
+std::uint64_t hash_direct_import_graph(const std::string& file_path) {
+  const std::filesystem::path importer(file_path);
+  const std::string source = read_file(importer);
+  auto parsed = parse_module(source, file_path);
+  if (!parsed.module) {
+    return 0;
+  }
+
+  struct Edge {
+    std::string path;
+    std::uint64_t content_hash = 0;
+  };
+  std::vector<Edge> edges;
+  for (const auto& imp : parsed.module->imports) {
+    const auto mod_path = resolve_module_path(imp.module, importer);
+    if (!mod_path) {
+      continue;
+    }
+    edges.push_back(Edge{mod_path->string(), hash_path_file(*mod_path)});
+  }
+  std::sort(edges.begin(), edges.end(),
+            [](const Edge& a, const Edge& b) { return a.path < b.path; });
+
+  std::uint64_t hash = 14695981039346656037ull;
+  for (const auto& edge : edges) {
+    hash = fnv1a64_update(hash, reinterpret_cast<const unsigned char*>(edge.path.data()),
+                           edge.path.size());
+    hash = fnv1a64_update(hash, reinterpret_cast<const unsigned char*>(&edge.content_hash),
+                           sizeof(edge.content_hash));
+  }
+  return hash;
+}
 
 bool resolve_imports(Module& out, const std::string& file_path, DiagnosticBag& diags) {
   const auto imports = out.imports;

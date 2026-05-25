@@ -6,6 +6,9 @@ All notable changes to Li are documented here. The format follows
 
 ## [Unreleased]
 
+### Added
+- **P-float (2f):** Close `sqrt_open_bound.li` via `Li.Discharge.sqrt_open_bound_spec` + trusted `li_rt_sqrt_bound`; `discharge_sqrt_open_lean.sh`; manifest `prove_lean_ok`.
+
 ### Changed
 
 - **Plan checkboxes (wave):** sync `docs/superpowers/plans/*.md` exit gates with shipped Phases 0–5, Pkg, P-linalg loop witness, and C++ compiler evidence — [2026-05-25-plan-checkbox-audit-wave.md](docs/release-notes/2026-05-25-plan-checkbox-audit-wave.md).

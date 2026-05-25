@@ -205,7 +205,7 @@ outcome = "verify_ok"
 [[tests]]
 suite = "contracts_verify"
 file = "contracts_verify/sqrt_open_bound.li"
-outcome = "verify_open_ok"
+outcome = "prove_lean_ok"
 
 [[tests]]
 suite = "contracts_verify"

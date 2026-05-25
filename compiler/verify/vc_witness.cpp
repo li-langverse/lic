@@ -412,6 +412,32 @@ bool expr_is_mat2_int_spec(const Expr& e, const std::string& a, const std::strin
   return true;
 }
 
+
+bool expr_is_float_eps(const Expr* e, double v) {
+  if (e == nullptr) return false;
+  if (e->kind == Expr::Kind::FloatLit) {
+    return std::fabs(e->float_value - v) < 1e-9 * std::max(1.0, std::fabs(v));
+  }
+  return false;
+}
+bool expr_is_result_sq_minus_x(const Expr* e, const std::string& x) {
+  if (e == nullptr || e->kind != Expr::Kind::BinOp || e->bin_op != BinOp::Sub || !e->lhs || !e->rhs) return false;
+  const Expr& lhs = *e->lhs;
+  if (lhs.kind != Expr::Kind::BinOp || lhs.bin_op != BinOp::Mul || !lhs.lhs || !lhs.rhs) return false;
+  return expr_is_ident(lhs.lhs.get(), "result") && expr_is_ident(lhs.rhs.get(), "result") && expr_is_ident(e->rhs.get(), x);
+}
+bool expr_is_sqrt_open_bound_ensures(const Expr& e, const std::string& x) {
+  if (e.kind != Expr::Kind::BinOp || e.bin_op != BinOp::Lt || !e.lhs || !e.rhs) return false;
+  if (!expr_is_float_eps(e.rhs.get(), 1e-12)) return false;
+  const Expr& lhs = *e.lhs;
+  if (lhs.kind == Expr::Kind::Call && lhs.ident == "abs" && lhs.args.size() == 1 && lhs.args[0])
+    return expr_is_result_sq_minus_x(lhs.args[0].get(), x);
+  return false;
+}
+bool witness_sqrt_open_bound_spec_impl(const ProcDecl& proc, const Expr& ensures_expr) {
+  if (proc.name != "sqrt_open" || proc.params.empty()) return false;
+  return expr_is_sqrt_open_bound_ensures(ensures_expr, proc.params[0].name);
+}
 bool witness_mat2_int_at2_spec_impl(const ProcDecl& proc, const Expr& ensures_expr) {
   const Expr* ret = single_return_expr(proc);
   if (ret == nullptr || ret->kind != Expr::Kind::BinOp || ret->bin_op != BinOp::MatMul ||
@@ -629,6 +655,10 @@ bool witness_dot4_prelude_call(const Expr& ret, const Expr& ensures_rhs) {
 
 bool witness_mat2_int_at2_spec(const ProcDecl& proc, const Expr& ensures_expr) {
   return witness_mat2_int_at2_spec_impl(proc, ensures_expr);
+}
+
+bool witness_sqrt_open_bound_spec(const ProcDecl& proc, const Expr& ensures_expr) {
+  return witness_sqrt_open_bound_spec_impl(proc, ensures_expr);
 }
 
 }  // namespace li

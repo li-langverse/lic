@@ -6,6 +6,10 @@ All notable changes to Li are documented here. The format follows
 
 ## [Unreleased]
 
+### Added
+
+- **PH-DB master plan cross-link:** phase map row + `ph-db-lidb-platform.md` appendix; **PH-8d-v2 → PH-DB-4** — [2026-05-25-ph-db-master-plan-crosslink.md](docs/release-notes/2026-05-25-ph-db-master-plan-crosslink.md).
+
 ### Fixed
 
 - **PH-UX vertical gap #1:** Studio UI bench registry and `bench-studio-viewport-perf.sh` reference `packages/lig` (`wgpu_smoke` hook) instead of removed `packages/li-gpu` — [2026-05-25-vertical-gap-bench-lig.md](docs/release-notes/2026-05-25-vertical-gap-bench-lig.md).

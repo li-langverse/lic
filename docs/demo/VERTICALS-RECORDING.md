@@ -1,5 +1,7 @@
 # Studio verticals — recording honesty matrix (UX-14)
 
+Generate and publish the gitignored MP4: [media/README.md](media/README.md).
+
 | Vertical | Native compose (`lic check`) | User demo MP4 frame | `native_pixels` | Not implemented |
 |----------|------------------------------|---------------------|-----------------|-----------------|
 | `game` | `studio_vertical_profile_roundtrip`, `studio_shell_demo` | CPU present host chip (cyan, h=21) | **1** | Full li-player ship loop |

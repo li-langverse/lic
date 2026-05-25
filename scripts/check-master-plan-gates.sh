@@ -31,6 +31,10 @@ rm -f "$ROOT/build/generated/AutoVC.lean"
 if command -v lake >/dev/null 2>&1; then
   li_phase "semantics lake"
   (cd "$ROOT/docs/semantics" && lake build) || fail "lake build"
+  "$ROOT/scripts/check-autovc-open-goals.sh" "$ROOT/build/generated/AutoVC.lean" || fail "autovc open goals"
+  export LI_PROOF_DB_STRICT=0
+  chmod +x "$ROOT/scripts/check-proof-db.sh"
+  "$ROOT/scripts/check-proof-db.sh" || fail "proof-db gate"
 fi
 
 li_phase "tier 0 bench"

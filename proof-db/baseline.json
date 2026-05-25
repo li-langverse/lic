@@ -1,8 +1,8 @@
 {
   "version": 1,
   "release_pin": "2026-05-25",
-  "proved_count": 10,
-  "total_count": 12,
+  "proved_count": 6,
+  "total_count": 8,
   "records": [
     {
       "id": "AutoVC.vc_greet_decreases_0_proved",
@@ -45,30 +45,6 @@
       "status": "placeholder",
       "source": "discharge",
       "file": "docs/semantics/Discharge.lean"
-    },
-    {
-      "id": "Li.ProofDB.proof_db_release_gate_stub",
-      "status": "proved",
-      "source": "proofdb",
-      "file": "proof-db/lean/ProofDB.lean"
-    },
-    {
-      "id": "Li.ProofDB.std_add_comm_int",
-      "status": "proved",
-      "source": "proofdb",
-      "file": "proof-db/lean/ProofDB.lean"
-    },
-    {
-      "id": "Li.ProofDB.std_mul_assoc_int",
-      "status": "proved",
-      "source": "proofdb",
-      "file": "proof-db/lean/ProofDB.lean"
-    },
-    {
-      "id": "Li.ProofDB.std_triangle_ineq_float_scalar",
-      "status": "proved",
-      "source": "proofdb",
-      "file": "proof-db/lean/ProofDB.lean"
     },
     {
       "id": "Li.core_stub_ok",

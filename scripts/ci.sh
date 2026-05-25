@@ -50,6 +50,9 @@ if command -v lake >/dev/null 2>&1; then
   li_phase "semantics (2f lake + AutoVC strict)"
   (cd "$ROOT/docs/semantics" && lake build) || exit 1
   "$ROOT/scripts/check-autovc-open-goals.sh" "$ROOT/build/generated/AutoVC.lean" || exit 1
+  export LI_PROOF_DB_STRICT=0
+  chmod +x "$ROOT/scripts/check-proof-db.sh"
+  "$ROOT/scripts/check-proof-db.sh" || exit 1
 fi
 
 li_phase "CVE / security gates"
@@ -114,6 +117,10 @@ chmod +x "$ROOT/scripts/check-stdlib-coverage.sh"
 li_phase "doc provability claims"
 chmod +x "$ROOT/scripts/check-doc-provability-claims.sh"
 "$ROOT/scripts/check-doc-provability-claims.sh"
+
+li_phase "proof-db report smoke"
+chmod +x "$ROOT/scripts/proof-db-report.sh" "$ROOT/li-tests/tooling/proof_db_report_smoke.sh"
+"$ROOT/li-tests/tooling/proof_db_report_smoke.sh"
 
 li_phase "lic verify smoke (2e/2f)"
 chmod +x "$ROOT/scripts/lean-verify-stub.sh" "$ROOT/li-tests/tooling/lic_verify_smoke.sh" \

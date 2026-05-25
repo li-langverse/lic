@@ -1,5 +1,9 @@
-# Proof database
+# proof-db
 
-Classical math: [math/](math/) — nine AX-MATH-* axioms, three target lemmas.
+Lemma pins and discrepancy analysis vs `docs/semantics/Discharge.lean`.
 
-Discrepancy policy: [math/discrepancy-policy.md](math/discrepancy-policy.md). Not trusted.lean.
+```bash
+python3 scripts/proof-db/compare_reference.py --write
+```
+
+See [`../proof-database/DISCREPANCIES.md`](../proof-database/DISCREPANCIES.md).

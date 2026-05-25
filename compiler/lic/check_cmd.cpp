@@ -107,6 +107,7 @@ bool run_frontend_check(const char* path, const std::string& source, Module& out
     return false;
   }
 
+  run_advisory_passes(*parsed.module, path, advisory_opts, diags);
   auto checked = typecheck_module(*parsed.module);
   for (const auto& d : checked.diagnostics.items()) {
     append_diagnostic(diags, d);
@@ -114,8 +115,6 @@ bool run_frontend_check(const char* path, const std::string& source, Module& out
   if (!checked.ok) {
     return false;
   }
-
-  run_advisory_passes(*parsed.module, path, advisory_opts, diags);
   if (options.deny_warnings && diags.has_warnings()) {
     SourceLoc loc{path, 1, 1, 0};
     diags.error(loc, "warnings denied by --deny-warnings");
@@ -155,10 +154,27 @@ int lic_check_main(int argc, char** argv) {
 
 int lic_diagnose_main(int argc, char** argv) {
   if (argc < 3) {
-    std::cerr << "usage: lic diagnose <file>\n";
+    std::cerr << "usage: lic diagnose <file> [--deny-warnings]\n";
     return 1;
   }
-  return check_file(argv[2], DiagOutput::Json, "diagnose", false);
+  const char* path = nullptr;
+  bool deny_warnings = false;
+  for (int i = 2; i < argc; ++i) {
+    const std::string_view arg = argv[i];
+    if (arg == "--deny-warnings") {
+      deny_warnings = true;
+    } else if (path == nullptr) {
+      path = argv[i];
+    } else {
+      std::cerr << "usage: lic diagnose <file> [--deny-warnings]\n";
+      return 1;
+    }
+  }
+  if (path == nullptr) {
+    std::cerr << "usage: lic diagnose <file> [--deny-warnings]\n";
+    return 1;
+  }
+  return check_file(path, DiagOutput::Json, "diagnose", deny_warnings);
 }
 
 }  // namespace li

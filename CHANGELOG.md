@@ -13,6 +13,7 @@ All notable changes to Li are documented here. The format follows
 
 ### Changed
 
+- **WP1 check/diagnose advisory:** added `lic check` advisory severities (W0401/W0402/W0403, N0401), `li.toml [check].typosquat` warn/deny policy, `--deny-warnings`, and `run_frontend_check` command API for WP3 follow-ups — `docs/release-notes/2026-05-25-lic-check-advisory-wp1.md`.
 - **Plan checkboxes (wave):** sync `docs/superpowers/plans/*.md` exit gates with shipped Phases 0–5, Pkg, P-linalg loop witness, and C++ compiler evidence — [2026-05-25-plan-checkbox-audit-wave.md](docs/release-notes/2026-05-25-plan-checkbox-audit-wave.md).
 - **LLVM toolchain:** pin **22** (was 18) — `scripts/llvm-env.sh`, `scripts/ci-install-llvm.sh`, CMake gate — [2026-05-22-llvm-22-toolchain-bump.md](docs/release-notes/2026-05-22-llvm-22-toolchain-bump.md).
 

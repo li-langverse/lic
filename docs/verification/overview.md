@@ -26,6 +26,7 @@ The only unproved surface is **`trusted.lean`** (minimal `IO`). Decorators, math
 | Command | Certificate? |
 |---------|----------------|
 | `lic build` | **Target:** binary iff Lean kernel OK · **Today:** parse + policy + typecheck + borrow + codegen (see [gaps](provability-gaps.md)) |
+| `li-tests prove_lean_ok` | **Partial:** strict build + zero open AutoVC + `lake build AutoVC` when elan installed — see [proof corpus](proof-corpus-roadmap.md) |
 | `lic check` | **No** — fast IDE feedback only |
 
 ## Required on every compiling unit

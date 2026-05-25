@@ -76,3 +76,14 @@ file = "smoke/studio_mcp_tools.li"
 outcome = "compile_open_ok"
 note = "T-PKG-li-studio-mcp-tools PH-AGENT"
 
+[[tests]]
+suite = "smoke"
+file = "smoke/studio_mcp_extended.li"
+outcome = "compile_open_ok"
+note = "T-PKG-li-studio-mcp-extended PH-AGENT gap-6-7"
+
+
+[[test]]
+file = "smoke/studio_vertical_demo_env.li"
+tier = "smoke"
+note = "STUDIO_DEMO_PROFILE vertical demo frames + optional LIG_HOST_PRESENT"

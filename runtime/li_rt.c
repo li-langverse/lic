@@ -350,6 +350,15 @@ static int32_t li_rt_studio_mcp_tool_match_name(const char* name) {
   if (li_rt_str_eq(name, "publish_bundle")) {
     return 5;
   }
+  if (li_rt_str_eq(name, "am_export_print")) {
+    return 6;
+  }
+  if (li_rt_str_eq(name, "chem_dft_run")) {
+    return 7;
+  }
+  if (li_rt_str_eq(name, "studio_adaptive_layout")) {
+    return 8;
+  }
   return 0;
 }
 
@@ -369,6 +378,12 @@ const char* li_rt_studio_mcp_tool_name(int32_t tool_id) {
       return "lic_build";
     case 5:
       return "publish_bundle";
+    case 6:
+      return "am_export_print";
+    case 7:
+      return "chem_dft_run";
+    case 8:
+      return "studio_adaptive_layout";
     default:
       return "";
   }

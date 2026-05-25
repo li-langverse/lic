@@ -11,10 +11,9 @@ All notable changes to Li are documented here. The format follows
 - **PH-HW WP2:** LKIR matmul CPU oracle + md_force_short placeholder — [2026-05-25-ph-hw-wp2-lkir-matmul-md.md](docs/release-notes/2026-05-25-ph-hw-wp2-lkir-matmul-md.md).
 
 - **PH-SIM SIM-3 (partial):** ml.rl EnvPoolStub + sim_rl studio route.
+
+- **PH-DB master plan cross-link:** phase map row + `ph-db-lidb-platform.md` appendix; **PH-8d-v2 → PH-DB-4** — [2026-05-25-ph-db-master-plan-crosslink.md](docs/release-notes/2026-05-25-ph-db-master-plan-crosslink.md).
 - **Studio UX Wave 2 P2 (HTML mocks 16–18):** command palette, reel motion, end CTA scenes — [2026-05-25-studio-ux-wave2-16-18.md](docs/release-notes/2026-05-25-studio-ux-wave2-16-18.md).
-
-
-
 - **Studio UX Wave 2 P1 (HTML mocks):** outliner panel, consolidated viewport error strip, dock labels — [2026-05-25-studio-ux-wave2-p1-mocks.md](docs/release-notes/2026-05-25-studio-ux-wave2-p1-mocks.md).
 
 ### Fixed

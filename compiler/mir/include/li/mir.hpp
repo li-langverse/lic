@@ -2,6 +2,8 @@
 
 #include "li/ast.hpp"
 
+#include <iosfwd>
+
 #include <cstdint>
 #include <string>
 #include <vector>
@@ -154,6 +156,8 @@ struct MirFn {
   bool is_async = false;
   /** When true, `ArrayDotF64` / `ArrayBinOpF64` use scalar loops only. */
   bool no_vectorize = false;
+  /** `@vectorized` / `@vectorized(lanes=4)` on `def`; 0 = not set (default SIMD when !no_vectorize). */
+  std::int64_t vectorized_lanes = 0;
   std::vector<MirDecorator> decorators;
   std::vector<MirParam> params;
   /** Populated when `returns_object`; parallel to ReturnObject / unpack layout. */
@@ -180,5 +184,8 @@ std::size_t count_mir_vectorized_proc(const MirModule& mir);
 std::size_t count_mir_parallel_disjoint_proven(const MirModule& mir);
 
 MirModule lower_to_mir(const Module& module);
+
+/** When `LI_MIR_DECOR_FLAGS=1`, print per-fn decorator codegen flags (verify smoke). */
+void print_mir_decorator_flags(const MirModule& mir, std::ostream& out);
 
 }  // namespace li

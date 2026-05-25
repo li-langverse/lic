@@ -224,6 +224,49 @@ int32_t li_rt_studio_profile_from_name(const char* name) {
   return li_rt_studio_profile_match_name(name);
 }
 
+static int32_t li_rt_studio_mcp_tool_match_name(const char* name) {
+  if (name == NULL) {
+    return 0;
+  }
+  if (li_rt_str_eq(name, "world_scaffold")) {
+    return 1;
+  }
+  if (li_rt_str_eq(name, "sim_set_profile")) {
+    return 2;
+  }
+  if (li_rt_str_eq(name, "lic_check")) {
+    return 3;
+  }
+  if (li_rt_str_eq(name, "lic_build")) {
+    return 4;
+  }
+  if (li_rt_str_eq(name, "publish_bundle")) {
+    return 5;
+  }
+  return 0;
+}
+
+int32_t li_rt_studio_mcp_tool_from_name(const char* name) {
+  return li_rt_studio_mcp_tool_match_name(name);
+}
+
+const char* li_rt_studio_mcp_tool_name(int32_t tool_id) {
+  switch (tool_id) {
+    case 1:
+      return "world_scaffold";
+    case 2:
+      return "sim_set_profile";
+    case 3:
+      return "lic_check";
+    case 4:
+      return "lic_build";
+    case 5:
+      return "publish_bundle";
+    default:
+      return "";
+  }
+}
+
 int32_t li_rt_studio_parse_toml_profile_line(const char* line) {
   if (line == NULL) {
     return 0;

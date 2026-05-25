@@ -219,3 +219,5 @@ int32_t li_rt_log_redact_ok(const char* in);
 #endif
 int32_t li_rt_studio_profile_from_name(const char* name);
 int32_t li_rt_studio_parse_toml_profile_line(const char* line);
+int32_t li_rt_studio_mcp_tool_from_name(const char* name);
+const char* li_rt_studio_mcp_tool_name(int32_t tool_id);

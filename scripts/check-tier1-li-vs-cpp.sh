@@ -1,6 +1,14 @@
 #!/usr/bin/env bash
 # Tier-1 math microbench: report Li vs C++ wall_time ratio; optional strict ≤1.2× gate.
-# Uses benchmarks/results/latest.csv (run bench.py --tier 1 locally to refresh).
+#
+# CSV (LI_TIER1_PERF_CSV, default benchmarks/results/latest.csv):
+#   Regenerate: python3 benchmarks/harness/bench.py --tier 1
+# Smoke (no local bench run): li-tests/tooling/tier1_li_vs_cpp.sh falls back to
+#   li-tests/fixtures/tier1_math_perf_smoke.csv when latest.csv is missing.
+#
+# Env:
+#   LI_TIER1_PERF_STRICT=1  — exit 1 when any listed bench exceeds LI_TIER1_MAX_RATIO (default 1.2)
+#   LI_TIER1_MAX_RATIO      — cap vs C++ wall_time (default 1.2)
 set -euo pipefail
 ROOT="$(cd "$(dirname "$0")/.." && pwd)"
 # shellcheck source=lib/li-ui.sh

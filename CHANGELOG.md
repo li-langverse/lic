@@ -6,6 +6,10 @@ All notable changes to Li are documented here. The format follows
 
 ## [Unreleased]
 
+### Added
+
+- **PH-7e / G-math:** Tier-1 reporter fixture smoke (`li-tests/fixtures/tier1_math_perf_smoke.csv`, `tier1_li_vs_cpp.sh` fallback); `dot_len_mismatch.li`; restore `sum_non_array.li` (manifest was ahead of file) — `docs/release-notes/2026-05-25-7e-tier1-smoke-reductions.md`.
+
 ### Changed
 
 - **Plan checkboxes (wave):** sync `docs/superpowers/plans/*.md` exit gates with shipped Phases 0–5, Pkg, P-linalg loop witness, and C++ compiler evidence — [2026-05-25-plan-checkbox-audit-wave.md](docs/release-notes/2026-05-25-plan-checkbox-audit-wave.md).

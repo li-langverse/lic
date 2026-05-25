@@ -1,0 +1,9 @@
+benchmark,lang,variant,threads,metric,value,unit,git_sha,cpu_model,flags
+simd_dot,li,release,1,wall_time,1.000000,s,smoke,fixture,li-tests
+simd_dot,cpp,release,1,wall_time,1.000000,s,smoke,fixture,li-tests
+matmul_naive,li,release,1,wall_time,1.100000,s,smoke,fixture,li-tests
+matmul_naive,cpp,release,1,wall_time,1.000000,s,smoke,fixture,li-tests
+matmul_blocked,li,release,1,wall_time,0.950000,s,smoke,fixture,li-tests
+matmul_blocked,cpp,release,1,wall_time,1.000000,s,smoke,fixture,li-tests
+horner_pure_li,li,release,1,wall_time,1.150000,s,smoke,fixture,li-tests
+horner_pure_li,cpp,release,1,wall_time,1.000000,s,smoke,fixture,li-tests

@@ -862,6 +862,18 @@ suite = "math_linalg"
 file = "math_linalg/reductions/dot_via_sum_product.li"
 outcome = "verify_ok"
 
+[[tests]]
+suite = "math_linalg"
+file = "math_linalg/reductions/dot_len_mismatch.li"
+outcome = "compile_fail"
+expected_substr = "dot expects two matching array"
+
+[[tests]]
+suite = "math_linalg"
+file = "math_linalg/reductions/sum_non_array.li"
+outcome = "compile_fail"
+expected_substr = "sum expects a fixed array argument"
+
 # --- physics (packages + profiles) ---
 
 [[tests]]

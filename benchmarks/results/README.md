@@ -24,9 +24,20 @@ Tracked ecosystems live in `benchmarks/competitive/registry.toml` (`cpp`, `rust`
 - **Tier 2 (physics):** shared-kernel target **≤ 1.2×** C++ on reference hardware (advisory MSD rows until harness fixed).
 - **Tier 1 (micro):** pure-Li rows tracked separately; not gated at parity until **2i/7e** complete.
 
+## Tier-1 Li vs C++ gate (7e / G-math)
+
+| Mode | CSV | Command |
+|------|-----|---------|
+| **Smoke** (CI / fresh clone) | `li-tests/fixtures/tier1_math_perf_smoke.csv` | `./li-tests/tooling/tier1_li_vs_cpp.sh` when `latest.csv` is absent |
+| **Advisory** (default) | `benchmarks/results/latest.csv` | `./scripts/check-tier1-li-vs-cpp.sh` — reports GAP rows, exit 0 |
+| **Strict** | same | `LI_TIER1_PERF_STRICT=1 ./scripts/check-tier1-li-vs-cpp.sh` — fail if Li > 1.2× C++ |
+
+Pure-Li math benches checked: `simd_dot`, `matmul_naive`, `matmul_blocked`, `horner_pure_li`.
+
 ## Regenerate
 
 ```bash
 python3 benchmarks/harness/bench.py --tier 0
+python3 benchmarks/harness/bench.py --tier 1
 python3 benchmarks/harness/bench.py --tier 12 --runs 5
 ```

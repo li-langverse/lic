@@ -8,6 +8,8 @@ All notable changes to Li are documented here. The format follows
 
 ### Added
 
+- **GitHub Linguist handoff (WP3/4/6/7):** playbook, usage-evidence process, `contrib/linguist-upstream/` patch bundle; Julian-only upstream PR — [2026-05-25-linguist-wp346-handoff.md](docs/release-notes/2026-05-25-linguist-wp346-handoff.md).
+
 - **PH-DB master plan cross-link:** phase map row + `ph-db-lidb-platform.md` appendix; **PH-8d-v2 → PH-DB-4** — [2026-05-25-ph-db-master-plan-crosslink.md](docs/release-notes/2026-05-25-ph-db-master-plan-crosslink.md).
 - **Studio UX Wave 2 P2 (HTML mocks 16–18):** command palette, reel motion, end CTA scenes — [2026-05-25-studio-ux-wave2-16-18.md](docs/release-notes/2026-05-25-studio-ux-wave2-16-18.md).
 - **Studio UX Wave 2 P1 (HTML mocks):** outliner panel, consolidated viewport error strip, dock labels — [2026-05-25-studio-ux-wave2-p1-mocks.md](docs/release-notes/2026-05-25-studio-ux-wave2-p1-mocks.md).

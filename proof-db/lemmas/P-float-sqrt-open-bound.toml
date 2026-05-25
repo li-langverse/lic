@@ -1,0 +1,13 @@
+id = "P-float-sqrt-open-bound"
+kind = "lemma"
+field = "float"
+gap_id = "G-lean"
+backlog_id = "P-float"
+statement = "sqrt: abs(result² - x) < ε via Li.Discharge.sqrt_open_bound_spec."
+li_specimen = "li-tests/contracts_verify/sqrt_open_bound.li"
+lean_thm = "Li.Discharge.sqrt_open_bound_spec"
+lean_module = "docs/semantics/Li/Discharge.lean"
+proof_status = "proved"
+release_pin = "2026-05-25"
+release_lic = "dev"
+evidence = ["li-tests/tooling/discharge_sqrt_open_lean.sh", "prove_lean_ok"]

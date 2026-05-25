@@ -10,6 +10,7 @@ Li’s **north star** is: user logic is proved before ship; runtime failures for
 This page is the **honest inventory** of what is **not** fully proved or not yet wired. When a gap closes, update this file in the **same PR** as the implementation.
 
 **Related:** [Verification overview](overview.md) · [Proof database](proof-database/README.md) · [Proof corpus roadmap](proof-corpus-roadmap.md) · [Master plan — Doc phase & compiler task map](../superpowers/plans/2026-05-14-li-master-plan.md#documentation--provability-honesty-cross-cutting) · [Trusted axioms](../semantics/README.md)
+**Related:** [Verification overview](overview.md) · [Proof database](proof-database.md) · [Proof database](proof-database.md) · [Master plan — Doc phase & compiler task map](../superpowers/plans/2026-05-14-li-master-plan.md#documentation--provability-honesty-cross-cutting) · [Trusted axioms](../semantics/README.md)
 
 ---
 
@@ -33,20 +34,20 @@ This page is the **honest inventory** of what is **not** fully proved or not yet
 
 | ID | Status | What remains |
 |----|--------|----------------|
-| **G-lean** | Partial | **Tier B (default when lake installed):** `lic build` runs `lake build AutoVC` (typecheck only; `--no-lean-verify` opt-out). **Strict** open goals: `--strict-lean`. Open obligations: fail unless `--allow-open-vc` (CLI only; env bypass removed). **`LiArray`** + fib/recursive call-site + parallel `_par*` VCs typecheck. **Still open:** `sqrt_open_bound` (P-float); `mat2_at2_eval` trusted vs MIR `@` (semantic closed in `Discharge.lean`) |
+| **G-lean** | Partial | **Tier B** when lake installed; **closed slice:** `sqrt_open_bound` via `Li.Discharge.sqrt_open_bound_spec` (trusted libm); kernel not universal |
 | **G-vc** | Partial | Float/`abs` ensures; opaque `vec3_dot`-style returns; loop implementations vs closed-form `ensures` |
 | **G-par** | Partial | AST `policy_module` rejects missing disjoint, false `disjoint_row`, mut capture, borrow-in-par; Lean proofs open |
 | **G-dec** | Partial | Decorator elaboration to MIR; `decorator_exploits` proofs |
-| **G-math** | Partial | **Closed slice (tier-1):** `matmul_naive`, `horner_pure_li` ≤1.2× C++ (`check-tier1-li-vs-cpp.sh`, loop matmul + FMA horner). **Closed slice:** full 2×2 float `@` Lean Prop (`linalg_mat2_at2_float_closed`, `mat2_at2_float_spec`). **Closed slice:** `linalg_dot4_float_closed` (prelude `dot`), `linalg_mat2_callproc_float_closed`, prelude `norm`/`axpy`/**, IKJ `ArrayMatMul2DF64` enforced only with `LI_TIER1_PERF_STRICT=1` (`check-tier1-li-vs-cpp.sh` reports gaps by default). **Closed slice:** prelude `norm`, `axpy`, same-length `**`, scalar×array, `math_linalg/reductions/`, loop-dot witness, P-linalg corpus |
+| **G-math** | Partial | **Closed slice (length-1 broadcast):** `broadcast_len1_{add,mul,pow}_*.li`; `broadcast_invalid_len2_vs_len4.li` + `elementwise_len_mismatch.li` compile_fail. **Closed slice (reductions shape):** `reductions/{sum_non_array,dot_len_mismatch}.li` compile_fail. **Closed slice (tier-1 perf):** `matmul_naive`, `horner_pure_li` ≤1.2× C++. **Closed slice:** 2×2 float `@` Prop; P-linalg int corpus; loop dot open |
 | **G-bnd** | Partial | Release path without `li_bounds_fail` for proved indices |
 | **G-def** | Partial+ | Cross-module method privacy proofs; virtual dispatch deferred |
-| **G-oop** | Partial | Lean `ensures` on methods; trait laws in kernel |
+| **G-oop** | Partial | **Closed slice:** method call-site `requires` + int-return `ensures` in `contracts_verify/` (`discharge_method_*_lean.sh`); trait laws / `old(self.field)` open |
 | **G-math-syn** | Partial | `for` / `range` surface |
-| **G-stdlib** | Partial | Full workspace cycle + seal edge cases |
+| **G-stdlib** | Partial | **Closed slice:** import-graph seal + `import_cycle` (`shadow_echo_via_import.li`, `import_cycle_a.li`); re-export override open (8a) |
 | **G-narrow** | Partial | Proved width narrowing (beyond `cast[` reject) |
 | **G-async** | Partial | `await` + structured concurrency proofs |
-| **G-net** | Partial | Net effect codegen + proofs |
-| **G-trust** | Stub | `Core.lean` / `MIR.lean` semantics, not placeholder |
+| **G-net** | Partial | Net effect codegen + proofs; **w0-bytes-io:** `raises Net` propagation + `check-w0-bytes-io.sh` |
+| **G-trust** | Partial | `trusted.lean` Net v1 axioms + accepted trusted-net RFC; `Core.lean` / `MIR.lean` still planned |
 | **G-ann** | Missing | PEP 649 deferred annotations |
 | **G-gpu** | Missing | `@gpu` address-space proofs + codegen |
 | **G-meta** | Missing | Compiler ↔ Lean equivalence (research) |
@@ -56,7 +57,7 @@ This page is the **honest inventory** of what is **not** fully proved or not yet
 | **G-hw** | Axiomatic | FP/hardware model limit (documented, not closable) |
 | **G-wrong-spec** | Social | User theorem quality (not tool-closable) |
 
-**Proof backlog still open:** **P-refine**, **P-ensures-witness**, **P-float**, **P-linalg** (float `@` Props; full matmul), **P-par**, **P-dec**, **P-bnd**, **P-http**, **P-narrow**, **P-meta** — see [proof-corpus-roadmap](proof-corpus-roadmap.md). **P-linalg partial:** closed dot/sum/matmul-entry + **loop dot** (`linalg_dot4_int_loop_open`, `dot4_int_loop_eval_spec`); open float `vec3_dot`, 2D CallProc.
+**Proof backlog still open:** **P-refine** (init/inline/guard), **P-ensures-witness**, **P-float**, **P-linalg** (float `@` Props; full matmul), **P-par**, **P-dec**, **P-bnd**, **P-http**, **P-narrow**, **P-meta** — see [proof-corpus-roadmap](proof-corpus-roadmap.md). **P-linalg partial:** closed dot/sum/matmul-entry + **loop dot** (`linalg_dot4_int_loop_open`, `dot4_int_loop_eval_spec`); open float `vec3_dot`, 2D CallProc.
 
 !!! warning "Do not overclaim in docs or packages"
     Until **Phase 2f** lands, saying “`lic build` proves your program in Lean” is **aspirational**. Prefer: “`lic build` runs the current static gate; see [provability gaps](provability-gaps.md).”
@@ -72,18 +73,18 @@ Status legend: **Missing** · **Stub** · **Partial** · **CI only** · **Done**
 | **G-lean** | Lean 4 gate | `lic build` fails if any VC open | **Partial** — Tier B `lake build AutoVC` when installed; **closed slice:** 14× `prove_lean_ok` corpus; `sqrt_open_bound` intentional open; kernel not universal certificate | **2f** | `discharge_trivial_lean.sh`, `discharge_linalg_int_lean.sh`, `contracts_discharge_corpus.sh`, `check-autovc-open-goals.sh`, `li-tests/run_all.sh` `prove_lean_ok` |
 | **G-vc** | VC generation | Contracts → proof obligations | **Partial** — **closed slice:** call-site `requires`, const-local discharge, E0303/E0304/E0305; open: float `abs`, opaque returns | **2e** | `vc_emit_contracts.sh`, `mir_vc_witness.sh`, `discharge_caller_requires_lean.sh`, `discharge_caller_requires_local_lean.sh`, `contracts_discharge_corpus.sh`, `prove_reject/weak_ensures_true.li` |
 | **G-par** | `parallel for` safety | Proved iteration independence | **Partial** — **closed slice:** 6× `compile_fail` + `good_disjoint_parallel.li` `verify_ok`; Lean disjoint proofs open | **7b**, **7d-c** | `li-tests/race_shared_memory/`, `decorator_exploits/missing_disjoint_at_parallel.li`, `run_all.sh` suite `race_shared_memory` |
-| **G-stdlib** | Prelude / std seal | User cannot shadow builtin or `std/` names | **Partial** — `check_stdlib_seal` + `resolve_imports` for `std.*` / workspace; cycle detect at load | **4s** | `li-tests/stdlib_seal/`, `li-tests/modules/` |
+| **G-stdlib** | Prelude / std seal | User cannot shadow builtin or `std/` names | **Partial** — **closed slice:** `check_stdlib_seal` on entry + each resolved import; `import_cycle` at load; workspace `std.*` / path deps; re-export override open (**8a**) | **4s** | `li-tests/stdlib_seal/` (6 compile_fail incl. `shadow_echo_via_import.li`), `li-tests/modules/import_cycle_a.li` |
 | **G-dec** | Execution decorators | Static elaboration; reserved names; no runtime | **Partial** — **closed slice:** 4× `decorator_exploits` `compile_fail`; `@vectorized` on `for` (`vectorized_for_scope_ok.li`); `@parallel` MIR elaboration open | **7d** | `li-tests/decorator_exploits/`, `li-tests/decorators/vectorized_for_scope_ok.li`, `run_all.sh` suites `decorator_exploits`, `decorators` |
 | **G-math** | Math / `A @ B` | Shape errors at compile time; no user `simd(...)` | **Partial** — **closed slice:** 9× `prove_lean_ok` linalg + `discharge_linalg_int_lean.sh`; `math_linalg/` compile tests; tier-1 `tier1_li_vs_cpp.sh` | **2i**, **7e**, **2f** | `li-tests/math_linalg/`, `li-tests/contracts_verify/linalg_*_closed.li`, `li-tests/tooling/discharge_linalg_int_lean.sh`, `li-tests/tooling/tier1_li_vs_cpp.sh` |
 | **G-bnd** | Bounds in release | No reliance on `li_bounds_fail` for proved indices | **Partial** — architecture lists MIR bounds; not full refinement | **2e**, **3** | [Architecture](../architecture/overview.md); codegen paths |
 | **G-def** | `def` / `object` / visibility | Handbook surface | **Partial+** — methods/`self`, `private def`, MIR in-out write-back (**2j-a/b/c**); inheritance/traits open (**2j-d–f**) | **2j** | `li-tests/encapsulation/`, `composable/import_physics_runtime.li` |
-| **G-oop** | Full OOP | Methods, traits, inheritance, cross-module encapsulation | **Partial** — **2j-a…f** surface done; Lean `ensures` on methods / trait laws open | **2j** | `li-tests/encapsulation/trait_*.li`, `method_call_requires_*.li` |
+| **G-oop** | Full OOP | Methods, traits, inheritance, cross-module encapsulation | **Partial** — **2j-a…f** surface + **P-oop partial:** folded method call-site `requires` + method `ensures` witnesses; trait laws / `old(self.field)` open | **2j** | `method_call_requires_*.li`, `method_ensures_return_ok.li`, `encapsulation/trait_*.li` |
 | **G-math-syn** | Python-math (`**`, `for`, …) | Ergonomic surface | **Partial** — `%`, `//`, `**` on `int`; `for`/`range` open | **2h** | `li-tests/math_syntax/` |
 | **G-ann** | Deferred annotations (PEP 649) | Lazy resolve at check | **Missing** — shown in pipeline diagram as planned | **4** | Not in compiler tree |
 | **G-gpu** | `@gpu` / device buffers | Separate address space proofs | **Missing** | **3+**, **7d** | Spec Phase 3+ |
 | **G-async** | `@async` / `raises Async` | Structured concurrency proofs | **Partial** — `@async` requires `raises Async`; await not parsed | **2+**, **7d** | `li-tests/effects/` |
-| **G-net** | `raises Net` | Trusted syscall surface | **Partial** — effect propagation + `trusted.lean` axioms; no codegen | **H**, **2f** | `li-tests/effects/net_*.li` |
-| **G-trust** | Trusted base growth | Only `trusted.lean` | **Stub** — file exists; `Core.lean` / `MIR.lean` **planned** | **2f** | [semantics/README.md](../semantics/README.md) |
+| **G-net** | `raises Net` | Trusted syscall surface | **Partial** — effect propagation + `trusted.lean` v1 TcpListen/TcpConn; C seam in `li_rt_net.c` | **H**, **2f** | `li-tests/effects/net_*.li`, `li-tests/net_trusted/`, `check-w0-bytes-io.sh` |
+| **G-trust** | Trusted base growth | Only `trusted.lean` | **Partial** — Net axioms + [trusted-net RFC](../superpowers/specs/2026-05-16-li-trusted-net-rfc.md); `Core.lean` / `MIR.lean` **planned** | **2f** | [semantics/README.md](../semantics/README.md) |
 | **G-meta** | Compiler correctness | C++ compiler ≡ Lean semantics | **Missing** (research) | long-term | Not started |
 | **G-hw** | Hardware / FP | Model vs IEEE / CPU bugs | **Axiomatic** | — | Documented limit |
 | **G-wrong-spec** | User contracts | Correct theorem | **Social** — tool cannot fix | — | Review culture |
@@ -158,7 +159,7 @@ flowchart LR
 | `li-tests/race_shared_memory/` | Policy + typecheck **reject** bad parallel patterns (not Lean) |
 | `li-tests/decorator_exploits/` | **Planned** — reserved names, macro hijack (7d-e) |
 | `li-tests/math_linalg/` | **Partial** — 1d/2d `@`, element-wise, matmul compile tests (2i/7e) |
-| `li-tests/contracts_verify/` | **Partial** — 14× `prove_lean_ok` closed corpus; `sqrt_open_bound` intentional open (`verify_open_ok`); refinements on `verify_ok` |
+| `li-tests/contracts_verify/` | **Partial** — 14× `prove_lean_ok` closed corpus; `sqrt_open_bound` intentional open (`verify_open_ok`); `refinement_call_ok` `prove_lean_ok`; other refinements `verify_ok` |
 | `li-tests/tooling/discharge_linalg_int_lean.sh` | P-linalg closed specimens → zero open AutoVC goals |
 | `li-tests/tooling/vc_emit_contracts.sh` | `sqrt_contract` AutoVC uses `≥` / `Float.abs`, not `True` stubs |
 | `li-tests/tooling/discharge_trivial_lean.sh` | `discharge_trivial.li` → zero open Prop goals + `lake build` when Lean installed |
@@ -197,3 +198,7 @@ Rough order from [master plan](../superpowers/plans/2026-05-14-li-master-plan.md
 5. **2i / 7e** — math surface (**G-math**)  
 
 **Documentation:** Phase **Doc** (Doc-a … Doc-e) in the master plan — update this file and handbook pages in the **same PR** as each compiler row moves to **Partial** or **Done**.
+
+
+| **G-trust** | Partial+ | **T-GetElem** in `Core.lean`; `MIR.lean` preservation open |
+| **G-trust** | Trusted base growth | Only `trusted.lean` | **Partial+** — **T-GetElem** (`typing_getElem`) in `Core.lean`; `MIR.lean` preservation **planned** | **2f** | `docs/semantics/Core.lean`, [semantics/README.md](../semantics/README.md) |

@@ -443,7 +443,7 @@ Track in phase **Doc** until each is checked:
 - [x] Phase 2g — `def`, `object` + field `private`/`public`, minimal `import` (`encapsulation` suite green; import parse-only; **not** full OOP)
 - [x] Phase 2j — Full OOP surface — **2j-a…f done** (#83+); Lean method/trait `ensures` sugar still **G-oop** open — [OOP roadmap](2026-05-20-li-oop-roadmap.md)
 - [x] Phase 2h — Python-math operators `%`, `//`, `**` (`math_syntax` suite); `for`/`range` deferred (**G-math-syn**)
-- [ ] Phase 2i — Math / linalg surface — **partial:** **2i-a/c** (#148); **2i-b** `norm`, `sum`/`dot`, `reductions/`, same-length `**`, prelude `axpy`, scalar×array; **length-1 broadcast** (`array[1]`→`array[N]` element-wise); full NumPy rank broadcast still open; float `@` Props closed (`mat2_at2_eval`)
+- [ ] Phase 2i — Math / linalg surface — **partial:** **2i-a/c** (#148); **2i-b** `norm`, `sum`/`dot`, `reductions/` (`sum_non_array.li`, `dot_len_mismatch.li` compile_fail); same-length `**`, prelude `axpy`, scalar×array; **length-1 broadcast closed slice** (`broadcast_len1_{add,mul,pow}_*.li`; `broadcast_invalid_len2_vs_len4.li` + `elementwise_len_mismatch.li` compile_fail); full NumPy rank broadcast open; float `@` Props closed (`mat2_at2_eval`)
 - [x] Phase 3 — MIR + LLVM codegen (`lic build`, minimal lower/emit; CFG/bounds IR deferred)
 - [x] Phase 4 — Runtime + stdlib
 - [x] Phase 4s — Stdlib seal (prelude/`std/` names cannot be shadowed; `stdlib_seal/` CI)
@@ -472,7 +472,7 @@ Track in phase **Doc** until each is checked:
 - [x] Phase Doc-c — Phase 02 plan links **G-*** IDs (expand to 03/07 as those land)
 - [x] Phase Doc-d — Contributing / build skill requires gap-register updates
 - [x] Phase Doc-e — `scripts/check-doc-provability-claims.sh` in `scripts/ci.sh` (expand patterns over time)
-- [ ] **Vision-LLM** — LLM-first + agent JSON diagnostics — **partial:** `lic check --format=json`, `lic diagnose`, `diagnostic-v1` schema, handover docs, manifest stub ([llm-first spec](../specs/2026-05-16-li-llm-first-design.md), [agent-handover](../ecosystem/agent-handover-formats.md))
+- [ ] **Vision-LLM** — LLM-first + agent JSON diagnostics — **partial:** `lic check --format=json`, `lic diagnose`, `diagnostic-v1` schema, handover docs; **agent test slice** `li-tests/agent-manifest.json` (`suites` index + per-test rows) via `scripts/export-li-tests-agent-slice.sh`; **smokes:** `diagnose_json_smoke.sh` (envelope + jq), `agent_manifest_smoke.sh` — **open:** `lic edit --patch=json`, symbol compression, advisory JSON (`--deny-warnings`) ([llm-first spec](../specs/2026-05-16-li-llm-first-design.md), [agent-handover](../ecosystem/agent-handover-formats.md))
 
 **Dashboards (Cursor):** `canvases/li-master-plan-progress.canvas.tsx` — phase tracker; `canvases/li-fuzz-security-dashboard.canvas.tsx` — updated by `scripts/export-fuzz-status.sh` after nightly fuzz.
 
@@ -499,7 +499,7 @@ Runnable on `dev` after `./scripts/build.sh`:
 | v2 item | Gap ID(s) | Why still open |
 |---------|-----------|----------------|
 | **2e–2f** | **G-lean**, **G-vc**, **G-trust** | Kernel discharge; float/loop VCs — [still open](../verification/provability-gaps.md#still-open-report-every-session) · [proof-corpus-roadmap](../verification/proof-corpus-roadmap.md) |
-| **2i / 7e** | **G-math** | broadcast, loop-dot proof, remaining tier-1 strict rows |
+| **2i / 7e** | **G-math** | general rank broadcast (length-1 slice done), loop-dot proof, remaining tier-1 strict rows |
 | **7d** | **G-par**, **G-dec** | Structured `disjoint=`; decorator elaboration |
 | **2j proofs** | **G-oop** | Method/trait Lean `ensures` (surface done) |
 | **H** | — | M1 ship gate (exploits A+B, li-log, full Lean on server); M1.5 SSE/TLS |

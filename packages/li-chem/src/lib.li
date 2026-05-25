@@ -1,0 +1,8 @@
+import lig
+def chem_lig_backend_auto() raises IO -> int
+  requires true
+  ensures 1 <= result
+  ensures result <= 4
+  decreases 0
+=
+  return lig_backend_select_auto()

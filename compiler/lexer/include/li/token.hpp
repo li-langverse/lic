@@ -48,6 +48,7 @@ enum class TokenKind {
   KwIs,
   KwRequires,
   KwEnsures,
+  KwProbEnsures,
   KwDecreases,
   KwInvariant,
   KwResult,

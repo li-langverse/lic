@@ -54,4 +54,3 @@ N/A — no runtime/codegen hot-path changes; advisory pass runs in `lic check` f
 | Repo | Action |
 |------|--------|
 | lip / lit / lis | N/A |
-# stack hygiene: retrigger CI

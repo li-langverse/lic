@@ -66,9 +66,11 @@ class HarnessContractTest(unittest.TestCase):
         block = tier0_block.group(0)
         self.assertIn("run_tier0()", block)
         self.assertIn("run_verify()", block)
+        self.assertIn("emit_tier0_correctness_plot()", block)
         self.assertIn("stability.py", block)
         self.assertLess(block.index("run_tier0()"), block.index("run_verify()"))
-        self.assertLess(block.index("run_verify()"), block.index("stability.py"))
+        self.assertLess(block.index("run_verify()"), block.index("emit_tier0_correctness_plot()"))
+        self.assertLess(block.index("emit_tier0_correctness_plot()"), block.index("stability.py"))
 
     def test_skip_verify_gates_checksum_before_timing(self) -> None:
         tree = ast.parse(BENCH.read_text())

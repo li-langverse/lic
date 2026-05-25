@@ -21,7 +21,8 @@ todos:
 
 - id: chem-r2-dft-scf-gap
   content: "Minimal SCF recipe vs Li stub — hand off sim-p2-qm-dft-scf"
-  status: pending
+  status: completed
+  study: docs/numerics/studies/2026-05-25-chem-r2-dft-scf-gap.md
   handoff_implement: sim-p2-qm-dft-scf
 
 - id: chem-r3-package-placement

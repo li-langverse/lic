@@ -26,6 +26,7 @@ todos:
 - id: sim-p2-qm-dft-scf
   content: "Implement algo_id=418 qm_dft_scf_energy minimal SCF stub with summary metrics"
   status: pending
+  research: docs/numerics/studies/2026-05-25-chem-r2-dft-scf-gap.md
 
 ---
 

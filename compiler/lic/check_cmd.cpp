@@ -183,6 +183,7 @@ bool run_frontend_check(const char* path, const std::string& source, Module& out
 int lic_check_main(int argc, char** argv, const char* lic_executable) {
   if (argc < 3) {
     std::cerr << "usage: lic check <file> | --workspace[=li.toml] [--jobs=N] [--max-memory=MB] "
+                 "[--cores=N] [--threads-per-core=N] [--threads=N] "
                  "[--cache-dir=PATH] [--cache-max-mb=N] [--no-cache] [--format=json] "
                  "[--deny-warnings]\n";
     return 1;
@@ -219,6 +220,7 @@ int lic_check_main(int argc, char** argv, const char* lic_executable) {
       continue;
     }
     std::cerr << "usage: lic check <file> | --workspace[=li.toml] [--jobs=N] [--max-memory=MB] "
+                 "[--cores=N] [--threads-per-core=N] [--threads=N] "
                  "[--cache-dir=PATH] [--cache-max-mb=N] [--no-cache] [--format=json] "
                  "[--deny-warnings]\n";
     return 1;
@@ -226,10 +228,16 @@ int lic_check_main(int argc, char** argv, const char* lic_executable) {
 
   if (has_workspace) {
     finalize_resource_options(resource_options());
+    if (resource_options_invalid()) {
+      return 1;
+    }
     return lic_workspace_check_main(argc, argv, lic_executable, opts.cache);
   }
 
   finalize_resource_options(resource_options());
+  if (resource_options_invalid()) {
+    return 1;
+  }
 
   if (path == nullptr) {
     std::cerr << "usage: lic check <file> | --workspace[=li.toml] ...\n";

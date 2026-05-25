@@ -12,11 +12,23 @@ Static previews for the Studio UI/UX plan loop. **Not** the shipped native app (
 | `screenshots/studio-tokens.css` | Generated from `docs/design/studio-design-tokens.toml` |
 | `screenshots/capture.sh` | Headless Chrome PNG capture (1920×1080) |
 
+## Native viewport capture (SDL + Xvfb)
+
+`native/studio_viewport_capture.c` draws grid + particle dots under SDL2 for honest `native_pixels` evidence when wgpu is not wired. **Not** the full `li-studio` binary.
+
+```bash
+# From lic repo root (requires libsdl2-dev; xvfb-run on headless Linux)
+./scripts/studio-ui-ux-capture-native.sh   # uses STUDIO_UI_UX_NATIVE_PNG_DIR
+./scripts/studio-ui-ux-verify-native-capture.py
+```
+
+`ux-harness` target `world-studio-native` invokes the same script via `native_gui` adapter.
+
 ## Capture harness
 
 ```bash
 # From lic repo root
-STUDIO_UI_UX_ITERATION=studio-ux-07-capture-harness \
+STUDIO_UI_UX_ITERATION=studio-ux-10-native-capture \
   ./scripts/studio-ui-ux-capture-progress.sh
 ```
 

@@ -34,7 +34,7 @@ todos:
     status: done
   - id: studio-ux-10-native-capture
     content: "Extend ux-harness native_gui for Xvfb SDL capture when viewport draws pixels"
-    status: pending
+    status: done
 isProject: false
 ---
 

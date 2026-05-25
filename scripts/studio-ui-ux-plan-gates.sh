@@ -25,6 +25,7 @@ li_phase "design system (tokens + demo CSS)"
 [[ -x "$ROOT/deploy/studio-demo/screenshots/capture.sh" ]] || chmod +x "$ROOT/deploy/studio-demo/screenshots/capture.sh"
 chmod +x "$ROOT/scripts/studio-ui-ux-capture-progress.sh" 2>/dev/null || true
 python3 "$ROOT/scripts/studio-ui-ux-verify-capture.py" || fail "studio-ui-ux-verify-capture"
+python3 "$ROOT/scripts/studio-ui-ux-verify-native-capture.py" || fail "studio-ui-ux-verify-native-capture"
 python3 "$ROOT/scripts/studio-ui-ux-verify-tokens.py" || fail "studio token sync (TOML ↔ li-ui)"
 
 li_phase "competitive intel doc"

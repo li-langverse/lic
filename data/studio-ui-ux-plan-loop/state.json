@@ -8,9 +8,11 @@
     "studio-ux-05-studio-compose",
     "studio-ux-06-agent-chrome",
     "studio-ux-07-capture-harness",
-    "studio-ux-08-bench-registry"
+    "studio-ux-08-bench-registry",
+    "studio-ux-09-memory-budget",
+    "studio-ux-10-native-capture"
   ],
-  "iterations": 8,
+  "iterations": 9,
   "history": [
     {
       "at": "2026-05-24T14:53:41+00:00",

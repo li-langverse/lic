@@ -47,6 +47,6 @@ Registry: `benchmarks/competitive/studio-ui.toml` → `[[memory]] id = animate_m
 
 **Competitors (design):** Blender, Unreal Editor, Unity, Houdini (viewport); **agentic:** Cursor, Linear, GitHub Copilot Workspace.
 
-**Evidence:** screenshots + short reel per iteration on GitHub (release `studio-ui-ux-progress`), not in git tree.
+**Evidence:** screenshots + short reel per iteration on GitHub (release `studio-ui-ux-progress`), not in git tree. Native SDL viewport frames (`deploy/studio-demo/native/`, `scripts/studio-ui-ux-capture-native.sh`, `ux-harness` `world-studio-native`) set `native_pixels=true` in `latest-capture.json` when Xvfb draws pixels; HTML mocks remain labeled marketing-only (UX-14).
 
 **Bench registry:** `benchmarks/competitive/studio-ui.toml` → `./scripts/bench-studio-viewport-perf.sh` → `benchmarks/results/bench-studio-viewport-perf.json` (regenerated; plan loop also writes `data/studio-ui-ux-plan-loop/latest-bench.json`).

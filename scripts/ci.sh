@@ -120,8 +120,13 @@ chmod +x "$ROOT/li-tests/tooling/diagnose_json_smoke.sh" \
   "$ROOT/li-tests/tooling/run_all_parallel_smoke.sh" \
   "$ROOT/li-tests/tooling/agent_manifest_smoke.sh" \
   "$ROOT/scripts/export-li-tests-agent-slice.sh" \
-  "$ROOT/scripts/lic-fix-suggest.sh"
+  "$ROOT/scripts/lic-fix-suggest.sh" \
+  "$ROOT/scripts/studio-mcp-lis-stub.sh" \
+  "$ROOT/scripts/studio-mcp-lis-stub.py" \
+  "$ROOT/scripts/studio-mcp-lis-dispatch.sh" \
+  "$ROOT/scripts/smoke-studio-mcp-lis-stub.sh"
 "$ROOT/li-tests/tooling/diagnose_json_smoke.sh"
+"$ROOT/scripts/smoke-studio-mcp-lis-stub.sh"
 "$ROOT/li-tests/tooling/check_workspace_cache_smoke.sh"
 "$ROOT/li-tests/tooling/run_all_parallel_smoke.sh"
 "$ROOT/li-tests/tooling/agent_manifest_smoke.sh"

@@ -56,8 +56,13 @@ Any tool that mutates project state or ships artifacts must run **`lic build`** 
 - `packages/li-studio/li-tests/smoke/studio_mcp_extended.li` — gap #6/#7 tool IDs, `studio_mcp_tool_dispatch`, adaptive layout hook.
 - `li-tests/composable/import_lig_chem_backend.li` — `chem_dft_run_smoke()` stub energy (`-76.0` Hartree); `chem_lig_backend_auto` unchanged.
 
+## `lis` MCP stub (post-#252)
+
+Subprocess stdio server and smoke: [studio-mcp-lis-server.md](studio-mcp-lis-server.md) (`scripts/studio-mcp-lis-stub.sh`, `scripts/smoke-studio-mcp-lis-stub.sh`).
+
 ## Not in this slice
 
-- `lis` HTTP MCP server implementation
+- `lis` native `mcp li-engine` binary (shell stub only — see link above)
+- MCP HTTP transport
 - `@cursor/sdk` agent session wiring
 - Real `am_export_print` / `chem_dft_run` / adaptive layout execution (contracts + dispatch stub only)

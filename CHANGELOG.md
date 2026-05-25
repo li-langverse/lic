@@ -21,6 +21,7 @@ All notable changes to Li are documented here. The format follows
 ### Added
 
 - **Execution-resource bench + security:** cores×tpc sweep CSV, `execution_exploits` CI, `--cores`/`--threads-per-core` — [2026-05-25-execution-resource-bench-security.md](docs/release-notes/2026-05-25-execution-resource-bench-security.md).
+- **Studio `lis` MCP stub (PH-AGENT-1):** stdio JSON-RPC `scripts/studio-mcp-lis-stub.sh` (eight Studio tools), `studio-mcp-lis-dispatch.sh`, `smoke-studio-mcp-lis-stub.sh` — [2026-05-25-studio-mcp-lis-server.md](docs/release-notes/2026-05-25-studio-mcp-lis-server.md).
 
 - **Studio MCP gap #6/#7 (contracts):** eight tool IDs (`am_export_print`, `chem_dft_run`, `studio_adaptive_layout`), `studio_mcp_tool_dispatch` stub, `li-chem` `chem_dft_run_smoke`, smokes `studio_mcp_extended.li` / composable chem — [2026-05-25-vertical-gap-mcp-chem.md](docs/release-notes/2026-05-25-vertical-gap-mcp-chem.md).
 

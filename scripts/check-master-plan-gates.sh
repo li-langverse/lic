@@ -70,6 +70,7 @@ chmod +x "$ROOT/scripts/check-doc-provability-claims.sh" \
 "$ROOT/li-tests/tooling/discharge_sqrt_contract_lean.sh"
 "$ROOT/li-tests/tooling/contracts_discharge_corpus.sh"
 "$ROOT/li-tests/tooling/diagnose_json_smoke.sh"
+"$ROOT/scripts/smoke-studio-mcp-lis-stub.sh"
 
 li_phase "hpc competitive registry (optional advisory)"
 chmod +x "$ROOT/li-tests/tooling/hpc_competitive_registry.sh"

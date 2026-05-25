@@ -1,0 +1,39 @@
+import sim
+
+def main() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  var sess: SimSessionStub = sim_session_stub_default()
+  if sim_reset(sess) != sim_status_ok():
+    return 1
+  if sim_step(sess, 0.016) != sim_status_ok():
+    return 2
+  if sim_step(sess, 0.016) != sim_status_ok():
+    return 3
+  if sess.tick != 2:
+    return 4
+  var cp: int = sim_checkpoint_tick(sess)
+  if cp != 2:
+    return 5
+  if sess.checkpoint_at != 2:
+    return 6
+  if sim_step(sess, 0.016) != sim_status_ok():
+    return 7
+  if sess.tick != 3:
+    return 8
+  if sim_replay_from_tick(sess, 2) != sim_status_ok():
+    return 9
+  if sess.tick != 2:
+    return 10
+  if sess.last_dt != 0.0:
+    return 11
+  if sim_replay_from_tick(sess, 4) != sim_status_invalid_tick():
+    return 12
+  if sim_replay_from_tick(sess, -1) != sim_status_invalid_tick():
+    return 13
+  var fresh: SimSessionStub = sim_session_stub_default()
+  if sim_replay_from_tick(fresh, 0) != sim_status_invalid_tick():
+    return 14
+  return 0

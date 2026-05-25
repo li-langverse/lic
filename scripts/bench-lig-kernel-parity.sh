@@ -60,6 +60,8 @@ kernels = []
 for kid in kernel_ids:
     if kid == pilot_id:
         kernels.append(pilot)
+    elif kid == "lig.kernel.md_force_short":
+        kernels.append({"kernel_id": kid, "status": "placeholder", "compile_ok": False, "validity_ref": "cpu"})
     else:
         kernels.append({"kernel_id": kid, "status": "stub", "compile_ok": False})
 

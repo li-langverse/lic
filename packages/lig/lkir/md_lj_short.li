@@ -1,0 +1,6 @@
+def lkir_md_lj_short_tile() -> int
+  requires true
+  ensures result == 1
+  decreases 0
+=
+  return 1

@@ -8,6 +8,9 @@ All notable changes to Li are documented here. The format follows
 
 ### Added
 
+- **PH-HW WP2:** LKIR matmul CPU oracle + md_force_short placeholder — [2026-05-25-ph-hw-wp2-lkir-matmul-md.md](docs/release-notes/2026-05-25-ph-hw-wp2-lkir-matmul-md.md).
+
+- **PH-SIM SIM-3 (partial):** ml.rl EnvPoolStub + sim_rl studio route.
 - **Studio UX Wave 2 P2 (HTML mocks 16–18):** command palette, reel motion, end CTA scenes — [2026-05-25-studio-ux-wave2-16-18.md](docs/release-notes/2026-05-25-studio-ux-wave2-16-18.md).
 
 

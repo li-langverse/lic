@@ -4,6 +4,7 @@
 
 ### Added
 
+- **PH-HW WP2** — matmul CPU oracle + md_force_short placeholder.
 - **PH-HW HW-0** — Rename package `li-gpu` → `lig`; import `lig`.
 - **Device API** — `lig_device_kind`, `lig_backend_available`, `lig_backend_select_auto`, `lig_capability_json`, `lig_parse_toml_backend_line`, `lig_present_surface_ok`.
 - **Runtime** — `li_rt_lig_*` in `runtime/li_rt.c` + `emit.cpp` declarations.

@@ -66,6 +66,7 @@ struct Parser {
   std::vector<TypeField> parse_type_fields();
   Param parse_param();
   std::unique_ptr<Expr> parse_contract_expr();
+  void parse_prob_ensures_tail(Contract& c);
   Contract parse_contract();
   std::unique_ptr<Expr> parse_decorator_value();
   Decorator parse_decorator();
@@ -595,6 +596,33 @@ std::unique_ptr<Expr> Parser::parse_contract_expr() {
   return parse_expr();
 }
 
+void Parser::parse_prob_ensures_tail(Contract& c) {
+  if (c.kind != ContractKind::ProbEnsures) {
+    return;
+  }
+  skip_newlines();
+  while (at(TokenKind::Ident) && (cur().text == "given" || cur().text == "samples")) {
+    const std::string tag = std::string(cur().text);
+    i++;
+    if (tag == "given") {
+      if (!at(TokenKind::Ident)) {
+        diags.error(loc(cur()), "expected axiom name after 'given'");
+        return;
+      }
+      c.prob_given = std::string(cur().text);
+      i++;
+    } else {
+      if (!at(TokenKind::IntLit)) {
+        diags.error(loc(cur()), "expected sample count after 'samples'");
+        return;
+      }
+      c.prob_samples = cur().int_value;
+      i++;
+    }
+    skip_newlines();
+  }
+}
+
 Contract Parser::parse_contract() {
   Contract c;
   const Token kw = cur();
@@ -602,6 +630,8 @@ Contract Parser::parse_contract() {
     c.kind = ContractKind::Requires;
   } else if (kw.kind == TokenKind::KwEnsures) {
     c.kind = ContractKind::Ensures;
+  } else if (kw.kind == TokenKind::KwProbEnsures) {
+    c.kind = ContractKind::ProbEnsures;
   } else if (kw.kind == TokenKind::KwDecreases) {
     c.kind = ContractKind::Decreases;
   } else {
@@ -610,6 +640,7 @@ Contract Parser::parse_contract() {
   c.span = {kw.start, kw.end};
   i++;
   c.expr = parse_contract_expr();
+  parse_prob_ensures_tail(c);
   skip_newlines();
   return c;
 }
@@ -793,7 +824,8 @@ Stmt Parser::parse_stmt() {
       if (accept(TokenKind::Indent)) {
         skip_newlines();
         while (at(TokenKind::KwRequires) || at(TokenKind::KwEnsures) ||
-               at(TokenKind::KwDecreases) || at(TokenKind::KwInvariant)) {
+               at(TokenKind::KwProbEnsures) || at(TokenKind::KwDecreases) ||
+               at(TokenKind::KwInvariant)) {
           s.par_contracts.push_back(parse_contract());
         }
         expect(TokenKind::Dedent, "dedent");
@@ -998,7 +1030,8 @@ Stmt Parser::parse_stmt() {
     if (accept(TokenKind::Indent)) {
       skip_newlines();
       while (at(TokenKind::KwRequires) || at(TokenKind::KwEnsures) ||
-             at(TokenKind::KwDecreases) || at(TokenKind::KwInvariant)) {
+             at(TokenKind::KwProbEnsures) || at(TokenKind::KwDecreases) ||
+             at(TokenKind::KwInvariant)) {
         s.par_contracts.push_back(parse_contract());
       }
       expect(TokenKind::Dedent, "dedent");
@@ -1106,7 +1139,8 @@ ProcDecl Parser::parse_proc(bool is_extern) {
   skip_newlines();
   parse_raises();
   while (at(TokenKind::KwRequires) || at(TokenKind::KwEnsures) ||
-         at(TokenKind::KwDecreases) || at(TokenKind::KwInvariant)) {
+         at(TokenKind::KwProbEnsures) || at(TokenKind::KwDecreases) ||
+         at(TokenKind::KwInvariant)) {
     proc.contracts.push_back(parse_contract());
   }
   if (is_extern) {
@@ -1266,7 +1300,8 @@ ProcDecl Parser::parse_trait_method() {
     proc.ret_type = parse_type();
   }
   skip_newlines();
-  while (at(TokenKind::KwRequires) || at(TokenKind::KwEnsures) || at(TokenKind::KwDecreases) ||
+  while (at(TokenKind::KwRequires) || at(TokenKind::KwEnsures) ||
+         at(TokenKind::KwProbEnsures) || at(TokenKind::KwDecreases) ||
          at(TokenKind::KwInvariant)) {
     proc.contracts.push_back(parse_contract());
   }

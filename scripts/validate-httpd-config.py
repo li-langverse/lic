@@ -11,6 +11,7 @@ from pathlib import Path
 from urllib.parse import urlparse
 
 from httpd_config import ConfigError, load_httpd_config
+from httpd_rng import validate_rng_config
 
 try:
     import tomllib
@@ -153,6 +154,42 @@ def validate(cfg: dict) -> list[str]:
                     if not str(k).strip():
                         errs.append("auth.keys must not contain empty strings")
 
+    health = cfg.get("health") or {}
+    if isinstance(health, dict):
+        mf = health.get("max_fails")
+        if mf is not None:
+            try:
+                if int(mf) < 1:
+                    errs.append("health.max_fails must be >= 1")
+            except (TypeError, ValueError):
+                errs.append("health.max_fails must be a positive integer")
+        active = health.get("active")
+        if active is not None:
+            if not isinstance(active, dict):
+                errs.append("health.active must be a table")
+            else:
+                path = active.get("path")
+                if not path:
+                    errs.append("health.active.path is required when [health.active] is set")
+                else:
+                    p = str(path).strip()
+                    if not p.startswith("/"):
+                        errs.append("health.active.path must be relative (start with /)")
+                    if "://" in p or ".." in p or "%" in p:
+                        errs.append("health.active.path must not contain ://, .., or %")
+                iv = active.get("interval") or active.get("interval_sec")
+                if iv is not None:
+                    s = str(iv).strip().rstrip("s")
+                    try:
+                        sec = int(s)
+                    except ValueError:
+                        errs.append("health.active.interval must be a duration in seconds")
+                    else:
+                        if sec < 1 or sec > 300:
+                            errs.append("health.active.interval must be in [1, 300]")
+
+    rng_errs, _rng_warns = validate_rng_config(cfg)
+    errs.extend(rng_errs)
     return errs
 
 

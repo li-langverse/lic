@@ -51,7 +51,7 @@ struct Param {
   TypeExpr type;
 };
 
-enum class ContractKind { Requires, Ensures, Decreases, Invariant };
+enum class ContractKind { Requires, Ensures, Decreases, Invariant, ProbEnsures };
 
 enum class BinOp { Add, Sub, Mul, Div, Mod, FloorDiv, Pow, MatMul, Le, Lt, Ge, Gt, Eq, Ne, And, Or };
 
@@ -98,6 +98,10 @@ struct Contract {
   ContractKind kind;
   Span span;
   std::unique_ptr<Expr> expr;
+  /// Monte Carlo hypothesis for `prob_ensures` (e.g. OsRngUniform).
+  std::string prob_given;
+  /// MC trial count; 0 = use `lic build --prob-check` default.
+  std::int64_t prob_samples = 0;
 };
 
 struct DecoratorArg {

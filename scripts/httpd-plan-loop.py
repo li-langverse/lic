@@ -29,6 +29,7 @@ from datetime import datetime, timezone
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
+HTTPD_PR_BRANCH = os.environ.get("HTTPD_PLAN_PR_BRANCH", "cursor/httpd-plan-continue")
 PLAN = ROOT / "docs/superpowers/plans/2026-05-16-li-httpd-plan.md"
 BASELINE = ROOT / "docs/ecosystem/httpd-m1-baseline.md"
 STATE_DIR = ROOT / "data/httpd-plan-loop"
@@ -58,14 +59,63 @@ def load_plan_todos() -> list[dict]:
     return todos
 
 
+def is_server_milestone(todo_id: str) -> bool:
+    """Server/httpd plan todos for parity loop (excludes prob-hoare, pkg-workspace-only)."""
+    if todo_id in ("prob-hoare", "pkg-workspace", "rng-concepts"):
+        return False
+    prefixes = (
+        "w0",
+        "w1",
+        "m0-",
+        "m1",
+        "m15",
+        "m2",
+        "m3",
+        "gap-",
+        "bench-harness",
+        "nginx-",
+        "exploit-",
+        "rng-exploit",
+        "setup-censor",
+        "li-log",
+    )
+    return todo_id.startswith(prefixes) or todo_id in ("setup-censor-schema",)
+
+
+def server_tier(todo_id: str) -> int:
+    if todo_id.startswith("w0"):
+        return 0
+    if todo_id.startswith("w1"):
+        return 1
+    if todo_id.startswith("m0"):
+        return 2
+    if todo_id.startswith("m1"):
+        return 3
+    if todo_id.startswith("m15"):
+        return 4
+    if todo_id.startswith("m2"):
+        return 5
+    if todo_id.startswith("m3"):
+        return 6
+    if todo_id.startswith("h-"):
+        return 7
+    if todo_id.startswith("gap-"):
+        return 8
+    return 9
+
+
 def pick_next(todos: list[dict], state: dict) -> dict | None:
     completed = set(state.get("completed_ids", []))
+    close_server = os.environ.get("LI_HTTPD_PLAN_CLOSE_SERVER_MILESTONES", "1").strip() not in (
+        "0",
+        "false",
+        "no",
+        "off",
+    )
 
     def order_key(t: dict) -> tuple[int, int, str]:
-        # Prefer M1 httpd todos over language-wide blockers (w0/w1).
-        m1 = 0 if t["id"].startswith("m1") else 1
         status_rank = 0 if t["status"] == "in_progress" else 1
-        return (status_rank, m1, t["id"])
+        return (status_rank, server_tier(t["id"]), t["id"])
 
     open_todos = [
         t
@@ -74,6 +124,14 @@ def pick_next(todos: list[dict], state: dict) -> dict | None:
     ]
     if not open_todos:
         return None
+    if close_server:
+        scoped = [t for t in open_todos if is_server_milestone(t["id"])]
+        if scoped:
+            open_todos = scoped
+    elif os.environ.get("LI_HTTPD_PLAN_INCLUDE_BLOCKERS", "").strip() not in ("1", "true", "yes"):
+        m1_open = [t for t in open_todos if t["id"].startswith("m1")]
+        if m1_open:
+            open_todos = m1_open
     open_todos.sort(key=order_key)
     return open_todos[0]
 
@@ -114,6 +172,96 @@ def _tee_stream(pipe, logf, out) -> None:
         out.flush()
         logf.write(line)
         logf.flush()
+
+
+def httpd_workflow_env() -> dict[str, str]:
+    branch = HTTPD_PR_BRANCH
+    return {
+        "LI_HTTPD_PLAN_LOOP": "1",
+        "LI_REPO_WORKFLOW_REPO": "lic",
+        "LI_REPO_WORKFLOW_BRANCH": branch,
+        "LI_REPO_WORKFLOW_TRACK_REMOTE": "1",
+        "LI_REPO_WORKFLOW_OPEN_PR": "1",
+        "HTTPD_PLAN_PR_BRANCH": branch,
+    }
+
+
+def _git(cwd: Path, *args: str) -> subprocess.CompletedProcess[str]:
+    return subprocess.run(
+        ["git", *args],
+        cwd=cwd,
+        capture_output=True,
+        text=True,
+        check=False,
+    )
+
+
+def recover_unpushed_work(lic_root: Path, agents_root: Path | None, branch: str) -> None:
+    token = os.environ.get("GH_TOKEN") or os.environ.get("GITHUB_TOKEN")
+    if not token:
+        print("recover: skip (no GH_TOKEN)", flush=True)
+        return
+
+    def push_repo(repo_dir: Path, label: str) -> None:
+        if not (repo_dir / ".git").is_dir():
+            return
+        cur = _git(repo_dir, "branch", "--show-current").stdout.strip()
+        if cur and cur != branch:
+            print(f"recover: skip {label} (branch {cur!r} != {branch!r})", flush=True)
+            return
+        if cur != branch:
+            _git(repo_dir, "checkout", "-B", branch, f"origin/{branch}")
+        dirty = _git(repo_dir, "status", "--porcelain").stdout.strip()
+        if dirty:
+            _git(repo_dir, "add", "-A")
+            _git(repo_dir, "commit", "-m", f"chore(httpd): plan loop recovery ({label})")
+        ahead = _git(repo_dir, "rev-list", "--count", f"origin/{branch}..HEAD")
+        if ahead.returncode == 0 and ahead.stdout.strip() not in ("", "0"):
+            push = _git(repo_dir, "push", "-u", "origin", branch)
+            if push.returncode == 0:
+                print(f"recover: pushed {label}", flush=True)
+
+    push_repo(lic_root, "lic checkout")
+    if not agents_root:
+        return
+    ws = agents_root / "data" / "workspaces"
+    if not ws.is_dir():
+        return
+    clones: list[Path] = []
+    for org_dir in ws.iterdir():
+        if not org_dir.is_dir():
+            continue
+        lic_dir = org_dir / "lic"
+        if not lic_dir.is_dir():
+            continue
+        for run_dir in lic_dir.iterdir():
+            repo = run_dir / "repo"
+            if (repo / ".git").is_dir():
+                clones.append(repo)
+    clones.sort(key=lambda p: p.stat().st_mtime, reverse=True)
+    for repo in clones[:3]:
+        push_repo(repo, repo.parent.name)
+
+
+def refresh_live_pages() -> None:
+    """Local Pages publish (no GHA). See lic/.cursor/skills/run-local-pages-benchmarks/."""
+    if os.environ.get("HTTPD_REFRESH_PAGES", "").strip() in ("0", "false", "no"):
+        return
+    bench_root = Path(os.environ.get("BENCHMARKS_ROOT", str(ROOT.parent / "benchmarks")))
+    script = bench_root / "scripts/refresh-live-sites.sh"
+    if not script.is_file():
+        print("pages: skip (no benchmarks/scripts/refresh-live-sites.sh)", flush=True)
+        return
+    env = {
+        **os.environ,
+        "LIC_ROOT": str(ROOT),
+        "SKIP_BENCH": os.environ.get("HTTPD_PAGES_SKIP_BENCH", "1"),
+        "SKIP_ROADMAP": os.environ.get("HTTPD_PAGES_SKIP_ROADMAP", "0"),
+    }
+    print("pages: refresh-live-sites.sh", flush=True)
+    proc = subprocess.run(["bash", str(script)], cwd=bench_root, env=env, check=False)
+    if proc.returncode != 0:
+        print(f"pages: refresh exit {proc.returncode}", flush=True)
 
 
 def agent_timeout_sec() -> int | None:
@@ -204,12 +352,12 @@ def run_cursor_agent(todo: dict, dry_run: bool) -> tuple[int, str]:
 
     env = {
         **os.environ,
+        **httpd_workflow_env(),
         "PYTHONUNBUFFERED": "1",
         "LI_SDK_TERMINAL_STREAM": os.environ.get("LI_SDK_TERMINAL_STREAM", "1"),
         "LI_AGENT_MINIMAL_PROMPT": "1",
-        "LI_HTTPD_PLAN_LOOP": "1",
-        "LI_REPO_WORKFLOW_REPO": "lic",
         "LIC_ROOT": str(ROOT),
+        "BENCHMARKS_ROOT": benchmarks or os.environ.get("BENCHMARKS_ROOT", str(ROOT.parent / "benchmarks")),
         "LI_AGENT_EXTRA_INSTRUCTION": instruction,
         "LI_AGENT_GOAL": instruction,
     }
@@ -231,6 +379,7 @@ def run_cursor_agent(todo: dict, dry_run: bool) -> tuple[int, str]:
     STATE_DIR.mkdir(parents=True, exist_ok=True)
     log_path = STATE_DIR / f"iter-{datetime.now(timezone.utc).strftime('%Y%m%d-%H%M%S')}.log"
     rc = run_subprocess_streaming(cmd, root, env, log_path)
+    recover_unpushed_work(ROOT, root, HTTPD_PR_BRANCH)
     return rc, f"log={log_path} (streamed above)"
 
 
@@ -238,22 +387,49 @@ def build_instruction(todo: dict) -> str:
     baseline = ""
     if BASELINE.is_file():
         baseline = BASELINE.read_text(encoding="utf-8")[:6000]
+    mission = ""
+    if os.environ.get("LI_HTTPD_PLAN_CLOSE_SERVER_MILESTONES", "1").strip() not in ("0", "false", "no", "off"):
+        mission = """
+## Loop mission (server parity — close all pending)
+
+Work through **every pending server milestone** in the plan (`w0`/`w1` → `m0` → `m1*` → `m15*` → `m2*` runtime rows).
+**Oracle/config-only is not enough** for `*-runtime` and `m0-ship-gate-full` todos — require running `build/li-httpd`, tier5 bench/exploit vs nginx where cited.
+See plan section **Parity milestones (agent-gateway vs nginx oracle)**.
+"""
+        if todo["id"].startswith("gap-"):
+            mission += """
+## Gap parity targets (measurable)
+
+- **Security:** every `tier5_http/exploits/*.toml` row passes on **running** `build/li-httpd`; map each exploit to OWASP/CWE in file header; li must be **stricter-or-equal** vs nginx (`[expect]` / `li_stricter`).
+- **Performance:** tier5 + Next.js toy scenarios — publish ratios in `benchmarks/results/`; default pass bar **li RPS ≥ 0.85× nginx** and **p99 ≤ 2× nginx** unless documented variant.
+- **LB / proxy / streaming:** runtime tests, not config-only; include sticky sessions (`ip_hash` or cookie) where multi-backend Next.js needs affinity.
+"""
     return f"""# httpd plan iteration — todo `{todo['id']}`
 
 **Plan:** `{PLAN.relative_to(ROOT)}`
 **Status in plan frontmatter:** update to `completed` when this todo is fully done.
-
+{mission}
 ## Current todo
 - **id:** {todo['id']}
 - **content:** {todo['content']}
 
 ## Rules (mandatory)
-1. Work only in **lic** on branch `cursor/httpd-plan-loop-54aa` (or continue existing httpd PR branch).
-2. PR-only: commit, push, open/update PR — do **not** merge to main yourself.
-3. Run `./scripts/httpd-plan-gates.sh` before finishing; fix failures.
-4. Write release notes (`docs/release-notes/`, `CHANGELOG.md`) per li-release-notes policy.
-5. After tier-5 httpd runtime changes, refresh HTTP bench matrix per `.cursor/rules/li-httpd-bench-matrix.mdc`.
-6. Close stale httpd PRs (#87, #84, #130) only with comment — do not merge wholesale.
+1. Work only in **lic** on branch `{HTTPD_PR_BRANCH}` (workspace tracks `origin/{HTTPD_PR_BRANCH}`).
+2. **Push before you stop:** commit, `git push -u origin {HTTPD_PR_BRANCH}`, open/update PR — never leave work only in a local clone.
+3. PR-only — do **not** merge to main yourself.
+4. Run `./scripts/httpd-plan-gates.sh` (or `HTTPD_GATES_SKIP_LIC_BUILD=1` for Python-only) before finishing.
+5. Release notes per li-release-notes policy when user-visible behavior changes.
+6. After tier-5 httpd runtime changes, refresh HTTP bench matrix per `.cursor/rules/li-httpd-bench-matrix.mdc`.
+
+## Live sites (local publish — no GitHub Actions)
+When benchmarks or org-visible status change, refresh public Pages from sibling **benchmarks** repo:
+```bash
+cd ../benchmarks && LIC_ROOT=../lic ./scripts/refresh-live-sites.sh
+```
+- **Benchmarks dashboard:** ratios vs cpp + hardware banner only (no raw wall times in UI).
+- **Development overview:** `roadmap/scripts/regenerate-development-overview-md.py` + deploy.
+- Skill: `lic/.cursor/skills/run-local-pages-benchmarks/SKILL.md`
+- Use `SKIP_BENCH=1` if no new CSV; still redeploy roadmap snapshot when PR queue changed.
 
 ## Baseline record
 {baseline}
@@ -261,7 +437,7 @@ def build_instruction(todo: dict) -> str:
 ## Deliverable
 - Implement the todo slice with tests.
 - Update plan YAML todo status for `{todo['id']}` when done.
-- PR URL + test commands in final summary.
+- PR URL + test commands + note if live sites were refreshed.
 """
 
 
@@ -343,6 +519,8 @@ def main() -> int:
         if code != 0:
             print(f"agent exit {code} — stopping loop (fix and re-run)", file=sys.stderr)
             return code
+
+        refresh_live_pages()
 
         tid = todo["id"]
         if tid not in state.setdefault("completed_ids", []):

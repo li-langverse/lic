@@ -12,7 +12,7 @@
 | Physics domains | `li-physics-*` | `import physics.<area>` | Rigid, fluids, particles, EM, … |
 | **Runtime** | `li-physics-runtime` | `import physics.runtime` | `physics_world_new`, `physics_step`, scene sync hooks |
 | **Scene** | `li-scene` | `import scene` | `EntityId`, `Transform3`, `Scene` graph hooks |
-| **UI** | `li-ui` | `import ui` | `Color`, `Rect`, `UiFrame`, `InputState` |
+| **UI** | `li-ui` | `import ui` | `Color`, `Rect`, `UiFrame`, `InputState`, `StudioShellLayout`, `PaintFrame` (layout + paint IR) |
 | Compiler std | `std/io`, `std/ui`, … | `import std.io` / facades | Prelude stubs for PH-IO-4 / UI tooling |
 | Benches | `benchmarks/tier2_physics/` | — | 20 kernels (catalog on benchmarks `main`) |
 

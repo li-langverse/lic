@@ -9,6 +9,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- **MD particle tiers** — `SceneMdParticleTier`, `SceneParticleDraw`, 1k/10k/100k @ 60/60/30 fps with honest `native_pixels=0` reporting.
+- **Bench hook** — `bench/particle_tiers.toml` for `bench-studio-viewport-perf.sh`.
 - Initial scaffold via `scripts/li-new-package` (PKG-li-std-scene).
 
 ## [0.1.0] - 2026-05-16

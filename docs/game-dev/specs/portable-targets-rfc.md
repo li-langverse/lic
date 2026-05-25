@@ -22,4 +22,4 @@ All official `packages/*` build on tier-1 without source changes.
 
 ## Dependencies
 
-LLVM 22 only for CPU; GPU via `[engine.gpu_backend]` in `li.toml` (see [li-gpu-lkir-rfc.md](li-gpu-lkir-rfc.md)).
+LLVM 22 only for CPU; GPU via `[engine.lig]` in `li.toml` (see [lig-rfc.md](lig-rfc.md); legacy `[engine.gpu]` alias one release).

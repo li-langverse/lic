@@ -8,6 +8,7 @@ namespace {
 
 ResourceOptions g_opts;
 bool g_env_warned = false;
+bool g_threads_cores_warned = false;
 
 void warn_deprecated_env_once(const char* var, const char* flag) {
   if (g_env_warned) {
@@ -23,6 +24,14 @@ void warn_env_ignored_once(const char* var) {
   }
   g_env_warned = true;
   std::cerr << "lic: warning: " << var << " is set but ignored because the matching flag was passed\n";
+}
+
+void warn_threads_over_cores_once() {
+  if (g_threads_cores_warned) {
+    return;
+  }
+  g_threads_cores_warned = true;
+  std::cerr << "lic: warning: --threads= wins over --cores/--threads-per-core= when both are set\n";
 }
 
 unsigned parse_positive(const char* s) {
@@ -45,6 +54,7 @@ ResourceOptions& resource_options() { return g_opts; }
 void reset_resource_options() {
   g_opts = ResourceOptions{};
   g_env_warned = false;
+  g_threads_cores_warned = false;
 }
 
 unsigned ResourceOptions::effective_jobs(unsigned default_per_job_mb) const {
@@ -56,6 +66,25 @@ unsigned ResourceOptions::effective_jobs(unsigned default_per_job_mb) const {
   const std::size_t cap = max_memory_mb / per;
   const unsigned capped = cap < 1 ? 1u : static_cast<unsigned>(cap);
   return j < capped ? j : capped;
+}
+
+int ResourceOptions::effective_runtime_team_size() const {
+  unsigned raw = 0;
+  if (threads_from_flag && threads > 0) {
+    raw = threads;
+  } else if (cores_from_flag && cores > 0) {
+    const unsigned tpc = threads_per_core > 0 ? threads_per_core : 1u;
+    raw = cores * tpc;
+  } else if (threads > 0) {
+    raw = threads;
+  }
+  if (raw == 0) {
+    return 0;
+  }
+  if (raw > kLiMaxRuntimeThreads) {
+    return static_cast<int>(kLiMaxRuntimeThreads);
+  }
+  return static_cast<int>(raw);
 }
 
 bool apply_resource_flag(std::string_view arg, ResourceOptions& out) {
@@ -77,6 +106,19 @@ bool apply_resource_flag(std::string_view arg, ResourceOptions& out) {
   if (arg.rfind("--build-dir=", 0) == 0) {
     out.build_dir = std::string(arg.substr(12));
     out.build_dir_from_flag = !out.build_dir.empty();
+    return true;
+  }
+  if (arg.rfind("--threads-per-core=", 0) == 0) {
+    out.threads_per_core = parse_positive(arg.substr(19).data());
+    if (out.threads_per_core == 0) {
+      out.threads_per_core = 1;
+    }
+    out.threads_per_core_from_flag = true;
+    return true;
+  }
+  if (arg.rfind("--cores=", 0) == 0) {
+    out.cores = parse_positive(arg.substr(8).data());
+    out.cores_from_flag = out.cores > 0;
     return true;
   }
   if (arg.rfind("--threads=", 0) == 0) {
@@ -119,6 +161,9 @@ void finalize_resource_options(ResourceOptions& opts) {
     }
   } else if (opts.threads_from_flag && std::getenv("LI_OMP_THREADS")) {
     warn_env_ignored_once("LI_OMP_THREADS");
+  }
+  if (opts.threads_from_flag && (opts.cores_from_flag || opts.threads_per_core_from_flag)) {
+    warn_threads_over_cores_once();
   }
   if (opts.jobs == 0) {
     opts.jobs = 1;

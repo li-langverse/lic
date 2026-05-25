@@ -12,6 +12,7 @@
 #include "li/error_codes.hpp"
 #include "li/proof_cli.hpp"
 #include "li/resource_options.hpp"
+#include "li/check_config.hpp"
 
 #include "li_rt.h"
 
@@ -43,7 +44,8 @@ int usage() {
             << "                       [--prob-check]     Monte Carlo discharge for prob_ensures P(event)<ε\n"
             << "                       [--no-lean-verify] skip lake / AutoVC typecheck\n"
             << "                       default: fail on open goals; lake typecheck when installed\n"
-            << "                       [--threads=N] [--jobs=N] [--max-memory=MB]\n"
+            << "                       [--jobs=N] [--cores=N] [--threads-per-core=M]\n"
+            << "                       [--threads=N] [--max-memory=MB]\n"
             << "                       [--coverage-instrument]\n"
             << "  lic smoke-llvm         verify LLVM can emit main returning 0\n"
             << "  lic httpd explain-config <file.toml>  desugar [routes] to canonical form\n"
@@ -55,7 +57,9 @@ int usage() {
             << "  --jobs=N — parallel compile workers (default 1; host=" << jobs << ")\n"
             << "  --max-memory=MB --job-memory-mb=N — cap effective --jobs\n"
             << "  --build-dir=PATH — isolated build tree (AutoVC, temps)\n"
-            << "  --threads=N — runtime parallel team size\n"
+            << "  --cores=N --threads-per-core=M — runtime team min(N*M, 64); M defaults 1\n"
+            << "  --threads=N — total runtime parallel team (overrides --cores when both set)\n"
+            << "  vector lanes — @vectorized(lanes=4) SIMD width; not threads or --jobs\n"
             << "  --numerically-stable / LI_FP_NUMERICALLY_STABLE=1 — cancellation-safe FP\n";
   return 1;
 }
@@ -162,8 +166,8 @@ void apply_resource_options_to_env() {
   if (!opts.build_dir.empty()) {
     setenv("LI_BUILD_DIR", opts.build_dir.c_str(), 1);
   }
-  if (opts.threads > 0) {
-    setenv("LI_OMP_THREADS", std::to_string(opts.threads).c_str(), 1);
+  if (opts.jobs > 0) {
+    setenv("LI_COMPILE_JOBS", std::to_string(opts.jobs).c_str(), 1);
   }
   if (opts.max_memory_mb > 0) {
     setenv("LI_MAX_MEMORY_MB", std::to_string(opts.max_memory_mb).c_str(), 1);
@@ -496,8 +500,8 @@ int main(int argc, char** argv) {
     li::finalize_resource_options(li::resource_options());
     li::note_compile_jobs_reserved(li::resource_options());
     apply_resource_options_to_env();
-    if (li::resource_options().threads > 0) {
-      opts.runtime_threads = static_cast<int>(li::resource_options().threads);
+    if (const int team = li::resource_options().effective_runtime_team_size(); team > 0) {
+      opts.runtime_team_size = team;
     }
     if (coverage) {
       extra_flags += "-fprofile-instr-generate -fcoverage-mapping ";

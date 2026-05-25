@@ -49,7 +49,10 @@ Most safety wins are **before** you run the program. The full proof gate is stil
 | Flag | Effect |
 |------|--------|
 | `--release` | `-O2` style optimization at link |
-| `--threads=N` | Sets `LI_OMP_THREADS` for parallel loops |
+| `--jobs=N` | Parallel compile workers |
+| `--cores=N` | Runtime parallel team from hardware cores |
+| `--threads-per-core=M` | Threads per core (default 1); team = min(N×M, 64) |
+| `--threads=N` | Total runtime parallel team (overrides `--cores` when both set) |
 | `-o path` | Output binary path |
 
 Environment:
@@ -57,7 +60,7 @@ Environment:
 | Variable | Effect |
 |----------|--------|
 | `LI_EXTRA_C` | Extra `.c` files to link (benchmarks) |
-| `LI_OMP_THREADS` | OpenMP thread count |
+| `LI_OMP_THREADS` | Deprecated; use `--threads=N` (team baked into binary at build) |
 | `CC` / `CXX` | C compiler for final link |
 
 ## Artifacts

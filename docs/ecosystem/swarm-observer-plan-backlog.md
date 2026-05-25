@@ -12,7 +12,7 @@ todos:
 
 - id: orch-r0-ingest-snapshot
   content: "Run swarm-gap-ingest.py; reconcile registry with snapshot + audits; confirm apply-actions dry-run"
-  status: pending
+  status: completed
 
 - id: orch-r1-plan-debt-sync
   content: "Map goal-directed snapshot plan_pending per runner → registry plan_debt; patch loop backlogs where stale"

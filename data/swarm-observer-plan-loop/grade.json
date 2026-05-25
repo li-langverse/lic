@@ -1,0 +1,15 @@
+{
+  "generated_at": "2026-05-25T19:08:49Z",
+  "vertical": "swarm_observer",
+  "registry_ok": 1,
+  "ingest_ok": 1,
+  "actions_ok": 1,
+  "study_ok": 1,
+  "overall_pass": true,
+  "notes": {
+    "registry": "ok",
+    "ingest": "ok",
+    "actions": "present",
+    "study": "orchestration iteration"
+  }
+}

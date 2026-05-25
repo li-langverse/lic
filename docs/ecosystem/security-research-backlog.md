@@ -8,6 +8,26 @@
 ---
 
 todos:
+- id: gap-security-research-sec-r0-cwe-delta
+  content: "security-research: pending plan todo sec-r0-cwe-delta"
+  status: pending
+  gap_orchestrator: true
+- id: gap-security-research-sec-r1-httpd-fuzz-smoke
+  content: "security-research: pending plan todo sec-r1-httpd-fuzz-smoke"
+  status: pending
+  gap_orchestrator: true
+- id: gap-security-research-sec-r2-tier5-gap-exploit
+  content: "security-research: pending plan todo sec-r2-tier5-gap-exploit"
+  status: pending
+  gap_orchestrator: true
+- id: gap-security-research-sec-r3-runtime-surface
+  content: "security-research: pending plan todo sec-r3-runtime-surface"
+  status: pending
+  gap_orchestrator: true
+
+
+
+
 
 - id: sec-r0-cwe-delta
   content: "CWE Top 25 feed sync vs cve-catalog.json — map new CWEs to catalog_gaps and li-tests"

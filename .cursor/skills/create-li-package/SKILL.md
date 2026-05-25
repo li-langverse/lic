@@ -11,13 +11,13 @@ description: >-
 ## Rules
 
 0. Read [engineering-standards.md](../../../docs/ecosystem/engineering-standards.md) and [vision-and-roadmap.md](../../../docs/ecosystem/vision-and-roadmap.md) first.
-1. **Always** run `./scripts/li-new-package` from the `li-language` repo root — never hand-create `packages/` trees.
+1. **Always** run `./scripts/li-new-package` from the **`lic`** repo root — never hand-create `packages/` trees.
 2. Use **`--official`** for `li-langverse` standard/first-party packages; follow printed `gh repo create` steps.
 3. **`li.toml`** must match [package manager plan § A3](../../../docs/superpowers/plans/2026-05-16-li-package-manager-lip.md).
-4. Every `proc` needs `requires`, `ensures`, `decreases` (no `sorry`, no `Any`).
+4. Every **`def`** (and each **`extern proc`**) needs `requires`, `ensures`, `decreases` (no `sorry`, no `Any`). Do not add bare `proc`.
 5. Add **`PKG-*`** to [official-packages.md](../../../docs/ecosystem/official-packages.md) when `--official`.
 6. **`min_coverage`:** default **80** in `li.toml`; **`li-std-*` / in-tree `std/`** slices use **100** (see engineering-standards).
-7. **Composable API:** `src/lib.li` with lifecycle `proc`s; `src/main.li` demo-only — [composable-by-default.md](../../../docs/ecosystem/composable-by-default.md) + `composable-li-library` skill.
+7. **Composable API:** `src/lib.li` with lifecycle **`def`** exports; `src/main.li` demo-only — [composable-by-default.md](../../../docs/ecosystem/composable-by-default.md) + `composable-li-library` skill.
 
 ## Commands
 

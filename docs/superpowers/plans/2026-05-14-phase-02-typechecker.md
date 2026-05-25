@@ -95,6 +95,6 @@
 
 ### Phase 2 exit gate
 
-- [ ] `fib.li` typechecks
-- [ ] All `bad_*.li` fail with expected errors
-- [ ] Borrow double-mut test fails cleanly
+- [x] `fib.li` typechecks — evidence: `li-tests/manifest.toml` `typecheck/fib.li` `verify_ok`; `./build/compiler/lic/lic check li-tests/typecheck/fib.li` exit 0
+- [x] All `bad_*.li` fail with expected errors — evidence: `typecheck/bad_*.li` `compile_fail` + `expected_substr` in manifest
+- [x] Borrow double-mut test fails cleanly — evidence: `borrow/double_mut.li` `compile_fail` + `expected_substr = "borrow"`

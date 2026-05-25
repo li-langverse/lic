@@ -91,10 +91,10 @@ scripts/
 
 ## Exit gate (Phase 5b plotting slice)
 
-- [ ] `./scripts/plot_shareables.sh` exits 0 and writes ≥4 PNGs to `benchmarks/results/share/`
-- [ ] Plots meet 16:9 + dark theme spec above
-- [ ] README or docs link to `results/share/` for social assets
-- [ ] `bench.py --tier 0` feeds correctness plot when Tier 0 data exists
+- [ ] `./scripts/plot_shareables.sh` exits 0 and writes ≥4 PNGs to `benchmarks/results/share/` — **Open:** script exists (`scripts/plot_shareables.sh`) but full run is slow (tier-1/2 bench + MD animations); no committed PNGs under `benchmarks/results/share/` (gitignored)
+- [ ] Plots meet 16:9 + dark theme spec above — **Open:** blocked on successful `plot.py` / `plot_suites.py` run above
+- [ ] README or docs link to `results/share/` for social assets — **Open:** `docs/benchmarks.md` documents `./scripts/plot_shareables.sh` but not `results/share/` output path yet
+- [ ] `bench.py --tier 0` feeds correctness plot when Tier 0 data exists — **Open:** tier-0 correctness harness path not wired into `plot.py` (catalog `tier0_stability` path gap in benchmarks audit)
 
 ---
 

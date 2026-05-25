@@ -29,6 +29,7 @@ python3 benchmarks/harness/bench.py --tier 12 --runs 3 --skip-verify
 # Optional when ecosystem benches are ready:
 # RUN_TIER5_ECOSYSTEM=1 python3 benchmarks/harness/bench_ecosystem.py --runs 3
 ./scripts/plot_shareables.sh
+# PNGs → benchmarks/results/share/ (gitignored; generate locally before social posts)
 ```
 
 ## Dashboard ([li-langverse/benchmarks](https://github.com/li-langverse/benchmarks))

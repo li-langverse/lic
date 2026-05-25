@@ -212,10 +212,10 @@ Third-party packages are **not** listed here; they appear only in the public `li
 
 ## Exit gate (governance slice)
 
-- [ ] Confirm org access: `gh api orgs/li-langverse` (or org owner invites bot/users)
-- [ ] `docs/ecosystem/official-packages.md` with `PKG-` table (all repos under `li-langverse`)
-- [ ] On execute: align `mkdocs.yml` `repo_url` / GitHub Pages with `li-langverse/li-language` when repo home moves
-- [ ] `docs/ecosystem/governance.md` user-facing summary (links here)
-- [ ] `scripts/templates/github-repo/` + `scripts/check-traceability.sh`
-- [ ] `create-li-package` skill: `--official` → org checklist
-- [ ] At least one example package `PUBLISH.md` with full traceability block in monorepo
+- [x] Confirm org access: `gh api orgs/li-langverse` (or org owner invites bot/users) — evidence: `gh api orgs/li-langverse` → `li-langverse` (2026-05-25)
+- [x] `docs/ecosystem/official-packages.md` with `PKG-` table (all repos under `li-langverse`) — evidence: `docs/ecosystem/official-packages.md` rows `PKG-lic` … `PKG-li-httpd`
+- [ ] On execute: align `mkdocs.yml` `repo_url` / GitHub Pages with `li-langverse/li-language` when repo home moves — **Open:** site still `li-langverse/li-language`; compiler home is `li-langverse/lic` (rename/docs migration pending)
+- [x] `docs/ecosystem/governance.md` user-facing summary (links here) — evidence: stub + links to roadmap canonical + master plan
+- [x] `scripts/templates/github-repo/` + `scripts/check-traceability.sh` — evidence: templates dir; `scripts/ci.sh` runs `check-traceability.sh`
+- [x] `create-li-package` skill: `--official` → org checklist — evidence: `.cursor/skills/create-li-package/SKILL.md` `--official` section
+- [x] At least one example package `PUBLISH.md` with full traceability block in monorepo — evidence: `packages/li-core/PUBLISH.md` + `packages/li-core/docs/traceability.md` (`PKG-`, `PH-`, `T-` rows)

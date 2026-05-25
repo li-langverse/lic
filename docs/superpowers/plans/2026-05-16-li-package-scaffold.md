@@ -119,13 +119,13 @@ Templates: `scripts/templates/package/` — **generated from lip § A3** (single
 
 ## Exit gate (Pkg)
 
-- [ ] `li-new-package` emits li.toml valid against lip § A3
-- [ ] `create-li-package` skill committed (incl. `--official` + org checklist)
-- [ ] Guide + ecosystem overview + governance summary in mkdocs
-- [ ] `scripts/templates/github-repo/` for org repos
-- [ ] `docs/ecosystem/official-packages.md` stub with `PKG-li-language`
-- [ ] Smoke test in `scripts/ci.sh`
-- [ ] lip + governance + master plan cross-linked
+- [x] `li-new-package` emits li.toml valid against lip § A3 — evidence: `li-tests/tooling/li_new_package_smoke.sh` (CI via `scripts/ci.sh`)
+- [x] `create-li-package` skill committed (incl. `--official` + org checklist) — evidence: `.cursor/skills/create-li-package/SKILL.md`
+- [x] Guide + ecosystem overview + governance summary in mkdocs — evidence: `mkdocs.yml` nav (`creating-packages`, `ecosystem/overview`, `ecosystem/governance`)
+- [x] `scripts/templates/github-repo/` for org repos — evidence: `scripts/templates/github-repo/`
+- [x] `docs/ecosystem/official-packages.md` stub with `PKG-lic` (was `PKG-li-language`) — evidence: `docs/ecosystem/official-packages.md`
+- [x] Smoke test in `scripts/ci.sh` — evidence: `scripts/ci.sh` runs `li_new_package_smoke.sh`
+- [x] lip + governance + master plan cross-linked — evidence: scaffold plan ↔ governance plan ↔ lip plan ↔ master plan § Pkg
 
 **Not in Pkg exit gate:** `import`, `li.lock`, registry (8a–8d).
 

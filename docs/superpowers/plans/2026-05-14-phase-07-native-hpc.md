@@ -72,8 +72,8 @@
 **7d (decorators — can ship after 7b; recommended before calling HPC “done” for users):**
 
 - [x] `./li-tests/run_all.sh decorators decorator_exploits`
-- [ ] Tier 2 MD example uses `@cpu` `@parallel` `@vectorized` on `def` (elaborates to same MIR as keywords)
-- [ ] Fuzz corpus includes `@` decorator stacks and reserved-name parse seeds
+- [ ] Tier 2 MD example uses `@cpu` `@parallel` `@vectorized` on `def` (elaborates to same MIR as keywords) — **Open:** `benchmarks/tier2_physics/md_lennard_jones/li/main.li` uses keyword `parallel for` only; decorator-on-`def` covered in `li-tests/decorators/` but not Tier-2 MD driver
+- [x] Fuzz corpus includes `@` decorator stacks and reserved-name parse seeds — evidence: `compiler/fuzz/corpus/seed_decorators`, `seed_decorator_stack`, `seed_reserved_typosquat`; nightly `.github/workflows/fuzz.yml`
 
 **7e (mathematical surface — user writes formulas, not `simd(...)`):**
 
@@ -89,4 +89,4 @@
 
 - [x] `./li-tests/run_all.sh math_linalg`
 - [x] Tier 1 Li sources: math notation only (`a @ b`, `C = A @ B` — no user `__li_simd_*`)
-- [ ] Tier 1 perf: Li within **1.2×** C++ on same machine (investigate reds on dashboard)
+- [ ] Tier 1 perf: Li within **1.2×** C++ on same machine (investigate reds on dashboard) — **Open:** advisory `check-tier1-li-vs-cpp.sh`; dashboard reds remain for some rows (see [benchmarks dashboard](https://li-langverse.github.io/benchmarks/))

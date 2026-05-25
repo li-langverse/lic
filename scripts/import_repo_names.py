@@ -33,6 +33,13 @@ LEGACY_FOLDER_IMPORT: dict[str, str] = {
     "li-httpd": "net.httpd",
     "li-net": "net",
     "li-demo": "demo",
+    "li-bytes": "bytes",
+    "li-rng": "rng",
+    "li-prob": "prob",
+    "li-crypto": "crypto",
+    "li-tls": "tls",
+    "li-acme": "acme",
+    "li-schema": "schema",
 }
 
 

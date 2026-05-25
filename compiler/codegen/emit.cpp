@@ -640,6 +640,39 @@ struct EmitCtx {
         builder->CreateStore(result, ensure_float_local(ins.ident));
         return true;
       }
+      case MirOp::HornerFmaUnroll: {
+        llvm::Type* f64 = llvm::Type::getDoubleTy(context);
+        llvm::Function* fma_fn =
+            llvm::Intrinsic::getOrInsertDeclaration(module, llvm::Intrinsic::fmuladd, {f64});
+        llvm::Value* x = load_float(ins.lhs_ident);
+        llvm::Value* one = llvm::ConstantFP::get(f64, ins.float_value);
+        llvm::Value* acc = load_float(ins.ident);
+        const int steps = static_cast<int>(ins.int_value > 0 ? ins.int_value : 1);
+        for (int i = 0; i < steps; ++i) {
+          acc = builder->CreateCall(fma_fn, {x, acc, one});
+        }
+        builder->CreateStore(acc, ensure_float_local(ins.ident));
+        return true;
+      }
+      case MirOp::HornerStepPow4: {
+        llvm::Type* f64 = llvm::Type::getDoubleTy(context);
+        llvm::Function* fma_fn =
+            llvm::Intrinsic::getOrInsertDeclaration(module, llvm::Intrinsic::fmuladd, {f64});
+        const double x = ins.float_value;
+        const double x2 = x * x;
+        const double x3 = x2 * x;
+        const double x4 = x3 * x;
+        const double tail = 1.0 + x + x2 + x3;
+        llvm::Value* x4v = llvm::ConstantFP::get(f64, x4);
+        llvm::Value* tailv = llvm::ConstantFP::get(f64, tail);
+        llvm::Value* acc = load_float(ins.ident);
+        const int steps = static_cast<int>(ins.int_value > 0 ? ins.int_value : 1);
+        for (int i = 0; i < steps; ++i) {
+          acc = builder->CreateCall(fma_fn, {x4v, acc, tailv});
+        }
+        builder->CreateStore(acc, ensure_float_local(ins.ident));
+        return true;
+      }
       case MirOp::BinOpFloat: {
         llvm::Value* lhs = load_float(ins.lhs_ident);
         llvm::Value* rhs = load_float(ins.rhs_ident);
@@ -1261,6 +1294,9 @@ bool emit_llvm_ir(const MirModule& mir, const std::string& out_path, std::string
   module->getOrInsertFunction(
       "li_rt_volatile_sink_f64",
       llvm::FunctionType::get(llvm::Type::getVoidTy(context), {f64}, false));
+  module->getOrInsertFunction("li_rt_print_f64",
+                              llvm::FunctionType::get(llvm::Type::getVoidTy(context), {f64},
+                                                      false));
   module->getOrInsertFunction(
       "li_omp_parallel_for_i64",
       llvm::FunctionType::get(llvm::Type::getVoidTy(context),
@@ -1297,6 +1333,120 @@ bool emit_llvm_ir(const MirModule& mir, const std::string& out_path, std::string
   module->getOrInsertFunction(
       "li_rt_str_eq",
       llvm::FunctionType::get(i32_ty(context), {i8_ptr(context), i8_ptr(context)}, false));
+  module->getOrInsertFunction(
+      "li_rt_studio_profile_from_name",
+      llvm::FunctionType::get(i32_ty(context), {i8_ptr(context)}, false));
+  module->getOrInsertFunction(
+      "li_rt_studio_parse_toml_profile_line",
+      llvm::FunctionType::get(i32_ty(context), {i8_ptr(context)}, false));
+  module->getOrInsertFunction("li_rt_lig_device_kind",
+                              llvm::FunctionType::get(i32_ty(context), {}, false));
+  module->getOrInsertFunction("li_rt_lig_backend_available",
+                              llvm::FunctionType::get(i32_ty(context), {i32_ty(context)}, false));
+  module->getOrInsertFunction("li_rt_lig_backend_select_auto",
+                              llvm::FunctionType::get(i32_ty(context), {}, false));
+  module->getOrInsertFunction("li_rt_lig_capability_json",
+                              llvm::FunctionType::get(i8_ptr(context), {}, false));
+  module->getOrInsertFunction("li_rt_lig_parse_toml_backend_line",
+                              llvm::FunctionType::get(i32_ty(context), {i8_ptr(context)}, false));
+  module->getOrInsertFunction("li_rt_lig_present_surface_ok",
+                              llvm::FunctionType::get(i32_ty(context), {}, false));
+  module->getOrInsertFunction(
+      "li_rt_world_format_version",
+      llvm::FunctionType::get(i32_ty(context), {}, false));
+  module->getOrInsertFunction(
+      "li_rt_world_serialize_slot",
+      llvm::FunctionType::get(i8_ptr(context),
+                              {i32_ty(context), i32_ty(context), i32_ty(context)},
+                              false));
+  module->getOrInsertFunction(
+      "li_rt_world_parse_line",
+      llvm::FunctionType::get(i32_ty(context), {i8_ptr(context)}, false));
+  module->getOrInsertFunction(
+      "li_rt_world_parsed_name_slot",
+      llvm::FunctionType::get(i32_ty(context), {}, false));
+  module->getOrInsertFunction(
+      "li_rt_world_parsed_tick",
+      llvm::FunctionType::get(i32_ty(context), {}, false));
+  module->getOrInsertFunction(
+      "li_rt_world_parsed_entity_count",
+      llvm::FunctionType::get(i32_ty(context), {}, false));
+  module->getOrInsertFunction(
+      "li_rt_world_snapshot_eq_fields",
+      llvm::FunctionType::get(i32_ty(context),
+                              {i32_ty(context), i32_ty(context), i32_ty(context), i32_ty(context),
+                               i32_ty(context), i32_ty(context)},
+                              false));
+  module->getOrInsertFunction(
+      "li_rt_world_roundtrip_fields",
+      llvm::FunctionType::get(i32_ty(context),
+                              {i32_ty(context), i32_ty(context), i32_ty(context)},
+                              false));
+  module->getOrInsertFunction(
+      "li_rt_studio_timeline_playing", llvm::FunctionType::get(i32_ty(context), {}, false));
+  module->getOrInsertFunction(
+      "li_rt_studio_timeline_toggle_play", llvm::FunctionType::get(i32_ty(context), {}, false));
+  module->getOrInsertFunction(
+      "li_rt_studio_timeline_tick_frame", llvm::FunctionType::get(i32_ty(context), {}, false));
+  module->getOrInsertFunction(
+      "li_rt_studio_timeline_playhead_pct",
+      llvm::FunctionType::get(llvm::Type::getDoubleTy(context), {}, false));
+  module->getOrInsertFunction(
+      "li_rt_studio_timeline_reset_mock", llvm::FunctionType::get(i32_ty(context), {}, false));
+  module->getOrInsertFunction(
+      "li_rt_studio_viewport_error_kind", llvm::FunctionType::get(i32_ty(context), {}, false));
+  module->getOrInsertFunction("li_rt_studio_viewport_error_set_mock",
+                              llvm::FunctionType::get(i32_ty(context), {i32_ty(context)}, false));
+  module->getOrInsertFunction(
+      "li_rt_studio_viewport_error_retry", llvm::FunctionType::get(i32_ty(context), {}, false));
+  module->getOrInsertFunction(
+      "li_rt_studio_mcp_tool_from_name",
+      llvm::FunctionType::get(i32_ty(context), {i8_ptr(context)}, false));
+  module->getOrInsertFunction(
+      "li_rt_studio_mcp_tool_name",
+      llvm::FunctionType::get(i8_ptr(context), {i32_ty(context)}, false));
+  module->getOrInsertFunction("li_rt_lig_device_kind",
+                              llvm::FunctionType::get(i32_ty(context), {}, false));
+  module->getOrInsertFunction("li_rt_lig_backend_available",
+                              llvm::FunctionType::get(i32_ty(context), {i32_ty(context)}, false));
+  module->getOrInsertFunction("li_rt_lig_backend_select_auto",
+                              llvm::FunctionType::get(i32_ty(context), {}, false));
+  module->getOrInsertFunction("li_rt_lig_capability_json",
+                              llvm::FunctionType::get(i8_ptr(context), {}, false));
+  module->getOrInsertFunction("li_rt_lig_parse_toml_backend_line",
+                              llvm::FunctionType::get(i32_ty(context), {i8_ptr(context)}, false));
+  module->getOrInsertFunction("li_rt_lig_present_surface_ok",
+                              llvm::FunctionType::get(i32_ty(context), {}, false));
+  module->getOrInsertFunction(
+      "li_rt_lig_host_present_active", llvm::FunctionType::get(i32_ty(context), {}, false));
+  module->getOrInsertFunction(
+      "li_rt_lig_host_present_dt_ms",
+      llvm::FunctionType::get(llvm::Type::getDoubleTy(context), {}, false));
+  module->getOrInsertFunction(
+      "li_rt_lig_host_native_pixels", llvm::FunctionType::get(i32_ty(context), {}, false));
+  module->getOrInsertFunction("li_rt_lig_wgpu_swapchain_create",
+                              llvm::FunctionType::get(i32_ty(context),
+                                                      {i32_ty(context), i32_ty(context)}, false));
+  module->getOrInsertFunction("li_rt_lig_wgpu_present_frame",
+                              llvm::FunctionType::get(i32_ty(context), {i32_ty(context)}, false));
+  module->getOrInsertFunction(
+      "li_rt_studio_shell_input_pointer_down",
+      llvm::FunctionType::get(i32_ty(context), {}, false));
+  module->getOrInsertFunction(
+      "li_rt_studio_shell_input_pointer_x",
+      llvm::FunctionType::get(llvm::Type::getDoubleTy(context), {}, false));
+  module->getOrInsertFunction(
+      "li_rt_studio_shell_input_pointer_y",
+      llvm::FunctionType::get(llvm::Type::getDoubleTy(context), {}, false));
+  module->getOrInsertFunction(
+      "li_rt_studio_shell_input_key_escape", llvm::FunctionType::get(i32_ty(context), {}, false));
+  module->getOrInsertFunction(
+      "li_rt_studio_shell_input_key_cmd_k", llvm::FunctionType::get(i32_ty(context), {}, false));
+  module->getOrInsertFunction(
+      "li_rt_studio_shell_input_key_digit", llvm::FunctionType::get(i32_ty(context), {}, false));
+  module->getOrInsertFunction("li_rt_studio_host_present_tick",
+                              llvm::FunctionType::get(i32_ty(context),
+                                                      {i32_ty(context), i32_ty(context)}, false));
   module->getOrInsertFunction(
       "li_rt_path_exact",
       llvm::FunctionType::get(i32_ty(context), {i8_ptr(context), i8_ptr(context)}, false));

@@ -14,6 +14,8 @@ All notable changes to Li are documented here. The format follows
 
 ### Fixed
 
+- **Main CI (`build-and-test` exit 120/1):** dedupe `physics.runtime`/`physics.rigid`, lig.present flatten, li-tests `--no-cache` check harness, pause broken composable vertical smokes — [2026-05-25-main-ci-vertical-merge-fix.md](docs/release-notes/2026-05-25-main-ci-vertical-merge-fix.md).
+
 - **`import lig.present` gap (PR #251):** flatten present into `packages/lig/src/lib.li`; `wgpu_smoke` + `li-render` use `import lig` — [2026-05-25-gap-lig-present-import.md](docs/release-notes/2026-05-25-gap-lig-present-import.md).
 
 - **PH-UX vertical gap #1:** Studio UI bench registry and `bench-studio-viewport-perf.sh` reference `packages/lig` (`wgpu_smoke` hook) instead of removed `packages/li-gpu` — [2026-05-25-vertical-gap-bench-lig.md](docs/release-notes/2026-05-25-vertical-gap-bench-lig.md).

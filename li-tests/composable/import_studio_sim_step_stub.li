@@ -1,4 +1,3 @@
-import sim
 import studio
 
 def smoke_studio_sim_step_stub() -> int

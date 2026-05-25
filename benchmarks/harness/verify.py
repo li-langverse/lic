@@ -127,6 +127,16 @@ def main() -> int:
         help="skip tier-2 physics smokes (md_lennard_jones, heat_equation_2d)",
     )
     parser.add_argument(
+        "--catalog-smoke-only",
+        action="store_true",
+        help="only WP4 catalog compile smokes (qm_*, auto_*, ml_*, viz_*)",
+    )
+    parser.add_argument(
+        "--skip-catalog-smoke",
+        action="store_true",
+        help="skip WP4 catalog compile smokes",
+    )
+    parser.add_argument(
         "--write-summary",
         action="store_true",
         help="emit benchmarks/results/<bench>/<lang>.summary.json (li_sim_summary_v1)",
@@ -144,6 +154,14 @@ def main() -> int:
         help="summary serialization: json (pretty), json_min, yaml",
     )
     args = parser.parse_args()
+
+    if args.catalog_smoke_only:
+        from catalog_smoke import run_wp4_catalog_smoke
+
+        ok = True
+        for _name, passed, _detail in run_wp4_catalog_smoke():
+            ok = ok and passed
+        return 0 if ok else 1
 
     rows: list[list[object]] = []
     ok = True
@@ -182,6 +200,27 @@ def main() -> int:
                     "verify",
                     1,
                     "checksum",
+                    1 if passed else 0,
+                    "bool",
+                    "",
+                    "",
+                    detail,
+                    passed,
+                ]
+            )
+
+    if not args.skip_catalog_smoke and not args.tier0_only:
+        from catalog_smoke import run_wp4_catalog_smoke
+
+        for name, passed, detail in run_wp4_catalog_smoke():
+            ok = ok and passed
+            rows.append(
+                [
+                    name,
+                    "li",
+                    "catalog_smoke",
+                    1,
+                    "compile",
                     1 if passed else 0,
                     "bool",
                     "",

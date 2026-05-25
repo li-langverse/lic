@@ -743,6 +743,13 @@ note = "sim.scientific: run_simulation + run_algo; detail 0–3; open VC via phy
 
 [[tests]]
 suite = "composable"
+file = "composable/import_studio_sim_profile_bridge.li"
+packages = ["li-sim", "li-studio", "li-gui", "li-ui"]
+outcome = "compile_open_ok"
+note = "PH-SIM SIM-0: studio_apply_profile_to_sim + li_sim_profile_from_studio_id"
+
+[[tests]]
+suite = "composable"
 file = "composable/import_ui_studio_shell.li"
 packages = ["li-ui"]
 outcome = "compile_open_ok"

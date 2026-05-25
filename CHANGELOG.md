@@ -6,6 +6,10 @@ All notable changes to Li are documented here. The format follows
 
 ## [Unreleased]
 
+### Fixed
+
+- **PH-HW WP2 li-render:** replace unsupported `else:` with sequential `if` + float FPS tick; `lic check` green on render smokes and `import_render_wgpu_fps.li` — [2026-05-25-ph-hw-wp2-li-render-else-fix.md](docs/release-notes/2026-05-25-ph-hw-wp2-li-render-else-fix.md).
+
 ### Added
 
 - **PH-HW integration (`lig` + studio gap):** Rollup for multi-vendor GPU work packages WP1–WP5 ([#217](https://github.com/li-langverse/lic/pull/217), [#218](https://github.com/li-langverse/lic/pull/218), [#213](https://github.com/li-langverse/lic/pull/213), [#220](https://github.com/li-langverse/lic/pull/220), [#222](https://github.com/li-langverse/lic/pull/222)) and merged `studio-gap-close-wave1` (UX/MCP/sim/world) on `feat/ph-hw-multi-vendor` — [2026-05-25-lig-ph-hw-integration.md](docs/release-notes/2026-05-25-lig-ph-hw-integration.md).

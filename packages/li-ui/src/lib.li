@@ -93,7 +93,7 @@ def ui_frame_begin(w: float, h: float, dt: float) -> UiFrame
   return f
 def ui_frame_end(frame: UiFrame) -> unit
   requires true
-  ensures true
+  ensures frame.frame_id == old(frame.frame_id)
   decreases 0
 =
   return

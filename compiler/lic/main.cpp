@@ -165,9 +165,6 @@ void apply_resource_options_to_env() {
   if (opts.threads > 0) {
     setenv("LI_OMP_THREADS", std::to_string(opts.threads).c_str(), 1);
   }
-  if (opts.jobs > 0) {
-    setenv("LI_COMPILE_JOBS", std::to_string(opts.jobs).c_str(), 1);
-  }
   if (opts.max_memory_mb > 0) {
     setenv("LI_MAX_MEMORY_MB", std::to_string(opts.max_memory_mb).c_str(), 1);
   }
@@ -547,6 +544,7 @@ int main(int argc, char** argv) {
       }
     }
     li::finalize_resource_options(li::resource_options());
+    li::note_compile_jobs_reserved(li::resource_options());
     apply_resource_options_to_env();
     if (coverage) {
       extra_flags += "-fprofile-instr-generate -fcoverage-mapping ";

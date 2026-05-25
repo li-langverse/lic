@@ -12,24 +12,15 @@ HEIGHT="${STUDIO_VIEWPORT_CAPTURE_HEIGHT:-720}"
 mkdir -p "$OUT"
 
 if [[ ! -x "$BIN" ]]; then
-  if ! command -v pkg-config >/dev/null 2>&1; then
-    echo "capture-native: pkg-config missing" >&2
-    exit 4
-  fi
-  if ! pkg-config --exists sdl2 2>/dev/null; then
-    echo "capture-native: libsdl2-dev not installed" >&2
-    exit 4
-  fi
-  SDL_FLAGS="$(pkg-config --cflags --libs sdl2)"
-  # shellcheck disable=SC2086
-  gcc -std=c11 -Wall -Wextra -O2 "$SRC" -o "$BIN" $SDL_FLAGS
+  chmod +x "$ROOT/native-sdl-build.sh" 2>/dev/null || true
+  bash "$ROOT/native-sdl-build.sh" "$SRC" "$BIN"
 fi
 
 run_capture() {
   "$BIN" --out "$OUT" --width "$WIDTH" --height "$HEIGHT" --frames "$FRAMES"
 }
 
-if [[ -n "${DISPLAY:-}" ]]; then
+if [[ -n "${DISPLAY:-}" ]] || [[ "$(uname -s)" == "Darwin" ]]; then
   run_capture
 elif command -v xvfb-run >/dev/null 2>&1; then
   xvfb-run -a -s "-screen 0 ${WIDTH}x${HEIGHT}x24" run_capture

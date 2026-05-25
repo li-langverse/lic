@@ -1,6 +1,6 @@
 /* Studio shell present host — one SDL frame on aarch64-apple-darwin (Metal backend via SDL).
  * Complements studio_shell_input_probe.c for PH-HW WP3 present loop evidence.
- * Build: cc -o studio_shell_present_host studio_shell_present_host.c $(sdl2-config --cflags --libs)
+ * Build: native-sdl-build.sh studio_shell_present_host.c studio_shell_present_host
  * Run: LIG_HOST_PRESENT=1 ./studio_shell_present_host --width 1280 --height 720 */
 #include <SDL.h>
 #include <stdio.h>
@@ -30,6 +30,9 @@ int main(int argc, char** argv) {
     return 3;
   }
   SDL_Renderer* ren = SDL_CreateRenderer(win, -1, SDL_RENDERER_ACCELERATED);
+  if (!ren) {
+    ren = SDL_CreateRenderer(win, -1, SDL_RENDERER_SOFTWARE);
+  }
   if (!ren) {
     fprintf(stderr, "SDL_CreateRenderer failed: %s\n", SDL_GetError());
     SDL_DestroyWindow(win);

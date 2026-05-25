@@ -19,6 +19,7 @@ All notable changes to Li are documented here. The format follows
 
 - **PH-HW HW-1 lig.present** — `packages/lig` swapchain/present contracts, `li-render` host FPS ticks, `li-studio` shell present glue, `packages/lig/bench/wgpu_smoke.toml` — [2026-05-25-lig-present-hw1.md](docs/release-notes/2026-05-25-lig-present-hw1.md).
 - **PH-SIM SIM-1 sim step stub** — `sim_reset` / `sim_step` on `SimSessionStub`, `studio_sim_step_hook`; smokes `sim_step_stub.li`, `import_studio_sim_step_stub.li` — [2026-05-25-sim-step-sim1-stub.md](docs/release-notes/2026-05-25-sim-step-sim1-stub.md).
+- **Studio per-vertical demos (UX-14)** — `packages/li-studio/examples/verticals/`, native-only `docs/demo/media/studio-verticals-demo.mp4` via `studio-verticals-capture-native.sh` (HTML mocks archived under `deploy/studio-demo/archive/`), smoke `studio_vertical_profile_roundtrip.li` — [2026-05-25-studio-vertical-demos.md](docs/release-notes/2026-05-25-studio-vertical-demos.md).
 
 
 - **PH-SIM SIM-0 studio→sim profile bridge** — `li_sim_profile_from_studio_id`, `SimSessionStub`, `studio_apply_profile_to_sim`; smokes `studio_profile_bridge.li`, `import_studio_sim_profile_bridge.li` — [2026-05-25-studio-sim-profile-bridge.md](docs/release-notes/2026-05-25-studio-sim-profile-bridge.md).

@@ -484,7 +484,6 @@ void emit_requires_vcs_for_call(std::ostream& out, const Module& module, const P
     if (witnessed) {
       prop = "True";
     } else if (auto lean = expr_to_lean(*folded, ctx)) {
-    if (auto lean = expr_to_lean(*folded, ctx)) {
       prop = *lean;
     } else if (auto lean = expr_to_lean(*sub, ctx)) {
       prop = *lean;

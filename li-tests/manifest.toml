@@ -926,6 +926,11 @@ suite = "stdlib_seal"
 file = "stdlib_seal/shadow_std_symbol.li"
 outcome = "compile_fail"
 
+[[tests]]
+suite = "stdlib_seal"
+file = "stdlib_seal/shadow_echo_via_import.li"
+outcome = "compile_fail"
+
 # --- encapsulation (2g — def, object, visibility, import) ---
 
 [[tests]]
@@ -1093,6 +1098,11 @@ note = "open VC until 2f full (Lean gate on devbox)"
 suite = "modules"
 file = "modules/use_positive.li"
 outcome = "verify_ok"
+
+[[tests]]
+suite = "modules"
+file = "modules/import_cycle_a.li"
+outcome = "compile_fail"
 
 # --- cve_patterns (C memory-safety classes — must reject or prove safe) ---
 

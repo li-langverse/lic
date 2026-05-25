@@ -434,6 +434,12 @@ bool load_module_recursive(const std::filesystem::path& mod_path, Module& out,
     return diags.empty();
   }
 
+  check_stdlib_seal(*parsed.module, mod_path.string(), diags);
+  if (!diags.empty()) {
+    loading.erase(key);
+    return false;
+  }
+
   Module imported = std::move(*parsed.module);
   const auto nested = imported.imports;
   for (const auto& imp : nested) {

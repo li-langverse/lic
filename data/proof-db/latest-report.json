@@ -1,13 +1,15 @@
 {
   "version": 1,
-  "generated_at": "2026-05-25T11:32:05Z",
-  "lic_commit": "a8882a8d48af939601134da7a2c81d08fe514ee7",
-  "lic_binary": null,
+  "generated_at": "2026-05-25T12:46:05Z",
+  "lic_commit": "e3be2db830d17033d6d67965643a5ad1afd5fd79",
+  "lic_binary": "/Users/julian/Documents/coding-projects/lic/build/compiler/lic/lic",
   "policy": "> **Policy:** failure/open = gap to investigate \u2014 not Li wrongness.",
-  "entry_count": 12,
+  "entry_count": 37,
   "summary": {
-    "skipped": 11,
-    "axiomatic": 1,
+    "proved": 18,
+    "axiomatic": 10,
+    "build_failed": 5,
+    "skipped": 4,
     "mismatch_catalog": 0
   },
   "entries": [
@@ -17,9 +19,11 @@
       "proof_status_catalog": "proved",
       "li_specimen": "li-tests/contracts_verify/linalg_dot4_int_closed.li",
       "gap_id": "G-math",
-      "status": "skipped",
-      "open_goals": null,
-      "discrepancy_notes": "lic build skipped."
+      "build_excerpt": "lic build: warning \u2014 Lean 4 / lake not installed; skipping semantics proof (install elan for full 2f gate)",
+      "status": "proved",
+      "open_goals": 0,
+      "open_goal_names": [],
+      "discrepancy_notes": ""
     },
     {
       "id": "P-linalg-dot4-int-loop-open",
@@ -27,9 +31,11 @@
       "proof_status_catalog": "proved",
       "li_specimen": "li-tests/contracts_verify/linalg_dot4_int_loop_open.li",
       "gap_id": "G-math",
-      "status": "skipped",
-      "open_goals": null,
-      "discrepancy_notes": "lic build skipped."
+      "build_excerpt": "lic build: warning \u2014 Lean 4 / lake not installed; skipping semantics proof (install elan for full 2f gate)",
+      "status": "proved",
+      "open_goals": 0,
+      "open_goal_names": [],
+      "discrepancy_notes": ""
     },
     {
       "id": "P-float-sqrt-open-bound",
@@ -37,9 +43,11 @@
       "proof_status_catalog": "proved",
       "li_specimen": "li-tests/contracts_verify/sqrt_open_bound.li",
       "gap_id": "G-math",
-      "status": "skipped",
-      "open_goals": null,
-      "discrepancy_notes": "lic build skipped."
+      "build_excerpt": "lic build: warning \u2014 Lean 4 / lake not installed; skipping semantics proof (install elan for full 2f gate)",
+      "status": "proved",
+      "open_goals": 0,
+      "open_goal_names": [],
+      "discrepancy_notes": ""
     },
     {
       "id": "G-lean-autovc-strict",
@@ -47,9 +55,11 @@
       "proof_status_catalog": "open",
       "li_specimen": "li-tests/contracts_verify/discharge_trivial.li",
       "gap_id": "G-lean",
-      "status": "skipped",
-      "open_goals": null,
-      "discrepancy_notes": "lic build skipped."
+      "build_excerpt": "lic build: warning \u2014 Lean 4 / lake not installed; skipping semantics proof (install elan for full 2f gate)",
+      "status": "proved",
+      "open_goals": 0,
+      "open_goal_names": [],
+      "discrepancy_notes": ""
     },
     {
       "id": "P-discharge-trivial",
@@ -57,9 +67,11 @@
       "proof_status_catalog": "proved",
       "li_specimen": "li-tests/contracts_verify/discharge_trivial.li",
       "gap_id": "G-lean",
-      "status": "skipped",
-      "open_goals": null,
-      "discrepancy_notes": "lic build skipped."
+      "build_excerpt": "lic build: warning \u2014 Lean 4 / lake not installed; skipping semantics proof (install elan for full 2f gate)",
+      "status": "proved",
+      "open_goals": 0,
+      "open_goal_names": [],
+      "discrepancy_notes": ""
     },
     {
       "id": "A-trusted-getelem",
@@ -72,14 +84,199 @@
       "discrepancy_notes": "Axiomatic \u2014 not user-code wrongness."
     },
     {
+      "id": "M-AX-PEANO-ZERO-NOT-SUCC",
+      "kind": "axiom",
+      "proof_status_catalog": "axiomatic",
+      "li_specimen": "proof-db/math/axioms/peano_order.li",
+      "gap_id": "G-math",
+      "status": "axiomatic",
+      "open_goals": null,
+      "discrepancy_notes": "Axiomatic \u2014 not user-code wrongness."
+    },
+    {
+      "id": "M-AX-PEANO-SUCC-INJ",
+      "kind": "axiom",
+      "proof_status_catalog": "axiomatic",
+      "li_specimen": "proof-db/math/axioms/peano_order.li",
+      "gap_id": "G-math",
+      "status": "axiomatic",
+      "open_goals": null,
+      "discrepancy_notes": "Axiomatic \u2014 not user-code wrongness."
+    },
+    {
+      "id": "M-AX-PEANO-IND",
+      "kind": "axiom",
+      "proof_status_catalog": "axiomatic",
+      "li_specimen": "proof-db/math/axioms/peano_order.li",
+      "gap_id": "G-math",
+      "status": "axiomatic",
+      "open_goals": null,
+      "discrepancy_notes": "Axiomatic \u2014 not user-code wrongness."
+    },
+    {
+      "id": "M-AX-ORDER-TRICHOTOMY",
+      "kind": "axiom",
+      "proof_status_catalog": "axiomatic",
+      "li_specimen": "proof-db/math/axioms/peano_order.li",
+      "gap_id": "G-math",
+      "status": "axiomatic",
+      "open_goals": null,
+      "discrepancy_notes": "Axiomatic \u2014 not user-code wrongness."
+    },
+    {
+      "id": "M-AX-ORDER-ANTISYM",
+      "kind": "axiom",
+      "proof_status_catalog": "axiomatic",
+      "li_specimen": "proof-db/math/axioms/peano_order.li",
+      "gap_id": "G-math",
+      "status": "axiomatic",
+      "open_goals": null,
+      "discrepancy_notes": "Axiomatic \u2014 not user-code wrongness."
+    },
+    {
+      "id": "M-AX-REAL-ADD-COMM",
+      "kind": "axiom",
+      "proof_status_catalog": "axiomatic",
+      "li_specimen": "proof-db/math/axioms/reals_field.li",
+      "gap_id": "G-math",
+      "status": "axiomatic",
+      "open_goals": null,
+      "discrepancy_notes": "Axiomatic \u2014 not user-code wrongness."
+    },
+    {
+      "id": "M-AX-REAL-ADD-ASSOC",
+      "kind": "axiom",
+      "proof_status_catalog": "axiomatic",
+      "li_specimen": "proof-db/math/axioms/reals_field.li",
+      "gap_id": "G-math",
+      "status": "axiomatic",
+      "open_goals": null,
+      "discrepancy_notes": "Axiomatic \u2014 not user-code wrongness."
+    },
+    {
+      "id": "M-AX-REAL-MUL-DIST",
+      "kind": "axiom",
+      "proof_status_catalog": "axiomatic",
+      "li_specimen": "proof-db/math/axioms/reals_field.li",
+      "gap_id": "G-math",
+      "status": "axiomatic",
+      "open_goals": null,
+      "discrepancy_notes": "Axiomatic \u2014 not user-code wrongness."
+    },
+    {
+      "id": "M-AX-REAL-MUL-ONE",
+      "kind": "axiom",
+      "proof_status_catalog": "axiomatic",
+      "li_specimen": "proof-db/math/axioms/reals_field.li",
+      "gap_id": "G-math",
+      "status": "axiomatic",
+      "open_goals": null,
+      "discrepancy_notes": "Axiomatic \u2014 not user-code wrongness."
+    },
+    {
+      "id": "M-LM-ADD-COMM",
+      "kind": "lemma",
+      "proof_status_catalog": "proved",
+      "li_specimen": "proof-db/math/axioms/reals_field.li",
+      "gap_id": "G-math",
+      "build_excerpt": "lic build: warning \u2014 Lean 4 / lake not installed; skipping semantics proof (install elan for full 2f gate)",
+      "status": "proved",
+      "open_goals": 0,
+      "open_goal_names": [],
+      "discrepancy_notes": ""
+    },
+    {
+      "id": "M-LM-ADD-ASSOC",
+      "kind": "lemma",
+      "proof_status_catalog": "proved",
+      "li_specimen": "proof-db/math/axioms/reals_field.li",
+      "gap_id": "G-math",
+      "build_excerpt": "lic build: warning \u2014 Lean 4 / lake not installed; skipping semantics proof (install elan for full 2f gate)",
+      "status": "proved",
+      "open_goals": 0,
+      "open_goal_names": [],
+      "discrepancy_notes": ""
+    },
+    {
+      "id": "M-LM-MUL-ONE",
+      "kind": "lemma",
+      "proof_status_catalog": "proved",
+      "li_specimen": "proof-db/math/axioms/reals_field.li",
+      "gap_id": "G-math",
+      "build_excerpt": "lic build: warning \u2014 Lean 4 / lake not installed; skipping semantics proof (install elan for full 2f gate)",
+      "status": "proved",
+      "open_goals": 0,
+      "open_goal_names": [],
+      "discrepancy_notes": ""
+    },
+    {
+      "id": "M-LM-NAT-ADD-ZERO",
+      "kind": "lemma",
+      "proof_status_catalog": "proved",
+      "li_specimen": "proof-db/math/axioms/peano_order.li",
+      "gap_id": "G-math",
+      "build_excerpt": "lic build: warning \u2014 Lean 4 / lake not installed; skipping semantics proof (install elan for full 2f gate)",
+      "status": "proved",
+      "open_goals": 0,
+      "open_goal_names": [],
+      "discrepancy_notes": ""
+    },
+    {
+      "id": "M-LM-NAT-ADD-COMM",
+      "kind": "lemma",
+      "proof_status_catalog": "proved",
+      "li_specimen": "proof-db/math/axioms/peano_order.li",
+      "gap_id": "G-math",
+      "build_excerpt": "lic build: warning \u2014 Lean 4 / lake not installed; skipping semantics proof (install elan for full 2f gate)",
+      "status": "proved",
+      "open_goals": 0,
+      "open_goal_names": [],
+      "discrepancy_notes": ""
+    },
+    {
+      "id": "M-LM-FLOAT-ADD-COMM",
+      "kind": "lemma",
+      "proof_status_catalog": "discrepancy",
+      "li_specimen": "proof-db/math/lemmas/add_commutative.li",
+      "gap_id": "G-math",
+      "build_excerpt": "lic build: 1 proof obligation(s) still need a Lean proof (see build/generated/AutoVC.lean)\nhint: a `requires` or `ensures` on your code created a goal the compiler could not close automatically \u2014 prove it in Lean, simplify the contract, or pass --allow-open-vc only for documented dev/tests",
+      "status": "build_failed",
+      "open_goals": null,
+      "discrepancy_notes": "Build failed \u2014 investigate VC/specimen."
+    },
+    {
+      "id": "M-LM-ORDER-TRANS",
+      "kind": "lemma",
+      "proof_status_catalog": "open",
+      "li_specimen": "proof-db/math/lemmas/order_transitive.li",
+      "gap_id": "G-math",
+      "build_excerpt": "lic build: warning \u2014 Lean 4 / lake not installed; skipping semantics proof (install elan for full 2f gate)",
+      "status": "proved",
+      "open_goals": 0,
+      "open_goal_names": [],
+      "discrepancy_notes": ""
+    },
+    {
+      "id": "M-LM-MUL-DIST-INST",
+      "kind": "lemma",
+      "proof_status_catalog": "open",
+      "li_specimen": "proof-db/math/lemmas/mul_distrib_instance.li",
+      "gap_id": "G-math",
+      "build_excerpt": "lic build: 1 proof obligation(s) still need a Lean proof (see build/generated/AutoVC.lean)\nhint: a `requires` or `ensures` on your code created a goal the compiler could not close automatically \u2014 prove it in Lean, simplify the contract, or pass --allow-open-vc only for documented dev/tests",
+      "status": "build_failed",
+      "open_goals": null,
+      "discrepancy_notes": "Build failed \u2014 investigate VC/specimen."
+    },
+    {
       "id": "P-AX-CONS-001",
       "kind": "axiom",
       "proof_status_catalog": "open",
       "li_specimen": "proof-db/physics/axioms/conservation.li",
       "gap_id": "G-physics",
-      "status": "skipped",
+      "build_excerpt": "module:1:1: error [E0301]: Every `extern proc` must declare what must be true before it runs (`requires`).\n  hint: Add a `requires` clause on the line above `=`.\nmodule:1:1: error [E0302]: Every `extern proc` must declare what it guarantees on exit (`ensures`).\n  hint: Add an `ensures` clause (often `ensures true` for opaque runtime calls).",
+      "status": "build_failed",
       "open_goals": null,
-      "discrepancy_notes": "lic build skipped."
+      "discrepancy_notes": "Build failed \u2014 investigate VC/specimen."
     },
     {
       "id": "P-AX-CONS-002",
@@ -87,9 +284,61 @@
       "proof_status_catalog": "open",
       "li_specimen": "proof-db/physics/axioms/conservation.li",
       "gap_id": "G-physics",
+      "build_excerpt": "module:1:1: error [E0301]: Every `extern proc` must declare what must be true before it runs (`requires`).\n  hint: Add a `requires` clause on the line above `=`.\nmodule:1:1: error [E0302]: Every `extern proc` must declare what it guarantees on exit (`ensures`).\n  hint: Add an `ensures` clause (often `ensures true` for opaque runtime calls).",
+      "status": "build_failed",
+      "open_goals": null,
+      "discrepancy_notes": "Build failed \u2014 investigate VC/specimen."
+    },
+    {
+      "id": "P-AX-DIM-001",
+      "kind": "axiom",
+      "proof_status_catalog": "open",
+      "li_specimen": null,
+      "gap_id": "G-physics",
       "status": "skipped",
       "open_goals": null,
-      "discrepancy_notes": "lic build skipped."
+      "discrepancy_notes": "No li_specimen."
+    },
+    {
+      "id": "P-AX-DIM-002",
+      "kind": "axiom",
+      "proof_status_catalog": "open",
+      "li_specimen": null,
+      "gap_id": "G-physics",
+      "status": "skipped",
+      "open_goals": null,
+      "discrepancy_notes": "No li_specimen."
+    },
+    {
+      "id": "P-LM-ENERGY-001",
+      "kind": "lemma",
+      "proof_status_catalog": "proved",
+      "li_specimen": null,
+      "gap_id": "G-physics",
+      "status": "skipped",
+      "open_goals": null,
+      "discrepancy_notes": "No li_specimen."
+    },
+    {
+      "id": "P-LM-MOM-001",
+      "kind": "lemma",
+      "proof_status_catalog": "proved",
+      "li_specimen": null,
+      "gap_id": "G-physics",
+      "status": "skipped",
+      "open_goals": null,
+      "discrepancy_notes": "No li_specimen."
+    },
+    {
+      "id": "P-LM-CONS-001",
+      "kind": "lemma",
+      "proof_status_catalog": "open",
+      "li_specimen": "proof-db/physics/lemmas/energy_drift_bound.li",
+      "gap_id": "G-physics",
+      "build_excerpt": "module:1:1: error [lic.error]: proc calls extern but does not declare raises IO",
+      "status": "build_failed",
+      "open_goals": null,
+      "discrepancy_notes": "Build failed \u2014 investigate VC/specimen."
     },
     {
       "id": "P-AX-MECH-001",
@@ -97,9 +346,11 @@
       "proof_status_catalog": "open",
       "li_specimen": "proof-db/physics/axioms/newton_laws.li",
       "gap_id": "G-physics",
-      "status": "skipped",
-      "open_goals": null,
-      "discrepancy_notes": "lic build skipped."
+      "build_excerpt": "lic build: warning \u2014 Lean 4 / lake not installed; skipping semantics proof (install elan for full 2f gate)",
+      "status": "proved",
+      "open_goals": 0,
+      "open_goal_names": [],
+      "discrepancy_notes": ""
     },
     {
       "id": "P-AX-MECH-002",
@@ -107,9 +358,11 @@
       "proof_status_catalog": "open",
       "li_specimen": "proof-db/physics/axioms/newton_laws.li",
       "gap_id": "G-physics",
-      "status": "skipped",
-      "open_goals": null,
-      "discrepancy_notes": "lic build skipped."
+      "build_excerpt": "lic build: warning \u2014 Lean 4 / lake not installed; skipping semantics proof (install elan for full 2f gate)",
+      "status": "proved",
+      "open_goals": 0,
+      "open_goal_names": [],
+      "discrepancy_notes": ""
     },
     {
       "id": "P-AX-MECH-003",
@@ -117,9 +370,23 @@
       "proof_status_catalog": "open",
       "li_specimen": "proof-db/physics/axioms/newton_laws.li",
       "gap_id": "G-physics",
-      "status": "skipped",
-      "open_goals": null,
-      "discrepancy_notes": "lic build skipped."
+      "build_excerpt": "lic build: warning \u2014 Lean 4 / lake not installed; skipping semantics proof (install elan for full 2f gate)",
+      "status": "proved",
+      "open_goals": 0,
+      "open_goal_names": [],
+      "discrepancy_notes": ""
+    },
+    {
+      "id": "G-lean-autovc-strict",
+      "kind": "lemma",
+      "proof_status_catalog": "open",
+      "li_specimen": "li-tests/modules/greeter/greeter.li",
+      "gap_id": "G-lean",
+      "build_excerpt": "lic build: warning \u2014 Lean 4 / lake not installed; skipping semantics proof (install elan for full 2f gate)",
+      "status": "proved",
+      "open_goals": 0,
+      "open_goal_names": [],
+      "discrepancy_notes": ""
     },
     {
       "id": "P-float-sqrt-open-bound",
@@ -127,9 +394,35 @@
       "proof_status_catalog": "proved",
       "li_specimen": "li-tests/contracts_verify/sqrt_open_bound.li",
       "gap_id": "G-lean",
-      "status": "skipped",
-      "open_goals": null,
-      "discrepancy_notes": "lic build skipped."
+      "build_excerpt": "lic build: warning \u2014 Lean 4 / lake not installed; skipping semantics proof (install elan for full 2f gate)",
+      "status": "proved",
+      "open_goals": 0,
+      "open_goal_names": [],
+      "discrepancy_notes": ""
+    },
+    {
+      "id": "P-linalg-dot4-int-closed",
+      "kind": "lemma",
+      "proof_status_catalog": "proved",
+      "li_specimen": "li-tests/contracts_verify/linalg_dot4_int_closed.li",
+      "gap_id": "G-math",
+      "build_excerpt": "lic build: warning \u2014 Lean 4 / lake not installed; skipping semantics proof (install elan for full 2f gate)",
+      "status": "proved",
+      "open_goals": 0,
+      "open_goal_names": [],
+      "discrepancy_notes": ""
+    },
+    {
+      "id": "P-linalg-dot4-int-loop-open",
+      "kind": "lemma",
+      "proof_status_catalog": "proved",
+      "li_specimen": "li-tests/contracts_verify/linalg_dot4_int_loop_open.li",
+      "gap_id": "G-math",
+      "build_excerpt": "lic build: warning \u2014 Lean 4 / lake not installed; skipping semantics proof (install elan for full 2f gate)",
+      "status": "proved",
+      "open_goals": 0,
+      "open_goal_names": [],
+      "discrepancy_notes": ""
     }
   ]
 }

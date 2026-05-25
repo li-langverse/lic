@@ -8,6 +8,26 @@
 ---
 
 todos:
+- id: gap-sim-chem-research-chem-r0-sota-survey
+  content: "sim-chem-research: pending plan todo chem-r0-sota-survey"
+  status: pending
+  gap_orchestrator: true
+- id: gap-sim-chem-research-chem-r1-basis-size-scaling
+  content: "sim-chem-research: pending plan todo chem-r1-basis-size-scaling"
+  status: pending
+  gap_orchestrator: true
+- id: gap-sim-chem-research-chem-r2-dft-scf-gap
+  content: "sim-chem-research: pending plan todo chem-r2-dft-scf-gap"
+  status: pending
+  gap_orchestrator: true
+- id: gap-sim-chem-research-chem-r3-package-placement
+  content: "sim-chem-research: pending plan todo chem-r3-package-placement"
+  status: pending
+  gap_orchestrator: true
+
+
+
+
 
 - id: chem-r0-sota-survey
   content: "Gaussian/ORCA/Psi4/PySCF minimal workflows; map to QM registry 401–432"

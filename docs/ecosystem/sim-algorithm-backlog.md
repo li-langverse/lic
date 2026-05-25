@@ -6,6 +6,21 @@
 ---
 
 todos:
+- id: gap-sim-sim-p1-num-dot-axpy
+  content: "sim: pending plan todo sim-p1-num-dot-axpy"
+  status: pending
+  gap_orchestrator: true
+- id: gap-sim-sim-p1-md-neighbor-cell
+  content: "sim: pending plan todo sim-p1-md-neighbor-cell"
+  status: pending
+  gap_orchestrator: true
+- id: gap-sim-sim-p2-qm-dft-scf
+  content: "sim: pending plan todo sim-p2-qm-dft-scf"
+  status: pending
+  gap_orchestrator: true
+
+
+
 
 - id: sim-p0-md-lj-li-parity
   content: "Tier-2 Li md_lennard_jones checksum parity vs native (fix runtime sink / driver)"

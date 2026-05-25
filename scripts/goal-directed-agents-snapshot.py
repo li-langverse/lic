@@ -132,6 +132,24 @@ RUNNERS: list[dict] = [
         "todo_id_prefix": "sec-r",
         "default_agent": "security_auditor",
     },
+    {
+        "id": "swarm-observer",
+        "name": "Swarm gap orchestrator",
+        "repo": LANGVERSE / "lic",
+        "branch": "cursor/swarm-observer-plan-loop",
+        "plan": "docs/ecosystem/swarm-observer-plan-backlog.md",
+        "state": "data/swarm-observer-plan-loop/state.json",
+        "log": "data/swarm-observer-plan-loop/runner.log",
+        "pgrep_patterns": [
+            "swarm-observer-plan-loop.py",
+            "swarm-observer-plan-run-until-done",
+            "swarm-observer-plan-loop-systemd",
+            "LI_SWARM_PLAN_AGENT",
+        ],
+        "systemd_unit": "li-swarm-observer-plan-loop.service",
+        "todo_id_prefix": "orch-r",
+        "default_agent": "swarm_observer",
+    },
 ]
 
 

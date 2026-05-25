@@ -33,10 +33,13 @@ source ~/Documents/Cursor/.env   # CURSOR_API_KEY, GH_TOKEN
 | `sim-md-research` | `li-sim-md-research-plan-loop` | `cursor/sim-md-research-loop` | `../lic-worktrees/sim-md-research` |
 | `sim-chem-research` | `li-sim-chem-research-plan-loop` | `cursor/sim-chem-research-loop` | `../lic-worktrees/sim-chem-research` |
 | `security-research` | `li-security-research-plan-loop` | `cursor/security-research-loop` | `../lic-worktrees/security-research` |
+| `swarm-observer` | `li-swarm-observer-plan-loop` | `cursor/swarm-observer-plan-loop` | main `lic` checkout |
 
 Research loops use `numerics_researcher` and `sim-algo-research-gates.sh` (validity hard gate). See `docs/ecosystem/sim-algo-research-grading.md`.
 
 Security research uses `security_auditor` and `security-research-gates.sh` (posture + CWE feed hard gates). See `docs/ecosystem/security-research-grading.md`.
+
+**Swarm observer** uses `swarm_observer`, gap registry (`data/swarm-gap-registry/registry.yaml`), `swarm-gap-ingest.py` / `swarm-gap-apply-actions.py`, and `swarm-observer-plan-gates.sh` — orchestration only, no product code.
 
 ## Requirements
 

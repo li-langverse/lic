@@ -11,6 +11,13 @@ namespace {
 
 bool type_mentions_heap(const TypeExpr& te);
 
+const TypeExpr* unwrap_refinement_type(const TypeExpr* ty) {
+  while (ty && ty->kind == TypeKind::Refinement && ty->refinement_base) {
+    ty = ty->refinement_base.get();
+  }
+  return ty;
+}
+
 struct LocalState {
   bool moved = false;
   int mut_borrows = 0;
@@ -127,7 +134,7 @@ struct BorrowCtx {
       if (param_is_var(callee.params[n].type)) {
         continue;
       }
-      if (!type_mentions_heap(callee.params[n].type)) {
+      if (!param_invalidate_on_pass(callee.params[n].type)) {
         continue;
       }
       const std::string& name = call.args[n]->ident;

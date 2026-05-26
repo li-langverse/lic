@@ -1,0 +1,30 @@
+# QM DFT vertical bench registry (computational chemistry — wave-d-21).
+# Validate: ./scripts/check-qm-dft-bench.sh
+# Layer B: benchmarks/competitive/verticals.toml id=qm_dft
+
+[meta]
+schema = 1
+version = 1
+track = "PH-QM"
+plan = "docs/game-dev/specs/li-chem-qm-rfc.md"
+updated = "2026-05-23"
+
+# workload_class: stub | full — honesty per algorithms-and-libraries-plan.md
+# oracle: composable_only | external_binary
+# status: stub | active
+
+[[benchmark]]
+id = "qm_dft"
+vertical_id = "qm_dft"
+name = "DFT single-point RKS stub (H2)"
+profile = "sim_scientific"
+workload_class = "stub"
+oracle = "composable_only"
+status = "stub"
+tier = "composable"
+li_package = "chem"
+composable = "import_chem_dft_smoke"
+method = "rks_stub"
+basis = "sto3g_stub"
+last_reviewed = "2026-05-23"
+notes = "Native closed-form H2 stub via import_chem_dft_smoke.li — not Gaussian/ORCA/Psi4 parity; external_binary oracle column TBD."

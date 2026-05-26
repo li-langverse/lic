@@ -1,0 +1,156 @@
+# Layer B — domain tool & algorithm registry (algorithms-and-libraries-plan §4).
+# Agents: update last_reviewed when SOTA review runs; cite rows in Studio/RFC claims.
+
+[meta]
+version = 1
+updated = "2026-05-23"
+
+[[vertical]]
+id = "gaming_rigid"
+incumbent = "Unreal Engine 5 / Unity / Godot + Jolt/Bullet"
+kernel_or_api = "rigid body integrate, collision broadphase"
+workload_class = "v0_gaming"
+oracle = "composable_only"
+li_package = "physics.rigid"
+last_reviewed = "2026-05-23"
+notes = "world-studio.toml gaming_rigid row; composable import_physics_rigid_gaming.li; tier-2 rigid_body_stack in verify.py (checksum vs rigid_stack_core.c) — not UE5/Bullet parity."
+
+[[vertical]]
+id = "md_lennard_jones"
+incumbent = "LAMMPS / GROMACS"
+kernel_or_api = "LJ cutoff force + energy drift"
+workload_class = "stub"
+oracle = "cpp"
+li_package = "sim.scientific"
+last_reviewed = "2026-05-23"
+notes = "tier-2 verify green; Layer B csv_lang lammps/gromacs (lammps_lj_micro, gromacs_lj_micro) in md_oracle.toml — stub via external/run_oracle_stub.sh + README; B1/B2 validity rows — not LAMMPS/GROMACS parity."
+
+[[vertical]]
+id = "pde_heat_2d"
+incumbent = "OpenFOAM / PETSc"
+kernel_or_api = "explicit heat step, CFL stability"
+workload_class = "stub"
+oracle = "cpp"
+li_package = "sim.scientific"
+last_reviewed = "2026-05-23"
+notes = "heat_equation_2d in verify.py; FEA/CFD split to fea_linear_elasticity + cfd_lid_driven_cavity (PH-CAE)."
+
+[[vertical]]
+id = "fea_linear_elasticity"
+incumbent = "CalculiX / ANSYS Mechanical / SimScale"
+kernel_or_api = "linear elasticity stiffness assembly + solve"
+workload_class = "stub"
+oracle = "cpp"
+li_package = "sim.scientific"
+last_reviewed = "2026-05-23"
+notes = "PH-CAE FEA track; engineering-cae-fundamentals.md; no bench oracle yet."
+
+[[vertical]]
+id = "cfd_lid_driven_cavity"
+incumbent = "OpenFOAM / COMSOL CFD / PETSc"
+kernel_or_api = "incompressible Navier-Stokes, lid-driven cavity"
+workload_class = "stub"
+oracle = "cpp"
+li_package = "sim.scientific"
+last_reviewed = "2026-05-23"
+notes = "PH-CAE CFD track; canonical cavity target; no bench oracle yet."
+
+[[vertical]]
+id = "drug_litl"
+incumbent = "Roche Lab-in-the-Loop / Recursion LOWE"
+kernel_or_api = "stage workflow UI + QM job queue"
+workload_class = "stub"
+oracle = "composable_only"
+li_package = "sim.drug_design"
+last_reviewed = "2026-05-23"
+notes = "studio.adaptive layout stub on li-ui; see competitive-intel/ui-ux-by-dimension.md UX-07."
+
+[[vertical]]
+id = "bio_litl"
+incumbent = "Benchling / Rosetta / ProteinMPNN / RFdiffusion"
+kernel_or_api = "DBTL stage workflow + assay score witness"
+workload_class = "stub"
+oracle = "composable_only"
+li_package = "bioeng"
+last_reviewed = "2026-05-23"
+notes = "bioengineering.toml composable import_bioeng_litl_workflow.li; design→build→test→learn stub — not Benchling/Rosetta parity."
+
+[[vertical]]
+id = "robo_workspace"
+incumbent = "Gazebo / Isaac Sim / MoveIt / Drake"
+kernel_or_api = "sim_robotics workspace profile + PH-ROBO phase chrome"
+workload_class = "stub"
+oracle = "composable_only"
+li_package = "sim.robotics"
+last_reviewed = "2026-05-23"
+notes = "robotics.toml composable import_sim_robotics_workspace.li; sim_robotics profile + tick stub — not Gazebo/Isaac Sim/MoveIt/Drake parity."
+
+[[vertical]]
+id = "am_slicer"
+incumbent = "PrusaSlicer / Cura / Bambu Studio"
+kernel_or_api = "slice → preview → export G-code/3MF"
+workload_class = "stub"
+oracle = "composable_only"
+li_package = "sim.additive"
+last_reviewed = "2026-05-23"
+notes = "additive.toml composable import_sim_additive_slicer_workflow.li; slice→preview→export stub — not PrusaSlicer/Cura/Bambu parity; ≤3 clicks export (PH-UX)."
+
+[[vertical]]
+id = "scientific_viz"
+incumbent = "ParaView / VTK / MATLAB"
+kernel_or_api = "pipeline source + display + view properties"
+workload_class = "stub"
+oracle = "composable_only"
+li_package = "sim.viz"
+last_reviewed = "2026-05-23"
+notes = "viz.toml composable import_sim_viz_pipeline_source_display.li; Properties/Display/View panel stub — not ParaView/VTK/MATLAB parity; downloads/paraview-properties-panel.html."
+
+[[vertical]]
+id = "cinematic_encode"
+incumbent = "ffmpeg / DaVinci Resolve export / UE movie render queue"
+kernel_or_api = "H.264/MP4 mux presets, deterministic pre-encode frame queue"
+workload_class = "stub"
+oracle = "external_binary"
+li_package = "studio"
+last_reviewed = "2026-05-23"
+notes = "PH-CIN encode track; cinematic-algorithm-fundamentals.md; trusted ffmpeg T5 at CIN-2."
+
+[[vertical]]
+id = "cinematic_color_grade"
+incumbent = "ACES / OCIO / Resolve color science"
+kernel_or_api = "1D LUT + display transfer (Rec.709 segment)"
+workload_class = "stub"
+oracle = "composable_only"
+li_package = "studio"
+last_reviewed = "2026-05-23"
+notes = "PH-CIN color track; explicit per-channel ops; no OCIO FFI yet."
+
+[[vertical]]
+id = "cinematic_audio_sync"
+incumbent = "ffmpeg aresample / Pro Tools pull-up"
+kernel_or_api = "sample index from seq timeline time + fps rational"
+workload_class = "stub"
+oracle = "composable_only"
+li_package = "studio"
+last_reviewed = "2026-05-23"
+notes = "PH-CIN audio track; mux with cinematic_encode at CIN-4."
+
+[[vertical]]
+id = "mmo_shard"
+incumbent = "Photon / Spatial / custom shard servers"
+kernel_or_api = "mmo profile shard tick + zone handoff witness"
+workload_class = "stub"
+oracle = "composable_only"
+li_package = "mmo"
+last_reviewed = "2026-05-23"
+notes = "mmorpg.toml composable import_mmo_shard.li; mmo profile shard stub — not Photon/Spatial/custom-shard parity; store.realtime oracle TBD."
+
+[[vertical]]
+id = "qm_dft"
+incumbent = "Gaussian / ORCA / Psi4"
+kernel_or_api = "DFT single-point energy"
+workload_class = "stub"
+oracle = "external_binary"
+li_package = "chem"
+last_reviewed = "2026-05-23"
+notes = "qm_dft.toml composable import_chem_dft_smoke.li; native RKS stub (workload_class=stub) — not Gaussian/ORCA/Psi4 parity; external_binary oracle TBD."

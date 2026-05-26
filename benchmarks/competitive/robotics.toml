@@ -1,0 +1,29 @@
+# Robotics vertical bench registry (sim_robotics workspace — wave-d-23).
+# Validate: ./scripts/check-robotics-bench.sh
+# Layer B: benchmarks/competitive/verticals.toml id=robo_workspace
+
+[meta]
+schema = 1
+version = 1
+track = "PH-ROBO"
+plan = "docs/game-dev/specs/li-sim-robotics-rfc.md"
+updated = "2026-05-23"
+
+# workload_class: stub | full — honesty per algorithms-and-libraries-plan.md
+# oracle: composable_only | external_binary
+# status: stub | active
+
+[[benchmark]]
+id = "robo_workspace"
+vertical_id = "robo_workspace"
+name = "sim_robotics workspace tick + PH-ROBO phase smoke"
+profile = "sim_robotics"
+workload_class = "stub"
+oracle = "composable_only"
+status = "stub"
+tier = "composable"
+li_package = "sim.robotics"
+composable = "import_sim_robotics_workspace"
+workflow = "studio_workspace_ph_robo"
+last_reviewed = "2026-05-23"
+notes = "Native sim_robotics profile stub via import_sim_robotics_workspace.li — not Gazebo/Isaac Sim/MoveIt/Drake parity; physics.rigid step oracle TBD."

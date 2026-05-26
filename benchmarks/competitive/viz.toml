@@ -1,0 +1,29 @@
+# Scientific visualization vertical bench registry (scientific_viz pipeline — wave-d-25).
+# Validate: ./scripts/check-viz-bench.sh
+# Layer B: benchmarks/competitive/verticals.toml id=scientific_viz
+
+[meta]
+schema = 1
+version = 1
+track = "PH-SCI"
+plan = "docs/game-dev/specs/li-sim-viz-rfc.md"
+updated = "2026-05-23"
+
+# workload_class: stub | full — honesty per algorithms-and-libraries-plan.md
+# oracle: composable_only | external_binary
+# status: stub | active
+
+[[benchmark]]
+id = "scientific_viz"
+vertical_id = "scientific_viz"
+name = "sim_scientific pipeline source/display smoke"
+profile = "sim_scientific"
+workload_class = "stub"
+oracle = "composable_only"
+status = "stub"
+tier = "composable"
+li_package = "sim.viz"
+composable = "import_sim_viz_pipeline_source_display"
+workflow = "pipeline_source_display_view"
+last_reviewed = "2026-05-23"
+notes = "Native pipeline browser + Properties/Display/View stub via import_sim_viz_pipeline_source_display.li — not ParaView/VTK/MATLAB parity; field color maps reuse tier-2 sim benches only."

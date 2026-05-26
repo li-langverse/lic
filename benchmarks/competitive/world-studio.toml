@@ -1,0 +1,29 @@
+# World Studio vertical bench registry (gaming slice — wave-d-19).
+# Validate: ./scripts/check-world-studio-bench.sh
+# Layer B: benchmarks/competitive/verticals.toml id=gaming_rigid
+
+[meta]
+schema = 1
+version = 1
+track = "PH-GD"
+plan = "docs/game-dev/world-studio-vision.md"
+updated = "2026-05-23"
+
+# workload_class: v0_gaming | stub | full — honesty per algorithms-and-libraries-plan.md
+# oracle: composable_only | cpp | external_binary
+# status: stub | active
+
+[[benchmark]]
+id = "gaming_rigid"
+vertical_id = "gaming_rigid"
+name = "Rigid body integrate + collision broadphase smoke"
+profile = "game"
+workload_class = "v0_gaming"
+oracle = "composable_only"
+status = "stub"
+tier = "composable"
+li_package = "physics.rigid"
+composable = "import_physics_rigid_gaming"
+tier2_proxy = "rigid_body_stack"
+last_reviewed = "2026-05-23"
+notes = "Composable semi-implicit + AABB/sphere overlap; tier-2 rigid_body_stack via verify.py — not UE5/Bullet parity."

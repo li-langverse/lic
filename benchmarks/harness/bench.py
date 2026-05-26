@@ -13,7 +13,7 @@ import statistics
 import subprocess
 import sys
 import time
-from dataclasses import dataclass, field
+from dataclasses import dataclass
 from datetime import datetime, timezone
 from pathlib import Path
 
@@ -33,13 +33,6 @@ CSV_HEADER = [
     "git_sha",
     "cpu_model",
     "flags",
-    "os",
-    "passed",
-    "oracle_kind",
-    "verify_abs_err",
-    "verify_rel_err",
-    "verify_ulps",
-    "verify_within_1ulp",
 ]
 NATIVE_FLAGS = "-O3 -march=native -ffast-math"
 LANGS = ("cpp", "rust", "julia", "li")
@@ -57,43 +50,6 @@ class BenchSpec:
     bytes_per_run: float | None = None
     li_pure: bool = False
     li_enabled: bool = True
-
-
-_WP1_NUM_IDS: tuple[str, ...] = (
-    "num_cg",
-    "num_cholesky",
-    "num_eig_symmetric",
-    "num_fft_r2c",
-    "num_gmres",
-    "num_integ_euler",
-    "num_integ_rk4",
-    "num_integ_semi_implicit",
-    "num_integ_symplectic",
-    "num_integ_verlet",
-    "num_opt_bfgs",
-    "num_opt_line_search",
-    "num_quadrature_gauss",
-    "num_rng_pcg",
-    "num_root_newton",
-    "num_sparse_mv",
-    "fft_1d_fixed",
-)
-
-
-def _wp1_num_bench_specs() -> tuple[BenchSpec, ...]:
-    """Catalog num_* + fft_1d_fixed smoke harnesses (shared C oracle)."""
-    return tuple(
-        BenchSpec(
-            name=bench_id,
-            tier=1,
-            rel_dir=bench_id,
-            main_c="cpp/main.c",
-            core_c=f"common/{bench_id}_core.c",
-            li_main="li/main.li",
-            li_pure=False,
-        )
-        for bench_id in _WP1_NUM_IDS
-    )
 
 
 TIER1_BENCHES: tuple[BenchSpec, ...] = (
@@ -146,7 +102,7 @@ TIER1_BENCHES: tuple[BenchSpec, ...] = (
         flops_per_run=2.0 * 5e6,
         li_pure=True,
     ),
-) + _wp1_num_bench_specs()
+)
 
 # Stdlib ADT tier-1 (WP0-C): native oracles only until WP1 Li drivers land.
 TIER_STDLIB_BENCHES: tuple[BenchSpec, ...] = (
@@ -180,7 +136,7 @@ TIER_STDLIB_BENCHES: tuple[BenchSpec, ...] = (
 )
 
 # Gaming-physics roadmap (physics-only; Tier R = rendering out of scope):
-#   exists: md_lennard_jones + catalog md_* aliases, nbody, wave_1d/2d, heat_2d, advection_diffusion_2d, sph_dam_break_2d (stub)
+#   exists: md_lennard_jones, nbody, wave_1d/2d, heat_2d, advection_diffusion_2d, sph_dam_break_2d (stub)
 #   planned: euler_fluid_2d, combustion_passive, wind_field_bc, rigid_body, cloth, mls_mpm
 #   Tier R: shadows, reflections BRDF, fire rendering
 TIER2_BENCHES: tuple[BenchSpec, ...] = (
@@ -191,33 +147,7 @@ TIER2_BENCHES: tuple[BenchSpec, ...] = (
         "cpp/md_main.c",
         "common/md_core.c",
         "li/main.li",
-        li_pure=False,
-    ),
-    *(
-        BenchSpec(
-            md_id,
-            2,
-            md_id,
-            "cpp/md_main.c",
-            "common/md_core.c",
-            "li/main.li",
-        )
-        for md_id in (
-            "md_barostat_parrinello_rahman",
-            "md_constraints_rattle",
-            "md_constraints_shake",
-            "md_energy_drift",
-            "md_init_fcc_mb",
-            "md_integrator_leapfrog",
-            "md_integrator_verlet",
-            "md_longrange_ewald",
-            "md_longrange_pme",
-            "md_neighbor_cell_list",
-            "md_neighbor_verlet_skin",
-            "md_oracle_external",
-            "md_thermostat_berendsen",
-            "md_thermostat_nose_hoover",
-        )
+        li_pure=True,
     ),
     BenchSpec(
         "three_body",
@@ -306,6 +236,7 @@ TIER2_BENCHES: tuple[BenchSpec, ...] = (
  "cpp/main.c",
  "common/three_body_core.c",
  "li/main.li",
+ li_pure=True,
  ),
  BenchSpec(
  "wind_field_bc",
@@ -432,24 +363,13 @@ def read_csv(path: Path) -> list[dict[str, str]]:
         return list(csv.DictReader(f))
 
 
-def normalize_csv_row(row: dict[str, object]) -> dict[str, str]:
-    """Backfill new columns when merging rows from older latest.csv files."""
-    out: dict[str, str] = {}
-    for key in CSV_HEADER:
-        val = row.get(key, "")
-        out[key] = "" if val is None else str(val)
-    if not out.get("os"):
-        out["os"] = host_os_tag()
-    return out
-
-
 def write_csv(path: Path, rows: list[dict[str, object]]) -> None:
     path.parent.mkdir(parents=True, exist_ok=True)
     with path.open("w", newline="") as f:
         w = csv.DictWriter(f, fieldnames=CSV_HEADER)
         w.writeheader()
         for row in rows:
-            w.writerow(normalize_csv_row(row))
+            w.writerow({k: row[k] for k in CSV_HEADER})
 
 
 def merge_rows(
@@ -531,6 +451,22 @@ def build_li(spec: BenchSpec, bin_path: Path) -> None:
     )
 
 
+def horner_reference_acc(*, steps: int = 5_000_000, x: float = 1.1) -> float:
+    acc = 0.0
+    for _ in range(steps):
+        acc = acc * x + 1.0
+    return acc
+
+
+def format_horner_checksum(value: float) -> str:
+    """Match C `printf(\"%.17g\\n\", checksum)` used by horner --verify."""
+    if math.isinf(value):
+        return "inf" if value > 0 else "-inf"
+    if math.isnan(value):
+        return "nan"
+    return f"{value:.17g}"
+
+
 # Li and native are different programs (e.g. reduced steps); only check native reproducibility.
 SKIP_LI_NATIVE_RESULT_PARITY: frozenset[str] = frozenset({"three_body_pure"})
 
@@ -591,81 +527,17 @@ def verify_stdlib_benchmark(spec: BenchSpec, build_dir: Path) -> None:
     print(f"{spec.name} verify ok (stdlib native oracle): checksum={native_out}")
 
 
-@dataclass
-class BenchmarkVerifyOutcome:
-    deviation_reports: list = field(default_factory=list)
-    oracle_kind: str = "iterative"
-
-
-def host_os_tag() -> str:
-    sys_name = platform.system().lower()
-    if sys_name == "darwin":
-        return "darwin"
-    if sys_name == "windows":
-        return "windows"
-    if sys_name == "linux":
-        return "linux"
-    return "unknown"
-
-
-def verify_csv_rows(
-    spec: BenchSpec,
-    outcome: BenchmarkVerifyOutcome,
-    *,
-    sha: str,
-    cpu: str,
-    flags: str,
-    lang: str,
-) -> list[dict[str, object]]:
-    """Export verify metrics for dashboard ingest (one row per metric)."""
-    from reference import analytical_report_for_label
-
-    label_for_lang = {"li": "Li", "cpp": "native", "rust": "native", "julia": "native"}
-    report_label = label_for_lang.get(lang, lang)
-    primary = analytical_report_for_label(outcome.deviation_reports, report_label)
-    if primary is None:
-        return []
-    passed = "true" if primary.within_machine_epsilon else "false"
-    shared = dict(
-        benchmark=spec.name,
-        lang=lang,
-        sha=sha,
-        cpu=cpu,
-        flags=flags,
-        passed=passed,
-        oracle_kind=outcome.oracle_kind,
-        verify_abs_err=f"{primary.abs_error:.6e}",
-        verify_rel_err=f"{primary.rel_error:.6e}",
-        verify_ulps=f"{primary.ulps:.4f}",
-        verify_within_1ulp="1" if primary.within_machine_epsilon else "0",
-    )
-    rows: list[dict[str, object]] = []
-
-    def add(metric: str, value: float, unit: str) -> None:
-        rows.append(row_for(metric=metric, value=value, unit=unit, **shared))
-
-    add("verify_checksum", primary.actual, "f64")
-    add("verify_analytical", primary.reference, "f64")
-    add("verify_abs_err", primary.abs_error, "f64")
-    add("verify_rel_err", primary.rel_error, "ratio")
-    add("verify_ulps", primary.ulps, "ulp")
-    add("verify_within_1ulp", 1.0 if primary.within_machine_epsilon else 0.0, "bool")
-    return rows
-
-
-def verify_benchmark_results(spec: BenchSpec, build_dir: Path) -> BenchmarkVerifyOutcome:
+def verify_benchmark_results(spec: BenchSpec, build_dir: Path) -> None:
     """Verify results against normative spec (reference.py), then Li vs native when applicable."""
     if not spec.li_enabled:
         verify_stdlib_benchmark(spec, build_dir)
-        return BenchmarkVerifyOutcome()
+        return
     from reference import (
         TIER1_REFERENCE,
         assert_checksum_against_spec,
         assert_spec_small_matches_table,
         float_close,
-        format_result,
         parse_result,
-        print_deviation_reports,
     )
 
     native = build_dir / f"{spec.name}_native"
@@ -674,17 +546,14 @@ def verify_benchmark_results(spec: BenchSpec, build_dir: Path) -> BenchmarkVerif
     build_li(spec, li_bin)
 
     ref_case = TIER1_REFERENCE.get(spec.name)
-    oracle_kind = ref_case.oracle if ref_case is not None else "iterative"
-    deviation_logs: list = []
     if ref_case is not None and os.environ.get("BENCH_VERIFY_REFERENCE", "1").strip() not in (
         "0",
         "false",
         "no",
     ):
         assert_spec_small_matches_table(spec.name, ref_case)
-        small_expected = format_result(ref_case.compute_small())
-        oracle = ref_case.oracle
-        print(f"{spec.name} spec small ok ({oracle}): {small_expected}")
+        small_expected = format_horner_checksum(ref_case.compute_small())
+        print(f"{spec.name} spec small ok: {small_expected}")
 
     native_out = native_result_checksum(native)
     if ref_case is not None and os.environ.get("BENCH_VERIFY_REFERENCE", "1").strip() not in (
@@ -692,15 +561,13 @@ def verify_benchmark_results(spec: BenchSpec, build_dir: Path) -> BenchmarkVerif
         "false",
         "no",
     ):
-        deviation_logs.extend(
-            assert_checksum_against_spec(
-                spec.name,
-                native_out,
-                label="native",
-                size="full",
-                ref=ref_case,
-                use_small=False,
-            )
+        assert_checksum_against_spec(
+            spec.name,
+            native_out,
+            label="native",
+            size="full",
+            ref=ref_case,
+            use_small=False,
         )
 
     if spec.name in SKIP_LI_NATIVE_RESULT_PARITY:
@@ -710,10 +577,7 @@ def verify_benchmark_results(spec: BenchSpec, build_dir: Path) -> BenchmarkVerif
         if native_out != native_b_out:
             raise RuntimeError(f"{spec.name}: native checksum not reproducible")
         print(f"{spec.name} verify ok (native only): checksum={native_out}")
-        return BenchmarkVerifyOutcome(
-            deviation_reports=deviation_logs,
-            oracle_kind=oracle_kind,
-        )
+        return
 
     t0 = time.perf_counter()
     li_out = li_result_checksum(li_bin, try_argv_verify=not spec.li_pure)
@@ -736,19 +600,14 @@ def verify_benchmark_results(spec: BenchSpec, build_dir: Path) -> BenchmarkVerif
                     f"{ref_case.min_li_seconds}s and <45% of native "
                     f"({native_elapsed_for_guard:.4f}s), likely DCE / wrong problem size"
                 )
-        deviation_logs.extend(
-            assert_checksum_against_spec(
-                spec.name,
-                li_out,
-                label="Li",
-                size="full",
-                ref=ref_case,
-                use_small=False,
-            )
+        assert_checksum_against_spec(
+            spec.name,
+            li_out,
+            label="Li",
+            size="full",
+            ref=ref_case,
+            use_small=False,
         )
-
-    if deviation_logs:
-        print_deviation_reports(deviation_logs, bench=spec.name)
 
     if li_out != native_out:
         if ref_case is not None:
@@ -775,14 +634,10 @@ def verify_benchmark_results(spec: BenchSpec, build_dir: Path) -> BenchmarkVerif
 
     variant = "pure Li" if spec.li_pure else "shared C kernel"
     print(f"{spec.name} verify ok ({variant}): result={li_out}")
-    return BenchmarkVerifyOutcome(
-        deviation_reports=deviation_logs,
-        oracle_kind=oracle_kind,
-    )
 
 
-def verify_checksum(spec: BenchSpec, build_dir: Path) -> BenchmarkVerifyOutcome:
-    return verify_benchmark_results(spec, build_dir)
+def verify_checksum(spec: BenchSpec, build_dir: Path) -> None:
+    verify_benchmark_results(spec, build_dir)
 
 
 def verify_md_refs() -> None:
@@ -824,12 +679,6 @@ def row_for(
     sha: str,
     cpu: str,
     flags: str,
-    passed: str = "",
-    oracle_kind: str = "",
-    verify_abs_err: str = "",
-    verify_rel_err: str = "",
-    verify_ulps: str = "",
-    verify_within_1ulp: str = "",
 ) -> dict[str, object]:
     return {
         "benchmark": benchmark,
@@ -842,13 +691,6 @@ def row_for(
         "git_sha": sha,
         "cpu_model": cpu,
         "flags": flags,
-        "os": host_os_tag(),
-        "passed": passed,
-        "oracle_kind": oracle_kind,
-        "verify_abs_err": verify_abs_err,
-        "verify_rel_err": verify_rel_err,
-        "verify_ulps": verify_ulps,
-        "verify_within_1ulp": verify_within_1ulp,
     }
 
 
@@ -954,9 +796,6 @@ def run_tier_benches(
 ) -> int:
     if not specs:
         return 1
-    verify_outcomes: dict[str, BenchmarkVerifyOutcome] = {}
-    sha = git_sha()
-    cpu = cpu_model()
     if verify:
         for spec in specs:
             build_dir = REPO / "build" / "bench" / spec.name
@@ -967,7 +806,7 @@ def run_tier_benches(
                 except RuntimeError as exc:
                     print(f"warn: {exc} — continuing with timing", file=sys.stderr)
             try:
-                verify_outcomes[spec.name] = verify_checksum(spec, build_dir)
+                verify_checksum(spec, build_dir)
             except RuntimeError as exc:
                 print(f"FAIL verify {spec.name}: {exc}", file=sys.stderr)
                 return 1
@@ -975,19 +814,6 @@ def run_tier_benches(
     merged: list[dict[str, object]] = read_csv(out)
     for spec in specs:
         new_rows = run_benchmark(spec, runs=runs)
-        outcome = verify_outcomes.get(spec.name)
-        if outcome is not None:
-            for lang in ("li", "cpp"):
-                new_rows.extend(
-                    verify_csv_rows(
-                        spec,
-                        outcome,
-                        sha=sha,
-                        cpu=cpu,
-                        flags=NATIVE_FLAGS,
-                        lang=lang,
-                    )
-                )
         merged = merge_rows(merged, new_rows, benchmark=spec.name)
     write_csv(out, merged)
     names = ", ".join(b.name for b in specs)
@@ -1063,16 +889,7 @@ def run_tier2_ci_smoke(*, only: set[str] | None = None) -> int:
 
 def run_verify() -> int:
     script = REPO / "benchmarks" / "harness" / "verify.py"
-    # Tier-0 CI gate: compile smokes only; tier-2 checksum parity runs via `bench.py --tier 2 --ci`.
-    return subprocess.call(
-        [
-            sys.executable,
-            str(script),
-            "--write-csv",
-            str(RESULTS / "verify.csv"),
-            "--tier0-only",
-        ]
-    )
+    return subprocess.call([sys.executable, str(script), "--write-csv", str(RESULTS / "verify.csv")])
 
 
 def run_tier0() -> int:
@@ -1197,16 +1014,6 @@ def main() -> int:
             return rc
         return run_tier2_all(
             runs=args.runs, out=args.out, verify=not args.skip_verify, only=only
-        )
-
-    if args.tier == 7:
-        from bench_registry import run_registry_family_benches
-
-        return run_registry_family_benches(
-            runs=args.runs,
-            out=args.out,
-            verify=not args.skip_verify,
-            only=only,
         )
 
     if args.tier == 3:

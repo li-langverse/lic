@@ -2,7 +2,7 @@
 
 **Program:** Li stdlib ADT — close strict Wave A before list/dict runtime (WP1 blocked).  
 **Sources:** [provability-gaps.md](../verification/provability-gaps.md), [algorithms-and-libraries-plan.md §5](algorithms-and-libraries-plan.md#5-lic-maturity--gate-before-large-scale-libraries).  
-**Assessed:** 2026-05-26 · branch `cursor/wave-a-stdlib-unblock` · repo `/home/s4il0r/Documents/Cursor/li-langverse/lic`
+**Assessed:** 2026-05-26 · branch `cursor/wave-a-stdlib-unblock` · integration **WA-P6** · repo `/home/s4il0r/Documents/Cursor/li-langverse/lic`
 
 **Wave A exit (strict):** **G-lean**, **G-vc**, **G-par**, **G-math** all **Done** (not Partial); `lic build` fails on open VCs by default; tier-1 pure-Li math ≤1.2× C++ (`LI_TIER1_PERF_STRICT=1`); phase **8a** workspace smoke green.
 
@@ -25,20 +25,20 @@
 
 | ID | Item | Command | Status | Output summary |
 |----|------|---------|--------|----------------|
-| **WA-1** | Contract discharge corpus | `./li-tests/tooling/contracts_discharge_corpus.sh` | **Pass** | All discharge scripts + lake ok; `sqrt_open_bound` closed with `Li.Discharge.sqrt_open_bound_spec` |
-| **WA-2** | AutoVC open goals (repo default) | `./scripts/check-autovc-open-goals.sh build/generated/AutoVC.lean` after `sqrt_open_bound` build | **Pass** (WA-P1) | `vc_sqrt_open_ensures_0_proved` via `Li.Discharge`; zero open obligations on specimen |
-| **WA-3** | Tier-1 perf (advisory) | `./scripts/check-tier1-li-vs-cpp.sh` | **Partial** | After `bench.py --tier 1`: OK `simd_dot` 1.059×, `matmul_naive` 0.905×; **GAP** `matmul_blocked` 1.886×, `horner_pure_li` 2.800×; advisory exit 0 |
-| **WA-4** | Tier-1 perf (strict ≤1.2×) | `LI_TIER1_PERF_STRICT=1 ./scripts/check-tier1-li-vs-cpp.sh` | **Fail** | `FAIL strict mode (2 bench(es) > 1.2× C++)` (exit 1) |
-| **WA-5** | Compiler + Studio plan gates | `./scripts/compiler-studio-plan-gates.sh` | **Fail** | Through tier-1 verify + Lean smokes; **exit 1** at `bench tier 0` (`li-tests` 211 pass / **4 fail** in security/stdlib paths) |
-| **WA-6** | G-lean smoke | `./li-tests/tooling/glean_strict_build_smoke.sh` | **Pass** | `check-autovc-open-goals: ok`; `glean_strict_build_smoke: ok` (exit 0) |
-| **WA-7** | G-lean lake typecheck | `./li-tests/tooling/autovc_lake_typecheck.sh` | **Pass** | `autovc_lake_typecheck: ok` (exit 0) |
-| **WA-8** | Workspace 8a build | `./scripts/lic-workspace-build.sh` | **Fail** | Smoke builds pass until `li-sim-scientific` `src/lib.li`: `14 proof obligation(s) still need a Lean proof` (exit 1) |
+| **WA-1** | Contract discharge corpus | `./li-tests/tooling/contracts_discharge_corpus.sh` (after `cmake --build build`) | **Partial** | Discharge smokes + par scripts pass in isolation; full corpus **exit 1** in WA-P6 run (sqrt step after long corpus — `lic build` open VC); **sqrt alone: exit 0** + `check-autovc-open-goals: ok` |
+| **WA-2** | AutoVC open goals (quiet sqrt) | `lic build li-tests/contracts_verify/sqrt_open_bound.li` then `./scripts/check-autovc-open-goals.sh build/generated/AutoVC.lean` | **Pass** | `vc_sqrt_open_ensures_0_proved` via `Li.Discharge.sqrt_open_bound_spec_proved`; **exit 0** / **exit 0** |
+| **WA-3** | Tier-1 perf (advisory) | `./scripts/check-tier1-li-vs-cpp.sh` | **Partial** | OK `simd_dot` 0.935×, `matmul_naive` 0.900×; GAP `matmul_blocked` 1.763×, `horner_pure_li` 8.600×; **exit 0** |
+| **WA-4** | Tier-1 perf (strict ≤1.2×) | `LI_TIER1_PERF_STRICT=1 ./scripts/check-tier1-li-vs-cpp.sh` | **Fail** | `FAIL strict mode (2 bench(es) > 1.2× C++)`; **exit 1** |
+| **WA-5** | Compiler + Studio plan gates | `./scripts/compiler-studio-plan-gates.sh` | **Fail** | Reaches tier-0 bench; **exit 1** — `li-tests` **207 pass / 8 fail** (`sqrt_open_bound`, linalg float closed, bytes smoke, physics golden, encapsulation open, …) |
+| **WA-6** | G-lean smoke | `./li-tests/tooling/glean_strict_build_smoke.sh` | **Pass** | **exit 0** |
+| **WA-7** | G-lean lake typecheck | `./li-tests/tooling/autovc_lake_typecheck.sh` | **Pass** | **exit 0** |
+| **WA-8** | Workspace 8a build | `./scripts/lic-workspace-build.sh` | **Pass** | All members with smoke/`lib.li` entrypoints; **exit 0** (incl. `li-sim-scientific` smoke) |
 
 ### `lic build` open-VC policy (default)
 
 ```text
 $ lic build li-tests/contracts_verify/sqrt_open_bound.li
-build ok → build/generated/AutoVC.lean has vc_sqrt_open_ensures_0_proved
+# exit 0 — lake + AutoVC typecheck
 $ ./scripts/check-autovc-open-goals.sh build/generated/AutoVC.lean
 check-autovc-open-goals: ok (no open Prop goals)
 ```
@@ -50,17 +50,20 @@ check-autovc-open-goals: ok (no open Prop goals)
 ## Recommended next PRs (Wave A closure)
 
 1. ~~**P-float / `sqrt_open_bound`**~~ — Done in WA-P1 (`cursor/wa-p1-pfloat`).
-2. **Tier-1 perf (7e)** — Pure-Li `matmul_blocked` IKJ/blocked codegen + `horner_pure_li` FMA/unroll until `LI_TIER1_PERF_STRICT=1` green; **G-math** → Done; WA-4 → Pass.
-3. **Workspace 8a proofs** — Proof-complete smokes for `li-sim-scientific` (and members using `src/lib.li` without smoke); WA-8 → Pass.
-4. **G-par Lean** — AST policy is partial; add Lean discharge for `_par*` VCs; **G-par** → Done.
-5. **Default `lic build` certificate** — Wire strict Lean on main user paths (no `--no-lean-verify` in CI smoke); align **G-lean** Done with “fails on any open VC” for shipped packages.
-6. **Docs sync** — When a gap closes, same PR updates `provability-gaps.md` + this checklist.
+2. ~~**G-par policy slice**~~ — Done in WA-P5 (`cursor/wa-p5-gpar-lean`); iteration-independence still open.
+3. ~~**Workspace 8a smoke (`li-sim-scientific`)**~~ — Done in WA-P4 (`cursor/wa-p4-workspace-8a`).
+4. **Tier-1 perf (7e)** — `matmul_blocked` + `horner_pure_li` until `LI_TIER1_PERF_STRICT=1` green; **G-math** → Done; WA-4 → Pass.
+5. **Tier-0 / manifest hygiene** — Fix 8 failing `li-tests` rows blocking WA-5.
+6. **G-par iteration independence (7d-c)** — Lean specs beyond policy witnesses; **G-par** → Done.
+7. **Default `lic build` certificate** — No open VCs on shipped workspace paths; **G-lean** → Done.
+8. **Corpus robustness** — `rm -rf build/generated` between specimens if `AutoVC.lean` cross-contamination recurs.
 
 **Out of scope this session:** list/dict runtime (WP1), domain lib scale-up.
 
 ---
 
-## Session notes
+## Session notes (WA-P6)
 
-- Ran `python3 benchmarks/harness/bench.py --tier 1` to refresh `benchmarks/results/latest.csv` before tier-1 assessment.
-- Fixed `bench.py` `--verify-results --tier 1` fall-through (return 0 after tier-1 verify, mirroring tier 4).
+- Merged `wa-p1-pfloat`, `wa-p5-gpar-lean` (conflict resolve in `vc_emit_lean.cpp`), `wa-p4-workspace-8a`; skipped `wa-p2` / `wa-p3` (even with base).
+- Rebuilt compiler (`cmake --build build`) before assessment — required for P-float discharge in `lic`.
+- Release note: [2026-05-26-wave-a-wa-p6-integration.md](../release-notes/2026-05-26-wave-a-wa-p6-integration.md).

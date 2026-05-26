@@ -61,6 +61,8 @@ Writes `../benchmarks/data/latest/ecosystem-quality-report.json` via `ecosystem-
 
 ## Stop / disable
 
+`DISABLE_AUTOSTART` is **local-only** (gitignored under `data/*-plan-loop/`). Never commit it; create with `touch` on the machine running the loop.
+
 ```bash
 touch data/sim-plan-loop/DISABLE_AUTOSTART
 systemctl --user stop li-sim-algo-plan-loop

@@ -947,6 +947,8 @@ def main() -> int:
             rc = run_verify_results(TIER1_BENCHES, label="tier-1", only=only)
             if rc != 0:
                 return rc
+            if args.tier == 1:
+                return 0
         if args.tier in (4, 12):
             rc = run_verify_results(TIER_STDLIB_BENCHES, label="tier-stdlib", only=only)
             if rc != 0:

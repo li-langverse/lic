@@ -7,7 +7,7 @@
 | Implemented | Not implemented |
 |-------------|-----------------|
 | Profile chip + compose roundtrip | Full li-player ship loop |
-| `physics_step` per studio tick | `physics_sync_from_scene` / scene graph |
+| Tick-rate gate on `studio_game_step_hook` (hz check) | `physics.runtime` `physics_step` in hot path |
 | World snapshot validity gate | `world_serialize` in hot path |
 | Session replay metadata (`replay_last_tick`) | Full SimWorld entity replay |
 

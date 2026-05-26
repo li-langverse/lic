@@ -12,8 +12,8 @@
 
 | Gap | Required status | Actual | Gate evidence |
 |-----|-----------------|--------|---------------|
-| **G-lean** | Done | **Partial** | Corpus + `glean_strict_build_smoke` pass on closed specimens; default `lic build` rejects open VCs (`lic_exit=1` on `sqrt_open_bound`); workspace packages still have open goals |
-| **G-vc** | Done | **Partial** | `contracts_discharge_corpus.sh` ok; intentional open `vc_sqrt_open_ensures_0` / P-float |
+| **G-lean** | Done | **Partial** | Corpus + `glean_strict_build_smoke` pass; `sqrt_open_bound` closed (P-float); workspace packages still have open goals |
+| **G-vc** | Done | **Partial** | `contracts_discharge_corpus.sh` ok; **P-float** `sqrt_open_bound` closed (`Li.Discharge` + trusted libm); other float ensures open |
 | **G-par** | Done | **Partial** | `race_shared_memory` suite pass (7/7); Lean parallel proofs still open per provability-gaps |
 | **G-math** | Done | **Partial** | Tier-1 checksum verify ok; **strict** perf: 2/4 benches over 1.2× (`matmul_blocked`, `horner_pure_li`) |
 
@@ -25,8 +25,8 @@
 
 | ID | Item | Command | Status | Output summary |
 |----|------|---------|--------|----------------|
-| **WA-1** | Contract discharge corpus | `./li-tests/tooling/contracts_discharge_corpus.sh` | **Pass** | All discharge scripts + lake ok; `sqrt_open_bound` keeps 1 open VC by design; ends `contracts_discharge_corpus: ok` (exit 0) |
-| **WA-2** | AutoVC open goals (repo default) | `./scripts/check-autovc-open-goals.sh build/generated/AutoVC.lean` | **Fail** | `open VC: vc_sqrt_open_ensures_0`; `1 open obligation(s)` (exit 1) — expected until P-float closed |
+| **WA-1** | Contract discharge corpus | `./li-tests/tooling/contracts_discharge_corpus.sh` | **Pass** | All discharge scripts + lake ok; `sqrt_open_bound` closed with `Li.Discharge.sqrt_open_bound_spec` |
+| **WA-2** | AutoVC open goals (repo default) | `./scripts/check-autovc-open-goals.sh build/generated/AutoVC.lean` after `sqrt_open_bound` build | **Pass** (WA-P1) | `vc_sqrt_open_ensures_0_proved` via `Li.Discharge`; zero open obligations on specimen |
 | **WA-3** | Tier-1 perf (advisory) | `./scripts/check-tier1-li-vs-cpp.sh` | **Partial** | After `bench.py --tier 1`: OK `simd_dot` 1.059×, `matmul_naive` 0.905×; **GAP** `matmul_blocked` 1.886×, `horner_pure_li` 2.800×; advisory exit 0 |
 | **WA-4** | Tier-1 perf (strict ≤1.2×) | `LI_TIER1_PERF_STRICT=1 ./scripts/check-tier1-li-vs-cpp.sh` | **Fail** | `FAIL strict mode (2 bench(es) > 1.2× C++)` (exit 1) |
 | **WA-5** | Compiler + Studio plan gates | `./scripts/compiler-studio-plan-gates.sh` | **Fail** | Through tier-1 verify + Lean smokes; **exit 1** at `bench tier 0` (`li-tests` 211 pass / **4 fail** in security/stdlib paths) |
@@ -38,8 +38,9 @@
 
 ```text
 $ lic build li-tests/contracts_verify/sqrt_open_bound.li
-lic build: 1 proof obligation(s) still need a Lean proof (see build/generated/AutoVC.lean)
-lic_exit=1
+build ok → build/generated/AutoVC.lean has vc_sqrt_open_ensures_0_proved
+$ ./scripts/check-autovc-open-goals.sh build/generated/AutoVC.lean
+check-autovc-open-goals: ok (no open Prop goals)
 ```
 
 `--allow-open-vc` remains CLI-only (env bypass removed). Policy **not** weakened.
@@ -48,7 +49,7 @@ lic_exit=1
 
 ## Recommended next PRs (Wave A closure)
 
-1. **P-float / `sqrt_open_bound`** — Close or narrow `vc_sqrt_open_ensures_0`; update provability-gaps **G-vc** → Done slice; WA-2 → Pass.
+1. ~~**P-float / `sqrt_open_bound`**~~ — Done in WA-P1 (`cursor/wa-p1-pfloat`).
 2. **Tier-1 perf (7e)** — Pure-Li `matmul_blocked` IKJ/blocked codegen + `horner_pure_li` FMA/unroll until `LI_TIER1_PERF_STRICT=1` green; **G-math** → Done; WA-4 → Pass.
 3. **Workspace 8a proofs** — Proof-complete smokes for `li-sim-scientific` (and members using `src/lib.li` without smoke); WA-8 → Pass.
 4. **G-par Lean** — AST policy is partial; add Lean discharge for `_par*` VCs; **G-par** → Done.

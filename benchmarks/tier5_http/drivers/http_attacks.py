@@ -161,23 +161,20 @@ def attack_oversized_request_line(host: str, port: int, attack: dict[str, Any]) 
 
 
 
+
+
 def attack_oversized_body(host: str, port: int, attack: dict[str, Any]) -> dict[str, Any]:
     body_len = int(attack.get("body_bytes") or 65536)
     payload = b"A" * body_len
     req = (
-        b"POST / HTTP/1.1
-"
+        b"POST / HTTP/1.1\r\n"
         b"Host: "
         + host.encode()
         + b":"
         + str(port).encode()
-        + b"
-Content-Length: "
+        + b"\r\nContent-Length: "
         + str(body_len).encode()
-        + b"
-Connection: close
-
-"
+        + b"\r\nConnection: close\r\n\r\n"
         + payload
     )
     try:

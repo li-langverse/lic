@@ -476,7 +476,21 @@ void merge_module(Module& into, Module&& from) {
     }
   }
   for (auto& proc : from.procs) {
-    if (proc.visibility == Visibility::Public && !has_proc(proc.name)) {
+    if (proc.visibility != Visibility::Public) {
+      continue;
+    }
+    bool replaced = false;
+    for (auto& existing : into.procs) {
+      if (existing.name != proc.name) {
+        continue;
+      }
+      if (existing.is_extern && !proc.is_extern) {
+        existing = std::move(proc);
+      }
+      replaced = true;
+      break;
+    }
+    if (!replaced && !has_proc(proc.name)) {
       into.procs.push_back(std::move(proc));
     }
   }

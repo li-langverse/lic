@@ -21,7 +21,7 @@ Tracked ecosystems live in `benchmarks/competitive/registry.toml` (`cpp`, `rust`
 ## Policy
 
 - **Tier 0 (stability):** strict invariants must pass for all backends.
-- **Result verify (tier 1/2):** before timings (or standalone), each binary is checked against the **normative kernel spec** in `benchmarks/harness/reference.py` (float64 loops from `common/*_core.c`, plus **small-N exact** cases). Then **Li vs native** for consistency. **DCE is allowed**; harness verifies (spec, small-N goldens, `|result|` floor, min Li wall time on pure-Li rows). Disable spec checks with `BENCH_VERIFY_REFERENCE=0`. Optional: `BENCH_VERIFY_TIMING=1`.
+- **Result verify (tier 1/2):** before timings (or standalone), each binary is checked against **`benchmarks/harness/reference.py`**. Where a closed form exists (**horner**, **reduce_sum**), the **analytical oracle** is normative; the C loop is checked for drift and reported separately. Verify prints **abs/rel error, ULPs, and `within_1ulp`** (machine-epsilon tight) for every run. Benches without a closed form still use the iterative spec (`dot`, `matmul`). Then **Li vs native** for consistency. **DCE is allowed**; harness verifies (oracle, small-N goldens, `|result|` floor, min Li wall time on pure-Li rows). Disable spec checks with `BENCH_VERIFY_REFERENCE=0`. Optional: `BENCH_VERIFY_TIMING=1`.
 - **Tier 2 (physics):** shared-kernel target **≤ 1.2×** C++ on reference hardware (advisory MSD rows until harness fixed).
 - **Tier 1 (micro):** pure-Li rows tracked separately; not gated at parity until **2i/7e** complete.
 

@@ -451,22 +451,6 @@ def build_li(spec: BenchSpec, bin_path: Path) -> None:
     )
 
 
-def horner_reference_acc(*, steps: int = 5_000_000, x: float = 0.999999) -> float:
-    acc = 0.0
-    for _ in range(steps):
-        acc = acc * x + 1.0
-    return acc
-
-
-def format_horner_checksum(value: float) -> str:
-    """Match C `printf(\"%.17g\\n\", checksum)` used by horner --verify."""
-    if math.isinf(value):
-        return "inf" if value > 0 else "-inf"
-    if math.isnan(value):
-        return "nan"
-    return f"{value:.17g}"
-
-
 # Li and native are different programs (e.g. reduced steps); only check native reproducibility.
 SKIP_LI_NATIVE_RESULT_PARITY: frozenset[str] = frozenset({"three_body_pure"})
 
@@ -537,7 +521,9 @@ def verify_benchmark_results(spec: BenchSpec, build_dir: Path) -> None:
         assert_checksum_against_spec,
         assert_spec_small_matches_table,
         float_close,
+        format_result,
         parse_result,
+        print_deviation_reports,
     )
 
     native = build_dir / f"{spec.name}_native"
@@ -552,22 +538,26 @@ def verify_benchmark_results(spec: BenchSpec, build_dir: Path) -> None:
         "no",
     ):
         assert_spec_small_matches_table(spec.name, ref_case)
-        small_expected = format_horner_checksum(ref_case.compute_small())
-        print(f"{spec.name} spec small ok: {small_expected}")
+        small_expected = format_result(ref_case.compute_small())
+        oracle = ref_case.oracle
+        print(f"{spec.name} spec small ok ({oracle}): {small_expected}")
 
     native_out = native_result_checksum(native)
+    deviation_logs: list = []
     if ref_case is not None and os.environ.get("BENCH_VERIFY_REFERENCE", "1").strip() not in (
         "0",
         "false",
         "no",
     ):
-        assert_checksum_against_spec(
-            spec.name,
-            native_out,
-            label="native",
-            size="full",
-            ref=ref_case,
-            use_small=False,
+        deviation_logs.extend(
+            assert_checksum_against_spec(
+                spec.name,
+                native_out,
+                label="native",
+                size="full",
+                ref=ref_case,
+                use_small=False,
+            )
         )
 
     if spec.name in SKIP_LI_NATIVE_RESULT_PARITY:
@@ -600,14 +590,19 @@ def verify_benchmark_results(spec: BenchSpec, build_dir: Path) -> None:
                     f"{ref_case.min_li_seconds}s and <45% of native "
                     f"({native_elapsed_for_guard:.4f}s), likely DCE / wrong problem size"
                 )
-        assert_checksum_against_spec(
-            spec.name,
-            li_out,
-            label="Li",
-            size="full",
-            ref=ref_case,
-            use_small=False,
+        deviation_logs.extend(
+            assert_checksum_against_spec(
+                spec.name,
+                li_out,
+                label="Li",
+                size="full",
+                ref=ref_case,
+                use_small=False,
+            )
         )
+
+    if deviation_logs:
+        print_deviation_reports(deviation_logs, bench=spec.name)
 
     if li_out != native_out:
         if ref_case is not None:

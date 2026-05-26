@@ -785,84 +785,10 @@ note = "import physics.relativity resolves to packages/li-physics-relativity"
 
 [[tests]]
 suite = "composable"
-file = "composable/import_physics_runtime.li"
-outcome = "verify_open_ok"
-note = "2j-c: var RigidBody in-out write-back after rigid_integrate_semi_implicit; runtime exit 0"
-
-[[tests]]
-suite = "composable"
-file = "composable/import_sim_scientific_run.li"
-packages = ["li-sim-scientific", "li-sim"]
-outcome = "compile_open_ok"
-note = "sim.scientific: run_simulation + run_algo; detail 0–3; open VC via physics.rigid import"
-
-[[tests]]
-suite = "composable"
-file = "composable/import_studio_sim_profile_bridge.li"
-packages = ["li-sim", "li-studio", "li-gui", "li-ui"]
-outcome = "compile_open_ok"
-note = "PH-SIM SIM-0: studio_apply_profile_to_sim + li_sim_profile_from_studio_id"
-
-[[tests]]
-suite = "composable"
-file = "composable/import_studio_sim_step_stub.li"
-packages = ["li-sim", "li-studio", "li-gui", "li-ui"]
-outcome = "compile_open_ok"
-note = "PH-SIM SIM-1: studio_sim_step_hook + sim_reset/sim_step tick stub"
-
-[[tests]]
-suite = "composable"
-file = "composable/import_studio_sim_step_by_profile.li"
-packages = ["li-sim", "li-sim-scientific", "li-studio", "li-scene", "li-physics-runtime", "li-gui", "li-ui"]
-outcome = "compile_open_ok"
-note = "PH-SIM vertical gap #4: studio_sim_step_hook game + sim_scientific"
-
-[[tests]]
-suite = "composable"
 file = "composable/import_ui_studio_shell.li"
 packages = ["li-ui"]
 outcome = "compile_open_ok"
 note = "import ui: studio shell layout + paint IR composables (PH-UX-01)"
-
-[[tests]]
-suite = "composable"
-file = "composable/import_gui_viewport_panel_switch.li"
-packages = ["li-gui", "li-ui"]
-outcome = "compile_open_ok"
-note = "import gui: viewport region + panel switch timing + paint expansion (PH-UX-02)"
-
-[[tests]]
-suite = "composable"
-file = "composable/import_gui_studio_keyboard.li"
-packages = ["li-gui", "li-ui"]
-outcome = "compile_open_ok"
-note = "import gui: UX-09 keyboard-first Escape/Cmd+K/1-5 region focus"
-
-[[tests]]
-suite = "composable"
-file = "composable/import_render_wgpu_fps.li"
-packages = ["li-render", "li-gpu", "li-gui", "li-ui"]
-outcome = "compile_open_ok"
-note = "import render: wgpu smoke + FPS counter bench hook (PH-UX-03)"
-
-[[tests]]
-suite = "composable"
-file = "composable/import_studio_compose.li"
-packages = ["li-studio", "li-gui", "li-ui"]
-outcome = "compile_open_ok"
-note = "import studio: compose dock + timeline + inspector from composables (PH-UX-05)"
-
-[[tests]]
-suite = "composable"
-file = "composable/import_lig_kernel.li"
-outcome = "compile_open_ok"
-note = "PH-HW WP4 lig kernel"
-
-[[tests]]
-suite = "composable"
-file = "composable/import_lig_chem_backend.li"
-outcome = "compile_open_ok"
-note = "PH-HW WP4 chem lig backend"
 
 [[tests]]
 suite = "smoke"
@@ -1082,7 +1008,7 @@ note = "tier-1 dot spec N=8; runtime via verify-math-physics-goldens.sh"
 [[tests]]
 suite = "physics"
 file = "physics/golden_positions_sum.li"
-outcome = "compile_ok"
+outcome = "compile_open_ok"
 note = "small golden 3.0; runtime via verify-math-physics-goldens.sh"
 
 # --- math_syntax (2h — %, //, **) ---

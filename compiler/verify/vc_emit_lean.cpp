@@ -627,23 +627,28 @@ void emit_call_site_requires(std::ostream& out, const Module& module, const Proc
           }
         }
       }
-      if (lit_nonneg && witnessed) {
+      if (witnessed && lit_nonneg) {
         prop = "Li.Discharge.refinement_nonneg_spec " + std::to_string(*lit_nonneg);
         refinement_discharge = true;
-      } else if (auto lean = expr_to_lean(*folded, ctx)) {
-        prop = *lean;
-      } else if (folded->kind == Expr::Kind::BinOp && folded->lhs && folded->rhs) {
-        const auto li = int_lit_value(*folded->lhs);
-        const auto ri = int_lit_value(*folded->rhs);
-        if (li && ri) {
-          if (auto lean =
-                  expr_to_lean_bin(folded->bin_op, std::to_string(*li), std::to_string(*ri))) {
-            prop = *lean;
-          }
-        }
       } else if (!witnessed) {
-        out << "/-! VC call-site refinement: param " << p << " of '" << callee->name
-            << "' at call " << call_idx << " -/\n";
+        if (lit_nonneg) {
+          prop = "Li.Discharge.refinement_nonneg_spec " + std::to_string(*lit_nonneg);
+          refinement_discharge = true;
+        } else if (auto lean = expr_to_lean(*folded, ctx)) {
+          prop = *lean;
+        } else if (folded->kind == Expr::Kind::BinOp && folded->lhs && folded->rhs) {
+          const auto li = int_lit_value(*folded->lhs);
+          const auto ri = int_lit_value(*folded->rhs);
+          if (li && ri) {
+            if (auto lean =
+                    expr_to_lean_bin(folded->bin_op, std::to_string(*li), std::to_string(*ri))) {
+              prop = *lean;
+            }
+          }
+        } else {
+          out << "/-! VC call-site refinement: param " << p << " of '" << callee->name
+              << "' at call " << call_idx << " -/\n";
+        }
       }
       std::set<std::string> ref_idents;
       collect_idents_in_expr(*sub, ref_idents);

@@ -1,0 +1,48 @@
+# std.algorithms — Phase 2 sort / bisect parity (WP0-B compile-only stubs).
+#
+# Target: list.sort, bisect_left/right, insort on sorted sequences.
+# Runtime: not implemented — WP2b after WP-WA + WP1.
+#
+# Import: `import std.algorithms`
+
+def algorithms_std_tag() -> int
+  requires true
+  ensures result == 22
+  decreases 0
+=
+  return 22
+
+def sort_list_stub(xs: list[int]) raises Alloc -> list[int]
+  requires true
+  ensures result == xs
+  decreases 0
+=
+  return xs
+
+def bisect_left_stub(xs: list[int], x: int) raises Alloc -> int
+  requires true
+  ensures 0 <= result
+  decreases 0
+=
+  return 0
+
+def bisect_right_stub(xs: list[int], x: int) raises Alloc -> int
+  requires true
+  ensures 0 <= result
+  decreases 0
+=
+  return 0
+
+def insort_left_stub(xs: var list[int], x: int) raises Alloc -> unit
+  requires true
+  ensures true
+  decreases 0
+=
+  return
+
+def binary_search_stub(xs: list[int], x: int) raises Alloc -> int
+  requires true
+  ensures result == -1
+  decreases 0
+=
+  return -1

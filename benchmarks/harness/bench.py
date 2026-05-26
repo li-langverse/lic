@@ -19,6 +19,7 @@ from pathlib import Path
 
 REPO = Path(__file__).resolve().parents[2]
 TIER1 = REPO / "benchmarks" / "tier1_micro"
+TIER_STDLIB = REPO / "benchmarks" / "tier1_stdlib"
 TIER2 = REPO / "benchmarks" / "tier2_physics"
 RESULTS = REPO / "benchmarks" / "results"
 CSV_HEADER = [
@@ -48,6 +49,7 @@ class BenchSpec:
     flops_per_run: float | None = None
     bytes_per_run: float | None = None
     li_pure: bool = False
+    li_enabled: bool = True
 
 
 TIER1_BENCHES: tuple[BenchSpec, ...] = (
@@ -99,6 +101,37 @@ TIER1_BENCHES: tuple[BenchSpec, ...] = (
         "li/main.li",
         flops_per_run=2.0 * 5e6,
         li_pure=True,
+    ),
+)
+
+# Stdlib ADT tier-1 (WP0-C): native oracles only until WP1 Li drivers land.
+TIER_STDLIB_BENCHES: tuple[BenchSpec, ...] = (
+    BenchSpec(
+        "stdlib_sort_int",
+        1,
+        "stdlib_sort_int",
+        "cpp/main.c",
+        "common/sort_core.c",
+        "li/main.li",
+        li_enabled=False,
+    ),
+    BenchSpec(
+        "stdlib_dict_insert_lookup",
+        1,
+        "stdlib_dict_insert_lookup",
+        "cpp/main.c",
+        "common/dict_core.c",
+        "li/main.li",
+        li_enabled=False,
+    ),
+    BenchSpec(
+        "stdlib_binary_search",
+        1,
+        "stdlib_binary_search",
+        "cpp/main.c",
+        "common/search_core.c",
+        "li/main.li",
+        li_enabled=False,
     ),
 )
 
@@ -273,6 +306,8 @@ TIER2_BENCHES: tuple[BenchSpec, ...] = (
 
 
 def bench_dir(spec: BenchSpec) -> Path:
+    if spec.name.startswith("stdlib_"):
+        return TIER_STDLIB / spec.rel_dir
     root = TIER1 if spec.tier == 1 else TIER2
     return root / spec.rel_dir
 
@@ -470,8 +505,33 @@ def li_result_checksum(li_bin: Path, *, try_argv_verify: bool) -> str:
     return lines[-1].strip()
 
 
+def verify_stdlib_benchmark(spec: BenchSpec, build_dir: Path) -> None:
+    """WP0: per-bench reference.py + native --verify (no Li until WP1)."""
+    root = bench_dir(spec)
+    ref_script = root / "reference.py"
+    if not ref_script.is_file():
+        raise RuntimeError(f"{spec.name}: missing {ref_script}")
+    proc = subprocess.run(
+        [sys.executable, str(ref_script), "--verify-cpp"],
+        cwd=root,
+        capture_output=True,
+        text=True,
+    )
+    if proc.returncode != 0:
+        raise RuntimeError(
+            f"{spec.name}: reference.py --verify-cpp failed\n{proc.stderr or proc.stdout}"
+        )
+    native = build_dir / f"{spec.name}_native"
+    build_native(spec, native)
+    native_out = native_result_checksum(native)
+    print(f"{spec.name} verify ok (stdlib native oracle): checksum={native_out}")
+
+
 def verify_benchmark_results(spec: BenchSpec, build_dir: Path) -> None:
     """Verify results against normative spec (reference.py), then Li vs native when applicable."""
+    if not spec.li_enabled:
+        verify_stdlib_benchmark(spec, build_dir)
+        return
     from reference import (
         TIER1_REFERENCE,
         assert_checksum_against_spec,
@@ -623,11 +683,28 @@ def run_benchmark(spec: BenchSpec, *, runs: int) -> list[dict[str, object]]:
     rows: list[dict[str, object]] = []
 
     cpp_bin = build_dir / f"{spec.name}_cpp"
+    build_native(spec, cpp_bin)
+    if not spec.li_enabled:
+        wall = time_command([str(cpp_bin)], runs=runs)
+        rows.append(
+            row_for(
+                benchmark=spec.name,
+                lang="cpp",
+                value=wall,
+                metric="wall_time",
+                unit="s",
+                sha=sha,
+                cpu=cpu,
+                flags=NATIVE_FLAGS,
+            )
+        )
+        print(f"{spec.name} cpp wall_time={wall:.4f}s (median of {runs}); Li column pending WP1")
+        return rows
+
     rust_bin = build_dir / f"{spec.name}_rust"
     julia_bin = build_dir / f"{spec.name}_julia"
     li_bin = build_dir / f"{spec.name}_li"
 
-    build_native(spec, cpp_bin)
     build_native(spec, rust_bin)
     build_native(spec, julia_bin)
     build_li(spec, li_bin)
@@ -730,6 +807,13 @@ def run_tier1_all(
 ) -> int:
     specs = filter_specs(TIER1_BENCHES, only)
     return run_tier_benches(specs, runs=runs, out=out, verify=verify, label="tier-1")
+
+
+def run_tier_stdlib_all(
+    *, runs: int, out: Path, verify: bool, only: set[str] | None = None
+) -> int:
+    specs = filter_specs(TIER_STDLIB_BENCHES, only)
+    return run_tier_benches(specs, runs=runs, out=out, verify=verify, label="tier-stdlib")
 
 
 def run_tier2_all(
@@ -863,12 +947,18 @@ def main() -> int:
             rc = run_verify_results(TIER1_BENCHES, label="tier-1", only=only)
             if rc != 0:
                 return rc
+        if args.tier in (4, 12):
+            rc = run_verify_results(TIER_STDLIB_BENCHES, label="tier-stdlib", only=only)
+            if rc != 0:
+                return rc
+            if args.tier == 4:
+                return 0
         if args.tier in (2, 12):
             return run_verify_results(TIER2_BENCHES, label="tier-2", only=only)
         if args.tier == 0:
-            print("verify-results: use --tier 1, 2, or 12", file=sys.stderr)
+            print("verify-results: use --tier 1, 2, 4, or 12", file=sys.stderr)
             return 1
-        print(f"verify-results: use --tier 1, 2, or 12 (got {args.tier})", file=sys.stderr)
+        print(f"verify-results: use --tier 1, 2, 4, or 12 (got {args.tier})", file=sys.stderr)
         return 1
 
     if args.tier == 0:
@@ -882,6 +972,11 @@ def main() -> int:
 
     if args.tier == 1:
         return run_tier1_all(
+            runs=args.runs, out=args.out, verify=not args.skip_verify, only=only
+        )
+
+    if args.tier == 4:
+        return run_tier_stdlib_all(
             runs=args.runs, out=args.out, verify=not args.skip_verify, only=only
         )
 

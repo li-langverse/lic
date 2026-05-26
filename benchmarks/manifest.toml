@@ -21,6 +21,22 @@ composable = ["composable/import_sim_scientific_run.li"]
 benches = ["md_lennard_jones", "heat_equation_2d"]
 hooks = ["sim_summary", "algo_registry"]
 
+[[package]]
+name = "li-sim-automotive"
+paths = ["packages/li-sim-automotive/"]
+depends_on = ["li-sim"]
+composable = ["composable/import_sim_automotive_workspace.li"]
+benches = []
+hooks = ["algo_registry"]
+
+[[package]]
+name = "li-sim-robotics"
+paths = ["packages/li-sim-robotics/"]
+depends_on = ["li-sim", "li-physics-rigid"]
+composable = ["composable/import_sim_robotics_workspace.li"]
+benches = []
+hooks = ["algo_registry"]
+
 # --- Physics (tier-2 kernels) ---
 
 [[package]]

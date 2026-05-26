@@ -2,7 +2,7 @@
 
 Domain profile stub for **sim_robotics** (World Studio profile id **4**, sim contract **4**).
 
-Arms, mobile bases, and factory cells land here in PH-SIM follow-ups; wires `sim.robotics` against `li-sim` contracts.
+**ROBO-0 (landed):** `sim_robotics_tick_stub` — one `physics.rigid` semi-implicit step per studio tick (algo **801**). IK, factory cells, and ROS2 remain PH-ROBO follow-ups.
 
 ## Build
 

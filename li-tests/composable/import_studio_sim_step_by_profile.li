@@ -15,6 +15,14 @@ def main() -> int
     return 11
   if game_sess.sim_contract_id != sim_contract_game():
     return 12
+  if sim_session_replay_last_tick(game_sess) != 1:
+    return 13
+  var rl_cfg: StudioProjectConfig = studio_project_config_new(studio_profile_sim_rl())
+  var rl_sess: SimSessionStub = sim_session_stub_default()
+  if studio_sim_step_hook(rl_cfg, rl_sess, 0.02) != sim_status_ok():
+    return 14
+  if rl_sess.tick != 4:
+    return 15
   var sci_cfg: StudioProjectConfig = studio_project_config_new(studio_profile_sim_scientific())
   var sci_sess: SimSessionStub = sim_session_stub_default()
   if studio_sim_step_hook(sci_cfg, sci_sess, 0.01) != sim_status_ok():
@@ -25,4 +33,20 @@ def main() -> int
     return 22
   if studio_md_particle_tier_select_ok(scene_md_tier_10k()) != 1:
     return 23
+  var auto_cfg: StudioProjectConfig = studio_project_config_new(studio_profile_sim_automotive())
+  var auto_sess: SimSessionStub = sim_session_stub_default()
+  if studio_sim_step_hook(auto_cfg, auto_sess, 0.01) != sim_status_ok():
+    return 30
+  if auto_sess.tick != 1:
+    return 31
+  if auto_sess.sim_contract_id != sim_contract_sim_automotive():
+    return 32
+  var robo_cfg: StudioProjectConfig = studio_project_config_new(studio_profile_sim_robotics())
+  var robo_sess: SimSessionStub = sim_session_stub_default()
+  if studio_sim_step_hook(robo_cfg, robo_sess, 0.01) != sim_status_ok():
+    return 40
+  if robo_sess.tick != 1:
+    return 41
+  if robo_sess.sim_contract_id != sim_contract_sim_robotics():
+    return 42
   return 0

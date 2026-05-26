@@ -10,16 +10,21 @@ def li_sim_scientific_version() -> int
 =
   return 1
 
-# PH-SIM vertical gap #4 — one MD smoke step per studio tick (no full SimWorld).
+# PH-SIM vertical gap #4 — detail-tier smoke per studio tick (no full SimWorld / sim.viz).
+# detail 0–1: MD Lennard-Jones; 2: PDE heat; 3: rigid integrator smoke.
 def sim_scientific_tick_stub(detail: int) -> int
   requires detail >= 0
   requires detail <= 3
   ensures result >= 0
   ensures result <= 1
-  decreases 0
+  decreases detail
 =
   var d: int = detail
   var r: SimRunResult = run_md_lj_smoke(d)
+  if d == 2:
+    r = run_heat_smoke(d)
+  if d >= 3:
+    r = run_rigid_smoke(d)
   if run_result_ok(r) != 1:
     return 0
   return 1

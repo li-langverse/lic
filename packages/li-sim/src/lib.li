@@ -126,6 +126,20 @@ def vertical_qm_dft() -> int
 =
   return 4
 
+def vertical_sim_robotics() -> int
+  requires true
+  ensures result == 5
+  decreases 0
+=
+  return 5
+
+def vertical_sim_automotive() -> int
+  requires true
+  ensures result == 6
+  decreases 0
+=
+  return 6
+
 def algo_registry_count() -> int
   requires true
   ensures result == 126
@@ -277,6 +291,55 @@ def algo_robo_multibody_step() -> int
 =
   return 801
 
+def algo_auto_bicycle_model() -> int
+  requires true
+  ensures result == 901
+  decreases 0
+=
+  return 901
+
+def algo_auto_dyn_rk4() -> int
+  requires true
+  ensures result == 902
+  decreases 0
+=
+  return 902
+
+def algo_auto_sensor_raycast() -> int
+  requires true
+  ensures result == 903
+  decreases 0
+=
+  return 903
+
+def algo_drug_litl_stages() -> int
+  requires true
+  ensures result == 501
+  decreases 0
+=
+  return 501
+
+def algo_am_slice_layers() -> int
+  requires true
+  ensures result == 603
+  decreases 0
+=
+  return 603
+
+def algo_am_thermal_warp() -> int
+  requires true
+  ensures result == 609
+  decreases 0
+=
+  return 609
+
+def algo_am_export_gcode_3mf() -> int
+  requires true
+  ensures result == 610
+  decreases 0
+=
+  return 610
+
 def run_result_ok(r: SimRunResult) -> int
   requires true
   ensures result >= 0
@@ -422,12 +485,59 @@ def sim_status_invalid_dt() -> int
 =
   return 1
 
+# PH-SIM SIM-2 — ring-buffer replay metadata on session (tick ids only; no SimWorld snapshot).
+def sim_replay_capacity_default() -> int
+  requires true
+  ensures result == 64
+  decreases 0
+=
+  return 64
+
+type SimReplay = object
+  public capacity: int
+  public count: int
+  public last_tick: int
+
+def sim_replay_new(capacity: int) -> SimReplay
+  requires capacity > 0
+  ensures result.capacity == capacity
+  ensures result.count == 0
+  ensures result.last_tick == 0
+  decreases capacity
+=
+  var r: SimReplay
+  r.capacity = capacity
+  r.count = 0
+  r.last_tick = 0
+  return r
+
+def sim_replay_push(replay: var SimReplay, tick: int) -> unit
+  requires replay.capacity > 0
+  requires tick >= 0
+  ensures replay.last_tick == tick
+  decreases replay.count
+=
+  replay.count = replay.count + 1
+  if replay.count > replay.capacity:
+    replay.count = replay.capacity
+  replay.last_tick = tick
+
+def sim_replay_last_tick(replay: SimReplay) -> int
+  requires true
+  ensures result == replay.last_tick
+  decreases 0
+=
+  return replay.last_tick
+
 type SimSessionStub = object
   public studio_profile_id: int
   public sim_contract_id: int
   public output_detail: int
   public tick: int
   public last_dt: float
+  public replay_capacity: int
+  public replay_count: int
+  public replay_last_tick: int
 
 def sim_session_stub_default() -> SimSessionStub
   requires true
@@ -436,6 +546,9 @@ def sim_session_stub_default() -> SimSessionStub
   ensures result.output_detail == output_detail_summary()
   ensures result.tick == 0
   ensures result.last_dt == 0.0
+  ensures result.replay_capacity == sim_replay_capacity_default()
+  ensures result.replay_count == 0
+  ensures result.replay_last_tick == 0
   decreases 0
 =
   var s: SimSessionStub
@@ -444,7 +557,28 @@ def sim_session_stub_default() -> SimSessionStub
   s.output_detail = output_detail_summary()
   s.tick = 0
   s.last_dt = 0.0
+  s.replay_capacity = sim_replay_capacity_default()
+  s.replay_count = 0
+  s.replay_last_tick = 0
   return s
+
+def sim_session_replay_record(session: var SimSessionStub) -> unit
+  requires session.replay_capacity > 0
+  requires session.tick >= 0
+  ensures session.replay_last_tick == session.tick
+  decreases session.replay_count
+=
+  session.replay_count = session.replay_count + 1
+  if session.replay_count > session.replay_capacity:
+    session.replay_count = session.replay_capacity
+  session.replay_last_tick = session.tick
+
+def sim_session_replay_last_tick(session: SimSessionStub) -> int
+  requires true
+  ensures result == session.replay_last_tick
+  decreases 0
+=
+  return session.replay_last_tick
 
 # PH-SIM SIM-1 — deterministic tick counter (no physics kernel).
 def sim_reset(session: var SimSessionStub) -> int
@@ -452,14 +586,19 @@ def sim_reset(session: var SimSessionStub) -> int
   ensures result == sim_status_ok()
   ensures session.tick == 0
   ensures session.last_dt == 0.0
+  ensures session.replay_count == 0
+  ensures session.replay_last_tick == 0
   decreases 0
 =
   session.tick = 0
   session.last_dt = 0.0
+  session.replay_count = 0
+  session.replay_last_tick = 0
   return sim_status_ok()
 
 def sim_step(session: var SimSessionStub, dt: float) -> int
   requires session.tick >= 0
+  requires session.replay_capacity > 0
   ensures result >= 0
   ensures result <= 1
   decreases session.tick
@@ -468,6 +607,7 @@ def sim_step(session: var SimSessionStub, dt: float) -> int
     return sim_status_invalid_dt()
   session.tick = session.tick + 1
   session.last_dt = dt
+  sim_session_replay_record(session)
   return sim_status_ok()
 
 def sim_session_apply_studio_profile(studio_profile_id: int, sim_out: var SimSessionStub) -> unit

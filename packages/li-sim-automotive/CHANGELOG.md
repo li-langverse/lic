@@ -9,6 +9,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- PH-SIM automotive tick — `sim_automotive_tick_stub`, `run_auto_bicycle_smoke` (algo **901** bicycle checksum); `li-tests/smoke/tick_stub.li`; composable `import_sim_automotive_workspace.li`.
 - PH-SIM vertical gap **#3** — profile contract + studio id constants, `run_automotive_smoke()`, package smoke (`li-tests/smoke/builds.li`).
 
 ## [0.1.0] - 2026-05-26

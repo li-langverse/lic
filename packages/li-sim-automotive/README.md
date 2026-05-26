@@ -2,7 +2,7 @@
 
 Domain profile stub for **sim_automotive** (World Studio profile id **3**, sim contract **3**).
 
-Driving, sensors, and maps land here in PH-SIM follow-ups; wires `sim.automotive` against `li-sim` contracts.
+**Tick stub (landed):** `sim_automotive_tick_stub` — bicycle-model checksum per studio tick (algo **901**). Maps, sensors, and CARLA-class sim remain follow-ups.
 
 ## Build
 

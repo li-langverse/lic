@@ -1,4 +1,5 @@
 import sim
+import sim.drug_design
 import scene
 import studio
 
@@ -15,6 +16,18 @@ def main() -> int
     return 11
   if game_sess.sim_contract_id != sim_contract_game():
     return 12
+  if sim_session_replay_last_tick(game_sess) != 1:
+    return 13
+  if studio_game_world_checkpoint_stub(game_sess.tick) != 1:
+    return 14
+  var rl_cfg: StudioProjectConfig = studio_project_config_new(studio_profile_sim_rl())
+  var rl_sess: SimSessionStub = sim_session_stub_default()
+  if studio_sim_step_hook(rl_cfg, rl_sess, 0.02) != sim_status_ok():
+    return 15
+  if rl_sess.tick != 4:
+    return 16
+  if rl_sess.sim_contract_id != sim_contract_sim_rl():
+    return 17
   var sci_cfg: StudioProjectConfig = studio_project_config_new(studio_profile_sim_scientific())
   var sci_sess: SimSessionStub = sim_session_stub_default()
   if studio_sim_step_hook(sci_cfg, sci_sess, 0.01) != sim_status_ok():
@@ -25,4 +38,38 @@ def main() -> int
     return 22
   if studio_md_particle_tier_select_ok(scene_md_tier_10k()) != 1:
     return 23
+  var auto_cfg: StudioProjectConfig = studio_project_config_new(studio_profile_sim_automotive())
+  var auto_sess: SimSessionStub = sim_session_stub_default()
+  if studio_sim_step_hook(auto_cfg, auto_sess, 0.01) != sim_status_ok():
+    return 30
+  if auto_sess.tick != 1:
+    return 31
+  if auto_sess.sim_contract_id != sim_contract_sim_automotive():
+    return 32
+  var robo_cfg: StudioProjectConfig = studio_project_config_new(studio_profile_sim_robotics())
+  var robo_sess: SimSessionStub = sim_session_stub_default()
+  if studio_sim_step_hook(robo_cfg, robo_sess, 0.01) != sim_status_ok():
+    return 40
+  if robo_sess.tick != 1:
+    return 41
+  if robo_sess.sim_contract_id != sim_contract_sim_robotics():
+    return 42
+  var add_cfg: StudioProjectConfig = studio_project_config_new(studio_profile_sim_additive())
+  var add_sess: SimSessionStub = sim_session_stub_default()
+  if studio_sim_step_hook(add_cfg, add_sess, 0.01) != sim_status_ok():
+    return 50
+  if add_sess.tick != 1:
+    return 51
+  if add_sess.sim_contract_id != sim_contract_sim_additive():
+    return 52
+  var drug_cfg: StudioProjectConfig = studio_project_config_new(studio_profile_sim_drug_design())
+  var drug_sess: SimSessionStub = sim_session_stub_default()
+  if studio_sim_step_hook(drug_cfg, drug_sess, 0.01) != sim_status_ok():
+    return 60
+  if drug_sess.tick != 1:
+    return 61
+  if drug_sess.sim_contract_id != sim_contract_sim_drug_design():
+    return 62
+  if studio_drug_litl_stage_from_tick(drug_sess.tick) != drug_litl_stage_generate():
+    return 63
   return 0

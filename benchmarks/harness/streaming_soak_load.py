@@ -22,14 +22,22 @@ def _sse_once(host: str, port: int, path: str, *, events_min: int, timeout: floa
         t0 = time.perf_counter()
         conn.request("GET", path)
         resp = conn.getresponse()
-        body = resp.read()
-        elapsed = time.perf_counter() - t0
         if resp.status != 200:
-            return False, elapsed
-        ticks = body.count(b"event: tick")
+            return False, time.perf_counter() - t0
+        ticks = 0
+        deadline = t0 + timeout
+        while ticks < events_min and time.perf_counter() < deadline:
+            try:
+                chunk = resp.read(4096)
+            except http.client.IncompleteRead as exc:
+                chunk = exc.partial
+            if not chunk:
+                break
+            ticks += chunk.count(b"event: tick")
+        elapsed = time.perf_counter() - t0
         return ticks >= events_min, elapsed
-    except OSError:
-        return False, 0.0
+    except (OSError, http.client.HTTPException, http.client.IncompleteRead):
+        return False, time.perf_counter() - t0
     finally:
         conn.close()
 
@@ -87,7 +95,10 @@ def _ws_handshake(host: str, port: int, path: str, *, frames_min: int, timeout: 
         "\r\n"
     ).encode()
     t0 = time.perf_counter()
-    conn = socket.create_connection((host, port), timeout=timeout)
+    try:
+        conn = socket.create_connection((host, port), timeout=timeout)
+    except OSError:
+        return False, time.perf_counter() - t0
     try:
         conn.sendall(req)
         data = b""

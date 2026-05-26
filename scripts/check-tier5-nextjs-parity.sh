@@ -51,6 +51,7 @@ export HTTPD_BENCH_P99_RATIO_MAX="${HTTPD_BENCH_P99_RATIO_MAX:-2.0}"
 
 echo "==> bench_http.py --profile nextjs_parity --check-parity (duration ${DUR}s, RPS/TTFB >= ${HTTPD_BENCH_RPS_RATIO_MIN}x nginx)"
 python3 "$HARNESS/bench_http.py" --profile nextjs_parity --check-parity \
+  nextjs_api nextjs_ssr \
   --set "load.duration_sec=${DUR}" \
   --out "$ROOT/benchmarks/results/tier5_nextjs_parity.csv"
 

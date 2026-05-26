@@ -2,6 +2,7 @@
 
 **Status:** Active execution guide (2026-05-26)  
 **Supersedes:** scaffolding-only sprint; does **not** replace [ph-db-lidb-platform.md](ph-db-lidb-platform.md) (phase index) or roadmap ADR detail.  
+**CI / hosting / containers:** [ph-db-ci-hosting-plan.md](ph-db-ci-hosting-plan.md)  
 **Research:** [db-r0-vertical-seed](https://github.com/li-langverse/research-findings/blob/main/whitepapers/2026-05/database_platform/db-r0-vertical-seed/README.md)  
 **Control plane:** [lidb-migration-control-plane.md](https://github.com/li-langverse/li-cursor-agents/blob/main/docs/plans/lidb-migration-control-plane.md)
 

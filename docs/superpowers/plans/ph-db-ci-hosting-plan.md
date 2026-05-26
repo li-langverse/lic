@@ -246,6 +246,20 @@ Parallel where noted. Builds on [ph-db-battle-plan.md](ph-db-battle-plan.md) WP-
 | **Tasks** | Re-enable li-cursor-agents PR job (or path-filtered); add job `lidb-engine-e2e` with checkout lidb + cmake + `npm run test:e2e:lidb-engine` (`continue-on-error` until green); pin lidb ref via `LIDB_CI_REF`; artifact `lidb_embed` from lidb workflow for downstream reuse |
 | **Depends** | WP-A smoke stable, WP-E engine e2e todos cleared |
 | **DoD** | PR comment shows pass/fail for engine e2e; mock e2e runs on every agents PR |
+| **Status (2026-05-26)** | **Partial — branch `cursor/wp-g-ph-db-ci`** |
+
+**Shipped (honest scope):**
+
+| Repo | Workflow | Trigger | Notes |
+|------|----------|---------|-------|
+| **lidb** | `ph-db-gate.yml`, `ph-db-reusable-embed.yml` | PR, push, dispatch | Smoke + pytest subset; uploads `lidb_embed` artifact |
+| **lis** | `ph-db-cross-repo.yml` | PR, push, dispatch | Checkout lidb @ `LIDB_CI_REF`; `db-smoke` + supervisor pytest |
+| **li-cursor-agents** | `ph-db-lidb-engine.yml` | **dispatch only** | `test:e2e:lidb-engine` + optional mock e2e; `continue-on-error` default |
+| **lic** | `ph-db-cross-repo-gate.yml` | **dispatch only** | Manual aggregator (lidb + lis gate in one job) |
+
+**Not claimed:** full OS matrix for engine e2e; agents PR CI re-enabled (quota); reusable workflow consumed from lidb default branch until merge.
+
+**Env vars (CI):** `LIDB_CI_REF`, `LIDB_REPO`, `LI_LIDB_REPO`, `LIDB_BUILD_DIR` — see [lidb/docs/ci-ph-db-gate.md](https://github.com/li-langverse/lidb/blob/main/docs/ci-ph-db-gate.md).
 
 ### WP-H — Container images
 

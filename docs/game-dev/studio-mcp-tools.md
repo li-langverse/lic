@@ -1,6 +1,6 @@
 # Studio MCP tools (PH-AGENT contract)
 
-**Status:** AGENT-1 partial (runtime dispatch + proof gate; no `lis` HTTP MCP)  
+**Status:** AGENT-1 partial (runtime dispatch + proof gate + in-process harness; no `lis` HTTP MCP)  
 **Vision:** [world-studio-vision.md](world-studio-vision.md) §18  
 **RFC:** [specs/studio-cursor-sdk-rfc.md](specs/studio-cursor-sdk-rfc.md)
 
@@ -29,6 +29,7 @@ Any tool that mutates project state or ships artifacts must run **`lic build`** 
 |--------|------|
 | `studio_mcp_tool_count()` | Returns `8` |
 | `studio_mcp_tool_dispatch(tool_id)` | Runtime dispatch via `li_rt_studio_mcp_dispatch`; proof gate on `lic_*` / `publish_bundle`; chem/adaptive Li hooks |
+| `studio_mcp_harness_run_all()` | In-process harness: dispatch all 8 tool IDs (build before publish); smoke `studio_mcp_harness_all_tools.li` |
 | `studio_mcp_last_profile_id()` | Last profile set by `sim_set_profile` dispatch (`STUDIO_MCP_PROFILE` env) |
 | `studio_mcp_chem_dft_energy_hartree()` | Stub energy (`-76.0` Hartree) aligned with `li-chem` smoke |
 | `studio_mcp_tool_name(id)` | Round-trip name via `li_rt` const table |
@@ -64,6 +65,9 @@ Any tool that mutates project state or ships artifacts must run **`lic build`** 
 - `packages/li-studio/li-tests/smoke/studio_mcp_tools.li` — wave-1 ID/name round-trip and agent chrome optional field.
 - `packages/li-studio/li-tests/smoke/studio_mcp_extended.li` — gap #6/#7 tool IDs, `studio_mcp_tool_dispatch`, adaptive layout hook.
 - `packages/li-studio/li-tests/smoke/studio_mcp_dispatch_run.li` — proof gate (`lic_build` → `publish_bundle`), chem energy, `sim_set_profile`.
+- `packages/li-studio/li-tests/smoke/studio_mcp_harness_all_tools.li` — all 8 MCP tool IDs via `studio_mcp_harness_run_all`.
+- `packages/li-studio/li-tests/smoke/studio_adaptive_drug_inspector.li` — profile 7 adaptive inspector rows by LITL stage.
+- `li-tests/composable/import_studio_drug_litl_payload.li` — `DrugLitlStagePayload` / DFT / ADMET stage outputs.
 - `packages/li-studio/li-tests/smoke/studio_cpu_present.li` — `STUDIO_CPU_PRESENT=1` vertical demo present path.
 - `li-tests/composable/import_lig_chem_backend.li` — `chem_dft_run_smoke()` stub energy (`-76.0` Hartree); `chem_lig_backend_auto` unchanged.
 

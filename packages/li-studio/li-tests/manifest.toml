@@ -66,6 +66,12 @@ note = "PH-SIM SIM-2/3: replay, sim_rl pool, game world stub, scientific + auto 
 
 [[tests]]
 suite = "smoke"
+file = "smoke/studio_game_physics_step.li"
+outcome = "compile_open_ok"
+note = "PH-SIM game: physics.runtime substep + world checkpoint fields"
+
+[[tests]]
+suite = "smoke"
 file = "smoke/studio_shell_loading.li"
 outcome = "compile_open_ok"
 note = "T-PKG-li-studio-shell-loading-ux10-ux11"
@@ -93,6 +99,18 @@ suite = "smoke"
 file = "smoke/studio_mcp_dispatch_run.li"
 outcome = "compile_open_ok"
 note = "T-PKG-li-studio-mcp-dispatch PH-AGENT-1"
+
+[[tests]]
+suite = "smoke"
+file = "smoke/studio_mcp_harness_all_tools.li"
+outcome = "compile_open_ok"
+note = "T-PKG-li-studio-mcp-harness PH-AGENT-1 all tools"
+
+[[tests]]
+suite = "smoke"
+file = "smoke/studio_adaptive_drug_inspector.li"
+outcome = "compile_open_ok"
+note = "T-PKG-li-studio-adaptive-drug PH-DRUG-1"
 
 [[tests]]
 suite = "smoke"

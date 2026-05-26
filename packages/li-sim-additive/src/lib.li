@@ -4,10 +4,10 @@ import sim
 
 def li_sim_additive_version() -> int
   requires true
-  ensures result == 2
+  ensures result == 3
   decreases 0
 =
-  return 2
+  return 3
 
 def li_sim_additive_profile_contract() -> int
   requires true
@@ -22,6 +22,17 @@ def li_sim_additive_studio_profile_id() -> int
   decreases 0
 =
   return 5
+
+type AmMeshDims = object
+  public width_mm: float
+  public depth_mm: float
+  public height_mm: float
+
+type AmSlicePlan = object
+  public layer_count: int
+  public path_point_count: int
+  public perimeter_mm: float
+  public ok: int
 
 # PH-AM AM-0 — slicer workflow stages (slice → preview → export); not Prusa/Cura parity.
 def am_slicer_stage_slice() -> int
@@ -80,6 +91,135 @@ def am_export_format_gcode() -> int
 =
   return 2
 
+def am_layer_height_mm_default() -> float
+  requires true
+  ensures result == 0.2
+  decreases 0
+=
+  return 0.2
+
+def am_mesh_dims_default() -> AmMeshDims
+  requires true
+  ensures result.width_mm == 40.0
+  ensures result.depth_mm == 30.0
+  ensures result.height_mm == 10.0
+  decreases 0
+=
+  var d: AmMeshDims
+  d.width_mm = 40.0
+  d.depth_mm = 30.0
+  d.height_mm = 10.0
+  return d
+
+def am_mesh_dims_valid(d: AmMeshDims) -> int
+  requires true
+  ensures result >= 0
+  ensures result <= 1
+  decreases 0
+=
+  if d.width_mm <= 0.0:
+    return 0
+  if d.depth_mm <= 0.0:
+    return 0
+  if d.height_mm <= 0.0:
+    return 0
+  return 1
+
+def am_layer_count_from_mesh(d: AmMeshDims, layer_h: float) -> int
+  requires layer_h > 0.0
+  requires am_mesh_dims_valid(d) == 1
+  ensures result >= 1
+  decreases 0
+=
+  var layers: int = 1
+  var acc: float = layer_h
+  while acc < d.height_mm
+    layers = layers + 1
+    acc = acc + layer_h
+  return layers
+
+def am_rect_perimeter_mm(d: AmMeshDims) -> float
+  requires am_mesh_dims_valid(d) == 1
+  ensures result == 2.0 * (d.width_mm + d.depth_mm)
+  decreases 0
+=
+  return 2.0 * (d.width_mm + d.depth_mm)
+
+def am_slice_path_point_x(d: AmMeshDims, point_idx: int) -> float
+  requires am_mesh_dims_valid(d) == 1
+  requires point_idx >= 0
+  requires point_idx <= 3
+  ensures result >= 0.0
+  decreases point_idx
+=
+  if point_idx == 0:
+    return 0.0
+  if point_idx == 1:
+    return d.width_mm
+  if point_idx == 2:
+    return d.width_mm
+  return 0.0
+
+def am_slice_path_point_y(d: AmMeshDims, point_idx: int) -> float
+  requires am_mesh_dims_valid(d) == 1
+  requires point_idx >= 0
+  requires point_idx <= 3
+  ensures result >= 0.0
+  decreases point_idx
+=
+  if point_idx == 0:
+    return 0.0
+  if point_idx == 1:
+    return 0.0
+  if point_idx == 2:
+    return d.depth_mm
+  return d.depth_mm
+
+def am_slice_mesh_plan(d: AmMeshDims, layer_h: float) -> AmSlicePlan
+  requires layer_h > 0.0
+  requires am_mesh_dims_valid(d) == 1
+  ensures result.layer_count >= 1
+  ensures result.path_point_count == result.layer_count * 4
+  ensures result.ok == 1
+  decreases 0
+=
+  var plan: AmSlicePlan
+  plan.layer_count = am_layer_count_from_mesh(d, layer_h)
+  plan.path_point_count = plan.layer_count * 4
+  plan.perimeter_mm = am_rect_perimeter_mm(d)
+  plan.ok = 1
+  return plan
+
+def sim_additive_validate_slice(layer_count: int, path_point_count: int, perimeter_mm: float, ok: int) -> int
+  requires true
+  ensures result >= 0
+  ensures result <= 1
+  decreases 0
+=
+  if ok != 1:
+    return 0
+  if layer_count < 1:
+    return 0
+  if path_point_count < 4:
+    return 0
+  if path_point_count != layer_count * 4:
+    return 0
+  if perimeter_mm <= 0.0:
+    return 0
+  return 1
+
+def sim_additive_require_sim_pass_ok(sim_pass: int, layer_count: int, path_point_count: int, perimeter_mm: float, ok: int) -> int
+  requires true
+  ensures result >= 0
+  ensures result <= 1
+  decreases sim_pass
+=
+  if sim_pass != 1:
+    return 0
+  if sim_additive_validate_slice(layer_count, path_point_count, perimeter_mm, ok) != 1:
+    return 0
+  return 1
+
 def sim_additive_export_format_ok(fmt: int) -> int
   requires true
   ensures result >= 0
@@ -94,20 +234,11 @@ def sim_additive_export_format_ok(fmt: int) -> int
     return 1
   return 0
 
-def sim_additive_require_sim_pass_ok(sim_pass: int) -> int
-  requires true
-  ensures result >= 0
-  ensures result <= 1
-  decreases sim_pass
-=
-  if sim_pass == 1:
-    return 1
-  return 0
-
-def run_am_slicer_stage(stage: int, detail: int) -> SimRunResult
+def run_am_slicer_stage(stage: int, detail: int, layer_count: int, path_point_count: int, perimeter_mm: float) -> SimRunResult
   requires detail >= 0
   requires detail <= 3
   requires am_slicer_stage_valid(stage) == 1
+  requires layer_count >= 1
   ensures result.ok == 1
   ensures result.detail_emitted == detail
   decreases stage
@@ -117,11 +248,15 @@ def run_am_slicer_stage(stage: int, detail: int) -> SimRunResult
     algo = algo_am_thermal_warp()
   if stage == am_slicer_stage_export():
     algo = algo_am_export_gcode_3mf()
+  var lc_f: float = 1.0 * layer_count
+  var ppc_f: float = 1.0 * path_point_count
   var checksum: float = 1.0
+  if stage == am_slicer_stage_slice():
+    checksum = lc_f * 0.01 + ppc_f * 0.001
   if stage == am_slicer_stage_preview():
-    checksum = 1.01
+    checksum = perimeter_mm * 0.01
   if stage == am_slicer_stage_export():
-    checksum = 1.02
+    checksum = lc_f * 0.02 + ppc_f * 0.002
   var r: SimRunResult
   r.ok = 1
   r.algo_id = algo
@@ -137,9 +272,12 @@ def sim_additive_tick_stub(detail: int) -> int
   ensures result <= 1
   decreases 0
 =
-  var d: int = detail
-  var r: SimRunResult = run_am_slicer_stage(am_slicer_stage_slice(), d)
+  var mesh: AmMeshDims = am_mesh_dims_default()
+  var plan: AmSlicePlan = am_slice_mesh_plan(mesh, am_layer_height_mm_default())
+  var r: SimRunResult = run_am_slicer_stage(am_slicer_stage_slice(), detail, plan.layer_count, plan.path_point_count, plan.perimeter_mm)
   if run_result_ok(r) != 1:
+    return 0
+  if sim_additive_validate_slice(plan.layer_count, plan.path_point_count, plan.perimeter_mm, plan.ok) != 1:
     return 0
   return 1
 
@@ -147,17 +285,22 @@ def run_additive_slicer_workflow(detail: int, sim_pass: int) -> int
   requires detail >= 0
   requires detail <= 3
   ensures result >= 0
-  ensures result <= 1
+  ensures result <= 4
   decreases 0
 =
-  var d: int = detail
-  if run_am_slicer_stage(am_slicer_stage_slice(), d).ok != 1:
+  var mesh0: AmMeshDims = am_mesh_dims_default()
+  var plan0: AmSlicePlan = am_slice_mesh_plan(mesh0, am_layer_height_mm_default())
+  var lc: int = plan0.layer_count
+  var ppc: int = plan0.path_point_count
+  var perim: float = plan0.perimeter_mm
+  var ok0: int = plan0.ok
+  if run_am_slicer_stage(am_slicer_stage_slice(), detail, lc, ppc, perim).ok != 1:
     return 1
-  if run_am_slicer_stage(am_slicer_stage_preview(), d).ok != 1:
+  if run_am_slicer_stage(am_slicer_stage_preview(), detail, lc, ppc, perim).ok != 1:
     return 2
-  if sim_additive_require_sim_pass_ok(sim_pass) != 1:
+  if sim_additive_require_sim_pass_ok(sim_pass, lc, ppc, perim, ok0) != 1:
     return 3
-  if run_am_slicer_stage(am_slicer_stage_export(), d).ok != 1:
+  if run_am_slicer_stage(am_slicer_stage_export(), detail, lc, ppc, perim).ok != 1:
     return 4
   return 0
 
@@ -172,4 +315,14 @@ def run_additive_smoke() -> int
     return 2
   if sim_additive_export_format_ok(am_export_format_gcode()) != 1:
     return 3
+  var mesh1: AmMeshDims = am_mesh_dims_default()
+  var plan1: AmSlicePlan = am_slice_mesh_plan(mesh1, am_layer_height_mm_default())
+  if plan1.layer_count != 50:
+    return 4
+  if plan1.path_point_count != 200:
+    return 5
+  if am_slice_path_point_x(mesh1, 1) != mesh1.width_mm:
+    return 6
+  if sim_additive_require_sim_pass_ok(0, plan1.layer_count, plan1.path_point_count, plan1.perimeter_mm, plan1.ok) != 0:
+    return 7
   return 0

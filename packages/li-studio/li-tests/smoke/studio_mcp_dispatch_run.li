@@ -5,7 +5,7 @@ def main() -> int raises IO
   ensures result == 0
   decreases 0
 =
-  if li_std_studio_version() < 8:
+  if li_std_studio_version() < 9:
     return 1
   var build_req: StudioAgentToolRequest = studio_mcp_tool_dispatch(studio_mcp_lic_build())
   if build_req.status != studio_mcp_tool_status_ok():

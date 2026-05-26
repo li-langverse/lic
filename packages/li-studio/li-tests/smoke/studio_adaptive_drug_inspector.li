@@ -1,0 +1,32 @@
+import sim.drug_design
+import studio
+
+def main() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  if li_std_studio_version() < 9:
+    return 1
+  var layout: StudioShellLayout = layout_studio_shell_adaptive(1280.0, 720.0)
+  var hyp: StudioInspectorCompose = studio_compose_inspector_drug_litl(layout, 0)
+  if hyp.litl_stage != drug_litl_stage_hypothesis():
+    return 2
+  if hyp.adaptive_row_base != studio_adaptive_inspector_row_base(drug_litl_stage_hypothesis()):
+    return 3
+  var dft: StudioInspectorCompose = studio_compose_inspector_drug_litl(layout, 2)
+  if dft.litl_stage != drug_litl_stage_dft():
+    return 4
+  if dft.adaptive_row_base != 2:
+    return 5
+  if dft.field_count != 3:
+    return 6
+  var shell: StudioShellCompose = studio_compose_shell_profile_litl(1280.0, 720.0, 0, 1, studio_profile_sim_drug_design(), 2)
+  if shell.inspector.litl_stage != drug_litl_stage_dft():
+    return 7
+  var payload: DrugLitlStagePayload = studio_drug_litl_stage_payload_from_tick(2)
+  if payload.dft_energy_hartree != -76.0:
+    return 8
+  if payload.conformer_count != 8:
+    return 9
+  return 0

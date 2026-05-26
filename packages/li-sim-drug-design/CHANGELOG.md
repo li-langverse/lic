@@ -9,6 +9,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- **PH-DRUG DRUG-1** — `DrugLitlStagePayload` (SMILES token, conformer count, DFT energy, `array[4,float]` ADMET); `drug_litl_stage_payload`; version **3**.
 - **PH-DRUG DRUG-0** — LITL stages, `run_drug_design_litl_workflow`, `sim_drug_design_tick_stub` (DFT via `chem_dft_run_smoke`), composable `import_sim_drug_design_litl_workflow.li`.
 - PH-SIM vertical gap **#3** — profile contract + studio id constants, `run_drug_design_smoke()`, package smoke (`li-tests/smoke/builds.li`).
 

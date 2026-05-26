@@ -6,6 +6,7 @@
 
 - **PH-SIM SIM-2 / PH-ML SIM-3 / PH-GD-2 partial** — replay on `sim_step`, `sim_rl` → `EnvPoolStub`, `studio_game_world_checkpoint_stub`, scientific detail-tier ticks; deps `li-ml-rl`, `li-world` — [2026-05-26-sim-replay-rl-game-scientific.md](../../docs/release-notes/2026-05-26-sim-replay-rl-game-scientific.md).
 
+- **PH-DRUG DRUG-1 / PH-AGENT-1** — `DrugLitlStagePayload` + `studio_drug_litl_stage_payload_from_tick`; `studio.adaptive` inspector routing (`studio_compose_inspector_drug_litl`, profile 7); `studio_mcp_harness_run_all` (8 tools); `li_std_studio_version` → 9; smokes `studio_adaptive_drug_inspector.li`, `studio_mcp_harness_all_tools.li`.
 - **PH-AGENT-1 (partial)** — `studio_mcp_tool_dispatch` via `li_rt_studio_mcp_dispatch` (proof gate, `STUDIO_MCP_PROFILE`), chem/adaptive Li hooks, `STUDIO_CPU_PRESENT` present path, bench hooks `studio_mcp_dispatch` / `studio_vertical_present`; `li_std_studio_version` → 8; smokes `studio_mcp_dispatch_run.li`, `studio_cpu_present.li`.
 
 - **PH-AM AM-0 / PH-DRUG DRUG-0** — `studio_sim_step_hook` calls `sim_additive_tick_stub` / `sim_drug_design_tick_stub`; `studio_drug_litl_stage_from_tick`; extended `studio_sim_step_by_profile.li`.

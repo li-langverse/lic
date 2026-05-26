@@ -376,11 +376,64 @@ Do **not** unless explicitly listed in a WP task:
 | Asset | State | Notes |
 |-------|-------|-------|
 | `lidb` `main` | `6d2632d` | Native integration merged; smoke script native-only |
-| `lidb` pytest | **6 failures reported** | Re-verify with `scripts/run_tests.sh` (venv); WP-A owns fix |
+| `lidb` pytest | **Superseded by §10** | WP-A branch green; WP-D branch has registry regressions |
 | `lic` | Active: `cursor/wp-lic-01-verticals-toml` | stdlib-adt on `cursor/stdlib-adt-wp0` |
-| `li-cursor-agents` | PH-DB-10 stub on `cursor/fix-swarm-health-9031` | Production default still **supabase** |
-| `benchmarks` `tier_db_registry` | `status: stub` | `tier-db-registry.json` honest |
-| `research-findings` | R0 seed on `main` `1fb7204` | study-only |
+| `li-cursor-agents` | **WP-E** `cursor/wp-e-ph-db-10-liorm` | Engine e2e partial; default store still **supabase** |
+| `benchmarks` `tier_db_registry` | **WP-C** harness + `status: unknown` | No fake green; Postgres ratio not measured |
+| `research-findings` | **WP-F** `cursor/wp-f-db-r0-experiments` | study-only; reproduce scripts green |
+
+---
+
+## 10. Verification (2026-05-26)
+
+Local verification on engineering WP branches (`git fetch` + checkout; commands from repo roots). **Did we test?** Yes — commands were executed; results below are evidence, not claims from branch READMEs.
+
+### 10.1 Test matrix
+
+| WP | Repo | Branch | Tip | Tests run? | Command(s) | Result | Ready to merge? |
+|----|------|--------|-----|------------|------------|--------|-----------------|
+| **A** | `lidb` | `cursor/wp-a-ph-db-2-engine` | `7ef9509` | Yes | `bash scripts/smoke.sh`; `bash scripts/run_tests.sh`; `bash scripts/check_no_sqlite.sh` | smoke **PASS**; pytest **37 passed**; security **5 pass, 4 skip, 1 fail** (`parallel-race-plan-registry`); `run_tests.sh` exit **1** | **No** — security fail + DoD wants CI on security without critical skips |
+| **B** | `lis` | `cursor/wp-b-ph-db-3-lis-db` | `ceac11e` | Yes | `bash scripts/db-smoke.sh` | **PASS** (start → status → migrate → stop) | **Yes** (soft-dep WP-A for full liorm; smoke uses local `lidb` embed) |
+| **C** | `benchmarks` | `cursor/wp-c-ph-db-5-registry-bench` | `fee9582` | Yes | `bash scripts/run-db-registry-bench.sh validate-only`; `BENCH_DB_REGISTRY_RUN_HARNESS=1` (no `POSTGRES_URL`) | validate-only **PASS**; harness **lidb_only**, `status=unknown` (honest) | **No** — PH-DB-5 exit needs Postgres P95 + ratio ≤ 1.2 |
+| **D** | `lidb` | `cursor/wp-d-ph-db-4-registry` | `4e34f0a` | Yes | `smoke.sh`; `registry_smoke.sh`; `run_tests.sh` | smoke **PASS**; registry_smoke **FAIL** (missing seeded version); pytest **31 passed, 9 failed** | **No** — registry OLTP read-back / liq examples broken on branch |
+| **D** | `lic` | `cursor/wp-d-ph-db-4-registry` | (docs) | N/A | — | Traceability/docs only; no test suite | **N/A** |
+| **E** | `li-cursor-agents` | `cursor/wp-e-ph-db-10-liorm` | `ac8c656` | Yes | `npm test`; `npm run test:e2e:lidb`; `LI_LIDB_REPO=…/lidb npm run test:e2e:lidb-engine` | unit **293 pass / 1 skip**; mock e2e **5 pass**; engine e2e **8 pass, 2 todo** (handoffs, control_plane_reports) | **No** — 2 persist todos; default store flip is human |
+| **F** | `research-findings` | `cursor/wp-f-db-r0-experiments` | `826285a` | Yes | `db-r0-1` + `db-r0-4` `scripts/reproduce.sh` | **PASS** (study-only artifacts) | **Yes** (research; no product gate) |
+
+**Wave 0 stubs (not re-run this session):** `li-cursor-agents` `cursor/fix-swarm-health-9031`, `lic` `cursor/stdlib-adt-wp0`, `cursor/wp-lic-01-verticals-toml` — merge per §6 after per-PR CI.
+
+### 10.2 Definition of done — gap snapshot
+
+| WP | DONE (verified) | OPEN |
+|----|-----------------|------|
+| **A** | Native smoke; pytest green; `check_no_sqlite`; liorm native path; pg-subset status table updated on branch | Security `parallel-race-plan-registry` fail; RLS harness skips; full CI matrix |
+| **B** | `lis db` smoke; registry-min profile; in-process embed | Formal pytest suite; README env contract sign-off |
+| **C** | Real harness code path; validate-only; honest `unknown` ingest | Postgres oracle timings; PH-DB-5 P95 ratio gate |
+| **D** | Schema/migration alignment work on branch | `registry_smoke` + 9 pytest failures; lip OpenAPI parity; PH-8d-v2 still blocked |
+| **E** | `npm test`; mock + engine e2e for `agent_runs` persist/read | `agent_handoffs` / `control_plane_reports` todos; `LI_E2E_LIDB=1` CI optional job |
+| **F** | DB-R0-1, DB-R0-4 reproduce + study-only notes | Product/dashboard must stay unknown until WP-C measured |
+
+### 10.3 This run vs human-required
+
+| Finished this run | Still requires human / infra |
+|-------------------|------------------------------|
+| Full test matrix on WP A–F branches | **lip** OpenAPI alignment sign-off (PH-DB-4) |
+| Battle plan §10 + honest merge readiness | **Postgres 15+** in CI for tier_db_registry ratio |
+| `pg-subset-v1.md` status table honesty (lidb WP-A commit pending) | **PH-DB-5** measured P95 ≤ 1.2× Postgres on 3 scenarios |
+| — | Default **`LI_CONTROL_PLANE_STORE=lidb`** flip |
+| — | Wave 0 PR merges + conflict resolution on `lic` verticals |
+
+### 10.4 Direct answer: did we test?
+
+| Repo | Tested? | Evidence |
+|------|---------|----------|
+| `lidb` (WP-A) | **Yes** | `37 passed`; smoke OK; `run_tests.sh` exit 1 (security) |
+| `lidb` (WP-D) | **Yes** | `31 passed, 9 failed`; `registry_smoke` exit 1 |
+| `lis` | **Yes** | `db-smoke.sh` exit 0 |
+| `benchmarks` | **Yes** | validate-only exit 0; harness `unknown` without Postgres |
+| `li-cursor-agents` | **Yes** | `npm test` exit 0; engine e2e exit 0 with 2 todos |
+| `research-findings` | **Yes** | reproduce scripts exit 0 |
+| `lic` | **No** (docs-only WP-D) | — |
 
 ---
 

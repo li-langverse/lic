@@ -23,4 +23,14 @@ export PATH="/usr/sbin:/usr/local/bin:${PATH:-}"
 
 echo "==> perf wrk soak (${DUR}s) — parity + nextjs + exploit compare"
 "$ROOT/scripts/check-tier5-nginx-perf-regression-gate.sh"
+
+HARNESS="$ROOT/benchmarks/harness"
+export PYTHONPATH="$HARNESS${PYTHONPATH:+:$PYTHONPATH}"
+export LI_HTTPD_BIN="$HTTPD"
+chmod +x "$HARNESS/bench_http.py" 2>/dev/null || true
+echo "==> parity_streaming soak (${DUR}s, li vs nginx)"
+python3 "$HARNESS/bench_http.py" --profile parity_streaming --check-parity \
+  --set "load.duration_sec=${DUR}" \
+  --out "$ROOT/benchmarks/results/tier5_streaming_parity_wrk_soak.csv"
+
 echo "check-tier5-perf-wrk-soak: OK"

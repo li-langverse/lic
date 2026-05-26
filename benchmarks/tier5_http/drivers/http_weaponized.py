@@ -115,6 +115,24 @@ def attack_absolute_uri_connect(host: str, port: int, attack: dict[str, Any]) ->
     }
 
 
+def attack_h2_rapid_reset(host: str, port: int, attack: dict[str, Any]) -> dict[str, Any]:
+    preface = b"PRI * HTTP/2.0\r\n\r\nSM\r\n\r\n"
+    attempts = min(int(attack.get("streams") or 50), 32)
+    rejected = True
+    for _ in range(attempts):
+        data = _raw(host, port, preface, timeout=1.5)
+        status = data.split(b"\r\n", 1)[0] if data else b""
+        if data and (b"HTTP/2" in status or b"200" in status):
+            rejected = False
+            break
+    legit = http_attacks.legitimate_get(host, port)
+    return {
+        "reject_or_close_attack": rejected,
+        "legitimate_client_ok": legit,
+        "no_crash": True,
+    }
+
+
 def attack_post_method_override(host: str, port: int, attack: dict[str, Any]) -> dict[str, Any]:
     req = (
         b"POST / HTTP/1.1\r\n"
@@ -134,6 +152,7 @@ def attack_post_method_override(host: str, port: int, attack: dict[str, Any]) ->
 
 
 WEAPONIZED_DRIVERS = {
+    "h2_rapid_reset": attack_h2_rapid_reset,
     "chunked_encoding_bomb": attack_chunked_encoding_bomb,
     "oversized_headers": attack_oversized_headers,
     "cache_poisoning_forwarded": attack_cache_poisoning_forwarded,

@@ -91,7 +91,7 @@ def _canary_listener(host: str = "127.0.0.1"):
         sock.close()
 
 
-def legitimate_get(host: str, port: int, path: str = "/") -> bool:
+def legitimate_get(host: str, port: int, path: str = "/file.bin") -> bool:
     try:
         s = _connect(host, port, 1.0)
         req = f"GET {path} HTTP/1.1\r\nHost: {host}:{port}\r\nConnection: close\r\n\r\n"
@@ -134,6 +134,32 @@ def attack_slowloris(host: str, port: int, attack: dict[str, Any]) -> dict[str, 
     legit = legitimate_get(host, port)
     return {
         "attack_closed": attack_closed,
+        "legitimate_client_ok": legit,
+        "no_crash": True,
+    }
+
+
+def attack_oversized_body(host: str, port: int, attack: dict[str, Any]) -> dict[str, Any]:
+    body_bytes = int(attack.get("body_bytes") or 1_048_576)
+    hdr = (
+        f"POST /file.bin HTTP/1.1\r\n"
+        f"Host: {host}:{port}\r\n"
+        f"Content-Length: {body_bytes}\r\n"
+        "Connection: close\r\n\r\n"
+    ).encode()
+    payload = hdr + (b"X" * body_bytes)
+    data = _raw_request(host, port, payload, timeout=5.0)
+    status = data.split(b"\r\n", 1)[0] if data else b""
+    rejected = (
+        b"413" in status
+        or b"400" in status
+        or b"431" in status
+        or b"414" in status
+        or len(data) == 0
+    )
+    legit = legitimate_get(host, port)
+    return {
+        "reject_or_close_attack": rejected,
         "legitimate_client_ok": legit,
         "no_crash": True,
     }
@@ -541,6 +567,7 @@ def attack_host_header_ssrf(host: str, port: int, attack: dict[str, Any]) -> dic
 
 DRIVERS = {
     "slowloris": attack_slowloris,
+    "oversized_body": attack_oversized_body,
     "oversized_request_line": attack_oversized_request_line,
     "path_traversal": attack_path_traversal,
     "duplicate_content_length": attack_duplicate_content_length,

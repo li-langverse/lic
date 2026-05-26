@@ -103,6 +103,17 @@ struct BorrowCtx {
 
   bool param_is_var(const TypeExpr& ty) { return ty.is_var; }
 
+  bool param_invalidate_on_pass(const TypeExpr& te) {
+    const TypeExpr* ut = unwrap_refinement_type(&te);
+    if (!ut) {
+      return true;
+    }
+    if (ut->kind == TypeKind::Array) {
+      return true;
+    }
+    return type_mentions_heap(te);
+  }
+
   void check_call_moves(const Expr& call) {
     const auto it = procs.find(call.ident);
     if (it == procs.end()) {

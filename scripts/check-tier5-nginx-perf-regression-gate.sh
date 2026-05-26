@@ -38,8 +38,8 @@ echo "==> tier5 exploit runtime (live li-httpd)"
 "$ROOT/scripts/check-tier5-exploit-runtime.sh"
 
 # Runtime phase starts li-httpd per exploit; ensure listeners are gone before nginx↔li compare.
-pkill -f '[/]build/li-httpd' 2>/dev/null || true
-sleep 1
+pkill -9 -f '[/]build/li-httpd' 2>/dev/null || true
+sleep 2
 
 EXPLOIT_PROFILE="${HTTPD_REGRESSION_EXPLOIT_PROFILE:-pr}"
 EXPLOIT_OUT="${HTTPD_REGRESSION_EXPLOIT_CSV:-$ROOT/benchmarks/results/tier5_exploit_regression.csv}"

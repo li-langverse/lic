@@ -580,16 +580,24 @@ def verify_benchmark_results(spec: BenchSpec, build_dir: Path) -> None:
     t0 = time.perf_counter()
     li_out = li_result_checksum(li_bin, try_argv_verify=not spec.li_pure)
     li_elapsed = time.perf_counter() - t0
+    native_elapsed_for_guard: float | None = None
     if ref_case is not None and os.environ.get("BENCH_VERIFY_REFERENCE", "1").strip() not in (
         "0",
         "false",
         "no",
     ):
         if spec.li_pure and li_elapsed < ref_case.min_li_seconds:
-            raise RuntimeError(
-                f"{spec.name}: Li ran in {li_elapsed:.4f}s < "
-                f"{ref_case.min_li_seconds}s (likely DCE / wrong problem size)"
-            )
+            # Absolute floors catch optimized-away kernels on normal loop lowerings, but
+            # closed-form codegen (for example Horner chunking) can legitimately fall
+            # below a fixed wall-time threshold on fast machines. Confirm against the
+            # native oracle before reporting DCE / wrong-size suspicion.
+            native_elapsed_for_guard = time_command([str(native)], runs=1)
+            if li_elapsed < native_elapsed_for_guard * 0.45:
+                raise RuntimeError(
+                    f"{spec.name}: Li ran in {li_elapsed:.4f}s < "
+                    f"{ref_case.min_li_seconds}s and <45% of native "
+                    f"({native_elapsed_for_guard:.4f}s), likely DCE / wrong problem size"
+                )
         assert_checksum_against_spec(
             spec.name,
             li_out,
@@ -606,7 +614,7 @@ def verify_benchmark_results(spec: BenchSpec, build_dir: Path) -> None:
         )
 
     if os.environ.get("BENCH_VERIFY_TIMING", "").strip() in ("1", "true", "yes"):
-        cpp_time = time_command([str(native)], runs=1)
+        cpp_time = native_elapsed_for_guard or time_command([str(native)], runs=1)
         li_time = time_command([str(li_bin)], runs=1)
         if li_time < cpp_time * 0.45:
             raise RuntimeError(

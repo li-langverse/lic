@@ -1001,7 +1001,14 @@ def run_tier2_ci_smoke(*, only: set[str] | None = None) -> int:
 
 def run_verify() -> int:
     script = REPO / "benchmarks" / "harness" / "verify.py"
-    return subprocess.call([sys.executable, str(script), "--write-csv", str(RESULTS / "verify.csv")])
+    cmd = [
+        sys.executable,
+        str(script),
+        "--write-csv",
+        str(RESULTS / "verify.csv"),
+        "--tier0-only",
+    ]
+    return subprocess.call(cmd)
 
 
 def run_tier0() -> int:

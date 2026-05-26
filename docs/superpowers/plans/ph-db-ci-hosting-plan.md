@@ -1,7 +1,7 @@
 # PH-DB CI, hosting, containers, and ORM integration plan
 
 **Status:** Active planning (2026-05-26)  
-**Companion:** [ph-db-battle-plan.md](ph-db-battle-plan.md) (engine + WPs A–F) · [ph-db-lidb-platform.md](ph-db-lidb-platform.md) (phase index)  
+**Companion:** [ph-db-battle-plan.md](ph-db-battle-plan.md) (engine + WPs A–F) · [ph-db-lidb-platform.md](ph-db-lidb-platform.md) (phase index) · **[ph-db-execution-tracker.md](ph-db-execution-tracker.md)** (phases 0–3 + WP-A…K status)  
 **Control plane:** [lidb-migration-control-plane.md](https://github.com/li-langverse/li-cursor-agents/blob/main/docs/plans/lidb-migration-control-plane.md)
 
 ---

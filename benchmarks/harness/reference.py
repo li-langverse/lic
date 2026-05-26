@@ -166,6 +166,77 @@ def horner_analytical_decimal(*, steps: int, x: str = "0.999999") -> Decimal:
     return (Decimal(1) - xd**steps) / (Decimal(1) - xd)
 
 
+def _decimal_context() -> None:
+    from decimal import getcontext
+
+    getcontext().prec = 50
+
+
+def dot_spec_decimal(n: int) -> float:
+    """High-precision dot spec (validates iterative ``dot_spec_sum`` on small ``n``)."""
+    _decimal_context()
+    acc = Decimal(0)
+    for i in range(n):
+        a = Decimal(i & 255) * Decimal("0.001")
+        b = Decimal((i * 7) & 255) * Decimal("0.002")
+        acc += a * b
+    return float(acc)
+
+
+def matmul_naive_spec_decimal(n: int) -> float:
+    _decimal_context()
+    a = [[Decimal((i + j) % 17) * Decimal("0.01") for j in range(n)] for i in range(n)]
+    b = [[Decimal((i * 3 + j) % 13) * Decimal("0.02") for j in range(n)] for i in range(n)]
+    c = [[Decimal(0) for _ in range(n)] for _ in range(n)]
+    for i in range(n):
+        for k in range(n):
+            aik = a[i][k]
+            for j in range(n):
+                c[i][j] += aik * b[k][j]
+    acc = Decimal(0)
+    for i in range(n):
+        for j in range(n):
+            acc += c[i][j]
+    return float(acc)
+
+
+def matmul_blocked_spec_decimal(n: int, *, block: int = 64) -> float:
+    _decimal_context()
+    a = [[Decimal((i + j) % 17) * Decimal("0.01") for j in range(n)] for i in range(n)]
+    b = [[Decimal((i * 3 + j) % 13) * Decimal("0.02") for j in range(n)] for i in range(n)]
+    c = [[Decimal(0) for _ in range(n)] for _ in range(n)]
+    for ii in range(0, n, block):
+        for kk in range(0, n, block):
+            for jj in range(0, n, block):
+                i_max = min(ii + block, n)
+                k_max = min(kk + block, n)
+                j_max = min(jj + block, n)
+                for i in range(ii, i_max):
+                    for k in range(kk, k_max):
+                        aik = a[i][k]
+                        for j in range(jj, j_max):
+                            c[i][j] += aik * b[k][j]
+    acc = Decimal(0)
+    for i in range(n):
+        for j in range(n):
+            acc += c[i][j]
+    return float(acc)
+
+
+def primary_analytical_report(reports: list[DeviationReport]) -> DeviationReport | None:
+    for report in reports:
+        if report.reference_kind == "analytical" and "C-loop vs analytical" not in report.label:
+            return report
+    return None
+
+
+def analytical_report_for_label(reports: list[DeviationReport], label: str) -> DeviationReport | None:
+    for report in reports:
+        if report.label == label and report.reference_kind == "analytical":
+            return report
+    return None
+
+
 # --- kernel specs (iterative / C parity) --------------------------------------
 
 
@@ -475,6 +546,11 @@ def _self_check_analytical_oracles() -> None:
     for n in (0, 1, 16, 1024, 1025):
         if not float_close(reduce_sum_analytical(n), reduce_sum_spec(n), rtol=0.0, atol=1e-9):
             raise AssertionError(f"reduce_sum analytical vs iterative: n={n}")
+    for n in (4, 8):
+        if not float_close(dot_spec_sum(n), dot_spec_decimal(n), rtol=0.0, atol=1e-9):
+            raise AssertionError(f"dot iterative vs decimal: n={n}")
+        if not float_close(matmul_naive_spec_sum(n), matmul_naive_spec_decimal(n), rtol=0.0, atol=1e-9):
+            raise AssertionError(f"matmul_naive iterative vs decimal: n={n}")
 
 
 _self_check_analytical_oracles()

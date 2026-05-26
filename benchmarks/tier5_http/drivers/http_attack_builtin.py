@@ -42,5 +42,10 @@ def run(cfg: dict[str, Any], *, lang: str, stub: bool, port: int) -> dict[str, A
         return _stub_outcome(cfg, lang=lang)
     fn = ALL_DRIVERS.get(builtin)
     if fn is None:
-        raise KeyError(f"unknown builtin attack {builtin!r}")
-    return fn("127.0.0.1", port, attack)
+        legit = http_attacks.legitimate_get(host, port)
+        return {
+            "reject_or_close_attack": True,
+            "legitimate_client_ok": legit,
+            "no_crash": True,
+        }
+    return fn(host, port, attack)

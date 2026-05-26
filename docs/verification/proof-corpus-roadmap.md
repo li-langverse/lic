@@ -94,7 +94,7 @@ Priority order aligned with [provability-gaps](provability-gaps.md) and **2e →
 | **P-float** | `Float.abs`, sqrt error bounds | **G-vc** partial — `sqrt_open_bound` closed (trusted libm); other float ensures open | `sqrt_open_bound.li` + `Li.Discharge` + `trusted.lean` |
 | **P-loop** | `while` invariant preservation | Few loop specimens | New `contracts_verify/loop_invariant_*.li` |
 | **P-linalg** | Matrix/vector shapes (`@`, slices) | **Partial** — closed dot/sum/matmul-entry/norm/axpy + loop witness. **Open:** float `vec3_dot` Props, 2D array CallProc | `contracts_verify/linalg_*`, `math_linalg/*` |
-| **P-par** | `parallel for` disjointness | **G-par** string heuristics only | Lean specs for `disjoint=` (7d-c) |
+| **P-par** | `parallel for` disjointness | **Partial** — `_par*` → `disjoint_*_spec` + policy witnesses + MIR tag | Iteration-independence Lean specs (7d-c) |
 | **P-dec** | Decorators never run at runtime | **G-dec** no MIR lowering | `decorator_exploits/` + elaboration proofs |
 | **P-bnd** | Release builds omit `li_bounds_fail` | **Partial** — `check_release_bounds_ir.sh` | [bounds-release-path](bounds-release-path.md) |
 | **P-http** | Parser/route config safety | Phase **H** | `httpd/*`, TOML desugar invariants |

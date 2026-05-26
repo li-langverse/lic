@@ -697,6 +697,28 @@ void emit_call_site_requires(std::ostream& out, const Module& module, const Proc
 }
 
 void walk_contracts(std::ostream& out, const Module& module, const ProcDecl& proc,
+                    const std::vector<Contract>& contracts, const std::string& vc_suffix,
+                    const std::string* loop_iter);
+
+void walk_par_contracts(std::ostream& out, const Module& module, const ProcDecl& proc,
+                        const std::vector<Stmt>& stmts, std::size_t& par_idx) {
+  for (const auto& stmt : stmts) {
+    if (stmt.kind == Stmt::Kind::ParallelFor && !stmt.par_contracts.empty()) {
+      const std::string suffix = "_par" + std::to_string(par_idx++);
+      walk_contracts(out, module, proc, stmt.par_contracts, suffix,
+                     stmt.par_iter.empty() ? nullptr : &stmt.par_iter);
+    }
+    walk_par_contracts(out, module, proc, stmt.then_body, par_idx);
+    if (stmt.else_body) {
+      walk_par_contracts(out, module, proc, *stmt.else_body, par_idx);
+    }
+    walk_par_contracts(out, module, proc, stmt.while_body, par_idx);
+    walk_par_contracts(out, module, proc, stmt.for_body, par_idx);
+    walk_par_contracts(out, module, proc, stmt.par_body, par_idx);
+  }
+}
+
+void walk_contracts(std::ostream& out, const Module& module, const ProcDecl& proc,
                     const std::vector<Contract>& contracts,
                     const std::string& vc_suffix = "",
                     const std::string* loop_iter = nullptr) {
@@ -744,13 +766,7 @@ bool write_vcs_lean(const Module& module, const std::string& path, std::string* 
     out << "namespace " << proc_section(proc.name) << "\n\n";
     walk_contracts(out, module, proc, proc.contracts);
     std::size_t par_idx = 0;
-    for (const auto& stmt : proc.body) {
-      if (stmt.kind == Stmt::Kind::ParallelFor && !stmt.par_contracts.empty()) {
-        const std::string suffix = "_par" + std::to_string(par_idx++);
-        walk_contracts(out, module, proc, stmt.par_contracts, suffix,
-                       stmt.par_iter.empty() ? nullptr : &stmt.par_iter);
-      }
-    }
+    walk_par_contracts(out, module, proc, proc.body, par_idx);
     emit_call_site_requires(out, module, proc);
     out << "\nend " << proc_section(proc.name) << "\n\n";
   }

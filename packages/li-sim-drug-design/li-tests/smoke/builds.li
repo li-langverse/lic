@@ -1,3 +1,4 @@
+import sim
 import sim.drug_design
 
 def main() -> int
@@ -5,7 +6,7 @@ def main() -> int
   ensures result == 0
   decreases 0
 =
-  if li_sim_drug_design_version() != 1:
+  if li_sim_drug_design_version() != 2:
     return 1
   if li_sim_drug_design_profile_contract() != sim_contract_sim_drug_design():
     return 2

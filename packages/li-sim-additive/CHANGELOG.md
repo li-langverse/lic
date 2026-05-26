@@ -9,6 +9,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- **PH-AM AM-0** — slicer stages, export format ids, `run_additive_slicer_workflow`, `sim_additive_tick_stub`, composable `import_sim_additive_slicer_workflow.li`.
 - PH-SIM vertical gap **#3** — profile contract + studio id constants, `run_additive_smoke()`, package smoke (`li-tests/smoke/builds.li`).
 
 ## [0.1.0] - 2026-05-26

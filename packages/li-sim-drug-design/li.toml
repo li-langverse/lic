@@ -7,6 +7,7 @@ description = "Drug-design simulation profiles — Lab-in-the-Loop and adaptive 
 
 [dependencies]
 li-sim = { path = "../li-sim" }
+li-chem = { path = "../li-chem" }
 
 [package.metadata.li]
 github_repo = "li-sim-drug-design"

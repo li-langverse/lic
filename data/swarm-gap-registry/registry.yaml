@@ -1,5 +1,5 @@
 version: 1
-updated_at: '2026-05-25T19:35:01Z'
+updated_at: '2026-05-26T05:40:18Z'
 gaps:
 - id: gap-line-profiler-001
   gap_kind: missing_package
@@ -17,11 +17,12 @@ gaps:
 - id: gap-missing-std-std-io
   gap_kind: missing_package
   title: Missing std module std.io
-  status: open
+  status: closed
   priority: 6
   discovered_by: gap_explorer
   evidence:
   - CSV/file ingest without Python
+  - ecosystem-explorer.json missing_std_modules status=present 2026-05-26
   ph_id: PH-IO-4
   target_backlog: docs/ecosystem/ecosystem-package-backlog.md
   target_todo_id: pkg-std-io
@@ -32,11 +33,12 @@ gaps:
 - id: gap-missing-std-std-csv
   gap_kind: missing_package
   title: Missing std module std.csv
-  status: open
+  status: closed
   priority: 6
   discovered_by: gap_explorer
   evidence:
   - Benchmark CSV parsing in Li
+  - ecosystem-explorer.json missing_std_modules status=present 2026-05-26
   ph_id: PH-IO-4
   target_backlog: docs/ecosystem/ecosystem-package-backlog.md
   target_todo_id: pkg-std-csv
@@ -390,11 +392,12 @@ gaps:
 - id: gap-plan-pending-sim-md-research-md-r2-neighbor-list-gap
   gap_kind: plan_debt
   title: 'sim-md-research: pending plan todo md-r2-neighbor-list-gap'
-  status: open
+  status: closed
   priority: 7
   discovered_by: plan_verifier
   evidence:
   - snapshot runner=sim-md-research plan_pending=md-r2-neighbor-list-gap
+  - snapshot sim-md-research completed_ids includes md-r2-neighbor-list-gap
   runner_id: sim-md-research
   plan_todo_id: md-r2-neighbor-list-gap
   suggested_loop: sim-md-research
@@ -690,3 +693,148 @@ gaps:
   handoff_to:
   - plan_verifier
   - issue_planner
+- id: gap-competitor-pure-li-ph7e-catalog
+  gap_kind: competitor_feature
+  title: Increase pure_li catalog variants for PH-7e codegen proof
+  status: open
+  priority: 6
+  discovered_by: gap_explorer
+  evidence:
+  - ecosystem-explorer.json catalog.suggested_catalog_gaps
+  - ecosystem-quality-report finding benchmark-red-rows
+  handoff_to:
+  - numerics_researcher
+  - bench_improver
+- id: gap-hpc-kokkos-execution-memory-spaces
+  gap_kind: competitor_feature
+  title: 'Kokkos-class execution model: parallel_for, Views, GPU memory spaces'
+  status: open
+  priority: 7
+  discovered_by: gap_explorer
+  evidence:
+  - ecosystem-explorer.json hpc_libraries[kokkos] li_status=missing
+  - https://github.com/kokkos/kokkos
+  - lic issue
+  ph_id: PH-7e
+  handoff_to:
+  - numerics_researcher
+  - issue_planner
+- id: gap-hpc-petsc-kokkos-implicit-pde
+  gap_kind: competitor_feature
+  title: PETSc 3.25 Kokkos-native KSP/PC (aijkokkos, PCBJKOKKOS) implicit PDE stack
+  status: open
+  priority: 7
+  discovered_by: gap_explorer
+  evidence:
+  - ecosystem-explorer.json hpc_libraries[petsc]
+  - https://petsc.org/release/manualpages/Vec/VecGetKokkosView/
+  - lic issue
+  ph_id: PH-5b
+  handoff_to:
+  - numerics_researcher
+- id: gap-hpc-fftw-roofline-catalog-row
+  gap_kind: competitor_feature
+  title: 'Tier-1 FFT micro-bench: FFTW vs vendor GPU roofline (cuFFT/VkFFT/heFFTe)'
+  status: open
+  priority: 6
+  discovered_by: gap_explorer
+  evidence:
+  - ecosystem-explorer.json hpc_libraries[fftw]
+  - benchmarks issues
+  - https://arxiv.org/html/2506.08653v1
+  handoff_to:
+  - bench_improver
+  - gap_explorer
+- id: gap-hpc-hypre-boomeramg-tier2-pde
+  gap_kind: competitor_feature
+  title: hypre BoomerAMG + parallel CSR for large-scale implicit PDE
+  status: open
+  priority: 6
+  discovered_by: gap_explorer
+  evidence:
+  - ecosystem-explorer.json hpc_libraries[hypre]
+  - lic issue
+  ph_id: PH-5b
+  handoff_to:
+  - numerics_researcher
+- id: gap-benchmark-red-matmul-naive-tier1
+  gap_kind: competitor_feature
+  title: 'Tier-1 red: matmul_naive 1.73x vs cpp (Eigen/MKL class)'
+  status: open
+  priority: 8
+  discovered_by: gap_explorer
+  evidence:
+  - ecosystem-audit.json benchmarks.red matmul_naive
+  - li-tests tier-1 harness
+  - ecosystem-quality-report finding benchmark-red-rows
+  ph_id: PH-7e
+  handoff_to:
+  - bench_improver
+  - numerics_researcher
+- id: gap-benchmark-red-num-gmres-tier1
+  gap_kind: competitor_feature
+  title: 'Tier-1 red: num_gmres 1.68x vs cpp (iterative solver class)'
+  status: open
+  priority: 8
+  discovered_by: gap_explorer
+  evidence:
+  - ecosystem-audit.json benchmarks.red num_gmres
+  - docs/numerics GMRES harness
+  ph_id: PH-5b
+  handoff_to:
+  - numerics_researcher
+- id: gap-vertical-stub-md-lennard-jones
+  gap_kind: competitor_feature
+  title: 'verticals.toml stub/honesty: md_lennard_jones (LAMMPS/GROMACS)'
+  status: open
+  priority: 4
+  discovered_by: gap_explorer
+  evidence:
+  - verticals.toml workload_class=stub
+  - not LAMMPS/GROMACS parity
+  suggested_loop: sim-md-research
+  handoff_to:
+  - numerics_researcher
+- id: gap-vertical-stub-pde-heat-2d
+  gap_kind: competitor_feature
+  title: 'verticals.toml stub/honesty: pde_heat_2d (OpenFOAM/PETSc)'
+  status: open
+  priority: 4
+  discovered_by: gap_explorer
+  evidence:
+  - verticals.toml workload_class=stub
+  handoff_to:
+  - numerics_researcher
+- id: gap-vertical-stub-fea-linear-elasticity
+  gap_kind: competitor_feature
+  title: 'verticals.toml stub/honesty: fea_linear_elasticity (CalculiX/ANSYS)'
+  status: open
+  priority: 4
+  discovered_by: gap_explorer
+  evidence:
+  - verticals.toml no bench oracle yet
+  handoff_to:
+  - numerics_researcher
+- id: gap-vertical-stub-cfd-lid-driven-cavity
+  gap_kind: competitor_feature
+  title: 'verticals.toml stub/honesty: cfd_lid_driven_cavity (OpenFOAM/COMSOL)'
+  status: open
+  priority: 4
+  discovered_by: gap_explorer
+  evidence:
+  - verticals.toml PH-CAE CFD track
+  handoff_to:
+  - numerics_researcher
+- id: gap-infra-verticals-toml-missing-benchmarks-main
+  gap_kind: competitor_feature
+  title: "benchmarks/competitive/verticals.toml missing on main \u2014 blocks swarm-gap\
+    \ vertical ingest"
+  status: open
+  priority: 5
+  discovered_by: gap_explorer
+  evidence:
+  - swarm-gap-ingest.py ingest_verticals_stubs returned 0
+  - lic-worktrees/compiler-studio/benchmarks/competitive/verticals.toml exists
+  handoff_to:
+  - gap_explorer
+  - docs_maintainer

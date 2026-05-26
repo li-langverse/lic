@@ -1,6 +1,6 @@
 # Studio vertical: `sim_automotive`
 
-**Focus:** Profile chip + `studio_sim_step_hook` bicycle-model tick stub (`sim.automotive`).
+**Focus:** Profile chip + `studio_sim_step_hook` bicycle kinematics (`x,y,yaw,v`) and sensor placeholder spec (`sim.automotive`).
 
 ## Verify
 
@@ -12,7 +12,7 @@ lic check li-tests/composable/import_sim_automotive_workspace.li
 
 ## Honest status
 
-Maps, sensor raycast, and CARLA-class driving sim are **not** implemented — only profile bridge + per-tick `run_auto_bicycle_smoke` checksum.
+Maps, raycast lidar, and CARLA-class driving sim are **not** implemented — landed: deterministic bicycle integration + `AutoSensorSpec` (64 rays, 640×480) per tick.
 
 ## Mock
 

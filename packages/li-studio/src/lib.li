@@ -1417,6 +1417,26 @@ def studio_game_step_hook(frame_dt: float, sim_tick: int) -> GamePhysicsStepOutc
 =
   return game_physics_step_hook(frame_dt, sim_tick)
 
+def studio_game_world_snapshot_from_physics(
+    tick: int, physics_step_count: int, body_pz: float) -> WorldSnapshot
+  requires tick >= 0
+  requires physics_step_count >= 0
+  ensures result.tick == tick
+  ensures result.entity_count == physics_step_count
+  decreases tick
+=
+  var snap: WorldSnapshot
+  snap.name = world_name_slot_default()
+  snap.tick = tick
+  snap.entity_count = physics_step_count
+  var pz_hi: float = body_pz
+  var pz_lo: float = body_pz
+  if pz_hi > 1000.0:
+    snap.entity_count = 0
+  if pz_lo < -1000.0:
+    snap.entity_count = 0
+  return snap
+
 def studio_game_world_checkpoint_fields(
     tick: int, physics_step_count: int, body_pz: float) -> int
   requires tick >= 0
@@ -1425,10 +1445,7 @@ def studio_game_world_checkpoint_fields(
   ensures result <= 1
   decreases tick
 =
-  var snap: WorldSnapshot
-  snap.name = world_name_slot_default()
-  snap.tick = tick
-  snap.entity_count = physics_step_count
+  var snap: WorldSnapshot = studio_game_world_snapshot_from_physics(tick, physics_step_count, body_pz)
   if world_snapshot_valid(snap) != 1:
     return 0
   if body_pz > 1000.0:
@@ -1490,13 +1507,19 @@ def studio_sim_step_hook(config: StudioProjectConfig, sim_out: var SimSessionStu
     var detail_auto: int = sim_out.output_detail
     if detail_auto > 3:
       detail_auto = 3
-    if sim_automotive_tick_stub(detail_auto) != 1:
+    var auto_step: int = sim_out.tick + 1
+    if auto_step > 64:
+      auto_step = 64
+    if sim_automotive_tick_at(auto_step, detail_auto) != 1:
       return sim_status_invalid_dt()
   if prof == studio_profile_sim_robotics():
     var detail_robo: int = sim_out.output_detail
     if detail_robo > 3:
       detail_robo = 3
-    if sim_robotics_tick_stub(detail_robo) != 1:
+    var robo_step: int = sim_out.tick + 1
+    if robo_step > 64:
+      robo_step = 64
+    if sim_robotics_tick_at(robo_step, detail_robo) != 1:
       return sim_status_invalid_dt()
   if prof == studio_profile_sim_additive():
     var detail_am: int = sim_out.output_detail
@@ -1520,9 +1543,13 @@ def studio_sim_step_hook(config: StudioProjectConfig, sim_out: var SimSessionStu
     var dt_game: float = dt0
     if dt_game <= 0.0:
       return sim_status_invalid_dt()
-    var tick_before: int = sim_out.tick
-    var game_out: GamePhysicsStepOutcome = studio_game_step_hook(dt_game, tick_before)
+    var tick_hook: int = sim_out.tick
+    var tick_snap: int = sim_out.tick
+    var game_out: GamePhysicsStepOutcome = studio_game_step_hook(dt_game, tick_hook)
     if game_out.status != sim_status_ok():
+      return sim_status_invalid_dt()
+    var snap_game: WorldSnapshot = studio_game_world_snapshot_from_physics(tick_snap, game_out.physics_step_count, game_out.body_pz)
+    if world_snapshot_valid(snap_game) != 1:
       return sim_status_invalid_dt()
     var dt_step: float = dt0
     var step_game: int = sim_step(sim_out, dt_step)

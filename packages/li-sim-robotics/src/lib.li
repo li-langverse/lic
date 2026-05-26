@@ -122,8 +122,10 @@ def robo_arm_integrate(st: var RoboArmState, tau0: float, tau1: float, dt: float
   ensures true
   decreases 0
 =
-  var t0: float = robo_arm_clamp_torque(tau0, torque_max)
-  var t1: float = robo_arm_clamp_torque(tau1, torque_max)
+  var tmax0: float = torque_max
+  var tmax1: float = torque_max
+  var t0: float = robo_arm_clamp_torque(tau0, tmax0)
+  var t1: float = robo_arm_clamp_torque(tau1, tmax1)
   st.j0_vel = st.j0_vel + t0 * dt
   st.j1_vel = st.j1_vel + t1 * dt
   st.j0_rad = st.j0_rad + st.j0_vel * dt
@@ -159,15 +161,16 @@ def run_robo_arm_at_steps(steps: int) -> SimRunResult
   ensures result.detail_emitted == steps - 1
   decreases steps
 =
-  var n: int = steps
-  var st: RoboArmState = robo_arm_state_after_steps(n)
+  var nsteps: int = steps
+  var emitted: int = nsteps - 1
+  var st: RoboArmState = robo_arm_state_after_steps(nsteps)
   var fk: RoboArmFk = robo_arm_fk(0.5, 0.4, st.j0_rad, st.j1_rad)
   var r: SimRunResult
   r.ok = robo_workspace_contains(-0.2, -0.2, 0.9, 0.9, fk.ee_x, fk.ee_y)
   r.algo_id = algo_robo_multibody_step()
   r.vertical_id = vertical_sim_robotics()
   r.checksum = robo_arm_tick_checksum_fk(fk)
-  r.detail_emitted = n - 1
+  r.detail_emitted = emitted
   return r
 
 def run_robo_arm_smoke(detail: int) -> SimRunResult
@@ -227,7 +230,9 @@ def run_robotics_smoke() -> int
   var fk0: RoboArmFk = robo_arm_fk(0.5, 0.4, st.j0_rad, st.j1_rad)
   if robo_workspace_contains(-0.2, -0.2, 0.9, 0.9, fk0.ee_x, fk0.ee_y) != 1:
     return 2
-  var over: float = robo_arm_clamp_torque(20.0, spec.torque_max_nm)
-  if over != spec.torque_max_nm:
+  var tau_cap: float = spec.torque_max_nm
+  var tau_expect: float = spec.torque_max_nm
+  var over: float = robo_arm_clamp_torque(20.0, tau_cap)
+  if over != tau_expect:
     return 3
   return 0

@@ -1,6 +1,6 @@
 # Studio vertical: `sim_robotics`
 
-**Focus:** Profile chip + inspector joint fields + `studio_sim_step_hook` rigid-body tick stub (`sim.robotics`).
+**Focus:** Profile chip + inspector joint fields + `studio_sim_step_hook` 2-DOF arm FK/torque tick (`sim.robotics`).
 
 ## Verify
 

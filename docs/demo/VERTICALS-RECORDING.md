@@ -4,9 +4,9 @@
 |----------|------------------------------|---------------------|-----------------|-----------------|
 | `game` | `studio_vertical_profile_roundtrip`, `studio_sim_step_by_profile` (physics + replay + world stub) | CPU present host chip (cyan, h=21) | **1** | Full li-player ship loop, scene sync |
 | `sim_rl` | Profile roundtrip + `env_pool_stub` + `studio_sim_step_by_profile` (4× step) | Present host (mint, h=22) | **1** | Async parallel env pools / live training |
-| `sim_automotive` | Profile roundtrip + `studio_sim_step_hook` + `import_sim_automotive_workspace` | Present host (amber, h=23) | **1** | Maps, sensors, CARLA-class sim |
-| `sim_robotics` | Profile roundtrip + tick stub + inspector when `has_selection=1` | Present host (amber, h=24) | **1** | IK, factory cells, ROS2 bridge |
-| `sim_additive` | TOML + composable `import_sim_additive_slicer_workflow` | Present host (amber, h=25) | **1** | `sim.export.print`, printer send |
+| `sim_automotive` | Bicycle kinematics `(x,y,yaw,v)` + sensor placeholder spec; `sim_automotive_tick_at` in `studio_sim_step_hook` | Present host (amber, h=23) | **1** | HD maps, raycast lidar, CARLA-class sim |
+| `sim_robotics` | 2-DOF FK + torque-limited integration + `robo_workspace` bounds; `sim_robotics_tick_at` | Present host (amber, h=24) | **1** | IK, Gazebo/Isaac, factory cells, ROS2 |
+| `sim_additive` | Layer slice plan (mesh→layers×4 path pts) + `sim_additive_require_sim_pass_ok` | Present host (amber, h=25) | **1** | `sim.export.print`, live printer send |
 | `sim_scientific` | Tier labels + `scientific_tick_tiers` (MD/heat/rigid smokes) | Present host (amber, h=26) | **1** | CFD/MD oracles, `sim.viz`, full SimWorld |
 | `sim_drug_design` | LITL composable + violet chip + tick stub | Present host (violet, h=27) | **1** | live `studio.adaptive`, ORCA/Psi4 queue |
 
@@ -19,6 +19,10 @@
 ```bash
 # Smokes (all vertical profile ids)
 lic check packages/li-studio/li-tests/smoke/studio_vertical_profile_roundtrip.li
+lic check packages/li-studio/li-tests/smoke/studio_sim_step_by_profile.li
+./scripts/check-automotive-bench.sh
+./scripts/check-robotics-bench.sh
+./scripts/check-additive-bench.sh
 
 # Native PNGs (requires cc; SDL optional for present tick)
 LIG_HOST_PRESENT=1 ./scripts/studio-verticals-capture-native.sh

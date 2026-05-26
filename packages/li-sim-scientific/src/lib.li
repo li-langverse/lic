@@ -23,7 +23,8 @@ def sim_scientific_tick_md(detail: int) -> int
   return 1
 
 def sim_scientific_tick_heat(detail: int) -> int
-  requires detail == 2
+  requires detail >= 2
+  requires detail <= 2
   ensures result >= 0
   ensures result <= 1
   decreases 0
@@ -34,7 +35,8 @@ def sim_scientific_tick_heat(detail: int) -> int
   return 1
 
 def sim_scientific_tick_rigid(detail: int) -> int
-  requires detail == 3
+  requires detail >= 3
+  requires detail <= 3
   ensures result >= 0
   ensures result <= 1
   decreases 0
@@ -52,11 +54,19 @@ def sim_scientific_tick_stub(detail: int) -> int
   ensures result <= 1
   decreases detail
 =
-  if detail == 2:
-    return sim_scientific_tick_heat(detail)
-  if detail == 3:
-    return sim_scientific_tick_rigid(detail)
-  return sim_scientific_tick_md(detail)
+  var d0: int = detail
+  var d1: int = detail
+  var d2: int = detail
+  var d3: int = detail
+  if d0 == 0:
+    return sim_scientific_tick_md(0)
+  if d1 == 1:
+    return sim_scientific_tick_md(1)
+  if d2 == 2:
+    return sim_scientific_tick_heat(2)
+  if d3 == 3:
+    return sim_scientific_tick_rigid(3)
+  return 0
 
 def scientific_oracle_md_lennard_jones() -> float
   requires true
@@ -212,14 +222,18 @@ def run_md_lj_smoke(detail: int) -> SimRunResult
   ensures result.checksum > 0.0
   decreases 0
 =
+  var d_emit: int = detail
+  var d1: int = detail
+  var d2: int = detail
+  var d3: int = detail
   var r: SimRunResult
-  r.detail_emitted = detail
+  r.detail_emitted = d_emit
   var steps: int = 1
-  if r.detail_emitted == 1:
+  if d1 == 1:
     steps = 2
-  if r.detail_emitted == 2:
+  if d2 == 2:
     steps = 3
-  if r.detail_emitted == 3:
+  if d3 == 3:
     steps = 4
   var chk: float = scientific_md_evolve_substeps(steps)
   r.ok = 1
@@ -237,14 +251,18 @@ def run_heat_smoke(detail: int) -> SimRunResult
   ensures result.checksum > 0.0
   decreases 0
 =
+  var d_emit: int = detail
+  var d1: int = detail
+  var d2: int = detail
+  var d3: int = detail
   var r: SimRunResult
-  r.detail_emitted = detail
+  r.detail_emitted = d_emit
   var steps: int = 2
-  if r.detail_emitted == 1:
+  if d1 == 1:
     steps = 3
-  if r.detail_emitted == 2:
+  if d2 == 2:
     steps = 4
-  if r.detail_emitted == 3:
+  if d3 == 3:
     steps = 5
   var chk: float = scientific_heat_evolve_substeps(steps)
   r.ok = 1
@@ -260,14 +278,18 @@ def run_rigid_smoke(detail: int) -> SimRunResult
   ensures result.detail_emitted == detail
   decreases 0
 =
+  var d_emit: int = detail
+  var d1: int = detail
+  var d2: int = detail
+  var d3: int = detail
   var r: SimRunResult
-  r.detail_emitted = detail
+  r.detail_emitted = d_emit
   var steps: int = 1
-  if r.detail_emitted == 1:
+  if d1 == 1:
     steps = 2
-  if r.detail_emitted == 2:
+  if d2 == 2:
     steps = 3
-  if r.detail_emitted == 3:
+  if d3 == 3:
     steps = 4
   var chk: float = scientific_rigid_evolve_substeps(steps)
   r.ok = 1
@@ -285,6 +307,7 @@ def run_algo_registry_stub(algo_id: int, detail: int) -> SimRunResult
   ensures result.detail_emitted == detail
   decreases 0
 =
+  var d_emit: int = detail
   var vert: int = 0
   if algo_id >= 101:
     if algo_id <= 117:
@@ -303,7 +326,7 @@ def run_algo_registry_stub(algo_id: int, detail: int) -> SimRunResult
   r.algo_id = algo_id
   r.vertical_id = vert
   r.checksum = 1.001
-  r.detail_emitted = detail
+  r.detail_emitted = d_emit
   return r
 
 def run_algo(algo_id: int, detail: int) -> SimRunResult
@@ -315,22 +338,28 @@ def run_algo(algo_id: int, detail: int) -> SimRunResult
 =
   var reg_chk: int = algo_id
   var reg_run: int = algo_id
+  var d_lj0: int = detail
+  var d_lj1: int = detail
+  var d_heat: int = detail
+  var d_rigid: int = detail
+  var d_reg: int = detail
+  var d_bad: int = detail
   if algo_id == algo_md_lj_cutoff_mic():
-    return run_md_lj_smoke(detail)
+    return run_md_lj_smoke(d_lj0)
   if algo_id == algo_md_integrator_verlet():
-    return run_md_lj_smoke(detail)
+    return run_md_lj_smoke(d_lj1)
   if algo_id == algo_pde_heat_explicit_2d():
-    return run_heat_smoke(detail)
+    return run_heat_smoke(d_heat)
   if algo_id == algo_rigid_semi_implicit():
-    return run_rigid_smoke(detail)
+    return run_rigid_smoke(d_rigid)
   if algo_in_registry(reg_chk) == 1:
-    return run_algo_registry_stub(reg_run, detail)
+    return run_algo_registry_stub(reg_run, d_reg)
   var bad: SimRunResult
   bad.ok = 0
   bad.algo_id = algo_id
   bad.vertical_id = 0
   bad.checksum = 0.0
-  bad.detail_emitted = detail
+  bad.detail_emitted = d_bad
   return bad
 
 def run_simulation(vertical_id: int, detail: int) -> SimRunResult
@@ -340,18 +369,39 @@ def run_simulation(vertical_id: int, detail: int) -> SimRunResult
   ensures result.detail_emitted == detail
   decreases 0
 =
+  var d_md: int = detail
+  var d_heat: int = detail
+  var d_rigid: int = detail
+  var d_qm: int = detail
+  var d_bad: int = detail
   if vertical_id == vertical_md_lennard_jones():
-    return run_md_lj_smoke(detail)
+    return run_md_lj_smoke(d_md)
   if vertical_id == vertical_pde_heat_2d():
-    return run_heat_smoke(detail)
+    return run_heat_smoke(d_heat)
   if vertical_id == vertical_gaming_rigid():
-    return run_rigid_smoke(detail)
+    return run_rigid_smoke(d_rigid)
   if vertical_id == vertical_qm_dft():
-    return run_algo(algo_qm_dft_scf_energy(), detail)
+    return run_algo(algo_qm_dft_scf_energy(), d_qm)
   var bad: SimRunResult
   bad.ok = 0
   bad.algo_id = 0
   bad.vertical_id = vertical_id
   bad.checksum = 0.0
-  bad.detail_emitted = detail
+  bad.detail_emitted = d_bad
   return bad
+
+# Layer B oracle column — deterministic Li checksum for `verticals.toml` md_lennard_jones row.
+def sim_scientific_oracle_checksum_md() -> float
+  requires true
+  ensures result > 0.0
+  decreases 0
+=
+  return scientific_oracle_md_lennard_jones()
+
+# Layer B oracle column — deterministic Li checksum for `verticals.toml` pde_heat_2d row.
+def sim_scientific_oracle_checksum_heat() -> float
+  requires true
+  ensures result > 0.0
+  decreases 0
+=
+  return scientific_oracle_pde_heat_2d()

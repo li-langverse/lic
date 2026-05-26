@@ -23,7 +23,7 @@ workload_class = "stub"
 oracle = "cpp"
 li_package = "sim.scientific"
 last_reviewed = "2026-05-23"
-notes = "tier-2 verify green; Layer B csv_lang lammps/gromacs (lammps_lj_micro, gromacs_lj_micro) in md_oracle.toml — stub via external/run_oracle_stub.sh + README; B1/B2 validity rows — not LAMMPS/GROMACS parity."
+notes = "tier-2 verify green; Li oracle `sim_scientific_oracle_checksum_md()` (8-step 4-particle LJ chain); Layer B csv_lang lammps/gromacs stubs — not LAMMPS/GROMACS parity."
 
 [[vertical]]
 id = "pde_heat_2d"
@@ -33,7 +33,7 @@ workload_class = "stub"
 oracle = "cpp"
 li_package = "sim.scientific"
 last_reviewed = "2026-05-23"
-notes = "heat_equation_2d in verify.py; FEA/CFD split to fea_linear_elasticity + cfd_lid_driven_cavity (PH-CAE)."
+notes = "heat_equation_2d in verify.py; Li oracle `sim_scientific_oracle_checksum_heat()` (explicit 1D laplacian stencil); FEA/CFD split to fea_linear_elasticity + cfd_lid_driven_cavity (PH-CAE)."
 
 [[vertical]]
 id = "fea_linear_elasticity"
@@ -79,21 +79,21 @@ notes = "bioengineering.toml composable import_bioeng_litl_workflow.li; design�
 id = "robo_workspace"
 incumbent = "Gazebo / Isaac Sim / MoveIt / Drake"
 kernel_or_api = "sim_robotics workspace profile + PH-ROBO phase chrome"
-workload_class = "stub"
+workload_class = "partial"
 oracle = "composable_only"
 li_package = "sim.robotics"
-last_reviewed = "2026-05-23"
-notes = "robotics.toml composable import_sim_robotics_workspace.li; sim_robotics profile + tick stub — not Gazebo/Isaac Sim/MoveIt/Drake parity."
+last_reviewed = "2026-05-26"
+notes = "2-DOF FK + torque clamp + robo_workspace_contains; studio_sim_step_hook sim_robotics_tick_at — not Gazebo/Isaac/MoveIt/Drake parity."
 
 [[vertical]]
 id = "am_slicer"
 incumbent = "PrusaSlicer / Cura / Bambu Studio"
 kernel_or_api = "slice → preview → export G-code/3MF"
-workload_class = "stub"
+workload_class = "partial"
 oracle = "composable_only"
 li_package = "sim.additive"
-last_reviewed = "2026-05-23"
-notes = "additive.toml composable import_sim_additive_slicer_workflow.li; slice→preview→export stub — not PrusaSlicer/Cura/Bambu parity; ≤3 clicks export (PH-UX)."
+last_reviewed = "2026-05-26"
+notes = "am_slice_mesh_plan layer/path points + sim_additive_require_sim_pass_ok; slice→preview→export composable — not Prusa/Cura/Bambu parity."
 
 [[vertical]]
 id = "scientific_viz"

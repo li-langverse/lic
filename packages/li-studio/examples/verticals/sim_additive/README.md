@@ -1,6 +1,6 @@
 # Studio vertical: `sim_additive`
 
-**Focus:** Profile chip + export hint 3MF/G-code stub.
+**Focus:** Profile chip + layer slice plan (`am_slice_mesh_plan`) + `require_sim_pass` export gate.
 
 ## Verify
 

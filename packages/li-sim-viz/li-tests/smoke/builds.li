@@ -1,0 +1,14 @@
+import sim.viz
+
+def main() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  if li_std_sim_viz_version() < 1:
+    return 1
+  if sim_viz_workload_class_stub() != 0:
+    return 2
+  if viz_smoke_entry() != 7024:
+    return 3
+  return 0

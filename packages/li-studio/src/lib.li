@@ -7,6 +7,7 @@ import sim.drug_design
 import sim.automotive
 import sim.robotics
 import sim.scientific
+import sim.viz
 import ml.rl
 import physics.runtime
 import world
@@ -1487,6 +1488,69 @@ def studio_md_particle_tier_select_ok(tier_id: int) -> int
       return 0
   return 1
 
+# PH-SCI / sim.viz — viewport tier labels for sim_scientific (pipeline stub; no wgpu field draw).
+def studio_sim_scientific_viewport_label_tier() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0
+
+def studio_sim_scientific_viewport_label_display() -> int
+  requires true
+  ensures result == 1
+  decreases 0
+=
+  return 1
+
+def studio_sim_scientific_viewport_label_integrator() -> int
+  requires true
+  ensures result == 2
+  decreases 0
+=
+  return 2
+
+def studio_sim_scientific_viewport_tier_id(detail: int) -> int
+  requires detail >= 0
+  requires detail <= 3
+  ensures result >= 0
+  ensures result <= 2
+  decreases detail
+=
+  return sim_scientific_display_tier_for_detail(detail)
+
+def studio_sim_scientific_viewport_tier_particles(detail: int) -> int
+  requires detail >= 0
+  requires detail <= 3
+  ensures result >= 0
+  decreases detail
+=
+  var tier_id: int = studio_sim_scientific_viewport_tier_id(detail)
+  var tier: SceneMdParticleTier = scene_md_particle_tier_by_id(tier_id)
+  return tier.particles
+
+def studio_sim_scientific_viz_viewport_ok(detail: int) -> int
+  requires detail >= 0
+  requires detail <= 3
+  ensures result >= 0
+  ensures result <= 1
+  decreases detail
+=
+  if sim_scientific_viz_tier_ok(detail) != 1:
+    return 0
+  var tier_id: int = studio_sim_scientific_viewport_tier_id(detail)
+  if studio_md_particle_tier_select_ok(tier_id) != 1:
+    return 0
+  var pipe: VizPipelineState = viz_pipeline_init()
+  if pipe.profile_id != viz_profile_sim_scientific():
+    return 0
+  if pipe.display_rep != viz_display_rep_surface():
+    return 0
+  if pipe.inspector_section != viz_inspector_section_properties():
+    return 0
+  return 1
+
+
 # PH-SIM SIM-1 + vertical gap #4 — profile sync, domain tick stub, session counter.
 def studio_sim_step_hook(config: StudioProjectConfig, sim_out: var SimSessionStub, dt: float) -> int
   requires studio_profile_id_valid(config.active_profile) == 1
@@ -1504,6 +1568,8 @@ def studio_sim_step_hook(config: StudioProjectConfig, sim_out: var SimSessionStu
     if detail0 > 3:
       detail0 = 3
     if sim_scientific_tick_stub(detail0) != 1:
+      return sim_status_invalid_dt()
+    if studio_sim_scientific_viz_viewport_ok(detail0) != 1:
       return sim_status_invalid_dt()
   if prof == studio_profile_sim_automotive():
     var detail_auto: int = sim_out.output_detail

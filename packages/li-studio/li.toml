@@ -10,6 +10,7 @@ li-gui = { path = "../li-gui" }
 li-ui = { path = "../li-ui" }
 li-sim = { path = "../li-sim" }
 li-sim-scientific = { path = "../li-sim-scientific" }
+li-sim-viz = { path = "../li-sim-viz" }
 li-sim-automotive = { path = "../li-sim-automotive" }
 li-sim-robotics = { path = "../li-sim-robotics" }
 li-sim-additive = { path = "../li-sim-additive" }

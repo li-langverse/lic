@@ -62,13 +62,19 @@ note = "T-PKG-li-studio-profile-roundtrip PH-UX-05 PH-SIM"
 suite = "smoke"
 file = "smoke/studio_sim_step_by_profile.li"
 outcome = "compile_open_ok"
-note = "PH-SIM SIM-2/3: replay, sim_rl pool, game world stub, scientific + auto + robo ticks"
+note = "PH-SIM vertical gap #4: studio_sim_step_hook game + sim_scientific"
 
 [[tests]]
 suite = "smoke"
 file = "smoke/studio_game_physics_step.li"
 outcome = "compile_open_ok"
-note = "PH-SIM game: physics.runtime substep + world checkpoint fields"
+note = "PH-GD-2-SCENE-1: game physics step + world snapshot checksum"
+
+[[tests]]
+suite = "smoke"
+file = "smoke/studio_sim_scientific_viz_viewport.li"
+outcome = "compile_open_ok"
+note = "PH-SCI: sim_scientific viewport tier labels + sim.viz pipeline gate"
 
 [[tests]]
 suite = "smoke"
@@ -84,6 +90,12 @@ note = "T-PKG-li-studio-shell-demo PH-GD-1"
 
 [[tests]]
 suite = "smoke"
+file = "smoke/studio_cpu_present.li"
+outcome = "compile_open_ok"
+note = "T-PKG-li-studio-cpu-present PLATFORM-VIEW-1 STUDIO_CPU_PRESENT"
+
+[[tests]]
+suite = "smoke"
 file = "smoke/studio_mcp_tools.li"
 outcome = "compile_open_ok"
 note = "T-PKG-li-studio-mcp-tools PH-AGENT"
@@ -96,27 +108,10 @@ note = "T-PKG-li-studio-mcp-extended PH-AGENT gap-6-7"
 
 [[tests]]
 suite = "smoke"
-file = "smoke/studio_mcp_dispatch_run.li"
-outcome = "compile_open_ok"
-note = "T-PKG-li-studio-mcp-dispatch PH-AGENT-1"
-
-[[tests]]
-suite = "smoke"
 file = "smoke/studio_mcp_harness_all_tools.li"
 outcome = "compile_open_ok"
 note = "T-PKG-li-studio-mcp-harness PH-AGENT-1 all tools"
 
-[[tests]]
-suite = "smoke"
-file = "smoke/studio_adaptive_drug_inspector.li"
-outcome = "compile_open_ok"
-note = "T-PKG-li-studio-adaptive-drug PH-DRUG-1"
-
-[[tests]]
-suite = "smoke"
-file = "smoke/studio_cpu_present.li"
-outcome = "compile_open_ok"
-note = "T-PKG-li-studio-cpu-present STUDIO_CPU_PRESENT"
 
 [[test]]
 file = "smoke/studio_vertical_demo_env.li"

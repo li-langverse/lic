@@ -102,8 +102,8 @@ kernel_or_api = "pipeline source + display + view properties"
 workload_class = "stub"
 oracle = "composable_only"
 li_package = "sim.viz"
-last_reviewed = "2026-05-23"
-notes = "viz.toml composable import_sim_viz_pipeline_source_display.li; Properties/Display/View panel stub — not ParaView/VTK/MATLAB parity; downloads/paraview-properties-panel.html."
+last_reviewed = "2026-05-26"
+notes = "viz.toml composable import_sim_viz_pipeline_source_display.li; Properties/Display/View panel stub + studio_sim_scientific_viz_viewport_ok — not ParaView/VTK/MATLAB parity; no wgpu field draw yet."
 
 [[vertical]]
 id = "cinematic_encode"

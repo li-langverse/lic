@@ -1340,3 +1340,12 @@ outcome = "script_ok"
 # --- security (malformed inputs; run via ./li-tests/run_security.sh) ---
 # Wired in scripts/ci.sh: parse/check must exit 0/1, never signal (SIGSEGV etc.).
 # Also: compiler/fuzz/parse_fuzz (libFuzzer, optional CI on Linux).
+
+[[tests]]
+suite = "composable"
+file = "composable/import_sim_viz_pipeline_source_display.li"
+packages = ["li-sim-viz"]
+outcome = "check_ok"
+note = "PH-SCI wave-d-25: sim.viz pipeline source/display/view stub — scientific_viz vertical"
+
+

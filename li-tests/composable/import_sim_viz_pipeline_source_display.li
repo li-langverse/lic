@@ -1,0 +1,60 @@
+import sim.viz
+
+def main() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  if li_std_sim_viz_version() < 1:
+    return 1
+  if sim_viz_workload_class_stub() != 0:
+    return 2
+  var s0: VizPipelineState = viz_pipeline_init()
+  if s0.profile_id != viz_profile_sim_scientific():
+    return 3
+  if s0.source_count != 0:
+    return 4
+  if s0.inspector_section != viz_inspector_section_properties():
+    return 5
+  if s0.display_rep != viz_display_rep_surface():
+    return 6
+  if s0.pending_apply != 0:
+    return 7
+  var s1: VizPipelineState = viz_pipeline_add_source(s0, viz_source_kind_sphere())
+  if s1.source_count != 1:
+    return 8
+  if s1.active_source_id != 0:
+    return 9
+  if s1.pending_apply != 1:
+    return 10
+  var s2: VizPipelineState = viz_pipeline_set_inspector_section(s1, viz_inspector_section_display())
+  if s2.inspector_section != viz_inspector_section_display():
+    return 11
+  var s3: VizPipelineState = viz_pipeline_set_display_rep(s2, viz_display_rep_wireframe())
+  if s3.display_rep != viz_display_rep_wireframe():
+    return 12
+  if s3.pending_apply != 1:
+    return 13
+  var s4: VizPipelineState = viz_pipeline_apply(s3)
+  if s4.pending_apply != 0:
+    return 14
+  var s5: VizPipelineState = viz_pipeline_add_source(s4, viz_source_kind_box())
+  if s5.source_count != 2:
+    return 15
+  if s5.active_source_id != 1:
+    return 16
+  var s6: VizPipelineState = viz_pipeline_select_source(s5, 0)
+  if s6.active_source_id != 0:
+    return 17
+  var s7: VizPipelineState = viz_pipeline_set_inspector_section(s6, viz_inspector_section_view())
+  if s7.inspector_section != viz_inspector_section_view():
+    return 18
+  if viz_pipeline_inspector_apply_mode(viz_inspector_section_view()) != viz_apply_mode_instant():
+    return 19
+  if viz_pipeline_inspector_apply_mode(viz_inspector_section_properties()) != viz_apply_mode_deferred():
+    return 20
+  if viz_pipeline_smoke_source_count() != 2:
+    return 21
+  if viz_smoke_entry() != 7024:
+    return 22
+  return 0

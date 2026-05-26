@@ -1,0 +1,20 @@
+import studio
+
+def main() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  if studio_sim_scientific_viz_viewport_ok(0) != 1:
+    return 1
+  if studio_sim_scientific_viz_viewport_ok(1) != 1:
+    return 2
+  if studio_sim_scientific_viewport_tier_particles(1) != 10000:
+    return 3
+  if studio_sim_scientific_viewport_label_tier() != 0:
+    return 4
+  if studio_sim_scientific_viewport_label_display() != 1:
+    return 5
+  if studio_md_particle_tier_select_ok(studio_sim_scientific_viewport_tier_id(1)) != 1:
+    return 6
+  return 0

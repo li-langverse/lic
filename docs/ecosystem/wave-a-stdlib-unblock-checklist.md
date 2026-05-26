@@ -14,7 +14,7 @@
 |-----|-----------------|--------|---------------|
 | **G-lean** | Done | **Partial** | Corpus + `glean_strict_build_smoke` pass; `sqrt_open_bound` closed (P-float); workspace packages still have open goals |
 | **G-vc** | Done | **Partial** | `contracts_discharge_corpus.sh` ok; **P-float** `sqrt_open_bound` closed (`Li.Discharge` + trusted libm); other float ensures open |
-| **G-par** | Done | **Partial** | `race_shared_memory` suite pass (7/7); Lean parallel proofs still open per provability-gaps |
+| **G-par** | Done | **Partial** | `race_shared_memory` 7/7; `_par*` Lean discharge slice (`discharge_par_parallel_lean.sh`); iteration-independence specs open |
 | **G-math** | Done | **Partial** | Tier-1 checksum verify ok; **strict** perf: 2/4 benches over 1.2× (`matmul_blocked`, `horner_pure_li`) |
 
 **Verdict:** Wave A **not closed**. Do not scale stdlib ADT runtime (list/dict) until G-* rows are **Done**.

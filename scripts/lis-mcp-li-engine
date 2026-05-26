@@ -1,0 +1,9 @@
+#!/usr/bin/env bash
+# In-tree shim for `lis mcp li-engine` until lis repo registers this subcommand.
+set -euo pipefail
+ROOT="$(cd "$(dirname "$0")/.." && pwd)"
+BIN="${LI_STUDIO_MCP_BIN:-$ROOT/build/tools/studio-mcp-li-engine}"
+if [[ ! -x "$BIN" ]]; then
+  "$ROOT/scripts/build-studio-mcp-server.sh" "$BIN"
+fi
+exec "$BIN"

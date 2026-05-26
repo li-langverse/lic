@@ -1,5 +1,6 @@
 import Init.Data.Float
 import Core
+import trusted
 
 /-!
 # Discharge lemmas for generated AutoVC (Phase 2f partial)

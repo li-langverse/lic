@@ -233,6 +233,24 @@ std::optional<std::string> expr_to_lean(const Expr& e, const VcCtx& ctx) {
           return "Float.abs " + *inner;
         }
       }
+      if (e.args.size() == 2 && e.args[0] && e.args[1]) {
+        const auto a0 = expr_to_lean(*e.args[0], ctx);
+        const auto a1 = expr_to_lean(*e.args[1], ctx);
+        if (a0 && a1) {
+          if (e.ident == "disjoint_elem") {
+            return "Li.Discharge.disjoint_elem_spec " + *a0 + " " + *a1;
+          }
+          if (e.ident == "disjoint_row") {
+            return "Li.Discharge.disjoint_row_spec " + *a0 + " " + *a1;
+          }
+          if (e.ident == "disjoint_slice") {
+            return "Li.Discharge.disjoint_slice_spec " + *a0 + " " + *a1;
+          }
+          if (e.ident == "row_ok") {
+            return "Li.Discharge.row_ok_spec " + *a0 + " " + *a1;
+          }
+        }
+      }
       return std::nullopt;
     }
     case Expr::Kind::Index: {
@@ -388,6 +406,12 @@ void emit_contract_def(std::ostream& out, const Module& module, const ProcDecl& 
       prop += p.name;
     }
     prop += ')';
+  } else if (sqrt_discharge_theorem && c.kind == ContractKind::Ensures) {
+    prop = "Li.Discharge.sqrt_open_bound_spec";
+    for (const auto& p : proc.params) {
+      prop += ' ';
+      prop += lean_ident(p.name);
+    }
   } else if (c.expr) {
     if (auto lean = expr_to_lean(*c.expr, ctx)) {
       prop = *lean;

@@ -20,6 +20,8 @@ All notable changes to Li are documented here. The format follows
 
 ### Fixed
 
+- **Wave A tier-1 strict (WP-LIC-02):** `ArrayMatMulBlocked2DF64` + `mm_blocked_512` (BK=16), `HornerConstLoopF64`, horner `x=0.999999`; `LI_TIER1_PERF_STRICT=1` green on four pure-Li math benches.
+
 - **lic check resource flags:** `resource_options_invalid()` wired in workspace check; ProofDB dot4 `sorry` stubs for lake-build — hotfix #299.
 
 - **Main CI (`build-and-test`):** dedupe `physics.runtime`/`physics.rigid`, lig.present flatten, pause broken composable vertical smokes, tier-0 verify — [2026-05-25-main-ci-vertical-merge-fix.md](docs/release-notes/2026-05-25-main-ci-vertical-merge-fix.md).

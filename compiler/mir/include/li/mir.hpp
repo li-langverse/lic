@@ -54,6 +54,10 @@ enum class MirOp {
   HornerFmaUnroll,
   /** acc = acc * x^4 + (1+x+x²+x³); lhs_is_literal, float_value = const x; int_value = supersteps. */
   HornerStepPow4,
+  /** Tight loop: acc = acc * float_value + 1.0 repeated int_value times (const x in float_value). */
+  HornerConstLoopF64,
+  /** Blocked IKJ: C[n,n] += A[n,n] @ B[n,n]; int_value = n, rhs_int = block size. */
+  ArrayMatMulBlocked2DF64,
   LocalAllocFloat,
   LocalAllocSimdF64,
   SimdSplatF64,
@@ -126,6 +130,8 @@ struct MirInsn {
   bool array_broadcast_lhs_len1 = false;
   bool array_broadcast_rhs_len1 = false;
   std::int64_t simd_lanes = 0;
+  /** Policy-accepted disjoint witness on this `OmpParallelFor` (**G-par**). */
+  bool parallel_disjoint_proven = false;
   std::vector<MirArg> args;
   /** Layout entries under object root (`name` paths). Used for ReturnObject pack and CallProc
    *  unpack into `ident + "_" + name` (scalar locals or ArrayAlloc slots). */

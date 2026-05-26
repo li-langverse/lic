@@ -19,7 +19,7 @@ flowchart LR
 | Phase | ID | Depends |
 |-------|-----|---------|
 | 0 | **PH-DB-0** | — |
-| 1 | **PH-DB-1** | PH-DB-0; human: create `li-langverse/lidb` |
+| 1 | **PH-DB-1** | PH-DB-0; [`li-langverse/lidb`](https://github.com/li-langverse/lidb) scaffold |
 | 2 | **PH-DB-2** | PH-DB-1 |
 | 3 | **PH-DB-3** | PH-DB-1 |
 | 4 | **PH-DB-4** | PH-DB-1–3, lip OpenAPI; **blocks PH-8d-v2** |
@@ -36,6 +36,6 @@ Deliverable detail (WAL, `liorm`, `lis db`, bench evidence) lives in the roadmap
 
 | Trigger | Org repo | Agent rule |
 |---------|----------|------------|
-| **PH-DB-1** | [`lidb`](https://github.com/li-langverse/lidb) (*proposed*) | Ask human to create repo before engine work; supervisor stays in **`lis`** |
+| **PH-DB-1** | [`lidb`](https://github.com/li-langverse/lidb) | Engine scaffold in **`lidb`**; supervisor stays in **`lis`** |
 
 **Benchmark evidence:** [`tier_db_registry`](https://github.com/li-langverse/benchmarks/blob/main/docs/ecosystem/tier-db-registry-benchmark.md) — see [benchmark tier index](https://github.com/li-langverse/roadmap/blob/main/docs/ecosystem/benchmark-tier-index.md).

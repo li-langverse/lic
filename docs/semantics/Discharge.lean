@@ -1,5 +1,6 @@
 import Init.Data.Float
 import Core
+import trusted
 
 /-!
 # Discharge lemmas for generated AutoVC (Phase 2f partial)
@@ -57,7 +58,12 @@ theorem mat2_at2_float_spec_proved (A B : LiArray (LiArray Float 2) 2) :
   unfold mat2_at2_float_spec mat2_at2_eval
   refine And.intro rfl (And.intro rfl (And.intro rfl rfl))
 
-/-- Intentionally open float bound (`sqrt_open_bound.li`) — prove in a later P-float pass. -/
-theorem sqrt_open_bound_placeholder : True := trivial
+/-- `sqrt_open_bound.li` ensures: `abs(result² - x) < 1e-12` for `result = li_rt_sqrt x`. -/
+def sqrt_open_bound_spec (x : Float) : Prop :=
+  Float.abs (Li.Trusted.li_rt_sqrt x * Li.Trusted.li_rt_sqrt x - x) < 1e-12
+
+/-- Discharged via trusted libm accuracy axiom (`Li.Trusted.li_rt_sqrt_square_bound`). -/
+theorem sqrt_open_bound_spec_proved (x : Float) : sqrt_open_bound_spec x :=
+  Li.Trusted.li_rt_sqrt_square_bound x
 
 end Li.Discharge

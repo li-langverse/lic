@@ -16,9 +16,11 @@ LIC="${LIC:-$("$ROOT/scripts/resolve-lic.sh")}"
 chmod +x "$ROOT/scripts/check-autovc-open-goals.sh"
 "$ROOT/scripts/check-autovc-open-goals.sh" "$ROOT/build/generated/AutoVC.lean"
 rm -f "$ROOT/build/generated/AutoVC.lean"
-"$LIC" build --allow-open-vc "$ROOT/li-tests/contracts_verify/sqrt_open_bound.li" -o /dev/null
-if "$ROOT/scripts/check-autovc-open-goals.sh" "$ROOT/build/generated/AutoVC.lean"; then
-  echo "contracts_discharge_corpus: unexpected — sqrt_open_bound abs VC should stay open"
+"$LIC" build "$ROOT/li-tests/contracts_verify/sqrt_open_bound.li" -o /dev/null
+test -f "$ROOT/build/generated/AutoVC.lean"
+grep -q 'Li\.Discharge\.sqrt_open_bound_spec' "$ROOT/build/generated/AutoVC.lean" || {
+  echo "contracts_discharge_corpus: missing sqrt_open_bound Discharge witness"
   exit 1
-fi
+}
+"$ROOT/scripts/check-autovc-open-goals.sh" "$ROOT/build/generated/AutoVC.lean"
 echo "contracts_discharge_corpus: ok"

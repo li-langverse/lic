@@ -228,6 +228,24 @@ std::optional<std::string> expr_to_lean(const Expr& e, const VcCtx& ctx) {
           return "Float.abs " + *inner;
         }
       }
+      if (e.args.size() == 2 && e.args[0] && e.args[1]) {
+        const auto a0 = expr_to_lean(*e.args[0], ctx);
+        const auto a1 = expr_to_lean(*e.args[1], ctx);
+        if (a0 && a1) {
+          if (e.ident == "disjoint_elem") {
+            return "Li.Discharge.disjoint_elem_spec " + *a0 + " " + *a1;
+          }
+          if (e.ident == "disjoint_row") {
+            return "Li.Discharge.disjoint_row_spec " + *a0 + " " + *a1;
+          }
+          if (e.ident == "disjoint_slice") {
+            return "Li.Discharge.disjoint_slice_spec " + *a0 + " " + *a1;
+          }
+          if (e.ident == "row_ok") {
+            return "Li.Discharge.row_ok_spec " + *a0 + " " + *a1;
+          }
+        }
+      }
       return std::nullopt;
     }
     case Expr::Kind::Index: {
@@ -279,6 +297,25 @@ const Expr* ensures_rhs_eq_result(const Expr& e) {
     return e.lhs.get();
   }
   return nullptr;
+}
+
+std::optional<std::string> par_disjoint_policy_witness(const Expr& e) {
+  if (e.kind != Expr::Kind::Call || e.args.size() != 2) {
+    return std::nullopt;
+  }
+  if (e.ident == "disjoint_elem") {
+    return "Li.Discharge.disjoint_elem_policy_witness";
+  }
+  if (e.ident == "disjoint_row") {
+    return "Li.Discharge.disjoint_row_policy_witness";
+  }
+  if (e.ident == "disjoint_slice") {
+    return "Li.Discharge.disjoint_slice_policy_witness";
+  }
+  if (e.ident == "row_ok") {
+    return "Li.Discharge.row_ok_policy_witness";
+  }
+  return std::nullopt;
 }
 
 }  // namespace
@@ -343,14 +380,17 @@ void emit_contract_def(std::ostream& out, const Module& module, const ProcDecl& 
   std::string prop = "True";
   const CallerProofFacts caller_facts = collect_caller_proof_facts(proc);
   bool mat2_discharge_theorem = false;
+  bool sqrt_discharge_theorem = false;
   if (c.kind == ContractKind::Ensures && c.expr) {
     if (ctx.proc != nullptr && witness_mat2_int_at2_spec(*ctx.proc, *c.expr)) {
       mat2_discharge_theorem = true;
+    } else if (ctx.proc != nullptr && witness_sqrt_open_li_rt_bound(*ctx.proc, *c.expr)) {
+      sqrt_discharge_theorem = true;
     }
   }
   const bool witnessed =
       contract_witnessed_trivial(proc, c, &module, &caller_facts);
-  if (witnessed && !mat2_discharge_theorem) {
+  if (witnessed && !mat2_discharge_theorem && !sqrt_discharge_theorem) {
     prop = "True";
   } else if (mat2_discharge_theorem && c.kind == ContractKind::Ensures) {
     prop = "Li.Discharge.mat2_at2_float_spec";
@@ -364,6 +404,12 @@ void emit_contract_def(std::ostream& out, const Module& module, const ProcDecl& 
       prop += p.name;
     }
     prop += ')';
+  } else if (sqrt_discharge_theorem && c.kind == ContractKind::Ensures) {
+    prop = "Li.Discharge.sqrt_open_bound_spec";
+    for (const auto& p : proc.params) {
+      prop += ' ';
+      prop += lean_ident(p.name);
+    }
   } else if (c.expr) {
     if (auto lean = expr_to_lean(*c.expr, ctx)) {
       prop = *lean;
@@ -372,10 +418,10 @@ void emit_contract_def(std::ostream& out, const Module& module, const ProcDecl& 
     }
   }
 
-  const bool mat2_ensures =
-      mat2_discharge_theorem && c.kind == ContractKind::Ensures;
+  const bool discharge_ensures =
+      (mat2_discharge_theorem || sqrt_discharge_theorem) && c.kind == ContractKind::Ensures;
   out << "def " << name;
-  emit_formals(!mat2_ensures);
+  emit_formals(!discharge_ensures);
   out << " : Prop := " << prop << '\n';
 
   if (prop == "True" && witnessed && c.kind == ContractKind::Ensures) {
@@ -404,6 +450,17 @@ void emit_contract_def(std::ostream& out, const Module& module, const ProcDecl& 
     out << " : " << name;
     emit_args(false);
     out << " := Li.Discharge.mat2_at2_float_spec_proved";
+    for (const auto& p : proc.params) {
+      out << ' ' << lean_ident(p.name);
+    }
+    out << '\n';
+  } else if (sqrt_discharge_theorem && c.kind == ContractKind::Ensures) {
+    out << "/-! Phase 2f: P-float sqrt_open_bound — Li.Discharge.sqrt_open_bound_spec (trusted libm) -/\n";
+    out << "theorem " << name << "_proved";
+    emit_formals(false);
+    out << " : " << name;
+    emit_args(false);
+    out << " := Li.Discharge.sqrt_open_bound_spec_proved";
     for (const auto& p : proc.params) {
       out << ' ' << lean_ident(p.name);
     }

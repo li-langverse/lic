@@ -2,15 +2,17 @@
 # CI: compile smokes on all targets; native surface on aarch64-apple-darwin when LIG_HOST_PRESENT=1.
 
 [wgpu_smoke]
-hook_version = 2
+hook_version = 3
 backend = "wgpu"
 package = "lig"
-import = "lig"
+import = "lig.present"
 status = "host_or_stub"
 native_device = false
+wgpu_full_readback = false
 surface_ok_when_host = true
+surface_ok_when_cpu_present = true
 
 [ci]
-x86_64_linux = "lic check packages/lig/li-tests/smoke/wgpu_smoke.li — stub surface_ok=0"
-aarch64_darwin = "LIG_HOST_PRESENT=1 lic check — surface_ok=1 when SDL/wgpu host linked"
-notes = "No wgpu-rs in-tree; runtime mock + deploy/studio-demo/native/studio_shell_present_host.c"
+x86_64_linux = "lic check packages/lig/li-tests/smoke/wgpu_smoke.li — stub surface_ok=0 unless STUDIO_CPU_PRESENT or LIG_HOST_PRESENT"
+aarch64_darwin = "LIG_HOST_PRESENT=1 lic check — surface_ok=1 when SDL host linked"
+notes = "No wgpu-rs in-tree; STUDIO_WGPU_PRESENT=1 is intent stub only (no GPU readback)"

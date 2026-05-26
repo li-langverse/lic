@@ -235,6 +235,7 @@ int32_t li_rt_studio_mcp_dispatch(int32_t tool_id);
 int32_t li_rt_studio_mcp_last_profile_id(void);
 float li_rt_studio_mcp_chem_energy_hartree(void);
 int32_t li_rt_lig_cpu_present_active(void);
+int32_t li_rt_lig_wgpu_present_intent_active(void);
 int32_t li_rt_lig_host_present_active(void);
 float li_rt_lig_host_present_dt_ms(void);
 int32_t li_rt_lig_host_native_pixels(void);
@@ -269,11 +270,14 @@ int32_t li_rt_lig_present_surface_ok(void);
 
 /* PH-GD-2: li-world text save/load seam (in-memory buffer; no filesystem I/O). */
 int32_t li_rt_world_format_version(void);
-const char* li_rt_world_serialize_slot(int32_t name_slot, int32_t tick, int32_t entity_count);
+const char* li_rt_world_serialize_slot(int32_t name_slot, int32_t tick, int32_t entity_count,
+                                       int32_t position_checksum);
 int32_t li_rt_world_parse_line(const char* line);
 int32_t li_rt_world_parsed_name_slot(void);
 int32_t li_rt_world_parsed_tick(void);
 int32_t li_rt_world_parsed_entity_count(void);
-int32_t li_rt_world_snapshot_eq_fields(int32_t an, int32_t at, int32_t ae, int32_t bn, int32_t bt,
-                                       int32_t be);
-int32_t li_rt_world_roundtrip_fields(int32_t name_slot, int32_t tick, int32_t entity_count);
+int32_t li_rt_world_parsed_position_checksum(void);
+int32_t li_rt_world_snapshot_eq_fields(int32_t an, int32_t at, int32_t ae, int32_t ac, int32_t bn,
+                                       int32_t bt, int32_t be, int32_t bc);
+int32_t li_rt_world_roundtrip_fields(int32_t name_slot, int32_t tick, int32_t entity_count,
+                                     int32_t position_checksum);

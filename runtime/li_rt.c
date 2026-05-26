@@ -563,7 +563,14 @@ static int32_t li_rt_lig_env_cpu_present(void) {
   return (v != NULL && v[0] == '1' && v[1] == '\0') ? 1 : 0;
 }
 
+static int32_t li_rt_lig_env_wgpu_present(void) {
+  const char* v = getenv("STUDIO_WGPU_PRESENT");
+  return (v != NULL && v[0] == '1' && v[1] == '\0') ? 1 : 0;
+}
+
 int32_t li_rt_lig_cpu_present_active(void) { return li_rt_lig_env_cpu_present(); }
+
+int32_t li_rt_lig_wgpu_present_intent_active(void) { return li_rt_lig_env_wgpu_present(); }
 
 static void li_rt_lig_refresh_host_active(void) {
   g_lig_host_present_active = li_rt_lig_env_host_present();
@@ -610,6 +617,9 @@ float li_rt_lig_host_present_dt_ms(void) {
 
 int32_t li_rt_lig_host_native_pixels(void) {
   li_rt_lig_refresh_host_active();
+  if (li_rt_lig_env_cpu_present()) {
+    return g_lig_native_pixels ? g_lig_native_pixels : 1;
+  }
   if (!g_lig_host_present_active) {
     return 0;
   }
@@ -634,6 +644,12 @@ int32_t li_rt_lig_wgpu_swapchain_create(int32_t viewport_w, int32_t viewport_h) 
     g_lig_surface_ok = 1;
     return 1;
   }
+  if (li_rt_lig_env_wgpu_present()) {
+    /* STUDIO_WGPU_PRESENT — intent stub only; no wgpu-rs readback in-tree. */
+    g_lig_surface_ok = 1;
+    g_lig_native_pixels = 0;
+    return 1;
+  }
   if (li_rt_lig_env_cpu_present()) {
     g_lig_surface_ok = 1;
     g_lig_native_pixels = 1;
@@ -655,6 +671,11 @@ int32_t li_rt_lig_wgpu_present_frame(int32_t swapchain_ok) {
   }
   if (g_lig_host_present_active && g_lig_surface_ok) {
     g_lig_native_pixels = 1;
+    g_lig_present_dt_ms = 16.667f;
+    return 1;
+  }
+  if (li_rt_lig_env_wgpu_present() && g_lig_surface_ok) {
+    /* Presented swapchain stub; native_pixels stays 0 without SDL host pixels. */
     g_lig_present_dt_ms = 16.667f;
     return 1;
   }
@@ -772,6 +793,12 @@ int32_t li_rt_lig_backend_select_auto(void) {
 
 int32_t li_rt_lig_present_surface_ok(void) {
   li_rt_lig_refresh_host_active();
+  if (li_rt_lig_env_cpu_present()) {
+    return 1;
+  }
+  if (li_rt_lig_env_wgpu_present()) {
+    return g_lig_surface_ok;
+  }
   if (g_lig_host_present_active && g_lig_surface_ok) {
     return 1;
   }
@@ -848,6 +875,7 @@ static struct {
   int32_t name_slot;
   int32_t tick;
   int32_t entity_count;
+  int32_t position_checksum;
   int32_t valid;
 } li_rt_world_parsed;
 
@@ -867,7 +895,8 @@ static int32_t li_rt_world_slot_for_token(const char* name) {
 
 int32_t li_rt_world_format_version(void) { return 1; }
 
-const char* li_rt_world_serialize_slot(int32_t name_slot, int32_t tick, int32_t entity_count) {
+const char* li_rt_world_serialize_slot(int32_t name_slot, int32_t tick, int32_t entity_count,
+                                       int32_t position_checksum) {
   if (name_slot < 0 || name_slot > 1) {
     name_slot = 0;
   }
@@ -877,8 +906,13 @@ const char* li_rt_world_serialize_slot(int32_t name_slot, int32_t tick, int32_t 
   if (entity_count < 0) {
     entity_count = 0;
   }
-  snprintf(li_rt_world_line_buf, sizeof(li_rt_world_line_buf), "world_v1 name=%s tick=%d entity_count=%d",
-           li_rt_world_token_for_slot(name_slot), (int)tick, (int)entity_count);
+  if (position_checksum < 0) {
+    position_checksum = 0;
+  }
+  snprintf(li_rt_world_line_buf, sizeof(li_rt_world_line_buf),
+           "world_v1 name=%s tick=%d entity_count=%d position_checksum=%d",
+           li_rt_world_token_for_slot(name_slot), (int)tick, (int)entity_count,
+           (int)position_checksum);
   return li_rt_world_line_buf;
 }
 
@@ -887,21 +921,30 @@ int32_t li_rt_world_parse_line(const char* line) {
   li_rt_world_parsed.name_slot = 0;
   li_rt_world_parsed.tick = 0;
   li_rt_world_parsed.entity_count = 0;
+  li_rt_world_parsed.position_checksum = 0;
   if (line == NULL) {
     return 0;
   }
   char name[LI_RT_WORLD_NAME_MAX];
   int tick = 0;
   int entity_count = 0;
-  if (sscanf(line, "world_v1 name=%63s tick=%d entity_count=%d", name, &tick, &entity_count) != 3) {
-    return 0;
+  int position_checksum = 0;
+  int matched = sscanf(line, "world_v1 name=%63s tick=%d entity_count=%d position_checksum=%d",
+                       name, &tick, &entity_count, &position_checksum);
+  if (matched != 4) {
+    matched = sscanf(line, "world_v1 name=%63s tick=%d entity_count=%d", name, &tick, &entity_count);
+    if (matched != 3) {
+      return 0;
+    }
+    position_checksum = 0;
   }
-  if (tick < 0 || entity_count < 0) {
+  if (tick < 0 || entity_count < 0 || position_checksum < 0) {
     return 0;
   }
   li_rt_world_parsed.name_slot = li_rt_world_slot_for_token(name);
   li_rt_world_parsed.tick = (int32_t)tick;
   li_rt_world_parsed.entity_count = (int32_t)entity_count;
+  li_rt_world_parsed.position_checksum = (int32_t)position_checksum;
   li_rt_world_parsed.valid = 1;
   return 1;
 }
@@ -927,13 +970,21 @@ int32_t li_rt_world_parsed_entity_count(void) {
   return li_rt_world_parsed.entity_count;
 }
 
-int32_t li_rt_world_snapshot_eq_fields(int32_t an, int32_t at, int32_t ae, int32_t bn, int32_t bt,
-                                     int32_t be) {
-  return (an == bn && at == bt && ae == be) ? 1 : 0;
+int32_t li_rt_world_parsed_position_checksum(void) {
+  if (li_rt_world_parsed.valid == 0) {
+    return 0;
+  }
+  return li_rt_world_parsed.position_checksum;
 }
 
-int32_t li_rt_world_roundtrip_fields(int32_t name_slot, int32_t tick, int32_t entity_count) {
-  const char* line = li_rt_world_serialize_slot(name_slot, tick, entity_count);
+int32_t li_rt_world_snapshot_eq_fields(int32_t an, int32_t at, int32_t ae, int32_t ac, int32_t bn,
+                                     int32_t bt, int32_t be, int32_t bc) {
+  return (an == bn && at == bt && ae == be && ac == bc) ? 1 : 0;
+}
+
+int32_t li_rt_world_roundtrip_fields(int32_t name_slot, int32_t tick, int32_t entity_count,
+                                     int32_t position_checksum) {
+  const char* line = li_rt_world_serialize_slot(name_slot, tick, entity_count, position_checksum);
   if (li_rt_world_parse_line(line) != 1) {
     return 0;
   }
@@ -944,6 +995,9 @@ int32_t li_rt_world_roundtrip_fields(int32_t name_slot, int32_t tick, int32_t en
     return 0;
   }
   if (li_rt_world_parsed.entity_count != entity_count) {
+    return 0;
+  }
+  if (li_rt_world_parsed.position_checksum != position_checksum) {
     return 0;
   }
   return 1;

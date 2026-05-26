@@ -1,13 +1,17 @@
-# PH-GD / PH-HW — vertical demo present hook (CPU framebuffer + optional SDL host).
+# PH-GD / PH-HW / PLATFORM-VIEW-1 — vertical demo present hook (CPU + wgpu intent stub).
 [meta]
 package = "li-studio"
-hook_version = 1
+hook_version = 2
 native_pixels_cpu = true
+native_pixels_wgpu = false
+wgpu_full_readback = false
 bench_simulate_fn = "studio_vertical_demo_frame"
 
 [present]
 env_profile = "STUDIO_DEMO_PROFILE"
 env_cpu_present = "STUDIO_CPU_PRESENT"
+env_wgpu_present = "STUDIO_WGPU_PRESENT"
 env_host_present = "LIG_HOST_PRESENT"
 profile_count = 7
 default_profile = "game"
+notes = "STUDIO_WGPU_PRESENT=1 is swapchain intent stub only — no wgpu-rs readback in-tree"

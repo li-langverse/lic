@@ -88,10 +88,42 @@ def bench_render_fps_hook() -> dict:
         "native_pixels": bool(vp_sec.get("native_pixels", False)),
         "wgpu_smoke_status": wgpu_sec.get("status", "missing"),
         "wgpu_surface_ok": bool(wgpu_sec.get("surface_ok", False)),
+        "wgpu_full_readback": bool(wgpu_sec.get("wgpu_full_readback", False)),
         "fps_counter_hook": fps_sec.get("package", "li-render"),
         "bench_simulate_fn": vp_sec.get("bench_simulate_fn", "render_bench_fps_counter_simulate"),
         "hook_version": fps_sec.get("hook_version", 0),
         "status": "simulate",
+        "honest_simulate": True,
+    }
+
+
+def bench_studio_vertical_present_hook() -> dict:
+    hook_path = root / "packages/li-studio/bench/studio_vertical_present.toml"
+    hook = load_toml(hook_path)
+    meta_h = hook.get("meta") or {}
+    pres = hook.get("present") or {}
+    cpu_env = pres.get("env_cpu_present", "STUDIO_CPU_PRESENT")
+    wgpu_env = pres.get("env_wgpu_present", "STUDIO_WGPU_PRESENT")
+    cpu_on = os.environ.get(cpu_env, "") == "1"
+    wgpu_on = os.environ.get(wgpu_env, "") == "1"
+    if cpu_on:
+        status = "cpu_framebuffer"
+    elif wgpu_on:
+        status = "wgpu_intent_stub"
+    else:
+        status = "simulate"
+    return {
+        "profile_count": int(pres.get("profile_count", 7)),
+        "bench_simulate_fn": meta_h.get("bench_simulate_fn", "studio_vertical_demo_frame"),
+        "hook_version": meta_h.get("hook_version", 0),
+        "native_pixels_cpu": bool(meta_h.get("native_pixels_cpu", False)) and cpu_on,
+        "native_pixels_wgpu": False,
+        "wgpu_full_readback": bool(meta_h.get("wgpu_full_readback", False)),
+        "status": status,
+        "honest_simulate": status == "simulate",
+        "env_cpu_present": cpu_env,
+        "env_wgpu_present": wgpu_env,
+        "notes": pres.get("notes", ""),
     }
 
 
@@ -182,6 +214,13 @@ if (root / "packages/li-gui/bench/panel_switch.toml").is_file():
     report["panel_switch_ms"] = bench_panel_switch_hook()
 else:
     report["notes"].append("skip_panel_switch:hook_missing")
+
+vertical_present_hook = root / "packages/li-studio/bench/studio_vertical_present.toml"
+if vertical_present_hook.is_file():
+    report["studio_vertical_present"] = bench_studio_vertical_present_hook()
+    report["notes"].append(f"studio_vertical_present:{report['studio_vertical_present'].get('status', 'unknown')}")
+else:
+    report["notes"].append("skip_studio_vertical_present:hook_missing")
 
 scene_hook = root / "packages/li-scene/bench/particle_tiers.toml"
 if scene_hook.is_file():

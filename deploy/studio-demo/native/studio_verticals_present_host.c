@@ -66,14 +66,7 @@ static void draw_vline(unsigned char* rgb, int w, int h, int x, int y0, int y1,
   }
 }
 
-static void draw_shell(unsigned char* rgb, int w, int h, const ProfileVisual* pv) {
-  fill_rect(rgb, w, h, 0, 0, w, h, 13, 17, 23);
-  for (int x = 0; x < w; x += 64) {
-    draw_vline(rgb, w, h, x, 0, h - 1, 48, 54, 61);
-  }
-  for (int y = 0; y < h; y += 64) {
-    draw_hline(rgb, w, h, 0, w - 1, y, 48, 54, 61);
-  }
+static void draw_viewport_profile(unsigned char* rgb, int w, int h, const ProfileVisual* pv) {
   int sx = w / 4;
   int sy = h / 4;
   int sw = w / 2;
@@ -86,6 +79,47 @@ static void draw_shell(unsigned char* rgb, int w, int h, const ProfileVisual* pv
     put_px(rgb, w, h, sx, sy + i, 251, 146, 60);
     put_px(rgb, w, h, sx + sw, sy + i, 251, 146, 60);
   }
+  int marker_w = 120;
+  int marker_h = pv->tag_h;
+  int mx = sx + (sw - marker_w) / 2;
+  int my = sy + (sh - marker_h) / 2;
+  fill_rect(rgb, w, h, mx, my, marker_w, marker_h, pv->r, pv->g, pv->b);
+  if (pv->id == 1) {
+    int cx = mx + marker_w / 2;
+    int cy = my + marker_h / 2;
+    for (int d = -8; d <= 8; d++) {
+      put_px(rgb, w, h, cx + d, cy, 255, 255, 255);
+      put_px(rgb, w, h, cx, cy + d, 255, 255, 255);
+    }
+  }
+  if (pv->id == 2) {
+    for (int a = 0; a < 360; a += 45) {
+      int ox = mx + marker_w / 2 + (a % 2 == 0 ? 24 : 12);
+      int oy = my + marker_h / 2 + (a / 45);
+      fill_rect(rgb, w, h, ox - 2, oy - 2, 4, 4, 255, 255, 255);
+    }
+  }
+  if (pv->id >= 3 && pv->id <= 6) {
+    for (int lane = 0; lane < 3; lane++) {
+      int ly = my + 4 + lane * (marker_h / 3);
+      draw_hline(rgb, w, h, mx + 8, mx + marker_w - 8, ly, 255, 255, 255);
+    }
+  }
+  if (pv->id == 7) {
+    fill_rect(rgb, w, h, mx + 12, my + 4, marker_w - 24, marker_h - 8, 91, 33, 182);
+    draw_hline(rgb, w, h, mx + 16, mx + marker_w - 16, my + marker_h / 2, 196, 181, 253);
+  }
+}
+
+static void draw_shell(unsigned char* rgb, int w, int h, const ProfileVisual* pv) {
+  fill_rect(rgb, w, h, 0, 0, w, h, 13, 17, 23);
+  for (int x = 0; x < w; x += 64) {
+    draw_vline(rgb, w, h, x, 0, h - 1, 48, 54, 61);
+  }
+  for (int y = 0; y < h; y += 64) {
+    draw_hline(rgb, w, h, 0, w - 1, y, 48, 54, 61);
+  }
+  draw_viewport_profile(rgb, w, h, pv);
   int chip_w = 88;
   int chip_x = w - chip_w - 12;
   fill_rect(rgb, w, h, chip_x, 12, chip_w, pv->tag_h, pv->r, pv->g, pv->b);

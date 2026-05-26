@@ -287,14 +287,23 @@ def write_scenario_httpd_toml(
     index = public / "index.html"
     if not index.is_file():
         index.write_text("ok\n", encoding="utf-8")
+    load = cfg.get("load") or {}
+    stream_limits = ""
+    if str(load.get("tool", "")) == "streaming_soak" or str(load.get("kind", "")) in ("sse", "ws"):
+        stream_limits = (
+            'stream_idle_timeout = "120s"\n'
+            'stream_max_duration = "600s"\n'
+            "concurrent_streams = 128\n"
+        )
     text = (
         f'[server]\n'
         f'listen = "127.0.0.1:{front_port}"\n'
         f'document_root = "{public}"\n'
-        f"workers = 1\n\n"
+        f'workers = "auto"\n\n'
         f"[limits]\n"
         f"rate_limit_rps = 10000\n"
-        f"rate_limit_burst = 20000\n\n"
+        f"rate_limit_burst = 20000\n"
+        f"{stream_limits}\n"
         f"[upstreams.backend]\n"
         f'peers = ["http://127.0.0.1:{backend_port}"]\n\n'
         f'[routes]\n'

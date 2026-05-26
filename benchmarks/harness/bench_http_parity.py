@@ -77,13 +77,19 @@ def check_parity_ratios(
             metric_rows(rows, benchmark=name, lang="nginx", metric="rps"), higher_better=True
         )
         li_rps = best_metric(metric_rows(rows, benchmark=name, lang="li", metric="rps"), higher_better=True)
-        if nginx_rps and li_rps:
-            ratio = li_rps / nginx_rps
-            line = f"{name}: rps li/nginx={ratio:.3f} (li={li_rps:.0f} nginx={nginx_rps:.0f})"
-            notes.append(line)
-            if ratio < rps_min_s:
+        if nginx_rps is not None:
+            if li_rps is None or li_rps <= 0:
+                line = f"{name}: rps li/nginx=0.000 (li={li_rps or 0:.0f} nginx={nginx_rps:.0f})"
+                notes.append(line)
                 ok_all = False
                 notes.append(f"  FAIL rps ratio < {rps_min_s}")
+            else:
+                ratio = li_rps / nginx_rps
+                line = f"{name}: rps li/nginx={ratio:.3f} (li={li_rps:.0f} nginx={nginx_rps:.0f})"
+                notes.append(line)
+                if ratio < rps_min_s:
+                    ok_all = False
+                    notes.append(f"  FAIL rps ratio < {rps_min_s}")
         nginx_p99 = best_metric(
             metric_rows(rows, benchmark=name, lang="nginx", metric="p99_latency_ms"),
             higher_better=False,

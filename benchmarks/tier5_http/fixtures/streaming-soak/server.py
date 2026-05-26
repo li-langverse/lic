@@ -70,14 +70,20 @@ class StreamingSoakHandler(BaseHTTPRequestHandler):
         if path == "/stream/sse":
             count = int((qs.get("count") or ["40"])[0])
             interval_ms = int((qs.get("interval_ms") or ["25"])[0])
-            body = _sse_events(max(1, min(count, 500)), max(0, interval_ms) / 1000.0)
+            interval_sec = max(0, interval_ms) / 1000.0
+            count = max(1, min(count, 500))
             self.send_response(200)
             self.send_header("Content-Type", "text/event-stream; charset=utf-8")
             self.send_header("Cache-Control", "no-cache")
             self.send_header("Connection", "close")
-            self.send_header("Content-Length", str(len(body)))
             self.end_headers()
-            self.wfile.write(body)
+            for i in range(count):
+                payload = json.dumps({"n": i + 1}).encode()
+                self.wfile.write(b"event: tick\n")
+                self.wfile.write(b"data: " + payload + b"\n\n")
+                self.wfile.flush()
+                if interval_sec > 0 and i + 1 < count:
+                    time.sleep(interval_sec)
             return
         self.send_error(404)
 

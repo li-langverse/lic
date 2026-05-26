@@ -20,3 +20,27 @@
 
 - Pending `gap-*` todos are scheduled **before** other milestones.
 - `httpd-plan-run-gap-parity.sh` defaults to `LI_HTTPD_PLAN_GAP_ONLY=1`.
+
+## Local phase-2 perf (long soak — not CI)
+
+Requires `build/li-httpd`, `wrk`, `nginx` (`PATH=/usr/sbin:$PATH`), and `node` for nextjs rows.
+
+```bash
+cd lic
+./scripts/build-li-httpd.sh
+export PATH="/usr/sbin:/usr/local/bin:$PATH" LI_HTTPD_BIN="$PWD/build/li-httpd"
+
+# WP-SRV-03 — streaming timing (default 6s; plan gate uses 30s via httpd-plan-gates)
+HTTPD_BENCH_SKIP_TIMING=0 HTTPD_BENCH_DURATION_SEC=30 \
+  ./scripts/check-tier5-streaming-soak.sh
+
+# WP-SRV-02 — full wrk + parity_streaming (default 30s each; includes regression gate)
+HTTPD_BENCH_SKIP_TIMING=0 HTTPD_BENCH_DURATION_SEC=30 \
+  ./scripts/check-tier5-perf-wrk-soak.sh
+
+# Short smoke (~8s parity wrk only)
+HTTPD_BENCH_SKIP_TIMING=0 HTTPD_BENCH_DURATION_SEC=8 \
+  ./scripts/check-tier5-nginx-bench-parity.sh
+```
+
+Phase-2 bundle: `HTTPD_RUN_PHASE2_GATES=1 HTTPD_BENCH_DURATION_SEC=30 ./scripts/httpd-plan-gates.sh`

@@ -139,6 +139,14 @@ struct Parser {
           return false;
         }
         skip_newlines();
+      } else if (at(TokenKind::Ident) && std::string_view(cur().text) == "decorator") {
+        i++;
+        if (!at(TokenKind::KwDef) && !at_fn_kw()) {
+          diags.error(loc(cur()), "expected 'def' after decorator");
+          return false;
+        }
+        out.procs.push_back(parse_proc(false));
+        skip_newlines();
       } else if (at(TokenKind::KwDef)) {
         out.procs.push_back(parse_proc(false));
         skip_newlines();

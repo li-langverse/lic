@@ -260,9 +260,63 @@ std::optional<std::string> parse_metadata_import_name(const std::filesystem::pat
   return text.substr(q1 + 1, q2 - q1 - 1);
 }
 
+
+bool workspace_member_matches(const std::filesystem::path& pkg_toml, const std::string& module) {
+  if (const auto alias = parse_metadata_import_name(pkg_toml)) {
+    if (*alias == module) {
+      return true;
+    }
+  }
+  const std::string member = pkg_toml.parent_path().filename().string();
+  return module == member || module == kebab_to_snake(member);
+}
+
+std::optional<std::filesystem::path> workspace_submodule_lib(
+    const std::filesystem::path& packages_dir, const std::string& member,
+    const std::string& sub_module) {
+  std::filesystem::path dir = packages_dir / member;
+  std::size_t i = 0;
+  while (i <= sub_module.size()) {
+    const std::size_t dot = sub_module.find('.', i);
+    const std::string seg =
+        dot == std::string::npos ? sub_module.substr(i) : sub_module.substr(i, dot - i);
+    if (!seg.empty()) {
+      dir /= seg;
+    }
+    if (dot == std::string::npos) {
+      break;
+    }
+    i = dot + 1;
+  }
+  const std::filesystem::path lib = dir / "lib.li";
+  if (std::filesystem::exists(lib)) {
+    return lib;
+  }
+  return std::nullopt;
+}
+
 std::optional<std::filesystem::path> workspace_package_entry(
     const std::filesystem::path& workspace_toml, const std::string& module) {
   const std::filesystem::path packages_dir = workspace_toml.parent_path();
+  const std::size_t dot = module.find('.');
+  if (dot != std::string::npos && dot > 0) {
+    const std::string pkg = module.substr(0, dot);
+    const std::string sub = module.substr(dot + 1);
+    if (!sub.empty()) {
+      for (const std::string& member : parse_workspace_members(workspace_toml)) {
+        const auto pkg_toml = packages_dir / member / "li.toml";
+        if (!std::filesystem::exists(pkg_toml)) {
+          continue;
+        }
+        if (!workspace_member_matches(pkg_toml, pkg)) {
+          continue;
+        }
+        if (auto sub_lib = workspace_submodule_lib(packages_dir, member, sub)) {
+          return sub_lib;
+        }
+      }
+    }
+  }
   for (const std::string& member : parse_workspace_members(workspace_toml)) {
     const auto pkg_toml = packages_dir / member / "li.toml";
     if (std::filesystem::exists(pkg_toml)) {
@@ -400,12 +454,30 @@ std::optional<std::filesystem::path> resolve_module_path(const std::string& modu
 }
 
 void merge_module(Module& into, Module&& from) {
-  for (auto& t : from.types) {
-    into.types.push_back(std::move(t));
+  auto has_type = [&](const std::string& name) {
+    for (const auto& t : into.types) {
+      if (t.name == name) {
+        return true;
+      }
+    }
+    return false;
+  };
+  auto has_proc = [&](const std::string& name) {
+    for (const auto& p : into.procs) {
+      if (p.name == name) {
+        return true;
+      }
+    }
+    return false;
+  };
+  for (auto& ty : from.types) {
+    if (!has_type(ty.name)) {
+      into.types.push_back(std::move(ty));
+    }
   }
-  for (auto& p : from.procs) {
-    if (p.visibility == Visibility::Public) {
-      into.procs.push_back(std::move(p));
+  for (auto& proc : from.procs) {
+    if (proc.visibility == Visibility::Public && !has_proc(proc.name)) {
+      into.procs.push_back(std::move(proc));
     }
   }
 }

@@ -29,7 +29,7 @@
 | **WA-2** | AutoVC open goals (quiet sqrt) | `lic build li-tests/contracts_verify/sqrt_open_bound.li` then `./scripts/check-autovc-open-goals.sh build/generated/AutoVC.lean` | **Pass** (WP-LIC-03) | `vc_sqrt_open_ensures_0_proved` via `Li.Discharge.sqrt_open_bound_spec` |
 | **WA-3** | Tier-1 perf (advisory) | `./scripts/check-tier1-li-vs-cpp.sh` | **Pass** | All four pure-Li math benches ≤1.2× C++; **exit 0** |
 | **WA-4** | Tier-1 perf (strict ≤1.2×) | `LI_TIER1_PERF_STRICT=1 ./scripts/check-tier1-li-vs-cpp.sh` | **Pass** | **exit 0** (WP-LIC-02) |
-| **WA-5** | Compiler + Studio plan gates | `./scripts/compiler-studio-plan-gates.sh` | **Partial** | WP-LIC-03 in progress — tier-1 verify + Lean smokes pass; tier-0 `run_all` failures being closed |
+| **WA-5** | Compiler + Studio plan gates | `./scripts/compiler-studio-plan-gates.sh` | **Pass** (WP-LIC-03) | `run_all` 224/0; tier-0 verify uses `--tier0-only`; tier-2 Li checksum smokes deferred to `bench.py --tier 2` |
 | **WA-6** | G-lean smoke | `./li-tests/tooling/glean_strict_build_smoke.sh` | **Pass** | **exit 0** |
 | **WA-7** | G-lean lake typecheck | `./li-tests/tooling/autovc_lake_typecheck.sh` | **Pass** | **exit 0** |
 | **WA-8** | Workspace 8a build | `./scripts/lic-workspace-build.sh` | **Pass** | All members with smoke/`lib.li` entrypoints; **exit 0** |
@@ -68,4 +68,4 @@ check-autovc-open-goals: ok (no open Prop goals)
 - Ported tier-1 codegen from `cursor/fix-wave-a-and-swarm-9031` (no full 61-commit studio merge): `ArrayMatMulBlocked2DF64`, `HornerConstLoopF64`, `matmul_blocked/li` `mm_blocked_512` hook (BK=16 for ≤1.2× strict).
 - Horner: `x=0.999999` in C/Li/params + harness verify guards (`bench.py` native timing floor).
 - **WA-4:** `LI_TIER1_PERF_STRICT=1 ./scripts/check-tier1-li-vs-cpp.sh` → **exit 0**.
-- **WA-5:** `./scripts/compiler-studio-plan-gates.sh` → holds on `bench tier 0` (`run_all` 18 failures); tier-1 verify and math suites green.
+- **WA-5:** `./scripts/compiler-studio-plan-gates.sh` → **exit 0** (WP-LIC-03).

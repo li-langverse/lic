@@ -21,14 +21,14 @@ def sort_list_stub(xs: list[int]) raises Alloc -> list[int]
 
 def bisect_left_stub(xs: list[int], x: int) raises Alloc -> int
   requires true
-  ensures 0 <= result
+  ensures result == 0
   decreases 0
 =
   return 0
 
 def bisect_right_stub(xs: list[int], x: int) raises Alloc -> int
   requires true
-  ensures 0 <= result
+  ensures result == 0
   decreases 0
 =
   return 0

@@ -370,13 +370,24 @@ def read_csv(path: Path) -> list[dict[str, str]]:
         return list(csv.DictReader(f))
 
 
+def normalize_csv_row(row: dict[str, object]) -> dict[str, str]:
+    """Backfill new columns when merging rows from older latest.csv files."""
+    out: dict[str, str] = {}
+    for key in CSV_HEADER:
+        val = row.get(key, "")
+        out[key] = "" if val is None else str(val)
+    if not out.get("os"):
+        out["os"] = host_os_tag()
+    return out
+
+
 def write_csv(path: Path, rows: list[dict[str, object]]) -> None:
     path.parent.mkdir(parents=True, exist_ok=True)
     with path.open("w", newline="") as f:
         w = csv.DictWriter(f, fieldnames=CSV_HEADER)
         w.writeheader()
         for row in rows:
-            w.writerow({k: row[k] for k in CSV_HEADER})
+            w.writerow(normalize_csv_row(row))
 
 
 def merge_rows(

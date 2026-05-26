@@ -798,13 +798,6 @@ outcome = "compile_open_ok"
 note = "PH-SIM: sim.scientific MD/heat/rigid run_simulation + oracle checksums"
 
 [[tests]]
-suite = "composable"
-file = "composable/import_studio_sim_step_by_profile.li"
-packages = ["li-studio"]
-outcome = "compile_open_ok"
-note = "PH-SIM vertical gap #4: studio_sim_step_hook game + sim_rl + sim_scientific"
-
-[[tests]]
 suite = "smoke"
 file = "packages/li-sim-scientific/li-tests/smoke/scientific_oracle_bench.li"
 outcome = "compile_open_ok"

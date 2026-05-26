@@ -1448,9 +1448,11 @@ def studio_game_world_checkpoint_fields(
   var snap: WorldSnapshot = studio_game_world_snapshot_from_physics(tick, physics_step_count, body_pz)
   if world_snapshot_valid(snap) != 1:
     return 0
-  if body_pz > 1000.0:
+  var pz_hi: float = body_pz
+  var pz_lo: float = body_pz
+  if pz_hi > 1000.0:
     return 0
-  if body_pz < -1000.0:
+  if pz_lo < -1000.0:
     return 0
   return 1
 

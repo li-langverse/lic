@@ -82,17 +82,20 @@ def env_action_for_index(env_index: int) -> EnvStepResult
   decreases env_index
 =
   var ei: int = env_index
+  var e1: int = env_index
+  var e2: int = env_index
+  var e3: int = env_index
   var r: EnvStepResult
   r.env_index = ei
   r.act0 = 0.0
   r.act1 = 0.0
   r.act2 = 0.0
   r.act3 = 0.0
-  if ei == 1:
+  if e1 == 1:
     r.act0 = 0.1
-  if ei == 2:
+  if e2 == 2:
     r.act0 = 0.2
-  if ei == 3:
+  if e3 == 3:
     r.act0 = 0.3
   r.obs0 = 0.0
   r.obs1 = 0.0
@@ -115,15 +118,18 @@ def env_obs_fill_fields(
   decreases env_index
 =
   var ei: int = env_index
-  var t0: int = tick
-  r.obs0 = env_tick_as_float(t0)
+  var e1: int = env_index
+  var e2: int = env_index
+  var e3: int = env_index
+  var t_obs: int = tick
+  r.obs0 = env_tick_as_float(t_obs)
   r.obs1 = last_dt
   r.obs2 = 0.0
-  if ei == 1:
+  if e1 == 1:
     r.obs2 = 1.0
-  if ei == 2:
+  if e2 == 2:
     r.obs2 = 2.0
-  if ei == 3:
+  if e3 == 3:
     r.obs2 = 3.0
   r.obs3 = 0.0
   r.obs4 = 0.0
@@ -139,13 +145,36 @@ def env_reward_for_action(act0: float, env_index: int, tick: int) -> float
   decreases env_index
 =
   var pen: float = 0.0
-  if env_index == 1:
+  var e1: int = env_index
+  var e2: int = env_index
+  var e3: int = env_index
+  var t_rew: int = tick
+  if e1 == 1:
     pen = 0.05
-  if env_index == 2:
+  if e2 == 2:
     pen = 0.10
-  if env_index == 3:
+  if e3 == 3:
     pen = 0.15
-  return act0 - pen + 0.01 * env_tick_as_float(tick)
+  return act0 - pen + 0.01 * env_tick_as_float(t_rew)
+
+def env_obs_from_session(session: SimSessionStub, env_index: int, last_dt: float) -> EnvStepResult
+  requires session.tick >= 0
+  requires env_index >= 0
+  requires env_index < 32
+  ensures result.obs1 == last_dt
+  ensures result.env_index == env_index
+  decreases env_index
+=
+  var t_obs: int = session.tick
+  var t_rew: int = session.tick
+  var ei_act: int = env_index
+  var ei_obs: int = env_index
+  var ei_rew: int = env_index
+  var r: EnvStepResult = env_action_for_index(ei_act)
+  env_obs_fill_fields(r, t_obs, last_dt, ei_obs)
+  r.reward = env_reward_for_action(r.act0, ei_rew, t_rew)
+  r.done = 0
+  return r
 
 def env_step_contract_pre(
     pool_size: int, tick: int, last_dt: float, env_index: int) -> EnvStepResult
@@ -157,10 +186,11 @@ def env_step_contract_pre(
   ensures result.done == 0
   decreases env_index
 =
-  var t0: int = tick
-  var ei: int = env_index
-  var r: EnvStepResult = env_action_for_index(ei)
-  env_obs_fill_fields(r, t0, last_dt, ei)
+  var t_obs: int = tick
+  var ei_act: int = env_index
+  var ei_obs: int = env_index
+  var r: EnvStepResult = env_action_for_index(ei_act)
+  env_obs_fill_fields(r, t_obs, last_dt, ei_obs)
   r.reward = 0.0
   r.done = 0
   return r
@@ -176,14 +206,17 @@ def env_step_contract_post(
   ensures result.done <= 1
   decreases pre.env_index
 =
-  var idx: int = pre.env_index
+  var idx_obs: int = pre.env_index
+  var idx_rew: int = pre.env_index
   var act0: float = pre.act0
-  var t0: int = tick
+  var t_obs: int = tick
+  var t_rew: int = tick
+  var t_done: int = tick
   var r: EnvStepResult = pre
-  env_obs_fill_fields(r, t0, last_dt, idx)
-  r.reward = env_reward_for_action(act0, idx, t0)
+  env_obs_fill_fields(r, t_obs, last_dt, idx_obs)
+  r.reward = env_reward_for_action(act0, idx_rew, t_rew)
   r.done = 0
-  if t0 >= pool_size * 8:
+  if t_done >= pool_size * 8:
     r.done = 1
   return r
 

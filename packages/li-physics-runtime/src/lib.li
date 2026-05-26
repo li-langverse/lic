@@ -1,4 +1,5 @@
 
+import sim
 import physics.rigid
 
 type PhysicsWorld = object
@@ -131,5 +132,5 @@ def game_physics_step_hook(frame_dt: float, sim_tick: int) -> GamePhysicsStepOut
   physics_step(w, frame_dt)
   out.physics_step_count = w.step_count
   out.body_pz = w.body.pz
-  out.status = 0
+  out.status = sim_status_ok()
   return out

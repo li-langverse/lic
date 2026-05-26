@@ -11,10 +11,12 @@ def main() -> int
     return 2
   if sim_scientific_tick_stub(3) != 1:
     return 3
-  var md: SimRunResult = run_md_lj_smoke(0)
+  var d_md: int = 0
+  var d_heat: int = 2
+  var md: SimRunResult = run_simulation(vertical_md_lennard_jones(), d_md)
   if md.checksum <= 0.0:
     return 4
-  var heat: SimRunResult = run_heat_smoke(2)
+  var heat: SimRunResult = run_simulation(vertical_pde_heat_2d(), d_heat)
   if heat.checksum <= 0.0:
     return 5
   return 0

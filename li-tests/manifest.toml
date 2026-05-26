@@ -791,6 +791,32 @@ outcome = "compile_open_ok"
 note = "import ui: studio shell layout + paint IR composables (PH-UX-01)"
 
 [[tests]]
+suite = "composable"
+file = "composable/import_sim_scientific_run.li"
+packages = ["li-sim-scientific"]
+outcome = "compile_open_ok"
+note = "PH-SIM: sim.scientific MD/heat/rigid run_simulation + oracle checksums"
+
+[[tests]]
+suite = "composable"
+file = "composable/import_studio_sim_step_by_profile.li"
+packages = ["li-studio"]
+outcome = "compile_open_ok"
+note = "PH-SIM vertical gap #4: studio_sim_step_hook game + sim_rl + sim_scientific"
+
+[[tests]]
+suite = "smoke"
+file = "packages/li-sim-scientific/li-tests/smoke/scientific_oracle_bench.li"
+outcome = "compile_open_ok"
+note = "PH-SIM: Layer B md_lennard_jones + pde_heat_2d Li oracles"
+
+[[tests]]
+suite = "smoke"
+file = "packages/li-ml-rl/li-tests/smoke/env_obs_from_session.li"
+outcome = "compile_open_ok"
+note = "PH-ML SIM-3: env_obs_from_session fixed obs/act contract"
+
+[[tests]]
 suite = "smoke"
 file = "packages/lig/li-tests/smoke/kernel_matmul_parity.li"
 outcome = "compile_open_ok"

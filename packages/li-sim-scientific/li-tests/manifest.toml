@@ -1,0 +1,13 @@
+# li-sim-scientific smoke — deterministic MD/heat/rigid evolution + Layer B oracles.
+
+[[tests]]
+suite = "smoke"
+file = "smoke/scientific_tick_tiers.li"
+outcome = "compile_open_ok"
+note = "PH-SIM: detail-tier MD/heat/rigid ticks"
+
+[[tests]]
+suite = "smoke"
+file = "smoke/scientific_oracle_bench.li"
+outcome = "compile_open_ok"
+note = "PH-SIM: md_lennard_jones + pde_heat_2d oracle checksums"

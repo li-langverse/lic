@@ -1,0 +1,16 @@
+import studio
+
+def main() -> int raises IO
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  if li_std_studio_version() < 8:
+    return 1
+  if lig_present_cpu_framebuffer_active() != 1:
+    return 2
+  var game: int = studio_profile_game()
+  var frame: int = studio_vertical_demo_frame(game, 0)
+  if frame != 0:
+    return 10
+  return 0

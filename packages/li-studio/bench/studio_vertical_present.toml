@@ -1,0 +1,13 @@
+# PH-GD / PH-HW — vertical demo present hook (CPU framebuffer + optional SDL host).
+[meta]
+package = "li-studio"
+hook_version = 1
+native_pixels_cpu = true
+bench_simulate_fn = "studio_vertical_demo_frame"
+
+[present]
+env_profile = "STUDIO_DEMO_PROFILE"
+env_cpu_present = "STUDIO_CPU_PRESENT"
+env_host_present = "LIG_HOST_PRESENT"
+profile_count = 7
+default_profile = "game"

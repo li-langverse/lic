@@ -4,6 +4,12 @@
 
 ### Added
 
+- **PH-AGENT-1 (partial)** — `studio_mcp_tool_dispatch` via `li_rt_studio_mcp_dispatch` (proof gate, `STUDIO_MCP_PROFILE`), chem/adaptive Li hooks, `STUDIO_CPU_PRESENT` present path, bench hooks `studio_mcp_dispatch` / `studio_vertical_present`; `li_std_studio_version` → 8; smokes `studio_mcp_dispatch_run.li`, `studio_cpu_present.li`.
+
+- **PH-AM AM-0 / PH-DRUG DRUG-0** — `studio_sim_step_hook` calls `sim_additive_tick_stub` / `sim_drug_design_tick_stub`; `studio_drug_litl_stage_from_tick`; extended `studio_sim_step_by_profile.li`.
+
+- **PH-ROBO ROBO-0 / automotive** — `studio_sim_step_hook` calls `sim_robotics_tick_stub` / `sim_automotive_tick_stub`; extended `studio_sim_step_by_profile.li` smoke.
+
 - **Vertical gap #4/#9 sim step physics** — `sim_scientific_tick_stub`, `studio_game_step_hook`, `studio_md_particle_tier_select_ok`, smokes `studio_sim_step_by_profile.li` / `import_studio_sim_step_by_profile.li` — [2026-05-25-vertical-gap-sim-step-physics.md](docs/release-notes/2026-05-25-vertical-gap-sim-step-physics.md).
 
 

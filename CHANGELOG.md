@@ -43,10 +43,15 @@ All notable changes to Li are documented here. The format follows
 - **Vertical gap #4/#9 sim step physics** — `sim_scientific_tick_stub`, `studio_game_step_hook`, `studio_md_particle_tier_select_ok`, smokes `studio_sim_step_by_profile.li` / `import_studio_sim_step_by_profile.li` — [2026-05-25-vertical-gap-sim-step-physics.md](docs/release-notes/2026-05-25-vertical-gap-sim-step-physics.md).
 
 - **Vertical gap #2/#10 native present (partial):** `STUDIO_DEMO_PROFILE` env wiring, `li_rt` lig host present restore, `li-studio-demo` verticals capture preference — [2026-05-26-vertical-gap-native-present.md](docs/release-notes/2026-05-26-vertical-gap-native-present.md).
+- **PH-AGENT-1 partial:** MCP `studio_mcp_tool_dispatch` + proof gate, `STUDIO_CPU_PRESENT` CPU present path, studio vertical bench hooks — [2026-05-26-ph-agent-mcp-dispatch-cpu-present.md](docs/release-notes/2026-05-26-ph-agent-mcp-dispatch-cpu-present.md).
 
 ### Added
 
+- **PH-AM AM-0 / PH-DRUG DRUG-0:** slicer + LITL workflow stubs, studio tick hooks, composables — [2026-05-26-vertical-am-drug-workflows.md](docs/release-notes/2026-05-26-vertical-am-drug-workflows.md).
+
 - **PH-SIM vertical gap #3:** domain profile stubs `li-sim-automotive`, `li-sim-robotics`, `li-sim-additive`, `li-sim-drug-design` (`import sim.*`, contract + studio id constants, `lic check` smokes) — [2026-05-26-vertical-sim-domain-stubs.md](docs/release-notes/2026-05-26-vertical-sim-domain-stubs.md).
+
+- **PH-ROBO ROBO-0 / automotive tick stubs** — `sim_robotics_tick_stub`, `sim_automotive_tick_stub`, `studio_sim_step_hook` branches, composables `import_sim_robotics_workspace` / `import_sim_automotive_workspace` — [2026-05-26-robo-auto-tick-stubs.md](docs/release-notes/2026-05-26-robo-auto-tick-stubs.md).
 
 - **PH-UX vertical gap #5:** Full `lig-kernels.toml` catalog rows (`md_force_short`, `heat_stencil_2d_f32`, …), `cuda`/`hip`/`metal` = `N/A` until `LIG_EMIT_*`, parity harness emits all `kernel_ids` — [2026-05-25-vertical-gap-lig-kernels.md](docs/release-notes/2026-05-25-vertical-gap-lig-kernels.md).
 

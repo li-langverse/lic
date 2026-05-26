@@ -1,0 +1,12 @@
+# PH-AGENT AGENT-1 — MCP tool dispatch bench hook (simulate; no lis HTTP server).
+[meta]
+package = "li-studio"
+hook_version = 1
+bench_simulate_fn = "studio_mcp_tool_dispatch"
+tool_count = 8
+proof_gate_tools = ["lic_check", "lic_build", "publish_bundle"]
+
+[mcp]
+dispatch_runtime = "li_rt_studio_mcp_dispatch"
+chem_energy_hartree = -76.0
+adaptive_layout_fn = "layout_studio_shell_adaptive"

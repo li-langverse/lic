@@ -272,6 +272,20 @@ def lig_present_host_native_pixels_flag() -> int raises IO
 =
   return li_rt_lig_host_native_pixels()
 
+extern proc li_rt_lig_cpu_present_active() -> int
+  requires true
+  ensures result >= 0
+  ensures result <= 1
+  decreases 0
+
+def lig_present_cpu_framebuffer_active() -> int raises IO
+  requires true
+  ensures result >= 0
+  ensures result <= 1
+  decreases 0
+=
+  return li_rt_lig_cpu_present_active()
+
 def lig_wgpu_smoke_run() -> LigWgpuSmoke raises IO, Alloc
   requires true
   ensures result.adapter_ok == 1

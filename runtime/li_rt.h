@@ -230,6 +230,11 @@ int32_t li_rt_studio_viewport_error_set_mock(int32_t kind);
 int32_t li_rt_studio_viewport_error_retry(void);
 int32_t li_rt_studio_mcp_tool_from_name(const char* name);
 const char* li_rt_studio_mcp_tool_name(int32_t tool_id);
+/* PH-AGENT AGENT-1 — dispatch result: 0 ok, 1 proof, 2 io */
+int32_t li_rt_studio_mcp_dispatch(int32_t tool_id);
+int32_t li_rt_studio_mcp_last_profile_id(void);
+float li_rt_studio_mcp_chem_energy_hartree(void);
+int32_t li_rt_lig_cpu_present_active(void);
 int32_t li_rt_lig_host_present_active(void);
 float li_rt_lig_host_present_dt_ms(void);
 int32_t li_rt_lig_host_native_pixels(void);

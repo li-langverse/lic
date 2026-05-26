@@ -1,6 +1,6 @@
 # Studio MCP tools (PH-AGENT contract)
 
-**Status:** AGENT-0 scaffold (contracts only)  
+**Status:** AGENT-1 partial (runtime dispatch + proof gate; no `lis` HTTP MCP)  
 **Vision:** [world-studio-vision.md](world-studio-vision.md) §18  
 **RFC:** [specs/studio-cursor-sdk-rfc.md](specs/studio-cursor-sdk-rfc.md)
 
@@ -28,14 +28,23 @@ Any tool that mutates project state or ships artifacts must run **`lic build`** 
 | Symbol | Role |
 |--------|------|
 | `studio_mcp_tool_count()` | Returns `8` |
-| `studio_mcp_tool_dispatch(tool_id)` | Stub: valid ID → `status_ok`, invalid → `status_failed` + `result_err_io` |
+| `studio_mcp_tool_dispatch(tool_id)` | Runtime dispatch via `li_rt_studio_mcp_dispatch`; proof gate on `lic_*` / `publish_bundle`; chem/adaptive Li hooks |
+| `studio_mcp_last_profile_id()` | Last profile set by `sim_set_profile` dispatch (`STUDIO_MCP_PROFILE` env) |
+| `studio_mcp_chem_dft_energy_hartree()` | Stub energy (`-76.0` Hartree) aligned with `li-chem` smoke |
 | `studio_mcp_tool_name(id)` | Round-trip name via `li_rt` const table |
 | `studio_mcp_tool_from_name(name)` | Parse MCP tool name → ID |
 | `studio_mcp_tool_id_valid(id)` | Non-zero IDs only |
 | `StudioAgentToolRequest` | `tool_id`, `status`, `result_code` on agent chrome |
 | `studio_compose_agent_chrome_with_tool` | Optional tool request on compose |
 
-## Status / result codes (stub)
+## Environment (AGENT-1 dispatch)
+
+| Variable | Effect |
+|----------|--------|
+| `STUDIO_MCP_PROOF_FAIL=1` | `lic_check` / `lic_build` return proof error; blocks `publish_bundle` |
+| `STUDIO_MCP_PROFILE` | Profile slug for `sim_set_profile` (default `game`) |
+
+## Status / result codes
 
 | Status | Constant |
 |--------|----------|
@@ -54,10 +63,12 @@ Any tool that mutates project state or ships artifacts must run **`lic build`** 
 
 - `packages/li-studio/li-tests/smoke/studio_mcp_tools.li` — wave-1 ID/name round-trip and agent chrome optional field.
 - `packages/li-studio/li-tests/smoke/studio_mcp_extended.li` — gap #6/#7 tool IDs, `studio_mcp_tool_dispatch`, adaptive layout hook.
+- `packages/li-studio/li-tests/smoke/studio_mcp_dispatch_run.li` — proof gate (`lic_build` → `publish_bundle`), chem energy, `sim_set_profile`.
+- `packages/li-studio/li-tests/smoke/studio_cpu_present.li` — `STUDIO_CPU_PRESENT=1` vertical demo present path.
 - `li-tests/composable/import_lig_chem_backend.li` — `chem_dft_run_smoke()` stub energy (`-76.0` Hartree); `chem_lig_backend_auto` unchanged.
 
 ## Not in this slice
 
-- `lis` HTTP MCP server implementation
+- `lis` HTTP MCP server implementation (`lis mcp li-engine` registration)
 - `@cursor/sdk` agent session wiring
-- Real `am_export_print` / `chem_dft_run` / adaptive layout execution (contracts + dispatch stub only)
+- Real `am_export_print` queue / external `lic` subprocess from MCP

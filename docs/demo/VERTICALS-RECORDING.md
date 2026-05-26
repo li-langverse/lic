@@ -4,13 +4,15 @@
 |----------|------------------------------|---------------------|-----------------|-----------------|
 | `game` | `studio_vertical_profile_roundtrip`, `studio_shell_demo` | CPU present host chip (cyan, h=21) | **1** | Full li-player ship loop |
 | `sim_rl` | Profile roundtrip + topbar paint | Present host (mint, h=22) | **1** | Live env stepping / PH-ML pools |
-| `sim_automotive` | Profile roundtrip | Present host (amber, h=23) | **1** | Maps, sensors, `li-sim-automotive` |
-| `sim_robotics` | Inspector rows when `has_selection=1` | Present host (amber, h=24) | **1** | IK, factory cells |
-| `sim_additive` | TOML `sim_additive` parse | Present host (amber, h=25) | **1** | `sim.export.print`, printer profiles |
+| `sim_automotive` | Profile roundtrip + `studio_sim_step_hook` + `import_sim_automotive_workspace` | Present host (amber, h=23) | **1** | Maps, sensors, CARLA-class sim |
+| `sim_robotics` | Profile roundtrip + tick stub + inspector when `has_selection=1` | Present host (amber, h=24) | **1** | IK, factory cells, ROS2 bridge |
+| `sim_additive` | TOML + composable `import_sim_additive_slicer_workflow` | Present host (amber, h=25) | **1** | `sim.export.print`, printer send |
 | `sim_scientific` | Particle tier labels in compose | Present host (amber, h=26) | **1** | CFD/MD oracles, `sim.viz` |
-| `sim_drug_design` | Drug paint color contract | Present host (violet, h=27) | **1** | `studio.adaptive`, `li-chem` live |
+| `sim_drug_design` | LITL composable + violet chip + tick stub | Present host (violet, h=27) | **1** | live `studio.adaptive`, ORCA/Psi4 queue |
 
 **User MP4 policy:** native frames only — `deploy/studio-demo/native/studio_verticals_present_host.c` under `LIG_HOST_PRESENT=1`, or future screen capture of `li-studio-demo`. **No** Chrome headless on HTML mocks (archived under `deploy/studio-demo/archive/verticals-html-mocks/`).
+
+**CPU present (CI / headless):** `STUDIO_CPU_PRESENT=1` with optional `LIG_HOST_PRESENT=1` uses the CPU framebuffer path when SDL `STUDIO_SHELL_PRESENT_HOST_BIN` is unset (`runtime/li_rt.c`).
 
 ## Commands
 

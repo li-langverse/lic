@@ -62,7 +62,7 @@ note = "T-PKG-li-studio-profile-roundtrip PH-UX-05 PH-SIM"
 suite = "smoke"
 file = "smoke/studio_sim_step_by_profile.li"
 outcome = "compile_open_ok"
-note = "PH-SIM vertical gap #4: studio_sim_step_hook game + sim_scientific"
+note = "PH-SIM vertical gap #4: studio_sim_step_hook game + sim_scientific + automotive + robotics"
 
 [[tests]]
 suite = "smoke"
@@ -88,6 +88,17 @@ file = "smoke/studio_mcp_extended.li"
 outcome = "compile_open_ok"
 note = "T-PKG-li-studio-mcp-extended PH-AGENT gap-6-7"
 
+[[tests]]
+suite = "smoke"
+file = "smoke/studio_mcp_dispatch_run.li"
+outcome = "compile_open_ok"
+note = "T-PKG-li-studio-mcp-dispatch PH-AGENT-1"
+
+[[tests]]
+suite = "smoke"
+file = "smoke/studio_cpu_present.li"
+outcome = "compile_open_ok"
+note = "T-PKG-li-studio-cpu-present STUDIO_CPU_PRESENT"
 
 [[test]]
 file = "smoke/studio_vertical_demo_env.li"

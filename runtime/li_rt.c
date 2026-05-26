@@ -367,6 +367,63 @@ int32_t li_rt_studio_mcp_tool_from_name(const char* name) {
   return li_rt_studio_mcp_tool_match_name(name);
 }
 
+static int32_t g_studio_mcp_last_profile = 1;
+static int32_t g_studio_mcp_build_passed = 0;
+
+static int32_t li_rt_studio_mcp_proof_fail_env(void) {
+  const char* v = getenv("STUDIO_MCP_PROOF_FAIL");
+  return (v != NULL && v[0] == '1' && v[1] == '\0') ? 1 : 0;
+}
+
+int32_t li_rt_studio_mcp_last_profile_id(void) { return g_studio_mcp_last_profile; }
+
+float li_rt_studio_mcp_chem_energy_hartree(void) { return -76.0f; }
+
+int32_t li_rt_studio_mcp_dispatch(int32_t tool_id) {
+  switch (tool_id) {
+    case 1:
+      return 0;
+    case 2: {
+      const char* prof = getenv("STUDIO_MCP_PROFILE");
+      if (prof == NULL || prof[0] == '\0') {
+        prof = "game";
+      }
+      const int32_t pid = li_rt_studio_profile_match_name(prof);
+      if (pid == 0) {
+        return 2;
+      }
+      g_studio_mcp_last_profile = pid;
+      return 0;
+    }
+    case 3:
+      if (li_rt_studio_mcp_proof_fail_env()) {
+        return 1;
+      }
+      return 0;
+    case 4:
+      if (li_rt_studio_mcp_proof_fail_env()) {
+        g_studio_mcp_build_passed = 0;
+        return 1;
+      }
+      g_studio_mcp_build_passed = 1;
+      return 0;
+    case 5:
+      if (!g_studio_mcp_build_passed) {
+        return 1;
+      }
+      if (li_rt_studio_mcp_proof_fail_env()) {
+        return 1;
+      }
+      return 0;
+    case 6:
+    case 7:
+    case 8:
+      return 0;
+    default:
+      return 2;
+  }
+}
+
 const char* li_rt_studio_mcp_tool_name(int32_t tool_id) {
   switch (tool_id) {
     case 1:
@@ -501,6 +558,13 @@ static int32_t li_rt_lig_env_host_present(void) {
   return (v != NULL && v[0] == '1' && v[1] == '\0') ? 1 : 0;
 }
 
+static int32_t li_rt_lig_env_cpu_present(void) {
+  const char* v = getenv("STUDIO_CPU_PRESENT");
+  return (v != NULL && v[0] == '1' && v[1] == '\0') ? 1 : 0;
+}
+
+int32_t li_rt_lig_cpu_present_active(void) { return li_rt_lig_env_cpu_present(); }
+
 static void li_rt_lig_refresh_host_active(void) {
   g_lig_host_present_active = li_rt_lig_env_host_present();
 }
@@ -562,7 +626,17 @@ int32_t li_rt_lig_wgpu_swapchain_create(int32_t viewport_w, int32_t viewport_h) 
     if (li_rt_lig_try_sdl_present_host(viewport_w, viewport_h)) {
       return 1;
     }
+    if (li_rt_lig_env_cpu_present()) {
+      g_lig_surface_ok = 1;
+      g_lig_native_pixels = 1;
+      return 1;
+    }
     g_lig_surface_ok = 1;
+    return 1;
+  }
+  if (li_rt_lig_env_cpu_present()) {
+    g_lig_surface_ok = 1;
+    g_lig_native_pixels = 1;
     return 1;
   }
   g_lig_surface_ok = 0;
@@ -573,6 +647,11 @@ int32_t li_rt_lig_wgpu_present_frame(int32_t swapchain_ok) {
   li_rt_lig_refresh_host_active();
   if (!swapchain_ok) {
     return 0;
+  }
+  if (li_rt_lig_env_cpu_present()) {
+    g_lig_native_pixels = 1;
+    g_lig_present_dt_ms = 16.667f;
+    return 1;
   }
   if (g_lig_host_present_active && g_lig_surface_ok) {
     g_lig_native_pixels = 1;

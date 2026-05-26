@@ -55,6 +55,21 @@ STUDIO_WGPU_PRESENT=1 ./scripts/bench-studio-viewport-perf.sh  # status=wgpu_int
 3. Common fixes: install `cc`; remove stale `deploy/studio-demo/native/studio_verticals_present_host` binary; rebuild via `native-sdl-build.sh`.
 4. On Linux CI without display: use `STUDIO_CPU_PRESENT=1` — CPU framebuffer path does not need Xvfb; SDL present tick may still use `xvfb-run`.
 
+## Composable import checks (PLATFORM-MOVE-1)
+
+All vertical composable smokes pass with `lic check --no-cache`:
+
+```bash
+lic check --no-cache li-tests/composable/import_sim_robotics_workspace.li
+lic check --no-cache li-tests/composable/import_sim_automotive_workspace.li
+lic check --no-cache li-tests/composable/import_sim_additive_slicer_workflow.li
+lic check --no-cache li-tests/composable/import_sim_drug_design_litl_workflow.li
+lic check --no-cache li-tests/composable/import_sim_scientific_run.li
+lic check --no-cache packages/li-studio/src/lib.li
+lic check --no-cache packages/li-studio/li-tests/smoke/studio_sim_step_by_profile.li
+lic check --workspace=packages/li.toml --no-cache
+```
+
 ## MP4
 
 - **Path:** `docs/demo/media/studio-verticals-demo.mp4`

@@ -2,14 +2,16 @@
 import gui
 import ui
 import sim
+import sim.additive
+import sim.drug_design
+import sim.automotive
+import sim.robotics
 import sim.scientific
 import sim.viz
-import scene
 import physics.runtime
 import world
+import scene
 import lig
-import lig.present
-import lig.memory
 
 # li-studio — compose dock + timeline + inspector + agent chrome (PH-UX-05/06/07).
 
@@ -253,6 +255,26 @@ def studio_profile_chip_height_px() -> float
   decreases 0
 =
   return 24.0
+
+# PH-DRUG DRUG-0 — adaptive LITL stage index from session tick (mock chrome only).
+def studio_drug_litl_stage_from_tick(tick: int) -> int
+  requires tick >= 0
+  ensures drug_litl_stage_valid(result) == 1
+  decreases tick
+=
+  var tick0: int = tick
+  return drug_litl_stage_from_tick(tick0)
+
+# PH-DRUG DRUG-1 — structured LITL stage payload (SMILES token, conformers, DFT, ADMET).
+def studio_drug_litl_stage_payload_from_tick(tick: int) -> DrugLitlStagePayload
+  requires tick >= 0
+  ensures drug_litl_stage_valid(result.stage) == 1
+  ensures result.stage == studio_drug_litl_stage_from_tick(tick)
+  decreases tick
+=
+  var tick0: int = tick
+  var stage: int = studio_drug_litl_stage_from_tick(tick0)
+  return drug_litl_stage_payload(stage)
 
 def studio_profile_paint_tag_h(profile_id: int) -> float
   requires studio_profile_id_valid(profile_id) == 1
@@ -1560,6 +1582,12 @@ def studio_sim_step_hook(config: StudioProjectConfig, sim_out: var SimSessionStu
     if sim_scientific_tick_stub(detail0) != 1:
       return sim_status_invalid_dt()
     if studio_sim_scientific_viz_viewport_ok(detail0) != 1:
+      return sim_status_invalid_dt()
+  if prof == studio_profile_sim_drug_design():
+    var detail_dr: int = sim_out.output_detail
+    if detail_dr > 3:
+      detail_dr = 3
+    if sim_drug_design_tick_stub(detail_dr) != 1:
       return sim_status_invalid_dt()
   if prof == studio_profile_game():
     if dt <= 0.0:

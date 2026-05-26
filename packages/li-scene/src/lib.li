@@ -1,14 +1,4 @@
-type LigMemoryLedger = object
-  public budget_mib: int
-  public allocated_bytes: int
-  public peak_bytes: int
-
-def lig_memory_budget_mib() -> int
-  requires true
-  ensures result == 512
-  decreases 0
-=
-  return 512
+import lig
 
 type EntityId = object
   public value: int

@@ -53,7 +53,7 @@ check-autovc-open-goals: ok (no open Prop goals)
 2. ~~**G-par policy slice**~~ — Done in WA-P5 (`cursor/wa-p5-gpar-lean`); iteration-independence still open.
 3. ~~**Workspace 8a smoke (`li-sim-scientific`)**~~ — Done in WA-P4 (`cursor/wa-p4-workspace-8a`).
 4. **Tier-1 perf (7e)** — `matmul_blocked` + `horner_pure_li` until `LI_TIER1_PERF_STRICT=1` green; **G-math** → Done; WA-4 → Pass.
-5. **Tier-0 / manifest hygiene** — Fix 8 failing `li-tests` rows blocking WA-5.
+5. ~~**Tier-0 / manifest hygiene**~~ — WA-P3: AutoVC clear + flock + open-VC lean skip in `run_all.sh` (rebuild `lic` then re-run WA-5).
 6. **G-par iteration independence (7d-c)** — Lean specs beyond policy witnesses; **G-par** → Done.
 7. **Default `lic build` certificate** — No open VCs on shipped workspace paths; **G-lean** → Done.
 8. ~~**Corpus robustness**~~ — Done: `lic-locked.sh` / `with-autovc-lock.sh` + `AutoVcFileLock` in `lic` + corpus `rm` stale `AutoVC.lean`.
@@ -72,4 +72,3 @@ check-autovc-open-goals: ok (no open Prop goals)
 
 - **WA-2:** `sqrt_open_bound` + `check-autovc-open-goals.sh` — **exit 0** (`Li.Discharge.sqrt_open_bound_spec_proved`).
 - **WA-1:** Corpus hardened (`rm` stale `AutoVC.lean`, `AutoVcFileLock` in `lic`); optional `scripts/lic-locked.sh` for parallel `run_all` only (not wired into corpus — avoids lock timeout vs stuck parallel builds).
-ion.md](../release-notes/2026-05-26-wave-a-wa-p6-integration.md).

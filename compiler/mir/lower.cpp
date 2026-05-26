@@ -1057,7 +1057,8 @@ std::string lower_callproc_with_optional_inout(
     ins.ret_is_float = true;
     float_names.insert(dest);
   } else if (!callee_ret_obj && callee.ret_type &&
-             is_i64_type_name(callee.ret_type->name)) {
+             (is_i64_type_name(callee.ret_type->name) ||
+              mir_ptr_param_type_name(callee.ret_type->name))) {
     ins.ret_is_i64 = true;
     i64_locals.insert(dest);
   } else if (!callee_ret_obj && callee.ret_type &&
@@ -2174,6 +2175,15 @@ void lower_stmt(const Stmt& stmt, LowerCtx& ctx, bool returns_float, std::vector
         if (horner_ok && float_names.count(acc_name) > 0) {
           const double* const_x =
               ctx.const_floats ? lookup_const_float(*ctx.const_floats, factor) : nullptr;
+          if (const_x != nullptr && trip >= 65536) {
+            MirInsn full;
+            full.op = MirOp::HornerConstLoopF64;
+            full.ident = acc_name;
+            full.float_value = *const_x;
+            full.int_value = trip;
+            out.push_back(std::move(full));
+            break;
+          }
           const std::string head_label = fresh_label("while_head_");
           const std::string exit_label = fresh_label("while_exit_");
           if (ctx.loop_stack) {

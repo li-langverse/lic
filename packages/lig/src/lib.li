@@ -166,3 +166,53 @@ def lig_wgpu_smoke_passed(smoke: LigWgpuSmoke) -> int
       if smoke.backend_id <= lig_backend_webgpu():
         return 1
   return 0
+
+extern proc li_rt_lig_kernel_run(kernel_id: int, backend_id: int) -> int
+  requires kernel_id >= 1
+  requires backend_id >= 1
+  requires backend_id <= 4
+  ensures result >= -1
+  ensures result <= 4
+  decreases kernel_id
+
+extern proc li_rt_lig_kernel_last_validity_ratio() -> float
+  requires true
+  ensures result >= 0.0
+  ensures result <= 1.0
+  decreases 0
+
+def lig_kernel_matmul_f32() -> int
+  requires true
+  ensures result == 1
+  decreases 0
+=
+  return 1
+
+def lig_kernel_run(kernel_id: int, backend_id: int) raises IO -> int
+  requires kernel_id >= 1
+  requires backend_id >= 1
+  requires backend_id <= 4
+  ensures result >= -1
+  ensures result <= 4
+  decreases kernel_id
+=
+  return li_rt_lig_kernel_run(kernel_id, backend_id)
+
+def lig_kernel_run_auto(kernel_id: int) raises IO -> int
+  requires kernel_id >= 1
+  ensures result >= -1
+  ensures result <= 4
+  decreases kernel_id
+=
+  return lig_kernel_run(kernel_id, lig_backend_select_auto())
+
+def lig_validity_gate_pass(min_ratio: float) -> int
+  requires min_ratio >= 0.0
+  requires min_ratio <= 1.0
+  ensures result >= 0
+  ensures result <= 1
+  decreases 0
+=
+  if li_rt_lig_kernel_last_validity_ratio() + 0.0001 >= min_ratio:
+    return 1
+  return 0

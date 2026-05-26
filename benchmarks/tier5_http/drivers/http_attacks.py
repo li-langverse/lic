@@ -159,10 +159,6 @@ def attack_oversized_request_line(host: str, port: int, attack: dict[str, Any]) 
     }
 
 
-
-
-
-
 def attack_oversized_body(host: str, port: int, attack: dict[str, Any]) -> dict[str, Any]:
     body_len = int(attack.get("body_bytes") or 65536)
     payload = b"A" * body_len
@@ -581,8 +577,8 @@ def attack_host_header_ssrf(host: str, port: int, attack: dict[str, Any]) -> dic
 
 DRIVERS = {
     "slowloris": attack_slowloris,
-    "oversized_request_line": attack_oversized_request_line,
     "oversized_body": attack_oversized_body,
+    "oversized_request_line": attack_oversized_request_line,
     "path_traversal": attack_path_traversal,
     "duplicate_content_length": attack_duplicate_content_length,
     "connection_flood": attack_connection_flood,

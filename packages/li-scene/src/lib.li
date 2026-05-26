@@ -300,7 +300,9 @@ def scene_bench_all_particle_tiers_pass() -> int
 
 def scene_md_particle_memory_ledger_default() -> LigMemoryLedger
   requires true
-  ensures true
+  ensures result.budget_mib == lig_memory_budget_mib()
+  ensures result.allocated_bytes == 0
+  ensures result.peak_bytes == 0
   decreases 0
 =
   var l: LigMemoryLedger

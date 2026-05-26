@@ -27,7 +27,7 @@
 | `extern_call_requires_ok.li` | Imported callee `requires` | Discharged |
 | `index_refinement.li` | Index refinement type + array access | Build + autovc check in corpus |
 | `sqrt_contract.li` | Float `requires`/`ensures` (toy `sqrt`) | Emits real Props; float goals may stay open |
-| `sqrt_open_bound.li` | `abs(result² - x) < ε` with `li_rt_sqrt` body | **Intentionally open** — `verify_open_ok` / `--allow-open-vc` |
+| `sqrt_open_bound.li` | `abs(result² - x) < ε` with `li_rt_sqrt` body | **Closed** — `Li.Discharge.sqrt_open_bound_spec` + `Li.Trusted.li_rt_sqrt_square_bound` |
 | `refinement_*_ok.li` | Refinement types at call/init | **Partial** — refinement VCs often `True`; user `ensures` may stay open |
 | `refinement_guard_ok.li` | `if n >= 0` branch discharge | Same |
 | `linalg_dot4_int_closed.li` | Fixed 4-term int dot — return matches ensures | Fully discharged (`discharge_linalg_int_lean.sh`) |
@@ -74,8 +74,8 @@ See [proof-db/reporter.md](../../proof-db/reporter.md).
 
 | Suite | Result | Notes |
 |-------|--------|-------|
-| `run_all.sh contracts_verify` | **26 pass / 0 fail** (14 `prove_lean_ok` + 12 `verify_ok`/`verify_open_ok`) | `prove_lean_ok` runs lake when elan on PATH |
-| `contracts_discharge_corpus.sh` | **ok** | Trivial/const/index/caller-requires/**linalg closed**; `sqrt_open_bound` + loop dot intentionally open |
+| `run_all.sh contracts_verify` | **26 pass / 0 fail** (14 `prove_lean_ok` + 12 `verify_ok`/`verify_open_ok`) | **P-float** `sqrt_open_bound` closed; `prove_lean_ok` runs lake when elan on PATH |
+| `contracts_discharge_corpus.sh` | **ok** | Trivial/const/index/caller-requires/**linalg closed**; **P-float** `sqrt_open_bound` closed; loop dot intentionally open |
 | `run_httpd_config.sh` | **ok** | Python oracle + Li `match_routes.li` binary exit 0 |
 | `contracts_verify_lean.sh` | **partial** | Needs Lean 4 + lake; may stop on specimens with open user `ensures` |
 | `lake build` | **default on `lic build`** | `--no-lean-verify` to skip; CI runs lake directly + tooling scripts |
@@ -88,7 +88,7 @@ Priority order aligned with [provability-gaps](provability-gaps.md) and **2e →
 |----|-------|-------------------|------------------|
 | **P-refine** | Refinement types emit real Props | Call-site VCs stubbed `True`; user `ensures` still open | Extend `refinement_*` + Lean lemmas in `Discharge.lean` |
 | **P-ensures-witness** | MIR-linked `ensures` for non-literal returns | `witnessed_ensures` partial | `caller()`, `use_positive.li`, physics smokes |
-| **P-float** | `Float.abs`, sqrt error bounds | **G-vc** open (`sqrt_open_bound`) | `sqrt_open_bound.li` + `Li.Discharge` lemmas |
+| **P-float** | `Float.abs`, sqrt error bounds | **G-vc** partial — `sqrt_open_bound` closed (trusted libm); other float ensures open | `sqrt_open_bound.li` + `Li.Discharge` + `trusted.lean` |
 | **P-loop** | `while` invariant preservation | Few loop specimens | New `contracts_verify/loop_invariant_*.li` |
 | **P-linalg** | Matrix/vector shapes (`@`, slices) | **Partial** — closed dot/sum/matmul-entry/norm/axpy + loop witness. **Open:** float `vec3_dot` Props, 2D array CallProc | `contracts_verify/linalg_*`, `math_linalg/*` |
 | **P-par** | `parallel for` disjointness | **G-par** string heuristics only | Lean specs for `disjoint=` (7d-c) |

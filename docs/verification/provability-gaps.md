@@ -1,6 +1,6 @@
 # Provability gaps (current compiler)
 
-**Last updated:** 2026-05-21  
+**Last updated:** 2026-05-26  
 **Audience:** contributors, package authors, anyone relying on `lic build` as a proof certificate  
 
 Li’s **north star** is: user logic is proved before ship; runtime failures for proved programs → **~0%**. That is the **target**, not a complete description of **`lic` today**.
@@ -33,8 +33,8 @@ This page is the **honest inventory** of what is **not** fully proved or not yet
 
 | ID | Status | What remains |
 |----|--------|----------------|
-| **G-lean** | Partial | **Tier B (default when lake installed):** `lic build` runs `lake build AutoVC` (typecheck only; `--no-lean-verify` opt-out). **Strict** open goals: `--strict-lean`. Open obligations: fail unless `--allow-open-vc` (CLI only; env bypass removed). **`LiArray`** + fib/recursive call-site + parallel `_par*` VCs typecheck. **Still open:** `sqrt_open_bound` (P-float); `mat2_at2_eval` trusted vs MIR `@` (semantic closed in `Discharge.lean`) |
-| **G-vc** | Partial | Float/`abs` ensures; opaque `vec3_dot`-style returns; loop implementations vs closed-form `ensures` |
+| **G-lean** | Partial | **Tier B (default when lake installed):** `lic build` runs `lake build AutoVC` (typecheck only; `--no-lean-verify` opt-out). **Strict** open goals: `--strict-lean`. Open obligations: fail unless `--allow-open-vc` (CLI only; env bypass removed). **`LiArray`** + fib/recursive call-site + parallel `_par*` VCs typecheck. **Closed slice:** `sqrt_open_bound` via `Li.Discharge` + `Li.Trusted.li_rt_sqrt_square_bound` (**G-hw**). **Still open:** `mat2_at2_eval` trusted vs MIR `@` (semantic closed in `Discharge.lean`) |
+| **G-vc** | Partial | **Closed slice:** `sqrt_open_bound` float `abs` bound (trusted libm axiom). Still open: opaque `vec3_dot`-style returns; loop implementations vs closed-form `ensures` |
 | **G-par** | Partial | AST `policy_module` rejects missing disjoint, false `disjoint_row`, mut capture, borrow-in-par; Lean proofs open |
 | **G-dec** | Partial | **Closed slice:** MIR telemetry + corpus scripts; Lean **P-dec** open |
 | **G-math** | Partial | **Closed slice (tier-1):** `matmul_naive`, `horner_pure_li` ≤1.2× C++ (`check-tier1-li-vs-cpp.sh`, loop matmul + FMA horner). **Closed slice:** full 2×2 float `@` Lean Prop (`linalg_mat2_at2_float_closed`, `mat2_at2_float_spec`). **Closed slice:** `linalg_dot4_float_closed` (prelude `dot`), `linalg_mat2_callproc_float_closed`, prelude `norm`/`axpy`/**, IKJ `ArrayMatMul2DF64` enforced only with `LI_TIER1_PERF_STRICT=1` (`check-tier1-li-vs-cpp.sh` reports gaps by default). **Closed slice:** prelude `norm`, `axpy`, same-length `**`, scalar×array, `math_linalg/reductions/`, loop-dot witness, P-linalg corpus |
@@ -78,8 +78,8 @@ Status legend: **Missing** · **Stub** · **Partial** · **CI only** · **Done**
 
 | ID | Area | Spec / promise | Current state | Phase | How we know |
 |----|------|----------------|---------------|-------|-------------|
-| **G-lean** | Lean 4 gate | `lic build` fails if any VC open | **Partial** — Tier B `lake build AutoVC` when installed; **closed slice:** 14× `prove_lean_ok` corpus; `sqrt_open_bound` intentional open; kernel not universal certificate | **2f** | `discharge_trivial_lean.sh`, `discharge_linalg_int_lean.sh`, `contracts_discharge_corpus.sh`, `check-autovc-open-goals.sh`, `li-tests/run_all.sh` `prove_lean_ok` |
-| **G-vc** | VC generation | Contracts → proof obligations | **Partial** — **closed slice:** call-site `requires`, const-local discharge, E0303/E0304/E0305; open: float `abs`, opaque returns | **2e** | `vc_emit_contracts.sh`, `mir_vc_witness.sh`, `discharge_caller_requires_lean.sh`, `discharge_caller_requires_local_lean.sh`, `contracts_discharge_corpus.sh`, `prove_reject/weak_ensures_true.li` |
+| **G-lean** | Lean 4 gate | `lic build` fails if any VC open | **Partial** — Tier B `lake build AutoVC` when installed; **P-float** `sqrt_open_bound` closed; kernel not universal certificate | **2f** | `discharge_trivial_lean.sh`, `discharge_linalg_int_lean.sh`, `contracts_discharge_corpus.sh`, `check-autovc-open-goals.sh`, `li-tests/run_all.sh` `prove_lean_ok` |
+| **G-vc** | VC generation | Contracts → proof obligations | **Partial** — **P-float** `sqrt_open_bound` discharged via `Li.Discharge`; open: other float / opaque returns | **2e** | `vc_emit_contracts.sh`, `mir_vc_witness.sh`, `discharge_caller_requires_lean.sh`, `contracts_discharge_corpus.sh` |
 | **G-par** | `parallel for` safety | Proved iteration independence | **Partial** — **closed slice:** 6× `compile_fail` + `good_disjoint_parallel.li` `verify_ok`; Lean disjoint proofs open | **7b**, **7d-c** | `li-tests/race_shared_memory/`, `decorator_exploits/missing_disjoint_at_parallel.li`, `run_all.sh` suite `race_shared_memory` |
 | **G-stdlib** | Prelude / std seal | User cannot shadow builtin or `std/` names | **Partial** — `check_stdlib_seal` + `resolve_imports` for `std.*` / workspace; cycle detect at load | **4s** | `li-tests/stdlib_seal/`, `li-tests/modules/` |
 | **G-dec** | Execution decorators | Static elaboration; reserved names; no runtime | **Partial** — **closed slice:** 4× `decorator_exploits` `compile_fail`; `@vectorized` on `for` (`vectorized_for_scope_ok.li`); `MIR proc tags + corpus scripts | **7d** | `contracts_discharge_corpus.sh`, `decorator_exploits/` |

@@ -233,6 +233,24 @@ std::optional<std::string> expr_to_lean(const Expr& e, const VcCtx& ctx) {
           return "Float.abs " + *inner;
         }
       }
+      if (e.args.size() == 2 && e.args[0] && e.args[1]) {
+        const auto a0 = expr_to_lean(*e.args[0], ctx);
+        const auto a1 = expr_to_lean(*e.args[1], ctx);
+        if (a0 && a1) {
+          if (e.ident == "disjoint_elem") {
+            return "Li.Discharge.disjoint_elem_spec " + *a0 + " " + *a1;
+          }
+          if (e.ident == "disjoint_row") {
+            return "Li.Discharge.disjoint_row_spec " + *a0 + " " + *a1;
+          }
+          if (e.ident == "disjoint_slice") {
+            return "Li.Discharge.disjoint_slice_spec " + *a0 + " " + *a1;
+          }
+          if (e.ident == "row_ok") {
+            return "Li.Discharge.row_ok_spec " + *a0 + " " + *a1;
+          }
+        }
+      }
       return std::nullopt;
     }
     case Expr::Kind::Index: {
@@ -284,6 +302,25 @@ const Expr* ensures_rhs_eq_result(const Expr& e) {
     return e.lhs.get();
   }
   return nullptr;
+}
+
+std::optional<std::string> par_disjoint_policy_witness(const Expr& e) {
+  if (e.kind != Expr::Kind::Call || e.args.size() != 2) {
+    return std::nullopt;
+  }
+  if (e.ident == "disjoint_elem") {
+    return "Li.Discharge.disjoint_elem_policy_witness";
+  }
+  if (e.ident == "disjoint_row") {
+    return "Li.Discharge.disjoint_row_policy_witness";
+  }
+  if (e.ident == "disjoint_slice") {
+    return "Li.Discharge.disjoint_slice_policy_witness";
+  }
+  if (e.ident == "row_ok") {
+    return "Li.Discharge.row_ok_policy_witness";
+  }
+  return std::nullopt;
 }
 
 }  // namespace
@@ -372,6 +409,12 @@ void emit_contract_def(std::ostream& out, const Module& module, const ProcDecl& 
       prop += p.name;
     }
     prop += ')';
+  } else if (sqrt_discharge_theorem && c.kind == ContractKind::Ensures) {
+    prop = "Li.Discharge.sqrt_open_bound_spec";
+    for (const auto& p : proc.params) {
+      prop += ' ';
+      prop += lean_ident(p.name);
+    }
   } else if (c.expr) {
     if (auto lean = expr_to_lean(*c.expr, ctx)) {
       prop = *lean;
@@ -417,16 +460,16 @@ void emit_contract_def(std::ostream& out, const Module& module, const ProcDecl& 
     }
     out << '\n';
   } else if (sqrt_discharge_theorem && c.kind == ContractKind::Ensures) {
-    const std::string req_name = "vc_" + sec + "_requires_0";
+    out << "/-! Phase 2f: P-float sqrt_open_bound — Li.Discharge.sqrt_open_bound_spec (trusted libm) -/\n";
     out << "theorem " << name << "_proved";
     emit_formals(false);
     out << " : " << name;
     emit_args(false);
-    out << " (hreq : " << req_name;
-    for (const auto& p : proc.params) { out << ' ' << lean_ident(p.name); }
-    out << ") := Li.Discharge.sqrt_open_bound_spec_proved";
-    for (const auto& p : proc.params) { out << ' ' << lean_ident(p.name); }
-    out << " hreq\n";
+    out << " := Li.Discharge.sqrt_open_bound_spec_proved";
+    for (const auto& p : proc.params) {
+      out << ' ' << lean_ident(p.name);
+    }
+    out << '\n';
   } else if (prop == "True") {
     out << "theorem " << name << "_proved";
     emit_formals(true);

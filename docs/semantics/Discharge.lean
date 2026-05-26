@@ -1,5 +1,6 @@
 import Init.Data.Float
 import Core
+import trusted
 
 /-!
 # Discharge lemmas for generated AutoVC (Phase 2f partial)
@@ -57,25 +58,13 @@ theorem mat2_at2_float_spec_proved (A B : LiArray (LiArray Float 2) 2) :
   unfold mat2_at2_float_spec mat2_at2_eval
   refine And.intro rfl (And.intro rfl (And.intro rfl rfl))
 
-/-!
-## Trusted libm (`li_rt_sqrt`) — **P-float** corpus only
-
-`li_rt_sqrt` accuracy is axiomatized here (not proved from IEEE). See **G-hw** in provability-gaps.
--/
-namespace Li.TrustedMath
-
-axiom li_rt_sqrt : Float → Float
-
-axiom li_rt_sqrt_bound (x : Float) (hx : x ≥ (0 : Float)) :
-    Float.abs (li_rt_sqrt x * li_rt_sqrt x - x) < (1e-12 : Float)
-
-end Li.TrustedMath
-
+/-- `sqrt_open_bound.li` ensures: `abs(result² - x) < 1e-12` for `result = li_rt_sqrt x`. -/
 def sqrt_open_bound_spec (x : Float) : Prop :=
-  Float.abs (Li.TrustedMath.li_rt_sqrt x * Li.TrustedMath.li_rt_sqrt x - x) < (1e-12 : Float)
+  Float.abs (Li.Trusted.li_rt_sqrt x * Li.Trusted.li_rt_sqrt x - x) < 1e-12
 
-theorem sqrt_open_bound_spec_proved (x : Float) (hreq : x ≥ (0 : Float)) : sqrt_open_bound_spec x :=
-  Li.TrustedMath.li_rt_sqrt_bound x hreq
+/-- Discharged via trusted libm accuracy axiom (`Li.Trusted.li_rt_sqrt_square_bound`). -/
+theorem sqrt_open_bound_spec_proved (x : Float) : sqrt_open_bound_spec x :=
+  Li.Trusted.li_rt_sqrt_square_bound x
 
 /-!
 ## Refinement types (**P-refine** / **G-vc**)

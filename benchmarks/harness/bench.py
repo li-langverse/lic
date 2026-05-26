@@ -13,7 +13,7 @@ import statistics
 import subprocess
 import sys
 import time
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from datetime import datetime, timezone
 from pathlib import Path
 
@@ -33,6 +33,13 @@ CSV_HEADER = [
     "git_sha",
     "cpu_model",
     "flags",
+    "os",
+    "passed",
+    "oracle_kind",
+    "verify_abs_err",
+    "verify_rel_err",
+    "verify_ulps",
+    "verify_within_1ulp",
 ]
 NATIVE_FLAGS = "-O3 -march=native -ffast-math"
 LANGS = ("cpp", "rust", "julia", "li")
@@ -511,11 +518,73 @@ def verify_stdlib_benchmark(spec: BenchSpec, build_dir: Path) -> None:
     print(f"{spec.name} verify ok (stdlib native oracle): checksum={native_out}")
 
 
-def verify_benchmark_results(spec: BenchSpec, build_dir: Path) -> None:
+@dataclass
+class BenchmarkVerifyOutcome:
+    deviation_reports: list = field(default_factory=list)
+    oracle_kind: str = "iterative"
+
+
+def host_os_tag() -> str:
+    sys_name = platform.system().lower()
+    if sys_name == "darwin":
+        return "darwin"
+    if sys_name == "windows":
+        return "windows"
+    if sys_name == "linux":
+        return "linux"
+    return "unknown"
+
+
+def verify_csv_rows(
+    spec: BenchSpec,
+    outcome: BenchmarkVerifyOutcome,
+    *,
+    sha: str,
+    cpu: str,
+    flags: str,
+    lang: str,
+) -> list[dict[str, object]]:
+    """Export verify metrics for dashboard ingest (one row per metric)."""
+    from reference import analytical_report_for_label
+
+    label_for_lang = {"li": "Li", "cpp": "native", "rust": "native", "julia": "native"}
+    report_label = label_for_lang.get(lang, lang)
+    primary = analytical_report_for_label(outcome.deviation_reports, report_label)
+    if primary is None:
+        return []
+    passed = "true" if primary.within_machine_epsilon else "false"
+    shared = dict(
+        benchmark=spec.name,
+        lang=lang,
+        sha=sha,
+        cpu=cpu,
+        flags=flags,
+        passed=passed,
+        oracle_kind=outcome.oracle_kind,
+        verify_abs_err=f"{primary.abs_error:.6e}",
+        verify_rel_err=f"{primary.rel_error:.6e}",
+        verify_ulps=f"{primary.ulps:.4f}",
+        verify_within_1ulp="1" if primary.within_machine_epsilon else "0",
+    )
+    rows: list[dict[str, object]] = []
+
+    def add(metric: str, value: float, unit: str) -> None:
+        rows.append(row_for(metric=metric, value=value, unit=unit, **shared))
+
+    add("verify_checksum", primary.actual, "f64")
+    add("verify_analytical", primary.reference, "f64")
+    add("verify_abs_err", primary.abs_error, "f64")
+    add("verify_rel_err", primary.rel_error, "ratio")
+    add("verify_ulps", primary.ulps, "ulp")
+    add("verify_within_1ulp", 1.0 if primary.within_machine_epsilon else 0.0, "bool")
+    return rows
+
+
+def verify_benchmark_results(spec: BenchSpec, build_dir: Path) -> BenchmarkVerifyOutcome:
     """Verify results against normative spec (reference.py), then Li vs native when applicable."""
     if not spec.li_enabled:
         verify_stdlib_benchmark(spec, build_dir)
-        return
+        return BenchmarkVerifyOutcome()
     from reference import (
         TIER1_REFERENCE,
         assert_checksum_against_spec,
@@ -532,6 +601,8 @@ def verify_benchmark_results(spec: BenchSpec, build_dir: Path) -> None:
     build_li(spec, li_bin)
 
     ref_case = TIER1_REFERENCE.get(spec.name)
+    oracle_kind = ref_case.oracle if ref_case is not None else "iterative"
+    deviation_logs: list = []
     if ref_case is not None and os.environ.get("BENCH_VERIFY_REFERENCE", "1").strip() not in (
         "0",
         "false",
@@ -543,7 +614,6 @@ def verify_benchmark_results(spec: BenchSpec, build_dir: Path) -> None:
         print(f"{spec.name} spec small ok ({oracle}): {small_expected}")
 
     native_out = native_result_checksum(native)
-    deviation_logs: list = []
     if ref_case is not None and os.environ.get("BENCH_VERIFY_REFERENCE", "1").strip() not in (
         "0",
         "false",
@@ -567,7 +637,10 @@ def verify_benchmark_results(spec: BenchSpec, build_dir: Path) -> None:
         if native_out != native_b_out:
             raise RuntimeError(f"{spec.name}: native checksum not reproducible")
         print(f"{spec.name} verify ok (native only): checksum={native_out}")
-        return
+        return BenchmarkVerifyOutcome(
+            deviation_reports=deviation_logs,
+            oracle_kind=oracle_kind,
+        )
 
     t0 = time.perf_counter()
     li_out = li_result_checksum(li_bin, try_argv_verify=not spec.li_pure)
@@ -629,10 +702,14 @@ def verify_benchmark_results(spec: BenchSpec, build_dir: Path) -> None:
 
     variant = "pure Li" if spec.li_pure else "shared C kernel"
     print(f"{spec.name} verify ok ({variant}): result={li_out}")
+    return BenchmarkVerifyOutcome(
+        deviation_reports=deviation_logs,
+        oracle_kind=oracle_kind,
+    )
 
 
-def verify_checksum(spec: BenchSpec, build_dir: Path) -> None:
-    verify_benchmark_results(spec, build_dir)
+def verify_checksum(spec: BenchSpec, build_dir: Path) -> BenchmarkVerifyOutcome:
+    return verify_benchmark_results(spec, build_dir)
 
 
 def verify_md_refs() -> None:
@@ -674,6 +751,12 @@ def row_for(
     sha: str,
     cpu: str,
     flags: str,
+    passed: str = "",
+    oracle_kind: str = "",
+    verify_abs_err: str = "",
+    verify_rel_err: str = "",
+    verify_ulps: str = "",
+    verify_within_1ulp: str = "",
 ) -> dict[str, object]:
     return {
         "benchmark": benchmark,
@@ -686,6 +769,13 @@ def row_for(
         "git_sha": sha,
         "cpu_model": cpu,
         "flags": flags,
+        "os": host_os_tag(),
+        "passed": passed,
+        "oracle_kind": oracle_kind,
+        "verify_abs_err": verify_abs_err,
+        "verify_rel_err": verify_rel_err,
+        "verify_ulps": verify_ulps,
+        "verify_within_1ulp": verify_within_1ulp,
     }
 
 
@@ -791,6 +881,9 @@ def run_tier_benches(
 ) -> int:
     if not specs:
         return 1
+    verify_outcomes: dict[str, BenchmarkVerifyOutcome] = {}
+    sha = git_sha()
+    cpu = cpu_model()
     if verify:
         for spec in specs:
             build_dir = REPO / "build" / "bench" / spec.name
@@ -801,7 +894,7 @@ def run_tier_benches(
                 except RuntimeError as exc:
                     print(f"warn: {exc} — continuing with timing", file=sys.stderr)
             try:
-                verify_checksum(spec, build_dir)
+                verify_outcomes[spec.name] = verify_checksum(spec, build_dir)
             except RuntimeError as exc:
                 print(f"FAIL verify {spec.name}: {exc}", file=sys.stderr)
                 return 1
@@ -809,6 +902,19 @@ def run_tier_benches(
     merged: list[dict[str, object]] = read_csv(out)
     for spec in specs:
         new_rows = run_benchmark(spec, runs=runs)
+        outcome = verify_outcomes.get(spec.name)
+        if outcome is not None:
+            for lang in ("li", "cpp"):
+                new_rows.extend(
+                    verify_csv_rows(
+                        spec,
+                        outcome,
+                        sha=sha,
+                        cpu=cpu,
+                        flags=NATIVE_FLAGS,
+                        lang=lang,
+                    )
+                )
         merged = merge_rows(merged, new_rows, benchmark=spec.name)
     write_csv(out, merged)
     names = ", ".join(b.name for b in specs)

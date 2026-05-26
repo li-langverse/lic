@@ -9,6 +9,8 @@
 namespace li {
 namespace {
 
+bool type_mentions_heap(const TypeExpr& te);
+
 struct LocalState {
   bool moved = false;
   int mut_borrows = 0;
@@ -112,6 +114,9 @@ struct BorrowCtx {
         continue;
       }
       if (param_is_var(callee.params[n].type)) {
+        continue;
+      }
+      if (!type_mentions_heap(callee.params[n].type)) {
         continue;
       }
       const std::string& name = call.args[n]->ident;

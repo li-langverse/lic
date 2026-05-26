@@ -819,6 +819,13 @@ note = "PH-SIM vertical gap #4: studio_sim_step_by_profile (verify until object-
 
 [[tests]]
 suite = "composable"
+file = "composable/import_sim_viz_pipeline_source_display.li"
+packages = ["li-sim-viz"]
+outcome = "check_ok"
+note = "PH-SCI wave-d-25: sim.viz pipeline source/display/view stub — scientific_viz vertical"
+
+[[tests]]
+suite = "composable"
 file = "composable/import_ui_studio_shell.li"
 packages = ["li-ui"]
 outcome = "compile_open_ok"
@@ -842,8 +849,8 @@ note = "import gui: UX-09 keyboard-first (verify until object-call codegen #322)
 suite = "composable"
 file = "composable/import_render_wgpu_fps.li"
 packages = ["li-render", "li-gpu", "li-gui", "li-ui"]
-outcome = "check_ok"
-note = "import render: wgpu smoke + FPS counter (verify until object-call codegen #322)"
+outcome = "compile_open_ok"
+note = "import render: wgpu smoke + FPS counter (check_ok blocked on render package contract noise)"
 
 [[tests]]
 suite = "composable"

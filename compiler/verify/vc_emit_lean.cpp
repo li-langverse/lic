@@ -317,6 +317,9 @@ std::optional<std::string> par_disjoint_policy_witness(const Expr& e) {
 
 }  // namespace
 
+void emit_par_policy_formals(std::ostream& out, const Module& module, const ProcDecl& proc,
+                             const Contract& c, const std::string* loop_iter);
+
 void emit_contract_def(std::ostream& out, const Module& module, const ProcDecl& proc,
                        const char* kind, std::size_t idx, const Contract& c,
                        const std::string& vc_suffix = "",
@@ -422,6 +425,7 @@ void emit_contract_def(std::ostream& out, const Module& module, const ProcDecl& 
 
   const bool semantic_ensures =
       (mat2_discharge_theorem || sqrt_discharge_theorem) && c.kind == ContractKind::Ensures;
+  const bool par_requires = par_witness.has_value() && c.kind == ContractKind::Requires;
   out << "def " << name;
   emit_formals(!semantic_ensures);
   out << " : Prop := " << prop << '\n';
@@ -486,6 +490,72 @@ void emit_contract_def(std::ostream& out, const Module& module, const ProcDecl& 
 bool is_caller_param(const ProcDecl& caller, const std::string& name) {
   return std::any_of(caller.params.begin(), caller.params.end(),
                      [&](const Param& p) { return p.name == name; });
+}
+
+void collect_par_policy_extra_idents(const Expr& call, const std::string* loop_iter,
+                                     const ProcDecl& proc, std::vector<std::string>& out) {
+  if (call.kind != Expr::Kind::Call) {
+    return;
+  }
+  for (const auto& arg : call.args) {
+    if (arg == nullptr || arg->kind != Expr::Kind::Ident) {
+      continue;
+    }
+    const std::string& n = arg->ident;
+    if (loop_iter != nullptr && n == *loop_iter) {
+      continue;
+    }
+    if (is_caller_param(proc, n)) {
+      continue;
+    }
+    if (std::find(out.begin(), out.end(), n) == out.end()) {
+      out.push_back(n);
+    }
+  }
+}
+
+void emit_par_policy_formals(std::ostream& out, const Module& module, const ProcDecl& proc,
+                             const Contract& c, const std::string* loop_iter) {
+  for (const auto& p : proc.params) {
+    out << ' ' << '(' << lean_ident(p.name) << " : " << lean_type_name(p.type, module) << ')';
+  }
+  if (loop_iter != nullptr) {
+    out << " (" << lean_ident(*loop_iter) << " : Int)";
+  }
+  if (!c.expr) {
+    return;
+  }
+  std::vector<std::string> extra;
+  collect_par_policy_extra_idents(*c.expr, loop_iter, proc, extra);
+  std::map<std::string, const TypeExpr*> locals;
+  for (const auto& p : proc.params) {
+    locals[p.name] = &p.type;
+  }
+  collect_local_types_in_stmts(proc.body, locals);
+  for (const std::string& n : extra) {
+    const auto it = locals.find(n);
+    if (it != locals.end() && it->second != nullptr) {
+      out << " (" << lean_ident(n) << " : " << lean_type_name(*it->second, module) << ')';
+    }
+  }
+}
+
+void emit_par_policy_args(std::ostream& out, const ProcDecl& proc, const Contract& c,
+                          const std::string* loop_iter) {
+  for (const auto& p : proc.params) {
+    out << ' ' << lean_ident(p.name);
+  }
+  if (loop_iter != nullptr) {
+    out << ' ' << lean_ident(*loop_iter);
+  }
+  if (!c.expr) {
+    return;
+  }
+  std::vector<std::string> extra;
+  collect_par_policy_extra_idents(*c.expr, loop_iter, proc, extra);
+  for (const std::string& n : extra) {
+    out << ' ' << lean_ident(n);
+  }
 }
 
 void append_call_site_vc_formals(std::ostream& out, const Module& module, const ProcDecl& caller,

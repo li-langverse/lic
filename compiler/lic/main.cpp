@@ -25,7 +25,44 @@
 #include <string>
 #include <string_view>
 
+#if defined(__linux__)
+#include <fcntl.h>
+#include <sys/file.h>
+#include <unistd.h>
+#endif
+
 namespace {
+
+#if defined(__linux__)
+struct AutoVcFileLock {
+  int fd{-1};
+  explicit AutoVcFileLock(const std::filesystem::path& vc_lean) {
+    if (const char* held = std::getenv("LI_AUTOVC_LOCK_HELD");
+        held != nullptr && held[0] == '1' && held[1] == '\0') {
+      return;
+    }
+    const auto lock_path = vc_lean.parent_path() / ".autovc.lock";
+    std::error_code ec;
+    std::filesystem::create_directories(lock_path.parent_path(), ec);
+    fd = ::open(lock_path.c_str(), O_CREAT | O_RDWR, 0666);
+    if (fd >= 0) {
+      ::flock(fd, LOCK_EX);
+    }
+  }
+  ~AutoVcFileLock() {
+    if (fd >= 0) {
+      ::flock(fd, LOCK_UN);
+      ::close(fd);
+    }
+  }
+  AutoVcFileLock(const AutoVcFileLock&) = delete;
+  AutoVcFileLock& operator=(const AutoVcFileLock&) = delete;
+};
+#else
+struct AutoVcFileLock {
+  explicit AutoVcFileLock(const std::filesystem::path&) {}
+};
+#endif
 
 int usage() {
   const unsigned jobs = li::default_host_jobs();

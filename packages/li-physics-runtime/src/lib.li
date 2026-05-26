@@ -1,6 +1,12 @@
-
 import sim
+import scene
 import physics.rigid
+
+type PhysicsEntitySync = object
+  public px: float
+  public py: float
+  public pz: float
+  public active: int
 
 type PhysicsWorld = object
   public tier: int
@@ -13,12 +19,32 @@ type PhysicsWorld = object
   public particles_enabled: int
   public gravity_z: float
   public body: RigidBody
+  public sync0: PhysicsEntitySync
+  public sync1: PhysicsEntitySync
+  public sync2: PhysicsEntitySync
+  public sync3: PhysicsEntitySync
+
 def li_std_physics_runtime_version() -> int
   requires true
   ensures result == 1
   decreases 0
 =
   return 1
+
+def physics_entity_sync_inactive() -> PhysicsEntitySync
+  requires true
+  ensures result.active == 0
+  ensures result.px == 0.0
+  ensures result.py == 0.0
+  ensures result.pz == 0.0
+  decreases 0
+=
+  var s: PhysicsEntitySync
+  s.px = 0.0
+  s.py = 0.0
+  s.pz = 0.0
+  s.active = 0
+  return s
 
 def physics_world_new(tier: int) -> PhysicsWorld
   requires tier >= 0
@@ -47,7 +73,12 @@ def physics_world_new(tier: int) -> PhysicsWorld
   w.body.vz = 0.0
   w.body.inv_mass = 1.0
   w.body.radius = 0.5
+  w.sync0 = physics_entity_sync_inactive()
+  w.sync1 = physics_entity_sync_inactive()
+  w.sync2 = physics_entity_sync_inactive()
+  w.sync3 = physics_entity_sync_inactive()
   return w
+
 def physics_world_game_default() -> PhysicsWorld
   requires true
   ensures result.tier == 2
@@ -58,7 +89,7 @@ def physics_world_game_default() -> PhysicsWorld
 
 def physics_rigid_substep(world: var PhysicsWorld, sub_dt: float) -> unit
   requires sub_dt > 0.0
-  ensures true
+  ensures world.step_count == old(world.step_count)
   decreases 0
 =
   if world.rigid_enabled == 0:
@@ -69,7 +100,7 @@ def physics_step(world: var PhysicsWorld, frame_dt: float) -> unit
   requires frame_dt > 0.0
   requires world.substeps >= 1
   requires world.substep_inv > 0.0
-  ensures true
+  ensures world.step_count >= old(world.step_count)
   decreases world.substeps
 =
   var sub: float = frame_dt * world.substep_inv
@@ -81,24 +112,63 @@ def physics_step(world: var PhysicsWorld, frame_dt: float) -> unit
     sc = sc + 1
     world.step_count = sc
     i = i + 1
-def physics_sync_from_scene(world: PhysicsWorld) -> unit
-  requires true
-  ensures true
-  decreases 0
-=
-  return
-def physics_sync_to_scene(world: PhysicsWorld) -> unit
-  requires true
-  ensures true
-  decreases 0
-=
-  return
 
-# PH-SIM game vertical — studio tick uses runtime substeps (RigidBody lives here, not physics.rigid).
+def physics_sync_slot_from_transform(sync: var PhysicsEntitySync, t: Transform3) -> unit
+  requires true
+  ensures sync.active == 1
+  ensures sync.px == t.px
+  ensures sync.py == t.py
+  ensures sync.pz == t.pz
+  decreases 0
+=
+  sync.px = t.px
+  sync.py = t.py
+  sync.pz = t.pz
+  sync.active = 1
+
+def physics_sync_from_scene(world: var PhysicsWorld, batch: var SceneEntityBatch) -> unit
+  requires batch.count >= 0
+  requires batch.count <= scene_sync_entity_max()
+  ensures world.sync0.active >= 0
+  decreases batch.count
+=
+  if batch.count >= 1:
+    var t0: Transform3 = scene_entity_batch_get_transform(batch, 0)
+    world.body.px = t0.px
+    world.body.py = t0.py
+    world.body.pz = t0.pz
+    physics_sync_slot_from_transform(world.sync0, t0)
+  if batch.count >= 2:
+    var t1: Transform3 = scene_entity_batch_get_transform(batch, 1)
+    physics_sync_slot_from_transform(world.sync1, t1)
+  if batch.count >= 3:
+    var t2: Transform3 = scene_entity_batch_get_transform(batch, 2)
+    physics_sync_slot_from_transform(world.sync2, t2)
+  if batch.count >= 4:
+    var t3: Transform3 = scene_entity_batch_get_transform(batch, 3)
+    physics_sync_slot_from_transform(world.sync3, t3)
+
+def physics_sync_to_scene(world: PhysicsWorld, batch: var SceneEntityBatch) -> unit
+  requires batch.count >= 0
+  requires batch.count <= scene_sync_entity_max()
+  ensures batch.count == old(batch.count)
+  decreases batch.count
+=
+  if batch.count >= 1:
+    scene_entity_batch_set_position(batch, 0, world.body.px, world.body.py, world.body.pz)
+  if batch.count >= 2:
+    scene_entity_batch_set_position(batch, 1, world.sync1.px, world.sync1.py, world.sync1.pz)
+  if batch.count >= 3:
+    scene_entity_batch_set_position(batch, 2, world.sync2.px, world.sync2.py, world.sync2.pz)
+  if batch.count >= 4:
+    scene_entity_batch_set_position(batch, 3, world.sync3.px, world.sync3.py, world.sync3.pz)
+
 type GamePhysicsStepOutcome = object
   public status: int
   public physics_step_count: int
   public body_pz: float
+  public scene_sync_count: int
+  public position_checksum: int
 
 def game_physics_world_at_tick(tick: int) -> PhysicsWorld
   requires tick >= 0
@@ -119,18 +189,40 @@ def game_physics_step_hook(frame_dt: float, sim_tick: int) -> GamePhysicsStepOut
   requires sim_tick <= 4096
   ensures result.status >= 0
   ensures result.status <= 1
+  ensures result.scene_sync_count >= 0
+  ensures result.position_checksum >= 0
   decreases sim_tick
 =
   var out: GamePhysicsStepOutcome
-  out.status = 1
+  out.status = 0
   out.physics_step_count = 0
   out.body_pz = 0.0
+  out.scene_sync_count = 0
+  out.position_checksum = 0
   var hz: float = 1.0 / frame_dt
   if hz < 1.0:
+    out.status = 1
     return out
-  var w: PhysicsWorld = game_physics_world_at_tick(sim_tick)
+  var tick0: int = sim_tick
+  var tick1: int = tick0
+  var batch: SceneEntityBatch = scene_entity_batch_demo(tick1)
+  var ent_n: int = batch.count
+  var w: PhysicsWorld = game_physics_world_at_tick(tick0)
+  physics_sync_from_scene(w, batch)
+  var sync_n: int = 1
   physics_step(w, frame_dt)
+  var batch_pre: SceneEntityBatch = scene_entity_batch_new(ent_n)
+  scene_entity_batch_set_position(batch_pre, 0, w.body.px, w.body.py, w.body.pz)
+  var chk_saved: int = scene_position_checksum(batch_pre)
+  var sync_n_saved: int = sync_n
+  var batch_out: SceneEntityBatch = scene_entity_batch_new(ent_n)
+  physics_sync_to_scene(w, batch_out)
+  sync_n = sync_n_saved + 1
   out.physics_step_count = w.step_count
   out.body_pz = w.body.pz
+  out.scene_sync_count = sync_n
+  out.position_checksum = scene_position_checksum(batch_out)
+  if chk_saved < 0:
+    out.position_checksum = 0
   out.status = sim_status_ok()
   return out

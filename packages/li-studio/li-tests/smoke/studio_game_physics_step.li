@@ -10,19 +10,17 @@ def main() -> int
   var out0: GamePhysicsStepOutcome = game_physics_step_hook(0.016, 0)
   if out0.status != sim_status_ok():
     return 1
-  var step_snap: int = out0.physics_step_count
-  var step_chk: int = out0.physics_step_count
-  var pz_snap: float = out0.body_pz
-  var pz_chk: float = out0.body_pz
-  var snap0: WorldSnapshot = studio_game_world_snapshot_from_physics(0, step_snap, pz_snap)
-  if world_snapshot_valid(snap0) != 1:
+  if out0.scene_sync_count != 2:
     return 2
-  if studio_game_world_checkpoint_fields(1, step_chk, pz_chk) != 1:
+  var snap0: WorldSnapshot = studio_game_world_snapshot_from_physics(0, out0.scene_sync_count, out0.position_checksum)
+  if world_snapshot_valid(snap0) != 1:
     return 3
+  if studio_game_world_checkpoint_fields(0, out0.scene_sync_count, out0.position_checksum) != 1:
+    return 4
   var cfg: StudioProjectConfig = studio_project_config_new(studio_profile_game())
   var sess: SimSessionStub = sim_session_stub_default()
   if studio_sim_step_hook(cfg, sess, 0.016) != sim_status_ok():
-    return 4
-  if sess.tick != 1:
     return 5
+  if sess.tick != 1:
+    return 6
   return 0

@@ -1,0 +1,22 @@
+import scene
+import physics.runtime
+
+def main() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  var batch: SceneEntityBatch = scene_entity_batch_demo(0)
+  var ent_n: int = batch.count
+  var w: PhysicsWorld = physics_world_game_default()
+  physics_sync_from_scene(w, batch)
+  physics_step(w, 0.016)
+  var batch_out: SceneEntityBatch = scene_entity_batch_new(ent_n)
+  physics_sync_to_scene(w, batch_out)
+  var chk: int = scene_position_checksum(batch_out)
+  if chk < 1:
+    return 1
+  var t0: Transform3 = scene_entity_batch_get_transform(batch_out, 0)
+  if t0.pz > 2.0:
+    return 2
+  return 0

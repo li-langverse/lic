@@ -7,14 +7,17 @@ def main() raises Alloc, IO -> int
 =
   if world_format_version() != 1:
     return 1
-  if world_roundtrip_ok_fields(1, 42, 7) != 1:
+  if world_roundtrip_ok_fields(1, 42, 7, 9001) != 1:
     return 2
-  var line: str = world_serialize_fields(1, 42, 7)
+  var line: str = world_serialize_fields(1, 42, 7, 9001)
   var parsed: WorldSnapshot = world_parse_line(line)
-  if world_snapshot_fields_match_fields(1, 42, 7, parsed.name, parsed.tick, parsed.entity_count) != 1:
+  if world_snapshot_fields_match_fields(1, 42, 7, 9001, parsed.name, parsed.tick, parsed.entity_count, parsed.position_checksum) != 1:
     return 3
-  var buf: str = world_save_to_buffer_fields(1, 42, 7)
+  var buf: str = world_save_to_buffer_fields(1, 42, 7, 9001)
   var loaded: WorldSnapshot = world_load_from_buffer(buf)
-  if world_snapshot_fields_match_fields(1, 42, 7, loaded.name, loaded.tick, loaded.entity_count) != 1:
+  if world_snapshot_fields_match_fields(1, 42, 7, 9001, loaded.name, loaded.tick, loaded.entity_count, loaded.position_checksum) != 1:
     return 4
+  var legacy: WorldSnapshot = world_parse_line("world_v1 name=arena tick=3 entity_count=2")
+  if legacy.position_checksum != 0:
+    return 5
   return 0

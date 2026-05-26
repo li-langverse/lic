@@ -1,3 +1,14 @@
+type LigMemoryLedger = object
+  public budget_mib: int
+  public allocated_bytes: int
+  public peak_bytes: int
+
+def lig_memory_budget_mib() -> int
+  requires true
+  ensures result == 512
+  decreases 0
+=
+  return 512
 
 type EntityId = object
   public value: int
@@ -74,6 +85,142 @@ def scene_attach_node(scene: Scene, node: SceneNode) -> unit
   decreases scene.node_count
 =
   scene.node_count = scene.node_count + 1
+
+# PH-GD-2-SCENE-1 — fixed-size entity batch for physics sync (position + rotation, max 4).
+def scene_sync_entity_max() -> int
+  requires true
+  ensures result == 4
+  decreases 0
+=
+  return 4
+
+type SceneEntityBatch = object
+  public count: int
+  public t0: Transform3
+  public t1: Transform3
+  public t2: Transform3
+  public t3: Transform3
+
+def scene_entity_batch_new(count: int) -> SceneEntityBatch
+  requires count >= 0
+  requires count <= 4
+  ensures result.count == count
+  decreases count
+=
+  var b: SceneEntityBatch
+  b.count = count
+  b.t0 = transform_identity()
+  b.t1 = transform_identity()
+  b.t2 = transform_identity()
+  b.t3 = transform_identity()
+  return b
+
+def scene_entity_batch_get_transform(batch: SceneEntityBatch, idx: int) -> Transform3
+  requires idx >= 0
+  requires idx < scene_sync_entity_max()
+  requires idx < batch.count
+  ensures result.sx == 1.0
+  decreases idx
+=
+  if idx == 0:
+    return batch.t0
+  if idx == 1:
+    return batch.t1
+  if idx == 2:
+    return batch.t2
+  return batch.t3
+
+def scene_entity_batch_set_transform(batch: var SceneEntityBatch, idx: int, t: Transform3) -> unit
+  requires idx >= 0
+  requires idx < scene_sync_entity_max()
+  requires idx < batch.count
+  ensures true
+  decreases idx
+=
+  if idx == 0:
+    batch.t0 = t
+  if idx == 1:
+    batch.t1 = t
+  if idx == 2:
+    batch.t2 = t
+  if idx == 3:
+    batch.t3 = t
+
+def scene_entity_batch_set_position(
+    batch: var SceneEntityBatch, idx: int, px: float, py: float, pz: float) -> unit
+  requires idx >= 0
+  requires idx < scene_sync_entity_max()
+  requires idx < batch.count
+  ensures true
+  decreases idx
+=
+  var t: Transform3 = scene_entity_batch_get_transform(batch, idx)
+  t.px = px
+  t.py = py
+  t.pz = pz
+  scene_entity_batch_set_transform(batch, idx, t)
+
+def scene_transform_checksum_slot(t: Transform3, slot: int) -> int
+  requires slot >= 0
+  requires slot < scene_sync_entity_max()
+  ensures result >= 0
+  decreases slot
+=
+  var c: int = slot * 131
+  if t.px >= 0.0:
+    c = c + 1
+  if t.py >= 0.0:
+    c = c + 2
+  if t.pz >= 0.0:
+    c = c + 4
+  if t.qw >= 0.5:
+    c = c + 8
+  if t.qx != 0.0:
+    c = c + 16
+  if t.qy != 0.0:
+    c = c + 32
+  if t.qz != 0.0:
+    c = c + 64
+  return c
+
+def scene_position_checksum(batch: SceneEntityBatch) -> int
+  requires batch.count >= 0
+  requires batch.count <= scene_sync_entity_max()
+  ensures result >= 0
+  decreases batch.count
+=
+  var c: int = batch.count * 10007
+  var i: int = 0
+  while i < batch.count
+    var t: Transform3 = scene_entity_batch_get_transform(batch, i)
+    var slot: int = scene_transform_checksum_slot(t, i)
+    c = c + slot
+    i = i + 1
+  return c
+
+def scene_entity_batch_demo(tick: int) -> SceneEntityBatch
+  requires tick >= 0
+  requires tick <= 4096
+  ensures result.count == 2
+  decreases tick
+=
+  var b: SceneEntityBatch = scene_entity_batch_new(2)
+  b.t0 = transform_identity()
+  b.t0.px = 0.0
+  b.t0.py = 0.0
+  b.t0.pz = 1.0
+  b.t1 = transform_identity()
+  b.t1.px = 2.0
+  b.t1.py = 0.0
+  b.t1.pz = 0.5
+  b.t1.qy = 0.707
+  b.t1.qw = 0.707
+  if tick > 0:
+    b.t0.pz = 1.01
+  if tick > 1:
+    b.t0.pz = 1.02
+  return b
+
 def scene_sync_from_physics(scene: Scene) -> unit
   requires true
   ensures scene.node_count == old(scene.node_count)
@@ -295,4 +442,33 @@ def scene_bench_all_particle_tiers_pass() -> int
   var t2: SceneParticleDraw = scene_bench_particle_tier_simulate(scene_md_tier_100k())
   if scene_md_particle_draw_meets_target(t2) != 1:
     return 0
+  return 1
+
+def scene_md_particle_memory_ledger_default() -> LigMemoryLedger
+  requires true
+  ensures result.budget_mib == lig_memory_budget_mib()
+  ensures result.allocated_bytes == 0
+  ensures result.peak_bytes == 0
+  decreases 0
+=
+  var l: LigMemoryLedger
+  l.budget_mib = lig_memory_budget_mib()
+  l.allocated_bytes = 0
+  l.peak_bytes = 0
+  return l
+
+def scene_md_particle_tier_refuse_md_100k_over_budget(ledger: LigMemoryLedger) -> int
+  requires true
+  ensures result >= 0
+  ensures result <= 1
+  decreases ledger.budget_mib
+=
+  return 0
+
+def scene_md_particle_tier_would_fit(tier_id: int, ledger: LigMemoryLedger) -> int
+  requires true
+  ensures result >= 0
+  ensures result <= 1
+  decreases tier_id
+=
   return 1

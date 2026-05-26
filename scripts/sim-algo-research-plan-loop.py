@@ -247,14 +247,15 @@ def run_gates(work: dict) -> tuple[bool, str]:
         "LIC_ROOT": str(ROOT),
         "LI_REPO_ROOT": str(ROOT),
     }
+    env["SIM_RESEARCH_STUDY_ONLY"] = "0"
+    env["SIM_RESEARCH_BACKLOG_STUDY_ONLY"] = "0"
     if work.get("study_only"):
+        env["SIM_RESEARCH_BACKLOG_STUDY_ONLY"] = "1"
         env["SIM_RESEARCH_STUDY_ONLY"] = "1"
         if study.is_file():
             env["SIM_RESEARCH_REQUIRE_STUDY"] = str(study.relative_to(ROOT))
         else:
             env.pop("SIM_RESEARCH_REQUIRE_STUDY", None)
-    else:
-        env["SIM_RESEARCH_STUDY_ONLY"] = "0"
 
     proc = subprocess.run(
         ["bash", str(GATES)], cwd=ROOT, env=env, capture_output=True, text=True

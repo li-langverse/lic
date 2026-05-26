@@ -9,12 +9,24 @@ set -euo pipefail
 
 ROOT="$(cd "$(dirname "$0")/.." && pwd)"
 APPLY=0
-if [[ "${1:-}" == "--apply" ]]; then
-  APPLY=1
-elif [[ -n "${1:-}" ]]; then
-  echo "usage: $0 [--apply]" >&2
-  exit 2
-fi
+ONLY_ID=""
+while [[ $# -gt 0 ]]; do
+  case "$1" in
+    --apply) APPLY=1; shift ;;
+    --only)
+      ONLY_ID="${2:-}"
+      shift 2
+      ;;
+    -h|--help)
+      echo "usage: $0 [--apply] [--only plan-id]" >&2
+      exit 0
+      ;;
+    *)
+      echo "usage: $0 [--apply] [--only plan-id]" >&2
+      exit 2
+      ;;
+  esac
+done
 
 # plan_id|systemd_unit|data_dir (relative to ROOT unless absolute)
 plan_row() {
@@ -65,7 +77,11 @@ resolve_data_dir() {
   fi
 }
 
-PLAN_IDS=(sim-algo httpd compiler-studio studio-ui-ux sim-md-research sim-chem-research security-research swarm-observer)
+if [[ -n "$ONLY_ID" ]]; then
+  PLAN_IDS=("$ONLY_ID")
+else
+  PLAN_IDS=(sim-algo httpd compiler-studio studio-ui-ux sim-md-research sim-chem-research security-research swarm-observer)
+fi
 
 echo "retire-goal-plan-loops: mode=$([[ $APPLY -eq 1 ]] && echo apply || echo dry-run)"
 echo "  lic root: $ROOT"

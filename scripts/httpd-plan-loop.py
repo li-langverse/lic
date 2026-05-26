@@ -29,6 +29,10 @@ from datetime import datetime, timezone
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
+sys.path.insert(0, str(ROOT / "scripts"))
+from plan_todo_normalize import normalize_plan_todo_id
+
+HTTPD_RUNNER_ID = "httpd"
 HTTPD_PR_BRANCH = os.environ.get("HTTPD_PLAN_PR_BRANCH", "cursor/httpd-plan-continue")
 PLAN = ROOT / "docs/superpowers/plans/2026-05-16-li-httpd-plan.md"
 BASELINE = ROOT / "docs/ecosystem/httpd-m1-baseline.md"
@@ -104,8 +108,32 @@ def server_tier(todo_id: str) -> int:
     return 9
 
 
+def canonical_todo_id(todo_id: str) -> str:
+    return normalize_plan_todo_id(todo_id, HTTPD_RUNNER_ID)
+
+
+def completed_canonical(state: dict) -> set[str]:
+    return {canonical_todo_id(t) for t in state.get("completed_ids") or []}
+
+
+def repair_state(state: dict) -> dict:
+    """Normalize completed_ids — collapse mirror gap-httpd-* duplicates."""
+    seen: set[str] = set()
+    repaired: list[str] = []
+    for tid in state.get("completed_ids") or []:
+        canon = canonical_todo_id(str(tid))
+        if canon not in seen:
+            seen.add(canon)
+            repaired.append(canon)
+    state["completed_ids"] = repaired
+    for row in state.get("history") or []:
+        if isinstance(row, dict) and row.get("todo_id"):
+            row["todo_id"] = canonical_todo_id(str(row["todo_id"]))
+    return state
+
+
 def pick_next(todos: list[dict], state: dict) -> dict | None:
-    completed = set(state.get("completed_ids", []))
+    completed = completed_canonical(state)
     close_server = os.environ.get("LI_HTTPD_PLAN_CLOSE_SERVER_MILESTONES", "1").strip() not in (
         "0",
         "false",
@@ -120,7 +148,7 @@ def pick_next(todos: list[dict], state: dict) -> dict | None:
     open_todos = [
         t
         for t in todos
-        if t["status"] in ("in_progress", "pending") and t["id"] not in completed
+        if t["status"] in ("in_progress", "pending") and canonical_todo_id(t["id"]) not in completed
     ]
     if not open_todos:
         return None
@@ -482,15 +510,29 @@ def main() -> int:
     parser.add_argument("--once", action="store_true", help="Single iteration")
     parser.add_argument("--dry-run", action="store_true", help="No SDK call; print instruction only")
     parser.add_argument("--skip-agent", action="store_true", help="Only run gates")
+    parser.add_argument("--repair-state", action="store_true", help="Normalize completed_ids in state.json")
     parser.add_argument("--mark-done", metavar="ID", help="Record todo id completed in state")
     args = parser.parse_args()
 
+    if args.repair_state:
+        state = load_state()
+        before = list(state.get("completed_ids") or [])
+        state = repair_state(state)
+        after = list(state.get("completed_ids") or [])
+        if not before and not after:
+            print("repair-state: state.json already empty — no changes", file=sys.stderr)
+            return 1
+        save_state(state)
+        print(f"repaired state: {len(after)} canonical completed_ids (was {len(before)})")
+        return 0
+
     if args.mark_done:
         state = load_state()
-        if args.mark_done not in state.setdefault("completed_ids", []):
-            state["completed_ids"].append(args.mark_done)
+        canon = canonical_todo_id(args.mark_done)
+        if canon not in state.setdefault("completed_ids", []):
+            state["completed_ids"].append(canon)
         save_state(state)
-        print(f"marked done: {args.mark_done}")
+        print(f"marked done: {canon}")
         return 0
 
     if not PLAN.is_file():
@@ -499,6 +541,10 @@ def main() -> int:
 
     todos = load_plan_todos()
     state = load_state()
+    repaired = repair_state(state)
+    if repaired["completed_ids"] != state.get("completed_ids"):
+        save_state(repaired)
+    state = repaired
     pending = [t for t in todos if t["status"] in ("pending", "in_progress")]
     done_count = len([t for t in todos if t["status"] == "completed"])
     print(f"plan todos: {len(todos)} total, {done_count} completed in plan, {len(pending)} open")
@@ -519,12 +565,16 @@ def main() -> int:
         else:
             os.environ.pop("HTTPD_RUN_PHASE2_GATES", None)
 
-        ok, gate_out = run_gates()
-        if not ok:
-            print("gates: FAIL (agent should fix first)")
-            print(gate_out[-2000:])
+        if not args.dry_run:
+            ok, gate_out = run_gates()
+            if not ok:
+                print("gates: FAIL (agent should fix first)")
+                print(gate_out[-2000:])
+            else:
+                print("gates: OK")
         else:
-            print("gates: OK")
+            ok = True
+            print("gates: skipped (--dry-run)")
 
         if args.skip_agent:
             return 0 if ok else 1
@@ -571,7 +621,7 @@ def main() -> int:
 
         refresh_live_pages()
 
-        tid = todo["id"]
+        tid = canonical_todo_id(todo["id"])
         if tid not in state.setdefault("completed_ids", []):
             state["completed_ids"].append(tid)
             save_state(state)

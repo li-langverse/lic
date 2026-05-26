@@ -18,6 +18,8 @@ except ImportError:
     yaml = None  # type: ignore
 
 ROOT = Path(__file__).resolve().parents[1]
+sys.path.insert(0, str(ROOT / "scripts"))
+from plan_todo_normalize import normalize_plan_todo_id
 LANGVERSE = Path(os.environ.get("LI_LANGVERSE_ROOT", ROOT.parent))
 BENCHMARKS = Path(os.environ.get("BENCHMARKS_ROOT", LANGVERSE / "benchmarks"))
 REGISTRY = ROOT / "data/swarm-gap-registry/registry.yaml"
@@ -89,17 +91,20 @@ def _ensure_todo_in_backlog(
         return f"exists {todo_id} (no status change)"
 
     block = (
-        f"\n- id: {todo_id}\n"
-        f'  content: "{content.replace(chr(34), chr(39))}"\n'
-        f"  status: pending\n"
-        f"  gap_orchestrator: true\n"
+        f"  - id: {todo_id}\n"
+        f'    content: "{content.replace(chr(34), chr(39))}"\n'
+        f"    status: pending\n"
+        f"    gap_orchestrator: true\n"
     )
-    if "todos:" in text:
+    fm = re.search(r"^(todos:\s*\n)(.*?)(^---\s*$)", text, re.MULTILINE | re.DOTALL)
+    if fm:
+        new_text = text[: fm.end(2)] + block + text[fm.end(2) :]
+    elif "todos:" in text:
         idx = text.index("todos:")
         insert_at = text.find("\n\n", idx)
         if insert_at < 0:
             insert_at = len(text)
-        new_text = text[:insert_at] + block + text[insert_at:]
+        new_text = text[:insert_at] + "\n" + block + text[insert_at:]
     else:
         new_text = text.rstrip() + "\n\ntodos:\n" + block
     if not dry_run:
@@ -109,8 +114,8 @@ def _ensure_todo_in_backlog(
 
 def _plan_debt_todo_id(gap: dict) -> str:
     runner = gap.get("runner_id") or gap.get("suggested_loop") or "plan"
-    todo = gap.get("plan_todo_id") or _slug(gap.get("title", "debt"))
-    return f"gap-{runner}-{_slug(str(todo))}"[:64]
+    raw = gap.get("plan_todo_id") or _slug(gap.get("title", "debt"))
+    return normalize_plan_todo_id(str(raw), runner)
 
 
 def _slug(s: str) -> str:

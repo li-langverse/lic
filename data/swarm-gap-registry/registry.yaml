@@ -1,5 +1,5 @@
 version: 1
-updated_at: '2026-05-25T19:07:51Z'
+updated_at: '2026-05-26T16:58:15Z'
 gaps:
 - id: gap-line-profiler-001
   gap_kind: missing_package
@@ -196,11 +196,12 @@ gaps:
 - id: gap-plan-pending-httpd-gap-phase2-perf-wrk-soak
   gap_kind: plan_debt
   title: 'httpd: pending plan todo gap-phase2-perf-wrk-soak'
-  status: open
+  status: closed
   priority: 7
   discovered_by: plan_verifier
   evidence:
   - snapshot runner=httpd plan_pending=gap-phase2-perf-wrk-soak
+  - deduped to gap-plan-pending-httpd-gap-httpd-gap-httpd-gap-phase2-perf-wrk-soak
   runner_id: httpd
   plan_todo_id: gap-phase2-perf-wrk-soak
   suggested_loop: httpd
@@ -209,11 +210,12 @@ gaps:
 - id: gap-plan-pending-httpd-gap-phase2-mitigation-exploits
   gap_kind: plan_debt
   title: 'httpd: pending plan todo gap-phase2-mitigation-exploits'
-  status: open
+  status: closed
   priority: 7
   discovered_by: plan_verifier
   evidence:
   - snapshot runner=httpd plan_pending=gap-phase2-mitigation-exploits
+  - deduped to gap-plan-pending-httpd-gap-httpd-gap-httpd-gap-phase2-mitigation-exploi
   runner_id: httpd
   plan_todo_id: gap-phase2-mitigation-exploits
   suggested_loop: httpd
@@ -222,11 +224,12 @@ gaps:
 - id: gap-plan-pending-httpd-gap-phase2-streaming-wrk
   gap_kind: plan_debt
   title: 'httpd: pending plan todo gap-phase2-streaming-wrk'
-  status: open
+  status: closed
   priority: 7
   discovered_by: plan_verifier
   evidence:
   - snapshot runner=httpd plan_pending=gap-phase2-streaming-wrk
+  - deduped to gap-plan-pending-httpd-gap-httpd-gap-httpd-gap-phase2-streaming-wrk
   runner_id: httpd
   plan_todo_id: gap-phase2-streaming-wrk
   suggested_loop: httpd
@@ -274,11 +277,12 @@ gaps:
 - id: gap-plan-pending-studio-ui-ux-studio-ux-04-particle-display
   gap_kind: plan_debt
   title: 'studio-ui-ux: pending plan todo studio-ux-04-particle-display'
-  status: open
+  status: closed
   priority: 7
   discovered_by: plan_verifier
   evidence:
   - snapshot runner=studio-ui-ux plan_pending=studio-ux-04-particle-display
+  - snapshot studio-ui-ux completed_ids includes studio-ux-04-particle-display
   runner_id: studio-ui-ux
   plan_todo_id: studio-ux-04-particle-display
   suggested_loop: studio-ui-ux
@@ -287,11 +291,12 @@ gaps:
 - id: gap-plan-pending-studio-ui-ux-studio-ux-05-studio-compose
   gap_kind: plan_debt
   title: 'studio-ui-ux: pending plan todo studio-ux-05-studio-compose'
-  status: open
+  status: closed
   priority: 7
   discovered_by: plan_verifier
   evidence:
   - snapshot runner=studio-ui-ux plan_pending=studio-ux-05-studio-compose
+  - snapshot studio-ui-ux completed_ids includes studio-ux-05-studio-compose
   runner_id: studio-ui-ux
   plan_todo_id: studio-ux-05-studio-compose
   suggested_loop: studio-ui-ux
@@ -300,11 +305,12 @@ gaps:
 - id: gap-plan-pending-studio-ui-ux-studio-ux-06-agent-chrome
   gap_kind: plan_debt
   title: 'studio-ui-ux: pending plan todo studio-ux-06-agent-chrome'
-  status: open
+  status: closed
   priority: 7
   discovered_by: plan_verifier
   evidence:
   - snapshot runner=studio-ui-ux plan_pending=studio-ux-06-agent-chrome
+  - snapshot studio-ui-ux completed_ids includes studio-ux-06-agent-chrome
   runner_id: studio-ui-ux
   plan_todo_id: studio-ux-06-agent-chrome
   suggested_loop: studio-ui-ux
@@ -313,11 +319,12 @@ gaps:
 - id: gap-plan-pending-studio-ui-ux-studio-ux-07-capture-harness
   gap_kind: plan_debt
   title: 'studio-ui-ux: pending plan todo studio-ux-07-capture-harness'
-  status: open
+  status: closed
   priority: 7
   discovered_by: plan_verifier
   evidence:
   - snapshot runner=studio-ui-ux plan_pending=studio-ux-07-capture-harness
+  - snapshot studio-ui-ux completed_ids includes studio-ux-07-capture-harness
   runner_id: studio-ui-ux
   plan_todo_id: studio-ux-07-capture-harness
   suggested_loop: studio-ui-ux
@@ -326,11 +333,12 @@ gaps:
 - id: gap-plan-pending-studio-ui-ux-studio-ux-08-bench-registry
   gap_kind: plan_debt
   title: 'studio-ui-ux: pending plan todo studio-ux-08-bench-registry'
-  status: open
+  status: closed
   priority: 7
   discovered_by: plan_verifier
   evidence:
   - snapshot runner=studio-ui-ux plan_pending=studio-ux-08-bench-registry
+  - snapshot studio-ui-ux completed_ids includes studio-ux-08-bench-registry
   runner_id: studio-ui-ux
   plan_todo_id: studio-ux-08-bench-registry
   suggested_loop: studio-ui-ux
@@ -339,11 +347,12 @@ gaps:
 - id: gap-plan-pending-studio-ui-ux-studio-ux-09-memory-budget
   gap_kind: plan_debt
   title: 'studio-ui-ux: pending plan todo studio-ux-09-memory-budget'
-  status: open
+  status: closed
   priority: 7
   discovered_by: plan_verifier
   evidence:
   - snapshot runner=studio-ui-ux plan_pending=studio-ux-09-memory-budget
+  - snapshot studio-ui-ux completed_ids includes studio-ux-09-memory-budget
   runner_id: studio-ui-ux
   plan_todo_id: studio-ux-09-memory-budget
   suggested_loop: studio-ui-ux
@@ -352,11 +361,12 @@ gaps:
 - id: gap-plan-pending-studio-ui-ux-studio-ux-10-native-capture
   gap_kind: plan_debt
   title: 'studio-ui-ux: pending plan todo studio-ux-10-native-capture'
-  status: open
+  status: closed
   priority: 7
   discovered_by: plan_verifier
   evidence:
   - snapshot runner=studio-ui-ux plan_pending=studio-ux-10-native-capture
+  - snapshot studio-ui-ux completed_ids includes studio-ux-10-native-capture
   runner_id: studio-ui-ux
   plan_todo_id: studio-ux-10-native-capture
   suggested_loop: studio-ui-ux
@@ -365,11 +375,12 @@ gaps:
 - id: gap-plan-pending-sim-md-research-md-r1-stability-matrix
   gap_kind: plan_debt
   title: 'sim-md-research: pending plan todo md-r1-stability-matrix'
-  status: open
+  status: closed
   priority: 7
   discovered_by: plan_verifier
   evidence:
   - snapshot runner=sim-md-research plan_pending=md-r1-stability-matrix
+  - snapshot sim-md-research completed_ids includes md-r1-stability-matrix
   runner_id: sim-md-research
   plan_todo_id: md-r1-stability-matrix
   suggested_loop: sim-md-research
@@ -378,11 +389,12 @@ gaps:
 - id: gap-plan-pending-sim-md-research-md-r2-neighbor-list-gap
   gap_kind: plan_debt
   title: 'sim-md-research: pending plan todo md-r2-neighbor-list-gap'
-  status: open
+  status: closed
   priority: 7
   discovered_by: plan_verifier
   evidence:
   - snapshot runner=sim-md-research plan_pending=md-r2-neighbor-list-gap
+  - snapshot sim-md-research completed_ids includes md-r2-neighbor-list-gap
   runner_id: sim-md-research
   plan_todo_id: md-r2-neighbor-list-gap
   suggested_loop: sim-md-research
@@ -404,11 +416,12 @@ gaps:
 - id: gap-plan-pending-sim-chem-research-chem-r0-sota-survey
   gap_kind: plan_debt
   title: 'sim-chem-research: pending plan todo chem-r0-sota-survey'
-  status: open
+  status: closed
   priority: 7
   discovered_by: plan_verifier
   evidence:
   - snapshot runner=sim-chem-research plan_pending=chem-r0-sota-survey
+  - snapshot sim-chem-research completed_ids includes chem-r0-sota-survey
   runner_id: sim-chem-research
   plan_todo_id: chem-r0-sota-survey
   suggested_loop: sim-chem-research
@@ -417,11 +430,12 @@ gaps:
 - id: gap-plan-pending-sim-chem-research-chem-r1-basis-size-scaling
   gap_kind: plan_debt
   title: 'sim-chem-research: pending plan todo chem-r1-basis-size-scaling'
-  status: open
+  status: closed
   priority: 7
   discovered_by: plan_verifier
   evidence:
   - snapshot runner=sim-chem-research plan_pending=chem-r1-basis-size-scaling
+  - snapshot sim-chem-research completed_ids includes chem-r1-basis-size-scaling
   runner_id: sim-chem-research
   plan_todo_id: chem-r1-basis-size-scaling
   suggested_loop: sim-chem-research
@@ -522,50 +536,54 @@ gaps:
 - id: gap-plan-pending-httpd-gap-httpd-gap-phase2-perf-wrk-soak
   gap_kind: plan_debt
   title: 'httpd: pending plan todo gap-httpd-gap-phase2-perf-wrk-soak'
-  status: open
+  status: closed
   priority: 7
   discovered_by: plan_verifier
   evidence:
   - snapshot runner=httpd plan_pending=gap-httpd-gap-phase2-perf-wrk-soak
+  - deduped to gap-plan-pending-httpd-gap-httpd-gap-httpd-gap-phase2-perf-wrk-soak
   runner_id: httpd
-  plan_todo_id: gap-httpd-gap-phase2-perf-wrk-soak
+  plan_todo_id: gap-phase2-perf-wrk-soak
   suggested_loop: httpd
   handoff_to:
   - swarm_observer
 - id: gap-plan-pending-httpd-gap-httpd-gap-phase2-mitigation-exploits
   gap_kind: plan_debt
   title: 'httpd: pending plan todo gap-httpd-gap-phase2-mitigation-exploits'
-  status: open
+  status: closed
   priority: 7
   discovered_by: plan_verifier
   evidence:
   - snapshot runner=httpd plan_pending=gap-httpd-gap-phase2-mitigation-exploits
+  - deduped to gap-plan-pending-httpd-gap-httpd-gap-httpd-gap-phase2-mitigation-exploi
   runner_id: httpd
-  plan_todo_id: gap-httpd-gap-phase2-mitigation-exploits
+  plan_todo_id: gap-phase2-mitigation-exploits
   suggested_loop: httpd
   handoff_to:
   - swarm_observer
 - id: gap-plan-pending-httpd-gap-httpd-gap-phase2-streaming-wrk
   gap_kind: plan_debt
   title: 'httpd: pending plan todo gap-httpd-gap-phase2-streaming-wrk'
-  status: open
+  status: closed
   priority: 7
   discovered_by: plan_verifier
   evidence:
   - snapshot runner=httpd plan_pending=gap-httpd-gap-phase2-streaming-wrk
+  - deduped to gap-plan-pending-httpd-gap-httpd-gap-httpd-gap-phase2-streaming-wrk
   runner_id: httpd
-  plan_todo_id: gap-httpd-gap-phase2-streaming-wrk
+  plan_todo_id: gap-phase2-streaming-wrk
   suggested_loop: httpd
   handoff_to:
   - swarm_observer
 - id: gap-plan-pending-security-research-sec-r0-cwe-delta
   gap_kind: plan_debt
   title: 'security-research: pending plan todo sec-r0-cwe-delta'
-  status: open
+  status: closed
   priority: 7
   discovered_by: plan_verifier
   evidence:
   - snapshot runner=security-research plan_pending=sec-r0-cwe-delta
+  - snapshot security-research completed_ids includes sec-r0-cwe-delta
   runner_id: security-research
   plan_todo_id: sec-r0-cwe-delta
   suggested_loop: security-research
@@ -619,20 +637,21 @@ gaps:
   evidence:
   - snapshot runner=httpd plan_pending=gap-httpd-gap-httpd-gap-phase2-perf-wrk-soak
   runner_id: httpd
-  plan_todo_id: gap-httpd-gap-httpd-gap-phase2-perf-wrk-soak
+  plan_todo_id: gap-phase2-perf-wrk-soak
   suggested_loop: httpd
   handoff_to:
   - swarm_observer
 - id: gap-plan-pending-httpd-gap-httpd-gap-httpd-gap-phase2-mitigation-exploi
   gap_kind: plan_debt
   title: 'httpd: pending plan todo gap-httpd-gap-httpd-gap-phase2-mitigation-exploits'
-  status: open
+  status: closed
   priority: 7
   discovered_by: plan_verifier
   evidence:
   - snapshot runner=httpd plan_pending=gap-httpd-gap-httpd-gap-phase2-mitigation-exploits
+  - snapshot httpd completed_ids includes gap-phase2-mitigation-exploits
   runner_id: httpd
-  plan_todo_id: gap-httpd-gap-httpd-gap-phase2-mitigation-exploits
+  plan_todo_id: gap-phase2-mitigation-exploits
   suggested_loop: httpd
   handoff_to:
   - swarm_observer
@@ -645,7 +664,176 @@ gaps:
   evidence:
   - snapshot runner=httpd plan_pending=gap-httpd-gap-httpd-gap-phase2-streaming-wrk
   runner_id: httpd
-  plan_todo_id: gap-httpd-gap-httpd-gap-phase2-streaming-wrk
+  plan_todo_id: gap-phase2-streaming-wrk
   suggested_loop: httpd
   handoff_to:
   - swarm_observer
+- id: gap-plan-debt-lic-master-plan-phase-8p-parallel-compile-ci-thr
+  gap_kind: plan_debt
+  title: "Phase 8p \u2014 Parallel compile + CI throughput \u2014 **partial:** Ninja\
+    \ `-j` for C++ only; `lic --jobs` reserved not wired; `ru"
+  status: open
+  priority: 5
+  discovered_by: plan_verifier
+  evidence:
+  - "lic:master_plan: Phase 8p \u2014 Parallel compile + CI throughput \u2014 **partial:**\
+    \ Ninja `-j` for C++ only; `lic --jobs` reserved not wired; `ru"
+  target_backlog: null
+  suggested_loop: null
+  handoff_to:
+  - plan_verifier
+  - issue_planner
+- id: gap-vertical-stub-md-lennard-jones
+  gap_kind: competitor_feature
+  title: 'verticals.toml stub/honesty: md_lennard_jones'
+  status: open
+  priority: 4
+  discovered_by: gap_explorer
+  evidence:
+  - verticals.toml id=md_lennard_jones
+  suggested_loop: sim-md-research
+  handoff_to:
+  - numerics_researcher
+- id: gap-vertical-stub-pde-heat-2d
+  gap_kind: competitor_feature
+  title: 'verticals.toml stub/honesty: pde_heat_2d'
+  status: open
+  priority: 4
+  discovered_by: gap_explorer
+  evidence:
+  - verticals.toml id=pde_heat_2d
+  suggested_loop: sim-md-research
+  handoff_to:
+  - numerics_researcher
+- id: gap-vertical-stub-fea-linear-elasticity
+  gap_kind: competitor_feature
+  title: 'verticals.toml stub/honesty: fea_linear_elasticity'
+  status: open
+  priority: 4
+  discovered_by: gap_explorer
+  evidence:
+  - verticals.toml id=fea_linear_elasticity
+  suggested_loop: sim-md-research
+  handoff_to:
+  - numerics_researcher
+- id: gap-vertical-stub-cfd-lid-driven-cavity
+  gap_kind: competitor_feature
+  title: 'verticals.toml stub/honesty: cfd_lid_driven_cavity'
+  status: open
+  priority: 4
+  discovered_by: gap_explorer
+  evidence:
+  - verticals.toml id=cfd_lid_driven_cavity
+  suggested_loop: sim-md-research
+  handoff_to:
+  - numerics_researcher
+- id: gap-vertical-stub-drug-litl
+  gap_kind: competitor_feature
+  title: 'verticals.toml stub/honesty: drug_litl'
+  status: open
+  priority: 4
+  discovered_by: gap_explorer
+  evidence:
+  - verticals.toml id=drug_litl
+  suggested_loop: sim-md-research
+  handoff_to:
+  - numerics_researcher
+- id: gap-vertical-stub-bio-litl
+  gap_kind: competitor_feature
+  title: 'verticals.toml stub/honesty: bio_litl'
+  status: open
+  priority: 4
+  discovered_by: gap_explorer
+  evidence:
+  - verticals.toml id=bio_litl
+  suggested_loop: sim-md-research
+  handoff_to:
+  - numerics_researcher
+- id: gap-vertical-stub-robo-workspace
+  gap_kind: competitor_feature
+  title: 'verticals.toml stub/honesty: robo_workspace'
+  status: open
+  priority: 4
+  discovered_by: gap_explorer
+  evidence:
+  - verticals.toml id=robo_workspace
+  suggested_loop: sim-md-research
+  handoff_to:
+  - numerics_researcher
+- id: gap-vertical-stub-am-slicer
+  gap_kind: competitor_feature
+  title: 'verticals.toml stub/honesty: am_slicer'
+  status: open
+  priority: 4
+  discovered_by: gap_explorer
+  evidence:
+  - verticals.toml id=am_slicer
+  suggested_loop: sim-md-research
+  handoff_to:
+  - numerics_researcher
+- id: gap-vertical-stub-scientific-viz
+  gap_kind: competitor_feature
+  title: 'verticals.toml stub/honesty: scientific_viz'
+  status: open
+  priority: 4
+  discovered_by: gap_explorer
+  evidence:
+  - verticals.toml id=scientific_viz
+  suggested_loop: sim-md-research
+  handoff_to:
+  - numerics_researcher
+- id: gap-vertical-stub-cinematic-encode
+  gap_kind: competitor_feature
+  title: 'verticals.toml stub/honesty: cinematic_encode'
+  status: open
+  priority: 4
+  discovered_by: gap_explorer
+  evidence:
+  - verticals.toml id=cinematic_encode
+  suggested_loop: sim-md-research
+  handoff_to:
+  - numerics_researcher
+- id: gap-vertical-stub-cinematic-color-grade
+  gap_kind: competitor_feature
+  title: 'verticals.toml stub/honesty: cinematic_color_grade'
+  status: open
+  priority: 4
+  discovered_by: gap_explorer
+  evidence:
+  - verticals.toml id=cinematic_color_grade
+  suggested_loop: sim-md-research
+  handoff_to:
+  - numerics_researcher
+- id: gap-vertical-stub-cinematic-audio-sync
+  gap_kind: competitor_feature
+  title: 'verticals.toml stub/honesty: cinematic_audio_sync'
+  status: open
+  priority: 4
+  discovered_by: gap_explorer
+  evidence:
+  - verticals.toml id=cinematic_audio_sync
+  suggested_loop: sim-md-research
+  handoff_to:
+  - numerics_researcher
+- id: gap-vertical-stub-mmo-shard
+  gap_kind: competitor_feature
+  title: 'verticals.toml stub/honesty: mmo_shard'
+  status: open
+  priority: 4
+  discovered_by: gap_explorer
+  evidence:
+  - verticals.toml id=mmo_shard
+  suggested_loop: sim-md-research
+  handoff_to:
+  - numerics_researcher
+- id: gap-vertical-stub-qm-dft
+  gap_kind: competitor_feature
+  title: 'verticals.toml stub/honesty: qm_dft'
+  status: open
+  priority: 4
+  discovered_by: gap_explorer
+  evidence:
+  - verticals.toml id=qm_dft
+  suggested_loop: sim-md-research
+  handoff_to:
+  - numerics_researcher

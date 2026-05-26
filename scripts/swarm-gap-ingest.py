@@ -18,6 +18,8 @@ except ImportError:
     yaml = None  # type: ignore
 
 ROOT = Path(__file__).resolve().parents[1]
+sys.path.insert(0, str(ROOT / "scripts"))
+from plan_todo_normalize import normalize_plan_todo_id
 LANGVERSE = Path(os.environ.get("LI_LANGVERSE_ROOT", ROOT.parent))
 BENCHMARKS = Path(os.environ.get("BENCHMARKS_ROOT", LANGVERSE / "benchmarks"))
 REGISTRY_DIR = ROOT / "data/swarm-gap-registry"
@@ -115,24 +117,96 @@ def ingest_snapshot_plan_pending(snap: dict, gaps_by_id: dict[str, dict]) -> int
             continue
         rid = runner.get("id") or "runner"
         for todo_id in runner.get("plan_pending") or []:
-            gid = f"gap-plan-pending-{rid}-{_slug(str(todo_id))}"
+            norm = normalize_plan_todo_id(str(todo_id), rid)
+            gid = f"gap-plan-pending-{rid}-{_slug(norm)}"
             if gid in gaps_by_id:
                 continue
             gaps_by_id[gid] = {
                 "id": gid,
                 "gap_kind": "plan_debt",
-                "title": f"{rid}: pending plan todo {todo_id}",
+                "title": f"{rid}: pending plan todo {norm}",
                 "status": "open",
                 "priority": 7,
                 "discovered_by": "plan_verifier",
-                "evidence": [f"snapshot runner={rid} plan_pending={todo_id}"],
+                "evidence": [f"snapshot runner={rid} plan_pending={norm}"],
                 "runner_id": rid,
-                "plan_todo_id": todo_id,
+                "plan_todo_id": norm,
                 "suggested_loop": rid,
                 "handoff_to": ["swarm_observer"],
             }
             added += 1
     return added
+
+
+def dedupe_plan_pending_gaps(gaps_by_id: dict[str, dict]) -> int:
+    """Close duplicate open plan_debt rows sharing runner + normalized plan_todo_id."""
+    closed = 0
+    canonical: dict[tuple[str, str], str] = {}
+    for gid, gap in sorted(gaps_by_id.items()):
+        if gap.get("status") != "open" or gap.get("gap_kind") != "plan_debt":
+            continue
+        rid = gap.get("runner_id") or ""
+        raw = gap.get("plan_todo_id")
+        if not rid or not raw:
+            continue
+        key = (rid, normalize_plan_todo_id(str(raw), rid))
+        if key not in canonical:
+            canonical[key] = gid
+            continue
+        gap["status"] = "closed"
+        ev = gap.setdefault("evidence", [])
+        note = f"deduped to {canonical[key]}"
+        if note not in ev:
+            ev.append(note)
+        closed += 1
+    return closed
+
+
+def reconcile_snapshot_completed(snap: dict, gaps_by_id: dict[str, dict]) -> int:
+    """Close plan_debt rows whose todo is in runner state.completed_ids."""
+    closed = 0
+    for runner in snap.get("runners") or []:
+        if not isinstance(runner, dict):
+            continue
+        rid = runner.get("id") or "runner"
+        completed = {
+            normalize_plan_todo_id(str(t), rid)
+            for t in (runner.get("state") or {}).get("completed_ids") or []
+        }
+        for gap in gaps_by_id.values():
+            if not isinstance(gap, dict) or gap.get("status") != "open":
+                continue
+            if gap.get("runner_id") != rid:
+                continue
+            raw = gap.get("plan_todo_id")
+            if not raw:
+                continue
+            norm = normalize_plan_todo_id(str(raw), rid)
+            if norm in completed:
+                gap["status"] = "closed"
+                ev = gap.setdefault("evidence", [])
+                note = f"snapshot {rid} completed_ids includes {norm}"
+                if note not in ev:
+                    ev.append(note)
+                closed += 1
+    return closed
+
+
+def normalize_registry_plan_todo_ids(gaps_by_id: dict[str, dict]) -> int:
+    """Rewrite stored plan_todo_id fields to canonical form (one-time hygiene)."""
+    fixed = 0
+    for gap in gaps_by_id.values():
+        if not isinstance(gap, dict):
+            continue
+        rid = gap.get("runner_id") or gap.get("suggested_loop") or ""
+        raw = gap.get("plan_todo_id")
+        if not rid or not raw:
+            continue
+        norm = normalize_plan_todo_id(str(raw), rid)
+        if norm != raw:
+            gap["plan_todo_id"] = norm
+            fixed += 1
+    return fixed
 
 
 def ingest_competitor_catalog(explorer: dict, gaps_by_id: dict[str, dict]) -> int:
@@ -215,6 +289,9 @@ def main() -> int:
         "plan_debt_snapshot": ingest_snapshot_plan_pending(snap, gaps_by_id),
         "competitor_catalog": ingest_competitor_catalog(explorer, gaps_by_id),
         "verticals_stubs": ingest_verticals_stubs(gaps_by_id),
+        "normalize_plan_todo_id": normalize_registry_plan_todo_ids(gaps_by_id),
+        "dedupe_plan_pending": dedupe_plan_pending_gaps(gaps_by_id),
+        "reconcile_completed": reconcile_snapshot_completed(snap, gaps_by_id),
     }
 
     data["gaps"] = list(gaps_by_id.values())

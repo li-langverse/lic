@@ -1,11 +1,20 @@
 # Studio vertical: `sim_rl`
 
-**Focus:** Profile chip + agent strip training-env context.
+**Focus:** Profile chip + agent strip training-env context; **PH-ML SIM-3 partial** — `env_pool_stub_step` (4× `sim_step` per studio tick).
+
+## Honest status
+
+| Implemented | Not implemented |
+|-------------|-----------------|
+| `studio_sim_step_hook` → `ml.rl.EnvPoolStub` | Async parallel env workers |
+| Deterministic tick × pool_size | Live PPO / Ray training |
+| Replay metadata via `sim_step` | Real `ml.rl.EnvPool` job graph |
 
 ## Verify
 
 ```bash
-lic check packages/li-studio/li-tests/smoke/studio_vertical_profile_roundtrip.li
+lic check packages/li-ml-rl/li-tests/smoke/env_pool_stub.li
+lic check packages/li-studio/li-tests/smoke/studio_sim_step_by_profile.li
 ```
 
 ## Mock

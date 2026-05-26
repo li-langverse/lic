@@ -19,13 +19,21 @@ def sim_scientific_tick_stub(detail: int) -> int
   ensures result <= 1
   decreases detail
 =
-  var d: int = detail
-  var r: SimRunResult = run_md_lj_smoke(d)
-  if d == 2:
-    r = run_heat_smoke(d)
-  if d >= 3:
-    r = run_rigid_smoke(d)
-  if run_result_ok(r) != 1:
+  if detail <= 1:
+    var d_md: int = detail
+    var r_md: SimRunResult = run_md_lj_smoke(d_md)
+    if run_result_ok(r_md) != 1:
+      return 0
+    return 1
+  if detail == 2:
+    var d_heat: int = detail
+    var r_heat: SimRunResult = run_heat_smoke(d_heat)
+    if run_result_ok(r_heat) != 1:
+      return 0
+    return 1
+  var d_rigid: int = detail
+  var r_rigid: SimRunResult = run_rigid_smoke(d_rigid)
+  if run_result_ok(r_rigid) != 1:
     return 0
   return 1
 

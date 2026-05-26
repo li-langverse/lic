@@ -1,0 +1,44 @@
+
+import sim
+
+def li_ml_rl_version() -> int
+  requires true
+  ensures result == 1
+  decreases 0
+=
+  return 1
+
+# PH-ML SIM-3 partial — async pool stub: N serial sim_step calls on one session (no parallel workers).
+type EnvPoolStub = object
+  public pool_size: int
+  public steps_emitted: int
+
+def env_pool_stub_default() -> EnvPoolStub
+  requires true
+  ensures result.pool_size == 4
+  ensures result.steps_emitted == 0
+  decreases 0
+=
+  var p: EnvPoolStub
+  p.pool_size = 4
+  p.steps_emitted = 0
+  return p
+
+def env_pool_stub_step(pool: var EnvPoolStub, session: var SimSessionStub, dt: float) -> int
+  requires pool.pool_size > 0
+  requires pool.pool_size <= 32
+  requires session.tick >= 0
+  requires session.replay_capacity > 0
+  ensures result >= 0
+  ensures result <= 1
+  decreases pool.pool_size
+=
+  if dt <= 0.0:
+    return sim_status_invalid_dt()
+  var i: int = 0
+  while i < pool.pool_size:
+    if sim_step(session, dt) != sim_status_ok():
+      return sim_status_invalid_dt()
+    i = i + 1
+  pool.steps_emitted = pool.steps_emitted + pool.pool_size
+  return sim_status_ok()

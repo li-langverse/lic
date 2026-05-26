@@ -1,6 +1,6 @@
 
 import sim
-import physics.rigid
+import sim.scientific
 
 def li_sim_robotics_version() -> int
   requires true
@@ -22,6 +22,16 @@ def li_sim_robotics_studio_profile_id() -> int
   decreases 0
 =
   return 4
+
+# Studio aggregate: one sim.scientific import path when robotics is linked (avoids duplicate load).
+def sim_scientific_tick_stub_bridge(detail: int) -> int
+  requires detail >= 0
+  requires detail <= 3
+  ensures result >= 0
+  ensures result <= 1
+  decreases 0
+=
+  return sim_scientific_tick_stub(detail)
 
 # PH-ROBO ROBO-0 — one rigid-body integrator step per studio tick (no IK / ROS).
 def sim_robotics_tick_stub(detail: int) -> int
@@ -46,23 +56,11 @@ def run_robo_multibody_smoke(detail: int) -> SimRunResult
   ensures result.detail_emitted == detail
   decreases 0
 =
-  var body: RigidBody
-  body.px = 0.0
-  body.py = 0.0
-  body.pz = 0.0
-  body.vx = 0.0
-  body.vy = 0.0
-  body.vz = 0.0
-  body.inv_mass = 1.0
-  body.radius = 0.25
-  rigid_integrate_semi_implicit(body, 0.0, 0.0, -9.81, 0.01)
-  var r: SimRunResult
-  r.ok = 1
-  r.algo_id = algo_robo_multibody_step()
-  r.vertical_id = vertical_sim_robotics()
-  r.checksum = body.pz
-  r.detail_emitted = detail
-  return r
+  var d0: int = detail
+  var base: SimRunResult = run_rigid_smoke(d0)
+  base.algo_id = algo_robo_multibody_step()
+  base.vertical_id = vertical_sim_robotics()
+  return base
 
 def run_robotics_smoke() -> int
   requires true

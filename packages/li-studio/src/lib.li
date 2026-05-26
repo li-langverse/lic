@@ -6,6 +6,7 @@ import sim.additive
 import sim.drug_design
 import sim.automotive
 import sim.robotics
+import sim.scientific
 import ml.rl
 import physics.runtime
 import world
@@ -1405,26 +1406,8 @@ def studio_apply_profile_to_sim(config: StudioProjectConfig, sim_out: var SimSes
   var prof0: int = config.active_profile
   sim_session_apply_studio_profile(prof0, sim_out)
 
-# PH-SIM vertical gap #4 — game tick: hz gate + physics.runtime substeps (physics.rigid not imported here).
-type StudioGameStepOutcome = object
-  public status: int
-  public physics_step_count: int
-  public body_pz: float
-
-def studio_game_physics_world_at_tick(tick: int) -> PhysicsWorld
-  requires tick >= 0
-  requires tick <= 4096
-  ensures result.substeps >= 1
-  decreases tick
-=
-  var w: PhysicsWorld = physics_world_game_default()
-  var i: int = 0
-  while i < tick
-    physics_step(w, w.dt)
-    i = i + 1
-  return w
-
-def studio_game_step_hook(frame_dt: float, sim_tick: int) -> StudioGameStepOutcome
+# PH-SIM vertical gap #4 — game tick delegates to physics.runtime (RigidBody type isolated from physics.rigid).
+def studio_game_step_hook(frame_dt: float, sim_tick: int) -> GamePhysicsStepOutcome
   requires frame_dt > 0.0
   requires sim_tick >= 0
   requires sim_tick <= 4096
@@ -1432,21 +1415,8 @@ def studio_game_step_hook(frame_dt: float, sim_tick: int) -> StudioGameStepOutco
   ensures result.status <= 1
   decreases sim_tick
 =
-  var out: StudioGameStepOutcome
-  out.status = 0
-  out.physics_step_count = 0
-  out.body_pz = 0.0
-  var hz: float = 1.0 / frame_dt
-  if hz < 1.0:
-    return out
-  var w: PhysicsWorld = studio_game_physics_world_at_tick(sim_tick)
-  physics_step(w, frame_dt)
-  out.physics_step_count = w.step_count
-  out.body_pz = w.body.pz
-  out.status = sim_status_ok()
-  return out
+  return game_physics_step_hook(frame_dt, sim_tick)
 
-# PH-GD-2 partial — snapshot fields carry physics step_count + body height (serialize via world_* later).
 def studio_game_world_checkpoint_fields(
     tick: int, physics_step_count: int, body_pz: float) -> int
   requires tick >= 0
@@ -1467,13 +1437,14 @@ def studio_game_world_checkpoint_fields(
     return 0
   return 1
 
+# PH-GD-2 partial — world snapshot validity after game tick (no serialize I/O in hot path).
 def studio_game_world_checkpoint_stub(tick: int) -> int
   requires tick >= 0
   ensures result >= 0
   ensures result <= 1
   decreases tick
 =
-  var w: PhysicsWorld = studio_game_physics_world_at_tick(tick)
+  var w: PhysicsWorld = game_physics_world_at_tick(tick)
   return studio_game_world_checkpoint_fields(tick, w.step_count, w.body.pz)
 
 # PH-SIM vertical gap #9 — MD particle tier gate via li-scene tier metadata (lig ledger follow-up).
@@ -1513,25 +1484,19 @@ def studio_sim_step_hook(config: StudioProjectConfig, sim_out: var SimSessionStu
     var detail0: int = sim_out.output_detail
     if detail0 > 3:
       detail0 = 3
-    if sim_scientific_tick_stub_bridge(detail0) != 1:
+    if sim_scientific_tick_stub(detail0) != 1:
       return sim_status_invalid_dt()
   if prof == studio_profile_sim_automotive():
     var detail_auto: int = sim_out.output_detail
     if detail_auto > 3:
       detail_auto = 3
-    var auto_step: int = sim_out.tick + 1
-    if auto_step > 64:
-      auto_step = 64
-    if sim_automotive_tick_at(auto_step, detail_auto) != 1:
+    if sim_automotive_tick_stub(detail_auto) != 1:
       return sim_status_invalid_dt()
   if prof == studio_profile_sim_robotics():
     var detail_robo: int = sim_out.output_detail
     if detail_robo > 3:
       detail_robo = 3
-    var robo_step: int = sim_out.tick + 1
-    if robo_step > 64:
-      robo_step = 64
-    if sim_robotics_tick_at(robo_step, detail_robo) != 1:
+    if sim_robotics_tick_stub(detail_robo) != 1:
       return sim_status_invalid_dt()
   if prof == studio_profile_sim_additive():
     var detail_am: int = sim_out.output_detail
@@ -1546,24 +1511,28 @@ def studio_sim_step_hook(config: StudioProjectConfig, sim_out: var SimSessionStu
     if sim_drug_design_tick_stub(detail_dr) != 1:
       return sim_status_invalid_dt()
   if prof == studio_profile_sim_rl():
-    if dt0 <= 0.0:
+    var dt_rl: float = dt0
+    if dt_rl <= 0.0:
       return sim_status_invalid_dt()
     var pool: EnvPoolStub = env_pool_stub_default()
-    return env_pool_stub_step(pool, sim_out, dt0)
+    return env_pool_stub_step(pool, sim_out, dt_rl)
   if prof == studio_profile_game():
-    if dt0 <= 0.0:
+    var dt_game: float = dt0
+    if dt_game <= 0.0:
       return sim_status_invalid_dt()
     var tick_before: int = sim_out.tick
-    var game_out: StudioGameStepOutcome = studio_game_step_hook(dt0, tick_before)
+    var game_out: GamePhysicsStepOutcome = studio_game_step_hook(dt_game, tick_before)
     if game_out.status != sim_status_ok():
       return sim_status_invalid_dt()
-    var step_game: int = sim_step(sim_out, dt0)
+    var dt_step: float = dt0
+    var step_game: int = sim_step(sim_out, dt_step)
     if step_game != sim_status_ok():
       return step_game
     if studio_game_world_checkpoint_fields(sim_out.tick, game_out.physics_step_count, game_out.body_pz) != 1:
       return sim_status_invalid_dt()
     return sim_status_ok()
-  return sim_step(sim_out, dt0)
+  var dt_default: float = dt0
+  return sim_step(sim_out, dt_default)
 
 def studio_scene_is_empty(scene_entity_count: int) -> int
   requires scene_entity_count >= 0
@@ -2388,20 +2357,22 @@ def studio_compose_agent_invoke_fields(out: StudioAgentChromeCompose, layout: St
   var ts_trace: int = task_state
   var tid: int = tool_id
   var lay0: StudioShellLayout = layout
-  var strip_x: float = lay0.agent_strip.x
-  var strip_y: float = lay0.agent_strip.y
-  var strip_w: float = lay0.agent_strip.w
-  var strip_h: float = lay0.agent_strip.h
+  var ts_invoke: int = task_state
+  var ts_trace: int = task_state
+  var tid: int = tool_id
   agent.invoke_input_visible = studio_agent_invoke_input_visible(ts_invoke)
   agent.tool_trace_visible = studio_agent_tool_trace_visible_for(ts_trace, tid)
   agent.task_input_rect = rect_make(0.0, 0.0, 0.0, 0.0)
   agent.send_rect = rect_make(0.0, 0.0, 0.0, 0.0)
   agent.tool_trace_rect = rect_make(0.0, 0.0, 0.0, 0.0)
   if agent.invoke_input_visible == 1:
-    agent.send_rect = studio_agent_send_rect_at(strip_x, strip_y, strip_w, strip_h, agent.cancel_visible)
-    agent.task_input_rect = studio_agent_task_input_rect_at(strip_x, strip_y, strip_w, strip_h, agent.send_rect)
+    var lay1: StudioShellLayout = layout
+    agent.send_rect = studio_agent_send_rect_at(lay1.agent_strip.x, lay1.agent_strip.y, lay1.agent_strip.w, lay1.agent_strip.h, agent.cancel_visible)
+    var lay2: StudioShellLayout = layout
+    agent.task_input_rect = studio_agent_task_input_rect_at(lay2.agent_strip.x, lay2.agent_strip.y, lay2.agent_strip.w, lay2.agent_strip.h, agent.send_rect)
   if agent.tool_trace_visible == 1:
-    agent.tool_trace_rect = studio_agent_tool_trace_rect_at(strip_x, strip_y, strip_w, strip_h, agent.cancel_visible)
+    var lay3: StudioShellLayout = layout
+    agent.tool_trace_rect = studio_agent_tool_trace_rect_at(lay3.agent_strip.x, lay3.agent_strip.y, lay3.agent_strip.w, lay3.agent_strip.h, agent.cancel_visible)
   return agent
 
 
@@ -2476,9 +2447,12 @@ def studio_compose_agent_chrome(layout: StudioShellLayout, task_state: int, agen
   out.cancel_visible = studio_agent_cancel_visible(ts_cancel)
   out.error_visible = studio_agent_error_visible(ts_error)
   out.retry_visible = studio_agent_retry_visible(ts_retry)
-  out.cancel_rect = studio_agent_cancel_rect_at(lay0.agent_strip.x, lay0.agent_strip.y, lay0.agent_strip.w, lay0.agent_strip.h)
-  out.status_rect = studio_agent_status_rect_at(lay0.agent_strip.x, lay0.agent_strip.y, lay0.agent_strip.w, lay0.agent_strip.h, out.cancel_visible)
-  out.error_strip_rect = studio_agent_error_strip_rect_at(lay0.agent_strip.x, lay0.agent_strip.y, lay0.agent_strip.w, lay0.agent_strip.h)
+  var lay1: StudioShellLayout = layout
+  out.cancel_rect = studio_agent_cancel_rect_at(lay1.agent_strip.x, lay1.agent_strip.y, lay1.agent_strip.w, lay1.agent_strip.h)
+  var lay2: StudioShellLayout = layout
+  out.status_rect = studio_agent_status_rect_at(lay2.agent_strip.x, lay2.agent_strip.y, lay2.agent_strip.w, lay2.agent_strip.h, out.cancel_visible)
+  var lay3: StudioShellLayout = layout
+  out.error_strip_rect = studio_agent_error_strip_rect_at(lay3.agent_strip.x, lay3.agent_strip.y, lay3.agent_strip.w, lay3.agent_strip.h)
   out.progress = studio_compose_agent_progress(ts_prog, out.status_rect)
   out.context_rect = rect_make(0.0, 0.0, 0.0, 0.0)
   if studio_agent_context_visible(ctx0) == 1:
@@ -2499,9 +2473,11 @@ def studio_compose_agent_chrome_with_tool(layout: StudioShellLayout, task_state:
 =
   var ts0: int = task_state
   var req_id: int = tool_request.tool_id
-  var out: StudioAgentChromeCompose = studio_compose_agent_chrome(layout, ts0, agent_context_label)
+  var lay_chrome: StudioShellLayout = layout
+  var lay_invoke: StudioShellLayout = layout
+  var out: StudioAgentChromeCompose = studio_compose_agent_chrome(lay_chrome, ts0, agent_context_label)
   out.tool_request = tool_request
-  return studio_compose_agent_invoke_fields(out, layout, ts0, req_id)
+  return studio_compose_agent_invoke_fields(out, lay_invoke, ts0, req_id)
 
 def studio_compose_shell_profile(w: float, h: float, active_dock_slot: int, has_selection: int, active_profile: int) -> StudioShellCompose
   requires w > 0.0
@@ -2516,11 +2492,12 @@ def studio_compose_shell_profile(w: float, h: float, active_dock_slot: int, has_
   ensures result.config.active_profile == active_profile
   decreases active_dock_slot
 =
+  var prof0: int = active_profile
   var out: StudioShellCompose
   var layout: StudioShellLayout = layout_studio_shell_adaptive(w, h)
   out.layout = layout
   var lay: StudioShellLayout = out.layout
-  out.config = studio_project_config_new(active_profile)
+  out.config = studio_project_config_new(prof0)
   out.dock.rect = lay.dock
   out.dock.slot_count = studio_dock_slot_count()
   var slot_dock: int = active_dock_slot
@@ -2544,9 +2521,9 @@ def studio_compose_shell_profile(w: float, h: float, active_dock_slot: int, has_
     out.inspector.hint_box_rect = studio_inspector_empty_hint_box_rect_at(lay.inspector.x, lay.inspector.y, lay.inspector.w, lay.inspector.h)
     out.inspector.field_row_rect = rect_make(0.0, 0.0, 0.0, 0.0)
   if has_selection == 1:
-    if active_profile == studio_profile_sim_drug_design():
+    if prof0 == studio_profile_sim_drug_design():
       out.inspector = studio_compose_inspector_drug_litl(lay, 0)
-    if active_profile != studio_profile_sim_drug_design():
+    if prof0 != studio_profile_sim_drug_design():
       out.inspector.has_selection = 1
       out.inspector.field_rows = studio_inspector_field_rows()
       out.inspector.empty_visible = 0

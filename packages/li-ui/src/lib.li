@@ -11,10 +11,6 @@ type Rect = object
   public w: float
   public h: float
 
-type Vec2 = object
-  public x: float
-  public y: float
-
 type InputState = object
   public pointer_down: int
   public pointer_x: float

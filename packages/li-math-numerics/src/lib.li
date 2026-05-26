@@ -1,16 +1,6 @@
 
-extern proc li_rt_sqrt(x: float) raises IO -> float
-  requires true
-  ensures true
-  decreases 0
-extern proc li_rt_sin(x: float) raises IO -> float
-  requires true
-  ensures true
-  decreases 0
-extern proc li_rt_cos(x: float) raises IO -> float
-  requires true
-  ensures true
-  decreases 0
+import math
+
 def li_std_numerics_version() -> int
   requires true
   ensures result == 1

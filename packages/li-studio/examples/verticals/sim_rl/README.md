@@ -6,14 +6,15 @@
 
 | Implemented | Not implemented |
 |-------------|-----------------|
-| `studio_sim_step_hook` → `ml.rl.EnvPoolStub` | Async parallel env workers |
-| Deterministic tick × pool_size | Live PPO / Ray training |
+| `EnvStepResult` — `obs[8]`, `action[4]`, `reward`, `done` | Async parallel env workers |
+| `env_pool_stub_step` → serial `sim_step` × `pool_size` | Live PPO / Ray training |
 | Replay metadata via `sim_step` | Real `ml.rl.EnvPool` job graph |
 
 ## Verify
 
 ```bash
 lic check packages/li-ml-rl/li-tests/smoke/env_pool_stub.li
+lic check packages/li-ml-rl/li-tests/smoke/env_pool_step_contract.li
 lic check packages/li-studio/li-tests/smoke/studio_sim_step_by_profile.li
 ```
 

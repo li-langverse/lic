@@ -1,0 +1,14 @@
+import sim.automotive
+
+def main() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  if sim_automotive_tick_at(3, 1) != 1:
+    return 1
+  if auto_sensor_spec_default().lidar_ray_count != 64:
+    return 2
+  if auto_sensor_spec_default().camera_w != 640:
+    return 3
+  return 0

@@ -7,7 +7,6 @@ description = "Robotics simulation profiles — Arms, mobile bases, and factory 
 
 [dependencies]
 li-sim = { path = "../li-sim" }
-li-sim-scientific = { path = "../li-sim-scientific" }
 
 [package.metadata.li]
 github_repo = "li-sim-robotics"

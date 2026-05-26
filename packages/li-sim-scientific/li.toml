@@ -7,8 +7,6 @@ description = "Scientific simulation profiles — MD, PDE; callable from any Li 
 
 [dependencies]
 li-sim = { path = "../li-sim" }
-li-physics-particles = { path = "../li-physics-particles" }
-li-physics-rigid = { path = "../li-physics-rigid" }
 
 [package.metadata.li]
 github_repo = "li-sim-scientific"

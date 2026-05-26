@@ -1,0 +1,15 @@
+import physics.runtime
+
+def main() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  var out0: GamePhysicsStepOutcome = game_physics_step_hook(0.016, 0)
+  if out0.status != 0:
+    return 1
+  if out0.physics_step_count < 4:
+    return 2
+  if out0.body_pz >= 0.0:
+    return 3
+  return 0

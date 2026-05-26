@@ -8,7 +8,6 @@ description = "Li package li-physics-runtime"
 [dependencies]
 li-physics-core = { path = "../li-physics-core" }
 li-physics-rigid = { path = "../li-physics-rigid" }
-li-math-numerics = { path = "../li-math-numerics" }
 # registry = "1.0.0"             # lip 8d+
 
 [package.metadata.li]

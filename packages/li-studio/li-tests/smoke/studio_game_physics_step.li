@@ -1,0 +1,21 @@
+import sim
+import physics.runtime
+import studio
+
+def main() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  var out0: GamePhysicsStepOutcome = game_physics_step_hook(0.016, 0)
+  if out0.status != 0:
+    return 1
+  if studio_game_world_checkpoint_fields(1, out0.physics_step_count, out0.body_pz) != 1:
+    return 2
+  var cfg: StudioProjectConfig = studio_project_config_new(studio_profile_game())
+  var sess: SimSessionStub = sim_session_stub_default()
+  if studio_sim_step_hook(cfg, sess, 0.016) != sim_status_ok():
+    return 3
+  if sess.tick != 1:
+    return 4
+  return 0

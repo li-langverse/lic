@@ -3,10 +3,10 @@ import sim
 
 def li_sim_automotive_version() -> int
   requires true
-  ensures result == 1
+  ensures result == 2
   decreases 0
 =
-  return 1
+  return 2
 
 def li_sim_automotive_profile_contract() -> int
   requires true
@@ -22,6 +22,112 @@ def li_sim_automotive_studio_profile_id() -> int
 =
   return 3
 
+type AutoVehicleState = object
+  public x: float
+  public y: float
+  public yaw: float
+  public v: float
+
+type AutoSensorSpec = object
+  public lidar_ray_count: int
+  public camera_w: int
+  public camera_h: int
+
+type AutoTickOutput = object
+  public state: AutoVehicleState
+  public sensors: AutoSensorSpec
+  public ok: int
+
+def auto_vehicle_state_default() -> AutoVehicleState
+  requires true
+  ensures result.x == 0.0
+  ensures result.y == 0.0
+  ensures result.yaw == 0.0
+  ensures result.v == 12.0
+  decreases 0
+=
+  var st: AutoVehicleState
+  st.x = 0.0
+  st.y = 0.0
+  st.yaw = 0.0
+  st.v = 12.0
+  return st
+
+def auto_sensor_spec_default() -> AutoSensorSpec
+  requires true
+  ensures result.lidar_ray_count == 64
+  ensures result.camera_w == 640
+  ensures result.camera_h == 480
+  decreases 0
+=
+  var s: AutoSensorSpec
+  s.lidar_ray_count = 64
+  s.camera_w = 640
+  s.camera_h = 480
+  return s
+
+def auto_bicycle_wheelbase_m() -> float
+  requires true
+  ensures result == 2.7
+  decreases 0
+=
+  return 2.7
+
+def auto_bicycle_steer_default() -> float
+  requires true
+  ensures result == 0.05
+  decreases 0
+=
+  return 0.05
+
+def auto_bicycle_dt_default() -> float
+  requires true
+  ensures result == 0.01
+  decreases 0
+=
+  return 0.01
+
+# Kinematic bicycle (small-angle sin/cos) — deterministic per-step integration.
+def auto_bicycle_step(st: var AutoVehicleState, steer_rad: float, dt: float, wheelbase: float) -> unit
+  requires dt > 0.0
+  requires wheelbase > 0.0
+  requires steer_rad >= -1.57
+  requires steer_rad <= 1.57
+  ensures true
+  decreases 0
+=
+  var v0: float = st.v
+  var cos_yaw: float = 1.0 - 0.5 * st.yaw * st.yaw
+  var sin_yaw: float = st.yaw
+  var yaw_rate: float = v0 * steer_rad / wheelbase
+  st.x = st.x + v0 * cos_yaw * dt
+  st.y = st.y + v0 * sin_yaw * dt
+  st.yaw = st.yaw + yaw_rate * dt
+
+def auto_bicycle_state_after_steps(steps: int) -> AutoVehicleState
+  requires steps >= 0
+  requires steps <= 64
+  ensures result.x >= 0.0
+  ensures result.v > 0.0
+  decreases steps
+=
+  var st: AutoVehicleState = auto_vehicle_state_default()
+  var steer: float = auto_bicycle_steer_default()
+  var dt: float = auto_bicycle_dt_default()
+  var wheelbase: float = auto_bicycle_wheelbase_m()
+  var i: int = 0
+  while i < steps
+    auto_bicycle_step(st, steer, dt, wheelbase)
+    i = i + 1
+  return st
+
+def auto_bicycle_state_checksum(st: AutoVehicleState) -> float
+  requires true
+  ensures result >= 0.0
+  decreases 0
+=
+  return st.x * 1.001 + st.y * 0.01 + st.yaw * 0.1 + st.v
+
 def auto_bicycle_checksum(speed_mps: float, steer_rad: float) -> float
   requires speed_mps >= 0.0
   requires steer_rad >= -1.57
@@ -29,21 +135,43 @@ def auto_bicycle_checksum(speed_mps: float, steer_rad: float) -> float
   ensures result >= 0.0
   decreases 0
 =
-  return speed_mps * 1.001 + steer_rad * 0.01
+  var st: AutoVehicleState = auto_vehicle_state_default()
+  st.v = speed_mps
+  var steer0: float = steer_rad
+  auto_bicycle_step(st, steer0, auto_bicycle_dt_default(), auto_bicycle_wheelbase_m())
+  return auto_bicycle_state_checksum(st)
 
-# PH-SIM automotive ROBO-adjacent stub — bicycle-model checksum per studio tick (no maps / raycast).
-def sim_automotive_tick_stub(detail: int) -> int
-  requires detail >= 0
-  requires detail <= 3
-  ensures result >= 0
-  ensures result <= 1
-  decreases 0
+def auto_tick_output_at(step_index: int) -> AutoTickOutput
+  requires step_index >= 1
+  requires step_index <= 64
+  ensures result.ok == 1
+  ensures result.sensors.lidar_ray_count == 64
+  decreases step_index
 =
-  var d: int = detail
-  var r: SimRunResult = run_auto_bicycle_smoke(d)
-  if run_result_ok(r) != 1:
-    return 0
-  return 1
+  var out: AutoTickOutput
+  out.state = auto_bicycle_state_after_steps(step_index)
+  out.sensors = auto_sensor_spec_default()
+  out.ok = 1
+  return out
+
+def run_auto_bicycle_at_steps(steps: int) -> SimRunResult
+  requires steps >= 1
+  requires steps <= 64
+  ensures result.ok == 1
+  ensures result.algo_id == algo_auto_bicycle_model()
+  ensures result.vertical_id == vertical_sim_automotive()
+  ensures result.detail_emitted >= 0
+  decreases steps
+=
+  var emitted: int = steps - 1
+  var tick_out: AutoTickOutput = auto_tick_output_at(steps)
+  var r: SimRunResult
+  r.ok = tick_out.ok
+  r.algo_id = algo_auto_bicycle_model()
+  r.vertical_id = vertical_sim_automotive()
+  r.checksum = auto_bicycle_state_checksum(tick_out.state)
+  r.detail_emitted = emitted
+  return r
 
 def run_auto_bicycle_smoke(detail: int) -> SimRunResult
   requires detail >= 0
@@ -54,15 +182,34 @@ def run_auto_bicycle_smoke(detail: int) -> SimRunResult
   ensures result.detail_emitted == detail
   decreases 0
 =
-  var speed: float = 12.0
-  var steer: float = 0.05
-  var r: SimRunResult
-  r.ok = 1
-  r.algo_id = algo_auto_bicycle_model()
-  r.vertical_id = vertical_sim_automotive()
-  r.checksum = auto_bicycle_checksum(speed, steer)
-  r.detail_emitted = detail
-  return r
+  var nsteps: int = detail + 1
+  return run_auto_bicycle_at_steps(nsteps)
+
+# PH-SIM automotive — bicycle kinematics + placeholder sensor spec per studio tick.
+def sim_automotive_tick_at(step_index: int, detail: int) -> int
+  requires step_index >= 1
+  requires step_index <= 64
+  requires detail >= 0
+  requires detail <= 3
+  ensures result >= 0
+  ensures result <= 1
+  decreases step_index
+=
+  var r: SimRunResult = run_auto_bicycle_at_steps(step_index)
+  if run_result_ok(r) != 1:
+    return 0
+  if r.checksum <= 0.0:
+    return 0
+  return 1
+
+def sim_automotive_tick_stub(detail: int) -> int
+  requires detail >= 0
+  requires detail <= 3
+  ensures result >= 0
+  ensures result <= 1
+  decreases 0
+=
+  return sim_automotive_tick_at(1, detail)
 
 def run_automotive_smoke() -> int
   requires true
@@ -71,4 +218,10 @@ def run_automotive_smoke() -> int
 =
   if sim_automotive_tick_stub(0) != 1:
     return 1
+  var st1: AutoVehicleState = auto_bicycle_state_after_steps(1)
+  var st2: AutoVehicleState = auto_bicycle_state_after_steps(2)
+  if st2.x <= st1.x:
+    return 2
+  if auto_sensor_spec_default().camera_w != 640:
+    return 3
   return 0

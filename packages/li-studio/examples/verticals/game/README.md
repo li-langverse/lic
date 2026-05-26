@@ -7,14 +7,15 @@
 | Implemented | Not implemented |
 |-------------|-----------------|
 | Profile chip + compose roundtrip | Full li-player ship loop |
-| Tick-rate gate on `studio_game_step_hook` (hz check) | `physics.runtime` `physics_step` in hot path |
-| World snapshot validity gate | `world_serialize` in hot path |
+| `studio_game_step_hook` → `physics.runtime` `physics_step` (no `physics.rigid` import) | Scene sync (`physics_sync_to_scene`) |
+| `studio_game_world_checkpoint_fields` — tick + physics `step_count` | `world_serialize` in hot path |
 | Session replay metadata (`replay_last_tick`) | Full SimWorld entity replay |
 
 ## Verify
 
 ```bash
 lic check packages/li-studio/li-tests/smoke/studio_vertical_profile_roundtrip.li
+lic check packages/li-studio/li-tests/smoke/studio_game_physics_step.li
 lic check packages/li-studio/li-tests/smoke/studio_sim_step_by_profile.li
 ```
 

@@ -3,26 +3,189 @@ import sim
 
 def li_ml_rl_version() -> int
   requires true
-  ensures result == 1
+  ensures result == 2
   decreases 0
 =
-  return 1
+  return 2
 
-# PH-ML SIM-3 partial — async pool stub: N serial sim_step calls on one session (no parallel workers).
+def env_obs_dim() -> int
+  requires true
+  ensures result == 8
+  decreases 0
+=
+  return 8
+
+def env_act_dim() -> int
+  requires true
+  ensures result == 4
+  decreases 0
+=
+  return 4
+
 type EnvPoolStub = object
   public pool_size: int
   public steps_emitted: int
+  public total_reward: float
+
+type EnvStepResult = object
+  public obs0: float
+  public obs1: float
+  public obs2: float
+  public obs3: float
+  public obs4: float
+  public obs5: float
+  public obs6: float
+  public obs7: float
+  public act0: float
+  public act1: float
+  public act2: float
+  public act3: float
+  public reward: float
+  public done: int
+  public env_index: int
 
 def env_pool_stub_default() -> EnvPoolStub
   requires true
   ensures result.pool_size == 4
   ensures result.steps_emitted == 0
+  ensures result.total_reward == 0.0
   decreases 0
 =
   var p: EnvPoolStub
   p.pool_size = 4
   p.steps_emitted = 0
+  p.total_reward = 0.0
   return p
+
+def env_tick_as_float(tick: int) -> float
+  requires tick >= 0
+  requires tick <= 32
+  ensures result >= 0.0
+  decreases tick
+=
+  if tick == 0:
+    return 0.0
+  if tick == 1:
+    return 1.0
+  if tick == 2:
+    return 2.0
+  if tick == 3:
+    return 3.0
+  if tick == 4:
+    return 4.0
+  return 5.0
+
+def env_action_for_index(env_index: int) -> EnvStepResult
+  requires env_index >= 0
+  requires env_index < 32
+  ensures result.env_index == env_index
+  decreases env_index
+=
+  var ei: int = env_index
+  var r: EnvStepResult
+  r.env_index = ei
+  r.act0 = 0.0
+  r.act1 = 0.0
+  r.act2 = 0.0
+  r.act3 = 0.0
+  if ei == 1:
+    r.act0 = 0.1
+  if ei == 2:
+    r.act0 = 0.2
+  if ei == 3:
+    r.act0 = 0.3
+  r.obs0 = 0.0
+  r.obs1 = 0.0
+  r.obs2 = 0.0
+  r.obs3 = 0.0
+  r.obs4 = 0.0
+  r.obs5 = 0.0
+  r.obs6 = 0.0
+  r.obs7 = 0.0
+  r.reward = 0.0
+  r.done = 0
+  return r
+
+def env_obs_fill_fields(
+    r: var EnvStepResult, tick: int, last_dt: float, env_index: int) -> unit
+  requires tick >= 0
+  requires env_index >= 0
+  requires env_index < 32
+  ensures r.obs1 == last_dt
+  decreases env_index
+=
+  var ei: int = env_index
+  var t0: int = tick
+  r.obs0 = env_tick_as_float(t0)
+  r.obs1 = last_dt
+  r.obs2 = 0.0
+  if ei == 1:
+    r.obs2 = 1.0
+  if ei == 2:
+    r.obs2 = 2.0
+  if ei == 3:
+    r.obs2 = 3.0
+  r.obs3 = 0.0
+  r.obs4 = 0.0
+  r.obs5 = 0.0
+  r.obs6 = 0.0
+  r.obs7 = 0.0
+
+def env_reward_for_action(act0: float, env_index: int, tick: int) -> float
+  requires env_index >= 0
+  requires env_index < 32
+  requires tick >= 0
+  ensures result >= -1.0
+  decreases env_index
+=
+  var pen: float = 0.0
+  if env_index == 1:
+    pen = 0.05
+  if env_index == 2:
+    pen = 0.10
+  if env_index == 3:
+    pen = 0.15
+  return act0 - pen + 0.01 * env_tick_as_float(tick)
+
+def env_step_contract_pre(
+    pool_size: int, tick: int, last_dt: float, env_index: int) -> EnvStepResult
+  requires pool_size > 0
+  requires env_index >= 0
+  requires env_index < pool_size
+  requires tick >= 0
+  ensures result.env_index == env_index
+  ensures result.done == 0
+  decreases env_index
+=
+  var t0: int = tick
+  var ei: int = env_index
+  var r: EnvStepResult = env_action_for_index(ei)
+  env_obs_fill_fields(r, t0, last_dt, ei)
+  r.reward = 0.0
+  r.done = 0
+  return r
+
+def env_step_contract_post(
+    pre: EnvStepResult, tick: int, last_dt: float, pool_size: int) -> EnvStepResult
+  requires tick >= 0
+  requires pool_size > 0
+  requires pre.env_index >= 0
+  requires pre.env_index < pool_size
+  ensures result.env_index == pre.env_index
+  ensures result.done >= 0
+  ensures result.done <= 1
+  decreases pre.env_index
+=
+  var idx: int = pre.env_index
+  var act0: float = pre.act0
+  var t0: int = tick
+  var r: EnvStepResult = pre
+  env_obs_fill_fields(r, t0, last_dt, idx)
+  r.reward = env_reward_for_action(act0, idx, t0)
+  r.done = 0
+  if t0 >= pool_size * 8:
+    r.done = 1
+  return r
 
 def env_pool_stub_step(pool: var EnvPoolStub, session: var SimSessionStub, dt: float) -> int
   requires pool.pool_size > 0
@@ -36,9 +199,17 @@ def env_pool_stub_step(pool: var EnvPoolStub, session: var SimSessionStub, dt: f
   if dt <= 0.0:
     return sim_status_invalid_dt()
   var i: int = 0
-  while i < pool.pool_size:
+  while i < pool.pool_size
+    var tick0: int = session.tick
+    var last_dt0: float = session.last_dt
+    var psz: int = pool.pool_size
+    var pre: EnvStepResult = env_step_contract_pre(psz, tick0, last_dt0, i)
     if sim_step(session, dt) != sim_status_ok():
       return sim_status_invalid_dt()
+    var tick1: int = session.tick
+    var last_dt1: float = session.last_dt
+    var post: EnvStepResult = env_step_contract_post(pre, tick1, last_dt1, psz)
+    pool.total_reward = pool.total_reward + post.reward
+    pool.steps_emitted = pool.steps_emitted + 1
     i = i + 1
-  pool.steps_emitted = pool.steps_emitted + pool.pool_size
   return sim_status_ok()

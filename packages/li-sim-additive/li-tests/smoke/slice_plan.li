@@ -1,0 +1,21 @@
+import sim.additive
+
+def main() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  if am_layer_count_from_mesh(10.0, 0.2) != 50:
+    return 1
+  if am_rect_perimeter_mm(40.0, 30.0) != 140.0:
+    return 2
+  if sim_additive_validate_slice(50, 200, 140.0, 1) != 1:
+    return 3
+  if sim_additive_require_sim_pass_ok(1, 50, 200, 140.0, 1) != 1:
+    return 4
+  if sim_additive_require_sim_pass_ok(0, 50, 200, 140.0, 1) != 0:
+    return 5
+  var mesh: AmMeshDims = am_mesh_dims_default()
+  if am_slice_path_point_y(mesh, 2) != 30.0:
+    return 6
+  return 0

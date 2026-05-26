@@ -16,6 +16,8 @@ def main() -> int
     return 3
   if pool.steps_emitted != pool.pool_size:
     return 4
-  if sim_session_replay_last_tick(sess) != pool.pool_size:
+  if pool.total_reward <= 0.0:
     return 5
+  if sim_session_replay_last_tick(sess) != pool.pool_size:
+    return 6
   return 0

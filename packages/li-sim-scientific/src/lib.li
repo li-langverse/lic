@@ -1,17 +1,50 @@
 
 import sim
-import physics.particles
-import physics.rigid
 
 def li_sim_scientific_version() -> int
   requires true
-  ensures result == 1
+  ensures result == 2
   decreases 0
 =
+  return 2
+
+def sim_scientific_tick_md(detail: int) -> int
+  requires detail >= 0
+  requires detail <= 1
+  ensures result >= 0
+  ensures result <= 1
+  decreases detail
+=
+  var r_md: SimRunResult = run_md_lj_smoke(detail)
+  if run_result_ok(r_md) != 1:
+    return 0
+  if sim_scientific_viz_tier_ok(r_md.detail_emitted) != 1:
+    return 0
   return 1
 
-# PH-SIM vertical gap #4 — detail-tier smoke per studio tick (no full SimWorld / sim.viz).
-# detail 0–1: MD Lennard-Jones; 2: PDE heat; 3: rigid integrator smoke.
+def sim_scientific_tick_heat(detail: int) -> int
+  requires detail == 2
+  ensures result >= 0
+  ensures result <= 1
+  decreases 0
+=
+  var r_heat: SimRunResult = run_heat_smoke(detail)
+  if run_result_ok(r_heat) != 1:
+    return 0
+  return 1
+
+def sim_scientific_tick_rigid(detail: int) -> int
+  requires detail == 3
+  ensures result >= 0
+  ensures result <= 1
+  decreases 0
+=
+  var r_rigid: SimRunResult = run_rigid_smoke(detail)
+  if run_result_ok(r_rigid) != 1:
+    return 0
+  return 1
+
+# PH-SIM — detail-tier ticks with deterministic kernel evolution (not label-only smokes).
 def sim_scientific_tick_stub(detail: int) -> int
   requires detail >= 0
   requires detail <= 3
@@ -19,23 +52,156 @@ def sim_scientific_tick_stub(detail: int) -> int
   ensures result <= 1
   decreases detail
 =
-  if detail <= 1:
-    var d_md: int = detail
-    var r_md: SimRunResult = run_md_lj_smoke(d_md)
-    if run_result_ok(r_md) != 1:
-      return 0
+  if detail == 2:
+    return sim_scientific_tick_heat(detail)
+  if detail == 3:
+    return sim_scientific_tick_rigid(detail)
+  return sim_scientific_tick_md(detail)
+
+def scientific_oracle_md_lennard_jones() -> float
+  requires true
+  ensures result > 0.0
+  decreases 0
+=
+  return scientific_md_evolve_substeps(8)
+
+def scientific_oracle_pde_heat_2d() -> float
+  requires true
+  ensures result > 0.0
+  decreases 0
+=
+  return scientific_heat_evolve_substeps(8)
+
+# Display tier ids align with li-scene `scene_md_tier_*` (wired in studio via `studio_md_particle_tier_select_ok`).
+def sim_scientific_display_tier_for_detail(detail: int) -> int
+  requires detail >= 0
+  requires detail <= 3
+  ensures result >= 0
+  ensures result <= 2
+  decreases detail
+=
+  if detail == 0:
+    return 0
+  if detail == 1:
     return 1
   if detail == 2:
-    var d_heat: int = detail
-    var r_heat: SimRunResult = run_heat_smoke(d_heat)
-    if run_result_ok(r_heat) != 1:
-      return 0
     return 1
-  var d_rigid: int = detail
-  var r_rigid: SimRunResult = run_rigid_smoke(d_rigid)
-  if run_result_ok(r_rigid) != 1:
+  return 0
+
+def sim_scientific_viz_tier_ok(detail: int) -> int
+  requires detail >= 0
+  requires detail <= 3
+  ensures result >= 0
+  ensures result <= 1
+  decreases detail
+=
+  if detail > 1:
+    return 1
+  var tier_id: int = sim_scientific_display_tier_for_detail(detail)
+  if tier_id < 0:
+    return 0
+  if tier_id > 2:
     return 0
   return 1
+
+def scientific_lj_force_scalar(r: float, epsilon: float, sigma: float, rc: float) -> float
+  requires r > 0.0
+  requires sigma > 0.0
+  requires rc > 0.0
+  ensures result >= 0.0
+  decreases 0
+=
+  if r >= rc:
+    return 0.0
+  var sr: float = sigma / r
+  var sr6: float = sr * sr * sr * sr * sr * sr
+  var sr12: float = sr6 * sr6
+  return 24.0 * epsilon * (2.0 * sr12 - sr6) / r
+
+# Four-particle 1D LJ chain — unrolled (no variable array index).
+def scientific_md_evolve_substeps(substeps: int) -> float
+  requires substeps >= 1
+  requires substeps <= 64
+  ensures result > 0.0
+  decreases substeps
+=
+  var x0: float = 1.0
+  var x1: float = 2.0
+  var x2: float = 3.0
+  var x3: float = 4.0
+  var v0: float = 0.0
+  var v1: float = 0.0
+  var v2: float = 0.0
+  var v3: float = 0.0
+  var dt: float = 0.001
+  var rc: float = 2.5
+  var eps: float = 1.0
+  var sig: float = 1.0
+  var s: int = 0
+  while s < substeps
+    var r01: float = x1 - x0
+    if r01 < 0.5:
+      r01 = 0.5
+    var f01: float = scientific_lj_force_scalar(r01, eps, sig, rc)
+    var r12: float = x2 - x1
+    if r12 < 0.5:
+      r12 = 0.5
+    var f12: float = scientific_lj_force_scalar(r12, eps, sig, rc)
+    var r23: float = x3 - x2
+    if r23 < 0.5:
+      r23 = 0.5
+    var f23: float = scientific_lj_force_scalar(r23, eps, sig, rc)
+    v0 = v0 - f01 * dt
+    v1 = v1 + f01 * dt - f12 * dt
+    v2 = v2 + f12 * dt - f23 * dt
+    v3 = v3 + f23 * dt
+    x0 = x0 + v0 * dt
+    x1 = x1 + v1 * dt
+    x2 = x2 + v2 * dt
+    x3 = x3 + v3 * dt
+    s = s + 1
+  return x0 * x0 + x1 * x1 + x2 * x2 + x3 * x3 + v0 * v0 + v1 * v1 + v2 * v2 + v3 * v3
+
+def scientific_heat_evolve_substeps(substeps: int) -> float
+  requires substeps >= 1
+  requires substeps <= 64
+  ensures result > 0.0
+  decreases substeps
+=
+  var u0: float = 0.0
+  var u1: float = 0.0
+  var u2: float = 0.0
+  var u3: float = 0.0
+  var u4: float = 1.0
+  var u5: float = 0.0
+  var u6: float = 0.0
+  var u7: float = 0.0
+  var alpha: float = 0.1
+  var dt: float = 0.01
+  var s: int = 0
+  while s < substeps
+    var lap4: float = u3 + u5 - 2.0 * u4
+    u4 = u4 + alpha * dt * lap4
+    u3 = u3 + alpha * dt * (u2 + u4 - 2.0 * u3)
+    u5 = u5 + alpha * dt * (u4 + u6 - 2.0 * u5)
+    s = s + 1
+  return u0 + u1 + u2 + u3 + u4 + u5 + u6 + u7
+
+def scientific_rigid_evolve_substeps(substeps: int) -> float
+  requires substeps >= 1
+  requires substeps <= 64
+  ensures result < 1.0
+  decreases substeps
+=
+  var pz: float = 1.0
+  var vz: float = 0.0
+  var dt: float = 0.01
+  var s: int = 0
+  while s < substeps
+    vz = vz - 9.81 * dt
+    pz = pz + vz * dt
+    s = s + 1
+  return pz
 
 def run_md_lj_smoke(detail: int) -> SimRunResult
   requires detail >= 0
@@ -43,15 +209,23 @@ def run_md_lj_smoke(detail: int) -> SimRunResult
   ensures result.ok == 1
   ensures result.algo_id == 101
   ensures result.detail_emitted == detail
+  ensures result.checksum > 0.0
   decreases 0
 =
-  var f: float = lj_force_scalar(1.12, 1.0, 1.0, 2.5)
   var r: SimRunResult
+  r.detail_emitted = detail
+  var steps: int = 1
+  if r.detail_emitted == 1:
+    steps = 2
+  if r.detail_emitted == 2:
+    steps = 3
+  if r.detail_emitted == 3:
+    steps = 4
+  var chk: float = scientific_md_evolve_substeps(steps)
   r.ok = 1
   r.algo_id = algo_md_lj_cutoff_mic()
   r.vertical_id = vertical_md_lennard_jones()
-  r.checksum = f
-  r.detail_emitted = detail
+  r.checksum = chk
   return r
 
 def run_heat_smoke(detail: int) -> SimRunResult
@@ -60,14 +234,23 @@ def run_heat_smoke(detail: int) -> SimRunResult
   ensures result.ok == 1
   ensures result.algo_id == 201
   ensures result.detail_emitted == detail
+  ensures result.checksum > 0.0
   decreases 0
 =
   var r: SimRunResult
+  r.detail_emitted = detail
+  var steps: int = 2
+  if r.detail_emitted == 1:
+    steps = 3
+  if r.detail_emitted == 2:
+    steps = 4
+  if r.detail_emitted == 3:
+    steps = 5
+  var chk: float = scientific_heat_evolve_substeps(steps)
   r.ok = 1
   r.algo_id = algo_pde_heat_explicit_2d()
   r.vertical_id = vertical_pde_heat_2d()
-  r.checksum = 1.0
-  r.detail_emitted = detail
+  r.checksum = chk
   return r
 
 def run_rigid_smoke(detail: int) -> SimRunResult
@@ -77,22 +260,20 @@ def run_rigid_smoke(detail: int) -> SimRunResult
   ensures result.detail_emitted == detail
   decreases 0
 =
-  var body: RigidBody
-  body.px = 0.0
-  body.py = 0.0
-  body.pz = 0.0
-  body.vx = 1.0
-  body.vy = 0.0
-  body.vz = 0.0
-  body.inv_mass = 1.0
-  body.radius = 0.5
-  rigid_integrate_semi_implicit(body, 0.0, 0.0, -9.81, 0.01)
   var r: SimRunResult
+  r.detail_emitted = detail
+  var steps: int = 1
+  if r.detail_emitted == 1:
+    steps = 2
+  if r.detail_emitted == 2:
+    steps = 3
+  if r.detail_emitted == 3:
+    steps = 4
+  var chk: float = scientific_rigid_evolve_substeps(steps)
   r.ok = 1
   r.algo_id = algo_rigid_semi_implicit()
   r.vertical_id = vertical_gaming_rigid()
-  r.checksum = body.pz
-  r.detail_emitted = detail
+  r.checksum = chk
   return r
 
 def run_algo_registry_stub(algo_id: int, detail: int) -> SimRunResult
@@ -135,27 +316,21 @@ def run_algo(algo_id: int, detail: int) -> SimRunResult
   var reg_chk: int = algo_id
   var reg_run: int = algo_id
   if algo_id == algo_md_lj_cutoff_mic():
-    var d0: int = detail
-    return run_md_lj_smoke(d0)
+    return run_md_lj_smoke(detail)
   if algo_id == algo_md_integrator_verlet():
-    var d1: int = detail
-    return run_md_lj_smoke(d1)
+    return run_md_lj_smoke(detail)
   if algo_id == algo_pde_heat_explicit_2d():
-    var d2: int = detail
-    return run_heat_smoke(d2)
+    return run_heat_smoke(detail)
   if algo_id == algo_rigid_semi_implicit():
-    var d3: int = detail
-    return run_rigid_smoke(d3)
+    return run_rigid_smoke(detail)
   if algo_in_registry(reg_chk) == 1:
-    var d4: int = detail
-    return run_algo_registry_stub(reg_run, d4)
+    return run_algo_registry_stub(reg_run, detail)
   var bad: SimRunResult
-  var d5: int = detail
   bad.ok = 0
   bad.algo_id = algo_id
   bad.vertical_id = 0
   bad.checksum = 0.0
-  bad.detail_emitted = d5
+  bad.detail_emitted = detail
   return bad
 
 def run_simulation(vertical_id: int, detail: int) -> SimRunResult
@@ -166,22 +341,17 @@ def run_simulation(vertical_id: int, detail: int) -> SimRunResult
   decreases 0
 =
   if vertical_id == vertical_md_lennard_jones():
-    var d0: int = detail
-    return run_md_lj_smoke(d0)
+    return run_md_lj_smoke(detail)
   if vertical_id == vertical_pde_heat_2d():
-    var d1: int = detail
-    return run_heat_smoke(d1)
+    return run_heat_smoke(detail)
   if vertical_id == vertical_gaming_rigid():
-    var d2: int = detail
-    return run_rigid_smoke(d2)
+    return run_rigid_smoke(detail)
   if vertical_id == vertical_qm_dft():
-    var d3: int = detail
-    return run_algo(algo_qm_dft_scf_energy(), d3)
+    return run_algo(algo_qm_dft_scf_energy(), detail)
   var bad: SimRunResult
-  var d4: int = detail
   bad.ok = 0
   bad.algo_id = 0
   bad.vertical_id = vertical_id
   bad.checksum = 0.0
-  bad.detail_emitted = d4
+  bad.detail_emitted = detail
   return bad

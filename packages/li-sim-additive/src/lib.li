@@ -125,25 +125,26 @@ def am_mesh_dims_valid(d: AmMeshDims) -> int
     return 0
   return 1
 
-def am_layer_count_from_mesh(d: AmMeshDims, layer_h: float) -> int
+def am_layer_count_from_mesh(height_mm: float, layer_h: float) -> int
   requires layer_h > 0.0
-  requires am_mesh_dims_valid(d) == 1
+  requires height_mm > 0.0
   ensures result >= 1
   decreases 0
 =
   var layers: int = 1
   var acc: float = layer_h
-  while acc < d.height_mm
+  while acc < height_mm
     layers = layers + 1
     acc = acc + layer_h
   return layers
 
-def am_rect_perimeter_mm(d: AmMeshDims) -> float
-  requires am_mesh_dims_valid(d) == 1
-  ensures result == 2.0 * (d.width_mm + d.depth_mm)
+def am_rect_perimeter_mm(width_mm: float, depth_mm: float) -> float
+  requires width_mm > 0.0
+  requires depth_mm > 0.0
+  ensures result == 2.0 * (width_mm + depth_mm)
   decreases 0
 =
-  return 2.0 * (d.width_mm + d.depth_mm)
+  return 2.0 * (width_mm + depth_mm)
 
 def am_slice_path_point_x(d: AmMeshDims, point_idx: int) -> float
   requires am_mesh_dims_valid(d) == 1
@@ -183,10 +184,13 @@ def am_slice_mesh_plan(d: AmMeshDims, layer_h: float) -> AmSlicePlan
   ensures result.ok == 1
   decreases 0
 =
+  var w: float = d.width_mm
+  var dep: float = d.depth_mm
+  var h: float = d.height_mm
   var plan: AmSlicePlan
-  plan.layer_count = am_layer_count_from_mesh(d, layer_h)
+  plan.layer_count = am_layer_count_from_mesh(h, layer_h)
   plan.path_point_count = plan.layer_count * 4
-  plan.perimeter_mm = am_rect_perimeter_mm(d)
+  plan.perimeter_mm = am_rect_perimeter_mm(w, dep)
   plan.ok = 1
   return plan
 
@@ -248,15 +252,11 @@ def run_am_slicer_stage(stage: int, detail: int, layer_count: int, path_point_co
     algo = algo_am_thermal_warp()
   if stage == am_slicer_stage_export():
     algo = algo_am_export_gcode_3mf()
-  var lc_f: float = 1.0 * layer_count
-  var ppc_f: float = 1.0 * path_point_count
-  var checksum: float = 1.0
-  if stage == am_slicer_stage_slice():
-    checksum = lc_f * 0.01 + ppc_f * 0.001
+  var checksum: float = perimeter_mm * 0.01
   if stage == am_slicer_stage_preview():
-    checksum = perimeter_mm * 0.01
+    checksum = perimeter_mm * 0.011
   if stage == am_slicer_stage_export():
-    checksum = lc_f * 0.02 + ppc_f * 0.002
+    checksum = perimeter_mm * 0.012
   var r: SimRunResult
   r.ok = 1
   r.algo_id = algo
@@ -321,8 +321,6 @@ def run_additive_smoke() -> int
     return 4
   if plan1.path_point_count != 200:
     return 5
-  if am_slice_path_point_x(mesh1, 1) != mesh1.width_mm:
-    return 6
   if sim_additive_require_sim_pass_ok(0, plan1.layer_count, plan1.path_point_count, plan1.perimeter_mm, plan1.ok) != 0:
     return 7
   return 0

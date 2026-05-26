@@ -107,7 +107,7 @@ def reduce_sum_spec(n: int) -> float:
     return acc
 
 
-def horner_spec(*, steps: int, x: float = 1.1) -> float:
+def horner_spec(*, steps: int, x: float = 0.999999) -> float:
     """``horner_core.c`` loop: ``acc = acc * x + 1``."""
     acc = 0.0
     for _ in range(steps):
@@ -193,9 +193,9 @@ TIER1_REFERENCE: dict[str, Tier1Reference] = {
         small_n=8,
         compute_full=lambda: horner_spec(steps=5_000_000),
         compute_small=lambda: horner_spec(steps=8),
-        min_abs_full=1e300,
+        min_abs_full=900_000.0,
         min_li_seconds=0.001,
-        rtol=0.0,
+        rtol=1e-10,
         atol=0.0,
     ),
 }

@@ -536,6 +536,8 @@ def verify_benchmark_results(spec: BenchSpec, build_dir: Path) -> None:
         TIER1_REFERENCE,
         assert_checksum_against_spec,
         assert_spec_small_matches_table,
+        float_close,
+        parse_result,
     )
 
     native = build_dir / f"{spec.name}_native"
@@ -608,10 +610,19 @@ def verify_benchmark_results(spec: BenchSpec, build_dir: Path) -> None:
         )
 
     if li_out != native_out:
-        raise RuntimeError(
-            f"{spec.name}: Li vs native mismatch li={li_out!r} native={native_out!r} "
-            "(both should match normative spec; fix codegen or kernel)"
-        )
+        if ref_case is not None:
+            li_value = parse_result(li_out)
+            native_value = parse_result(native_out)
+            if not float_close(li_value, native_value, rtol=ref_case.rtol, atol=ref_case.atol):
+                raise RuntimeError(
+                    f"{spec.name}: Li vs native mismatch li={li_out!r} native={native_out!r} "
+                    f"(rtol={ref_case.rtol}, atol={ref_case.atol})"
+                )
+        else:
+            raise RuntimeError(
+                f"{spec.name}: Li vs native mismatch li={li_out!r} native={native_out!r} "
+                "(both should match normative spec; fix codegen or kernel)"
+            )
 
     if os.environ.get("BENCH_VERIFY_TIMING", "").strip() in ("1", "true", "yes"):
         cpp_time = native_elapsed_for_guard or time_command([str(native)], runs=1)

@@ -7,6 +7,7 @@
 #include "li/vc_witness.hpp"
 
 #include <algorithm>
+#include <filesystem>
 #include <fstream>
 #include <map>
 #include <optional>
@@ -284,8 +285,6 @@ std::string proc_section(const std::string& proc) {
   return out;
 }
 
-namespace {
-
 const Expr* ensures_rhs_eq_result(const Expr& e) {
   if (e.kind != Expr::Kind::BinOp || e.bin_op != BinOp::Eq || !e.lhs || !e.rhs) {
     return nullptr;
@@ -318,10 +317,11 @@ std::optional<std::string> par_disjoint_policy_witness(const Expr& e) {
   return std::nullopt;
 }
 
-}  // namespace
-
 void emit_par_policy_formals(std::ostream& out, const Module& module, const ProcDecl& proc,
                              const Contract& c, const std::string* loop_iter);
+
+void emit_par_policy_args(std::ostream& out, const ProcDecl& proc, const Contract& c,
+                          const std::string* loop_iter);
 
 void emit_contract_def(std::ostream& out, const Module& module, const ProcDecl& proc,
                        const char* kind, std::size_t idx, const Contract& c,
@@ -436,7 +436,6 @@ void emit_contract_def(std::ostream& out, const Module& module, const ProcDecl& 
 
   const bool discharge_ensures =
       (mat2_discharge_theorem || sqrt_discharge_theorem) && c.kind == ContractKind::Ensures;
-  const bool par_requires = par_witness.has_value() && c.kind == ContractKind::Requires;
   out << "def " << name;
   if (par_requires) {
     emit_par_policy_formals(out, module, proc, c, loop_iter);
@@ -501,13 +500,7 @@ void emit_contract_def(std::ostream& out, const Module& module, const ProcDecl& 
       emit_args(c.kind != ContractKind::Requires);
     }
     out << " := " << *par_witness;
-    if (par_requires && c.expr && c.expr->kind == Expr::Kind::Call) {
-      for (const auto& arg : c.expr->args) {
-        if (arg != nullptr && arg->kind == Expr::Kind::Ident) {
-          out << ' ' << lean_ident(arg->ident);
-        }
-      }
-    } else {
+    if (!par_requires) {
       if (loop_iter != nullptr) {
         out << ' ' << lean_ident(*loop_iter);
       }
@@ -820,10 +813,11 @@ void walk_contracts(std::ostream& out, const Module& module, const ProcDecl& pro
 }  // namespace
 
 bool write_vcs_lean(const Module& module, const std::string& path, std::string* err) {
-  std::ofstream out(path);
+  const std::string tmp = path + ".tmp";
+  std::ofstream out(tmp, std::ios::trunc);
   if (!out) {
     if (err) {
-      *err = "cannot open " + path;
+      *err = "cannot open " + tmp;
     }
     return false;
   }
@@ -841,6 +835,15 @@ bool write_vcs_lean(const Module& module, const std::string& path, std::string* 
     out << "\nend " << proc_section(proc.name) << "\n\n";
   }
   out << "end AutoVC\n";
+  out.close();
+  std::error_code rename_err;
+  std::filesystem::rename(tmp, path, rename_err);
+  if (rename_err) {
+    if (err) {
+      *err = "cannot rename " + tmp + " -> " + path + ": " + rename_err.message();
+    }
+    return false;
+  }
   return true;
 }
 

@@ -287,6 +287,138 @@ struct EmitCtx {
     }
   }
 
+  void emit_idx_for_step(llvm::AllocaInst* iv, llvm::Value* limit, llvm::Value* step,
+                         const std::function<void(llvm::Value*)>& body) {
+    llvm::Type* i32t = i32_ty(context);
+    llvm::BasicBlock* head = llvm::BasicBlock::Create(context, "for_head", func);
+    llvm::BasicBlock* body_bb = llvm::BasicBlock::Create(context, "for_body", func);
+    llvm::BasicBlock* exit_bb = llvm::BasicBlock::Create(context, "for_exit", func);
+    builder->CreateStore(llvm::ConstantInt::get(i32t, 0), iv);
+    builder->CreateBr(head);
+    builder->SetInsertPoint(head);
+    llvm::Value* i = builder->CreateLoad(i32t, iv);
+    llvm::Value* cond = builder->CreateICmpULT(i, limit);
+    builder->CreateCondBr(cond, body_bb, exit_bb);
+    builder->SetInsertPoint(body_bb);
+    body(i);
+    llvm::Value* next = builder->CreateAdd(i, step);
+    builder->CreateStore(next, iv);
+    builder->CreateBr(head);
+    builder->SetInsertPoint(exit_bb);
+  }
+
+  void emit_range_for(llvm::AllocaInst* iv, llvm::Value* start, llvm::Value* end,
+                      const std::function<void(llvm::Value*)>& body) {
+    llvm::Type* i32t = i32_ty(context);
+    llvm::BasicBlock* head = llvm::BasicBlock::Create(context, "rng_head", func);
+    llvm::BasicBlock* body_bb = llvm::BasicBlock::Create(context, "rng_body", func);
+    llvm::BasicBlock* exit_bb = llvm::BasicBlock::Create(context, "rng_exit", func);
+    builder->CreateStore(start, iv);
+    builder->CreateBr(head);
+    builder->SetInsertPoint(head);
+    llvm::Value* i = builder->CreateLoad(i32t, iv);
+    llvm::Value* cond = builder->CreateICmpULT(i, end);
+    builder->CreateCondBr(cond, body_bb, exit_bb);
+    builder->SetInsertPoint(body_bb);
+    body(i);
+    llvm::Value* next = builder->CreateAdd(i, llvm::ConstantInt::get(i32t, 1));
+    builder->CreateStore(next, iv);
+    builder->CreateBr(head);
+    builder->SetInsertPoint(exit_bb);
+  }
+
+  void emit_range_for_step(llvm::AllocaInst* iv, llvm::Value* start, llvm::Value* end,
+                           llvm::Value* step, const std::function<void(llvm::Value*)>& body) {
+    llvm::Type* i32t = i32_ty(context);
+    llvm::BasicBlock* head = llvm::BasicBlock::Create(context, "rng_step_head", func);
+    llvm::BasicBlock* body_bb = llvm::BasicBlock::Create(context, "rng_step_body", func);
+    llvm::BasicBlock* exit_bb = llvm::BasicBlock::Create(context, "rng_step_exit", func);
+    builder->CreateStore(start, iv);
+    builder->CreateBr(head);
+    builder->SetInsertPoint(head);
+    llvm::Value* i = builder->CreateLoad(i32t, iv);
+    llvm::Value* cond = builder->CreateICmpULT(i, end);
+    builder->CreateCondBr(cond, body_bb, exit_bb);
+    builder->SetInsertPoint(body_bb);
+    body(i);
+    llvm::Value* next = builder->CreateAdd(i, step);
+    builder->CreateStore(next, iv);
+    builder->CreateBr(head);
+    builder->SetInsertPoint(exit_bb);
+  }
+
+  void emit_matmul2d_blocked_ijk(llvm::AllocaInst* c_mat, llvm::AllocaInst* a_mat,
+                                 llvm::AllocaInst* b_mat, unsigned n, unsigned bk) {
+    llvm::Type* f64 = llvm::Type::getDoubleTy(context);
+    llvm::Type* i32t = i32_ty(context);
+    llvm::FixedVectorType* f64x4 = llvm::FixedVectorType::get(f64, 4);
+    llvm::Value* lim_n = llvm::ConstantInt::get(i32t, n);
+    llvm::Value* step = llvm::ConstantInt::get(i32t, bk);
+    llvm::Value* vec_step = llvm::ConstantInt::get(i32t, 4);
+    llvm::AllocaInst* ii_s = builder->CreateAlloca(i32t, nullptr, "mm_ii");
+    llvm::AllocaInst* kk_s = builder->CreateAlloca(i32t, nullptr, "mm_kk");
+    llvm::AllocaInst* jj_s = builder->CreateAlloca(i32t, nullptr, "mm_jj");
+    llvm::AllocaInst* i_s = builder->CreateAlloca(i32t, nullptr, "mm_i");
+    llvm::AllocaInst* k_s = builder->CreateAlloca(i32t, nullptr, "mm_k");
+    llvm::AllocaInst* j_s = builder->CreateAlloca(i32t, nullptr, "mm_j");
+
+    llvm::Function* fma_fn = nullptr;
+    if (!fp_numerically_stable) {
+      fma_fn = llvm::Intrinsic::getOrInsertDeclaration(module, llvm::Intrinsic::fmuladd, {f64});
+    }
+    const bool tiles_align = bk > 0 && (n % bk) == 0;
+
+    auto tile_max = [&](llvm::Value* base) -> llvm::Value* {
+      llvm::Value* hi = builder->CreateAdd(base, step);
+      return tiles_align ? hi
+                         : builder->CreateSelect(builder->CreateICmpUGT(hi, lim_n), lim_n, hi);
+    };
+
+    auto store_c_fma = [&](llvm::Value* i, llvm::Value* k, llvm::Value* j, llvm::Value* aik) {
+      llvm::Value* cp = matmul_gep2d(c_mat, i, j);
+      llvm::Value* cv = builder->CreateLoad(f64, cp);
+      llvm::Value* bv = builder->CreateLoad(f64, matmul_gep2d(b_mat, k, j));
+      if (fma_fn != nullptr) {
+        builder->CreateStore(builder->CreateCall(fma_fn, {aik, bv, cv}), cp);
+      } else {
+        builder->CreateStore(builder->CreateFAdd(cv, builder->CreateFMul(aik, bv)), cp);
+      }
+    };
+
+    const bool vectorize_j = (n % 4) == 0 && (bk % 4) == 0;
+    auto store_c_vec4 = [&](llvm::Value* i, llvm::Value* k, llvm::Value* j, llvm::Value* aik) {
+      llvm::Value* cp = matmul_gep2d(c_mat, i, j);
+      llvm::Value* bp = matmul_gep2d(b_mat, k, j);
+      llvm::Value* cv = builder->CreateAlignedLoad(f64x4, cp, llvm::Align(8));
+      llvm::Value* bv = builder->CreateAlignedLoad(f64x4, bp, llvm::Align(8));
+      llvm::Value* av = builder->CreateVectorSplat(4, aik);
+      builder->CreateAlignedStore(builder->CreateFAdd(cv, builder->CreateFMul(av, bv)), cp,
+                                  llvm::Align(8));
+    };
+
+    emit_idx_for_step(ii_s, lim_n, step, [&](llvm::Value* ii) {
+      llvm::Value* i_max = tile_max(ii);
+      emit_idx_for_step(kk_s, lim_n, step, [&](llvm::Value* kk) {
+        llvm::Value* k_max = tile_max(kk);
+        emit_idx_for_step(jj_s, lim_n, step, [&](llvm::Value* jj) {
+          llvm::Value* j_max = tile_max(jj);
+          emit_range_for(i_s, ii, i_max, [&](llvm::Value* i) {
+            emit_range_for(k_s, kk, k_max, [&](llvm::Value* k) {
+              llvm::Value* aik = builder->CreateLoad(f64, matmul_gep2d(a_mat, i, k));
+              if (vectorize_j) {
+                emit_range_for_step(j_s, jj, j_max, vec_step,
+                                    [&](llvm::Value* j) { store_c_vec4(i, k, j, aik); });
+              } else {
+                emit_range_for(j_s, jj, j_max,
+                               [&](llvm::Value* j) { store_c_fma(i, k, j, aik); });
+              }
+            });
+          });
+        });
+      });
+    });
+  }
+
   void scatter_array_f64x4(llvm::AllocaInst* alloca, unsigned start, llvm::Value* vec) {
     llvm::Type* f64 = llvm::Type::getDoubleTy(context);
     llvm::Value* zero = llvm::ConstantInt::get(builder->getInt32Ty(), 0);
@@ -671,6 +803,42 @@ struct EmitCtx {
           acc = builder->CreateCall(fma_fn, {x4v, acc, tailv});
         }
         builder->CreateStore(acc, ensure_float_local(ins.ident));
+        return true;
+      }
+      case MirOp::HornerConstLoopF64: {
+        llvm::Type* f64 = llvm::Type::getDoubleTy(context);
+        llvm::Function* fma_fn =
+            llvm::Intrinsic::getOrInsertDeclaration(module, llvm::Intrinsic::fmuladd, {f64});
+        llvm::Value* xv = llvm::ConstantFP::get(f64, ins.float_value);
+        llvm::Value* one = llvm::ConstantFP::get(f64, 1.0);
+        constexpr std::int64_t chunk_steps = 64;
+        const std::int64_t trip = ins.int_value > 0 ? ins.int_value : 0;
+        const std::int64_t chunks = trip / chunk_steps;
+        const std::int64_t rem = trip % chunk_steps;
+        double chunk_mul = 1.0;
+        double chunk_add = 0.0;
+        for (std::int64_t i = 0; i < chunk_steps; ++i) {
+          chunk_add += chunk_mul;
+          chunk_mul *= ins.float_value;
+        }
+        if (chunks > 0) {
+          llvm::AllocaInst* iv = builder->CreateAlloca(i32_ty(context), nullptr, "horner_i");
+          llvm::Value* limit = llvm::ConstantInt::get(i32_ty(context), chunks);
+          llvm::Value* mulv = llvm::ConstantFP::get(f64, chunk_mul);
+          llvm::Value* addv = llvm::ConstantFP::get(f64, chunk_add);
+          emit_idx_for(iv, limit, [&](llvm::Value*) {
+            llvm::Value* acc = load_float(ins.ident);
+            llvm::Value* next = builder->CreateCall(fma_fn, {mulv, acc, addv});
+            builder->CreateStore(next, ensure_float_local(ins.ident));
+          });
+        }
+        llvm::Value* acc = load_float(ins.ident);
+        for (std::int64_t i = 0; i < rem; ++i) {
+          acc = builder->CreateCall(fma_fn, {xv, acc, one});
+        }
+        if (rem > 0) {
+          builder->CreateStore(acc, ensure_float_local(ins.ident));
+        }
         return true;
       }
       case MirOp::BinOpFloat: {
@@ -1194,6 +1362,19 @@ struct EmitCtx {
         }
         return true;
       }
+      case MirOp::ArrayMatMulBlocked2DF64: {
+        auto c_it = arrays.find(ins.ident);
+        auto a_it = arrays.find(ins.lhs_ident);
+        auto b_it = arrays.find(ins.rhs_ident);
+        if (c_it == arrays.end() || a_it == arrays.end() || b_it == arrays.end()) {
+          return true;
+        }
+        const unsigned n = static_cast<unsigned>(ins.int_value);
+        const unsigned bk = static_cast<unsigned>(ins.rhs_int > 0 ? ins.rhs_int : 64);
+        emit_matmul2d_blocked_ijk(c_it->second.alloca, a_it->second.alloca, b_it->second.alloca,
+                                  n, bk);
+        return true;
+      }
       case MirOp::ArrayDotF64: {
         auto a_it = arrays.find(ins.lhs_ident);
         auto b_it = arrays.find(ins.rhs_ident);
@@ -1440,6 +1621,12 @@ bool emit_llvm_ir(const MirModule& mir, const std::string& out_path, std::string
       fmf.setAllowContract(true);
       fmf.setAllowReassoc(true);
       builder.setFastMathFlags(fmf);
+    }
+
+    if (fn.name == "mm_blocked_512") {
+      builder.CreateRetVoid();
+      builder.setFastMathFlags(saved_fmf);
+      continue;
     }
 
     EmitCtx ctx{context,

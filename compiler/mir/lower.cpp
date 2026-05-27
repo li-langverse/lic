@@ -928,10 +928,18 @@ void push_mir_args_for_object_value_r(const Module& module, const TypeExpr& te,
 
 void push_mir_args_for_object_value(const Module& module, const TypeExpr& param_ty,
                                     const Expr& arg, std::vector<MirArg>& args_out) {
-  if (arg.kind != Expr::Kind::Ident) {
+  std::string prefix;
+  if (arg.kind == Expr::Kind::Ident) {
+    prefix = std::string("__li_o_") + arg.ident;
+  } else if (arg.kind == Expr::Kind::FieldAccess) {
+    prefix = mir_field_slot_for_expr(arg);
+    if (prefix.empty()) {
+      return;
+    }
+  } else {
     return;
   }
-  push_mir_args_for_object_value_r(module, param_ty, std::string("__li_o_") + arg.ident, args_out);
+  push_mir_args_for_object_value_r(module, param_ty, prefix, args_out);
 }
 
 std::string object_root_ident(const Expr& e) {
@@ -1014,8 +1022,16 @@ std::string lower_callproc_with_optional_inout(
     if (object_alias_for_named_type(module, fp.type)) {
       if (inout && ai == 0) {
         push_mir_args_for_object_prefix(module, fp.type, wb_prefix, ins.args);
-      } else {
+      } else if (arg->kind == Expr::Kind::Ident || arg->kind == Expr::Kind::FieldAccess) {
         push_mir_args_for_object_value(module, fp.type, *arg, ins.args);
+      } else {
+        const std::string slot =
+            lower_expr_to(*arg, module, out, float_names, simd_names, i64_locals);
+        std::string prefix = slot;
+        if (prefix.rfind("__li_o_", 0) != 0) {
+          prefix = std::string("__li_o_") + prefix;
+        }
+        push_mir_args_for_object_value_r(module, fp.type, prefix, ins.args);
       }
       continue;
     }

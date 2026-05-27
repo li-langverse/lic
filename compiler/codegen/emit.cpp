@@ -143,12 +143,18 @@ struct EmitCtx {
     return enable_array_simd;
   }
 
+  llvm::AllocaInst* alloca_at_entry(llvm::Type* ty, const std::string& name) {
+    llvm::BasicBlock& entry = func->getEntryBlock();
+    llvm::IRBuilder<> entry_builder(&entry, entry.begin());
+    return entry_builder.CreateAlloca(ty, nullptr, name);
+  }
+
   llvm::AllocaInst* ensure_simd_f64x4(const std::string& name) {
     auto it = simd_f64x4_locals.find(name);
     if (it != simd_f64x4_locals.end()) {
       return it->second;
     }
-    llvm::AllocaInst* slot = builder->CreateAlloca(vec4_f64(), nullptr, name);
+    llvm::AllocaInst* slot = alloca_at_entry(vec4_f64(), name);
     simd_f64x4_locals[name] = slot;
     return slot;
   }
@@ -439,8 +445,7 @@ struct EmitCtx {
     if (it != int_locals.end()) {
       return it->second;
     }
-    llvm::AllocaInst* slot =
-        builder->CreateAlloca(i32_ty(context), nullptr, name);
+    llvm::AllocaInst* slot = alloca_at_entry(i32_ty(context), name);
     int_locals[name] = slot;
     return slot;
   }
@@ -451,7 +456,7 @@ struct EmitCtx {
       return it->second;
     }
     llvm::AllocaInst* slot =
-        builder->CreateAlloca(llvm::Type::getDoubleTy(context), nullptr, name);
+        alloca_at_entry(llvm::Type::getDoubleTy(context), name);
     float_locals[name] = slot;
     return slot;
   }
@@ -465,8 +470,7 @@ struct EmitCtx {
     if (it != ptr_locals.end()) {
       return it->second;
     }
-    llvm::AllocaInst* slot =
-        builder->CreateAlloca(i8_ptr(context), nullptr, name);
+    llvm::AllocaInst* slot = alloca_at_entry(i8_ptr(context), name);
     ptr_locals[name] = slot;
     return slot;
   }
@@ -487,8 +491,7 @@ struct EmitCtx {
     if (it != i64_locals.end()) {
       return it->second;
     }
-    llvm::AllocaInst* slot =
-        builder->CreateAlloca(i64_ty(context), nullptr, name);
+    llvm::AllocaInst* slot = alloca_at_entry(i64_ty(context), name);
     i64_locals[name] = slot;
     return slot;
   }

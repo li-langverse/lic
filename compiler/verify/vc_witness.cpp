@@ -642,6 +642,123 @@ bool ensures_witnessed_for_return(const ProcDecl& proc, const Contract& c, const
   return false;
 }
 
+bool is_result_ge_zero_ensures(const Expr& e) {
+  if (e.kind != Expr::Kind::BinOp || e.bin_op != BinOp::Ge || !e.lhs || !e.rhs) {
+    return false;
+  }
+  return e.lhs->kind == Expr::Kind::Ident && e.lhs->ident == "result" &&
+         expr_is_int_lit(e.rhs.get(), 0);
+}
+
+bool is_result_le_one_ensures(const Expr& e) {
+  if (e.kind != Expr::Kind::BinOp || e.bin_op != BinOp::Le || !e.lhs || !e.rhs) {
+    return false;
+  }
+  return e.lhs->kind == Expr::Kind::Ident && e.lhs->ident == "result" &&
+         expr_is_int_lit(e.rhs.get(), 1);
+}
+
+bool return_expr_is_bool01_literal(const Expr& ret) {
+  return ret.kind == Expr::Kind::IntLit && (ret.int_value == 0 || ret.int_value == 1);
+}
+
+bool callee_returns_bool01_literal(const Module& module, const std::string& name) {
+  const ProcDecl* callee = find_proc_by_name(module, name);
+  if (callee == nullptr) {
+    return false;
+  }
+  const Expr* ret = single_return_expr(*callee);
+  return ret != nullptr && return_expr_is_bool01_literal(*ret);
+}
+
+bool return_expr_is_bool01(const Expr& ret, const Module* module) {
+  if (return_expr_is_bool01_literal(ret)) {
+    return true;
+  }
+  if (module != nullptr && ret.kind == Expr::Kind::Call && ret.args.empty()) {
+    return callee_returns_bool01_literal(*module, ret.ident);
+  }
+  return false;
+}
+
+bool witness_bool01_bound_ensures(const ProcDecl& proc, const Contract& c, const Module& module) {
+  if (c.kind != ContractKind::Ensures || !c.expr) {
+    return false;
+  }
+  if (!is_result_ge_zero_ensures(*c.expr) && !is_result_le_one_ensures(*c.expr)) {
+    return false;
+  }
+  std::vector<const Expr*> returns;
+  collect_return_exprs_in_stmts(proc.body, returns);
+  if (returns.empty()) {
+    return false;
+  }
+  for (const Expr* ret : returns) {
+    if (ret == nullptr || !return_expr_is_bool01(*ret, &module)) {
+      return false;
+    }
+  }
+  return true;
+}
+
+bool assign_rhs_is_bool01_literal(const Expr& rhs) {
+  return rhs.kind == Expr::Kind::IntLit && (rhs.int_value == 0 || rhs.int_value == 1);
+}
+
+bool stmts_only_bool01_assigns_to(const std::vector<Stmt>& stmts, const std::string& var) {
+  for (const auto& s : stmts) {
+    if (s.kind == Stmt::Kind::Assign && s.init && expr_is_ident(s.init.get(), var)) {
+      if (!s.expr || !assign_rhs_is_bool01_literal(*s.expr)) {
+        return false;
+      }
+    }
+    if (!stmts_only_bool01_assigns_to(s.then_body, var)) {
+      return false;
+    }
+    if (s.else_body && !stmts_only_bool01_assigns_to(*s.else_body, var)) {
+      return false;
+    }
+    if (!stmts_only_bool01_assigns_to(s.while_body, var)) {
+      return false;
+    }
+    if (!stmts_only_bool01_assigns_to(s.for_body, var)) {
+      return false;
+    }
+    if (!stmts_only_bool01_assigns_to(s.par_body, var)) {
+      return false;
+    }
+  }
+  return true;
+}
+
+bool witness_bool01_single_return_var(const ProcDecl& proc, const Contract& c) {
+  if (c.kind != ContractKind::Ensures || !c.expr) {
+    return false;
+  }
+  if (!is_result_ge_zero_ensures(*c.expr) && !is_result_le_one_ensures(*c.expr)) {
+    return false;
+  }
+  const Expr* ret = single_return_expr(proc);
+  if (ret == nullptr || ret->kind != Expr::Kind::Ident) {
+    return false;
+  }
+  const std::string& var = ret->ident;
+  bool saw_init = false;
+  for (const auto& s : proc.body) {
+    if (s.kind == Stmt::Kind::VarDecl && s.var_name == var && s.init) {
+      if (!assign_rhs_is_bool01_literal(*s.init)) {
+        return false;
+      }
+      saw_init = true;
+      break;
+    }
+  }
+  if (!saw_init) {
+    return false;
+  }
+  return stmts_only_bool01_assigns_to(proc.body, var);
+}
+
 }  // namespace
 
 bool contract_witnessed_trivial(const ProcDecl& proc, const Contract& c, const Module* module,
@@ -660,6 +777,12 @@ bool contract_witnessed_trivial(const ProcDecl& proc, const Contract& c, const M
   }
   if (c.kind != ContractKind::Ensures) {
     return false;
+  }
+  if (module != nullptr && witness_bool01_bound_ensures(proc, c, *module)) {
+    return true;
+  }
+  if (witness_bool01_single_return_var(proc, c)) {
+    return true;
   }
   std::vector<const Expr*> returns;
   collect_return_exprs_in_stmts(proc.body, returns);

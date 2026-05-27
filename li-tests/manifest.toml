@@ -305,12 +305,14 @@ note = "P-refine: discharge_refinement_lean.sh"
 [[tests]]
 suite = "contracts_verify"
 file = "contracts_verify/refinement_inline_ok.li"
-outcome = "verify_ok"
+outcome = "prove_lean_ok"
+note = "P-refine: literal call-site; discharge_refinement_lean.sh"
 
 [[tests]]
 suite = "contracts_verify"
 file = "contracts_verify/refinement_local_ok.li"
-outcome = "verify_ok"
+outcome = "prove_lean_ok"
+note = "P-refine: const-local call-site; discharge_refinement_lean.sh"
 
 [[tests]]
 suite = "contracts_verify"
@@ -332,7 +334,8 @@ expected_substr = "E0305"
 [[tests]]
 suite = "contracts_verify"
 file = "contracts_verify/refinement_guard_ok.li"
-outcome = "verify_ok"
+outcome = "prove_lean_ok"
+note = "P-refine: if-guard branch discharge; discharge_refinement_lean.sh"
 
 [[tests]]
 suite = "contracts_verify"
@@ -1061,6 +1064,12 @@ suite = "math_linalg"
 file = "math_linalg/reductions/sum_non_array.li"
 outcome = "compile_fail"
 expected_substr = "sum expects a fixed array argument"
+
+[[tests]]
+suite = "math_linalg"
+file = "math_linalg/reductions/norm_non_array.li"
+outcome = "compile_fail"
+expected_substr = "norm expects array"
 
 # --- physics (packages + profiles) ---
 

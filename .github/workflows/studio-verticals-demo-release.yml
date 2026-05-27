@@ -1,0 +1,48 @@
+# Build native verticals demo MP4 and attach to GitHub Release (not git).
+# Manual only — no secrets in repo; uses GITHUB_TOKEN from the workflow.
+name: Studio verticals demo release
+
+on:
+  workflow_dispatch:
+    inputs:
+      release_tag:
+        description: GitHub release tag for the MP4 asset
+        required: true
+        default: studio-verticals-demo
+        type: string
+
+permissions:
+  contents: write
+
+concurrency:
+  group: studio-verticals-demo-release
+  cancel-in-progress: false
+
+jobs:
+  build-and-upload:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install capture dependencies
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y --no-install-recommends ffmpeg build-essential
+
+      - name: Record native verticals MP4
+        env:
+          LIG_HOST_PRESENT: "1"
+        run: |
+          chmod +x scripts/record-studio-verticals-demo.sh scripts/studio-verticals-capture-native.sh
+          chmod +x deploy/studio-demo/native/native-sdl-build.sh 2>/dev/null || true
+          ./scripts/record-studio-verticals-demo.sh
+          test -f docs/demo/media/studio-verticals-demo.mp4
+          ffprobe -v error -show_entries format=duration -of default=noprint_wrappers=1:nokey=1 \
+            docs/demo/media/studio-verticals-demo.mp4
+
+      - name: Upload to GitHub Release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          chmod +x scripts/upload-studio-verticals-demo-release.sh
+          ./scripts/upload-studio-verticals-demo-release.sh "${{ inputs.release_tag }}"

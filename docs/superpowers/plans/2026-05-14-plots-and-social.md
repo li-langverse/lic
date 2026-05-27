@@ -94,7 +94,7 @@ scripts/
 - [ ] `./scripts/plot_shareables.sh` exits 0 and writes ≥4 PNGs to `benchmarks/results/share/`
 - [ ] Plots meet 16:9 + dark theme spec above
 - [ ] README or docs link to `results/share/` for social assets
-- [ ] `bench.py --tier 0` feeds correctness plot when Tier 0 data exists
+- [x] `bench.py --tier 0` feeds correctness plot when Tier 0 data exists (`emit_tier0_correctness_plot()` after `run_verify()` → `benchmarks/results/share/correctness_tier0.png`; `test_harness_contract.py`)
 
 ---
 

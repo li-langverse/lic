@@ -300,6 +300,9 @@ int verify_file(const char* path, bool run_lean, bool strict_lean) {
     return 1;
   }
   const li::MirModule mir = li::lower_to_mir(module);
+  if (std::getenv("LI_MIR_DECOR_FLAGS") != nullptr) {
+    li::print_mir_decorator_flags(mir, std::cout);
+  }
   li::VcSummary vc = li::summarize_vcs(module);
   vc.mir_fn_count = mir.functions.size();
   const li::VcWitnessStats witness = li::compute_vc_witness_stats(module, &mir);

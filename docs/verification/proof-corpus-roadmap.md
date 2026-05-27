@@ -27,9 +27,11 @@
 | `extern_call_requires_ok.li` | Imported callee `requires` | Discharged |
 | `index_refinement.li` | Index refinement type + array access | Build + autovc check in corpus |
 | `sqrt_contract.li` | Float `requires`/`ensures` (toy `sqrt`) | Emits real Props; float goals may stay open |
-| `sqrt_open_bound.li` | `abs(result² - x) < ε` with `li_rt_sqrt` body | **Intentionally open** — `verify_open_ok` / `--allow-open-vc` |
-| `refinement_*_ok.li` | Refinement types at call/init | **Partial** — refinement VCs often `True`; user `ensures` may stay open |
-| `refinement_guard_ok.li` | `if n >= 0` branch discharge | Same |
+| `sqrt_open_bound.li` | `abs(result² - x) < ε` with `li_rt_sqrt` body | **Closed** — `prove_lean_ok` via `Li.Discharge.sqrt_open_bound_spec` (trusted libm) |
+| `refinement_call_ok.li` | Literal call-site NonNeg | **Closed** — `prove_lean_ok` |
+| `refinement_inline_ok.li` / `refinement_local_ok.li` | Inline / const-local call-site | **Closed** — `prove_lean_ok` |
+| `refinement_guard_ok.li` | `if n >= 0` branch discharge | **Closed** — `prove_lean_ok` (`refinement_nonneg_lit_proved` + guard hypothesis) |
+| `refinement_init_ok.li` | Refinement at `var` init | **Partial** — `verify_ok` |
 | `linalg_dot4_int_closed.li` | Fixed 4-term int dot — return matches ensures | Fully discharged (`discharge_linalg_int_lean.sh`) |
 | `linalg_sum4_int_closed.li` | Fixed 4-term int sum | Fully discharged |
 | `linalg_mat2_entry00_int_closed.li` | Matmul (0,0) entry via scalars | Fully discharged |
@@ -75,7 +77,7 @@ See [proof-db/reporter.md](../../proof-db/reporter.md).
 | Suite | Result | Notes |
 |-------|--------|-------|
 | `run_all.sh contracts_verify` | **26 pass / 0 fail** (14 `prove_lean_ok` + 12 `verify_ok`/`verify_open_ok`) | `prove_lean_ok` runs lake when elan on PATH |
-| `contracts_discharge_corpus.sh` | **ok** | Trivial/const/index/caller-requires/**linalg closed**; `sqrt_open_bound` + loop dot intentionally open |
+| `contracts_discharge_corpus.sh` | **ok** | Trivial/const/index/caller-requires/**linalg closed**/**P-refine**/**P-float sqrt**; loop dot intentionally open |
 | `run_httpd_config.sh` | **ok** | Python oracle + Li `match_routes.li` binary exit 0 |
 | `contracts_verify_lean.sh` | **partial** | Needs Lean 4 + lake; may stop on specimens with open user `ensures` |
 | `lake build` | **default on `lic build`** | `--no-lean-verify` to skip; CI runs lake directly + tooling scripts |
@@ -86,9 +88,9 @@ Priority order aligned with [provability-gaps](provability-gaps.md) and **2e →
 
 | ID | Topic | Why unproven today | Suggested corpus |
 |----|-------|-------------------|------------------|
-| **P-refine** | Refinement types emit real Props | Call-site VCs stubbed `True`; user `ensures` still open | Extend `refinement_*` + Lean lemmas in `Discharge.lean` |
+| **P-refine** | Refinement types emit real Props | **Closed slice:** call/inline/local/guard call-sites → `Li.Discharge.refinement_nonneg_spec`; init typing open | `refinement_init_ok.li` |
 | **P-ensures-witness** | MIR-linked `ensures` for non-literal returns | `witnessed_ensures` partial | `caller()`, `use_positive.li`, physics smokes |
-| **P-float** | `Float.abs`, sqrt error bounds | **G-vc** open (`sqrt_open_bound`) | `sqrt_open_bound.li` + `Li.Discharge` lemmas |
+| **P-float** | `Float.abs`, sqrt error bounds | **Closed slice:** `sqrt_open_bound` trusted libm axiom; universal float order open | `sqrt_open_bound.li`, `Li.TrustedMath.li_rt_sqrt_bound` |
 | **P-loop** | `while` invariant preservation | Few loop specimens | New `contracts_verify/loop_invariant_*.li` |
 | **P-linalg** | Matrix/vector shapes (`@`, slices) | **Partial** — closed dot/sum/matmul-entry/norm/axpy + loop witness. **Open:** float `vec3_dot` Props, 2D array CallProc | `contracts_verify/linalg_*`, `math_linalg/*` |
 | **P-par** | `parallel for` disjointness | **G-par** string heuristics only | Lean specs for `disjoint=` (7d-c) |

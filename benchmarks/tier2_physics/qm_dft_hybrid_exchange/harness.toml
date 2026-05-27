@@ -1,0 +1,3 @@
+# Generated family-template harness (orchestration via bench_registry.py).
+template = "schrodinger_1d_barrier"
+family = "qm"

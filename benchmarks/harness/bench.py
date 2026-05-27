@@ -59,6 +59,43 @@ class BenchSpec:
     li_enabled: bool = True
 
 
+_WP1_NUM_IDS: tuple[str, ...] = (
+    "num_cg",
+    "num_cholesky",
+    "num_eig_symmetric",
+    "num_fft_r2c",
+    "num_gmres",
+    "num_integ_euler",
+    "num_integ_rk4",
+    "num_integ_semi_implicit",
+    "num_integ_symplectic",
+    "num_integ_verlet",
+    "num_opt_bfgs",
+    "num_opt_line_search",
+    "num_quadrature_gauss",
+    "num_rng_pcg",
+    "num_root_newton",
+    "num_sparse_mv",
+    "fft_1d_fixed",
+)
+
+
+def _wp1_num_bench_specs() -> tuple[BenchSpec, ...]:
+    """Catalog num_* + fft_1d_fixed smoke harnesses (shared C oracle)."""
+    return tuple(
+        BenchSpec(
+            name=bench_id,
+            tier=1,
+            rel_dir=bench_id,
+            main_c="cpp/main.c",
+            core_c=f"common/{bench_id}_core.c",
+            li_main="li/main.li",
+            li_pure=False,
+        )
+        for bench_id in _WP1_NUM_IDS
+    )
+
+
 TIER1_BENCHES: tuple[BenchSpec, ...] = (
     BenchSpec(
         "simd_dot",
@@ -109,7 +146,7 @@ TIER1_BENCHES: tuple[BenchSpec, ...] = (
         flops_per_run=2.0 * 5e6,
         li_pure=True,
     ),
-)
+) + _wp1_num_bench_specs()
 
 # Stdlib ADT tier-1 (WP0-C): native oracles only until WP1 Li drivers land.
 TIER_STDLIB_BENCHES: tuple[BenchSpec, ...] = (
@@ -143,7 +180,7 @@ TIER_STDLIB_BENCHES: tuple[BenchSpec, ...] = (
 )
 
 # Gaming-physics roadmap (physics-only; Tier R = rendering out of scope):
-#   exists: md_lennard_jones, nbody, wave_1d/2d, heat_2d, advection_diffusion_2d, sph_dam_break_2d (stub)
+#   exists: md_lennard_jones + catalog md_* aliases, nbody, wave_1d/2d, heat_2d, advection_diffusion_2d, sph_dam_break_2d (stub)
 #   planned: euler_fluid_2d, combustion_passive, wind_field_bc, rigid_body, cloth, mls_mpm
 #   Tier R: shadows, reflections BRDF, fire rendering
 TIER2_BENCHES: tuple[BenchSpec, ...] = (
@@ -155,6 +192,32 @@ TIER2_BENCHES: tuple[BenchSpec, ...] = (
         "common/md_core.c",
         "li/main.li",
         li_pure=False,
+    ),
+    *(
+        BenchSpec(
+            md_id,
+            2,
+            md_id,
+            "cpp/md_main.c",
+            "common/md_core.c",
+            "li/main.li",
+        )
+        for md_id in (
+            "md_barostat_parrinello_rahman",
+            "md_constraints_rattle",
+            "md_constraints_shake",
+            "md_energy_drift",
+            "md_init_fcc_mb",
+            "md_integrator_leapfrog",
+            "md_integrator_verlet",
+            "md_longrange_ewald",
+            "md_longrange_pme",
+            "md_neighbor_cell_list",
+            "md_neighbor_verlet_skin",
+            "md_oracle_external",
+            "md_thermostat_berendsen",
+            "md_thermostat_nose_hoover",
+        )
     ),
     BenchSpec(
         "three_body",
@@ -243,7 +306,6 @@ TIER2_BENCHES: tuple[BenchSpec, ...] = (
  "cpp/main.c",
  "common/three_body_core.c",
  "li/main.li",
- li_pure=True,
  ),
  BenchSpec(
  "wind_field_bc",
@@ -408,25 +470,68 @@ def merge_rows(
     return kept + new_rows
 
 
+def _bench_env_flag(name: str, default: str = "1") -> bool:
+    return os.environ.get(name, default).strip().lower() not in ("0", "false", "no", "off")
+
+
+def _run_timed_once(cmd: list[str], *, cwd: Path | None) -> float:
+    start = time.perf_counter()
+    proc = subprocess.run(cmd, cwd=cwd, capture_output=True, text=True)
+    elapsed = time.perf_counter() - start
+    if proc.returncode != 0:
+        raise RuntimeError(
+            f"command failed ({proc.returncode}): {' '.join(cmd)}\n"
+            f"{proc.stderr or proc.stdout}"
+        )
+    return elapsed
+
+
+def resolve_timing_runs(base_runs: int, median_sec: float) -> int:
+    """Scale repetitions for short kernels (≥BENCH_MIN_RUNS, ~BENCH_TARGET_SAMPLE_SEC total)."""
+    if not _bench_env_flag("BENCH_ADAPTIVE_RUNS", "1"):
+        return base_runs
+    min_runs = int(os.environ.get("BENCH_MIN_RUNS", "20"))
+    max_runs = int(os.environ.get("BENCH_MAX_RUNS", "200"))
+    target = float(os.environ.get("BENCH_TARGET_SAMPLE_SEC", "1.0"))
+    runs = max(base_runs, min_runs)
+    if median_sec > 0:
+        needed = math.ceil(target / median_sec)
+        runs = max(runs, min(needed, max_runs))
+    return runs
+
+
 def time_command(cmd: list[str], *, cwd: Path | None = None, runs: int = 3) -> float:
-    samples: list[float] = []
-    # Discard one warmup run (JIT/cache/thermal).
+    if runs <= 1:
+        warmup = subprocess.run(cmd, cwd=cwd, capture_output=True, text=True)
+        if warmup.returncode != 0:
+            raise RuntimeError(
+                f"warmup failed ({warmup.returncode}): {' '.join(cmd)}\n"
+                f"{warmup.stderr or warmup.stdout}"
+            )
+        return _run_timed_once(cmd, cwd=cwd)
+
     warmup = subprocess.run(cmd, cwd=cwd, capture_output=True, text=True)
     if warmup.returncode != 0:
         raise RuntimeError(
             f"warmup failed ({warmup.returncode}): {' '.join(cmd)}\n"
             f"{warmup.stderr or warmup.stdout}"
         )
-    for _ in range(runs):
-        start = time.perf_counter()
-        proc = subprocess.run(cmd, cwd=cwd, capture_output=True, text=True)
-        elapsed = time.perf_counter() - start
-        if proc.returncode != 0:
-            raise RuntimeError(
-                f"command failed ({proc.returncode}): {' '.join(cmd)}\n"
-                f"{proc.stderr or proc.stdout}"
-            )
-        samples.append(elapsed)
+
+    probe_n = min(3, runs)
+    samples = [_run_timed_once(cmd, cwd=cwd) for _ in range(probe_n)]
+    probe_median = statistics.median(samples)
+    total_runs = resolve_timing_runs(runs, probe_median)
+    extra = max(0, total_runs - probe_n)
+    if extra:
+        samples.extend(_run_timed_once(cmd, cwd=cwd) for _ in range(extra))
+
+    if _bench_env_flag("BENCH_TIMING_VERBOSE", "0"):
+        stdev = statistics.stdev(samples) if len(samples) > 1 else 0.0
+        print(
+            f"timing: runs={len(samples)} median={statistics.median(samples):.6f}s "
+            f"stdev={stdev:.6f}s cmd={' '.join(cmd)}",
+            file=sys.stderr,
+        )
     return statistics.median(samples)
 
 
@@ -823,7 +928,7 @@ def run_benchmark(spec: BenchSpec, *, runs: int) -> list[dict[str, object]]:
                 flags=NATIVE_FLAGS,
             )
         )
-        print(f"{spec.name} cpp wall_time={wall:.4f}s (median of {runs}); Li column pending WP1")
+        print(f"{spec.name} cpp wall_time={wall:.4f}s (adaptive median); Li column pending WP1")
         return rows
 
     rust_bin = build_dir / f"{spec.name}_rust"
@@ -1011,7 +1116,16 @@ def run_tier2_ci_smoke(*, only: set[str] | None = None) -> int:
 
 def run_verify() -> int:
     script = REPO / "benchmarks" / "harness" / "verify.py"
-    return subprocess.call([sys.executable, str(script), "--write-csv", str(RESULTS / "verify.csv")])
+    # Tier-0 CI gate: compile smokes only; tier-2 checksum parity runs via `bench.py --tier 2 --ci`.
+    return subprocess.call(
+        [
+            sys.executable,
+            str(script),
+            "--write-csv",
+            str(RESULTS / "verify.csv"),
+            "--tier0-only",
+        ]
+    )
 
 
 def run_tier0() -> int:
@@ -1136,6 +1250,16 @@ def main() -> int:
             return rc
         return run_tier2_all(
             runs=args.runs, out=args.out, verify=not args.skip_verify, only=only
+        )
+
+    if args.tier == 7:
+        from bench_registry import run_registry_family_benches
+
+        return run_registry_family_benches(
+            runs=args.runs,
+            out=args.out,
+            verify=not args.skip_verify,
+            only=only,
         )
 
     if args.tier == 3:

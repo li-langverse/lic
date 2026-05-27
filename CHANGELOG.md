@@ -8,6 +8,12 @@ All notable changes to Li are documented here. The format follows
 
 ### Added
 
+- **WP2 md_* tier2 fill:** 13 catalog `md_*` harness stubs from `md_lennard_jones` template, `bench.py` `TIER2_BENCHES` rows, runnable fixes for `three_body_pure` / `schrodinger_1d_barrier` / `ragdoll_chain` / `orbit_two_body` / `fdtd_waveguide_2d` — [2026-05-25-bench-fill-wp2-md.md](docs/release-notes/2026-05-25-bench-fill-wp2-md.md).
+
+- **Bench fill WP1:** tier-1 micro harnesses for all catalog `num_*` + `fft_1d_fixed` (`benchmarks/tier1_micro/`, `bench.py` `_WP1_NUM_IDS`, `scripts/gen_wp1_tier1_num_harnesses.py`) — [2026-05-25-tier1-num-fft-harnesses-wp1.md](docs/release-notes/2026-05-25-tier1-num-fft-harnesses-wp1.md).
+
+- **Registry benchmark harness fill:** family-template dirs + `bench_registry.py` tier-7 CSV aliases for dashboard catalog — [2026-05-25-bench-harness-fill-registry.md](docs/release-notes/2026-05-25-bench-harness-fill-registry.md).
+
 - **PH-HW viewport phase B:** `LIG_WGPU_READBACK=1` wgpu readback present stub (`native_pixel_source=3`, kid=4); studio vertical demo exit 54/55 — [2026-05-27-wgpu-readback-phase-b.md](docs/release-notes/2026-05-27-wgpu-readback-phase-b.md).
 
 - **PH-HW viewport phase A:** `lig_present_blit_paint_summary` / `present_blit_rgba8` scaffold (`native_pixel_source`); studio vertical demo requires paint blit before host present — [2026-05-27-studio-wgpu-readback-a.md](docs/release-notes/2026-05-27-studio-wgpu-readback-a.md).
@@ -114,6 +120,8 @@ All notable changes to Li are documented here. The format follows
 - Cursor rule `li-llm-first.mdc`, skill `agent-diagnose-fix-li`
 
 ### Changed
+
+- **CI platform (WP-C1–C5):** Linux jobs consume `ghcr.io/li-langverse/lic-ci:ubuntu24-llvm22`, `actions/cache@v4` on `build/`, reusable `package-ci.yml`, GHA layer cache on lic-ci image publish — [2026-05-25-ci-lic-cache-wp-c.md](docs/release-notes/2026-05-25-ci-lic-cache-wp-c.md).
 
 - **Plan checkboxes (wave):** sync `docs/superpowers/plans/*.md` exit gates with shipped Phases 0–5, Pkg, P-linalg loop witness, and C++ compiler evidence — [2026-05-25-plan-checkbox-audit-wave.md](docs/release-notes/2026-05-25-plan-checkbox-audit-wave.md).
 - **LLVM toolchain:** pin **22** (was 18) — `scripts/llvm-env.sh`, `scripts/ci-install-llvm.sh`, CMake gate — [2026-05-22-llvm-22-toolchain-bump.md](docs/release-notes/2026-05-22-llvm-22-toolchain-bump.md).

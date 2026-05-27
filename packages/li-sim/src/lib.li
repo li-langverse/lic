@@ -422,12 +422,59 @@ def sim_status_invalid_dt() -> int
 =
   return 1
 
+# PH-SIM SIM-2 — ring-buffer replay metadata on session (tick ids only; no SimWorld snapshot).
+def sim_replay_capacity_default() -> int
+  requires true
+  ensures result == 64
+  decreases 0
+=
+  return 64
+
+type SimReplay = object
+  public capacity: int
+  public count: int
+  public last_tick: int
+
+def sim_replay_new(capacity: int) -> SimReplay
+  requires capacity > 0
+  ensures result.capacity == capacity
+  ensures result.count == 0
+  ensures result.last_tick == 0
+  decreases capacity
+=
+  var r: SimReplay
+  r.capacity = capacity
+  r.count = 0
+  r.last_tick = 0
+  return r
+
+def sim_replay_push(replay: var SimReplay, tick: int) -> unit
+  requires replay.capacity > 0
+  requires tick >= 0
+  ensures replay.last_tick == tick
+  decreases replay.count
+=
+  replay.count = replay.count + 1
+  if replay.count > replay.capacity:
+    replay.count = replay.capacity
+  replay.last_tick = tick
+
+def sim_replay_last_tick(replay: SimReplay) -> int
+  requires true
+  ensures result == replay.last_tick
+  decreases 0
+=
+  return replay.last_tick
+
 type SimSessionStub = object
   public studio_profile_id: int
   public sim_contract_id: int
   public output_detail: int
   public tick: int
   public last_dt: float
+  public replay_capacity: int
+  public replay_count: int
+  public replay_last_tick: int
 
 def sim_session_stub_default() -> SimSessionStub
   requires true
@@ -436,6 +483,9 @@ def sim_session_stub_default() -> SimSessionStub
   ensures result.output_detail == output_detail_summary()
   ensures result.tick == 0
   ensures result.last_dt == 0.0
+  ensures result.replay_capacity == sim_replay_capacity_default()
+  ensures result.replay_count == 0
+  ensures result.replay_last_tick == 0
   decreases 0
 =
   var s: SimSessionStub
@@ -444,7 +494,28 @@ def sim_session_stub_default() -> SimSessionStub
   s.output_detail = output_detail_summary()
   s.tick = 0
   s.last_dt = 0.0
+  s.replay_capacity = sim_replay_capacity_default()
+  s.replay_count = 0
+  s.replay_last_tick = 0
   return s
+
+def sim_session_replay_record(session: var SimSessionStub) -> unit
+  requires session.replay_capacity > 0
+  requires session.tick >= 0
+  ensures session.replay_last_tick == session.tick
+  decreases session.replay_count
+=
+  session.replay_count = session.replay_count + 1
+  if session.replay_count > session.replay_capacity:
+    session.replay_count = session.replay_capacity
+  session.replay_last_tick = session.tick
+
+def sim_session_replay_last_tick(session: SimSessionStub) -> int
+  requires true
+  ensures result == session.replay_last_tick
+  decreases 0
+=
+  return session.replay_last_tick
 
 # PH-SIM SIM-1 — deterministic tick counter (no physics kernel).
 def sim_reset(session: var SimSessionStub) -> int
@@ -452,14 +523,19 @@ def sim_reset(session: var SimSessionStub) -> int
   ensures result == sim_status_ok()
   ensures session.tick == 0
   ensures session.last_dt == 0.0
+  ensures session.replay_count == 0
+  ensures session.replay_last_tick == 0
   decreases 0
 =
   session.tick = 0
   session.last_dt = 0.0
+  session.replay_count = 0
+  session.replay_last_tick = 0
   return sim_status_ok()
 
 def sim_step(session: var SimSessionStub, dt: float) -> int
   requires session.tick >= 0
+  requires session.replay_capacity > 0
   ensures result >= 0
   ensures result <= 1
   decreases session.tick
@@ -468,6 +544,7 @@ def sim_step(session: var SimSessionStub, dt: float) -> int
     return sim_status_invalid_dt()
   session.tick = session.tick + 1
   session.last_dt = dt
+  sim_session_replay_record(session)
   return sim_status_ok()
 
 def sim_session_apply_studio_profile(studio_profile_id: int, sim_out: var SimSessionStub) -> unit
@@ -504,3 +581,239 @@ def sim_session_apply_studio_profile(studio_profile_id: int, sim_out: var SimSes
     if sid <= 5:
       detail0 = output_detail_fields()
   sim_out.output_detail = detail0
+
+# PH-SIM SIM-3 partial — RL env pool stub batches sim_step across parallel env slots.
+def sim_rl_env_pool_size_default() -> int
+  requires true
+  ensures result == 4
+  decreases 0
+=
+  return 4
+
+type EnvPoolStub = object
+  public pool_size: int
+  public steps_emitted: int
+  public total_reward: float
+
+type EnvStepResult = object
+  public obs0: float
+  public obs1: float
+  public obs2: float
+  public obs3: float
+  public obs4: float
+  public obs5: float
+  public obs6: float
+  public obs7: float
+  public act0: float
+  public act1: float
+  public act2: float
+  public act3: float
+  public reward: float
+  public done: int
+  public env_index: int
+
+def env_pool_stub_default() -> EnvPoolStub
+  requires true
+  ensures result.pool_size == sim_rl_env_pool_size_default()
+  ensures result.steps_emitted == 0
+  ensures result.total_reward == 0.0
+  decreases 0
+=
+  var p: EnvPoolStub
+  p.pool_size = sim_rl_env_pool_size_default()
+  p.steps_emitted = 0
+  p.total_reward = 0.0
+  return p
+
+def env_tick_as_float(tick: int) -> float
+  requires tick >= 0
+  requires tick <= 32
+  ensures result >= 0.0
+  decreases tick
+=
+  if tick == 0:
+    return 0.0
+  if tick == 1:
+    return 1.0
+  if tick == 2:
+    return 2.0
+  if tick == 3:
+    return 3.0
+  if tick == 4:
+    return 4.0
+  return 5.0
+
+def env_action_for_index(env_index: int) -> EnvStepResult
+  requires env_index >= 0
+  requires env_index < 32
+  ensures result.env_index == env_index
+  decreases env_index
+=
+  var ei: int = env_index
+  var e1: int = env_index
+  var e2: int = env_index
+  var e3: int = env_index
+  var r: EnvStepResult
+  r.env_index = ei
+  r.act0 = 0.0
+  r.act1 = 0.0
+  r.act2 = 0.0
+  r.act3 = 0.0
+  if e1 == 1:
+    r.act0 = 0.1
+  if e2 == 2:
+    r.act0 = 0.2
+  if e3 == 3:
+    r.act0 = 0.3
+  r.obs0 = 0.0
+  r.obs1 = 0.0
+  r.obs2 = 0.0
+  r.obs3 = 0.0
+  r.obs4 = 0.0
+  r.obs5 = 0.0
+  r.obs6 = 0.0
+  r.obs7 = 0.0
+  r.reward = 0.0
+  r.done = 0
+  return r
+
+def env_obs_fill_fields(
+    r: var EnvStepResult, tick: int, last_dt: float, env_index: int) -> unit
+  requires tick >= 0
+  requires env_index >= 0
+  requires env_index < 32
+  ensures r.obs1 == last_dt
+  decreases env_index
+=
+  var e1: int = env_index
+  var e2: int = env_index
+  var e3: int = env_index
+  var t_obs: int = tick
+  r.obs0 = env_tick_as_float(t_obs)
+  r.obs1 = last_dt
+  r.obs2 = 0.0
+  if e1 == 1:
+    r.obs2 = 1.0
+  if e2 == 2:
+    r.obs2 = 2.0
+  if e3 == 3:
+    r.obs2 = 3.0
+  r.obs3 = 0.0
+  r.obs4 = 0.0
+  r.obs5 = 0.0
+  r.obs6 = 0.0
+  r.obs7 = 0.0
+
+def env_reward_for_action(act0: float, env_index: int, tick: int) -> float
+  requires env_index >= 0
+  requires env_index < 32
+  requires tick >= 0
+  ensures result >= -1.0
+  decreases env_index
+=
+  var pen: float = 0.0
+  var e1: int = env_index
+  var e2: int = env_index
+  var e3: int = env_index
+  var t_rew: int = tick
+  if e1 == 1:
+    pen = 0.05
+  if e2 == 2:
+    pen = 0.10
+  if e3 == 3:
+    pen = 0.15
+  return act0 - pen + 0.01 * env_tick_as_float(t_rew)
+
+def env_step_contract_pre(
+    pool_size: int, tick: int, last_dt: float, env_index: int) -> EnvStepResult
+  requires pool_size > 0
+  requires env_index >= 0
+  requires env_index < pool_size
+  requires tick >= 0
+  ensures result.env_index == env_index
+  ensures result.done == 0
+  decreases env_index
+=
+  var t_obs: int = tick
+  var ei_act: int = env_index
+  var ei_obs: int = env_index
+  var r: EnvStepResult = env_action_for_index(ei_act)
+  env_obs_fill_fields(r, t_obs, last_dt, ei_obs)
+  r.reward = 0.0
+  r.done = 0
+  return r
+
+def env_step_contract_post(
+    pre: EnvStepResult, tick: int, last_dt: float, pool_size: int) -> EnvStepResult
+  requires tick >= 0
+  requires pool_size > 0
+  requires pre.env_index >= 0
+  requires pre.env_index < pool_size
+  ensures result.env_index == pre.env_index
+  ensures result.done >= 0
+  ensures result.done <= 1
+  decreases pre.env_index
+=
+  var idx_obs: int = pre.env_index
+  var idx_rew: int = pre.env_index
+  var act0: float = pre.act0
+  var t_obs: int = tick
+  var t_rew: int = tick
+  var t_done: int = tick
+  var r: EnvStepResult = pre
+  env_obs_fill_fields(r, t_obs, last_dt, idx_obs)
+  r.reward = env_reward_for_action(act0, idx_rew, t_rew)
+  r.done = 0
+  if t_done >= pool_size * 8:
+    r.done = 1
+  return r
+
+def env_pool_stub_step(pool: var EnvPoolStub, session: var SimSessionStub, dt: float) -> int
+  requires pool.pool_size > 0
+  requires pool.pool_size <= 32
+  requires session.tick >= 0
+  requires session.replay_capacity > 0
+  ensures result >= 0
+  ensures result <= 1
+  decreases pool.pool_size
+=
+  if dt <= 0.0:
+    return sim_status_invalid_dt()
+  var i: int = 0
+  while i < pool.pool_size
+    var tick0: int = session.tick
+    var last_dt0: float = session.last_dt
+    var psz: int = pool.pool_size
+    var pre: EnvStepResult = env_step_contract_pre(psz, tick0, last_dt0, i)
+    if sim_step(session, dt) != sim_status_ok():
+      return sim_status_invalid_dt()
+    var tick1: int = session.tick
+    var last_dt1: float = session.last_dt
+    var post: EnvStepResult = env_step_contract_post(pre, tick1, last_dt1, psz)
+    pool.total_reward = pool.total_reward + post.reward
+    pool.steps_emitted = pool.steps_emitted + 1
+    i = i + 1
+  return sim_status_ok()
+
+def sim_rl_tick_stub(detail: int) -> int
+  requires detail >= 0
+  requires detail <= 3
+  ensures result >= 0
+  ensures result <= 1
+  decreases 0
+=
+  var pool: EnvPoolStub = env_pool_stub_default()
+  var sess: SimSessionStub = sim_session_stub_default()
+  sim_session_apply_studio_profile(2, sess)
+  var dt: float = 0.02
+  if detail == 0:
+    dt = 0.016
+  if env_pool_stub_step(pool, sess, dt) != sim_status_ok():
+    return 0
+  if pool.steps_emitted != pool.pool_size:
+    return 0
+  if pool.total_reward <= 0.0:
+    return 0
+  if sim_session_replay_last_tick(sess) != pool.pool_size:
+    return 0
+  return 1

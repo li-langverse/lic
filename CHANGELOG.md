@@ -11,7 +11,6 @@ All notable changes to Li are documented here. The format follows
 - **CI container siblings:** `lip`/`lit` via `actions/checkout` into `ecosystem/`; `git safe.directory` on lic-ci jobs; repair `lean.yml` schema — [2026-05-25-ci-lic-cache-wp-c.md](docs/release-notes/2026-05-25-ci-lic-cache-wp-c.md).
 - **WP-T2 tier-2 physics Li builds:** `cloth_swing`, `combustion_passive`, `euler_fluid_2d`, `rigid_body_stack`, `wind_field_bc` harness `main.li` extern contracts + checksum sink — [2026-05-25-tier2-physics-li-builds-wp-t2.md](docs/release-notes/2026-05-25-tier2-physics-li-builds-wp-t2.md).
 <<<<<<< Updated upstream
-=======
 ### Added
 
 - **WP2 md_* tier2 fill:** 13 catalog `md_*` harness stubs from `md_lennard_jones` template, `bench.py` `TIER2_BENCHES` rows, runnable fixes for `three_body_pure` / `schrodinger_1d_barrier` / `ragdoll_chain` / `orbit_two_body` / `fdtd_waveguide_2d` — [2026-05-25-bench-fill-wp2-md.md](docs/release-notes/2026-05-25-bench-fill-wp2-md.md).
@@ -20,7 +19,6 @@ All notable changes to Li are documented here. The format follows
 
 - **CI platform (WP-C1–C5):** Linux jobs consume `ghcr.io/li-langverse/lic-ci:ubuntu24-llvm22`, `actions/cache@v4` on `build/`, reusable `package-ci.yml`, GHA layer cache on lic-ci image publish — [2026-05-25-ci-lic-cache-wp-c.md](docs/release-notes/2026-05-25-ci-lic-cache-wp-c.md).
 
->>>>>>> origin/pr-307-tmp
 ### Added
 
 - **Bench fill WP1:** tier-1 micro harnesses for all catalog `num_*` + `fft_1d_fixed` (`benchmarks/tier1_micro/`, `bench.py` `_WP1_NUM_IDS`, `scripts/gen_wp1_tier1_num_harnesses.py`) — [2026-05-25-tier1-num-fft-harnesses-wp1.md](docs/release-notes/2026-05-25-tier1-num-fft-harnesses-wp1.md).
@@ -46,11 +44,25 @@ All notable changes to Li are documented here. The format follows
 
 - **Bench fill WP1:** tier-1 micro harnesses for all catalog `num_*` + `fft_1d_fixed` (`benchmarks/tier1_micro/`, `bench.py` `_WP1_NUM_IDS`, `scripts/gen_wp1_tier1_num_harnesses.py`) — [2026-05-25-tier1-num-fft-harnesses-wp1.md](docs/release-notes/2026-05-25-tier1-num-fft-harnesses-wp1.md).
 
+=======
+- **WP-T2 tier-2 physics Li builds:** `cloth_swing`, `combustion_passive`, `euler_fluid_2d`, `rigid_body_stack`, `wind_field_bc` harness `main.li` extern contracts + checksum sink — [2026-05-25-tier2-physics-li-builds-wp-t2.md](docs/release-notes/2026-05-25-tier2-physics-li-builds-wp-t2.md).
+
+### Added
+
+- **Registry benchmark harness fill:** family-template dirs + `bench_registry.py` tier-7 CSV aliases for dashboard catalog — [2026-05-25-bench-harness-fill-registry.md](docs/release-notes/2026-05-25-bench-harness-fill-registry.md).
+
+### Added
+
+- **WP2 md_* tier2 fill:** 13 catalog `md_*` harness stubs from `md_lennard_jones` template, `bench.py` `TIER2_BENCHES` rows, runnable fixes for `three_body_pure` / `schrodinger_1d_barrier` / `ragdoll_chain` / `orbit_two_body` / `fdtd_waveguide_2d` — [2026-05-25-bench-fill-wp2-md.md](docs/release-notes/2026-05-25-bench-fill-wp2-md.md).
+
+>>>>>>> origin/pr-309-tmp
 ### Changed
 
 - **CI platform (WP-C1–C5):** Linux jobs consume `ghcr.io/li-langverse/lic-ci:ubuntu24-llvm22`, `actions/cache@v4` on `build/`, reusable `package-ci.yml`, GHA layer cache on lic-ci image publish — [2026-05-25-ci-lic-cache-wp-c.md](docs/release-notes/2026-05-25-ci-lic-cache-wp-c.md).
 
 ### Added
+
+- **Bench fill WP1:** tier-1 micro harnesses for all catalog `num_*` + `fft_1d_fixed` (`benchmarks/tier1_micro/`, `bench.py` `_WP1_NUM_IDS`, `scripts/gen_wp1_tier1_num_harnesses.py`) — [2026-05-25-tier1-num-fft-harnesses-wp1.md](docs/release-notes/2026-05-25-tier1-num-fft-harnesses-wp1.md).
 
 - **Bench fill WP4:** compile smokes for `qm_*`, `auto_*`, `ml_*`, `viz_*` catalog rows (`catalog_smoke.py`, 45× `li/main.li`) — [2026-05-25-bench-fill-wp4-qm-auto-ml-viz.md](docs/release-notes/2026-05-25-bench-fill-wp4-qm-auto-ml-viz.md).
 - **PH-DB master plan cross-link:** phase map row + `ph-db-lidb-platform.md` appendix; **PH-8d-v2 → PH-DB-4** — [2026-05-25-ph-db-master-plan-crosslink.md](docs/release-notes/2026-05-25-ph-db-master-plan-crosslink.md).

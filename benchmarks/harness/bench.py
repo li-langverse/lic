@@ -59,6 +59,43 @@ class BenchSpec:
     li_enabled: bool = True
 
 
+_WP1_NUM_IDS: tuple[str, ...] = (
+    "num_cg",
+    "num_cholesky",
+    "num_eig_symmetric",
+    "num_fft_r2c",
+    "num_gmres",
+    "num_integ_euler",
+    "num_integ_rk4",
+    "num_integ_semi_implicit",
+    "num_integ_symplectic",
+    "num_integ_verlet",
+    "num_opt_bfgs",
+    "num_opt_line_search",
+    "num_quadrature_gauss",
+    "num_rng_pcg",
+    "num_root_newton",
+    "num_sparse_mv",
+    "fft_1d_fixed",
+)
+
+
+def _wp1_num_bench_specs() -> tuple[BenchSpec, ...]:
+    """Catalog num_* + fft_1d_fixed smoke harnesses (shared C oracle)."""
+    return tuple(
+        BenchSpec(
+            name=bench_id,
+            tier=1,
+            rel_dir=bench_id,
+            main_c="cpp/main.c",
+            core_c=f"common/{bench_id}_core.c",
+            li_main="li/main.li",
+            li_pure=False,
+        )
+        for bench_id in _WP1_NUM_IDS
+    )
+
+
 TIER1_BENCHES: tuple[BenchSpec, ...] = (
     BenchSpec(
         "simd_dot",
@@ -109,7 +146,7 @@ TIER1_BENCHES: tuple[BenchSpec, ...] = (
         flops_per_run=2.0 * 5e6,
         li_pure=True,
     ),
-)
+) + _wp1_num_bench_specs()
 
 # Stdlib ADT tier-1 (WP0-C): native oracles only until WP1 Li drivers land.
 TIER_STDLIB_BENCHES: tuple[BenchSpec, ...] = (
@@ -155,6 +192,32 @@ TIER2_BENCHES: tuple[BenchSpec, ...] = (
         "common/md_core.c",
         "li/main.li",
         li_pure=False,
+    ),
+    *(
+        BenchSpec(
+            md_id,
+            2,
+            md_id,
+            "cpp/md_main.c",
+            "common/md_core.c",
+            "li/main.li",
+        )
+        for md_id in (
+            "md_barostat_parrinello_rahman",
+            "md_constraints_rattle",
+            "md_constraints_shake",
+            "md_energy_drift",
+            "md_init_fcc_mb",
+            "md_integrator_leapfrog",
+            "md_integrator_verlet",
+            "md_longrange_ewald",
+            "md_longrange_pme",
+            "md_neighbor_cell_list",
+            "md_neighbor_verlet_skin",
+            "md_oracle_external",
+            "md_thermostat_berendsen",
+            "md_thermostat_nose_hoover",
+        )
     ),
     BenchSpec(
         "three_body",
@@ -243,7 +306,6 @@ TIER2_BENCHES: tuple[BenchSpec, ...] = (
  "cpp/main.c",
  "common/three_body_core.c",
  "li/main.li",
- li_pure=True,
  ),
  BenchSpec(
  "wind_field_bc",
@@ -1135,6 +1197,16 @@ def main() -> int:
             return rc
         return run_tier2_all(
             runs=args.runs, out=args.out, verify=not args.skip_verify, only=only
+        )
+
+    if args.tier == 7:
+        from bench_registry import run_registry_family_benches
+
+        return run_registry_family_benches(
+            runs=args.runs,
+            out=args.out,
+            verify=not args.skip_verify,
+            only=only,
         )
 
     if args.tier == 3:

@@ -10,14 +10,13 @@ All notable changes to Li are documented here. The format follows
 
 - **CI container siblings:** `lip`/`lit` via `actions/checkout` into `ecosystem/`; `git safe.directory` on lic-ci jobs; repair `lean.yml` schema — [2026-05-25-ci-lic-cache-wp-c.md](docs/release-notes/2026-05-25-ci-lic-cache-wp-c.md).
 - **WP-T2 tier-2 physics Li builds:** `cloth_swing`, `combustion_passive`, `euler_fluid_2d`, `rigid_body_stack`, `wind_field_bc` harness `main.li` extern contracts + checksum sink — [2026-05-25-tier2-physics-li-builds-wp-t2.md](docs/release-notes/2026-05-25-tier2-physics-li-builds-wp-t2.md).
+### Changed
+
+- **CI platform (WP-C1–C5):** Linux jobs consume `ghcr.io/li-langverse/lic-ci:ubuntu24-llvm22`, `actions/cache@v4` on `build/`, reusable `package-ci.yml`, GHA layer cache on lic-ci image publish — [2026-05-25-ci-lic-cache-wp-c.md](docs/release-notes/2026-05-25-ci-lic-cache-wp-c.md).
 
 ### Added
 
-- **Linguist WP1 — Li TextMate grammar:** `contrib/li-grammar/` (`.li` syntax, VS Code/Cursor extension manifest, smoke script); install pointer `contrib/li-vscode/` — [2026-05-25-linguist-wp1-grammar.md](docs/release-notes/2026-05-25-linguist-wp1-grammar.md).
-
-- **Linguist WP2 samples (staging):** `contrib/linguist-samples/Li/` (10 `.li` files), license manifest, WP6 copy README — [2026-05-25-linguist-wp2-samples.md](docs/release-notes/2026-05-25-linguist-wp2-samples.md).
-
-- **GitHub Linguist handoff (WP3/4/6/7):** playbook, usage-evidence process, `contrib/linguist-upstream/` patch bundle; Julian-only upstream PR — [2026-05-25-linguist-wp346-handoff.md](docs/release-notes/2026-05-25-linguist-wp346-handoff.md).
+- **Bench fill WP1:** tier-1 micro harnesses for all catalog `num_*` + `fft_1d_fixed` (`benchmarks/tier1_micro/`, `bench.py` `_WP1_NUM_IDS`, `scripts/gen_wp1_tier1_num_harnesses.py`) — [2026-05-25-tier1-num-fft-harnesses-wp1.md](docs/release-notes/2026-05-25-tier1-num-fft-harnesses-wp1.md).
 
 - **Registry benchmark harness fill:** family-template dirs + `bench_registry.py` tier-7 CSV aliases for dashboard catalog — [2026-05-25-bench-harness-fill-registry.md](docs/release-notes/2026-05-25-bench-harness-fill-registry.md).
 

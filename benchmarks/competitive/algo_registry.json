@@ -24,97 +24,97 @@
       "id": 4,
       "name": "num_sparse_mv",
       "family": "num",
-      "implemented_smoke": false
+      "implemented_smoke": true
     },
     {
       "id": 5,
       "name": "num_cg",
       "family": "num",
-      "implemented_smoke": false
+      "implemented_smoke": true
     },
     {
       "id": 6,
       "name": "num_gmres",
       "family": "num",
-      "implemented_smoke": false
+      "implemented_smoke": true
     },
     {
       "id": 7,
       "name": "num_cholesky",
       "family": "num",
-      "implemented_smoke": false
+      "implemented_smoke": true
     },
     {
       "id": 8,
       "name": "num_eig_symmetric",
       "family": "num",
-      "implemented_smoke": false
+      "implemented_smoke": true
     },
     {
       "id": 9,
       "name": "num_fft_r2c",
       "family": "num",
-      "implemented_smoke": false
+      "implemented_smoke": true
     },
     {
       "id": 10,
       "name": "num_rng_pcg",
       "family": "num",
-      "implemented_smoke": false
+      "implemented_smoke": true
     },
     {
       "id": 11,
       "name": "num_integ_euler",
       "family": "num",
-      "implemented_smoke": false
+      "implemented_smoke": true
     },
     {
       "id": 12,
       "name": "num_integ_rk4",
       "family": "num",
-      "implemented_smoke": false
+      "implemented_smoke": true
     },
     {
       "id": 13,
       "name": "num_integ_verlet",
       "family": "num",
-      "implemented_smoke": false
+      "implemented_smoke": true
     },
     {
       "id": 14,
       "name": "num_integ_symplectic",
       "family": "num",
-      "implemented_smoke": false
+      "implemented_smoke": true
     },
     {
       "id": 15,
       "name": "num_integ_semi_implicit",
       "family": "num",
-      "implemented_smoke": false
+      "implemented_smoke": true
     },
     {
       "id": 16,
       "name": "num_root_newton",
       "family": "num",
-      "implemented_smoke": false
+      "implemented_smoke": true
     },
     {
       "id": 17,
       "name": "num_opt_bfgs",
       "family": "num",
-      "implemented_smoke": false
+      "implemented_smoke": true
     },
     {
       "id": 18,
       "name": "num_opt_line_search",
       "family": "num",
-      "implemented_smoke": false
+      "implemented_smoke": true
     },
     {
       "id": 19,
       "name": "num_quadrature_gauss",
       "family": "num",
-      "implemented_smoke": false
+      "implemented_smoke": true
     },
     {
       "id": 101,

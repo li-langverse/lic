@@ -8,13 +8,12 @@
 | # | Step | Digest |
 |---|------|--------|
 | 1 | `inventory_std_tree` | [stdlib-research/cycle-1-inventory-std-tree.md](../stdlib-research/cycle-1-inventory-std-tree.md) |
+| 2 | `gap_vs_sota` (linear algebra) | [stdlib-research/cycle-1-gap-linalg-sota.md](../stdlib-research/cycle-1-gap-linalg-sota.md) |
 
 ## Queue
 
-1. `audit_package` — li-std-core (sample)
-2. `gap_vs_sota` — linear algebra stdlibs
-3. `synthesize_step` — cycle summary
+1. `synthesize_step` — cycle summary
 
 ## Rolling outputs
 
-See cycle-1 digest YAML block for `packages_to_improve`, `std_modules_to_add`, `connections`.
+See [cycle-1-gap-linalg-sota.md](../stdlib-research/cycle-1-gap-linalg-sota.md) YAML block for latest `packages_to_build`, `packages_to_improve`, `std_modules_to_add`, `connections`.

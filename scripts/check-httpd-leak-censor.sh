@@ -50,5 +50,7 @@ echo "$lc_warn_out" | grep -q 'ack_disable_censor'
 out="$(python3 "$ROOT/scripts/httpd_config.py" \
   "$ROOT/li-tests/config_desugar/good/leak_censor_disabled_warn.toml" 2>&1)"
 echo "$out" | grep -q 'production profile with leak_censor.enabled=false'
+echo "$lc_warn_out" | grep -qE 'ack_disable_censor|leak_censor\.enabled=false' \
+  || { echo "$lc_warn_out" >&2; exit 1; }
 
 echo "check-httpd-leak-censor: OK"

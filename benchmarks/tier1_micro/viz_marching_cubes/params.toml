@@ -1,0 +1,3 @@
+# Family template: horner_pure_li
+steps = 5_000_000
+x = 1.1

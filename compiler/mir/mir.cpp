@@ -24,6 +24,12 @@ std::size_t count_mir_parallel_disjoint_proven(const MirModule& mir) {
   for (const auto& fn : mir.functions) {
     for (const auto& d : fn.decorators) {
       if (d.parallel && d.disjoint_proven) {
+      if (d.parallel && d.disjoint_proven) { ++n; }
+std::size_t count_mir_parallel_disjoint_proven(const MirModule& mir) {
+  std::size_t n = 0;
+  for (const auto& fn : mir.functions) {
+    for (const auto& ins : fn.body) {
+      if (ins.op == MirOp::OmpParallelFor && ins.parallel_disjoint_proven) {
         ++n;
       }
     }

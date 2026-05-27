@@ -4,6 +4,10 @@ set -euo pipefail
 ROOT="$(cd "$(dirname "$0")/.." && pwd)"
 export LI_REPO_ROOT="$ROOT"
 export LIC_ROOT="${LIC_ROOT:-$ROOT}"
+# bench_sim.py uses $LIC; resolve so full gates do not fail when cwd LIC is wrong.
+if [[ -z "${LIC:-}" || ! -x "${LIC}" ]]; then
+  export LIC="$("$ROOT/scripts/resolve-lic.sh")"
+fi
 
 VERT="${SIM_RESEARCH_VERTICAL:-}"
 if [[ "$VERT" != "md" && "$VERT" != "chem" ]]; then

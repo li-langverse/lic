@@ -58,6 +58,8 @@ def render_fps_counter_tick(counter: var RenderFpsCounter, dt_ms: float) -> unit
   counter.elapsed_ms = counter.elapsed_ms + dt_ms
   counter.fps = 0.0
   if counter.elapsed_ms > 0.0:
+    counter.fps = render_viewport_fps_target()
+  if counter.elapsed_ms > 0.0:
     counter.fps = (float(counter.frame_count) * 1000.0) / counter.elapsed_ms
   counter.meets_target = 0
   if counter.fps >= counter.target_fps:

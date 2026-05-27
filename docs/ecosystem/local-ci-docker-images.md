@@ -86,6 +86,20 @@ What people sometimes confuse:
 
 Publishing more GHCR tags only helps for **Linux** variants (e.g. `ubuntu24-llvm22`, optional slim vs full). macOS/Windows “images” for local Actions are not a supported substitute on Linux.
 
+## GHA cache keys (`actions/cache@v4`)
+
+Linux jobs that build `lic` restore `build/` (or `build-fuzz/` for fuzz) using keys derived from compiler sources:
+
+| Job family | Cache path | Key prefix |
+|------------|------------|------------|
+| Main CI | `build/` | `lic-build-ubuntu24-llvm22-` |
+| Package CI (reusable) | `lic/build/` | `lic-pkg-ci-<lic-ref>-` |
+| Fuzz | `build-fuzz/` | `lic-fuzz-ubuntu24-llvm22-` |
+
+**ccache:** not wired in CMake yet — no `~/.ccache` cache scope.
+
+Mirrors should call `li-langverse/lic/.github/workflows/package-ci.yml@main` (see `scripts/templates/github-repo/ci.yml`).
+
 ## li-local-ci
 
 Set `LI_LOCAL_CI_IMAGE=ghcr.io/li-langverse/lic-ci:debian12-llvm22` in profile `lic-docker` (see `li-local-ci` repo) for act/profile container runs.

@@ -22,6 +22,7 @@ bool witness_dot4_int_loop(const ProcDecl& proc, const Expr& ensures_rhs);
 bool witness_dot4_prelude_call(const Expr& ret, const Expr& ensures_rhs);
 bool witness_mat2_int_at2_spec(const ProcDecl& proc, const Expr& ensures_expr);
 bool witness_sqrt_open_bound_spec(const ProcDecl& proc, const Expr& ensures_expr);
+bool witness_sqrt_open_li_rt_bound(const ProcDecl& proc, const Expr& ensures_expr);
 
 VcWitnessStats compute_vc_witness_stats(const Module& module, const MirModule* mir);
 

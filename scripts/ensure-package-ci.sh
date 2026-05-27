@@ -12,6 +12,12 @@ if [[ ! -f "$TPL" ]]; then
   exit 1
 fi
 
+PKG_CI_WF="$ROOT/.github/workflows/package-ci.yml"
+if [[ ! -f "$PKG_CI_WF" ]]; then
+  echo "error: missing reusable workflow $PKG_CI_WF" >&2
+  exit 1
+fi
+
 for pkg in "$ROOT/packages"/*/; do
   [[ -d "$pkg" ]] || continue
   name="$(basename "$pkg")"

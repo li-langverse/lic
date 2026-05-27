@@ -69,6 +69,43 @@ class BenchSpec:
     li_enabled: bool = True
 
 
+_WP1_NUM_IDS: tuple[str, ...] = (
+    "num_cg",
+    "num_cholesky",
+    "num_eig_symmetric",
+    "num_fft_r2c",
+    "num_gmres",
+    "num_integ_euler",
+    "num_integ_rk4",
+    "num_integ_semi_implicit",
+    "num_integ_symplectic",
+    "num_integ_verlet",
+    "num_opt_bfgs",
+    "num_opt_line_search",
+    "num_quadrature_gauss",
+    "num_rng_pcg",
+    "num_root_newton",
+    "num_sparse_mv",
+    "fft_1d_fixed",
+)
+
+
+def _wp1_num_bench_specs() -> tuple[BenchSpec, ...]:
+    """Catalog num_* + fft_1d_fixed smoke harnesses (shared C oracle)."""
+    return tuple(
+        BenchSpec(
+            name=bench_id,
+            tier=1,
+            rel_dir=bench_id,
+            main_c="cpp/main.c",
+            core_c=f"common/{bench_id}_core.c",
+            li_main="li/main.li",
+            li_pure=False,
+        )
+        for bench_id in _WP1_NUM_IDS
+    )
+
+
 TIER1_BENCHES: tuple[BenchSpec, ...] = (
     BenchSpec(
         "simd_dot",
@@ -119,6 +156,37 @@ TIER1_BENCHES: tuple[BenchSpec, ...] = (
         flops_per_run=2.0 * 5e6,
         li_pure=True,
     ),
+) + _wp1_num_bench_specs()
+
+# Stdlib ADT tier-1 (WP0-C): native oracles only until WP1 Li drivers land.
+TIER_STDLIB_BENCHES: tuple[BenchSpec, ...] = (
+    BenchSpec(
+        "stdlib_sort_int",
+        1,
+        "stdlib_sort_int",
+        "cpp/main.c",
+        "common/sort_core.c",
+        "li/main.li",
+        li_enabled=False,
+    ),
+    BenchSpec(
+        "stdlib_dict_insert_lookup",
+        1,
+        "stdlib_dict_insert_lookup",
+        "cpp/main.c",
+        "common/dict_core.c",
+        "li/main.li",
+        li_enabled=False,
+    ),
+    BenchSpec(
+        "stdlib_binary_search",
+        1,
+        "stdlib_binary_search",
+        "cpp/main.c",
+        "common/search_core.c",
+        "li/main.li",
+        li_enabled=False,
+    ),
 )
 
 # Stdlib ADT tier-1 (WP0-C): native oracles only until WP1 Li drivers land.
@@ -153,7 +221,7 @@ TIER_STDLIB_BENCHES: tuple[BenchSpec, ...] = (
 )
 
 # Gaming-physics roadmap (physics-only; Tier R = rendering out of scope):
-#   exists: md_lennard_jones, nbody, wave_1d/2d, heat_2d, advection_diffusion_2d, sph_dam_break_2d (stub)
+#   exists: md_lennard_jones + catalog md_* aliases, nbody, wave_1d/2d, heat_2d, advection_diffusion_2d, sph_dam_break_2d (stub)
 #   planned: euler_fluid_2d, combustion_passive, wind_field_bc, rigid_body, cloth, mls_mpm
 #   Tier R: shadows, reflections BRDF, fire rendering
 TIER2_BENCHES: tuple[BenchSpec, ...] = (
@@ -166,6 +234,32 @@ TIER2_BENCHES: tuple[BenchSpec, ...] = (
         "li/main.li",
         li_pure=False,
 
+    ),
+    *(
+        BenchSpec(
+            md_id,
+            2,
+            md_id,
+            "cpp/md_main.c",
+            "common/md_core.c",
+            "li/main.li",
+        )
+        for md_id in (
+            "md_barostat_parrinello_rahman",
+            "md_constraints_rattle",
+            "md_constraints_shake",
+            "md_energy_drift",
+            "md_init_fcc_mb",
+            "md_integrator_leapfrog",
+            "md_integrator_verlet",
+            "md_longrange_ewald",
+            "md_longrange_pme",
+            "md_neighbor_cell_list",
+            "md_neighbor_verlet_skin",
+            "md_oracle_external",
+            "md_thermostat_berendsen",
+            "md_thermostat_nose_hoover",
+        )
     ),
     BenchSpec(
         "three_body",
@@ -254,7 +348,6 @@ TIER2_BENCHES: tuple[BenchSpec, ...] = (
  "cpp/main.c",
  "common/three_body_core.c",
  "li/main.li",
- li_pure=True,
  ),
  BenchSpec(
  "wind_field_bc",
@@ -607,6 +700,11 @@ def verify_benchmark_results(spec: BenchSpec, build_dir: Path) -> BenchmarkVerif
     if not spec.li_enabled:
         verify_stdlib_benchmark(spec, build_dir)
         return BenchmarkVerifyOutcome()
+def verify_benchmark_results(spec: BenchSpec, build_dir: Path) -> None:
+    """Verify results against normative spec (reference.py), then Li vs native when applicable."""
+    if not spec.li_enabled:
+        verify_stdlib_benchmark(spec, build_dir)
+        return
     from reference import (
         TIER1_REFERENCE,
         assert_checksum_against_spec,
@@ -615,6 +713,7 @@ def verify_benchmark_results(spec: BenchSpec, build_dir: Path) -> BenchmarkVerif
         format_result,
         parse_result,
         print_deviation_reports,
+        parse_result,
     )
 
     native = build_dir / f"{spec.name}_native"
@@ -694,6 +793,13 @@ def verify_benchmark_results(spec: BenchSpec, build_dir: Path) -> BenchmarkVerif
                 ref=ref_case,
                 use_small=False,
             )
+        assert_checksum_against_spec(
+            spec.name,
+            li_out,
+            label="Li",
+            size="full",
+            ref=ref_case,
+            use_small=False,
         )
 
     if deviation_logs:
@@ -1012,7 +1118,16 @@ def run_tier2_ci_smoke(*, only: set[str] | None = None) -> int:
 
 def run_verify() -> int:
     script = REPO / "benchmarks" / "harness" / "verify.py"
-    return subprocess.call([sys.executable, str(script), "--write-csv", str(RESULTS / "verify.csv")])
+    # Tier-0 CI gate: compile smokes only; tier-2 checksum parity runs via `bench.py --tier 2 --ci`.
+    return subprocess.call(
+        [
+            sys.executable,
+            str(script),
+            "--write-csv",
+            str(RESULTS / "verify.csv"),
+            "--tier0-only",
+        ]
+    )
 
 def emit_tier0_correctness_plot() -> int:
     """Write correctness_tier0.png when verify.csv exists (bench.py --tier 0)."""
@@ -1158,6 +1273,16 @@ def main() -> int:
             return rc
         return run_tier2_all(
             runs=args.runs, out=args.out, verify=not args.skip_verify, only=only
+        )
+
+    if args.tier == 7:
+        from bench_registry import run_registry_family_benches
+
+        return run_registry_family_benches(
+            runs=args.runs,
+            out=args.out,
+            verify=not args.skip_verify,
+            only=only,
         )
 
     if args.tier == 3:

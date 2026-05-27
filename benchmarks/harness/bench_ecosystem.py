@@ -49,6 +49,15 @@ SECURITY_SCRIPTS: tuple[tuple[str, Path], ...] = (
     ("security_webserver_registry", REPO / "scripts/check-webserver-bugs.sh"),
 )
 
+# WP0-E: future dashboard rows for li-tests/security/stdlib_abuse (not timed yet).
+# Wire scripts in bench_security() once stdlib runtime + run_stdlib_abuse.sh exist.
+STDLIB_SECURITY_BENCH_IDS: tuple[str, ...] = (
+    "security_stdlib_hash_flood",
+    "security_stdlib_array_oob",
+    "security_stdlib_dyn_index",
+    "security_stdlib_abuse_corpus",
+)
+
 
 def git_sha() -> str:
     try:

@@ -1,3 +1,4 @@
+# Phase 8a workspace gate — proof-complete; full API lives in src/lib.li.
 def main() -> int
   requires true
   ensures result == 0

@@ -2,13 +2,20 @@
 # Delegates to li-langverse/lit when checked out beside lic; else embedded stub path.
 set -euo pipefail
 ROOT="$(cd "$(dirname "$0")/.." && pwd)"
+# shellcheck source=lib/ecosystem-siblings.sh
+source "$ROOT/scripts/lib/ecosystem-siblings.sh"
+if lit_dir="$(_li_ecosystem_lit_dir "$ROOT" 2>/dev/null)" && [[ -x "$lit_dir/scripts/lit" ]]; then
+  exec "$lit_dir/scripts/lit" "$@"
+fi
 for lit in "$ROOT/../lit/scripts/lit" "$ROOT/scripts/../lit/scripts/lit"; do
   if [[ -x "$lit" ]]; then
     exec "$lit" "$@"
   fi
 done
 # Fallback: minimal runner in-tree (keep in sync with lit repo)
-# shellcheck source=../lit/scripts/lit
+if lit_dir="$(_li_ecosystem_lit_dir "$ROOT" 2>/dev/null)" && [[ -f "$lit_dir/scripts/lit" ]]; then
+  exec "$lit_dir/scripts/lit" "$@"
+fi
 if [[ -f "$ROOT/../lit/scripts/lit" ]]; then
   exec "$ROOT/../lit/scripts/lit" "$@"
 fi

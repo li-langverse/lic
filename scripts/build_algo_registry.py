@@ -151,6 +151,7 @@ def main() -> None:
             "qm_job_queue_io",
         ],
         "qm",
+        impl=True,
     )
     add(
         rows,
@@ -184,6 +185,7 @@ def main() -> None:
             "ml_conv2d_forward",
         ],
         "ml",
+        impl=True,
     )
     add(
         rows,
@@ -215,6 +217,7 @@ def main() -> None:
             "viz_linked_views",
         ],
         "viz",
+        impl=True,
     )
     add(
         rows,
@@ -238,6 +241,7 @@ def main() -> None:
             "auto_sensor_raycast",
         ],
         "auto",
+        impl=True,
     )
 
     doc = {"schema": "li_algo_registry_v1", "count": len(rows), "algorithms": rows}

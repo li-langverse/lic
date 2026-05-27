@@ -6,10 +6,63 @@ All notable changes to Li are documented here. The format follows
 
 ## [Unreleased]
 
+### Fixed
+
+- **CI container siblings:** `lip`/`lit` via `actions/checkout` into `ecosystem/`; `git safe.directory` on lic-ci jobs; repair `lean.yml` schema — [2026-05-25-ci-lic-cache-wp-c.md](docs/release-notes/2026-05-25-ci-lic-cache-wp-c.md).
+- **WP-T2 tier-2 physics Li builds:** `cloth_swing`, `combustion_passive`, `euler_fluid_2d`, `rigid_body_stack`, `wind_field_bc` harness `main.li` extern contracts + checksum sink — [2026-05-25-tier2-physics-li-builds-wp-t2.md](docs/release-notes/2026-05-25-tier2-physics-li-builds-wp-t2.md).
 ### Added
 
 - **PH-SIM SIM-2 replay stub** — `sim_checkpoint_tick` / `sim_replay_from_tick` on `SimSessionStub`; smoke `sim_replay_stub.li`; unified-sim RFC pointer — [2026-05-25-sim-replay-sim2-stub.md](docs/release-notes/2026-05-25-sim-replay-sim2-stub.md).
+- **WP2 md_* tier2 fill:** 13 catalog `md_*` harness stubs from `md_lennard_jones` template, `bench.py` `TIER2_BENCHES` rows, runnable fixes for `three_body_pure` / `schrodinger_1d_barrier` / `ragdoll_chain` / `orbit_two_body` / `fdtd_waveguide_2d` — [2026-05-25-bench-fill-wp2-md.md](docs/release-notes/2026-05-25-bench-fill-wp2-md.md).
 
+### Changed
+
+- **CI platform (WP-C1–C5):** Linux jobs consume `ghcr.io/li-langverse/lic-ci:ubuntu24-llvm22`, `actions/cache@v4` on `build/`, reusable `package-ci.yml`, GHA layer cache on lic-ci image publish — [2026-05-25-ci-lic-cache-wp-c.md](docs/release-notes/2026-05-25-ci-lic-cache-wp-c.md).
+
+### Added
+
+- **Bench fill WP1:** tier-1 micro harnesses for all catalog `num_*` + `fft_1d_fixed` (`benchmarks/tier1_micro/`, `bench.py` `_WP1_NUM_IDS`, `scripts/gen_wp1_tier1_num_harnesses.py`) — [2026-05-25-tier1-num-fft-harnesses-wp1.md](docs/release-notes/2026-05-25-tier1-num-fft-harnesses-wp1.md).
+
+- **Registry benchmark harness fill:** family-template dirs + `bench_registry.py` tier-7 CSV aliases for dashboard catalog — [2026-05-25-bench-harness-fill-registry.md](docs/release-notes/2026-05-25-bench-harness-fill-registry.md).
+
+### Added
+
+- **WP2 md_* tier2 fill:** 13 catalog `md_*` harness stubs from `md_lennard_jones` template, `bench.py` `TIER2_BENCHES` rows, runnable fixes for `three_body_pure` / `schrodinger_1d_barrier` / `ragdoll_chain` / `orbit_two_body` / `fdtd_waveguide_2d` — [2026-05-25-bench-fill-wp2-md.md](docs/release-notes/2026-05-25-bench-fill-wp2-md.md).
+
+- **Registry benchmark harness fill:** family-template dirs + `bench_registry.py` tier-7 CSV aliases for dashboard catalog — [2026-05-25-bench-harness-fill-registry.md](docs/release-notes/2026-05-25-bench-harness-fill-registry.md).
+
+### Added
+
+- **WP2 md_* tier2 fill:** 13 catalog `md_*` harness stubs from `md_lennard_jones` template, `bench.py` `TIER2_BENCHES` rows, runnable fixes for `three_body_pure` / `schrodinger_1d_barrier` / `ragdoll_chain` / `orbit_two_body` / `fdtd_waveguide_2d` — [2026-05-25-bench-fill-wp2-md.md](docs/release-notes/2026-05-25-bench-fill-wp2-md.md).
+
+### Changed
+
+- **CI platform (WP-C1–C5):** Linux jobs consume `ghcr.io/li-langverse/lic-ci:ubuntu24-llvm22`, `actions/cache@v4` on `build/`, reusable `package-ci.yml`, GHA layer cache on lic-ci image publish — [2026-05-25-ci-lic-cache-wp-c.md](docs/release-notes/2026-05-25-ci-lic-cache-wp-c.md).
+
+>>>>>>> origin/pr-308-tmp
+### Added
+
+- **Bench fill WP1:** tier-1 micro harnesses for all catalog `num_*` + `fft_1d_fixed` (`benchmarks/tier1_micro/`, `bench.py` `_WP1_NUM_IDS`, `scripts/gen_wp1_tier1_num_harnesses.py`) — [2026-05-25-tier1-num-fft-harnesses-wp1.md](docs/release-notes/2026-05-25-tier1-num-fft-harnesses-wp1.md).
+
+- **WP-T2 tier-2 physics Li builds:** `cloth_swing`, `combustion_passive`, `euler_fluid_2d`, `rigid_body_stack`, `wind_field_bc` harness `main.li` extern contracts + checksum sink — [2026-05-25-tier2-physics-li-builds-wp-t2.md](docs/release-notes/2026-05-25-tier2-physics-li-builds-wp-t2.md).
+
+### Added
+
+- **Registry benchmark harness fill:** family-template dirs + `bench_registry.py` tier-7 CSV aliases for dashboard catalog — [2026-05-25-bench-harness-fill-registry.md](docs/release-notes/2026-05-25-bench-harness-fill-registry.md).
+
+### Added
+
+- **WP2 md_* tier2 fill:** 13 catalog `md_*` harness stubs from `md_lennard_jones` template, `bench.py` `TIER2_BENCHES` rows, runnable fixes for `three_body_pure` / `schrodinger_1d_barrier` / `ragdoll_chain` / `orbit_two_body` / `fdtd_waveguide_2d` — [2026-05-25-bench-fill-wp2-md.md](docs/release-notes/2026-05-25-bench-fill-wp2-md.md).
+
+### Changed
+
+- **CI platform (WP-C1–C5):** Linux jobs consume `ghcr.io/li-langverse/lic-ci:ubuntu24-llvm22`, `actions/cache@v4` on `build/`, reusable `package-ci.yml`, GHA layer cache on lic-ci image publish — [2026-05-25-ci-lic-cache-wp-c.md](docs/release-notes/2026-05-25-ci-lic-cache-wp-c.md).
+
+### Added
+
+- **Bench fill WP1:** tier-1 micro harnesses for all catalog `num_*` + `fft_1d_fixed` (`benchmarks/tier1_micro/`, `bench.py` `_WP1_NUM_IDS`, `scripts/gen_wp1_tier1_num_harnesses.py`) — [2026-05-25-tier1-num-fft-harnesses-wp1.md](docs/release-notes/2026-05-25-tier1-num-fft-harnesses-wp1.md).
+
+- **Bench fill WP4:** compile smokes for `qm_*`, `auto_*`, `ml_*`, `viz_*` catalog rows (`catalog_smoke.py`, 45× `li/main.li`) — [2026-05-25-bench-fill-wp4-qm-auto-ml-viz.md](docs/release-notes/2026-05-25-bench-fill-wp4-qm-auto-ml-viz.md).
 - **PH-DB master plan cross-link:** phase map row + `ph-db-lidb-platform.md` appendix; **PH-8d-v2 → PH-DB-4** — [2026-05-25-ph-db-master-plan-crosslink.md](docs/release-notes/2026-05-25-ph-db-master-plan-crosslink.md).
 - **Studio UX Wave 2 P2 (HTML mocks 16–18):** command palette, reel motion, end CTA scenes — [2026-05-25-studio-ux-wave2-16-18.md](docs/release-notes/2026-05-25-studio-ux-wave2-16-18.md).
 - **Studio UX Wave 2 P1 (HTML mocks):** outliner panel, consolidated viewport error strip, dock labels — [2026-05-25-studio-ux-wave2-p1-mocks.md](docs/release-notes/2026-05-25-studio-ux-wave2-p1-mocks.md).
@@ -130,6 +183,11 @@ All notable changes to Li are documented here. The format follows
 
 - **CI `test-auth-bearer`:** `build-li-httpd.sh` links `main.li` so `li-httpd` runs `httpd_run_from_argv` (was stub `main` returning 0) — [2026-05-25-ci-test-auth-bearer-main-li.md](docs/release-notes/2026-05-25-ci-test-auth-bearer-main-li.md).
 
+- **Wave A tier-0 / AutoVC:** bounded AutoVC lock waits, atomic `AutoVC.lean` writes, open-VC manifest rows compile without Lean cross-talk, and tier-1 Horner verifies a finite stable value with native-comparable timing — [2026-05-26-wave-a-tier0-li-tests-hygiene.md](docs/release-notes/2026-05-26-wave-a-tier0-li-tests-hygiene.md).
+- **HTTPd M0 ship gate:** `build-li-httpd.sh` builds `main.li` with LLVM env; `httpd-plan-gates.sh` builds `build/li-httpd` and runs `test-auth-bearer.sh` by default — [2026-05-22-httpd-m0-ship-gate-full.md](docs/release-notes/2026-05-22-httpd-m0-ship-gate-full.md).
+- **w0-lean-gate (httpd):** `check-httpd-lean-gate.sh`, callee-ensures VC witness, `li_rt_log` link with `li_rt_net`, closed `http_parse_forward_closed.li` — [2026-05-22-w0-lean-gate-httpd.md](docs/release-notes/2026-05-22-w0-lean-gate-httpd.md).
+- **w0-lean-gate (TLS link):** explain-config C link includes `li_rt_tls`/`li_rt_h2`; Lean CI runs httpd VC gate — [2026-05-23-w0-lean-gate-tls-link.md](docs/release-notes/2026-05-23-w0-lean-gate-tls-link.md).
+- **VC emit (call-site requires):** Lean formals include caller locals used in callee `requires` after substitution (fixes `Unknown identifier` on `i` / `n` in httpd AutoVC) — [2026-05-24-httpd-h-lean-server-modules.md](docs/release-notes/2026-05-24-httpd-h-lean-server-modules.md).
 - **HTTPd M1 bearer auth gate:** non-Linux `epoll_ctl_add_listen_i` stub, `build-li-httpd.sh`, plan gates run `test-auth-bearer.sh` on `build/li-httpd` — [2026-05-22-httpd-m1-bearer-auth-gate.md](docs/release-notes/2026-05-22-httpd-m1-bearer-auth-gate.md).
 - **HTTPd routing CI:** rebase plan-loop branch on `main`; `run_httpd_config.sh` — `--allow-open-vc` + `HTTPD_SKIP_LI_ROUTING_BIN` — `docs/release-notes/2026-05-22-httpd-rebase-main-post-164.md`.
 - **G-lean / P-linalg:** `mat2_at2_float_spec_proved` — closed via `mat2_at2_eval` + `rfl` (no `sorry`); AutoVC ensures use eval not free `result` — `docs/release-notes/2026-05-22-mat2-float-spec-closed.md`.

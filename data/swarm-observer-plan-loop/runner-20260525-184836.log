@@ -6577,3 +6577,7 @@ prep: OK
   }
 }
 log=/home/s4il0r/Documents/Cursor/li-langverse/lic/data/swarm-observer-plan-loop/iter-20260525-184836.log
+==> remaining orchestrator todos: 3
+backend: cursor-sdk agent: swarm_observer
+SDK tool activity streams to stderr ([sdk] ▶/✓ lines). Set LI_SDK_TERMINAL_STREAM=0 to disable.
+2026-05-25T19:35:01.618Z [heartbeat] info: worker_status → Supabase: 1 active run(s) swarm_observer

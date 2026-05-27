@@ -490,6 +490,78 @@ int32_t li_rt_studio_demo_profile_from_env(void) {
   return id;
 }
 
+int32_t li_rt_studio_demo_frames_from_env(void) {
+  const char* v = getenv("STUDIO_DEMO_FRAMES");
+  if (v == NULL || v[0] == '\0') {
+    return 3;
+  }
+  const int n = atoi(v);
+  if (n < 1) {
+    return 1;
+  }
+  if (n > 64) {
+    return 64;
+  }
+  return (int32_t)n;
+}
+
+static int32_t li_rt_studio_env_flag_one(const char* name) {
+  const char* v = getenv(name);
+  return (v != NULL && v[0] == '1' && v[1] == '\0') ? 1 : 0;
+}
+
+static int32_t g_studio_shell_pointer_down = 0;
+static float g_studio_shell_pointer_x = 0.0f;
+static float g_studio_shell_pointer_y = 0.0f;
+static int32_t g_studio_shell_key_escape = 0;
+static int32_t g_studio_shell_key_cmd_k = 0;
+static int32_t g_studio_shell_key_digit = 0;
+
+static void li_rt_studio_shell_input_apply_env(void) {
+  g_studio_shell_pointer_down = 0;
+  g_studio_shell_pointer_x = 0.0f;
+  g_studio_shell_pointer_y = 0.0f;
+  g_studio_shell_key_escape = 0;
+  g_studio_shell_key_cmd_k = 0;
+  g_studio_shell_key_digit = 0;
+
+  g_studio_shell_pointer_down = li_rt_studio_env_flag_one("STUDIO_SHELL_POINTER_DOWN");
+  const char* px = getenv("STUDIO_SHELL_POINTER_X");
+  if (px != NULL && px[0] != '\0') {
+    g_studio_shell_pointer_x = (float)atof(px);
+  }
+  const char* py = getenv("STUDIO_SHELL_POINTER_Y");
+  if (py != NULL && py[0] != '\0') {
+    g_studio_shell_pointer_y = (float)atof(py);
+  }
+  g_studio_shell_key_escape = li_rt_studio_env_flag_one("STUDIO_SHELL_KEY_ESCAPE");
+  g_studio_shell_key_cmd_k = li_rt_studio_env_flag_one("STUDIO_SHELL_KEY_CMD_K");
+  const char* digit = getenv("STUDIO_SHELL_KEY_DIGIT");
+  if (digit != NULL && digit[0] != '\0') {
+    const int d = atoi(digit);
+    if (d >= 1 && d <= 5) {
+      g_studio_shell_key_digit = d;
+    }
+  }
+
+  const char* mock = getenv("STUDIO_SHELL_INPUT_MOCK");
+  if (mock != NULL && mock[0] != '\0') {
+    if (strstr(mock, "cmd_k") != NULL) {
+      g_studio_shell_key_cmd_k = 1;
+    }
+    if (strstr(mock, "escape") != NULL) {
+      g_studio_shell_key_escape = 1;
+    }
+    const char* digit_mock = strstr(mock, "digit=");
+    if (digit_mock != NULL) {
+      const int d = atoi(digit_mock + 6);
+      if (d >= 1 && d <= 5) {
+        g_studio_shell_key_digit = d;
+      }
+    }
+  }
+}
+
 /* PH-HW HW-1 — lig.present trusted edge (SDL host; wgpu-rs readback not in-tree). */
 #define LI_RT_LIG_PIXEL_SOURCE_NONE 0
 #define LI_RT_LIG_PIXEL_SOURCE_HOST_CPU 1
@@ -515,13 +587,6 @@ static int32_t li_rt_lig_env_wgpu_readback(void) {
 static void li_rt_lig_refresh_host_active(void) {
   g_lig_host_present_active = li_rt_lig_env_host_present();
 }
-
-static int32_t g_studio_shell_pointer_down = 0;
-static float g_studio_shell_pointer_x = 0.0f;
-static float g_studio_shell_pointer_y = 0.0f;
-static int32_t g_studio_shell_key_escape = 0;
-static int32_t g_studio_shell_key_cmd_k = 0;
-static int32_t g_studio_shell_key_digit = 0;
 
 static int32_t li_rt_lig_try_sdl_present_host(int32_t viewport_w, int32_t viewport_h) {
   const char* bin = getenv("STUDIO_SHELL_PRESENT_HOST_BIN");
@@ -655,18 +720,7 @@ int32_t li_rt_studio_shell_input_key_digit(void) {
 }
 
 int32_t li_rt_studio_host_present_tick(int32_t viewport_w, int32_t viewport_h) {
-  const char* mock = getenv("STUDIO_SHELL_INPUT_MOCK");
-  if (mock != NULL && mock[0] != '\0') {
-    g_studio_shell_key_cmd_k = (strstr(mock, "cmd_k") != NULL) ? 1 : 0;
-    g_studio_shell_key_escape = (strstr(mock, "escape") != NULL) ? 1 : 0;
-    const char* digit = strstr(mock, "digit=");
-    if (digit != NULL) {
-      int d = atoi(digit + 6);
-      if (d >= 1 && d <= 5) {
-        g_studio_shell_key_digit = d;
-      }
-    }
-  }
+  li_rt_studio_shell_input_apply_env();
   (void)li_rt_lig_wgpu_swapchain_create(viewport_w, viewport_h);
   return li_rt_lig_wgpu_present_frame(viewport_w > 0 && viewport_h > 0 ? 1 : 0);
 }

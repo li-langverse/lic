@@ -4,18 +4,36 @@ Li World Studio product shell: composes **dock**, **timeline**, and **inspector*
 
 Import: `import studio`
 
-## Run demo (PH-GD-1)
+## Run demo (PH-GD-1 / PH-HW WP3)
 
-**Headless compose/paint contract demo** — not an SDL/wgpu window yet. The runnable entry exercises `studio_compose_shell_palette` → `studio_paint_shell_chrome` and one `studio_handle_studio_key` call per frame; a native host must wire input and present paint IR later.
+**`li-studio-demo`** runs `studio_shell_demo_present_loop`: cycles `studio_vertical_demo_frame` / `studio_shell_demo_frame` per tick with `STUDIO_DEMO_PROFILE`, host `InputState` (`studio_shell_input_from_host` → `studio_handle_studio_key`), and optional `LIG_HOST_PRESENT` blit/present via `studio_shell_host_present_loop_tick`. Compose/paint IR is real; full wgpu viewport swapchain may still be partial — use the existing host-present path first.
 
 ```bash
+# Headless contract (default 3 ticks, game profile)
 cd packages/li-studio
 lic check src/main.li
-lic build src/main.li -o li-studio-demo
-./li-studio-demo   # exits 0 when 3-frame shell contract holds
+lic build src/main.li -o ../../build/li-studio-demo
+./../../build/li-studio-demo
+
+# Vertical + host present (CI-safe mock input; optional SDL present host)
+cd ../..   # lic repo root
+STUDIO_DEMO_PROFILE=sim_drug_design STUDIO_DEMO_FRAMES=3 \
+  LIG_HOST_PRESENT=1 ./scripts/studio-shell-demo-present-loop.sh
+
+# Build and run demo binary with mock keys + present tick
+STUDIO_SHELL_DEMO_BUILD_RUN=1 LIG_HOST_PRESENT=1 \
+  STUDIO_DEMO_PROFILE=game ./scripts/studio-shell-demo-present-loop.sh
 ```
 
-Dimensions and frame budget: `examples/studio_shell_demo.toml` (1280×720, 3 frames). Smoke: `li-tests/smoke/studio_shell_demo.li`.
+| Env | Role |
+|-----|------|
+| `STUDIO_DEMO_PROFILE` | Profile slug or id (`game`, `sim_rl`, `sim_drug_design`, …) |
+| `STUDIO_DEMO_FRAMES` | Loop length (1–64; default 3) |
+| `LIG_HOST_PRESENT=1` | Enable `lig_present_blit_paint_summary` + `studio_shell_host_present_loop_tick` |
+| `STUDIO_SHELL_INPUT_MOCK` | Keys for `studio_shell_input_from_host` (e.g. `cmd_k,digit=3`) |
+| `STUDIO_SHELL_PRESENT_HOST_BIN` | SDL one-shot present host (`deploy/studio-demo/native/studio_shell_present_host`) |
+
+Dimensions: `examples/studio_shell_demo.toml` (1280×720). Smokes: `studio_shell_demo.li`, `studio_shell_demo_present_loop.li`, `studio_host_present.li`.
 
 ## Compose API
 

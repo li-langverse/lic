@@ -9,6 +9,9 @@ All notable changes to Li are documented here. The format follows
 ### Fixed
 
 - **PH-UX vertical gap #1:** Studio UI bench registry and `bench-studio-viewport-perf.sh` reference `packages/lig` (`wgpu_smoke` hook) instead of removed `packages/li-gpu` — [2026-05-25-vertical-gap-bench-lig.md](docs/release-notes/2026-05-25-vertical-gap-bench-lig.md).
+### Changed
+
+- **Plan checkbox (plots):** `bench.py --tier 0` writes `benchmarks/results/share/correctness_tier0.png` after tier-0 verify CSV — [2026-05-25-gap-close-checkbox-tier0-plot.md](docs/release-notes/2026-05-25-gap-close-checkbox-tier0-plot.md).
 
 ### Added
 

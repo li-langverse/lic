@@ -143,3 +143,35 @@ connections:
 - **code_implementer:** Pure-Li `simd_dot`; seed `num_*` harnesses; extend `math_linalg` for float Props; refresh `stdlib.md:53`.
 - **numerics_researcher / bench_improver:** `simd_dot` red row; strict tier-1 CSV refresh (`PH-5b`, `PH-7e`).
 - **north_star_fit:** Provable static shapes first (Li strength) → then decompositions/solvers in proved packages — no unproved `unsafe` BLAS shortcut in v1.
+
+---
+
+## Addendum (verification pass) — 2026-05-27
+
+This addendum exists to tighten the “file:line evidence” chain for the key linear-algebra stdlib claims.
+
+### Verified: linalg surface is **prelude + lowering**, not `std.math`
+
+- **Prelude proc seal includes** `sum`, `dot`, `norm`, `axpy`:
+  - `lic/compiler/types/prelude.cpp:35-38`
+- **`std.math` is still a tag-only stub**:
+  - `lic/std/math/math.li:1-6`
+
+### Verified: dot/matmul are real MIR ops with LLVM emission (including SIMD gather for dot)
+
+- **MIR lowering emits** `MirOp::ArrayDotF64` when both sides are float arrays with equal static length:
+  - `lic/compiler/mir/lower.cpp:263-287`
+- **LLVM codegen emits**:
+  - `MirOp::ArrayMatMul2DF64` loop/unroll decision + emission (`use_loops` cutover)
+  - `MirOp::ArrayMatMulBlocked2DF64` blocked kernel emission
+  - `MirOp::ArrayDotF64` with **4-wide vector gather** when enabled and \(N \ge 4\), then scalar tail
+  - Evidence: `lic/compiler/codegen/emit.cpp:1349-1417`
+
+### Verified: current `simd_dot` tier-1 Li driver still calls a C kernel
+
+- `lic/benchmarks/tier1_micro/simd_dot/li/main.li:1-3` explains why a pure-Li reduction is deferred under `-ffast-math`.
+- `lic/benchmarks/tier1_micro/simd_dot/li/main.li:4-23` shows the benchmark is wired through `extern proc li_simd_dot_kernel()` + checksum sink.
+
+### Confirmed docs drift to fix (affects stdlib research consumers)
+
+- `lic/docs/language/stdlib.md:53` still claims “no `std/collections`, `std/heap`, or `std/algorithms` sources yet” — contradicts shipped files under `lic/std/collections/`, `lic/std/heap/`, `lic/std/algorithms/` (see inventory digest step 1).

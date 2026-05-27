@@ -1,0 +1,7 @@
+@ppcu
+@proc p() -> i@cpcw
+@proc p() -> i@ppcu
+@proc p() -> i@cpcw
+@proc() -> i@cpu
+@@cpu
+@p (

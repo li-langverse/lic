@@ -20,6 +20,8 @@ All notable changes to Li are documented here. The format follows
 
 ### Fixed
 
+- **Tier-1 CSV validity:** `passed` uses spec rtol/atol (not 1-ULP only); `horner_pure_li` oracle matches `horner_core.c` `x=1.1` — [2026-05-27-bench-csv-validity-passed.md](docs/release-notes/2026-05-27-bench-csv-validity-passed.md).
+
 - **httpd nightly / E0303:** broaden `check_weak_ensures` httpd name prefixes; tier-3 `bench_ecosystem.py` uses manifest-aligned `lic build` flags — [2026-05-27-httpd-e0303-nightly.md](docs/release-notes/2026-05-27-httpd-e0303-nightly.md).
 
 - **lic check resource flags:** `resource_options_invalid()` wired in workspace check; ProofDB dot4 `sorry` stubs for lake-build — hotfix #299.

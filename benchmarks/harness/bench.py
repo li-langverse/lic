@@ -556,14 +556,24 @@ def verify_csv_rows(
     lang: str,
 ) -> list[dict[str, object]]:
     """Export verify metrics for dashboard ingest (one row per metric)."""
-    from reference import analytical_report_for_label
+    from reference import TIER1_REFERENCE, float_close, primary_report_for_label
 
     label_for_lang = {"li": "Li", "cpp": "native", "rust": "native", "julia": "native"}
     report_label = label_for_lang.get(lang, lang)
-    primary = analytical_report_for_label(outcome.deviation_reports, report_label)
+    primary = primary_report_for_label(outcome.deviation_reports, report_label)
     if primary is None:
         return []
-    passed = "true" if primary.within_machine_epsilon else "false"
+    ref_case = TIER1_REFERENCE.get(spec.name)
+    if ref_case is not None:
+        spec_pass = float_close(
+            primary.actual,
+            primary.reference,
+            rtol=ref_case.rtol,
+            atol=ref_case.atol,
+        )
+    else:
+        spec_pass = primary.within_machine_epsilon
+    passed = "true" if spec_pass else "false"
     shared = dict(
         benchmark=spec.name,
         lang=lang,

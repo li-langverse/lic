@@ -2,7 +2,7 @@ import sim
 import scene
 import studio
 
-def main() -> int
+def main() -> int raises IO
   requires true
   ensures result == 0
   decreases 0
@@ -15,16 +15,25 @@ def main() -> int
     return 11
   if game_sess.sim_contract_id != sim_contract_game():
     return 12
+  if game_sess.game_pz >= 0.0:
+    return 13
+  if game_sess.game_physics_steps < 1:
+    return 14
   var sci_cfg: StudioProjectConfig = studio_project_config_new(studio_profile_sim_scientific())
   var sci_sess: SimSessionStub = sim_session_stub_default()
+  studio_viewport_display_reset_for_profile(studio_profile_sim_scientific())
   if studio_sim_step_hook(sci_cfg, sci_sess, 0.01) != sim_status_ok():
     return 20
   if sci_sess.tick != 1:
     return 21
   if sci_sess.sim_contract_id != sim_contract_sim_scientific():
     return 22
-  if studio_md_particle_tier_select_ok(scene_md_tier_10k()) != 1:
+  if studio_viewport_display_read_particle_tier() != scene_md_tier_1k():
     return 23
+  if studio_viewport_display_read_particle_draw_points() != 1000:
+    return 24
+  if studio_md_particle_tier_select_ok(scene_md_tier_10k()) != 1:
+    return 25
   var robo_cfg: StudioProjectConfig = studio_project_config_new(studio_profile_sim_robotics())
   var robo_sess: SimSessionStub = sim_session_stub_default()
   if studio_sim_step_hook(robo_cfg, robo_sess, 0.01) != sim_status_ok():

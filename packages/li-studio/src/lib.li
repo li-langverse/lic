@@ -88,6 +88,19 @@ extern proc li_rt_studio_viewport_display_reset_defaults(profile_id: int) raises
   ensures result == 1
   decreases profile_id
 
+extern proc li_rt_studio_viewport_display_particle_draw_points() raises IO -> int
+  requires true
+  ensures result >= 0
+  decreases 0
+
+extern proc li_rt_studio_viewport_display_sync_scientific_step(tier_id: int, draw_points: int) -> int
+  requires tier_id >= -1
+  requires tier_id <= 2
+  requires draw_points >= 0
+  ensures result >= 0
+  ensures result <= 1
+  decreases tier_id
+
 # PH-HW WP3 — shell input + present host bridge (SDL/wgpu on aarch64-apple-darwin).
 extern proc li_rt_studio_shell_input_pointer_down() -> int
   requires true
@@ -701,6 +714,13 @@ def studio_viewport_display_read_biomol_style() raises IO -> int
 =
   return li_rt_studio_viewport_display_biomol_style()
 
+def studio_viewport_display_read_particle_draw_points() raises IO -> int
+  requires true
+  ensures result >= 0
+  decreases 0
+=
+  return li_rt_studio_viewport_display_particle_draw_points()
+
 def studio_viewport_display_reset_for_profile(profile_id: int) raises IO -> unit
   requires studio_profile_id_valid(profile_id) == 1
   ensures studio_viewport_display_read_bg() >= studio_viewport_bg_solid()
@@ -867,7 +887,10 @@ def studio_compose_viewport_display(vp: Rect, profile_id: int) raises IO -> Stud
   out.biomol_chip_rect = studio_viewport_display_biomol_chip_rect(vp)
   if out.particle_tier_id >= scene_md_tier_1k():
     var tier: SceneMdParticleTier = scene_md_particle_tier_by_id(out.particle_tier_id)
+    var draw_pts: int = studio_viewport_display_read_particle_draw_points()
     out.tier_particles = tier.particles
+    if draw_pts > 0:
+      out.tier_particles = draw_pts
     out.particle_dots_visible = 1
   return out
 
@@ -968,10 +991,10 @@ def studio_compose_shell_drug_litl(w: float, h: float, tick: int, has_selection:
 
 def li_std_studio_version() -> int
   requires true
-  ensures result == 9
+  ensures result == 10
   decreases 0
 =
-  return 9
+  return 10
 
 def studio_agent_context_none() -> int
   requires true
@@ -1693,6 +1716,49 @@ def studio_apply_profile_to_sim(config: StudioProjectConfig, sim_out: var SimSes
   var prof0: int = config.active_profile
   sim_session_apply_studio_profile(prof0, sim_out)
 
+# PH-SIM scientific — multi-physics tick + MD tier bench sync into viewport display (CPU paint; not wgpu).
+def studio_sim_scientific_tier_for_tick(tick: int) -> int
+  requires tick >= 1
+  requires tick <= 64
+  ensures result >= scene_md_tier_1k()
+  ensures result <= scene_md_tier_100k()
+  decreases tick
+=
+  if tick <= 1:
+    return scene_md_tier_1k()
+  if tick <= 10:
+    return scene_md_tier_10k()
+  return scene_md_tier_100k()
+
+def studio_sim_scientific_step_hook(sim_out: var SimSessionStub, dt: float) -> int
+  requires sim_out.tick >= 0
+  requires sim_out.replay_capacity > 0
+  ensures result >= 0
+  ensures result <= 1
+  decreases sim_out.tick
+=
+  if dt <= 0.0:
+    return sim_status_invalid_dt()
+  var detail: int = sim_out.output_detail
+  if detail > 3:
+    detail = 3
+  var next_step: int = sim_out.tick + 1
+  if next_step > 64:
+    next_step = 64
+  if sim_scientific_tick_at(next_step, detail) != 1:
+    return sim_status_invalid_dt()
+  var tier: int = studio_sim_scientific_tier_for_tick(next_step)
+  if studio_md_particle_tier_select_ok(tier) != 1:
+    tier = scene_md_tier_10k()
+  if studio_md_particle_tier_select_ok(tier) != 1:
+    tier = scene_md_tier_1k()
+  var draw: SceneParticleDraw = scene_bench_particle_tier_simulate(tier)
+  if li_rt_studio_viewport_display_sync_scientific_step(tier, draw.draw_points) != 1:
+    return sim_status_invalid_dt()
+  if sim_step(sim_out, dt) != sim_status_ok():
+    return sim_status_invalid_dt()
+  return sim_status_ok()
+
 # PH-SIM SIM-3 — RL profile: env pool batches sim_step on the studio session (contract stub, not PH-ML async).
 def studio_sim_rl_step_hook(sim_out: var SimSessionStub, dt: float) -> int
   requires sim_out.tick >= 0
@@ -1703,15 +1769,47 @@ def studio_sim_rl_step_hook(sim_out: var SimSessionStub, dt: float) -> int
 =
   return sim_rl_session_env_pool_step(sim_out, dt)
 
-# PH-SIM vertical gap #4 — game profile: physics.runtime substep placeholder (no scene sync yet).
-def studio_game_step_hook(frame_dt: float) -> int
+def studio_game_session_physics_load(session: SimSessionStub) -> GamePhysicsState
+  requires session.tick >= 0
+  ensures result.px == session.game_px
+  ensures result.step_count == session.game_physics_steps
+  decreases session.tick
+=
+  var st: GamePhysicsState = game_physics_state_default()
+  st.px = session.game_px
+  st.py = session.game_py
+  st.pz = session.game_pz
+  st.vx = session.game_vx
+  st.vy = session.game_vy
+  st.vz = session.game_vz
+  st.step_count = session.game_physics_steps
+  return st
+
+def studio_game_session_physics_store(session: var SimSessionStub, state: GamePhysicsState) -> unit
+  requires session.tick >= 0
+  ensures session.game_px == state.px
+  ensures session.game_physics_steps == state.step_count
+  decreases session.tick
+=
+  session.game_px = state.px
+  session.game_py = state.py
+  session.game_pz = state.pz
+  session.game_vx = state.vx
+  session.game_vy = state.vy
+  session.game_vz = state.vz
+  session.game_physics_steps = state.step_count
+
+# PH-SIM vertical gap #4 — game profile: physics.runtime on session-persisted GamePhysicsState.
+def studio_game_step_hook(sim_out: var SimSessionStub, frame_dt: float) -> int
   requires frame_dt > 0.0
+  requires sim_out.tick >= 0
   ensures result >= 0
   ensures result <= 1
-  decreases 0
+  decreases sim_out.tick
 =
-  var phys: PhysicsWorld = physics_world_game_default()
-  physics_step(phys, frame_dt)
+  var st: GamePhysicsState = studio_game_session_physics_load(sim_out)
+  game_physics_step_hook(st, frame_dt)
+  studio_game_session_physics_store(sim_out, st)
   return sim_status_ok()
 
 # PH-GD-2 — game world checkpoint scaffold (li-world text line; no scene graph yet).
@@ -1809,8 +1907,9 @@ def studio_sim_step_hook(config: StudioProjectConfig, sim_out: var SimSessionStu
   if detail_hook > 3:
     detail_hook = 3
   if prof == studio_profile_sim_scientific():
-    if sim_scientific_tick_stub(detail_hook) != 1:
+    if dt <= 0.0:
       return sim_status_invalid_dt()
+    return studio_sim_scientific_step_hook(sim_out, dt)
   if prof == studio_profile_sim_rl():
     if dt <= 0.0:
       return sim_status_invalid_dt()
@@ -1830,7 +1929,7 @@ def studio_sim_step_hook(config: StudioProjectConfig, sim_out: var SimSessionStu
   if prof == studio_profile_game():
     if dt <= 0.0:
       return sim_status_invalid_dt()
-    if studio_game_step_hook(dt) != sim_status_ok():
+    if studio_game_step_hook(sim_out, dt) != sim_status_ok():
       return sim_status_invalid_dt()
   return sim_step(sim_out, dt)
 

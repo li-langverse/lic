@@ -4,7 +4,9 @@
 
 ### Added
 
+- **PH-SIM scientific viewport sync** — `studio_sim_scientific_step_hook`, `studio_sim_scientific_tier_for_tick`; `sim_scientific` profile runs `sim_scientific_tick_at` + `scene_bench_particle_tier_simulate` and syncs tier/draw_points into viewport display; smoke `studio_sim_scientific_step_hook.li`; `li_std_studio_version` → 10.
 - **PH-SIM SIM-3 studio RL step** — `studio_sim_rl_step_hook`; `sim_rl` in `studio_sim_step_hook` uses `sim_rl_session_env_pool_step` on live session; smokes `studio_sim_rl_step_hook.li`, extended `studio_sim_step_by_profile.li` — [2026-05-27-studio-sim-rl-env-pool-step.md](../../docs/release-notes/2026-05-27-studio-sim-rl-env-pool-step.md).
+- **PH-GAME-01 session game physics** — `studio_game_step_hook(sim_out, dt)` + `game_physics_step_hook`; smokes assert `game_pz` / `game_physics_steps` — [2026-05-27-studio-game-session-physics.md](../../docs/release-notes/2026-05-27-studio-game-session-physics.md).
 
 - **PH-GD-2 game checkpoint roundtrip** — `studio_game_world_checkpoint_from_session`, `studio_game_world_checkpoint_stub`, `studio_game_world_checkpoint_roundtrip` (`li-world` buffer seam); smoke `studio_game_step_hook.li` — [2026-05-27-vertical-game-checkpoint-roundtrip.md](docs/release-notes/2026-05-27-vertical-game-checkpoint-roundtrip.md).
 

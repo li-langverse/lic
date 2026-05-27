@@ -277,6 +277,27 @@ def algo_robo_multibody_step() -> int
 =
   return 801
 
+def algo_am_slice_layers() -> int
+  requires true
+  ensures result == 603
+  decreases 0
+=
+  return 603
+
+def algo_am_thermal_warp() -> int
+  requires true
+  ensures result == 609
+  decreases 0
+=
+  return 609
+
+def algo_am_export_gcode_3mf() -> int
+  requires true
+  ensures result == 610
+  decreases 0
+=
+  return 610
+
 def run_result_ok(r: SimRunResult) -> int
   requires true
   ensures result >= 0

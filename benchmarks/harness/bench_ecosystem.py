@@ -43,6 +43,39 @@ COMPILE_FIXTURES: tuple[tuple[str, Path], ...] = (
     ("lic_check_contracts", REPO / "li-tests/contracts_verify/discharge_trivial.li"),
 )
 
+# Outcomes for tier-3 compile fixtures (must match li-tests/manifest.toml).
+_FIXTURE_OUTCOMES: dict[str, str] = {
+    "async/await_codegen_ok.li": "compile_open_ok",
+    "effects/net_ok.li": "compile_ok",
+    "effects/async_ok.li": "compile_open_ok",
+    "effects/alloc_ok.li": "verify_ok",
+    "contracts_verify/discharge_trivial.li": "prove_lean_ok",
+}
+
+
+def manifest_outcome_for(src: Path) -> str:
+    """Map fixture path to manifest outcome (matches run_all.sh gates)."""
+    try:
+        rel = src.relative_to(REPO / "li-tests").as_posix()
+    except ValueError:
+        # tier3_ecosystem benches live under benchmarks/, not li-tests/
+        return "compile_open_ok"
+    return _FIXTURE_OUTCOMES.get(rel, "compile_ok")
+
+
+def lic_build_command(src: Path) -> tuple[list[str], str]:
+    """Build argv + CSV flags label aligned with li-tests/manifest.toml outcomes."""
+    outcome = manifest_outcome_for(src)
+    cmd = [str(LIC), "build", str(src), "-o", os.devnull, "--release"]
+    flags = "lic build --release"
+    if outcome == "compile_open_ok":
+        cmd.append("--allow-open-vc")
+        flags += " --allow-open-vc"
+    elif outcome in ("verify_open_ok",):
+        cmd.extend(["--allow-open-vc", "--no-lean-verify"])
+        flags += " --allow-open-vc --no-lean-verify"
+    return cmd, flags
+
 SECURITY_SCRIPTS: tuple[tuple[str, Path], ...] = (
     ("security_corpus", REPO / "li-tests/run_security.sh"),
     ("security_cve_patterns", REPO / "scripts/check-cve-coverage.sh"),
@@ -131,7 +164,8 @@ def bench_compile(*, runs: int, sha: str, cpu: str) -> list[dict[str, object]]:
         raise RuntimeError(f"lic missing at {LIC} — run ./scripts/build.sh")
     rows: list[dict[str, object]] = []
     for bench_id, src in COMPILE_FIXTURES:
-        wall = time_command([str(LIC), "build", str(src), "-o", os.devnull, "--release"], runs=runs)
+        cmd, flags = lic_build_command(src)
+        wall = time_command(cmd, runs=runs)
         rows.append(
             row_for(
                 benchmark=bench_id,
@@ -141,7 +175,7 @@ def bench_compile(*, runs: int, sha: str, cpu: str) -> list[dict[str, object]]:
                 unit="s",
                 sha=sha,
                 cpu=cpu,
-                flags="lic build --release",
+                flags=flags,
             )
         )
         print(f"{bench_id} lic build wall_time={wall:.4f}s")
@@ -155,10 +189,12 @@ def bench_async_runtime(*, runs: int, sha: str, cpu: str) -> list[dict[str, obje
         return []
     bin_path = REPO / "build/bench/async_await_chain_li"
     bin_path.parent.mkdir(parents=True, exist_ok=True)
-    subprocess.check_call(
-        [str(LIC), "build", str(li_main), "-o", str(bin_path), "--release"],
-        cwd=REPO,
-    )
+    build_cmd, _ = lic_build_command(li_main)
+    for i, arg in enumerate(build_cmd):
+        if arg == os.devnull:
+            build_cmd[i] = str(bin_path)
+            break
+    subprocess.check_call(build_cmd, cwd=REPO)
     wall = time_command([str(bin_path)], runs=runs)
     print(f"async_await_chain li wall_time={wall:.4f}s")
     return [

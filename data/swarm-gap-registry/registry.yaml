@@ -1,6 +1,17 @@
 version: 1
 updated_at: '2026-05-26T06:18:44Z'
 gaps:
+- id: gap-ci-blocked-swarm-pr
+  gap_kind: ci_blocked
+  title: Swarm agent PR(s) blocked on failing CI
+  status: open
+  priority: 8
+  discovered_by: ci_bug_triage
+  evidence:
+  - benchmarks/data/latest/ci-bug-triage.json swarm_work_queue
+  suggested_loop: null
+  handoff_to:
+  - bug_fixer
 - id: gap-line-profiler-001
   gap_kind: missing_package
   title: "li-line-profiler \u2014 line-level profiling package (seed)"

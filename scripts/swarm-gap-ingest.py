@@ -223,6 +223,46 @@ def ingest_competitor_catalog(explorer: dict, gaps_by_id: dict[str, dict]) -> in
     return added
 
 
+def ingest_ci_blocked_swarm(triage: dict, gaps_by_id: dict[str, dict]) -> int:
+    """Upsert gap-ci-blocked-swarm-pr from benchmarks ci-bug-triage swarm queue."""
+    gid = "gap-ci-blocked-swarm-pr"
+    swarm = [r for r in (triage.get("swarm_work_queue") or []) if isinstance(r, dict)]
+    if not swarm:
+        gap = gaps_by_id.get(gid)
+        if gap and gap.get("status") == "open":
+            gap["status"] = "closed"
+            ev = gap.setdefault("evidence", [])
+            note = "ci-bug-triage swarm_work_queue empty"
+            if note not in ev:
+                ev.append(note)
+        return 0
+
+    evidence = [
+        f"{r.get('repo')}#{r.get('number')} {r.get('reason', '')}".strip()
+        for r in swarm[:8]
+    ]
+    if gid in gaps_by_id:
+        gap = gaps_by_id[gid]
+        gap["status"] = "open"
+        gap["title"] = f"Swarm agent PR(s) blocked on CI ({len(swarm)} in queue)"
+        gap["evidence"] = evidence
+        gap["priority"] = max(int(gap.get("priority") or 7), 7)
+        return 0
+
+    gaps_by_id[gid] = {
+        "id": gid,
+        "gap_kind": "ci_blocked",
+        "title": f"Swarm agent PR(s) blocked on CI ({len(swarm)} in queue)",
+        "status": "open",
+        "priority": 8,
+        "discovered_by": "ci_bug_triage",
+        "evidence": evidence,
+        "suggested_loop": None,
+        "handoff_to": ["bug_fixer"],
+    }
+    return 1
+
+
 def ingest_verticals_stubs(gaps_by_id: dict[str, dict]) -> int:
     vert = ROOT / "benchmarks/competitive/verticals.toml"
     if not vert.is_file():
@@ -269,6 +309,8 @@ def main() -> int:
     explorer = json.loads(explorer_path.read_text(encoding="utf-8")) if explorer_path.is_file() else {}
     audit = json.loads(audit_path.read_text(encoding="utf-8")) if audit_path.is_file() else {}
     snap = json.loads(SNAPSHOT.read_text(encoding="utf-8")) if SNAPSHOT.is_file() else {}
+    triage_path = LATEST / "ci-bug-triage.json"
+    triage = json.loads(triage_path.read_text(encoding="utf-8")) if triage_path.is_file() else {}
 
     stats = {
         "missing_std": ingest_missing_std(explorer, gaps_by_id),
@@ -278,6 +320,7 @@ def main() -> int:
         "plan_debt_dedupe": dedupe_plan_pending_gaps(gaps_by_id),
         "competitor_catalog": ingest_competitor_catalog(explorer, gaps_by_id),
         "verticals_stubs": ingest_verticals_stubs(gaps_by_id),
+        "ci_blocked_swarm": ingest_ci_blocked_swarm(triage, gaps_by_id),
     }
 
     data["gaps"] = list(gaps_by_id.values())

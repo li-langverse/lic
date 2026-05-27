@@ -9,6 +9,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- **WP-AUTO-01** — `AutomotivePose`, `automotive_pose_init`, `sim_automotive_pose_integrate` (bicycle kinematic step with contracts), `sim_automotive_tick_at` / `sim_automotive_tick_stub`, default wheelbase helper; smokes `li-tests/smoke/builds.li`, `li-tests/smoke/bicycle_kinematic.li`.
 - PH-SIM vertical gap **#3** — profile contract + studio id constants, `run_automotive_smoke()`, package smoke (`li-tests/smoke/builds.li`).
 
 ## [0.1.0] - 2026-05-26

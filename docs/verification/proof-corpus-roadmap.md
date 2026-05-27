@@ -46,9 +46,12 @@
 
 See [proof-db/reporter.md](../../proof-db/reporter.md).
 
+**Proof database (lemma inventory):** `proof-db/**/lemmas/*.li` — rebuild with `./scripts/proof-db-rebuild.sh` (see `proof-db/README.md`).
+
 **Tooling entrypoints:**
 
 ```bash
+./scripts/proof-db-rebuild.sh
 ./li-tests/tooling/contracts_discharge_corpus.sh
 ./li-tests/tooling/discharge_linalg_int_lean.sh   # P-linalg closed specimens
 ./li-tests/tooling/contracts_verify_lean.sh   # needs Lean 4 + lake for full 2f

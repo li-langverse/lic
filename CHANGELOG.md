@@ -8,6 +8,7 @@ All notable changes to Li are documented here. The format follows
 
 ### Added
 
+<<<<<<< HEAD
 - **PH-AM AM-0:** slicer workflow stages in `li-sim-additive` (slice/preview/export gates, `run_additive_slicer_workflow`, composable smoke) — [2026-05-27-ph-am-slicer-workflow.md](docs/release-notes/2026-05-27-ph-am-slicer-workflow.md).
 
 - **PH-SIM SIM-3 RL env pool stub** — `EnvPoolStub`, `env_pool_stub_step`, `sim_rl_tick_stub` in `packages/li-sim`; SIM-2 replay on `SimSessionStub`; smoke `env_pool_stub.li` — [2026-05-27-sim-3-env-pool-stub.md](docs/release-notes/2026-05-27-sim-3-env-pool-stub.md).
@@ -109,9 +110,7 @@ All notable changes to Li are documented here. The format follows
 
 - **Proof DB (2f slice):** `proof-db/index.json` + `proof-db/lean/ProofDB.lean` — five standard lemmas (4 proved, 1 `sorry`); `lake build ProofDB` — [2026-05-25-proof-db-lean-bridge.md](docs/release-notes/2026-05-25-proof-db-lean-bridge.md).
 
-### Added
-
-- **Proof DB (2f slice):** `proof-db/index.json` + `proof-db/lean/ProofDB.lean` — five standard lemmas (4 proved, 1 `sorry`); `lake build ProofDB` — [2026-05-25-proof-db-lean-bridge.md](docs/release-notes/2026-05-25-proof-db-lean-bridge.md).
+- **Proof database:** `proof-db/` math seed lemmas + `scripts/proof-db-rebuild.sh` JSONL rebuild pipeline — [2026-05-25-proof-db-rebuild.md](docs/release-notes/2026-05-25-proof-db-rebuild.md).
 
 ### Changed
 

@@ -45,4 +45,6 @@ def main() raises Alloc, IO -> int
     return 33
   if studio_game_world_checkpoint_roundtrip(game_sess) != 1:
     return 34
+  if studio_game_world_checkpoint_file_roundtrip(game_sess) != 1:
+    return 35
   return 0

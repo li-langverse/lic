@@ -22,7 +22,7 @@ def main() -> int raises IO
   var sci_cfg: StudioProjectConfig = studio_project_config_new(studio_profile_sim_scientific())
   var sci_sess: SimSessionStub = sim_session_stub_default()
   studio_viewport_display_reset_for_profile(studio_profile_sim_scientific())
-  if studio_sim_step_hook(sci_cfg, sci_sess, 0.01) != sim_status_ok():
+  if studio_sim_step_hook(sci_cfg, sci_sess, 1.0) != sim_status_ok():
     return 20
   if sci_sess.tick != 1:
     return 21

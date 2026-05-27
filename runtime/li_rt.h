@@ -237,6 +237,8 @@ int32_t li_rt_studio_viewport_display_set_particle_tier(int32_t tier_id);
 int32_t li_rt_studio_viewport_display_biomol_style(void);
 int32_t li_rt_studio_viewport_display_set_biomol_style(int32_t style);
 int32_t li_rt_studio_viewport_display_reset_defaults(int32_t profile_id);
+int32_t li_rt_studio_viewport_display_particle_draw_points(void);
+int32_t li_rt_studio_viewport_display_sync_scientific_step(int32_t tier_id, int32_t draw_points);
 int32_t li_rt_lig_host_present_active(void);
 float li_rt_lig_host_present_dt_ms(void);
 int32_t li_rt_lig_host_native_pixels(void);

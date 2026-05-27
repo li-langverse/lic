@@ -154,7 +154,7 @@ TIER2_BENCHES: tuple[BenchSpec, ...] = (
         "cpp/md_main.c",
         "common/md_core.c",
         "li/main.li",
-        li_pure=True,
+        li_pure=False,
     ),
     BenchSpec(
         "three_body",

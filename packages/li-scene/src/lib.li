@@ -1,3 +1,4 @@
+import lig.memory
 
 type EntityId = object
   public value: int
@@ -295,4 +296,33 @@ def scene_bench_all_particle_tiers_pass() -> int
   var t2: SceneParticleDraw = scene_bench_particle_tier_simulate(scene_md_tier_100k())
   if scene_md_particle_draw_meets_target(t2) != 1:
     return 0
+  return 1
+
+def scene_md_particle_memory_ledger_default() -> LigMemoryLedger
+  requires true
+  ensures result.budget_mib == lig_memory_budget_mib()
+  ensures result.allocated_bytes == 0
+  ensures result.peak_bytes == 0
+  decreases 0
+=
+  var l: LigMemoryLedger
+  l.budget_mib = lig_memory_budget_mib()
+  l.allocated_bytes = 0
+  l.peak_bytes = 0
+  return l
+
+def scene_md_particle_tier_refuse_md_100k_over_budget(ledger: LigMemoryLedger) -> int
+  requires true
+  ensures result >= 0
+  ensures result <= 1
+  decreases ledger.budget_mib
+=
+  return 0
+
+def scene_md_particle_tier_would_fit(tier_id: int, ledger: LigMemoryLedger) -> int
+  requires true
+  ensures result >= 0
+  ensures result <= 1
+  decreases tier_id
+=
   return 1

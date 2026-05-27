@@ -50,10 +50,27 @@ Registry: `benchmarks/competitive/studio-ui.toml`. Harness writes:
 python3 scripts/studio-ui-ux-verify-bench-registry.py
 ```
 
+## `latest.csv` verify columns (tier 1+ with `--verify`)
+
+Written when `bench.py` runs tier 1/2 with result verification (or `./scripts/bench-verify-results.sh`).
+
+| Column | Meaning |
+|--------|---------|
+| **os** | Host OS tag from harness (`linux`, `darwin`, …). |
+| **passed** | `1` if verify gate passed for this row (Li and cpp when both run). |
+| **oracle_kind** | `analytical` (closed form) or `iterative` (C-loop spec). |
+| **verify_abs_err** | Absolute error vs primary oracle. |
+| **verify_rel_err** | Relative error vs primary oracle. |
+| **verify_ulps** | Float64 ULP distance vs analytical reference. |
+| **verify_within_1ulp** | `1` if ≤1 ULP of analytical oracle (machine-epsilon tight). |
+
+Ingest into the benchmarks dashboard maps these to `numeric_validity` on `summary.json` rows.
+
 ## Regenerate
 
 ```bash
 python3 benchmarks/harness/bench.py --tier 0
 ./scripts/bench-verify-results.sh 1    # results only, tier 1
+python3 benchmarks/harness/bench.py --tier 1 --verify --runs 3
 python3 benchmarks/harness/bench.py --tier 12 --runs 5
 ```

@@ -79,6 +79,7 @@ for rej in "$ROOT/li-tests/config_desugar/reject"/*.toml; do
     | m3_token_budget_bad_header.toml \
     | m3_token_cap_excess.toml \
     | rng_prng_production.toml \
+    | lb_bad_balance.toml \
     | tls_le_missing_email.toml \
     | tls_public_no_tls.toml \
     | tls_public_self_signed.toml)
@@ -96,7 +97,7 @@ echo "== validate-httpd-config (Python M1 schema) =="
 "$ROOT/scripts/lic-validate-httpd-config.sh" "$ROOT/packages/li-net-httpd/examples/auth_bearer.toml"
 "$ROOT/scripts/lic-validate-httpd-config.sh" "$ROOT/packages/li-net-httpd/examples/agent_gateway_limits.toml"
 for rej in "$ROOT/li-tests/config_desugar/reject"/proxy_without_rate_limit.toml \
-  "$ROOT/li-tests/config_desugar/reject/lb_bad_balance.toml; do
+  "$ROOT/li-tests/config_desugar/reject/lb_bad_balance.toml"; do
   [[ -f "$rej" ]] || continue
   if "$ROOT/scripts/lic-validate-httpd-config.sh" "$rej" 2>/dev/null; then
     echo "validate-httpd-config: expected reject for $(basename "$rej")" >&2

@@ -14,7 +14,11 @@ STAMP="$(date -u +%Y-%m-%dT%H:%M:%SZ)"
 
 fail() { echo "security-research-gates: $*" >&2; exit 1; }
 
-STUDY_ONLY="${SECURITY_RESEARCH_STUDY_ONLY:-0}"
+if [[ "${SECURITY_RESEARCH_STUDY_ONLY:-0}" == "1" && "${SECURITY_RESEARCH_BACKLOG_STUDY_ONLY:-0}" != "1" ]]; then
+  echo "security-research-gates: SECURITY_RESEARCH_STUDY_ONLY=1 rejected (set study_only: true on backlog todo)" >&2
+  exit 1
+fi
+STUDY_ONLY="${SECURITY_RESEARCH_BACKLOG_STUDY_ONLY:-0}"
 posture_ok=1
 cwe_feed_ok=1
 tier5_ok=1

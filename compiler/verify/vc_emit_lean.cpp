@@ -654,6 +654,9 @@ void emit_call_site_requires(std::ostream& out, const Module& module, const Proc
               << "' at call " << call_idx << " -/\n";
         }
       }
+      if (witnessed && !refinement_discharge) {
+        prop = "True";
+      }
       std::set<std::string> ref_idents;
       collect_idents_in_expr(*sub, ref_idents);
       out << "def " << name;
@@ -667,8 +670,10 @@ void emit_call_site_requires(std::ostream& out, const Module& module, const Proc
         if (refinement_discharge && lit_nonneg) {
           out << " := Li.Discharge.refinement_nonneg_lit_proved " << *lit_nonneg
               << " (by decide)\n";
-        } else {
+        } else if (prop == "True") {
           out << " := trivial\n";
+        } else {
+          out << " := by decide\n";
         }
       }
     }

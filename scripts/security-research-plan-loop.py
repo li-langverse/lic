@@ -222,12 +222,13 @@ def run_gates(work: dict) -> tuple[bool, str]:
         "LI_REPO_ROOT": str(ROOT),
         "BENCH_ROOT": str(LANGVERSE / "benchmarks"),
     }
+    env["SECURITY_RESEARCH_STUDY_ONLY"] = "0"
+    env["SECURITY_RESEARCH_BACKLOG_STUDY_ONLY"] = "0"
     if work.get("study_only"):
+        env["SECURITY_RESEARCH_BACKLOG_STUDY_ONLY"] = "1"
         env["SECURITY_RESEARCH_STUDY_ONLY"] = "1"
         if study.is_file():
             env["SECURITY_RESEARCH_REQUIRE_STUDY"] = str(study.relative_to(ROOT))
-    else:
-        env["SECURITY_RESEARCH_STUDY_ONLY"] = "0"
 
     proc = subprocess.run(
         ["bash", str(GATES)], cwd=ROOT, env=env, capture_output=True, text=True

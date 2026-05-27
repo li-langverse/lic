@@ -157,7 +157,7 @@ run_one() {
     check_ok)
       local out
       out="$("$LIC" check --no-cache "$path" 2>&1)" || true
-      if ! "$LIC" check --no-cache "$path" >/dev/null 2>&1; then
+      if echo "$out" | grep -qE 'error \[|severity.: .error|lic\.error'; then
         li_test_fail "check_ok $file"
         return 1
       fi

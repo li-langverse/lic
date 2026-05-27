@@ -8,10 +8,12 @@ import sim.automotive
 import sim.robotics
 import sim.scientific
 import ml.rl
+import scene
 import physics.runtime
 import world
-import scene
 import lig
+import lig.present
+import lig.memory
 
 # li-studio — compose dock + timeline + inspector + agent chrome (PH-UX-05/06/07).
 
@@ -132,22 +134,6 @@ extern proc li_rt_studio_mcp_tool_name(tool_id: int) raises IO, Alloc -> str
   ensures result != ""
   decreases tool_id
 
-extern proc li_rt_studio_mcp_dispatch(tool_id: int) -> int
-  requires true
-  ensures result >= 0
-  ensures result <= 2
-  decreases tool_id
-
-extern proc li_rt_studio_mcp_last_profile_id() -> int
-  requires true
-  ensures result >= 0
-  decreases 0
-
-extern proc li_rt_studio_mcp_chem_energy_hartree() -> float
-  requires true
-  ensures result == -76.0
-  decreases 0
-
 def studio_profile_unknown() -> int
   requires true
   ensures result == 0
@@ -210,22 +196,21 @@ def studio_profile_id_valid(profile_id: int) -> int
   ensures result <= 1
   decreases profile_id
 =
-  var pid0: int = profile_id
-  if pid0 == studio_profile_unknown():
+  if profile_id == studio_profile_unknown():
     return 1
-  if pid0 == studio_profile_game():
+  if profile_id == studio_profile_game():
     return 1
-  if pid0 == studio_profile_sim_rl():
+  if profile_id == studio_profile_sim_rl():
     return 1
-  if pid0 == studio_profile_sim_automotive():
+  if profile_id == studio_profile_sim_automotive():
     return 1
-  if pid0 == studio_profile_sim_robotics():
+  if profile_id == studio_profile_sim_robotics():
     return 1
-  if pid0 == studio_profile_sim_additive():
+  if profile_id == studio_profile_sim_additive():
     return 1
-  if pid0 == studio_profile_sim_scientific():
+  if profile_id == studio_profile_sim_scientific():
     return 1
-  if pid0 == studio_profile_sim_drug_design():
+  if profile_id == studio_profile_sim_drug_design():
     return 1
   return 0
 
@@ -257,73 +242,25 @@ def studio_profile_chip_height_px() -> float
 =
   return 24.0
 
-# PH-DRUG DRUG-0 — adaptive LITL stage index from session tick (mock chrome only).
-def studio_drug_litl_stage_from_tick(tick: int) -> int
-  requires tick >= 0
-  ensures drug_litl_stage_valid(result) == 1
-  decreases tick
-=
-  return drug_litl_stage_from_tick(tick)
-
-# PH-DRUG DRUG-1 — structured LITL stage payload (SMILES token, conformers, DFT, ADMET).
-def studio_drug_litl_stage_payload_from_tick(tick: int) -> DrugLitlStagePayload
-  requires tick >= 0
-  ensures drug_litl_stage_valid(result.stage) == 1
-  ensures result.stage == studio_drug_litl_stage_from_tick(tick)
-  decreases tick
-=
-  var stage: int = studio_drug_litl_stage_from_tick(tick)
-  return drug_litl_stage_payload(stage)
-
-# PH-DRUG / studio.adaptive — inspector row base switches by LITL stage (profile 7).
-def studio_adaptive_inspector_row_base(litl_stage: int) -> int
-  requires drug_litl_stage_valid(litl_stage) == 1
-  ensures result >= 0
-  ensures result <= 3
-  decreases litl_stage
-=
-  if litl_stage == drug_litl_stage_hypothesis():
-    return 0
-  if litl_stage == drug_litl_stage_generate():
-    return 1
-  if litl_stage == drug_litl_stage_dft():
-    return 2
-  if litl_stage == drug_litl_stage_lab():
-    return 3
-  return 2
-
-def studio_adaptive_inspector_field_count(litl_stage: int) -> int
-  requires drug_litl_stage_valid(litl_stage) == 1
-  ensures result >= 2
-  ensures result <= 3
-  decreases litl_stage
-=
-  if litl_stage == drug_litl_stage_dft():
-    return 3
-  if litl_stage == drug_litl_stage_retrain():
-    return 3
-  return 2
-
 def studio_profile_paint_tag_h(profile_id: int) -> float
   requires studio_profile_id_valid(profile_id) == 1
   ensures result >= 20.0
   ensures result <= 28.0
   decreases profile_id
 =
-  var pid0: int = profile_id
-  if pid0 == studio_profile_game():
+  if profile_id == studio_profile_game():
     return 21.0
-  if pid0 == studio_profile_sim_rl():
+  if profile_id == studio_profile_sim_rl():
     return 22.0
-  if pid0 == studio_profile_sim_automotive():
+  if profile_id == studio_profile_sim_automotive():
     return 23.0
-  if pid0 == studio_profile_sim_robotics():
+  if profile_id == studio_profile_sim_robotics():
     return 24.0
-  if pid0 == studio_profile_sim_additive():
+  if profile_id == studio_profile_sim_additive():
     return 25.0
-  if pid0 == studio_profile_sim_scientific():
+  if profile_id == studio_profile_sim_scientific():
     return 26.0
-  if pid0 == studio_profile_sim_drug_design():
+  if profile_id == studio_profile_sim_drug_design():
     return 27.0
   return 20.0
 
@@ -346,12 +283,11 @@ def studio_profile_color(profile_id: int) -> Color
   ensures result.r >= 0.0
   decreases profile_id
 =
-  var pid0: int = profile_id
-  if pid0 == studio_profile_game():
+  if profile_id == studio_profile_game():
     return studio_color_accent_cyan()
-  if pid0 == studio_profile_sim_rl():
+  if profile_id == studio_profile_sim_rl():
     return studio_color_accent_mint()
-  if pid0 == studio_profile_sim_drug_design():
+  if profile_id == studio_profile_sim_drug_design():
     return studio_color_accent_violet()
   return studio_color_accent_amber()
 
@@ -369,9 +305,8 @@ def studio_paint_topbar_profile(frame: var PaintFrame, topbar: Rect, profile_id:
   ensures frame.last_kind == paint_op_stroke_rect()
   decreases profile_id
 =
-  var pid0: int = profile_id
-  var pid_chip: int = pid0
-  var pid_color: int = pid0
+  var pid_chip: int = profile_id
+  var pid_color: int = profile_id
   frame.cmd_count = frame.cmd_count + studio_paint_topbar_profile_cmds()
   frame.last_kind = paint_op_stroke_rect()
   var top_copy: Rect = topbar
@@ -460,24 +395,23 @@ def studio_mcp_tool_id_valid(tool_id: int) -> int
   ensures result <= 1
   decreases tool_id
 =
-  var tid0: int = tool_id
-  if tid0 == studio_mcp_tool_unknown():
+  if tool_id == studio_mcp_tool_unknown():
     return 0
-  if tid0 == studio_mcp_world_scaffold():
+  if tool_id == studio_mcp_world_scaffold():
     return 1
-  if tid0 == studio_mcp_sim_set_profile():
+  if tool_id == studio_mcp_sim_set_profile():
     return 1
-  if tid0 == studio_mcp_lic_check():
+  if tool_id == studio_mcp_lic_check():
     return 1
-  if tid0 == studio_mcp_lic_build():
+  if tool_id == studio_mcp_lic_build():
     return 1
-  if tid0 == studio_mcp_publish_bundle():
+  if tool_id == studio_mcp_publish_bundle():
     return 1
-  if tid0 == studio_mcp_am_export_print():
+  if tool_id == studio_mcp_am_export_print():
     return 1
-  if tid0 == studio_mcp_chem_dft_run():
+  if tool_id == studio_mcp_chem_dft_run():
     return 1
-  if tid0 == studio_mcp_studio_adaptive_layout():
+  if tool_id == studio_mcp_studio_adaptive_layout():
     return 1
   return 0
 
@@ -562,129 +496,27 @@ def studio_agent_tool_request_none() -> StudioAgentToolRequest
   out.result_code = studio_mcp_tool_result_ok()
   return out
 
-def studio_mcp_chem_dft_energy_hartree() -> float
-  requires true
-  ensures result == -76.0
-  decreases 0
-=
-  return li_rt_studio_mcp_chem_energy_hartree()
-
-def studio_mcp_last_profile_id() -> int raises IO
-  requires true
-  ensures studio_profile_id_valid(result) == 1
-  decreases 0
-=
-  var pid: int = li_rt_studio_mcp_last_profile_id()
-  var pid_chk: int = pid
-  if studio_profile_id_valid(pid_chk) != 1:
-    return studio_profile_game()
-  return pid
-
-def studio_mcp_run_adaptive_layout(w: float, h: float) -> int
-  requires w > 0.0
-  requires h > 0.0
-  ensures result >= 0
-  ensures result <= 1
-  decreases 0
-=
-  var layout: StudioShellLayout = layout_studio_shell_adaptive(w, h)
-  if layout.viewport_w <= 0.0:
-    return 0
-  if layout.viewport_h <= 0.0:
-    return 0
-  return 1
-
-def studio_mcp_tool_dispatch(tool_id: int) -> StudioAgentToolRequest raises IO
+def studio_mcp_tool_dispatch(tool_id: int) -> StudioAgentToolRequest
   requires true
   ensures result.tool_id == tool_id
   decreases tool_id
 =
-  var tid: int = tool_id
   var out: StudioAgentToolRequest = studio_agent_tool_request_none()
-  out.tool_id = tid
-  if studio_mcp_tool_id_valid(tid) != 1:
+  out.tool_id = tool_id
+  if studio_mcp_tool_id_valid(tool_id) != 1:
     out.status = studio_mcp_tool_status_failed()
     out.result_code = studio_mcp_tool_result_err_io()
     return out
-  var rc: int = li_rt_studio_mcp_dispatch(tid)
-  if rc == studio_mcp_tool_result_err_proof():
-    out.status = studio_mcp_tool_status_failed()
-    out.result_code = studio_mcp_tool_result_err_proof()
-    return out
-  if rc == studio_mcp_tool_result_err_io():
-    out.status = studio_mcp_tool_status_failed()
-    out.result_code = studio_mcp_tool_result_err_io()
-    return out
-  if tid == studio_mcp_chem_dft_run():
-    if studio_mcp_chem_dft_energy_hartree() != -76.0:
-      out.status = studio_mcp_tool_status_failed()
-      out.result_code = studio_mcp_tool_result_err_io()
-      return out
-  if tid == studio_mcp_studio_adaptive_layout():
-    if studio_mcp_run_adaptive_layout(1280.0, 720.0) != 1:
-      out.status = studio_mcp_tool_status_failed()
-      out.result_code = studio_mcp_tool_result_err_io()
-      return out
   out.status = studio_mcp_tool_status_ok()
   out.result_code = studio_mcp_tool_result_ok()
   return out
 
-# PH-AGENT-1 — in-process MCP harness (all 8 tool IDs + proof gate; no lis HTTP server).
-def studio_mcp_harness_run_all() -> int raises IO
-  requires true
-  ensures result >= 0
-  decreases 0
-=
-  var scaffold: StudioAgentToolRequest = studio_mcp_tool_dispatch(studio_mcp_world_scaffold())
-  if scaffold.status != studio_mcp_tool_status_ok():
-    return 1
-  var profile: StudioAgentToolRequest = studio_mcp_tool_dispatch(studio_mcp_sim_set_profile())
-  if profile.status != studio_mcp_tool_status_ok():
-    return 2
-  var check: StudioAgentToolRequest = studio_mcp_tool_dispatch(studio_mcp_lic_check())
-  if check.status != studio_mcp_tool_status_ok():
-    return 3
-  var build: StudioAgentToolRequest = studio_mcp_tool_dispatch(studio_mcp_lic_build())
-  if build.status != studio_mcp_tool_status_ok():
-    return 4
-  var publish: StudioAgentToolRequest = studio_mcp_tool_dispatch(studio_mcp_publish_bundle())
-  if publish.status != studio_mcp_tool_status_ok():
-    return 5
-  var am: StudioAgentToolRequest = studio_mcp_tool_dispatch(studio_mcp_am_export_print())
-  if am.status != studio_mcp_tool_status_ok():
-    return 6
-  var chem: StudioAgentToolRequest = studio_mcp_tool_dispatch(studio_mcp_chem_dft_run())
-  if chem.status != studio_mcp_tool_status_ok():
-    return 7
-  var adaptive: StudioAgentToolRequest = studio_mcp_tool_dispatch(studio_mcp_studio_adaptive_layout())
-  if adaptive.status != studio_mcp_tool_status_ok():
-    return 8
-  return 0
-
-def studio_present_frame_acceptable(presented: LigPresentFrame) -> int raises IO
-  requires true
-  ensures result >= 0
-  ensures result <= 1
-  decreases 0
-=
-  if lig_present_host_active() != 1:
-    return 1
-  if lig_present_cpu_framebuffer_active() == 1:
-    if presented.presented != 1:
-      return 0
-    return 1
-  if presented.presented != 1:
-    return 0
-  if presented.native_pixels != 1:
-    return 0
-  return 1
-
 def li_std_studio_version() -> int
   requires true
-  ensures result == 9
+  ensures result == 7
   decreases 0
 =
-  return 9
+  return 7
 
 def studio_agent_context_none() -> int
   requires true
@@ -1137,8 +969,6 @@ type StudioInspectorCompose = object
   public field_count: int
   public field0: StudioInspectorField
   public field1: StudioInspectorField
-  public litl_stage: int
-  public adaptive_row_base: int
 
 type StudioViewportEmptyCompose = object
   public frame_rect: Rect
@@ -1406,67 +1236,18 @@ def studio_apply_profile_to_sim(config: StudioProjectConfig, sim_out: var SimSes
   var prof0: int = config.active_profile
   sim_session_apply_studio_profile(prof0, sim_out)
 
-# PH-SIM vertical gap #4 — game tick delegates to physics.runtime (RigidBody type isolated from physics.rigid).
-def studio_game_step_hook(frame_dt: float, sim_tick: int) -> GamePhysicsStepOutcome
+# PH-SIM vertical gap #4 — game profile: physics.runtime substep placeholder (no scene sync yet).
+def studio_game_step_hook(frame_dt: float) -> int
   requires frame_dt > 0.0
-  requires sim_tick >= 0
-  requires sim_tick <= 4096
-  ensures result.status >= 0
-  ensures result.status <= 1
-  decreases sim_tick
-=
-  return game_physics_step_hook(frame_dt, sim_tick)
-
-def studio_game_world_snapshot_from_physics(
-    tick: int, physics_step_count: int, body_pz: float) -> WorldSnapshot
-  requires tick >= 0
-  requires physics_step_count >= 0
-  ensures result.tick == tick
-  ensures result.entity_count == physics_step_count
-  decreases tick
-=
-  var snap: WorldSnapshot
-  snap.name = world_name_slot_default()
-  snap.tick = tick
-  snap.entity_count = physics_step_count
-  var pz_hi: float = body_pz
-  var pz_lo: float = body_pz
-  if pz_hi > 1000.0:
-    snap.entity_count = 0
-  if pz_lo < -1000.0:
-    snap.entity_count = 0
-  return snap
-
-def studio_game_world_checkpoint_fields(
-    tick: int, physics_step_count: int, body_pz: float) -> int
-  requires tick >= 0
-  requires physics_step_count >= 0
   ensures result >= 0
   ensures result <= 1
-  decreases tick
+  decreases 0
 =
-  var snap: WorldSnapshot = studio_game_world_snapshot_from_physics(tick, physics_step_count, body_pz)
-  if world_snapshot_valid(snap) != 1:
-    return 0
-  var pz_hi: float = body_pz
-  var pz_lo: float = body_pz
-  if pz_hi > 1000.0:
-    return 0
-  if pz_lo < -1000.0:
-    return 0
-  return 1
+  var world: PhysicsWorld = physics_world_game_default()
+  physics_step(world, frame_dt)
+  return sim_status_ok()
 
-# PH-GD-2 partial — world snapshot validity after game tick (no serialize I/O in hot path).
-def studio_game_world_checkpoint_stub(tick: int) -> int
-  requires tick >= 0
-  ensures result >= 0
-  ensures result <= 1
-  decreases tick
-=
-  var w: PhysicsWorld = game_physics_world_at_tick(tick)
-  return studio_game_world_checkpoint_fields(tick, w.step_count, w.body.pz)
-
-# PH-SIM vertical gap #9 — MD particle tier gate via li-scene tier metadata (lig ledger follow-up).
+# PH-SIM vertical gap #9 — MD particle tier gate via li-scene tier metadata + lig ledger.
 def studio_md_particle_tier_select_ok(tier_id: int) -> int
   requires tier_id >= 0
   requires tier_id <= 2
@@ -1474,17 +1255,19 @@ def studio_md_particle_tier_select_ok(tier_id: int) -> int
   ensures result <= 1
   decreases tier_id
 =
-  var tid: int = tier_id
-  var tier: SceneMdParticleTier = scene_md_particle_tier_by_id(tid)
-  if tier.tier_id != tid:
+  var tier: SceneMdParticleTier = scene_md_particle_tier_by_id(tier_id)
+  if tier.tier_id != tier_id:
     return 0
   if tier.particles <= 0:
     return 0
   if tier.kernel_tag != scene_md_kernel_lennard_jones():
     return 0
-  if tid == scene_md_tier_100k():
-    if tier.particles > 100000:
+  var ledger: LigMemoryLedger = scene_md_particle_memory_ledger_default()
+  if tier_id == scene_md_tier_100k():
+    if scene_md_particle_tier_refuse_md_100k_over_budget(ledger) == 1:
       return 0
+  if scene_md_particle_tier_would_fit(tier_id, ledger) != 1:
+    return 0
   return 1
 
 # PH-SIM SIM-1 + vertical gap #4 — profile sync, domain tick stub, session counter.
@@ -1496,7 +1279,6 @@ def studio_sim_step_hook(config: StudioProjectConfig, sim_out: var SimSessionStu
   ensures sim_out.output_detail == sim_output_detail_for_studio_profile(config.active_profile)
   decreases config.active_profile
 =
-  var dt0: float = dt
   studio_apply_profile_to_sim(config, sim_out)
   var prof: int = config.active_profile
   if prof == studio_profile_sim_scientific():
@@ -1505,63 +1287,12 @@ def studio_sim_step_hook(config: StudioProjectConfig, sim_out: var SimSessionStu
       detail0 = 3
     if sim_scientific_tick_stub(detail0) != 1:
       return sim_status_invalid_dt()
-  if prof == studio_profile_sim_automotive():
-    var detail_auto: int = sim_out.output_detail
-    if detail_auto > 3:
-      detail_auto = 3
-    var auto_step: int = sim_out.tick + 1
-    if auto_step > 64:
-      auto_step = 64
-    if sim_automotive_tick_at(auto_step, detail_auto) != 1:
-      return sim_status_invalid_dt()
-  if prof == studio_profile_sim_robotics():
-    var detail_robo: int = sim_out.output_detail
-    if detail_robo > 3:
-      detail_robo = 3
-    var robo_step: int = sim_out.tick + 1
-    if robo_step > 64:
-      robo_step = 64
-    if sim_robotics_tick_at(robo_step, detail_robo) != 1:
-      return sim_status_invalid_dt()
-  if prof == studio_profile_sim_additive():
-    var detail_am: int = sim_out.output_detail
-    if detail_am > 3:
-      detail_am = 3
-    if sim_additive_tick_stub(detail_am) != 1:
-      return sim_status_invalid_dt()
-  if prof == studio_profile_sim_drug_design():
-    var detail_dr: int = sim_out.output_detail
-    if detail_dr > 3:
-      detail_dr = 3
-    if sim_drug_design_tick_stub(detail_dr) != 1:
-      return sim_status_invalid_dt()
-  if prof == studio_profile_sim_rl():
-    var dt_rl: float = dt0
-    if dt_rl <= 0.0:
-      return sim_status_invalid_dt()
-    var pool: EnvPoolStub = env_pool_stub_default()
-    return env_pool_stub_step(pool, sim_out, dt_rl)
   if prof == studio_profile_game():
-    var dt_game: float = dt0
-    if dt_game <= 0.0:
+    if dt <= 0.0:
       return sim_status_invalid_dt()
-    var tick_hook: int = sim_out.tick
-    var tick_snap: int = sim_out.tick
-    var game_out: GamePhysicsStepOutcome = studio_game_step_hook(dt_game, tick_hook)
-    if game_out.status != sim_status_ok():
+    if studio_game_step_hook(dt) != sim_status_ok():
       return sim_status_invalid_dt()
-    var snap_game: WorldSnapshot = studio_game_world_snapshot_from_physics(tick_snap, game_out.physics_step_count, game_out.body_pz)
-    if world_snapshot_valid(snap_game) != 1:
-      return sim_status_invalid_dt()
-    var dt_step: float = dt0
-    var step_game: int = sim_step(sim_out, dt_step)
-    if step_game != sim_status_ok():
-      return step_game
-    if studio_game_world_checkpoint_fields(sim_out.tick, game_out.physics_step_count, game_out.body_pz) != 1:
-      return sim_status_invalid_dt()
-    return sim_status_ok()
-  var dt_default: float = dt0
-  return sim_step(sim_out, dt_default)
+  return sim_step(sim_out, dt)
 
 def studio_scene_is_empty(scene_entity_count: int) -> int
   requires scene_entity_count >= 0
@@ -1677,7 +1408,7 @@ def studio_inspector_selection_field_count() -> int
 def studio_inspector_field_at(insp_x: float, insp_y: float, insp_w: float, row: int) -> StudioInspectorField
   requires insp_w >= studio_inspector_field_label_width_px()
   requires row >= 0
-  requires row <= 4
+  requires row <= 1
   ensures result.label_rect.w == studio_inspector_field_label_width_px()
   ensures result.value_rect.w >= 0.0
   decreases row
@@ -1689,12 +1420,6 @@ def studio_inspector_field_at(insp_x: float, insp_y: float, insp_w: float, row: 
   var y: float = insp_y + studio_inspector_header_height_px() + pad
   if row0 == 1:
     y = y + row_h + gap
-  if row0 == 2:
-    y = y + (row_h + gap) + (row_h + gap)
-  if row0 == 3:
-    y = y + (row_h + gap) + (row_h + gap) + (row_h + gap)
-  if row0 == 4:
-    y = y + (row_h + gap) + (row_h + gap) + (row_h + gap) + (row_h + gap)
   var label_w: float = studio_inspector_field_label_width_px()
   var value_w: float = insp_w - label_w - (pad * 3.0)
   if value_w < 0.0:
@@ -1738,44 +1463,11 @@ def studio_compose_inspector_selected(layout: StudioShellLayout) -> StudioInspec
   var f1w: float = lay.inspector.w
   out.field0 = studio_inspector_field_at(f0x, f0y, f0w, 0)
   out.field1 = studio_inspector_field_at(f1x, f1y, f1w, 1)
-  out.litl_stage = drug_litl_stage_hypothesis()
-  out.adaptive_row_base = 0
   out.empty_visible = 0
   out.hint_line1_rect = rect_make(0.0, 0.0, 0.0, 0.0)
   out.hint_line2_rect = rect_make(0.0, 0.0, 0.0, 0.0)
   out.hint_box_rect = rect_make(0.0, 0.0, 0.0, 0.0)
   out.field_row_rect = rect_make(0.0, 0.0, 0.0, 0.0)
-  return out
-
-def studio_compose_inspector_drug_litl(layout: StudioShellLayout, litl_tick: int) -> StudioInspectorCompose
-  requires layout.inspector.w >= studio_inspector_width_px()
-  requires litl_tick >= 0
-  ensures result.has_selection == 1
-  ensures result.litl_stage == studio_drug_litl_stage_from_tick(litl_tick)
-  decreases litl_tick
-=
-  var lay: StudioShellLayout = layout
-  var stage: int = studio_drug_litl_stage_from_tick(litl_tick)
-  var row_base: int = studio_adaptive_inspector_row_base(stage)
-  var field_n: int = studio_adaptive_inspector_field_count(stage)
-  var out: StudioInspectorCompose
-  out.rect = lay.inspector
-  out.header_rect = studio_inspector_header_rect_at(lay.inspector.x, lay.inspector.y, lay.inspector.w)
-  out.has_selection = 1
-  out.field_rows = studio_inspector_field_rows()
-  out.field_count = field_n
-  out.litl_stage = stage
-  out.adaptive_row_base = row_base
-  var ix: float = lay.inspector.x
-  var iy: float = lay.inspector.y
-  var iw: float = lay.inspector.w
-  out.field0 = studio_inspector_field_at(ix, iy, iw, row_base)
-  out.field1 = studio_inspector_field_at(ix, iy, iw, row_base + 1)
-  out.empty_visible = 0
-  out.hint_line1_rect = rect_make(0.0, 0.0, 0.0, 0.0)
-  out.hint_line2_rect = rect_make(0.0, 0.0, 0.0, 0.0)
-  out.hint_box_rect = rect_make(0.0, 0.0, 0.0, 0.0)
-  out.field_row_rect = studio_inspector_field_row_rect_at(ix, iy, iw)
   return out
 
 def studio_compose_timeline(layout: StudioShellLayout) -> StudioTimelineCompose
@@ -1805,9 +1497,6 @@ def studio_compose_empty_inspector(layout: StudioShellLayout) -> StudioInspector
   out.header_rect = studio_inspector_header_rect_at(layout.inspector.x, layout.inspector.y, layout.inspector.w)
   out.has_selection = 0
   out.field_rows = 0
-  out.field_count = 0
-  out.litl_stage = drug_litl_stage_hypothesis()
-  out.adaptive_row_base = 0
   out.empty_visible = 1
   var h1x: float = layout.inspector.x
   var h1y: float = layout.inspector.y
@@ -2384,24 +2073,16 @@ def studio_compose_agent_invoke_fields(out: StudioAgentChromeCompose, layout: St
   var agent: StudioAgentChromeCompose = out
   var ts_invoke: int = task_state
   var ts_trace: int = task_state
-  var tid: int = tool_id
-  var lay0: StudioShellLayout = layout
-  var ts_invoke: int = task_state
-  var ts_trace: int = task_state
-  var tid: int = tool_id
   agent.invoke_input_visible = studio_agent_invoke_input_visible(ts_invoke)
-  agent.tool_trace_visible = studio_agent_tool_trace_visible_for(ts_trace, tid)
+  agent.tool_trace_visible = studio_agent_tool_trace_visible_for(ts_trace, tool_id)
   agent.task_input_rect = rect_make(0.0, 0.0, 0.0, 0.0)
   agent.send_rect = rect_make(0.0, 0.0, 0.0, 0.0)
   agent.tool_trace_rect = rect_make(0.0, 0.0, 0.0, 0.0)
   if agent.invoke_input_visible == 1:
-    var lay1: StudioShellLayout = layout
-    agent.send_rect = studio_agent_send_rect_at(lay1.agent_strip.x, lay1.agent_strip.y, lay1.agent_strip.w, lay1.agent_strip.h, agent.cancel_visible)
-    var lay2: StudioShellLayout = layout
-    agent.task_input_rect = studio_agent_task_input_rect_at(lay2.agent_strip.x, lay2.agent_strip.y, lay2.agent_strip.w, lay2.agent_strip.h, agent.send_rect)
+    agent.send_rect = studio_agent_send_rect_at(layout.agent_strip.x, layout.agent_strip.y, layout.agent_strip.w, layout.agent_strip.h, agent.cancel_visible)
+    agent.task_input_rect = studio_agent_task_input_rect_at(layout.agent_strip.x, layout.agent_strip.y, layout.agent_strip.w, layout.agent_strip.h, agent.send_rect)
   if agent.tool_trace_visible == 1:
-    var lay3: StudioShellLayout = layout
-    agent.tool_trace_rect = studio_agent_tool_trace_rect_at(lay3.agent_strip.x, lay3.agent_strip.y, lay3.agent_strip.w, lay3.agent_strip.h, agent.cancel_visible)
+    agent.tool_trace_rect = studio_agent_tool_trace_rect_at(layout.agent_strip.x, layout.agent_strip.y, layout.agent_strip.w, layout.agent_strip.h, agent.cancel_visible)
   return agent
 
 
@@ -2466,22 +2147,17 @@ def studio_compose_agent_chrome(layout: StudioShellLayout, task_state: int, agen
   var ts_error: int = task_state
   var ts_retry: int = task_state
   var ts_prog: int = task_state
-  var ts0: int = task_state
   var ctx0: int = agent_context_label
-  var lay0: StudioShellLayout = layout
   var out: StudioAgentChromeCompose
-  out.rect = lay0.agent_strip
+  out.rect = layout.agent_strip
   out.task_state = ts_cancel
   out.agent_context_label = ctx0
   out.cancel_visible = studio_agent_cancel_visible(ts_cancel)
   out.error_visible = studio_agent_error_visible(ts_error)
   out.retry_visible = studio_agent_retry_visible(ts_retry)
-  var lay1: StudioShellLayout = layout
-  out.cancel_rect = studio_agent_cancel_rect_at(lay1.agent_strip.x, lay1.agent_strip.y, lay1.agent_strip.w, lay1.agent_strip.h)
-  var lay2: StudioShellLayout = layout
-  out.status_rect = studio_agent_status_rect_at(lay2.agent_strip.x, lay2.agent_strip.y, lay2.agent_strip.w, lay2.agent_strip.h, out.cancel_visible)
-  var lay3: StudioShellLayout = layout
-  out.error_strip_rect = studio_agent_error_strip_rect_at(lay3.agent_strip.x, lay3.agent_strip.y, lay3.agent_strip.w, lay3.agent_strip.h)
+  out.cancel_rect = studio_agent_cancel_rect_at(layout.agent_strip.x, layout.agent_strip.y, layout.agent_strip.w, layout.agent_strip.h)
+  out.status_rect = studio_agent_status_rect_at(layout.agent_strip.x, layout.agent_strip.y, layout.agent_strip.w, layout.agent_strip.h, out.cancel_visible)
+  out.error_strip_rect = studio_agent_error_strip_rect_at(layout.agent_strip.x, layout.agent_strip.y, layout.agent_strip.w, layout.agent_strip.h)
   out.progress = studio_compose_agent_progress(ts_prog, out.status_rect)
   out.context_rect = rect_make(0.0, 0.0, 0.0, 0.0)
   if studio_agent_context_visible(ctx0) == 1:
@@ -2490,7 +2166,7 @@ def studio_compose_agent_chrome(layout: StudioShellLayout, task_state: int, agen
   if out.retry_visible == 1:
     out.retry_hint_rect = studio_agent_retry_hint_rect_at(out.error_strip_rect)
   out.tool_request = studio_agent_tool_request_none()
-  return studio_compose_agent_invoke_fields(out, lay0, ts0, studio_mcp_tool_unknown())
+  return studio_compose_agent_invoke_fields(out, layout, task_state, studio_mcp_tool_unknown())
 
 def studio_compose_agent_chrome_with_tool(layout: StudioShellLayout, task_state: int, agent_context_label: int, tool_request: StudioAgentToolRequest) -> StudioAgentChromeCompose
   requires task_state >= studio_agent_task_idle()
@@ -2500,13 +2176,9 @@ def studio_compose_agent_chrome_with_tool(layout: StudioShellLayout, task_state:
   ensures result.tool_request.tool_id == tool_request.tool_id
   decreases task_state
 =
-  var ts0: int = task_state
-  var req_id: int = tool_request.tool_id
-  var lay_chrome: StudioShellLayout = layout
-  var lay_invoke: StudioShellLayout = layout
-  var out: StudioAgentChromeCompose = studio_compose_agent_chrome(lay_chrome, ts0, agent_context_label)
+  var out: StudioAgentChromeCompose = studio_compose_agent_chrome(layout, task_state, agent_context_label)
   out.tool_request = tool_request
-  return studio_compose_agent_invoke_fields(out, lay_invoke, ts0, req_id)
+  return studio_compose_agent_invoke_fields(out, layout, task_state, tool_request.tool_id)
 
 def studio_compose_shell_profile(w: float, h: float, active_dock_slot: int, has_selection: int, active_profile: int) -> StudioShellCompose
   requires w > 0.0
@@ -2521,12 +2193,11 @@ def studio_compose_shell_profile(w: float, h: float, active_dock_slot: int, has_
   ensures result.config.active_profile == active_profile
   decreases active_dock_slot
 =
-  var prof0: int = active_profile
   var out: StudioShellCompose
   var layout: StudioShellLayout = layout_studio_shell_adaptive(w, h)
   out.layout = layout
   var lay: StudioShellLayout = out.layout
-  out.config = studio_project_config_new(prof0)
+  out.config = studio_project_config_new(active_profile)
   out.dock.rect = lay.dock
   out.dock.slot_count = studio_dock_slot_count()
   var slot_dock: int = active_dock_slot
@@ -2550,18 +2221,13 @@ def studio_compose_shell_profile(w: float, h: float, active_dock_slot: int, has_
     out.inspector.hint_box_rect = studio_inspector_empty_hint_box_rect_at(lay.inspector.x, lay.inspector.y, lay.inspector.w, lay.inspector.h)
     out.inspector.field_row_rect = rect_make(0.0, 0.0, 0.0, 0.0)
   if has_selection == 1:
-    if prof0 == studio_profile_sim_drug_design():
-      out.inspector = studio_compose_inspector_drug_litl(lay, 0)
-    if prof0 != studio_profile_sim_drug_design():
-      out.inspector.has_selection = 1
-      out.inspector.field_rows = studio_inspector_field_rows()
-      out.inspector.empty_visible = 0
-      out.inspector.litl_stage = drug_litl_stage_hypothesis()
-      out.inspector.adaptive_row_base = 0
-      out.inspector.hint_line1_rect = rect_make(0.0, 0.0, 0.0, 0.0)
-      out.inspector.hint_line2_rect = rect_make(0.0, 0.0, 0.0, 0.0)
-      out.inspector.hint_box_rect = rect_make(0.0, 0.0, 0.0, 0.0)
-      out.inspector.field_row_rect = studio_inspector_field_row_rect_at(lay.inspector.x, lay.inspector.y, lay.inspector.w)
+    out.inspector.has_selection = 1
+    out.inspector.field_rows = studio_inspector_field_rows()
+    out.inspector.empty_visible = 0
+    out.inspector.hint_line1_rect = rect_make(0.0, 0.0, 0.0, 0.0)
+    out.inspector.hint_line2_rect = rect_make(0.0, 0.0, 0.0, 0.0)
+    out.inspector.hint_box_rect = rect_make(0.0, 0.0, 0.0, 0.0)
+    out.inspector.field_row_rect = studio_inspector_field_row_rect_at(lay.inspector.x, lay.inspector.y, lay.inspector.w)
   out.viewport_empty.frame_rect = lay.viewport
   out.viewport_empty.empty_visible = 1
   out.viewport_empty.title_rect = studio_viewport_empty_title_rect_at(lay.viewport.x, lay.viewport.y, lay.viewport.w, lay.viewport.h)
@@ -2573,24 +2239,6 @@ def studio_compose_shell_profile(w: float, h: float, active_dock_slot: int, has_
   out.palette = studio_compose_palette(lay.viewport_w, lay.viewport_h, studio_palette_closed_flag())
   out.panel = gui_panel_state_new()
   out.loading = studio_shell_loading_state_new()
-  return out
-
-def studio_compose_shell_profile_litl(w: float, h: float, active_dock_slot: int, has_selection: int, active_profile: int, litl_tick: int) -> StudioShellCompose
-  requires w > 0.0
-  requires h > 0.0
-  requires active_dock_slot >= 0
-  requires active_dock_slot < studio_dock_slot_count()
-  requires has_selection >= 0
-  requires has_selection <= 1
-  requires studio_profile_id_valid(active_profile) == 1
-  requires litl_tick >= 0
-  ensures result.config.active_profile == active_profile
-  decreases active_dock_slot
-=
-  var out: StudioShellCompose = studio_compose_shell_profile(w, h, active_dock_slot, has_selection, active_profile)
-  if active_profile == studio_profile_sim_drug_design():
-    if has_selection == 1:
-      out.inspector = studio_compose_inspector_drug_litl(out.layout, litl_tick)
   return out
 
 def studio_compose_shell(w: float, h: float, active_dock_slot: int, has_selection: int, scene_entity_count: int) -> StudioShellCompose
@@ -3239,8 +2887,7 @@ def studio_demo_profile_from_env() -> int raises IO
   decreases 0
 =
   var pid: int = li_rt_studio_demo_profile_from_env()
-  var pid_chk: int = pid
-  if studio_profile_id_valid(pid_chk) != 1:
+  if studio_profile_id_valid(pid) != 1:
     return studio_profile_game()
   return pid
 
@@ -3258,17 +2905,15 @@ def studio_vertical_demo_frame(profile_id: int, frame_id: int) -> int raises IO
   ensures result >= 0
   decreases frame_id
 =
-  var prof0: int = profile_id
-  var fid0: int = frame_id
   var palette_open: int = studio_palette_closed_flag()
-  if fid0 == 2:
+  if frame_id == 2:
     palette_open = studio_palette_open_flag()
   var compose: StudioShellCompose = studio_compose_shell_palette(1280.0, 720.0, 0, 1, palette_open)
-  studio_shell_demo_apply_profile(compose, prof0)
+  studio_shell_demo_apply_profile(compose, profile_id)
   var key_compose: StudioShellCompose = studio_compose_shell_palette(1280.0, 720.0, 0, 1, studio_palette_closed_flag())
-  studio_shell_demo_apply_profile(key_compose, prof0)
+  studio_shell_demo_apply_profile(key_compose, profile_id)
   var input: InputState = input_default()
-  if fid0 == 2:
+  if frame_id == 2:
     input.key_cmd_k = 1
   var _key_action: int = studio_handle_studio_key(key_compose, input)
   var has_sel: int = compose.inspector.has_selection
@@ -3282,26 +2927,22 @@ def studio_vertical_demo_frame(profile_id: int, frame_id: int) -> int raises IO
   var frame: PaintFrame = paint_frame_new()
   studio_paint_shell_chrome(frame, compose)
   var topbar: Rect = compose.layout.topbar
-  studio_paint_topbar_profile(frame, topbar, prof0)
-  var tag_h: float = studio_profile_paint_tag_h(prof0)
+  studio_paint_topbar_profile(frame, topbar, profile_id)
+  var tag_h: float = studio_profile_paint_tag_h(profile_id)
   if frame.last_rect.h != tag_h:
-    return 40 + fid0
+    return 40 + frame_id
   if frame.cmd_count != expected:
-    return 10 + fid0
+    return 10 + frame_id
   if lig_present_host_active() == 1:
     var vp: ViewportRegion = gui_viewport_region_from_layout(compose.layout)
-    var _presented: LigPresentFrame = studio_shell_host_present_loop_tick(vp.w, vp.h, fid0)
-    if studio_present_frame_acceptable(_presented) != 1:
-      return 50 + fid0
-  if lig_present_cpu_framebuffer_active() == 1:
-    if lig_present_host_active() != 1:
-      var vp_cpu: ViewportRegion = gui_viewport_region_from_layout(compose.layout)
-      var _cpu_presented: LigPresentFrame = studio_shell_host_present_loop_tick(vp_cpu.w, vp_cpu.h, fid0)
-      if _cpu_presented.presented != 1:
-        return 52 + fid0
-  if fid0 == 0:
+    var _presented: LigPresentFrame = studio_shell_host_present_loop_tick(vp.w, vp.h, frame_id)
+    if _presented.presented != 1:
+      return 50 + frame_id
+    if _presented.native_pixels != 1:
+      return 51 + frame_id
+  if frame_id == 0:
     return 0
-  if fid0 == 1:
+  if frame_id == 1:
     if play_pct != studio_timeline_playhead_pct():
       return 21
     return 0
@@ -3363,16 +3004,15 @@ def studio_shell_host_frame(compose: StudioShellCompose, frame_id: int) -> int r
   ensures result >= 0
   decreases frame_id
 =
-  var fid0: int = frame_id
-  var shell: StudioShellCompose = compose
   var input: InputState = studio_shell_input_from_host()
-  var _action: int = studio_handle_studio_key(shell, input)
-  var vp: ViewportRegion = gui_viewport_region_from_layout(shell.layout)
-  var _presented: LigPresentFrame = studio_shell_host_present_loop_tick(vp.w, vp.h, fid0)
+  var key_compose: StudioShellCompose = compose
+  var _action: int = studio_handle_studio_key(key_compose, input)
+  var vp: ViewportRegion = gui_viewport_region_from_layout(compose.layout)
+  var _presented: LigPresentFrame = studio_shell_host_present_loop_tick(vp.w, vp.h, frame_id)
   if _presented.presented != 1:
     return 20
   var frame: PaintFrame = paint_frame_new()
-  studio_paint_shell_chrome(frame, shell)
+  studio_paint_shell_chrome(frame, compose)
   if frame.cmd_count < 1:
     return 30
   return 0

@@ -1306,6 +1306,16 @@ def studio_apply_profile_to_sim(config: StudioProjectConfig, sim_out: var SimSes
   var prof0: int = config.active_profile
   sim_session_apply_studio_profile(prof0, sim_out)
 
+# PH-SIM SIM-3 — RL profile: env pool batches sim_step on the studio session (contract stub, not PH-ML async).
+def studio_sim_rl_step_hook(sim_out: var SimSessionStub, dt: float) -> int
+  requires sim_out.tick >= 0
+  requires sim_out.replay_capacity > 0
+  ensures result >= 0
+  ensures result <= 1
+  decreases sim_out.tick
+=
+  return sim_rl_session_env_pool_step(sim_out, dt)
+
 # PH-SIM vertical gap #4 — game profile: physics.runtime substep placeholder (no scene sync yet).
 def studio_game_step_hook(frame_dt: float) -> int
   requires frame_dt > 0.0
@@ -1415,8 +1425,9 @@ def studio_sim_step_hook(config: StudioProjectConfig, sim_out: var SimSessionStu
     if sim_scientific_tick_stub(detail_hook) != 1:
       return sim_status_invalid_dt()
   if prof == studio_profile_sim_rl():
-    if sim_rl_tick_stub(detail_hook) != 1:
+    if dt <= 0.0:
       return sim_status_invalid_dt()
+    return studio_sim_rl_step_hook(sim_out, dt)
   if prof == studio_profile_sim_automotive():
     if sim_automotive_tick_stub(detail_hook) != 1:
       return sim_status_invalid_dt()

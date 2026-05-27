@@ -37,4 +37,11 @@ def main() -> int
     return 40
   if rl_sess.sim_contract_id != sim_contract_sim_rl():
     return 41
+  var rl_pool_sz: int = sim_rl_env_pool_size_default()
+  if rl_sess.tick != rl_pool_sz:
+    return 42
+  if sim_session_replay_last_tick(rl_sess) != rl_pool_sz:
+    return 43
+  if rl_sess.last_dt != 0.01:
+    return 44
   return 0

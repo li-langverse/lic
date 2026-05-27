@@ -230,6 +230,13 @@ int32_t li_rt_studio_viewport_error_set_mock(int32_t kind);
 int32_t li_rt_studio_viewport_error_retry(void);
 int32_t li_rt_studio_mcp_tool_from_name(const char* name);
 const char* li_rt_studio_mcp_tool_name(int32_t tool_id);
+int32_t li_rt_studio_viewport_display_bg(void);
+int32_t li_rt_studio_viewport_display_set_bg(int32_t bg);
+int32_t li_rt_studio_viewport_display_particle_tier(void);
+int32_t li_rt_studio_viewport_display_set_particle_tier(int32_t tier_id);
+int32_t li_rt_studio_viewport_display_biomol_style(void);
+int32_t li_rt_studio_viewport_display_set_biomol_style(int32_t style);
+int32_t li_rt_studio_viewport_display_reset_defaults(int32_t profile_id);
 int32_t li_rt_lig_host_present_active(void);
 float li_rt_lig_host_present_dt_ms(void);
 int32_t li_rt_lig_host_native_pixels(void);
@@ -248,6 +255,7 @@ int32_t li_rt_studio_shell_input_key_digit(void);
 int32_t li_rt_studio_host_present_tick(int32_t viewport_w, int32_t viewport_h);
 int32_t li_rt_studio_demo_profile_from_env(void);
 int32_t li_rt_studio_demo_frames_from_env(void);
+int32_t li_rt_studio_demo_loop_tick_from_env(void);
 
 
 /* PH-HW HW-0: lig device layer. */
@@ -267,7 +275,7 @@ const char* li_rt_lig_capability_json(void);
 int32_t li_rt_lig_parse_toml_backend_line(const char* line);
 int32_t li_rt_lig_present_surface_ok(void);
 
-/* PH-GD-2: li-world text save/load seam (in-memory buffer; no filesystem I/O). */
+/* PH-GD-2: li-world text save/load (buffer + single-line world.li file I/O). */
 int32_t li_rt_world_format_version(void);
 const char* li_rt_world_serialize_slot(int32_t name_slot, int32_t tick, int32_t entity_count);
 int32_t li_rt_world_parse_line(const char* line);
@@ -277,3 +285,8 @@ int32_t li_rt_world_parsed_entity_count(void);
 int32_t li_rt_world_snapshot_eq_fields(int32_t an, int32_t at, int32_t ae, int32_t bn, int32_t bt,
                                        int32_t be);
 int32_t li_rt_world_roundtrip_fields(int32_t name_slot, int32_t tick, int32_t entity_count);
+int32_t li_rt_world_write_path(const char* path, int32_t name_slot, int32_t tick, int32_t entity_count);
+int32_t li_rt_world_read_path(const char* path);
+int32_t li_rt_world_file_roundtrip_path(const char* path, int32_t name_slot, int32_t tick,
+                                        int32_t entity_count);
+const char* li_rt_world_checkpoint_path_default(void);

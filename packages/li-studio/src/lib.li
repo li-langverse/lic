@@ -43,6 +43,51 @@ extern proc li_rt_studio_viewport_error_retry() raises IO -> int
   ensures result >= 0
   decreases 0
 
+# PH-UX viewport display — background / MD tier / biomol style (CPU paint_blit; not wgpu PDB).
+extern proc li_rt_studio_viewport_display_bg() raises IO -> int
+  requires true
+  ensures result >= 0
+  ensures result <= 2
+  decreases 0
+
+extern proc li_rt_studio_viewport_display_set_bg(bg: int) raises IO -> int
+  requires bg >= 0
+  requires bg <= 2
+  ensures result >= 0
+  ensures result <= 2
+  decreases bg
+
+extern proc li_rt_studio_viewport_display_particle_tier() raises IO -> int
+  requires true
+  ensures result >= -1
+  ensures result <= 2
+  decreases 0
+
+extern proc li_rt_studio_viewport_display_set_particle_tier(tier_id: int) raises IO -> int
+  requires tier_id >= -1
+  requires tier_id <= 2
+  ensures result >= -1
+  ensures result <= 2
+  decreases tier_id
+
+extern proc li_rt_studio_viewport_display_biomol_style() raises IO -> int
+  requires true
+  ensures result >= 0
+  ensures result <= 2
+  decreases 0
+
+extern proc li_rt_studio_viewport_display_set_biomol_style(style: int) raises IO -> int
+  requires style >= 0
+  requires style <= 2
+  ensures result >= 0
+  ensures result <= 2
+  decreases style
+
+extern proc li_rt_studio_viewport_display_reset_defaults(profile_id: int) raises IO -> int
+  requires profile_id >= 0
+  ensures result == 1
+  decreases profile_id
+
 # PH-HW WP3 — shell input + present host bridge (SDL/wgpu on aarch64-apple-darwin).
 extern proc li_rt_studio_shell_input_pointer_down() -> int
   requires true
@@ -94,6 +139,11 @@ extern proc li_rt_studio_demo_frames_from_env() -> int
   requires true
   ensures result >= 1
   ensures result <= 64
+  decreases 0
+
+extern proc li_rt_studio_demo_loop_tick_from_env() -> int
+  requires true
+  ensures result >= 0
   decreases 0
 
 
@@ -387,12 +437,33 @@ def studio_mcp_studio_adaptive_layout() -> int
 =
   return 8
 
-def studio_mcp_tool_count() -> int
+def studio_mcp_set_viewport_background() -> int
   requires true
-  ensures result == 8
+  ensures result == 9
   decreases 0
 =
-  return 8
+  return 9
+
+def studio_mcp_set_particle_display() -> int
+  requires true
+  ensures result == 10
+  decreases 0
+=
+  return 10
+
+def studio_mcp_set_biomol_style() -> int
+  requires true
+  ensures result == 11
+  decreases 0
+=
+  return 11
+
+def studio_mcp_tool_count() -> int
+  requires true
+  ensures result == 11
+  decreases 0
+=
+  return 11
 
 def studio_mcp_tool_id_valid(tool_id: int) -> int
   requires true
@@ -417,6 +488,12 @@ def studio_mcp_tool_id_valid(tool_id: int) -> int
   if tool_id == studio_mcp_chem_dft_run():
     return 1
   if tool_id == studio_mcp_studio_adaptive_layout():
+    return 1
+  if tool_id == studio_mcp_set_viewport_background():
+    return 1
+  if tool_id == studio_mcp_set_particle_display():
+    return 1
+  if tool_id == studio_mcp_set_biomol_style():
     return 1
   return 0
 
@@ -579,6 +656,10 @@ def studio_compose_shell_drug_litl(w: float, h: float, tick: int, has_selection:
   out.layout = layout
   if has_selection == 1:
     out.inspector.field_rows = studio_drug_litl_inspector_field_rows(stage)
+  studio_viewport_display_reset_for_profile(studio_profile_sim_drug_design())
+  out.scene_entity_count = 1
+  out.viewport_empty.empty_visible = 0
+  studio_attach_viewport_shell(out)
   return out
 
 def li_std_studio_version() -> int
@@ -1365,6 +1446,26 @@ def studio_game_world_checkpoint_stub(snapshot: WorldSnapshot) -> int
     return 0
   return 1
 
+def studio_game_world_checkpoint_path() raises Alloc, IO -> str
+  requires true
+  ensures result != ""
+  decreases 0
+=
+  return world_checkpoint_path_default()
+
+def studio_game_world_checkpoint_file_roundtrip(session: SimSessionStub, path: str) raises Alloc, IO -> int
+  requires session.tick >= 0
+  ensures result >= 0
+  ensures result <= 1
+  decreases session.tick
+=
+  var snap: WorldSnapshot = studio_game_world_checkpoint_from_session(session)
+  if studio_game_world_checkpoint_stub(snap) != 1:
+    return 0
+  if world_file_roundtrip_ok(snap, path) != 1:
+    return 0
+  return 1
+
 def studio_game_world_checkpoint_roundtrip(session: SimSessionStub) raises Alloc, IO -> int
   requires session.tick >= 0
   ensures result >= 0
@@ -1381,6 +1482,9 @@ def studio_game_world_checkpoint_roundtrip(session: SimSessionStub) raises Alloc
   if studio_game_world_checkpoint_stub(loaded) != 1:
     return 0
   if world_snapshot_fields_match(snap, loaded) != 1:
+    return 0
+  var path: str = studio_game_world_checkpoint_path()
+  if studio_game_world_checkpoint_file_roundtrip(session, path) != 1:
     return 0
   return 1
 
@@ -2655,6 +2759,123 @@ def studio_paint_viewport_scene_cmds() -> int
 =
   return 1
 
+def studio_paint_viewport_display_bg_cmds(background: int) -> int
+  requires background >= studio_viewport_bg_solid()
+  requires background <= studio_viewport_bg_gradient()
+  ensures result >= 0
+  ensures result <= 2
+  decreases background
+=
+  if background == studio_viewport_bg_gradient():
+    return 2
+  if background == studio_viewport_bg_solid():
+    return 1
+  return 0
+
+def studio_paint_viewport_display_cmds(display: StudioViewportDisplayCompose) -> int
+  requires display.background >= studio_viewport_bg_solid()
+  requires display.background <= studio_viewport_bg_gradient()
+  ensures result >= 0
+  decreases display.background
+=
+  var n: int = studio_paint_viewport_display_bg_cmds(display.background)
+  if display.particle_dots_visible == 1:
+    n = n + studio_viewport_display_particle_dot_count()
+  if display.tier_particles > 0:
+    n = n + 1
+  n = n + 1
+  return n
+
+def studio_paint_viewport_menu_cmds(menu: StudioViewportMenuCompose) -> int
+  requires true
+  ensures result >= 0
+  ensures result <= 3
+  decreases menu.menu_visible
+=
+  if menu.menu_visible != 1:
+    return 0
+  return 3
+
+def studio_viewport_display_bg_color(background: int) -> Color
+  requires background >= studio_viewport_bg_solid()
+  requires background <= studio_viewport_bg_gradient()
+  decreases background
+=
+  if background == studio_viewport_bg_gradient():
+    return color_rgb(0.04, 0.06, 0.12, 1.0)
+  if background == studio_viewport_bg_grid():
+    return color_rgb(0.05, 0.07, 0.10, 1.0)
+  return color_rgb(0.051, 0.067, 0.090, 1.0)
+
+def studio_viewport_display_biomol_color(style: int) -> Color
+  requires style >= studio_biomol_style_cartoon()
+  requires style <= studio_biomol_style_sticks()
+  decreases style
+=
+  if style == studio_biomol_style_surface():
+    return studio_color_accent_violet()
+  if style == studio_biomol_style_sticks():
+    return studio_color_accent_mint()
+  return studio_color_accent_cyan()
+
+def studio_paint_viewport_display(frame: var PaintFrame, vp: Rect, display: StudioViewportDisplayCompose) -> unit
+  requires frame.cmd_count >= 0
+  requires vp.w >= 0.0
+  requires vp.h >= 0.0
+  ensures frame.cmd_count == old(frame.cmd_count) + studio_paint_viewport_display_cmds(display)
+  decreases display.background
+=
+  var bg_n: int = studio_paint_viewport_display_bg_cmds(display.background)
+  if bg_n >= 1:
+    frame.cmd_count = frame.cmd_count + 1
+    frame.last_kind = paint_op_fill_rect()
+    frame.last_rect = vp
+    frame.last_color = studio_viewport_display_bg_color(display.background)
+  if display.background == studio_viewport_bg_gradient():
+    frame.cmd_count = frame.cmd_count + 1
+    frame.last_kind = paint_op_fill_rect()
+    var band: Rect = rect_make(vp.x, vp.y, vp.w, vp.h * 0.35)
+    frame.last_rect = band
+    frame.last_color = color_rgb(0.08, 0.10, 0.18, 1.0)
+  if display.particle_dots_visible == 1:
+    var i: int = 0
+    while i < studio_viewport_display_particle_dot_count():
+      var dot: Rect = studio_viewport_display_particle_dot_rect_at(vp, i)
+      frame.cmd_count = frame.cmd_count + 1
+      frame.last_kind = paint_op_fill_rect()
+      frame.last_rect = dot
+      frame.last_color = studio_color_accent_amber()
+      i = i + 1
+  if display.tier_particles > 0:
+    frame.cmd_count = frame.cmd_count + 1
+    frame.last_kind = paint_op_fill_rect()
+    frame.last_rect = display.tier_label_rect
+    frame.last_color = studio_color_border()
+  frame.cmd_count = frame.cmd_count + 1
+  frame.last_kind = paint_op_stroke_rect()
+  frame.last_rect = display.biomol_chip_rect
+  frame.last_color = studio_viewport_display_biomol_color(display.biomol_style)
+
+def studio_paint_viewport_menu(frame: var PaintFrame, menu: StudioViewportMenuCompose) -> unit
+  requires frame.cmd_count >= 0
+  ensures frame.cmd_count == old(frame.cmd_count) + studio_paint_viewport_menu_cmds(menu)
+  decreases menu.menu_visible
+=
+  if menu.menu_visible != 1:
+    return
+  frame.cmd_count = frame.cmd_count + 1
+  frame.last_kind = paint_op_stroke_rect()
+  frame.last_rect = menu.bg_btn
+  frame.last_color = studio_color_accent_cyan()
+  frame.cmd_count = frame.cmd_count + 1
+  frame.last_kind = paint_op_stroke_rect()
+  frame.last_rect = menu.particle_btn
+  frame.last_color = studio_color_accent_amber()
+  frame.cmd_count = frame.cmd_count + 1
+  frame.last_kind = paint_op_stroke_rect()
+  frame.last_rect = menu.biomol_btn
+  frame.last_color = studio_color_accent_violet()
+
 
 def studio_paint_dock(frame: var PaintFrame, dock: StudioDockCompose) -> unit
   requires frame.cmd_count >= 0
@@ -2766,19 +2987,18 @@ def studio_paint_compose_panels_count(has_selection: int) -> int
 =
   return studio_paint_dock_cmds() + studio_paint_outliner_cmds(studio_outliner_demo_node_count()) + studio_paint_timeline_cmds() + studio_paint_inspector_cmds(has_selection)
 
-def studio_shell_viewport_cmds(scene_entity_count: int, viewport_error_kind: int) -> int
+def studio_shell_viewport_cmds(scene_entity_count: int, viewport_error_kind: int, display: StudioViewportDisplayCompose, menu: StudioViewportMenuCompose) -> int
   requires scene_entity_count >= 0
   requires viewport_error_kind >= studio_viewport_error_none()
   requires viewport_error_kind <= studio_err_missing_asset()
   ensures result >= 1
-  ensures result <= 3
   decreases viewport_error_kind
 =
   if studio_viewport_error_visible(viewport_error_kind) == 1:
     return studio_paint_viewport_error_cmds()
   if scene_entity_count == 0:
     return studio_paint_viewport_empty_cmds()
-  return studio_paint_viewport_scene_cmds()
+  return studio_paint_viewport_scene_cmds() + studio_paint_viewport_display_cmds(display) + studio_paint_viewport_menu_cmds(menu)
 
 def studio_shell_chrome_count(has_selection: int, scene_entity_count: int, task_state: int) -> int
   requires has_selection >= 0
@@ -2815,7 +3035,9 @@ def studio_shell_chrome_count_palette(has_selection: int, scene_entity_count: in
   var ts0: int = task_state
   var pal0: int = palette_open
   var ctx0: int = agent_context_label
-  return studio_paint_compose_panels_count(sel0) + 1 + studio_paint_topbar_profile_cmds() + studio_shell_viewport_cmds(scene0, viewport_error_kind) + studio_paint_agent_cmds(ts0, ctx0) + studio_paint_palette_cmds(pal0)
+  var disp0: StudioViewportDisplayCompose = studio_viewport_display_compose_new()
+  var menu0: StudioViewportMenuCompose = studio_viewport_menu_compose_new()
+  return studio_paint_compose_panels_count(sel0) + 1 + studio_paint_topbar_profile_cmds() + studio_shell_viewport_cmds(scene0, viewport_error_kind, disp0, menu0) + studio_paint_agent_cmds(ts0, ctx0) + studio_paint_palette_cmds(pal0)
 
 
 def studio_paint_shell_chrome(frame: var PaintFrame, compose: StudioShellCompose) -> unit
@@ -3135,6 +3357,13 @@ def studio_shell_demo_frame_budget() -> int raises IO
 =
   return li_rt_studio_demo_frames_from_env()
 
+def studio_shell_demo_loop_tick_start() -> int raises IO
+  requires true
+  ensures result >= 0
+  decreases 0
+=
+  return li_rt_studio_demo_loop_tick_from_env()
+
 def studio_shell_demo_pattern_index(loop_tick: int) -> int
   requires loop_tick >= 0
   ensures result >= 0
@@ -3150,21 +3379,22 @@ def studio_shell_demo_pattern_index(loop_tick: int) -> int
   var prev: int = loop_tick - 3
   return studio_shell_demo_pattern_index(prev)
 
-def studio_shell_demo_present_loop_rec(loop_tick: int, budget: int) -> int raises IO
-  requires loop_tick >= 0
+def studio_shell_demo_present_loop_rec(i: int, budget: int, base_tick: int) -> int raises IO
+  requires i >= 0
   requires budget >= 1
   requires budget <= 64
-  requires loop_tick <= budget
+  requires base_tick >= 0
+  requires i <= budget
   ensures result >= 0
-  decreases budget - loop_tick
+  decreases budget - i
 =
-  if loop_tick >= budget:
+  if i >= budget:
     return 0
-  var pattern: int = studio_shell_demo_pattern_index(loop_tick)
+  var pattern: int = studio_shell_demo_pattern_index(base_tick + i)
   var r: int = studio_shell_demo_frame(pattern)
   if r != 0:
-    return 100 + loop_tick * 10 + r
-  return studio_shell_demo_present_loop_rec(loop_tick + 1, budget)
+    return 100 + i * 10 + r
+  return studio_shell_demo_present_loop_rec(i + 1, budget, base_tick)
 
 def studio_shell_demo_present_loop() -> int raises IO
   requires true
@@ -3172,7 +3402,8 @@ def studio_shell_demo_present_loop() -> int raises IO
   decreases 0
 =
   var budget: int = studio_shell_demo_frame_budget()
-  return studio_shell_demo_present_loop_rec(0, budget)
+  var base_tick: int = studio_shell_demo_loop_tick_start()
+  return studio_shell_demo_present_loop_rec(0, budget, base_tick)
 
 # PH-HW WP3 — InputState from studio-shell-input-bridge runtime (SDL or mock).
 def studio_shell_input_from_host() -> InputState raises IO

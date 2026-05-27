@@ -17,6 +17,7 @@
 
 ### Added
 
+- **Demo loop tick** — `STUDIO_DEMO_LOOP_TICK` / `li_rt_studio_demo_loop_tick_from_env`; interactive `studio-shell-demo-interactive.sh` cycles patterns 0→1→2; smoke `studio_shell_demo_pattern_tick.li`.
 - **PH-HW WP3 host present** — `studio_shell_input_from_host`, `studio_shell_host_frame`, `studio_shell_host_present_loop_tick`; `li_std_studio_version` → 6; smoke `studio_host_present.li`.
 - **`li-studio-demo` present loop** — `studio_shell_demo_present_loop`, `STUDIO_DEMO_FRAMES`, host input on `studio_vertical_demo_frame`; `scripts/studio-shell-demo-present-loop.sh`; smoke `studio_shell_demo_present_loop.li`.
 - **PH-SIM SIM-1** — `studio_sim_step_hook` (profile sync + `sim_step` tick stub).

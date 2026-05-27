@@ -360,6 +360,15 @@ static int32_t li_rt_studio_mcp_tool_match_name(const char* name) {
   if (li_rt_str_eq(name, "studio_adaptive_layout")) {
     return 8;
   }
+  if (li_rt_str_eq(name, "studio_set_viewport_background")) {
+    return 9;
+  }
+  if (li_rt_str_eq(name, "studio_set_particle_display")) {
+    return 10;
+  }
+  if (li_rt_str_eq(name, "studio_set_biomol_style")) {
+    return 11;
+  }
   return 0;
 }
 
@@ -385,9 +394,67 @@ const char* li_rt_studio_mcp_tool_name(int32_t tool_id) {
       return "chem_dft_run";
     case 8:
       return "studio_adaptive_layout";
+    case 9:
+      return "studio_set_viewport_background";
+    case 10:
+      return "studio_set_particle_display";
+    case 11:
+      return "studio_set_biomol_style";
     default:
       return "";
   }
+}
+
+/* PH-UX viewport display — CPU paint_blit placeholders (not wgpu MD/PDB). */
+static int32_t g_studio_viewport_bg = 0;
+static int32_t g_studio_viewport_particle_tier = -1;
+static int32_t g_studio_viewport_biomol_style = 0;
+
+int32_t li_rt_studio_viewport_display_bg(void) { return g_studio_viewport_bg; }
+
+int32_t li_rt_studio_viewport_display_set_bg(int32_t bg) {
+  if (bg < 0 || bg > 2) {
+    return g_studio_viewport_bg;
+  }
+  g_studio_viewport_bg = bg;
+  return g_studio_viewport_bg;
+}
+
+int32_t li_rt_studio_viewport_display_particle_tier(void) { return g_studio_viewport_particle_tier; }
+
+int32_t li_rt_studio_viewport_display_set_particle_tier(int32_t tier_id) {
+  if (tier_id < -1 || tier_id > 2) {
+    return g_studio_viewport_particle_tier;
+  }
+  g_studio_viewport_particle_tier = tier_id;
+  return g_studio_viewport_particle_tier;
+}
+
+int32_t li_rt_studio_viewport_display_biomol_style(void) { return g_studio_viewport_biomol_style; }
+
+int32_t li_rt_studio_viewport_display_set_biomol_style(int32_t style) {
+  if (style < 0 || style > 2) {
+    return g_studio_viewport_biomol_style;
+  }
+  g_studio_viewport_biomol_style = style;
+  return g_studio_viewport_biomol_style;
+}
+
+int32_t li_rt_studio_viewport_display_reset_defaults(int32_t profile_id) {
+  g_studio_viewport_bg = 0;
+  g_studio_viewport_particle_tier = -1;
+  g_studio_viewport_biomol_style = 0;
+  if (profile_id == 6) {
+    g_studio_viewport_bg = 1;
+    g_studio_viewport_particle_tier = 1;
+    g_studio_viewport_biomol_style = 0;
+  }
+  if (profile_id == 7) {
+    g_studio_viewport_bg = 2;
+    g_studio_viewport_particle_tier = 0;
+    g_studio_viewport_biomol_style = 1;
+  }
+  return 1;
 }
 
 static int32_t g_studio_timeline_playing = 0;
@@ -503,6 +570,30 @@ int32_t li_rt_studio_demo_frames_from_env(void) {
     return 64;
   }
   return (int32_t)n;
+}
+
+static int32_t li_rt_studio_env_flag_one(const char* name);
+
+static int32_t g_studio_demo_loop_tick = 0;
+
+int32_t li_rt_studio_demo_loop_tick_from_env(void) {
+  const char* v = getenv("STUDIO_DEMO_LOOP_TICK");
+  if (v != NULL && v[0] != '\0') {
+    const int n = atoi(v);
+    if (n < 0) {
+      return 0;
+    }
+    if (n > 1000000) {
+      return 1000000;
+    }
+    return (int32_t)n;
+  }
+  if (li_rt_studio_env_flag_one("STUDIO_DEMO_LOOP_AUTO")) {
+    const int32_t t = g_studio_demo_loop_tick;
+    g_studio_demo_loop_tick = (t >= 1000000) ? 0 : t + 1;
+    return t;
+  }
+  return 0;
 }
 
 static int32_t li_rt_studio_env_flag_one(const char* name) {
@@ -974,6 +1065,84 @@ int32_t li_rt_world_roundtrip_fields(int32_t name_slot, int32_t tick, int32_t en
     return 0;
   }
   return 1;
+}
+
+static int32_t li_rt_world_path_safe(const char* path) {
+  if (path == NULL || path[0] == '\0') {
+    return 0;
+  }
+  if (strstr(path, "..") != NULL) {
+    return 0;
+  }
+  return 1;
+}
+
+int32_t li_rt_world_write_path(const char* path, int32_t name_slot, int32_t tick, int32_t entity_count) {
+  if (!li_rt_world_path_safe(path)) {
+    return 0;
+  }
+  const char* line = li_rt_world_serialize_slot(name_slot, tick, entity_count);
+  FILE* f = fopen(path, "w");
+  if (f == NULL) {
+    return 0;
+  }
+  if (fprintf(f, "%s\n", line) < 0) {
+    fclose(f);
+    return 0;
+  }
+  if (fclose(f) != 0) {
+    return 0;
+  }
+  return 1;
+}
+
+int32_t li_rt_world_read_path(const char* path) {
+  if (!li_rt_world_path_safe(path)) {
+    return 0;
+  }
+  FILE* f = fopen(path, "r");
+  if (f == NULL) {
+    return 0;
+  }
+  char buf[LI_RT_WORLD_LINE_MAX];
+  if (fgets(buf, sizeof(buf), f) == NULL) {
+    fclose(f);
+    return 0;
+  }
+  fclose(f);
+  size_t n = strlen(buf);
+  while (n > 0 && (buf[n - 1] == '\n' || buf[n - 1] == '\r')) {
+    buf[--n] = '\0';
+  }
+  return li_rt_world_parse_line(buf);
+}
+
+int32_t li_rt_world_file_roundtrip_path(const char* path, int32_t name_slot, int32_t tick,
+                                        int32_t entity_count) {
+  if (li_rt_world_write_path(path, name_slot, tick, entity_count) != 1) {
+    return 0;
+  }
+  if (li_rt_world_read_path(path) != 1) {
+    return 0;
+  }
+  if (li_rt_world_parsed.name_slot != name_slot) {
+    return 0;
+  }
+  if (li_rt_world_parsed.tick != tick) {
+    return 0;
+  }
+  if (li_rt_world_parsed.entity_count != entity_count) {
+    return 0;
+  }
+  return 1;
+}
+
+const char* li_rt_world_checkpoint_path_default(void) {
+  const char* v = getenv("LI_WORLD_CHECKPOINT_PATH");
+  if (v != NULL && v[0] != '\0' && li_rt_world_path_safe(v)) {
+    return v;
+  }
+  return "/tmp/li_world_checkpoint.li";
 }
 
 int32_t li_rt_path_exact(const char* path, const char* want) {

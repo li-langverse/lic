@@ -23,9 +23,45 @@ def li_sim_additive_studio_profile_id() -> int
 =
   return 5
 
+# PH-AM-0 — slicer workflow stage gate (slice → preview → export).
+def sim_additive_slicer_stage_ok(detail: int, stage: int) -> int
+  requires detail >= 0
+  requires detail <= 3
+  requires stage >= 0
+  requires stage <= 3
+  ensures result >= 0
+  ensures result <= 1
+  decreases 0
+=
+  if stage > detail + 1:
+    return 0
+  return 1
+
+def sim_additive_tick_at(detail: int) -> int
+  requires detail >= 0
+  requires detail <= 3
+  ensures result >= 0
+  ensures result <= 1
+  decreases 0
+=
+  if sim_additive_slicer_stage_ok(detail, 2) != 1:
+    return 0
+  return 1
+
+def sim_additive_tick_stub(detail: int) -> int
+  requires detail >= 0
+  requires detail <= 3
+  ensures result >= 0
+  ensures result <= 1
+  decreases 0
+=
+  return sim_additive_tick_at(detail)
+
 def run_additive_smoke() -> int
   requires true
   ensures result == 0
   decreases 0
 =
+  if sim_additive_tick_stub(2) != 1:
+    return 1
   return 0

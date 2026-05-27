@@ -1,0 +1,23 @@
+import sim.scientific
+
+def main() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  if sim_scientific_tick_at(1, 1) != 1:
+    return 1
+  if sim_scientific_tick_at(4, 2) != 1:
+    return 2
+  var r: SimRunResult = run_multi_physics_at_step(2, 0)
+  if run_result_ok(r) != 1:
+    return 3
+  if r.checksum <= 0.0:
+    return 4
+  var md: SimRunResult = run_md_lj_smoke(0)
+  var heat: SimRunResult = run_heat_smoke(0)
+  var rigid: SimRunResult = run_rigid_smoke(0)
+  var expect: float = sim_scientific_checksum_combine(md.checksum, heat.checksum, rigid.checksum, 2)
+  if r.checksum != expect:
+    return 5
+  return 0

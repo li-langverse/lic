@@ -8,7 +8,7 @@ All notable changes to Li are documented here. The format follows
 
 ### Added
 
-- **PH-GD-2 game checkpoint roundtrip** — `studio_game_world_checkpoint_roundtrip` in `li-studio` (depends on `li-world`); smoke `studio_game_step_hook.li` — [2026-05-27-vertical-game-checkpoint-roundtrip.md](docs/release-notes/2026-05-27-vertical-game-checkpoint-roundtrip.md).
+- **WP-SCI-01 multi-physics scientific tick** — `sim_scientific_tick_at`, `run_multi_physics_at_step`, `sim_scientific_checksum_combine` in `packages/li-sim-scientific`; smoke `multi_physics_tick.li`.
 
 - **Linguist WP1 — Li TextMate grammar:** `contrib/li-grammar/` (`.li` syntax, VS Code/Cursor extension manifest, smoke script); install pointer `contrib/li-vscode/` — [2026-05-25-linguist-wp1-grammar.md](docs/release-notes/2026-05-25-linguist-wp1-grammar.md).
 

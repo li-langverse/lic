@@ -48,6 +48,23 @@ extern proc li_rt_lig_present_blit_rgba8(viewport_w: int, viewport_h: int, profi
   ensures result <= 1
   decreases viewport_w
 
+extern proc li_rt_lig_wgpu_readback_active() -> int
+  requires true
+  ensures result >= 0
+  ensures result <= 1
+  decreases 0
+
+extern proc li_rt_lig_wgpu_readback_stub(viewport_w: int, viewport_h: int, profile_id: int, paint_cmd_count: int, tag_h_px: int) -> int
+  requires viewport_w >= 0
+  requires viewport_h >= 0
+  requires profile_id >= 0
+  requires profile_id <= 7
+  requires paint_cmd_count >= 0
+  requires tag_h_px >= 0
+  ensures result >= 0
+  ensures result <= 1
+  decreases viewport_w
+
 def li_std_lig_present_version() -> int
   requires true
   ensures result == 2
@@ -89,6 +106,21 @@ def lig_kernel_present_blit_rgba8() -> int
   decreases 0
 =
   return 3
+
+def lig_kernel_present_wgpu_readback() -> int
+  requires true
+  ensures result == 4
+  decreases 0
+=
+  return 4
+
+def lig_present_wgpu_readback_active() -> int raises IO
+  requires true
+  ensures result >= 0
+  ensures result <= 1
+  decreases 0
+=
+  return li_rt_lig_wgpu_readback_active()
 
 def lig_backend_webgpu() -> int
   requires true
@@ -222,6 +254,25 @@ def lig_present_blit_profile_tag_h_px(profile_id: int) -> int
     return 26
   return 27
 
+def lig_present_wgpu_readback_paint_summary(vp_w: float, vp_h: float, profile_id: int, paint_cmd_count: int) -> int raises IO
+  requires vp_w >= 0.0
+  requires vp_h >= 0.0
+  requires profile_id >= 1
+  requires profile_id <= 7
+  requires paint_cmd_count >= 0
+  ensures result >= 0
+  ensures result <= 1
+  decreases paint_cmd_count
+=
+  var iw: int = 0
+  var ih: int = 0
+  if vp_w >= 64.0:
+    iw = 1280
+  if vp_h >= 36.0:
+    ih = 720
+  var tag_i: int = lig_present_blit_profile_tag_h_px(profile_id)
+  return li_rt_lig_wgpu_readback_stub(iw, ih, profile_id, paint_cmd_count, tag_i)
+
 def lig_present_blit_paint_summary(vp_w: float, vp_h: float, profile_id: int, paint_cmd_count: int) -> int raises IO
   requires vp_w >= 0.0
   requires vp_h >= 0.0
@@ -232,6 +283,8 @@ def lig_present_blit_paint_summary(vp_w: float, vp_h: float, profile_id: int, pa
   ensures result <= 1
   decreases paint_cmd_count
 =
+  if lig_present_wgpu_readback_active() == 1:
+    return lig_present_wgpu_readback_paint_summary(vp_w, vp_h, profile_id, paint_cmd_count)
   var iw: int = 0
   var ih: int = 0
   if vp_w >= 64.0:

@@ -1459,3 +1459,9 @@ suite = "smoke"
 file = "packages/lig/li-tests/smoke/present_blit_rgba8.li"
 outcome = "compile_open_ok"
 note = "T-PKG-lig-present-blit"
+
+[[tests]]
+suite = "smoke"
+file = "packages/lig/li-tests/smoke/present_wgpu_readback_stub.li"
+outcome = "compile_open_ok"
+note = "T-PKG-lig-present-wgpu-readback"

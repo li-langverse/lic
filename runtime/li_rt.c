@@ -507,6 +507,11 @@ static int32_t li_rt_lig_env_host_present(void) {
   return (v != NULL && v[0] == '1' && v[1] == '\0') ? 1 : 0;
 }
 
+static int32_t li_rt_lig_env_wgpu_readback(void) {
+  const char* v = getenv("LIG_WGPU_READBACK");
+  return (v != NULL && v[0] == '1' && v[1] == '\0') ? 1 : 0;
+}
+
 static void li_rt_lig_refresh_host_active(void) {
   g_lig_host_present_active = li_rt_lig_env_host_present();
 }
@@ -546,6 +551,32 @@ int32_t li_rt_lig_present_blit_rgba8(int32_t viewport_w, int32_t viewport_h, int
   if (!g_lig_host_present_active || viewport_w <= 0 || viewport_h <= 0 || paint_cmd_count <= 0) return 0;
   if (li_rt_lig_profile_tag_h_px(profile_id) != tag_h_px) return 0;
   g_lig_native_pixels = 1; g_lig_native_pixel_source = LI_RT_LIG_PIXEL_SOURCE_PAINT_BLIT; g_lig_surface_ok = 1; g_lig_present_dt_ms = 16.667f; return 1;
+}
+
+int32_t li_rt_lig_wgpu_readback_active(void) {
+  li_rt_lig_refresh_host_active();
+  if (!g_lig_host_present_active) {
+    return 0;
+  }
+  return li_rt_lig_env_wgpu_readback();
+}
+
+int32_t li_rt_lig_wgpu_readback_stub(int32_t viewport_w, int32_t viewport_h, int32_t profile_id, int32_t paint_cmd_count, int32_t tag_h_px) {
+  li_rt_lig_refresh_host_active();
+  if (!li_rt_lig_env_wgpu_readback()) {
+    return 0;
+  }
+  if (!g_lig_host_present_active || viewport_w <= 0 || viewport_h <= 0 || paint_cmd_count <= 0) {
+    return 0;
+  }
+  if (li_rt_lig_profile_tag_h_px(profile_id) != tag_h_px) {
+    return 0;
+  }
+  g_lig_native_pixels = 1;
+  g_lig_native_pixel_source = LI_RT_LIG_PIXEL_SOURCE_WGPU_READBACK;
+  g_lig_surface_ok = 1;
+  g_lig_present_dt_ms = 16.667f;
+  return 1;
 }
 int32_t li_rt_lig_host_present_active(void) {
   li_rt_lig_refresh_host_active();

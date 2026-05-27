@@ -8,6 +8,8 @@ All notable changes to Li are documented here. The format follows
 
 ### Added
 
+- **PH-HW viewport phase B:** `LIG_WGPU_READBACK=1` wgpu readback present stub (`native_pixel_source=3`, kid=4); studio vertical demo exit 54/55 — [2026-05-27-wgpu-readback-phase-b.md](docs/release-notes/2026-05-27-wgpu-readback-phase-b.md).
+
 - **PH-HW viewport phase A:** `lig_present_blit_paint_summary` / `present_blit_rgba8` scaffold (`native_pixel_source`); studio vertical demo requires paint blit before host present — [2026-05-27-studio-wgpu-readback-a.md](docs/release-notes/2026-05-27-studio-wgpu-readback-a.md).
 
 - **WP-DRUG-03 Studio adaptive LITL panels:** `layout_studio_shell_drug_litl`, `studio_adaptive_layout_for_drug_tick`, MCP `studio_mcp_dispatch_adaptive_drug` — [2026-05-27-studio-drug-litl-adaptive.md](docs/release-notes/2026-05-27-studio-drug-litl-adaptive.md).

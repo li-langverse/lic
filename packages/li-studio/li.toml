@@ -16,6 +16,7 @@ li-sim-additive = { path = "../li-sim-additive" }
 li-sim-drug-design = { path = "../li-sim-drug-design" }
 li-scene = { path = "../li-scene" }
 li-physics-runtime = { path = "../li-physics-runtime" }
+li-world = { path = "../li-world" }
 lig = { path = "../lig" }
 
 [[bin]]

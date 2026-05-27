@@ -94,6 +94,12 @@ file = "smoke/studio_mcp_extended.li"
 outcome = "compile_open_ok"
 note = "T-PKG-li-studio-mcp-extended PH-AGENT gap-6-7"
 
+[[tests]]
+suite = "smoke"
+file = "smoke/studio_drug_litl_adaptive.li"
+outcome = "compile_open_ok"
+note = "T-PKG-li-studio-drug-litl-adaptive WP-DRUG-03"
+
 
 [[test]]
 file = "smoke/studio_vertical_demo_env.li"

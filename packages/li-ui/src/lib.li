@@ -654,11 +654,14 @@ def rect_make(x: float, y: float, w: float, h: float) -> Rect
   r.h = h
   return r
 
-def layout_studio_shell_adaptive(w: float, h: float) -> StudioShellLayout
+def layout_studio_shell_adaptive_inspector(w: float, h: float, inspector_w: float) -> StudioShellLayout
   requires w > 0.0
   requires h > 0.0
+  requires inspector_w >= 200.0
+  requires inspector_w <= w
   ensures result.viewport_w > 0.0
   ensures result.viewport_h > 0.0
+  ensures result.inspector.w == inspector_w
   decreases 0
 =
   var out: StudioShellLayout
@@ -671,12 +674,13 @@ def layout_studio_shell_adaptive(w: float, h: float) -> StudioShellLayout
   var h1: float = h
   var h2: float = h
   var h3: float = h
+  var insp_w: float = inspector_w
   out.viewport_w = w0
   out.viewport_h = h0
   out.dock = rect_make(0.0, 0.0, studio_dock_width_px(), h1)
   var top_w: float = w1 - studio_dock_width_px()
   out.topbar = rect_make(studio_dock_width_px(), 0.0, top_w, studio_topbar_height_px())
-  var vp_w: float = w2 - studio_dock_width_px() - studio_inspector_width_px()
+  var vp_w: float = w2 - studio_dock_width_px() - insp_w
   var vp_h: float = h2 - studio_topbar_height_px() - studio_timeline_height_px() - studio_agent_strip_height_px()
   if vp_w < 0.0:
     vp_w = 0.0
@@ -684,18 +688,56 @@ def layout_studio_shell_adaptive(w: float, h: float) -> StudioShellLayout
     vp_h = 0.0
   var agent_y: float = studio_topbar_height_px() + vp_h
   out.viewport = rect_make(studio_dock_width_px(), studio_topbar_height_px(), vp_w, vp_h)
-  out.inspector = rect_make(w3 - studio_inspector_width_px(), studio_topbar_height_px(), studio_inspector_width_px(), h3 - studio_topbar_height_px())
-  var tl_w: float = w4 - studio_dock_width_px() - studio_inspector_width_px()
+  out.inspector = rect_make(w3 - insp_w, studio_topbar_height_px(), insp_w, h3 - studio_topbar_height_px())
+  var tl_w: float = w4 - studio_dock_width_px() - insp_w
   if tl_w < 0.0:
     tl_w = 0.0
   var h4: float = h
   out.timeline = rect_make(studio_dock_width_px(), h4 - studio_timeline_height_px(), tl_w, studio_timeline_height_px())
   var w5: float = w
-  var agent_w: float = w5 - studio_dock_width_px() - studio_inspector_width_px()
+  var agent_w: float = w5 - studio_dock_width_px() - insp_w
   if agent_w < 0.0:
     agent_w = 0.0
   out.agent_strip = rect_make(studio_dock_width_px(), agent_y, agent_w, studio_agent_strip_height_px())
   return out
+
+# PH-UX / WP-DRUG-03 — LITL stage widens inspector for DFT/lab panels (compose-only).
+def studio_inspector_width_for_drug_litl_stage(litl_stage: int) -> float
+  requires litl_stage >= 0
+  requires litl_stage <= 4
+  ensures result >= 260.0
+  ensures result <= 400.0
+  decreases litl_stage
+=
+  if litl_stage == 0:
+    return 260.0
+  if litl_stage == 1:
+    return 300.0
+  if litl_stage == 2:
+    return 360.0
+  if litl_stage == 3:
+    return 400.0
+  return 380.0
+
+def layout_studio_shell_drug_litl(w: float, h: float, litl_stage: int) -> StudioShellLayout
+  requires w > 0.0
+  requires h > 0.0
+  requires litl_stage >= 0
+  requires litl_stage <= 4
+  ensures result.inspector.w == studio_inspector_width_for_drug_litl_stage(litl_stage)
+  decreases litl_stage
+=
+  var insp_w: float = studio_inspector_width_for_drug_litl_stage(litl_stage)
+  return layout_studio_shell_adaptive_inspector(w, h, insp_w)
+
+def layout_studio_shell_adaptive(w: float, h: float) -> StudioShellLayout
+  requires w > 0.0
+  requires h > 0.0
+  ensures result.viewport_w > 0.0
+  ensures result.viewport_h > 0.0
+  decreases 0
+=
+  return layout_studio_shell_adaptive_inspector(w, h, studio_inspector_width_px())
 
 def layout_region_rect(layout: var StudioShellLayout, region: int) -> Rect
   requires region >= 1

@@ -510,12 +510,77 @@ def studio_mcp_tool_dispatch(tool_id: int) -> StudioAgentToolRequest
   out.result_code = studio_mcp_tool_result_ok()
   return out
 
+# WP-DRUG-03 — adaptive shell layout keyed to LITL stage (drug profile).
+def studio_drug_litl_inspector_field_rows(litl_stage: int) -> int
+  requires litl_stage >= 0
+  requires litl_stage <= 4
+  ensures result >= 2
+  ensures result <= 4
+  decreases litl_stage
+=
+  if litl_stage == drug_litl_stage_dft():
+    return 4
+  if litl_stage == drug_litl_stage_lab():
+    return 4
+  if litl_stage == drug_litl_stage_retrain():
+    return 3
+  return 2
+
+def studio_adaptive_layout_for_drug_tick(w: float, h: float, tick: int) -> StudioShellLayout
+  requires w > 0.0
+  requires h > 0.0
+  requires tick >= 0
+  ensures result.inspector.w == studio_inspector_width_for_drug_litl_stage(drug_litl_stage_from_tick(tick))
+  decreases tick
+=
+  var stage: int = drug_litl_stage_from_tick(tick)
+  return layout_studio_shell_drug_litl(w, h, stage)
+
+def studio_mcp_dispatch_adaptive_drug(w: float, h: float, tick: int) -> StudioAgentToolRequest
+  requires w > 0.0
+  requires h > 0.0
+  requires tick >= 0
+  ensures result.tool_id == studio_mcp_studio_adaptive_layout()
+  ensures result.status == studio_mcp_tool_status_ok()
+  ensures result.result_code == drug_litl_stage_from_tick(tick)
+  decreases tick
+=
+  var out: StudioAgentToolRequest = studio_agent_tool_request_none()
+  out.tool_id = studio_mcp_studio_adaptive_layout()
+  out.status = studio_mcp_tool_status_ok()
+  out.result_code = studio_mcp_tool_result_ok()
+  var stage: int = drug_litl_stage_from_tick(tick)
+  out.result_code = stage
+  var layout: StudioShellLayout = layout_studio_shell_drug_litl(w, h, stage)
+  if layout.inspector.w < studio_inspector_width_for_drug_litl_stage(stage):
+    out.status = studio_mcp_tool_status_failed()
+    out.result_code = studio_mcp_tool_result_err_io()
+    return out
+  return out
+
+def studio_compose_shell_drug_litl(w: float, h: float, tick: int, has_selection: int) -> StudioShellCompose
+  requires w > 0.0
+  requires h > 0.0
+  requires tick >= 0
+  requires has_selection >= 0
+  requires has_selection <= 1
+  ensures result.config.active_profile == studio_profile_sim_drug_design()
+  decreases tick
+=
+  var stage: int = drug_litl_stage_from_tick(tick)
+  var layout: StudioShellLayout = layout_studio_shell_drug_litl(w, h, stage)
+  var out: StudioShellCompose = studio_compose_shell_profile(w, h, 0, has_selection, studio_profile_sim_drug_design())
+  out.layout = layout
+  if has_selection == 1:
+    out.inspector.field_rows = studio_drug_litl_inspector_field_rows(stage)
+  return out
+
 def li_std_studio_version() -> int
   requires true
-  ensures result == 7
+  ensures result == 8
   decreases 0
 =
-  return 7
+  return 8
 
 def studio_agent_context_none() -> int
   requires true

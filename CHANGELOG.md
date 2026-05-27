@@ -8,7 +8,12 @@ All notable changes to Li are documented here. The format follows
 
 ### Added
 
-<<<<<<< HEAD
+- **WP-DRUG-03 Studio adaptive LITL panels:** `layout_studio_shell_drug_litl`, `studio_adaptive_layout_for_drug_tick`, MCP `studio_mcp_dispatch_adaptive_drug` — [2026-05-27-studio-drug-litl-adaptive.md](docs/release-notes/2026-05-27-studio-drug-litl-adaptive.md).
+
+- **PH-DRUG DRUG-1 deepen:** LITL inspector payload + LLVM admet score fix — merged #336.
+
+- **Proof-db rebuild:** lemma rebuild pipeline — merged #280.
+
 - **PH-AM AM-0:** slicer workflow stages in `li-sim-additive` (slice/preview/export gates, `run_additive_slicer_workflow`, composable smoke) — [2026-05-27-ph-am-slicer-workflow.md](docs/release-notes/2026-05-27-ph-am-slicer-workflow.md).
 
 - **PH-SIM SIM-3 RL env pool stub** — `EnvPoolStub`, `env_pool_stub_step`, `sim_rl_tick_stub` in `packages/li-sim`; SIM-2 replay on `SimSessionStub`; smoke `env_pool_stub.li` — [2026-05-27-sim-3-env-pool-stub.md](docs/release-notes/2026-05-27-sim-3-env-pool-stub.md).

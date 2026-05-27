@@ -25,7 +25,76 @@
 #include <string>
 #include <string_view>
 
+#if defined(__linux__)
+#include <fcntl.h>
+#include <sys/file.h>
+#include <unistd.h>
+#endif
+
 namespace {
+
+#if defined(__linux__)
+int autovc_lock_timeout_seconds() {
+  if (const char* raw = std::getenv("LI_AUTOVC_LOCK_TIMEOUT_SEC"); raw != nullptr && raw[0] != '\0') {
+    const int parsed = std::atoi(raw);
+    if (parsed >= 0) {
+      return parsed;
+    }
+  }
+  return 600;
+}
+
+struct AutoVcFileLock {
+  int fd{-1};
+  bool locked{true};
+  std::string error;
+
+  explicit AutoVcFileLock(const std::filesystem::path& vc_lean) {
+    if (const char* held = std::getenv("LI_AUTOVC_LOCK_HELD");
+        held != nullptr && held[0] == '1' && held[1] == '\0') {
+      return;
+    }
+    locked = false;
+    const auto lock_path = vc_lean.parent_path() / ".autovc.lock";
+    std::error_code ec;
+    std::filesystem::create_directories(lock_path.parent_path(), ec);
+    fd = ::open(lock_path.c_str(), O_CREAT | O_RDWR, 0666);
+    if (fd >= 0) {
+      const int timeout = autovc_lock_timeout_seconds();
+      for (int waited = 0;; ++waited) {
+        if (::flock(fd, LOCK_EX | LOCK_NB) == 0) {
+          locked = true;
+          return;
+        }
+        if (waited >= timeout) {
+          error = "timeout waiting for " + lock_path.string();
+          ::close(fd);
+          fd = -1;
+          return;
+        }
+        ::sleep(1);
+      }
+    } else {
+      error = "cannot open " + lock_path.string();
+    }
+  }
+  ~AutoVcFileLock() {
+    if (fd >= 0 && locked) {
+      ::flock(fd, LOCK_UN);
+      ::close(fd);
+    }
+  }
+  bool ok() const { return locked; }
+  AutoVcFileLock(const AutoVcFileLock&) = delete;
+  AutoVcFileLock& operator=(const AutoVcFileLock&) = delete;
+};
+#else
+struct AutoVcFileLock {
+  explicit AutoVcFileLock(const std::filesystem::path&) {}
+  bool ok() const { return true; }
+  std::string error;
+};
+#endif
 
 int usage() {
   const unsigned jobs = li::default_host_jobs();
@@ -315,6 +384,7 @@ int verify_file(const char* path, bool run_lean, bool strict_lean) {
             << " mir_return_linked=" << vc.mir_return_linked
             << " mir_parallel_disjoint=" << mir_parallel_disjoint
             << " mir_vectorized_proc=" << mir_vectorized_proc << '\n';
+            << " mir_parallel_disjoint=" << mir_parallel_disjoint << '\n';
   if (li::terminal_color_enabled()) {
     std::cout << li::styled_success("verify") << li::styled_dim(" telemetry") << li::reset_style()
               << '\n';
@@ -344,6 +414,15 @@ int verify_file(const char* path, bool run_lean, bool strict_lean) {
   }
   if (run_lean) {
     const std::string vc_lean = li::repo_build_path("generated/AutoVC.lean");
+    std::string vc_lean = "build/generated/AutoVC.lean";
+    if (const char* root = std::getenv("LI_REPO_ROOT")) {
+      vc_lean = std::string(root) + "/" + vc_lean;
+    }
+    const AutoVcFileLock autovc_lock{vc_lean};
+    if (!autovc_lock.ok()) {
+      std::cerr << "verify: " << autovc_lock.error << '\n';
+      return 1;
+    }
     std::error_code fs_err;
     std::filesystem::create_directories(std::filesystem::path(vc_lean).parent_path(), fs_err);
     std::string vc_err;
@@ -528,6 +607,15 @@ int main(int argc, char** argv) {
                 << li::reset_style() << '\n';
     }
     const std::string vc_lean = li::repo_build_path("generated/AutoVC.lean");
+    std::string vc_lean = "build/generated/AutoVC.lean";
+    if (const char* root = std::getenv("LI_REPO_ROOT")) {
+      vc_lean = std::string(root) + "/" + vc_lean;
+    }
+    const AutoVcFileLock autovc_lock{vc_lean};
+    if (!autovc_lock.ok()) {
+      std::cerr << "vc emit: " << autovc_lock.error << '\n';
+      return 1;
+    }
     std::error_code fs_err;
     std::filesystem::create_directories(std::filesystem::path(vc_lean).parent_path(), fs_err);
     if (!li::write_vcs_lean(module, vc_lean, &err)) {

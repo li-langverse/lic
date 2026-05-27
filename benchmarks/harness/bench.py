@@ -179,6 +179,37 @@ TIER_STDLIB_BENCHES: tuple[BenchSpec, ...] = (
     ),
 )
 
+# Stdlib ADT tier-1 (WP0-C): native oracles only until WP1 Li drivers land.
+TIER_STDLIB_BENCHES: tuple[BenchSpec, ...] = (
+    BenchSpec(
+        "stdlib_sort_int",
+        1,
+        "stdlib_sort_int",
+        "cpp/main.c",
+        "common/sort_core.c",
+        "li/main.li",
+        li_enabled=False,
+    ),
+    BenchSpec(
+        "stdlib_dict_insert_lookup",
+        1,
+        "stdlib_dict_insert_lookup",
+        "cpp/main.c",
+        "common/dict_core.c",
+        "li/main.li",
+        li_enabled=False,
+    ),
+    BenchSpec(
+        "stdlib_binary_search",
+        1,
+        "stdlib_binary_search",
+        "cpp/main.c",
+        "common/search_core.c",
+        "li/main.li",
+        li_enabled=False,
+    ),
+)
+
 # Gaming-physics roadmap (physics-only; Tier R = rendering out of scope):
 #   exists: md_lennard_jones + catalog md_* aliases, nbody, wave_1d/2d, heat_2d, advection_diffusion_2d, sph_dam_break_2d (stub)
 #   planned: euler_fluid_2d, combustion_passive, wind_field_bc, rigid_body, cloth, mls_mpm
@@ -658,6 +689,11 @@ def verify_benchmark_results(spec: BenchSpec, build_dir: Path) -> BenchmarkVerif
     if not spec.li_enabled:
         verify_stdlib_benchmark(spec, build_dir)
         return BenchmarkVerifyOutcome()
+def verify_benchmark_results(spec: BenchSpec, build_dir: Path) -> None:
+    """Verify results against normative spec (reference.py), then Li vs native when applicable."""
+    if not spec.li_enabled:
+        verify_stdlib_benchmark(spec, build_dir)
+        return
     from reference import (
         TIER1_REFERENCE,
         assert_checksum_against_spec,
@@ -666,6 +702,7 @@ def verify_benchmark_results(spec: BenchSpec, build_dir: Path) -> BenchmarkVerif
         format_result,
         parse_result,
         print_deviation_reports,
+        parse_result,
     )
 
     native = build_dir / f"{spec.name}_native"
@@ -745,6 +782,13 @@ def verify_benchmark_results(spec: BenchSpec, build_dir: Path) -> BenchmarkVerif
                 ref=ref_case,
                 use_small=False,
             )
+        assert_checksum_against_spec(
+            spec.name,
+            li_out,
+            label="Li",
+            size="full",
+            ref=ref_case,
+            use_small=False,
         )
 
     if deviation_logs:

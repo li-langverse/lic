@@ -7,6 +7,7 @@
 #include "li/vc_witness.hpp"
 
 #include <algorithm>
+#include <filesystem>
 #include <fstream>
 #include <map>
 #include <optional>
@@ -233,6 +234,24 @@ std::optional<std::string> expr_to_lean(const Expr& e, const VcCtx& ctx) {
           return "Float.abs " + *inner;
         }
       }
+      if (e.args.size() == 2 && e.args[0] && e.args[1]) {
+        const auto a0 = expr_to_lean(*e.args[0], ctx);
+        const auto a1 = expr_to_lean(*e.args[1], ctx);
+        if (a0 && a1) {
+          if (e.ident == "disjoint_elem") {
+            return "Li.Discharge.disjoint_elem_spec " + *a0 + " " + *a1;
+          }
+          if (e.ident == "disjoint_row") {
+            return "Li.Discharge.disjoint_row_spec " + *a0 + " " + *a1;
+          }
+          if (e.ident == "disjoint_slice") {
+            return "Li.Discharge.disjoint_slice_spec " + *a0 + " " + *a1;
+          }
+          if (e.ident == "row_ok") {
+            return "Li.Discharge.row_ok_spec " + *a0 + " " + *a1;
+          }
+        }
+      }
       return std::nullopt;
     }
     case Expr::Kind::Index: {
@@ -271,8 +290,6 @@ std::string proc_section(const std::string& proc) {
   return out;
 }
 
-namespace {
-
 const Expr* ensures_rhs_eq_result(const Expr& e) {
   if (e.kind != Expr::Kind::BinOp || e.bin_op != BinOp::Eq || !e.lhs || !e.rhs) {
     return nullptr;
@@ -293,11 +310,27 @@ std::optional<std::string> par_disjoint_policy_witness(const Expr& e) {
   if (e.ident == "disjoint_elem" || e.ident == "disjoint_row" || e.ident == "disjoint_slice" ||
       e.ident == "row_ok") {
     return std::string{"policy"};
+  if (e.ident == "disjoint_elem") {
+    return "Li.Discharge.disjoint_elem_policy_witness";
+  }
+  if (e.ident == "disjoint_row") {
+    return "Li.Discharge.disjoint_row_policy_witness";
+  }
+  if (e.ident == "disjoint_slice") {
+    return "Li.Discharge.disjoint_slice_policy_witness";
+  }
+  if (e.ident == "row_ok") {
+    return "Li.Discharge.row_ok_policy_witness";
   }
   return std::nullopt;
 }
 
 }  // namespace
+void emit_par_policy_formals(std::ostream& out, const Module& module, const ProcDecl& proc,
+                             const Contract& c, const std::string* loop_iter);
+
+void emit_par_policy_args(std::ostream& out, const ProcDecl& proc, const Contract& c,
+                          const std::string* loop_iter);
 
 void emit_contract_def(std::ostream& out, const Module& module, const ProcDecl& proc,
                        const char* kind, std::size_t idx, const Contract& c,
@@ -367,12 +400,28 @@ void emit_contract_def(std::ostream& out, const Module& module, const ProcDecl& 
     if (ctx.proc != nullptr && witness_mat2_int_at2_spec(*ctx.proc, *c.expr)) {
       mat2_discharge_theorem = true;
     } else if (ctx.proc != nullptr && witness_sqrt_open_bound_spec(*ctx.proc, *c.expr)) {
+  std::optional<std::string> par_witness;
+  if (c.expr && (c.kind == ContractKind::Requires || c.kind == ContractKind::Invariant)) {
+    par_witness = par_disjoint_policy_witness(*c.expr);
+  }
+  if (c.kind == ContractKind::Ensures && c.expr) {
+    if (ctx.proc != nullptr && witness_mat2_int_at2_spec(*ctx.proc, *c.expr)) {
+      mat2_discharge_theorem = true;
+    } else if (ctx.proc != nullptr && witness_sqrt_open_li_rt_bound(*ctx.proc, *c.expr)) {
       sqrt_discharge_theorem = true;
     }
   }
   const bool witnessed =
       contract_witnessed_trivial(proc, c, &module, &caller_facts);
   if (par_policy) {
+  const bool par_requires = par_witness.has_value() && c.kind == ContractKind::Requires;
+  if (par_witness && par_requires && c.expr) {
+    if (auto lean = expr_to_lean(*c.expr, ctx)) {
+      prop = *lean;
+    } else {
+      prop = "True";
+    }
+  } else if (par_witness) {
     prop = "True";
   } else if (witnessed && !mat2_discharge_theorem && !sqrt_discharge_theorem) {
     prop = "True";
@@ -388,6 +437,12 @@ void emit_contract_def(std::ostream& out, const Module& module, const ProcDecl& 
       prop += p.name;
     }
     prop += ')';
+  } else if (sqrt_discharge_theorem && c.kind == ContractKind::Ensures) {
+    prop = "Li.Discharge.sqrt_open_bound_spec";
+    for (const auto& p : proc.params) {
+      prop += ' ';
+      prop += lean_ident(p.name);
+    }
   } else if (c.expr) {
     if (auto lean = expr_to_lean(*c.expr, ctx)) {
       prop = *lean;
@@ -400,6 +455,14 @@ void emit_contract_def(std::ostream& out, const Module& module, const ProcDecl& 
       (mat2_discharge_theorem || sqrt_discharge_theorem) && c.kind == ContractKind::Ensures;
   out << "def " << name;
   emit_formals(!semantic_ensures);
+  const bool discharge_ensures =
+      (mat2_discharge_theorem || sqrt_discharge_theorem) && c.kind == ContractKind::Ensures;
+  out << "def " << name;
+  if (par_requires) {
+    emit_par_policy_formals(out, module, proc, c, loop_iter);
+  } else {
+    emit_formals(!discharge_ensures);
+  }
   out << " : Prop := " << prop << '\n';
 
   if (prop == "True" && witnessed && c.kind == ContractKind::Ensures) {
@@ -450,6 +513,30 @@ void emit_contract_def(std::ostream& out, const Module& module, const ProcDecl& 
     out << " : " << name;
     emit_args(c.kind != ContractKind::Requires);
     out << " := trivial\n";
+  } else if (par_witness) {
+    out << "/-! Phase 2f: P-par disjoint policy witness (**G-par**) -/\n";
+    out << "theorem " << name << "_proved";
+    if (par_requires) {
+      emit_par_policy_formals(out, module, proc, c, loop_iter);
+    } else {
+      emit_formals(c.kind != ContractKind::Requires);
+    }
+    out << " : " << name;
+    if (par_requires) {
+      emit_par_policy_args(out, proc, c, loop_iter);
+    } else {
+      emit_args(c.kind != ContractKind::Requires);
+    }
+    out << " := " << *par_witness;
+    if (!par_requires) {
+      if (loop_iter != nullptr) {
+        out << ' ' << lean_ident(*loop_iter);
+      }
+      for (const auto& p : proc.params) {
+        out << ' ' << lean_ident(p.name);
+      }
+    }
+    out << '\n';
   } else if (prop == "True") {
     out << "theorem " << name << "_proved";
     emit_formals(true);
@@ -462,6 +549,72 @@ void emit_contract_def(std::ostream& out, const Module& module, const ProcDecl& 
 bool is_caller_param(const ProcDecl& caller, const std::string& name) {
   return std::any_of(caller.params.begin(), caller.params.end(),
                      [&](const Param& p) { return p.name == name; });
+}
+
+void collect_par_policy_extra_idents(const Expr& call, const std::string* loop_iter,
+                                     const ProcDecl& proc, std::vector<std::string>& out) {
+  if (call.kind != Expr::Kind::Call) {
+    return;
+  }
+  for (const auto& arg : call.args) {
+    if (arg == nullptr || arg->kind != Expr::Kind::Ident) {
+      continue;
+    }
+    const std::string& n = arg->ident;
+    if (loop_iter != nullptr && n == *loop_iter) {
+      continue;
+    }
+    if (is_caller_param(proc, n)) {
+      continue;
+    }
+    if (std::find(out.begin(), out.end(), n) == out.end()) {
+      out.push_back(n);
+    }
+  }
+}
+
+void emit_par_policy_formals(std::ostream& out, const Module& module, const ProcDecl& proc,
+                             const Contract& c, const std::string* loop_iter) {
+  for (const auto& p : proc.params) {
+    out << ' ' << '(' << lean_ident(p.name) << " : " << lean_type_name(p.type, module) << ')';
+  }
+  if (loop_iter != nullptr) {
+    out << " (" << lean_ident(*loop_iter) << " : Int)";
+  }
+  if (!c.expr) {
+    return;
+  }
+  std::vector<std::string> extra;
+  collect_par_policy_extra_idents(*c.expr, loop_iter, proc, extra);
+  std::map<std::string, const TypeExpr*> locals;
+  for (const auto& p : proc.params) {
+    locals[p.name] = &p.type;
+  }
+  collect_local_types_in_stmts(proc.body, locals);
+  for (const std::string& n : extra) {
+    const auto it = locals.find(n);
+    if (it != locals.end() && it->second != nullptr) {
+      out << " (" << lean_ident(n) << " : " << lean_type_name(*it->second, module) << ')';
+    }
+  }
+}
+
+void emit_par_policy_args(std::ostream& out, const ProcDecl& proc, const Contract& c,
+                          const std::string* loop_iter) {
+  for (const auto& p : proc.params) {
+    out << ' ' << lean_ident(p.name);
+  }
+  if (loop_iter != nullptr) {
+    out << ' ' << lean_ident(*loop_iter);
+  }
+  if (!c.expr) {
+    return;
+  }
+  std::vector<std::string> extra;
+  collect_par_policy_extra_idents(*c.expr, loop_iter, proc, extra);
+  for (const std::string& n : extra) {
+    out << ' ' << lean_ident(n);
+  }
 }
 
 void append_call_site_vc_formals(std::ostream& out, const Module& module, const ProcDecl& caller,
@@ -673,6 +826,28 @@ void emit_call_site_requires(std::ostream& out, const Module& module, const Proc
 }
 
 void walk_contracts(std::ostream& out, const Module& module, const ProcDecl& proc,
+                    const std::vector<Contract>& contracts, const std::string& vc_suffix,
+                    const std::string* loop_iter);
+
+void walk_par_contracts(std::ostream& out, const Module& module, const ProcDecl& proc,
+                        const std::vector<Stmt>& stmts, std::size_t& par_idx) {
+  for (const auto& stmt : stmts) {
+    if (stmt.kind == Stmt::Kind::ParallelFor && !stmt.par_contracts.empty()) {
+      const std::string suffix = "_par" + std::to_string(par_idx++);
+      walk_contracts(out, module, proc, stmt.par_contracts, suffix,
+                     stmt.par_iter.empty() ? nullptr : &stmt.par_iter);
+    }
+    walk_par_contracts(out, module, proc, stmt.then_body, par_idx);
+    if (stmt.else_body) {
+      walk_par_contracts(out, module, proc, *stmt.else_body, par_idx);
+    }
+    walk_par_contracts(out, module, proc, stmt.while_body, par_idx);
+    walk_par_contracts(out, module, proc, stmt.for_body, par_idx);
+    walk_par_contracts(out, module, proc, stmt.par_body, par_idx);
+  }
+}
+
+void walk_contracts(std::ostream& out, const Module& module, const ProcDecl& proc,
                     const std::vector<Contract>& contracts,
                     const std::string& vc_suffix = "",
                     const std::string* loop_iter = nullptr) {
@@ -704,10 +879,11 @@ void walk_contracts(std::ostream& out, const Module& module, const ProcDecl& pro
 }  // namespace
 
 bool write_vcs_lean(const Module& module, const std::string& path, std::string* err) {
-  std::ofstream out(path);
+  const std::string tmp = path + ".tmp";
+  std::ofstream out(tmp, std::ios::trunc);
   if (!out) {
     if (err) {
-      *err = "cannot open " + path;
+      *err = "cannot open " + tmp;
     }
     return false;
   }
@@ -720,17 +896,20 @@ bool write_vcs_lean(const Module& module, const std::string& path, std::string* 
     out << "namespace " << proc_section(proc.name) << "\n\n";
     walk_contracts(out, module, proc, proc.contracts);
     std::size_t par_idx = 0;
-    for (const auto& stmt : proc.body) {
-      if (stmt.kind == Stmt::Kind::ParallelFor && !stmt.par_contracts.empty()) {
-        const std::string suffix = "_par" + std::to_string(par_idx++);
-        walk_contracts(out, module, proc, stmt.par_contracts, suffix,
-                       stmt.par_iter.empty() ? nullptr : &stmt.par_iter);
-      }
-    }
+    walk_par_contracts(out, module, proc, proc.body, par_idx);
     emit_call_site_requires(out, module, proc);
     out << "\nend " << proc_section(proc.name) << "\n\n";
   }
   out << "end AutoVC\n";
+  out.close();
+  std::error_code rename_err;
+  std::filesystem::rename(tmp, path, rename_err);
+  if (rename_err) {
+    if (err) {
+      *err = "cannot rename " + tmp + " -> " + path + ": " + rename_err.message();
+    }
+    return false;
+  }
   return true;
 }
 

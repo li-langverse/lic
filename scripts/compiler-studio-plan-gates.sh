@@ -37,6 +37,7 @@ else
 fi
 
 li_phase "tier 0 bench"
+export LIC
 python3 "$ROOT/benchmarks/harness/bench.py" --tier 0 || fail "bench tier 0"
 
 if [[ "${COMPILER_STUDIO_GATES_FULL:-0}" == "1" ]]; then

@@ -230,6 +230,7 @@ outcome = "verify_ok"
 suite = "contracts_verify"
 file = "contracts_verify/sqrt_open_bound.li"
 outcome = "prove_lean_ok"
+outcome = "verify_ok"
 
 [[tests]]
 suite = "contracts_verify"
@@ -1155,6 +1156,8 @@ outcome = "compile_fail"
 suite = "stdlib_seal"
 file = "stdlib_seal/shadow_echo_via_import.li"
 outcome = "compile_fail"
+file = "stdlib_seal/import_std_collections_ok.li"
+outcome = "compile_ok"
 
 # --- encapsulation (2g — def, object, visibility, import) ---
 
@@ -1400,6 +1403,52 @@ file = "execution_resources/smoke.sh"
 outcome = "script_ok"
 
 # --- hpc_competitive (registry gate; ./li-tests/run_all.sh hpc_competitive) ---
+
+# --- stdlib_parity (WP0-D — compile-only until WP-WA + WP1 runtime) ---
+
+[[tests]]
+suite = "stdlib_parity"
+file = "stdlib_parity/collections_parity.li"
+outcome = "compile_ok"
+note = "WP0-D: collections.deque/OrderedDict/Counter/defaultdict sketch → std/collections"
+
+[[tests]]
+suite = "stdlib_parity"
+file = "stdlib_parity/heapq_parity.li"
+outcome = "compile_ok"
+note = "WP0-D: heapq → std/heap; bench stdlib_heap_push_pop"
+
+[[tests]]
+suite = "stdlib_parity"
+file = "stdlib_parity/bisect_parity.li"
+outcome = "compile_ok"
+note = "WP0-D: bisect → std/algorithms/search; bench stdlib_binary_search"
+
+# --- stdlib_abuse (WP0-E — security matrix pre-runtime) ---
+
+[[tests]]
+suite = "stdlib_abuse"
+file = "security/stdlib_abuse/hash_flood_design.li"
+outcome = "compile_ok"
+note = "WP0-E: hash-flood design; runtime bounds in WP1"
+
+[[tests]]
+suite = "stdlib_abuse"
+file = "security/stdlib_abuse/array_index_oob.li"
+outcome = "compile_fail"
+expected_substr = "out of range"
+
+[[tests]]
+suite = "stdlib_abuse"
+file = "security/stdlib_abuse/array_negative_index.li"
+outcome = "compile_fail"
+expected_substr = "out of range"
+
+[[tests]]
+suite = "stdlib_abuse"
+file = "security/stdlib_abuse/array_dyn_index.li"
+outcome = "compile_fail"
+expected_substr = "array index must be constant"
 
 # --- security (malformed inputs; run via ./li-tests/run_security.sh) ---
 # Wired in scripts/ci.sh: parse/check must exit 0/1, never signal (SIGSEGV etc.).

@@ -15,4 +15,7 @@ void check_source_policies(const std::string& source, const std::string& file,
 void check_module_policies(const Module& module, const std::string& file,
                            DiagnosticBag& diags);
 
+bool parallel_for_disjoint_witness(const Stmt& stmt,
+                                   const std::vector<Decorator>* proc_decorators);
+
 }  // namespace li

@@ -300,6 +300,12 @@ def reduce_sum_spec(n: int) -> float:
 
 # Back-compat alias
 horner_spec = horner_iterative
+def horner_spec(*, steps: int, x: float = 0.999999) -> float:
+    """``horner_core.c`` loop: ``acc = acc * x + 1``."""
+    acc = 0.0
+    for _ in range(steps):
+        acc = acc * x + 1.0
+    return acc
 
 
 # --- tier-1 reference cases ---------------------------------------------------
@@ -418,6 +424,8 @@ TIER1_REFERENCE: dict[str, Tier1Reference] = {
         compute_small=lambda: horner_analytical(steps=8),
         compute_iterative_full=lambda: horner_iterative(steps=5_000_000),
         compute_iterative_small=lambda: horner_iterative(steps=8),
+        compute_full=lambda: horner_spec(steps=5_000_000),
+        compute_small=lambda: horner_spec(steps=8),
         min_abs_full=900_000.0,
         min_li_seconds=0.001,
         rtol=1e-10,

@@ -1,0 +1,5 @@
+# cmd: node /home/s4il0r/Documents/Cursor/li-langverse/lic/../li-cursor-agents/dist/cli/run-agent.js --agent swarm_observer --cwd /home/s4il0r/Documents/Cursor/li-langverse/lic --workflow-repo lic --goal-file /home/s4il0r/Documents/Cursor/li-langverse/lic/data/swarm-observer-plan-loop/goal-20260525-193501.md
+
+backend: cursor-sdk agent: swarm_observer
+SDK tool activity streams to stderr ([sdk] ▶/✓ lines). Set LI_SDK_TERMINAL_STREAM=0 to disable.
+2026-05-25T19:35:01.618Z [heartbeat] info: worker_status → Supabase: 1 active run(s) swarm_observer

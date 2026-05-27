@@ -1,5 +1,6 @@
 {
   "generated_at": "2026-05-27T06:51:21.356382+00:00",
+  "generated_at": "2026-05-26T00:27:58.534309+00:00",
   "tz": "Europe/Berlin",
   "agents_live": 0,
   "runners": [
@@ -11,6 +12,10 @@
       "running": true,
       "process": "348722 gh api repos/li-langverse/lic/compare/cursor/swarm-observer-plan-loop...chore/master-plan-gates-verticals",
       "log_path": "/home/s4il0r/Documents/Cursor/li-langverse/lic/../lic/data/httpd-plan-loop/iter-20260522-132846.log",
+      "head": "c9bbe240",
+      "running": true,
+      "process": "1074474 python3 /home/s4il0r/Documents/Cursor/li-langverse/lic/scripts/goal-directed-agents-snapshot.py",
+      "log_path": "/home/s4il0r/Documents/Cursor/li-langverse/lic/../lic/data/httpd-plan-loop/until-deadline-20260525-180023.log",
       "todos": [
         {
           "id": "gap-exploit-owasp-cwe-suite",
@@ -50,7 +55,7 @@
         {
           "id": "gap-phase2-mitigation-exploits",
           "content": "Close nginx_mitigations.toml rows with empty exploit \u2014 client_max_body_size, h2_rapid_reset, dns_resolver_limits; tier5 TOML + live li-httpd vs nginx compare; gate check-tier5-mitigation-exploits-complete.sh",
-          "status": "pending"
+          "status": "completed"
         },
         {
           "id": "gap-phase2-streaming-wrk",
@@ -144,6 +149,393 @@
       ],
       "status_note": "supervisor idle (log 50080s stale \u2014 check log_path)",
       "active_todo_id": "gap-phase2-perf-wrk-soak"
+        }
+      ],
+      "plan_completed": 8,
+      "plan_total": 10,
+      "plan_pending": [
+        "gap-phase2-perf-wrk-soak",
+        "gap-phase2-streaming-wrk"
+      ],
+      "state": {
+        "completed_ids": [
+          "h-lean-server-modules",
+          "gap-exploit-owasp-cwe-suite",
+          "gap-lb-sticky-sessions",
+          "gap-llvm22-build-warnings",
+          "gap-nginx-perf-regression-gate",
+          "gap-tier5-streaming-soak",
+          "gap-phase2-exploit-nginx-regression",
+          "gap-phase2-mitigation-exploits",
+          "gap-httpd-gap-phase2-mitigation-exploits",
+          "gap-httpd-gap-httpd-gap-phase2-mitigation-exploits"
+        ],
+        "iterations": 57,
+        "history": [
+          {
+            "at": "2026-05-24T12:57:17.198584+00:00",
+            "todo_id": "h-lean-server-modules",
+            "agent_exit": 0,
+            "gates_ok": true
+          },
+          {
+            "at": "2026-05-24T13:18:08.570188+00:00",
+            "todo_id": "gap-exploit-owasp-cwe-suite",
+            "agent_exit": 1,
+            "gates_ok": true
+          },
+          {
+            "at": "2026-05-24T15:35:27.740040+00:00",
+            "todo_id": "gap-lb-sticky-sessions",
+            "agent_exit": 124,
+            "gates_ok": true
+          },
+          {
+            "at": "2026-05-24T16:31:24.966765+00:00",
+            "todo_id": "gap-lb-sticky-sessions",
+            "agent_exit": 124,
+            "gates_ok": true
+          },
+          {
+            "at": "2026-05-24T16:36:56.980658+00:00",
+            "todo_id": "gap-lb-sticky-sessions",
+            "agent_exit": 0,
+            "gates_ok": true
+          },
+          {
+            "at": "2026-05-24T17:22:22.312204+00:00",
+            "todo_id": "gap-nextjs-toy-bench",
+            "agent_exit": 124,
+            "gates_ok": true
+          },
+          {
+            "at": "2026-05-24T17:37:43.123270+00:00",
+            "todo_id": "gap-llvm22-build-warnings",
+            "agent_exit": 0,
+            "gates_ok": true
+          },
+          {
+            "at": "2026-05-24T17:44:52.221370+00:00",
+            "todo_id": "gap-nginx-perf-regression-gate",
+            "agent_exit": 0,
+            "gates_ok": true
+          },
+          {
+            "at": "2026-05-24T17:56:57.082111+00:00",
+            "todo_id": "gap-tier5-streaming-soak",
+            "agent_exit": 0,
+            "gates_ok": true
+          },
+          {
+            "at": "2026-05-24T19:35:11.785883+00:00",
+            "todo_id": "gap-phase2-exploit-nginx-regression",
+            "agent_exit": 1,
+            "gates_ok": false
+          },
+          {
+            "at": "2026-05-24T19:45:32.285445+00:00",
+            "todo_id": "gap-phase2-exploit-nginx-regression",
+            "agent_exit": 0,
+            "gates_ok": false
+          },
+          {
+            "at": "2026-05-24T19:56:56.323154+00:00",
+            "todo_id": "gap-phase2-exploit-nginx-regression",
+            "agent_exit": 0,
+            "gates_ok": false
+          },
+          {
+            "at": "2026-05-24T20:18:26.551405+00:00",
+            "todo_id": "gap-phase2-exploit-nginx-regression",
+            "agent_exit": 0,
+            "gates_ok": false
+          },
+          {
+            "at": "2026-05-24T20:32:16.959163+00:00",
+            "todo_id": "gap-phase2-exploit-nginx-regression",
+            "agent_exit": 0,
+            "gates_ok": false
+          },
+          {
+            "at": "2026-05-24T20:46:45.500752+00:00",
+            "todo_id": "gap-phase2-exploit-nginx-regression",
+            "agent_exit": 0,
+            "gates_ok": false
+          },
+          {
+            "at": "2026-05-24T21:00:23.470462+00:00",
+            "todo_id": "gap-phase2-exploit-nginx-regression",
+            "agent_exit": 1,
+            "gates_ok": false
+          },
+          {
+            "at": "2026-05-24T21:09:47.585657+00:00",
+            "todo_id": "gap-phase2-exploit-nginx-regression",
+            "agent_exit": 0,
+            "gates_ok": false
+          },
+          {
+            "at": "2026-05-24T21:20:36.529835+00:00",
+            "todo_id": "gap-phase2-exploit-nginx-regression",
+            "agent_exit": 0,
+            "gates_ok": false
+          },
+          {
+            "at": "2026-05-24T21:31:51.739161+00:00",
+            "todo_id": "gap-phase2-exploit-nginx-regression",
+            "agent_exit": 0,
+            "gates_ok": true
+          },
+          {
+            "at": "2026-05-24T21:34:49.066282+00:00",
+            "todo_id": "gap-phase2-mitigation-exploits",
+            "agent_exit": 1,
+            "gates_ok": false
+          },
+          {
+            "at": "2026-05-24T21:48:12.642144+00:00",
+            "todo_id": "gap-phase2-mitigation-exploits",
+            "agent_exit": 1,
+            "gates_ok": false
+          },
+          {
+            "at": "2026-05-24T22:01:49.781035+00:00",
+            "todo_id": "gap-phase2-mitigation-exploits",
+            "agent_exit": 1,
+            "gates_ok": false
+          },
+          {
+            "at": "2026-05-24T22:13:42.460818+00:00",
+            "todo_id": "gap-phase2-mitigation-exploits",
+            "agent_exit": 0,
+            "gates_ok": true
+          },
+          {
+            "at": "2026-05-24T22:59:07.562677+00:00",
+            "todo_id": "gap-phase2-perf-wrk-soak",
+            "agent_exit": 124,
+            "gates_ok": false
+          },
+          {
+            "at": "2026-05-24T23:12:52.916657+00:00",
+            "todo_id": "gap-phase2-perf-wrk-soak",
+            "agent_exit": 1,
+            "gates_ok": false
+          },
+          {
+            "at": "2026-05-24T23:59:31.261414+00:00",
+            "todo_id": "gap-phase2-perf-wrk-soak",
+            "agent_exit": 124,
+            "gates_ok": false
+          },
+          {
+            "at": "2026-05-25T00:07:16.466771+00:00",
+            "todo_id": "gap-phase2-perf-wrk-soak",
+            "agent_exit": 1,
+            "gates_ok": false
+          },
+          {
+            "at": "2026-05-25T01:11:41.474379+00:00",
+            "todo_id": "gap-phase2-perf-wrk-soak",
+            "agent_exit": 1,
+            "gates_ok": false
+          },
+          {
+            "at": "2026-05-25T01:25:12.671233+00:00",
+            "todo_id": "gap-phase2-perf-wrk-soak",
+            "agent_exit": 1,
+            "gates_ok": false
+          },
+          {
+            "at": "2026-05-25T02:11:49.716395+00:00",
+            "todo_id": "gap-phase2-perf-wrk-soak",
+            "agent_exit": 124,
+            "gates_ok": false
+          },
+          {
+            "at": "2026-05-25T02:58:26.854549+00:00",
+            "todo_id": "gap-phase2-perf-wrk-soak",
+            "agent_exit": 124,
+            "gates_ok": false
+          },
+          {
+            "at": "2026-05-25T03:12:06.327640+00:00",
+            "todo_id": "gap-phase2-perf-wrk-soak",
+            "agent_exit": 1,
+            "gates_ok": false
+          },
+          {
+            "at": "2026-05-25T03:58:43.421329+00:00",
+            "todo_id": "gap-phase2-perf-wrk-soak",
+            "agent_exit": 124,
+            "gates_ok": false
+          },
+          {
+            "at": "2026-05-25T04:26:08.823716+00:00",
+            "todo_id": "gap-phase2-perf-wrk-soak",
+            "agent_exit": 1,
+            "gates_ok": false
+          },
+          {
+            "at": "2026-05-25T05:12:46.045654+00:00",
+            "todo_id": "gap-phase2-perf-wrk-soak",
+            "agent_exit": 124,
+            "gates_ok": false
+          },
+          {
+            "at": "2026-05-25T05:26:16.881790+00:00",
+            "todo_id": "gap-phase2-perf-wrk-soak",
+            "agent_exit": 1,
+            "gates_ok": false
+          },
+          {
+            "at": "2026-05-25T05:39:38.665977+00:00",
+            "todo_id": "gap-phase2-perf-wrk-soak",
+            "agent_exit": 1,
+            "gates_ok": false
+          },
+          {
+            "at": "2026-05-25T06:26:16.129102+00:00",
+            "todo_id": "gap-phase2-perf-wrk-soak",
+            "agent_exit": 124,
+            "gates_ok": false
+          },
+          {
+            "at": "2026-05-25T07:14:27.078783+00:00",
+            "todo_id": "gap-phase2-perf-wrk-soak",
+            "agent_exit": 1,
+            "gates_ok": false
+          },
+          {
+            "at": "2026-05-25T08:01:04.044044+00:00",
+            "todo_id": "gap-phase2-perf-wrk-soak",
+            "agent_exit": 124,
+            "gates_ok": false
+          },
+          {
+            "at": "2026-05-25T08:47:41.423421+00:00",
+            "todo_id": "gap-phase2-perf-wrk-soak",
+            "agent_exit": 124,
+            "gates_ok": false
+          },
+          {
+            "at": "2026-05-25T09:34:18.507802+00:00",
+            "todo_id": "gap-phase2-perf-wrk-soak",
+            "agent_exit": 124,
+            "gates_ok": false
+          },
+          {
+            "at": "2026-05-25T10:20:55.447274+00:00",
+            "todo_id": "gap-phase2-perf-wrk-soak",
+            "agent_exit": 124,
+            "gates_ok": false
+          },
+          {
+            "at": "2026-05-25T11:07:36.928070+00:00",
+            "todo_id": "gap-phase2-perf-wrk-soak",
+            "agent_exit": 124,
+            "gates_ok": false
+          },
+          {
+            "at": "2026-05-25T11:54:17.951439+00:00",
+            "todo_id": "gap-phase2-perf-wrk-soak",
+            "agent_exit": 124,
+            "gates_ok": false
+          },
+          {
+            "at": "2026-05-25T12:40:59.536193+00:00",
+            "todo_id": "gap-phase2-perf-wrk-soak",
+            "agent_exit": 124,
+            "gates_ok": false
+          },
+          {
+            "at": "2026-05-25T13:27:37.030345+00:00",
+            "todo_id": "gap-phase2-perf-wrk-soak",
+            "agent_exit": 124,
+            "gates_ok": false
+          },
+          {
+            "at": "2026-05-25T14:14:20.503438+00:00",
+            "todo_id": "gap-phase2-perf-wrk-soak",
+            "agent_exit": 124,
+            "gates_ok": false
+          },
+          {
+            "at": "2026-05-25T15:01:03.460400+00:00",
+            "todo_id": "gap-phase2-perf-wrk-soak",
+            "agent_exit": 124,
+            "gates_ok": false
+          },
+          {
+            "at": "2026-05-25T15:32:29.669682+00:00",
+            "todo_id": "gap-phase2-perf-wrk-soak",
+            "agent_exit": 1,
+            "gates_ok": false
+          },
+          {
+            "at": "2026-05-25T16:19:13.729346+00:00",
+            "todo_id": "gap-phase2-perf-wrk-soak",
+            "agent_exit": 124,
+            "gates_ok": false
+          },
+          {
+            "at": "2026-05-25T17:05:55.950503+00:00",
+            "todo_id": "gap-phase2-perf-wrk-soak",
+            "agent_exit": 124,
+            "gates_ok": false
+          },
+          {
+            "at": "2026-05-25T17:52:34.546608+00:00",
+            "todo_id": "gap-phase2-perf-wrk-soak",
+            "agent_exit": 124,
+            "gates_ok": false
+          },
+          {
+            "at": "2026-05-25T18:45:30.759723+00:00",
+            "todo_id": "gap-phase2-perf-wrk-soak",
+            "agent_exit": 124,
+            "gates_ok": false
+          },
+          {
+            "at": "2026-05-25T19:01:06.075781+00:00",
+            "todo_id": "gap-httpd-gap-phase2-mitigation-exploits",
+            "agent_exit": 0,
+            "gates_ok": true
+          },
+          {
+            "at": "2026-05-25T19:28:13.116129+00:00",
+            "todo_id": "gap-httpd-gap-httpd-gap-phase2-mitigation-exploits",
+            "agent_exit": 0,
+            "gates_ok": true
+          },
+          {
+            "at": "2026-05-25T19:50:00.582195+00:00",
+            "todo_id": "gap-httpd-gap-httpd-gap-httpd-gap-phase2-mitigatio",
+            "agent_exit": 1,
+            "gates_ok": false
+          }
+        ]
+      },
+      "state_iterations": 57,
+      "agent_live": false,
+      "agent": "",
+      "goal_file": "",
+      "log_age_sec": 16676,
+      "last_state_at": "2026-05-25T19:50:00.582195+00:00",
+      "last_state_todo": "gap-httpd-gap-httpd-gap-httpd-gap-phase2-mitigatio",
+      "last_state_gates": false,
+      "current_iteration": "==> batch 2 exit 1 @ 2026-05-25T21:50:00+02:00",
+      "activity": [
+        "[sdk] thinking\u2026",
+        "[sdk] assistant reply",
+        "gates: OK after agent",
+        "=== iteration 3: gap-httpd-gap-httpd-gap-httpd-gap-phase2-mitigatio ===",
+        "gates: OK",
+        "SDK tool activity streams to stderr ([sdk] \u25b6/\u2713 lines). Set LI_SDK_TERMINAL_STREAM=0 to disable.",
+        "agent exit 1 \u2014 stopping loop (fix and re-run)",
+        "==> batch 2 exit 1 @ 2026-05-25T21:50:00+02:00"
+      ],
+      "status_note": "supervisor idle (log 16676s stale \u2014 check log_path)"
     },
     {
       "id": "compiler-studio",
@@ -871,6 +1263,7 @@
       "agent": "",
       "goal_file": "",
       "log_age_sec": 126549,
+      "log_age_sec": 17147,
       "last_state_at": "2026-05-25T19:26:43.369615+00:00",
       "last_state_todo": "wave-d-gui-scaffold",
       "last_state_gates": false,
@@ -894,6 +1287,8 @@
       "head": "32187436",
       "running": false,
       "process": "",
+      "running": true,
+      "process": "1074505 gh api repos/li-langverse/lic/compare/main...cursor/sim-algo-plan-loop",
       "log_path": "/home/s4il0r/Documents/Cursor/li-langverse/lic/../lic-worktrees/sim-algo/data/sim-plan-loop/runner.log",
       "todos": [
         {
@@ -1634,6 +2029,7 @@
       "agent": "",
       "goal_file": "",
       "log_age_sec": 126943,
+      "log_age_sec": 17541,
       "last_state_at": "2026-05-25T19:35:36.548468+00:00",
       "last_state_todo": "sim-p1-num-dot-axpy",
       "last_state_gates": false,
@@ -1649,6 +2045,7 @@
         "gates: FAIL"
       ],
       "status_note": "supervisor off",
+      "status_note": "supervisor idle (log 17541s stale \u2014 check log_path)",
       "active_todo_id": "sim-p1-num-dot-axpy"
     },
     {
@@ -1656,6 +2053,7 @@
       "name": "Studio UI/UX",
       "branch": "cursor/studio-ui-ux-plan-loop",
       "head": "d102c79e",
+      "head": "babe9195",
       "running": false,
       "process": "",
       "log_path": "/home/s4il0r/Documents/Cursor/li-langverse/lic/../lic-studio-ui/data/studio-ui-ux-plan-loop/runner.log",
@@ -1842,6 +2240,7 @@
       "agent": "",
       "goal_file": "",
       "log_age_sec": 127254,
+      "log_age_sec": 17852,
       "last_state_at": "2026-05-25T06:32:37.228062+00:00",
       "last_state_todo": "studio-ux-10-native-capture",
       "last_state_gates": true,
@@ -1925,6 +2324,7 @@
       "agent": "",
       "goal_file": "",
       "log_age_sec": 126525,
+      "log_age_sec": 17122,
       "last_state_at": "2026-05-25T19:42:04.198858+00:00",
       "last_state_todo": "md-r2-neighbor-list-gap",
       "last_state_gates": true,
@@ -2004,6 +2404,7 @@
       "agent": "",
       "goal_file": "",
       "log_age_sec": 127036,
+      "log_age_sec": 17633,
       "last_state_at": "2026-05-25T19:32:04.164094+00:00",
       "last_state_todo": "chem-r2-dft-scf-gap",
       "last_state_gates": false,
@@ -2076,6 +2477,7 @@
       "agent": "",
       "goal_file": "",
       "log_age_sec": 127188,
+      "log_age_sec": 17785,
       "last_state_at": "2026-05-25T19:29:32.615546+00:00",
       "last_state_todo": "sec-r1-httpd-fuzz-smoke",
       "last_state_gates": true,
@@ -2094,6 +2496,10 @@
       "running": true,
       "process": "348722 gh api repos/li-langverse/lic/compare/cursor/swarm-observer-plan-loop...chore/master-plan-gates-verticals",
       "log_path": "/home/s4il0r/Documents/Cursor/li-langverse/lic/../lic/data/swarm-observer-plan-loop/iter-20260525-184836.log",
+      "head": "c9bbe240",
+      "running": true,
+      "process": "1074474 python3 /home/s4il0r/Documents/Cursor/li-langverse/lic/scripts/goal-directed-agents-snapshot.py",
+      "log_path": "/home/s4il0r/Documents/Cursor/li-langverse/lic/../lic/data/swarm-observer-plan-loop/iter-20260525-193501.log",
       "todos": [
         {
           "id": "orch-r0-ingest-snapshot",
@@ -2103,7 +2509,7 @@
         {
           "id": "orch-r1-plan-debt-sync",
           "content": "Map goal-directed snapshot plan_pending per runner \u2192 registry plan_debt; patch loop backlogs where stale",
-          "status": "pending"
+          "status": "completed"
         },
         {
           "id": "orch-r2-competitor-stubs",
@@ -2125,6 +2531,9 @@
       "plan_total": 5,
       "plan_pending": [
         "orch-r1-plan-debt-sync",
+      "plan_completed": 2,
+      "plan_total": 5,
+      "plan_pending": [
         "orch-r2-competitor-stubs",
         "orch-r3-missing-package-sweep",
         "orch-r4-ui-ux-signals"
@@ -2134,6 +2543,10 @@
           "orch-r0-ingest-snapshot"
         ],
         "iterations": 1,
+          "orch-r0-ingest-snapshot",
+          "orch-r1-plan-debt-sync"
+        ],
+        "iterations": 2,
         "history": [
           {
             "at": "2026-05-25T19:09:59.208177+00:00",
@@ -2164,6 +2577,29 @@
       ],
       "status_note": "supervisor idle (log 50081s stale \u2014 check log_path)",
       "active_todo_id": "orch-r1-plan-debt-sync"
+          },
+          {
+            "at": "2026-05-25T19:34:28.890041+00:00",
+            "todo_id": "orch-r1-plan-debt-sync",
+            "agent_exit": 0,
+            "gates_ok": true
+          }
+        ]
+      },
+      "state_iterations": 2,
+      "agent_live": false,
+      "agent": "",
+      "goal_file": "",
+      "log_age_sec": 17576,
+      "last_state_at": "2026-05-25T19:34:28.890041+00:00",
+      "last_state_todo": "orch-r1-plan-debt-sync",
+      "last_state_gates": true,
+      "current_iteration": "",
+      "activity": [
+        "SDK tool activity streams to stderr ([sdk] \u25b6/\u2713 lines). Set LI_SDK_TERMINAL_STREAM=0 to disable."
+      ],
+      "status_note": "supervisor idle (log 17576s stale \u2014 check log_path)",
+      "active_todo_id": "orch-r2-competitor-stubs"
     }
   ],
   "history": [
@@ -2199,12 +2635,16 @@
       "runner": "compiler-studio",
       "at": "2026-05-25T19:26:43.369615+00:00",
       "todo_id": "wave-d-gui-scaffold",
+      "runner": "httpd",
+      "at": "2026-05-25T19:50:00.582195+00:00",
+      "todo_id": "gap-httpd-gap-httpd-gap-httpd-gap-phase2-mitigatio",
       "agent_exit": 1,
       "gates_ok": false
     },
     {
       "runner": "sim-md-research",
       "at": "2026-05-25T19:23:10.135969+00:00",
+      "at": "2026-05-25T19:42:04.198858+00:00",
       "todo_id": "md-r2-neighbor-list-gap",
       "agent_exit": 0,
       "gates_ok": false
@@ -2212,6 +2652,7 @@
     {
       "runner": "sim",
       "at": "2026-05-25T19:18:32.771185+00:00",
+      "at": "2026-05-25T19:35:36.548468+00:00",
       "todo_id": "sim-p1-num-dot-axpy",
       "agent_exit": 0,
       "gates_ok": false
@@ -2241,6 +2682,8 @@
       "runner": "compiler-studio",
       "at": "2026-05-25T18:56:44.778223+00:00",
       "todo_id": "wave-d-gui-scaffold",
+      "at": "2026-05-25T19:34:28.890041+00:00",
+      "todo_id": "orch-r1-plan-debt-sync",
       "agent_exit": 0,
       "gates_ok": true
     },
@@ -2248,6 +2691,59 @@
       "runner": "sim-md-research",
       "at": "2026-05-25T18:55:29.188178+00:00",
       "todo_id": "md-r1-stability-matrix",
+      "agent_exit": 0,
+      "runner": "sim-chem-research",
+      "at": "2026-05-25T19:32:04.164094+00:00",
+      "todo_id": "chem-r2-dft-scf-gap",
+      "agent_exit": 0,
+      "gates_ok": false
+    },
+    {
+      "runner": "security-research",
+      "at": "2026-05-25T19:29:32.615546+00:00",
+      "todo_id": "sec-r1-httpd-fuzz-smoke",
+      "agent_exit": 1,
+      "gates_ok": true
+    },
+    {
+      "runner": "httpd",
+      "at": "2026-05-25T19:28:13.116129+00:00",
+      "todo_id": "gap-httpd-gap-httpd-gap-phase2-mitigation-exploits",
+      "agent_exit": 0,
+      "gates_ok": true
+    },
+    {
+      "runner": "compiler-studio",
+      "at": "2026-05-25T19:26:43.369615+00:00",
+      "todo_id": "wave-d-gui-scaffold",
+      "agent_exit": 1,
+      "gates_ok": false
+    },
+    {
+      "runner": "sim-md-research",
+      "at": "2026-05-25T19:23:10.135969+00:00",
+      "todo_id": "md-r2-neighbor-list-gap",
+      "agent_exit": 0,
+      "gates_ok": false
+    },
+    {
+      "runner": "sim",
+      "at": "2026-05-25T19:18:32.771185+00:00",
+      "todo_id": "sim-p1-num-dot-axpy",
+      "agent_exit": 0,
+      "gates_ok": false
+    },
+    {
+      "runner": "swarm-observer",
+      "at": "2026-05-25T19:09:59.208177+00:00",
+      "todo_id": "orch-r0-ingest-snapshot",
+      "agent_exit": 0,
+      "gates_ok": true
+    },
+    {
+      "runner": "security-research",
+      "at": "2026-05-25T19:08:08.544345+00:00",
+      "todo_id": "sec-r0-cwe-delta",
       "agent_exit": 0,
       "gates_ok": true
     }

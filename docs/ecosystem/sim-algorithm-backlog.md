@@ -31,16 +31,16 @@ todos:
   status: pending
 
 - id: sim-p1-num-dot-axpy
-  content: "Implement algo_id=1 num_dot_axpy in li-math-numerics + bench-package gate"
+  content: "sim: pending plan todo sim-p1-num-dot-axpy — gap orchestrator"
   status: pending
 
 - id: sim-p1-md-neighbor-cell
-  content: "Implement algo_id=105 md_neighbor_cell_list stub→smoke in li-physics-particles"
+  content: "sim: pending plan todo sim-p1-md-neighbor-cell — gap orchestrator"
   status: pending
   study: docs/numerics/studies/2026-05-25-md-r2-neighbor-list-gap.md
 
 - id: sim-p2-qm-dft-scf
-  content: "Implement algo_id=418 qm_dft_scf_energy minimal SCF stub with summary metrics"
+  content: "sim: pending plan todo sim-p2-qm-dft-scf — gap orchestrator"
   status: pending
 
 ---

@@ -1,5 +1,6 @@
 version: 1
 updated_at: '2026-05-25T19:07:51Z'
+updated_at: '2026-05-26T06:18:44Z'
 gaps:
 - id: gap-line-profiler-001
   gap_kind: missing_package
@@ -17,11 +18,12 @@ gaps:
 - id: gap-missing-std-std-io
   gap_kind: missing_package
   title: Missing std module std.io
-  status: open
+  status: closed
   priority: 6
   discovered_by: gap_explorer
   evidence:
   - CSV/file ingest without Python
+  - ecosystem-explorer.json missing_std_modules status=present 2026-05-26
   ph_id: PH-IO-4
   target_backlog: docs/ecosystem/ecosystem-package-backlog.md
   target_todo_id: pkg-std-io
@@ -32,11 +34,12 @@ gaps:
 - id: gap-missing-std-std-csv
   gap_kind: missing_package
   title: Missing std module std.csv
-  status: open
+  status: closed
   priority: 6
   discovered_by: gap_explorer
   evidence:
   - Benchmark CSV parsing in Li
+  - ecosystem-explorer.json missing_std_modules status=present 2026-05-26
   ph_id: PH-IO-4
   target_backlog: docs/ecosystem/ecosystem-package-backlog.md
   target_todo_id: pkg-std-csv
@@ -196,11 +199,12 @@ gaps:
 - id: gap-plan-pending-httpd-gap-phase2-perf-wrk-soak
   gap_kind: plan_debt
   title: 'httpd: pending plan todo gap-phase2-perf-wrk-soak'
-  status: open
+  status: closed
   priority: 7
   discovered_by: plan_verifier
   evidence:
   - snapshot runner=httpd plan_pending=gap-phase2-perf-wrk-soak
+  - deduped to gap-plan-pending-httpd-gap-httpd-gap-httpd-gap-phase2-perf-wrk-soak
   runner_id: httpd
   plan_todo_id: gap-phase2-perf-wrk-soak
   suggested_loop: httpd
@@ -209,11 +213,13 @@ gaps:
 - id: gap-plan-pending-httpd-gap-phase2-mitigation-exploits
   gap_kind: plan_debt
   title: 'httpd: pending plan todo gap-phase2-mitigation-exploits'
-  status: open
+  status: closed
   priority: 7
   discovered_by: plan_verifier
   evidence:
   - snapshot runner=httpd plan_pending=gap-phase2-mitigation-exploits
+  - snapshot httpd completed_ids includes gap-phase2-mitigation-exploits
+  - 'orch-r1: dedupe or complete'
   runner_id: httpd
   plan_todo_id: gap-phase2-mitigation-exploits
   suggested_loop: httpd
@@ -222,11 +228,12 @@ gaps:
 - id: gap-plan-pending-httpd-gap-phase2-streaming-wrk
   gap_kind: plan_debt
   title: 'httpd: pending plan todo gap-phase2-streaming-wrk'
-  status: open
+  status: closed
   priority: 7
   discovered_by: plan_verifier
   evidence:
   - snapshot runner=httpd plan_pending=gap-phase2-streaming-wrk
+  - deduped to gap-plan-pending-httpd-gap-httpd-gap-httpd-gap-phase2-streaming-wrk
   runner_id: httpd
   plan_todo_id: gap-phase2-streaming-wrk
   suggested_loop: httpd
@@ -274,11 +281,12 @@ gaps:
 - id: gap-plan-pending-studio-ui-ux-studio-ux-04-particle-display
   gap_kind: plan_debt
   title: 'studio-ui-ux: pending plan todo studio-ux-04-particle-display'
-  status: open
+  status: closed
   priority: 7
   discovered_by: plan_verifier
   evidence:
   - snapshot runner=studio-ui-ux plan_pending=studio-ux-04-particle-display
+  - snapshot studio-ui-ux completed_ids includes studio-ux-04-particle-display
   runner_id: studio-ui-ux
   plan_todo_id: studio-ux-04-particle-display
   suggested_loop: studio-ui-ux
@@ -287,11 +295,12 @@ gaps:
 - id: gap-plan-pending-studio-ui-ux-studio-ux-05-studio-compose
   gap_kind: plan_debt
   title: 'studio-ui-ux: pending plan todo studio-ux-05-studio-compose'
-  status: open
+  status: closed
   priority: 7
   discovered_by: plan_verifier
   evidence:
   - snapshot runner=studio-ui-ux plan_pending=studio-ux-05-studio-compose
+  - snapshot studio-ui-ux completed_ids includes studio-ux-05-studio-compose
   runner_id: studio-ui-ux
   plan_todo_id: studio-ux-05-studio-compose
   suggested_loop: studio-ui-ux
@@ -300,11 +309,12 @@ gaps:
 - id: gap-plan-pending-studio-ui-ux-studio-ux-06-agent-chrome
   gap_kind: plan_debt
   title: 'studio-ui-ux: pending plan todo studio-ux-06-agent-chrome'
-  status: open
+  status: closed
   priority: 7
   discovered_by: plan_verifier
   evidence:
   - snapshot runner=studio-ui-ux plan_pending=studio-ux-06-agent-chrome
+  - snapshot studio-ui-ux completed_ids includes studio-ux-06-agent-chrome
   runner_id: studio-ui-ux
   plan_todo_id: studio-ux-06-agent-chrome
   suggested_loop: studio-ui-ux
@@ -313,11 +323,12 @@ gaps:
 - id: gap-plan-pending-studio-ui-ux-studio-ux-07-capture-harness
   gap_kind: plan_debt
   title: 'studio-ui-ux: pending plan todo studio-ux-07-capture-harness'
-  status: open
+  status: closed
   priority: 7
   discovered_by: plan_verifier
   evidence:
   - snapshot runner=studio-ui-ux plan_pending=studio-ux-07-capture-harness
+  - snapshot studio-ui-ux completed_ids includes studio-ux-07-capture-harness
   runner_id: studio-ui-ux
   plan_todo_id: studio-ux-07-capture-harness
   suggested_loop: studio-ui-ux
@@ -326,11 +337,12 @@ gaps:
 - id: gap-plan-pending-studio-ui-ux-studio-ux-08-bench-registry
   gap_kind: plan_debt
   title: 'studio-ui-ux: pending plan todo studio-ux-08-bench-registry'
-  status: open
+  status: closed
   priority: 7
   discovered_by: plan_verifier
   evidence:
   - snapshot runner=studio-ui-ux plan_pending=studio-ux-08-bench-registry
+  - snapshot studio-ui-ux completed_ids includes studio-ux-08-bench-registry
   runner_id: studio-ui-ux
   plan_todo_id: studio-ux-08-bench-registry
   suggested_loop: studio-ui-ux
@@ -339,11 +351,12 @@ gaps:
 - id: gap-plan-pending-studio-ui-ux-studio-ux-09-memory-budget
   gap_kind: plan_debt
   title: 'studio-ui-ux: pending plan todo studio-ux-09-memory-budget'
-  status: open
+  status: closed
   priority: 7
   discovered_by: plan_verifier
   evidence:
   - snapshot runner=studio-ui-ux plan_pending=studio-ux-09-memory-budget
+  - snapshot studio-ui-ux completed_ids includes studio-ux-09-memory-budget
   runner_id: studio-ui-ux
   plan_todo_id: studio-ux-09-memory-budget
   suggested_loop: studio-ui-ux
@@ -352,11 +365,12 @@ gaps:
 - id: gap-plan-pending-studio-ui-ux-studio-ux-10-native-capture
   gap_kind: plan_debt
   title: 'studio-ui-ux: pending plan todo studio-ux-10-native-capture'
-  status: open
+  status: closed
   priority: 7
   discovered_by: plan_verifier
   evidence:
   - snapshot runner=studio-ui-ux plan_pending=studio-ux-10-native-capture
+  - snapshot studio-ui-ux completed_ids includes studio-ux-10-native-capture
   runner_id: studio-ui-ux
   plan_todo_id: studio-ux-10-native-capture
   suggested_loop: studio-ui-ux
@@ -365,11 +379,12 @@ gaps:
 - id: gap-plan-pending-sim-md-research-md-r1-stability-matrix
   gap_kind: plan_debt
   title: 'sim-md-research: pending plan todo md-r1-stability-matrix'
-  status: open
+  status: closed
   priority: 7
   discovered_by: plan_verifier
   evidence:
   - snapshot runner=sim-md-research plan_pending=md-r1-stability-matrix
+  - snapshot sim-md-research completed_ids includes md-r1-stability-matrix
   runner_id: sim-md-research
   plan_todo_id: md-r1-stability-matrix
   suggested_loop: sim-md-research
@@ -378,11 +393,12 @@ gaps:
 - id: gap-plan-pending-sim-md-research-md-r2-neighbor-list-gap
   gap_kind: plan_debt
   title: 'sim-md-research: pending plan todo md-r2-neighbor-list-gap'
-  status: open
+  status: closed
   priority: 7
   discovered_by: plan_verifier
   evidence:
   - snapshot runner=sim-md-research plan_pending=md-r2-neighbor-list-gap
+  - snapshot sim-md-research completed_ids includes md-r2-neighbor-list-gap
   runner_id: sim-md-research
   plan_todo_id: md-r2-neighbor-list-gap
   suggested_loop: sim-md-research
@@ -404,11 +420,12 @@ gaps:
 - id: gap-plan-pending-sim-chem-research-chem-r0-sota-survey
   gap_kind: plan_debt
   title: 'sim-chem-research: pending plan todo chem-r0-sota-survey'
-  status: open
+  status: closed
   priority: 7
   discovered_by: plan_verifier
   evidence:
   - snapshot runner=sim-chem-research plan_pending=chem-r0-sota-survey
+  - snapshot sim-chem-research completed_ids includes chem-r0-sota-survey
   runner_id: sim-chem-research
   plan_todo_id: chem-r0-sota-survey
   suggested_loop: sim-chem-research
@@ -417,11 +434,12 @@ gaps:
 - id: gap-plan-pending-sim-chem-research-chem-r1-basis-size-scaling
   gap_kind: plan_debt
   title: 'sim-chem-research: pending plan todo chem-r1-basis-size-scaling'
-  status: open
+  status: closed
   priority: 7
   discovered_by: plan_verifier
   evidence:
   - snapshot runner=sim-chem-research plan_pending=chem-r1-basis-size-scaling
+  - snapshot sim-chem-research completed_ids includes chem-r1-basis-size-scaling
   runner_id: sim-chem-research
   plan_todo_id: chem-r1-basis-size-scaling
   suggested_loop: sim-chem-research
@@ -470,11 +488,12 @@ gaps:
 - id: gap-plan-pending-swarm-observer-orch-r1-plan-debt-sync
   gap_kind: plan_debt
   title: 'swarm-observer: pending plan todo orch-r1-plan-debt-sync'
-  status: open
+  status: closed
   priority: 7
   discovered_by: plan_verifier
   evidence:
   - snapshot runner=swarm-observer plan_pending=orch-r1-plan-debt-sync
+  - 'orch-r1: dedupe or complete'
   runner_id: swarm-observer
   plan_todo_id: orch-r1-plan-debt-sync
   suggested_loop: swarm-observer
@@ -523,10 +542,13 @@ gaps:
   gap_kind: plan_debt
   title: 'httpd: pending plan todo gap-httpd-gap-phase2-perf-wrk-soak'
   status: open
+  status: closed
   priority: 7
   discovered_by: plan_verifier
   evidence:
   - snapshot runner=httpd plan_pending=gap-httpd-gap-phase2-perf-wrk-soak
+  - deduped to gap-plan-pending-httpd-gap-httpd-gap-httpd-gap-phase2-perf-wrk-soak
+  - 'orch-r1: dedupe or complete'
   runner_id: httpd
   plan_todo_id: gap-httpd-gap-phase2-perf-wrk-soak
   suggested_loop: httpd
@@ -536,10 +558,13 @@ gaps:
   gap_kind: plan_debt
   title: 'httpd: pending plan todo gap-httpd-gap-phase2-mitigation-exploits'
   status: open
+  status: closed
   priority: 7
   discovered_by: plan_verifier
   evidence:
   - snapshot runner=httpd plan_pending=gap-httpd-gap-phase2-mitigation-exploits
+  - snapshot httpd completed_ids includes gap-phase2-mitigation-exploits
+  - 'orch-r1: dedupe or complete'
   runner_id: httpd
   plan_todo_id: gap-httpd-gap-phase2-mitigation-exploits
   suggested_loop: httpd
@@ -549,10 +574,13 @@ gaps:
   gap_kind: plan_debt
   title: 'httpd: pending plan todo gap-httpd-gap-phase2-streaming-wrk'
   status: open
+  status: closed
   priority: 7
   discovered_by: plan_verifier
   evidence:
   - snapshot runner=httpd plan_pending=gap-httpd-gap-phase2-streaming-wrk
+  - deduped to gap-plan-pending-httpd-gap-httpd-gap-httpd-gap-phase2-streaming-wrk
+  - 'orch-r1: dedupe or complete'
   runner_id: httpd
   plan_todo_id: gap-httpd-gap-phase2-streaming-wrk
   suggested_loop: httpd
@@ -562,10 +590,12 @@ gaps:
   gap_kind: plan_debt
   title: 'security-research: pending plan todo sec-r0-cwe-delta'
   status: open
+  status: closed
   priority: 7
   discovered_by: plan_verifier
   evidence:
   - snapshot runner=security-research plan_pending=sec-r0-cwe-delta
+  - snapshot security-research completed_ids includes sec-r0-cwe-delta
   runner_id: security-research
   plan_todo_id: sec-r0-cwe-delta
   suggested_loop: security-research
@@ -614,10 +644,12 @@ gaps:
   gap_kind: plan_debt
   title: 'httpd: pending plan todo gap-httpd-gap-httpd-gap-phase2-perf-wrk-soak'
   status: open
+  status: closed
   priority: 7
   discovered_by: plan_verifier
   evidence:
   - snapshot runner=httpd plan_pending=gap-httpd-gap-httpd-gap-phase2-perf-wrk-soak
+  - 'orch-r1: dedupe or complete'
   runner_id: httpd
   plan_todo_id: gap-httpd-gap-httpd-gap-phase2-perf-wrk-soak
   suggested_loop: httpd
@@ -627,10 +659,13 @@ gaps:
   gap_kind: plan_debt
   title: 'httpd: pending plan todo gap-httpd-gap-httpd-gap-phase2-mitigation-exploits'
   status: open
+  status: closed
   priority: 7
   discovered_by: plan_verifier
   evidence:
   - snapshot runner=httpd plan_pending=gap-httpd-gap-httpd-gap-phase2-mitigation-exploits
+  - snapshot httpd completed_ids includes gap-phase2-mitigation-exploits
+  - 'orch-r1: dedupe or complete'
   runner_id: httpd
   plan_todo_id: gap-httpd-gap-httpd-gap-phase2-mitigation-exploits
   suggested_loop: httpd
@@ -640,12 +675,301 @@ gaps:
   gap_kind: plan_debt
   title: 'httpd: pending plan todo gap-httpd-gap-httpd-gap-phase2-streaming-wrk'
   status: open
+  status: closed
   priority: 7
   discovered_by: plan_verifier
   evidence:
   - snapshot runner=httpd plan_pending=gap-httpd-gap-httpd-gap-phase2-streaming-wrk
+  - 'orch-r1: dedupe or complete'
   runner_id: httpd
   plan_todo_id: gap-httpd-gap-httpd-gap-phase2-streaming-wrk
   suggested_loop: httpd
   handoff_to:
   - swarm_observer
+- id: gap-plan-debt-lic-master-plan-phase-8p-parallel-compile-ci-thr
+  gap_kind: plan_debt
+  title: "Phase 8p \u2014 Parallel compile + CI throughput \u2014 **partial (8p-a/b/c/d):**\
+    \ 8p-a parallel `run_all` + isolated `LI_BUILD_DIR"
+  status: open
+  priority: 5
+  discovered_by: plan_verifier
+  evidence:
+  - "lic:master_plan: Phase 8p \u2014 Parallel compile + CI throughput \u2014 **partial\
+    \ (8p-a/b/c/d):** 8p-a parallel `run_all` + isolated `LI_BUILD_DIR"
+  target_backlog: null
+  suggested_loop: null
+  handoff_to:
+  - plan_verifier
+  - issue_planner
+- id: gap-competitor-pure-li-ph7e-catalog
+  gap_kind: competitor_feature
+  title: Increase pure_li catalog variants for PH-7e codegen proof
+  status: open
+  priority: 6
+  discovered_by: gap_explorer
+  evidence:
+  - ecosystem-explorer.json catalog.suggested_catalog_gaps
+  - ecosystem-quality-report finding benchmark-red-rows
+  handoff_to:
+  - numerics_researcher
+  - bench_improver
+- id: gap-hpc-kokkos-execution-memory-spaces
+  gap_kind: competitor_feature
+  title: 'Kokkos-class execution model: parallel_for, Views, GPU memory spaces'
+  status: open
+  priority: 7
+  discovered_by: gap_explorer
+  evidence:
+  - ecosystem-explorer.json hpc_libraries[kokkos] li_status=missing
+  - https://github.com/kokkos/kokkos
+  - lic issue
+  ph_id: PH-7e
+  handoff_to:
+  - numerics_researcher
+  - issue_planner
+- id: gap-hpc-petsc-kokkos-implicit-pde
+  gap_kind: competitor_feature
+  title: PETSc 3.25 Kokkos-native KSP/PC (aijkokkos, PCBJKOKKOS) implicit PDE stack
+  status: open
+  priority: 7
+  discovered_by: gap_explorer
+  evidence:
+  - ecosystem-explorer.json hpc_libraries[petsc]
+  - https://petsc.org/release/manualpages/Vec/VecGetKokkosView/
+  - lic issue
+  ph_id: PH-5b
+  handoff_to:
+  - numerics_researcher
+- id: gap-hpc-fftw-roofline-catalog-row
+  gap_kind: competitor_feature
+  title: 'Tier-1 FFT micro-bench: FFTW vs vendor GPU roofline (cuFFT/VkFFT/heFFTe)'
+  status: open
+  priority: 6
+  discovered_by: gap_explorer
+  evidence:
+  - ecosystem-explorer.json hpc_libraries[fftw]
+  - benchmarks issues
+  - https://arxiv.org/html/2506.08653v1
+  handoff_to:
+  - bench_improver
+  - gap_explorer
+- id: gap-hpc-hypre-boomeramg-tier2-pde
+  gap_kind: competitor_feature
+  title: hypre BoomerAMG + parallel CSR for large-scale implicit PDE
+  status: open
+  priority: 6
+  discovered_by: gap_explorer
+  evidence:
+  - ecosystem-explorer.json hpc_libraries[hypre]
+  - lic issue
+  ph_id: PH-5b
+  handoff_to:
+  - numerics_researcher
+- id: gap-benchmark-red-matmul-naive-tier1
+  gap_kind: competitor_feature
+  title: 'Tier-1 red: matmul_naive 1.73x vs cpp (Eigen/MKL class)'
+  status: open
+  priority: 8
+  discovered_by: gap_explorer
+  evidence:
+  - ecosystem-audit.json benchmarks.red matmul_naive
+  - li-tests tier-1 harness
+  - ecosystem-quality-report finding benchmark-red-rows
+  ph_id: PH-7e
+  handoff_to:
+  - bench_improver
+  - numerics_researcher
+- id: gap-benchmark-red-num-gmres-tier1
+  gap_kind: competitor_feature
+  title: 'Tier-1 red: num_gmres 1.68x vs cpp (iterative solver class)'
+  status: open
+  priority: 8
+  discovered_by: gap_explorer
+  evidence:
+  - ecosystem-audit.json benchmarks.red num_gmres
+  - docs/numerics GMRES harness
+  ph_id: PH-5b
+  handoff_to:
+  - numerics_researcher
+- id: gap-vertical-stub-md-lennard-jones
+  gap_kind: competitor_feature
+  title: 'verticals.toml stub/honesty: md_lennard_jones (LAMMPS/GROMACS)'
+  status: open
+  priority: 4
+  discovered_by: gap_explorer
+  evidence:
+  - verticals.toml workload_class=stub
+  - not LAMMPS/GROMACS parity
+  suggested_loop: sim-md-research
+  handoff_to:
+  - numerics_researcher
+- id: gap-vertical-stub-pde-heat-2d
+  gap_kind: competitor_feature
+  title: 'verticals.toml stub/honesty: pde_heat_2d (OpenFOAM/PETSc)'
+  status: open
+  priority: 4
+  discovered_by: gap_explorer
+  evidence:
+  - verticals.toml workload_class=stub
+  handoff_to:
+  - numerics_researcher
+- id: gap-vertical-stub-fea-linear-elasticity
+  gap_kind: competitor_feature
+  title: 'verticals.toml stub/honesty: fea_linear_elasticity (CalculiX/ANSYS)'
+  status: open
+  priority: 4
+  discovered_by: gap_explorer
+  evidence:
+  - verticals.toml no bench oracle yet
+  handoff_to:
+  - numerics_researcher
+- id: gap-vertical-stub-cfd-lid-driven-cavity
+  gap_kind: competitor_feature
+  title: 'verticals.toml stub/honesty: cfd_lid_driven_cavity (OpenFOAM/COMSOL)'
+  status: open
+  priority: 4
+  discovered_by: gap_explorer
+  evidence:
+  - verticals.toml PH-CAE CFD track
+  handoff_to:
+  - numerics_researcher
+- id: gap-infra-verticals-toml-missing-benchmarks-main
+  gap_kind: competitor_feature
+  title: "benchmarks/competitive/verticals.toml missing on main \u2014 blocks swarm-gap\
+    \ vertical ingest"
+  status: open
+  priority: 5
+  discovered_by: gap_explorer
+  evidence:
+  - swarm-gap-ingest.py ingest_verticals_stubs returned 0
+  - lic-worktrees/compiler-studio/benchmarks/competitive/verticals.toml exists
+  handoff_to:
+  - gap_explorer
+  - docs_maintainer
+- id: gap-benchmark-red-num-integ-euler-tier1
+  gap_kind: competitor_feature
+  title: 'Tier-1 red: num_integ_euler 1.40x vs cpp (explicit integrator class)'
+  status: open
+  priority: 7
+  discovered_by: gap_explorer
+  evidence:
+  - ecosystem-audit.json benchmarks.red num_integ_euler
+  - li-tests/ numerics tier-2 integrators
+  - ecosystem-quality-report finding benchmark-red-rows
+  ph_id: PH-5b
+  handoff_to:
+  - numerics_researcher
+  - bench_improver
+- id: gap-benchmark-red-num-integ-verlet-tier1
+  gap_kind: competitor_feature
+  title: 'Tier-1 red: num_integ_verlet 1.35x vs cpp (symplectic integrator class)'
+  status: open
+  priority: 7
+  discovered_by: gap_explorer
+  evidence:
+  - ecosystem-audit.json benchmarks.red num_integ_verlet
+  - docs/numerics/ integrator harness
+  ph_id: PH-5b
+  handoff_to:
+  - numerics_researcher
+- id: gap-benchmark-red-num-opt-line-search-tier1
+  gap_kind: competitor_feature
+  title: 'Tier-1 red: num_opt_line_search 2.00x vs cpp (optimization microbench)'
+  status: open
+  priority: 8
+  discovered_by: gap_explorer
+  evidence:
+  - ecosystem-audit.json benchmarks.red num_opt_line_search
+  - ecosystem-quality-report finding benchmark-red-rows
+  ph_id: PH-5b
+  handoff_to:
+  - numerics_researcher
+  - bench_improver
+- id: gap-benchmark-red-cloth-swing-tier1
+  gap_kind: competitor_feature
+  title: 'Tier-1 red: cloth_swing 1.37x vs cpp (physics tier-2)'
+  status: open
+  priority: 7
+  discovered_by: gap_explorer
+  evidence:
+  - ecosystem-audit.json benchmarks.red cloth_swing
+  - li-physics-rigid / tier-2 physics benches
+  ph_id: PH-5b
+  handoff_to:
+  - numerics_researcher
+- id: gap-benchmark-red-orbit-two-body-tier1
+  gap_kind: competitor_feature
+  title: 'Tier-1 red: orbit_two_body 1.69x vs cpp (N-body integrator)'
+  status: open
+  priority: 7
+  discovered_by: gap_explorer
+  evidence:
+  - ecosystem-audit.json benchmarks.red orbit_two_body
+  ph_id: PH-5b
+  handoff_to:
+  - numerics_researcher
+- id: gap-benchmark-red-schrodinger-1d-barrier-tier1
+  gap_kind: competitor_feature
+  title: 'Tier-1 red: schrodinger_1d_barrier 1.77x vs cpp (quantum PDE stub)'
+  status: open
+  priority: 7
+  discovered_by: gap_explorer
+  evidence:
+  - ecosystem-audit.json benchmarks.red schrodinger_1d_barrier
+  - std.physics.quantum tier-2
+  ph_id: PH-5b
+  handoff_to:
+  - numerics_researcher
+- id: gap-hpc-raja-execution-policies
+  gap_kind: competitor_feature
+  title: RAJA policy-based loop abstractions vs Li std/execution decorators
+  status: open
+  priority: 6
+  discovered_by: gap_explorer
+  evidence:
+  - ecosystem-explorer.json hpc_libraries[raja] li_status=missing
+  - https://arxiv.org/html/2402.08950v1
+  - lic issue
+  ph_id: PH-7e
+  handoff_to:
+  - numerics_researcher
+  - issue_planner
+- id: gap-hpc-sundials-stiff-ode-sensitivity
+  gap_kind: competitor_feature
+  title: SUNDIALS-class stiff ODE + sensitivity vs tier-2 Li integrators
+  status: open
+  priority: 6
+  discovered_by: gap_explorer
+  evidence:
+  - ecosystem-explorer.json hpc_libraries[sundials] li_status=partial
+  - lic issue
+  ph_id: PH-5b
+  handoff_to:
+  - numerics_researcher
+- id: gap-hpc-openmp-llvm-lowering-rubric
+  gap_kind: competitor_feature
+  title: OpenMP prescriptive vs descriptive lowering rubric for portable codegen
+  status: open
+  priority: 6
+  discovered_by: gap_explorer
+  evidence:
+  - ecosystem-explorer.json hpc_libraries[openmp] li_status=partial
+  - https://www.osti.gov/servlets/purl/2224192
+  - lic issues
+  ph_id: PH-7e
+  handoff_to:
+  - numerics_researcher
+- id: gap-competitor-chapel-hpsf-productivity
+  gap_kind: competitor_feature
+  title: Chapel 2.x HPSF productivity parallel language vs Li PH-7d execution
+  status: open
+  priority: 5
+  discovered_by: gap_explorer
+  evidence:
+  - https://chapel-lang.org/blog/posts/announcing-chapel-2.0/
+  - https://github.com/chapel-lang/chapel/releases/tag/2.8.0
+  - https://hpsf.io/blog/2025/hpsf-welcomes-chapel/
+  ph_id: PH-7d
+  handoff_to:
+  - gap_explorer
+  - issue_planner

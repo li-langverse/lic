@@ -408,6 +408,7 @@ const char* li_rt_studio_mcp_tool_name(int32_t tool_id) {
 /* PH-UX viewport display — CPU paint_blit placeholders (not wgpu MD/PDB). */
 static int32_t g_studio_viewport_bg = 0;
 static int32_t g_studio_viewport_particle_tier = -1;
+static int32_t g_studio_viewport_particle_draw_points = 0;
 static int32_t g_studio_viewport_biomol_style = 0;
 
 int32_t li_rt_studio_viewport_display_bg(void) { return g_studio_viewport_bg; }
@@ -427,7 +428,24 @@ int32_t li_rt_studio_viewport_display_set_particle_tier(int32_t tier_id) {
     return g_studio_viewport_particle_tier;
   }
   g_studio_viewport_particle_tier = tier_id;
+  g_studio_viewport_particle_draw_points = 0;
   return g_studio_viewport_particle_tier;
+}
+
+int32_t li_rt_studio_viewport_display_particle_draw_points(void) {
+  return g_studio_viewport_particle_draw_points;
+}
+
+int32_t li_rt_studio_viewport_display_sync_scientific_step(int32_t tier_id, int32_t draw_points) {
+  if (tier_id < -1 || tier_id > 2) {
+    return 0;
+  }
+  if (draw_points < 0) {
+    return 0;
+  }
+  g_studio_viewport_particle_tier = tier_id;
+  g_studio_viewport_particle_draw_points = draw_points;
+  return 1;
 }
 
 int32_t li_rt_studio_viewport_display_biomol_style(void) { return g_studio_viewport_biomol_style; }
@@ -443,15 +461,18 @@ int32_t li_rt_studio_viewport_display_set_biomol_style(int32_t style) {
 int32_t li_rt_studio_viewport_display_reset_defaults(int32_t profile_id) {
   g_studio_viewport_bg = 0;
   g_studio_viewport_particle_tier = -1;
+  g_studio_viewport_particle_draw_points = 0;
   g_studio_viewport_biomol_style = 0;
   if (profile_id == 6) {
     g_studio_viewport_bg = 1;
     g_studio_viewport_particle_tier = 1;
+    g_studio_viewport_particle_draw_points = 10000;
     g_studio_viewport_biomol_style = 0;
   }
   if (profile_id == 7) {
     g_studio_viewport_bg = 2;
     g_studio_viewport_particle_tier = 0;
+    g_studio_viewport_particle_draw_points = 1000;
     g_studio_viewport_biomol_style = 1;
   }
   return 1;

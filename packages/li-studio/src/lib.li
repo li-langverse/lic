@@ -1752,8 +1752,12 @@ def studio_sim_scientific_step_hook(sim_out: var SimSessionStub, dt: float) -> i
     tier = scene_md_tier_10k()
   if studio_md_particle_tier_select_ok(tier) != 1:
     tier = scene_md_tier_1k()
-  var draw: SceneParticleDraw = scene_bench_particle_tier_simulate(tier)
-  if li_rt_studio_viewport_display_sync_scientific_step(tier, draw.draw_points) != 1:
+  var tier_meta: SceneMdParticleTier = scene_md_particle_tier_by_id(tier)
+  var _bench: SceneParticleDraw = scene_bench_particle_tier_simulate(tier)
+  var particle_n: int = tier_meta.particles
+  if _bench.draw_points > 0:
+    particle_n = _bench.draw_points
+  if li_rt_studio_viewport_display_sync_scientific_step(tier, particle_n) != 1:
     return sim_status_invalid_dt()
   if sim_step(sim_out, dt) != sim_status_ok():
     return sim_status_invalid_dt()
@@ -1863,6 +1867,33 @@ def studio_game_world_checkpoint_roundtrip(session: SimSessionStub) raises Alloc
     return 0
   var buf: str = world_save_to_buffer(snap)
   var loaded: WorldSnapshot = world_load_from_buffer(buf)
+  if studio_game_world_checkpoint_stub(loaded) != 1:
+    return 0
+  if world_snapshot_fields_match(snap, loaded) != 1:
+    return 0
+  return 1
+
+def studio_game_world_checkpoint_path() raises Alloc, IO -> str
+  requires true
+  ensures result != ""
+  decreases 0
+=
+  return world_checkpoint_path_default()
+
+def studio_game_world_checkpoint_file_roundtrip(session: SimSessionStub) raises Alloc, IO -> int
+  requires session.tick >= 0
+  ensures result >= 0
+  ensures result <= 1
+  decreases session.tick
+=
+  var snap: WorldSnapshot = studio_game_world_checkpoint_from_session(session)
+  if studio_game_world_checkpoint_stub(snap) != 1:
+    return 0
+  var path_save: str = studio_game_world_checkpoint_path()
+  if world_save_to_path(snap, path_save) != 1:
+    return 0
+  var path_load: str = studio_game_world_checkpoint_path()
+  var loaded: WorldSnapshot = world_load_from_path(path_load)
   if studio_game_world_checkpoint_stub(loaded) != 1:
     return 0
   if world_snapshot_fields_match(snap, loaded) != 1:

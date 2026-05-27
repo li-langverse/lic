@@ -9,6 +9,7 @@ import sim.additive
 import sim.drug_design
 import scene
 import physics.runtime
+import world
 import lig
 import lig.present
 import lig.memory
@@ -1241,9 +1242,66 @@ def studio_game_step_hook(frame_dt: float) -> int
   ensures result <= 1
   decreases 0
 =
-  var world: PhysicsWorld = physics_world_game_default()
-  physics_step(world, frame_dt)
+  var phys: PhysicsWorld = physics_world_game_default()
+  physics_step(phys, frame_dt)
   return sim_status_ok()
+
+# PH-GD-2 — game world checkpoint scaffold (li-world text line; no scene graph yet).
+def studio_game_entity_count_stub() -> int
+  requires true
+  ensures result == 1
+  decreases 0
+=
+  return 1
+
+def studio_game_world_checkpoint_from_session(session: SimSessionStub) -> WorldSnapshot
+  requires session.tick >= 0
+  ensures world_snapshot_valid(result) == 1
+  ensures result.name == world_name_slot_arena()
+  ensures result.tick == session.tick
+  ensures result.entity_count == studio_game_entity_count_stub()
+  decreases session.tick
+=
+  var snap: WorldSnapshot
+  snap.name = world_name_slot_arena()
+  snap.tick = session.tick
+  snap.entity_count = studio_game_entity_count_stub()
+  return snap
+
+def studio_game_world_checkpoint_stub(snapshot: WorldSnapshot) -> int
+  requires true
+  ensures result >= 0
+  ensures result <= 1
+  decreases snapshot.tick
+=
+  if world_snapshot_valid(snapshot) != 1:
+    return 0
+  if snapshot.name != world_name_slot_arena():
+    return 0
+  if snapshot.tick < 0:
+    return 0
+  if snapshot.entity_count != studio_game_entity_count_stub():
+    return 0
+  return 1
+
+def studio_game_world_checkpoint_roundtrip(session: SimSessionStub) raises Alloc, IO -> int
+  requires session.tick >= 0
+  ensures result >= 0
+  ensures result <= 1
+  decreases session.tick
+=
+  var snap: WorldSnapshot = studio_game_world_checkpoint_from_session(session)
+  if studio_game_world_checkpoint_stub(snap) != 1:
+    return 0
+  if world_roundtrip_ok(snap) != 1:
+    return 0
+  var buf: str = world_save_to_buffer(snap)
+  var loaded: WorldSnapshot = world_load_from_buffer(buf)
+  if studio_game_world_checkpoint_stub(loaded) != 1:
+    return 0
+  if world_snapshot_fields_match(snap, loaded) != 1:
+    return 0
+  return 1
 
 # PH-SIM vertical gap #9 — MD particle tier gate via li-scene tier metadata + lig ledger.
 def studio_md_particle_tier_select_ok(tier_id: int) -> int

@@ -10,7 +10,7 @@ WIDTH="${STUDIO_VERTICALS_CAPTURE_WIDTH:-1920}"
 HEIGHT="${STUDIO_VERTICALS_CAPTURE_HEIGHT:-1080}"
 export LIG_HOST_PRESENT="${LIG_HOST_PRESENT:-1}"
 
-# slug:profile_id
+# slug:profile_id — sim_drug_design (7) uses Li studio_compose_shell_drug_litl (frame_id = LITL tick).
 VERTICALS=(
   "game:1"
   "sim_rl:2"

@@ -100,6 +100,12 @@ file = "smoke/studio_drug_litl_adaptive.li"
 outcome = "compile_open_ok"
 note = "T-PKG-li-studio-drug-litl-adaptive WP-DRUG-03"
 
+[[tests]]
+suite = "smoke"
+file = "smoke/studio_drug_demo_frame.li"
+outcome = "compile_open_ok"
+note = "T-PKG-li-studio-drug-demo-litl vertical demo frame profile 7"
+
 
 [[test]]
 file = "smoke/studio_vertical_demo_env.li"

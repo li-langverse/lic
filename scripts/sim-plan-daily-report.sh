@@ -96,5 +96,10 @@ SHA="$(git -C "$ROOT" rev-parse --short HEAD 2>/dev/null || echo unknown)"
 
 cp -f "$OUT" "${ROOT}/docs/reports/sim-plan/daily/LATEST.md"
 echo "sim-plan-daily-report: $OUT"
-# Append to rolling log for email/CI hooks
+
+python3 "${ROOT}/scripts/sim-plan-write-snapshot.py" || true
+if [[ -f "${ROOT}/scripts/sim-plan-refresh-canvas.py" ]]; then
+  python3 "${ROOT}/scripts/sim-plan-refresh-canvas.py" || true
+fi
+
 echo "$(date -Iseconds) daily ${IMPL}/${TOTAL} ${SHA}" >> "${ROOT}/data/sim-plan-loop/daily.log"

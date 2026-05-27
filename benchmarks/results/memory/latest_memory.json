@@ -1,0 +1,25 @@
+{
+  "schema": "li_sim_memory_v1",
+  "samples": [
+    {
+      "benchmark": "horner_pure_li",
+      "peak_rss_kb": 0
+    },
+    {
+      "benchmark": "matmul_blocked",
+      "peak_rss_kb": 0
+    },
+    {
+      "benchmark": "matmul_naive",
+      "peak_rss_kb": 0
+    },
+    {
+      "benchmark": "reduce_sum",
+      "peak_rss_kb": 0
+    },
+    {
+      "benchmark": "simd_dot",
+      "peak_rss_kb": 0
+    }
+  ]
+}

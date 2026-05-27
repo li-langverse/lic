@@ -1,4 +1,5 @@
 #!/usr/bin/env bash
+# Optional: daily markdown archive at 08:00. Live canvases use agent-canvases-watch (systemd).
 # Install user crontab entry: daily sim report at 08:00 (SIM_PLAN_TZ).
 set -euo pipefail
 ROOT="$(cd "$(dirname "$0")/.." && pwd)"

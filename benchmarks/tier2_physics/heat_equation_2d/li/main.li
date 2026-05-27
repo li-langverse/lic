@@ -1,3 +1,6 @@
+# Li heat_equation_2d — driver over shared C kernel (heat_core.c via LI_EXTRA_C).
+# Harness reads stencil checksum via li_rt_volatile_sink_f64 + LI_PRINT_SINK_F64.
+
 extern proc li_rt_volatile_sink_f64(v: float) -> unit
   requires true
   ensures true

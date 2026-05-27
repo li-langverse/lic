@@ -23,6 +23,18 @@ BRANCH = os.environ.get("SIM_PLAN_PR_BRANCH", "cursor/sim-algo-plan-loop")
 STATE_DIR = ROOT / "data" / "sim-plan-loop"
 STATE_FILE = STATE_DIR / "state.json"
 
+
+def _refresh_agent_canvases() -> None:
+    langverse = Path(os.environ.get("LI_LANGVERSE_ROOT", ROOT.parent.parent))
+    lic = Path(os.environ.get("LIC_ROOT", langverse / "lic"))
+    script = lic / "scripts/refresh-all-agent-canvases.sh"
+    if script.is_file():
+        subprocess.run(["bash", str(script)], check=False)
+        return
+    subprocess.run([sys.executable, str(ROOT / "scripts/sim-plan-write-snapshot.py")], check=False)
+    subprocess.run([sys.executable, str(ROOT / "scripts/sim-plan-refresh-canvas.py")], check=False)
+
+
 TODO_RE = re.compile(
     r"- id: (\S+)\n\s+content: \"([^\"]+)\"\n\s+status: (\w+)",
     re.MULTILINE,
@@ -354,6 +366,7 @@ def main() -> int:
             }
         )
         save_state(state)
+        _refresh_agent_canvases()
 
         if code != 0:
             print(f"agent exit {code} — stopping", file=sys.stderr)

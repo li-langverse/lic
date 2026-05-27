@@ -235,6 +235,13 @@ def algo_family_num(algo_id: int) -> int
       return 12
   return 0
 
+def algo_num_dot_axpy() -> int
+  requires true
+  ensures result == 1
+  decreases 0
+=
+  return 1
+
 def algo_md_lj_cutoff_mic() -> int
   requires true
   ensures result == 101

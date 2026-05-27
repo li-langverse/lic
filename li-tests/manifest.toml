@@ -879,6 +879,14 @@ suite = "smoke"
 file = "packages/lig/li-tests/smoke/kernel_matmul_parity.li"
 outcome = "compile_open_ok"
 note = "T-PKG-lig-kernel-matmul-parity"
+[[tests]]
+suite = "composable"
+file = "composable/import_math_numerics_dot_axpy.li"
+packages = ["li-math-numerics"]
+outcome = "compile_open_ok"
+note = "math.numerics: num_dot_axpy smoke (algo_id=1) dot_f64_8 + axpy_f64_8"
+
+
 
 # stdlib_coverage/build_std_csv — enable when std.csv module resolves (PH-IO-4)
 

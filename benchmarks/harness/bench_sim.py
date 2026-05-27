@@ -68,10 +68,12 @@ def tier2_verify_benches(names: list[str], *, write_summary: bool) -> int:
     if not run_smoke:
         print(f"tier2 verify: skip (no smokes in scope: {names})")
         return 0
-    cmd = [sys.executable, str(HARNESS / "verify.py"), "--tier0-only"]
+    cmd = [sys.executable, str(HARNESS / "verify.py")]
     if write_summary:
         fmt = os.environ.get("LI_SIM_SUMMARY_FORMAT", "json_min")
         cmd.extend(["--write-summary", "--summary-format", fmt])
+    else:
+        cmd.append("--tier0-only")
     # verify.py tier2 runs all TIER2_SMOKE — acceptable for md+heat package scope
     return run(cmd)
 

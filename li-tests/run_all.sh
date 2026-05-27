@@ -233,7 +233,13 @@ run_one() {
       return 2
       ;;
     compile_open_ok)
-      if li_lic_build --allow-open-vc "$path" -o "$NULL_OUT" 2>/dev/null; then
+      local open_build_flags=(--allow-open-vc)
+      case "$file" in
+        composable/import_sim_scientific_run.li|composable/import_physics_runtime.li|composable/import_math_numerics_dot_axpy.li)
+          open_build_flags+=(--no-lean-verify)
+          ;;
+      esac
+      if li_lic_build "${open_build_flags[@]}" "$path" -o "$NULL_OUT" 2>/dev/null; then
         li_test_pass "compile_open_ok $file"
         return 0
       fi

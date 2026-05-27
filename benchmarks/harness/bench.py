@@ -19,6 +19,15 @@ from pathlib import Path
 
 REPO = Path(__file__).resolve().parents[2]
 HARNESS = Path(__file__).resolve().parent
+
+
+def resolve_lic() -> Path:
+    env = os.environ.get("LIC")
+    if env:
+        return Path(env)
+    return REPO / "build" / "compiler" / "lic" / "lic"
+
+
 TIER1 = REPO / "benchmarks" / "tier1_micro"
 TIER_STDLIB = REPO / "benchmarks" / "tier1_stdlib"
 TIER2 = REPO / "benchmarks" / "tier2_physics"
@@ -156,6 +165,7 @@ TIER2_BENCHES: tuple[BenchSpec, ...] = (
         "common/md_core.c",
         "li/main.li",
         li_pure=False,
+
     ),
     BenchSpec(
         "three_body",
@@ -444,7 +454,7 @@ def build_native(spec: BenchSpec, bin_path: Path) -> None:
 
 
 def build_li(spec: BenchSpec, bin_path: Path) -> None:
-    lic = REPO / "build" / "compiler" / "lic" / "lic"
+    lic = resolve_lic()
     if not lic.is_file():
         raise RuntimeError(f"lic missing at {lic} — run ./scripts/build.sh")
     root = bench_dir(spec)
@@ -1028,7 +1038,7 @@ def run_tier0() -> int:
     if not script.exists():
         print("li-tests harness missing", file=sys.stderr)
         return 1
-    env = {**os.environ, "LIC": str(REPO / "build" / "compiler" / "lic" / "lic")}
+    env = {**os.environ, "LIC": str(resolve_lic())}
     return subprocess.call([str(script)], cwd=REPO / "li-tests", env=env)
 
 

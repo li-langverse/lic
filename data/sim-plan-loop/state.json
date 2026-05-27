@@ -1,0 +1,58 @@
+{
+  "completed_ids": [],
+  "iterations": 8,
+  "history": [
+    {
+      "at": "2026-05-24T15:02:54.490019+00:00",
+      "todo_id": "sim-p0-md-lj-li-parity",
+      "agent_exit": 1,
+      "gates_ok": false
+    },
+    {
+      "at": "2026-05-24T15:16:27.411191+00:00",
+      "todo_id": "sim-p0-md-lj-li-parity",
+      "agent_exit": 1,
+      "gates_ok": false
+    },
+    {
+      "at": "2026-05-24T15:29:49.379145+00:00",
+      "todo_id": "sim-p0-md-lj-li-parity",
+      "agent_exit": 1,
+      "gates_ok": false
+    },
+    {
+      "at": "2026-05-24T15:40:57.682346+00:00",
+      "todo_id": "sim-p0-md-lj-li-parity",
+      "agent_exit": 0,
+      "gates_ok": false
+    },
+    {
+      "at": "2026-05-24T15:59:15.531627+00:00",
+      "todo_id": "sim-p0-md-lj-li-parity",
+      "agent_exit": 1,
+      "gates_ok": false
+    },
+    {
+      "at": "2026-05-24T16:13:05.985211+00:00",
+      "todo_id": "sim-p0-md-lj-li-parity",
+      "agent_exit": 1,
+      "gates_ok": false
+    },
+    {
+      "at": "2026-05-24T16:21:16.339757+00:00",
+      "todo_id": "sim-p0-md-lj-li-parity",
+      "agent_exit": 0,
+      "gates_ok": false
+    },
+    {
+      "at": "2026-05-24T16:32:27.410480+00:00",
+      "todo_id": "sim-p0-md-lj-li-parity",
+      "agent_exit": 0,
+      "gates_ok": false
+    }
+  ],
+  "registry": {
+    "implemented": 43,
+    "total": 126
+  }
+}

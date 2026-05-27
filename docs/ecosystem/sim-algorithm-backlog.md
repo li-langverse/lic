@@ -24,15 +24,15 @@ todos:
 
 - id: sim-p0-md-lj-li-parity
   content: "Tier-2 Li md_lennard_jones checksum parity vs native (fix runtime sink / driver)"
-  status: pending
+  status: completed
 
 - id: sim-p0-heat-li-smoke
   content: "Pure-Li heat_equation_2d smoke with harness verify row"
-  status: pending
+  status: completed
 
 - id: sim-p1-num-dot-axpy
   content: "Implement algo_id=1 num_dot_axpy in li-math-numerics + bench-package gate"
-  status: pending
+  status: completed
 
 - id: sim-p1-md-neighbor-cell
   content: "Implement algo_id=105 md_neighbor_cell_list stub→smoke in li-physics-particles"

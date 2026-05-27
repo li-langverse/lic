@@ -16,7 +16,7 @@
 | Machine-readable summaries | **Yes** | `sim_summary.py`, `sim-write-summary.py`, `sim_li_run_summary.sh` |
 | **Modular bench/verify** | **Yes** | `bench-package.sh`, `bench_sim.py`, `bench_scope.py` — no full tier-12 on package edits |
 | Real algorithm kernels | **No** | Most ids are `registry_stub`; only MD/heat/rigid smokes are substantive |
-| Tier-2 Li parity gate | **No** | Native C++ verify passes; full Li MD checksum parity still blocked on runtime sink |
+| Tier-2 Li parity gate | **Yes** (MD smoke) | `md_lennard_jones` Li driver sinks `li_md_checksum()` via `LI_PRINT_SINK_F64`; pure-Li kernel still future work |
 | Autonomous plan loop | **Partial** | `scripts/sim-plan-loop.py` + `sim-plan-gates.sh` (mirror httpd loop); needs `CURSOR_API_KEY` |
 
 **Verdict:** The agent can **implement, bench, and verify incrementally** per package without rerunning all Li benchmarks. It should **not** claim production parity or full 126-kernel coverage until stubs are replaced and tier-2 Li verify is green.
@@ -28,7 +28,20 @@
 1. **Pick** `algo_id` from `algo_registry.json` (or plan slice).
 2. **Implement** in the owning package (`li-sim-scientific`, `li-physics-*`, …).
 3. **Wire** `run_algo` branch (replace stub) and set `implemented_smoke = true` in registry when a real smoke exists.
-4. **Gate** (package-scoped only):
+4. **Toolchain** (native C++ reference for tier-2 verify — not for compiling Li):
+
+```bash
+# Usually enough on this dev box (clang-22, not plain `clang`):
+source ../../lic/scripts/lib/ensure-bench-deps.sh && ensure_bench_deps
+
+# One-time host setup (human or root):
+sudo bash ../../lic/scripts/setup-li-devbox.sh && bash ../../lic/scripts/setup-li-devbox.sh --user
+
+# Opt-in auto-apt when agents run gates (needs passwordless sudo — do not hand agents unrestricted root):
+export LI_AGENT_INSTALL_DEPS=1
+```
+
+5. **Gate** (package-scoped only):
 
 ```bash
 export LIC=build/compiler/lic/lic
@@ -38,7 +51,7 @@ export LIC=build/compiler/lic/lic
 ./scripts/sim-plan-gates.sh   # full sim agent gate set
 ```
 
-5. **Emit summary** for CI/agents:
+6. **Emit summary** for CI/agents:
 
 ```bash
 LI_SIM_ALGO_ID=418 LI_SIM_OK=1 LI_SIM_CHECKSUM=0.42 LI_SIM_VERTICAL_ID=4 \
@@ -95,5 +108,5 @@ Full table: `benchmarks/manifest.toml`.
 ## Blockers before “production sim” claims
 
 1. Replace registry stubs with proved kernels (Wave A: 2e/2f VC gates per [algorithms-and-libraries-plan.md](algorithms-and-libraries-plan.md)).
-2. Tier-2 Li vs native checksum parity for `md_lennard_jones`.
+2. ~~Tier-2 Li vs native checksum parity for `md_lennard_jones`~~ — **done** (PR #179; shared `md_core.c` + runtime sink; pure-Li kernel still future).
 3. External oracle column (LAMMPS/GROMACS) for MD — competitive plan item.

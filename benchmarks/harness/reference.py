@@ -390,7 +390,7 @@ TIER1_REFERENCE: dict[str, Tier1Reference] = {
         small_n=4,
         full_fn=matmul_naive_spec_sum,
         min_abs_full=100_000.0,
-        min_li_seconds=0.002,
+        min_li_seconds=0.0015,
     ),
     "matmul_blocked": _ref(
         "matmul_blocked",

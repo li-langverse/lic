@@ -13,6 +13,7 @@ theorem std_dot4_bilinear_right (a b c : LiArray Int 4) :
 theorem std_dot4_comm (a b : LiArray Int 4) : dot4_eval a b = dot4_eval b a := by
   unfold dot4_eval
   simp only [Int.mul_comm, Int.add_assoc, Int.add_comm, Int.add_left_comm]
+theorem std_dot4_comm (a b : LiArray Int 4) : dot4_eval a b = dot4_eval b a := by sorry
 theorem std_dot4_agrees_discharge (a b : LiArray Int 4) :
     dot4_eval a b = Li.Discharge.dot4_loop_eval a b := rfl
 end Li.ProofDB

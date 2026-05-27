@@ -429,12 +429,20 @@ def sim_status_invalid_dt() -> int
 =
   return 1
 
+def sim_status_invalid_tick() -> int
+  requires true
+  ensures result == 2
+  decreases 0
+=
+  return 2
+
 type SimSessionStub = object
   public studio_profile_id: int
   public sim_contract_id: int
   public output_detail: int
   public tick: int
   public last_dt: float
+  public checkpoint_at: int
 
 def sim_session_stub_default() -> SimSessionStub
   requires true
@@ -443,6 +451,7 @@ def sim_session_stub_default() -> SimSessionStub
   ensures result.output_detail == output_detail_summary()
   ensures result.tick == 0
   ensures result.last_dt == 0.0
+  ensures result.checkpoint_at == -1
   decreases 0
 =
   var s: SimSessionStub
@@ -451,6 +460,7 @@ def sim_session_stub_default() -> SimSessionStub
   s.output_detail = output_detail_summary()
   s.tick = 0
   s.last_dt = 0.0
+  s.checkpoint_at = -1
   return s
 
 # PH-SIM SIM-1 — deterministic tick counter (no physics kernel).
@@ -459,10 +469,12 @@ def sim_reset(session: var SimSessionStub) -> int
   ensures result == sim_status_ok()
   ensures session.tick == 0
   ensures session.last_dt == 0.0
+  ensures session.checkpoint_at == -1
   decreases 0
 =
   session.tick = 0
   session.last_dt = 0.0
+  session.checkpoint_at = -1
   return sim_status_ok()
 
 def sim_step(session: var SimSessionStub, dt: float) -> int
@@ -475,6 +487,33 @@ def sim_step(session: var SimSessionStub, dt: float) -> int
     return sim_status_invalid_dt()
   session.tick = session.tick + 1
   session.last_dt = dt
+  return sim_status_ok()
+
+# PH-SIM SIM-2 — deterministic replay stub (tick counter only; no state buffer).
+def sim_checkpoint_tick(session: var SimSessionStub) -> int
+  requires session.tick >= 0
+  ensures result == session.tick
+  ensures session.checkpoint_at == session.tick
+  decreases session.tick
+=
+  var at0: int = session.tick
+  session.checkpoint_at = at0
+  return at0
+
+def sim_replay_from_tick(session: var SimSessionStub, tick: int) -> int
+  requires session.tick >= 0
+  ensures result >= 0
+  ensures result <= 2
+  decreases session.tick
+=
+  if tick < 0:
+    return sim_status_invalid_tick()
+  if session.checkpoint_at < 0:
+    return sim_status_invalid_tick()
+  if tick > session.checkpoint_at:
+    return sim_status_invalid_tick()
+  session.tick = tick
+  session.last_dt = 0.0
   return sim_status_ok()
 
 def sim_session_apply_studio_profile(studio_profile_id: int, sim_out: var SimSessionStub) -> unit

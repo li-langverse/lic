@@ -67,6 +67,63 @@ report = {
 }
 
 
+def bench_lig_present_runtime_probe() -> dict | None:
+    probe_src = root / "deploy/studio-demo/native/lig_present_bench_probe.c"
+    rt_c = root / "runtime/li_rt.c"
+    rt_lig = root / "runtime/li_rt_lig.c"
+    if not probe_src.is_file() or not rt_c.is_file():
+        return None
+    bin_path = root / "build/native/lig_present_bench_probe"
+    bin_path.parent.mkdir(parents=True, exist_ok=True)
+    compile_cmd = [
+        "cc",
+        "-std=c11",
+        "-Wall",
+        f"-I{root / 'runtime'}",
+        "-o",
+        str(bin_path),
+        str(probe_src),
+        str(rt_c),
+        "-lm",
+    ]
+    if rt_lig.is_file():
+        compile_cmd.append(str(rt_lig))
+    try:
+        proc = subprocess.run(compile_cmd, cwd=root, capture_output=True, text=True, timeout=120)
+        if proc.returncode != 0:
+            return {"probe_compile_ok": False, "probe_stderr_tail": (proc.stderr or "")[-400:]}
+    except (subprocess.TimeoutExpired, FileNotFoundError):
+        return None
+
+    def run_probe(host_present: bool) -> dict:
+        env = os.environ.copy()
+        if host_present:
+            env["LIG_HOST_PRESENT"] = "1"
+        else:
+            env.pop("LIG_HOST_PRESENT", None)
+        run = subprocess.run(
+            [str(bin_path)],
+            cwd=root,
+            capture_output=True,
+            text=True,
+            timeout=30,
+            env=env,
+        )
+        if run.returncode != 0:
+            return {"probe_run_ok": False, "probe_exit": run.returncode}
+        line = (run.stdout or "").strip().splitlines()[-1] if run.stdout else ""
+        try:
+            data = json.loads(line)
+            data["probe_run_ok"] = True
+            return data
+        except json.JSONDecodeError:
+            return {"probe_run_ok": False, "probe_stdout_tail": line[-400:]}
+
+    stub = run_probe(False)
+    host = run_probe(True)
+    return {"stub": stub, "host_present": host, "probe_compile_ok": True}
+
+
 def bench_render_fps_hook() -> dict:
     hook_path = root / "packages/li-render/bench/viewport_fps.toml"
     gpu_hook = root / "packages/lig/bench/wgpu_smoke.toml"
@@ -81,17 +138,102 @@ def bench_render_fps_hook() -> dict:
     elapsed = frames * dt_ms
     fps_est = round((frames * 1000.0) / elapsed, 2) if elapsed > 0 else 0.0
     meets = fps_est >= target
-    return {
+    paint_blit_source = int(vp_sec.get("native_pixel_source_paint_blit", 2))
+    native_stub = bool(vp_sec.get("native_pixels", False))
+    surface_stub = bool(wgpu_sec.get("surface_ok", False))
+    smoke_status = wgpu_sec.get("status", "missing")
+    status = "simulate"
+    native_pixels = native_stub
+    wgpu_surface_ok = surface_stub
+    runtime = bench_lig_present_runtime_probe()
+    host_probe = (runtime or {}).get("host_present") or {}
+    stub_probe = (runtime or {}).get("stub") or {}
+    if host_probe.get("probe_run_ok"):
+        native_host = bool(host_probe.get("native_pixels"))
+        surface_host = bool(host_probe.get("surface_ok"))
+        blit_ok = bool(host_probe.get("paint_blit_ok"))
+        pixel_source = int(host_probe.get("native_pixel_source", 0))
+        if native_host and surface_host and blit_ok and pixel_source == paint_blit_source:
+            smoke_status = "paint_blit_host"
+            status = "host_present"
+            native_pixels = True
+            wgpu_surface_ok = True
+        elif host_probe.get("host_present_active"):
+            smoke_status = "host_present_partial"
+            status = "host_present_partial"
+            native_pixels = native_host
+            wgpu_surface_ok = surface_host
+    elif stub_probe.get("probe_run_ok"):
+        native_pixels = bool(stub_probe.get("native_pixels"))
+        wgpu_surface_ok = bool(stub_probe.get("surface_ok"))
+    env_host = os.environ.get("LIG_HOST_PRESENT", "") == "1"
+    if env_host and status == "simulate" and host_probe.get("probe_run_ok"):
+        native_pixels = bool(host_probe.get("native_pixels"))
+        wgpu_surface_ok = bool(host_probe.get("surface_ok"))
+        if native_pixels and wgpu_surface_ok:
+            smoke_status = "paint_blit_host"
+            status = "host_present"
+    out = {
         "fps_target": target,
         "fps_estimated": fps_est,
         "meets_target": meets,
-        "native_pixels": bool(vp_sec.get("native_pixels", False)),
-        "wgpu_smoke_status": wgpu_sec.get("status", "missing"),
-        "wgpu_surface_ok": bool(wgpu_sec.get("surface_ok", False)),
+        "native_pixels": native_pixels,
+        "native_pixels_stub": native_stub,
+        "wgpu_smoke_status": smoke_status,
+        "wgpu_surface_ok": wgpu_surface_ok,
+        "wgpu_surface_ok_stub": surface_stub,
+        "native_pixel_source": host_probe.get("native_pixel_source", 0),
+        "native_pixel_source_paint_blit": paint_blit_source,
         "fps_counter_hook": fps_sec.get("package", "li-render"),
         "bench_simulate_fn": vp_sec.get("bench_simulate_fn", "render_bench_fps_counter_simulate"),
+        "host_bench_fn": vp_sec.get("host_bench_fn", "render_viewport_host_fps_counter"),
         "hook_version": fps_sec.get("hook_version", 0),
-        "status": "simulate",
+        "status": status,
+        "honest_simulate": status == "simulate",
+    }
+    if runtime is not None:
+        out["lig_present_runtime_probe"] = runtime
+    return out
+
+
+def bench_studio_vertical_present_hook() -> dict:
+    hook_path = root / "packages/li-studio/bench/studio_vertical_present.toml"
+    hook = load_toml(hook_path)
+    meta_h = hook.get("meta") or {}
+    pres = hook.get("present") or {}
+    host_env = pres.get("env_host_present", "LIG_HOST_PRESENT")
+    readback_env = pres.get("env_wgpu_readback", "LIG_WGPU_READBACK")
+    host_on = os.environ.get(host_env, "") == "1"
+    readback_on = os.environ.get(readback_env, "") == "1"
+    paint_blit = int(pres.get("native_pixel_source_paint_blit", 2))
+    runtime = bench_lig_present_runtime_probe()
+    host_probe = (runtime or {}).get("host_present") or {}
+    if readback_on:
+        status = "wgpu_readback_stub"
+    elif host_probe.get("probe_run_ok") and bool(host_probe.get("paint_blit_ok")):
+        status = "paint_blit_host"
+    elif host_on:
+        status = "host_present_env"
+    else:
+        status = "simulate"
+    native_paint = False
+    if host_probe.get("probe_run_ok"):
+        native_paint = (
+            bool(host_probe.get("native_pixels"))
+            and int(host_probe.get("native_pixel_source", 0)) == paint_blit
+        )
+    return {
+        "profile_count": int(pres.get("profile_count", 7)),
+        "bench_simulate_fn": meta_h.get("bench_simulate_fn", "studio_vertical_demo_frame"),
+        "hook_version": meta_h.get("hook_version", 0),
+        "native_pixels_paint_blit": native_paint,
+        "native_pixels_wgpu": False,
+        "wgpu_full_readback": bool(meta_h.get("wgpu_full_readback", False)) and readback_on,
+        "status": status,
+        "honest_simulate": status == "simulate",
+        "env_host_present": host_env,
+        "env_wgpu_readback": readback_env,
+        "notes": pres.get("notes", ""),
     }
 
 
@@ -177,6 +319,13 @@ if pkg_dir("li-render") is not None:
     report["viewport_fps_target"] = report["viewport_fps"].get("fps_target", 60)
 else:
     report["notes"].append("skip_viewport_fps:li-render_missing")
+
+vertical_present_hook = root / "packages/li-studio/bench/studio_vertical_present.toml"
+if vertical_present_hook.is_file():
+    report["studio_vertical_present"] = bench_studio_vertical_present_hook()
+    report["notes"].append(f"studio_vertical_present:{report['studio_vertical_present'].get('status', 'unknown')}")
+else:
+    report["notes"].append("skip_studio_vertical_present:hook_missing")
 
 if (root / "packages/li-gui/bench/panel_switch.toml").is_file():
     report["panel_switch_ms"] = bench_panel_switch_hook()
@@ -267,7 +416,7 @@ report["gates"]["viewport_fps"] = {
     "value": vf.get("fps_estimated"),
     "unit": "fps",
     "meets_target": bool(vf.get("meets_target", False)),
-    "honest_simulate": vf.get("status") == "simulate",
+    "honest_simulate": bool(vf.get("honest_simulate", vf.get("status") == "simulate")),
 }
 
 ps = report.get("panel_switch_ms") or {}

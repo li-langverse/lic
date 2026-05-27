@@ -8,7 +8,9 @@ package = "lig"
 import = "lig.present"
 status = "host_or_stub"
 native_device = false
-surface_ok_when_host = true
+surface_ok = false
+surface_ok_when_host_present = true
+native_pixel_source_paint_blit = 2
 
 [ci]
 x86_64_linux = "lic check packages/lig/li-tests/smoke/wgpu_smoke.li — stub surface_ok=0"

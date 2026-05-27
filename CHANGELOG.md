@@ -144,6 +144,8 @@ All notable changes to Li are documented here. The format follows
 
 ### Fixed
 
+- **AutoVC emit segfault (httpd build):** null-safe `ensures_rhs_eq_result` + alias-cycle guard in `lean_type_name` — [2026-05-27-vc-emit-null-ensures-guard.md](docs/release-notes/2026-05-27-vc-emit-null-ensures-guard.md).
+
 - **Tier-1 CSV validity:** `passed` uses spec rtol/atol (not 1-ULP only); `horner_pure_li` oracle matches `horner_core.c` `x=1.1` — [2026-05-27-bench-csv-validity-passed.md](docs/release-notes/2026-05-27-bench-csv-validity-passed.md).
 - **httpd nightly / E0303:** broaden `check_weak_ensures` httpd name prefixes; tier-3 `bench_ecosystem.py` uses manifest-aligned `lic build` flags — [2026-05-27-httpd-e0303-nightly.md](docs/release-notes/2026-05-27-httpd-e0303-nightly.md).
 - **lic check --workspace resource flags:** `resource_options_invalid()` gate in `workspace_check.cpp` (supersedes stacked hotfix #299) — [2026-05-27-workspace-resource-gate.md](docs/release-notes/2026-05-27-workspace-resource-gate.md).

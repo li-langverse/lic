@@ -33,12 +33,21 @@ This page is the **honest inventory** of what is **not** fully proved or not yet
 
 | ID | Status | What remains |
 |----|--------|----------------|
+<<<<<<< HEAD
 | **G-lean** | Partial | **Tier B (default when lake installed):** `lic build` runs `lake build AutoVC` (typecheck only; `--no-lean-verify` opt-out). **Strict** open goals: `--strict-lean`. Open obligations: fail unless `--allow-open-vc` (CLI only; env bypass removed). **`LiArray`** + fib/recursive call-site + parallel `_par*` VCs typecheck. **Closed slice:** `sqrt_open_bound` via trusted `Li.Discharge.sqrt_open_bound_spec`; **still open:** universal float/`abs` discharge |
 | **G-vc** | Partial | `witnessed_ensures_ident.li` (`mir_return_linked=` telemetry); **closed slice:** `sqrt_open_bound` semantic discharge; loop vs closed-form `ensures` |
 | **G-par** | Partial | AST `policy_module` rejects missing/weak `disjoint=` and loop `requires true`; `race_shared_memory/false_disjoint_requires_*.li`; Lean proofs open |
 | **G-dec** | Partial | **Closed slice:** `MirDecorator.parallel` + `vectorized` proc tags; `lic verify mir_parallel_disjoint=` / `mir_vectorized_proc=`; `check_mir_{parallel,vectorized}_decorator.sh` in `contracts_discharge_corpus.sh`; `decorator_exploits` (5× compile_fail). **Open:** Lean **P-dec**, full decorator elaboration proofs |
 | **G-math** | Partial | **Closed slice (length-1 broadcast):** `broadcast_len1_{add,mul,pow}_*.li`; `broadcast_invalid_len2_vs_len4.li` + `elementwise_len_mismatch.li` compile_fail. **Closed slice (reductions shape):** `reductions/{sum_non_array,norm_non_array,dot_len_mismatch}.li` compile_fail. **Closed slice (tier-1 perf):** `matmul_naive`, `horner_pure_li` ≤1.2× C++ when CSV refreshed. **Closed slice:** 1×2 `@` (`matmul_1x2_ok.li`); 2×2 float `@` Prop; P-linalg int corpus; loop dot open |
 | **G-bnd** | Partial | Release path without `li_bounds_fail` for proved indices |
+=======
+| **G-lean** | Partial | **Tier B (default when lake installed):** `lic build` runs `lake build AutoVC` (typecheck only; `--no-lean-verify` opt-out). **Strict** open goals: `--strict-lean`. Open obligations: fail unless `--allow-open-vc` (CLI only; env bypass removed). **`LiArray`** + fib/recursive call-site + parallel `_par*` VCs typecheck. **Still open:** `sqrt_open_bound` (P-float); `mat2_at2_eval` trusted vs MIR `@` (semantic closed in `Discharge.lean`) |
+| **G-vc** | Partial | Float/`abs` ensures; opaque `vec3_dot`-style returns; loop implementations vs closed-form `ensures` |
+| **G-par** | Partial | AST `policy_module` rejects missing disjoint, false `disjoint_row`, mut capture, borrow-in-par; Lean proofs open |
+| **G-dec** | Partial | Decorator elaboration to MIR; `decorator_exploits` proofs |
+| **G-math** | Partial | **Closed slice (tier-1):** `matmul_naive`, `horner_pure_li` ≤1.2× C++ (`check-tier1-li-vs-cpp.sh`, loop matmul + FMA horner). **Closed slice:** full 2×2 float `@` Lean Prop (`linalg_mat2_at2_float_closed`, `mat2_at2_float_spec`). **Closed slice:** `linalg_dot4_float_closed` (prelude `dot`), `linalg_mat2_callproc_float_closed`, prelude `norm`/`axpy`/**, IKJ `ArrayMatMul2DF64` enforced only with `LI_TIER1_PERF_STRICT=1` (`check-tier1-li-vs-cpp.sh` reports gaps by default). **Closed slice:** prelude `norm`, `axpy`, same-length `**`, scalar×array; `math_linalg/reductions/{sum_non_array,norm_non_array,dot_len_mismatch}.li` compile_fail; loop-dot witness, P-linalg corpus |
+| **G-bnd** | Partial | **Closed slice:** `bounds_refinement_release_ok.li` + `check_release_bounds_ir.sh`; `discharge_refinement_lean.sh` |
+>>>>>>> origin/pr-262-tmp
 | **G-def** | Partial+ | Cross-module method privacy proofs; virtual dispatch deferred |
 | **G-oop** | Partial | **Closed slice:** method call-site `requires` + int-return `ensures` in `contracts_verify/` (`discharge_method_*_lean.sh`); trait laws / `old(self.field)` open |
 | **G-math-syn** | Partial | **Closed slice:** `for i in start..<end` (`math_syntax/for_range_sum.li`); Python `range()` / dynamic bounds open |

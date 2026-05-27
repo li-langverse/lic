@@ -8,7 +8,7 @@ See also: [Getting started — tools](getting-started-tools.md) (generic macOS/L
 
 | Tool | Purpose |
 |------|---------|
-| **LLVM 18** + clang-18 | Build `lic` (`./scripts/build.sh`) |
+| **LLVM 22** + clang-22 | Build `lic` (`./scripts/build.sh`) |
 | **cmake**, **ninja** | Li compiler build |
 | **Node 24.16** (LTS), **npm** | `li-cursor-agents` SDK / httpd plan loop — pin via `LI_DEVBOX_NODE_VERSION` or `.node-version` in agents repo |
 | **Python 3** | httpd TOML validators, routing oracles |
@@ -48,7 +48,7 @@ Log out/in or `source ~/.config/environment.d/99-li-dev.conf` so `PATH`, `LLVM_D
 Verify:
 
 ```bash
-which clang-18 node npm
+which clang-22 node npm
 echo "$LLVM_DIR"
 cd ~/Documents/Cursor/li-langverse/lic
 ./build/compiler/lic/lic --version
@@ -149,7 +149,7 @@ Mark a todo done in loop state without running the agent:
 
 | Problem | Fix |
 |---------|-----|
-| `Set LLVM_DIR to LLVM 18` | `sudo bash scripts/setup-li-devbox.sh` or `export LLVM_DIR=/usr/lib/llvm-18/lib/cmake/llvm` |
+| `Set LLVM_DIR to LLVM 22` | `sudo bash scripts/setup-li-devbox.sh` or `bash scripts/cloud-vm-bootstrap.sh` |
 | `npm: command not found` | `bash scripts/setup-li-devbox.sh --user` and `export PATH="$HOME/.local/node/bin:$PATH"` |
 | `resolve-lic: no executable` | `./scripts/build.sh` |
 | `build-li-httpd.sh failed` | Build `lic` first; on Linux ensure `runtime/li_rt_httpd.c` links (see `scripts/build-li-httpd.sh`) |

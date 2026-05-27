@@ -13,3 +13,5 @@
 11. Precision-polymorphic APIs: [precision-polymorphism.md](docs/language/precision-polymorphism.md) — `type Real = float32` (today) and `def f[S](…)` (generics); proposed `precision float32:` block.
 
 Skills: `strict-by-default-gate`, `build-li-master-plan`, `create-li-package`, `li-ecosystem-discipline` (in `.cursor/skills/`).
+
+**Cloud VM:** set install script to `bash /agent/repos/lic/scripts/cloud-vm-bootstrap.sh` — [cloud-agent-vm.md](docs/ecosystem/cloud-agent-vm.md) (LLVM **22**, not 18).

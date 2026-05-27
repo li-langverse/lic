@@ -158,40 +158,81 @@ def drug_litl_dft_energy_for_stage(stage: int) -> float
     return chem_dft_run_smoke()
   return 0.0
 
+def drug_litl_admet_scores_hypothesis() -> array[4, float]
+  requires true
+  ensures result[0] == 0.42
+  decreases 0
+=
+  var scores: array[4, float]
+  scores[0] = 0.42
+  scores[1] = 0.0
+  scores[2] = 0.0
+  scores[3] = 0.0
+  return scores
+
+def drug_litl_admet_scores_generate() -> array[4, float]
+  requires true
+  ensures result[0] == 0.55
+  decreases 0
+=
+  var scores: array[4, float]
+  scores[0] = 0.55
+  scores[1] = 0.48
+  scores[2] = 0.0
+  scores[3] = 0.0
+  return scores
+
+def drug_litl_admet_scores_dft() -> array[4, float]
+  requires true
+  ensures result[0] == 0.61
+  decreases 0
+=
+  var scores: array[4, float]
+  scores[0] = 0.61
+  scores[1] = 0.52
+  scores[2] = 0.44
+  scores[3] = 0.0
+  return scores
+
+def drug_litl_admet_scores_lab() -> array[4, float]
+  requires true
+  ensures result[0] == 0.68
+  decreases 0
+=
+  var scores: array[4, float]
+  scores[0] = 0.68
+  scores[1] = 0.57
+  scores[2] = 0.49
+  scores[3] = 0.41
+  return scores
+
+def drug_litl_admet_scores_retrain() -> array[4, float]
+  requires true
+  ensures result[0] == 0.72
+  decreases 0
+=
+  var scores: array[4, float]
+  scores[0] = 0.72
+  scores[1] = 0.63
+  scores[2] = 0.54
+  scores[3] = 0.47
+  return scores
+
 def drug_litl_admet_scores_for_stage(stage: int) -> array[4, float]
   requires drug_litl_stage_valid(stage) == 1
   ensures result[0] >= 0.0
   decreases stage
 =
   var s: int = stage
-  var scores: array[4, float]
-  scores[0] = 0.0
-  scores[1] = 0.0
-  scores[2] = 0.0
-  scores[3] = 0.0
   if s == drug_litl_stage_hypothesis():
-    scores[0] = 0.42
-    return scores
+    return drug_litl_admet_scores_hypothesis()
   if s == drug_litl_stage_generate():
-    scores[0] = 0.55
-    scores[1] = 0.48
-    return scores
+    return drug_litl_admet_scores_generate()
   if s == drug_litl_stage_dft():
-    scores[0] = 0.61
-    scores[1] = 0.52
-    scores[2] = 0.44
-    return scores
+    return drug_litl_admet_scores_dft()
   if s == drug_litl_stage_lab():
-    scores[0] = 0.68
-    scores[1] = 0.57
-    scores[2] = 0.49
-    scores[3] = 0.41
-    return scores
-  scores[0] = 0.72
-  scores[1] = 0.63
-  scores[2] = 0.54
-  scores[3] = 0.47
-  return scores
+    return drug_litl_admet_scores_lab()
+  return drug_litl_admet_scores_retrain()
 
 type DrugLitlStagePayload = object
   public stage: int

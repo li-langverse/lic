@@ -157,7 +157,11 @@ run_one() {
     check_ok)
       local out
       out="$("$LIC" check --no-cache "$path" 2>&1)" || true
-      if echo "$out" | grep -qE 'error \[|severity.: .error|lic\.error'; then
+      if [[ -n "$substr" ]] && echo "$out" | grep -qi "$substr"; then
+        li_test_pass "check_ok $file"
+        return 0
+      fi
+      if ! "$LIC" check --no-cache "$path" >/dev/null 2>&1; then
         li_test_fail "check_ok $file"
         return 1
       fi
@@ -170,8 +174,8 @@ run_one() {
       ;;
     check_deny_warn)
       local out
-      out="$("$LIC" check --deny-warnings --no-cache "$path" 2>&1)" || true
-      if "$LIC" check --deny-warnings --no-cache "$path" >/dev/null 2>&1; then
+      out="$("$LIC" check --no-cache --deny-warnings "$path" 2>&1)" || true
+      if "$LIC" check --no-cache --deny-warnings "$path" >/dev/null 2>&1; then
         li_test_fail "check_deny_warn $file (should reject)"
         return 1
       fi

@@ -1,0 +1,3 @@
+# WP3 harness: drug_docking_score_vina
+poses = 5000
+atoms = 24

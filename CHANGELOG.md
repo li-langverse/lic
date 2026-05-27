@@ -6,103 +6,47 @@ All notable changes to Li are documented here. The format follows
 
 ## [Unreleased]
 
-### Fixed
-
-- **PH-UX vertical gap #1:** Studio UI bench registry and `bench-studio-viewport-perf.sh` reference `packages/lig` (`wgpu_smoke` hook) instead of removed `packages/li-gpu` — [2026-05-25-vertical-gap-bench-lig.md](docs/release-notes/2026-05-25-vertical-gap-bench-lig.md).
-
-### Added
-
-- **Benchmark package-release:** `.github/workflows/benchmark-release.yml` on tag `v*` — conditional `benchmarks/**` rebuild, `benchmark-csv` artifact, `package-release` dispatch to benchmarks — [2026-05-25-lic-package-release-dispatch.md](docs/release-notes/2026-05-25-lic-package-release-dispatch.md).
-
-- **Studio MCP gap #6/#7 (contracts):** eight tool IDs (`am_export_print`, `chem_dft_run`, `studio_adaptive_layout`), `studio_mcp_tool_dispatch` stub, `li-chem` `chem_dft_run_smoke`, smokes `studio_mcp_extended.li` / composable chem — [2026-05-25-vertical-gap-mcp-chem.md](docs/release-notes/2026-05-25-vertical-gap-mcp-chem.md).
-
-- **Vertical gap #4/#9 sim step physics** — `sim_scientific_tick_stub`, `studio_game_step_hook`, `studio_md_particle_tier_select_ok`, smokes `studio_sim_step_by_profile.li` / `import_studio_sim_step_by_profile.li` — [2026-05-25-vertical-gap-sim-step-physics.md](docs/release-notes/2026-05-25-vertical-gap-sim-step-physics.md).
-
-- **Vertical gap #2/#10 native present (partial):** `STUDIO_DEMO_PROFILE` env wiring, `li_rt` lig host present restore, `li-studio-demo` verticals capture preference — [2026-05-26-vertical-gap-native-present.md](docs/release-notes/2026-05-26-vertical-gap-native-present.md).
-
-### Added
-
-- **PH-SIM vertical gap #3:** domain profile stubs `li-sim-automotive`, `li-sim-robotics`, `li-sim-additive`, `li-sim-drug-design` (`import sim.*`, contract + studio id constants, `lic check` smokes) — [2026-05-26-vertical-sim-domain-stubs.md](docs/release-notes/2026-05-26-vertical-sim-domain-stubs.md).
-
-- **PH-UX vertical gap #5:** Full `lig-kernels.toml` catalog rows (`md_force_short`, `heat_stencil_2d_f32`, …), `cuda`/`hip`/`metal` = `N/A` until `LIG_EMIT_*`, parity harness emits all `kernel_ids` — [2026-05-25-vertical-gap-lig-kernels.md](docs/release-notes/2026-05-25-vertical-gap-lig-kernels.md).
-
-
-- **PH-HW integration (`lig` + studio gap):** Rollup for multi-vendor GPU work packages WP1–WP5 ([#217](https://github.com/li-langverse/lic/pull/217), [#218](https://github.com/li-langverse/lic/pull/218), [#213](https://github.com/li-langverse/lic/pull/213), [#220](https://github.com/li-langverse/lic/pull/220), [#222](https://github.com/li-langverse/lic/pull/222)) and merged `studio-gap-close-wave1` (UX/MCP/sim/world) on `feat/ph-hw-multi-vendor` — [2026-05-25-lig-ph-hw-integration.md](docs/release-notes/2026-05-25-lig-ph-hw-integration.md).
-
-- **2i / G-math (tracker):** `norm_non_array.li` compile_fail for scalar `norm` — `docs/release-notes/2026-05-25-2i-norm-plan-tracker.md`.
-
-### Added
-
-- **Gap closure queue (Phase 2a audit):** `docs/verification/GAP_CLOSURE_QUEUE.md` — prioritized open gaps excluding open PRs — [2026-05-25-gap-closure-queue.md](docs/release-notes/2026-05-25-gap-closure-queue.md).
-
-### Added
-
-- **G-dec (partial):** `check_mir_vectorized_decorator.sh` in `contracts_discharge_corpus.sh` + master-plan gates; provability-gaps **G-dec** / **P-dec** sync — `docs/release-notes/2026-05-25-g-dec-gap-close-corpus.md`.
-
-### Added
-
-- **Vertical gap #4/#9 sim step physics** — `sim_scientific_tick_stub`, `studio_game_step_hook`, `studio_md_particle_tier_select_ok`, smokes `studio_sim_step_by_profile.li` / `import_studio_sim_step_by_profile.li` — [2026-05-25-vertical-gap-sim-step-physics.md](docs/release-notes/2026-05-25-vertical-gap-sim-step-physics.md).
-
-### Fixed
-
-- **PH-UX vertical gap #1:** Studio UI bench registry and `bench-studio-viewport-perf.sh` reference `packages/lig` (`wgpu_smoke` hook) instead of removed `packages/li-gpu` — [2026-05-25-vertical-gap-bench-lig.md](docs/release-notes/2026-05-25-vertical-gap-bench-lig.md).
-
-### Added
-
-- **P-physics proof database:** `docs/verification/proof-database/entries/physics-*.toml` (`P-AX-*`, `P-LM-*`); tier-2 bench refs; scalar lemmas in `Discharge.lean` — [2026-05-25-proof-db-physics-axioms.md](docs/release-notes/2026-05-25-proof-db-physics-axioms.md).
-- **Proof-db sweep reporter:** `scripts/proof-db-report.sh`, `proof-db/expected.json`, `discrepancies.toml`, `reporter.md` — [2026-05-25-proof-db-sweep-reporter.md](docs/release-notes/2026-05-25-proof-db-sweep-reporter.md).
-
-### Added
-
-- **Proof DB lemma rebuild:** `scripts/proof-db/rebuild_lemmas.sh` → `data/proof-db/latest-report.{json,md}` from `docs/verification/proof-database/entries/` — [2026-05-25-proof-db-rebuild-pipeline.md](docs/release-notes/2026-05-25-proof-db-rebuild-pipeline.md).
-- **Proof-db discrepancy analyzer:** `scripts/proof-db/compare_reference.py`, `proof-database/DISCREPANCIES.md` — [2026-05-25-proof-db-discrepancies.md](docs/release-notes/2026-05-25-proof-db-discrepancies.md).
-- **Proof-db CI release gate:** `proof-db/baseline.jsonl`, `scripts/check-proof-db.sh`, advisory `LI_PROOF_DB_STRICT` in `scripts/ci.sh` — [2026-05-25-proof-db-ci-gate.md](docs/release-notes/2026-05-25-proof-db-ci-gate.md).
-- **Proof-db sweep reporter:** `scripts/proof-db-report.sh`, `proof-db/expected.json`, `discrepancies.toml`, `reporter.md` — [2026-05-25-proof-db-sweep-reporter.md](docs/release-notes/2026-05-25-proof-db-sweep-reporter.md).
-
-### Added
-
-- **Classical math proof database:** `docs/semantics/proof-db/math/`, `docs/verification/proof-database/entries/math-*.toml` (`M-AX-*`, `M-LM-*`), `lake build ProofDbMath` — [2026-05-25-proof-db-math-axioms.md](docs/release-notes/2026-05-25-proof-db-math-axioms.md).
-
-### Added
-
-- **Execution surface docs:** specs `2026-05-25-li-execution-surface.md`, `2026-05-25-li-execution-resources.md`; handbook `docs/language/parallelism.md` — [2026-05-25-execution-surface-docs.md](docs/release-notes/2026-05-25-execution-surface-docs.md).
-- **Proof DB lemma rebuild:** `scripts/proof-db/rebuild_lemmas.sh` → `data/proof-db/latest-report.{json,md}` — [2026-05-25-proof-db-rebuild-pipeline.md](docs/release-notes/2026-05-25-proof-db-rebuild-pipeline.md).
-- **Proof-db discrepancy analyzer:** `scripts/proof-db/compare_reference.py`, `proof-database/DISCREPANCIES.md` — [2026-05-25-proof-db-discrepancies.md](docs/release-notes/2026-05-25-proof-db-discrepancies.md).
-- **Proof database (v0):** `docs/verification/proof-database.md`, `proof-db/` manifest (axioms/lemmas + `release_pin`), `scripts/check-proof-db.sh` CI smoke — [2026-05-25-proof-database-arch.md](docs/release-notes/2026-05-25-proof-database-arch.md).
-- **P-physics proof database:** `docs/verification/proof-database/entries/physics-*.toml` (`P-AX-*`, `P-LM-*`); tier-2 bench refs; scalar lemmas in `Discharge.lean` — [2026-05-25-proof-db-physics-axioms.md](docs/release-notes/2026-05-25-proof-db-physics-axioms.md).
-- **G-trust (Partial+):** **T-GetElem** (`typing_getElem`) in `docs/semantics/Core.lean` — [2026-05-25-g-trust-core-getelem.md](docs/release-notes/2026-05-25-g-trust-core-getelem.md).
-
-### Added
-
-- **Proof DB (2f slice):** `proof-db/index.json` + `proof-db/lean/ProofDB.lean` — five standard lemmas (4 proved, 1 `sorry`); `lake build ProofDB` — [2026-05-25-proof-db-lean-bridge.md](docs/release-notes/2026-05-25-proof-db-lean-bridge.md).
-
-### Added
-
-- **Proof DB (2f slice):** `proof-db/index.json` + `proof-db/lean/ProofDB.lean` — five standard lemmas (4 proved, 1 `sorry`); `lake build ProofDB` — [2026-05-25-proof-db-lean-bridge.md](docs/release-notes/2026-05-25-proof-db-lean-bridge.md).
-
-### Added
-
-- **Proof DB (2f slice):** `proof-db/index.json` + `proof-db/lean/ProofDB.lean` — five standard lemmas (4 proved, 1 `sorry`); `lake build ProofDB` — [2026-05-25-proof-db-lean-bridge.md](docs/release-notes/2026-05-25-proof-db-lean-bridge.md).
-
 ### Changed
 
-- **Plan checkboxes (wave):** sync `docs/superpowers/plans/*.md` exit gates with shipped Phases 0–5, Pkg, P-linalg loop witness, and C++ compiler evidence — [2026-05-25-plan-checkbox-audit-wave.md](docs/release-notes/2026-05-25-plan-checkbox-audit-wave.md).
 - **LLVM toolchain:** pin **22** (was 18) — `scripts/llvm-env.sh`, `scripts/ci-install-llvm.sh`, CMake gate — [2026-05-22-llvm-22-toolchain-bump.md](docs/release-notes/2026-05-22-llvm-22-toolchain-bump.md).
 
 ### Added
 
-- **G-test-verify Done:** `prove_lean_ok` in `li-tests/run_all.sh`; 14 closed `contracts_verify` specimens — `docs/release-notes/2026-05-25-g-test-verify-prove-lean-ok.md`.
-
+- **HTTPd pkg-workspace:** Phase-H httpd packages aligned via `scripts/li-new-package` + lip § A3; `packages/li.toml` workspace members; `check-pkg-workspace` gate — [2026-05-22-pkg-workspace-httpd.md](docs/release-notes/2026-05-22-pkg-workspace-httpd.md).
+- **tier5_http nginx-src-audit:** nginx `release-1.26.2` submodule + read-only `nginx_mitigations.toml` (no `li_done`); `audit_nginx_src.py` + `check-tier5-nginx-src-audit.sh` — [2026-05-22-nginx-src-audit.md](docs/release-notes/2026-05-22-nginx-src-audit.md).
+- **tier5_http bench harness (bench-harness):** TOML-driven `suite.toml` + per-scenario `bench.toml`; `bench_http.py` / `verify_http.py` resolve scenarios from suite only — [2026-05-22-tier5-http-bench-harness.md](docs/release-notes/2026-05-22-tier5-http-bench-harness.md).
+- **tier5_http exploit harness (exploit-harness):** `exploit_http.py` + `suite_exploits.toml` / `exploits/*.toml` vs nginx baseline and `build/li-httpd`; `[expect].li_behavior = "stricter"` and `--compare-nginx` — [2026-05-22-tier5-http-exploit-harness.md](docs/release-notes/2026-05-22-tier5-http-exploit-harness.md).
+- **HTTPd M1 nginx bench parity:** tier5 `parity` profile runs live `build/li-httpd` vs nginx verify + optional wrk ratios — [2026-05-23-httpd-nginx-bench-parity.md](docs/release-notes/2026-05-23-httpd-nginx-bench-parity.md).
+- **HTTPd M1 serve-production:** multi-worker fork + `SO_REUSEPORT`, config `workers=`, `test-serve-production.sh` gate (keep-alive, static, proxy) — [2026-05-23-httpd-m1-serve-production.md](docs/release-notes/2026-05-23-httpd-m1-serve-production.md).
+- **w1-async-reactor:** epoll/kqueue `li_async_poll` reactor, `tcp_echo_epoll_once_i`, tier5 `tcp_echo` bench row, `check-w1-async-reactor.sh` — [2026-05-22-httpd-w1-async-reactor.md](docs/release-notes/2026-05-22-httpd-w1-async-reactor.md).
+- **w0-bytes-io:** `std/bytes` Reader/Writer + stringview helpers, `raises Net` policy tests, accepted trusted-net RFC + Lean axioms — [2026-05-22-w0-bytes-io.md](docs/release-notes/2026-05-22-w0-bytes-io.md).
+- **rng-concepts:** `packages/li-rng` Prng surface, `prob_ensures` IV oracles (`OsRngUniform` / `PrngSeed`), Prng-on-TLS profile gates — [2026-05-22-rng-concepts.md](docs/release-notes/2026-05-22-rng-concepts.md).
+- **rng-exploit-suite (Tier F):** BadRng/SimRng inject via exploit `[server.rng]`; `li-tests/rng/exploits/` + `run_rng_exploits.sh`; GitHub workflow on `packages/li-rng` / `li-tls` — [2026-05-22-rng-exploit-suite.md](docs/release-notes/2026-05-22-rng-exploit-suite.md).
+- **prob-hoare (P2):** `prob_ensures` contracts, `lic build --prob-check` Monte Carlo gate, `Probability.lean` stub — [2026-05-22-prob-hoare-p2.md](docs/release-notes/2026-05-22-prob-hoare-p2.md).
+- **HTTPd M3 optional:** L4 stream + token-budget hooks RFC, config gates, ingress 429 cap — [2026-05-22-httpd-m3-optional.md](docs/release-notes/2026-05-22-httpd-m3-optional.md).
+- **HTTPd M2 circuit-queue runtime:** live queue-depth 429 + `Retry-After`; upstream circuit opens on peer failures — [2026-05-23-httpd-m2-circuit-queue-runtime.md](docs/release-notes/2026-05-23-httpd-m2-circuit-queue-runtime.md).
+- **HTTPd M2 TLS/H2 scale:** TLS 1.3 terminate profile, HTTP/2 config gate, WebSocket `require=websocket`, queue 429, circuit breaker, webhook allowlist — [2026-05-22-httpd-m2-tls-h2.md](docs/release-notes/2026-05-22-httpd-m2-tls-h2.md).
+- **HTTPd M2 runtime parity:** live WebSocket proxy tunnel, `X-Li-Webhook-Url` egress allowlist, queue/circuit 429 fix — [2026-05-23-httpd-m2-runtime-parity.md](docs/release-notes/2026-05-23-httpd-m2-runtime-parity.md).
+- **HTTPd setup-censor-schema:** `--migrations-applied` filters prod-applied SQL; `ack_disable_censor` for disabled production censorship — [2026-05-22-httpd-setup-censor-schema.md](docs/release-notes/2026-05-22-httpd-setup-censor-schema.md).
+- **HTTPd M1.5 agent gateway (m15-agent):** SSE stream caps, `x-model` routing, OTel `traceparent` require/inject, cancel-on-disconnect; Li oracles use `LI_REPO_ROOT` fixtures — [2026-05-22-httpd-m15-agent.md](docs/release-notes/2026-05-22-httpd-m15-agent.md).
+- **HTTPd M1.5 inference live:** `/v1` proxy on live `li-httpd` with rate limits, OTel, upstream cancel — [2026-05-23-httpd-m15-inference-live.md](docs/release-notes/2026-05-23-httpd-m15-inference-live.md).
+- **HTTPd M1.5 SSE runtime:** idle-between-chunks timeout cancels stalled upstream (504) — [2026-05-23-httpd-m15-sse-runtime.md](docs/release-notes/2026-05-23-httpd-m15-sse-runtime.md).
+- **HTTPd M1.5 leak_censor:** `setup-censor-httpd.py`, migration `SchemaCatalog`, optional proxy egress scrub, Tier G exploit TOML rows — [2026-05-22-httpd-m15-leak-censor.md](docs/release-notes/2026-05-22-httpd-m15-leak-censor.md).
+- **HTTPd M1.5 TLS auto (m15-tls-auto):** `manual` / `self_signed` / `lets_encrypt` TOML modes, `setup-tls-httpd.py` (dev certs + ACME staging obtain/renew), `check-httpd-tls-auto.sh`, `m15_tls_oracle.li` — [2026-05-22-httpd-m15-tls-auto.md](docs/release-notes/2026-05-22-httpd-m15-tls-auto.md).
 - **Ecosystem phase 0:** `algorithms-and-libraries-plan.md`, `lic-ecosystem-baseline.md`, agent skill `run-local-ci-gha-quota` — `docs/release-notes/2026-05-22-lic-ecosystem-phase0-baseline.md`.
 - **2i broadcast (partial):** `array[1, T]` element-wise broadcast to `array[N, T]` — `docs/release-notes/2026-05-22-2i-broadcast-len1.md`.
 - **P-float (partial):** `sqrt_open_bound.li` calls `li_rt_sqrt`; tight `abs` ensures still open — `docs/release-notes/2026-05-22-p-float-sqrt-runtime.md`.
 - **7d/7e (partial):** `@parallel(disjoint=)` on `def` inherits to inner `parallel for`; tier-1 `bench.py` uses `--allow-open-vc` — `docs/release-notes/2026-05-22-7d-7e-bench-parallel.md`.
 - **Tier-1 matmul benches:** hoist `A`/`B` init out of hot loop in `matmul_naive` / `matmul_blocked` Li drivers — `docs/release-notes/2026-05-22-tier1-matmul-bench-hotloop.md`.
+- **HTTPd h-lean-server-modules:** Lean typecheck on `li-net-httpd` lib + main; server lean gate — [2026-05-24-httpd-h-lean-server-modules.md](docs/release-notes/2026-05-24-httpd-h-lean-server-modules.md).
 
 ### Fixed
 
-- **CI `test-auth-bearer`:** `build-li-httpd.sh` links `main.li` so `li-httpd` runs `httpd_run_from_argv` (was stub `main` returning 0) — [2026-05-25-ci-test-auth-bearer-main-li.md](docs/release-notes/2026-05-25-ci-test-auth-bearer-main-li.md).
-
+- **Wave A tier-0 / AutoVC:** bounded AutoVC lock waits, atomic `AutoVC.lean` writes, open-VC manifest rows compile without Lean cross-talk, and tier-1 Horner verifies a finite stable value with native-comparable timing — [2026-05-26-wave-a-tier0-li-tests-hygiene.md](docs/release-notes/2026-05-26-wave-a-tier0-li-tests-hygiene.md).
+- **HTTPd M0 ship gate:** `build-li-httpd.sh` builds `main.li` with LLVM env; `httpd-plan-gates.sh` builds `build/li-httpd` and runs `test-auth-bearer.sh` by default — [2026-05-22-httpd-m0-ship-gate-full.md](docs/release-notes/2026-05-22-httpd-m0-ship-gate-full.md).
+- **w0-lean-gate (httpd):** `check-httpd-lean-gate.sh`, callee-ensures VC witness, `li_rt_log` link with `li_rt_net`, closed `http_parse_forward_closed.li` — [2026-05-22-w0-lean-gate-httpd.md](docs/release-notes/2026-05-22-w0-lean-gate-httpd.md).
+- **w0-lean-gate (TLS link):** explain-config C link includes `li_rt_tls`/`li_rt_h2`; Lean CI runs httpd VC gate — [2026-05-23-w0-lean-gate-tls-link.md](docs/release-notes/2026-05-23-w0-lean-gate-tls-link.md).
+- **VC emit (call-site requires):** Lean formals include caller locals used in callee `requires` after substitution (fixes `Unknown identifier` on `i` / `n` in httpd AutoVC) — [2026-05-24-httpd-h-lean-server-modules.md](docs/release-notes/2026-05-24-httpd-h-lean-server-modules.md).
 - **HTTPd M1 bearer auth gate:** non-Linux `epoll_ctl_add_listen_i` stub, `build-li-httpd.sh`, plan gates run `test-auth-bearer.sh` on `build/li-httpd` — [2026-05-22-httpd-m1-bearer-auth-gate.md](docs/release-notes/2026-05-22-httpd-m1-bearer-auth-gate.md).
 - **HTTPd routing CI:** rebase plan-loop branch on `main`; `run_httpd_config.sh` — `--allow-open-vc` + `HTTPD_SKIP_LI_ROUTING_BIN` — `docs/release-notes/2026-05-22-httpd-rebase-main-post-164.md`.
 - **G-lean / P-linalg:** `mat2_at2_float_spec_proved` — closed via `mat2_at2_eval` + `rfl` (no `sorry`); AutoVC ensures use eval not free `result` — `docs/release-notes/2026-05-22-mat2-float-spec-closed.md`.
@@ -120,6 +64,7 @@ All notable changes to Li are documented here. The format follows
 
 - **HTTPd M1 TOML desugar:** `li-tests/config_desugar/` goldens (prefix_strip, header extras), `check-httpd-config-desugar.sh`, C runtime route-key extras — [2026-05-22-httpd-m1-toml-desugar.md](docs/release-notes/2026-05-22-httpd-m1-toml-desugar.md).
 - **HTTPd M1 routing tests:** `li-tests/routing/` table cases, `config_reject/routing_overlap.toml`, `run_routing.sh`, green `match_routes.li` gate — [2026-05-22-httpd-m1-routing-tests.md](docs/release-notes/2026-05-22-httpd-m1-routing-tests.md).
+- **Runtime link + Horner (PH-7e):** `lic build` links `li_rt_net` / `li_rt_httpd` / `li_rt_log` only when MIR calls those symbols (`LI_LINK_RUNTIME_FULL` overrides); Horner uses `HornerStepPow4` + 64-step FMA chain; `volatile_sink` no longer requires `raises IO`; `scripts/check-runtime-link.sh`.
 - **HTTPd autonomous plan loop:** `scripts/httpd-plan-loop.py`, `httpd-plan-gates.sh`, baseline doc, `httpd_implementer` agent — [2026-05-22-httpd-plan-autonomous-loop.md](docs/release-notes/2026-05-22-httpd-plan-autonomous-loop.md).
 - **HTTPd M1 plan continue:** overlap reject, `validate-httpd-config` / `flatten-httpd-config`, Bearer 401 runtime + example — [2026-05-22-httpd-m1-plan-continue.md](docs/release-notes/2026-05-22-httpd-m1-plan-continue.md).
 - **P-loop (2f):** Close `linalg_dot4_int_loop_open` AutoVC via static loop witness; `Li.Discharge.dot4_int_loop_eval_spec` — `docs/release-notes/2026-05-22-p-loop-dot-closed.md`.
@@ -158,8 +103,6 @@ All notable changes to Li are documented here. The format follows
 - **Phase 7d-c (partial):** proof builtins `disjoint_elem`, `disjoint_row`, `disjoint_slice`, `row_ok` in typecheck + prelude reserve; see `docs/release-notes/2026-05-20-disjoint-builtins-and-codegen-fixes.md`.
 
 ### Fixed
-
-- **CI `test-auth-bearer`:** `build-li-httpd.sh` links `main.li` so `li-httpd` runs `httpd_run_from_argv` (was stub `main` returning 0) — [2026-05-25-ci-test-auth-bearer-main-li.md](docs/release-notes/2026-05-25-ci-test-auth-bearer-main-li.md).
 
 - **G-lean (2f):** AutoVC emits `LiArray α n` (not Lean builtin `Array`); `docs/semantics/Core.lean` + `lake build AutoVC` in CI/`lean-verify-stub.sh`; see `docs/release-notes/2026-05-21-glean-liarray-lake.md`.
 - **`CallProc` codegen:** no store on `-> unit` calls; float literal args + f32/i32 coercion; generic return **E0202**; `str`→`ptr` for bootstrap `strcmp`.
@@ -203,8 +146,6 @@ All notable changes to Li are documented here. The format follows
 - `packages/li-net-httpd`: path deps on `li-http` + `li-net`; `httpd_serve` calls `tcp_listen` (stub).
 
 ### Fixed
-
-- **CI `test-auth-bearer`:** `build-li-httpd.sh` links `main.li` so `li-httpd` runs `httpd_run_from_argv` (was stub `main` returning 0) — [2026-05-25-ci-test-auth-bearer-main-li.md](docs/release-notes/2026-05-25-ci-test-auth-bearer-main-li.md).
 
 - **`horner_pure_li` harness honesty** — `li_rt_volatile_sink_f64` prevents LLVM from deleting the pure-Li Horner loop; tier-1 verify rejects pure_li timings < 0.45× native (DCE guard). See `docs/numerics/bench-improver-horner-2026-05-20.md`.
 - Proof witnesses: `return callee(lit)` / `return callee(ident)` / multi-return procedures discharge `ensures`; call-site refinement VCs use `collect_caller_proof_facts` (const locals + `if n >= 0`); stdlib coverage harness uses `LI_ALLOW_OPEN_VC=1`.

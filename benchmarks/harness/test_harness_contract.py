@@ -97,6 +97,32 @@ class HarnessContractTest(unittest.TestCase):
         self.assertEqual(proc.returncode, 0, msg=proc.stderr or proc.stdout)
         self.assertIn("PASS verify", proc.stdout)
 
+    def test_wp4_catalog_smoke_dirs_have_main_li(self) -> None:
+        sys.path.insert(0, str(HARNESS))
+        try:
+            from catalog_smoke import wp4_bench_dirs  # noqa: PLC0415
+        finally:
+            sys.path.pop(0)
+        dirs = wp4_bench_dirs()
+        self.assertGreaterEqual(len(dirs), 40)
+        for bench_dir in dirs:
+            self.assertTrue(
+                (bench_dir / "li" / "main.li").is_file(),
+                bench_dir.name,
+            )
+            self.assertTrue((bench_dir / "harness.toml").is_file(), bench_dir.name)
+
+    @unittest.skipUnless(LIC.is_file(), "lic not built (run ./scripts/build.sh)")
+    def test_wp4_catalog_smoke_compiles(self) -> None:
+        proc = subprocess.run(
+            [sys.executable, str(VERIFY), "--catalog-smoke-only"],
+            cwd=REPO,
+            capture_output=True,
+            text=True,
+        )
+        self.assertEqual(proc.returncode, 0, msg=proc.stderr or proc.stdout)
+        self.assertIn("PASS catalog-smoke", proc.stdout)
+
 
 if __name__ == "__main__":
     raise SystemExit(unittest.main(verbosity=2))

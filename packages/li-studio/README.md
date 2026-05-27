@@ -49,6 +49,7 @@ Dimensions: `examples/studio_shell_demo.toml` (1280×720). Smokes: `studio_shell
 - `studio_compose_outliner` / `studio_paint_outliner` — scene hierarchy stub (Root, Camera, Mesh) in dock strip below slots (PH-GD-1)
 - `studio_paint_compose_panels` — paint dock slots, outliner rows, timeline track/playhead, inspector chrome
 - `studio_shell_frame` — full editor chrome (panels + topbar + viewport grid + agent chrome)
+- **PH-UX viewport display** — `StudioViewportDisplayCompose` + `StudioViewportMenuCompose` on shell; background preset (solid/grid/gradient), MD particle tier dots (placeholder), biomol style chip; MCP `studio_set_viewport_background`, `studio_set_particle_display`, `studio_set_biomol_style` (`studio_mcp_tool_dispatch_arg`); defaults for `sim_scientific` / `sim_drug_design`; smoke `studio_viewport_display.li`
 - **UX-08** — `studio_err_gpu` / `studio_err_missing_asset`, `StudioViewportErrorOverlay`, `studio_viewport_error_retry()` (mock; native wgpu probe not wired)
 - `studio_compose_agent_chrome` / `studio_paint_agent` — task status, step progress, context label, cancel, error strip, retry hint (UX-06)
 - `studio_panel_switch_inspector` / `studio_panel_switch_timeline` — PH-UX panel switch hooks

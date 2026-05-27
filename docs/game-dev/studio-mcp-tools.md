@@ -22,12 +22,16 @@ Any tool that mutates project state or ships artifacts must run **`lic build`** 
 | `studio_mcp_am_export_print` | `am_export_print` | `job_path: str`, `printer_id: str` (optional) | Export slice/mesh to printer pipeline (stub) |
 | `studio_mcp_chem_dft_run` | `chem_dft_run` | `input_path: str`, `method: str` (optional) | Queue QM/DFT job via `li-chem` (stub) |
 | `studio_mcp_studio_adaptive_layout` | `studio_adaptive_layout` | `role: str`, `stage: str` | Drug/role adaptive shell layout (`layout_studio_shell_adaptive`) |
+| `studio_mcp_set_viewport_background` | `studio_set_viewport_background` | `bg: int` (0 solid, 1 grid, 2 gradient) | Sets runtime viewport background preset (CPU paint_blit) |
+| `studio_mcp_set_particle_display` | `studio_set_particle_display` | `tier_id: int` (-1 off, 0–2 = 1k/10k/100k) | MD particle tier label + placeholder dots in viewport |
+| `studio_mcp_set_biomol_style` | `studio_set_biomol_style` | `style: int` (0 cartoon, 1 surface, 2 sticks) | Biomolecule representation chip color (stub, not mesh) |
 
 ## Runtime API (`import studio`)
 
 | Symbol | Role |
 |--------|------|
-| `studio_mcp_tool_count()` | Returns `8` |
+| `studio_mcp_tool_count()` | Returns `11` |
+| `studio_mcp_tool_dispatch_arg(tool_id, arg)` | Viewport MCP tools apply `arg` via `li_rt_studio_viewport_display_*` |
 | `studio_mcp_tool_dispatch(tool_id)` | Stub: valid ID → `status_ok`, invalid → `status_failed` + `result_err_io` |
 | `studio_mcp_tool_name(id)` | Round-trip name via `li_rt` const table |
 | `studio_mcp_tool_from_name(name)` | Parse MCP tool name → ID |
@@ -54,6 +58,7 @@ Any tool that mutates project state or ships artifacts must run **`lic build`** 
 
 - `packages/li-studio/li-tests/smoke/studio_mcp_tools.li` — wave-1 ID/name round-trip and agent chrome optional field.
 - `packages/li-studio/li-tests/smoke/studio_mcp_extended.li` — gap #6/#7 tool IDs, `studio_mcp_tool_dispatch`, adaptive layout hook.
+- `packages/li-studio/li-tests/smoke/studio_viewport_display.li` — viewport background / particle tier / biomol style MCP + compose/paint.
 - `li-tests/composable/import_lig_chem_backend.li` — `chem_dft_run_smoke()` stub energy (`-76.0` Hartree); `chem_lig_backend_auto` unchanged.
 
 ## Not in this slice

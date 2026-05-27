@@ -9,6 +9,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- **WP-ROBO-02/03** — 2-DOF FK (`robo_arm_fk`), workspace gate (`sim_robotics_workspace_bounds_ok`), numeric IK stub tick (`sim_robotics_joint_angles_tick`), ROBO-0 tick helpers (`sim_robotics_tick_at` / `sim_robotics_tick_stub`), smoke `li-tests/smoke/workspace_bounds.li`.
+
+### Changed
+
+- `li_sim_robotics_version()` **1 → 2**; `run_robotics_smoke()` exercises FK, workspace, and joint-angle tick paths.
+
+### Added (prior)
+
 - PH-SIM vertical gap **#3** — profile contract + studio id constants, `run_robotics_smoke()`, package smoke (`li-tests/smoke/builds.li`).
 
 ## [0.1.0] - 2026-05-26

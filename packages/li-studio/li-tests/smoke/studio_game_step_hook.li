@@ -1,0 +1,34 @@
+import sim
+import studio
+
+def main() raises Alloc, IO -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  if studio_game_step_hook(0.016) != sim_status_ok():
+    return 10
+  if studio_game_step_hook(1.0 / 60.0) != sim_status_ok():
+    return 11
+  var game_cfg: StudioProjectConfig = studio_project_config_new(studio_profile_game())
+  var game_sess: SimSessionStub = sim_session_stub_default()
+  if studio_sim_step_hook(game_cfg, game_sess, 0.016) != sim_status_ok():
+    return 20
+  if game_sess.tick != 1:
+    return 21
+  if game_sess.sim_contract_id != sim_contract_game():
+    return 22
+  if studio_game_world_checkpoint_roundtrip(game_sess) != 1:
+    return 23
+  if studio_sim_step_hook(game_cfg, game_sess, 0.016) != sim_status_ok():
+    return 30
+  if game_sess.tick != 2:
+    return 31
+  var snap: WorldSnapshot = studio_game_world_checkpoint_from_session(game_sess)
+  if studio_game_world_checkpoint_stub(snap) != 1:
+    return 32
+  if snap.tick != 2:
+    return 33
+  if studio_game_world_checkpoint_roundtrip(game_sess) != 1:
+    return 34
+  return 0

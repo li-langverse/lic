@@ -324,6 +324,25 @@ void check_proc_decorators(const std::vector<Decorator>& decos, const std::strin
     }
   }
   for (const auto& d : decos) {
+    if (d.name == "vectorized") {
+      proc_vectorized = true;
+    }
+    if (d.name == "no_vectorize") {
+      proc_no_vectorize = true;
+    }
+  }
+  if (proc_vectorized && proc_no_vectorize) {
+    for (const auto& d : decos) {
+      if (d.name == "vectorized") {
+        diag_error(diags, SourceLoc{file, 1, 1, d.span.start}, ErrorCode::E0323,
+                   "`@vectorized` on `def` cannot combine with `@no_vectorize` on the same "
+                   "procedure.",
+                   "Remove one decorator, or put `@vectorized` on an inner `for` loop (7d-c).");
+        break;
+      }
+    }
+  }
+  for (const auto& d : decos) {
     if (d.name == "parallel") {
       bool saw_disjoint_kw = false;
       for (const auto& arg : d.args) {

@@ -59,6 +59,8 @@ This page is the **honest inventory** of what is **not** fully proved or not yet
 | **G-authz** | Missing | Capability / IDOR (OS phase) |
 | **G-test-verify** | **Done** | `prove_lean_ok` in `li-tests/run_all.sh`; 18 closed `contracts_verify` specimens (incl. `sqrt_open_bound`, `refinement_{call,inline,local,guard}_ok`); `verify_ok` = strict build; lake skips when elan absent |
 | **G-proof-db** | Partial | [Proof database](proof-database.md): register at `docs/verification/proof-database/entries/physics-*.toml` (`P-AX-*`, `P-LM-*`) |
+| **G-test-verify** | **Done** | `prove_lean_ok` in `run_all.sh`; 14 closed `contracts_verify` specimens |
+| **G-proof-db** | Partial | [Proof database](proof-database.md): catalog `L-MATH-*` lemmas + `rebuild_lemmas.sh` → `data/proof-db/latest-report.{json,md}` |
 | **G-physics** | Partial | **P-physics** slice: 7× `P-AX-*` + 3× `P-LM-*`; 2× proved scalar lemmas in `Discharge.lean`; tier-2 **modeling_gap** on extern stubs |
 | **G-hw** | Axiomatic | FP/hardware model limit (documented, not closable) |
 | **G-wrong-spec** | Social | User theorem quality (not tool-closable) |
@@ -115,6 +117,8 @@ Status legend: **Missing** · **Stub** · **Partial** · **CI only** · **Done**
 | **G-proof-db** | Proof database | Axiom → lemma → discharge status vs `lic` commit | **Partial** — physics TOML under `docs/verification/proof-database/entries/physics-*.toml` | **Doc**, **2f**, **5b** | [proof-database.md](proof-database.md) |
 | **G-test-verify** | Manifest honesty | `verify_ok` vs Lean QED | **Done** — `prove_lean_ok` outcome; 13 closed `contracts_verify` rows | **2f** | `li-tests/run_all.sh`, `manifest.toml` |
 | **G-proof-db** | Proof database | Axiom → lemma → discharge status vs `lic` commit | **Partial** — math + physics TOML under `docs/verification/proof-database/entries/` | **Doc**, **2f**, **5b** | [proof-database.md](proof-database.md), `proof-db.py verify-slice` |
+| **G-test-verify** | Manifest honesty | `verify_ok` vs Lean QED | **Done** — `prove_lean_ok` outcome; 14 closed `contracts_verify` rows | **2f** | `li-tests/run_all.sh`, `li-tests/manifest.toml`, `contracts_discharge_corpus.sh` |
+| **G-proof-db** | Proof database | Axiom → lemma → discharge status vs `lic` commit | **Partial** — 3× catalog `L-MATH-*` lemmas + rebuild report | **Doc**, **2f**, **5b** | [proof-database.md](proof-database.md), `data/proof-db/latest-report.md` |
 | **G-physics** | Classical physics proofs | Newton + conservation linked to tier-2 benches | **Partial** — `entries/physics-*.toml`; 2× `proved` + 1× open `P-LM-*` in `Discharge.lean` | **Doc**, **2f**, **5b** | [proof-database/entries/physics-*.toml](proof-database/entries/physics-mechanics.toml), `benchmarks/tier2_physics/`, `Discharge.lean` |
 
 ---

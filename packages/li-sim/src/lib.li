@@ -504,3 +504,23 @@ def sim_session_apply_studio_profile(studio_profile_id: int, sim_out: var SimSes
     if sid <= 5:
       detail0 = output_detail_fields()
   sim_out.output_detail = detail0
+
+# PH-SIM SIM-3 partial — RL env pool stub (deterministic step id).
+def sim_rl_env_pool_step_id(tick: int) -> int
+  requires tick >= 0
+  ensures result >= 0
+  decreases tick
+=
+  return tick + 1
+
+def sim_rl_tick_stub(detail: int) -> int
+  requires detail >= 0
+  requires detail <= 3
+  ensures result >= 0
+  ensures result <= 1
+  decreases 0
+=
+  var step_id: int = sim_rl_env_pool_step_id(detail)
+  if step_id <= 0:
+    return 0
+  return 1

@@ -23,9 +23,52 @@ def li_sim_drug_design_studio_profile_id() -> int
 =
   return 7
 
+# PH-DRUG-0 — LITL five-stage workflow index (design → make → test → learn → adapt).
+def sim_drug_design_litl_stage_count() -> int
+  requires true
+  ensures result == 5
+  decreases 0
+=
+  return 5
+
+def sim_drug_design_litl_stage_ok(detail: int, stage: int) -> int
+  requires detail >= 0
+  requires detail <= 3
+  requires stage >= 0
+  requires stage < sim_drug_design_litl_stage_count()
+  ensures result >= 0
+  ensures result <= 1
+  decreases 0
+=
+  if stage > detail + 2:
+    return 0
+  return 1
+
+def sim_drug_design_tick_at(detail: int) -> int
+  requires detail >= 0
+  requires detail <= 3
+  ensures result >= 0
+  ensures result <= 1
+  decreases 0
+=
+  if sim_drug_design_litl_stage_ok(detail, 2) != 1:
+    return 0
+  return 1
+
+def sim_drug_design_tick_stub(detail: int) -> int
+  requires detail >= 0
+  requires detail <= 3
+  ensures result >= 0
+  ensures result <= 1
+  decreases 0
+=
+  return sim_drug_design_tick_at(detail)
+
 def run_drug_design_smoke() -> int
   requires true
   ensures result == 0
   decreases 0
 =
+  if sim_drug_design_tick_stub(1) != 1:
+    return 1
   return 0

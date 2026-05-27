@@ -23,9 +23,46 @@ def li_sim_automotive_studio_profile_id() -> int
 =
   return 3
 
+# PH-AUTO — bicycle kinematic stub (yaw rate from steer + speed).
+def sim_automotive_bicycle_checksum(detail: int, steer_rad: float, speed_mps: float) -> float
+  requires detail >= 0
+  requires detail <= 3
+  requires speed_mps >= 0.0
+  ensures result >= 0.0
+  decreases 0
+=
+  var wheelbase: float = 2.7
+  if detail >= 2:
+    wheelbase = 2.9
+  var yaw_rate: float = speed_mps * steer_rad / wheelbase
+  return yaw_rate + speed_mps + 0.01
+
+def sim_automotive_tick_at(detail: int) -> int
+  requires detail >= 0
+  requires detail <= 3
+  ensures result >= 0
+  ensures result <= 1
+  decreases 0
+=
+  var c: float = sim_automotive_bicycle_checksum(detail, 0.05, 12.0)
+  if c <= 0.0:
+    return 0
+  return 1
+
+def sim_automotive_tick_stub(detail: int) -> int
+  requires detail >= 0
+  requires detail <= 3
+  ensures result >= 0
+  ensures result <= 1
+  decreases 0
+=
+  return sim_automotive_tick_at(detail)
+
 def run_automotive_smoke() -> int
   requires true
   ensures result == 0
   decreases 0
 =
+  if sim_automotive_tick_stub(1) != 1:
+    return 1
   return 0

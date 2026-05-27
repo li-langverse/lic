@@ -470,25 +470,68 @@ def merge_rows(
     return kept + new_rows
 
 
+def _bench_env_flag(name: str, default: str = "1") -> bool:
+    return os.environ.get(name, default).strip().lower() not in ("0", "false", "no", "off")
+
+
+def _run_timed_once(cmd: list[str], *, cwd: Path | None) -> float:
+    start = time.perf_counter()
+    proc = subprocess.run(cmd, cwd=cwd, capture_output=True, text=True)
+    elapsed = time.perf_counter() - start
+    if proc.returncode != 0:
+        raise RuntimeError(
+            f"command failed ({proc.returncode}): {' '.join(cmd)}\n"
+            f"{proc.stderr or proc.stdout}"
+        )
+    return elapsed
+
+
+def resolve_timing_runs(base_runs: int, median_sec: float) -> int:
+    """Scale repetitions for short kernels (≥BENCH_MIN_RUNS, ~BENCH_TARGET_SAMPLE_SEC total)."""
+    if not _bench_env_flag("BENCH_ADAPTIVE_RUNS", "1"):
+        return base_runs
+    min_runs = int(os.environ.get("BENCH_MIN_RUNS", "20"))
+    max_runs = int(os.environ.get("BENCH_MAX_RUNS", "200"))
+    target = float(os.environ.get("BENCH_TARGET_SAMPLE_SEC", "1.0"))
+    runs = max(base_runs, min_runs)
+    if median_sec > 0:
+        needed = math.ceil(target / median_sec)
+        runs = max(runs, min(needed, max_runs))
+    return runs
+
+
 def time_command(cmd: list[str], *, cwd: Path | None = None, runs: int = 3) -> float:
-    samples: list[float] = []
-    # Discard one warmup run (JIT/cache/thermal).
+    if runs <= 1:
+        warmup = subprocess.run(cmd, cwd=cwd, capture_output=True, text=True)
+        if warmup.returncode != 0:
+            raise RuntimeError(
+                f"warmup failed ({warmup.returncode}): {' '.join(cmd)}\n"
+                f"{warmup.stderr or warmup.stdout}"
+            )
+        return _run_timed_once(cmd, cwd=cwd)
+
     warmup = subprocess.run(cmd, cwd=cwd, capture_output=True, text=True)
     if warmup.returncode != 0:
         raise RuntimeError(
             f"warmup failed ({warmup.returncode}): {' '.join(cmd)}\n"
             f"{warmup.stderr or warmup.stdout}"
         )
-    for _ in range(runs):
-        start = time.perf_counter()
-        proc = subprocess.run(cmd, cwd=cwd, capture_output=True, text=True)
-        elapsed = time.perf_counter() - start
-        if proc.returncode != 0:
-            raise RuntimeError(
-                f"command failed ({proc.returncode}): {' '.join(cmd)}\n"
-                f"{proc.stderr or proc.stdout}"
-            )
-        samples.append(elapsed)
+
+    probe_n = min(3, runs)
+    samples = [_run_timed_once(cmd, cwd=cwd) for _ in range(probe_n)]
+    probe_median = statistics.median(samples)
+    total_runs = resolve_timing_runs(runs, probe_median)
+    extra = max(0, total_runs - probe_n)
+    if extra:
+        samples.extend(_run_timed_once(cmd, cwd=cwd) for _ in range(extra))
+
+    if _bench_env_flag("BENCH_TIMING_VERBOSE", "0"):
+        stdev = statistics.stdev(samples) if len(samples) > 1 else 0.0
+        print(
+            f"timing: runs={len(samples)} median={statistics.median(samples):.6f}s "
+            f"stdev={stdev:.6f}s cmd={' '.join(cmd)}",
+            file=sys.stderr,
+        )
     return statistics.median(samples)
 
 
@@ -885,7 +928,7 @@ def run_benchmark(spec: BenchSpec, *, runs: int) -> list[dict[str, object]]:
                 flags=NATIVE_FLAGS,
             )
         )
-        print(f"{spec.name} cpp wall_time={wall:.4f}s (median of {runs}); Li column pending WP1")
+        print(f"{spec.name} cpp wall_time={wall:.4f}s (adaptive median); Li column pending WP1")
         return rows
 
     rust_bin = build_dir / f"{spec.name}_rust"

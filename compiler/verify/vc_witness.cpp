@@ -609,6 +609,9 @@ bool ensures_witnessed_for_return(const ProcDecl& proc, const Contract& c, const
   if (witness_mat2_int_at2_spec_impl(proc, *c.expr)) {
     return true;
   }
+  if (witness_sqrt_open_bound_spec_impl(proc, *c.expr)) {
+    return true;
+  }
   if (rhs != nullptr && expr_same_shape(ret, *rhs)) {
     return true;
   }

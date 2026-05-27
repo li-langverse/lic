@@ -3,6 +3,8 @@
 set -euo pipefail
 ROOT="$(cd "$(dirname "$0")/../.." && pwd)"
 export LI_REPO_ROOT="$ROOT"
+rm -f "$ROOT/build/generated/AutoVC.lean"
+LIC="${LIC:-$("$ROOT/scripts/resolve-lic.sh")}"
 chmod +x "$ROOT/li-tests/tooling/discharge_trivial_lean.sh" \
   "$ROOT/li-tests/tooling/discharge_const_lean.sh" \
   "$ROOT/li-tests/tooling/discharge_caller_requires_lean.sh" \

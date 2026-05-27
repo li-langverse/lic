@@ -142,7 +142,7 @@ todos:
     status: pending
   - id: gap-phase2-mitigation-exploits
     content: "Close nginx_mitigations.toml rows with empty exploit — client_max_body_size, h2_rapid_reset, dns_resolver_limits; tier5 TOML + live li-httpd vs nginx compare; gate check-tier5-mitigation-exploits-complete.sh"
-    status: pending
+    status: completed
   - id: gap-phase2-streaming-wrk
     content: "Streaming wrk parity — sse_long_stream + ws_fanout with timing (not verify-only); check-tier5-streaming-soak.sh with HTTPD_BENCH_SKIP_TIMING=0"
     status: pending
@@ -151,51 +151,6 @@ todos:
     status: completed
 isProject: false
 ---
-- id: gap-httpd-gap-phase2-perf-wrk-soak
-  content: "httpd: pending plan todo gap-phase2-perf-wrk-soak"
-  status: pending
-  gap_orchestrator: true
-- id: gap-httpd-gap-phase2-mitigation-exploits
-  content: "httpd: pending plan todo gap-phase2-mitigation-exploits"
-  status: pending
-  gap_orchestrator: true
-- id: gap-httpd-gap-phase2-streaming-wrk
-  content: "httpd: pending plan todo gap-phase2-streaming-wrk"
-  status: pending
-  gap_orchestrator: true
-- id: gap-httpd-gap-httpd-gap-phase2-perf-wrk-soak
-  content: "httpd: pending plan todo gap-httpd-gap-phase2-perf-wrk-soak"
-  status: pending
-  gap_orchestrator: true
-- id: gap-httpd-gap-httpd-gap-phase2-mitigation-exploits
-  content: "httpd: pending plan todo gap-httpd-gap-phase2-mitigation-exploits"
-  status: pending
-  gap_orchestrator: true
-- id: gap-httpd-gap-httpd-gap-phase2-streaming-wrk
-  content: "httpd: pending plan todo gap-httpd-gap-phase2-streaming-wrk"
-  status: pending
-  gap_orchestrator: true
-- id: gap-httpd-gap-httpd-gap-httpd-gap-phase2-perf-wrk-
-  content: "httpd: pending plan todo gap-httpd-gap-httpd-gap-phase2-perf-wrk-soak"
-  status: pending
-  gap_orchestrator: true
-- id: gap-httpd-gap-httpd-gap-httpd-gap-phase2-mitigatio
-  content: "httpd: pending plan todo gap-httpd-gap-httpd-gap-phase2-mitigation-exploits"
-  status: pending
-  gap_orchestrator: true
-- id: gap-httpd-gap-httpd-gap-httpd-gap-phase2-streaming
-  content: "httpd: pending plan todo gap-httpd-gap-httpd-gap-phase2-streaming-wrk"
-  status: pending
-  gap_orchestrator: true
-
-
-
-
-
-
-
-
-
 
 # li-httpd — minimal, proved, nginx-competitive
 

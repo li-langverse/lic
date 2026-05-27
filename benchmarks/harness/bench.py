@@ -180,7 +180,7 @@ TIER_STDLIB_BENCHES: tuple[BenchSpec, ...] = (
 )
 
 # Gaming-physics roadmap (physics-only; Tier R = rendering out of scope):
-#   exists: md_lennard_jones, nbody, wave_1d/2d, heat_2d, advection_diffusion_2d, sph_dam_break_2d (stub)
+#   exists: md_lennard_jones + catalog md_* aliases, nbody, wave_1d/2d, heat_2d, advection_diffusion_2d, sph_dam_break_2d (stub)
 #   planned: euler_fluid_2d, combustion_passive, wind_field_bc, rigid_body, cloth, mls_mpm
 #   Tier R: shadows, reflections BRDF, fire rendering
 TIER2_BENCHES: tuple[BenchSpec, ...] = (

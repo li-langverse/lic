@@ -277,6 +277,13 @@ def algo_robo_multibody_step() -> int
 =
   return 801
 
+def algo_drug_litl_stages() -> int
+  requires true
+  ensures result == 501
+  decreases 0
+=
+  return 501
+
 def run_result_ok(r: SimRunResult) -> int
   requires true
   ensures result >= 0

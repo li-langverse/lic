@@ -96,6 +96,12 @@ note = "T-PKG-li-studio-shell-demo-present-loop PH-HW WP3"
 
 [[tests]]
 suite = "smoke"
+file = "smoke/studio_shell_demo_pattern_tick.li"
+outcome = "compile_open_ok"
+note = "T-PKG-li-studio-shell-demo-pattern-tick STUDIO_DEMO_LOOP_TICK base"
+
+[[tests]]
+suite = "smoke"
 file = "smoke/studio_mcp_tools.li"
 outcome = "compile_open_ok"
 note = "T-PKG-li-studio-mcp-tools PH-AGENT"
@@ -105,6 +111,12 @@ suite = "smoke"
 file = "smoke/studio_mcp_extended.li"
 outcome = "compile_open_ok"
 note = "T-PKG-li-studio-mcp-extended PH-AGENT gap-6-7"
+
+[[tests]]
+suite = "smoke"
+file = "smoke/studio_viewport_display.li"
+outcome = "compile_open_ok"
+note = "PH-UX viewport display MCP + paint_blit biomol/particle placeholders"
 
 [[tests]]
 suite = "smoke"

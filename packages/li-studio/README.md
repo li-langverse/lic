@@ -15,8 +15,9 @@ lic check src/main.li
 lic build --allow-open-vc --no-lean-verify packages/li-studio/src/main.li -o build/li-studio-demo
 ./build/li-studio-demo
 
-# Interactive SDL/mock loop (one demo frame per tick; optional LIG_HOST_PRESENT present host)
+# Interactive SDL/mock loop (one frame per tick; pattern 0→1→2 via STUDIO_DEMO_LOOP_TICK)
 ./scripts/studio-shell-demo-interactive.sh
+# STUDIO_INTERACTIVE_MAX_TICKS=9 ./scripts/studio-shell-demo-interactive.sh
 
 # Vertical + host present (CI-safe mock input; optional SDL present host)
 cd ../..   # lic repo root
@@ -31,7 +32,9 @@ STUDIO_SHELL_DEMO_BUILD_RUN=1 LIG_HOST_PRESENT=1 \
 | Env | Role |
 |-----|------|
 | `STUDIO_DEMO_PROFILE` | Profile slug or id (`game`, `sim_rl`, `sim_drug_design`, …) |
-| `STUDIO_DEMO_FRAMES` | Loop length (1–64; default 3) |
+| `STUDIO_DEMO_FRAMES` | Frames per `li-studio-demo` invocation (1–64; default 3; interactive default 1) |
+| `STUDIO_DEMO_LOOP_TICK` | Base pattern index for present loop (mod 3); interactive script sets each tick |
+| `STUDIO_DEMO_LOOP_AUTO=1` | In-process tick counter when `STUDIO_DEMO_LOOP_TICK` unset (optional) |
 | `LIG_HOST_PRESENT=1` | Enable `lig_present_blit_paint_summary` + `studio_shell_host_present_loop_tick` |
 | `STUDIO_SHELL_INPUT_MOCK` | Keys for `studio_shell_input_from_host` (e.g. `cmd_k,digit=3`) |
 | `STUDIO_SHELL_PRESENT_HOST_BIN` | SDL one-shot present host (`deploy/studio-demo/native/studio_shell_present_host`) |

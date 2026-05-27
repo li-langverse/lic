@@ -37,6 +37,12 @@ All notable changes to Li are documented here. The format follows
 
 ### Added
 
+- **Vertical gap #2/#10 (partial):** `STUDIO_DEMO_PROFILE` → `studio_shell_demo_frame` / `studio_vertical_demo_frame`; restore `li_rt_lig_host_present_*`; capture prefers `li-studio-demo` — [2026-05-26-vertical-gap-native-present.md](docs/release-notes/2026-05-26-vertical-gap-native-present.md).
+
+- **Gap closure queue (Phase 2a audit):** `docs/verification/GAP_CLOSURE_QUEUE.md` — prioritized open gaps excluding open PRs — [2026-05-25-gap-closure-queue.md](docs/release-notes/2026-05-25-gap-closure-queue.md).
+
+### Added
+
 - **G-dec (partial):** `check_mir_vectorized_decorator.sh` in `contracts_discharge_corpus.sh` + master-plan gates; provability-gaps **G-dec** / **P-dec** sync — `docs/release-notes/2026-05-25-g-dec-gap-close-corpus.md`.
 
 ### Added

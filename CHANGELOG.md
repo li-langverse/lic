@@ -19,6 +19,7 @@ All notable changes to Li are documented here. The format follows
 - **PH-HW viewport phase A:** `lig_present_blit_paint_summary` / `present_blit_rgba8` scaffold (`native_pixel_source`); studio vertical demo requires paint blit before host present — [2026-05-27-studio-wgpu-readback-a.md](docs/release-notes/2026-05-27-studio-wgpu-readback-a.md).
 
 - **WP-DRUG-03 Studio adaptive LITL panels:** `layout_studio_shell_drug_litl`, `studio_adaptive_layout_for_drug_tick`, MCP `studio_mcp_dispatch_adaptive_drug` — [2026-05-27-studio-drug-litl-adaptive.md](docs/release-notes/2026-05-27-studio-drug-litl-adaptive.md).
+- **Studio drug vertical demo:** `studio_vertical_demo_frame` uses `studio_compose_shell_drug_litl` for profile 7 (native capture + paint blit) — [2026-05-27-studio-drug-demo-litl.md](docs/release-notes/2026-05-27-studio-drug-demo-litl.md).
 - **PH-DRUG DRUG-1 deepen:** LITL inspector payload + LLVM admet score fix — merged #336.
 - **Proof-db rebuild:** lemma rebuild pipeline — merged #280.
 

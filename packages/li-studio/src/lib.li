@@ -3034,6 +3034,28 @@ def studio_shell_demo_apply_profile(compose: var StudioShellCompose, profile_id:
 =
   compose.config = studio_project_config_new(profile_id)
 
+def studio_vertical_demo_compose(profile_id: int, frame_id: int, key_compose: int) -> StudioShellCompose
+  requires studio_profile_id_valid(profile_id) == 1
+  requires frame_id >= 0
+  requires frame_id <= 2
+  requires key_compose >= 0
+  requires key_compose <= 1
+  ensures studio_compose_ok(result) == 1
+  decreases frame_id
+=
+  if profile_id == studio_profile_sim_drug_design():
+    var tick: int = frame_id
+    if key_compose == 1:
+      tick = 0
+    return studio_compose_shell_drug_litl(1280.0, 720.0, tick, 1)
+  var palette_open: int = studio_palette_closed_flag()
+  if key_compose == 0:
+    if frame_id == 2:
+      palette_open = studio_palette_open_flag()
+  var out: StudioShellCompose = studio_compose_shell_palette(1280.0, 720.0, 0, 1, palette_open)
+  studio_shell_demo_apply_profile(out, profile_id)
+  return out
+
 def studio_vertical_demo_frame(profile_id: int, frame_id: int) -> int raises IO
   requires studio_profile_id_valid(profile_id) == 1
   requires frame_id >= 0
@@ -3041,13 +3063,8 @@ def studio_vertical_demo_frame(profile_id: int, frame_id: int) -> int raises IO
   ensures result >= 0
   decreases frame_id
 =
-  var palette_open: int = studio_palette_closed_flag()
-  if frame_id == 2:
-    palette_open = studio_palette_open_flag()
-  var compose: StudioShellCompose = studio_compose_shell_palette(1280.0, 720.0, 0, 1, palette_open)
-  studio_shell_demo_apply_profile(compose, profile_id)
-  var key_compose: StudioShellCompose = studio_compose_shell_palette(1280.0, 720.0, 0, 1, studio_palette_closed_flag())
-  studio_shell_demo_apply_profile(key_compose, profile_id)
+  var compose: StudioShellCompose = studio_vertical_demo_compose(profile_id, frame_id, 0)
+  var key_compose: StudioShellCompose = studio_vertical_demo_compose(profile_id, frame_id, 1)
   var input: InputState = input_default()
   if frame_id == 2:
     input.key_cmd_k = 1
@@ -3071,24 +3088,14 @@ def studio_vertical_demo_frame(profile_id: int, frame_id: int) -> int raises IO
     return 10 + frame_id
   if lig_present_host_active() == 1:
     var vp: ViewportRegion = gui_viewport_region_from_layout(compose.layout)
-    var use_readback: int = lig_present_wgpu_readback_active()
-    if use_readback == 1:
-      if lig_present_wgpu_readback_paint_summary(vp.w, vp.h, profile_id, frame.cmd_count) != 1:
-        return 54 + frame_id
-    if use_readback != 1:
-      if lig_present_blit_paint_summary(vp.w, vp.h, profile_id, frame.cmd_count) != 1:
-        return 52 + frame_id
+    if lig_present_blit_paint_summary(vp.w, vp.h, profile_id, frame.cmd_count) != 1:
+      return 52 + frame_id
     var _presented: LigPresentFrame = studio_shell_host_present_loop_tick(vp.w, vp.h, frame_id)
     if _presented.presented != 1:
       return 50 + frame_id
     if _presented.native_pixels != 1:
       return 51 + frame_id
-    var expected_src: int = lig_native_pixel_source_paint_blit()
-    if use_readback == 1:
-      expected_src = lig_native_pixel_source_wgpu_readback()
-    if _presented.native_pixel_source != expected_src:
-      if use_readback == 1:
-        return 55 + frame_id
+    if _presented.native_pixel_source != lig_native_pixel_source_paint_blit():
       return 53 + frame_id
   if frame_id == 0:
     return 0

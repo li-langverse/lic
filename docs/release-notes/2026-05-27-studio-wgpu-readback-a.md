@@ -1,6 +1,6 @@
 # Release notes: 2026-05-27 — studio-wgpu-readback-a
 
-**Status:** Ready for review  
+**Status:** Ready for review (rebased onto `main` 2026-05-27)  
 **Repo:** li-langverse/lic  
 **PR:** cursor/studio-wgpu-readback-5599  
 **PH / REQ:** PH-HW viewport, UX-14 native pixels  

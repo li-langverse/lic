@@ -7,8 +7,8 @@
 | `sim_automotive` | Profile roundtrip | Paint-blit shell | **1** | `paint_blit` | Maps, sensors, `li-sim-automotive` |
 | `sim_robotics` | Inspector rows when `has_selection=1` | Paint-blit shell | **1** | `paint_blit` | IK, factory cells |
 | `sim_additive` | TOML `sim_additive` parse | Paint-blit shell | **1** | `paint_blit` | `sim.export.print`, printer profiles |
-| `sim_scientific` | Particle tier labels in compose | Paint-blit shell | **1** | `paint_blit` | CFD/MD oracles, `sim.viz` |
-| `sim_drug_design` | Drug paint color contract | Paint-blit shell (wider inspector) | **1** | `paint_blit` | `studio.adaptive`, `li-chem` live |
+| `sim_scientific` | Viewport display compose (bg grid, MD tier 10k, cartoon biomol chip) + 3 viewport menu stubs | Paint-blit shell + 8 particle dot placeholders | **1** | `paint_blit` | wgpu MD draw, PDB, real cartoon/surface mesh |
+| `sim_drug_design` | Viewport display (gradient bg, MD 1k, surface biomol) + drug LITL inspector | Paint-blit shell (wider inspector) | **1** | `paint_blit` | `studio.adaptive`, `li-chem` live, real 3D biomol |
 
 **Honesty:** `capture_mode=paint_blit` means `studio_shell_paint_fb.c` rasterizes the same region geometry as `studio_paint_shell_chrome` / `layout_studio_shell_adaptive` — not a live `li-studio-demo` window or wgpu swapchain readback. Legacy `cpu_chip_only` (grid + topbar chip only) is available via `STUDIO_VERTICALS_CAPTURE_MODE=cpu_chip_only`.
 

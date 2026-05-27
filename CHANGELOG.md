@@ -12,7 +12,6 @@ All notable changes to Li are documented here. The format follows
 
 ### Added
 
-<<<<<<< HEAD
 - **Benchmark package-release:** `.github/workflows/benchmark-release.yml` on tag `v*` — conditional `benchmarks/**` rebuild, `benchmark-csv` artifact, `package-release` dispatch to benchmarks — [2026-05-25-lic-package-release-dispatch.md](docs/release-notes/2026-05-25-lic-package-release-dispatch.md).
 
 - **Studio MCP gap #6/#7 (contracts):** eight tool IDs (`am_export_print`, `chem_dft_run`, `studio_adaptive_layout`), `studio_mcp_tool_dispatch` stub, `li-chem` `chem_dft_run_smoke`, smokes `studio_mcp_extended.li` / composable chem — [2026-05-25-vertical-gap-mcp-chem.md](docs/release-notes/2026-05-25-vertical-gap-mcp-chem.md).
@@ -28,12 +27,10 @@ All notable changes to Li are documented here. The format follows
 - **PH-UX vertical gap #5:** Full `lig-kernels.toml` catalog rows (`md_force_short`, `heat_stencil_2d_f32`, …), `cuda`/`hip`/`metal` = `N/A` until `LIG_EMIT_*`, parity harness emits all `kernel_ids` — [2026-05-25-vertical-gap-lig-kernels.md](docs/release-notes/2026-05-25-vertical-gap-lig-kernels.md).
 
 
-=======
 - **2i / G-math (tracker):** `norm_non_array.li` compile_fail for scalar `norm` — `docs/release-notes/2026-05-25-2i-norm-plan-tracker.md`.
 
 ### Added
 
->>>>>>> origin/pr-262-tmp
 - **PH-HW integration (`lig` + studio gap):** Rollup for multi-vendor GPU work packages WP1–WP5 ([#217](https://github.com/li-langverse/lic/pull/217), [#218](https://github.com/li-langverse/lic/pull/218), [#213](https://github.com/li-langverse/lic/pull/213), [#220](https://github.com/li-langverse/lic/pull/220), [#222](https://github.com/li-langverse/lic/pull/222)) and merged `studio-gap-close-wave1` (UX/MCP/sim/world) on `feat/ph-hw-multi-vendor` — [2026-05-25-lig-ph-hw-integration.md](docs/release-notes/2026-05-25-lig-ph-hw-integration.md).
 
 - **2i / G-math (tracker):** `norm_non_array.li` compile_fail for scalar `norm` — `docs/release-notes/2026-05-25-2i-norm-plan-tracker.md`.

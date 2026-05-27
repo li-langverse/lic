@@ -1,7 +1,7 @@
 # Research goal digest — `chem_sim_algorithms`
 
-**Session:** `66d1f3bf-7ced-4520-95f5-7c6fba34da72` · **Cycle:** 1 · **Agent:** `numerics_researcher`  
-**Run:** `numerics_researcher-1779876594572` · **Generated:** 2026-05-27T10:30:00Z  
+**Session:** `1bdb6322-8399-425d-9257-9b9098475e89` · **Cycle:** 1 · **Agent:** `numerics_researcher`  
+**Run:** `numerics_researcher-1779918652712` · **Generated:** 2026-05-27T21:51:36Z  
 **North star fit:** Chemistry / QM — PH-5b (proved numerics), PH-7e (integral/Fock SIMD), domains: scientific_computing, hpc
 
 ---
@@ -9,13 +9,13 @@
 ## Executive summary
 
 - **Mode A SOTA survey complete** (`chem-r0`): Psi4, PySCF, ORCA, Helgaker mapped to **algo_registry 401–432** with implementation ordering (integrals 401–404 → SCF 411/418).
-- **Li gap:** All 32 `qm_*` catalog rows are **unknown** on the [dashboard](https://li-langverse.github.io/benchmarks/); tier-2 harnesses use **`schrodinger_1d_barrier` template**, not QC kernels.
+- **Li gap:** All 32 `qm_*` catalog rows are **unknown** on the [dashboard](https://li-langverse.github.io/benchmarks/) (preflight @ 2026-05-27T21:50Z); tier-2 harnesses use **`schrodinger_1d_barrier` template**, not QC kernels.
 - **`li-sim-scientific`:** `vertical_qm_dft()` → `algo_qm_dft_scf_energy()` → `run_algo_registry_stub` (checksum **1.001**); same pattern as MD stubs pre–r2 handoff.
 - **`std/physics/chem.li`:** tag-only (`physics_chem_std_tag`); no GTO/SCF surface yet.
 - **Composable gate missing:** `li-tests/composable/import_chem_dft_smoke.li` not on `main`; `verticals.toml` honesty stays **stub / external_binary** until it passes.
 - **v1 implement target:** `chem-r2-dft-scf-gap` → `qm_dft_scf_energy` (418) with **Psi4 subprocess oracle** before native RKS perf; validity locked.
 - **Whitepaper + study evidence:** [chem-r0 whitepaper](../../../../research-findings/whitepapers/2026-05/chem_sim_algorithms/chem-r0-qm-sota-survey/README.md) · [study](../../numerics/studies/2026-05-27-chem-r0-qm-sota-survey.md) (`validity_grade: study-only`).
-- **No perf claims** this cycle; `threshold_ratio_cpp` and tier-0 tolerances unchanged.
+- **Org red rows (unrelated to QM):** `horner_pure_li`, `reduce_sum` — do not relax `threshold_ratio_cpp` while fixing chemistry vertical.
 
 ---
 
@@ -23,12 +23,10 @@
 
 ### Completed artifacts (cycle 1)
 
-| Step | Artifact |
-|------|----------|
-| `survey_sota` | `docs/numerics/studies/2026-05-27-chem-r0-qm-sota-survey.md` |
-| Whitepaper | `research-findings/whitepapers/2026-05/chem_sim_algorithms/chem-r0-qm-sota-survey/` |
-| Session log | `docs/ecosystem/research-sessions/chem_sim_algorithms-cycle.md` |
-| This digest | `docs/research/goals/chem_sim_algorithms.md` |
+| Step | Run | Artifact |
+|------|-----|----------|
+| `survey_sota` | `numerics_researcher-1779916590880` | `docs/numerics/studies/2026-05-27-chem-r0-qm-sota-survey.md` · [whitepaper](../../../../research-findings/whitepapers/2026-05/chem_sim_algorithms/chem-r0-qm-sota-survey/) |
+| `digest` | `numerics_researcher-1779918652712` | This file · `docs/ecosystem/research-sessions/chem_sim_algorithms-cycle.md` |
 
 ### Learned from (SOTA, 2–4)
 
@@ -48,12 +46,20 @@
 
 ### In-repo gap evidence (verified)
 
-```217:226:packages/li-sim-scientific/src/lib.li
+```167:195:packages/li-sim-scientific/src/lib.li
+def run_algo_registry_stub(algo_id: int, detail: int) -> SimRunResult
+  ...
   if algo_id >= 401:
     if algo_id <= 432:
       vert = vertical_qm_dft()
   ...
   r.checksum = 1.001
+```
+
+```246:248:packages/li-sim-scientific/src/lib.li
+  if vertical_id == vertical_qm_dft():
+    var d3: int = detail
+    return run_algo(algo_qm_dft_scf_energy(), d3)
 ```
 
 ```1:6:std/physics/chem.li
@@ -87,7 +93,7 @@ Validity, stability (SCF convergence), and accuracy (basis-set monotonicity) rem
 | Numerics study | `docs/numerics/studies/2026-05-27-chem-r0-qm-sota-survey.md` |
 | Whitepaper | `research-findings/whitepapers/2026-05/chem_sim_algorithms/chem-r0-qm-sota-survey/` |
 | Bench catalog | `benchmarks/catalog.toml` → `qm_dft_scf_energy` (harness pending) |
-| Preflight | `benchmarks/data/latest/ecosystem-audit.json` (32 unknown `qm_*`) |
+| Preflight | `benchmarks/data/latest/ecosystem-audit.json` @ 2026-05-27T21:50Z (32 unknown `qm_*`) |
 
 ### Implementation path (handoff → `bench_improver` / sim worktree)
 

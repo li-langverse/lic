@@ -25,4 +25,16 @@ def main() -> int
     return 22
   if studio_md_particle_tier_select_ok(scene_md_tier_10k()) != 1:
     return 23
+  var robo_cfg: StudioProjectConfig = studio_project_config_new(studio_profile_sim_robotics())
+  var robo_sess: SimSessionStub = sim_session_stub_default()
+  if studio_sim_step_hook(robo_cfg, robo_sess, 0.01) != sim_status_ok():
+    return 30
+  if robo_sess.sim_contract_id != sim_contract_sim_robotics():
+    return 31
+  var rl_cfg: StudioProjectConfig = studio_project_config_new(studio_profile_sim_rl())
+  var rl_sess: SimSessionStub = sim_session_stub_default()
+  if studio_sim_step_hook(rl_cfg, rl_sess, 0.01) != sim_status_ok():
+    return 40
+  if rl_sess.sim_contract_id != sim_contract_sim_rl():
+    return 41
   return 0

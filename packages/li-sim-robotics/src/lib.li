@@ -23,9 +23,49 @@ def li_sim_robotics_studio_profile_id() -> int
 =
   return 4
 
+# PH-ROBO-0 — deterministic 2-DOF planar FK checksum (studio tick hook).
+def sim_robotics_fk_checksum(detail: int) -> float
+  requires detail >= 0
+  requires detail <= 3
+  ensures result > 0.0
+  decreases 0
+=
+  var l1: float = 1.0
+  var l2: float = 0.8
+  var t1: float = 0.35
+  var t2: float = 0.20
+  if detail >= 2:
+    t2 = 0.45
+  var x: float = l1 * t1 + l2 * (t1 + t2)
+  var y: float = l2 * (t1 + t2)
+  return x + y + 0.01
+
+def sim_robotics_tick_at(detail: int) -> int
+  requires detail >= 0
+  requires detail <= 3
+  ensures result >= 0
+  ensures result <= 1
+  decreases 0
+=
+  var c: float = sim_robotics_fk_checksum(detail)
+  if c <= 0.0:
+    return 0
+  return 1
+
+def sim_robotics_tick_stub(detail: int) -> int
+  requires detail >= 0
+  requires detail <= 3
+  ensures result >= 0
+  ensures result <= 1
+  decreases 0
+=
+  return sim_robotics_tick_at(detail)
+
 def run_robotics_smoke() -> int
   requires true
   ensures result == 0
   decreases 0
 =
+  if sim_robotics_tick_stub(1) != 1:
+    return 1
   return 0

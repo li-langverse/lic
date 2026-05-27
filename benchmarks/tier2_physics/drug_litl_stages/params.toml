@@ -1,0 +1,3 @@
+# WP3 harness: drug_litl_stages
+stages = 8
+mols = 256

@@ -1,0 +1,3 @@
+# WP3 harness: drug_ml_retrain_loop
+feat = 64
+epochs = 800

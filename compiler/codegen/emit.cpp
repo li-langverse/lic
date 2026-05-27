@@ -1575,6 +1575,21 @@ bool emit_llvm_ir(const MirModule& mir, const std::string& out_path, int runtime
                               {i32_ty(context), i32_ty(context), i32_ty(context)},
                               false));
   module->getOrInsertFunction(
+      "li_rt_world_write_path",
+      llvm::FunctionType::get(i32_ty(context),
+                              {i8_ptr(context), i32_ty(context), i32_ty(context), i32_ty(context)},
+                              false));
+  module->getOrInsertFunction(
+      "li_rt_world_read_path",
+      llvm::FunctionType::get(i32_ty(context), {i8_ptr(context)}, false));
+  module->getOrInsertFunction(
+      "li_rt_world_file_roundtrip_path",
+      llvm::FunctionType::get(i32_ty(context),
+                              {i8_ptr(context), i32_ty(context), i32_ty(context), i32_ty(context)},
+                              false));
+  module->getOrInsertFunction("li_rt_world_checkpoint_path_default",
+                              llvm::FunctionType::get(i8_ptr(context), {}, false));
+  module->getOrInsertFunction(
       "li_rt_studio_timeline_playing", llvm::FunctionType::get(i32_ty(context), {}, false));
   module->getOrInsertFunction(
       "li_rt_studio_timeline_toggle_play", llvm::FunctionType::get(i32_ty(context), {}, false));
@@ -1597,6 +1612,20 @@ bool emit_llvm_ir(const MirModule& mir, const std::string& out_path, int runtime
   module->getOrInsertFunction(
       "li_rt_studio_mcp_tool_name",
       llvm::FunctionType::get(i8_ptr(context), {i32_ty(context)}, false));
+  module->getOrInsertFunction(
+      "li_rt_studio_viewport_display_bg", llvm::FunctionType::get(i32_ty(context), {}, false));
+  module->getOrInsertFunction("li_rt_studio_viewport_display_set_bg",
+                              llvm::FunctionType::get(i32_ty(context), {i32_ty(context)}, false));
+  module->getOrInsertFunction("li_rt_studio_viewport_display_particle_tier",
+                              llvm::FunctionType::get(i32_ty(context), {}, false));
+  module->getOrInsertFunction("li_rt_studio_viewport_display_set_particle_tier",
+                              llvm::FunctionType::get(i32_ty(context), {i32_ty(context)}, false));
+  module->getOrInsertFunction("li_rt_studio_viewport_display_biomol_style",
+                              llvm::FunctionType::get(i32_ty(context), {}, false));
+  module->getOrInsertFunction("li_rt_studio_viewport_display_set_biomol_style",
+                              llvm::FunctionType::get(i32_ty(context), {i32_ty(context)}, false));
+  module->getOrInsertFunction("li_rt_studio_viewport_display_reset_defaults",
+                              llvm::FunctionType::get(i32_ty(context), {i32_ty(context)}, false));
   module->getOrInsertFunction("li_rt_lig_device_kind",
                               llvm::FunctionType::get(i32_ty(context), {}, false));
   module->getOrInsertFunction("li_rt_lig_backend_available",

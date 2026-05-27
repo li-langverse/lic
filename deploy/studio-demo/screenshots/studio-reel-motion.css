@@ -2,3 +2,12 @@ html.reel-frozen *,html[data-reel-motion] *{animation-play-state:paused!importan
 html[data-reel-frame="0"] .playhead{left:35%}html[data-reel-frame="1"] .playhead{left:45%}html[data-reel-frame="2"] .playhead{left:55%}
 html[data-reel-frame="1"] .viewport-grid{transform:translate(6px,3px)}html[data-reel-frame="2"] .viewport-grid{transform:translate(12px,6px)}
 html[data-reel-frame="1"] .agent-status::before{opacity:.45;transform:scale(1.15)}
+html[data-reel-frame="0"] .playhead{left:35%}
+html[data-reel-frame="1"] .playhead{left:45%}
+html[data-reel-frame="2"] .playhead{left:55%}
+html[data-reel-frame="0"] .viewport-grid{transform:translate(0,0)}
+html[data-reel-frame="1"] .viewport-grid{transform:translate(6px,3px)}
+html[data-reel-frame="2"] .viewport-grid{transform:translate(12px,6px)}
+html[data-reel-frame="1"] .agent-status::before{opacity:.45;transform:scale(1.15);box-shadow:0 0 10px var(--color-agent-running)}
+[data-reel-motion] .agent-status::before{animation:reel-pulse 1.2s ease-in-out infinite}
+@keyframes reel-pulse{50%{opacity:.45;transform:scale(1.15)}}

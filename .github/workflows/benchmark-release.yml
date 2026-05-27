@@ -1,0 +1,119 @@
+# On tag v*: refresh benchmark CSV when benchmarks/** changed, always upload latest.csv,
+# and dispatch package-release to li-langverse/benchmarks.
+# See benchmarks/docs/dashboard/release-manifest.md
+name: Benchmark release
+
+on:
+  push:
+    tags:
+      - "v*"
+
+jobs:
+  package-release:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Detect benchmarks/ changes since previous tag
+        id: bench
+        run: |
+          TAG="${GITHUB_REF_NAME}"
+          PREV="$(git describe --tags --abbrev=0 --exclude="${TAG}" HEAD^ 2>/dev/null || true)"
+          if [[ -z "$PREV" ]]; then
+            echo "build=true" >> "$GITHUB_OUTPUT"
+            echo "No previous tag — will build benchmarks"
+          elif git diff --quiet "$PREV" HEAD -- benchmarks/; then
+            echo "build=false" >> "$GITHUB_OUTPUT"
+            echo "benchmarks/ unchanged since ${PREV}"
+          else
+            echo "build=true" >> "$GITHUB_OUTPUT"
+            echo "benchmarks/ changed since ${PREV}"
+          fi
+
+      - name: Install LLVM 22 and build tools
+        if: steps.bench.outputs.build == 'true'
+        run: |
+          chmod +x scripts/ci-install-llvm.sh
+          sudo LI_LLVM_MAJOR=22 bash scripts/ci-install-llvm.sh
+
+      - name: Build and tier-1 bench smoke
+        if: steps.bench.outputs.build == 'true'
+        env:
+          LLVM_DIR: /usr/lib/llvm-22/lib/cmake/llvm
+          CC: clang-22
+          CXX: clang++-22
+        run: |
+          chmod +x scripts/ci.sh scripts/ci-bench.sh scripts/build.sh
+          ./scripts/ci.sh
+          ./scripts/ci-bench.sh
+
+      - name: Check latest.csv
+        id: csv
+        run: |
+          if [[ -f benchmarks/results/latest.csv ]]; then
+            echo "has_csv=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "has_csv=false" >> "$GITHUB_OUTPUT"
+            echo "benchmarks/results/latest.csv missing at tag ${GITHUB_REF_NAME}" >&2
+          fi
+
+      - name: Upload benchmark CSV
+        uses: actions/upload-artifact@v4
+        with:
+          name: benchmark-csv
+          path: benchmarks/results/latest.csv
+          if-no-files-found: ignore
+
+      - name: Dispatch package-release to benchmarks
+        env:
+          GH_TOKEN: ${{ secrets.LI_BENCHMARKS_DISPATCH_TOKEN }}
+          TAG: ${{ github.ref_name }}
+          GIT_SHA: ${{ github.sha }}
+          BENCH_REQUIRED: ${{ steps.csv.outputs.has_csv }}
+          RUN_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+        run: |
+          if [[ -z "${GH_TOKEN:-}" ]]; then
+            echo "LI_BENCHMARKS_DISPATCH_TOKEN not set — skip dispatch"
+            exit 0
+          fi
+          export PUBLISHED_AT="$(date -u +%Y-%m-%dT%H:%M:%SZ)"
+          BODY="$(python3 <<'PY'
+          import json, os
+          tag = os.environ["TAG"]
+          sha = os.environ["GIT_SHA"]
+          published = os.environ["PUBLISHED_AT"]
+          bench_required = os.environ["BENCH_REQUIRED"].lower() == "true"
+          run_url = os.environ["RUN_URL"]
+          artifacts = []
+          if bench_required:
+              artifacts.append({
+                  "path": "lic/benchmarks/results/latest.csv",
+                  "kind": "csv",
+              })
+          manifest = {
+              "package": "lic",
+              "version": tag,
+              "git_sha": sha,
+              "published_at": published,
+              "bench_required": bench_required,
+              "artifacts": artifacts,
+          }
+          payload = {
+              "event_type": "package-release",
+              "client_payload": {
+                  "package": "lic",
+                  "version": tag,
+                  "git_sha": sha,
+                  "published_at": published,
+                  "bench_required": bench_required,
+                  "ref": sha,
+                  "run_url": run_url,
+                  "manifest": manifest,
+              },
+          }
+          print(json.dumps(payload))
+          PY
+          )"
+          gh api repos/li-langverse/benchmarks/dispatches --method POST --input - <<<"$BODY"

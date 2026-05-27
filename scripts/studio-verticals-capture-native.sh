@@ -23,7 +23,16 @@ VERTICALS=(
 
 mkdir -p "$PNG_DIR"
 chmod +x "$NATIVE/native-sdl-build.sh" 2>/dev/null || true
-bash "$NATIVE/native-sdl-build.sh" "$NATIVE/studio_verticals_present_host.c" "$BIN"
+# paint-blit shell: host + studio_shell_paint_fb (no SDL)
+if [[ -f "$NATIVE/studio_shell_paint_fb.c" ]]; then
+  rm -f "$BIN" 2>/dev/null || true
+  cc -std=c11 -Wall -Wextra -O2 \
+    "$NATIVE/studio_shell_paint_fb.c" \
+    "$NATIVE/studio_verticals_present_host.c" \
+    -o "$BIN"
+else
+  bash "$NATIVE/native-sdl-build.sh" "$NATIVE/studio_verticals_present_host.c" "$BIN"
+fi
 
 run_one() {
   local slug="$1"
@@ -89,6 +98,8 @@ for raw in sys.argv[4:]:
         rows.append({"raw": raw})
 pngs = sorted(png_dir.glob("*.png"))
 meta.parent.mkdir(parents=True, exist_ok=True)
+paint_blit_n = sum(1 for r in rows if r.get("capture_mode") == "paint_blit")
+chip_only_n = sum(1 for r in rows if r.get("capture_mode") == "cpu_chip_only")
 meta.write_text(
     json.dumps(
         {
@@ -98,7 +109,9 @@ meta.write_text(
             "png_count": len(pngs),
             "png_dir": str(png_dir),
             "requires_min_verticals": 2,
-            "note": "SDL verticals present host — not full li-studio-demo window",
+            "capture_paint_blit": paint_blit_n,
+            "capture_cpu_chip_only": chip_only_n,
+            "note": "paint_blit_shell mirrors studio_paint_shell_chrome layout; not li-studio-demo SDL window",
             "frames": rows,
         },
         indent=2,

@@ -1046,6 +1046,12 @@ std::string lower_callproc_with_optional_inout(
              is_i64_type_name(callee.ret_type->name)) {
     ins.ret_is_i64 = true;
     i64_locals.insert(dest);
+  } else if (!callee_ret_obj && callee.ret_type &&
+             (callee.ret_type->name == "str" || callee.ret_type->name == "string" ||
+              callee.ret_type->name == "bytes" || callee.ret_type->name == "StringView" ||
+              callee.ret_type->name == "ptr")) {
+    ins.ret_is_i64 = true;
+    i64_locals.insert(dest);
   }
   out.push_back(std::move(ins));
   if (inout && inout_ty) {

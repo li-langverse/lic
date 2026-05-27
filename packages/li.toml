@@ -2,7 +2,7 @@
 [workspace]
 members = ["li-sim", "li-sim-scientific", "li-sim-automotive", "li-sim-robotics",
   "li-sim-additive", "li-sim-drug-design",
-  "li-acme", "li-bytes", "li-core", "li-crypto", "li-demo", "li-http", "li-log",
+  "li-acme", "li-bytes", "li-chem", "li-core", "li-crypto", "li-demo", "li-http", "li-log",
   "li-math", "li-math-numerics", "li-net", "li-net-httpd", "li-physics-aero",
   "li-physics-chem", "li-physics-core", "li-physics-em", "li-physics-fluids",
   "li-physics-hep", "li-physics-particles", "li-physics-quantum",

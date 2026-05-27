@@ -819,6 +819,13 @@ note = "PH-SIM vertical gap #4: studio_sim_step_by_profile (verify until object-
 
 [[tests]]
 suite = "composable"
+file = "composable/import_studio_sensor_bus_stub.li"
+packages = ["li-sim", "li-sim-automotive", "li-sim-robotics", "li-studio"]
+outcome = "check_ok"
+note = "PH-SIM SIM-5: import sensor bus stub into studio"
+
+[[tests]]
+suite = "composable"
 file = "composable/import_sim_viz_pipeline_source_display.li"
 packages = ["li-sim-viz"]
 outcome = "check_ok"

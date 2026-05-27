@@ -1,0 +1,25 @@
+import sim
+import studio
+
+def main() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  var cfg_a: StudioProjectConfig = studio_project_config_new(studio_profile_sim_automotive())
+  var sess_a: SimSessionStub = sim_session_stub_default()
+  if studio_sim_step_hook(cfg_a, sess_a, 0.01) != sim_status_ok():
+    return 1
+  if sensor_bus_validate(sess_a.sensor_bus) != 1:
+    return 2
+  if sess_a.sensor_bus.frame_count != 1:
+    return 3
+  var cfg_r: StudioProjectConfig = studio_project_config_new(studio_profile_sim_robotics())
+  var sess_r: SimSessionStub = sim_session_stub_default()
+  if studio_sim_step_hook(cfg_r, sess_r, 0.01) != sim_status_ok():
+    return 10
+  if sensor_bus_validate(sess_r.sensor_bus) != 1:
+    return 11
+  if sess_r.sensor_bus.frame_count != 1:
+    return 12
+  return 0

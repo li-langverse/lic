@@ -298,6 +298,28 @@ def run_rigid_smoke(detail: int) -> SimRunResult
   r.checksum = chk
   return r
 
+#
+# WP-SIM-05: Convert scientific tick output into validated sensor telemetry.
+#
+def sim_scientific_sensor_frame_at(step_index: int, detail: int) -> SensorFrame
+  requires step_index >= 1
+  requires step_index <= 64
+  requires detail >= 0
+  requires detail <= 3
+  ensures result.ok == 1
+  ensures sensor_frame_validate(result) == 1
+  decreases step_index
+=
+  var r: SimRunResult
+  if detail <= 1:
+    r = run_md_lj_smoke(detail)
+  else:
+    if detail == 2:
+      r = run_heat_smoke(detail)
+    else:
+      r = run_rigid_smoke(detail)
+  return sensor_frame_make(step_index, detail, r.vertical_id, 64, r.checksum)
+
 def run_algo_registry_stub(algo_id: int, detail: int) -> SimRunResult
   requires detail >= 0
   requires detail <= 3

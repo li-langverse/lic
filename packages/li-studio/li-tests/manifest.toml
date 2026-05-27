@@ -78,6 +78,12 @@ note = "PH-SCI: sim_scientific viewport tier labels + sim.viz pipeline gate"
 
 [[tests]]
 suite = "smoke"
+file = "smoke/studio_sensor_bus_stub.li"
+outcome = "verify_ok"
+note = "PH-SIM SIM-5: studio sensor bus stub (auto+robo)"
+
+[[tests]]
+suite = "smoke"
 file = "smoke/studio_shell_loading.li"
 outcome = "compile_open_ok"
 note = "T-PKG-li-studio-shell-loading-ux10-ux11"

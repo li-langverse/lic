@@ -211,6 +211,20 @@ def sim_automotive_tick_stub(detail: int) -> int
 =
   return sim_automotive_tick_at(1, detail)
 
+# WP-SIM-05: Convert automotive tick state into validated sensor telemetry.
+def sim_automotive_sensor_frame_at(step_index: int, detail: int) -> SensorFrame
+  requires step_index >= 1
+  requires step_index <= 64
+  requires detail >= 0
+  requires detail <= 3
+  ensures result.ok == 1
+  ensures sensor_frame_validate(result) == 1
+  decreases step_index
+=
+  var tick_out: AutoTickOutput = auto_tick_output_at(step_index)
+  var base: float = tick_out.state.x + tick_out.state.y + tick_out.state.yaw + tick_out.state.v
+  return sensor_frame_make(step_index, detail, vertical_sim_automotive(), tick_out.sensors.lidar_ray_count, base)
+
 def run_automotive_smoke() -> int
   requires true
   ensures result == 0

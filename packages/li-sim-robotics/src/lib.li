@@ -207,6 +207,20 @@ def sim_robotics_tick_stub(detail: int) -> int
 =
   return sim_robotics_tick_at(1, detail)
 
+# WP-SIM-05: Convert robotics tick state into validated sensor telemetry.
+def sim_robotics_sensor_frame_at(step_index: int, detail: int) -> SensorFrame
+  requires step_index >= 1
+  requires step_index <= 64
+  requires detail >= 0
+  requires detail <= 3
+  ensures result.ok == 1
+  ensures sensor_frame_validate(result) == 1
+  decreases step_index
+=
+  var st: RoboArmState = robo_arm_state_after_steps(step_index)
+  var base: float = st.j0_rad + st.j1_rad + st.j0_vel + st.j1_vel
+  return sensor_frame_make(step_index, detail, vertical_sim_robotics(), 64, base)
+
 def run_robo_multibody_smoke(detail: int) -> SimRunResult
   requires detail >= 0
   requires detail <= 3

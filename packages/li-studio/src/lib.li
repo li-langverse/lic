@@ -1583,11 +1583,43 @@ def studio_sim_step_hook(config: StudioProjectConfig, sim_out: var SimSessionStu
       return sim_status_invalid_dt()
     if studio_sim_scientific_viz_viewport_ok(detail0) != 1:
       return sim_status_invalid_dt()
+    var step_idx: int = sim_out.tick + 1
+    if step_idx > 64:
+      step_idx = 64
+    var frame_sci: SensorFrame = sim_scientific_sensor_frame_at(step_idx, detail0)
+    if sensor_frame_validate(frame_sci) != 1:
+      return sim_status_invalid_dt()
+    if sensor_bus_step_update(sim_out.sensor_bus, frame_sci) != sim_status_ok():
+      return sim_status_invalid_dt()
   if prof == studio_profile_sim_drug_design():
     var detail_dr: int = sim_out.output_detail
     if detail_dr > 3:
       detail_dr = 3
     if sim_drug_design_tick_stub(detail_dr) != 1:
+      return sim_status_invalid_dt()
+  if prof == studio_profile_sim_automotive():
+    var detail_a: int = sim_out.output_detail
+    if detail_a > 3:
+      detail_a = 3
+    var step_idx_a: int = sim_out.tick + 1
+    if step_idx_a > 64:
+      step_idx_a = 64
+    var frame_auto: SensorFrame = sim_automotive_sensor_frame_at(step_idx_a, detail_a)
+    if sensor_frame_validate(frame_auto) != 1:
+      return sim_status_invalid_dt()
+    if sensor_bus_step_update(sim_out.sensor_bus, frame_auto) != sim_status_ok():
+      return sim_status_invalid_dt()
+  if prof == studio_profile_sim_robotics():
+    var detail_r: int = sim_out.output_detail
+    if detail_r > 3:
+      detail_r = 3
+    var step_idx_r: int = sim_out.tick + 1
+    if step_idx_r > 64:
+      step_idx_r = 64
+    var frame_robo: SensorFrame = sim_robotics_sensor_frame_at(step_idx_r, detail_r)
+    if sensor_frame_validate(frame_robo) != 1:
+      return sim_status_invalid_dt()
+    if sensor_bus_step_update(sim_out.sensor_bus, frame_robo) != sim_status_ok():
       return sim_status_invalid_dt()
   if prof == studio_profile_game():
     if dt <= 0.0:

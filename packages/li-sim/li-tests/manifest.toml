@@ -23,3 +23,9 @@ suite = "smoke"
 file = "smoke/sim_replay_stub.li"
 outcome = "compile_open_ok"
 note = "T-PKG-li-sim-replay-stub PH-SIM SIM-2"
+
+[[tests]]
+suite = "smoke"
+file = "smoke/sensor_bus_stub.li"
+outcome = "verify_ok"
+note = "PH-SIM SIM-5: sensor bus stub contract"

@@ -72,6 +72,160 @@ type SimRunResult = object
   public checksum: float
   public detail_emitted: int
 
+#
+# WP-SIM-05: Sensor bus stub
+#
+type SensorFrame = object
+  public step_index: int
+  public detail: int
+  public vertical_id: int
+  public raycast_count: int
+  public telemetry_base: float
+  public raycast_ids: array[64, int]
+  public hit_dist_m: array[64, float]
+  public ok: int
+
+def sensor_frame_default() -> SensorFrame
+  requires true
+  ensures result.step_index == 0
+  ensures result.detail == 0
+  ensures result.vertical_id == 0
+  ensures result.raycast_count == 0
+  ensures result.telemetry_base == 0.0
+  ensures result.ok == 0
+  decreases 0
+=
+  var f: SensorFrame
+  f.step_index = 0
+  f.detail = 0
+  f.vertical_id = 0
+  f.raycast_count = 0
+  f.telemetry_base = 0.0
+  f.ok = 0
+  var i: int = 0
+  while i < 64
+    f.raycast_ids[i] = 0
+    f.hit_dist_m[i] = 0.0
+    i = i + 1
+  return f
+
+def sensor_frame_validate(frame: SensorFrame) -> int
+  requires true
+  ensures result >= 0
+  ensures result <= 1
+  decreases frame.step_index
+=
+  if frame.ok != 1:
+    return 0
+  if frame.step_index < 1:
+    return 0
+  if frame.step_index > 64:
+    return 0
+  if frame.detail < 0:
+    return 0
+  if frame.detail > 3:
+    return 0
+  if frame.raycast_count < 0:
+    return 0
+  if frame.raycast_count > 64:
+    return 0
+  var base_id: int = (frame.step_index * 1000000) + (frame.detail * 1000) + (frame.vertical_id * 10)
+  var i: int = 0
+  while i < 64
+    if i < frame.raycast_count:
+      if frame.raycast_ids[i] != base_id + i:
+        return 0
+      if frame.hit_dist_m[i] != (frame.telemetry_base * 0.001) + (i * 0.01) + (frame.detail * 0.1) + (frame.vertical_id * 0.0001):
+        return 0
+    if i >= frame.raycast_count:
+      if frame.raycast_ids[i] != 0:
+        return 0
+      if frame.hit_dist_m[i] != 0.0:
+        return 0
+    i = i + 1
+  return 1
+
+def sensor_frame_make(step_index: int, detail: int, vertical_id: int, raycast_count: int, telemetry_base: float) -> SensorFrame
+  requires step_index >= 1
+  requires step_index <= 64
+  requires detail >= 0
+  requires detail <= 3
+  requires raycast_count >= 0
+  requires raycast_count <= 64
+  requires true
+  ensures result.ok == 1
+  ensures result.step_index == step_index
+  ensures result.detail == detail
+  ensures result.vertical_id == vertical_id
+  ensures result.raycast_count == raycast_count
+  ensures result.telemetry_base == telemetry_base
+  ensures sensor_frame_validate(result) == 1
+  decreases raycast_count
+=
+  var f: SensorFrame = sensor_frame_default()
+  f.step_index = step_index
+  f.detail = detail
+  f.vertical_id = vertical_id
+  f.raycast_count = raycast_count
+  f.telemetry_base = telemetry_base
+  f.ok = 1
+  var base_id: int = (step_index * 1000000) + (detail * 1000) + (vertical_id * 10)
+  var i: int = 0
+  while i < 64
+    if i < raycast_count:
+      f.raycast_ids[i] = base_id + i
+      f.hit_dist_m[i] = (telemetry_base * 0.001) + (i * 0.01) + (detail * 0.1) + (vertical_id * 0.0001)
+    if i >= raycast_count:
+      f.raycast_ids[i] = 0
+      f.hit_dist_m[i] = 0.0
+    i = i + 1
+  return f
+
+type SensorBus = object
+  public frame_count: int
+  public last_step_index: int
+  public last_frame: SensorFrame
+
+def sensor_bus_default() -> SensorBus
+  requires true
+  ensures result.frame_count == 0
+  ensures result.last_step_index == 0
+  decreases 0
+=
+  var b: SensorBus
+  b.frame_count = 0
+  b.last_step_index = 0
+  b.last_frame = sensor_frame_default()
+  return b
+
+def sensor_bus_step_update(bus: var SensorBus, frame: SensorFrame) -> int
+  requires sensor_frame_validate(frame) == 1
+  requires true
+  ensures result == 0
+  ensures bus.frame_count >= 1
+  ensures bus.last_step_index == frame.step_index
+  ensures bus.last_frame.step_index == frame.step_index
+  decreases bus.frame_count
+=
+  bus.last_frame = frame
+  bus.last_step_index = frame.step_index
+  bus.frame_count = bus.frame_count + 1
+  return 0
+
+def sensor_bus_validate(bus: SensorBus) -> int
+  requires true
+  ensures result >= 0
+  ensures result <= 1
+  decreases bus.frame_count
+=
+  if bus.frame_count == 0:
+    return 1
+  if sensor_frame_validate(bus.last_frame) != 1:
+    return 0
+  if bus.last_step_index != bus.last_frame.step_index:
+    return 0
+  return 1
+
 def output_spec_default() -> SimOutputSpec
   requires true
   ensures result.detail == 0
@@ -538,6 +692,7 @@ type SimSessionStub = object
   public replay_capacity: int
   public replay_count: int
   public replay_last_tick: int
+  public sensor_bus: SensorBus
 
 def sim_session_stub_default() -> SimSessionStub
   requires true
@@ -560,6 +715,7 @@ def sim_session_stub_default() -> SimSessionStub
   s.replay_capacity = sim_replay_capacity_default()
   s.replay_count = 0
   s.replay_last_tick = 0
+  s.sensor_bus = sensor_bus_default()
   return s
 
 def sim_session_replay_record(session: var SimSessionStub) -> unit
@@ -594,6 +750,7 @@ def sim_reset(session: var SimSessionStub) -> int
   session.last_dt = 0.0
   session.replay_count = 0
   session.replay_last_tick = 0
+  session.sensor_bus = sensor_bus_default()
   return sim_status_ok()
 
 def sim_step(session: var SimSessionStub, dt: float) -> int

@@ -31,8 +31,8 @@ todos:
   status: completed
 
 - id: sim-p1-num-dot-axpy
-  content: "Implement algo_id=1 num_dot_axpy in li-math-numerics + bench-package gate"
-  status: completed
+  content: "sim: pending plan todo sim-p1-num-dot-axpy — gap orchestrator"
+  status: pending
   content: "sim: pending plan todo sim-p1-num-dot-axpy — gap orchestrator"
   status: pending
 

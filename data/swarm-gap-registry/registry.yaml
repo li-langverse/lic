@@ -1,6 +1,5 @@
 version: 1
-updated_at: '2026-05-25T19:07:51Z'
-updated_at: '2026-05-26T06:18:44Z'
+updated_at: '2026-05-27T12:59:56Z'
 gaps:
 - id: gap-line-profiler-001
   gap_kind: missing_package
@@ -541,7 +540,6 @@ gaps:
 - id: gap-plan-pending-httpd-gap-httpd-gap-phase2-perf-wrk-soak
   gap_kind: plan_debt
   title: 'httpd: pending plan todo gap-httpd-gap-phase2-perf-wrk-soak'
-  status: open
   status: closed
   priority: 7
   discovered_by: plan_verifier
@@ -557,7 +555,6 @@ gaps:
 - id: gap-plan-pending-httpd-gap-httpd-gap-phase2-mitigation-exploits
   gap_kind: plan_debt
   title: 'httpd: pending plan todo gap-httpd-gap-phase2-mitigation-exploits'
-  status: open
   status: closed
   priority: 7
   discovered_by: plan_verifier
@@ -573,7 +570,6 @@ gaps:
 - id: gap-plan-pending-httpd-gap-httpd-gap-phase2-streaming-wrk
   gap_kind: plan_debt
   title: 'httpd: pending plan todo gap-httpd-gap-phase2-streaming-wrk'
-  status: open
   status: closed
   priority: 7
   discovered_by: plan_verifier
@@ -589,7 +585,6 @@ gaps:
 - id: gap-plan-pending-security-research-sec-r0-cwe-delta
   gap_kind: plan_debt
   title: 'security-research: pending plan todo sec-r0-cwe-delta'
-  status: open
   status: closed
   priority: 7
   discovered_by: plan_verifier
@@ -643,7 +638,6 @@ gaps:
 - id: gap-plan-pending-httpd-gap-httpd-gap-httpd-gap-phase2-perf-wrk-soak
   gap_kind: plan_debt
   title: 'httpd: pending plan todo gap-httpd-gap-httpd-gap-phase2-perf-wrk-soak'
-  status: open
   status: closed
   priority: 7
   discovered_by: plan_verifier
@@ -658,7 +652,6 @@ gaps:
 - id: gap-plan-pending-httpd-gap-httpd-gap-httpd-gap-phase2-mitigation-exploi
   gap_kind: plan_debt
   title: 'httpd: pending plan todo gap-httpd-gap-httpd-gap-phase2-mitigation-exploits'
-  status: open
   status: closed
   priority: 7
   discovered_by: plan_verifier
@@ -674,7 +667,6 @@ gaps:
 - id: gap-plan-pending-httpd-gap-httpd-gap-httpd-gap-phase2-streaming-wrk
   gap_kind: plan_debt
   title: 'httpd: pending plan todo gap-httpd-gap-httpd-gap-phase2-streaming-wrk'
-  status: open
   status: closed
   priority: 7
   discovered_by: plan_verifier
@@ -973,3 +965,42 @@ gaps:
   handoff_to:
   - gap_explorer
   - issue_planner
+- id: gap-plan-pending-httpd-gap-phase2-perf-wrk
+  gap_kind: plan_debt
+  title: 'httpd: pending plan todo gap-phase2-perf-wrk-'
+  status: open
+  priority: 7
+  discovered_by: plan_verifier
+  evidence:
+  - snapshot runner=httpd plan_pending=gap-phase2-perf-wrk-
+  runner_id: httpd
+  plan_todo_id: gap-phase2-perf-wrk-
+  suggested_loop: httpd
+  handoff_to:
+  - swarm_observer
+- id: gap-plan-pending-httpd-gap-phase2-mitigatio
+  gap_kind: plan_debt
+  title: 'httpd: pending plan todo gap-phase2-mitigatio'
+  status: open
+  priority: 7
+  discovered_by: plan_verifier
+  evidence:
+  - snapshot runner=httpd plan_pending=gap-phase2-mitigatio
+  runner_id: httpd
+  plan_todo_id: gap-phase2-mitigatio
+  suggested_loop: httpd
+  handoff_to:
+  - swarm_observer
+- id: gap-plan-pending-httpd-gap-phase2-streaming
+  gap_kind: plan_debt
+  title: 'httpd: pending plan todo gap-phase2-streaming'
+  status: open
+  priority: 7
+  discovered_by: plan_verifier
+  evidence:
+  - snapshot runner=httpd plan_pending=gap-phase2-streaming
+  runner_id: httpd
+  plan_todo_id: gap-phase2-streaming
+  suggested_loop: httpd
+  handoff_to:
+  - swarm_observer

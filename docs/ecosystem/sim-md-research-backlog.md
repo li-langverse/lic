@@ -8,6 +8,11 @@
 ---
 
 todos:
+- id: gap-competitor-gap-vertical-stub-md-lennard-jones
+  content: "verticals.toml stub/honesty: md_lennard_jones (LAMMPS/GROMACS)"
+  status: pending
+  gap_orchestrator: true
+
 
 - id: md-r0-sota-survey
   content: "LAMMPS/GROMACS/OpenMM — integrators, neighbor lists, cutoffs; map to algo_registry 101–120"

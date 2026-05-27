@@ -125,6 +125,9 @@ def print_deviation_reports(reports: list[DeviationReport], *, bench: str) -> No
 
 # --- analytical closed forms --------------------------------------------------
 
+# Must match ``tier1_micro/horner_pure_li/common/horner_core.c`` ``LI_HORNER_X``.
+HORNER_BENCH_X = 1.1
+
 
 def horner_analytical(*, steps: int, x: float = 0.999999) -> float:
     """acc after ``steps`` updates ``acc = acc * x + 1`` from ``acc = 0``.
@@ -233,6 +236,14 @@ def primary_analytical_report(reports: list[DeviationReport]) -> DeviationReport
 def analytical_report_for_label(reports: list[DeviationReport], label: str) -> DeviationReport | None:
     for report in reports:
         if report.label == label and report.reference_kind == "analytical":
+            return report
+    return None
+
+
+def primary_report_for_label(reports: list[DeviationReport], label: str) -> DeviationReport | None:
+    """Primary verify row for ``label`` (analytical or iterative oracle)."""
+    for report in reports:
+        if report.label == label and "C-loop vs analytical" not in report.label:
             return report
     return None
 
@@ -414,15 +425,13 @@ TIER1_REFERENCE: dict[str, Tier1Reference] = {
     "horner_pure_li": Tier1Reference(
         full_n=5_000_000,
         small_n=8,
-        compute_full=lambda: horner_analytical(steps=5_000_000),
-        compute_small=lambda: horner_analytical(steps=8),
-        compute_iterative_full=lambda: horner_iterative(steps=5_000_000),
-        compute_iterative_small=lambda: horner_iterative(steps=8),
+        compute_full=lambda: horner_iterative(steps=5_000_000, x=HORNER_BENCH_X),
+        compute_small=lambda: horner_iterative(steps=8, x=HORNER_BENCH_X),
         min_abs_full=900_000.0,
         min_li_seconds=0.001,
         rtol=1e-10,
         atol=0.0,
-        oracle="analytical",
+        oracle="iterative",
     ),
 }
 

@@ -28,10 +28,17 @@ class ReferenceAnalyticalTest(unittest.TestCase):
         b = ref.reduce_sum_spec(n)
         self.assertTrue(ref.float_close(a, b, rtol=1e-6, atol=1.0))
 
-    def test_horner_tier1_oracle_is_analytical(self) -> None:
+    def test_horner_tier1_oracle_matches_bench_x(self) -> None:
         case = ref.TIER1_REFERENCE["horner_pure_li"]
-        self.assertEqual(case.oracle, "analytical")
-        self.assertAlmostEqual(case.compute_full(), ref.horner_analytical(steps=5_000_000))
+        self.assertEqual(case.oracle, "iterative")
+        self.assertAlmostEqual(
+            case.compute_full(),
+            ref.horner_iterative(steps=5_000_000, x=ref.HORNER_BENCH_X),
+        )
+        self.assertAlmostEqual(
+            case.compute_small(),
+            ref.horner_analytical(steps=8, x=ref.HORNER_BENCH_X),
+        )
 
     def test_deviation_report_within_1ulp_self(self) -> None:
         x = 1.5

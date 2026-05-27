@@ -20,6 +20,8 @@ All notable changes to Li are documented here. The format follows
 
 ### Fixed
 
+- **httpd nightly / E0303:** broaden `check_weak_ensures` httpd name prefixes; tier-3 `bench_ecosystem.py` uses manifest-aligned `lic build` flags — [2026-05-27-httpd-e0303-nightly.md](docs/release-notes/2026-05-27-httpd-e0303-nightly.md).
+
 - **lic check resource flags:** `resource_options_invalid()` wired in workspace check; ProofDB dot4 `sorry` stubs for lake-build — hotfix #299.
 
 - **Main CI (`build-and-test`):** dedupe `physics.runtime`/`physics.rigid`, lig.present flatten, pause broken composable vertical smokes, tier-0 verify — [2026-05-25-main-ci-vertical-merge-fix.md](docs/release-notes/2026-05-25-main-ci-vertical-merge-fix.md).

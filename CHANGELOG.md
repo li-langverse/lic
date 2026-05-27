@@ -44,6 +44,10 @@ All notable changes to Li are documented here. The format follows
 
 - **Proof-db catalog lemmas (2b):** `L-MATH-*` entries + rebuild report — [2026-05-25-gap-close-proof-db.md](docs/release-notes/2026-05-25-gap-close-proof-db.md).
 
+- **Studio verticals demo release:** `scripts/upload-studio-verticals-demo-release.sh`, `docs/demo/media/README.md`, GHA `studio-verticals-demo-release` — publish gitignored `studio-verticals-demo.mp4` via GitHub Release `studio-verticals-demo` — [2026-05-25-studio-verticals-demo-release.md](docs/release-notes/2026-05-25-studio-verticals-demo-release.md).
+
+### Added
+
 - **PH-HW integration (`lig` + studio gap):** Rollup for multi-vendor GPU work packages WP1–WP5 ([#217](https://github.com/li-langverse/lic/pull/217), [#218](https://github.com/li-langverse/lic/pull/218), [#213](https://github.com/li-langverse/lic/pull/213), [#220](https://github.com/li-langverse/lic/pull/220), [#222](https://github.com/li-langverse/lic/pull/222)) and merged `studio-gap-close-wave1` (UX/MCP/sim/world) on `feat/ph-hw-multi-vendor` — [2026-05-25-lig-ph-hw-integration.md](docs/release-notes/2026-05-25-lig-ph-hw-integration.md).
 
 - **2i / G-math (tracker):** `norm_non_array.li` compile_fail for scalar `norm` — `docs/release-notes/2026-05-25-2i-norm-plan-tracker.md`.

@@ -14,6 +14,7 @@
 #include <set>
 #include <sstream>
 #include <string>
+#include <unordered_set>
 
 namespace li {
 namespace {
@@ -114,7 +115,15 @@ std::string object_type_name_from_method_receiver(const ProcDecl& caller, const 
 
 std::string lean_type_name(const TypeExpr& ty, const Module& module);
 
-std::string lean_type_name(const TypeExpr& ty, const Module& module) {
+namespace {
+
+constexpr int kLeanTypeNameMaxDepth = 64;
+
+std::string lean_type_name_impl(const TypeExpr& ty, const Module& module,
+                                std::unordered_set<std::string>& alias_stack, int depth) {
+  if (depth > kLeanTypeNameMaxDepth) {
+    return "Unit";
+  }
   switch (ty.kind) {
     case TypeKind::Named:
       if (ty.name == "int") {
@@ -139,12 +148,18 @@ std::string lean_type_name(const TypeExpr& ty, const Module& module) {
         return "Unit";
       }
       if (const TypeAlias* alias = find_type_alias(module, ty.name)) {
-        return lean_type_name(alias->definition, module);
+        if (!alias_stack.insert(ty.name).second) {
+          return "Int";
+        }
+        const std::string expanded =
+            lean_type_name_impl(alias->definition, module, alias_stack, depth + 1);
+        alias_stack.erase(ty.name);
+        return expanded;
       }
       return "Int";
     case TypeKind::Array:
       if (ty.elem) {
-        const std::string elem = lean_type_name(*ty.elem, module);
+        const std::string elem = lean_type_name_impl(*ty.elem, module, alias_stack, depth + 1);
         const bool wrap_elem = ty.elem->kind == TypeKind::Array;
         return "LiArray " + (wrap_elem ? "(" + elem + ")" : elem) + " " +
                std::to_string(ty.array_size);
@@ -152,7 +167,7 @@ std::string lean_type_name(const TypeExpr& ty, const Module& module) {
       return "LiArray Unit 0";
     case TypeKind::Refinement:
       if (ty.refinement_base) {
-        return lean_type_name(*ty.refinement_base, module);
+        return lean_type_name_impl(*ty.refinement_base, module, alias_stack, depth + 1);
       }
       return "Int";
     case TypeKind::TypeApp:
@@ -162,6 +177,13 @@ std::string lean_type_name(const TypeExpr& ty, const Module& module) {
       return "Unit";
   }
   return "Unit";
+}
+
+}  // namespace
+
+std::string lean_type_name(const TypeExpr& ty, const Module& module) {
+  std::unordered_set<std::string> alias_stack;
+  return lean_type_name_impl(ty, module, alias_stack, 0);
 }
 
 struct VcCtx {
@@ -291,14 +313,19 @@ std::string proc_section(const std::string& proc) {
 }
 
 const Expr* ensures_rhs_eq_result(const Expr& e) {
-  if (e.kind != Expr::Kind::BinOp || e.bin_op != BinOp::Eq || !e.lhs || !e.rhs) {
+  if (e.kind != Expr::Kind::BinOp || e.bin_op != BinOp::Eq) {
     return nullptr;
   }
-  if (e.lhs->kind == Expr::Kind::Ident && e.lhs->ident == "result") {
-    return e.rhs.get();
+  const Expr* lhs = e.lhs.get();
+  const Expr* rhs = e.rhs.get();
+  if (lhs == nullptr || rhs == nullptr) {
+    return nullptr;
   }
-  if (e.rhs->kind == Expr::Kind::Ident && e.rhs->ident == "result") {
-    return e.lhs.get();
+  if (lhs->kind == Expr::Kind::Ident && lhs->ident == "result") {
+    return rhs;
+  }
+  if (rhs->kind == Expr::Kind::Ident && rhs->ident == "result") {
+    return lhs;
   }
   return nullptr;
 }
@@ -439,7 +466,7 @@ void emit_contract_def(std::ostream& out, const Module& module, const ProcDecl& 
       const Expr* rhs = ensures_rhs_eq_result(*c.expr);
       if (rhs != nullptr && witness_dot4_prelude_call(*ret, *rhs)) {
         out << "/-! Phase 2f: prelude dot() return witness -/\n";
-      } else if (ctx.proc != nullptr &&
+      } else if (rhs != nullptr && ctx.proc != nullptr &&
                  witness_dot4_int_loop(*ctx.proc, *rhs)) {
         out << "/-! Phase 2f: fixed-bound dot loop witness (4 iterations) -/\n";
       } else {

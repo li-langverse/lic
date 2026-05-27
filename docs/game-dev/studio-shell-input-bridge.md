@@ -74,7 +74,7 @@ Metadata: `data/studio-ui-ux-plan-loop/latest-shell-input.json`.
 
 ## Headless Li demo (today)
 
-`packages/li-studio/src/main.li` calls `studio_shell_demo_present_loop` (env `STUDIO_DEMO_FRAMES`, default 3). Each tick uses `studio_shell_input_from_host` → `studio_handle_studio_key`; frame pattern index 2 falls back to `key_cmd_k = 1` when the host sends no keys. With `LIG_HOST_PRESENT=1`, `studio_vertical_demo_frame` also runs `lig_present_blit_paint_summary` and `studio_shell_host_present_loop_tick`. CI entry: `./scripts/studio-shell-demo-present-loop.sh` (mock input via `studio-shell-sdl-tick.sh`). The probe + this doc are the **host bridge** to score UX-09 **3/3** in the plan loop (instrumented native key map, not HTML hints alone).
+`packages/li-studio/src/main.li` calls `studio_shell_demo_present_loop` (env `STUDIO_DEMO_FRAMES`, default 3; base tick `STUDIO_DEMO_LOOP_TICK` via `li_rt_studio_demo_loop_tick_from_env`). Each tick uses `studio_shell_input_from_host` → `studio_handle_studio_key`; frame pattern index 2 falls back to `key_cmd_k = 1` when the host sends no keys. `./scripts/studio-shell-demo-interactive.sh` sets `STUDIO_DEMO_LOOP_TICK` per host tick with `STUDIO_DEMO_FRAMES=1` so repeated invocations cycle patterns 0/1/2. With `LIG_HOST_PRESENT=1`, `studio_vertical_demo_frame` also runs `lig_present_blit_paint_summary` and `studio_shell_host_present_loop_tick`. CI entry: `./scripts/studio-shell-demo-present-loop.sh` (mock input via `studio-shell-sdl-tick.sh`). The probe + this doc are the **host bridge** to score UX-09 **3/3** in the plan loop (instrumented native key map, not HTML hints alone).
 
 ## Tests
 

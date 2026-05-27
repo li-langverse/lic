@@ -14,4 +14,5 @@
 ## Scripts
 
 - `./scripts/studio-shell-demo-present-loop.sh` — CI smokes + optional `STUDIO_SHELL_DEMO_BUILD_RUN=1`
-- `./scripts/studio-shell-demo-interactive.sh` — SDL/mock input poll + per-tick demo binary; optional `LIG_HOST_PRESENT=1` present tick
+- `./scripts/studio-shell-demo-interactive.sh` — SDL/mock input poll + per-tick demo binary; exports `STUDIO_DEMO_LOOP_TICK` so pattern 0→1→2 cycles with `STUDIO_DEMO_FRAMES=1`; optional `LIG_HOST_PRESENT=1` present tick
+- `li_rt_studio_demo_loop_tick_from_env` / `studio_shell_demo_loop_tick_start` — base tick for `studio_shell_demo_present_loop_rec` (batch default `base=0`; interactive host sets env each tick)

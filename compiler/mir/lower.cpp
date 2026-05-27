@@ -82,6 +82,8 @@ void apply_fn_decorator_codegen_flags(MirFn& fn) {
     if (d.vectorized) {
       fn.vectorized_lanes = d.lanes > 0 ? d.lanes : 4;
     }
+    if (d.name == "vectorized") {
+      fn.vectorized_lanes = d.lanes > 0 ? d.lanes : 4;
     }
     if (d.name == "no_vectorize") {
       fn.no_vectorize = true;

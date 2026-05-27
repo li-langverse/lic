@@ -16,6 +16,7 @@
 ### Added
 
 - **PH-HW WP3 host present** — `studio_shell_input_from_host`, `studio_shell_host_frame`, `studio_shell_host_present_loop_tick`; `li_std_studio_version` → 6; smoke `studio_host_present.li`.
+- **`li-studio-demo` present loop** — `studio_shell_demo_present_loop`, `STUDIO_DEMO_FRAMES`, host input on `studio_vertical_demo_frame`; `scripts/studio-shell-demo-present-loop.sh`; smoke `studio_shell_demo_present_loop.li`.
 - **PH-SIM SIM-1** — `studio_sim_step_hook` (profile sync + `sim_step` tick stub).
 - **PH-SIM SIM-0** — `studio_apply_profile_to_sim` (read-only `SimSessionStub`); `li-sim` path dependency; robotics profile id `4`.
 

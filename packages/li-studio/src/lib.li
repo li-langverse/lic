@@ -90,6 +90,12 @@ extern proc li_rt_studio_demo_profile_from_env() -> int
   ensures result >= 0
   decreases 0
 
+extern proc li_rt_studio_demo_frames_from_env() -> int
+  requires true
+  ensures result >= 1
+  ensures result <= 64
+  decreases 0
+
 
 # UX-02 — timeline playback mock.
 extern proc li_rt_studio_timeline_playing() -> int
@@ -3065,9 +3071,12 @@ def studio_vertical_demo_frame(profile_id: int, frame_id: int) -> int raises IO
 =
   var compose: StudioShellCompose = studio_vertical_demo_compose(profile_id, frame_id, 0)
   var key_compose: StudioShellCompose = studio_vertical_demo_compose(profile_id, frame_id, 1)
-  var input: InputState = input_default()
+  var input: InputState = studio_shell_input_from_host()
   if frame_id == 2:
-    input.key_cmd_k = 1
+    if input.key_cmd_k == 0:
+      if input.key_escape == 0:
+        if input.key_digit == 0:
+          input.key_cmd_k = 1
   var _key_action: int = studio_handle_studio_key(key_compose, input)
   var has_sel: int = compose.inspector.has_selection
   var scene_n: int = compose.scene_entity_count
@@ -3115,6 +3124,53 @@ def studio_shell_demo_frame(frame_id: int) -> int raises IO
 =
   var profile_id: int = studio_demo_profile_from_env()
   return studio_vertical_demo_frame(profile_id, frame_id)
+
+def studio_shell_demo_frame_budget() -> int raises IO
+  requires true
+  ensures result >= 1
+  ensures result <= 64
+  decreases 0
+=
+  return li_rt_studio_demo_frames_from_env()
+
+def studio_shell_demo_pattern_index(loop_tick: int) -> int
+  requires loop_tick >= 0
+  ensures result >= 0
+  ensures result <= 2
+  decreases loop_tick
+=
+  if loop_tick <= 0:
+    return 0
+  if loop_tick == 1:
+    return 1
+  if loop_tick == 2:
+    return 2
+  var prev: int = loop_tick - 3
+  return studio_shell_demo_pattern_index(prev)
+
+def studio_shell_demo_present_loop_rec(loop_tick: int, budget: int) -> int raises IO
+  requires loop_tick >= 0
+  requires budget >= 1
+  requires budget <= 64
+  requires loop_tick <= budget
+  ensures result >= 0
+  decreases budget - loop_tick
+=
+  if loop_tick >= budget:
+    return 0
+  var pattern: int = studio_shell_demo_pattern_index(loop_tick)
+  var r: int = studio_shell_demo_frame(pattern)
+  if r != 0:
+    return 100 + loop_tick * 10 + r
+  return studio_shell_demo_present_loop_rec(loop_tick + 1, budget)
+
+def studio_shell_demo_present_loop() -> int raises IO
+  requires true
+  ensures result >= 0
+  decreases 0
+=
+  var budget: int = studio_shell_demo_frame_budget()
+  return studio_shell_demo_present_loop_rec(0, budget)
 
 # PH-HW WP3 — InputState from studio-shell-input-bridge runtime (SDL or mock).
 def studio_shell_input_from_host() -> InputState raises IO

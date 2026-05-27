@@ -1,5 +1,4 @@
 import studio
-import ui
 
 def main() -> int raises IO
   requires true
@@ -8,11 +7,8 @@ def main() -> int raises IO
 =
   if li_std_studio_version() < 8:
     return 1
-  if li_std_gui_version() < 1:
+  if studio_shell_demo_frame_budget() < 3:
     return 2
-  if li_std_ui_studio_composables_version() < 3:
+  if studio_shell_demo_present_loop() != 0:
     return 3
-  var loop_rc: int = studio_shell_demo_present_loop()
-  if loop_rc != 0:
-    return 4
   return 0

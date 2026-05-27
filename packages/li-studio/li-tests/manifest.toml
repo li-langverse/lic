@@ -84,6 +84,12 @@ note = "T-PKG-li-studio-shell-demo PH-GD-1"
 
 [[tests]]
 suite = "smoke"
+file = "smoke/studio_shell_demo_present_loop.li"
+outcome = "compile_open_ok"
+note = "T-PKG-li-studio-shell-demo-present-loop PH-HW WP3"
+
+[[tests]]
+suite = "smoke"
 file = "smoke/studio_mcp_tools.li"
 outcome = "compile_open_ok"
 note = "T-PKG-li-studio-mcp-tools PH-AGENT"

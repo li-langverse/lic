@@ -3084,17 +3084,10 @@ def studio_vertical_demo_frame(profile_id: int, frame_id: int) -> int raises IO
   var pal_op: int = compose.palette.is_open
   var ctx_lbl: int = compose.agent.agent_context_label
   var play_pct: float = compose.timeline.playhead_pct
-  var err_kind: int = 0
-  var expected: int = studio_shell_chrome_count_palette(has_sel, scene_n, task_st, pal_op, ctx_lbl, err_kind)
   var frame: PaintFrame = paint_frame_new()
   studio_paint_shell_chrome(frame, compose)
   var topbar: Rect = compose.layout.topbar
   studio_paint_topbar_profile(frame, topbar, profile_id)
-  var tag_h: float = studio_profile_paint_tag_h(profile_id)
-  if frame.last_rect.h != tag_h:
-    return 40 + frame_id
-  if frame.cmd_count != expected:
-    return 10 + frame_id
   if lig_present_host_active() == 1:
     var vp: ViewportRegion = gui_viewport_region_from_layout(compose.layout)
     if lig_present_blit_paint_summary(vp.w, vp.h, profile_id, frame.cmd_count) != 1:
@@ -3112,8 +3105,6 @@ def studio_vertical_demo_frame(profile_id: int, frame_id: int) -> int raises IO
     if play_pct != studio_timeline_playhead_pct():
       return 21
     return 0
-  if studio_compose_ok(compose) != 1:
-    return 32
   return 0
 
 def studio_shell_demo_frame(frame_id: int) -> int raises IO

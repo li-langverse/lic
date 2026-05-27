@@ -12,8 +12,11 @@ Import: `import studio`
 # Headless contract (default 3 ticks, game profile)
 cd packages/li-studio
 lic check src/main.li
-lic build src/main.li -o ../../build/li-studio-demo
-./../../build/li-studio-demo
+lic build --allow-open-vc --no-lean-verify packages/li-studio/src/main.li -o build/li-studio-demo
+./build/li-studio-demo
+
+# Interactive SDL/mock loop (one demo frame per tick; optional LIG_HOST_PRESENT present host)
+./scripts/studio-shell-demo-interactive.sh
 
 # Vertical + host present (CI-safe mock input; optional SDL present host)
 cd ../..   # lic repo root

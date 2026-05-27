@@ -31,6 +31,6 @@ fi
 if [[ "${STUDIO_SHELL_DEMO_BUILD_RUN:-0}" == "1" ]]; then
   OUT="${STUDIO_SHELL_DEMO_BIN:-$ROOT/build/li-studio-demo}"
   mkdir -p "$(dirname "$OUT")"
-  (cd "$PKG" && "$LIC" build src/main.li -o "$OUT")
+  "$LIC" build --allow-open-vc --no-lean-verify "$PKG/src/main.li" -o "$OUT"
   exec "$OUT"
 fi

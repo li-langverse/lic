@@ -169,6 +169,9 @@ int lic_workspace_check_main(int argc, char** argv, const char* lic_executable,
   }
 
   finalize_resource_options(resources);
+  if (resource_options_invalid()) {
+    return 1;
+  }
   const unsigned jobs = resources.effective_jobs(128);
   const auto repo_root = repo_root_for_workspace(workspace_toml);
   const auto members = workspace_members(workspace_toml);

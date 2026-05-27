@@ -3,6 +3,10 @@ import gui
 import ui
 import sim
 import sim.scientific
+import sim.robotics
+import sim.automotive
+import sim.additive
+import sim.drug_design
 import scene
 import physics.runtime
 import lig
@@ -1275,11 +1279,26 @@ def studio_sim_step_hook(config: StudioProjectConfig, sim_out: var SimSessionStu
 =
   studio_apply_profile_to_sim(config, sim_out)
   var prof: int = config.active_profile
+  var detail_hook: int = sim_out.output_detail
+  if detail_hook > 3:
+    detail_hook = 3
   if prof == studio_profile_sim_scientific():
-    var detail0: int = sim_out.output_detail
-    if detail0 > 3:
-      detail0 = 3
-    if sim_scientific_tick_stub(detail0) != 1:
+    if sim_scientific_tick_stub(detail_hook) != 1:
+      return sim_status_invalid_dt()
+  if prof == studio_profile_sim_rl():
+    if sim_rl_tick_stub(detail_hook) != 1:
+      return sim_status_invalid_dt()
+  if prof == studio_profile_sim_automotive():
+    if sim_automotive_tick_stub(detail_hook) != 1:
+      return sim_status_invalid_dt()
+  if prof == studio_profile_sim_robotics():
+    if sim_robotics_tick_stub(detail_hook) != 1:
+      return sim_status_invalid_dt()
+  if prof == studio_profile_sim_additive():
+    if sim_additive_tick_stub(detail_hook) != 1:
+      return sim_status_invalid_dt()
+  if prof == studio_profile_sim_drug_design():
+    if sim_drug_design_tick_stub(detail_hook) != 1:
       return sim_status_invalid_dt()
   if prof == studio_profile_game():
     if dt <= 0.0:

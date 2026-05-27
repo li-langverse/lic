@@ -158,12 +158,12 @@ Cross-tracks (not separate phases above): **PH-PORT**, **PH-COMPLY**, **PH-CIN**
 | ID | Title | Profile | State | Target | Proof gate | Cx | Blocks | Par? |
 |----|-------|---------|-------|--------|------------|-----|--------|------|
 | WP-UX-01 | Viewport grid + selection ring | game | **partial** | Depth cues in compose | `studio_shell_demo.li` | S | WP-GD-01 | Y |
-| WP-UX-02 | Timeline playback | game | **partial** | Playhead advance | `studio_timeline_playback.li` | S | WP-GD-01 | Y |
-| WP-UX-03 | Inspector fields | sim_robotics, game | **partial** | ≥2 rows on selection | `studio_inspector_fields.li` | S | WP-GD-01 | Y |
-| WP-UX-04 | Command palette | all | **partial** | ⌘K overlay | `studio_command_palette.li` | S | WP-GD-01 | Y |
+| WP-UX-02 | Timeline playback | game | **done** | Playhead advance | `studio_timeline_playback.li` | S | WP-GD-01 | Y |
+| WP-UX-03 | Inspector fields | sim_robotics, game | **done** | ≥2 rows on selection | `studio_inspector_fields.li` | S | WP-GD-01 | Y |
+| WP-UX-04 | Command palette | all | **done** | ⌘K overlay | `studio_command_palette.li` | S | WP-GD-01 | Y |
 | WP-UX-05 | Profile chip + TOML | all 7 | **done** | `studio_vertical_profile_roundtrip.li` | smoke | S | WP-SIM-00 | Y |
-| WP-UX-06 | Agent chrome | sim_rl, sim_drug | **partial** | Task states + cancel | `studio_agent_*.li` | M | WP-GD-01 | Y |
-| WP-UX-07 | Empty states | all | **partial** | Inspector/viewport hints | smokes | S | WP-GD-01 | Y |
+| WP-UX-06 | Agent chrome | sim_rl, sim_drug | **done** | Task states + cancel | `studio_agent_*.li` | M | WP-GD-01 | Y |
+| WP-UX-07 | Empty states | all | **done** | Inspector/viewport hints | smokes | S | WP-GD-01 | Y |
 | WP-UX-08 | Viewport error recovery | all | **partial** | GPU/asset overlay | `studio_viewport_error.li` | S | WP-GD-05 | Y |
 | WP-UX-09 | Keyboard-first (SDL/mock) | all | **partial** | `InputState` bridge | `studio_keyboard_input_json.li` | M | PH-HW-3 | Y |
 | WP-UX-10 | WCAG contrast measured | all | stub | Real ratio from host | `studio_accessibility.li` fails ratio | M | WP-GD-05 | Y |
@@ -250,7 +250,7 @@ Cross-tracks (not separate phases above): **PH-PORT**, **PH-COMPLY**, **PH-CIN**
 
 | ID | Title | Profile | State | Target | Proof gate | Cx | Blocks | Par? |
 |----|-------|---------|-------|--------|------------|-----|--------|------|
-| WP-AUTO-01 | Automotive tick + bicycle | sim_automotive | **partial** | `sim_automotive_tick_at` | `bicycle_kinematic.li` | M | WP-SIM-01 | Y |
+| WP-AUTO-01 | Automotive tick + bicycle | sim_automotive | **done** | `sim_automotive_tick_at` | `bicycle_kinematic.li` | M | WP-SIM-01 | Y |
 | WP-AUTO-02 | Lane map + odometry | sim_automotive | stub | Map tiles | composable | L | WP-AUTO-01 | N |
 | WP-RL-01 | Env obs from session | sim_rl | **done** | `env_obs_from_session` | smoke | S | WP-SIM-03 | Y |
 | WP-RL-02 | Async parallel pools | sim_rl | stub | Worker processes | bench + smoke | L | WP-SIM-03, PH-ML | N |

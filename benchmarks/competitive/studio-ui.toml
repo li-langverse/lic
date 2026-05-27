@@ -41,6 +41,12 @@ path = "packages/li-studio/bench/studio_compose.toml"
 gates = ["panel_switch_ms", "studio_load_ms"]
 
 [[hook]]
+id = "studio_vertical_present"
+package = "li-studio"
+path = "packages/li-studio/bench/studio_vertical_present.toml"
+gates = []
+
+[[hook]]
 id = "particle_tiers"
 package = "li-scene"
 path = "packages/li-scene/bench/particle_tiers.toml"

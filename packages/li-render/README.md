@@ -13,4 +13,4 @@ Li Studio viewport render layer: **wgpu smoke** bridge (`li-gpu`), **FPS counter
 ## Viewport smoke
 
 - `render_wgpu_viewport_smoke(ViewportRegion)` — ties `li-gui` viewport geometry to `gpu_wgpu_smoke_run()`.
-- `native_pixels=0` until wgpu-rs surface records pixels (honest stub).
+- `native_pixels=0` in simulate bench; with `LIG_HOST_PRESENT=1`, paint blit sets `native_pixels=1` via `lig_present_surface_ok()` (no wgpu-rs readback yet).

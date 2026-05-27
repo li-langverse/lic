@@ -5,6 +5,8 @@
 **Research (PH-DB-G0):** [lidb-multi-model-gpu-research](https://github.com/li-langverse/roadmap/blob/main/proposals/lidb-multi-model-gpu-research.md)  
 **Ecosystem copy:** [vision-and-roadmap § PH-DB](https://github.com/li-langverse/roadmap/blob/main/docs/ecosystem/vision-and-roadmap.md#li-data-platform-ph-db-0--ph-db-10) · **PKG-lidb:** [official-packages](https://github.com/li-langverse/roadmap/blob/main/docs/ecosystem/official-packages.md)
 
+**Execution tracker:** [ph-db-execution-tracker.md](ph-db-execution-tracker.md) (phases 0–3, WP-A…K) · **Battle plan:** [ph-db-battle-plan.md](ph-db-battle-plan.md) · **CI/hosting:** [ph-db-ci-hosting-plan.md](ph-db-ci-hosting-plan.md)
+
 **Cross-phase dependency (lip):** **`PH-8d-v2`** (remote registry, full trust store) **depends on `PH-DB-4`** (registry v2 central DB on `lidb`). Do not ship **8d v2** until PH-DB-4 exit gate is met.
 
 ```mermaid

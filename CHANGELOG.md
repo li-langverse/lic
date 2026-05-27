@@ -8,6 +8,8 @@ All notable changes to Li are documented here. The format follows
 
 ### Added
 
+- **WP-SCI-01 multi-physics scientific tick** — `sim_scientific_tick_at`, `run_multi_physics_at_step`, `sim_scientific_checksum_combine` in `packages/li-sim-scientific`; smoke `multi_physics_tick.li`.
+
 - **Linguist WP1 — Li TextMate grammar:** `contrib/li-grammar/` (`.li` syntax, VS Code/Cursor extension manifest, smoke script); install pointer `contrib/li-vscode/` — [2026-05-25-linguist-wp1-grammar.md](docs/release-notes/2026-05-25-linguist-wp1-grammar.md).
 
 - **Linguist WP2 samples (staging):** `contrib/linguist-samples/Li/` (10 `.li` files), license manifest, WP6 copy README — [2026-05-25-linguist-wp2-samples.md](docs/release-notes/2026-05-25-linguist-wp2-samples.md).

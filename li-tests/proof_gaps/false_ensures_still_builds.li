@@ -1,0 +1,15 @@
+# G-CONTRACT-01: Tier A accepts syntactically valid but semantically false postconditions.
+# Tier B/C should reject at VC discharge; today `lic build` may still succeed (soundness hole).
+def lies_about_return() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 42
+
+def main() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return lies_about_return()

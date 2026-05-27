@@ -219,6 +219,14 @@ file = "prove_reject/weak_ensures_true.li"
 outcome = "compile_fail"
 expected_substr = "ensures true"
 
+# --- proof_gaps (provability_holes — contract tier honesty) ---
+
+[[tests]]
+suite = "proof_gaps"
+file = "proof_gaps/false_ensures_still_builds.li"
+outcome = "verify_open_ok"
+note = "G-CONTRACT-01: lic check passes; strict build open VC; --allow-open-vc links despite false ensures"
+
 # --- contracts_verify (must prove) ---
 
 [[tests]]
@@ -230,7 +238,6 @@ outcome = "verify_ok"
 suite = "contracts_verify"
 file = "contracts_verify/sqrt_open_bound.li"
 outcome = "prove_lean_ok"
-outcome = "verify_ok"
 
 [[tests]]
 suite = "contracts_verify"
@@ -500,6 +507,8 @@ file = "race_shared_memory/false_disjoint_decorator_bare_row.li"
 outcome = "compile_fail"
 expected_substr = "disjoint_row"
 
+[[tests]]
+suite = "race_shared_memory"
 file = "race_shared_memory/good_disjoint_parallel.li"
 outcome = "verify_ok"
 
@@ -1173,6 +1182,9 @@ outcome = "compile_fail"
 suite = "stdlib_seal"
 file = "stdlib_seal/shadow_echo_via_import.li"
 outcome = "compile_fail"
+
+[[tests]]
+suite = "stdlib_seal"
 file = "stdlib_seal/import_std_collections_ok.li"
 outcome = "compile_ok"
 

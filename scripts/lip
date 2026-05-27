@@ -2,6 +2,11 @@
 # Delegates to li-langverse/lip when checked out beside lic.
 set -euo pipefail
 ROOT="$(cd "$(dirname "$0")/.." && pwd)"
+# shellcheck source=lib/ecosystem-siblings.sh
+source "$ROOT/scripts/lib/ecosystem-siblings.sh"
+if lip_dir="$(_li_ecosystem_lip_dir "$ROOT" 2>/dev/null)" && [[ -x "$lip_dir/scripts/lip" ]]; then
+  exec "$lip_dir/scripts/lip" "$@"
+fi
 for lip in "$ROOT/../lip/scripts/lip"; do
   if [[ -x "$lip" ]]; then
     exec "$lip" "$@"

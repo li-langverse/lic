@@ -1,0 +1,78 @@
+# Reusable CI for official package mirrors (and monorepo packages via workflow_call).
+# Consumes ghcr.io/li-langverse/lic-ci:ubuntu24-llvm22 — no apt LLVM install on the runner.
+name: Package CI
+
+on:
+  workflow_call:
+    inputs:
+      lic-ref:
+        description: Git ref of li-langverse/lic to build
+        required: false
+        type: string
+        default: main
+      check-path:
+        description: Package tree for def-syntax check (relative to caller workspace)
+        required: false
+        type: string
+        default: src
+
+permissions:
+  contents: read
+
+jobs:
+  check:
+    runs-on: ubuntu-24.04
+    container:
+      image: ghcr.io/li-langverse/lic-ci:ubuntu24-llvm22
+    env:
+      LLVM_DIR: /usr/lib/llvm-22/lib/cmake/llvm
+      CC: clang-22
+      CXX: clang++-22
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/checkout@v4
+        with:
+          repository: li-langverse/lic
+          path: lic
+          ref: ${{ inputs.lic-ref }}
+
+      - name: Cache lic build/
+        uses: actions/cache@v4
+        with:
+          path: lic/build
+          key: lic-pkg-ci-${{ inputs.lic-ref }}-${{ hashFiles('lic/compiler/**', 'lic/CMakeLists.txt', 'lic/cmake/**') }}
+          restore-keys: |
+            lic-pkg-ci-${{ inputs.lic-ref }}-
+
+      - name: Enforce def syntax (no bare proc)
+        run: |
+          set -euo pipefail
+          chmod +x lic/scripts/check-li-def-syntax.sh
+          lic/scripts/check-li-def-syntax.sh "${{ inputs.check-path }}"
+          if [[ -d li-tests ]]; then
+            lic/scripts/check-li-def-syntax.sh li-tests
+          fi
+
+      - name: Build lic
+        working-directory: lic
+        run: |
+          chmod +x scripts/build.sh scripts/resolve-lic.sh 2>/dev/null || chmod +x scripts/build.sh
+          ./scripts/build.sh
+
+      - name: lic check + smoke
+        env:
+          LIC: ${{ github.workspace }}/lic/build/compiler/lic/lic
+        run: |
+          test -x "$LIC"
+          if [[ -f src/lib.li ]]; then
+            "$LIC" check src/lib.li
+          elif [[ -f src/main.li ]]; then
+            "$LIC" check src/main.li
+          else
+            echo "no src/lib.li or src/main.li"
+            exit 1
+          fi
+          if [[ -f li-tests/smoke/builds.li ]]; then
+            "$LIC" build li-tests/smoke/builds.li -o /dev/null
+          fi

@@ -1,6 +1,6 @@
 # MD algorithms — SOTA survey and Li gap analysis (`md-r0-sota-survey`)
 
-**Goal:** `md_sim_algorithms` · **Session:** `f1114f06-7079-45f3-9d88-ce5106130118` · **Run:** `numerics_researcher-1779909647877`  
+**Goal:** `md_sim_algorithms` · **Session:** `f1114f06-7079-45f3-9d88-ce5106130118` · **Run:** `numerics_researcher-1779911656866`  
 **Agent:** `numerics_researcher` · **Mode:** study-only (validity locked; no perf claims)  
 **North star:** PH-5b (proved numerics), PH-7e (math→SIMD), G-math / G-par for force loops  
 **Preflight:** `benchmarks/data/latest/ecosystem-audit.json` @ 2026-05-27T18:44Z · [dashboard](https://li-langverse.github.io/benchmarks/)
@@ -138,4 +138,4 @@ cd benchmarks && LIC_ROOT=../lic ./scripts/render-benchmark-visuals.sh
 | Catalog | `benchmarks/catalog.toml` — `md_lennard_jones`, `md_neighbor_cell_list` |
 | Harness | `lic/benchmarks/tier2_physics/md_lennard_jones/`, `md_neighbor_cell_list/` |
 | li-tests | `li-tests/composable/import_sim_scientific_run.li` |
-| Bench | `python3 lic/benchmarks/harness/bench.py --tier 2 --only md_lennard_jones` |
+| Bench | `md_lennard_jones` @ `48d23a7a`: verify drift=0.689; li/cpp≈0.996× — `python3 lic/benchmarks/harness/bench.py --tier 2 --only md_lennard_jones` |

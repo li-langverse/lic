@@ -4,6 +4,6 @@
 
 | Step | Run | Artifacts |
 |------|-----|-----------|
-| `survey_sota` | `numerics_researcher-1779909647877` | [Study](../../numerics/studies/2026-05-27-md-r0-sota-survey.md) · [Whitepaper](../../../../research-findings/whitepapers/2026-05/md_sim_algorithms/md-r0-sota-survey/README.md) |
+| `survey_sota` | `numerics_researcher-1779911656866` ✓ | [Study](../../numerics/studies/2026-05-27-md-r0-sota-survey.md) · [Whitepaper](../../../../research-findings/whitepapers/2026-05/md_sim_algorithms/md-r0-sota-survey/README.md) |
 
 **Queue (pending):** `li_gap_analysis` → `digest: docs/research/goals/md_sim_algorithms`

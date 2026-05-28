@@ -27,6 +27,8 @@ CSV_HEADER = [
     "threads",
     "metric",
     "value",
+    "stddev",
+    "sample_runs",
     "unit",
     "git_sha",
     "cpu_model",
@@ -111,13 +113,14 @@ def cpu_model() -> str:
     return platform.processor() or "unknown"
 
 
-def time_command(cmd: list[str], *, runs: int, cwd: Path | None = None) -> float:
-    samples: list[float] = []
-    for _ in range(max(1, runs)):
-        t0 = time.perf_counter()
-        subprocess.run(cmd, cwd=cwd or REPO, check=True, capture_output=True)
-        samples.append(time.perf_counter() - t0)
-    return statistics.median(samples)
+_HARNESS = Path(__file__).resolve().parent
+if str(_HARNESS) not in sys.path:
+    sys.path.insert(0, str(_HARNESS))
+from timing_stats import TimingStats, time_command as _time_command_stats
+
+
+def time_command(cmd: list[str], *, runs: int, cwd: Path | None = None) -> TimingStats:
+    return _time_command_stats(cmd, cwd=cwd or REPO, runs=runs)
 
 
 def row_for(
@@ -131,6 +134,8 @@ def row_for(
     cpu: str,
     flags: str,
     variant: str = "release",
+    stddev: float | None = None,
+    sample_runs: int | None = None,
 ) -> dict[str, object]:
     return {
         "benchmark": benchmark,
@@ -139,11 +144,24 @@ def row_for(
         "threads": 1,
         "metric": metric,
         "value": round(value, 4),
+        "stddev": round(stddev, 6) if stddev is not None else "",
+        "sample_runs": sample_runs if sample_runs is not None else "",
         "unit": unit,
         "git_sha": sha,
         "cpu_model": cpu,
         "flags": flags,
     }
+
+
+def _timing_fields(timing: TimingStats) -> dict[str, object]:
+    return {"stddev": timing.stddev, "sample_runs": timing.sample_runs}
+
+
+def _print_timing(label: str, timing: TimingStats) -> None:
+    print(
+        f"{label} wall_time={timing.mean:.4f}s ± {timing.stddev:.4f}s "
+        f"(n={timing.sample_runs})"
+    )
 
 
 def read_csv(path: Path) -> list[dict[str, str]]:
@@ -174,20 +192,21 @@ def bench_compile(*, runs: int, sha: str, cpu: str) -> list[dict[str, object]]:
     rows: list[dict[str, object]] = []
     for bench_id, src in COMPILE_FIXTURES:
         cmd, flags = lic_build_command(src)
-        wall = time_command(cmd, runs=runs)
+        timing = time_command(cmd, runs=runs)
         rows.append(
             row_for(
                 benchmark=bench_id,
                 lang="lic",
-                value=wall,
+                value=timing.mean,
                 metric="wall_time",
                 unit="s",
                 sha=sha,
                 cpu=cpu,
                 flags=flags,
+                **_timing_fields(timing),
             )
         )
-        print(f"{bench_id} lic build wall_time={wall:.4f}s")
+        _print_timing(f"{bench_id} lic build", timing)
     return rows
 
 
@@ -204,35 +223,37 @@ def bench_async_runtime(*, runs: int, sha: str, cpu: str) -> list[dict[str, obje
             build_cmd[i] = str(bin_path)
             break
     subprocess.check_call(build_cmd, cwd=REPO)
-    wall = time_command([str(bin_path)], runs=runs)
-    print(f"async_await_chain li wall_time={wall:.4f}s")
+    timing = time_command([str(bin_path)], runs=runs)
+    _print_timing("async_await_chain li", timing)
     return [
         row_for(
             benchmark="async_await_chain",
             lang="li",
-            value=wall,
+            value=timing.mean,
             metric="wall_time",
             unit="s",
             sha=sha,
             cpu=cpu,
             flags="async await chain d10 (epoll/kqueue reactor)",
+            **_timing_fields(timing),
         )
     ]
 
 
 def bench_li_tests_smoke(*, sha: str, cpu: str) -> list[dict[str, object]]:
-    wall = time_command(["./run_all.sh"], runs=1, cwd=REPO / "li-tests")
-    print(f"li_tests_full harness wall_time={wall:.4f}s")
+    timing = time_command(["./run_all.sh"], runs=1, cwd=REPO / "li-tests")
+    _print_timing("li_tests_full harness", timing)
     return [
         row_for(
             benchmark="li_tests_full",
             lang="harness",
-            value=wall,
+            value=timing.mean,
             metric="wall_time",
             unit="s",
             sha=sha,
             cpu=cpu,
             flags="li-tests/run_all.sh",
+            **_timing_fields(timing),
         )
     ]
 
@@ -244,18 +265,19 @@ def bench_security(*, runs: int, sha: str, cpu: str) -> tuple[list[dict[str, obj
     for test_id, script in SECURITY_SCRIPTS:
         if not script.is_file():
             continue
-        wall = time_command(["bash", str(script)], runs=runs)
+        timing = time_command(["bash", str(script)], runs=runs)
         perf_rows.append(
             row_for(
                 benchmark=f"security_{test_id}",
                 lang="harness",
-                value=wall,
+                value=timing.mean,
                 metric="wall_time",
                 unit="s",
                 sha=sha,
                 cpu=cpu,
                 flags=str(script.relative_to(REPO)),
                 variant="ci",
+                **_timing_fields(timing),
             )
         )
         sec_rows.append(
@@ -263,28 +285,29 @@ def bench_security(*, runs: int, sha: str, cpu: str) -> tuple[list[dict[str, obj
                 "lang": "harness",
                 "test": test_id,
                 "metric": "wall_time",
-                "value": str(round(wall, 4)),
+                "value": str(round(timing.mean, 4)),
                 "threshold": "0",
                 "passed": "true",
                 "reference": "pass",
             }
         )
-        print(f"security_{test_id} wall_time={wall:.4f}s")
+        _print_timing(f"security_{test_id}", timing)
     # Full ci-security aggregate
     sec_script = REPO / "scripts/ci-security.sh"
     if sec_script.is_file():
-        wall = time_command(["bash", str(sec_script)], runs=1)
+        timing = time_command(["bash", str(sec_script)], runs=1)
         perf_rows.append(
             row_for(
                 benchmark="security_gate_full",
                 lang="harness",
-                value=wall,
+                value=timing.mean,
                 metric="wall_time",
                 unit="s",
                 sha=sha,
                 cpu=cpu,
                 flags="scripts/ci-security.sh",
                 variant="ci",
+                **_timing_fields(timing),
             )
         )
         sec_rows.append(
@@ -292,7 +315,7 @@ def bench_security(*, runs: int, sha: str, cpu: str) -> tuple[list[dict[str, obj
                 "lang": "harness",
                 "test": "ci_security_full",
                 "metric": "wall_time",
-                "value": str(round(wall, 4)),
+                "value": str(round(timing.mean, 4)),
                 "threshold": "0",
                 "passed": "true",
                 "reference": "pass",

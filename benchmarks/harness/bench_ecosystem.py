@@ -116,7 +116,12 @@ def cpu_model() -> str:
 _HARNESS = Path(__file__).resolve().parent
 if str(_HARNESS) not in sys.path:
     sys.path.insert(0, str(_HARNESS))
-from timing_stats import TimingStats, default_bench_runs, time_command as _time_command_stats
+from timing_stats import (
+    TimingStats,
+    default_bench_runs,
+    host_os_tag,
+    time_command as _time_command_stats,
+)
 
 
 def time_command(cmd: list[str], *, runs: int, cwd: Path | None = None) -> TimingStats:
@@ -150,6 +155,7 @@ def row_for(
         "git_sha": sha,
         "cpu_model": cpu,
         "flags": flags,
+        "os": host_os_tag(),
     }
 
 

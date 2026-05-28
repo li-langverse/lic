@@ -49,6 +49,7 @@ if str(_HARNESS) not in sys.path:
 from timing_stats import (
     TimingStats,
     default_bench_runs,
+    host_os_tag,
     measure_repeated,
     resolve_timing_runs,
     stats_from_samples,
@@ -267,6 +268,7 @@ def run_load_for_lang(
             return []
         sha = git_sha()
         cpu = cpu_model()
+        host_os = host_os_tag()
         flags = f"profile={cfg.get('_profile', '')};tool=streaming_soak"
         unit_map = {"rps": "events/s", "p99_latency_ms": "ms", "stream_ok_ratio": "ratio"}
         rows: list[dict[str, object]] = []
@@ -284,6 +286,7 @@ def run_load_for_lang(
                     "git_sha": sha,
                     "cpu_model": cpu,
                     "flags": flags,
+                    "os": host_os,
                 }
             )
         return rows
@@ -314,6 +317,7 @@ def run_load_for_lang(
                 variants.append((f"{prefix}{c}", int(c)))
     sha = git_sha()
     cpu = cpu_model()
+    host_os = host_os_tag()
     flags = f"profile={cfg.get('_profile', '')};tool=wrk"
     rows: list[dict[str, object]] = []
     bench_runs = measured_runs_for_cfg(cfg)
@@ -349,6 +353,7 @@ def run_load_for_lang(
                     "git_sha": sha,
                     "cpu_model": cpu,
                     "flags": flags,
+                    "os": host_os,
                 }
             )
     return rows

@@ -5,6 +5,7 @@ from __future__ import annotations
 
 import math
 import os
+import platform
 import statistics
 from collections.abc import Callable
 import subprocess
@@ -20,6 +21,17 @@ class TimingStats:
     mean: float
     stddev: float
     sample_runs: int
+
+
+def host_os_tag() -> str:
+    sys_name = platform.system().lower()
+    if sys_name == "darwin":
+        return "darwin"
+    if sys_name == "windows":
+        return "windows"
+    if sys_name == "linux":
+        return "linux"
+    return "unknown"
 
 
 def bench_env_flag(name: str, default: str = "1") -> bool:

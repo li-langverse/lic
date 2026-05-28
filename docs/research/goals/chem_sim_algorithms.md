@@ -1,34 +1,32 @@
 # Research goal digest — `chem_sim_algorithms`
 
-**Session:** `66d1f3bf-7ced-4520-95f5-7c6fba34da72` · **Cycle:** 1 · **Agent:** `numerics_researcher`  
-**Run:** `numerics_researcher-1779876594572` · **Generated:** 2026-05-27T10:30:00Z  
+**Session:** `1bdb6322-8399-425d-9257-9b9098475e89` · **Cycle:** 1 · **Agent:** `numerics_researcher`  
+**Run:** `numerics_researcher-1779943243424` · **Generated:** 2026-05-28T04:41:35Z  
 **North star fit:** Chemistry / QM — PH-5b (proved numerics), PH-7e (integral/Fock SIMD), domains: scientific_computing, hpc
 
 ---
 
 ## Executive summary
 
-- **Mode A SOTA survey complete** (`chem-r0`): Psi4, PySCF, ORCA, Helgaker mapped to **algo_registry 401–432** with implementation ordering (integrals 401–404 → SCF 411/418).
-- **Li gap:** All 32 `qm_*` catalog rows are **unknown** on the [dashboard](https://li-langverse.github.io/benchmarks/); tier-2 harnesses use **`schrodinger_1d_barrier` template**, not QC kernels.
-- **`li-sim-scientific`:** `vertical_qm_dft()` → `algo_qm_dft_scf_energy()` → `run_algo_registry_stub` (checksum **1.001**); same pattern as MD stubs pre–r2 handoff.
-- **`std/physics/chem.li`:** tag-only (`physics_chem_std_tag`); no GTO/SCF surface yet.
-- **Composable gate missing:** `li-tests/composable/import_chem_dft_smoke.li` not on `main`; `verticals.toml` honesty stays **stub / external_binary** until it passes.
+- **Mode A SOTA survey complete** (`chem-r0`, run `numerics_researcher-1779916590880`): Psi4, PySCF, ORCA, Helgaker/Szabo mapped to **algo_registry 401–432**; implement order **401–404 → 411/418**.
+- **Li gap:** All **32 `qm_*`** catalog rows remain **unknown** on the [dashboard](https://li-langverse.github.io/benchmarks/) (preflight 2026-05-28); tier-2 harnesses still use **`schrodinger_1d_barrier` template**, not QC kernels.
+- **`li-sim-scientific`:** `vertical_qm_dft()` → `algo_qm_dft_scf_energy()` → `run_algo_registry_stub` (checksum **1.001**); same honesty pattern as MD stubs pre–r2.
+- **`std/physics/chem.li`:** tag-only (`physics_chem_std_tag`); no GTO/SCF surface on `main`.
+- **Composable gate missing:** `li-tests/composable/import_chem_dft_smoke.li` not on `main`; `verticals.toml` stays **stub / external_binary** until green.
 - **v1 implement target:** `chem-r2-dft-scf-gap` → `qm_dft_scf_energy` (418) with **Psi4 subprocess oracle** before native RKS perf; validity locked.
 - **Whitepaper + study evidence:** [chem-r0 whitepaper](../../../../research-findings/whitepapers/2026-05/chem_sim_algorithms/chem-r0-qm-sota-survey/README.md) · [study](../../numerics/studies/2026-05-27-chem-r0-qm-sota-survey.md) (`validity_grade: study-only`).
-- **No perf claims** this cycle; `threshold_ratio_cpp` and tier-0 tolerances unchanged.
+- **No perf claims** this cycle; `threshold_ratio_cpp` and tier-0 tolerances unchanged. Org red rows (`horner_pure_li`, `reduce_sum`) are **non-QM** — chemistry work stays on validity path.
 
 ---
 
 ## Deliverable / findings
 
-### Completed artifacts (cycle 1)
+### Completed artifacts (session `1bdb6322`, cycle 1)
 
-| Step | Artifact |
-|------|----------|
-| `survey_sota` | `docs/numerics/studies/2026-05-27-chem-r0-qm-sota-survey.md` |
-| Whitepaper | `research-findings/whitepapers/2026-05/chem_sim_algorithms/chem-r0-qm-sota-survey/` |
-| Session log | `docs/ecosystem/research-sessions/chem_sim_algorithms-cycle.md` |
-| This digest | `docs/research/goals/chem_sim_algorithms.md` |
+| Step | Run | Artifact |
+|------|-----|----------|
+| `survey_sota` | `numerics_researcher-1779916590880` | [Study](../../numerics/studies/2026-05-27-chem-r0-qm-sota-survey.md) · [Whitepaper](../../../../research-findings/whitepapers/2026-05/chem_sim_algorithms/chem-r0-qm-sota-survey/) |
+| `digest` | `numerics_researcher-1779943243424` | This file · [Session log](../../ecosystem/research-sessions/chem_sim_algorithms-cycle.md) |
 
 ### Learned from (SOTA, 2–4)
 
@@ -41,14 +39,16 @@
 
 | Surface | PH / group | Status |
 |---------|------------|--------|
-| SCF convergence + Ha refs | PH-5b | Documented; oracle path proposed |
+| SCF convergence + Ha refs | PH-5b | Documented; Psi4 oracle path proposed |
 | ERI/Fock contraction loops | PH-7e | Deferred until integral parity |
 | Gaussian recurrence, symmetry | G-math | `chem.li` / future `li-physics-quantum` |
 | AO block parallelism | G-par | Post-proof `@vectorized` / `parallel for` |
 
-### In-repo gap evidence (verified)
+### In-repo gap evidence (verified 2026-05-28)
 
-```217:226:packages/li-sim-scientific/src/lib.li
+```167:195:packages/li-sim-scientific/src/lib.li
+def run_algo_registry_stub(algo_id: int, detail: int) -> SimRunResult
+  ...
   if algo_id >= 401:
     if algo_id <= 432:
       vert = vertical_qm_dft()
@@ -62,8 +62,11 @@ def physics_chem_std_tag() -> int
   return 1
 ```
 
-```1:1:benchmarks/tier2_physics/qm_dft_scf_energy/li/main.li
+```1:12:benchmarks/tier2_physics/qm_dft_scf_energy/li/main.li
 # WP4 catalog smoke (qm_dft_scf_energy); family template schrodinger_1d_barrier.
+extern proc li_schrodinger_1d_barrier_kernel()
+  ...
+  li_schrodinger_1d_barrier_kernel()
 ```
 
 ### Grade matrix
@@ -78,7 +81,7 @@ def physics_chem_std_tag() -> int
 
 ### Tradeoffs
 
-Validity, stability (SCF convergence), and accuracy (basis-set monotonicity) remain **locked**. Speed on ERI/Fock rows is explicitly deferred until checksum/Ha parity. External Gaussian/ORCA binaries are **not** required in CI; Psi4 subprocess oracle is optional and documented.
+Validity, stability (SCF convergence), and accuracy (basis-set monotonicity) remain **locked**. Speed on ERI/Fock rows is explicitly deferred until checksum/Ha parity. External Gaussian/ORCA binaries are **not** required in CI; Psi4 subprocess oracle is optional and documented in `verticals.toml` honesty notes.
 
 ### Mandatory evidence (this run)
 
@@ -86,16 +89,16 @@ Validity, stability (SCF convergence), and accuracy (basis-set monotonicity) rem
 |------|------|
 | Numerics study | `docs/numerics/studies/2026-05-27-chem-r0-qm-sota-survey.md` |
 | Whitepaper | `research-findings/whitepapers/2026-05/chem_sim_algorithms/chem-r0-qm-sota-survey/` |
-| Bench catalog | `benchmarks/catalog.toml` → `qm_dft_scf_energy` (harness pending) |
-| Preflight | `benchmarks/data/latest/ecosystem-audit.json` (32 unknown `qm_*`) |
+| Bench catalog | `benchmarks/catalog.toml` → `qm_dft_scf_energy` (`size_label = "harness pending"`) |
+| Preflight | `benchmarks/data/latest/ecosystem-audit.json` (32 unknown `qm_*`, 2026-05-28 briefing) |
 
-### Implementation path (handoff → `bench_improver` / sim worktree)
+### Implementation path (handoff → `bench_improver` / `sim-p2-qm-dft-scf`)
 
 1. Add `common/qm_scf_core.c` or Psi4 subprocess oracle for H₂ STO-3G; wire `qm_dft_scf_energy` harness off `schrodinger_1d_barrier` template.
 2. Implement integral microkernels **401–404** before Fock/SCF.
-3. Replace `run_algo_registry_stub` for id **418** with real `run_qm_dft_scf_energy_smoke`.
+3. Replace `run_algo_registry_stub` path for id **418** with real `run_qm_dft_scf_energy_smoke`.
 4. Add `li-tests/composable/import_chem_dft_smoke.li`; flip `verticals.toml` only when green.
-5. Deep gates in `lic-worktrees/sim-chem-research` only.
+5. Deep gates in `lic-worktrees/sim-chem-research` only (no new systemd sim loops).
 
 ---
 

@@ -4,13 +4,19 @@ Fresh Cursor Cloud VMs must install **LLVM 22** (org pin) before `lic` builds. O
 
 ## One-line install script (Cursor Cloud settings)
 
-Point the environment **install script** at:
+Point the environment **install script** at (org-wide pull + LLVM 22 + dashboard-next):
+
+```bash
+bash /agent/repos/benchmarks/scripts/cloud-agent-install.sh
+```
+
+Minimal **lic-only** bootstrap (no org `git pull`):
 
 ```bash
 bash /agent/repos/lic/scripts/cloud-vm-bootstrap.sh
 ```
 
-Or copy the two lines from `/tmp/cursor/async-install/install-user.sh` after syncing this repo.
+Do **not** use inline `cmake -DLLVM_DIR="$LLVM_DIR"` with a same-line `LLVM_DIR=…` prefix under `set -u` — bash expands `$LLVM_DIR` before the assignment and fails with *unbound variable*.
 
 ## What it does
 

@@ -17,6 +17,11 @@ from dataclasses import dataclass, field
 from datetime import datetime, timezone
 from pathlib import Path
 
+_HARNESS = Path(__file__).resolve().parent
+if str(_HARNESS) not in sys.path:
+    sys.path.insert(0, str(_HARNESS))
+from timing_stats import TimingStats, time_command as _time_command_stats
+
 REPO = Path(__file__).resolve().parents[2]
 TIER1 = REPO / "benchmarks" / "tier1_micro"
 TIER_STDLIB = REPO / "benchmarks" / "tier1_stdlib"
@@ -29,6 +34,8 @@ CSV_HEADER = [
     "threads",
     "metric",
     "value",
+    "stddev",
+    "sample_runs",
     "unit",
     "git_sha",
     "cpu_model",
@@ -474,65 +481,8 @@ def _bench_env_flag(name: str, default: str = "1") -> bool:
     return os.environ.get(name, default).strip().lower() not in ("0", "false", "no", "off")
 
 
-def _run_timed_once(cmd: list[str], *, cwd: Path | None) -> float:
-    start = time.perf_counter()
-    proc = subprocess.run(cmd, cwd=cwd, capture_output=True, text=True)
-    elapsed = time.perf_counter() - start
-    if proc.returncode != 0:
-        raise RuntimeError(
-            f"command failed ({proc.returncode}): {' '.join(cmd)}\n"
-            f"{proc.stderr or proc.stdout}"
-        )
-    return elapsed
-
-
-def resolve_timing_runs(base_runs: int, median_sec: float) -> int:
-    """Scale repetitions for short kernels (≥BENCH_MIN_RUNS, ~BENCH_TARGET_SAMPLE_SEC total)."""
-    if not _bench_env_flag("BENCH_ADAPTIVE_RUNS", "1"):
-        return base_runs
-    min_runs = int(os.environ.get("BENCH_MIN_RUNS", "20"))
-    max_runs = int(os.environ.get("BENCH_MAX_RUNS", "200"))
-    target = float(os.environ.get("BENCH_TARGET_SAMPLE_SEC", "1.0"))
-    runs = max(base_runs, min_runs)
-    if median_sec > 0:
-        needed = math.ceil(target / median_sec)
-        runs = max(runs, min(needed, max_runs))
-    return runs
-
-
-def time_command(cmd: list[str], *, cwd: Path | None = None, runs: int = 3) -> float:
-    if runs <= 1:
-        warmup = subprocess.run(cmd, cwd=cwd, capture_output=True, text=True)
-        if warmup.returncode != 0:
-            raise RuntimeError(
-                f"warmup failed ({warmup.returncode}): {' '.join(cmd)}\n"
-                f"{warmup.stderr or warmup.stdout}"
-            )
-        return _run_timed_once(cmd, cwd=cwd)
-
-    warmup = subprocess.run(cmd, cwd=cwd, capture_output=True, text=True)
-    if warmup.returncode != 0:
-        raise RuntimeError(
-            f"warmup failed ({warmup.returncode}): {' '.join(cmd)}\n"
-            f"{warmup.stderr or warmup.stdout}"
-        )
-
-    probe_n = min(3, runs)
-    samples = [_run_timed_once(cmd, cwd=cwd) for _ in range(probe_n)]
-    probe_median = statistics.median(samples)
-    total_runs = resolve_timing_runs(runs, probe_median)
-    extra = max(0, total_runs - probe_n)
-    if extra:
-        samples.extend(_run_timed_once(cmd, cwd=cwd) for _ in range(extra))
-
-    if _bench_env_flag("BENCH_TIMING_VERBOSE", "0"):
-        stdev = statistics.stdev(samples) if len(samples) > 1 else 0.0
-        print(
-            f"timing: runs={len(samples)} median={statistics.median(samples):.6f}s "
-            f"stdev={stdev:.6f}s cmd={' '.join(cmd)}",
-            file=sys.stderr,
-        )
-    return statistics.median(samples)
+def time_command(cmd: list[str], *, cwd: Path | None = None, runs: int = 6) -> TimingStats:
+    return _time_command_stats(cmd, cwd=cwd, runs=runs)
 
 
 def build_native(spec: BenchSpec, bin_path: Path) -> None:
@@ -883,14 +833,18 @@ def row_for(
     verify_rel_err: str = "",
     verify_ulps: str = "",
     verify_within_1ulp: str = "",
+    stddev: float | None = None,
+    sample_runs: int | None = None,
 ) -> dict[str, object]:
-    return {
+    row: dict[str, object] = {
         "benchmark": benchmark,
         "lang": lang,
         "variant": "release",
         "threads": 1,
         "metric": metric,
         "value": round(value, 4),
+        "stddev": round(stddev, 6) if stddev is not None else "",
+        "sample_runs": sample_runs if sample_runs is not None else "",
         "unit": unit,
         "git_sha": sha,
         "cpu_model": cpu,
@@ -903,6 +857,11 @@ def row_for(
         "verify_ulps": verify_ulps,
         "verify_within_1ulp": verify_within_1ulp,
     }
+    return row
+
+
+def _timing_row_fields(timing: TimingStats) -> dict[str, object]:
+    return {"stddev": timing.stddev, "sample_runs": timing.sample_runs}
 
 
 def run_benchmark(spec: BenchSpec, *, runs: int) -> list[dict[str, object]]:
@@ -915,20 +874,24 @@ def run_benchmark(spec: BenchSpec, *, runs: int) -> list[dict[str, object]]:
     cpp_bin = build_dir / f"{spec.name}_cpp"
     build_native(spec, cpp_bin)
     if not spec.li_enabled:
-        wall = time_command([str(cpp_bin)], runs=runs)
+        timing = time_command([str(cpp_bin)], runs=runs)
         rows.append(
             row_for(
                 benchmark=spec.name,
                 lang="cpp",
-                value=wall,
+                value=timing.mean,
                 metric="wall_time",
                 unit="s",
                 sha=sha,
                 cpu=cpu,
                 flags=NATIVE_FLAGS,
+                **_timing_row_fields(timing),
             )
         )
-        print(f"{spec.name} cpp wall_time={wall:.4f}s (adaptive median); Li column pending WP1")
+        print(
+            f"{spec.name} cpp wall_time={timing.mean:.4f}s ± {timing.stddev:.4f}s "
+            f"(n={timing.sample_runs}); Li column pending WP1"
+        )
         return rows
 
     rust_bin = build_dir / f"{spec.name}_rust"
@@ -945,21 +908,22 @@ def run_benchmark(spec: BenchSpec, *, runs: int) -> list[dict[str, object]]:
         ("julia", julia_bin, f"{NATIVE_FLAGS} (native C kernel)"),
         ("li", li_bin, f"{'pure lic' if spec.li_pure else 'shared C kernel + lic'} {NATIVE_FLAGS}"),
     ):
-        wall = time_command([str(bin_path)], runs=runs)
+        timing = time_command([str(bin_path)], runs=runs)
         rows.append(
             row_for(
                 benchmark=spec.name,
                 lang=lang,
-                value=wall,
+                value=timing.mean,
                 metric="wall_time",
                 unit="s",
                 sha=sha,
                 cpu=cpu,
                 flags=flags,
+                **_timing_row_fields(timing),
             )
         )
-        if spec.flops_per_run is not None and wall > 0:
-            gflops = spec.flops_per_run / wall / 1e9
+        if spec.flops_per_run is not None and timing.mean > 0:
+            gflops = spec.flops_per_run / timing.mean / 1e9
             rows.append(
                 row_for(
                     benchmark=spec.name,
@@ -972,8 +936,8 @@ def run_benchmark(spec: BenchSpec, *, runs: int) -> list[dict[str, object]]:
                     flags=flags,
                 )
             )
-        if spec.bytes_per_run is not None and wall > 0:
-            gbps = spec.bytes_per_run / wall / 1e9
+        if spec.bytes_per_run is not None and timing.mean > 0:
+            gbps = spec.bytes_per_run / timing.mean / 1e9
             rows.append(
                 row_for(
                     benchmark=spec.name,
@@ -986,7 +950,10 @@ def run_benchmark(spec: BenchSpec, *, runs: int) -> list[dict[str, object]]:
                     flags=flags,
                 )
             )
-        print(f"{spec.name} {lang} wall_time={wall:.4f}s (median of {runs})")
+        print(
+            f"{spec.name} {lang} wall_time={timing.mean:.4f}s ± {timing.stddev:.4f}s "
+            f"(n={timing.sample_runs})"
+        )
 
     return rows
 
@@ -1142,7 +1109,12 @@ def main() -> int:
     parser.add_argument("--tier", type=int, default=0)
     parser.add_argument("--sample", action="store_true", help="write demo CSV for plots")
     parser.add_argument("--ci", action="store_true")
-    parser.add_argument("--runs", type=int, default=3, help="timing repetitions (median)")
+    parser.add_argument(
+        "--runs",
+        type=int,
+        default=int(os.environ.get("BENCH_RUNS", "6")),
+        help="timing repetitions (mean; adaptive min 6, sub-second min 20)",
+    )
     parser.add_argument("--skip-verify", action="store_true")
     parser.add_argument(
         "--verify-results",

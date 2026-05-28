@@ -35,3 +35,12 @@ The workspace lives at `/workspace` (not `/agent/repos/lic`). The update script 
 **Lean 4 is optional:** The Lean verification layer (`lake`) is not installed by default. Tests and builds still pass without it; you'll see a warning: "Lean 4 / lake not installed; skipping semantics proof". Install via `scripts/ci-install-lean.sh` only if working on proof gates (PH-2f+).
 
 **No lint tool:** There is no separate linter command. The compiler itself (`lic build` / `lic check`) performs all static analysis (types, borrow, contracts, policy). CI gates are in `scripts/ci.sh`.
+
+**Running benchmarks:** Set `CC=clang-22 CXX=clang++-22` before running benchmarks or the execution resource sweep, since the default `clang` may not find OpenMP headers. Key commands:
+- Full tier 1+2 sweep: `python3 benchmarks/harness/bench.py --tier 12 --runs 6`
+- Stdlib (tier 4): `python3 benchmarks/harness/bench.py --tier 4 --runs 6`
+- Registry (tier 7): `python3 benchmarks/harness/bench.py --tier 7`
+- Parallel sweep: `python3 benchmarks/harness/execution_resource_sweep.py --runs 6`
+- Two tier-1 benchmarks (`matmul_blocked`, `horner_pure_li`) fail Li compilation due to an LLVM IR attribute bug; exclude them with `--only` or use `--skip-verify`.
+- Tier 5 ecosystem (`bench_ecosystem.py`) needs Lean 4 for the `alloc_ok.li` fixture (outcome `verify_ok`); without Lean it will fail.
+- Install `time` package (`sudo apt-get install time`) for RSS measurement in execution_resource_sweep.

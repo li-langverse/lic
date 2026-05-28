@@ -7,11 +7,15 @@ import argparse
 import csv
 import os
 import platform
-import statistics
 import subprocess
 import sys
 import time
 from pathlib import Path
+
+_HARNESS = Path(__file__).resolve().parent
+if str(_HARNESS) not in sys.path:
+    sys.path.insert(0, str(_HARNESS))
+from timing_stats import TimingStats, default_bench_runs, time_command
 
 REPO = Path(__file__).resolve().parents[2]
 REF_ROOT = REPO / "benchmarks" / "runtime_refs" / "reduce_parallel"
@@ -27,6 +31,8 @@ SWEEP_HDR = [
     "parallelism",
     "metric",
     "value",
+    "stddev",
+    "sample_runs",
     "unit",
     "git_sha",
     "cpu_model",
@@ -102,19 +108,9 @@ def peak_rss_mb(cmd: list[str], *, cwd: Path | None = None) -> float | None:
     return None
 
 
-def time_median(cmd: list[str], *, cwd: Path | None = None, runs: int = 3) -> float:
-    warmup = subprocess.run(cmd, cwd=cwd, capture_output=True, text=True)
-    if warmup.returncode != 0:
-        raise RuntimeError(f"warmup failed: {' '.join(cmd)}\n{warmup.stderr or warmup.stdout}")
-    samples: list[float] = []
-    for _ in range(runs):
-        start = time.perf_counter()
-        proc = subprocess.run(cmd, cwd=cwd, capture_output=True, text=True)
-        elapsed = time.perf_counter() - start
-        if proc.returncode != 0:
-            raise RuntimeError(f"run failed: {' '.join(cmd)}\n{proc.stderr or proc.stdout}")
-        samples.append(elapsed)
-    return statistics.median(samples)
+def time_wall(cmd: list[str], *, cwd: Path | None = None, runs: int | None = None) -> TimingStats:
+    cwd_s = str(cwd) if cwd else None
+    return time_command(cmd, cwd=cwd_s, runs=runs if runs is not None else default_bench_runs())
 
 
 def omp_compile_flags(cc: str) -> list[str] | None:
@@ -200,7 +196,8 @@ def sweep_reduce_parallel(*, runs: int, smoke: bool) -> list[dict[str, object]]:
             env["LI_OMP_THREADS"] = str(threads)
             env["OMP_NUM_THREADS"] = str(threads)
             cmd = [str(bin_path), f"--threads={threads}"]
-            wall = time_median(cmd, cwd=REPO, runs=1 if smoke else runs)
+            timing = time_wall(cmd, cwd=REPO, runs=1 if smoke else runs)
+            wall = timing.mean
             rss = peak_rss_mb(cmd, cwd=REPO)
             if baseline_wall is None and cores == 1 and tpc == 1 and impl == "li_native":
                 baseline_wall = wall
@@ -218,12 +215,46 @@ def sweep_reduce_parallel(*, runs: int, smoke: bool) -> list[dict[str, object]]:
                 "cpu_model": cpu,
                 "flags": flags,
             }
-            rows.append({**base, "metric": "wall_s", "value": round(wall, 4), "unit": "s"})
-            if rss is not None:
-                rows.append({**base, "metric": "peak_rss_mb", "value": rss, "unit": "MiB"})
-            rows.append({**base, "metric": "speedup", "value": round(speedup, 4), "unit": "x"})
             rows.append(
-                {**base, "metric": "efficiency", "value": round(efficiency, 4), "unit": "x_per_hw_thread"}
+                {
+                    **base,
+                    "metric": "wall_s",
+                    "value": round(wall, 4),
+                    "stddev": round(timing.stddev, 6),
+                    "sample_runs": timing.sample_runs,
+                    "unit": "s",
+                }
+            )
+            if rss is not None:
+                rows.append(
+                    {
+                        **base,
+                        "metric": "peak_rss_mb",
+                        "value": rss,
+                        "stddev": "",
+                        "sample_runs": "",
+                        "unit": "MiB",
+                    }
+                )
+            rows.append(
+                {
+                    **base,
+                    "metric": "speedup",
+                    "value": round(speedup, 4),
+                    "stddev": "",
+                    "sample_runs": "",
+                    "unit": "x",
+                }
+            )
+            rows.append(
+                {
+                    **base,
+                    "metric": "efficiency",
+                    "value": round(efficiency, 4),
+                    "stddev": "",
+                    "sample_runs": "",
+                    "unit": "x_per_hw_thread",
+                }
             )
             print(f"reduce_sum_parallel {impl} cores={cores} tpc={tpc} wall={wall:.4f}s eff={efficiency:.3f}")
 
@@ -249,10 +280,10 @@ def sweep_simd_dot(*, runs: int) -> list[dict[str, object]]:
         ],
         cwd=REPO,
     )
-    wall = time_median([str(native)], cwd=REPO, runs=runs)
+    timing = time_wall([str(native)], cwd=REPO, runs=runs)
     sha = git_sha()
     cpu = cpu_model()
-    print(f"simd_dot li_native parallelism=simd_intrathread wall={wall:.4f}s")
+    print(f"simd_dot li_native parallelism=simd_intrathread wall={timing.mean:.4f}s")
     return [
         {
             "benchmark": "simd_dot",
@@ -261,7 +292,9 @@ def sweep_simd_dot(*, runs: int) -> list[dict[str, object]]:
             "threads_per_core": 1,
             "parallelism": "simd_intrathread",
             "metric": "wall_s",
-            "value": round(wall, 4),
+            "value": round(timing.mean, 4),
+            "stddev": round(timing.stddev, 6),
+            "sample_runs": timing.sample_runs,
             "unit": "s",
             "git_sha": sha,
             "cpu_model": cpu,
@@ -282,7 +315,7 @@ def write_csv(path: Path, rows: list[dict[str, object]]) -> None:
 def main() -> int:
     parser = argparse.ArgumentParser()
     parser.add_argument("--out", type=Path, default=DEFAULT_OUT)
-    parser.add_argument("--runs", type=int, default=3)
+    parser.add_argument("--runs", type=int, default=default_bench_runs())
     parser.add_argument("--smoke", action="store_true")
     args = parser.parse_args()
 

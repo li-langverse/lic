@@ -6,6 +6,7 @@ from __future__ import annotations
 import math
 import os
 import statistics
+from collections.abc import Callable
 import subprocess
 import sys
 import time
@@ -67,6 +68,25 @@ def run_timed_once(cmd: list[str], *, cwd: str | os.PathLike[str] | None) -> flo
             f"{proc.stderr or proc.stdout}"
         )
     return elapsed
+
+
+def default_bench_runs() -> int:
+    return int(os.environ.get("BENCH_RUNS", "6"))
+
+
+def measure_repeated(measure: Callable[[], float], *, runs: int | None = None) -> TimingStats:
+    """Repeated scalar samples (e.g. wrk RPS, TTFB ms); mean ± stddev with adaptive count."""
+    base = runs if runs is not None else default_bench_runs()
+    probe_n = min(3, base)
+    samples: list[float] = []
+    for _ in range(probe_n):
+        samples.append(float(measure()))
+    probe_mean = statistics.mean(samples)
+    total = resolve_timing_runs(base, probe_mean)
+    extra = max(0, total - probe_n)
+    if extra:
+        samples.extend(float(measure()) for _ in range(extra))
+    return stats_from_samples(samples)
 
 
 def time_command(

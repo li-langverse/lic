@@ -10,10 +10,10 @@ import argparse
 import csv
 import os
 import platform
-import statistics
 import subprocess
 import sys
 import time
+from concurrent.futures import ProcessPoolExecutor, as_completed
 from pathlib import Path
 
 REPO = Path(__file__).resolve().parents[2]
@@ -116,7 +116,7 @@ def cpu_model() -> str:
 _HARNESS = Path(__file__).resolve().parent
 if str(_HARNESS) not in sys.path:
     sys.path.insert(0, str(_HARNESS))
-from timing_stats import TimingStats, time_command as _time_command_stats
+from timing_stats import TimingStats, default_bench_runs, time_command as _time_command_stats
 
 
 def time_command(cmd: list[str], *, runs: int, cwd: Path | None = None) -> TimingStats:
@@ -186,27 +186,47 @@ def merge_latest(existing: list[dict[str, str]], new_rows: list[dict[str, object
     return kept + new_rows
 
 
-def bench_compile(*, runs: int, sha: str, cpu: str) -> list[dict[str, object]]:
+def _bench_one_compile(payload: tuple[str, str, int, str, str]) -> dict[str, object]:
+    bench_id, src_s, runs, sha, cpu = payload
+    src = Path(src_s)
+    cmd, flags = lic_build_command(src)
+    timing = _time_command_stats(cmd, cwd=REPO, runs=runs)
+    return row_for(
+        benchmark=bench_id,
+        lang="lic",
+        value=timing.mean,
+        metric="wall_time",
+        unit="s",
+        sha=sha,
+        cpu=cpu,
+        flags=flags,
+        stddev=timing.stddev,
+        sample_runs=timing.sample_runs,
+    )
+
+
+def bench_compile(*, runs: int, sha: str, cpu: str, jobs: int = 1) -> list[dict[str, object]]:
     if not LIC.is_file():
         raise RuntimeError(f"lic missing at {LIC} — run ./scripts/build.sh")
+    tasks = [(bid, str(src), runs, sha, cpu) for bid, src in COMPILE_FIXTURES]
     rows: list[dict[str, object]] = []
-    for bench_id, src in COMPILE_FIXTURES:
-        cmd, flags = lic_build_command(src)
-        timing = time_command(cmd, runs=runs)
-        rows.append(
-            row_for(
-                benchmark=bench_id,
-                lang="lic",
-                value=timing.mean,
-                metric="wall_time",
-                unit="s",
-                sha=sha,
-                cpu=cpu,
-                flags=flags,
-                **_timing_fields(timing),
-            )
-        )
-        _print_timing(f"{bench_id} lic build", timing)
+    if jobs <= 1:
+        for task in tasks:
+            row = _bench_one_compile(task)
+            rows.append(row)
+            _print_timing(f"{row['benchmark']} lic build", TimingStats(
+                mean=float(row["value"]), stddev=float(row["stddev"] or 0), sample_runs=int(row["sample_runs"] or 1)
+            ))
+        return rows
+    print(f"bench_ecosystem: parallel compile jobs={jobs}", flush=True)
+    with ProcessPoolExecutor(max_workers=jobs) as pool:
+        futures = [pool.submit(_bench_one_compile, t) for t in tasks]
+        for fut in as_completed(futures):
+            row = fut.result()
+            rows.append(row)
+            _print_timing(f"{row['benchmark']} lic build", TimingStats(
+                mean=float(row["value"]), stddev=float(row["stddev"] or 0), sample_runs=int(row["sample_runs"] or 1)
+            ))
     return rows
 
 
@@ -324,9 +344,17 @@ def bench_security(*, runs: int, sha: str, cpu: str) -> tuple[list[dict[str, obj
     return perf_rows, sec_rows
 
 
+def _default_jobs() -> int:
+    raw = os.environ.get("BENCH_JOBS", "").strip()
+    if raw:
+        return max(1, int(raw))
+    return max(1, os.cpu_count() or 1)
+
+
 def main() -> int:
     parser = argparse.ArgumentParser(description="Tier-3 ecosystem benchmarks for dashboard ingest")
-    parser.add_argument("--runs", type=int, default=3)
+    parser.add_argument("--runs", type=int, default=default_bench_runs())
+    parser.add_argument("--jobs", type=int, default=_default_jobs())
     parser.add_argument("--latest", type=Path, default=RESULTS / "latest.csv")
     parser.add_argument("--security", type=Path, default=RESULTS / "security.csv")
     parser.add_argument("--skip-runtime", action="store_true")
@@ -346,7 +374,7 @@ def main() -> int:
     cpu = cpu_model()
     new_rows: list[dict[str, object]] = []
 
-    new_rows.extend(bench_compile(runs=args.runs, sha=sha, cpu=cpu))
+    new_rows.extend(bench_compile(runs=args.runs, sha=sha, cpu=cpu, jobs=args.jobs))
     if not args.skip_runtime:
         new_rows.extend(bench_async_runtime(runs=args.runs, sha=sha, cpu=cpu))
     if args.with_li_tests:

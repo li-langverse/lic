@@ -18,7 +18,7 @@ Skills: `strict-by-default-gate`, `build-li-master-plan`, `create-li-package`, `
 
 ## Cursor Cloud specific instructions
 
-The workspace lives at `/workspace` (not `/agent/repos/lic`). The update script handles LLVM 22 installation, system deps, and compiler rebuild automatically on VM start.
+The workspace lives at `/workspace` (not `/agent/repos/lic`). The update script handles LLVM 22 installation, system deps, Lean 4 installation, and compiler rebuild automatically on VM start.
 
 **Building:** `./scripts/build.sh` — sources `scripts/llvm-env.sh` to auto-detect LLVM 22 cmake dir, then runs CMake + Ninja. Output binary: `./build/compiler/lic/lic`.
 
@@ -32,7 +32,7 @@ The workspace lives at `/workspace` (not `/agent/repos/lic`). The update script 
 
 **Compiling a `.li` file:** `LI_REPO_ROOT=$PWD ./build/compiler/lic/lic build file.li -o output`
 
-**Lean 4 is optional:** The Lean verification layer (`lake`) is not installed by default. Tests and builds still pass without it; you'll see a warning: "Lean 4 / lake not installed; skipping semantics proof". Install via `scripts/ci-install-lean.sh` only if working on proof gates (PH-2f+).
+**Lean 4 is installed by default.** The update script runs `scripts/ci-install-lean.sh` (elan + stable toolchain). Ensure `$HOME/.elan/bin` is on `PATH` (`export PATH="$HOME/.elan/bin:$PATH"`). If `lake` is missing, re-run `bash scripts/ci-install-lean.sh`. Lean warnings about unused variables in `Discharge.lean` / `AutoVC.lean` are expected and benign.
 
 **No lint tool:** There is no separate linter command. The compiler itself (`lic build` / `lic check`) performs all static analysis (types, borrow, contracts, policy). CI gates are in `scripts/ci.sh`.
 
@@ -42,5 +42,4 @@ The workspace lives at `/workspace` (not `/agent/repos/lic`). The update script 
 - Registry (tier 7): `python3 benchmarks/harness/bench.py --tier 7`
 - Parallel sweep: `python3 benchmarks/harness/execution_resource_sweep.py --runs 6`
 - Two tier-1 benchmarks (`matmul_blocked`, `horner_pure_li`) fail Li compilation due to an LLVM IR attribute bug; exclude them with `--only` or use `--skip-verify`.
-- Tier 5 ecosystem (`bench_ecosystem.py`) needs Lean 4 for the `alloc_ok.li` fixture (outcome `verify_ok`); without Lean it will fail.
 - Install `time` package (`sudo apt-get install time`) for RSS measurement in execution_resource_sweep.

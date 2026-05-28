@@ -490,13 +490,25 @@ void emit_contract_def(std::ostream& out, const Module& module, const ProcDecl& 
     out << "/-! Phase 2f: P-float sqrt_open_bound — Li.Discharge.sqrt_open_bound_spec (trusted libm) -/\n";
     out << "theorem " << name << "_proved";
     emit_formals(false);
-    out << " : " << name;
+    // `sqrt_open_bound_spec_proved` is conditional on the procedure `requires`.
+    // Emit the proof as `requires -> ensures` so AutoVC typechecks under Lean.
+    std::string requires_name = name;
+    const std::string needle = "_ensures_";
+    const std::size_t pos = requires_name.find(needle);
+    if (pos != std::string::npos) {
+      requires_name.replace(pos, needle.size(), "_requires_");
+    }
+    out << " : " << requires_name;
     emit_args(false);
-    out << " := Li.Discharge.sqrt_open_bound_spec_proved";
+    out << " → " << name;
+    emit_args(false);
+    out << " := by\n";
+    out << "  intro h\n";
+    out << "  simpa using (Li.Discharge.sqrt_open_bound_spec_proved";
     for (const auto& p : proc.params) {
       out << ' ' << lean_ident(p.name);
     }
-    out << '\n';
+    out << " h)\n";
   } else if (par_policy) {
     out << "/-! Phase 2f: P-par disjoint policy witness (**G-par**) -/\n";
     out << "theorem " << name << "_proved";

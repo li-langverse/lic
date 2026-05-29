@@ -198,6 +198,11 @@ std::int64_t decorator_vectorized_lanes(const Decorator& d) {
 
 void check_stmt_decorators(const Stmt& stmt, const std::string& file, DiagnosticBag& diags) {
   for (const auto& d : stmt.decorators) {
+    if (d.name == "gpu") {
+      diag_error(diags, SourceLoc{file, 1, 1, d.span.start}, ErrorCode::E0322,
+                 "`@gpu` on loops is not supported in v1; use `@gpu def` for whole-function device code.",
+                 "Grid-stride `@gpu` on `for` / `parallel for` is Phase 2 (WP-GPU-07).");
+    }
     if (d.name == "parallel") {
       if (!decorator_has_disjoint_arg(d)) {
         diag_error(diags, SourceLoc{file, 1, 1, d.span.start}, ErrorCode::E0321,

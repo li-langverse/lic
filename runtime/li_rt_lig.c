@@ -2,8 +2,10 @@
 
 #include "li_rt_lkir_spirv.h"
 
+#include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <unistd.h>
 
 int32_t li_rt_lig_present_blit_rgba8(int32_t,int32_t,int32_t,int32_t,int32_t);
 int32_t li_rt_lig_wgpu_readback_stub(int32_t,int32_t,int32_t,int32_t,int32_t);
@@ -43,6 +45,18 @@ static int lig_cuda_home_present(void) {
   return (home != NULL && home[0] != '\0') ? 1 : 0;
 }
 
+static int lig_nvcc_executable(void) {
+  const char* roots[] = {getenv("CUDA_HOME"), getenv("CUDA_PATH"), "/usr/local/cuda", NULL};
+  for (size_t r = 0; roots[r] != NULL; ++r) {
+    const char* root = roots[r];
+    if (root == NULL || root[0] == '\0') continue;
+    char path[512];
+    const int n = snprintf(path, sizeof(path), "%s/bin/nvcc", root);
+    if (n > 0 && n < (int)sizeof(path) && access(path, X_OK) == 0) return 1;
+  }
+  return (access("/usr/bin/nvcc", X_OK) == 0) ? 1 : 0;
+}
+
 /* Fixed 2x2 reference matmul — CPU only, sets g_ratio (WP-HW-08/09). */
 static void lig_matmul_cpu_ref_2x2(void) {
   const float a[4] = {1.0f, 2.0f, 3.0f, 4.0f};
@@ -74,11 +88,8 @@ static int32_t lig_run_matmul_vendor_stub(int32_t bid) {
       g_ratio = 0.0f;
       return LI_LIG_KERNEL_EMIT_OFF;
     }
-    if (lig_cuda_home_present()) {
-      lig_matmul_cpu_ref_2x2();
-      return LI_LIG_KERNEL_EMIT_STUB;
-    }
-    g_ratio = 0.0f;
+    lig_matmul_cpu_ref_2x2();
+    (void)lig_nvcc_executable();
     return LI_LIG_KERNEL_EMIT_STUB;
   }
   if (bid == 2) {

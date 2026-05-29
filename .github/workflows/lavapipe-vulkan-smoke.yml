@@ -1,0 +1,38 @@
+name: Lavapipe Vulkan smoke (PH-ML)
+
+on:
+  pull_request:
+    paths:
+      - "runtime/li_rt_lkir_spirv.c"
+      - "runtime/li_rt_lig.c"
+      - "packages/lig/**"
+      - "docs/ci/lavapipe-vulkan-smoke.md"
+      - ".github/workflows/lavapipe-vulkan-smoke.yml"
+  workflow_dispatch:
+
+jobs:
+  spirv-smoke:
+    runs-on: ubuntu-24.04
+    continue-on-error: true
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install LLVM 22
+        run: |
+          chmod +x scripts/ci-install-llvm.sh
+          sudo LI_LLVM_MAJOR=22 bash scripts/ci-install-llvm.sh
+      - name: Install lavapipe (optional)
+        run: sudo apt-get update && sudo apt-get install -y libvulkan1 mesa-vulkan-drivers vulkan-tools || true
+      - name: Build and smokes
+        env:
+          LLVM_DIR: /usr/lib/llvm-22/lib/cmake/llvm
+          CC: clang-22
+          CXX: clang++-22
+          LIG_VULKAN_LAVA: "1"
+          LIG_VULKAN_LAVAPIPE: "1"
+          VK_ICD_FILENAMES: /usr/share/vulkan/icd.d/lvp_icd.x86_64.json
+        run: |
+          ./scripts/build.sh
+          export LIC="$(./scripts/resolve-lic.sh)"
+          "$LIC" check packages/lig/li-tests/smoke/kernel_launch_status.li
+          LIG_VULKAN_LAVA=1 ./scripts/bench-lig-gpu-suite.sh
+          python3 -c "import json; assert json.load(open('benchmarks/results/lig-gpu-suite-honest.json'))['gpu_timing_ns']=='N/A'"

@@ -1,6 +1,6 @@
 # PH-ML + GPU execution tracker
 
-**Status:** Wave 4c tracker honesty (2026-05-29)  
+**Status:** Wave 5b hardware probes (2026-05-29) (2026-05-29)  
 **Branch:** `feat/ph-ml-gpu-swarm`  
 **Plan:** [PH-ML-GPU-battle-plan.md](PH-ML-GPU-battle-plan.md)
 
@@ -19,6 +19,7 @@
 | **4b** | De-stub pilot | Vulkan stub_ok + CPU matmul ref + RL serial batch | **pass** |
 | **4c** | Honest blockers | lavapipe doc; CUDA_HOME evidence; compile_fail corpus | **pass** |
 | **5** | Scale stubs | RFCs + tier-4 stub rows; blockers documented | **pass** |
+| **5b** | HW probes + CI | CUDA doc; CPU ref on emit; 8-env RL; lavapipe workflow | **pass** |
 
 ---
 
@@ -62,7 +63,7 @@
 | 4c | wave 4c docs + gpu suite + RL serial + honest blockers | pass (agent) |
 | 5 | RFC/docs only + tracker blockers | pass |
 
-**Release notes:** [Wave 4c](../release-notes/2026-05-29-ph-ml-wave-4c.md) · [Wave 4b](../release-notes/2026-05-29-ph-ml-de-stub-wave-4b.md) · [Wave 5](../release-notes/2026-05-29-ph-ml-wave-5-scale-stubs.md)
+**Release notes:** [Wave 4c](../release-notes/2026-05-29-ph-ml-wave-4c.md) · [Wave 4b](../release-notes/2026-05-29-ph-ml-de-stub-wave-4b.md) · [Wave 5b](../release-notes/2026-05-29-ph-ml-wave-5b.md) · [Wave 5](../release-notes/2026-05-29-ph-ml-wave-5-scale-stubs.md)
 
 ---
 

@@ -1515,3 +1515,17 @@ file = "gpu/gpu_decorator_type_alias_compile_fail.li"
 outcome = "compile_fail"
 expected_substr = "def"
 note = "WP-GPU-05 Partial: @gpu on type alias rejected"
+[[tests]]
+suite = "gpu"
+file = "gpu/gpu_decorator_extern_compile_fail.li"
+outcome = "compile_fail"
+expected_substr = "def"
+note = "WP-GPU-05 Partial: @gpu on extern def rejected"
+
+[[tests]]
+suite = "gpu"
+file = "gpu/gpu_decorator_import_compile_fail.li"
+outcome = "compile_fail"
+expected_substr = "def"
+note = "WP-GPU-05 Partial: @gpu on import rejected"
+

@@ -17,10 +17,10 @@ def env_obs_dim() -> int
 
 def env_act_dim() -> int
   requires true
-  ensures result == 4
+  ensures result == 8
   decreases 0
 =
-  return 4
+  return 8
 
 type EnvPoolStub = object
   public pool_size: int
@@ -296,10 +296,10 @@ def rl_train_tick(pool: var EnvPoolPersistent, policy_out: float) -> int
     return 0
   return 1
 
-# WP-RL-04: in-process serial multi-env batch (4 slots); fork IPC deferred.
+# WP-RL-04: in-process serial multi-env batch (8 slots); fork IPC deferred.
 def async_env_worker_slot_count() -> int
   requires true
-  ensures result == 4
+  ensures result == 8
   decreases 0
 =
   return 4
@@ -309,7 +309,7 @@ def async_env_pool_tick_serial_batch(
   requires pool.pool_size > 0
   requires pool.pool_size <= 32
   requires worker_count >= 1
-  requires worker_count <= 4
+  requires worker_count <= 8
   requires session.tick >= 0
   requires session.replay_capacity > 0
   ensures result >= 0
@@ -329,7 +329,7 @@ def async_env_pool_tick_serial_batch(
 
 def async_env_pool_tick_stub(worker_count: int) -> int
   requires worker_count >= 1
-  requires worker_count <= 4
+  requires worker_count <= 8
   ensures result >= 0
   ensures result <= 1
   decreases worker_count

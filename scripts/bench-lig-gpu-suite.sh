@@ -27,7 +27,7 @@ vulkan_lava = env_on("LIG_VULKAN_LAVA")
 
 report = {
     "status": "honest_stub",
-    "wave": "4c",
+    "wave": "5b",
     "gpu_timing_ns": "N/A",
     "cuda_timing_ns": "N/A",
     "hip_timing_ns": "N/A",
@@ -61,21 +61,35 @@ def nvidia_smi_visible() -> bool:
     except OSError:
         return False
 
+def nvcc_visible() -> bool:
+    import shutil
+    if shutil.which("nvcc") is not None:
+        return True
+    for root in (os.environ.get("CUDA_HOME"), os.environ.get("CUDA_PATH"), "/usr/local/cuda"):
+        if not root:
+            continue
+        candidate = Path(root) / "bin" / "nvcc"
+        if candidate.is_file() and os.access(candidate, os.X_OK):
+            return True
+    return False
+
 report["cuda_hardware"] = {
     "nvidia_smi": nvidia_smi_visible(),
     "cuda_home": env_on("CUDA_HOME") or bool(os.environ.get("CUDA_PATH")),
+    "nvcc": nvcc_visible(),
 }
-if cuda_emit and not report["cuda_hardware"]["cuda_home"]:
-    report["cuda_cpu_ref"] = "emit_on_no_cuda_home_ratio_may_be_zero"
-    if report["cuda_hardware"]["nvidia_smi"]:
-        report["wp_hw_09"] = "blocked_ptx_nvcc_cuda_home_unset"
-elif cuda_emit:
-    report["cuda_cpu_ref"] = "2x2_host_reference_when_cuda_home_set"
+if cuda_emit:
+    report["cuda_cpu_ref"] = "2x2_host_reference_when_emit_on"
+    if not report["cuda_hardware"]["nvcc"]:
+        report["wp_hw_09"] = "blocked_ptx_nvcc_toolkit_missing"
+        report["cuda_toolkit_doc"] = "docs/ci/cuda-toolkit-setup.md"
+    elif not report["cuda_hardware"]["cuda_home"]:
+        report["wp_hw_09"] = "blocked_ptx_cuda_home_unset_nvcc_present"
 
 out_path.write_text(json.dumps(report, indent=2) + "\n")
 tier3 = {
     "status": "ingest_stub",
-    "wave": "4c",
+    "wave": "5b",
     "family": "ml",
     "gpu_timing_ns": "N/A",
     "note": "Tier-3 dashboard ingest placeholder until real oracle CSV lands",

@@ -61,6 +61,10 @@ int32_t li_rt_lkir_spirv_lavapipe_probe(void) {
   if (force != NULL && force[0] != '\0' && strcmp(force, "0") != 0) {
     return 1;
   }
+  force = getenv("LIG_VULKAN_LAVAPIPE");
+  if (force != NULL && force[0] != '\0' && strcmp(force, "0") != 0) {
+    return 1;
+  }
   const char* icd = getenv("VK_ICD_FILENAMES");
   if (icd != NULL && icd[0] != '\0') {
     if (strstr(icd, "lavapipe") != NULL || strstr(icd, "Lavapipe") != NULL) {

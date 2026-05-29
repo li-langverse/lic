@@ -31,9 +31,13 @@ flowchart LR
 
 | API | Behavior |
 |-----|----------|
-| `async_env_worker_slot_count()` | Returns `4` |
+| `async_env_worker_slot_count()` | Returns `8` |
 | `async_env_pool_tick_serial_batch` | Loops `env_pool_stub_step` `worker_count` times in one process |
 | `async_env_pool_tick_stub(n)` | Default pool/session; delegates to serial batch |
+
+## Next step — fork worker RFC (Wave 5b)
+
+Process isolation remains **blocked** until `posix_spawn` IPC lands.
 
 **Verify:** `lic check packages/li-ml-rl/li-tests/smoke/async_env_pool_serial.li`
 

@@ -14,12 +14,14 @@ Headless SPIR-V module validation (`li_rt_lkir_spirv_validation_smoke`) is **don
 sudo apt-get install -y libvulkan1 mesa-vulkan-drivers
 export VK_ICD_FILENAMES=/usr/share/vulkan/icd.d/lvp_icd.x86_64.json
 export LIG_VULKAN_LAVA=1
+export LIG_VULKAN_LAVAPIPE=1  # Wave 5b alias
 ```
 
 ## Planned CI steps (`.github/workflows` follow-up)
 
 1. `lic check packages/lig/li-tests/smoke/kernel_launch_status.li`
 2. `LIG_VULKAN_LAVA=1 lic check packages/lig/li-tests/smoke/kernel_matmul_parity.li`
+export LIG_VULKAN_LAVAPIPE=1  # Wave 5b alias
 3. Optional: `vulkaninfo | head` artifact when ICD present
 4. **Do not** assert `gpu_timing_ns` — only launch status `0` (stub_ok)
 

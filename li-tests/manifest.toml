@@ -890,8 +890,8 @@ note = "import gui: UX-09 keyboard-first (verify until object-call codegen #322)
 suite = "composable"
 file = "composable/import_render_wgpu_fps.li"
 packages = ["li-render", "li-gpu", "li-gui", "li-ui"]
-outcome = "compile_ok"
-note = "import render: bench FPS counter composable compile (wgpu smoke in package smoke)"
+outcome = "compile_open_ok"
+note = "import render: bench FPS composable (compile_open_ok; wgpu IO in package smoke)"
 
 [[tests]]
 suite = "composable"

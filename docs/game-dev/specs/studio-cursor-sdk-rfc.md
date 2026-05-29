@@ -70,7 +70,7 @@ See [lillm-rfc.md](lillm-rfc.md).
 | WP-AG-04 | stub | apply_patch → `lic check --format=json` loop |
 | WP-AG-05 | stub | Live `chem_dft_run`, `am_export_print` dispatch |
 | WP-GD-07 | stub | `world.apply_patch` + `studio.gen` contracts |
-| PR #362 | DRAFT | Agentic run state FSM (`studio_ai_cancel_task`, task strip) |
+| PR #362 / #370 | **merged** | Agentic run state FSM in `li-studio`; `studio.ai` bridges via `studio_ai_agent_run_tick` |
 
 ## Li syntax
 
@@ -93,5 +93,5 @@ in `li-studio`. Contracts on every export.
 ## Open questions
 
 - [ ] Max patch retry count before surfacing blocked state
-- [ ] Merge PR #362 agentic FSM before WP-AG-04 loop
+- [x] Agentic FSM on `main` (#370); `studio_ai_mcp_dispatch` delegates to `li-studio` (wave 1)
 - [ ] In-process vs subprocess `lic check` for latency

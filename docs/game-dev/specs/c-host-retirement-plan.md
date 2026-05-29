@@ -1,6 +1,6 @@
 # C-host retirement plan (WP-UX-14b / WP-GD-05)
 
-**Status:** PLANNING — no C files deleted in Wave 0  
+**Status:** ACTIVE — Step 1 in progress (PR #356 merged to `main`; C hosts grandfathered)  
 **Policy:** [li-native-li-only.mdc](../../../.cursor/rules/li-native-li-only.mdc)
 
 ## Current C hosts (`deploy/studio-demo/native/`)
@@ -13,7 +13,7 @@
 | `studio_shell_input_probe.c` | Input probe for shell demos | `InputState` via Li runtime poll or `lig` window queue |
 | `capture.sh`, `input_capture.sh`, `native-sdl-build.sh` | Build/capture scripts | Li-native capture scripts only |
 
-**On `feat/studio-real-implementation` (PR #356, not on main yet):**
+**On `main` (merged via PR #356):**
 
 | File | Role | Replacement |
 |------|------|-------------|
@@ -44,7 +44,7 @@ New pixel paths: `packages/li-studio` + `packages/li-render` + `lig.present` onl
 
 | When | Milestone |
 |------|-----------|
-| Prerequisite | PR #356 merged to `main` |
+| Prerequisite | PR **#356** merged to `main` (**done**) |
 | +1 week | Step 1 readback path green on Linux + macOS CI |
 | +2 weeks | Steps 2–3 |
 | +1 week | Step 4 deletion + script updates |

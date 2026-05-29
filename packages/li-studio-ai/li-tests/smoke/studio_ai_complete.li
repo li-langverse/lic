@@ -1,0 +1,16 @@
+import studio.ai
+
+def main() -> int raises IO, Alloc
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  if li_studio_ai_version() != 1:
+    return 1
+  var text: str = studio_ai_complete("hi")
+  if text == "":
+    return 2
+  var noop: StudioAiPatchResult = studio_ai_apply_patch("", "world.li")
+  if noop.success != 1:
+    return 3
+  return 0

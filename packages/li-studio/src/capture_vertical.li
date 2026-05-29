@@ -13,6 +13,6 @@ def main() -> int raises IO
   var width: int = 1920
   var height: int = 1080
   var frame_id: int = 0
-  if studio_vertical_capture_ppm(profile_id, frame_id, path, width, height) != 1:
+  if studio_vertical_capture_ppm_auto(profile_id, frame_id, path, width, height) != 1:
     return 2
   return 0

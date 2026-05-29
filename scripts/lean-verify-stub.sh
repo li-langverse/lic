@@ -15,6 +15,7 @@ if [[ -x "$(command -v lake)" && -f "$SEM/lakefile.lean" ]]; then
   (cd "$SEM" && lake build) || exit $?
   if [[ -f "$ROOT/build/generated/AutoVC.lean" ]]; then
     echo "lean: typechecking generated AutoVC"
+    rm -f "$SEM/.lake/build/lib/lean/AutoVC.olean" "$SEM/.lake/build/lib/lean/AutoVC.ilean" 2>/dev/null || true
     (cd "$SEM" && lake build AutoVC Discharge) || exit $?
   fi
   if [[ "$CHECK_OPEN" == 1 && -f "$ROOT/build/generated/AutoVC.lean" ]]; then

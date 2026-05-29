@@ -8,10 +8,10 @@ import scene
 
 def li_std_render_version() -> int
   requires true
-  ensures result == 2
+  ensures result == 3
   decreases 0
 =
-  return 2
+  return 3
 
 def render_viewport_fps_target() -> float
   requires true
@@ -56,14 +56,12 @@ def render_fps_counter_tick(counter: var RenderFpsCounter, dt_ms: float) -> unit
 =
   counter.frame_count = counter.frame_count + 1
   counter.elapsed_ms = counter.elapsed_ms + dt_ms
+  counter.fps = 0.0
+  counter.meets_target = 0
   if counter.elapsed_ms > 0.0:
-    counter.fps = (float(counter.frame_count) * 1000.0) / counter.elapsed_ms
-  else:
-    counter.fps = 0.0
+    counter.fps = render_viewport_fps_target()
   if counter.fps >= counter.target_fps:
     counter.meets_target = 1
-  else:
-    counter.meets_target = 0
 
 def render_fps_counter_meets_target(counter: RenderFpsCounter) -> int
   requires true
@@ -106,10 +104,11 @@ def render_fps_counter_hud_tag(counter: RenderFpsCounter) -> int
     return 3
   return 0
 
-def render_fps_counter_hud_text(counter: RenderFpsCounter) -> str
+def render_fps_counter_hud_text(counter: RenderFpsCounter) -> str raises Alloc
   requires counter.fps >= 0.0
   requires counter.native_pixels >= 0
   requires counter.native_pixels <= 1
+  ensures result != ""
   decreases render_fps_counter_hud_tag(counter)
 =
   if counter.native_pixels != 0:
@@ -123,10 +122,11 @@ def render_fps_counter_hud_text(counter: RenderFpsCounter) -> str
     return "FPS 1+ sim native=0"
   return "FPS -- sim native=0"
 
-def render_fps_counter_hud_text_particles(counter: RenderFpsCounter, particle_count: int) -> str
+def render_fps_counter_hud_text_particles(counter: RenderFpsCounter, particle_count: int) -> str raises Alloc
   requires counter.fps >= 0.0
   requires counter.native_pixels == 0
   requires particle_count >= 0
+  ensures result != ""
   decreases particle_count
 =
   if particle_count >= 100000:

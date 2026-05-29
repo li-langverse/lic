@@ -10,10 +10,10 @@ import argparse
 import csv
 import os
 import platform
-import statistics
 import subprocess
 import sys
 import time
+from concurrent.futures import ProcessPoolExecutor, as_completed
 from pathlib import Path
 
 REPO = Path(__file__).resolve().parents[2]
@@ -27,10 +27,19 @@ CSV_HEADER = [
     "threads",
     "metric",
     "value",
+    "stddev",
+    "sample_runs",
     "unit",
     "git_sha",
     "cpu_model",
     "flags",
+    "os",
+    "passed",
+    "oracle_kind",
+    "verify_abs_err",
+    "verify_rel_err",
+    "verify_ulps",
+    "verify_within_1ulp",
 ]
 
 SECURITY_HEADER = ["lang", "test", "metric", "value", "threshold", "passed", "reference"]
@@ -43,10 +52,52 @@ COMPILE_FIXTURES: tuple[tuple[str, Path], ...] = (
     ("lic_check_contracts", REPO / "li-tests/contracts_verify/discharge_trivial.li"),
 )
 
+# Outcomes for tier-3 compile fixtures (must match li-tests/manifest.toml).
+_FIXTURE_OUTCOMES: dict[str, str] = {
+    "async/await_codegen_ok.li": "compile_open_ok",
+    "effects/net_ok.li": "compile_ok",
+    "effects/async_ok.li": "compile_open_ok",
+    "effects/alloc_ok.li": "verify_ok",
+    "contracts_verify/discharge_trivial.li": "prove_lean_ok",
+}
+
+
+def manifest_outcome_for(src: Path) -> str:
+    """Map fixture path to manifest outcome (matches run_all.sh gates)."""
+    try:
+        rel = src.relative_to(REPO / "li-tests").as_posix()
+    except ValueError:
+        # tier3_ecosystem benches live under benchmarks/, not li-tests/
+        return "compile_open_ok"
+    return _FIXTURE_OUTCOMES.get(rel, "compile_ok")
+
+
+def lic_build_command(src: Path) -> tuple[list[str], str]:
+    """Build argv + CSV flags label aligned with li-tests/manifest.toml outcomes."""
+    outcome = manifest_outcome_for(src)
+    cmd = [str(LIC), "build", str(src), "-o", os.devnull, "--release"]
+    flags = "lic build --release"
+    if outcome == "compile_open_ok":
+        cmd.append("--allow-open-vc")
+        flags += " --allow-open-vc"
+    elif outcome in ("verify_open_ok",):
+        cmd.extend(["--allow-open-vc", "--no-lean-verify"])
+        flags += " --allow-open-vc --no-lean-verify"
+    return cmd, flags
+
 SECURITY_SCRIPTS: tuple[tuple[str, Path], ...] = (
     ("security_corpus", REPO / "li-tests/run_security.sh"),
     ("security_cve_patterns", REPO / "scripts/check-cve-coverage.sh"),
     ("security_webserver_registry", REPO / "scripts/check-webserver-bugs.sh"),
+)
+
+# WP0-E: future dashboard rows for li-tests/security/stdlib_abuse (not timed yet).
+# Wire scripts in bench_security() once stdlib runtime + run_stdlib_abuse.sh exist.
+STDLIB_SECURITY_BENCH_IDS: tuple[str, ...] = (
+    "security_stdlib_hash_flood",
+    "security_stdlib_array_oob",
+    "security_stdlib_dyn_index",
+    "security_stdlib_abuse_corpus",
 )
 
 
@@ -69,13 +120,19 @@ def cpu_model() -> str:
     return platform.processor() or "unknown"
 
 
-def time_command(cmd: list[str], *, runs: int, cwd: Path | None = None) -> float:
-    samples: list[float] = []
-    for _ in range(max(1, runs)):
-        t0 = time.perf_counter()
-        subprocess.run(cmd, cwd=cwd or REPO, check=True, capture_output=True)
-        samples.append(time.perf_counter() - t0)
-    return statistics.median(samples)
+_HARNESS = Path(__file__).resolve().parent
+if str(_HARNESS) not in sys.path:
+    sys.path.insert(0, str(_HARNESS))
+from timing_stats import (
+    TimingStats,
+    default_bench_runs,
+    host_os_tag,
+    time_command as _time_command_stats,
+)
+
+
+def time_command(cmd: list[str], *, runs: int, cwd: Path | None = None) -> TimingStats:
+    return _time_command_stats(cmd, cwd=cwd or REPO, runs=runs)
 
 
 def row_for(
@@ -89,6 +146,8 @@ def row_for(
     cpu: str,
     flags: str,
     variant: str = "release",
+    stddev: float | None = None,
+    sample_runs: int | None = None,
 ) -> dict[str, object]:
     return {
         "benchmark": benchmark,
@@ -97,11 +156,25 @@ def row_for(
         "threads": 1,
         "metric": metric,
         "value": round(value, 4),
+        "stddev": round(stddev, 6) if stddev is not None else "",
+        "sample_runs": sample_runs if sample_runs is not None else "",
         "unit": unit,
         "git_sha": sha,
         "cpu_model": cpu,
         "flags": flags,
+        "os": host_os_tag(),
     }
+
+
+def _timing_fields(timing: TimingStats) -> dict[str, object]:
+    return {"stddev": timing.stddev, "sample_runs": timing.sample_runs}
+
+
+def _print_timing(label: str, timing: TimingStats) -> None:
+    print(
+        f"{label} wall_time={timing.mean:.4f}s ± {timing.stddev:.4f}s "
+        f"(n={timing.sample_runs})"
+    )
 
 
 def read_csv(path: Path) -> list[dict[str, str]]:
@@ -126,25 +199,47 @@ def merge_latest(existing: list[dict[str, str]], new_rows: list[dict[str, object
     return kept + new_rows
 
 
-def bench_compile(*, runs: int, sha: str, cpu: str) -> list[dict[str, object]]:
+def _bench_one_compile(payload: tuple[str, str, int, str, str]) -> dict[str, object]:
+    bench_id, src_s, runs, sha, cpu = payload
+    src = Path(src_s)
+    cmd, flags = lic_build_command(src)
+    timing = _time_command_stats(cmd, cwd=REPO, runs=runs)
+    return row_for(
+        benchmark=bench_id,
+        lang="lic",
+        value=timing.mean,
+        metric="wall_time",
+        unit="s",
+        sha=sha,
+        cpu=cpu,
+        flags=flags,
+        stddev=timing.stddev,
+        sample_runs=timing.sample_runs,
+    )
+
+
+def bench_compile(*, runs: int, sha: str, cpu: str, jobs: int = 1) -> list[dict[str, object]]:
     if not LIC.is_file():
         raise RuntimeError(f"lic missing at {LIC} — run ./scripts/build.sh")
+    tasks = [(bid, str(src), runs, sha, cpu) for bid, src in COMPILE_FIXTURES]
     rows: list[dict[str, object]] = []
-    for bench_id, src in COMPILE_FIXTURES:
-        wall = time_command([str(LIC), "build", str(src), "-o", os.devnull, "--release"], runs=runs)
-        rows.append(
-            row_for(
-                benchmark=bench_id,
-                lang="lic",
-                value=wall,
-                metric="wall_time",
-                unit="s",
-                sha=sha,
-                cpu=cpu,
-                flags="lic build --release",
-            )
-        )
-        print(f"{bench_id} lic build wall_time={wall:.4f}s")
+    if jobs <= 1:
+        for task in tasks:
+            row = _bench_one_compile(task)
+            rows.append(row)
+            _print_timing(f"{row['benchmark']} lic build", TimingStats(
+                mean=float(row["value"]), stddev=float(row["stddev"] or 0), sample_runs=int(row["sample_runs"] or 1)
+            ))
+        return rows
+    print(f"bench_ecosystem: parallel compile jobs={jobs}", flush=True)
+    with ProcessPoolExecutor(max_workers=jobs) as pool:
+        futures = [pool.submit(_bench_one_compile, t) for t in tasks]
+        for fut in as_completed(futures):
+            row = fut.result()
+            rows.append(row)
+            _print_timing(f"{row['benchmark']} lic build", TimingStats(
+                mean=float(row["value"]), stddev=float(row["stddev"] or 0), sample_runs=int(row["sample_runs"] or 1)
+            ))
     return rows
 
 
@@ -155,39 +250,43 @@ def bench_async_runtime(*, runs: int, sha: str, cpu: str) -> list[dict[str, obje
         return []
     bin_path = REPO / "build/bench/async_await_chain_li"
     bin_path.parent.mkdir(parents=True, exist_ok=True)
-    subprocess.check_call(
-        [str(LIC), "build", str(li_main), "-o", str(bin_path), "--release"],
-        cwd=REPO,
-    )
-    wall = time_command([str(bin_path)], runs=runs)
-    print(f"async_await_chain li wall_time={wall:.4f}s")
+    build_cmd, _ = lic_build_command(li_main)
+    for i, arg in enumerate(build_cmd):
+        if arg == os.devnull:
+            build_cmd[i] = str(bin_path)
+            break
+    subprocess.check_call(build_cmd, cwd=REPO)
+    timing = time_command([str(bin_path)], runs=runs)
+    _print_timing("async_await_chain li", timing)
     return [
         row_for(
             benchmark="async_await_chain",
             lang="li",
-            value=wall,
+            value=timing.mean,
             metric="wall_time",
             unit="s",
             sha=sha,
             cpu=cpu,
             flags="async await chain d10 (epoll/kqueue reactor)",
+            **_timing_fields(timing),
         )
     ]
 
 
 def bench_li_tests_smoke(*, sha: str, cpu: str) -> list[dict[str, object]]:
-    wall = time_command(["./run_all.sh"], runs=1, cwd=REPO / "li-tests")
-    print(f"li_tests_full harness wall_time={wall:.4f}s")
+    timing = time_command(["./run_all.sh"], runs=1, cwd=REPO / "li-tests")
+    _print_timing("li_tests_full harness", timing)
     return [
         row_for(
             benchmark="li_tests_full",
             lang="harness",
-            value=wall,
+            value=timing.mean,
             metric="wall_time",
             unit="s",
             sha=sha,
             cpu=cpu,
             flags="li-tests/run_all.sh",
+            **_timing_fields(timing),
         )
     ]
 
@@ -199,18 +298,19 @@ def bench_security(*, runs: int, sha: str, cpu: str) -> tuple[list[dict[str, obj
     for test_id, script in SECURITY_SCRIPTS:
         if not script.is_file():
             continue
-        wall = time_command(["bash", str(script)], runs=runs)
+        timing = time_command(["bash", str(script)], runs=runs)
         perf_rows.append(
             row_for(
                 benchmark=f"security_{test_id}",
                 lang="harness",
-                value=wall,
+                value=timing.mean,
                 metric="wall_time",
                 unit="s",
                 sha=sha,
                 cpu=cpu,
                 flags=str(script.relative_to(REPO)),
                 variant="ci",
+                **_timing_fields(timing),
             )
         )
         sec_rows.append(
@@ -218,28 +318,29 @@ def bench_security(*, runs: int, sha: str, cpu: str) -> tuple[list[dict[str, obj
                 "lang": "harness",
                 "test": test_id,
                 "metric": "wall_time",
-                "value": str(round(wall, 4)),
+                "value": str(round(timing.mean, 4)),
                 "threshold": "0",
                 "passed": "true",
                 "reference": "pass",
             }
         )
-        print(f"security_{test_id} wall_time={wall:.4f}s")
+        _print_timing(f"security_{test_id}", timing)
     # Full ci-security aggregate
     sec_script = REPO / "scripts/ci-security.sh"
     if sec_script.is_file():
-        wall = time_command(["bash", str(sec_script)], runs=1)
+        timing = time_command(["bash", str(sec_script)], runs=1)
         perf_rows.append(
             row_for(
                 benchmark="security_gate_full",
                 lang="harness",
-                value=wall,
+                value=timing.mean,
                 metric="wall_time",
                 unit="s",
                 sha=sha,
                 cpu=cpu,
                 flags="scripts/ci-security.sh",
                 variant="ci",
+                **_timing_fields(timing),
             )
         )
         sec_rows.append(
@@ -247,7 +348,7 @@ def bench_security(*, runs: int, sha: str, cpu: str) -> tuple[list[dict[str, obj
                 "lang": "harness",
                 "test": "ci_security_full",
                 "metric": "wall_time",
-                "value": str(round(wall, 4)),
+                "value": str(round(timing.mean, 4)),
                 "threshold": "0",
                 "passed": "true",
                 "reference": "pass",
@@ -256,9 +357,17 @@ def bench_security(*, runs: int, sha: str, cpu: str) -> tuple[list[dict[str, obj
     return perf_rows, sec_rows
 
 
+def _default_jobs() -> int:
+    raw = os.environ.get("BENCH_JOBS", "").strip()
+    if raw:
+        return max(1, int(raw))
+    return max(1, os.cpu_count() or 1)
+
+
 def main() -> int:
     parser = argparse.ArgumentParser(description="Tier-3 ecosystem benchmarks for dashboard ingest")
-    parser.add_argument("--runs", type=int, default=3)
+    parser.add_argument("--runs", type=int, default=default_bench_runs())
+    parser.add_argument("--jobs", type=int, default=_default_jobs())
     parser.add_argument("--latest", type=Path, default=RESULTS / "latest.csv")
     parser.add_argument("--security", type=Path, default=RESULTS / "security.csv")
     parser.add_argument("--skip-runtime", action="store_true")
@@ -278,7 +387,7 @@ def main() -> int:
     cpu = cpu_model()
     new_rows: list[dict[str, object]] = []
 
-    new_rows.extend(bench_compile(runs=args.runs, sha=sha, cpu=cpu))
+    new_rows.extend(bench_compile(runs=args.runs, sha=sha, cpu=cpu, jobs=args.jobs))
     if not args.skip_runtime:
         new_rows.extend(bench_async_runtime(runs=args.runs, sha=sha, cpu=cpu))
     if args.with_li_tests:

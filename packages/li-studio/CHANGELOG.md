@@ -4,6 +4,13 @@
 
 ### Added
 
+- **PH-AGENT-2 Studio agent run state:** `StudioAgentRun`, `studio_agent_run_start`, `studio_agent_run_next`, `studio_agent_run_complete`, and `studio_agent_tool_request_for_run` model the in-process world-patch → `lic_check` → `lic_build` tool sequence with `used_html_mock == 0`; smokes `studio_agentic_run.li` and root `import_studio_agentic_run.li`; `li_std_studio_version` → 11.
+- **PH-SIM scientific viewport sync** — `studio_sim_scientific_step_hook`, `studio_sim_scientific_tier_for_tick`; `sim_scientific` profile runs `sim_scientific_tick_at` + `scene_bench_particle_tier_simulate` and syncs tier/draw_points into viewport display; smoke `studio_sim_scientific_step_hook.li`; `li_std_studio_version` → 10.
+- **PH-SIM SIM-3 studio RL step** — `studio_sim_rl_step_hook`; `sim_rl` in `studio_sim_step_hook` uses `sim_rl_session_env_pool_step` on live session; smokes `studio_sim_rl_step_hook.li`, extended `studio_sim_step_by_profile.li` — [2026-05-27-studio-sim-rl-env-pool-step.md](../../docs/release-notes/2026-05-27-studio-sim-rl-env-pool-step.md).
+- **PH-GAME-01 session game physics** — `studio_game_step_hook(sim_out, dt)` + `game_physics_step_hook`; smokes assert `game_pz` / `game_physics_steps` — [2026-05-27-studio-game-session-physics.md](../../docs/release-notes/2026-05-27-studio-game-session-physics.md).
+
+- **PH-GD-2 game checkpoint roundtrip** — `studio_game_world_checkpoint_from_session`, `studio_game_world_checkpoint_stub`, `studio_game_world_checkpoint_roundtrip` (`li-world` buffer seam); smoke `studio_game_step_hook.li` — [2026-05-27-vertical-game-checkpoint-roundtrip.md](docs/release-notes/2026-05-27-vertical-game-checkpoint-roundtrip.md).
+
 - **Vertical gap #4/#9 sim step physics** — `sim_scientific_tick_stub`, `studio_game_step_hook`, `studio_md_particle_tier_select_ok`, smokes `studio_sim_step_by_profile.li` / `import_studio_sim_step_by_profile.li` — [2026-05-25-vertical-gap-sim-step-physics.md](docs/release-notes/2026-05-25-vertical-gap-sim-step-physics.md).
 
 
@@ -13,7 +20,9 @@
 
 ### Added
 
+- **Demo loop tick** — `STUDIO_DEMO_LOOP_TICK` / `li_rt_studio_demo_loop_tick_from_env`; interactive `studio-shell-demo-interactive.sh` cycles patterns 0→1→2; smoke `studio_shell_demo_pattern_tick.li`.
 - **PH-HW WP3 host present** — `studio_shell_input_from_host`, `studio_shell_host_frame`, `studio_shell_host_present_loop_tick`; `li_std_studio_version` → 6; smoke `studio_host_present.li`.
+- **`li-studio-demo` present loop** — `studio_shell_demo_present_loop`, `STUDIO_DEMO_FRAMES`, host input on `studio_vertical_demo_frame`; `scripts/studio-shell-demo-present-loop.sh`; smoke `studio_shell_demo_present_loop.li`.
 - **PH-SIM SIM-1** — `studio_sim_step_hook` (profile sync + `sim_step` tick stub).
 - **PH-SIM SIM-0** — `studio_apply_profile_to_sim` (read-only `SimSessionStub`); `li-sim` path dependency; robotics profile id `4`.
 

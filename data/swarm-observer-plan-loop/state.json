@@ -1,12 +1,19 @@
 {
   "completed_ids": [
-    "orch-r0-ingest-snapshot"
+    "orch-r0-ingest-snapshot",
+    "orch-r1-plan-debt-sync"
   ],
-  "iterations": 1,
+  "iterations": 2,
   "history": [
     {
       "at": "2026-05-25T19:09:59.208177+00:00",
       "todo_id": "orch-r0-ingest-snapshot",
+      "agent_exit": 0,
+      "gates_ok": true
+    },
+    {
+      "at": "2026-05-25T19:34:28.890041+00:00",
+      "todo_id": "orch-r1-plan-debt-sync",
       "agent_exit": 0,
       "gates_ok": true
     }

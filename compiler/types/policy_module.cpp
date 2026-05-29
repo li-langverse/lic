@@ -335,6 +335,17 @@ void check_proc_decorators(const std::vector<Decorator>& decos, const std::strin
   }
 }
 
+bool parallel_for_disjoint_witness(const Stmt& stmt,
+                                   const std::vector<Decorator>* proc_decorators) {
+  if (stmt.kind != Stmt::Kind::ParallelFor) {
+    return false;
+  }
+  const bool proc_disjoint =
+      proc_decorators != nullptr && decorator_parallel_has_disjoint(*proc_decorators);
+  return contract_has_disjoint(stmt.par_contracts) ||
+         decorator_parallel_has_disjoint(stmt.decorators) || proc_disjoint;
+}
+
 void check_module_policies(const Module& module, const std::string& file,
                            DiagnosticBag& diags) {
   for (const auto& proc : module.procs) {

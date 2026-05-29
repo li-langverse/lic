@@ -1,54 +1,84 @@
 # Swarm ops status (WP-0 baseline)
 
-Updated: 2026-05-25 (America/New_York)
+Updated: 2026-05-26 (America/New_York)
 
 ## Linger
 
 - `loginctl enable-linger s4il0r` — **ok** (`Linger=yes`)
 - User systemd units survive logout/reboot when enabled.
 
-## Installed plan-loop units (this session)
+## Agents dashboard / async swarm (WP-AGT-01)
 
-| Unit | ID | State | Log / data |
-|------|-----|-------|------------|
-| `li-security-research-plan-loop.service` | security-research | enabled, **active (running)** | `lic-worktrees/security-research/data/security-research-loop/` |
-| `li-swarm-observer-plan-loop.service` | swarm-observer | enabled, **active (running)** | `lic/data/swarm-observer-plan-loop/` |
+| Check | Result |
+|-------|--------|
+| `li-agents-dashboard.service` | **active** |
+| `li-agents-async-swarm.service` | **active** |
+| `curl http://127.0.0.1:9477/api/runtime` | **ok** — `async_swarm_running: true`, store `supabase` |
+| `NODE_BIN` (systemd) | `/home/s4il0r/.local/node/bin/node` (**v24.11.0**) |
+| `LI_CURSOR_ENV_FILE` | `/home/s4il0r/Documents/Cursor/.env` |
+| `DISABLE_AUTOSTART` | **absent** (autostart on) |
+| `li-agents-health-report.timer` | **active** (20min) |
 
-Install command:
+Install / refresh:
 
 ```bash
-cd lic
-LI_CURSOR_ENV_FILE=/home/s4il0r/Documents/Cursor/.env \
-  ./scripts/install-goal-plan-loop-systemd.sh security-research swarm-observer
+cd li-langverse/li-cursor-agents
+LI_CURSOR_ENV_FILE=/home/s4il0r/Documents/Cursor/.env npm run db:ensure
+LI_CURSOR_ENV_FILE=/home/s4il0r/Documents/Cursor/.env ./scripts/install-agents-swarm-systemd.sh
+rm -f data/control-plane/DISABLE_AUTOSTART
+systemctl --user restart li-agents-dashboard li-agents-async-swarm
 ```
 
-Note: first combined install printed only security-research; `swarm-observer` was installed in a second invocation (both now enabled).
+## Research session repair (WP-AGT-02)
 
-## Other enabled plan loops (pre-existing)
+```bash
+npm run build
+/home/s4il0r/.local/node/bin/node dist/cli/repair-research-sessions.js --apply
+./scripts/sweep-hung-agents.sh --apply
+```
 
-- `li-compiler-studio-plan-loop.service`
-- `li-httpd-plan-loop.service`
-- `li-sim-algo-plan-loop.service`
-- `li-sim-chem-research-plan-loop.service`
-- `li-sim-md-research-plan-loop.service`
-- `li-studio-ui-ux-plan-loop.service`
+2026-05-26 apply: no zombie sessions; disk state — `numerics_researcher` in_progress `chem_sim_algorithms`, `goal_researcher` / `proof_gap_researcher` cycle_complete, `stdlib_researcher` in_progress.
 
-## Dashboard / async swarm
+## GitHub / env (WP-INF-01)
 
-- `curl http://127.0.0.1:9477/api/runtime` — **connection refused** (dashboard not listening on 9477).
-- `async_swarm_running` — **unknown** until dashboard/async-swarm systemd is up (WP-1).
+- `push_ready=yes` (GH_TOKEN set in workspace `.env`; value not logged)
+- `scripts/swarm-env-preflight.sh` — fail-fast boolean check in systemd wrapper logs
+- Health report section: `GH_TOKEN present | yes` in `logs/swarm-health-reports/latest.md`
+
+## Lanes snapshot
+
+`li-cursor-agents/data/lanes/state.json`:
+
+- `research_lane_enabled`: true
+- `last_research_tick_at`: **2026-05-19T19:57:15.058Z** (stale — watch after async-swarm uptime)
+- `last_maintenance_tick_at`: 2026-05-26T18:56:11.091Z (fresh)
+
+## Installed plan-loop units
+
+| Unit | ID | Notes |
+|------|-----|-------|
+| `li-security-research-plan-loop.service` | security-research | enabled |
+| `li-swarm-observer-plan-loop.service` | swarm-observer | enabled |
+| `li-compiler-studio-plan-loop.service` | compiler-studio | enabled |
+| `li-httpd-plan-loop.service` | httpd | enabled |
+| `li-sim-algo-plan-loop.service` | sim-algo | enabled |
+| `li-sim-chem-research-plan-loop.service` | sim-chem-research | enabled |
+| `li-sim-md-research-plan-loop.service` | sim-md-research | enabled |
+| `li-studio-ui-ux-plan-loop.service` | studio-ui-ux | enabled |
+
+Goal-plan wrappers source `LI_CURSOR_ENV_FILE` and mirror `GH_TOKEN` → `GITHUB_TOKEN`.
 
 ## SDK slot locks
 
 - Path: `li-cursor-agents/data/control-plane/sdk-slots/`
-- `sdk-session.lock` — held by PID **315285** (`code_implementer`, compiler-studio); process **alive** → **not reclaimed**.
+- Sweep 2026-05-26: **0** reclaimed (no dead-PID locks)
 
 ## Blockers / follow-ups
 
-1. Start agents dashboard + async swarm (WP-1: `install-agents-swarm-systemd.sh`) to restore `:9477/api/runtime`.
-2. WP-1 watchdog should monitor `li-*-plan-loop` health.
-3. Multiple concurrent `run-agent` processes; SDK single-slot lock is expected contention until WP-2 policy lands.
+1. **Research lane tick stale** — `last_research_tick_at` predates recovery; confirm new ticks in dashboard / `state.json` over next async-swarm cycles.
+2. Health report still notes no successful researcher run in 24h — expect improvement once research lane rotates with SDK slots free.
+3. Unrelated dirty tree in `li-cursor-agents` (lidb stub, handoffs) — not part of this recovery commit.
 
 ## Env
 
-- `LI_CURSOR_ENV_FILE=/home/s4il0r/Documents/Cursor/.env` used for installs.
+- `LI_CURSOR_ENV_FILE=/home/s4il0r/Documents/Cursor/.env` for all agent systemd paths and install scripts.

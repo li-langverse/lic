@@ -1,5 +1,5 @@
 
-# li-world — PH-GD-2 text save/load scaffold (no scene graph / studio integration yet).
+# li-world — PH-GD-2 text save/load (buffer + single-line world.li file I/O).
 # `WorldSnapshot.name` is a stub name-slot id (0=default, 1=arena); wire line uses text tokens.
 
 type WorldSnapshot = object
@@ -56,6 +56,35 @@ extern proc li_rt_world_roundtrip_fields(name_slot: int, tick: int, entity_count
   ensures 0 <= result
   ensures result <= 1
   decreases tick
+
+extern proc li_rt_world_write_path(path: str, name_slot: int, tick: int, entity_count: int) -> int
+  requires name_slot >= 0
+  requires name_slot <= 1
+  requires tick >= 0
+  requires entity_count >= 0
+  ensures 0 <= result
+  ensures result <= 1
+  decreases tick
+
+extern proc li_rt_world_read_path(path: str) -> int
+  requires true
+  ensures 0 <= result
+  ensures result <= 1
+  decreases 0
+
+extern proc li_rt_world_file_roundtrip_path(path: str, name_slot: int, tick: int, entity_count: int) -> int
+  requires name_slot >= 0
+  requires name_slot <= 1
+  requires tick >= 0
+  requires entity_count >= 0
+  ensures 0 <= result
+  ensures result <= 1
+  decreases tick
+
+extern proc li_rt_world_checkpoint_path_default() -> str
+  requires true
+  ensures result != ""
+  decreases 0
 
 def world_format_version() raises IO -> int
   requires true
@@ -164,6 +193,77 @@ def world_load_from_buffer(buf: str) raises Alloc, IO -> WorldSnapshot
   decreases 0
 =
   return world_parse_line(buf)
+
+def world_checkpoint_path_default() raises Alloc, IO -> str
+  requires true
+  ensures result != ""
+  decreases 0
+=
+  return li_rt_world_checkpoint_path_default()
+
+def world_save_to_path_fields(name_slot: int, tick: int, entity_count: int, path: str) raises Alloc, IO -> int
+  requires 0 <= name_slot
+  requires name_slot <= 1
+  requires tick >= 0
+  requires entity_count >= 0
+  ensures 0 <= result
+  ensures result <= 1
+  decreases tick
+=
+  return li_rt_world_write_path(path, name_slot, tick, entity_count)
+
+def world_save_to_path(snapshot: WorldSnapshot, path: str) raises Alloc, IO -> int
+  requires world_snapshot_valid(snapshot) == 1
+  ensures 0 <= result
+  ensures result <= 1
+  decreases snapshot.tick
+=
+  return world_save_to_path_fields(snapshot.name, snapshot.tick, snapshot.entity_count, path)
+
+def world_load_from_path(path: str) raises Alloc, IO -> WorldSnapshot
+  requires true
+  ensures world_snapshot_valid(result) == 1
+  decreases 0
+=
+  var ok: int = li_rt_world_read_path(path)
+  var s: WorldSnapshot
+  if ok != 1:
+    return world_snapshot_default()
+  s.name = li_rt_world_parsed_name_slot()
+  s.tick = li_rt_world_parsed_tick()
+  s.entity_count = li_rt_world_parsed_entity_count()
+  return s
+
+def world_path_matches_fields(path: str, name_slot: int, tick: int, entity_count: int) raises Alloc, IO -> int
+  requires 0 <= name_slot
+  requires name_slot <= 1
+  requires tick >= 0
+  requires entity_count >= 0
+  ensures 0 <= result
+  ensures result <= 1
+  decreases tick
+=
+  var loaded: WorldSnapshot = world_load_from_path(path)
+  return world_snapshot_fields_match_fields(name_slot, tick, entity_count, loaded.name, loaded.tick, loaded.entity_count)
+
+def world_file_roundtrip_ok_fields(name_slot: int, tick: int, entity_count: int, path: str) raises Alloc, IO -> int
+  requires 0 <= name_slot
+  requires name_slot <= 1
+  requires tick >= 0
+  requires entity_count >= 0
+  ensures 0 <= result
+  ensures result <= 1
+  decreases tick
+=
+  return li_rt_world_file_roundtrip_path(path, name_slot, tick, entity_count)
+
+def world_file_roundtrip_ok(snapshot: WorldSnapshot, path: str) raises Alloc, IO -> int
+  requires world_snapshot_valid(snapshot) == 1
+  ensures 0 <= result
+  ensures result <= 1
+  decreases snapshot.tick
+=
+  return world_file_roundtrip_ok_fields(snapshot.name, snapshot.tick, snapshot.entity_count, path)
 
 def world_snapshot_fields_match_fields(an: int, at: int, ae: int, bn: int, bt: int, be: int) raises IO -> int
   requires true

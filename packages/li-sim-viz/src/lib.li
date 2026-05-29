@@ -1,0 +1,292 @@
+
+# PH-SCI / wave-d-25 — scientific viz pipeline source/display stub (scientific_viz vertical; workload_class=stub).
+# Pipeline browser + Properties/Display/View sections (ParaView UX-04/06 panel model) — NOT ParaView/VTK render parity.
+
+type VizPipelineState = object
+  public profile_id: int
+  public source_count: int
+  public active_source_id: int
+  public inspector_section: int
+  public display_rep: int
+  public pending_apply: int
+
+def li_std_sim_viz_version() -> int
+  requires true
+  ensures result == 1
+  decreases 0
+=
+  return 1
+
+def sim_viz_workload_class_stub() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0
+
+def viz_profile_sim_scientific() -> int
+  requires true
+  ensures result == 1
+  decreases 0
+=
+  return 1
+
+def viz_source_kind_sphere() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0
+
+def viz_source_kind_box() -> int
+  requires true
+  ensures result == 1
+  decreases 0
+=
+  return 1
+
+def viz_source_kind_reader() -> int
+  requires true
+  ensures result == 2
+  decreases 0
+=
+  return 2
+
+def viz_display_rep_surface() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0
+
+def viz_display_rep_wireframe() -> int
+  requires true
+  ensures result == 1
+  decreases 0
+=
+  return 1
+
+def viz_display_rep_points() -> int
+  requires true
+  ensures result == 2
+  decreases 0
+=
+  return 2
+
+# Aligned with `ui_inspector_section_*` / `gui_inspector_section_*` (Properties / Display / View).
+def viz_inspector_section_properties() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0
+
+def viz_inspector_section_display() -> int
+  requires true
+  ensures result == 1
+  decreases 0
+=
+  return 1
+
+def viz_inspector_section_view() -> int
+  requires true
+  ensures result == 2
+  decreases 0
+=
+  return 2
+
+def viz_apply_mode_deferred() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0
+
+def viz_apply_mode_instant() -> int
+  requires true
+  ensures result == 1
+  decreases 0
+=
+  return 1
+
+def viz_event_add_source() -> int
+  requires true
+  ensures result == 1
+  decreases 0
+=
+  return 1
+
+def viz_event_select_source() -> int
+  requires true
+  ensures result == 2
+  decreases 0
+=
+  return 2
+
+def viz_event_set_section() -> int
+  requires true
+  ensures result == 3
+  decreases 0
+=
+  return 3
+
+def viz_event_set_display_rep() -> int
+  requires true
+  ensures result == 4
+  decreases 0
+=
+  return 4
+
+def viz_event_apply() -> int
+  requires true
+  ensures result == 5
+  decreases 0
+=
+  return 5
+
+def viz_pipeline_inspector_apply_mode(section_id: int) -> int
+  requires section_id >= viz_inspector_section_properties()
+  requires section_id <= viz_inspector_section_view()
+  ensures result >= viz_apply_mode_deferred()
+  ensures result <= viz_apply_mode_instant()
+  decreases 0
+=
+  if section_id == viz_inspector_section_view():
+    return viz_apply_mode_instant()
+  return viz_apply_mode_deferred()
+
+def viz_pipeline_init() -> VizPipelineState
+  requires true
+  ensures result.profile_id == viz_profile_sim_scientific()
+  ensures result.source_count == 0
+  ensures result.active_source_id == 0
+  ensures result.inspector_section == viz_inspector_section_properties()
+  ensures result.display_rep == viz_display_rep_surface()
+  ensures result.pending_apply == 0
+  decreases 0
+=
+  var s: VizPipelineState
+  s.profile_id = viz_profile_sim_scientific()
+  s.source_count = 0
+  s.active_source_id = 0
+  s.inspector_section = viz_inspector_section_properties()
+  s.display_rep = viz_display_rep_surface()
+  s.pending_apply = 0
+  return s
+
+def viz_pipeline_add_source(state: VizPipelineState, kind_id: int) -> VizPipelineState
+  requires state.profile_id == viz_profile_sim_scientific()
+  requires state.source_count >= 0
+  requires state.source_count <= 64
+  requires kind_id >= viz_source_kind_sphere()
+  requires kind_id <= viz_source_kind_reader()
+  ensures result.source_count == state.source_count + 1
+  ensures result.active_source_id == state.source_count
+  decreases 0
+=
+  var next: VizPipelineState
+  next.profile_id = state.profile_id
+  next.inspector_section = state.inspector_section
+  next.display_rep = state.display_rep
+  next.source_count = state.source_count + 1
+  next.active_source_id = state.source_count
+  next.pending_apply = 1
+  return next
+
+def viz_pipeline_select_source(state: VizPipelineState, source_id: int) -> VizPipelineState
+  requires state.profile_id == viz_profile_sim_scientific()
+  requires state.source_count >= 1
+  requires source_id >= 0
+  requires source_id < state.source_count
+  ensures result.active_source_id == source_id
+  decreases 0
+=
+  var next: VizPipelineState
+  next.profile_id = state.profile_id
+  next.source_count = state.source_count
+  next.inspector_section = state.inspector_section
+  next.display_rep = state.display_rep
+  next.active_source_id = source_id
+  next.pending_apply = state.pending_apply
+  return next
+
+def viz_pipeline_set_inspector_section(state: VizPipelineState, section_id: int) -> VizPipelineState
+  requires state.profile_id == viz_profile_sim_scientific()
+  requires section_id >= viz_inspector_section_properties()
+  requires section_id <= viz_inspector_section_view()
+  ensures result.inspector_section == section_id
+  decreases 0
+=
+  var next: VizPipelineState
+  next.profile_id = state.profile_id
+  next.source_count = state.source_count
+  next.active_source_id = state.active_source_id
+  next.display_rep = state.display_rep
+  next.inspector_section = section_id
+  if section_id == viz_inspector_section_view():
+    next.pending_apply = 0
+  if section_id != viz_inspector_section_view():
+    next.pending_apply = state.pending_apply
+  return next
+
+def viz_pipeline_set_display_rep(state: VizPipelineState, rep_id: int) -> VizPipelineState
+  requires state.profile_id == viz_profile_sim_scientific()
+  requires rep_id >= viz_display_rep_surface()
+  requires rep_id <= viz_display_rep_points()
+  ensures result.display_rep == rep_id
+  decreases 0
+=
+  var next: VizPipelineState
+  next.profile_id = state.profile_id
+  next.source_count = state.source_count
+  next.active_source_id = state.active_source_id
+  next.inspector_section = state.inspector_section
+  next.display_rep = rep_id
+  if state.inspector_section == viz_inspector_section_view():
+    next.pending_apply = 0
+  if state.inspector_section != viz_inspector_section_view():
+    next.pending_apply = 1
+  return next
+
+def viz_pipeline_apply(state: VizPipelineState) -> VizPipelineState
+  requires state.profile_id == viz_profile_sim_scientific()
+  ensures result.pending_apply == 0
+  decreases 0
+=
+  var next: VizPipelineState
+  next.profile_id = state.profile_id
+  next.source_count = state.source_count
+  next.active_source_id = state.active_source_id
+  next.inspector_section = state.inspector_section
+  next.display_rep = state.display_rep
+  next.pending_apply = 0
+  return next
+
+def viz_pipeline_smoke_source_count() -> int
+  requires true
+  ensures result == 2
+  decreases 0
+=
+  var s0: VizPipelineState = viz_pipeline_init()
+  var s1: VizPipelineState = viz_pipeline_add_source(s0, viz_source_kind_sphere())
+  var s2: VizPipelineState = viz_pipeline_add_source(s1, viz_source_kind_box())
+  return s2.source_count
+
+def viz_smoke_entry() -> int
+  requires true
+  ensures result == 7024
+  decreases 0
+=
+  var count: int = viz_pipeline_smoke_source_count()
+  if count != 2:
+    return 0
+  var s: VizPipelineState = viz_pipeline_init()
+  if s.profile_id != viz_profile_sim_scientific():
+    return 0
+  var s1: VizPipelineState = viz_pipeline_add_source(s, viz_source_kind_sphere())
+  var s2: VizPipelineState = viz_pipeline_set_inspector_section(s1, viz_inspector_section_display())
+  var s3: VizPipelineState = viz_pipeline_set_display_rep(s2, viz_display_rep_wireframe())
+  var s4: VizPipelineState = viz_pipeline_apply(s3)
+  if s4.pending_apply != 0:
+    return 0
+  return 7000 + count * 11 + s4.inspector_section

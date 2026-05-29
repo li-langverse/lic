@@ -1,13 +1,14 @@
 
 
 import sim
+import chem
 
 def li_sim_drug_design_version() -> int
   requires true
-  ensures result == 1
+  ensures result == 4
   decreases 0
 =
-  return 1
+  return 4
 
 def li_sim_drug_design_profile_contract() -> int
   requires true
@@ -23,9 +24,344 @@ def li_sim_drug_design_studio_profile_id() -> int
 =
   return 7
 
+# PH-DRUG DRUG-0 — Lab-in-the-Loop stage indices (adaptive shell hints; not Roche parity).
+def drug_litl_stage_hypothesis() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0
+
+def drug_litl_stage_generate() -> int
+  requires true
+  ensures result == 1
+  decreases 0
+=
+  return 1
+
+def drug_litl_stage_dft() -> int
+  requires true
+  ensures result == 2
+  decreases 0
+=
+  return 2
+
+def drug_litl_stage_lab() -> int
+  requires true
+  ensures result == 3
+  decreases 0
+=
+  return 3
+
+def drug_litl_stage_retrain() -> int
+  requires true
+  ensures result == 4
+  decreases 0
+=
+  return 4
+
+def drug_litl_stage_count() -> int
+  requires true
+  ensures result == 5
+  decreases 0
+=
+  return 5
+
+def drug_litl_admet_score_count() -> int
+  requires true
+  ensures result == 4
+  decreases 0
+=
+  return 4
+
+def drug_litl_stage_valid(stage: int) -> int
+  requires true
+  ensures result >= 0
+  ensures result <= 1
+  decreases stage
+=
+  if stage >= drug_litl_stage_hypothesis():
+    if stage < drug_litl_stage_count():
+      return 1
+  return 0
+
+def drug_litl_stage_from_tick(tick: int) -> int
+  requires tick >= 0
+  ensures drug_litl_stage_valid(result) == 1
+  decreases tick
+=
+  var idx: int = tick
+  if idx >= drug_litl_stage_count():
+    idx = drug_litl_stage_count() - 1
+  return idx
+
+# PH-DRUG DRUG-1 — advance LITL stage for studio tick / adaptive inspector.
+def sim_drug_design_litl_advance(stage: int) -> int
+  requires drug_litl_stage_valid(stage) == 1
+  ensures drug_litl_stage_valid(result) == 1
+  ensures result >= stage
+  decreases stage
+=
+  if stage >= drug_litl_stage_retrain():
+    return drug_litl_stage_retrain()
+  var next: int = stage + 1
+  if drug_litl_stage_valid(next) == 1:
+    return next
+  return drug_litl_stage_retrain()
+
+# SMILES placeholder tokens (stable ints; UI maps to mock strings).
+def drug_litl_smiles_placeholder_hypothesis() -> int
+  requires true
+  ensures result == 1001
+  decreases 0
+=
+  return 1001
+
+def drug_litl_smiles_placeholder_generate() -> int
+  requires true
+  ensures result == 2001
+  decreases 0
+=
+  return 2001
+
+def drug_litl_smiles_placeholder_for_stage(stage: int) -> int
+  requires drug_litl_stage_valid(stage) == 1
+  ensures result > 0
+  decreases stage
+=
+  if stage == drug_litl_stage_hypothesis():
+    return drug_litl_smiles_placeholder_hypothesis()
+  return drug_litl_smiles_placeholder_generate()
+
+def drug_litl_conformer_count_for_stage(stage: int) -> int
+  requires drug_litl_stage_valid(stage) == 1
+  ensures result >= 0
+  decreases stage
+=
+  if stage == drug_litl_stage_hypothesis():
+    return 0
+  if stage == drug_litl_stage_generate():
+    return 8
+  if stage == drug_litl_stage_dft():
+    return 8
+  if stage == drug_litl_stage_lab():
+    return 12
+  return 12
+
+def drug_litl_dft_energy_for_stage(stage: int) -> float
+  requires drug_litl_stage_valid(stage) == 1
+  ensures result <= 0.0
+  decreases stage
+=
+  var s: int = stage
+  if s == drug_litl_stage_dft():
+    return chem_dft_run_smoke()
+  return 0.0
+
+def drug_litl_admet_scores_hypothesis() -> array[4, float]
+  requires true
+  ensures result[0] == 0.42
+  decreases 0
+=
+  var scores: array[4, float]
+  scores[0] = 0.42
+  scores[1] = 0.0
+  scores[2] = 0.0
+  scores[3] = 0.0
+  return scores
+
+def drug_litl_admet_scores_generate() -> array[4, float]
+  requires true
+  ensures result[0] == 0.55
+  decreases 0
+=
+  var scores: array[4, float]
+  scores[0] = 0.55
+  scores[1] = 0.48
+  scores[2] = 0.0
+  scores[3] = 0.0
+  return scores
+
+def drug_litl_admet_scores_dft() -> array[4, float]
+  requires true
+  ensures result[0] == 0.61
+  decreases 0
+=
+  var scores: array[4, float]
+  scores[0] = 0.61
+  scores[1] = 0.52
+  scores[2] = 0.44
+  scores[3] = 0.0
+  return scores
+
+def drug_litl_admet_scores_lab() -> array[4, float]
+  requires true
+  ensures result[0] == 0.68
+  decreases 0
+=
+  var scores: array[4, float]
+  scores[0] = 0.68
+  scores[1] = 0.57
+  scores[2] = 0.49
+  scores[3] = 0.41
+  return scores
+
+def drug_litl_admet_scores_retrain() -> array[4, float]
+  requires true
+  ensures result[0] == 0.72
+  decreases 0
+=
+  var scores: array[4, float]
+  scores[0] = 0.72
+  scores[1] = 0.63
+  scores[2] = 0.54
+  scores[3] = 0.47
+  return scores
+
+def drug_litl_admet_scores_for_stage(stage: int) -> array[4, float]
+  requires drug_litl_stage_valid(stage) == 1
+  ensures result[0] >= 0.0
+  decreases stage
+=
+  var s: int = stage
+  if s == drug_litl_stage_hypothesis():
+    return drug_litl_admet_scores_hypothesis()
+  if s == drug_litl_stage_generate():
+    return drug_litl_admet_scores_generate()
+  if s == drug_litl_stage_dft():
+    return drug_litl_admet_scores_dft()
+  if s == drug_litl_stage_lab():
+    return drug_litl_admet_scores_lab()
+  return drug_litl_admet_scores_retrain()
+
+type DrugLitlStagePayload = object
+  public stage: int
+  public smiles_placeholder: int
+  public conformer_count: int
+  public dft_energy_hartree: float
+  public admet: array[4, float]
+
+def drug_litl_stage_payload(stage: int) -> DrugLitlStagePayload
+  requires drug_litl_stage_valid(stage) == 1
+  ensures result.stage == stage
+  ensures drug_litl_stage_valid(result.stage) == 1
+  decreases stage
+=
+  var s0: int = stage
+  var s1: int = stage
+  var s2: int = stage
+  var s3: int = stage
+  var s4: int = stage
+  var out: DrugLitlStagePayload
+  out.stage = s0
+  out.smiles_placeholder = drug_litl_smiles_placeholder_for_stage(s1)
+  out.conformer_count = drug_litl_conformer_count_for_stage(s2)
+  out.dft_energy_hartree = drug_litl_dft_energy_for_stage(s3)
+  out.admet = drug_litl_admet_scores_for_stage(s4)
+  return out
+
+def sim_drug_design_inspector_payload(stage: int) -> DrugLitlStagePayload
+  requires drug_litl_stage_valid(stage) == 1
+  ensures result.stage == stage
+  ensures drug_litl_stage_valid(result.stage) == 1
+  decreases stage
+=
+  return drug_litl_stage_payload(stage)
+
+def drug_litl_payload_checksum(p: DrugLitlStagePayload) -> float
+  requires drug_litl_stage_valid(p.stage) == 1
+  ensures result > 0.0
+  decreases p.stage
+=
+  var sum: float = 0.1
+  sum = sum + p.dft_energy_hartree
+  sum = sum + p.admet[0]
+  sum = sum + p.admet[1]
+  sum = sum + p.admet[2]
+  sum = sum + p.admet[3]
+  return sum
+
+def run_drug_litl_stage(stage: int, detail: int) -> SimRunResult
+  requires detail >= 0
+  requires detail <= 3
+  requires drug_litl_stage_valid(stage) == 1
+  ensures result.ok == 1
+  ensures result.algo_id == algo_drug_litl_stages()
+  ensures result.detail_emitted == detail
+  decreases stage
+=
+  var s: int = stage
+  var d: int = detail
+  var payload: DrugLitlStagePayload = drug_litl_stage_payload(s)
+  var checksum: float = drug_litl_payload_checksum(payload)
+  var r: SimRunResult
+  r.ok = 1
+  r.algo_id = algo_drug_litl_stages()
+  r.vertical_id = sim_contract_sim_drug_design()
+  r.checksum = checksum
+  r.detail_emitted = d
+  return r
+
+def sim_drug_design_tick_stub(detail: int) -> int
+  requires detail >= 0
+  requires detail <= 3
+  ensures result >= 0
+  ensures result <= 1
+  decreases 0
+=
+  var d0: int = detail
+  var stage: int = drug_litl_stage_from_tick(d0)
+  var d1: int = detail
+  var r: SimRunResult = run_drug_litl_stage(stage, d1)
+  if run_result_ok(r) != 1:
+    return 0
+  return 1
+
+def run_drug_design_litl_workflow(detail: int) -> int
+  requires detail >= 0
+  requires detail <= 3
+  ensures result == 0
+  decreases 0
+=
+  var d0: int = detail
+  var d1: int = detail
+  var d2: int = detail
+  var d3: int = detail
+  var d4: int = detail
+  if run_drug_litl_stage(drug_litl_stage_hypothesis(), d0).ok != 1:
+    return 1
+  if run_drug_litl_stage(drug_litl_stage_generate(), d1).ok != 1:
+    return 2
+  if run_drug_litl_stage(drug_litl_stage_dft(), d2).ok != 1:
+    return 3
+  if run_drug_litl_stage(drug_litl_stage_lab(), d3).ok != 1:
+    return 4
+  if run_drug_litl_stage(drug_litl_stage_retrain(), d4).ok != 1:
+    return 5
+  return 0
+
 def run_drug_design_smoke() -> int
   requires true
   ensures result == 0
   decreases 0
 =
+  if run_drug_design_litl_workflow(0) != 0:
+    return 1
+  if drug_litl_stage_from_tick(0) != drug_litl_stage_hypothesis():
+    return 2
+  var hyp: DrugLitlStagePayload = drug_litl_stage_payload(drug_litl_stage_hypothesis())
+  if hyp.conformer_count != 0:
+    return 3
+  var dft: DrugLitlStagePayload = drug_litl_stage_payload(drug_litl_stage_dft())
+  if dft.dft_energy_hartree != chem_dft_run_smoke():
+    return 4
+  if dft.admet[2] <= 0.0:
+    return 5
+  if sim_drug_design_litl_advance(drug_litl_stage_hypothesis()) != drug_litl_stage_generate():
+    return 6
+  if sim_drug_design_litl_advance(drug_litl_stage_retrain()) != drug_litl_stage_retrain():
+    return 7
+  var insp: DrugLitlStagePayload = sim_drug_design_inspector_payload(drug_litl_stage_lab())
+  if insp.conformer_count != 12:
+    return 8
   return 0

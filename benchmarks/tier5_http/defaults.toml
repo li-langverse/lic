@@ -4,7 +4,7 @@
 workers = "auto"
 port_base = 18080
 warmup_sec = 30
-measured_runs = 5
+measured_runs = 6
 
 [servers.nginx]
 binary = "nginx"

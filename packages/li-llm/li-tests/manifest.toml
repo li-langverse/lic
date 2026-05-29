@@ -1,0 +1,29 @@
+[[tests]]
+suite = "smoke"
+file = "smoke/builds.li"
+outcome = "verify_ok"
+note = "T-PKG-li-llm-smoke-builds"
+
+[[tests]]
+suite = "smoke"
+file = "smoke/llm_tokenize_roundtrip.li"
+outcome = "verify_ok"
+note = "PH-LLM WP-LLM-01 byte tokenizer roundtrip"
+
+[[tests]]
+suite = "smoke"
+file = "smoke/llm_load_weights.li"
+outcome = "verify_ok"
+note = "PH-LLM WP-LLM-02 fixture safetensors/GGUF loader"
+
+[[tests]]
+suite = "smoke"
+file = "smoke/llm_forward.li"
+outcome = "verify_ok"
+note = "PH-LLM WP-LLM-03 forward stub"
+
+[[tests]]
+suite = "smoke"
+file = "smoke/llm_generate.li"
+outcome = "verify_ok"
+note = "PH-LLM WP-LLM-04 generate stub"

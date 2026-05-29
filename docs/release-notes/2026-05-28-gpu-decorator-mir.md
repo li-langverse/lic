@@ -10,7 +10,7 @@
 
 ## Summary (one sentence)
 
-`@gpu` and `@gpu(devices=N)` now survive MIR lowering and appear in `lic verify` telemetry, establishing compiler-visible Li GPU placement before LKIR/vendor codegen.
+`@gpu` and `@gpu(devices=N)` now survive MIR lowering and appear in `lic verify` telemetry, establishing compiler-visible Li GPU placement on `def` declarations before LKIR/vendor codegen.
 
 ## Agent continuation (required)
 
@@ -23,8 +23,8 @@
 
 | Area | What | Evidence |
 |------|------|----------|
-| MIR | `MirDecorator` now carries `gpu` and `gpu_devices`; `copy_decorators()` records `@gpu` and `@gpu(devices=N)`. | `lic verify li-tests/decorators/gpu_multi_device_ok.li` reports `mir_gpu_proc=1 mir_gpu_multi_device_proc=1`. |
-| Verify telemetry | `count_mir_gpu_proc`, `count_mir_gpu_multi_device_proc`, and `lic verify` output expose GPU placement counts. | `./scripts/check-mir-gpu-decorator.sh` exit `0`. |
+| MIR | `MirDecorator` now carries `gpu` and `gpu_devices`; `copy_decorators()` records `@gpu` and `@gpu(devices=N)`. | `lic verify li-tests/decorators/gpu_multi_device_ok.li` reports `mir_gpu_def=1 mir_gpu_multi_device_def=1`. |
+| Verify telemetry | `count_mir_gpu_def`, `count_mir_gpu_multi_device_def`, and `lic verify` output expose GPU placement counts. | `./scripts/check-mir-gpu-decorator.sh` exit `0`. |
 | Policy | `@gpu(devices=0)`, non-integer `devices`, and vendor/backend arguments are rejected rather than accepted as impossible or vendor-specific placement. | `lic check --format=json li-tests/decorators/gpu_devices_zero_fail.li` returns `E0322` with `gpu_devices`; decorators suite compile-fail rows cover `gpu_devices_ident_fail.li` and `gpu_vendor_arg_fail.li`. |
 | Tests | Added `gpu_only_ok.li`, `gpu_multi_device_ok.li`, `gpu_devices_zero_fail.li`, `gpu_devices_ident_fail.li`, `gpu_vendor_arg_fail.li`, and manifest rows. | `LI_REPO_ROOT=$PWD ./li-tests/run_all.sh decorators` exit `0`. |
 | Docs | Updated execution decorators, `lig` RFC, and provability gaps to mark G-gpu as partial. | `docs/superpowers/specs/2026-05-16-li-execution-decorators.md`, `docs/game-dev/specs/lig-rfc.md`, `docs/verification/provability-gaps.md`. |
@@ -52,7 +52,7 @@ N/A — no GPU execution path or performance claim changed. This PR only adds MI
 
 | Repo | Action |
 |------|--------|
-| `lig` | Use `mir_gpu_proc` / `mir_gpu_multi_device_proc` as the compiler-side handoff for future LKIR launch work. |
+| `lig` | Use `mir_gpu_def` / `mir_gpu_multi_device_def` as the compiler-side handoff for future LKIR launch work. |
 | `benchmarks` | N/A — no benchmark rows changed; future `lig` perf PRs should update `lig-kernels.toml`. |
 | `lip` / `lit` / `lis` | N/A — no package manager, test runner, or server API changed. |
 
@@ -60,5 +60,5 @@ N/A — no GPU execution path or performance claim changed. This PR only adds MI
 
 ```markdown
 ### Added
-- **PH-7d / G-gpu decorator telemetry:** `@gpu` and `@gpu(devices=N)` now survive MIR lowering and `lic verify` reports `mir_gpu_proc` / `mir_gpu_multi_device_proc`; invalid device counts and source-level vendor args are rejected before LKIR/codegen — [2026-05-28-gpu-decorator-mir.md](docs/release-notes/2026-05-28-gpu-decorator-mir.md).
+- **PH-7d / G-gpu decorator telemetry:** `@gpu` and `@gpu(devices=N)` now survive MIR lowering and `lic verify` reports `mir_gpu_def` / `mir_gpu_multi_device_def`; invalid device counts and source-level vendor args are rejected before LKIR/codegen — [2026-05-28-gpu-decorator-mir.md](docs/release-notes/2026-05-28-gpu-decorator-mir.md).
 ```

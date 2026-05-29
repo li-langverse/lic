@@ -28,8 +28,8 @@ User `decorator def` names: strict package-prefixed snake_case; typosquat ban; e
 
 `@gpu` is now visible in MIR and `lic verify` telemetry:
 
-- `mir_gpu_proc` counts functions tagged with `@gpu`.
-- `mir_gpu_multi_device_proc` counts functions tagged with `@gpu(devices=N)` where `N > 1`.
+- `mir_gpu_def` counts `def` declarations tagged with `@gpu`.
+- `mir_gpu_multi_device_def` counts `def` declarations tagged with `@gpu(devices=N)` where `N > 1`.
 - `@gpu(devices=0)` and non-integer `devices` values are rejected (`gpu_devices`) so impossible placement is not silently accepted.
 - Vendor/backend arguments such as `vendor="cuda"` are rejected; backend selection belongs to `lig` config/runtime gates, not source-level decorator strings.
 

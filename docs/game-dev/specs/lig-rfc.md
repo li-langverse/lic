@@ -107,7 +107,7 @@ def force_tile() -> int
   return 0
 ```
 
-Today this is a **MIR-visible placement tag** (`mir_gpu_proc`, `mir_gpu_multi_device_proc`) with integer-literal `devices >= 1` validation. Vendor/backend arguments are rejected on `@gpu`; backend selection stays in `lig` config/runtime gates. Next PH-HW slices must connect that tag to LKIR catalog launch, device-buffer proofs, and backend selection. `lig` remains the runtime/benchmark surface for CUDA, HIP/ROCm, Metal, and Vulkan/wgpu comparisons; Li source remains the kernel authority.
+Today this is a **MIR-visible placement tag** (`mir_gpu_def`, `mir_gpu_multi_device_def`) with integer-literal `devices >= 1` validation. Vendor/backend arguments are rejected on `@gpu`; backend selection stays in `lig` config/runtime gates. Next PH-HW slices must connect that tag to LKIR catalog launch, device-buffer proofs, and backend selection. `lig` remains the runtime/benchmark surface for CUDA, HIP/ROCm, Metal, and Vulkan/wgpu comparisons; Li source remains the kernel authority.
 
 Example catalog binding (conceptual):
 

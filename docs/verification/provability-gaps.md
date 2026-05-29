@@ -48,7 +48,7 @@ This page is the **honest inventory** of what is **not** fully proved or not yet
 | **G-net** | Partial | Net effect codegen + proofs |
 | **G-trust** | Stub | `Core.lean` / `MIR.lean` semantics, not placeholder |
 | **G-ann** | Missing | PEP 649 deferred annotations |
-| **G-gpu** | Partial | **Closed slice:** `@gpu` / `@gpu(devices=N)` are MIR-visible (`mir_gpu_proc`, `mir_gpu_multi_device_proc`) with `devices >= 1` policy. Still open: address-space proofs, LKIR lowering, device buffers, and vendor codegen |
+| **G-gpu** | Partial | **Closed slice:** `@gpu` / `@gpu(devices=N)` are MIR-visible (`mir_gpu_def`, `mir_gpu_multi_device_def`) with `devices >= 1` policy. Still open: address-space proofs, LKIR lowering, device buffers, and vendor codegen |
 | **G-meta** | Missing | Compiler ↔ Lean equivalence (research) |
 | **G-authz** | Missing | Capability / IDOR (OS phase) |
 | **G-test-verify** | **Done** | `prove_lean_ok` in `run_all.sh`; 14 closed `contracts_verify` specimens |

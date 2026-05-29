@@ -15,7 +15,7 @@ std::size_t count_mir_vectorized_proc(const MirModule& mir) {
 
 }
 
-std::size_t count_mir_gpu_proc(const MirModule& mir) {
+std::size_t count_mir_gpu_def(const MirModule& mir) {
   std::size_t n = 0;
   for (const auto& fn : mir.functions) {
     for (const auto& d : fn.decorators) {
@@ -25,7 +25,7 @@ std::size_t count_mir_gpu_proc(const MirModule& mir) {
   return n;
 }
 
-std::size_t count_mir_gpu_multi_device_proc(const MirModule& mir) {
+std::size_t count_mir_gpu_multi_device_def(const MirModule& mir) {
   std::size_t n = 0;
   for (const auto& fn : mir.functions) {
     for (const auto& d : fn.decorators) {

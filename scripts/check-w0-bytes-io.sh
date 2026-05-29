@@ -58,4 +58,8 @@ echo "==> li-bytes package smoke"
 "$LIC" build "$ROOT/packages/li-bytes/li-tests/smoke/builds.li" \
   -o /tmp/li_bytes_pkg --allow-open-vc --no-lean-verify
 
+echo "==> G-net trusted/codegen/seam drift regression"
+chmod +x "$ROOT/li-tests/tooling/net_trusted_codegen_drift.sh"
+"$ROOT/li-tests/tooling/net_trusted_codegen_drift.sh"
+
 echo "check-w0-bytes-io: OK"

@@ -891,7 +891,7 @@ suite = "composable"
 file = "composable/import_render_wgpu_fps.li"
 packages = ["li-render", "li-gpu", "li-gui", "li-ui"]
 outcome = "check_ok"
-note = "import render: wgpu smoke + FPS counter (ensures/Alloc on HUD str procs)"
+note = "import render: bench FPS counter + HUD tag (wgpu smoke in package smoke)"
 
 [[tests]]
 suite = "composable"

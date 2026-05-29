@@ -1,9 +1,5 @@
 version: 1
-<<<<<<< Updated upstream
-updated_at: '2026-05-29T20:29:44Z'
-=======
-updated_at: '2026-05-29T20:36:21Z'
->>>>>>> Stashed changes
+updated_at: '2026-05-29T21:10:49Z'
 gaps:
 - id: gap-line-profiler-001
   gap_kind: missing_package
@@ -525,13 +521,9 @@ gaps:
   discovered_by: plan_verifier
   evidence:
   - snapshot runner=swarm-observer plan_pending=orch-r3-missing-package-sweep
-<<<<<<< Updated upstream
   - 'orch-r3 completed 2026-05-29: 3 open missing_package gaps; backlog pending for
     line_profiler, std.summary, std.plot; ingest+apply run'
-=======
-  - 'orch-r3 completed 2026-05-29: 3 missing_package backlogs pending; io/csv backlog
-    drift fixed; note docs/ecosystem/orchestrator-notes/2026-05-29-orch-r3-missing-package-sweep.md'
->>>>>>> Stashed changes
+  - 'orch-r3: io/csv backlog drift fixed; note docs/ecosystem/orchestrator-notes/2026-05-29-orch-r3-missing-package-sweep.md'
   runner_id: swarm-observer
   plan_todo_id: orch-r3-missing-package-sweep
   suggested_loop: swarm-observer

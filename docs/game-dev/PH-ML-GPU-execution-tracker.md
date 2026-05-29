@@ -29,9 +29,9 @@
 | id | state | branch | verify | blocker |
 |----|-------|--------|--------|---------|
 | WP-HW-06 | partial | feat/ph-ml-gpu-swarm | `lkir_spirv_stub.li`, `li_rt_lkir_spirv.c` | Full SPIR-V shader module |
-| WP-HW-07 | **blocked** | feat/ph-ml-gpu-swarm | SPIR-V validate → `bid=5` status `0`; [lavapipe CI](../ci/lavapipe-vulkan-smoke.md) advisory | Vulkan compute dispatch |
-| WP-HW-08 | **blocked** | feat/ph-ml-gpu-swarm | CPU 2×2 ref + `kernel_matmul_parity.li` | Real GPU device dispatch |
-| WP-HW-09 | **partial** | feat/ph-ml-gpu-swarm | NVIDIA lab: `CUDA_HOME=/usr/lib/cuda`, nvcc 12.4, probe `ready_emit_cpu_ref`; [platform matrix](../ci/hardware-platform-matrix.md) | Real PTX/device timing (WP-HW-08) |
+| WP-HW-07 | **partial** | feat/ph-ml-gpu-swarm | `li_rt_lkir_vulkan_loader_smoke` VkInstance via dlopen; lavapipe ICD hint | Full SPIR-V compute pipeline |
+| WP-HW-08 | **partial** | feat/ph-ml-gpu-swarm | `li_rt_lig_cuda_matmul2x2_device` + `lig-cuda-timing-probe.sh`; `kernel_matmul_parity.li` | General kernels / LKIR dispatch |
+| WP-HW-09 | **partial** | feat/ph-ml-gpu-swarm | Embedded PTX `lig_matmul2x2_f32`; device timing when probe passes | Full catalog PTX emit |
 | WP-HW-10 | partial | feat/ph-ml-gpu-swarm | `LIG_EMIT_HIP=1` → status `1` + CPU ref | ROCm CI hardware |
 | WP-HW-12 | partial | feat/ph-ml-gpu-swarm | `mlp_forward_f32.lkir` + catalog | GPU dispatch |
 | WP-HW-14 | stub | feat/ph-ml-gpu-swarm | `lig-rfc.md` § multi-GPU | Scheduler impl |
@@ -80,8 +80,8 @@
 - [x] CHANGELOG Unreleased + release notes
 - [x] `ph-ml-stub-then-implement.mdc` rule
 - [x] [PH-ML-GPU-merge-readiness.md](PH-ML-GPU-merge-readiness.md)
-- [ ] Human: Vulkan compute dispatch on lavapipe (WP-HW-07 unblocked)
-- [x] Human (NVIDIA lab): `CUDA_HOME` + nvcc — WP-HW-09 partial; timed CUDA rows still WP-HW-08
+- [x] NVIDIA lab: CUDA device 2×2 matmul + honest `gpu_timing_ns` (WP-HW-08/09 pilot)
+- [ ] Vulkan compute pipeline beyond VkInstance smoke (WP-HW-07)
 - [ ] Human (M1 Mac): Metal smokes per [metal-macos-smoke.md](../ci/metal-macos-smoke.md)
 - [ ] Human: G-gpu Lean proofs (WP-GPU-05 done)
 - [ ] Human: lic-studio-ui `chore/agent-kit-1.3.5-studio-ui` merge

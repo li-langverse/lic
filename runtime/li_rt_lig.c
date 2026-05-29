@@ -1,5 +1,6 @@
 #include "li_rt_lig.h"
 
+#include "li_rt_lig_cuda.h"
 #include "li_rt_lkir_spirv.h"
 
 #include <stdio.h>
@@ -88,8 +89,12 @@ static int32_t lig_run_matmul_vendor_stub(int32_t bid) {
       g_ratio = 0.0f;
       return LI_LIG_KERNEL_EMIT_OFF;
     }
+    if (lig_cuda_home_present() && lig_nvcc_executable() &&
+        li_rt_lig_cuda_matmul2x2_device() == 1) {
+      g_ratio = 1.0f;
+      return LI_LIG_KERNEL_STUB_OK;
+    }
     lig_matmul_cpu_ref_2x2();
-    (void)lig_nvcc_executable();
     return LI_LIG_KERNEL_EMIT_STUB;
   }
   if (bid == 2) {

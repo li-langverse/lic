@@ -21,6 +21,8 @@ if [[ -z "${CUDA_HOME:-}" && -z "${CUDA_PATH:-}" ]]; then
 fi
 
 PROBE="$ROOT/scripts/cuda-home-probe.sh"
+TIMING_PROBE="$ROOT/scripts/lig-cuda-timing-probe.sh"
+export LIG_BENCH_TIMING_PROBE="$TIMING_PROBE"
 python3 - "$PARITY" "$OUT" "$TIER3_STUB" "$PROBE" <<'PY'
 import json, os, sys
 from pathlib import Path
@@ -127,13 +129,41 @@ if cuda_emit:
         report["cuda_toolkit_doc"] = "docs/ci/cuda-toolkit-setup.md"
     elif not cuda_home_ok:
         report["wp_hw_09"] = "blocked_ptx_cuda_home_unset_nvcc_present"
+    else:
+        timing_probe = os.environ.get("LIG_BENCH_TIMING_PROBE", "")
+        if timing_probe:
+            import subprocess
+
+            try:
+                tp = subprocess.run(
+                    ["bash", timing_probe],
+                    capture_output=True,
+                    text=True,
+                    timeout=60,
+                    check=False,
+                    cwd=str(Path(timing_probe).resolve().parent.parent),
+                )
+                if tp.returncode == 0 and tp.stdout.strip():
+                    td = json.loads(tp.stdout)
+                    if td.get("cuda_device_ok"):
+                        report["cuda_timing_ns"] = td["cuda_timing_ns"]
+                        report["gpu_timing_ns"] = td["gpu_timing_ns"]
+                        report["wp_hw_08"] = "device_matmul2x2_pilot"
+                        report["wp_hw_09"] = "ptx_device_pilot"
+                        report["status"] = "cuda_device_pilot"
+                        report["note"] = (
+                            "Honest 2x2 CUDA device timing via lig-cuda-timing-probe; "
+                            "Vulkan compute pipeline still partial (WP-HW-07)."
+                        )
+            except (OSError, json.JSONDecodeError, ValueError):
+                pass
 
 out_path.write_text(json.dumps(report, indent=2) + "\n")
 tier3 = {
     "status": "ingest_stub",
     "wave": "4d",
     "family": "ml",
-    "gpu_timing_ns": "N/A",
+    "gpu_timing_ns": report.get("gpu_timing_ns", "N/A"),
     "note": "Tier-3 dashboard ingest placeholder until real oracle CSV lands",
 }
 tier3_path.write_text(json.dumps(tier3, indent=2) + "\n")

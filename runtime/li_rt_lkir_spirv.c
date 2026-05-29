@@ -1,5 +1,6 @@
 #include "li_rt_lkir_spirv.h"
 
+#include <dlfcn.h>
 #include <stdlib.h>
 #include <string.h>
 
@@ -52,10 +53,75 @@ int32_t li_rt_lkir_spirv_validation_smoke(void) {
   return 1;
 }
 
-/* WP-HW-07: lavapipe / ICD hint only — no linked Vulkan loader in default build. */
+/* WP-HW-07: headless VkInstance create via dlopen (no compute pipeline yet). */
+int32_t li_rt_lkir_vulkan_loader_smoke(void) {
+  void* lib = dlopen("libvulkan.so.1", RTLD_LAZY | RTLD_LOCAL);
+  if (lib == NULL) {
+    lib = dlopen("libvulkan.so", RTLD_LAZY | RTLD_LOCAL);
+  }
+  if (lib == NULL) {
+    return 0;
+  }
+
+  typedef uint32_t VkResult;
+  typedef void* VkInstance;
+  typedef uint32_t VkStructureType;
+  typedef uint32_t VkFlags;
+  typedef struct VkApplicationInfo {
+    VkStructureType sType;
+    const void* pNext;
+    const char* pApplicationName;
+    uint32_t applicationVersion;
+    const char* pEngineName;
+    uint32_t engineVersion;
+    uint32_t apiVersion;
+  } VkApplicationInfo;
+  typedef struct VkInstanceCreateInfo {
+    VkStructureType sType;
+    const void* pNext;
+    VkFlags flags;
+    const VkApplicationInfo* pApplicationInfo;
+    uint32_t enabledLayerCount;
+    const char* const* ppEnabledLayerNames;
+    uint32_t enabledExtensionCount;
+    const char* const* ppEnabledExtensionNames;
+  } VkInstanceCreateInfo;
+
+  typedef VkResult (*PFN_vkCreateInstance)(const VkInstanceCreateInfo*, const void*, VkInstance*);
+  typedef void (*PFN_vkDestroyInstance)(VkInstance, const void*);
+
+  PFN_vkCreateInstance vkCreateInstance = (PFN_vkCreateInstance)dlsym(lib, "vkCreateInstance");
+  PFN_vkDestroyInstance vkDestroyInstance = (PFN_vkDestroyInstance)dlsym(lib, "vkDestroyInstance");
+  if (vkCreateInstance == NULL || vkDestroyInstance == NULL) {
+    dlclose(lib);
+    return 0;
+  }
+
+  VkApplicationInfo app = {0};
+  app.sType = 0; /* VK_STRUCTURE_TYPE_APPLICATION_INFO */
+  app.apiVersion = (1u << 22) | (3u << 12); /* Vulkan 1.3 */
+
+  VkInstanceCreateInfo info = {0};
+  info.sType = 1; /* VK_STRUCTURE_TYPE_INSTANCE_CREATE_INFO */
+  info.pApplicationInfo = &app;
+
+  VkInstance inst = NULL;
+  const VkResult rc = vkCreateInstance(&info, NULL, &inst);
+  if (rc == 0 && inst != NULL) {
+    vkDestroyInstance(inst, NULL);
+    dlclose(lib);
+    return 1;
+  }
+  dlclose(lib);
+  return 0;
+}
+
 int32_t li_rt_lkir_spirv_lavapipe_probe(void) {
   if (li_rt_lkir_spirv_validation_smoke() != 1) {
     return 0;
+  }
+  if (li_rt_lkir_vulkan_loader_smoke() == 1) {
+    return 1;
   }
   const char* force = getenv("LIG_VULKAN_LAVA");
   if (force != NULL && force[0] != '\0' && strcmp(force, "0") != 0) {

@@ -908,11 +908,13 @@ int32_t li_rt_lig_backend_select_auto(void) {
     g_lig_selected_backend = LI_RT_LIG_BACKEND_ROCM;
     return LI_RT_LIG_BACKEND_ROCM;
   }
-  g_lig_selected_backend = LI_RT_LIG_BACKEND_VULKAN_SPIRV;
-  return LI_RT_LIG_BACKEND_VULKAN_SPIRV;
   if (li_rt_lig_backend_probe_available(LI_RT_LIG_BACKEND_CUDA)) {
     g_lig_selected_backend = LI_RT_LIG_BACKEND_CUDA;
     return LI_RT_LIG_BACKEND_CUDA;
+  }
+  if (li_rt_lig_backend_probe_available(LI_RT_LIG_BACKEND_VULKAN_SPIRV)) {
+    g_lig_selected_backend = LI_RT_LIG_BACKEND_VULKAN_SPIRV;
+    return LI_RT_LIG_BACKEND_VULKAN_SPIRV;
   }
   g_lig_selected_backend = LI_RT_LIG_BACKEND_WEBGPU;
   return LI_RT_LIG_BACKEND_WEBGPU;

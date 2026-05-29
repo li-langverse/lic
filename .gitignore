@@ -67,3 +67,4 @@ docs/demo/media/ffmpeg-*.txt
 
 # Local CI sweep output (benchmarks local-ci)
 data/local-ci*.log
+runtime/lig_cuda_timing_probe.c

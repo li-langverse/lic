@@ -1,6 +1,6 @@
 # PH-ML + GPU execution tracker
 
-**Status:** Waves 0–5 + 4b/4c/5b complete — merge-ready (2026-05-29)  
+**Status:** Waves 0–5 complete (4b/4c/4d/5b) — merge-ready (2026-05-29)  
 **Branch:** `feat/ph-ml-gpu-swarm`  
 **Plan:** [PH-ML-GPU-battle-plan.md](PH-ML-GPU-battle-plan.md) · [Merge readiness](PH-ML-GPU-merge-readiness.md)
 
@@ -43,7 +43,7 @@
 | WP-BENCH-ML-06 | partial | feat/ph-ml-gpu-swarm | `tier3-ml-ingest-stub.json` | Dashboard ingest |
 | WP-BENCH-ML-07 | stub | feat/ph-ml-gpu-swarm | `resnet18_infer.toml` | ONNX oracle + tensor |
 | WP-DOC-ML-04 | done | feat/ph-ml-gpu-swarm | `ml-autograd-rfc.md` | WP-ML-13 impl |
-| WP-RL-04 | partial | feat/ph-ml-gpu-swarm | `async_env_pool_serial.li` 8-env in-process **done** | Fork IPC / multi-process |
+| WP-RL-04 | **blocked** (fork) | feat/ph-ml-gpu-swarm | serial batch **done**; [issue template](../../.github/ISSUE_TEMPLATE/wp-rl-04-fork-ipc.md) | Fork IPC / multi-process |
 | WP-ML-07 | done | feat/ph-ml-gpu-swarm | `dl_mlp4_backward_apply`, nn `w1_scale`+`w2` | Dynamic `tensor` (WP-ML-14) |
 | WP-ML-08 | done | feat/ph-ml-gpu-swarm | `mnist_train_step.li` | Full dynamic weights |
 | WP-ML-13 | blocked | — | RFC only | `tensor` Phase 3 |

@@ -97,7 +97,7 @@ def gui_panel_switch_to(state: var GuiPanelState, region: int, elapsed_ms: float
   var from_region: int = state.active_region
   var timing: PanelSwitchTiming = gui_panel_switch_timing(from_region, region, elapsed_ms)
   state.last_switch_ms = timing.elapsed_ms
-  state.active_region = timing.to_region
+  state.active_region = region
   state.switch_count = state.switch_count + 1
   return timing
 

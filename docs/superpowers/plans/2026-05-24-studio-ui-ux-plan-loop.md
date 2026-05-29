@@ -35,6 +35,9 @@ todos:
   - id: studio-ux-10-native-capture
     content: "Extend ux-harness native_gui for Xvfb SDL capture when viewport draws pixels"
     status: done
+  - id: studio-ux-11-panel-switch-gate
+    content: "PH-UX panel_switch_ms gate — bench hook within 100ms + gui_panel_switch_to region fix"
+    status: in_progress
 isProject: false
 ---
 

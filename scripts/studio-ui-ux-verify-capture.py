@@ -57,7 +57,10 @@ def dry_capture() -> Path:
         "STUDIO_UI_UX_CAPTURE_DRY": "1",
         "STUDIO_UI_UX_ITERATION": "verify-capture-dry",
         "STUDIO_UI_UX_CAPTURE_SKIP_HTML": os.environ.get(
-            "STUDIO_UI_UX_VERIFY_SKIP_HTML", "0"
+            "STUDIO_UI_UX_VERIFY_SKIP_HTML", "1"
+        ),
+        "STUDIO_UI_UX_CAPTURE_SKIP_NATIVE": os.environ.get(
+            "STUDIO_UI_UX_VERIFY_SKIP_NATIVE", "1"
         ),
     }
     proc = subprocess.run(

@@ -1,0 +1,17 @@
+# G-vc: path-guarded call-site callee requires — typecheck uses if n >= 0 guard,
+# but AutoVC call-site VC is True stub (see caller_requires_local_lean_gap.sh).
+def callee(x: int) -> int
+  requires x >= 0
+  ensures result == x
+  decreases 0
+=
+  return x
+
+def caller_guarded(n: int) -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  if n >= 0:
+    callee(n)
+  return 0

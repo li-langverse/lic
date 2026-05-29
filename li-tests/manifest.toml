@@ -269,6 +269,12 @@ outcome = "verify_ok"
 
 [[tests]]
 suite = "contracts_verify"
+file = "contracts_verify/caller_requires_guarded_ok.li"
+outcome = "verify_ok"
+note = "G-vc: path-guarded call-site requires — AutoVC True stub (caller_requires_local_lean_gap.sh)"
+
+[[tests]]
+suite = "contracts_verify"
 file = "contracts_verify/caller_requires_fail.li"
 outcome = "compile_fail"
 expected_substr = "E0304"

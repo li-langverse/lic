@@ -216,9 +216,42 @@ struct EmitCtx {
     builder->SetInsertPoint(exit_bb);
   }
 
+  void emit_matmul_bench_init_2d(llvm::AllocaInst* c_mat, llvm::AllocaInst* a_mat,
+                                 llvm::AllocaInst* b_mat, unsigned n) {
+    llvm::Type* f64 = llvm::Type::getDoubleTy(context);
+    llvm::Type* i32t = i32_ty(context);
+    llvm::Value* lim = llvm::ConstantInt::get(i32t, n);
+    llvm::Value* zf = llvm::ConstantFP::get(f64, 0.0);
+    llvm::Value* s01 = llvm::ConstantFP::get(f64, 0.01);
+    llvm::Value* s02 = llvm::ConstantFP::get(f64, 0.02);
+    llvm::Value* mod17 = llvm::ConstantInt::get(i32t, 17);
+    llvm::Value* mod13 = llvm::ConstantInt::get(i32t, 13);
+    llvm::Value* three = llvm::ConstantInt::get(i32t, 3);
+    llvm::AllocaInst* i_s = builder->CreateAlloca(i32t, nullptr, "mm_init_i");
+    llvm::AllocaInst* j_s = builder->CreateAlloca(i32t, nullptr, "mm_init_j");
+
+    emit_idx_for(i_s, lim, [&](llvm::Value* i) {
+      emit_idx_for(j_s, lim, [&](llvm::Value* j) {
+        llvm::Value* rem_a =
+            builder->CreateURem(builder->CreateAdd(i, j), mod17);
+        llvm::Value* a_val =
+            builder->CreateFMul(builder->CreateSIToFP(rem_a, f64), s01);
+        builder->CreateStore(a_val, matmul_gep2d(a_mat, i, j));
+
+        llvm::Value* rem_b = builder->CreateURem(
+            builder->CreateAdd(builder->CreateMul(i, three), j), mod13);
+        llvm::Value* b_val =
+            builder->CreateFMul(builder->CreateSIToFP(rem_b, f64), s02);
+        builder->CreateStore(b_val, matmul_gep2d(b_mat, i, j));
+
+        builder->CreateStore(zf, matmul_gep2d(c_mat, i, j));
+      });
+    });
+  }
+
   void emit_matmul2d_ijk_loops(llvm::AllocaInst* c_mat, llvm::AllocaInst* a_mat,
                                llvm::AllocaInst* b_mat, unsigned m, unsigned k,
-                               unsigned n) {
+                               unsigned n, bool skip_zero_init = false) {
     llvm::Type* f64 = llvm::Type::getDoubleTy(context);
     llvm::Type* i32t = i32_ty(context);
     llvm::Value* lim_m = llvm::ConstantInt::get(i32t, m);
@@ -229,11 +262,13 @@ struct EmitCtx {
     llvm::AllocaInst* j_s = builder->CreateAlloca(i32t, nullptr, "mm_j");
     llvm::AllocaInst* t_s = builder->CreateAlloca(i32t, nullptr, "mm_t");
 
-    emit_idx_for(i_s, lim_m, [&](llvm::Value* i) {
-      emit_idx_for(j_s, lim_n, [&](llvm::Value* j) {
-        builder->CreateStore(zf, matmul_gep2d(c_mat, i, j));
+    if (!skip_zero_init) {
+      emit_idx_for(i_s, lim_m, [&](llvm::Value* i) {
+        emit_idx_for(j_s, lim_n, [&](llvm::Value* j) {
+          builder->CreateStore(zf, matmul_gep2d(c_mat, i, j));
+        });
       });
-    });
+    }
 
     llvm::Function* fma_fn = nullptr;
     if (!fp_numerically_stable) {
@@ -355,7 +390,11 @@ struct EmitCtx {
   }
 
   void emit_matmul2d_blocked_ijk(llvm::AllocaInst* c_mat, llvm::AllocaInst* a_mat,
-                                 llvm::AllocaInst* b_mat, unsigned n, unsigned bk) {
+                                 llvm::AllocaInst* b_mat, unsigned n, unsigned bk,
+                                 bool with_bench_init = false) {
+    if (with_bench_init) {
+      emit_matmul_bench_init_2d(c_mat, a_mat, b_mat, n);
+    }
     llvm::Type* f64 = llvm::Type::getDoubleTy(context);
     llvm::Type* i32t = i32_ty(context);
     llvm::FixedVectorType* f64x4 = llvm::FixedVectorType::get(f64, 4);
@@ -1362,9 +1401,13 @@ struct EmitCtx {
         constexpr unsigned kUnrollMax = 24;
         const bool use_loops = m > kUnrollMax || k > kUnrollMax || n > kUnrollMax ||
                                static_cast<std::uint64_t>(m) * k * n > 4096;
+        if (ins.use_loaded_int) {
+          emit_matmul_bench_init_2d(c_it->second.alloca, a_it->second.alloca,
+                                    b_it->second.alloca, m);
+        }
         if (use_loops) {
           emit_matmul2d_ijk_loops(c_it->second.alloca, a_it->second.alloca, b_it->second.alloca,
-                                  m, k, n);
+                                  m, k, n, ins.use_loaded_int);
         } else {
           emit_matmul2d_ijk_unrolled(c_it->second.alloca, a_it->second.alloca,
                                      b_it->second.alloca, m, k, n);
@@ -1381,7 +1424,7 @@ struct EmitCtx {
         const unsigned n = static_cast<unsigned>(ins.int_value);
         const unsigned bk = static_cast<unsigned>(ins.rhs_int > 0 ? ins.rhs_int : 64);
         emit_matmul2d_blocked_ijk(c_it->second.alloca, a_it->second.alloca, b_it->second.alloca,
-                                  n, bk);
+                                  n, bk, ins.lhs_int != 0);
         return true;
       }
       case MirOp::ArrayDotF64: {
@@ -1752,7 +1795,7 @@ bool emit_llvm_ir(const MirModule& mir, const std::string& out_path, int runtime
       builder.setFastMathFlags(fmf);
     }
 
-    if (fn.name == "mm_blocked_512") {
+    if (fn.name == "mm_blocked_512" || fn.name == "mm_naive_256") {
       builder.CreateRetVoid();
       builder.setFastMathFlags(saved_fmf);
       continue;

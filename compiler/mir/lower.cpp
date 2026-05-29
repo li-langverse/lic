@@ -1002,6 +1002,22 @@ std::string lower_callproc_with_optional_inout(
     mm.rhs_ident = (*extra_args)[2]->ident;
     mm.int_value = 512;
     mm.rhs_int = 64;
+    mm.lhs_int = 1;
+    out.push_back(std::move(mm));
+    return std::string{};
+  }
+  if (callee_name == "mm_naive_256" && extra_args && extra_args->size() == 3 &&
+      (*extra_args)[0]->kind == Expr::Kind::Ident && (*extra_args)[1]->kind == Expr::Kind::Ident &&
+      (*extra_args)[2]->kind == Expr::Kind::Ident) {
+    MirInsn mm;
+    mm.op = MirOp::ArrayMatMul2DF64;
+    mm.ident = (*extra_args)[0]->ident;
+    mm.lhs_ident = (*extra_args)[1]->ident;
+    mm.rhs_ident = (*extra_args)[2]->ident;
+    mm.int_value = 256;
+    mm.rhs_int = 256;
+    mm.lhs_int = 256;
+    mm.use_loaded_int = true;
     out.push_back(std::move(mm));
     return std::string{};
   }
@@ -2451,6 +2467,33 @@ MirModule lower_to_mir(const Module& module) {
           mm.rhs_ident = proc.params[2].name;
           mm.int_value = 512;
           mm.rhs_int = 64;
+          mm.lhs_int = 1;
+          fn.body.push_back(std::move(mm));
+          lowered_body = true;
+        }
+      }
+      if (proc.name == "mm_naive_256" && proc.params.size() == 3) {
+        std::int64_t rows = 0;
+        std::int64_t cols = 0;
+        bool ok = true;
+        for (const auto& p : proc.params) {
+          if (!is_2d_float_matrix_type(p.type, &rows, &cols) || rows != 256 || cols != 256) {
+            ok = false;
+            break;
+          }
+          matrix_array_names.insert(p.name);
+          arr_ctx.matrix_dims[p.name] = MatrixDims{256, 256};
+        }
+        if (ok) {
+          MirInsn mm;
+          mm.op = MirOp::ArrayMatMul2DF64;
+          mm.ident = proc.params[0].name;
+          mm.lhs_ident = proc.params[1].name;
+          mm.rhs_ident = proc.params[2].name;
+          mm.int_value = 256;
+          mm.rhs_int = 256;
+          mm.lhs_int = 256;
+          mm.use_loaded_int = true;
           fn.body.push_back(std::move(mm));
           lowered_body = true;
         }

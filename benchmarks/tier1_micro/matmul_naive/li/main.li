@@ -1,6 +1,6 @@
-# Pure-Li matmul (256×256).
+# Pure-Li matmul (256×256) — IKJ matches C++ li_matmul_naive_kernel (init + GEMM + checksum).
 
-extern proc li_rt_volatile_sink_f64(v: float) -> unit
+extern proc li_rt_volatile_sink_f64(v: float) raises IO -> unit
   requires true
   ensures true
 
@@ -78,7 +78,7 @@ def mm_lut_b(rem: int) -> float
     return 0.24
   return 0.0
 
-def main() -> int
+def main() raises IO -> int
   requires true
   ensures result == 0
   decreases 0

@@ -143,12 +143,18 @@ struct EmitCtx {
     return enable_array_simd;
   }
 
+  llvm::AllocaInst* alloca_at_entry(llvm::Type* ty, const std::string& name) {
+    llvm::BasicBlock& entry = func->getEntryBlock();
+    llvm::IRBuilder<> entry_builder(&entry, entry.begin());
+    return entry_builder.CreateAlloca(ty, nullptr, name);
+  }
+
   llvm::AllocaInst* ensure_simd_f64x4(const std::string& name) {
     auto it = simd_f64x4_locals.find(name);
     if (it != simd_f64x4_locals.end()) {
       return it->second;
     }
-    llvm::AllocaInst* slot = builder->CreateAlloca(vec4_f64(), nullptr, name);
+    llvm::AllocaInst* slot = alloca_at_entry(vec4_f64(), name);
     simd_f64x4_locals[name] = slot;
     return slot;
   }
@@ -439,8 +445,7 @@ struct EmitCtx {
     if (it != int_locals.end()) {
       return it->second;
     }
-    llvm::AllocaInst* slot =
-        builder->CreateAlloca(i32_ty(context), nullptr, name);
+    llvm::AllocaInst* slot = alloca_at_entry(i32_ty(context), name);
     int_locals[name] = slot;
     return slot;
   }
@@ -451,7 +456,7 @@ struct EmitCtx {
       return it->second;
     }
     llvm::AllocaInst* slot =
-        builder->CreateAlloca(llvm::Type::getDoubleTy(context), nullptr, name);
+        alloca_at_entry(llvm::Type::getDoubleTy(context), name);
     float_locals[name] = slot;
     return slot;
   }
@@ -465,8 +470,7 @@ struct EmitCtx {
     if (it != ptr_locals.end()) {
       return it->second;
     }
-    llvm::AllocaInst* slot =
-        builder->CreateAlloca(i8_ptr(context), nullptr, name);
+    llvm::AllocaInst* slot = alloca_at_entry(i8_ptr(context), name);
     ptr_locals[name] = slot;
     return slot;
   }
@@ -487,8 +491,7 @@ struct EmitCtx {
     if (it != i64_locals.end()) {
       return it->second;
     }
-    llvm::AllocaInst* slot =
-        builder->CreateAlloca(i64_ty(context), nullptr, name);
+    llvm::AllocaInst* slot = alloca_at_entry(i64_ty(context), name);
     i64_locals[name] = slot;
     return slot;
   }
@@ -1572,6 +1575,21 @@ bool emit_llvm_ir(const MirModule& mir, const std::string& out_path, int runtime
                               {i32_ty(context), i32_ty(context), i32_ty(context)},
                               false));
   module->getOrInsertFunction(
+      "li_rt_world_write_path",
+      llvm::FunctionType::get(i32_ty(context),
+                              {i8_ptr(context), i32_ty(context), i32_ty(context), i32_ty(context)},
+                              false));
+  module->getOrInsertFunction(
+      "li_rt_world_read_path",
+      llvm::FunctionType::get(i32_ty(context), {i8_ptr(context)}, false));
+  module->getOrInsertFunction(
+      "li_rt_world_file_roundtrip_path",
+      llvm::FunctionType::get(i32_ty(context),
+                              {i8_ptr(context), i32_ty(context), i32_ty(context), i32_ty(context)},
+                              false));
+  module->getOrInsertFunction("li_rt_world_checkpoint_path_default",
+                              llvm::FunctionType::get(i8_ptr(context), {}, false));
+  module->getOrInsertFunction(
       "li_rt_studio_timeline_playing", llvm::FunctionType::get(i32_ty(context), {}, false));
   module->getOrInsertFunction(
       "li_rt_studio_timeline_toggle_play", llvm::FunctionType::get(i32_ty(context), {}, false));
@@ -1594,6 +1612,25 @@ bool emit_llvm_ir(const MirModule& mir, const std::string& out_path, int runtime
   module->getOrInsertFunction(
       "li_rt_studio_mcp_tool_name",
       llvm::FunctionType::get(i8_ptr(context), {i32_ty(context)}, false));
+  module->getOrInsertFunction(
+      "li_rt_studio_viewport_display_bg", llvm::FunctionType::get(i32_ty(context), {}, false));
+  module->getOrInsertFunction("li_rt_studio_viewport_display_set_bg",
+                              llvm::FunctionType::get(i32_ty(context), {i32_ty(context)}, false));
+  module->getOrInsertFunction("li_rt_studio_viewport_display_particle_tier",
+                              llvm::FunctionType::get(i32_ty(context), {}, false));
+  module->getOrInsertFunction("li_rt_studio_viewport_display_set_particle_tier",
+                              llvm::FunctionType::get(i32_ty(context), {i32_ty(context)}, false));
+  module->getOrInsertFunction("li_rt_studio_viewport_display_biomol_style",
+                              llvm::FunctionType::get(i32_ty(context), {}, false));
+  module->getOrInsertFunction("li_rt_studio_viewport_display_set_biomol_style",
+                              llvm::FunctionType::get(i32_ty(context), {i32_ty(context)}, false));
+  module->getOrInsertFunction("li_rt_studio_viewport_display_reset_defaults",
+                              llvm::FunctionType::get(i32_ty(context), {i32_ty(context)}, false));
+  module->getOrInsertFunction("li_rt_studio_viewport_display_particle_draw_points",
+                              llvm::FunctionType::get(i32_ty(context), {}, false));
+  module->getOrInsertFunction("li_rt_studio_viewport_display_sync_scientific_step",
+                              llvm::FunctionType::get(i32_ty(context),
+                                                       {i32_ty(context), i32_ty(context)}, false));
   module->getOrInsertFunction("li_rt_lig_device_kind",
                               llvm::FunctionType::get(i32_ty(context), {}, false));
   module->getOrInsertFunction("li_rt_lig_backend_available",

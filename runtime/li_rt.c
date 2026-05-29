@@ -360,6 +360,15 @@ static int32_t li_rt_studio_mcp_tool_match_name(const char* name) {
   if (li_rt_str_eq(name, "studio_adaptive_layout")) {
     return 8;
   }
+  if (li_rt_str_eq(name, "studio_set_viewport_background")) {
+    return 9;
+  }
+  if (li_rt_str_eq(name, "studio_set_particle_display")) {
+    return 10;
+  }
+  if (li_rt_str_eq(name, "studio_set_biomol_style")) {
+    return 11;
+  }
   return 0;
 }
 
@@ -385,9 +394,88 @@ const char* li_rt_studio_mcp_tool_name(int32_t tool_id) {
       return "chem_dft_run";
     case 8:
       return "studio_adaptive_layout";
+    case 9:
+      return "studio_set_viewport_background";
+    case 10:
+      return "studio_set_particle_display";
+    case 11:
+      return "studio_set_biomol_style";
     default:
       return "";
   }
+}
+
+/* PH-UX viewport display — CPU paint_blit placeholders (not wgpu MD/PDB). */
+static int32_t g_studio_viewport_bg = 0;
+static int32_t g_studio_viewport_particle_tier = -1;
+static int32_t g_studio_viewport_particle_draw_points = 0;
+static int32_t g_studio_viewport_biomol_style = 0;
+
+int32_t li_rt_studio_viewport_display_bg(void) { return g_studio_viewport_bg; }
+
+int32_t li_rt_studio_viewport_display_set_bg(int32_t bg) {
+  if (bg < 0 || bg > 2) {
+    return g_studio_viewport_bg;
+  }
+  g_studio_viewport_bg = bg;
+  return g_studio_viewport_bg;
+}
+
+int32_t li_rt_studio_viewport_display_particle_tier(void) { return g_studio_viewport_particle_tier; }
+
+int32_t li_rt_studio_viewport_display_set_particle_tier(int32_t tier_id) {
+  if (tier_id < -1 || tier_id > 2) {
+    return g_studio_viewport_particle_tier;
+  }
+  g_studio_viewport_particle_tier = tier_id;
+  g_studio_viewport_particle_draw_points = 0;
+  return g_studio_viewport_particle_tier;
+}
+
+int32_t li_rt_studio_viewport_display_particle_draw_points(void) {
+  return g_studio_viewport_particle_draw_points;
+}
+
+int32_t li_rt_studio_viewport_display_sync_scientific_step(int32_t tier_id, int32_t draw_points) {
+  if (tier_id < -1 || tier_id > 2) {
+    return 0;
+  }
+  if (draw_points < 0) {
+    return 0;
+  }
+  g_studio_viewport_particle_tier = tier_id;
+  g_studio_viewport_particle_draw_points = draw_points;
+  return 1;
+}
+
+int32_t li_rt_studio_viewport_display_biomol_style(void) { return g_studio_viewport_biomol_style; }
+
+int32_t li_rt_studio_viewport_display_set_biomol_style(int32_t style) {
+  if (style < 0 || style > 2) {
+    return g_studio_viewport_biomol_style;
+  }
+  g_studio_viewport_biomol_style = style;
+  return g_studio_viewport_biomol_style;
+}
+
+int32_t li_rt_studio_viewport_display_reset_defaults(int32_t profile_id) {
+  g_studio_viewport_bg = 0;
+  g_studio_viewport_particle_tier = -1;
+  g_studio_viewport_particle_draw_points = 0;
+  g_studio_viewport_biomol_style = 0;
+  if (profile_id == 6) {
+    g_studio_viewport_bg = 1;
+    g_studio_viewport_particle_tier = 1;
+    g_studio_viewport_particle_draw_points = 10000;
+    g_studio_viewport_biomol_style = 0;
+  }
+  if (profile_id == 7) {
+    g_studio_viewport_bg = 2;
+    g_studio_viewport_particle_tier = 0;
+    g_studio_viewport_particle_draw_points = 1000;
+    g_studio_viewport_biomol_style = 1;
+  }
+  return 1;
 }
 
 static int32_t g_studio_timeline_playing = 0;
@@ -490,6 +578,102 @@ int32_t li_rt_studio_demo_profile_from_env(void) {
   return id;
 }
 
+int32_t li_rt_studio_demo_frames_from_env(void) {
+  const char* v = getenv("STUDIO_DEMO_FRAMES");
+  if (v == NULL || v[0] == '\0') {
+    return 3;
+  }
+  const int n = atoi(v);
+  if (n < 1) {
+    return 1;
+  }
+  if (n > 64) {
+    return 64;
+  }
+  return (int32_t)n;
+}
+
+static int32_t li_rt_studio_env_flag_one(const char* name);
+
+static int32_t g_studio_demo_loop_tick = 0;
+
+int32_t li_rt_studio_demo_loop_tick_from_env(void) {
+  const char* v = getenv("STUDIO_DEMO_LOOP_TICK");
+  if (v != NULL && v[0] != '\0') {
+    const int n = atoi(v);
+    if (n < 0) {
+      return 0;
+    }
+    if (n > 1000000) {
+      return 1000000;
+    }
+    return (int32_t)n;
+  }
+  if (li_rt_studio_env_flag_one("STUDIO_DEMO_LOOP_AUTO")) {
+    const int32_t t = g_studio_demo_loop_tick;
+    g_studio_demo_loop_tick = (t >= 1000000) ? 0 : t + 1;
+    return t;
+  }
+  return 0;
+}
+
+static int32_t li_rt_studio_env_flag_one(const char* name) {
+  const char* v = getenv(name);
+  return (v != NULL && v[0] == '1' && v[1] == '\0') ? 1 : 0;
+}
+
+static int32_t g_studio_shell_pointer_down = 0;
+static float g_studio_shell_pointer_x = 0.0f;
+static float g_studio_shell_pointer_y = 0.0f;
+static int32_t g_studio_shell_key_escape = 0;
+static int32_t g_studio_shell_key_cmd_k = 0;
+static int32_t g_studio_shell_key_digit = 0;
+
+static void li_rt_studio_shell_input_apply_env(void) {
+  g_studio_shell_pointer_down = 0;
+  g_studio_shell_pointer_x = 0.0f;
+  g_studio_shell_pointer_y = 0.0f;
+  g_studio_shell_key_escape = 0;
+  g_studio_shell_key_cmd_k = 0;
+  g_studio_shell_key_digit = 0;
+
+  g_studio_shell_pointer_down = li_rt_studio_env_flag_one("STUDIO_SHELL_POINTER_DOWN");
+  const char* px = getenv("STUDIO_SHELL_POINTER_X");
+  if (px != NULL && px[0] != '\0') {
+    g_studio_shell_pointer_x = (float)atof(px);
+  }
+  const char* py = getenv("STUDIO_SHELL_POINTER_Y");
+  if (py != NULL && py[0] != '\0') {
+    g_studio_shell_pointer_y = (float)atof(py);
+  }
+  g_studio_shell_key_escape = li_rt_studio_env_flag_one("STUDIO_SHELL_KEY_ESCAPE");
+  g_studio_shell_key_cmd_k = li_rt_studio_env_flag_one("STUDIO_SHELL_KEY_CMD_K");
+  const char* digit = getenv("STUDIO_SHELL_KEY_DIGIT");
+  if (digit != NULL && digit[0] != '\0') {
+    const int d = atoi(digit);
+    if (d >= 1 && d <= 5) {
+      g_studio_shell_key_digit = d;
+    }
+  }
+
+  const char* mock = getenv("STUDIO_SHELL_INPUT_MOCK");
+  if (mock != NULL && mock[0] != '\0') {
+    if (strstr(mock, "cmd_k") != NULL) {
+      g_studio_shell_key_cmd_k = 1;
+    }
+    if (strstr(mock, "escape") != NULL) {
+      g_studio_shell_key_escape = 1;
+    }
+    const char* digit_mock = strstr(mock, "digit=");
+    if (digit_mock != NULL) {
+      const int d = atoi(digit_mock + 6);
+      if (d >= 1 && d <= 5) {
+        g_studio_shell_key_digit = d;
+      }
+    }
+  }
+}
+
 /* PH-HW HW-1 — lig.present trusted edge (SDL host; wgpu-rs readback not in-tree). */
 #define LI_RT_LIG_PIXEL_SOURCE_NONE 0
 #define LI_RT_LIG_PIXEL_SOURCE_HOST_CPU 1
@@ -515,13 +699,6 @@ static int32_t li_rt_lig_env_wgpu_readback(void) {
 static void li_rt_lig_refresh_host_active(void) {
   g_lig_host_present_active = li_rt_lig_env_host_present();
 }
-
-static int32_t g_studio_shell_pointer_down = 0;
-static float g_studio_shell_pointer_x = 0.0f;
-static float g_studio_shell_pointer_y = 0.0f;
-static int32_t g_studio_shell_key_escape = 0;
-static int32_t g_studio_shell_key_cmd_k = 0;
-static int32_t g_studio_shell_key_digit = 0;
 
 static int32_t li_rt_lig_try_sdl_present_host(int32_t viewport_w, int32_t viewport_h) {
   const char* bin = getenv("STUDIO_SHELL_PRESENT_HOST_BIN");
@@ -655,18 +832,7 @@ int32_t li_rt_studio_shell_input_key_digit(void) {
 }
 
 int32_t li_rt_studio_host_present_tick(int32_t viewport_w, int32_t viewport_h) {
-  const char* mock = getenv("STUDIO_SHELL_INPUT_MOCK");
-  if (mock != NULL && mock[0] != '\0') {
-    g_studio_shell_key_cmd_k = (strstr(mock, "cmd_k") != NULL) ? 1 : 0;
-    g_studio_shell_key_escape = (strstr(mock, "escape") != NULL) ? 1 : 0;
-    const char* digit = strstr(mock, "digit=");
-    if (digit != NULL) {
-      int d = atoi(digit + 6);
-      if (d >= 1 && d <= 5) {
-        g_studio_shell_key_digit = d;
-      }
-    }
-  }
+  li_rt_studio_shell_input_apply_env();
   (void)li_rt_lig_wgpu_swapchain_create(viewport_w, viewport_h);
   return li_rt_lig_wgpu_present_frame(viewport_w > 0 && viewport_h > 0 ? 1 : 0);
 }
@@ -920,6 +1086,84 @@ int32_t li_rt_world_roundtrip_fields(int32_t name_slot, int32_t tick, int32_t en
     return 0;
   }
   return 1;
+}
+
+static int32_t li_rt_world_path_safe(const char* path) {
+  if (path == NULL || path[0] == '\0') {
+    return 0;
+  }
+  if (strstr(path, "..") != NULL) {
+    return 0;
+  }
+  return 1;
+}
+
+int32_t li_rt_world_write_path(const char* path, int32_t name_slot, int32_t tick, int32_t entity_count) {
+  if (!li_rt_world_path_safe(path)) {
+    return 0;
+  }
+  const char* line = li_rt_world_serialize_slot(name_slot, tick, entity_count);
+  FILE* f = fopen(path, "w");
+  if (f == NULL) {
+    return 0;
+  }
+  if (fprintf(f, "%s\n", line) < 0) {
+    fclose(f);
+    return 0;
+  }
+  if (fclose(f) != 0) {
+    return 0;
+  }
+  return 1;
+}
+
+int32_t li_rt_world_read_path(const char* path) {
+  if (!li_rt_world_path_safe(path)) {
+    return 0;
+  }
+  FILE* f = fopen(path, "r");
+  if (f == NULL) {
+    return 0;
+  }
+  char buf[LI_RT_WORLD_LINE_MAX];
+  if (fgets(buf, sizeof(buf), f) == NULL) {
+    fclose(f);
+    return 0;
+  }
+  fclose(f);
+  size_t n = strlen(buf);
+  while (n > 0 && (buf[n - 1] == '\n' || buf[n - 1] == '\r')) {
+    buf[--n] = '\0';
+  }
+  return li_rt_world_parse_line(buf);
+}
+
+int32_t li_rt_world_file_roundtrip_path(const char* path, int32_t name_slot, int32_t tick,
+                                        int32_t entity_count) {
+  if (li_rt_world_write_path(path, name_slot, tick, entity_count) != 1) {
+    return 0;
+  }
+  if (li_rt_world_read_path(path) != 1) {
+    return 0;
+  }
+  if (li_rt_world_parsed.name_slot != name_slot) {
+    return 0;
+  }
+  if (li_rt_world_parsed.tick != tick) {
+    return 0;
+  }
+  if (li_rt_world_parsed.entity_count != entity_count) {
+    return 0;
+  }
+  return 1;
+}
+
+const char* li_rt_world_checkpoint_path_default(void) {
+  const char* v = getenv("LI_WORLD_CHECKPOINT_PATH");
+  if (v != NULL && v[0] != '\0' && li_rt_world_path_safe(v)) {
+    return v;
+  }
+  return "/tmp/li_world_checkpoint.li";
 }
 
 int32_t li_rt_path_exact(const char* path, const char* want) {

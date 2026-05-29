@@ -18,7 +18,8 @@ Cross-cutting program IDs. Implementation order respects dependencies in the vis
 | **PH-VOXEL** | VOXEL-0…5 | PH-GD-5 |
 | **PH-PUB** | PUB-0…5 | PH-UX, `sim.viz` |
 | **PH-ML** | ML-0…5 | PH-HW-1 |
-| **PH-AGENT** | AGENT-0…6 | `lic check --format=json` |
+| **PH-LLM** | LLM-01…08 | PH-ML Wave 1 · **Program:** [PH-LLM-program.md](PH-LLM-program.md) |
+| **PH-AGENT** | AGENT-0…6 | `lic check --format=json`, PH-LLM WP-LLM-04 smoke |
 | **PH-PORT** | PORT-0…2 | LLVM triples |
 | **PH-HW** | HW-0…4 | `lig` (WP1 governance; WP2+ `packages/lig`) |
 | **PH-COMPLY** | COMPLY-0…4 | governance |

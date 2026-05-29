@@ -1,95 +1,47 @@
-/* Per-vertical native frame — CPU framebuffer (no RenderReadPixels); honest native_pixels for MP4.
- * Profile chip height/color aligned with packages/li-studio/src/lib.li contracts. */
+/* Per-vertical native frame — paint-blit shell chrome (layout/paint contracts from li-ui + li-studio).
+ * capture_mode paint_blit: dock/timeline/inspector/viewport regions (not cpu_chip_only stub).
+ * Set STUDIO_VERTICALS_CAPTURE_MODE=cpu_chip_only for legacy chip+grid only. */
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 
-typedef struct {
-  int id;
-  const char* slug;
-  int tag_h;
-  unsigned char r;
-  unsigned char g;
-  unsigned char b;
-} ProfileVisual;
+#include "studio_shell_paint_fb.h"
 
-static const ProfileVisual k_profiles[] = {
-    {1, "game", 21, 61, 214, 255},
-    {2, "sim_rl", 22, 46, 230, 168},
-    {3, "sim_automotive", 23, 255, 179, 71},
-    {4, "sim_robotics", 24, 255, 179, 71},
-    {5, "sim_additive", 25, 255, 179, 71},
-    {6, "sim_scientific", 26, 255, 179, 71},
-    {7, "sim_drug_design", 27, 124, 92, 255},
-};
-
-static const ProfileVisual* find_profile(int profile_id) {
-  for (size_t i = 0; i < sizeof(k_profiles) / sizeof(k_profiles[0]); i++) {
-    if (k_profiles[i].id == profile_id) {
-      return &k_profiles[i];
+static void draw_legacy_chip_only(unsigned char* rgb, int w, int h, const ShellProfileVisual* pv) {
+  for (int y = 0; y < h; y++) {
+    for (int x = 0; x < w; x++) {
+      unsigned char* p = rgb + (y * w + x) * 3;
+      p[0] = 13;
+      p[1] = 17;
+      p[2] = 23;
     }
   }
-  return NULL;
-}
-
-static void put_px(unsigned char* rgb, int w, int h, int x, int y, unsigned char r,
-                   unsigned char g, unsigned char b) {
-  if (x < 0 || y < 0 || x >= w || y >= h) {
-    return;
-  }
-  unsigned char* p = rgb + (y * w + x) * 3;
-  p[0] = r;
-  p[1] = g;
-  p[2] = b;
-}
-
-static void fill_rect(unsigned char* rgb, int w, int h, int x, int y, int rw, int rh,
-                      unsigned char r, unsigned char g, unsigned char b) {
-  for (int yy = y; yy < y + rh && yy < h; yy++) {
-    for (int xx = x; xx < x + rw && xx < w; xx++) {
-      put_px(rgb, w, h, xx, yy, r, g, b);
-    }
-  }
-}
-
-static void draw_hline(unsigned char* rgb, int w, int h, int x0, int x1, int y,
-                       unsigned char r, unsigned char g, unsigned char b) {
-  for (int x = x0; x <= x1; x++) {
-    put_px(rgb, w, h, x, y, r, g, b);
-  }
-}
-
-static void draw_vline(unsigned char* rgb, int w, int h, int x, int y0, int y1,
-                       unsigned char r, unsigned char g, unsigned char b) {
-  for (int y = y0; y <= y1; y++) {
-    put_px(rgb, w, h, x, y, r, g, b);
-  }
-}
-
-static void draw_shell(unsigned char* rgb, int w, int h, const ProfileVisual* pv) {
-  fill_rect(rgb, w, h, 0, 0, w, h, 13, 17, 23);
   for (int x = 0; x < w; x += 64) {
-    draw_vline(rgb, w, h, x, 0, h - 1, 48, 54, 61);
+    for (int y = 0; y < h; y++) {
+      unsigned char* p = rgb + (y * w + x) * 3;
+      p[0] = 48;
+      p[1] = 54;
+      p[2] = 61;
+    }
   }
   for (int y = 0; y < h; y += 64) {
-    draw_hline(rgb, w, h, 0, w - 1, y, 48, 54, 61);
-  }
-  int sx = w / 4;
-  int sy = h / 4;
-  int sw = w / 2;
-  int sh = h / 2;
-  for (int i = 0; i < sw; i++) {
-    put_px(rgb, w, h, sx + i, sy, 251, 146, 60);
-    put_px(rgb, w, h, sx + i, sy + sh, 251, 146, 60);
-  }
-  for (int i = 0; i < sh; i++) {
-    put_px(rgb, w, h, sx, sy + i, 251, 146, 60);
-    put_px(rgb, w, h, sx + sw, sy + i, 251, 146, 60);
+    for (int x = 0; x < w; x++) {
+      unsigned char* p = rgb + (y * w + x) * 3;
+      p[0] = 48;
+      p[1] = 54;
+      p[2] = 61;
+    }
   }
   int chip_w = 88;
   int chip_x = w - chip_w - 12;
-  fill_rect(rgb, w, h, chip_x, 12, chip_w, pv->tag_h, pv->r, pv->g, pv->b);
-  fill_rect(rgb, w, h, 12, h - 36, 520, 24, 34, 197, 94);
+  for (int yy = 12; yy < 12 + pv->tag_h && yy < h; yy++) {
+    for (int xx = chip_x; xx < chip_x + chip_w && xx < w; xx++) {
+      unsigned char* p = rgb + (yy * w + xx) * 3;
+      p[0] = pv->chip_r;
+      p[1] = pv->chip_g;
+      p[2] = pv->chip_b;
+    }
+  }
 }
 
 static int save_ppm(const unsigned char* rgb, int w, int h, const char* path) {
@@ -103,16 +55,24 @@ static int save_ppm(const unsigned char* rgb, int w, int h, const char* path) {
   return 0;
 }
 
+static int capture_mode_paint_blit(const char* env_mode, int profile_id) {
+  (void)profile_id;
+  if (env_mode != NULL && strcmp(env_mode, "cpu_chip_only") == 0) {
+    return 0;
+  }
+  return 1;
+}
 
 static int profile_from_env_slug(const char** slug_out) {
   const char* env = getenv("STUDIO_DEMO_PROFILE");
   if (env == NULL || env[0] == '\0') {
     return 0;
   }
-  for (size_t i = 0; i < sizeof(k_profiles) / sizeof(k_profiles[0]); i++) {
-    if (strcmp(k_profiles[i].slug, env) == 0) {
-      *slug_out = k_profiles[i].slug;
-      return k_profiles[i].id;
+  for (int id = 1; id <= 7; id++) {
+    const ShellProfileVisual* p = shell_profile_find(id);
+    if (p != NULL && strcmp(p->slug, env) == 0) {
+      *slug_out = p->slug;
+      return p->id;
     }
   }
   return 0;
@@ -124,6 +84,7 @@ int main(int argc, char** argv) {
   int profile_id = 1;
   const char* out_dir = ".";
   const char* slug = "game";
+  const char* env_mode = getenv("STUDIO_VERTICALS_CAPTURE_MODE");
   const int env_pid = profile_from_env_slug(&slug);
   if (env_pid > 0) {
     profile_id = env_pid;
@@ -141,24 +102,36 @@ int main(int argc, char** argv) {
       out_dir = argv[++i];
     }
   }
-  const ProfileVisual* pv = find_profile(profile_id);
+  const ShellProfileVisual* pv = shell_profile_find(profile_id);
   if (!pv) {
     fprintf(stderr, "unknown profile_id %d\n", profile_id);
     return 1;
   }
+  slug = pv->slug;
   size_t n = (size_t)width * (size_t)height * 3;
   unsigned char* rgb = (unsigned char*)calloc(n, 1);
   if (!rgb) {
     return 2;
   }
-  draw_shell(rgb, width, height, pv);
+  const int paint_blit = capture_mode_paint_blit(env_mode, profile_id);
+  if (paint_blit) {
+    /* studio_vertical_demo_compose(game): palette path has_selection=1, playhead ~0.35 */
+    shell_paint_frame(rgb, width, height, pv, 1, 0.35f);
+  } else {
+    draw_legacy_chip_only(rgb, width, height, pv);
+  }
   char path[512];
   snprintf(path, sizeof(path), "%s/frame-000.ppm", out_dir);
   int ok = save_ppm(rgb, width, height, path);
   free(rgb);
+  const char* capture_mode = paint_blit ? "paint_blit" : "cpu_chip_only";
+  const char* pixel_source = paint_blit ? "paint_blit" : "cpu_chip_only";
+  const char* backend = paint_blit ? "paint_blit_shell" : "cpu_framebuffer";
   printf(
       "{\"native_pixels\":%s,\"profile_id\":%d,\"slug\":\"%s\",\"slug_expected\":\"%s\","
-      "\"ppm\":\"%s\",\"width\":%d,\"height\":%d,\"backend\":\"cpu_framebuffer\"}\n",
-      ok == 0 ? "1" : "0", profile_id, slug, pv->slug, path, width, height);
+      "\"ppm\":\"%s\",\"width\":%d,\"height\":%d,\"backend\":\"%s\","
+      "\"capture_mode\":\"%s\",\"pixel_source\":\"%s\"}\n",
+      ok == 0 ? "1" : "0", profile_id, slug, pv->slug, path, width, height, backend, capture_mode,
+      pixel_source);
   return ok == 0 ? 0 : 5;
 }

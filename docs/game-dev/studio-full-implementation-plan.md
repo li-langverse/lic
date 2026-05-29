@@ -46,7 +46,7 @@ Recording matrix: [VERTICALS-RECORDING.md](../demo/VERTICALS-RECORDING.md) — a
 |----|-------|----------|
 | PH-GD-0 | **DONE** | Vision + RFC index |
 | PH-GD-1 | **DONE** (MVP) | Shell demo, outliner, timeline, MCP IDs |
-| PH-GD-2 | **PARTIAL** | `studio_game_world_checkpoint_*`; no `world.li` serialize I/O |
+| PH-GD-2 | **PARTIAL** | `studio_game_world_checkpoint_*` + `world_save_to_path` / `world_load_from_path` (single-line `world.li`); scene graph / assets still stub |
 | PH-SIM SIM-0 | **DONE** | Profile bridge, contracts |
 | PH-SIM SIM-1 | **DONE** | `sim_step` / `studio_sim_step_hook` |
 | PH-SIM SIM-2 | **DONE** | Replay metadata on session |
@@ -56,7 +56,7 @@ Recording matrix: [VERTICALS-RECORDING.md](../demo/VERTICALS-RECORDING.md) — a
 | PH-DRUG DRUG-0 | **DONE** | LITL workflow stub |
 | PH-DRUG DRUG-1 | **PARTIAL** | Adaptive inspector payloads, MCP harness |
 | PH-AGENT AGENT-0 | **DONE** | Tool ID registry |
-| PH-AGENT AGENT-1 | **PARTIAL** | In-process `studio_mcp_tool_dispatch`; no `lis mcp li-engine` |
+| PH-AGENT AGENT-1 | **PARTIAL** | In-process `studio_mcp_tool_dispatch` plus `StudioAgentRun` world-patch → `lic_check` → `lic_build` state model; no `lis mcp li-engine` |
 | AL-1 `verticals.toml` | **DONE** | Layer B registry (15 rows) |
 | PH-UX UX-02…11 | **PARTIAL** | Compose-level; mocks for timeline/viewport/contrast |
 | PH-HW HW-3 | **PARTIAL** | Host present / input bridge |
@@ -177,7 +177,7 @@ Cross-tracks (not separate phases above): **PH-PORT**, **PH-COMPLY**, **PH-CIN**
 | ID | Title | Profile | State | Target | Proof gate | Cx | Blocks | Par? |
 |----|-------|---------|-------|--------|------------|-----|--------|------|
 | WP-AG-01 | MCP tool registry AGENT-0 | all | **done** | Stable tool IDs | `studio_mcp_tools.li` | S | — | Y |
-| WP-AG-02 | In-process dispatch AGENT-1 | all | **partial** | `studio_mcp_tool_dispatch` | `studio_mcp_dispatch_run.li` | M | WP-AG-01 | Y |
+| WP-AG-02 | In-process dispatch AGENT-1 | all | **partial** | `studio_mcp_tool_dispatch` + `StudioAgentRun` state model | `studio_mcp_dispatch_run.li`, `studio_agentic_run.li` | M | WP-AG-01 | Y |
 | WP-AG-03 | `lis mcp li-engine` HTTP server | all | stub | Wire tools to studio | integration smoke | L | WP-AG-02 | N |
 | WP-AG-04 | `@cursor/sdk` apply_patch loop | all | stub | Prompt → patch → `lic check` | agent eval set | L | WP-AG-03, WP-GD-07 | N |
 | WP-AG-05 | `chem_dft_run` / `am_export_print` live | sim_drug, sim_additive | stub | Domain dispatch | composable per tool | M | WP-AG-03 | Y |

@@ -112,3 +112,76 @@ def physics_sync_to_scene(world: PhysicsWorld) -> unit
   decreases 0
 =
   return
+
+# PH-GAME-01 — session-sized rigid state (studio persists on SimSessionStub; not ephemeral world).
+type GamePhysicsState = object
+  public px: float
+  public py: float
+  public pz: float
+  public vx: float
+  public vy: float
+  public vz: float
+  public step_count: int
+
+def game_physics_state_default() -> GamePhysicsState
+  requires true
+  ensures result.step_count == 0
+  ensures result.px == 0.0
+  ensures result.pz == 0.0
+  decreases 0
+=
+  var s: GamePhysicsState
+  s.px = 0.0
+  s.py = 0.0
+  s.pz = 0.0
+  s.vx = 0.0
+  s.vy = 0.0
+  s.vz = 0.0
+  s.step_count = 0
+  return s
+
+def game_physics_world_apply_state(world: var PhysicsWorld, state: GamePhysicsState) -> unit
+  requires true
+  ensures true
+  decreases 0
+=
+  world.body.px = state.px
+  world.body.py = state.py
+  world.body.pz = state.pz
+  world.body.vx = state.vx
+  world.body.vy = state.vy
+  world.body.vz = state.vz
+  world.step_count = state.step_count
+
+def game_physics_world_read_state(world: PhysicsWorld) -> GamePhysicsState
+  requires true
+  ensures result.px == world.body.px
+  ensures result.step_count == world.step_count
+  decreases 0
+=
+  var s: GamePhysicsState
+  s.px = world.body.px
+  s.py = world.body.py
+  s.pz = world.body.pz
+  s.vx = world.body.vx
+  s.vy = world.body.vy
+  s.vz = world.body.vz
+  s.step_count = world.step_count
+  return s
+
+def game_physics_step_hook(state: var GamePhysicsState, frame_dt: float) -> unit
+  requires frame_dt > 0.0
+  ensures true
+  decreases state.step_count
+=
+  var world: PhysicsWorld = physics_world_game_default()
+  game_physics_world_apply_state(world, state)
+  physics_step(world, frame_dt)
+  var next: GamePhysicsState = game_physics_world_read_state(world)
+  state.px = next.px
+  state.py = next.py
+  state.pz = next.pz
+  state.vx = next.vx
+  state.vy = next.vy
+  state.vz = next.vz
+  state.step_count = next.step_count

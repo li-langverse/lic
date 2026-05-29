@@ -13,6 +13,7 @@ All notable changes to Li are documented here. The format follows
 
 ### Added
 
+- **PH-AGENT-2 Studio agent run:** `packages/li-studio/src/lib.li` now exposes `StudioAgentRun` for the world-patch → `lic_check` → `lic_build` tool sequence with `used_html_mock == 0`; package/root smokes `studio_agentic_run.li` and `import_studio_agentic_run.li` — [2026-05-28-studio-agentic-run.md](docs/release-notes/2026-05-28-studio-agentic-run.md).
 - **PH-DB planning docs:** `ph-db-battle-plan.md`, `ph-db-ci-hosting-plan.md`, `ph-db-execution-tracker.md`, WP verification matrix cross-link — supersedes conflicting PRs #323–#325.
 
 - **WP2 md_* tier2 fill:** 13 catalog `md_*` harness stubs from `md_lennard_jones` template, `bench.py` `TIER2_BENCHES` rows, runnable fixes for `three_body_pure` / `schrodinger_1d_barrier` / `ragdoll_chain` / `orbit_two_body` / `fdtd_waveguide_2d` — [2026-05-25-bench-fill-wp2-md.md](docs/release-notes/2026-05-25-bench-fill-wp2-md.md).
@@ -24,6 +25,7 @@ All notable changes to Li are documented here. The format follows
 - **PH-HW viewport phase B:** `LIG_WGPU_READBACK=1` wgpu readback present stub (`native_pixel_source=3`, kid=4); studio vertical demo exit 54/55 — [2026-05-27-wgpu-readback-phase-b.md](docs/release-notes/2026-05-27-wgpu-readback-phase-b.md).
 
 - **PH-HW viewport phase A:** `lig_present_blit_paint_summary` / `present_blit_rgba8` scaffold (`native_pixel_source`); studio vertical demo requires paint blit before host present — [2026-05-27-studio-wgpu-readback-a.md](docs/release-notes/2026-05-27-studio-wgpu-readback-a.md).
+- **PH-HW viewport bench probe:** `lig_present_bench_probe` + `render_viewport_host_fps_counter`; bench JSON reports `paint_blit_host` / `native_pixels` when `LIG_HOST_PRESENT=1`.
 
 - **WP-DRUG-03 Studio adaptive LITL panels:** `layout_studio_shell_drug_litl`, `studio_adaptive_layout_for_drug_tick`, MCP `studio_mcp_dispatch_adaptive_drug` — [2026-05-27-studio-drug-litl-adaptive.md](docs/release-notes/2026-05-27-studio-drug-litl-adaptive.md).
 - **Studio drug vertical demo:** `studio_vertical_demo_frame` uses `studio_compose_shell_drug_litl` for profile 7 (native capture + paint blit) — [2026-05-27-studio-drug-demo-litl.md](docs/release-notes/2026-05-27-studio-drug-demo-litl.md).
@@ -32,6 +34,8 @@ All notable changes to Li are documented here. The format follows
 
 - **PH-AM AM-0:** slicer workflow stages in `li-sim-additive` (slice/preview/export gates, `run_additive_slicer_workflow`, composable smoke) — [2026-05-27-ph-am-slicer-workflow.md](docs/release-notes/2026-05-27-ph-am-slicer-workflow.md).
 - **PH-SIM SIM-3 RL env pool stub** — `EnvPoolStub`, `env_pool_stub_step`, `sim_rl_tick_stub` in `packages/li-sim`; SIM-2 replay on `SimSessionStub`; smoke `env_pool_stub.li` — [2026-05-27-sim-3-env-pool-stub.md](docs/release-notes/2026-05-27-sim-3-env-pool-stub.md).
+- **PH-SIM SIM-3 studio RL step** — `studio_sim_rl_step_hook`, `sim_rl_session_env_pool_step`; `sim_rl` profile batches env pool on live `SimSessionStub`; smokes `studio_sim_rl_step_hook.li` — [2026-05-27-studio-sim-rl-env-pool-step.md](docs/release-notes/2026-05-27-studio-sim-rl-env-pool-step.md).
+- **PH-GAME-01 studio game session physics** — `game_physics_step_hook`, `SimSessionStub.game_*`, `studio_game_step_hook(sim_out, dt)`; smokes assert falling `game_pz` — [2026-05-27-studio-game-session-physics.md](docs/release-notes/2026-05-27-studio-game-session-physics.md).
 - **WP-SCI-01 multi-physics scientific tick** — `sim_scientific_tick_at`, `run_multi_physics_at_step`, `sim_scientific_checksum_combine` in `packages/li-sim-scientific`; smoke `multi_physics_tick.li`.
 - **Linguist WP1 — Li TextMate grammar:** `contrib/li-grammar/` (`.li` syntax, VS Code/Cursor extension manifest, smoke script); install pointer `contrib/li-vscode/` — [2026-05-25-linguist-wp1-grammar.md](docs/release-notes/2026-05-25-linguist-wp1-grammar.md).
 - **Linguist WP2 samples (staging):** `contrib/linguist-samples/Li/` (10 `.li` files), license manifest, WP6 copy README — [2026-05-25-linguist-wp2-samples.md](docs/release-notes/2026-05-25-linguist-wp2-samples.md).

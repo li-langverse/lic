@@ -1,0 +1,18 @@
+import ml.rl
+
+def main() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  var out0: float = rl_policy_forward(1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0)
+  if out0 < 0.99:
+    return 1
+  if out0 > 1.01:
+    return 2
+  var out8: float = rl_policy_forward(1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0)
+  if out8 < 7.99:
+    return 3
+  if out8 > 8.01:
+    return 4
+  return 0

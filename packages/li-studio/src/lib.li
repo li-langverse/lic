@@ -1409,8 +1409,11 @@ def studio_sim_step_hook(config: StudioProjectConfig, sim_out: var SimSessionStu
     if sim_scientific_tick_stub(detail_hook) != 1:
       return sim_status_invalid_dt()
   if prof == studio_profile_sim_rl():
-    if sim_rl_tick_stub(detail_hook) != 1:
+    if dt <= 0.0:
       return sim_status_invalid_dt()
+    if sim_rl_tick_session(sim_out, detail_hook) != sim_status_ok():
+      return sim_status_invalid_dt()
+    return sim_status_ok()
   if prof == studio_profile_sim_automotive():
     if sim_automotive_tick_stub(detail_hook) != 1:
       return sim_status_invalid_dt()

@@ -1,0 +1,18 @@
+import ml.rl
+
+def main() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  var pool: EnvPoolPersistent = env_pool_persistent_default()
+  if pool.pool_size != 4:
+    return 1
+  var act: float = rl_policy_forward(0.1, 0.2, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0)
+  pool.steps_emitted = 4
+  pool.total_reward = 0.5
+  if rl_train_tick(pool, act) != 1:
+    return 2
+  if pool.policy_loss <= 0.0:
+    return 3
+  return 0

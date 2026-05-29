@@ -503,6 +503,9 @@ type SimSessionStub = object
   public replay_capacity: int
   public replay_count: int
   public replay_last_tick: int
+  public rl_persistent_pool_size: int
+  public rl_persistent_steps: int
+  public rl_persistent_total_reward: float
 
 def sim_session_stub_default() -> SimSessionStub
   requires true
@@ -514,6 +517,9 @@ def sim_session_stub_default() -> SimSessionStub
   ensures result.replay_capacity == sim_replay_capacity_default()
   ensures result.replay_count == 0
   ensures result.replay_last_tick == 0
+  ensures result.rl_persistent_pool_size == 0
+  ensures result.rl_persistent_steps == 0
+  ensures result.rl_persistent_total_reward == 0.0
   decreases 0
 =
   var s: SimSessionStub
@@ -525,6 +531,9 @@ def sim_session_stub_default() -> SimSessionStub
   s.replay_capacity = sim_replay_capacity_default()
   s.replay_count = 0
   s.replay_last_tick = 0
+  s.rl_persistent_pool_size = 0
+  s.rl_persistent_steps = 0
+  s.rl_persistent_total_reward = 0.0
   return s
 
 def sim_session_replay_record(session: var SimSessionStub) -> unit
@@ -823,6 +832,47 @@ def env_pool_stub_step(pool: var EnvPoolStub, session: var SimSessionStub, dt: f
     i = i + 1
   return sim_status_ok()
 
+def sim_rl_env_pool_size_default() -> int
+  requires true
+  ensures result == 4
+  decreases 0
+=
+  return 4
+
+def sim_rl_tick_session(session: var SimSessionStub, detail: int) -> int
+  requires session.tick >= 0
+  requires session.replay_capacity > 0
+  requires detail >= 0
+  requires detail <= 3
+  ensures result >= 0
+  ensures result <= 1
+  decreases session.tick
+=
+  var dt: float = 0.02
+  if detail == 0:
+    dt = 0.016
+  if dt <= 0.0:
+    return sim_status_invalid_dt()
+  var psz: int = session.rl_persistent_pool_size
+  if psz <= 0:
+    psz = sim_rl_env_pool_size_default()
+    session.rl_persistent_pool_size = psz
+  var pool: EnvPoolStub = env_pool_stub_default()
+  pool.pool_size = psz
+  pool.steps_emitted = session.rl_persistent_steps
+  pool.total_reward = session.rl_persistent_total_reward
+  if env_pool_stub_step(pool, session, dt) != sim_status_ok():
+    return sim_status_invalid_dt()
+  session.rl_persistent_steps = pool.steps_emitted
+  session.rl_persistent_total_reward = pool.total_reward
+  if pool.steps_emitted != psz:
+    return sim_status_invalid_dt()
+  if pool.total_reward <= 0.0:
+    return sim_status_invalid_dt()
+  if sim_session_replay_last_tick(session) != psz:
+    return sim_status_invalid_dt()
+  return sim_status_ok()
+
 def sim_rl_tick_stub(detail: int) -> int
   requires detail >= 0
   requires detail <= 3
@@ -830,18 +880,8 @@ def sim_rl_tick_stub(detail: int) -> int
   ensures result <= 1
   decreases 0
 =
-  var pool: EnvPoolStub = env_pool_stub_default()
   var sess: SimSessionStub = sim_session_stub_default()
   sim_session_apply_studio_profile(2, sess)
-  var dt: float = 0.02
-  if detail == 0:
-    dt = 0.016
-  if env_pool_stub_step(pool, sess, dt) != sim_status_ok():
-    return 0
-  if pool.steps_emitted != pool.pool_size:
-    return 0
-  if pool.total_reward <= 0.0:
-    return 0
-  if sim_session_replay_last_tick(sess) != pool.pool_size:
+  if sim_rl_tick_session(sess, detail) != sim_status_ok():
     return 0
   return 1

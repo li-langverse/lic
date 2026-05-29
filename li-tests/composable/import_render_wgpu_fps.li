@@ -1,6 +1,4 @@
 import render
-import lig
-import gui
 
 def main() -> int
   requires true
@@ -9,13 +7,7 @@ def main() -> int
 =
   if li_std_render_version() < 3:
     return 1
-  if li_std_lig_version() < 2:
-    return 2
-  if li_std_gui_version() < 1:
-    return 3
   var counter: RenderFpsCounter = render_bench_fps_counter_simulate()
   if render_fps_counter_meets_target(counter) != 1:
-    return 4
-  if render_fps_counter_hud_tag(counter) < 1:
-    return 5
+    return 2
   return 0

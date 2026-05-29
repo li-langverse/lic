@@ -286,6 +286,7 @@ def render_bench_fps_counter_simulate() -> RenderFpsCounter
   ensures result.frame_count == render_bench_fps_sample_frames()
   ensures result.meets_target == 1
   ensures result.native_pixels == 0
+  ensures render_fps_counter_hud_tag(result) == 1
   decreases 0
 =
   return render_fps_counter_shell_simulate()

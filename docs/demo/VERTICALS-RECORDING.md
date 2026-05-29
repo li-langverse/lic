@@ -24,6 +24,16 @@
 - Artifacts under `docs/demo/media/` are **gitignored** for local marketing refresh only
 - See [c-host-retirement-plan.md](../game-dev/specs/c-host-retirement-plan.md) for wgpu/Li pixel path
 
+## C-host retirement timeline (WP-UX-14b)
+
+| When | Action |
+|------|--------|
+| **Now (main)** | `deploy/studio-demo/native/*.c` remain for local capture only; **no new C product code** |
+| **After studio stack stable** | `render.host` + wgpu readback replace present hosts (PR #356 landed) |
+| **Target ~4 weeks post-#356** | Delete `studio_shell_paint_fb.c`, `studio_verticals_present_host.c`, and siblings per retirement plan |
+
+No mass deletion until `lic check` smokes and `LIG_HOST_PRESENT=1 ./build/li-studio-demo` pass without C paint_blit.
+
 ## Commands
 
 ```bash

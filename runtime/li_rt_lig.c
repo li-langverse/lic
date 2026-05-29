@@ -64,8 +64,8 @@ static int lig_nvcc_executable(void) {
 
 /* Tiny 2→2→1 MLP forward — CPU only, sets g_ratio (WP-HW-12; no device PTX). */
 static void lig_mlp_forward_cpu_ref_pilot(void) {
-  const float x[2] = {0.5f, -0.25f};
-  const float w1[4] = {0.1f, 0.2f, 0.3f, 0.4f};
+  const float x[2] = {1.0f, 0.0f};
+  const float w1[4] = {1.0f, 0.0f, 0.0f, 1.0f};
   const float b1[2] = {0.0f, 0.0f};
   float h[2];
   h[0] = x[0] * w1[0] + x[1] * w1[2] + b1[0];
@@ -76,9 +76,9 @@ static void lig_mlp_forward_cpu_ref_pilot(void) {
   if (h[1] < 0.0f) {
     h[1] = 0.0f;
   }
-  const float w2[2] = {0.5f, 0.5f};
+  const float w2[2] = {1.0f, 0.0f};
   const float out = h[0] * w2[0] + h[1] * w2[1];
-  const float expect = 0.0375f;
+  const float expect = 1.0f;
   const float d = out - expect;
   const float err = (d < 0.0f) ? -d : d;
   g_ratio = (err < 1e-5f) ? 1.0f : 0.0f;

@@ -1,5 +1,7 @@
 # Li Benchmarks & Simulation Test Plan
 
+**Honest proof status:** [Provability gaps](../../verification/provability-gaps.md) (**G-math**, tier-1 advisory) · [Master plan](2026-05-14-li-master-plan.md) · [Benchmarks dashboard](https://li-langverse.github.io/benchmarks/)
+
 > **For agentic workers:** Implement harness first (Phase 5b), then add simulations as language features land. Correctness before speed; cross-language only after li reference impl is trusted.
 
 **Goal:** A reproducible `benchmarks/` suite: physics simulations (MD, N-body, PDEs), ML micro/kernels, and published comparisons vs C++, Rust, Python, Julia, and ML baselines.

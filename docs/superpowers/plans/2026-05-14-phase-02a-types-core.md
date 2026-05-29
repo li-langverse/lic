@@ -1,5 +1,7 @@
 # Phase 2a: Type Core (C++)
 
+**Honest proof status:** [Provability gaps](../../verification/provability-gaps.md) · [Master plan](2026-05-14-li-master-plan.md)
+
 **Exit gate:** `LIC=./build/compiler/lic/lic ./li-tests/run_all.sh typecheck prove_reject`
 
 **Delivered on `dev`:**

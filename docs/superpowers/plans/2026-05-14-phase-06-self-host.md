@@ -1,5 +1,7 @@
 # Phase 6: Self-host seed
 
+**Honest proof status:** [Provability gaps](../../verification/provability-gaps.md) · [Master plan](2026-05-14-li-master-plan.md)
+
 > **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:executing-plans or build-li-master-plan.
 
 **Goal:** Ship a **bootstrap** `lic` binary compiled from Li source (`bootstrap/lic/main.li`) by the C++ host. Full compiler rewrite in Li is out of scope for v1; this phase proves the build/run loop and CLI argv bridge.

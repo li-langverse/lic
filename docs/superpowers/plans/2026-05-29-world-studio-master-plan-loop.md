@@ -19,7 +19,7 @@ todos:
     status: done
   - id: wsm-w1-profile-smokes
     content: "Green studio_vertical_profile_roundtrip + studio_sim_step_by_profile for all 7 profiles"
-    status: pending
+    status: done
   - id: wsm-w1-sim3-envpool
     content: "SIM-3 RL EnvPool persistent + obs contract — not stack stub (WP-SIM-03, WP-RL-01)"
     status: pending

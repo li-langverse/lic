@@ -1,1 +1,18 @@
-{"completed_ids":["wsm-w0-docs-hub","wsm-w0-gd1-shell","wsm-w0-sim-bridge","wsm-w0-agent-registry","wsm-w0-profile-chips"],"iterations":0,"history":[]}
+{
+  "completed_ids": [
+    "wsm-w0-docs-hub",
+    "wsm-w0-gd1-shell",
+    "wsm-w0-sim-bridge",
+    "wsm-w0-agent-registry",
+    "wsm-w0-profile-chips",
+    "wsm-w1-profile-smokes"
+  ],
+  "iterations": 1,
+  "history": [
+    {
+      "todo_id": "wsm-w1-profile-smokes",
+      "completed_at": "2026-05-29T18:05:00Z",
+      "wps": ["WP-SIM-00", "WP-SIM-01", "WP-UX-05"]
+    }
+  ]
+}

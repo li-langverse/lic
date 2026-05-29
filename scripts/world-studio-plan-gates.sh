@@ -59,15 +59,15 @@ fi
 li_phase "iteration assessment"
 assess="$ROOT/data/world-studio-plan-loop/latest-iteration-assessment.json"
 if [[ -f "$assess" ]]; then
-  python3 -c "
+  (cd "$ROOT" && python3 -c "
 import json, sys
 from pathlib import Path
-p = Path('$assess')
-d = json.loads(p.read_text())
+p = Path('data/world-studio-plan-loop/latest-iteration-assessment.json')
+d = json.loads(p.read_text(encoding='utf-8'))
 if not d.get('native_only', True):
     print('assessment: native_only must be true', file=sys.stderr)
     sys.exit(1)
-" || fail "latest-iteration-assessment.json native_only=false"
+") || fail "latest-iteration-assessment.json native_only=false"
 else
   li_warn "no latest-iteration-assessment.json yet (agent should write after iteration)"
 fi

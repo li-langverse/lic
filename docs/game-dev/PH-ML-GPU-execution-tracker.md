@@ -31,7 +31,7 @@
 | WP-HW-06 | partial | feat/ph-ml-gpu-swarm | `lkir_spirv_stub.li`, `li_rt_lkir_spirv.c` | Full SPIR-V shader module |
 | WP-HW-07 | **blocked** | feat/ph-ml-gpu-swarm | SPIR-V validate → `bid=5` status `0`; [lavapipe CI](../ci/lavapipe-vulkan-smoke.md) advisory | Vulkan compute dispatch |
 | WP-HW-08 | **blocked** | feat/ph-ml-gpu-swarm | CPU 2×2 ref + `kernel_matmul_parity.li` | Real GPU device dispatch |
-| WP-HW-09 | **blocked** | feat/ph-ml-gpu-swarm | `cuda-home-probe.sh`, `li_rt_lig_cuda_home_probe`, bench `cuda_home_probe` | PTX/nvcc — lab `CUDA_HOME` unset |
+| WP-HW-09 | **partial** | feat/ph-ml-gpu-swarm | NVIDIA lab: `CUDA_HOME=/usr/lib/cuda`, nvcc 12.4, probe `ready_emit_cpu_ref`; [platform matrix](../ci/hardware-platform-matrix.md) | Real PTX/device timing (WP-HW-08) |
 | WP-HW-10 | partial | feat/ph-ml-gpu-swarm | `LIG_EMIT_HIP=1` → status `1` + CPU ref | ROCm CI hardware |
 | WP-HW-12 | partial | feat/ph-ml-gpu-swarm | `mlp_forward_f32.lkir` + catalog | GPU dispatch |
 | WP-HW-14 | stub | feat/ph-ml-gpu-swarm | `lig-rfc.md` § multi-GPU | Scheduler impl |
@@ -81,7 +81,8 @@
 - [x] `ph-ml-stub-then-implement.mdc` rule
 - [x] [PH-ML-GPU-merge-readiness.md](PH-ML-GPU-merge-readiness.md)
 - [ ] Human: Vulkan compute dispatch on lavapipe (WP-HW-07 unblocked)
-- [ ] Human: `CUDA_HOME` + PTX for timed CUDA rows (WP-HW-09)
+- [x] Human (NVIDIA lab): `CUDA_HOME` + nvcc — WP-HW-09 partial; timed CUDA rows still WP-HW-08
+- [ ] Human (M1 Mac): Metal smokes per [metal-macos-smoke.md](../ci/metal-macos-smoke.md)
 - [ ] Human: G-gpu Lean proofs (WP-GPU-05 done)
 - [ ] Human: lic-studio-ui `chore/agent-kit-1.3.5-studio-ui` merge
 

@@ -1,17 +1,17 @@
 {
   "status": "honest_stub",
-  "wave": "4c",
+  "wave": "4d",
   "gpu_timing_ns": "N/A",
   "cuda_timing_ns": "N/A",
   "hip_timing_ns": "N/A",
   "vulkan_dispatch": "spirv_validation_stub_ok",
   "spirv_validation": "header_smoke_extended",
-  "cuda_emit_status": "emit_off",
+  "cuda_emit_status": 1,
   "hip_emit_status": "emit_off",
   "vulkan_lavapipe_hint": false,
   "note": "No GPU ns timings. cuda/hip emit=1 is host CPU ref matmul when enabled; vulkan bid=5 returns stub_ok after SPIR-V header validation (WP-HW-07).",
   "parity": {
-    "generated_at": "2026-05-29T06:45:34Z",
+    "generated_at": "2026-05-29T07:08:46Z",
     "registry": "benchmarks/competitive/lig-kernels.toml",
     "kernel_ids": [
       "lig.kernel.matmul_f32",
@@ -37,7 +37,7 @@
         "validity_gate_pass": false,
         "compile_ok": false,
         "status": "pilot",
-        "cpu_sec": 0.004754,
+        "cpu_sec": 0.004698,
         "stderr_tail": "bash: scripts/lean-verify-stub.sh: No such file or directory\nlic build: Lean semantics verification failed (see docs/semantics)\n"
       },
       {
@@ -111,10 +111,24 @@
     "validity_ratio": 0.0,
     "validity_gate_pass": false,
     "compile_ok": false,
-    "cpu_sec": 0.004754
+    "cpu_sec": 0.004698
   },
   "cuda_hardware": {
     "nvidia_smi": true,
-    "cuda_home": false
-  }
+    "cuda_home": true,
+    "cuda_home_path": "/usr/lib/cuda",
+    "nvcc": true
+  },
+  "cuda_home_probe": {
+    "cuda_home_set": true,
+    "cuda_path_set": false,
+    "cuda_home": "/usr/lib/cuda",
+    "cuda_path": null,
+    "nvcc_on_path": true,
+    "nvcc_path": "/usr/bin/nvcc",
+    "nvcc_version": "nvcc: NVIDIA (R) Cuda compiler driver",
+    "nvidia_smi": true,
+    "wp_hw_09": "ready_emit_cpu_ref"
+  },
+  "cuda_cpu_ref": "2x2_host_reference_when_emit_on"
 }

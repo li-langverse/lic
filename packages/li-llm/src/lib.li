@@ -1,0 +1,120 @@
+import ml
+
+# li-llm (PH-LLM): native LLM inference — tokenizer, loader, forward, generate.
+# Status: STUB — WP-LLM-01..04 contracts only; no PyTorch runtime.
+
+def li_llm_version() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0
+
+type LlmTokenIds = object
+  public count: int
+  public ids: array[256, int]
+
+type LlmModelConfig = object
+  public vocab_size: int
+  public hidden_dim: int
+  public num_heads: int
+  public num_layers: int
+  public max_seq_len: int
+
+type LlmModelWeights = object
+  public loaded: int
+  public config: LlmModelConfig
+
+type LlmKVCache = object
+  public seq_len: int
+
+type LlmLogits = object
+  public vocab_size: int
+  public top_id: int
+
+def llm_model_weights_none() -> LlmModelWeights
+  requires true
+  ensures result.loaded == 0
+  decreases 0
+=
+  var w: LlmModelWeights
+  w.loaded = 0
+  w.config.vocab_size = 0
+  w.config.hidden_dim = 0
+  w.config.num_heads = 0
+  w.config.num_layers = 0
+  w.config.max_seq_len = 0
+  return w
+
+def llm_model_weights_valid(w: LlmModelWeights) -> int
+  requires true
+  ensures result >= 0
+  ensures result <= 1
+  decreases 0
+=
+  if w.loaded != 1:
+    return 0
+  if w.config.num_layers <= 0:
+    return 0
+  return 1
+
+def llm_token_ids_empty() -> LlmTokenIds
+  requires true
+  ensures result.count == 0
+  decreases 0
+=
+  var out: LlmTokenIds
+  out.count = 0
+  return out
+
+# WP-LLM-01: BPE/byte-level tokenizer + vocab load — STUB
+def llm_tokenize(text: str, vocab_path: str) -> LlmTokenIds
+  requires true
+  ensures result.count >= 0
+  decreases 0
+=
+  var _unused_text: str = text
+  var _unused_vocab: str = vocab_path
+  return llm_token_ids_empty()
+
+def llm_detokenize(tokens: LlmTokenIds, vocab_path: str) -> str
+  requires tokens.count >= 0
+  ensures true
+  decreases tokens.count
+=
+  var _unused_vocab: str = vocab_path
+  return ""
+
+# WP-LLM-02: safetensors/GGUF weight loader (f32/f16; no MoE v1) — STUB
+def llm_load_weights(path: str) -> LlmModelWeights
+  requires true
+  ensures result.loaded == 0
+  decreases 0
+=
+  var _unused_path: str = path
+  return llm_model_weights_none()
+
+# WP-LLM-03: transformer forward (attn, ffn, RoPE) — STUB
+def llm_forward(tokens: LlmTokenIds, weights: LlmModelWeights, cache: LlmKVCache) -> LlmLogits
+  requires tokens.count >= 0
+  requires cache.seq_len >= 0
+  ensures result.vocab_size >= 0
+  decreases tokens.count
+=
+  var _unused_w: LlmModelWeights = weights
+  var out: LlmLogits
+  out.vocab_size = weights.config.vocab_size
+  out.top_id = 0
+  return out
+
+# WP-LLM-04: KV-cache + greedy decode loop — STUB
+def llm_generate(
+    prompt: str, weights: LlmModelWeights, vocab_path: str, max_tokens: int) -> str
+  requires max_tokens >= 0
+  ensures true
+  decreases max_tokens
+=
+  var _unused_prompt: str = prompt
+  var _unused_weights: LlmModelWeights = weights
+  var _unused_vocab: str = vocab_path
+  return ""

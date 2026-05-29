@@ -1,17 +1,17 @@
 # Research session — `chem_sim_algorithms`
 
-**Session:** `66d1f3bf-7ced-4520-95f5-7c6fba34da72` · **Cycle:** 1 · **Agent:** `numerics_researcher` · **Status:** `cycle_complete`
+**Session:** `1bdb6322-8399-425d-9257-9b9098475e89` · **Cycle:** 1 · **Agent:** `numerics_researcher` · **Status:** `in_progress`
 
 ## Completed steps
 
 | Step | Run | Artifact |
 |------|-----|----------|
-| `survey_sota` | `numerics_researcher-1779869405908` | [Study](../../numerics/studies/2026-05-27-chem-r0-qm-sota-survey.md) · [Whitepaper](../../../../research-findings/whitepapers/2026-05/chem_sim_algorithms/chem-r0-qm-sota-survey/README.md) |
-| `digest` | `numerics_researcher-1779876594572` | [Goal digest](../../research/goals/chem_sim_algorithms.md) |
+| `survey_sota` | `numerics_researcher-1779916590880` | [Study](../../numerics/studies/2026-05-27-chem-r0-qm-sota-survey.md) · [Whitepaper](../../../../research-findings/whitepapers/2026-05/chem_sim_algorithms/chem-r0-qm-sota-survey/README.md) |
 
-## Queue (next cycle)
+## Queue (this cycle)
 
-- _Cycle 1 complete — handoff `chem-r2-dft-scf-gap` to `bench_improver` / `sim-p2-qm-dft-scf`._
+- `li_gap_analysis` — goal:chem_sim_algorithms
+- `digest` — docs/research/goals/chem_sim_algorithms
 
 ## North star fit
 

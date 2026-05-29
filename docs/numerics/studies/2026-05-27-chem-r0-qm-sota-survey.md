@@ -1,9 +1,9 @@
 # Chemistry / QM algorithms — SOTA survey and Li gap analysis (`chem-r0-qm-sota-survey`)
 
-**Goal:** `chem_sim_algorithms` · **Session:** `66d1f3bf-7ced-4520-95f5-7c6fba34da72` · **Run:** `numerics_researcher-1779869405908`  
+**Goal:** `chem_sim_algorithms` · **Session:** `1bdb6322-8399-425d-9257-9b9098475e89` · **Run:** `numerics_researcher-1779916590880`  
 **Agent:** `numerics_researcher` · **Mode:** study-only (validity locked; no perf claims)  
 **North star:** PH-5b (proved numerics), PH-7e (math→SIMD on integral/ERI loops), G-math / G-par for AO contraction kernels  
-**Preflight:** `benchmarks/data/latest/ecosystem-audit.json` @ 2026-05-27T08:10Z · [dashboard](https://li-langverse.github.io/benchmarks/)
+**Preflight:** `benchmarks/data/latest/ecosystem-audit.json` @ 2026-05-27T21:03Z · [dashboard](https://li-langverse.github.io/benchmarks/)
 
 ---
 

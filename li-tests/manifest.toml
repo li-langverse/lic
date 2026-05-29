@@ -872,6 +872,13 @@ note = "import studio: compose shell (verify until object-call codegen #322)"
 
 [[tests]]
 suite = "composable"
+file = "composable/import_studio_agentic_run.li"
+packages = ["li-studio", "li-gui", "li-ui"]
+outcome = "check_ok"
+note = "PH-AGENT-2: Studio agent state model uses world-patch -> lic_check -> lic_build tool IDs, not HTML mocks"
+
+[[tests]]
+suite = "composable"
 file = "composable/import_lig_kernel.li"
 outcome = "compile_open_ok"
 note = "PH-HW WP4 lig kernel"

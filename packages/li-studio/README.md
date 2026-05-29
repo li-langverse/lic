@@ -52,6 +52,7 @@ Dimensions: `examples/studio_shell_demo.toml` (1280×720). Smokes: `studio_shell
 - **PH-UX viewport display** — `StudioViewportDisplayCompose` + `StudioViewportMenuCompose` on shell; background preset (solid/grid/gradient), MD particle tier dots (placeholder), biomol style chip; MCP `studio_set_viewport_background`, `studio_set_particle_display`, `studio_set_biomol_style` (`studio_mcp_tool_dispatch_arg`); defaults for `sim_scientific` / `sim_drug_design`; smoke `studio_viewport_display.li`
 - **UX-08** — `studio_err_gpu` / `studio_err_missing_asset`, `StudioViewportErrorOverlay`, `studio_viewport_error_retry()` (mock; native wgpu probe not wired)
 - `studio_compose_agent_chrome` / `studio_paint_agent` — task status, step progress, context label, cancel, error strip, retry hint (UX-06)
+- `StudioAgentRun` / `studio_agent_run_*` — in-process PH-AGENT state for the world-patch → `lic_check` → `lic_build` tool sequence; `used_html_mock == 0` is part of the run contract
 - `studio_panel_switch_inspector` / `studio_panel_switch_timeline` — PH-UX panel switch hooks
 - `studio_compose_shell_loading` / `studio_paint_shell_loading` — UX-11 skeleton rects (viewport + inspector fields); no spinner paint IR
 - `studio_paint_focus_ring_for_panel` — UX-10 focus stroke when `panel.active_region` matches (see `li-ui` `studio_paint_focus_ring`)
@@ -81,5 +82,7 @@ Dimensions: `examples/studio_shell_demo.toml` (1280×720). Smokes: `studio_shell
 | `studio_agent_context_selection()` | Label id `2` → display **selection: Node** |
 | `retry_hint_rect` | Failed-state retry affordance (stroke only) |
 | `studio_agent_last_action_reversible()` | Undo contract stub; returns `0` until host wires undo |
+| `StudioAgentRun` | In-process agent run record; tracks active tool, progress, patch/check/build flags, and `used_html_mock == 0` |
+| `studio_agent_tool_request_for_run` | Converts a `StudioAgentRun` into the existing chrome tool trace request |
 
 Failures use `studio_color_agent_error()` on status + error strip; running state never masks failed tasks.

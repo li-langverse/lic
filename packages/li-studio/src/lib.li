@@ -579,6 +579,19 @@ type StudioAgentToolRequest = object
   public status: int
   public result_code: int
 
+type StudioAgentRun = object
+  public task_state: int
+  public agent_context_label: int
+  public active_tool_id: int
+  public last_tool_status: int
+  public last_result_code: int
+  public step_index: int
+  public step_total: int
+  public patch_applied: int
+  public check_step_done: int
+  public build_step_done: int
+  public used_html_mock: int
+
 def studio_agent_tool_request_none() -> StudioAgentToolRequest
   requires true
   ensures result.tool_id == studio_mcp_tool_unknown()
@@ -590,6 +603,149 @@ def studio_agent_tool_request_none() -> StudioAgentToolRequest
   out.tool_id = studio_mcp_tool_unknown()
   out.status = studio_mcp_tool_status_idle()
   out.result_code = studio_mcp_tool_result_ok()
+  return out
+
+def studio_agent_real_pipeline_steps() -> int
+  requires true
+  ensures result == 3
+  decreases 0
+=
+  return 3
+
+def studio_agent_run_start(agent_context_label: int) -> StudioAgentRun
+  requires agent_context_label >= studio_agent_context_none()
+  requires agent_context_label <= studio_agent_context_selection()
+  ensures result.task_state == studio_agent_task_running()
+  ensures result.agent_context_label == agent_context_label
+  ensures result.active_tool_id == studio_mcp_world_scaffold()
+  ensures result.step_total == studio_agent_real_pipeline_steps()
+  ensures result.used_html_mock == 0
+  decreases agent_context_label
+=
+  var out: StudioAgentRun
+  out.task_state = studio_agent_task_running()
+  out.agent_context_label = agent_context_label
+  out.active_tool_id = studio_mcp_world_scaffold()
+  out.last_tool_status = studio_mcp_tool_status_pending()
+  out.last_result_code = studio_mcp_tool_result_ok()
+  out.step_index = 0
+  out.step_total = studio_agent_real_pipeline_steps()
+  out.patch_applied = 0
+  out.check_step_done = 0
+  out.build_step_done = 0
+  out.used_html_mock = 0
+  return out
+
+def studio_agent_run_next(run: StudioAgentRun) -> StudioAgentRun
+  requires run.task_state >= studio_agent_task_idle()
+  requires run.task_state <= studio_agent_task_done()
+  requires run.agent_context_label >= studio_agent_context_none()
+  requires run.agent_context_label <= studio_agent_context_selection()
+  requires run.step_index >= 0
+  requires run.step_total == studio_agent_real_pipeline_steps()
+  requires run.step_index <= run.step_total
+  ensures result.used_html_mock == 0
+  ensures result.step_total == studio_agent_real_pipeline_steps()
+  decreases run.step_index
+=
+  var out: StudioAgentRun = run
+  out.used_html_mock = 0
+  out.step_total = studio_agent_real_pipeline_steps()
+  if out.task_state == studio_agent_task_idle():
+    out.last_tool_status = studio_mcp_tool_status_idle()
+    return out
+  if out.task_state == studio_agent_task_blocked():
+    out.last_tool_status = studio_mcp_tool_status_pending()
+    return out
+  if out.task_state == studio_agent_task_done():
+    return out
+  if out.task_state == studio_agent_task_failed():
+    return out
+  if out.active_tool_id == studio_mcp_world_scaffold():
+    out.patch_applied = 1
+    out.last_tool_status = studio_mcp_tool_status_ok()
+    out.last_result_code = studio_mcp_tool_result_ok()
+    out.step_index = 1
+    out.active_tool_id = studio_mcp_lic_check()
+    out.task_state = studio_agent_task_running()
+    return out
+  if out.active_tool_id == studio_mcp_lic_check():
+    out.check_step_done = 1
+    out.last_tool_status = studio_mcp_tool_status_ok()
+    out.last_result_code = studio_mcp_tool_result_ok()
+    out.step_index = 2
+    out.active_tool_id = studio_mcp_lic_build()
+    out.task_state = studio_agent_task_running()
+    return out
+  if out.active_tool_id == studio_mcp_lic_build():
+    out.build_step_done = 1
+    out.last_tool_status = studio_mcp_tool_status_ok()
+    out.last_result_code = studio_mcp_tool_result_ok()
+    out.step_index = studio_agent_real_pipeline_steps()
+    out.task_state = studio_agent_task_done()
+    return out
+  out.last_tool_status = studio_mcp_tool_status_failed()
+  out.last_result_code = studio_mcp_tool_result_err_io()
+  out.task_state = studio_agent_task_failed()
+  return out
+
+def studio_agent_run_complete(agent_context_label: int) -> StudioAgentRun
+  requires agent_context_label >= studio_agent_context_none()
+  requires agent_context_label <= studio_agent_context_selection()
+  ensures result.step_total == studio_agent_real_pipeline_steps()
+  ensures result.used_html_mock == 0
+  decreases agent_context_label
+=
+  var run0: StudioAgentRun = studio_agent_run_start(agent_context_label)
+  var run1: StudioAgentRun = studio_agent_run_next(run0)
+  var run2: StudioAgentRun = studio_agent_run_next(run1)
+  return studio_agent_run_next(run2)
+
+def studio_agent_run_complete_ok(run: StudioAgentRun) -> int
+  requires run.task_state >= studio_agent_task_idle()
+  requires run.task_state <= studio_agent_task_done()
+  requires run.step_index >= 0
+  requires run.step_total == studio_agent_real_pipeline_steps()
+  ensures result >= 0
+  ensures result <= 1
+  decreases run.step_index
+=
+  if run.used_html_mock != 0:
+    return 0
+  if run.task_state != studio_agent_task_done():
+    return 0
+  if run.step_index != studio_agent_real_pipeline_steps():
+    return 0
+  if run.patch_applied != 1:
+    return 0
+  if run.check_step_done != 1:
+    return 0
+  if run.build_step_done != 1:
+    return 0
+  return 1
+
+def studio_agent_tool_request_for_run(run: StudioAgentRun) -> StudioAgentToolRequest
+  requires run.task_state >= studio_agent_task_idle()
+  requires run.task_state <= studio_agent_task_done()
+  ensures result.tool_id == run.active_tool_id
+  decreases run.task_state
+=
+  var out: StudioAgentToolRequest = studio_agent_tool_request_none()
+  out.tool_id = run.active_tool_id
+  out.result_code = run.last_result_code
+  if run.task_state == studio_agent_task_idle():
+    out.status = studio_mcp_tool_status_idle()
+    return out
+  if run.task_state == studio_agent_task_failed():
+    out.status = studio_mcp_tool_status_failed()
+    return out
+  if run.task_state == studio_agent_task_blocked():
+    out.status = studio_mcp_tool_status_pending()
+    return out
+  if run.task_state == studio_agent_task_running():
+    out.status = studio_mcp_tool_status_pending()
+    return out
+  out.status = studio_mcp_tool_status_ok()
   return out
 
 def studio_mcp_tool_dispatch(tool_id: int) -> StudioAgentToolRequest
@@ -991,10 +1147,10 @@ def studio_compose_shell_drug_litl(w: float, h: float, tick: int, has_selection:
 
 def li_std_studio_version() -> int
   requires true
-  ensures result == 10
+  ensures result == 11
   decreases 0
 =
-  return 10
+  return 11
 
 def studio_agent_context_none() -> int
   requires true

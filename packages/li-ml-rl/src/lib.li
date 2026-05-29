@@ -295,3 +295,21 @@ def rl_train_tick(pool: var EnvPoolPersistent, policy_out: float) -> int
   if pool.total_reward <= 0.0:
     return 0
   return 1
+
+# WP-RL-04: async env pool design stub (process workers blocked — see ml-rl-async-env-pool.md).
+def async_env_worker_slot_count() -> int
+  requires true
+  ensures result == 1
+  decreases 0
+=
+  return 1
+
+def async_env_pool_tick_stub(worker_count: int) -> int
+  requires worker_count >= 1
+  ensures result >= -1
+  ensures result <= 0
+  decreases worker_count
+=
+  if worker_count > 1:
+    return -1
+  return 0

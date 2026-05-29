@@ -14,6 +14,7 @@ All notable changes to Li are documented here. The format follows
 ### Added
 
 - **PH-HW Wave 4 — GPU hardening:** SPIR-V header stub + validation smoke, honest `li_rt_lig_kernel_run` status codes (`-1`/`-2`/`1`/`0`), `LIG_EMIT_CUDA`/`LIG_EMIT_HIP` emit stubs, `@gpu` MIR tag + codegen launch prologue (Partial), `mlp_forward_f32.lkir`, lig-gpu-suite JSON refresh — [2026-05-29-ph-hw-wave-4-hardening.md](docs/release-notes/2026-05-29-ph-hw-wave-4-hardening.md).
+- **PH-ML Wave 5 — scale stubs:** autograd RFC, async RL env pool design, ResNet18 tier-4 bench stub, multi-GPU scheduler sketch in `lig-rfc.md`, documented `tensor`/autograd blockers — [2026-05-29-ph-ml-wave-5-scale-stubs.md](docs/release-notes/2026-05-29-ph-ml-wave-5-scale-stubs.md).
 - **PH-ML Wave 0 — li-ml stack:** `packages/li-ml` (activations, `ml.nn` MLP, `ml.optim` SGD/Adam, `ml.dl` train step, `ml.ai` batch infer) and `packages/li-ml-rl` (env pool contract smokes); workspace members; PH-ML cursor bootstrap + execution tracker — [2026-05-29-ph-ml-wave-0-packages.md](docs/release-notes/2026-05-29-ph-ml-wave-0-packages.md).
 
 - **PH-ML + GPU battle plan:** `docs/game-dev/PH-ML-GPU-battle-plan.md` — 56 WPs across `@gpu`/G-gpu, PH-HW LKIR backends, and Li-only ML/DL/RL/AI parity path (ML-0…5, five waves, eight agent batches) — [2026-05-29-ph-ml-gpu-battle-plan.md](docs/release-notes/2026-05-29-ph-ml-gpu-battle-plan.md).

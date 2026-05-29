@@ -1,0 +1,19 @@
+import ml.dl
+
+def main() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  var state: TrainState4 = dl_train_state_default()
+  var inp: array[4, float]
+  inp[0] = 1.0
+  inp[1] = 0.0
+  inp[2] = 0.0
+  inp[3] = 0.0
+  var loss: float = dl_train_step4(state, inp, 0, 0.01)
+  if loss < 0.0:
+    return 1
+  if state.steps != 1:
+    return 2
+  return 0

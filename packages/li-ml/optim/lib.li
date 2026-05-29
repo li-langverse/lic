@@ -1,0 +1,49 @@
+# ml.optim — SGD and manual gradient steps (PH-ML ML-1).
+
+def optim_sgd_scalar(weight: var float, grad: float, lr: float) -> unit
+  requires lr > 0.0
+  requires lr <= 1.0
+  ensures true
+  decreases 0
+=
+  weight = weight - lr * grad
+
+def optim_sgd4(weights: var array[4, float], grads: array[4, float], lr: float) -> unit
+  requires lr > 0.0
+  requires lr <= 1.0
+  ensures true
+  decreases 0
+=
+  var i: int = 0
+  while i < 4
+    optim_sgd_scalar(weights[i], grads[i], lr)
+    i = i + 1
+
+def optim_momentum_scalar(
+    weight: var float, velocity: var float, grad: float, lr: float, beta: float) -> unit
+  requires lr > 0.0
+  requires lr <= 1.0
+  requires beta >= 0.0
+  requires beta <= 1.0
+  ensures true
+  decreases 0
+=
+  velocity = beta * velocity + grad
+  weight = weight - lr * velocity
+
+def optim_adam_scalar(
+    weight: var float, m: var float, v: var float, grad: float, lr: float, t: int) -> unit
+  requires lr > 0.0
+  requires lr <= 1.0
+  requires t >= 1
+  ensures true
+  decreases t
+=
+  var beta1: float = 0.9
+  var beta2: float = 0.999
+  var eps: float = 0.0000001
+  m = beta1 * m + (1.0 - beta1) * grad
+  v = beta2 * v + (1.0 - beta2) * grad * grad
+  var m_hat: float = m / (1.0 - beta1)
+  var v_hat: float = v / (1.0 - beta2)
+  weight = weight - lr * m_hat / (v_hat + eps)

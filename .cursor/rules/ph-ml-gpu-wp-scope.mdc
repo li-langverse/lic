@@ -1,0 +1,34 @@
+---
+description: PH-ML GPU swarm — one work package per branch, minimal file touch
+alwaysApply: false
+globs: packages/li-ml/**,packages/li-ml-rl/**,packages/lig/**,compiler/**,docs/game-dev/PH-ML*
+---
+
+# PH-ML work-package scope
+
+## Branch rule
+
+- One **WP-* ID** per feature branch (e.g. `feat/wp-ml-04-mnist-forward`).
+- Wave sweeps (`feat/ph-ml-gpu-swarm`) are steward-only; agents resume with a single WP after merge.
+
+## File-lock matrix
+
+| Path | Steward | Parallel? |
+|------|---------|-----------|
+| `packages/li-ml/**`, `packages/li-ml-rl/**` | ML agent | Yes (different subdirs) |
+| `packages/lig/**` | HW agent | One agent per batch |
+| `compiler/mir/**`, `compiler/codegen/**` | Compiler agent | **Serial** — one agent at a time |
+| `benchmarks/**` | Bench agent | Med — coordinate in tracker |
+
+## Minimal touch
+
+- Do not refactor unrelated packages, stdlib, or studio while landing a WP.
+- Product logic stays in `.li` (`li-native-li-only`); vendor strings only at `runtime/**` + PH-HW gates.
+- Update only the tracker row(s) for WPs you close; link release note when user-visible.
+
+## Exit before PR
+
+1. `./scripts/build.sh`
+2. `lic check` on touched smokes
+3. Tracker row: `state=done`, `verify=` command output summary
+4. No honesty violations (`ph-ml-gpu-honesty.mdc`)

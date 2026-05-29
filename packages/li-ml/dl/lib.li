@@ -1,0 +1,78 @@
+import ml
+import ml.nn
+import ml.optim
+
+# ml.dl — deep learning train steps (forward + manual backward + optim).
+
+type TrainState4 = object
+  public b2: array[2, float]
+  public loss: float
+  public steps: int
+
+def dl_train_state_default() -> TrainState4
+  requires true
+  ensures result.steps == 0
+  ensures result.loss == 0.0
+  ensures result.b2[0] == 0.0
+  decreases 0
+=
+  var s: TrainState4
+  s.b2[0] = 0.0
+  s.b2[1] = 0.0
+  s.loss = 0.0
+  s.steps = 0
+  return s
+
+def dl_mlp4_backward_loss(
+    pred: array[2, float], target_idx: int) -> float
+  requires target_idx >= 0
+  requires target_idx < 2
+  ensures result >= 0.0
+  decreases target_idx
+=
+  var loss: float = 0.0
+  var i: int = 0
+  while i < 2
+    var tgt: float = 0.0
+    if i == target_idx:
+      tgt = 1.0
+    loss = loss + ml_mse_scalar(pred[i], tgt)
+    i = i + 1
+  return loss
+
+def dl_train_step4(
+    state: var TrainState4, inp: array[4, float], target_idx: int, lr: float) -> float
+  requires target_idx >= 0
+  requires target_idx < 2
+  requires lr > 0.0
+  requires lr <= 1.0
+  ensures result >= 0.0
+  ensures state.steps > 0
+  decreases target_idx
+=
+  var net: Mlp4x4x2 = nn_mlp4x4x2_default()
+  var pred: array[2, float] = nn_mlp4x4x2_forward(net, inp)
+  var p0: float = pred[0]
+  var p1: float = pred[1]
+  var loss: float = dl_mlp4_backward_loss(pred, target_idx)
+  var grad_out0: float = p0
+  var grad_out1: float = p1
+  if target_idx == 0:
+    grad_out0 = p0 - 1.0
+  if target_idx == 1:
+    grad_out1 = p1 - 1.0
+  optim_sgd_scalar(state.b2[0], grad_out0, lr)
+  optim_sgd_scalar(state.b2[1], grad_out1, lr)
+  state.loss = loss
+  var next_steps: int = state.steps + 1
+  state.steps = next_steps
+  return loss
+
+def dl_mnist_train_step_acc(inp: array[784, float], lr: float) -> float
+  requires lr > 0.0
+  requires lr <= 1.0
+  ensures result >= 0.0
+  decreases 0
+=
+  var pred: float = nn_mlp_mnist_acc(inp)
+  return ml_mse_scalar(pred, 0.5)

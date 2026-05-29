@@ -1,0 +1,33 @@
+import ml.rl
+import sim
+
+def main() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  if env_obs_dim() != 8:
+    return 1
+  if env_act_dim() != 4:
+    return 2
+  var pool: EnvPoolStub = env_pool_stub_default()
+  var sess: SimSessionStub = sim_session_stub_default()
+  var pre: EnvStepResult = env_step_contract_pre(pool.pool_size, sess.tick, sess.last_dt, 0)
+  if pre.done != 0:
+    return 3
+  if pre.obs2 != 0.0:
+    return 4
+  if sim_step(sess, 0.02) != sim_status_ok():
+    return 5
+  var post: EnvStepResult = env_step_contract_post(pre, sess.tick, sess.last_dt, pool.pool_size)
+  if post.reward <= 0.0:
+    return 6
+  if post.obs0 != 1.0:
+    return 7
+  if env_pool_stub_step(pool, sess, 0.02) != sim_status_ok():
+    return 8
+  if sess.tick != pool.pool_size:
+    return 9
+  if pool.steps_emitted != pool.pool_size:
+    return 10
+  return 0

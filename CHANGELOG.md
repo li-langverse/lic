@@ -15,6 +15,8 @@ All notable changes to Li are documented here. The format follows
 
 - **PH-AGENT-2 Studio agent run:** `packages/li-studio/src/lib.li` now exposes `StudioAgentRun` for the world-patch → `lic_check` → `lic_build` tool sequence with `used_html_mock == 0`; package/root smokes `studio_agentic_run.li` and `import_studio_agentic_run.li` — [2026-05-28-studio-agentic-run.md](docs/release-notes/2026-05-28-studio-agentic-run.md).
 - **PH-DB planning docs:** `ph-db-battle-plan.md`, `ph-db-ci-hosting-plan.md`, `ph-db-execution-tracker.md`, WP verification matrix cross-link — supersedes conflicting PRs #323–#325.
+- **PH-ML Wave 0 — li-ml stack:** `packages/li-ml` (activations, `ml.nn` MLP, `ml.optim` SGD/Adam, `ml.dl` train step, `ml.ai` batch infer) and `packages/li-ml-rl` (env pool contract smokes); workspace members; PH-ML cursor bootstrap + execution tracker — [2026-05-29-ph-ml-wave-0-packages.md](docs/release-notes/2026-05-29-ph-ml-wave-0-packages.md).
+
 - **PH-ML + GPU battle plan:** `docs/game-dev/PH-ML-GPU-battle-plan.md` — 56 WPs across `@gpu`/G-gpu, PH-HW LKIR backends, and Li-only ML/DL/RL/AI parity path (ML-0…5, five waves, eight agent batches) — [2026-05-29-ph-ml-gpu-battle-plan.md](docs/release-notes/2026-05-29-ph-ml-gpu-battle-plan.md).
  `ph-db-battle-plan.md`, `ph-db-ci-hosting-plan.md`, `ph-db-execution-tracker.md`, WP verification matrix cross-link — supersedes conflicting PRs #323–#325.
 

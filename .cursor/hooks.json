@@ -35,6 +35,22 @@
       {
         "command": ".cursor/hooks/remind-stdlib-coverage.sh",
         "matcher": "std/**"
+      },
+      {
+        "command": ".cursor/hooks/remind-ph-ml-wp-id.sh",
+        "matcher": "packages/li-ml/**"
+      },
+      {
+        "command": ".cursor/hooks/remind-ph-ml-wp-id.sh",
+        "matcher": "packages/li-ml-rl/**"
+      },
+      {
+        "command": ".cursor/hooks/remind-ph-ml-wp-id.sh",
+        "matcher": "packages/lig/**"
+      },
+      {
+        "command": ".cursor/hooks/remind-ph-ml-wp-id.sh",
+        "matcher": "compiler/**"
       }
     ],
     "stop": [

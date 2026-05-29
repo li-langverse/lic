@@ -1,0 +1,25 @@
+import ml.ai
+import ml.nn
+
+def main() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  if ai_version() != 1:
+    return 1
+  var net: Mlp4x4x2 = nn_mlp4x4x2_default()
+  var batch: array[4, array[4, float]]
+  var i: int = 0
+  while i < 4
+    var j: int = 0
+    while j < 4
+      batch[i][j] = 0.1
+      j = j + 1
+    i = i + 1
+  var st: AiBatchStatus = ai_batch_predict4(net, batch)
+  if st.batch_size != 4:
+    return 2
+  if st.ok != 4:
+    return 3
+  return 0

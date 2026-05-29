@@ -13,6 +13,7 @@ All notable changes to Li are documented here. The format follows
 
 ### Added
 
+- **PH-AGENT-2 Studio agent run:** `packages/li-studio/src/lib.li` now exposes `StudioAgentRun` for the world-patch → `lic_check` → `lic_build` tool sequence with `used_html_mock == 0`; package/root smokes `studio_agentic_run.li` and `import_studio_agentic_run.li` — [2026-05-28-studio-agentic-run.md](docs/release-notes/2026-05-28-studio-agentic-run.md).
 - **PH-DB planning docs:** `ph-db-battle-plan.md`, `ph-db-ci-hosting-plan.md`, `ph-db-execution-tracker.md`, WP verification matrix cross-link — supersedes conflicting PRs #323–#325.
 
 - **WP2 md_* tier2 fill:** 13 catalog `md_*` harness stubs from `md_lennard_jones` template, `bench.py` `TIER2_BENCHES` rows, runnable fixes for `three_body_pure` / `schrodinger_1d_barrier` / `ragdoll_chain` / `orbit_two_body` / `fdtd_waveguide_2d` — [2026-05-25-bench-fill-wp2-md.md](docs/release-notes/2026-05-25-bench-fill-wp2-md.md).

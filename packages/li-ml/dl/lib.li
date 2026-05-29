@@ -5,7 +5,12 @@ import ml.optim
 # ml.dl — deep learning train steps (forward + manual backward + optim).
 
 type TrainState4 = object
-  public b2: array[2, float]
+  public net: Mlp4x4x2
+  public loss: float
+  public steps: int
+
+type TrainStateMnist = object
+  public net: MlpMnist784
   public loss: float
   public steps: int
 
@@ -13,12 +18,22 @@ def dl_train_state_default() -> TrainState4
   requires true
   ensures result.steps == 0
   ensures result.loss == 0.0
-  ensures result.b2[0] == 0.0
   decreases 0
 =
   var s: TrainState4
-  s.b2[0] = 0.0
-  s.b2[1] = 0.0
+  s.net = nn_mlp4x4x2_default()
+  s.loss = 0.0
+  s.steps = 0
+  return s
+
+def dl_mnist_train_state_default() -> TrainStateMnist
+  requires true
+  ensures result.steps == 0
+  ensures result.loss == 0.0
+  decreases 0
+=
+  var s: TrainStateMnist
+  s.net = nn_mlp_mnist_default()
   s.loss = 0.0
   s.steps = 0
   return s
@@ -40,6 +55,81 @@ def dl_mlp4_backward_loss(
     i = i + 1
   return loss
 
+def dl_mnist_backward_loss(
+    pred: array[10, float], target_idx: int) -> float
+  requires target_idx >= 0
+  requires target_idx < 10
+  ensures result >= 0.0
+  decreases target_idx
+=
+  var loss: float = 0.0
+  var i: int = 0
+  while i < 10
+    var tgt: float = 0.0
+    if i == target_idx:
+      tgt = 1.0
+    loss = loss + ml_mse_scalar(pred[i], tgt)
+    i = i + 1
+  return loss
+
+def dl_mlp4_backward_apply(
+    net: var Mlp4x4x2, inp: array[4, float], target_idx: int, lr: float) -> float
+  requires target_idx >= 0
+  requires target_idx < 2
+  requires lr > 0.0
+  requires lr <= 1.0
+  ensures result >= 0.0
+  decreases target_idx
+=
+  var h: array[4, float] = nn_linear4(inp, net.w1, net.b1)
+  var h_relu: array[4, float] = ml_relu4(h)
+  var pred: array[2, float] = nn_linear4x2(h_relu, net.w2, net.b2)
+  var loss: float = 0.0
+  var t: int = 0
+  while t < 2
+    var tgt: float = 0.0
+    if t == target_idx:
+      tgt = 1.0
+    loss = loss + ml_mse_scalar(pred[t], tgt)
+    t = t + 1
+  var grad_out0: float = pred[0]
+  var grad_out1: float = pred[1]
+  if target_idx == 0:
+    grad_out0 = pred[0] - 1.0
+  if target_idx == 1:
+    grad_out1 = pred[1] - 1.0
+  var j: int = 0
+  while j < 2
+    var g_out: float = grad_out0
+    if j == 1:
+      g_out = grad_out1
+    optim_sgd_scalar(net.b2[j], g_out, lr)
+    var i_w2: int = 0
+    while i_w2 < 4
+      var g_w2: float = g_out * h_relu[i_w2]
+      optim_sgd_scalar(net.w2[i_w2][j], g_w2, lr)
+      i_w2 = i_w2 + 1
+    j = j + 1
+  var grad_h: array[4, float]
+  j = 0
+  while j < 4
+    var gh: float = 0.0
+    if grad_out0 != 0.0:
+      gh = gh + grad_out0 * net.w2[j][0]
+    if grad_out1 != 0.0:
+      gh = gh + grad_out1 * net.w2[j][1]
+    if h[j] <= 0.0:
+      gh = 0.0
+    grad_h[j] = gh
+    optim_sgd_scalar(net.b1[j], gh, lr)
+    var i_w1: int = 0
+    while i_w1 < 4
+      var g_w1: float = gh * inp[i_w1]
+      optim_sgd_scalar(net.w1[i_w1][j], g_w1, lr)
+      i_w1 = i_w1 + 1
+    j = j + 1
+  return loss
+
 def dl_train_step4(
     state: var TrainState4, inp: array[4, float], target_idx: int, lr: float) -> float
   requires target_idx >= 0
@@ -50,22 +140,79 @@ def dl_train_step4(
   ensures state.steps > 0
   decreases target_idx
 =
-  var net: Mlp4x4x2 = nn_mlp4x4x2_default()
-  var pred: array[2, float] = nn_mlp4x4x2_forward(net, inp)
-  var p0: float = pred[0]
-  var p1: float = pred[1]
-  var loss: float = dl_mlp4_backward_loss(pred, target_idx)
-  var grad_out0: float = p0
-  var grad_out1: float = p1
-  if target_idx == 0:
-    grad_out0 = p0 - 1.0
-  if target_idx == 1:
-    grad_out1 = p1 - 1.0
-  optim_sgd_scalar(state.b2[0], grad_out0, lr)
-  optim_sgd_scalar(state.b2[1], grad_out1, lr)
+  var loss: float = dl_mlp4_backward_apply(state.net, inp, target_idx, lr)
   state.loss = loss
   var next_steps: int = state.steps + 1
   state.steps = next_steps
+  return loss
+
+def dl_mnist_backward_apply(
+    net: var MlpMnist784, inp: array[784, float], target_idx: int, lr: float) -> float
+  requires target_idx >= 0
+  requires target_idx < 10
+  requires lr > 0.0
+  requires lr <= 1.0
+  ensures result >= 0.0
+  decreases target_idx
+=
+  var h: array[256, float] = nn_linear784x256(inp, net)
+  var h_relu: array[256, float] = nn_relu256(h)
+  var pred: array[10, float] = nn_linear256x10(h_relu, net)
+  var loss: float = 0.0
+  var t: int = 0
+  while t < 10
+    var tgt: float = 0.0
+    if t == target_idx:
+      tgt = 1.0
+    loss = loss + ml_mse_scalar(pred[t], tgt)
+    t = t + 1
+  var grad_out: array[10, float]
+  var c: int = 0
+  while c < 10
+    grad_out[c] = pred[c]
+    if c == target_idx:
+      grad_out[c] = pred[c] - 1.0
+    c = c + 1
+  c = 0
+  while c < 10
+    optim_sgd_scalar(net.b2[c], grad_out[c], lr)
+    var i2: int = 0
+    while i2 < 256
+      var g_w2: float = grad_out[c] * h_relu[i2]
+      optim_sgd_scalar(net.w2[i2][c], g_w2, lr)
+      i2 = i2 + 1
+    c = c + 1
+  var j: int = 0
+  while j < 256
+    var gh: float = 0.0
+    c = 0
+    while c < 10
+      gh = gh + grad_out[c] * net.w2[j][c]
+      c = c + 1
+    if h[j] <= 0.0:
+      gh = 0.0
+    optim_sgd_scalar(net.b1[j], gh, lr)
+    var i1: int = 0
+    while i1 < 784
+      var g_scale: float = gh * inp[i1] * nn_mnist_w1_base(i1, j)
+      optim_sgd_scalar(net.w1_scale[i1], g_scale, lr)
+      i1 = i1 + 1
+    j = j + 1
+  return loss
+
+def dl_mnist_train_step(
+    state: var TrainStateMnist, inp: array[784, float], target_idx: int, lr: float) -> float
+  requires target_idx >= 0
+  requires target_idx < 10
+  requires lr > 0.0
+  requires lr <= 1.0
+  ensures result >= 0.0
+  ensures state.steps > 0
+  decreases target_idx
+=
+  var loss: float = dl_mnist_backward_apply(state.net, inp, target_idx, lr)
+  state.loss = loss
+  state.steps = state.steps + 1
   return loss
 
 def dl_mnist_train_step_acc(inp: array[784, float], lr: float) -> float
@@ -74,5 +221,5 @@ def dl_mnist_train_step_acc(inp: array[784, float], lr: float) -> float
   ensures result >= 0.0
   decreases 0
 =
-  var pred: float = nn_mlp_mnist_acc(inp)
-  return ml_mse_scalar(pred, 0.5)
+  var state: TrainStateMnist = dl_mnist_train_state_default()
+  return dl_mnist_train_step(state, inp, 0, lr)

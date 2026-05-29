@@ -32,7 +32,11 @@ note = "PH-ML: ml.ai batch predict"
 
 [[tests]]
 suite = "smoke"
-file = "smoke/gpu_bridge.li"
+file = "smoke/mnist_train_step.li"
+outcome = "verify_ok"
+note = "PH-ML: MNIST 784→256→10 train step + loss decrease"
+
+[[tests]]
 outcome = "verify_ok"
 allow_open_vc = true
 note = "PH-ML: lig matmul bridge (GPU emit blocked)"

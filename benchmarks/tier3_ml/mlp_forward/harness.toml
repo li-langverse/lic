@@ -1,0 +1,20 @@
+# Tier-3 ML forward — correctness vs NumPy oracle (WP-BENCH-ML-02).
+
+name = "mlp_forward"
+tier = 3
+family = "ml"
+metric = "forward_pass_checksum"
+batch = 1
+input_dim = 784
+hidden_dim = 256
+output_dim = 10
+
+[oracle]
+script = "oracle_mlp_forward.py"
+rtol = 1.0e-4
+atol = 1.0e-4
+
+[columns]
+li = "required"
+python_numpy = "optional"
+pytorch_cpu = "optional"

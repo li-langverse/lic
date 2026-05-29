@@ -116,14 +116,273 @@ def nn_conv2d3x3_acc(
     i = i + 1
   return acc
 
+def nn_lut17(k: int) -> float
+  requires k >= 0
+  requires k < 17
+  ensures result >= 0.0
+  decreases k
+=
+  if k == 0:
+    return 0.0
+  if k == 1:
+    return 0.01
+  if k == 2:
+    return 0.02
+  if k == 3:
+    return 0.03
+  if k == 4:
+    return 0.04
+  if k == 5:
+    return 0.05
+  if k == 6:
+    return 0.06
+  if k == 7:
+    return 0.07
+  if k == 8:
+    return 0.08
+  if k == 9:
+    return 0.09
+  if k == 10:
+    return 0.1
+  if k == 11:
+    return 0.11
+  if k == 12:
+    return 0.12
+  if k == 13:
+    return 0.13
+  if k == 14:
+    return 0.14
+  if k == 15:
+    return 0.15
+  if k == 16:
+    return 0.16
+  return 0.0
+
+def nn_mod17(v: int) -> int
+  requires v >= 0
+  ensures result >= 0
+  ensures result < 17
+  decreases v
+=
+  var r: int = v
+  while r >= 17
+    r = r - 17
+  return r
+
+def nn_mod37(v: int) -> int
+  requires v >= 0
+  ensures result >= 0
+  ensures result < 37
+  decreases v
+=
+  var r: int = v
+  while r >= 37
+    r = r - 37
+  return r
+
+def nn_mnist_w1_base(i: int, j: int) -> float
+  requires i >= 0
+  requires i < 784
+  requires j >= 0
+  requires j < 256
+  ensures result >= -1.0
+  ensures result <= 1.0
+  decreases i
+=
+  var ii: int = nn_mod17(i)
+  var jj: int = nn_mod17(j)
+  var mix: int = ii * 31 + jj * 17
+  var rem: int = mix
+  while rem >= 113
+    rem = rem - 113
+  var rk: int = rem
+  while rk >= 17
+    rk = rk - 17
+  return 0.001 * nn_lut17(rk) - 0.05
+
+def nn_mnist_w2_base(i: int, j: int) -> float
+  requires i >= 0
+  requires i < 256
+  requires j >= 0
+  requires j < 10
+  ensures result >= -1.0
+  ensures result <= 1.0
+  decreases i
+=
+  var ii: int = nn_mod17(i)
+  var jj: int = j
+  if jj >= 17:
+    jj = jj - 17
+  var mix: int = ii * 13 + jj * 7
+  var rem: int = nn_mod37(mix)
+  var rk: int = rem
+  while rk >= 17
+    rk = rk - 17
+  return 0.01 * nn_lut17(rk) - 0.18
+
+type MlpMnist784 = object
+  public b1: array[256, float]
+  public b2: array[10, float]
+  public w1_scale: array[784, float]
+  public w2: array[256, array[10, float]]
+
+def nn_mlp_mnist_default() -> MlpMnist784
+  requires true
+  ensures result.b1[0] == 0.0
+  ensures result.b2[0] == 0.0
+  decreases 0
+=
+  var n: MlpMnist784
+  var i: int = 0
+  while i < 784
+    n.w1_scale[i] = 1.0
+    i = i + 1
+  i = 0
+  while i < 256
+    n.b1[i] = 0.0
+    var j: int = 0
+    while j < 10
+      n.w2[i][j] = nn_mnist_w2_base(i, j)
+      j = j + 1
+    i = i + 1
+  i = 0
+  while i < 10
+    n.b2[i] = 0.0
+    i = i + 1
+  return n
+
+def nn_relu256(x: array[256, float]) -> array[256, float]
+  requires true
+  ensures result[0] >= 0.0
+  decreases 0
+=
+  var out: array[256, float]
+  var i: int = 0
+  while i < 256
+    out[i] = ml_relu_scalar(x[i])
+    i = i + 1
+  return out
+
+def nn_linear784x256(inp: array[784, float], net: MlpMnist784) -> array[256, float]
+  requires true
+  ensures result[0] >= -1000000.0
+  ensures result[0] <= 1000000.0
+  decreases 0
+=
+  var out: array[256, float]
+  var j: int = 0
+  while j < 256
+    var sum: float = net.b1[j]
+    var i: int = 0
+    while i < 784
+      var w: float = nn_mnist_w1_base(i, j) * net.w1_scale[i]
+      sum = sum + inp[i] * w
+      i = i + 1
+    out[j] = sum
+    j = j + 1
+  return out
+
+def nn_linear256x10(h: array[256, float], net: MlpMnist784) -> array[10, float]
+  requires true
+  ensures result[0] >= -1000000.0
+  ensures result[0] <= 1000000.0
+  decreases 0
+=
+  var out: array[10, float]
+  var j: int = 0
+  while j < 10
+    var sum: float = net.b2[j]
+    var i: int = 0
+    while i < 256
+      sum = sum + h[i] * net.w2[i][j]
+      i = i + 1
+    out[j] = sum
+    j = j + 1
+  return out
+
+def nn_mlp_mnist_forward(inp: array[784, float], net: MlpMnist784) -> array[10, float]
+  requires true
+  ensures result[0] >= -1000000.0
+  ensures result[0] <= 1000000.0
+  decreases 0
+=
+  var h: array[256, float] = nn_linear784x256(inp, net)
+  var h_relu: array[256, float] = nn_relu256(h)
+  return nn_linear256x10(h_relu, net)
+
 def nn_mlp_mnist_acc(inp: array[784, float]) -> float
   requires true
   ensures result >= 0.0
   decreases 0
 =
+  var net: MlpMnist784 = nn_mlp_mnist_default()
+  var logits: array[10, float] = nn_mlp_mnist_forward(inp, net)
   var acc: float = 0.0
   var i: int = 0
-  while i < 784
-    acc = acc + inp[i] * 0.001
+  while i < 10
+    acc = acc + logits[i]
     i = i + 1
   return ml_relu_scalar(acc)
+
+def nn_conv2d3x3_forward(
+    inp: array[4, array[4, float]], kernel: array[3, array[3, float]]) -> array[2, array[2, float]]
+  requires true
+  ensures result[0][0] >= -1000000.0
+  ensures result[0][0] <= 1000000.0
+  decreases 0
+=
+  var k00: float = kernel[0][0]
+  var k01: float = kernel[0][1]
+  var k02: float = kernel[0][2]
+  var k10: float = kernel[1][0]
+  var k11: float = kernel[1][1]
+  var k12: float = kernel[1][2]
+  var k20: float = kernel[2][0]
+  var k21: float = kernel[2][1]
+  var k22: float = kernel[2][2]
+  var p00: array[3, array[3, float]]
+  p00[0][0] = inp[0][0]
+  p00[0][1] = inp[0][1]
+  p00[0][2] = inp[0][2]
+  p00[1][0] = inp[1][0]
+  p00[1][1] = inp[1][1]
+  p00[1][2] = inp[1][2]
+  p00[2][0] = inp[2][0]
+  p00[2][1] = inp[2][1]
+  p00[2][2] = inp[2][2]
+  var p01: array[3, array[3, float]]
+  p01[0][0] = inp[0][1]
+  p01[0][1] = inp[0][2]
+  p01[0][2] = inp[0][3]
+  p01[1][0] = inp[1][1]
+  p01[1][1] = inp[1][2]
+  p01[1][2] = inp[1][3]
+  p01[2][0] = inp[2][1]
+  p01[2][1] = inp[2][2]
+  p01[2][2] = inp[2][3]
+  var p10: array[3, array[3, float]]
+  p10[0][0] = inp[1][0]
+  p10[0][1] = inp[1][1]
+  p10[0][2] = inp[1][2]
+  p10[1][0] = inp[2][0]
+  p10[1][1] = inp[2][1]
+  p10[1][2] = inp[2][2]
+  p10[2][0] = inp[3][0]
+  p10[2][1] = inp[3][1]
+  p10[2][2] = inp[3][2]
+  var p11: array[3, array[3, float]]
+  p11[0][0] = inp[1][1]
+  p11[0][1] = inp[1][2]
+  p11[0][2] = inp[1][3]
+  p11[1][0] = inp[2][1]
+  p11[1][1] = inp[2][2]
+  p11[1][2] = inp[2][3]
+  p11[2][0] = inp[3][1]
+  p11[2][1] = inp[3][2]
+  p11[2][2] = inp[3][3]
+  var out: array[2, array[2, float]]
+  out[0][0] = p00[0][0] * k00 + p00[0][1] * k01 + p00[0][2] * k02 + p00[1][0] * k10 + p00[1][1] * k11 + p00[1][2] * k12 + p00[2][0] * k20 + p00[2][1] * k21 + p00[2][2] * k22
+  out[0][1] = p01[0][0] * k00 + p01[0][1] * k01 + p01[0][2] * k02 + p01[1][0] * k10 + p01[1][1] * k11 + p01[1][2] * k12 + p01[2][0] * k20 + p01[2][1] * k21 + p01[2][2] * k22
+  out[1][0] = p10[0][0] * k00 + p10[0][1] * k01 + p10[0][2] * k02 + p10[1][0] * k10 + p10[1][1] * k11 + p10[1][2] * k12 + p10[2][0] * k20 + p10[2][1] * k21 + p10[2][2] * k22
+  out[1][1] = p11[0][0] * k00 + p11[0][1] * k01 + p11[0][2] * k02 + p11[1][0] * k10 + p11[1][1] * k11 + p11[1][2] * k12 + p11[2][0] * k20 + p11[2][1] * k21 + p11[2][2] * k22
+  return out

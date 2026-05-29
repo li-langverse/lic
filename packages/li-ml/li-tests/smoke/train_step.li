@@ -6,14 +6,22 @@ def main() -> int
   decreases 0
 =
   var state: TrainState4 = dl_train_state_default()
-  var inp: array[4, float]
-  inp[0] = 1.0
-  inp[1] = 0.0
-  inp[2] = 0.0
-  inp[3] = 0.0
-  var loss: float = dl_train_step4(state, inp, 0, 0.01)
-  if loss < 0.0:
+  var inp0: array[4, float]
+  var inp1: array[4, float]
+  inp0[0] = 1.0
+  inp0[1] = 0.0
+  inp0[2] = 0.0
+  inp0[3] = 0.0
+  inp1[0] = 1.0
+  inp1[1] = 0.0
+  inp1[2] = 0.0
+  inp1[3] = 0.0
+  var loss0: float = dl_train_step4(state, inp0, 0, 0.01)
+  var loss1: float = dl_train_step4(state, inp1, 0, 0.01)
+  if loss0 < 0.0:
     return 1
-  if state.steps != 1:
+  if state.steps != 2:
     return 2
+  if loss1 > loss0:
+    return 3
   return 0

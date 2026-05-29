@@ -27,13 +27,17 @@
 | WP-ML-01 | done | feat/ph-ml-gpu-swarm | `li-ml`, `li-ml-rl` in `packages/li.toml` | — |
 | WP-ML-02 | done | feat/ph-ml-gpu-swarm | `lic check packages/li-ml/li-tests/smoke/activations.li` | — |
 | WP-ML-03 | done | feat/ph-ml-gpu-swarm | `lic check packages/li-ml/li-tests/smoke/mlp_forward.li` | — |
-| WP-ML-04 | stub | — | — | Wave 1; tier-3 NumPy oracle |
-| WP-ML-05 | stub | — | — | Wave 1 |
+| WP-ML-04 | done | feat/ph-ml-gpu-swarm | `nn_mlp_mnist_forward` 784→256→10 | — |
+| WP-ML-05 | done | feat/ph-ml-gpu-swarm | `nn_conv2d3x3_forward` smoke | — |
 | WP-ML-06 | done | feat/ph-ml-gpu-swarm | `lic check packages/li-ml/li-tests/smoke/train_step.li` | — |
-| WP-ML-07 | WIP | — | partial `dl_train_step4` | Wave 1 manual backward |
-| WP-ML-08 | stub | — | — | Wave 1 |
+| WP-ML-07 | done | feat/ph-ml-gpu-swarm | `dl_mlp4_backward_apply` weight+SGD | — |
+| WP-ML-08 | done | feat/ph-ml-gpu-swarm | `lic check …/mnist_train_step.li` | — |
 | WP-ML-09 | done | feat/ph-ml-gpu-swarm | `lic check packages/li-ml/li-tests/smoke/ai_batch.li` | — |
 | WP-ML-10 | partial | feat/ph-ml-gpu-swarm | `lic check …/gpu_bridge.li` | WP-HW-08 host launch |
+| WP-BENCH-ML-01 | done | feat/ph-ml-gpu-swarm | tier1 `ml_*` real Li kernels | — |
+| WP-BENCH-ML-02 | partial | feat/ph-ml-gpu-swarm | tier3_ml oracle script | CSV ingest pending |
+| WP-BENCH-ML-03 | done | feat/ph-ml-gpu-swarm | tier1 `ml_mlp_train_step` | — |
+| WP-BENCH-ML-04 | partial | feat/ph-ml-gpu-swarm | `pytorch_cpu_mlp.py` N/A honest | torch optional |
 | WP-RL-01 | done | (prior) | `env_obs_from_session.li` | merged contract |
 | WP-RL-02 | done | feat/ph-ml-gpu-swarm | 3× `lic check packages/li-ml-rl/li-tests/smoke/*.li` | — |
 | WP-RL-03 | stub | — | — | Wave 3 persistent pool |
@@ -47,20 +51,18 @@
 
 ## Wave 0 verification log
 
-Run after merge:
-
-```bash
-./scripts/build.sh
-lic check packages/li-ml/li-tests/smoke/*.li
-lic check packages/li-ml-rl/li-tests/smoke/*.li
-```
-
-Update this section with commit SHA and pass/fail summary when the wave closes.
-
 | Run | Result |
 |-----|--------|
 | `./scripts/build.sh` | pass (`b9051d03`) |
 | 6× `li-ml` smokes `lic check --no-cache` | pass |
 | 3× `li-ml-rl` smokes `lic check --no-cache` | pass |
+
+## Wave 1 verification log
+
+| Run | Result |
+|-----|--------|
+| `./scripts/build.sh` | pass |
+| 7× `li-ml` smokes `lic check --no-cache` | pass |
+| tier3 oracle `oracle_mlp_forward.py` | script landed |
 
 **Maintainers:** Mirror battle plan §5 **State** when PRs land; link release notes under `docs/release-notes/`.

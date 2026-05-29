@@ -9,12 +9,14 @@
 todos:
 - id: pkg-std-io
   content: "Missing std module std.io"
-  status: pending
+  status: completed
   gap_orchestrator: true
+  note: "present in ecosystem — registry closed orch-r3 2026-05-29"
 - id: pkg-std-csv
   content: "Missing std module std.csv"
-  status: pending
+  status: completed
   gap_orchestrator: true
+  note: "present in ecosystem — registry closed orch-r3 2026-05-29"
 - id: pkg-std-summary
   content: "Missing std module std.summary"
   status: pending

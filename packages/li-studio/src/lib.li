@@ -3995,7 +3995,7 @@ def studio_vertical_demo_frame(profile_id: int, frame_id: int) -> int raises IO
     if use_wgpu_rb == 1:
       if _presented.native_pixel_source != lig_native_pixel_source_wgpu_readback():
         return 55 + frame_id
-    else:
+    if use_wgpu_rb != 1:
       if _presented.native_pixel_source != lig_native_pixel_source_paint_blit():
         return 53 + frame_id
   if frame_id == 0:

@@ -1,5 +1,5 @@
 version: 1
-updated_at: '2026-05-29T12:50:00Z'
+updated_at: '2026-05-29T12:54:32Z'
 gaps:
 - id: gap-line-profiler-001
   gap_kind: missing_package
@@ -514,7 +514,7 @@ gaps:
 - id: gap-plan-pending-swarm-observer-orch-r3-missing-package-sweep
   gap_kind: plan_debt
   title: 'swarm-observer: pending plan todo orch-r3-missing-package-sweep'
-  status: open
+  status: closed
   priority: 7
   discovered_by: plan_verifier
   evidence:
@@ -558,7 +558,7 @@ gaps:
   priority: 6
   discovered_by: swarm_observer
   evidence:
-  - benchmarks/data/latest/ui-audit.json — agents-dashboard absent
+  - "benchmarks/data/latest/ui-audit.json \u2014 agents-dashboard absent"
   - ux-targets.json target_id=agents-dashboard
   suggested_loop: studio-ui-ux
   handoff_to:
@@ -571,7 +571,7 @@ gaps:
   priority: 6
   discovered_by: swarm_observer
   evidence:
-  - benchmarks/data/latest/ux-audit.json — only lic-docs target
+  - "benchmarks/data/latest/ux-audit.json \u2014 only lic-docs target"
   - ux-targets.json target_id=world-studio-demo
   suggested_loop: studio-ui-ux
   handoff_to:
@@ -579,7 +579,7 @@ gaps:
   - studio_ui_ux_builder
 - id: gap-ux-studio-wave2-plan
   gap_kind: ui_ux
-  title: 'Studio UI wave 2 — expand ux-harness targets + agentic bench loops'
+  title: "Studio UI wave 2 \u2014 expand ux-harness targets + agentic bench loops"
   status: open
   priority: 5
   discovered_by: swarm_observer
@@ -591,7 +591,8 @@ gaps:
   - studio_ui_ux_builder
 - id: gap-ux-cinematic-studio-handoff
   gap_kind: ui_ux
-  title: 'Cinematic vertical UX parity — encode, color-grade, audio-sync (orch-r2 follow-up)'
+  title: "Cinematic vertical UX parity \u2014 encode, color-grade, audio-sync (orch-r2\
+    \ follow-up)"
   status: open
   priority: 5
   discovered_by: swarm_observer

@@ -70,6 +70,7 @@
 | 5b | wave 5b CUDA doc + CPU ref on emit + RL 8-env + lavapipe CI | pass (agent) |
 | 5b+ | WP-HW-08 device matmul hardening: `cuCtxSynchronize` timing + probe gate | pass (agent, NVIDIA lab) |
 | 5b++ | WP-HW-08 re-verify: `ph-ml-gpu-hw-gates.sh` + probe `gpu_timing_ns=2375` + `kernel_matmul_parity.li` exit 0 | pass (code_implementer, RTX 3060) |
+| 5b+++ | WP-HW-08 gate re-run: probe `gpu_timing_ns=4749`, bench JSON refresh, `kernel_matmul_parity.li` check exit 0 | pass (code_implementer, RTX 3060, 2026-05-29) |
 | 5 | RFC/docs only + tracker blockers | pass |
 
 **Release notes:** [Wave 4d](../release-notes/2026-05-29-ph-ml-wave-4d.md) · [Wave 4c](../release-notes/2026-05-29-ph-ml-wave-4c.md) · [Wave 4b](../release-notes/2026-05-29-ph-ml-de-stub-wave-4b.md) · [Wave 5](../release-notes/2026-05-29-ph-ml-wave-5-scale-stubs.md)

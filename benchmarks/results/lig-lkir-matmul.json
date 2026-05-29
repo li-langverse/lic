@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-05-29T18:16:23Z",
+  "generated_at": "2026-05-29T18:26:47Z",
   "registry": "benchmarks/competitive/lig-kernels.toml",
   "kernel_ids": [
     "lig.kernel.matmul_f32",
@@ -25,7 +25,7 @@
       "validity_gate_pass": true,
       "compile_ok": true,
       "status": "pilot",
-      "cpu_sec": 3.538091,
+      "cpu_sec": 7.62973,
       "run_ok": true
     },
     {
@@ -99,5 +99,5 @@
   "validity_ratio": 1.0,
   "validity_gate_pass": true,
   "compile_ok": true,
-  "cpu_sec": 3.538091
+  "cpu_sec": 7.62973
 }

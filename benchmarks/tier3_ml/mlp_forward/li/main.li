@@ -1,4 +1,4 @@
-# WP-BENCH-ML-01: real 784→256→10 MLP forward (PH-ML Wave 1).
+# Tier-3 mlp_forward correctness smoke (batch=1, 784→256→10).
 
 import ml.nn
 
@@ -6,16 +6,18 @@ extern proc li_rt_volatile_sink_f64(v: float) -> unit
   requires true
   ensures true
 
-def bench_inp_at(i: int) -> float
+def tier3_inp_at(i: int) -> float
   requires i >= 0
   requires i < 784
   ensures result >= 0.0
   decreases i
 =
   var rk: int = i
+  while rk >= 19
+    rk = rk - 19
   while rk >= 17
     rk = rk - 17
-  return 0.001 * nn_lut17(rk)
+  return 0.002 * nn_lut17(rk)
 
 def main() -> int
   requires true
@@ -26,11 +28,11 @@ def main() -> int
   var inp: array[784, float]
   var i: int = 0
   while i < 784
-    inp[i] = bench_inp_at(i)
+    inp[i] = tier3_inp_at(i)
     i = i + 1
   var logits: array[10, float] = nn_mlp_mnist_forward(inp, net)
-  var acc: float = 0.0
-  i = 0
+  var acc: float = logits[0]
+  i = 1
   while i < 10
     acc = acc + logits[i]
     i = i + 1

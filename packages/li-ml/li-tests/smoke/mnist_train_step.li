@@ -1,0 +1,50 @@
+import ml.dl
+import ml.nn
+
+def mnist_inp_at(i: int) -> float
+  requires i >= 0
+  requires i < 784
+  ensures result >= 0.0
+  decreases i
+=
+  var rk: int = i
+  while rk >= 19
+    rk = rk - 19
+  while rk >= 17
+    rk = rk - 17
+  return 0.002 * nn_lut17(rk)
+
+def mnist_fill(inp: var array[784, float]) -> unit
+  requires true
+  ensures true
+  decreases 0
+=
+  var i: int = 0
+  while i < 784
+    inp[i] = mnist_inp_at(i)
+    i = i + 1
+
+def main() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  var state: TrainStateMnist = dl_mnist_train_state_default()
+  var inp0: array[784, float]
+  var inp1: array[784, float]
+  var inp2: array[784, float]
+  mnist_fill(inp0)
+  var loss0: float = dl_mnist_train_step(state, inp0, 0, 0.01)
+  mnist_fill(inp1)
+  var loss1: float = dl_mnist_train_step(state, inp1, 0, 0.01)
+  if loss0 < 0.0:
+    return 1
+  if state.steps != 2:
+    return 2
+  if loss1 > loss0:
+    return 3
+  mnist_fill(inp2)
+  var logits: array[10, float] = nn_mlp_mnist_forward(inp2, state.net)
+  if logits[0] + logits[1] < -1.0e6:
+    return 4
+  return 0

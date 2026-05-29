@@ -1,17 +1,41 @@
-# WP4 catalog smoke (ml_mlp_train_step); family template matmul_naive.
+# WP-BENCH-ML-03: real MNIST train step (forward + backward + SGD).
+
+import ml.dl
+import ml.nn
+
 extern proc li_rt_volatile_sink_f64(v: float) -> unit
   requires true
   ensures true
+
+def bench_inp_at(i: int) -> float
+  requires i >= 0
+  requires i < 784
+  ensures result >= 0.0
+  decreases i
+=
+  var rk: int = i
+  while rk >= 23
+    rk = rk - 23
+  while rk >= 17
+    rk = rk - 17
+  return 0.001 * nn_lut17(rk)
 
 def main() -> int
   requires true
   ensures result == 0
   decreases 0
 =
-  var acc: float = 0.0
+  var state: TrainStateMnist = dl_mnist_train_state_default()
+  var inp: array[784, float]
   var i: int = 0
-  while i < 4096
-    acc = acc * 1.0001 + 1.0
+  while i < 784
+    inp[i] = bench_inp_at(i)
     i = i + 1
-  li_rt_volatile_sink_f64(acc)
+  var loss0: float = dl_mnist_train_step(state, inp, 0, 0.01)
+  i = 0
+  while i < 784
+    inp[i] = bench_inp_at(i)
+    i = i + 1
+  var loss1: float = dl_mnist_train_step(state, inp, 0, 0.01)
+  li_rt_volatile_sink_f64(loss0 + loss1)
   return 0

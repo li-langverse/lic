@@ -108,6 +108,15 @@ li_lic_build() {
   fi
 }
 
+# Case-insensitive substring match without piping to grep (pipefail + SIGPIPE flakes).
+li_output_has_substr() {
+  local haystack="$1" needle="$2"
+  [[ -z "$needle" ]] && return 0
+  local h="${haystack,,}"
+  local n="${needle,,}"
+  [[ "$h" == *"$n"* ]]
+}
+
 run_one() {
   local suite="$1" file="$2" outcome="$3" substr="${4:-}"
   local -a build_dir_flag=()
@@ -161,7 +170,7 @@ run_one() {
         li_test_fail "check_ok $file"
         return 1
       fi
-      if [[ -n "$substr" ]] && ! echo "$out" | grep -qi "$substr"; then
+      if [[ -n "$substr" ]] && ! li_output_has_substr "$out" "$substr"; then
         li_test_fail "check_ok $file (missing expected substring: $substr)"
         return 1
       fi
@@ -175,7 +184,7 @@ run_one() {
         li_test_fail "check_deny_warn $file (should reject)"
         return 1
       fi
-      if [[ -n "$substr" ]] && ! echo "$out" | grep -qi "$substr"; then
+      if [[ -n "$substr" ]] && ! li_output_has_substr "$out" "$substr"; then
         li_test_fail "check_deny_warn $file (missing expected substring: $substr)"
         return 1
       fi
@@ -189,7 +198,7 @@ run_one() {
         li_test_fail "check_fail $file (should reject)"
         return 1
       fi
-      if [[ -n "$substr" ]] && ! echo "$out" | grep -qi "$substr"; then
+      if [[ -n "$substr" ]] && ! li_output_has_substr "$out" "$substr"; then
         li_test_fail "check_fail $file (missing expected substring: $substr)"
         return 1
       fi
@@ -272,7 +281,7 @@ run_one() {
         li_test_fail "$outcome $file (should reject)"
         return 1
       fi
-      if [[ -n "$substr" ]] && ! echo "$err" | grep -qi "$substr"; then
+      if [[ -n "$substr" ]] && ! li_output_has_substr "$err" "$substr"; then
         li_test_fail "$outcome $file (missing expected substring: $substr)"
         return 1
       fi

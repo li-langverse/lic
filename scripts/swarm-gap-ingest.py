@@ -223,6 +223,55 @@ def ingest_competitor_catalog(explorer: dict, gaps_by_id: dict[str, dict]) -> in
     return added
 
 
+def ingest_ui_ux_signals(gaps_by_id: dict[str, dict]) -> int:
+    """Ingest failing/skipped GUI targets from benchmarks/data/latest/ui-audit.json."""
+    ui_path = LATEST / "ui-audit.json"
+    if not ui_path.is_file():
+        return 0
+    audit = json.loads(ui_path.read_text(encoding="utf-8"))
+    added = 0
+    for target in audit.get("targets") or []:
+        if not isinstance(target, dict):
+            continue
+        status = target.get("status")
+        if status not in ("fail", "skip"):
+            continue
+        tid = str(target.get("target_id") or "unknown")
+        gid = f"gap-ux-{_slug(tid)}"
+        if gid in gaps_by_id:
+            continue
+        repo = target.get("repo") or "lic"
+        reason = (
+            target.get("skip_reason")
+            or (target.get("findings") or [None])[0]
+            or target.get("note")
+            or status
+        )
+        handoff = ["studio_ui_ux_builder", "code_implementer", "issue_planner"]
+        if repo == "benchmarks":
+            handoff = ["code_implementer", "gui_ux_tester", "issue_planner"]
+        elif repo == "li-cursor-agents":
+            handoff = ["gui_ux_tester", "code_implementer", "issue_planner"]
+        gaps_by_id[gid] = {
+            "id": gid,
+            "gap_kind": "ui_ux",
+            "title": f"UI/UX ({tid}): {str(reason)[:100]}",
+            "status": "open",
+            "priority": 6 if status == "fail" else 5,
+            "discovered_by": "gui_ux_tester",
+            "evidence": [
+                f"ui-audit.json target={tid} status={status} repo={repo}",
+                str(reason)[:200],
+            ],
+            "target_backlog": "docs/superpowers/plans/2026-05-24-studio-ui-ux-plan-loop.md",
+            "target_todo_id": f"gap-ux-{_slug(tid)}",
+            "suggested_loop": "studio-ui-ux",
+            "handoff_to": handoff,
+        }
+        added += 1
+    return added
+
+
 def ingest_verticals_stubs(gaps_by_id: dict[str, dict]) -> int:
     vert = ROOT / "benchmarks/competitive/verticals.toml"
     if not vert.is_file():
@@ -278,6 +327,7 @@ def main() -> int:
         "plan_debt_dedupe": dedupe_plan_pending_gaps(gaps_by_id),
         "competitor_catalog": ingest_competitor_catalog(explorer, gaps_by_id),
         "verticals_stubs": ingest_verticals_stubs(gaps_by_id),
+        "ui_ux_signals": ingest_ui_ux_signals(gaps_by_id),
     }
 
     data["gaps"] = list(gaps_by_id.values())

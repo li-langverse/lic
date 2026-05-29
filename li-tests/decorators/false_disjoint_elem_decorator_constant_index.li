@@ -1,0 +1,10 @@
+# G-par / G-dec research: @parallel(disjoint=disjoint_elem) on `for` does not reject buf[0] writes.
+# Mirror of race_shared_memory/false_disjoint_elem_constant_index.li (parallel for path).
+def false_elem_decorator(buf: var array[64, int]) -> unit
+  requires true
+  ensures true
+  decreases 0
+=
+  @parallel(disjoint=disjoint_elem)
+  for i in 0..<64
+    buf[0] = buf[0] + 1

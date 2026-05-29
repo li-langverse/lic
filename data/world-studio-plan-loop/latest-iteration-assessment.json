@@ -1,16 +1,18 @@
 {
   "pass": true,
-  "todo_id": "wsm-w1-profile-smokes",
-  "wps_touched": ["WP-SIM-00", "WP-SIM-01", "WP-UX-05"],
+  "todo_id": "wsm-w1-sim3-envpool",
+  "wps_touched": ["WP-SIM-03", "WP-RL-01"],
   "smokes_run": [
-    "packages/li-studio/li-tests/smoke/studio_vertical_profile_roundtrip.li",
+    "packages/li-sim/li-tests/smoke/env_pool_stub.li",
+    "packages/li-sim/li-tests/smoke/env_pool_step_contract.li",
+    "packages/li-studio/li-tests/smoke/studio_sim_rl_step_hook.li",
     "packages/li-studio/li-tests/smoke/studio_sim_step_by_profile.li"
   ],
   "native_only": true,
   "gates": {
     "world_studio_plan_gates": "pass",
-    "lic_check_local": "skipped_llvm_dev_missing",
+    "lic_check_local": "skipped_lic_not_built",
     "lic_check_ci": "pending"
   },
-  "notes": "Extended studio_sim_step_by_profile.li with studio_sim_step_profile_ok helper covering all 7 runtime profiles (game, sim_rl, sim_automotive, sim_robotics, sim_additive, sim_scientific, sim_drug_design). Scientific and RL retain specialized assertions (MD tier viewport sync, env pool batch tick). studio_vertical_profile_roundtrip.li already covered all 7 compose/TOML paths. Local lic check blocked: LLVM 22 runtime present but LLVMConfig.cmake dev package missing on Windows host; CI will verify lic check."
+  "notes": "EnvPool state lives on SimSessionStub (env_pool_size/steps_emitted/total_reward + env_last_obs*). sim_rl_session_env_pool_step loads/stores session pool across frames; env_obs_from_session exposes last post-step contract. New smoke env_pool_step_contract.li proves persistence + obs/reward contract. PH-ML async workers and li-ml-rl package remain future."
 }

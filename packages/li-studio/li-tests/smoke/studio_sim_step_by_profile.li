@@ -105,4 +105,10 @@ def main() -> int raises IO
     return 73
   if rl_sess.last_dt != 0.01:
     return 74
+  if rl_sess.env_pool_size != rl_pool_sz:
+    return 75
+  if rl_sess.env_pool_steps_emitted != rl_pool_sz:
+    return 76
+  if env_obs_from_session(rl_sess).obs1 != rl_sess.last_dt:
+    return 77
   return 0

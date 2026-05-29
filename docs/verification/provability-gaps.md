@@ -38,7 +38,7 @@ This page is the **honest inventory** of what is **not** fully proved or not yet
 | **G-par** | Partial | AST `policy_module` rejects missing disjoint, false `disjoint_row`, mut capture, borrow-in-par; Lean proofs open |
 | **G-dec** | Partial | Decorator elaboration to MIR; `decorator_exploits` proofs |
 | **G-math** | Partial | **Closed slice (tier-1):** `matmul_naive`, `horner_pure_li` ≤1.2× C++ (`check-tier1-li-vs-cpp.sh`, loop matmul + FMA horner). **Closed slice:** full 2×2 float `@` Lean Prop (`linalg_mat2_at2_float_closed`, `mat2_at2_float_spec`). **Closed slice:** `linalg_dot4_float_closed` (prelude `dot`), `linalg_mat2_callproc_float_closed`, prelude `norm`/`axpy`/**, IKJ `ArrayMatMul2DF64` enforced only with `LI_TIER1_PERF_STRICT=1` (`check-tier1-li-vs-cpp.sh` reports gaps by default). **Closed slice:** prelude `norm`, `axpy`, same-length `**`, scalar×array, `math_linalg/reductions/`, loop-dot witness, P-linalg corpus |
-| **G-bnd** | Partial | Release path without `li_bounds_fail` for proved indices |
+| **G-bnd** | Partial | No `li_bounds_fail` in codegen today (`emit.cpp` declares only); refinement indices use `inbounds` GEP without Lean bounds VCs (`index_refinement.li` → `vc_get_requires_0 := True`) — `bounds_refinement_lean_gap.sh` |
 | **G-def** | Partial+ | Cross-module method privacy proofs; virtual dispatch deferred |
 | **G-oop** | Partial | Lean `ensures` on methods; trait laws in kernel |
 | **G-math-syn** | Partial | `for` / `range` surface |
@@ -74,7 +74,7 @@ Status legend: **Missing** · **Stub** · **Partial** · **CI only** · **Done**
 | **G-stdlib** | Prelude / std seal | User cannot shadow builtin or `std/` names | **Partial** — `check_stdlib_seal` + `resolve_imports` for `std.*` / workspace; cycle detect at load | **4s** | `li-tests/stdlib_seal/`, `li-tests/modules/` |
 | **G-dec** | Execution decorators | Static elaboration; reserved names; no runtime | **Partial** — parse + policy + `MirFn.decorators`; **7d-c** `@vectorized` on `for` → `ArraySimdScope` (#150); `@parallel` elaboration open | **7d** | `decorator_exploits/`, `decorators/` |
 | **G-math** | Math / `A @ B` | Shape errors at compile time; no user `simd(...)` | **Partial** — 1d/2d `@` lowering + **P-linalg** proof corpus (`linalg_*_closed.li`, loop dot open) | **2i**, **7e**, **2f** | `li-tests/math_linalg/`, `li-tests/contracts_verify/linalg_*` |
-| **G-bnd** | Bounds in release | No reliance on `li_bounds_fail` for proved indices | **Partial** — architecture lists MIR bounds; not full refinement | **2e**, **3** | [Architecture](../architecture/overview.md); codegen paths |
+| **G-bnd** | Bounds in release | No reliance on `li_bounds_fail` for proved indices | **Partial** — typecheck rejects raw `int` index; **refinement** params compile but AutoVC `True` + no runtime guard (`bounds_refinement_lean_gap.sh`) | **2e**, **3** | `index_refinement.li`, `emit.cpp:1275`, `vc_emit_lean.cpp:550-551` |
 | **G-def** | `def` / `object` / visibility | Handbook surface | **Partial+** — methods/`self`, `private def`, MIR in-out write-back (**2j-a/b/c**); inheritance/traits open (**2j-d–f**) | **2j** | `li-tests/encapsulation/`, `composable/import_physics_runtime.li` |
 | **G-oop** | Full OOP | Methods, traits, inheritance, cross-module encapsulation | **Partial** — **2j-a…f** surface done; Lean `ensures` on methods / trait laws open | **2j** | `li-tests/encapsulation/trait_*.li`, `method_call_requires_*.li` |
 | **G-math-syn** | Python-math (`**`, `for`, …) | Ergonomic surface | **Partial** — `%`, `//`, `**` on `int`; `for`/`range` open | **2h** | `li-tests/math_syntax/` |
@@ -138,7 +138,7 @@ flowchart LR
 |-----------|-------------------|--------|
 | Type / borrow errors | Compile-time only | **Mostly** at typecheck |
 | `parallel for` races | Compile-time reject | **Heuristic** policy + tests |
-| Out-of-bounds | Compile-time proof | **May** still hit `li_bounds_fail` in debug paths |
+| Out-of-bounds | Compile-time proof | Typecheck blocks raw `int` index; **no** `li_bounds_fail` emitted yet — refinement Lean VCs stubbed |
 | Decorators | Never interpreted at run time | **N/A** — not executed; not elaborated yet |
 | `li_panic` / contract fail | No user path in proved release | **Runtime** hooks exist in `li_rt` |
 | OpenMP | Native threads | **Runtime** library (not user logic validation) |

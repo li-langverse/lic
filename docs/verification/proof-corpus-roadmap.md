@@ -25,7 +25,7 @@
 | `caller_requires_local_ok.li` | Const-local discharge | Discharged |
 | `method_call_requires_ok.li` | Method call-site `requires` on `Type_method` | Build + autovc (2j-f) |
 | `extern_call_requires_ok.li` | Imported callee `requires` | Discharged |
-| `index_refinement.li` | Index refinement type + array access | Build + autovc check in corpus |
+| `index_refinement.li` | Index refinement type + array access | Build passes; **Lean stub** (`i : Int`, `requires := True`) — `bounds_refinement_lean_gap.sh` |
 | `sqrt_contract.li` | Float `requires`/`ensures` (toy `sqrt`) | Emits real Props; float goals may stay open |
 | `sqrt_open_bound.li` | `abs(result² - x) < ε` with `li_rt_sqrt` body | **Intentionally open** — `verify_open_ok` / `--allow-open-vc` |
 | `refinement_*_ok.li` | Refinement types at call/init | **Partial** — refinement VCs often `True`; user `ensures` may stay open |

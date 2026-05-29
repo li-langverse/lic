@@ -3,6 +3,10 @@
 # Invoked from lic only; use --check-open-goals (not env) for strict open-VC pass.
 set -euo pipefail
 ROOT="$(cd "$(dirname "$0")/.." && pwd)"
+if [[ "${LI_AUTOVC_LOCK_HELD:-}" != "1" ]]; then
+  chmod +x "$ROOT/scripts/with-autovc-lock.sh" 2>/dev/null || true
+  exec "$ROOT/scripts/with-autovc-lock.sh" "$0" "$@"
+fi
 SEM="$ROOT/docs/semantics"
 CHECK_OPEN=0
 for arg in "$@"; do

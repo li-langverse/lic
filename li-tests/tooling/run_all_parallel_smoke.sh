@@ -28,12 +28,16 @@ run_job() {
   [[ -f "$build_dir/generated/AutoVC.lean" ]] || return 1
 }
 
+# Parallel verify_ok rows exercise shared docs/semantics lake (AutoVC.olean races without flock).
 run_job 0 "typecheck/fib.li" &
 p0=$!
 run_job 1 "math_linalg/broadcast_len1_add_float4.li" &
 p1=$!
+run_job 2 "math_linalg/elementwise_pow_float4.li" &
+p2=$!
 wait "$p0" || fail "worker 0"
 wait "$p1" || fail "worker 1"
+wait "$p2" || fail "worker 2 (lean verify)"
 
 [[ -f "$ROOT/build/li-test-smoke-0/generated/AutoVC.lean" ]] || fail "missing worker 0 AutoVC"
 [[ -f "$ROOT/build/li-test-smoke-1/generated/AutoVC.lean" ]] || fail "missing worker 1 AutoVC"

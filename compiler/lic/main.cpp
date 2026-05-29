@@ -44,18 +44,26 @@ int autovc_lock_timeout_seconds() {
   return 600;
 }
 
+std::filesystem::path autovc_shared_lock_path() {
+  const std::string root = li::repo_root_from_env();
+  if (!root.empty()) {
+    return std::filesystem::path(root) / "build" / "generated" / ".autovc.lock";
+  }
+  return std::filesystem::path("build/generated/.autovc.lock");
+}
+
 struct AutoVcFileLock {
   int fd{-1};
   bool locked{true};
   std::string error;
 
-  explicit AutoVcFileLock(const std::filesystem::path& vc_lean) {
+  explicit AutoVcFileLock(const std::filesystem::path& /*vc_lean*/) {
     if (const char* held = std::getenv("LI_AUTOVC_LOCK_HELD");
         held != nullptr && held[0] == '1' && held[1] == '\0') {
       return;
     }
     locked = false;
-    const auto lock_path = vc_lean.parent_path() / ".autovc.lock";
+    const auto lock_path = autovc_shared_lock_path();
     std::error_code ec;
     std::filesystem::create_directories(lock_path.parent_path(), ec);
     fd = ::open(lock_path.c_str(), O_CREAT | O_RDWR, 0666);
@@ -308,6 +316,8 @@ bool lake_available() {
 }
 
 int run_lean_verify_script(bool check_open_goals) {
+  // lic build/verify holds AutoVcFileLock; lean-verify-stub must not re-flock the same path.
+  (void)setenv("LI_AUTOVC_LOCK_HELD", "1", 1);
   const char* root = std::getenv("LI_REPO_ROOT");
   std::string script = "scripts/lean-verify-stub.sh";
   if (root != nullptr) {
@@ -415,6 +425,11 @@ int verify_file(const char* path, bool run_lean, bool strict_lean) {
     const std::string vc_lean = li::repo_build_path("generated/AutoVC.lean");
     std::error_code fs_err;
     std::filesystem::create_directories(std::filesystem::path(vc_lean).parent_path(), fs_err);
+    AutoVcFileLock autovc_lock(vc_lean);
+    if (!autovc_lock.ok()) {
+      std::cerr << "verify: AutoVC lock failed — " << autovc_lock.error << '\n';
+      return 1;
+    }
     std::string vc_err;
     (void)li::write_vcs_lean(module, vc_lean, &vc_err);
     const int open = count_open_autovc_goals();
@@ -599,6 +614,11 @@ int main(int argc, char** argv) {
     const std::string vc_lean = li::repo_build_path("generated/AutoVC.lean");
     std::error_code fs_err;
     std::filesystem::create_directories(std::filesystem::path(vc_lean).parent_path(), fs_err);
+    AutoVcFileLock autovc_lock(vc_lean);
+    if (!autovc_lock.ok()) {
+      std::cerr << "lic build: AutoVC lock failed — " << autovc_lock.error << '\n';
+      return 1;
+    }
     if (!li::write_vcs_lean(module, vc_lean, &err)) {
       std::cerr << "vc emit: " << err << '\n';
     }

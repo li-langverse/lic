@@ -36,7 +36,7 @@
 | WP-HW-09 | **done** | feat/ph-ml-gpu-swarm | `lig-ptx-catalog.toml` + `lig_cuda_ptx_catalog.c`; cuda-home-probe `ready_emit_cpu_ref`; timing probe only | LKIR→nvcc per-kernel emit |
 | WP-HW-10 | partial | feat/ph-ml-gpu-swarm | `LIG_EMIT_HIP=1` → status `1` + CPU ref | ROCm CI hardware |
 | WP-HW-11 | **partial** | feat/ph-ml-gpu-swarm | `li_rt_lig_metal.mm` + `macos-metal-smoke.sh`; `LIG_EMIT_METAL=1` | AIR emit + catalog kernels |
-| WP-HW-12 | **partial** | feat/ph-ml-gpu-swarm | kid=2 LKIR file gate + `kernel_mlp_launch_status.li` | Device MLP kernels |
+| WP-HW-12 | **partial** | feat/ph-ml-gpu-swarm | kid=2 LKIR gate + Vulkan stub + CUDA/ROCm/Metal CPU ref (`EMIT_STUB`); `kernel_mlp_launch_status.li` | Device MLP PTX / `gpu_timing_ns` |
 | WP-HW-14 | stub | feat/ph-ml-gpu-swarm | `lig-rfc.md` § multi-GPU | Scheduler impl |
 | WP-GPU-04 | partial | feat/ph-ml-gpu-swarm | `gpu_decorator_mir.li` (2× `@gpu`), MIR partial | G-gpu proofs |
 | WP-GPU-05 | partial | feat/ph-ml-gpu-swarm | 4× compile_fail + Lean note | `P-gpu-*` corpus |
@@ -76,6 +76,7 @@
 | 5b++++++ | WP-HW-08 LKIR dispatch re-verify: gates exit 0; probe `gpu_timing_ns=5936`; bench JSON `4749` | pass (code_implementer, RTX 3060, 2026-05-29) |
 | 5b+++++++ | WP-HW-08 LKIR→CUDA dispatch verify: `ph-ml-gpu-hw-gates.sh` exit 0; probe `gpu_timing_ns=4749`; `kernel_matmul_lkir_dispatch.li` check exit 0 | pass (code_implementer, RTX 3060, 2026-05-29) |
 | 5b++++++++ | WP-HW-09 PTX catalog: `check-lig-ptx-catalog.sh` + cuda-home-probe `ready_emit_cpu_ref`; device timing via timing-probe only | pass (code_implementer, RTX 3060, 2026-05-29) |
+| 5b+++++++++ | WP-HW-12 MLP fallback: kid=2 vendor CPU ref only; no matmul device on MLP path; `ph-ml-gpu-hw-gates.sh` exit 0 | pass (code_implementer, RTX 3060, 2026-05-29) |
 | 5 | RFC/docs only + tracker blockers | pass |
 
 **Release notes:** [Wave 4d](../release-notes/2026-05-29-ph-ml-wave-4d.md) · [Wave 4c](../release-notes/2026-05-29-ph-ml-wave-4c.md) · [Wave 4b](../release-notes/2026-05-29-ph-ml-de-stub-wave-4b.md) · [Wave 5](../release-notes/2026-05-29-ph-ml-wave-5-scale-stubs.md)

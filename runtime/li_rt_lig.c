@@ -62,6 +62,28 @@ static int lig_nvcc_executable(void) {
   return (access("/usr/bin/nvcc", X_OK) == 0) ? 1 : 0;
 }
 
+/* Tiny 2→2→1 MLP forward — CPU only, sets g_ratio (WP-HW-12; no device PTX). */
+static void lig_mlp_forward_cpu_ref_pilot(void) {
+  const float x[2] = {0.5f, -0.25f};
+  const float w1[4] = {0.1f, 0.2f, 0.3f, 0.4f};
+  const float b1[2] = {0.0f, 0.0f};
+  float h[2];
+  h[0] = x[0] * w1[0] + x[1] * w1[2] + b1[0];
+  h[1] = x[0] * w1[1] + x[1] * w1[3] + b1[1];
+  if (h[0] < 0.0f) {
+    h[0] = 0.0f;
+  }
+  if (h[1] < 0.0f) {
+    h[1] = 0.0f;
+  }
+  const float w2[2] = {0.5f, 0.5f};
+  const float out = h[0] * w2[0] + h[1] * w2[1];
+  const float expect = 0.0375f;
+  const float d = out - expect;
+  const float err = (d < 0.0f) ? -d : d;
+  g_ratio = (err < 1e-5f) ? 1.0f : 0.0f;
+}
+
 /* Fixed 2x2 reference matmul — CPU only, sets g_ratio (WP-HW-08/09). */
 static void lig_matmul_cpu_ref_2x2(void) {
   const float a[4] = {1.0f, 2.0f, 3.0f, 4.0f};
@@ -119,6 +141,35 @@ static int32_t lig_run_matmul_vendor_stub(int32_t bid) {
       return LI_LIG_KERNEL_STUB_OK;
     }
     lig_matmul_cpu_ref_2x2();
+    return LI_LIG_KERNEL_EMIT_STUB;
+  }
+  return LI_LIG_KERNEL_UNAVAILABLE;
+}
+
+/* WP-HW-12: vendor backends after LKIR gate — CPU ref only (no matmul device / gpu_timing_ns). */
+static int32_t lig_run_mlp_forward_vendor_stub(int32_t bid) {
+  if (bid == 1) {
+    if (!lig_emit_cuda_enabled()) {
+      g_ratio = 0.0f;
+      return LI_LIG_KERNEL_EMIT_OFF;
+    }
+    lig_mlp_forward_cpu_ref_pilot();
+    return LI_LIG_KERNEL_EMIT_STUB;
+  }
+  if (bid == 2) {
+    if (!lig_emit_hip_enabled()) {
+      g_ratio = 0.0f;
+      return LI_LIG_KERNEL_EMIT_OFF;
+    }
+    lig_mlp_forward_cpu_ref_pilot();
+    return LI_LIG_KERNEL_EMIT_STUB;
+  }
+  if (bid == 3) {
+    if (!lig_emit_metal_enabled()) {
+      g_ratio = 0.0f;
+      return LI_LIG_KERNEL_EMIT_OFF;
+    }
+    lig_mlp_forward_cpu_ref_pilot();
     return LI_LIG_KERNEL_EMIT_STUB;
   }
   return LI_LIG_KERNEL_UNAVAILABLE;
@@ -203,7 +254,7 @@ static int32_t lig_run_mlp_forward_path(int32_t bid) {
   if (bid == 5) {
     return lig_run_vulkan_spirv_path();
   }
-  return lig_run_matmul_vendor_stub(bid);
+  return lig_run_mlp_forward_vendor_stub(bid);
 }
 
 static int32_t lig_run_vulkan_spirv_path(void) {

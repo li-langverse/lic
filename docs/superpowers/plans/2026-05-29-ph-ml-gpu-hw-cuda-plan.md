@@ -31,7 +31,7 @@ todos:
 
 - id: hw-cuda-12-mlp-stub
   content: "WP-HW-12: kid=2 mlp_forward CUDA/Vulkan fallback after LKIR file gate — no fake gpu_timing_ns"
-  status: pending
+  status: completed
 
 - id: hw-cuda-bench-tracker
   content: "Refresh benchmarks/results/lig-gpu-suite-honest.json; tracker WP-HW-08/09 partial→done only with verify evidence"

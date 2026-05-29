@@ -14,7 +14,7 @@
   "vulkan_lavapipe_hint": false,
   "note": "Honest 2x2 CUDA device timing via lig-cuda-timing-probe; Vulkan compute pipeline still partial (WP-HW-07).",
   "parity": {
-    "generated_at": "2026-05-29T18:54:45Z",
+    "generated_at": "2026-05-29T18:57:30Z",
     "registry": "benchmarks/competitive/lig-kernels.toml",
     "kernel_ids": [
       "lig.kernel.matmul_f32",
@@ -40,8 +40,8 @@
         "validity_gate_pass": false,
         "compile_ok": false,
         "status": "pilot",
-        "cpu_sec": 0.176234,
-        "stderr_tail": "/usr/bin/ld: /tmp/li_rt_lig_cuda-8de4e8.o: in function `li_rt_lig_cuda_matmul2x2_device':\nli_rt_lig_cuda.c:(.text+0x1ce): undefined reference to `li_rt_lig_cuda_ptx_lookup'\nclang-22: error: linker command failed with exit code 1 (use -v to see invocation)\nerror: build failed: clang link failed\n"
+        "cpu_sec": 0.170691,
+        "stderr_tail": "/usr/bin/ld: /tmp/li_rt_lig_cuda-b0cc68.o: in function `li_rt_lig_cuda_matmul2x2_device':\nli_rt_lig_cuda.c:(.text+0x1ce): undefined reference to `li_rt_lig_cuda_ptx_lookup'\nclang-22: error: linker command failed with exit code 1 (use -v to see invocation)\nerror: build failed: clang link failed\n"
       },
       {
         "kernel_id": "lig.kernel.matmul_f64",
@@ -114,7 +114,7 @@
     "validity_ratio": 0.0,
     "validity_gate_pass": false,
     "compile_ok": false,
-    "cpu_sec": 0.176234
+    "cpu_sec": 0.170691
   },
   "cuda_hardware": {
     "nvidia_smi": true,

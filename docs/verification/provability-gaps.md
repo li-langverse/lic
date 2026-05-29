@@ -197,6 +197,7 @@ When editing handbook pages, do **not** imply features beyond this register with
 | [Language overview](../language/overview.md) | “Status honesty” links here |
 | [SIMD and parallel](../language/simd-parallel.md) | Note heuristic disjoint until 7d-c |
 | Decorator / math spec stubs | Say “planned” until gaps closed |
+| [Ecosystem package handbooks](../ecosystem/official-packages.md) | Link here for **G-*** / **Partial** on lip, lit, httpd, std mirrors |
 
 ---
 

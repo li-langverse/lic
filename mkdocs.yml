@@ -103,6 +103,15 @@ nav:
       - Language evolution: ecosystem/language-evolution.md
       - Upstream notifications: ecosystem/upstream-notifications.md
       - Official packages: ecosystem/official-packages.md
+      - Package handbooks:
+          - lip: ecosystem/lip.md
+          - lit: ecosystem/lit.md
+          - lis: ecosystem/lis.md
+          - li-net: ecosystem/li-net.md
+          - li-httpd: ecosystem/li-httpd.md
+          - li-std-core: ecosystem/li-std-core.md
+          - li-std-math: ecosystem/li-std-math.md
+          - li-demo: ecosystem/li-demo.md
       - HTTPd prerequisites: ecosystem/httpd-prerequisites.md
   - Language handbook:
       - li.toml manifest: language/li-toml.md

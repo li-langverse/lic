@@ -479,6 +479,18 @@ suite = "race_shared_memory"
 file = "race_shared_memory/good_disjoint_elem_per_index.li"
 outcome = "verify_ok"
 
+[[tests]]
+suite = "race_shared_memory"
+file = "race_shared_memory/false_disjoint_elem_constant_index.li"
+outcome = "compile_ok"
+note = "G-par: disjoint_elem + buf[0] passes check; lowers to OpenMP (policy_disjoint_elem_soundness.sh)"
+
+[[tests]]
+suite = "decorators"
+file = "decorators/false_disjoint_elem_decorator_constant_index.li"
+outcome = "compile_ok"
+note = "G-par/G-dec: same constant-index hole on @parallel for; serial lowering until 7d-b"
+
 # --- benchmarks tier0 ---
 
 [[tests]]

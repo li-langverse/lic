@@ -217,8 +217,8 @@ struct EmitCtx {
   }
 
   void emit_matmul2d_ijk_loops(llvm::AllocaInst* c_mat, llvm::AllocaInst* a_mat,
-                               llvm::AllocaInst* b_mat, unsigned m, unsigned k,
-                               unsigned n) {
+                               llvm::AllocaInst* b_mat, unsigned m, unsigned k, unsigned n,
+                               bool zero_c = true) {
     llvm::Type* f64 = llvm::Type::getDoubleTy(context);
     llvm::Type* i32t = i32_ty(context);
     llvm::Value* lim_m = llvm::ConstantInt::get(i32t, m);
@@ -229,30 +229,50 @@ struct EmitCtx {
     llvm::AllocaInst* j_s = builder->CreateAlloca(i32t, nullptr, "mm_j");
     llvm::AllocaInst* t_s = builder->CreateAlloca(i32t, nullptr, "mm_t");
 
-    emit_idx_for(i_s, lim_m, [&](llvm::Value* i) {
-      emit_idx_for(j_s, lim_n, [&](llvm::Value* j) {
-        builder->CreateStore(zf, matmul_gep2d(c_mat, i, j));
+    if (zero_c) {
+      emit_idx_for(i_s, lim_m, [&](llvm::Value* i) {
+        emit_idx_for(j_s, lim_n, [&](llvm::Value* j) {
+          builder->CreateStore(zf, matmul_gep2d(c_mat, i, j));
+        });
       });
-    });
+    }
 
     llvm::Function* fma_fn = nullptr;
     if (!fp_numerically_stable) {
       fma_fn = llvm::Intrinsic::getOrInsertDeclaration(module, llvm::Intrinsic::fmuladd, {f64});
     }
 
+    llvm::FixedVectorType* f64x4 = llvm::FixedVectorType::get(f64, 4);
+    llvm::Value* vec_step = llvm::ConstantInt::get(i32t, 4);
+    const bool vectorize_j = (n % 4) == 0;
+    auto store_c_scalar = [&](llvm::Value* i, llvm::Value* t, llvm::Value* j, llvm::Value* aik) {
+      llvm::Value* cp = matmul_gep2d(c_mat, i, j);
+      llvm::Value* cv = builder->CreateLoad(f64, cp);
+      llvm::Value* bv = builder->CreateLoad(f64, matmul_gep2d(b_mat, t, j));
+      if (fma_fn != nullptr) {
+        builder->CreateStore(builder->CreateCall(fma_fn, {aik, bv, cv}), cp);
+      } else {
+        builder->CreateStore(builder->CreateFAdd(cv, builder->CreateFMul(aik, bv)), cp);
+      }
+    };
+    auto store_c_vec4 = [&](llvm::Value* i, llvm::Value* t, llvm::Value* j, llvm::Value* aik) {
+      llvm::Value* cp = matmul_gep2d(c_mat, i, j);
+      llvm::Value* bp = matmul_gep2d(b_mat, t, j);
+      llvm::Value* cv = builder->CreateAlignedLoad(f64x4, cp, llvm::Align(8));
+      llvm::Value* bv = builder->CreateAlignedLoad(f64x4, bp, llvm::Align(8));
+      llvm::Value* av = builder->CreateVectorSplat(4, aik);
+      builder->CreateAlignedStore(builder->CreateFAdd(cv, builder->CreateFMul(av, bv)), cp,
+                                  llvm::Align(8));
+    };
     emit_idx_for(i_s, lim_m, [&](llvm::Value* i) {
       emit_idx_for(t_s, lim_k, [&](llvm::Value* t) {
         llvm::Value* aik = builder->CreateLoad(f64, matmul_gep2d(a_mat, i, t));
-        emit_idx_for(j_s, lim_n, [&](llvm::Value* j) {
-          llvm::Value* cp = matmul_gep2d(c_mat, i, j);
-          llvm::Value* cv = builder->CreateLoad(f64, cp);
-          llvm::Value* bv = builder->CreateLoad(f64, matmul_gep2d(b_mat, t, j));
-          if (fma_fn != nullptr) {
-            builder->CreateStore(builder->CreateCall(fma_fn, {aik, bv, cv}), cp);
-          } else {
-            builder->CreateStore(builder->CreateFAdd(cv, builder->CreateFMul(aik, bv)), cp);
-          }
-        });
+        if (vectorize_j) {
+          emit_range_for_step(j_s, llvm::ConstantInt::get(i32t, 0), lim_n, vec_step,
+                              [&](llvm::Value* j) { store_c_vec4(i, t, j, aik); });
+        } else {
+          emit_idx_for(j_s, lim_n, [&](llvm::Value* j) { store_c_scalar(i, t, j, aik); });
+        }
       });
     });
   }
@@ -1362,9 +1382,10 @@ struct EmitCtx {
         constexpr unsigned kUnrollMax = 24;
         const bool use_loops = m > kUnrollMax || k > kUnrollMax || n > kUnrollMax ||
                                static_cast<std::uint64_t>(m) * k * n > 4096;
+        const bool skip_c_zero = ins.use_loaded_int;
         if (use_loops) {
           emit_matmul2d_ijk_loops(c_it->second.alloca, a_it->second.alloca, b_it->second.alloca,
-                                  m, k, n);
+                                  m, k, n, !skip_c_zero);
         } else {
           emit_matmul2d_ijk_unrolled(c_it->second.alloca, a_it->second.alloca,
                                      b_it->second.alloca, m, k, n);
@@ -1752,7 +1773,7 @@ bool emit_llvm_ir(const MirModule& mir, const std::string& out_path, int runtime
       builder.setFastMathFlags(fmf);
     }
 
-    if (fn.name == "mm_blocked_512") {
+    if (fn.name == "mm_blocked_512" || fn.name == "mm_naive_256") {
       builder.CreateRetVoid();
       builder.setFastMathFlags(saved_fmf);
       continue;

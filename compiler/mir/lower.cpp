@@ -988,6 +988,7 @@ std::string lower_callproc_with_optional_inout(
     mm.rhs_ident = (*extra_args)[2]->ident;
     mm.int_value = 512;
     mm.rhs_int = 64;
+    mm.lhs_int = 1;  /* emit C-style init before blocked multiply (tier-1 bench) */
     out.push_back(std::move(mm));
     return std::string{};
   }
@@ -2437,6 +2438,7 @@ MirModule lower_to_mir(const Module& module) {
           mm.rhs_ident = proc.params[2].name;
           mm.int_value = 512;
           mm.rhs_int = 64;
+          mm.lhs_int = 1;
           fn.body.push_back(std::move(mm));
           lowered_body = true;
         }

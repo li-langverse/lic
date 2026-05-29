@@ -673,25 +673,37 @@ def studio_agent_run_next(run: StudioAgentRun) -> StudioAgentRun
   if out.task_state == studio_agent_task_failed():
     return out
   if out.active_tool_id == studio_mcp_world_scaffold():
+    var req0: StudioAgentToolRequest = studio_mcp_tool_dispatch(out.active_tool_id)
+    out.last_tool_status = req0.status
+    out.last_result_code = req0.result_code
+    if req0.status != studio_mcp_tool_status_ok():
+      out.task_state = studio_agent_task_failed()
+      return out
     out.patch_applied = 1
-    out.last_tool_status = studio_mcp_tool_status_ok()
-    out.last_result_code = studio_mcp_tool_result_ok()
     out.step_index = 1
     out.active_tool_id = studio_mcp_lic_check()
     out.task_state = studio_agent_task_running()
     return out
   if out.active_tool_id == studio_mcp_lic_check():
+    var req1: StudioAgentToolRequest = studio_mcp_tool_dispatch(out.active_tool_id)
+    out.last_tool_status = req1.status
+    out.last_result_code = req1.result_code
+    if req1.status != studio_mcp_tool_status_ok():
+      out.task_state = studio_agent_task_failed()
+      return out
     out.check_step_done = 1
-    out.last_tool_status = studio_mcp_tool_status_ok()
-    out.last_result_code = studio_mcp_tool_result_ok()
     out.step_index = 2
     out.active_tool_id = studio_mcp_lic_build()
     out.task_state = studio_agent_task_running()
     return out
   if out.active_tool_id == studio_mcp_lic_build():
+    var req2: StudioAgentToolRequest = studio_mcp_tool_dispatch(out.active_tool_id)
+    out.last_tool_status = req2.status
+    out.last_result_code = req2.result_code
+    if req2.status != studio_mcp_tool_status_ok():
+      out.task_state = studio_agent_task_failed()
+      return out
     out.build_step_done = 1
-    out.last_tool_status = studio_mcp_tool_status_ok()
-    out.last_result_code = studio_mcp_tool_result_ok()
     out.step_index = studio_agent_real_pipeline_steps()
     out.task_state = studio_agent_task_done()
     return out

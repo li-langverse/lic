@@ -1,5 +1,6 @@
 #!/usr/bin/env bash
-# WP-UX-14b Step 1: capture vertical PNGs via studio_vertical_capture_ppm (Li API + runtime paint).
+# WP-UX-14b Step 1: capture via studio_vertical_capture_ppm_auto (Li API + runtime paint).
+# Optional: LIG_WGPU_READBACK=1 LIG_HOST_PRESENT=1 for readback-gated demo frame (PPM still paint mirror).
 # Falls back to C paint_blit host when capture_vertical binary is missing.
 set -euo pipefail
 ROOT="$(cd "$(dirname "$0")/.." && pwd)"

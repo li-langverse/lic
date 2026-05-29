@@ -1,0 +1,14 @@
+{
+  "status": "pass",
+  "input": {
+    "pointer_down": 0,
+    "pointer_x": 0.0,
+    "pointer_y": 0.0,
+    "key_escape": 0,
+    "key_cmd_k": 1,
+    "key_digit": 3,
+    "mock": true,
+    "capture_mode": "script_mock"
+  },
+  "note": "SDL/mock probe \u2014 map to InputState then studio_handle_studio_key each frame"
+}

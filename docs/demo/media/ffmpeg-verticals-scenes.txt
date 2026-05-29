@@ -1,0 +1,16 @@
+file '/home/s4il0r/Documents/Cursor/li-langverse/lic/docs/demo/media/native-verticals/png/game.png'
+duration 10
+file '/home/s4il0r/Documents/Cursor/li-langverse/lic/docs/demo/media/native-verticals/png/sim_rl.png'
+duration 10
+file '/home/s4il0r/Documents/Cursor/li-langverse/lic/docs/demo/media/native-verticals/png/sim_automotive.png'
+duration 10
+file '/home/s4il0r/Documents/Cursor/li-langverse/lic/docs/demo/media/native-verticals/png/sim_robotics.png'
+duration 10
+file '/home/s4il0r/Documents/Cursor/li-langverse/lic/docs/demo/media/native-verticals/png/sim_additive.png'
+duration 10
+file '/home/s4il0r/Documents/Cursor/li-langverse/lic/docs/demo/media/native-verticals/png/sim_scientific.png'
+duration 10
+file '/home/s4il0r/Documents/Cursor/li-langverse/lic/docs/demo/media/native-verticals/png/sim_drug_design.png'
+duration 10
+file '/home/s4il0r/Documents/Cursor/li-langverse/lic/docs/demo/media/native-verticals/png/game.png'
+duration 5

@@ -296,20 +296,46 @@ def rl_train_tick(pool: var EnvPoolPersistent, policy_out: float) -> int
     return 0
   return 1
 
-# WP-RL-04: async env pool design stub (process workers blocked — see ml-rl-async-env-pool.md).
+# WP-RL-04: in-process serial multi-env batch (4 slots); fork IPC deferred.
 def async_env_worker_slot_count() -> int
   requires true
-  ensures result == 1
+  ensures result == 4
   decreases 0
 =
-  return 1
+  return 4
+
+def async_env_pool_tick_serial_batch(
+    pool: var EnvPoolStub, session: var SimSessionStub, dt: float, worker_count: int) -> int
+  requires pool.pool_size > 0
+  requires pool.pool_size <= 32
+  requires worker_count >= 1
+  requires worker_count <= 4
+  requires session.tick >= 0
+  requires session.replay_capacity > 0
+  ensures result >= 0
+  ensures result <= 1
+  decreases worker_count
+=
+  if worker_count > async_env_worker_slot_count():
+    return 0
+  if dt <= 0.0:
+    return sim_status_invalid_dt()
+  var w: int = 0
+  while w < worker_count
+    if env_pool_stub_step(pool, session, dt) != sim_status_ok():
+      return sim_status_invalid_dt()
+    w = w + 1
+  return sim_status_ok()
 
 def async_env_pool_tick_stub(worker_count: int) -> int
   requires worker_count >= 1
-  ensures result >= -1
-  ensures result <= 0
+  requires worker_count <= 4
+  ensures result >= 0
+  ensures result <= 1
   decreases worker_count
 =
-  if worker_count > 1:
-    return -1
-  return 0
+  if worker_count > async_env_worker_slot_count():
+    return 0
+  var pool: EnvPoolStub = env_pool_stub_default()
+  var session: SimSessionStub = sim_session_stub_default()
+  return async_env_pool_tick_serial_batch(pool, session, 0.016, worker_count)

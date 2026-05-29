@@ -3,10 +3,12 @@
 
 #include <stdint.h>
 
-/** 0 = stub module ok, 1 = magic mismatch, 2 = size too small */
+/** 0 = stub module ok, 1 = magic mismatch, 2 = bound too small */
 int32_t li_rt_lkir_spirv_emit_status(void);
-/** 1 when minimal SPIR-V header validates (no Vulkan dispatch). */
+/** 1 when minimal SPIR-V header validates (no GPU dispatch). */
 int32_t li_rt_lkir_spirv_validation_smoke(void);
+/** 1 when LIG_VULKAN_LAVA or lavapipe VK_ICD_FILENAMES hint present (WP-HW-07). */
+int32_t li_rt_lkir_spirv_lavapipe_probe(void);
 const uint8_t* li_rt_lkir_spirv_matmul_stub_bytes(uint32_t* out_len);
 
 #endif

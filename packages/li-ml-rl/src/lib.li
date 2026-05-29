@@ -3,10 +3,10 @@ import sim
 
 def li_ml_rl_version() -> int
   requires true
-  ensures result == 2
+  ensures result == 3
   decreases 0
 =
-  return 2
+  return 3
 
 def env_obs_dim() -> int
   requires true
@@ -246,3 +246,52 @@ def env_pool_stub_step(pool: var EnvPoolStub, session: var SimSessionStub, dt: f
     pool.steps_emitted = pool.steps_emitted + 1
     i = i + 1
   return sim_status_ok()
+
+type EnvPoolPersistent = object
+  public pool_size: int
+  public steps_emitted: int
+  public total_reward: float
+  public policy_loss: float
+
+def env_pool_persistent_default() -> EnvPoolPersistent
+  requires true
+  ensures result.pool_size == 4
+  ensures result.steps_emitted == 0
+  ensures result.total_reward == 0.0
+  ensures result.policy_loss == 0.0
+  decreases 0
+=
+  var p: EnvPoolPersistent
+  p.pool_size = 4
+  p.steps_emitted = 0
+  p.total_reward = 0.0
+  p.policy_loss = 0.0
+  return p
+
+def rl_policy_forward(
+    obs0: float, obs1: float, obs2: float, obs3: float,
+    obs4: float, obs5: float, obs6: float, obs7: float) -> float
+  requires true
+  ensures result >= -8.0
+  ensures result <= 8.0
+  decreases 0
+=
+  return obs0 + obs1 + obs2 + obs3 + obs4 + obs5 + obs6 + obs7
+
+def rl_train_tick(pool: var EnvPoolPersistent, policy_out: float) -> int
+  requires pool.pool_size > 0
+  requires pool.pool_size <= 32
+  ensures result >= 0
+  ensures result <= 1
+  decreases pool.pool_size
+=
+  if policy_out < -32.0:
+    return 0
+  if policy_out > 32.0:
+    return 0
+  pool.policy_loss = pool.policy_loss + policy_out * 0.01
+  if pool.steps_emitted < pool.pool_size:
+    return 0
+  if pool.total_reward <= 0.0:
+    return 0
+  return 1

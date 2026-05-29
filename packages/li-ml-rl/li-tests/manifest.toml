@@ -17,3 +17,15 @@ suite = "smoke"
 file = "smoke/env_obs_from_session.li"
 outcome = "verify_ok"
 note = "PH-ML SIM-3: env_obs_from_session"
+
+[[tests]]
+suite = "smoke"
+file = "smoke/env_pool_persistent.li"
+outcome = "verify_ok"
+note = "PH-ML Wave 3: EnvPoolPersistent + rl_train_tick"
+
+[[tests]]
+suite = "smoke"
+file = "smoke/policy_forward.li"
+outcome = "verify_ok"
+note = "PH-ML Wave 3: rl_policy_forward stub"

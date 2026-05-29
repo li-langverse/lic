@@ -55,6 +55,24 @@ cwe = "CWE-125"
 mitigation = "strlen bounded by max_header_block; GET probe via li_rt_str_prefix_is_get"
 cve_refs = []
 
+[[file.functions]]
+name = "li_rt_world_write_path"
+cwe = "CWE-22"
+mitigation = "reject null/empty paths and .. segments; single bounded world_v1 line"
+cve_refs = []
+
+[[file.functions]]
+name = "li_rt_world_read_path"
+cwe = "CWE-22"
+mitigation = "reject traversal; fgets bounded to LI_RT_WORLD_LINE_MAX"
+cve_refs = []
+
+[[file.functions]]
+name = "li_rt_world_file_roundtrip_path"
+cwe = "CWE-22"
+mitigation = "write then read same bounded path; field equality check"
+cve_refs = []
+
 [[file]]
 path = "runtime/li_rt_httpd.c"
 status = "active"

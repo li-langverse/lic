@@ -46,7 +46,7 @@ Recording matrix: [VERTICALS-RECORDING.md](../demo/VERTICALS-RECORDING.md) — a
 |----|-------|----------|
 | PH-GD-0 | **DONE** | Vision + RFC index |
 | PH-GD-1 | **DONE** (MVP) | Shell demo, outliner, timeline, MCP IDs |
-| PH-GD-2 | **PARTIAL** | `studio_game_world_checkpoint_*`; no `world.li` serialize I/O |
+| PH-GD-2 | **PARTIAL** | `studio_game_world_checkpoint_*` + `world_save_to_path` / `world_load_from_path` (single-line `world.li`); scene graph / assets still stub |
 | PH-SIM SIM-0 | **DONE** | Profile bridge, contracts |
 | PH-SIM SIM-1 | **DONE** | `sim_step` / `studio_sim_step_hook` |
 | PH-SIM SIM-2 | **DONE** | Replay metadata on session |

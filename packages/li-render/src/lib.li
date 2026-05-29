@@ -8,10 +8,10 @@ import scene
 
 def li_std_render_version() -> int
   requires true
-  ensures result == 2
+  ensures result == 3
   decreases 0
 =
-  return 2
+  return 3
 
 def render_viewport_fps_target() -> float
   requires true

@@ -1005,6 +1005,21 @@ std::string lower_callproc_with_optional_inout(
     out.push_back(std::move(mm));
     return std::string{};
   }
+  if (callee_name == "mm_naive_256" && extra_args && extra_args->size() == 3 &&
+      (*extra_args)[0]->kind == Expr::Kind::Ident && (*extra_args)[1]->kind == Expr::Kind::Ident &&
+      (*extra_args)[2]->kind == Expr::Kind::Ident) {
+    MirInsn mm;
+    mm.op = MirOp::ArrayMatMul2DF64;
+    mm.ident = (*extra_args)[0]->ident;
+    mm.lhs_ident = (*extra_args)[1]->ident;
+    mm.rhs_ident = (*extra_args)[2]->ident;
+    mm.int_value = 256;
+    mm.rhs_int = 256;
+    mm.lhs_int = 256;
+    mm.lhs_is_literal = true;
+    out.push_back(std::move(mm));
+    return std::string{};
+  }
   const TypeExpr* inout_ty = nullptr;
   const std::string recv_ident =
       receiver_or_first_arg ? object_root_ident(*receiver_or_first_arg) : std::string{};
@@ -2431,26 +2446,37 @@ MirModule lower_to_mir(const Module& module) {
                    &loop_stack,   &object_local_types, &const_floats};
       g_object_locals = &object_local_types;
       bool lowered_body = false;
-      if (proc.name == "mm_blocked_512" && proc.params.size() == 3) {
+      if ((proc.name == "mm_blocked_512" || proc.name == "mm_naive_256") &&
+          proc.params.size() == 3) {
+        const std::int64_t n_side = proc.name == "mm_blocked_512" ? 512 : 256;
         std::int64_t rows = 0;
         std::int64_t cols = 0;
         bool ok = true;
         for (const auto& p : proc.params) {
-          if (!is_2d_float_matrix_type(p.type, &rows, &cols) || rows != 512 || cols != 512) {
+          if (!is_2d_float_matrix_type(p.type, &rows, &cols) || rows != n_side ||
+              cols != n_side) {
             ok = false;
             break;
           }
           matrix_array_names.insert(p.name);
-          arr_ctx.matrix_dims[p.name] = MatrixDims{512, 512};
+          arr_ctx.matrix_dims[p.name] = MatrixDims{n_side, n_side};
         }
         if (ok) {
           MirInsn mm;
-          mm.op = MirOp::ArrayMatMulBlocked2DF64;
+          if (proc.name == "mm_blocked_512") {
+            mm.op = MirOp::ArrayMatMulBlocked2DF64;
+            mm.int_value = 512;
+            mm.rhs_int = 64;
+          } else {
+            mm.op = MirOp::ArrayMatMul2DF64;
+            mm.int_value = 256;
+            mm.rhs_int = 256;
+            mm.lhs_int = 256;
+            mm.lhs_is_literal = true;
+          }
           mm.ident = proc.params[0].name;
           mm.lhs_ident = proc.params[1].name;
           mm.rhs_ident = proc.params[2].name;
-          mm.int_value = 512;
-          mm.rhs_int = 64;
           fn.body.push_back(std::move(mm));
           lowered_body = true;
         }

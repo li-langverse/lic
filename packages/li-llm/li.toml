@@ -6,6 +6,7 @@ license = "Apache-2.0 OR MIT"
 description = "Native LLM inference for Li — tokenizer, safetensors/GGUF loader, transformer forward, generate loop (PH-LLM)"
 
 [dependencies]
+li-bytes = { path = "../li-bytes" }
 li-math = { path = "../li-math" }
 li-ml = { path = "../li-ml" }
 

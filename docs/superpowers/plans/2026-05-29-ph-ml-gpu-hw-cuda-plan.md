@@ -19,7 +19,7 @@ todos:
 
 - id: hw-cuda-08-device-matmul
   content: "WP-HW-08: Harden 2x2 CUDA device matmul — lig-cuda-timing-probe honest ns; kernel_matmul_parity.li green"
-  status: pending
+  status: completed
 
 - id: hw-cuda-08-lkir-dispatch
   content: "WP-HW-08: Route lig kernel kid=1 through CUDA device when LIG_EMIT_CUDA=1 and cuda probe passes"

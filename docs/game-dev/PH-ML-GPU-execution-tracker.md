@@ -32,7 +32,7 @@
 | WP-HW-05 | **partial** | feat/ph-ml-gpu-swarm | schema validate matmul + mlp_forward `.lkir` | Tile/barrier semantics proofs |
 | WP-HW-06 | partial | feat/ph-ml-gpu-swarm | `lkir_spirv_stub.li`, `li_rt_lkir_spirv.c` | Full SPIR-V shader module |
 | WP-HW-07 | **partial** | feat/ph-ml-gpu-swarm | VkInstance + `li_rt_lkir_vulkan_compute_symbols_ok`; lavapipe ICD hint | `vkCreateComputePipelines` dispatch |
-| WP-HW-08 | **partial** | feat/ph-ml-gpu-swarm | `li_rt_lig_cuda_matmul2x2_device` + `lig-cuda-timing-probe.sh`; `kernel_matmul_parity.li` | General kernels / LKIR dispatch |
+| WP-HW-08 | **done** | feat/ph-ml-gpu-swarm | `li_rt_lig_cuda_matmul2x2_device` + `cuCtxSynchronize` timing + `lig-cuda-timing-probe.sh`; `kernel_matmul_parity.li` | LKIR dispatch (hw-cuda-08-lkir-dispatch) |
 | WP-HW-09 | **partial** | feat/ph-ml-gpu-swarm | Embedded PTX `lig_matmul2x2_f32`; device timing when probe passes | Full catalog PTX emit |
 | WP-HW-10 | partial | feat/ph-ml-gpu-swarm | `LIG_EMIT_HIP=1` → status `1` + CPU ref | ROCm CI hardware |
 | WP-HW-11 | **partial** | feat/ph-ml-gpu-swarm | `li_rt_lig_metal.mm` + `macos-metal-smoke.sh`; `LIG_EMIT_METAL=1` | AIR emit + catalog kernels |
@@ -52,7 +52,7 @@
 | WP-ML-13 | blocked | — | RFC only | `tensor` Phase 3 |
 | WP-ML-14 | blocked | — | tracker | WP-ML-13 + compiler |
 
-**Counts:** done **5** · partial **10** · stub **2** · blocked **6** (hardware / language — honest, not merge blockers for #367)
+**Counts:** done **6** · partial **9** · stub **2** · blocked **6** (hardware / language — honest, not merge blockers for #367)
 
 ---
 
@@ -68,6 +68,7 @@
 | 4b | wave 4b smokes + bench JSON + RL serial batch | pass |
 | 4c | wave 4c docs + gpu suite + RL serial + honest blockers | pass |
 | 5b | wave 5b CUDA doc + CPU ref on emit + RL 8-env + lavapipe CI | pass (agent) |
+| 5b+ | WP-HW-08 device matmul hardening: `cuCtxSynchronize` timing + probe gate | pass (agent, NVIDIA lab) |
 | 5 | RFC/docs only + tracker blockers | pass |
 
 **Release notes:** [Wave 4d](../release-notes/2026-05-29-ph-ml-wave-4d.md) · [Wave 4c](../release-notes/2026-05-29-ph-ml-wave-4c.md) · [Wave 4b](../release-notes/2026-05-29-ph-ml-de-stub-wave-4b.md) · [Wave 5](../release-notes/2026-05-29-ph-ml-wave-5-scale-stubs.md)

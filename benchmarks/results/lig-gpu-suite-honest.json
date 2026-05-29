@@ -2,8 +2,8 @@
   "status": "cuda_device_pilot",
   "wave": "4d",
   "host_os": "Linux",
-  "gpu_timing_ns": 13061,
-  "cuda_timing_ns": 13061,
+  "gpu_timing_ns": 5937,
+  "cuda_timing_ns": 5937,
   "metal_timing_ns": "N/A",
   "hip_timing_ns": "N/A",
   "vulkan_dispatch": "spirv_validation_stub_ok",
@@ -14,7 +14,7 @@
   "vulkan_lavapipe_hint": false,
   "note": "Honest 2x2 CUDA device timing via lig-cuda-timing-probe; Vulkan compute pipeline still partial (WP-HW-07).",
   "parity": {
-    "generated_at": "2026-05-29T07:25:44Z",
+    "generated_at": "2026-05-29T18:11:56Z",
     "registry": "benchmarks/competitive/lig-kernels.toml",
     "kernel_ids": [
       "lig.kernel.matmul_f32",
@@ -36,12 +36,12 @@
       {
         "kernel_id": "lig.kernel.matmul_f32",
         "validity_min": 0.999,
-        "validity_ratio": 0.0,
-        "validity_gate_pass": false,
-        "compile_ok": false,
+        "validity_ratio": 1.0,
+        "validity_gate_pass": true,
+        "compile_ok": true,
         "status": "pilot",
-        "cpu_sec": 0.01671,
-        "stderr_tail": "clang-22: error: no such file or directory: '../runtime/li_rt.c'\nerror: build failed: clang link failed\n"
+        "cpu_sec": 3.328223,
+        "run_ok": true
       },
       {
         "kernel_id": "lig.kernel.matmul_f64",
@@ -111,11 +111,12 @@
     ],
     "kernel_id": "lig.kernel.matmul_f32",
     "validity_min": 0.999,
-    "validity_ratio": 0.0,
-    "validity_gate_pass": false,
-    "compile_ok": false,
-    "cpu_sec": 0.01671
+    "validity_ratio": 1.0,
+    "validity_gate_pass": true,
+    "compile_ok": true,
+    "cpu_sec": 3.328223
   },
+  "host_validity_ratio": 1.0,
   "cuda_hardware": {
     "nvidia_smi": true,
     "cuda_home": true,

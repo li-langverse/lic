@@ -27,6 +27,8 @@ typedef CUresult (*cuMemcpyHtoD_v2_t)(CUdeviceptr, const void*, size_t);
 typedef CUresult (*cuMemcpyDtoH_v2_t)(void*, CUdeviceptr, size_t);
 typedef CUresult (*cuLaunchKernel_t)(CUfunction, unsigned int, unsigned int, unsigned int, unsigned int,
                                      unsigned int, unsigned int, unsigned int, void*, void**, void**);
+typedef CUresult (*cuCtxSynchronize_t)(void);
+typedef CUresult (*cuModuleUnload_t)(CUmodule);
 typedef CUresult (*cuCtxDestroy_v2_t)(CUcontext);
 
 #define CU_SUCCESS 0
@@ -70,11 +72,13 @@ int32_t li_rt_lig_cuda_matmul2x2_device(void) {
   cuMemcpyHtoD_v2_t cuMemcpyHtoD = (cuMemcpyHtoD_v2_t)cuda_sym("cuMemcpyHtoD_v2");
   cuMemcpyDtoH_v2_t cuMemcpyDtoH = (cuMemcpyDtoH_v2_t)cuda_sym("cuMemcpyDtoH_v2");
   cuLaunchKernel_t cuLaunchKernel = (cuLaunchKernel_t)cuda_sym("cuLaunchKernel");
+  cuCtxSynchronize_t cuCtxSynchronize = (cuCtxSynchronize_t)cuda_sym("cuCtxSynchronize");
+  cuModuleUnload_t cuModuleUnload = (cuModuleUnload_t)cuda_sym("cuModuleUnload");
   cuCtxDestroy_v2_t cuCtxDestroy = (cuCtxDestroy_v2_t)cuda_sym("cuCtxDestroy_v2");
 
   if (cuInit == NULL || cuDeviceGet == NULL || cuCtxCreate == NULL || cuModuleLoadData == NULL ||
       cuModuleGetFunction == NULL || cuMemAlloc == NULL || cuMemFree == NULL || cuMemcpyHtoD == NULL ||
-      cuMemcpyDtoH == NULL || cuLaunchKernel == NULL || cuCtxDestroy == NULL) {
+      cuMemcpyDtoH == NULL || cuLaunchKernel == NULL || cuCtxSynchronize == NULL || cuCtxDestroy == NULL) {
     return 0;
   }
 
@@ -100,6 +104,9 @@ int32_t li_rt_lig_cuda_matmul2x2_device(void) {
 
   CUfunction fn = NULL;
   if (cuModuleGetFunction(&fn, module, "lig_matmul2x2_f32") != CU_SUCCESS) {
+    if (cuModuleUnload != NULL) {
+      cuModuleUnload(module);
+    }
     cuCtxDestroy(ctx);
     return 0;
   }
@@ -123,6 +130,9 @@ int32_t li_rt_lig_cuda_matmul2x2_device(void) {
     if (d_c) {
       cuMemFree(d_c);
     }
+    if (cuModuleUnload != NULL) {
+      cuModuleUnload(module);
+    }
     cuCtxDestroy(ctx);
     return 0;
   }
@@ -131,6 +141,9 @@ int32_t li_rt_lig_cuda_matmul2x2_device(void) {
     cuMemFree(d_a);
     cuMemFree(d_b);
     cuMemFree(d_c);
+    if (cuModuleUnload != NULL) {
+      cuModuleUnload(module);
+    }
     cuCtxDestroy(ctx);
     return 0;
   }
@@ -138,25 +151,44 @@ int32_t li_rt_lig_cuda_matmul2x2_device(void) {
   void* args[] = {&d_a, &d_b, &d_c};
   struct timespec t0;
   struct timespec t1;
-#if defined(__linux__)
-  clock_gettime(CLOCK_MONOTONIC, &t0);
-#endif
   const CUresult launch_rc = cuLaunchKernel(fn, 1, 1, 1, 1, 1, 1, 0, NULL, args, NULL);
-#if defined(__linux__)
-  clock_gettime(CLOCK_MONOTONIC, &t1);
-#endif
   if (launch_rc != CU_SUCCESS) {
     cuMemFree(d_a);
     cuMemFree(d_b);
     cuMemFree(d_c);
+    if (cuModuleUnload != NULL) {
+      cuModuleUnload(module);
+    }
     cuCtxDestroy(ctx);
     return 0;
   }
+
+#if defined(__linux__)
+  clock_gettime(CLOCK_MONOTONIC, &t0);
+#endif
+  if (cuCtxSynchronize() != CU_SUCCESS) {
+    cuMemFree(d_a);
+    cuMemFree(d_b);
+    cuMemFree(d_c);
+    if (cuModuleUnload != NULL) {
+      cuModuleUnload(module);
+    }
+    cuCtxDestroy(ctx);
+    return 0;
+  }
+#if defined(__linux__)
+  clock_gettime(CLOCK_MONOTONIC, &t1);
+  g_cuda_timing_ns =
+      (int64_t)(t1.tv_sec - t0.tv_sec) * 1000000000LL + (int64_t)(t1.tv_nsec - t0.tv_nsec);
+#endif
 
   if (cuMemcpyDtoH(c, d_c, sizeof(c)) != CU_SUCCESS) {
     cuMemFree(d_a);
     cuMemFree(d_b);
     cuMemFree(d_c);
+    if (cuModuleUnload != NULL) {
+      cuModuleUnload(module);
+    }
     cuCtxDestroy(ctx);
     return 0;
   }
@@ -164,19 +196,26 @@ int32_t li_rt_lig_cuda_matmul2x2_device(void) {
   cuMemFree(d_a);
   cuMemFree(d_b);
   cuMemFree(d_c);
+  if (cuModuleUnload != NULL) {
+    cuModuleUnload(module);
+  }
   cuCtxDestroy(ctx);
-
-#if defined(__linux__)
-  g_cuda_timing_ns =
-      (int64_t)(t1.tv_sec - t0.tv_sec) * 1000000000LL + (int64_t)(t1.tv_nsec - t0.tv_nsec);
-#endif
 
   float err = 0.0f;
   for (int i = 0; i < 4; ++i) {
     const float d = c[i] - expect[i];
     err += (d < 0.0f) ? -d : d;
   }
-  return (err < 1e-4f) ? 1 : 0;
+  if (err >= 1e-4f) {
+    g_cuda_timing_ns = -1;
+    return 0;
+  }
+#if defined(__linux__)
+  if (g_cuda_timing_ns <= 0) {
+    return 0;
+  }
+#endif
+  return 1;
 }
 
 int64_t li_rt_lig_cuda_last_timing_ns(void) { return g_cuda_timing_ns; }

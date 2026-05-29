@@ -8,6 +8,7 @@ OUT="$ROOT/benchmarks/results/lig-gpu-suite-honest.json"
 TIER3_STUB="$ROOT/benchmarks/results/tier3-ml-ingest-stub.json"
 export LIG_EMIT_CUDA="${LIG_EMIT_CUDA:-0}"
 export LIG_EMIT_HIP="${LIG_EMIT_HIP:-0}"
+export LIG_EMIT_METAL="${LIG_EMIT_METAL:-0}"
 export LIG_VULKAN_LAVA="${LIG_VULKAN_LAVA:-0}"
 
 # WP-HW-09: probe CUDA_HOME when unset (lab + CI recipe in docs/ci/cuda-gpu-smoke.md).
@@ -22,7 +23,9 @@ fi
 
 PROBE="$ROOT/scripts/cuda-home-probe.sh"
 TIMING_PROBE="$ROOT/scripts/lig-cuda-timing-probe.sh"
+METAL_TIMING_PROBE="$ROOT/scripts/lig-metal-timing-probe.sh"
 export LIG_BENCH_TIMING_PROBE="$TIMING_PROBE"
+export LIG_BENCH_METAL_TIMING_PROBE="$METAL_TIMING_PROBE"
 python3 - "$PARITY" "$OUT" "$TIER3_STUB" "$PROBE" <<'PY'
 import json, os, sys
 from pathlib import Path
@@ -54,17 +57,22 @@ def env_on(name: str) -> bool:
 
 cuda_emit = env_on("LIG_EMIT_CUDA")
 hip_emit = env_on("LIG_EMIT_HIP")
+metal_emit = env_on("LIG_EMIT_METAL")
 vulkan_lava = env_on("LIG_VULKAN_LAVA")
+import platform
 
 report = {
     "status": "honest_stub",
     "wave": "4d",
+    "host_os": platform.system(),
     "gpu_timing_ns": "N/A",
     "cuda_timing_ns": "N/A",
+    "metal_timing_ns": "N/A",
     "hip_timing_ns": "N/A",
     "vulkan_dispatch": "spirv_validation_stub_ok",
     "spirv_validation": "header_smoke_extended",
     "cuda_emit_status": 1 if cuda_emit else "emit_off",
+    "metal_emit_status": 1 if metal_emit else "emit_off",
     "hip_emit_status": 1 if hip_emit else "emit_off",
     "vulkan_lavapipe_hint": vulkan_lava,
     "note": (
@@ -157,6 +165,33 @@ if cuda_emit:
                         )
             except (OSError, json.JSONDecodeError, ValueError):
                 pass
+
+if metal_emit and platform.system() == "Darwin":
+    metal_probe = os.environ.get("LIG_BENCH_METAL_TIMING_PROBE", "")
+    if metal_probe:
+        import subprocess
+
+        try:
+            mp = subprocess.run(
+                ["bash", metal_probe],
+                capture_output=True,
+                text=True,
+                timeout=60,
+                check=False,
+                cwd=str(Path(metal_probe).resolve().parent.parent),
+            )
+            if mp.returncode == 0 and mp.stdout.strip():
+                md = json.loads(mp.stdout)
+                if md.get("metal_device_ok"):
+                    report["metal_timing_ns"] = md["metal_timing_ns"]
+                    report["gpu_timing_ns"] = md["gpu_timing_ns"]
+                    report["wp_hw_11"] = "metal_matmul2x2_pilot"
+                    report["status"] = "metal_device_pilot"
+                    report["note"] = (
+                        "Honest 2x2 Metal device timing on Apple Silicon (LIG_EMIT_METAL=1)."
+                    )
+        except (OSError, json.JSONDecodeError, ValueError):
+            pass
 
 out_path.write_text(json.dumps(report, indent=2) + "\n")
 tier3 = {

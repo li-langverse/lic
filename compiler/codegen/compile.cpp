@@ -108,6 +108,11 @@ bool compile_module(const Module& module, const std::string& output_path,
   const std::filesystem::path rt_lig_path = resolve_runtime_c("li_rt_lig.c");
   const std::filesystem::path rt_lkir_spirv_path = resolve_runtime_c("li_rt_lkir_spirv.c");
   const std::filesystem::path rt_lig_cuda_path = resolve_runtime_c("li_rt_lig_cuda.c");
+#if defined(__APPLE__)
+  const std::filesystem::path rt_lig_metal_path = resolve_runtime_c("li_rt_lig_metal.mm");
+#else
+  const std::filesystem::path rt_lig_metal_stub_path = resolve_runtime_c("li_rt_lig_metal_stub.c");
+#endif
 
   std::ostringstream cmd;
   const char* cc_env = std::getenv("CC");
@@ -143,6 +148,16 @@ bool compile_module(const Module& module, const std::string& output_path,
   if (std::filesystem::exists(rt_lig_cuda_path)) {
     cmd << " -x c \"" << rt_lig_cuda_path.string() << "\"";
   }
+#if defined(__APPLE__)
+  if (std::filesystem::exists(rt_lig_metal_path)) {
+    cmd << " -x objective-c++ \"" << rt_lig_metal_path.string() << "\"";
+    cmd << " -framework Metal -framework Foundation";
+  }
+#else
+  if (std::filesystem::exists(rt_lig_metal_stub_path)) {
+    cmd << " -x c \"" << rt_lig_metal_stub_path.string() << "\"";
+  }
+#endif
   cmd << " -o \"" << output_path << "\"";
   if (opts.release) {
     cmd << " -O3 -march=native";

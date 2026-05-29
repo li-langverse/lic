@@ -33,6 +33,7 @@
 | WP-HW-08 | **partial** | feat/ph-ml-gpu-swarm | `li_rt_lig_cuda_matmul2x2_device` + `lig-cuda-timing-probe.sh`; `kernel_matmul_parity.li` | General kernels / LKIR dispatch |
 | WP-HW-09 | **partial** | feat/ph-ml-gpu-swarm | Embedded PTX `lig_matmul2x2_f32`; device timing when probe passes | Full catalog PTX emit |
 | WP-HW-10 | partial | feat/ph-ml-gpu-swarm | `LIG_EMIT_HIP=1` → status `1` + CPU ref | ROCm CI hardware |
+| WP-HW-11 | **partial** | feat/ph-ml-gpu-swarm | `li_rt_lig_metal.mm` + `macos-metal-smoke.sh`; `LIG_EMIT_METAL=1` | AIR emit + catalog kernels |
 | WP-HW-12 | partial | feat/ph-ml-gpu-swarm | `mlp_forward_f32.lkir` + catalog | GPU dispatch |
 | WP-HW-14 | stub | feat/ph-ml-gpu-swarm | `lig-rfc.md` § multi-GPU | Scheduler impl |
 | WP-GPU-04 | partial | feat/ph-ml-gpu-swarm | `gpu_decorator_mir.li` (2× `@gpu`), MIR partial | G-gpu proofs |
@@ -82,7 +83,7 @@
 - [x] [PH-ML-GPU-merge-readiness.md](PH-ML-GPU-merge-readiness.md)
 - [x] NVIDIA lab: CUDA device 2×2 matmul + honest `gpu_timing_ns` (WP-HW-08/09 pilot)
 - [ ] Vulkan compute pipeline beyond VkInstance smoke (WP-HW-07)
-- [ ] Human (M1 Mac): Metal smokes per [metal-macos-smoke.md](../ci/metal-macos-smoke.md)
+- [ ] Human (M1 Mac): run `./scripts/macos-metal-smoke.sh` — WP-HW-11 pilot
 - [ ] Human: G-gpu Lean proofs (WP-GPU-05 done)
 - [ ] Human: lic-studio-ui `chore/agent-kit-1.3.5-studio-ui` merge
 

@@ -4,7 +4,7 @@ Where to run GPU-related work packages — **no fake timings**; each host only c
 
 | Host | Typical machine | Primary backends | WPs to run here | Do not claim here |
 |------|-----------------|------------------|-----------------|-------------------|
-| **Apple Silicon (M1+)** | MacBook, local dev | **Metal** (`bid=3`), WebGPU probe | WP-HW on Metal path; `lig_device_probe.li`; Studio present smokes | CUDA, HIP, lavapipe Vulkan compute |
+| **Apple Silicon (M1+)** | MacBook, local dev | **Metal** (`bid=3`), `LIG_EMIT_METAL=1` | `./scripts/macos-metal-smoke.sh`; WP-HW-11 device 2×2 matmul | CUDA, HIP, lavapipe Vulkan compute |
 | **Linux + NVIDIA** | Remote lab, CI GPU runners | **CUDA** (`bid=1`), Vulkan/SPIR-V (`bid=5`) when loader present | WP-HW-08/09 emit probes; `LIG_EMIT_CUDA=1` bench; future PTX dispatch | Metal |
 | **Linux + AMD** | ROCm box | **HIP/ROCm** (`bid=2`) | WP-HW-10 with `ROCM_PATH` / `LIG_EMIT_HIP=1` | CUDA, Metal |
 | **Linux CPU-only CI** | GitHub `ubuntu-latest` | WebGPU stub, SPIR-V header validation | Advisory [lavapipe-vulkan-smoke](lavapipe-vulkan-smoke.md) | Device `gpu_timing_ns` |
@@ -30,9 +30,8 @@ LIG_EMIT_CUDA=1 ./scripts/bench-lig-gpu-suite.sh   # cuda_emit_status=1, gpu_tim
 ## Mac M1 checklist
 
 ```bash
-./scripts/build.sh
-lic check packages/lig/li-tests/smoke/lig_device_probe.li
-# expect lig_backend_select_auto() == Metal (3)
+export LIG_EMIT_METAL=1
+./scripts/macos-metal-smoke.sh
 ```
 
 CUDA toolkit and `nvidia-smi` are **not** required on Apple Silicon.

@@ -225,9 +225,9 @@ struct EmitCtx {
     llvm::Value* lim_k = llvm::ConstantInt::get(i32t, k);
     llvm::Value* lim_n = llvm::ConstantInt::get(i32t, n);
     llvm::Value* zf = llvm::ConstantFP::get(f64, 0.0);
-    llvm::AllocaInst* i_s = builder->CreateAlloca(i32t, nullptr, "mm_i");
-    llvm::AllocaInst* j_s = builder->CreateAlloca(i32t, nullptr, "mm_j");
-    llvm::AllocaInst* t_s = builder->CreateAlloca(i32t, nullptr, "mm_t");
+    llvm::AllocaInst* i_s = alloca_at_entry(i32t, "mm_i");
+    llvm::AllocaInst* j_s = alloca_at_entry(i32t, "mm_j");
+    llvm::AllocaInst* t_s = alloca_at_entry(i32t, "mm_t");
 
     emit_idx_for(i_s, lim_m, [&](llvm::Value* i) {
       emit_idx_for(j_s, lim_n, [&](llvm::Value* j) {
@@ -362,16 +362,19 @@ struct EmitCtx {
     llvm::Value* lim_n = llvm::ConstantInt::get(i32t, n);
     llvm::Value* step = llvm::ConstantInt::get(i32t, bk);
     llvm::Value* vec_step = llvm::ConstantInt::get(i32t, 4);
-    llvm::AllocaInst* ii_s = builder->CreateAlloca(i32t, nullptr, "mm_ii");
-    llvm::AllocaInst* kk_s = builder->CreateAlloca(i32t, nullptr, "mm_kk");
-    llvm::AllocaInst* jj_s = builder->CreateAlloca(i32t, nullptr, "mm_jj");
-    llvm::AllocaInst* i_s = builder->CreateAlloca(i32t, nullptr, "mm_i");
-    llvm::AllocaInst* k_s = builder->CreateAlloca(i32t, nullptr, "mm_k");
-    llvm::AllocaInst* j_s = builder->CreateAlloca(i32t, nullptr, "mm_j");
+    llvm::AllocaInst* ii_s = alloca_at_entry(i32t, "mm_ii");
+    llvm::AllocaInst* kk_s = alloca_at_entry(i32t, "mm_kk");
+    llvm::AllocaInst* jj_s = alloca_at_entry(i32t, "mm_jj");
+    llvm::AllocaInst* i_s = alloca_at_entry(i32t, "mm_i");
+    llvm::AllocaInst* k_s = alloca_at_entry(i32t, "mm_k");
+    llvm::AllocaInst* j_s = alloca_at_entry(i32t, "mm_j");
 
     llvm::Function* fma_fn = nullptr;
+    llvm::Function* fma_fn_x4 = nullptr;
     if (!fp_numerically_stable) {
       fma_fn = llvm::Intrinsic::getOrInsertDeclaration(module, llvm::Intrinsic::fmuladd, {f64});
+      fma_fn_x4 =
+          llvm::Intrinsic::getOrInsertDeclaration(module, llvm::Intrinsic::fmuladd, {f64x4});
     }
     const bool tiles_align = bk > 0 && (n % bk) == 0;
 
@@ -399,8 +402,11 @@ struct EmitCtx {
       llvm::Value* cv = builder->CreateAlignedLoad(f64x4, cp, llvm::Align(8));
       llvm::Value* bv = builder->CreateAlignedLoad(f64x4, bp, llvm::Align(8));
       llvm::Value* av = builder->CreateVectorSplat(4, aik);
-      builder->CreateAlignedStore(builder->CreateFAdd(cv, builder->CreateFMul(av, bv)), cp,
-                                  llvm::Align(8));
+      llvm::Value* out =
+          fma_fn_x4 != nullptr
+              ? builder->CreateCall(fma_fn_x4, {av, bv, cv})
+              : builder->CreateFAdd(cv, builder->CreateFMul(av, bv));
+      builder->CreateAlignedStore(out, cp, llvm::Align(8));
     };
 
     emit_idx_for_step(ii_s, lim_n, step, [&](llvm::Value* ii) {

@@ -1,7 +1,7 @@
 # Lavapipe Vulkan smoke (WP-HW-07 blocker)
 
-**Status:** CI recipe only — default `lic` build does **not** link Vulkan.  
-**Tracker:** WP-HW-07 **blocked** until compute pipeline + this job land.
+**Status:** Advisory CI — [lavapipe-vulkan-smoke.yml](../../.github/workflows/lavapipe-vulkan-smoke.yml) runs SPIR-V launch smokes with Mesa ICD; default `lic` build does **not** link Vulkan compute.  
+**Tracker:** WP-HW-07 **blocked** until `vkCreateComputePipelines` dispatch (job proves env + status `0` only).
 
 ## Goal
 
@@ -17,13 +17,13 @@ export LIG_VULKAN_LAVA=1
 export LIG_VULKAN_LAVAPIPE=1  # Wave 5b alias
 ```
 
-## Planned CI steps (`.github/workflows` follow-up)
+## CI workflow steps (`lavapipe-vulkan-smoke.yml`)
 
-1. `lic check packages/lig/li-tests/smoke/kernel_launch_status.li`
-2. `LIG_VULKAN_LAVA=1 lic check packages/lig/li-tests/smoke/kernel_matmul_parity.li`
-export LIG_VULKAN_LAVAPIPE=1  # Wave 5b alias
-3. Optional: `vulkaninfo | head` artifact when ICD present
-4. **Do not** assert `gpu_timing_ns` — only launch status `0` (stub_ok)
+1. Install `libvulkan1` + `mesa-vulkan-drivers` + `vulkan-tools`; set `VK_ICD_FILENAMES` + `LIG_VULKAN_LAVA=1`
+2. `./scripts/build.sh`
+3. `lic check` on `kernel_launch_status`, `kernel_matmul_parity`, `lkir_spirv_stub`
+4. Optional `vulkaninfo` artifact
+5. **Do not** assert `gpu_timing_ns` — in-process SPIR-V validation only (WP-HW-07 still **blocked** for compute)
 
 ## Evidence (2026-05-29 agent)
 

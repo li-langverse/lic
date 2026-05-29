@@ -15,6 +15,8 @@
 
 - `gpu_device_type_reserved_compile_fail.li` — `@gpu proc` → `def` required
 - `gpu_decorator_type_alias_compile_fail.li` — `@gpu` on type alias rejected
-- `gpu_decorator_mir.li` — `mir_gpu_proc` telemetry at verify
+- `gpu_decorator_reserved_prefix_compile_fail.li` — `decorator def gpu_*` → `reserved_prefix`
+- `gpu_decorator_reserved_name_compile_fail.li` — `decorator def gpu` → `reserved_name`
+- `gpu_decorator_mir.li` — `@gpu def` verify smoke (MIR partial)
 
 **Honesty:** WP-GPU-05 stays **partial** until `lake build` includes at least one discharged `P-gpu-*` goal.

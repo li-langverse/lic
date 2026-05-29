@@ -1515,6 +1515,27 @@ file = "gpu/gpu_decorator_type_alias_compile_fail.li"
 outcome = "compile_fail"
 expected_substr = "def"
 note = "WP-GPU-05 Partial: @gpu on type alias rejected"
+
+[[tests]]
+suite = "gpu"
+file = "gpu/gpu_decorator_for_loop_compile_fail.li"
+outcome = "compile_fail"
+expected_substr = "loops"
+note = "WP-GPU-05 Partial: @gpu on for loop rejected (Phase 2 grid-stride)"
+
+[[tests]]
+suite = "gpu"
+file = "gpu/gpu_decorator_reserved_prefix_compile_fail.li"
+outcome = "compile_fail"
+expected_substr = "reserved_prefix: gpu"
+note = "WP-GPU-05 Partial: decorator def gpu_* forbidden"
+
+[[tests]]
+suite = "gpu"
+file = "gpu/gpu_decorator_reserved_name_compile_fail.li"
+outcome = "compile_fail"
+expected_substr = "reserved_name: gpu"
+note = "WP-GPU-05 Partial: decorator def gpu forbidden"
 [[tests]]
 suite = "gpu"
 file = "gpu/gpu_decorator_extern_compile_fail.li"

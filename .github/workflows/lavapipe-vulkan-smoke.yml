@@ -1,38 +1,56 @@
-name: Lavapipe Vulkan smoke (PH-ML)
+name: Lavapipe Vulkan smoke
 
 on:
+  workflow_dispatch:
   pull_request:
     paths:
-      - "runtime/li_rt_lkir_spirv.c"
-      - "runtime/li_rt_lig.c"
+      - "runtime/li_rt_lkir_spirv.*"
       - "packages/lig/**"
       - "docs/ci/lavapipe-vulkan-smoke.md"
       - ".github/workflows/lavapipe-vulkan-smoke.yml"
-  workflow_dispatch:
 
 jobs:
-  spirv-smoke:
+  spirv-validation:
     runs-on: ubuntu-24.04
-    continue-on-error: true
     steps:
       - uses: actions/checkout@v4
-      - name: Install LLVM 22
+
+      - name: Install LLVM 22 and build tools
         run: |
           chmod +x scripts/ci-install-llvm.sh
           sudo LI_LLVM_MAJOR=22 bash scripts/ci-install-llvm.sh
-      - name: Install lavapipe (optional)
-        run: sudo apt-get update && sudo apt-get install -y libvulkan1 mesa-vulkan-drivers vulkan-tools || true
-      - name: Build and smokes
+
+      - name: Install Vulkan (lavapipe ICD)
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y libvulkan1 mesa-vulkan-drivers vulkan-tools
+          echo "VK_ICD_FILENAMES=/usr/share/vulkan/icd.d/lvp_icd.x86_64.json" >> "$GITHUB_ENV"
+          echo "LIG_VULKAN_LAVA=1" >> "$GITHUB_ENV"
+
+      - name: Build lic
         env:
           LLVM_DIR: /usr/lib/llvm-22/lib/cmake/llvm
           CC: clang-22
           CXX: clang++-22
-          LIG_VULKAN_LAVA: "1"
-          LIG_VULKAN_LAVAPIPE: "1"
-          VK_ICD_FILENAMES: /usr/share/vulkan/icd.d/lvp_icd.x86_64.json
         run: |
+          chmod +x scripts/build.sh scripts/resolve-lic.sh
           ./scripts/build.sh
-          export LIC="$(./scripts/resolve-lic.sh)"
+
+      - name: SPIR-V validation smokes (no linked Vulkan in libli_rt)
+        run: |
+          LIC="$(./scripts/resolve-lic.sh)"
           "$LIC" check packages/lig/li-tests/smoke/kernel_launch_status.li
-          LIG_VULKAN_LAVA=1 ./scripts/bench-lig-gpu-suite.sh
-          python3 -c "import json; assert json.load(open('benchmarks/results/lig-gpu-suite-honest.json'))['gpu_timing_ns']=='N/A'"
+          "$LIC" check packages/lig/li-tests/smoke/kernel_matmul_parity.li
+          "$LIC" check packages/lig/li-tests/smoke/lkir_spirv_stub.li
+
+      - name: vulkaninfo head (artifact when ICD present)
+        continue-on-error: true
+        run: vulkaninfo --summary 2>&1 | head -40 > /tmp/vulkaninfo-head.txt
+
+      - name: Upload vulkaninfo snippet
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: vulkaninfo-head
+          path: /tmp/vulkaninfo-head.txt
+          if-no-files-found: ignore

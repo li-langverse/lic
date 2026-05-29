@@ -1,6 +1,6 @@
 # Design: Async RL env pool (WP-RL-04)
 
-**Status:** In-process serial batch **done** (Wave 4c); process workers **blocked**  
+**Status:** In-process serial batch **done** (Wave 4c/4d); fork IPC **blocked** — [issue template](../../../.github/ISSUE_TEMPLATE/wp-rl-04-fork-ipc.md)  
 **Date:** 2026-05-29  
 **Related:** [ml-async-parallel-rfc.md](ml-async-parallel-rfc.md) axis 2 (process isolation)
 

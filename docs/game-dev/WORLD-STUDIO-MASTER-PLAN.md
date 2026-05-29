@@ -659,6 +659,19 @@ LIG_HOST_PRESENT=1 ./scripts/studio-verticals-capture-native.sh
 
 ---
 
+
+### 13.5 World Studio master plan loop (goal-directed)
+
+| Command | Purpose |
+|---------|---------|
+| `python3 ./scripts/world-studio-plan-loop.py --once` | One iteration (`world_studio_builder`) |
+| `python3 ./scripts/world-studio-plan-loop.py` | Until all `wsm-w*` todos done |
+| `./scripts/world-studio-plan-continuous.sh` | Daemon with idle sleep |
+| `../scripts/start-goal-directed-sprints.ps1 -Sprint world-studio` | SDK sprint from workspace root |
+
+Plan YAML: `docs/superpowers/plans/2026-05-29-world-studio-master-plan-loop.md`  
+Goal file: `data/goal-directed-sprints/world-studio-master-plan.md`
+
 ## 14. Parallel dispatch & milestone calendar
 
 ### 14.1 Immediate parallel batch (from full plan)

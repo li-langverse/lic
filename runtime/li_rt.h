@@ -258,6 +258,9 @@ int32_t li_rt_studio_host_present_tick(int32_t viewport_w, int32_t viewport_h);
 int32_t li_rt_studio_demo_profile_from_env(void);
 int32_t li_rt_studio_demo_frames_from_env(void);
 int32_t li_rt_studio_demo_loop_tick_from_env(void);
+int32_t li_rt_studio_shell_paint_ppm(
+    const char* path, int32_t width, int32_t height, int32_t profile_id, int32_t has_selection,
+    float playhead_pct);
 
 
 /* PH-HW HW-0: lig device layer. */

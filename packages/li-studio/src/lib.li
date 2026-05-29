@@ -159,6 +159,17 @@ extern proc li_rt_studio_demo_loop_tick_from_env() -> int
   ensures result >= 0
   decreases 0
 
+extern proc li_rt_studio_shell_paint_ppm(
+    path: str, width: int, height: int, profile_id: int, has_selection: int, playhead_pct: float) raises IO -> int
+  requires width >= 64
+  requires height >= 64
+  requires profile_id >= 1
+  requires profile_id <= 7
+  requires has_selection >= 0
+  requires has_selection <= 1
+  ensures result >= 0
+  ensures result <= 1
+  decreases width
 
 # UX-02 — timeline playback mock.
 extern proc li_rt_studio_timeline_playing() -> int
@@ -3885,6 +3896,22 @@ def studio_vertical_demo_compose(profile_id: int, frame_id: int, key_compose: in
     out.viewport_empty.empty_visible = 0
     studio_attach_viewport_shell(out)
   return out
+
+# WP-UX-14b Step 1: write PPM from Li compose layout (runtime paint mirror; C deletion Step 4).
+def studio_vertical_capture_ppm(profile_id: int, frame_id: int, path: str, width: int, height: int) -> int raises IO
+  requires studio_profile_id_valid(profile_id) == 1
+  requires frame_id >= 0
+  requires frame_id <= 2
+  requires width >= 64
+  requires height >= 64
+  requires path != ""
+  ensures result >= 0
+  decreases frame_id
+=
+  var compose: StudioShellCompose = studio_vertical_demo_compose(profile_id, frame_id, 0)
+  var has_sel: int = compose.inspector.has_selection
+  var play_pct: float = compose.timeline.playhead_pct
+  return li_rt_studio_shell_paint_ppm(path, width, height, profile_id, has_sel, play_pct)
 
 def studio_vertical_demo_frame(profile_id: int, frame_id: int) -> int raises IO
   requires studio_profile_id_valid(profile_id) == 1

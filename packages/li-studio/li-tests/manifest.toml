@@ -151,6 +151,12 @@ note = "T-PKG-li-studio-vertical-profile-roundtrip PH-UX-05"
 
 [[tests]]
 suite = "smoke"
+file = "smoke/studio_vertical_capture_ppm.li"
+outcome = "check_ok"
+note = "WP-UX-14b Step 1: studio_vertical_capture_ppm via runtime paint mirror"
+
+[[tests]]
+suite = "smoke"
 file = "smoke/studio_host_present.li"
 outcome = "check_ok"
 note = "T-PKG-li-studio-host-present PH-HW WP3"

@@ -1,54 +1,54 @@
 # Research goal digest — `chem_sim_algorithms`
 
-**Session:** `66d1f3bf-7ced-4520-95f5-7c6fba34da72` · **Cycle:** 1 · **Agent:** `numerics_researcher`  
-**Run:** `numerics_researcher-1779876594572` · **Generated:** 2026-05-27T10:30:00Z  
+**Session:** `1bdb6322-8399-425d-9257-9b9098475e89` · **Cycle:** 1 · **Agent:** `numerics_researcher`  
+**Run:** `numerics_researcher-1779940539765` · **Generated:** 2026-05-28T03:56:40Z  
 **North star fit:** Chemistry / QM — PH-5b (proved numerics), PH-7e (integral/Fock SIMD), domains: scientific_computing, hpc
 
 ---
 
 ## Executive summary
 
-- **Mode A SOTA survey complete** (`chem-r0`): Psi4, PySCF, ORCA, Helgaker mapped to **algo_registry 401–432** with implementation ordering (integrals 401–404 → SCF 411/418).
-- **Li gap:** All 32 `qm_*` catalog rows are **unknown** on the [dashboard](https://li-langverse.github.io/benchmarks/); tier-2 harnesses use **`schrodinger_1d_barrier` template**, not QC kernels.
-- **`li-sim-scientific`:** `vertical_qm_dft()` → `algo_qm_dft_scf_energy()` → `run_algo_registry_stub` (checksum **1.001**); same pattern as MD stubs pre–r2 handoff.
-- **`std/physics/chem.li`:** tag-only (`physics_chem_std_tag`); no GTO/SCF surface yet.
+- **Mode A SOTA survey complete** (`chem-r0`): Psi4, PySCF, ORCA, Helgaker/Szabo mapped to **algo_registry 401–432**; implement **401–404** (integrals) before **408/418** (Fock/SCF energy).
+- **Li gap:** All **32 `qm_*`** catalog rows remain **unknown** on the [dashboard](https://li-langverse.github.io/benchmarks/) (preflight 2026-05-28); tier-2 harnesses still use the **`schrodinger_1d_barrier` family template**, not QC kernels.
+- **`li-sim-scientific`:** `vertical_qm_dft()` → `algo_qm_dft_scf_energy()` → `run_algo_registry_stub` (checksum **1.001**); registry ids 401–432 route through the same stub path.
+- **`std/physics/chem.li`:** tag-only (`physics_chem_std_tag`); no GTO/SCF surface on `main` yet.
 - **Composable gate missing:** `li-tests/composable/import_chem_dft_smoke.li` not on `main`; `verticals.toml` honesty stays **stub / external_binary** until it passes.
-- **v1 implement target:** `chem-r2-dft-scf-gap` → `qm_dft_scf_energy` (418) with **Psi4 subprocess oracle** before native RKS perf; validity locked.
-- **Whitepaper + study evidence:** [chem-r0 whitepaper](../../../../research-findings/whitepapers/2026-05/chem_sim_algorithms/chem-r0-qm-sota-survey/README.md) · [study](../../numerics/studies/2026-05-27-chem-r0-qm-sota-survey.md) (`validity_grade: study-only`).
-- **No perf claims** this cycle; `threshold_ratio_cpp` and tier-0 tolerances unchanged.
+- **v1 implement target:** `chem-r2-dft-scf-gap` → `qm_dft_scf_energy` (418) with **Psi4 subprocess oracle** (H₂ STO-3G) before native RKS perf; validity/stability/accuracy axes locked.
+- **Evidence pack:** [chem-r0 whitepaper](../../../../research-findings/whitepapers/2026-05/chem_sim_algorithms/chem-r0-qm-sota-survey/README.md) · [study](../../numerics/studies/2026-05-27-chem-r0-qm-sota-survey.md) · catalog `qm_dft_scf_energy` (`size_label=harness pending`).
+- **No perf claims** this cycle; `threshold_ratio_cpp` (1.2) and tier-0 tolerances unchanged.
 
 ---
 
 ## Deliverable / findings
 
-### Completed artifacts (cycle 1)
+### Completed artifacts (cycle 1, session `1bdb6322`)
 
-| Step | Artifact |
-|------|----------|
-| `survey_sota` | `docs/numerics/studies/2026-05-27-chem-r0-qm-sota-survey.md` |
-| Whitepaper | `research-findings/whitepapers/2026-05/chem_sim_algorithms/chem-r0-qm-sota-survey/` |
-| Session log | `docs/ecosystem/research-sessions/chem_sim_algorithms-cycle.md` |
-| This digest | `docs/research/goals/chem_sim_algorithms.md` |
+| Step | Run | Artifact |
+|------|-----|----------|
+| `survey_sota-1` | `numerics_researcher-1779916590880` | [Study](../../numerics/studies/2026-05-27-chem-r0-qm-sota-survey.md) · [Whitepaper](../../../../research-findings/whitepapers/2026-05/chem_sim_algorithms/chem-r0-qm-sota-survey/README.md) |
+| `digest` | `numerics_researcher-1779940539765` | This file · [Session log](../../ecosystem/research-sessions/chem_sim_algorithms-cycle.md) |
 
 ### Learned from (SOTA, 2–4)
 
 1. [Psi4 tutorials](https://psicode.org/psi4manual/master/tutorial.html) — minimal HF/DFT energy, basis sets, DIIS SCF → **v1 external oracle** for H₂/H₂O STO-3G.
 2. [PySCF user guide](https://pyscf.org/user/scf.html) — AO integrals, density fitting, RKS drivers → **401–404 before 408/418**.
-3. [ORCA manual](https://www.faccts.de/orca/manual/) — GGA/hybrid/grid (registry **412–417**) → stub honesty until LDA ref energy.
+3. [ORCA manual](https://www.faccts.de/orca/manual/) — GGA/hybrid/grid (registry **412–417**) → stub honesty until LDA (412) reference energy on fixed geometry.
 4. Helgaker, Jørgensen, Olsen — *Molecular Electronic-Structure Theory* → basis monotonicity required in `chem-r1` scaling table.
 
 ### Li mapping (PH / proof)
 
 | Surface | PH / group | Status |
 |---------|------------|--------|
-| SCF convergence + Ha refs | PH-5b | Documented; oracle path proposed |
+| SCF convergence + Ha refs | PH-5b | Documented; Psi4 oracle path proposed |
 | ERI/Fock contraction loops | PH-7e | Deferred until integral parity |
 | Gaussian recurrence, symmetry | G-math | `chem.li` / future `li-physics-quantum` |
 | AO block parallelism | G-par | Post-proof `@vectorized` / `parallel for` |
 
-### In-repo gap evidence (verified)
+### In-repo gap evidence (verified 2026-05-28)
 
-```217:226:packages/li-sim-scientific/src/lib.li
+```167:195:packages/li-sim-scientific/src/lib.li
+def run_algo_registry_stub(algo_id: int, detail: int) -> SimRunResult
+  ...
   if algo_id >= 401:
     if algo_id <= 432:
       vert = vertical_qm_dft()
@@ -56,15 +56,13 @@
   r.checksum = 1.001
 ```
 
-```1:6:std/physics/chem.li
-def physics_chem_std_tag() -> int
-  ...
-  return 1
+```246:248:packages/li-sim-scientific/src/lib.li
+  if vertical_id == vertical_qm_dft():
+    var d3: int = detail
+    return run_algo(algo_qm_dft_scf_energy(), d3)
 ```
 
-```1:1:benchmarks/tier2_physics/qm_dft_scf_energy/li/main.li
-# WP4 catalog smoke (qm_dft_scf_energy); family template schrodinger_1d_barrier.
-```
+`benchmarks/catalog.toml` — `qm_dft_scf_energy`: `size_label = "harness pending"`, `threshold_ratio_cpp = 1.2`, `validity_required = true`.
 
 ### Grade matrix
 
@@ -78,7 +76,7 @@ def physics_chem_std_tag() -> int
 
 ### Tradeoffs
 
-Validity, stability (SCF convergence), and accuracy (basis-set monotonicity) remain **locked**. Speed on ERI/Fock rows is explicitly deferred until checksum/Ha parity. External Gaussian/ORCA binaries are **not** required in CI; Psi4 subprocess oracle is optional and documented.
+Validity, stability (SCF convergence), and accuracy (basis-set monotonicity) remain **locked**. Speed on ERI/Fock rows is explicitly deferred until checksum/Ha parity. External Gaussian/ORCA binaries are **not** required in CI; Psi4 subprocess oracle is optional and documented. No axis may regress to green dashboard cells without human approval of locked-axis tradeoffs.
 
 ### Mandatory evidence (this run)
 
@@ -86,7 +84,7 @@ Validity, stability (SCF convergence), and accuracy (basis-set monotonicity) rem
 |------|------|
 | Numerics study | `docs/numerics/studies/2026-05-27-chem-r0-qm-sota-survey.md` |
 | Whitepaper | `research-findings/whitepapers/2026-05/chem_sim_algorithms/chem-r0-qm-sota-survey/` |
-| Bench catalog | `benchmarks/catalog.toml` → `qm_dft_scf_energy` (harness pending) |
+| Bench catalog | `benchmarks/catalog.toml` → `qm_dft_scf_energy` |
 | Preflight | `benchmarks/data/latest/ecosystem-audit.json` (32 unknown `qm_*`) |
 
 ### Implementation path (handoff → `bench_improver` / sim worktree)
@@ -95,7 +93,7 @@ Validity, stability (SCF convergence), and accuracy (basis-set monotonicity) rem
 2. Implement integral microkernels **401–404** before Fock/SCF.
 3. Replace `run_algo_registry_stub` for id **418** with real `run_qm_dft_scf_energy_smoke`.
 4. Add `li-tests/composable/import_chem_dft_smoke.li`; flip `verticals.toml` only when green.
-5. Deep gates in `lic-worktrees/sim-chem-research` only.
+5. Deep gates in `lic-worktrees/sim-chem-research` only — no new systemd sim loops on `main`.
 
 ---
 

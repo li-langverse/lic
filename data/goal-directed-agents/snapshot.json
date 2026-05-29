@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-05-28T19:38:12.261914+00:00",
+  "generated_at": "2026-05-29T10:47:06.625677+00:00",
   "tz": "Europe/Berlin",
   "agents_live": 0,
   "runners": [
@@ -7,9 +7,9 @@
       "id": "httpd",
       "name": "li-httpd gap parity",
       "branch": "cursor/httpd-plan-continue",
-      "head": "c8c18657",
+      "head": "6b7cb3aa",
       "running": true,
-      "process": "4100598 python3 /home/s4il0r/Documents/Cursor/li-langverse/lic/scripts/goal-directed-agents-snapshot.py",
+      "process": "3434238 python3 /home/s4il0r/Documents/Cursor/li-langverse/li-cursor-agents/data/workspaces/li-langverse/lic/code_implem",
       "log_path": "/home/s4il0r/Documents/Cursor/li-langverse/lic/../lic/data/httpd-plan-loop/iter-20260522-132846.log",
       "todos": [
         {
@@ -72,7 +72,7 @@
       "agent_live": false,
       "agent": "",
       "goal_file": "",
-      "log_age_sec": 182491,
+      "log_age_sec": 237025,
       "last_state_at": "",
       "last_state_todo": "",
       "last_state_gates": "",
@@ -87,7 +87,7 @@
         "ursor/li-langverse/li-cursor-agents/data/workspaces/li-langverse/lic/code_implementer-1779456669806/repo/docs/ecosystem/httpd-m1-baseline.md",
         "[sdk] \u2717 tool"
       ],
-      "status_note": "supervisor idle (log 182491s stale \u2014 check log_path)",
+      "status_note": "supervisor idle (log 237025s stale \u2014 check log_path)",
       "active_todo_id": "gap-phase2-perf-wrk-soak"
     },
     {
@@ -815,7 +815,7 @@
       "agent_live": false,
       "agent": "",
       "goal_file": "",
-      "log_age_sec": 258960,
+      "log_age_sec": 313494,
       "last_state_at": "2026-05-25T19:26:43.369615+00:00",
       "last_state_todo": "wave-d-gui-scaffold",
       "last_state_gates": false,
@@ -1578,7 +1578,7 @@
       "agent_live": false,
       "agent": "",
       "goal_file": "",
-      "log_age_sec": 259354,
+      "log_age_sec": 313889,
       "last_state_at": "2026-05-25T19:35:36.548468+00:00",
       "last_state_todo": "sim-p1-num-dot-axpy",
       "last_state_gates": false,
@@ -1600,10 +1600,10 @@
       "id": "studio-ui-ux",
       "name": "Studio UI/UX",
       "branch": "cursor/studio-ui-ux-plan-loop",
-      "head": "d102c79e",
+      "head": "05fa39d0",
       "running": false,
       "process": "",
-      "log_path": "/home/s4il0r/Documents/Cursor/li-langverse/lic/../lic-studio-ui/data/studio-ui-ux-plan-loop/runner.log",
+      "log_path": "/home/s4il0r/Documents/Cursor/li-langverse/lic/../lic-studio-ui/data/studio-ui-ux-plan-loop/iter-20260524-141218.log",
       "todos": [
         {
           "id": "studio-ux-00-design-system",
@@ -1628,50 +1628,42 @@
         {
           "id": "studio-ux-04-particle-display",
           "content": "Scene path \u2014 MD particle draw tiers (1k/10k/100k) with honest FPS reporting",
-          "status": "pending"
+          "status": "done"
         },
         {
           "id": "studio-ux-05-studio-compose",
           "content": "li-studio \u2014 compose dock + timeline + inspector from composables",
-          "status": "pending"
+          "status": "done"
         },
         {
           "id": "studio-ux-06-agent-chrome",
           "content": "Agentic chrome \u2014 task status, cancel, error strip (PH UX-06)",
-          "status": "pending"
+          "status": "done"
         },
         {
           "id": "studio-ux-07-capture-harness",
           "content": "Wire studio-ui-ux-capture-progress.sh + demo HTML mocks; verify gh upload path",
-          "status": "pending"
+          "status": "done"
         },
         {
           "id": "studio-ux-08-bench-registry",
           "content": "benchmarks/competitive/studio-ui.toml + bench-studio-viewport-perf.json output",
-          "status": "pending"
+          "status": "done"
         },
         {
           "id": "studio-ux-09-memory-budget",
           "content": "profile-animate-memory in loop gates; document peak MiB budget in ui-ux-by-dimension",
-          "status": "pending"
+          "status": "done"
         },
         {
           "id": "studio-ux-10-native-capture",
           "content": "Extend ux-harness native_gui for Xvfb SDL capture when viewport draws pixels",
-          "status": "pending"
+          "status": "done"
         }
       ],
       "plan_completed": 0,
       "plan_total": 11,
-      "plan_pending": [
-        "studio-ux-04-particle-display",
-        "studio-ux-05-studio-compose",
-        "studio-ux-06-agent-chrome",
-        "studio-ux-07-capture-harness",
-        "studio-ux-08-bench-registry",
-        "studio-ux-09-memory-budget",
-        "studio-ux-10-native-capture"
-      ],
+      "plan_pending": [],
       "state": {
         "completed_ids": [
           "studio-ux-00-design-system",
@@ -1686,7 +1678,7 @@
           "studio-ux-09-memory-budget",
           "studio-ux-10-native-capture"
         ],
-        "iterations": 11,
+        "iterations": 9,
         "history": [
           {
             "at": "2026-05-24T14:53:41+00:00",
@@ -1725,75 +1717,54 @@
             "note": "re-verified gates/capture; issue #181 comment"
           },
           {
-            "at": "2026-05-25T00:44:11.085589+00:00",
+            "at": "2026-05-24T23:05:00+00:00",
             "todo_id": "studio-ux-04-particle-display",
             "agent_exit": 0,
             "capture_exit": 0,
             "gates_ok": true,
-            "ux_pass": true
+            "ux_pass": true,
+            "note": "li-scene MD tiers + li-render scene path; issue #181 comment"
           },
           {
-            "at": "2026-05-25T01:39:06.746882+00:00",
-            "todo_id": "studio-ux-05-studio-compose",
+            "at": "2026-05-25T00:42:54+00:00",
+            "todo_id": "studio-ux-04-particle-display",
             "agent_exit": 0,
             "capture_exit": 0,
             "gates_ok": true,
-            "ux_pass": true
+            "ux_pass": true,
+            "note": "re-verified gates/capture/bench; issue #181 comment 4530713964"
           },
           {
-            "at": "2026-05-25T02:16:34.197349+00:00",
+            "at": "2026-05-25T02:14:50+00:00",
             "todo_id": "studio-ux-06-agent-chrome",
             "agent_exit": 0,
             "capture_exit": 0,
             "gates_ok": true,
-            "ux_pass": true
-          },
-          {
-            "at": "2026-05-25T03:11:04.676214+00:00",
-            "todo_id": "studio-ux-07-capture-harness",
-            "agent_exit": 0,
-            "capture_exit": 0,
-            "gates_ok": true,
-            "ux_pass": true
-          },
-          {
-            "at": "2026-05-25T04:03:38.791590+00:00",
-            "todo_id": "studio-ux-08-bench-registry",
-            "agent_exit": 0,
-            "capture_exit": 0,
-            "gates_ok": true,
-            "ux_pass": true
-          },
-          {
-            "at": "2026-05-25T05:26:38.195920+00:00",
-            "todo_id": "studio-ux-09-memory-budget",
-            "agent_exit": 0,
-            "capture_exit": 0,
-            "gates_ok": true,
-            "ux_pass": true
-          },
-          {
-            "at": "2026-05-25T06:32:37.228062+00:00",
-            "todo_id": "studio-ux-10-native-capture",
-            "agent_exit": 0,
-            "capture_exit": 0,
-            "gates_ok": true,
-            "ux_pass": true
+            "ux_pass": true,
+            "note": "StudioAgentChromeCompose task states + cancel + error strip; issue #181"
           }
         ]
       },
-      "state_iterations": 11,
+      "state_iterations": 9,
       "agent_live": false,
       "agent": "",
       "goal_file": "",
-      "log_age_sec": 259665,
-      "last_state_at": "2026-05-25T06:32:37.228062+00:00",
-      "last_state_todo": "studio-ux-10-native-capture",
+      "log_age_sec": 14567,
+      "last_state_at": "2026-05-25T02:14:50+00:00",
+      "last_state_todo": "studio-ux-06-agent-chrome",
       "last_state_gates": true,
       "current_iteration": "",
-      "activity": [],
-      "status_note": "supervisor off",
-      "active_todo_id": "studio-ux-04-particle-display"
+      "activity": [
+        "erse/li-cursor-agents/data/workspaces/li-langverse/lic/studio_ui_ux_builder-1779632016002/repo/data/studio-ui-ux-plan-loop/latest-bench.json",
+        "[sdk] \u2717 tool",
+        "[sdk] \u2713 shell cd /home/s4il0r/Documents/Cursor/li-langverse/li-cursor-agents/data/workspaces/l",
+        "[sdk] \u2717 tool",
+        "[sdk] \u25b6 tool",
+        "Documents-Cursor-li-langverse-li-cursor-agents-data-workspaces-li-langverse-lic-studio-ui-ux-builder-1779632016002-repo/terminals/466752.txt",
+        "[sdk] \u2717 tool",
+        "[sdk] thinking\u2026"
+      ],
+      "status_note": "supervisor off"
     },
     {
       "id": "sim-md-research",
@@ -1869,7 +1840,7 @@
       "agent_live": false,
       "agent": "",
       "goal_file": "",
-      "log_age_sec": 258936,
+      "log_age_sec": 313470,
       "last_state_at": "2026-05-25T19:42:04.198858+00:00",
       "last_state_todo": "md-r2-neighbor-list-gap",
       "last_state_gates": true,
@@ -1948,7 +1919,7 @@
       "agent_live": false,
       "agent": "",
       "goal_file": "",
-      "log_age_sec": 259447,
+      "log_age_sec": 313981,
       "last_state_at": "2026-05-25T19:32:04.164094+00:00",
       "last_state_todo": "chem-r2-dft-scf-gap",
       "last_state_gates": false,
@@ -2020,7 +1991,7 @@
       "agent_live": false,
       "agent": "",
       "goal_file": "",
-      "log_age_sec": 259599,
+      "log_age_sec": 314133,
       "last_state_at": "2026-05-25T19:29:32.615546+00:00",
       "last_state_todo": "sec-r1-httpd-fuzz-smoke",
       "last_state_gates": true,
@@ -2035,9 +2006,9 @@
       "id": "swarm-observer",
       "name": "Swarm gap orchestrator",
       "branch": "cursor/swarm-observer-plan-loop",
-      "head": "c8c18657",
+      "head": "6b7cb3aa",
       "running": true,
-      "process": "4100598 python3 /home/s4il0r/Documents/Cursor/li-langverse/lic/scripts/goal-directed-agents-snapshot.py",
+      "process": "3434238 python3 /home/s4il0r/Documents/Cursor/li-langverse/li-cursor-agents/data/workspaces/li-langverse/lic/code_implem",
       "log_path": "/home/s4il0r/Documents/Cursor/li-langverse/lic/../lic/data/swarm-observer-plan-loop/iter-20260525-193501.log",
       "todos": [
         {
@@ -2098,7 +2069,7 @@
       "agent_live": false,
       "agent": "",
       "goal_file": "",
-      "log_age_sec": 132329,
+      "log_age_sec": 15184,
       "last_state_at": "2026-05-25T19:34:28.890041+00:00",
       "last_state_todo": "orch-r1-plan-debt-sync",
       "last_state_gates": true,
@@ -2106,7 +2077,7 @@
       "activity": [
         "SDK tool activity streams to stderr ([sdk] \u25b6/\u2713 lines). Set LI_SDK_TERMINAL_STREAM=0 to disable."
       ],
-      "status_note": "supervisor idle (log 132329s stale \u2014 check log_path)",
+      "status_note": "supervisor idle (log 15184s stale \u2014 check log_path)",
       "active_todo_id": "orch-r2-competitor-stubs"
     }
   ],

@@ -1,0 +1,14 @@
+# G-par research (2026-05-29): proc-level `@parallel(disjoint=disjoint_elem)` must not
+# excuse overlapping writes in nested `parallel for` without loop-level proof.
+@cpu
+@parallel(disjoint=disjoint_elem)
+def proc_disjoint_overlap() -> unit
+  requires true
+  ensures true
+  decreases 0
+=
+  var buf: array[10, int]
+  parallel for tile in 0..<10
+    decreases 10 - tile
+  =
+    buf[0] = tile

@@ -18,6 +18,9 @@
       },
       {
         "command": ".cursor/hooks/guard-pr-merge.sh"
+      },
+      {
+        "command": ".cursor/hooks/guard-li-surface.sh"
       }
     ],
     "afterFileEdit": [

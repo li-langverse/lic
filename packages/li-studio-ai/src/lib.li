@@ -1,0 +1,122 @@
+import llm
+import studio
+
+# li-studio-ai — agent orchestration for Li Studio (PH-AGENT / WP-AG-02..05).
+# Status: STUB — scaffolding only; inference lives in li-llm.
+
+def li_studio_ai_version() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0
+
+type StudioAiTaskState = object
+  public status: int
+  public task_id: int
+  public prompt_len: int
+  public result_len: int
+  public error_len: int
+
+type StudioAiPatchResult = object
+  public success: int
+  public diagnostic_count: int
+
+type StudioAiToolResult = object
+  public success: int
+  public output_len: int
+
+def studio_ai_task_idle() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0
+
+def studio_ai_task_running() -> int
+  requires true
+  ensures result == 1
+  decreases 0
+=
+  return 1
+
+def studio_ai_task_done() -> int
+  requires true
+  ensures result == 2
+  decreases 0
+=
+  return 2
+
+def studio_ai_task_cancelled() -> int
+  requires true
+  ensures result == 3
+  decreases 0
+=
+  return 3
+
+def studio_ai_task_failed() -> int
+  requires true
+  ensures result == 4
+  decreases 0
+=
+  return 4
+
+def studio_ai_create_task(prompt: str) -> StudioAiTaskState
+  requires true
+  ensures result.status == studio_ai_task_idle()
+  decreases 0
+=
+  var t: StudioAiTaskState
+  t.status = studio_ai_task_idle()
+  t.task_id = 0
+  t.prompt_len = 0
+  t.result_len = 0
+  t.error_len = 0
+  if prompt != "":
+    t.prompt_len = 1
+  return t
+
+# WP-AG-04: route to llm.generate or Cursor SDK cloud — STUB
+def studio_ai_complete(prompt: str) -> str
+  requires true
+  ensures true
+  decreases 0
+=
+  var _unused: str = prompt
+  return ""
+
+# WP-AG-04: apply_patch + lic check --format=json loop — STUB
+def studio_ai_apply_patch(patch: str, target_file: str) -> StudioAiPatchResult
+  requires true
+  ensures result.success == 0
+  decreases 0
+=
+  var _unused_patch: str = patch
+  var _unused_file: str = target_file
+  var out: StudioAiPatchResult
+  out.success = 0
+  out.diagnostic_count = 0
+  return out
+
+# WP-AG-02: in-process MCP tool dispatch — STUB
+def studio_ai_mcp_dispatch(tool_name: str, arg_count: int) -> StudioAiToolResult
+  requires arg_count >= 0
+  ensures result.success == 0
+  decreases arg_count
+=
+  var _unused_tool: str = tool_name
+  var out: StudioAiToolResult
+  out.success = 0
+  out.output_len = 0
+  return out
+
+# PR #362 FSM — cancel path — STUB
+def studio_ai_cancel_task(task: StudioAiTaskState) -> StudioAiTaskState
+  requires task.status >= studio_ai_task_idle()
+  requires task.status <= studio_ai_task_failed()
+  ensures result.status == studio_ai_task_cancelled()
+  decreases task.status
+=
+  var out: StudioAiTaskState = task
+  out.status = studio_ai_task_cancelled()
+  return out

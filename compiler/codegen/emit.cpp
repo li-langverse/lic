@@ -221,9 +221,11 @@ struct EmitCtx {
                                unsigned n) {
     llvm::Type* f64 = llvm::Type::getDoubleTy(context);
     llvm::Type* i32t = i32_ty(context);
+    llvm::FixedVectorType* f64x4 = llvm::FixedVectorType::get(f64, 4);
     llvm::Value* lim_m = llvm::ConstantInt::get(i32t, m);
     llvm::Value* lim_k = llvm::ConstantInt::get(i32t, k);
     llvm::Value* lim_n = llvm::ConstantInt::get(i32t, n);
+    llvm::Value* vec_step = llvm::ConstantInt::get(i32t, 4);
     llvm::Value* zf = llvm::ConstantFP::get(f64, 0.0);
     llvm::AllocaInst* i_s = builder->CreateAlloca(i32t, nullptr, "mm_i");
     llvm::AllocaInst* j_s = builder->CreateAlloca(i32t, nullptr, "mm_j");
@@ -236,23 +238,47 @@ struct EmitCtx {
     });
 
     llvm::Function* fma_fn = nullptr;
+    llvm::Function* vfma_fn = nullptr;
     if (!fp_numerically_stable) {
       fma_fn = llvm::Intrinsic::getOrInsertDeclaration(module, llvm::Intrinsic::fmuladd, {f64});
+      vfma_fn = llvm::Intrinsic::getOrInsertDeclaration(module, llvm::Intrinsic::fmuladd, {f64x4});
     }
+
+    const bool vectorize_j = (n % 4) == 0;
+    auto store_c_scalar = [&](llvm::Value* i, llvm::Value* t, llvm::Value* j, llvm::Value* aik) {
+      llvm::Value* cp = matmul_gep2d(c_mat, i, j);
+      llvm::Value* cv = builder->CreateLoad(f64, cp);
+      llvm::Value* bv = builder->CreateLoad(f64, matmul_gep2d(b_mat, t, j));
+      if (fma_fn != nullptr) {
+        builder->CreateStore(builder->CreateCall(fma_fn, {aik, bv, cv}), cp);
+      } else {
+        builder->CreateStore(builder->CreateFAdd(cv, builder->CreateFMul(aik, bv)), cp);
+      }
+    };
+    auto store_c_vec4 = [&](llvm::Value* i, llvm::Value* t, llvm::Value* j, llvm::Value* aik) {
+      llvm::Value* cp = matmul_gep2d(c_mat, i, j);
+      llvm::Value* bp = matmul_gep2d(b_mat, t, j);
+      llvm::Value* cv = builder->CreateAlignedLoad(f64x4, cp, llvm::Align(8));
+      llvm::Value* bv = builder->CreateAlignedLoad(f64x4, bp, llvm::Align(8));
+      llvm::Value* av = builder->CreateVectorSplat(4, aik);
+      if (vfma_fn != nullptr) {
+        builder->CreateAlignedStore(builder->CreateCall(vfma_fn, {av, bv, cv}), cp,
+                                    llvm::Align(8));
+      } else {
+        builder->CreateAlignedStore(builder->CreateFAdd(cv, builder->CreateFMul(av, bv)), cp,
+                                    llvm::Align(8));
+      }
+    };
 
     emit_idx_for(i_s, lim_m, [&](llvm::Value* i) {
       emit_idx_for(t_s, lim_k, [&](llvm::Value* t) {
         llvm::Value* aik = builder->CreateLoad(f64, matmul_gep2d(a_mat, i, t));
-        emit_idx_for(j_s, lim_n, [&](llvm::Value* j) {
-          llvm::Value* cp = matmul_gep2d(c_mat, i, j);
-          llvm::Value* cv = builder->CreateLoad(f64, cp);
-          llvm::Value* bv = builder->CreateLoad(f64, matmul_gep2d(b_mat, t, j));
-          if (fma_fn != nullptr) {
-            builder->CreateStore(builder->CreateCall(fma_fn, {aik, bv, cv}), cp);
-          } else {
-            builder->CreateStore(builder->CreateFAdd(cv, builder->CreateFMul(aik, bv)), cp);
-          }
-        });
+        if (vectorize_j) {
+          emit_idx_for_step(j_s, lim_n, vec_step,
+                            [&](llvm::Value* j) { store_c_vec4(i, t, j, aik); });
+        } else {
+          emit_idx_for(j_s, lim_n, [&](llvm::Value* j) { store_c_scalar(i, t, j, aik); });
+        }
       });
     });
   }
@@ -370,8 +396,10 @@ struct EmitCtx {
     llvm::AllocaInst* j_s = builder->CreateAlloca(i32t, nullptr, "mm_j");
 
     llvm::Function* fma_fn = nullptr;
+    llvm::Function* vfma_fn = nullptr;
     if (!fp_numerically_stable) {
       fma_fn = llvm::Intrinsic::getOrInsertDeclaration(module, llvm::Intrinsic::fmuladd, {f64});
+      vfma_fn = llvm::Intrinsic::getOrInsertDeclaration(module, llvm::Intrinsic::fmuladd, {f64x4});
     }
     const bool tiles_align = bk > 0 && (n % bk) == 0;
 
@@ -392,17 +420,27 @@ struct EmitCtx {
       }
     };
 
-    const bool vectorize_j = (n % 4) == 0 && (bk % 4) == 0;
-    auto store_c_vec4 = [&](llvm::Value* i, llvm::Value* k, llvm::Value* j, llvm::Value* aik) {
+    const bool vectorize_j = (n % 8) == 0 && (bk % 8) == 0;
+    llvm::Value* vec8_step = llvm::ConstantInt::get(i32t, 8);
+    auto store_c_vec4_at = [&](llvm::Value* i, llvm::Value* k, llvm::Value* j, llvm::Value* aik) {
       llvm::Value* cp = matmul_gep2d(c_mat, i, j);
       llvm::Value* bp = matmul_gep2d(b_mat, k, j);
       llvm::Value* cv = builder->CreateAlignedLoad(f64x4, cp, llvm::Align(8));
       llvm::Value* bv = builder->CreateAlignedLoad(f64x4, bp, llvm::Align(8));
       llvm::Value* av = builder->CreateVectorSplat(4, aik);
-      builder->CreateAlignedStore(builder->CreateFAdd(cv, builder->CreateFMul(av, bv)), cp,
-                                  llvm::Align(8));
+      if (vfma_fn != nullptr) {
+        builder->CreateAlignedStore(builder->CreateCall(vfma_fn, {av, bv, cv}), cp,
+                                    llvm::Align(8));
+      } else {
+        builder->CreateAlignedStore(builder->CreateFAdd(cv, builder->CreateFMul(av, bv)), cp,
+                                    llvm::Align(8));
+      }
     };
-
+    auto store_c_vec8 = [&](llvm::Value* i, llvm::Value* k, llvm::Value* j, llvm::Value* aik) {
+      llvm::Value* j4 = builder->CreateAdd(j, vec_step);
+      store_c_vec4_at(i, k, j, aik);
+      store_c_vec4_at(i, k, j4, aik);
+    };
     emit_idx_for_step(ii_s, lim_n, step, [&](llvm::Value* ii) {
       llvm::Value* i_max = tile_max(ii);
       emit_idx_for_step(kk_s, lim_n, step, [&](llvm::Value* kk) {
@@ -413,8 +451,8 @@ struct EmitCtx {
             emit_range_for(k_s, kk, k_max, [&](llvm::Value* k) {
               llvm::Value* aik = builder->CreateLoad(f64, matmul_gep2d(a_mat, i, k));
               if (vectorize_j) {
-                emit_range_for_step(j_s, jj, j_max, vec_step,
-                                    [&](llvm::Value* j) { store_c_vec4(i, k, j, aik); });
+                emit_range_for_step(j_s, jj, j_max, vec8_step,
+                                    [&](llvm::Value* j) { store_c_vec8(i, k, j, aik); });
               } else {
                 emit_range_for(j_s, jj, j_max,
                                [&](llvm::Value* j) { store_c_fma(i, k, j, aik); });

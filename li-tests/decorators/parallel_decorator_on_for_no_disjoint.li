@@ -1,0 +1,11 @@
+# G-dec policy gap: @parallel on `for` without disjoint= is not checked (only proc / parallel for).
+def main() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  var buf: array[8, float]
+  @parallel
+  for rep in 0..<8
+    buf[rep] = 0.0
+  return 0

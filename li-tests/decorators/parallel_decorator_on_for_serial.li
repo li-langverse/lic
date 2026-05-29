@@ -1,0 +1,15 @@
+# G-dec: @parallel on plain `for` parses as Stmt::For — no ParallelFor / OpenMP lowering (cycle 5).
+def main() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  var buf: array[8, float]
+  var j: int = 0
+  while j < 8
+    buf[j] = 1.0
+    j = j + 1
+  @parallel(disjoint=disjoint_elem)
+  for rep in 0..<8
+    buf[rep] = 0.0
+  return 0

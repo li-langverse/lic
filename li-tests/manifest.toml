@@ -78,6 +78,18 @@ outcome = "verify_ok"
 
 [[tests]]
 suite = "decorators"
+file = "decorators/parallel_decorator_on_for_serial.li"
+outcome = "verify_ok"
+note = "G-dec: @parallel on plain for — serial lowering until 7d-b elaboration"
+
+[[tests]]
+suite = "decorators"
+file = "decorators/parallel_decorator_on_for_no_disjoint.li"
+outcome = "compile_ok"
+note = "G-dec policy gap: @parallel on for without disjoint= accepted (guard script)"
+
+[[tests]]
+suite = "decorators"
 file = "decorators/vectorized_lanes8_fail.li"
 outcome = "compile_fail"
 expected_substr = "lanes=4"

@@ -2,6 +2,7 @@
 
 #include "li_rt_lig_cuda.h"
 #include "li_rt_lig_metal.h"
+#include "li_rt_lkir_parse.h"
 #include "li_rt_lkir_spirv.h"
 
 #include <stdio.h>
@@ -123,12 +124,57 @@ static int32_t lig_run_matmul_vendor_stub(int32_t bid) {
   return LI_LIG_KERNEL_UNAVAILABLE;
 }
 
+static int32_t lig_run_vulkan_spirv_path(void);
+
+static int lig_mlp_lkir_file_valid(void) {
+  const char* paths[] = {
+      getenv("LIG_LKIR_MLP_PATH"),
+      "packages/lig/lkir/mlp_forward_f32.lkir",
+      NULL,
+  };
+  const char* root = getenv("LIC_ROOT");
+  char rooted[512];
+  for (size_t i = 0; i < sizeof(paths) / sizeof(paths[0]); ++i) {
+    const char* p = paths[i];
+    if (p == NULL || p[0] == '\0') {
+      if (root != NULL && root[0] != '\0') {
+        const int n = snprintf(rooted, sizeof(rooted), "%s/packages/lig/lkir/mlp_forward_f32.lkir",
+                               root);
+        if (n > 0 && n < (int)sizeof(rooted)) {
+          p = rooted;
+        } else {
+          continue;
+        }
+      } else {
+        continue;
+      }
+    }
+    if (li_rt_lkir_validate_file(p, LI_LKIR_MODULE_MLP_FORWARD) == 1) {
+      return 1;
+    }
+  }
+  return 0;
+}
+
+static int32_t lig_run_mlp_forward_path(int32_t bid) {
+  if (!lig_mlp_lkir_file_valid()) {
+    g_ratio = 0.0f;
+    return LI_LIG_KERNEL_UNAVAILABLE;
+  }
+  g_ratio = 1.0f;
+  if (bid == 5) {
+    return lig_run_vulkan_spirv_path();
+  }
+  return lig_run_matmul_vendor_stub(bid);
+}
+
 static int32_t lig_run_vulkan_spirv_path(void) {
   if (li_rt_lkir_spirv_validation_smoke() != 1) {
     g_ratio = 0.0f;
     return LI_LIG_KERNEL_UNAVAILABLE;
   }
   g_ratio = 1.0f;
+  (void)li_rt_lkir_vulkan_compute_symbols_ok();
   if (li_rt_lkir_spirv_lavapipe_probe() == 1) {
     return LI_LIG_KERNEL_STUB_OK;
   }
@@ -144,10 +190,7 @@ int32_t li_rt_lig_kernel_run(int32_t kid, int32_t bid) {
     return lig_run_matmul_vendor_stub(bid);
   }
   if (kid == 2 && (bid == 1 || bid == 2 || bid == 3 || bid == 5)) {
-    if (bid == 5) {
-      return lig_run_vulkan_spirv_path();
-    }
-    return lig_run_matmul_vendor_stub(bid);
+    return lig_run_mlp_forward_path(bid);
   }
   if (kid == 3) {
     return lig_run_present_blit_rgba8(0);

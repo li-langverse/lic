@@ -42,6 +42,12 @@ note = "PH-HW Wave 4: kernel launch status -1/-2 honest"
 
 [[tests]]
 suite = "smoke"
+file = "smoke/kernel_mlp_launch_status.li"
+outcome = "verify_ok"
+note = "WP-HW-12: mlp_forward kid=2 + LKIR file gate"
+
+[[tests]]
+suite = "smoke"
 file = "smoke/kernel_matmul_parity.li"
 outcome = "verify_ok"
 note = "PH-HW Wave 2: matmul parity backend 5 stub + webgpu"

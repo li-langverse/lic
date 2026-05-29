@@ -93,6 +93,9 @@ void apply_fn_decorator_codegen_flags(MirFn& fn) {
       fn.no_vectorize = true;
     }
   }
+  if (fn.gpu_device && fn.name.find("mlp") != std::string::npos) {
+    fn.gpu_kernel_id = 2;
+  }
 }
 
 bool stmt_has_vectorized(const std::vector<Decorator>& decos) {

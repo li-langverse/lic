@@ -165,6 +165,8 @@ struct MirFn {
   bool no_vectorize = false;
   /** When true, codegen emits `li_rt_lig_kernel_run` prologue (WP-GPU-06 partial). */
   bool gpu_device = false;
+  /** LIG catalog kernel id passed to `li_rt_lig_kernel_run` (1=matmul, 2=mlp_forward). */
+  int32_t gpu_kernel_id = 1;
   std::vector<MirDecorator> decorators;
   std::vector<MirParam> params;
   /** Populated when `returns_object`; parallel to ReturnObject / unpack layout. */

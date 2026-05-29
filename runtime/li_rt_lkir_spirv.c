@@ -116,6 +116,26 @@ int32_t li_rt_lkir_vulkan_loader_smoke(void) {
   return 0;
 }
 
+/* WP-HW-07 partial: prove compute entry points exist (no vkCreateComputePipelines call). */
+int32_t li_rt_lkir_vulkan_compute_symbols_ok(void) {
+  void* lib = dlopen("libvulkan.so.1", RTLD_LAZY | RTLD_LOCAL);
+  if (lib == NULL) {
+    lib = dlopen("libvulkan.so", RTLD_LAZY | RTLD_LOCAL);
+  }
+  if (lib == NULL) {
+    return 0;
+  }
+  void* sym = dlsym(lib, "vkCreateComputePipelines");
+  if (sym == NULL) {
+    sym = dlsym(lib, "vkCreateShaderModule");
+  }
+  if (sym == NULL) {
+    sym = dlsym(lib, "vkCreateDevice");
+  }
+  dlclose(lib);
+  return sym != NULL ? 1 : 0;
+}
+
 int32_t li_rt_lkir_spirv_lavapipe_probe(void) {
   if (li_rt_lkir_spirv_validation_smoke() != 1) {
     return 0;

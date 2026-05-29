@@ -1,6 +1,6 @@
 # PH-ML + GPU execution tracker
 
-**Status:** Waves 0–5 complete (4b/4c/4d/5b) — merge-ready (2026-05-29)  
+**Status:** Waves 0–6 partial (WP-HW-07/12, WP-GPU-06) — merge-ready baseline (2026-05-29)  
 **Branch:** `feat/ph-ml-gpu-swarm`  
 **Plan:** [PH-ML-GPU-battle-plan.md](PH-ML-GPU-battle-plan.md) · [Merge readiness](PH-ML-GPU-merge-readiness.md)
 
@@ -31,16 +31,16 @@
 | WP-HW-04 | **partial** | feat/ph-ml-gpu-swarm | `li_rt_lkir_parse.c`, `lkir-validate.sh`, `lkir_file_validate.li` | Full `lic` LKIR AST |
 | WP-HW-05 | **partial** | feat/ph-ml-gpu-swarm | schema validate matmul + mlp_forward `.lkir` | Tile/barrier semantics proofs |
 | WP-HW-06 | partial | feat/ph-ml-gpu-swarm | `lkir_spirv_stub.li`, `li_rt_lkir_spirv.c` | Full SPIR-V shader module |
-| WP-HW-07 | **partial** | feat/ph-ml-gpu-swarm | `li_rt_lkir_vulkan_loader_smoke` VkInstance via dlopen; lavapipe ICD hint | Full SPIR-V compute pipeline |
+| WP-HW-07 | **partial** | feat/ph-ml-gpu-swarm | VkInstance + `li_rt_lkir_vulkan_compute_symbols_ok`; lavapipe ICD hint | `vkCreateComputePipelines` dispatch |
 | WP-HW-08 | **partial** | feat/ph-ml-gpu-swarm | `li_rt_lig_cuda_matmul2x2_device` + `lig-cuda-timing-probe.sh`; `kernel_matmul_parity.li` | General kernels / LKIR dispatch |
 | WP-HW-09 | **partial** | feat/ph-ml-gpu-swarm | Embedded PTX `lig_matmul2x2_f32`; device timing when probe passes | Full catalog PTX emit |
 | WP-HW-10 | partial | feat/ph-ml-gpu-swarm | `LIG_EMIT_HIP=1` → status `1` + CPU ref | ROCm CI hardware |
 | WP-HW-11 | **partial** | feat/ph-ml-gpu-swarm | `li_rt_lig_metal.mm` + `macos-metal-smoke.sh`; `LIG_EMIT_METAL=1` | AIR emit + catalog kernels |
-| WP-HW-12 | partial | feat/ph-ml-gpu-swarm | `mlp_forward_f32.lkir` + catalog | GPU dispatch |
+| WP-HW-12 | **partial** | feat/ph-ml-gpu-swarm | kid=2 LKIR file gate + `kernel_mlp_launch_status.li` | Device MLP kernels |
 | WP-HW-14 | stub | feat/ph-ml-gpu-swarm | `lig-rfc.md` § multi-GPU | Scheduler impl |
 | WP-GPU-04 | partial | feat/ph-ml-gpu-swarm | `gpu_decorator_mir.li` (2× `@gpu`), MIR partial | G-gpu proofs |
 | WP-GPU-05 | partial | feat/ph-ml-gpu-swarm | 4× compile_fail + Lean note | `P-gpu-*` corpus |
-| WP-GPU-06 | partial | feat/ph-ml-gpu-swarm | codegen launch prologue | LKIR module per `@gpu def` |
+| WP-GPU-06 | **partial** | feat/ph-ml-gpu-swarm | `gpu_kernel_id` prologue; mlp name → kid 2 | LKIR module per `@gpu def` |
 | WP-ML-11 | partial | feat/ph-ml-gpu-swarm | `dl_gpu_train_hook.li` | Device buffers + real GPU train |
 | WP-BENCH-ML-05 | done | feat/ph-ml-gpu-swarm | `bench-lig-gpu-suite.sh` wave 4d JSON | `gpu_timing_ns` N/A |
 | WP-BENCH-ML-06 | partial | feat/ph-ml-gpu-swarm | tier3 oracle checksum in bench JSON; parity runs binary | Dashboard ingest |
@@ -84,7 +84,8 @@
 - [x] `ph-ml-stub-then-implement.mdc` rule
 - [x] [PH-ML-GPU-merge-readiness.md](PH-ML-GPU-merge-readiness.md)
 - [x] NVIDIA lab: CUDA device 2×2 matmul + honest `gpu_timing_ns` (WP-HW-08/09 pilot)
-- [ ] Vulkan compute pipeline beyond VkInstance smoke (WP-HW-07)
+- [x] Vulkan compute symbols probe (WP-HW-07 partial)
+- [ ] `vkCreateComputePipelines` dispatch on lavapipe (WP-HW-07)
 - [ ] Human (M1 Mac): run `./scripts/macos-metal-smoke.sh` — WP-HW-11 pilot
 - [ ] Human: G-gpu Lean proofs (WP-GPU-05 done)
 - [ ] Human: lic-studio-ui `chore/agent-kit-1.3.5-studio-ui` merge

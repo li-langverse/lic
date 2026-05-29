@@ -1765,8 +1765,8 @@ bool emit_llvm_ir(const MirModule& mir, const std::string& out_path, int runtime
       llvm::Function* lig_run = module->getFunction("li_rt_lig_kernel_run");
       llvm::Function* lig_auto = module->getFunction("li_rt_lig_backend_select_auto");
       if (lig_run && lig_auto) {
-        llvm::Value* kid =
-            llvm::ConstantInt::get(i32_ty(context), 1);
+        const int32_t kid_val = fn.gpu_kernel_id >= 1 ? fn.gpu_kernel_id : 1;
+        llvm::Value* kid = llvm::ConstantInt::get(i32_ty(context), kid_val);
         llvm::Value* bid = builder.CreateCall(lig_auto, {});
         builder.CreateCall(lig_run, {kid, bid});
       }

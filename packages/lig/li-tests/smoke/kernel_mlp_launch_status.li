@@ -1,0 +1,32 @@
+# WP-HW-12: kid=2 dispatches after on-disk mlp_forward_f32.lkir validates.
+
+extern proc li_rt_lig_kernel_run(kernel_id: int, backend_id: int) -> int
+  requires kernel_id >= 1
+  requires 1 <= backend_id
+  requires backend_id <= 5
+  ensures -2 <= result
+  ensures result <= 5
+  decreases kernel_id
+
+def lig_backend_vulkan_spirv() -> int
+  requires true
+  ensures result == 5
+  decreases 0
+=
+  return 5
+
+def lig_kernel_mlp_forward_f32() -> int
+  requires true
+  ensures result == 2
+  decreases 0
+=
+  return 2
+
+def main() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  if li_rt_lig_kernel_run(lig_kernel_mlp_forward_f32(), lig_backend_vulkan_spirv()) != 0:
+    return 1
+  return 0

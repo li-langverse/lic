@@ -13,6 +13,7 @@ All notable changes to Li are documented here. The format follows
 
 ### Added
 
+- **PH-ML Wave 6 — MLP LKIR dispatch + Vulkan symbols:** kid=2 `mlp_forward_f32.lkir` gate, `li_rt_lkir_vulkan_compute_symbols_ok`, `@gpu` `gpu_kernel_id` prologue — [2026-05-29-ph-ml-wave-6-gpu.md](docs/release-notes/2026-05-29-ph-ml-wave-6-gpu.md).
 - **PH-AGENT-2 Studio agent run:** `packages/li-studio/src/lib.li` now exposes `StudioAgentRun` for the world-patch → `lic_check` → `lic_build` tool sequence with `used_html_mock == 0`; package/root smokes `studio_agentic_run.li` and `import_studio_agentic_run.li` — [2026-05-28-studio-agentic-run.md](docs/release-notes/2026-05-28-studio-agentic-run.md).
 - **PH-DB planning docs:** `ph-db-battle-plan.md`, `ph-db-ci-hosting-plan.md`, `ph-db-execution-tracker.md`, WP verification matrix cross-link — supersedes conflicting PRs #323–#325.
 - **PH-ML merge readiness:** `docs/game-dev/PH-ML-GPU-merge-readiness.md` — PR #367 rebase onto `main`, verify log, blocked WP registry (lavapipe, `CUDA_HOME`, fork IPC, tensor/autograd).

@@ -1504,6 +1504,12 @@ note = "WP-GPU-04/06: @gpu MIR tag + launch prologue"
 
 [[tests]]
 suite = "gpu"
+file = "gpu/gpu_decorator_mlp_mir.li"
+outcome = "verify_ok"
+note = "WP-GPU-06: mlp-named @gpu → kernel_id 2 prologue"
+
+[[tests]]
+suite = "gpu"
 file = "gpu/gpu_device_type_reserved_compile_fail.li"
 outcome = "compile_fail"
 expected_substr = "def"

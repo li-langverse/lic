@@ -1,11 +1,12 @@
 # Lavapipe Vulkan smoke (WP-HW-07 blocker)
 
 **Status:** Advisory CI — [lavapipe-vulkan-smoke.yml](../../.github/workflows/lavapipe-vulkan-smoke.yml) runs SPIR-V launch smokes with Mesa ICD; default `lic` build does **not** link Vulkan compute.  
-**Tracker:** WP-HW-07 **blocked** until `vkCreateComputePipelines` dispatch (job proves env + status `0` only).
+**Tracker:** WP-HW-07 **partial** — `li_rt_lkir_vulkan_compute_symbols_ok()` proves dlopen symbols; **blocked** until real `vkCreateComputePipelines` dispatch (job proves env + status `0` only).
 
 ## Goal
 
 Headless SPIR-V module validation (`li_rt_lkir_spirv_validation_smoke`) is **done** in-process.  
+**Partial (Wave 6):** `li_rt_lkir_vulkan_compute_symbols_ok()` after loader open.  
 **Blocked:** `vkCreateComputePipelines` dispatch on lavapipe (no swapchain).
 
 ## Host prerequisites (Linux CI)
@@ -31,6 +32,7 @@ export LIG_VULKAN_LAVAPIPE=1  # Wave 5b alias
 |-------|--------|
 | SPIR-V header smoke | pass (`bid=5` → status `0`) |
 | `li_rt_lkir_spirv_lavapipe_probe()` | env-gated only |
-| Linked Vulkan loader in `libli_rt` | **no** — dispatch blocked |
+| `li_rt_lkir_vulkan_compute_symbols_ok()` | pass when `libvulkan` installed |
+| Linked Vulkan compute pipeline in `libli_rt` | **no** — dispatch blocked |
 
 **Next WP:** link minimal Vulkan compute smoke binary or CI job separate from default `build.sh`.

@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-05-29T23:06:16.741652+00:00",
+  "generated_at": "2026-05-29T23:07:39.240423+00:00",
   "tz": "Europe/Berlin",
   "agents_live": 0,
   "runners": [
@@ -7,7 +7,7 @@
       "id": "httpd",
       "name": "li-httpd gap parity",
       "branch": "cursor/httpd-plan-continue",
-      "head": "e901da1b",
+      "head": "857a27a1",
       "running": true,
       "process": "2010567 bash ./scripts/httpd-plan-until-deadline.sh",
       "log_path": "/home/s4il0r/Documents/Cursor/li-langverse/lic/../lic/data/httpd-plan-loop/iter-20260522-132846.log",
@@ -72,7 +72,7 @@
       "agent_live": false,
       "agent": "",
       "goal_file": "",
-      "log_age_sec": 179,
+      "log_age_sec": 261,
       "last_state_at": "",
       "last_state_todo": "",
       "last_state_gates": "",
@@ -815,7 +815,7 @@
       "agent_live": false,
       "agent": "",
       "goal_file": "",
-      "log_age_sec": 357845,
+      "log_age_sec": 357927,
       "last_state_at": "2026-05-25T19:26:43.369615+00:00",
       "last_state_todo": "wave-d-gui-scaffold",
       "last_state_gates": false,
@@ -1578,7 +1578,7 @@
       "agent_live": false,
       "agent": "",
       "goal_file": "",
-      "log_age_sec": 358239,
+      "log_age_sec": 358321,
       "last_state_at": "2026-05-25T19:35:36.548468+00:00",
       "last_state_todo": "sim-p1-num-dot-axpy",
       "last_state_gates": false,
@@ -1749,7 +1749,7 @@
       "agent_live": false,
       "agent": "",
       "goal_file": "",
-      "log_age_sec": 58917,
+      "log_age_sec": 59000,
       "last_state_at": "2026-05-25T02:14:50+00:00",
       "last_state_todo": "studio-ux-06-agent-chrome",
       "last_state_gates": true,
@@ -1840,7 +1840,7 @@
       "agent_live": false,
       "agent": "",
       "goal_file": "",
-      "log_age_sec": 357821,
+      "log_age_sec": 357903,
       "last_state_at": "2026-05-25T19:42:04.198858+00:00",
       "last_state_todo": "md-r2-neighbor-list-gap",
       "last_state_gates": true,
@@ -1919,7 +1919,7 @@
       "agent_live": false,
       "agent": "",
       "goal_file": "",
-      "log_age_sec": 358332,
+      "log_age_sec": 358414,
       "last_state_at": "2026-05-25T19:32:04.164094+00:00",
       "last_state_todo": "chem-r2-dft-scf-gap",
       "last_state_gates": false,
@@ -1991,7 +1991,7 @@
       "agent_live": false,
       "agent": "",
       "goal_file": "",
-      "log_age_sec": 358483,
+      "log_age_sec": 358566,
       "last_state_at": "2026-05-25T19:29:32.615546+00:00",
       "last_state_todo": "sec-r1-httpd-fuzz-smoke",
       "last_state_gates": true,
@@ -2006,9 +2006,9 @@
       "id": "swarm-observer",
       "name": "Swarm gap orchestrator",
       "branch": "cursor/swarm-observer-plan-loop",
-      "head": "e901da1b",
+      "head": "857a27a1",
       "running": true,
-      "process": "3911148 /bin/bash -O extglob -c snap=$(command cat <&3) && builtin shopt -s extglob && builtin eval -- \"$snap\" && { buil",
+      "process": "3916664 python3 /home/s4il0r/Documents/Cursor/li-langverse/lic/scripts/goal-directed-agents-snapshot.py",
       "log_path": "/home/s4il0r/Documents/Cursor/li-langverse/lic/../lic/data/swarm-observer-plan-loop/iter-20260525-193501.log",
       "todos": [
         {
@@ -2034,14 +2034,12 @@
         {
           "id": "orch-r4-ui-ux-signals",
           "content": "Surface studio-ui-ux / gui_ux_tester signals as ui_ux gaps; link studio backlog if needed",
-          "status": "pending"
+          "status": "completed"
         }
       ],
-      "plan_completed": 4,
+      "plan_completed": 5,
       "plan_total": 5,
-      "plan_pending": [
-        "orch-r4-ui-ux-signals"
-      ],
+      "plan_pending": [],
       "state": {
         "completed_ids": [
           "orch-r0-ingest-snapshot",
@@ -2067,7 +2065,7 @@
       "agent_live": false,
       "agent": "",
       "goal_file": "",
-      "log_age_sec": 14658,
+      "log_age_sec": 14741,
       "last_state_at": "2026-05-25T19:34:28.890041+00:00",
       "last_state_todo": "orch-r1-plan-debt-sync",
       "last_state_gates": true,
@@ -2075,8 +2073,7 @@
       "activity": [
         "SDK tool activity streams to stderr ([sdk] \u25b6/\u2713 lines). Set LI_SDK_TERMINAL_STREAM=0 to disable."
       ],
-      "status_note": "supervisor idle (log 14658s stale \u2014 check log_path)",
-      "active_todo_id": "orch-r4-ui-ux-signals"
+      "status_note": "supervisor idle (log 14741s stale \u2014 check log_path)"
     }
   ],
   "history": [

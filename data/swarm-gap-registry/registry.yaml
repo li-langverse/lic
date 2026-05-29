@@ -1,5 +1,5 @@
 version: 1
-updated_at: '2026-05-29T23:06:00Z'
+updated_at: '2026-05-29T23:06:38Z'
 gaps:
 - id: gap-line-profiler-001
   gap_kind: missing_package
@@ -1058,3 +1058,71 @@ gaps:
   suggested_loop: sim-md-research
   handoff_to:
   - numerics_researcher
+- id: gap-ux-agents-dashboard
+  gap_kind: ui_ux
+  title: 'UI/UX (agents-dashboard): GUI not reachable at http://127.0.0.1:3000 (start
+    dashboard for extended audit)'
+  status: open
+  priority: 5
+  discovered_by: gui_ux_tester
+  evidence:
+  - ui-audit.json target=agents-dashboard status=skip repo=li-cursor-agents
+  - GUI not reachable at http://127.0.0.1:3000 (start dashboard for extended audit)
+  target_backlog: docs/superpowers/plans/2026-05-24-studio-ui-ux-plan-loop.md
+  target_todo_id: gap-ux-agents-dashboard
+  suggested_loop: studio-ui-ux
+  handoff_to:
+  - gui_ux_tester
+  - code_implementer
+  - issue_planner
+- id: gap-ux-lic-tetris
+  gap_kind: ui_ux
+  title: 'UI/UX (lic-tetris): native capture script not configured (paths.capture_script
+    or lic_root)'
+  status: open
+  priority: 5
+  discovered_by: gui_ux_tester
+  evidence:
+  - ui-audit.json target=lic-tetris status=skip repo=lic
+  - native capture script not configured (paths.capture_script or lic_root)
+  target_backlog: docs/superpowers/plans/2026-05-24-studio-ui-ux-plan-loop.md
+  target_todo_id: gap-ux-lic-tetris
+  suggested_loop: studio-ui-ux
+  handoff_to:
+  - studio_ui_ux_builder
+  - code_implementer
+  - issue_planner
+- id: gap-ux-world-studio-native
+  gap_kind: ui_ux
+  title: 'UI/UX (world-studio-native): native capture script not configured (paths.capture_script
+    or lic_root)'
+  status: open
+  priority: 5
+  discovered_by: gui_ux_tester
+  evidence:
+  - ui-audit.json target=world-studio-native status=skip repo=lic
+  - native capture script not configured (paths.capture_script or lic_root)
+  target_backlog: docs/superpowers/plans/2026-05-24-studio-ui-ux-plan-loop.md
+  target_todo_id: gap-ux-world-studio-native
+  suggested_loop: studio-ui-ux
+  handoff_to:
+  - studio_ui_ux_builder
+  - code_implementer
+  - issue_planner
+- id: gap-ux-benchmarks-dashboard-gpu-matrix
+  gap_kind: ui_ux
+  title: 'UI/UX (benchmarks-dashboard-gpu-matrix): gpu-chip-picker uses role=tab/tablist
+    without tabpanel or roving tabindex'
+  status: open
+  priority: 6
+  discovered_by: gui_ux_tester
+  evidence:
+  - ui-audit.json target=benchmarks-dashboard-gpu-matrix status=fail repo=benchmarks
+  - gpu-chip-picker uses role=tab/tablist without tabpanel or roving tabindex
+  target_backlog: docs/superpowers/plans/2026-05-24-studio-ui-ux-plan-loop.md
+  target_todo_id: gap-ux-benchmarks-dashboard-gpu-matrix
+  suggested_loop: studio-ui-ux
+  handoff_to:
+  - code_implementer
+  - gui_ux_tester
+  - issue_planner

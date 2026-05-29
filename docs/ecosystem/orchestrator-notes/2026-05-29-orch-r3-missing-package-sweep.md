@@ -12,7 +12,7 @@
 
 | Field | Value |
 |-------|-------|
-| Swarm posture | **Degraded** (ecosystem grade **C**, 72.8 after r4 refresh; `unattended_safe: false`) |
+| Swarm posture | **Critical** (ecosystem grade **D**, 64.0 after r5 refresh; `unattended_safe: false`) |
 | Open `missing_package` gaps | **3** (all `open` in registry) |
 | Package backlog | **3/3** todos `pending` in `ecosystem-package-backlog.md` |
 | Apply delta | Re-confirmed patches for `pkg-line-profiler`, `pkg-std-summary`, `pkg-std-plot` |
@@ -32,9 +32,10 @@ python3 scripts/swarm-gap-apply-actions.py
 
 **Outputs:**
 
-- `lic/data/swarm-gap-registry/registry.yaml` — `updated_at: 2026-05-29T12:00Z` (ingest re-run)
+- `lic/data/swarm-gap-registry/registry.yaml` — `updated_at: 2026-05-29T12:16Z` (ingest re-run)
 - `benchmarks/data/latest/swarm-gap-actions.json` — `open_gaps: 52` (3 `missing_package`)
-- `benchmarks/data/latest/ecosystem-quality-report.json` — refreshed (`overall_score: 72.8`, grade C)
+- `benchmarks/data/latest/ecosystem-quality-report.json` — refreshed (`overall_score: 64.0`, grade D)
+- `benchmarks/data/runs/swarm_observer-2026-05-29-swarm-coverage-r5` — meta audit digest
 
 ---
 

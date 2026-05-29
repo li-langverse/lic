@@ -9,6 +9,7 @@
 | `PKG-lic` | [`li-langverse/lic`](https://github.com/li-langverse/lic) | [Home](https://li-langverse.github.io/li-language/) | Compiler, runtime, `li-tests` |
 | `PKG-lip` | [`li-langverse/lip`](https://github.com/li-langverse/lip) | [lip](lip.md) | Package manager |
 | `PKG-lit` | [`li-langverse/lit`](https://github.com/li-langverse/lit) | [lit](lit.md) | Tests + coverage |
+| `PKG-lis` | [`li-langverse/lis`](https://github.com/li-langverse/lis) | [lis](lis.md) | HTTP gateway tooling + `lis db` (Phase H) |
 | `PKG-roadmap` | [`li-langverse/roadmap`](https://github.com/li-langverse/roadmap) | [Development overview](https://li-langverse.github.io/roadmap/development-overview/) | Governance + agent-kit |
 | `PKG-benchmarks` | [`li-langverse/benchmarks`](https://github.com/li-langverse/benchmarks) | [Dashboard](https://li-langverse.github.io/benchmarks/) | Benchmark dashboard + ingest |
 | `PKG-li-net` | [`li-langverse/li-net`](https://github.com/li-langverse/li-net) | [li-net](li-net.md) | Trusted TCP / `raises Net` (httpd P0) |

@@ -424,6 +424,7 @@ Track in phase **Doc** until each is checked:
 | `.cursor/plans/li_execution_decorators_7c6e3b42.plan.md` | Phase **7d** — `@` decorators on `def`/`for`/`while`; reserved stdlib names; `decorator_exploits` suite |
 | [2026-05-16-li-math-linalg-surface.md](2026-05-16-li-math-linalg-surface.md) | Phase **2i** + **7e** — math notation in source; compiler lowers to SIMD/OpenMP; Tier 1 cross-lang benches |
 | [provability-gaps.md](../verification/provability-gaps.md) | **Doc-a** — living **G-*** register; update on every proof-surface PR |
+| [official-packages.md](../ecosystem/official-packages.md) + [package handbooks](../ecosystem/lip.md) | Per-repo **Partial** status (lip, lit, lis, net, httpd, std mirrors, demo) |
 | [2026-05-22-parallel-compile-ci.md](2026-05-22-parallel-compile-ci.md) | Phase **8p** — parallel `li-tests`, workspace builds, `--jobs` frontend |
 | [ph-db-lidb-platform.md](ph-db-lidb-platform.md) | Phase **PH-DB** — `lidb` + `lis` data platform; **PH-8d-v2 → PH-DB-4** |
 

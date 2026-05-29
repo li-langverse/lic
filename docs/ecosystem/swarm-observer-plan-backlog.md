@@ -20,7 +20,7 @@ todos:
 
 - id: orch-r2-competitor-stubs
   content: "Ingest verticals.toml stubs + ecosystem explorer catalog gaps as competitor_feature rows"
-  status: pending
+  status: completed
 
 - id: orch-r3-missing-package-sweep
   content: "Sweep missing_std_modules + seed line_profiler; ensure ecosystem-package-backlog todos pending"

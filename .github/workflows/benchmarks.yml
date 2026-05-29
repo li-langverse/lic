@@ -20,7 +20,7 @@ jobs:
           chmod +x scripts/ci-install-llvm.sh
           sudo LI_LLVM_MAJOR=22 bash scripts/ci-install-llvm.sh
 
-      - name: Build and tier-1 bench smoke
+      - name: Tier-0 gate + optional tier-1 smoke (full perf: benchmarks nightly)
         env:
           LLVM_DIR: /usr/lib/llvm-22/lib/cmake/llvm
           CC: clang-22
@@ -28,7 +28,8 @@ jobs:
         run: |
           chmod +x scripts/ci.sh scripts/ci-bench.sh scripts/build.sh
           ./scripts/ci.sh
-          ./scripts/ci-bench.sh
+          # Perf matrix runs in li-langverse/benchmarks benchmark-nightly.yml
+          BENCH_PACKAGE=lig ./scripts/ci-bench.sh || ./scripts/ci-bench.sh
 
       - name: Upload benchmark CSV
         uses: actions/upload-artifact@v4

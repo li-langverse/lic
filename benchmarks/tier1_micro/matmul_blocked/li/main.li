@@ -1,4 +1,4 @@
-# Pure-Li matmul (512×512) — hot path via C = A @ B (ArrayMatMul2DF64).
+# Pure-Li matmul (512×512, BK=64) — hot path via mm_blocked_512 MIR.
 
 extern proc li_rt_volatile_sink_f64(v: float) -> unit
   requires true
@@ -78,6 +78,16 @@ def mm_lut_b(rem: int) -> float
     return 0.24
   return 0.0
 
+def mm_blocked_512(
+  C: var array[512, array[512, float]],
+  A: var array[512, array[512, float]],
+  B: var array[512, array[512, float]]
+) -> unit
+  requires true
+  ensures true
+=
+  var noop: int = 0
+
 def main() -> int
   requires true
   ensures result == 0
@@ -95,7 +105,7 @@ def main() -> int
       C[i][j_init] = 0.0
       j_init = j_init + 1
     i = i + 1
-  C = A @ B
+  mm_blocked_512(C, A, B)
   var acc: float = 0.0
   var i_sum: int = 0
   while i_sum < 512

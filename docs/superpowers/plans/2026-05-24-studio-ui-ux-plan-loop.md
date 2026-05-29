@@ -37,6 +37,26 @@ todos:
     status: done
 isProject: false
 ---
+- id: gap-ux-gap-ux-agents-dashboard
+  content: "UI/UX (agents-dashboard): GUI not reachable at http://127.0.0.1:3000 (start dashboard for extended audit)"
+  status: pending
+  gap_orchestrator: true
+- id: gap-ux-gap-ux-lic-tetris
+  content: "UI/UX (lic-tetris): native capture script not configured (paths.capture_script or lic_root)"
+  status: pending
+  gap_orchestrator: true
+- id: gap-ux-gap-ux-world-studio-native
+  content: "UI/UX (world-studio-native): native capture script not configured (paths.capture_script or lic_root)"
+  status: pending
+  gap_orchestrator: true
+- id: gap-ux-gap-ux-benchmarks-dashboard-gpu-matrix
+  content: "UI/UX (benchmarks-dashboard-gpu-matrix): gpu-chip-picker uses role=tab/tablist without tabpanel or roving tabindex"
+  status: pending
+  gap_orchestrator: true
+
+
+
+
 
 # Studio UI/UX autonomous loop
 

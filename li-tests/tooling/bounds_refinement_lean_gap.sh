@@ -6,6 +6,7 @@ ROOT="$(cd "$(dirname "$0")/../.." && pwd)"
 export LI_REPO_ROOT="$ROOT"
 LIC="${LIC:-$("$ROOT/scripts/resolve-lic.sh")}"
 SAMPLE="$ROOT/li-tests/contracts_verify/index_refinement.li"
+GUARDED="$ROOT/li-tests/contracts_verify/refinement_guard_ok.li"
 AUTOVC="$ROOT/build/generated/AutoVC.lean"
 BIN="$(mktemp -t li_bounds_refine.XXXXXX)"
 trap 'rm -f "$BIN"' EXIT
@@ -27,6 +28,23 @@ fi
 # Codegen: get must not call li_bounds_fail (only linked from li_rt, unused).
 if objdump -d "$BIN" --disassemble=get 2>/dev/null | grep -q 'call.*li_bounds_fail'; then
   echo "bounds_refinement_lean_gap: get calls li_bounds_fail — update script if runtime guard is intentional"
+  exit 1
+fi
+
+# Guarded call-site: typecheck path-proves NonNeg but Lean VC stays True stub.
+rm -f "$AUTOVC"
+"$LIC" build "$GUARDED" -o /dev/null
+test -f "$AUTOVC"
+if ! grep -q 'def vc_caller_guarded_call0_callee_refine_0 (n : Int) : Prop := True' "$AUTOVC"; then
+  echo "bounds_refinement_lean_gap: expected guarded call-site refine stub — gap may be closed; update script"
+  exit 1
+fi
+if grep -qE '0 <= n|n >= 0' "$AUTOVC"; then
+  echo "bounds_refinement_lean_gap: unexpected guarded refinement bounds in AutoVC — update script"
+  exit 1
+fi
+if ! "$LIC" check "$GUARDED" >/dev/null 2>&1; then
+  echo "bounds_refinement_lean_gap: refinement_guard_ok must pass lic check (typecheck fence)"
   exit 1
 fi
 

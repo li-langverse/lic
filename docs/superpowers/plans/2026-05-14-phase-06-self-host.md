@@ -2,6 +2,8 @@
 
 > **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:executing-plans or build-li-master-plan.
 
+**Master plan:** [2026-05-14-li-master-plan.md](2026-05-14-li-master-plan.md) · **Proof gaps (Doc-c):** [G-lean](../../verification/provability-gaps.md#g-lean) · [phase-plans-index.md](../../ecosystem/phase-plans-index.md)
+
 **Goal:** Ship a **bootstrap** `lic` binary compiled from Li source (`bootstrap/lic/main.li`) by the C++ host. Full compiler rewrite in Li is out of scope for v1; this phase proves the build/run loop and CLI argv bridge.
 
 **Architecture:** C++ `lic` remains the production compiler. Li bootstrap binary is a minimal CLI (`--version`, `smoke`) using `li_rt_argc` / `li_rt_argv` and libc `strcmp`. Parameterless `def main()` lowers to `li_user_main` with a C `main(argc, argv)` wrapper that calls `li_rt_set_args` before user code.

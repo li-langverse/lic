@@ -13,6 +13,8 @@ All notable changes to Li are documented here. The format follows
 
 ### Added
 
+- **Ecosystem org-repo handbooks:** published stubs for all ten audit repos (`lip`, `lit`, `lic`, `lis`, `li-httpd`, `li-net`, `li-std-core`, `li-std-math`, `li-demo`, `roadmap`) plus [phase-plans-index.md](docs/ecosystem/phase-plans-index.md) cross-linking master plan ↔ **G-*** — [2026-05-29-ecosystem-org-repo-handbooks.md](docs/release-notes/2026-05-29-ecosystem-org-repo-handbooks.md).
+
 - **PH-AGENT-2 Studio agent run:** `packages/li-studio/src/lib.li` now exposes `StudioAgentRun` for the world-patch → `lic_check` → `lic_build` tool sequence with `used_html_mock == 0`; package/root smokes `studio_agentic_run.li` and `import_studio_agentic_run.li` — [2026-05-28-studio-agentic-run.md](docs/release-notes/2026-05-28-studio-agentic-run.md).
 - **PH-DB planning docs:** `ph-db-battle-plan.md`, `ph-db-ci-hosting-plan.md`, `ph-db-execution-tracker.md`, WP verification matrix cross-link — supersedes conflicting PRs #323–#325.
 

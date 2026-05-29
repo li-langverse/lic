@@ -2,6 +2,8 @@
 
 > **For agentic workers:** Use `.cursor/skills/build-li-master-plan/SKILL.md` — continue through exit gate without per-step user prompts.
 
+**Master plan:** [2026-05-14-li-master-plan.md](2026-05-14-li-master-plan.md) · **Phase index:** [phase-plans-index.md](../../ecosystem/phase-plans-index.md)
+
 **Goal:** CMake + Ninja workspace, C++ compiler library skeleton, LLVM 22 smoke test, `lic` CLI, C runtime stubs.
 
 **Architecture:** Static libs under `compiler/` (`lexer` → … → `codegen`); thin `lic` executable; `runtime/li_rt.c`.

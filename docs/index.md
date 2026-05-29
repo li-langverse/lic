@@ -69,6 +69,8 @@ def main() -> int
 | [Testing](testing/overview.md) | Suites, fuzz, CI, audits |
 | [Provability gaps](verification/provability-gaps.md) | What is **not** proved/wired yet (honest status) |
 | [Ecosystem](ecosystem/overview.md) | Packages, `lip`, governance (`li-langverse`) |
+| [Org repo handbooks](ecosystem/phase-plans-index.md#org-repo-handbooks) | lip, lit, lis, li-httpd, … (10 audit repos) |
+| [Phase plans index](ecosystem/phase-plans-index.md) | Master plan ↔ phase files ↔ **G-*** gaps |
 | [Creating packages](guide/creating-packages.md) | `li-new-package` scaffold |
 | [Reference spec](superpowers/specs/2026-05-14-li-language-design.md) | Normative design (technical) |
 

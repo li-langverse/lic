@@ -93,6 +93,18 @@ nav:
       - Package layout: guide/package-layout-reference.md
   - Ecosystem:
       - Overview: ecosystem/overview.md
+      - Phase plans index: ecosystem/phase-plans-index.md
+      - Org repos:
+          - Compiler (lic): ecosystem/lic.md
+          - Package manager (lip): ecosystem/lip.md
+          - Tests (lit): ecosystem/lit.md
+          - HTTP package (lis): ecosystem/lis.md
+          - HTTP gateway (li-httpd): ecosystem/li-httpd.md
+          - Networking (li-net): ecosystem/li-net.md
+          - Std core mirror: ecosystem/li-std-core.md
+          - Std math mirror: ecosystem/li-std-math.md
+          - Scaffold demo (li-demo): ecosystem/li-demo.md
+          - Governance (roadmap): ecosystem/roadmap.md
       - Canonical docs (roadmap repo): https://github.com/li-langverse/roadmap/tree/main/docs/ecosystem
       - Agent-kit adoption: ecosystem/ADOPTION.md
       - Governance: ecosystem/governance.md
@@ -148,6 +160,7 @@ nav:
       - Documentation style: contributing/documentation.md
   - Project:
       - Master plan: superpowers/plans/2026-05-14-li-master-plan.md
+      - Phase plans index: ecosystem/phase-plans-index.md
       - Phase 7 — Native HPC: superpowers/plans/2026-05-14-phase-07-native-hpc.md
       - Benchmarks plan: superpowers/plans/2026-05-14-benchmarks-and-simulations.md
       - Phase plans:

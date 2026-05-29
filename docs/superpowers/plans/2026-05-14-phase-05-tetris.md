@@ -9,6 +9,8 @@
 **Depends on:** Phase 4  
 **Blocks:** Nothing (v1 milestone complete)
 
+**Master plan:** [2026-05-14-li-master-plan.md](2026-05-14-li-master-plan.md) · **Phase index:** [phase-plans-index.md](../../ecosystem/phase-plans-index.md)
+
 ---
 
 ## Constants (compile-time shaped)

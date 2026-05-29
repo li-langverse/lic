@@ -135,6 +135,7 @@ Proof always comes first. Speed never skips the check.
 | Game worlds (vision) | [World Studio](docs/game-dev/world-studio-vision.md) |
 | Understand the build steps | [How `lic build` works](docs/compiler/build-pipeline.md) |
 | Understand why this is “mathematically provable” | [Why Li is provable](docs/compiler/why-provable.md) |
+| Org repo handbooks (lip, lit, httpd, …) | [Phase plans & org repos](docs/ecosystem/phase-plans-index.md) |
 | See every test and security check | [Tests & audits](docs/testing/overview.md) |
 | Read the full design spec (technical) | [Language design spec](docs/superpowers/specs/2026-05-14-li-language-design.md) |
 

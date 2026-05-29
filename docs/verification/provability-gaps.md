@@ -1,6 +1,6 @@
 # Provability gaps (current compiler)
 
-**Last updated:** 2026-05-26  
+**Last updated:** 2026-05-29  
 **Audience:** contributors, package authors, anyone relying on `lic build` as a proof certificate  
 
 Li’s **north star** is: user logic is proved before ship; runtime failures for proved programs → **~0%**. That is the **target**, not a complete description of **`lic` today**.
@@ -9,7 +9,7 @@ Li’s **north star** is: user logic is proved before ship; runtime failures for
 
 This page is the **honest inventory** of what is **not** fully proved or not yet wired. When a gap closes, update this file in the **same PR** as the implementation.
 
-**Related:** [Verification overview](overview.md) · [Master plan — Doc phase & compiler task map](../superpowers/plans/2026-05-14-li-master-plan.md#documentation--provability-honesty-cross-cutting) · [Trusted axioms](../semantics/README.md)
+**Related:** [Verification overview](overview.md) · [Master plan — Doc phase & compiler task map](../superpowers/plans/2026-05-14-li-master-plan.md#documentation--provability-honesty-cross-cutting) · [Phase plans index](../ecosystem/phase-plans-index.md) · [Trusted axioms](../semantics/README.md)
 
 ---
 
@@ -63,16 +63,15 @@ This page is the **honest inventory** of what is **not** fully proved or not yet
 
 [`../../proof-database/DISCREPANCIES.md`](../../proof-database/DISCREPANCIES.md) — `python3 scripts/proof-db/compare_reference.py --write`. Kinds: `missing_lemma`, `open_vc`, `spec_drift`, `trusted_axiom`, `hardware_axiom` (**G-hw**).
 
-### Proof-db discrepancy appendix
-
-[`../../proof-database/DISCREPANCIES.md`](../../proof-database/DISCREPANCIES.md) — `python3 scripts/proof-db/compare_reference.py --write`. Kinds: `missing_lemma`, `open_vc`, `spec_drift`, `trusted_axiom`, `hardware_axiom` (**G-hw**).
-
 !!! warning "Do not overclaim in docs or packages"
     Until **Phase 2f** lands, saying “`lic build` proves your program in Lean” is **aspirational**. Prefer: “`lic build` runs the current static gate; see [provability gaps](provability-gaps.md).”
 
 ---
 
 ## Gap register
+
+<!-- Per-gap anchors for phase-plan and handbook cross-links (mkdocs --strict) -->
+<span id="g-lean"></span><span id="g-vc"></span><span id="g-par"></span><span id="g-stdlib"></span><span id="g-dec"></span><span id="g-math"></span><span id="g-bnd"></span><span id="g-def"></span><span id="g-oop"></span><span id="g-math-syn"></span><span id="g-ann"></span><span id="g-gpu"></span><span id="g-async"></span><span id="g-net"></span><span id="g-trust"></span><span id="g-meta"></span><span id="g-hw"></span><span id="g-wrong-spec"></span><span id="g-narrow"></span><span id="g-authz"></span><span id="g-test-verify"></span><span id="g-proof-db"></span><span id="g-physics"></span>
 
 Status legend: **Missing** · **Stub** · **Partial** · **CI only** · **Done**
 

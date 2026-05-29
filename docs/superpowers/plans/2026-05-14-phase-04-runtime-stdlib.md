@@ -9,6 +9,8 @@
 **Depends on:** Phase 3  
 **Blocks:** Phase 5
 
+**Master plan:** [2026-05-14-li-master-plan.md](2026-05-14-li-master-plan.md) · **Proof gaps (Doc-c):** [G-stdlib](../../verification/provability-gaps.md#g-stdlib)
+
 ---
 
 ### Task 1: `echo` builtin

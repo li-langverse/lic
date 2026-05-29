@@ -3,6 +3,8 @@
 > **Depends on:** Phases 3–5b (MIR/LLVM, benchmarks harness)  
 > **Blocks:** Pure-Li Tier 2 perf tables, OpenMP scaling columns
 
+**Master plan:** [2026-05-14-li-master-plan.md](2026-05-14-li-master-plan.md) · **Phase index:** [phase-plans-index.md](../../ecosystem/phase-plans-index.md)
+
 **Proof gaps (Doc-c):** [G-par](../../verification/provability-gaps.md#g-par) · [G-dec](../../verification/provability-gaps.md#g-dec) · [G-math](../../verification/provability-gaps.md#g-math) · [still open](../../verification/provability-gaps.md#still-open-report-every-session)
 
 **Goal:** Built-in `simd[T, N]` and proved `parallel for` without user-level parallel/math libraries. Toolchain links LLVM + libomp only.

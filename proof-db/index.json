@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "updated": "2026-05-25",
+  "updated": "2026-05-29",
   "lean_module": "Li.ProofDB",
   "lean_path": "proof-db/lean/ProofDB.lean",
   "discharge_path": "docs/semantics/Discharge.lean",
@@ -9,7 +9,7 @@
   "build": {
     "command": "cd docs/semantics && lake build ProofDB",
     "elan_required": true,
-    "local_build": "2026-05-25: ok (1 sorry warning)"
+    "local_build": "2026-05-29: ok (zero sorry)"
   },
   "entries": [
     {
@@ -35,9 +35,9 @@
       "textbook": "\u2200 a b, |a+b| \u2264 |a|+|b|",
       "autovc_name": "autovc_std_triangle_ineq_scalar",
       "lean_theorem": "Li.ProofDB.std_triangle_ineq_float_scalar",
-      "discharge_link": null,
-      "status": "sorry",
-      "gap": "P-float: Float.abs order not in semantics slice"
+      "discharge_link": "Li.Trusted.float_abs_triangle",
+      "status": "proved",
+      "gap": "G-hw: explicit trusted axiom (float order not in Core slice)"
     },
     {
       "id": "std_dot4_bilinear_right",

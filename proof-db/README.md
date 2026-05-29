@@ -52,6 +52,8 @@ Each line is one object:
 | `lean_fail` | Closed AutoVC but `lake build AutoVC` failed (`--lake` only) |
 | `discrepancy` | Optional `*.expected.json` `status` differs from actual |
 
+**No `sorry`:** `proof-db/lean/*.lean` and `docs/semantics/Discharge.lean` must not contain Lean `sorry`. Unproved float/hardware facts belong in `docs/semantics/trusted.lean` as explicit `axiom` entries (see `Li.Trusted.float_abs_triangle`). CI: `scripts/proof-db/compare_reference.py` fails on any `sorry` in those paths.
+
 ## Math seed (worked examples)
 
 Three P-linalg specimens mirrored from `li-tests/contracts_verify/`:

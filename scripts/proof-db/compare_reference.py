@@ -73,8 +73,22 @@ def lemmas():
         if rid: rows.append({"id":rid,"lean_theorem":lean,"status":"proved" if status=="proved" else status,"gap":gap,"backlog_id":back,"file":str(p.relative_to(ROOT))})
     return rows
 
+def fail_on_sorry() -> None:
+    """Proof-db Lean modules must not use `sorry`; use Li.Trusted axioms instead."""
+    paths = [
+        ROOT / "proof-db/lean/ProofDB.lean",
+        ROOT / "docs/semantics/Discharge.lean",
+        ROOT / "proof-db/math/axioms/MathAxioms.lean",
+        ROOT / "proof-db/math/axioms/MathLemmas.lean",
+    ]
+    for p in paths:
+        if p.is_file() and SORRY.search(p.read_text(encoding="utf-8")):
+            print(f"FAIL: sorry in {p.relative_to(ROOT)} — move to trusted.lean as axiom", file=sys.stderr)
+            sys.exit(1)
+
 def main():
     a=argparse.ArgumentParser(); a.add_argument("--write",action="store_true"); a.add_argument("--json",action="store_true"); a.add_argument("--min-count",type=int,default=5); o=a.parse_args()
+    fail_on_sorry()
     dis=scan(ROOT/"docs/semantics/Discharge.lean","Li.Discharge")
     pdb=scan(ROOT/"proof-db/lean/ProofDB.lean","Li.ProofDB") if (ROOT/"proof-db/lean/ProofDB.lean").is_file() else {}
     tr=scan(ROOT/"docs/semantics/trusted.lean","Li.Trusted")
@@ -98,8 +112,21 @@ def main():
         if s.kind=="axiom" and s.name not in seen:
             seen.add(s.name); rows=mrg(rows,[D(f"disc-trusted-{s.name}","trusted_axiom","G-trust",None,f"Li.Trusted.{s.name}","trusted.lean",f"{s.file}:{s.name}",[s.name],"wontfix")])
     for e in ent:
-        if e.get("status")=="sorry" or e.get("id")=="std_triangle_ineq_scalar":
-            rows=mrg(rows,[D("disc-std-triangle-ineq-float","hardware_axiom","G-hw","P-float","Float triangle sorry","index","ProofDB.lean",["sorry"],"wontfix")]); break
+        if e.get("status") == "sorry":
+            ref = e.get("lean_theorem") or e.get("discharge_link")
+            sym = res(ref, dis, pdb)
+            if sym and sym.status == "sorry":
+                rows = mrg(rows, [D(
+                    f"disc-{e['id']}-sorry",
+                    "open_vc",
+                    e.get("gap"),
+                    e.get("backlog_id"),
+                    f"{e['id']} catalog status sorry",
+                    e.get("file", "index"),
+                    f"{sym.file}:{sym.name}",
+                    [ref or sym.name],
+                    "open",
+                )])
     rows=mrg(rows,[D("disc-g-hw-float-model","hardware_axiom","G-hw","P-float","Li float model not IEEE ULP","provability-gaps.md","fp-numerical-stability.md",["G-hw"],"wontfix")])
     rep={"version":1,"generated":date.today().isoformat(),"taxonomy":list(KINDS),"count":len(rows),"discrepancies":[asdict(x) for x in rows]}
     if o.json: print(json.dumps(rep,indent=2))

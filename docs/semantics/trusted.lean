@@ -45,4 +45,8 @@ axiom li_rt_sqrt : Float → Float
 axiom li_rt_sqrt_square_bound (x : Float) :
     Float.abs (li_rt_sqrt x * li_rt_sqrt x - x) < 1e-12
 
+/-- Float triangle inequality (**G-hw** / P-float — IEEE order not modeled in Core). -/
+axiom float_abs_triangle (a b : Float) :
+    Float.abs (a + b) ≤ Float.abs a + Float.abs b
+
 end Li.Trusted

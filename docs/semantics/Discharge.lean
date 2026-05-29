@@ -23,11 +23,11 @@ theorem discharge_corpus_placeholder : True := trivial
 
 /-- Closed-form fixed-size dot (matches `linalg_dot4_int_closed.li` / loop specimen). -/
 def dot4_int_spec (a b : LiArray Int 4) (result : Int) : Prop :=
-  result = (((((a[0]!) * (b[0]!)) + ((a[1]!) * (b[1]!))) + ((a[2]!) * (b[2]!))) + ((a[3]!) * (b[3]!)))
+  result = a 0 * b 0 + a 1 * b 1 + a 2 * b 2 + a 3 * b 3
 
 /-- Semantic value of the 4-iteration `while i < 4` dot loop (`witness_dot4_int_loop`). -/
 def dot4_loop_eval (a b : LiArray Int 4) : Int :=
-  (((((a[0]!) * (b[0]!)) + ((a[1]!) * (b[1]!))) + ((a[2]!) * (b[2]!))) + ((a[3]!) * (b[3]!)))
+  a 0 * b 0 + a 1 * b 1 + a 2 * b 2 + a 3 * b 3
 
 /-- Loop implementation matches closed-form spec (P-loop / **G-vc**). -/
 theorem dot4_int_loop_eval_spec (a b : LiArray Int 4) : dot4_int_spec a b (dot4_loop_eval a b) := rfl

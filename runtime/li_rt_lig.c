@@ -142,3 +142,36 @@ int32_t li_rt_lig_kernel_run(int32_t kid, int32_t bid) {
 }
 
 float li_rt_lig_kernel_last_validity_ratio(void) { return g_ratio; }
+
+int32_t li_rt_lig_cuda_home_probe(void) {
+  int32_t mask = 0;
+  const char* home = getenv("CUDA_HOME");
+  if (home != NULL && home[0] != '\0') {
+    mask |= 1;
+  }
+  home = getenv("CUDA_PATH");
+  if (home != NULL && home[0] != '\0') {
+    mask |= 2;
+  }
+  const char* path = getenv("PATH");
+  if (path != NULL && path[0] != '\0') {
+    const char* start = path;
+    for (;;) {
+      const char* end = strchr(start, ':');
+      const size_t len = end ? (size_t)(end - start) : strlen(start);
+      if (len > 0 && len < 480) {
+        char candidate[512];
+        snprintf(candidate, sizeof(candidate), "%.*s/nvcc", (int)len, start);
+        if (access(candidate, X_OK) == 0) {
+          mask |= 4;
+          break;
+        }
+      }
+      if (end == NULL) {
+        break;
+      }
+      start = end + 1;
+    }
+  }
+  return mask;
+}

@@ -9,13 +9,42 @@ TIER3_STUB="$ROOT/benchmarks/results/tier3-ml-ingest-stub.json"
 export LIG_EMIT_CUDA="${LIG_EMIT_CUDA:-0}"
 export LIG_EMIT_HIP="${LIG_EMIT_HIP:-0}"
 export LIG_VULKAN_LAVA="${LIG_VULKAN_LAVA:-0}"
-python3 - "$PARITY" "$OUT" "$TIER3_STUB" <<'PY'
+
+# WP-HW-09: probe CUDA_HOME when unset (lab + CI recipe in docs/ci/cuda-gpu-smoke.md).
+if [[ -z "${CUDA_HOME:-}" && -z "${CUDA_PATH:-}" ]]; then
+  for candidate in /usr/local/cuda /usr/lib/cuda /opt/cuda; do
+    if [[ -x "${candidate}/bin/nvcc" ]]; then
+      export CUDA_HOME="$candidate"
+      break
+    fi
+  done
+fi
+
+PROBE="$ROOT/scripts/cuda-home-probe.sh"
+python3 - "$PARITY" "$OUT" "$TIER3_STUB" "$PROBE" <<'PY'
 import json, os, sys
 from pathlib import Path
 
 parity_path = Path(sys.argv[1])
 out_path = Path(sys.argv[2])
 tier3_path = Path(sys.argv[3])
+probe_script = Path(sys.argv[4]) if len(sys.argv) > 4 else None
+cuda_home_probe = {}
+if probe_script and probe_script.is_file():
+    import subprocess
+    try:
+        out = subprocess.run(
+            ["bash", str(probe_script)],
+            capture_output=True,
+            text=True,
+            timeout=15,
+            check=False,
+            cwd=str(probe_script.resolve().parent.parent),
+        )
+        if out.returncode == 0 and out.stdout.strip():
+            cuda_home_probe = json.loads(out.stdout)
+    except (OSError, json.JSONDecodeError):
+        cuda_home_probe = {"probe_error": "cuda-home-probe failed"}
 
 def env_on(name: str) -> bool:
     v = os.environ.get(name, "")
@@ -27,7 +56,7 @@ vulkan_lava = env_on("LIG_VULKAN_LAVA")
 
 report = {
     "status": "honest_stub",
-    "wave": "5b",
+    "wave": "4d",
     "gpu_timing_ns": "N/A",
     "cuda_timing_ns": "N/A",
     "hip_timing_ns": "N/A",
@@ -46,6 +75,7 @@ if parity_path.is_file():
     pr = report["parity"]
     if pr.get("validity_gate_pass"):
         report["host_validity_ratio"] = pr.get("validity_ratio", "N/A")
+
 def nvidia_smi_visible() -> bool:
     import shutil
     if shutil.which("nvidia-smi") is None:
@@ -61,35 +91,47 @@ def nvidia_smi_visible() -> bool:
     except OSError:
         return False
 
+def cuda_home_resolved() -> tuple[bool, str]:
+    home = os.environ.get("CUDA_HOME") or os.environ.get("CUDA_PATH") or ""
+    if home:
+        return True, home
+    for candidate in ("/usr/local/cuda", "/usr/lib/cuda", "/opt/cuda"):
+        if (Path(candidate) / "bin" / "nvcc").is_file():
+            return True, candidate
+    return False, "unset"
+
 def nvcc_visible() -> bool:
     import shutil
     if shutil.which("nvcc") is not None:
         return True
-    for root in (os.environ.get("CUDA_HOME"), os.environ.get("CUDA_PATH"), "/usr/local/cuda"):
-        if not root:
-            continue
-        candidate = Path(root) / "bin" / "nvcc"
-        if candidate.is_file() and os.access(candidate, os.X_OK):
+    cuda_home_ok, cuda_home_path = cuda_home_resolved()
+    if cuda_home_ok:
+        candidate = Path(cuda_home_path) / "bin" / "nvcc"
+        if candidate.is_file():
             return True
     return False
 
+cuda_home_ok, cuda_home_path = cuda_home_resolved()
 report["cuda_hardware"] = {
     "nvidia_smi": nvidia_smi_visible(),
-    "cuda_home": env_on("CUDA_HOME") or bool(os.environ.get("CUDA_PATH")),
+    "cuda_home": cuda_home_ok,
+    "cuda_home_path": cuda_home_path,
     "nvcc": nvcc_visible(),
 }
+if cuda_home_probe:
+    report["cuda_home_probe"] = cuda_home_probe
 if cuda_emit:
     report["cuda_cpu_ref"] = "2x2_host_reference_when_emit_on"
     if not report["cuda_hardware"]["nvcc"]:
         report["wp_hw_09"] = "blocked_ptx_nvcc_toolkit_missing"
         report["cuda_toolkit_doc"] = "docs/ci/cuda-toolkit-setup.md"
-    elif not report["cuda_hardware"]["cuda_home"]:
+    elif not cuda_home_ok:
         report["wp_hw_09"] = "blocked_ptx_cuda_home_unset_nvcc_present"
 
 out_path.write_text(json.dumps(report, indent=2) + "\n")
 tier3 = {
     "status": "ingest_stub",
-    "wave": "5b",
+    "wave": "4d",
     "family": "ml",
     "gpu_timing_ns": "N/A",
     "note": "Tier-3 dashboard ingest placeholder until real oracle CSV lands",

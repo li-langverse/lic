@@ -86,6 +86,7 @@ void apply_fn_decorator_codegen_flags(MirFn& fn) {
       (void)d.lanes;
     }
     if (d.gpu) {
+      // WP-GPU-04/06: device tag; host→device buffer copy MIR lands with device[T] (WP-GPU-05).
       fn.gpu_device = true;
     }
     if (d.name == "no_vectorize") {

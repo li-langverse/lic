@@ -1,5 +1,16 @@
 #!/usr/bin/env bash
 # PH-ML GPU hardware CUDA sprint — isolated worktree + duration supervisor.
+if [[ -z "${LI_CURSOR_AGENTS_ROOT:-}" || ! -f "${LI_CURSOR_AGENTS_ROOT}/package.json" ]]; then
+  for c in \
+    "$(cd "$(dirname "$0")/../.." && pwd)/li-cursor-agents" \
+    "$HOME/Documents/Cursor/li-langverse/li-cursor-agents" \
+    "/home/s4il0r/Documents/Cursor/li-langverse/li-cursor-agents"; do
+    if [[ -f "$c/package.json" ]]; then
+      export LI_CURSOR_AGENTS_ROOT="$c"
+      break
+    fi
+  done
+fi
 export GOAL_PLAN_ID="ph-ml-gpu-hw"
 export GOAL_PLAN_RUN_SCRIPT="scripts/ph-ml-gpu-hw-until-duration.sh"
 export GOAL_PLAN_DATA_DIR="$(cd "$(dirname "$0")/.." && pwd)/data/ph-ml-gpu-hw-plan-loop"

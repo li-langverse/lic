@@ -92,6 +92,8 @@ def agents_root() -> Path | None:
     for candidate in [
         os.environ.get("LI_CURSOR_AGENTS_ROOT"),
         ROOT.parent / "li-cursor-agents",
+        Path("/home/s4il0r/Documents/Cursor/li-langverse/li-cursor-agents"),
+        Path.home() / "Documents/Cursor/li-langverse/li-cursor-agents",
     ]:
         if not candidate:
             continue

@@ -37,7 +37,14 @@ plan_def() {
       echo "li-swarm-observer-plan-loop|scripts/swarm-observer-plan-loop-systemd.sh|data/swarm-observer-plan-loop|LI_SWARM_PLAN_AGENT=swarm_observer"
       ;;
     ph-ml-gpu-hw)
-      echo "li-ph-ml-gpu-hw-plan-loop|scripts/ph-ml-gpu-hw-plan-loop-systemd.sh|data/ph-ml-gpu-hw-plan-loop|PH_ML_GPU_HW_DURATION_MIN=120|CUDA_HOME=/usr/lib/cuda"
+      agents="$(cd "$ROOT/../../li-cursor-agents" 2>/dev/null && pwd || true)"
+      if [[ -z "$agents" || ! -f "$agents/package.json" ]]; then
+        agents="$(cd "$ROOT/../li-cursor-agents" 2>/dev/null && pwd || true)"
+      fi
+      if [[ -z "$agents" || ! -f "$agents/package.json" ]]; then
+        agents="$HOME/Documents/Cursor/li-langverse/li-cursor-agents"
+      fi
+      echo "li-ph-ml-gpu-hw-plan-loop|scripts/ph-ml-gpu-hw-plan-loop-systemd.sh|data/ph-ml-gpu-hw-plan-loop|PH_ML_GPU_HW_DURATION_MIN=120|CUDA_HOME=/usr/lib/cuda|LI_CURSOR_AGENTS_ROOT=${agents}"
       ;;
     *)
       return 1

@@ -134,6 +134,10 @@ report["cuda_hardware"] = {
 }
 if cuda_home_probe:
     report["cuda_home_probe"] = cuda_home_probe
+    if cuda_home_probe.get("embedded_ptx_kernel_ids"):
+        report["ptx_catalog_embedded"] = cuda_home_probe["embedded_ptx_kernel_ids"]
+    if cuda_home_probe.get("blocked_ptx_kernel_ids"):
+        report["ptx_catalog_blocked"] = cuda_home_probe["blocked_ptx_kernel_ids"]
 if cuda_emit:
     report["cuda_cpu_ref"] = "2x2_host_reference_when_emit_on"
     if not report["cuda_hardware"]["nvcc"]:

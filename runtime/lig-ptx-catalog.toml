@@ -1,0 +1,28 @@
+# WP-HW-09: embedded CUDA PTX catalog (honest pilot — not LKIR→nvcc emit).
+# Regenerate inc: bash scripts/gen-lig-cuda-matmul-ptx.sh
+# Gate: bash scripts/check-lig-ptx-catalog.sh
+
+[meta]
+version = 1
+emit_env = "LIG_EMIT_CUDA=1"
+device_timing_probe = "scripts/lig-cuda-timing-probe.sh"
+
+[[embedded]]
+kernel_id = "lig.kernel.matmul_f32"
+lig_kid = 1
+symbol = "lig_matmul2x2_f32"
+ptx_inc = "runtime/lig_cuda_matmul2_ptx.inc"
+source_cu = "runtime/kernels/lig_matmul2x2.cu"
+arch = "sm_86"
+
+[[blocked]]
+kernel_id = "lig.kernel.mlp_forward_f32"
+reason = "WP-HW-12 — no embedded PTX; LKIR→PTX catalog emit blocked"
+
+[[blocked]]
+kernel_id = "lig.kernel.matmul_f64"
+reason = "no pilot cu source — nvcc emit blocked"
+
+[[blocked]]
+kernel_id = "lig.kernel.dot_f32"
+reason = "no pilot cu source — nvcc emit blocked"

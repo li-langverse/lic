@@ -7,6 +7,8 @@
 Stable kernel IDs use the prefix **`lig.kernel.`**. Agents add rows here **and** in `lig-kernels.toml` before claiming perf parity.
 **Vendor columns (honest stubs):** `cuda`, `hip`, and `metal` are **`N/A`** until emit env (`LIG_EMIT_CUDA=1`, `LIG_EMIT_HIP=1`, `LIG_EMIT_METAL=1`). `./scripts/bench-lig-kernel-parity.sh` emits all catalog `kernel_ids` in JSON.
 
+**CUDA PTX pilot (WP-HW-09):** only `lig.kernel.matmul_f32` has embedded PTX — see [lig-cuda-ptx-catalog.md](lig-cuda-ptx-catalog.md). Bench TOML `cuda` columns stay `N/A` until Tier-3 timed harness; device ns only in `lig-cuda-timing-probe.sh`.
+
 ## Naming
 
 | Pattern | Example |

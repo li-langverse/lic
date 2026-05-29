@@ -1,6 +1,6 @@
 #include "li_rt_lig_cuda.h"
 
-#include "lig_cuda_matmul2_ptx.inc"
+#include "lig_cuda_ptx_catalog.h"
 
 #include <dlfcn.h>
 #include <stdint.h>
@@ -97,13 +97,19 @@ int32_t li_rt_lig_cuda_matmul2x2_device(void) {
   }
 
   CUmodule module = NULL;
-  if (cuModuleLoadData(&module, k_lig_matmul2x2_ptx) != CU_SUCCESS) {
+  const LiLigCudaPtxEntry* entry = li_rt_lig_cuda_ptx_lookup("lig_matmul2x2_f32");
+  if (entry == NULL || entry->ptx == NULL || entry->ptx_len == 0) {
+    cuCtxDestroy(ctx);
+    return 0;
+  }
+
+  if (cuModuleLoadData(&module, entry->ptx) != CU_SUCCESS) {
     cuCtxDestroy(ctx);
     return 0;
   }
 
   CUfunction fn = NULL;
-  if (cuModuleGetFunction(&fn, module, "lig_matmul2x2_f32") != CU_SUCCESS) {
+  if (cuModuleGetFunction(&fn, module, entry->symbol) != CU_SUCCESS) {
     if (cuModuleUnload != NULL) {
       cuModuleUnload(module);
     }

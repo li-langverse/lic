@@ -19,6 +19,7 @@ else
 fi
 
 bash scripts/cuda-home-probe.sh
+bash scripts/check-lig-ptx-catalog.sh
 
 li-tests/run_all.sh gpu
 

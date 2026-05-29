@@ -1,4 +1,6 @@
 import render
+import lig
+import gui
 
 def main() -> int
   requires true

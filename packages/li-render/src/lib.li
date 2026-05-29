@@ -213,6 +213,22 @@ type RenderViewportSmoke = object
   public native_pixels: int
 
 def render_wgpu_viewport_smoke(vp: ViewportRegion) -> RenderViewportSmoke raises IO, Alloc
+  requires vp.w >= 0.0
+  requires vp.h >= 0.0
+  ensures result.viewport_w == vp.w
+  ensures result.viewport_h == vp.h
+  ensures result.fps_counter_ready == 1
+  ensures result.native_pixels >= 0
+  ensures result.native_pixels <= 1
+  decreases 0
+=
+  var out: RenderViewportSmoke
+  out.wgpu = lig_wgpu_smoke_run()
+  out.viewport_w = vp.w
+  out.viewport_h = vp.h
+  out.fps_counter_ready = 1
+  out.native_pixels = lig_present_surface_ok()
+  return out
 
 def render_wgpu_viewport_smoke_pure(vp: ViewportRegion) -> RenderViewportSmoke
   requires vp.w >= 0.0
@@ -233,23 +249,6 @@ def render_wgpu_viewport_smoke_pure(vp: ViewportRegion) -> RenderViewportSmoke
   out.viewport_h = vp.h
   out.fps_counter_ready = 1
   out.native_pixels = 0
-  return out
-
-  requires vp.w >= 0.0
-  requires vp.h >= 0.0
-  ensures result.viewport_w == vp.w
-  ensures result.viewport_h == vp.h
-  ensures result.fps_counter_ready == 1
-  ensures result.native_pixels >= 0
-  ensures result.native_pixels <= 1
-  decreases 0
-=
-  var out: RenderViewportSmoke
-  out.wgpu = lig_wgpu_smoke_run()
-  out.viewport_w = vp.w
-  out.viewport_h = vp.h
-  out.fps_counter_ready = 1
-  out.native_pixels = lig_present_surface_ok()
   return out
 
 def render_viewport_smoke_ok(smoke: RenderViewportSmoke) -> int

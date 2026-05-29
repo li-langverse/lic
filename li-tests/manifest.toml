@@ -890,7 +890,7 @@ note = "import gui: UX-09 keyboard-first (verify until object-call codegen #322)
 suite = "composable"
 file = "composable/import_render_wgpu_fps.li"
 packages = ["li-render", "li-gpu", "li-gui", "li-ui"]
-outcome = "compile_ok"
+outcome = "check_ok"
 note = "import render: bench FPS counter + HUD tag (wgpu smoke in package smoke)"
 
 [[tests]]

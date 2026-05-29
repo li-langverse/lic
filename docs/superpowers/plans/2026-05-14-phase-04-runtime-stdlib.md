@@ -1,5 +1,7 @@
 # Phase 4: Runtime + Stdlib Implementation Plan
 
+**Honest proof status:** [Provability gaps](../../verification/provability-gaps.md) · [Master plan](2026-05-14-li-master-plan.md)
+
 > **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development or superpowers:executing-plans.
 
 **Goal:** Provide builtins (`echo`), fixed arrays, `extern` FFI to C, and panic runtime so real programs link.

@@ -8,9 +8,10 @@
 6. Synced agent-kit: `./scripts/sync-agent-kit.sh` after roadmap `agent-kit/` changes.
 7. **std/** = 100% coverage; `lip publish` = ≥80%.
 8. Perf status: https://li-langverse.github.io/benchmarks/
-9. li-httpd: **`lis`** + [httpd prerequisites](docs/ecosystem/httpd-prerequisites.md).
-10. Scalar widths / quantization: [scalar-precision.md](docs/language/scalar-precision.md) — `float4`–`float512`, suffixes (`3.14f32`), `binary` + `0b`; **no org-wide float width**; physics uses `ScalarPrecision` / `PhysicsProfile.float_bits`.
-11. Precision-polymorphic APIs: [precision-polymorphism.md](docs/language/precision-polymorphism.md) — `type Real = float32` (today) and `def f[S](…)` (generics); proposed `precision float32:` block.
+9. Published handbook: https://li-langverse.github.io/li-language/ — [provability gaps](https://li-langverse.github.io/li-language/verification/provability-gaps/) · [live docs map](docs/ecosystem/live-documentation.md)
+10. li-httpd: **`lis`** + [httpd prerequisites](docs/ecosystem/httpd-prerequisites.md).
+11. Scalar widths / quantization: [scalar-precision.md](docs/language/scalar-precision.md) — `float4`–`float512`, suffixes (`3.14f32`), `binary` + `0b`; **no org-wide float width**; physics uses `ScalarPrecision` / `PhysicsProfile.float_bits`.
+12. Precision-polymorphic APIs: [precision-polymorphism.md](docs/language/precision-polymorphism.md) — `type Real = float32` (today) and `def f[S](…)` (generics); proposed `precision float32:` block.
 
 Skills: `strict-by-default-gate`, `build-li-master-plan`, `create-li-package`, `li-ecosystem-discipline` (in `.cursor/skills/`).
 

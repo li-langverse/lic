@@ -93,7 +93,8 @@ nav:
       - Package layout: guide/package-layout-reference.md
   - Ecosystem:
       - Overview: ecosystem/overview.md
-      - Canonical docs (roadmap repo): https://github.com/li-langverse/roadmap/tree/main/docs/ecosystem
+      - Live documentation map: ecosystem/live-documentation.md
+      - Org development overview (live): https://li-langverse.github.io/roadmap/development-overview/
       - Agent-kit adoption: ecosystem/ADOPTION.md
       - Governance: ecosystem/governance.md
       - Strict by default: ecosystem/strict-by-default.md

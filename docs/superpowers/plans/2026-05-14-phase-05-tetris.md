@@ -1,5 +1,7 @@
 # Phase 5: Tetris Implementation Plan
 
+**Honest proof status:** [Provability gaps](../../verification/provability-gaps.md) · [Master plan](2026-05-14-li-master-plan.md)
+
 > **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development or superpowers:executing-plans.
 
 **Goal:** Ship `examples/tetris/` — playable Tetris compiled with li, SDL2 window, keyboard input, 60 FPS loop.

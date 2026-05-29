@@ -1,5 +1,7 @@
 # Phase 0: Bootstrap Implementation Plan (C++)
 
+**Honest proof status:** [Provability gaps](../../verification/provability-gaps.md) · [Master plan](2026-05-14-li-master-plan.md)
+
 > **For agentic workers:** Use `.cursor/skills/build-li-master-plan/SKILL.md` — continue through exit gate without per-step user prompts.
 
 **Goal:** CMake + Ninja workspace, C++ compiler library skeleton, LLVM 22 smoke test, `lic` CLI, C runtime stubs.

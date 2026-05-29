@@ -37,6 +37,15 @@ outcome = "verify_ok"
 note = "PH-ML: MNIST 784→256→10 train step + loss decrease"
 
 [[tests]]
+suite = "smoke"
+file = "smoke/gpu_bridge.li"
 outcome = "verify_ok"
 allow_open_vc = true
 note = "PH-ML: lig matmul bridge (GPU emit blocked)"
+
+[[tests]]
+suite = "smoke"
+file = "smoke/dl_gpu_train_hook.li"
+outcome = "compile_open_ok"
+allow_open_vc = true
+note = "PH-ML Wave 4: @gpu hook probe; dl_forward_gpu_stub in ml.dl (lig bridge)"

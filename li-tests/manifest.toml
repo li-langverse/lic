@@ -1495,3 +1495,9 @@ suite = "gpu"
 file = "gpu/gpu_decorator_parse.li"
 outcome = "compile_open_ok"
 note = "WP-GPU-04: @gpu def parse smoke (lowering Partial)"
+
+[[tests]]
+suite = "gpu"
+file = "gpu/gpu_decorator_mir.li"
+outcome = "verify_ok"
+note = "WP-GPU-04/06: @gpu MIR tag + launch prologue"

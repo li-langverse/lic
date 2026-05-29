@@ -1,0 +1,10 @@
+; lig.kernel.mlp_forward_f32 — LKIR tile stub (WP-HW-12, MNIST-shaped pilot)
+tile 16 16 1
+load_a f32
+load_b f32
+barrier
+fma_acc f32
+barrier
+relu f32
+barrier
+store_c f32

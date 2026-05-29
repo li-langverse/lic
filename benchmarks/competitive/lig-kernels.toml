@@ -121,7 +121,7 @@ custom_lab = ""
 [[kernel]]
 id = "lig.kernel.mlp_forward_f32"
 bench_name = "mlp_forward_f32"
-lkir = "lkir/mlp_tile.lkir"
+lkir = "lkir/mlp_forward_f32.lkir"
 validity_ref = "cpu"
 workload_class = "stub"
 cpu = ""

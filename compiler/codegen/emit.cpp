@@ -1544,6 +1544,9 @@ bool emit_llvm_ir(const MirModule& mir, const std::string& out_path, int runtime
   module->getOrInsertFunction("li_rt_lig_present_surface_ok",
                               llvm::FunctionType::get(i32_ty(context), {}, false));
   module->getOrInsertFunction(
+      "li_rt_lig_kernel_run",
+      llvm::FunctionType::get(i32_ty(context), {i32_ty(context), i32_ty(context)}, false));
+  module->getOrInsertFunction(
       "li_rt_world_format_version",
       llvm::FunctionType::get(i32_ty(context), {}, false));
   module->getOrInsertFunction(
@@ -1756,6 +1759,17 @@ bool emit_llvm_ir(const MirModule& mir, const std::string& out_path, int runtime
       builder.CreateRetVoid();
       builder.setFastMathFlags(saved_fmf);
       continue;
+    }
+
+    if (fn.gpu_device) {
+      llvm::Function* lig_run = module->getFunction("li_rt_lig_kernel_run");
+      llvm::Function* lig_auto = module->getFunction("li_rt_lig_backend_select_auto");
+      if (lig_run && lig_auto) {
+        llvm::Value* kid =
+            llvm::ConstantInt::get(i32_ty(context), 1);
+        llvm::Value* bid = builder.CreateCall(lig_auto, {});
+        builder.CreateCall(lig_run, {kid, bid});
+      }
     }
 
     EmitCtx ctx{context,

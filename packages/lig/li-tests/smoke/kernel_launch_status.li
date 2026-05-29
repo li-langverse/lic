@@ -1,0 +1,50 @@
+# WP-HW-08/09/10: host launch status codes (honest stubs, no GPU timing).
+
+extern proc li_rt_lig_kernel_run(kernel_id: int, backend_id: int) -> int
+  requires kernel_id >= 1
+  requires 1 <= backend_id
+  requires backend_id <= 5
+  ensures -2 <= result
+  ensures result <= 5
+  decreases kernel_id
+
+def lig_backend_cuda() -> int
+  requires true
+  ensures result == 1
+  decreases 0
+=
+  return 1
+
+def lig_backend_rocm() -> int
+  requires true
+  ensures result == 2
+  decreases 0
+=
+  return 2
+
+def lig_backend_vulkan_spirv() -> int
+  requires true
+  ensures result == 5
+  decreases 0
+=
+  return 5
+
+def lig_kernel_matmul_f32() -> int
+  requires true
+  ensures result == 1
+  decreases 0
+=
+  return 1
+
+def main() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  if li_rt_lig_kernel_run(lig_kernel_matmul_f32(), lig_backend_vulkan_spirv()) != -1:
+    return 1
+  if li_rt_lig_kernel_run(lig_kernel_matmul_f32(), lig_backend_cuda()) != -2:
+    return 2
+  if li_rt_lig_kernel_run(lig_kernel_matmul_f32(), lig_backend_rocm()) != -2:
+    return 3
+  return 0

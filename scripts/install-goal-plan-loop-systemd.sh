@@ -36,6 +36,9 @@ plan_def() {
     swarm-observer)
       echo "li-swarm-observer-plan-loop|scripts/swarm-observer-plan-loop-systemd.sh|data/swarm-observer-plan-loop|LI_SWARM_PLAN_AGENT=swarm_observer"
       ;;
+    ph-ml-gpu-hw)
+      echo "li-ph-ml-gpu-hw-plan-loop|scripts/ph-ml-gpu-hw-plan-loop-systemd.sh|data/ph-ml-gpu-hw-plan-loop|PH_ML_GPU_HW_DURATION_MIN=120|CUDA_HOME=/usr/lib/cuda"
+      ;;
     *)
       return 1
       ;;
@@ -117,6 +120,7 @@ list_plans() {
   echo "  sim-chem-research — lic-worktrees/sim-chem-research (numerics_researcher)"
   echo "  security-research — lic-worktrees/security-research (security_auditor)"
   echo "  swarm-observer    — lic (swarm_observer gap orchestration)"
+  echo "  ph-ml-gpu-hw      — /tmp/lic-ph-ml-gpu (feat/ph-ml-gpu-swarm CUDA hardware sprint)"
   echo ""
   echo "Quality grade timer (benchmarks, weekly):"
   echo "  $0 ecosystem-quality-grade"

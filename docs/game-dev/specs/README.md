@@ -15,6 +15,7 @@
 | [voxel-engine-rfc.md](voxel-engine-rfc.md) | PH-VOXEL |
 | [publication-export-rfc.md](publication-export-rfc.md) | PH-PUB |
 | [ml-async-parallel-rfc.md](ml-async-parallel-rfc.md) | PH-ML |
+| [../PH-ML-GPU-battle-plan.md](../PH-ML-GPU-battle-plan.md) | PH-ML + PH-HW + G-gpu (56 WPs) |
 | [portable-targets-rfc.md](portable-targets-rfc.md) | PH-PORT |
 | [lig-rfc.md](lig-rfc.md) | PH-HW |
 | [li-gpu-lkir-rfc.md](li-gpu-lkir-rfc.md) | PH-HW (redirect → lig-rfc) |

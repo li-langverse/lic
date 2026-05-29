@@ -42,6 +42,30 @@ def hook_sim_summary() -> int:
     return run(["bash", str(REPO / "scripts" / "validate-sim-summary.sh")])
 
 
+def hook_lig_gpu_suite() -> int:
+    script = REPO / "scripts" / "bench-lig-gpu-suite.sh"
+    if not script.is_file():
+        print("lig_gpu_suite: missing bench-lig-gpu-suite.sh", file=sys.stderr)
+        return 1
+    return run(["bash", str(script)])
+
+
+def hook_lig_kernels() -> int:
+    script = REPO / "scripts" / "bench-lig-kernel-parity.sh"
+    if not script.is_file():
+        print("lig_kernels: missing bench-lig-kernel-parity.sh", file=sys.stderr)
+        return 1
+    return run(["bash", str(script)])
+
+
+def hook_lig_device_probe(lic: Path) -> int:
+    smoke = REPO / "packages" / "lig" / "li-tests" / "smoke" / "lig_device_probe.li"
+    if not smoke.is_file():
+        print("lig_device_probe: missing lig_device_probe.li", file=sys.stderr)
+        return 1
+    return run([str(lic), "check", str(smoke)])
+
+
 def build_composable(path: str, lic: Path) -> int:
     full = REPO / "li-tests" / path
     if not full.is_file():
@@ -102,6 +126,15 @@ def main() -> int:
             rc = hook_algo_registry() or rc
         elif hook == "sim_summary":
             rc = hook_sim_summary() or rc
+        elif hook == "lig_gpu_suite":
+            rc = hook_lig_gpu_suite() or rc
+        elif hook == "lig_kernels":
+            rc = hook_lig_kernels() or rc
+        elif hook == "lig_device_probe":
+            rc = hook_lig_device_probe(lic) or rc
+        else:
+            print(f"bench_sim: unknown hook {hook}", file=sys.stderr)
+            rc = 1
 
     for comp in scope["composable"]:
         rc = build_composable(comp, lic) or rc

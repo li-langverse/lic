@@ -1,0 +1,301 @@
+{
+  "schema": "ph-hw/lig-gpu-suite/v1",
+  "generated_at": "2026-05-29T04:27:42Z",
+  "registry": "benchmarks/competitive/lig-kernels.toml",
+  "registry_meta": {
+    "version": 1,
+    "package": "lig",
+    "vendor_na_until_emit": "cuda,hip,metal",
+    "emit_env_cuda": "LIG_EMIT_CUDA=1",
+    "emit_env_hip": "LIG_EMIT_HIP=1",
+    "emit_env_metal": "LIG_EMIT_METAL=1"
+  },
+  "gpu": {
+    "name": "NVIDIA GeForce RTX 3060",
+    "driver_version": "550.163.01",
+    "memory_total_mib": 12288,
+    "compute_capability": "8.6",
+    "pci_bus_id": "00000000:01:00.0",
+    "temperature_c": "39",
+    "power_limit_w": "170.00",
+    "visible": true,
+    "tool": "nvidia-smi"
+  },
+  "tools": {
+    "nvidia_smi": "/usr/bin/nvidia-smi",
+    "nvcc": "",
+    "vulkaninfo": "",
+    "rocm_smi": ""
+  },
+  "possible_now": {
+    "hardware_visible": true,
+    "cuda_kernel_timing": false,
+    "reason": "RTX GPU is visible, but Li LKIR -> CUDA kernel emit is not implemented in this repo yet."
+  },
+  "verification_mode": {
+    "strict_proof_certificate": false,
+    "allow_open_vc": true,
+    "lean_verify": "skipped",
+    "reason": "kernel_matmul_parity is a PH-HW smoke while full G-gpu proof/codegen remains open"
+  },
+  "summary": {
+    "kernel_count": 14,
+    "cuda_catalog_ready_count": 0,
+    "li_smoke_binary_passed_count": 1,
+    "blocked_lkir_cuda_emit_count": 13,
+    "smoke_checks_ok": true
+  },
+  "ai_status": {
+    "mlp_forward_gpu": "cataloged_blocked_on_lkir_cuda_emit",
+    "deep_learning_training": "not_timed_no_autograd_or_tensor_training_stack",
+    "rl_gpu_batching": "not_timed_env_pool_stub_only",
+    "agent_ai": "studio_agent_chrome_and_mcp_stubs_not_model_inference"
+  },
+  "checks": {
+    "lig_device_probe": {
+      "cmd": [
+        "<repo>/build/compiler/lic/lic",
+        "check",
+        "packages/lig/li-tests/smoke/lig_device_probe.li"
+      ],
+      "exit": 0,
+      "ok": true,
+      "elapsed_sec": 0.001693,
+      "stdout_tail": "",
+      "stderr_tail": ""
+    },
+    "lig_wgpu_smoke": {
+      "cmd": [
+        "<repo>/build/compiler/lic/lic",
+        "check",
+        "packages/lig/li-tests/smoke/wgpu_smoke.li"
+      ],
+      "exit": 0,
+      "ok": true,
+      "elapsed_sec": 0.001416,
+      "stdout_tail": "",
+      "stderr_tail": ""
+    },
+    "lig_kernel_matmul_parity_build": {
+      "cmd": [
+        "<repo>/build/compiler/lic/lic",
+        "build",
+        "--allow-open-vc",
+        "--no-lean-verify",
+        "packages/lig/li-tests/smoke/kernel_matmul_parity.li",
+        "-o",
+        "build/bench/lig_kernel_matmul_parity_suite"
+      ],
+      "exit": 0,
+      "ok": true,
+      "elapsed_sec": 0.098332,
+      "stdout_tail": "",
+      "stderr_tail": "lic build: warning \u2014 Lean verify skipped (--no-lean-verify)\n"
+    },
+    "lig_kernel_matmul_parity_run": {
+      "cmd": [
+        "build/bench/lig_kernel_matmul_parity_suite"
+      ],
+      "exit": 0,
+      "ok": true,
+      "elapsed_sec": 0.000512,
+      "stdout_tail": "",
+      "stderr_tail": ""
+    },
+    "bench_lig_kernel_parity": {
+      "cmd": [
+        "bash",
+        "scripts/bench-lig-kernel-parity.sh"
+      ],
+      "exit": 0,
+      "ok": true,
+      "elapsed_sec": 0.037459,
+      "stdout_tail": "<repo>/benchmarks/results/lig-lkir-matmul.json\nkernel_ids: lig.kernel.matmul_f32 lig.kernel.matmul_f64 lig.kernel.dot_f32 lig.kernel.reduce_sum_f32 lig.kernel.md_force_short lig.kernel.md_force_full lig.kernel.heat_stencil_2d_f32 lig.kernel.sph_density_f32 lig.kernel.horner_f32 lig.kernel.mlp_forward_f32 lig.kernel.memcpy_h2d_f32 lig.kernel.memcpy_d2h_f32 lig.kernel.quat_rotate_vec3 lig.kernel.present_blit_rgba8\nbench-lig-kernel-parity: done\n",
+      "stderr_tail": ""
+    }
+  },
+  "kernels": [
+    {
+      "kernel_id": "lig.kernel.matmul_f32",
+      "bench_name": "matmul_f32",
+      "lkir": "lkir/matmul_f32.li",
+      "workload_class": "stub",
+      "validity_ref": "cpu",
+      "cuda_catalog": "N/A",
+      "target_gpu": "NVIDIA GeForce RTX 3060",
+      "backend": "cuda",
+      "gpu_execution_status": "not_run",
+      "status": "li_smoke_binary_passed",
+      "reason": "Li smoke binary exits 0; no GPU kernel emitted or timed"
+    },
+    {
+      "kernel_id": "lig.kernel.matmul_f64",
+      "bench_name": "matmul_f64",
+      "lkir": "lkir/matmul_tile_f64.lkir",
+      "workload_class": "stub",
+      "validity_ref": "cpu",
+      "cuda_catalog": "N/A",
+      "target_gpu": "NVIDIA GeForce RTX 3060",
+      "backend": "cuda",
+      "gpu_execution_status": "not_run",
+      "status": "blocked_lkir_cuda_emit",
+      "reason": "catalog row is N/A until Li LKIR CUDA/HIP/Metal emit exists"
+    },
+    {
+      "kernel_id": "lig.kernel.dot_f32",
+      "bench_name": "dot_f32",
+      "lkir": "lkir/dot_warp.lkir",
+      "workload_class": "stub",
+      "validity_ref": "cpu",
+      "cuda_catalog": "N/A",
+      "target_gpu": "NVIDIA GeForce RTX 3060",
+      "backend": "cuda",
+      "gpu_execution_status": "not_run",
+      "status": "blocked_lkir_cuda_emit",
+      "reason": "catalog row is N/A until Li LKIR CUDA/HIP/Metal emit exists"
+    },
+    {
+      "kernel_id": "lig.kernel.reduce_sum_f32",
+      "bench_name": "reduce_sum_f32",
+      "lkir": "lkir/reduce_sum.lkir",
+      "workload_class": "stub",
+      "validity_ref": "cpu",
+      "cuda_catalog": "N/A",
+      "target_gpu": "NVIDIA GeForce RTX 3060",
+      "backend": "cuda",
+      "gpu_execution_status": "not_run",
+      "status": "blocked_lkir_cuda_emit",
+      "reason": "catalog row is N/A until Li LKIR CUDA/HIP/Metal emit exists"
+    },
+    {
+      "kernel_id": "lig.kernel.md_force_short",
+      "bench_name": "md_force_short",
+      "lkir": "lkir/md_lj_short.lkir",
+      "workload_class": "stub",
+      "validity_ref": "cpu",
+      "cuda_catalog": "N/A",
+      "target_gpu": "NVIDIA GeForce RTX 3060",
+      "backend": "cuda",
+      "gpu_execution_status": "not_run",
+      "status": "blocked_lkir_cuda_emit",
+      "reason": "catalog row is N/A until Li LKIR CUDA/HIP/Metal emit exists"
+    },
+    {
+      "kernel_id": "lig.kernel.md_force_full",
+      "bench_name": "md_force_full",
+      "lkir": "lkir/md_lj_full.lkir",
+      "workload_class": "stub",
+      "validity_ref": "cpu",
+      "cuda_catalog": "N/A",
+      "target_gpu": "NVIDIA GeForce RTX 3060",
+      "backend": "cuda",
+      "gpu_execution_status": "not_run",
+      "status": "blocked_lkir_cuda_emit",
+      "reason": "catalog row is N/A until Li LKIR CUDA/HIP/Metal emit exists"
+    },
+    {
+      "kernel_id": "lig.kernel.heat_stencil_2d_f32",
+      "bench_name": "heat_stencil_2d",
+      "lkir": "lkir/heat_2d.lkir",
+      "workload_class": "stub",
+      "validity_ref": "cpu",
+      "cuda_catalog": "N/A",
+      "target_gpu": "NVIDIA GeForce RTX 3060",
+      "backend": "cuda",
+      "gpu_execution_status": "not_run",
+      "status": "blocked_lkir_cuda_emit",
+      "reason": "catalog row is N/A until Li LKIR CUDA/HIP/Metal emit exists"
+    },
+    {
+      "kernel_id": "lig.kernel.sph_density_f32",
+      "bench_name": "sph_density",
+      "lkir": "lkir/sph_density.lkir",
+      "workload_class": "stub",
+      "validity_ref": "cpu",
+      "cuda_catalog": "N/A",
+      "target_gpu": "NVIDIA GeForce RTX 3060",
+      "backend": "cuda",
+      "gpu_execution_status": "not_run",
+      "status": "blocked_lkir_cuda_emit",
+      "reason": "catalog row is N/A until Li LKIR CUDA/HIP/Metal emit exists"
+    },
+    {
+      "kernel_id": "lig.kernel.horner_f32",
+      "bench_name": "horner_f32",
+      "lkir": "lkir/horner.lkir",
+      "workload_class": "stub",
+      "validity_ref": "cpu",
+      "cuda_catalog": "N/A",
+      "target_gpu": "NVIDIA GeForce RTX 3060",
+      "backend": "cuda",
+      "gpu_execution_status": "not_run",
+      "status": "blocked_lkir_cuda_emit",
+      "reason": "catalog row is N/A until Li LKIR CUDA/HIP/Metal emit exists"
+    },
+    {
+      "kernel_id": "lig.kernel.mlp_forward_f32",
+      "bench_name": "mlp_forward_f32",
+      "lkir": "lkir/mlp_tile.lkir",
+      "workload_class": "stub",
+      "validity_ref": "cpu",
+      "cuda_catalog": "N/A",
+      "target_gpu": "NVIDIA GeForce RTX 3060",
+      "backend": "cuda",
+      "gpu_execution_status": "not_run",
+      "status": "blocked_lkir_cuda_emit",
+      "reason": "catalog row is N/A until Li LKIR CUDA/HIP/Metal emit exists"
+    },
+    {
+      "kernel_id": "lig.kernel.memcpy_h2d_f32",
+      "bench_name": "memcpy_h2d",
+      "lkir": "lkir/memcpy.lkir",
+      "workload_class": "stub",
+      "validity_ref": "cpu",
+      "cuda_catalog": "N/A",
+      "target_gpu": "NVIDIA GeForce RTX 3060",
+      "backend": "cuda",
+      "gpu_execution_status": "not_run",
+      "status": "blocked_lkir_cuda_emit",
+      "reason": "catalog row is N/A until Li LKIR CUDA/HIP/Metal emit exists"
+    },
+    {
+      "kernel_id": "lig.kernel.memcpy_d2h_f32",
+      "bench_name": "memcpy_d2h",
+      "lkir": "lkir/memcpy.lkir",
+      "workload_class": "stub",
+      "validity_ref": "cpu",
+      "cuda_catalog": "N/A",
+      "target_gpu": "NVIDIA GeForce RTX 3060",
+      "backend": "cuda",
+      "gpu_execution_status": "not_run",
+      "status": "blocked_lkir_cuda_emit",
+      "reason": "catalog row is N/A until Li LKIR CUDA/HIP/Metal emit exists"
+    },
+    {
+      "kernel_id": "lig.kernel.quat_rotate_vec3",
+      "bench_name": "quat_rotate_vec3",
+      "lkir": "lkir/quat_rotate.lkir",
+      "workload_class": "stub",
+      "validity_ref": "cpu",
+      "cuda_catalog": "N/A",
+      "target_gpu": "NVIDIA GeForce RTX 3060",
+      "backend": "cuda",
+      "gpu_execution_status": "not_run",
+      "status": "blocked_lkir_cuda_emit",
+      "reason": "catalog row is N/A until Li LKIR CUDA/HIP/Metal emit exists"
+    },
+    {
+      "kernel_id": "lig.kernel.present_blit_rgba8",
+      "bench_name": "present_blit_rgba8",
+      "lkir": "lkir/blit.lkir",
+      "workload_class": "stub",
+      "validity_ref": "cpu",
+      "cuda_catalog": "N/A",
+      "target_gpu": "NVIDIA GeForce RTX 3060",
+      "backend": "cuda",
+      "gpu_execution_status": "not_run",
+      "status": "blocked_lkir_cuda_emit",
+      "reason": "catalog row is N/A until Li LKIR CUDA/HIP/Metal emit exists"
+    }
+  ]
+}

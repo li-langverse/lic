@@ -50,6 +50,21 @@ Registry: `benchmarks/competitive/studio-ui.toml`. Harness writes:
 python3 scripts/studio-ui-ux-verify-bench-registry.py
 ```
 
+## `lig` GPU suite (PH-HW)
+
+Registry: `benchmarks/competitive/lig-kernels.toml`. Harness writes:
+
+- `benchmarks/results/lig-gpu-suite-latest.json`
+
+```bash
+./scripts/bench-lig-gpu-suite.sh
+```
+
+This records visible GPU hardware with `nvidia-smi`, enumerates every `lig.kernel.*`
+catalog row, and runs the available Li compile/probe checks. Until Li LKIR ->
+CUDA/HIP/Metal emit lands, CUDA kernel timings are reported as unavailable rather
+than fabricated.
+
 ## `latest.csv` verify columns (tier 1+ with `--verify`)
 
 Written when `bench.py` runs tier 1/2 with result verification (or `./scripts/bench-verify-results.sh`).

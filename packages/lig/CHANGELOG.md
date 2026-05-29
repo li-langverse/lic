@@ -4,6 +4,7 @@
 
 ### Added
 
+- **PH-HW GPU suite:** `scripts/bench-lig-gpu-suite.sh` records visible NVIDIA hardware, enumerates all `lig.kernel.*` catalog rows, and reports CUDA timing as unavailable until LKIR emit lands.
 - **PH-HW HW-0** — Rename package `li-gpu` → `lig`; import `lig`.
 - **Device API** — `lig_device_kind`, `lig_backend_available`, `lig_backend_select_auto`, `lig_capability_json`, `lig_parse_toml_backend_line`, `lig_present_surface_ok`.
 - **Runtime** — `li_rt_lig_*` in `runtime/li_rt.c` + `emit.cpp` declarations.

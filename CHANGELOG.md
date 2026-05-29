@@ -8,6 +8,7 @@ All notable changes to Li are documented here. The format follows
 
 ### Added
 
+- **PH-HW lig GPU suite:** `scripts/bench-lig-gpu-suite.sh` records RTX-class GPU hardware via `nvidia-smi`, enumerates `benchmarks/competitive/lig-kernels.toml`, and writes `benchmarks/results/lig-gpu-suite-latest.json` with honest LKIR/CUDA blockers — [2026-05-29-lig-gpu-suite-rtx3060.md](docs/release-notes/2026-05-29-lig-gpu-suite-rtx3060.md).
 - **PH-DB planning docs:** `ph-db-battle-plan.md`, `ph-db-ci-hosting-plan.md`, `ph-db-execution-tracker.md`, WP verification matrix cross-link — supersedes conflicting PRs #323–#325.
 
 - **WP2 md_* tier2 fill:** 13 catalog `md_*` harness stubs from `md_lennard_jones` template, `bench.py` `TIER2_BENCHES` rows, runnable fixes for `three_body_pure` / `schrodinger_1d_barrier` / `ragdoll_chain` / `orbit_two_body` / `fdtd_waveguide_2d` — [2026-05-25-bench-fill-wp2-md.md](docs/release-notes/2026-05-25-bench-fill-wp2-md.md).

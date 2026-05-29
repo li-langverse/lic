@@ -41,18 +41,28 @@ pilot = {
 }
 smoke_cwd = smoke.parent.parent.parent if smoke.is_file() else root
 if lic.is_file() and smoke.is_file():
+    exe = root / "build" / "bench" / "lig_kernel_matmul_parity"
+    exe.parent.mkdir(parents=True, exist_ok=True)
     t0 = time.perf_counter()
     p = subprocess.run(
-        [str(lic), "build", "--allow-open-vc", str(smoke.relative_to(smoke_cwd)), "-o", "/dev/null"],
+        [str(lic), "build", "--allow-open-vc", "--no-lean-verify", str(smoke.relative_to(smoke_cwd)), "-o", str(exe)],
         cwd=smoke_cwd,
         capture_output=True,
         text=True,
     )
-    pilot["cpu_sec"] = round(time.perf_counter() - t0, 6)
+    pilot["lic_build_elapsed_sec"] = round(time.perf_counter() - t0, 6)
     pilot["compile_ok"] = p.returncode == 0
     if not pilot["compile_ok"]:
         pilot["stderr_tail"] = (p.stderr or "")[-500:]
-if pilot.get("compile_ok"):
+    if pilot["compile_ok"]:
+        t1 = time.perf_counter()
+        run = subprocess.run([str(exe)], cwd=root, capture_output=True, text=True)
+        pilot["run_elapsed_sec"] = round(time.perf_counter() - t1, 6)
+        pilot["run_ok"] = run.returncode == 0
+        pilot["run_exit"] = run.returncode
+        if not pilot["run_ok"]:
+            pilot["run_stderr_tail"] = (run.stderr or "")[-500:]
+if pilot.get("compile_ok") and pilot.get("run_ok"):
     pilot["validity_ratio"] = 1.0
     pilot["validity_gate_pass"] = True
 
@@ -74,8 +84,8 @@ report = {
     "validity_gate_pass": pilot["validity_gate_pass"],
     "compile_ok": pilot["compile_ok"],
 }
-if "cpu_sec" in pilot:
-    report["cpu_sec"] = pilot["cpu_sec"]
+if "lic_build_elapsed_sec" in pilot:
+    report["lic_build_elapsed_sec"] = pilot["lic_build_elapsed_sec"]
 
 out.write_text(json.dumps(report, indent=2) + "\n")
 print(out)

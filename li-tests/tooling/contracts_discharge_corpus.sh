@@ -10,6 +10,7 @@ chmod +x "$ROOT/li-tests/tooling/discharge_trivial_lean.sh" \
   "$ROOT/li-tests/tooling/sqrt_open_bound_contract_tier.sh" \
   "$ROOT/li-tests/tooling/sqrt_open_bound_verify_cli_order.sh" \
   "$ROOT/li-tests/tooling/sqrt_open_bound_codegen_drift.sh" \
+  "$ROOT/li-tests/tooling/vec3_dot_field_opaque_lean_gap.sh" \
   "$ROOT/li-tests/tooling/manifest_verify_ok_honesty_gap.sh"
 "$ROOT/li-tests/tooling/discharge_trivial_lean.sh"
 "$ROOT/li-tests/tooling/discharge_const_lean.sh"
@@ -28,5 +29,6 @@ fi
 "$ROOT/li-tests/tooling/sqrt_open_bound_contract_tier.sh"
 "$ROOT/li-tests/tooling/sqrt_open_bound_verify_cli_order.sh"
 "$ROOT/li-tests/tooling/sqrt_open_bound_codegen_drift.sh"
+"$ROOT/li-tests/tooling/vec3_dot_field_opaque_lean_gap.sh"
 "$ROOT/li-tests/tooling/manifest_verify_ok_honesty_gap.sh"
 echo "contracts_discharge_corpus: ok"

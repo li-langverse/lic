@@ -126,7 +126,7 @@ def print_deviation_reports(reports: list[DeviationReport], *, bench: str) -> No
 # --- analytical closed forms --------------------------------------------------
 
 # Must match ``tier1_micro/horner_pure_li/common/horner_core.c`` ``LI_HORNER_X``.
-HORNER_BENCH_X = 1.1
+HORNER_BENCH_X = 0.999999
 
 
 def horner_analytical(*, steps: int, x: float = 0.999999) -> float:

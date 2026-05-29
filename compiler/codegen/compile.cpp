@@ -106,7 +106,6 @@ bool compile_module(const Module& module, const std::string& output_path,
   const bool link_runtime_full =
       std::getenv("LI_LINK_RUNTIME_FULL") != nullptr && *std::getenv("LI_LINK_RUNTIME_FULL") != '0';
   const std::filesystem::path rt_lig_path = resolve_runtime_c("li_rt_lig.c");
-  const std::filesystem::path rt_lkir_spirv_path = resolve_runtime_c("li_rt_lkir_spirv.c");
 
   std::ostringstream cmd;
   const char* cc_env = std::getenv("CC");
@@ -136,8 +135,9 @@ bool compile_module(const Module& module, const std::string& output_path,
   if (std::filesystem::exists(rt_lig_path)) {
     cmd << " -x c \"" << rt_lig_path.string() << "\"";
   }
-  if (std::filesystem::exists(rt_lkir_spirv_path)) {
-    cmd << " -x c \"" << rt_lkir_spirv_path.string() << "\"";
+  const std::filesystem::path rt_studio_paint_path = resolve_runtime_c("li_rt_studio_paint_capture.c");
+  if (std::filesystem::exists(rt_studio_paint_path)) {
+    cmd << " -x c \"" << rt_studio_paint_path.string() << "\"";
   }
   cmd << " -o \"" << output_path << "\"";
   if (opts.release) {

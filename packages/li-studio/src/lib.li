@@ -160,6 +160,18 @@ extern proc li_rt_studio_demo_loop_tick_from_env() -> int
   decreases 0
 
 
+extern proc li_rt_studio_shell_paint_ppm(
+    path: str, width: int, height: int, profile_id: int, has_selection: int, playhead_pct: float) raises IO -> int
+  requires width >= 64
+  requires height >= 64
+  requires profile_id >= 1
+  requires profile_id <= 7
+  requires has_selection >= 0
+  requires has_selection <= 1
+  ensures result >= 0
+  ensures result <= 1
+  decreases width
+
 # UX-02 — timeline playback mock.
 extern proc li_rt_studio_timeline_playing() -> int
   requires true
@@ -3892,6 +3904,51 @@ def studio_vertical_demo_compose(profile_id: int, frame_id: int, key_compose: in
     studio_attach_viewport_shell(out)
   return out
 
+
+# WP-UX-14b Step 1: write PPM from Li compose layout (runtime paint mirror; C deletion Step 4).
+def studio_vertical_capture_ppm(profile_id: int, frame_id: int, path: str, width: int, height: int) -> int raises IO
+  requires studio_profile_id_valid(profile_id) == 1
+  requires frame_id >= 0
+  requires frame_id <= 2
+  requires width >= 64
+  requires height >= 64
+  requires path != ""
+  ensures result >= 0
+  decreases frame_id
+=
+  var compose: StudioShellCompose = studio_vertical_demo_compose(profile_id, frame_id, 0)
+  var has_sel: int = compose.inspector.has_selection
+  var play_pct: float = compose.timeline.playhead_pct
+  return li_rt_studio_shell_paint_ppm(path, width, height, profile_id, has_sel, play_pct)
+
+def studio_vertical_capture_ppm_wgpu(profile_id: int, frame_id: int, path: str, width: int, height: int) -> int raises IO
+  requires studio_profile_id_valid(profile_id) == 1
+  requires frame_id >= 0
+  requires frame_id <= 2
+  requires width >= 64
+  requires height >= 64
+  requires path != ""
+  ensures result >= 0
+  decreases frame_id
+=
+  if lig_present_wgpu_readback_active() != 1:
+    return 0
+  return studio_vertical_capture_ppm(profile_id, frame_id, path, width, height)
+
+def studio_vertical_capture_ppm_auto(profile_id: int, frame_id: int, path: str, width: int, height: int) -> int raises IO
+  requires studio_profile_id_valid(profile_id) == 1
+  requires frame_id >= 0
+  requires frame_id <= 2
+  requires width >= 64
+  requires height >= 64
+  requires path != ""
+  ensures result >= 0
+  decreases frame_id
+=
+  if lig_present_wgpu_readback_active() == 1:
+    return studio_vertical_capture_ppm_wgpu(profile_id, frame_id, path, width, height)
+  return studio_vertical_capture_ppm(profile_id, frame_id, path, width, height)
+
 def studio_vertical_demo_frame(profile_id: int, frame_id: int) -> int raises IO
   requires studio_profile_id_valid(profile_id) == 1
   requires frame_id >= 0
@@ -3920,15 +3977,22 @@ def studio_vertical_demo_frame(profile_id: int, frame_id: int) -> int raises IO
   studio_paint_topbar_profile(frame, topbar, profile_id)
   if lig_present_host_active() == 1:
     var vp: ViewportRegion = gui_viewport_region_from_layout(compose.layout)
+    var use_wgpu_rb: int = lig_present_wgpu_readback_active()
     if lig_present_blit_paint_summary(vp.w, vp.h, profile_id, frame.cmd_count) != 1:
+      if use_wgpu_rb == 1:
+        return 54 + frame_id
       return 52 + frame_id
     var _presented: LigPresentFrame = studio_shell_host_present_loop_tick(vp.w, vp.h, frame_id)
     if _presented.presented != 1:
       return 50 + frame_id
     if _presented.native_pixels != 1:
       return 51 + frame_id
-    if _presented.native_pixel_source != lig_native_pixel_source_paint_blit():
-      return 53 + frame_id
+    if use_wgpu_rb == 1:
+      if _presented.native_pixel_source != lig_native_pixel_source_wgpu_readback():
+        return 55 + frame_id
+    else:
+      if _presented.native_pixel_source != lig_native_pixel_source_paint_blit():
+        return 53 + frame_id
   if frame_id == 0:
     return 0
   if frame_id == 1:

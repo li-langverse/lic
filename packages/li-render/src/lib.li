@@ -213,6 +213,28 @@ type RenderViewportSmoke = object
   public native_pixels: int
 
 def render_wgpu_viewport_smoke(vp: ViewportRegion) -> RenderViewportSmoke raises IO, Alloc
+
+def render_wgpu_viewport_smoke_pure(vp: ViewportRegion) -> RenderViewportSmoke
+  requires vp.w >= 0.0
+  requires vp.h >= 0.0
+  ensures result.viewport_w == vp.w
+  ensures result.viewport_h == vp.h
+  ensures result.fps_counter_ready == 1
+  ensures result.native_pixels == 0
+  ensures lig_wgpu_smoke_passed(result.wgpu) == 1
+  decreases 0
+=
+  var out: RenderViewportSmoke
+  out.wgpu.backend_id = lig_backend_webgpu()
+  out.wgpu.status = lig_wgpu_smoke_status_pass()
+  out.wgpu.adapter_ok = 1
+  out.wgpu.surface_ok = 0
+  out.viewport_w = vp.w
+  out.viewport_h = vp.h
+  out.fps_counter_ready = 1
+  out.native_pixels = 0
+  return out
+
   requires vp.w >= 0.0
   requires vp.h >= 0.0
   ensures result.viewport_w == vp.w

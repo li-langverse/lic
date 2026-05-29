@@ -9,3 +9,27 @@ suite = "smoke"
 file = "smoke/lig_device_probe.li"
 outcome = "compile_open_ok"
 note = "T-PKG-lig-device-probe"
+
+[[tests]]
+suite = "smoke"
+file = "smoke/vulkan_spirv_backend.li"
+outcome = "verify_ok"
+note = "PH-HW Wave 2: vulkan_spirv backend id 5"
+
+[[tests]]
+suite = "smoke"
+file = "smoke/lkir_parser.li"
+outcome = "verify_ok"
+note = "PH-HW Wave 2: LKIR parser smoke"
+
+[[tests]]
+suite = "smoke"
+file = "smoke/lkir_spirv_stub.li"
+outcome = "verify_ok"
+note = "PH-HW Wave 2: SPIR-V emit stub"
+
+[[tests]]
+suite = "smoke"
+file = "smoke/kernel_matmul_parity.li"
+outcome = "verify_ok"
+note = "PH-HW Wave 2: matmul parity backend 5 stub + webgpu"

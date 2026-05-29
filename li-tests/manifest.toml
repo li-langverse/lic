@@ -1465,3 +1465,9 @@ suite = "smoke"
 file = "packages/lig/li-tests/smoke/present_wgpu_readback_stub.li"
 outcome = "compile_open_ok"
 note = "T-PKG-lig-present-wgpu-readback"
+
+[[tests]]
+suite = "gpu"
+file = "gpu/gpu_decorator_parse.li"
+outcome = "compile_open_ok"
+note = "WP-GPU-04: @gpu def parse smoke (lowering Partial)"

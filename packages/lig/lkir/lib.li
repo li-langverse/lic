@@ -1,0 +1,69 @@
+# lig.lkir — LKIR parse / validity / SPIR-V emit stubs (PH-HW Wave 2).
+
+def lkir_version() -> int
+  requires true
+  ensures result == 1
+  decreases 0
+=
+  return 1
+
+def lkir_line_kind_tile() -> int
+  requires true
+  ensures result == 1
+  decreases 0
+=
+  return 1
+
+def lkir_line_kind_barrier() -> int
+  requires true
+  ensures result == 2
+  decreases 0
+=
+  return 2
+
+def lkir_line_kind_load_a() -> int
+  requires true
+  ensures result == 3
+  decreases 0
+=
+  return 3
+
+def lkir_matmul_module_line_count() -> int
+  requires true
+  ensures result == 6
+  decreases 0
+=
+  return 6
+
+def lkir_validity_check_matmul() -> int
+  requires true
+  ensures result == 1
+  decreases 0
+=
+  if lkir_line_kind_tile() != 1:
+    return 0
+  if lkir_line_kind_load_a() != 3:
+    return 0
+  if lkir_line_kind_barrier() != 2:
+    return 0
+  return 1
+
+def lkir_spirv_emit_status() -> int
+  requires true
+  ensures result >= 0
+  ensures result <= 2
+  decreases 0
+=
+  return 0
+
+def lkir_spirv_validation_smoke() -> int
+  requires true
+  ensures result >= 0
+  ensures result <= 1
+  decreases 0
+=
+  if lkir_validity_check_matmul() != 1:
+    return 0
+  if lkir_spirv_emit_status() != 0:
+    return 0
+  return 1

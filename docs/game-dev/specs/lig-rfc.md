@@ -162,6 +162,22 @@ def run(a: tensor[f32], b: tensor[f32]) -> tensor[f32]
 | **WP3** | `lig.present` + Studio viewport wire-up | Studio + render |
 | **WP4** | ROCm/HIP CI parity, multi-GPU overlap (PH-ML) | HW + ML |
 
+### Multi-GPU scheduler (WP-HW-14 — design stub)
+
+**Status:** Not implemented. See [ml-async-parallel-rfc.md](ml-async-parallel-rfc.md) axis 3 (GPU streams).
+
+Planned `lig.device` surface:
+
+| API (sketch) | Role |
+|--------------|------|
+| `lig_device_count()` | Enumerate physical devices |
+| `lig_queue_for_device(id)` | Per-device command queue |
+| `lig_kernel_run_on(device_id, kernel_id)` | Pin launch to device |
+
+Overlap model: copy engine on device 0 while device 1 runs `lig.kernel.matmul_f32`; scheduler records dependencies in host ledger (`lig.memory` budget).
+
+**Honesty:** No multi-GPU timing or overlap claims until bench note + `lig-kernels.toml` row with real hardware.
+
 ## Proof / trust
 
 | Layer | Status |

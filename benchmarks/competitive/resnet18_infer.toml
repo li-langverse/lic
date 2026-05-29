@@ -1,0 +1,18 @@
+# Tier-4 bench stub — ResNet18 inference (WP-BENCH-ML-07)
+# No performance claims until ONNX oracle + GPU path exist.
+
+[meta]
+version = 1
+tier = 4
+bench_name = "resnet18_infer"
+status = "stub"
+oracle = "onnx_reference"
+gpu_timing_ns = "N/A"
+note = "Design row only; Li kernel + ONNX compare blocked on ML-3 GPU matmul + WP-ML-14 tensor"
+
+[[fixture]]
+batch = 1
+channels = 3
+height = 224
+width = 224
+weights = "N/A"

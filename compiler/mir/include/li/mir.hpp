@@ -146,6 +146,8 @@ struct MirDecorator {
   bool vectorized = false;
   bool parallel = false;
   bool disjoint_proven = false;
+  /** `@gpu` on the owning `def` (G-gpu Partial — host launch glue at codegen). */
+  bool gpu = false;
 };
 
 struct MirFn {
@@ -160,6 +162,8 @@ struct MirFn {
   bool is_async = false;
   /** When true, `ArrayDotF64` / `ArrayBinOpF64` use scalar loops only. */
   bool no_vectorize = false;
+  /** When true, codegen emits `li_rt_lig_kernel_run` prologue (WP-GPU-06 partial). */
+  bool gpu_device = false;
   std::vector<MirDecorator> decorators;
   std::vector<MirParam> params;
   /** Populated when `returns_object`; parallel to ReturnObject / unpack layout. */
@@ -184,6 +188,8 @@ struct MirModule {
 /** Count `def` decorators with {@link MirDecorator::vectorized}. */
 std::size_t count_mir_vectorized_proc(const MirModule& mir);
 std::size_t count_mir_parallel_disjoint_proven(const MirModule& mir);
+/** Count `def` decorators with {@link MirDecorator::gpu}. */
+std::size_t count_mir_gpu_proc(const MirModule& mir);
 
 MirModule lower_to_mir(const Module& module);
 

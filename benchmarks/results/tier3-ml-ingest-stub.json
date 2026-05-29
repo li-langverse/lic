@@ -1,0 +1,7 @@
+{
+  "status": "ingest_stub",
+  "wave": 4,
+  "family": "ml",
+  "gpu_timing_ns": "N/A",
+  "note": "Tier-3 dashboard ingest placeholder until real oracle CSV lands"
+}

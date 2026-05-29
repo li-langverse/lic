@@ -23,7 +23,7 @@ See `matmul_f32.lkir` — six non-comment lines matching `lkir_matmul_module_lin
 
 | Target | Env gate | Runtime status |
 |--------|----------|----------------|
-| SPIR-V / Vulkan | — | `lig_backend_vulkan_spirv()` id 5; `li_rt_lig_kernel_run` returns `-1` until WP-HW-06 |
+| SPIR-V / Vulkan | header stub | `li_rt_lkir_spirv_validation_smoke()`; dispatch still `-1` until WP-HW-07 |
 | CUDA PTX | `LIG_EMIT_CUDA=1` | `bid==1` returns `-1` without env |
 | HIP / Metal | `LIG_EMIT_HIP=1`, `LIG_EMIT_METAL=1` | not wired in Wave 2 |
 

@@ -26,7 +26,13 @@ note = "PH-HW Wave 2: LKIR parser smoke"
 suite = "smoke"
 file = "smoke/lkir_spirv_stub.li"
 outcome = "verify_ok"
-note = "PH-HW Wave 2: SPIR-V emit stub"
+note = "PH-HW Wave 4: SPIR-V bytes + validation smoke"
+
+[[tests]]
+suite = "smoke"
+file = "smoke/kernel_launch_status.li"
+outcome = "verify_ok"
+note = "PH-HW Wave 4: kernel launch status -1/-2 honest"
 
 [[tests]]
 suite = "smoke"

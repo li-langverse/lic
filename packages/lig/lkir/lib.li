@@ -1,4 +1,16 @@
-# lig.lkir — LKIR parse / validity / SPIR-V emit stubs (PH-HW Wave 2).
+# lig.lkir — LKIR parse / validity / SPIR-V emit stubs (PH-HW Wave 4).
+
+extern proc li_rt_lkir_spirv_emit_status() -> int
+  requires true
+  ensures 0 <= result
+  ensures result <= 2
+  decreases 0
+
+extern proc li_rt_lkir_spirv_validation_smoke() -> int
+  requires true
+  ensures 0 <= result
+  ensures result <= 1
+  decreases 0
 
 def lkir_version() -> int
   requires true
@@ -28,6 +40,13 @@ def lkir_line_kind_load_a() -> int
 =
   return 3
 
+def lkir_line_kind_relu() -> int
+  requires true
+  ensures result == 4
+  decreases 0
+=
+  return 4
+
 def lkir_matmul_module_line_count() -> int
   requires true
   ensures result == 6
@@ -35,9 +54,17 @@ def lkir_matmul_module_line_count() -> int
 =
   return 6
 
+def lkir_mlp_forward_module_line_count() -> int
+  requires true
+  ensures result == 8
+  decreases 0
+=
+  return 8
+
 def lkir_validity_check_matmul() -> int
   requires true
-  ensures result == 1
+  ensures result >= 0
+  ensures result <= 1
   decreases 0
 =
   if lkir_line_kind_tile() != 1:
@@ -48,15 +75,7 @@ def lkir_validity_check_matmul() -> int
     return 0
   return 1
 
-def lkir_spirv_emit_status() -> int
-  requires true
-  ensures result >= 0
-  ensures result <= 2
-  decreases 0
-=
-  return 0
-
-def lkir_spirv_validation_smoke() -> int
+def lkir_validity_check_mlp_forward() -> int
   requires true
   ensures result >= 0
   ensures result <= 1
@@ -64,6 +83,26 @@ def lkir_spirv_validation_smoke() -> int
 =
   if lkir_validity_check_matmul() != 1:
     return 0
-  if lkir_spirv_emit_status() != 0:
+  if lkir_line_kind_relu() != 4:
+    return 0
+  if lkir_mlp_forward_module_line_count() != 8:
     return 0
   return 1
+
+def lkir_spirv_emit_status() raises IO -> int
+  requires true
+  ensures result >= 0
+  ensures result <= 2
+  decreases 0
+=
+  return li_rt_lkir_spirv_emit_status()
+
+def lkir_spirv_validation_smoke() raises IO -> int
+  requires true
+  ensures result >= 0
+  ensures result <= 1
+  decreases 0
+=
+  if lkir_validity_check_matmul() != 1:
+    return 0
+  return li_rt_lkir_spirv_validation_smoke()

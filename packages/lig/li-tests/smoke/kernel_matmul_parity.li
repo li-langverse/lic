@@ -10,7 +10,7 @@ extern proc li_rt_lig_kernel_run(kernel_id: int, backend_id: int) -> int
   requires kernel_id >= 1
   requires 1 <= backend_id
   requires backend_id <= 5
-  ensures -1 <= result
+  ensures -2 <= result
   ensures result <= 5
   decreases kernel_id
 
@@ -45,7 +45,7 @@ def lig_kernel_run(kernel_id: int, backend_id: int) raises IO -> int
   requires kernel_id >= 1
   requires 1 <= backend_id
   requires backend_id <= 5
-  ensures -1 <= result
+  ensures -2 <= result
   ensures result <= 5
   decreases kernel_id
 =

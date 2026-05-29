@@ -1,6 +1,7 @@
 import ml
 import ml.nn
 import ml.optim
+import lig
 
 # ml.dl — deep learning train steps (forward + manual backward + optim).
 
@@ -214,6 +215,24 @@ def dl_mnist_train_step(
   state.loss = loss
   state.steps = state.steps + 1
   return loss
+
+# WP-ML-11: @gpu train hook — calls lig kernel bridge when MIR/gpu codegen lands (CPU fallback).
+@gpu
+def dl_forward_gpu_stub(inp: array[784, float]) raises IO -> float
+  requires true
+  ensures result >= -2.0
+  decreases 0
+=
+  var st: float = 0.0
+  var i: int = 0
+  while i < 784
+    st = st + inp[i] * 0.001
+    i = i + 1
+  var kid: int = lig_kernel_matmul_f32()
+  var run: int = lig_kernel_run_auto(kid)
+  if run < 0:
+    return st
+  return st + 1.0
 
 def dl_mnist_train_step_acc(inp: array[784, float], lr: float) -> float
   requires lr > 0.0

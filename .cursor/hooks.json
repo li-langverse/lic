@@ -18,9 +18,15 @@
       },
       {
         "command": ".cursor/hooks/guard-pr-merge.sh"
+      },
+      {
+        "command": ".cursor/hooks/guard-li-surface.sh"
       }
     ],
     "afterFileEdit": [
+      {
+        "command": ".cursor/hooks/guard-li-surface.sh"
+      },
       {
         "command": ".cursor/hooks/remind-governance-docs.sh",
         "matcher": "docs/**"
@@ -32,22 +38,6 @@
       {
         "command": ".cursor/hooks/remind-stdlib-coverage.sh",
         "matcher": "std/**"
-      },
-      {
-        "command": ".cursor/hooks/remind-ph-ml-wp-id.sh",
-        "matcher": "packages/li-ml/**"
-      },
-      {
-        "command": ".cursor/hooks/remind-ph-ml-wp-id.sh",
-        "matcher": "packages/li-ml-rl/**"
-      },
-      {
-        "command": ".cursor/hooks/remind-ph-ml-wp-id.sh",
-        "matcher": "packages/lig/**"
-      },
-      {
-        "command": ".cursor/hooks/remind-ph-ml-wp-id.sh",
-        "matcher": "compiler/**"
       }
     ],
     "stop": [

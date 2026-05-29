@@ -194,6 +194,7 @@ When editing handbook pages, do **not** imply features beyond this register with
 | [SIMD and parallel](../language/simd-parallel.md) | Note heuristic disjoint until 7d-c |
 | Decorator / math spec stubs | Say “planned” until gaps closed |
 | [Ecosystem package handbooks](../ecosystem/official-packages.md) | Link here for **G-*** / **Partial** on lip, lit, httpd, std mirrors |
+| [Live documentation map](../ecosystem/live-documentation.md) | Org Pages URLs; audit `live_docs_down` until **lic** → **li-language** deploy |
 
 ---
 

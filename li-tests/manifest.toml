@@ -441,6 +441,12 @@ expected_substr = "disjoint_row"
 
 [[tests]]
 suite = "race_shared_memory"
+file = "race_shared_memory/disjoint_row_writes_row_i.li"
+outcome = "compile_open_ok"
+note = "KNOWN G-par gap: disjoint_row + grid[i][0] accepted until policy_module catches row-index writes (policy_disjoint_row_soundness.sh)"
+
+[[tests]]
+suite = "race_shared_memory"
 file = "race_shared_memory/good_disjoint_parallel.li"
 outcome = "verify_ok"
 

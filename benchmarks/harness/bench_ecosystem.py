@@ -33,6 +33,13 @@ CSV_HEADER = [
     "git_sha",
     "cpu_model",
     "flags",
+    "os",
+    "passed",
+    "oracle_kind",
+    "verify_abs_err",
+    "verify_rel_err",
+    "verify_ulps",
+    "verify_within_1ulp",
 ]
 
 SECURITY_HEADER = ["lang", "test", "metric", "value", "threshold", "passed", "reference"]

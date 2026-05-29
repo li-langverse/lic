@@ -7,11 +7,15 @@ import argparse
 import csv
 import os
 import platform
-import statistics
 import subprocess
 import sys
 import time
 from pathlib import Path
+
+_HARNESS = Path(__file__).resolve().parent
+if str(_HARNESS) not in sys.path:
+    sys.path.insert(0, str(_HARNESS))
+from timing_stats import TimingStats, default_bench_runs, time_command
 
 REPO = Path(__file__).resolve().parents[2]
 MICRO = REPO / "benchmarks" / "toolchain" / "micro"
@@ -25,6 +29,8 @@ HDR = [
     "cores",
     "threads_per_core",
     "wall_s",
+    "wall_stddev",
+    "sample_runs",
     "peak_rss_mb",
     "exit_code",
     "diagnostics_count",
@@ -42,15 +48,20 @@ RESOURCE_CASES = (
 )
 
 
-def timed(cmd: list[str], *, runs: int = 1) -> tuple[float, int]:
-    samples: list[float] = []
+def timed(cmd: list[str], *, runs: int | None = None) -> tuple[TimingStats, int]:
+    base = runs if runs is not None else default_bench_runs()
     code = 0
-    for _ in range(max(1, runs)):
+
+    def once() -> float:
+        nonlocal code
         start = time.perf_counter()
         proc = subprocess.run(cmd, cwd=REPO, capture_output=True, text=True)
-        samples.append(time.perf_counter() - start)
         code = proc.returncode
-    return statistics.median(samples), code
+        return time.perf_counter() - start
+
+    if base <= 1:
+        return TimingStats(mean=once(), stddev=0.0, sample_runs=1), code
+    return time_command(cmd, cwd=REPO, runs=base), code
 
 
 def peak_rss_mb(cmd: list[str]) -> float | None:
@@ -86,7 +97,7 @@ def git_sha() -> str:
 def main() -> int:
     parser = argparse.ArgumentParser()
     parser.add_argument("--smoke", action="store_true")
-    parser.add_argument("--runs", type=int, default=1)
+    parser.add_argument("--runs", type=int, default=default_bench_runs())
     parser.add_argument("--resource-sweep", action="store_true")
     args = parser.parse_args()
 
@@ -103,7 +114,7 @@ def main() -> int:
 
     for p in corpus:
         cmd = [str(LIC), "check", str(p), "--format=json"]
-        wall, code = timed(cmd, runs=1)
+        timing, code = timed(cmd, runs=args.runs)
         rows.append(
             {k: "" for k in HDR}
             | {
@@ -113,7 +124,9 @@ def main() -> int:
                 "jobs": 1,
                 "cores": 1,
                 "threads_per_core": 1,
-                "wall_s": round(wall, 4),
+                "wall_s": round(timing.mean, 4),
+                "wall_stddev": round(timing.stddev, 6),
+                "sample_runs": timing.sample_runs,
                 "exit_code": code,
                 "diagnostics_count": 0,
                 "cache_hit": "false",
@@ -122,14 +135,14 @@ def main() -> int:
                 "flags": "--smoke" if args.smoke else "",
             }
         )
-        print(p.name, wall, code)
+        print(p.name, timing.mean, code)
 
     if args.resource_sweep or args.smoke:
         probe = corpus[0] if corpus else MICRO / "fib.li"
         cases = [RESOURCE_CASES[0]] if args.smoke else RESOURCE_CASES
         for label, extra in cases:
             cmd = [str(LIC), "check", str(probe), *extra]
-            wall, code = timed(cmd, runs=1)
+            timing, code = timed(cmd, runs=args.runs)
             rss = peak_rss_mb(cmd)
             rows.append(
                 {k: "" for k in HDR}
@@ -140,7 +153,9 @@ def main() -> int:
                     "jobs": 999999 if "jobs=999999" in " ".join(extra) else 1,
                     "cores": 999999 if "cores=999999" in " ".join(extra) else 1,
                     "threads_per_core": 1,
-                    "wall_s": round(wall, 4),
+                    "wall_s": round(timing.mean, 4),
+                    "wall_stddev": round(timing.stddev, 6),
+                    "sample_runs": timing.sample_runs,
                     "peak_rss_mb": rss if rss is not None else "",
                     "exit_code": code,
                     "diagnostics_count": 0,
@@ -150,7 +165,7 @@ def main() -> int:
                     "flags": label,
                 }
             )
-            print(f"resource {label}", wall, code)
+            print(f"resource {label}", timing.mean, code)
 
     OUT.parent.mkdir(parents=True, exist_ok=True)
     with OUT.open("w", newline="") as f:

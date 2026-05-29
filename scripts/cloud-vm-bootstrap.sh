@@ -20,8 +20,13 @@ if [[ "${EUID:-$(id -u)}" -eq 0 ]]; then
   bash "$LIC_ROOT/scripts/ci-install-llvm.sh"
 else
   if ! command -v "clang-${LLVM_VER}" >/dev/null 2>&1; then
-    echo "clang-${LLVM_VER} missing; re-run with sudo or pre-install LLVM ${LLVM_VER}" >&2
-    exit 1
+    if [[ -f "$LIC_ROOT/scripts/ci-install-llvm.sh" ]] && command -v sudo >/dev/null 2>&1; then
+      echo "==> installing LLVM ${LLVM_VER} (sudo)"
+      sudo LI_LLVM_MAJOR="$LLVM_VER" bash "$LIC_ROOT/scripts/ci-install-llvm.sh"
+    else
+      echo "clang-${LLVM_VER} missing; re-run with sudo or pre-install LLVM ${LLVM_VER}" >&2
+      exit 1
+    fi
   fi
 fi
 
@@ -54,16 +59,24 @@ if [[ "${LI_CLOUD_SKIP_BUILD:-0}" != "1" ]]; then
   "$LIC_ROOT/build/compiler/lic/lic" --version 2>/dev/null || true
 fi
 
-if [[ "${LI_CLOUD_SKIP_BENCHMARKS:-0}" != "1" ]] && [[ -d "$BENCHMARKS_ROOT/dashboard" ]]; then
-  if command -v npm >/dev/null 2>&1; then
-    echo "==> benchmarks dashboard npm ci"
-    (cd "$BENCHMARKS_ROOT/dashboard" && npm ci)
+if [[ "${LI_CLOUD_SKIP_BENCHMARKS:-0}" != "1" ]]; then
+  dash=""
+  if [[ -f "$BENCHMARKS_ROOT/dashboard-next/package.json" ]]; then
+    dash="$BENCHMARKS_ROOT/dashboard-next"
+  elif [[ -f "$BENCHMARKS_ROOT/dashboard/package.json" ]]; then
+    dash="$BENCHMARKS_ROOT/dashboard"
+  fi
+  if [[ -n "$dash" ]] && command -v npm >/dev/null 2>&1; then
+    echo "==> benchmarks dashboard npm ci ($dash)"
+    (cd "$dash" && npm ci)
+  elif [[ -z "$dash" ]]; then
+    echo "==> skip benchmarks dashboard (no dashboard-next/ dashboard package.json)"
   else
     echo "==> skip benchmarks dashboard (npm not installed)"
   fi
 fi
 
-if command -v pip3 >/dev/null 2>&1; then
+if [[ "${LI_CLOUD_SKIP_PYTEST:-0}" != "1" ]] && command -v pip3 >/dev/null 2>&1; then
   pip3 install -q pytest 2>/dev/null || pip3 install pytest
 fi
 

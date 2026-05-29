@@ -45,3 +45,9 @@ alwaysApply: false
 ## Phases
 
 PH-GD (editor) → PH-SIM (profiles) → domain packs (ROBO, AM, SCI, DRUG) → PH-QM / PH-VOXEL / PH-PUB in parallel where deps allow.
+
+## PH-LLM + C-host retirement
+
+- **PH-LLM:** native inference in `packages/li-llm`; orchestration in `packages/li-studio-ai`. See `docs/game-dev/PH-LLM-program.md`.
+- **C-host retirement (WP-UX-14b):** retire `deploy/studio-demo/native/*.c` paint/present hosts per `docs/game-dev/specs/c-host-retirement-plan.md` after PR #356 lands.
+- **Demo policy:** local capture only — **no** GitHub Release demo MP4s (`docs/demo/VERTICALS-RECORDING.md`).

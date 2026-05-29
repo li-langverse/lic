@@ -1,0 +1,11 @@
+[[tests]]
+suite = "smoke"
+file = "smoke/builds.li"
+outcome = "verify_ok"
+note = "T-PKG-li-studio-ai-smoke-builds"
+
+[[tests]]
+suite = "smoke"
+file = "smoke/studio_ai_task_state.li"
+outcome = "verify_ok"
+note = "PH-AGENT: agentic task FSM stub (WP-AG-04 / PR #362)"

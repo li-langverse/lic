@@ -35,7 +35,7 @@ todos:
 
 - id: hw-cuda-bench-tracker
   content: "Refresh benchmarks/results/lig-gpu-suite-honest.json; tracker WP-HW-08/09 partial→done only with verify evidence"
-  status: pending
+  status: completed
 
 ---
 

@@ -72,6 +72,7 @@
 | 5b++ | WP-HW-08 re-verify: `ph-ml-gpu-hw-gates.sh` + probe `gpu_timing_ns=2375` + `kernel_matmul_parity.li` exit 0 | pass (code_implementer, RTX 3060) |
 | 5b+++ | WP-HW-08 gate re-run: probe `gpu_timing_ns=4749`, bench JSON refresh, `kernel_matmul_parity.li` check exit 0 | pass (code_implementer, RTX 3060, 2026-05-29) |
 | 5b++++ | WP-HW-08 LKIR dispatch: `lig_run_matmul_lkir_path` + `kernel_matmul_lkir_dispatch.li`; probe `gpu_timing_ns=4750` | pass (code_implementer, RTX 3060, 2026-05-29) |
+| 5b+++++ | WP-HW-08 verify: `ph-ml-gpu-hw-gates.sh` exit 0; probe `gpu_timing_ns=2374`; bench JSON `5936` | pass (code_implementer, RTX 3060, 2026-05-29) |
 | 5 | RFC/docs only + tracker blockers | pass |
 
 **Release notes:** [Wave 4d](../release-notes/2026-05-29-ph-ml-wave-4d.md) · [Wave 4c](../release-notes/2026-05-29-ph-ml-wave-4c.md) · [Wave 4b](../release-notes/2026-05-29-ph-ml-de-stub-wave-4b.md) · [Wave 5](../release-notes/2026-05-29-ph-ml-wave-5-scale-stubs.md)

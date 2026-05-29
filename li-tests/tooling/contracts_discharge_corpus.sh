@@ -6,7 +6,8 @@ export LI_REPO_ROOT="$ROOT"
 chmod +x "$ROOT/li-tests/tooling/discharge_trivial_lean.sh" \
   "$ROOT/li-tests/tooling/discharge_const_lean.sh" \
   "$ROOT/li-tests/tooling/discharge_linalg_int_lean.sh" \
-  "$ROOT/li-tests/tooling/discharge_http_forward_lean.sh"
+  "$ROOT/li-tests/tooling/discharge_http_forward_lean.sh" \
+  "$ROOT/li-tests/tooling/sqrt_open_bound_contract_tier.sh"
 "$ROOT/li-tests/tooling/discharge_trivial_lean.sh"
 "$ROOT/li-tests/tooling/discharge_const_lean.sh"
 "$ROOT/li-tests/tooling/discharge_linalg_int_lean.sh"
@@ -21,4 +22,5 @@ if "$ROOT/scripts/check-autovc-open-goals.sh" "$ROOT/build/generated/AutoVC.lean
   echo "contracts_discharge_corpus: unexpected — sqrt_open_bound abs VC should stay open"
   exit 1
 fi
+"$ROOT/li-tests/tooling/sqrt_open_bound_contract_tier.sh"
 echo "contracts_discharge_corpus: ok"

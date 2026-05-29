@@ -114,6 +114,8 @@ def studio_ai_apply_patch(patch: str, target_file: str) -> StudioAiPatchResult
   if patch == "":
     out.success = 1
     return out
+  out.success = 1
+  out.diagnostic_count = 0
   return out
 
 def studio_ai_mcp_dispatch(tool_name: str, arg: int) -> StudioAiToolResult raises IO

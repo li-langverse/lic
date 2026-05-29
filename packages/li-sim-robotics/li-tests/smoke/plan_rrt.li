@@ -1,0 +1,18 @@
+import sim.robotics
+
+def main() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  var r: SimRunResult = run_robo_plan_rrt_smoke(1)
+  if run_result_ok(r) != 1:
+    return 1
+  if r.algo_id != algo_robo_plan_rrt():
+    return 2
+  if r.checksum <= 0.0:
+    return 3
+  var c: float = robo_plan_rrt_checksum_smoke()
+  if c <= 0.0:
+    return 4
+  return 0

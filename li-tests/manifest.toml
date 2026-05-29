@@ -809,6 +809,13 @@ note = "sim.scientific: run_simulation + run_algo; detail 0–3; open VC via phy
 
 [[tests]]
 suite = "composable"
+file = "composable/import_sim_robotics_run.li"
+packages = ["li-sim-robotics", "li-sim"]
+outcome = "compile_open_ok"
+note = "sim.robotics: multibody + robo_plan_rrt (803) + ik jacobian (802) smoke; goal robotics_systems v1"
+
+[[tests]]
+suite = "composable"
 file = "composable/import_studio_sim_profile_bridge.li"
 packages = ["li-sim", "li-studio", "li-gui", "li-ui"]
 outcome = "check_ok"

@@ -1,0 +1,23 @@
+import sim
+import sim.robotics
+
+def smoke_robotics_outputs() -> int
+  requires true
+  ensures result >= 0
+  ensures result <= 1
+  decreases 0
+=
+  var r1: SimRunResult = run_robo_multibody_smoke(0)
+  if run_result_ok(r1) != 1:
+    return 1
+  var r2: SimRunResult = run_robo_plan_rrt_smoke(0)
+  if run_result_ok(r2) != 1:
+    return 2
+  if r2.algo_id != algo_robo_plan_rrt():
+    return 3
+  var r3: SimRunResult = run_robo_algo(algo_robo_ik_jacobian(), 1)
+  if run_result_ok(r3) != 1:
+    return 4
+  if sim_robotics_tick_stub(0) != 1:
+    return 5
+  return 0

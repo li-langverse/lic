@@ -277,6 +277,20 @@ def algo_robo_multibody_step() -> int
 =
   return 801
 
+def algo_robo_ik_jacobian() -> int
+  requires true
+  ensures result == 802
+  decreases 0
+=
+  return 802
+
+def algo_robo_plan_rrt() -> int
+  requires true
+  ensures result == 803
+  decreases 0
+=
+  return 803
+
 def algo_drug_litl_stages() -> int
   requires true
   ensures result == 501

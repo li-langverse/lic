@@ -4,10 +4,10 @@ import sim
 
 def li_sim_robotics_version() -> int
   requires true
-  ensures result == 2
+  ensures result == 3
   decreases 0
 =
-  return 2
+  return 3
 
 def li_sim_robotics_profile_contract() -> int
   requires true
@@ -272,6 +272,129 @@ def run_robo_multibody_smoke(detail: int) -> SimRunResult
 =
   return run_robo_arm_smoke(detail)
 
+# WP-ROBO-04 — deterministic 2-D RRT* smoke (tick-indexed samples; tier-2 bench uses C oracle).
+def robo_plan_rrt_nodes_smoke() -> int
+  requires true
+  ensures result == 64
+  decreases 0
+=
+  return 64
+
+def robo_plan_rrt_sample_q(tick: int, lane: int) -> float
+  requires tick >= 0
+  requires tick <= 64
+  requires lane >= 0
+  requires lane <= 1
+  ensures result >= 0.01
+  ensures result <= 0.99
+  decreases tick
+=
+  var t: float = env_tick_as_float(tick)
+  var base: float = 0.05 + t * 0.14
+  if lane == 1:
+    base = base + 0.03
+  if base > 0.99:
+    return 0.99
+  return base
+
+def robo_plan_rrt_checksum_at(nodes: int) -> float
+  requires nodes >= 1
+  requires nodes <= 64
+  ensures result >= 0.0
+  decreases nodes
+=
+  var x0: float = 0.05
+  var y0: float = 0.05
+  var goal_x: float = 0.95
+  var goal_y: float = 0.95
+  var acc: float = 0.0
+  var n: int = 0
+  while n < nodes
+    var qx: float = robo_plan_rrt_sample_q(n, 0)
+    var qy: float = robo_plan_rrt_sample_q(n, 1)
+    var dx: float = qx - x0
+    var dy: float = qy - y0
+    var dist: float = dx * dx + dy * dy
+    if dist < 0.04:
+      x0 = qx
+      y0 = qy
+    acc = acc + dist
+    n = n + 1
+  var gx: float = goal_x - x0
+  var gy: float = goal_y - y0
+  return acc + gx + gy
+
+def robo_plan_rrt_checksum_smoke() -> float
+  requires true
+  ensures result >= 0.0
+  decreases 0
+=
+  return robo_plan_rrt_checksum_at(robo_plan_rrt_nodes_smoke())
+
+def run_robo_plan_rrt_smoke(detail: int) -> SimRunResult
+  requires detail >= 0
+  requires detail <= 3
+  ensures result.ok == 1
+  ensures result.algo_id == algo_robo_plan_rrt()
+  ensures result.vertical_id == robo_vertical_sim_robotics()
+  ensures result.detail_emitted == detail
+  ensures result.checksum >= 0.0
+  decreases 0
+=
+  var r: SimRunResult
+  r.ok = 1
+  r.algo_id = algo_robo_plan_rrt()
+  r.vertical_id = robo_vertical_sim_robotics()
+  r.checksum = robo_plan_rrt_checksum_smoke()
+  r.detail_emitted = detail
+  return r
+
+# WP-ROBO-03 — IK jacobian smoke ties FK pose to registry id 802 (numeric IK deferred).
+def run_robo_ik_jacobian_smoke(detail: int) -> SimRunResult
+  requires detail >= 0
+  requires detail <= 3
+  ensures result.ok == 1
+  ensures result.algo_id == algo_robo_ik_jacobian()
+  ensures result.vertical_id == robo_vertical_sim_robotics()
+  ensures result.detail_emitted == detail
+  decreases 0
+=
+  var spec: RoboArmSpec = robo_arm_spec_default()
+  var st: RoboArmState = robo_arm_state_default()
+  var fk: RoboArmFk = robo_arm_fk(spec.l0_m, spec.l1_m, st.j0_rad, st.j1_rad)
+  var r: SimRunResult
+  r.ok = 1
+  r.algo_id = algo_robo_ik_jacobian()
+  r.vertical_id = robo_vertical_sim_robotics()
+  r.checksum = robo_arm_tick_checksum_fk(fk)
+  r.detail_emitted = detail
+  return r
+
+def run_robo_algo(algo_id: int, detail: int) -> SimRunResult
+  requires detail >= 0
+  requires detail <= 3
+  requires algo_id > 0
+  ensures result.detail_emitted == detail
+  decreases 0
+=
+  if algo_id == algo_robo_multibody_step():
+    var d0: int = detail
+    return run_robo_multibody_smoke(d0)
+  if algo_id == algo_robo_ik_jacobian():
+    var d1: int = detail
+    return run_robo_ik_jacobian_smoke(d1)
+  if algo_id == algo_robo_plan_rrt():
+    var d2: int = detail
+    return run_robo_plan_rrt_smoke(d2)
+  var bad: SimRunResult
+  var d3: int = detail
+  bad.ok = 0
+  bad.algo_id = algo_id
+  bad.vertical_id = robo_vertical_sim_robotics()
+  bad.checksum = 0.0
+  bad.detail_emitted = d3
+  return bad
+
 def run_robotics_smoke() -> int
   requires true
   ensures result == 0
@@ -290,4 +413,12 @@ def run_robotics_smoke() -> int
   var over: float = robo_arm_clamp_torque(20.0, tau_cap)
   if over != tau_expect:
     return 4
+  var rrt: SimRunResult = run_robo_plan_rrt_smoke(0)
+  if run_result_ok(rrt) != 1:
+    return 5
+  if rrt.checksum <= 0.0:
+    return 6
+  var ik: SimRunResult = run_robo_ik_jacobian_smoke(0)
+  if run_result_ok(ik) != 1:
+    return 7
   return 0

@@ -256,6 +256,13 @@ def algo_md_integrator_verlet() -> int
 =
   return 102
 
+def algo_md_neighbor_cell_list() -> int
+  requires true
+  ensures result == 105
+  decreases 0
+=
+  return 105
+
 def algo_pde_heat_explicit_2d() -> int
   requires true
   ensures result == 201

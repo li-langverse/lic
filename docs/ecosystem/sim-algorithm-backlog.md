@@ -21,7 +21,7 @@ todos:
 
 - id: sim-p1-md-neighbor-cell
   content: "Implement algo_id=105 md_neighbor_cell_list stub→smoke in li-physics-particles"
-  status: pending
+  status: completed
 
 - id: sim-p2-qm-dft-scf
   content: "Implement algo_id=418 qm_dft_scf_energy minimal SCF stub with summary metrics"

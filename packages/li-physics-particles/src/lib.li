@@ -1,3 +1,4 @@
+import math.numerics
 
 type Particle = object
   public px: float
@@ -50,6 +51,121 @@ def lj_force_scalar(r: float, epsilon: float, sigma: float, rc: float) -> float
   var sr6: float = sr * sr * sr * sr * sr * sr
   var sr12: float = sr6 * sr6
   return 24.0 * epsilon * (2.0 * sr12 - sr6) / r
+
+# Minimum-image convention for cubic periodic box.
+def md_mic(delta: float, box: float) -> float
+  requires box > 0.0
+  ensures true
+  decreases 0
+=
+  var half: float = box * 0.5
+  if delta > half:
+    return delta - box
+  if delta < -half:
+    return delta + box
+  return delta
+
+# One-axis cell index (ncell=2 smoke grid).
+def md_cell_index_1d(pos: float, box: float) -> int
+  requires box > 0.0
+  ensures result >= 0
+  ensures result <= 1
+  decreases 0
+=
+  var half: float = box * 0.5
+  if pos >= half:
+    return 1
+  return 0
+
+def md_cells_neighbor(cxi: int, cyi: int, czi: int, cxj: int, cyj: int, czj: int) -> int
+  requires true
+  ensures result >= 0
+  ensures result <= 1
+  decreases 0
+=
+  var dx: int = cxi - cxj
+  if dx < 0:
+    dx = -dx
+  var dy: int = cyi - cyj
+  if dy < 0:
+    dy = -dy
+  var dz: int = czi - czj
+  if dz < 0:
+    dz = -dz
+  if dx <= 1:
+    if dy <= 1:
+      if dz <= 1:
+        return 1
+  return 0
+
+# Sum LJ force scalars over pairs within 3×3×3 cell shell (half-shell i<j).
+def md_neighbor_cell_list_force_sum(
+    px: array[8, float], py: array[8, float], pz: array[8, float],
+    box: float, rc: float) -> float
+  requires box > 0.0
+  requires rc > 0.0
+  ensures true
+  decreases 0
+=
+  var acc: float = 0.0
+  var i: int = 0
+  while i < 8
+    var cxi: int = md_cell_index_1d(px[i], box)
+    var cyi: int = md_cell_index_1d(py[i], box)
+    var czi: int = md_cell_index_1d(pz[i], box)
+    var j: int = i + 1
+    while j < 8
+      var cxj: int = md_cell_index_1d(px[j], box)
+      var cyj: int = md_cell_index_1d(py[j], box)
+      var czj: int = md_cell_index_1d(pz[j], box)
+      var neigh: int = md_cells_neighbor(cxi, cyi, czi, cxj, cyj, czj)
+      if neigh == 1:
+        var dx: float = md_mic(px[j] - px[i], box)
+        var dy: float = md_mic(py[j] - py[i], box)
+        var dz: float = md_mic(pz[j] - pz[i], box)
+        var r2: float = dx * dx + dy * dy + dz * dz
+        if r2 > 1e-12:
+          var r: float = li_rt_sqrt(r2)
+          acc = acc + lj_force_scalar(r, 1.0, 1.0, rc)
+      j = j + 1
+    i = i + 1
+  return acc
+
+# Smoke checksum: 8-particle FCC-like lattice in box=4.0, rc=2.5 (algo_id=105).
+def md_neighbor_cell_list_smoke_checksum() -> float
+  requires true
+  ensures true
+  decreases 0
+=
+  var px: array[8, float]
+  var py: array[8, float]
+  var pz: array[8, float]
+  px[0] = 0.6
+  py[0] = 0.6
+  pz[0] = 0.6
+  px[1] = 1.2
+  py[1] = 1.2
+  pz[1] = 1.2
+  px[2] = 2.6
+  py[2] = 0.6
+  pz[2] = 0.6
+  px[3] = 3.2
+  py[3] = 1.2
+  pz[3] = 1.2
+  px[4] = 0.6
+  py[4] = 2.6
+  pz[4] = 0.6
+  px[5] = 1.2
+  py[5] = 3.2
+  pz[5] = 1.2
+  px[6] = 2.6
+  py[6] = 2.6
+  pz[6] = 0.6
+  px[7] = 3.2
+  py[7] = 3.2
+  pz[7] = 1.2
+  return md_neighbor_cell_list_force_sum(px, py, pz, 4.0, 2.5)
+
 def md_mini_step(
     px: array[16, float], py: array[16, float], pz: array[16, float],
     vx: array[16, float], vy: array[16, float], vz: array[16, float],

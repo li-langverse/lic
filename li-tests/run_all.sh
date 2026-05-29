@@ -100,7 +100,7 @@ run_one() {
     compile_open_ok)
       local open_build_flags=(--allow-open-vc)
       case "$file" in
-        composable/import_sim_scientific_run.li|composable/import_physics_runtime.li|composable/import_math_numerics_dot_axpy.li)
+        composable/import_sim_scientific_run.li|composable/import_physics_runtime.li|composable/import_math_numerics_dot_axpy.li|composable/import_physics_particles_neighbor_cell.li)
           open_build_flags+=(--no-lean-verify)
           ;;
       esac

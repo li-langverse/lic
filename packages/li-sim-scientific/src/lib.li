@@ -139,6 +139,22 @@ def run_md_lj_smoke(detail: int) -> SimRunResult
   r.detail_emitted = detail
   return r
 
+def run_md_neighbor_cell_smoke(detail: int) -> SimRunResult
+  requires detail >= 0
+  requires detail <= 3
+  ensures result.ok == 1
+  ensures result.algo_id == 105
+  ensures result.detail_emitted == detail
+  decreases 0
+=
+  var r: SimRunResult
+  r.ok = 1
+  r.algo_id = algo_md_neighbor_cell_list()
+  r.vertical_id = vertical_md_lennard_jones()
+  r.checksum = md_neighbor_cell_list_smoke_checksum()
+  r.detail_emitted = detail
+  return r
+
 def run_heat_smoke(detail: int) -> SimRunResult
   requires detail >= 0
   requires detail <= 3
@@ -225,6 +241,9 @@ def run_algo(algo_id: int, detail: int) -> SimRunResult
   if algo_id == algo_md_lj_cutoff_mic():
     var d0: int = detail
     return run_md_lj_smoke(d0)
+  if algo_id == algo_md_neighbor_cell_list():
+    var d_md105: int = detail
+    return run_md_neighbor_cell_smoke(d_md105)
   if algo_id == algo_md_integrator_verlet():
     var d1: int = detail
     return run_md_lj_smoke(d1)

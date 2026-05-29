@@ -748,6 +748,13 @@ packages = ["li-math-numerics"]
 outcome = "compile_open_ok"
 note = "math.numerics: num_dot_axpy smoke (algo_id=1) dot_f64_8 + axpy_f64_8"
 
+[[tests]]
+suite = "composable"
+file = "composable/import_physics_particles_neighbor_cell.li"
+packages = ["li-physics-particles"]
+outcome = "compile_open_ok"
+note = "physics.particles: md_neighbor_cell_list smoke (algo_id=105)"
+
 # stdlib_coverage/build_std_csv — enable when std.csv module resolves (PH-IO-4)
 
 # --- httpd (Phase H placeholder) ---

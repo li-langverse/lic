@@ -27,7 +27,7 @@ hooks = ["sim_summary", "algo_registry"]
 name = "li-physics-particles"
 paths = ["packages/li-physics-particles/"]
 benches = ["md_lennard_jones", "nbody_gravity", "three_body"]
-composable = []
+composable = ["composable/import_physics_particles_neighbor_cell.li"]
 
 [[package]]
 name = "li-physics-rigid"

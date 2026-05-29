@@ -9,6 +9,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- `md_neighbor_cell_list_smoke_checksum` and cell-shell neighbor helpers (algo_id=105 smoke).
 - Initial scaffold via `scripts/li-new-package` (PKG-li-std-physics-particles).
 
 ## [0.1.0] - 2026-05-16

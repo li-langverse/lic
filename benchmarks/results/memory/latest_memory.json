@@ -2,23 +2,23 @@
   "schema": "li_sim_memory_v1",
   "samples": [
     {
-      "benchmark": "horner_pure_li",
+      "benchmark": "double_pendulum",
       "peak_rss_kb": 0
     },
     {
-      "benchmark": "matmul_blocked",
+      "benchmark": "heat_equation_2d",
       "peak_rss_kb": 0
     },
     {
-      "benchmark": "matmul_naive",
+      "benchmark": "md_lennard_jones",
       "peak_rss_kb": 0
     },
     {
-      "benchmark": "reduce_sum",
+      "benchmark": "nbody_gravity",
       "peak_rss_kb": 0
     },
     {
-      "benchmark": "simd_dot",
+      "benchmark": "three_body",
       "peak_rss_kb": 0
     }
   ]

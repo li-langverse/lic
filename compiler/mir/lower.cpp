@@ -1925,6 +1925,7 @@ void lower_stmt(const Stmt& stmt, LowerCtx& ctx, bool returns_float, std::vector
           mm.int_value = dc.rows;
           mm.rhs_int = da.cols;
           mm.lhs_int = dc.cols;
+          mm.matmul_c_prezeroed = true;
           out.push_back(std::move(mm));
           break;
         }

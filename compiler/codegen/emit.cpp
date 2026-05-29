@@ -218,7 +218,7 @@ struct EmitCtx {
 
   void emit_matmul2d_ijk_loops(llvm::AllocaInst* c_mat, llvm::AllocaInst* a_mat,
                                llvm::AllocaInst* b_mat, unsigned m, unsigned k,
-                               unsigned n) {
+                               unsigned n, bool c_prezeroed = false) {
     llvm::Type* f64 = llvm::Type::getDoubleTy(context);
     llvm::Type* i32t = i32_ty(context);
     llvm::Value* lim_m = llvm::ConstantInt::get(i32t, m);
@@ -229,11 +229,13 @@ struct EmitCtx {
     llvm::AllocaInst* j_s = builder->CreateAlloca(i32t, nullptr, "mm_j");
     llvm::AllocaInst* t_s = builder->CreateAlloca(i32t, nullptr, "mm_t");
 
-    emit_idx_for(i_s, lim_m, [&](llvm::Value* i) {
-      emit_idx_for(j_s, lim_n, [&](llvm::Value* j) {
-        builder->CreateStore(zf, matmul_gep2d(c_mat, i, j));
+    if (!c_prezeroed) {
+      emit_idx_for(i_s, lim_m, [&](llvm::Value* i) {
+        emit_idx_for(j_s, lim_n, [&](llvm::Value* j) {
+          builder->CreateStore(zf, matmul_gep2d(c_mat, i, j));
+        });
       });
-    });
+    }
 
     llvm::Function* fma_fn = nullptr;
     if (!fp_numerically_stable) {
@@ -1364,7 +1366,7 @@ struct EmitCtx {
                                static_cast<std::uint64_t>(m) * k * n > 4096;
         if (use_loops) {
           emit_matmul2d_ijk_loops(c_it->second.alloca, a_it->second.alloca, b_it->second.alloca,
-                                  m, k, n);
+                                  m, k, n, ins.matmul_c_prezeroed);
         } else {
           emit_matmul2d_ijk_unrolled(c_it->second.alloca, a_it->second.alloca,
                                      b_it->second.alloca, m, k, n);
@@ -1725,6 +1727,9 @@ bool emit_llvm_ir(const MirModule& mir, const std::string& out_path, int runtime
     const std::string llvm_name = argv_main ? "li_user_main" : fn.name;
     llvm::Function* func =
         llvm::Function::Create(fn_ty, llvm::Function::ExternalLinkage, llvm_name, module.get());
+    if (fn.name == "mm_lut_a" || fn.name == "mm_lut_b") {
+      func->addFnAttr(llvm::Attribute::AlwaysInline);
+    }
     if (fn.name == "main") {
       user_main = func;
       user_main_argv_wrapper = argv_main;

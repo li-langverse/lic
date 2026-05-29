@@ -1,4 +1,4 @@
-# Pure-Li matmul (512×512, BK=64) — hot path via mm_blocked_512 MIR.
+# Pure-Li matmul (512×512, BK=64) — LUT init + mm_blocked_512 MIR + checksum (matches matmul_blocked_core.c).
 
 extern proc li_rt_volatile_sink_f64(v: float) raises IO -> unit
   requires true

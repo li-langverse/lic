@@ -132,6 +132,8 @@ struct MirInsn {
   std::int64_t simd_lanes = 0;
   /** Policy-accepted disjoint witness on this `OmpParallelFor` (**G-par**). */
   bool parallel_disjoint_proven = false;
+  /** `ArrayMatMul2DF64`: destination already zeroed (assign form); skip zero loop. */
+  bool matmul_c_prezeroed = false;
   std::vector<MirArg> args;
   /** Layout entries under object root (`name` paths). Used for ReturnObject pack and CallProc
    *  unpack into `ident + "_" + name` (scalar locals or ArrayAlloc slots). */

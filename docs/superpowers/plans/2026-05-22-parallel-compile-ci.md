@@ -2,6 +2,8 @@
 
 **Master plan:** [2026-05-14-li-master-plan.md](2026-05-14-li-master-plan.md) § Phase 8p
 
+**Honest proof status:** [Provability gaps](../../verification/provability-gaps.md) — parallel test jobs do not change **G-*** rows unless Lean/AutoVC concurrency semantics change.
+
 **Problem:** Sequential `lic build` in `li-tests/run_all.sh` dominates local CI wall time (~4–8 min for manifest alone; full `local-ci.sh` often 10+ min).
 
 ## Exit gate (phase complete)

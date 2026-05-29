@@ -4,6 +4,8 @@
 
 **Master plan ID:** **Pkg** (prerequisite for **8a** layout consistency and **8b** `lip init`).
 
+**Honest proof status:** [Provability gaps](../../verification/provability-gaps.md) · [Master plan](2026-05-14-li-master-plan.md) · [Governance plan](2026-05-16-li-ecosystem-governance.md) · [Live documentation](../../ecosystem/live-documentation.md)
+
 ---
 
 ## How this fits `lip`

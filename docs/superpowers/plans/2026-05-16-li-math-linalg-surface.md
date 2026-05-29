@@ -4,6 +4,8 @@
 > **Blocks:** Tier 1 `matmul_*` / `simd_dot` benchmarks with **pure math source** (no user `simd(...)` / intrinsics)  
 > **Design spec addendum:** `docs/superpowers/specs/2026-05-16-li-math-linalg-surface.md` (to land with phase)
 
+**Proof gaps (Doc-c):** [G-math](../../verification/provability-gaps.md#g-math) · [G-lean](../../verification/provability-gaps.md#g-lean) · [G-dec](../../verification/provability-gaps.md#g-dec) · [still open](../../verification/provability-gaps.md#still-open-report-every-session) · [Master plan](2026-05-14-li-master-plan.md) § Phase 2i/7e
+
 ## Principle (binding)
 
 **Users write mathematics.** The compiler and stdlib lower to `simd`, `parallel for`, OpenMP, and (later) GPU — same as today’s proved cores.

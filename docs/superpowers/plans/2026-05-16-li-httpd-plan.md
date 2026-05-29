@@ -154,6 +154,8 @@ isProject: false
 
 # li-httpd — minimal, proved, nginx-competitive
 
+**Proof gaps (Doc-c):** [G-net](../../verification/provability-gaps.md#g-net) · [still open](../../verification/provability-gaps.md#still-open-report-every-session) · [Master plan](2026-05-14-li-master-plan.md) · [Benchmark honesty](../../ecosystem/bench-timing-runs.md)
+
 ## Parity milestones (agent-gateway vs nginx oracle)
 
 Config/oracle todos may be `completed` while **runtime parity** rows stay `pending` until `build/li-httpd` passes full gates, tier5 bench/exploit vs nginx, and live SSE/TLS/H2/WS.

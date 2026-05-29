@@ -32,7 +32,7 @@ This page is the **honest inventory** of what is **not** fully proved or not yet
 **Done:** **G-test-verify** (manifest `prove_lean_ok`). **Closed slices** inside **Partial** rows (e.g. P-linalg closed specimens, static `ensures` witnesses). All other **G-*** rows remain **Partial** or **Missing**.
 
 <!-- Phase-plan cross-links (Doc-c) — explicit anchors for mkdocs strict mode -->
-<span id="g-vc"></span><span id="g-bnd"></span><span id="g-def"></span><span id="g-math-syn"></span><span id="g-meta"></span><span id="g-par"></span><span id="g-dec"></span><span id="g-math"></span><span id="g-lean"></span>
+<span id="g-vc"></span><span id="g-bnd"></span><span id="g-def"></span><span id="g-math-syn"></span><span id="g-meta"></span><span id="g-par"></span><span id="g-dec"></span><span id="g-math"></span><span id="g-lean"></span><span id="g-net"></span><span id="g-oop"></span><span id="g-stdlib"></span><span id="g-async"></span><span id="g-trust"></span>
 
 | ID | Status | What remains |
 |----|--------|----------------|
@@ -198,6 +198,9 @@ When editing handbook pages, do **not** imply features beyond this register with
 | Decorator / math spec stubs | Say “planned” until gaps closed |
 | [Ecosystem package handbooks](../ecosystem/official-packages.md) | Link here for **G-*** / **Partial** on lip, lit, httpd, std mirrors |
 | [Live documentation map](../ecosystem/live-documentation.md) | Org Pages URLs; audit `live_docs_down` until **lic#421** merges and **lic** Pages deploy on `main` |
+| [Math / linalg surface plan](../superpowers/plans/2026-05-16-li-math-linalg-surface.md) | **G-math** / **G-lean** exit gates — tier-1 perf ≤1.2× only with dashboard evidence |
+| [li-httpd plan](../superpowers/plans/2026-05-16-li-httpd-plan.md) | **G-net** — runtime parity vs nginx oracle; no “proved gateway” without gap link |
+| [Parallel compile (8p)](../superpowers/plans/2026-05-22-parallel-compile-ci.md) | CI throughput only — does not close proof gaps by default |
 
 ---
 

@@ -1,5 +1,5 @@
 version: 1
-updated_at: '2026-05-29T10:55:43Z'
+updated_at: '2026-05-29T12:50:00Z'
 gaps:
 - id: gap-line-profiler-001
   gap_kind: missing_package
@@ -527,16 +527,80 @@ gaps:
 - id: gap-plan-pending-swarm-observer-orch-r4-ui-ux-signals
   gap_kind: plan_debt
   title: 'swarm-observer: pending plan todo orch-r4-ui-ux-signals'
-  status: open
+  status: closed
   priority: 7
   discovered_by: plan_verifier
   evidence:
   - snapshot runner=swarm-observer plan_pending=orch-r4-ui-ux-signals
+  - 'orch-r4: docs/ecosystem/orchestrator-notes/2026-05-29-orch-r4-ui-ux-signals.md'
   runner_id: swarm-observer
   plan_todo_id: orch-r4-ui-ux-signals
   suggested_loop: swarm-observer
   handoff_to:
   - swarm_observer
+- id: gap-ux-audit-native-studio
+  gap_kind: ui_ux
+  title: 'ux-harness: world-studio-native not run in latest ui/ux audit'
+  status: open
+  priority: 6
+  discovered_by: swarm_observer
+  evidence:
+  - benchmarks/data/latest/ui-audit.json summary.total=1 (lic-docs only)
+  - li-cursor-agents/config/ux-targets.json target_id=world-studio-native
+  suggested_loop: studio-ui-ux
+  handoff_to:
+  - gui_ux_tester
+  - studio_ui_ux_builder
+- id: gap-ux-audit-agents-dashboard
+  gap_kind: ui_ux
+  title: 'ux-harness: agents-dashboard not run in latest ui/ux audit'
+  status: open
+  priority: 6
+  discovered_by: swarm_observer
+  evidence:
+  - benchmarks/data/latest/ui-audit.json — agents-dashboard absent
+  - ux-targets.json target_id=agents-dashboard
+  suggested_loop: studio-ui-ux
+  handoff_to:
+  - gui_ux_tester
+  - gui_ui_tester
+- id: gap-ux-audit-world-studio-demo
+  gap_kind: ui_ux
+  title: 'ux-harness: world-studio-demo fixture not audited on Linux'
+  status: open
+  priority: 6
+  discovered_by: swarm_observer
+  evidence:
+  - benchmarks/data/latest/ux-audit.json — only lic-docs target
+  - ux-targets.json target_id=world-studio-demo
+  suggested_loop: studio-ui-ux
+  handoff_to:
+  - gui_ux_tester
+  - studio_ui_ux_builder
+- id: gap-ux-studio-wave2-plan
+  gap_kind: ui_ux
+  title: 'Studio UI wave 2 — expand ux-harness targets + agentic bench loops'
+  status: open
+  priority: 5
+  discovered_by: swarm_observer
+  evidence:
+  - studio-ui-ux snapshot plan_pending=[] (wave 1 complete)
+  - orch-r4 orchestrator note
+  suggested_loop: studio-ui-ux
+  handoff_to:
+  - studio_ui_ux_builder
+- id: gap-ux-cinematic-studio-handoff
+  gap_kind: ui_ux
+  title: 'Cinematic vertical UX parity — encode, color-grade, audio-sync (orch-r2 follow-up)'
+  status: open
+  priority: 5
+  discovered_by: swarm_observer
+  evidence:
+  - gap-vertical-stub-cinematic-encode/color-grade/audio-sync in registry
+  - orch-r2 deferred studio/cinematic ui_ux linkage
+  suggested_loop: studio-ui-ux
+  handoff_to:
+  - studio_ui_ux_builder
 - id: gap-plan-pending-httpd-gap-httpd-gap-phase2-perf-wrk-soak
   gap_kind: plan_debt
   title: 'httpd: pending plan todo gap-httpd-gap-phase2-perf-wrk-soak'

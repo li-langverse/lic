@@ -193,6 +193,7 @@ def render_present_viewport_tick(vp: ViewportRegion, profile_id: int, paint_cmd_
 def render_fps_counter_shell_simulate() -> RenderFpsCounter
   requires true
   ensures result.frame_count == render_bench_fps_sample_frames()
+  ensures result.meets_target == 1
   ensures result.native_pixels == 0
   ensures render_fps_counter_hud_tag(result) == 1
   decreases 0

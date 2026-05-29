@@ -13,7 +13,9 @@ Reject programs where host memory aliases device-resident buffers (G-gpu § devi
 | Case | Expected | Command |
 |------|----------|---------|
 | `@gpu proc` (must be `def`) | `compile_fail` | `li-tests/run_all.sh gpu` |
-| `@gpu` MIR smoke | `verify_ok` | `lic check li-tests/gpu/gpu_decorator_mir.li` |
+| `@gpu` on type alias | `compile_fail` | `gpu_decorator_type_alias_compile_fail.li` |
+| `@gpu` MIR smoke (2 defs) | `verify_ok` | `lic check li-tests/gpu/gpu_decorator_mir.li` |
+| Lean `P-gpu-*` | not started | [gpu-lean-p-gpu-corpus-note.md](gpu-lean-p-gpu-corpus-note.md) |
 
 ## Stub → real (WP-GPU-05)
 

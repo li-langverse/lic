@@ -1,0 +1,11 @@
+# WP-GPU-05 Partial: @gpu applies to `def` only (type aliases deferred).
+
+@gpu
+type GpuScratch = int
+
+def main() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0

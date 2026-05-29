@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-05-29T06:39:55Z",
+  "generated_at": "2026-05-29T06:45:34Z",
   "registry": "benchmarks/competitive/lig-kernels.toml",
   "kernel_ids": [
     "lig.kernel.matmul_f32",
@@ -25,7 +25,7 @@
       "validity_gate_pass": false,
       "compile_ok": false,
       "status": "pilot",
-      "cpu_sec": 0.005621,
+      "cpu_sec": 0.004754,
       "stderr_tail": "bash: scripts/lean-verify-stub.sh: No such file or directory\nlic build: Lean semantics verification failed (see docs/semantics)\n"
     },
     {
@@ -99,5 +99,5 @@
   "validity_ratio": 0.0,
   "validity_gate_pass": false,
   "compile_ok": false,
-  "cpu_sec": 0.005621
+  "cpu_sec": 0.004754
 }

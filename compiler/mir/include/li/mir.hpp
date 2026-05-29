@@ -146,7 +146,8 @@ struct MirDecorator {
   bool vectorized = false;
   bool parallel = false;
   bool disjoint_proven = false;
-  /** `@gpu` on the owning `def` (G-gpu Partial — host launch glue at codegen). */
+  /** `@gpu` on the owning `def` (G-gpu Partial — host launch glue at codegen).
+   *  Wave 4c: `apply_fn_decorator_codegen_flags` sets `gpu_device`; counted by `count_mir_gpu_proc`. */
   bool gpu = false;
 };
 

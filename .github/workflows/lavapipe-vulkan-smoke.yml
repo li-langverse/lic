@@ -1,0 +1,86 @@
+name: Lavapipe Vulkan smoke (PH-ML wave 6)
+
+on:
+  workflow_dispatch:
+  pull_request:
+    paths:
+      - "runtime/li_rt_lkir_spirv.*"
+      - "runtime/li_rt_lig.c"
+      - "packages/lig/**"
+      - "scripts/detect-cuda-home.sh"
+      - "docs/ci/**"
+      - ".github/workflows/lavapipe-vulkan-smoke.yml"
+
+concurrency:
+  group: lavapipe-vulkan-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  spirv-validation:
+    runs-on: ubuntu-24.04
+    continue-on-error: true
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install LLVM 22 and build tools
+        run: |
+          chmod +x scripts/ci-install-llvm.sh
+          sudo LI_LLVM_MAJOR=22 bash scripts/ci-install-llvm.sh
+
+      - name: Install Vulkan (lavapipe ICD)
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y libvulkan1 mesa-vulkan-drivers vulkan-tools
+          echo "VK_ICD_FILENAMES=/usr/share/vulkan/icd.d/lvp_icd.x86_64.json" >> "$GITHUB_ENV"
+          echo "LIG_VULKAN_LAVA=1" >> "$GITHUB_ENV"
+
+      - name: Build lic
+        env:
+          LLVM_DIR: /usr/lib/llvm-22/lib/cmake/llvm
+          CC: clang-22
+          CXX: clang++-22
+        run: |
+          chmod +x scripts/build.sh scripts/resolve-lic.sh
+          ./scripts/build.sh
+
+      - name: CUDA_HOME probe (honest, no timing)
+        run: |
+          chmod +x scripts/detect-cuda-home.sh
+          ./scripts/detect-cuda-home.sh
+
+      - name: lig SPIR-V validation smokes
+        env:
+          LLVM_DIR: /usr/lib/llvm-22/lib/cmake/llvm
+        run: |
+          LIC="$(./scripts/resolve-lic.sh)"
+          for smoke in \
+            packages/lig/li-tests/smoke/lkir_spirv_stub.li \
+            packages/lig/li-tests/smoke/vulkan_spirv_backend.li \
+            packages/lig/li-tests/smoke/kernel_launch_status.li \
+            packages/lig/li-tests/smoke/kernel_matmul_parity.li; do
+            if [[ -f "$smoke" ]]; then
+              "$LIC" check "$smoke"
+            fi
+          done
+
+      - name: Honest GPU suite JSON (optional)
+        run: |
+          if [[ -f scripts/bench-lig-gpu-suite.sh ]]; then
+            chmod +x scripts/bench-lig-gpu-suite.sh
+            ./scripts/bench-lig-gpu-suite.sh
+            python3 -c "import json; r=json.load(open('benchmarks/results/lig-gpu-suite-honest.json')); assert r.get('gpu_timing_ns')=='N/A', r"
+          else
+            echo "bench-lig-gpu-suite.sh not present; skip"
+          fi
+
+      - name: vulkaninfo head (artifact when ICD present)
+        continue-on-error: true
+        run: vulkaninfo --summary 2>&1 | head -40 > /tmp/vulkaninfo-head.txt
+
+      - name: Upload vulkaninfo snippet
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: vulkaninfo-head
+          path: /tmp/vulkaninfo-head.txt
+          if-no-files-found: ignore

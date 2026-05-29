@@ -196,8 +196,37 @@ std::int64_t decorator_vectorized_lanes(const Decorator& d) {
   return 4;
 }
 
+void check_gpu_decorator(const Decorator& d, const std::string& file, DiagnosticBag& diags) {
+  if (d.name != "gpu") {
+    return;
+  }
+  for (const auto& arg : d.args) {
+    if (arg.name != "devices") {
+      diag_error(diags, SourceLoc{file, 1, 1, d.span.start}, ErrorCode::E0322,
+                 "gpu decorator: unsupported argument `" + arg.name + "`.",
+                 "Use only `@gpu` or `@gpu(devices=N)`; vendor/backend selection belongs to "
+                 "`lig` config and benchmark/runtime gates.");
+      continue;
+    }
+    if (!arg.value || arg.value->kind != Expr::Kind::IntLit) {
+      diag_error(diags, SourceLoc{file, 1, 1, d.span.start}, ErrorCode::E0322,
+                 "gpu_devices: `@gpu(devices=N)` requires an integer literal N >= 1.",
+                 "Use `@gpu` for automatic single-device placement or `@gpu(devices=2)` for "
+                 "multi-GPU placement intent.");
+      continue;
+    }
+    if (arg.value->int_value < 1) {
+      diag_error(diags, SourceLoc{file, 1, 1, d.span.start}, ErrorCode::E0322,
+                 "gpu_devices: `@gpu(devices=N)` requires N >= 1.",
+                 "Use `@gpu` for automatic single-device placement or `@gpu(devices=2)` for "
+                 "multi-GPU placement intent.");
+    }
+  }
+}
+
 void check_stmt_decorators(const Stmt& stmt, const std::string& file, DiagnosticBag& diags) {
   for (const auto& d : stmt.decorators) {
+    check_gpu_decorator(d, file, diags);
     if (d.name == "parallel") {
       if (!decorator_has_disjoint_arg(d)) {
         diag_error(diags, SourceLoc{file, 1, 1, d.span.start}, ErrorCode::E0321,
@@ -303,6 +332,7 @@ void walk_stmts(const std::vector<Stmt>& stmts, const std::vector<std::string>& 
 void check_proc_decorators(const std::vector<Decorator>& decos, const std::string& file,
                            DiagnosticBag& diags) {
   for (const auto& d : decos) {
+    check_gpu_decorator(d, file, diags);
     if (d.name == "parallel") {
       bool saw_disjoint_kw = false;
       for (const auto& arg : d.args) {

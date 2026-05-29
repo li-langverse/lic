@@ -45,6 +45,16 @@ std::int64_t mir_vectorized_lanes_from_decorator(const Decorator& d) {
   return 4;
 }
 
+std::int64_t mir_gpu_devices_from_decorator(const Decorator& d) {
+  if (d.name != "gpu") return 0;
+  for (const auto& arg : d.args) {
+    if (arg.name == "devices" && arg.value && arg.value->kind == Expr::Kind::IntLit) {
+      return arg.value->int_value;
+    }
+  }
+  return 1;
+}
+
 bool mir_decorator_disjoint_proven(const Decorator& d) {
   if (d.name != "parallel") return false;
   for (const auto& arg : d.args) {
@@ -63,6 +73,10 @@ void copy_decorators(const std::vector<Decorator>& src, std::vector<MirDecorator
     if (d.name == "vectorized") {
       md.vectorized = true;
       md.lanes = mir_vectorized_lanes_from_decorator(d);
+    }
+    if (d.name == "gpu") {
+      md.gpu = true;
+      md.gpu_devices = mir_gpu_devices_from_decorator(d);
     }
     if (d.name == "parallel") {
       md.parallel = true;

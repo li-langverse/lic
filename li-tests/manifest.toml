@@ -1105,6 +1105,12 @@ outcome = "compile_ok"
 note = "tier-1 dot spec N=8; runtime via verify-math-physics-goldens.sh"
 
 [[tests]]
+suite = "math_linalg"
+file = "math_linalg/golden_mat2_at2_float.li"
+outcome = "compile_ok"
+note = "2×2 @ golden C[0][0]=19.0; aligns mat2_at2_eval vs MIR codegen"
+
+[[tests]]
 suite = "physics"
 file = "physics/golden_positions_sum.li"
 outcome = "compile_ok"

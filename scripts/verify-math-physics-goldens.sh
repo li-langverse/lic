@@ -72,6 +72,7 @@ def run_li_golden(rel: str, expected: str, *, rtol: float = 0.0) -> None:
         raise SystemExit(f"{rel}: got {got!r} expected {expected!r}")
 
 run_li_golden("math_linalg/golden_dot4_ones_twos.li", "8")
+run_li_golden("math_linalg/golden_mat2_at2_float.li", "19")
 run_li_golden("math_linalg/golden_tier1_dot8.li", dot8, rtol=1e-14)
 run_li_golden("physics/golden_positions_sum.li", "3")
 

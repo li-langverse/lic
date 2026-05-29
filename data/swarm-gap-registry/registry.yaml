@@ -1,5 +1,5 @@
 version: 1
-updated_at: '2026-05-29T10:55:43Z'
+updated_at: '2026-05-29T11:19:20Z'
 gaps:
 - id: gap-line-profiler-001
   gap_kind: missing_package
@@ -514,7 +514,7 @@ gaps:
 - id: gap-plan-pending-swarm-observer-orch-r3-missing-package-sweep
   gap_kind: plan_debt
   title: 'swarm-observer: pending plan todo orch-r3-missing-package-sweep'
-  status: open
+  status: closed
   priority: 7
   discovered_by: plan_verifier
   evidence:

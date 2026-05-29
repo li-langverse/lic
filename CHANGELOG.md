@@ -13,6 +13,7 @@ All notable changes to Li are documented here. The format follows
 
 ### Added
 
+- **PH-ML Wave 4c — honest blockers:** WP-HW-07/08/09 blocked with lavapipe CI doc + CUDA_HOME evidence; GPU compile_fail corpus + Lean note; RL in-process serial batch documented; `@gpu` MIR dual-def smoke — [2026-05-29-ph-ml-wave-4c.md](docs/release-notes/2026-05-29-ph-ml-wave-4c.md).
 - **PH-ML Wave 4b — de-stub pilot:** Vulkan SPIR-V validation → stub_ok, CPU 2×2 matmul ref when `LIG_EMIT_CUDA`+`CUDA_HOME`, RL 4-env serial batch, WP-GPU-05 Partial verification, honest bench JSON wave `4b` — [2026-05-29-ph-ml-de-stub-wave-4b.md](docs/release-notes/2026-05-29-ph-ml-de-stub-wave-4b.md).
 - **Cursor:** `ph-ml-stub-then-implement.mdc` — stub step 1 only; Stub→Real table + tracker progression required before merge.
 - **PH-HW Wave 4 — GPU hardening:** SPIR-V header stub + validation smoke, honest `li_rt_lig_kernel_run` status codes (`-1`/`-2`/`1`/`0`), `LIG_EMIT_CUDA`/`LIG_EMIT_HIP` emit stubs, `@gpu` MIR tag + codegen launch prologue (Partial), `mlp_forward_f32.lkir`, lig-gpu-suite JSON refresh — [2026-05-29-ph-hw-wave-4-hardening.md](docs/release-notes/2026-05-29-ph-hw-wave-4-hardening.md).

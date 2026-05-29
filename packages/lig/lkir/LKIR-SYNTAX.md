@@ -23,7 +23,7 @@ See `matmul_f32.lkir` — six non-comment lines matching `lkir_matmul_module_lin
 
 | Target | Env gate | Runtime status |
 |--------|----------|----------------|
-| SPIR-V / Vulkan | validation stub_ok | `li_rt_lkir_spirv_validation_smoke()`; `bid=5` → status `0`; compute dispatch blocked WP-HW-07 |
+| SPIR-V / Vulkan | validation stub_ok | `li_rt_lkir_spirv_validation_smoke()`; `bid=5` → status `0`; compute **blocked** — [lavapipe CI](../../../docs/ci/lavapipe-vulkan-smoke.md) |
 | CUDA PTX | `LIG_EMIT_CUDA=1` | `bid==1` returns `-1` without env |
 | HIP / Metal | `LIG_EMIT_HIP=1`, `LIG_EMIT_METAL=1` | not wired in Wave 2 |
 

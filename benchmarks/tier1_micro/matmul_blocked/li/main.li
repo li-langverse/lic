@@ -1,4 +1,4 @@
-# Pure-Li matmul (512×512, BK=64) — hot path via mm_blocked_512 MIR.
+# Pure-Li matmul (512×512, BK=64) — blocked IKJ matches C++ li_matmul_blocked_kernel.
 
 extern proc li_rt_volatile_sink_f64(v: float) raises IO -> unit
   requires true
@@ -78,16 +78,6 @@ def mm_lut_b(rem: int) -> float
     return 0.24
   return 0.0
 
-def mm_blocked_512(
-  C: var array[512, array[512, float]],
-  A: var array[512, array[512, float]],
-  B: var array[512, array[512, float]]
-) -> unit
-  requires true
-  ensures true
-=
-  var noop: int = 0
-
 def main() raises IO -> int
   requires true
   ensures result == 0
@@ -105,7 +95,26 @@ def main() raises IO -> int
       C[i][j_init] = 0.0
       j_init = j_init + 1
     i = i + 1
-  mm_blocked_512(C, A, B)
+  var ii: int = 0
+  while ii < 512
+    var kk: int = 0
+    while kk < 512
+      var jj: int = 0
+      while jj < 512
+        var i_tile: int = ii
+        while i_tile < ii + 64
+          var k_tile: int = kk
+          while k_tile < kk + 64
+            var aik: float = A[i_tile][k_tile]
+            var j_tile: int = jj
+            while j_tile < jj + 64
+              C[i_tile][j_tile] = C[i_tile][j_tile] + aik * B[k_tile][j_tile]
+              j_tile = j_tile + 1
+            k_tile = k_tile + 1
+          i_tile = i_tile + 1
+        jj = jj + 64
+      kk = kk + 64
+    ii = ii + 64
   var acc: float = 0.0
   var i_sum: int = 0
   while i_sum < 512

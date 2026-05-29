@@ -1,5 +1,7 @@
 # Phase 2: Typechecker + Borrow Implementation Plan
 
+**Honest proof status:** [Provability gaps](../../verification/provability-gaps.md) · [Master plan](2026-05-14-li-master-plan.md)
+
 > **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development or superpowers:executing-plans.
 
 **Goal:** Reject ill-typed programs; attach types to AST; enforce lexical borrow rules and `raises` effect tracking.

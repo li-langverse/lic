@@ -1,5 +1,7 @@
 # Phase 7: Native HPC (SIMD + parallel for)
 
+**Honest proof status:** [Provability gaps](../../verification/provability-gaps.md) · [Master plan](2026-05-14-li-master-plan.md)
+
 > **Depends on:** Phases 3–5b (MIR/LLVM, benchmarks harness)  
 > **Blocks:** Pure-Li Tier 2 perf tables, OpenMP scaling columns
 

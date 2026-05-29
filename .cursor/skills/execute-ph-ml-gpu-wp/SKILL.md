@@ -31,6 +31,15 @@ lic check <smoke paths>
 - No GPU perf / PyTorch parity claims unless Tier-3 CSV exists.
 ```
 
+## Stub step (Wave / step 1 only)
+
+Before marking a WP **done**, read [ph-ml-stub-then-implement.mdc](../../rules/ph-ml-stub-then-implement.mdc).
+
+1. **Allowed on step 1:** `*_stub.li`, emit-status `1`, bench `gpu_timing_ns: N/A`, RFC-only rows with tracker `partial` / `blocked`.
+2. **Same branch before merge:** Stub→Real table in release note; tracker `stub` → `in_progress` → `done` (or `blocked` + reason).
+3. **Forbidden:** `done` with only constants, bare `return -1`, or fake timing — pair with next commit or explicit blocker.
+4. **Verify stub exit:** `lic check` on smokes; bench script must not invent ns (honesty rule).
+
 ## Implementation rules
 
 - Use **`def`**, not `proc`, in all new Li surface code.

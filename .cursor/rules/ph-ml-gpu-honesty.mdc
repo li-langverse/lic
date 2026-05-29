@@ -33,3 +33,4 @@ globs: packages/li-ml/**,packages/li-ml-rl/**,packages/lig/**,docs/game-dev/PH-M
 
 - [PH-ML-GPU-battle-plan.md](../../docs/game-dev/PH-ML-GPU-battle-plan.md) §1.3, §9, §10
 - [PH-ML-GPU-execution-tracker.md](../../docs/game-dev/PH-ML-GPU-execution-tracker.md)
+- [ph-ml-stub-then-implement.mdc](ph-ml-stub-then-implement.mdc) — stub step 1 only; Stub→Real before merge

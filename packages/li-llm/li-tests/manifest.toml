@@ -1,0 +1,11 @@
+[[tests]]
+suite = "smoke"
+file = "smoke/builds.li"
+outcome = "verify_ok"
+note = "T-PKG-li-llm-smoke-builds"
+
+[[tests]]
+suite = "smoke"
+file = "smoke/llm_tokenize_roundtrip.li"
+outcome = "verify_ok"
+note = "PH-LLM WP-LLM-01 gate (stub honesty until roundtrip lands)"

@@ -28,12 +28,14 @@ alwaysApply: false
    - **2i** — math / linalg surface (broadcast, proofs)
    - **7d / 7e** — decorators, math → SIMD/MIR, tier-1 correct + fast (see `li-benchmark-correctness.mdc`)
    - **8p** — compile/CI throughput when it blocks iteration
-2. **Then** simulation, engineering, chemistry, biology, Studio UI, and adjacent packages per:
+2. **PH-ML Wave 1** (CPU matmul / MLP train) when compiler Wave A gates are honest — unblocks **PH-LLM** WP-LLM-03..05.
+3. **PH-LLM** (`packages/li-llm`, WP-LLM-01..04) after PH-ML Wave 1 CPU path is green — one WP per PR (`ph-llm-wp-scope.mdc`).
+4. **Then** simulation, engineering, chemistry, biology, Studio UI, and adjacent packages per:
    - `docs/ecosystem/algorithms-and-libraries-plan.md`
    - `docs/game-dev/world-studio-vision.md`, `PH-world-studio-program.md`
    - `2026-05-14-benchmarks-and-simulations.md` (tier-2 physics, verify before timing)
 
-Do **not** start large domain/studio features while **2e/2f** or core **7e** correctness gates are knowingly false. The loop may still touch benches/packages when they **close a compiler milestone** (e.g. pure-Li `simd_dot`, `reference.py` goldens).
+Do **not** start large domain/studio features while **2e/2f** or core **7e** correctness gates are knowingly false. Compiler Wave A proof gates still come before PH-LLM implementation beyond stubs. The loop may still touch benches/packages when they **close a compiler milestone** (e.g. pure-Li `simd_dot`, `reference.py` goldens).
 
 ## Philosophy
 

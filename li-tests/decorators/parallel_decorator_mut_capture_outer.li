@@ -1,0 +1,12 @@
+# G-par / G-dec policy gap: outer `var` mutation in @parallel `for` body is not checked
+# (parallel for rejects via check_stmt_parallel_capture — policy_module.cpp:200-212).
+def mut_capture_decorator_for() -> unit
+  requires true
+  ensures true
+  decreases 0
+=
+  var counter: int = 0
+  var buf: array[8, float]
+  @parallel(disjoint=disjoint_elem)
+  for i in 0..<8
+    counter = counter + 1

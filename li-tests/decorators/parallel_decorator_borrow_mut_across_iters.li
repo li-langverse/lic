@@ -1,0 +1,10 @@
+# G-par / G-dec policy gap: borrow mut in @parallel `for` body passes lic check today.
+def borrow_mut_decorator_for(buf: var array[256, f64]) -> unit
+  requires true
+  ensures true
+  decreases 0
+=
+  @parallel(disjoint=disjoint_elem)
+  for i in 0..<256
+    borrow mut b = buf
+    b[i] = b[i] + 1.0

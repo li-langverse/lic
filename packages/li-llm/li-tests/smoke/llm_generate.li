@@ -1,0 +1,13 @@
+import llm
+
+def main() -> int raises IO, Alloc
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  var w: LlmModelWeights = llm_load_weights("fixtures/model.safetensors")
+  var out: str = llm_generate("hi", w, "fixtures/vocab.json", 1)
+  var check: LlmTokenIds = llm_tokenize(out, "fixtures/vocab.json")
+  if check.count <= 0:
+    return 1
+  return 0

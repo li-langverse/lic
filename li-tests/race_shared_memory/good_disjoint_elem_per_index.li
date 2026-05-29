@@ -1,0 +1,11 @@
+
+def good_elem_parallel(buf: var array[64, int]) -> unit
+  requires true
+  ensures true
+  decreases 0
+=
+  parallel for i in 0..<64
+    requires disjoint_elem(i, buf)
+    decreases 64 - i
+  =
+    buf[i] = buf[i] + 1

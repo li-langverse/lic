@@ -456,6 +456,11 @@ suite = "race_shared_memory"
 file = "race_shared_memory/good_disjoint_parallel.li"
 outcome = "verify_ok"
 
+[[tests]]
+suite = "race_shared_memory"
+file = "race_shared_memory/good_disjoint_elem_per_index.li"
+outcome = "verify_ok"
+
 # --- benchmarks tier0 ---
 
 [[tests]]

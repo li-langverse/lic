@@ -1,0 +1,12 @@
+
+# G-par research: disjoint_elem(i, buf) does not justify every iteration writing buf[0].
+def false_elem_proof(buf: var array[64, int]) -> unit
+  requires true
+  ensures true
+  decreases 0
+=
+  parallel for i in 0..<64
+    requires disjoint_elem(i, buf)
+    decreases 64 - i
+  =
+    buf[0] = buf[0] + 1

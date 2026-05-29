@@ -1,0 +1,28 @@
+import lig
+
+def main() -> int raises IO, Alloc
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  if lig_backend_vulkan_spirv() != 5:
+    return 1
+  if lig_backend_max() != lig_backend_vulkan_spirv():
+    return 2
+  if lig_backend_target_supported(lig_backend_vulkan_spirv()) != 1:
+    return 3
+  if lig_backend_available(lig_backend_vulkan_spirv()) != 0:
+    return 9
+  if lig_parse_toml_backend_line("backend = vulkan_spirv") != lig_backend_vulkan_spirv():
+    return 4
+  if lig_parse_toml_backend_line("backend = spirv") != lig_backend_vulkan_spirv():
+    return 5
+  if lig_backend_select_auto() != lig_backend_vulkan_spirv():
+    return 6
+  var cap: str = lig_capability_json()
+  if cap == "":
+    return 7
+  var smoke: LigWgpuSmoke = lig_wgpu_smoke_run()
+  if lig_wgpu_smoke_passed(smoke) != 1:
+    return 8
+  return 0

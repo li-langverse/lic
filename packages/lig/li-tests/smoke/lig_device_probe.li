@@ -5,17 +5,17 @@ def main() -> int raises IO, Alloc
   ensures result == 0
   decreases 0
 =
-  if li_std_lig_version() < 2:
+  if li_std_lig_version() < 3:
     return 1
   var kind: int = lig_device_kind()
   if kind < lig_backend_cuda():
     return 2
-  if kind > lig_backend_webgpu():
+  if kind > lig_backend_max():
     return 3
-  if lig_backend_available(kind) != 1:
+  if lig_backend_target_supported(kind) != 1:
     return 4
   var auto_id: int = lig_backend_select_auto()
-  if lig_backend_available(auto_id) != 1:
+  if lig_backend_target_supported(auto_id) != 1:
     return 5
   var cap: str = lig_capability_json()
   if cap == "":
@@ -26,6 +26,12 @@ def main() -> int raises IO, Alloc
   var toml_gpu: int = lig_parse_toml_backend_line("backend = metal")
   if toml_gpu != lig_backend_metal():
     return 8
+  var toml_spirv: int = lig_parse_toml_backend_line("backend = vulkan_spirv")
+  if toml_spirv != lig_backend_vulkan_spirv():
+    return 11
+  var toml_spirv_short: int = lig_parse_toml_backend_line("backend = spirv")
+  if toml_spirv_short != lig_backend_vulkan_spirv():
+    return 12
   var smoke: LigWgpuSmoke = lig_wgpu_smoke_run()
   if lig_wgpu_smoke_passed(smoke) != 1:
     return 9

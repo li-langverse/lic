@@ -8,7 +8,7 @@
 
 ## Summary
 
-Rename and unify GPU work under **`lig`** (`import lig`), replacing the provisional **`li-gpu`** package and legacy **`import gpu`** surface. User kernels compile through **LKIR** (Li Kernel IR) under `packages/lig/lkir/` and lower to CUDA, HIP/ROCm, Metal, SPIR-V/wgpu, or a **custom lab** backend — never raw vendor source strings in application code.
+Rename and unify GPU work under **`lig`** (`import lig`), replacing the provisional **`li-gpu`** package and legacy **`import gpu`** surface. User kernels compile through **LKIR** (Li Kernel IR) under `packages/lig/lkir/` and lower first to **Vulkan/SPIR-V**, with CUDA, HIP/ROCm, Metal, and custom lab backends as optional benchmark/runtime targets — never raw vendor source strings in application code.
 
 **WP1 (this RFC):** governance, module boundaries, vendor matrix, four proof/bench gates, migration plan.  
 **WP2+:** `packages/lig/src/lib.li`, codegen, and harness drivers.
@@ -42,7 +42,7 @@ Until the mv lands, docs and benches may reference `packages/gpu` stubs; agents 
 
 ### Li syntax
 
-Use **`def`** for all new APIs. Do not document bare **`proc`**. **`extern proc`** only for FFI to trusted vendor runtimes. Every exported `def` needs `requires` / `ensures` / `decreases` where applicable.
+Use **`def`** for all new APIs. Do not document the legacy function keyword. FFI declarations are allowed only at trusted runtime boundaries, with full `requires` / `ensures` / `decreases` where applicable.
 
 ```li
 import lig
@@ -76,7 +76,7 @@ def viewport_frame(surface: lig.present.Surface) -> ()
 ```toml
 # li.toml (engine / studio project)
 [engine.lig]
-backend = "auto"   # auto | cuda | hip | metal | wgpu | custom_lab
+backend = "auto"   # auto | vulkan_spirv | cuda | hip | metal | wgpu | custom_lab
 lkir_path = "kernels/my_tile.lkir"
 custom_lab_manifest = ""   # required when backend = custom_lab
 ```
@@ -89,7 +89,7 @@ LKIR is the **only** supported IR for user-defined GPU kernels.
 |----------|------|
 | Location | `packages/lig/lkir/` — versioned schema + worked examples |
 | Tile semantics | Explicit tile sizes, memory scopes, sync barriers |
-| Lowering | LKIR → CUDA PTX/SASS path, HIP, Metal AIR, SPIR-V (wgpu), custom lab stub |
+| Lowering | LKIR → Vulkan/SPIR-V first; CUDA PTX/SASS, HIP, Metal AIR, and custom lab are optional backends |
 | Forbidden | CUDA/HIP/Metal **source strings** in `.li` user modules |
 | Triton interop | Optional import/export for autotune (PH-ML); not a user-facing default |
 
@@ -112,10 +112,11 @@ def md_force_short(r: tensor[f32], eps: f32, sigma: f32) -> tensor[f32]
 | Apple | `metal` | Metal 3 | **default** on macOS | LKIR → Metal | macOS runner |
 | NVIDIA | `cuda` | CUDA 12+ | via wgpu fallback | LKIR → CUDA | Linux + GPU label |
 | AMD | `hip` | ROCm / HIP | via wgpu fallback | LKIR → HIP | `hipcc` probe, gfx arch |
+| Cross-vendor | `vulkan_spirv` | Vulkan compute + SPIR-V | target default on non-Apple | LKIR → SPIR-V | headless shader module smoke |
 | Cross-vendor | `wgpu` | wgpu / Vulkan / DX12 | **default** on Windows/Linux | subset kernels | headless present smoke |
 | Lab / research | `custom_lab` | Site manifest | off by default | gated catalog IDs | manual only |
 
-**Parity rule:** ROCm/HIP is a **peer** of CUDA, not a secondary port. No CUDA-only user kernels.
+**Default rule:** Li-owned kernels target Vulkan/SPIR-V first. CUDA, ROCm/HIP, Metal, and wgpu are benchmark/runtime adapters, not user-authored source surfaces. ROCm/HIP is a **peer** of CUDA, not a secondary port.
 
 ## Four gates (every kernel + backend change)
 
@@ -168,7 +169,7 @@ def run(a: tensor[f32], b: tensor[f32]) -> tensor[f32]
 |-------|--------|
 | Host launch (`requires` on buffers, alignment) | Target: proved in Lean via `lic build` |
 | Device kernel bodies | Trusted until device calculus lands; LKIR carries ghost specs |
-| Vendor FFI (`extern proc`) | Trusted + SBOM; **IMPORTANT** tier per [critical-package-compliance-rfc.md](critical-package-compliance-rfc.md) |
+| Vendor FFI boundary | Trusted + SBOM; **IMPORTANT** tier per [critical-package-compliance-rfc.md](critical-package-compliance-rfc.md) |
 
 ## Dependencies
 

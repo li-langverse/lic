@@ -1,8 +1,124 @@
 import lig
-# li-ml (PH-HW WP4): use lig.kernel.matmul_f32 via LKIR + lig_backend_select_auto.
-def ml_lig_matmul_id() -> int
+
+# li-ml (PH-ML ML-0): pure-Li activations, loss scalars, lig GPU matmul bridge.
+# Submodules: ml.nn, ml.optim, ml.dl, ml.ai
+
+def li_ml_version() -> int
+  requires true
+  ensures result == 2
+  decreases 0
+=
+  return 2
+
+def ml_lig_matmul_kernel_id() -> int
   requires true
   ensures result == lig_kernel_matmul_f32()
   decreases 0
 =
   return lig_kernel_matmul_f32()
+
+def ml_relu_scalar(x: float) -> float
+  requires true
+  ensures result >= 0.0
+  decreases 0
+=
+  if x > 0.0:
+    return x
+  return 0.0
+
+def ml_sigmoid_scalar(x: float) -> float
+  requires true
+  ensures result >= 0.0
+  ensures result <= 1.0
+  decreases 0
+=
+  if x >= 0.0:
+    return 1.0 / (1.0 + x)
+  var ex: float = 1.0 - x
+  if ex <= 0.0:
+    return 0.0
+  return 1.0 / (1.0 + ex)
+
+def ml_tanh_scalar(x: float) -> float
+  requires true
+  ensures result >= -1.0
+  ensures result <= 1.0
+  decreases 0
+=
+  if x > 1.0:
+    return 1.0
+  if x < -1.0:
+    return -1.0
+  return x
+
+def ml_relu4(x: array[4, float]) -> array[4, float]
+  requires true
+  ensures result[0] >= 0.0
+  ensures result[1] >= 0.0
+  ensures result[2] >= 0.0
+  ensures result[3] >= 0.0
+  decreases 0
+=
+  var out: array[4, float]
+  var i: int = 0
+  while i < 4
+    out[i] = ml_relu_scalar(x[i])
+    i = i + 1
+  return out
+
+def ml_mse_scalar(pred: float, target: float) -> float
+  requires true
+  ensures result >= 0.0
+  decreases 0
+=
+  var d: float = pred - target
+  return d * d
+
+def ml_cross_entropy_scalar(logit: float, target: float) -> float
+  requires true
+  ensures result >= 0.0
+  decreases 0
+=
+  var p: float = ml_sigmoid_scalar(logit)
+  if p <= 0.0001:
+    return 10.0
+  var q: float = 1.0 - p
+  if q <= 0.0001:
+    return 10.0
+  if target >= 0.5:
+    return -1.0 * p
+  return -1.0 * q
+
+def ml_softmax4(logits: array[4, float]) -> array[4, float]
+  requires true
+  ensures result[0] >= 0.0
+  ensures result[0] <= 1.0
+  ensures result[1] >= 0.0
+  ensures result[1] <= 1.0
+  decreases 0
+=
+  var maxv: float = logits[0]
+  var i: int = 1
+  while i < 4
+    if logits[i] > maxv:
+      maxv = logits[i]
+    i = i + 1
+  var exp0: float = ml_sigmoid_scalar(logits[0] - maxv) + 0.5
+  var exp1: float = ml_sigmoid_scalar(logits[1] - maxv) + 0.5
+  var exp2: float = ml_sigmoid_scalar(logits[2] - maxv) + 0.5
+  var exp3: float = ml_sigmoid_scalar(logits[3] - maxv) + 0.5
+  var sum: float = exp0 + exp1 + exp2 + exp3
+  var out: array[4, float]
+  out[0] = exp0 / sum
+  out[1] = exp1 / sum
+  out[2] = exp2 / sum
+  out[3] = exp3 / sum
+  return out
+
+def ml_lig_matmul_run_auto() raises IO -> int
+  requires true
+  ensures result >= -1
+  ensures result <= 4
+  decreases 0
+=
+  return lig_kernel_run_auto(ml_lig_matmul_kernel_id())

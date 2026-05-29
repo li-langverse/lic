@@ -1,0 +1,19 @@
+# li-ml-rl smoke — EnvPool contract (fixed obs/act, reward, done).
+
+[[tests]]
+suite = "smoke"
+file = "smoke/env_pool_stub.li"
+outcome = "verify_ok"
+note = "PH-ML SIM-3: env_pool_stub_step serial pool"
+
+[[tests]]
+suite = "smoke"
+file = "smoke/env_pool_step_contract.li"
+outcome = "verify_ok"
+note = "PH-ML SIM-3: pre/post contract + pool_size tick cap"
+
+[[tests]]
+suite = "smoke"
+file = "smoke/env_obs_from_session.li"
+outcome = "verify_ok"
+note = "PH-ML SIM-3: env_obs_from_session"

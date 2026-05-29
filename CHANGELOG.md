@@ -13,6 +13,8 @@ All notable changes to Li are documented here. The format follows
 
 ### Added
 
+- **PH-ML Wave 0 — li-ml stack:** `packages/li-ml` (activations, `ml.nn` MLP, `ml.optim` SGD/Adam, `ml.dl` train step, `ml.ai` batch infer) and `packages/li-ml-rl` (env pool contract smokes); workspace members; PH-ML cursor bootstrap + execution tracker — [2026-05-29-ph-ml-wave-0-packages.md](docs/release-notes/2026-05-29-ph-ml-wave-0-packages.md).
+
 - **PH-ML + GPU battle plan:** `docs/game-dev/PH-ML-GPU-battle-plan.md` — 56 WPs across `@gpu`/G-gpu, PH-HW LKIR backends, and Li-only ML/DL/RL/AI parity path (ML-0…5, five waves, eight agent batches) — [2026-05-29-ph-ml-gpu-battle-plan.md](docs/release-notes/2026-05-29-ph-ml-gpu-battle-plan.md).
  `ph-db-battle-plan.md`, `ph-db-ci-hosting-plan.md`, `ph-db-execution-tracker.md`, WP verification matrix cross-link — supersedes conflicting PRs #323–#325.
 

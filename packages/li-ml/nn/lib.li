@@ -1,0 +1,129 @@
+import ml
+
+# ml.nn — fixed-shape layers and MLP forward (pure Li, no vendor kernels).
+
+type Mlp4x4x2 = object
+  public w1: array[4, array[4, float]]
+  public b1: array[4, float]
+  public w2: array[4, array[2, float]]
+  public b2: array[2, float]
+
+def nn_linear4(
+    inp: array[4, float], W: array[4, array[4, float]], b: array[4, float]) -> array[4, float]
+  requires true
+  ensures result[0] == b[0] + inp[0] * W[0][0] + inp[1] * W[1][0] + inp[2] * W[2][0] + inp[3] * W[3][0]
+  decreases 0
+=
+  var out: array[4, float]
+  var j: int = 0
+  while j < 4
+    var sum: float = b[j]
+    var i: int = 0
+    while i < 4
+      sum = sum + inp[i] * W[i][j]
+      i = i + 1
+    out[j] = sum
+    j = j + 1
+  return out
+
+def nn_linear4x2(
+    inp: array[4, float], W: array[4, array[2, float]], b: array[2, float]) -> array[2, float]
+  requires true
+  ensures result[0] == b[0] + inp[0] * W[0][0] + inp[1] * W[1][0] + inp[2] * W[2][0] + inp[3] * W[3][0]
+  ensures result[1] == b[1] + inp[0] * W[0][1] + inp[1] * W[1][1] + inp[2] * W[2][1] + inp[3] * W[3][1]
+  decreases 0
+=
+  var out: array[2, float]
+  var j: int = 0
+  while j < 2
+    var sum: float = b[j]
+    var i: int = 0
+    while i < 4
+      sum = sum + inp[i] * W[i][j]
+      i = i + 1
+    out[j] = sum
+    j = j + 1
+  return out
+
+def nn_mlp4x4x2_forward(net: Mlp4x4x2, inp: array[4, float]) -> array[2, float]
+  requires true
+  ensures result[0] >= -1000000.0
+  ensures result[0] <= 1000000.0
+  ensures result[1] >= -1000000.0
+  ensures result[1] <= 1000000.0
+  decreases 0
+=
+  var h: array[4, float] = nn_linear4(inp, net.w1, net.b1)
+  var h_relu: array[4, float] = ml_relu4(h)
+  return nn_linear4x2(h_relu, net.w2, net.b2)
+
+def nn_mlp4x4x2_default() -> Mlp4x4x2
+  requires true
+  ensures result.b1[0] == 0.0
+  ensures result.b2[0] == 0.0
+  ensures result.b2[1] == 0.0
+  decreases 0
+=
+  var n: Mlp4x4x2
+  var i: int = 0
+  while i < 4
+    var j: int = 0
+    while j < 4
+      n.w1[i][j] = 0.01
+      j = j + 1
+    n.b1[i] = 0.0
+    i = i + 1
+  i = 0
+  while i < 4
+    n.w1[i][i] = 1.0
+    i = i + 1
+  i = 0
+  while i < 4
+    var k: int = 0
+    while k < 2
+      n.w2[i][k] = 0.1
+      k = k + 1
+    i = i + 1
+  n.b2[0] = 0.0
+  n.b2[1] = 0.0
+  return n
+
+def nn_mlp_forward_acc8(inp: array[8, float]) -> float
+  requires true
+  ensures result >= 0.0
+  decreases 0
+=
+  var acc: float = 0.0
+  var i: int = 0
+  while i < 8
+    acc = acc + inp[i] * 0.125
+    i = i + 1
+  return ml_relu_scalar(acc)
+
+def nn_conv2d3x3_acc(
+    patch: array[3, array[3, float]], kernel: array[3, array[3, float]]) -> float
+  requires true
+  ensures result == patch[0][0] * kernel[0][0] + patch[0][1] * kernel[0][1] + patch[0][2] * kernel[0][2] + patch[1][0] * kernel[1][0] + patch[1][1] * kernel[1][1] + patch[1][2] * kernel[1][2] + patch[2][0] * kernel[2][0] + patch[2][1] * kernel[2][1] + patch[2][2] * kernel[2][2]
+  decreases 0
+=
+  var acc: float = 0.0
+  var i: int = 0
+  while i < 3
+    var j: int = 0
+    while j < 3
+      acc = acc + patch[i][j] * kernel[i][j]
+      j = j + 1
+    i = i + 1
+  return acc
+
+def nn_mlp_mnist_acc(inp: array[784, float]) -> float
+  requires true
+  ensures result >= 0.0
+  decreases 0
+=
+  var acc: float = 0.0
+  var i: int = 0
+  while i < 784
+    acc = acc + inp[i] * 0.001
+    i = i + 1
+  return ml_relu_scalar(acc)

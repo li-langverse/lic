@@ -1,7 +1,21 @@
 [package]
 name = "li-ml"
-version = "0.1.0"
+version = "0.2.0"
+edition = "2026"
+license = "Apache-2.0 OR MIT"
+description = "Li ML stack — activations, neural nets, optimizers, training (PH-ML ML-0..2)"
+
 [dependencies]
 lig = { path = "../lig" }
+
 [package.metadata.li]
+github_repo = "li-ml"
 import_name = "ml"
+min_lic = "0.1.0"
+maintainer = "li-langverse"
+pkg_id = "PKG-li-ml"
+
+[package.repository]
+url = "https://github.com/li-langverse/li-ml"
+documentation = "https://li-langverse.github.io/li-language/ecosystem/li-ml/"
+changelog = "https://github.com/li-langverse/li-ml/blob/main/CHANGELOG.md"

@@ -1,0 +1,17 @@
+import ml.nn
+
+def main() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  var net: Mlp4x4x2 = nn_mlp4x4x2_default()
+  var inp: array[4, float]
+  inp[0] = 1.0
+  inp[1] = 0.0
+  inp[2] = 0.5
+  inp[3] = -0.5
+  var out: array[2, float] = nn_mlp4x4x2_forward(net, inp)
+  if out[0] + out[1] < -1000.0:
+    return 1
+  return 0

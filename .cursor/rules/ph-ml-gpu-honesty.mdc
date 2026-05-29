@@ -1,0 +1,35 @@
+---
+description: PH-ML + GPU program — no fake performance or parity claims until Tier-3 evidence exists
+alwaysApply: false
+globs: packages/li-ml/**,packages/li-ml-rl/**,packages/lig/**,docs/game-dev/PH-ML*,docs/release-notes/*ph-ml*,CHANGELOG.md
+---
+
+# PH-ML + GPU honesty
+
+## Forbidden until gated
+
+- PyTorch, JAX, cuBLAS, or Ray RLlib **parity** or **speedup** claims in release notes, README, CHANGELOG, or agent output.
+- Populated GPU timing columns in `lig-kernels.toml` or bench CSV without a verified harness run on real hardware.
+- Claims that `@gpu` lowers to LKIR, SPIR-V, CUDA, HIP, or Metal when G-gpu codegen is still **Missing** or **Partial**.
+- Fake benchmark loops labeled as real MLP, conv, or train-step kernels.
+
+## Allowed today (Wave 0 / ML-0)
+
+- `lic check` smoke green = **interface landed**, not SOTA performance.
+- Explicit `N/A`, `blocked`, or `stub` in docs and tracker rows.
+- CPU forward/train smokes with fixed-shape pure Li loops.
+- `lig.kernel.matmul_f32` bridge returning probe status without timed ns claims.
+
+## Required phrasing
+
+| Situation | Write |
+|-----------|-------|
+| Smoke passes | "contract smoke green" or "interface landed" |
+| GPU kernel not emitted | "LKIR emit blocked — WP-HW-06" |
+| No Tier-3 row | "correctness oracle pending Wave 1" |
+| RL env pool serial | "serial stub pool — async blocked on WP-RL-04" |
+
+## Cross-links
+
+- [PH-ML-GPU-battle-plan.md](../../docs/game-dev/PH-ML-GPU-battle-plan.md) §1.3, §9, §10
+- [PH-ML-GPU-execution-tracker.md](../../docs/game-dev/PH-ML-GPU-execution-tracker.md)

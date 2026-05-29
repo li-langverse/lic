@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-05-29T13:43:57.660086+00:00",
+  "generated_at": "2026-05-29T19:43:24.716957+00:00",
   "tz": "Europe/Berlin",
   "agents_live": 0,
   "runners": [
@@ -7,10 +7,10 @@
       "id": "httpd",
       "name": "li-httpd gap parity",
       "branch": "cursor/httpd-plan-continue",
-      "head": "7b4fefa6",
+      "head": "773ef9ca",
       "running": true,
-      "process": "4191522 python3 /home/s4il0r/Documents/Cursor/li-langverse/lic/scripts/goal-directed-agents-snapshot.py",
-      "log_path": "/home/s4il0r/Documents/Cursor/li-langverse/lic/../lic/data/httpd-plan-loop/gap-until-done.log",
+      "process": "2010567 bash ./scripts/httpd-plan-until-deadline.sh",
+      "log_path": "/home/s4il0r/Documents/Cursor/li-langverse/lic/../lic/data/httpd-plan-loop/until-deadline-20260529-191636.log",
       "todos": [
         {
           "id": "gap-exploit-owasp-cwe-suite",
@@ -72,13 +72,13 @@
       "agent_live": false,
       "agent": "",
       "goal_file": "",
-      "log_age_sec": null,
+      "log_age_sec": 1607,
       "last_state_at": "",
       "last_state_todo": "",
       "last_state_gates": "",
       "current_iteration": "",
       "activity": [],
-      "status_note": "supervisor up, between agent runs",
+      "status_note": "supervisor idle (log 1607s stale \u2014 check log_path)",
       "active_todo_id": "gap-phase2-perf-wrk-soak"
     },
     {
@@ -806,7 +806,7 @@
       "agent_live": false,
       "agent": "",
       "goal_file": "",
-      "log_age_sec": 324106,
+      "log_age_sec": 345673,
       "last_state_at": "2026-05-25T19:26:43.369615+00:00",
       "last_state_todo": "wave-d-gui-scaffold",
       "last_state_gates": false,
@@ -828,8 +828,8 @@
       "name": "Sim / algo registry",
       "branch": "cursor/sim-algo-plan-loop",
       "head": "32187436",
-      "running": false,
-      "process": "",
+      "running": true,
+      "process": "2198175 python3 /home/s4il0r/Documents/Cursor/li-langverse/lic-worktrees/sim-algo/benchmarks/harness/bench.py --tier 2 -",
       "log_path": "/home/s4il0r/Documents/Cursor/li-langverse/lic/../lic-worktrees/sim-algo/data/sim-plan-loop/runner.log",
       "todos": [
         {
@@ -1569,7 +1569,7 @@
       "agent_live": false,
       "agent": "",
       "goal_file": "",
-      "log_age_sec": 324500,
+      "log_age_sec": 346067,
       "last_state_at": "2026-05-25T19:35:36.548468+00:00",
       "last_state_todo": "sim-p1-num-dot-axpy",
       "last_state_gates": false,
@@ -1584,14 +1584,14 @@
         "=== iteration 1: sim-p1-num-dot-axpy ===",
         "gates: FAIL"
       ],
-      "status_note": "supervisor off",
+      "status_note": "supervisor idle (log 346067s stale \u2014 check log_path)",
       "active_todo_id": "sim-p1-num-dot-axpy"
     },
     {
       "id": "studio-ui-ux",
       "name": "Studio UI/UX",
       "branch": "cursor/studio-ui-ux-plan-loop",
-      "head": "05fa39d0",
+      "head": "3e21dd9a",
       "running": false,
       "process": "",
       "log_path": "/home/s4il0r/Documents/Cursor/li-langverse/lic/../lic-studio-ui/data/studio-ui-ux-plan-loop/iter-20260524-141218.log",
@@ -1740,7 +1740,7 @@
       "agent_live": false,
       "agent": "",
       "goal_file": "",
-      "log_age_sec": 25178,
+      "log_age_sec": 46745,
       "last_state_at": "2026-05-25T02:14:50+00:00",
       "last_state_todo": "studio-ux-06-agent-chrome",
       "last_state_gates": true,
@@ -1831,7 +1831,7 @@
       "agent_live": false,
       "agent": "",
       "goal_file": "",
-      "log_age_sec": 324081,
+      "log_age_sec": 345649,
       "last_state_at": "2026-05-25T19:42:04.198858+00:00",
       "last_state_todo": "md-r2-neighbor-list-gap",
       "last_state_gates": true,
@@ -1910,7 +1910,7 @@
       "agent_live": false,
       "agent": "",
       "goal_file": "",
-      "log_age_sec": 324593,
+      "log_age_sec": 346160,
       "last_state_at": "2026-05-25T19:32:04.164094+00:00",
       "last_state_todo": "chem-r2-dft-scf-gap",
       "last_state_gates": false,
@@ -1982,7 +1982,7 @@
       "agent_live": false,
       "agent": "",
       "goal_file": "",
-      "log_age_sec": 324744,
+      "log_age_sec": 346311,
       "last_state_at": "2026-05-25T19:29:32.615546+00:00",
       "last_state_todo": "sec-r1-httpd-fuzz-smoke",
       "last_state_gates": true,
@@ -1997,9 +1997,9 @@
       "id": "swarm-observer",
       "name": "Swarm gap orchestrator",
       "branch": "cursor/swarm-observer-plan-loop",
-      "head": "7b4fefa6",
+      "head": "773ef9ca",
       "running": true,
-      "process": "4191522 python3 /home/s4il0r/Documents/Cursor/li-langverse/lic/scripts/goal-directed-agents-snapshot.py",
+      "process": "2125450 /bin/bash -O extglob -c snap=$(command cat <&3) && builtin shopt -s extglob && builtin eval -- \"$snap\" && { buil",
       "log_path": "/home/s4il0r/Documents/Cursor/li-langverse/lic/../lic/data/swarm-observer-plan-loop/iter-20260525-193501.log",
       "todos": [
         {
@@ -2056,7 +2056,7 @@
       "agent_live": false,
       "agent": "",
       "goal_file": "",
-      "log_age_sec": 25795,
+      "log_age_sec": 2486,
       "last_state_at": "2026-05-25T19:34:28.890041+00:00",
       "last_state_todo": "orch-r1-plan-debt-sync",
       "last_state_gates": true,
@@ -2064,7 +2064,7 @@
       "activity": [
         "SDK tool activity streams to stderr ([sdk] \u25b6/\u2713 lines). Set LI_SDK_TERMINAL_STREAM=0 to disable."
       ],
-      "status_note": "supervisor idle (log 25795s stale \u2014 check log_path)"
+      "status_note": "supervisor idle (log 2486s stale \u2014 check log_path)"
     }
   ],
   "history": [

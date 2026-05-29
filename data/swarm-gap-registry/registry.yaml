@@ -1,5 +1,5 @@
 version: 1
-updated_at: '2026-05-29T13:42:31Z'
+updated_at: '2026-05-29T19:42:43Z'
 gaps:
 - id: gap-line-profiler-001
   gap_kind: missing_package
@@ -506,6 +506,8 @@ gaps:
   discovered_by: plan_verifier
   evidence:
   - snapshot runner=swarm-observer plan_pending=orch-r2-competitor-stubs
+  - 'orch-r2 completed 2026-05-29: verticals.toml + catalog competitor_feature ingest;
+    9 sim-md-research + 3 sim CAE backlog patches'
   runner_id: swarm-observer
   plan_todo_id: orch-r2-competitor-stubs
   suggested_loop: swarm-observer
@@ -519,14 +521,13 @@ gaps:
   discovered_by: plan_verifier
   evidence:
   - snapshot runner=swarm-observer plan_pending=orch-r3-missing-package-sweep
-  - 'orch-r3 completed 2026-05-29: missing_std_modules sweep; 3 open missing_package
-    gaps; 5 ecosystem-package-backlog todos pending; handoff issue_planner'
+  - 'orch-r3 completed 2026-05-29: 3 open missing_package gaps; backlog pending for
+    line_profiler, std.summary, std.plot; ingest+apply run'
   runner_id: swarm-observer
   plan_todo_id: orch-r3-missing-package-sweep
   suggested_loop: swarm-observer
   handoff_to:
   - swarm_observer
-  - issue_planner
 - id: gap-plan-pending-swarm-observer-orch-r4-ui-ux-signals
   gap_kind: plan_debt
   title: 'swarm-observer: pending plan todo orch-r4-ui-ux-signals'
@@ -535,76 +536,13 @@ gaps:
   discovered_by: plan_verifier
   evidence:
   - snapshot runner=swarm-observer plan_pending=orch-r4-ui-ux-signals
-  - 'orch-r4: docs/ecosystem/orchestrator-notes/2026-05-29-orch-r4-ui-ux-signals.md'
+  - 'orch-r4 completed 2026-05-29: 6 ui_ux gaps ingested; studio plan wave2 todos
+    patched; note docs/ecosystem/orchestrator-notes/2026-05-29-orch-r4-ui-ux-signals.md'
   runner_id: swarm-observer
   plan_todo_id: orch-r4-ui-ux-signals
   suggested_loop: swarm-observer
   handoff_to:
   - swarm_observer
-- id: gap-ux-audit-native-studio
-  gap_kind: ui_ux
-  title: 'ux-harness: world-studio-native not run in latest ui/ux audit'
-  status: open
-  priority: 6
-  discovered_by: swarm_observer
-  evidence:
-  - benchmarks/data/latest/ui-audit.json summary.total=1 (lic-docs only)
-  - li-cursor-agents/config/ux-targets.json target_id=world-studio-native
-  suggested_loop: studio-ui-ux
-  handoff_to:
-  - gui_ux_tester
-  - studio_ui_ux_builder
-- id: gap-ux-audit-agents-dashboard
-  gap_kind: ui_ux
-  title: 'ux-harness: agents-dashboard not run in latest ui/ux audit'
-  status: open
-  priority: 6
-  discovered_by: swarm_observer
-  evidence:
-  - "benchmarks/data/latest/ui-audit.json \u2014 agents-dashboard absent"
-  - ux-targets.json target_id=agents-dashboard
-  suggested_loop: studio-ui-ux
-  handoff_to:
-  - gui_ux_tester
-  - gui_ui_tester
-- id: gap-ux-audit-world-studio-demo
-  gap_kind: ui_ux
-  title: 'ux-harness: world-studio-demo fixture not audited on Linux'
-  status: open
-  priority: 6
-  discovered_by: swarm_observer
-  evidence:
-  - "benchmarks/data/latest/ux-audit.json \u2014 only lic-docs target"
-  - ux-targets.json target_id=world-studio-demo
-  suggested_loop: studio-ui-ux
-  handoff_to:
-  - gui_ux_tester
-  - studio_ui_ux_builder
-- id: gap-ux-studio-wave2-plan
-  gap_kind: ui_ux
-  title: "Studio UI wave 2 \u2014 expand ux-harness targets + agentic bench loops"
-  status: open
-  priority: 5
-  discovered_by: swarm_observer
-  evidence:
-  - studio-ui-ux snapshot plan_pending=[] (wave 1 complete)
-  - orch-r4 orchestrator note
-  suggested_loop: studio-ui-ux
-  handoff_to:
-  - studio_ui_ux_builder
-- id: gap-ux-cinematic-studio-handoff
-  gap_kind: ui_ux
-  title: "Cinematic vertical UX parity \u2014 encode, color-grade, audio-sync (orch-r2\
-    \ follow-up)"
-  status: open
-  priority: 5
-  discovered_by: swarm_observer
-  evidence:
-  - gap-vertical-stub-cinematic-encode/color-grade/audio-sync in registry
-  - orch-r2 deferred studio/cinematic ui_ux linkage
-  suggested_loop: studio-ui-ux
-  handoff_to:
-  - studio_ui_ux_builder
 - id: gap-plan-pending-httpd-gap-httpd-gap-phase2-perf-wrk-soak
   gap_kind: plan_debt
   title: 'httpd: pending plan todo gap-httpd-gap-phase2-perf-wrk-soak'
@@ -871,6 +809,7 @@ gaps:
   discovered_by: gap_explorer
   evidence:
   - verticals.toml workload_class=stub
+  suggested_loop: sim
   handoff_to:
   - numerics_researcher
 - id: gap-vertical-stub-fea-linear-elasticity
@@ -881,6 +820,7 @@ gaps:
   discovered_by: gap_explorer
   evidence:
   - verticals.toml no bench oracle yet
+  suggested_loop: sim
   handoff_to:
   - numerics_researcher
 - id: gap-vertical-stub-cfd-lid-driven-cavity
@@ -891,6 +831,7 @@ gaps:
   discovered_by: gap_explorer
   evidence:
   - verticals.toml PH-CAE CFD track
+  suggested_loop: sim
   handoff_to:
   - numerics_researcher
 - id: gap-infra-verticals-toml-missing-benchmarks-main
@@ -1121,3 +1062,98 @@ gaps:
   suggested_loop: sim-md-research
   handoff_to:
   - numerics_researcher
+- id: gap-ux-studio-ux01-viewport-wgpu-grid
+  gap_kind: ui_ux
+  title: "UX-01 viewport \u2014 SDL stub; full li-render wgpu grid pending (score\
+    \ 2.2/3)"
+  status: open
+  priority: 7
+  discovered_by: gui_ux_tester
+  evidence:
+  - lic-studio-ui/data/studio-ui-ux-plan-loop/daily-snapshot.json UX-01 score=2.2
+  - ui-ux-by-dimension.md UX-01 rubric
+  ph_id: PH-UX
+  suggested_loop: studio-ui-ux
+  target_backlog: docs/superpowers/plans/2026-05-24-studio-ui-ux-plan-loop.md
+  target_todo_id: gap-ux-gap-ux-studio-ux01-viewport-wgpu-grid
+  handoff_to:
+  - studio_ui_ux_builder
+  - gui_ux_tester
+- id: gap-ux-studio-ux08-agent-error-strip
+  gap_kind: ui_ux
+  title: "UX-08 agent error strip \u2014 mock only; GPU fail path undocumented (score\
+    \ 2.0/3)"
+  status: open
+  priority: 7
+  discovered_by: gui_ux_tester
+  evidence:
+  - lic-studio-ui/data/studio-ui-ux-plan-loop/daily-snapshot.json UX-08 score=2.0
+  - issue
+  ph_id: PH-UX
+  suggested_loop: studio-ui-ux
+  target_backlog: docs/superpowers/plans/2026-05-24-studio-ui-ux-plan-loop.md
+  target_todo_id: gap-ux-gap-ux-studio-ux08-agent-error-strip
+  handoff_to:
+  - studio_ui_ux_builder
+  - gui_ux_tester
+- id: gap-ux-studio-ux12-mock-vs-native
+  gap_kind: ui_ux
+  title: UX-12 mock banner vs native capture honesty (score 2.2/3)
+  status: open
+  priority: 6
+  discovered_by: gui_ux_tester
+  evidence:
+  - lic-studio-ui/data/studio-ui-ux-plan-loop/daily-snapshot.json UX-12 score=2.2
+  - daily-snapshot bench.honest_simulate=false on viewport_fps
+  ph_id: PH-UX
+  suggested_loop: studio-ui-ux
+  target_backlog: docs/superpowers/plans/2026-05-24-studio-ui-ux-plan-loop.md
+  target_todo_id: gap-ux-gap-ux-studio-ux12-mock-vs-native
+  handoff_to:
+  - studio_ui_ux_builder
+  - gui_ux_tester
+- id: gap-ux-gui-tester-workflow-repo
+  gap_kind: ui_ux
+  title: "gui_ux_tester workflow_repo \u2014 searches benchmarks root, misses lic-studio-ui\
+    \ ux-harness"
+  status: open
+  priority: 8
+  discovered_by: swarm_observer
+  evidence:
+  - li-cursor-agents/data/runs/gui_ux_tester-1779918664551.json (19.6h SDK error;
+    0 ux-harness hits)
+  - implement-goals.yaml studio_ui_ux lic_root=lic-studio-ui vs agent cwd mismatch
+  suggested_loop: null
+  handoff_to:
+  - issue_planner
+  - swarm_observer
+- id: gap-ux-harness-world-studio-demo
+  gap_kind: ui_ux
+  title: ux-harness world-studio-demo fixture not audited on Linux
+  status: open
+  priority: 6
+  discovered_by: gui_ux_tester
+  evidence:
+  - lic-studio-ui/docs/superpowers/plans/2026-05-24-studio-ui-ux-plan-loop.md gap-ux-audit-world-studio-demo
+  - issue
+  suggested_loop: studio-ui-ux
+  target_backlog: docs/superpowers/plans/2026-05-24-studio-ui-ux-plan-loop.md
+  target_todo_id: gap-ux-gap-ux-audit-world-studio-demo
+  handoff_to:
+  - gui_ux_tester
+  - studio_ui_ux_builder
+- id: gap-ux-studio-wave2-bench-loops
+  gap_kind: ui_ux
+  title: "Studio UI wave 2 \u2014 expand ux-harness targets + CI capture deps (studio-ux-13/16)"
+  status: open
+  priority: 7
+  discovered_by: swarm_observer
+  evidence:
+  - benchmarks/data/latest/issue-feature-triage.json lic issues
+  - studio-ui-ux plan wave1 complete; state_completed_count=11
+  suggested_loop: studio-ui-ux
+  target_backlog: docs/superpowers/plans/2026-05-24-studio-ui-ux-plan-loop.md
+  target_todo_id: gap-ux-gap-ux-studio-wave2-plan
+  handoff_to:
+  - studio_ui_ux_builder
+  - issue_planner

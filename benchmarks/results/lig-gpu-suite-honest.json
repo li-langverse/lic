@@ -2,8 +2,8 @@
   "status": "cuda_device_pilot",
   "wave": "4d",
   "host_os": "Linux",
-  "gpu_timing_ns": 4749,
-  "cuda_timing_ns": 4749,
+  "gpu_timing_ns": 2375,
+  "cuda_timing_ns": 2375,
   "metal_timing_ns": "N/A",
   "hip_timing_ns": "N/A",
   "vulkan_dispatch": "spirv_validation_stub_ok",
@@ -14,7 +14,7 @@
   "vulkan_lavapipe_hint": false,
   "note": "Honest 2x2 CUDA device timing via lig-cuda-timing-probe; Vulkan compute pipeline still partial (WP-HW-07).",
   "parity": {
-    "generated_at": "2026-05-29T18:42:35Z",
+    "generated_at": "2026-05-29T18:50:04Z",
     "registry": "benchmarks/competitive/lig-kernels.toml",
     "kernel_ids": [
       "lig.kernel.matmul_f32",
@@ -40,7 +40,7 @@
         "validity_gate_pass": true,
         "compile_ok": true,
         "status": "pilot",
-        "cpu_sec": 3.961418,
+        "cpu_sec": 1.927627,
         "run_ok": true
       },
       {
@@ -114,7 +114,7 @@
     "validity_ratio": 1.0,
     "validity_gate_pass": true,
     "compile_ok": true,
-    "cpu_sec": 3.961418
+    "cpu_sec": 1.927627
   },
   "host_validity_ratio": 1.0,
   "cuda_hardware": {

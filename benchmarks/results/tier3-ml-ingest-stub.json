@@ -2,7 +2,7 @@
   "status": "oracle_smoke_ok",
   "wave": "4d",
   "family": "ml",
-  "gpu_timing_ns": 4749,
+  "gpu_timing_ns": 2375,
   "note": "Tier-3 dashboard ingest placeholder until real oracle CSV lands",
   "oracle_mlp_forward": {
     "ok": true,

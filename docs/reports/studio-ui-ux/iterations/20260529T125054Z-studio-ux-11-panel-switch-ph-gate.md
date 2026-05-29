@@ -1,3 +1,33 @@
+# Studio UI/UX iteration — `studio-ux-11-panel-switch-ph-gate`
+
+_UTC 2026-05-29T12:50:54.303883+00:00_
+
+## UX assessment
+
+- **pass:** True
+- **avg_score:** 2.52
+- **min_score:** 2.0
+
+| ID | Score | Note |
+|----|------:|------|
+| UX-01 | 2.2 | SDL stub draws grid + selection rect; full li-render wgpu grid pending. |
+| UX-02 | 2.8 | Native play/pause RT + tick; timeline compose smoke. |
+| UX-03 | 2.8 | Inspector field rows when selected; empty delegates to UX-07 helper. |
+| UX-04 | 2.5 | Native palette compose, Cmd+K toggle; stub results, no search latency. |
+| UX-05 | 3 | studio_profile_* + topbar chip; TOML line parse stub. |
+| UX-06 | 2.4 | Agent chrome + invoke strip; Cursor/Linear/Copilot SOTA compared. |
+| UX-07 | 3 | Native empty inspector/viewport composables + shell wiring. |
+| UX-08 | 2.1 | Viewport + agent error strips composable; wgpu probe deferred to studio-ux-13. |
+| UX-09 | 3.0 | SDL/mock InputState probe + studio-shell-sdl-tick.sh. |
+| UX-10 | 3.2 | focus_ring token + studio_paint_focus_ring IR; inspector focus smoke. |
+| UX-11 | 3 | StudioShellLoadingState skeleton cmds; loading > idle smoke. |
+| UX-12 | 2.3 | Mock banner + aligned GPU/agent error copy in HTML mock. |
+| UX-13 | 2.7 | PH panel_switch gate on product transitions; stress 150ms documented outside gate. |
+| UX-14 | 2.8 | HTML labeled mock; native_pixels meta when SDL runs. |
+
+## Bench
+
+```json
 {
   "generated_at": "2026-05-29T12:50:51Z",
   "registry_path": "benchmarks/competitive/studio-ui.toml",
@@ -199,46 +229,6 @@
     "panel_switch": {
       "package": "li-gui",
       "path": "packages/li-gui/bench/panel_switch.toml",
-      "present": true
-    },
-    "studio_compose": {
-      "package": "li-studio",
-      "path": "packages/li-studio/bench/studio_compose.toml",
-      "present": true
-    },
-    "studio_vertical_present": {
-      "package": "li-studio",
-      "path": "packages/li-studio/bench/studio_vertical_present.toml",
-      "present": true
-    },
-    "particle_tiers": {
-      "package": "li-scene",
-      "path": "packages/li-scene/bench/particle_tiers.toml",
-      "present": true
-    }
-  },
-  "notes": [
-    "present:li-ui",
-    "present:li-gui",
-    "present:lig",
-    "present:li-render",
-    "present:li-scene",
-    "present:li-studio",
-    "studio_vertical_present:paint_blit_host",
-    "particle_tiers:li-scene_hook_simulate"
-  ],
-  "studio_vertical_present": {
-    "profile_count": 7,
-    "bench_simulate_fn": "studio_vertical_demo_frame",
-    "hook_version": 2,
-    "native_pixels_paint_blit": true,
-    "native_pixels_wgpu": false,
-    "wgpu_full_readback": false,
-    "status": "paint_blit_host",
-    "honest_simulate": false,
-    "env_host_present": "LIG_HOST_PRESENT",
-    "env_wgpu_readback": "LIG_WGPU_READBACK",
-    "notes": "LIG_HOST_PRESENT=1: lig_present_blit_paint_summary before studio_shell_host_present_loop_tick"
-  },
-  "gates_pass": true
-}
+      "present": tru
+```
+

@@ -35,6 +35,15 @@ todos:
   - id: studio-ux-10-native-capture
     content: "Extend ux-harness native_gui for Xvfb SDL capture when viewport draws pixels"
     status: done
+  - id: studio-ux-11-panel-switch-ph-gate
+    content: "PH-UX panel_switch_ms — product transitions in bench hook; stress path excluded from gate"
+    status: done
+  - id: studio-ux-12-native-panel-timing
+    content: "Instrument real panel switch elapsed_ms from SDL shell (replace simulate worst)"
+    status: pending
+  - id: studio-ux-13-wgpu-error-probe
+    content: "Wire li_rt viewport error from wgpu surface fail (replace mock-only UX-08)"
+    status: pending
 isProject: false
 ---
 

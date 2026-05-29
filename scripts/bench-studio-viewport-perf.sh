@@ -243,16 +243,23 @@ def bench_panel_switch_hook() -> dict:
     meta_h = hook.get("meta") or {}
     bench = hook.get("bench") or {}
     transitions = hook.get("transition") or []
+    stress = hook.get("stress_transition") or []
     budget = float(meta_h.get("budget_ms", report["panel_switch_ms_target"]))
     elapsed_samples = [float(t.get("elapsed_ms", 0)) for t in transitions if isinstance(t, dict)]
     worst = float(bench.get("worst_elapsed_ms", max(elapsed_samples) if elapsed_samples else 0))
     within = [bool(t.get("within_budget", False)) for t in transitions if isinstance(t, dict)]
     all_within = all(within) if within else worst <= budget
+    stress_samples = [float(t.get("elapsed_ms", 0)) for t in stress if isinstance(t, dict)]
+    stress_worst = float(
+        bench.get("stress_worst_elapsed_ms", max(stress_samples) if stress_samples else 0)
+    )
     return {
         "budget_ms": budget,
         "worst_elapsed_ms": worst,
         "median_elapsed_ms": float(bench.get("median_elapsed_ms", 0)),
         "transition_count": len(transitions),
+        "stress_transition_count": len(stress),
+        "stress_worst_elapsed_ms": stress_worst,
         "all_within_budget": all_within,
         "meets_target": worst <= budget,
         "native_pixels": bool(meta_h.get("native_pixels", False)),

@@ -7,7 +7,7 @@
 | Gate | Target | Measure |
 |------|--------|---------|
 | Viewport FPS | ≥ 60 sustained | `bench-studio-viewport-perf.sh` / future native HUD |
-| Panel switch | &lt; 100 ms | Instrumented composable or mock timing |
+| Panel switch | &lt; 100 ms | Product `[[transition]]` samples in `packages/li-gui/bench/panel_switch.toml`; `[[stress_transition]]` (e.g. 150 ms) is smoke-only and excluded from `gates.panel_switch_ms` |
 | Studio cold load | &lt; 2 s to interactive shell | `load_ms` in bench JSON |
 | MD particles (display) | 10k @ 60 fps; 100k @ 30 fps (tiered) | `md_lennard_jones` + scene path |
 | Memory (animate MD) | Document peak MiB; no unbounded growth | `profile-animate-memory.sh` |

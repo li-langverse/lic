@@ -10,7 +10,8 @@
     "studio-ux-07-capture-harness",
     "studio-ux-08-bench-registry",
     "studio-ux-09-memory-budget",
-    "studio-ux-10-native-capture"
+    "studio-ux-10-native-capture",
+    "studio-ux-11-panel-switch-ph-gate"
   ],
   "iterations": 9,
   "history": [

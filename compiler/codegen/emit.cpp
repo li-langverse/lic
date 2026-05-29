@@ -1039,6 +1039,51 @@ struct EmitCtx {
              llvm::ConstantInt::get(i32_ty(context), runtime_team_size)});
         return true;
       }
+      case MirOp::GpuFor: {
+        llvm::Function* gpu_fn = module->getFunction(ins.callee);
+        if (!gpu_fn) {
+          return true;
+        }
+        llvm::FunctionType* iter_ty =
+            llvm::FunctionType::get(llvm::Type::getVoidTy(context), {i64_ty(context)}, false);
+        if (std::getenv("LI_GPU_BACKEND") != nullptr) {
+          llvm::FunctionType* gpu_ty = llvm::FunctionType::get(
+              llvm::Type::getVoidTy(context),
+              {i64_ty(context), i64_ty(context), iter_ty->getPointerTo(), i32_ty(context)},
+              false);
+          llvm::FunctionCallee gpu_rt =
+              module->getOrInsertFunction("li_rt_lig_gpu_for_i64", gpu_ty);
+          llvm::FunctionCallee kind_rt =
+              module->getOrInsertFunction("li_rt_lig_device_kind",
+                                          llvm::FunctionType::get(i32_ty(context), {}, false));
+          llvm::Value* backend =
+              builder->CreateCall(kind_rt, {});
+          builder->CreateCall(
+              gpu_rt,
+              {llvm::ConstantInt::get(i64_ty(context), ins.int_value),
+               llvm::ConstantInt::get(i64_ty(context), ins.rhs_int), gpu_fn, backend});
+          return true;
+        }
+        llvm::BasicBlock* head = llvm::BasicBlock::Create(context, "gpu_for_head", func);
+        llvm::BasicBlock* body = llvm::BasicBlock::Create(context, "gpu_for_body", func);
+        llvm::BasicBlock* exit = llvm::BasicBlock::Create(context, "gpu_for_exit", func);
+        llvm::Value* iter_slot = builder->CreateAlloca(i64_ty(context), nullptr, "gpu_i");
+        builder->CreateStore(llvm::ConstantInt::get(i64_ty(context), ins.int_value), iter_slot);
+        builder->CreateBr(head);
+        builder->SetInsertPoint(head);
+        llvm::Value* cur = builder->CreateLoad(i64_ty(context), iter_slot);
+        llvm::Value* done =
+            builder->CreateICmpSGE(cur, llvm::ConstantInt::get(i64_ty(context), ins.rhs_int));
+        builder->CreateCondBr(done, exit, body);
+        builder->SetInsertPoint(body);
+        builder->CreateCall(gpu_fn, {cur});
+        llvm::Value* next = builder->CreateAdd(
+            cur, llvm::ConstantInt::get(i64_ty(context), 1), "", true, true);
+        builder->CreateStore(next, iter_slot);
+        builder->CreateBr(head);
+        builder->SetInsertPoint(exit);
+        return true;
+      }
       case MirOp::ArrayAlloc: {
         llvm::AllocaInst* slot = nullptr;
         if (ins.array_is_matrix) {

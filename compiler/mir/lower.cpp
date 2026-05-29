@@ -45,6 +45,16 @@ std::int64_t mir_vectorized_lanes_from_decorator(const Decorator& d) {
   return 4;
 }
 
+std::int64_t mir_gpu_devices_from_decorator(const Decorator& d) {
+  if (d.name != "gpu") return 0;
+  for (const auto& arg : d.args) {
+    if (arg.name == "devices" && arg.value && arg.value->kind == Expr::Kind::IntLit) {
+      return arg.value->int_value;
+    }
+  }
+  return 1;
+}
+
 bool mir_decorator_disjoint_proven(const Decorator& d) {
   if (d.name != "parallel") return false;
   for (const auto& arg : d.args) {
@@ -63,6 +73,13 @@ void copy_decorators(const std::vector<Decorator>& src, std::vector<MirDecorator
     if (d.name == "vectorized") {
       md.vectorized = true;
       md.lanes = mir_vectorized_lanes_from_decorator(d);
+    }
+    if (d.name == "gpu") {
+      md.gpu = true;
+      md.gpu_devices = mir_gpu_devices_from_decorator(d);
+    }
+    if (d.name == "cpu") {
+      md.cpu = true;
     }
     if (d.name == "parallel") {
       md.parallel = true;
@@ -91,6 +108,15 @@ void apply_fn_decorator_codegen_flags(MirFn& fn) {
 bool stmt_has_vectorized(const std::vector<Decorator>& decos) {
   for (const auto& d : decos) {
     if (d.name == "vectorized") {
+      return true;
+    }
+  }
+  return false;
+}
+
+bool stmt_has_gpu(const std::vector<Decorator>& decos) {
+  for (const auto& d : decos) {
+    if (d.name == "gpu") {
       return true;
     }
   }
@@ -2061,6 +2087,33 @@ void lower_stmt(const Stmt& stmt, LowerCtx& ctx, bool returns_float, std::vector
     }
     case Stmt::Kind::For: {
       if (!ctx.loop_stack || stmt.for_iter.empty()) {
+        break;
+      }
+      if (stmt_has_gpu(stmt.decorators) && ctx.mir) {
+        const std::string gpu_name =
+            "__li_gpu_" + ctx.proc_name + "_" + std::to_string(par_counter++);
+        MirFn gpu_fn;
+        gpu_fn.name = gpu_name;
+        copy_decorators(stmt.decorators, gpu_fn.decorators);
+        MirParam ip;
+        ip.name = stmt.for_iter;
+        ip.is_i64 = true;
+        gpu_fn.params.push_back(ip);
+        std::unordered_set<std::string> gpu_floats;
+        std::unordered_set<std::string> gpu_simd;
+        std::unordered_set<std::string> gpu_float_arrays;
+        std::unordered_set<std::string> gpu_i64s;
+        LowerCtx gpu_ctx{ctx.module, ctx.mir, gpu_name, nullptr, nullptr, ctx.object_locals};
+        lower_stmts(stmt.for_body, gpu_ctx, false, gpu_fn.body, gpu_floats, gpu_simd,
+                    gpu_float_arrays, gpu_i64s);
+        append_implicit_return(gpu_fn.body);
+        ctx.mir->functions.push_back(std::move(gpu_fn));
+        MirInsn gpu_call;
+        gpu_call.op = MirOp::GpuFor;
+        gpu_call.callee = gpu_name;
+        gpu_call.int_value = stmt.for_start;
+        gpu_call.rhs_int = stmt.for_end;
+        out.push_back(std::move(gpu_call));
         break;
       }
       const std::string head_label = fresh_label("for_head_");

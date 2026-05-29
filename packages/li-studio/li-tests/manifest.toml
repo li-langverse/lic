@@ -166,3 +166,9 @@ suite = "smoke"
 file = "smoke/studio_agentic_run.li"
 outcome = "check_ok"
 note = "T-PKG-li-studio-agentic-run PH-AGENT-2 Studio agent state model"
+
+[[tests]]
+suite = "smoke"
+file = "smoke/studio_gpu_decorator.li"
+outcome = "verify_ok"
+note = "PH-7d Studio-shaped @gpu def parse + MIR telemetry"

@@ -13,6 +13,8 @@ All notable changes to Li are documented here. The format follows
 
 ### Added
 
+- **Phase 7d GPU decorators:** `@gpu` / `@cpu` on `def` and `@gpu` on `for` → MIR tags (`mir_gpu_def`, `mir_gpu_for`, `mir_cpu_def`); `LI_GPU_BACKEND` + `li_rt_lig_gpu_for_i64` stub; `scripts/lig-gpu-compile-driver.sh` and `docs/compiler/gpu-backend-driver.md` (cuda | rocm | metal | webgpu — not Vulkan-only); Studio/render smokes.
+
 - **PH-AGENT-2 Studio agent run:** `packages/li-studio/src/lib.li` now exposes `StudioAgentRun` for the world-patch → `lic_check` → `lic_build` tool sequence with `used_html_mock == 0`; package/root smokes `studio_agentic_run.li` and `import_studio_agentic_run.li` — [2026-05-28-studio-agentic-run.md](docs/release-notes/2026-05-28-studio-agentic-run.md).
 - **PH-DB planning docs:** `ph-db-battle-plan.md`, `ph-db-ci-hosting-plan.md`, `ph-db-execution-tracker.md`, WP verification matrix cross-link — supersedes conflicting PRs #323–#325.
 

@@ -66,6 +66,8 @@ enum class MirOp {
   SimdHorizSumF64,
   SimdCopyF64,
   OmpParallelFor,
+  /** `@gpu` on `for` — helper `def` + placement tag; scalar fallback unless `LI_GPU_BACKEND` set. */
+  GpuFor,
   Label,
   Jump,
   BranchIfZero,
@@ -144,6 +146,12 @@ struct MirDecorator {
   std::int64_t lanes = 0;
   /** `@vectorized` on the owning `def` (7d-b MIR proc tag); SIMD LLVM only, never `OmpParallelFor`. */
   bool vectorized = false;
+  /** `@gpu` device-placement tag (G-gpu metadata; LKIR/codegen gated on `LI_GPU_BACKEND`). */
+  bool gpu = false;
+  /** `@gpu(devices=N)` — 0 means default single device. */
+  std::int64_t gpu_devices = 0;
+  /** `@cpu` host-placement tag. */
+  bool cpu = false;
   bool parallel = false;
   bool disjoint_proven = false;
 };
@@ -183,10 +191,12 @@ struct MirModule {
 
 /** Count `def` decorators with {@link MirDecorator::vectorized}. */
 std::size_t count_mir_vectorized_proc(const MirModule& mir);
+std::size_t count_mir_gpu_def(const MirModule& mir);
+std::size_t count_mir_gpu_multi_device_def(const MirModule& mir);
+std::size_t count_mir_gpu_for(const MirModule& mir);
+std::size_t count_mir_cpu_def(const MirModule& mir);
 std::size_t count_mir_parallel_disjoint_proven(const MirModule& mir);
 
 MirModule lower_to_mir(const Module& module);
-
-std::size_t count_mir_parallel_disjoint_proven(const MirModule& mir);
 
 }  // namespace li

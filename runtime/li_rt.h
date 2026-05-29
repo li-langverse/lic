@@ -267,6 +267,8 @@ int32_t li_rt_lig_backend_select_auto(void);
 const char* li_rt_lig_capability_json(void);
 int32_t li_rt_lig_parse_toml_backend_line(const char* line);
 int32_t li_rt_lig_present_surface_ok(void);
+void li_rt_lig_gpu_for_i64(long long start, long long end, void (*body)(long long),
+                           int32_t backend_id);
 
 
 /* PH-HW HW-0: lig device layer. */

@@ -1,0 +1,8 @@
+# Example GPU backend selection for lig-gpu-compile-driver.sh and Studio-shaped builds.
+[engine.lig]
+backend = "webgpu"
+
+# Alternatives (one active line):
+# backend = "cuda"
+# backend = "rocm"
+# backend = "metal"

@@ -30,6 +30,14 @@ backend = "metal"
 - `bench/device_probe.toml` — hook for `./scripts/bench-studio-viewport-perf.sh`
 - Smoke: `li-tests/smoke/lig_device_probe.li`
 
+## GPU compile driver
+
+```bash
+./scripts/lig-gpu-compile-driver.sh packages/lig/examples/engine_lig.toml
+```
+
+Sets `LI_GPU_BACKEND` from `backend = "cuda"|"rocm"|"metal"|"webgpu"` (wgpu is one backend, not Vulkan-only). See `docs/compiler/gpu-backend-driver.md`.
+
 ## Verify
 
 ```bash

@@ -14,7 +14,7 @@ Names such as `parallel`, `vectorized`, `async`, `cpu`, and `gpu` are reserved f
 
 ## Status
 
-Parsing and policy checks are implemented in `lic check`. MIR elaboration and codegen lowering are tracked as **G-dec** in [provability-gaps](../verification/provability-gaps.md).
+Parsing and policy checks are implemented in `lic check`. `@gpu`, `@cpu`, `@parallel`, and `@vectorized` elaborate to MIR tags (`mir_gpu_def`, `mir_cpu_def`, … in `lic verify`). Vendor GPU codegen and address-space proofs remain **G-gpu** / **G-dec** — see [gpu-backend-driver.md](../compiler/gpu-backend-driver.md).
 
 ## Resource knobs (`lic build`)
 

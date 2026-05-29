@@ -886,6 +886,14 @@ static int32_t li_rt_lig_backend_match_name(const char* name) {
 
 int32_t li_rt_lig_device_kind(void) { return g_lig_selected_backend; }
 
+void li_rt_lig_gpu_for_i64(long long start, long long end, void (*body)(long long),
+                           int32_t backend_id) {
+  (void)backend_id;
+  for (long long i = start; i < end; ++i) {
+    body(i);
+  }
+}
+
 int32_t li_rt_lig_backend_available(int32_t backend_id) {
   return li_rt_lig_backend_probe_available(backend_id);
 }

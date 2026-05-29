@@ -1,6 +1,6 @@
 # Pure-Li matmul (512×512, BK=64) — hot path via mm_blocked_512 MIR.
 
-extern proc li_rt_volatile_sink_f64(v: float) -> unit
+extern proc li_rt_volatile_sink_f64(v: float) raises IO -> unit
   requires true
   ensures true
 
@@ -88,7 +88,7 @@ def mm_blocked_512(
 =
   var noop: int = 0
 
-def main() -> int
+def main() raises IO -> int
   requires true
   ensures result == 0
   decreases 0

@@ -78,4 +78,6 @@
 - [ ] Human: `CUDA_HOME` + PTX for timed CUDA rows (WP-HW-09)
 - [ ] Human: G-gpu Lean proofs (WP-GPU-05 done)
 
+**Merge readiness:** [PH-ML-GPU-merge-readiness.md](PH-ML-GPU-merge-readiness.md) (rebase + verify log, blocked WPs, PR #367 recommendation).
+
 **Maintainers:** Mirror battle plan §5 **State** when follow-up PRs land.

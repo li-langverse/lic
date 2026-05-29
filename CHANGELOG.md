@@ -15,6 +15,7 @@ All notable changes to Li are documented here. The format follows
 
 - **PH-AGENT-2 Studio agent run:** `packages/li-studio/src/lib.li` now exposes `StudioAgentRun` for the world-patch → `lic_check` → `lic_build` tool sequence with `used_html_mock == 0`; package/root smokes `studio_agentic_run.li` and `import_studio_agentic_run.li` — [2026-05-28-studio-agentic-run.md](docs/release-notes/2026-05-28-studio-agentic-run.md).
 - **PH-DB planning docs:** `ph-db-battle-plan.md`, `ph-db-ci-hosting-plan.md`, `ph-db-execution-tracker.md`, WP verification matrix cross-link — supersedes conflicting PRs #323–#325.
+- **PH-ML merge readiness:** `docs/game-dev/PH-ML-GPU-merge-readiness.md` — PR #367 rebase onto `main`, verify log, blocked WP registry (lavapipe, `CUDA_HOME`, fork IPC, tensor/autograd).
 - **PH-ML Wave 4c — honest blockers:** WP-HW-07/08/09 blocked with lavapipe CI doc + CUDA_HOME evidence; GPU compile_fail corpus + Lean note; RL in-process serial batch documented; `@gpu` MIR dual-def smoke — [2026-05-29-ph-ml-wave-4c.md](docs/release-notes/2026-05-29-ph-ml-wave-4c.md).
 - **PH-ML Wave 4b — de-stub pilot:** Vulkan SPIR-V validation → stub_ok, CPU 2×2 matmul ref when `LIG_EMIT_CUDA`+`CUDA_HOME`, RL 4-env serial batch, WP-GPU-05 Partial verification, honest bench JSON wave `4b` — [2026-05-29-ph-ml-de-stub-wave-4b.md](docs/release-notes/2026-05-29-ph-ml-de-stub-wave-4b.md).
 - **Cursor:** `ph-ml-stub-then-implement.mdc` — stub step 1 only; Stub→Real table + tracker progression required before merge.

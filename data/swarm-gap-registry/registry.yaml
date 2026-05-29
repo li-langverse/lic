@@ -1,5 +1,5 @@
 version: 1
-updated_at: '2026-05-29T19:05:31Z'
+updated_at: '2026-05-29T19:09:42Z'
 gaps:
 - id: gap-line-profiler-001
   gap_kind: missing_package
@@ -506,7 +506,8 @@ gaps:
   discovered_by: plan_verifier
   evidence:
   - snapshot runner=swarm-observer plan_pending=orch-r2-competitor-stubs
-  - 'orch-r2 completed 2026-05-29: verticals.toml + catalog competitor_feature ingest; 9 sim-md-research + 3 sim CAE backlog patches'
+  - 'orch-r2 completed 2026-05-29: verticals.toml + catalog competitor_feature ingest;
+    9 sim-md-research + 3 sim CAE backlog patches'
   runner_id: swarm-observer
   plan_todo_id: orch-r2-competitor-stubs
   suggested_loop: swarm-observer

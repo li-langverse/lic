@@ -293,7 +293,7 @@ expected_substr = "E0304"
 suite = "contracts_verify"
 file = "contracts_verify/method_call_requires_ok.li"
 outcome = "prove_lean_ok"
-note = "G-oop: discharge_method_call_requires_lean.sh (folded balance requires)"
+note = "G-oop: discharge_method_call_requires_lean.sh; method_call_requires_lean_gap.sh (field requires opaque + call-site True stubs)"
 
 [[tests]]
 suite = "contracts_verify"

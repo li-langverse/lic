@@ -107,6 +107,7 @@ bool compile_module(const Module& module, const std::string& output_path,
       std::getenv("LI_LINK_RUNTIME_FULL") != nullptr && *std::getenv("LI_LINK_RUNTIME_FULL") != '0';
   const std::filesystem::path rt_lig_path = resolve_runtime_c("li_rt_lig.c");
   const std::filesystem::path rt_lkir_spirv_path = resolve_runtime_c("li_rt_lkir_spirv.c");
+  const std::filesystem::path rt_lkir_parse_path = resolve_runtime_c("li_rt_lkir_parse.c");
   const std::filesystem::path rt_lig_cuda_path = resolve_runtime_c("li_rt_lig_cuda.c");
 #if defined(__APPLE__)
   const std::filesystem::path rt_lig_metal_path = resolve_runtime_c("li_rt_lig_metal.mm");
@@ -144,6 +145,9 @@ bool compile_module(const Module& module, const std::string& output_path,
   }
   if (std::filesystem::exists(rt_lkir_spirv_path)) {
     cmd << " -x c \"" << rt_lkir_spirv_path.string() << "\"";
+  }
+  if (std::filesystem::exists(rt_lkir_parse_path)) {
+    cmd << " -x c \"" << rt_lkir_parse_path.string() << "\"";
   }
   if (std::filesystem::exists(rt_lig_cuda_path)) {
     cmd << " -x c \"" << rt_lig_cuda_path.string() << "\"";

@@ -25,6 +25,7 @@ See `matmul_f32.lkir` — six non-comment lines matching `lkir_matmul_module_lin
 |--------|----------|----------------|
 | SPIR-V / Vulkan | validation stub_ok | `li_rt_lkir_spirv_validation_smoke()`; `bid=5` → status `0`; compute **blocked** — [lavapipe CI](../../../docs/ci/lavapipe-vulkan-smoke.md) |
 | CUDA PTX | `LIG_EMIT_CUDA=1` | `bid==1` returns `-1` without env |
-| HIP / Metal | `LIG_EMIT_HIP=1`, `LIG_EMIT_METAL=1` | not wired in Wave 2 |
+| HIP / Metal | `LIG_EMIT_HIP=1`, `LIG_EMIT_METAL=1` | device 2×2 pilot (Mac Metal); HIP hardware probe only |
+| File parse | — | `scripts/lkir-validate.sh`, `lkir_file_validate.li` |
 
 RFC: [lig-rfc.md](../../docs/game-dev/specs/lig-rfc.md)

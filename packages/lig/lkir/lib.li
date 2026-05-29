@@ -56,10 +56,10 @@ def lkir_matmul_module_line_count() -> int
 
 def lkir_mlp_forward_module_line_count() -> int
   requires true
-  ensures result == 8
+  ensures result == 9
   decreases 0
 =
-  return 8
+  return 9
 
 def lkir_validity_check_matmul() -> int
   requires true
@@ -85,9 +85,45 @@ def lkir_validity_check_mlp_forward() -> int
     return 0
   if lkir_line_kind_relu() != 4:
     return 0
-  if lkir_mlp_forward_module_line_count() != 8:
+  if lkir_mlp_forward_module_line_count() != 9:
     return 0
   return 1
+
+extern proc li_rt_lkir_validate_file(path: str, module_kind: int) -> int
+  requires true
+  ensures -1 <= result
+  ensures result <= 1
+  decreases 0
+
+def lkir_module_matmul() -> int
+  requires true
+  ensures result == 1
+  decreases 0
+=
+  return 1
+
+def lkir_module_mlp_forward() -> int
+  requires true
+  ensures result == 2
+  decreases 0
+=
+  return 2
+
+def lkir_validate_matmul_file(path: str) raises IO, Alloc -> int
+  requires true
+  ensures -1 <= result
+  ensures result <= 1
+  decreases 0
+=
+  return li_rt_lkir_validate_file(path, lkir_module_matmul())
+
+def lkir_validate_mlp_forward_file(path: str) raises IO, Alloc -> int
+  requires true
+  ensures -1 <= result
+  ensures result <= 1
+  decreases 0
+=
+  return li_rt_lkir_validate_file(path, lkir_module_mlp_forward())
 
 def lkir_spirv_emit_status() raises IO -> int
   requires true

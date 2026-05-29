@@ -24,8 +24,12 @@ fi
 PROBE="$ROOT/scripts/cuda-home-probe.sh"
 TIMING_PROBE="$ROOT/scripts/lig-cuda-timing-probe.sh"
 METAL_TIMING_PROBE="$ROOT/scripts/lig-metal-timing-probe.sh"
+HIP_TIMING_PROBE="$ROOT/scripts/lig-hip-timing-probe.sh"
+ORACLE_MLP="$ROOT/benchmarks/tier3_ml/mlp_forward/oracle_mlp_forward.py"
 export LIG_BENCH_TIMING_PROBE="$TIMING_PROBE"
 export LIG_BENCH_METAL_TIMING_PROBE="$METAL_TIMING_PROBE"
+export LIG_BENCH_HIP_TIMING_PROBE="$HIP_TIMING_PROBE"
+export LIG_BENCH_ORACLE_MLP="$ORACLE_MLP"
 python3 - "$PARITY" "$OUT" "$TIER3_STUB" "$PROBE" <<'PY'
 import json, os, sys
 from pathlib import Path
@@ -201,6 +205,45 @@ tier3 = {
     "gpu_timing_ns": report.get("gpu_timing_ns", "N/A"),
     "note": "Tier-3 dashboard ingest placeholder until real oracle CSV lands",
 }
+oracle_mlp = os.environ.get("LIG_BENCH_ORACLE_MLP", "")
+if oracle_mlp and Path(oracle_mlp).is_file():
+    import subprocess
+
+    try:
+        orc = subprocess.run(
+            [sys.executable, oracle_mlp],
+            capture_output=True,
+            text=True,
+            timeout=120,
+            check=False,
+            cwd=str(Path(oracle_mlp).resolve().parent),
+        )
+        tier3["oracle_mlp_forward"] = {
+            "ok": orc.returncode == 0,
+            "checksum": (orc.stdout or "").strip() if orc.returncode == 0 else None,
+        }
+        if orc.returncode == 0:
+            tier3["status"] = "oracle_smoke_ok"
+    except OSError:
+        tier3["oracle_mlp_forward"] = {"ok": False, "error": "oracle run failed"}
+
+hip_probe = os.environ.get("LIG_BENCH_HIP_TIMING_PROBE", "")
+if hip_emit and hip_probe:
+    import subprocess
+
+    try:
+        hp = subprocess.run(
+            ["bash", hip_probe],
+            capture_output=True,
+            text=True,
+            timeout=30,
+            check=False,
+            cwd=str(Path(hip_probe).resolve().parent.parent),
+        )
+        if hp.returncode == 0 and hp.stdout.strip():
+            report["hip_probe"] = json.loads(hp.stdout)
+    except (OSError, json.JSONDecodeError):
+        pass
 tier3_path.write_text(json.dumps(tier3, indent=2) + "\n")
 print(out_path)
 print(tier3_path)

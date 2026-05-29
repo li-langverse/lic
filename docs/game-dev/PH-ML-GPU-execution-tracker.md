@@ -28,6 +28,8 @@
 
 | id | state | branch | verify | blocker |
 |----|-------|--------|--------|---------|
+| WP-HW-04 | **partial** | feat/ph-ml-gpu-swarm | `li_rt_lkir_parse.c`, `lkir-validate.sh`, `lkir_file_validate.li` | Full `lic` LKIR AST |
+| WP-HW-05 | **partial** | feat/ph-ml-gpu-swarm | schema validate matmul + mlp_forward `.lkir` | Tile/barrier semantics proofs |
 | WP-HW-06 | partial | feat/ph-ml-gpu-swarm | `lkir_spirv_stub.li`, `li_rt_lkir_spirv.c` | Full SPIR-V shader module |
 | WP-HW-07 | **partial** | feat/ph-ml-gpu-swarm | `li_rt_lkir_vulkan_loader_smoke` VkInstance via dlopen; lavapipe ICD hint | Full SPIR-V compute pipeline |
 | WP-HW-08 | **partial** | feat/ph-ml-gpu-swarm | `li_rt_lig_cuda_matmul2x2_device` + `lig-cuda-timing-probe.sh`; `kernel_matmul_parity.li` | General kernels / LKIR dispatch |
@@ -41,7 +43,7 @@
 | WP-GPU-06 | partial | feat/ph-ml-gpu-swarm | codegen launch prologue | LKIR module per `@gpu def` |
 | WP-ML-11 | partial | feat/ph-ml-gpu-swarm | `dl_gpu_train_hook.li` | Device buffers + real GPU train |
 | WP-BENCH-ML-05 | done | feat/ph-ml-gpu-swarm | `bench-lig-gpu-suite.sh` wave 4d JSON | `gpu_timing_ns` N/A |
-| WP-BENCH-ML-06 | partial | feat/ph-ml-gpu-swarm | `tier3-ml-ingest-stub.json` | Dashboard ingest |
+| WP-BENCH-ML-06 | partial | feat/ph-ml-gpu-swarm | tier3 oracle checksum in bench JSON; parity runs binary | Dashboard ingest |
 | WP-BENCH-ML-07 | stub | feat/ph-ml-gpu-swarm | `resnet18_infer.toml` | ONNX oracle + tensor |
 | WP-DOC-ML-04 | done | feat/ph-ml-gpu-swarm | `ml-autograd-rfc.md` | WP-ML-13 impl |
 | WP-RL-04 | **blocked** (fork) | feat/ph-ml-gpu-swarm | serial batch **done**; [issue template](../../.github/ISSUE_TEMPLATE/wp-rl-04-fork-ipc.md) | Fork IPC / multi-process |

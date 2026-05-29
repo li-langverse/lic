@@ -1,7 +1,11 @@
 {
-  "status": "ingest_stub",
+  "status": "oracle_smoke_ok",
   "wave": "4d",
   "family": "ml",
-  "gpu_timing_ns": 10686,
-  "note": "Tier-3 dashboard ingest placeholder until real oracle CSV lands"
+  "gpu_timing_ns": 13061,
+  "note": "Tier-3 dashboard ingest placeholder until real oracle CSV lands",
+  "oracle_mlp_forward": {
+    "ok": true,
+    "checksum": "0.000000000000"
+  }
 }

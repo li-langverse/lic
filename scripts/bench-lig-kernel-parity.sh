@@ -13,8 +13,18 @@ SMOKE="$ROOT/packages/lig/li-tests/smoke/kernel_matmul_parity.li"
 PILOT_ID="${LIG_BENCH_PILOT_KERNEL_ID:-lig.kernel.matmul_f32}"
 mkdir -p "$ROOT/benchmarks/results"
 export LIG_BENCH_ROOT="$ROOT" LIG_BENCH_LIC="$LIC" LIG_BENCH_OUT="$OUT" LIG_BENCH_REG="$REG" LIG_BENCH_SMOKE="$SMOKE" LIG_BENCH_PILOT_ID="$PILOT_ID"
+export LIG_EMIT_CUDA="${LIG_EMIT_CUDA:-0}"
+for candidate in /usr/lib/cuda /usr/local/cuda /opt/cuda; do
+  if [[ -z "${CUDA_HOME:-}" && -x "${candidate}/bin/nvcc" ]]; then
+    export CUDA_HOME="$candidate"
+  fi
+done
+if [[ -n "${CUDA_HOME:-}" ]]; then
+  export PATH="$CUDA_HOME/bin:${PATH}"
+  export LIG_EMIT_CUDA=1
+fi
 python3 <<'PY'
-import json, os, re, subprocess, time
+import json, os, re, subprocess, sys, tempfile, time
 from pathlib import Path
 
 root = Path(os.environ["LIG_BENCH_ROOT"])
@@ -39,22 +49,39 @@ pilot = {
     "compile_ok": False,
     "status": "pilot",
 }
-smoke_cwd = smoke.parent.parent.parent if smoke.is_file() else root
+smoke_cwd = root
+smoke_rel = smoke.relative_to(root) if smoke.is_file() else smoke
 if lic.is_file() and smoke.is_file():
+    out_bin = tempfile.mktemp(prefix="lig_matmul_parity_")
     t0 = time.perf_counter()
-    p = subprocess.run(
-        [str(lic), "build", "--allow-open-vc", str(smoke.relative_to(smoke_cwd)), "-o", "/dev/null"],
+    br = subprocess.run(
+        [str(lic), "build", "--allow-open-vc", str(smoke_rel), "-o", out_bin],
         cwd=smoke_cwd,
         capture_output=True,
         text=True,
     )
     pilot["cpu_sec"] = round(time.perf_counter() - t0, 6)
-    pilot["compile_ok"] = p.returncode == 0
+    pilot["compile_ok"] = br.returncode == 0
     if not pilot["compile_ok"]:
-        pilot["stderr_tail"] = (p.stderr or "")[-500:]
-if pilot.get("compile_ok"):
-    pilot["validity_ratio"] = 1.0
-    pilot["validity_gate_pass"] = True
+        pilot["stderr_tail"] = (br.stderr or "")[-500:]
+    elif br.returncode == 0:
+        rr = subprocess.run(
+            [out_bin],
+            cwd=smoke_cwd,
+            capture_output=True,
+            text=True,
+            env=os.environ.copy(),
+            timeout=30,
+        )
+        pilot["run_ok"] = rr.returncode == 0
+        pilot["validity_ratio"] = 1.0 if rr.returncode == 0 else 0.0
+        pilot["validity_gate_pass"] = rr.returncode == 0
+        if rr.returncode != 0:
+            pilot["run_stderr_tail"] = (rr.stderr or "")[-300:]
+        try:
+            os.remove(out_bin)
+        except OSError:
+            pass
 
 kernels = []
 for kid in kernel_ids:

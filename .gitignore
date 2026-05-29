@@ -69,3 +69,4 @@ docs/demo/media/ffmpeg-*.txt
 data/local-ci*.log
 runtime/lig_cuda_timing_probe.c
 runtime/lig_metal_timing_probe.c
+runtime/lig_lkir_validate_probe.c

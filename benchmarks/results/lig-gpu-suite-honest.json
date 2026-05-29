@@ -1,17 +1,20 @@
 {
   "status": "cuda_device_pilot",
   "wave": "4d",
-  "gpu_timing_ns": 10686,
-  "cuda_timing_ns": 10686,
+  "host_os": "Linux",
+  "gpu_timing_ns": 13061,
+  "cuda_timing_ns": 13061,
+  "metal_timing_ns": "N/A",
   "hip_timing_ns": "N/A",
   "vulkan_dispatch": "spirv_validation_stub_ok",
   "spirv_validation": "header_smoke_extended",
   "cuda_emit_status": 1,
+  "metal_emit_status": "emit_off",
   "hip_emit_status": "emit_off",
   "vulkan_lavapipe_hint": false,
   "note": "Honest 2x2 CUDA device timing via lig-cuda-timing-probe; Vulkan compute pipeline still partial (WP-HW-07).",
   "parity": {
-    "generated_at": "2026-05-29T07:15:36Z",
+    "generated_at": "2026-05-29T07:25:44Z",
     "registry": "benchmarks/competitive/lig-kernels.toml",
     "kernel_ids": [
       "lig.kernel.matmul_f32",
@@ -37,8 +40,8 @@
         "validity_gate_pass": false,
         "compile_ok": false,
         "status": "pilot",
-        "cpu_sec": 0.004552,
-        "stderr_tail": "bash: scripts/lean-verify-stub.sh: No such file or directory\nlic build: Lean semantics verification failed (see docs/semantics)\n"
+        "cpu_sec": 0.01671,
+        "stderr_tail": "clang-22: error: no such file or directory: '../runtime/li_rt.c'\nerror: build failed: clang link failed\n"
       },
       {
         "kernel_id": "lig.kernel.matmul_f64",
@@ -111,7 +114,7 @@
     "validity_ratio": 0.0,
     "validity_gate_pass": false,
     "compile_ok": false,
-    "cpu_sec": 0.004552
+    "cpu_sec": 0.01671
   },
   "cuda_hardware": {
     "nvidia_smi": true,

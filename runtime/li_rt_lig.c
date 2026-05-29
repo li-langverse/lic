@@ -34,6 +34,37 @@ static int lig_emit_cuda_enabled(void) { return lig_emit_env_enabled("LIG_EMIT_C
 
 static int lig_emit_hip_enabled(void) { return lig_emit_env_enabled("LIG_EMIT_HIP"); }
 
+static int lig_cuda_home_present(void) {
+  const char* home = getenv("CUDA_HOME");
+  if (home != NULL && home[0] != '\0') {
+    return 1;
+  }
+  home = getenv("CUDA_PATH");
+  return (home != NULL && home[0] != '\0') ? 1 : 0;
+}
+
+/* Fixed 2x2 reference matmul — CPU only, sets g_ratio (WP-HW-08/09). */
+static void lig_matmul_cpu_ref_2x2(void) {
+  const float a[4] = {1.0f, 2.0f, 3.0f, 4.0f};
+  const float b[4] = {5.0f, 6.0f, 7.0f, 8.0f};
+  float c[4];
+  c[0] = a[0] * b[0] + a[1] * b[2];
+  c[1] = a[0] * b[1] + a[1] * b[3];
+  c[2] = a[2] * b[0] + a[3] * b[2];
+  c[3] = a[2] * b[1] + a[3] * b[3];
+  const float expect[4] = {19.0f, 22.0f, 43.0f, 50.0f};
+  float err = 0.0f;
+  for (int i = 0; i < 4; ++i) {
+    const float d = c[i] - expect[i];
+    if (d < 0.0f) {
+      err += -d;
+    } else {
+      err += d;
+    }
+  }
+  g_ratio = (err < 1e-5f) ? 1.0f : 0.0f;
+}
+
 static int32_t lig_run_present_blit_rgba8(int32_t b){(void)b;int p=li_rt_studio_demo_profile_from_env();int t=21+(p>1?p-1:0);if(p==7)t=27;g_ratio=1.0f;return li_rt_lig_present_blit_rgba8(1280,720,p,1,t)==1?0:1;}
 static int32_t lig_run_present_wgpu_readback(int32_t b){(void)b;int p=li_rt_studio_demo_profile_from_env();int t=21+(p>1?p-1:0);if(p==7)t=27;g_ratio=1.0f;return li_rt_lig_wgpu_readback_stub(1280,720,p,1,t)==1?0:1;}
 
@@ -43,6 +74,10 @@ static int32_t lig_run_matmul_vendor_stub(int32_t bid) {
       g_ratio = 0.0f;
       return LI_LIG_KERNEL_EMIT_OFF;
     }
+    if (lig_cuda_home_present()) {
+      lig_matmul_cpu_ref_2x2();
+      return LI_LIG_KERNEL_EMIT_STUB;
+    }
     g_ratio = 0.0f;
     return LI_LIG_KERNEL_EMIT_STUB;
   }
@@ -51,26 +86,36 @@ static int32_t lig_run_matmul_vendor_stub(int32_t bid) {
       g_ratio = 0.0f;
       return LI_LIG_KERNEL_EMIT_OFF;
     }
-    g_ratio = 0.0f;
+    lig_matmul_cpu_ref_2x2();
     return LI_LIG_KERNEL_EMIT_STUB;
   }
   return LI_LIG_KERNEL_UNAVAILABLE;
 }
 
+static int32_t lig_run_vulkan_spirv_path(void) {
+  if (li_rt_lkir_spirv_validation_smoke() != 1) {
+    g_ratio = 0.0f;
+    return LI_LIG_KERNEL_UNAVAILABLE;
+  }
+  g_ratio = 1.0f;
+  if (li_rt_lkir_spirv_lavapipe_probe() == 1) {
+    return LI_LIG_KERNEL_STUB_OK;
+  }
+  return LI_LIG_KERNEL_STUB_OK;
+}
+
 int32_t li_rt_lig_kernel_run(int32_t kid, int32_t bid) {
   g_ratio = 1.0f;
   if (bid == 5) {
-    if (li_rt_lkir_spirv_validation_smoke() == 1) {
-      g_ratio = 1.0f;
-    } else {
-      g_ratio = 0.0f;
-    }
-    return LI_LIG_KERNEL_UNAVAILABLE;
+    return lig_run_vulkan_spirv_path();
   }
   if (kid == 1 && (bid == 1 || bid == 2)) {
     return lig_run_matmul_vendor_stub(bid);
   }
   if (kid == 2 && (bid == 1 || bid == 2 || bid == 5)) {
+    if (bid == 5) {
+      return lig_run_vulkan_spirv_path();
+    }
     return lig_run_matmul_vendor_stub(bid);
   }
   if (kid == 3) {

@@ -220,6 +220,7 @@ def nn_mnist_w2_base(i: int, j: int) -> float
     rk = rk - 17
   return 0.01 * nn_lut17(rk) - 0.18
 
+# WP-ML-07/08: w1 uses base LUT * per-row w1_scale (784 floats); w2 is full 256x10 trainable.
 type MlpMnist784 = object
   public b1: array[256, float]
   public b2: array[10, float]

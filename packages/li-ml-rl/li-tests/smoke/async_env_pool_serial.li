@@ -1,0 +1,15 @@
+# WP-RL-04: serial 4-env in-process batch (no fork IPC).
+
+import ml.rl
+import sim
+
+def main() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  if async_env_worker_slot_count() != 4:
+    return 1
+  if async_env_pool_tick_stub(4) != 0:
+    return 2
+  return 0

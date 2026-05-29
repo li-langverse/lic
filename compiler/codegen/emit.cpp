@@ -354,6 +354,21 @@ struct EmitCtx {
     builder->SetInsertPoint(exit_bb);
   }
 
+  llvm::Function* fma_scalar_fn() {
+    if (fp_numerically_stable) {
+      return nullptr;
+    }
+    return llvm::Intrinsic::getOrInsertDeclaration(
+        module, llvm::Intrinsic::fmuladd, {llvm::Type::getDoubleTy(context)});
+  }
+
+  llvm::Function* fma_vec4_fn(llvm::FixedVectorType* f64x4) {
+    if (fp_numerically_stable) {
+      return nullptr;
+    }
+    return llvm::Intrinsic::getOrInsertDeclaration(module, llvm::Intrinsic::fmuladd, {f64x4});
+  }
+
   void emit_matmul2d_blocked_ijk(llvm::AllocaInst* c_mat, llvm::AllocaInst* a_mat,
                                  llvm::AllocaInst* b_mat, unsigned n, unsigned bk) {
     llvm::Type* f64 = llvm::Type::getDoubleTy(context);
@@ -361,7 +376,8 @@ struct EmitCtx {
     llvm::FixedVectorType* f64x4 = llvm::FixedVectorType::get(f64, 4);
     llvm::Value* lim_n = llvm::ConstantInt::get(i32t, n);
     llvm::Value* step = llvm::ConstantInt::get(i32t, bk);
-    llvm::Value* vec_step = llvm::ConstantInt::get(i32t, 4);
+    const unsigned vec_lane_step = (bk % 8) == 0 ? 8u : 4u;
+    llvm::Value* vec_step = llvm::ConstantInt::get(i32t, vec_lane_step);
     llvm::AllocaInst* ii_s = builder->CreateAlloca(i32t, nullptr, "mm_ii");
     llvm::AllocaInst* kk_s = builder->CreateAlloca(i32t, nullptr, "mm_kk");
     llvm::AllocaInst* jj_s = builder->CreateAlloca(i32t, nullptr, "mm_jj");
@@ -369,10 +385,8 @@ struct EmitCtx {
     llvm::AllocaInst* k_s = builder->CreateAlloca(i32t, nullptr, "mm_k");
     llvm::AllocaInst* j_s = builder->CreateAlloca(i32t, nullptr, "mm_j");
 
-    llvm::Function* fma_fn = nullptr;
-    if (!fp_numerically_stable) {
-      fma_fn = llvm::Intrinsic::getOrInsertDeclaration(module, llvm::Intrinsic::fmuladd, {f64});
-    }
+    llvm::Function* fma_fn = fma_scalar_fn();
+    llvm::Function* vfma_fn = fma_vec4_fn(f64x4);
     const bool tiles_align = bk > 0 && (n % bk) == 0;
 
     auto tile_max = [&](llvm::Value* base) -> llvm::Value* {
@@ -393,14 +407,27 @@ struct EmitCtx {
     };
 
     const bool vectorize_j = (n % 4) == 0 && (bk % 4) == 0;
-    auto store_c_vec4 = [&](llvm::Value* i, llvm::Value* k, llvm::Value* j, llvm::Value* aik) {
+    auto store_c_vec4_at = [&](llvm::Value* i, llvm::Value* k, llvm::Value* j,
+                               llvm::Value* aik) {
       llvm::Value* cp = matmul_gep2d(c_mat, i, j);
       llvm::Value* bp = matmul_gep2d(b_mat, k, j);
       llvm::Value* cv = builder->CreateAlignedLoad(f64x4, cp, llvm::Align(8));
       llvm::Value* bv = builder->CreateAlignedLoad(f64x4, bp, llvm::Align(8));
       llvm::Value* av = builder->CreateVectorSplat(4, aik);
-      builder->CreateAlignedStore(builder->CreateFAdd(cv, builder->CreateFMul(av, bv)), cp,
-                                  llvm::Align(8));
+      llvm::Value* out =
+          vfma_fn != nullptr ? builder->CreateCall(vfma_fn, {av, bv, cv})
+                             : builder->CreateFAdd(cv, builder->CreateFMul(av, bv));
+      builder->CreateAlignedStore(out, cp, llvm::Align(8));
+    };
+
+    auto store_c_vec = [&](llvm::Value* i, llvm::Value* k, llvm::Value* j, llvm::Value* aik) {
+      if (vec_lane_step == 8) {
+        store_c_vec4_at(i, k, j, aik);
+        llvm::Value* j4 = builder->CreateAdd(j, llvm::ConstantInt::get(i32t, 4));
+        store_c_vec4_at(i, k, j4, aik);
+      } else {
+        store_c_vec4_at(i, k, j, aik);
+      }
     };
 
     emit_idx_for_step(ii_s, lim_n, step, [&](llvm::Value* ii) {
@@ -414,7 +441,7 @@ struct EmitCtx {
               llvm::Value* aik = builder->CreateLoad(f64, matmul_gep2d(a_mat, i, k));
               if (vectorize_j) {
                 emit_range_for_step(j_s, jj, j_max, vec_step,
-                                    [&](llvm::Value* j) { store_c_vec4(i, k, j, aik); });
+                                    [&](llvm::Value* j) { store_c_vec(i, k, j, aik); });
               } else {
                 emit_range_for(j_s, jj, j_max,
                                [&](llvm::Value* j) { store_c_fma(i, k, j, aik); });

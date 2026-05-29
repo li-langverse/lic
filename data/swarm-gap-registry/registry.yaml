@@ -519,11 +519,14 @@ gaps:
   discovered_by: plan_verifier
   evidence:
   - snapshot runner=swarm-observer plan_pending=orch-r3-missing-package-sweep
+  - 'orch-r3 completed 2026-05-29: missing_std_modules sweep; 3 open missing_package
+    gaps; 5 ecosystem-package-backlog todos pending; handoff issue_planner'
   runner_id: swarm-observer
   plan_todo_id: orch-r3-missing-package-sweep
   suggested_loop: swarm-observer
   handoff_to:
   - swarm_observer
+  - issue_planner
 - id: gap-plan-pending-swarm-observer-orch-r4-ui-ux-signals
   gap_kind: plan_debt
   title: 'swarm-observer: pending plan todo orch-r4-ui-ux-signals'

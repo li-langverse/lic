@@ -21,3 +21,9 @@ suite = "smoke"
 file = "smoke/studio_ai_agent_pipeline.li"
 outcome = "check_ok"
 note = "WP-AG-04: studio_ai_run_agent_pipeline → studio_agent_run_complete"
+
+[[tests]]
+suite = "smoke"
+file = "smoke/studio_ai_apply_patch.li"
+outcome = "check_ok"
+note = "WP-AG-04: studio_ai_apply_patch acceptance stub"

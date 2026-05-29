@@ -67,7 +67,7 @@ See [lillm-rfc.md](lillm-rfc.md).
 |----|--------|--------|
 | WP-AG-02 | partial in li-studio | Full MCP dispatch + tool args |
 | WP-AG-03 | **partial** | `scripts/studio-mcp-li-engine-stub.sh` stdio JSON-RPC (transport); Li dispatch in-process |
-| WP-AG-04 | stub | apply_patch → `lic check --format=json` loop |
+| WP-AG-04 | **partial** | `studio_ai_apply_patch`; `scripts/studio-lic-check-json-stub.sh` |
 | WP-AG-05 | stub | Live `chem_dft_run`, `am_export_print` dispatch |
 | WP-GD-07 | stub | `world.apply_patch` + `studio.gen` contracts |
 | PR #362 | DRAFT | Agentic run state FSM (`studio_ai_cancel_task`, task strip) |

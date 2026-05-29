@@ -19,6 +19,10 @@ Consolidates wave 2 capture (cherry-picked) with agentic depth: `studio_agent_ru
 - `@cursor/sdk` network transport
 - C paint host deletion (Step 4)
 
+## CI fix
+
+- `emit.cpp`: `getFloatTy(context)` for `li_rt_studio_shell_paint_ppm` signature (fixes LLVM build)
+
 ## Verify
 
 ```bash

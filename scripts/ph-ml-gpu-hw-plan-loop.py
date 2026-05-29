@@ -233,7 +233,18 @@ def run_agent(todo: dict, *, dry_run: bool) -> tuple[int, str]:
     if not dist.is_file():
         subprocess.run(["npm", "run", "build"], cwd=root, check=True)
 
-    benchmarks = os.environ.get("BENCHMARKS_ROOT", str(ROOT.parent / "benchmarks"))
+    benchmarks = os.environ.get("BENCHMARKS_ROOT", "")
+    if not benchmarks or not Path(benchmarks, "scripts/agent-briefing.py").is_file():
+        for c in [
+            ROOT.parent / "benchmarks",
+            Path("/home/s4il0r/Documents/Cursor/li-langverse/benchmarks"),
+            Path.home() / "Documents/Cursor/li-langverse/benchmarks",
+        ]:
+            if (c / "scripts/agent-briefing.py").is_file():
+                benchmarks = str(c)
+                break
+    if not benchmarks:
+        benchmarks = str(ROOT.parent / "benchmarks")
     goal_path = STATE_DIR / f"goal-{datetime.now(timezone.utc).strftime('%Y%m%d-%H%M%S')}.md"
     goal_path.write_text(instruction, encoding="utf-8")
 

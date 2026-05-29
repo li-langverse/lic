@@ -56,11 +56,12 @@ def wave_tier(todo_id: str) -> tuple[int, str]:
 
 def pick_next(todos: list[dict], state: dict) -> dict | None:
     completed = set(state.get("completed_ids", []))
+    id_order = {t["id"]: i for i, t in enumerate(todos)}
 
-    def order_key(t: dict) -> tuple[int, int, str]:
+    def order_key(t: dict) -> tuple[int, int, int]:
         status_rank = 0 if t["status"] == "in_progress" else 1
-        wave, tid = wave_tier(t["id"])
-        return (status_rank, wave, tid)
+        wave, _ = wave_tier(t["id"])
+        return (status_rank, wave, id_order.get(t["id"], 999))
 
     open_todos = [
         t
@@ -386,7 +387,11 @@ def main() -> int:
             return 0 if ok else 1
 
         code, msg = run_cursor_agent(todo, args.dry_run)
-        print(msg, flush=True)
+        try:
+            print(msg, flush=True)
+        except UnicodeEncodeError:
+            sys.stdout.buffer.write(msg.encode("utf-8", errors="replace") + b"\n")
+            sys.stdout.buffer.flush()
         if args.dry_run:
             return 0
 

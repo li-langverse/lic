@@ -892,6 +892,12 @@ note = "PH-HW WP4 chem lig backend"
 [[tests]]
 suite = "smoke"
 file = "packages/lig/li-tests/smoke/kernel_matmul_parity.li"
+
+[[tests]]
+suite = "smoke"
+file = "packages/lig/li-tests/smoke/kernel_matmul_lkir_dispatch.li"
+outcome = "verify_ok"
+note = "WP-HW-08: kid=1 matmul LKIR gate + CUDA/ROCm emit-off status"
 outcome = "compile_open_ok"
 note = "T-PKG-lig-kernel-matmul-parity"
 

@@ -23,7 +23,7 @@ todos:
 
 - id: hw-cuda-08-lkir-dispatch
   content: "WP-HW-08: Route lig kernel kid=1 through CUDA device when LIG_EMIT_CUDA=1 and cuda probe passes"
-  status: pending
+  status: completed
 
 - id: hw-cuda-09-ptx-catalog
   content: "WP-HW-09: Extend embedded PTX path or document blocked; cuda-home-probe ready_emit_cpu_ref + device timing only if real"

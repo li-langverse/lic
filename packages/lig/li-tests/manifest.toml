@@ -51,3 +51,9 @@ suite = "smoke"
 file = "smoke/kernel_matmul_parity.li"
 outcome = "verify_ok"
 note = "PH-HW Wave 2: matmul parity backend 5 stub + webgpu"
+
+[[tests]]
+suite = "smoke"
+file = "smoke/kernel_matmul_lkir_dispatch.li"
+outcome = "verify_ok"
+note = "WP-HW-08: kid=1 matmul LKIR gate + CUDA/ROCm emit-off status"

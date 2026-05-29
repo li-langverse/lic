@@ -26,4 +26,4 @@ bash scripts/lig-cuda-timing-probe.sh   # cuda_timing_ns: positive integer
 
 **Evidence (2026-05-29):** `lig-cuda-timing-probe.sh` → `cuda_device_ok: true`, `gpu_timing_ns` ≈ 10–20 µs on RTX lab; `ph-ml-gpu-hw-gates.sh` exit 0.
 
-LKIR dispatch for kid=1 remains **pending** (`hw-cuda-08-lkir-dispatch` plan todo).
+LKIR dispatch for kid=1: `lig_run_matmul_lkir_path` validates `matmul_f32.lkir` before CUDA/HIP/Metal vendor stubs (`hw-cuda-08-lkir-dispatch` completed).

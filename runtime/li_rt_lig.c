@@ -126,6 +126,36 @@ static int32_t lig_run_matmul_vendor_stub(int32_t bid) {
 
 static int32_t lig_run_vulkan_spirv_path(void);
 
+static int lig_matmul_lkir_file_valid(void) {
+  const char* paths[] = {
+      getenv("LIG_LKIR_MATMUL_PATH"),
+      "packages/lig/lkir/matmul_f32.lkir",
+      NULL,
+  };
+  const char* root = getenv("LIC_ROOT");
+  char rooted[512];
+  for (size_t i = 0; i < sizeof(paths) / sizeof(paths[0]); ++i) {
+    const char* p = paths[i];
+    if (p == NULL || p[0] == '\0') {
+      if (root != NULL && root[0] != '\0') {
+        const int n = snprintf(rooted, sizeof(rooted), "%s/packages/lig/lkir/matmul_f32.lkir",
+                               root);
+        if (n > 0 && n < (int)sizeof(rooted)) {
+          p = rooted;
+        } else {
+          continue;
+        }
+      } else {
+        continue;
+      }
+    }
+    if (li_rt_lkir_validate_file(p, LI_LKIR_MODULE_MATMUL) == 1) {
+      return 1;
+    }
+  }
+  return 0;
+}
+
 static int lig_mlp_lkir_file_valid(void) {
   const char* paths[] = {
       getenv("LIG_LKIR_MLP_PATH"),
@@ -154,6 +184,14 @@ static int lig_mlp_lkir_file_valid(void) {
     }
   }
   return 0;
+}
+
+static int32_t lig_run_matmul_lkir_path(int32_t bid) {
+  if (!lig_matmul_lkir_file_valid()) {
+    g_ratio = 0.0f;
+    return LI_LIG_KERNEL_UNAVAILABLE;
+  }
+  return lig_run_matmul_vendor_stub(bid);
 }
 
 static int32_t lig_run_mlp_forward_path(int32_t bid) {
@@ -187,7 +225,7 @@ int32_t li_rt_lig_kernel_run(int32_t kid, int32_t bid) {
     return lig_run_vulkan_spirv_path();
   }
   if (kid == 1 && (bid == 1 || bid == 2 || bid == 3)) {
-    return lig_run_matmul_vendor_stub(bid);
+    return lig_run_matmul_lkir_path(bid);
   }
   if (kid == 2 && (bid == 1 || bid == 2 || bid == 3 || bid == 5)) {
     return lig_run_mlp_forward_path(bid);

@@ -109,12 +109,19 @@ li_lic_build() {
 }
 
 # Case-insensitive substring match without piping to grep (pipefail + SIGPIPE flakes).
+# Use shopt nocasematch (bash 3.2+ on macOS CI) — ${var,,} needs bash 4+.
 li_output_has_substr() {
   local haystack="$1" needle="$2"
   [[ -z "$needle" ]] && return 0
-  local h="${haystack,,}"
-  local n="${needle,,}"
-  [[ "$h" == *"$n"* ]]
+  local had_nocasematch=0
+  shopt -q nocasematch && had_nocasematch=1
+  shopt -s nocasematch
+  [[ "$haystack" == *"$needle"* ]]
+  local rc=$?
+  if [[ "$had_nocasematch" -eq 0 ]]; then
+    shopt -u nocasematch
+  fi
+  return "$rc"
 }
 
 run_one() {

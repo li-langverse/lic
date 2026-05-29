@@ -1449,6 +1449,12 @@ file = "tooling/lint_manifest_no_duplicate_keys.sh"
 outcome = "script_ok"
 note = "contract tiers: prevent silent downgrades from duplicate keys in [[tests]] blocks"
 
+[[tests]]
+suite = "tooling"
+file = "tooling/output_has_substr_smoke.sh"
+outcome = "script_ok"
+note = "run_all compile_fail substring helper must work on bash 3.2 (macOS CI)"
+
 # --- hpc_competitive (registry gate; ./li-tests/run_all.sh hpc_competitive) ---
 
 # --- stdlib_parity (WP0-D — compile-only until WP-WA + WP1 runtime) ---

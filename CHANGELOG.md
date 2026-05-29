@@ -8,6 +8,7 @@ All notable changes to Li are documented here. The format follows
 
 ### Changed
 
+- **Docs:** live documentation map clarifies **lic** (not archived `li-language`) as handbook source + Pages deploy path; **G-*** explicit anchors for phase-plan cross-links — run `docs_maintainer-1780091817122`.
 - **Docs:** live documentation map, phase-plan ↔ provability-gaps cross-links, official-packages publish column — [2026-05-29-live-documentation-map.md](docs/release-notes/2026-05-29-live-documentation-map.md).
 - **Harness timing:** `latest.csv` reports **mean** in `value`, plus `stddev` and `sample_runs`; default ≥6 runs, ≥20 when mean wall &lt; 1s (`timing_stats.py`) — tier 1–2, ecosystem, HTTP (`bench_http.py`), toolchain, execution-resource sweep — [2026-05-28-bench-mean-std-timing.md](docs/release-notes/2026-05-28-bench-mean-std-timing.md).
 - **Tier-3 ecosystem:** parallel `lic build` fixtures when `BENCH_JOBS>1` (`bench_ecosystem.py`).

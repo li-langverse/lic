@@ -23,7 +23,7 @@ Per-repo status pages with honest **Partial** labels and links to the [master pl
 
 Full table: [official-packages.md](official-packages.md).
 
-Until [lic#421](https://github.com/li-langverse/lic/pull/421) merges and **li-language** Pages deploys, handbook URLs may return **404** (`ecosystem-audit.json` → `live_docs_down`). Source pages live in this repo under `docs/ecosystem/`.
+Until [lic#421](https://github.com/li-langverse/lic/pull/421) merges and **lic** [docs CI](https://github.com/li-langverse/lic/blob/main/.github/workflows/docs.yml) deploys to the legacy **`li-language`** Pages URL, handbook paths may return **404** (`ecosystem-audit.json` → `live_docs_down`). Source pages live in this repo under `docs/ecosystem/`.
 
 ## Related
 

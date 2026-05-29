@@ -31,6 +31,9 @@ This page is the **honest inventory** of what is **not** fully proved or not yet
 
 **Done:** **G-test-verify** (manifest `prove_lean_ok`). **Closed slices** inside **Partial** rows (e.g. P-linalg closed specimens, static `ensures` witnesses). All other **G-*** rows remain **Partial** or **Missing**.
 
+<!-- Phase-plan cross-links (Doc-c) — explicit anchors for mkdocs strict mode -->
+<span id="g-vc"></span><span id="g-bnd"></span><span id="g-def"></span><span id="g-math-syn"></span><span id="g-meta"></span><span id="g-par"></span><span id="g-dec"></span><span id="g-math"></span><span id="g-lean"></span>
+
 | ID | Status | What remains |
 |----|--------|----------------|
 | **G-lean** | Partial | **Tier B (default when lake installed):** `lic build` runs `lake build AutoVC` (typecheck only; `--no-lean-verify` opt-out). **Strict** open goals: `--strict-lean`. Open obligations: fail unless `--allow-open-vc` (CLI only; env bypass removed). **`LiArray`** + fib/recursive call-site + parallel `_par*` VCs typecheck. **Closed slice:** `sqrt_open_bound` via `Li.Discharge` + `Li.Trusted.li_rt_sqrt_square_bound` (**G-hw**). **Still open:** `mat2_at2_eval` trusted vs MIR `@` (semantic closed in `Discharge.lean`) |
@@ -194,7 +197,7 @@ When editing handbook pages, do **not** imply features beyond this register with
 | [SIMD and parallel](../language/simd-parallel.md) | Note heuristic disjoint until 7d-c |
 | Decorator / math spec stubs | Say “planned” until gaps closed |
 | [Ecosystem package handbooks](../ecosystem/official-packages.md) | Link here for **G-*** / **Partial** on lip, lit, httpd, std mirrors |
-| [Live documentation map](../ecosystem/live-documentation.md) | Org Pages URLs; audit `live_docs_down` until **lic** → **li-language** deploy |
+| [Live documentation map](../ecosystem/live-documentation.md) | Org Pages URLs; audit `live_docs_down` until **lic#421** merges and **lic** Pages deploy on `main` |
 
 ---
 

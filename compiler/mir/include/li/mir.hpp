@@ -144,6 +144,10 @@ struct MirDecorator {
   std::int64_t lanes = 0;
   /** `@vectorized` on the owning `def` (7d-b MIR proc tag); SIMD LLVM only, never `OmpParallelFor`. */
   bool vectorized = false;
+  /** `@gpu` device-placement tag. Lowering/codegen remains G-gpu; this makes placement visible to gates. */
+  bool gpu = false;
+  /** Requested device count for `@gpu(devices=N)`; 1 means ordinary single-device placement. */
+  std::int64_t gpu_devices = 0;
   bool parallel = false;
   bool disjoint_proven = false;
 };
@@ -183,10 +187,10 @@ struct MirModule {
 
 /** Count `def` decorators with {@link MirDecorator::vectorized}. */
 std::size_t count_mir_vectorized_proc(const MirModule& mir);
+std::size_t count_mir_gpu_proc(const MirModule& mir);
+std::size_t count_mir_gpu_multi_device_proc(const MirModule& mir);
 std::size_t count_mir_parallel_disjoint_proven(const MirModule& mir);
 
 MirModule lower_to_mir(const Module& module);
-
-std::size_t count_mir_parallel_disjoint_proven(const MirModule& mir);
 
 }  // namespace li

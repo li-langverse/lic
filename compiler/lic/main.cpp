@@ -376,6 +376,8 @@ int verify_file(const char* path, bool run_lean, bool strict_lean) {
   vc.mir_return_linked = witness.mir_return_linked;
   const std::size_t mir_parallel_disjoint = li::count_mir_parallel_disjoint_proven(mir);
   const std::size_t mir_vectorized_proc = li::count_mir_vectorized_proc(mir);
+  const std::size_t mir_gpu_proc = li::count_mir_gpu_proc(mir);
+  const std::size_t mir_gpu_multi_device_proc = li::count_mir_gpu_multi_device_proc(mir);
   std::cout << "verify: procs=" << vc.proc_count << " mir_fns=" << vc.mir_fn_count
             << " requires=" << vc.requires_count << " ensures=" << vc.ensures_count
             << " prob_ensures=" << vc.prob_ensures_count
@@ -383,7 +385,9 @@ int verify_file(const char* path, bool run_lean, bool strict_lean) {
             << " witnessed_ensures=" << vc.ensures_witnessed
             << " mir_return_linked=" << vc.mir_return_linked
             << " mir_parallel_disjoint=" << mir_parallel_disjoint
-            << " mir_vectorized_proc=" << mir_vectorized_proc << '\n';
+            << " mir_vectorized_proc=" << mir_vectorized_proc
+            << " mir_gpu_proc=" << mir_gpu_proc
+            << " mir_gpu_multi_device_proc=" << mir_gpu_multi_device_proc << '\n';
   if (li::terminal_color_enabled()) {
     std::cout << li::styled_success("verify") << li::styled_dim(" telemetry") << li::reset_style()
               << '\n';
@@ -397,6 +401,10 @@ int verify_file(const char* path, bool run_lean, bool strict_lean) {
                                std::to_string(vc.mir_return_linked));
     li::print_verify_telemetry(std::cout, "mir_vectorized_proc",
                                std::to_string(mir_vectorized_proc));
+    li::print_verify_telemetry(std::cout, "mir_gpu_proc",
+                               std::to_string(mir_gpu_proc));
+    li::print_verify_telemetry(std::cout, "mir_gpu_multi_device_proc",
+                               std::to_string(mir_gpu_multi_device_proc));
   }
   if (vc.requires_count == 0 && vc.ensures_count == 0) {
     std::cerr << li::styled_warning("verify") << li::styled_dim(" — no procedure contracts (G-vc partial)")

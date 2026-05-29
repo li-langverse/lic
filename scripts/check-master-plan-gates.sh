@@ -54,6 +54,7 @@ chmod +x "$ROOT/scripts/check-doc-provability-claims.sh" \
   "$ROOT/li-tests/tooling/discharge_trivial_lean.sh" \
   "$ROOT/li-tests/tooling/discharge_const_lean.sh" \
   "$ROOT/li-tests/tooling/discharge_sqrt_contract_lean.sh" \
+  "$ROOT/scripts/check-mir-gpu-decorator.sh" \
   "$ROOT/li-tests/tooling/check_release_bounds_ir.sh" \
   "$ROOT/li-tests/tooling/contracts_discharge_corpus.sh" \
   "$ROOT/li-tests/tooling/contracts_verify_lean.sh" \
@@ -61,6 +62,7 @@ chmod +x "$ROOT/scripts/check-doc-provability-claims.sh" \
   "$ROOT/li-tests/tooling/diagnose_json_smoke.sh"
 "$ROOT/scripts/check-doc-provability-claims.sh"
 "$ROOT/scripts/check-mir-parallel-decorator.sh"
+"$ROOT/scripts/check-mir-gpu-decorator.sh"
 "$ROOT/scripts/check-mir-vectorized-decorator.sh"
 "$ROOT/scripts/check-li-toolchain.sh"
 "$ROOT/li-tests/tooling/li_new_package_smoke.sh"

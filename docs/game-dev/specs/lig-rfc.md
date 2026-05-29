@@ -93,6 +93,22 @@ LKIR is the **only** supported IR for user-defined GPU kernels.
 | Forbidden | CUDA/HIP/Metal **source strings** in `.li` user modules |
 | Triton interop | Optional import/export for autotune (PH-ML); not a user-facing default |
 
+### `@gpu` placement and multi-GPU intent
+
+User-facing GPU placement starts in the compiler, not in vendor source strings:
+
+```li
+@gpu(devices=2)
+def force_tile() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0
+```
+
+Today this is a **MIR-visible placement tag** (`mir_gpu_proc`, `mir_gpu_multi_device_proc`) with integer-literal `devices >= 1` validation. Vendor/backend arguments are rejected on `@gpu`; backend selection stays in `lig` config/runtime gates. Next PH-HW slices must connect that tag to LKIR catalog launch, device-buffer proofs, and backend selection. `lig` remains the runtime/benchmark surface for CUDA, HIP/ROCm, Metal, and Vulkan/wgpu comparisons; Li source remains the kernel authority.
+
 Example catalog binding (conceptual):
 
 ```li

@@ -44,6 +44,36 @@ outcome = "verify_ok"
 
 [[tests]]
 suite = "decorators"
+file = "decorators/gpu_only_ok.li"
+outcome = "verify_ok"
+note = "PH-7d/G-gpu: @gpu is visible in MIR telemetry before LKIR/codegen"
+
+[[tests]]
+suite = "decorators"
+file = "decorators/gpu_multi_device_ok.li"
+outcome = "verify_ok"
+note = "PH-7d/G-gpu: @gpu(devices=2) records multi-GPU placement intent in MIR telemetry"
+
+[[tests]]
+suite = "decorators"
+file = "decorators/gpu_devices_zero_fail.li"
+outcome = "compile_fail"
+expected_substr = "gpu_devices"
+
+[[tests]]
+suite = "decorators"
+file = "decorators/gpu_devices_ident_fail.li"
+outcome = "compile_fail"
+expected_substr = "gpu_devices"
+
+[[tests]]
+suite = "decorators"
+file = "decorators/gpu_vendor_arg_fail.li"
+outcome = "compile_fail"
+expected_substr = "gpu decorator"
+
+[[tests]]
+suite = "decorators"
 file = "decorators/parallel_with_disjoint.li"
 outcome = "verify_ok"
 

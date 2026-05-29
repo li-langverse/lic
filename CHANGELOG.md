@@ -8,6 +8,7 @@ All notable changes to Li are documented here. The format follows
 
 ### Added
 
+- **PH-7d / G-gpu decorator telemetry:** `@gpu` and `@gpu(devices=N)` now survive MIR lowering and `lic verify` reports `mir_gpu_proc` / `mir_gpu_multi_device_proc`; invalid device counts and source-level vendor args are rejected before LKIR/codegen — [2026-05-28-gpu-decorator-mir.md](docs/release-notes/2026-05-28-gpu-decorator-mir.md).
 - **PH-DB planning docs:** `ph-db-battle-plan.md`, `ph-db-ci-hosting-plan.md`, `ph-db-execution-tracker.md`, WP verification matrix cross-link — supersedes conflicting PRs #323–#325.
 
 - **WP2 md_* tier2 fill:** 13 catalog `md_*` harness stubs from `md_lennard_jones` template, `bench.py` `TIER2_BENCHES` rows, runnable fixes for `three_body_pure` / `schrodinger_1d_barrier` / `ragdoll_chain` / `orbit_two_body` / `fdtd_waveguide_2d` — [2026-05-25-bench-fill-wp2-md.md](docs/release-notes/2026-05-25-bench-fill-wp2-md.md).

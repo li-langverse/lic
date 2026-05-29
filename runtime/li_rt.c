@@ -843,8 +843,9 @@ int32_t li_rt_studio_host_present_tick(int32_t viewport_w, int32_t viewport_h) {
 #define LI_RT_LIG_BACKEND_ROCM 2
 #define LI_RT_LIG_BACKEND_METAL 3
 #define LI_RT_LIG_BACKEND_WEBGPU 4
+#define LI_RT_LIG_BACKEND_VULKAN_SPIRV 5
 
-static int32_t g_lig_selected_backend = LI_RT_LIG_BACKEND_WEBGPU;
+static int32_t g_lig_selected_backend = LI_RT_LIG_BACKEND_VULKAN_SPIRV;
 
 static int32_t li_rt_lig_backend_probe_available(int32_t backend_id) {
   switch (backend_id) {
@@ -860,6 +861,8 @@ static int32_t li_rt_lig_backend_probe_available(int32_t backend_id) {
 #endif
     case LI_RT_LIG_BACKEND_WEBGPU:
       return 1;
+    case LI_RT_LIG_BACKEND_VULKAN_SPIRV:
+      return 0;
     default:
       return 0;
   }
@@ -881,6 +884,10 @@ static int32_t li_rt_lig_backend_match_name(const char* name) {
   if (strcmp(name, "webgpu") == 0 || strcmp(name, "wgpu") == 0) {
     return LI_RT_LIG_BACKEND_WEBGPU;
   }
+  if (strcmp(name, "vulkan_spirv") == 0 || strcmp(name, "spirv") == 0 ||
+      strcmp(name, "vulkan") == 0) {
+    return LI_RT_LIG_BACKEND_VULKAN_SPIRV;
+  }
   return 0;
 }
 
@@ -901,6 +908,8 @@ int32_t li_rt_lig_backend_select_auto(void) {
     g_lig_selected_backend = LI_RT_LIG_BACKEND_ROCM;
     return LI_RT_LIG_BACKEND_ROCM;
   }
+  g_lig_selected_backend = LI_RT_LIG_BACKEND_VULKAN_SPIRV;
+  return LI_RT_LIG_BACKEND_VULKAN_SPIRV;
   if (li_rt_lig_backend_probe_available(LI_RT_LIG_BACKEND_CUDA)) {
     g_lig_selected_backend = LI_RT_LIG_BACKEND_CUDA;
     return LI_RT_LIG_BACKEND_CUDA;
@@ -917,11 +926,11 @@ int32_t li_rt_lig_present_surface_ok(void) {
   return 0;
 }
 
-static char li_rt_lig_cap_json_buf[192];
+static char li_rt_lig_cap_json_buf[256];
 
 const char* li_rt_lig_capability_json(void) {
   snprintf(li_rt_lig_cap_json_buf, sizeof(li_rt_lig_cap_json_buf),
-           "{\"lig_version\":2,\"device_kind\":%d,\"surface_ok\":%d}",
+           "{\"lig_version\":3,\"device_kind\":%d,\"backend_max\":5,\"vulkan_spirv_target\":1,\"vulkan_spirv_runtime\":0,\"surface_ok\":%d}",
            (int)g_lig_selected_backend, (int)li_rt_lig_present_surface_ok());
   return li_rt_lig_cap_json_buf;
 }

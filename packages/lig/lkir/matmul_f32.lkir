@@ -1,0 +1,7 @@
+; lig.kernel.matmul_f32 — LKIR tile pilot (PH-HW Wave 2)
+tile 4 4 1
+load_a f32
+load_b f32
+barrier
+store_c f32
+barrier

@@ -1,0 +1,20 @@
+import lig.lkir
+
+def main() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  if lkir_version() != 1:
+    return 1
+  if lkir_matmul_module_line_count() != 6:
+    return 2
+  if lkir_validity_check_matmul() != 1:
+    return 3
+  if lkir_line_kind_tile() != 1:
+    return 4
+  if lkir_line_kind_barrier() != 2:
+    return 5
+  if lkir_line_kind_load_a() != 3:
+    return 6
+  return 0

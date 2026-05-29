@@ -1,0 +1,108 @@
+{
+  "status": "honest_stub",
+  "gpu_timing_ns": "N/A",
+  "note": "SPIR-V emit blocked WP-HW-06; validity from CPU parity smoke only",
+  "parity": {
+    "generated_at": "2026-05-29T05:41:38Z",
+    "registry": "benchmarks/competitive/lig-kernels.toml",
+    "kernel_ids": [
+      "lig.kernel.matmul_f32",
+      "lig.kernel.matmul_f64",
+      "lig.kernel.dot_f32",
+      "lig.kernel.reduce_sum_f32",
+      "lig.kernel.md_force_short",
+      "lig.kernel.md_force_full",
+      "lig.kernel.heat_stencil_2d_f32",
+      "lig.kernel.sph_density_f32",
+      "lig.kernel.horner_f32",
+      "lig.kernel.mlp_forward_f32",
+      "lig.kernel.memcpy_h2d_f32",
+      "lig.kernel.memcpy_d2h_f32",
+      "lig.kernel.quat_rotate_vec3",
+      "lig.kernel.present_blit_rgba8"
+    ],
+    "kernels": [
+      {
+        "kernel_id": "lig.kernel.matmul_f32",
+        "validity_min": 0.999,
+        "validity_ratio": 0.0,
+        "validity_gate_pass": false,
+        "compile_ok": false,
+        "status": "pilot",
+        "cpu_sec": 0.004691,
+        "stderr_tail": "bash: scripts/lean-verify-stub.sh: No such file or directory\nlic build: Lean semantics verification failed (see docs/semantics)\n"
+      },
+      {
+        "kernel_id": "lig.kernel.matmul_f64",
+        "status": "stub",
+        "compile_ok": false
+      },
+      {
+        "kernel_id": "lig.kernel.dot_f32",
+        "status": "stub",
+        "compile_ok": false
+      },
+      {
+        "kernel_id": "lig.kernel.reduce_sum_f32",
+        "status": "stub",
+        "compile_ok": false
+      },
+      {
+        "kernel_id": "lig.kernel.md_force_short",
+        "status": "stub",
+        "compile_ok": false
+      },
+      {
+        "kernel_id": "lig.kernel.md_force_full",
+        "status": "stub",
+        "compile_ok": false
+      },
+      {
+        "kernel_id": "lig.kernel.heat_stencil_2d_f32",
+        "status": "stub",
+        "compile_ok": false
+      },
+      {
+        "kernel_id": "lig.kernel.sph_density_f32",
+        "status": "stub",
+        "compile_ok": false
+      },
+      {
+        "kernel_id": "lig.kernel.horner_f32",
+        "status": "stub",
+        "compile_ok": false
+      },
+      {
+        "kernel_id": "lig.kernel.mlp_forward_f32",
+        "status": "stub",
+        "compile_ok": false
+      },
+      {
+        "kernel_id": "lig.kernel.memcpy_h2d_f32",
+        "status": "stub",
+        "compile_ok": false
+      },
+      {
+        "kernel_id": "lig.kernel.memcpy_d2h_f32",
+        "status": "stub",
+        "compile_ok": false
+      },
+      {
+        "kernel_id": "lig.kernel.quat_rotate_vec3",
+        "status": "stub",
+        "compile_ok": false
+      },
+      {
+        "kernel_id": "lig.kernel.present_blit_rgba8",
+        "status": "stub",
+        "compile_ok": false
+      }
+    ],
+    "kernel_id": "lig.kernel.matmul_f32",
+    "validity_min": 0.999,
+    "validity_ratio": 0.0,
+    "validity_gate_pass": false,
+    "compile_ok": false,
+    "cpu_sec": 0.004691
+  }
+}

@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-05-29T12:14:44.428997+00:00",
+  "generated_at": "2026-05-29T12:42:45.478944+00:00",
   "tz": "Europe/Berlin",
   "agents_live": 0,
   "runners": [
@@ -7,9 +7,9 @@
       "id": "httpd",
       "name": "li-httpd gap parity",
       "branch": "cursor/httpd-plan-continue",
-      "head": "74c4756c",
+      "head": "c0874ae6",
       "running": true,
-      "process": "3826277 python3 /home/s4il0r/Documents/Cursor/li-langverse/lic/scripts/goal-directed-agents-snapshot.py",
+      "process": "3837396 /bin/bash -O extglob -c snap=$(command cat <&3) && builtin shopt -s extglob && builtin eval -- \"$snap\" && { buil",
       "log_path": "/home/s4il0r/Documents/Cursor/li-langverse/lic/../lic/data/httpd-plan-loop/gap-until-done.log",
       "todos": [
         {
@@ -806,7 +806,7 @@
       "agent_live": false,
       "agent": "",
       "goal_file": "",
-      "log_age_sec": 318752,
+      "log_age_sec": 320434,
       "last_state_at": "2026-05-25T19:26:43.369615+00:00",
       "last_state_todo": "wave-d-gui-scaffold",
       "last_state_gates": false,
@@ -1569,7 +1569,7 @@
       "agent_live": false,
       "agent": "",
       "goal_file": "",
-      "log_age_sec": 319146,
+      "log_age_sec": 320828,
       "last_state_at": "2026-05-25T19:35:36.548468+00:00",
       "last_state_todo": "sim-p1-num-dot-axpy",
       "last_state_gates": false,
@@ -1740,7 +1740,7 @@
       "agent_live": false,
       "agent": "",
       "goal_file": "",
-      "log_age_sec": 19825,
+      "log_age_sec": 21506,
       "last_state_at": "2026-05-25T02:14:50+00:00",
       "last_state_todo": "studio-ux-06-agent-chrome",
       "last_state_gates": true,
@@ -1831,7 +1831,7 @@
       "agent_live": false,
       "agent": "",
       "goal_file": "",
-      "log_age_sec": 318728,
+      "log_age_sec": 320409,
       "last_state_at": "2026-05-25T19:42:04.198858+00:00",
       "last_state_todo": "md-r2-neighbor-list-gap",
       "last_state_gates": true,
@@ -1910,7 +1910,7 @@
       "agent_live": false,
       "agent": "",
       "goal_file": "",
-      "log_age_sec": 319239,
+      "log_age_sec": 320920,
       "last_state_at": "2026-05-25T19:32:04.164094+00:00",
       "last_state_todo": "chem-r2-dft-scf-gap",
       "last_state_gates": false,
@@ -1982,7 +1982,7 @@
       "agent_live": false,
       "agent": "",
       "goal_file": "",
-      "log_age_sec": 319391,
+      "log_age_sec": 321072,
       "last_state_at": "2026-05-25T19:29:32.615546+00:00",
       "last_state_todo": "sec-r1-httpd-fuzz-smoke",
       "last_state_gates": true,
@@ -1997,9 +1997,9 @@
       "id": "swarm-observer",
       "name": "Swarm gap orchestrator",
       "branch": "cursor/swarm-observer-plan-loop",
-      "head": "74c4756c",
+      "head": "c0874ae6",
       "running": true,
-      "process": "3826277 python3 /home/s4il0r/Documents/Cursor/li-langverse/lic/scripts/goal-directed-agents-snapshot.py",
+      "process": "3837396 /bin/bash -O extglob -c snap=$(command cat <&3) && builtin shopt -s extglob && builtin eval -- \"$snap\" && { buil",
       "log_path": "/home/s4il0r/Documents/Cursor/li-langverse/lic/../lic/data/swarm-observer-plan-loop/iter-20260525-193501.log",
       "todos": [
         {
@@ -2020,7 +2020,7 @@
         {
           "id": "orch-r3-missing-package-sweep",
           "content": "Sweep missing_std_modules + seed line_profiler; ensure ecosystem-package-backlog todos pending",
-          "status": "pending"
+          "status": "completed"
         },
         {
           "id": "orch-r4-ui-ux-signals",
@@ -2028,10 +2028,9 @@
           "status": "pending"
         }
       ],
-      "plan_completed": 3,
+      "plan_completed": 4,
       "plan_total": 5,
       "plan_pending": [
-        "orch-r3-missing-package-sweep",
         "orch-r4-ui-ux-signals"
       ],
       "state": {
@@ -2059,7 +2058,7 @@
       "agent_live": false,
       "agent": "",
       "goal_file": "",
-      "log_age_sec": 20441,
+      "log_age_sec": 22122,
       "last_state_at": "2026-05-25T19:34:28.890041+00:00",
       "last_state_todo": "orch-r1-plan-debt-sync",
       "last_state_gates": true,
@@ -2067,8 +2066,8 @@
       "activity": [
         "SDK tool activity streams to stderr ([sdk] \u25b6/\u2713 lines). Set LI_SDK_TERMINAL_STREAM=0 to disable."
       ],
-      "status_note": "supervisor idle (log 20441s stale \u2014 check log_path)",
-      "active_todo_id": "orch-r3-missing-package-sweep"
+      "status_note": "supervisor idle (log 22122s stale \u2014 check log_path)",
+      "active_todo_id": "orch-r4-ui-ux-signals"
     }
   ],
   "history": [

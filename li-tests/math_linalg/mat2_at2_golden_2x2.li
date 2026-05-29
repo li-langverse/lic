@@ -1,0 +1,28 @@
+# Golden 2×2 float `@` — runtime must match Li.Discharge.mat2_at2_eval semantics.
+# Matrices from linalg_mat2_at2_float_closed.li: C = [[19,22],[43,50]].
+
+extern proc li_rt_volatile_sink_f64(v: float) -> unit
+  requires true
+  ensures true
+
+def main() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  var A: array[2, array[2, float]]
+  var B: array[2, array[2, float]]
+  A[0][0] = 1.0
+  A[0][1] = 2.0
+  A[1][0] = 3.0
+  A[1][1] = 4.0
+  B[0][0] = 5.0
+  B[0][1] = 6.0
+  B[1][0] = 7.0
+  B[1][1] = 8.0
+  var C: array[2, array[2, float]] = A @ B
+  if C[0][0] != 19.0 or C[0][1] != 22.0 or C[1][0] != 43.0 or C[1][1] != 50.0:
+    return 1
+  var sink: float = C[0][0] + C[0][1] + C[1][0] + C[1][1]
+  li_rt_volatile_sink_f64(sink)
+  return 0

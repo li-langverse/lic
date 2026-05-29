@@ -1,5 +1,7 @@
 # Li ecosystem governance — GitHub org, standards, traceability
 
+**Honest proof status:** [Provability gaps](../../verification/provability-gaps.md) · [Live documentation map](../../ecosystem/live-documentation.md) · [Master plan](2026-05-14-li-master-plan.md)
+
 > **Applies to:** [package-scaffold](2026-05-16-li-package-scaffold.md), [package-manager-lip](2026-05-16-li-package-manager-lip.md), [li-httpd](2026-05-16-li-httpd-plan.md), and all **first-party** / **standard** libraries.
 
 **Goal:** Official Li software and standard packages live under a **defined GitHub organization**, with documentation and metadata that meet **international conventions** and a **traceability chain** from requirements → design → tests → releases.

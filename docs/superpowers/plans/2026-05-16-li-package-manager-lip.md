@@ -2,6 +2,8 @@
 
 > **Canonical ecosystem plan.** Package **layout/scaffold** is [2026-05-16-li-package-scaffold.md](2026-05-16-li-package-scaffold.md) — same `li.toml` schema, same directory tree; `lip init` eventually wraps `scripts/li-new-package`.
 
+**Proof gaps (Doc-c):** [G-stdlib](../../verification/provability-gaps.md#g-stdlib) · [G-test-verify](../../verification/provability-gaps.md#g-test-verify) · [still open](../../verification/provability-gaps.md#still-open-report-every-session) · [Governance plan](2026-05-16-li-ecosystem-governance.md)
+
 **Goal:** `lip` resolves and installs dependencies with **proof + signature + coverage** gates; `lit` enforces **≥ 80% line coverage** on publish/install.
 
 **Master plan phase:** **8-repo, 8a–8e, 8e-li** (Ecosystem). **Phase 7** remains Native HPC. **Phase Pkg** (scaffold) ships first.

@@ -67,6 +67,7 @@ When LLM-first convenience conflicts with provability: **provability wins** (sam
 
 ## Related
 
+- [Master plan — Vision-LLM](../plans/2026-05-14-li-master-plan.md) (tracker row)
 - [Agent handover formats](../../ecosystem/agent-handover-formats.md)
 - [li-agent-manifest.toml](../../ecosystem/li-agent-manifest.toml)
-- [Provability gaps](../../verification/provability-gaps.md)
+- [Provability gaps](../../verification/provability-gaps.md) — agent ergonomics must not skip proof gates

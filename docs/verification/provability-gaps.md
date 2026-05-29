@@ -62,10 +62,6 @@ This page is the **honest inventory** of what is **not** fully proved or not yet
 
 **Proof backlog still open:** **P-refine**, **P-ensures-witness**, **P-float**, **P-linalg** (float `@` Props; full matmul), **P-par**, **P-dec**, **P-bnd**, **P-http**, **P-narrow**, **P-meta**, **P-physics** — see [proof-corpus-roadmap](proof-corpus-roadmap.md). **P-linalg partial:** closed dot/sum/matmul-entry + **loop dot** (`linalg_dot4_int_loop_open`, `dot4_int_loop_eval_spec`); open float `vec3_dot`, 2D CallProc. **P-physics partial:** [proof-database.md](proof-database.md) index + `docs/verification/proof-database/entries/physics-*.toml` (`P-AX-*`, `P-LM-*`, pin `a9542bfc`); tier-2 wrappers still **modeling_gap** (`ensures true` on extern kernels).
 
-### Proof-db discrepancy appendix
-
-[`../../proof-database/DISCREPANCIES.md`](../../proof-database/DISCREPANCIES.md) — `python3 scripts/proof-db/compare_reference.py --write`. Kinds: `missing_lemma`, `open_vc`, `spec_drift`, `trusted_axiom`, `hardware_axiom` (**G-hw**).
-
 !!! warning "Do not overclaim in docs or packages"
     Until **Phase 2f** lands, saying “`lic build` proves your program in Lean” is **aspirational**. Prefer: “`lic build` runs the current static gate; see [provability gaps](provability-gaps.md).”
 
@@ -201,6 +197,9 @@ When editing handbook pages, do **not** imply features beyond this register with
 | [Math / linalg surface plan](../superpowers/plans/2026-05-16-li-math-linalg-surface.md) | **G-math** / **G-lean** exit gates — tier-1 perf ≤1.2× only with dashboard evidence |
 | [li-httpd plan](../superpowers/plans/2026-05-16-li-httpd-plan.md) | **G-net** — runtime parity vs nginx oracle; no “proved gateway” without gap link |
 | [Parallel compile (8p)](../superpowers/plans/2026-05-22-parallel-compile-ci.md) | CI throughput only — does not close proof gaps by default |
+| [Ecosystem governance](../superpowers/plans/2026-05-16-li-ecosystem-governance.md) | Traceability + live-docs map — not a proof milestone |
+| [lip / lit plan](../superpowers/plans/2026-05-16-li-package-manager-lip.md) | Publish gates reference **G-stdlib** / **G-test-verify** — no “proved package” without gap link |
+| [LLM-first spec](../superpowers/specs/2026-05-16-li-llm-first-design.md) | **Vision-LLM** — agent JSON diagnostics; provability pillar unchanged |
 
 ---
 

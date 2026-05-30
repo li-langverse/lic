@@ -928,6 +928,12 @@ outcome = "compile_ok"
 note = "tier-1 dot spec N=8; runtime via verify-math-physics-goldens.sh"
 
 [[tests]]
+suite = "math_linalg"
+file = "math_linalg/mat2_at2_golden_2x2.li"
+outcome = "compile_ok"
+note = "2×2 float @ golden [[19,22],[43,50]]; runtime via mat2_codegen_lean_drift.sh"
+
+[[tests]]
 suite = "physics"
 file = "physics/golden_positions_sum.li"
 outcome = "compile_ok"

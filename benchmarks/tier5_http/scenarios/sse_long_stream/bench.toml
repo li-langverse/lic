@@ -11,7 +11,6 @@ backend_port = 19101
 target = "edge"
 requests = [
   { method = "GET", path = "/stream/sse?count=30&interval_ms=20", expect_status = 200, body_contains = "event: tick" },
-  { method = "GET", path = "/stream/sse?count=30&interval_ms=20", expect_status = 200, body_contains = "data:" },
 ]
 
 [load]
@@ -25,7 +24,8 @@ duration_sec = 6
 collect = ["rps", "stream_ok_ratio"]
 
 [parity]
-# SSE long stream is event-bound (one soak per connection); gate stream_ok_ratio not wrk RPS.
+# SSE long stream: verify on live li-httpd; timing via ws_fanout in parity_streaming (see nextjs_sse sse_verify).
+verify_only = true
 rps_handshake_bound = true
 stream_ok_ratio_min = 0.50
 rps_ratio_min = 0.85

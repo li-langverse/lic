@@ -1312,6 +1312,7 @@ static struct {
   int32_t name_slot;
   int32_t tick;
   int32_t entity_count;
+  int32_t asset_ref_count;
   int32_t valid;
 } li_rt_world_parsed;
 
@@ -1331,7 +1332,8 @@ static int32_t li_rt_world_slot_for_token(const char* name) {
 
 int32_t li_rt_world_format_version(void) { return 1; }
 
-const char* li_rt_world_serialize_slot(int32_t name_slot, int32_t tick, int32_t entity_count) {
+const char* li_rt_world_serialize_fields(int32_t name_slot, int32_t tick, int32_t entity_count,
+                                       int32_t asset_ref_count) {
   if (name_slot < 0 || name_slot > 1) {
     name_slot = 0;
   }
@@ -1341,9 +1343,20 @@ const char* li_rt_world_serialize_slot(int32_t name_slot, int32_t tick, int32_t 
   if (entity_count < 0) {
     entity_count = 0;
   }
-  snprintf(li_rt_world_line_buf, sizeof(li_rt_world_line_buf), "world_v1 name=%s tick=%d entity_count=%d",
-           li_rt_world_token_for_slot(name_slot), (int)tick, (int)entity_count);
+  if (asset_ref_count < 0) {
+    asset_ref_count = 0;
+  }
+  if (asset_ref_count > 1) {
+    asset_ref_count = 1;
+  }
+  snprintf(li_rt_world_line_buf, sizeof(li_rt_world_line_buf),
+           "world_v1 name=%s tick=%d entity_count=%d asset_ref_count=%d",
+           li_rt_world_token_for_slot(name_slot), (int)tick, (int)entity_count, (int)asset_ref_count);
   return li_rt_world_line_buf;
+}
+
+const char* li_rt_world_serialize_slot(int32_t name_slot, int32_t tick, int32_t entity_count) {
+  return li_rt_world_serialize_fields(name_slot, tick, entity_count, 0);
 }
 
 int32_t li_rt_world_parse_line(const char* line) {
@@ -1351,21 +1364,33 @@ int32_t li_rt_world_parse_line(const char* line) {
   li_rt_world_parsed.name_slot = 0;
   li_rt_world_parsed.tick = 0;
   li_rt_world_parsed.entity_count = 0;
+  li_rt_world_parsed.asset_ref_count = 0;
   if (line == NULL) {
     return 0;
   }
   char name[LI_RT_WORLD_NAME_MAX];
   int tick = 0;
   int entity_count = 0;
-  if (sscanf(line, "world_v1 name=%63s tick=%d entity_count=%d", name, &tick, &entity_count) != 3) {
+  int asset_ref_count = 0;
+  int parsed = sscanf(line, "world_v1 name=%63s tick=%d entity_count=%d asset_ref_count=%d", name,
+                      &tick, &entity_count, &asset_ref_count);
+  if (parsed != 4) {
+    asset_ref_count = 0;
+    parsed = sscanf(line, "world_v1 name=%63s tick=%d entity_count=%d", name, &tick, &entity_count);
+    if (parsed != 3) {
+      return 0;
+    }
+  }
+  if (tick < 0 || entity_count < 0 || asset_ref_count < 0) {
     return 0;
   }
-  if (tick < 0 || entity_count < 0) {
+  if (asset_ref_count > 1) {
     return 0;
   }
   li_rt_world_parsed.name_slot = li_rt_world_slot_for_token(name);
   li_rt_world_parsed.tick = (int32_t)tick;
   li_rt_world_parsed.entity_count = (int32_t)entity_count;
+  li_rt_world_parsed.asset_ref_count = (int32_t)asset_ref_count;
   li_rt_world_parsed.valid = 1;
   return 1;
 }
@@ -1391,13 +1416,21 @@ int32_t li_rt_world_parsed_entity_count(void) {
   return li_rt_world_parsed.entity_count;
 }
 
-int32_t li_rt_world_snapshot_eq_fields(int32_t an, int32_t at, int32_t ae, int32_t bn, int32_t bt,
-                                     int32_t be) {
-  return (an == bn && at == bt && ae == be) ? 1 : 0;
+int32_t li_rt_world_parsed_asset_ref_count(void) {
+  if (li_rt_world_parsed.valid == 0) {
+    return 0;
+  }
+  return li_rt_world_parsed.asset_ref_count;
 }
 
-int32_t li_rt_world_roundtrip_fields(int32_t name_slot, int32_t tick, int32_t entity_count) {
-  const char* line = li_rt_world_serialize_slot(name_slot, tick, entity_count);
+int32_t li_rt_world_snapshot_eq_fields(int32_t an, int32_t at, int32_t ae, int32_t aar, int32_t bn,
+                                     int32_t bt, int32_t be, int32_t bar) {
+  return (an == bn && at == bt && ae == be && aar == bar) ? 1 : 0;
+}
+
+int32_t li_rt_world_roundtrip_fields(int32_t name_slot, int32_t tick, int32_t entity_count,
+                                     int32_t asset_ref_count) {
+  const char* line = li_rt_world_serialize_fields(name_slot, tick, entity_count, asset_ref_count);
   if (li_rt_world_parse_line(line) != 1) {
     return 0;
   }
@@ -1408,6 +1441,9 @@ int32_t li_rt_world_roundtrip_fields(int32_t name_slot, int32_t tick, int32_t en
     return 0;
   }
   if (li_rt_world_parsed.entity_count != entity_count) {
+    return 0;
+  }
+  if (li_rt_world_parsed.asset_ref_count != asset_ref_count) {
     return 0;
   }
   return 1;
@@ -1423,11 +1459,12 @@ static int32_t li_rt_world_path_safe(const char* path) {
   return 1;
 }
 
-int32_t li_rt_world_write_path(const char* path, int32_t name_slot, int32_t tick, int32_t entity_count) {
+int32_t li_rt_world_write_path(const char* path, int32_t name_slot, int32_t tick, int32_t entity_count,
+                               int32_t asset_ref_count) {
   if (!li_rt_world_path_safe(path)) {
     return 0;
   }
-  const char* line = li_rt_world_serialize_slot(name_slot, tick, entity_count);
+  const char* line = li_rt_world_serialize_fields(name_slot, tick, entity_count, asset_ref_count);
   FILE* f = fopen(path, "w");
   if (f == NULL) {
     return 0;
@@ -1464,8 +1501,8 @@ int32_t li_rt_world_read_path(const char* path) {
 }
 
 int32_t li_rt_world_file_roundtrip_path(const char* path, int32_t name_slot, int32_t tick,
-                                        int32_t entity_count) {
-  if (li_rt_world_write_path(path, name_slot, tick, entity_count) != 1) {
+                                        int32_t entity_count, int32_t asset_ref_count) {
+  if (li_rt_world_write_path(path, name_slot, tick, entity_count, asset_ref_count) != 1) {
     return 0;
   }
   if (li_rt_world_read_path(path) != 1) {
@@ -1480,8 +1517,13 @@ int32_t li_rt_world_file_roundtrip_path(const char* path, int32_t name_slot, int
   if (li_rt_world_parsed.entity_count != entity_count) {
     return 0;
   }
+  if (li_rt_world_parsed.asset_ref_count != asset_ref_count) {
+    return 0;
+  }
   return 1;
 }
+
+const char* li_rt_world_default_asset_ref_path(void) { return "assets/mesh.gltf"; }
 
 const char* li_rt_world_checkpoint_path_default(void) {
   const char* v = getenv("LI_WORLD_CHECKPOINT_PATH");

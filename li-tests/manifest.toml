@@ -895,6 +895,13 @@ note = "import studio: compose shell (verify until object-call codegen #322)"
 
 [[tests]]
 suite = "composable"
+file = "composable/import_world_roundtrip.li"
+packages = ["li-world"]
+outcome = "check_ok"
+note = "WP-GD-03: world.li text save/load roundtrip via li-world"
+
+[[tests]]
+suite = "composable"
 file = "composable/import_studio_agentic_run.li"
 packages = ["li-studio", "li-gui", "li-ui"]
 outcome = "check_ok"

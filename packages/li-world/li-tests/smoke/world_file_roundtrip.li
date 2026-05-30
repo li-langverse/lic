@@ -5,12 +5,13 @@ def main() raises Alloc, IO -> int
   ensures result == 0
   decreases 0
 =
-  if world_file_roundtrip_ok_fields(1, 42, 7, world_checkpoint_path_default()) != 1:
+  if world_file_roundtrip_ok_fields(1, 42, 7, 1, world_checkpoint_path_default()) != 1:
     return 1
   var snap: WorldSnapshot
   snap.name = world_name_slot_arena()
   snap.tick = 99
   snap.entity_count = 3
+  snap.asset_ref_count = 1
   if world_file_roundtrip_ok(snap, world_checkpoint_path_default()) != 1:
     return 2
   return 0

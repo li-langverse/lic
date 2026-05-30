@@ -1244,11 +1244,7 @@ def studio_mcp_tool_dispatch_mode_arg(mode: int, tool_id: int, arg: int) -> Stud
     return out
   if tool_id == studio_mcp_world_scaffold():
     var profile0: int = studio_mcp_arg_normalize_profile(arg)
-    var snap: WorldSnapshot
-    snap.name = world_name_slot_default()
-    snap.tick = 0
-    snap.entity_count = studio_game_entity_count_stub()
-    if world_snapshot_valid(snap) != 1:
+    if studio_world_scaffold_write(studio_world_li_path_default()) != 1:
       out.status = studio_mcp_tool_status_failed()
       out.result_code = studio_mcp_tool_result_err_io()
       return out
@@ -2063,10 +2059,10 @@ def studio_compose_shell_drug_litl(w: float, h: float, tick: int, has_selection:
 
 def li_std_studio_version() -> int
   requires true
-  ensures result == 22
+  ensures result == 23
   decreases 0
 =
-  return 22
+  return 23
 
 def studio_agent_context_none() -> int
   requires true
@@ -2991,6 +2987,7 @@ type StudioWorldCheckpoint = object
   public name: int
   public tick: int
   public entity_count: int
+  public asset_ref_count: int
 
 # UX-11 — shell loading / skeleton rects (viewport + inspector); no spinner IR
 type StudioShellLoadingState = object
@@ -3405,18 +3402,89 @@ def studio_game_entity_count_stub() -> int
 =
   return 1
 
+def studio_game_asset_ref_count_stub() -> int
+  requires true
+  ensures result == 1
+  decreases 0
+=
+  return 1
+
+def studio_world_asset_ref_path_default() raises Alloc, IO -> str
+  requires true
+  ensures result != ""
+  decreases 0
+=
+  return world_default_asset_ref_path()
+
+def studio_world_li_path_default() raises Alloc, IO -> str
+  requires true
+  ensures result != ""
+  decreases 0
+=
+  return world_checkpoint_path_default()
+
+def studio_world_scaffold_snapshot() -> WorldSnapshot
+  requires true
+  ensures world_snapshot_valid(result) == 1
+  ensures result.name == world_name_slot_default()
+  ensures result.tick == 0
+  ensures result.entity_count == studio_game_entity_count_stub()
+  ensures result.asset_ref_count == studio_game_asset_ref_count_stub()
+  decreases 0
+=
+  var snap: WorldSnapshot
+  snap.name = world_name_slot_default()
+  snap.tick = 0
+  snap.entity_count = studio_game_entity_count_stub()
+  snap.asset_ref_count = studio_game_asset_ref_count_stub()
+  return snap
+
+def studio_world_save(snapshot: WorldSnapshot, path: str) raises Alloc, IO -> int
+  requires world_snapshot_valid(snapshot) == 1
+  ensures 0 <= result
+  ensures result <= 1
+  decreases snapshot.tick
+=
+  return world_save_to_path(snapshot, path)
+
+def studio_world_load(path: str) raises Alloc, IO -> WorldSnapshot
+  requires true
+  ensures world_snapshot_valid(result) == 1
+  decreases 0
+=
+  return world_load_from_path(path)
+
+def studio_world_io_roundtrip(snapshot: WorldSnapshot, path: str) raises Alloc, IO -> int
+  requires world_snapshot_valid(snapshot) == 1
+  ensures 0 <= result
+  ensures result <= 1
+  decreases snapshot.tick
+=
+  return world_file_roundtrip_ok(snapshot, path)
+
+def studio_world_scaffold_write(path: str) raises Alloc, IO -> int
+  requires true
+  ensures 0 <= result
+  ensures result <= 1
+  decreases 0
+=
+  var snap: WorldSnapshot = studio_world_scaffold_snapshot()
+  return studio_world_save(snap, path)
+
 def studio_game_world_checkpoint_from_session(session: SimSessionStub) -> WorldSnapshot
   requires session.tick >= 0
   ensures world_snapshot_valid(result) == 1
   ensures result.name == world_name_slot_arena()
   ensures result.tick == session.tick
   ensures result.entity_count == studio_game_entity_count_stub()
+  ensures result.asset_ref_count == studio_game_asset_ref_count_stub()
   decreases session.tick
 =
   var snap: WorldSnapshot
   snap.name = world_name_slot_arena()
   snap.tick = session.tick
   snap.entity_count = studio_game_entity_count_stub()
+  snap.asset_ref_count = studio_game_asset_ref_count_stub()
   return snap
 
 def studio_game_world_checkpoint_stub(snapshot: WorldSnapshot) -> int
@@ -3433,6 +3501,8 @@ def studio_game_world_checkpoint_stub(snapshot: WorldSnapshot) -> int
     return 0
   if snapshot.entity_count != studio_game_entity_count_stub():
     return 0
+  if snapshot.asset_ref_count != studio_game_asset_ref_count_stub():
+    return 0
   return 1
 
 def studio_world_checkpoint_empty() -> StudioWorldCheckpoint
@@ -3446,18 +3516,21 @@ def studio_world_checkpoint_empty() -> StudioWorldCheckpoint
   c.name = world_name_slot_default()
   c.tick = 0
   c.entity_count = 0
+  c.asset_ref_count = 0
   return c
 
 def studio_world_checkpoint_from_snapshot(snapshot: WorldSnapshot) -> StudioWorldCheckpoint
   requires true
   ensures result.tick == snapshot.tick
   ensures result.entity_count == snapshot.entity_count
+  ensures result.asset_ref_count == snapshot.asset_ref_count
   decreases snapshot.tick
 =
   var c: StudioWorldCheckpoint
   c.name = snapshot.name
   c.tick = snapshot.tick
   c.entity_count = snapshot.entity_count
+  c.asset_ref_count = snapshot.asset_ref_count
   c.valid = 0
   if studio_game_world_checkpoint_stub(snapshot) == 1:
     c.valid = 1
@@ -3465,7 +3538,6 @@ def studio_world_checkpoint_from_snapshot(snapshot: WorldSnapshot) -> StudioWorl
 
 def studio_world_checkpoint_capture(profile_id: int, session: SimSessionStub) -> StudioWorldCheckpoint
   requires session.tick >= 0
-  ensures profile_id != studio_profile_game() ==> result.valid == 0
   decreases profile_id
 =
   if profile_id != studio_profile_game():
@@ -3487,6 +3559,8 @@ def studio_world_checkpoint_after_sim_tick(profile_id: int, session: SimSessionS
   if c.tick != session.tick:
     return sim_status_invalid_dt()
   if c.entity_count != studio_game_entity_count_stub():
+    return sim_status_invalid_dt()
+  if c.asset_ref_count != studio_game_asset_ref_count_stub():
     return sim_status_invalid_dt()
   return sim_status_ok()
 

@@ -294,15 +294,21 @@ int32_t li_rt_lig_present_surface_ok(void);
 /* PH-GD-2: li-world text save/load (buffer + single-line world.li file I/O). */
 int32_t li_rt_world_format_version(void);
 const char* li_rt_world_serialize_slot(int32_t name_slot, int32_t tick, int32_t entity_count);
+const char* li_rt_world_serialize_fields(int32_t name_slot, int32_t tick, int32_t entity_count,
+                                         int32_t asset_ref_count);
 int32_t li_rt_world_parse_line(const char* line);
 int32_t li_rt_world_parsed_name_slot(void);
 int32_t li_rt_world_parsed_tick(void);
 int32_t li_rt_world_parsed_entity_count(void);
-int32_t li_rt_world_snapshot_eq_fields(int32_t an, int32_t at, int32_t ae, int32_t bn, int32_t bt,
-                                       int32_t be);
-int32_t li_rt_world_roundtrip_fields(int32_t name_slot, int32_t tick, int32_t entity_count);
-int32_t li_rt_world_write_path(const char* path, int32_t name_slot, int32_t tick, int32_t entity_count);
+int32_t li_rt_world_parsed_asset_ref_count(void);
+int32_t li_rt_world_snapshot_eq_fields(int32_t an, int32_t at, int32_t ae, int32_t aar, int32_t bn,
+                                       int32_t bt, int32_t be, int32_t bar);
+int32_t li_rt_world_roundtrip_fields(int32_t name_slot, int32_t tick, int32_t entity_count,
+                                     int32_t asset_ref_count);
+int32_t li_rt_world_write_path(const char* path, int32_t name_slot, int32_t tick, int32_t entity_count,
+                               int32_t asset_ref_count);
 int32_t li_rt_world_read_path(const char* path);
 int32_t li_rt_world_file_roundtrip_path(const char* path, int32_t name_slot, int32_t tick,
-                                        int32_t entity_count);
+                                        int32_t entity_count, int32_t asset_ref_count);
+const char* li_rt_world_default_asset_ref_path(void);
 const char* li_rt_world_checkpoint_path_default(void);

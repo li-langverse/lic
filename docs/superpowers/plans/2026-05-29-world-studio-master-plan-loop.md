@@ -73,7 +73,7 @@ todos:
     status: done
   - id: wsm-w4-world-io
     content: "world.li text save/load roundtrip (WP-GD-03)"
-    status: pending
+    status: done
   - id: wsm-w4-gltf-ingest
     content: "glTF ingest via li-assets into scene (WP-GD-04)"
     status: pending

@@ -1,16 +1,18 @@
 {
   "pass": true,
-  "todo_id": "wsm-w4-world-checkpoint",
-  "wps_touched": ["WP-GD-02"],
+  "todo_id": "wsm-w4-world-io",
+  "wps_touched": ["WP-GD-03"],
   "smokes_run": [
-    "packages/li-studio/li-tests/smoke/studio_world_checkpoint_after_tick.li",
-    "packages/li-studio/li-tests/smoke/studio_game_step_hook.li"
+    "packages/li-world/li-tests/smoke/world_roundtrip.li",
+    "packages/li-world/li-tests/smoke/world_file_roundtrip.li",
+    "packages/li-studio/li-tests/smoke/studio_world_io_roundtrip.li",
+    "li-tests/composable/import_world_roundtrip.li"
   ],
   "native_only": true,
   "gates": {
     "world_studio_plan_gates": "pass",
-    "lic_check_local": "wsl studio_world_checkpoint_after_tick.li green",
+    "lic_check_local": "wsl studio_world_io_roundtrip.li + import_world_roundtrip.li green",
     "lic_check_ci": "pending"
   },
-  "notes": "WP-GD-02: StudioWorldCheckpoint on StudioShellCompose; studio_world_checkpoint_after_sim_tick wired in studio_sim_step_hook (game profile post sim_step); studio_shell_timeline_tick_sim_step stores checkpoint on timeline advance; smoke studio_world_checkpoint_after_tick.li."
+  "notes": "WP-GD-03: extended world_v1 line with asset_ref_count (0..1 stub; default ref path assets/mesh.gltf). Studio studio_world_save/load/io_roundtrip/scaffold_write; world_scaffold MCP writes world.li. Composable import_world_roundtrip.li + smoke studio_world_io_roundtrip.li. Scene graph / multi-asset paths remain stub."
 }

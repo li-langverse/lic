@@ -6,12 +6,14 @@
     "packages/li-studio/li-tests/smoke/studio_mcp_dispatch_run.li",
     "packages/li-studio/li-tests/smoke/studio_mcp_tools.li",
     "packages/li-studio/li-tests/smoke/studio_mcp_extended.li",
-    "packages/li-studio/li-tests/smoke/studio_agentic_run.li"
+    "packages/li-studio/li-tests/smoke/studio_agentic_run.li",
+    "packages/li-studio/li-tests/smoke/studio_native_pixels_wgpu_readback.li"
   ],
   "native_only": true,
   "gates": {
     "world_studio_plan_gates": "pass",
-    "lic_check_local": "skipped_no_lic_build_windows"
+    "lic_check_local": "wsl build-wsl/compiler/lic/lic",
+    "lic_check_ci": "pending"
   },
-  "notes": "WP-AG-02: studio_mcp_tool_dispatch_arg applies normalized int args for all 11 MCP tools — world_scaffold (profile + WorldSnapshot valid), sim_set_profile, lic_check/lic_build proof gates, publish_bundle export mask, am_export_print format, chem_dft_run via drug LITL DFT payload, studio_adaptive_layout LITL stage + layout width, viewport display hooks. studio_mcp_dispatch_run.li in plan gates. lis stdio MCP server (WP-AG-03) next."
+  "notes": "Merged WP-UX-14 native_pixels honesty (render_host_native_pixels_honest, studio_native_pixels_wgpu_readback smoke, li-sim-sensors workspace) with WP-AG-02 MCP dispatch arg normalization on remote."
 }

@@ -4881,6 +4881,54 @@ def studio_shell_demo_apply_profile(compose: var StudioShellCompose, profile_id:
 =
   compose.config = studio_project_config_new(profile_id)
 
+# WP-UX-14 — honest native_pixels: paint blit or wgpu readback/draw-list (not external CPU host alone).
+def studio_native_pixel_source_honest(source: int) -> int
+  requires source >= 0
+  requires source <= 4
+  ensures result >= 0
+  ensures result <= 1
+  decreases source
+=
+  if source == lig_native_pixel_source_paint_blit():
+    return 1
+  if source == lig_native_pixel_source_wgpu_readback():
+    return 1
+  if source == lig_native_pixel_source_wgpu_draw_list():
+    return 1
+  return 0
+
+def studio_native_pixel_source_expected() -> int raises IO
+  requires true
+  ensures result >= 0
+  ensures result <= 4
+  decreases 0
+=
+  if lig_present_wgpu_readback_active() == 1:
+    return lig_native_pixel_source_wgpu_readback()
+  return lig_native_pixel_source_paint_blit()
+
+def studio_native_pixels_wgpu_readback_host_smoke() -> int raises IO
+  requires true
+  ensures result >= 0
+  ensures result <= 8
+  decreases 0
+=
+  if lig_present_wgpu_readback_active() != 1:
+    return 0
+  var vp_w: float = 1280.0
+  var vp_h: float = 720.0
+  if lig_present_blit_paint_summary(vp_w, vp_h, 1, 8) != 1:
+    return 1
+  if lig_present_host_native_pixels_flag() != 1:
+    return 2
+  if lig_present_host_native_pixel_source_flag() != lig_native_pixel_source_wgpu_readback():
+    return 3
+  var counter: RenderFpsCounter = render_fps_counter_new()
+  render_fps_counter_host_tick(counter)
+  if counter.native_pixels != 1:
+    return 4
+  return 0
+
 def studio_vertical_demo_compose(profile_id: int, frame_id: int, key_compose: int) -> StudioShellCompose
   requires studio_profile_id_valid(profile_id) == 1
   requires frame_id >= 0
@@ -4935,7 +4983,9 @@ def studio_vertical_demo_frame(profile_id: int, frame_id: int) -> int raises IO
   studio_paint_topbar_profile(frame, topbar, profile_id)
   if lig_present_host_active() == 1:
     var vp: ViewportRegion = gui_viewport_region_from_layout(compose.layout)
+    var blit_fail_code: int = 52 + frame_id
     if lig_present_wgpu_readback_active() == 1:
+      blit_fail_code = 54
       var draw_list: RenderDrawList = render_draw_list_new()
       render_draw_list_push_clear(draw_list, 0.05, 0.07, 0.1)
       var draw_mat: RenderPbrLiteMaterial = render_pbr_lite_material_default()
@@ -4944,13 +4994,20 @@ def studio_vertical_demo_frame(profile_id: int, frame_id: int) -> int raises IO
       if render_draw_list_submit(vp, draw_list, profile_id) != 1:
         return 54 + frame_id
     if lig_present_blit_paint_summary(vp.w, vp.h, profile_id, frame.cmd_count) != 1:
-      return 52 + frame_id
+      return blit_fail_code
     var _presented: LigPresentFrame = studio_shell_host_present_loop_tick(vp.w, vp.h, frame_id)
     if _presented.presented != 1:
       return 50 + frame_id
     if _presented.native_pixels != 1:
       return 51 + frame_id
     if lig_native_pixel_source_honest_product(_presented.native_pixel_source) != 1:
+      if lig_present_wgpu_readback_active() == 1:
+        return 55
+      return 53 + frame_id
+    var expected_src: int = studio_native_pixel_source_expected()
+    if _presented.native_pixel_source != expected_src:
+      if lig_present_wgpu_readback_active() == 1:
+        return 55
       return 53 + frame_id
   if frame_id == 0:
     return 0

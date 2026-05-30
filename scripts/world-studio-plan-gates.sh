@@ -14,6 +14,8 @@ if [[ -x "$ROOT/build/compiler/lic/lic" ]]; then
   LIC="$ROOT/build/compiler/lic/lic"
 elif [[ -x "$ROOT/build/compiler/lic/lic.exe" ]]; then
   LIC="$ROOT/build/compiler/lic/lic.exe"
+elif [[ "$(uname -s)" == "Linux" && -x "$ROOT/build-wsl/compiler/lic/lic" ]]; then
+  LIC="$ROOT/build-wsl/compiler/lic/lic"
 elif [[ -x "$ROOT/scripts/resolve-lic.sh" ]]; then
   LIC="$("$ROOT/scripts/resolve-lic.sh" 2>/dev/null)" || true
 fi
@@ -33,27 +35,8 @@ li_phase "design tokens"
 
 
 run_lic_smokes() {
-  local lic_bin="$1"
-  li_phase "li-studio core smokes"
-  for smoke in \
-    studio_shell_demo.li \
-    studio_vertical_profile_roundtrip.li \
-    studio_sim_step_by_profile.li \
-    studio_timeline_playback.li \
-    studio_toml_engine_export.li \
-    studio_command_palette.li \
-    studio_keyboard_bridge.li \
-    studio_mcp_tools.li \
-    studio_mcp_dispatch_run.li \
-    studio_agentic_run.li \
-    studio_agent_chrome.li \
-    studio_agent_chrome_fsm.li \
-    studio_viewport_hud.li \
-    studio_viewport_error.li; do
-    path="$ROOT/packages/li-studio/li-tests/smoke/$smoke"
-    [[ -f "$path" ]] || fail "missing smoke $smoke"
-    "$lic_bin" check "$path" || fail "lic check $smoke"
-  done
+  li_phase "lic check smokes"
+  LIC="$1" bash "$ROOT/scripts/world-studio-plan-lic-smokes.sh"
 }
 
 try_wsl_lic_smokes() {
@@ -65,12 +48,21 @@ try_wsl_lic_smokes() {
   wsl_root="$(wsl wslpath -u "$win_root" 2>/dev/null || true)"
   [[ -z "$wsl_root" ]] && return 1
   li_phase "wsl lic check smokes"
-  wsl bash -lc "set -euo pipefail; cd '$wsl_root'; if [[ -x build/compiler/lic/lic ]]; then LIC=build/compiler/lic/lic; elif [[ -x build/compiler/lic/lic.exe ]]; then LIC=build/compiler/lic/lic.exe; else ./scripts/build.sh; LIC=build/compiler/lic/lic; fi; for smoke in studio_shell_demo.li studio_vertical_profile_roundtrip.li studio_sim_step_by_profile.li studio_timeline_playback.li studio_toml_engine_export.li studio_command_palette.li studio_keyboard_bridge.li studio_mcp_tools.li studio_mcp_dispatch_run.li studio_agentic_run.li studio_agent_chrome.li studio_agent_chrome_fsm.li studio_viewport_hud.li studio_viewport_error.li; do \"\$LIC\" check \"packages/li-studio/li-tests/smoke/\$smoke\"; done"
+  if wsl --cd "$win_root" bash ./scripts/world-studio-plan-lic-smokes.sh; then
+    return 0
+  fi
+  wsl bash -lc "cd $(printf '%q' "$wsl_root") && bash ./scripts/world-studio-plan-lic-smokes.sh"
 }
 if [[ "${WORLD_STUDIO_GATES_SKIP_LIC:-0}" == "1" ]]; then
   li_warn "skip lic check smokes (WORLD_STUDIO_GATES_SKIP_LIC=1)"
 elif [[ -n "$LIC" && -x "$LIC" ]]; then
   run_lic_smokes "$LIC"
+elif [[ -x "$ROOT/build-wsl/compiler/lic/lic" ]] && command -v wsl >/dev/null 2>&1; then
+  if try_wsl_lic_smokes; then
+    li_ok "wsl lic smokes passed"
+  else
+    li_warn "wsl lic smokes failed — build native lic or fix WSL"
+  fi
 elif try_wsl_lic_smokes; then
   li_ok "wsl lic smokes passed"
 else

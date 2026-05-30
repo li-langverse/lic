@@ -42,6 +42,18 @@ note = "T-PKG-li-studio-empty-states"
 
 [[tests]]
 suite = "smoke"
+file = "smoke/studio_viewport_hud.li"
+outcome = "check_ok"
+note = "WP-UX-13: live FPS + particle tier viewport HUD"
+
+[[tests]]
+suite = "smoke"
+file = "smoke/studio_native_pixels_wgpu_readback.li"
+outcome = "check_ok"
+note = "WP-UX-14: native_pixels honest via wgpu readback stub (LIG_WGPU_READBACK=1)"
+
+[[tests]]
+suite = "smoke"
 file = "smoke/studio_viewport_error.li"
 outcome = "check_ok"
 note = "T-PKG-li-studio-viewport-error UX-08"

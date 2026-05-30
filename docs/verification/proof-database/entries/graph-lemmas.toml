@@ -1,13 +1,29 @@
 version = 1
 
 [[entry]]
+id = "GT-LM-HANDSHAKING"
+kind = "lemma"
+field = "graph"
+domain = "combinatorics"
+statement = "Handshaking lemma: sum of vertex degrees equals twice the number of edges."
+proof_status = "target"
+gap_id = "G-graph"
+gap_kind = "proof_gap"
+lean_module = "proof-db/graph/GraphAxioms.lean"
+lean_thm = "Li.ProofDb.Graph.gt_lm_handshaking"
+mathlib_ref = "Mathlib.Combinatorics.SimpleGraph.DegreeSum"
+last_verified_lic_commit = "17b150a"
+
+[[entry]]
 id = "GT-LM-TREE-EDGES"
 kind = "lemma"
 field = "graph"
 domain = "combinatorics"
 statement = "Tree on n vertices has exactly n - 1 edges."
-proof_status = "target"
+proof_status = "open"
 gap_id = "G-graph"
 gap_kind = "proof_gap"
-lean_module = "docs/semantics/Discharge.lean"
-last_verified_lic_commit = "35fe7f99"
+lean_module = "proof-db/graph/GraphAxioms.lean"
+lean_thm = "Li.ProofDb.Graph.gt_lm_tree_edges"
+mathlib_ref = "Mathlib.Combinatorics.SimpleGraph.Tree"
+last_verified_lic_commit = "17b150a"

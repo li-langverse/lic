@@ -2499,7 +2499,8 @@ def studio_project_config_from_additive_toml_fixture() -> StudioProjectConfig
   var _s1: int = studio_toml_parse_line("profile = sim_additive")
   var _s2: int = studio_toml_parse_line("determinism_tier = 2")
   var _s3: int = studio_toml_parse_line("[engine.export]")
-  var _s4: int = studio_toml_parse_line("formats = [3mf, gcode]")
+  # Mask parser matches substrings 3mf + gcode (no bracket list — avoids lic check parse on commas).
+  var _s4: int = studio_toml_parse_line("formats = x3mf_ygcode_z")
   var _s5: int = studio_toml_parse_line("require_sim_pass = true")
   var _s6: int = studio_toml_parse_line("printer_profile = profiles/bambu_x1c.toml")
   return studio_toml_parsed_config()

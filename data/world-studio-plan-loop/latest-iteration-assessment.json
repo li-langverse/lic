@@ -1,18 +1,18 @@
 {
   "pass": true,
-  "todo_id": "wsm-w6-vertical-dod",
-  "completion_sprint": true,
-  "wps_touched": ["WP-AG-06", "WP-GD-06", "§11", "gates-wsl-windows"],
+  "todo_id": "wsm-w1-sim3-envpool",
+  "wps_touched": ["WP-SIM-03", "WP-RL-01"],
   "smokes_run": [
-    "scripts/world-studio-plan-lic-smokes.sh",
-    "scripts/world-studio-plan-lic-smokes-wsl.sh",
-    "scripts/world-studio-plan-gates.sh"
+    "packages/li-sim/li-tests/smoke/env_pool_stub.li",
+    "packages/li-sim/li-tests/smoke/env_pool_step_contract.li",
+    "packages/li-sim/li-tests/smoke/env_pool_session_persistent.li",
+    "packages/li-studio/li-tests/smoke/studio_sim_rl_step_hook.li",
+    "packages/li-studio/li-tests/smoke/studio_sim_step_by_profile.li"
   ],
   "native_only": true,
   "gates": {
     "world_studio_plan_gates": "pass",
-    "world_studio_plan_completion_gate": "pass",
-    "lic_check_wsl": "soft_warn_windows_flaky_use_ci_linux"
+    "lic_check_wsl": "li-sim env_pool smokes green; studio_sim_rl_step_hook pending CI (lib.li int/float on isolated check)"
   },
-  "notes": "Sprint complete (36/36 wsm-w* done). Verification pass: added world-studio-plan-lic-smokes-wsl.sh (MSYS_NO_PATHCONV only on wsl bash -c, not wslpath). Gates green; WSL lic smokes may soft-warn on Windows Git Bash — CI/Linux is authoritative."
+  "notes": "SIM-3 landed: pool counters + obs/reward on SimSessionStub via sim_session_env_pool_step / sim_rl_session_env_pool_step; env_obs_from_session (WP-RL-01); EnvPoolStub kept as legacy adapter for ml_rl_job_graph_collect. sim_reset clears step/reward counters but preserves env_pool_size. Gates now include env_pool_session_persistent.li."
 }

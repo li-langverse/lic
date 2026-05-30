@@ -15,7 +15,7 @@ fi
   exit 1
 }
 
-for smoke in env_pool_stub.li env_pool_step_contract.li; do
+for smoke in env_pool_stub.li env_pool_step_contract.li env_pool_session_persistent.li; do
   "$LIC" check "$ROOT/packages/li-sim/li-tests/smoke/$smoke"
 done
 

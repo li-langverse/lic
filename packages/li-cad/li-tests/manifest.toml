@@ -1,0 +1,11 @@
+[[tests]]
+suite = "smoke"
+file = "smoke/cad_version.li"
+outcome = "verify_ok"
+note = "T-PKG-li-cad-smoke PH-CAD v1"
+
+[[tests]]
+suite = "smoke"
+file = "smoke/cad_degenerate_triangle.li"
+outcome = "compile_open_ok"
+note = "T-PKG-li-cad-degenerate PH-CAD tier-0 epsilon"

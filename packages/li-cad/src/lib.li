@@ -1,0 +1,99 @@
+# li-cad (PH-CAD v1): types + contracts only — no OpenCascade/CGAL/Manifold FFI.
+
+type CadVec3 = object
+  public x: float
+  public y: float
+  public z: float
+
+type CadTriangle = object
+  public a: CadVec3
+  public b: CadVec3
+  public c: CadVec3
+
+type CadMesh = object
+  public triangle_count: int
+  public kernel_kind: int
+
+def cad_version() -> int
+  requires true
+  ensures result == 1
+  decreases 0
+=
+  return 1
+
+def cad_kernel_mesh_stub() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0
+
+def cad_kernel_brep_stub() -> int
+  requires true
+  ensures result == 1
+  decreases 0
+=
+  return 1
+
+def cad_eps_area_sq() -> float
+  requires true
+  ensures result > 0.0
+  decreases 0
+=
+  return 1.0e-24
+
+def cad_vec3_sub(u: CadVec3, v: CadVec3) -> CadVec3
+  requires true
+  ensures result.x == u.x - v.x
+  ensures result.y == u.y - v.y
+  ensures result.z == u.z - v.z
+  decreases 0
+=
+  var r: CadVec3
+  r.x = u.x - v.x
+  r.y = u.y - v.y
+  r.z = u.z - v.z
+  return r
+
+def cad_vec3_cross(u: CadVec3, v: CadVec3) -> CadVec3
+  requires true
+  ensures true
+  decreases 0
+=
+  var r: CadVec3
+  r.x = u.y * v.z - u.z * v.y
+  r.y = u.z * v.x - u.x * v.z
+  r.z = u.x * v.y - u.y * v.x
+  return r
+
+def cad_triangle_area_sq(t: CadTriangle) -> float
+  requires true
+  ensures result >= 0.0
+  decreases 0
+=
+  var ab: CadVec3 = cad_vec3_sub(t.b, t.a)
+  var ac: CadVec3 = cad_vec3_sub(t.c, t.a)
+  var cr: CadVec3 = cad_vec3_cross(ab, ac)
+  return cr.x * cr.x + cr.y * cr.y + cr.z * cr.z
+
+def cad_triangle_is_degenerate(t: CadTriangle) -> int
+  requires true
+  ensures result == 0 || result == 1
+  decreases 0
+=
+  var a2: float = cad_triangle_area_sq(t)
+  if a2 <= cad_eps_area_sq():
+    return 1
+  return 0
+
+def cad_mesh_new(kernel_kind: int) -> CadMesh
+  requires kernel_kind >= 0
+  requires kernel_kind <= 1
+  ensures result.triangle_count == 0
+  ensures result.kernel_kind == kernel_kind
+  decreases kernel_kind
+=
+  var m: CadMesh
+  m.triangle_count = 0
+  m.kernel_kind = kernel_kind
+  return m

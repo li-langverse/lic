@@ -1,0 +1,12 @@
+[package]
+name = "li-cad"
+version = "0.1.0"
+edition = "2026"
+license = "Apache-2.0 OR MIT"
+description = "CAD/geometry types and contracts (v1 types-only; no kernel FFI)"
+
+[package.metadata.li]
+import_name = "cad"
+min_lic = "0.1.0"
+maintainer = "li-langverse"
+pkg_id = "PKG-li-cad"

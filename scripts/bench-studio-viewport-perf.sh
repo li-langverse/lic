@@ -125,6 +125,29 @@ def bench_palette_latency_hook() -> dict:
     }
 
 
+def bench_gpu_fail_recovery_hook() -> dict:
+    hook_path = root / "packages/li-studio/bench/gpu_fail_recovery.toml"
+    hook = load_toml(hook_path)
+    meta_h = hook.get("meta") or {}
+    bench = hook.get("bench") or {}
+    recovery = hook.get("recovery") or {}
+    budget = float(meta_h.get("retry_budget_ms", 100))
+    retry_ms = float(recovery.get("retry_latency_ms", bench.get("worst_retry_ms", 0)))
+    strip_visible = bool(recovery.get("strip_visible", False))
+    retry_visible = bool(recovery.get("retry_visible", False))
+    return {
+        "retry_budget_ms": budget,
+        "retry_latency_ms": retry_ms,
+        "worst_retry_ms": float(bench.get("worst_retry_ms", retry_ms)),
+        "strip_visible": strip_visible,
+        "retry_visible": retry_visible,
+        "retry_meets_target": retry_ms <= budget and strip_visible and retry_visible,
+        "meets_target": retry_ms <= budget and strip_visible and retry_visible,
+        "status": "simulate",
+        "bench_simulate_fn": meta_h.get("bench_simulate_fn", "studio_gpu_fail_retry_latency_ms"),
+    }
+
+
 def bench_panel_switch_hook() -> dict:
     hook_path = root / "packages/li-gui/bench/panel_switch.toml"
     hook = load_toml(hook_path)
@@ -223,6 +246,13 @@ if palette_hook.is_file():
     report["notes"].append("palette_latency:li-ui_hook_simulate")
 else:
     report["notes"].append("skip_palette_latency:hook_missing")
+
+gpu_fail_hook = root / "packages/li-studio/bench/gpu_fail_recovery.toml"
+if gpu_fail_hook.is_file():
+    report["gpu_fail_recovery"] = bench_gpu_fail_recovery_hook()
+    report["notes"].append("gpu_fail_recovery:li-studio_hook_simulate")
+else:
+    report["notes"].append("skip_gpu_fail_recovery:hook_missing")
 
 scene_hook = root / "packages/li-scene/bench/particle_tiers.toml"
 if scene_hook.is_file():
@@ -334,6 +364,17 @@ report["gates"]["palette_filter_ms"] = {
     "unit": "ms",
     "meets_target": bool(pl.get("filter_meets_target", False)),
     "honest_simulate": pl.get("status") == "simulate",
+}
+
+gf = report.get("gpu_fail_recovery") or {}
+report["gates"]["gpu_fail_retry_ms"] = {
+    "target": gf.get("retry_budget_ms", 100),
+    "value": gf.get("worst_retry_ms"),
+    "unit": "ms",
+    "meets_target": bool(gf.get("retry_meets_target", False)),
+    "honest_simulate": gf.get("status") == "simulate",
+    "strip_visible": gf.get("strip_visible"),
+    "retry_visible": gf.get("retry_visible"),
 }
 
 report["gates"]["studio_load_ms"] = {

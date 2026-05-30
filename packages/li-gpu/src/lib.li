@@ -71,6 +71,21 @@ def gpu_wgpu_smoke_run() -> GpuWgpuSmoke
   s.surface_ok = 0
   return s
 
+def gpu_wgpu_smoke_fail_run() -> GpuWgpuSmoke
+  requires true
+  ensures result.backend_id == gpu_backend_wgpu()
+  ensures result.status == gpu_wgpu_smoke_status_fail()
+  ensures result.adapter_ok == 0
+  ensures result.surface_ok == 0
+  decreases 0
+=
+  var s: GpuWgpuSmoke
+  s.backend_id = gpu_backend_wgpu()
+  s.status = gpu_wgpu_smoke_status_fail()
+  s.adapter_ok = 0
+  s.surface_ok = 0
+  return s
+
 def gpu_wgpu_smoke_passed(smoke: GpuWgpuSmoke) -> int
   requires true
   ensures result >= 0

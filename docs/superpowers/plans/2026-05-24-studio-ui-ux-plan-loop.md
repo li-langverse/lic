@@ -55,6 +55,9 @@ todos:
     status: done
   - id: studio-ux-17-gpu-fail-recovery
     content: "Native GPU fail strip + retry affordance in li-studio shell (UX-08)"
+    status: done
+  - id: studio-ux-18-proactive-wave3
+    content: "Proactive sweep wave-3 — keyboard journey audit + native wgpu CI matrix"
     status: pending
 isProject: false
 ---

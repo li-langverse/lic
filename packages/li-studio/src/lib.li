@@ -6,10 +6,10 @@ import ui
 
 def li_std_studio_version() -> int
   requires true
-  ensures result == 3
+  ensures result == 4
   decreases 0
 =
-  return 3
+  return 4
 
 def studio_dock_slot_count() -> int
   requires true
@@ -102,6 +102,7 @@ type StudioShellCompose = object
   public agent: StudioAgentChromeCompose
   public panel: GuiPanelState
   public palette: StudioCommandPaletteCompose
+  public gpu_fail: StudioGpuFailCompose
 
 def studio_dock_slot_offset_y(slot: int) -> float
   requires slot >= 0
@@ -296,6 +297,7 @@ def studio_compose_shell(w: float, h: float, active_dock_slot: int, has_selectio
   out.agent = studio_compose_agent_chrome(layout, studio_agent_task_idle())
   out.panel = gui_panel_state_new()
   out.palette = studio_compose_palette(w, h, studio_palette_closed_flag(), 0)
+  out.gpu_fail = studio_compose_gpu_fail(layout.viewport, studio_gpu_state_ok())
   return out
 
 def studio_compose_shell_palette(w: float, h: float, active_dock_slot: int, has_selection: int, is_open: int, query_code: int) -> StudioShellCompose
@@ -330,6 +332,22 @@ def studio_compose_shell_agent(w: float, h: float, active_dock_slot: int, has_se
 =
   var out: StudioShellCompose = studio_compose_shell(w, h, active_dock_slot, has_selection)
   out.agent = studio_compose_agent_chrome(out.layout, task_state)
+  return out
+
+def studio_compose_shell_gpu_fail(w: float, h: float, active_dock_slot: int, has_selection: int, gpu_state: int) -> StudioShellCompose
+  requires w > 0.0
+  requires h > 0.0
+  requires active_dock_slot >= 0
+  requires active_dock_slot < studio_dock_slot_count()
+  requires has_selection >= 0
+  requires has_selection <= 1
+  requires gpu_state >= studio_gpu_state_ok()
+  requires gpu_state <= studio_gpu_state_fail()
+  ensures result.gpu_fail.gpu_state == gpu_state
+  decreases gpu_state
+=
+  var out: StudioShellCompose = studio_compose_shell(w, h, active_dock_slot, has_selection)
+  out.gpu_fail = studio_compose_gpu_fail(out.layout.viewport, gpu_state)
   return out
 
 def studio_paint_dock_cmds() -> int
@@ -573,4 +591,30 @@ def studio_compose_ok(compose: StudioShellCompose) -> int
     return 0
   if studio_palette_ok(compose.palette) != 1:
     return 0
+  if studio_gpu_fail_ok(compose.gpu_fail) != 1:
+    return 0
   return 1
+
+def studio_gpu_fail_shell_ok(compose: StudioShellCompose) -> int
+  requires true
+  ensures result >= 0
+  ensures result <= 1
+  decreases 0
+=
+  if studio_compose_ok(compose) != 1:
+    return 0
+  if compose.gpu_fail.gpu_state != studio_gpu_state_fail():
+    return 0
+  if compose.gpu_fail.retry_visible != 1:
+    return 0
+  return 1
+
+def studio_paint_gpu_fail_overlay(frame: var PaintFrame, gpu_fail: StudioGpuFailCompose) -> unit
+  requires frame.cmd_count >= 0
+  requires gpu_fail.gpu_state >= studio_gpu_state_ok()
+  requires gpu_fail.gpu_state <= studio_gpu_state_fail()
+  ensures frame.cmd_count == old(frame.cmd_count) + studio_paint_gpu_fail_cmds(gpu_fail.gpu_state)
+  decreases gpu_fail.gpu_state
+=
+  if gpu_fail.gpu_state == studio_gpu_state_fail():
+    paint_studio_gpu_fail(frame, gpu_fail)

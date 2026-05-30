@@ -52,6 +52,12 @@ package = "li-ui"
 path = "packages/li-ui/bench/palette_latency.toml"
 gates = ["palette_open_ms", "palette_filter_ms"]
 
+[[hook]]
+id = "gpu_fail_recovery"
+package = "li-studio"
+path = "packages/li-studio/bench/gpu_fail_recovery.toml"
+gates = ["gpu_fail_retry_ms"]
+
 [[gate]]
 id = "viewport_fps"
 target = 60
@@ -86,6 +92,13 @@ target = 30
 unit = "ms"
 compare = "lte"
 notes = "Fuzzy filter keystroke to result list refresh (UX-04)"
+
+[[gate]]
+id = "gpu_fail_retry_ms"
+target = 100
+unit = "ms"
+compare = "lte"
+notes = "GPU fail strip retry affordance latency (UX-08)"
 
 [[particle_tier]]
 id = "md_1k"

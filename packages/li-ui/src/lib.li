@@ -35,10 +35,10 @@ def li_std_ui_version() -> int
 
 def li_std_ui_studio_composables_version() -> int
   requires true
-  ensures result == 3
+  ensures result == 4
   decreases 0
 =
-  return 3
+  return 4
 def color_rgb(r: float, g: float, b: float, a: float) -> Color
   requires r >= 0.0
   requires g >= 0.0
@@ -577,6 +577,205 @@ def paint_studio_palette(frame: var PaintFrame, palette: StudioCommandPaletteCom
   frame.cmd_count = frame.cmd_count + 1
   frame.last_kind = paint_op_stroke_rect()
   frame.last_rect = palette.search_rect
+  frame.last_color = studio_color_accent_cyan()
+
+# UX-08 GPU fail strip — viewport overlay + retry affordance (studio-ux-17).
+
+def studio_gpu_state_ok() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0
+
+def studio_gpu_state_fail() -> int
+  requires true
+  ensures result == 1
+  decreases 0
+=
+  return 1
+
+def studio_gpu_fail_strip_height_px() -> float
+  requires true
+  ensures result == 32.0
+  decreases 0
+=
+  return 32.0
+
+def studio_gpu_retry_btn_width_px() -> float
+  requires true
+  ensures result == 88.0
+  decreases 0
+=
+  return 88.0
+
+def studio_gpu_fail_retry_latency_ms() -> float
+  requires true
+  ensures result == 15.0
+  decreases 0
+=
+  return 15.0
+
+def studio_gpu_fail_retry_budget_ms() -> float
+  requires true
+  ensures result == 100.0
+  decreases 0
+=
+  return 100.0
+
+type StudioGpuFailCompose = object
+  public gpu_state: int
+  public strip_rect: Rect
+  public message_rect: Rect
+  public retry_rect: Rect
+  public retry_visible: int
+  public retry_latency_ms: float
+
+def studio_gpu_fail_visible(gpu_state: int) -> int
+  requires gpu_state >= studio_gpu_state_ok()
+  requires gpu_state <= studio_gpu_state_fail()
+  ensures result >= 0
+  ensures result <= 1
+  decreases gpu_state
+=
+  if gpu_state == studio_gpu_state_fail():
+    return 1
+  return 0
+
+def studio_gpu_retry_visible(gpu_state: int) -> int
+  requires gpu_state >= studio_gpu_state_ok()
+  requires gpu_state <= studio_gpu_state_fail()
+  ensures result >= 0
+  ensures result <= 1
+  decreases gpu_state
+=
+  return studio_gpu_fail_visible(gpu_state)
+
+def studio_gpu_fail_strip_rect_at(vp_x: float, vp_y: float, vp_w: float, vp_h: float) -> Rect
+  requires vp_w >= 0.0
+  requires vp_h >= studio_gpu_fail_strip_height_px()
+  ensures result.w == vp_w
+  ensures result.h == studio_gpu_fail_strip_height_px()
+  decreases 0
+=
+  return rect_make(vp_x, vp_y, vp_w, studio_gpu_fail_strip_height_px())
+
+def studio_gpu_retry_rect_at(strip_x: float, strip_y: float, strip_w: float, strip_h: float) -> Rect
+  requires strip_w >= studio_gpu_retry_btn_width_px()
+  requires strip_h >= 0.0
+  ensures result.w == studio_gpu_retry_btn_width_px()
+  ensures result.h <= strip_h
+  decreases 0
+=
+  var pad: float = studio_agent_status_pad_px()
+  var btn_h: float = strip_h - (pad * 2.0)
+  if btn_h < 20.0:
+    btn_h = 20.0
+  if btn_h > strip_h:
+    btn_h = strip_h
+  var x: float = strip_x + strip_w - studio_gpu_retry_btn_width_px() - pad
+  var y: float = strip_y + (strip_h - btn_h) / 2.0
+  return rect_make(x, y, studio_gpu_retry_btn_width_px(), btn_h)
+
+def studio_gpu_fail_message_rect_at(strip_x: float, strip_y: float, strip_w: float, strip_h: float, retry_visible: int) -> Rect
+  requires strip_w >= 0.0
+  requires strip_h >= 0.0
+  requires retry_visible >= 0
+  requires retry_visible <= 1
+  ensures result.w >= 0.0
+  ensures result.h <= strip_h
+  decreases retry_visible
+=
+  var pad: float = studio_agent_status_pad_px()
+  var reserved: float = 0.0
+  if retry_visible == 1:
+    reserved = studio_gpu_retry_btn_width_px() + pad
+  var w: float = strip_w - (pad * 2.0) - reserved
+  if w < 0.0:
+    w = 0.0
+  var h: float = strip_h - (pad * 2.0)
+  if h < 0.0:
+    h = 0.0
+  return rect_make(strip_x + pad, strip_y + pad, w, h)
+
+def studio_compose_gpu_fail(viewport: Rect, gpu_state: int) -> StudioGpuFailCompose
+  requires gpu_state >= studio_gpu_state_ok()
+  requires gpu_state <= studio_gpu_state_fail()
+  requires viewport.w >= 0.0
+  requires viewport.h >= studio_gpu_fail_strip_height_px()
+  ensures result.gpu_state == gpu_state
+  decreases gpu_state
+=
+  var out: StudioGpuFailCompose
+  out.gpu_state = gpu_state
+  out.retry_visible = 0
+  out.retry_latency_ms = 0.0
+  out.strip_rect = rect_make(0.0, 0.0, 0.0, 0.0)
+  out.message_rect = rect_make(0.0, 0.0, 0.0, 0.0)
+  out.retry_rect = rect_make(0.0, 0.0, 0.0, 0.0)
+  if gpu_state == studio_gpu_state_fail():
+    out.retry_visible = 1
+    out.strip_rect = studio_gpu_fail_strip_rect_at(viewport.x, viewport.y, viewport.w, viewport.h)
+    out.retry_rect = studio_gpu_retry_rect_at(out.strip_rect.x, out.strip_rect.y, out.strip_rect.w, out.strip_rect.h)
+    out.message_rect = studio_gpu_fail_message_rect_at(out.strip_rect.x, out.strip_rect.y, out.strip_rect.w, out.strip_rect.h, out.retry_visible)
+    out.retry_latency_ms = studio_gpu_fail_retry_latency_ms()
+  return out
+
+def studio_gpu_fail_ok(gpu_fail: StudioGpuFailCompose) -> int
+  requires gpu_fail.gpu_state >= studio_gpu_state_ok()
+  requires gpu_fail.gpu_state <= studio_gpu_state_fail()
+  ensures result >= 0
+  ensures result <= 1
+  decreases gpu_fail.gpu_state
+=
+  if gpu_fail.gpu_state == studio_gpu_state_ok():
+    if gpu_fail.retry_visible != 0:
+      return 0
+    if gpu_fail.retry_latency_ms != 0.0:
+      return 0
+    return 1
+  if gpu_fail.strip_rect.h != studio_gpu_fail_strip_height_px():
+    return 0
+  if gpu_fail.retry_visible != 1:
+    return 0
+  if gpu_fail.retry_rect.w != studio_gpu_retry_btn_width_px():
+    return 0
+  if gpu_fail.retry_latency_ms > studio_gpu_fail_retry_budget_ms():
+    return 0
+  return 1
+
+def studio_paint_gpu_fail_cmds(gpu_state: int) -> int
+  requires gpu_state >= studio_gpu_state_ok()
+  requires gpu_state <= studio_gpu_state_fail()
+  ensures result >= 0
+  ensures result <= 4
+  decreases gpu_state
+=
+  if gpu_state == studio_gpu_state_fail():
+    return 4
+  return 0
+
+def paint_studio_gpu_fail(frame: var PaintFrame, gpu_fail: StudioGpuFailCompose) -> unit
+  requires frame.cmd_count >= 0
+  requires gpu_fail.gpu_state == studio_gpu_state_fail()
+  ensures frame.cmd_count == old(frame.cmd_count) + studio_paint_gpu_fail_cmds(studio_gpu_state_fail())
+  decreases 0
+=
+  frame.cmd_count = frame.cmd_count + 1
+  frame.last_kind = paint_op_fill_rect()
+  frame.last_rect = gpu_fail.strip_rect
+  frame.last_color = studio_color_agent_error()
+  frame.cmd_count = frame.cmd_count + 1
+  frame.last_kind = paint_op_stroke_rect()
+  frame.last_rect = gpu_fail.strip_rect
+  frame.last_color = studio_color_agent_error()
+  frame.cmd_count = frame.cmd_count + 1
+  frame.last_kind = paint_op_fill_rect()
+  frame.last_rect = gpu_fail.message_rect
+  frame.last_color = studio_color_bg_elevated()
+  frame.cmd_count = frame.cmd_count + 1
+  frame.last_kind = paint_op_stroke_rect()
+  frame.last_rect = gpu_fail.retry_rect
   frame.last_color = studio_color_accent_cyan()
 
 # --- studio shell layout IR ---

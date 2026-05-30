@@ -214,6 +214,11 @@ int32_t li_rt_log_reopen(void);
 const char* li_rt_log_redact(const char* in);
 int32_t li_rt_log_redact_ok(const char* in);
 
+/* PH-IO ingest + static dashboard (li_rt_ph_io.c). */
+int32_t summary_build(intptr_t catalog, intptr_t lic_csv, intptr_t lis_csv, intptr_t stab,
+                      intptr_t out);
+int32_t plot_render_dashboard(intptr_t summary_json, intptr_t html_out);
+
 #ifdef __cplusplus
 }
 #endif

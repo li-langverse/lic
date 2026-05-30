@@ -957,6 +957,12 @@ suite = "stdlib_coverage"
 file = "stdlib_coverage/build_std_decorators.li"
 outcome = "verify_open_ok"
 
+[[tests]]
+suite = "stdlib_coverage"
+file = "stdlib_coverage/build_std_summary_plot.li"
+outcome = "compile_open_ok"
+note = "PH-IO-5/7 std.summary + std.plot module resolve"
+
 # --- stdlib_seal (4s — prelude/stdlib names cannot be shadowed) ---
 # Coverage policy: std/**/*.li requires 100% line coverage (scripts/check-stdlib-coverage.sh).
 note = "open VC until 2f full (Lean gate on devbox)"

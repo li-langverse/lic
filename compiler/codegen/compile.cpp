@@ -72,6 +72,7 @@ bool compile_module(const Module& module, const std::string& output_path,
   const std::filesystem::path rt_net_path = resolve_runtime_c("li_rt_net.c");
   const std::filesystem::path rt_tls_path = resolve_runtime_c("li_rt_tls.c");
   const std::filesystem::path rt_h2_path = resolve_runtime_c("li_rt_h2.c");
+  const std::filesystem::path rt_ph_io_path = resolve_runtime_c("li_rt_ph_io.c");
 
   MirModule rt_needs;
   mir_collect_runtime_link_needs(mir, rt_needs);
@@ -102,6 +103,11 @@ bool compile_module(const Module& module, const std::string& output_path,
     }
     if (std::filesystem::exists(rt_h2_path)) {
       cmd << " -x c \"" << rt_h2_path.string() << "\"";
+    }
+  }
+  if (link_runtime_full || rt_needs.needs_rt_ph_io) {
+    if (std::filesystem::exists(rt_ph_io_path)) {
+      cmd << " -x c \"" << rt_ph_io_path.string() << "\"";
     }
   }
   cmd << " -o \"" << output_path << "\"";

@@ -1,0 +1,11 @@
+def plot_tag() -> int
+  requires true
+  ensures result == 8
+  decreases 0
+=
+  return 8
+
+extern proc plot_render_dashboard(summary_json: var ptr, html_out: var ptr) raises IO -> int
+  requires true
+  ensures true
+  decreases 0

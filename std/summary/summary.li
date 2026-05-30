@@ -1,0 +1,11 @@
+def summary_tag() -> int
+  requires true
+  ensures result == 7
+  decreases 0
+=
+  return 7
+
+extern proc summary_build(catalog: var ptr, lic_csv: var ptr, lis_csv: var ptr, stability_csv: var ptr, out: var ptr) raises IO -> int
+  requires true
+  ensures true
+  decreases 0

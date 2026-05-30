@@ -167,6 +167,7 @@ struct MirModule {
   bool needs_rt_net = false;
   /** Link runtime/li_rt_log.c when MIR calls li_log_* symbols. */
   bool needs_rt_log = false;
+  bool needs_rt_ph_io = false;
   /** When true: MIR stability pass + strict FP codegen (no fast-math reassociation). */
   bool fp_numerically_stable = false;
 };

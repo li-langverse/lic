@@ -15,6 +15,9 @@ void note_one(std::string_view callee, MirModule& mir) {
       starts_with(callee, "proxy_") || starts_with(callee, "li_rt_proxy_")) {
     mir.needs_rt_httpd = true;
   }
+  if (starts_with(callee, "summary_") || starts_with(callee, "plot_")) {
+    mir.needs_rt_ph_io = true;
+  }
   if (starts_with(callee, "net_") || starts_with(callee, "tcp_") || starts_with(callee, "epoll_") ||
       starts_with(callee, "hdr_") || starts_with(callee, "buf_") || starts_with(callee, "bytes_") ||
       callee == "path_ends_with_conf" || callee == "net_ping" ||

@@ -322,6 +322,18 @@ std::optional<std::string> easy_std_module(const std::string& module) {
   if (module.rfind("csv.", 0) == 0) {
     return "std." + module;
   }
+  if (module == "summary") {
+    return "std.summary";
+  }
+  if (module.rfind("summary.", 0) == 0) {
+    return "std." + module;
+  }
+  if (module == "plot") {
+    return "std.plot";
+  }
+  if (module.rfind("plot.", 0) == 0) {
+    return "std." + module;
+  }
   return std::nullopt;
 }
 

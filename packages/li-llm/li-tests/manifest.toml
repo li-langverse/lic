@@ -27,3 +27,9 @@ suite = "smoke"
 file = "smoke/llm_generate.li"
 outcome = "verify_ok"
 note = "PH-LLM WP-LLM-04 generate stub"
+
+[[tests]]
+suite = "smoke"
+file = "smoke/llm_forward_matmul.li"
+outcome = "check_ok"
+note = "PH-LLM WP-LLM-05 forward + ml_lig_matmul_run_auto hint"

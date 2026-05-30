@@ -201,6 +201,17 @@ extern proc li_rt_studio_demo_loop_tick_from_env() -> int
   ensures result >= 0
   decreases 0
 
+extern proc li_rt_studio_shell_paint_ppm(
+    path: str, width: int, height: int, profile_id: int, has_selection: int, playhead_pct: float) raises IO -> int
+  requires width >= 64
+  requires height >= 64
+  requires profile_id >= 1
+  requires profile_id <= 7
+  requires has_selection >= 0
+  requires has_selection <= 1
+  ensures result >= 0
+  ensures result <= 1
+  decreases width
 
 # UX-02 / WP-GD-08 — timeline playback (playhead synced to sim session tick).
 extern proc li_rt_studio_timeline_playing() -> int
@@ -817,25 +828,37 @@ def studio_agent_run_next(run: StudioAgentRun) -> StudioAgentRun
   if out.task_state == studio_agent_task_failed():
     return out
   if out.active_tool_id == studio_mcp_world_scaffold():
+    var req0: StudioAgentToolRequest = studio_mcp_tool_dispatch(out.active_tool_id)
+    out.last_tool_status = req0.status
+    out.last_result_code = req0.result_code
+    if req0.status != studio_mcp_tool_status_ok():
+      out.task_state = studio_agent_task_failed()
+      return out
     out.patch_applied = 1
-    out.last_tool_status = studio_mcp_tool_status_ok()
-    out.last_result_code = studio_mcp_tool_result_ok()
     out.step_index = 1
     out.active_tool_id = studio_mcp_lic_check()
     out.task_state = studio_agent_task_running()
     return out
   if out.active_tool_id == studio_mcp_lic_check():
+    var req1: StudioAgentToolRequest = studio_mcp_tool_dispatch(out.active_tool_id)
+    out.last_tool_status = req1.status
+    out.last_result_code = req1.result_code
+    if req1.status != studio_mcp_tool_status_ok():
+      out.task_state = studio_agent_task_failed()
+      return out
     out.check_step_done = 1
-    out.last_tool_status = studio_mcp_tool_status_ok()
-    out.last_result_code = studio_mcp_tool_result_ok()
     out.step_index = 2
     out.active_tool_id = studio_mcp_lic_build()
     out.task_state = studio_agent_task_running()
     return out
   if out.active_tool_id == studio_mcp_lic_build():
+    var req2: StudioAgentToolRequest = studio_mcp_tool_dispatch(out.active_tool_id)
+    out.last_tool_status = req2.status
+    out.last_result_code = req2.result_code
+    if req2.status != studio_mcp_tool_status_ok():
+      out.task_state = studio_agent_task_failed()
+      return out
     out.build_step_done = 1
-    out.last_tool_status = studio_mcp_tool_status_ok()
-    out.last_result_code = studio_mcp_tool_result_ok()
     out.step_index = studio_agent_real_pipeline_steps()
     out.task_state = studio_agent_task_done()
     return out
@@ -4601,6 +4624,50 @@ def studio_vertical_demo_compose(profile_id: int, frame_id: int, key_compose: in
     studio_attach_viewport_shell(out)
   return out
 
+# WP-UX-14b Step 1: write PPM from Li compose layout (runtime paint mirror; C deletion Step 4).
+def studio_vertical_capture_ppm(profile_id: int, frame_id: int, path: str, width: int, height: int) -> int raises IO, Alloc
+  requires studio_profile_id_valid(profile_id) == 1
+  requires frame_id >= 0
+  requires frame_id <= 2
+  requires width >= 64
+  requires height >= 64
+  requires path != ""
+  ensures result >= 0
+  decreases frame_id
+=
+  var compose: StudioShellCompose = studio_vertical_demo_compose(profile_id, frame_id, 0)
+  var has_sel: int = compose.inspector.has_selection
+  var play_pct: float = compose.timeline.playhead_pct
+  return li_rt_studio_shell_paint_ppm(path, width, height, profile_id, has_sel, play_pct)
+
+
+def studio_vertical_capture_ppm_wgpu(profile_id: int, frame_id: int, path: str, width: int, height: int) -> int raises IO, Alloc
+  requires studio_profile_id_valid(profile_id) == 1
+  requires frame_id >= 0
+  requires frame_id <= 2
+  requires width >= 64
+  requires height >= 64
+  requires path != ""
+  ensures result >= 0
+  decreases frame_id
+=
+  if lig_present_wgpu_readback_active() != 1:
+    return 0
+  return studio_vertical_capture_ppm(profile_id, frame_id, path, width, height)
+
+def studio_vertical_capture_ppm_auto(profile_id: int, frame_id: int, path: str, width: int, height: int) -> int raises IO, Alloc
+  requires studio_profile_id_valid(profile_id) == 1
+  requires frame_id >= 0
+  requires frame_id <= 2
+  requires width >= 64
+  requires height >= 64
+  requires path != ""
+  ensures result >= 0
+  decreases frame_id
+=
+  # LIG_WGPU_READBACK gates demo frame pixel source (studio_vertical_demo_frame); PPM bytes still paint mirror.
+  return studio_vertical_capture_ppm(profile_id, frame_id, path, width, height)
+
 def studio_vertical_demo_frame(profile_id: int, frame_id: int) -> int raises IO
   requires studio_profile_id_valid(profile_id) == 1
   requires frame_id >= 0
@@ -4628,15 +4695,22 @@ def studio_vertical_demo_frame(profile_id: int, frame_id: int) -> int raises IO
   studio_paint_topbar_profile(frame, topbar, profile_id)
   if lig_present_host_active() == 1:
     var vp: ViewportRegion = gui_viewport_region_from_layout(compose.layout)
+    var use_wgpu_rb: int = lig_present_wgpu_readback_active()
     if lig_present_blit_paint_summary(vp.w, vp.h, profile_id, frame.cmd_count) != 1:
+      if use_wgpu_rb == 1:
+        return 54 + frame_id
       return 52 + frame_id
     var _presented: LigPresentFrame = studio_shell_host_present_loop_tick(vp.w, vp.h, frame_id)
     if _presented.presented != 1:
       return 50 + frame_id
     if _presented.native_pixels != 1:
       return 51 + frame_id
-    if _presented.native_pixel_source != lig_native_pixel_source_paint_blit():
-      return 53 + frame_id
+    if use_wgpu_rb == 1:
+      if _presented.native_pixel_source != lig_native_pixel_source_wgpu_readback():
+        return 55 + frame_id
+    if use_wgpu_rb != 1:
+      if _presented.native_pixel_source != lig_native_pixel_source_paint_blit():
+        return 53 + frame_id
   if frame_id == 0:
     return 0
   if frame_id == 1:

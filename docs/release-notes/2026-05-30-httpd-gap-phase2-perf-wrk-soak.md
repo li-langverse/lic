@@ -16,12 +16,12 @@
 ```bash
 ./scripts/build-li-httpd.sh
 HTTPD_BENCH_DURATION_SEC=8 HTTPD_BENCH_SETTLE_SEC=1 HTTPD_BENCH_SKIP_TIMING=0 ./scripts/check-tier5-perf-wrk-soak.sh
-# exit 0 (2026-05-30T10:59Z, code_implementer pass 2)
+# exit 0 (2026-05-30T12:15Z, code_implementer re-verify)
 
 HTTPD_GATES_SKIP_LIC_BUILD=1 HTTPD_BENCH_SKIP_TIMING=1 ./scripts/httpd-plan-gates.sh
-# exit 0 (2026-05-30T10:59Z)
+# exit 0 (2026-05-30T12:15Z)
 
-# Parity highlights (8s lean soak): static_small rps li/nginx=1.33; nextjs_api=1.19; nextjs_ssr=1.15
+# Parity highlights (8s lean soak): static_small rps li/nginx=1.27; nextjs_api=1.22; nextjs_ssr=1.26
 ```
 
 Nightly / plan loop: `HTTPD_RUN_PHASE2_GATES=1 HTTPD_BENCH_DURATION_SEC=30 ./scripts/httpd-plan-gates.sh`

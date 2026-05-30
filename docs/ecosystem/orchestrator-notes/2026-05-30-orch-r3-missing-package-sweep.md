@@ -11,7 +11,7 @@
 
 | Field | Value |
 |-------|-------|
-| Swarm posture | **Degraded (recoverable)** — ecosystem grade **B** (80.0); `unattended_safe: true` on scorecard but observer flagged `needs_meta_observer` |
+| Swarm posture | **Degraded (recoverable)** — ecosystem grade **C** (75.0); `unattended_safe: true` on scorecard; swarm_execution 70 (stuck SDK runs) |
 | `missing_package` open | **3** (`gap-line-profiler-001`, `gap-missing-std-std-summary`, `gap-missing-std-std-plot`) |
 | Explorer `missing_std_modules` | **2 missing** (`std.summary`, `std.plot`); `std.io` / `std.csv` **present** |
 | Backlog patches | **3** todos set `pending` in `ecosystem-package-backlog.md` |
@@ -28,7 +28,7 @@
 | Apply manifest | `benchmarks/data/latest/swarm-gap-actions.json` |
 | Explorer | `benchmarks/data/latest/ecosystem-explorer.json` (`missing_std_modules`) |
 | Quality scorecard | `benchmarks/data/latest/ecosystem-quality-report.json` |
-| Meta audit | `li-cursor-agents/data/runs/swarm_observer-20260530-swarm-coverage.md` |
+| Meta audit | `benchmarks/data/runs/swarm_observer-1780135312809.md` |
 
 ---
 

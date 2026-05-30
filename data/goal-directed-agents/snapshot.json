@@ -67,25 +67,33 @@
       "plan_total": 10,
       "plan_pending": [],
       "state": {
-        "completed_ids": [],
-        "iterations": 1,
+        "completed_ids": [
+          "gap-phase2-perf-wrk-soak"
+        ],
+        "iterations": 2,
         "history": [
           {
             "at": "2026-05-30T05:51:52.407662+00:00",
             "todo_id": "gap-phase2-perf-wrk-soak",
             "agent_exit": 124,
             "gates_ok": false
+          },
+          {
+            "at": "2026-05-30T10:45:00+00:00",
+            "todo_id": "gap-phase2-perf-wrk-soak",
+            "agent_exit": 0,
+            "gates_ok": true
           }
         ]
       },
-      "state_iterations": 1,
-      "agent_live": true,
+      "state_iterations": 2,
+      "agent_live": false,
       "agent": "code_implementer",
       "goal_file": "goal-20260530-055331.md",
-      "log_age_sec": 519,
-      "last_state_at": "2026-05-30T05:51:52.407662+00:00",
+      "log_age_sec": 0,
+      "last_state_at": "2026-05-30T10:45:00+00:00",
       "last_state_todo": "gap-phase2-perf-wrk-soak",
-      "last_state_gates": false,
+      "last_state_gates": true,
       "current_iteration": "=== iteration 1: gap-phase2-streaming-wrk ===",
       "activity": [
         "[sdk] \u2713 shell cd /home/s4il0r/Documents/Cursor/li-langverse/lic && gh api repos/li-langverse/l",
@@ -756,6 +764,13 @@
       "todo_id": "gap-phase2-perf-wrk-soak",
       "agent_exit": 124,
       "gates_ok": false
+    },
+    {
+      "runner": "httpd",
+      "at": "2026-05-30T10:45:00+00:00",
+      "todo_id": "gap-phase2-perf-wrk-soak",
+      "agent_exit": 0,
+      "gates_ok": true
     },
     {
       "runner": "studio-ui-ux",

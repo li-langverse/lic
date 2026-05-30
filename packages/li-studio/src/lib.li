@@ -1294,10 +1294,10 @@ def studio_compose_shell_drug_litl(w: float, h: float, tick: int, has_selection:
 
 def li_std_studio_version() -> int
   requires true
-  ensures result == 13
+  ensures result == 14
   decreases 0
 =
-  return 13
+  return 14
 
 def studio_agent_context_none() -> int
   requires true
@@ -4105,6 +4105,19 @@ def studio_palette_shell_ok(compose: StudioShellCompose) -> int
     return 0
   return 1
 
+def studio_palette_apply_action(compose: var StudioShellCompose, action_id: int) -> int
+  requires action_id >= studio_palette_action_none()
+  requires action_id <= studio_palette_action_focus_agent()
+  ensures result >= 0
+  ensures result <= 1
+  decreases action_id
+=
+  var region: int = gui_studio_palette_region_for_action(action_id)
+  if region >= studio_region_dock():
+    var _timing: PanelSwitchTiming = gui_panel_switch_to(compose.panel, region, 0.0)
+    return 1
+  return 0
+
 def studio_handle_studio_key(compose: var StudioShellCompose, input: InputState) -> int
   requires compose.layout.viewport_w > 0.0
   requires compose.layout.viewport_h > 0.0
@@ -4116,12 +4129,15 @@ def studio_handle_studio_key(compose: var StudioShellCompose, input: InputState)
   requires input.key_digit >= 0
   requires input.key_digit <= 5
   ensures result >= studio_key_action_none()
-  ensures result <= studio_key_action_region_focus()
+  ensures result <= studio_key_action_palette_exec()
   decreases input.key_digit
 =
   var key_w: float = compose.layout.viewport_w
   var key_h: float = compose.layout.viewport_h
-  return gui_handle_studio_key_palette(compose.panel, compose.palette, key_w, key_h, input)
+  var action: int = gui_handle_studio_key_palette(compose.panel, compose.palette, key_w, key_h, input)
+  if action == studio_key_action_palette_exec():
+    var _applied: int = studio_palette_apply_action(compose, compose.panel.last_palette_action)
+  return action
 
 def studio_viewport_error_overlay_visible_flag(overlay: StudioViewportErrorOverlay) -> int
   requires true

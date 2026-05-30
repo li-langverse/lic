@@ -1,16 +1,16 @@
 {
   "pass": true,
-  "todo_id": "wsm-w1-timeline-playback",
-  "wps_touched": ["WP-UX-02", "WP-GD-08"],
+  "todo_id": "wsm-w1-command-palette",
+  "wps_touched": ["WP-UX-04"],
   "smokes_run": [
-    "packages/li-studio/li-tests/smoke/studio_timeline_playback.li",
-    "packages/li-studio/li-tests/smoke/studio_sim_step_by_profile.li",
-    "packages/li-studio/li-tests/smoke/studio_shell_demo.li"
+    "packages/li-studio/li-tests/smoke/studio_command_palette.li",
+    "packages/li-ui/li-tests/smoke/studio_palette.li",
+    "packages/li-gui/li-tests/smoke/studio_keyboard.li"
   ],
   "native_only": true,
   "gates": {
     "world_studio_plan_gates": "pass",
     "lic_check_local": "pending"
   },
-  "notes": "Timeline playhead derives from SimSessionStub.tick via studio_timeline_tick_sim_step (game profile smoke); mock +0.01 frame advance removed from li_rt_studio_timeline_tick_frame; scrub uses studio_timeline_scrub_to_tick. Host present loop still does not auto-step sim each frame — wire in WP-UX-09 keyboard bridge."
+  "notes": "Command palette actions: digits 1-3 when palette open dispatch focus-inspector/timeline/agent via studio_palette_exec_slot; studio_handle_studio_key applies region focus and closes overlay. Fixed corrupted run_lic_smokes in world-studio-plan-gates.sh; added studio_command_palette.li to gate smokes."
 }

@@ -34,7 +34,7 @@ todos:
     status: done
   - id: wsm-w1-command-palette
     content: "⌘K command palette overlay + actions (WP-UX-04)"
-    status: pending
+    status: done
   - id: wsm-w1-keyboard-bridge
     content: "SDL/mock InputState → studio_handle_studio_key end-to-end (WP-UX-09)"
     status: pending

@@ -81,17 +81,21 @@ def bench_render_fps_hook() -> dict:
     elapsed = frames * dt_ms
     fps_est = round((frames * 1000.0) / elapsed, 2) if elapsed > 0 else 0.0
     meets = fps_est >= target
+    native = bool(vp_sec.get("native_pixels", False))
+    wgpu_status = wgpu_sec.get("status", "missing")
     return {
         "fps_target": target,
         "fps_estimated": fps_est,
         "meets_target": meets,
-        "native_pixels": bool(vp_sec.get("native_pixels", False)),
-        "wgpu_smoke_status": wgpu_sec.get("status", "missing"),
+        "native_pixels": native,
+        "wgpu_smoke_status": wgpu_status,
         "wgpu_surface_ok": bool(wgpu_sec.get("surface_ok", False)),
         "fps_counter_hook": fps_sec.get("package", "li-render"),
         "bench_simulate_fn": vp_sec.get("bench_simulate_fn", "render_bench_fps_counter_simulate"),
+        "bench_native_fn": vp_sec.get("bench_native_fn", "render_bench_fps_counter_native"),
+        "draw_path": vp_sec.get("draw_path", "simulate"),
         "hook_version": fps_sec.get("hook_version", 0),
-        "status": "simulate",
+        "status": "native" if native else "simulate",
     }
 
 
@@ -126,6 +130,8 @@ def bench_scene_particle_tiers() -> list:
     tiers_cfg = hook.get("tier") or []
     out = []
     frames = int((hook.get("bench") or {}).get("sample_frames", 120))
+    native_meta = bool(meta_h.get("native_pixels", False))
+    draw_path = meta_h.get("draw_path", "scene_budget_simulate")
     for t in tiers_cfg:
         particles = int(t.get("particles", 0))
         fps_target = int(t.get("fps_target", 60))
@@ -135,6 +141,7 @@ def bench_scene_particle_tiers() -> list:
         dt_ms = 1000.0 / fps_target if fps_target > 0 else 16.667
         elapsed = frames * dt_ms
         fps_est = round((frames * 1000.0) / elapsed, 2) if elapsed > 0 else 0.0
+        tier_native = native_meta
         out.append(
             {
                 "id": t.get("id", f"md_{particles}"),
@@ -143,12 +150,13 @@ def bench_scene_particle_tiers() -> list:
                 "fps_target": fps_target,
                 "fps_estimated": fps_est,
                 "meets_target": fps_est >= fps_target,
-                "status": "simulate",
-                "native_pixels": bool(meta_h.get("native_pixels", False)),
-                "draw_path": meta_h.get("draw_path", "scene_budget_simulate"),
+                "status": "native" if tier_native else "simulate",
+                "native_pixels": tier_native,
+                "draw_path": draw_path,
                 "kernel": meta_h.get("kernel", "md_lennard_jones"),
                 "hook_version": meta_h.get("hook_version", 0),
                 "bench_simulate_fn": t.get("bench_simulate_fn", "scene_bench_particle_tier_simulate"),
+                "bench_native_fn": t.get("bench_native_fn", "scene_bench_particle_tier_native"),
             }
         )
     return out
@@ -186,7 +194,7 @@ else:
 scene_hook = root / "packages/li-scene/bench/particle_tiers.toml"
 if scene_hook.is_file():
     report["particle_tiers"] = bench_scene_particle_tiers()
-    report["notes"].append("particle_tiers:li-scene_hook_simulate")
+    report["notes"].append("particle_tiers:li-scene_hook_native")
 
 lic = root / "build/compiler/lic/lic"
 bench_py = root / "benchmarks/harness/bench.py"

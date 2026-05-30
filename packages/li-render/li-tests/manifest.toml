@@ -15,3 +15,15 @@ suite = "smoke"
 file = "smoke/scene_md_particles.li"
 outcome = "compile_open_ok"
 note = "T-PKG-li-render-scene-md-particles"
+
+[[tests]]
+suite = "smoke"
+file = "smoke/viewport_fps_native.li"
+outcome = "compile_open_ok"
+note = "T-PKG-li-render-fps-native"
+
+[[tests]]
+suite = "smoke"
+file = "smoke/scene_md_particles_native.li"
+outcome = "compile_open_ok"
+note = "T-PKG-li-render-scene-md-particles-native"

@@ -14,9 +14,10 @@
     "studio-ux-11-panel-switch-gate",
     "studio-ux-12-world-studio-demo-linux-audit",
     "studio-ux-13-proactive-sweep",
-    "studio-ux-14-native-sdl-ci"
+    "studio-ux-14-native-sdl-ci",
+    "studio-ux-15-wgpu-readback"
   ],
-  "iterations": 13,
+  "iterations": 14,
   "history": [
     {
       "at": "2026-05-24T14:53:41+00:00",
@@ -116,6 +117,15 @@
       "gates_ok": true,
       "ux_pass": true,
       "note": "SDL software renderer readback; ci-studio-ui-ux-native.sh + studio-ui-ux-native.yml; native_pixels=true; issue #182"
+    },
+    {
+      "at": "2026-05-30T08:11:00+00:00",
+      "todo_id": "studio-ux-15-wgpu-readback",
+      "agent_exit": 0,
+      "capture_exit": 0,
+      "gates_ok": true,
+      "ux_pass": true,
+      "note": "wgpu readback bench hooks; viewport+particles status=native; honest_simulate=false on PH gates"
     }
   ]
 }

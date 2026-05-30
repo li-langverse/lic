@@ -11,14 +11,16 @@ def main() -> int
     return 2
   var layout: StudioShellLayout = layout_studio_shell_adaptive(1920.0, 1080.0)
   var vp: ViewportRegion = gui_viewport_region_from_layout(layout)
-  var smoke: RenderViewportSmoke = render_wgpu_viewport_smoke(vp)
-  if render_viewport_smoke_ok(smoke) != 1:
+  var smoke: RenderViewportSmoke = render_wgpu_viewport_readback(vp)
+  if render_viewport_readback_ok(smoke) != 1:
     return 3
-  var counter: RenderFpsCounter = render_bench_fps_counter_simulate()
-  if render_fps_counter_meets_target(counter) != 1:
+  if smoke.native_pixels != 1:
     return 4
-  if render_fps_counter_display_fps(counter) < 60:
+  var counter: RenderFpsCounter = render_bench_fps_counter_native()
+  if render_fps_counter_meets_target(counter) != 1:
     return 5
-  if counter.native_pixels != 0:
+  if render_fps_counter_display_fps(counter) < 60:
     return 6
+  if counter.native_pixels != 1:
+    return 7
   return 0

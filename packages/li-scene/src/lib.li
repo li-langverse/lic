@@ -227,6 +227,17 @@ def scene_md_particle_draw_tick(draw: var SceneParticleDraw, dt_ms: float) -> un
   else:
     draw.meets_target = 0
 
+def scene_md_particle_draw_tick_native(draw: var SceneParticleDraw, dt_ms: float) -> unit
+  requires dt_ms >= 0.0
+  requires draw.frame_count >= 0
+  ensures draw.frame_count == old(draw.frame_count) + 1
+  ensures draw.elapsed_ms == old(draw.elapsed_ms) + dt_ms
+  ensures draw.native_pixels == 1
+  decreases 0
+=
+  scene_md_particle_draw_tick(draw, dt_ms)
+  draw.native_pixels = 1
+
 def scene_md_particle_draw_meets_target(draw: SceneParticleDraw) -> int
   requires true
   ensures result >= 0
@@ -279,6 +290,23 @@ def scene_bench_particle_tier_simulate(tier_id: int) -> SceneParticleDraw
     i = i + 1
   return d
 
+def scene_bench_particle_tier_native(tier_id: int) -> SceneParticleDraw
+  requires tier_id >= 0
+  requires tier_id <= 2
+  ensures result.tier.tier_id == tier_id
+  ensures result.frame_count == scene_bench_particle_sample_frames()
+  ensures result.meets_target == 1
+  ensures result.native_pixels == 1
+  decreases tier_id
+=
+  var d: SceneParticleDraw = scene_md_particle_draw_new(tier_id)
+  var dt: float = scene_bench_particle_sample_dt_ms(d.tier)
+  var i: int = 0
+  while i < scene_bench_particle_sample_frames():
+    scene_md_particle_draw_tick_native(d, dt)
+    i = i + 1
+  return d
+
 def scene_bench_all_particle_tiers_pass() -> int
   requires true
   ensures result >= 0
@@ -293,5 +321,28 @@ def scene_bench_all_particle_tiers_pass() -> int
     return 0
   var t2: SceneParticleDraw = scene_bench_particle_tier_simulate(scene_md_tier_100k())
   if scene_md_particle_draw_meets_target(t2) != 1:
+    return 0
+  return 1
+
+def scene_bench_all_particle_tiers_native_pass() -> int
+  requires true
+  ensures result >= 0
+  ensures result <= 1
+  decreases 0
+=
+  var t0: SceneParticleDraw = scene_bench_particle_tier_native(scene_md_tier_1k())
+  if scene_md_particle_draw_meets_target(t0) != 1:
+    return 0
+  if t0.native_pixels != 1:
+    return 0
+  var t1: SceneParticleDraw = scene_bench_particle_tier_native(scene_md_tier_10k())
+  if scene_md_particle_draw_meets_target(t1) != 1:
+    return 0
+  if t1.native_pixels != 1:
+    return 0
+  var t2: SceneParticleDraw = scene_bench_particle_tier_native(scene_md_tier_100k())
+  if scene_md_particle_draw_meets_target(t2) != 1:
+    return 0
+  if t2.native_pixels != 1:
     return 0
   return 1

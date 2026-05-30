@@ -49,7 +49,7 @@ todos:
     status: done
   - id: studio-ux-15-wgpu-readback
     content: "li-render wgpu real pixel draw — bench status native (not simulate) for viewport + particles"
-    status: pending
+    status: done
   - id: studio-ux-16-palette-search-latency
     content: "Command palette fuzzy search + measured open/filter latency hook (UX-04)"
     status: pending

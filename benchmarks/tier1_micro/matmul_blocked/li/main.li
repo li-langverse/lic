@@ -88,6 +88,16 @@ def mm_blocked_512(
 =
   var noop: int = 0
 
+def mm_flat_512(
+  C: var array[512, array[512, float]],
+  A: var array[512, array[512, float]],
+  B: var array[512, array[512, float]]
+) -> unit
+  requires true
+  ensures true
+=
+  var noop2: int = 0
+
 def main() raises IO -> int
   requires true
   ensures result == 0
@@ -105,7 +115,7 @@ def main() raises IO -> int
       C[i][j_init] = 0.0
       j_init = j_init + 1
     i = i + 1
-  mm_blocked_512(C, A, B)
+  mm_flat_512(C, A, B)
   var acc: float = 0.0
   var i_sum: int = 0
   while i_sum < 512

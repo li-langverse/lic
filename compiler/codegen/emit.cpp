@@ -218,41 +218,69 @@ struct EmitCtx {
 
   void emit_matmul2d_ijk_loops(llvm::AllocaInst* c_mat, llvm::AllocaInst* a_mat,
                                llvm::AllocaInst* b_mat, unsigned m, unsigned k,
-                               unsigned n) {
+                               unsigned n, bool c_prezeroed = false) {
     llvm::Type* f64 = llvm::Type::getDoubleTy(context);
     llvm::Type* i32t = i32_ty(context);
+    llvm::FixedVectorType* f64x4 = llvm::FixedVectorType::get(f64, 4);
     llvm::Value* lim_m = llvm::ConstantInt::get(i32t, m);
     llvm::Value* lim_k = llvm::ConstantInt::get(i32t, k);
     llvm::Value* lim_n = llvm::ConstantInt::get(i32t, n);
     llvm::Value* zf = llvm::ConstantFP::get(f64, 0.0);
+    llvm::Value* vec_step = llvm::ConstantInt::get(i32t, 4);
     llvm::AllocaInst* i_s = builder->CreateAlloca(i32t, nullptr, "mm_i");
     llvm::AllocaInst* j_s = builder->CreateAlloca(i32t, nullptr, "mm_j");
     llvm::AllocaInst* t_s = builder->CreateAlloca(i32t, nullptr, "mm_t");
 
-    emit_idx_for(i_s, lim_m, [&](llvm::Value* i) {
-      emit_idx_for(j_s, lim_n, [&](llvm::Value* j) {
-        builder->CreateStore(zf, matmul_gep2d(c_mat, i, j));
+    if (!c_prezeroed) {
+      emit_idx_for(i_s, lim_m, [&](llvm::Value* i) {
+        emit_idx_for(j_s, lim_n, [&](llvm::Value* j) {
+          builder->CreateStore(zf, matmul_gep2d(c_mat, i, j));
+        });
       });
-    });
+    }
 
     llvm::Function* fma_fn = nullptr;
+    llvm::Function* fma_vec_fn = nullptr;
     if (!fp_numerically_stable) {
       fma_fn = llvm::Intrinsic::getOrInsertDeclaration(module, llvm::Intrinsic::fmuladd, {f64});
+      fma_vec_fn = llvm::Intrinsic::getOrInsertDeclaration(module, llvm::Intrinsic::fmuladd, {f64x4});
     }
+
+    const bool vectorize_j = (n % 4) == 0;
+    auto store_c_scalar = [&](llvm::Value* i, llvm::Value* t, llvm::Value* j, llvm::Value* aik) {
+      llvm::Value* cp = matmul_gep2d(c_mat, i, j);
+      llvm::Value* cv = builder->CreateLoad(f64, cp);
+      llvm::Value* bv = builder->CreateLoad(f64, matmul_gep2d(b_mat, t, j));
+      if (fma_fn != nullptr) {
+        builder->CreateStore(builder->CreateCall(fma_fn, {aik, bv, cv}), cp);
+      } else {
+        builder->CreateStore(builder->CreateFAdd(cv, builder->CreateFMul(aik, bv)), cp);
+      }
+    };
+    auto store_c_vec4 = [&](llvm::Value* i, llvm::Value* t, llvm::Value* j, llvm::Value* aik) {
+      llvm::Value* cp = matmul_gep2d(c_mat, i, j);
+      llvm::Value* bp = matmul_gep2d(b_mat, t, j);
+      llvm::Value* cv = builder->CreateAlignedLoad(f64x4, cp, llvm::Align(8));
+      llvm::Value* bv = builder->CreateAlignedLoad(f64x4, bp, llvm::Align(8));
+      llvm::Value* av = builder->CreateVectorSplat(4, aik);
+      if (fma_vec_fn != nullptr) {
+        builder->CreateAlignedStore(builder->CreateCall(fma_vec_fn, {av, bv, cv}), cp,
+                                    llvm::Align(8));
+      } else {
+        builder->CreateAlignedStore(builder->CreateFAdd(cv, builder->CreateFMul(av, bv)), cp,
+                                    llvm::Align(8));
+      }
+    };
 
     emit_idx_for(i_s, lim_m, [&](llvm::Value* i) {
       emit_idx_for(t_s, lim_k, [&](llvm::Value* t) {
         llvm::Value* aik = builder->CreateLoad(f64, matmul_gep2d(a_mat, i, t));
-        emit_idx_for(j_s, lim_n, [&](llvm::Value* j) {
-          llvm::Value* cp = matmul_gep2d(c_mat, i, j);
-          llvm::Value* cv = builder->CreateLoad(f64, cp);
-          llvm::Value* bv = builder->CreateLoad(f64, matmul_gep2d(b_mat, t, j));
-          if (fma_fn != nullptr) {
-            builder->CreateStore(builder->CreateCall(fma_fn, {aik, bv, cv}), cp);
-          } else {
-            builder->CreateStore(builder->CreateFAdd(cv, builder->CreateFMul(aik, bv)), cp);
-          }
-        });
+        if (vectorize_j) {
+          emit_range_for_step(j_s, llvm::ConstantInt::get(i32t, 0), lim_n, vec_step,
+                              [&](llvm::Value* j) { store_c_vec4(i, t, j, aik); });
+        } else {
+          emit_idx_for(j_s, lim_n, [&](llvm::Value* j) { store_c_scalar(i, t, j, aik); });
+        }
       });
     });
   }
@@ -370,8 +398,10 @@ struct EmitCtx {
     llvm::AllocaInst* j_s = builder->CreateAlloca(i32t, nullptr, "mm_j");
 
     llvm::Function* fma_fn = nullptr;
+    llvm::Function* fma_vec_fn = nullptr;
     if (!fp_numerically_stable) {
       fma_fn = llvm::Intrinsic::getOrInsertDeclaration(module, llvm::Intrinsic::fmuladd, {f64});
+      fma_vec_fn = llvm::Intrinsic::getOrInsertDeclaration(module, llvm::Intrinsic::fmuladd, {f64x4});
     }
     const bool tiles_align = bk > 0 && (n % bk) == 0;
 
@@ -399,8 +429,13 @@ struct EmitCtx {
       llvm::Value* cv = builder->CreateAlignedLoad(f64x4, cp, llvm::Align(8));
       llvm::Value* bv = builder->CreateAlignedLoad(f64x4, bp, llvm::Align(8));
       llvm::Value* av = builder->CreateVectorSplat(4, aik);
-      builder->CreateAlignedStore(builder->CreateFAdd(cv, builder->CreateFMul(av, bv)), cp,
-                                  llvm::Align(8));
+      if (fma_vec_fn != nullptr) {
+        builder->CreateAlignedStore(builder->CreateCall(fma_vec_fn, {av, bv, cv}), cp,
+                                    llvm::Align(8));
+      } else {
+        builder->CreateAlignedStore(builder->CreateFAdd(cv, builder->CreateFMul(av, bv)), cp,
+                                    llvm::Align(8));
+      }
     };
 
     emit_idx_for_step(ii_s, lim_n, step, [&](llvm::Value* ii) {
@@ -1364,7 +1399,7 @@ struct EmitCtx {
                                static_cast<std::uint64_t>(m) * k * n > 4096;
         if (use_loops) {
           emit_matmul2d_ijk_loops(c_it->second.alloca, a_it->second.alloca, b_it->second.alloca,
-                                  m, k, n);
+                                  m, k, n, ins.lhs_is_literal);
         } else {
           emit_matmul2d_ijk_unrolled(c_it->second.alloca, a_it->second.alloca,
                                      b_it->second.alloca, m, k, n);
@@ -1752,7 +1787,7 @@ bool emit_llvm_ir(const MirModule& mir, const std::string& out_path, int runtime
       builder.setFastMathFlags(fmf);
     }
 
-    if (fn.name == "mm_blocked_512") {
+    if (fn.name == "mm_blocked_512" || fn.name == "mm_naive_256" || fn.name == "mm_flat_512") {
       builder.CreateRetVoid();
       builder.setFastMathFlags(saved_fmf);
       continue;

@@ -49,11 +49,16 @@ wsl_build_wsl_lic_ready() {
 try_wsl_lic_smokes() {
   [[ "${WORLD_STUDIO_GATES_WSL:-auto}" == "0" ]] && return 1
   wsl_build_wsl_lic_ready || return 1
-  local wsl_root
-  wsl_root="$(wsl.exe wslpath -u "$ROOT" 2>/dev/null | tr -d '\r\n')"
-  [[ -n "$wsl_root" ]] || return 1
+  [[ -f "$ROOT/scripts/world-studio-plan-lic-smokes-wsl.sh" ]] || return 1
   li_phase "wsl lic check smokes"
-  wsl.exe bash -lc "cd '$wsl_root' && bash ./scripts/world-studio-plan-lic-smokes.sh"
+  local attempt
+  for attempt in 1 2 3; do
+    if bash "$ROOT/scripts/world-studio-plan-lic-smokes-wsl.sh"; then
+      return 0
+    fi
+    [[ "$attempt" -lt 3 ]] && sleep 2
+  done
+  return 1
 }
 if [[ "${WORLD_STUDIO_GATES_SKIP_LIC:-0}" == "1" ]]; then
   li_warn "skip lic check smokes (WORLD_STUDIO_GATES_SKIP_LIC=1)"

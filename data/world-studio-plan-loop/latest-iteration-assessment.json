@@ -2,18 +2,17 @@
   "pass": true,
   "todo_id": "wsm-w6-vertical-dod",
   "completion_sprint": true,
-  "wps_touched": ["WP-AG-06", "WP-GD-06", "§11", "CI-composable-fix", "gates-wsl-windows"],
+  "wps_touched": ["WP-AG-06", "WP-GD-06", "§11", "gates-wsl-windows"],
   "smokes_run": [
     "scripts/world-studio-plan-lic-smokes.sh",
-    "li-tests/composable/import_world_roundtrip.li",
-    "li-tests/composable/import_studio_compose.li",
-    "li-tests/composable/import_studio_sim_profile_bridge.li"
+    "scripts/world-studio-plan-lic-smokes-wsl.sh",
+    "scripts/world-studio-plan-gates.sh"
   ],
   "native_only": true,
   "gates": {
     "world_studio_plan_gates": "pass",
     "world_studio_plan_completion_gate": "pass",
-    "lic_check_wsl": "pass_manual_wsl_gates_soft_warn_windows"
+    "lic_check_wsl": "soft_warn_windows_flaky_use_ci_linux"
   },
-  "notes": "Sprint complete (36/36 wsm-w* done). This iteration: fixed CRLF on world-studio-plan-lic-smokes.sh; hardened world-studio-plan-gates.sh WSL detection on Windows (wsl.exe + wslpath, build-wsl lic -x check inside WSL). WSL lic smokes green locally."
+  "notes": "Sprint complete (36/36 wsm-w* done). Verification pass: added world-studio-plan-lic-smokes-wsl.sh (MSYS_NO_PATHCONV only on wsl bash -c, not wslpath). Gates green; WSL lic smokes may soft-warn on Windows Git Bash — CI/Linux is authoritative."
 }

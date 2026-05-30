@@ -1,4 +1,4 @@
-# Pure-Li matmul (256×256) — IKJ matches C++ li_matmul_naive_kernel (init + GEMM + checksum).
+# Pure-Li matmul (256×256) — GEMM via `C = A @ B` → `ArrayMatMul2DF64` (IKJ + fmuladd).
 
 extern proc li_rt_volatile_sink_f64(v: float) raises IO -> unit
   requires true

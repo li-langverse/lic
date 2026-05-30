@@ -440,7 +440,6 @@ struct EmitCtx {
                                     llvm::Align(8));
       }
     };
-
     emit_idx_for_step(ii_s, lim_n, step, [&](llvm::Value* ii) {
       llvm::Value* i_max = tile_max(ii);
       emit_idx_for_step(kk_s, lim_n, step, [&](llvm::Value* kk) {
@@ -1397,9 +1396,9 @@ struct EmitCtx {
         const unsigned m = static_cast<unsigned>(ins.int_value);
         const unsigned k = static_cast<unsigned>(ins.rhs_int);
         const unsigned n = static_cast<unsigned>(ins.lhs_int);
-        constexpr unsigned kUnrollMax = 24;
+        constexpr unsigned kUnrollMax = 64;
         const bool use_loops = m > kUnrollMax || k > kUnrollMax || n > kUnrollMax ||
-                               static_cast<std::uint64_t>(m) * k * n > 4096;
+                               static_cast<std::uint64_t>(m) * k * n > (kUnrollMax * kUnrollMax * kUnrollMax);
         if (use_loops) {
           const bool skip_zero = ins.use_loaded_int;
           emit_matmul2d_ijk_loops(c_it->second.alloca, a_it->second.alloca, b_it->second.alloca,

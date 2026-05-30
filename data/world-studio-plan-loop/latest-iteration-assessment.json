@@ -1,18 +1,18 @@
 {
   "pass": true,
-  "todo_id": "wsm-w1-sim3-envpool",
-  "wps_touched": ["WP-SIM-03", "WP-RL-01"],
+  "todo_id": "wsm-w6-vertical-dod",
+  "completion_sprint": true,
+  "verification_pass": true,
+  "wps_touched": ["§11", "gates-wsl-windows"],
   "smokes_run": [
-    "packages/li-sim/li-tests/smoke/env_pool_stub.li",
-    "packages/li-sim/li-tests/smoke/env_pool_step_contract.li",
-    "packages/li-sim/li-tests/smoke/env_pool_session_persistent.li",
-    "packages/li-studio/li-tests/smoke/studio_sim_rl_step_hook.li",
-    "packages/li-studio/li-tests/smoke/studio_sim_step_by_profile.li"
+    "scripts/world-studio-plan-gates.sh",
+    "scripts/world-studio-plan-completion-gate.sh"
   ],
   "native_only": true,
   "gates": {
     "world_studio_plan_gates": "pass",
-    "lic_check_wsl": "li-sim env_pool smokes green; studio_sim_rl_step_hook pending CI (lib.li int/float on isolated check)"
+    "world_studio_plan_completion_gate": "pass",
+    "lic_check_wsl": "soft_warn_lic_not_built_windows"
   },
-  "notes": "SIM-3 landed: pool counters + obs/reward on SimSessionStub via sim_session_env_pool_step / sim_rl_session_env_pool_step; env_obs_from_session (WP-RL-01); EnvPoolStub kept as legacy adapter for ml_rl_job_graph_collect. sim_reset clears step/reward counters but preserves env_pool_size. Gates now include env_pool_session_persistent.li."
+  "notes": "Sprint complete (36/36 wsm-w* done). Verification pass: fixed CRLF on world-studio-plan-lic-smokes.sh via .gitattributes eol=lf (eliminated WSL pipefail invalid option). Gates green; lic smokes soft-warn on Windows host without built lic — CI/Linux authoritative."
 }

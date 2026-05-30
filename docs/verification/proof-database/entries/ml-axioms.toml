@@ -1,0 +1,14 @@
+version = 1
+
+[[entry]]
+id = "ML-AX-L-SMOOTH"
+kind = "axiom"
+field = "ml"
+domain = "optimization"
+statement = "L-smoothness: ||grad f(x) - grad f(y)|| <= L ||x - y|| for convex f."
+proof_status = "target"
+gap_id = "G-ml"
+gap_kind = "axiom_layer"
+convergence_class = "convex_first_order"
+lean_module = "docs/semantics/Discharge.lean"
+last_verified_lic_commit = "35fe7f99"

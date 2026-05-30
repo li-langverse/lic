@@ -1,0 +1,16 @@
+version = 1
+
+[[entry]]
+id = "N-LM-SQRT-BOUND"
+kind = "lemma"
+field = "numerics"
+domain = "floating_point"
+statement = "Float sqrt: |result^2 - x| < epsilon for x >= 0 (extends sqrt_open_bound specimen)."
+proof_status = "open"
+gap_id = "G-num"
+gap_kind = "proof_gap"
+lean_module = "docs/semantics/Discharge.lean"
+lean_thm = "Li.Discharge.sqrt_open_bound_spec"
+li_specimen = "li-tests/contracts_verify/sqrt_open_bound.li"
+benchmark_ref = "benchmarks/tier1_numerics/sqrt_pure_li"
+last_verified_lic_commit = "35fe7f99"

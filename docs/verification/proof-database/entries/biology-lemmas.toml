@@ -1,0 +1,14 @@
+version = 1
+
+[[entry]]
+id = "BIO-LM-NEEDLEMAN-WUNSCH"
+kind = "lemma"
+field = "biology"
+domain = "sequence_alignment"
+statement = "Needleman-Wunsch dynamic programming yields optimal global alignment score."
+proof_status = "target"
+gap_id = "G-bio"
+gap_kind = "proof_gap"
+lean_module = "docs/semantics/Discharge.lean"
+benchmark_ref = "benchmarks/tier2_biology/sequence_align"
+last_verified_lic_commit = "35fe7f99"

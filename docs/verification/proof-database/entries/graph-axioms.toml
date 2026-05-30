@@ -1,0 +1,14 @@
+version = 1
+
+[[entry]]
+id = "GT-AX-DEGREE-SUM"
+kind = "axiom"
+field = "graph"
+domain = "combinatorics"
+statement = "Handshaking lemma: sum of vertex degrees equals twice the number of edges."
+proof_status = "target"
+gap_id = "G-graph"
+gap_kind = "proof_gap"
+lean_module = "docs/semantics/Discharge.lean"
+mathlib_ref = "Mathlib.Combinatorics.SimpleGraph.DegreeSum"
+last_verified_lic_commit = "35fe7f99"

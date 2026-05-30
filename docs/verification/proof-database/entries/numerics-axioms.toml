@@ -1,0 +1,14 @@
+version = 1
+
+[[entry]]
+id = "N-AX-FP-ROUND"
+kind = "axiom"
+field = "numerics"
+domain = "floating_point"
+statement = "IEEE-style rounding: result of float op equals exact result rounded to nearest representable (axiomatic under G-hw)."
+proof_status = "target"
+gap_id = "G-num"
+gap_kind = "modeling_gap"
+lean_module = "docs/semantics/Discharge.lean"
+benchmark_ref = "benchmarks/tier1_numerics/horner_pure_li"
+last_verified_lic_commit = "35fe7f99"

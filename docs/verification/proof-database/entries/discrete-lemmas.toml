@@ -1,0 +1,13 @@
+version = 1
+
+[[entry]]
+id = "D-LM-ADD-ASSOC-INT"
+kind = "lemma"
+field = "discrete"
+domain = "integer_algebra"
+statement = "Int addition associative (discharge target from D-AX-INT-RING)."
+proof_status = "target"
+gap_id = "G-discrete"
+gap_kind = "proof_gap"
+lean_module = "docs/semantics/Discharge.lean"
+last_verified_lic_commit = "35fe7f99"

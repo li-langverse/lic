@@ -1,0 +1,13 @@
+version = 1
+
+[[entry]]
+id = "GT-LM-TREE-EDGES"
+kind = "lemma"
+field = "graph"
+domain = "combinatorics"
+statement = "Tree on n vertices has exactly n - 1 edges."
+proof_status = "target"
+gap_id = "G-graph"
+gap_kind = "proof_gap"
+lean_module = "docs/semantics/Discharge.lean"
+last_verified_lic_commit = "35fe7f99"

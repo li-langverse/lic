@@ -1,0 +1,13 @@
+version = 1
+
+[[entry]]
+id = "ST-AX-EXPECT-LINEAR"
+kind = "axiom"
+field = "statistics"
+domain = "probability"
+statement = "Expectation is linear: E[aX + bY] = a E[X] + b E[Y] (finite discrete sample space)."
+proof_status = "target"
+gap_id = "G-stats"
+gap_kind = "axiom_layer"
+lean_module = "docs/semantics/Discharge.lean"
+last_verified_lic_commit = "35fe7f99"

@@ -1,5 +1,5 @@
 version: 1
-updated_at: '2026-05-30T09:26:53Z'
+updated_at: '2026-05-30T19:45:07Z'
 gaps:
 - id: gap-line-profiler-001
   gap_kind: missing_package
@@ -506,8 +506,8 @@ gaps:
   discovered_by: plan_verifier
   evidence:
   - snapshot runner=swarm-observer plan_pending=orch-r2-competitor-stubs
-  - 'orch-r2 completed 2026-05-30: 30 competitor_feature rows; verticals.toml 12 stubs;
-    note docs/ecosystem/orchestrator-notes/2026-05-30-orch-r2-competitor-stubs.md'
+  - 'orch-r2 completed 2026-05-30: 30 competitor_feature rows; 9 vertical stubs patched
+    sim-md-research-backlog.md; note docs/ecosystem/orchestrator-notes/2026-05-30-orch-r2-competitor-stubs.md'
   runner_id: swarm-observer
   plan_todo_id: orch-r2-competitor-stubs
   suggested_loop: swarm-observer
@@ -1055,34 +1055,6 @@ gaps:
   suggested_loop: sim-md-research
   handoff_to:
   - numerics_researcher
-- id: gap-plan-pending-studio-ui-ux-studio-ux-14-native-sdl-ci
-  gap_kind: plan_debt
-  title: 'studio-ui-ux: pending plan todo studio-ux-14-native-sdl-ci'
-  status: closed
-  priority: 7
-  discovered_by: plan_verifier
-  evidence:
-  - snapshot runner=studio-ui-ux plan_pending=studio-ux-14-native-sdl-ci
-  - snapshot studio-ui-ux completed_ids includes studio-ux-14-native-sdl-ci
-  runner_id: studio-ui-ux
-  plan_todo_id: studio-ux-14-native-sdl-ci
-  suggested_loop: studio-ui-ux
-  handoff_to:
-  - swarm_observer
-- id: gap-plan-pending-studio-ui-ux-studio-ux-15-wgpu-readback
-  gap_kind: plan_debt
-  title: 'studio-ui-ux: pending plan todo studio-ux-15-wgpu-readback'
-  status: closed
-  priority: 7
-  discovered_by: plan_verifier
-  evidence:
-  - snapshot runner=studio-ui-ux plan_pending=studio-ux-15-wgpu-readback
-  - snapshot studio-ui-ux completed_ids includes studio-ux-15-wgpu-readback
-  runner_id: studio-ui-ux
-  plan_todo_id: studio-ux-15-wgpu-readback
-  suggested_loop: studio-ui-ux
-  handoff_to:
-  - swarm_observer
 - id: gap-plan-pending-studio-ui-ux-studio-ux-16-palette-search-latency
   gap_kind: plan_debt
   title: 'studio-ui-ux: pending plan todo studio-ux-16-palette-search-latency'

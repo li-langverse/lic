@@ -2,9 +2,9 @@
 
 **Date:** 2026-05-29  
 **Agent:** `swarm_observer`  
-**Research goal:** `swarm_coverage` (`li-cursor-agents/config/research-goals.yaml`)  
-**Branch:** `feat/world-studio-wave3-agentic` (lic working tree)  
-**north_star_fit:** ecosystem + ai — missing std modules and package seeds routed to `issue_planner` without lic product code
+**Research goal:** `swarm_coverage`  
+**Run:** `swarm_observer-1780092578193`  
+**Work item:** Reconcile `missing_std_modules` explorer signals with gap registry + `ecosystem-package-backlog.md`; seed `li-line-profiler`.
 
 ---
 
@@ -12,76 +12,103 @@
 
 | Field | Value |
 |-------|-------|
-| Swarm posture | **Critical / degraded** — ecosystem grade **F** (59.0 after refresh), `unattended_safe: false` |
-| Open `missing_package` gaps | **3** (`gap-line-profiler-001`, `gap-missing-std-std-summary`, `gap-missing-std-std-plot`) |
-| Package backlog | All five todos **`pending`** in `ecosystem-package-backlog.md` (including `pkg-std-io`, `pkg-std-csv` with registry **closed**) |
-| Apply pipeline | Confirmed — ingest + apply re-ran 2026-05-29T10:11:37Z |
-| Unattended? | **No** — 548 DB rows `unregistered_running_reconciled` inflate error metrics; 35 failing PRs |
+| Swarm posture | **Degraded / recovering** (ecosystem grade **C**, 78.3; `unattended_safe: true`) |
+| Open `missing_package` gaps | **3** — `std.summary`, `std.plot`, `li-line-profiler` |
+| Explorer `missing_std_modules` | 2 missing (`std.summary`, `std.plot`); 2 present (`std.io`, `std.csv`) |
+| Package backlog todos | **3 pending**, **2 completed** (io/csv present) |
+| Gap registry (open) | **57** — 30 competitor, 18 plan_debt, 6 ui_ux, 3 missing_package |
+| Unattended? | **Marginal yes** — scorecard `unattended_safe: true`; 106 local runs still `running`, 3394 DB errors/24h |
 
-`orch-r3` verified programmatic gap apply for open missing-package rows and documented handoffs to `issue_planner` / `package_architect`.
+Package orchestration is aligned: explorer → registry → apply-actions → `ecosystem-package-backlog.md` → `issue_planner` / `package_architect`.
+
+---
+
+## `missing_std_modules` sweep (explorer)
+
+Source: `benchmarks/data/latest/ecosystem-explorer.json`
+
+| Module | Explorer status | Registry gap | Backlog todo | Handoff |
+|--------|-----------------|--------------|--------------|---------|
+| `std.io` | present | `gap-missing-std-std-io` **closed** | `pkg-std-io` **completed** | — |
+| `std.csv` | present | `gap-missing-std-std-csv` **closed** | `pkg-std-csv` **completed** | — |
+| `std.summary` | **missing** | `gap-missing-std-std-summary` open | `pkg-std-summary` pending | issue_planner, package_architect |
+| `std.plot` | **missing** | `gap-missing-std-std-plot` open | `pkg-std-plot` pending | issue_planner, package_architect |
+
+| Package seed | Registry | Backlog |
+|--------------|----------|---------|
+| `li-line-profiler` | `gap-line-profiler-001` open | `pkg-line-profiler` pending |
 
 ---
 
 ## Scripts executed
 
 ```bash
-cd lic
-python3 scripts/swarm-gap-ingest.py
-python3 scripts/swarm-gap-apply-actions.py
-cd ../benchmarks
-python3 scripts/ecosystem-quality-grade.py
+cd benchmarks && python3 scripts/ecosystem-quality-grade.py
+cd lic && python3 scripts/swarm-gap-ingest.py
+cd lic && python3 scripts/swarm-gap-apply-actions.py
+SWARM_OBSERVER_REQUIRE_NOTE=docs/ecosystem/orchestrator-notes/2026-05-29-orch-r3-missing-package-sweep.md \
+  ./scripts/swarm-observer-plan-gates.sh
 ```
 
-**Ingest:** `registry gaps: 79` — `open_gaps: 54` (`missing_package` 3, `plan_debt` 21, `competitor_feature` 30)  
-**Apply patches (package):**
+**Evidence paths:**
 
-| Gap id | Backlog todo | Patch |
-|--------|--------------|-------|
-| `gap-line-profiler-001` | `pkg-line-profiler` | pending in `ecosystem-package-backlog.md` |
-| `gap-missing-std-std-summary` | `pkg-std-summary` | pending |
-| `gap-missing-std-std-plot` | `pkg-std-plot` | pending |
-
-**Evidence:** `benchmarks/data/latest/swarm-gap-actions.json`, `lic/data/swarm-gap-registry/registry.yaml`
+- Registry: `lic/data/swarm-gap-registry/registry.yaml` (85 gaps; 57 open)
+- Apply artifact: `benchmarks/data/latest/swarm-gap-actions.json`
+- Package backlog: `lic/docs/ecosystem/ecosystem-package-backlog.md`
+- Explorer: `benchmarks/data/latest/ecosystem-explorer.json`
+- Quality scorecard: `benchmarks/data/latest/ecosystem-quality-report.json`
+- Run report: `lic/data/runs/swarm_observer-1780092578193.md`
 
 ---
 
-## Registry vs backlog reconciliation
+## Registry reconciliation
 
-| Gap id | Registry status | Backlog todo | Action |
-|--------|-----------------|--------------|--------|
-| `gap-missing-std-std-io` | **closed** (present 2026-05-26) | `pkg-std-io` pending | **Human/issue_planner:** mark todo completed or re-open gap |
-| `gap-missing-std-std-csv` | **closed** | `pkg-std-csv` pending | same |
-| `gap-line-profiler-001` | open | `pkg-line-profiler` pending | handoff `issue_planner` — seed WP-B |
-| `gap-missing-std-std-summary` | open | `pkg-std-summary` pending | `issue_planner`, `package_architect` |
-| `gap-missing-std-std-plot` | open | `pkg-std-plot` pending | PH-IO-5 viz/dashboard |
+- Confirmed apply-actions patched all 3 open `missing_package` rows → `ecosystem-package-backlog.md`.
+- Closed `gap-plan-pending-swarm-observer-orch-r3-missing-package-sweep` with completion evidence.
+- `orch-r3-missing-package-sweep` → **completed** in `swarm-observer-plan-backlog.md`.
+- Marked `pkg-std-io` / `pkg-std-csv` **completed** in backlog (explorer `status=present`).
 
-No new systemd plan loops. Swarm goals only.
+**Do not close** `gap-missing-std-std-summary` / `gap-missing-std-std-plot` until explorer reports `present` (product work via `package_architect`).
 
 ---
 
-## Swarm routing
+## Handoffs (swarm goals — no lic systemd loops)
 
-| Work | Route |
-|------|-------|
-| Package issues from backlog | `issue_planner` (research goal handoff on `swarm_coverage`) |
-| Placement / new `li-*` repos | `package_architect` |
-| Line profiler seed | `issue_planner` — gap `gap-line-profiler-001` priority 8 |
+| Target agent | Work |
+|--------------|------|
+| `issue_planner` | File PH-IO-5/7 issues for `std.summary`, `std.plot`; seed `li-line-profiler` package issue |
+| `package_architect` | Scaffold `std/summary`, `std/plot` modules per master plan PH-IO |
+| `gap_explorer` | Re-scan after std modules land; close registry rows |
 
-**Deferred (other orch todos):** `orch-r4-ui-ux-signals`, competitor stubs (`orch-r2` note).
-
----
-
-## Control-plane signal (orchestration, not package code)
-
-- Top error string in `agent_runs`: **`unregistered_running_reconciled`** (548 rows) — supervisor lane restart marks in-flight SDK runs error; not leaf-agent logic failures.
-- Recommend: `li-cursor-agents/src/observer/` exclude reconcile errors from `error_rate`; persist `error_reason` in `meta` for dashboards.
+Route via `li-cursor-agents/config/research-goals.yaml` (`swarm_coverage`) — **not** `install-goal-plan-loop-systemd.sh`.
 
 ---
 
-## Agent deliverable
+## Self-heal actions (programmatic observer)
 
-- [x] Gap ingest + apply confirmed
-- [x] `ecosystem-package-backlog.md` todos pending for open gaps
+From `control_plane_state` (`updated_at` 2026-05-29T22:10:55Z):
+
+- `observer.retry_counts`: `{}`
+- `stopped_agents`: `[]`
+- Last scan: 2026-05-29T22:10:55Z
+
+106 local runs still `running`; DB shows 3394 `error` rows in 24h — meta-audit recommends finalize-run sweep in `li-cursor-agents`.
+
+---
+
+## Human-only blockers
+
+- PH-IO std module implementation merges (provability / API design)
+- Governance PRs on `trusted.lean`
+- `CURSOR_API_KEY` — present on host; SDK auth OK
+
+---
+
+## Agent deliverable checklist
+
+- [x] Ingest + apply-actions
+- [x] Package backlog verified (3 pending, 2 completed)
+- [x] Registry orch-r3 closed
 - [x] Orchestrator note (this file)
-- [ ] Registry/backlog drift (`pkg-std-io`, `pkg-std-csv`) — `issue_planner`
-- [ ] No product code in lic
+- [x] Run report under `data/runs/`
+- [x] Gates OK

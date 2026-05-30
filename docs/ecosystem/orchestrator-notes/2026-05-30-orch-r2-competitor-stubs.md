@@ -2,8 +2,9 @@
 
 **Date:** 2026-05-30  
 **Agent:** `swarm_observer`  
-**Research goal:** `swarm_coverage`  
-**Work item:** Ingest `verticals.toml` stubs + ecosystem explorer catalog gaps as `competitor_feature` rows
+**Branch:** `cursor/swarm-observer-plan-loop`  
+**Research goal:** `swarm_coverage` (north_star_fit: ecosystem, ai)  
+**Work item:** Ingest `verticals.toml` stubs + ecosystem explorer catalog gaps as `competitor_feature` rows; patch research/implement backlogs.
 
 ---
 
@@ -11,123 +12,65 @@
 
 | Field | Value |
 |-------|-------|
-| Swarm posture | **Degraded** (ecosystem grade **D**, 68.8; `unattended_safe: false`) |
-| `orch-r2` | **Completed** — registry merge conflicts resolved; ingest + apply confirmed |
-| `competitor_feature` | **30 open** rows (12 `verticals.toml` stubs + tier-1 red + HPC catalog) |
-| `verticals.toml` | Present on lic branch `benchmarks/competitive/verticals.toml` (12 `workload_class = "stub"`) |
-| Unattended? | **No** — registry was blocked by merge conflicts until this pass |
+| Swarm posture | **Degraded** (ecosystem grade **C**, 71.3; `unattended_safe: false`) |
+| Gap registry | **65 open** (30 `competitor_feature`, 32 `plan_debt`, 3 `missing_package`) |
+| `orch-r2` | **Completed** — 30 competitor rows tracked; 12 vertical stubs patched to backlogs |
+| Unattended? | **No** — 33% error rate in last 45 terminal runs; 6/9 goal runners stopped |
 
-Programmatic prep: `swarm-gap-ingest.py` + `swarm-gap-apply-actions.py` (dry-run + live). Closed `gap-plan-pending-swarm-observer-orch-r2-competitor-stubs` in registry.
-
----
-
-## Gap counts by `gap_kind` (post-ingest)
-
-| `gap_kind` | Open | Total in registry | Discoverer |
-|------------|-----:|------------------:|------------|
-| `competitor_feature` | 30 | 30 | `gap_explorer`, verticals ingest |
-| `plan_debt` | 32 | 57 | `plan_verifier`, snapshot |
-| `missing_package` | 3 | 5 | `gap_explorer` |
-| **Total** | **65** | **92** | |
-
-**Ingest delta this cycle:** `verticals_stubs: 0` (already present), `competitor_catalog: 0` — idempotent reconcile after conflict resolution.
+Competitor gap orchestration reconciles Layer B honesty (`verticals.toml` `workload_class=stub`) with swarm registry + sim research backlogs. Catalog/HPC/benchmark-red rows remain open for `numerics_researcher` / `bench_improver` handoffs.
 
 ---
 
-## Verticals.toml stubs ingested
+## Gap counts by `gap_kind` (post orch-r2)
 
-Source: `lic/benchmarks/competitive/verticals.toml` (12 rows with `workload_class = "stub"`):
-
-| Vertical id | Incumbent class |
-|-------------|-----------------|
-| `md_lennard_jones` | LAMMPS / GROMACS |
-| `pde_heat_2d` | OpenFOAM / PETSc |
-| `fea_linear_elasticity` | CalculiX / ANSYS |
-| `cfd_lid_driven_cavity` | OpenFOAM / COMSOL |
-| `drug_litl` | Roche LiTL |
-| `bio_litl` | Benchling / Rosetta |
-| `scientific_viz` | VTK / ParaView class |
-| `cinematic_encode` | FFmpeg class |
-| `cinematic_color_grade` | DaVinci class |
-| `cinematic_audio_sync` | DAW class |
-| `mmo_shard` | game server class |
-| `qm_dft` | VASP / Quantum ESPRESSO |
-
-Registry rows: `gap-vertical-stub-*` + tier-1 red (`gap-benchmark-red-*`) + HPC library gaps (`gap-hpc-*`).
+| `gap_kind` | Open | Patched this cycle | Primary handoff |
+|------------|-----:|-------------------:|-----------------|
+| `competitor_feature` | 30 | 12 vertical stubs → backlogs | `numerics_researcher`, `bench_improver` |
+| `plan_debt` | 32 | orch-r2 closed | `plan_verifier`, goal-directed loops |
+| `missing_package` | 3 | orch-r3 prior | `issue_planner` |
+| `ui_ux` | 0 | — | `orch-r4` next |
 
 ---
 
 ## Scripts executed
 
 ```bash
-# Resolved UU merge conflicts in data/swarm-gap-registry/registry.yaml first
 python3 scripts/swarm-gap-ingest.py
-python3 scripts/swarm-gap-apply-actions.py --dry-run
 python3 scripts/swarm-gap-apply-actions.py
+cd ../benchmarks && python3 scripts/ecosystem-quality-grade.py
 ```
 
-Apply output: `benchmarks/data/latest/swarm-gap-actions.json` — 9 vertical stub rows patched to `sim-md-research-backlog.md`; tier-1/HPC competitor rows logged (no runner backlog mapping).
+**Ingest signals:** `verticals_stubs: 0` new (all stubs already in registry); `competitor_catalog: 0` new. Source: `lic/benchmarks/competitive/verticals.toml` (17 verticals; 13 stub/partial honesty rows).
 
 ---
 
-## Backlog patches (live apply)
+## Vertical stub → backlog routing
 
-| Target | Patches |
-|--------|---------|
-| `docs/ecosystem/sim-md-research-backlog.md` | 9 × vertical stub competitor rows |
-| `docs/ecosystem/sim-algorithm-backlog.md` | sim P1/P2 plan_debt (prior cycle) |
-| `docs/ecosystem/ecosystem-package-backlog.md` | 3 × missing_package |
+| Registry id | Vertical | Backlog | Todo id |
+|-------------|----------|---------|---------|
+| `gap-vertical-stub-md-lennard-jones` | `md_lennard_jones` | `sim-md-research-backlog.md` | `gap-competitor-gap-vertical-stub-md-lennard-jones` |
+| `gap-vertical-stub-drug-litl` … `qm-dft` | 8 cinematic/bio/mmo stubs | `sim-md-research-backlog.md` | `gap-competitor-gap-vertical-stub-*` |
+| `gap-vertical-stub-pde-heat-2d` | PH-CAE heat | `sim-algorithm-backlog.md` | `gap-competitor-gap-vertical-stub-pde-heat-2d` |
+| `gap-vertical-stub-fea-linear-elasticity` | PH-CAE FEA | `sim-algorithm-backlog.md` | `gap-competitor-gap-vertical-stub-fea-linear-elasticity` |
+| `gap-vertical-stub-cfd-lid-driven-cavity` | PH-CAE CFD | `sim-algorithm-backlog.md` | `gap-competitor-gap-vertical-stub-cfd-lid-driven-cavity` |
 
-### Deferred (competitor_feature without backlog mapping)
-
-Tier-1 red + HPC catalog rows route via swarm goals:
-
-- `bench_improver` / `numerics_researcher` — `gap-benchmark-red-matmul-naive-tier1`, `num_gmres`, etc.
-- `gap_explorer` — `gap-infra-verticals-toml-missing-benchmarks-main` (merge `verticals.toml` to benchmarks main)
+**Deferred (registry only):** HPC library rows, tier-1 benchmark-red rows, `gap-infra-verticals-toml-missing-benchmarks-main`.
 
 ---
 
-## Self-heal / control-plane actions
+## Self-heal actions (control plane)
 
-| Layer | Action |
-|-------|--------|
-| **This cycle** | Fixed `registry.yaml` git merge conflicts (blocked ingest YAML parse) |
-| **Registry** | Closed `orch-r2-competitor-stubs`; evidence note path added |
-| **apply-actions** | Re-ran live; refreshed `swarm-gap-actions.json` |
-| **Next (`orch-r3`)** | `missing_package` sweep — std.summary, std.plot, line_profiler |
-| **Next (`orch-r4`)** | `ui_ux` signals from studio-ui-ux pending todos |
+- Gap ingest + apply @ 2026-05-30T10:36Z — 23 backlog patches (idempotent).
+- Programmatic observer: `retry_counts: {}`; remediations: `implementation_gaps`, `proof_gap_researcher` goal-align retry.
+- Registry: `gap-plan-pending-swarm-observer-orch-r2-competitor-stubs` → **closed**.
 
-No new systemd plan loops. Route via `li-cursor-agents` research/implement goals per `docs/ecosystem/swarm-architecture.md`.
-
----
-
-## Recommended control-plane fixes
-
-| Priority | Path | Change |
-|----------|------|--------|
-| P0 | `lic/data/swarm-gap-registry/registry.yaml` | **Done:** resolve merge conflicts before ingest (pre-commit or sweeper) |
-| P1 | `lic/scripts/swarm-gap-ingest.py` | Re-ingest when `benchmarks/competitive/verticals.toml` lands on benchmarks main |
-| P1 | `li-cursor-agents/src/observer/` | Terminalize `running` > TTL; historical error relabeling |
-| P2 | `benchmarks/scripts/ecosystem-quality-grade.py` | Weight `registry.yaml` parse health in briefing_health |
-| P2 | `li-cursor-agents/config/research-goals.yaml` | Handoff `swarm_coverage` → `gap_explorer` for verticals main PR |
-
----
-
-## Human-only blockers
-
-- **Governance / provability PRs** — no auto-merge on `trusted.lean` or roadmap
-- **`verticals.toml` on benchmarks main** — requires human PR from lic/benchmarks branch
-- **6 red tier-1 benchmarks** — product codegen (`bench_improver` / `numerics_researcher`), not orchestration
+No product code in lic.
 
 ---
 
 ## Agent deliverable checklist
 
-- [x] `swarm-gap-ingest.py` ran after conflict resolution
-- [x] `swarm-gap-apply-actions.py` dry-run + live apply
-- [x] 30 `competitor_feature` rows documented; 12 vertical stubs enumerated
-- [x] Registry `orch-r2` closed
-- [x] Orchestrator note (this file)
-- [x] Swarm observer digest under `benchmarks/data/runs/`
-
-**Report:** `benchmarks/data/runs/swarm_observer-1780133166367.md`
+- [x] Ingest + apply-actions confirmed
+- [x] 30 `competitor_feature` rows reconciled; 12 vertical stubs in backlogs
+- [x] `orch-r2-competitor-stubs` closed in registry + plan backlog
+- [x] Digest → `benchmarks/data/runs/swarm_observer-1780137256044.md`

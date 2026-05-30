@@ -9,12 +9,16 @@
 todos:
 - id: pkg-std-io
   content: "Missing std module std.io"
-  status: pending
+  status: completed
   gap_orchestrator: true
+  gap_ref: gap-missing-std-std-io
+  note: "std.io present per ecosystem-explorer 2026-05-26; registry closed orch-r3"
 - id: pkg-std-csv
   content: "Missing std module std.csv"
-  status: pending
+  status: completed
   gap_orchestrator: true
+  gap_ref: gap-missing-std-std-csv
+  note: "std.csv present per ecosystem-explorer 2026-05-26; registry closed orch-r3"
 - id: pkg-std-summary
   content: "Missing std module std.summary"
   status: pending
@@ -23,11 +27,6 @@ todos:
   content: "Missing std module std.plot"
   status: pending
   gap_orchestrator: true
-
-
-
-
-
 - id: pkg-line-profiler
   content: "li-line-profiler — line-level profiling package (seed) — gap orchestrator"
   status: pending

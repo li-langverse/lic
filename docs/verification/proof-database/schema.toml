@@ -4,7 +4,6 @@ version = 2
 entries_root = "docs/verification/proof-database/entries"
 corpus_root = "proof-db/lemmas"
 
-# ID prefix registry (catalog convention; not enforced by verify-slice)
 [id_prefixes]
 math = ["M-AX-", "M-LM-"]
 numerics = ["N-AX-", "N-LM-"]

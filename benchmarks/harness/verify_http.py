@@ -46,10 +46,21 @@ from http_bench_toml import (
 RESULTS = REPO / "benchmarks" / "results"
 
 
-def _http_request(host: str, port: int, method: str, path: str, timeout: float = 5.0) -> tuple[int, bytes]:
+def _http_request(
+    host: str,
+    port: int,
+    method: str,
+    path: str,
+    timeout: float = 5.0,
+    *,
+    headers: dict[str, str] | None = None,
+) -> tuple[int, bytes]:
     conn = http.client.HTTPConnection(host, port, timeout=timeout)
     try:
-        conn.request(method, path, headers={"Connection": "close"})
+        req_headers = {"Connection": "close"}
+        if headers:
+            req_headers.update(headers)
+        conn.request(method, path, headers=req_headers)
         resp = conn.getresponse()
         try:
             clen = resp.getheader("Content-Length")
@@ -82,9 +93,11 @@ def _run_verify_requests(
         path = str(item.get("path", "/"))
         expect_status = int(item.get("expect_status", 200))
         timeout = float(item.get("timeout_sec", 5.0))
+        extra_headers: dict[str, str] = {}
         if "/stream/sse" in path:
             timeout = max(timeout, 30.0)
-        status, body = _http_request(host, port, method, path, timeout=timeout)
+            extra_headers["Accept"] = "text/event-stream"
+        status, body = _http_request(host, port, method, path, timeout=timeout, headers=extra_headers)
         if status != expect_status:
             return False, f"{method} {path}: status {status} != {expect_status}"
         expect_sha = item.get("body_sha256")

@@ -145,7 +145,7 @@ todos:
     status: completed
   - id: gap-phase2-streaming-wrk
     content: "Streaming wrk parity — sse_long_stream + ws_fanout with timing (not verify-only); check-tier5-streaming-soak.sh with HTTPD_BENCH_SKIP_TIMING=0"
-    status: pending
+    status: completed
   - id: gap-phase2-exploit-nginx-regression
     content: "Every enabled tier5 exploit row — live li-httpd vs nginx, --fail-on-regression; no nginx-pass/li-fail; document in release note"
     status: completed

@@ -37,6 +37,16 @@ todos:
     status: done
 isProject: false
 ---
+- id: studio-ux-16-palette-search-latency
+  content: "studio-ui-ux: pending plan todo studio-ux-16-palette-search-latency"
+  status: pending
+  gap_orchestrator: true
+- id: studio-ux-17-gpu-fail-recovery
+  content: "studio-ui-ux: pending plan todo studio-ux-17-gpu-fail-recovery"
+  status: pending
+  gap_orchestrator: true
+
+
 
 # Studio UI/UX autonomous loop
 

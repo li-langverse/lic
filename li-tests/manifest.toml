@@ -841,22 +841,22 @@ note = "sim.scientific: run_simulation + run_algo; detail 0–3; open VC via phy
 suite = "composable"
 file = "composable/import_studio_sim_profile_bridge.li"
 packages = ["li-sim", "li-studio", "li-gui", "li-ui"]
-outcome = "check_ok"
-note = "PH-SIM SIM-0: studio profile bridge (verify until object-call codegen #322)"
+outcome = "compile_open_ok"
+note = "PH-SIM SIM-0: studio profile bridge (compile-open until object-call codegen #322)"
 
 [[tests]]
 suite = "composable"
 file = "composable/import_studio_sim_step_stub.li"
 packages = ["li-sim", "li-studio", "li-gui", "li-ui"]
-outcome = "check_ok"
-note = "PH-SIM SIM-1: studio_sim_step_hook (verify until object-call codegen #322)"
+outcome = "compile_open_ok"
+note = "PH-SIM SIM-1: studio_sim_step_hook (compile-open until object-call codegen #322)"
 
 [[tests]]
 suite = "composable"
 file = "composable/import_studio_sim_step_by_profile.li"
 packages = ["li-sim", "li-sim-scientific", "li-studio", "li-scene", "li-physics-runtime", "li-gui", "li-ui"]
-outcome = "check_ok"
-note = "PH-SIM vertical gap #4: studio_sim_step_by_profile (verify until object-call codegen #322)"
+outcome = "compile_open_ok"
+note = "PH-SIM vertical gap #4: studio_sim_step_by_profile (compile-open until object-call codegen #322)"
 
 [[tests]]
 suite = "composable"
@@ -890,15 +890,15 @@ note = "import gui: UX-09 keyboard-first (verify until object-call codegen #322)
 suite = "composable"
 file = "composable/import_studio_compose.li"
 packages = ["li-studio", "li-gui", "li-ui"]
-outcome = "check_ok"
-note = "import studio: compose shell (verify until object-call codegen #322)"
+outcome = "compile_open_ok"
+note = "import studio: compose shell (compile-open until object-call codegen #322)"
 
 [[tests]]
 suite = "composable"
 file = "composable/import_studio_agentic_run.li"
 packages = ["li-studio", "li-gui", "li-ui"]
-outcome = "check_ok"
-note = "PH-AGENT-2: Studio agent state model uses world-patch -> lic_check -> lic_build tool IDs, not HTML mocks"
+outcome = "compile_open_ok"
+note = "PH-AGENT-2: Studio agent state model (compile-open until object-call codegen #322)"
 
 [[tests]]
 suite = "composable"

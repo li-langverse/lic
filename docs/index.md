@@ -68,6 +68,7 @@ def main() -> int
 | [Compiler](compiler/build-pipeline.md) | Compile-time behavior |
 | [Testing](testing/overview.md) | Suites, fuzz, CI, audits |
 | [Provability gaps](verification/provability-gaps.md) | What is **not** proved/wired yet (honest status) |
+| [Plan cross-links](ecosystem/plan-cross-links.md) | Master plan ↔ **G-*** ↔ phase plans |
 | [Ecosystem](ecosystem/overview.md) | Packages, `lip`, governance (`li-langverse`) |
 | [Creating packages](guide/creating-packages.md) | `li-new-package` scaffold |
 | [Reference spec](superpowers/specs/2026-05-14-li-language-design.md) | Normative design (technical) |

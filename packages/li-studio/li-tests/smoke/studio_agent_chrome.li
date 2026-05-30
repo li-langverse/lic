@@ -5,12 +5,12 @@ def main() -> int
   ensures result == 0
   decreases 0
 =
-  if li_std_studio_version() < 3:
+  if li_std_studio_version() < 16:
     return 1
   var idle: StudioAgentChromeCompose = studio_compose_agent_chrome(layout_studio_shell_adaptive(1280.0, 720.0), studio_agent_task_idle(), studio_agent_context_none())
   if studio_agent_chrome_ok(idle) != 1:
     return 2
-  if studio_paint_agent_cmds(studio_agent_task_idle(), studio_agent_context_none()) != 2:
+  if studio_paint_agent_cmds(studio_agent_task_idle(), studio_agent_context_none(), 1, 0) != 4:
     return 3
   var running: StudioAgentChromeCompose = studio_compose_agent_chrome(layout_studio_shell_adaptive(1280.0, 720.0), studio_agent_task_running(), studio_agent_context_world())
   if studio_agent_cancel_visible(studio_agent_task_running()) != 1:
@@ -23,7 +23,7 @@ def main() -> int
     return 7
   if studio_agent_chrome_ok(running) != 1:
     return 8
-  if studio_paint_agent_cmds(studio_agent_task_running(), studio_agent_context_world()) != 5:
+  if studio_paint_agent_cmds(studio_agent_task_running(), studio_agent_context_world(), 0, 0) != 5:
     return 9
   var failed: StudioAgentChromeCompose = studio_compose_agent_chrome(layout_studio_shell_adaptive(1280.0, 720.0), studio_agent_task_failed(), studio_agent_context_world())
   if studio_agent_error_visible(studio_agent_task_failed()) != 1:
@@ -34,7 +34,7 @@ def main() -> int
     return 12
   if studio_agent_chrome_ok(failed) != 1:
     return 13
-  if studio_paint_agent_cmds(studio_agent_task_failed(), studio_agent_context_world()) != 6:
+  if studio_paint_agent_cmds(studio_agent_task_failed(), studio_agent_context_world(), 0, 0) != 6:
     return 14
   if studio_agent_last_action_reversible() != 0:
     return 15

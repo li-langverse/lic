@@ -1,0 +1,34 @@
+version = 1
+
+[[entry]]
+id = "BIO-LM-NEEDLEMAN-WUNSCH"
+kind = "lemma"
+field = "biology"
+domain = "sequence_alignment"
+statement = "Needleman-Wunsch dynamic programming yields optimal global alignment score."
+proof_status = "target"
+gap_id = "G-bio"
+gap_kind = "proof_gap"
+lean_module = "proof-db/biology/BioAxioms.lean"
+lean_thm = "Li.ProofDb.Biology.alignment_score_optimal"
+bench_refs = [
+  "benchmarks/tier2_physics/bio_proteinmpnn",
+]
+last_verified_lic_commit = "940e93e"
+
+[[entry]]
+id = "BIO-LM-ALIGNMENT-SCORE-OPTIMAL"
+kind = "lemma"
+field = "biology"
+domain = "sequence_alignment"
+statement = "Global alignment DP score is maximal among all valid alignments (alignment score target)."
+proof_status = "target"
+gap_id = "G-bio"
+gap_kind = "proof_gap"
+lean_module = "proof-db/biology/BioAxioms.lean"
+lean_thm = "Li.ProofDb.Biology.alignment_score_optimal"
+bench_refs = [
+  "benchmarks/tier2_physics/bio_proteinmpnn",
+  "benchmarks/tier2_physics/bio_rfdiffusion",
+]
+last_verified_lic_commit = "940e93e"

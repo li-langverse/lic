@@ -1,0 +1,7 @@
+@cpu
+quires true
+  ensures tvue
+  decr
+  requ
+=
+  return 0

@@ -1,0 +1,5 @@
+proc p()-> int
+  requires true
+  ensures trueX  decreases 0
+=
+  return 0

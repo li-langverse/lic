@@ -1,0 +1,6 @@
+proc p() -> int
+  requires true
+  ensures true
+  Aaerecsde0
+=
+  return 0

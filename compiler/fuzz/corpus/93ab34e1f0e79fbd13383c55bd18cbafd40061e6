@@ -1,0 +1,13 @@
+@cpu
+@P@continuecpu
+@parallel( ______@dddddddddd@cpu
+@pparallel( _FFFFFFF@@@@@@@@@@@@@@@@@@@
+@parallel(disj_row)
+proc fnsures true
+  decreases p
+=
+  returres true
+  ensu@@@@@@@@@@@@@
+@parallel(dispjoint=disjoint_row)
+proc f() -> int
+@cdd

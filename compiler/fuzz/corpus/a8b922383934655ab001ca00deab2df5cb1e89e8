@@ -1,0 +1,3 @@
+proc p() -> l[t
+ 
+  decreases  return 0

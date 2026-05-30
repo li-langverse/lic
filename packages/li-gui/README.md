@@ -13,7 +13,8 @@ Native Li Studio GUI layer: viewport region extraction, panel-switch timing hook
 |-------|--------|----------------------------------|
 | `Escape` | Close command palette when open | `studio_key_action_palette_close` (2) |
 | `Cmd/Ctrl+K` | Toggle command palette | `studio_key_action_palette_toggle` (1) |
-| `1` | Focus dock | `studio_key_action_region_focus` (3) |
+| `1`–`3` (palette open) | Execute palette action (focus inspector / timeline / agent) | `studio_key_action_palette_exec` (4) |
+| `1` (palette closed) | Focus dock | `studio_key_action_region_focus` (3) |
 | `2` | Focus viewport | region focus (3) |
 | `3` | Focus inspector | region focus (3) |
 | `4` | Focus timeline | region focus (3) |

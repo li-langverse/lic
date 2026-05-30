@@ -5,10 +5,10 @@ import ui
 
 def li_std_gui_version() -> int
   requires true
-  ensures result == 3
+  ensures result == 4
   decreases 0
 =
-  return 3
+  return 4
 
 def gui_panel_switch_budget_ms() -> float
   requires true
@@ -124,12 +124,14 @@ type GuiPanelState = object
   public last_switch_ms: float
   public switch_count: int
   public palette_open: int
+  public last_palette_action: int
 
 def gui_panel_state_new() -> GuiPanelState
   requires true
   ensures result.active_region == studio_region_viewport()
   ensures result.switch_count == 0
   ensures result.palette_open == studio_palette_closed_flag()
+  ensures result.last_palette_action == studio_palette_action_none()
   decreases 0
 =
   var s: GuiPanelState
@@ -137,6 +139,7 @@ def gui_panel_state_new() -> GuiPanelState
   s.last_switch_ms = 0.0
   s.switch_count = 0
   s.palette_open = studio_palette_closed_flag()
+  s.last_palette_action = studio_palette_action_none()
   return s
 
 def gui_panel_switch_to(state: var GuiPanelState, region: int, elapsed_ms: float) -> PanelSwitchTiming
@@ -192,6 +195,13 @@ def studio_key_action_region_focus() -> int
   decreases 0
 =
   return 3
+
+def studio_key_action_palette_exec() -> int
+  requires true
+  ensures result == 4
+  decreases 0
+=
+  return 4
 
 def studio_key_binding_escape() -> int
   requires true
@@ -360,6 +370,38 @@ def gui_studio_palette_toggle_compose(panel: var GuiPanelState, palette: var Stu
   panel.palette_open = palette.is_open
   return studio_key_action_palette_toggle()
 
+def gui_studio_palette_exec_compose(panel: var GuiPanelState, palette: var StudioCommandPaletteCompose, slot: int, w: float, h: float) -> int
+  requires w > 0.0
+  requires h > 0.0
+  requires slot >= 1
+  requires slot <= studio_palette_result_count_stub()
+  requires palette.is_open == studio_palette_open_flag()
+  ensures panel.palette_open == studio_palette_closed_flag()
+  ensures palette.is_open == studio_palette_closed_flag()
+  ensures panel.last_palette_action == studio_palette_action_for_slot(slot)
+  ensures result == studio_key_action_palette_exec()
+  decreases slot
+=
+  var action_id: int = studio_palette_exec_slot(palette, slot)
+  panel.last_palette_action = action_id
+  panel.palette_open = studio_palette_closed_flag()
+  return studio_key_action_palette_exec()
+
+def gui_studio_palette_region_for_action(action_id: int) -> int
+  requires action_id >= studio_palette_action_none()
+  requires action_id <= studio_palette_action_focus_agent()
+  ensures result >= 0
+  ensures result <= 6
+  decreases action_id
+=
+  if action_id == studio_palette_action_focus_inspector():
+    return studio_region_inspector()
+  if action_id == studio_palette_action_focus_timeline():
+    return studio_region_timeline()
+  if action_id == studio_palette_action_focus_agent():
+    return studio_region_agent_strip()
+  return 0
+
 def gui_handle_studio_key_palette(panel: var GuiPanelState, palette: var StudioCommandPaletteCompose, w: float, h: float, input: InputState) -> int
   requires w > 0.0
   requires h > 0.0
@@ -375,7 +417,7 @@ def gui_handle_studio_key_palette(panel: var GuiPanelState, palette: var StudioC
   requires input.key_digit >= 0
   requires input.key_digit <= 5
   ensures result >= studio_key_action_none()
-  ensures result <= studio_key_action_region_focus()
+  ensures result <= studio_key_action_palette_exec()
   decreases input.key_digit
 =
   if input.key_escape == 1:
@@ -388,6 +430,12 @@ def gui_handle_studio_key_palette(panel: var GuiPanelState, palette: var StudioC
     return gui_studio_palette_toggle_compose(panel, palette, key_w, key_h)
   if input.key_digit >= 1:
     if input.key_digit <= 5:
+      if palette.is_open == studio_palette_open_flag():
+        if input.key_digit <= studio_palette_result_count_stub():
+          var exec_w: float = w
+          var exec_h: float = h
+          return gui_studio_palette_exec_compose(panel, palette, input.key_digit, exec_w, exec_h)
+        return studio_key_action_none()
       var region: int = gui_studio_region_from_focus_digit(input.key_digit)
       if region >= studio_region_dock():
         gui_panel_switch_to(panel, region, 0.0)

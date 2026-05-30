@@ -1,6 +1,7 @@
 # Phase 8p — Parallel compile & CI throughput
 
-**Master plan:** [2026-05-14-li-master-plan.md](2026-05-14-li-master-plan.md) § Phase 8p
+**Master plan:** [2026-05-14-li-master-plan.md](2026-05-14-li-master-plan.md) § Phase 8p  
+**Plan map:** [plan-cross-links](../../ecosystem/plan-cross-links.md) · **Provability:** throughput only — does not close **G-*** rows ([gaps](../../verification/provability-gaps.md#still-open-report-every-session))
 
 **Problem:** Sequential `lic build` in `li-tests/run_all.sh` dominates local CI wall time (~4–8 min for manifest alone; full `local-ci.sh` often 10+ min).
 

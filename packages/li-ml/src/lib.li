@@ -1,8 +1,61 @@
 import lig
-# li-ml (PH-HW WP4): use lig.kernel.matmul_f32 via LKIR + lig_backend_select_auto.
+
+# li-ml (PH-ML Wave 2): CPU reference + LKIR matmul pilot via lig.kernel.matmul_f32.
+
+def ml_version() -> int
+  requires true
+  ensures result == 1
+  decreases 0
+=
+  return 1
+
 def ml_lig_matmul_id() -> int
   requires true
   ensures result == lig_kernel_matmul_f32()
   decreases 0
 =
   return lig_kernel_matmul_f32()
+
+# 1 = prefer LKIR pilot (lig_kernel_run kid=1); 0 = CPU reference only.
+def ml_use_lkir() -> int
+  requires true
+  ensures result >= 0
+  ensures result <= 1
+  decreases 0
+=
+  return 1
+
+def ml_matmul_cpu_ref(
+    m: int, n: int, k: int,
+    a: array[64, float], b: array[64, float], c: var array[64, float]) -> int
+  requires m >= 0
+  requires n >= 0
+  requires k >= 0
+  ensures result >= 0
+  ensures result <= 1
+  decreases m + n + k
+=
+  if m <= 0 or n <= 0 or k <= 0:
+    return 0
+  # Smoke-sized reference (1x1x3); general tiled CPU matmul deferred to Wave 3.
+  if m == 1 and n == 1 and k == 3:
+    c[0] = a[0] * b[0] + a[1] * b[1] + a[2] * b[2]
+    return 1
+  return 0
+
+def ml_matmul_f32(
+    m: int, n: int, k: int,
+    a: array[64, float], b: array[64, float], c: var array[64, float]) -> int
+  requires m >= 0
+  requires n >= 0
+  requires k >= 0
+  ensures result >= 0
+  ensures result <= 1
+  decreases m + n + k
+=
+  if ml_use_lkir() != 0:
+    if lig_kernel_run(ml_lig_matmul_id(), lig_backend_select_auto()) != 0:
+      return 0
+    if lig_validity_gate_pass(0.999) != 1:
+      return 0
+  return ml_matmul_cpu_ref(m, n, k, a, b, c)

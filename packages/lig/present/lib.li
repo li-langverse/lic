@@ -34,8 +34,17 @@ extern proc li_rt_lig_host_native_pixels() -> int
 extern proc li_rt_lig_host_native_pixel_source() -> int
   requires true
   ensures result >= 0
-  ensures result <= 3
+  ensures result <= 4
   decreases 0
+
+extern proc li_rt_lig_wgpu_draw_list_submit(viewport_w: int, viewport_h: int, cmd_count: int, pbr_tag: int) -> int
+  requires viewport_w >= 0
+  requires viewport_h >= 0
+  requires cmd_count >= 0
+  requires pbr_tag >= 0
+  ensures result >= 0
+  ensures result <= 1
+  decreases viewport_w
 
 extern proc li_rt_lig_present_surface_ok() -> int
   requires true
@@ -105,6 +114,13 @@ def lig_native_pixel_source_wgpu_readback() -> int
   decreases 0
 =
   return 3
+
+def lig_native_pixel_source_wgpu_draw_list() -> int
+  requires true
+  ensures result == 4
+  decreases 0
+=
+  return 4
 
 def lig_kernel_present_blit_rgba8() -> int
   requires true
@@ -234,10 +250,28 @@ def lig_present_frame(swap: LigSwapchain, frame_id: int) -> LigPresentFrame rais
 def lig_present_host_native_pixel_source_flag() -> int raises IO
   requires true
   ensures result >= 0
-  ensures result <= 3
+  ensures result <= 4
   decreases 0
 =
   return li_rt_lig_host_native_pixel_source()
+
+def lig_wgpu_draw_list_submit(vp_w: float, vp_h: float, cmd_count: int, pbr_tag: int) -> int raises IO
+  requires vp_w >= 0.0
+  requires vp_h >= 0.0
+  requires cmd_count >= 0
+  requires pbr_tag >= 21
+  requires pbr_tag <= 27
+  ensures result >= 0
+  ensures result <= 1
+  decreases cmd_count
+=
+  var iw: int = 0
+  var ih: int = 0
+  if vp_w >= 64.0:
+    iw = 1280
+  if vp_h >= 36.0:
+    ih = 720
+  return li_rt_lig_wgpu_draw_list_submit(iw, ih, cmd_count, pbr_tag)
 
 def lig_present_blit_profile_tag_h_px(profile_id: int) -> int
   requires profile_id >= 1

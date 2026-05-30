@@ -6,6 +6,9 @@
 
 ---
 
+**Swarm todos (canvas):** [ph-db-swarm-plan.md](./ph-db-swarm-plan.md)
+
+
 ## 1. Execution phases (Wave 3 ladder)
 
 Cross-repo **CI + hosting MVP** phases from [ph-db-ci-hosting-plan.md §6–9](ph-db-ci-hosting-plan.md). Status reflects verified state **2026-05-26**; update this table when a phase exit gate closes.

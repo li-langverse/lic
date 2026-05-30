@@ -21,4 +21,8 @@ if "$ROOT/scripts/check-autovc-open-goals.sh" "$ROOT/build/generated/AutoVC.lean
   echo "contracts_discharge_corpus: unexpected — sqrt_open_bound abs VC should stay open"
   exit 1
 fi
+chmod +x "$ROOT/li-tests/tooling/p_linalg_mat2_loop_witness_gap.sh" \
+  "$ROOT/li-tests/tooling/verify_ok_manifest_tier_gap.sh"
+"$ROOT/li-tests/tooling/p_linalg_mat2_loop_witness_gap.sh"
+"$ROOT/li-tests/tooling/verify_ok_manifest_tier_gap.sh"
 echo "contracts_discharge_corpus: ok"

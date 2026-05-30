@@ -6,10 +6,10 @@ import ui
 
 def li_std_studio_version() -> int
   requires true
-  ensures result == 2
+  ensures result == 3
   decreases 0
 =
-  return 2
+  return 3
 
 def studio_dock_slot_count() -> int
   requires true
@@ -101,6 +101,7 @@ type StudioShellCompose = object
   public inspector: StudioInspectorCompose
   public agent: StudioAgentChromeCompose
   public panel: GuiPanelState
+  public palette: StudioCommandPaletteCompose
 
 def studio_dock_slot_offset_y(slot: int) -> float
   requires slot >= 0
@@ -294,6 +295,25 @@ def studio_compose_shell(w: float, h: float, active_dock_slot: int, has_selectio
   out.inspector.field_rows = studio_inspector_field_rows()
   out.agent = studio_compose_agent_chrome(layout, studio_agent_task_idle())
   out.panel = gui_panel_state_new()
+  out.palette = studio_compose_palette(w, h, studio_palette_closed_flag(), 0)
+  return out
+
+def studio_compose_shell_palette(w: float, h: float, active_dock_slot: int, has_selection: int, is_open: int, query_code: int) -> StudioShellCompose
+  requires w > 0.0
+  requires h > 0.0
+  requires active_dock_slot >= 0
+  requires active_dock_slot < studio_dock_slot_count()
+  requires has_selection >= 0
+  requires has_selection <= 1
+  requires is_open >= studio_palette_closed_flag()
+  requires is_open <= studio_palette_open_flag()
+  requires query_code >= 0
+  ensures result.palette.is_open == is_open
+  ensures result.palette.query_code == query_code
+  decreases is_open
+=
+  var out: StudioShellCompose = studio_compose_shell(w, h, active_dock_slot, has_selection)
+  out.palette = studio_compose_palette(w, h, is_open, query_code)
   return out
 
 def studio_compose_shell_agent(w: float, h: float, active_dock_slot: int, has_selection: int, task_state: int) -> StudioShellCompose
@@ -516,6 +536,27 @@ def studio_panel_switch_timeline(panel: var GuiPanelState, elapsed_ms: float) ->
 =
   return gui_panel_switch_to(panel, studio_region_timeline(), elapsed_ms)
 
+def studio_palette_shell_ok(compose: StudioShellCompose) -> int
+  requires true
+  ensures result >= 0
+  ensures result <= 1
+  decreases 0
+=
+  if studio_palette_ok(compose.palette) != 1:
+    return 0
+  return 1
+
+def studio_paint_palette_overlay(frame: var PaintFrame, palette: StudioCommandPaletteCompose) -> unit
+  requires frame.cmd_count >= 0
+  requires palette.is_open >= studio_palette_closed_flag()
+  requires palette.is_open <= studio_palette_open_flag()
+  ensures frame.cmd_count == old(frame.cmd_count) + studio_paint_palette_cmds(palette.is_open)
+  decreases palette.is_open
+=
+  if palette.is_open == studio_palette_closed_flag():
+    return
+  paint_studio_palette(frame, palette)
+
 def studio_compose_ok(compose: StudioShellCompose) -> int
   requires true
   ensures result >= 0
@@ -529,5 +570,7 @@ def studio_compose_ok(compose: StudioShellCompose) -> int
   if compose.inspector.rect.w != studio_inspector_width_px():
     return 0
   if compose.layout.viewport.w <= 0.0:
+    return 0
+  if studio_palette_ok(compose.palette) != 1:
     return 0
   return 1

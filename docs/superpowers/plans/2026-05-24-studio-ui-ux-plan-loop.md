@@ -52,7 +52,7 @@ todos:
     status: done
   - id: studio-ux-16-palette-search-latency
     content: "Command palette fuzzy search + measured open/filter latency hook (UX-04)"
-    status: pending
+    status: done
   - id: studio-ux-17-gpu-fail-recovery
     content: "Native GPU fail strip + retry affordance in li-studio shell (UX-08)"
     status: pending

@@ -5,7 +5,7 @@ def main() -> int
   ensures result == 0
   decreases 0
 =
-  if li_std_studio_version() < 2:
+  if li_std_studio_version() < 3:
     return 1
   var idle: StudioAgentChromeCompose = studio_compose_agent_chrome(layout_studio_shell_adaptive(1280.0, 720.0), studio_agent_task_idle())
   if studio_agent_chrome_ok(idle) != 1:

@@ -46,6 +46,12 @@ package = "li-scene"
 path = "packages/li-scene/bench/particle_tiers.toml"
 gates = ["md_1k", "md_10k", "md_100k"]
 
+[[hook]]
+id = "palette_latency"
+package = "li-ui"
+path = "packages/li-ui/bench/palette_latency.toml"
+gates = ["palette_open_ms", "palette_filter_ms"]
+
 [[gate]]
 id = "viewport_fps"
 target = 60
@@ -66,6 +72,20 @@ target = 2000
 unit = "ms"
 compare = "lte"
 notes = "Cold start to interactive shell"
+
+[[gate]]
+id = "palette_open_ms"
+target = 50
+unit = "ms"
+compare = "lte"
+notes = "Command palette open to first paint (UX-04)"
+
+[[gate]]
+id = "palette_filter_ms"
+target = 30
+unit = "ms"
+compare = "lte"
+notes = "Fuzzy filter keystroke to result list refresh (UX-04)"
 
 [[particle_tier]]
 id = "md_1k"

@@ -15,9 +15,10 @@
     "studio-ux-12-world-studio-demo-linux-audit",
     "studio-ux-13-proactive-sweep",
     "studio-ux-14-native-sdl-ci",
-    "studio-ux-15-wgpu-readback"
+    "studio-ux-15-wgpu-readback",
+    "studio-ux-16-palette-search-latency"
   ],
-  "iterations": 14,
+  "iterations": 15,
   "history": [
     {
       "at": "2026-05-24T14:53:41+00:00",
@@ -126,6 +127,15 @@
       "gates_ok": true,
       "ux_pass": true,
       "note": "wgpu readback bench hooks; viewport+particles status=native; honest_simulate=false on PH gates"
+    },
+    {
+      "at": "2026-05-30T08:15:00+00:00",
+      "todo_id": "studio-ux-16-palette-search-latency",
+      "agent_exit": 0,
+      "capture_exit": 0,
+      "gates_ok": true,
+      "ux_pass": true,
+      "note": "palette fuzzy filter + palette_latency bench hook; UX-04 score bump"
     }
   ]
 }

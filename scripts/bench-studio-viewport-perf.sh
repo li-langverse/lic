@@ -99,6 +99,32 @@ def bench_render_fps_hook() -> dict:
     }
 
 
+def bench_palette_latency_hook() -> dict:
+    hook_path = root / "packages/li-ui/bench/palette_latency.toml"
+    hook = load_toml(hook_path)
+    meta_h = hook.get("meta") or {}
+    bench = hook.get("bench") or {}
+    open_sec = hook.get("open") or {}
+    filter_sec = hook.get("filter") or {}
+    budget_open = float(meta_h.get("budget_open_ms", 50))
+    budget_filter = float(meta_h.get("budget_filter_ms", 30))
+    open_ms = float(open_sec.get("elapsed_ms", bench.get("worst_open_ms", 0)))
+    filter_ms = float(filter_sec.get("elapsed_ms", bench.get("worst_filter_ms", 0)))
+    return {
+        "budget_open_ms": budget_open,
+        "budget_filter_ms": budget_filter,
+        "open_ms": open_ms,
+        "filter_ms": filter_ms,
+        "worst_open_ms": float(bench.get("worst_open_ms", open_ms)),
+        "worst_filter_ms": float(bench.get("worst_filter_ms", filter_ms)),
+        "open_meets_target": open_ms <= budget_open,
+        "filter_meets_target": filter_ms <= budget_filter,
+        "meets_target": open_ms <= budget_open and filter_ms <= budget_filter,
+        "status": "simulate",
+        "bench_simulate_fn": meta_h.get("bench_simulate_fn", "studio_palette_open_latency_ms"),
+    }
+
+
 def bench_panel_switch_hook() -> dict:
     hook_path = root / "packages/li-gui/bench/panel_switch.toml"
     hook = load_toml(hook_path)
@@ -190,6 +216,13 @@ if (root / "packages/li-gui/bench/panel_switch.toml").is_file():
     report["panel_switch_ms"] = bench_panel_switch_hook()
 else:
     report["notes"].append("skip_panel_switch:hook_missing")
+
+palette_hook = root / "packages/li-ui/bench/palette_latency.toml"
+if palette_hook.is_file():
+    report["palette_latency"] = bench_palette_latency_hook()
+    report["notes"].append("palette_latency:li-ui_hook_simulate")
+else:
+    report["notes"].append("skip_palette_latency:hook_missing")
 
 scene_hook = root / "packages/li-scene/bench/particle_tiers.toml"
 if scene_hook.is_file():
@@ -285,6 +318,22 @@ report["gates"]["panel_switch_ms"] = {
     "unit": "ms",
     "meets_target": bool(ps.get("meets_target", ps.get("worst_elapsed_ms", 999) <= report["panel_switch_ms_target"])),
     "honest_simulate": ps.get("status") == "simulate",
+}
+
+pl = report.get("palette_latency") or {}
+report["gates"]["palette_open_ms"] = {
+    "target": pl.get("budget_open_ms", 50),
+    "value": pl.get("worst_open_ms"),
+    "unit": "ms",
+    "meets_target": bool(pl.get("open_meets_target", False)),
+    "honest_simulate": pl.get("status") == "simulate",
+}
+report["gates"]["palette_filter_ms"] = {
+    "target": pl.get("budget_filter_ms", 30),
+    "value": pl.get("worst_filter_ms"),
+    "unit": "ms",
+    "meets_target": bool(pl.get("filter_meets_target", False)),
+    "honest_simulate": pl.get("status") == "simulate",
 }
 
 report["gates"]["studio_load_ms"] = {

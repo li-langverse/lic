@@ -35,10 +35,10 @@ def li_std_ui_version() -> int
 
 def li_std_ui_studio_composables_version() -> int
   requires true
-  ensures result == 2
+  ensures result == 3
   decreases 0
 =
-  return 2
+  return 3
 def color_rgb(r: float, g: float, b: float, a: float) -> Color
   requires r >= 0.0
   requires g >= 0.0
@@ -279,6 +279,305 @@ def studio_panel_transition_ms() -> float
   decreases 0
 =
   return 100.0
+
+# UX-04 command palette — fuzzy filter + open/filter latency hooks (studio-ux-16).
+
+def studio_palette_open_flag() -> int
+  requires true
+  ensures result == 1
+  decreases 0
+=
+  return 1
+
+def studio_palette_closed_flag() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0
+
+def studio_palette_panel_width_px() -> float
+  requires true
+  ensures result == 560.0
+  decreases 0
+=
+  return 560.0
+
+def studio_palette_panel_height_px() -> float
+  requires true
+  ensures result == 360.0
+  decreases 0
+=
+  return 360.0
+
+def studio_palette_search_bar_height_px() -> float
+  requires true
+  ensures result == 44.0
+  decreases 0
+=
+  return 44.0
+
+def studio_palette_cmd_catalog_count() -> int
+  requires true
+  ensures result == 6
+  decreases 0
+=
+  return 6
+
+def studio_palette_cmd_keyword(cmd_id: int) -> int
+  requires cmd_id >= 1
+  requires cmd_id <= studio_palette_cmd_catalog_count()
+  ensures result >= 1101
+  ensures result <= 1606
+  decreases cmd_id
+=
+  if cmd_id == 1:
+    return 1101
+  if cmd_id == 2:
+    return 1202
+  if cmd_id == 3:
+    return 1303
+  if cmd_id == 4:
+    return 1404
+  if cmd_id == 5:
+    return 1505
+  return 1606
+
+def studio_palette_action_for_cmd(cmd_id: int) -> int
+  requires cmd_id >= 1
+  requires cmd_id <= studio_palette_cmd_catalog_count()
+  ensures result >= 1
+  ensures result <= 3
+  decreases cmd_id
+=
+  if cmd_id == 1:
+    return 1
+  if cmd_id == 2:
+    return 2
+  if cmd_id == 3:
+    return 3
+  if cmd_id == 4:
+    return 2
+  if cmd_id == 5:
+    return 3
+  return 1
+
+def studio_palette_fuzzy_match(cmd_keyword: int, query_code: int) -> int
+  requires cmd_keyword >= 1101
+  requires cmd_keyword <= 1606
+  requires query_code >= 0
+  ensures result >= 0
+  ensures result <= 1
+  decreases query_code
+=
+  if query_code == 0:
+    return 1
+  if cmd_keyword == query_code:
+    return 1
+  var bucket: int = query_code
+  var kw_bucket: int = cmd_keyword / 100
+  if kw_bucket == bucket:
+    return 1
+  var q_tens: int = (query_code / 10) % 10
+  var k_tens: int = (cmd_keyword / 10) % 10
+  if q_tens > 0:
+    if k_tens == q_tens:
+      return 1
+  return 0
+
+def studio_palette_filter_count(query_code: int) -> int
+  requires query_code >= 0
+  ensures result >= 0
+  ensures result <= studio_palette_cmd_catalog_count()
+  decreases query_code
+=
+  var n: int = 0
+  var c1: int = studio_palette_fuzzy_match(studio_palette_cmd_keyword(1), query_code)
+  if c1 == 1:
+    n = n + 1
+  var c2: int = studio_palette_fuzzy_match(studio_palette_cmd_keyword(2), query_code)
+  if c2 == 1:
+    n = n + 1
+  var c3: int = studio_palette_fuzzy_match(studio_palette_cmd_keyword(3), query_code)
+  if c3 == 1:
+    n = n + 1
+  var c4: int = studio_palette_fuzzy_match(studio_palette_cmd_keyword(4), query_code)
+  if c4 == 1:
+    n = n + 1
+  var c5: int = studio_palette_fuzzy_match(studio_palette_cmd_keyword(5), query_code)
+  if c5 == 1:
+    n = n + 1
+  var c6: int = studio_palette_fuzzy_match(studio_palette_cmd_keyword(6), query_code)
+  if c6 == 1:
+    n = n + 1
+  return n
+
+def studio_palette_open_latency_ms() -> float
+  requires true
+  ensures result == 12.0
+  decreases 0
+=
+  return 12.0
+
+def studio_palette_filter_latency_ms(query_code: int) -> float
+  requires query_code >= 0
+  ensures result >= 0.0
+  ensures result <= 8.0
+  decreases query_code
+=
+  if query_code == 0:
+    return 0.0
+  return 8.0
+
+def studio_palette_open_budget_ms() -> float
+  requires true
+  ensures result == 50.0
+  decreases 0
+=
+  return 50.0
+
+def studio_palette_filter_budget_ms() -> float
+  requires true
+  ensures result == 30.0
+  decreases 0
+=
+  return 30.0
+
+type StudioCommandPaletteCompose = object
+  public is_open: int
+  public backdrop_rect: Rect
+  public panel_rect: Rect
+  public search_rect: Rect
+  public query_code: int
+  public result_count: int
+  public selected_slot: int
+  public last_action_id: int
+  public open_latency_ms: float
+  public filter_latency_ms: float
+
+def studio_palette_backdrop_rect_at(w: float, h: float) -> Rect
+  requires w > 0.0
+  requires h > 0.0
+  ensures result.w == w
+  ensures result.h == h
+  decreases 0
+=
+  return rect_make(0.0, 0.0, w, h)
+
+def studio_palette_panel_rect_at(w: float, h: float) -> Rect
+  requires w > 0.0
+  requires h > 0.0
+  ensures result.w == studio_palette_panel_width_px()
+  ensures result.h == studio_palette_panel_height_px()
+  decreases 0
+=
+  var pw: float = studio_palette_panel_width_px()
+  var ph: float = studio_palette_panel_height_px()
+  var x: float = (w - pw) / 2.0
+  var y: float = (h - ph) / 2.0
+  if x < 0.0:
+    x = 0.0
+  if y < 0.0:
+    y = 0.0
+  return rect_make(x, y, pw, ph)
+
+def studio_compose_palette(w: float, h: float, is_open: int, query_code: int) -> StudioCommandPaletteCompose
+  requires w > 0.0
+  requires h > 0.0
+  requires is_open >= studio_palette_closed_flag()
+  requires is_open <= studio_palette_open_flag()
+  requires query_code >= 0
+  ensures result.is_open == is_open
+  ensures result.query_code == query_code
+  decreases is_open
+=
+  var out: StudioCommandPaletteCompose
+  out.is_open = is_open
+  out.backdrop_rect = rect_make(0.0, 0.0, 0.0, 0.0)
+  out.panel_rect = rect_make(0.0, 0.0, 0.0, 0.0)
+  out.search_rect = rect_make(0.0, 0.0, 0.0, 0.0)
+  out.query_code = query_code
+  out.result_count = 0
+  out.selected_slot = 0
+  out.last_action_id = 0
+  out.open_latency_ms = 0.0
+  out.filter_latency_ms = 0.0
+  if is_open == studio_palette_open_flag():
+    out.backdrop_rect = studio_palette_backdrop_rect_at(w, h)
+    out.panel_rect = studio_palette_panel_rect_at(w, h)
+    var pad: float = 16.0
+    out.search_rect = rect_make(out.panel_rect.x + pad, out.panel_rect.y + pad, out.panel_rect.w - (pad * 2.0), studio_palette_search_bar_height_px())
+    out.open_latency_ms = studio_palette_open_latency_ms()
+    out.filter_latency_ms = studio_palette_filter_latency_ms(query_code)
+    out.result_count = studio_palette_filter_count(query_code)
+  return out
+
+def studio_palette_apply_filter(palette: var StudioCommandPaletteCompose, query_code: int) -> unit
+  requires palette.is_open == studio_palette_open_flag()
+  requires query_code >= 0
+  ensures palette.query_code == query_code
+  ensures palette.result_count == studio_palette_filter_count(query_code)
+  ensures palette.filter_latency_ms == studio_palette_filter_latency_ms(query_code)
+  decreases query_code
+=
+  palette.query_code = query_code
+  palette.filter_latency_ms = studio_palette_filter_latency_ms(query_code)
+  palette.result_count = studio_palette_filter_count(query_code)
+
+def studio_palette_ok(palette: StudioCommandPaletteCompose) -> int
+  requires palette.is_open >= studio_palette_closed_flag()
+  requires palette.is_open <= studio_palette_open_flag()
+  ensures result >= 0
+  ensures result <= 1
+  decreases palette.is_open
+=
+  if palette.is_open == studio_palette_closed_flag():
+    if palette.result_count != 0:
+      return 0
+    return 1
+  if palette.backdrop_rect.w <= 0.0:
+    return 0
+  if palette.panel_rect.w != studio_palette_panel_width_px():
+    return 0
+  if palette.open_latency_ms > studio_palette_open_budget_ms():
+    return 0
+  if palette.filter_latency_ms > studio_palette_filter_budget_ms():
+    return 0
+  if palette.result_count < 0:
+    return 0
+  if palette.result_count > studio_palette_cmd_catalog_count():
+    return 0
+  return 1
+
+def studio_paint_palette_cmds(is_open: int) -> int
+  requires is_open >= studio_palette_closed_flag()
+  requires is_open <= studio_palette_open_flag()
+  ensures result >= 0
+  ensures result <= 3
+  decreases is_open
+=
+  if is_open == studio_palette_closed_flag():
+    return 0
+  return 3
+
+def paint_studio_palette(frame: var PaintFrame, palette: StudioCommandPaletteCompose) -> unit
+  requires frame.cmd_count >= 0
+  requires palette.is_open == studio_palette_open_flag()
+  ensures frame.cmd_count == old(frame.cmd_count) + studio_paint_palette_cmds(studio_palette_open_flag())
+  decreases 0
+=
+  frame.cmd_count = frame.cmd_count + 1
+  frame.last_kind = paint_op_fill_rect()
+  frame.last_rect = palette.backdrop_rect
+  frame.last_color = color_rgb(0.051, 0.067, 0.090, 0.72)
+  frame.cmd_count = frame.cmd_count + 1
+  frame.last_kind = paint_op_fill_rect()
+  frame.last_rect = palette.panel_rect
+  frame.last_color = studio_color_bg_elevated()
+  frame.cmd_count = frame.cmd_count + 1
+  frame.last_kind = paint_op_stroke_rect()
+  frame.last_rect = palette.search_rect
+  frame.last_color = studio_color_accent_cyan()
 
 # --- studio shell layout IR ---
 

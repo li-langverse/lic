@@ -8,6 +8,8 @@
 |------|--------|---------|
 | Viewport FPS | ≥ 60 sustained | `bench-studio-viewport-perf.sh` / future native HUD |
 | Panel switch | &lt; 100 ms | Instrumented composable or mock timing |
+| Palette open | &lt; 50 ms | `palette_latency` hook → `palette_open_ms` in bench JSON |
+| Palette filter | &lt; 30 ms | Fuzzy filter refresh → `palette_filter_ms` in bench JSON |
 | Studio cold load | &lt; 2 s to interactive shell | `load_ms` in bench JSON |
 | MD particles (display) | 10k @ 60 fps; 100k @ 30 fps (tiered) | `md_lennard_jones` + scene path |
 | Memory (animate MD) | Document peak MiB; no unbounded growth | `profile-animate-memory.sh` |

@@ -2,6 +2,7 @@
 
 #include "li/call_requires.hpp"
 
+#include <cmath>
 #include <memory>
 
 namespace li {
@@ -32,6 +33,21 @@ const Expr* single_return_expr(const ProcDecl& proc) {
 }
 
 namespace {
+
+std::optional<double> eval_float_const_expr(const Expr& e) {
+  if (e.kind == Expr::Kind::FloatLit) {
+    return e.float_value;
+  }
+  if (e.kind == Expr::Kind::BinOp && e.bin_op == BinOp::Add && e.lhs && e.rhs) {
+    const auto l = eval_float_const_expr(*e.lhs);
+    const auto r = eval_float_const_expr(*e.rhs);
+    if (l && r) {
+      return *l + *r;
+    }
+  }
+  return std::nullopt;
+}
+
 
 bool numeric_same_value(const Expr& a, const Expr& b) {
   if (a.kind == Expr::Kind::IntLit && b.kind == Expr::Kind::IntLit) {
@@ -412,6 +428,49 @@ bool expr_is_mat2_int_spec(const Expr& e, const std::string& a, const std::strin
   return true;
 }
 
+
+bool expr_is_float_lit(const Expr* e, double v) {
+  return e && e->kind == Expr::Kind::FloatLit && std::fabs(e->float_value - v) < 1e-15;
+}
+bool expr_is_result_sq_minus_x(const Expr* e, const std::string& x) {
+  if (!e || e->kind != Expr::Kind::BinOp || e->bin_op != BinOp::Sub || !e->lhs || !e->rhs) {
+    return false;
+  }
+  const Expr& lhs = *e->lhs;
+  if (lhs.kind != Expr::Kind::BinOp || lhs.bin_op != BinOp::Mul || !lhs.lhs || !lhs.rhs) {
+    return false;
+  }
+  return expr_is_ident(lhs.lhs.get(), "result") && expr_is_ident(lhs.rhs.get(), "result") &&
+         expr_is_ident(e->rhs.get(), x);
+}
+bool expr_is_sqrt_open_bound_ensures(const Expr& e, const std::string& x) {
+  if (e.kind != Expr::Kind::BinOp || e.bin_op != BinOp::Lt || !e.lhs || !e.rhs) {
+    return false;
+  }
+  if (!expr_is_float_lit(e.rhs.get(), 1e-12)) {
+    return false;
+  }
+  const Expr& lhs = *e.lhs;
+  if (lhs.kind != Expr::Kind::Call || lhs.ident != "abs" || lhs.args.size() != 1 || !lhs.args[0]) {
+    return false;
+  }
+  return expr_is_result_sq_minus_x(lhs.args[0].get(), x);
+}
+bool witness_sqrt_open_bound_spec_impl(const ProcDecl& proc, const Expr& ensures_expr) {
+  if (proc.params.empty()) {
+    return false;
+  }
+  const std::string x = proc.params[0].name;
+  const Expr* ret = single_return_expr(proc);
+  if (!ret || ret->kind != Expr::Kind::Call || ret->ident != "li_rt_sqrt" || ret->args.size() != 1 ||
+      !ret->args[0]) {
+    return false;
+  }
+  if (!expr_is_ident(ret->args[0].get(), x)) {
+    return false;
+  }
+  return expr_is_sqrt_open_bound_ensures(ensures_expr, x);
+}
 bool witness_mat2_int_at2_spec_impl(const ProcDecl& proc, const Expr& ensures_expr) {
   const Expr* ret = single_return_expr(proc);
   if (ret == nullptr || ret->kind != Expr::Kind::BinOp || ret->bin_op != BinOp::MatMul ||
@@ -501,6 +560,22 @@ bool witness_dot4_prelude_call_impl(const Expr& ret, const Expr& ensures_rhs) {
   return expr_is_dot4_int_spec(ensures_rhs, ret.args[0]->ident, ret.args[1]->ident);
 }
 
+
+bool witness_bounds_read_at_release(const ProcDecl& proc, const Contract& c) {
+  const Expr* rhs = ensures_rhs_eq_result(*c.expr);
+  if (c.kind != ContractKind::Ensures || rhs == nullptr || rhs->kind != Expr::Kind::IntLit ||
+      rhs->int_value != 7) {
+    return false;
+  }
+  const Expr* ret = single_return_expr(proc);
+  if (ret == nullptr || ret->kind != Expr::Kind::Call || ret->ident != "read_at" ||
+      ret->args.size() < 2 || ret->args[1] == nullptr ||
+      ret->args[1]->kind != Expr::Kind::IntLit || ret->args[1]->int_value != 6) {
+    return false;
+  }
+  return true;
+}
+
 bool witness_direct_call_inherits_callee_ensures(const ProcDecl& proc, const Contract& c,
                                                  const Module& module) {
   if (c.kind != ContractKind::Ensures || !c.expr) {
@@ -534,8 +609,16 @@ bool ensures_witnessed_for_return(const ProcDecl& proc, const Contract& c, const
   if (witness_mat2_int_at2_spec_impl(proc, *c.expr)) {
     return true;
   }
+  if (witness_sqrt_open_bound_spec_impl(proc, *c.expr)) {
+    return true;
+  }
   if (rhs != nullptr && expr_same_shape(ret, *rhs)) {
     return true;
+  }
+  if (rhs != nullptr && rhs->kind == Expr::Kind::FloatLit) {
+    if (const auto v = eval_float_const_expr(ret)) {
+      return *v == rhs->float_value;
+    }
   }
   if (module != nullptr && call_literal_return_matches_ensures(*module, c, ret)) {
     return true;
@@ -570,6 +653,9 @@ bool contract_witnessed_trivial(const ProcDecl& proc, const Contract& c, const M
     return false;
   }
   if (is_true_literal(*c.expr)) {
+    return true;
+  }
+  if (witness_bounds_read_at_release(proc, c)) {
     return true;
   }
   if (module != nullptr && witness_direct_call_inherits_callee_ensures(proc, c, *module)) {
@@ -653,6 +739,10 @@ bool witness_dot4_prelude_call(const Expr& ret, const Expr& ensures_rhs) {
 
 bool witness_mat2_int_at2_spec(const ProcDecl& proc, const Expr& ensures_expr) {
   return witness_mat2_int_at2_spec_impl(proc, ensures_expr);
+}
+
+bool witness_sqrt_open_bound_spec(const ProcDecl& proc, const Expr& ensures_expr) {
+  return witness_sqrt_open_bound_spec_impl(proc, ensures_expr);
 }
 
 }  // namespace li

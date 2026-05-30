@@ -1,0 +1,6 @@
+[[tests]]
+suite = "x"
+file = "x.li"
+outcome = "verify_open_ok"
+outcome = "verify_ok"
+

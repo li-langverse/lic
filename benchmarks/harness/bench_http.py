@@ -9,7 +9,6 @@ import http.client
 import os
 import platform
 import shutil
-import statistics
 import subprocess
 import sys
 import tempfile
@@ -44,6 +43,18 @@ from http_bench_toml import (
     validate_merged,
 )
 
+_HARNESS = Path(__file__).resolve().parent
+if str(_HARNESS) not in sys.path:
+    sys.path.insert(0, str(_HARNESS))
+from timing_stats import (
+    TimingStats,
+    default_bench_runs,
+    host_os_tag,
+    measure_repeated,
+    resolve_timing_runs,
+    stats_from_samples,
+)
+
 RESULTS = REPO / "benchmarks" / "results"
 CSV_HEADER = [
     "benchmark",
@@ -52,6 +63,8 @@ CSV_HEADER = [
     "threads",
     "metric",
     "value",
+    "stddev",
+    "sample_runs",
     "unit",
     "git_sha",
     "cpu_model",
@@ -160,30 +173,84 @@ def run_wrk(
     return metrics or None
 
 
-def sample_ttfb_ms(url: str, *, samples: int = 24) -> float | None:
+def _ttfb_sample_ms(url: str) -> float:
     from urllib.parse import urlparse
 
-    times: list[float] = []
     parsed = urlparse(url)
-    for _ in range(samples):
-        host = parsed.hostname or "127.0.0.1"
-        port = parsed.port or 80
-        path = parsed.path or "/"
-        conn = http.client.HTTPConnection(host, port, timeout=5.0)
-        try:
-            t0 = time.perf_counter()
-            conn.request("GET", path)
-            resp = conn.getresponse()
-            resp.read(1)
-            times.append((time.perf_counter() - t0) * 1000.0)
-            resp.read()
-        except OSError:
-            continue
-        finally:
-            conn.close()
-    if not times:
+    host = parsed.hostname or "127.0.0.1"
+    port = parsed.port or 80
+    path = parsed.path or "/"
+    conn = http.client.HTTPConnection(host, port, timeout=5.0)
+    try:
+        t0 = time.perf_counter()
+        conn.request("GET", path)
+        resp = conn.getresponse()
+        resp.read(1)
+        ms = (time.perf_counter() - t0) * 1000.0
+        resp.read()
+        return ms
+    finally:
+        conn.close()
+
+
+def sample_ttfb_stats(url: str, *, runs: int | None = None) -> TimingStats | None:
+    try:
+        return measure_repeated(lambda: _ttfb_sample_ms(url), runs=runs)
+    except OSError:
         return None
-    return float(statistics.median(times))
+
+
+def measured_runs_for_cfg(cfg: dict[str, Any]) -> int:
+    global_tbl = cfg.get("global") or {}
+    raw = global_tbl.get("measured_runs")
+    if raw is not None:
+        return max(1, int(raw))
+    env = os.environ.get("HTTP_BENCH_RUNS", "").strip()
+    if env:
+        return max(1, int(env))
+    return default_bench_runs()
+
+
+def run_wrk_stats(
+    url: str,
+    *,
+    threads: int,
+    connections: int,
+    duration_sec: int,
+    pipeline: int,
+    runs: int,
+) -> dict[str, TimingStats] | None:
+    """Run wrk repeatedly; return mean ± stddev per parsed metric."""
+    by_metric: dict[str, list[float]] = {}
+
+    def one_run() -> dict[str, float]:
+        m = run_wrk(
+            url,
+            threads=threads,
+            connections=connections,
+            duration_sec=duration_sec,
+            pipeline=pipeline,
+        )
+        if not m:
+            raise RuntimeError("wrk returned no metrics")
+        return m
+
+    try:
+        first = one_run()
+    except RuntimeError:
+        return None
+    for key, val in first.items():
+        by_metric.setdefault(key, []).append(val)
+
+    total = resolve_timing_runs(runs, float(duration_sec))
+    for _ in range(max(0, total - 1)):
+        m = one_run()
+        if not m:
+            return None
+        for key, val in m.items():
+            by_metric.setdefault(key, []).append(val)
+
+    return {k: stats_from_samples(v) for k, v in by_metric.items()}
 
 
 def run_load_for_lang(
@@ -201,6 +268,7 @@ def run_load_for_lang(
             return []
         sha = git_sha()
         cpu = cpu_model()
+        host_os = host_os_tag()
         flags = f"profile={cfg.get('_profile', '')};tool=streaming_soak"
         unit_map = {"rps": "events/s", "p99_latency_ms": "ms", "stream_ok_ratio": "ratio"}
         rows: list[dict[str, object]] = []
@@ -218,6 +286,7 @@ def run_load_for_lang(
                     "git_sha": sha,
                     "cpu_model": cpu,
                     "flags": flags,
+                    "os": host_os,
                 }
             )
         return rows
@@ -248,25 +317,28 @@ def run_load_for_lang(
                 variants.append((f"{prefix}{c}", int(c)))
     sha = git_sha()
     cpu = cpu_model()
+    host_os = host_os_tag()
     flags = f"profile={cfg.get('_profile', '')};tool=wrk"
     rows: list[dict[str, object]] = []
+    bench_runs = measured_runs_for_cfg(cfg)
     for var, conn in variants:
-        metrics = run_wrk(
+        metric_stats = run_wrk_stats(
             url,
             threads=threads,
             connections=conn,
             duration_sec=duration,
             pipeline=pipeline,
+            runs=bench_runs,
         )
-        if not metrics:
+        if not metric_stats:
             continue
         collect = (cfg.get("metrics") or {}).get("collect") or []
         if isinstance(collect, list) and "ttfb_ms" in collect:
-            ttfb = sample_ttfb_ms(url, samples=int(os.environ.get("HTTPD_BENCH_TTFB_SAMPLES", "20")))
-            if ttfb is not None:
-                metrics["ttfb_ms"] = ttfb
+            ttfb_stats = sample_ttfb_stats(url, runs=bench_runs)
+            if ttfb_stats is not None:
+                metric_stats["ttfb_ms"] = ttfb_stats
         unit_map = {"rps": "req/s", "p50_latency_ms": "ms", "p99_latency_ms": "ms", "ttfb_ms": "ms"}
-        for metric, value in metrics.items():
+        for metric, timing in metric_stats.items():
             rows.append(
                 {
                     "benchmark": cfg["name"],
@@ -274,11 +346,14 @@ def run_load_for_lang(
                     "variant": var,
                     "threads": threads,
                     "metric": metric,
-                    "value": value,
+                    "value": round(timing.mean, 4),
+                    "stddev": round(timing.stddev, 6),
+                    "sample_runs": timing.sample_runs,
                     "unit": unit_map.get(metric, ""),
                     "git_sha": sha,
                     "cpu_model": cpu,
                     "flags": flags,
+                    "os": host_os,
                 }
             )
     return rows

@@ -1,0 +1,120 @@
+{
+  "generated_at": "2026-05-30T06:14:58Z",
+  "registry": "benchmarks/competitive/lig-kernels.toml",
+  "kernel_ids": [
+    "lig.kernel.matmul_f32",
+    "lig.kernel.matmul_f64",
+    "lig.kernel.dot_f32",
+    "lig.kernel.reduce_sum_f32",
+    "lig.kernel.md_force_short",
+    "lig.kernel.md_force_full",
+    "lig.kernel.heat_stencil_2d_f32",
+    "lig.kernel.sph_density_f32",
+    "lig.kernel.horner_f32",
+    "lig.kernel.mlp_forward_f32",
+    "lig.kernel.memcpy_h2d_f32",
+    "lig.kernel.memcpy_d2h_f32",
+    "lig.kernel.quat_rotate_vec3",
+    "lig.kernel.present_blit_rgba8"
+  ],
+  "kernels": [
+    {
+      "kernel_id": "lig.kernel.matmul_f32",
+      "validity_min": 0.999,
+      "validity_ratio": 1.0,
+      "validity_gate_pass": true,
+      "compile_ok": true,
+      "executed": true,
+      "status": "pilot",
+      "cpu_sec": 0.000914,
+      "run_exit_code": 0,
+      "build_cpu_sec": 0.396201
+    },
+    {
+      "kernel_id": "lig.kernel.matmul_f64",
+      "status": "stub",
+      "compile_ok": false,
+      "executed": false
+    },
+    {
+      "kernel_id": "lig.kernel.dot_f32",
+      "status": "stub",
+      "compile_ok": false,
+      "executed": false
+    },
+    {
+      "kernel_id": "lig.kernel.reduce_sum_f32",
+      "status": "stub",
+      "compile_ok": false,
+      "executed": false
+    },
+    {
+      "kernel_id": "lig.kernel.md_force_short",
+      "status": "stub",
+      "compile_ok": false,
+      "executed": false
+    },
+    {
+      "kernel_id": "lig.kernel.md_force_full",
+      "status": "stub",
+      "compile_ok": false,
+      "executed": false
+    },
+    {
+      "kernel_id": "lig.kernel.heat_stencil_2d_f32",
+      "status": "stub",
+      "compile_ok": false,
+      "executed": false
+    },
+    {
+      "kernel_id": "lig.kernel.sph_density_f32",
+      "status": "stub",
+      "compile_ok": false,
+      "executed": false
+    },
+    {
+      "kernel_id": "lig.kernel.horner_f32",
+      "status": "stub",
+      "compile_ok": false,
+      "executed": false
+    },
+    {
+      "kernel_id": "lig.kernel.mlp_forward_f32",
+      "status": "stub",
+      "compile_ok": false,
+      "executed": false
+    },
+    {
+      "kernel_id": "lig.kernel.memcpy_h2d_f32",
+      "status": "stub",
+      "compile_ok": false,
+      "executed": false
+    },
+    {
+      "kernel_id": "lig.kernel.memcpy_d2h_f32",
+      "status": "stub",
+      "compile_ok": false,
+      "executed": false
+    },
+    {
+      "kernel_id": "lig.kernel.quat_rotate_vec3",
+      "status": "stub",
+      "compile_ok": false,
+      "executed": false
+    },
+    {
+      "kernel_id": "lig.kernel.present_blit_rgba8",
+      "status": "stub",
+      "compile_ok": false,
+      "executed": false
+    }
+  ],
+  "kernel_id": "lig.kernel.matmul_f32",
+  "validity_min": 0.999,
+  "validity_ratio": 1.0,
+  "validity_gate_pass": true,
+  "compile_ok": true,
+  "executed": true,
+  "cpu_sec": 0.000914,
+  "build_cpu_sec": 0.396201
+}

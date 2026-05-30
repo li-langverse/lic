@@ -18,7 +18,7 @@ There is **no optional provability** by default.
 
 | Gate | Applies? | Evidence |
 |------|----------|----------|
-| **Proof** | Contracts on new `proc`; Lean/VC path if proof surface changed | `li-tests` contract suites; update `provability-gaps.md` if maturity gap |
+| **Proof** | Contracts on new **`def`** / **`extern proc`**; Lean/VC path if proof surface changed | `li-tests` contract suites; update `provability-gaps.md` if maturity gap |
 | **Security** | stdlib seal, CVE/exploit row if attack surface | `run_security.sh` / relevant `li-tests/security/` |
 | **Performance** | Hot path or perf claim | Bench row or documented **N/A** in PR |
 

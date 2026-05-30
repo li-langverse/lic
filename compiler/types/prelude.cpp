@@ -49,7 +49,19 @@ bool is_std_module_symbol(const std::string_view name) {
                        "Writer", "bytes_len", "bytes_slice", "bytes_append", "bytes_byte_at",
                        "bytes_push_byte", "stringview_len", "stringview_byte_at", "reader_new",
                        "reader_remaining", "reader_read_byte", "reader_read_chunk", "writer_new",
-                       "writer_push_byte", "writer_len", nullptr});
+                       "writer_push_byte", "writer_len",
+                       // std.collections (WP0-B)
+                       "Deque", "OrderedDict", "Counter", "DefaultDict", "collections_std_tag",
+                       "deque_new_stub", "deque_append_stub", "deque_popleft_stub",
+                       "ordered_dict_new_stub", "counter_new_stub", "counter_inc_stub",
+                       "defaultdict_new_stub",
+                       // std.heap (WP0-B)
+                       "PriorityQueue", "heap_std_tag", "priority_queue_new_stub", "heappush_stub",
+                       "heappop_stub", "heapify_stub", "heapreplace_stub",
+                       // std.algorithms (WP0-B)
+                       "algorithms_std_tag", "sort_list_stub", "bisect_left_stub",
+                       "bisect_right_stub", "insort_left_stub", "binary_search_stub",
+                       nullptr});
 }
 
 void check_duplicate_definitions(const Module& module, const std::string& file,

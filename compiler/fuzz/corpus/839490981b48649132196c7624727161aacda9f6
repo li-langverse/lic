@@ -1,0 +1,3 @@
+#ranler Xe@cpu
+@Parallel(notjoisjoint_row)
+proc f() %->()

@@ -1,0 +1,4 @@
+@cpu
+@parallel(djsjoint=disjoi)
+proc f() -> int
+  requires true:  ensures t2

@@ -1,0 +1,11 @@
+@@@@@@@@@@@@@@@@@@@@@@
+@parallel(disj_row)
+proc f() -> @@@@@@@@@@@@@@@@@@@@@@
+@parallel(disj_row)
+proc f() -> int
+@pu
+@parallel(disint_row)
+proc f() -> int
+  requires true
+  in  t
+  reroc f() trequires :rurnu@@@@

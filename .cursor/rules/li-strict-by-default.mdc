@@ -12,7 +12,7 @@ There is **no optional provability** by default. Mathematical proof, security, a
 ## Forbidden (agents)
 
 - Suggesting `sorry`, `assume`, `unsafe`, or bare `cast` to “unblock” work
-- Skipping `requires` / `ensures` on new or changed `proc`
+- Skipping `requires` / `ensures` on new or changed **`def`** / **`extern proc`**
 - Treating `lic check` as sufficient for ship — **`lic build`** is the certificate path
 - Weakening `stdlib_seal`, removing CVE/exploit tests, or lowering bench thresholds without human approval + tracked issue
 - Suggesting `git commit --no-verify`, `--no-verify`, or bypassing hooks/CI gates unless the user **explicitly** requests a documented downgrade
@@ -20,7 +20,7 @@ There is **no optional provability** by default. Mathematical proof, security, a
 
 ## Required (agents)
 
-- Contracts on every new/changed `proc`; loop specs where applicable
+- Contracts on every new/changed **`def`** and each **`extern proc`**; loop specs where applicable
 - Respect `check_stdlib_seal` and security harnesses when touching `std/` or policy
 - Run relevant gates before claiming done (`li-tests`, `scripts/ci.sh`, stdlib coverage when applicable)
 - Document explicit downgrades in `li.toml` `[gates]` — never implicit defaults-off

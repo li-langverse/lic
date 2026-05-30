@@ -1,0 +1,9 @@
+# WP0-E: negative constant index — must not compile.
+type Row = array[4, int]
+
+def read_negative(row: Row) -> int
+  requires true
+  ensures result == row[-1]
+  decreases 0
+=
+  return row[-1]

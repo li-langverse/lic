@@ -1,0 +1,32 @@
+# ML-LM-GRAD-DESCENT-RATE — toy 1D GD step on x^2 (open specimen; WP3-A stub).
+
+def quadratic_loss(x: float) -> float
+  requires true
+  ensures result == x * x
+  decreases 0
+:=
+  return x * x
+
+def quadratic_grad(x: float) -> float
+  requires true
+  ensures result == 2.0 * x
+  decreases 0
+:=
+  return 2.0 * x
+
+def grad_descent_step(x: float, eta: float) -> float
+  requires eta > 0.0
+  requires eta <= 1.0
+  ensures abs(result) <= abs(x)
+  decreases 0
+:=
+  var g: float = quadratic_grad(x)
+  return x - eta * g
+
+def main() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+:=
+  discard grad_descent_step(1.0, 0.5)
+  return 0

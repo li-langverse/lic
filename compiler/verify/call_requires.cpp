@@ -286,6 +286,9 @@ bool expr_statically_true(const Expr& e) {
   if (e.kind == Expr::Kind::Ident && e.ident == "true") {
     return true;
   }
+  if (e.kind == Expr::Kind::BinOp && e.bin_op == BinOp::And && e.lhs && e.rhs) {
+    return expr_statically_true(*e.lhs) && expr_statically_true(*e.rhs);
+  }
   if (e.kind != Expr::Kind::BinOp || !e.lhs || !e.rhs) {
     return false;
   }

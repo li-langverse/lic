@@ -1,4 +1,12 @@
+extern proc li_rt_volatile_sink_f64(v: float) -> unit
+  requires true
+  ensures true
+
 extern proc li_nbody_gravity_kernel()
+  requires true
+  ensures true
+
+extern proc li_nbody_gravity_checksum() -> float
   requires true
   ensures true
 
@@ -8,4 +16,5 @@ def main() raises IO -> int
   decreases 0
 =
   li_nbody_gravity_kernel()
+  li_rt_volatile_sink_f64(li_nbody_gravity_checksum())
   return 0

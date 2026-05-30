@@ -14,14 +14,17 @@ alwaysApply: false
 
 # Li World Studio & Li Engine
 
+**Hub:** `docs/game-dev/WORLD-STUDIO-MASTER-PLAN.md`
 **Canonical:** `docs/game-dev/world-studio-vision.md`  
 **Tracker:** `docs/game-dev/PH-world-studio-program.md`  
 **RFCs:** `docs/game-dev/specs/`
 
 ## Syntax
 
-- Use Python-style **`def`** for functions in new code and docs (not `proc`).
-- Keep `requires` / `ensures` / `decreases` on exported APIs.
+- Use **`def`** for all new APIs in code and docs. Do not document bare **`proc`**.
+- **`extern proc`** only for FFI/runtime stubs (C ABI), with full contracts.
+- Parser may still accept legacy bare `proc` in old trees — reject that syntax in new Studio/game-dev docs and package code.
+- Keep `requires` / `ensures` / `decreases` on every exported `def` and each `extern proc`.
 
 ## Product
 
@@ -43,3 +46,9 @@ alwaysApply: false
 ## Phases
 
 PH-GD (editor) → PH-SIM (profiles) → domain packs (ROBO, AM, SCI, DRUG) → PH-QM / PH-VOXEL / PH-PUB in parallel where deps allow.
+
+## PH-LLM + C-host retirement
+
+- **PH-LLM:** native inference in `packages/li-llm`; orchestration in `packages/li-studio-ai`. See `docs/game-dev/PH-LLM-program.md`.
+- **C-host retirement (WP-UX-14b):** retire `deploy/studio-demo/native/*.c` paint/present hosts per `docs/game-dev/specs/c-host-retirement-plan.md` after PR #356 lands.
+- **Demo policy:** local capture only — **no** GitHub Release demo MP4s (`docs/demo/VERTICALS-RECORDING.md`).

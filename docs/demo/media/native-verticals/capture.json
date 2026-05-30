@@ -1,0 +1,97 @@
+{
+  "status": "pass",
+  "native_pixels": true,
+  "verticals_native": 7,
+  "png_count": 7,
+  "png_dir": "/home/s4il0r/Documents/Cursor/li-langverse/lic/docs/demo/media/native-verticals/png",
+  "requires_min_verticals": 2,
+  "capture_paint_blit": 7,
+  "capture_cpu_chip_only": 0,
+  "note": "paint_blit_shell mirrors studio_paint_shell_chrome layout; not li-studio-demo SDL window",
+  "frames": [
+    {
+      "native_pixels": 1,
+      "profile_id": 1,
+      "slug": "game",
+      "slug_expected": "game",
+      "ppm": "/tmp/tmp.661MJ4id8R/frame-000.ppm",
+      "width": 1920,
+      "height": 1080,
+      "backend": "paint_blit_shell",
+      "capture_mode": "paint_blit",
+      "pixel_source": "paint_blit"
+    },
+    {
+      "native_pixels": 1,
+      "profile_id": 2,
+      "slug": "sim_rl",
+      "slug_expected": "sim_rl",
+      "ppm": "/tmp/tmp.nOXE8Ls5Gg/frame-000.ppm",
+      "width": 1920,
+      "height": 1080,
+      "backend": "paint_blit_shell",
+      "capture_mode": "paint_blit",
+      "pixel_source": "paint_blit"
+    },
+    {
+      "native_pixels": 1,
+      "profile_id": 3,
+      "slug": "sim_automotive",
+      "slug_expected": "sim_automotive",
+      "ppm": "/tmp/tmp.EF7AYAd7F4/frame-000.ppm",
+      "width": 1920,
+      "height": 1080,
+      "backend": "paint_blit_shell",
+      "capture_mode": "paint_blit",
+      "pixel_source": "paint_blit"
+    },
+    {
+      "native_pixels": 1,
+      "profile_id": 4,
+      "slug": "sim_robotics",
+      "slug_expected": "sim_robotics",
+      "ppm": "/tmp/tmp.BXBS0J60mj/frame-000.ppm",
+      "width": 1920,
+      "height": 1080,
+      "backend": "paint_blit_shell",
+      "capture_mode": "paint_blit",
+      "pixel_source": "paint_blit"
+    },
+    {
+      "native_pixels": 1,
+      "profile_id": 5,
+      "slug": "sim_additive",
+      "slug_expected": "sim_additive",
+      "ppm": "/tmp/tmp.OL8bQLSe45/frame-000.ppm",
+      "width": 1920,
+      "height": 1080,
+      "backend": "paint_blit_shell",
+      "capture_mode": "paint_blit",
+      "pixel_source": "paint_blit"
+    },
+    {
+      "native_pixels": 1,
+      "profile_id": 6,
+      "slug": "sim_scientific",
+      "slug_expected": "sim_scientific",
+      "ppm": "/tmp/tmp.jiTMFoz17h/frame-000.ppm",
+      "width": 1920,
+      "height": 1080,
+      "backend": "paint_blit_shell",
+      "capture_mode": "paint_blit",
+      "pixel_source": "paint_blit"
+    },
+    {
+      "native_pixels": 1,
+      "profile_id": 7,
+      "slug": "sim_drug_design",
+      "slug_expected": "sim_drug_design",
+      "ppm": "/tmp/tmp.xfVfFZqbxZ/frame-000.ppm",
+      "width": 1920,
+      "height": 1080,
+      "backend": "paint_blit_shell",
+      "capture_mode": "paint_blit",
+      "pixel_source": "paint_blit"
+    }
+  ]
+}

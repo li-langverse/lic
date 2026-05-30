@@ -1,0 +1,13 @@
+# Package-local tests — also register in monorepo li-tests/manifest.toml when integrated.
+
+[[tests]]
+suite = "smoke"
+file = "smoke/builds.li"
+outcome = "verify_ok"
+note = "T-PKG-li-sim-sensors-smoke"
+
+[[tests]]
+suite = "smoke"
+file = "smoke/sensor_bus_raycast_contract.li"
+outcome = "compile_open_ok"
+note = "T-PKG-li-sim-sensors-raycast-contract PH-SIM SIM-5 WP-SIM-05"

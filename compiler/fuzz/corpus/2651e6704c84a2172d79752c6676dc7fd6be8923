@@ -1,0 +1,5 @@
+@cyu
+@parallel(@cpu
+@parallel(disjoint=disjoInt_r)es 5
+=
+  return 0

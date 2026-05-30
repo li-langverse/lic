@@ -22,14 +22,19 @@ case "$VERT" in
   md)
     export SIM_PLAN_PACKAGE="${SIM_PLAN_PACKAGE:-li-sim-scientific}"
     export SIM_RESEARCH_BENCHES="${SIM_RESEARCH_BENCHES:-md_lennard_jones,heat_equation_2d}"
-    STUDY_ONLY="${SIM_RESEARCH_STUDY_ONLY:-0}"
     ;;
   chem)
     export SIM_PLAN_PACKAGE="${SIM_PLAN_PACKAGE:-li-sim-scientific}"
     export SIM_RESEARCH_BENCHES="${SIM_RESEARCH_BENCHES:-}"
-    STUDY_ONLY="${SIM_RESEARCH_STUDY_ONLY:-1}"
     ;;
 esac
+
+# Study-only mode requires explicit backlog flag (WP-LIC-04) — env alone cannot bypass benches.
+if [[ "${SIM_RESEARCH_STUDY_ONLY:-0}" == "1" && "${SIM_RESEARCH_BACKLOG_STUDY_ONLY:-0}" != "1" ]]; then
+  echo "sim-algo-research-gates: SIM_RESEARCH_STUDY_ONLY=1 rejected (set study_only: true on backlog todo)" >&2
+  exit 1
+fi
+STUDY_ONLY="${SIM_RESEARCH_BACKLOG_STUDY_ONLY:-0}"
 
 validity_ok=1
 perf_ok=1
@@ -117,7 +122,7 @@ doc = {
     "security_note": os.environ.get("SIM_RESEARCH_SECURITY_NOTE", "skip"),
     "stability_ok": os.environ["SIM_RESEARCH_STABILITY_OK"] == "1",
     "size_scaling_ok": os.environ["SIM_RESEARCH_SIZE_OK"] == "1",
-    "study_only": os.environ.get("SIM_RESEARCH_STUDY_ONLY", "0") == "1",
+    "study_only": os.environ.get("SIM_RESEARCH_BACKLOG_STUDY_ONLY", "0") == "1",
     "overall_ok": os.environ["SIM_RESEARCH_OVERALL_OK"] == "1",
     "package": os.environ.get("SIM_PLAN_PACKAGE", ""),
     "benches": os.environ.get("SIM_RESEARCH_BENCHES", ""),

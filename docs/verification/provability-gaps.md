@@ -206,7 +206,7 @@ When editing handbook pages, do **not** imply features beyond this register with
 | [SIMD and parallel](../language/simd-parallel.md) | Note heuristic disjoint until 7d-c |
 | Decorator / math spec stubs | Say “planned” until gaps closed |
 | [Plan cross-links](../ecosystem/plan-cross-links.md) | Master plan ↔ phase plans ↔ benchmarks; update when PH rows move |
-| [Handbook index](../handbook/README.md) | Satellite Pages table — mark deploy-pending until `main` Pages green |
+| [Handbook index](../handbook/README.md) | Satellite Pages table — lic hub at https://li-langverse.github.io/lic/ |
 
 ---
 

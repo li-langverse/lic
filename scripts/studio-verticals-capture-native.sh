@@ -1,5 +1,6 @@
 #!/usr/bin/env bash
-# Capture one native PNG per World Studio vertical (SDL present host, no HTML).
+# Capture one native PNG per World Studio vertical (C paint_blit host — deprecated; prefer wgpu readback).
+# See deploy/studio-demo/native/DEPRECATED.md and scripts/studio-c-host-retirement-gate.sh.
 set -euo pipefail
 ROOT="$(cd "$(dirname "$0")/.." && pwd)"
 NATIVE="$ROOT/deploy/studio-demo/native"

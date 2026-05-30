@@ -55,7 +55,7 @@ todos:
     status: done
   - id: wsm-w2-c-host-retire
     content: "Retire deploy/studio-demo C paint hosts after wgpu path (WP-UX-14b)"
-    status: pending
+    status: done
   - id: wsm-w3-mcp-dispatch
     content: "studio_mcp_tool_dispatch with real args for all 11 tools (WP-AG-02)"
     status: pending

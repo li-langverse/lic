@@ -16,14 +16,15 @@
     "wsm-w2-wgpu-viewport",
     "wsm-w2-viewport-hud",
     "wsm-w2-viewport-error",
-    "wsm-w2-native-pixels"
+    "wsm-w2-native-pixels",
+    "wsm-w2-c-host-retire"
   ],
-  "iterations": 18,
+  "iterations": 19,
   "history": [
     {
-      "todo_id": "wsm-w2-native-pixels",
-      "completed_at": "2026-05-30T09:30:00Z",
-      "wps": ["WP-UX-14", "WP-GD-05"]
+      "todo_id": "wsm-w2-c-host-retire",
+      "completed_at": "2026-05-30T10:00:00Z",
+      "wps": ["WP-UX-14b", "WP-GD-05"]
     }
   ]
 }

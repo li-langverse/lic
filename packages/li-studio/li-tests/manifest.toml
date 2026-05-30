@@ -144,6 +144,12 @@ note = "T-PKG-li-studio-native-pixels-honesty WP-UX-14"
 
 [[tests]]
 suite = "smoke"
+file = "smoke/studio_c_host_retirement_gate.li"
+outcome = "compile_open_ok"
+note = "T-PKG-li-studio-c-host-retirement WP-UX-14b"
+
+[[tests]]
+suite = "smoke"
 file = "smoke/studio_viewport_hud.li"
 outcome = "check_ok"
 note = "T-PKG-li-studio-viewport-hud UX-13 WP-UX-13 live FPS + particle tier HUD"

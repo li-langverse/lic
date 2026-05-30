@@ -991,6 +991,40 @@ def env_step_contract_post(
     r.done = 1
   return r
 
+# PH-SIM SIM-3 — session-persistent env pool (counters live on SimSessionStub, not stack EnvPoolStub).
+def sim_session_env_pool_step(session: var SimSessionStub, dt: float) -> int
+  requires session.tick >= 0
+  requires session.replay_capacity > 0
+  ensures result >= 0
+  ensures result <= 1
+  decreases session.tick
+=
+  if dt <= 0.0:
+    return sim_status_invalid_dt()
+  if session.env_pool_size <= 0:
+    sim_session_env_pool_init(session)
+  var psz: int = session.env_pool_size
+  if psz <= 0:
+    return sim_status_invalid_dt()
+  if psz > 32:
+    return sim_status_invalid_dt()
+  var i: int = 0
+  while i < psz
+    var tick0: int = session.tick
+    var last_dt0: float = session.last_dt
+    var pre: EnvStepResult = env_step_contract_pre(psz, tick0, last_dt0, i)
+    if sim_step(session, dt) != sim_status_ok():
+      return sim_status_invalid_dt()
+    var tick1: int = session.tick
+    var last_dt1: float = session.last_dt
+    var post: EnvStepResult = env_step_contract_post(pre, tick1, last_dt1, psz)
+    session.env_pool_total_reward = session.env_pool_total_reward + post.reward
+    session.env_pool_steps_emitted = session.env_pool_steps_emitted + 1
+    env_obs_store_on_session(session, post)
+    i = i + 1
+  return sim_status_ok()
+
+# Legacy EnvPoolStub adapter — syncs stack stub ↔ session fields for isolated unit smokes.
 def env_pool_stub_step(pool: var EnvPoolStub, session: var SimSessionStub, dt: float) -> int
   requires pool.pool_size > 0
   requires pool.pool_size <= 32
@@ -1002,21 +1036,13 @@ def env_pool_stub_step(pool: var EnvPoolStub, session: var SimSessionStub, dt: f
 =
   if dt <= 0.0:
     return sim_status_invalid_dt()
-  var i: int = 0
-  while i < pool.pool_size
-    var tick0: int = session.tick
-    var last_dt0: float = session.last_dt
-    var psz: int = pool.pool_size
-    var pre: EnvStepResult = env_step_contract_pre(psz, tick0, last_dt0, i)
-    if sim_step(session, dt) != sim_status_ok():
-      return sim_status_invalid_dt()
-    var tick1: int = session.tick
-    var last_dt1: float = session.last_dt
-    var post: EnvStepResult = env_step_contract_post(pre, tick1, last_dt1, psz)
-    pool.total_reward = pool.total_reward + post.reward
-    pool.steps_emitted = pool.steps_emitted + 1
-    env_obs_store_on_session(session, post)
-    i = i + 1
+  session.env_pool_size = pool.pool_size
+  session.env_pool_steps_emitted = pool.steps_emitted
+  session.env_pool_total_reward = pool.total_reward
+  if sim_session_env_pool_step(session, dt) != sim_status_ok():
+    return sim_status_invalid_dt()
+  pool.steps_emitted = session.env_pool_steps_emitted
+  pool.total_reward = session.env_pool_total_reward
   return sim_status_ok()
 
 # PH-SIM SIM-3 — batch env pool step on a live session (obs/reward contract + replay).
@@ -1029,14 +1055,16 @@ def sim_rl_session_env_pool_step(session: var SimSessionStub, dt: float) -> int
 =
   if dt <= 0.0:
     return sim_status_invalid_dt()
-  if session.env_pool_size <= 0:
-    sim_session_env_pool_init(session)
   var steps_before: int = session.env_pool_steps_emitted
-  var pool: EnvPoolStub = sim_session_env_pool_load(session)
-  if env_pool_stub_step(pool, session, dt) != sim_status_ok():
+  var pool_size_before: int = session.env_pool_size
+  if sim_session_env_pool_step(session, dt) != sim_status_ok():
     return sim_status_invalid_dt()
-  sim_session_env_pool_store(session, pool)
   var psz: int = session.env_pool_size
+  if psz <= 0:
+    return sim_status_invalid_dt()
+  if pool_size_before > 0:
+    if session.env_pool_size != pool_size_before:
+      return sim_status_invalid_dt()
   if session.env_pool_steps_emitted != steps_before + psz:
     return sim_status_invalid_dt()
   if session.env_pool_total_reward <= 0.0:

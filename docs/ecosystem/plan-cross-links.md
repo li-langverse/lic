@@ -41,4 +41,4 @@ Agents use this map so **vision**, **PH trackers**, and **honest proof status** 
 
 ## Automation
 
-`python3 scripts/plan-completion-audit.py` in **benchmarks** (`LIC_ROOT` = sibling `lic`) writes `data/latest/plan-completion-audit.json` — `master_plan_open` = tracker rows only.
+`python3 scripts/plan-completion-audit.py` in **benchmarks** ( **LIC_ROOT** = sibling `lic` ) writes `data/latest/plan-completion-audit.json` — `master_plan_open` = tracker rows only.

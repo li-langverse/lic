@@ -1,0 +1,7 @@
+@cpu
+@parallel(disjoint=disjoint_row)
+proc f() -> int
+  requires tr@parallel(disjoi@cpu
+@parallel(diue
+  ensures true
+  decreases r0

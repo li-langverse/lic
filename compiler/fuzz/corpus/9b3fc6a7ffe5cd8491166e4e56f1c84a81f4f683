@@ -1,0 +1,5 @@
+@cispu
+@parallel(doinintot_row)
+proc @cpu
+@parallel(disjoisjoint_row)
+proc f(p

@@ -1,0 +1,16 @@
+@cpu
+@parallel(disjoint=disjoint_row)
+proc@cpu
+@pa
+proc f() -> @@cpcllel(disjoint=disjoint_row)
+proc@cpu
+@pa
+proc f() -> @@cpcpuu
+@@cpu
+@pa@pu
+@pa
+proc f() ->cpu@cpu
+@andp#)
+proc=fntq r
+
+@parallel(d euic) etuisirn

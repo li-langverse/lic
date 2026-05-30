@@ -1,0 +1,5 @@
+@cpu
+@parallel(dint_row)
+proc f() -> int
+  requires true  ensures tru 
+e decre 0

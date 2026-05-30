@@ -61,6 +61,7 @@ def main() -> int raises IO
     return 24
   if studio_md_particle_tier_select_ok(scene_md_tier_10k()) != 1:
     return 25
+<<<<<<< HEAD
   var auto_cfg: StudioProjectConfig = studio_project_config_new(studio_profile_sim_automotive())
   var auto_sess: SimSessionStub = sim_session_stub_default()
   if studio_sim_step_hook(auto_cfg, auto_sess, 0.02) != sim_status_ok():
@@ -91,6 +92,24 @@ def main() -> int raises IO
     return 44
   if studio_sim_robotics_inspector_live_ok(robo_sess) != 1:
     return 45
+=======
+  var auto: int = studio_sim_step_profile_ok(
+    studio_profile_sim_automotive(),
+    sim_contract_sim_automotive(),
+    0.02,
+    1,
+  )
+  if auto != 0:
+    return 30 + auto
+  var robo: int = studio_sim_step_profile_ok(
+    studio_profile_sim_robotics(),
+    sim_contract_sim_robotics(),
+    0.01,
+    1,
+  )
+  if robo != 0:
+    return 40 + robo
+>>>>>>> origin/main
   var add: int = studio_sim_step_profile_ok(
     studio_profile_sim_additive(),
     sim_contract_sim_additive(),
@@ -120,10 +139,13 @@ def main() -> int raises IO
     return 73
   if rl_sess.last_dt != 0.01:
     return 74
+<<<<<<< HEAD
   if rl_sess.env_pool_size != rl_pool_sz:
     return 75
   if rl_sess.env_pool_steps_emitted != rl_pool_sz:
     return 76
   if env_obs_from_session(rl_sess).obs1 != rl_sess.last_dt:
     return 77
+=======
+>>>>>>> origin/main
   return 0

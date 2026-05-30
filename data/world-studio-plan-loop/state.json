@@ -5,6 +5,7 @@
     "wsm-w0-sim-bridge",
     "wsm-w0-agent-registry",
     "wsm-w0-profile-chips",
+<<<<<<< HEAD
     "wsm-w1-profile-smokes",
     "wsm-w1-sim3-envpool",
     "wsm-w1-sim-sensors",
@@ -41,6 +42,16 @@
       "todo_id": "wsm-w6-player-ship",
       "completed_at": "2026-05-30T12:30:00Z",
       "wps": ["WP-GD-06", "WP-GD-03", "WP-PUB-03"]
+=======
+    "wsm-w1-profile-smokes"
+  ],
+  "iterations": 1,
+  "history": [
+    {
+      "todo_id": "wsm-w1-profile-smokes",
+      "completed_at": "2026-05-29T18:05:00Z",
+      "wps": ["WP-SIM-00", "WP-SIM-01", "WP-UX-05"]
+>>>>>>> origin/main
     }
   ]
 }

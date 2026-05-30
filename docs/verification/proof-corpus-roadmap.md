@@ -99,6 +99,16 @@ Priority order aligned with [provability-gaps](provability-gaps.md) and **2e →
 | **P-bnd** | Release builds omit `li_bounds_fail` | **Partial** — `check_release_bounds_ir.sh` | [bounds-release-path](bounds-release-path.md) |
 | **P-http** | Parser/route config safety | Phase **H** | `httpd/*`, TOML desugar invariants |
 | **P-narrow** | Width-narrowing / casts | **G-narrow** partial | Ariane-style `prove_reject` + proved narrowing |
+
+| **P-physics** | Classical mechanics + conservation | **Partial** — physics-*.toml; 2× proved scalar lemmas; tier-2 **modeling_gap** on extern kernels | proof-db/physics/, enchmarks/tier2_physics/, Discharge.lean |
+| **P-num** | Number theory lemmas | **Stub** — **WP0-A** catalog (N-AX-*, N-LM-*) not in entries/ yet | proof-db/num/ (planned), **G-num** |
+| **P-discrete** | Combinatorics / finite structures | **Stub** — **WP0-A** after **P-num** axiom layer | proof-db/discrete/ (planned), **G-discrete** |
+| **P-stats** | Estimators + sampling bounds | **Stub** — axiomatic stats rows first | Tier-2 stats benches (planned), **G-stats** |
+| **P-ml-convergence** | Optimizer / SGD convergence | **Stub** — [ml-convergence-program](ml-convergence-program.md) dual track | proof-db/ml/ (planned), **G-ml** |
+| **P-graph** | Graph invariants | **Stub** — **WP0-A** | proof-db/graph/ (planned), **G-graph** |
+| **P-erdos** | Erdős register → formal targets | **Partial** — **WP0-B** E-* catalog; specimens **WP1+** | proof-db/erdos/register.json, **G-erdos** |
+| **P-chem** | Stoichiometry + reaction bookkeeping | **Stub** — **WP0-D** | Tier-2 chem benches (planned), **G-chem** |
+| **P-bio** | Population / sequence dynamics | **Stub** — **WP0-D** | Tier-2 bio benches (planned), **G-bio** |
 | **P-meta** | Compiler ↔ `Core.lean` | **G-meta** research | Long-term; cite Dafny/CakeML VCG literature |
 
 **Learned from (external):** Dafny `requires`/`ensures`/`decreases`; Lean 4 `mvcgen` / WP tactics; verified Dafny VCG (HOL4) for “what a finished pipeline proves.”

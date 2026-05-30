@@ -1,0 +1,6 @@
+proc p() > int
+  requirVes true
+  ensures true
+  decreases 0
+=
+  return 0

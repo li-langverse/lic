@@ -1,0 +1,5 @@
+@cpu
+@parallel(disjow)
+proc sures tint
+  requires tue
+  ensures trun 0

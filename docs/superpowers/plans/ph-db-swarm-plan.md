@@ -37,7 +37,11 @@ todos:
   status: pending
 - id: wp-k-postgres-nightly
   content: "WP-K nightly Postgres P95 compare GHA + honest ratio_vs_postgres (workflow on branch; needs merge + first green run)"
+<<<<<<< HEAD
   status: completed
+=======
+  status: pending
+>>>>>>> origin/main
 - id: wp-pr-merge-wave
   content: "Open PRs + merge four feat/ph-db-* branches across lidb/lis/benchmarks/li-cursor-agents"
   status: pending

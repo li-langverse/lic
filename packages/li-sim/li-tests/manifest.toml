@@ -29,9 +29,12 @@ suite = "smoke"
 file = "smoke/env_pool_step_contract.li"
 outcome = "compile_open_ok"
 note = "T-PKG-li-sim-env-pool-contract PH-SIM SIM-3 WP-SIM-03"
+<<<<<<< HEAD
 
 [[tests]]
 suite = "smoke"
 file = "smoke/env_pool_session_persistent.li"
 outcome = "compile_open_ok"
 note = "T-PKG-li-sim-env-pool-session-persistent PH-SIM SIM-3 WP-SIM-03"
+=======
+>>>>>>> origin/main

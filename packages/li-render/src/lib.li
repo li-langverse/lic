@@ -9,10 +9,17 @@ import scene
 
 def li_std_render_version() -> int
   requires true
+<<<<<<< HEAD
   ensures result == 5
   decreases 0
 =
   return 5
+=======
+  ensures result == 4
+  decreases 0
+=
+  return 4
+>>>>>>> origin/main
 
 def render_viewport_fps_target() -> float
   requires true
@@ -182,7 +189,14 @@ def render_fps_counter_host_tick(counter: var RenderFpsCounter) -> unit raises I
 =
   var dt: float = lig_present_host_dt_ms()
   render_fps_counter_tick(counter, dt)
+<<<<<<< HEAD
   counter.native_pixels = render_host_native_pixels_honest()
+=======
+  if lig_present_host_active() == 1:
+    counter.native_pixels = lig_present_host_native_pixels_flag()
+  if lig_present_host_active() != 1:
+    counter.native_pixels = 0
+>>>>>>> origin/main
 
 def render_viewport_host_fps_counter(frame_count: int) -> RenderFpsCounter raises IO
   requires frame_count >= 0
@@ -202,6 +216,9 @@ def render_present_viewport_tick(vp: ViewportRegion, profile_id: int, paint_cmd_
   requires profile_id >= 1
   requires profile_id <= 7
   requires paint_cmd_count >= 0
+  ensures result.frame_id >= 0
+  ensures result.presented >= 0
+  ensures result.presented <= 1
   decreases paint_cmd_count
 =
   if lig_present_host_active() == 1:
@@ -515,6 +532,7 @@ def render_wgpu_draw_list_smoke(vp: ViewportRegion, profile_id: int) -> RenderVi
   out.viewport_w = vp.w
   out.viewport_h = vp.h
   out.fps_counter_ready = 1
+<<<<<<< HEAD
   out.native_pixels = render_host_native_pixels_honest()
   return out
 
@@ -532,6 +550,11 @@ def render_viewport_native_pixels_honest(native_pixels: int, pixel_source: int) 
     return 0
   return 1
 
+=======
+  out.native_pixels = lig_present_surface_ok()
+  return out
+
+>>>>>>> origin/main
 def render_wgpu_draw_list_smoke_ok(smoke: RenderViewportSmoke) -> int
   requires true
   ensures result >= 0

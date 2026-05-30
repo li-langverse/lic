@@ -216,3 +216,44 @@ def lig_validity_gate_pass(min_ratio: float) -> int
   if li_rt_lig_kernel_last_validity_ratio() + 0.0001 >= min_ratio:
     return 1
   return 0
+
+type LigBackendSwitchLog = object
+  public from_backend: int
+  public to_backend: int
+  public ok: int
+
+def lig_backend_switch_log(from_backend: int, to_backend: int, ok: int) -> LigBackendSwitchLog
+  requires from_backend >= 1
+  requires from_backend <= 4
+  requires to_backend >= 1
+  requires to_backend <= 4
+  requires ok >= 0
+  requires ok <= 1
+  ensures result.from_backend == from_backend
+  ensures result.to_backend == to_backend
+  ensures result.ok == ok
+  decreases from_backend
+=
+  var log: LigBackendSwitchLog
+  log.from_backend = from_backend
+  log.to_backend = to_backend
+  log.ok = ok
+  return log
+
+def lig_backend_switch_log_ok(log: LigBackendSwitchLog) -> int
+  requires true
+  ensures result >= 0
+  ensures result <= 1
+  decreases 0
+=
+  if log.ok != 1:
+    return 0
+  if log.from_backend < lig_backend_cuda():
+    return 0
+  if log.from_backend > lig_backend_webgpu():
+    return 0
+  if log.to_backend < lig_backend_cuda():
+    return 0
+  if log.to_backend > lig_backend_webgpu():
+    return 0
+  return 1

@@ -1,0 +1,3 @@
+proc p() -> int
+ proc p() proc p() -> int
+ proc p() -> i

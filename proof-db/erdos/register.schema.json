@@ -1,0 +1,55 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://li-langverse.dev/schemas/proof-db/erdos-register-row.json",
+  "title": "Erdős problem register row",
+  "description": "Curated row in proof-db/erdos/register.json; synced to docs/verification/proof-database/entries/erdos-register.toml as E-{number}.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "number",
+    "statement",
+    "tags",
+    "priority_tier",
+    "erdos_status"
+  ],
+  "properties": {
+    "number": {
+      "type": "integer",
+      "minimum": 1,
+      "description": "Canonical Erdős problem number (erdosproblems.com index)."
+    },
+    "statement": {
+      "type": "string",
+      "minLength": 8,
+      "description": "Human-readable problem statement."
+    },
+    "tags": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "pattern": "^[a-z][a-z0-9_]*$"
+      },
+      "minItems": 1,
+      "uniqueItems": true
+    },
+    "priority_tier": {
+      "type": "string",
+      "enum": ["P0", "P1", "P2", "P3"],
+      "description": "Li Erdős program priority (see ROADMAP.md)."
+    },
+    "erdos_status": {
+      "type": "string",
+      "enum": ["open", "proved", "target"],
+      "description": "open = unsolved; proved = published solution; target = active Li formalization slice."
+    },
+    "external_url": {
+      "type": "string",
+      "format": "uri",
+      "description": "Optional reference (erdosproblems.com, OEIS, paper)."
+    },
+    "notes": {
+      "type": "string",
+      "description": "Optional curator note (not synced to TOML statement)."
+    }
+  }
+}

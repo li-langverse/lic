@@ -1,4 +1,6 @@
 import lig
+import lig.memory
+import lig.custom
 
 def main() raises IO -> int
   requires true

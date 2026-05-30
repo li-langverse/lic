@@ -1,5 +1,9 @@
 #!/usr/bin/env bash
+<<<<<<< HEAD
 # Gates for World Studio master plan loop — native li-studio smokes + plan docs.
+=======
+# Gates for World Studio master plan loop â€” native li-studio smokes + plan docs.
+>>>>>>> origin/main
 set -euo pipefail
 ROOT="$(cd "$(dirname "$0")/.." && pwd)"
 # shellcheck source=lib/li-ui.sh
@@ -14,8 +18,11 @@ if [[ -x "$ROOT/build/compiler/lic/lic" ]]; then
   LIC="$ROOT/build/compiler/lic/lic"
 elif [[ -x "$ROOT/build/compiler/lic/lic.exe" ]]; then
   LIC="$ROOT/build/compiler/lic/lic.exe"
+<<<<<<< HEAD
 elif [[ "$(uname -s)" == "Linux" && -x "$ROOT/build-wsl/compiler/lic/lic" ]]; then
   LIC="$ROOT/build-wsl/compiler/lic/lic"
+=======
+>>>>>>> origin/main
 elif [[ -x "$ROOT/scripts/resolve-lic.sh" ]]; then
   LIC="$("$ROOT/scripts/resolve-lic.sh" 2>/dev/null)" || true
 fi
@@ -33,6 +40,7 @@ li_phase "loop scripts"
 li_phase "design tokens"
 [[ -f "$ROOT/docs/design/studio-design-tokens.toml" ]] || fail "studio-design-tokens.toml"
 
+<<<<<<< HEAD
 
 run_lic_smokes() {
   li_phase "lic check smokes"
@@ -67,6 +75,26 @@ elif try_wsl_lic_smokes; then
   li_ok "wsl lic smokes passed"
 else
   li_warn "lic not built — set WORLD_STUDIO_GATES_SKIP_LIC=1, build lic, or enable WSL"
+=======
+if [[ "${WORLD_STUDIO_GATES_SKIP_LIC:-0}" == "1" ]]; then
+  li_warn "skip lic check smokes (WORLD_STUDIO_GATES_SKIP_LIC=1)"
+else
+  if [[ -z "$LIC" || ! -x "$LIC" ]]; then
+    li_warn "lic not built â€” set WORLD_STUDIO_GATES_SKIP_LIC=1 or run ./scripts/build.sh"
+  else
+    li_phase "li-studio core smokes"
+    for smoke in \
+      studio_shell_demo.li \
+      studio_vertical_profile_roundtrip.li \
+      studio_sim_step_by_profile.li \
+      studio_mcp_tools.li \
+      studio_agentic_run.li; do
+      path="$ROOT/packages/li-studio/li-tests/smoke/$smoke"
+      [[ -f "$path" ]] || fail "missing smoke $smoke"
+      "$LIC" check "$path" || fail "lic check $smoke"
+    done
+  fi
+>>>>>>> origin/main
 fi
 
 if [[ -f "$ROOT/scripts/bench-studio-viewport-perf.sh" ]]; then
@@ -74,6 +102,7 @@ if [[ -f "$ROOT/scripts/bench-studio-viewport-perf.sh" ]]; then
   "$ROOT/scripts/bench-studio-viewport-perf.sh" || li_warn "bench-studio-viewport-perf soft-fail"
 fi
 
+<<<<<<< HEAD
 if [[ -x "$ROOT/scripts/studio-c-host-retirement-gate.sh" ]]; then
   li_phase "c-host retirement (WP-UX-14b)"
   "$ROOT/scripts/studio-c-host-retirement-gate.sh" || li_warn "studio-c-host-retirement-gate soft-fail"
@@ -94,6 +123,8 @@ if [[ -x "$ROOT/scripts/studio-vertical-dod-gate.sh" ]]; then
   "$ROOT/scripts/studio-vertical-dod-gate.sh" || fail "studio-vertical-dod-gate"
 fi
 
+=======
+>>>>>>> origin/main
 li_phase "iteration assessment"
 assess="$ROOT/data/world-studio-plan-loop/latest-iteration-assessment.json"
 if [[ -f "$assess" ]]; then

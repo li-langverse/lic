@@ -19,7 +19,10 @@ li-sim-viz = { path = "../li-sim-viz" }
 li-scene = { path = "../li-scene" }
 li-physics-runtime = { path = "../li-physics-runtime" }
 li-world = { path = "../li-world" }
+<<<<<<< HEAD
 li-assets = { path = "../li-assets" }
+=======
+>>>>>>> origin/main
 li-render = { path = "../li-render" }
 lig = { path = "../lig" }
 

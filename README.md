@@ -138,7 +138,11 @@ Proof always comes first. Speed never skips the check.
 | See every test and security check | [Tests & audits](docs/testing/overview.md) |
 | Read the full design spec (technical) | [Language design spec](docs/superpowers/specs/2026-05-14-li-language-design.md) |
 
+<<<<<<< HEAD
 Published docs: [li-langverse.github.io/lic-docs](https://li-langverse.github.io/lic-docs/) · handbook repo [lic-docs](https://github.com/li-langverse/lic-docs)
+=======
+Published docs: [Compiler handbook hub](https://li-langverse.github.io/lic/) · [Language handbook](https://li-langverse.github.io/li-language/) · [lic-docs](https://li-langverse.github.io/lic-docs/) (split user Pages)
+>>>>>>> origin/main
 
 Create a new package: `./scripts/li-new-package <name> --kind library` â€” see [Creating packages](docs/guide/creating-packages.md).
 

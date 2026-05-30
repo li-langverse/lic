@@ -538,6 +538,26 @@ int32_t li_rt_studio_timeline_sync_sim_tick(int32_t tick, int32_t duration_ticks
   return tick;
 }
 
+<<<<<<< HEAD
+=======
+float li_rt_studio_timeline_playhead_pct_from_tick(int32_t tick, int32_t duration_ticks) {
+  if (duration_ticks < 1) {
+    duration_ticks = 1;
+  }
+  if (tick < 0) {
+    tick = 0;
+  }
+  if (tick > duration_ticks) {
+    tick = duration_ticks;
+  }
+  float pct = (float)tick / (float)duration_ticks;
+  if (pct > 1.0f) {
+    pct = 1.0f;
+  }
+  return pct;
+}
+
+>>>>>>> origin/main
 int32_t li_rt_studio_timeline_reset_playback(void) {
   g_studio_timeline_playing = 0;
   g_studio_timeline_playhead_pct = 0.0f;
@@ -695,6 +715,34 @@ static int32_t li_rt_studio_toml_parse_quoted_value(const char* p, char* out, si
   return 1;
 }
 
+<<<<<<< HEAD
+=======
+static int32_t li_rt_studio_toml_parse_bare_value(const char* p, char* out, size_t cap) {
+  p = li_rt_studio_toml_skip_ws(p);
+  if (p == NULL || *p == '\0') {
+    return 0;
+  }
+  const char* start = p;
+  while (*p != '\0' && *p != ' ' && *p != '\t' && *p != ',' && *p != ']' && *p != '#') {
+    p++;
+  }
+  const size_t n = (size_t)(p - start);
+  if (n == 0 || n >= cap) {
+    return 0;
+  }
+  memcpy(out, start, n);
+  out[n] = '\0';
+  return 1;
+}
+
+static int32_t li_rt_studio_toml_parse_string_value(const char* p, char* out, size_t cap) {
+  if (li_rt_studio_toml_parse_quoted_value(p, out, cap) == 1) {
+    return 1;
+  }
+  return li_rt_studio_toml_parse_bare_value(p, out, cap);
+}
+
+>>>>>>> origin/main
 static int32_t li_rt_studio_toml_parse_formats_mask(const char* line) {
   int32_t mask = 0;
   if (line == NULL) {
@@ -722,6 +770,7 @@ static int32_t li_rt_studio_toml_printer_slot_for_path(const char* path) {
   return 2;
 }
 
+<<<<<<< HEAD
 static int32_t li_rt_studio_toml_parse_unquoted_token(const char* p, char* out, size_t cap) {
   p = li_rt_studio_toml_skip_ws(p);
   if (p == NULL || *p == '\0') {
@@ -740,6 +789,8 @@ static int32_t li_rt_studio_toml_parse_unquoted_token(const char* p, char* out, 
   return 1;
 }
 
+=======
+>>>>>>> origin/main
 static int32_t li_rt_studio_toml_parse_key_value(const char* line, const char* key) {
   const char* p = strstr(line, key);
   if (p == NULL) {
@@ -757,10 +808,15 @@ static int32_t li_rt_studio_toml_parse_key_value(const char* line, const char* k
   }
   if (li_rt_str_eq(key, "profile")) {
     char buf[64];
+<<<<<<< HEAD
     if (li_rt_studio_toml_parse_quoted_value(p, buf, sizeof(buf)) != 1) {
       if (li_rt_studio_toml_parse_unquoted_token(p, buf, sizeof(buf)) != 1) {
         return 0;
       }
+=======
+    if (li_rt_studio_toml_parse_string_value(p, buf, sizeof(buf)) != 1) {
+      return 0;
+>>>>>>> origin/main
     }
     const int32_t id = li_rt_studio_profile_match_name(buf);
     if (id == 0) {
@@ -791,10 +847,15 @@ static int32_t li_rt_studio_toml_parse_key_value(const char* line, const char* k
   }
   if (li_rt_str_eq(key, "printer_profile")) {
     char buf[128];
+<<<<<<< HEAD
     if (li_rt_studio_toml_parse_quoted_value(p, buf, sizeof(buf)) != 1) {
       if (li_rt_studio_toml_parse_unquoted_token(p, buf, sizeof(buf)) != 1) {
         return 0;
       }
+=======
+    if (li_rt_studio_toml_parse_string_value(p, buf, sizeof(buf)) != 1) {
+      return 0;
+>>>>>>> origin/main
     }
     g_studio_toml.printer_profile_slot = li_rt_studio_toml_printer_slot_for_path(buf);
     return g_studio_toml.printer_profile_slot == 0 ? 0 : 1;

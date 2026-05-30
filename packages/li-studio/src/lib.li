@@ -8,7 +8,11 @@ import sim.automotive
 import sim.sensors
 import sim.additive
 import sim.drug_design
+<<<<<<< HEAD
 import sim.viz
+=======
+import sim.additive
+>>>>>>> origin/main
 import scene
 import physics.runtime
 import world
@@ -70,7 +74,11 @@ extern proc li_rt_studio_toml_parsed_printer_profile_slot() -> int
   ensures result <= 2
   decreases 0
 
+<<<<<<< HEAD
 # UX-08 — viewport error overlay; li-render wgpu smoke → report; host may set via li_rt_*.
+=======
+# UX-08 — viewport error mock (no wgpu surface probe; native host wires later).
+>>>>>>> origin/main
 extern proc li_rt_studio_viewport_error_kind() raises IO -> int
   requires true
   ensures result >= 0
@@ -208,7 +216,10 @@ extern proc li_rt_studio_bench_mode_from_env() -> int
   ensures result <= 1
   decreases 0
 
+<<<<<<< HEAD
 
+=======
+>>>>>>> origin/main
 # UX-02 / WP-GD-08 — timeline playback (playhead synced to sim session tick).
 extern proc li_rt_studio_timeline_playing() -> int
   requires true
@@ -250,6 +261,16 @@ extern proc li_rt_studio_timeline_sync_sim_tick(tick: int, duration_ticks: int) 
   ensures result == tick
   decreases tick
 
+<<<<<<< HEAD
+=======
+extern proc li_rt_studio_timeline_playhead_pct_from_tick(tick: int, duration_ticks: int) -> float
+  requires tick >= 0
+  requires duration_ticks >= 1
+  ensures result >= 0.0
+  ensures result <= 1.0
+  decreases tick
+
+>>>>>>> origin/main
 extern proc li_rt_studio_timeline_reset_playback() -> int
   requires true
   ensures result == 0
@@ -1081,11 +1102,14 @@ def studio_agent_sync_chrome_from_run(compose: var StudioShellCompose, run: Stud
     compose.agent.progress = studio_compose_agent_progress_run(run, compose.agent.status_rect)
   if run.task_state == studio_agent_task_done():
     compose.agent.progress = studio_compose_agent_progress_run(run, compose.agent.status_rect)
+<<<<<<< HEAD
   if run.task_state == studio_agent_task_idle():
     if compose.mode == studio_mode_agent():
       studio_shell_apply_mode(compose, studio_mode_author())
   if run.task_state == studio_agent_task_done():
     studio_shell_apply_mode(compose, studio_mode_author())
+=======
+>>>>>>> origin/main
 
 def studio_shell_agent_run_tick(compose: var StudioShellCompose, run: var StudioAgentRun) -> int
   requires compose.layout.viewport_w > 0.0
@@ -1131,6 +1155,7 @@ def studio_shell_handle_agent_pointer(compose: var StudioShellCompose, run: var 
       return studio_agent_action_send()
   return studio_agent_action_none()
 
+<<<<<<< HEAD
 # WP-AG-02 — int arg slots for in-process MCP dispatch (stdio server maps strings → these).
 def studio_mcp_arg_lic_check_pass() -> int
   requires true
@@ -1232,6 +1257,8 @@ def studio_mcp_export_mask_valid(mask: int) -> int
     return 1
   return 0
 
+=======
+>>>>>>> origin/main
 def studio_mcp_tool_dispatch(tool_id: int) -> StudioAgentToolRequest
   requires true
   ensures result.tool_id == tool_id
@@ -1907,8 +1934,11 @@ def studio_compose_viewport_display(vp: Rect, profile_id: int) raises IO -> Stud
       out.tier_particles = draw_pts
     out.particle_dots_visible = 1
   var fps_counter: RenderFpsCounter = render_fps_counter_shell_simulate()
+<<<<<<< HEAD
   if lig_present_host_active() == 1:
     fps_counter = render_viewport_host_fps_counter(1)
+=======
+>>>>>>> origin/main
   out.fps_display = render_fps_counter_display_fps(fps_counter)
   out.fps_meets_target = render_fps_counter_meets_target(fps_counter)
   out.fps_hud_tag = render_fps_counter_hud_tag(fps_counter)
@@ -1916,12 +1946,15 @@ def studio_compose_viewport_display(vp: Rect, profile_id: int) raises IO -> Stud
   out.fps_hud_rect = studio_viewport_hud_fps_rect(vp)
   out.particle_hud_rect = studio_viewport_hud_particle_rect(vp)
   out.native_badge_rect = studio_viewport_hud_native_badge_rect(vp)
+<<<<<<< HEAD
   if profile_id == studio_profile_sim_scientific():
     if out.particle_tier_id >= scene_md_tier_1k():
       var viz_tick: int = studio_viz_tick_for_particle_tier(out.particle_tier_id)
       var viz_pipe: VizPipelineState = studio_sim_scientific_viz_for_tick(viz_tick)
       if viz_pipe.source_count >= 1:
         out = studio_viewport_display_apply_viz_pipeline(out, viz_pipe)
+=======
+>>>>>>> origin/main
   return out
 
 def studio_viewport_hud_ok(display: StudioViewportDisplayCompose) -> int
@@ -2135,10 +2168,17 @@ def studio_compose_shell_drug_litl(w: float, h: float, tick: int, has_selection:
 
 def li_std_studio_version() -> int
   requires true
+<<<<<<< HEAD
   ensures result == 31
   decreases 0
 =
   return 31
+=======
+  ensures result == 17
+  decreases 0
+=
+  return 17
+>>>>>>> origin/main
 
 def studio_agent_context_none() -> int
   requires true
@@ -2393,13 +2433,18 @@ def studio_timeline_duration_ticks_default() -> int
 =
   return 100
 
+<<<<<<< HEAD
 def studio_timeline_playhead_pct_from_tick(tick: int, duration_ticks: int) -> float
+=======
+def studio_timeline_playhead_pct_from_tick(tick: int, duration_ticks: int) -> float raises IO
+>>>>>>> origin/main
   requires tick >= 0
   requires duration_ticks >= 1
   ensures result >= 0.0
   ensures result <= 1.0
   decreases tick
 =
+<<<<<<< HEAD
   var dur: int = duration_ticks
   if dur < 1:
     dur = 1
@@ -2412,10 +2457,17 @@ def studio_timeline_playhead_pct_from_tick(tick: int, duration_ticks: int) -> fl
   if pct > 1.0:
     pct = 1.0
   return pct
+=======
+  return li_rt_studio_timeline_playhead_pct_from_tick(tick, duration_ticks)
+>>>>>>> origin/main
 
 def studio_timeline_sync_playhead_from_tick(tick: int, duration_ticks: int) raises IO -> unit
   requires tick >= 0
   requires duration_ticks >= 1
+<<<<<<< HEAD
+=======
+  ensures true
+>>>>>>> origin/main
   decreases tick
 =
   var _synced: int = li_rt_studio_timeline_sync_sim_tick(tick, duration_ticks)
@@ -2423,6 +2475,10 @@ def studio_timeline_sync_playhead_from_tick(tick: int, duration_ticks: int) rais
 def studio_timeline_sync_playhead_from_session(session: SimSessionStub, duration_ticks: int) raises IO -> unit
   requires session.tick >= 0
   requires duration_ticks >= 1
+<<<<<<< HEAD
+=======
+  ensures true
+>>>>>>> origin/main
   decreases session.tick
 =
   studio_timeline_sync_playhead_from_tick(session.tick, duration_ticks)
@@ -2442,6 +2498,10 @@ def studio_timeline_reset_for_session(sim_out: var SimSessionStub, duration_tick
 def studio_timeline_scrub_to_tick(tick: int, duration_ticks: int) raises IO -> unit
   requires tick >= 0
   requires duration_ticks >= 1
+<<<<<<< HEAD
+=======
+  ensures true
+>>>>>>> origin/main
   decreases tick
 =
   studio_timeline_sync_playhead_from_tick(tick, duration_ticks)
@@ -3299,7 +3359,11 @@ def studio_export_config_default() -> StudioExportConfig
   e.printer_profile_slot = studio_printer_profile_slot_none()
   return e
 
+<<<<<<< HEAD
 def studio_toml_parsed_export_config() -> StudioExportConfig
+=======
+def studio_toml_parsed_export_config() -> StudioExportConfig raises IO
+>>>>>>> origin/main
   requires true
   ensures result.format_mask >= 0
   ensures result.require_sim_pass >= 0
@@ -3312,7 +3376,11 @@ def studio_toml_parsed_export_config() -> StudioExportConfig
   e.printer_profile_slot = li_rt_studio_toml_parsed_printer_profile_slot()
   return e
 
+<<<<<<< HEAD
 def studio_toml_parsed_config() -> StudioProjectConfig
+=======
+def studio_toml_parsed_config() -> StudioProjectConfig raises IO
+>>>>>>> origin/main
   requires true
   ensures studio_profile_id_valid(result.active_profile) == 1
   ensures studio_determinism_tier_valid(result.determinism_tier) == 1
@@ -3324,7 +3392,11 @@ def studio_toml_parsed_config() -> StudioProjectConfig
   cfg.export_cfg = studio_toml_parsed_export_config()
   return cfg
 
+<<<<<<< HEAD
 def studio_project_config_from_additive_toml_fixture() -> StudioProjectConfig
+=======
+def studio_project_config_from_additive_toml_fixture() -> StudioProjectConfig raises IO
+>>>>>>> origin/main
   requires true
   ensures result.active_profile == studio_profile_sim_additive()
   ensures result.determinism_tier == 2
@@ -3336,11 +3408,17 @@ def studio_project_config_from_additive_toml_fixture() -> StudioProjectConfig
   var _s1: int = studio_toml_parse_line("profile = sim_additive")
   var _s2: int = studio_toml_parse_line("determinism_tier = 2")
   var _s3: int = studio_toml_parse_line("[engine.export]")
+<<<<<<< HEAD
   var _s4: int = studio_toml_parse_line("formats = [3mf, gcode]")
+=======
+  # Mask parser matches substrings 3mf + gcode (no bracket list — avoids lic check parse on commas).
+  var _s4: int = studio_toml_parse_line("formats = x3mf_ygcode_z")
+>>>>>>> origin/main
   var _s5: int = studio_toml_parse_line("require_sim_pass = true")
   var _s6: int = studio_toml_parse_line("printer_profile = profiles/bambu_x1c.toml")
   return studio_toml_parsed_config()
 
+<<<<<<< HEAD
 # WP-UX-16 / WP-AM-03 — additive export wizard (Review → Pre-flight → Export/Print, ≤3 clicks).
 def studio_am_export_wizard_step_review() -> int
   requires true
@@ -4329,6 +4407,8 @@ def studio_publish_bundle_three_click_flow(
     return 8
   return 0
 
+=======
+>>>>>>> origin/main
 def studio_apply_profile_to_sim(config: StudioProjectConfig, sim_out: var SimSessionStub) -> unit
   requires studio_profile_id_valid(config.active_profile) == 1
   ensures sim_out.studio_profile_id == config.active_profile
@@ -4478,6 +4558,7 @@ def studio_sim_sensor_step_hook(sim_out: var SimSessionStub, dt: float) -> int
 =
   return sim_sensor_session_bus_step(sim_out, dt)
 
+<<<<<<< HEAD
 # WP-ROBO-03 / WP-UX-03 — 6-DOF IK on session + sensor bus + replay tick.
 def studio_sim_robotics_step_hook(sim_out: var SimSessionStub, dt: float) -> int
   requires sim_out.tick >= 0
@@ -4496,6 +4577,8 @@ def studio_sim_robotics_step_hook(sim_out: var SimSessionStub, dt: float) -> int
     return sim_status_invalid_dt()
   return sim_status_ok()
 
+=======
+>>>>>>> origin/main
 def studio_game_session_physics_load(session: SimSessionStub) -> GamePhysicsState
   requires session.tick >= 0
   ensures result.px == session.game_px
@@ -4869,7 +4952,11 @@ def studio_sim_step_hook(config: StudioProjectConfig, sim_out: var SimSessionStu
   if prof == studio_profile_sim_robotics():
     if sim_robotics_tick_stub(detail_hook) != 1:
       return sim_status_invalid_dt()
+<<<<<<< HEAD
     return studio_sim_robotics_step_hook(sim_out, dt)
+=======
+    return studio_sim_sensor_step_hook(sim_out, dt)
+>>>>>>> origin/main
   if prof == studio_profile_sim_additive():
     if sim_additive_tick_stub(detail_hook) != 1:
       return sim_status_invalid_dt()
@@ -6666,9 +6753,12 @@ def studio_palette_apply_action(compose: var StudioShellCompose, action_id: int)
   ensures result <= 1
   decreases action_id
 =
+<<<<<<< HEAD
   if action_id == studio_palette_action_focus_agent():
     studio_shell_apply_mode(compose, studio_mode_agent())
     return 1
+=======
+>>>>>>> origin/main
   var region: int = gui_studio_palette_region_for_action(action_id)
   if region >= studio_region_dock():
     var _timing: PanelSwitchTiming = gui_panel_switch_to(compose.panel, region, 0.0)
@@ -7034,8 +7124,11 @@ def studio_shell_host_frame(compose: var StudioShellCompose, frame_id: int) -> i
 =
   var input: InputState = studio_shell_input_from_host()
   var _action: int = studio_shell_handle_host_key(compose, input)
+<<<<<<< HEAD
   studio_viewport_error_sync_render(compose)
   var _vp_err: int = studio_shell_handle_viewport_error_pointer(compose, input)
+=======
+>>>>>>> origin/main
   var vp: ViewportRegion = gui_viewport_region_from_layout(compose.layout)
   var _presented: LigPresentFrame = studio_shell_host_present_loop_tick(vp.w, vp.h, frame_id)
   if _presented.presented != 1:

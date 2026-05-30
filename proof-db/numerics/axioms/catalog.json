@@ -1,0 +1,23 @@
+{
+  "version": 1,
+  "vertical": "numerics",
+  "entries": [
+    {
+      "id": "N-AX-FP-ROUND",
+      "status": "target",
+      "family": "floating_point",
+      "statement": "IEEE-style rounding to nearest representable",
+      "li_stub": "proof-db/numerics/lemmas/fp_horner_round_stub.li",
+      "lean_stub": "proof-db/numerics/axioms/NumericsAxioms.lean#fp_round_axiom"
+    },
+    {
+      "id": "N-LM-SQRT-BOUND",
+      "status": "open",
+      "family": "libm",
+      "statement": "sqrt square error bound",
+      "li_stub": "li-tests/contracts_verify/sqrt_open_bound.li",
+      "lean_stub": "proof-db/numerics/axioms/NumericsAxioms.lean#sqrt_bound_axiom",
+      "discharge_ref": "Li.Discharge.sqrt_open_bound_spec"
+    }
+  ]
+}

@@ -1,0 +1,3 @@
+proc p() -> int
+  requires true
+  ensures trueX  decreaseK$0rn 0

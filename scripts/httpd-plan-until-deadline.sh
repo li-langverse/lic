@@ -69,7 +69,8 @@ log "    batch_cap=$BATCH_CAP min_per_iter=${MIN_PER_ITER}m log=$LOG"
 
 if [[ "$WAIT_FOR_LOOP" == "1" ]]; then
   log "==> waiting for any in-flight httpd-plan-loop.py to finish…"
-  while pgrep -f 'httpd-plan-loop.py' >/dev/null 2>&1; do
+  # Match python runner only — plain 'httpd-plan-loop.py' false-matches nohup/pgrep cmdlines.
+  while pgrep -f 'python3 .*/scripts/httpd-plan-loop\.py' >/dev/null 2>&1; do
     sleep 30
   done
   log "==> prior loop finished; starting deadline batches"

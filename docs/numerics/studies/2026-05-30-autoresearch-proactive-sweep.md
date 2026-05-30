@@ -1,15 +1,15 @@
 # Autoresearch proactive sweep — red-row triage (2026-05-30)
 
-**Agent:** `autoresearch` · **Run:** `autoresearch-1780104301827` · **Source:** proactive  
+**Agent:** `autoresearch` · **Run:** `autoresearch-1780144955216` · **Source:** proactive  
 **North star fit:** scientific computing / pure-Li codegen (**PH-5b**, **PH-7e**)  
-**Briefing:** `benchmarks/data/latest/agent-briefing.json` @ 2026-05-30T01:07Z  
-**Dashboard:** [benchmark-matrix](https://li-langverse.github.io/benchmarks/) · ingest @ 2026-05-29T07:01Z
+**Briefing:** `benchmarks/data/latest/agent-briefing.json` @ 2026-05-30T12:07Z  
+**Dashboard:** [benchmark-matrix](https://li-langverse.github.io/benchmarks/) · ingest @ 2026-05-30T09:25Z
 
 ---
 
 ## Executive summary
 
-Proactive autoresearch pass triaged all **6 org-red** benchmark rows. **None qualify for Mode B (novel algorithm)** this cycle — each maps to SOTA-known recipes with gaps in **codegen lowering**, **harness honesty**, or **cross-repo stubs**. Prior autoresearch win (`horner_pure_li` lexer) remains the template for codegen-bound `*_pure_li` rows.
+Proactive autoresearch pass triaged org benchmark rows. **Briefing listed 6 reds (stale ingest); latest dashboard shows 0 red / 2 yellow** (`matmul_blocked`, `matmul_naive`). Fresh local benches confirm **`matmul_naive` and `num_gmres` are green**; only **`matmul_blocked` at 1.33×** exceeds the 1.2× tier-1 threshold. **None qualify for Mode B (novel algorithm)** — gaps are PH-7e codegen emit tuning or harness honesty, not missing discrete math.
 
 ---
 
@@ -65,9 +65,26 @@ No new discrete equations required; improvement path = existing SOTA + PH-7e cod
 
 ---
 
-## Commands (repro — blocked this run)
+## Local evidence (2026-05-30, this run)
 
-Local `./scripts/build.sh` required before bench:
+```bash
+# symlink sibling lic build or ./scripts/build.sh
+cd lic/benchmarks/harness
+python3 bench.py --tier 1 --only matmul_naive,matmul_blocked,num_gmres --runs 5 --skip-verify
+python3 bench.py --tier 1 --only matmul_blocked,matmul_naive --runs 3 --verify-results
+```
+
+| Benchmark | cpp (s) | li (s) | li/cpp | Threshold | Dashboard (09:25Z) |
+|-----------|---------|--------|--------|-----------|-------------------|
+| `matmul_naive` | 0.0018 | 0.0019 | **1.06×** | 1.2 | yellow |
+| `matmul_blocked` | 0.0089 | 0.0118 | **1.33×** | 1.2 | yellow |
+| `num_gmres` | 0.0005 | 0.0005 | **1.0×** | 1.2 | green (was red in stale briefing) |
+
+Verify: `matmul_naive` checksum **161055.1865999999**; `matmul_blocked` **1288460.7563999966** — parity ok.
+
+CSV: `lic/benchmarks/results/latest.csv`
+
+## Commands (repro)
 
 ```bash
 cd lic && ./scripts/build.sh
@@ -75,8 +92,6 @@ cd lic/benchmarks/harness
 python3 bench.py --tier 1 --only matmul_blocked,matmul_naive --runs 6
 python3 bench.py --verify-results --only matmul_blocked,matmul_naive
 ```
-
-**This run:** verify failed — `lic` binary missing at `build/compiler/lic/lic`.
 
 ---
 

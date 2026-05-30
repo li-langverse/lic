@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-05-30T02:04:46.750635+00:00",
+  "generated_at": "2026-05-30T02:15:35.917211+00:00",
   "tz": "Europe/Berlin",
   "agents_live": 0,
   "runners": [
@@ -7,7 +7,7 @@
       "id": "httpd",
       "name": "li-httpd gap parity",
       "branch": "cursor/httpd-plan-continue",
-      "head": "fb035300",
+      "head": "abd17732",
       "running": true,
       "process": "2010567 bash ./scripts/httpd-plan-until-deadline.sh",
       "log_path": "/home/s4il0r/Documents/Cursor/li-langverse/lic/../lic/data/httpd-plan-loop/until-deadline-20260529-191636.log",
@@ -50,7 +50,7 @@
         {
           "id": "gap-phase2-mitigation-exploits",
           "content": "Close nginx_mitigations.toml rows with empty exploit \u2014 client_max_body_size, h2_rapid_reset, dns_resolver_limits; tier5 TOML + live li-httpd vs nginx compare; gate check-tier5-mitigation-exploits-complete.sh",
-          "status": "pending"
+          "status": "completed"
         },
         {
           "id": "gap-phase2-streaming-wrk",
@@ -63,23 +63,22 @@
           "status": "completed"
         }
       ],
-      "plan_completed": 7,
+      "plan_completed": 8,
       "plan_total": 10,
       "plan_pending": [
         "gap-phase2-perf-wrk-soak",
-        "gap-phase2-mitigation-exploits",
         "gap-phase2-streaming-wrk"
       ],
       "agent_live": false,
       "agent": "",
       "goal_file": "",
-      "log_age_sec": 24490,
+      "log_age_sec": 25139,
       "last_state_at": "",
       "last_state_todo": "",
       "last_state_gates": "",
       "current_iteration": "",
       "activity": [],
-      "status_note": "supervisor idle (log 24490s stale \u2014 check log_path)",
+      "status_note": "supervisor idle (log 25139s stale \u2014 check log_path)",
       "active_todo_id": "gap-phase2-perf-wrk-soak"
     },
     {
@@ -393,7 +392,7 @@
       "agent_live": false,
       "agent": "",
       "goal_file": "",
-      "log_age_sec": 368555,
+      "log_age_sec": 369205,
       "last_state_at": "2026-05-25T06:41:51.000000+00:00",
       "last_state_todo": "wave-d-gui-scaffold",
       "last_state_gates": true,
@@ -512,7 +511,7 @@
       "agent_live": false,
       "agent": "",
       "goal_file": "",
-      "log_age_sec": 465824,
+      "log_age_sec": 466473,
       "last_state_at": "2026-05-24T16:32:27.410480+00:00",
       "last_state_todo": "sim-p0-md-lj-li-parity",
       "last_state_gates": false,
@@ -713,7 +712,7 @@
       "agent_live": false,
       "agent": "",
       "goal_file": "",
-      "log_age_sec": 415964,
+      "log_age_sec": 416613,
       "last_state_at": "2026-05-30T01:04:00+00:00",
       "last_state_todo": "studio-ux-12-world-studio-demo-linux-audit",
       "last_state_gates": true,

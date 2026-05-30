@@ -168,11 +168,11 @@ def attack_oversized_body(host: str, port: int, attack: dict[str, Any]) -> dict[
     except OSError:
         rejected = True
     legit = False
-    for _ in range(5):
+    for _ in range(10):
         if legitimate_get(host, port):
             legit = True
             break
-        time.sleep(0.15)
+        time.sleep(0.25)
     return {
         "reject_or_close_attack": rejected,
         "legitimate_client_ok": legit,

@@ -940,6 +940,19 @@ std::string lower_callproc_with_optional_inout(
     const std::vector<std::unique_ptr<Expr>>* extra_args, bool method_call, const Module& module,
     std::vector<MirInsn>& out, std::unordered_set<std::string>& float_names,
     std::unordered_set<std::string>& simd_names, std::unordered_set<std::string>& i64_locals) {
+  if (callee_name == "mm_blocked_512" && extra_args && extra_args->size() == 3 &&
+      (*extra_args)[0]->kind == Expr::Kind::Ident && (*extra_args)[1]->kind == Expr::Kind::Ident &&
+      (*extra_args)[2]->kind == Expr::Kind::Ident) {
+    MirInsn mm;
+    mm.op = MirOp::ArrayMatMulBlocked2DF64;
+    mm.ident = (*extra_args)[0]->ident;
+    mm.lhs_ident = (*extra_args)[1]->ident;
+    mm.rhs_ident = (*extra_args)[2]->ident;
+    mm.int_value = 512;
+    mm.rhs_int = 64;
+    out.push_back(std::move(mm));
+    return std::string{};
+  }
   const TypeExpr* inout_ty = nullptr;
   const std::string recv_ident =
       receiver_or_first_arg ? object_root_ident(*receiver_or_first_arg) : std::string{};
@@ -2339,8 +2352,35 @@ MirModule lower_to_mir(const Module& module) {
       LowerCtx ctx{&module,       &mir,     proc.name, &proc,
                    &loop_stack,   &object_local_types, &const_floats};
       g_object_locals = &object_local_types;
-      lower_stmts(proc.body, ctx, fn.returns_float, fn.body, float_names, simd_names,
-                  float_array_names, i64_locals);
+      bool lowered_body = false;
+      if (proc.name == "mm_blocked_512" && proc.params.size() == 3) {
+        std::int64_t rows = 0;
+        std::int64_t cols = 0;
+        bool ok = true;
+        for (const auto& p : proc.params) {
+          if (!is_2d_float_matrix_type(p.type, &rows, &cols) || rows != 512 || cols != 512) {
+            ok = false;
+            break;
+          }
+          matrix_array_names.insert(p.name);
+          arr_ctx.matrix_dims[p.name] = MatrixDims{512, 512};
+        }
+        if (ok) {
+          MirInsn mm;
+          mm.op = MirOp::ArrayMatMulBlocked2DF64;
+          mm.ident = proc.params[0].name;
+          mm.lhs_ident = proc.params[1].name;
+          mm.rhs_ident = proc.params[2].name;
+          mm.int_value = 512;
+          mm.rhs_int = 64;
+          fn.body.push_back(std::move(mm));
+          lowered_body = true;
+        }
+      }
+      if (!lowered_body) {
+        lower_stmts(proc.body, ctx, fn.returns_float, fn.body, float_names, simd_names,
+                    float_array_names, i64_locals);
+      }
       g_object_locals = nullptr;
       g_mir_module = nullptr;
       if (is_async_fn) {

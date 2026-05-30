@@ -142,7 +142,7 @@ todos:
     status: pending
   - id: gap-phase2-mitigation-exploits
     content: "Close nginx_mitigations.toml rows with empty exploit — client_max_body_size, h2_rapid_reset, dns_resolver_limits; tier5 TOML + live li-httpd vs nginx compare; gate check-tier5-mitigation-exploits-complete.sh"
-    status: pending
+    status: completed
   - id: gap-phase2-streaming-wrk
     content: "Streaming wrk parity — sse_long_stream + ws_fanout with timing (not verify-only); check-tier5-streaming-soak.sh with HTTPD_BENCH_SKIP_TIMING=0"
     status: pending

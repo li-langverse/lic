@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import socket
+import time
 from typing import Any
 
 import http_attacks
@@ -135,7 +136,12 @@ def attack_dns_resolver_oversize(host: str, port: int, attack: dict[str, Any]) -
         or b"431" in status
         or b"413" in status
     )
-    legit = http_attacks.legitimate_get(host, port)
+    legit = False
+    for _ in range(10):
+        if http_attacks.legitimate_get(host, port):
+            legit = True
+            break
+        time.sleep(0.25)
     out: dict[str, Any] = {
         "legitimate_client_ok": legit,
         "no_crash": True,

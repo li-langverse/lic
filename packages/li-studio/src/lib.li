@@ -1568,11 +1568,16 @@ def studio_compose_viewport_menu(vp: Rect, profile_id: int) -> StudioViewportMen
 def studio_attach_viewport_shell(compose: var StudioShellCompose) raises IO -> unit
   requires studio_profile_id_valid(compose.config.active_profile) == 1
   ensures compose.viewport_display.background >= studio_viewport_bg_solid()
+  ensures compose.viewport_error.error_kind >= studio_viewport_error_none()
+  ensures compose.viewport_error.error_kind <= studio_err_missing_asset()
   decreases 0
 =
   var pid: int = compose.config.active_profile
   compose.viewport_display = studio_compose_viewport_display(compose.layout.viewport, pid)
   compose.viewport_menu = studio_compose_viewport_menu(compose.layout.viewport, pid)
+  var err_kind: int = studio_viewport_error_sync_from_wgpu(compose)
+  var lay_err: StudioShellLayout = compose.layout
+  compose.viewport_error = studio_compose_viewport_error_overlay(lay_err, err_kind)
 
 # WP-DRUG-03 — adaptive shell layout keyed to LITL stage (drug profile).
 def studio_drug_litl_inspector_field_rows(litl_stage: int) -> int
@@ -2165,6 +2170,84 @@ def studio_shell_handle_viewport_error_pointer(compose: var StudioShellCompose, 
   compose.viewport_error = studio_compose_viewport_error_overlay(lay, studio_viewport_error_kind())
   return studio_viewport_error_action_retry_clicked()
 
+def studio_viewport_error_kind_from_wgpu_probe(probe: RenderViewportWgpuProbe) -> int
+  requires probe.draw_submit_ok >= 0
+  requires probe.draw_submit_ok <= 1
+  requires probe.surface_ok >= 0
+  requires probe.surface_ok <= 1
+  requires probe.asset_ok >= 0
+  requires probe.asset_ok <= 1
+  ensures result >= studio_viewport_error_none()
+  ensures result <= studio_err_missing_asset()
+  decreases probe.draw_submit_ok
+=
+  if probe.asset_ok == 0:
+    return studio_err_missing_asset()
+  if probe.draw_submit_ok == 0:
+    return studio_err_gpu()
+  if probe.surface_ok == 0:
+    return studio_err_gpu()
+  return studio_viewport_error_none()
+
+def studio_viewport_error_probe_from_layout(layout: StudioShellLayout, profile_id: int) -> RenderViewportWgpuProbe raises IO
+  requires layout.viewport.w > 0.0
+  requires layout.viewport.h > 0.0
+  requires studio_profile_id_valid(profile_id) == 1
+  ensures result.draw_submit_ok >= 0
+  ensures result.draw_submit_ok <= 1
+  ensures result.surface_ok >= 0
+  ensures result.surface_ok <= 1
+  ensures result.asset_ok >= 0
+  ensures result.asset_ok <= 1
+  decreases profile_id
+=
+  var lay_copy: StudioShellLayout = layout
+  var vp: ViewportRegion = gui_viewport_region_from_layout(lay_copy)
+  return render_viewport_wgpu_probe(vp, profile_id, 1)
+
+def studio_viewport_error_sync_from_wgpu(compose: StudioShellCompose) raises IO -> int
+  requires studio_profile_id_valid(compose.config.active_profile) == 1
+  ensures result >= studio_viewport_error_none()
+  ensures result <= studio_err_missing_asset()
+  decreases compose.config.active_profile
+=
+  var current: int = studio_viewport_error_kind()
+  if current != studio_viewport_error_none():
+    return current
+  var lay_copy: StudioShellLayout = compose.layout
+  var probe: RenderViewportWgpuProbe = studio_viewport_error_probe_from_layout(lay_copy, compose.config.active_profile)
+  var kind: int = studio_viewport_error_kind_from_wgpu_probe(probe)
+  if kind != studio_viewport_error_none():
+    studio_viewport_error_set_mock(kind)
+  return kind
+
+def studio_viewport_error_retry_wgpu(layout: StudioShellLayout, profile_id: int) raises IO -> int
+  requires layout.viewport.w > 0.0
+  requires layout.viewport.h > 0.0
+  requires studio_profile_id_valid(profile_id) == 1
+  ensures result >= studio_viewport_error_none()
+  ensures result <= studio_err_missing_asset()
+  decreases profile_id
+=
+  studio_viewport_error_retry()
+  var lay_copy: StudioShellLayout = layout
+  var probe: RenderViewportWgpuProbe = studio_viewport_error_probe_from_layout(lay_copy, profile_id)
+  var kind: int = studio_viewport_error_kind_from_wgpu_probe(probe)
+  if kind != studio_viewport_error_none():
+    studio_viewport_error_set_mock(kind)
+  return kind
+
+def studio_viewport_error_wgpu_probe_ok(probe: RenderViewportWgpuProbe) -> int
+  requires probe.draw_submit_ok >= 0
+  requires probe.draw_submit_ok <= 1
+  ensures result >= 0
+  ensures result <= 1
+  decreases probe.draw_submit_ok
+=
+  if studio_viewport_error_kind_from_wgpu_probe(probe) != studio_viewport_error_none():
+    return 0
+  return render_viewport_wgpu_probe_ok(probe)
+
 def studio_viewport_error_visible(error_kind: int) -> int
   requires error_kind >= studio_viewport_error_none()
   requires error_kind <= studio_err_missing_asset()
@@ -2565,12 +2648,12 @@ def studio_project_config_from_additive_toml_fixture() -> StudioProjectConfig
 =
   studio_toml_reset()
   var _s0: int = studio_toml_parse_line("[engine]")
-  var _s1: int = studio_toml_parse_line("profile = \"sim_additive\"")
+  var _s1: int = studio_toml_parse_line("profile = sim_additive")
   var _s2: int = studio_toml_parse_line("determinism_tier = 2")
   var _s3: int = studio_toml_parse_line("[engine.export]")
-  var _s4: int = studio_toml_parse_line("formats = [\"3mf\", \"gcode\"]")
+  var _s4: int = studio_toml_parse_line("formats = [3mf, gcode]")
   var _s5: int = studio_toml_parse_line("require_sim_pass = true")
-  var _s6: int = studio_toml_parse_line("printer_profile = \"profiles/bambu_x1c.toml\"")
+  var _s6: int = studio_toml_parse_line("printer_profile = profiles/bambu_x1c.toml")
   return studio_toml_parsed_config()
 
 def studio_apply_profile_to_sim(config: StudioProjectConfig, sim_out: var SimSessionStub) -> unit

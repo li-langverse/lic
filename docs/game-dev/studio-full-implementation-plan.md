@@ -165,7 +165,7 @@ Cross-tracks (not separate phases above): **PH-PORT**, **PH-COMPLY**, **PH-CIN**
 | WP-UX-05 | Profile chip + TOML | all 7 | **done** | `studio_vertical_profile_roundtrip.li` | smoke | S | WP-SIM-00 | Y |
 | WP-UX-06 | Agent chrome | sim_rl, sim_drug | **partial** | Task states + cancel | `studio_agent_*.li` | M | WP-GD-01 | Y |
 | WP-UX-07 | Empty states | all | **partial** | Inspector/viewport hints | smokes | S | WP-GD-01 | Y |
-| WP-UX-08 | Viewport error recovery | all | **partial** | GPU/asset overlay | `studio_viewport_error.li` | S | WP-GD-05 | Y |
+| WP-UX-08 | Viewport error recovery | all | **done** | GPU/asset overlay + wgpu probe | `studio_viewport_error.li` | S | WP-GD-05 | Y |
 | WP-UX-09 | Keyboard-first (SDL/mock) | all | **partial** | `InputState` bridge | `studio_keyboard_input_json.li` | M | PH-HW-3 | Y |
 | WP-UX-10 | WCAG contrast measured | all | stub | Real ratio from host | `studio_accessibility.li` fails ratio | M | WP-GD-05 | Y |
 | WP-UX-11 | Loading skeleton | all | **partial** | 4 fill cmds | `studio_shell_loading.li` | S | WP-GD-01 | Y |

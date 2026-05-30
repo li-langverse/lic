@@ -5,14 +5,20 @@
     "wsm-w0-sim-bridge",
     "wsm-w0-agent-registry",
     "wsm-w0-profile-chips",
-    "wsm-w1-profile-smokes"
+    "wsm-w1-profile-smokes",
+    "wsm-w2-viewport-error"
   ],
-  "iterations": 1,
+  "iterations": 2,
   "history": [
     {
       "todo_id": "wsm-w1-profile-smokes",
       "completed_at": "2026-05-29T18:05:00Z",
       "wps": ["WP-SIM-00", "WP-SIM-01", "WP-UX-05"]
+    },
+    {
+      "todo_id": "wsm-w2-viewport-error",
+      "completed_at": "2026-05-30T09:30:00Z",
+      "wps": ["WP-UX-08", "WP-GD-05"]
     }
   ]
 }

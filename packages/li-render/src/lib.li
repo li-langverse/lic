@@ -573,3 +573,72 @@ def render_bench_all_md_particle_tiers() -> int
   decreases 0
 =
   return scene_bench_all_particle_tiers_pass()
+
+# WP-UX-08 — wgpu draw submit + surface probe for viewport error overlay (WP-GD-05).
+type RenderViewportWgpuProbe = object
+  public draw_submit_ok: int
+  public surface_ok: int
+  public asset_ok: int
+
+def render_viewport_wgpu_probe_pure(draw_submit_ok: int, surface_ok: int, asset_ok: int) -> RenderViewportWgpuProbe
+  requires draw_submit_ok >= 0
+  requires draw_submit_ok <= 1
+  requires surface_ok >= 0
+  requires surface_ok <= 1
+  requires asset_ok >= 0
+  requires asset_ok <= 1
+  ensures result.draw_submit_ok == draw_submit_ok
+  ensures result.surface_ok == surface_ok
+  ensures result.asset_ok == asset_ok
+  decreases draw_submit_ok
+=
+  var p: RenderViewportWgpuProbe
+  p.draw_submit_ok = draw_submit_ok
+  p.surface_ok = surface_ok
+  p.asset_ok = asset_ok
+  return p
+
+def render_viewport_wgpu_probe(vp: ViewportRegion, profile_id: int, mesh_id: int) -> RenderViewportWgpuProbe raises IO
+  requires vp.w >= 0.0
+  requires vp.h >= 0.0
+  requires profile_id >= 1
+  requires profile_id <= 7
+  ensures result.asset_ok >= 0
+  ensures result.asset_ok <= 1
+  ensures result.draw_submit_ok >= 0
+  ensures result.draw_submit_ok <= 1
+  ensures result.surface_ok >= 0
+  ensures result.surface_ok <= 1
+  decreases mesh_id
+=
+  if mesh_id < 0:
+    return render_viewport_wgpu_probe_pure(0, 0, 0)
+  var list: RenderDrawList = render_draw_list_new()
+  render_draw_list_push_clear(list, 0.05, 0.07, 0.1)
+  var mat: RenderPbrLiteMaterial = render_pbr_lite_material_default()
+  render_draw_list_push_mesh(list, mesh_id, mat)
+  render_draw_list_push_particles(list, 1000, mat)
+  var submit_ok: int = 0
+  if render_draw_list_submit(vp, list, profile_id) == 1:
+    submit_ok = 1
+  var surface_ok: int = lig_present_surface_ok()
+  return render_viewport_wgpu_probe_pure(submit_ok, surface_ok, 1)
+
+def render_viewport_wgpu_probe_ok(probe: RenderViewportWgpuProbe) -> int
+  requires probe.draw_submit_ok >= 0
+  requires probe.draw_submit_ok <= 1
+  requires probe.surface_ok >= 0
+  requires probe.surface_ok <= 1
+  requires probe.asset_ok >= 0
+  requires probe.asset_ok <= 1
+  ensures result >= 0
+  ensures result <= 1
+  decreases probe.draw_submit_ok
+=
+  if probe.asset_ok == 0:
+    return 0
+  if probe.draw_submit_ok == 0:
+    return 0
+  if probe.surface_ok == 0:
+    return 0
+  return 1

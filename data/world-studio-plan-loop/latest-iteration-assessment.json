@@ -3,13 +3,14 @@
   "todo_id": "wsm-w2-viewport-error",
   "wps_touched": ["WP-UX-08", "WP-GD-05"],
   "smokes_run": [
-    "packages/li-studio/li-tests/smoke/studio_viewport_error.li"
+    "packages/li-studio/li-tests/smoke/studio_viewport_error.li",
+    "packages/li-render/li-tests/smoke/wgpu_draw_list.li"
   ],
   "native_only": true,
   "gates": {
     "world_studio_plan_gates": "pass",
-    "lic_check_local": "skipped_no_lic_binary",
+    "lic_check_local": "wsl",
     "lic_check_ci": "pending"
   },
-  "notes": "WP-UX-08 viewport error recovery: li-render wgpu smoke maps to studio_err_gpu via studio_viewport_error_kind_for_render_smoke; studio_viewport_error_sync_render on host frame; one-click retry via studio_shell_handle_viewport_error_pointer; smoke studio_viewport_error.li extended (render bridge + pointer retry). li_std_studio_version 18."
+  "notes": "WP-UX-08 merged: render smoke error mapping + pointer retry + RenderViewportWgpuProbe sync on studio_attach_viewport_shell; TOML fixture unquoted parse fallback for Li strings; li_std_studio_version 18."
 }

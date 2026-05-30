@@ -61,11 +61,27 @@ def main() -> int raises IO
     return 13
   if studio_viewport_error_kind() != studio_viewport_error_none():
     return 14
-  if studio_viewport_error_set_mock(studio_err_missing_asset()) != studio_err_missing_asset():
+  var probe_gpu: RenderViewportWgpuProbe = render_viewport_wgpu_probe_pure(0, 1, 1)
+  if studio_viewport_error_kind_from_wgpu_probe(probe_gpu) != studio_err_gpu():
     return 15
-  if studio_viewport_error_retry() != studio_viewport_error_none():
+  var probe_surface: RenderViewportWgpuProbe = render_viewport_wgpu_probe_pure(1, 0, 1)
+  if studio_viewport_error_kind_from_wgpu_probe(probe_surface) != studio_err_gpu():
     return 16
-  var cleared: StudioViewportErrorOverlay = studio_compose_viewport_error_overlay(layout0, studio_viewport_error_kind())
-  if cleared.visible != 0:
+  var probe_asset: RenderViewportWgpuProbe = render_viewport_wgpu_probe_pure(1, 1, 0)
+  if studio_viewport_error_kind_from_wgpu_probe(probe_asset) != studio_err_missing_asset():
     return 17
+  var probe_ok: RenderViewportWgpuProbe = render_viewport_wgpu_probe_pure(1, 1, 1)
+  if studio_viewport_error_kind_from_wgpu_probe(probe_ok) != studio_viewport_error_none():
+    return 18
+  if studio_viewport_error_wgpu_probe_ok(probe_ok) != 1:
+    return 19
+  if studio_viewport_error_wgpu_probe_ok(probe_gpu) != 0:
+    return 20
+  studio_viewport_error_retry()
+  var layout_sync: StudioShellLayout = layout0
+  var sync_kind: int = studio_viewport_error_retry_wgpu(layout_sync, studio_profile_sim_scientific())
+  if sync_kind < studio_viewport_error_none():
+    return 21
+  if sync_kind > studio_err_missing_asset():
+    return 22
   return 0

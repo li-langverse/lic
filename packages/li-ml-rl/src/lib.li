@@ -1,0 +1,17 @@
+﻿import sim
+
+# li-ml-rl (PH-ML Wave 1): RL batch boundary — re-export sim EnvPool types until async JobGraph (Wave 3).
+
+def ml_rl_version() -> int
+  requires true
+  ensures result == 1
+  decreases 0
+=
+  return 1
+
+def ml_rl_env_pool_step(session: var SimSessionStub, dt: float) -> int
+  requires session.tick >= 0
+  ensures result >= 0
+  decreases session.tick
+=
+  return sim_rl_session_env_pool_step(session, dt)

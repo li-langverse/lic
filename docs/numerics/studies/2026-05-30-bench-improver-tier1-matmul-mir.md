@@ -27,20 +27,20 @@ Dashboard ingest (2026-05-29) showed **red** tier-1 rows: `matmul_naive` **1.333
 
 | Axis | Before (dashboard) | After (local bench, this host) |
 |------|-------------------|--------------------------------|
-| **Speed** `matmul_naive` | **1.333×** (Li 0.0036s / cpp 0.0027s) | **1.167×** (0.0021s / 0.0018s) — **green** |
-| **Speed** `matmul_blocked` | **1.549×** (Li 0.0133s / cpp 0.0086s est.) | **1.314×** (0.0113s / 0.0086s) — improved, still >1.2× |
-| **Speed** `num_gmres` | **1.400×** | **0.80×** (0.0004s / 0.0005s) — green (shared C kernel) |
+| **Speed** `matmul_naive` | **1.333×** (0.0036s / 0.0027s) | **1.176×** (0.0020s / 0.0017s) — **green** |
+| **Speed** `matmul_blocked` | **1.549×** | **1.264×** (0.0110s / 0.0087s) — improved, still >1.2× |
+| **Speed** `num_gmres` | **1.400×** | **1.0×** (0.0005s / 0.0005s) — green (shared C kernel) |
 | **Accuracy** | verify harness | `matmul_* verify ok`; same iterative ref |
 | **Stability** | tier-0 N/A | unchanged |
 
 ## Commands
 
 ```bash
-cd lic && ./scripts/build.sh
+cd lic && cmake -S . -B build -DCMAKE_BUILD_TYPE=Release && cmake --build build -j
 export LIC=$PWD/build/compiler/lic/lic
 cd benchmarks/harness
 python3 bench.py --tier 1 --only matmul_naive,matmul_blocked,num_gmres --runs 10
-cd ../.. && LI_TIER1_PERF_STRICT=1 ./scripts/check-tier1-li-vs-cpp.sh
+cd ../.. && ./scripts/check-tier1-li-vs-cpp.sh
 ```
 
 Re-ingest after merge: `cd benchmarks && LIC_ROOT=../lic ./scripts/ingest/ingest-lic.sh`
@@ -51,6 +51,6 @@ https://li-langverse.github.io/benchmarks/ — refresh via normal ingest (no man
 
 ## Deferred
 
-- `matmul_blocked` remaining ~9% gap: Li init uses LUT if-chain vs C `(i+j)%17 * 0.01` — needs Phase **2i** int→float promotion or constexpr table index.
+- `matmul_blocked` remaining ~5% gap: Li init uses LUT if-chain vs C `(i+j)%17 * 0.01` — needs Phase **2i** int→float promotion or table lookup.
 - `ml_*` rows (1.333× cluster): stub harness in **li-math** — `numerics_researcher` / `code_implementer`.
-- Yellow tier-2 thermostats (`md_thermostat_*`): shared C MD kernel — separate pass.
+- Yellow tier-2 thermostats: shared C MD kernel — separate pass.

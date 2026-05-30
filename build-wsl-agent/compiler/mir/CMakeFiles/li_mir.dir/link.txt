@@ -1,0 +1,2 @@
+/usr/bin/llvm-ar-22 Dqc libli_mir.a CMakeFiles/li_mir.dir/mir.cpp.o CMakeFiles/li_mir.dir/lower.cpp.o CMakeFiles/li_mir.dir/num_stable.cpp.o CMakeFiles/li_mir.dir/mir_abi.cpp.o CMakeFiles/li_mir.dir/mir_runtime_link.cpp.o
+/usr/bin/llvm-ranlib-22 -D libli_mir.a

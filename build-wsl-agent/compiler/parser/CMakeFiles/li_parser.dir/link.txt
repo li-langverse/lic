@@ -1,0 +1,2 @@
+/usr/bin/llvm-ar-22 Dqc libli_parser.a CMakeFiles/li_parser.dir/parser.cpp.o
+/usr/bin/llvm-ranlib-22 -D libli_parser.a

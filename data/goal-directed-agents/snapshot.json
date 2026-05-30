@@ -1,15 +1,15 @@
 {
-  "generated_at": "2026-05-30T05:53:02.348185+00:00",
+  "generated_at": "2026-05-30T05:53:34.405963+00:00",
   "tz": "Europe/Berlin",
-  "agents_live": 0,
+  "agents_live": 1,
   "runners": [
     {
       "id": "httpd",
       "name": "li-httpd gap parity",
       "branch": "cursor/httpd-plan-continue",
-      "head": "e51c3308",
+      "head": "2ac479c7",
       "running": true,
-      "process": "2751579 /usr/bin/bash -c cd /home/s4il0r/Documents/Cursor/li-langverse/lic && mkdir -p data/httpd-plan-loop && ENV_FILE=",
+      "process": "2970410 python3 /home/s4il0r/Documents/Cursor/li-langverse/lic/scripts/httpd-plan-loop.py --max 1",
       "log_path": "/home/s4il0r/Documents/Cursor/li-langverse/lic/../lic/data/httpd-plan-loop/until-deadline-20260530-050645.log",
       "todos": [
         {
@@ -81,25 +81,26 @@
         ]
       },
       "state_iterations": 1,
-      "agent_live": false,
-      "agent": "",
-      "goal_file": "",
-      "log_age_sec": 69,
+      "agent_live": true,
+      "agent": "code_implementer",
+      "goal_file": "goal-20260530-055331.md",
+      "log_age_sec": 0,
       "last_state_at": "2026-05-30T05:51:52.407662+00:00",
       "last_state_todo": "gap-phase2-perf-wrk-soak",
       "last_state_gates": false,
-      "current_iteration": "==> batch 1 exit 124 @ 2026-05-30T07:51:52+02:00",
+      "current_iteration": "=== iteration 1: gap-phase2-streaming-wrk ===",
       "activity": [
-        "[sdk] thinking\u2026",
-        "[sdk] thinking\u2026",
-        "[sdk] \u25b6 tool",
-        "[sdk] \u25b6 tool",
-        "agent exit 124 \u2014 stopping loop (fix and re-run)",
-        "agent exit 124 \u2014 stopping loop (fix and re-run)",
-        "==> batch 1 exit 124 @ 2026-05-30T07:51:52+02:00",
-        "==> batch 1 exit 124 @ 2026-05-30T07:51:52+02:00"
+        "=== iteration 1: gap-phase2-streaming-wrk ===",
+        "gates: OK",
+        "=== iteration 1: gap-phase2-streaming-wrk ===",
+        "gates: OK",
+        "SDK tool activity streams to stderr ([sdk] \u25b6/\u2713 lines). Set LI_SDK_TERMINAL_STREAM=0 to disable.",
+        "SDK tool activity streams to stderr ([sdk] \u25b6/\u2713 lines). Set LI_SDK_TERMINAL_STREAM=0 to disable.",
+        "stream on (agent=code_implementer cwd=/home/s4il0r/Documents/Cursor/li-langverse/lic) \u2014 tool lines only; LI_SDK_TERMINAL_STREAM=0 to disable",
+        "stream on (agent=code_implementer cwd=/home/s4il0r/Documents/Cursor/li-langverse/lic) \u2014 tool lines only; LI_SDK_TERMINAL_STREAM=0 to disable"
       ],
-      "status_note": "supervisor up, between agent runs"
+      "status_note": "agent coding (code_implementer)",
+      "active_todo_id": "gap-phase2-streaming-wrk"
     },
     {
       "id": "compiler-studio",
@@ -412,7 +413,7 @@
       "agent_live": false,
       "agent": "",
       "goal_file": "",
-      "log_age_sec": 382251,
+      "log_age_sec": 382283,
       "last_state_at": "2026-05-25T06:41:51.000000+00:00",
       "last_state_todo": "wave-d-gui-scaffold",
       "last_state_gates": true,
@@ -531,7 +532,7 @@
       "agent_live": false,
       "agent": "",
       "goal_file": "",
-      "log_age_sec": 479519,
+      "log_age_sec": 479551,
       "last_state_at": "2026-05-24T16:32:27.410480+00:00",
       "last_state_todo": "sim-p0-md-lj-li-parity",
       "last_state_gates": false,
@@ -732,7 +733,7 @@
       "agent_live": false,
       "agent": "",
       "goal_file": "",
-      "log_age_sec": 429660,
+      "log_age_sec": 429692,
       "last_state_at": "2026-05-30T01:04:00+00:00",
       "last_state_todo": "studio-ux-12-world-studio-demo-linux-audit",
       "last_state_gates": true,

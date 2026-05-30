@@ -12,11 +12,15 @@ run_in_wsl() {
 
 lic_check_smokes() {
   local lic="$1"
+<<<<<<< HEAD
+=======
+  export CC="${CC:-clang-22}" CXX="${CXX:-clang++-22}"
+>>>>>>> eabfbfe (feat(PH-ML): Wave 2 LKIR matmul dispatch, gpu stub, tier-3 bench)
   for smoke in \
     packages/li-ml/li-tests/smoke/ml_matmul_lkir_parity.li \
     packages/li-ml/li-tests/smoke/ml_gpu_matmul_stub.li; do
     [[ -f "$smoke" ]] || { echo "missing smoke: $smoke"; return 1; }
-    "$lic" check --allow-open-vc "$smoke" || return 1
+    "$lic" build --allow-open-vc "$smoke" -o /dev/null || return 1
   done
 }
 

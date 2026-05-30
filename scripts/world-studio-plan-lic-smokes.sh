@@ -37,6 +37,7 @@ for smoke in \
   studio_timeline_playback.li \
   studio_toml_engine_export.li \
   studio_am_export_three_click.li \
+  studio_publish_figure.li \
   studio_command_palette.li \
   studio_keyboard_bridge.li \
   studio_mcp_tools.li \

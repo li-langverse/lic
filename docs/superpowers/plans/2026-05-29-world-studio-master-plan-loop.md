@@ -94,7 +94,7 @@ todos:
     status: done
   - id: wsm-w6-publish-figures
     content: "studio.publish.figure SVG/PDF vector export (WP-PUB-01)"
-    status: pending
+    status: done
   - id: wsm-w6-publish-data
     content: "HDF5/CSV scientific table export (WP-PUB-02)"
     status: pending

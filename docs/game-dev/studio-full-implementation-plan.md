@@ -243,7 +243,7 @@ Cross-tracks (not separate phases above): **PH-PORT**, **PH-COMPLY**, **PH-CIN**
 
 | ID | Title | State | Target | Proof gate | Cx | Blocks | Par? |
 |----|-------|-------|--------|------------|-----|--------|------|
-| WP-PUB-01 | `studio.publish.figure` | stub | SVG/PDF vector | composable | M | WP-UX-12 | Y |
+| WP-PUB-01 | `studio.publish.figure` | **done** | SVG/PDF vector | composable | M | WP-UX-12 | Y |
 | WP-PUB-02 | HDF5/CSV export | stub | Scientific tables | smoke | M | WP-SCI-04 | Y |
 | WP-PUB-03 | Reproducibility bundle | stub | `publish.zip` manifest | `publish_bundle` MCP | L | WP-PUB-01, WP-SIM-04 | N |
 

@@ -108,6 +108,12 @@ note = "WP-AM-03 / WP-UX-16: sim.export.print 3MF/G-code + ≤3-click export wiz
 
 [[tests]]
 suite = "smoke"
+file = "smoke/studio_publish_figure.li"
+outcome = "check_ok"
+note = "WP-PUB-01: studio.publish.figure SVG/PDF/PNG vector export + ≤3-click publish flow"
+
+[[tests]]
+suite = "smoke"
 file = "smoke/studio_sim_scientific_step_hook.li"
 outcome = "check_ok"
 note = "PH-SIM scientific step: tick_at + scene_bench tier sync to viewport display"

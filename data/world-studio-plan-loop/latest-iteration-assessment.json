@@ -1,17 +1,14 @@
 {
   "pass": true,
-  "todo_id": "wsm-w5-drug-adaptive",
-  "wps_touched": ["WP-DRUG-03", "WP-UX-07"],
+  "todo_id": "wsm-w6-publish-figures",
+  "wps_touched": ["WP-PUB-01", "WP-UX-12"],
   "smokes_run": [
-    "packages/li-studio/li-tests/smoke/studio_adaptive_litl_panel_sets.li",
-    "packages/li-studio/li-tests/smoke/studio_drug_litl_adaptive.li",
-    "packages/li-studio/li-tests/smoke/studio_interaction_modes.li",
-    "packages/li-studio/li-tests/smoke/studio_mcp_dispatch_run.li"
+    "packages/li-studio/li-tests/smoke/studio_publish_figure.li"
   ],
   "native_only": true,
   "gates": {
     "world_studio_plan_gates": "pass",
     "lic_check_local": "wsl"
   },
-  "notes": "WP-DRUG-03: studio_adaptive_panel_region_for_litl_stage + studio_shell_apply_adaptive_panel_set switch inspector/viewport/timeline/agent regions per LITL stage on drug compose; smoke studio_adaptive_litl_panel_sets.li; li_std_studio_version 28."
+  "notes": "WP-PUB-01: studio_publish_figure + studio_publish_three_click_flow (Select → lic build proof → Export); SVG/PDF/300+dpi PNG contract with nature_single/double/letter/viewport templates; smoke studio_publish_figure.li; li_std_studio_version 29."
 }

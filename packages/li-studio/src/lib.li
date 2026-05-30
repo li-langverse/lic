@@ -2107,10 +2107,10 @@ def studio_compose_shell_drug_litl(w: float, h: float, tick: int, has_selection:
 
 def li_std_studio_version() -> int
   requires true
-  ensures result == 28
+  ensures result == 29
   decreases 0
 =
-  return 28
+  return 29
 
 def studio_agent_context_none() -> int
   requires true
@@ -3444,6 +3444,322 @@ def studio_am_export_three_click_flow(
     return 5
   if flow.last_magic != am_export_magic_for_format(fmt):
     return 6
+  return 0
+
+# WP-PUB-01 — studio.publish.figure vector export (SVG/PDF/300+dpi PNG contract; not file I/O).
+def studio_publish_format_svg() -> int
+  requires true
+  ensures result == 1
+  decreases 0
+=
+  return 1
+
+def studio_publish_format_pdf() -> int
+  requires true
+  ensures result == 2
+  decreases 0
+=
+  return 2
+
+def studio_publish_format_png() -> int
+  requires true
+  ensures result == 3
+  decreases 0
+=
+  return 3
+
+def studio_publish_format_ok(fmt: int) -> int
+  requires true
+  ensures result >= 0
+  ensures result <= 1
+  decreases fmt
+=
+  if fmt == studio_publish_format_svg():
+    return 1
+  if fmt == studio_publish_format_pdf():
+    return 1
+  if fmt == studio_publish_format_png():
+    return 1
+  return 0
+
+def studio_publish_template_nature_single() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0
+
+def studio_publish_template_nature_double() -> int
+  requires true
+  ensures result == 1
+  decreases 0
+=
+  return 1
+
+def studio_publish_template_letter() -> int
+  requires true
+  ensures result == 2
+  decreases 0
+=
+  return 2
+
+def studio_publish_template_viewport() -> int
+  requires true
+  ensures result == 3
+  decreases 0
+=
+  return 3
+
+def studio_publish_template_ok(tmpl: int) -> int
+  requires true
+  ensures result >= 0
+  ensures result <= 1
+  decreases tmpl
+=
+  if tmpl == studio_publish_template_nature_single():
+    return 1
+  if tmpl == studio_publish_template_nature_double():
+    return 1
+  if tmpl == studio_publish_template_letter():
+    return 1
+  if tmpl == studio_publish_template_viewport():
+    return 1
+  return 0
+
+def studio_publish_template_width_px(tmpl: int) -> int
+  requires studio_publish_template_ok(tmpl) == 1
+  ensures result >= 336
+  ensures result <= 1920
+  decreases tmpl
+=
+  if tmpl == studio_publish_template_nature_single():
+    return 336
+  if tmpl == studio_publish_template_nature_double():
+    return 672
+  if tmpl == studio_publish_template_letter():
+    return 816
+  return 1280
+
+def studio_publish_template_height_px(tmpl: int) -> int
+  requires studio_publish_template_ok(tmpl) == 1
+  ensures result >= 252
+  ensures result <= 1080
+  decreases tmpl
+=
+  if tmpl == studio_publish_template_nature_single():
+    return 252
+  if tmpl == studio_publish_template_nature_double():
+    return 504
+  if tmpl == studio_publish_template_letter():
+    return 1056
+  return 720
+
+def studio_publish_template_dpi(tmpl: int) -> int
+  requires studio_publish_template_ok(tmpl) == 1
+  ensures result >= 96
+  ensures result <= 600
+  decreases tmpl
+=
+  if tmpl == studio_publish_template_viewport():
+    return 96
+  return 300
+
+def studio_publish_proof_pass_ok(proof_pass: int) -> int
+  requires true
+  ensures result >= 0
+  ensures result <= 1
+  decreases proof_pass
+=
+  if proof_pass == 1:
+    return 1
+  return 0
+
+def studio_publish_magic_svg() -> int
+  requires true
+  ensures result == 29583
+  decreases 0
+=
+  return 29583
+
+def studio_publish_magic_pdf() -> int
+  requires true
+  ensures result == 31466
+  decreases 0
+=
+  return 31466
+
+def studio_publish_magic_png() -> int
+  requires true
+  ensures result == 32678
+  decreases 0
+=
+  return 32678
+
+def studio_publish_magic_for_format(fmt: int) -> int
+  requires studio_publish_format_ok(fmt) == 1
+  ensures result > 0
+  decreases fmt
+=
+  if fmt == studio_publish_format_pdf():
+    return studio_publish_magic_pdf()
+  if fmt == studio_publish_format_png():
+    return studio_publish_magic_png()
+  return studio_publish_magic_svg()
+
+type PublishFigureResult = object
+  public ok: int
+  public format: int
+  public template: int
+  public width_px: int
+  public height_px: int
+  public dpi: int
+  public sim_checksum: float
+  public byte_checksum: float
+  public magic_tag: int
+
+def studio_publish_figure(
+    format: int,
+    template: int,
+    sim_checksum: float,
+    proof_pass: int) -> PublishFigureResult
+  requires sim_checksum >= 0.0
+  ensures result.format == format
+  ensures result.template == template
+  decreases format
+=
+  var r: PublishFigureResult
+  r.ok = 0
+  r.format = format
+  r.template = template
+  r.width_px = 0
+  r.height_px = 0
+  r.dpi = 0
+  r.sim_checksum = sim_checksum
+  r.byte_checksum = 0.0
+  r.magic_tag = 0
+  if studio_publish_format_ok(format) != 1:
+    return r
+  if studio_publish_template_ok(template) != 1:
+    return r
+  if studio_publish_proof_pass_ok(proof_pass) != 1:
+    return r
+  r.width_px = studio_publish_template_width_px(template)
+  r.height_px = studio_publish_template_height_px(template)
+  r.dpi = studio_publish_template_dpi(template)
+  if format == studio_publish_format_png():
+    if r.dpi < 300:
+      r.dpi = 300
+  r.byte_checksum = sim_checksum + float(r.width_px) + float(r.height_px) + float(r.dpi)
+  r.magic_tag = studio_publish_magic_for_format(format)
+  r.ok = 1
+  return r
+
+# WP-PUB-01 publish mode — Select template → lic build proof → export figure (≤3 clicks).
+def studio_publish_wizard_step_select() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0
+
+def studio_publish_wizard_step_proof() -> int
+  requires true
+  ensures result == 1
+  decreases 0
+=
+  return 1
+
+def studio_publish_wizard_step_export() -> int
+  requires true
+  ensures result == 2
+  decreases 0
+=
+  return 2
+
+type StudioPublishFlowState = object
+  public format: int
+  public template: int
+  public wizard_step: int
+  public click_count: int
+  public proof_pass: int
+  public export_ok: int
+  public last_magic: int
+
+def studio_publish_flow_init(fmt: int, tmpl: int) -> StudioPublishFlowState
+  requires studio_publish_format_ok(fmt) == 1
+  requires studio_publish_template_ok(tmpl) == 1
+  ensures result.format == fmt
+  ensures result.template == tmpl
+  ensures result.wizard_step == studio_publish_wizard_step_select()
+  decreases fmt
+=
+  var f: StudioPublishFlowState
+  f.format = fmt
+  f.template = tmpl
+  f.wizard_step = studio_publish_wizard_step_select()
+  f.click_count = 0
+  f.proof_pass = 0
+  f.export_ok = 0
+  f.last_magic = 0
+  return f
+
+def studio_publish_flow_advance(
+    flow: var StudioPublishFlowState,
+    sim_checksum: float) -> int
+  requires studio_publish_format_ok(flow.format) == 1
+  requires studio_publish_template_ok(flow.template) == 1
+  requires sim_checksum >= 0.0
+  ensures flow.click_count >= 0
+  decreases flow.wizard_step
+=
+  flow.click_count = flow.click_count + 1
+  if flow.wizard_step == studio_publish_wizard_step_select():
+    flow.wizard_step = studio_publish_wizard_step_proof()
+    return 0
+  if flow.wizard_step == studio_publish_wizard_step_proof():
+    if flow.proof_pass != 1:
+      return 1
+    flow.wizard_step = studio_publish_wizard_step_export()
+    return 0
+  if flow.wizard_step == studio_publish_wizard_step_export():
+    var fig: PublishFigureResult = studio_publish_figure(flow.format, flow.template, sim_checksum, flow.proof_pass)
+    if fig.ok != 1:
+      return 2
+    if fig.magic_tag != studio_publish_magic_for_format(flow.format):
+      return 3
+    flow.export_ok = 1
+    flow.last_magic = fig.magic_tag
+    return 0
+  return 4
+
+def studio_publish_three_click_flow(
+    fmt: int,
+    tmpl: int,
+    sim_checksum: float,
+    proof_pass: int) -> int
+  requires studio_publish_format_ok(fmt) == 1
+  requires studio_publish_template_ok(tmpl) == 1
+  requires sim_checksum >= 0.0
+  ensures result >= 0
+  ensures result <= 6
+  decreases fmt
+=
+  var flow: StudioPublishFlowState = studio_publish_flow_init(fmt, tmpl)
+  if studio_publish_flow_advance(flow, sim_checksum) != 0:
+    return 1
+  flow.proof_pass = proof_pass
+  if studio_publish_flow_advance(flow, sim_checksum) != 0:
+    return 2
+  if proof_pass != 1:
+    return 3
+  if studio_publish_flow_advance(flow, sim_checksum) != 0:
+    return 4
+  if flow.click_count != 3:
+    return 5
+  if flow.export_ok != 1:
+    return 6
+  if flow.last_magic != studio_publish_magic_for_format(fmt):
+    return 7
   return 0
 
 def studio_apply_profile_to_sim(config: StudioProjectConfig, sim_out: var SimSessionStub) -> unit

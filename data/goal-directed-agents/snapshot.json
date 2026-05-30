@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-05-30T11:38:32.253800+00:00",
+  "generated_at": "2026-05-30T11:39:05.248747+00:00",
   "tz": "Europe/Berlin",
   "agents_live": 0,
   "runners": [
@@ -7,9 +7,9 @@
       "id": "httpd",
       "name": "li-httpd gap parity",
       "branch": "cursor/httpd-plan-continue",
-      "head": "0562d813",
+      "head": "e163deb4",
       "running": true,
-      "process": "1272882 python3 /home/s4il0r/Documents/Cursor/li-langverse/lic/scripts/goal-directed-agents-snapshot.py",
+      "process": "1275412 python3 /home/s4il0r/Documents/Cursor/li-langverse/lic/scripts/goal-directed-agents-snapshot.py",
       "log_path": "/home/s4il0r/Documents/Cursor/li-langverse/lic/../lic/data/httpd-plan-loop/until-deadline-20260530-050645.log",
       "todos": [
         {
@@ -91,7 +91,7 @@
       "agent_live": false,
       "agent": "",
       "goal_file": "",
-      "log_age_sec": 17907,
+      "log_age_sec": 17940,
       "last_state_at": "2026-05-30T06:38:33.327023+00:00",
       "last_state_todo": "gap-phase2-streaming-wrk",
       "last_state_gates": false,
@@ -106,7 +106,7 @@
         "==> batch 2 exit 124 @ 2026-05-30T08:38:33+02:00",
         "==> batch 2 exit 124 @ 2026-05-30T08:38:33+02:00"
       ],
-      "status_note": "supervisor idle (log 17907s stale \u2014 check log_path)"
+      "status_note": "supervisor idle (log 17940s stale \u2014 check log_path)"
     },
     {
       "id": "compiler-studio",
@@ -419,7 +419,7 @@
       "agent_live": false,
       "agent": "",
       "goal_file": "",
-      "log_age_sec": 402980,
+      "log_age_sec": 403013,
       "last_state_at": "2026-05-25T06:41:51.000000+00:00",
       "last_state_todo": "wave-d-gui-scaffold",
       "last_state_gates": true,
@@ -536,7 +536,7 @@
       "agent_live": false,
       "agent": "",
       "goal_file": "",
-      "log_age_sec": 500249,
+      "log_age_sec": 500282,
       "last_state_at": "2026-05-24T16:32:27.410480+00:00",
       "last_state_todo": "sim-p0-md-lj-li-parity",
       "last_state_gates": false,
@@ -794,7 +794,7 @@
       "agent_live": false,
       "agent": "",
       "goal_file": "",
-      "log_age_sec": 450389,
+      "log_age_sec": 450422,
       "last_state_at": "2026-05-30T08:11:00+00:00",
       "last_state_todo": "studio-ux-15-wgpu-readback",
       "last_state_gates": true,
@@ -886,7 +886,7 @@
       "agent_live": false,
       "agent": "",
       "goal_file": "",
-      "log_age_sec": 402956,
+      "log_age_sec": 402989,
       "last_state_at": "2026-05-25T19:42:04.198858+00:00",
       "last_state_todo": "md-r2-neighbor-list-gap",
       "last_state_gates": true,
@@ -965,7 +965,7 @@
       "agent_live": false,
       "agent": "",
       "goal_file": "",
-      "log_age_sec": 403467,
+      "log_age_sec": 403500,
       "last_state_at": "2026-05-25T19:32:04.164094+00:00",
       "last_state_todo": "chem-r2-dft-scf-gap",
       "last_state_gates": false,
@@ -1037,7 +1037,7 @@
       "agent_live": false,
       "agent": "",
       "goal_file": "",
-      "log_age_sec": 403619,
+      "log_age_sec": 403652,
       "last_state_at": "2026-05-25T19:29:32.615546+00:00",
       "last_state_todo": "sec-r1-httpd-fuzz-smoke",
       "last_state_gates": true,
@@ -1052,9 +1052,9 @@
       "id": "swarm-observer",
       "name": "Swarm gap orchestrator",
       "branch": "cursor/swarm-observer-plan-loop",
-      "head": "0562d813",
+      "head": "e163deb4",
       "running": true,
-      "process": "1272882 python3 /home/s4il0r/Documents/Cursor/li-langverse/lic/scripts/goal-directed-agents-snapshot.py",
+      "process": "1275412 python3 /home/s4il0r/Documents/Cursor/li-langverse/lic/scripts/goal-directed-agents-snapshot.py",
       "log_path": "/home/s4il0r/Documents/Cursor/li-langverse/lic/../lic/data/swarm-observer-plan-loop/iter-20260525-193501.log",
       "todos": [
         {
@@ -1111,7 +1111,7 @@
       "agent_live": false,
       "agent": "",
       "goal_file": "",
-      "log_age_sec": 16305,
+      "log_age_sec": 16338,
       "last_state_at": "2026-05-25T19:34:28.890041+00:00",
       "last_state_todo": "orch-r1-plan-debt-sync",
       "last_state_gates": true,
@@ -1119,7 +1119,7 @@
       "activity": [
         "SDK tool activity streams to stderr ([sdk] \u25b6/\u2713 lines). Set LI_SDK_TERMINAL_STREAM=0 to disable."
       ],
-      "status_note": "supervisor idle (log 16305s stale \u2014 check log_path)"
+      "status_note": "supervisor idle (log 16338s stale \u2014 check log_path)"
     }
   ],
   "history": [

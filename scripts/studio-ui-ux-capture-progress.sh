@@ -88,10 +88,16 @@ run_ux_harness() {
     return 0
   fi
   export LIC_ROOT="$ROOT"
+  local demo_mock="--mock"
+  if [[ "$(uname -s)" == "Linux" && "${STUDIO_UI_UX_HARNESS_MOCK:-0}" != "1" ]]; then
+    demo_mock=""
+    echo "capture: world-studio-demo Linux fixture audit (non-mock)"
+  fi
+  # shellcheck disable=SC2086
   python3 "$AGENTS_ROOT/ux-harness/run_audit.py" \
     --target world-studio-demo \
     --mode both \
-    --mock \
+    $demo_mock \
     --out-dir "$ART" || true
   local native_out="$ART/native-audit"
   mkdir -p "$native_out"

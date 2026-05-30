@@ -37,7 +37,10 @@ todos:
     status: done
   - id: studio-ux-11-panel-switch-gate
     content: "PH-UX panel_switch_ms gate — bench hook within 100ms + gui_panel_switch_to region fix"
-    status: in_progress
+    status: done
+  - id: studio-ux-12-world-studio-demo-linux-audit
+    content: "ux-harness world-studio-demo fixture audit on Linux (non-mock) + agentic_ai SOTA refs in gates"
+    status: done
 isProject: false
 ---
 

@@ -25,7 +25,13 @@ def check_files() -> None:
     if not CAPTURE.is_file():
         fail("missing scripts/studio-ui-ux-capture-progress.sh")
     text = CAPTURE.read_text(encoding="utf-8")
-    for needle in ("capture_html", "capture_native_sdl", "publish_github", "studio-ui-ux-progress"):
+    for needle in (
+        "capture_html",
+        "capture_native_sdl",
+        "publish_github",
+        "studio-ui-ux-progress",
+        "world-studio-demo Linux fixture audit",
+    ):
         if needle not in text:
             fail(f"capture script missing expected fragment: {needle}")
     if not (ROOT / "scripts/studio-ui-ux-capture-native.sh").is_file():

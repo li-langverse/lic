@@ -27,6 +27,7 @@ chmod +x "$ROOT/scripts/studio-ui-ux-capture-progress.sh" 2>/dev/null || true
 python3 "$ROOT/scripts/studio-ui-ux-verify-capture.py" || fail "studio-ui-ux-verify-capture"
 python3 "$ROOT/scripts/studio-ui-ux-verify-native-capture.py" || fail "studio-ui-ux-verify-native-capture"
 python3 "$ROOT/scripts/studio-ui-ux-verify-tokens.py" || fail "studio token sync (TOML ↔ li-ui)"
+python3 "$ROOT/scripts/studio-ui-ux-verify-harness-audit.py" || fail "studio-ui-ux-verify-harness-audit"
 
 li_phase "competitive intel doc"
 [[ -f "$ROOT/docs/game-dev/competitive-intel/ui-ux-by-dimension.md" ]] || fail "ui-ux-by-dimension.md"

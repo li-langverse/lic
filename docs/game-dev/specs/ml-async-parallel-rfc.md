@@ -1,4 +1,4 @@
-﻿# RFC: ml-async-parallel — async JobGraph for ML/RL on Li
+# RFC: ml-async-parallel — async JobGraph for ML/RL on Li
 
 **Status:** Draft (Wave 1 deepen)  
 **Date:** 2026-05-30  
@@ -22,7 +22,7 @@ Studio sim_rl and chem.ml workloads need **async sample collection** across mult
 | `ml_rl_env_pool_async_collect(session, dt)` | def | Convenience wrapper; returns `sim_status_ok()` when >=4 samples |
 | `ml_rl_async_env_count()` | def | Honest parallel env handle count (currently `sim_rl_env_pool_size_default() == 4`) |
 
-Future waves add `TrainStep` / `EvalStep` nodes and non-blocking worker processes; Wave 3 uses synchronous stub workers with honest `async_workers` count in bench JSON.
+Wave 4 adds `TrainStepJob` / `EvalStepJob` dispatch, session-persistent EnvPool in `ml_rl_job_graph_collect`, and `SampleJob` fill on collect. Worker model is **sync** (`ml_rl_worker_mode()==0`); bench JSON uses `"worker": "sync"` (not `"stub"`). Process pool workers remain deferred.
 
 ### Packages
 

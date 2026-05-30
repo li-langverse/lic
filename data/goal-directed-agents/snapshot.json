@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-05-28T19:38:12.261914+00:00",
+  "generated_at": "2026-05-30T05:05:28.486469+00:00",
   "tz": "Europe/Berlin",
   "agents_live": 0,
   "runners": [
@@ -7,9 +7,9 @@
       "id": "httpd",
       "name": "li-httpd gap parity",
       "branch": "cursor/httpd-plan-continue",
-      "head": "c8c18657",
+      "head": "28cf644b",
       "running": true,
-      "process": "4100598 python3 /home/s4il0r/Documents/Cursor/li-langverse/lic/scripts/goal-directed-agents-snapshot.py",
+      "process": "2010567 bash ./scripts/httpd-plan-until-deadline.sh",
       "log_path": "/home/s4il0r/Documents/Cursor/li-langverse/lic/../lic/data/httpd-plan-loop/iter-20260522-132846.log",
       "todos": [
         {
@@ -72,7 +72,7 @@
       "agent_live": false,
       "agent": "",
       "goal_file": "",
-      "log_age_sec": 182491,
+      "log_age_sec": 19,
       "last_state_at": "",
       "last_state_todo": "",
       "last_state_gates": "",
@@ -87,14 +87,14 @@
         "ursor/li-langverse/li-cursor-agents/data/workspaces/li-langverse/lic/code_implementer-1779456669806/repo/docs/ecosystem/httpd-m1-baseline.md",
         "[sdk] \u2717 tool"
       ],
-      "status_note": "supervisor idle (log 182491s stale \u2014 check log_path)",
+      "status_note": "supervisor up, between agent runs",
       "active_todo_id": "gap-phase2-perf-wrk-soak"
     },
     {
       "id": "compiler-studio",
       "name": "Compiler + Studio",
       "branch": "cursor/compiler-studio-plan-loop",
-      "head": "4767dd8a",
+      "head": "b0edbdc8",
       "running": false,
       "process": "",
       "log_path": "/home/s4il0r/Documents/Cursor/li-langverse/lic/../lic-worktrees/compiler-studio/data/compiler-studio-plan-loop/until-deadline-20260525-180023.log",
@@ -187,7 +187,7 @@
         {
           "id": "wave-d-gui-scaffold",
           "content": "AL-9 packages/gui scaffold + composable import gui (studio shell; UX-02/04)",
-          "status": "in_progress"
+          "status": "completed"
         },
         {
           "id": "wave-d-02-al2-catalog",
@@ -335,7 +335,7 @@
           "status": "completed"
         }
       ],
-      "plan_completed": 46,
+      "plan_completed": 47,
       "plan_total": 47,
       "plan_pending": [],
       "state": {
@@ -356,13 +356,13 @@
           "wave-c-competitive-intel",
           "wave-c-verticals-toml",
           "wave-c-ui-rect-vc",
+          "wave-d-gui-scaffold",
           "wave-d-02-al2-catalog",
           "wave-d-03-ux-inspector",
           "wave-d-04-math-quat-mat4",
-          "wave-d-05-linalg-scaffold",
-          "wave-d-gui-scaffold"
+          "wave-d-05-linalg-scaffold"
         ],
-        "iterations": 74,
+        "iterations": 4,
         "history": [
           {
             "at": "2026-05-23T09:02:50.508081+00:00",
@@ -389,436 +389,22 @@
             "gates_ok": false
           },
           {
-            "at": "2026-05-24T19:35:09.248291+00:00",
-            "todo_id": "wave-d-gui-scaffold",
-            "agent_exit": 0,
-            "gates_ok": false
-          },
-          {
-            "at": "2026-05-24T19:53:34.860479+00:00",
-            "todo_id": "wave-d-gui-scaffold",
-            "agent_exit": 0,
-            "gates_ok": false
-          },
-          {
-            "at": "2026-05-24T20:06:02.114368+00:00",
-            "todo_id": "wave-d-gui-scaffold",
-            "agent_exit": 0,
-            "gates_ok": false
-          },
-          {
-            "at": "2026-05-24T20:27:58.164632+00:00",
-            "todo_id": "wave-d-gui-scaffold",
-            "agent_exit": 0,
-            "gates_ok": false
-          },
-          {
-            "at": "2026-05-24T20:42:03.743213+00:00",
-            "todo_id": "wave-d-gui-scaffold",
-            "agent_exit": 0,
-            "gates_ok": false
-          },
-          {
-            "at": "2026-05-24T21:28:33.788765+00:00",
-            "todo_id": "wave-d-gui-scaffold",
-            "agent_exit": 124,
-            "gates_ok": false
-          },
-          {
-            "at": "2026-05-24T21:32:13.473435+00:00",
-            "todo_id": "wave-d-gui-scaffold",
-            "agent_exit": -15,
-            "gates_ok": false
-          },
-          {
-            "at": "2026-05-24T21:46:49.869436+00:00",
-            "todo_id": "wave-d-gui-scaffold",
-            "agent_exit": 1,
-            "gates_ok": false
-          },
-          {
-            "at": "2026-05-24T22:34:10.538378+00:00",
-            "todo_id": "wave-d-gui-scaffold",
-            "agent_exit": 124,
-            "gates_ok": false
-          },
-          {
-            "at": "2026-05-24T22:53:59.295760+00:00",
-            "todo_id": "wave-d-gui-scaffold",
-            "agent_exit": 1,
-            "gates_ok": false
-          },
-          {
-            "at": "2026-05-24T23:20:15.290384+00:00",
+            "at": "2026-05-25T06:41:51.000000+00:00",
             "todo_id": "wave-d-gui-scaffold",
             "agent_exit": 0,
             "gates_ok": true
-          },
-          {
-            "at": "2026-05-24T23:38:40.778108+00:00",
-            "todo_id": "wave-d-gui-scaffold",
-            "agent_exit": 1,
-            "gates_ok": false
-          },
-          {
-            "at": "2026-05-24T23:58:02.874568+00:00",
-            "todo_id": "wave-d-gui-scaffold",
-            "agent_exit": 1,
-            "gates_ok": false
-          },
-          {
-            "at": "2026-05-25T00:23:48.159960+00:00",
-            "todo_id": "wave-d-gui-scaffold",
-            "agent_exit": 0,
-            "gates_ok": true
-          },
-          {
-            "at": "2026-05-25T00:53:24.739028+00:00",
-            "todo_id": "wave-d-gui-scaffold",
-            "agent_exit": 1,
-            "gates_ok": false
-          },
-          {
-            "at": "2026-05-25T01:07:42.744840+00:00",
-            "todo_id": "wave-d-gui-scaffold",
-            "agent_exit": 1,
-            "gates_ok": false
-          },
-          {
-            "at": "2026-05-25T01:25:19.219821+00:00",
-            "todo_id": "wave-d-gui-scaffold",
-            "agent_exit": 0,
-            "gates_ok": true
-          },
-          {
-            "at": "2026-05-25T01:38:21.263886+00:00",
-            "todo_id": "wave-d-gui-scaffold",
-            "agent_exit": 1,
-            "gates_ok": false
-          },
-          {
-            "at": "2026-05-25T01:52:44.791868+00:00",
-            "todo_id": "wave-d-gui-scaffold",
-            "agent_exit": 1,
-            "gates_ok": false
-          },
-          {
-            "at": "2026-05-25T02:07:25.489757+00:00",
-            "todo_id": "wave-d-gui-scaffold",
-            "agent_exit": 1,
-            "gates_ok": false
-          },
-          {
-            "at": "2026-05-25T02:25:28.893455+00:00",
-            "todo_id": "wave-d-gui-scaffold",
-            "agent_exit": 0,
-            "gates_ok": true
-          },
-          {
-            "at": "2026-05-25T02:38:21.417524+00:00",
-            "todo_id": "wave-d-gui-scaffold",
-            "agent_exit": 1,
-            "gates_ok": false
-          },
-          {
-            "at": "2026-05-25T02:52:41.943793+00:00",
-            "todo_id": "wave-d-gui-scaffold",
-            "agent_exit": 1,
-            "gates_ok": false
-          },
-          {
-            "at": "2026-05-25T03:07:33.157835+00:00",
-            "todo_id": "wave-d-gui-scaffold",
-            "agent_exit": 0,
-            "gates_ok": true
-          },
-          {
-            "at": "2026-05-25T03:19:38.273007+00:00",
-            "todo_id": "wave-d-gui-scaffold",
-            "agent_exit": 0,
-            "gates_ok": true
-          },
-          {
-            "at": "2026-05-25T03:31:53.213316+00:00",
-            "todo_id": "wave-d-gui-scaffold",
-            "agent_exit": 1,
-            "gates_ok": false
-          },
-          {
-            "at": "2026-05-25T03:46:21.408720+00:00",
-            "todo_id": "wave-d-gui-scaffold",
-            "agent_exit": 1,
-            "gates_ok": false
-          },
-          {
-            "at": "2026-05-25T04:01:02.701103+00:00",
-            "todo_id": "wave-d-gui-scaffold",
-            "agent_exit": 1,
-            "gates_ok": false
-          },
-          {
-            "at": "2026-05-25T04:15:28.068845+00:00",
-            "todo_id": "wave-d-gui-scaffold",
-            "agent_exit": 1,
-            "gates_ok": false
-          },
-          {
-            "at": "2026-05-25T04:37:13.031245+00:00",
-            "todo_id": "wave-d-gui-scaffold",
-            "agent_exit": 0,
-            "gates_ok": true
-          },
-          {
-            "at": "2026-05-25T04:50:18.886756+00:00",
-            "todo_id": "wave-d-gui-scaffold",
-            "agent_exit": 1,
-            "gates_ok": false
-          },
-          {
-            "at": "2026-05-25T05:05:04.567689+00:00",
-            "todo_id": "wave-d-gui-scaffold",
-            "agent_exit": 1,
-            "gates_ok": false
-          },
-          {
-            "at": "2026-05-25T05:21:26.715978+00:00",
-            "todo_id": "wave-d-gui-scaffold",
-            "agent_exit": 0,
-            "gates_ok": false
-          },
-          {
-            "at": "2026-05-25T05:42:06.879901+00:00",
-            "todo_id": "wave-d-gui-scaffold",
-            "agent_exit": 0,
-            "gates_ok": true
-          },
-          {
-            "at": "2026-05-25T05:55:00.519499+00:00",
-            "todo_id": "wave-d-gui-scaffold",
-            "agent_exit": 1,
-            "gates_ok": false
-          },
-          {
-            "at": "2026-05-25T06:09:22.345926+00:00",
-            "todo_id": "wave-d-gui-scaffold",
-            "agent_exit": 1,
-            "gates_ok": false
-          },
-          {
-            "at": "2026-05-25T06:23:50.392853+00:00",
-            "todo_id": "wave-d-gui-scaffold",
-            "agent_exit": 1,
-            "gates_ok": false
-          },
-          {
-            "at": "2026-05-25T06:44:04.821315+00:00",
-            "todo_id": "wave-d-gui-scaffold",
-            "agent_exit": 0,
-            "gates_ok": true
-          },
-          {
-            "at": "2026-05-25T06:57:04.647288+00:00",
-            "todo_id": "wave-d-gui-scaffold",
-            "agent_exit": 1,
-            "gates_ok": false
-          },
-          {
-            "at": "2026-05-25T07:11:41.358919+00:00",
-            "todo_id": "wave-d-gui-scaffold",
-            "agent_exit": 1,
-            "gates_ok": false
-          },
-          {
-            "at": "2026-05-25T07:27:10.609591+00:00",
-            "todo_id": "wave-d-gui-scaffold",
-            "agent_exit": 0,
-            "gates_ok": false
-          },
-          {
-            "at": "2026-05-25T07:41:49.156764+00:00",
-            "todo_id": "wave-d-gui-scaffold",
-            "agent_exit": 1,
-            "gates_ok": false
-          },
-          {
-            "at": "2026-05-25T07:56:31.068126+00:00",
-            "todo_id": "wave-d-gui-scaffold",
-            "agent_exit": 1,
-            "gates_ok": false
-          },
-          {
-            "at": "2026-05-25T08:12:58.898604+00:00",
-            "todo_id": "wave-d-gui-scaffold",
-            "agent_exit": 0,
-            "gates_ok": true
-          },
-          {
-            "at": "2026-05-25T08:26:54.100716+00:00",
-            "todo_id": "wave-d-gui-scaffold",
-            "agent_exit": 1,
-            "gates_ok": false
-          },
-          {
-            "at": "2026-05-25T08:42:07.674882+00:00",
-            "todo_id": "wave-d-gui-scaffold",
-            "agent_exit": 1,
-            "gates_ok": false
-          },
-          {
-            "at": "2026-05-25T09:00:46.613077+00:00",
-            "todo_id": "wave-d-gui-scaffold",
-            "agent_exit": 0,
-            "gates_ok": true
-          },
-          {
-            "at": "2026-05-25T09:14:55.269612+00:00",
-            "todo_id": "wave-d-gui-scaffold",
-            "agent_exit": 1,
-            "gates_ok": false
-          },
-          {
-            "at": "2026-05-25T09:30:58.836382+00:00",
-            "todo_id": "wave-d-gui-scaffold",
-            "agent_exit": 1,
-            "gates_ok": false
-          },
-          {
-            "at": "2026-05-25T09:49:23.050358+00:00",
-            "todo_id": "wave-d-gui-scaffold",
-            "agent_exit": 0,
-            "gates_ok": true
-          },
-          {
-            "at": "2026-05-25T10:07:03.429984+00:00",
-            "todo_id": "wave-d-gui-scaffold",
-            "agent_exit": 1,
-            "gates_ok": false
-          },
-          {
-            "at": "2026-05-25T10:30:23.917003+00:00",
-            "todo_id": "wave-d-gui-scaffold",
-            "agent_exit": 0,
-            "gates_ok": true
-          },
-          {
-            "at": "2026-05-25T10:53:35.549094+00:00",
-            "todo_id": "wave-d-gui-scaffold",
-            "agent_exit": 1,
-            "gates_ok": false
-          },
-          {
-            "at": "2026-05-25T11:37:46.653884+00:00",
-            "todo_id": "wave-d-gui-scaffold",
-            "agent_exit": 0,
-            "gates_ok": true
-          },
-          {
-            "at": "2026-05-25T12:03:42.884178+00:00",
-            "todo_id": "wave-d-gui-scaffold",
-            "agent_exit": 0,
-            "gates_ok": true
-          },
-          {
-            "at": "2026-05-25T12:49:51.700194+00:00",
-            "todo_id": "wave-d-gui-scaffold",
-            "agent_exit": 124,
-            "gates_ok": false
-          },
-          {
-            "at": "2026-05-25T13:13:34.949812+00:00",
-            "todo_id": "wave-d-gui-scaffold",
-            "agent_exit": 1,
-            "gates_ok": false
-          },
-          {
-            "at": "2026-05-25T13:39:58.475661+00:00",
-            "todo_id": "wave-d-gui-scaffold",
-            "agent_exit": 0,
-            "gates_ok": true
-          },
-          {
-            "at": "2026-05-25T13:54:41.598113+00:00",
-            "todo_id": "wave-d-gui-scaffold",
-            "agent_exit": 1,
-            "gates_ok": false
-          },
-          {
-            "at": "2026-05-25T14:32:29.033763+00:00",
-            "todo_id": "wave-d-gui-scaffold",
-            "agent_exit": 0,
-            "gates_ok": true
-          },
-          {
-            "at": "2026-05-25T14:49:46.168126+00:00",
-            "todo_id": "wave-d-gui-scaffold",
-            "agent_exit": 1,
-            "gates_ok": false
-          },
-          {
-            "at": "2026-05-25T15:34:56.153655+00:00",
-            "todo_id": "wave-d-gui-scaffold",
-            "agent_exit": 0,
-            "gates_ok": true
-          },
-          {
-            "at": "2026-05-25T15:52:40.125679+00:00",
-            "todo_id": "wave-d-gui-scaffold",
-            "agent_exit": 1,
-            "gates_ok": false
-          },
-          {
-            "at": "2026-05-25T16:31:21.257143+00:00",
-            "todo_id": "wave-d-gui-scaffold",
-            "agent_exit": 0,
-            "gates_ok": true
-          },
-          {
-            "at": "2026-05-25T16:48:46.000762+00:00",
-            "todo_id": "wave-d-gui-scaffold",
-            "agent_exit": 1,
-            "gates_ok": false
-          },
-          {
-            "at": "2026-05-25T17:26:44.196325+00:00",
-            "todo_id": "wave-d-gui-scaffold",
-            "agent_exit": 1,
-            "gates_ok": false
-          },
-          {
-            "at": "2026-05-25T17:45:50.263799+00:00",
-            "todo_id": "wave-d-gui-scaffold",
-            "agent_exit": 1,
-            "gates_ok": false
-          },
-          {
-            "at": "2026-05-25T18:37:22.299597+00:00",
-            "todo_id": "wave-d-gui-scaffold",
-            "agent_exit": 0,
-            "gates_ok": true
-          },
-          {
-            "at": "2026-05-25T18:56:44.778223+00:00",
-            "todo_id": "wave-d-gui-scaffold",
-            "agent_exit": 0,
-            "gates_ok": true
-          },
-          {
-            "at": "2026-05-25T19:26:43.369615+00:00",
-            "todo_id": "wave-d-gui-scaffold",
-            "agent_exit": 1,
-            "gates_ok": false
           }
         ],
-        "note": "2026-05-24: cleared premature completed_ids for wave-a-llvm22-typecheck-warnings and wave-d-gui-scaffold (plan still open; gates had failed or plan YAML not updated)"
+        "note": "2026-05-25: wave-d-gui-scaffold re-verified (compiler-studio-plan-gates + bench/math green); wave-a-llvm22-typecheck-warnings still open"
       },
-      "state_iterations": 74,
+      "state_iterations": 4,
       "agent_live": false,
       "agent": "",
       "goal_file": "",
-      "log_age_sec": 258960,
-      "last_state_at": "2026-05-25T19:26:43.369615+00:00",
+      "log_age_sec": 379396,
+      "last_state_at": "2026-05-25T06:41:51.000000+00:00",
       "last_state_todo": "wave-d-gui-scaffold",
-      "last_state_gates": false,
+      "last_state_gates": true,
       "current_iteration": "=== iteration 1: wave-d-gui-scaffold ===",
       "activity": [
         "[sdk] \u2717 tool",
@@ -836,10 +422,10 @@
       "id": "sim",
       "name": "Sim / algo registry",
       "branch": "cursor/sim-algo-plan-loop",
-      "head": "32187436",
+      "head": "f9a3fc57",
       "running": false,
       "process": "",
-      "log_path": "/home/s4il0r/Documents/Cursor/li-langverse/lic/../lic-worktrees/sim-algo/data/sim-plan-loop/runner.log",
+      "log_path": "/home/s4il0r/Documents/Cursor/li-langverse/lic/../lic-worktrees/sim-algo/data/sim-plan-loop/iter-20260524-163427.log",
       "todos": [
         {
           "id": "sim-p0-md-lj-li-parity",
@@ -854,12 +440,12 @@
         {
           "id": "sim-p1-num-dot-axpy",
           "content": "Implement algo_id=1 num_dot_axpy in li-math-numerics + bench-package gate",
-          "status": "pending"
+          "status": "completed"
         },
         {
           "id": "sim-p1-md-neighbor-cell",
           "content": "Implement algo_id=105 md_neighbor_cell_list stub\u2192smoke in li-physics-particles",
-          "status": "pending"
+          "status": "completed"
         },
         {
           "id": "sim-p2-qm-dft-scf",
@@ -867,16 +453,14 @@
           "status": "pending"
         }
       ],
-      "plan_completed": 2,
+      "plan_completed": 4,
       "plan_total": 5,
       "plan_pending": [
-        "sim-p1-num-dot-axpy",
-        "sim-p1-md-neighbor-cell",
         "sim-p2-qm-dft-scf"
       ],
       "state": {
         "completed_ids": [],
-        "iterations": 115,
+        "iterations": 8,
         "history": [
           {
             "at": "2026-05-24T15:02:54.490019+00:00",
@@ -925,648 +509,6 @@
             "todo_id": "sim-p0-md-lj-li-parity",
             "agent_exit": 0,
             "gates_ok": false
-          },
-          {
-            "at": "2026-05-24T17:12:10.136689+00:00",
-            "todo_id": "sim-p0-heat-li-smoke",
-            "agent_exit": 0,
-            "gates_ok": false
-          },
-          {
-            "at": "2026-05-24T17:22:12.298471+00:00",
-            "todo_id": "sim-p0-heat-li-smoke",
-            "agent_exit": 0,
-            "gates_ok": false
-          },
-          {
-            "at": "2026-05-24T17:35:36.186316+00:00",
-            "todo_id": "sim-p0-heat-li-smoke",
-            "agent_exit": 0,
-            "gates_ok": false
-          },
-          {
-            "at": "2026-05-24T17:42:43.583129+00:00",
-            "todo_id": "sim-p0-heat-li-smoke",
-            "agent_exit": 0,
-            "gates_ok": false
-          },
-          {
-            "at": "2026-05-24T17:49:39.417934+00:00",
-            "todo_id": "sim-p0-heat-li-smoke",
-            "agent_exit": 0,
-            "gates_ok": false
-          },
-          {
-            "at": "2026-05-24T18:00:06.812245+00:00",
-            "todo_id": "sim-p0-heat-li-smoke",
-            "agent_exit": 0,
-            "gates_ok": false
-          },
-          {
-            "at": "2026-05-24T18:08:00.156935+00:00",
-            "todo_id": "sim-p0-heat-li-smoke",
-            "agent_exit": 0,
-            "gates_ok": false
-          },
-          {
-            "at": "2026-05-24T18:15:31.650644+00:00",
-            "todo_id": "sim-p0-heat-li-smoke",
-            "agent_exit": 0,
-            "gates_ok": false
-          },
-          {
-            "at": "2026-05-24T18:22:15.016643+00:00",
-            "todo_id": "sim-p0-heat-li-smoke",
-            "agent_exit": 0,
-            "gates_ok": false
-          },
-          {
-            "at": "2026-05-24T18:29:52.254067+00:00",
-            "todo_id": "sim-p0-heat-li-smoke",
-            "agent_exit": 0,
-            "gates_ok": false
-          },
-          {
-            "at": "2026-05-24T18:41:29.414742+00:00",
-            "todo_id": "sim-p0-heat-li-smoke",
-            "agent_exit": 0,
-            "gates_ok": false
-          },
-          {
-            "at": "2026-05-24T18:48:23.381886+00:00",
-            "todo_id": "sim-p0-heat-li-smoke",
-            "agent_exit": 0,
-            "gates_ok": false
-          },
-          {
-            "at": "2026-05-24T18:55:12.900099+00:00",
-            "todo_id": "sim-p0-heat-li-smoke",
-            "agent_exit": 0,
-            "gates_ok": false
-          },
-          {
-            "at": "2026-05-24T19:01:58.197709+00:00",
-            "todo_id": "sim-p0-heat-li-smoke",
-            "agent_exit": 0,
-            "gates_ok": false
-          },
-          {
-            "at": "2026-05-24T19:08:39.614535+00:00",
-            "todo_id": "sim-p0-heat-li-smoke",
-            "agent_exit": 0,
-            "gates_ok": false
-          },
-          {
-            "at": "2026-05-24T19:18:40.803564+00:00",
-            "todo_id": "sim-p0-heat-li-smoke",
-            "agent_exit": 0,
-            "gates_ok": false
-          },
-          {
-            "at": "2026-05-24T19:25:26.673734+00:00",
-            "todo_id": "sim-p0-heat-li-smoke",
-            "agent_exit": 0,
-            "gates_ok": false
-          },
-          {
-            "at": "2026-05-24T19:40:32.405350+00:00",
-            "todo_id": "sim-p0-heat-li-smoke",
-            "agent_exit": 0,
-            "gates_ok": false
-          },
-          {
-            "at": "2026-05-24T19:54:15.348570+00:00",
-            "todo_id": "sim-p0-heat-li-smoke",
-            "agent_exit": 1,
-            "gates_ok": false
-          },
-          {
-            "at": "2026-05-24T20:09:11.853593+00:00",
-            "todo_id": "sim-p0-heat-li-smoke",
-            "agent_exit": 0,
-            "gates_ok": false
-          },
-          {
-            "at": "2026-05-24T20:25:54.817094+00:00",
-            "todo_id": "sim-p0-heat-li-smoke",
-            "agent_exit": 1,
-            "gates_ok": false
-          },
-          {
-            "at": "2026-05-24T20:39:56.047293+00:00",
-            "todo_id": "sim-p0-heat-li-smoke",
-            "agent_exit": 1,
-            "gates_ok": false
-          },
-          {
-            "at": "2026-05-24T20:53:38.945663+00:00",
-            "todo_id": "sim-p0-heat-li-smoke",
-            "agent_exit": 1,
-            "gates_ok": false
-          },
-          {
-            "at": "2026-05-24T21:01:35.750917+00:00",
-            "todo_id": "sim-p0-heat-li-smoke",
-            "agent_exit": 0,
-            "gates_ok": false
-          },
-          {
-            "at": "2026-05-24T21:12:25.406231+00:00",
-            "todo_id": "sim-p0-heat-li-smoke",
-            "agent_exit": 0,
-            "gates_ok": false
-          },
-          {
-            "at": "2026-05-24T21:23:41.262072+00:00",
-            "todo_id": "sim-p0-heat-li-smoke",
-            "agent_exit": 0,
-            "gates_ok": false
-          },
-          {
-            "at": "2026-05-24T21:32:14.346517+00:00",
-            "todo_id": "sim-p0-heat-li-smoke",
-            "agent_exit": -15,
-            "gates_ok": false
-          },
-          {
-            "at": "2026-05-24T21:37:50.862283+00:00",
-            "todo_id": "sim-p1-num-dot-axpy",
-            "agent_exit": 1,
-            "gates_ok": false
-          },
-          {
-            "at": "2026-05-24T21:49:49.777800+00:00",
-            "todo_id": "sim-p1-num-dot-axpy",
-            "agent_exit": 1,
-            "gates_ok": false
-          },
-          {
-            "at": "2026-05-24T22:10:18.849668+00:00",
-            "todo_id": "sim-p1-num-dot-axpy",
-            "agent_exit": 0,
-            "gates_ok": false
-          },
-          {
-            "at": "2026-05-24T22:27:02.461879+00:00",
-            "todo_id": "sim-p1-num-dot-axpy",
-            "agent_exit": 1,
-            "gates_ok": false
-          },
-          {
-            "at": "2026-05-24T22:40:56.439704+00:00",
-            "todo_id": "sim-p1-num-dot-axpy",
-            "agent_exit": 1,
-            "gates_ok": false
-          },
-          {
-            "at": "2026-05-24T22:54:51.221413+00:00",
-            "todo_id": "sim-p1-num-dot-axpy",
-            "agent_exit": 1,
-            "gates_ok": false
-          },
-          {
-            "at": "2026-05-24T23:03:12.528289+00:00",
-            "todo_id": "sim-p1-num-dot-axpy",
-            "agent_exit": 0,
-            "gates_ok": false
-          },
-          {
-            "at": "2026-05-24T23:17:07.860210+00:00",
-            "todo_id": "sim-p1-num-dot-axpy",
-            "agent_exit": 0,
-            "gates_ok": false
-          },
-          {
-            "at": "2026-05-24T23:34:16.069960+00:00",
-            "todo_id": "sim-p1-num-dot-axpy",
-            "agent_exit": 1,
-            "gates_ok": false
-          },
-          {
-            "at": "2026-05-24T23:48:12.696082+00:00",
-            "todo_id": "sim-p1-num-dot-axpy",
-            "agent_exit": 1,
-            "gates_ok": false
-          },
-          {
-            "at": "2026-05-25T00:03:38.287315+00:00",
-            "todo_id": "sim-p1-num-dot-axpy",
-            "agent_exit": 0,
-            "gates_ok": false
-          },
-          {
-            "at": "2026-05-25T00:10:24.767532+00:00",
-            "todo_id": "sim-p1-num-dot-axpy",
-            "agent_exit": 0,
-            "gates_ok": false
-          },
-          {
-            "at": "2026-05-25T00:19:01.119003+00:00",
-            "todo_id": "sim-p1-num-dot-axpy",
-            "agent_exit": 0,
-            "gates_ok": false
-          },
-          {
-            "at": "2026-05-25T00:36:11.603368+00:00",
-            "todo_id": "sim-p1-num-dot-axpy",
-            "agent_exit": 1,
-            "gates_ok": false
-          },
-          {
-            "at": "2026-05-25T00:45:26.847274+00:00",
-            "todo_id": "sim-p1-num-dot-axpy",
-            "agent_exit": 0,
-            "gates_ok": false
-          },
-          {
-            "at": "2026-05-25T00:59:41.430636+00:00",
-            "todo_id": "sim-p1-num-dot-axpy",
-            "agent_exit": 1,
-            "gates_ok": false
-          },
-          {
-            "at": "2026-05-25T01:13:46.792987+00:00",
-            "todo_id": "sim-p1-num-dot-axpy",
-            "agent_exit": 0,
-            "gates_ok": false
-          },
-          {
-            "at": "2026-05-25T01:26:34.550727+00:00",
-            "todo_id": "sim-p1-num-dot-axpy",
-            "agent_exit": 0,
-            "gates_ok": false
-          },
-          {
-            "at": "2026-05-25T01:40:34.234184+00:00",
-            "todo_id": "sim-p1-num-dot-axpy",
-            "agent_exit": 1,
-            "gates_ok": false
-          },
-          {
-            "at": "2026-05-25T01:57:45.554049+00:00",
-            "todo_id": "sim-p1-num-dot-axpy",
-            "agent_exit": 1,
-            "gates_ok": false
-          },
-          {
-            "at": "2026-05-25T02:11:44.074916+00:00",
-            "todo_id": "sim-p1-num-dot-axpy",
-            "agent_exit": 1,
-            "gates_ok": false
-          },
-          {
-            "at": "2026-05-25T02:25:25.801728+00:00",
-            "todo_id": "sim-p1-num-dot-axpy",
-            "agent_exit": 1,
-            "gates_ok": false
-          },
-          {
-            "at": "2026-05-25T02:39:07.757616+00:00",
-            "todo_id": "sim-p1-num-dot-axpy",
-            "agent_exit": 1,
-            "gates_ok": false
-          },
-          {
-            "at": "2026-05-25T02:52:57.867528+00:00",
-            "todo_id": "sim-p1-num-dot-axpy",
-            "agent_exit": 1,
-            "gates_ok": false
-          },
-          {
-            "at": "2026-05-25T03:09:39.111992+00:00",
-            "todo_id": "sim-p1-num-dot-axpy",
-            "agent_exit": 1,
-            "gates_ok": false
-          },
-          {
-            "at": "2026-05-25T03:23:38.795835+00:00",
-            "todo_id": "sim-p1-num-dot-axpy",
-            "agent_exit": 1,
-            "gates_ok": false
-          },
-          {
-            "at": "2026-05-25T03:37:28.988939+00:00",
-            "todo_id": "sim-p1-num-dot-axpy",
-            "agent_exit": 1,
-            "gates_ok": false
-          },
-          {
-            "at": "2026-05-25T03:51:20.296509+00:00",
-            "todo_id": "sim-p1-num-dot-axpy",
-            "agent_exit": 1,
-            "gates_ok": false
-          },
-          {
-            "at": "2026-05-25T04:05:08.341813+00:00",
-            "todo_id": "sim-p1-num-dot-axpy",
-            "agent_exit": 1,
-            "gates_ok": false
-          },
-          {
-            "at": "2026-05-25T04:22:11.509614+00:00",
-            "todo_id": "sim-p1-num-dot-axpy",
-            "agent_exit": 1,
-            "gates_ok": false
-          },
-          {
-            "at": "2026-05-25T04:27:54.865000+00:00",
-            "todo_id": "sim-p1-num-dot-axpy",
-            "agent_exit": 1,
-            "gates_ok": false
-          },
-          {
-            "at": "2026-05-25T04:41:48.137716+00:00",
-            "todo_id": "sim-p1-num-dot-axpy",
-            "agent_exit": 1,
-            "gates_ok": false
-          },
-          {
-            "at": "2026-05-25T04:55:32.959744+00:00",
-            "todo_id": "sim-p1-num-dot-axpy",
-            "agent_exit": 1,
-            "gates_ok": false
-          },
-          {
-            "at": "2026-05-25T05:09:28.295178+00:00",
-            "todo_id": "sim-p1-num-dot-axpy",
-            "agent_exit": 1,
-            "gates_ok": false
-          },
-          {
-            "at": "2026-05-25T05:33:25.922993+00:00",
-            "todo_id": "sim-p1-num-dot-axpy",
-            "agent_exit": 0,
-            "gates_ok": false
-          },
-          {
-            "at": "2026-05-25T05:42:36.345981+00:00",
-            "todo_id": "sim-p1-num-dot-axpy",
-            "agent_exit": 0,
-            "gates_ok": false
-          },
-          {
-            "at": "2026-05-25T05:56:41.496921+00:00",
-            "todo_id": "sim-p1-num-dot-axpy",
-            "agent_exit": 1,
-            "gates_ok": false
-          },
-          {
-            "at": "2026-05-25T06:10:39.919520+00:00",
-            "todo_id": "sim-p1-num-dot-axpy",
-            "agent_exit": 1,
-            "gates_ok": false
-          },
-          {
-            "at": "2026-05-25T06:24:30.933863+00:00",
-            "todo_id": "sim-p1-num-dot-axpy",
-            "agent_exit": 1,
-            "gates_ok": false
-          },
-          {
-            "at": "2026-05-25T06:34:08.666403+00:00",
-            "todo_id": "sim-p1-num-dot-axpy",
-            "agent_exit": 0,
-            "gates_ok": false
-          },
-          {
-            "at": "2026-05-25T06:44:20.541059+00:00",
-            "todo_id": "sim-p1-num-dot-axpy",
-            "agent_exit": 0,
-            "gates_ok": false
-          },
-          {
-            "at": "2026-05-25T06:58:09.473035+00:00",
-            "todo_id": "sim-p1-num-dot-axpy",
-            "agent_exit": 1,
-            "gates_ok": false
-          },
-          {
-            "at": "2026-05-25T07:12:15.066237+00:00",
-            "todo_id": "sim-p1-num-dot-axpy",
-            "agent_exit": 1,
-            "gates_ok": false
-          },
-          {
-            "at": "2026-05-25T07:19:15.584779+00:00",
-            "todo_id": "sim-p1-num-dot-axpy",
-            "agent_exit": 0,
-            "gates_ok": false
-          },
-          {
-            "at": "2026-05-25T07:36:12.305628+00:00",
-            "todo_id": "sim-p1-num-dot-axpy",
-            "agent_exit": 1,
-            "gates_ok": false
-          },
-          {
-            "at": "2026-05-25T07:50:06.221173+00:00",
-            "todo_id": "sim-p1-num-dot-axpy",
-            "agent_exit": 1,
-            "gates_ok": false
-          },
-          {
-            "at": "2026-05-25T08:04:02.784022+00:00",
-            "todo_id": "sim-p1-num-dot-axpy",
-            "agent_exit": 0,
-            "gates_ok": false
-          },
-          {
-            "at": "2026-05-25T08:15:15.547814+00:00",
-            "todo_id": "sim-p1-num-dot-axpy",
-            "agent_exit": 0,
-            "gates_ok": false
-          },
-          {
-            "at": "2026-05-25T08:29:48.064107+00:00",
-            "todo_id": "sim-p1-num-dot-axpy",
-            "agent_exit": 1,
-            "gates_ok": false
-          },
-          {
-            "at": "2026-05-25T08:51:15.083796+00:00",
-            "todo_id": "sim-p1-num-dot-axpy",
-            "agent_exit": 0,
-            "gates_ok": false
-          },
-          {
-            "at": "2026-05-25T09:05:34.281522+00:00",
-            "todo_id": "sim-p1-num-dot-axpy",
-            "agent_exit": 1,
-            "gates_ok": false
-          },
-          {
-            "at": "2026-05-25T09:20:58.661359+00:00",
-            "todo_id": "sim-p1-num-dot-axpy",
-            "agent_exit": 1,
-            "gates_ok": false
-          },
-          {
-            "at": "2026-05-25T09:36:35.290573+00:00",
-            "todo_id": "sim-p1-num-dot-axpy",
-            "agent_exit": 0,
-            "gates_ok": false
-          },
-          {
-            "at": "2026-05-25T09:50:58.439886+00:00",
-            "todo_id": "sim-p1-num-dot-axpy",
-            "agent_exit": 1,
-            "gates_ok": false
-          },
-          {
-            "at": "2026-05-25T10:11:47.816744+00:00",
-            "todo_id": "sim-p1-num-dot-axpy",
-            "agent_exit": 1,
-            "gates_ok": false
-          },
-          {
-            "at": "2026-05-25T10:30:49.039118+00:00",
-            "todo_id": "sim-p1-num-dot-axpy",
-            "agent_exit": 0,
-            "gates_ok": false
-          },
-          {
-            "at": "2026-05-25T10:54:31.271556+00:00",
-            "todo_id": "sim-p1-num-dot-axpy",
-            "agent_exit": 1,
-            "gates_ok": false
-          },
-          {
-            "at": "2026-05-25T11:39:06.114509+00:00",
-            "todo_id": "sim-p1-num-dot-axpy",
-            "agent_exit": 0,
-            "gates_ok": false
-          },
-          {
-            "at": "2026-05-25T11:57:13.058974+00:00",
-            "todo_id": "sim-p1-num-dot-axpy",
-            "agent_exit": 1,
-            "gates_ok": false
-          },
-          {
-            "at": "2026-05-25T12:22:15.537712+00:00",
-            "todo_id": "sim-p1-num-dot-axpy",
-            "agent_exit": 0,
-            "gates_ok": false
-          },
-          {
-            "at": "2026-05-25T12:37:30.410524+00:00",
-            "todo_id": "sim-p1-num-dot-axpy",
-            "agent_exit": 1,
-            "gates_ok": false
-          },
-          {
-            "at": "2026-05-25T12:43:51.562650+00:00",
-            "todo_id": "sim-p1-num-dot-axpy",
-            "agent_exit": 0,
-            "gates_ok": false
-          },
-          {
-            "at": "2026-05-25T12:58:26.111628+00:00",
-            "todo_id": "sim-p1-num-dot-axpy",
-            "agent_exit": 1,
-            "gates_ok": false
-          },
-          {
-            "at": "2026-05-25T13:18:47.766584+00:00",
-            "todo_id": "sim-p1-num-dot-axpy",
-            "agent_exit": 1,
-            "gates_ok": false
-          },
-          {
-            "at": "2026-05-25T13:41:33.004747+00:00",
-            "todo_id": "sim-p1-num-dot-axpy",
-            "agent_exit": 1,
-            "gates_ok": false
-          },
-          {
-            "at": "2026-05-25T13:57:18.779230+00:00",
-            "todo_id": "sim-p1-num-dot-axpy",
-            "agent_exit": 1,
-            "gates_ok": false
-          },
-          {
-            "at": "2026-05-25T14:32:06.129664+00:00",
-            "todo_id": "sim-p1-num-dot-axpy",
-            "agent_exit": 1,
-            "gates_ok": false
-          },
-          {
-            "at": "2026-05-25T14:50:10.539960+00:00",
-            "todo_id": "sim-p1-num-dot-axpy",
-            "agent_exit": 1,
-            "gates_ok": false
-          },
-          {
-            "at": "2026-05-25T15:30:41.071123+00:00",
-            "todo_id": "sim-p1-num-dot-axpy",
-            "agent_exit": 1,
-            "gates_ok": false
-          },
-          {
-            "at": "2026-05-25T15:52:20.113997+00:00",
-            "todo_id": "sim-p1-num-dot-axpy",
-            "agent_exit": 1,
-            "gates_ok": false
-          },
-          {
-            "at": "2026-05-25T16:22:01.776532+00:00",
-            "todo_id": "sim-p1-num-dot-axpy",
-            "agent_exit": 0,
-            "gates_ok": false
-          },
-          {
-            "at": "2026-05-25T16:40:06.144086+00:00",
-            "todo_id": "sim-p1-num-dot-axpy",
-            "agent_exit": 1,
-            "gates_ok": false
-          },
-          {
-            "at": "2026-05-25T16:58:21.961986+00:00",
-            "todo_id": "sim-p1-num-dot-axpy",
-            "agent_exit": 1,
-            "gates_ok": false
-          },
-          {
-            "at": "2026-05-25T17:29:37.295719+00:00",
-            "todo_id": "sim-p1-num-dot-axpy",
-            "agent_exit": 1,
-            "gates_ok": false
-          },
-          {
-            "at": "2026-05-25T17:51:19.672048+00:00",
-            "todo_id": "sim-p1-num-dot-axpy",
-            "agent_exit": 1,
-            "gates_ok": false
-          },
-          {
-            "at": "2026-05-25T18:26:46.226090+00:00",
-            "todo_id": "sim-p1-num-dot-axpy",
-            "agent_exit": 0,
-            "gates_ok": false
-          },
-          {
-            "at": "2026-05-25T18:38:03.635209+00:00",
-            "todo_id": "sim-p1-num-dot-axpy",
-            "agent_exit": 0,
-            "gates_ok": false
-          },
-          {
-            "at": "2026-05-25T18:51:54.308801+00:00",
-            "todo_id": "sim-p1-num-dot-axpy",
-            "agent_exit": 0,
-            "gates_ok": false
-          },
-          {
-            "at": "2026-05-25T19:18:32.771185+00:00",
-            "todo_id": "sim-p1-num-dot-axpy",
-            "agent_exit": 0,
-            "gates_ok": false
-          },
-          {
-            "at": "2026-05-25T19:35:36.548468+00:00",
-            "todo_id": "sim-p1-num-dot-axpy",
-            "agent_exit": 0,
-            "gates_ok": false
           }
         ],
         "registry": {
@@ -1574,36 +516,36 @@
           "total": 126
         }
       },
-      "state_iterations": 115,
+      "state_iterations": 8,
       "agent_live": false,
       "agent": "",
       "goal_file": "",
-      "log_age_sec": 259354,
-      "last_state_at": "2026-05-25T19:35:36.548468+00:00",
-      "last_state_todo": "sim-p1-num-dot-axpy",
+      "log_age_sec": 476665,
+      "last_state_at": "2026-05-24T16:32:27.410480+00:00",
+      "last_state_todo": "sim-p0-md-lj-li-parity",
       "last_state_gates": false,
-      "current_iteration": "=== iteration 1: sim-p1-num-dot-axpy ===",
+      "current_iteration": "",
       "activity": [
-        "Documents/Cursor/li-langverse/li-cursor-agents/data/workspaces/li-langverse/lic/code_implementer-1779737577743/repo/benchmarks/manifest.toml",
+        "[sdk] \u25b6 tool",
+        "[sdk] \u2713 shell cd /home/s4il0r/Documents/Cursor/li-langverse/li-cursor-agents/data/workspaces/l",
         "[sdk] \u2717 tool",
+        "[sdk] \u25b6 tool",
         "[sdk] \u2713 shell cd /home/s4il0r/Documents/Cursor/li-langverse/li-cursor-agents/data/workspaces/l",
         "[sdk] \u2717 tool",
         "[sdk] thinking\u2026",
-        "[sdk] assistant reply",
-        "=== iteration 1: sim-p1-num-dot-axpy ===",
-        "gates: FAIL"
+        "[sdk] assistant reply"
       ],
       "status_note": "supervisor off",
-      "active_todo_id": "sim-p1-num-dot-axpy"
+      "active_todo_id": "sim-p2-qm-dft-scf"
     },
     {
       "id": "studio-ui-ux",
       "name": "Studio UI/UX",
       "branch": "cursor/studio-ui-ux-plan-loop",
-      "head": "d102c79e",
+      "head": "f398a1e4",
       "running": false,
       "process": "",
-      "log_path": "/home/s4il0r/Documents/Cursor/li-langverse/lic/../lic-studio-ui/data/studio-ui-ux-plan-loop/runner.log",
+      "log_path": "/home/s4il0r/Documents/Cursor/li-langverse/lic/../lic-studio-ui/data/studio-ui-ux-plan-loop/iter-20260525-062259.log",
       "todos": [
         {
           "id": "studio-ux-00-design-system",
@@ -1628,50 +570,52 @@
         {
           "id": "studio-ux-04-particle-display",
           "content": "Scene path \u2014 MD particle draw tiers (1k/10k/100k) with honest FPS reporting",
-          "status": "pending"
+          "status": "done"
         },
         {
           "id": "studio-ux-05-studio-compose",
           "content": "li-studio \u2014 compose dock + timeline + inspector from composables",
-          "status": "pending"
+          "status": "done"
         },
         {
           "id": "studio-ux-06-agent-chrome",
           "content": "Agentic chrome \u2014 task status, cancel, error strip (PH UX-06)",
-          "status": "pending"
+          "status": "done"
         },
         {
           "id": "studio-ux-07-capture-harness",
           "content": "Wire studio-ui-ux-capture-progress.sh + demo HTML mocks; verify gh upload path",
-          "status": "pending"
+          "status": "done"
         },
         {
           "id": "studio-ux-08-bench-registry",
           "content": "benchmarks/competitive/studio-ui.toml + bench-studio-viewport-perf.json output",
-          "status": "pending"
+          "status": "done"
         },
         {
           "id": "studio-ux-09-memory-budget",
           "content": "profile-animate-memory in loop gates; document peak MiB budget in ui-ux-by-dimension",
-          "status": "pending"
+          "status": "done"
         },
         {
           "id": "studio-ux-10-native-capture",
           "content": "Extend ux-harness native_gui for Xvfb SDL capture when viewport draws pixels",
-          "status": "pending"
+          "status": "done"
+        },
+        {
+          "id": "studio-ux-11-panel-switch-gate",
+          "content": "PH-UX panel_switch_ms gate \u2014 bench hook within 100ms + gui_panel_switch_to region fix",
+          "status": "done"
+        },
+        {
+          "id": "studio-ux-12-world-studio-demo-linux-audit",
+          "content": "ux-harness world-studio-demo fixture audit on Linux (non-mock) + agentic_ai SOTA refs in gates",
+          "status": "done"
         }
       ],
       "plan_completed": 0,
-      "plan_total": 11,
-      "plan_pending": [
-        "studio-ux-04-particle-display",
-        "studio-ux-05-studio-compose",
-        "studio-ux-06-agent-chrome",
-        "studio-ux-07-capture-harness",
-        "studio-ux-08-bench-registry",
-        "studio-ux-09-memory-budget",
-        "studio-ux-10-native-capture"
-      ],
+      "plan_total": 13,
+      "plan_pending": [],
       "state": {
         "completed_ids": [
           "studio-ux-00-design-system",
@@ -1684,7 +628,9 @@
           "studio-ux-07-capture-harness",
           "studio-ux-08-bench-registry",
           "studio-ux-09-memory-budget",
-          "studio-ux-10-native-capture"
+          "studio-ux-10-native-capture",
+          "studio-ux-11-panel-switch-gate",
+          "studio-ux-12-world-studio-demo-linux-audit"
         ],
         "iterations": 11,
         "history": [
@@ -1725,60 +671,49 @@
             "note": "re-verified gates/capture; issue #181 comment"
           },
           {
-            "at": "2026-05-25T00:44:11.085589+00:00",
+            "at": "2026-05-24T23:05:00+00:00",
             "todo_id": "studio-ux-04-particle-display",
             "agent_exit": 0,
             "capture_exit": 0,
             "gates_ok": true,
-            "ux_pass": true
+            "ux_pass": true,
+            "note": "li-scene MD tiers + li-render scene path; issue #181 comment"
           },
           {
-            "at": "2026-05-25T01:39:06.746882+00:00",
-            "todo_id": "studio-ux-05-studio-compose",
+            "at": "2026-05-25T00:42:54+00:00",
+            "todo_id": "studio-ux-04-particle-display",
             "agent_exit": 0,
             "capture_exit": 0,
             "gates_ok": true,
-            "ux_pass": true
+            "ux_pass": true,
+            "note": "re-verified gates/capture/bench; issue #181 comment 4530713964"
           },
           {
-            "at": "2026-05-25T02:16:34.197349+00:00",
+            "at": "2026-05-25T02:14:50+00:00",
             "todo_id": "studio-ux-06-agent-chrome",
             "agent_exit": 0,
             "capture_exit": 0,
             "gates_ok": true,
-            "ux_pass": true
+            "ux_pass": true,
+            "note": "StudioAgentChromeCompose task states + cancel + error strip; issue #181"
           },
           {
-            "at": "2026-05-25T03:11:04.676214+00:00",
-            "todo_id": "studio-ux-07-capture-harness",
+            "at": "2026-05-29T08:42:00+00:00",
+            "todo_id": "studio-ux-11-panel-switch-gate",
             "agent_exit": 0,
             "capture_exit": 0,
             "gates_ok": true,
-            "ux_pass": true
+            "ux_pass": true,
+            "note": "panel_switch bench worst 95ms; gui_panel_switch_to region fix; gates_pass true"
           },
           {
-            "at": "2026-05-25T04:03:38.791590+00:00",
-            "todo_id": "studio-ux-08-bench-registry",
+            "at": "2026-05-30T01:04:00+00:00",
+            "todo_id": "studio-ux-12-world-studio-demo-linux-audit",
             "agent_exit": 0,
             "capture_exit": 0,
             "gates_ok": true,
-            "ux_pass": true
-          },
-          {
-            "at": "2026-05-25T05:26:38.195920+00:00",
-            "todo_id": "studio-ux-09-memory-budget",
-            "agent_exit": 0,
-            "capture_exit": 0,
-            "gates_ok": true,
-            "ux_pass": true
-          },
-          {
-            "at": "2026-05-25T06:32:37.228062+00:00",
-            "todo_id": "studio-ux-10-native-capture",
-            "agent_exit": 0,
-            "capture_exit": 0,
-            "gates_ok": true,
-            "ux_pass": true
+            "ux_pass": true,
+            "note": "Linux non-mock world-studio-demo harness; agentic_ai SOTA refs; capture dry exit 0"
           }
         ]
       },
@@ -1786,14 +721,22 @@
       "agent_live": false,
       "agent": "",
       "goal_file": "",
-      "log_age_sec": 259665,
-      "last_state_at": "2026-05-25T06:32:37.228062+00:00",
-      "last_state_todo": "studio-ux-10-native-capture",
+      "log_age_sec": 426805,
+      "last_state_at": "2026-05-30T01:04:00+00:00",
+      "last_state_todo": "studio-ux-12-world-studio-demo-linux-audit",
       "last_state_gates": true,
       "current_iteration": "",
-      "activity": [],
-      "status_note": "supervisor off",
-      "active_todo_id": "studio-ux-04-particle-display"
+      "activity": [
+        "[sdk] thinking\u2026",
+        "[sdk] \u25b6 tool",
+        "[sdk] \u2713 shell cd /home/s4il0r/Documents/Cursor/li-langverse/li-cursor-agents/data/workspaces/l",
+        "[sdk] \u2717 tool",
+        "[sdk] \u25b6 tool",
+        "[sdk] \u2713 shell cd /home/s4il0r/Documents/Cursor/li-langverse/li-cursor-agents/data/workspaces/l",
+        "[sdk] \u2717 tool",
+        "[sdk] assistant reply"
+      ],
+      "status_note": "supervisor off"
     },
     {
       "id": "sim-md-research",
@@ -1869,7 +812,7 @@
       "agent_live": false,
       "agent": "",
       "goal_file": "",
-      "log_age_sec": 258936,
+      "log_age_sec": 379372,
       "last_state_at": "2026-05-25T19:42:04.198858+00:00",
       "last_state_todo": "md-r2-neighbor-list-gap",
       "last_state_gates": true,
@@ -1948,7 +891,7 @@
       "agent_live": false,
       "agent": "",
       "goal_file": "",
-      "log_age_sec": 259447,
+      "log_age_sec": 379883,
       "last_state_at": "2026-05-25T19:32:04.164094+00:00",
       "last_state_todo": "chem-r2-dft-scf-gap",
       "last_state_gates": false,
@@ -2020,7 +963,7 @@
       "agent_live": false,
       "agent": "",
       "goal_file": "",
-      "log_age_sec": 259599,
+      "log_age_sec": 380035,
       "last_state_at": "2026-05-25T19:29:32.615546+00:00",
       "last_state_todo": "sec-r1-httpd-fuzz-smoke",
       "last_state_gates": true,
@@ -2035,9 +978,9 @@
       "id": "swarm-observer",
       "name": "Swarm gap orchestrator",
       "branch": "cursor/swarm-observer-plan-loop",
-      "head": "c8c18657",
+      "head": "28cf644b",
       "running": true,
-      "process": "4100598 python3 /home/s4il0r/Documents/Cursor/li-langverse/lic/scripts/goal-directed-agents-snapshot.py",
+      "process": "2739721 python3 /home/s4il0r/Documents/Cursor/li-langverse/lic/scripts/goal-directed-agents-snapshot.py",
       "log_path": "/home/s4il0r/Documents/Cursor/li-langverse/lic/../lic/data/swarm-observer-plan-loop/iter-20260525-193501.log",
       "todos": [
         {
@@ -2098,7 +1041,7 @@
       "agent_live": false,
       "agent": "",
       "goal_file": "",
-      "log_age_sec": 132329,
+      "log_age_sec": 20,
       "last_state_at": "2026-05-25T19:34:28.890041+00:00",
       "last_state_todo": "orch-r1-plan-debt-sync",
       "last_state_gates": true,
@@ -2106,24 +1049,31 @@
       "activity": [
         "SDK tool activity streams to stderr ([sdk] \u25b6/\u2713 lines). Set LI_SDK_TERMINAL_STREAM=0 to disable."
       ],
-      "status_note": "supervisor idle (log 132329s stale \u2014 check log_path)",
+      "status_note": "supervisor up, between agent runs",
       "active_todo_id": "orch-r2-competitor-stubs"
     }
   ],
   "history": [
+    {
+      "runner": "studio-ui-ux",
+      "at": "2026-05-30T01:04:00+00:00",
+      "todo_id": "studio-ux-12-world-studio-demo-linux-audit",
+      "agent_exit": 0,
+      "gates_ok": true
+    },
+    {
+      "runner": "studio-ui-ux",
+      "at": "2026-05-29T08:42:00+00:00",
+      "todo_id": "studio-ux-11-panel-switch-gate",
+      "agent_exit": 0,
+      "gates_ok": true
+    },
     {
       "runner": "sim-md-research",
       "at": "2026-05-25T19:42:04.198858+00:00",
       "todo_id": "md-r2-neighbor-list-gap",
       "agent_exit": 0,
       "gates_ok": true
-    },
-    {
-      "runner": "sim",
-      "at": "2026-05-25T19:35:36.548468+00:00",
-      "todo_id": "sim-p1-num-dot-axpy",
-      "agent_exit": 0,
-      "gates_ok": false
     },
     {
       "runner": "swarm-observer",
@@ -2147,23 +1097,9 @@
       "gates_ok": true
     },
     {
-      "runner": "compiler-studio",
-      "at": "2026-05-25T19:26:43.369615+00:00",
-      "todo_id": "wave-d-gui-scaffold",
-      "agent_exit": 1,
-      "gates_ok": false
-    },
-    {
       "runner": "sim-md-research",
       "at": "2026-05-25T19:23:10.135969+00:00",
       "todo_id": "md-r2-neighbor-list-gap",
-      "agent_exit": 0,
-      "gates_ok": false
-    },
-    {
-      "runner": "sim",
-      "at": "2026-05-25T19:18:32.771185+00:00",
-      "todo_id": "sim-p1-num-dot-axpy",
       "agent_exit": 0,
       "gates_ok": false
     },
@@ -2189,9 +1125,16 @@
       "gates_ok": true
     },
     {
-      "runner": "compiler-studio",
-      "at": "2026-05-25T18:56:44.778223+00:00",
-      "todo_id": "wave-d-gui-scaffold",
+      "runner": "sim-md-research",
+      "at": "2026-05-25T18:55:29.188178+00:00",
+      "todo_id": "md-r1-stability-matrix",
+      "agent_exit": 0,
+      "gates_ok": true
+    },
+    {
+      "runner": "sim-chem-research",
+      "at": "2026-05-25T18:47:25.514244+00:00",
+      "todo_id": "chem-r0-sota-survey",
       "agent_exit": 0,
       "gates_ok": true
     }

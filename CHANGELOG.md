@@ -8,7 +8,7 @@ All notable changes to Li are documented here. The format follows
 
 ### Added
 
-- **Docs:** GitHub Pages handbook hub at https://li-langverse.github.io/lic/ (`site/`, `pages.yml`) — [2026-05-30-lic-handbook-pages.md](docs/release-notes/2026-05-30-lic-handbook-pages.md).
+- **Docs:** GitHub Pages handbook hub at https://li-langverse.github.io/lic/ (`site/index.html`, `pages.yml`) — fixes deploy after #535; [2026-05-30-lic-handbook-pages.md](docs/release-notes/2026-05-30-lic-handbook-pages.md).
 
 ### Changed
 

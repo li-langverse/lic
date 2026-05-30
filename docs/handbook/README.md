@@ -21,7 +21,7 @@ Canonical **language** handbook is published from [li-language](https://github.c
 | **lic** (this repo) | [lic Pages](https://li-langverse.github.io/lic/) | [docs/handbook/README.md](README.md) |
 | lip | [lip](https://li-langverse.github.io/lip/) | [lip/docs/handbook.md](https://github.com/li-langverse/lip/blob/main/docs/handbook.md) |
 | lit | [lit](https://li-langverse.github.io/lit/) | [lit/docs/handbook.md](https://github.com/li-langverse/lit/blob/main/docs/handbook.md) |
-| lis | [lis](https://li-langverse.github.io/lis/) — merge Pages PR if 404 | [lis/docs/handbook.md](https://github.com/li-langverse/lis/blob/main/docs/handbook.md) |
+| lis | [lis](https://li-langverse.github.io/lis/) | [lis/docs/handbook.md](https://github.com/li-langverse/lis/blob/main/docs/handbook.md) |
 | li-net | [li-net](https://li-langverse.github.io/li-net/) | [li-net/docs/handbook.md](https://github.com/li-langverse/li-net/blob/main/docs/handbook.md) |
 | li-httpd | [li-httpd](https://li-langverse.github.io/li-httpd/) | [li-httpd/docs/handbook.md](https://github.com/li-langverse/li-httpd/blob/main/docs/handbook.md) |
 | li-std-core | [li-std-core](https://li-langverse.github.io/li-std-core/) | [li-std-core/docs/handbook.md](https://github.com/li-langverse/li-std-core/blob/main/docs/handbook.md) |

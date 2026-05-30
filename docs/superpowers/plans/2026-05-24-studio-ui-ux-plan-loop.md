@@ -37,14 +37,6 @@ todos:
     status: done
 isProject: false
 ---
-- id: studio-ux-14-native-sdl-ci
-  content: "studio-ui-ux: pending plan todo studio-ux-14-native-sdl-ci"
-  status: pending
-  gap_orchestrator: true
-- id: studio-ux-15-wgpu-readback
-  content: "studio-ui-ux: pending plan todo studio-ux-15-wgpu-readback"
-  status: pending
-  gap_orchestrator: true
 - id: studio-ux-16-palette-search-latency
   content: "studio-ui-ux: pending plan todo studio-ux-16-palette-search-latency"
   status: pending
@@ -53,6 +45,7 @@ isProject: false
   content: "studio-ui-ux: pending plan todo studio-ux-17-gpu-fail-recovery"
   status: pending
   gap_orchestrator: true
+
 
 
 # Studio UI/UX autonomous loop

@@ -681,6 +681,31 @@ static int32_t li_rt_studio_toml_parse_quoted_value(const char* p, char* out, si
   return 1;
 }
 
+static int32_t li_rt_studio_toml_parse_bare_value(const char* p, char* out, size_t cap) {
+  p = li_rt_studio_toml_skip_ws(p);
+  if (p == NULL || *p == '\0') {
+    return 0;
+  }
+  const char* start = p;
+  while (*p != '\0' && *p != ' ' && *p != '\t' && *p != ',' && *p != ']' && *p != '#') {
+    p++;
+  }
+  const size_t n = (size_t)(p - start);
+  if (n == 0 || n >= cap) {
+    return 0;
+  }
+  memcpy(out, start, n);
+  out[n] = '\0';
+  return 1;
+}
+
+static int32_t li_rt_studio_toml_parse_string_value(const char* p, char* out, size_t cap) {
+  if (li_rt_studio_toml_parse_quoted_value(p, out, cap) == 1) {
+    return 1;
+  }
+  return li_rt_studio_toml_parse_bare_value(p, out, cap);
+}
+
 static int32_t li_rt_studio_toml_parse_formats_mask(const char* line) {
   int32_t mask = 0;
   if (line == NULL) {
@@ -725,7 +750,7 @@ static int32_t li_rt_studio_toml_parse_key_value(const char* line, const char* k
   }
   if (li_rt_str_eq(key, "profile")) {
     char buf[64];
-    if (li_rt_studio_toml_parse_quoted_value(p, buf, sizeof(buf)) != 1) {
+    if (li_rt_studio_toml_parse_string_value(p, buf, sizeof(buf)) != 1) {
       return 0;
     }
     const int32_t id = li_rt_studio_profile_match_name(buf);
@@ -757,7 +782,7 @@ static int32_t li_rt_studio_toml_parse_key_value(const char* line, const char* k
   }
   if (li_rt_str_eq(key, "printer_profile")) {
     char buf[128];
-    if (li_rt_studio_toml_parse_quoted_value(p, buf, sizeof(buf)) != 1) {
+    if (li_rt_studio_toml_parse_string_value(p, buf, sizeof(buf)) != 1) {
       return 0;
     }
     g_studio_toml.printer_profile_slot = li_rt_studio_toml_printer_slot_for_path(buf);

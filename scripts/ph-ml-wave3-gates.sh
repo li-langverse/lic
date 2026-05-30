@@ -30,7 +30,7 @@ lic_check_smokes() {
     packages/li-ml-rl/li-tests/smoke/env_pool_async_four.li \
     packages/li-studio/li-tests/smoke/studio_sim_rl_step.li; do
     [[ -f "$smoke" ]] || { echo "missing smoke: $smoke"; return 1; }
-    "$lic" build --allow-open-vc "$smoke" -o /dev/null || return 1
+    "$lic" check "$smoke" || return 1
   done
 }
 

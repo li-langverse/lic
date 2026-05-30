@@ -18,18 +18,7 @@ todos:
   content: "sim: pending plan todo sim-p2-qm-dft-scf"
   status: pending
   gap_orchestrator: true
-- id: gap-competitor-gap-vertical-stub-pde-heat-2d
-  content: "verticals.toml stub/honesty: pde_heat_2d (OpenFOAM/PETSc)"
-  status: pending
-  gap_orchestrator: true
-- id: gap-competitor-gap-vertical-stub-fea-linear-elasticity
-  content: "verticals.toml stub/honesty: fea_linear_elasticity (CalculiX/ANSYS)"
-  status: pending
-  gap_orchestrator: true
-- id: gap-competitor-gap-vertical-stub-cfd-lid-driven-cavity
-  content: "verticals.toml stub/honesty: cfd_lid_driven_cavity (OpenFOAM/COMSOL)"
-  status: pending
-  gap_orchestrator: true
+
 
 
 

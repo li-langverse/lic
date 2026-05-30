@@ -31,8 +31,6 @@ enum class MirOp {
   ArrayStore2DF64,
   /** C[M,N] = A[M,K] @ B[K,N] — nested `array[M, array[K, float]]`; M=int_value, K=rhs_int, N=lhs_int */
   ArrayMatMul2DF64,
-  /** Blocked IKJ GEMM on square N×N; int_value=N, rhs_int=block size (default 64). */
-  ArrayMatMulBlocked2DF64,
   ArraySumF64,
   ArraySumI64,
   /** Element-wise binop into `ident` from `lhs_ident` and `rhs_ident` (length `int_value`). */

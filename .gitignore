@@ -1,8 +1,10 @@
-/build/
+﻿/build/
 build-fuzz/
 .venv-plot/
 .venv-docs/
-site/
+site/*
+!site/index.html
+site-proofs/
 __pycache__/
 *.pyc
 *.pyo
@@ -45,11 +47,9 @@ build-asan/
 
 # Lean 4 (docs/semantics)
 docs/semantics/.lake/
-# Autonomous plan-loop (agent logs — local only)
-data/*-plan-loop/
-!data/*/state.json.example
-logs/*.log
-benchmarks/tier5_http/drivers/logs/
+# Autonomous plan-loop (agent logs, goals, overnight tee â€” local only)
+data/httpd-plan-loop/
+!data/httpd-plan-loop/state.json.example
 data/studio-ui-ux-plan-loop/*
 !data/studio-ui-ux-plan-loop/state.json.example
 !data/studio-ui-ux-plan-loop/state.json

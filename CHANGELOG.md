@@ -9,6 +9,7 @@ All notable changes to Li are documented here. The format follows
 ### Added
 
 - **Plan cross-links:** `docs/ecosystem/plan-cross-links.md` — master plan ↔ provability-gaps ↔ phase plans; mkdocs Ecosystem nav — [2026-05-30-plan-cross-links.md](docs/release-notes/2026-05-30-plan-cross-links.md).
+- **Live documentation map:** `docs/ecosystem/live-documentation.md` — org GitHub Pages URLs and satellite handbook status — [2026-05-30-live-documentation-map.md](docs/release-notes/2026-05-30-live-documentation-map.md).
 
 ### Changed
 

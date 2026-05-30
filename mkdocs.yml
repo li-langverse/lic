@@ -94,6 +94,7 @@ nav:
   - Ecosystem:
       - Overview: ecosystem/overview.md
       - Plan cross-links: ecosystem/plan-cross-links.md
+      - Live documentation map: ecosystem/live-documentation.md
       - Canonical docs (roadmap repo): https://github.com/li-langverse/roadmap/tree/main/docs/ecosystem
       - Agent-kit adoption: ecosystem/ADOPTION.md
       - Governance: ecosystem/governance.md

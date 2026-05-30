@@ -12,6 +12,7 @@ Agents and contributors use this map so **vision**, **PH trackers**, and **hones
 | **Proof corpus roadmap** | [proof-corpus-roadmap.md](../verification/proof-corpus-roadmap.md) |
 | **Ecosystem governance** | [roadmap vision](https://github.com/li-langverse/roadmap/blob/main/docs/ecosystem/vision-and-roadmap.md) |
 | **Benchmark catalog & dashboard** | [catalog.toml](https://github.com/li-langverse/benchmarks/blob/main/catalog.toml) · [dashboard](https://li-langverse.github.io/benchmarks/) |
+| **Live documentation map** | [live-documentation.md](live-documentation.md) · org Pages URLs |
 
 ## Edit rules
 
@@ -37,4 +38,4 @@ Master plan § [Documentation & provability honesty](../superpowers/plans/2026-0
 
 ## Satellite handbook Pages
 
-Package repos ship minimal [GitHub Pages handbooks](https://github.com/li-langverse/lip/tree/main/site) linking here. Until Pages deploy on `main`, use in-repo `docs/handbook.md` in each repo.
+Package repos ship minimal GitHub Pages handbooks (`docs/handbook.md`, `site/index.html`, `pages.yml`) — see [live documentation map](live-documentation.md). Until Pages deploy on `main`, use in-repo `docs/handbook.md` in each repo.

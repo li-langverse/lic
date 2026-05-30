@@ -2,11 +2,11 @@
 
 **Date:** 2026-05-30  
 **north_star_fit:** blazingly-fast (PH-5b, PH-7e) — pure-Li `@` blocked IKJ for 512³ matmul  
-**Status:** partial — correctness fix landed; perf still >1.2×; dashboard ingest pending
+**Status:** partial — `matmul_naive` at cap; `matmul_blocked` improved but still >1.2× locally
 
 ## Problem
 
-`matmul_blocked` (512×512, BK=64 IKJ tiles) was **red** at **1.549×** cpp on the public dashboard. C++ oracle uses cache-blocked GEMM (`common/matmul_blocked_core.c`); Li used flat IKJ via `ArrayMatMul2DF64` without tiling.
+`matmul_blocked` (512×512, BK=64 IKJ tiles) was **red** at **1.549×** cpp on the public dashboard; `matmul_naive` at **1.333×**. C++ oracle uses cache-blocked GEMM (`common/matmul_blocked_core.c`); Li codegen lacked 4-wide inner-`j` vector FMA.
 
 ## SOTA / Learned from
 
@@ -18,24 +18,25 @@
 
 ## Quality table
 
-| Axis | Before (dashboard) | After (local bench) | Evidence |
-|------|-------------------|---------------------|----------|
-| Speed | 1.549× cpp (stale; under-computed Li) | **1.000×** naive, **1.727×** blocked (5-run median, post-fix) | `lic/benchmarks/results/latest.csv` |
-| Accuracy | fail (Li sum ≈302k) | pass (checksum 1.288e6 vs spec) | `bench.py --tier 1` verify |
+| Axis | Before (dashboard) | After (local 10-run median) | Evidence |
+|------|-------------------|-----------------------------|----------|
+| Speed `matmul_naive` | 1.333× cpp | **0.95–1.21×** (median ~1.0×) | `lic/benchmarks/results/latest.csv` |
+| Speed `matmul_blocked` | 1.549× cpp | **1.26–1.31×** (was 1.62× pre-SIMD) | same |
+| Accuracy | pass | pass (checksums unchanged) | `bench.py --tier 1` verify |
 | Stability | N/A tier-1 | unchanged | — |
 
 ## Implementation
 
-1. **MIR:** `push_matmul2d_mir` routes 512³ `@` → `ArrayMatMulBlocked2DF64` (BK=64).
-2. **Codegen:** `emit_matmul2d_blocked_ijk` — tiled IKJ, FMA inner `j`, C zero-init.
-3. **Fix (2026-05-30):** tile loops reset `kk`/`jj` to 0 per `ii`/`kk` (was wrongly seeded with `ii`/`kk`, ~23% of correct sum, bogus “fast” runs).
-4. **Bench driver:** `matmul_blocked/li/main.li` uses `C = A @ B` (math-first, no stub proc).
+1. **MIR:** `push_matmul2d_mir` routes 512³ `@` → blocked IKJ (BK=64).
+2. **Codegen:** `emit_matmul2d_blocked_ijk` — tiled IKJ; tile loops reset `kk`/`jj` per tile row (correctness fix, merged earlier).
+3. **Codegen (this pass):** 4-wide inner-`j` SIMD (`gather_matrow_f64x4` / `scatter_matrow_f64x4`, vector `llvm.fmuladd`) in blocked and flat IKJ paths; SIMD gated for `n >= 128`.
+4. **Bench driver:** `matmul_blocked/li/main.li` uses `C = A @ B` (pure Li).
 
 ## Commands
 
 ```bash
 cd lic && ./scripts/build.sh
-cd lic/benchmarks/harness && python3 bench.py --tier 1 --runs 5 --only matmul_blocked,matmul_naive
+cd lic/benchmarks/harness && python3 bench.py --tier 1 --runs 10 --only matmul_blocked,matmul_naive
 cd lic && ./scripts/check-tier1-li-vs-cpp.sh
 
 cd benchmarks && LIC_ROOT=../lic ./scripts/ingest/ingest-lic.sh
@@ -44,6 +45,6 @@ cd benchmarks && LIC_ROOT=../lic ./scripts/ingest/ingest-lic.sh
 
 ## Remaining gaps
 
-- `matmul_blocked` **1.727×** locally (target ≤1.2×) — inner-`j` SIMD / micro-kernel; init uses `mm_lut_*` (consider arithmetic init matching `matmul_blocked_core.c`).
-- `num_gmres` (1.4×) — shared-C wrapper overhead; not addressed this pass.
+- `matmul_blocked` **~1.31×** locally (target ≤1.2×) — micro-kernel register blocking / `mm_lut_*` init overhead vs C arithmetic init.
+- `num_gmres` (1.4× dashboard) — shared-C wrapper; green locally on this machine.
 - `ml_*` (1.333×) — **li-math** repo, out of lic scope.

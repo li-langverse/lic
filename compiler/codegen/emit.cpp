@@ -189,6 +189,102 @@ struct EmitCtx {
     return builder->CreateInBoundsGEP(mat->getAllocatedType(), mat, idx);
   }
 
+  llvm::Value* gather_matrow_f64x4(llvm::AllocaInst* mat, llvm::Value* row, llvm::Value* col) {
+    llvm::Type* f64 = llvm::Type::getDoubleTy(context);
+    llvm::Value* vec = llvm::UndefValue::get(vec4_f64());
+    for (unsigned lane = 0; lane < 4; ++lane) {
+      llvm::Value* col_i = builder->CreateAdd(col, llvm::ConstantInt::get(i32_ty(context), lane));
+      llvm::Value* scalar = builder->CreateLoad(f64, matmul_gep2d(mat, row, col_i));
+      vec = builder->CreateInsertElement(
+          vec, scalar, llvm::ConstantInt::get(i32_ty(context), lane));
+    }
+    return vec;
+  }
+
+  void scatter_matrow_f64x4(llvm::AllocaInst* mat, llvm::Value* row, llvm::Value* col,
+                            llvm::Value* vec) {
+    llvm::Type* f64 = llvm::Type::getDoubleTy(context);
+    for (unsigned lane = 0; lane < 4; ++lane) {
+      llvm::Value* col_i = builder->CreateAdd(col, llvm::ConstantInt::get(i32_ty(context), lane));
+      llvm::Value* ptr = matmul_gep2d(mat, row, col_i);
+      llvm::Value* scalar = builder->CreateExtractElement(
+          vec, llvm::ConstantInt::get(i32_ty(context), lane));
+      builder->CreateStore(scalar, ptr);
+    }
+  }
+
+  void emit_matmul_aik_fma_j(llvm::AllocaInst* c_mat, llvm::AllocaInst* b_mat, llvm::Value* i,
+                             llvm::Value* k, llvm::Value* j, llvm::Value* aik,
+                             llvm::Function* fma_fn) {
+    llvm::Type* f64 = llvm::Type::getDoubleTy(context);
+    llvm::Value* cp = matmul_gep2d(c_mat, i, j);
+    llvm::Value* cv = builder->CreateLoad(f64, cp);
+    llvm::Value* bv = builder->CreateLoad(f64, matmul_gep2d(b_mat, k, j));
+    if (fma_fn != nullptr) {
+      builder->CreateStore(builder->CreateCall(fma_fn, {aik, bv, cv}), cp);
+    } else {
+      builder->CreateStore(builder->CreateFAdd(cv, builder->CreateFMul(aik, bv)), cp);
+    }
+  }
+
+  void emit_matmul_aik_fma_j_simd(llvm::AllocaInst* c_mat, llvm::AllocaInst* b_mat,
+                                  llvm::Value* i, llvm::Value* k, llvm::Value* j,
+                                  llvm::Value* aik) {
+    llvm::Value* cv = gather_matrow_f64x4(c_mat, i, j);
+    llvm::Value* bv = gather_matrow_f64x4(b_mat, k, j);
+    llvm::Value* aik_vec = builder->CreateVectorSplat(4, aik);
+    llvm::Value* out;
+    if (!fp_numerically_stable) {
+      llvm::Function* vfma_fn = llvm::Intrinsic::getOrInsertDeclaration(
+          module, llvm::Intrinsic::fmuladd, {vec4_f64()});
+      out = builder->CreateCall(vfma_fn, {aik_vec, bv, cv});
+    } else {
+      out = builder->CreateFAdd(cv, builder->CreateFMul(aik_vec, bv));
+    }
+    scatter_matrow_f64x4(c_mat, i, j, out);
+  }
+
+  void emit_idx_for_step(llvm::AllocaInst* iv, llvm::Value* limit, unsigned step,
+                         const std::function<void(llvm::Value*)>& body) {
+    llvm::Type* i32t = i32_ty(context);
+    llvm::Value* step_v = llvm::ConstantInt::get(i32t, step);
+    llvm::BasicBlock* head = llvm::BasicBlock::Create(context, "for_step_head", func);
+    llvm::BasicBlock* body_bb = llvm::BasicBlock::Create(context, "for_step_body", func);
+    llvm::BasicBlock* exit_bb = llvm::BasicBlock::Create(context, "for_step_exit", func);
+    builder->CreateStore(llvm::ConstantInt::get(i32t, 0), iv);
+    builder->CreateBr(head);
+    builder->SetInsertPoint(head);
+    llvm::Value* i = builder->CreateLoad(i32t, iv);
+    llvm::Value* cond = builder->CreateICmpULT(i, limit);
+    builder->CreateCondBr(cond, body_bb, exit_bb);
+    builder->SetInsertPoint(body_bb);
+    body(i);
+    llvm::Value* next = builder->CreateAdd(i, step_v);
+    builder->CreateStore(next, iv);
+    builder->CreateBr(head);
+    builder->SetInsertPoint(exit_bb);
+  }
+
+  void emit_idx_for_from(llvm::AllocaInst* iv, llvm::Value* start, llvm::Value* limit,
+                         const std::function<void(llvm::Value*)>& body) {
+    llvm::Type* i32t = i32_ty(context);
+    llvm::BasicBlock* head = llvm::BasicBlock::Create(context, "for_from_head", func);
+    llvm::BasicBlock* body_bb = llvm::BasicBlock::Create(context, "for_from_body", func);
+    llvm::BasicBlock* exit_bb = llvm::BasicBlock::Create(context, "for_from_exit", func);
+    builder->CreateStore(start, iv);
+    builder->CreateBr(head);
+    builder->SetInsertPoint(head);
+    llvm::Value* i = builder->CreateLoad(i32t, iv);
+    llvm::Value* cond = builder->CreateICmpULT(i, limit);
+    builder->CreateCondBr(cond, body_bb, exit_bb);
+    builder->SetInsertPoint(body_bb);
+    body(i);
+    llvm::Value* next = builder->CreateAdd(i, llvm::ConstantInt::get(i32t, 1));
+    builder->CreateStore(next, iv);
+    builder->CreateBr(head);
+    builder->SetInsertPoint(exit_bb);
+  }
+
   void emit_idx_for(llvm::AllocaInst* iv, llvm::Value* limit,
                     const std::function<void(llvm::Value*)>& body) {
     llvm::Type* i32t = i32_ty(context);
@@ -236,16 +332,21 @@ struct EmitCtx {
     emit_idx_for(i_s, lim_m, [&](llvm::Value* i) {
       emit_idx_for(t_s, lim_k, [&](llvm::Value* t) {
         llvm::Value* aik = builder->CreateLoad(f64, matmul_gep2d(a_mat, i, t));
-        emit_idx_for(j_s, lim_n, [&](llvm::Value* j) {
-          llvm::Value* cp = matmul_gep2d(c_mat, i, j);
-          llvm::Value* cv = builder->CreateLoad(f64, cp);
-          llvm::Value* bv = builder->CreateLoad(f64, matmul_gep2d(b_mat, t, j));
-          if (fma_fn != nullptr) {
-            builder->CreateStore(builder->CreateCall(fma_fn, {aik, bv, cv}), cp);
-          } else {
-            builder->CreateStore(builder->CreateFAdd(cv, builder->CreateFMul(aik, bv)), cp);
-          }
-        });
+        if (array_simd_enabled() && n >= 128) {
+          llvm::Value* four = llvm::ConstantInt::get(i32t, 4);
+          llvm::Value* simd_lim = builder->CreateSub(lim_n, builder->CreateURem(lim_n, four));
+          emit_idx_for_step(j_s, simd_lim, 4, [&](llvm::Value* j) {
+            emit_matmul_aik_fma_j_simd(c_mat, b_mat, i, t, j, aik);
+          });
+          llvm::Value* j_start = builder->CreateLoad(i32t, j_s);
+          emit_idx_for_from(j_s, j_start, lim_n, [&](llvm::Value* j) {
+            emit_matmul_aik_fma_j(c_mat, b_mat, i, t, j, aik, fma_fn);
+          });
+        } else {
+          emit_idx_for(j_s, lim_n, [&](llvm::Value* j) {
+            emit_matmul_aik_fma_j(c_mat, b_mat, i, t, j, aik, fma_fn);
+          });
+        }
       });
     });
   }
@@ -353,17 +454,44 @@ struct EmitCtx {
     llvm::Value* j_ok = builder->CreateICmpULT(j_v, j_max_v);
     builder->CreateCondBr(j_ok, j_body, j_exit);
     builder->SetInsertPoint(j_body);
-    llvm::Value* cp = matmul_gep2d(c_mat, i_v, j_v);
-    llvm::Value* cv = builder->CreateLoad(f64, cp);
-    llvm::Value* bv = builder->CreateLoad(f64, matmul_gep2d(b_mat, k_v, j_v));
-    if (fma_fn != nullptr) {
-      builder->CreateStore(builder->CreateCall(fma_fn, {aik, bv, cv}), cp);
+    if (array_simd_enabled()) {
+      llvm::Value* four = llvm::ConstantInt::get(i32t, 4);
+      llvm::Value* simd_jmax = builder->CreateSub(j_max_v, builder->CreateURem(j_max_v, four));
+      llvm::BasicBlock* j_simd_head = llvm::BasicBlock::Create(context, "mm_j_simd_head", func);
+      llvm::BasicBlock* j_simd_body = llvm::BasicBlock::Create(context, "mm_j_simd_body", func);
+      llvm::BasicBlock* j_simd_exit = llvm::BasicBlock::Create(context, "mm_j_simd_exit", func);
+      builder->CreateBr(j_simd_head);
+      builder->SetInsertPoint(j_simd_head);
+      llvm::Value* j_simd_v = builder->CreateLoad(i32t, j_s);
+      llvm::Value* j_simd_ok = builder->CreateICmpULT(j_simd_v, simd_jmax);
+      builder->CreateCondBr(j_simd_ok, j_simd_body, j_simd_exit);
+      builder->SetInsertPoint(j_simd_body);
+      emit_matmul_aik_fma_j_simd(c_mat, b_mat, i_v, k_v, j_simd_v, aik);
+      llvm::Value* j_simd_next = builder->CreateAdd(j_simd_v, four);
+      builder->CreateStore(j_simd_next, j_s);
+      builder->CreateBr(j_simd_head);
+      builder->SetInsertPoint(j_simd_exit);
+      llvm::BasicBlock* j_tail_head = llvm::BasicBlock::Create(context, "mm_j_tail_head", func);
+      llvm::BasicBlock* j_tail_body = llvm::BasicBlock::Create(context, "mm_j_tail_body", func);
+      llvm::BasicBlock* j_tail_exit = llvm::BasicBlock::Create(context, "mm_j_tail_exit", func);
+      builder->CreateBr(j_tail_head);
+      builder->SetInsertPoint(j_tail_head);
+      llvm::Value* j_tail_v = builder->CreateLoad(i32t, j_s);
+      llvm::Value* j_tail_ok = builder->CreateICmpULT(j_tail_v, j_max_v);
+      builder->CreateCondBr(j_tail_ok, j_tail_body, j_tail_exit);
+      builder->SetInsertPoint(j_tail_body);
+      emit_matmul_aik_fma_j(c_mat, b_mat, i_v, k_v, j_tail_v, aik, fma_fn);
+      llvm::Value* j_tail_next = builder->CreateAdd(j_tail_v, llvm::ConstantInt::get(i32t, 1));
+      builder->CreateStore(j_tail_next, j_s);
+      builder->CreateBr(j_tail_head);
+      builder->SetInsertPoint(j_tail_exit);
+      builder->CreateBr(j_exit);
     } else {
-      builder->CreateStore(builder->CreateFAdd(cv, builder->CreateFMul(aik, bv)), cp);
+      emit_matmul_aik_fma_j(c_mat, b_mat, i_v, k_v, j_v, aik, fma_fn);
+      llvm::Value* j_next = builder->CreateAdd(j_v, llvm::ConstantInt::get(i32t, 1));
+      builder->CreateStore(j_next, j_s);
+      builder->CreateBr(j_head);
     }
-    llvm::Value* j_next = builder->CreateAdd(j_v, llvm::ConstantInt::get(i32t, 1));
-    builder->CreateStore(j_next, j_s);
-    builder->CreateBr(j_head);
     builder->SetInsertPoint(j_exit);
     llvm::Value* k_next = builder->CreateAdd(k_v, llvm::ConstantInt::get(i32t, 1));
     builder->CreateStore(k_next, k_s);

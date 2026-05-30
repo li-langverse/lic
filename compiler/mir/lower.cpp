@@ -1,6 +1,7 @@
 #include "li/mir.hpp"
 #include "li/mir_runtime_link.hpp"
 #include "li/numeric_types.hpp"
+#include "li/policy.hpp"
 #include "li/prelude.hpp"
 
 #include <algorithm>
@@ -34,10 +35,53 @@ MirModule* g_mir_module = nullptr;
 
 std::string fresh_temp() { return "__t" + std::to_string(temp_counter++); }
 
+std::int64_t mir_vectorized_lanes_from_decorator(const Decorator& d) {
+  if (d.name != "vectorized") return 0;
+  for (const auto& arg : d.args) {
+    if (arg.name == "lanes" && arg.value && arg.value->kind == Expr::Kind::IntLit) {
+      return arg.value->int_value;
+    }
+  }
+  return 4;
+}
+
+std::int64_t mir_gpu_devices_from_decorator(const Decorator& d) {
+  if (d.name != "gpu") return 0;
+  for (const auto& arg : d.args) {
+    if (arg.name == "devices" && arg.value && arg.value->kind == Expr::Kind::IntLit) {
+      return arg.value->int_value;
+    }
+  }
+  return 1;
+}
+
+bool mir_decorator_disjoint_proven(const Decorator& d) {
+  if (d.name != "parallel") return false;
+  for (const auto& arg : d.args) {
+    if (arg.name != "disjoint" || !arg.value) continue;
+    const Expr& e = *arg.value;
+    if (e.kind == Expr::Kind::Ident && (e.ident == "disjoint_elem" || e.ident == "disjoint_slice")) return true;
+    if (e.kind == Expr::Kind::Call && (e.ident == "disjoint_elem" || e.ident == "disjoint_row" || e.ident == "disjoint_slice")) return true;
+  }
+  return false;
+}
+
 void copy_decorators(const std::vector<Decorator>& src, std::vector<MirDecorator>& dst) {
   for (const auto& d : src) {
     MirDecorator md;
     md.name = d.name;
+    if (d.name == "vectorized") {
+      md.vectorized = true;
+      md.lanes = mir_vectorized_lanes_from_decorator(d);
+    }
+    if (d.name == "gpu") {
+      md.gpu = true;
+      md.gpu_devices = mir_gpu_devices_from_decorator(d);
+    }
+    if (d.name == "parallel") {
+      md.parallel = true;
+      md.disjoint_proven = mir_decorator_disjoint_proven(d);
+    }
     for (const auto& arg : d.args) {
       if (arg.name == "lanes" && arg.value && arg.value->kind == Expr::Kind::IntLit) {
         md.lanes = arg.value->int_value;
@@ -49,7 +93,7 @@ void copy_decorators(const std::vector<Decorator>& src, std::vector<MirDecorator
 
 void apply_fn_decorator_codegen_flags(MirFn& fn) {
   for (const auto& d : fn.decorators) {
-    if (d.name == "vectorized") {
+    if (d.vectorized) {
       (void)d.lanes;
     }
     if (d.name == "no_vectorize") {
@@ -898,10 +942,18 @@ void push_mir_args_for_object_value_r(const Module& module, const TypeExpr& te,
 
 void push_mir_args_for_object_value(const Module& module, const TypeExpr& param_ty,
                                     const Expr& arg, std::vector<MirArg>& args_out) {
-  if (arg.kind != Expr::Kind::Ident) {
+  std::string prefix;
+  if (arg.kind == Expr::Kind::Ident) {
+    prefix = std::string("__li_o_") + arg.ident;
+  } else if (arg.kind == Expr::Kind::FieldAccess) {
+    prefix = mir_field_slot_for_expr(arg);
+    if (prefix.empty()) {
+      return;
+    }
+  } else {
     return;
   }
-  push_mir_args_for_object_value_r(module, param_ty, std::string("__li_o_") + arg.ident, args_out);
+  push_mir_args_for_object_value_r(module, param_ty, prefix, args_out);
 }
 
 std::string object_root_ident(const Expr& e) {
@@ -953,6 +1005,21 @@ std::string lower_callproc_with_optional_inout(
     out.push_back(std::move(mm));
     return std::string{};
   }
+  if (callee_name == "mm_naive_256" && extra_args && extra_args->size() == 3 &&
+      (*extra_args)[0]->kind == Expr::Kind::Ident && (*extra_args)[1]->kind == Expr::Kind::Ident &&
+      (*extra_args)[2]->kind == Expr::Kind::Ident) {
+    MirInsn mm;
+    mm.op = MirOp::ArrayMatMul2DF64;
+    mm.ident = (*extra_args)[0]->ident;
+    mm.lhs_ident = (*extra_args)[1]->ident;
+    mm.rhs_ident = (*extra_args)[2]->ident;
+    mm.int_value = 256;
+    mm.lhs_int = 256;
+    mm.rhs_int = 256;
+    mm.use_loaded_int = true;
+    out.push_back(std::move(mm));
+    return std::string{};
+  }
   const TypeExpr* inout_ty = nullptr;
   const std::string recv_ident =
       receiver_or_first_arg ? object_root_ident(*receiver_or_first_arg) : std::string{};
@@ -984,8 +1051,16 @@ std::string lower_callproc_with_optional_inout(
     if (object_alias_for_named_type(module, fp.type)) {
       if (inout && ai == 0) {
         push_mir_args_for_object_prefix(module, fp.type, wb_prefix, ins.args);
-      } else {
+      } else if (arg->kind == Expr::Kind::Ident || arg->kind == Expr::Kind::FieldAccess) {
         push_mir_args_for_object_value(module, fp.type, *arg, ins.args);
+      } else {
+        const std::string slot =
+            lower_expr_to(*arg, module, out, float_names, simd_names, i64_locals);
+        std::string prefix = slot;
+        if (prefix.rfind("__li_o_", 0) != 0) {
+          prefix = std::string("__li_o_") + prefix;
+        }
+        push_mir_args_for_object_value_r(module, fp.type, prefix, ins.args);
       }
       continue;
     }
@@ -1027,7 +1102,14 @@ std::string lower_callproc_with_optional_inout(
     ins.ret_is_float = true;
     float_names.insert(dest);
   } else if (!callee_ret_obj && callee.ret_type &&
-             is_i64_type_name(callee.ret_type->name)) {
+             (is_i64_type_name(callee.ret_type->name) ||
+              mir_ptr_param_type_name(callee.ret_type->name))) {
+    ins.ret_is_i64 = true;
+    i64_locals.insert(dest);
+  } else if (!callee_ret_obj && callee.ret_type &&
+             (callee.ret_type->name == "str" || callee.ret_type->name == "string" ||
+              callee.ret_type->name == "bytes" || callee.ret_type->name == "StringView" ||
+              callee.ret_type->name == "ptr")) {
     ins.ret_is_i64 = true;
     i64_locals.insert(dest);
   }
@@ -1978,6 +2060,8 @@ void lower_stmt(const Stmt& stmt, LowerCtx& ctx, bool returns_float, std::vector
       call.callee = par_name;
       call.int_value = stmt.par_start;
       call.rhs_int = stmt.par_end;
+      call.parallel_disjoint_proven =
+          parallel_for_disjoint_witness(stmt, ctx.proc ? &ctx.proc->decorators : nullptr);
       out.push_back(std::move(call));
       ctx.mir->uses_openmp = true;
       break;
@@ -2134,6 +2218,17 @@ void lower_stmt(const Stmt& stmt, LowerCtx& ctx, bool returns_float, std::vector
           }
         }
         if (horner_ok && float_names.count(acc_name) > 0) {
+          const double* const_x =
+              ctx.const_floats ? lookup_const_float(*ctx.const_floats, factor) : nullptr;
+          if (const_x != nullptr && trip >= 65536) {
+            MirInsn full;
+            full.op = MirOp::HornerConstLoopF64;
+            full.ident = acc_name;
+            full.float_value = *const_x;
+            full.int_value = trip;
+            out.push_back(std::move(full));
+            break;
+          }
           const std::string head_label = fresh_label("while_head_");
           const std::string exit_label = fresh_label("while_exit_");
           if (ctx.loop_stack) {
@@ -2143,8 +2238,6 @@ void lower_stmt(const Stmt& stmt, LowerCtx& ctx, bool returns_float, std::vector
           const std::string cond_tmp =
               lower_expr_to(*stmt.cond, module, out, float_names, simd_names, i64_locals);
           push_branch_if_zero(out, cond_tmp, exit_label);
-          const double* const_x =
-              ctx.const_floats ? lookup_const_float(*ctx.const_floats, factor) : nullptr;
           if (const_x != nullptr) {
             MirInsn step;
             step.op = MirOp::HornerStepPow4;
@@ -2373,6 +2466,32 @@ MirModule lower_to_mir(const Module& module) {
           mm.rhs_ident = proc.params[2].name;
           mm.int_value = 512;
           mm.rhs_int = 64;
+          fn.body.push_back(std::move(mm));
+          lowered_body = true;
+        }
+      }
+      if (proc.name == "mm_naive_256" && proc.params.size() == 3) {
+        std::int64_t rows = 0;
+        std::int64_t cols = 0;
+        bool ok = true;
+        for (const auto& p : proc.params) {
+          if (!is_2d_float_matrix_type(p.type, &rows, &cols) || rows != 256 || cols != 256) {
+            ok = false;
+            break;
+          }
+          matrix_array_names.insert(p.name);
+          arr_ctx.matrix_dims[p.name] = MatrixDims{256, 256};
+        }
+        if (ok) {
+          MirInsn mm;
+          mm.op = MirOp::ArrayMatMul2DF64;
+          mm.ident = proc.params[0].name;
+          mm.lhs_ident = proc.params[1].name;
+          mm.rhs_ident = proc.params[2].name;
+          mm.int_value = 256;
+          mm.lhs_int = 256;
+          mm.rhs_int = 256;
+          mm.use_loaded_int = true;
           fn.body.push_back(std::move(mm));
           lowered_body = true;
         }

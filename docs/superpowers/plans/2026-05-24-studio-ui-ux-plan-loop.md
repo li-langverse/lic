@@ -37,16 +37,6 @@ todos:
     status: done
 isProject: false
 ---
-- id: studio-ux-16-palette-search-latency
-  content: "studio-ui-ux: pending plan todo studio-ux-16-palette-search-latency"
-  status: pending
-  gap_orchestrator: true
-- id: studio-ux-17-gpu-fail-recovery
-  content: "studio-ui-ux: pending plan todo studio-ux-17-gpu-fail-recovery"
-  status: pending
-  gap_orchestrator: true
-
-
 
 # Studio UI/UX autonomous loop
 
@@ -54,6 +44,7 @@ isProject: false
 **Branch:** `cursor/studio-ui-ux-plan-loop`  
 **Not in scope:** httpd, tier5 HTTP, compiler Wave A (separate loops).
 
+**GUI UX handoff:** [gui-ux-quality-handoff.md](../../ecosystem/gui-ux-quality-handoff.md) (`gui_ux_tester`, `ui_ux_quality` research goal)  
 **UX rubric:** [ui-ux-by-dimension.md](../../game-dev/competitive-intel/ui-ux-by-dimension.md)
 
 **Loop:** `./scripts/studio-ui-ux-plan-loop.py`  

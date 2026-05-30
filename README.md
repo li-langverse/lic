@@ -137,6 +137,7 @@ Proof always comes first. Speed never skips the check.
 | Understand why this is “mathematically provable” | [Why Li is provable](docs/compiler/why-provable.md) |
 | See every test and security check | [Tests & audits](docs/testing/overview.md) |
 | Read the full design spec (technical) | [Language design spec](docs/superpowers/specs/2026-05-14-li-language-design.md) |
+| Master plan · provability gaps · bench | [lic handbook](docs/handbook/README.md) |
 
 Published docs site: [li-langverse.github.io/li-language](https://li-langverse.github.io/li-language/)
 

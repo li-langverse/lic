@@ -15,7 +15,7 @@
 | `missing_package` open | **3** (`gap-line-profiler-001`, `gap-missing-std-std-summary`, `gap-missing-std-std-plot`) |
 | Explorer `missing_std_modules` | **2 missing** (`std.summary`, `std.plot`); `std.io` / `std.csv` **present** |
 | Backlog patches | **3** todos set `pending` in `ecosystem-package-backlog.md` |
-| `orch-r3` status | **Completed** — hand off to `issue_planner` / `package_architect` |
+| `orch-r3` status | **Completed** @ 2026-05-30T10:03Z — hand off to `issue_planner` / `package_architect` |
 
 ---
 
@@ -28,7 +28,7 @@
 | Apply manifest | `benchmarks/data/latest/swarm-gap-actions.json` |
 | Explorer | `benchmarks/data/latest/ecosystem-explorer.json` (`missing_std_modules`) |
 | Quality scorecard | `benchmarks/data/latest/ecosystem-quality-report.json` |
-| Meta audit | `benchmarks/data/runs/swarm_observer-1780135312809.md` |
+| Meta audit | `benchmarks/data/runs/swarm_observer-1780135360070.md` |
 
 ---
 

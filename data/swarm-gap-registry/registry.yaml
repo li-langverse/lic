@@ -1,5 +1,5 @@
 version: 1
-updated_at: '2026-05-30T07:08:55Z'
+updated_at: '2026-05-30T07:12:08Z'
 gaps:
 - id: gap-line-profiler-001
   gap_kind: missing_package
@@ -506,7 +506,8 @@ gaps:
   discovered_by: plan_verifier
   evidence:
   - snapshot runner=swarm-observer plan_pending=orch-r2-competitor-stubs
-  - 'orch-r2 completed 2026-05-30: verticals.toml stubs + catalog gaps ingested; note docs/ecosystem/orchestrator-notes/2026-05-30-orch-r2-competitor-stubs.md'
+  - 'orch-r2 completed 2026-05-30: verticals.toml stubs + catalog gaps ingested; note
+    docs/ecosystem/orchestrator-notes/2026-05-30-orch-r2-competitor-stubs.md'
   runner_id: swarm-observer
   plan_todo_id: orch-r2-competitor-stubs
   suggested_loop: swarm-observer

@@ -4,15 +4,14 @@
   "completion_sprint": true,
   "wps_touched": ["WP-AG-06", "WP-GD-06", "§11"],
   "smokes_run": [
-    "packages/li-studio/li-tests/smoke/studio_shell_demo.li",
-    "packages/li-studio/li-tests/smoke/studio_vertical_dod.li",
-    "scripts/world-studio-plan-lic-smokes.sh (WSL)"
+    "scripts/world-studio-plan-lic-smokes.sh (WSL, CRLF fix)",
+    "packages/li-studio/li-tests/smoke/studio_vertical_dod.li"
   ],
   "native_only": true,
   "gates": {
     "world_studio_plan_gates": "pass",
     "world_studio_plan_completion_gate": "pass",
-    "lic_check_wsl": "pass"
+    "lic_check_wsl": "pending_ci"
   },
-  "notes": "All 36 wsm-w* todos done. Fixed unresolved merge conflicts (23 files), studio lib contract/IO compose fixes, CRLF on world-studio-plan-lic-smokes.sh, render_present_viewport_tick ensures. Completion gate green."
+  "notes": "Sprint complete (36/36 wsm-w* done). CI babysit pass: resolved leftover merge conflicts in emit.cpp, ph-ml-wave2-gates.sh, ph-db-swarm-plan.md; restored snapshot.json from main; fixed CRLF on world-studio-plan-lic-smokes.sh for WSL."
 }

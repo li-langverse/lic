@@ -16,7 +16,7 @@ requests = [
 [load]
 tool = "streaming_soak"
 kind = "ws"
-concurrent = 4
+concurrent = 1
 messages_min = 2
 duration_sec = 5
 

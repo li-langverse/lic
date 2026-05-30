@@ -31,26 +31,46 @@ li_phase "loop scripts"
 li_phase "design tokens"
 [[ -f "$ROOT/docs/design/studio-design-tokens.toml" ]] || fail "studio-design-tokens.toml"
 
+
+run_lic_smokes() {
+  local lic_bin="li_phase "design tokens"
+[[ -f "$ROOT/docs/design/studio-design-tokens.toml" ]] || fail "studio-design-tokens.toml"
+
+"
+  li_phase "li-studio core smokes"
+  for smoke in \
+    studio_shell_demo.li \
+    studio_vertical_profile_roundtrip.li \
+    studio_sim_step_by_profile.li \
+    studio_timeline_playback.li \
+    studio_toml_engine_export.li \
+    studio_mcp_tools.li \
+    studio_agentic_run.li; do
+    path="$ROOT/packages/li-studio/li-tests/smoke/$smoke"
+    [[ -f "$path" ]] || fail "missing smoke $smoke"
+    "$lic_bin" check "$path" || fail "lic check $smoke"
+  done
+}
+
+try_wsl_lic_smokes() {
+  command -v wsl >/dev/null 2>&1 || return 1
+  [[ "${WORLD_STUDIO_GATES_WSL:-auto}" == "0" ]] && return 1
+  local win_root wsl_root
+  win_root="$(cd "$ROOT" && pwd -W 2>/dev/null || true)"
+  [[ -z "$win_root" ]] && return 1
+  wsl_root="$(wsl wslpath -u "$win_root" 2>/dev/null || true)"
+  [[ -z "$wsl_root" ]] && return 1
+  li_phase "wsl lic check smokes"
+  wsl bash -lc "set -euo pipefail; cd '$wsl_root'; if [[ -x build/compiler/lic/lic ]]; then LIC=build/compiler/lic/lic; elif [[ -x build/compiler/lic/lic.exe ]]; then LIC=build/compiler/lic/lic.exe; else ./scripts/build.sh; LIC=build/compiler/lic/lic; fi; for smoke in studio_shell_demo.li studio_vertical_profile_roundtrip.li studio_sim_step_by_profile.li studio_timeline_playback.li studio_toml_engine_export.li studio_mcp_tools.li studio_agentic_run.li; do \"\$LIC\" check \"packages/li-studio/li-tests/smoke/\$smoke\"; done"
+}
 if [[ "${WORLD_STUDIO_GATES_SKIP_LIC:-0}" == "1" ]]; then
   li_warn "skip lic check smokes (WORLD_STUDIO_GATES_SKIP_LIC=1)"
+elif [[ -n "$LIC" && -x "$LIC" ]]; then
+  run_lic_smokes "$LIC"
+elif try_wsl_lic_smokes; then
+  li_ok "wsl lic smokes passed"
 else
-  if [[ -z "$LIC" || ! -x "$LIC" ]]; then
-    li_warn "lic not built â€” set WORLD_STUDIO_GATES_SKIP_LIC=1 or run ./scripts/build.sh"
-  else
-    li_phase "li-studio core smokes"
-    for smoke in \
-      studio_shell_demo.li \
-      studio_vertical_profile_roundtrip.li \
-      studio_sim_step_by_profile.li \
-      studio_timeline_playback.li \
-      studio_toml_engine_export.li \
-      studio_mcp_tools.li \
-      studio_agentic_run.li; do
-      path="$ROOT/packages/li-studio/li-tests/smoke/$smoke"
-      [[ -f "$path" ]] || fail "missing smoke $smoke"
-      "$LIC" check "$path" || fail "lic check $smoke"
-    done
-  fi
+  li_warn "lic not built — set WORLD_STUDIO_GATES_SKIP_LIC=1, build lic, or enable WSL"
 fi
 
 if [[ -f "$ROOT/scripts/bench-studio-viewport-perf.sh" ]]; then

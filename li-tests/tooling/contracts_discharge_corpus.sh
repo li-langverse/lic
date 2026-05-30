@@ -15,6 +15,7 @@ chmod +x "$ROOT/li-tests/tooling/discharge_trivial_lean.sh" \
   "$ROOT/li-tests/tooling/horner_fma_numerically_stable_gap.sh" \
   "$ROOT/li-tests/tooling/sum_dot_product_equiv_gap.sh" \
   "$ROOT/li-tests/tooling/matmul_loop_codegen_witness_gap.sh" \
+  "$ROOT/li-tests/tooling/mat2_at2_mir_codegen_lean_gap.sh" \
   "$ROOT/li-tests/tooling/method_call_requires_lean_gap.sh"
 "$ROOT/li-tests/tooling/discharge_trivial_lean.sh"
 "$ROOT/li-tests/tooling/discharge_const_lean.sh"

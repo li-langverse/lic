@@ -196,24 +196,35 @@ struct EmitCtx {
     return builder->CreateInBoundsGEP(mat->getAllocatedType(), mat, idx);
   }
 
-  void emit_idx_for(llvm::AllocaInst* iv, llvm::Value* limit,
-                    const std::function<void(llvm::Value*)>& body) {
+  void emit_counted_for(llvm::Value* start, llvm::Value* end, llvm::Value* step,
+                        const char* prefix, const std::function<void(llvm::Value*)>& body) {
     llvm::Type* i32t = i32_ty(context);
-    llvm::BasicBlock* head = llvm::BasicBlock::Create(context, "for_head", func);
+    llvm::BasicBlock* pre = builder->GetInsertBlock();
+    llvm::BasicBlock* head = llvm::BasicBlock::Create(context, prefix, func);
     llvm::BasicBlock* body_bb = llvm::BasicBlock::Create(context, "for_body", func);
+    llvm::BasicBlock* latch = llvm::BasicBlock::Create(context, "for_latch", func);
     llvm::BasicBlock* exit_bb = llvm::BasicBlock::Create(context, "for_exit", func);
-    builder->CreateStore(llvm::ConstantInt::get(i32t, 0), iv);
     builder->CreateBr(head);
     builder->SetInsertPoint(head);
-    llvm::Value* i = builder->CreateLoad(i32t, iv);
-    llvm::Value* cond = builder->CreateICmpULT(i, limit);
+    llvm::PHINode* phi = builder->CreatePHI(i32t, 2, "iv");
+    phi->addIncoming(start, pre);
+    llvm::Value* cond = builder->CreateICmpULT(phi, end);
     builder->CreateCondBr(cond, body_bb, exit_bb);
     builder->SetInsertPoint(body_bb);
-    body(i);
-    llvm::Value* next = builder->CreateAdd(i, llvm::ConstantInt::get(i32t, 1));
-    builder->CreateStore(next, iv);
+    body(phi);
+    builder->CreateBr(latch);
+    builder->SetInsertPoint(latch);
+    llvm::Value* next = builder->CreateAdd(phi, step);
+    phi->addIncoming(next, latch);
     builder->CreateBr(head);
     builder->SetInsertPoint(exit_bb);
+  }
+
+  void emit_idx_for(llvm::AllocaInst* /*iv*/, llvm::Value* limit,
+                    const std::function<void(llvm::Value*)>& body) {
+    llvm::Type* i32t = i32_ty(context);
+    emit_counted_for(llvm::ConstantInt::get(i32t, 0), limit, llvm::ConstantInt::get(i32t, 1),
+                     "for_head", body);
   }
 
   void emit_matmul2d_ijk_loops(llvm::AllocaInst* c_mat, llvm::AllocaInst* a_mat,
@@ -322,64 +333,21 @@ struct EmitCtx {
     }
   }
 
-  void emit_idx_for_step(llvm::AllocaInst* iv, llvm::Value* limit, llvm::Value* step,
+  void emit_idx_for_step(llvm::AllocaInst* /*iv*/, llvm::Value* limit, llvm::Value* step,
                          const std::function<void(llvm::Value*)>& body) {
     llvm::Type* i32t = i32_ty(context);
-    llvm::BasicBlock* head = llvm::BasicBlock::Create(context, "for_head", func);
-    llvm::BasicBlock* body_bb = llvm::BasicBlock::Create(context, "for_body", func);
-    llvm::BasicBlock* exit_bb = llvm::BasicBlock::Create(context, "for_exit", func);
-    builder->CreateStore(llvm::ConstantInt::get(i32t, 0), iv);
-    builder->CreateBr(head);
-    builder->SetInsertPoint(head);
-    llvm::Value* i = builder->CreateLoad(i32t, iv);
-    llvm::Value* cond = builder->CreateICmpULT(i, limit);
-    builder->CreateCondBr(cond, body_bb, exit_bb);
-    builder->SetInsertPoint(body_bb);
-    body(i);
-    llvm::Value* next = builder->CreateAdd(i, step);
-    builder->CreateStore(next, iv);
-    builder->CreateBr(head);
-    builder->SetInsertPoint(exit_bb);
+    emit_counted_for(llvm::ConstantInt::get(i32t, 0), limit, step, "for_step_head", body);
   }
 
-  void emit_range_for(llvm::AllocaInst* iv, llvm::Value* start, llvm::Value* end,
+  void emit_range_for(llvm::AllocaInst* /*iv*/, llvm::Value* start, llvm::Value* end,
                       const std::function<void(llvm::Value*)>& body) {
     llvm::Type* i32t = i32_ty(context);
-    llvm::BasicBlock* head = llvm::BasicBlock::Create(context, "rng_head", func);
-    llvm::BasicBlock* body_bb = llvm::BasicBlock::Create(context, "rng_body", func);
-    llvm::BasicBlock* exit_bb = llvm::BasicBlock::Create(context, "rng_exit", func);
-    builder->CreateStore(start, iv);
-    builder->CreateBr(head);
-    builder->SetInsertPoint(head);
-    llvm::Value* i = builder->CreateLoad(i32t, iv);
-    llvm::Value* cond = builder->CreateICmpULT(i, end);
-    builder->CreateCondBr(cond, body_bb, exit_bb);
-    builder->SetInsertPoint(body_bb);
-    body(i);
-    llvm::Value* next = builder->CreateAdd(i, llvm::ConstantInt::get(i32t, 1));
-    builder->CreateStore(next, iv);
-    builder->CreateBr(head);
-    builder->SetInsertPoint(exit_bb);
+    emit_counted_for(start, end, llvm::ConstantInt::get(i32t, 1), "rng_head", body);
   }
 
-  void emit_range_for_step(llvm::AllocaInst* iv, llvm::Value* start, llvm::Value* end,
+  void emit_range_for_step(llvm::AllocaInst* /*iv*/, llvm::Value* start, llvm::Value* end,
                            llvm::Value* step, const std::function<void(llvm::Value*)>& body) {
-    llvm::Type* i32t = i32_ty(context);
-    llvm::BasicBlock* head = llvm::BasicBlock::Create(context, "rng_step_head", func);
-    llvm::BasicBlock* body_bb = llvm::BasicBlock::Create(context, "rng_step_body", func);
-    llvm::BasicBlock* exit_bb = llvm::BasicBlock::Create(context, "rng_step_exit", func);
-    builder->CreateStore(start, iv);
-    builder->CreateBr(head);
-    builder->SetInsertPoint(head);
-    llvm::Value* i = builder->CreateLoad(i32t, iv);
-    llvm::Value* cond = builder->CreateICmpULT(i, end);
-    builder->CreateCondBr(cond, body_bb, exit_bb);
-    builder->SetInsertPoint(body_bb);
-    body(i);
-    llvm::Value* next = builder->CreateAdd(i, step);
-    builder->CreateStore(next, iv);
-    builder->CreateBr(head);
-    builder->SetInsertPoint(exit_bb);
+    emit_counted_for(start, end, step, "rng_step_head", body);
   }
 
   void emit_matmul2d_blocked_ijk(llvm::AllocaInst* c_mat, llvm::AllocaInst* a_mat,

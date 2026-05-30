@@ -62,7 +62,7 @@ note = "T-PKG-li-studio-profile-roundtrip PH-UX-05 PH-SIM"
 suite = "smoke"
 file = "smoke/studio_sim_step_by_profile.li"
 outcome = "check_ok"
-note = "PH-SIM vertical gap #4: studio_sim_step_hook game + sim_scientific + sim_rl env pool"
+note = "PH-SIM vertical gap #4: studio_sim_step_hook all 7 runtime profiles + RL env pool"
 
 [[tests]]
 suite = "smoke"

@@ -88,10 +88,16 @@ run_ux_harness() {
     return 0
   fi
   export LIC_ROOT="$ROOT"
+  local demo_mock="--mock"
+  if [[ "$(uname -s)" == "Linux" && "${STUDIO_UI_UX_HARNESS_MOCK:-0}" != "1" ]]; then
+    demo_mock=""
+    echo "capture: world-studio-demo Linux fixture audit (non-mock)"
+  fi
+  # shellcheck disable=SC2086
   python3 "$AGENTS_ROOT/ux-harness/run_audit.py" \
     --target world-studio-demo \
     --mode both \
-    --mock \
+    $demo_mock \
     --out-dir "$ART" || true
   local native_out="$ART/native-audit"
   mkdir -p "$native_out"
@@ -143,7 +149,9 @@ write_report() {
     fi
     echo ""
     echo "### Artifacts"
-    echo "- PNG count: $(ls -1 "$PNG"/*.png 2>/dev/null | wc -l)"
+    shopt -s nullglob
+    local _png_files=("$PNG"/*.png)
+    echo "- PNG count: ${#_png_files[@]}"
     [[ -f "$ART/iter-reel.mp4" ]] && echo "- Video: \`iter-reel.mp4\` (GitHub release only)"
     echo ""
     echo "Rubric: \`docs/game-dev/competitive-intel/ui-ux-by-dimension.md\`"
@@ -155,7 +163,9 @@ write_capture_meta() {
   local issue="${1:-}" comment_url="${2:-}" upload_count="${3:-0}" dry="${4:-0}"
   local meta="$STATE_DIR/latest-capture.json"
   local png_count
-  png_count="$(ls -1 "$PNG"/*.png 2>/dev/null | wc -l | tr -d ' ')"
+  shopt -s nullglob
+  local _png_files=("$PNG"/*.png)
+  png_count="${#_png_files[@]}"
   python3 - "$meta" "$ITER" "$REPO" "$RELEASE_TAG" "$issue" "$comment_url" \
     "$png_count" "$upload_count" "$dry" "$ART" "$ROOT" <<'PY'
 import json, sys
@@ -264,6 +274,11 @@ publish_github() {
 }
 
 echo "==> studio-ui-ux capture ($ITER)"
+if [[ "${STUDIO_UI_UX_CAPTURE_DRY:-0}" != "1" ]]; then
+  if [[ -x "$ROOT/scripts/studio-ui-ux-probe-capture-deps.sh" ]]; then
+    "$ROOT/scripts/studio-ui-ux-probe-capture-deps.sh" || true
+  fi
+fi
 capture_native_sdl
 capture_html
 run_ux_harness

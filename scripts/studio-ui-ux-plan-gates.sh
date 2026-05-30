@@ -27,6 +27,19 @@ chmod +x "$ROOT/scripts/studio-ui-ux-capture-progress.sh" 2>/dev/null || true
 python3 "$ROOT/scripts/studio-ui-ux-verify-capture.py" || fail "studio-ui-ux-verify-capture"
 python3 "$ROOT/scripts/studio-ui-ux-verify-native-capture.py" || fail "studio-ui-ux-verify-native-capture"
 python3 "$ROOT/scripts/studio-ui-ux-verify-tokens.py" || fail "studio token sync (TOML ↔ li-ui)"
+python3 "$ROOT/scripts/studio-ui-ux-verify-harness-audit.py" || fail "studio-ui-ux-verify-harness-audit"
+python3 "$ROOT/scripts/studio-ui-ux-verify-keyboard-journey.py" || fail "studio-ui-ux-verify-keyboard-journey"
+python3 "$ROOT/scripts/studio-ui-ux-verify-palette-native.py" || fail "studio-ui-ux-verify-palette-native"
+python3 "$ROOT/scripts/studio-ui-ux-verify-agent-chrome-native.py" || fail "studio-ui-ux-verify-agent-chrome-native"
+python3 "$ROOT/scripts/studio-ui-ux-verify-wgpu-swapchain.py" || fail "studio-ui-ux-verify-wgpu-swapchain"
+if [[ -x "$ROOT/scripts/studio-ui-ux-probe-capture-deps.sh" ]]; then
+  "$ROOT/scripts/studio-ui-ux-probe-capture-deps.sh" || li_warn "capture-deps probe failed"
+  [[ -f "$ROOT/data/studio-ui-ux-plan-loop/latest-capture-deps.json" ]] \
+    || fail "latest-capture-deps.json missing after probe"
+fi
+python3 "$ROOT/scripts/studio-ui-ux-write-briefing-snapshot.py" || fail "studio-ui-ux-write-briefing-snapshot"
+[[ -f "$ROOT/data/studio-ui-ux-plan-loop/latest-briefing-snapshot.json" ]] \
+  || fail "latest-briefing-snapshot.json missing"
 
 li_phase "competitive intel doc"
 [[ -f "$ROOT/docs/game-dev/competitive-intel/ui-ux-by-dimension.md" ]] || fail "ui-ux-by-dimension.md"

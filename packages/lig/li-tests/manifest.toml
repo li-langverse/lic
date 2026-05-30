@@ -2,10 +2,22 @@
 suite = "smoke"
 file = "smoke/builds.li"
 outcome = "verify_ok"
-note = "T-PKG-lig-smoke"
+note = "T-PKG-li-gpu-smoke"
 
 [[tests]]
 suite = "smoke"
-file = "smoke/lig_device_probe.li"
+file = "smoke/wgpu_smoke.li"
 outcome = "compile_open_ok"
-note = "T-PKG-lig-device-probe"
+note = "T-PKG-li-gpu-wgpu-smoke"
+
+[[tests]]
+suite = "smoke"
+file = "smoke/wgpu_readback_smoke.li"
+outcome = "compile_open_ok"
+note = "T-PKG-li-gpu-wgpu-readback-smoke"
+
+[[tests]]
+suite = "smoke"
+file = "smoke/wgpu_swapchain_readback.li"
+outcome = "compile_open_ok"
+note = "T-PKG-li-gpu-wgpu-swapchain-readback"

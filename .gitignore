@@ -45,9 +45,9 @@ build-asan/
 
 # Lean 4 (docs/semantics)
 docs/semantics/.lake/
-# Autonomous plan-loop (agent logs — local only)
-data/*-plan-loop/
-!data/*/state.json.example
+# Autonomous plan-loop (agent logs, goals, overnight tee — local only)
+data/httpd-plan-loop/
+!data/httpd-plan-loop/state.json.example
 logs/*.log
 benchmarks/tier5_http/drivers/logs/
 data/studio-ui-ux-plan-loop/*
@@ -55,17 +55,12 @@ data/studio-ui-ux-plan-loop/*
 !data/studio-ui-ux-plan-loop/state.json
 !data/studio-ui-ux-plan-loop/latest-ux-assessment.json
 !data/studio-ui-ux-plan-loop/latest-capture.json
+!data/studio-ui-ux-plan-loop/keyboard-journey-manifest.json
 !data/studio-ui-ux-plan-loop/tracking-issue.txt
 deploy/studio-demo/screenshots/png/
-deploy/studio-demo/screenshots/verticals/png/
-docs/demo/media/native-verticals/png/
-docs/demo/media/studio-verticals-demo.mp4
-deploy/studio-demo/native/studio_verticals_present_host
-deploy/studio-demo/native/studio_shell_present_host
-deploy/studio-demo/native/studio_viewport_capture
 deploy/studio-demo/**/*.mp4
-docs/demo/media/*.mp4
-docs/demo/media/ffmpeg-*.txt
+deploy/studio-demo/native/studio_viewport_capture
+deploy/studio-demo/native/out/
 
 # Local CI sweep output (benchmarks local-ci)
 data/local-ci*.log

@@ -1,12 +1,12 @@
 # Bench harness hook — read by scripts/bench-studio-viewport-perf.sh
-# PH-UX: md_lennard_jones display tiers with honest FPS (native_pixels=false until wgpu draws).
+# PH-UX: md_lennard_jones display tiers with honest FPS (native_pixels=true on wgpu readback bench).
 
 [meta]
-hook_version = 1
+hook_version = 2
 package = "li-scene"
 kernel = "md_lennard_jones"
-native_pixels = false
-draw_path = "scene_budget_simulate"
+native_pixels = true
+draw_path = "wgpu_readback"
 
 [[tier]]
 id = "md_1k"
@@ -14,6 +14,7 @@ tier_id = 0
 particles = 1000
 fps_target = 60
 bench_simulate_fn = "scene_bench_particle_tier_simulate"
+bench_native_fn = "scene_bench_particle_tier_native"
 
 [[tier]]
 id = "md_10k"
@@ -21,6 +22,7 @@ tier_id = 1
 particles = 10000
 fps_target = 60
 bench_simulate_fn = "scene_bench_particle_tier_simulate"
+bench_native_fn = "scene_bench_particle_tier_native"
 
 [[tier]]
 id = "md_100k"
@@ -28,7 +30,9 @@ tier_id = 2
 particles = 100000
 fps_target = 30
 bench_simulate_fn = "scene_bench_particle_tier_simulate"
+bench_native_fn = "scene_bench_particle_tier_native"
 
 [bench]
 all_tiers_fn = "scene_bench_all_particle_tiers_pass"
+all_tiers_native_fn = "scene_bench_all_particle_tiers_native_pass"
 sample_frames = 120

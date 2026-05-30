@@ -1,0 +1,8 @@
+@el(disjoint=disjoint_row)
+proc f(( -> int
+  requires tr
+@p(pu
+@parallel(proc f@cdisjoint=disjoint_row)
+pr%int
+ true 
+ rn 0

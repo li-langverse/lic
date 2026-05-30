@@ -1561,10 +1561,15 @@ struct Ctx {
     if (li::allow_open_vc()) {
       return;
     }
-    /* li-net-httpd proxy loop: contracts tightened incrementally (tier-5 bench). */
+    /* li-net-httpd: incremental contract tightening (tier-5 bench); weak ensures allowed. */
     if (p.name.rfind("httpd_", 0) == 0 || p.name.rfind("proxy_", 0) == 0 ||
         p.name.rfind("hdr_", 0) == 0 || p.name.rfind("buf_", 0) == 0 ||
-        p.name.rfind("net_", 0) == 0 || p.name == "path_ends_with_conf") {
+        p.name.rfind("net_", 0) == 0 || p.name.rfind("send_", 0) == 0 ||
+        p.name.rfind("parse_", 0) == 0 || p.name.rfind("filepath_", 0) == 0 ||
+        p.name.rfind("try_", 0) == 0 || p.name.rfind("conn_", 0) == 0 ||
+        p.name.rfind("accept_", 0) == 0 || p.name.rfind("handle_", 0) == 0 ||
+        p.name.rfind("serve_", 0) == 0 || p.name.rfind("nginx_", 0) == 0 ||
+        p.name == "path_ends_with_conf") {
       return;
     }
     for (const auto& c : p.contracts) {

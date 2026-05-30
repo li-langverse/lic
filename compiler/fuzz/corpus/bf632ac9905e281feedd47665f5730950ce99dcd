@@ -1,0 +1,3 @@
+@cpu
+@paralleL(1disjoint=disjoint_row)
+proproc p() ->c fea f

@@ -30,6 +30,9 @@ chmod +x "$ROOT/scripts/check-stdlib-coverage.sh"
 
 export LI_REPO_ROOT="$ROOT"
 export LIC="$("$ROOT/scripts/resolve-lic.sh")"
+export CI=true
+# Wave 2 integrator (8p-d): explicit parallel flags — do not export LI_TEST_JOBS.
+RUN_ALL_FLAGS=(-j8 --max-memory=8192)
 
 li_phase "generate AutoVC (2e)"
 "$LIC" build "$ROOT/li-tests/modules/greeter/greeter.li" -o /dev/null
@@ -53,43 +56,47 @@ chmod +x "$ROOT/li-tests/run_httpd_config.sh" \
   "$ROOT/scripts/flatten-httpd-config.py" \
   "$ROOT/scripts/validate-httpd-config.py"
 "$ROOT/li-tests/run_httpd_config.sh"
-if [[ "${HTTPD_SKIP_AUTH_BEARER_SMOKE:-0}" != "1" ]] \
-  && [[ -x "$ROOT/scripts/build-li-httpd.sh" ]] \
+if [[ "${HTTPD_SKIP_AUTH_BEARER_SMOKE:-0}" == "1" ]]; then
+  echo "skip test-auth-bearer (HTTPD_SKIP_AUTH_BEARER_SMOKE=1)"
+elif [[ "$(uname -s)" == "Darwin" && "${HTTPD_SKIP_AUTH_BEARER_DARWIN:-1}" != "0" ]]; then
+  echo "skip test-auth-bearer (Darwin CI: bearer TCP smoke runs on Linux)"
+elif [[ -x "$ROOT/scripts/build-li-httpd.sh" ]] \
   && "$ROOT/scripts/build-li-httpd.sh"; then
   chmod +x "$ROOT/scripts/test-auth-bearer.sh"
   "$ROOT/scripts/test-auth-bearer.sh"
-elif [[ "${HTTPD_SKIP_AUTH_BEARER_SMOKE:-0}" == "1" ]]; then
-  echo "skip test-auth-bearer (HTTPD_SKIP_AUTH_BEARER_SMOKE=1)"
 fi
 
 li_phase "E2E li-tests (full manifest)"
-"$ROOT/li-tests/run_all.sh"
+"$ROOT/li-tests/run_all.sh" "${RUN_ALL_FLAGS[@]}"
 
 li_phase "tier 0 physics (strict stability)"
 python3 "$ROOT/benchmarks/harness/bench.py" --tier 0
 
 li_phase "race_shared_memory"
-"$ROOT/li-tests/run_all.sh" race_shared_memory
+"$ROOT/li-tests/run_all.sh" "${RUN_ALL_FLAGS[@]}" race_shared_memory
 
 li_phase "math_syntax (2h)"
-"$ROOT/li-tests/run_all.sh" math_syntax
+"$ROOT/li-tests/run_all.sh" "${RUN_ALL_FLAGS[@]}" math_syntax
 
 li_phase "math_linalg (2i)"
-"$ROOT/li-tests/run_all.sh" math_linalg
+"$ROOT/li-tests/run_all.sh" "${RUN_ALL_FLAGS[@]}" math_linalg
 
 li_phase "workspace build (8a)"
 chmod +x "$ROOT/scripts/lic-workspace-build.sh"
 "$ROOT/scripts/lic-workspace-build.sh" "$ROOT/packages/li.toml"
+
+li_phase "lic check workspace (WP3)"
+"$LIC" check --workspace="$ROOT/packages/li.toml" --jobs=8 --max-memory=8192
 
 li_phase "lip / lit (8b/8e)"
 chmod +x "$ROOT/scripts/lip" "$ROOT/scripts/lit" "$ROOT/li-tests/tooling/lip_lit_smoke.sh"
 "$ROOT/li-tests/tooling/lip_lit_smoke.sh"
 
 li_phase "encapsulation (2g)"
-"$ROOT/li-tests/run_all.sh" encapsulation
+"$ROOT/li-tests/run_all.sh" "${RUN_ALL_FLAGS[@]}" encapsulation
 
 li_phase "decorators (7d)"
-"$ROOT/li-tests/run_all.sh" decorator_exploits decorators
+"$ROOT/li-tests/run_all.sh" "${RUN_ALL_FLAGS[@]}" decorator_exploits decorators
 
 li_phase "stdlib coverage (8e)"
 chmod +x "$ROOT/scripts/check-stdlib-coverage.sh"
@@ -108,8 +115,22 @@ export LI_REPO_ROOT="$ROOT"
 "$ROOT/li-tests/tooling/contracts_verify_lean.sh"
 
 li_phase "lic JSON diagnostics (Vision-LLM)"
-chmod +x "$ROOT/li-tests/tooling/diagnose_json_smoke.sh" "$ROOT/scripts/lic-fix-suggest.sh"
+chmod +x "$ROOT/li-tests/tooling/diagnose_json_smoke.sh" \
+  "$ROOT/li-tests/tooling/check_workspace_cache_smoke.sh" \
+  "$ROOT/li-tests/tooling/run_all_parallel_smoke.sh" \
+  "$ROOT/li-tests/tooling/agent_manifest_smoke.sh" \
+  "$ROOT/scripts/export-li-tests-agent-slice.sh" \
+  "$ROOT/scripts/lic-fix-suggest.sh"
 "$ROOT/li-tests/tooling/diagnose_json_smoke.sh"
+"$ROOT/li-tests/tooling/check_workspace_cache_smoke.sh"
+"$ROOT/li-tests/tooling/run_all_parallel_smoke.sh"
+"$ROOT/li-tests/tooling/agent_manifest_smoke.sh"
+
+li_phase "8p parallel smokes"
+chmod +x "$ROOT/li-tests/tooling/ci_test_jobs_smoke.sh"   "$ROOT/li-tests/tooling/resource_flags_smoke.sh"   "$ROOT/li-tests/tooling/parallel_run_all_smoke.sh"
+"$ROOT/li-tests/tooling/ci_test_jobs_smoke.sh"
+"$ROOT/li-tests/tooling/resource_flags_smoke.sh"
+"$ROOT/li-tests/tooling/parallel_run_all_smoke.sh"
 
 li_phase "8-sync toolchain"
 chmod +x "$ROOT/scripts/check-li-toolchain.sh"

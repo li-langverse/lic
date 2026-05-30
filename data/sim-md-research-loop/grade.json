@@ -1,0 +1,16 @@
+{
+  "generated_at": "2026-05-25T18:54:35Z",
+  "vertical": "md",
+  "validity_ok": true,
+  "perf_ok": true,
+  "memory_ok": true,
+  "security_ok": true,
+  "security_note": "skip",
+  "stability_ok": true,
+  "size_scaling_ok": true,
+  "study_only": true,
+  "overall_ok": true,
+  "package": "li-sim-scientific",
+  "benches": "md_lennard_jones,heat_equation_2d",
+  "gate_log_tail": ""
+}

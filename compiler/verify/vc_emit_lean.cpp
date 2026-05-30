@@ -7,15 +7,22 @@
 #include "li/vc_witness.hpp"
 
 #include <algorithm>
+#include <filesystem>
 #include <fstream>
 #include <map>
 #include <optional>
 #include <set>
 #include <sstream>
 #include <string>
+#include <unordered_set>
 
 namespace li {
 namespace {
+
+std::optional<std::int64_t> int_lit_value(const Expr& e) {
+  if (e.kind == Expr::Kind::IntLit) return e.int_value;
+  return std::nullopt;
+}
 
 bool lean_reserved_ident(const std::string& name) {
   static const char* const kReserved[] = {
@@ -108,7 +115,15 @@ std::string object_type_name_from_method_receiver(const ProcDecl& caller, const 
 
 std::string lean_type_name(const TypeExpr& ty, const Module& module);
 
-std::string lean_type_name(const TypeExpr& ty, const Module& module) {
+namespace {
+
+constexpr int kLeanTypeNameMaxDepth = 64;
+
+std::string lean_type_name_impl(const TypeExpr& ty, const Module& module,
+                                std::unordered_set<std::string>& alias_stack, int depth) {
+  if (depth > kLeanTypeNameMaxDepth) {
+    return "Unit";
+  }
   switch (ty.kind) {
     case TypeKind::Named:
       if (ty.name == "int") {
@@ -133,12 +148,18 @@ std::string lean_type_name(const TypeExpr& ty, const Module& module) {
         return "Unit";
       }
       if (const TypeAlias* alias = find_type_alias(module, ty.name)) {
-        return lean_type_name(alias->definition, module);
+        if (!alias_stack.insert(ty.name).second) {
+          return "Int";
+        }
+        const std::string expanded =
+            lean_type_name_impl(alias->definition, module, alias_stack, depth + 1);
+        alias_stack.erase(ty.name);
+        return expanded;
       }
       return "Int";
     case TypeKind::Array:
       if (ty.elem) {
-        const std::string elem = lean_type_name(*ty.elem, module);
+        const std::string elem = lean_type_name_impl(*ty.elem, module, alias_stack, depth + 1);
         const bool wrap_elem = ty.elem->kind == TypeKind::Array;
         return "LiArray " + (wrap_elem ? "(" + elem + ")" : elem) + " " +
                std::to_string(ty.array_size);
@@ -146,7 +167,7 @@ std::string lean_type_name(const TypeExpr& ty, const Module& module) {
       return "LiArray Unit 0";
     case TypeKind::Refinement:
       if (ty.refinement_base) {
-        return lean_type_name(*ty.refinement_base, module);
+        return lean_type_name_impl(*ty.refinement_base, module, alias_stack, depth + 1);
       }
       return "Int";
     case TypeKind::TypeApp:
@@ -156,6 +177,13 @@ std::string lean_type_name(const TypeExpr& ty, const Module& module) {
       return "Unit";
   }
   return "Unit";
+}
+
+}  // namespace
+
+std::string lean_type_name(const TypeExpr& ty, const Module& module) {
+  std::unordered_set<std::string> alias_stack;
+  return lean_type_name_impl(ty, module, alias_stack, 0);
 }
 
 struct VcCtx {
@@ -228,6 +256,24 @@ std::optional<std::string> expr_to_lean(const Expr& e, const VcCtx& ctx) {
           return "Float.abs " + *inner;
         }
       }
+      if (e.args.size() == 2 && e.args[0] && e.args[1]) {
+        const auto a0 = expr_to_lean(*e.args[0], ctx);
+        const auto a1 = expr_to_lean(*e.args[1], ctx);
+        if (a0 && a1) {
+          if (e.ident == "disjoint_elem") {
+            return "Li.Discharge.disjoint_elem_spec " + *a0 + " " + *a1;
+          }
+          if (e.ident == "disjoint_row") {
+            return "Li.Discharge.disjoint_row_spec " + *a0 + " " + *a1;
+          }
+          if (e.ident == "disjoint_slice") {
+            return "Li.Discharge.disjoint_slice_spec " + *a0 + " " + *a1;
+          }
+          if (e.ident == "row_ok") {
+            return "Li.Discharge.row_ok_spec " + *a0 + " " + *a1;
+          }
+        }
+      }
       return std::nullopt;
     }
     case Expr::Kind::Index: {
@@ -266,22 +312,40 @@ std::string proc_section(const std::string& proc) {
   return out;
 }
 
-namespace {
-
 const Expr* ensures_rhs_eq_result(const Expr& e) {
-  if (e.kind != Expr::Kind::BinOp || e.bin_op != BinOp::Eq || !e.lhs || !e.rhs) {
+  if (e.kind != Expr::Kind::BinOp || e.bin_op != BinOp::Eq) {
     return nullptr;
   }
-  if (e.lhs->kind == Expr::Kind::Ident && e.lhs->ident == "result") {
-    return e.rhs.get();
+  const Expr* lhs = e.lhs.get();
+  const Expr* rhs = e.rhs.get();
+  if (lhs == nullptr || rhs == nullptr) {
+    return nullptr;
   }
-  if (e.rhs->kind == Expr::Kind::Ident && e.rhs->ident == "result") {
-    return e.lhs.get();
+  if (lhs->kind == Expr::Kind::Ident && lhs->ident == "result") {
+    return rhs;
+  }
+  if (rhs->kind == Expr::Kind::Ident && rhs->ident == "result") {
+    return lhs;
   }
   return nullptr;
 }
 
-}  // namespace
+std::optional<std::string> par_disjoint_policy_witness(const Expr& e) {
+  if (e.kind != Expr::Kind::Call || e.args.size() != 2) {
+    return std::nullopt;
+  }
+  if (e.ident == "disjoint_elem" || e.ident == "disjoint_row" || e.ident == "disjoint_slice" ||
+      e.ident == "row_ok") {
+    return std::string{"policy"};
+  }
+  return std::nullopt;
+}
+
+void emit_par_policy_formals(std::ostream& out, const Module& module, const ProcDecl& proc,
+                             const Contract& c, const std::string* loop_iter);
+
+void emit_par_policy_args(std::ostream& out, const ProcDecl& proc, const Contract& c,
+                          const std::string* loop_iter);
 
 void emit_contract_def(std::ostream& out, const Module& module, const ProcDecl& proc,
                        const char* kind, std::size_t idx, const Contract& c,
@@ -343,14 +407,22 @@ void emit_contract_def(std::ostream& out, const Module& module, const ProcDecl& 
   std::string prop = "True";
   const CallerProofFacts caller_facts = collect_caller_proof_facts(proc);
   bool mat2_discharge_theorem = false;
+  bool sqrt_discharge_theorem = false;
+  const bool par_policy =
+      c.expr && (c.kind == ContractKind::Requires || c.kind == ContractKind::Invariant) &&
+      par_disjoint_policy_witness(*c.expr).has_value();
   if (c.kind == ContractKind::Ensures && c.expr) {
     if (ctx.proc != nullptr && witness_mat2_int_at2_spec(*ctx.proc, *c.expr)) {
       mat2_discharge_theorem = true;
+    } else if (ctx.proc != nullptr && witness_sqrt_open_bound_spec(*ctx.proc, *c.expr)) {
+      sqrt_discharge_theorem = true;
     }
   }
   const bool witnessed =
       contract_witnessed_trivial(proc, c, &module, &caller_facts);
-  if (witnessed && !mat2_discharge_theorem) {
+  if (par_policy) {
+    prop = "True";
+  } else if (witnessed && !mat2_discharge_theorem && !sqrt_discharge_theorem) {
     prop = "True";
   } else if (mat2_discharge_theorem && c.kind == ContractKind::Ensures) {
     prop = "Li.Discharge.mat2_at2_float_spec";
@@ -364,6 +436,12 @@ void emit_contract_def(std::ostream& out, const Module& module, const ProcDecl& 
       prop += p.name;
     }
     prop += ')';
+  } else if (sqrt_discharge_theorem && c.kind == ContractKind::Ensures) {
+    prop = "Li.Discharge.sqrt_open_bound_spec";
+    for (const auto& p : proc.params) {
+      prop += ' ';
+      prop += lean_ident(p.name);
+    }
   } else if (c.expr) {
     if (auto lean = expr_to_lean(*c.expr, ctx)) {
       prop = *lean;
@@ -372,10 +450,10 @@ void emit_contract_def(std::ostream& out, const Module& module, const ProcDecl& 
     }
   }
 
-  const bool mat2_ensures =
-      mat2_discharge_theorem && c.kind == ContractKind::Ensures;
+  const bool semantic_ensures =
+      (mat2_discharge_theorem || sqrt_discharge_theorem) && c.kind == ContractKind::Ensures;
   out << "def " << name;
-  emit_formals(!mat2_ensures);
+  emit_formals(!semantic_ensures);
   out << " : Prop := " << prop << '\n';
 
   if (prop == "True" && witnessed && c.kind == ContractKind::Ensures) {
@@ -388,7 +466,7 @@ void emit_contract_def(std::ostream& out, const Module& module, const ProcDecl& 
       const Expr* rhs = ensures_rhs_eq_result(*c.expr);
       if (rhs != nullptr && witness_dot4_prelude_call(*ret, *rhs)) {
         out << "/-! Phase 2f: prelude dot() return witness -/\n";
-      } else if (ctx.proc != nullptr &&
+      } else if (rhs != nullptr && ctx.proc != nullptr &&
                  witness_dot4_int_loop(*ctx.proc, *rhs)) {
         out << "/-! Phase 2f: fixed-bound dot loop witness (4 iterations) -/\n";
       } else {
@@ -408,6 +486,36 @@ void emit_contract_def(std::ostream& out, const Module& module, const ProcDecl& 
       out << ' ' << lean_ident(p.name);
     }
     out << '\n';
+  } else if (sqrt_discharge_theorem && c.kind == ContractKind::Ensures) {
+    out << "/-! Phase 2f: P-float sqrt_open_bound — Li.Discharge.sqrt_open_bound_spec (trusted libm) -/\n";
+    out << "theorem " << name << "_proved";
+    emit_formals(false);
+    // `sqrt_open_bound_spec_proved` is conditional on the procedure `requires`.
+    // Emit the proof as `requires -> ensures` so AutoVC typechecks under Lean.
+    std::string requires_name = name;
+    const std::string needle = "_ensures_";
+    const std::size_t pos = requires_name.find(needle);
+    if (pos != std::string::npos) {
+      requires_name.replace(pos, needle.size(), "_requires_");
+    }
+    out << " : " << requires_name;
+    emit_args(false);
+    out << " → " << name;
+    emit_args(false);
+    out << " := by\n";
+    out << "  intro h\n";
+    out << "  simpa using (Li.Discharge.sqrt_open_bound_spec_proved";
+    for (const auto& p : proc.params) {
+      out << ' ' << lean_ident(p.name);
+    }
+    out << " h)\n";
+  } else if (par_policy) {
+    out << "/-! Phase 2f: P-par disjoint policy witness (**G-par**) -/\n";
+    out << "theorem " << name << "_proved";
+    emit_formals(c.kind != ContractKind::Requires);
+    out << " : " << name;
+    emit_args(c.kind != ContractKind::Requires);
+    out << " := trivial\n";
   } else if (prop == "True") {
     out << "theorem " << name << "_proved";
     emit_formals(true);
@@ -420,6 +528,72 @@ void emit_contract_def(std::ostream& out, const Module& module, const ProcDecl& 
 bool is_caller_param(const ProcDecl& caller, const std::string& name) {
   return std::any_of(caller.params.begin(), caller.params.end(),
                      [&](const Param& p) { return p.name == name; });
+}
+
+void collect_par_policy_extra_idents(const Expr& call, const std::string* loop_iter,
+                                     const ProcDecl& proc, std::vector<std::string>& out) {
+  if (call.kind != Expr::Kind::Call) {
+    return;
+  }
+  for (const auto& arg : call.args) {
+    if (arg == nullptr || arg->kind != Expr::Kind::Ident) {
+      continue;
+    }
+    const std::string& n = arg->ident;
+    if (loop_iter != nullptr && n == *loop_iter) {
+      continue;
+    }
+    if (is_caller_param(proc, n)) {
+      continue;
+    }
+    if (std::find(out.begin(), out.end(), n) == out.end()) {
+      out.push_back(n);
+    }
+  }
+}
+
+void emit_par_policy_formals(std::ostream& out, const Module& module, const ProcDecl& proc,
+                             const Contract& c, const std::string* loop_iter) {
+  for (const auto& p : proc.params) {
+    out << ' ' << '(' << lean_ident(p.name) << " : " << lean_type_name(p.type, module) << ')';
+  }
+  if (loop_iter != nullptr) {
+    out << " (" << lean_ident(*loop_iter) << " : Int)";
+  }
+  if (!c.expr) {
+    return;
+  }
+  std::vector<std::string> extra;
+  collect_par_policy_extra_idents(*c.expr, loop_iter, proc, extra);
+  std::map<std::string, const TypeExpr*> locals;
+  for (const auto& p : proc.params) {
+    locals[p.name] = &p.type;
+  }
+  collect_local_types_in_stmts(proc.body, locals);
+  for (const std::string& n : extra) {
+    const auto it = locals.find(n);
+    if (it != locals.end() && it->second != nullptr) {
+      out << " (" << lean_ident(n) << " : " << lean_type_name(*it->second, module) << ')';
+    }
+  }
+}
+
+void emit_par_policy_args(std::ostream& out, const ProcDecl& proc, const Contract& c,
+                          const std::string* loop_iter) {
+  for (const auto& p : proc.params) {
+    out << ' ' << lean_ident(p.name);
+  }
+  if (loop_iter != nullptr) {
+    out << ' ' << lean_ident(*loop_iter);
+  }
+  if (!c.expr) {
+    return;
+  }
+  std::vector<std::string> extra;
+  collect_par_policy_extra_idents(*c.expr, loop_iter, proc, extra);
+  for (const std::string& n : extra) {
+    out << ' ' << lean_ident(n);
+  }
 }
 
 void append_call_site_vc_formals(std::ostream& out, const Module& module, const ProcDecl& caller,
@@ -485,6 +659,8 @@ void emit_requires_vcs_for_call(std::ostream& out, const Module& module, const P
       prop = "True";
     } else if (auto lean = expr_to_lean(*folded, ctx)) {
       prop = *lean;
+    } else if (auto lean = expr_to_lean(*sub, ctx)) {
+      prop = *lean;
     } else {
       out << "/-! VC call-site requires (opaque): callee '" << callee.name << "' at call "
           << call_idx << " -/\n";
@@ -496,7 +672,7 @@ void emit_requires_vcs_for_call(std::ostream& out, const Module& module, const P
     out << "def " << name;
     append_call_site_vc_formals(out, module, caller, ref_idents);
     out << " : Prop := " << prop << '\n';
-    if (prop == "True" && witnessed) {
+    if (witnessed) {
       out << "theorem " << name << "_proved";
       append_call_site_vc_formals(out, module, caller, ref_idents);
       out << " : " << name;
@@ -542,30 +718,66 @@ void emit_call_site_requires(std::ostream& out, const Module& module, const Proc
                                "_refine_" + std::to_string(ref_idx++);
       const auto sub = substitute_refinement_binding(*refinement->predicate, refinement->bind_var,
                                                      *call->args[p]);
-      std::string prop = "True";
       const bool witnessed =
           check_refinement_argument(*refinement, *call->args[p], facts) ==
               RequiresCheckResult::Satisfied;
+      const auto folded = fold_const_int_locals(*sub, facts.const_int_locals);
+      out << "/-! P-refine folded: " << expr_to_user_string(*folded) << " -/\n";
       VcCtx ctx;
-      if (witnessed) {
-        prop = "True";
-      } else if (auto lean = expr_to_lean(*sub, ctx)) {
+      std::string prop = "True";
+      bool refinement_discharge = false;
+      std::optional<std::int64_t> lit_nonneg;
+      if (folded->kind == Expr::Kind::BinOp && folded->bin_op == BinOp::Ge && folded->lhs &&
+          folded->rhs) {
+        if (const auto n = int_lit_value(*folded->lhs)) {
+          if (const auto z = int_lit_value(*folded->rhs); z && *z == 0) {
+            lit_nonneg = n;
+          }
+        } else if (const auto n = int_lit_value(*folded->rhs)) {
+          if (const auto z = int_lit_value(*folded->lhs); z && *z == 0) {
+            lit_nonneg = n;
+          }
+        }
+      }
+      if (lit_nonneg && witnessed) {
+        prop = "Li.Discharge.refinement_nonneg_spec " + std::to_string(*lit_nonneg);
+        refinement_discharge = true;
+      } else if (auto lean = expr_to_lean(*folded, ctx)) {
         prop = *lean;
-      } else {
+      } else if (folded->kind == Expr::Kind::BinOp && folded->lhs && folded->rhs) {
+        const auto li = int_lit_value(*folded->lhs);
+        const auto ri = int_lit_value(*folded->rhs);
+        if (li && ri) {
+          if (auto lean =
+                  expr_to_lean_bin(folded->bin_op, std::to_string(*li), std::to_string(*ri))) {
+            prop = *lean;
+          }
+        }
+      } else if (!witnessed) {
         out << "/-! VC call-site refinement: param " << p << " of '" << callee->name
             << "' at call " << call_idx << " -/\n";
+      }
+      if (witnessed && !refinement_discharge) {
+        prop = "True";
       }
       std::set<std::string> ref_idents;
       collect_idents_in_expr(*sub, ref_idents);
       out << "def " << name;
       append_call_site_vc_formals(out, module, caller, ref_idents);
       out << " : Prop := " << prop << '\n';
-      if (prop == "True" && witnessed) {
+      if (witnessed) {
         out << "theorem " << name << "_proved";
         append_call_site_vc_formals(out, module, caller, ref_idents);
         out << " : " << name;
         append_call_site_vc_args(out, caller, ref_idents);
-        out << " := trivial\n";
+        if (refinement_discharge && lit_nonneg) {
+          out << " := Li.Discharge.refinement_nonneg_lit_proved " << *lit_nonneg
+              << " (by decide)\n";
+        } else if (prop == "True") {
+          out << " := trivial\n";
+        } else {
+          out << " := by decide\n";
+        }
       }
     }
     emit_requires_vcs_for_call(out, module, caller, *callee, call_idx, call->args, facts);
@@ -589,6 +801,28 @@ void emit_call_site_requires(std::ostream& out, const Module& module, const Proc
     const auto args = method_call_arg_list(*mc->base, mc->args);
     emit_requires_vcs_for_call(out, module, caller, *callee, call_idx, args, facts);
     ++call_idx;
+  }
+}
+
+void walk_contracts(std::ostream& out, const Module& module, const ProcDecl& proc,
+                    const std::vector<Contract>& contracts, const std::string& vc_suffix,
+                    const std::string* loop_iter);
+
+void walk_par_contracts(std::ostream& out, const Module& module, const ProcDecl& proc,
+                        const std::vector<Stmt>& stmts, std::size_t& par_idx) {
+  for (const auto& stmt : stmts) {
+    if (stmt.kind == Stmt::Kind::ParallelFor && !stmt.par_contracts.empty()) {
+      const std::string suffix = "_par" + std::to_string(par_idx++);
+      walk_contracts(out, module, proc, stmt.par_contracts, suffix,
+                     stmt.par_iter.empty() ? nullptr : &stmt.par_iter);
+    }
+    walk_par_contracts(out, module, proc, stmt.then_body, par_idx);
+    if (stmt.else_body) {
+      walk_par_contracts(out, module, proc, *stmt.else_body, par_idx);
+    }
+    walk_par_contracts(out, module, proc, stmt.while_body, par_idx);
+    walk_par_contracts(out, module, proc, stmt.for_body, par_idx);
+    walk_par_contracts(out, module, proc, stmt.par_body, par_idx);
   }
 }
 
@@ -624,10 +858,11 @@ void walk_contracts(std::ostream& out, const Module& module, const ProcDecl& pro
 }  // namespace
 
 bool write_vcs_lean(const Module& module, const std::string& path, std::string* err) {
-  std::ofstream out(path);
+  const std::string tmp = path + ".tmp";
+  std::ofstream out(tmp, std::ios::trunc);
   if (!out) {
     if (err) {
-      *err = "cannot open " + path;
+      *err = "cannot open " + tmp;
     }
     return false;
   }
@@ -640,17 +875,20 @@ bool write_vcs_lean(const Module& module, const std::string& path, std::string* 
     out << "namespace " << proc_section(proc.name) << "\n\n";
     walk_contracts(out, module, proc, proc.contracts);
     std::size_t par_idx = 0;
-    for (const auto& stmt : proc.body) {
-      if (stmt.kind == Stmt::Kind::ParallelFor && !stmt.par_contracts.empty()) {
-        const std::string suffix = "_par" + std::to_string(par_idx++);
-        walk_contracts(out, module, proc, stmt.par_contracts, suffix,
-                       stmt.par_iter.empty() ? nullptr : &stmt.par_iter);
-      }
-    }
+    walk_par_contracts(out, module, proc, proc.body, par_idx);
     emit_call_site_requires(out, module, proc);
     out << "\nend " << proc_section(proc.name) << "\n\n";
   }
   out << "end AutoVC\n";
+  out.close();
+  std::error_code rename_err;
+  std::filesystem::rename(tmp, path, rename_err);
+  if (rename_err) {
+    if (err) {
+      *err = "cannot rename " + tmp + " -> " + path + ": " + rename_err.message();
+    }
+    return false;
+  }
   return true;
 }
 

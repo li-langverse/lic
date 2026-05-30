@@ -1,0 +1,16 @@
+# PH-ML Wave 2: @gpu matmul emit stub (LKIR owns tiles; vendor emit deferred).
+
+@gpu
+def ml_gpu_matmul_emit_stub() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0
+
+def main() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return ml_gpu_matmul_emit_stub()

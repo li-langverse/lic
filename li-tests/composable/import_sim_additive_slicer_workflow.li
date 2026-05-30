@@ -1,0 +1,12 @@
+import sim.additive
+
+def smoke_additive_slicer_workflow() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  if run_additive_slicer_workflow(1, 1) != 0:
+    return 1
+  if sim_additive_tick_stub(0) != 1:
+    return 2
+  return 0

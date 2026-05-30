@@ -1,0 +1,3 @@
+# WP3 harness: bio_rfdiffusion
+steps = 4000
+dim = 32

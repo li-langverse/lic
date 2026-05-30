@@ -1,6 +1,7 @@
 #include "li/diagnostics.hpp"
 #include "li/terminal.hpp"
 
+#include <algorithm>
 #include <cstdio>
 #include <iostream>
 #include <string>
@@ -154,17 +155,58 @@ std::string effective_code(const Diagnostic& d) {
 }  // namespace
 
 void DiagnosticBag::error(SourceLoc loc, std::string message) {
-  items_.push_back(Diagnostic{std::move(loc), {}, std::move(message), std::nullopt});
+  push(DiagnosticSeverity::Error, std::move(loc), {}, std::move(message), {});
 }
 
 void DiagnosticBag::error(SourceLoc loc, std::string code, std::string message,
                           std::string hint) {
+  push(DiagnosticSeverity::Error, std::move(loc), std::move(code), std::move(message),
+       std::move(hint));
+}
+
+void DiagnosticBag::warning(SourceLoc loc, std::string code, std::string message,
+                            std::string hint) {
+  push(DiagnosticSeverity::Warning, std::move(loc), std::move(code), std::move(message),
+       std::move(hint));
+}
+
+void DiagnosticBag::note(SourceLoc loc, std::string code, std::string message, std::string hint) {
+  push(DiagnosticSeverity::Note, std::move(loc), std::move(code), std::move(message),
+       std::move(hint));
+}
+
+void DiagnosticBag::push(DiagnosticSeverity severity, SourceLoc loc, std::string code,
+                         std::string message, std::string hint) {
   std::optional<std::string> hint_opt;
   if (!hint.empty()) {
     hint_opt = std::move(hint);
   }
   items_.push_back(
-      Diagnostic{std::move(loc), std::move(code), std::move(message), std::move(hint_opt)});
+      Diagnostic{severity, std::move(loc), std::move(code), std::move(message), std::move(hint_opt)});
+}
+
+bool DiagnosticBag::has_errors() const {
+  return std::any_of(items_.begin(), items_.end(), [](const Diagnostic& d) {
+    return d.severity == DiagnosticSeverity::Error;
+  });
+}
+
+bool DiagnosticBag::has_warnings() const {
+  return std::any_of(items_.begin(), items_.end(), [](const Diagnostic& d) {
+    return d.severity == DiagnosticSeverity::Warning;
+  });
+}
+
+std::string_view severity_string(DiagnosticSeverity severity) {
+  switch (severity) {
+    case DiagnosticSeverity::Error:
+      return "error";
+    case DiagnosticSeverity::Warning:
+      return "warning";
+    case DiagnosticSeverity::Note:
+      return "note";
+  }
+  return "error";
 }
 
 void print_diagnostics(const DiagnosticBag& bag) {
@@ -174,9 +216,17 @@ void print_diagnostics(const DiagnosticBag& bag) {
   print_lic_banner(std::cerr);
   for (const auto& d : bag.items()) {
     const std::string code = effective_code(d);
+    std::string label;
+    if (d.severity == DiagnosticSeverity::Error) {
+      label = styled_error_label();
+    } else if (d.severity == DiagnosticSeverity::Warning) {
+      label = styled_warning("warning");
+    } else {
+      label = styled_note_label();
+    }
     std::cerr << styled_dim(d.loc.file) << ':' << styled_accent(std::to_string(d.loc.line))
-              << ':' << styled_accent(std::to_string(d.loc.column)) << ": "
-              << styled_error_label() << " [" << styled_accent(code) << "]: " << d.message
+              << ':' << styled_accent(std::to_string(d.loc.column)) << ": " << label << " ["
+              << styled_accent(code) << "]: " << d.message
               << reset_style() << '\n';
     if (d.hint && !d.hint->empty()) {
       std::cerr << "  " << styled_dim("hint:") << ' ' << *d.hint << reset_style() << '\n';
@@ -187,7 +237,7 @@ void print_diagnostics(const DiagnosticBag& bag) {
 void print_diagnostics_json(const DiagnosticBag& bag, std::ostream& out,
                             std::string_view command) {
   out << "{\"version\":1,\"schema\":\"diagnostic-v1\",\"tool\":\"lic\",\"command\":"
-      << json_escape(command) << ",\"ok\":" << (bag.empty() ? "true" : "false")
+      << json_escape(command) << ",\"ok\":" << (bag.has_errors() ? "false" : "true")
       << ",\"diagnostics\":[";
   bool first = true;
   for (const auto& d : bag.items()) {
@@ -196,9 +246,10 @@ void print_diagnostics_json(const DiagnosticBag& bag, std::ostream& out,
     }
     first = false;
     const std::string code = agent_diagnostic_code(effective_code(d));
-    out << "{\"severity\":\"error\",\"file\":" << json_escape(d.loc.file) << ",\"line\":"
-        << d.loc.line << ",\"column\":" << d.loc.column << ",\"offset\":" << d.loc.offset
-        << ",\"code\":" << json_escape(code) << ",\"message\":" << json_escape(d.message);
+    out << "{\"severity\":" << json_escape(severity_string(d.severity)) << ",\"file\":"
+        << json_escape(d.loc.file) << ",\"line\":" << d.loc.line << ",\"column\":" << d.loc.column
+        << ",\"offset\":" << d.loc.offset << ",\"code\":" << json_escape(code)
+        << ",\"message\":" << json_escape(d.message);
     if (d.hint && !d.hint->empty()) {
       out << ",\"fix_hint\":" << json_escape(*d.hint);
     } else {

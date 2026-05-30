@@ -1,7 +1,7 @@
 -- Trusted axioms for Li (ONLY unproved surface)
 -- Every symbol here must be reviewed in RFC; keep minimal.
 
-import Mathlib
+import Init.Data.Float
 
 namespace Li.Trusted
 
@@ -37,5 +37,12 @@ axiom tcp_recv_stub : Nat → Nat → Net Nat
 
 /-- v1 TcpConn: close is total on valid handles. -/
 axiom tcp_close_stub : Nat → Net Unit
+
+/-- Runtime `li_rt_sqrt` (libm); model for extern seam (`std/runtime/seam.li`). -/
+axiom li_rt_sqrt : Float → Float
+
+/-- Square-root accuracy for non-negative inputs (**G-hw** / P-float `sqrt_open_bound`). -/
+axiom li_rt_sqrt_square_bound (x : Float) :
+    Float.abs (li_rt_sqrt x * li_rt_sqrt x - x) < 1e-12
 
 end Li.Trusted

@@ -1,5 +1,6 @@
 # li-tests manifest — single index of all tests
 # outcome: parse_ok | parse_fail | compile_ok | compile_fail | verify_ok | verify_fail
+#           verify_open_ok | compile_open_ok | prove_lean_ok (strict build + AutoVC + lake; G-test-verify)
 
 [config]
 lic = "../build/compiler/lic/lic"
@@ -40,6 +41,36 @@ note = "regression: '+' must lex as Plus (horner_pure_li loop counter)"
 suite = "decorators"
 file = "decorators/cpu_only_ok.li"
 outcome = "verify_ok"
+
+[[tests]]
+suite = "decorators"
+file = "decorators/gpu_only_ok.li"
+outcome = "verify_ok"
+note = "PH-7d/G-gpu: @gpu is visible in MIR telemetry before LKIR/codegen"
+
+[[tests]]
+suite = "decorators"
+file = "decorators/gpu_multi_device_ok.li"
+outcome = "verify_ok"
+note = "PH-7d/G-gpu: @gpu(devices=2) records multi-GPU placement intent in MIR telemetry"
+
+[[tests]]
+suite = "decorators"
+file = "decorators/gpu_devices_zero_fail.li"
+outcome = "compile_fail"
+expected_substr = "gpu_devices"
+
+[[tests]]
+suite = "decorators"
+file = "decorators/gpu_devices_ident_fail.li"
+outcome = "compile_fail"
+expected_substr = "gpu_devices"
+
+[[tests]]
+suite = "decorators"
+file = "decorators/gpu_vendor_arg_fail.li"
+outcome = "compile_fail"
+expected_substr = "gpu decorator"
 
 [[tests]]
 suite = "decorators"
@@ -92,7 +123,8 @@ outcome = "compile_fail"
 [[tests]]
 suite = "decorator_exploits"
 file = "decorator_exploits/typosquat_paralell.li"
-outcome = "compile_fail"
+outcome = "check_ok"
+expected_substr = "W0403"
 
 [[tests]]
 suite = "decorator_exploits"
@@ -103,6 +135,23 @@ outcome = "compile_fail"
 suite = "decorator_exploits"
 file = "decorator_exploits/missing_disjoint_at_parallel.li"
 outcome = "compile_fail"
+
+# --- advisory (WP1 check/diagnose warnings+notes) ---
+
+[[tests]]
+suite = "advisory"
+file = "advisory/check_ok.li"
+outcome = "check_ok"
+
+[[tests]]
+suite = "advisory"
+file = "advisory/check_deny_warn.li"
+outcome = "check_deny_warn"
+
+[[tests]]
+suite = "advisory"
+file = "advisory/deny/check_fail.li"
+outcome = "check_fail"
 
 # --- typecheck ---
 
@@ -209,8 +258,20 @@ outcome = "verify_ok"
 
 [[tests]]
 suite = "contracts_verify"
-file = "contracts_verify/sqrt_open_bound.li"
+file = "contracts_verify/false_ensures_strict_reject.li"
+outcome = "compile_fail"
+expected_substr = "allow-open-vc"
+
+[[tests]]
+suite = "contracts_verify"
+file = "contracts_verify/false_ensures_allow_open_ok.li"
 outcome = "verify_open_ok"
+note = "contract tiers: --allow-open-vc permits known-open postcondition (must not be Tier-A strict)"
+
+[[tests]]
+suite = "contracts_verify"
+file = "contracts_verify/sqrt_open_bound.li"
+outcome = "prove_lean_ok"
 
 [[tests]]
 suite = "contracts_verify"
@@ -219,8 +280,14 @@ outcome = "verify_ok"
 
 [[tests]]
 suite = "contracts_verify"
-file = "contracts_verify/discharge_trivial.li"
+file = "contracts_verify/bounds_refinement_release_ok.li"
 outcome = "verify_ok"
+
+[[tests]]
+suite = "contracts_verify"
+file = "contracts_verify/discharge_trivial.li"
+outcome = "prove_lean_ok"
+note = "P-closed: discharge_trivial_lean.sh"
 
 [[tests]]
 suite = "contracts_verify"
@@ -231,17 +298,20 @@ note = "w0-lean-gate: extern forward inherits callee ensures (zero open AutoVC)"
 [[tests]]
 suite = "contracts_verify"
 file = "contracts_verify/discharge_const.li"
-outcome = "verify_ok"
+outcome = "prove_lean_ok"
+note = "P-closed: discharge_const_lean.sh"
 
 [[tests]]
 suite = "contracts_verify"
 file = "contracts_verify/caller_requires_ok.li"
-outcome = "verify_ok"
+outcome = "prove_lean_ok"
+note = "P-closed: discharge_caller_requires_lean.sh"
 
 [[tests]]
 suite = "contracts_verify"
 file = "contracts_verify/caller_requires_local_ok.li"
-outcome = "verify_ok"
+outcome = "prove_lean_ok"
+note = "P-closed: discharge_caller_requires_local_lean.sh"
 
 [[tests]]
 suite = "contracts_verify"
@@ -252,8 +322,14 @@ expected_substr = "E0304"
 [[tests]]
 suite = "contracts_verify"
 file = "contracts_verify/method_call_requires_ok.li"
-outcome = "verify_ok"
-note = "2j-f: method call-site requires on desugared Type_method"
+outcome = "prove_lean_ok"
+note = "G-oop: discharge_method_call_requires_lean.sh (folded balance requires)"
+
+[[tests]]
+suite = "contracts_verify"
+file = "contracts_verify/method_ensures_return_ok.li"
+outcome = "prove_lean_ok"
+note = "G-oop: method ensures on int return; discharge_method_ensures_return_lean.sh"
 
 [[tests]]
 suite = "contracts_verify"
@@ -265,7 +341,8 @@ note = "2j-f: violated method requires at call site"
 [[tests]]
 suite = "contracts_verify"
 file = "contracts_verify/refinement_call_ok.li"
-outcome = "verify_ok"
+outcome = "prove_lean_ok"
+note = "P-refine: discharge_refinement_lean.sh"
 
 [[tests]]
 suite = "contracts_verify"
@@ -302,61 +379,62 @@ outcome = "verify_ok"
 [[tests]]
 suite = "contracts_verify"
 file = "contracts_verify/extern_call_requires_ok.li"
-outcome = "verify_ok"
+outcome = "prove_lean_ok"
+note = "P-closed: discharge_import_requires_lean.sh"
 
 [[tests]]
 suite = "contracts_verify"
 file = "contracts_verify/linalg_dot4_int_closed.li"
-outcome = "verify_ok"
-note = "P-linalg: fixed int dot — static witness, zero open AutoVC goals"
+outcome = "prove_lean_ok"
+note = "P-linalg closed: discharge_linalg_int_lean.sh"
 
 [[tests]]
 suite = "contracts_verify"
 file = "contracts_verify/linalg_sum4_int_closed.li"
-outcome = "verify_ok"
-note = "P-linalg: fixed int sum — static witness"
+outcome = "prove_lean_ok"
+note = "P-linalg closed"
 
 [[tests]]
 suite = "contracts_verify"
 file = "contracts_verify/linalg_mat2_entry00_int_closed.li"
-outcome = "verify_ok"
-note = "P-linalg: 2×2 matmul (0,0) entry via scalars — static witness"
+outcome = "prove_lean_ok"
+note = "P-linalg closed"
 
 [[tests]]
 suite = "contracts_verify"
 file = "contracts_verify/linalg_dot4_int_loop_open.li"
-outcome = "verify_ok"
-note = "P-linalg: loop dot — fixed-bound loop witness (4 iterations)"
+outcome = "prove_lean_ok"
+note = "P-loop closed: dot4_int_loop_eval_spec"
 
 [[tests]]
 suite = "contracts_verify"
 file = "contracts_verify/linalg_norm4_int_closed.li"
-outcome = "verify_ok"
-note = "P-linalg: int norm (sum of squares) via prelude norm"
+outcome = "prove_lean_ok"
+note = "P-linalg closed"
 
 [[tests]]
 suite = "contracts_verify"
 file = "contracts_verify/linalg_axpy4_int_closed.li"
-outcome = "verify_ok"
-note = "P-linalg: axpy scalar closed form (alpha*x+y)"
+outcome = "prove_lean_ok"
+note = "P-linalg closed"
 
 [[tests]]
 suite = "contracts_verify"
 file = "contracts_verify/linalg_dot4_float_closed.li"
-outcome = "verify_ok"
-note = "P-linalg: float dot via prelude dot() — static witness"
+outcome = "prove_lean_ok"
+note = "P-linalg closed"
 
 [[tests]]
 suite = "contracts_verify"
 file = "contracts_verify/linalg_mat2_at2_float_closed.li"
-outcome = "verify_ok"
-note = "P-linalg: full 2×2 float @ — Li.Discharge.mat2_at2_float_spec"
+outcome = "prove_lean_ok"
+note = "P-linalg closed: mat2_at2_float_spec_proved"
 
 [[tests]]
 suite = "contracts_verify"
 file = "contracts_verify/linalg_mat2_callproc_float_closed.li"
-outcome = "verify_ok"
-note = "P-linalg: 2×2 float @ via CallProc nested arrays"
+outcome = "prove_lean_ok"
+note = "P-linalg closed"
 
 # --- borrow ---
 
@@ -436,6 +514,24 @@ expected_substr = "borrow"
 [[tests]]
 suite = "race_shared_memory"
 file = "race_shared_memory/false_disjoint_proof.li"
+outcome = "compile_fail"
+expected_substr = "disjoint_row"
+
+[[tests]]
+suite = "race_shared_memory"
+file = "race_shared_memory/false_disjoint_requires_true.li"
+outcome = "compile_fail"
+expected_substr = "bare"
+
+[[tests]]
+suite = "race_shared_memory"
+file = "race_shared_memory/false_disjoint_requires_bare_row.li"
+outcome = "compile_fail"
+expected_substr = "bare"
+
+[[tests]]
+suite = "race_shared_memory"
+file = "race_shared_memory/false_disjoint_decorator_bare_row.li"
 outcome = "compile_fail"
 expected_substr = "disjoint_row"
 
@@ -741,6 +837,60 @@ packages = ["li-sim-scientific", "li-sim"]
 outcome = "compile_open_ok"
 note = "sim.scientific: run_simulation + run_algo; detail 0–3; open VC via physics.rigid import"
 
+# Deferred until object-call codegen #322 — cross-package import studio composables
+# fail check_ok and compile_open_ok on main CI; coverage lives in packages/li-studio/li-tests/.
+# composable/import_studio_sim_profile_bridge.li
+# composable/import_studio_sim_step_stub.li
+# composable/import_studio_sim_step_by_profile.li
+# composable/import_studio_compose.li
+# composable/import_studio_agentic_run.li
+
+[[tests]]
+suite = "composable"
+file = "composable/import_sim_viz_pipeline_source_display.li"
+packages = ["li-sim-viz"]
+outcome = "check_ok"
+note = "PH-SCI wave-d-25: sim.viz pipeline source/display/view stub — scientific_viz vertical"
+
+[[tests]]
+suite = "composable"
+file = "composable/import_ui_studio_shell.li"
+packages = ["li-ui"]
+outcome = "compile_open_ok"
+note = "import ui: studio shell layout + paint IR composables (PH-UX-01)"
+
+[[tests]]
+suite = "composable"
+file = "composable/import_gui_viewport_panel_switch.li"
+packages = ["li-gui", "li-ui"]
+outcome = "check_ok"
+note = "import gui: viewport region + panel switch (verify until object-call codegen #322)"
+
+[[tests]]
+suite = "composable"
+file = "composable/import_gui_studio_keyboard.li"
+packages = ["li-gui", "li-ui"]
+outcome = "check_ok"
+note = "import gui: UX-09 keyboard-first (verify until object-call codegen #322)"
+
+[[tests]]
+suite = "composable"
+file = "composable/import_lig_kernel.li"
+outcome = "compile_open_ok"
+note = "PH-HW WP4 lig kernel"
+
+[[tests]]
+suite = "composable"
+file = "composable/import_lig_chem_backend.li"
+outcome = "compile_open_ok"
+note = "PH-HW WP4 chem lig backend"
+
+[[tests]]
+suite = "smoke"
+file = "packages/lig/li-tests/smoke/kernel_matmul_parity.li"
+outcome = "compile_open_ok"
+note = "T-PKG-lig-kernel-matmul-parity"
+
 # stdlib_coverage/build_std_csv — enable when std.csv module resolves (PH-IO-4)
 
 # --- httpd (Phase H placeholder) ---
@@ -832,6 +982,17 @@ outcome = "compile_ok"
 
 [[tests]]
 suite = "math_linalg"
+file = "math_linalg/broadcast_len1_pow_int4.li"
+outcome = "compile_ok"
+
+[[tests]]
+suite = "math_linalg"
+file = "math_linalg/broadcast_invalid_len2_vs_len4.li"
+outcome = "compile_fail"
+expected_substr = "length-1 broadcast"
+
+[[tests]]
+suite = "math_linalg"
 file = "math_linalg/sum_elementwise_product.li"
 outcome = "verify_ok"
 
@@ -903,6 +1064,18 @@ suite = "math_linalg"
 file = "math_linalg/reductions/dot_via_sum_product.li"
 outcome = "verify_ok"
 
+[[tests]]
+suite = "math_linalg"
+file = "math_linalg/reductions/dot_len_mismatch.li"
+outcome = "compile_fail"
+expected_substr = "dot expects two matching array"
+
+[[tests]]
+suite = "math_linalg"
+file = "math_linalg/reductions/sum_non_array.li"
+outcome = "compile_fail"
+expected_substr = "sum expects a fixed array argument"
+
 # --- physics (packages + profiles) ---
 
 [[tests]]
@@ -949,6 +1122,11 @@ note = "open VC until 2f full (Lean gate on devbox)"
 suite = "math_syntax"
 file = "math_syntax/int_pow.li"
 outcome = "verify_open_ok"
+[[tests]]
+suite = "math_syntax"
+file = "math_syntax/for_range_sum.li"
+outcome = "verify_open_ok"
+note = "G-math-syn: plain for i in start..<end (no range() helper)"
 
 # --- stdlib_coverage (8e — std/**/*.li instrumented build) ---
 note = "open VC until 2f full (Lean gate on devbox)"
@@ -984,6 +1162,16 @@ outcome = "compile_fail"
 suite = "stdlib_seal"
 file = "stdlib_seal/shadow_std_symbol.li"
 outcome = "compile_fail"
+
+[[tests]]
+suite = "stdlib_seal"
+file = "stdlib_seal/shadow_echo_via_import.li"
+outcome = "compile_fail"
+
+[[tests]]
+suite = "stdlib_seal"
+file = "stdlib_seal/import_std_collections_ok.li"
+outcome = "compile_ok"
 
 # --- encapsulation (2g — def, object, visibility, import) ---
 
@@ -1153,6 +1341,15 @@ suite = "modules"
 file = "modules/use_positive.li"
 outcome = "verify_ok"
 
+# --- execution_exploits (resource CLI — shell harness, not .li rows) ---
+# Run: ./li-tests/run_all.sh execution_exploits
+# Wired in scripts/ci-security.sh and run_all.sh all.
+
+[[tests]]
+suite = "modules"
+file = "modules/import_cycle_a.li"
+outcome = "compile_fail"
+
 # --- cve_patterns (C memory-safety classes — must reject or prove safe) ---
 
 [[tests]]
@@ -1207,8 +1404,96 @@ suite = "codegen"
 file = "codegen/fp_numerically_stable.li"
 outcome = "compile_ok"
 
+# --- execution_resources (WP4 team_size + vectorized no parallel RT) ---
+
+[[tests]]
+suite = "execution_resources"
+file = "execution_resources/parallel_disjoint_ok.li"
+outcome = "compile_ok"
+
+[[tests]]
+suite = "execution_resources"
+file = "execution_resources/smoke.sh"
+outcome = "script_ok"
+
+[[tests]]
+suite = "tooling"
+file = "tooling/lint_manifest_no_duplicate_keys.sh"
+outcome = "script_ok"
+note = "contract tiers: prevent silent downgrades from duplicate keys in [[tests]] blocks"
+
+[[tests]]
+suite = "tooling"
+file = "tooling/output_has_substr_smoke.sh"
+outcome = "script_ok"
+note = "run_all compile_fail substring helper must work on bash 3.2 (macOS CI)"
+
+[[tests]]
+suite = "tooling"
+file = "tooling/lean_lake_lock_smoke.sh"
+outcome = "script_ok"
+note = "parallel li-tests must serialize lake AutoVC via .autovc.lock (G-lean)"
+
 # --- hpc_competitive (registry gate; ./li-tests/run_all.sh hpc_competitive) ---
+
+# --- stdlib_parity (WP0-D — compile-only until WP-WA + WP1 runtime) ---
+
+[[tests]]
+suite = "stdlib_parity"
+file = "stdlib_parity/collections_parity.li"
+outcome = "compile_ok"
+note = "WP0-D: collections.deque/OrderedDict/Counter/defaultdict sketch → std/collections"
+
+[[tests]]
+suite = "stdlib_parity"
+file = "stdlib_parity/heapq_parity.li"
+outcome = "compile_ok"
+note = "WP0-D: heapq → std/heap; bench stdlib_heap_push_pop"
+
+[[tests]]
+suite = "stdlib_parity"
+file = "stdlib_parity/bisect_parity.li"
+outcome = "compile_ok"
+note = "WP0-D: bisect → std/algorithms/search; bench stdlib_binary_search"
+
+# --- stdlib_abuse (WP0-E — security matrix pre-runtime) ---
+
+[[tests]]
+suite = "stdlib_abuse"
+file = "security/stdlib_abuse/hash_flood_design.li"
+outcome = "compile_ok"
+note = "WP0-E: hash-flood design; runtime bounds in WP1"
+
+[[tests]]
+suite = "stdlib_abuse"
+file = "security/stdlib_abuse/array_index_oob.li"
+outcome = "compile_fail"
+expected_substr = "out of range"
+
+[[tests]]
+suite = "stdlib_abuse"
+file = "security/stdlib_abuse/array_negative_index.li"
+outcome = "compile_fail"
+expected_substr = "out of range"
+
+[[tests]]
+suite = "stdlib_abuse"
+file = "security/stdlib_abuse/array_dyn_index.li"
+outcome = "compile_fail"
+expected_substr = "array index must be constant"
 
 # --- security (malformed inputs; run via ./li-tests/run_security.sh) ---
 # Wired in scripts/ci.sh: parse/check must exit 0/1, never signal (SIGSEGV etc.).
 # Also: compiler/fuzz/parse_fuzz (libFuzzer, optional CI on Linux).
+
+[[tests]]
+suite = "smoke"
+file = "packages/lig/li-tests/smoke/present_blit_rgba8.li"
+outcome = "compile_open_ok"
+note = "T-PKG-lig-present-blit"
+
+[[tests]]
+suite = "smoke"
+file = "packages/lig/li-tests/smoke/present_wgpu_readback_stub.li"
+outcome = "compile_open_ok"
+note = "T-PKG-lig-present-wgpu-readback"

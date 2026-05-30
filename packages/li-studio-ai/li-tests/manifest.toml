@@ -1,0 +1,29 @@
+[[tests]]
+suite = "smoke"
+file = "smoke/builds.li"
+outcome = "verify_ok"
+note = "T-PKG-li-studio-ai-smoke-builds"
+
+[[tests]]
+suite = "smoke"
+file = "smoke/studio_ai_task_state.li"
+outcome = "verify_ok"
+note = "PH-AGENT: agentic task FSM stub (WP-AG-04 / PR #362)"
+
+[[tests]]
+suite = "smoke"
+file = "smoke/studio_ai_mcp_dispatch.li"
+outcome = "check_ok"
+note = "WP-AG-02: studio_ai_mcp_dispatch → studio_mcp_tool_dispatch_arg"
+
+[[tests]]
+suite = "smoke"
+file = "smoke/studio_ai_agent_pipeline.li"
+outcome = "check_ok"
+note = "WP-AG-04: studio_ai_run_agent_pipeline → studio_agent_run_complete"
+
+[[tests]]
+suite = "smoke"
+file = "smoke/studio_ai_apply_patch.li"
+outcome = "check_ok"
+note = "WP-AG-04: studio_ai_apply_patch acceptance stub"

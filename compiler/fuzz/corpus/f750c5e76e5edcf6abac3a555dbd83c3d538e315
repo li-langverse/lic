@@ -1,0 +1,8 @@
+proc /
+  requires true
+  ensures true
+  decreases 0
+=
+  reasproc p(s true
+  c@deearses 0
+=+++

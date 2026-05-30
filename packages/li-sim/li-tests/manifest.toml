@@ -5,3 +5,27 @@ suite = "smoke"
 file = "smoke/builds.li"
 outcome = "verify_ok"
 note = "T-PKG-li-sim-smoke"
+
+[[tests]]
+suite = "smoke"
+file = "smoke/studio_profile_bridge.li"
+outcome = "compile_open_ok"
+note = "T-PKG-li-sim-studio-profile-bridge PH-SIM SIM-0"
+
+[[tests]]
+suite = "smoke"
+file = "smoke/sim_step_stub.li"
+outcome = "compile_open_ok"
+note = "T-PKG-li-sim-step-stub PH-SIM SIM-1"
+
+[[tests]]
+suite = "smoke"
+file = "smoke/env_pool_stub.li"
+outcome = "compile_open_ok"
+note = "T-PKG-li-sim-env-pool-stub PH-SIM SIM-3"
+
+[[tests]]
+suite = "smoke"
+file = "smoke/env_pool_step_contract.li"
+outcome = "compile_open_ok"
+note = "T-PKG-li-sim-env-pool-contract PH-SIM SIM-3 WP-SIM-03"

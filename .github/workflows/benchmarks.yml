@@ -2,8 +2,7 @@ name: Benchmarks
 
 on:
   workflow_dispatch:
-  schedule:
-    - cron: "0 6 * * 1"
+  # Full multi-OS nightly + dashboard ingest: li-langverse/benchmarks benchmark-nightly.yml
   push:
     branches: [main, dev]
     paths:
@@ -15,6 +14,11 @@ jobs:
     runs-on: ubuntu-24.04
     steps:
       - uses: actions/checkout@v4
+
+      - name: Checkout lip + lit (ecosystem siblings for ci.sh)
+        run: |
+          chmod +x scripts/checkout-ecosystem-siblings.sh
+          ./scripts/checkout-ecosystem-siblings.sh
 
       - name: Install LLVM 22 and build tools
         run: |

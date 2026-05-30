@@ -18,6 +18,15 @@
 - Run **`./scripts/local-ci.sh`** on this branch before merge (see skill `run-local-ci-gha-quota`).
 - Record: `benchmarks/data/latest/local-ci-results.json` when validating a PR number.
 
+## 8p throughput observability (Linux devbox, LLVM 22 + Lean)
+
+| Metric | `run_all -j1` | `run_all -j8 --max-memory=8192` | Notes |
+|--------|---------------|-----------------------------------|--------|
+| **wall_s** (full manifest) | not measured | not measured | Re-measure after [#205](https://github.com/li-langverse/lic/pull/205) + integrator PR; target ≤50% vs `-j1` ([8p plan](../superpowers/plans/2026-05-22-parallel-compile-ci.md)) |
+| **peak_rss** (full manifest) | not measured | not measured | Use `/usr/bin/time -l ./li-tests/run_all.sh …` or `scripts/profile-memory.sh` |
+
+`scripts/ci.sh` passes explicit `-j8 --max-memory=8192` to manifest `run_all` phases (no `LI_TEST_JOBS` export).
+
 ## Stale / parallel work — do not conflate
 
 | Track | Branch | Owner |
@@ -34,7 +43,8 @@ Do not edit `runtime/li_rt_httpd.c`, `scripts/httpd-plan-loop.py`, or httpd plan
 - [x] This baseline doc
 - [x] Agent skill `run-local-ci-gha-quota` in roadmap agent-kit (+ `li-local-ci`)
 - [x] Local CI green on devbox (`li-tests` **196/0**; tier-0 `verify.py` uses `--allow-open-vc` to match manifest honesty)
-- [ ] **8p** parallel CI — master plan §8p; today sequential `run_all` (~5–10 min); target `LI_TEST_JOBS` + isolated build dirs
+- [x] **8p-d** CI integrator — `scripts/ci.sh` uses `run_all.sh -j8 --max-memory=8192` (stacked on [#205](https://github.com/li-langverse/lic/pull/205))
+- [ ] **8p** wall-time SLO — log `wall_s` / `peak_rss` in table above after green `local-ci.sh`
 - [x] LLVM 22 + Lean 4 on devbox (`lake build` in `docs/semantics` ok)
 - [x] PR [#174](https://github.com/li-langverse/lic/pull/174) **merged** to `main`
 - **Run CI:** `HTTPD_SKIP_LI_ROUTING_BIN=1 ./scripts/local-ci.sh` if port bind conflicts with another agent

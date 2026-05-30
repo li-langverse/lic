@@ -1,0 +1,14 @@
+def returns_one_but_claims_zero() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 1
+
+def main() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return returns_one_but_claims_zero()
+

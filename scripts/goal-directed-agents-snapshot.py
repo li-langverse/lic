@@ -150,6 +150,22 @@ RUNNERS: list[dict] = [
         "todo_id_prefix": "orch-r",
         "default_agent": "swarm_observer",
     },
+    {
+        "id": "ph-db",
+        "name": "PH-DB / native Li platform",
+        "repo": LANGVERSE / "lic",
+        "branch": "main",
+        "plan": "docs/superpowers/plans/ph-db-swarm-plan.md",
+        "state": "data/ph-db-plan-loop/state.json",
+        "log": "data/ph-db-plan-loop/runner.log",
+        "pgrep_patterns": [
+            "verify-ph-db-wsl",
+            "goal-directed-loop",
+            "registry_oltp_compare",
+            "ph-db-swarm",
+        ],
+        "todo_id_prefix": "wp-",
+    },
 ]
 
 
@@ -373,6 +389,40 @@ def git_head(repo: Path) -> str:
     return (proc.stdout or "").strip()
 
 
+
+PH_DB_REPOS = (
+    ("lidb", "feat/ph-db-native-embed-wp-a"),
+    ("lis", "feat/ph-db-3-lis-db-native"),
+    ("benchmarks", "feat/ph-db-5-registry-compare"),
+    ("li-cursor-agents", "feat/ph-db-10-native-persist"),
+)
+
+
+def enrich_ph_db_branches(entry: dict) -> None:
+    """Attach sibling repo branch tips for cross-repo PH-DB runner."""
+    branches: list[dict] = []
+    for name, expected in PH_DB_REPOS:
+        repo = LANGVERSE / name
+        if not (repo / ".git").exists():
+            continue
+        proc = subprocess.run(
+            ["git", "-C", str(repo), "branch", "--show-current"],
+            capture_output=True,
+            text=True,
+        )
+        branch = (proc.stdout or "").strip()
+        branches.append(
+            {
+                "repo": name,
+                "branch": branch,
+                "head": git_head(repo),
+                "expected_branch": expected,
+            }
+        )
+    entry["cross_repo"] = branches
+
+
+
 def build_runner(cfg: dict) -> dict:
     repo: Path = cfg["repo"]
     plan_p = repo / cfg["plan"]
@@ -425,6 +475,8 @@ def build_runner(cfg: dict) -> dict:
             entry["active_todo_id"] = "(plan complete — polling)"
     elif entry.get("plan_pending"):
         entry["active_todo_id"] = entry["plan_pending"][0]
+    if cfg.get("id") == "ph-db":
+        enrich_ph_db_branches(entry)
     return entry
 
 

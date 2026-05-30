@@ -10,7 +10,7 @@ Li targets **CPU HPC**: vector lanes on one core, many cores on shared memory â€
 | Layer | Syntax | Hardware |
 |-------|--------|----------|
 | SIMD | `simd[T, N]` | AVX / NEON vector units |
-| Multi-core | `parallel for` | OpenMP thread team (linked by `lic build`) |
+| Multi-core | `parallel for` | `li_parallel_for` (`--cores`) (linked by `lic build`) |
 
 Inner SIMD + outer `parallel for` is the standard Li pattern for hot loops.
 
@@ -74,12 +74,11 @@ Exploit fixtures live in `li-tests/race_shared_memory/`.
 ## Thread count
 
 ```bash
-lic build app.li -o app --threads=8
-export LI_OMP_THREADS=8
+lic build app.li -o app --cores=8 --threads-per-core=1
 ./app
 ```
 
-On macOS, OpenMP may require Homebrew `libomp`; without it, Li falls back to a **serial** loop (correct, not parallel).
+See [execution surface](../superpowers/specs/2026-05-25-li-execution-surface.md). Native pool replaces OpenMP on user link path.
 
 ## `Send` and `Sync` (spec)
 

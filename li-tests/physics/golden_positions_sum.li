@@ -4,17 +4,13 @@ extern proc li_rt_volatile_sink_f64(v: float) -> unit
   requires true
   ensures true
 
-def physics_golden_position_sum() -> float
-  requires true
-  ensures result == 3.0
-  decreases 0
-=
-  return 1.0 + 1.0 + 1.0
-
 def main() -> int
   requires true
   ensures result == 0
   decreases 0
 =
-  li_rt_volatile_sink_f64(physics_golden_position_sum())
+  var s: float = 1.0 + 1.0 + 1.0
+  if s != 3.0:
+    return 1
+  li_rt_volatile_sink_f64(s)
   return 0

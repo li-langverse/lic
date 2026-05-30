@@ -25,6 +25,22 @@ std::string unique_temp_ll_path() {
       .string();
 }
 
+
+void maybe_keep_emit_ll(const std::string& ll_path) {
+  if (const char* keep = std::getenv("LI_KEEP_LL"); keep == nullptr || keep[0] != '1' ||
+      keep[1] != '\0') {
+    return;
+  }
+  const std::string prefix = repo_build_prefix();
+  if (prefix.empty()) {
+    return;
+  }
+  std::error_code ec;
+  std::filesystem::create_directories(prefix, ec);
+  const std::filesystem::path dest = std::filesystem::path(prefix) / "last_emit.ll";
+  std::filesystem::copy_file(ll_path, dest, std::filesystem::copy_options::overwrite_existing, ec);
+}
+
 }  // namespace
 
 bool compile_module(const Module& module, const std::string& output_path,
@@ -40,14 +56,23 @@ bool compile_module(const Module& module, const std::string& output_path,
     }
     return false;
   }
-  const std::string ll_path = unique_temp_ll_path();
+  std::string ll_path;
+  const char* emit_ll = std::getenv("LI_EMIT_LL");
+  if (emit_ll && emit_ll[0]) {
+    ll_path = emit_ll;
+  } else {
+    ll_path = unique_temp_ll_path();
+  }
 
-  if (!emit_llvm_ir(mir, ll_path, error)) {
+  if (!emit_llvm_ir(mir, ll_path, opts.runtime_team_size, error)) {
     return false;
   }
 
   if (is_null_output_path(output_path)) {
-    std::filesystem::remove(ll_path);
+    maybe_keep_emit_ll(ll_path);
+    if (!emit_ll || !emit_ll[0]) {
+      std::filesystem::remove(ll_path);
+    }
     return true;
   }
 
@@ -55,7 +80,9 @@ bool compile_module(const Module& module, const std::string& output_path,
     if (error) {
       *error = "unsafe characters in output path";
     }
-    std::filesystem::remove(ll_path);
+    if (!emit_ll || !emit_ll[0]) {
+      std::filesystem::remove(ll_path);
+    }
     return false;
   }
 
@@ -78,6 +105,7 @@ bool compile_module(const Module& module, const std::string& output_path,
   mir_finalize_runtime_link_needs(rt_needs);
   const bool link_runtime_full =
       std::getenv("LI_LINK_RUNTIME_FULL") != nullptr && *std::getenv("LI_LINK_RUNTIME_FULL") != '0';
+  const std::filesystem::path rt_lig_path = resolve_runtime_c("li_rt_lig.c");
 
   std::ostringstream cmd;
   const char* cc_env = std::getenv("CC");
@@ -104,6 +132,13 @@ bool compile_module(const Module& module, const std::string& output_path,
       cmd << " -x c \"" << rt_h2_path.string() << "\"";
     }
   }
+  if (std::filesystem::exists(rt_lig_path)) {
+    cmd << " -x c \"" << rt_lig_path.string() << "\"";
+  }
+  const std::filesystem::path rt_studio_paint_path = resolve_runtime_c("li_rt_studio_paint_capture.c");
+  if (std::filesystem::exists(rt_studio_paint_path)) {
+    cmd << " -x c \"" << rt_studio_paint_path.string() << "\"";
+  }
   cmd << " -o \"" << output_path << "\"";
   if (opts.release) {
     cmd << " -O3 -march=native";
@@ -118,19 +153,8 @@ bool compile_module(const Module& module, const std::string& output_path,
     cmd << " " << extra_clang_flags;
   }
   if (mir.uses_openmp) {
-#if defined(__linux__)
-    if (std::filesystem::exists("/usr/include/omp.h")) {
-      cmd << " -fopenmp";
-    }
-#elif defined(__APPLE__)
-    if (std::filesystem::exists("/opt/homebrew/opt/libomp/lib/libomp.dylib")) {
-      cmd << " -Xpreprocessor -fopenmp -I/opt/homebrew/opt/libomp/include"
-          << " -L/opt/homebrew/opt/libomp/lib -lomp";
-    }
-#else
-    if (const char* omp = std::getenv("LI_OPENMP_FLAGS")) {
-      cmd << " " << omp;
-    }
+#if defined(__linux__) || defined(__APPLE__)
+    cmd << " -pthread";
 #endif
   }
   if (const char* extra_c = std::getenv("LI_EXTRA_C")) {
@@ -145,7 +169,9 @@ bool compile_module(const Module& module, const std::string& output_path,
           if (error) {
             *error = "unsafe characters in LI_EXTRA_C path";
           }
-          std::filesystem::remove(ll_path);
+          if (!emit_ll || !emit_ll[0]) {
+            std::filesystem::remove(ll_path);
+          }
           return false;
         }
         cmd << " -x c \"" << path << "\"";
@@ -160,7 +186,10 @@ bool compile_module(const Module& module, const std::string& output_path,
   cmd << " -lm -ldl";
 #endif
   const int rc = std::system(cmd.str().c_str());
-  std::filesystem::remove(ll_path);
+  maybe_keep_emit_ll(ll_path);
+  if (!emit_ll || !emit_ll[0]) {
+    std::filesystem::remove(ll_path);
+  }
   if (rc != 0) {
     if (error) {
       *error = "clang link failed";

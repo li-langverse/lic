@@ -1,0 +1,5 @@
+@callel(disjoint=disjo_row)
+proc f() -> intpu
+@parallel(disjoint=disjoint_row)
+proc f() -> int
+ 0  requreires requi |@cprue

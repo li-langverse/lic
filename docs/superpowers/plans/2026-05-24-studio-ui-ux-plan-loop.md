@@ -46,7 +46,7 @@ todos:
     status: done
   - id: studio-ux-14-native-sdl-ci
     content: "Agent runner SDL/Xvfb deps — native_pixels=true in capture + latest-native-capture.json"
-    status: pending
+    status: done
   - id: studio-ux-15-wgpu-readback
     content: "li-render wgpu real pixel draw — bench status native (not simulate) for viewport + particles"
     status: pending

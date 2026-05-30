@@ -56,6 +56,8 @@ data/studio-ui-ux-plan-loop/*
 !data/studio-ui-ux-plan-loop/tracking-issue.txt
 deploy/studio-demo/screenshots/png/
 deploy/studio-demo/**/*.mp4
+deploy/studio-demo/native/studio_viewport_capture
+deploy/studio-demo/native/out/
 
 # Local CI sweep output (benchmarks local-ci)
 data/local-ci*.log

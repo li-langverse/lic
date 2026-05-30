@@ -11,7 +11,13 @@ HEIGHT="${STUDIO_VIEWPORT_CAPTURE_HEIGHT:-720}"
 
 mkdir -p "$OUT"
 
+need_build=0
 if [[ ! -x "$BIN" ]]; then
+  need_build=1
+elif [[ "$SRC" -nt "$BIN" ]]; then
+  need_build=1
+fi
+if [[ "$need_build" == 1 ]]; then
   if ! command -v pkg-config >/dev/null 2>&1; then
     echo "capture-native: pkg-config missing" >&2
     exit 4

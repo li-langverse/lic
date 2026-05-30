@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-05-30T09:58:03.370968+00:00",
+  "generated_at": "2026-05-30T10:00:50.198792+00:00",
   "tz": "Europe/Berlin",
   "agents_live": 0,
   "runners": [
@@ -7,9 +7,9 @@
       "id": "httpd",
       "name": "li-httpd gap parity",
       "branch": "cursor/httpd-plan-continue",
-      "head": "11ef5e37",
+      "head": "c18c48e6",
       "running": true,
-      "process": "512141 /bin/bash -O extglob -c snap=$(command cat <&3) && builtin shopt -s extglob && builtin eval -- \"$snap\" && { built",
+      "process": "550226 python3 /home/s4il0r/Documents/Cursor/li-langverse/lic/scripts/goal-directed-agents-snapshot.py",
       "log_path": "/home/s4il0r/Documents/Cursor/li-langverse/lic/../lic/data/httpd-plan-loop/iter-20260522-132846.log",
       "todos": [
         {
@@ -91,7 +91,7 @@
       "agent_live": false,
       "agent": "",
       "goal_file": "",
-      "log_age_sec": 23,
+      "log_age_sec": 190,
       "last_state_at": "2026-05-30T06:38:33.327023+00:00",
       "last_state_todo": "gap-phase2-streaming-wrk",
       "last_state_gates": false,
@@ -420,7 +420,7 @@
       "agent_live": false,
       "agent": "",
       "goal_file": "",
-      "log_age_sec": 396951,
+      "log_age_sec": 397118,
       "last_state_at": "2026-05-25T06:41:51.000000+00:00",
       "last_state_todo": "wave-d-gui-scaffold",
       "last_state_gates": true,
@@ -537,7 +537,7 @@
       "agent_live": false,
       "agent": "",
       "goal_file": "",
-      "log_age_sec": 494220,
+      "log_age_sec": 494386,
       "last_state_at": "2026-05-24T16:32:27.410480+00:00",
       "last_state_todo": "sim-p0-md-lj-li-parity",
       "last_state_gates": false,
@@ -795,7 +795,7 @@
       "agent_live": false,
       "agent": "",
       "goal_file": "",
-      "log_age_sec": 444360,
+      "log_age_sec": 444527,
       "last_state_at": "2026-05-30T08:11:00+00:00",
       "last_state_todo": "studio-ux-15-wgpu-readback",
       "last_state_gates": true,
@@ -887,7 +887,7 @@
       "agent_live": false,
       "agent": "",
       "goal_file": "",
-      "log_age_sec": 396927,
+      "log_age_sec": 397094,
       "last_state_at": "2026-05-25T19:42:04.198858+00:00",
       "last_state_todo": "md-r2-neighbor-list-gap",
       "last_state_gates": true,
@@ -966,7 +966,7 @@
       "agent_live": false,
       "agent": "",
       "goal_file": "",
-      "log_age_sec": 397438,
+      "log_age_sec": 397605,
       "last_state_at": "2026-05-25T19:32:04.164094+00:00",
       "last_state_todo": "chem-r2-dft-scf-gap",
       "last_state_gates": false,
@@ -1038,7 +1038,7 @@
       "agent_live": false,
       "agent": "",
       "goal_file": "",
-      "log_age_sec": 397590,
+      "log_age_sec": 397757,
       "last_state_at": "2026-05-25T19:29:32.615546+00:00",
       "last_state_todo": "sec-r1-httpd-fuzz-smoke",
       "last_state_gates": true,
@@ -1053,9 +1053,9 @@
       "id": "swarm-observer",
       "name": "Swarm gap orchestrator",
       "branch": "cursor/swarm-observer-plan-loop",
-      "head": "11ef5e37",
+      "head": "c18c48e6",
       "running": true,
-      "process": "512141 /bin/bash -O extglob -c snap=$(command cat <&3) && builtin shopt -s extglob && builtin eval -- \"$snap\" && { built",
+      "process": "550226 python3 /home/s4il0r/Documents/Cursor/li-langverse/lic/scripts/goal-directed-agents-snapshot.py",
       "log_path": "/home/s4il0r/Documents/Cursor/li-langverse/lic/../lic/data/swarm-observer-plan-loop/iter-20260525-193501.log",
       "todos": [
         {
@@ -1071,7 +1071,7 @@
         {
           "id": "orch-r2-competitor-stubs",
           "content": "Ingest verticals.toml stubs + ecosystem explorer catalog gaps as competitor_feature rows",
-          "status": "pending"
+          "status": "completed"
         },
         {
           "id": "orch-r3-missing-package-sweep",
@@ -1084,19 +1084,19 @@
           "status": "pending"
         }
       ],
-      "plan_completed": 2,
+      "plan_completed": 3,
       "plan_total": 5,
       "plan_pending": [
-        "orch-r2-competitor-stubs",
         "orch-r3-missing-package-sweep",
         "orch-r4-ui-ux-signals"
       ],
       "state": {
         "completed_ids": [
           "orch-r0-ingest-snapshot",
-          "orch-r1-plan-debt-sync"
+          "orch-r1-plan-debt-sync",
+          "orch-r2-competitor-stubs"
         ],
-        "iterations": 2,
+        "iterations": 3,
         "history": [
           {
             "at": "2026-05-25T19:09:59.208177+00:00",
@@ -1109,31 +1109,37 @@
             "todo_id": "orch-r1-plan-debt-sync",
             "agent_exit": 0,
             "gates_ok": true
+          },
+          {
+            "at": "2026-05-30T10:00:00.000000+00:00",
+            "todo_id": "orch-r2-competitor-stubs",
+            "agent_exit": 0,
+            "gates_ok": true
           }
         ]
       },
-      "state_iterations": 2,
+      "state_iterations": 3,
       "agent_live": false,
       "agent": "",
       "goal_file": "",
-      "log_age_sec": 10276,
-      "last_state_at": "2026-05-25T19:34:28.890041+00:00",
-      "last_state_todo": "orch-r1-plan-debt-sync",
+      "log_age_sec": 10443,
+      "last_state_at": "2026-05-30T10:00:00.000000+00:00",
+      "last_state_todo": "orch-r2-competitor-stubs",
       "last_state_gates": true,
       "current_iteration": "",
       "activity": [
         "SDK tool activity streams to stderr ([sdk] \u25b6/\u2713 lines). Set LI_SDK_TERMINAL_STREAM=0 to disable."
       ],
-      "status_note": "supervisor idle (log 10276s stale \u2014 check log_path)",
-      "active_todo_id": "orch-r2-competitor-stubs"
+      "status_note": "supervisor idle (log 10443s stale \u2014 check log_path)",
+      "active_todo_id": "orch-r3-missing-package-sweep"
     },
     {
       "id": "ph-db",
       "name": "PH-DB / native Li platform",
       "branch": "main",
-      "head": "11ef5e37",
+      "head": "c18c48e6",
       "running": true,
-      "process": "512141 /bin/bash -O extglob -c snap=$(command cat <&3) && builtin shopt -s extglob && builtin eval -- \"$snap\" && { built",
+      "process": "550226 python3 /home/s4il0r/Documents/Cursor/li-langverse/lic/scripts/goal-directed-agents-snapshot.py",
       "log_path": "/home/s4il0r/Documents/Cursor/li-langverse/lic/../lic/data/ph-db-plan-loop/runner.log",
       "todos": [
         {
@@ -1255,19 +1261,26 @@
         {
           "repo": "benchmarks",
           "branch": "chore/agent-agent_kit_maintainer-1780134265177-digest",
-          "head": "c1dae23",
+          "head": "83438d6",
           "expected_branch": "feat/ph-db-5-registry-compare"
         },
         {
           "repo": "li-cursor-agents",
           "branch": "chore/studio-ux-12-harness-sota",
-          "head": "727d8c5",
+          "head": "a399d4e",
           "expected_branch": "feat/ph-db-10-native-persist"
         }
       ]
     }
   ],
   "history": [
+    {
+      "runner": "swarm-observer",
+      "at": "2026-05-30T10:00:00.000000+00:00",
+      "todo_id": "orch-r2-competitor-stubs",
+      "agent_exit": 0,
+      "gates_ok": true
+    },
     {
       "runner": "studio-ui-ux",
       "at": "2026-05-30T08:11:00+00:00",
@@ -1344,13 +1357,6 @@
       "todo_id": "sec-r1-httpd-fuzz-smoke",
       "agent_exit": 1,
       "gates_ok": true
-    },
-    {
-      "runner": "sim-md-research",
-      "at": "2026-05-25T19:23:10.135969+00:00",
-      "todo_id": "md-r2-neighbor-list-gap",
-      "agent_exit": 0,
-      "gates_ok": false
     }
   ]
 }

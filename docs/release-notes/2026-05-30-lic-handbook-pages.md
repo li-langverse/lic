@@ -6,7 +6,7 @@
 ## Summary
 
 - Add `site/index.html` and `.github/workflows/pages.yml` for https://li-langverse.github.io/lic/
-- Handbook index satellite table marks seven package mirrors live; **lis** pending Pages merge
+- Handbook index satellite table marks eight package mirrors live (including **lis**)
 - README and AGENTS.md link compiler hub + plan cross-links
 
 ## Verification

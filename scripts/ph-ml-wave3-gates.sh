@@ -10,8 +10,20 @@ run_in_wsl() {
   wsl.exe bash -lc "set -euo pipefail; cd '$wsl_root'; export LIC=./build-wsl/compiler/lic/lic CC=clang-22 CXX=clang++-22; PH_ML_WAVE3_INNER=1 bash scripts/ph-ml-wave3-gates.sh"
 }
 
-lic_check_smokes() {
+lic_bin_for_smokes() {
   local lic="$1"
+  if [[ "$lic" == /mnt/* ]] && [[ -x "$lic" ]]; then
+    local tmp_lic="/tmp/lic-ph-ml-wave3-$$"
+    cp -f "$lic" "$tmp_lic" && chmod +x "$tmp_lic"
+    echo "$tmp_lic"
+    return
+  fi
+  echo "$lic"
+}
+
+lic_check_smokes() {
+  local lic
+  lic="$(lic_bin_for_smokes "$1")"
   export CC="${CC:-clang-22}" CXX="${CXX:-clang++-22}"
   for smoke in \
     packages/li-ml-rl/li-tests/smoke/job_graph_collect.li \

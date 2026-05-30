@@ -42,6 +42,7 @@ else
       studio_shell_demo.li \
       studio_vertical_profile_roundtrip.li \
       studio_sim_step_by_profile.li \
+      studio_timeline_playback.li \
       studio_toml_engine_export.li \
       studio_mcp_tools.li \
       studio_agentic_run.li; do

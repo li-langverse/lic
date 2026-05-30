@@ -159,7 +159,7 @@ Cross-tracks (not separate phases above): **PH-PORT**, **PH-COMPLY**, **PH-CIN**
 | ID | Title | Profile | State | Target | Proof gate | Cx | Blocks | Par? |
 |----|-------|---------|-------|--------|------------|-----|--------|------|
 | WP-UX-01 | Viewport grid + selection ring | game | **partial** | Depth cues in compose | `studio_shell_demo.li` | S | WP-GD-01 | Y |
-| WP-UX-02 | Timeline playback | game | **partial** | Playhead advance | `studio_timeline_playback.li` | S | WP-GD-01 | Y |
+| WP-UX-02 | Timeline playback | game | **partial** | Playhead from `sim_step` tick | `studio_timeline_playback.li` | S | WP-GD-01 | Y |
 | WP-UX-03 | Inspector fields | sim_robotics, game | **partial** | ≥2 rows on selection | `studio_inspector_fields.li` | S | WP-GD-01 | Y |
 | WP-UX-04 | Command palette | all | **partial** | ⌘K overlay | `studio_command_palette.li` | S | WP-GD-01 | Y |
 | WP-UX-05 | Profile chip + TOML | all 7 | **done** | `studio_vertical_profile_roundtrip.li` | smoke | S | WP-SIM-00 | Y |

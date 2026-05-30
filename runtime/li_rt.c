@@ -479,7 +479,7 @@ int32_t li_rt_studio_viewport_display_reset_defaults(int32_t profile_id) {
 }
 
 static int32_t g_studio_timeline_playing = 0;
-static float g_studio_timeline_playhead_pct = 0.35f;
+static float g_studio_timeline_playhead_pct = 0.0f;
 
 int32_t li_rt_studio_timeline_playing(void) { return g_studio_timeline_playing; }
 
@@ -492,19 +492,46 @@ int32_t li_rt_studio_timeline_tick_frame(void) {
   if (!g_studio_timeline_playing) {
     return 0;
   }
-  g_studio_timeline_playhead_pct += 0.01f;
-  if (g_studio_timeline_playhead_pct > 1.0f) {
-    g_studio_timeline_playhead_pct = 1.0f;
-  }
+  /* Playhead advances via li_rt_studio_timeline_sync_sim_tick after studio_sim_step_hook. */
   return 1;
 }
 
 float li_rt_studio_timeline_playhead_pct(void) { return g_studio_timeline_playhead_pct; }
 
-int32_t li_rt_studio_timeline_reset_mock(void) {
-  g_studio_timeline_playing = 0;
-  g_studio_timeline_playhead_pct = 0.35f;
+int32_t li_rt_studio_timeline_set_playhead_pct(float pct) {
+  if (pct < 0.0f) {
+    pct = 0.0f;
+  }
+  if (pct > 1.0f) {
+    pct = 1.0f;
+  }
+  g_studio_timeline_playhead_pct = pct;
   return 0;
+}
+
+int32_t li_rt_studio_timeline_sync_sim_tick(int32_t tick, int32_t duration_ticks) {
+  if (duration_ticks < 1) {
+    duration_ticks = 1;
+  }
+  if (tick < 0) {
+    tick = 0;
+  }
+  float pct = (float)tick / (float)duration_ticks;
+  if (pct > 1.0f) {
+    pct = 1.0f;
+  }
+  g_studio_timeline_playhead_pct = pct;
+  return tick;
+}
+
+int32_t li_rt_studio_timeline_reset_playback(void) {
+  g_studio_timeline_playing = 0;
+  g_studio_timeline_playhead_pct = 0.0f;
+  return 0;
+}
+
+int32_t li_rt_studio_timeline_reset_mock(void) {
+  return li_rt_studio_timeline_reset_playback();
 }
 
 static int32_t g_studio_viewport_error_kind = 0;

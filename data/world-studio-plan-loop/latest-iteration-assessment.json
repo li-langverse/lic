@@ -1,16 +1,16 @@
 {
   "pass": true,
-  "todo_id": "wsm-w1-studio-toml-engine",
-  "wps_touched": ["WP-SIM-06"],
+  "todo_id": "wsm-w1-timeline-playback",
+  "wps_touched": ["WP-UX-02", "WP-GD-08"],
   "smokes_run": [
-    "packages/li-studio/li-tests/smoke/studio_toml_engine_export.li",
+    "packages/li-studio/li-tests/smoke/studio_timeline_playback.li",
     "packages/li-studio/li-tests/smoke/studio_sim_step_by_profile.li",
-    "packages/li-studio/li-tests/smoke/studio_vertical_profile_roundtrip.li"
+    "packages/li-studio/li-tests/smoke/studio_shell_demo.li"
   ],
   "native_only": true,
   "gates": {
     "world_studio_plan_gates": "pass",
     "lic_check_local": "pending"
   },
-  "notes": "Cumulative studio.toml line parser (li_rt_studio_toml_*) lands determinism_tier 0-3, [engine.export] formats/require_sim_pass/printer_profile into StudioProjectConfig; studio_apply_config_to_sim maps tier to sim output_detail. Full TOML file I/O and publish manifest remain WP-PUB-03."
+  "notes": "Timeline playhead derives from SimSessionStub.tick via studio_timeline_tick_sim_step (game profile smoke); mock +0.01 frame advance removed from li_rt_studio_timeline_tick_frame; scrub uses studio_timeline_scrub_to_tick. Host present loop still does not auto-step sim each frame — wire in WP-UX-09 keyboard bridge."
 }

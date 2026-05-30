@@ -8,7 +8,7 @@ note = "T-PKG-li-studio-smoke"
 suite = "smoke"
 file = "smoke/studio_timeline_playback.li"
 outcome = "check_ok"
-note = "T-PKG-li-studio-timeline-playback UX-02"
+note = "T-PKG-li-studio-timeline-playback UX-02 WP-GD-08 sim tick sync"
 
 [[tests]]
 suite = "smoke"

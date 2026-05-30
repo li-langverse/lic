@@ -31,7 +31,7 @@ todos:
     status: done
   - id: wsm-w1-timeline-playback
     content: "Timeline playhead tied to sim tick — not mock reset (WP-UX-02, WP-GD-08)"
-    status: pending
+    status: done
   - id: wsm-w1-command-palette
     content: "⌘K command palette overlay + actions (WP-UX-04)"
     status: pending

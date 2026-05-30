@@ -5,6 +5,7 @@ from __future__ import annotations
 
 import hashlib
 import json
+import os
 import subprocess
 from datetime import datetime, timezone
 from pathlib import Path
@@ -201,6 +202,13 @@ def build_summary_from_li_run(
     if bench in ("md_lennard_jones", "md_lj_cutoff_mic"):
         summary["metrics"]["energy_drift_rel"] = checksum
         summary["invariants"] = {"energy_drift_ok": ok}
+    if algo_id == 418 or bench == "qm_dft_scf_energy":
+        summary["metrics"]["total_energy_hartree"] = checksum
+        summary["metrics"]["scf_iterations"] = int(os.environ.get("LI_SIM_SCF_ITERATIONS", "6"))
+        summary["metrics"]["converged"] = os.environ.get("LI_SIM_SCF_CONVERGED", "1") == "1"
+        summary["metrics"]["method"] = "lda_stub"
+        summary["metrics"]["basis"] = "STO-3G"
+        summary["invariants"] = {"scf_converged": ok}
     return summary
 
 

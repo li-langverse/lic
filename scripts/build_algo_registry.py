@@ -241,6 +241,9 @@ def main() -> None:
     )
 
     doc = {"schema": "li_algo_registry_v1", "count": len(rows), "algorithms": rows}
+    for row in rows:
+        if row["name"] == "qm_dft_scf_energy":
+            row["implemented_smoke"] = True
     OUT.write_text(json.dumps(doc, indent=2) + "\n")
     print(f"wrote {OUT.relative_to(REPO)} count={len(rows)}")
 

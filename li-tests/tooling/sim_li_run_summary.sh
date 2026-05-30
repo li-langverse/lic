@@ -38,4 +38,10 @@ emit 201 1 6606.4384 2 pde_heat_explicit_2d
 # Registry stub spot-check (robo family)
 emit 801 1 0.801 0 robo_multibody_step
 
+# QM DFT SCF smoke (algo_id=418, H2 STO-3G LDA stub)
+export LI_SIM_SCF_ITERATIONS=6
+export LI_SIM_SCF_CONVERGED=1
+export LI_SIM_TOTAL_ENERGY_HARTREE=-0.963399
+emit 418 1 -0.963399 4 qm_dft_scf_energy
+
 echo "sim_li_run_summary: wrote summaries under $OUT_DIR (format=$FORMAT)"

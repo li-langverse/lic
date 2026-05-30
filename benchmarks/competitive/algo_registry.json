@@ -450,7 +450,7 @@
       "id": 418,
       "name": "qm_dft_scf_energy",
       "family": "qm",
-      "implemented_smoke": false
+      "implemented_smoke": true
     },
     {
       "id": 419,

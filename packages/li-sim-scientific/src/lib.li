@@ -2,6 +2,7 @@
 import sim
 import physics.particles
 import physics.rigid
+import physics.quantum
 import math.numerics
 
 def li_sim_scientific_version() -> int
@@ -171,6 +172,22 @@ def run_heat_smoke(detail: int) -> SimRunResult
   r.detail_emitted = detail
   return r
 
+def run_qm_dft_scf_energy_smoke(detail: int) -> SimRunResult
+  requires detail >= 0
+  requires detail <= 3
+  ensures result.ok == 1
+  ensures result.algo_id == 418
+  ensures result.detail_emitted == detail
+  decreases 0
+=
+  var r: SimRunResult
+  r.ok = 1
+  r.algo_id = algo_qm_dft_scf_energy()
+  r.vertical_id = vertical_qm_dft()
+  r.checksum = qm_dft_scf_energy_smoke_checksum()
+  r.detail_emitted = detail
+  return r
+
 def run_rigid_smoke(detail: int) -> SimRunResult
   requires detail >= 0
   requires detail <= 3
@@ -253,6 +270,9 @@ def run_algo(algo_id: int, detail: int) -> SimRunResult
   if algo_id == algo_rigid_semi_implicit():
     var d3: int = detail
     return run_rigid_smoke(d3)
+  if algo_id == algo_qm_dft_scf_energy():
+    var d_qm: int = detail
+    return run_qm_dft_scf_energy_smoke(d_qm)
   if algo_in_registry(reg_chk) == 1:
     var d4: int = detail
     return run_algo_registry_stub(reg_run, d4)

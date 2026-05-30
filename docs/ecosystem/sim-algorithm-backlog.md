@@ -25,7 +25,7 @@ todos:
 
 - id: sim-p2-qm-dft-scf
   content: "Implement algo_id=418 qm_dft_scf_energy minimal SCF stub with summary metrics"
-  status: pending
+  status: completed
 
 ---
 

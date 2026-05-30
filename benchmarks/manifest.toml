@@ -16,7 +16,7 @@ hooks = ["algo_registry"]
 [[package]]
 name = "li-sim-scientific"
 paths = ["packages/li-sim-scientific/"]
-depends_on = ["li-sim", "li-physics-particles", "li-physics-rigid"]
+depends_on = ["li-sim", "li-physics-particles", "li-physics-quantum", "li-physics-rigid"]
 composable = ["composable/import_sim_scientific_run.li"]
 benches = ["md_lennard_jones", "heat_equation_2d"]
 hooks = ["sim_summary", "algo_registry"]
@@ -52,7 +52,7 @@ name = "li-physics-quantum"
 paths = ["packages/li-physics-quantum/"]
 benches = []
 hooks = ["algo_registry"]
-composable = []
+composable = ["composable/import_physics_quantum_qm_dft_scf.li"]
 
 # --- Numerics (tier-1 micro) ---
 

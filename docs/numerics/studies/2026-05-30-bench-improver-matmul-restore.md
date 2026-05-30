@@ -21,7 +21,7 @@ Dashboard ingest (2026-05-29) still red on `matmul_blocked` (1.549×), `matmul_n
 |------|--------------|----------------|
 | **Stability** | unchanged (checksum) | unchanged |
 | **Accuracy** | verify vs spec | verify vs spec |
-| **Speed (local)** | **1.000×** cpp (was 1.333× dash) | **1.291×** cpp (was 1.549× dash) |
+| **Speed (local)** | **1.000×** cpp (was 1.333× dash) | **1.299×** cpp (was 1.549× dash; cap 1.2×) |
 | **Memory** | stack 256³ (harness) | stack 512³ (harness) |
 
 ## Changes

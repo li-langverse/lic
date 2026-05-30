@@ -1,17 +1,17 @@
 {
   "pass": true,
-  "todo_id": "wsm-w3-mcp-server",
-  "wps_touched": ["WP-AG-03"],
+  "todo_id": "wsm-w3-apply-patch-loop",
+  "wps_touched": ["WP-AG-04"],
   "smokes_run": [
-    "packages/li-studio/li-tests/smoke/studio_mcp_stdio_server.li",
+    "packages/li-studio-ai/li-tests/smoke/studio_ai_apply_patch_loop.li",
     "packages/li-studio-ai/li-tests/smoke/studio_ai_mcp_dispatch.li",
-    "scripts/studio-mcp-li-engine-smoke.sh"
+    "packages/li-studio-ai/li-tests/smoke/studio_ai_task_state.li"
   ],
   "native_only": true,
   "gates": {
     "world_studio_plan_gates": "pass",
-    "lic_check_local": "wsl studio_mcp_stdio_server.li green",
+    "lic_check_local": "wsl studio_ai_apply_patch_loop.li green",
     "lic_check_ci": "pending"
   },
-  "notes": "WP-AG-03: studio_mcp_server_* native handlers, lis-mcp-li-engine stdio transport, studio_ai_mcp_dispatch wired to dispatch_arg."
+  "notes": "WP-AG-04: studio_ai_apply_patch + studio_ai_apply_patch_loop wired to studio_mcp_lic_check dispatch; li_rt_studio_ai_patch_kind markers; studio_ai_complete routes to llm_generate with fixture weights."
 }

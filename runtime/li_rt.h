@@ -270,6 +270,8 @@ int32_t li_rt_studio_demo_profile_from_env(void);
 int32_t li_rt_studio_demo_frames_from_env(void);
 int32_t li_rt_studio_demo_loop_tick_from_env(void);
 
+int32_t li_rt_studio_ai_patch_kind(const char* patch);
+
 
 /* PH-HW HW-0: lig device layer. */
 int32_t li_rt_lig_device_kind(void);

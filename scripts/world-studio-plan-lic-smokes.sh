@@ -40,4 +40,8 @@ for smoke in \
   (cd "$ROOT/packages/li-studio" && "$LIC" check "li-tests/smoke/$smoke")
 done
 
+for smoke in studio_ai_apply_patch_loop.li studio_ai_mcp_dispatch.li studio_ai_task_state.li; do
+  "$LIC" check "$ROOT/packages/li-studio-ai/li-tests/smoke/$smoke"
+done
+
 echo "world-studio-plan-lic-smokes: ok"

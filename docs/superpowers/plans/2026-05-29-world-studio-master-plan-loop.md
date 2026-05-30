@@ -64,7 +64,7 @@ todos:
     status: done
   - id: wsm-w3-apply-patch-loop
     content: "apply_patch → lic check JSON → retry loop (WP-AG-04, studio-cursor-sdk-rfc)"
-    status: pending
+    status: done
   - id: wsm-w3-interaction-modes
     content: "Studio mode FSM — author/simulate/analyze/agent/publish/adaptive (WP-UX-15)"
     status: pending

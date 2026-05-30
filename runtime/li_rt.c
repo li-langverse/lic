@@ -405,6 +405,20 @@ const char* li_rt_studio_mcp_tool_name(int32_t tool_id) {
   }
 }
 
+/* WP-AG-04: patch marker classification for studio_ai_apply_patch loop (smoke/eval contract). */
+int32_t li_rt_studio_ai_patch_kind(const char* patch) {
+  if (patch == NULL || patch[0] == '\0') {
+    return -1;
+  }
+  if (li_rt_str_eq(patch, "@@fail@@")) {
+    return 1;
+  }
+  if (li_rt_str_eq(patch, "@@retry@@")) {
+    return 2;
+  }
+  return 0;
+}
+
 /* PH-UX viewport display — CPU paint_blit placeholders (not wgpu MD/PDB). */
 static int32_t g_studio_viewport_bg = 0;
 static int32_t g_studio_viewport_particle_tier = -1;

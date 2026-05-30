@@ -91,5 +91,16 @@ Cursor MCP config example:
 
 ## Not in this slice
 
-- `@cursor/sdk` agent session wiring (WP-AG-04)
+- `@cursor/sdk` cloud session wiring (local `studio_ai_complete` uses `llm_generate` when fixture weights load)
 - Real `am_export_print` / `chem_dft_run` / adaptive layout execution (contracts + dispatch stub only)
+
+## apply_patch loop (WP-AG-04)
+
+| Symbol | Role |
+|--------|------|
+| `studio_ai_apply_patch(patch, target_file)` | Apply patch marker → `studio_mcp_lic_check` dispatch (JSON gate mock) |
+| `studio_ai_apply_patch_loop(patch, target_file, max_retries)` | Retry until green or exhausted |
+| `studio_ai_complete(prompt)` | `llm_generate` when fixture weights load; else honest empty |
+| Patch markers | `@@valid@@`, `@@fail@@`, `@@retry@@` (smoke/eval contract) |
+
+Smoke: `packages/li-studio-ai/li-tests/smoke/studio_ai_apply_patch_loop.li`

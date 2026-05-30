@@ -55,9 +55,6 @@ isProject: false
   gap_orchestrator: true
 
 
-
-
-
 # Studio UI/UX autonomous loop
 
 **Agent:** `studio_ui_ux_builder` (li-cursor-agents)  

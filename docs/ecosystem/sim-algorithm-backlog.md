@@ -33,10 +33,6 @@ todos:
 
 
 
-
-
-
-
 - id: sim-p0-md-lj-li-parity
   content: "Tier-2 Li md_lennard_jones checksum parity vs native (fix runtime sink / driver)"
   status: pending

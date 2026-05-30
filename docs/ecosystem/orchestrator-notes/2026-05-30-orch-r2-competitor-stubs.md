@@ -4,7 +4,7 @@
 **Agent:** `swarm_observer`  
 **Branch:** `cursor/swarm-observer-plan-loop`  
 **Research goal:** `swarm_coverage` (north_star_fit: ecosystem, ai)  
-**Work item:** Ingest `verticals.toml` stubs + ecosystem explorer catalog gaps as `competitor_feature` rows; apply backlog patches.
+**Work item:** Ingest `verticals.toml` stubs + ecosystem explorer catalog gaps as `competitor_feature` rows; patch research/implement backlogs.
 
 ---
 
@@ -12,64 +12,65 @@
 
 | Field | Value |
 |-------|-------|
-| Swarm posture | **Degraded** (ecosystem grade **C**, 73.8; `unattended_safe: false`) |
-| Competitor gaps | **30 open** `competitor_feature` rows in registry |
-| Vertical stubs | **12** `workload_class = "stub"` in `lic/benchmarks/competitive/verticals.toml` |
-| Ingest delta (this run) | `verticals_stubs: 0`, `competitor_catalog: 0` (rows already present) |
-| Apply delta | **9** vertical-stub rows appended to `sim-md-research-backlog.md` |
-| Unattended? | **No** — 65 open gaps, 6/9 goal runners stopped, 106/120 local runs stuck `running` |
+| Swarm posture | **Degraded** (ecosystem grade **C**, 71.3; `unattended_safe: false`) |
+| Gap registry | **65 open** (30 `competitor_feature`, 32 `plan_debt`, 3 `missing_package`) |
+| `orch-r2` | **Completed** — 30 competitor rows tracked; 12 vertical stubs patched to backlogs |
+| Unattended? | **No** — 33% error rate in last 45 terminal runs; 6/9 goal runners stopped |
 
-`orch-r2` confirms the competitor_feature taxonomy is populated and backlogs are wired. Route follow-up via `numerics_researcher`, `bench_improver`, and `gap_explorer` — not new systemd plan loops.
+Competitor gap orchestration reconciles Layer B honesty (`verticals.toml` `workload_class=stub`) with swarm registry + sim research backlogs. Catalog/HPC/benchmark-red rows remain open for `numerics_researcher` / `bench_improver` handoffs.
 
 ---
 
-## Sources ingested
+## Gap counts by `gap_kind` (post orch-r2)
 
-| Source | Path | Rows |
-|--------|------|-----:|
-| Vertical stubs | `lic/benchmarks/competitive/verticals.toml` | 12 stub verticals |
-| Explorer catalog | `benchmarks/data/latest/ecosystem-explorer.json` → `catalog.suggested_catalog_gaps` | 1 (pure_li PH-7e) |
-| Ecosystem audit reds | `benchmarks/data/latest/agent-briefing.json` → `ecosystem_audit.benchmarks.red` | 6 tier-1/2 bench ids |
-| HPC library gaps | `ecosystem-explorer.json` → `hpc_libraries` missing/partial | Kokkos, PETSc, FFTW, hypre, RAJA, SUNDIALS, OpenMP, Chapel |
-
-**Infra:** `gap-infra-verticals-toml-missing-benchmarks-main` stays open — ingest uses lic copy; landing on benchmarks main is a separate PR.
-
----
-
-## Registry snapshot (post-ingest @ 2026-05-30T09:16Z)
-
-| `gap_kind` | Open |
-|------------|-----:|
-| `competitor_feature` | 30 |
-| `plan_debt` | 32 |
-| `missing_package` | 3 |
-| **Total** | **65** |
+| `gap_kind` | Open | Patched this cycle | Primary handoff |
+|------------|-----:|-------------------:|-----------------|
+| `competitor_feature` | 30 | 12 vertical stubs → backlogs | `numerics_researcher`, `bench_improver` |
+| `plan_debt` | 32 | orch-r2 closed | `plan_verifier`, goal-directed loops |
+| `missing_package` | 3 | orch-r3 prior | `issue_planner` |
+| `ui_ux` | 0 | — | `orch-r4` next |
 
 ---
 
 ## Scripts executed
 
 ```bash
-cd lic
 python3 scripts/swarm-gap-ingest.py
 python3 scripts/swarm-gap-apply-actions.py
 cd ../benchmarks && python3 scripts/ecosystem-quality-grade.py
 ```
 
----
-
-## Evidence paths
-
-- Registry: `lic/data/swarm-gap-registry/registry.yaml`
-- Apply digest: `benchmarks/data/latest/swarm-gap-actions.json`
-- Scorecard: `benchmarks/data/latest/ecosystem-quality-report.json`
-- Observer digest: `benchmarks/data/runs/swarm_observer-1780132501488.md`
+**Ingest signals:** `verticals_stubs: 0` new (all stubs already in registry); `competitor_catalog: 0` new. Source: `lic/benchmarks/competitive/verticals.toml` (17 verticals; 13 stub/partial honesty rows).
 
 ---
 
-## Next orchestrator todos
+## Vertical stub → backlog routing
 
-| id | Status on branch |
-|----|------------------|
-| `orch-r3-missing-package-sweep` | completed (prior iteration) |
-| `orch-r4-ui-ux-signals` | completed (prior iteration) |
+| Registry id | Vertical | Backlog | Todo id |
+|-------------|----------|---------|---------|
+| `gap-vertical-stub-md-lennard-jones` | `md_lennard_jones` | `sim-md-research-backlog.md` | `gap-competitor-gap-vertical-stub-md-lennard-jones` |
+| `gap-vertical-stub-drug-litl` … `qm-dft` | 8 cinematic/bio/mmo stubs | `sim-md-research-backlog.md` | `gap-competitor-gap-vertical-stub-*` |
+| `gap-vertical-stub-pde-heat-2d` | PH-CAE heat | `sim-algorithm-backlog.md` | `gap-competitor-gap-vertical-stub-pde-heat-2d` |
+| `gap-vertical-stub-fea-linear-elasticity` | PH-CAE FEA | `sim-algorithm-backlog.md` | `gap-competitor-gap-vertical-stub-fea-linear-elasticity` |
+| `gap-vertical-stub-cfd-lid-driven-cavity` | PH-CAE CFD | `sim-algorithm-backlog.md` | `gap-competitor-gap-vertical-stub-cfd-lid-driven-cavity` |
+
+**Deferred (registry only):** HPC library rows, tier-1 benchmark-red rows, `gap-infra-verticals-toml-missing-benchmarks-main`.
+
+---
+
+## Self-heal actions (control plane)
+
+- Gap ingest + apply @ 2026-05-30T10:36Z — 23 backlog patches (idempotent).
+- Programmatic observer: `retry_counts: {}`; remediations: `implementation_gaps`, `proof_gap_researcher` goal-align retry.
+- Registry: `gap-plan-pending-swarm-observer-orch-r2-competitor-stubs` → **closed**.
+
+No product code in lic.
+
+---
+
+## Agent deliverable checklist
+
+- [x] Ingest + apply-actions confirmed
+- [x] 30 `competitor_feature` rows reconciled; 12 vertical stubs in backlogs
+- [x] `orch-r2-competitor-stubs` closed in registry + plan backlog
+- [x] Digest → `benchmarks/data/runs/swarm_observer-1780137256044.md`

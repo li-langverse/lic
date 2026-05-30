@@ -15,7 +15,7 @@ from pathlib import Path
 text = Path(sys.argv[1]).read_text(encoding="utf-8")
 pending = []
 for m in re.finditer(
-    r"- id: (wsm-w\S+)\n\s+content:.*?\n\s+status: (\w+)", text, re.DOTALL
+    r"- id: (wsm-w\S+)\n\s+content: [^\n]+\n\s+status: (\w+)", text
 ):
     if m.group(2) != "done":
         pending.append(m.group(1))

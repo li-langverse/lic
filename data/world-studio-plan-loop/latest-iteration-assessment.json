@@ -1,19 +1,17 @@
 {
   "pass": true,
-  "todo_id": "wsm-w3-mcp-dispatch",
-  "wps_touched": ["WP-AG-02"],
+  "todo_id": "wsm-w3-mcp-server",
+  "wps_touched": ["WP-AG-03"],
   "smokes_run": [
-    "packages/li-studio/li-tests/smoke/studio_mcp_dispatch_run.li",
-    "packages/li-studio/li-tests/smoke/studio_mcp_tools.li",
-    "packages/li-studio/li-tests/smoke/studio_mcp_extended.li",
-    "packages/li-studio/li-tests/smoke/studio_agentic_run.li",
-    "packages/li-studio/li-tests/smoke/studio_native_pixels_wgpu_readback.li"
+    "packages/li-studio/li-tests/smoke/studio_mcp_stdio_server.li",
+    "packages/li-studio-ai/li-tests/smoke/studio_ai_mcp_dispatch.li",
+    "scripts/studio-mcp-li-engine-smoke.sh"
   ],
   "native_only": true,
   "gates": {
     "world_studio_plan_gates": "pass",
-    "lic_check_local": "wsl build-wsl/compiler/lic/lic",
+    "lic_check_local": "wsl studio_mcp_stdio_server.li green",
     "lic_check_ci": "pending"
   },
-  "notes": "Merged WP-UX-14 native_pixels honesty (render_host_native_pixels_honest, studio_native_pixels_wgpu_readback smoke, li-sim-sensors workspace) with WP-AG-02 MCP dispatch arg normalization on remote."
+  "notes": "WP-AG-03: studio_mcp_server_* native handlers, lis-mcp-li-engine stdio transport, studio_ai_mcp_dispatch wired to dispatch_arg."
 }

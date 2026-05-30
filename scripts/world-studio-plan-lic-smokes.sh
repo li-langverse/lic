@@ -30,6 +30,7 @@ for smoke in \
   studio_keyboard_bridge.li \
   studio_mcp_tools.li \
   studio_mcp_dispatch_run.li \
+  studio_mcp_stdio_server.li \
   studio_agentic_run.li \
   studio_agent_chrome.li \
   studio_agent_chrome_fsm.li \

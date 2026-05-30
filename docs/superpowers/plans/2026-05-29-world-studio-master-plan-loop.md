@@ -61,7 +61,7 @@ todos:
     status: done
   - id: wsm-w3-mcp-server
     content: "lis mcp li-engine stdio server wiring (WP-AG-03)"
-    status: pending
+    status: done
   - id: wsm-w3-apply-patch-loop
     content: "apply_patch → lic check JSON → retry loop (WP-AG-04, studio-cursor-sdk-rfc)"
     status: pending

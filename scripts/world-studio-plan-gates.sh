@@ -79,6 +79,11 @@ if [[ -x "$ROOT/scripts/studio-c-host-retirement-gate.sh" ]]; then
   "$ROOT/scripts/studio-c-host-retirement-gate.sh" || li_warn "studio-c-host-retirement-gate soft-fail"
 fi
 
+if [[ -x "$ROOT/scripts/studio-mcp-li-engine-smoke.sh" ]]; then
+  li_phase "mcp li-engine stdio (WP-AG-03)"
+  "$ROOT/scripts/studio-mcp-li-engine-smoke.sh" || li_warn "studio-mcp-li-engine-smoke soft-fail"
+fi
+
 li_phase "iteration assessment"
 assess="$ROOT/data/world-studio-plan-loop/latest-iteration-assessment.json"
 if [[ -f "$assess" ]]; then

@@ -1321,6 +1321,238 @@ def studio_mcp_tool_dispatch_arg(tool_id: int, arg: int) -> StudioAgentToolReque
   out.result_code = studio_mcp_tool_result_err_io()
   return out
 
+# WP-AG-03 — MCP stdio server wiring (lis mcp li-engine maps JSON-RPC → dispatch below).
+type StudioMcpServerState = object
+  public initialized: int
+  public protocol_version: int
+
+type StudioMcpServerReply = object
+  public ok: int
+  public method: int
+  public tool_count: int
+  public tool_index: int
+  public tool_id: int
+  public request: StudioAgentToolRequest
+  public error_code: int
+
+def studio_mcp_server_method_unknown() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0
+
+def studio_mcp_server_method_initialize() -> int
+  requires true
+  ensures result == 1
+  decreases 0
+=
+  return 1
+
+def studio_mcp_server_method_tools_list() -> int
+  requires true
+  ensures result == 2
+  decreases 0
+=
+  return 2
+
+def studio_mcp_server_method_tools_call() -> int
+  requires true
+  ensures result == 3
+  decreases 0
+=
+  return 3
+
+def studio_mcp_server_method_ping() -> int
+  requires true
+  ensures result == 4
+  decreases 0
+=
+  return 4
+
+def studio_mcp_server_flag_off() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0
+
+def studio_mcp_server_flag_on() -> int
+  requires true
+  ensures result == 1
+  decreases 0
+=
+  return 1
+
+def studio_mcp_server_protocol_version() -> int
+  requires true
+  ensures result == 20241105
+  decreases 0
+=
+  return 20241105
+
+def studio_mcp_server_state_new() -> StudioMcpServerState
+  requires true
+  ensures result.initialized == studio_mcp_server_flag_off()
+  ensures result.protocol_version == studio_mcp_server_protocol_version()
+  decreases 0
+=
+  var out: StudioMcpServerState
+  out.initialized = studio_mcp_server_flag_off()
+  out.protocol_version = studio_mcp_server_protocol_version()
+  return out
+
+def studio_mcp_server_tool_id_at(index: int) -> int
+  requires index >= 0
+  requires index < studio_mcp_tool_count()
+  ensures studio_mcp_tool_id_valid(result) == 1
+  decreases index
+=
+  if index == 0:
+    return studio_mcp_world_scaffold()
+  if index == 1:
+    return studio_mcp_sim_set_profile()
+  if index == 2:
+    return studio_mcp_lic_check()
+  if index == 3:
+    return studio_mcp_lic_build()
+  if index == 4:
+    return studio_mcp_publish_bundle()
+  if index == 5:
+    return studio_mcp_am_export_print()
+  if index == 6:
+    return studio_mcp_chem_dft_run()
+  if index == 7:
+    return studio_mcp_studio_adaptive_layout()
+  if index == 8:
+    return studio_mcp_set_viewport_background()
+  if index == 9:
+    return studio_mcp_set_particle_display()
+  return studio_mcp_set_biomol_style()
+
+def studio_mcp_server_default_arg_for_tool(tool_id: int) -> int
+  requires studio_mcp_tool_id_valid(tool_id) == 1
+  ensures result >= -1
+  decreases tool_id
+=
+  if tool_id == studio_mcp_lic_check():
+    return studio_mcp_arg_lic_check_pass()
+  if tool_id == studio_mcp_lic_build():
+    return studio_mcp_arg_lic_build_pass()
+  if tool_id == studio_mcp_sim_set_profile():
+    return studio_profile_game()
+  if tool_id == studio_mcp_world_scaffold():
+    return studio_profile_game()
+  if tool_id == studio_mcp_publish_bundle():
+    return studio_export_format_mask_3mf()
+  if tool_id == studio_mcp_am_export_print():
+    return am_export_format_3mf()
+  if tool_id == studio_mcp_studio_adaptive_layout():
+    return drug_litl_stage_hypothesis()
+  if tool_id == studio_mcp_set_viewport_background():
+    return studio_viewport_bg_solid()
+  if tool_id == studio_mcp_set_particle_display():
+    return scene_md_tier_1k()
+  if tool_id == studio_mcp_set_biomol_style():
+    return studio_biomol_style_cartoon()
+  return 0
+
+def studio_mcp_server_reply_ok(method: int) -> StudioMcpServerReply
+  requires method >= studio_mcp_server_method_unknown()
+  requires method <= studio_mcp_server_method_ping()
+  ensures result.ok == studio_mcp_server_flag_on()
+  ensures result.method == method
+  decreases method
+=
+  var out: StudioMcpServerReply
+  out.ok = studio_mcp_server_flag_on()
+  out.method = method
+  out.tool_count = studio_mcp_tool_count()
+  out.tool_index = 0
+  out.tool_id = studio_mcp_tool_unknown()
+  out.request = studio_agent_tool_request_none()
+  out.error_code = studio_mcp_tool_result_ok()
+  return out
+
+def studio_mcp_server_reply_err(method: int, error_code: int) -> StudioMcpServerReply
+  requires method >= studio_mcp_server_method_unknown()
+  requires method <= studio_mcp_server_method_ping()
+  ensures result.ok == studio_mcp_server_flag_off()
+  ensures result.method == method
+  ensures result.error_code == error_code
+  decreases method
+=
+  var out: StudioMcpServerReply
+  out.ok = studio_mcp_server_flag_off()
+  out.method = method
+  out.tool_count = 0
+  out.tool_index = 0
+  out.tool_id = studio_mcp_tool_unknown()
+  out.request = studio_agent_tool_request_none()
+  out.error_code = error_code
+  return out
+
+def studio_mcp_server_handle_initialize(state: var StudioMcpServerState) -> StudioMcpServerReply
+  requires state.protocol_version == studio_mcp_server_protocol_version()
+  ensures state.initialized == studio_mcp_server_flag_on()
+  ensures result.ok == studio_mcp_server_flag_on()
+  ensures result.method == studio_mcp_server_method_initialize()
+  decreases state.initialized
+=
+  state.initialized = studio_mcp_server_flag_on()
+  return studio_mcp_server_reply_ok(studio_mcp_server_method_initialize())
+
+def studio_mcp_server_handle_tools_list(state: StudioMcpServerState) -> StudioMcpServerReply
+  requires state.initialized == studio_mcp_server_flag_on()
+  ensures result.ok == studio_mcp_server_flag_on()
+  ensures result.method == studio_mcp_server_method_tools_list()
+  ensures result.tool_count == studio_mcp_tool_count()
+  decreases state.initialized
+=
+  return studio_mcp_server_reply_ok(studio_mcp_server_method_tools_list())
+
+def studio_mcp_server_handle_tools_call(state: StudioMcpServerState, tool_name: str, arg: int) raises IO, Alloc -> StudioMcpServerReply
+  requires state.initialized == studio_mcp_server_flag_on()
+  ensures result.method == studio_mcp_server_method_tools_call()
+  decreases state.initialized
+=
+  if state.initialized != studio_mcp_server_flag_on():
+    return studio_mcp_server_reply_err(studio_mcp_server_method_tools_call(), studio_mcp_tool_result_err_io())
+  var tool_id: int = studio_mcp_tool_from_name(tool_name)
+  if studio_mcp_tool_id_valid(tool_id) != 1:
+    return studio_mcp_server_reply_err(studio_mcp_server_method_tools_call(), studio_mcp_tool_result_err_io())
+  var call_arg: int = arg
+  if call_arg == 0:
+    call_arg = studio_mcp_server_default_arg_for_tool(tool_id)
+  var req: StudioAgentToolRequest = studio_mcp_tool_dispatch_arg(tool_id, call_arg)
+  var out: StudioMcpServerReply = studio_mcp_server_reply_ok(studio_mcp_server_method_tools_call())
+  out.tool_id = tool_id
+  out.request = req
+  if req.status != studio_mcp_tool_status_ok():
+    out.ok = studio_mcp_server_flag_off()
+    out.error_code = req.result_code
+  return out
+
+def studio_mcp_server_handle_method(state: var StudioMcpServerState, method: int, tool_name: str, arg: int) raises IO, Alloc -> StudioMcpServerReply
+  requires method >= studio_mcp_server_method_unknown()
+  requires method <= studio_mcp_server_method_ping()
+  ensures result.method == method
+  decreases method
+=
+  if method == studio_mcp_server_method_initialize():
+    return studio_mcp_server_handle_initialize(state)
+  if method == studio_mcp_server_method_tools_list():
+    if state.initialized != studio_mcp_server_flag_on():
+      return studio_mcp_server_reply_err(method, studio_mcp_tool_result_err_io())
+    return studio_mcp_server_handle_tools_list(state)
+  if method == studio_mcp_server_method_tools_call():
+    return studio_mcp_server_handle_tools_call(state, tool_name, arg)
+  if method == studio_mcp_server_method_ping():
+    if state.initialized != studio_mcp_server_flag_on():
+      return studio_mcp_server_reply_err(method, studio_mcp_tool_result_err_io())
+    return studio_mcp_server_reply_ok(method)
+  return studio_mcp_server_reply_err(method, studio_mcp_tool_result_err_io())
+
 def studio_viewport_bg_solid() -> int
   requires true
   ensures result == 0
@@ -1805,10 +2037,10 @@ def studio_compose_shell_drug_litl(w: float, h: float, tick: int, has_selection:
 
 def li_std_studio_version() -> int
   requires true
-  ensures result == 20
+  ensures result == 21
   decreases 0
 =
-  return 20
+  return 21
 
 def studio_agent_context_none() -> int
   requires true

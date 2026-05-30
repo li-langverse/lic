@@ -1,0 +1,21 @@
+import studio
+import studio.ai
+
+def main() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  var ok: StudioAiToolResult = studio_ai_mcp_dispatch("lic_check", studio_mcp_arg_lic_check_pass())
+  if ok.success != 1:
+    return 1
+  var bg: StudioAiToolResult = studio_ai_mcp_dispatch(
+      "studio_set_viewport_background", studio_viewport_bg_gradient())
+  if bg.success != 1:
+    return 2
+  if studio_viewport_display_read_bg() != studio_viewport_bg_gradient():
+    return 3
+  var bad: StudioAiToolResult = studio_ai_mcp_dispatch("unknown_tool", 0)
+  if bad.success != 0:
+    return 4
+  return 0

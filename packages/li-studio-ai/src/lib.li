@@ -98,16 +98,26 @@ def studio_ai_apply_patch(patch: str, target_file: str) -> StudioAiPatchResult
   out.diagnostic_count = 0
   return out
 
-# WP-AG-02: in-process MCP tool dispatch — STUB
-def studio_ai_mcp_dispatch(tool_name: str, arg_count: int) -> StudioAiToolResult
+# WP-AG-03: in-process MCP dispatch wired to studio_mcp_tool_dispatch_arg.
+def studio_ai_mcp_dispatch(tool_name: str, arg_count: int) -> StudioAiToolResult raises IO, Alloc
   requires arg_count >= 0
-  ensures result.success == 0
+  ensures result.success >= 0
+  ensures result.success <= 1
   decreases arg_count
 =
-  var _unused_tool: str = tool_name
   var out: StudioAiToolResult
   out.success = 0
   out.output_len = 0
+  var tool_id: int = studio_mcp_tool_from_name(tool_name)
+  if studio_mcp_tool_id_valid(tool_id) != 1:
+    return out
+  var arg: int = arg_count
+  if arg == 0:
+    arg = studio_mcp_server_default_arg_for_tool(tool_id)
+  var req: StudioAgentToolRequest = studio_mcp_tool_dispatch_arg(tool_id, arg)
+  if req.status == studio_mcp_tool_status_ok():
+    out.success = 1
+  out.output_len = req.result_code
   return out
 
 # PR #362 FSM — cancel path — STUB

@@ -4,6 +4,8 @@
 
 ### Added
 
+- **WP-AG-03 MCP stdio server** — `studio_mcp_server_*` handlers, `scripts/lis-mcp-li-engine.py` + `.sh`, integration smoke; `studio_ai_mcp_dispatch` wired; smokes `studio_mcp_stdio_server.li`, `studio_ai_mcp_dispatch.li`; `li_std_studio_version` → 21.
+
 - **WP-UX-14 native_pixels wgpu honesty** — `lig_native_pixel_source_honest_product`; vertical demo accepts wgpu readback/draw-list sources; draw-list submit when `LIG_WGPU_READBACK=1`; HUD host fps counter; smokes `studio_native_pixels_honesty.li`; `li_std_studio_version` → 19.
 - **WP-UX-08 viewport error overlay + retry** — `studio_viewport_error_kind_for_render_smoke`, `studio_viewport_error_sync_render`, `studio_shell_handle_viewport_error_pointer`; li-render wgpu fail → GPU error strip; smoke `studio_viewport_error.li`; `li_std_studio_version` → 18.
 

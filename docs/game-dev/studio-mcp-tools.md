@@ -1,10 +1,10 @@
 # Studio MCP tools (PH-AGENT contract)
 
-**Status:** AGENT-0 scaffold (contracts only)  
+**Status:** AGENT-1 in-process dispatch **done**; WP-AG-03 stdio server wired (transport + native handlers)  
 **Vision:** [world-studio-vision.md](world-studio-vision.md) §18  
 **RFC:** [specs/studio-cursor-sdk-rfc.md](specs/studio-cursor-sdk-rfc.md)
 
-Li World Studio agents call these tools via MCP (`lis mcp li-engine`) once PH-AGENT-1+ lands. This document and `packages/li-studio` define **stable tool IDs and names** only — no HTTP MCP server or `@cursor/sdk` wiring in AGENT-0.
+Li World Studio agents call these tools via MCP (`lis mcp li-engine`) — stdio transport in `scripts/lis-mcp-li-engine.py` (Cursor config) delegates to native `studio_mcp_server_*` handlers and `studio_mcp_tool_dispatch_arg`.
 
 ## Proof gate
 
@@ -25,6 +25,31 @@ Any tool that mutates project state or ships artifacts must run **`lic build`** 
 | `studio_mcp_set_viewport_background` | `studio_set_viewport_background` | `bg: int` (0 solid, 1 grid, 2 gradient) | Sets runtime viewport background preset (CPU paint_blit) |
 | `studio_mcp_set_particle_display` | `studio_set_particle_display` | `tier_id: int` (-1 off, 0–2 = 1k/10k/100k) | MD particle tier label + placeholder dots in viewport |
 | `studio_mcp_set_biomol_style` | `studio_set_biomol_style` | `style: int` (0 cartoon, 1 surface, 2 sticks) | Biomolecule representation chip color (stub, not mesh) |
+
+| `studio_mcp_server_handle_method(state, method, tool_name, arg)` | WP-AG-03 JSON-RPC method dispatch (initialize / tools/list / tools/call / ping) |
+| `studio_mcp_server_handle_tools_call(state, tool_name, arg)` | MCP tools/call → `studio_mcp_tool_dispatch_arg` |
+| `studio_ai_mcp_dispatch(tool_name, arg_count)` | `li-studio-ai` in-process bridge to dispatch |
+
+## Stdio server (WP-AG-03)
+
+| Entry | Role |
+|-------|------|
+| `scripts/lis-mcp-li-engine.sh` | Cursor MCP stdio command (`lis mcp li-engine` delegate) |
+| `scripts/lis-mcp-li-engine.py` | MCP JSON-RPC transport; 11-tool allowlist |
+| `scripts/studio-mcp-li-engine-smoke.sh` | initialize + tools/list integration smoke |
+
+Cursor MCP config example:
+
+```json
+{
+  "mcpServers": {
+    "li-engine": {
+      "command": "bash",
+      "args": ["<lic>/scripts/lis-mcp-li-engine.sh"]
+    }
+  }
+}
+```
 
 ## Runtime API (`import studio`)
 
@@ -58,12 +83,13 @@ Any tool that mutates project state or ships artifacts must run **`lic build`** 
 
 - `packages/li-studio/li-tests/smoke/studio_mcp_tools.li` — wave-1 ID/name round-trip and agent chrome optional field.
 - `packages/li-studio/li-tests/smoke/studio_mcp_extended.li` — gap #6/#7 tool IDs, `studio_mcp_tool_dispatch`, adaptive layout hook.
-- `packages/li-studio/li-tests/smoke/studio_mcp_dispatch_run.li` — WP-AG-02 all 11 tools with real int args + proof-gate failure path.
+- `packages/li-studio/li-tests/smoke/studio_mcp_stdio_server.li` — WP-AG-03 native server handlers + tools/call dispatch.
+- `scripts/studio-mcp-li-engine-smoke.sh` — stdio initialize + tools/list integration.
+- `packages/li-studio-ai/li-tests/smoke/studio_ai_mcp_dispatch.li` — `studio_ai_mcp_dispatch` wired to dispatch.
 - `packages/li-studio/li-tests/smoke/studio_viewport_display.li` — viewport background / particle tier / biomol style MCP + compose/paint.
 - `li-tests/composable/import_lig_chem_backend.li` — `chem_dft_run_smoke()` stub energy (`-76.0` Hartree); `chem_lig_backend_auto` unchanged.
 
 ## Not in this slice
 
-- `lis` HTTP MCP server implementation
-- `@cursor/sdk` agent session wiring
+- `@cursor/sdk` agent session wiring (WP-AG-04)
 - Real `am_export_print` / `chem_dft_run` / adaptive layout execution (contracts + dispatch stub only)

@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-05-30T06:55:14.205159+00:00",
+  "generated_at": "2026-05-30T06:55:45.831676+00:00",
   "tz": "Europe/Berlin",
   "agents_live": 0,
   "runners": [
@@ -7,7 +7,7 @@
       "id": "httpd",
       "name": "li-httpd gap parity",
       "branch": "cursor/httpd-plan-continue",
-      "head": "c5c0a384",
+      "head": "f77b079d",
       "running": true,
       "process": "2811759 /usr/bin/python3 /home/s4il0r/Documents/Cursor/li-langverse/lic/benchmarks/tier5_http/fixtures/streaming-soak/se",
       "log_path": "/home/s4il0r/Documents/Cursor/li-langverse/lic/../lic/data/httpd-plan-loop/until-deadline-20260530-050645.log",
@@ -91,7 +91,7 @@
       "agent_live": false,
       "agent": "",
       "goal_file": "",
-      "log_age_sec": 910,
+      "log_age_sec": 942,
       "last_state_at": "2026-05-30T06:38:33.327023+00:00",
       "last_state_todo": "gap-phase2-streaming-wrk",
       "last_state_gates": false,
@@ -106,7 +106,7 @@
         "==> batch 2 exit 124 @ 2026-05-30T08:38:33+02:00",
         "==> batch 2 exit 124 @ 2026-05-30T08:38:33+02:00"
       ],
-      "status_note": "supervisor idle (log 910s stale \u2014 check log_path)"
+      "status_note": "supervisor idle (log 942s stale \u2014 check log_path)"
     },
     {
       "id": "compiler-studio",
@@ -419,7 +419,7 @@
       "agent_live": false,
       "agent": "",
       "goal_file": "",
-      "log_age_sec": 385983,
+      "log_age_sec": 386015,
       "last_state_at": "2026-05-25T06:41:51.000000+00:00",
       "last_state_todo": "wave-d-gui-scaffold",
       "last_state_gates": true,
@@ -536,7 +536,7 @@
       "agent_live": false,
       "agent": "",
       "goal_file": "",
-      "log_age_sec": 483251,
+      "log_age_sec": 483283,
       "last_state_at": "2026-05-24T16:32:27.410480+00:00",
       "last_state_todo": "sim-p0-md-lj-li-parity",
       "last_state_gates": false,
@@ -736,7 +736,7 @@
       "agent_live": false,
       "agent": "",
       "goal_file": "",
-      "log_age_sec": 433391,
+      "log_age_sec": 433423,
       "last_state_at": "2026-05-30T01:04:00+00:00",
       "last_state_todo": "studio-ux-12-world-studio-demo-linux-audit",
       "last_state_gates": true,

@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-05-30T09:15:50.659654+00:00",
+  "generated_at": "2026-05-30T15:56:32.548519+00:00",
   "tz": "Europe/Berlin",
   "agents_live": 0,
   "runners": [
@@ -7,9 +7,9 @@
       "id": "httpd",
       "name": "li-httpd gap parity",
       "branch": "cursor/httpd-plan-continue",
-      "head": "cc3ad9a6",
+      "head": "dc3f663f",
       "running": true,
-      "process": "138862 python3 /home/s4il0r/Documents/Cursor/li-langverse/lic/scripts/goal-directed-agents-snapshot.py",
+      "process": "2811759 /usr/bin/python3 /home/s4il0r/Documents/Cursor/li-langverse/lic/benchmarks/tier5_http/fixtures/streaming-soak/se",
       "log_path": "/home/s4il0r/Documents/Cursor/li-langverse/lic/../lic/data/httpd-plan-loop/iter-20260522-132846.log",
       "todos": [
         {
@@ -91,7 +91,7 @@
       "agent_live": false,
       "agent": "",
       "goal_file": "",
-      "log_age_sec": 222,
+      "log_age_sec": 25,
       "last_state_at": "2026-05-30T06:38:33.327023+00:00",
       "last_state_todo": "gap-phase2-streaming-wrk",
       "last_state_gates": false,
@@ -420,7 +420,7 @@
       "agent_live": false,
       "agent": "",
       "goal_file": "",
-      "log_age_sec": 394419,
+      "log_age_sec": 418460,
       "last_state_at": "2026-05-25T06:41:51.000000+00:00",
       "last_state_todo": "wave-d-gui-scaffold",
       "last_state_gates": true,
@@ -537,7 +537,7 @@
       "agent_live": false,
       "agent": "",
       "goal_file": "",
-      "log_age_sec": 491687,
+      "log_age_sec": 515729,
       "last_state_at": "2026-05-24T16:32:27.410480+00:00",
       "last_state_todo": "sim-p0-md-lj-li-parity",
       "last_state_gates": false,
@@ -645,12 +645,12 @@
         },
         {
           "id": "studio-ux-16-palette-search-latency",
-          "content": "Command palette fuzzy search + measured open/filter latency hook (UX-04)",
+          "content": "studio-ui-ux: pending plan todo studio-ux-16-palette-search-latency \u2014 gap orchestrator",
           "status": "pending"
         },
         {
           "id": "studio-ux-17-gpu-fail-recovery",
-          "content": "Native GPU fail strip + retry affordance in li-studio shell (UX-08)",
+          "content": "studio-ui-ux: pending plan todo studio-ux-17-gpu-fail-recovery \u2014 gap orchestrator",
           "status": "pending"
         }
       ],
@@ -795,7 +795,7 @@
       "agent_live": false,
       "agent": "",
       "goal_file": "",
-      "log_age_sec": 441827,
+      "log_age_sec": 465869,
       "last_state_at": "2026-05-30T08:11:00+00:00",
       "last_state_todo": "studio-ux-15-wgpu-readback",
       "last_state_gates": true,
@@ -887,7 +887,7 @@
       "agent_live": false,
       "agent": "",
       "goal_file": "",
-      "log_age_sec": 394394,
+      "log_age_sec": 418436,
       "last_state_at": "2026-05-25T19:42:04.198858+00:00",
       "last_state_todo": "md-r2-neighbor-list-gap",
       "last_state_gates": true,
@@ -966,7 +966,7 @@
       "agent_live": false,
       "agent": "",
       "goal_file": "",
-      "log_age_sec": 394905,
+      "log_age_sec": 418947,
       "last_state_at": "2026-05-25T19:32:04.164094+00:00",
       "last_state_todo": "chem-r2-dft-scf-gap",
       "last_state_gates": false,
@@ -1038,7 +1038,7 @@
       "agent_live": false,
       "agent": "",
       "goal_file": "",
-      "log_age_sec": 395057,
+      "log_age_sec": 419099,
       "last_state_at": "2026-05-25T19:29:32.615546+00:00",
       "last_state_todo": "sec-r1-httpd-fuzz-smoke",
       "last_state_gates": true,
@@ -1053,9 +1053,9 @@
       "id": "swarm-observer",
       "name": "Swarm gap orchestrator",
       "branch": "cursor/swarm-observer-plan-loop",
-      "head": "cc3ad9a6",
+      "head": "dc3f663f",
       "running": true,
-      "process": "138862 python3 /home/s4il0r/Documents/Cursor/li-langverse/lic/scripts/goal-directed-agents-snapshot.py",
+      "process": "2811759 /usr/bin/python3 /home/s4il0r/Documents/Cursor/li-langverse/lic/benchmarks/tier5_http/fixtures/streaming-soak/se",
       "log_path": "/home/s4il0r/Documents/Cursor/li-langverse/lic/../lic/data/swarm-observer-plan-loop/iter-20260525-193501.log",
       "todos": [
         {
@@ -1071,7 +1071,7 @@
         {
           "id": "orch-r2-competitor-stubs",
           "content": "Ingest verticals.toml stubs + ecosystem explorer catalog gaps as competitor_feature rows",
-          "status": "pending"
+          "status": "completed"
         },
         {
           "id": "orch-r3-missing-package-sweep",
@@ -1084,10 +1084,9 @@
           "status": "pending"
         }
       ],
-      "plan_completed": 2,
+      "plan_completed": 3,
       "plan_total": 5,
       "plan_pending": [
-        "orch-r2-competitor-stubs",
         "orch-r3-missing-package-sweep",
         "orch-r4-ui-ux-signals"
       ],
@@ -1116,7 +1115,7 @@
       "agent_live": false,
       "agent": "",
       "goal_file": "",
-      "log_age_sec": 7743,
+      "log_age_sec": 31785,
       "last_state_at": "2026-05-25T19:34:28.890041+00:00",
       "last_state_todo": "orch-r1-plan-debt-sync",
       "last_state_gates": true,
@@ -1124,16 +1123,16 @@
       "activity": [
         "SDK tool activity streams to stderr ([sdk] \u25b6/\u2713 lines). Set LI_SDK_TERMINAL_STREAM=0 to disable."
       ],
-      "status_note": "supervisor idle (log 7743s stale \u2014 check log_path)",
-      "active_todo_id": "orch-r2-competitor-stubs"
+      "status_note": "supervisor idle (log 31785s stale \u2014 check log_path)",
+      "active_todo_id": "orch-r3-missing-package-sweep"
     },
     {
       "id": "ph-db",
       "name": "PH-DB / native Li platform",
       "branch": "main",
-      "head": "cc3ad9a6",
+      "head": "dc3f663f",
       "running": true,
-      "process": "138862 python3 /home/s4il0r/Documents/Cursor/li-langverse/lic/scripts/goal-directed-agents-snapshot.py",
+      "process": "2811759 /usr/bin/python3 /home/s4il0r/Documents/Cursor/li-langverse/lic/benchmarks/tier5_http/fixtures/streaming-soak/se",
       "log_path": "/home/s4il0r/Documents/Cursor/li-langverse/lic/../lic/data/ph-db-plan-loop/runner.log",
       "todos": [
         {
@@ -1248,20 +1247,20 @@
         },
         {
           "repo": "lis",
-          "branch": "chore/agent-docs_maintainer-20260530",
-          "head": "94873aa",
+          "branch": "chore/agent-docs_maintainer-pages-20260530",
+          "head": "85434de",
           "expected_branch": "feat/ph-db-3-lis-db-native"
         },
         {
           "repo": "benchmarks",
-          "branch": "chore/agent-bench_improver-20260530-matmul-tier1-digest",
-          "head": "a693d12",
+          "branch": "chore/agent-docs_maintainer-1780156200-cross-links",
+          "head": "2aca581",
           "expected_branch": "feat/ph-db-5-registry-compare"
         },
         {
           "repo": "li-cursor-agents",
           "branch": "chore/studio-ux-12-harness-sota",
-          "head": "d875154",
+          "head": "8f69b54",
           "expected_branch": "feat/ph-db-10-native-persist"
         }
       ]

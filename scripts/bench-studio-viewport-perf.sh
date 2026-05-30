@@ -67,9 +67,20 @@ report = {
 }
 
 
+def wgpu_smoke_hook_path() -> Path | None:
+    for rel in (
+        "packages/lig/bench/wgpu_smoke.toml",
+        "packages/li-gpu/bench/wgpu_smoke.toml",
+    ):
+        p = root / rel
+        if p.is_file():
+            return p
+    return None
+
+
 def bench_wgpu_swapchain_hook() -> dict:
-    hook_path = root / "packages/li-gpu/bench/wgpu_smoke.toml"
-    hook = load_toml(hook_path)
+    hook_path = wgpu_smoke_hook_path()
+    hook = load_toml(hook_path) if hook_path else {}
     sec = hook.get("wgpu_swapchain") or {}
     env_on = os.environ.get(sec.get("env_enable", "LIG_WGPU_SWAPCHAIN"), "") == "1"
     status = sec.get("status", "blocked_runner")
@@ -93,9 +104,9 @@ def bench_wgpu_swapchain_hook() -> dict:
 
 def bench_render_fps_hook() -> dict:
     hook_path = root / "packages/li-render/bench/viewport_fps.toml"
-    gpu_hook = root / "packages/li-gpu/bench/wgpu_smoke.toml"
+    gpu_hook = wgpu_smoke_hook_path()
     viewport = load_toml(hook_path)
-    wgpu = load_toml(gpu_hook)
+    wgpu = load_toml(gpu_hook) if gpu_hook else {}
     vp_sec = viewport.get("viewport") or {}
     wgpu_sec = viewport.get("wgpu_smoke") or wgpu.get("wgpu_smoke") or {}
     fps_sec = viewport.get("fps_counter") or {}
@@ -340,8 +351,8 @@ if pkg_dir("li-render") is not None:
 else:
     report["notes"].append("skip_viewport_fps:li-render_missing")
 
-wgpu_hook = root / "packages/li-gpu/bench/wgpu_smoke.toml"
-if wgpu_hook.is_file():
+wgpu_hook = wgpu_smoke_hook_path()
+if wgpu_hook is not None:
     report["wgpu_swapchain"] = bench_wgpu_swapchain_hook()
     report["notes"].append(f"wgpu_swapchain:{report['wgpu_swapchain'].get('status', 'missing')}")
 else:

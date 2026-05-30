@@ -18,6 +18,11 @@ Wave 1 tranche: CPU matmul spine in li-ml, li-ml-rl EnvPool re-export, PH-ML pro
 - packages/li-ml-rl — ml_rl_env_pool_step re-export
 - docs/game-dev/PH-ML-GPU-battle-plan.md + tracker
 
+## Gates (Wave 1)
+
+- Progress gate: `ph-ml-wave1: progress gate OK` (file presence + JobGraph RFC)
+- Completion gate: `ph-ml-dl-rl-llm-wave1: completion gate OK` (smoke paths; `lic check` when compiler built)
+
 ## Branch
 
-cursor/ph-ml-dl-rl-llm-wave1
+cursor/ph-ml-dl-rl-llm-wave1 — PR https://github.com/li-langverse/lic/pull/492

@@ -216,6 +216,7 @@ outcome = "verify_open_ok"
 suite = "contracts_verify"
 file = "contracts_verify/index_refinement.li"
 outcome = "verify_ok"
+note = "G-bnd/P-refine gap: Index10 erases to Int in AutoVC; see bounds_refinement_lean_gap.sh"
 
 [[tests]]
 suite = "contracts_verify"
@@ -298,6 +299,7 @@ expected_substr = "E0305"
 suite = "contracts_verify"
 file = "contracts_verify/refinement_guard_ok.li"
 outcome = "verify_ok"
+note = "G-bnd/P-refine gap: guarded call-site refine VC stubs True; see bounds_refinement_lean_gap.sh"
 
 [[tests]]
 suite = "contracts_verify"

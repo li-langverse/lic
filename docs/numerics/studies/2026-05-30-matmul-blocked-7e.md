@@ -2,7 +2,7 @@
 
 **Date:** 2026-05-30  
 **north_star_fit:** blazingly-fast (PH-5b, PH-7e) — pure-Li `@` blocked IKJ for 512³ matmul  
-**Status:** partial — local ratio improved; dashboard ingest pending
+**Status:** partial — correctness fix landed; perf still >1.2×; dashboard ingest pending
 
 ## Problem
 
@@ -20,15 +20,16 @@
 
 | Axis | Before (dashboard) | After (local bench) | Evidence |
 |------|-------------------|---------------------|----------|
-| Speed | 1.549× cpp | **1.053×** naive, **~1.26×** blocked (5-run median) | `lic/benchmarks/results/latest.csv` |
-| Accuracy | pass | pass (≤4 ULP vs iterative ref) | `bench.py --tier 1` verify |
+| Speed | 1.549× cpp (stale; under-computed Li) | **1.000×** naive, **1.727×** blocked (5-run median, post-fix) | `lic/benchmarks/results/latest.csv` |
+| Accuracy | fail (Li sum ≈302k) | pass (checksum 1.288e6 vs spec) | `bench.py --tier 1` verify |
 | Stability | N/A tier-1 | unchanged | — |
 
 ## Implementation
 
 1. **MIR:** `push_matmul2d_mir` routes 512³ `@` → `ArrayMatMulBlocked2DF64` (BK=64).
-2. **Codegen:** `emit_matmul2d_blocked_ijk` — tiled IKJ, scalar + 4-wide FMA inner `j`, C zero-init.
-3. **Bench driver:** `matmul_blocked/li/main.li` uses `C = A @ B` (math-first, no stub proc).
+2. **Codegen:** `emit_matmul2d_blocked_ijk` — tiled IKJ, FMA inner `j`, C zero-init.
+3. **Fix (2026-05-30):** tile loops reset `kk`/`jj` to 0 per `ii`/`kk` (was wrongly seeded with `ii`/`kk`, ~23% of correct sum, bogus “fast” runs).
+4. **Bench driver:** `matmul_blocked/li/main.li` uses `C = A @ B` (math-first, no stub proc).
 
 ## Commands
 
@@ -43,6 +44,6 @@ cd benchmarks && LIC_ROOT=../lic ./scripts/ingest/ingest-lic.sh
 
 ## Remaining gaps
 
-- `matmul_blocked` still **~1.26×** locally (target ≤1.2×) — needs LLVM autovec / micro-kernel polish or larger BK sweep.
+- `matmul_blocked` **1.727×** locally (target ≤1.2×) — inner-`j` SIMD / micro-kernel; init uses `mm_lut_*` (consider arithmetic init matching `matmul_blocked_core.c`).
 - `num_gmres` (1.4×) — shared-C wrapper overhead; not addressed this pass.
 - `ml_*` (1.333×) — **li-math** repo, out of lic scope.

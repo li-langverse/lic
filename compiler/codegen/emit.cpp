@@ -296,7 +296,7 @@ struct EmitCtx {
     llvm::Value* ii_ok = builder->CreateICmpULT(ii_v, lim_n);
     builder->CreateCondBr(ii_ok, blk_body, blk_exit);
     builder->SetInsertPoint(blk_body);
-    builder->CreateStore(ii_v, kk_s);
+    builder->CreateStore(llvm::ConstantInt::get(i32t, 0), kk_s);
     llvm::BasicBlock* kk_head = llvm::BasicBlock::Create(context, "mm_kk_head", func);
     llvm::BasicBlock* kk_body = llvm::BasicBlock::Create(context, "mm_kk_body", func);
     llvm::BasicBlock* kk_exit = llvm::BasicBlock::Create(context, "mm_kk_exit", func);
@@ -306,7 +306,7 @@ struct EmitCtx {
     llvm::Value* kk_ok = builder->CreateICmpULT(kk_v, lim_n);
     builder->CreateCondBr(kk_ok, kk_body, kk_exit);
     builder->SetInsertPoint(kk_body);
-    builder->CreateStore(kk_v, jj_s);
+    builder->CreateStore(llvm::ConstantInt::get(i32t, 0), jj_s);
     llvm::BasicBlock* jj_head = llvm::BasicBlock::Create(context, "mm_jj_head", func);
     llvm::BasicBlock* jj_body = llvm::BasicBlock::Create(context, "mm_jj_body", func);
     llvm::BasicBlock* jj_exit = llvm::BasicBlock::Create(context, "mm_jj_exit", func);

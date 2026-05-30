@@ -73,8 +73,9 @@ def dry_capture() -> Path:
             "STUDIO_UI_UX_VERIFY_HARNESS_MOCK", "1"
         ),
     }
+    os.chmod(CAPTURE, 0o755)
     proc = subprocess.run(
-        ["bash", str(CAPTURE)],
+        [str(CAPTURE)],
         cwd=ROOT,
         env=env,
         capture_output=True,
@@ -82,7 +83,11 @@ def dry_capture() -> Path:
         timeout=120,
     )
     if proc.returncode != 0:
-        fail(f"dry capture exit {proc.returncode}\n{proc.stderr[-2000:]}")
+        fail(
+            "dry capture exit "
+            f"{proc.returncode}\n--- stdout ---\n{proc.stdout[-2000:]}\n"
+            f"--- stderr ---\n{proc.stderr[-2000:]}"
+        )
     art = STATE / "artifacts/iter-verify-capture-dry"
     if not art.is_dir():
         fail(f"expected artifact dir {art}")

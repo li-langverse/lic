@@ -270,8 +270,10 @@ publish_github() {
 }
 
 echo "==> studio-ui-ux capture ($ITER)"
-if [[ -x "$ROOT/scripts/studio-ui-ux-probe-capture-deps.sh" ]]; then
-  "$ROOT/scripts/studio-ui-ux-probe-capture-deps.sh" || true
+if [[ "${STUDIO_UI_UX_CAPTURE_DRY:-0}" != "1" ]]; then
+  if [[ -x "$ROOT/scripts/studio-ui-ux-probe-capture-deps.sh" ]]; then
+    "$ROOT/scripts/studio-ui-ux-probe-capture-deps.sh" || true
+  fi
 fi
 capture_native_sdl
 capture_html

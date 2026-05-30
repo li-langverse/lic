@@ -599,4 +599,4 @@ print(competitive)
 PY
 
 chmod +x "$ROOT/scripts/studio-ui-ux-verify-bench-registry.py" 2>/dev/null || true
-echo "bench-studio-viewport-perf: ok → $LATEST (+ $COMPETITIVE)"
+echo "bench-studio-viewport-perf: ok -> $LATEST (+ $COMPETITIVE)"

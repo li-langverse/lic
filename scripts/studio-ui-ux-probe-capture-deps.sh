@@ -91,7 +91,7 @@ payload = {
     ],
 }
 out.write_text(json.dumps(payload, indent=2) + "\n", encoding="utf-8")
-print(f"studio-ui-ux-probe-capture-deps: ok → {out}")
+print(f"studio-ui-ux-probe-capture-deps: ok -> {out}")
 if gaps:
     print(f"studio-ui-ux-probe-capture-deps: gaps={len(gaps)} → {', '.join(gaps[:3])}{'…' if len(gaps) > 3 else ''}")
 PY

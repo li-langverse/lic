@@ -1,6 +1,6 @@
 ﻿# PH-ML-GPU battle plan — native ML/DL/RL on Li
 
-**Status:** Wave 1 in progress (2026-05-30)  
+**Status:** Wave 2 LKIR matmul pilot landed (2026-05-30); Wave 1 spine on branch  
 **Vision:** [world-studio-vision.md](world-studio-vision.md)  
 **RFC:** [specs/ml-async-parallel-rfc.md](specs/ml-async-parallel-rfc.md)  
 **Tracker:** [PH-ML-GPU-execution-tracker.md](PH-ML-GPU-execution-tracker.md)

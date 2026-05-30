@@ -9,3 +9,15 @@ suite = "smoke"
 file = "smoke/ml_matmul_f32.li"
 outcome = "compile_open_ok"
 note = "T-PKG-li-ml-matmul PH-ML WP-ML-02"
+
+[[tests]]
+suite = "smoke"
+file = "smoke/ml_matmul_lkir_parity.li"
+outcome = "compile_open_ok"
+note = "T-PKG-li-ml-lkir-parity PH-ML WP-ML-04"
+
+[[tests]]
+suite = "smoke"
+file = "smoke/ml_gpu_matmul_stub.li"
+outcome = "compile_open_ok"
+note = "T-PKG-li-ml-gpu-stub PH-ML WP-ML-05"

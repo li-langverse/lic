@@ -1,16 +1,17 @@
 {
   "pass": true,
-  "todo_id": "wsm-w5-robo-ik",
-  "wps_touched": ["WP-ROBO-03", "WP-UX-03"],
+  "todo_id": "wsm-w5-am-export",
+  "wps_touched": ["WP-AM-03", "WP-UX-16"],
   "smokes_run": [
-    "packages/li-sim-robotics/li-tests/smoke/robo_ik_6dof.li",
-    "packages/li-studio/li-tests/smoke/studio_sim_robotics_inspector.li",
-    "packages/li-studio/li-tests/smoke/studio_sim_step_by_profile.li"
+    "packages/li-sim-additive/li-tests/smoke/sim_export_print.li",
+    "packages/li-studio/li-tests/smoke/studio_am_export_three_click.li",
+    "packages/li-studio/li-tests/smoke/studio_toml_engine_export.li",
+    "packages/li-studio/li-tests/smoke/studio_mcp_dispatch_run.li"
   ],
   "native_only": true,
   "gates": {
     "world_studio_plan_gates": "pass",
-    "lic_check_local": "wsl_robo_ik_pass_studio_pending_ci"
+    "lic_check_local": "sim_export_print_pass; studio_module_9_preexisting_errors_on_branch"
   },
-  "notes": "WP-ROBO-03: 6-DOF numeric IK stub (target pose → joint angles) with session persistence on env_last_obs0..5. WP-UX-03: studio_compose_inspector_robotics_live encodes θ0/θ1 in inspector value_rect widths from live sim session; studio_sim_robotics_step_hook wires IK + sensor bus + sim_step for sim_robotics profile."
+  "notes": "WP-AM-03: sim_export_print runs slicer workflow then emits format-specific magic tags (3MF/G-code/STL). WP-UX-16: studio_am_export_three_click_flow advances Review → Pre-flight → Export in exactly 3 clicks; MCP am_export_print dispatches through sim_export_print. li_std_studio_version 27, li_sim_additive_version 3."
 }

@@ -199,7 +199,7 @@ Cross-tracks (not separate phases above): **PH-PORT**, **PH-COMPLY**, **PH-CIN**
 |----|-------|-------|--------|------------|-----|--------|------|
 | WP-AM-01 | AM-0 slicer workflow | **done** | slice→preview→export | `import_sim_additive_slicer_workflow.li` | M | WP-SIM-01 | Y |
 | WP-AM-02 | `require_sim_pass` thermal gate | stub | `heat_equation` witness | tier-2 heat + composable | L | PH-SCI-2 | N |
-| WP-AM-03 | `sim.export.print` 3MF/G-code | stub | Printer profile TOML | smoke export | M | WP-AM-02, WP-UX-14 | N |
+| WP-AM-03 | `sim.export.print` 3MF/G-code | **done** | `sim_export_print` + `studio_am_export_three_click_flow` | `sim_export_print.li`, `studio_am_export_three_click.li` | M | WP-AM-02, WP-UX-14 | N |
 | WP-AM-04 | OctoPrint-class send (trusted) | stub | Audited HTTP | compliance log | L | WP-AM-03 | N |
 
 ### 3.8 PH-DRUG (`sim_drug_design`)

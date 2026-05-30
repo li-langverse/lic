@@ -27,6 +27,8 @@ done
 
 "$LIC" check "$ROOT/packages/li-sim-robotics/li-tests/smoke/robo_ik_6dof.li"
 
+"$LIC" check "$ROOT/packages/li-sim-additive/li-tests/smoke/sim_export_print.li"
+
 for smoke in \
   studio_shell_demo.li \
   studio_vertical_profile_roundtrip.li \
@@ -34,6 +36,7 @@ for smoke in \
   studio_sim_rl_step_hook.li \
   studio_timeline_playback.li \
   studio_toml_engine_export.li \
+  studio_am_export_three_click.li \
   studio_command_palette.li \
   studio_keyboard_bridge.li \
   studio_mcp_tools.li \

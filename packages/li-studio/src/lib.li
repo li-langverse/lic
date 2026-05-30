@@ -8,7 +8,6 @@ import sim.automotive
 import sim.sensors
 import sim.additive
 import sim.drug_design
-import sim.additive
 import sim.viz
 import scene
 import physics.runtime
@@ -1289,6 +1288,16 @@ def studio_mcp_tool_dispatch_mode_arg(mode: int, tool_id: int, arg: int) -> Stud
       out.status = studio_mcp_tool_status_failed()
       out.result_code = studio_mcp_tool_result_err_io()
       return out
+    var slot0: int = studio_printer_profile_slot_bambu()
+    var print0: AmExportPrintResult = sim_export_print(fmt, 1, slot0, 1)
+    if print0.ok != 1:
+      out.status = studio_mcp_tool_status_failed()
+      out.result_code = studio_mcp_tool_result_err_io()
+      return out
+    if print0.magic_tag != am_export_magic_for_format(fmt):
+      out.status = studio_mcp_tool_status_failed()
+      out.result_code = studio_mcp_tool_result_err_io()
+      return out
     out.status = studio_mcp_tool_status_ok()
     out.result_code = fmt
     return out
@@ -2067,10 +2076,10 @@ def studio_compose_shell_drug_litl(w: float, h: float, tick: int, has_selection:
 
 def li_std_studio_version() -> int
   requires true
-  ensures result == 26
+  ensures result == 27
   decreases 0
 =
-  return 26
+  return 27
 
 def studio_agent_context_none() -> int
   requires true
@@ -3272,6 +3281,139 @@ def studio_project_config_from_additive_toml_fixture() -> StudioProjectConfig
   var _s5: int = studio_toml_parse_line("require_sim_pass = true")
   var _s6: int = studio_toml_parse_line("printer_profile = profiles/bambu_x1c.toml")
   return studio_toml_parsed_config()
+
+# WP-UX-16 / WP-AM-03 — additive export wizard (Review → Pre-flight → Export/Print, ≤3 clicks).
+def studio_am_export_wizard_step_review() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0
+
+def studio_am_export_wizard_step_preflight() -> int
+  requires true
+  ensures result == 1
+  decreases 0
+=
+  return 1
+
+def studio_am_export_wizard_step_export() -> int
+  requires true
+  ensures result == 2
+  decreases 0
+=
+  return 2
+
+type StudioAmExportFlowState = object
+  public click_count: int
+  public wizard_step: int
+  public export_ok: int
+  public format: int
+  public last_magic: int
+
+def studio_am_export_flow_init(fmt: int) -> StudioAmExportFlowState
+  requires sim_additive_export_format_ok(fmt) == 1
+  ensures result.click_count == 0
+  ensures result.wizard_step == studio_am_export_wizard_step_review()
+  ensures result.format == fmt
+  decreases 0
+=
+  var f: StudioAmExportFlowState
+  f.click_count = 0
+  f.wizard_step = studio_am_export_wizard_step_review()
+  f.export_ok = 0
+  f.format = fmt
+  f.last_magic = 0
+  return f
+
+def studio_am_export_format_in_mask(fmt: int, mask: int) -> int
+  requires true
+  ensures result >= 0
+  ensures result <= 1
+  decreases fmt
+=
+  if fmt == am_export_format_3mf():
+    if mask == studio_export_format_mask_3mf():
+      return 1
+    if mask == studio_export_format_mask_3mf() + studio_export_format_mask_gcode():
+      return 1
+  if fmt == am_export_format_gcode():
+    if mask == studio_export_format_mask_gcode():
+      return 1
+    if mask == studio_export_format_mask_3mf() + studio_export_format_mask_gcode():
+      return 1
+  if fmt == am_export_format_stl():
+    if mask == studio_export_format_mask_stl():
+      return 1
+  return 0
+
+def studio_am_export_flow_advance(
+    flow: var StudioAmExportFlowState,
+    cfg: StudioProjectConfig,
+    sim_out: var SimSessionStub) -> int
+  requires sim_additive_export_format_ok(flow.format) == 1
+  requires flow.click_count >= 0
+  requires flow.click_count <= 2
+  ensures result >= 0
+  ensures result <= 7
+  decreases flow.click_count
+=
+  flow.click_count = flow.click_count + 1
+  if flow.wizard_step == studio_am_export_wizard_step_review():
+    if cfg.active_profile != studio_profile_sim_additive():
+      return 1
+    if studio_am_export_format_in_mask(flow.format, cfg.export_cfg.format_mask) != 1:
+      return 2
+    flow.wizard_step = studio_am_export_wizard_step_preflight()
+    return 0
+  if flow.wizard_step == studio_am_export_wizard_step_preflight():
+    if sim_out.tick < 1:
+      studio_apply_profile_to_sim(cfg, sim_out)
+      if sim_additive_tick_stub(1) != 1:
+        return 3
+      if sim_step(sim_out, 0.02) != sim_status_ok():
+        return 4
+    if cfg.export_cfg.require_sim_pass == 1:
+      if sim_additive_require_sim_pass_ok(1) != 1:
+        return 5
+      if sim_out.tick < 1:
+        return 6
+    flow.wizard_step = studio_am_export_wizard_step_export()
+    return 0
+  if flow.wizard_step == studio_am_export_wizard_step_export():
+    var slot: int = cfg.export_cfg.printer_profile_slot
+    if slot == studio_printer_profile_slot_none():
+      slot = studio_printer_profile_slot_bambu()
+    var pass_flag: int = cfg.export_cfg.require_sim_pass
+    var print_r: AmExportPrintResult = sim_export_print(flow.format, pass_flag, slot, 1)
+    if print_r.ok != 1:
+      return 7
+    flow.last_magic = print_r.magic_tag
+    flow.export_ok = 1
+    return 0
+  return 8
+
+def studio_am_export_three_click_flow(
+    cfg: StudioProjectConfig, sim_out: var SimSessionStub, fmt: int) -> int
+  requires sim_additive_export_format_ok(fmt) == 1
+  ensures result >= 0
+  ensures result <= 10
+  decreases fmt
+=
+  var flow: StudioAmExportFlowState = studio_am_export_flow_init(fmt)
+  if studio_am_export_flow_advance(flow, cfg, sim_out) != 0:
+    return 1
+  if studio_am_export_flow_advance(flow, cfg, sim_out) != 0:
+    return 2
+  if studio_am_export_flow_advance(flow, cfg, sim_out) != 0:
+    return 3
+  if flow.click_count != 3:
+    return 4
+  if flow.export_ok != 1:
+    return 5
+  if flow.last_magic != am_export_magic_for_format(fmt):
+    return 6
+  return 0
 
 def studio_apply_profile_to_sim(config: StudioProjectConfig, sim_out: var SimSessionStub) -> unit
   requires studio_profile_id_valid(config.active_profile) == 1

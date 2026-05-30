@@ -4,6 +4,7 @@
 
 ### Added
 
+- **WP-AM-03 / WP-UX-16 AM export print + ≤3-click wizard** — `sim_export_print` in `li-sim-additive`; `studio_am_export_three_click_flow` (Review → Pre-flight → Export); MCP `am_export_print` runs print contract; smokes `sim_export_print.li`, `studio_am_export_three_click.li`; `li_std_studio_version` → 27.
 - **WP-ROBO-03 / WP-UX-03 6-DOF IK + live inspector** — `studio_sim_robotics_step_hook`, `studio_compose_inspector_robotics_live`, `studio_sim_robotics_inspector_live_ok`; smokes `studio_sim_robotics_inspector.li`; extended `studio_sim_step_by_profile.li`; `li_std_studio_version` → 26.
 - **WP-SCI-04 sim.viz pipeline → viewport fields** — `import sim.viz`; `studio_viewport_display_apply_viz_pipeline`, `studio_sim_scientific_viz_viewport_ok`, `studio_viz_tick_for_particle_tier`; scientific compose applies viz panel state to particle dots; smoke `studio_sim_scientific_viz_viewport.li`; `li_std_studio_version` → 25.
 - **WP-GD-04 glTF ingest** — `li-assets` + `studio_shell_apply_gltf_ingest`; smoke `studio_gltf_ingest.li`; `li_std_studio_version` → 24.

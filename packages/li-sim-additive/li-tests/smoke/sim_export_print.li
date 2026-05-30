@@ -1,0 +1,24 @@
+import sim.additive
+
+def main() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  if li_sim_additive_version() < 3:
+    return 1
+  var r3: AmExportPrintResult = sim_export_print(am_export_format_3mf(), 1, 1, 1)
+  if r3.ok != 1:
+    return 2
+  if r3.magic_tag != am_export_magic_3mf():
+    return 3
+  if r3.layer_count < 64:
+    return 4
+  var rg: AmExportPrintResult = sim_export_print(am_export_format_gcode(), 1, 1, 1)
+  if rg.ok != 1:
+    return 5
+  if rg.magic_tag != am_export_magic_gcode():
+    return 6
+  if sim_export_print(am_export_format_gcode(), 0, 1, 1).ok != 0:
+    return 7
+  return 0

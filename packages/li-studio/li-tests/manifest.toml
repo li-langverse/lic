@@ -102,6 +102,12 @@ note = "WP-SIM-06: studio.toml [engine] determinism_tier + [engine.export] parse
 
 [[tests]]
 suite = "smoke"
+file = "smoke/studio_am_export_three_click.li"
+outcome = "check_ok"
+note = "WP-AM-03 / WP-UX-16: sim.export.print 3MF/G-code + ≤3-click export wizard"
+
+[[tests]]
+suite = "smoke"
 file = "smoke/studio_sim_scientific_step_hook.li"
 outcome = "check_ok"
 note = "PH-SIM scientific step: tick_at + scene_bench tier sync to viewport display"

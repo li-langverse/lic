@@ -88,7 +88,7 @@ todos:
     status: done
   - id: wsm-w5-am-export
     content: "sim.export.print 3MF/G-code + ≤3-click flow (WP-AM-03, WP-UX-16)"
-    status: pending
+    status: done
   - id: wsm-w5-drug-adaptive
     content: "studio.adaptive LITL stage panel sets (WP-DRUG-03)"
     status: pending

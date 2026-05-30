@@ -19,7 +19,7 @@ Any tool that mutates project state or ships artifacts must run **`lic build`** 
 | `studio_mcp_lic_check` | `lic_check` | `paths: str[]` (optional) | Run `lic check --format=json`; return diagnostics |
 | `studio_mcp_lic_build` | `lic_build` | `target: str` (optional triple) | Run `lic build`; **required** before publish/export |
 | `studio_mcp_publish_bundle` | `publish_bundle` | `out_path: str` | Write repro bundle (SVG/HDF5/manifest) after proof pass |
-| `studio_mcp_am_export_print` | `am_export_print` | `job_path: str`, `printer_id: str` (optional) | Export slice/mesh to printer pipeline (stub) |
+| `studio_mcp_am_export_print` | `am_export_print` | `format` arg (`am_export_format_*`) | `sim_export_print` after slicer workflow (3MF/G-code magic tags) |
 | `studio_mcp_chem_dft_run` | `chem_dft_run` | `input_path: str`, `method: str` (optional) | Queue QM/DFT job via `li-chem` (stub) |
 | `studio_mcp_studio_adaptive_layout` | `studio_adaptive_layout` | `role: str`, `stage: str` | Drug/role adaptive shell layout (`layout_studio_shell_adaptive`) |
 | `studio_mcp_set_viewport_background` | `studio_set_viewport_background` | `bg: int` (0 solid, 1 grid, 2 gradient) | Sets runtime viewport background preset (CPU paint_blit) |
@@ -92,7 +92,7 @@ Cursor MCP config example:
 ## Not in this slice
 
 - `@cursor/sdk` cloud session wiring (local `studio_ai_complete` uses `llm_generate` when fixture weights load)
-- Real `am_export_print` / `chem_dft_run` / adaptive layout execution (contracts + dispatch stub only)
+- Live `chem_dft_run` queue and full printer send (OctoPrint/Bambu) — `am_export_print` runs `sim_export_print` contract only
 
 ## apply_patch loop (WP-AG-04)
 

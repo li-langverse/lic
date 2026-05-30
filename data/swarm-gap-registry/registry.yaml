@@ -114,4 +114,57 @@ gaps:
   suggested_loop: sim
   handoff_to:
   - swarm_observer
-updated_at: '2026-05-30T02:32:08Z'
+- id: gap-missing-std-std-summary
+  gap_kind: missing_package
+  title: 'PH-IO-7: std.summary missing — build_summary.li blocked'
+  status: open
+  priority: 6
+  discovered_by: implementation_gaps
+  evidence:
+  - 'ecosystem-explorer: std.summary status=missing; refs scripts/ingest/build_summary.li'
+  ph_id: PH-IO-7
+  target_backlog: docs/ecosystem/ecosystem-package-backlog.md
+  suggested_loop: null
+  handoff_to:
+  - issue_planner
+  - gap_explorer
+- id: gap-missing-std-std-plot
+  gap_kind: missing_package
+  title: 'PH-IO-5: std.plot missing — render_dashboard.li blocked'
+  status: open
+  priority: 6
+  discovered_by: implementation_gaps
+  evidence:
+  - 'ecosystem-explorer: std.plot status=missing; refs scripts/dashboard/render_dashboard.li'
+  ph_id: PH-IO-5
+  target_backlog: docs/ecosystem/ecosystem-package-backlog.md
+  suggested_loop: null
+  handoff_to:
+  - issue_planner
+  - gap_explorer
+- id: gap-catalog-path-drift-lic-vs-benchmarks
+  gap_kind: plan_debt
+  title: 'catalog.toml: 117 rows point at lic paths; workloads live under benchmarks/workloads/'
+  status: open
+  priority: 4
+  discovered_by: implementation_gaps
+  evidence:
+  - 'plan-completion-audit: catalog_gaps=117; e.g. num_gmres at benchmarks/workloads/tier1_micro/ not lic/benchmarks/tier1_micro/'
+  target_backlog: null
+  suggested_loop: null
+  handoff_to:
+  - plan_verifier
+  - docs_maintainer
+- id: gap-physics-unpublished-branch
+  gap_kind: plan_debt
+  title: 'feat/physics-module-packages branch unpublished — physics scaffolds not on main'
+  status: open
+  priority: 6
+  discovered_by: implementation_gaps
+  evidence:
+  - 'plan-completion-audit implementation_signals: lic:physics feat/physics-module-packages'
+  target_backlog: null
+  suggested_loop: null
+  handoff_to:
+  - issue_planner
+updated_at: '2026-05-30T03:30:00Z'

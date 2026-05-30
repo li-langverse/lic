@@ -93,6 +93,7 @@ nav:
       - Package layout: guide/package-layout-reference.md
   - Ecosystem:
       - Overview: ecosystem/overview.md
+      - Plan cross-links: ecosystem/plan-cross-links.md
       - Canonical docs (roadmap repo): https://github.com/li-langverse/roadmap/tree/main/docs/ecosystem
       - Agent-kit adoption: ecosystem/ADOPTION.md
       - Governance: ecosystem/governance.md

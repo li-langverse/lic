@@ -6,6 +6,10 @@ All notable changes to Li are documented here. The format follows
 
 ## [Unreleased]
 
+### Added
+
+- **Plan cross-links:** `docs/ecosystem/plan-cross-links.md` — master plan ↔ provability-gaps ↔ phase plans (httpd, **PH-8p**, governance, OOP); mkdocs Ecosystem nav; satellite Pages deploy status — [2026-05-30-plan-cross-links.md](docs/release-notes/2026-05-30-plan-cross-links.md).
+
 ### Changed
 
 - **Harness timing:** `latest.csv` reports **mean** in `value`, plus `stddev` and `sample_runs`; default ≥6 runs, ≥20 when mean wall &lt; 1s (`timing_stats.py`) — tier 1–2, ecosystem, HTTP (`bench_http.py`), toolchain, execution-resource sweep — [2026-05-28-bench-mean-std-timing.md](docs/release-notes/2026-05-28-bench-mean-std-timing.md).

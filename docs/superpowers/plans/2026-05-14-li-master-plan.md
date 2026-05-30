@@ -332,7 +332,7 @@ See [local-ci-docker-images.md](../ecosystem/local-ci-docker-images.md).
 
 **Problem:** Handbook and specs must not read as if Lean, full disjoint proofs, decorators, or math lowering already ship when they do not. Contributors need a **single gap register** and **compiler-task linkage**.
 
-**Canonical register:** [docs/verification/provability-gaps.md](../verification/provability-gaps.md) (`G-*` IDs).
+**Canonical register:** [docs/verification/provability-gaps.md](../verification/provability-gaps.md) (`G-*` IDs). **Navigation map:** [plan cross-links](../../ecosystem/plan-cross-links.md).
 
 ### Phase Doc — sub-phases
 

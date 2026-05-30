@@ -1,88 +1,58 @@
-# Autoresearch proactive sweep — red-row triage (2026-05-30)
+# Autoresearch proactive sweep — 2026-05-30
 
-**Agent:** `autoresearch` · **Run:** `autoresearch-1780104301827` · **Source:** proactive  
-**North star fit:** scientific computing / pure-Li codegen (**PH-5b**, **PH-7e**)  
-**Briefing:** `benchmarks/data/latest/agent-briefing.json` @ 2026-05-30T01:07Z  
-**Dashboard:** [benchmark-matrix](https://li-langverse.github.io/benchmarks/) · ingest @ 2026-05-29T07:01Z
-
----
+**north_star_fit:** provable + blazingly-fast (PH-5b, PH-7e) — triage codegen reds vs novel-algorithm scope  
+**Status:** negative result — no novel kernel shipped; handoffs filed for bench_improver / numerics_researcher  
+**Run:** `autoresearch-1780146986895` (proactive ecosystem sweep)
 
 ## Executive summary
 
-Proactive autoresearch pass triaged all **6 org-red** benchmark rows. **None qualify for Mode B (novel algorithm)** this cycle — each maps to SOTA-known recipes with gaps in **codegen lowering**, **harness honesty**, or **cross-repo stubs**. Prior autoresearch win (`horner_pure_li` lexer) remains the template for codegen-bound `*_pure_li` rows.
+Proactive briefing refresh (2026-05-30T12:07Z) lists six dashboard **red** tier-1 rows; local ecosystem audit (2026-05-30T12:52Z, partial ingest) shows **zero reds**, two **yellow** (`matmul_blocked`, `matmul_naive`). None of the current reds qualify for **Mode B autoresearch** without repeating SOTA codegen work already assigned to `bench_improver`.
 
----
+## Triage table
 
-## Red-row classification
+| Bench id | Dashboard ratio | Root cause class | Agent lane |
+|----------|----------------|------------------|------------|
+| `matmul_blocked` | 1.549× | PH-7e blocked `@` MIR/codegen (IKJ tiles) | **bench_improver** — study `2026-05-30-matmul-blocked-7e.md`, PR #541 |
+| `matmul_naive` | 1.333× | PH-7e loop matmul lowering | **bench_improver** — same PR stack |
+| `horner_pure_li` | (was 88×, fixed) | Lexer `+` bug — **closed autoresearch** | Done — `autoresearch-horner-lexer-2026-05-18.md` |
+| `num_gmres` | 1.4× | Shared-C wrapper (`LI_EXTRA_C`), not pure-Li | **bench_improver** / harness — not novel Krylov |
+| `ml_conv2d_forward` | 1.333× | **li-math** repo (`algo_registry`) | **numerics_researcher** in li-math |
+| `ml_mlp_*` | 1.333× | **li-math** repo | **numerics_researcher** in li-math |
 
-| Bench id | ratio_vs_cpp | Repo | Autoresearch? | Rationale |
-|----------|-------------:|------|---------------|-----------|
-| `matmul_blocked` | 1.549 | lic | **No** → `bench_improver` | SOTA blocked IKJ (Goto/BLIS class). Li uses MIR call-site fusion (`ArrayMatMulBlocked2DF64` in `lower.cpp` L995–1006) + `emit_matmul2d_blocked_ijk` (FMA + 4-wide `j`). Gap is PH-7e SIMD/register tiling, not a new discretization. |
-| `matmul_naive` | 1.3333 | lic | **No** → `bench_improver` | SOTA IKJ GEMM in `matmul_naive/li/main.li` (explicit loops). Pure-Li; needs `@vectorized` / FMA horiz lowering per master plan 7e. |
-| `ml_conv2d_forward` | 1.3333 | li-math | **No** → `numerics_researcher` / `code_implementer` | `algo_registry` variant; catalog `size_label = "harness pending"`. Ratio cluster 1.3333× matches stub ingest pattern (4/3 placeholder), not measured pure-Li kernel. |
-| `ml_mlp_forward` | 1.3333 | li-math | **No** (same) | Same stub/honesty class as conv2d. |
-| `ml_mlp_train_step` | 1.3333 | li-math | **No** (same) | Same stub/honesty class. |
-| `num_gmres` | 1.4 | lic | **No** → `numerics_researcher` | Li driver is `extern proc li_num_gmres_kernel()` (shared C oracle). Red is link/wrapper overhead or stale row — not a pure-Li solver invention target. |
+Local `lic/benchmarks/results/latest.csv` (pre-ingest, sha `b655309b`): `matmul_naive` **1.01×** (pass), `matmul_blocked` **1.88×** (fail), `horner_pure_li` **2.33×** (fail vs 1.2× pure_li gate — needs rebuild after #543).
 
-**Locked axes:** stability + checksum parity unchanged on all rows; no accuracy regression risk from deferring autoresearch.
+## Autoresearch candidates (novel-algorithm lane)
 
----
+| Target | Why autoresearch | Prerequisite |
+|--------|------------------|--------------|
+| `md_thermostat_berendsen` | Yellow on dashboard; Li-specific symplectic+dissipative splitting may beat cpp oracle | Mode A SOTA survey (Nosé-Hoover chains, deterministic variants) |
+| `md_thermostat_nose_hoover` | Same | Stability sweeps + tier-2 GIF evidence |
+| Near-threshold tier-2 (`cloth_swing`, `robo_*`) | 1.05–1.17× — algorithm/registry tuning, not lexer/codegen | Physics visual validation |
 
-## Codegen notes (matmul_blocked — not novel, but documented)
+**Rejected this pass:** inventing a new GMRES/preconditioner in lic — harness uses shared C oracle; pure-Li path absent; would not beat 1.2× without codegen parity first.
 
-1. `mm_blocked_512` proc body in source is intentionally empty; MIR lowers calls to `ArrayMatMulBlocked2DF64` at **call site** (`compiler/mir/lower.cpp`).
-2. `emit.cpp` emits `CreateRetVoid()` for the standalone `mm_blocked_512` symbol (L1755–1758) to avoid compiling an unused helper — hot path lives in `main` via fused MIR insn.
-3. C oracle: cache-blocked IKJ, BK=64 (`matmul_blocked_core.c`).
-
-No new discrete equations required; improvement path = existing SOTA + PH-7e codegen.
-
----
-
-## Hypothesis evaluated (rejected)
-
-| Hypothesis | Falsifier | Result |
-|------------|-----------|--------|
-| “Blocked matmul red row needs a novel Li blocking scheme” | SOTA survey: Goto/BLIS blocking already implemented in C oracle and mirrored in MIR `emit_matmul2d_blocked_ijk` | **Rejected** — perf gap is codegen quality, not algorithm |
-| “GMRES red needs autoresearch preconditioner” | Li bench uses C kernel via `LI_EXTRA_C`; no pure-Li Krylov implementation exists | **Deferred** — Mode A SOTA + pure-Li port first (`numerics_researcher`) |
-| “ML micro rows need fused conv/GEMM autoresearch” | Catalog honesty: harness pending; 1.3333× cluster | **Deferred** — implement honest harness before any novel fusion |
-
----
-
-## Prior autoresearch evidence (reference)
-
-- [autoresearch-horner-lexer-2026-05-18.md](../autoresearch-horner-lexer-2026-05-18.md) — codegen defect (`+` → `Minus`); 71.7× → 0.26× after fix.
-- [bench-improver-horner-2026-05-20.md](../bench-improver-horner-2026-05-20.md) — DCE guard + remaining PH-7e Horner lowering.
-
----
-
-## Future autoresearch queue (after SOTA gates)
-
-| Topic | Prerequisite | PH ids |
-|-------|--------------|--------|
-| `md_neighbor_cell_list` (algo 105) | [2026-05-27-md-r0-sota-survey.md](./2026-05-27-md-r0-sota-survey.md) F-parity on brute force | PH-5b, PH-7e |
-| Li-specific multi-kernel fusion (Horner+FMA chains, MD force+integrator) | Tier-1 pure-Li rows green at ≤1.2× | PH-7e |
-| Chem/QM integral shortcuts | [2026-05-27-chem-r0-qm-sota-survey.md](./2026-05-27-chem-r0-qm-sota-survey.md) + `qm_dft_scf_energy` smoke | PH-5b |
-
----
-
-## Commands (repro — blocked this run)
-
-Local `./scripts/build.sh` required before bench:
+## Commands (repro)
 
 ```bash
-cd lic && ./scripts/build.sh
+# Briefing + audit
+cat /home/s4il0r/Documents/Cursor/li-langverse/benchmarks/data/latest/agent-briefing.json | jq '.ecosystem_audit.benchmarks'
+cat /home/s4il0r/Documents/Cursor/li-langverse/benchmarks/data/latest/ecosystem-audit.json | jq '.benchmarks'
+
+# Local tier-1 ratios
 cd lic/benchmarks/harness
-python3 bench.py --tier 1 --only matmul_blocked,matmul_naive --runs 6
-python3 bench.py --verify-results --only matmul_blocked,matmul_naive
+python3 bench.py --tier 1 --runs 3 --only matmul_blocked,matmul_naive,horner_pure_li
+python3 -c "import csv; ..."  # li/cpp from benchmarks/results/latest.csv
 ```
 
-**This run:** verify failed — `lic` binary missing at `build/compiler/lic/lic`.
+## Evidence paths
 
----
+- Study: `docs/numerics/studies/2026-05-30-autoresearch-proactive-sweep.md` (this file)
+- Prior autoresearch win: `docs/numerics/autoresearch-horner-lexer-2026-05-18.md`
+- Bench improver in-flight: `docs/numerics/studies/2026-05-30-matmul-blocked-7e.md`
+- Bench row catalog: `benchmarks/catalog.toml` (`horner_pure_li` `variant = "pure_li"`)
+- Lean/contracts: N/A — triage only, no kernel change
 
-## Agent deliverable checklist
+## Negative result
 
-- [x] li-tests or lit test id: N/A — study-only triage; no kernel change
-- [x] Bench row / benchmarks path: org-red rows documented above; ingest @ 2026-05-29
-- [x] Lean/contracts path: N/A — no `trusted.lean` or new axioms proposed
-- [x] Negative result documented: **yes** — no novel algorithm PR this cycle
+**Hypothesis:** At least one dashboard red row is codegen-bound pure-Li work suitable for a **novel** numerical method (Mode B).  
+**Outcome:** **Rejected.** All six reds decompose into (a) MIR/codegen fixes, (b) shared-C harness overhead, or (c) sibling-repo (`li-math`) SOTA adoption — not autoresearch invention scope.

@@ -43,5 +43,10 @@ if ! "$OUT" >/dev/null 2>&1; then
   exit 1
 fi
 
+if ! "$ROOT/li-tests/tooling/mat2_fma_lean_drift.sh" >/dev/null 2>&1; then
+  echo "mat2_codegen_lean_drift: FMA-vs-Lean drift witness must pass (see mat2_fma_lean_drift.sh)"
+  exit 1
+fi
+
 rm -f "$OUT"
 echo "mat2_codegen_lean_drift: ok (documented eval-vs-MIR certificate gap; runtime golden passes)"

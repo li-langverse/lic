@@ -934,6 +934,12 @@ outcome = "compile_ok"
 note = "2×2 float @ golden [[19,22],[43,50]]; runtime via mat2_codegen_lean_drift.sh"
 
 [[tests]]
+suite = "math_linalg"
+file = "math_linalg/mat2_at2_fma_drift_cell.li"
+outcome = "compile_ok"
+note = "G-hw: FMA vs Lean mul+add drift on one 2×2 cell; runtime via mat2_fma_lean_drift.sh"
+
+[[tests]]
 suite = "physics"
 file = "physics/golden_positions_sum.li"
 outcome = "compile_ok"

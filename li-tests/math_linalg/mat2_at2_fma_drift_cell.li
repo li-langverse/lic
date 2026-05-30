@@ -1,0 +1,44 @@
+# G-hw / G-meta witness: release FMA matmul vs Lean mat2_at2_eval (mul-then-add).
+# Matrix entries loaded at runtime via LI_EXTRA_C (mat2_fma_drift_rt.c).
+# Harness compares LI_PRINT_SINK_F64 output to Python Lean eval (see mat2_fma_lean_drift.sh).
+
+extern proc li_rt_volatile_sink_f64(v: float) -> unit
+  requires true
+  ensures true
+
+extern proc mat2_fma_drift_a00() -> float
+  requires true
+  ensures true
+
+extern proc mat2_fma_drift_b00() -> float
+  requires true
+  ensures true
+
+extern proc mat2_fma_drift_a01() -> float
+  requires true
+  ensures true
+
+extern proc mat2_fma_drift_b10() -> float
+  requires true
+  ensures true
+
+def main() raises IO -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  var A: array[2, array[2, float]]
+  var B: array[2, array[2, float]]
+  A[0][0] = mat2_fma_drift_a00()
+  A[0][1] = mat2_fma_drift_a01()
+  A[1][0] = 0.0
+  A[1][1] = 0.0
+  B[0][0] = mat2_fma_drift_b00()
+  B[0][1] = 0.0
+  B[1][0] = mat2_fma_drift_b10()
+  B[1][1] = 0.0
+  var C: array[2, array[2, float]] = A @ B
+  if C[0][1] != 0.0 or C[1][0] != 0.0 or C[1][1] != 0.0:
+    return 1
+  li_rt_volatile_sink_f64(C[0][0])
+  return 0

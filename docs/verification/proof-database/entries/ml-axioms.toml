@@ -1,0 +1,29 @@
+version = 1
+
+[[entry]]
+id = "ML-AX-L-SMOOTH"
+kind = "axiom"
+field = "ml"
+domain = "optimization"
+statement = "L-smoothness: ||grad f(x) - grad f(y)|| <= L ||x - y||."
+proof_status = "target"
+gap_id = "G-ml"
+gap_kind = "axiom_layer"
+convergence_class = "convex_first_order"
+lean_module = "proof-db/ml/OptAxioms.lean"
+lean_thm = "Li.ProofDb.ML.l_smooth_axiom"
+last_verified_lic_commit = "7e64ba8"
+
+[[entry]]
+id = "ML-AX-CONVEX-DOM"
+kind = "axiom"
+field = "ml"
+domain = "optimization"
+statement = "Training domain S subset R^n is convex and contains the GD iterate path."
+proof_status = "target"
+gap_id = "G-ml"
+gap_kind = "axiom_layer"
+convergence_class = "convex_first_order"
+lean_module = "proof-db/ml/Convex.lean"
+lean_thm = "Li.ProofDb.ML.convex_domain_axiom"
+last_verified_lic_commit = "7e64ba8"

@@ -160,7 +160,7 @@ Cross-tracks (not separate phases above): **PH-PORT**, **PH-COMPLY**, **PH-CIN**
 |----|-------|---------|-------|--------|------------|-----|--------|------|
 | WP-UX-01 | Viewport grid + selection ring | game | **partial** | Depth cues in compose | `studio_shell_demo.li` | S | WP-GD-01 | Y |
 | WP-UX-02 | Timeline playback | game | **partial** | Playhead from `sim_step` tick | `studio_timeline_playback.li` | S | WP-GD-01 | Y |
-| WP-UX-03 | Inspector fields | sim_robotics, game | **partial** | ≥2 rows on selection | `studio_inspector_fields.li` | S | WP-GD-01 | Y |
+| WP-UX-03 | Inspector fields | sim_robotics, game | **partial** | ≥2 rows on selection + live joint encode | `studio_inspector_fields.li`, `studio_sim_robotics_inspector.li` | S | WP-GD-01 | Y |
 | WP-UX-04 | Command palette | all | **done** | ⌘K overlay + action dispatch | `studio_command_palette.li` | S | WP-GD-01 | Y |
 | WP-UX-05 | Profile chip + TOML | all 7 | **done** | `studio_vertical_profile_roundtrip.li` | smoke | S | WP-SIM-00 | Y |
 | WP-UX-06 | Agent chrome | sim_rl, sim_drug | **partial** | Task states + cancel | `studio_agent_*.li` | M | WP-GD-01 | Y |
@@ -189,7 +189,7 @@ Cross-tracks (not separate phases above): **PH-PORT**, **PH-COMPLY**, **PH-CIN**
 |----|-------|-------|--------|------------|-----|--------|------|
 | WP-ROBO-01 | ROBO-0 tick + workspace | **done** | `sim_robotics_tick_at` | `tick_stub.li`, `import_sim_robotics_workspace.li` | S | WP-SIM-01 | Y |
 | WP-ROBO-02 | 2-DOF FK + torque (partial) | **partial** | `robo_arm_*` | `arm_workspace.li` | M | WP-ROBO-01 | Y |
-| WP-ROBO-03 | IK stub → numeric | stub | Target pose → joint angles | smoke IK | L | WP-ROBO-02, math quat | N |
+| WP-ROBO-03 | IK stub → numeric | **partial** | Target pose → joint angles (6-DOF) | `robo_ik_6dof.li`, `studio_sim_robotics_inspector.li` | L | WP-ROBO-02, math quat | N |
 | WP-ROBO-04 | Factory cell layout | stub | Multi-arm scene | composable | L | WP-ROBO-03 | N |
 | WP-ROBO-05 | ROS2 bridge (trusted) | stub | `extern` joint state | audit log | L | PH-COMPLY | N |
 
@@ -354,8 +354,8 @@ Each profile is **done** when all bullets hold simultaneously (not composable-on
 
 ### 6.4 `sim_robotics`
 
-- [ ] IK + workspace checks on 6-DOF arm (`WP-ROBO-03`)
-- [ ] Inspector shows live joint state from sim (`WP-UX-03`)
+- [x] IK + workspace checks on 6-DOF arm (`WP-ROBO-03`)
+- [x] Inspector shows live joint state from sim (`WP-UX-03`)
 - [ ] `robo_workspace` bench ≠ composable-only
 - [ ] Optional ROS2 bridge behind `extern` + audit (`WP-ROBO-05`)
 

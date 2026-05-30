@@ -85,7 +85,7 @@ todos:
     status: done
   - id: wsm-w5-robo-ik
     content: "6-DOF IK numeric stub + inspector live joints (WP-ROBO-03, WP-UX-03)"
-    status: pending
+    status: done
   - id: wsm-w5-am-export
     content: "sim.export.print 3MF/G-code + ≤3-click flow (WP-AM-03, WP-UX-16)"
     status: pending

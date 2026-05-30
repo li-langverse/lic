@@ -87,6 +87,10 @@ def main() -> int raises IO
     return 42
   if sensor_hit_from_session(robo_sess).hit1 > sensor_raycast_max_range_m():
     return 43
+  if robo_sess.env_last_obs0 <= 0.0:
+    return 44
+  if studio_sim_robotics_inspector_live_ok(robo_sess) != 1:
+    return 45
   var add: int = studio_sim_step_profile_ok(
     studio_profile_sim_additive(),
     sim_contract_sim_additive(),

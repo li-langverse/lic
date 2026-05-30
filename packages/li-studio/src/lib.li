@@ -2067,10 +2067,10 @@ def studio_compose_shell_drug_litl(w: float, h: float, tick: int, has_selection:
 
 def li_std_studio_version() -> int
   requires true
-  ensures result == 25
+  ensures result == 26
   decreases 0
 =
-  return 25
+  return 26
 
 def studio_agent_context_none() -> int
   requires true
@@ -3422,6 +3422,24 @@ def studio_sim_sensor_step_hook(sim_out: var SimSessionStub, dt: float) -> int
 =
   return sim_sensor_session_bus_step(sim_out, dt)
 
+# WP-ROBO-03 / WP-UX-03 — 6-DOF IK on session + sensor bus + replay tick.
+def studio_sim_robotics_step_hook(sim_out: var SimSessionStub, dt: float) -> int
+  requires sim_out.tick >= 0
+  requires sim_out.replay_capacity > 0
+  ensures result >= 0
+  ensures result <= 1
+  decreases sim_out.tick
+=
+  if dt <= 0.0:
+    return sim_status_invalid_dt()
+  if sim_robotics_session_ik_step(sim_out, dt) != 1:
+    return sim_status_invalid_dt()
+  if sim_sensor_session_bus_step(sim_out, dt) != sim_status_ok():
+    return sim_status_invalid_dt()
+  if sim_step(sim_out, dt) != sim_status_ok():
+    return sim_status_invalid_dt()
+  return sim_status_ok()
+
 def studio_game_session_physics_load(session: SimSessionStub) -> GamePhysicsState
   requires session.tick >= 0
   ensures result.px == session.game_px
@@ -3795,7 +3813,7 @@ def studio_sim_step_hook(config: StudioProjectConfig, sim_out: var SimSessionStu
   if prof == studio_profile_sim_robotics():
     if sim_robotics_tick_stub(detail_hook) != 1:
       return sim_status_invalid_dt()
-    return studio_sim_sensor_step_hook(sim_out, dt)
+    return studio_sim_robotics_step_hook(sim_out, dt)
   if prof == studio_profile_sim_additive():
     if sim_additive_tick_stub(detail_hook) != 1:
       return sim_status_invalid_dt()
@@ -3990,6 +4008,61 @@ def studio_compose_inspector_selected(layout: StudioShellLayout) -> StudioInspec
   out.hint_box_rect = rect_make(0.0, 0.0, 0.0, 0.0)
   out.field_row_rect = rect_make(0.0, 0.0, 0.0, 0.0)
   return out
+
+def studio_inspector_joint_value_width_px(joint_rad: float, slot_max_w: float) -> float
+  requires slot_max_w >= 24.0
+  ensures result >= 24.0
+  ensures result <= slot_max_w
+  decreases 0
+=
+  var min_w: float = 24.0
+  var norm: float = joint_rad
+  if norm < 0.0:
+    norm = 0.0
+  if norm > 1.2:
+    norm = 1.2
+  var span: float = slot_max_w - min_w
+  var scale: float = norm * 0.8333333
+  return min_w + span * scale
+
+def studio_compose_inspector_robotics_live(layout: StudioShellLayout, session: SimSessionStub) -> StudioInspectorCompose
+  requires layout.inspector.w >= studio_inspector_width_px()
+  requires session.tick >= 0
+  ensures result.has_selection == 1
+  ensures result.field_count == studio_inspector_selection_field_count()
+  decreases session.tick
+=
+  var out: StudioInspectorCompose = studio_compose_inspector_selected(layout)
+  var arm: RoboArm6DofState = sim_robotics_arm6_from_session(session)
+  var slot0: float = out.field0.value_rect.w
+  var slot1: float = out.field1.value_rect.w
+  var live0: float = studio_inspector_joint_value_width_px(arm.j0_rad, slot0)
+  var live1: float = studio_inspector_joint_value_width_px(arm.j1_rad, slot1)
+  out.field0.value_rect.w = live0
+  out.field1.value_rect.w = live1
+  return out
+
+def studio_sim_robotics_inspector_live_ok(session: SimSessionStub) -> int
+  requires session.tick >= 1
+  ensures result >= 0
+  ensures result <= 1
+  decreases session.tick
+=
+  var layout: StudioShellLayout = layout_studio_shell_adaptive(1280.0, 720.0)
+  var static_insp: StudioInspectorCompose = studio_compose_inspector_selected(layout)
+  var live_insp: StudioInspectorCompose = studio_compose_inspector_robotics_live(layout, session)
+  var arm: RoboArm6DofState = sim_robotics_arm6_from_session(session)
+  var expect0: float = studio_inspector_joint_value_width_px(arm.j0_rad, static_insp.field0.value_rect.w)
+  var expect1: float = studio_inspector_joint_value_width_px(arm.j1_rad, static_insp.field1.value_rect.w)
+  if live_insp.field0.value_rect.w != expect0:
+    return 0
+  if live_insp.field1.value_rect.w != expect1:
+    return 0
+  if arm.j0_rad <= 0.0:
+    return 0
+  if live_insp.field0.value_rect.w == static_insp.field0.value_rect.w:
+    return 0
+  return 1
 
 def studio_compose_timeline(layout: StudioShellLayout) -> StudioTimelineCompose
   requires layout.timeline.w > 0.0

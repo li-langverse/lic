@@ -25,6 +25,8 @@ done
 
 "$LIC" check "$ROOT/packages/li-assets/li-tests/smoke/gltf_ingest.li"
 
+"$LIC" check "$ROOT/packages/li-sim-robotics/li-tests/smoke/robo_ik_6dof.li"
+
 for smoke in \
   studio_shell_demo.li \
   studio_vertical_profile_roundtrip.li \
@@ -45,6 +47,7 @@ for smoke in \
   studio_world_io_roundtrip.li \
   studio_gltf_ingest.li \
   studio_sim_scientific_viz_viewport.li \
+  studio_sim_robotics_inspector.li \
   studio_viewport_hud.li \
   studio_viewport_error.li \
   studio_native_pixels_wgpu_readback.li; do

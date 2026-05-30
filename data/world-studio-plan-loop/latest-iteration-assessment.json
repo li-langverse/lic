@@ -1,16 +1,16 @@
 {
   "pass": true,
-  "todo_id": "wsm-w5-sim-viz",
-  "wps_touched": ["WP-SCI-04", "WP-GD-05"],
+  "todo_id": "wsm-w5-robo-ik",
+  "wps_touched": ["WP-ROBO-03", "WP-UX-03"],
   "smokes_run": [
-    "packages/li-sim-viz/li-tests/smoke/viz_viewport_fields.li",
-    "packages/li-studio/li-tests/smoke/studio_sim_scientific_viz_viewport.li",
-    "li-tests/composable/import_sim_viz_pipeline_source_display.li"
+    "packages/li-sim-robotics/li-tests/smoke/robo_ik_6dof.li",
+    "packages/li-studio/li-tests/smoke/studio_sim_robotics_inspector.li",
+    "packages/li-studio/li-tests/smoke/studio_sim_step_by_profile.li"
   ],
   "native_only": true,
   "gates": {
     "world_studio_plan_gates": "pass",
-    "lic_check_local": "wsl_pass"
+    "lic_check_local": "wsl_robo_ik_pass_studio_pending_ci"
   },
-  "notes": "WP-SCI-04: VizViewportFields maps sim.viz Properties/Display/View panels to viewport compose (tier label, particle dots, biomol chip). studio_viewport_display_apply_viz_pipeline + studio_sim_scientific_viz_viewport_ok wire pipeline into scientific profile compose. viz_pipeline_scientific_step advances pipeline with sim tick. No wgpu field volume draw — compose-time contract only."
+  "notes": "WP-ROBO-03: 6-DOF numeric IK stub (target pose → joint angles) with session persistence on env_last_obs0..5. WP-UX-03: studio_compose_inspector_robotics_live encodes θ0/θ1 in inspector value_rect widths from live sim session; studio_sim_robotics_step_hook wires IK + sensor bus + sim_step for sim_robotics profile."
 }

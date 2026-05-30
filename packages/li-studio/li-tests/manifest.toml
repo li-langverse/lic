@@ -114,6 +114,12 @@ note = "WP-SCI-04: sim.viz pipeline panels → viewport fields"
 
 [[tests]]
 suite = "smoke"
+file = "smoke/studio_sim_robotics_inspector.li"
+outcome = "check_ok"
+note = "WP-ROBO-03 / WP-UX-03: 6-DOF IK session + live inspector joint fields"
+
+[[tests]]
+suite = "smoke"
 file = "smoke/studio_game_step_hook.li"
 outcome = "check_ok"
 note = "PH-GD-2: studio_game_step_hook + studio_game_world_checkpoint_roundtrip"

@@ -1,5 +1,5 @@
 version: 1
-updated_at: '2026-05-30T07:53:43Z'
+updated_at: '2026-05-30T08:07:11Z'
 gaps:
 - id: gap-line-profiler-001
   gap_kind: missing_package
@@ -1061,11 +1061,12 @@ gaps:
 - id: gap-plan-pending-studio-ui-ux-studio-ux-14-native-sdl-ci
   gap_kind: plan_debt
   title: 'studio-ui-ux: pending plan todo studio-ux-14-native-sdl-ci'
-  status: open
+  status: closed
   priority: 7
   discovered_by: plan_verifier
   evidence:
   - snapshot runner=studio-ui-ux plan_pending=studio-ux-14-native-sdl-ci
+  - snapshot studio-ui-ux completed_ids includes studio-ux-14-native-sdl-ci
   runner_id: studio-ui-ux
   plan_todo_id: studio-ux-14-native-sdl-ci
   suggested_loop: studio-ui-ux

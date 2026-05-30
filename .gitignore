@@ -69,3 +69,6 @@ docs/demo/media/ffmpeg-*.txt
 
 # Local CI sweep output (benchmarks local-ci)
 data/local-ci*.log
+
+# Agent isolated workspace clones (gitlink without .gitmodules breaks actions/checkout)
+data/workspaces/

@@ -1,11 +1,9 @@
 {
   "pass": true,
-  "todo_id": "wsm-w2-viewport-hud",
-  "wps_touched": ["WP-UX-13", "WP-GD-05"],
+  "todo_id": "wsm-w2-viewport-error",
+  "wps_touched": ["WP-UX-08", "WP-GD-05"],
   "smokes_run": [
-    "packages/li-studio/li-tests/smoke/studio_viewport_hud.li",
-    "packages/li-render/li-tests/smoke/viewport_fps_counter.li",
-    "packages/li-render/li-tests/smoke/scene_md_particles.li"
+    "packages/li-studio/li-tests/smoke/studio_viewport_error.li"
   ],
   "native_only": true,
   "gates": {
@@ -13,5 +11,5 @@
     "lic_check_local": "skipped_no_lic_binary",
     "lic_check_ci": "pending"
   },
-  "notes": "WP-UX-13 live FPS + particle tier HUD in native viewport compose/paint: StudioViewportDisplayCompose extended with fps_display, fps_hud_tag, tier particle bars (top-left rects); render_fps_counter_shell_simulate wired via li-render dep; smoke studio_viewport_hud.li; li_std_studio_version 17."
+  "notes": "WP-UX-08 viewport error recovery: li-render wgpu smoke maps to studio_err_gpu via studio_viewport_error_kind_for_render_smoke; studio_viewport_error_sync_render on host frame; one-click retry via studio_shell_handle_viewport_error_pointer; smoke studio_viewport_error.li extended (render bridge + pointer retry). li_std_studio_version 18."
 }

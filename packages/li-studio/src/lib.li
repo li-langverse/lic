@@ -69,7 +69,7 @@ extern proc li_rt_studio_toml_parsed_printer_profile_slot() -> int
   ensures result <= 2
   decreases 0
 
-# UX-08 — viewport error mock (no wgpu surface probe; native host wires later).
+# UX-08 — viewport error overlay; li-render wgpu smoke → report; host may set via li_rt_*.
 extern proc li_rt_studio_viewport_error_kind() raises IO -> int
   requires true
   ensures result >= 0
@@ -1645,10 +1645,10 @@ def studio_compose_shell_drug_litl(w: float, h: float, tick: int, has_selection:
 
 def li_std_studio_version() -> int
   requires true
-  ensures result == 17
+  ensures result == 18
   decreases 0
 =
-  return 17
+  return 18
 
 def studio_agent_context_none() -> int
   requires true
@@ -2095,6 +2095,75 @@ def studio_viewport_error_retry() raises IO -> int
   decreases 0
 =
   return li_rt_studio_viewport_error_retry()
+
+def studio_viewport_error_action_none() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0
+
+def studio_viewport_error_action_retry_clicked() -> int
+  requires true
+  ensures result == 1
+  decreases 0
+=
+  return 1
+
+def studio_viewport_error_kind_for_render_smoke(smoke: RenderViewportSmoke) -> int
+  requires true
+  ensures result >= studio_viewport_error_none()
+  ensures result <= studio_err_missing_asset()
+  decreases 0
+=
+  if render_viewport_smoke_ok(smoke) == 1:
+    return studio_viewport_error_none()
+  if lig_wgpu_smoke_passed(smoke.wgpu) != 1:
+    return studio_err_gpu()
+  return studio_err_missing_asset()
+
+def studio_viewport_error_report(kind: int) raises IO -> int
+  requires kind >= studio_viewport_error_none()
+  requires kind <= studio_err_missing_asset()
+  ensures result == kind
+  decreases kind
+=
+  return li_rt_studio_viewport_error_set_mock(kind)
+
+def studio_viewport_error_sync_render(compose: var StudioShellCompose) raises IO -> unit
+  requires studio_profile_id_valid(compose.config.active_profile) == 1
+  requires compose.layout.viewport_w > 0.0
+  requires compose.layout.viewport_h > 0.0
+  ensures compose.viewport_error.error_kind == studio_viewport_error_kind()
+  decreases 0
+=
+  var vp: ViewportRegion = gui_viewport_region_from_layout(compose.layout)
+  var pid: int = compose.config.active_profile
+  var smoke: RenderViewportSmoke = render_wgpu_draw_list_smoke_pure(vp, pid)
+  var kind: int = studio_viewport_error_kind_for_render_smoke(smoke)
+  if kind != studio_viewport_error_none():
+    var _reported: int = studio_viewport_error_report(kind)
+  var lay: StudioShellLayout = compose.layout
+  compose.viewport_error = studio_compose_viewport_error_overlay(lay, studio_viewport_error_kind())
+
+def studio_shell_handle_viewport_error_pointer(compose: var StudioShellCompose, input: InputState) -> int
+  requires compose.layout.viewport_w > 0.0
+  requires input.pointer_down >= 0
+  requires input.pointer_down <= 1
+  ensures result >= studio_viewport_error_action_none()
+  ensures result <= studio_viewport_error_action_retry_clicked()
+  decreases input.pointer_down
+=
+  if input.pointer_down != 1:
+    return studio_viewport_error_action_none()
+  if compose.viewport_error.visible != 1:
+    return studio_viewport_error_action_none()
+  if rect_contains(compose.viewport_error.retry_rect, input.pointer_x, input.pointer_y) != 1:
+    return studio_viewport_error_action_none()
+  var _cleared: int = studio_viewport_error_retry()
+  var lay: StudioShellLayout = compose.layout
+  compose.viewport_error = studio_compose_viewport_error_overlay(lay, studio_viewport_error_kind())
+  return studio_viewport_error_action_retry_clicked()
 
 def studio_viewport_error_visible(error_kind: int) -> int
   requires error_kind >= studio_viewport_error_none()
@@ -4799,6 +4868,8 @@ def studio_shell_host_frame(compose: var StudioShellCompose, frame_id: int) -> i
 =
   var input: InputState = studio_shell_input_from_host()
   var _action: int = studio_shell_handle_host_key(compose, input)
+  studio_viewport_error_sync_render(compose)
+  var _vp_err: int = studio_shell_handle_viewport_error_pointer(compose, input)
   var vp: ViewportRegion = gui_viewport_region_from_layout(compose.layout)
   var _presented: LigPresentFrame = studio_shell_host_present_loop_tick(vp.w, vp.h, frame_id)
   if _presented.presented != 1:

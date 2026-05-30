@@ -49,7 +49,7 @@ todos:
     status: done
   - id: wsm-w2-viewport-error
     content: "GPU/asset error overlay + retry (WP-UX-08)"
-    status: pending
+    status: done
   - id: wsm-w2-native-pixels
     content: "UX-14 native_pixels via wgpu readback — record verticals demo honest (WP-UX-14)"
     status: pending

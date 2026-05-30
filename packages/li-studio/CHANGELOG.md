@@ -4,6 +4,8 @@
 
 ### Added
 
+- **WP-UX-08 viewport error overlay + retry** — `studio_viewport_error_kind_for_render_smoke`, `studio_viewport_error_sync_render`, `studio_shell_handle_viewport_error_pointer`; li-render wgpu fail → GPU error strip; smoke `studio_viewport_error.li`; `li_std_studio_version` → 18.
+
 - **WP-UX-06 / WP-AG-02 agent chrome FSM** — `studio_agent_run_cancel`, `studio_agent_run_fail`, `studio_agent_run_retry`, `studio_agent_run_undo`, `studio_agent_sync_chrome_from_run`, `studio_shell_handle_agent_pointer`, `studio_shell_agent_run_tick`; invoke + tool-trace paint; smoke `studio_agent_chrome_fsm.li`; `li_std_studio_version` → 16.
 
 - **WP-UX-09 keyboard bridge** — `studio_shell_input_probe_mock_*`, `studio_shell_handle_host_key`; demo/host frames apply keys on live compose; smoke `studio_keyboard_bridge.li`; `li_std_studio_version` → 15.

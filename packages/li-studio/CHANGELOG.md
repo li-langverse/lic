@@ -4,6 +4,8 @@
 
 ### Added
 
+- **WP-UX-04 command palette actions** — `studio_palette_action_*`, `studio_palette_exec_slot`, `studio_key_action_palette_exec`, `studio_palette_apply_action`; digits 1–3 run focus actions when palette open; smoke `studio_command_palette.li` extended with Cmd+K + exec path; `li_std_studio_version` → 14.
+
 - **WP-UX-02 / WP-GD-08 timeline ↔ sim tick** — `studio_timeline_tick_sim_step`, `studio_timeline_sync_playhead_from_session`, `studio_timeline_scrub_to_tick`, `studio_timeline_reset_for_session`; playhead from `SimSessionStub.tick` / `studio_timeline_duration_ticks_default()` (not mock +0.01); runtime `li_rt_studio_timeline_sync_sim_tick`; smoke `studio_timeline_playback.li`; `li_std_studio_version` → 13.
 
 - **WP-SIM-06 studio.toml engine/export** — `StudioExportConfig`, cumulative `studio_toml_parse_line` / `studio_toml_parsed_config`, `determinism_tier` → `output_detail` via `studio_apply_config_to_sim`; fixture `examples/verticals/sim_additive/studio.toml`; smoke `studio_toml_engine_export.li`; `li_std_studio_version` → 12.

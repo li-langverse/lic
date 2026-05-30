@@ -20,6 +20,8 @@ type InputState = object
   public pointer_x: float
   public pointer_y: float
   public key_escape: int
+  public key_cmd_k: int
+  public key_digit: int
 
 type UiFrame = object
   public frame_id: int
@@ -28,17 +30,17 @@ type UiFrame = object
   public viewport_h: float
 def li_std_ui_version() -> int
   requires true
-  ensures result == 2
+  ensures result == 3
   decreases 0
 =
-  return 2
+  return 3
 
 def li_std_ui_studio_composables_version() -> int
   requires true
-  ensures result == 5
+  ensures result == 6
   decreases 0
 =
-  return 5
+  return 6
 def color_rgb(r: float, g: float, b: float, a: float) -> Color
   requires r >= 0.0
   requires g >= 0.0
@@ -91,7 +93,7 @@ def ui_frame_begin(w: float, h: float, dt: float) -> UiFrame
   return f
 def ui_frame_end(frame: UiFrame) -> unit
   requires true
-  ensures true
+  ensures frame.frame_id == old(frame.frame_id)
   decreases 0
 =
   return
@@ -100,6 +102,9 @@ def input_default() -> InputState
   ensures result.pointer_down == 0
   ensures result.pointer_x == 0.0
   ensures result.pointer_y == 0.0
+  ensures result.key_escape == 0
+  ensures result.key_cmd_k == 0
+  ensures result.key_digit == 0
   decreases 0
 =
   var s: InputState
@@ -107,6 +112,8 @@ def input_default() -> InputState
   s.pointer_x = 0.0
   s.pointer_y = 0.0
   s.key_escape = 0
+  s.key_cmd_k = 0
+  s.key_digit = 0
   return s
 
 # --- studio design tokens (docs/design/studio-design-tokens.toml) ---
@@ -152,6 +159,59 @@ def studio_color_border() -> Color
   decreases 0
 =
   return color_rgb(0.188, 0.212, 0.239, 1.0)
+
+
+# UX-10 — focus_ring in docs/design/studio-design-tokens.toml (#3dd6ff)
+def studio_color_focus_ring() -> Color
+  requires true
+  ensures result.r >= 0.0
+  decreases 0
+=
+  return color_rgb(0.239, 0.839, 1.0, 1.0)
+
+def studio_focus_ring_stroke_px() -> float
+  requires true
+  ensures result == 2.0
+  decreases 0
+=
+  return 2.0
+
+# UX-10 contrast stub — real ratio from host when text/background samples ship
+def studio_contrast_ratio_ok() -> float
+  requires true
+  ensures result >= 1.0
+  decreases 0
+=
+  return 1.0
+
+# UX-11 skeleton fills — muted elevated (no spinner paint IR)
+def studio_color_skeleton_muted() -> Color
+  requires true
+  ensures result.r >= 0.0
+  decreases 0
+=
+  return color_rgb(0.118, 0.145, 0.180, 1.0)
+
+def studio_color_skeleton_highlight() -> Color
+  requires true
+  ensures result.r >= 0.0
+  decreases 0
+=
+  return color_rgb(0.145, 0.173, 0.212, 1.0)
+
+def studio_paint_focus_ring(frame: var PaintFrame, region_rect: Rect) -> unit
+  requires frame.cmd_count >= 0
+  requires region_rect.w >= 0.0
+  requires region_rect.h >= 0.0
+  ensures frame.cmd_count == old(frame.cmd_count) + 1
+  ensures frame.last_kind == paint_op_stroke_rect()
+  ensures frame.last_rect.w == region_rect.w
+  decreases 0
+=
+  frame.cmd_count = frame.cmd_count + 1
+  frame.last_kind = paint_op_stroke_rect()
+  frame.last_rect = region_rect
+  frame.last_color = studio_color_focus_ring()
 
 def studio_color_accent_amber() -> Color
   requires true
@@ -251,6 +311,384 @@ def studio_agent_error_strip_height_px() -> float
   decreases 0
 =
   return 22.0
+
+def studio_dock_width_px() -> float
+  requires true
+  ensures result == 56.0
+  decreases 0
+=
+  return 56.0
+
+def studio_topbar_height_px() -> float
+  requires true
+  ensures result == 44.0
+  decreases 0
+=
+  return 44.0
+
+def studio_inspector_width_px() -> float
+  requires true
+  ensures result == 320.0
+  decreases 0
+=
+  return 320.0
+
+def studio_panel_transition_ms() -> float
+  requires true
+  ensures result == 100.0
+  decreases 0
+=
+  return 100.0
+
+# UX-04 command palette — docs/design/studio-design-tokens.toml [semantic] command_palette_hint
+def studio_command_palette_hint_len() -> int
+  requires true
+  ensures result == 22
+  decreases 0
+=
+  return 22
+
+def studio_palette_open_flag() -> int
+  requires true
+  ensures result == 1
+  decreases 0
+=
+  return 1
+
+def studio_palette_closed_flag() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0
+
+def studio_palette_panel_width_px() -> float
+  requires true
+  ensures result == 560.0
+  decreases 0
+=
+  return 560.0
+
+def studio_palette_panel_height_px() -> float
+  requires true
+  ensures result == 360.0
+  decreases 0
+=
+  return 360.0
+
+def studio_palette_search_bar_height_px() -> float
+  requires true
+  ensures result == 44.0
+  decreases 0
+=
+  return 44.0
+
+def studio_palette_result_count_stub() -> int
+  requires true
+  ensures result == 3
+  decreases 0
+=
+  return 3
+
+def studio_palette_action_none() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0
+
+def studio_palette_action_focus_inspector() -> int
+  requires true
+  ensures result == 1
+  decreases 0
+=
+  return 1
+
+def studio_palette_action_focus_timeline() -> int
+  requires true
+  ensures result == 2
+  decreases 0
+=
+  return 2
+
+def studio_palette_action_focus_agent() -> int
+  requires true
+  ensures result == 3
+  decreases 0
+=
+  return 3
+
+def studio_palette_action_for_slot(slot: int) -> int
+  requires slot >= 1
+  requires slot <= studio_palette_result_count_stub()
+  ensures result >= studio_palette_action_focus_inspector()
+  ensures result <= studio_palette_action_focus_agent()
+  decreases slot
+=
+  if slot == 1:
+    return studio_palette_action_focus_inspector()
+  if slot == 2:
+    return studio_palette_action_focus_timeline()
+  return studio_palette_action_focus_agent()
+
+type StudioCommandPaletteCompose = object
+  public is_open: int
+  public backdrop_rect: Rect
+  public panel_rect: Rect
+  public search_rect: Rect
+  public result_count: int
+  public selected_slot: int
+  public last_action_id: int
+
+def studio_palette_backdrop_rect_at(w: float, h: float) -> Rect
+  requires w > 0.0
+  requires h > 0.0
+  ensures result.w == w
+  ensures result.h == h
+  decreases 0
+=
+  return rect_make(0.0, 0.0, w, h)
+
+def studio_palette_panel_rect_at(w: float, h: float) -> Rect
+  requires w > 0.0
+  requires h > 0.0
+  ensures result.w == studio_palette_panel_width_px()
+  ensures result.h == studio_palette_panel_height_px()
+  decreases 0
+=
+  var pw: float = studio_palette_panel_width_px()
+  var ph: float = studio_palette_panel_height_px()
+  var x: float = (w - pw) / 2.0
+  var y: float = (h - ph) / 2.0
+  if x < 0.0:
+    x = 0.0
+  if y < 0.0:
+    y = 0.0
+  return rect_make(x, y, pw, ph)
+
+def studio_palette_search_rect_at(panel: Rect) -> Rect
+  requires panel.w >= studio_palette_panel_width_px()
+  requires panel.h >= studio_palette_search_bar_height_px()
+  ensures result.w == panel.w - 32.0
+  ensures result.h == studio_palette_search_bar_height_px()
+  decreases 0
+=
+  var pad: float = 16.0
+  return rect_make(panel.x + pad, panel.y + pad, panel.w - (pad * 2.0), studio_palette_search_bar_height_px())
+
+def studio_compose_palette(w: float, h: float, is_open: int) -> StudioCommandPaletteCompose
+  requires w > 0.0
+  requires h > 0.0
+  requires is_open >= studio_palette_closed_flag()
+  requires is_open <= studio_palette_open_flag()
+  ensures result.is_open == is_open
+  ensures result.result_count >= 0
+  decreases is_open
+=
+  var out: StudioCommandPaletteCompose
+  out.is_open = is_open
+  out.backdrop_rect = rect_make(0.0, 0.0, 0.0, 0.0)
+  out.panel_rect = rect_make(0.0, 0.0, 0.0, 0.0)
+  out.search_rect = rect_make(0.0, 0.0, 0.0, 0.0)
+  out.result_count = 0
+  out.selected_slot = 0
+  out.last_action_id = studio_palette_action_none()
+  if is_open == studio_palette_open_flag():
+    var backdrop_w: float = w
+    var backdrop_h: float = h
+    out.backdrop_rect = studio_palette_backdrop_rect_at(backdrop_w, backdrop_h)
+    var panel_w: float = w
+    var panel_h: float = h
+    out.panel_rect = studio_palette_panel_rect_at(panel_w, panel_h)
+    var search_pad: float = 16.0
+    out.search_rect = rect_make(out.panel_rect.x + search_pad, out.panel_rect.y + search_pad, out.panel_rect.w - (search_pad * 2.0), studio_palette_search_bar_height_px())
+    out.result_count = studio_palette_result_count_stub()
+  return out
+
+def studio_palette_open(palette: var StudioCommandPaletteCompose, w: float, h: float) -> unit
+  requires w > 0.0
+  requires h > 0.0
+  requires palette.is_open == studio_palette_closed_flag()
+  ensures palette.is_open == studio_palette_open_flag()
+  ensures palette.result_count == studio_palette_result_count_stub()
+  ensures palette.backdrop_rect.w == w
+  decreases 0
+=
+  var open_w: float = w
+  var open_h: float = h
+  var opened: StudioCommandPaletteCompose = studio_compose_palette(open_w, open_h, studio_palette_open_flag())
+  palette.is_open = opened.is_open
+  palette.backdrop_rect = opened.backdrop_rect
+  palette.panel_rect = opened.panel_rect
+  palette.search_rect = opened.search_rect
+  palette.result_count = opened.result_count
+  palette.selected_slot = 0
+  palette.last_action_id = studio_palette_action_none()
+
+def studio_palette_close(palette: var StudioCommandPaletteCompose) -> unit
+  requires palette.is_open == studio_palette_open_flag()
+  ensures palette.is_open == studio_palette_closed_flag()
+  ensures palette.result_count == 0
+  decreases 0
+=
+  palette.is_open = studio_palette_closed_flag()
+  palette.result_count = 0
+  palette.backdrop_rect = rect_make(0.0, 0.0, 0.0, 0.0)
+  palette.panel_rect = rect_make(0.0, 0.0, 0.0, 0.0)
+  palette.search_rect = rect_make(0.0, 0.0, 0.0, 0.0)
+  palette.selected_slot = 0
+
+def studio_palette_exec_slot(palette: var StudioCommandPaletteCompose, slot: int) -> int
+  requires slot >= 1
+  requires slot <= studio_palette_result_count_stub()
+  requires palette.is_open == studio_palette_open_flag()
+  ensures palette.is_open == studio_palette_closed_flag()
+  ensures palette.last_action_id == studio_palette_action_for_slot(slot)
+  ensures result == palette.last_action_id
+  decreases slot
+=
+  palette.selected_slot = slot
+  palette.last_action_id = studio_palette_action_for_slot(slot)
+  studio_palette_close(palette)
+  return palette.last_action_id
+
+def studio_palette_toggle(palette: var StudioCommandPaletteCompose, w: float, h: float) -> unit
+  requires w > 0.0
+  requires h > 0.0
+  requires palette.is_open >= studio_palette_closed_flag()
+  requires palette.is_open <= studio_palette_open_flag()
+  ensures palette.is_open >= studio_palette_closed_flag()
+  ensures palette.is_open <= studio_palette_open_flag()
+  decreases palette.is_open
+=
+  if palette.is_open == studio_palette_open_flag():
+    studio_palette_close(palette)
+    return
+  var toggle_w: float = w
+  var toggle_h: float = h
+  studio_palette_open(palette, toggle_w, toggle_h)
+
+def studio_palette_ok(palette: StudioCommandPaletteCompose) -> int
+  requires palette.is_open >= studio_palette_closed_flag()
+  requires palette.is_open <= studio_palette_open_flag()
+  ensures result >= 0
+  ensures result <= 1
+  decreases palette.is_open
+=
+  if palette.is_open == studio_palette_closed_flag():
+    if palette.result_count != 0:
+      return 0
+    if palette.search_rect.w != 0.0:
+      return 0
+    return 1
+  if palette.backdrop_rect.w <= 0.0:
+    return 0
+  if palette.panel_rect.w != studio_palette_panel_width_px():
+    return 0
+  if palette.search_rect.h != studio_palette_search_bar_height_px():
+    return 0
+  if palette.result_count != studio_palette_result_count_stub():
+    return 0
+  return 1
+
+def studio_paint_palette_cmds(is_open: int) -> int
+  requires is_open >= studio_palette_closed_flag()
+  requires is_open <= studio_palette_open_flag()
+  ensures result >= 0
+  ensures result <= 3
+  decreases is_open
+=
+  if is_open == studio_palette_closed_flag():
+    return 0
+  return 3
+
+def paint_studio_palette(frame: var PaintFrame, palette: StudioCommandPaletteCompose) -> unit
+  requires frame.cmd_count >= 0
+  requires palette.is_open >= studio_palette_closed_flag()
+  requires palette.is_open <= studio_palette_open_flag()
+  ensures frame.cmd_count == old(frame.cmd_count) + studio_paint_palette_cmds(palette.is_open)
+  decreases palette.is_open
+=
+  if palette.is_open == studio_palette_closed_flag():
+    return
+  frame.cmd_count = frame.cmd_count + 1
+  frame.last_kind = paint_op_fill_rect()
+  frame.last_rect = palette.backdrop_rect
+  frame.last_color = color_rgb(0.051, 0.067, 0.090, 0.72)
+  frame.cmd_count = frame.cmd_count + 1
+  frame.last_kind = paint_op_fill_rect()
+  frame.last_rect = palette.panel_rect
+  frame.last_color = studio_color_bg_elevated()
+  frame.cmd_count = frame.cmd_count + 1
+  frame.last_kind = paint_op_stroke_rect()
+  frame.last_rect = palette.search_rect
+  frame.last_color = studio_color_accent_cyan()
+
+def paint_studio_palette_count(is_open: int) -> int
+  requires is_open >= studio_palette_closed_flag()
+  requires is_open <= studio_palette_open_flag()
+  ensures result == studio_paint_palette_cmds(is_open)
+  decreases is_open
+=
+  return studio_paint_palette_cmds(is_open)
+
+# --- studio shell layout IR ---
+
+def studio_region_dock() -> int
+  requires true
+  ensures result == 1
+  decreases 0
+=
+  return 1
+
+def studio_region_topbar() -> int
+  requires true
+  ensures result == 2
+  decreases 0
+=
+  return 2
+
+def studio_region_viewport() -> int
+  requires true
+  ensures result == 3
+  decreases 0
+=
+  return 3
+
+def studio_region_inspector() -> int
+  requires true
+  ensures result == 4
+  decreases 0
+=
+  return 4
+
+def studio_region_timeline() -> int
+  requires true
+  ensures result == 5
+  decreases 0
+=
+  return 5
+
+def studio_region_agent_strip() -> int
+  requires true
+  ensures result == 6
+  decreases 0
+=
+  return 6
+
+def studio_timeline_height_px() -> float
+  requires true
+  ensures result == 180.0
+  decreases 0
+=
+  return 180.0
+
+def studio_agent_strip_height_px() -> float
+  requires true
+  ensures result == 40.0
+  decreases 0
+=
+  return 40.0
 
 def studio_agent_stream_step_total() -> int
   requires true
@@ -428,695 +866,6 @@ def studio_agent_bench_native(w: float, h: float) -> StudioAgentBenchNative
   var tick_ms: float = studio_agent_tick_latency_native_ms()
   studio_agent_stream_tick(stream, tick_ms)
   studio_agent_stream_tick(stream, tick_ms)
-  studio_agent_stream_tick(stream, tick_ms)
-  if stream.task_state != studio_agent_task_done():
-    var fail2: StudioAgentBenchNative
-    fail2.tick_ms = tick_ms
-    fail2.cancel_ms = 999.0
-    fail2.steps_completed = stream.step_index
-    fail2.cancel_works = 0
-    fail2.progress_visible = 0
-    fail2.native_pixels = 0
-    fail2.tick_meets_budget = 0
-    fail2.cancel_meets_budget = 0
-    return fail2
-  if stream.progress_pct != 1.0:
-    var fail3: StudioAgentBenchNative
-    fail3.tick_ms = tick_ms
-    fail3.cancel_ms = 999.0
-    fail3.steps_completed = stream.step_index
-    fail3.cancel_works = 0
-    fail3.progress_visible = 0
-    fail3.native_pixels = 0
-    fail3.tick_meets_budget = 0
-    fail3.cancel_meets_budget = 0
-    return fail3
-  var cancel_stream: StudioAgentStreamState = studio_agent_stream_new()
-  studio_agent_stream_start(cancel_stream)
-  var cancel_ms: float = studio_agent_cancel_latency_native_ms()
-  studio_agent_stream_cancel(cancel_stream)
-  var cancel_works: int = 0
-  if cancel_stream.task_state == studio_agent_task_idle():
-    if cancel_stream.cancel_requested == 1:
-      cancel_works = 1
-  var out: StudioAgentBenchNative
-  out.tick_ms = tick_ms
-  out.cancel_ms = cancel_ms
-  out.steps_completed = stream.step_index
-  out.cancel_works = cancel_works
-  out.progress_visible = 1
-  out.native_pixels = 1
-  out.tick_meets_budget = 1
-  out.cancel_meets_budget = 1
-  return out
-
-def studio_dock_width_px() -> float
-  requires true
-  ensures result == 56.0
-  decreases 0
-=
-  return 56.0
-
-def studio_topbar_height_px() -> float
-  requires true
-  ensures result == 44.0
-  decreases 0
-=
-  return 44.0
-
-def studio_inspector_width_px() -> float
-  requires true
-  ensures result == 320.0
-  decreases 0
-=
-  return 320.0
-
-def studio_panel_transition_ms() -> float
-  requires true
-  ensures result == 100.0
-  decreases 0
-=
-  return 100.0
-
-# UX-04 command palette — fuzzy filter + open/filter latency hooks (studio-ux-16).
-
-def studio_palette_open_flag() -> int
-  requires true
-  ensures result == 1
-  decreases 0
-=
-  return 1
-
-def studio_palette_closed_flag() -> int
-  requires true
-  ensures result == 0
-  decreases 0
-=
-  return 0
-
-def studio_palette_panel_width_px() -> float
-  requires true
-  ensures result == 560.0
-  decreases 0
-=
-  return 560.0
-
-def studio_palette_panel_height_px() -> float
-  requires true
-  ensures result == 360.0
-  decreases 0
-=
-  return 360.0
-
-def studio_palette_search_bar_height_px() -> float
-  requires true
-  ensures result == 44.0
-  decreases 0
-=
-  return 44.0
-
-def studio_palette_cmd_catalog_count() -> int
-  requires true
-  ensures result == 6
-  decreases 0
-=
-  return 6
-
-def studio_palette_cmd_keyword(cmd_id: int) -> int
-  requires cmd_id >= 1
-  requires cmd_id <= studio_palette_cmd_catalog_count()
-  ensures result >= 1101
-  ensures result <= 1606
-  decreases cmd_id
-=
-  if cmd_id == 1:
-    return 1101
-  if cmd_id == 2:
-    return 1202
-  if cmd_id == 3:
-    return 1303
-  if cmd_id == 4:
-    return 1404
-  if cmd_id == 5:
-    return 1505
-  return 1606
-
-def studio_palette_action_for_cmd(cmd_id: int) -> int
-  requires cmd_id >= 1
-  requires cmd_id <= studio_palette_cmd_catalog_count()
-  ensures result >= 1
-  ensures result <= 3
-  decreases cmd_id
-=
-  if cmd_id == 1:
-    return 1
-  if cmd_id == 2:
-    return 2
-  if cmd_id == 3:
-    return 3
-  if cmd_id == 4:
-    return 2
-  if cmd_id == 5:
-    return 3
-  return 1
-
-def studio_palette_fuzzy_match(cmd_keyword: int, query_code: int) -> int
-  requires cmd_keyword >= 1101
-  requires cmd_keyword <= 1606
-  requires query_code >= 0
-  ensures result >= 0
-  ensures result <= 1
-  decreases query_code
-=
-  if query_code == 0:
-    return 1
-  if cmd_keyword == query_code:
-    return 1
-  var bucket: int = query_code
-  var kw_bucket: int = cmd_keyword / 100
-  if kw_bucket == bucket:
-    return 1
-  var q_tens: int = (query_code / 10) % 10
-  var k_tens: int = (cmd_keyword / 10) % 10
-  if q_tens > 0:
-    if k_tens == q_tens:
-      return 1
-  return 0
-
-def studio_palette_filter_count(query_code: int) -> int
-  requires query_code >= 0
-  ensures result >= 0
-  ensures result <= studio_palette_cmd_catalog_count()
-  decreases query_code
-=
-  var n: int = 0
-  var c1: int = studio_palette_fuzzy_match(studio_palette_cmd_keyword(1), query_code)
-  if c1 == 1:
-    n = n + 1
-  var c2: int = studio_palette_fuzzy_match(studio_palette_cmd_keyword(2), query_code)
-  if c2 == 1:
-    n = n + 1
-  var c3: int = studio_palette_fuzzy_match(studio_palette_cmd_keyword(3), query_code)
-  if c3 == 1:
-    n = n + 1
-  var c4: int = studio_palette_fuzzy_match(studio_palette_cmd_keyword(4), query_code)
-  if c4 == 1:
-    n = n + 1
-  var c5: int = studio_palette_fuzzy_match(studio_palette_cmd_keyword(5), query_code)
-  if c5 == 1:
-    n = n + 1
-  var c6: int = studio_palette_fuzzy_match(studio_palette_cmd_keyword(6), query_code)
-  if c6 == 1:
-    n = n + 1
-  return n
-
-def studio_palette_open_latency_ms() -> float
-  requires true
-  ensures result == 12.0
-  decreases 0
-=
-  return 12.0
-
-def studio_palette_filter_latency_ms(query_code: int) -> float
-  requires query_code >= 0
-  ensures result >= 0.0
-  ensures result <= 8.0
-  decreases query_code
-=
-  if query_code == 0:
-    return 0.0
-  return 8.0
-
-def studio_palette_open_budget_ms() -> float
-  requires true
-  ensures result == 50.0
-  decreases 0
-=
-  return 50.0
-
-def studio_palette_filter_budget_ms() -> float
-  requires true
-  ensures result == 30.0
-  decreases 0
-=
-  return 30.0
-
-type StudioPaletteBenchLatency = object
-  public open_ms: float
-  public filter_ms: float
-  public native_pixels: int
-  public open_meets_budget: int
-  public filter_meets_budget: int
-  public result_count: int
-
-def studio_palette_open_latency_native_ms() -> float
-  requires true
-  ensures result == 14.0
-  ensures result <= studio_palette_open_budget_ms()
-  decreases 0
-=
-  return 14.0
-
-def studio_palette_filter_latency_native_ms(query_code: int) -> float
-  requires query_code >= 0
-  ensures result >= 0.0
-  ensures result <= 9.5
-  ensures result <= studio_palette_filter_budget_ms()
-  decreases query_code
-=
-  if query_code == 0:
-    return 0.0
-  return 9.5
-
-def studio_palette_bench_native(w: float, h: float, query_code: int) -> StudioPaletteBenchLatency
-  requires w > 0.0
-  requires h > 0.0
-  requires query_code >= 0
-  ensures result.native_pixels == 1
-  ensures result.open_meets_budget == 1
-  ensures result.filter_meets_budget == 1
-  ensures result.open_ms == studio_palette_open_latency_native_ms()
-  ensures result.filter_ms == studio_palette_filter_latency_native_ms(query_code)
-  ensures result.result_count == studio_palette_filter_count(query_code)
-  decreases query_code
-=
-  var closed: StudioCommandPaletteCompose = studio_compose_palette(w, h, studio_palette_closed_flag(), 0)
-  if studio_palette_ok(closed) != 1:
-    var fail: StudioPaletteBenchLatency
-    fail.open_ms = 999.0
-    fail.filter_ms = 999.0
-    fail.native_pixels = 0
-    fail.open_meets_budget = 0
-    fail.filter_meets_budget = 0
-    fail.result_count = 0
-    return fail
-  var open_pal: StudioCommandPaletteCompose = studio_compose_palette(w, h, studio_palette_open_flag(), query_code)
-  var mut: StudioCommandPaletteCompose = open_pal
-  studio_palette_apply_filter(mut, query_code)
-  var frame: PaintFrame = paint_frame_new()
-  paint_studio_palette(frame, mut)
-  var out: StudioPaletteBenchLatency
-  out.open_ms = studio_palette_open_latency_native_ms()
-  out.filter_ms = studio_palette_filter_latency_native_ms(query_code)
-  out.native_pixels = 1
-  out.open_meets_budget = 1
-  out.filter_meets_budget = 1
-  out.result_count = mut.result_count
-  return out
-
-type StudioCommandPaletteCompose = object
-  public is_open: int
-  public backdrop_rect: Rect
-  public panel_rect: Rect
-  public search_rect: Rect
-  public query_code: int
-  public result_count: int
-  public selected_slot: int
-  public last_action_id: int
-  public open_latency_ms: float
-  public filter_latency_ms: float
-
-def studio_palette_backdrop_rect_at(w: float, h: float) -> Rect
-  requires w > 0.0
-  requires h > 0.0
-  ensures result.w == w
-  ensures result.h == h
-  decreases 0
-=
-  return rect_make(0.0, 0.0, w, h)
-
-def studio_palette_panel_rect_at(w: float, h: float) -> Rect
-  requires w > 0.0
-  requires h > 0.0
-  ensures result.w == studio_palette_panel_width_px()
-  ensures result.h == studio_palette_panel_height_px()
-  decreases 0
-=
-  var pw: float = studio_palette_panel_width_px()
-  var ph: float = studio_palette_panel_height_px()
-  var x: float = (w - pw) / 2.0
-  var y: float = (h - ph) / 2.0
-  if x < 0.0:
-    x = 0.0
-  if y < 0.0:
-    y = 0.0
-  return rect_make(x, y, pw, ph)
-
-def studio_compose_palette(w: float, h: float, is_open: int, query_code: int) -> StudioCommandPaletteCompose
-  requires w > 0.0
-  requires h > 0.0
-  requires is_open >= studio_palette_closed_flag()
-  requires is_open <= studio_palette_open_flag()
-  requires query_code >= 0
-  ensures result.is_open == is_open
-  ensures result.query_code == query_code
-  decreases is_open
-=
-  var out: StudioCommandPaletteCompose
-  out.is_open = is_open
-  out.backdrop_rect = rect_make(0.0, 0.0, 0.0, 0.0)
-  out.panel_rect = rect_make(0.0, 0.0, 0.0, 0.0)
-  out.search_rect = rect_make(0.0, 0.0, 0.0, 0.0)
-  out.query_code = query_code
-  out.result_count = 0
-  out.selected_slot = 0
-  out.last_action_id = 0
-  out.open_latency_ms = 0.0
-  out.filter_latency_ms = 0.0
-  if is_open == studio_palette_open_flag():
-    out.backdrop_rect = studio_palette_backdrop_rect_at(w, h)
-    out.panel_rect = studio_palette_panel_rect_at(w, h)
-    var pad: float = 16.0
-    out.search_rect = rect_make(out.panel_rect.x + pad, out.panel_rect.y + pad, out.panel_rect.w - (pad * 2.0), studio_palette_search_bar_height_px())
-    out.open_latency_ms = studio_palette_open_latency_ms()
-    out.filter_latency_ms = studio_palette_filter_latency_ms(query_code)
-    out.result_count = studio_palette_filter_count(query_code)
-  return out
-
-def studio_palette_apply_filter(palette: var StudioCommandPaletteCompose, query_code: int) -> unit
-  requires palette.is_open == studio_palette_open_flag()
-  requires query_code >= 0
-  ensures palette.query_code == query_code
-  ensures palette.result_count == studio_palette_filter_count(query_code)
-  ensures palette.filter_latency_ms == studio_palette_filter_latency_ms(query_code)
-  decreases query_code
-=
-  palette.query_code = query_code
-  palette.filter_latency_ms = studio_palette_filter_latency_ms(query_code)
-  palette.result_count = studio_palette_filter_count(query_code)
-
-def studio_palette_ok(palette: StudioCommandPaletteCompose) -> int
-  requires palette.is_open >= studio_palette_closed_flag()
-  requires palette.is_open <= studio_palette_open_flag()
-  ensures result >= 0
-  ensures result <= 1
-  decreases palette.is_open
-=
-  if palette.is_open == studio_palette_closed_flag():
-    if palette.result_count != 0:
-      return 0
-    return 1
-  if palette.backdrop_rect.w <= 0.0:
-    return 0
-  if palette.panel_rect.w != studio_palette_panel_width_px():
-    return 0
-  if palette.open_latency_ms > studio_palette_open_budget_ms():
-    return 0
-  if palette.filter_latency_ms > studio_palette_filter_budget_ms():
-    return 0
-  if palette.result_count < 0:
-    return 0
-  if palette.result_count > studio_palette_cmd_catalog_count():
-    return 0
-  return 1
-
-def studio_paint_palette_cmds(is_open: int) -> int
-  requires is_open >= studio_palette_closed_flag()
-  requires is_open <= studio_palette_open_flag()
-  ensures result >= 0
-  ensures result <= 3
-  decreases is_open
-=
-  if is_open == studio_palette_closed_flag():
-    return 0
-  return 3
-
-def paint_studio_palette(frame: var PaintFrame, palette: StudioCommandPaletteCompose) -> unit
-  requires frame.cmd_count >= 0
-  requires palette.is_open == studio_palette_open_flag()
-  ensures frame.cmd_count == old(frame.cmd_count) + studio_paint_palette_cmds(studio_palette_open_flag())
-  decreases 0
-=
-  frame.cmd_count = frame.cmd_count + 1
-  frame.last_kind = paint_op_fill_rect()
-  frame.last_rect = palette.backdrop_rect
-  frame.last_color = color_rgb(0.051, 0.067, 0.090, 0.72)
-  frame.cmd_count = frame.cmd_count + 1
-  frame.last_kind = paint_op_fill_rect()
-  frame.last_rect = palette.panel_rect
-  frame.last_color = studio_color_bg_elevated()
-  frame.cmd_count = frame.cmd_count + 1
-  frame.last_kind = paint_op_stroke_rect()
-  frame.last_rect = palette.search_rect
-  frame.last_color = studio_color_accent_cyan()
-
-# UX-08 GPU fail strip — viewport overlay + retry affordance (studio-ux-17).
-
-def studio_gpu_state_ok() -> int
-  requires true
-  ensures result == 0
-  decreases 0
-=
-  return 0
-
-def studio_gpu_state_fail() -> int
-  requires true
-  ensures result == 1
-  decreases 0
-=
-  return 1
-
-def studio_gpu_fail_strip_height_px() -> float
-  requires true
-  ensures result == 32.0
-  decreases 0
-=
-  return 32.0
-
-def studio_gpu_retry_btn_width_px() -> float
-  requires true
-  ensures result == 88.0
-  decreases 0
-=
-  return 88.0
-
-def studio_gpu_fail_retry_latency_ms() -> float
-  requires true
-  ensures result == 15.0
-  decreases 0
-=
-  return 15.0
-
-def studio_gpu_fail_retry_budget_ms() -> float
-  requires true
-  ensures result == 100.0
-  decreases 0
-=
-  return 100.0
-
-type StudioGpuFailCompose = object
-  public gpu_state: int
-  public strip_rect: Rect
-  public message_rect: Rect
-  public retry_rect: Rect
-  public retry_visible: int
-  public retry_latency_ms: float
-
-def studio_gpu_fail_visible(gpu_state: int) -> int
-  requires gpu_state >= studio_gpu_state_ok()
-  requires gpu_state <= studio_gpu_state_fail()
-  ensures result >= 0
-  ensures result <= 1
-  decreases gpu_state
-=
-  if gpu_state == studio_gpu_state_fail():
-    return 1
-  return 0
-
-def studio_gpu_retry_visible(gpu_state: int) -> int
-  requires gpu_state >= studio_gpu_state_ok()
-  requires gpu_state <= studio_gpu_state_fail()
-  ensures result >= 0
-  ensures result <= 1
-  decreases gpu_state
-=
-  return studio_gpu_fail_visible(gpu_state)
-
-def studio_gpu_fail_strip_rect_at(vp_x: float, vp_y: float, vp_w: float, vp_h: float) -> Rect
-  requires vp_w >= 0.0
-  requires vp_h >= studio_gpu_fail_strip_height_px()
-  ensures result.w == vp_w
-  ensures result.h == studio_gpu_fail_strip_height_px()
-  decreases 0
-=
-  return rect_make(vp_x, vp_y, vp_w, studio_gpu_fail_strip_height_px())
-
-def studio_gpu_retry_rect_at(strip_x: float, strip_y: float, strip_w: float, strip_h: float) -> Rect
-  requires strip_w >= studio_gpu_retry_btn_width_px()
-  requires strip_h >= 0.0
-  ensures result.w == studio_gpu_retry_btn_width_px()
-  ensures result.h <= strip_h
-  decreases 0
-=
-  var pad: float = studio_agent_status_pad_px()
-  var btn_h: float = strip_h - (pad * 2.0)
-  if btn_h < 20.0:
-    btn_h = 20.0
-  if btn_h > strip_h:
-    btn_h = strip_h
-  var x: float = strip_x + strip_w - studio_gpu_retry_btn_width_px() - pad
-  var y: float = strip_y + (strip_h - btn_h) / 2.0
-  return rect_make(x, y, studio_gpu_retry_btn_width_px(), btn_h)
-
-def studio_gpu_fail_message_rect_at(strip_x: float, strip_y: float, strip_w: float, strip_h: float, retry_visible: int) -> Rect
-  requires strip_w >= 0.0
-  requires strip_h >= 0.0
-  requires retry_visible >= 0
-  requires retry_visible <= 1
-  ensures result.w >= 0.0
-  ensures result.h <= strip_h
-  decreases retry_visible
-=
-  var pad: float = studio_agent_status_pad_px()
-  var reserved: float = 0.0
-  if retry_visible == 1:
-    reserved = studio_gpu_retry_btn_width_px() + pad
-  var w: float = strip_w - (pad * 2.0) - reserved
-  if w < 0.0:
-    w = 0.0
-  var h: float = strip_h - (pad * 2.0)
-  if h < 0.0:
-    h = 0.0
-  return rect_make(strip_x + pad, strip_y + pad, w, h)
-
-def studio_compose_gpu_fail(viewport: Rect, gpu_state: int) -> StudioGpuFailCompose
-  requires gpu_state >= studio_gpu_state_ok()
-  requires gpu_state <= studio_gpu_state_fail()
-  requires viewport.w >= 0.0
-  requires viewport.h >= studio_gpu_fail_strip_height_px()
-  ensures result.gpu_state == gpu_state
-  decreases gpu_state
-=
-  var out: StudioGpuFailCompose
-  out.gpu_state = gpu_state
-  out.retry_visible = 0
-  out.retry_latency_ms = 0.0
-  out.strip_rect = rect_make(0.0, 0.0, 0.0, 0.0)
-  out.message_rect = rect_make(0.0, 0.0, 0.0, 0.0)
-  out.retry_rect = rect_make(0.0, 0.0, 0.0, 0.0)
-  if gpu_state == studio_gpu_state_fail():
-    out.retry_visible = 1
-    out.strip_rect = studio_gpu_fail_strip_rect_at(viewport.x, viewport.y, viewport.w, viewport.h)
-    out.retry_rect = studio_gpu_retry_rect_at(out.strip_rect.x, out.strip_rect.y, out.strip_rect.w, out.strip_rect.h)
-    out.message_rect = studio_gpu_fail_message_rect_at(out.strip_rect.x, out.strip_rect.y, out.strip_rect.w, out.strip_rect.h, out.retry_visible)
-    out.retry_latency_ms = studio_gpu_fail_retry_latency_ms()
-  return out
-
-def studio_gpu_fail_ok(gpu_fail: StudioGpuFailCompose) -> int
-  requires gpu_fail.gpu_state >= studio_gpu_state_ok()
-  requires gpu_fail.gpu_state <= studio_gpu_state_fail()
-  ensures result >= 0
-  ensures result <= 1
-  decreases gpu_fail.gpu_state
-=
-  if gpu_fail.gpu_state == studio_gpu_state_ok():
-    if gpu_fail.retry_visible != 0:
-      return 0
-    if gpu_fail.retry_latency_ms != 0.0:
-      return 0
-    return 1
-  if gpu_fail.strip_rect.h != studio_gpu_fail_strip_height_px():
-    return 0
-  if gpu_fail.retry_visible != 1:
-    return 0
-  if gpu_fail.retry_rect.w != studio_gpu_retry_btn_width_px():
-    return 0
-  if gpu_fail.retry_latency_ms > studio_gpu_fail_retry_budget_ms():
-    return 0
-  return 1
-
-def studio_paint_gpu_fail_cmds(gpu_state: int) -> int
-  requires gpu_state >= studio_gpu_state_ok()
-  requires gpu_state <= studio_gpu_state_fail()
-  ensures result >= 0
-  ensures result <= 4
-  decreases gpu_state
-=
-  if gpu_state == studio_gpu_state_fail():
-    return 4
-  return 0
-
-def paint_studio_gpu_fail(frame: var PaintFrame, gpu_fail: StudioGpuFailCompose) -> unit
-  requires frame.cmd_count >= 0
-  requires gpu_fail.gpu_state == studio_gpu_state_fail()
-  ensures frame.cmd_count == old(frame.cmd_count) + studio_paint_gpu_fail_cmds(studio_gpu_state_fail())
-  decreases 0
-=
-  frame.cmd_count = frame.cmd_count + 1
-  frame.last_kind = paint_op_fill_rect()
-  frame.last_rect = gpu_fail.strip_rect
-  frame.last_color = studio_color_agent_error()
-  frame.cmd_count = frame.cmd_count + 1
-  frame.last_kind = paint_op_stroke_rect()
-  frame.last_rect = gpu_fail.strip_rect
-  frame.last_color = studio_color_agent_error()
-  frame.cmd_count = frame.cmd_count + 1
-  frame.last_kind = paint_op_fill_rect()
-  frame.last_rect = gpu_fail.message_rect
-  frame.last_color = studio_color_bg_elevated()
-  frame.cmd_count = frame.cmd_count + 1
-  frame.last_kind = paint_op_stroke_rect()
-  frame.last_rect = gpu_fail.retry_rect
-  frame.last_color = studio_color_accent_cyan()
-
-# --- studio shell layout IR ---
-
-def studio_region_dock() -> int
-  requires true
-  ensures result == 1
-  decreases 0
-=
-  return 1
-
-def studio_region_topbar() -> int
-  requires true
-  ensures result == 2
-  decreases 0
-=
-  return 2
-
-def studio_region_viewport() -> int
-  requires true
-  ensures result == 3
-  decreases 0
-=
-  return 3
-
-def studio_region_inspector() -> int
-  requires true
-  ensures result == 4
-  decreases 0
-=
-  return 4
-
-def studio_region_timeline() -> int
-  requires true
-  ensures result == 5
-  decreases 0
-=
-  return 5
-
-def studio_region_agent_strip() -> int
-  requires true
-  ensures result == 6
-  decreases 0
-=
-  return 6
-
-def studio_timeline_height_px() -> float
-  requires true
-  ensures result == 180.0
-  decreases 0
-=
-  return 180.0
-
-def studio_agent_strip_height_px() -> float
-  requires true
-  ensures result == 40.0
-  decreases 0
-=
-  return 40.0
-
 type StudioShellLayout = object
   public viewport_w: float
   public viewport_h: float
@@ -1143,11 +892,14 @@ def rect_make(x: float, y: float, w: float, h: float) -> Rect
   r.h = h
   return r
 
-def layout_studio_shell_adaptive(w: float, h: float) -> StudioShellLayout
+def layout_studio_shell_adaptive_inspector(w: float, h: float, inspector_w: float) -> StudioShellLayout
   requires w > 0.0
   requires h > 0.0
+  requires inspector_w >= 200.0
+  requires inspector_w <= w
   ensures result.viewport_w > 0.0
   ensures result.viewport_h > 0.0
+  ensures result.inspector.w == inspector_w
   decreases 0
 =
   var out: StudioShellLayout
@@ -1160,12 +912,13 @@ def layout_studio_shell_adaptive(w: float, h: float) -> StudioShellLayout
   var h1: float = h
   var h2: float = h
   var h3: float = h
+  var insp_w: float = inspector_w
   out.viewport_w = w0
   out.viewport_h = h0
   out.dock = rect_make(0.0, 0.0, studio_dock_width_px(), h1)
   var top_w: float = w1 - studio_dock_width_px()
   out.topbar = rect_make(studio_dock_width_px(), 0.0, top_w, studio_topbar_height_px())
-  var vp_w: float = w2 - studio_dock_width_px() - studio_inspector_width_px()
+  var vp_w: float = w2 - studio_dock_width_px() - insp_w
   var vp_h: float = h2 - studio_topbar_height_px() - studio_timeline_height_px() - studio_agent_strip_height_px()
   if vp_w < 0.0:
     vp_w = 0.0
@@ -1173,18 +926,56 @@ def layout_studio_shell_adaptive(w: float, h: float) -> StudioShellLayout
     vp_h = 0.0
   var agent_y: float = studio_topbar_height_px() + vp_h
   out.viewport = rect_make(studio_dock_width_px(), studio_topbar_height_px(), vp_w, vp_h)
-  out.inspector = rect_make(w3 - studio_inspector_width_px(), studio_topbar_height_px(), studio_inspector_width_px(), h3 - studio_topbar_height_px())
-  var tl_w: float = w4 - studio_dock_width_px() - studio_inspector_width_px()
+  out.inspector = rect_make(w3 - insp_w, studio_topbar_height_px(), insp_w, h3 - studio_topbar_height_px())
+  var tl_w: float = w4 - studio_dock_width_px() - insp_w
   if tl_w < 0.0:
     tl_w = 0.0
   var h4: float = h
   out.timeline = rect_make(studio_dock_width_px(), h4 - studio_timeline_height_px(), tl_w, studio_timeline_height_px())
   var w5: float = w
-  var agent_w: float = w5 - studio_dock_width_px() - studio_inspector_width_px()
+  var agent_w: float = w5 - studio_dock_width_px() - insp_w
   if agent_w < 0.0:
     agent_w = 0.0
   out.agent_strip = rect_make(studio_dock_width_px(), agent_y, agent_w, studio_agent_strip_height_px())
   return out
+
+# PH-UX / WP-DRUG-03 — LITL stage widens inspector for DFT/lab panels (compose-only).
+def studio_inspector_width_for_drug_litl_stage(litl_stage: int) -> float
+  requires litl_stage >= 0
+  requires litl_stage <= 4
+  ensures result >= 260.0
+  ensures result <= 400.0
+  decreases litl_stage
+=
+  if litl_stage == 0:
+    return 260.0
+  if litl_stage == 1:
+    return 300.0
+  if litl_stage == 2:
+    return 360.0
+  if litl_stage == 3:
+    return 400.0
+  return 380.0
+
+def layout_studio_shell_drug_litl(w: float, h: float, litl_stage: int) -> StudioShellLayout
+  requires w > 0.0
+  requires h > 0.0
+  requires litl_stage >= 0
+  requires litl_stage <= 4
+  ensures result.inspector.w == studio_inspector_width_for_drug_litl_stage(litl_stage)
+  decreases litl_stage
+=
+  var insp_w: float = studio_inspector_width_for_drug_litl_stage(litl_stage)
+  return layout_studio_shell_adaptive_inspector(w, h, insp_w)
+
+def layout_studio_shell_adaptive(w: float, h: float) -> StudioShellLayout
+  requires w > 0.0
+  requires h > 0.0
+  ensures result.viewport_w > 0.0
+  ensures result.viewport_h > 0.0
+  decreases 0
+=
+  return layout_studio_shell_adaptive_inspector(w, h, studio_inspector_width_px())
 
 def layout_region_rect(layout: var StudioShellLayout, region: int) -> Rect
   requires region >= 1
@@ -1331,3 +1122,11 @@ def paint_studio_shell_chrome_count() -> int
   decreases 0
 =
   return 7
+
+def paint_studio_shell_chrome_with_palette_count(palette_open: int) -> int
+  requires palette_open >= studio_palette_closed_flag()
+  requires palette_open <= studio_palette_open_flag()
+  ensures result == paint_studio_shell_chrome_count() + paint_studio_palette_count(palette_open)
+  decreases palette_open
+=
+  return paint_studio_shell_chrome_count() + paint_studio_palette_count(palette_open)

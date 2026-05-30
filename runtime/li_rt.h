@@ -220,6 +220,13 @@ int32_t li_rt_log_redact_ok(const char* in);
 #endif
 int32_t li_rt_studio_profile_from_name(const char* name);
 int32_t li_rt_studio_parse_toml_profile_line(const char* line);
+int32_t li_rt_studio_toml_reset(void);
+int32_t li_rt_studio_toml_parse_line(const char* line);
+int32_t li_rt_studio_toml_parsed_profile(void);
+int32_t li_rt_studio_toml_parsed_determinism_tier(void);
+int32_t li_rt_studio_toml_parsed_export_format_mask(void);
+int32_t li_rt_studio_toml_parsed_require_sim_pass(void);
+int32_t li_rt_studio_toml_parsed_printer_profile_slot(void);
 int32_t li_rt_studio_timeline_playing(void);
 int32_t li_rt_studio_timeline_toggle_play(void);
 int32_t li_rt_studio_timeline_tick_frame(void);

@@ -8,6 +8,7 @@ import sim.automotive
 import sim.sensors
 import sim.additive
 import sim.drug_design
+import sim.additive
 import scene
 import physics.runtime
 import world
@@ -26,6 +27,45 @@ extern proc li_rt_studio_profile_from_name(name: str) -> int
 extern proc li_rt_studio_parse_toml_profile_line(line: str) -> int
   requires true
   ensures result >= 0
+  decreases 0
+
+extern proc li_rt_studio_toml_reset() -> int
+  requires true
+  ensures result == 1
+  decreases 0
+
+extern proc li_rt_studio_toml_parse_line(line: str) -> int
+  requires true
+  ensures result >= 0
+  ensures result <= 1
+  decreases 0
+
+extern proc li_rt_studio_toml_parsed_profile() -> int
+  requires true
+  ensures result >= 0
+  decreases 0
+
+extern proc li_rt_studio_toml_parsed_determinism_tier() -> int
+  requires true
+  ensures result >= 0
+  ensures result <= 3
+  decreases 0
+
+extern proc li_rt_studio_toml_parsed_export_format_mask() -> int
+  requires true
+  ensures result >= 0
+  decreases 0
+
+extern proc li_rt_studio_toml_parsed_require_sim_pass() -> int
+  requires true
+  ensures result >= 0
+  ensures result <= 1
+  decreases 0
+
+extern proc li_rt_studio_toml_parsed_printer_profile_slot() -> int
+  requires true
+  ensures result >= 0
+  ensures result <= 2
   decreases 0
 
 # UX-08 — viewport error mock (no wgpu surface probe; native host wires later).
@@ -296,6 +336,96 @@ def studio_parse_toml_profile_line(line: str) raises IO, Alloc -> int
   decreases 0
 =
   return li_rt_studio_parse_toml_profile_line(line)
+
+def studio_determinism_tier_default() -> int
+  requires true
+  ensures result == 1
+  decreases 0
+=
+  return 1
+
+def studio_determinism_tier_valid(tier: int) -> int
+  requires true
+  ensures result >= 0
+  ensures result <= 1
+  decreases tier
+=
+  if tier < 0:
+    return 0
+  if tier > 3:
+    return 0
+  return 1
+
+def studio_determinism_tier_to_output_detail(tier: int) -> int
+  requires studio_determinism_tier_valid(tier) == 1
+  ensures result >= output_detail_summary()
+  ensures result <= output_detail_repro()
+  decreases tier
+=
+  if tier == 0:
+    return output_detail_summary()
+  if tier == 1:
+    return output_detail_fields()
+  if tier == 2:
+    return output_detail_debug()
+  return output_detail_repro()
+
+def studio_export_format_mask_stl() -> int
+  requires true
+  ensures result == 1
+  decreases 0
+=
+  return 1
+
+def studio_export_format_mask_3mf() -> int
+  requires true
+  ensures result == 2
+  decreases 0
+=
+  return 2
+
+def studio_export_format_mask_gcode() -> int
+  requires true
+  ensures result == 4
+  decreases 0
+=
+  return 4
+
+def studio_printer_profile_slot_none() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0
+
+def studio_printer_profile_slot_bambu() -> int
+  requires true
+  ensures result == 1
+  decreases 0
+=
+  return 1
+
+def studio_printer_profile_slot_generic() -> int
+  requires true
+  ensures result == 2
+  decreases 0
+=
+  return 2
+
+def studio_toml_reset() -> unit
+  requires true
+  ensures true
+  decreases 0
+=
+  var _ok: int = li_rt_studio_toml_reset()
+
+def studio_toml_parse_line(line: str) raises IO, Alloc -> int
+  requires true
+  ensures result >= 0
+  ensures result <= 1
+  decreases 0
+=
+  return li_rt_studio_toml_parse_line(line)
 
 def studio_profile_chip_width_px() -> float
   requires true
@@ -1148,10 +1278,10 @@ def studio_compose_shell_drug_litl(w: float, h: float, tick: int, has_selection:
 
 def li_std_studio_version() -> int
   requires true
-  ensures result == 11
+  ensures result == 12
   decreases 0
 =
-  return 11
+  return 12
 
 def studio_agent_context_none() -> int
   requires true
@@ -1644,8 +1774,15 @@ type StudioAgentChromeCompose = object
   public invoke_input_visible: int
   public tool_trace_visible: int
 
+type StudioExportConfig = object
+  public format_mask: int
+  public require_sim_pass: int
+  public printer_profile_slot: int
+
 type StudioProjectConfig = object
   public active_profile: int
+  public determinism_tier: int
+  public export_cfg: StudioExportConfig
 
 
 # UX-11 — shell loading / skeleton rects (viewport + inspector); no spinner IR
@@ -1857,21 +1994,89 @@ def studio_active_profile(compose: StudioShellCompose) -> int
 def studio_project_config_new(active_profile: int) -> StudioProjectConfig
   requires studio_profile_id_valid(active_profile) == 1
   ensures result.active_profile == active_profile
+  ensures result.determinism_tier == studio_determinism_tier_default()
+  ensures result.export_cfg.format_mask == 0
   decreases 0
 =
   var cfg: StudioProjectConfig
   cfg.active_profile = active_profile
+  cfg.determinism_tier = studio_determinism_tier_default()
+  cfg.export_cfg = studio_export_config_default()
   return cfg
+
+def studio_export_config_default() -> StudioExportConfig
+  requires true
+  ensures result.format_mask == 0
+  ensures result.require_sim_pass == 0
+  ensures result.printer_profile_slot == studio_printer_profile_slot_none()
+  decreases 0
+=
+  var e: StudioExportConfig
+  e.format_mask = 0
+  e.require_sim_pass = 0
+  e.printer_profile_slot = studio_printer_profile_slot_none()
+  return e
+
+def studio_toml_parsed_export_config() -> StudioExportConfig
+  requires true
+  ensures result.format_mask >= 0
+  ensures result.require_sim_pass >= 0
+  ensures result.require_sim_pass <= 1
+  decreases 0
+=
+  var e: StudioExportConfig = studio_export_config_default()
+  e.format_mask = li_rt_studio_toml_parsed_export_format_mask()
+  e.require_sim_pass = li_rt_studio_toml_parsed_require_sim_pass()
+  e.printer_profile_slot = li_rt_studio_toml_parsed_printer_profile_slot()
+  return e
+
+def studio_toml_parsed_config() -> StudioProjectConfig
+  requires true
+  ensures studio_profile_id_valid(result.active_profile) == 1
+  ensures studio_determinism_tier_valid(result.determinism_tier) == 1
+  decreases 0
+=
+  var cfg: StudioProjectConfig
+  cfg.active_profile = li_rt_studio_toml_parsed_profile()
+  cfg.determinism_tier = li_rt_studio_toml_parsed_determinism_tier()
+  cfg.export_cfg = studio_toml_parsed_export_config()
+  return cfg
+
+def studio_project_config_from_additive_toml_fixture() -> StudioProjectConfig
+  requires true
+  ensures result.active_profile == studio_profile_sim_additive()
+  ensures result.determinism_tier == 2
+  ensures result.export_cfg.require_sim_pass == 1
+  decreases 0
+=
+  studio_toml_reset()
+  var _s0: int = studio_toml_parse_line("[engine]")
+  var _s1: int = studio_toml_parse_line("profile = \"sim_additive\"")
+  var _s2: int = studio_toml_parse_line("determinism_tier = 2")
+  var _s3: int = studio_toml_parse_line("[engine.export]")
+  var _s4: int = studio_toml_parse_line("formats = [\"3mf\", \"gcode\"]")
+  var _s5: int = studio_toml_parse_line("require_sim_pass = true")
+  var _s6: int = studio_toml_parse_line("printer_profile = \"profiles/bambu_x1c.toml\"")
+  return studio_toml_parsed_config()
 
 def studio_apply_profile_to_sim(config: StudioProjectConfig, sim_out: var SimSessionStub) -> unit
   requires studio_profile_id_valid(config.active_profile) == 1
   ensures sim_out.studio_profile_id == config.active_profile
   ensures sim_out.sim_contract_id == li_sim_profile_from_studio_id(config.active_profile)
-  ensures sim_out.output_detail == sim_output_detail_for_studio_profile(config.active_profile)
   decreases config.active_profile
 =
   var prof0: int = config.active_profile
   sim_session_apply_studio_profile(prof0, sim_out)
+
+def studio_apply_config_to_sim(config: StudioProjectConfig, sim_out: var SimSessionStub) -> unit
+  requires studio_profile_id_valid(config.active_profile) == 1
+  requires studio_determinism_tier_valid(config.determinism_tier) == 1
+  ensures sim_out.studio_profile_id == config.active_profile
+  ensures sim_out.output_detail == studio_determinism_tier_to_output_detail(config.determinism_tier)
+  decreases config.determinism_tier
+=
+  studio_apply_profile_to_sim(config, sim_out)
+  sim_out.output_detail = studio_determinism_tier_to_output_detail(config.determinism_tier)
 
 # PH-SIM scientific — multi-physics tick + MD tier bench sync into viewport display (CPU paint; not wgpu).
 def studio_sim_scientific_tier_for_tick(tick: int) -> int

@@ -1531,6 +1531,20 @@ bool emit_llvm_ir(const MirModule& mir, const std::string& out_path, int runtime
   module->getOrInsertFunction(
       "li_rt_studio_parse_toml_profile_line",
       llvm::FunctionType::get(i32_ty(context), {i8_ptr(context)}, false));
+  module->getOrInsertFunction("li_rt_studio_toml_reset",
+                              llvm::FunctionType::get(i32_ty(context), {}, false));
+  module->getOrInsertFunction("li_rt_studio_toml_parse_line",
+                              llvm::FunctionType::get(i32_ty(context), {i8_ptr(context)}, false));
+  module->getOrInsertFunction("li_rt_studio_toml_parsed_profile",
+                              llvm::FunctionType::get(i32_ty(context), {}, false));
+  module->getOrInsertFunction("li_rt_studio_toml_parsed_determinism_tier",
+                              llvm::FunctionType::get(i32_ty(context), {}, false));
+  module->getOrInsertFunction("li_rt_studio_toml_parsed_export_format_mask",
+                              llvm::FunctionType::get(i32_ty(context), {}, false));
+  module->getOrInsertFunction("li_rt_studio_toml_parsed_require_sim_pass",
+                              llvm::FunctionType::get(i32_ty(context), {}, false));
+  module->getOrInsertFunction("li_rt_studio_toml_parsed_printer_profile_slot",
+                              llvm::FunctionType::get(i32_ty(context), {}, false));
   module->getOrInsertFunction("li_rt_lig_device_kind",
                               llvm::FunctionType::get(i32_ty(context), {}, false));
   module->getOrInsertFunction("li_rt_lig_backend_available",

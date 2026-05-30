@@ -4,6 +4,7 @@
 
 ### Added
 
+- **WP-SIM-06 studio.toml engine/export** — `StudioExportConfig`, cumulative `studio_toml_parse_line` / `studio_toml_parsed_config`, `determinism_tier` → `output_detail` via `studio_apply_config_to_sim`; fixture `examples/verticals/sim_additive/studio.toml`; smoke `studio_toml_engine_export.li`; `li_std_studio_version` → 12.
 - **PH-AGENT-2 Studio agent run state:** `StudioAgentRun`, `studio_agent_run_start`, `studio_agent_run_next`, `studio_agent_run_complete`, and `studio_agent_tool_request_for_run` model the in-process world-patch → `lic_check` → `lic_build` tool sequence with `used_html_mock == 0`; smokes `studio_agentic_run.li` and root `import_studio_agentic_run.li`; `li_std_studio_version` → 11.
 - **PH-SIM scientific viewport sync** — `studio_sim_scientific_step_hook`, `studio_sim_scientific_tier_for_tick`; `sim_scientific` profile runs `sim_scientific_tick_at` + `scene_bench_particle_tier_simulate` and syncs tier/draw_points into viewport display; smoke `studio_sim_scientific_step_hook.li`; `li_std_studio_version` → 10.
 - **PH-SIM SIM-3 studio RL step** — `studio_sim_rl_step_hook`; `sim_rl` in `studio_sim_step_hook` uses `sim_rl_session_env_pool_step` on live session; smokes `studio_sim_rl_step_hook.li`, extended `studio_sim_step_by_profile.li` — [2026-05-27-studio-sim-rl-env-pool-step.md](../../docs/release-notes/2026-05-27-studio-sim-rl-env-pool-step.md).

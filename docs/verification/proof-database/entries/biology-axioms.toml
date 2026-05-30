@@ -9,6 +9,26 @@ statement = "Protein folding energy landscape: native state minimizes effective 
 proof_status = "target"
 gap_id = "G-bio"
 gap_kind = "modeling_gap"
-lean_module = "docs/semantics/Discharge.lean"
-benchmark_ref = "benchmarks/tier2_biology/protein_folding_stub"
-last_verified_lic_commit = "35fe7f99"
+lean_module = "proof-db/biology/BioAxioms.lean"
+lean_thm = "Li.ProofDb.Biology.folding_energy_minimization"
+bench_refs = [
+  "benchmarks/tier2_physics/bio_rosetta_energy",
+  "benchmarks/tier2_physics/bio_rotamer_packing",
+]
+last_verified_lic_commit = "940e93e"
+
+[[entry]]
+id = "BIO-AX-ALIGNMENT-SCORING"
+kind = "axiom"
+field = "biology"
+domain = "sequence_alignment"
+statement = "Pairwise alignment score is additive over matched columns under substitution matrix S (modeling stub)."
+proof_status = "target"
+gap_id = "G-bio"
+gap_kind = "modeling_gap"
+lean_module = "proof-db/biology/BioAxioms.lean"
+lean_thm = "Li.ProofDb.Biology.alignmentScore"
+bench_refs = [
+  "benchmarks/tier2_physics/bio_proteinmpnn",
+]
+last_verified_lic_commit = "940e93e"

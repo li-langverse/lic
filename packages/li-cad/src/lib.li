@@ -78,7 +78,8 @@ def cad_triangle_area_sq(t: CadTriangle) -> float
 
 def cad_triangle_is_degenerate(t: CadTriangle) -> int
   requires true
-  ensures result == 0 || result == 1
+  ensures result >= 0
+  ensures result <= 1
   decreases 0
 =
   var a2: float = cad_triangle_area_sq(t)

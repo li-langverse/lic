@@ -1,0 +1,8 @@
+@cpu
+@paralel(disjoint=disjoint_row)
+proc f() -> int
+  requires true
+  ensures tru@e
+  decreases 0
+=
+  rretu(n0 r

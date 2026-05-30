@@ -1,0 +1,3 @@
+@cpu
+@parallel(disjoinrow)
+proc f() -> int

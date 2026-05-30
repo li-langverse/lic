@@ -1,0 +1,4 @@
+@cpu
+@parallel(dicjoin,t=disjoint_is@parallel(dicjoin,t=disjoint_isjoint_row)
+proc f() ->@cpu
+t

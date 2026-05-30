@@ -43,17 +43,40 @@ Agents use this map so **vision**, **PH trackers**, and **honest proof status** 
 | `2026-05-16-li-package-scaffold.md` | **Pkg** / **8a** |
 | `2026-05-16-li-ecosystem-governance.md` | **PH-Pkg** governance |
 | `ph-db-lidb-platform.md` | **PH-DB** (roadmap ADR owns detail) |
+| `2026-05-30-ph7e-tier1-red-benchmark-honesty.md` | **PH-7e** tier-1 honesty · **G-math** doc sync |
+| `2026-05-16-li-execution-decorators.md` (spec) | **PH-7d** · **G-dec**, **G-par** |
+| `2026-05-16-li-llm-first-design.md` (spec) | **Vision-LLM** — agent JSON diagnostics (no **G-*** closure) |
+
+## Open master-plan tracker rows (2026-05-30)
+
+Preflight: `benchmarks/data/latest/ecosystem-audit.json` · `plan_completion_audit.summary.open_tracker_items: 5`. Do not mark **Done** without cited evidence.
+
+| PH | Gap ID(s) | Phase plan (lic) |
+|----|-----------|------------------|
+| **2i** — Math / linalg | **G-math**, **G-math-syn** | [2026-05-16-li-math-linalg-surface.md](../superpowers/plans/2026-05-16-li-math-linalg-surface.md) |
+| **7d** — Execution decorators | **G-dec**, **G-par** | [2026-05-16-li-execution-decorators.md](../superpowers/specs/2026-05-16-li-execution-decorators.md) · [phase-07-native-hpc](../superpowers/plans/2026-05-14-phase-07-native-hpc.md) |
+| **7e** — Math → SIMD lowering | **G-math** | [2026-05-16-li-math-linalg-surface.md](../superpowers/plans/2026-05-16-li-math-linalg-surface.md) · [ph7e-tier1-red-benchmark-honesty](../superpowers/plans/2026-05-30-ph7e-tier1-red-benchmark-honesty.md) |
+| **8p** — Parallel compile / CI | — | [2026-05-22-parallel-compile-ci.md](../superpowers/plans/2026-05-22-parallel-compile-ci.md) |
+| **Vision-LLM** — Agent JSON diagnostics | — | [2026-05-16-li-llm-first-design.md](../superpowers/specs/2026-05-16-li-llm-first-design.md) |
 
 ## UI/UX quality (`ui_ux_quality` research goal)
+
+Surface quality is **not** proof — keep separate from **G-*** rows. Supports **`gui_ux_tester`**, **`docs_ui_tester`**, **`studio_ui_ux_builder`**.
+
+| Agent | Surface | Latest digest / audit |
+|-------|---------|------------------------|
+| `gui_ux_tester` | GUI apps, fixtures, native SDL | [2026-05-30-gui-ui.md](https://github.com/li-langverse/benchmarks/blob/main/docs/ecosystem/ux-digests/2026-05-30-gui-ui.md) · `data/latest-gui-ui-run/ui-audit.json` |
+| `docs_ui_tester` | MkDocs / handbook Pages | [2026-05-30-docs-ui.md](https://github.com/li-langverse/benchmarks/blob/main/docs/ecosystem/ux-digests/2026-05-30-docs-ui.md) |
+| `studio_ui_ux_builder` | PH-UX plan loop, bench gates | [studio-ui-ux-builder-digest](https://github.com/li-langverse/benchmarks/blob/main/data/latest/studio-ui-ux-builder-digest.md) |
 
 | Layer | Path |
 |-------|------|
 | **Handoff (this repo)** | [gui-ux-quality-handoff.md](gui-ux-quality-handoff.md) |
 | **Orchestrator ingest** | [orch-r4-ui-ux-signals](orchestrator-notes/2026-05-29-orch-r4-ui-ux-signals.md) |
-| **UX digests** | `benchmarks/docs/ecosystem/ux-digests/` (`*-gui-ux.md`, `*-gui-ui.md`) |
+| **Remediation manifest** | `benchmarks/data/latest/remediation_manifest.json` |
 | **Targets** | `li-cursor-agents/config/ux-targets.json` |
 
-Primary agent: **`gui_ux_tester`**. Companion: **`gui_ui_tester`** (axe/pixel). Implementation: **`studio_ui_ux_builder`**.
+**Preflight note:** briefing `data/latest/ux-audit.json` is often **docs-only** (`lic-docs`). GUI rows require proactive `data/latest-gui-ui-run/ui-audit.json`.
 
 ## Automation
 

@@ -14,8 +14,9 @@ This page is the **lic-side routing doc** for UX journeys on GUI targets. Produc
 |----------|------------|------|
 | UX target registry | `li-cursor-agents` | [`config/ux-targets.json`](https://github.com/li-langverse/li-cursor-agents/blob/main/config/ux-targets.json) |
 | UX harness | `li-cursor-agents` | [`ux-harness/`](https://github.com/li-langverse/li-cursor-agents/tree/main/ux-harness) |
-| Latest UX audit (preflight) | `benchmarks` | `data/latest/ux-audit.json` — today often **docs-only** (`lic-docs`) |
-| Latest UI audit (GUI) | `benchmarks` | `data/latest/ui-audit.json` or proactive `data/latest-gui-ui-run/ui-audit.json` |
+| Latest UX audit (preflight) | `benchmarks` | `data/latest/ux-audit.json` — often **docs-only** (`lic-docs` pass; no GUI targets) |
+| Latest UI audit (GUI) | `benchmarks` | Proactive `data/latest-gui-ui-run/ui-audit.json` (2026-05-30T15:47Z: **4 pass**, **1 skip**, **0 fail**) |
+| Remediation manifest | `benchmarks` | [`data/latest/remediation_manifest.json`](https://github.com/li-langverse/benchmarks/blob/main/data/latest/remediation_manifest.json) — P1 issues + acceptance checklists |
 | UX digests | `benchmarks` | [`docs/ecosystem/ux-digests/`](https://github.com/li-langverse/benchmarks/tree/main/docs/ecosystem/ux-digests) |
 | Studio UX rubric | `lic` | [ui-ux-by-dimension.md](../game-dev/competitive-intel/ui-ux-by-dimension.md) |
 | Studio plan loop | `lic` | [2026-05-24-studio-ui-ux-plan-loop.md](../superpowers/plans/2026-05-24-studio-ui-ux-plan-loop.md) |
@@ -63,14 +64,25 @@ Wave 1 studio plan todos are **done**; wave 2 is harness expansion + agentic ben
 | `studio_ui_ux_builder` | `lic` branch `cursor/studio-ui-ux-plan-loop` | Plan loop gates + capture scripts |
 | `docs_maintainer` | `lic` (this handoff) + `benchmarks` (digests) | No product code |
 
-Latest companion digests: [2026-05-30-gui-ui.md](https://github.com/li-langverse/benchmarks/blob/main/docs/ecosystem/ux-digests/2026-05-30-gui-ui.md) (`gui_ui_tester`), [studio-ui-ux-builder-digest](https://github.com/li-langverse/benchmarks/blob/main/data/latest/studio-ui-ux-builder-digest.md).
+Latest companion digests: [2026-05-30-gui-ui.md](https://github.com/li-langverse/benchmarks/blob/main/docs/ecosystem/ux-digests/2026-05-30-gui-ui.md) (`gui_ui_tester` proactive refresh), [studio-ui-ux-builder-digest](https://github.com/li-langverse/benchmarks/blob/main/data/latest/studio-ui-ux-builder-digest.md).
+
+### Proactive audit snapshot (2026-05-30)
+
+| Target | Status | Blocker |
+|--------|--------|---------|
+| `agents-dashboard` | **skip** | Dev server not at `:3000` ([#38](https://github.com/li-langverse/li-cursor-agents/issues/38)) |
+| `gui-gen-fixture` | pass | `http_probe` only — no axe/pixel ([#32](https://github.com/li-langverse/li-cursor-agents/issues/32)) |
+| `world-studio-demo` | pass | HTML mock (studio-ux-12 **Partial**) |
+| `world-studio-native` | pass | SDL capture with `LIC_ROOT=lic-studio-ui` |
+| `lic-tetris` | pass* | *Studio stub — not real tetris ([#46](https://github.com/li-langverse/li-cursor-agents/issues/46)) |
 
 ---
 
 ## Runbook (`gui_ux_tester`)
 
-1. Read briefing `ux-audit.json` / `ui-audit.json` (or run proactive harness → `benchmarks/data/latest-gui-ui-run/`).
-2. For each **failing** GUI target, file issues via **ui-ux-remediation** template (`li-cursor-agents`).
+1. Read briefing `ux-audit.json` (docs) **and** proactive `data/latest-gui-ui-run/ui-audit.json` (GUI).
+2. Cross-check `data/latest/remediation_manifest.json` for open P1 items before filing duplicates.
+3. For each **failing** GUI target, file issues via **ui-ux-remediation** template (`li-cursor-agents`).
 3. Write digest `benchmarks/docs/ecosystem/ux-digests/YYYY-MM-DD-gui-ux.md` (link issues; no product code in tester run).
 4. Append P0/P1 to `implementation_queue` when enrich is enabled.
 

@@ -73,7 +73,7 @@
 
 - [x] `./li-tests/run_all.sh decorators decorator_exploits`
 - [ ] Tier 2 MD example uses `@cpu` `@parallel` `@vectorized` on `def` (elaborates to same MIR as keywords)
-- [ ] Fuzz corpus includes `@` decorator stacks and reserved-name parse seeds
+- [x] Fuzz corpus includes `@` decorator stacks and reserved-name parse seeds (`compiler/fuzz/corpus/seed_decorators`)
 
 **7e (mathematical surface — user writes formulas, not `simd(...)`):**
 

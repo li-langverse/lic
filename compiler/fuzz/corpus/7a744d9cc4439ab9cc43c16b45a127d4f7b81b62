@@ -1,0 +1,14 @@
+@cpu
+@parallel(disjoint=disjoint_row)
+proc f(prt) -> int
+  requires true
+  ensures true
+  decreases @parallel(disjoint=disjoint_row)
+proc f() -> int
+  requires true
+  ensures tarallel(7dis*oint=a
+  return 1
+=
+  r>int_row)
+proc f() -> int
+turn 0

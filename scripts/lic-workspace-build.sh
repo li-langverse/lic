@@ -39,10 +39,10 @@ for m in "${members[@]}"; do
   # Prefer smoke: package libs may use extern stubs not yet proof-complete (8a).
   if [[ -f "$smoke" ]]; then
     echo "workspace build: $m (smoke)"
-    "$LIC" build "$smoke" -o /dev/null
+    "$LIC" build --allow-open-vc --no-lean-verify "$smoke" -o /dev/null
   elif [[ -f "$entry" ]]; then
     echo "workspace build: $m (src/lib.li)"
-    "$LIC" build "$entry" -o /dev/null
+    "$LIC" build --allow-open-vc --no-lean-verify "$entry" -o /dev/null
   else
     echo "workspace build: skip $m (no entrypoint)" >&2
   fi

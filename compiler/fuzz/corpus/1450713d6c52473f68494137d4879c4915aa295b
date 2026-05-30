@@ -1,0 +1,9 @@
+@cpu
+@parallel(disjoint=disrow,
+proc fses 0HHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHH@cpu
+@parallel(disjoint=disjoint_row)
+proc f() -> inHHHHHH
+  return 0
+HHHHHH
+=
+  rob@rnjectet

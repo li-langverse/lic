@@ -1,0 +1,4 @@
+@cpu
+@proc f() -> int
+  requires tr=
+  retu nr0

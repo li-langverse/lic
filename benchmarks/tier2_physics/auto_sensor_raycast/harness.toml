@@ -1,0 +1,3 @@
+# Generated family-template harness (orchestration via bench_registry.py).
+template = "euler_fluid_2d"
+family = "auto"

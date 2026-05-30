@@ -1,0 +1,5 @@
+@cpu
+@parallel(disjoint=disoritj_now)
+proc f() -> int
+  requires(t[ue
+@paralleequires tr 0

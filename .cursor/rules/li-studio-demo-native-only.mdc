@@ -1,0 +1,55 @@
+---
+description: Li World Studio demo — native Li libraries only (no HTML runtime)
+globs:
+  - packages/li-studio/**
+  - packages/li-ui/**
+  - packages/li-gui/**
+  - deploy/studio-demo/**
+  - scripts/studio-*.sh
+  - docs/game-dev/studio/**
+  - docs/demo/**
+alwaysApply: false
+---
+
+# Li Studio demo — native Li only
+
+**Product:** Li World Studio is a **Li executable**, not a web app.
+
+## Required for “studio demo”
+
+- Build and run **`packages/li-studio/src/main.li`** → `build/li-studio-demo` (or env `STUDIO_SHELL_DEMO_BIN`).
+- Demo logic lives in **`packages/li-studio/src/lib.li`** and composable packages:
+  - **`li-ui`** — layout / paint IR, design tokens
+  - **`li-gui`** — paint primitives
+  - **`li-render` / `lig`** — viewport present when `LIG_HOST_PRESENT=1`
+  - **`li-sim-*`** — simulation step hooks (`studio_sim_*_step_hook`, `sim_step`, profile stubs)
+- Use existing scripts: `studio-shell-demo-present-loop.sh`, `studio-shell-demo-interactive.sh`, `studio-verticals-capture-native.sh`.
+- Smokes under `packages/li-studio/li-tests/smoke/` are the contract — extend those, not parallel HTML demos.
+
+## Canonical run (after `./scripts/build.sh`)
+
+```bash
+lic build packages/li-studio/src/main.li -o build/li-studio-demo
+STUDIO_DEMO_PROFILE=sim_scientific STUDIO_SHELL_DEMO_BUILD_RUN=1 LIG_HOST_PRESENT=1 \
+  ./scripts/studio-shell-demo-present-loop.sh
+```
+
+## Forbidden as studio demo
+
+- HTML/CSS/JavaScript **as the runtime** for Li World Studio (interactive or “live” demos in the viewport).
+- Treating `deploy/studio-demo/**/*.html` or UX harness HTML fixtures as the shipped product.
+- Adding new HTML mock “simulations” instead of wiring native compose/paint + sim hooks.
+- Suggesting “open the HTML preview” when the user asked for the **real** studio.
+
+## Marketing HTML (allowed, labeled)
+
+`deploy/studio-demo/` static HTML is **marketing / UX plan loop only** — must keep the mock banner and README disclaimer. Do not expand it into a second product surface.
+
+## Future (not a substitute today)
+
+**HTML or embedded web viewport rendering** may be integrated later as an optional present path (e.g. host embed). Until that is an explicit, reviewed Li API:
+
+- Do not build HTML demos to stand in for native studio.
+- Do not block native work on “good enough” HTML previews.
+
+When adding HTML-in-viewport support, it must go through `li-studio` / `li-render` (or a dedicated package) with smokes — not ad-hoc pages under `deploy/`.

@@ -1,7 +1,7 @@
 #include "horner_core.h"
 
 enum { LI_HORNER_STEPS = 5000000 };
-#define LI_HORNER_X 1.1
+#define LI_HORNER_X 0.999999
 
 static double g_li_horner_checksum;
 

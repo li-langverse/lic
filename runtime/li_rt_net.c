@@ -33,6 +33,9 @@
 #ifndef MSG_MORE
 #define MSG_MORE 0
 #endif
+#ifndef POLLRDHUP
+#define POLLRDHUP 0
+#endif
 #ifndef EPOLLIN
 #define EPOLLIN 0x001u
 #define EPOLLOUT 0x004u
@@ -2891,14 +2894,6 @@ static int32_t httpd_try_drain_once(int32_t conn, int32_t slot) {
   if (hdr_end < 0) {
     return 0;
   }
-  int keep_early = !wants_connection_close(g_slots[slot].buf, hdr_end);
-  if (g_cache_file_ready && g_rate_limit_rps == 0 && !g_auth_required && g_proxy_port <= 0 &&
-      g_route_count == 0 && is_file_bin_get(g_slots[slot].buf, hdr_end)) {
-    if (httpd_reply_cached_file_bin_i(conn, slot, keep_early) >= 0) {
-      net_slot_consume(slot, hdr_end);
-      return keep_early ? 1 : -1;
-    }
-  }
   httpd_req_info_t req;
   memset(&req, 0, sizeof(req));
   if (request_headers_unsafe_c(g_slots[slot].buf, hdr_end)) {
@@ -2912,7 +2907,7 @@ static int32_t httpd_try_drain_once(int32_t conn, int32_t slot) {
     return -2;
   }
   parse_request_body_meta_c(g_slots[slot].buf, hdr_end, &req);
-  if (req.body_mode == 1 && req.content_length > HTTPD_MAX_BODY) {
+  if (req.body_mode == 1 && req.content_length >= HTTPD_MAX_BODY) {
     int keep = !wants_connection_close(g_slots[slot].buf, hdr_end);
     if (httpd_send_status(conn, 413, "Payload Too Large", NULL, keep) < 0) {
       return -2;
@@ -5861,7 +5856,7 @@ int32_t httpd_li_proxy_init_req_i(int32_t slot, int32_t hdr_end) {
     return -1;
   }
   parse_request_body_meta_c(s->buf, hdr_end, &req);
-  if (req.body_mode == 1 && req.content_length > HTTPD_MAX_BODY) {
+  if (req.body_mode == 1 && req.content_length >= HTTPD_MAX_BODY) {
     return -1;
   }
   s->proxy_req = req;

@@ -1,0 +1,10 @@
+@cpu
+@parallepu
+@parallel(disjoint=disjoint_row)
+proc f(breakint
+  requires @cpu
+@parallel(disjoint=disjoint_row)
+proc f(btrue
+  ensures true
+  decreakint
+reases l(disjoint=disjoint

@@ -1,0 +1,36 @@
+version = 1
+
+[[entry]]
+id = "CHEM-LM-SCF-ENERGY-DECREASE"
+kind = "lemma"
+field = "chemistry"
+domain = "quantum_chemistry"
+statement = "SCF iteration: energy decreases (or stalls) under standard mixing (convergence target)."
+proof_status = "target"
+gap_id = "G-chem"
+gap_kind = "proof_gap"
+lean_module = "proof-db/chemistry/ChemAxioms.lean"
+lean_thm = "Li.ProofDb.Chemistry.scf_energy_decrease"
+li_specimen = "proof-db/chemistry/lemmas/scf_energy_decrease_stub.li"
+bench_refs = [
+  "benchmarks/tier2_physics/qm_dft_scf_energy",
+  "benchmarks/tier2_physics/qm_scf_solver",
+]
+last_verified_lic_commit = "940e93e"
+
+[[entry]]
+id = "CHEM-LM-DIIS-CONVERGENCE"
+kind = "lemma"
+field = "chemistry"
+domain = "quantum_chemistry"
+statement = "DIIS extrapolation accelerates SCF convergence toward fixed-point energy (target)."
+proof_status = "target"
+gap_id = "G-chem"
+gap_kind = "proof_gap"
+lean_module = "proof-db/chemistry/ChemAxioms.lean"
+lean_thm = "Li.ProofDb.Chemistry.scf_energy_decrease"
+bench_refs = [
+  "benchmarks/tier2_physics/qm_hf_diis",
+  "benchmarks/tier2_physics/qm_scf_solver",
+]
+last_verified_lic_commit = "940e93e"

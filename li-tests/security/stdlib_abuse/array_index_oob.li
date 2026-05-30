@@ -1,0 +1,9 @@
+# WP0-E: fixed-array OOB — must not compile (CWE-787 class).
+type Row = array[4, int]
+
+def read_past_end(row: Row) -> int
+  requires true
+  ensures result == row[4]
+  decreases 0
+=
+  return row[4]

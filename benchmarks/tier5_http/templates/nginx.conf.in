@@ -15,6 +15,7 @@ http {
   server {
     listen 127.0.0.1:{{port}};
     server_name localhost;
+    client_max_body_size 512k;
     root {{document_root}};
 
     location / {

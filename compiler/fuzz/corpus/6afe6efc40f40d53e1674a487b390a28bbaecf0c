@@ -1,0 +1,4 @@
+@@cpu
+@allel(disjoint=disjoint_row)
+proc ) -> DDD@cpu
+@paralzl(  ensures DDDt@cpDDu

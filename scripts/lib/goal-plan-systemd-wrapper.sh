@@ -34,6 +34,7 @@ if [[ -f "$ENV_FILE" ]]; then
   source "$ENV_FILE"
   set +a
 fi
+export GITHUB_TOKEN="${GITHUB_TOKEN:-${GH_TOKEN:-}}"
 
 export LI_LLVM_MAJOR="${LI_LLVM_MAJOR:-22}"
 export PATH="${HOME}/.local/node/bin:${PATH:-/usr/bin:/bin}"

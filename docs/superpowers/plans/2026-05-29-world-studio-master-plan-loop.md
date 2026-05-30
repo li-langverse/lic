@@ -22,31 +22,31 @@ todos:
     status: done
   - id: wsm-w1-sim3-envpool
     content: "SIM-3 RL EnvPool persistent + obs contract — not stack stub (WP-SIM-03, WP-RL-01)"
-    status: done
+    status: pending
   - id: wsm-w1-sim-sensors
     content: "Sensor bus stub for automotive/robotics (WP-SIM-05)"
-    status: done
+    status: pending
   - id: wsm-w1-studio-toml-engine
     content: "Parse studio.toml [engine] determinism_tier + export section (WP-SIM-06)"
-    status: done
+    status: pending
   - id: wsm-w1-timeline-playback
     content: "Timeline playhead tied to sim tick — not mock reset (WP-UX-02, WP-GD-08)"
-    status: done
+    status: pending
   - id: wsm-w1-command-palette
     content: "⌘K command palette overlay + actions (WP-UX-04)"
-    status: done
+    status: pending
   - id: wsm-w1-keyboard-bridge
     content: "SDL/mock InputState → studio_handle_studio_key end-to-end (WP-UX-09)"
-    status: done
+    status: pending
   - id: wsm-w1-agent-chrome-fsm
     content: "Agent task FSM — running/cancel/error/retry + tool trace (WP-UX-06, WP-AG-02)"
-    status: done
+    status: pending
   - id: wsm-w2-wgpu-viewport
     content: "li-render PBR-lite wgpu draw list — not stub_pass only (WP-GD-05)"
-    status: done
+    status: pending
   - id: wsm-w2-viewport-hud
     content: "Live FPS + particle tier HUD in viewport (WP-UX-13)"
-    status: done
+    status: pending
   - id: wsm-w2-viewport-error
     content: "GPU/asset error overlay + retry (WP-UX-08)"
     status: pending

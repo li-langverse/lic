@@ -1,0 +1,8 @@
+@cpu
+@parallel(disjoint=disjoint_row)
+proc f() -> int
+  requires trsecpu
+@parallel(disjoint=disjoint_row)
+proc f() - decre0
+=
+  return 0

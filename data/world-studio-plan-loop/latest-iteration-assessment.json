@@ -1,17 +1,16 @@
 {
   "pass": true,
-  "todo_id": "wsm-w2-viewport-hud",
-  "wps_touched": ["WP-UX-13", "WP-GD-05"],
+  "todo_id": "wsm-w1-profile-smokes",
+  "wps_touched": ["WP-SIM-00", "WP-SIM-01", "WP-UX-05"],
   "smokes_run": [
-    "packages/li-studio/li-tests/smoke/studio_viewport_hud.li",
-    "packages/li-render/li-tests/smoke/viewport_fps_counter.li",
-    "packages/li-render/li-tests/smoke/scene_md_particles.li"
+    "packages/li-studio/li-tests/smoke/studio_vertical_profile_roundtrip.li",
+    "packages/li-studio/li-tests/smoke/studio_sim_step_by_profile.li"
   ],
   "native_only": true,
   "gates": {
     "world_studio_plan_gates": "pass",
-    "lic_check_local": "skipped_no_lic_binary",
+    "lic_check_local": "skipped_llvm_dev_missing",
     "lic_check_ci": "pending"
   },
-  "notes": "WP-UX-13 live FPS + particle tier HUD in native viewport compose/paint: StudioViewportDisplayCompose extended with fps_display, fps_hud_tag, tier particle bars (top-left rects); render_fps_counter_shell_simulate wired via li-render dep; smoke studio_viewport_hud.li; li_std_studio_version 17."
+  "notes": "Extended studio_sim_step_by_profile.li with studio_sim_step_profile_ok helper covering all 7 runtime profiles (game, sim_rl, sim_automotive, sim_robotics, sim_additive, sim_scientific, sim_drug_design). Scientific and RL retain specialized assertions (MD tier viewport sync, env pool batch tick). studio_vertical_profile_roundtrip.li already covered all 7 compose/TOML paths. Local lic check blocked: LLVM 22 runtime present but LLVMConfig.cmake dev package missing on Windows host; CI will verify lic check."
 }

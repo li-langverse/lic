@@ -1,0 +1,9 @@
+@cpu
+@parallel(disjeint=disjoint_row)
+proc f() -> int]
+ :requires true
+  eoint_row)
+proc f() -> int
+  proc p() -> int
+  requires true*  decreaproc p() -> int
+  rrequires trugs

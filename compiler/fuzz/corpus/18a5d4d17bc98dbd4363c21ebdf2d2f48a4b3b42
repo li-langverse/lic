@@ -1,0 +1,9 @@
+
+@parallel(disjoint=disiotAn_row)
+proc fcpu
+@parall@cpu
+@parallel(disjoint=disiotAn_row)
+proc fcpu
+@parallel(disjoint_row)
+proc f()=disiotAn_row)joint=d@u
+@

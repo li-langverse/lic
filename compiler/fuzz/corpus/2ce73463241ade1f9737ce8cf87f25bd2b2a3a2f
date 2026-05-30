@@ -1,0 +1,5 @@
+@cpu
+@parallel(disjoinw)
+proc f(> int0
+=
+  veturn 0

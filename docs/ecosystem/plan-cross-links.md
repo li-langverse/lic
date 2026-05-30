@@ -66,7 +66,7 @@ Surface quality is **not** proof — keep separate from **G-*** rows. Supports *
 | Agent | Surface | Latest digest / audit |
 |-------|---------|------------------------|
 | `gui_ux_tester` | GUI apps, fixtures, native SDL | [2026-05-30-gui-ui.md](https://github.com/li-langverse/benchmarks/blob/main/docs/ecosystem/ux-digests/2026-05-30-gui-ui.md) · `data/latest-gui-ui-run/ui-audit.json` |
-| `docs_ui_tester` | MkDocs / handbook Pages | [2026-05-30-docs-ui.md](https://github.com/li-langverse/benchmarks/blob/main/docs/ecosystem/ux-digests/2026-05-30-docs-ui.md) |
+| `docs_ui_tester` | MkDocs / handbook Pages | [2026-05-30-docs-ui.md](https://github.com/li-langverse/benchmarks/blob/main/docs/ecosystem/ux-digests/2026-05-30-docs-ui.md) · [2026-05-30-docs-ux.md](https://github.com/li-langverse/benchmarks/blob/main/docs/ecosystem/ux-digests/2026-05-30-docs-ux.md) |
 | `studio_ui_ux_builder` | PH-UX plan loop, bench gates | [studio-ui-ux-builder-digest](https://github.com/li-langverse/benchmarks/blob/main/data/latest/studio-ui-ux-builder-digest.md) |
 
 | Layer | Path |
@@ -76,7 +76,11 @@ Surface quality is **not** proof — keep separate from **G-*** rows. Supports *
 | **Remediation manifest** | `benchmarks/data/latest/remediation_manifest.json` |
 | **Targets** | `li-cursor-agents/config/ux-targets.json` |
 
-**Preflight note:** briefing `data/latest/ux-audit.json` is often **docs-only** (`lic-docs`). GUI rows require proactive `data/latest-gui-ui-run/ui-audit.json`.
+**Preflight note:** briefing `data/latest/ux-audit.json` is often **docs-only** (`lic-docs`). GUI rows require proactive `data/latest-gui-ui-run/ui-audit.json` with **all** GUI targets exercised — not a single-target native rerun.
+
+### Live handbook vs audit HEAD (2026-05-30)
+
+`ecosystem-audit.json` reports `repos_without_live_docs: []` and `live_docs_down: []` (URL roots respond). **Content** on [li-language Pages](https://li-langverse.github.io/li-language/) can still be **stale** (5-tab nav vs 12-tab local `mkdocs.yml`; hero paths 404) until [lic#403](https://github.com/li-langverse/lic/issues/403) strict build + deploy lands. Treat audit green as **reachability**, not **IA freshness** — see docs-ux digest above.
 
 ## Automation
 

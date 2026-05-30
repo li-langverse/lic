@@ -3269,6 +3269,12 @@ static void httpd_proxy_finish_ok(int epfd, int32_t slot) {
   int keep = g_slots[slot].proxy_keep;
   int hdr_end = g_slots[slot].proxy_hdr_end;
   int conn = g_slots[slot].fd;
+  if (g_slots[slot].proxy_is_sse || g_slots[slot].proxy_is_ws ||
+      httpd_slot_stream_proxy_request(slot, hdr_end)) {
+    g_proxy_resp_cl_cached = -1;
+    g_proxy_resp_hdr_bytes_cached = 0;
+    httpd_proxy_snap_reset();
+  }
   if (g_proxy_snap_recording && g_proxy_snap_len > 0) {
     if (g_slots[slot].proxy_is_sse || g_slots[slot].proxy_is_ws) {
       g_proxy_snap_recording = 0;
@@ -4715,6 +4721,12 @@ static void httpd_conn_close_slot(int epfd, int32_t slot) {
     g_slots[slot].fd = -1;
     g_slots[slot].len = 0;
   }
+  g_slots[slot].proxy_active = 0;
+  g_slots[slot].proxy_up_fd = -1;
+  g_slots[slot].proxy_phase = HTTPD_PROXY_PHASE_IDLE;
+  g_slots[slot].proxy_is_sse = 0;
+  g_slots[slot].proxy_is_ws = 0;
+  g_slots[slot].proxy_client_epoll_events = 0;
 }
 
 void httpd_client_force_close_i(int32_t epfd, int32_t slot) { httpd_conn_close_slot((int)epfd, slot); }
@@ -5938,6 +5950,11 @@ int32_t httpd_li_proxy_try_snap_i(int32_t conn, int32_t slot, int32_t hdr_end, i
     return -2;
   }
   if (!path_proxy_match(req.path, req.path_len, &req)) {
+    return 0;
+  }
+  if (httpd_path_is_stream_proxy(req.path, req.path_len) ||
+      httpd_client_wants_sse(g_slots[slot].buf, hdr_end) ||
+      httpd_client_wants_websocket(g_slots[slot].buf, hdr_end)) {
     return 0;
   }
   size_t off = 0;

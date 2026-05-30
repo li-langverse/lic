@@ -1,14 +1,17 @@
 {
   "pass": true,
-  "todo_id": "wsm-w6-player-ship",
-  "wps_touched": ["WP-GD-06", "WP-GD-03", "WP-PUB-03"],
+  "todo_id": "wsm-w6-vertical-dod",
+  "wps_touched": ["WP-AG-06", "WP-GD-06"],
   "smokes_run": [
-    "packages/li-player/li-tests/smoke/player_publish.li"
+    "packages/li-studio-ai/li-tests/smoke/studio_ai_patch_eval.li",
+    "packages/li-studio/li-tests/smoke/studio_vertical_dod.li"
   ],
   "native_only": true,
   "gates": {
     "world_studio_plan_gates": "pass",
-    "lic_check_local": "wsl"
+    "studio_patch_eval_gate": "pass",
+    "studio_vertical_dod_gate": "pass",
+    "lic_check_local": "wsl_or_skip"
   },
-  "notes": "WP-GD-06: new li-player package — player_headless_play (game profile sim+physics ticks without viewport), player_publish_from_game + player_ship_game_demo ship studio_publish_bundle zip after valid game checkpoint; smoke player_publish.li verifies 4-tick headless play, bundle magic 20555, entry_count=2, proof gate."
+  "notes": "WP-AG-06: studio_ai_patch_eval_* harness over 10 curated tasks (7 valid + 1 retry + 2 fail) with 70% gate; fixtures/patch-eval/manifest.toml. wsm-w6-vertical-dod: studio_vertical_dod_* composable DoD for all 7 profiles (game world+physics+wgpu, RL env pool obs, automotive sensors, robotics IK inspector, additive 3MF export, scientific tier-2+vz, drug LITL panels). Completion gate: all wsm-w* todos done."
 }

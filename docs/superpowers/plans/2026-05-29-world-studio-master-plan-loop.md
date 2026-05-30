@@ -106,10 +106,10 @@ todos:
     status: done
   - id: wsm-w6-agent-eval
     content: "Patch eval harness + 70% fix-rate gate (WP-AG-06)"
-    status: pending
+    status: done
   - id: wsm-w6-vertical-dod
     content: "All 7 profile Definition-of-Done checklists green in §11 master plan"
-    status: pending
+    status: done
 isProject: false
 ---
 

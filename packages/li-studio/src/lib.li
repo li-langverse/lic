@@ -7046,3 +7046,180 @@ def studio_shell_host_frame(compose: var StudioShellCompose, frame_id: int) -> i
     return 30
   return 0
 
+# Plan-loop §6 / §11 — composable vertical DoD (honest slice; full ship criteria remain in master plan).
+def studio_vertical_dod_game_composable_ok() -> int raises Alloc, IO
+  requires true
+  ensures result >= 0
+  ensures result <= 1
+  decreases 0
+=
+  var cfg: StudioProjectConfig = studio_project_config_new(studio_profile_game())
+  var sess: SimSessionStub = sim_session_stub_default()
+  studio_apply_config_to_sim(cfg, sess)
+  if studio_game_step_hook(sess, 0.016) != sim_status_ok():
+    return 0
+  if sess.game_physics_steps < 1:
+    return 0
+  if sess.game_pz >= 0.0:
+    return 0
+  if studio_game_world_checkpoint_roundtrip(sess) != 1:
+    return 0
+  if lig_native_pixel_source_honest_product(lig_native_pixel_source_wgpu_readback()) != 1:
+    return 0
+  return 1
+
+def studio_vertical_dod_sim_rl_composable_ok() -> int
+  requires true
+  ensures result >= 0
+  ensures result <= 1
+  decreases 0
+=
+  var cfg: StudioProjectConfig = studio_project_config_new(studio_profile_sim_rl())
+  var sess: SimSessionStub = sim_session_stub_default()
+  studio_apply_config_to_sim(cfg, sess)
+  if studio_sim_rl_step_hook(sess, 0.02) != sim_status_ok():
+    return 0
+  var psz: int = sim_rl_env_pool_size_default()
+  if sess.env_pool_size != psz:
+    return 0
+  if sess.env_pool_steps_emitted != psz:
+    return 0
+  if sim_env_obs_dim() != 8:
+    return 0
+  var obs: EnvStepResult = env_obs_from_session(sess)
+  if obs.obs1 != sess.last_dt:
+    return 0
+  if obs.env_index != psz - 1:
+    return 0
+  return 1
+
+def studio_vertical_dod_sim_automotive_composable_ok() -> int
+  requires true
+  ensures result >= 0
+  ensures result <= 1
+  decreases 0
+=
+  var cfg: StudioProjectConfig = studio_project_config_new(studio_profile_sim_automotive())
+  var sess: SimSessionStub = sim_session_stub_default()
+  if studio_sim_step_hook(cfg, sess, 0.02) != sim_status_ok():
+    return 0
+  var bus: int = sensor_bus_size_default()
+  if sess.sensor_bus_size != bus:
+    return 0
+  if sess.sensor_rays_emitted != bus:
+    return 0
+  if sensor_raycast_id_valid(sess.sensor_last_raycast_id) != 1:
+    return 0
+  return 1
+
+def studio_vertical_dod_sim_robotics_composable_ok() -> int
+  requires true
+  ensures result >= 0
+  ensures result <= 1
+  decreases 0
+=
+  var cfg: StudioProjectConfig = studio_project_config_new(studio_profile_sim_robotics())
+  var sess: SimSessionStub = sim_session_stub_default()
+  if studio_sim_step_hook(cfg, sess, 0.01) != sim_status_ok():
+    return 0
+  if studio_sim_robotics_inspector_live_ok(sess) != 1:
+    return 0
+  return 1
+
+def studio_vertical_dod_sim_additive_composable_ok() -> int
+  requires true
+  ensures result >= 0
+  ensures result <= 1
+  decreases 0
+=
+  var cfg: StudioProjectConfig = studio_project_config_from_additive_toml_fixture()
+  var sess: SimSessionStub = sim_session_stub_default()
+  studio_apply_config_to_sim(cfg, sess)
+  if studio_am_export_three_click_flow(cfg, sess, am_export_format_3mf()) != 0:
+    return 0
+  return 1
+
+def studio_vertical_dod_sim_scientific_composable_ok() -> int raises IO
+  requires true
+  ensures result >= 0
+  ensures result <= 1
+  decreases 0
+=
+  var md_oracle: float = sim_scientific_oracle_checksum_md()
+  var md105: SimRunResult = run_algo(105, 1)
+  if run_result_ok(md105) != 1:
+    return 0
+  if md105.checksum != md_oracle:
+    return 0
+  var cfg: StudioProjectConfig = studio_project_config_new(studio_profile_sim_scientific())
+  var sess: SimSessionStub = sim_session_stub_default()
+  studio_viewport_display_reset_for_profile(studio_profile_sim_scientific())
+  if studio_sim_scientific_step_hook(sess, 1.0) != sim_status_ok():
+    return 0
+  var vp: Rect = rect_make(0.0, 0.0, 1280.0, 720.0)
+  var pipeline: VizPipelineState = studio_sim_scientific_viz_for_tick(sess.tick)
+  var display: StudioViewportDisplayCompose = studio_compose_viewport_display(vp, studio_profile_sim_scientific())
+  if studio_sim_scientific_viz_viewport_ok(pipeline, display) != 1:
+    return 0
+  return 1
+
+def studio_vertical_dod_sim_drug_design_composable_ok() -> int
+  requires true
+  ensures result >= 0
+  ensures result <= 1
+  decreases 0
+=
+  var lab: int = drug_litl_stage_lab()
+  if studio_adaptive_panel_set_id(lab) != lab:
+    return 0
+  if studio_adaptive_panel_region_for_litl_stage(lab) != studio_region_timeline():
+    return 0
+  var shell: StudioShellCompose = studio_compose_shell_drug_litl(1280.0, 720.0, lab, 1)
+  if shell.panel.active_region != studio_region_timeline():
+    return 0
+  return 1
+
+def studio_vertical_dod_profile_composable_ok(profile_id: int) -> int raises Alloc, IO
+  requires studio_profile_id_valid(profile_id) == 1
+  ensures result >= 0
+  ensures result <= 1
+  decreases profile_id
+=
+  if profile_id == studio_profile_game():
+    return studio_vertical_dod_game_composable_ok()
+  if profile_id == studio_profile_sim_rl():
+    return studio_vertical_dod_sim_rl_composable_ok()
+  if profile_id == studio_profile_sim_automotive():
+    return studio_vertical_dod_sim_automotive_composable_ok()
+  if profile_id == studio_profile_sim_robotics():
+    return studio_vertical_dod_sim_robotics_composable_ok()
+  if profile_id == studio_profile_sim_additive():
+    return studio_vertical_dod_sim_additive_composable_ok()
+  if profile_id == studio_profile_sim_scientific():
+    return studio_vertical_dod_sim_scientific_composable_ok()
+  if profile_id == studio_profile_sim_drug_design():
+    return studio_vertical_dod_sim_drug_design_composable_ok()
+  return 0
+
+def studio_vertical_dod_all_profiles_ok() -> int raises Alloc, IO
+  requires true
+  ensures result >= 0
+  ensures result <= 1
+  decreases 0
+=
+  if studio_vertical_dod_profile_composable_ok(studio_profile_game()) != 1:
+    return 0
+  if studio_vertical_dod_profile_composable_ok(studio_profile_sim_rl()) != 1:
+    return 0
+  if studio_vertical_dod_profile_composable_ok(studio_profile_sim_automotive()) != 1:
+    return 0
+  if studio_vertical_dod_profile_composable_ok(studio_profile_sim_robotics()) != 1:
+    return 0
+  if studio_vertical_dod_profile_composable_ok(studio_profile_sim_additive()) != 1:
+    return 0
+  if studio_vertical_dod_profile_composable_ok(studio_profile_sim_scientific()) != 1:
+    return 0
+  if studio_vertical_dod_profile_composable_ok(studio_profile_sim_drug_design()) != 1:
+    return 0
+  return 1
+

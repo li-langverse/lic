@@ -21,3 +21,9 @@ suite = "smoke"
 file = "smoke/studio_ai_apply_patch_loop.li"
 outcome = "verify_ok"
 note = "WP-AG-04 apply_patch lic check JSON retry loop"
+
+[[tests]]
+suite = "smoke"
+file = "smoke/studio_ai_patch_eval.li"
+outcome = "verify_ok"
+note = "WP-AG-06 patch eval harness ≥70% fix-rate gate"

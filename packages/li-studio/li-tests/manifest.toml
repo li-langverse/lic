@@ -156,6 +156,12 @@ note = "WP-GD-02: WorldSnapshot after sim tick + shell timeline cache"
 
 [[tests]]
 suite = "smoke"
+file = "smoke/studio_vertical_dod.li"
+outcome = "check_ok"
+note = "wsm-w6: composable vertical DoD for all 7 runtime profiles"
+
+[[tests]]
+suite = "smoke"
 file = "smoke/studio_world_io_roundtrip.li"
 outcome = "check_ok"
 note = "WP-GD-03: world.li text save/load roundtrip + asset_ref_count stub"

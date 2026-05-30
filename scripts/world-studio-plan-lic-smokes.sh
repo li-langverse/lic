@@ -56,11 +56,12 @@ for smoke in \
   studio_sim_robotics_inspector.li \
   studio_viewport_hud.li \
   studio_viewport_error.li \
-  studio_native_pixels_wgpu_readback.li; do
+  studio_native_pixels_wgpu_readback.li \
+  studio_vertical_dod.li; do
   (cd "$ROOT/packages/li-studio" && "$LIC" check "li-tests/smoke/$smoke")
 done
 
-for smoke in studio_ai_apply_patch_loop.li studio_ai_mcp_dispatch.li studio_ai_task_state.li; do
+for smoke in studio_ai_apply_patch_loop.li studio_ai_mcp_dispatch.li studio_ai_task_state.li studio_ai_patch_eval.li; do
   "$LIC" check "$ROOT/packages/li-studio-ai/li-tests/smoke/$smoke"
 done
 

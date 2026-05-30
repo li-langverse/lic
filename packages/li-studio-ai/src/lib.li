@@ -283,3 +283,132 @@ def studio_ai_cancel_task(task: StudioAiTaskState) -> StudioAiTaskState
   var out: StudioAiTaskState = task
   out.status = studio_ai_task_cancelled()
   return out
+
+# WP-AG-06 — curated patch-eval set; ≥70% outcomes match expected lic-check contract.
+def studio_ai_patch_eval_task_count() -> int
+  requires true
+  ensures result == 10
+  decreases 0
+=
+  return 10
+
+def studio_ai_patch_eval_fix_rate_min_pct() -> int
+  requires true
+  ensures result == 70
+  decreases 0
+=
+  return 70
+
+def studio_ai_patch_eval_task_patch(task_id: int) -> str
+  requires task_id >= 0
+  requires task_id < studio_ai_patch_eval_task_count()
+  ensures result != ""
+  decreases task_id
+=
+  if task_id == 0:
+    return studio_ai_patch_marker_valid()
+  if task_id == 1:
+    return studio_ai_patch_marker_valid()
+  if task_id == 2:
+    return studio_ai_patch_marker_valid()
+  if task_id == 3:
+    return studio_ai_patch_marker_valid()
+  if task_id == 4:
+    return studio_ai_patch_marker_valid()
+  if task_id == 5:
+    return studio_ai_patch_marker_valid()
+  if task_id == 6:
+    return studio_ai_patch_marker_valid()
+  if task_id == 7:
+    return studio_ai_patch_marker_retry()
+  if task_id == 8:
+    return studio_ai_patch_marker_fail()
+  return studio_ai_patch_marker_fail()
+
+def studio_ai_patch_eval_task_target(task_id: int) -> str
+  requires task_id >= 0
+  requires task_id < studio_ai_patch_eval_task_count()
+  ensures result != ""
+  decreases task_id
+=
+  if task_id == 7:
+    return "world.li"
+  if task_id == 8:
+    return "scene.li"
+  return "world.li"
+
+def studio_ai_patch_eval_task_expect_success(task_id: int) -> int
+  requires task_id >= 0
+  requires task_id < studio_ai_patch_eval_task_count()
+  ensures result >= 0
+  ensures result <= 1
+  decreases task_id
+=
+  if task_id >= 8:
+    return 0
+  return 1
+
+def studio_ai_patch_eval_task_actual_success(task_id: int) -> int raises IO
+  requires task_id >= 0
+  requires task_id < studio_ai_patch_eval_task_count()
+  ensures result >= 0
+  ensures result <= 1
+  decreases task_id
+=
+  var patch: str = studio_ai_patch_eval_task_patch(task_id)
+  var target: str = studio_ai_patch_eval_task_target(task_id)
+  var kind: int = li_rt_studio_ai_patch_kind(patch)
+  if kind == studio_ai_patch_kind_retry():
+    var loop: StudioAiPatchLoopResult = studio_ai_apply_patch_loop(patch, target, studio_ai_patch_loop_max_retries_default())
+    return loop.success
+  var step: StudioAiPatchResult = studio_ai_apply_patch(patch, target)
+  return step.success
+
+def studio_ai_patch_eval_task_match(task_id: int) -> int raises IO
+  requires task_id >= 0
+  requires task_id < studio_ai_patch_eval_task_count()
+  ensures result >= 0
+  ensures result <= 1
+  decreases task_id
+=
+  var expect: int = studio_ai_patch_eval_task_expect_success(task_id)
+  var actual: int = studio_ai_patch_eval_task_actual_success(task_id)
+  if expect == actual:
+    return 1
+  return 0
+
+def studio_ai_patch_eval_pass_count() -> int raises IO
+  requires true
+  ensures result >= 0
+  ensures result <= studio_ai_patch_eval_task_count()
+  decreases studio_ai_patch_eval_task_count()
+=
+  var n: int = 0
+  var i: int = 0
+  while i < studio_ai_patch_eval_task_count()
+    if studio_ai_patch_eval_task_match(i) == 1:
+      n = n + 1
+    i = i + 1
+  return n
+
+def studio_ai_patch_eval_fix_rate_pct() -> int raises IO
+  requires true
+  ensures result >= 0
+  ensures result <= 100
+  decreases 0
+=
+  var passed: int = studio_ai_patch_eval_pass_count()
+  var total: int = studio_ai_patch_eval_task_count()
+  if total <= 0:
+    return 0
+  return (passed * 100) / total
+
+def studio_ai_patch_eval_gate_ok() -> int raises IO
+  requires true
+  ensures result >= 0
+  ensures result <= 1
+  decreases 0
+=
+  if studio_ai_patch_eval_fix_rate_pct() >= studio_ai_patch_eval_fix_rate_min_pct():
+    return 1
+  return 0

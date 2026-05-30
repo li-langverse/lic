@@ -84,6 +84,16 @@ if [[ -x "$ROOT/scripts/studio-mcp-li-engine-smoke.sh" ]]; then
   "$ROOT/scripts/studio-mcp-li-engine-smoke.sh" || li_warn "studio-mcp-li-engine-smoke soft-fail"
 fi
 
+if [[ -x "$ROOT/scripts/studio-patch-eval-gate.sh" ]]; then
+  li_phase "patch eval harness (WP-AG-06)"
+  "$ROOT/scripts/studio-patch-eval-gate.sh" || fail "studio-patch-eval-gate"
+fi
+
+if [[ -x "$ROOT/scripts/studio-vertical-dod-gate.sh" ]]; then
+  li_phase "vertical DoD composable (wsm-w6)"
+  "$ROOT/scripts/studio-vertical-dod-gate.sh" || fail "studio-vertical-dod-gate"
+fi
+
 li_phase "iteration assessment"
 assess="$ROOT/data/world-studio-plan-loop/latest-iteration-assessment.json"
 if [[ -f "$assess" ]]; then

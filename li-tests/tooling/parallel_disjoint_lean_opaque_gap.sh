@@ -6,6 +6,7 @@ ROOT="$(cd "$(dirname "$0")/../.." && pwd)"
 cd "$ROOT"
 LIC="${LIC:-$ROOT/build/compiler/lic/lic}"
 EXPLICIT="$ROOT/li-tests/race_shared_memory/good_disjoint_parallel.li"
+DECORATOR="$ROOT/li-tests/decorators/parallel_with_disjoint.li"
 INHERIT="$ROOT/li-tests/decorators/parallel_def_disjoint_inherit.li"
 VC_EMIT="$ROOT/compiler/verify/vc_emit_lean.cpp"
 CORE="$ROOT/docs/semantics/Core.lean"
@@ -72,5 +73,25 @@ if ! grep -q 'par0_decreases_0' "$AUTOVC"; then
   echo "FAIL: expected par loop decreases VC on inherit specimen" >&2
   exit 1
 fi
+
+rm -f "$AUTOVC"
+"$LIC" build "$DECORATOR" -o /dev/null 2>/dev/null
+if ! grep -q 'VC requires (opaque): source expr not yet translated' "$AUTOVC"; then
+  echo "FAIL: expected opaque requires marker for disjoint_elem on decorator specimen" >&2
+  exit 1
+fi
+if ! grep -q 'vc_par_decorated_par0_requires_0.*Prop := True' "$AUTOVC"; then
+  echo "FAIL: decorator disjoint_elem par requires should stub True (G-par Lean gap)" >&2
+  exit 1
+fi
+if ! grep -q 'vc_par_decorated_par0_requires_0_proved.*:= trivial' "$AUTOVC"; then
+  echo "FAIL: decorator disjoint_elem should discharge via trivial" >&2
+  exit 1
+fi
+if grep -q 'disjoint_row\|disjoint_elem\|row_ok' "$AUTOVC"; then
+  echo "FAIL: disjoint builtins should not appear in decorator AutoVC yet" >&2
+  exit 1
+fi
+"$ROOT/scripts/check-autovc-open-goals.sh" "$AUTOVC" >/dev/null
 
 echo "PASS parallel_disjoint_lean_opaque_gap: disjoint contracts → opaque True; no Lean disjoint semantics"

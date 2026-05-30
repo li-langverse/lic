@@ -45,7 +45,7 @@ New pixel paths: `packages/li-studio` + `packages/li-render` + `lig.present` onl
 | When | Milestone |
 |------|-----------|
 | Prerequisite | PR #356 merged to `main` |
-| +1 week | Step 1 readback path green on Linux + macOS CI |
+| +1 week | Step 1 `studio_vertical_capture_ppm` + `studio-verticals-capture-li-demo.sh` (Li PPM; wgpu readback next) |
 | +2 weeks | Steps 2–3 |
 | +1 week | Step 4 deletion + script updates |
 

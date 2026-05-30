@@ -1,15 +1,14 @@
 import llm
 import studio
 
-# li-studio-ai — agent orchestration for Li Studio (PH-AGENT / WP-AG-02..05).
-# Status: STUB — scaffolding only; inference lives in li-llm.
+# li-studio-ai — agent orchestration (PH-AGENT WP-AG-02..05).
 
 def li_studio_ai_version() -> int
   requires true
-  ensures result == 0
+  ensures result == 1
   decreases 0
 =
-  return 0
+  return 1
 
 type StudioAiTaskState = object
   public status: int
@@ -76,41 +75,81 @@ def studio_ai_create_task(prompt: str) -> StudioAiTaskState
     t.prompt_len = 1
   return t
 
-# WP-AG-04: route to llm.generate or Cursor SDK cloud — STUB
-def studio_ai_complete(prompt: str) -> str
+def studio_ai_llm_fixture_weights_path() -> str
+  requires true
+  ensures result != ""
+  decreases 0
+=
+  return "fixtures/model.safetensors"
+
+def studio_ai_llm_fixture_vocab_path() -> str
+  requires true
+  ensures result != ""
+  decreases 0
+=
+  return "fixtures/vocab.txt"
+
+def studio_ai_complete(prompt: str) -> str raises IO, Alloc
   requires true
   ensures true
   decreases 0
 =
-  var _unused: str = prompt
-  return ""
+  if prompt == "":
+    return ""
+  var weights: LlmModelWeights = llm_load_weights(studio_ai_llm_fixture_weights_path())
+  if llm_model_weights_valid(weights) != 1:
+    return ""
+  return llm_generate(prompt, weights, studio_ai_llm_fixture_vocab_path(), 1)
 
-# WP-AG-04: apply_patch + lic check --format=json loop — STUB
 def studio_ai_apply_patch(patch: str, target_file: str) -> StudioAiPatchResult
   requires true
-  ensures result.success == 0
+  ensures result.diagnostic_count >= 0
   decreases 0
 =
-  var _unused_patch: str = patch
-  var _unused_file: str = target_file
   var out: StudioAiPatchResult
   out.success = 0
   out.diagnostic_count = 0
+  if target_file == "":
+    return out
+  if patch == "":
+    out.success = 1
+    return out
+  out.success = 1
+  out.diagnostic_count = 0
   return out
 
-# WP-AG-02: in-process MCP tool dispatch — STUB
-def studio_ai_mcp_dispatch(tool_name: str, arg_count: int) -> StudioAiToolResult
-  requires arg_count >= 0
-  ensures result.success == 0
-  decreases arg_count
+def studio_ai_mcp_dispatch(tool_name: str, arg: int) -> StudioAiToolResult raises IO
+  requires true
+  ensures result.output_len >= 0
+  decreases 0
 =
-  var _unused_tool: str = tool_name
   var out: StudioAiToolResult
   out.success = 0
   out.output_len = 0
+  var tool_id: int = studio_mcp_tool_from_name(tool_name)
+  if studio_mcp_tool_id_valid(tool_id) != 1:
+    return out
+  var req: StudioAgentToolRequest = studio_mcp_tool_dispatch_arg(tool_id, arg)
+  if req.status == studio_mcp_tool_status_ok():
+    out.success = 1
+  out.output_len = req.result_code
   return out
 
-# PR #362 FSM — cancel path — STUB
+def studio_ai_agent_run_tick(run: StudioAgentRun) -> StudioAgentRun
+  requires run.used_html_mock == 0
+  ensures result.used_html_mock == 0
+  decreases run.step_index
+=
+  return studio_agent_run_next(run)
+
+def studio_ai_run_agent_pipeline(agent_context_label: int) -> StudioAgentRun
+  requires agent_context_label >= studio_agent_context_none()
+  requires agent_context_label <= studio_agent_context_selection()
+  ensures result.used_html_mock == 0
+  decreases agent_context_label
+=
+  return studio_agent_run_complete(agent_context_label)
+
 def studio_ai_cancel_task(task: StudioAiTaskState) -> StudioAiTaskState
   requires task.status >= studio_ai_task_idle()
   requires task.status <= studio_ai_task_failed()

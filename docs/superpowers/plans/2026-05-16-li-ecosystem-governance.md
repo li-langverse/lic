@@ -4,6 +4,8 @@
 
 **Goal:** Official Li software and standard packages live under a **defined GitHub organization**, with documentation and metadata that meet **international conventions** and a **traceability chain** from requirements → design → tests → releases.
 
+**Plan map:** [plan-cross-links](../../ecosystem/plan-cross-links.md) · [master plan](2026-05-14-li-master-plan.md#documentation--provability-honesty-cross-cutting) · [provability gaps](../../verification/provability-gaps.md) (honesty for `proof_digest` / release claims — **G-*** updated only with compiler evidence)
+
 ---
 
 ## GitHub organization policy

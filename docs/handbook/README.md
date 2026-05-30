@@ -11,6 +11,7 @@ Canonical **language** handbook: [li-language Pages](https://li-langverse.github
 | What `lic build` proves **today** | [Provability gaps](../verification/provability-gaps.md) |
 | PH order and repo policy | [Master plan](../superpowers/plans/2026-05-14-li-master-plan.md) |
 | Map plans ↔ gaps ↔ benchmarks | [Plan cross-links](../ecosystem/plan-cross-links.md) |
+| GUI UX agent handoff (`ui_ux_quality`) | [gui-ux-quality-handoff](../ecosystem/gui-ux-quality-handoff.md) |
 | Org vision (human merge) | [Vision & roadmap](../ecosystem/vision-and-roadmap.md) → [roadmap repo](https://github.com/li-langverse/roadmap) |
 | Perf dashboard (not proof) | [Benchmarks](https://li-langverse.github.io/benchmarks/) |
 

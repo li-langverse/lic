@@ -1,16 +1,18 @@
 {
   "pass": true,
-  "todo_id": "wsm-w2-viewport-error",
-  "wps_touched": ["WP-UX-08", "WP-GD-05"],
+  "todo_id": "wsm-w2-native-pixels",
+  "wps_touched": ["WP-UX-14", "WP-GD-05"],
   "smokes_run": [
-    "packages/li-studio/li-tests/smoke/studio_viewport_error.li",
-    "packages/li-render/li-tests/smoke/wgpu_draw_list.li"
+    "packages/li-render/li-tests/smoke/native_pixels_honesty.li",
+    "packages/li-studio/li-tests/smoke/studio_native_pixels_honesty.li",
+    "packages/li-render/li-tests/smoke/wgpu_draw_list.li",
+    "packages/li-studio/li-tests/smoke/studio_vertical_demo_env.li"
   ],
   "native_only": true,
   "gates": {
     "world_studio_plan_gates": "pass",
-    "lic_check_local": "wsl",
+    "lic_check_local": "wsl_or_ci",
     "lic_check_ci": "pending"
   },
-  "notes": "WP-UX-08 merged: render smoke error mapping + pointer retry + RenderViewportWgpuProbe sync on studio_attach_viewport_shell; TOML fixture unquoted parse fallback for Li strings; li_std_studio_version 18."
+  "notes": "UX-14: lig_native_pixel_source_honest_product accepts paint_blit + wgpu readback/draw-list; studio_vertical_demo_frame submits PBR draw list when LIG_WGPU_READBACK=1; HUD uses host fps counter when LIG_HOST_PRESENT=1; record scripts honor STUDIO_VERTICALS_WGPU_READBACK=1; li_std_studio_version 19, li_std_render_version 5."
 }

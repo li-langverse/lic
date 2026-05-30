@@ -9,6 +9,9 @@ META="${STUDIO_VERTICALS_NATIVE_META:-$ROOT/docs/demo/media/native-verticals/cap
 WIDTH="${STUDIO_VERTICALS_CAPTURE_WIDTH:-1920}"
 HEIGHT="${STUDIO_VERTICALS_CAPTURE_HEIGHT:-1080}"
 export LIG_HOST_PRESENT="${LIG_HOST_PRESENT:-1}"
+if [[ "${STUDIO_VERTICALS_WGPU_READBACK:-0}" == "1" ]]; then
+  export LIG_WGPU_READBACK=1
+fi
 
 # slug:profile_id — sim_drug_design (7) uses Li studio_compose_shell_drug_litl (frame_id = LITL tick).
 VERTICALS=(

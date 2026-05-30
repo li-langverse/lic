@@ -9,10 +9,10 @@ import scene
 
 def li_std_render_version() -> int
   requires true
-  ensures result == 4
+  ensures result == 5
   decreases 0
 =
-  return 4
+  return 5
 
 def render_viewport_fps_target() -> float
   requires true
@@ -489,8 +489,25 @@ def render_wgpu_draw_list_smoke(vp: ViewportRegion, profile_id: int) -> RenderVi
   out.viewport_w = vp.w
   out.viewport_h = vp.h
   out.fps_counter_ready = 1
-  out.native_pixels = lig_present_surface_ok()
+  if lig_present_host_active() == 1:
+    out.native_pixels = lig_present_host_native_pixels_flag()
+  if lig_present_host_active() != 1:
+    out.native_pixels = 0
   return out
+
+def render_viewport_native_pixels_honest(native_pixels: int, pixel_source: int) -> int
+  requires native_pixels >= 0
+  requires native_pixels <= 1
+  requires pixel_source >= 0
+  ensures result >= 0
+  ensures result <= 1
+  decreases pixel_source
+=
+  if native_pixels == 0:
+    return 0
+  if lig_native_pixel_source_honest_product(pixel_source) != 1:
+    return 0
+  return 1
 
 def render_wgpu_draw_list_smoke_ok(smoke: RenderViewportSmoke) -> int
   requires true

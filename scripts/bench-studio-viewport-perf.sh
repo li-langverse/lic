@@ -217,17 +217,19 @@ def bench_studio_vertical_present_hook() -> dict:
     else:
         status = "simulate"
     native_paint = False
+    native_wgpu = False
     if host_probe.get("probe_run_ok"):
-        native_paint = (
-            bool(host_probe.get("native_pixels"))
-            and int(host_probe.get("native_pixel_source", 0)) == paint_blit
-        )
+        src = int(host_probe.get("native_pixel_source", 0))
+        native_paint = bool(host_probe.get("native_pixels")) and src == paint_blit
+        native_wgpu = bool(host_probe.get("native_pixels")) and src in (3, 4)
+    if readback_on and host_probe.get("probe_run_ok") and native_wgpu:
+        status = "wgpu_readback_host"
     return {
         "profile_count": int(pres.get("profile_count", 7)),
         "bench_simulate_fn": meta_h.get("bench_simulate_fn", "studio_vertical_demo_frame"),
         "hook_version": meta_h.get("hook_version", 0),
         "native_pixels_paint_blit": native_paint,
-        "native_pixels_wgpu": False,
+        "native_pixels_wgpu": native_wgpu or (readback_on and bool(meta_h.get("native_pixels_wgpu", False))),
         "wgpu_full_readback": bool(meta_h.get("wgpu_full_readback", False)) and readback_on,
         "status": status,
         "honest_simulate": status == "simulate",

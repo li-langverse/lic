@@ -52,7 +52,7 @@ todos:
     status: done
   - id: wsm-w2-native-pixels
     content: "UX-14 native_pixels via wgpu readback — record verticals demo honest (WP-UX-14)"
-    status: pending
+    status: done
   - id: wsm-w2-c-host-retire
     content: "Retire deploy/studio-demo C paint hosts after wgpu path (WP-UX-14b)"
     status: pending

@@ -1461,6 +1461,8 @@ def studio_compose_viewport_display(vp: Rect, profile_id: int) raises IO -> Stud
       out.tier_particles = draw_pts
     out.particle_dots_visible = 1
   var fps_counter: RenderFpsCounter = render_fps_counter_shell_simulate()
+  if lig_present_host_active() == 1:
+    fps_counter = render_viewport_host_fps_counter(1)
   out.fps_display = render_fps_counter_display_fps(fps_counter)
   out.fps_meets_target = render_fps_counter_meets_target(fps_counter)
   out.fps_hud_tag = render_fps_counter_hud_tag(fps_counter)
@@ -1650,10 +1652,10 @@ def studio_compose_shell_drug_litl(w: float, h: float, tick: int, has_selection:
 
 def li_std_studio_version() -> int
   requires true
-  ensures result == 18
+  ensures result == 19
   decreases 0
 =
-  return 18
+  return 19
 
 def studio_agent_context_none() -> int
   requires true
@@ -4780,6 +4782,14 @@ def studio_vertical_demo_frame(profile_id: int, frame_id: int) -> int raises IO
   studio_paint_topbar_profile(frame, topbar, profile_id)
   if lig_present_host_active() == 1:
     var vp: ViewportRegion = gui_viewport_region_from_layout(compose.layout)
+    if lig_present_wgpu_readback_active() == 1:
+      var draw_list: RenderDrawList = render_draw_list_new()
+      render_draw_list_push_clear(draw_list, 0.05, 0.07, 0.1)
+      var draw_mat: RenderPbrLiteMaterial = render_pbr_lite_material_default()
+      render_draw_list_push_mesh(draw_list, 1, draw_mat)
+      render_draw_list_push_particles(draw_list, 1000, draw_mat)
+      if render_draw_list_submit(vp, draw_list, profile_id) != 1:
+        return 54 + frame_id
     if lig_present_blit_paint_summary(vp.w, vp.h, profile_id, frame.cmd_count) != 1:
       return 52 + frame_id
     var _presented: LigPresentFrame = studio_shell_host_present_loop_tick(vp.w, vp.h, frame_id)
@@ -4787,7 +4797,7 @@ def studio_vertical_demo_frame(profile_id: int, frame_id: int) -> int raises IO
       return 50 + frame_id
     if _presented.native_pixels != 1:
       return 51 + frame_id
-    if _presented.native_pixel_source != lig_native_pixel_source_paint_blit():
+    if lig_native_pixel_source_honest_product(_presented.native_pixel_source) != 1:
       return 53 + frame_id
   if frame_id == 0:
     return 0

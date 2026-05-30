@@ -138,6 +138,12 @@ note = "T-PKG-li-studio-mcp-extended PH-AGENT gap-6-7"
 
 [[tests]]
 suite = "smoke"
+file = "smoke/studio_native_pixels_honesty.li"
+outcome = "compile_open_ok"
+note = "T-PKG-li-studio-native-pixels-honesty WP-UX-14"
+
+[[tests]]
+suite = "smoke"
 file = "smoke/studio_viewport_hud.li"
 outcome = "check_ok"
 note = "T-PKG-li-studio-viewport-hud UX-13 WP-UX-13 live FPS + particle tier HUD"

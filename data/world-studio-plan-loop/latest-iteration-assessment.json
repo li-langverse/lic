@@ -1,11 +1,11 @@
 {
   "pass": true,
-  "todo_id": "wsm-w1-sim3-envpool",
-  "wps_touched": ["WP-SIM-03", "WP-RL-01"],
+  "todo_id": "wsm-w1-sim-sensors",
+  "wps_touched": ["WP-SIM-05"],
   "smokes_run": [
-    "packages/li-sim/li-tests/smoke/env_pool_stub.li",
-    "packages/li-sim/li-tests/smoke/env_pool_step_contract.li",
-    "packages/li-studio/li-tests/smoke/studio_sim_rl_step_hook.li",
+    "packages/li-sim-sensors/li-tests/smoke/builds.li",
+    "packages/li-sim-sensors/li-tests/smoke/sensor_bus_raycast_contract.li",
+    "packages/li-studio/li-tests/smoke/studio_sim_sensor_step_hook.li",
     "packages/li-studio/li-tests/smoke/studio_sim_step_by_profile.li"
   ],
   "native_only": true,
@@ -14,5 +14,5 @@
     "lic_check_local": "skipped_lic_not_built",
     "lic_check_ci": "pending"
   },
-  "notes": "EnvPool state lives on SimSessionStub (env_pool_size/steps_emitted/total_reward + env_last_obs*). sim_rl_session_env_pool_step loads/stores session pool across frames; env_obs_from_session exposes last post-step contract. New smoke env_pool_step_contract.li proves persistence + obs/reward contract. PH-ML async workers and li-ml-rl package remain future."
+  "notes": "New li-sim-sensors (sim.sensors) exposes stable raycast IDs (903 lidar + 904/905/806 stubs) with proved hit bounds [0,100m]. SimSessionStub.sensor_* persists bus emit across frames; studio_sim_sensor_step_hook wires auto/robo profiles. Full physics raycast + map ingest remain future (WP-AUTO-02)."
 }

@@ -5,6 +5,7 @@ import sim
 import sim.scientific
 import sim.robotics
 import sim.automotive
+import sim.sensors
 import sim.additive
 import sim.drug_design
 import scene
@@ -1929,6 +1930,16 @@ def studio_sim_rl_step_hook(sim_out: var SimSessionStub, dt: float) -> int
 =
   return sim_rl_session_env_pool_step(sim_out, dt)
 
+# PH-SIM SIM-5 — automotive/robotics: sensor raycast bus on session before replay tick.
+def studio_sim_sensor_step_hook(sim_out: var SimSessionStub, dt: float) -> int
+  requires sim_out.tick >= 0
+  requires sim_out.replay_capacity > 0
+  ensures result >= 0
+  ensures result <= 1
+  decreases sim_out.tick
+=
+  return sim_sensor_session_bus_step(sim_out, dt)
+
 def studio_game_session_physics_load(session: SimSessionStub) -> GamePhysicsState
   requires session.tick >= 0
   ensures result.px == session.game_px
@@ -2104,9 +2115,11 @@ def studio_sim_step_hook(config: StudioProjectConfig, sim_out: var SimSessionStu
   if prof == studio_profile_sim_automotive():
     if sim_automotive_tick_stub(detail_hook) != 1:
       return sim_status_invalid_dt()
+    return studio_sim_sensor_step_hook(sim_out, dt)
   if prof == studio_profile_sim_robotics():
     if sim_robotics_tick_stub(detail_hook) != 1:
       return sim_status_invalid_dt()
+    return studio_sim_sensor_step_hook(sim_out, dt)
   if prof == studio_profile_sim_additive():
     if sim_additive_tick_stub(detail_hook) != 1:
       return sim_status_invalid_dt()

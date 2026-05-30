@@ -100,7 +100,7 @@ todos:
     status: done
   - id: wsm-w6-repro-bundle
     content: "publish_bundle MCP → manifest zip after lic build (WP-PUB-03)"
-    status: pending
+    status: done
   - id: wsm-w6-player-ship
     content: "li-player publish bundle from game profile (WP-GD-06)"
     status: pending

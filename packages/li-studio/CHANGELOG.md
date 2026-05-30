@@ -4,6 +4,7 @@
 
 ### Added
 
+- **WP-PUB-03 publish_bundle reproducibility manifest** — `studio_publish_bundle`, `studio_publish_bundle_three_click_flow` (Select → lic build proof → Export zip manifest); MCP `publish_bundle` writes manifest contract after proof pass; smoke `studio_publish_bundle.li`; `li_std_studio_version` → 31.
 - **WP-PUB-02 studio.publish.table scientific export** — `studio_publish_table`, `studio_publish_table_from_viz_tick`, `studio_publish_table_three_click_flow` (Select → lic build proof → Export); HDF5/CSV contract from sim.viz pipeline rows; smoke `studio_publish_table.li`; `li_std_studio_version` → 30.
 - **WP-PUB-01 studio.publish.figure vector export** — `studio_publish_figure`, `studio_publish_three_click_flow` (Select → lic build proof → Export); SVG/PDF/300+dpi PNG contract with journal templates; smoke `studio_publish_figure.li`; `li_std_studio_version` → 29.
 - **WP-DRUG-03 adaptive LITL panel sets** — `studio_adaptive_panel_region_for_litl_stage`, `studio_shell_apply_adaptive_panel_set`; drug compose switches panel focus per LITL stage; smoke `studio_adaptive_litl_panel_sets.li`; `li_std_studio_version` → 28.

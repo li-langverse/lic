@@ -1192,6 +1192,28 @@ def studio_mcp_arg_normalize_export_mask(arg: int) -> int
     mask = studio_export_format_mask_3mf()
   return mask
 
+def studio_mcp_arg_normalize_publish_proof(arg: int) -> int
+  requires true
+  ensures result >= 0
+  ensures result <= 1
+  decreases arg
+=
+  if arg == studio_mcp_arg_lic_build_fail():
+    return 0
+  if arg >= studio_mcp_arg_publish_bundle_proof():
+    return 1
+  var mask0: int = studio_mcp_arg_normalize_export_mask(arg)
+  if studio_mcp_export_mask_valid(mask0) == 1:
+    return 1
+  return 0
+
+def studio_mcp_arg_publish_bundle_proof() -> int
+  requires true
+  ensures result == 1
+  decreases 0
+=
+  return 1
+
 def studio_mcp_export_mask_valid(mask: int) -> int
   requires true
   ensures result >= 0
@@ -1274,13 +1296,19 @@ def studio_mcp_tool_dispatch_mode_arg(mode: int, tool_id: int, arg: int) -> Stud
     out.result_code = studio_mcp_tool_result_ok()
     return out
   if tool_id == studio_mcp_publish_bundle():
-    var mask0: int = studio_mcp_arg_normalize_export_mask(arg)
-    if studio_mcp_export_mask_valid(mask0) != 1:
+    var proof0: int = studio_mcp_arg_normalize_publish_proof(arg)
+    var cfg0: StudioProjectConfig = studio_project_config_from_additive_toml_fixture()
+    var sess0: SimSessionStub = sim_session_stub_default()
+    studio_apply_config_to_sim(cfg0, sess0)
+    sess0.tick = 8
+    var chk0: StudioWorldCheckpoint = studio_world_checkpoint_capture(cfg0.active_profile, sess0)
+    var bundle0: PublishBundleResult = studio_publish_bundle(cfg0, chk0, 42.0, 8, proof0)
+    if bundle0.ok != 1:
       out.status = studio_mcp_tool_status_failed()
       out.result_code = studio_mcp_tool_result_err_proof()
       return out
     out.status = studio_mcp_tool_status_ok()
-    out.result_code = mask0
+    out.result_code = bundle0.magic_tag
     return out
   if tool_id == studio_mcp_am_export_print():
     var fmt: int = studio_mcp_arg_normalize_am_format(arg)
@@ -2107,10 +2135,10 @@ def studio_compose_shell_drug_litl(w: float, h: float, tick: int, has_selection:
 
 def li_std_studio_version() -> int
   requires true
-  ensures result == 30
+  ensures result == 31
   decreases 0
 =
-  return 30
+  return 31
 
 def studio_agent_context_none() -> int
   requires true
@@ -4031,6 +4059,273 @@ def studio_publish_table_three_click_flow(
   if flow.last_magic != studio_publish_table_magic_for_format(fmt):
     return 7
   if flow.last_row_count <= 0:
+    return 8
+  return 0
+
+# WP-PUB-03 — publish.zip reproducibility manifest contract (not file I/O; after lic build proof).
+def studio_publish_bundle_magic_zip() -> int
+  requires true
+  ensures result == 20555
+  decreases 0
+=
+  return 20555
+
+def studio_publish_bundle_manifest_entry_manifest() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0
+
+def studio_publish_bundle_manifest_entry_figure() -> int
+  requires true
+  ensures result == 1
+  decreases 0
+=
+  return 1
+
+def studio_publish_bundle_manifest_entry_data() -> int
+  requires true
+  ensures result == 2
+  decreases 0
+=
+  return 2
+
+def studio_publish_bundle_world_sha256_fields(name: int, tick: int, entity_count: int, asset_ref_count: int) -> float
+  requires tick >= 0
+  requires entity_count >= 0
+  requires asset_ref_count >= 0
+  ensures result >= 0.0
+  decreases tick
+=
+  var n_f: float = (name * 1.0)
+  var t_f: float = (tick * 1.0)
+  var e_f: float = (entity_count * 1.0)
+  var a_f: float = (asset_ref_count * 1.0)
+  return n_f * 1000.0 + t_f * 10.0 + e_f + a_f * 0.1
+
+def studio_publish_bundle_world_sha256(snapshot: WorldSnapshot) -> float
+  requires true
+  ensures result >= 0.0
+  decreases snapshot.tick
+=
+  return studio_publish_bundle_world_sha256_fields(snapshot.name, snapshot.tick, snapshot.entity_count, snapshot.asset_ref_count)
+
+def studio_publish_bundle_world_sha256_from_checkpoint(checkpoint: StudioWorldCheckpoint) -> float
+  requires checkpoint.tick >= 0
+  ensures result >= 0.0
+  decreases checkpoint.tick
+=
+  if checkpoint.valid == 1:
+    return studio_publish_bundle_world_sha256_fields(checkpoint.name, checkpoint.tick, checkpoint.entity_count, checkpoint.asset_ref_count)
+  var snap: WorldSnapshot = studio_world_scaffold_snapshot()
+  return studio_publish_bundle_world_sha256(snap)
+
+def studio_publish_bundle_manifest_checksum(
+    lic_version: int,
+    profile_id: int,
+    determinism_tier: int,
+    sim_checksum: float,
+    world_sha256: float,
+    figure_magic: int,
+    data_magic: int) -> float
+  requires lic_version >= 0
+  requires sim_checksum >= 0.0
+  requires world_sha256 >= 0.0
+  ensures result >= 0.0
+  decreases lic_version
+=
+  var lv_f: float = (lic_version * 1.0)
+  var pf_f: float = (profile_id * 1.0)
+  var dt_f: float = (determinism_tier * 1.0)
+  var fig_f: float = (figure_magic * 1.0)
+  var dat_f: float = (data_magic * 1.0)
+  return lv_f + pf_f * 10.0 + dt_f * 100.0 + sim_checksum + world_sha256 + fig_f + dat_f
+
+type PublishBundleResult = object
+  public ok: int
+  public lic_version: int
+  public profile_id: int
+  public determinism_tier: int
+  public sim_checksum: float
+  public world_sha256: float
+  public figure_count: int
+  public data_count: int
+  public entry_count: int
+  public manifest_checksum: float
+  public byte_checksum: float
+  public magic_tag: int
+
+def studio_publish_bundle(
+    config: StudioProjectConfig,
+    checkpoint: StudioWorldCheckpoint,
+    sim_checksum: float,
+    viz_tick: int,
+    proof_pass: int) -> PublishBundleResult
+  requires studio_profile_id_valid(config.active_profile) == 1
+  requires studio_determinism_tier_valid(config.determinism_tier) == 1
+  requires sim_checksum >= 0.0
+  requires viz_tick >= 1
+  requires viz_tick <= 64
+  ensures result.profile_id == config.active_profile
+  ensures result.determinism_tier == config.determinism_tier
+  ensures result.ok >= 0
+  ensures result.ok <= 1
+  decreases config.active_profile
+=
+  var r: PublishBundleResult
+  r.ok = 0
+  r.lic_version = li_std_studio_version()
+  r.profile_id = config.active_profile
+  r.determinism_tier = config.determinism_tier
+  r.sim_checksum = sim_checksum
+  r.world_sha256 = studio_publish_bundle_world_sha256_from_checkpoint(checkpoint)
+  r.figure_count = 0
+  r.data_count = 0
+  r.entry_count = 0
+  r.manifest_checksum = 0.0
+  r.byte_checksum = 0.0
+  r.magic_tag = 0
+  if studio_publish_proof_pass_ok(proof_pass) != 1:
+    return r
+  var fig_magic: int = 0
+  var dat_magic: int = 0
+  var fig: PublishFigureResult = studio_publish_figure(studio_publish_format_svg(), studio_publish_template_nature_single(), sim_checksum, proof_pass)
+  if fig.ok == 1:
+    r.figure_count = 1
+    fig_magic = fig.magic_tag
+  if config.active_profile == studio_profile_sim_scientific():
+    var tbl: PublishTableResult = studio_publish_table_from_viz_tick(viz_tick, studio_publish_table_format_hdf5(), sim_checksum, proof_pass)
+    if tbl.ok == 1:
+      r.data_count = 1
+      dat_magic = tbl.magic_tag
+  r.entry_count = 1 + r.figure_count + r.data_count
+  if r.entry_count < 2:
+    return r
+  r.manifest_checksum = studio_publish_bundle_manifest_checksum(r.lic_version, r.profile_id, r.determinism_tier, sim_checksum, r.world_sha256, fig_magic, dat_magic)
+  var ec_f: float = (r.entry_count * 1.0)
+  var fc_f: float = (r.figure_count * 1.0)
+  var dc_f: float = (r.data_count * 1.0)
+  r.byte_checksum = r.manifest_checksum + ec_f + fc_f + dc_f
+  r.magic_tag = studio_publish_bundle_magic_zip()
+  r.ok = 1
+  return r
+
+def studio_publish_bundle_wizard_step_select() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0
+
+def studio_publish_bundle_wizard_step_proof() -> int
+  requires true
+  ensures result == 1
+  decreases 0
+=
+  return 1
+
+def studio_publish_bundle_wizard_step_export() -> int
+  requires true
+  ensures result == 2
+  decreases 0
+=
+  return 2
+
+type StudioPublishBundleFlowState = object
+  public profile_id: int
+  public viz_tick: int
+  public wizard_step: int
+  public click_count: int
+  public proof_pass: int
+  public export_ok: int
+  public last_magic: int
+  public entry_count: int
+
+def studio_publish_bundle_flow_init(profile_id: int, viz_tick: int) -> StudioPublishBundleFlowState
+  requires studio_profile_id_valid(profile_id) == 1
+  requires viz_tick >= 1
+  requires viz_tick <= 64
+  ensures result.profile_id == profile_id
+  ensures result.viz_tick == viz_tick
+  ensures result.wizard_step == studio_publish_bundle_wizard_step_select()
+  decreases profile_id
+=
+  var f: StudioPublishBundleFlowState
+  f.profile_id = profile_id
+  f.viz_tick = viz_tick
+  f.wizard_step = studio_publish_bundle_wizard_step_select()
+  f.click_count = 0
+  f.proof_pass = 0
+  f.export_ok = 0
+  f.last_magic = 0
+  f.entry_count = 0
+  return f
+
+def studio_publish_bundle_flow_advance(
+    flow: var StudioPublishBundleFlowState,
+    config: StudioProjectConfig,
+    checkpoint: StudioWorldCheckpoint,
+    sim_checksum: float) -> int
+  requires studio_profile_id_valid(flow.profile_id) == 1
+  requires flow.viz_tick >= 1
+  requires flow.viz_tick <= 64
+  requires sim_checksum >= 0.0
+  ensures flow.click_count >= 0
+  decreases flow.wizard_step
+=
+  flow.click_count = flow.click_count + 1
+  if flow.wizard_step == studio_publish_bundle_wizard_step_select():
+    flow.wizard_step = studio_publish_bundle_wizard_step_proof()
+    return 0
+  if flow.wizard_step == studio_publish_bundle_wizard_step_proof():
+    if flow.proof_pass != 1:
+      return 1
+    flow.wizard_step = studio_publish_bundle_wizard_step_export()
+    return 0
+  if flow.wizard_step == studio_publish_bundle_wizard_step_export():
+    var bundle: PublishBundleResult = studio_publish_bundle(config, checkpoint, sim_checksum, flow.viz_tick, flow.proof_pass)
+    if bundle.ok != 1:
+      return 2
+    if bundle.magic_tag != studio_publish_bundle_magic_zip():
+      return 3
+    flow.export_ok = 1
+    flow.last_magic = bundle.magic_tag
+    flow.entry_count = bundle.entry_count
+    return 0
+  return 4
+
+def studio_publish_bundle_three_click_flow(
+    config: StudioProjectConfig,
+    checkpoint: StudioWorldCheckpoint,
+    sim_checksum: float,
+    viz_tick: int,
+    proof_pass: int) -> int
+  requires studio_profile_id_valid(config.active_profile) == 1
+  requires viz_tick >= 1
+  requires viz_tick <= 64
+  requires sim_checksum >= 0.0
+  ensures result >= 0
+  ensures result <= 8
+  decreases config.active_profile
+=
+  var flow: StudioPublishBundleFlowState = studio_publish_bundle_flow_init(config.active_profile, viz_tick)
+  if studio_publish_bundle_flow_advance(flow, config, checkpoint, sim_checksum) != 0:
+    return 1
+  flow.proof_pass = proof_pass
+  if studio_publish_bundle_flow_advance(flow, config, checkpoint, sim_checksum) != 0:
+    return 2
+  if proof_pass != 1:
+    return 3
+  if studio_publish_bundle_flow_advance(flow, config, checkpoint, sim_checksum) != 0:
+    return 4
+  if flow.click_count != 3:
+    return 5
+  if flow.export_ok != 1:
+    return 6
+  if flow.last_magic != studio_publish_bundle_magic_zip():
+    return 7
+  if flow.entry_count < 2:
     return 8
   return 0
 

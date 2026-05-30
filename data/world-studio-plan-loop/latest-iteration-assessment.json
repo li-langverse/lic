@@ -1,14 +1,14 @@
 {
   "pass": true,
-  "todo_id": "wsm-w6-publish-data",
-  "wps_touched": ["WP-PUB-02", "WP-SCI-04"],
+  "todo_id": "wsm-w6-repro-bundle",
+  "wps_touched": ["WP-PUB-03", "WP-PUB-01", "WP-PUB-02"],
   "smokes_run": [
-    "packages/li-studio/li-tests/smoke/studio_publish_table.li"
+    "packages/li-studio/li-tests/smoke/studio_publish_bundle.li"
   ],
   "native_only": true,
   "gates": {
     "world_studio_plan_gates": "pass",
     "lic_check_local": "wsl"
   },
-  "notes": "WP-PUB-02: studio_publish_table + studio_publish_table_from_viz_tick + studio_publish_table_three_click_flow (Select → lic build proof → Export); HDF5/CSV contract with sim.viz pipeline row/col schema; smoke studio_publish_table.li; li_std_studio_version 30."
+  "notes": "WP-PUB-03: studio_publish_bundle + studio_publish_bundle_three_click_flow + MCP publish_bundle dispatch after lic build proof; manifest contract with lic_version/profile/determinism_tier/sim_checksum/world_sha256/figure+data entries; zip magic 20555; li_std_studio_version 31."
 }

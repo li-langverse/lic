@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Gates for World Studio master plan loop — native li-studio smokes + plan docs.
+# Gates for World Studio master plan loop Ã‚Â— native li-studio smokes + plan docs.
 set -euo pipefail
 ROOT="$(cd "$(dirname "$0")/.." && pwd)"
 # shellcheck source=lib/li-ui.sh
@@ -38,34 +38,31 @@ run_lic_smokes() {
   LIC="$1" bash "$ROOT/scripts/world-studio-plan-lic-smokes.sh"
 }
 
+wsl_build_wsl_lic_ready() {
+  command -v wsl.exe >/dev/null 2>&1 || return 1
+  local wsl_root
+  wsl_root="$(wsl.exe wslpath -u "$ROOT" 2>/dev/null | tr -d '\r\n')"
+  [[ -n "$wsl_root" ]] || return 1
+  wsl.exe bash -lc "test -x '$wsl_root/build-wsl/compiler/lic/lic'" 2>/dev/null
+}
+
 try_wsl_lic_smokes() {
-  command -v wsl >/dev/null 2>&1 || return 1
   [[ "${WORLD_STUDIO_GATES_WSL:-auto}" == "0" ]] && return 1
-  local win_root wsl_root
-  win_root="$(cd "$ROOT" && pwd -W 2>/dev/null || true)"
-  [[ -z "$win_root" ]] && return 1
-  wsl_root="$(wsl wslpath -u "$win_root" 2>/dev/null || true)"
-  [[ -z "$wsl_root" ]] && return 1
+  wsl_build_wsl_lic_ready || return 1
+  local wsl_root
+  wsl_root="$(wsl.exe wslpath -u "$ROOT" 2>/dev/null | tr -d '\r\n')"
+  [[ -n "$wsl_root" ]] || return 1
   li_phase "wsl lic check smokes"
-  if wsl --cd "$win_root" bash ./scripts/world-studio-plan-lic-smokes.sh; then
-    return 0
-  fi
-  wsl bash -lc "cd $(printf '%q' "$wsl_root") && bash ./scripts/world-studio-plan-lic-smokes.sh"
+  wsl.exe bash -lc "cd '$wsl_root' && bash ./scripts/world-studio-plan-lic-smokes.sh"
 }
 if [[ "${WORLD_STUDIO_GATES_SKIP_LIC:-0}" == "1" ]]; then
   li_warn "skip lic check smokes (WORLD_STUDIO_GATES_SKIP_LIC=1)"
 elif [[ -n "$LIC" && -x "$LIC" ]]; then
   run_lic_smokes "$LIC"
-elif [[ -x "$ROOT/build-wsl/compiler/lic/lic" ]] && command -v wsl >/dev/null 2>&1; then
-  if try_wsl_lic_smokes; then
-    li_ok "wsl lic smokes passed"
-  else
-    li_warn "wsl lic smokes failed — build native lic or fix WSL"
-  fi
 elif try_wsl_lic_smokes; then
   li_ok "wsl lic smokes passed"
 else
-  li_warn "lic not built — set WORLD_STUDIO_GATES_SKIP_LIC=1, build lic, or enable WSL"
+  li_warn "lic not built - set WORLD_STUDIO_GATES_SKIP_LIC=1, build lic, or enable WSL"
 fi
 
 if [[ -f "$ROOT/scripts/bench-studio-viewport-perf.sh" ]]; then

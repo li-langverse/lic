@@ -1232,7 +1232,7 @@ def studio_mcp_export_mask_valid(mask: int) -> int
     return 1
   return 0
 
-def studio_mcp_tool_dispatch(tool_id: int) -> StudioAgentToolRequest
+def studio_mcp_tool_dispatch(tool_id: int) -> StudioAgentToolRequest raises IO
   requires true
   ensures result.tool_id == tool_id
   decreases tool_id
@@ -3327,7 +3327,7 @@ def studio_toml_parsed_config() -> StudioProjectConfig
   cfg.export_cfg = studio_toml_parsed_export_config()
   return cfg
 
-def studio_project_config_from_additive_toml_fixture() -> StudioProjectConfig
+def studio_project_config_from_additive_toml_fixture() -> StudioProjectConfig raises IO, Alloc
   requires true
   ensures result.active_profile == studio_profile_sim_additive()
   ensures result.determinism_tier == 2
@@ -3649,18 +3649,18 @@ type PublishFigureResult = object
   public magic_tag: int
 
 def studio_publish_figure(
-    format: int,
+    fmt: int,
     template: int,
     sim_checksum: float,
     proof_pass: int) -> PublishFigureResult
   requires sim_checksum >= 0.0
-  ensures result.format == format
+  ensures result.format == fmt
   ensures result.template == template
-  decreases format
+  decreases fmt
 =
   var r: PublishFigureResult
   r.ok = 0
-  r.format = format
+  r.format = fmt
   r.template = template
   r.width_px = 0
   r.height_px = 0
@@ -3668,7 +3668,7 @@ def studio_publish_figure(
   r.sim_checksum = sim_checksum
   r.byte_checksum = 0.0
   r.magic_tag = 0
-  if studio_publish_format_ok(format) != 1:
+  if studio_publish_format_ok(fmt) != 1:
     return r
   if studio_publish_template_ok(template) != 1:
     return r
@@ -3677,14 +3677,14 @@ def studio_publish_figure(
   r.width_px = studio_publish_template_width_px(template)
   r.height_px = studio_publish_template_height_px(template)
   r.dpi = studio_publish_template_dpi(template)
-  if format == studio_publish_format_png():
+  if fmt == studio_publish_format_png():
     if r.dpi < 300:
       r.dpi = 300
   var w_f: float = (r.width_px * 1.0)
   var h_f: float = (r.height_px * 1.0)
   var d_f: float = (r.dpi * 1.0)
   r.byte_checksum = sim_checksum + w_f + h_f + d_f
-  r.magic_tag = studio_publish_magic_for_format(format)
+  r.magic_tag = studio_publish_magic_for_format(fmt)
   r.ok = 1
   return r
 
@@ -3744,6 +3744,8 @@ def studio_publish_flow_advance(
   requires studio_publish_template_ok(flow.template) == 1
   requires sim_checksum >= 0.0
   ensures flow.click_count >= 0
+  ensures result >= 0
+  ensures result <= 4
   decreases flow.wizard_step
 =
   flow.click_count = flow.click_count + 1
@@ -3890,29 +3892,29 @@ type PublishTableResult = object
   public magic_tag: int
 
 def studio_publish_table(
-    format: int,
+    fmt: int,
     pipeline: VizPipelineState,
     sim_checksum: float,
     proof_pass: int) -> PublishTableResult
   requires sim_checksum >= 0.0
   requires pipeline.profile_id == viz_profile_sim_scientific()
-  ensures result.format == format
+  ensures result.format == fmt
   ensures result.ok >= 0
   ensures result.ok <= 1
   ensures result.row_count >= 0
   ensures result.col_count >= 0
-  decreases format
+  decreases fmt
 =
   var r: PublishTableResult
   r.ok = 0
-  r.format = format
+  r.format = fmt
   r.row_count = 0
   r.col_count = 0
   r.source_count = pipeline.source_count
   r.sim_checksum = sim_checksum
   r.byte_checksum = 0.0
   r.magic_tag = 0
-  if studio_publish_table_format_ok(format) != 1:
+  if studio_publish_table_format_ok(fmt) != 1:
     return r
   if studio_publish_proof_pass_ok(proof_pass) != 1:
     return r
@@ -3924,25 +3926,25 @@ def studio_publish_table(
   var cols_f: float = (r.col_count * 1.0)
   var src_f: float = (r.source_count * 1.0)
   r.byte_checksum = sim_checksum + rows_f + cols_f + src_f
-  r.magic_tag = studio_publish_table_magic_for_format(format)
+  r.magic_tag = studio_publish_table_magic_for_format(fmt)
   r.ok = 1
   return r
 
 def studio_publish_table_from_viz_tick(
     tick: int,
-    format: int,
+    fmt: int,
     sim_checksum: float,
     proof_pass: int) -> PublishTableResult
   requires tick >= 1
   requires tick <= 64
   requires sim_checksum >= 0.0
-  ensures result.format == format
+  ensures result.format == fmt
   ensures result.ok >= 0
   ensures result.ok <= 1
   decreases tick
 =
   var pipe: VizPipelineState = studio_sim_scientific_viz_for_tick(tick)
-  return studio_publish_table(format, pipe, sim_checksum, proof_pass)
+  return studio_publish_table(fmt, pipe, sim_checksum, proof_pass)
 
 def studio_publish_table_wizard_step_select() -> int
   requires true
@@ -4275,6 +4277,8 @@ def studio_publish_bundle_flow_advance(
   requires flow.viz_tick <= 64
   requires sim_checksum >= 0.0
   ensures flow.click_count >= 0
+  ensures result >= 0
+  ensures result <= 4
   decreases flow.wizard_step
 =
   flow.click_count = flow.click_count + 1

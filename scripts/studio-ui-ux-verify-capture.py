@@ -68,6 +68,10 @@ def dry_capture() -> Path:
         "STUDIO_UI_UX_CAPTURE_SKIP_NATIVE": os.environ.get(
             "STUDIO_UI_UX_VERIFY_SKIP_NATIVE", "1"
         ),
+        # Gates dry-run must not require Linux fixture checkout (li-cursor-agents sibling).
+        "STUDIO_UI_UX_HARNESS_MOCK": os.environ.get(
+            "STUDIO_UI_UX_VERIFY_HARNESS_MOCK", "1"
+        ),
     }
     proc = subprocess.run(
         ["bash", str(CAPTURE)],
@@ -85,7 +89,7 @@ def dry_capture() -> Path:
     report = art / "report.md"
     if not report.is_file():
         fail("dry capture did not write report.md")
-    print(f"studio-ui-ux-verify-capture: dry run ok → {art}")
+    print(f"studio-ui-ux-verify-capture: dry run ok -> {art}")
     return art
 
 

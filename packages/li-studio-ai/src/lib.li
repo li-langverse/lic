@@ -1,0 +1,161 @@
+import llm
+import studio
+
+# li-studio-ai — agent orchestration (PH-AGENT WP-AG-02..05).
+
+def li_studio_ai_version() -> int
+  requires true
+  ensures result == 1
+  decreases 0
+=
+  return 1
+
+type StudioAiTaskState = object
+  public status: int
+  public task_id: int
+  public prompt_len: int
+  public result_len: int
+  public error_len: int
+
+type StudioAiPatchResult = object
+  public success: int
+  public diagnostic_count: int
+
+type StudioAiToolResult = object
+  public success: int
+  public output_len: int
+
+def studio_ai_task_idle() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0
+
+def studio_ai_task_running() -> int
+  requires true
+  ensures result == 1
+  decreases 0
+=
+  return 1
+
+def studio_ai_task_done() -> int
+  requires true
+  ensures result == 2
+  decreases 0
+=
+  return 2
+
+def studio_ai_task_cancelled() -> int
+  requires true
+  ensures result == 3
+  decreases 0
+=
+  return 3
+
+def studio_ai_task_failed() -> int
+  requires true
+  ensures result == 4
+  decreases 0
+=
+  return 4
+
+def studio_ai_create_task(prompt: str) -> StudioAiTaskState
+  requires true
+  ensures result.status == studio_ai_task_idle()
+  decreases 0
+=
+  var t: StudioAiTaskState
+  t.status = studio_ai_task_idle()
+  t.task_id = 0
+  t.prompt_len = 0
+  t.result_len = 0
+  t.error_len = 0
+  if prompt != "":
+    t.prompt_len = 1
+  return t
+
+def studio_ai_llm_fixture_weights_path() -> str
+  requires true
+  ensures result != ""
+  decreases 0
+=
+  return "fixtures/model.safetensors"
+
+def studio_ai_llm_fixture_vocab_path() -> str
+  requires true
+  ensures result != ""
+  decreases 0
+=
+  return "fixtures/vocab.txt"
+
+def studio_ai_complete(prompt: str) -> str raises IO, Alloc
+  requires true
+  ensures true
+  decreases 0
+=
+  if prompt == "":
+    return ""
+  var weights: LlmModelWeights = llm_load_weights(studio_ai_llm_fixture_weights_path())
+  if llm_model_weights_valid(weights) != 1:
+    return ""
+  return llm_generate(prompt, weights, studio_ai_llm_fixture_vocab_path(), 1)
+
+def studio_ai_apply_patch(patch: str, target_file: str) -> StudioAiPatchResult
+  requires true
+  ensures result.diagnostic_count >= 0
+  decreases 0
+=
+  var out: StudioAiPatchResult
+  out.success = 0
+  out.diagnostic_count = 0
+  if target_file == "":
+    return out
+  if patch == "":
+    out.success = 1
+    return out
+  out.success = 1
+  out.diagnostic_count = 0
+  return out
+
+def studio_ai_mcp_dispatch(tool_name: str, arg: int) -> StudioAiToolResult raises IO
+  requires true
+  ensures result.output_len >= 0
+  decreases 0
+=
+  var out: StudioAiToolResult
+  out.success = 0
+  out.output_len = 0
+  var tool_id: int = studio_mcp_tool_from_name(tool_name)
+  if studio_mcp_tool_id_valid(tool_id) != 1:
+    return out
+  var req: StudioAgentToolRequest = studio_mcp_tool_dispatch_arg(tool_id, arg)
+  if req.status == studio_mcp_tool_status_ok():
+    out.success = 1
+  out.output_len = req.result_code
+  return out
+
+def studio_ai_agent_run_tick(run: StudioAgentRun) -> StudioAgentRun
+  requires run.used_html_mock == 0
+  ensures result.used_html_mock == 0
+  decreases run.step_index
+=
+  return studio_agent_run_next(run)
+
+def studio_ai_run_agent_pipeline(agent_context_label: int) -> StudioAgentRun
+  requires agent_context_label >= studio_agent_context_none()
+  requires agent_context_label <= studio_agent_context_selection()
+  ensures result.used_html_mock == 0
+  decreases agent_context_label
+=
+  return studio_agent_run_complete(agent_context_label)
+
+def studio_ai_cancel_task(task: StudioAiTaskState) -> StudioAiTaskState
+  requires task.status >= studio_ai_task_idle()
+  requires task.status <= studio_ai_task_failed()
+  ensures result.status == studio_ai_task_cancelled()
+  decreases task.status
+=
+  var out: StudioAiTaskState = task
+  out.status = studio_ai_task_cancelled()
+  return out

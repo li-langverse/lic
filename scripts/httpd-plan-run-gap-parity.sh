@@ -32,7 +32,8 @@ export LI_HTTPD_PLAN_AGENT="${LI_HTTPD_PLAN_AGENT:-code_implementer}"
 export LI_HTTPD_PLAN_AGENT_TIMEOUT_SEC="${LI_HTTPD_PLAN_AGENT_TIMEOUT_SEC:-2700}"
 
 LOG="data/httpd-plan-loop/gap-parity-$(date -u +%Y%m%d-%H%M%S).log"
-MAX="${HTTPD_PLAN_GAP_MAX:-6}"
+MAX="${HTTPD_PLAN_GAP_MAX:-12}"
+export LI_HTTPD_PLAN_GAP_ONLY="${LI_HTTPD_PLAN_GAP_ONLY:-1}"
 
 echo "==> httpd-plan-run-gap-parity $(date -Iseconds) max=$MAX log=$LOG"
 

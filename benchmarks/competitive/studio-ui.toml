@@ -24,8 +24,8 @@ gates = ["viewport_fps"]
 
 [[hook]]
 id = "wgpu_smoke"
-package = "li-gpu"
-path = "packages/li-gpu/bench/wgpu_smoke.toml"
+package = "lig"
+path = "packages/lig/bench/wgpu_smoke.toml"
 gates = []
 
 [[hook]]
@@ -39,6 +39,12 @@ id = "studio_compose"
 package = "li-studio"
 path = "packages/li-studio/bench/studio_compose.toml"
 gates = ["panel_switch_ms", "studio_load_ms"]
+
+[[hook]]
+id = "studio_vertical_present"
+package = "li-studio"
+path = "packages/li-studio/bench/studio_vertical_present.toml"
+gates = []
 
 [[hook]]
 id = "particle_tiers"

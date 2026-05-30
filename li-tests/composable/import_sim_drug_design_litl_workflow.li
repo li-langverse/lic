@@ -1,0 +1,21 @@
+import sim
+import sim.drug_design
+import chem
+
+def main() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  if run_drug_design_litl_workflow(0) != 0:
+    return 1
+  if sim_drug_design_tick_stub(1) != 1:
+    return 2
+  if drug_litl_stage_from_tick(2) != drug_litl_stage_dft():
+    return 3
+  if sim_drug_design_litl_advance(drug_litl_stage_hypothesis()) != drug_litl_stage_generate():
+    return 4
+  var insp: DrugLitlStagePayload = sim_drug_design_inspector_payload(drug_litl_stage_dft())
+  if insp.dft_energy_hartree != chem_dft_run_smoke():
+    return 5
+  return 0

@@ -1,0 +1,40 @@
+---
+description: PH-LLM (lillm native inference) — one work package per branch, stub honesty
+alwaysApply: false
+globs: packages/li-llm/**,packages/li-studio-ai/**,docs/game-dev/PH-LLM*,docs/game-dev/specs/lillm*
+---
+
+# PH-LLM work-package scope
+
+## Branch rule
+
+- One **WP-LLM-XX** per feature branch (e.g. `feat/wp-llm-01-tokenizer`).
+- Wave 0 scaffold (`feat/world-studio-lillm-wave0`) is steward-only; agents resume with a single WP after merge.
+
+## WP boundaries
+
+| WP | Scope | Gate |
+|----|-------|------|
+| WP-LLM-01 | BPE/byte-level tokenizer + vocab load | smoke roundtrip |
+| WP-LLM-02 | Safetensors + GGUF loader (f32/f16; no MoE v1) | load Llama-3.2-1B-class fixture |
+| WP-LLM-03 | Transformer graph (attn, ffn, RoPE) | forward vs reference logits ULP |
+| WP-LLM-04 | KV-cache + decode loop (`llm_generate`) | greedy decode smoke |
+| WP-LLM-05 | CPU perf via `li-ml`/`linalg` matmul | tier-3 bench row |
+| WP-LLM-06 | GPU matmul/attention via `@gpu` + LKIR | tier-3 GPU column |
+| WP-LLM-07 | HF → safetensors export doc + import CLI | one documented model path |
+| WP-LLM-08 | Trusted backend (Ollama/OpenAI) — Wave 2 | audit + `[trusted]` fence |
+
+## Rules
+
+1. **One WP per PR** — do not mix tokenizer with transformer forward in one PR
+2. **Stub honesty** — label unimplemented APIs; `li_llm_version() == 0` until WP lands
+3. **No PyTorch runtime** — weights via safetensors/GGUF export only
+4. **Gate before merge** — each WP must pass its exit smoke/bench
+5. **Dependencies** — respect 01→02→03→04 chain
+6. **li-native-li-only** — inference logic in `.li`; no new C/Python product helpers
+
+## Exit before PR
+
+1. `./scripts/build.sh` (if compiler touched)
+2. `lic check packages/li-llm/li-tests/smoke/` (and `li-studio-ai` if orchestration touched)
+3. Update PH-LLM-program.md row status when WP closes

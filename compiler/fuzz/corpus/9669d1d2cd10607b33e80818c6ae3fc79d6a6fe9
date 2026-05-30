@@ -1,0 +1,4 @@
+@cpu
+@parallesil(djoint=dt_row,
+proc @cpu
+@parallel(dis0

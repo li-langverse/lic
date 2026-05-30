@@ -5,7 +5,7 @@ def main() -> int
   ensures result == 0
   decreases 0
 =
-  if li_std_gui_version() < 1:
+  if li_std_gui_version() < 2:
     return 1
   var layout: StudioShellLayout = layout_studio_shell_adaptive(1920.0, 1080.0)
   var vp: ViewportRegion = gui_viewport_region_from_layout(layout)
@@ -13,6 +13,8 @@ def main() -> int
     return 2
   if vp.grid_enabled != 1:
     return 3
+  if vp.selection_active != 0:
+    return 8
   var state: GuiPanelState = gui_panel_state_new()
   var t: PanelSwitchTiming = gui_panel_switch_to(state, studio_region_inspector(), 42.0)
   if gui_panel_switch_within_budget(t) != 1:

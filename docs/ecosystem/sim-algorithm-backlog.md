@@ -6,6 +6,21 @@
 ---
 
 todos:
+- id: gap-sim-sim-p1-num-dot-axpy
+  content: "sim: pending plan todo sim-p1-num-dot-axpy"
+  status: pending
+  gap_orchestrator: true
+- id: gap-sim-sim-p1-md-neighbor-cell
+  content: "sim: pending plan todo sim-p1-md-neighbor-cell"
+  status: pending
+  gap_orchestrator: true
+- id: gap-sim-sim-p2-qm-dft-scf
+  content: "sim: pending plan todo sim-p2-qm-dft-scf"
+  status: pending
+  gap_orchestrator: true
+
+
+
 
 - id: sim-p0-md-lj-li-parity
   content: "Tier-2 Li md_lennard_jones checksum parity vs native (fix runtime sink / driver)"
@@ -16,15 +31,15 @@ todos:
   status: pending
 
 - id: sim-p1-num-dot-axpy
-  content: "Implement algo_id=1 num_dot_axpy in li-math-numerics + bench-package gate"
+  content: "sim: pending plan todo sim-p1-num-dot-axpy — gap orchestrator"
   status: pending
 
 - id: sim-p1-md-neighbor-cell
-  content: "Implement algo_id=105 md_neighbor_cell_list stub→smoke in li-physics-particles"
+  content: "sim: pending plan todo sim-p1-md-neighbor-cell — gap orchestrator"
   status: pending
 
 - id: sim-p2-qm-dft-scf
-  content: "Implement algo_id=418 qm_dft_scf_energy minimal SCF stub with summary metrics"
+  content: "sim: pending plan todo sim-p2-qm-dft-scf — gap orchestrator"
   status: pending
 
 ---

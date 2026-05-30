@@ -1,11 +1,9 @@
+#include "li/check_cmd.hpp"
 #include "li/compile.hpp"
 #include "li/parser.hpp"
 #include "li/platform.hpp"
-#include "li/policy.hpp"
-#include "li/import_resolve.hpp"
 #include "li/prelude.hpp"
 #include "li/smoke_llvm.hpp"
-#include "li/typecheck.hpp"
 #include "li/vc_emit.hpp"
 #include "li/mir.hpp"
 #include "li/vc_summary.hpp"
@@ -13,6 +11,8 @@
 #include "li/terminal.hpp"
 #include "li/error_codes.hpp"
 #include "li/proof_cli.hpp"
+#include "li/resource_options.hpp"
+#include "li/check_config.hpp"
 
 #include "li_rt.h"
 
@@ -25,7 +25,76 @@
 #include <string>
 #include <string_view>
 
+#if defined(__linux__)
+#include <fcntl.h>
+#include <sys/file.h>
+#include <unistd.h>
+#endif
+
 namespace {
+
+#if defined(__linux__)
+int autovc_lock_timeout_seconds() {
+  if (const char* raw = std::getenv("LI_AUTOVC_LOCK_TIMEOUT_SEC"); raw != nullptr && raw[0] != '\0') {
+    const int parsed = std::atoi(raw);
+    if (parsed >= 0) {
+      return parsed;
+    }
+  }
+  return 600;
+}
+
+struct AutoVcFileLock {
+  int fd{-1};
+  bool locked{true};
+  std::string error;
+
+  explicit AutoVcFileLock(const std::filesystem::path& vc_lean) {
+    if (const char* held = std::getenv("LI_AUTOVC_LOCK_HELD");
+        held != nullptr && held[0] == '1' && held[1] == '\0') {
+      return;
+    }
+    locked = false;
+    const auto lock_path = vc_lean.parent_path() / ".autovc.lock";
+    std::error_code ec;
+    std::filesystem::create_directories(lock_path.parent_path(), ec);
+    fd = ::open(lock_path.c_str(), O_CREAT | O_RDWR, 0666);
+    if (fd >= 0) {
+      const int timeout = autovc_lock_timeout_seconds();
+      for (int waited = 0;; ++waited) {
+        if (::flock(fd, LOCK_EX | LOCK_NB) == 0) {
+          locked = true;
+          return;
+        }
+        if (waited >= timeout) {
+          error = "timeout waiting for " + lock_path.string();
+          ::close(fd);
+          fd = -1;
+          return;
+        }
+        ::sleep(1);
+      }
+    } else {
+      error = "cannot open " + lock_path.string();
+    }
+  }
+  ~AutoVcFileLock() {
+    if (fd >= 0 && locked) {
+      ::flock(fd, LOCK_UN);
+      ::close(fd);
+    }
+  }
+  bool ok() const { return locked; }
+  AutoVcFileLock(const AutoVcFileLock&) = delete;
+  AutoVcFileLock& operator=(const AutoVcFileLock&) = delete;
+};
+#else
+struct AutoVcFileLock {
+  explicit AutoVcFileLock(const std::filesystem::path&) {}
+  bool ok() const { return true; }
+  std::string error;
+};
+#endif
 
 int usage() {
   const unsigned jobs = li::default_host_jobs();
@@ -33,7 +102,8 @@ int usage() {
   std::cerr << li::styled_accent("lic") << li::styled_dim(" — prove · write · run fast") << li::reset_style()
             << "\nusage:\n"
             << "  lic parse <file>       parse and validate syntax\n"
-            << "  lic check <file> [--format=json]  parse + typecheck\n"
+            << "  lic check <file>|--workspace [li.toml] [--format=json] [--deny-warnings]\n"
+            << "                       [--cache-dir=DIR] [--cache-max-mb=N] [--no-cache] [--jobs=N]\n"
             << "  lic diagnose <file>    agent-oriented JSON diagnostics\n"
             << "  lic verify <file>      VC summary; --lean lake; --strict-lean fails open VCs\n"
             << "                       [--allow-open-vc] [--no-lean-verify]\n"
@@ -43,7 +113,8 @@ int usage() {
             << "                       [--prob-check]     Monte Carlo discharge for prob_ensures P(event)<ε\n"
             << "                       [--no-lean-verify] skip lake / AutoVC typecheck\n"
             << "                       default: fail on open goals; lake typecheck when installed\n"
-            << "                       [--threads=N] [--jobs=N] [--max-memory=MB]\n"
+            << "                       [--jobs=N] [--cores=N] [--threads-per-core=M]\n"
+            << "                       [--threads=N] [--max-memory=MB]\n"
             << "                       [--coverage-instrument]\n"
             << "  lic smoke-llvm         verify LLVM can emit main returning 0\n"
             << "  lic httpd explain-config <file.toml>  desugar [routes] to canonical form\n"
@@ -51,11 +122,13 @@ int usage() {
             << "  lic validate-httpd-config <file.toml>  M1 TOML schema + overlap (Python)\n"
             << "  lic --version          print version\n"
             << "\n"
-            << "resource defaults (override via flags or env):\n"
-            << "  --jobs=N / LI_COMPILE_JOBS / LI_BUILD_JOBS (host=" << jobs
-            << ") — reserved for parallel frontend\n"
-            << "  --max-memory=MB / LI_MAX_MEMORY_MB — reserved memory budget\n"
-            << "  --threads=N / LI_OMP_THREADS — OpenMP team size at run time\n"
+            << "resource flags (preferred; LI_* env deprecated):\n"
+            << "  --jobs=N — parallel compile workers (default 1; host=" << jobs << ")\n"
+            << "  --max-memory=MB --job-memory-mb=N — cap effective --jobs\n"
+            << "  --build-dir=PATH — isolated build tree (AutoVC, temps)\n"
+            << "  --cores=N --threads-per-core=M — runtime team min(N*M, 64); M defaults 1\n"
+            << "  --threads=N — total runtime parallel team (overrides --cores when both set)\n"
+            << "  vector lanes — @vectorized(lanes=4) SIMD width; not threads or --jobs\n"
             << "  --numerically-stable / LI_FP_NUMERICALLY_STABLE=1 — cancellation-safe FP\n";
   return 1;
 }
@@ -157,16 +230,17 @@ int httpd_explain_config(int argc, char** argv) {
   return 0;
 }
 
-bool apply_resource_flag(std::string_view arg) {
-  if (arg.rfind("--jobs=", 0) == 0) {
-    setenv("LI_COMPILE_JOBS", std::string(arg.substr(7)).c_str(), 1);
-    return true;
+void apply_resource_options_to_env() {
+  const auto& opts = li::resource_options();
+  if (!opts.build_dir.empty()) {
+    setenv("LI_BUILD_DIR", opts.build_dir.c_str(), 1);
   }
-  if (arg.rfind("--max-memory=", 0) == 0) {
-    setenv("LI_MAX_MEMORY_MB", std::string(arg.substr(13)).c_str(), 1);
-    return true;
+  if (opts.jobs > 0) {
+    setenv("LI_COMPILE_JOBS", std::to_string(opts.jobs).c_str(), 1);
   }
-  return false;
+  if (opts.max_memory_mb > 0) {
+    setenv("LI_MAX_MEMORY_MB", std::to_string(opts.max_memory_mb).c_str(), 1);
+  }
 }
 
 std::string read_file(const char* path) {
@@ -178,65 +252,7 @@ std::string read_file(const char* path) {
 
 bool frontend(const char* path, const std::string& source, li::Module& out,
               li::DiagnosticBag& diags) {
-  li::check_source_policies(source, path, diags);
-  if (!diags.empty()) {
-    return false;
-  }
-  auto parsed = li::parse_module(source, path);
-  for (const auto& d : parsed.diagnostics.items()) {
-    diags.error(d.loc, d.message);
-  }
-  if (!parsed.module) {
-    return false;
-  }
-  li::check_stdlib_seal(*parsed.module, path, diags);
-  if (!diags.empty()) {
-    return false;
-  }
-  if (!li::resolve_imports(*parsed.module, path, diags)) {
-    return false;
-  }
-  li::check_module_policies(*parsed.module, path, diags);
-  if (!diags.empty()) {
-    return false;
-  }
-  li::check_duplicate_definitions(*parsed.module, path, diags);
-  if (!diags.empty()) {
-    return false;
-  }
-  auto checked = li::typecheck_module(*parsed.module);
-  for (const auto& d : checked.diagnostics.items()) {
-    if (!d.code.empty()) {
-      diags.error(d.loc, d.code, d.message, d.hint ? *d.hint : std::string{});
-    } else {
-      diags.error(d.loc, d.message);
-    }
-  }
-  if (!checked.ok) {
-    return false;
-  }
-  out = std::move(*parsed.module);
-  return true;
-}
-
-enum class DiagOutput { Human, Json };
-
-int check_file(const char* path, DiagOutput output, std::string_view json_command) {
-  const std::string source = read_file(path);
-  li::Module module;
-  li::DiagnosticBag diags;
-  if (!frontend(path, source, module, diags)) {
-    if (output == DiagOutput::Json) {
-      li::print_diagnostics_json(diags, std::cout, json_command);
-    } else {
-      li::print_diagnostics(diags);
-    }
-    return 1;
-  }
-  if (output == DiagOutput::Json) {
-    li::print_diagnostics_json(diags, std::cout, json_command);
-  }
-  return 0;
+  return li::run_frontend_check(path, source, out, diags);
 }
 
 void warn_deprecated_proof_env() {
@@ -320,7 +336,8 @@ int count_open_autovc_goals() {
   if (root != nullptr) {
     script = std::string(root) + "/" + script;
   }
-  const std::string cmd = "bash " + script + " 2>&1";
+  const std::string autovc = li::repo_build_path("generated/AutoVC.lean");
+  const std::string cmd = "bash \"" + script + "\" \"" + autovc + "\" 2>&1";
   FILE* pipe = popen(cmd.c_str(), "r");
   if (pipe == nullptr) {
     return -1;
@@ -357,12 +374,20 @@ int verify_file(const char* path, bool run_lean, bool strict_lean) {
   const li::VcWitnessStats witness = li::compute_vc_witness_stats(module, &mir);
   vc.ensures_witnessed = witness.ensures_witnessed;
   vc.mir_return_linked = witness.mir_return_linked;
+  const std::size_t mir_parallel_disjoint = li::count_mir_parallel_disjoint_proven(mir);
+  const std::size_t mir_vectorized_proc = li::count_mir_vectorized_proc(mir);
+  const std::size_t mir_gpu_def = li::count_mir_gpu_def(mir);
+  const std::size_t mir_gpu_multi_device_def = li::count_mir_gpu_multi_device_def(mir);
   std::cout << "verify: procs=" << vc.proc_count << " mir_fns=" << vc.mir_fn_count
             << " requires=" << vc.requires_count << " ensures=" << vc.ensures_count
             << " prob_ensures=" << vc.prob_ensures_count
             << " decreases=" << vc.decreases_count << " invariant=" << vc.invariant_count
             << " witnessed_ensures=" << vc.ensures_witnessed
-            << " mir_return_linked=" << vc.mir_return_linked << '\n';
+            << " mir_return_linked=" << vc.mir_return_linked
+            << " mir_parallel_disjoint=" << mir_parallel_disjoint
+            << " mir_vectorized_proc=" << mir_vectorized_proc
+            << " mir_gpu_def=" << mir_gpu_def
+            << " mir_gpu_multi_device_def=" << mir_gpu_multi_device_def << '\n';
   if (li::terminal_color_enabled()) {
     std::cout << li::styled_success("verify") << li::styled_dim(" telemetry") << li::reset_style()
               << '\n';
@@ -374,16 +399,19 @@ int verify_file(const char* path, bool run_lean, bool strict_lean) {
                                std::to_string(vc.ensures_witnessed));
     li::print_verify_telemetry(std::cout, "mir_return_linked",
                                std::to_string(vc.mir_return_linked));
+    li::print_verify_telemetry(std::cout, "mir_vectorized_proc",
+                               std::to_string(mir_vectorized_proc));
+    li::print_verify_telemetry(std::cout, "mir_gpu_def",
+                               std::to_string(mir_gpu_def));
+    li::print_verify_telemetry(std::cout, "mir_gpu_multi_device_def",
+                               std::to_string(mir_gpu_multi_device_def));
   }
   if (vc.requires_count == 0 && vc.ensures_count == 0) {
     std::cerr << li::styled_warning("verify") << li::styled_dim(" — no procedure contracts (G-vc partial)")
               << li::reset_style() << '\n';
   }
   if (std::getenv("LI_EMIT_VCS") != nullptr) {
-    std::string vc_path = "build/vcs.json";
-    if (const char* root = std::getenv("LI_REPO_ROOT")) {
-      vc_path = std::string(root) + "/build/vcs.json";
-    }
+    std::string vc_path = li::repo_build_path("vcs.json");
     std::string vc_err;
     if (!li::write_vcs_json(module, vc_path, &vc_err)) {
       std::cerr << "verify: " << vc_err << '\n';
@@ -392,10 +420,7 @@ int verify_file(const char* path, bool run_lean, bool strict_lean) {
     }
   }
   if (run_lean) {
-    std::string vc_lean = "build/generated/AutoVC.lean";
-    if (const char* root = std::getenv("LI_REPO_ROOT")) {
-      vc_lean = std::string(root) + "/" + vc_lean;
-    }
+    const std::string vc_lean = li::repo_build_path("generated/AutoVC.lean");
     std::error_code fs_err;
     std::filesystem::create_directories(std::filesystem::path(vc_lean).parent_path(), fs_err);
     std::string vc_err;
@@ -434,6 +459,7 @@ int build_file(const char* path, const char* output, const li::CompileOptions& o
 }  // namespace
 
 int main(int argc, char** argv) {
+  li::reset_resource_options();
   if (argc < 2) {
     return usage();
   }
@@ -469,31 +495,10 @@ int main(int argc, char** argv) {
     return 0;
   }
   if (cmd == "check") {
-    if (argc < 3) {
-      return usage();
-    }
-    const char* path = nullptr;
-    DiagOutput output = DiagOutput::Human;
-    for (int i = 2; i < argc; ++i) {
-      const std::string_view arg = argv[i];
-      if (arg == "--format=json") {
-        output = DiagOutput::Json;
-      } else if (path == nullptr) {
-        path = argv[i];
-      } else {
-        return usage();
-      }
-    }
-    if (path == nullptr) {
-      return usage();
-    }
-    return check_file(path, output, "check");
+    return li::lic_check_main(argc, argv, argv[0]);
   }
   if (cmd == "diagnose") {
-    if (argc < 3) {
-      return usage();
-    }
-    return check_file(argv[2], DiagOutput::Json, "diagnose");
+    return li::lic_diagnose_main(argc, argv);
   }
   if (cmd == "verify") {
     if (argc < 3) {
@@ -509,10 +514,14 @@ int main(int argc, char** argv) {
       } else if (std::string_view(argv[i]) == "--strict-lean") {
         run_lean = true;
         strict_lean = true;
+      } else if (li::apply_resource_flag(argv[i], li::resource_options())) {
+        continue;
       } else if (parse_proof_cli_flag(argv[i])) {
         continue;
       }
     }
+    li::finalize_resource_options(li::resource_options());
+    apply_resource_options_to_env();
     return verify_file(argv[2], run_lean, strict_lean);
   }
   if (cmd == "validate-httpd-config") {
@@ -560,14 +569,18 @@ int main(int argc, char** argv) {
         strict_lean = true;
       } else if (parse_proof_cli_flag(arg)) {
         continue;
-      } else if (arg.rfind("--threads=", 0) == 0) {
-        setenv("LI_OMP_THREADS", std::string(arg.substr(10)).c_str(), 1);
-      } else if (apply_resource_flag(arg)) {
+      } else if (li::apply_resource_flag(arg, li::resource_options())) {
         continue;
       } else {
         extra_flags.append(argv[i]);
         extra_flags.push_back(' ');
       }
+    }
+    li::finalize_resource_options(li::resource_options());
+    li::note_compile_jobs_reserved(li::resource_options());
+    apply_resource_options_to_env();
+    if (const int team = li::resource_options().effective_runtime_team_size(); team > 0) {
+      opts.runtime_team_size = team;
     }
     if (coverage) {
       extra_flags += "-fprofile-instr-generate -fcoverage-mapping ";
@@ -591,10 +604,7 @@ int main(int argc, char** argv) {
       std::cout << li::styled_success("build") << li::styled_dim(" ok → ") << li::styled_accent(output)
                 << li::reset_style() << '\n';
     }
-    std::string vc_lean = "build/generated/AutoVC.lean";
-    if (const char* root = std::getenv("LI_REPO_ROOT")) {
-      vc_lean = std::string(root) + "/" + vc_lean;
-    }
+    const std::string vc_lean = li::repo_build_path("generated/AutoVC.lean");
     std::error_code fs_err;
     std::filesystem::create_directories(std::filesystem::path(vc_lean).parent_path(), fs_err);
     if (!li::write_vcs_lean(module, vc_lean, &err)) {
@@ -605,7 +615,7 @@ int main(int argc, char** argv) {
       if (open > 0) {
         std::cerr << "lic build: " << open
                   << " proof obligation(s) still need a Lean proof "
-                     "(see build/generated/AutoVC.lean)\n";
+                     "(see " << vc_lean << ")\n";
         std::cerr << "hint: a `requires` or `ensures` on your code created a goal the compiler "
                      "could not close automatically — prove it in Lean, simplify the "
                      "contract, or pass --allow-open-vc only for documented dev/tests\n";

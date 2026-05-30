@@ -1,0 +1,32 @@
+import ml_rl
+import sim
+
+def main() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  if ml_rl_version() != 4:
+    return 1
+  var sess: SimSessionStub = sim_session_stub_default()
+  sim_session_apply_studio_profile(2, sess)
+  var graph: JobGraphStub = job_graph_stub_default()
+  if graph.pool_size < 4:
+    return 2
+  if ml_rl_job_graph_collect(sess, 0.02, graph) != sim_status_ok():
+    return 3
+  if graph.samples_collected < 4:
+    return 4
+  if graph.job_count < 4:
+    return 5
+  if graph.async_workers < 4:
+    return 6
+  if graph.total_reward <= 0.0:
+    return 7
+  if graph.last_sample.sample_id < 4:
+    return 9
+  if graph.last_sample.env_index != graph.pool_size - 1:
+    return 10
+  if sess.tick != graph.pool_size:
+    return 8
+  return 0

@@ -1,0 +1,16 @@
+@cpu
+@parallel(disjoint=disjoint_row)
+proc f() -> int
+  requires true
+  ensures true
+  decreases 0
+=
+
+@parallel(disjoint=disjoint_row
+proc f() -> int
+  requirproc(t
+  r p(t
+Be true
+  decreases 0
+=
+  return 0

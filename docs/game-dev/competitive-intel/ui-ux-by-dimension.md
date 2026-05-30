@@ -51,7 +51,7 @@ Registry: `benchmarks/competitive/studio-ui.toml` → `[[memory]] id = animate_m
 
 **Competitors (design):** Blender, Unreal Editor, Unity, Houdini (viewport); **agentic:** Cursor, Linear, GitHub Copilot Workspace.
 
-**Evidence:** screenshots + short reel per iteration on GitHub (release `studio-ui-ux-progress`), not in git tree. Native SDL viewport frames (`deploy/studio-demo/native/`, `scripts/studio-ui-ux-capture-native.sh`, `ux-harness` `world-studio-native`) set `native_pixels=true` in `latest-capture.json` when Xvfb draws pixels; HTML mocks remain labeled marketing-only (UX-14).
+**Evidence:** screenshots + short reel per iteration on GitHub (release `studio-ui-ux-progress`), not in git tree. Native SDL viewport frames (`deploy/studio-demo/native/`, `scripts/studio-ui-ux-capture-native.sh`, `ux-harness` `world-studio-native`) set `native_pixels=true` in `latest-capture.json` when Xvfb draws pixels; HTML mocks remain labeled marketing-only (UX-14). **UX-09:** keyboard ingest probe (`studio_shell_input_probe.c`, `scripts/studio-shell-sdl-tick.sh`, [studio-shell-input-bridge.md](../studio-shell-input-bridge.md)) maps SDL/mock keys to `InputState` for `studio_handle_studio_key` each frame.
 
 **Wgpu swapchain (studio-ux-19):** `packages/li-gpu/bench/wgpu_smoke.toml` → `[wgpu_swapchain]` reports `blocked_runner` on CPU CI until a GPU runner sets `LIG_WGPU_SWAPCHAIN=1` and lig host readback passes. Bench JSON field `wgpu_swapchain.status` is informational (not in `gates_pass`).
 

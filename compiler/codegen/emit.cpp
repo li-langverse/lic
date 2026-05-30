@@ -119,6 +119,7 @@ struct EmitCtx {
   bool returns_i64 = false;
   bool returns_object = false;
   bool fp_numerically_stable = false;
+  int runtime_team_size = 0;
   bool enable_array_simd = true;
   std::vector<bool> array_simd_scope_stack;
   std::map<std::string, llvm::AllocaInst*> int_locals;
@@ -142,12 +143,18 @@ struct EmitCtx {
     return enable_array_simd;
   }
 
+  llvm::AllocaInst* alloca_at_entry(llvm::Type* ty, const std::string& name) {
+    llvm::BasicBlock& entry = func->getEntryBlock();
+    llvm::IRBuilder<> entry_builder(&entry, entry.begin());
+    return entry_builder.CreateAlloca(ty, nullptr, name);
+  }
+
   llvm::AllocaInst* ensure_simd_f64x4(const std::string& name) {
     auto it = simd_f64x4_locals.find(name);
     if (it != simd_f64x4_locals.end()) {
       return it->second;
     }
-    llvm::AllocaInst* slot = builder->CreateAlloca(vec4_f64(), nullptr, name);
+    llvm::AllocaInst* slot = alloca_at_entry(vec4_f64(), name);
     simd_f64x4_locals[name] = slot;
     return slot;
   }
@@ -209,9 +216,38 @@ struct EmitCtx {
     builder->SetInsertPoint(exit_bb);
   }
 
+  /** Tier-1 matmul oracle fill: a[i][j]=(i+j)%17*0.01, b[i][j]=(i*3+j)%13*0.02, c[i][j]=0. */
+  void emit_matmul_oracle_init_2d(llvm::AllocaInst* a_mat, llvm::AllocaInst* b_mat,
+                                  llvm::AllocaInst* c_mat, unsigned n) {
+    llvm::Type* f64 = llvm::Type::getDoubleTy(context);
+    llvm::Type* i32t = i32_ty(context);
+    llvm::Value* lim = llvm::ConstantInt::get(i32t, n);
+    llvm::Value* zf = llvm::ConstantFP::get(f64, 0.0);
+    llvm::Value* s017 = llvm::ConstantFP::get(f64, 0.01);
+    llvm::Value* s002 = llvm::ConstantFP::get(f64, 0.02);
+    llvm::Value* m17 = llvm::ConstantInt::get(i32t, 17);
+    llvm::Value* m13 = llvm::ConstantInt::get(i32t, 13);
+    llvm::AllocaInst* i_s = builder->CreateAlloca(i32t, nullptr, "mm_init_i");
+    llvm::AllocaInst* j_s = builder->CreateAlloca(i32t, nullptr, "mm_init_j");
+    emit_idx_for(i_s, lim, [&](llvm::Value* i) {
+      emit_idx_for(j_s, lim, [&](llvm::Value* j) {
+        llvm::Value* isum = builder->CreateAdd(i, j);
+        llvm::Value* amod = builder->CreateSRem(isum, m17);
+        llvm::Value* aval = builder->CreateFMul(builder->CreateSIToFP(amod, f64), s017);
+        builder->CreateStore(aval, matmul_gep2d(a_mat, i, j));
+        llvm::Value* bmod =
+            builder->CreateSRem(builder->CreateAdd(builder->CreateMul(i, llvm::ConstantInt::get(i32t, 3)), j),
+                                m13);
+        llvm::Value* bval = builder->CreateFMul(builder->CreateSIToFP(bmod, f64), s002);
+        builder->CreateStore(bval, matmul_gep2d(b_mat, i, j));
+        builder->CreateStore(zf, matmul_gep2d(c_mat, i, j));
+      });
+    });
+  }
+
   void emit_matmul2d_ijk_loops(llvm::AllocaInst* c_mat, llvm::AllocaInst* a_mat,
                                llvm::AllocaInst* b_mat, unsigned m, unsigned k,
-                               unsigned n) {
+                               unsigned n, bool skip_zero = false) {
     llvm::Type* f64 = llvm::Type::getDoubleTy(context);
     llvm::Type* i32t = i32_ty(context);
     llvm::Value* lim_m = llvm::ConstantInt::get(i32t, m);
@@ -222,30 +258,58 @@ struct EmitCtx {
     llvm::AllocaInst* j_s = builder->CreateAlloca(i32t, nullptr, "mm_j");
     llvm::AllocaInst* t_s = builder->CreateAlloca(i32t, nullptr, "mm_t");
 
-    emit_idx_for(i_s, lim_m, [&](llvm::Value* i) {
-      emit_idx_for(j_s, lim_n, [&](llvm::Value* j) {
-        builder->CreateStore(zf, matmul_gep2d(c_mat, i, j));
+    if (!skip_zero) {
+      emit_idx_for(i_s, lim_m, [&](llvm::Value* i) {
+        emit_idx_for(j_s, lim_n, [&](llvm::Value* j) {
+          builder->CreateStore(zf, matmul_gep2d(c_mat, i, j));
+        });
       });
-    });
+    }
 
     llvm::Function* fma_fn = nullptr;
+    llvm::Function* fma_vec_fn = nullptr;
     if (!fp_numerically_stable) {
       fma_fn = llvm::Intrinsic::getOrInsertDeclaration(module, llvm::Intrinsic::fmuladd, {f64});
     }
 
+    const bool vectorize_j = (n % 4) == 0;
+    llvm::FixedVectorType* f64x4 = vectorize_j ? llvm::FixedVectorType::get(f64, 4) : nullptr;
+    if (vectorize_j && fma_fn != nullptr) {
+      fma_vec_fn = llvm::Intrinsic::getOrInsertDeclaration(module, llvm::Intrinsic::fmuladd,
+                                                           {f64x4});
+    }
+    llvm::Value* vec_step = llvm::ConstantInt::get(i32t, 4);
+
     emit_idx_for(i_s, lim_m, [&](llvm::Value* i) {
       emit_idx_for(t_s, lim_k, [&](llvm::Value* t) {
         llvm::Value* aik = builder->CreateLoad(f64, matmul_gep2d(a_mat, i, t));
-        emit_idx_for(j_s, lim_n, [&](llvm::Value* j) {
-          llvm::Value* cp = matmul_gep2d(c_mat, i, j);
-          llvm::Value* cv = builder->CreateLoad(f64, cp);
-          llvm::Value* bv = builder->CreateLoad(f64, matmul_gep2d(b_mat, t, j));
-          if (fma_fn != nullptr) {
-            builder->CreateStore(builder->CreateCall(fma_fn, {aik, bv, cv}), cp);
-          } else {
-            builder->CreateStore(builder->CreateFAdd(cv, builder->CreateFMul(aik, bv)), cp);
-          }
-        });
+        if (vectorize_j) {
+          emit_idx_for_step(j_s, lim_n, vec_step, [&](llvm::Value* j) {
+            llvm::Value* cp = matmul_gep2d(c_mat, i, j);
+            llvm::Value* bp = matmul_gep2d(b_mat, t, j);
+            llvm::Value* cv = builder->CreateAlignedLoad(f64x4, cp, llvm::Align(8));
+            llvm::Value* bv = builder->CreateAlignedLoad(f64x4, bp, llvm::Align(8));
+            llvm::Value* av = builder->CreateVectorSplat(4, aik);
+            if (fma_vec_fn != nullptr) {
+              builder->CreateAlignedStore(builder->CreateCall(fma_vec_fn, {av, bv, cv}), cp,
+                                        llvm::Align(8));
+            } else {
+              builder->CreateAlignedStore(builder->CreateFAdd(cv, builder->CreateFMul(av, bv)), cp,
+                                        llvm::Align(8));
+            }
+          });
+        } else {
+          emit_idx_for(j_s, lim_n, [&](llvm::Value* j) {
+            llvm::Value* cp = matmul_gep2d(c_mat, i, j);
+            llvm::Value* cv = builder->CreateLoad(f64, cp);
+            llvm::Value* bv = builder->CreateLoad(f64, matmul_gep2d(b_mat, t, j));
+            if (fma_fn != nullptr) {
+              builder->CreateStore(builder->CreateCall(fma_fn, {aik, bv, cv}), cp);
+            } else {
+              builder->CreateStore(builder->CreateFAdd(cv, builder->CreateFMul(aik, bv)), cp);
+            }
+          });
+        }
       });
     });
   }
@@ -287,6 +351,147 @@ struct EmitCtx {
     }
   }
 
+  void emit_idx_for_step(llvm::AllocaInst* iv, llvm::Value* limit, llvm::Value* step,
+                         const std::function<void(llvm::Value*)>& body) {
+    llvm::Type* i32t = i32_ty(context);
+    llvm::BasicBlock* head = llvm::BasicBlock::Create(context, "for_head", func);
+    llvm::BasicBlock* body_bb = llvm::BasicBlock::Create(context, "for_body", func);
+    llvm::BasicBlock* exit_bb = llvm::BasicBlock::Create(context, "for_exit", func);
+    builder->CreateStore(llvm::ConstantInt::get(i32t, 0), iv);
+    builder->CreateBr(head);
+    builder->SetInsertPoint(head);
+    llvm::Value* i = builder->CreateLoad(i32t, iv);
+    llvm::Value* cond = builder->CreateICmpULT(i, limit);
+    builder->CreateCondBr(cond, body_bb, exit_bb);
+    builder->SetInsertPoint(body_bb);
+    body(i);
+    llvm::Value* next = builder->CreateAdd(i, step);
+    builder->CreateStore(next, iv);
+    builder->CreateBr(head);
+    builder->SetInsertPoint(exit_bb);
+  }
+
+  void emit_range_for(llvm::AllocaInst* iv, llvm::Value* start, llvm::Value* end,
+                      const std::function<void(llvm::Value*)>& body) {
+    llvm::Type* i32t = i32_ty(context);
+    llvm::BasicBlock* head = llvm::BasicBlock::Create(context, "rng_head", func);
+    llvm::BasicBlock* body_bb = llvm::BasicBlock::Create(context, "rng_body", func);
+    llvm::BasicBlock* exit_bb = llvm::BasicBlock::Create(context, "rng_exit", func);
+    builder->CreateStore(start, iv);
+    builder->CreateBr(head);
+    builder->SetInsertPoint(head);
+    llvm::Value* i = builder->CreateLoad(i32t, iv);
+    llvm::Value* cond = builder->CreateICmpULT(i, end);
+    builder->CreateCondBr(cond, body_bb, exit_bb);
+    builder->SetInsertPoint(body_bb);
+    body(i);
+    llvm::Value* next = builder->CreateAdd(i, llvm::ConstantInt::get(i32t, 1));
+    builder->CreateStore(next, iv);
+    builder->CreateBr(head);
+    builder->SetInsertPoint(exit_bb);
+  }
+
+  void emit_range_for_step(llvm::AllocaInst* iv, llvm::Value* start, llvm::Value* end,
+                           llvm::Value* step, const std::function<void(llvm::Value*)>& body) {
+    llvm::Type* i32t = i32_ty(context);
+    llvm::BasicBlock* head = llvm::BasicBlock::Create(context, "rng_step_head", func);
+    llvm::BasicBlock* body_bb = llvm::BasicBlock::Create(context, "rng_step_body", func);
+    llvm::BasicBlock* exit_bb = llvm::BasicBlock::Create(context, "rng_step_exit", func);
+    builder->CreateStore(start, iv);
+    builder->CreateBr(head);
+    builder->SetInsertPoint(head);
+    llvm::Value* i = builder->CreateLoad(i32t, iv);
+    llvm::Value* cond = builder->CreateICmpULT(i, end);
+    builder->CreateCondBr(cond, body_bb, exit_bb);
+    builder->SetInsertPoint(body_bb);
+    body(i);
+    llvm::Value* next = builder->CreateAdd(i, step);
+    builder->CreateStore(next, iv);
+    builder->CreateBr(head);
+    builder->SetInsertPoint(exit_bb);
+  }
+
+  void emit_matmul2d_blocked_ijk(llvm::AllocaInst* c_mat, llvm::AllocaInst* a_mat,
+                                 llvm::AllocaInst* b_mat, unsigned n, unsigned bk) {
+    llvm::Type* f64 = llvm::Type::getDoubleTy(context);
+    llvm::Type* i32t = i32_ty(context);
+    llvm::FixedVectorType* f64x4 = llvm::FixedVectorType::get(f64, 4);
+    llvm::Value* lim_n = llvm::ConstantInt::get(i32t, n);
+    llvm::Value* step = llvm::ConstantInt::get(i32t, bk);
+    llvm::Value* vec_step = llvm::ConstantInt::get(i32t, 4);
+    llvm::AllocaInst* ii_s = builder->CreateAlloca(i32t, nullptr, "mm_ii");
+    llvm::AllocaInst* kk_s = builder->CreateAlloca(i32t, nullptr, "mm_kk");
+    llvm::AllocaInst* jj_s = builder->CreateAlloca(i32t, nullptr, "mm_jj");
+    llvm::AllocaInst* i_s = builder->CreateAlloca(i32t, nullptr, "mm_i");
+    llvm::AllocaInst* k_s = builder->CreateAlloca(i32t, nullptr, "mm_k");
+    llvm::AllocaInst* j_s = builder->CreateAlloca(i32t, nullptr, "mm_j");
+
+    llvm::Function* fma_fn = nullptr;
+    if (!fp_numerically_stable) {
+      fma_fn = llvm::Intrinsic::getOrInsertDeclaration(module, llvm::Intrinsic::fmuladd, {f64});
+    }
+    const bool tiles_align = bk > 0 && (n % bk) == 0;
+
+    auto tile_max = [&](llvm::Value* base) -> llvm::Value* {
+      llvm::Value* hi = builder->CreateAdd(base, step);
+      return tiles_align ? hi
+                         : builder->CreateSelect(builder->CreateICmpUGT(hi, lim_n), lim_n, hi);
+    };
+
+    auto store_c_fma = [&](llvm::Value* i, llvm::Value* k, llvm::Value* j, llvm::Value* aik) {
+      llvm::Value* cp = matmul_gep2d(c_mat, i, j);
+      llvm::Value* cv = builder->CreateLoad(f64, cp);
+      llvm::Value* bv = builder->CreateLoad(f64, matmul_gep2d(b_mat, k, j));
+      if (fma_fn != nullptr) {
+        builder->CreateStore(builder->CreateCall(fma_fn, {aik, bv, cv}), cp);
+      } else {
+        builder->CreateStore(builder->CreateFAdd(cv, builder->CreateFMul(aik, bv)), cp);
+      }
+    };
+
+    const bool vectorize_j = (n % 4) == 0 && (bk % 4) == 0;
+    llvm::Function* fma_vec_fn = nullptr;
+    if (fma_fn != nullptr) {
+      fma_vec_fn = llvm::Intrinsic::getOrInsertDeclaration(module, llvm::Intrinsic::fmuladd,
+                                                           {f64x4});
+    }
+    auto store_c_vec4 = [&](llvm::Value* i, llvm::Value* k, llvm::Value* j, llvm::Value* aik) {
+      llvm::Value* cp = matmul_gep2d(c_mat, i, j);
+      llvm::Value* bp = matmul_gep2d(b_mat, k, j);
+      llvm::Value* cv = builder->CreateAlignedLoad(f64x4, cp, llvm::Align(8));
+      llvm::Value* bv = builder->CreateAlignedLoad(f64x4, bp, llvm::Align(8));
+      llvm::Value* av = builder->CreateVectorSplat(4, aik);
+      if (fma_vec_fn != nullptr) {
+        builder->CreateAlignedStore(builder->CreateCall(fma_vec_fn, {av, bv, cv}), cp,
+                                    llvm::Align(8));
+      } else {
+        builder->CreateAlignedStore(builder->CreateFAdd(cv, builder->CreateFMul(av, bv)), cp,
+                                    llvm::Align(8));
+      }
+    };
+    emit_idx_for_step(ii_s, lim_n, step, [&](llvm::Value* ii) {
+      llvm::Value* i_max = tile_max(ii);
+      emit_idx_for_step(kk_s, lim_n, step, [&](llvm::Value* kk) {
+        llvm::Value* k_max = tile_max(kk);
+        emit_idx_for_step(jj_s, lim_n, step, [&](llvm::Value* jj) {
+          llvm::Value* j_max = tile_max(jj);
+          emit_range_for(i_s, ii, i_max, [&](llvm::Value* i) {
+            emit_range_for(k_s, kk, k_max, [&](llvm::Value* k) {
+              llvm::Value* aik = builder->CreateLoad(f64, matmul_gep2d(a_mat, i, k));
+              if (vectorize_j) {
+                emit_range_for_step(j_s, jj, j_max, vec_step,
+                                    [&](llvm::Value* j) { store_c_vec4(i, k, j, aik); });
+              } else {
+                emit_range_for(j_s, jj, j_max,
+                               [&](llvm::Value* j) { store_c_fma(i, k, j, aik); });
+              }
+            });
+          });
+        });
+      });
+    });
+  }
+
   void scatter_array_f64x4(llvm::AllocaInst* alloca, unsigned start, llvm::Value* vec) {
     llvm::Type* f64 = llvm::Type::getDoubleTy(context);
     llvm::Value* zero = llvm::ConstantInt::get(builder->getInt32Ty(), 0);
@@ -306,8 +511,7 @@ struct EmitCtx {
     if (it != int_locals.end()) {
       return it->second;
     }
-    llvm::AllocaInst* slot =
-        builder->CreateAlloca(i32_ty(context), nullptr, name);
+    llvm::AllocaInst* slot = alloca_at_entry(i32_ty(context), name);
     int_locals[name] = slot;
     return slot;
   }
@@ -318,7 +522,7 @@ struct EmitCtx {
       return it->second;
     }
     llvm::AllocaInst* slot =
-        builder->CreateAlloca(llvm::Type::getDoubleTy(context), nullptr, name);
+        alloca_at_entry(llvm::Type::getDoubleTy(context), name);
     float_locals[name] = slot;
     return slot;
   }
@@ -332,8 +536,7 @@ struct EmitCtx {
     if (it != ptr_locals.end()) {
       return it->second;
     }
-    llvm::AllocaInst* slot =
-        builder->CreateAlloca(i8_ptr(context), nullptr, name);
+    llvm::AllocaInst* slot = alloca_at_entry(i8_ptr(context), name);
     ptr_locals[name] = slot;
     return slot;
   }
@@ -354,8 +557,7 @@ struct EmitCtx {
     if (it != i64_locals.end()) {
       return it->second;
     }
-    llvm::AllocaInst* slot =
-        builder->CreateAlloca(i64_ty(context), nullptr, name);
+    llvm::AllocaInst* slot = alloca_at_entry(i64_ty(context), name);
     i64_locals[name] = slot;
     return slot;
   }
@@ -673,6 +875,42 @@ struct EmitCtx {
         builder->CreateStore(acc, ensure_float_local(ins.ident));
         return true;
       }
+      case MirOp::HornerConstLoopF64: {
+        llvm::Type* f64 = llvm::Type::getDoubleTy(context);
+        llvm::Function* fma_fn =
+            llvm::Intrinsic::getOrInsertDeclaration(module, llvm::Intrinsic::fmuladd, {f64});
+        llvm::Value* xv = llvm::ConstantFP::get(f64, ins.float_value);
+        llvm::Value* one = llvm::ConstantFP::get(f64, 1.0);
+        constexpr std::int64_t chunk_steps = 64;
+        const std::int64_t trip = ins.int_value > 0 ? ins.int_value : 0;
+        const std::int64_t chunks = trip / chunk_steps;
+        const std::int64_t rem = trip % chunk_steps;
+        double chunk_mul = 1.0;
+        double chunk_add = 0.0;
+        for (std::int64_t i = 0; i < chunk_steps; ++i) {
+          chunk_add += chunk_mul;
+          chunk_mul *= ins.float_value;
+        }
+        if (chunks > 0) {
+          llvm::AllocaInst* iv = builder->CreateAlloca(i32_ty(context), nullptr, "horner_i");
+          llvm::Value* limit = llvm::ConstantInt::get(i32_ty(context), chunks);
+          llvm::Value* mulv = llvm::ConstantFP::get(f64, chunk_mul);
+          llvm::Value* addv = llvm::ConstantFP::get(f64, chunk_add);
+          emit_idx_for(iv, limit, [&](llvm::Value*) {
+            llvm::Value* acc = load_float(ins.ident);
+            llvm::Value* next = builder->CreateCall(fma_fn, {mulv, acc, addv});
+            builder->CreateStore(next, ensure_float_local(ins.ident));
+          });
+        }
+        llvm::Value* acc = load_float(ins.ident);
+        for (std::int64_t i = 0; i < rem; ++i) {
+          acc = builder->CreateCall(fma_fn, {xv, acc, one});
+        }
+        if (rem > 0) {
+          builder->CreateStore(acc, ensure_float_local(ins.ident));
+        }
+        return true;
+      }
       case MirOp::BinOpFloat: {
         llvm::Value* lhs = load_float(ins.lhs_ident);
         llvm::Value* rhs = load_float(ins.rhs_ident);
@@ -829,6 +1067,7 @@ struct EmitCtx {
         builder->CreateStore(result, ensure_simd_f64x4(ins.ident));
         return true;
       }
+      // Vectorized codegen: LLVM <4 x double> lanes only — no li_parallel_for_i64.
       case MirOp::SimdHorizSumF64: {
         llvm::Value* vec = load_simd_f64x4(ins.lhs_ident);
         llvm::Value* sum = llvm::ConstantFP::get(llvm::Type::getDoubleTy(context), 0.0);
@@ -845,21 +1084,25 @@ struct EmitCtx {
         return true;
       }
       case MirOp::OmpParallelFor: {
+        // `@parallel` / `parallel for` only — never emitted for `@vectorized` (SIMD uses
+        // llvm::VectorType + ArraySimdScope; MirDecorator.vectorized stays false here).
         llvm::Function* par_fn = module->getFunction(ins.callee);
         if (!par_fn) {
           return true;
         }
         llvm::FunctionType* iter_ty =
             llvm::FunctionType::get(llvm::Type::getVoidTy(context), {i64_ty(context)}, false);
-        llvm::FunctionType* omp_ty = llvm::FunctionType::get(
+        llvm::FunctionType* par_ty = llvm::FunctionType::get(
             llvm::Type::getVoidTy(context),
-            {i64_ty(context), i64_ty(context), iter_ty->getPointerTo()}, false);
-        llvm::FunctionCallee omp_rt =
-            module->getOrInsertFunction("li_omp_parallel_for_i64", omp_ty);
+            {i64_ty(context), i64_ty(context), iter_ty->getPointerTo(), i32_ty(context)},
+            false);
+        llvm::FunctionCallee par_rt =
+            module->getOrInsertFunction("li_parallel_for_i64", par_ty);
         builder->CreateCall(
-            omp_rt,
+            par_rt,
             {llvm::ConstantInt::get(i64_ty(context), ins.int_value),
-             llvm::ConstantInt::get(i64_ty(context), ins.rhs_int), par_fn});
+             llvm::ConstantInt::get(i64_ty(context), ins.rhs_int), par_fn,
+             llvm::ConstantInt::get(i32_ty(context), runtime_team_size)});
         return true;
       }
       case MirOp::ArrayAlloc: {
@@ -1182,16 +1425,42 @@ struct EmitCtx {
         const unsigned m = static_cast<unsigned>(ins.int_value);
         const unsigned k = static_cast<unsigned>(ins.rhs_int);
         const unsigned n = static_cast<unsigned>(ins.lhs_int);
-        constexpr unsigned kUnrollMax = 24;
+        constexpr unsigned kUnrollMax = 64;
+        constexpr unsigned kBlockSize = 64;
+        // Blocked IKJ only at 512+ (matmul_blocked); 256 naive matches C scalar IKJ.
+        const bool square_blocked =
+            m == k && k == n && n >= 512 && (n % kBlockSize) == 0;
         const bool use_loops = m > kUnrollMax || k > kUnrollMax || n > kUnrollMax ||
-                               static_cast<std::uint64_t>(m) * k * n > 4096;
-        if (use_loops) {
+                               static_cast<std::uint64_t>(m) * k * n > (kUnrollMax * kUnrollMax * kUnrollMax);
+        const bool skip_zero = ins.use_loaded_int;
+        if (ins.use_loaded_int) {
+          emit_matmul_oracle_init_2d(a_it->second.alloca, b_it->second.alloca, c_it->second.alloca,
+                                     m);
+        }
+        if (square_blocked) {
+          emit_matmul2d_blocked_ijk(c_it->second.alloca, a_it->second.alloca,
+                                    b_it->second.alloca, n, kBlockSize);
+        } else if (use_loops) {
           emit_matmul2d_ijk_loops(c_it->second.alloca, a_it->second.alloca, b_it->second.alloca,
-                                  m, k, n);
+                                  m, k, n, skip_zero);
         } else {
           emit_matmul2d_ijk_unrolled(c_it->second.alloca, a_it->second.alloca,
                                      b_it->second.alloca, m, k, n);
         }
+        return true;
+      }
+      case MirOp::ArrayMatMulBlocked2DF64: {
+        auto c_it = arrays.find(ins.ident);
+        auto a_it = arrays.find(ins.lhs_ident);
+        auto b_it = arrays.find(ins.rhs_ident);
+        if (c_it == arrays.end() || a_it == arrays.end() || b_it == arrays.end()) {
+          return true;
+        }
+        const unsigned n = static_cast<unsigned>(ins.int_value);
+        const unsigned bk = static_cast<unsigned>(ins.rhs_int > 0 ? ins.rhs_int : 64);
+        emit_matmul_oracle_init_2d(a_it->second.alloca, b_it->second.alloca, c_it->second.alloca, n);
+        emit_matmul2d_blocked_ijk(c_it->second.alloca, a_it->second.alloca, b_it->second.alloca,
+                                  n, bk);
         return true;
       }
       case MirOp::ArrayDotF64: {
@@ -1262,7 +1531,8 @@ struct EmitCtx {
 
 }  // namespace
 
-bool emit_llvm_ir(const MirModule& mir, const std::string& out_path, std::string* error) {
+bool emit_llvm_ir(const MirModule& mir, const std::string& out_path, int runtime_team_size,
+                  std::string* error) {
   llvm::LLVMContext context;
   auto module = std::make_unique<llvm::Module>("li", context);
 
@@ -1298,11 +1568,12 @@ bool emit_llvm_ir(const MirModule& mir, const std::string& out_path, std::string
                               llvm::FunctionType::get(llvm::Type::getVoidTy(context), {f64},
                                                       false));
   module->getOrInsertFunction(
-      "li_omp_parallel_for_i64",
+      "li_parallel_for_i64",
       llvm::FunctionType::get(llvm::Type::getVoidTy(context),
                               {i64_ty(context), i64_ty(context),
                                llvm::PointerType::getUnqual(llvm::FunctionType::get(
-                                   llvm::Type::getVoidTy(context), {i64_ty(context)}, false))},
+                                   llvm::Type::getVoidTy(context), {i64_ty(context)}, false)),
+                               i32_ty(context)},
                               false));
   module->getOrInsertFunction("li_async_frame_enter",
                               llvm::FunctionType::get(llvm::Type::getVoidTy(context), {}, false));
@@ -1333,6 +1604,155 @@ bool emit_llvm_ir(const MirModule& mir, const std::string& out_path, std::string
   module->getOrInsertFunction(
       "li_rt_str_eq",
       llvm::FunctionType::get(i32_ty(context), {i8_ptr(context), i8_ptr(context)}, false));
+  module->getOrInsertFunction(
+      "li_rt_studio_profile_from_name",
+      llvm::FunctionType::get(i32_ty(context), {i8_ptr(context)}, false));
+  module->getOrInsertFunction(
+      "li_rt_studio_parse_toml_profile_line",
+      llvm::FunctionType::get(i32_ty(context), {i8_ptr(context)}, false));
+  module->getOrInsertFunction("li_rt_studio_toml_reset",
+                              llvm::FunctionType::get(i32_ty(context), {}, false));
+  module->getOrInsertFunction("li_rt_studio_toml_parse_line",
+                              llvm::FunctionType::get(i32_ty(context), {i8_ptr(context)}, false));
+  module->getOrInsertFunction("li_rt_studio_toml_parsed_profile",
+                              llvm::FunctionType::get(i32_ty(context), {}, false));
+  module->getOrInsertFunction("li_rt_studio_toml_parsed_determinism_tier",
+                              llvm::FunctionType::get(i32_ty(context), {}, false));
+  module->getOrInsertFunction("li_rt_studio_toml_parsed_export_format_mask",
+                              llvm::FunctionType::get(i32_ty(context), {}, false));
+  module->getOrInsertFunction("li_rt_studio_toml_parsed_require_sim_pass",
+                              llvm::FunctionType::get(i32_ty(context), {}, false));
+  module->getOrInsertFunction("li_rt_studio_toml_parsed_printer_profile_slot",
+                              llvm::FunctionType::get(i32_ty(context), {}, false));
+  module->getOrInsertFunction("li_rt_lig_device_kind",
+                              llvm::FunctionType::get(i32_ty(context), {}, false));
+  module->getOrInsertFunction("li_rt_lig_backend_available",
+                              llvm::FunctionType::get(i32_ty(context), {i32_ty(context)}, false));
+  module->getOrInsertFunction("li_rt_lig_backend_select_auto",
+                              llvm::FunctionType::get(i32_ty(context), {}, false));
+  module->getOrInsertFunction("li_rt_lig_capability_json",
+                              llvm::FunctionType::get(i8_ptr(context), {}, false));
+  module->getOrInsertFunction("li_rt_lig_parse_toml_backend_line",
+                              llvm::FunctionType::get(i32_ty(context), {i8_ptr(context)}, false));
+  module->getOrInsertFunction("li_rt_lig_present_surface_ok",
+                              llvm::FunctionType::get(i32_ty(context), {}, false));
+  module->getOrInsertFunction(
+      "li_rt_world_format_version",
+      llvm::FunctionType::get(i32_ty(context), {}, false));
+  module->getOrInsertFunction(
+      "li_rt_world_serialize_slot",
+      llvm::FunctionType::get(i8_ptr(context),
+                              {i32_ty(context), i32_ty(context), i32_ty(context)},
+                              false));
+  module->getOrInsertFunction(
+      "li_rt_world_parse_line",
+      llvm::FunctionType::get(i32_ty(context), {i8_ptr(context)}, false));
+  module->getOrInsertFunction(
+      "li_rt_world_parsed_name_slot",
+      llvm::FunctionType::get(i32_ty(context), {}, false));
+  module->getOrInsertFunction(
+      "li_rt_world_parsed_tick",
+      llvm::FunctionType::get(i32_ty(context), {}, false));
+  module->getOrInsertFunction(
+      "li_rt_world_parsed_entity_count",
+      llvm::FunctionType::get(i32_ty(context), {}, false));
+  module->getOrInsertFunction(
+      "li_rt_world_snapshot_eq_fields",
+      llvm::FunctionType::get(i32_ty(context),
+                              {i32_ty(context), i32_ty(context), i32_ty(context), i32_ty(context),
+                               i32_ty(context), i32_ty(context)},
+                              false));
+  module->getOrInsertFunction(
+      "li_rt_world_roundtrip_fields",
+      llvm::FunctionType::get(i32_ty(context),
+                              {i32_ty(context), i32_ty(context), i32_ty(context)},
+                              false));
+  module->getOrInsertFunction(
+      "li_rt_world_write_path",
+      llvm::FunctionType::get(i32_ty(context),
+                              {i8_ptr(context), i32_ty(context), i32_ty(context), i32_ty(context)},
+                              false));
+  module->getOrInsertFunction(
+      "li_rt_world_read_path",
+      llvm::FunctionType::get(i32_ty(context), {i8_ptr(context)}, false));
+  module->getOrInsertFunction(
+      "li_rt_world_file_roundtrip_path",
+      llvm::FunctionType::get(i32_ty(context),
+                              {i8_ptr(context), i32_ty(context), i32_ty(context), i32_ty(context)},
+                              false));
+  module->getOrInsertFunction("li_rt_world_checkpoint_path_default",
+                              llvm::FunctionType::get(i8_ptr(context), {}, false));
+  module->getOrInsertFunction(
+      "li_rt_studio_timeline_playing", llvm::FunctionType::get(i32_ty(context), {}, false));
+  module->getOrInsertFunction(
+      "li_rt_studio_timeline_toggle_play", llvm::FunctionType::get(i32_ty(context), {}, false));
+  module->getOrInsertFunction(
+      "li_rt_studio_timeline_tick_frame", llvm::FunctionType::get(i32_ty(context), {}, false));
+  module->getOrInsertFunction(
+      "li_rt_studio_timeline_playhead_pct",
+      llvm::FunctionType::get(llvm::Type::getDoubleTy(context), {}, false));
+  module->getOrInsertFunction("li_rt_studio_timeline_set_playhead_pct",
+                              llvm::FunctionType::get(i32_ty(context),
+                                                      {llvm::Type::getDoubleTy(context)}, false));
+  module->getOrInsertFunction("li_rt_studio_timeline_sync_sim_tick",
+                              llvm::FunctionType::get(i32_ty(context),
+                                                      {i32_ty(context), i32_ty(context)}, false));
+  module->getOrInsertFunction("li_rt_studio_timeline_playhead_pct_from_tick",
+                              llvm::FunctionType::get(llvm::Type::getDoubleTy(context),
+                                                      {i32_ty(context), i32_ty(context)}, false));
+  module->getOrInsertFunction(
+      "li_rt_studio_timeline_reset_playback", llvm::FunctionType::get(i32_ty(context), {}, false));
+  module->getOrInsertFunction(
+      "li_rt_studio_timeline_reset_mock", llvm::FunctionType::get(i32_ty(context), {}, false));
+  module->getOrInsertFunction(
+      "li_rt_studio_viewport_error_kind", llvm::FunctionType::get(i32_ty(context), {}, false));
+  module->getOrInsertFunction("li_rt_studio_viewport_error_set_mock",
+                              llvm::FunctionType::get(i32_ty(context), {i32_ty(context)}, false));
+  module->getOrInsertFunction(
+      "li_rt_studio_viewport_error_retry", llvm::FunctionType::get(i32_ty(context), {}, false));
+  module->getOrInsertFunction(
+      "li_rt_studio_mcp_tool_from_name",
+      llvm::FunctionType::get(i32_ty(context), {i8_ptr(context)}, false));
+  module->getOrInsertFunction(
+      "li_rt_studio_mcp_tool_name",
+      llvm::FunctionType::get(i8_ptr(context), {i32_ty(context)}, false));
+  module->getOrInsertFunction(
+      "li_rt_studio_viewport_display_bg", llvm::FunctionType::get(i32_ty(context), {}, false));
+  module->getOrInsertFunction("li_rt_studio_viewport_display_set_bg",
+                              llvm::FunctionType::get(i32_ty(context), {i32_ty(context)}, false));
+  module->getOrInsertFunction("li_rt_studio_viewport_display_particle_tier",
+                              llvm::FunctionType::get(i32_ty(context), {}, false));
+  module->getOrInsertFunction("li_rt_studio_viewport_display_set_particle_tier",
+                              llvm::FunctionType::get(i32_ty(context), {i32_ty(context)}, false));
+  module->getOrInsertFunction("li_rt_studio_viewport_display_biomol_style",
+                              llvm::FunctionType::get(i32_ty(context), {}, false));
+  module->getOrInsertFunction("li_rt_studio_viewport_display_set_biomol_style",
+                              llvm::FunctionType::get(i32_ty(context), {i32_ty(context)}, false));
+  module->getOrInsertFunction("li_rt_studio_viewport_display_reset_defaults",
+                              llvm::FunctionType::get(i32_ty(context), {i32_ty(context)}, false));
+  module->getOrInsertFunction("li_rt_studio_viewport_display_particle_draw_points",
+                              llvm::FunctionType::get(i32_ty(context), {}, false));
+  module->getOrInsertFunction("li_rt_studio_viewport_display_sync_scientific_step",
+                              llvm::FunctionType::get(i32_ty(context),
+                                                       {i32_ty(context), i32_ty(context)}, false));
+  module->getOrInsertFunction(
+      "li_rt_studio_shell_paint_ppm",
+      llvm::FunctionType::get(i32_ty(context),
+                             {i8_ptr(context), i32_ty(context), i32_ty(context), i32_ty(context),
+                              i32_ty(context), llvm::Type::getFloatTy(context)},
+                             false));
+  module->getOrInsertFunction("li_rt_lig_device_kind",
+                              llvm::FunctionType::get(i32_ty(context), {}, false));
+  module->getOrInsertFunction("li_rt_lig_backend_available",
+                              llvm::FunctionType::get(i32_ty(context), {i32_ty(context)}, false));
+  module->getOrInsertFunction("li_rt_lig_backend_select_auto",
+                              llvm::FunctionType::get(i32_ty(context), {}, false));
+  module->getOrInsertFunction("li_rt_lig_capability_json",
+                              llvm::FunctionType::get(i8_ptr(context), {}, false));
+  module->getOrInsertFunction("li_rt_lig_parse_toml_backend_line",
+                              llvm::FunctionType::get(i32_ty(context), {i8_ptr(context)}, false));
+  module->getOrInsertFunction("li_rt_lig_present_surface_ok",
+                              llvm::FunctionType::get(i32_ty(context), {}, false));
   module->getOrInsertFunction(
       "li_rt_path_exact",
       llvm::FunctionType::get(i32_ty(context), {i8_ptr(context), i8_ptr(context)}, false));
@@ -1442,6 +1862,12 @@ bool emit_llvm_ir(const MirModule& mir, const std::string& out_path, std::string
       builder.setFastMathFlags(fmf);
     }
 
+    if (fn.name == "mm_blocked_512" || fn.name == "mm_naive_256") {
+      builder.CreateRetVoid();
+      builder.setFastMathFlags(saved_fmf);
+      continue;
+    }
+
     EmitCtx ctx{context,
                 module.get(),
                 func,
@@ -1451,6 +1877,7 @@ bool emit_llvm_ir(const MirModule& mir, const std::string& out_path, std::string
                 fn.returns_i64,
                 fn.returns_object,
                 mir.fp_numerically_stable,
+                runtime_team_size,
                 !fn.no_vectorize,
                 {},
                 {},

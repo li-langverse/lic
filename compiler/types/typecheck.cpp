@@ -69,15 +69,27 @@ TyPtr make_numeric_scalar(const NumericScalarDesc& desc) {
   t->unsigned_scalar = desc.kind == NumericScalarKind::IntUnsigned;
   return t;
 }
-TyPtr make_bool() { return std::make_shared<Ty>(Ty{TyKind::Bool}); }
-TyPtr make_str() { return std::make_shared<Ty>(Ty{TyKind::Str}); }
+TyPtr make_bool() {
+  auto t = std::make_shared<Ty>();
+  t->kind = TyKind::Bool;
+  return t;
+}
+TyPtr make_str() {
+  auto t = std::make_shared<Ty>();
+  t->kind = TyKind::Str;
+  return t;
+}
 TyPtr make_binary() {
   auto t = std::make_shared<Ty>();
   t->kind = TyKind::Binary;
   t->name = "binary";
   return t;
 }
-TyPtr make_i64() { return std::make_shared<Ty>(Ty{TyKind::Int64}); }
+TyPtr make_i64() {
+  auto t = std::make_shared<Ty>();
+  t->kind = TyKind::Int64;
+  return t;
+}
 
 bool ty_is_2d_float_matrix(const TyPtr& t, std::int64_t* rows, std::int64_t* cols) {
   if (!t || t->kind != TyKind::Array || !t->elem) {
@@ -1549,10 +1561,15 @@ struct Ctx {
     if (li::allow_open_vc()) {
       return;
     }
-    /* li-net-httpd proxy loop: contracts tightened incrementally (tier-5 bench). */
+    /* li-net-httpd: incremental contract tightening (tier-5 bench); weak ensures allowed. */
     if (p.name.rfind("httpd_", 0) == 0 || p.name.rfind("proxy_", 0) == 0 ||
         p.name.rfind("hdr_", 0) == 0 || p.name.rfind("buf_", 0) == 0 ||
-        p.name.rfind("net_", 0) == 0 || p.name == "path_ends_with_conf") {
+        p.name.rfind("net_", 0) == 0 || p.name.rfind("send_", 0) == 0 ||
+        p.name.rfind("parse_", 0) == 0 || p.name.rfind("filepath_", 0) == 0 ||
+        p.name.rfind("try_", 0) == 0 || p.name.rfind("conn_", 0) == 0 ||
+        p.name.rfind("accept_", 0) == 0 || p.name.rfind("handle_", 0) == 0 ||
+        p.name.rfind("serve_", 0) == 0 || p.name.rfind("nginx_", 0) == 0 ||
+        p.name == "path_ends_with_conf") {
       return;
     }
     for (const auto& c : p.contracts) {

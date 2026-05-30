@@ -134,6 +134,11 @@ if [[ -x "$ROOT/scripts/check-tier5-exploit-harness.sh" ]]; then
   "$ROOT/scripts/check-tier5-exploit-harness.sh"
 fi
 
+if [[ -x "$ROOT/scripts/check-tier5-exploit-owasp-cwe-suite.sh" ]]; then
+  echo "==> check-tier5-exploit-owasp-cwe-suite.sh (gap-exploit-owasp-cwe-suite)"
+  "$ROOT/scripts/check-tier5-exploit-owasp-cwe-suite.sh"
+fi
+
 if [[ -x "$ROOT/scripts/check-tier5-nginx-src-audit.sh" ]]; then
   echo "==> check-tier5-nginx-src-audit.sh"
   "$ROOT/scripts/check-tier5-nginx-src-audit.sh"
@@ -193,6 +198,16 @@ if [[ "${HTTPD_GATES_SKIP_LIC_BUILD:-0}" != "1" && "${HTTPD_RUN_EXPLOIT_RUNTIME:
     "$ROOT/scripts/check-tier5-exploit-runtime.sh" || fail "check-tier5-exploit-runtime.sh failed"
   else
     fail "m1-exploit-runtime: build/li-httpd missing (run build-li-httpd.sh)"
+  fi
+fi
+
+# gap-lb-sticky-sessions: ip_hash + cookie affinity on multi-backend pool (opt-out HTTPD_RUN_STICKY_LB_TEST=0).
+if [[ "${HTTPD_GATES_SKIP_LIC_BUILD:-0}" != "1" && "${HTTPD_RUN_STICKY_LB_TEST:-1}" == "1" ]]; then
+  if [[ -x "$ROOT/scripts/test-lb-sticky-sessions.sh" && -x "$ROOT/build/li-httpd" ]]; then
+    echo "==> test-lb-sticky-sessions.sh (gap-lb-sticky-sessions)"
+    "$ROOT/scripts/test-lb-sticky-sessions.sh" || fail "test-lb-sticky-sessions.sh failed"
+  else
+    fail "gap-lb-sticky-sessions: build/li-httpd missing (run build-li-httpd.sh)"
   fi
 fi
 
@@ -296,15 +311,50 @@ if [[ "${HTTPD_GATES_SKIP_LIC_BUILD:-0}" != "1" && "${HTTPD_RUN_M3_TOKEN_BUDGET_
   fi
 fi
 
-# m1-nginx-bench-parity: tier5 verify + optional wrk ratios (HTTPD_BENCH_SKIP_TIMING=1 in lean CI).
-if [[ "${HTTPD_GATES_SKIP_LIC_BUILD:-0}" != "1" && "${HTTPD_RUN_BENCH_PARITY:-1}" == "1" ]]; then
-  if [[ -x "$ROOT/scripts/check-tier5-nginx-bench-parity.sh" && -x "$ROOT/build/li-httpd" ]]; then
-    echo "==> check-tier5-nginx-bench-parity.sh (m1-nginx-bench-parity)"
+# gap-tier5-streaming-soak: SSE long stream + WS fanout vs nginx on live li-httpd.
+if [[ "${HTTPD_GATES_SKIP_LIC_BUILD:-0}" != "1" && "${HTTPD_RUN_STREAMING_SOAK_TEST:-1}" == "1" ]]; then
+  if [[ -x "$ROOT/scripts/check-tier5-streaming-soak.sh" && -x "$ROOT/build/li-httpd" ]]; then
+    echo "==> check-tier5-streaming-soak.sh (gap-tier5-streaming-soak)"
     HTTPD_BENCH_SKIP_TIMING="${HTTPD_BENCH_SKIP_TIMING:-1}" \
-      "$ROOT/scripts/check-tier5-nginx-bench-parity.sh" || fail "check-tier5-nginx-bench-parity.sh failed"
+      "$ROOT/scripts/check-tier5-streaming-soak.sh" \
+      || fail "check-tier5-streaming-soak.sh failed"
   else
-    fail "m1-nginx-bench-parity: build/li-httpd missing (run build-li-httpd.sh)"
+    fail "gap-tier5-streaming-soak: build/li-httpd missing (run build-li-httpd.sh)"
   fi
+fi
+
+# gap-nginx-perf-regression-gate: tier5 parity + nextjs + exploit compare (verify lean; timing when wrk/nginx/node).
+if [[ "${HTTPD_GATES_SKIP_LIC_BUILD:-0}" != "1" && "${HTTPD_RUN_PERF_REGRESSION_GATE:-1}" == "1" ]]; then
+  if [[ -x "$ROOT/scripts/check-tier5-nginx-perf-regression-gate.sh" && -x "$ROOT/build/li-httpd" ]]; then
+    echo "==> check-tier5-nginx-perf-regression-gate.sh (gap-nginx-perf-regression-gate)"
+    HTTPD_BENCH_SKIP_TIMING="${HTTPD_BENCH_SKIP_TIMING:-1}" \
+      "$ROOT/scripts/check-tier5-nginx-perf-regression-gate.sh" \
+      || fail "check-tier5-nginx-perf-regression-gate.sh failed"
+  else
+    fail "gap-nginx-perf-regression-gate: build/li-httpd missing (run build-li-httpd.sh)"
+  fi
+fi
+
+# gap-phase2-* (nginx strict parity — run when plan todo pending or HTTPD_RUN_PHASE2_GATES=1).
+if [[ "${HTTPD_GATES_SKIP_LIC_BUILD:-0}" != "1" && "${HTTPD_RUN_PHASE2_GATES:-0}" == "1" && -x "$ROOT/build/li-httpd" ]]; then
+  for hook in \
+    check-tier5-mitigation-exploits-complete.sh \
+    check-tier5-exploit-nginx-regression.sh \
+    check-tier5-streaming-soak.sh \
+    check-tier5-perf-wrk-soak.sh; do
+    if [[ -x "$ROOT/scripts/$hook" ]]; then
+      echo "==> $hook (gap-phase2)"
+      case "$hook" in
+        check-tier5-streaming-soak.sh)
+          HTTPD_BENCH_SKIP_TIMING=0 HTTPD_BENCH_DURATION_SEC="${HTTPD_BENCH_DURATION_SEC:-30}" \
+            "$ROOT/scripts/$hook" || fail "$hook failed"
+          ;;
+        *)
+          "$ROOT/scripts/$hook" || fail "$hook failed"
+          ;;
+      esac
+    fi
+  done
 fi
 
 echo "httpd-plan-gates: OK"

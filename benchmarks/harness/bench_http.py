@@ -5,25 +5,32 @@ from __future__ import annotations
 
 import argparse
 import csv
+import http.client
 import os
 import platform
 import shutil
 import subprocess
 import sys
 import tempfile
+import time
 from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any
 
 from bench_http_parity import check_parity_ratios
 from http_bench_servers import (
+    is_proxy_scenario,
     pick_free_port,
+    proxy_backend_available,
     resolve_nginx_binary,
     scenario_port,
     start_li_httpd,
     start_nginx,
+    start_proxy_front,
     stop_proc,
+    stop_proxy_stack,
 )
+from streaming_soak_load import run_streaming_soak_load
 from http_bench_toml import (
     REPO,
     TIER5,
@@ -36,6 +43,18 @@ from http_bench_toml import (
     validate_merged,
 )
 
+_HARNESS = Path(__file__).resolve().parent
+if str(_HARNESS) not in sys.path:
+    sys.path.insert(0, str(_HARNESS))
+from timing_stats import (
+    TimingStats,
+    default_bench_runs,
+    host_os_tag,
+    measure_repeated,
+    resolve_timing_runs,
+    stats_from_samples,
+)
+
 RESULTS = REPO / "benchmarks" / "results"
 CSV_HEADER = [
     "benchmark",
@@ -44,6 +63,8 @@ CSV_HEADER = [
     "threads",
     "metric",
     "value",
+    "stddev",
+    "sample_runs",
     "unit",
     "git_sha",
     "cpu_model",
@@ -152,6 +173,86 @@ def run_wrk(
     return metrics or None
 
 
+def _ttfb_sample_ms(url: str) -> float:
+    from urllib.parse import urlparse
+
+    parsed = urlparse(url)
+    host = parsed.hostname or "127.0.0.1"
+    port = parsed.port or 80
+    path = parsed.path or "/"
+    conn = http.client.HTTPConnection(host, port, timeout=5.0)
+    try:
+        t0 = time.perf_counter()
+        conn.request("GET", path)
+        resp = conn.getresponse()
+        resp.read(1)
+        ms = (time.perf_counter() - t0) * 1000.0
+        resp.read()
+        return ms
+    finally:
+        conn.close()
+
+
+def sample_ttfb_stats(url: str, *, runs: int | None = None) -> TimingStats | None:
+    try:
+        return measure_repeated(lambda: _ttfb_sample_ms(url), runs=runs)
+    except OSError:
+        return None
+
+
+def measured_runs_for_cfg(cfg: dict[str, Any]) -> int:
+    global_tbl = cfg.get("global") or {}
+    raw = global_tbl.get("measured_runs")
+    if raw is not None:
+        return max(1, int(raw))
+    env = os.environ.get("HTTP_BENCH_RUNS", "").strip()
+    if env:
+        return max(1, int(env))
+    return default_bench_runs()
+
+
+def run_wrk_stats(
+    url: str,
+    *,
+    threads: int,
+    connections: int,
+    duration_sec: int,
+    pipeline: int,
+    runs: int,
+) -> dict[str, TimingStats] | None:
+    """Run wrk repeatedly; return mean ± stddev per parsed metric."""
+    by_metric: dict[str, list[float]] = {}
+
+    def one_run() -> dict[str, float]:
+        m = run_wrk(
+            url,
+            threads=threads,
+            connections=connections,
+            duration_sec=duration_sec,
+            pipeline=pipeline,
+        )
+        if not m:
+            raise RuntimeError("wrk returned no metrics")
+        return m
+
+    try:
+        first = one_run()
+    except RuntimeError:
+        return None
+    for key, val in first.items():
+        by_metric.setdefault(key, []).append(val)
+
+    total = resolve_timing_runs(runs, float(duration_sec))
+    for _ in range(max(0, total - 1)):
+        m = one_run()
+        if not m:
+            return None
+        for key, val in m.items():
+            by_metric.setdefault(key, []).append(val)
+
+    return {k: stats_from_samples(v) for k, v in by_metric.items()}
+
+
 def run_load_for_lang(
     cfg: dict[str, Any],
     lang: str,
@@ -161,6 +262,34 @@ def run_load_for_lang(
 ) -> list[dict[str, object]]:
     load = cfg.get("load") or {}
     tool = str(load.get("tool", "wrk"))
+    if tool == "streaming_soak":
+        metrics = run_streaming_soak_load(cfg, port=port)
+        if not metrics:
+            return []
+        sha = git_sha()
+        cpu = cpu_model()
+        host_os = host_os_tag()
+        flags = f"profile={cfg.get('_profile', '')};tool=streaming_soak"
+        unit_map = {"rps": "events/s", "p99_latency_ms": "ms", "stream_ok_ratio": "ratio"}
+        rows: list[dict[str, object]] = []
+        threads = int(load.get("concurrent", 16))
+        for metric, value in metrics.items():
+            rows.append(
+                {
+                    "benchmark": cfg["name"],
+                    "lang": lang,
+                    "variant": variant,
+                    "threads": threads,
+                    "metric": metric,
+                    "value": value,
+                    "unit": unit_map.get(metric, ""),
+                    "git_sha": sha,
+                    "cpu_model": cpu,
+                    "flags": flags,
+                    "os": host_os,
+                }
+            )
+        return rows
     if tool != "wrk":
         print(f"warn: load tool {tool!r} not implemented", file=sys.stderr)
         return []
@@ -188,20 +317,28 @@ def run_load_for_lang(
                 variants.append((f"{prefix}{c}", int(c)))
     sha = git_sha()
     cpu = cpu_model()
+    host_os = host_os_tag()
     flags = f"profile={cfg.get('_profile', '')};tool=wrk"
     rows: list[dict[str, object]] = []
+    bench_runs = measured_runs_for_cfg(cfg)
     for var, conn in variants:
-        metrics = run_wrk(
+        metric_stats = run_wrk_stats(
             url,
             threads=threads,
             connections=conn,
             duration_sec=duration,
             pipeline=pipeline,
+            runs=bench_runs,
         )
-        if not metrics:
+        if not metric_stats:
             continue
-        unit_map = {"rps": "req/s", "p50_latency_ms": "ms", "p99_latency_ms": "ms"}
-        for metric, value in metrics.items():
+        collect = (cfg.get("metrics") or {}).get("collect") or []
+        if isinstance(collect, list) and "ttfb_ms" in collect:
+            ttfb_stats = sample_ttfb_stats(url, runs=bench_runs)
+            if ttfb_stats is not None:
+                metric_stats["ttfb_ms"] = ttfb_stats
+        unit_map = {"rps": "req/s", "p50_latency_ms": "ms", "p99_latency_ms": "ms", "ttfb_ms": "ms"}
+        for metric, timing in metric_stats.items():
             rows.append(
                 {
                     "benchmark": cfg["name"],
@@ -209,11 +346,14 @@ def run_load_for_lang(
                     "variant": var,
                     "threads": threads,
                     "metric": metric,
-                    "value": value,
+                    "value": round(timing.mean, 4),
+                    "stddev": round(timing.stddev, 6),
+                    "sample_runs": timing.sample_runs,
                     "unit": unit_map.get(metric, ""),
                     "git_sha": sha,
                     "cpu_model": cpu,
                     "flags": flags,
+                    "os": host_os,
                 }
             )
     return rows
@@ -331,9 +471,14 @@ def main() -> int:
     if subprocess.call(vcmd) != 0:
         return 1
 
-    if not shutil.which("wrk"):
-        print("bench_http: wrk not in PATH — skipping load timing", file=sys.stderr)
-        return 0
+    names_need_wrk = [
+        n
+        for n in names
+        if str((merge_scenario(n, overrides=args.overrides, profile=profile).get("load") or {}).get("tool", "wrk"))
+        != "streaming_soak"
+    ]
+    if names_need_wrk and not shutil.which("wrk"):
+        print("bench_http: wrk not in PATH — skipping wrk load timing", file=sys.stderr)
     if not resolve_nginx_binary():
         print("bench_http: nginx missing — skipping load timing", file=sys.stderr)
         return 0
@@ -351,14 +496,30 @@ def main() -> int:
         port = pick_free_port(port_base, sum(ord(c) for c in name) % 200)
         server = cfg.get("server") or {}
         variant = "sendfile_on" if server.get("sendfile", True) else "sendfile_off"
+        parity_tbl = cfg.get("parity") or {}
+        if parity_tbl.get("verify_only"):
+            continue
+        if is_proxy_scenario(cfg) and not proxy_backend_available(cfg):
+            print(f"bench_http {name}: skip timing (proxy backend unavailable)", file=sys.stderr)
+            continue
+        load_tool = str((cfg.get("load") or {}).get("tool", "wrk"))
+        if load_tool == "streaming_soak":
+            # Streaming soak uses custom driver; wrk not required.
+            pass
+        elif not shutil.which("wrk"):
+            print(f"bench_http {name}: skip timing (wrk missing)", file=sys.stderr)
+            continue
         for lang in langs:
             proc = None
+            backend_proc = None
             work_dir: Path | None = None
             try:
-                if lang == "nginx":
+                if is_proxy_scenario(cfg):
+                    proc, work_dir, backend_proc = start_proxy_front(cfg, name, port, lang)
+                elif lang == "nginx":
                     proc, work_dir = start_nginx(cfg, port)
                 elif lang == "li":
-                    proc, work_dir = start_li_httpd(name, port)
+                    proc, work_dir = start_li_httpd(name, port, cfg=cfg)
                 else:
                     print(f"skip load for {lang!r}", file=sys.stderr)
                     continue
@@ -368,9 +529,12 @@ def main() -> int:
                 print(f"bench_http {name} {lang}: {exc}", file=sys.stderr)
                 return 1
             finally:
-                stop_proc(proc)
-                if work_dir and work_dir.exists():
-                    shutil.rmtree(work_dir, ignore_errors=True)
+                if is_proxy_scenario(cfg):
+                    stop_proxy_stack(proc, work_dir, backend_proc)
+                else:
+                    stop_proc(proc)
+                    if work_dir and work_dir.exists():
+                        shutil.rmtree(work_dir, ignore_errors=True)
 
     if all_rows:
         write_csv(args.out, all_rows)
@@ -379,8 +543,8 @@ def main() -> int:
         print("bench_http: no timing rows produced", file=sys.stderr)
         return 1
 
-    if args.check_parity or profile == "parity":
-        ok, notes = check_parity_ratios(all_rows, names)
+    if args.check_parity or profile in ("parity", "nextjs_parity", "parity_streaming"):
+        ok, notes = check_parity_ratios(all_rows, names, cfg_by_name={n: merge_scenario(n, overrides=args.overrides, profile=profile) for n in names})
         for line in notes:
             print(line)
         if not ok:

@@ -47,14 +47,7 @@ export CC=clang-22 CXX=clang++-22
 
 Or `./scripts/build.sh` after `export LLVM_DIR=...` — it auto-detects via `scripts/llvm-env.sh`.
 
-## Linux (Debian 12 / Ubuntu)
-
-```bash
-sudo apt-get install cmake ninja-build clang-18 llvm-18-dev lld-18
-export LLVM_DIR=/usr/lib/llvm-18/lib/cmake/llvm
-export CC=clang-18 CXX=clang++-18
-./scripts/build.sh
-```
+**Cloud Agent VMs:** use [cloud-agent-vm.md](../ecosystem/cloud-agent-vm.md) — `bash scripts/cloud-vm-bootstrap.sh`.
 
 **Dedicated dev box (e.g. `engine`):** use the idempotent script and agent-oriented guide — [devbox Li development](devbox-li-development.md).
 

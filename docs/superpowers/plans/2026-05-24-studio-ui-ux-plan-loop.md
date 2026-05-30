@@ -86,6 +86,7 @@ isProject: false
 **Branch:** `cursor/studio-ui-ux-plan-loop`  
 **Not in scope:** httpd, tier5 HTTP, compiler Wave A (separate loops).
 
+**GUI UX handoff:** [gui-ux-quality-handoff.md](../../ecosystem/gui-ux-quality-handoff.md) (`gui_ux_tester`, `ui_ux_quality` research goal)  
 **UX rubric:** [ui-ux-by-dimension.md](../../game-dev/competitive-intel/ui-ux-by-dimension.md)
 
 **Loop:** `./scripts/studio-ui-ux-plan-loop.py`  

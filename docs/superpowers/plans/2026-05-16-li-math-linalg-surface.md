@@ -4,6 +4,9 @@
 > **Blocks:** Tier 1 `matmul_*` / `simd_dot` benchmarks with **pure math source** (no user `simd(...)` / intrinsics)  
 > **Design spec addendum:** `docs/superpowers/specs/2026-05-16-li-math-linalg-surface.md` (to land with phase)
 
+**Proof gaps (Doc-c):** [G-math](../../verification/provability-gaps.md#g-math) · [G-math-syn](../../verification/provability-gaps.md#g-math-syn) · [G-dec](../../verification/provability-gaps.md#g-dec) · [still open](../../verification/provability-gaps.md#still-open-report-every-session)  
+**Plan map:** [plan-cross-links](../../ecosystem/plan-cross-links.md) · [master plan](2026-05-14-li-master-plan.md#documentation--provability-honesty-cross-cutting)
+
 ## Principle (binding)
 
 **Users write mathematics.** The compiler and stdlib lower to `simd`, `parallel for`, OpenMP, and (later) GPU — same as today’s proved cores.
@@ -168,5 +171,6 @@ Use existing [benchmarks plan](2026-05-14-benchmarks-and-simulations.md) harness
 - [x] Handbook pages published (`linear-algebra.md`, `math-hpc-examples.md`)
 - [x] No user-facing doc recommends `__li_simd_*` as the default path
 - [x] **2i-b** `norm`, `sum`/`dot`, `reductions/` suite; same-length `**` / prelude `axpy` / scalar×array (no broadcast) — float Lean Props still open
-- [ ] **P-linalg** loop implementation ≡ closed-form `ensures` in Lean (**G-lean**)
+- [x] **2i-broadcast** length-1 element-wise broadcast (`broadcast_len1_*.li`); non-broadcast length mismatch (`broadcast_invalid_len2_vs_len4.li`, `elementwise_len_mismatch.li`) — full NumPy rank rules open
+- [x] **P-linalg** loop implementation ≡ closed-form `ensures` in Lean (**G-lean**) (`linalg_dot4_int_loop_open.li` + `discharge_linalg_int_lean.sh`; float Props still **G-math** open)
 - [ ] Tier 1 perf ≤1.2× C++ (benchmarks dashboard)

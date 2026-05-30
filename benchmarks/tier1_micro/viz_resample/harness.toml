@@ -1,0 +1,3 @@
+# WP4 catalog smoke (bench_registry family template).
+template = "horner_pure_li"
+family = "viz"

@@ -1,0 +1,5 @@
+# WP3 harness: pde_cfl_timestep
+nx = 64
+ny = 64
+steps = 40_000
+cfl = 0.45

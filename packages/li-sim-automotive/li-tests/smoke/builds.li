@@ -1,0 +1,26 @@
+import sim.automotive
+
+def main() raises IO -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  if li_sim_automotive_version() != 1:
+    return 1
+  if li_sim_automotive_profile_contract() != sim_contract_sim_automotive():
+    return 2
+  if li_sim_automotive_studio_profile_id() != 3:
+    return 3
+  if run_automotive_smoke() != 0:
+    return 4
+  var pose: AutomotivePose
+  automotive_pose_init(pose)
+  pose.speed_mps = 12.0
+  sim_automotive_pose_integrate(pose, 0.05, sim_automotive_bicycle_wheelbase_default(), 0.05)
+  if pose.x_m <= 0.0:
+    return 5
+  if pose.y_m <= 0.0:
+    return 6
+  if pose.heading_rad <= 0.0:
+    return 7
+  return 0

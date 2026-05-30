@@ -1,0 +1,53 @@
+# std.heap — Phase 2 heapq parity (WP0-B compile-only stubs).
+#
+# Target: binary heap on list[T]; PriorityQueue[T] facade.
+# Runtime: not implemented — WP2 after WP-WA + WP1.
+#
+# Import: `import std.heap`
+
+type PriorityQueue = object
+  public len: int
+
+def heap_std_tag() -> int
+  requires true
+  ensures result == 21
+  decreases 0
+=
+  return 21
+
+def priority_queue_new_stub() -> PriorityQueue
+  requires true
+  ensures result.len == 0
+  decreases 0
+=
+  var q: PriorityQueue
+  q.len = 0
+  return q
+
+def heappush_stub(q: var PriorityQueue, item: int) -> unit
+  requires true
+  ensures true
+  decreases 0
+=
+  return
+
+def heappop_stub(q: var PriorityQueue) -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0
+
+def heapify_stub(q: var PriorityQueue) -> unit
+  requires true
+  ensures true
+  decreases 0
+=
+  return
+
+def heapreplace_stub(q: var PriorityQueue, item: int) -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0

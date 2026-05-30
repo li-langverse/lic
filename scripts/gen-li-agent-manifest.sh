@@ -23,7 +23,12 @@ cat >"$OUT_JSON" <<EOF
     "diagnose": "lic diagnose",
     "build": "lic build",
     "verify": "lic verify",
-    "tests": "./li-tests/run_all.sh"
+    "tests": "./li-tests/run_all.sh",
+    "tests_agent_slice": "./scripts/export-li-tests-agent-slice.sh"
+  },
+  "tests_manifest": {
+    "schema": "li-tests-agent-manifest-v1",
+    "path": "li-tests/agent-manifest.json"
   },
   "diagnostics": {
     "schema": "docs/schemas/diagnostic-v1.json",

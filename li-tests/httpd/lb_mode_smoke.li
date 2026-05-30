@@ -1,4 +1,4 @@
-# M1 LB enum surface: round_robin / least_conn (C runtime, Li wrapper).
+# M1 LB enum surface: round_robin / least_conn / ip_hash / cookie (C runtime, Li wrapper).
 import http
 
 def main() raises IO, Alloc -> int
@@ -10,6 +10,10 @@ def main() raises IO, Alloc -> int
     return 1
   if lb_mode_from_name("least_conn") != 1:
     return 2
-  if lb_mode_from_name("unknown") != 0:
+  if lb_mode_from_name("ip_hash") != 2:
     return 3
+  if lb_mode_from_name("cookie") != 3:
+    return 4
+  if lb_mode_from_name("unknown") != 0:
+    return 5
   return 0

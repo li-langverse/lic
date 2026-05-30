@@ -1,0 +1,12 @@
+@cpu
+@parallel(di@c
+@parallel(breakisjoint
+@parallel(cpu
+@parallel(disjoint=proc f() -> 
+@para@proc f
+@para@proc @p@Barp@p@Ba@c
+@
+@parallel(di@c
+@parallel(breakisjoint
+@parallel(disjntoint=disjoint_row)
+proc/ kens{j

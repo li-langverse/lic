@@ -238,14 +238,32 @@ def resolve_document_root(cfg: dict[str, Any], tier5_root: Path | None = None) -
     return (root / doc_path).resolve()
 
 
-def render_nginx_conf(cfg: dict[str, Any], *, port: int, template_path: Path | None = None) -> str:
-    tpl_path = template_path or (TIER5 / "templates" / "nginx.conf.in")
-    tpl = tpl_path.read_text(encoding="utf-8")
+def scenario_backend_port(cfg: dict[str, Any], name: str) -> int:
     server = cfg.get("server") or {}
+    explicit = server.get("backend_port")
+    if explicit is not None:
+        return int(explicit)
+    return 19000 + (sum(ord(c) for c in name) % 50)
+
+
+def render_nginx_conf(cfg: dict[str, Any], *, port: int, template_path: Path | None = None) -> str:
+    server = cfg.get("server") or {}
+    kind = server.get("kind", "static")
     global_tbl = cfg.get("global") or {}
     workers = global_tbl.get("workers", "auto")
     if workers == "auto":
         workers = "1"
+    if kind == "proxy":
+        tpl_path = template_path or (TIER5 / "templates" / "nginx_proxy.conf.in")
+        tpl = tpl_path.read_text(encoding="utf-8")
+        backend_port = scenario_backend_port(cfg, str(cfg.get("name", "proxy")))
+        return (
+            tpl.replace("{{workers}}", str(workers))
+            .replace("{{port}}", str(port))
+            .replace("{{backend_port}}", str(backend_port))
+        )
+    tpl_path = template_path or (TIER5 / "templates" / "nginx.conf.in")
+    tpl = tpl_path.read_text(encoding="utf-8")
     doc_root = resolve_document_root(cfg)
     sendfile = "on" if server.get("sendfile", True) else "off"
     return (
@@ -254,3 +272,33 @@ def render_nginx_conf(cfg: dict[str, Any], *, port: int, template_path: Path | N
         .replace("{{document_root}}", str(doc_root))
         .replace("{{sendfile}}", sendfile)
     )
+
+
+def write_scenario_httpd_toml(
+    cfg: dict[str, Any],
+    *,
+    front_port: int,
+    backend_port: int,
+    out_path: Path,
+) -> None:
+    """Emit a minimal validated li-httpd.toml for proxy scenarios."""
+    public = out_path.parent / "public"
+    public.mkdir(parents=True, exist_ok=True)
+    index = public / "index.html"
+    if not index.is_file():
+        index.write_text("ok\n", encoding="utf-8")
+    text = (
+        f'[server]\n'
+        f'listen = "127.0.0.1:{front_port}"\n'
+        f'document_root = "{public}"\n'
+        f"workers = 1\n\n"
+        f"[limits]\n"
+        f"rate_limit_rps = 10000\n"
+        f"rate_limit_burst = 20000\n\n"
+        f"[upstreams.backend]\n"
+        f'peers = ["http://127.0.0.1:{backend_port}"]\n\n'
+        f'[routes]\n'
+        f'"GET /*" = "proxy:backend"\n'
+        f'"POST /*" = "proxy:backend"\n'
+    )
+    out_path.write_text(text, encoding="utf-8")

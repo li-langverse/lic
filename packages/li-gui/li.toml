@@ -1,6 +1,6 @@
 [package]
 name = "li-gui"
-version = "0.1.0"
+version = "0.1.1"
 edition = "2026"
 license = "Apache-2.0 OR MIT"
 description = "Li Studio GUI — viewport region, panel switch timing, paint expansion for li-ui shell IR"

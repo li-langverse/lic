@@ -12,6 +12,8 @@ Static previews for the Studio UI/UX plan loop. **Not** the shipped native app (
 | `screenshots/04-studio-gpu-fail.html` | GPU init fail strip + retry (UX-08) |
 | `screenshots/studio-tokens.css` | Generated from `docs/design/studio-design-tokens.toml` |
 | `screenshots/capture.sh` | Headless Chrome PNG capture (1920×1080) |
+| `screenshots/verticals/` | Per-profile HTML mocks (`game`, `sim_*`) + `manifest.json` |
+| `scripts/record-studio-verticals-demo.sh` | Vertical tour MP4 → `docs/demo/media/studio-verticals-demo.mp4` |
 
 ## Native viewport capture (SDL + Xvfb)
 
@@ -24,6 +26,17 @@ Static previews for the Studio UI/UX plan loop. **Not** the shipped native app (
 ```
 
 `ux-harness` target `world-studio-native` invokes the same script via `native_gui` adapter.
+
+## Native keyboard ingest (UX-09)
+
+`native/studio_shell_input_probe.c` polls SDL keyboard/mouse once (or `--mock cmd_k,digit=3`) and prints `InputState` JSON for hosts. **Not** the full `li-studio` binary.
+
+```bash
+./scripts/studio-shell-sdl-tick.sh
+STUDIO_SHELL_INPUT_MOCK=cmd_k,digit=3 ./scripts/studio-shell-sdl-tick.sh
+```
+
+See [studio-shell-input-bridge.md](../../docs/game-dev/studio-shell-input-bridge.md).
 
 ## Capture harness
 

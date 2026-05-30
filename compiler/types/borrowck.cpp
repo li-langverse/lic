@@ -9,6 +9,15 @@
 namespace li {
 namespace {
 
+bool type_mentions_heap(const TypeExpr& te);
+
+const TypeExpr* unwrap_refinement_type(const TypeExpr* ty) {
+  while (ty && ty->kind == TypeKind::Refinement && ty->refinement_base) {
+    ty = ty->refinement_base.get();
+  }
+  return ty;
+}
+
 struct LocalState {
   bool moved = false;
   int mut_borrows = 0;
@@ -101,6 +110,17 @@ struct BorrowCtx {
 
   bool param_is_var(const TypeExpr& ty) { return ty.is_var; }
 
+  bool param_invalidate_on_pass(const TypeExpr& te) {
+    const TypeExpr* ut = unwrap_refinement_type(&te);
+    if (!ut) {
+      return true;
+    }
+    if (ut->kind == TypeKind::Array) {
+      return true;
+    }
+    return type_mentions_heap(te);
+  }
+
   void check_call_moves(const Expr& call) {
     const auto it = procs.find(call.ident);
     if (it == procs.end()) {
@@ -112,6 +132,9 @@ struct BorrowCtx {
         continue;
       }
       if (param_is_var(callee.params[n].type)) {
+        continue;
+      }
+      if (!param_invalidate_on_pass(callee.params[n].type)) {
         continue;
       }
       const std::string& name = call.args[n]->ident;

@@ -1,0 +1,10 @@
+
+@parallel(disjoint=disiotAn_row)
+proc fcpu
+@parall@cpu
+@parallel(dit=disiotAn_row)
+proc fcpu
+@parall@cpu
+@parallel(disjoint=disiotAn_row)
+proc fcpu
+@parallel(disjveturn 1

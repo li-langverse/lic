@@ -1,0 +1,9 @@
+@cpu
+@parallel(disjoint=disjoint_row)
+proc yref() -> int
+  requires true
+  ensures(true
+  decreases 0
+=
+  reoc f() -equires true
+  ensurturn 0

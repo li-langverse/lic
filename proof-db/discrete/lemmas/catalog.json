@@ -1,0 +1,16 @@
+{
+  "version": 1,
+  "entries": [
+    {
+      "id": "D-LM-ADD-COMM-INT",
+      "status": "target",
+      "requires_axioms": ["D-AX-INT-RING"],
+      "li_file": "proof-db/discrete/lemmas/int_ring_stub.li"
+    },
+    {
+      "id": "D-LM-DOT4-INT-LOOP",
+      "status": "open",
+      "li_file": "proof-db/discrete/lemmas/dot4_int_loop_stub.li"
+    }
+  ]
+}

@@ -1,8 +1,9 @@
 # Li LLM-first design (research stub)
 
 **Date:** 2026-05-16  
-**Status:** Planning / research  
-**Pillar priority:** Provability (#1) unchanged — this spec optimizes **agent ergonomics**, not proof shortcuts.
+**Status:** Planning / research (**Vision-LLM** — partial on master plan)  
+**Pillar priority:** Provability (#1) unchanged — this spec optimizes **agent ergonomics**, not proof shortcuts.  
+**Plan map:** [plan-cross-links](../../ecosystem/plan-cross-links.md) · [master plan](../plans/2026-05-14-li-master-plan.md#documentation--provability-honesty-cross-cutting) · [provability-gaps](../../verification/provability-gaps.md) (no **G-*** closure from JSON diagnostics alone)
 
 ## What this page is for
 
@@ -43,7 +44,7 @@ Capture how Li language, tooling, and docs should minimize **token cost** for LL
 | `lic check --format=json` | **Implemented** — `docs/schemas/diagnostic-v1.json` |
 | `lic diagnose` | **Implemented** — JSON to stdout |
 | `scripts/lic-fix-suggest.sh` | **Stub** — jq hints from JSON |
-| Compact test manifest slice for agents | **Planned** — export from `li-tests/manifest.toml` |
+| Compact test manifest slice for agents | **Implemented** — `scripts/export-li-tests-agent-slice.sh` → `li-tests/agent-manifest.json` |
 | `lic edit --patch=json` | **Spec only** — compact edit IR |
 
 ### Docs & rules

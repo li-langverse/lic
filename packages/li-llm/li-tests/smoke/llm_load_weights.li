@@ -1,0 +1,21 @@
+import llm
+
+def main() -> int raises IO, Alloc
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  var w: LlmModelWeights = llm_load_weights("fixtures/model.safetensors")
+  if llm_model_weights_valid(w) != 1:
+    return 1
+  if w.format_tag != llm_format_safetensors():
+    return 2
+  var g: LlmModelWeights = llm_load_weights("fixtures/model.gguf")
+  if llm_model_weights_valid(g) != 1:
+    return 3
+  if g.format_tag != llm_format_gguf():
+    return 4
+  var bad: LlmModelWeights = llm_load_weights("fixtures/missing.bin")
+  if bad.loaded != 0:
+    return 5
+  return 0

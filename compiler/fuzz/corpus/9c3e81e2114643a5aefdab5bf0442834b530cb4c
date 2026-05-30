@@ -1,0 +1,8 @@
+@cpu
+@parallel(disjoint=disjoint_ow)
+proc@cpu
+@pa
+proc f() -> @@cpcpuu
+@@u
+@pa@cpu
+@nsures(tru c

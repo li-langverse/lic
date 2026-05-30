@@ -121,23 +121,41 @@ todos:
     status: completed
   - id: gap-exploit-owasp-cwe-suite
     content: "Expand tier5 exploits + nginx_mitigations.toml — OWASP Top 10 / CWE-class coverage; li stricter-or-equal vs nginx on every row; gate in httpd-plan-gates"
-    status: pending
+    status: completed
   - id: gap-lb-sticky-sessions
     content: "Upstream ip_hash (or cookie affinity) for multi-backend stickiness — config schema + runtime + gate"
-    status: pending
+    status: completed
+  - id: gap-llvm22-build-warnings
+    content: "LLVM 22 clean ./scripts/build.sh — runtime/li_rt_net.c (-Wcast-qual: ptr_mut_i vs ptr_i, iov/read/memcpy/free; drop or use unused httpd helpers); compiler/types/typecheck.cpp (-Wmissing-field-initializers on Ty{}); gate: rebuild with CC=clang-22 and no warnings from those sites"
+    status: completed
   - id: gap-tier5-streaming-soak
     content: "tier5 scenarios sse_long_stream + ws_fanout + suite profile parity_streaming; live li-httpd vs nginx"
-    status: pending
+    status: completed
   - id: gap-nextjs-toy-bench
     content: "Next.js toy app (API/SSR/SSE/WS) + tier5 scenarios; check-tier5-nextjs-parity.sh — li RPS/TTFB >= 0.85x nginx (document variants)"
-    status: pending
+    status: completed
   - id: gap-nginx-perf-regression-gate
     content: "CI/nightly gate — all tier5 parity + nextjs scenarios; fail if li p99 > 2x nginx or exploit row regresses"
+    status: completed
+  - id: gap-phase2-perf-wrk-soak
+    content: "Full wrk soak vs nginx — HTTPD_BENCH_SKIP_TIMING=0, ≥30s on parity + parity_streaming + nextjs; li RPS/TTFB bars in perf-regression gate; gate check-tier5-perf-wrk-soak.sh"
     status: pending
+  - id: gap-phase2-mitigation-exploits
+    content: "Close nginx_mitigations.toml rows with empty exploit — client_max_body_size, h2_rapid_reset, dns_resolver_limits; tier5 TOML + live li-httpd vs nginx compare; gate check-tier5-mitigation-exploits-complete.sh"
+    status: completed
+  - id: gap-phase2-streaming-wrk
+    content: "Streaming wrk parity — sse_long_stream + ws_fanout with timing (not verify-only); check-tier5-streaming-soak.sh with HTTPD_BENCH_SKIP_TIMING=0"
+    status: pending
+  - id: gap-phase2-exploit-nginx-regression
+    content: "Every enabled tier5 exploit row — live li-httpd vs nginx, --fail-on-regression; no nginx-pass/li-fail; document in release note"
+    status: completed
 isProject: false
 ---
 
 # li-httpd — minimal, proved, nginx-competitive
+
+**Proof gaps (Doc-c):** [G-net](../../verification/provability-gaps.md#g-net) · [G-async](../../verification/provability-gaps.md#g-async) · [G-vc](../../verification/provability-gaps.md#g-vc) · [still open](../../verification/provability-gaps.md#still-open-report-every-session)  
+**Plan map:** [plan-cross-links](../../ecosystem/plan-cross-links.md) · [master plan](2026-05-14-li-master-plan.md#documentation--provability-honesty-cross-cutting)
 
 ## Parity milestones (agent-gateway vs nginx oracle)
 

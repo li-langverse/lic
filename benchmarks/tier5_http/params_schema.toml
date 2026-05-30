@@ -4,18 +4,21 @@
 workers = "auto | int — nginx worker_processes"
 port_base = "int — base port; scenario hash picks offset"
 warmup_sec = "int — discarded wrk warmup"
-measured_runs = "int — median of N timed runs"
+measured_runs = "int — mean of N timed runs (≥6; ≥20 when per-run wall < 1s)"
 
 [server]
 kind = "static | proxy | li_config"
 document_root = "path relative to tier5_http/"
 sendfile = "bool — nginx sendfile parity label"
+backend = "nextjs_toy | streaming_soak — proxy backend fixture (proxy kind)"
+backend_port = "int — loopback port for toy backend (proxy kind)"
 
 [verify]
-requests = "array of { method, path, expect_status, body_sha256?, body_len? }"
+target = "edge | backend — hit proxy front or toy backend directly (streaming smoke)"
+requests = "array of { method, path, expect_status, body_sha256?, body_len?, body_contains? }"
 
 [load]
-tool = "wrk | h2load | openssl_s_time | tcpkali"
+tool = "wrk | streaming_soak | h2load | openssl_s_time | tcpkali"
 threads = "int"
 connections = "int"
 duration_sec = "int"

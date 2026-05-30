@@ -1,12 +1,12 @@
 [package]
 name = "li-render"
-version = "0.1.0"
+version = "0.1.1"
 edition = "2026"
 license = "Apache-2.0 OR MIT"
 description = "Li Studio viewport render — wgpu smoke bridge + FPS counter for bench harness"
 
 [dependencies]
-li-gpu = { path = "../li-gpu" }
+lig = { path = "../lig" }
 li-gui = { path = "../li-gui" }
 li-ui = { path = "../li-ui" }
 li-scene = { path = "../li-scene" }

@@ -76,6 +76,9 @@ if [[ "$WAIT_FOR_LOOP" == "1" ]]; then
 fi
 
 cd "$ROOT"
+git fetch origin "${HTTPD_PLAN_PR_BRANCH:-cursor/httpd-plan-continue}" 2>/dev/null || true
+git pull --ff-only origin "${HTTPD_PLAN_PR_BRANCH:-cursor/httpd-plan-continue}" 2>/dev/null || true
+
 BATCH_N=0
 while true; do
   now="$(date +%s)"

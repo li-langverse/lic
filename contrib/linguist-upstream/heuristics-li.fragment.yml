@@ -1,0 +1,11 @@
+# Optional fragment for lib/linguist/heuristics.yml on the linguist fork.
+# Merge under the ".li:" key (alphabetically with other extensions).
+# Use when maintainers require disambiguation from other .li ecosystems (e.g. LemonOS interfaces).
+# Test with: bundle exec rake test && bundle exec script/cross-validation --test
+
+.li:
+  - Li:
+      - '(?m)^\s*(def|proc)\s+\w'
+      - '(?m)\b(requires|ensures|decreases)\b'
+      - '(?m)^\s*import\s+'
+      - '(?m)\b(typedict|enum)\b'

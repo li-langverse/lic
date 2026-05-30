@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-05-30T06:00:40.215748+00:00",
+  "generated_at": "2026-05-30T06:01:11.599418+00:00",
   "tz": "Europe/Berlin",
   "agents_live": 1,
   "runners": [
@@ -7,7 +7,7 @@
       "id": "httpd",
       "name": "li-httpd gap parity",
       "branch": "cursor/httpd-plan-continue",
-      "head": "14280f79",
+      "head": "7a5166e4",
       "running": true,
       "process": "2970410 python3 /home/s4il0r/Documents/Cursor/li-langverse/lic/scripts/httpd-plan-loop.py --max 1",
       "log_path": "/home/s4il0r/Documents/Cursor/li-langverse/lic/../lic/data/httpd-plan-loop/until-deadline-20260530-050645.log",
@@ -55,7 +55,7 @@
         {
           "id": "gap-phase2-streaming-wrk",
           "content": "Streaming wrk parity \u2014 sse_long_stream + ws_fanout with timing (not verify-only); check-tier5-streaming-soak.sh with HTTPD_BENCH_SKIP_TIMING=0",
-          "status": "pending"
+          "status": "completed"
         },
         {
           "id": "gap-phase2-exploit-nginx-regression",
@@ -63,11 +63,9 @@
           "status": "completed"
         }
       ],
-      "plan_completed": 9,
+      "plan_completed": 10,
       "plan_total": 10,
-      "plan_pending": [
-        "gap-phase2-streaming-wrk"
-      ],
+      "plan_pending": [],
       "state": {
         "completed_ids": [],
         "iterations": 1,
@@ -90,14 +88,14 @@
       "last_state_gates": false,
       "current_iteration": "=== iteration 1: gap-phase2-streaming-wrk ===",
       "activity": [
+        "[sdk] thinking\u2026",
+        "[sdk] thinking\u2026",
         "[sdk] \u25b6 tool",
         "[sdk] \u25b6 tool",
-        "[sdk] \u2713 edit /home/s4il0r/Documents/Cursor/li-langverse/lic/benchmarks/harness/verify_http.py",
-        "[sdk] \u2713 edit /home/s4il0r/Documents/Cursor/li-langverse/lic/benchmarks/harness/verify_http.py",
+        "[sdk] \u2713 shell cd /home/s4il0r/Documents/Cursor/li-langverse/lic && git stash push -m test-buil",
+        "[sdk] \u2713 shell cd /home/s4il0r/Documents/Cursor/li-langverse/lic && git stash push -m test-buil",
         "[sdk] \u2717 tool",
-        "[sdk] \u2717 tool",
-        "[sdk] \u25b6 tool",
-        "[sdk] \u25b6 tool"
+        "[sdk] \u2717 tool"
       ],
       "status_note": "agent coding (code_implementer)",
       "active_todo_id": "gap-phase2-streaming-wrk"
@@ -413,7 +411,7 @@
       "agent_live": false,
       "agent": "",
       "goal_file": "",
-      "log_age_sec": 382709,
+      "log_age_sec": 382740,
       "last_state_at": "2026-05-25T06:41:51.000000+00:00",
       "last_state_todo": "wave-d-gui-scaffold",
       "last_state_gates": true,
@@ -532,7 +530,7 @@
       "agent_live": false,
       "agent": "",
       "goal_file": "",
-      "log_age_sec": 479977,
+      "log_age_sec": 480009,
       "last_state_at": "2026-05-24T16:32:27.410480+00:00",
       "last_state_todo": "sim-p0-md-lj-li-parity",
       "last_state_gates": false,
@@ -733,7 +731,7 @@
       "agent_live": false,
       "agent": "",
       "goal_file": "",
-      "log_age_sec": 430117,
+      "log_age_sec": 430149,
       "last_state_at": "2026-05-30T01:04:00+00:00",
       "last_state_todo": "studio-ux-12-world-studio-demo-linux-audit",
       "last_state_gates": true,

@@ -2510,7 +2510,7 @@ static int httpd_slot_stream_proxy_request(int32_t slot, int hdr_end) {
   return httpd_path_is_stream_proxy(req.path, req.path_len);
 }
 
-/* SSE/WS backends use Connection: close — never reuse pooled upstream fds for /stream/*. */
+/* SSE/WS backends use Connection: close; never reuse pooled upstream fds on /stream paths. */
 static int upstream_acquire_for_port(int32_t port, int stream_fresh) {
   if (!stream_fresh) {
     return upstream_pool_acquire(port);

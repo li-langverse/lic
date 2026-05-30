@@ -50,6 +50,7 @@ for smoke in \
   studio_world_io_roundtrip.li \
   studio_gltf_ingest.li \
   studio_sim_scientific_viz_viewport.li \
+  studio_adaptive_litl_panel_sets.li \
   studio_sim_robotics_inspector.li \
   studio_viewport_hud.li \
   studio_viewport_error.li \

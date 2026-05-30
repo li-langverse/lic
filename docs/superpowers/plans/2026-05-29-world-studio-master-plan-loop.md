@@ -91,7 +91,7 @@ todos:
     status: done
   - id: wsm-w5-drug-adaptive
     content: "studio.adaptive LITL stage panel sets (WP-DRUG-03)"
-    status: pending
+    status: done
   - id: wsm-w6-publish-figures
     content: "studio.publish.figure SVG/PDF vector export (WP-PUB-01)"
     status: pending

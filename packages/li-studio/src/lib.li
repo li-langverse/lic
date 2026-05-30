@@ -2021,6 +2021,38 @@ def studio_drug_litl_inspector_field_rows(litl_stage: int) -> int
     return 3
   return 2
 
+def studio_adaptive_panel_region_for_litl_stage(litl_stage: int) -> int
+  requires drug_litl_stage_valid(litl_stage) == 1
+  ensures result >= studio_region_dock()
+  ensures result <= studio_region_agent_strip()
+  decreases litl_stage
+=
+  if litl_stage == drug_litl_stage_hypothesis():
+    return studio_region_inspector()
+  if litl_stage == drug_litl_stage_generate():
+    return studio_region_viewport()
+  if litl_stage == drug_litl_stage_dft():
+    return studio_region_inspector()
+  if litl_stage == drug_litl_stage_lab():
+    return studio_region_timeline()
+  return studio_region_agent_strip()
+
+def studio_adaptive_panel_set_id(litl_stage: int) -> int
+  requires drug_litl_stage_valid(litl_stage) == 1
+  ensures result == litl_stage
+  decreases litl_stage
+=
+  return litl_stage
+
+def studio_shell_apply_adaptive_panel_set(compose: var StudioShellCompose, litl_stage: int) -> unit
+  requires drug_litl_stage_valid(litl_stage) == 1
+  ensures compose.panel.active_region == studio_adaptive_panel_region_for_litl_stage(litl_stage)
+  ensures compose.inspector.field_rows == studio_drug_litl_inspector_field_rows(litl_stage)
+  decreases litl_stage
+=
+  compose.panel.active_region = studio_adaptive_panel_region_for_litl_stage(litl_stage)
+  compose.inspector.field_rows = studio_drug_litl_inspector_field_rows(litl_stage)
+
 def studio_adaptive_layout_for_drug_tick(w: float, h: float, tick: int) -> StudioShellLayout
   requires w > 0.0
   requires h > 0.0
@@ -2066,8 +2098,7 @@ def studio_compose_shell_drug_litl(w: float, h: float, tick: int, has_selection:
   var layout: StudioShellLayout = layout_studio_shell_drug_litl(w, h, stage)
   var out: StudioShellCompose = studio_compose_shell_profile(w, h, 0, has_selection, studio_profile_sim_drug_design())
   out.layout = layout
-  if has_selection == 1:
-    out.inspector.field_rows = studio_drug_litl_inspector_field_rows(stage)
+  studio_shell_apply_adaptive_panel_set(out, stage)
   studio_viewport_display_reset_for_profile(studio_profile_sim_drug_design())
   out.scene_entity_count = 1
   out.viewport_empty.empty_visible = 0
@@ -2076,10 +2107,10 @@ def studio_compose_shell_drug_litl(w: float, h: float, tick: int, has_selection:
 
 def li_std_studio_version() -> int
   requires true
-  ensures result == 27
+  ensures result == 28
   decreases 0
 =
-  return 27
+  return 28
 
 def studio_agent_context_none() -> int
   requires true

@@ -208,7 +208,7 @@ Cross-tracks (not separate phases above): **PH-PORT**, **PH-COMPLY**, **PH-CIN**
 |----|-------|-------|--------|------------|-----|--------|------|
 | WP-DRUG-01 | DRUG-0 LITL workflow | **done** | Five-stage stub | `import_sim_drug_design_litl_workflow.li` | M | WP-SIM-01 | Y |
 | WP-DRUG-02 | DRUG-1 adaptive inspector | **partial** | Stage from tick | `studio_adaptive_drug_inspector.li` | S | WP-DRUG-01 | Y |
-| WP-DRUG-03 | `studio.adaptive` role layouts | stub | Panel sets per stage | composable + UX-07 | M | WP-DRUG-02 | N |
+| WP-DRUG-03 | `studio.adaptive` role layouts | **partial** | Panel sets per stage | composable + UX-07 | M | WP-DRUG-02 | N |
 | WP-DRUG-04 | Live `chem.dft` queue | stub | QM job status in UI | `chem_dft_run` MCP | L | PH-QM-1 | N |
 | WP-DRUG-05 | Lab ingest + retrain hook | stub | Assay CSV witness | bioeng composable | L | WP-DRUG-04 | N |
 
@@ -375,7 +375,7 @@ Each profile is **done** when all bullets hold simultaneously (not composable-on
 
 ### 6.7 `sim_drug_design`
 
-- [ ] `studio.adaptive` switches panel sets by LITL stage (`WP-DRUG-03`)
+- [x] `studio.adaptive` switches panel sets by LITL stage (`WP-DRUG-03`)
 - [ ] Live `chem.dft` jobs with trusted backend (`WP-DRUG-04`, `WP-QM-02`)
 - [ ] Lab ingest + retrain witness (`WP-DRUG-05`)
 - [ ] CRITICAL compliance: SBOM + export audit for drug pack (`PH-COMPLY`)

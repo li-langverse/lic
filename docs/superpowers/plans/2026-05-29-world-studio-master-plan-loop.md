@@ -103,7 +103,7 @@ todos:
     status: done
   - id: wsm-w6-player-ship
     content: "li-player publish bundle from game profile (WP-GD-06)"
-    status: pending
+    status: done
   - id: wsm-w6-agent-eval
     content: "Patch eval harness + 70% fix-rate gate (WP-AG-06)"
     status: pending

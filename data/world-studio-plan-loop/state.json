@@ -28,14 +28,19 @@
     "wsm-w5-sci-kernels",
     "wsm-w5-sim-viz",
     "wsm-w5-robo-ik",
-    "wsm-w5-am-export"
+    "wsm-w5-am-export",
+    "wsm-w5-drug-adaptive",
+    "wsm-w6-publish-figures",
+    "wsm-w6-publish-data",
+    "wsm-w6-repro-bundle",
+    "wsm-w6-player-ship"
   ],
-  "iterations": 25,
+  "iterations": 26,
   "history": [
     {
-      "todo_id": "wsm-w5-am-export",
-      "completed_at": "2026-05-30T12:00:00Z",
-      "wps": ["WP-AM-03", "WP-UX-16"]
+      "todo_id": "wsm-w6-player-ship",
+      "completed_at": "2026-05-30T12:30:00Z",
+      "wps": ["WP-GD-06", "WP-GD-03", "WP-PUB-03"]
     }
   ]
 }

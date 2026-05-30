@@ -64,4 +64,6 @@ for smoke in studio_ai_apply_patch_loop.li studio_ai_mcp_dispatch.li studio_ai_t
   "$LIC" check "$ROOT/packages/li-studio-ai/li-tests/smoke/$smoke"
 done
 
+"$LIC" check "$ROOT/packages/li-player/li-tests/smoke/player_publish.li"
+
 echo "world-studio-plan-lic-smokes: ok"

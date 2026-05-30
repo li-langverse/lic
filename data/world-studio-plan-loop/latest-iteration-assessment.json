@@ -1,14 +1,14 @@
 {
   "pass": true,
-  "todo_id": "wsm-w6-repro-bundle",
-  "wps_touched": ["WP-PUB-03", "WP-PUB-01", "WP-PUB-02"],
+  "todo_id": "wsm-w6-player-ship",
+  "wps_touched": ["WP-GD-06", "WP-GD-03", "WP-PUB-03"],
   "smokes_run": [
-    "packages/li-studio/li-tests/smoke/studio_publish_bundle.li"
+    "packages/li-player/li-tests/smoke/player_publish.li"
   ],
   "native_only": true,
   "gates": {
     "world_studio_plan_gates": "pass",
     "lic_check_local": "wsl"
   },
-  "notes": "WP-PUB-03: studio_publish_bundle + studio_publish_bundle_three_click_flow + MCP publish_bundle dispatch after lic build proof; manifest contract with lic_version/profile/determinism_tier/sim_checksum/world_sha256/figure+data entries; zip magic 20555; li_std_studio_version 31."
+  "notes": "WP-GD-06: new li-player package — player_headless_play (game profile sim+physics ticks without viewport), player_publish_from_game + player_ship_game_demo ship studio_publish_bundle zip after valid game checkpoint; smoke player_publish.li verifies 4-tick headless play, bundle magic 20555, entry_count=2, proof gate."
 }

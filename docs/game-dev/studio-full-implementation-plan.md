@@ -139,7 +139,7 @@ Cross-tracks (not separate phases above): **PH-PORT**, **PH-COMPLY**, **PH-CIN**
 | WP-GD-03 | `world.li` text save/load | game | **done** | Serialize snapshot + assets refs | composable `import_world_roundtrip.li` | M | WP-GD-02 | N |
 | WP-GD-04 | glTF ingest (`li-assets`) | game | stub | Load mesh into scene | `lic check packages/li-assets/...` | M | WP-GD-03 | Y |
 | WP-GD-05 | `li-render` PBR-lite | game, sim_scientific | stub | wgpu draw list | `viewport_fps.toml` not `stub_pass` | L | PH-HW-2 | N |
-| WP-GD-06 | `li-player` publish | game | stub | Headless play + ship bundle | smoke `player_publish.li` | L | WP-GD-03, WP-GD-05 | N |
+| WP-GD-06 | `li-player` publish | game | **done** | Headless play + ship bundle | smoke `player_publish.li` | L | WP-GD-03, WP-GD-05 | Y |
 | WP-GD-07 | `studio.gen` / AI patch hooks | game | stub | `world.apply_patch` contract | `lic check` + MCP tool | M | PH-AGENT-2 | N |
 
 ### 3.3 PH-SIM

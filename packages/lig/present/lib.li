@@ -122,7 +122,6 @@ def lig_native_pixel_source_wgpu_draw_list() -> int
 =
   return 4
 
-<<<<<<< HEAD
 # UX-14 — honest product truth: paint blit or wgpu readback/draw-list (not host_cpu alone).
 def lig_native_pixel_source_honest_product(source: int) -> int
   requires true
@@ -150,8 +149,6 @@ def lig_native_pixel_source_is_wgpu_path(source: int) -> int
     return 1
   return 0
 
-=======
->>>>>>> origin/main
 def lig_kernel_present_blit_rgba8() -> int
   requires true
   ensures result == 3

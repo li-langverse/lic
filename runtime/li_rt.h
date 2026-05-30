@@ -233,10 +233,6 @@ int32_t li_rt_studio_timeline_tick_frame(void);
 float li_rt_studio_timeline_playhead_pct(void);
 int32_t li_rt_studio_timeline_set_playhead_pct(float pct);
 int32_t li_rt_studio_timeline_sync_sim_tick(int32_t tick, int32_t duration_ticks);
-<<<<<<< HEAD
-=======
-float li_rt_studio_timeline_playhead_pct_from_tick(int32_t tick, int32_t duration_ticks);
->>>>>>> origin/main
 int32_t li_rt_studio_timeline_reset_playback(void);
 int32_t li_rt_studio_timeline_reset_mock(void);
 int32_t li_rt_studio_viewport_error_kind(void);

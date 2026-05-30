@@ -266,11 +266,7 @@ Canonical: [studio-mcp-tools.md](studio-mcp-tools.md). **11 tools** — all muta
 | `sim_set_profile` | Switch `[engine] profile` | stub |
 | `lic_check` | JSON diagnostics | partial |
 | `lic_build` | Proof gate | partial |
-<<<<<<< HEAD
 | `publish_bundle` | Repro zip | **done** (manifest contract) |
-=======
-| `publish_bundle` | Repro zip | stub |
->>>>>>> origin/main
 | `am_export_print` | 3MF/G-code pipeline | stub |
 | `chem_dft_run` | QM queue | stub |
 | `studio_adaptive_layout` | Drug role layouts | partial |

@@ -1,17 +1,9 @@
 {
-<<<<<<< HEAD
-  "generated_at": "2026-05-30T12:20:25Z",
+  "generated_at": "2026-05-30T13:11:13Z",
   "registry_path": "benchmarks\\competitive\\studio-ui.toml",
   "registry_schema": "li_studio_ui_bench_v1",
   "registry_version": 1,
-  "load_ms": 0.29,
-=======
-  "generated_at": "2026-05-30T06:21:20Z",
-  "registry_path": "benchmarks\\competitive\\studio-ui.toml",
-  "registry_schema": "li_studio_ui_bench_v1",
-  "registry_version": 1,
-  "load_ms": 0.32,
->>>>>>> origin/main
+  "load_ms": 0.3,
   "viewport_fps_target": 60,
   "panel_switch_ms_target": 100,
   "studio_load_ms_target": 2000,
@@ -91,33 +83,18 @@
   "memory_mib": {
     "profile_exit": 1,
     "lines": [
-<<<<<<< HEAD
-      "tracemalloc peak (import): 4.48 MiB",
-      "==> budget warn_peak_mib=512 observed=4.48 meets=True",
-      "STUDIO_MEMORY_JSON={\"schema\":\"li_studio_memory_profile_v1\",\"generated_at\":\"2026-05-30T12:20:25Z\",\"memory_id\":\"animate_md_import\",\"warn_peak_mib\":512.0,\"peak_import_mib\":4.48,\"peak_rss_mib\":null,\"peak_observed_mib\":4.48,\"meets_budget\":true,\"rss_status\":\"skip\",\"registry_path\":\"benchmarks\\\\competitive\\\\studio-ui.toml\",\"notes\":[\"import peak = tracemalloc after loading animate_md\",\"rss peak = --skip-export --max-frames 4 when /usr/bin/time available\",\"full GIF export can exceed budget; Studio timeline uses streamed frames\"]}"
-    ],
-    "profile": {
-      "schema": "li_studio_memory_profile_v1",
-      "generated_at": "2026-05-30T12:20:25Z",
-      "memory_id": "animate_md_import",
-      "warn_peak_mib": 512.0,
-      "peak_import_mib": 4.48,
-      "peak_rss_mib": null,
-      "peak_observed_mib": 4.48,
-=======
       "tracemalloc peak (import): 0.56 MiB",
       "==> budget warn_peak_mib=512 observed=0.56 meets=True",
-      "STUDIO_MEMORY_JSON={\"schema\":\"li_studio_memory_profile_v1\",\"generated_at\":\"2026-05-30T06:21:21Z\",\"memory_id\":\"animate_md_import\",\"warn_peak_mib\":512.0,\"peak_import_mib\":0.56,\"peak_rss_mib\":null,\"peak_observed_mib\":0.56,\"meets_budget\":true,\"rss_status\":\"skip\",\"registry_path\":\"benchmarks\\\\competitive\\\\studio-ui.toml\",\"notes\":[\"import peak = tracemalloc after loading animate_md\",\"rss peak = --skip-export --max-frames 4 when /usr/bin/time available\",\"full GIF export can exceed budget; Studio timeline uses streamed frames\"]}"
+      "STUDIO_MEMORY_JSON={\"schema\":\"li_studio_memory_profile_v1\",\"generated_at\":\"2026-05-30T13:11:13Z\",\"memory_id\":\"animate_md_import\",\"warn_peak_mib\":512.0,\"peak_import_mib\":0.56,\"peak_rss_mib\":null,\"peak_observed_mib\":0.56,\"meets_budget\":true,\"rss_status\":\"skip\",\"registry_path\":\"benchmarks\\\\competitive\\\\studio-ui.toml\",\"notes\":[\"import peak = tracemalloc after loading animate_md\",\"rss peak = --skip-export --max-frames 4 when /usr/bin/time available\",\"full GIF export can exceed budget; Studio timeline uses streamed frames\"]}"
     ],
     "profile": {
       "schema": "li_studio_memory_profile_v1",
-      "generated_at": "2026-05-30T06:21:21Z",
+      "generated_at": "2026-05-30T13:11:13Z",
       "memory_id": "animate_md_import",
       "warn_peak_mib": 512.0,
       "peak_import_mib": 0.56,
       "peak_rss_mib": null,
       "peak_observed_mib": 0.56,
->>>>>>> origin/main
       "meets_budget": true,
       "rss_status": "skip",
       "registry_path": "benchmarks\\competitive\\studio-ui.toml",
@@ -128,11 +105,7 @@
       ]
     },
     "warn_peak_mib": 512.0,
-<<<<<<< HEAD
-    "peak_observed_mib": 4.48,
-=======
     "peak_observed_mib": 0.56,
->>>>>>> origin/main
     "meets_budget": true
   },
   "gates": {
@@ -152,11 +125,7 @@
     },
     "studio_load_ms": {
       "target": 2000,
-<<<<<<< HEAD
-      "value": 0.29,
-=======
-      "value": 0.32,
->>>>>>> origin/main
+      "value": 0.3,
       "unit": "ms",
       "meets_target": true,
       "honest_simulate": true
@@ -187,19 +156,11 @@
     },
     "animate_md_import": {
       "target": 512.0,
-<<<<<<< HEAD
-      "value": 4.48,
-      "unit": "mib",
-      "meets_target": true,
-      "honest_simulate": true,
-      "peak_import_mib": 4.48,
-=======
       "value": 0.56,
       "unit": "mib",
       "meets_target": true,
       "honest_simulate": true,
       "peak_import_mib": 0.56,
->>>>>>> origin/main
       "peak_rss_mib": null
     }
   },
@@ -248,11 +209,7 @@
   "studio_vertical_present": {
     "profile_count": 7,
     "bench_simulate_fn": "studio_vertical_demo_frame",
-<<<<<<< HEAD
     "hook_version": 3,
-=======
-    "hook_version": 2,
->>>>>>> origin/main
     "native_pixels_paint_blit": false,
     "native_pixels_wgpu": false,
     "wgpu_full_readback": false,

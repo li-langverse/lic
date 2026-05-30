@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 # Li documentation (`lic` tree)
 
 Handbook and site content for Li lives in a **separate repository** so GitHub Pages can use its own subdomain (e.g. `docs.yourdomain.com`).
@@ -10,19 +9,6 @@ Handbook and site content for Li lives in a **separate repository** so GitHub Pa
 | **Compiler** | [github.com/li-langverse/lic](https://github.com/li-langverse/lic) (this repo) |
 
 This `docs/` directory is kept in `lic` for compiler CI (Lean semantics under `docs/semantics/`, plan-loop gates, release-note links in `CHANGELOG.md`). **User-facing doc edits should land in `lic-docs` first**; we will converge on a git submodule so this tree tracks that repo automatically.
-=======
-﻿# Li documentation (`lic` tree)
-
-| | |
-|---|---|
-| **Handbook index** | [docs/handbook/README.md](handbook/README.md) |
-| **Plan map** | [docs/ecosystem/plan-cross-links.md](ecosystem/plan-cross-links.md) |
-| **Published language site** | [li-langverse.github.io/li-language](https://li-langverse.github.io/li-language/) |
-| **Edit user-facing Pages** | [github.com/li-langverse/lic-docs](https://github.com/li-langverse/lic-docs) |
-| **Compiler** | [github.com/li-langverse/lic](https://github.com/li-langverse/lic) (this repo) |
-
-This `docs/` directory is kept in `lic` for compiler CI (Lean semantics under `docs/semantics/`, plan-loop gates, release-note links in `CHANGELOG.md`). **User-facing doc edits should land in `lic-docs` first** when the split site is authoritative.
->>>>>>> origin/main
 
 Build the site locally from a sibling checkout:
 

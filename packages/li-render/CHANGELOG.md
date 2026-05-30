@@ -4,11 +4,8 @@
 
 ### Added
 
-<<<<<<< HEAD
 - **WP-UX-14 native_pixels honesty** — `lig_native_pixel_source_honest_product`, `render_viewport_native_pixels_honest`, wgpu draw-list smoke sets host `native_pixels`; smoke `native_pixels_honesty.li`; `li_std_render_version` → 5.
 
-=======
->>>>>>> origin/main
 - **WP-GD-05 PBR-lite draw list** — `RenderDrawList`, `RenderPbrLiteMaterial`, `render_draw_list_*`, `render_wgpu_draw_list_smoke*`; smoke `wgpu_draw_list.li`; `viewport_fps.toml` status `draw_list`.
 - **lig.present wire-up (PH-HW HW-1)** — `render_present_viewport_tick`, `render_fps_counter_host_tick`, `render_viewport_host_fps_counter`; `li_std_render_version` → 3.
 - **UX-13 HUD** — `render_fps_counter_hud_text`, `render_fps_counter_hud_tag`, particle-tier HUD helper; `native=0` in sim strings.

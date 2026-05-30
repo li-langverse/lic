@@ -21,12 +21,9 @@ suite = "smoke"
 file = "smoke/wgpu_draw_list.li"
 outcome = "compile_open_ok"
 note = "T-PKG-li-render-wgpu-draw-list WP-GD-05"
-<<<<<<< HEAD
 
 [[tests]]
 suite = "smoke"
 file = "smoke/native_pixels_honesty.li"
 outcome = "compile_open_ok"
 note = "T-PKG-li-render-native-pixels-honesty WP-UX-14"
-=======
->>>>>>> origin/main

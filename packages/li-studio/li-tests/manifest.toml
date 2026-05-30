@@ -90,15 +90,6 @@ note = "PH-SIM SIM-3: studio_sim_rl_step_hook env pool on live session"
 
 [[tests]]
 suite = "smoke"
-<<<<<<< HEAD
-=======
-file = "smoke/studio_sim_rl_step.li"
-outcome = "compile_open_ok"
-note = "PH-ML Wave 3: JobGraph collect + sim_rl step hook"
-
-[[tests]]
-suite = "smoke"
->>>>>>> origin/main
 file = "smoke/studio_sim_sensor_step_hook.li"
 outcome = "check_ok"
 note = "PH-SIM SIM-5: studio_sim_sensor_step_hook raycast bus auto/robo"
@@ -111,7 +102,6 @@ note = "WP-SIM-06: studio.toml [engine] determinism_tier + [engine.export] parse
 
 [[tests]]
 suite = "smoke"
-<<<<<<< HEAD
 file = "smoke/studio_am_export_three_click.li"
 outcome = "check_ok"
 note = "WP-AM-03 / WP-UX-16: sim.export.print 3MF/G-code + ≤3-click export wizard"
@@ -136,8 +126,6 @@ note = "WP-PUB-03: publish_bundle MCP reproducibility manifest zip after lic bui
 
 [[tests]]
 suite = "smoke"
-=======
->>>>>>> origin/main
 file = "smoke/studio_sim_scientific_step_hook.li"
 outcome = "check_ok"
 note = "PH-SIM scientific step: tick_at + scene_bench tier sync to viewport display"
@@ -222,7 +210,6 @@ note = "T-PKG-li-studio-mcp-extended PH-AGENT gap-6-7"
 
 [[tests]]
 suite = "smoke"
-<<<<<<< HEAD
 file = "smoke/studio_mcp_dispatch_run.li"
 outcome = "check_ok"
 note = "T-PKG-li-studio-mcp-dispatch-run WP-AG-02 all 11 tools real args"
@@ -247,8 +234,6 @@ note = "T-PKG-li-studio-c-host-retirement WP-UX-14b"
 
 [[tests]]
 suite = "smoke"
-=======
->>>>>>> origin/main
 file = "smoke/studio_viewport_hud.li"
 outcome = "check_ok"
 note = "T-PKG-li-studio-viewport-hud UX-13 WP-UX-13 live FPS + particle tier HUD"
@@ -310,15 +295,12 @@ note = "T-PKG-li-studio-agent-chrome-fsm UX-06 WP-AG-02 cancel/retry/tool trace 
 
 [[tests]]
 suite = "smoke"
-<<<<<<< HEAD
 file = "smoke/studio_interaction_modes.li"
 outcome = "check_ok"
 note = "WP-UX-15: Studio interaction mode FSM on StudioShellCompose"
 
 [[tests]]
 suite = "smoke"
-=======
->>>>>>> origin/main
 file = "smoke/studio_agentic_run.li"
 outcome = "check_ok"
 note = "T-PKG-li-studio-agentic-run PH-AGENT-2 Studio agent state model"

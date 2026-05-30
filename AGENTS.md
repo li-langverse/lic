@@ -2,11 +2,7 @@
 
 ## Documentation site
 
-<<<<<<< HEAD
 Handbook source and GitHub Pages deploy: [li-langverse/lic-docs](https://github.com/li-langverse/lic-docs) ([live site](https://li-langverse.github.io/lic-docs/)). Paths under docs/ in this repo remain for CI until submodule wiring; edit the published handbook in **lic-docs**.
-=======
-Handbook hub: [docs/handbook/README.md](docs/handbook/README.md) · [live Pages](https://li-langverse.github.io/lic/) · plan map [plan-cross-links.md](docs/ecosystem/plan-cross-links.md). User-facing language Pages: [li-language](https://li-langverse.github.io/li-language/). Split publish: [lic-docs](https://github.com/li-langverse/lic-docs).
->>>>>>> origin/main
 
 1. Read [strict-by-default](docs/ecosystem/strict-by-default.md) â€” proof, security, performance **always on**; **no optional provability**.
 2. Read [engineering-standards](https://github.com/li-langverse/roadmap/blob/main/docs/ecosystem/engineering-standards.md) â€” **functionality, security, performance** (strict).

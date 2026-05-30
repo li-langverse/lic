@@ -5,7 +5,6 @@
     "wsm-w0-sim-bridge",
     "wsm-w0-agent-registry",
     "wsm-w0-profile-chips",
-<<<<<<< HEAD
     "wsm-w1-profile-smokes",
     "wsm-w1-sim3-envpool",
     "wsm-w1-sim-sensors",
@@ -34,24 +33,17 @@
     "wsm-w6-publish-figures",
     "wsm-w6-publish-data",
     "wsm-w6-repro-bundle",
-    "wsm-w6-player-ship"
+    "wsm-w6-player-ship",
+    "wsm-w6-agent-eval",
+    "wsm-w6-vertical-dod"
   ],
-  "iterations": 26,
+  "iterations": 27,
   "history": [
     {
-      "todo_id": "wsm-w6-player-ship",
-      "completed_at": "2026-05-30T12:30:00Z",
-      "wps": ["WP-GD-06", "WP-GD-03", "WP-PUB-03"]
-=======
-    "wsm-w1-profile-smokes"
-  ],
-  "iterations": 1,
-  "history": [
-    {
-      "todo_id": "wsm-w1-profile-smokes",
-      "completed_at": "2026-05-29T18:05:00Z",
-      "wps": ["WP-SIM-00", "WP-SIM-01", "WP-UX-05"]
->>>>>>> origin/main
+      "todo_id": "wsm-w6-vertical-dod",
+      "completed_at": "2026-05-30T13:10:00Z",
+      "wps": ["WP-AG-06", "§11 vertical DoD"],
+      "notes": "Completion pass: resolved merge conflicts, lic check green on studio smokes via WSL"
     }
   ]
 }

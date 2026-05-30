@@ -1,32 +1,18 @@
 {
   "pass": true,
-<<<<<<< HEAD
   "todo_id": "wsm-w6-vertical-dod",
-  "wps_touched": ["WP-AG-06", "WP-GD-06"],
+  "completion_sprint": true,
+  "wps_touched": ["WP-AG-06", "WP-GD-06", "§11"],
   "smokes_run": [
-    "packages/li-studio-ai/li-tests/smoke/studio_ai_patch_eval.li",
-    "packages/li-studio/li-tests/smoke/studio_vertical_dod.li"
-=======
-  "todo_id": "wsm-w1-profile-smokes",
-  "wps_touched": ["WP-SIM-00", "WP-SIM-01", "WP-UX-05"],
-  "smokes_run": [
-    "packages/li-studio/li-tests/smoke/studio_vertical_profile_roundtrip.li",
-    "packages/li-studio/li-tests/smoke/studio_sim_step_by_profile.li"
->>>>>>> origin/main
+    "packages/li-studio/li-tests/smoke/studio_shell_demo.li",
+    "packages/li-studio/li-tests/smoke/studio_vertical_dod.li",
+    "scripts/world-studio-plan-lic-smokes.sh (WSL)"
   ],
   "native_only": true,
   "gates": {
     "world_studio_plan_gates": "pass",
-<<<<<<< HEAD
-    "studio_patch_eval_gate": "pass",
-    "studio_vertical_dod_gate": "pass",
-    "lic_check_local": "wsl_or_skip"
+    "world_studio_plan_completion_gate": "pass",
+    "lic_check_wsl": "pass"
   },
-  "notes": "WP-AG-06: studio_ai_patch_eval_* harness over 10 curated tasks (7 valid + 1 retry + 2 fail) with 70% gate; fixtures/patch-eval/manifest.toml. wsm-w6-vertical-dod: studio_vertical_dod_* composable DoD for all 7 profiles (game world+physics+wgpu, RL env pool obs, automotive sensors, robotics IK inspector, additive 3MF export, scientific tier-2+vz, drug LITL panels). Completion gate: all wsm-w* todos done."
-=======
-    "lic_check_local": "skipped_llvm_dev_missing",
-    "lic_check_ci": "pending"
-  },
-  "notes": "Extended studio_sim_step_by_profile.li with studio_sim_step_profile_ok helper covering all 7 runtime profiles (game, sim_rl, sim_automotive, sim_robotics, sim_additive, sim_scientific, sim_drug_design). Scientific and RL retain specialized assertions (MD tier viewport sync, env pool batch tick). studio_vertical_profile_roundtrip.li already covered all 7 compose/TOML paths. Local lic check blocked: LLVM 22 runtime present but LLVMConfig.cmake dev package missing on Windows host; CI will verify lic check."
->>>>>>> origin/main
+  "notes": "All 36 wsm-w* todos done. Fixed unresolved merge conflicts (23 files), studio lib contract/IO compose fixes, CRLF on world-studio-plan-lic-smokes.sh, render_present_viewport_tick ensures. Completion gate green."
 }

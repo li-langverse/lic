@@ -25,6 +25,9 @@ on:
       - "benchmarks/tier5_http/**"
       - "benchmarks/harness/**"
       - "scripts/check-tier5-nginx-perf-regression-gate.sh"
+      - "scripts/check-tier5-perf-wrk-soak.sh"
+      - "scripts/build-tier5-nginx-oracle.sh"
+      - "scripts/build-tier5-wrk.sh"
   schedule:
     - cron: "0 4 * * *"
   workflow_dispatch:
@@ -73,6 +76,18 @@ jobs:
           fi
           ./scripts/check-tier5-nginx-perf-regression-gate.sh
 
+      - name: Tier5 perf wrk soak (gap-phase2-perf-wrk-soak)
+        if: github.event_name == 'schedule' || (github.event_name == 'workflow_dispatch' && inputs.full_timing)
+        env:
+          HTTPD_BENCH_SKIP_TIMING: "0"
+          HTTPD_BENCH_DURATION_SEC: "30"
+          HTTPD_BENCH_SETTLE_SEC: "3"
+        run: |
+          chmod +x scripts/check-tier5-perf-wrk-soak.sh \
+            scripts/build-tier5-nginx-oracle.sh scripts/build-tier5-wrk.sh
+          ./scripts/build-tier5-nginx-oracle.sh
+          ./scripts/check-tier5-perf-wrk-soak.sh
+
       - name: Upload tier5 regression CSVs
         if: always()
         uses: actions/upload-artifact@v4
@@ -82,4 +97,5 @@ jobs:
             benchmarks/results/tier5_http_parity.csv
             benchmarks/results/tier5_nextjs_parity.csv
             benchmarks/results/tier5_exploit_regression.csv
+            benchmarks/results/tier5_streaming_parity.csv
           if-no-files-found: ignore

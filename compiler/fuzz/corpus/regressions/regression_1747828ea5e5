@@ -1,0 +1,10 @@
+proc p
+  requires true
+  ensures true
+  decreases 0
+=
+  reasproc p(es@cpu
+@parallel(disjoint=ow)
+proc  true
+  ensures cp___
+proc  CCCCCCCCCCCCCCCCCCj

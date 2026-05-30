@@ -1111,21 +1111,25 @@ struct EmitCtx {
         return true;
       }
       case MirOp::OmpParallelFor: {
+        // `@parallel` / `parallel for` only — never emitted for `@vectorized` (SIMD uses
+        // llvm::VectorType + ArraySimdScope; MirDecorator.vectorized stays false here).
         llvm::Function* par_fn = module->getFunction(ins.callee);
         if (!par_fn) {
           return true;
         }
         llvm::FunctionType* iter_ty =
             llvm::FunctionType::get(llvm::Type::getVoidTy(context), {i64_ty(context)}, false);
-        llvm::FunctionType* omp_ty = llvm::FunctionType::get(
+        llvm::FunctionType* par_ty = llvm::FunctionType::get(
             llvm::Type::getVoidTy(context),
-            {i64_ty(context), i64_ty(context), iter_ty->getPointerTo()}, false);
-        llvm::FunctionCallee omp_rt =
-            module->getOrInsertFunction("li_omp_parallel_for_i64", omp_ty);
+            {i64_ty(context), i64_ty(context), iter_ty->getPointerTo(), i32_ty(context)},
+            false);
+        llvm::FunctionCallee par_rt =
+            module->getOrInsertFunction("li_parallel_for_i64", par_ty);
         builder->CreateCall(
-            omp_rt,
+            par_rt,
             {llvm::ConstantInt::get(i64_ty(context), ins.int_value),
-             llvm::ConstantInt::get(i64_ty(context), ins.rhs_int), par_fn});
+             llvm::ConstantInt::get(i64_ty(context), ins.rhs_int), par_fn,
+             llvm::ConstantInt::get(i32_ty(context), runtime_team_size)});
         return true;
       }
       case MirOp::ArrayAlloc: {
@@ -1572,11 +1576,12 @@ bool emit_llvm_ir(const MirModule& mir, const std::string& out_path, int runtime
                               llvm::FunctionType::get(llvm::Type::getVoidTy(context), {f64},
                                                       false));
   module->getOrInsertFunction(
-      "li_omp_parallel_for_i64",
+      "li_parallel_for_i64",
       llvm::FunctionType::get(llvm::Type::getVoidTy(context),
                               {i64_ty(context), i64_ty(context),
                                llvm::PointerType::getUnqual(llvm::FunctionType::get(
-                                   llvm::Type::getVoidTy(context), {i64_ty(context)}, false))},
+                                   llvm::Type::getVoidTy(context), {i64_ty(context)}, false)),
+                               i32_ty(context)},
                               false));
   module->getOrInsertFunction("li_async_frame_enter",
                               llvm::FunctionType::get(llvm::Type::getVoidTy(context), {}, false));

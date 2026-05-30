@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Gates for World Studio master plan loop â€” native li-studio smokes + plan docs.
+# Gates for World Studio master plan loop — native li-studio smokes + plan docs.
 set -euo pipefail
 ROOT="$(cd "$(dirname "$0")/.." && pwd)"
 # shellcheck source=lib/li-ui.sh
@@ -42,6 +42,7 @@ run_lic_smokes() {
     studio_timeline_playback.li \
     studio_toml_engine_export.li \
     studio_command_palette.li \
+    studio_keyboard_bridge.li \
     studio_mcp_tools.li \
     studio_agentic_run.li; do
     path="$ROOT/packages/li-studio/li-tests/smoke/$smoke"
@@ -59,7 +60,7 @@ try_wsl_lic_smokes() {
   wsl_root="$(wsl wslpath -u "$win_root" 2>/dev/null || true)"
   [[ -z "$wsl_root" ]] && return 1
   li_phase "wsl lic check smokes"
-  wsl bash -lc "set -euo pipefail; cd '$wsl_root'; if [[ -x build/compiler/lic/lic ]]; then LIC=build/compiler/lic/lic; elif [[ -x build/compiler/lic/lic.exe ]]; then LIC=build/compiler/lic/lic.exe; else ./scripts/build.sh; LIC=build/compiler/lic/lic; fi; for smoke in studio_shell_demo.li studio_vertical_profile_roundtrip.li studio_sim_step_by_profile.li studio_timeline_playback.li studio_toml_engine_export.li studio_command_palette.li studio_mcp_tools.li studio_agentic_run.li; do \"\$LIC\" check \"packages/li-studio/li-tests/smoke/\$smoke\"; done"
+  wsl bash -lc "set -euo pipefail; cd '$wsl_root'; if [[ -x build/compiler/lic/lic ]]; then LIC=build/compiler/lic/lic; elif [[ -x build/compiler/lic/lic.exe ]]; then LIC=build/compiler/lic/lic.exe; else ./scripts/build.sh; LIC=build/compiler/lic/lic; fi; for smoke in studio_shell_demo.li studio_vertical_profile_roundtrip.li studio_sim_step_by_profile.li studio_timeline_playback.li studio_toml_engine_export.li studio_command_palette.li studio_keyboard_bridge.li studio_mcp_tools.li studio_agentic_run.li; do \"\$LIC\" check \"packages/li-studio/li-tests/smoke/\$smoke\"; done"
 }
 if [[ "${WORLD_STUDIO_GATES_SKIP_LIC:-0}" == "1" ]]; then
   li_warn "skip lic check smokes (WORLD_STUDIO_GATES_SKIP_LIC=1)"

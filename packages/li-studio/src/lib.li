@@ -1294,10 +1294,10 @@ def studio_compose_shell_drug_litl(w: float, h: float, tick: int, has_selection:
 
 def li_std_studio_version() -> int
   requires true
-  ensures result == 14
+  ensures result == 15
   decreases 0
 =
-  return 14
+  return 15
 
 def studio_agent_context_none() -> int
   requires true
@@ -4221,15 +4221,14 @@ def studio_vertical_demo_frame(profile_id: int, frame_id: int) -> int raises IO
   ensures result >= 0
   decreases frame_id
 =
-  var compose: StudioShellCompose = studio_vertical_demo_compose(profile_id, frame_id, 0)
-  var key_compose: StudioShellCompose = studio_vertical_demo_compose(profile_id, frame_id, 1)
+  var compose: StudioShellCompose = studio_vertical_demo_compose(profile_id, frame_id, 1)
   var input: InputState = studio_shell_input_from_host()
   if frame_id == 2:
     if input.key_cmd_k == 0:
       if input.key_escape == 0:
         if input.key_digit == 0:
           input.key_cmd_k = 1
-  var _key_action: int = studio_handle_studio_key(key_compose, input)
+  var _key_action: int = studio_shell_handle_host_key(compose, input)
   var has_sel: int = compose.inspector.has_selection
   var scene_n: int = compose.scene_entity_count
   var task_st: int = compose.agent.task_state
@@ -4324,6 +4323,48 @@ def studio_shell_demo_present_loop() -> int raises IO
   var base_tick: int = studio_shell_demo_loop_tick_start()
   return studio_shell_demo_present_loop_rec(0, budget, base_tick)
 
+# WP-UX-09 — probe-shaped mock for lic check smokes (matches studio_shell_input_probe JSON).
+def studio_shell_input_probe_mock_cmd_k_digit(digit: int) -> InputState
+  requires digit >= 0
+  requires digit <= 5
+  ensures result.key_cmd_k == 1
+  ensures result.key_digit == digit
+  ensures result.key_escape == 0
+  decreases digit
+=
+  var s: InputState = input_default()
+  s.key_cmd_k = 1
+  s.key_digit = digit
+  return s
+
+def studio_shell_input_probe_mock_escape() -> InputState
+  requires true
+  ensures result.key_escape == 1
+  ensures result.key_cmd_k == 0
+  ensures result.key_digit == 0
+  decreases 0
+=
+  var s: InputState = input_default()
+  s.key_escape = 1
+  return s
+
+# WP-UX-09 — SDL/mock InputState → studio_handle_studio_key on live compose (host bridge).
+def studio_shell_handle_host_key(compose: var StudioShellCompose, input: InputState) -> int
+  requires compose.layout.viewport_w > 0.0
+  requires compose.layout.viewport_h > 0.0
+  requires compose.panel.switch_count >= 0
+  requires input.key_escape >= 0
+  requires input.key_escape <= 1
+  requires input.key_cmd_k >= 0
+  requires input.key_cmd_k <= 1
+  requires input.key_digit >= 0
+  requires input.key_digit <= 5
+  ensures result >= studio_key_action_none()
+  ensures result <= studio_key_action_palette_exec()
+  decreases input.key_digit
+=
+  return studio_handle_studio_key(compose, input)
+
 # PH-HW WP3 — InputState from studio-shell-input-bridge runtime (SDL or mock).
 def studio_shell_input_from_host() -> InputState raises IO
   requires true
@@ -4363,15 +4404,14 @@ def studio_shell_host_present_loop_tick(vp_w: float, vp_h: float, frame_id: int)
   var swap: LigSwapchain = lig_present_swapchain_create(vp_w, vp_h)
   return lig_present_frame(swap, frame_id)
 
-def studio_shell_host_frame(compose: StudioShellCompose, frame_id: int) -> int raises IO
+def studio_shell_host_frame(compose: var StudioShellCompose, frame_id: int) -> int raises IO
   requires frame_id >= 0
   requires frame_id <= 4
   ensures result >= 0
   decreases frame_id
 =
   var input: InputState = studio_shell_input_from_host()
-  var key_compose: StudioShellCompose = compose
-  var _action: int = studio_handle_studio_key(key_compose, input)
+  var _action: int = studio_shell_handle_host_key(compose, input)
   var vp: ViewportRegion = gui_viewport_region_from_layout(compose.layout)
   var _presented: LigPresentFrame = studio_shell_host_present_loop_tick(vp.w, vp.h, frame_id)
   if _presented.presented != 1:

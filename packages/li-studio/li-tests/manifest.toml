@@ -54,6 +54,12 @@ note = "T-PKG-li-studio-command-palette-ux04"
 
 [[tests]]
 suite = "smoke"
+file = "smoke/studio_keyboard_bridge.li"
+outcome = "check_ok"
+note = "T-PKG-li-studio-keyboard-bridge UX-09 WP-UX-09 SDL/mock InputState end-to-end"
+
+[[tests]]
+suite = "smoke"
 file = "smoke/studio_profile_roundtrip.li"
 outcome = "check_ok"
 note = "T-PKG-li-studio-profile-roundtrip PH-UX-05 PH-SIM"

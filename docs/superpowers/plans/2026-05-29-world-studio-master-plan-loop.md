@@ -37,7 +37,7 @@ todos:
     status: done
   - id: wsm-w1-keyboard-bridge
     content: "SDL/mock InputState → studio_handle_studio_key end-to-end (WP-UX-09)"
-    status: pending
+    status: done
   - id: wsm-w1-agent-chrome-fsm
     content: "Agent task FSM — running/cancel/error/retry + tool trace (WP-UX-06, WP-AG-02)"
     status: pending

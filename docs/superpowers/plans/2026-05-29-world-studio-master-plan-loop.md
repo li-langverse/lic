@@ -70,7 +70,7 @@ todos:
     status: done
   - id: wsm-w4-world-checkpoint
     content: "WorldSnapshot checkpoint after sim tick (WP-GD-02)"
-    status: pending
+    status: done
   - id: wsm-w4-world-io
     content: "world.li text save/load roundtrip (WP-GD-03)"
     status: pending

@@ -2985,19 +2985,12 @@ def studio_shell_sync_mode_from_env(compose: var StudioShellCompose) raises IO -
   if studio_bench_mode_from_env() == 1:
     studio_shell_apply_mode(compose, studio_mode_bench())
 
-def studio_shell_timeline_tick_sim_step(compose: StudioShellCompose, config: StudioProjectConfig, sim_out: var SimSessionStub, dt: float, duration_ticks: int) raises IO -> int
-  requires studio_mode_valid(compose.mode) == 1
-  requires studio_profile_id_valid(config.active_profile) == 1
-  requires sim_out.tick >= 0
-  requires duration_ticks >= 1
-  ensures result >= -1
-  ensures result <= 1
-  decreases compose.mode
-=
-  if studio_mode_sim_step_allowed(compose.mode, studio_timeline_playing()) != 1:
-    return 0
-  return studio_timeline_tick_sim_step(config, sim_out, dt, duration_ticks)
-
+# PH-GD-2 — last WorldSnapshot tick cached on shell (game profile).
+type StudioWorldCheckpoint = object
+  public valid: int
+  public name: int
+  public tick: int
+  public entity_count: int
 
 # UX-11 — shell loading / skeleton rects (viewport + inspector); no spinner IR
 type StudioShellLoadingState = object
@@ -3025,6 +3018,7 @@ type StudioShellCompose = object
   public panel: GuiPanelState
   public scene_entity_count: int
   public loading: StudioShellLoadingState
+  public world_checkpoint: StudioWorldCheckpoint
 
 
 def studio_shell_loading_on() -> int
@@ -3441,6 +3435,83 @@ def studio_game_world_checkpoint_stub(snapshot: WorldSnapshot) -> int
     return 0
   return 1
 
+def studio_world_checkpoint_empty() -> StudioWorldCheckpoint
+  requires true
+  ensures result.valid == 0
+  ensures result.tick == 0
+  decreases 0
+=
+  var c: StudioWorldCheckpoint
+  c.valid = 0
+  c.name = world_name_slot_default()
+  c.tick = 0
+  c.entity_count = 0
+  return c
+
+def studio_world_checkpoint_from_snapshot(snapshot: WorldSnapshot) -> StudioWorldCheckpoint
+  requires true
+  ensures result.tick == snapshot.tick
+  ensures result.entity_count == snapshot.entity_count
+  decreases snapshot.tick
+=
+  var c: StudioWorldCheckpoint
+  c.name = snapshot.name
+  c.tick = snapshot.tick
+  c.entity_count = snapshot.entity_count
+  c.valid = 0
+  if studio_game_world_checkpoint_stub(snapshot) == 1:
+    c.valid = 1
+  return c
+
+def studio_world_checkpoint_capture(profile_id: int, session: SimSessionStub) -> StudioWorldCheckpoint
+  requires session.tick >= 0
+  ensures profile_id != studio_profile_game() ==> result.valid == 0
+  decreases profile_id
+=
+  if profile_id != studio_profile_game():
+    return studio_world_checkpoint_empty()
+  var snap: WorldSnapshot = studio_game_world_checkpoint_from_session(session)
+  return studio_world_checkpoint_from_snapshot(snap)
+
+def studio_world_checkpoint_after_sim_tick(profile_id: int, session: SimSessionStub) -> int
+  requires session.tick >= 0
+  ensures result >= 0
+  ensures result <= 1
+  decreases profile_id
+=
+  if profile_id != studio_profile_game():
+    return sim_status_ok()
+  var c: StudioWorldCheckpoint = studio_world_checkpoint_capture(profile_id, session)
+  if c.valid != 1:
+    return sim_status_invalid_dt()
+  if c.tick != session.tick:
+    return sim_status_invalid_dt()
+  if c.entity_count != studio_game_entity_count_stub():
+    return sim_status_invalid_dt()
+  return sim_status_ok()
+
+def studio_shell_world_checkpoint_store(compose: var StudioShellCompose, session: SimSessionStub) -> unit
+  requires session.tick >= 0
+  decreases session.tick
+=
+  compose.world_checkpoint = studio_world_checkpoint_capture(compose.config.active_profile, session)
+
+def studio_shell_timeline_tick_sim_step(compose: var StudioShellCompose, config: StudioProjectConfig, sim_out: var SimSessionStub, dt: float, duration_ticks: int) raises IO -> int
+  requires studio_mode_valid(compose.mode) == 1
+  requires studio_profile_id_valid(config.active_profile) == 1
+  requires sim_out.tick >= 0
+  requires duration_ticks >= 1
+  ensures result >= -1
+  ensures result <= 1
+  decreases compose.mode
+=
+  if studio_mode_sim_step_allowed(compose.mode, studio_timeline_playing()) != 1:
+    return 0
+  var rc: int = studio_timeline_tick_sim_step(config, sim_out, dt, duration_ticks)
+  if rc == 1:
+    studio_shell_world_checkpoint_store(compose, sim_out)
+  return rc
+
 def studio_game_world_checkpoint_roundtrip(session: SimSessionStub) raises Alloc, IO -> int
   requires session.tick >= 0
   ensures result >= 0
@@ -3551,7 +3622,13 @@ def studio_sim_step_hook(config: StudioProjectConfig, sim_out: var SimSessionStu
       return sim_status_invalid_dt()
     if studio_game_step_hook(sim_out, dt) != sim_status_ok():
       return sim_status_invalid_dt()
-  return sim_step(sim_out, dt)
+  var step_rc: int = sim_step(sim_out, dt)
+  if step_rc != sim_status_ok():
+    return step_rc
+  if prof == studio_profile_game():
+    if studio_world_checkpoint_after_sim_tick(prof, sim_out) != sim_status_ok():
+      return sim_status_invalid_dt()
+  return sim_status_ok()
 
 def studio_scene_is_empty(scene_entity_count: int) -> int
   requires scene_entity_count >= 0
@@ -4504,6 +4581,7 @@ def studio_compose_shell_profile(w: float, h: float, active_dock_slot: int, has_
   out.palette = studio_compose_palette(lay.viewport_w, lay.viewport_h, studio_palette_closed_flag())
   out.panel = gui_panel_state_new()
   out.loading = studio_shell_loading_state_new()
+  out.world_checkpoint = studio_world_checkpoint_empty()
   var mode0: int = studio_mode_from_profile(active_profile)
   studio_shell_apply_mode(out, mode0)
   return out
@@ -4572,6 +4650,7 @@ def studio_compose_shell(w: float, h: float, active_dock_slot: int, has_selectio
   out.palette = studio_compose_palette(out.layout.viewport_w, out.layout.viewport_h, studio_palette_closed_flag())
   out.panel = gui_panel_state_new()
   out.loading = studio_shell_loading_state_new()
+  out.world_checkpoint = studio_world_checkpoint_empty()
   var mode0: int = studio_mode_default()
   studio_shell_apply_mode(out, mode0)
   return out

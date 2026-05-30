@@ -114,6 +114,12 @@ note = "PH-GD-2: studio_game_step_hook + studio_game_world_checkpoint_roundtrip"
 
 [[tests]]
 suite = "smoke"
+file = "smoke/studio_world_checkpoint_after_tick.li"
+outcome = "check_ok"
+note = "WP-GD-02: WorldSnapshot after sim tick + shell timeline cache"
+
+[[tests]]
+suite = "smoke"
 file = "smoke/studio_shell_loading.li"
 outcome = "check_ok"
 note = "T-PKG-li-studio-shell-loading-ux10-ux11"

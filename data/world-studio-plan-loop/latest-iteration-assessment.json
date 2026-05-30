@@ -1,15 +1,16 @@
 {
   "pass": true,
-  "todo_id": "wsm-w3-interaction-modes",
-  "wps_touched": ["WP-UX-15"],
+  "todo_id": "wsm-w4-world-checkpoint",
+  "wps_touched": ["WP-GD-02"],
   "smokes_run": [
-    "packages/li-studio/li-tests/smoke/studio_interaction_modes.li"
+    "packages/li-studio/li-tests/smoke/studio_world_checkpoint_after_tick.li",
+    "packages/li-studio/li-tests/smoke/studio_game_step_hook.li"
   ],
   "native_only": true,
   "gates": {
     "world_studio_plan_gates": "pass",
-    "lic_check_local": "wsl studio_interaction_modes.li green",
+    "lic_check_local": "wsl studio_world_checkpoint_after_tick.li green",
     "lic_check_ci": "pending"
   },
-  "notes": "WP-UX-15: StudioShellCompose.mode + mode FSM (author/simulate/analyze/agent/publish/adaptive/bench); studio_mode_transition, studio_shell_apply_mode, studio_mode_mcp_tool_allowed, studio_shell_timeline_tick_sim_step; palette focus_agent enters agent mode; drug/scientific profiles auto-select adaptive/analyze modes; STUDIO_BENCH_MODE env via li_rt_studio_bench_mode_from_env."
+  "notes": "WP-GD-02: StudioWorldCheckpoint on StudioShellCompose; studio_world_checkpoint_after_sim_tick wired in studio_sim_step_hook (game profile post sim_step); studio_shell_timeline_tick_sim_step stores checkpoint on timeline advance; smoke studio_world_checkpoint_after_tick.li."
 }

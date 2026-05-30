@@ -135,7 +135,7 @@ Cross-tracks (not separate phases above): **PH-PORT**, **PH-COMPLY**, **PH-CIN**
 | ID | Title | Profile | State | Target | Proof gate | Cx | Blocks | Par? |
 |----|-------|---------|-------|--------|------------|-----|--------|------|
 | WP-GD-01 | Studio shell MVP | game | **done** | Outliner, timeline, demo bin | `lic check packages/li-studio/li-tests/smoke/studio_shell_demo.li` | M | PH-GD-0 | N |
-| WP-GD-02 | World snapshot checkpoint | game | **partial** | Post-tick `WorldSnapshot` validity | `studio_sim_step_by_profile.li` | S | WP-GD-01 | Y |
+| WP-GD-02 | World snapshot checkpoint | game | **done** | Post-tick `WorldSnapshot` validity | `studio_world_checkpoint_after_tick.li` | S | WP-GD-01 | Y |
 | WP-GD-03 | `world.li` text save/load | game | stub | Serialize snapshot + assets refs | composable `import_world_roundtrip.li` | M | WP-GD-02 | N |
 | WP-GD-04 | glTF ingest (`li-assets`) | game | stub | Load mesh into scene | `lic check packages/li-assets/...` | M | WP-GD-03 | Y |
 | WP-GD-05 | `li-render` PBR-lite | game, sim_scientific | stub | wgpu draw list | `viewport_fps.toml` not `stub_pass` | L | PH-HW-2 | N |

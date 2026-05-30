@@ -20,24 +20,21 @@
     "wsm-w2-c-host-retire",
     "wsm-w3-mcp-dispatch",
     "wsm-w3-mcp-server",
-    "wsm-w3-apply-patch-loop"
+    "wsm-w3-apply-patch-loop",
+    "wsm-w3-interaction-modes",
+    "wsm-w4-world-checkpoint"
   ],
-  "iterations": 21,
+  "iterations": 22,
   "history": [
     {
-      "todo_id": "wsm-w3-apply-patch-loop",
+      "todo_id": "wsm-w4-world-checkpoint",
+      "completed_at": "2026-05-30T12:00:00Z",
+      "wps": ["WP-GD-02"]
+    },
+    {
+      "todo_id": "wsm-w3-interaction-modes",
       "completed_at": "2026-05-30T10:30:00Z",
-      "wps": ["WP-AG-04"]
-    },
-    {
-      "todo_id": "wsm-w2-native-pixels",
-      "completed_at": "2026-05-30T10:15:00Z",
-      "wps": ["WP-UX-14", "WP-GD-05"]
-    },
-    {
-      "todo_id": "wsm-w2-c-host-retire",
-      "completed_at": "2026-05-30T10:00:00Z",
-      "wps": ["WP-UX-14b", "WP-GD-05"]
+      "wps": ["WP-UX-15"]
     }
   ]
 }

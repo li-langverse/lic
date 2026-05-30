@@ -524,6 +524,23 @@ int32_t li_rt_studio_timeline_sync_sim_tick(int32_t tick, int32_t duration_ticks
   return tick;
 }
 
+float li_rt_studio_timeline_playhead_pct_from_tick(int32_t tick, int32_t duration_ticks) {
+  if (duration_ticks < 1) {
+    duration_ticks = 1;
+  }
+  if (tick < 0) {
+    tick = 0;
+  }
+  if (tick > duration_ticks) {
+    tick = duration_ticks;
+  }
+  float pct = (float)tick / (float)duration_ticks;
+  if (pct > 1.0f) {
+    pct = 1.0f;
+  }
+  return pct;
+}
+
 int32_t li_rt_studio_timeline_reset_playback(void) {
   g_studio_timeline_playing = 0;
   g_studio_timeline_playhead_pct = 0.0f;

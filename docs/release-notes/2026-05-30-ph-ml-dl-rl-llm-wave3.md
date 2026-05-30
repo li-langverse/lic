@@ -25,6 +25,11 @@ Wave 3 tranche: async JobGraph scaffold in li-ml-rl, >=4 parallel env sample col
 - Progress gate: `ph-ml-wave3: progress gate OK`
 - Completion gate: `ph-ml-dl-rl-llm-wave3: completion gate OK` (`scripts/ph-ml-wave3-gates.sh`)
 
+## CI (composable studio imports)
+
+- `li-studio` — `raises IO` on TOML parse helpers; `ensures` on timeline scrub/sync; `li_rt_studio_timeline_playhead_pct_from_tick` (no int/float mix in Li)
+- `li-render` — `ensures` on `render_present_viewport_tick`
+
 ## Branch
 
 `cursor/ph-ml-dl-rl-llm-wave3` · WP-RL-02 done

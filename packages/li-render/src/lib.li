@@ -176,6 +176,9 @@ def render_present_viewport_tick(vp: ViewportRegion, profile_id: int, paint_cmd_
   requires profile_id >= 1
   requires profile_id <= 7
   requires paint_cmd_count >= 0
+  ensures result.frame_id >= 0
+  ensures result.presented >= 0
+  ensures result.presented <= 1
   decreases paint_cmd_count
 =
   if lig_present_host_active() == 1:

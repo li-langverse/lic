@@ -3,6 +3,7 @@ build-fuzz/
 .venv-plot/
 .venv-docs/
 site/
+!site/index.html
 site-proofs/
 __pycache__/
 *.pyc

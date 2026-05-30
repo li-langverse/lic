@@ -3,10 +3,12 @@
   "todo_id": "wsm-w6-vertical-dod",
   "completion_sprint": true,
   "verification_pass": true,
-  "wps_touched": ["§11", "gates-wsl-windows"],
+  "verified_at": "2026-05-30T15:50:07Z",
+  "wps_touched": ["§11", "gates-wsl-windows", "bench-refresh"],
   "smokes_run": [
     "scripts/world-studio-plan-gates.sh",
-    "scripts/world-studio-plan-completion-gate.sh"
+    "scripts/world-studio-plan-completion-gate.sh",
+    "scripts/studio-ui-ux-capture-progress.sh"
   ],
   "native_only": true,
   "gates": {
@@ -14,5 +16,5 @@
     "world_studio_plan_completion_gate": "pass",
     "lic_check_wsl": "soft_warn_lic_not_built_windows"
   },
-  "notes": "Sprint complete (36/36 wsm-w* done). Verification pass: fixed CRLF on world-studio-plan-lic-smokes.sh via .gitattributes eol=lf (eliminated WSL pipefail invalid option). Gates green; lic smokes soft-warn on Windows host without built lic — CI/Linux authoritative."
+  "notes": "Sprint complete (36/36 wsm-w* done). Re-verification pass on Windows host: plan gates + completion gate green; lic smokes soft-warn without built lic (CI/Linux authoritative). Bench refreshed; design capture posted to issue #182."
 }

@@ -896,6 +896,10 @@ int32_t li_rt_studio_demo_frames_from_env(void) {
 
 static int32_t li_rt_studio_env_flag_one(const char* name);
 
+int32_t li_rt_studio_bench_mode_from_env(void) {
+  return li_rt_studio_env_flag_one("STUDIO_BENCH_MODE");
+}
+
 static int32_t g_studio_demo_loop_tick = 0;
 
 int32_t li_rt_studio_demo_loop_tick_from_env(void) {

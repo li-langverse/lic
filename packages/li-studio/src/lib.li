@@ -201,6 +201,12 @@ extern proc li_rt_studio_demo_loop_tick_from_env() -> int
   ensures result >= 0
   decreases 0
 
+extern proc li_rt_studio_bench_mode_from_env() -> int
+  requires true
+  ensures result >= 0
+  ensures result <= 1
+  decreases 0
+
 
 # UX-02 / WP-GD-08 — timeline playback (playhead synced to sim session tick).
 extern proc li_rt_studio_timeline_playing() -> int
@@ -1074,6 +1080,11 @@ def studio_agent_sync_chrome_from_run(compose: var StudioShellCompose, run: Stud
     compose.agent.progress = studio_compose_agent_progress_run(run, compose.agent.status_rect)
   if run.task_state == studio_agent_task_done():
     compose.agent.progress = studio_compose_agent_progress_run(run, compose.agent.status_rect)
+  if run.task_state == studio_agent_task_idle():
+    if compose.mode == studio_mode_agent():
+      studio_shell_apply_mode(compose, studio_mode_author())
+  if run.task_state == studio_agent_task_done():
+    studio_shell_apply_mode(compose, studio_mode_author())
 
 def studio_shell_agent_run_tick(compose: var StudioShellCompose, run: var StudioAgentRun) -> int
   requires compose.layout.viewport_w > 0.0
@@ -1210,9 +1221,24 @@ def studio_mcp_tool_dispatch_arg(tool_id: int, arg: int) -> StudioAgentToolReque
   ensures result.tool_id == tool_id
   decreases tool_id
 =
+  return studio_mcp_tool_dispatch_mode_arg(studio_mode_agent(), tool_id, arg)
+
+def studio_mcp_tool_dispatch_mode_arg(mode: int, tool_id: int, arg: int) -> StudioAgentToolRequest raises IO
+  requires true
+  ensures result.tool_id == tool_id
+  decreases tool_id
+=
   var out: StudioAgentToolRequest = studio_agent_tool_request_none()
   out.tool_id = tool_id
+  if studio_mode_valid(mode) != 1:
+    out.status = studio_mcp_tool_status_failed()
+    out.result_code = studio_mcp_tool_result_err_io()
+    return out
   if studio_mcp_tool_id_valid(tool_id) != 1:
+    out.status = studio_mcp_tool_status_failed()
+    out.result_code = studio_mcp_tool_result_err_io()
+    return out
+  if studio_mode_mcp_tool_allowed(mode, tool_id) != 1:
     out.status = studio_mcp_tool_status_failed()
     out.result_code = studio_mcp_tool_result_err_io()
     return out
@@ -2037,10 +2063,10 @@ def studio_compose_shell_drug_litl(w: float, h: float, tick: int, has_selection:
 
 def li_std_studio_version() -> int
   requires true
-  ensures result == 21
+  ensures result == 22
   decreases 0
 =
-  return 21
+  return 22
 
 def studio_agent_context_none() -> int
   requires true
@@ -2769,6 +2795,210 @@ type StudioProjectConfig = object
   public export_cfg: StudioExportConfig
 
 
+# WP-UX-15 — Studio interaction mode FSM on compose (§3 mode matrix).
+def studio_mode_default() -> int
+  requires true
+  ensures result == studio_mode_author()
+  decreases 0
+=
+  return studio_mode_author()
+
+def studio_bench_mode_from_env() raises IO -> int
+  requires true
+  ensures result >= 0
+  ensures result <= 1
+  decreases 0
+=
+  return li_rt_studio_bench_mode_from_env()
+
+def studio_mode_from_profile(profile_id: int) -> int
+  requires studio_profile_id_valid(profile_id) == 1
+  ensures studio_mode_valid(result) == 1
+  decreases profile_id
+=
+  if profile_id == studio_profile_sim_drug_design():
+    return studio_mode_adaptive()
+  if profile_id == studio_profile_sim_scientific():
+    return studio_mode_analyze()
+  return studio_mode_default()
+
+def studio_mode_primary_region(mode: int) -> int
+  requires studio_mode_valid(mode) == 1
+  ensures result >= studio_region_dock()
+  ensures result <= studio_region_agent_strip()
+  decreases mode
+=
+  if mode == studio_mode_simulate():
+    return studio_region_timeline()
+  if mode == studio_mode_agent():
+    return studio_region_agent_strip()
+  if mode == studio_mode_analyze():
+    return studio_region_viewport()
+  if mode == studio_mode_bench():
+    return studio_region_viewport()
+  return studio_region_inspector()
+
+def studio_mode_sim_step_allowed(mode: int, timeline_playing: int) -> int
+  requires studio_mode_valid(mode) == 1
+  requires timeline_playing >= 0
+  requires timeline_playing <= 1
+  ensures result >= 0
+  ensures result <= 1
+  decreases mode
+=
+  if mode == studio_mode_bench():
+    return 1
+  if mode == studio_mode_analyze():
+    return 1
+  if mode == studio_mode_simulate():
+    if timeline_playing == 1:
+      return 1
+    return 0
+  return 0
+
+def studio_mode_mcp_tool_allowed(mode: int, tool_id: int) -> int
+  requires studio_mode_valid(mode) == 1
+  ensures result >= 0
+  ensures result <= 1
+  decreases mode
+=
+  if studio_mcp_tool_id_valid(tool_id) != 1:
+    return 0
+  if mode == studio_mode_agent():
+    return 1
+  if mode == studio_mode_bench():
+    if tool_id == studio_mcp_lic_check():
+      return 1
+    return 0
+  if mode == studio_mode_publish():
+    if tool_id == studio_mcp_lic_check():
+      return 1
+    if tool_id == studio_mcp_lic_build():
+      return 1
+    if tool_id == studio_mcp_publish_bundle():
+      return 1
+    return 0
+  if mode == studio_mode_analyze():
+    if tool_id == studio_mcp_lic_check():
+      return 1
+    if tool_id == studio_mcp_publish_bundle():
+      return 1
+    if tool_id == studio_mcp_chem_dft_run():
+      return 1
+    if tool_id == studio_mcp_set_viewport_background():
+      return 1
+    if tool_id == studio_mcp_set_particle_display():
+      return 1
+    if tool_id == studio_mcp_set_biomol_style():
+      return 1
+    return 0
+  if mode == studio_mode_adaptive():
+    if tool_id == studio_mcp_studio_adaptive_layout():
+      return 1
+    if tool_id == studio_mcp_lic_check():
+      return 1
+    if tool_id == studio_mcp_sim_set_profile():
+      return 1
+    return 0
+  if mode == studio_mode_simulate():
+    if tool_id == studio_mcp_lic_check():
+      return 1
+    if tool_id == studio_mcp_sim_set_profile():
+      return 1
+    return 0
+  if tool_id == studio_mcp_world_scaffold():
+    return 1
+  if tool_id == studio_mcp_sim_set_profile():
+    return 1
+  if tool_id == studio_mcp_lic_check():
+    return 1
+  if tool_id == studio_mcp_set_viewport_background():
+    return 1
+  if tool_id == studio_mcp_set_particle_display():
+    return 1
+  if tool_id == studio_mcp_set_biomol_style():
+    return 1
+  return 0
+
+def studio_mode_transition(mode: int, trigger: int) -> int
+  requires studio_mode_valid(mode) == 1
+  ensures studio_mode_valid(result) == 1
+  decreases mode
+=
+  if trigger == studio_mode_trigger_play():
+    if mode == studio_mode_author():
+      return studio_mode_simulate()
+  if trigger == studio_mode_trigger_stop():
+    if mode == studio_mode_simulate():
+      return studio_mode_author()
+  if trigger == studio_mode_trigger_agent():
+    return studio_mode_agent()
+  if trigger == studio_mode_trigger_agent_done():
+    if mode == studio_mode_agent():
+      return studio_mode_author()
+  if trigger == studio_mode_trigger_publish():
+    return studio_mode_publish()
+  if trigger == studio_mode_trigger_bench_env():
+    return studio_mode_bench()
+  if trigger == studio_mode_trigger_adaptive_profile():
+    return studio_mode_adaptive()
+  return mode
+
+def studio_shell_apply_mode(compose: var StudioShellCompose, mode: int) -> unit
+  requires studio_mode_valid(mode) == 1
+  requires compose.layout.viewport_w > 0.0
+  ensures compose.mode == mode
+  decreases mode
+=
+  compose.mode = mode
+  var region: int = studio_mode_primary_region(mode)
+  var _timing: PanelSwitchTiming = gui_panel_switch_to(compose.panel, region, 0.0)
+
+def studio_shell_handle_mode_trigger(compose: var StudioShellCompose, trigger: int) raises IO -> int
+  requires studio_mode_valid(compose.mode) == 1
+  requires trigger >= studio_mode_trigger_none()
+  requires trigger <= studio_mode_trigger_adaptive_profile()
+  ensures result >= 0
+  ensures result <= 1
+  decreases trigger
+=
+  var next: int = studio_mode_transition(compose.mode, trigger)
+  if trigger == studio_mode_trigger_play():
+    if compose.mode == studio_mode_author():
+      var _play: int = studio_timeline_toggle_play()
+  if trigger == studio_mode_trigger_stop():
+    if studio_timeline_playing() == 1:
+      var _stop: int = studio_timeline_toggle_play()
+  if next == compose.mode:
+    if trigger == studio_mode_trigger_stop():
+      return 1
+    return 0
+  studio_shell_apply_mode(compose, next)
+  return 1
+
+def studio_shell_sync_mode_from_env(compose: var StudioShellCompose) raises IO -> unit
+  requires studio_mode_valid(compose.mode) == 1
+  requires compose.layout.viewport_w > 0.0
+  ensures studio_mode_valid(compose.mode) == 1
+  decreases compose.mode
+=
+  if studio_bench_mode_from_env() == 1:
+    studio_shell_apply_mode(compose, studio_mode_bench())
+
+def studio_shell_timeline_tick_sim_step(compose: StudioShellCompose, config: StudioProjectConfig, sim_out: var SimSessionStub, dt: float, duration_ticks: int) raises IO -> int
+  requires studio_mode_valid(compose.mode) == 1
+  requires studio_profile_id_valid(config.active_profile) == 1
+  requires sim_out.tick >= 0
+  requires duration_ticks >= 1
+  ensures result >= -1
+  ensures result <= 1
+  decreases compose.mode
+=
+  if studio_mode_sim_step_allowed(compose.mode, studio_timeline_playing()) != 1:
+    return 0
+  return studio_timeline_tick_sim_step(config, sim_out, dt, duration_ticks)
+
+
 # UX-11 — shell loading / skeleton rects (viewport + inspector); no spinner IR
 type StudioShellLoadingState = object
   public shell_loading: int
@@ -2781,6 +3011,7 @@ type StudioShellLoadingState = object
 type StudioShellCompose = object
   public layout: StudioShellLayout
   public config: StudioProjectConfig
+  public mode: int
   public dock: StudioDockCompose
   public outliner: StudioOutlinerCompose
   public timeline: StudioTimelineCompose
@@ -4273,6 +4504,8 @@ def studio_compose_shell_profile(w: float, h: float, active_dock_slot: int, has_
   out.palette = studio_compose_palette(lay.viewport_w, lay.viewport_h, studio_palette_closed_flag())
   out.panel = gui_panel_state_new()
   out.loading = studio_shell_loading_state_new()
+  var mode0: int = studio_mode_from_profile(active_profile)
+  studio_shell_apply_mode(out, mode0)
   return out
 
 def studio_compose_shell(w: float, h: float, active_dock_slot: int, has_selection: int, scene_entity_count: int) -> StudioShellCompose
@@ -4339,6 +4572,8 @@ def studio_compose_shell(w: float, h: float, active_dock_slot: int, has_selectio
   out.palette = studio_compose_palette(out.layout.viewport_w, out.layout.viewport_h, studio_palette_closed_flag())
   out.panel = gui_panel_state_new()
   out.loading = studio_shell_loading_state_new()
+  var mode0: int = studio_mode_default()
+  studio_shell_apply_mode(out, mode0)
   return out
 
 
@@ -5038,6 +5273,9 @@ def studio_palette_apply_action(compose: var StudioShellCompose, action_id: int)
   ensures result <= 1
   decreases action_id
 =
+  if action_id == studio_palette_action_focus_agent():
+    studio_shell_apply_mode(compose, studio_mode_agent())
+    return 1
   var region: int = gui_studio_palette_region_for_action(action_id)
   if region >= studio_region_dock():
     var _timing: PanelSwitchTiming = gui_panel_switch_to(compose.panel, region, 0.0)

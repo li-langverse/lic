@@ -67,7 +67,7 @@ todos:
     status: done
   - id: wsm-w3-interaction-modes
     content: "Studio mode FSM — author/simulate/analyze/agent/publish/adaptive (WP-UX-15)"
-    status: pending
+    status: done
   - id: wsm-w4-world-checkpoint
     content: "WorldSnapshot checkpoint after sim tick (WP-GD-02)"
     status: pending

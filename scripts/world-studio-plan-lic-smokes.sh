@@ -34,6 +34,7 @@ for smoke in \
   studio_agentic_run.li \
   studio_agent_chrome.li \
   studio_agent_chrome_fsm.li \
+  studio_interaction_modes.li \
   studio_viewport_hud.li \
   studio_viewport_error.li \
   studio_native_pixels_wgpu_readback.li; do

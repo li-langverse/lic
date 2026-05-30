@@ -1,17 +1,15 @@
 {
   "pass": true,
-  "todo_id": "wsm-w3-apply-patch-loop",
-  "wps_touched": ["WP-AG-04"],
+  "todo_id": "wsm-w3-interaction-modes",
+  "wps_touched": ["WP-UX-15"],
   "smokes_run": [
-    "packages/li-studio-ai/li-tests/smoke/studio_ai_apply_patch_loop.li",
-    "packages/li-studio-ai/li-tests/smoke/studio_ai_mcp_dispatch.li",
-    "packages/li-studio-ai/li-tests/smoke/studio_ai_task_state.li"
+    "packages/li-studio/li-tests/smoke/studio_interaction_modes.li"
   ],
   "native_only": true,
   "gates": {
     "world_studio_plan_gates": "pass",
-    "lic_check_local": "wsl studio_ai_apply_patch_loop.li green",
+    "lic_check_local": "wsl studio_interaction_modes.li green",
     "lic_check_ci": "pending"
   },
-  "notes": "WP-AG-04: studio_ai_apply_patch + studio_ai_apply_patch_loop wired to studio_mcp_lic_check dispatch; li_rt_studio_ai_patch_kind markers; studio_ai_complete routes to llm_generate with fixture weights."
+  "notes": "WP-UX-15: StudioShellCompose.mode + mode FSM (author/simulate/analyze/agent/publish/adaptive/bench); studio_mode_transition, studio_shell_apply_mode, studio_mode_mcp_tool_allowed, studio_shell_timeline_tick_sim_step; palette focus_agent enters agent mode; drug/scientific profiles auto-select adaptive/analyze modes; STUDIO_BENCH_MODE env via li_rt_studio_bench_mode_from_env."
 }

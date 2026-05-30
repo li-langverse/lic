@@ -8,13 +8,15 @@ chmod +x "$ROOT/li-tests/tooling/discharge_trivial_lean.sh" \
   "$ROOT/li-tests/tooling/discharge_linalg_int_lean.sh" \
   "$ROOT/li-tests/tooling/discharge_http_forward_lean.sh" \
   "$ROOT/li-tests/tooling/bounds_guard_codegen_gap.sh" \
-  "$ROOT/li-tests/tooling/dot4_loop_ensures_lean_stub_gap.sh"
+  "$ROOT/li-tests/tooling/dot4_loop_ensures_lean_stub_gap.sh" \
+  "$ROOT/li-tests/tooling/parallel_disjoint_lean_opaque_gap.sh"
 "$ROOT/li-tests/tooling/discharge_trivial_lean.sh"
 "$ROOT/li-tests/tooling/discharge_const_lean.sh"
 "$ROOT/li-tests/tooling/discharge_linalg_int_lean.sh"
 "$ROOT/li-tests/tooling/discharge_http_forward_lean.sh"
 "$ROOT/li-tests/tooling/bounds_guard_codegen_gap.sh"
 "$ROOT/li-tests/tooling/dot4_loop_ensures_lean_stub_gap.sh"
+"$ROOT/li-tests/tooling/parallel_disjoint_lean_opaque_gap.sh"
 LIC="${LIC:-$("$ROOT/scripts/resolve-lic.sh")}"
 "$LIC" build "$ROOT/li-tests/contracts_verify/index_refinement.li" -o /dev/null
 chmod +x "$ROOT/scripts/check-autovc-open-goals.sh"

@@ -2,7 +2,7 @@
 
 **Date:** 2026-05-30  
 **north_star_fit:** blazingly-fast (PH-5b, PH-7e) — pure-Li `@` blocked IKJ for 512³ matmul  
-**Status:** partial — `matmul_naive` at cap; `matmul_blocked` improved but still >1.2× locally
+**Status:** tier-1 cap met locally — both matmul rows ≤1.2× cpp (pending CI ingest to dashboard)
 
 ## Problem
 
@@ -20,8 +20,8 @@
 
 | Axis | Before (dashboard) | After (local 10-run median) | Evidence |
 |------|-------------------|-----------------------------|----------|
-| Speed `matmul_naive` | 1.333× cpp | **0.95–1.21×** (median ~1.0×) | `lic/benchmarks/results/latest.csv` |
-| Speed `matmul_blocked` | 1.549× cpp | **1.26–1.31×** (was 1.62× pre-SIMD) | same |
+| Speed `matmul_naive` | 1.333× cpp | **1.167×** (li=0.0021s, cpp=0.0018s) | `lic/benchmarks/results/latest.csv` @ e6fcf17f |
+| Speed `matmul_blocked` | 1.549× cpp | **1.160×** (li=0.0109s, cpp=0.0094s) | same |
 | Accuracy | pass | pass (checksums unchanged) | `bench.py --tier 1` verify |
 | Stability | N/A tier-1 | unchanged | — |
 
@@ -45,6 +45,7 @@ cd benchmarks && LIC_ROOT=../lic ./scripts/ingest/ingest-lic.sh
 
 ## Remaining gaps
 
-- `matmul_blocked` **~1.31×** locally (target ≤1.2×) — micro-kernel register blocking / `mm_lut_*` init overhead vs C arithmetic init.
-- `num_gmres` (1.4× dashboard) — shared-C wrapper; green locally on this machine.
-- `ml_*` (1.333×) — **li-math** repo, out of lic scope.
+- Dashboard ingest: run full `./scripts/run-full-benchmark-suite.sh` on CI after merge — partial `--only` ingest clears unrelated rows.
+- `num_gmres` (1.4× dashboard) — shared-C wrapper; **1.0×** locally (li=cpp=0.0005s); stale dashboard row.
+- `ml_conv2d_forward`, `ml_mlp_*` (1.333×) — **li-math** repo (PH-ML Wave 2), not lic codegen.
+- `md_thermostat_*` (yellow ~1.29×) — tier-2 shared kernel; micro-opt deferred.

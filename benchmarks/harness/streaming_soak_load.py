@@ -25,7 +25,7 @@ def _sse_once(host: str, port: int, path: str, *, events_min: int, timeout: floa
     conn = http.client.HTTPConnection(host, port, timeout=timeout)
     try:
         t0 = time.perf_counter()
-        conn.request("GET", path)
+        conn.request("GET", path, headers={"Accept": "text/event-stream"})
         resp = conn.getresponse()
         if resp.status != 200:
             return False, time.perf_counter() - t0

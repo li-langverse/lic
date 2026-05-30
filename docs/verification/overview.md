@@ -58,6 +58,9 @@ Tier 2 physics must **`lic build`** with full proofs (energy/momentum `ensures`)
 
 ## Related
 
+- [Provability gaps (G-*)](provability-gaps.md) — honest register; update with every proof-surface PR
+- [Plan cross-links](../ecosystem/plan-cross-links.md) — master plan ↔ gaps ↔ phase plans
+- [Master plan](../superpowers/plans/2026-05-14-li-master-plan.md#documentation--provability-honesty-cross-cutting) — Doc phase rules
 - [Proof database](proof-database.md)
 - [Architecture overview](../architecture/overview.md)  
 - [Benchmarks plan](../superpowers/plans/2026-05-14-benchmarks-and-simulations.md)  

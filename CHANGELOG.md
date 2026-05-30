@@ -6,6 +6,10 @@ All notable changes to Li are documented here. The format follows
 
 ## [Unreleased]
 
+### Added
+
+- **Docs maintainer:** [plan-cross-links](docs/ecosystem/plan-cross-links.md), [live-handbook-sites](docs/ecosystem/live-handbook-sites.md), provability-gaps dedupe — [2026-05-30-docs-maintainer-crosslinks.md](docs/release-notes/2026-05-30-docs-maintainer-crosslinks.md).
+
 ### Changed
 
 - **Harness timing:** `latest.csv` reports **mean** in `value`, plus `stddev` and `sample_runs`; default ≥6 runs, ≥20 when mean wall &lt; 1s (`timing_stats.py`) — tier 1–2, ecosystem, HTTP (`bench_http.py`), toolchain, execution-resource sweep — [2026-05-28-bench-mean-std-timing.md](docs/release-notes/2026-05-28-bench-mean-std-timing.md).

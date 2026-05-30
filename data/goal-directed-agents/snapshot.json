@@ -1,16 +1,16 @@
 {
-  "generated_at": "2026-05-30T05:04:55.597598+00:00",
+  "generated_at": "2026-05-30T05:07:39.119785+00:00",
   "tz": "Europe/Berlin",
-  "agents_live": 0,
+  "agents_live": 1,
   "runners": [
     {
       "id": "httpd",
       "name": "li-httpd gap parity",
       "branch": "cursor/httpd-plan-continue",
-      "head": "25f04993",
+      "head": "788361af",
       "running": true,
-      "process": "2010567 bash ./scripts/httpd-plan-until-deadline.sh",
-      "log_path": "/home/s4il0r/Documents/Cursor/li-langverse/lic/../lic/data/httpd-plan-loop/until-deadline-20260529-191636.log",
+      "process": "2751704 python3 /home/s4il0r/Documents/Cursor/li-langverse/lic/scripts/httpd-plan-loop.py --max 4",
+      "log_path": "/home/s4il0r/Documents/Cursor/li-langverse/lic/../lic/data/httpd-plan-loop/until-deadline-20260530-050645.log",
       "todos": [
         {
           "id": "gap-exploit-owasp-cwe-suite",
@@ -68,17 +68,26 @@
       "plan_pending": [
         "gap-phase2-streaming-wrk"
       ],
-      "agent_live": false,
-      "agent": "",
-      "goal_file": "",
-      "log_age_sec": 35299,
+      "agent_live": true,
+      "agent": "code_implementer",
+      "goal_file": "goal-20260530-050652.md",
+      "log_age_sec": 24,
       "last_state_at": "",
       "last_state_todo": "",
       "last_state_gates": "",
-      "current_iteration": "",
-      "activity": [],
-      "status_note": "supervisor idle (log 35299s stale \u2014 check log_path)",
-      "active_todo_id": "gap-phase2-streaming-wrk"
+      "current_iteration": "=== iteration 1: gap-phase2-perf-wrk-soak ===",
+      "activity": [
+        "[sdk] \u25b6 tool",
+        "[sdk] \u25b6 tool",
+        "[sdk] \u2713 read /home/s4il0r/Documents/Cursor/li-langverse/lic/scripts/check-tier5-perf-wrk-soak.sh",
+        "[sdk] \u2713 read /home/s4il0r/Documents/Cursor/li-langverse/lic/scripts/check-tier5-perf-wrk-soak.sh",
+        "[sdk] \u2717 tool",
+        "[sdk] \u2717 tool",
+        "[sdk] \u25b6 tool",
+        "[sdk] \u25b6 tool"
+      ],
+      "status_note": "agent coding (code_implementer)",
+      "active_todo_id": "gap-phase2-perf-wrk-soak"
     },
     {
       "id": "compiler-studio",
@@ -391,7 +400,7 @@
       "agent_live": false,
       "agent": "",
       "goal_file": "",
-      "log_age_sec": 379364,
+      "log_age_sec": 379528,
       "last_state_at": "2026-05-25T06:41:51.000000+00:00",
       "last_state_todo": "wave-d-gui-scaffold",
       "last_state_gates": true,
@@ -510,7 +519,7 @@
       "agent_live": false,
       "agent": "",
       "goal_file": "",
-      "log_age_sec": 476633,
+      "log_age_sec": 476796,
       "last_state_at": "2026-05-24T16:32:27.410480+00:00",
       "last_state_todo": "sim-p0-md-lj-li-parity",
       "last_state_gates": false,
@@ -711,7 +720,7 @@
       "agent_live": false,
       "agent": "",
       "goal_file": "",
-      "log_age_sec": 426773,
+      "log_age_sec": 426936,
       "last_state_at": "2026-05-30T01:04:00+00:00",
       "last_state_todo": "studio-ux-12-world-studio-demo-linux-audit",
       "last_state_gates": true,

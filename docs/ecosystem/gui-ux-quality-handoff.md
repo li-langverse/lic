@@ -30,7 +30,7 @@ From `ux-targets.json` — **surface_class** `gui_app` / `gui_gen`:
 | Target id | Repo | Adapter | Journeys (summary) | Honesty note |
 |-----------|------|---------|-------------------|--------------|
 | `agents-dashboard` | `li-cursor-agents` | `web_gui` | empty state, live stream | Requires dev server; port alignment ([#38](https://github.com/li-langverse/li-cursor-agents/issues/38)) |
-| `world-studio-demo` | `lic` | `web_gui` (fixture) | viewport, palette, keyboard | HTML mock — not full `li-studio` binary |
+| `world-studio-demo` | `lic` | `web_gui` (fixture) | viewport, palette, keyboard | HTML mock — not full `li-studio` binary; **studio-ux-12** Linux harness audit wired (Partial — still mock) |
 | `world-studio-native` | `lic` | `native_gui` | Xvfb SDL PNG capture | Needs `LIC_ROOT` + `scripts/studio-ui-ux-capture-native.sh` ([#394](https://github.com/li-langverse/lic/issues/394)) |
 | `lic-tetris` | `lic` | `native_gui` | play session | Must not reuse studio stub ([#46](https://github.com/li-langverse/li-cursor-agents/issues/46), [#515](https://github.com/li-langverse/lic/issues/515)) |
 | `gui-gen-fixture` | `li-cursor-agents` | `web_gui` | gen preview loop | `http_probe` only until Playwright ([#32](https://github.com/li-langverse/li-cursor-agents/issues/32)) |
@@ -47,7 +47,7 @@ Ingested by `swarm_observer` (`orch-r4-ui-ux-signals`); see [orchestrator note](
 |--------|----------------|
 | `gap-ux-audit-native-studio` | `gui_ux_tester`, `studio_ui_ux_builder` |
 | `gap-ux-audit-agents-dashboard` | `gui_ux_tester`, `gui_ui_tester` |
-| `gap-ux-audit-world-studio-demo` | `gui_ux_tester`, `studio_ui_ux_builder` |
+| `gap-ux-audit-world-studio-demo` | `gui_ux_tester`, `studio_ui_ux_builder` — **Partial:** studio-ux-12 harness on Linux; fixture still HTML mock |
 | `gap-ux-studio-wave2-plan` | `studio_ui_ux_builder` |
 | `gap-ux-cinematic-studio-handoff` | `studio_ui_ux_builder` |
 
@@ -55,9 +55,21 @@ Wave 1 studio plan todos are **done**; wave 2 is harness expansion + agentic ben
 
 ---
 
+## Workflow repo routing
+
+| Agent | Primary clone | Notes |
+|-------|---------------|-------|
+| `gui_ux_tester` | `li-cursor-agents` (harness) + `lic-studio-ui` worktree for native capture | Set `LIC_ROOT` to `lic-studio-ui` for SDL targets ([#47](https://github.com/li-langverse/li-cursor-agents/issues/47)) |
+| `studio_ui_ux_builder` | `lic` branch `cursor/studio-ui-ux-plan-loop` | Plan loop gates + capture scripts |
+| `docs_maintainer` | `lic` (this handoff) + `benchmarks` (digests) | No product code |
+
+Latest companion digests: [2026-05-30-gui-ui.md](https://github.com/li-langverse/benchmarks/blob/main/docs/ecosystem/ux-digests/2026-05-30-gui-ui.md) (`gui_ui_tester`), [studio-ui-ux-builder-digest](https://github.com/li-langverse/benchmarks/blob/main/data/latest/studio-ui-ux-builder-digest.md).
+
+---
+
 ## Runbook (`gui_ux_tester`)
 
-1. Read briefing `ux-audit.json` / `ui-audit.json` (or run proactive harness → `benchmarks/data/latest-gui-ux-run/`).
+1. Read briefing `ux-audit.json` / `ui-audit.json` (or run proactive harness → `benchmarks/data/latest-gui-ui-run/`).
 2. For each **failing** GUI target, file issues via **ui-ux-remediation** template (`li-cursor-agents`).
 3. Write digest `benchmarks/docs/ecosystem/ux-digests/YYYY-MM-DD-gui-ux.md` (link issues; no product code in tester run).
 4. Append P0/P1 to `implementation_queue` when enrich is enabled.

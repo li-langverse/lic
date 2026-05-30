@@ -12,6 +12,8 @@ All notable changes to Li are documented here. The format follows
 
 ### Changed
 
+- **Docs:** audit HEAD vs stale Pages honesty + GUI handoff native-rerun caveat — [2026-05-30-docs-maintainer-audit-head-vs-content.md](docs/release-notes/2026-05-30-docs-maintainer-audit-head-vs-content.md).
+
 - **Docs:** open PH tracker table + proactive GUI audit handoff for `gui_ux_tester` — [2026-05-30-docs-maintainer-ph-tracker-ui-handoff.md](docs/release-notes/2026-05-30-docs-maintainer-ph-tracker-ui-handoff.md).
 
 - **Docs:** README and `docs/handbook/README.md` link live [lic Pages hub](https://li-langverse.github.io/lic/); satellite handbook table reflects deployed org Pages (audit green).

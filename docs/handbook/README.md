@@ -1,6 +1,6 @@
 # Li handbook index (in-repo)
 
-Canonical **language** handbook: [li-language Pages](https://li-langverse.github.io/li-language/). **Compiler + verification** hub: [lic Pages](https://li-langverse.github.io/lic/) (static `site/index.html` + plan cross-links nav). This tree under `lic/docs/` is the source of truth until submodule wiring completes; edit [lic-docs](https://github.com/li-langverse/lic-docs) for user-facing Pages when split.
+Canonical **language** handbook: [li-language Pages](https://li-langverse.github.io/li-language/) — **deploy may lag** this tree until [lic#403](https://github.com/li-langverse/lic/issues/403) (strict MkDocs + Pages publish); prefer local `mkdocs serve` for 12-tab IA. **Compiler + verification** hub: [lic Pages](https://li-langverse.github.io/lic/) (static `site/index.html` + plan cross-links nav). This tree under `lic/docs/` is the source of truth until submodule wiring completes; edit [lic-docs](https://github.com/li-langverse/lic-docs) for user-facing Pages when split.
 
 ## Start here
 

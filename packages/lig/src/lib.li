@@ -1,5 +1,5 @@
 
-# lig — Li GPU device layer (PH-HW HW-0): backend probe, TOML backend line, wgpu smoke.
+# lig â€” Li GPU device layer (PH-HW HW-0): backend probe, TOML backend line, wgpu smoke.
 
 extern proc li_rt_lig_device_kind() -> int
   requires true
@@ -187,6 +187,14 @@ def lig_kernel_matmul_f32() -> int
   decreases 0
 =
   return 1
+
+def lig_kernel_mlp_forward_f32() -> int
+  requires true
+  ensures result == 2
+  decreases 0
+=
+  return 2
+
 
 def lig_kernel_run(kernel_id: int, backend_id: int) raises IO -> int
   requires kernel_id >= 1

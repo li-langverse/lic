@@ -1,20 +1,36 @@
 {
-  "generated_at": "2026-05-30T08:20:00Z",
+  "generated_at": "2026-05-30T21:15:46Z",
   "suite": "ph-ml-async-env-collect",
   "smoke": "packages/li-ml-rl/li-tests/smoke/env_pool_async_four.li",
   "env_count": 4,
   "num_envs": 4,
   "async_workers": 4,
-  "samples_collected": true,
+  "worker": "sync",
+  "worker_count": 4,
+  "parallelism_model": "sync_session_env_pool",
+  "samples_collected": false,
   "compile_ok": true,
   "executed": true,
-  "validity_gate_pass": true,
-  "run_exit_code": 0,
-  "note": "verified via lic build/run in WSL (bench harness cwd fix in PR)",
+  "validity_gate_pass": false,
+  "run_exit_code": 2,
+  "cpu_sec": 0.551127,
+  "stderr_tail": "",
   "envs": [
-    {"env_index": 0, "worker": "stub"},
-    {"env_index": 1, "worker": "stub"},
-    {"env_index": 2, "worker": "stub"},
-    {"env_index": 3, "worker": "stub"}
+    {
+      "env_index": 0,
+      "worker": "sync"
+    },
+    {
+      "env_index": 1,
+      "worker": "sync"
+    },
+    {
+      "env_index": 2,
+      "worker": "sync"
+    },
+    {
+      "env_index": 3,
+      "worker": "sync"
+    }
   ]
 }

@@ -1,13 +1,21 @@
 import sim
 
-# li-ml-rl (PH-ML Wave 3): JobGraph scaffold + async EnvPool collection (>=4 env handles).
+# li-ml-rl (PH-ML Wave 4): persistent EnvPool JobGraph, SampleJob fill, Train/Eval nodes.
 
 def ml_rl_version() -> int
   requires true
-  ensures result == 3
+  ensures result == 4
   decreases 0
 =
-  return 3
+  return 4
+
+def ml_rl_worker_mode() -> int
+  requires true
+  ensures result >= 0
+  ensures result <= 1
+  decreases 0
+=
+  return 0
 
 type SampleJob = object
   public env_index: int
@@ -15,12 +23,25 @@ type SampleJob = object
   public reward: float
   public done: int
 
+type TrainStepJob = object
+  public batch_size: int
+  public loss_stub: float
+  public dispatched: int
+
+type EvalStepJob = object
+  public batch_size: int
+  public mean_reward: float
+  public dispatched: int
+
 type JobGraphStub = object
   public pool_size: int
   public job_count: int
   public samples_collected: int
   public total_reward: float
   public async_workers: int
+  public last_sample: SampleJob
+  public train_step: TrainStepJob
+  public eval_step: EvalStepJob
 
 def job_graph_stub_default() -> JobGraphStub
   requires true
@@ -37,6 +58,16 @@ def job_graph_stub_default() -> JobGraphStub
   g.samples_collected = 0
   g.total_reward = 0.0
   g.async_workers = sim_rl_env_pool_size_default()
+  g.last_sample.env_index = 0
+  g.last_sample.sample_id = 0
+  g.last_sample.reward = 0.0
+  g.last_sample.done = 0
+  g.train_step.batch_size = 0
+  g.train_step.loss_stub = 0.0
+  g.train_step.dispatched = 0
+  g.eval_step.batch_size = 0
+  g.eval_step.mean_reward = 0.0
+  g.eval_step.dispatched = 0
   return g
 
 def ml_rl_async_env_count() -> int
@@ -47,12 +78,55 @@ def ml_rl_async_env_count() -> int
 =
   return sim_rl_env_pool_size_default()
 
+def ml_rl_sample_job_from_session(session: SimSessionStub, sample_id: int) -> SampleJob
+  requires sample_id >= 0
+  ensures result.sample_id == sample_id
+  decreases sample_id
+=
+  var obs: EnvStepResult = env_obs_from_session(session)
+  var s: SampleJob
+  s.env_index = obs.env_index
+  s.sample_id = sample_id
+  s.reward = obs.reward
+  s.done = obs.done
+  return s
+
 def ml_rl_env_pool_step(session: var SimSessionStub, dt: float) -> int
   requires session.tick >= 0
   ensures result >= 0
   decreases session.tick
 =
   return sim_rl_session_env_pool_step(session, dt)
+
+def ml_rl_job_graph_train_step(graph: var JobGraphStub, batch_size: int) -> int
+  requires batch_size >= 0
+  ensures result >= 0
+  ensures result <= 1
+  decreases batch_size
+=
+  if batch_size <= 0:
+    return sim_status_invalid_dt()
+  graph.train_step.batch_size = batch_size
+  graph.train_step.loss_stub = graph.total_reward / env_tick_as_float(batch_size)
+  graph.train_step.dispatched = 1
+  graph.job_count = graph.job_count + 1
+  return sim_status_ok()
+
+def ml_rl_job_graph_eval_step(graph: var JobGraphStub, batch_size: int) -> int
+  requires batch_size >= 0
+  ensures result >= 0
+  ensures result <= 1
+  decreases batch_size
+=
+  if batch_size <= 0:
+    return sim_status_invalid_dt()
+  graph.eval_step.batch_size = batch_size
+  graph.eval_step.mean_reward = 0.0
+  if batch_size > 0:
+    graph.eval_step.mean_reward = graph.total_reward / env_tick_as_float(batch_size)
+  graph.eval_step.dispatched = 1
+  graph.job_count = graph.job_count + 1
+  return sim_status_ok()
 
 def ml_rl_job_graph_collect(
     session: var SimSessionStub, dt: float, graph: var JobGraphStub) -> int
@@ -65,19 +139,25 @@ def ml_rl_job_graph_collect(
 =
   if dt <= 0.0:
     return sim_status_invalid_dt()
-  var pool: EnvPoolStub = env_pool_stub_default()
-  if pool.pool_size < 4:
+  if session.env_pool_size <= 0:
+    sim_session_env_pool_init(session)
+  var steps_before: int = session.env_pool_steps_emitted
+  if ml_rl_env_pool_step(session, dt) != sim_status_ok():
     return sim_status_invalid_dt()
-  if env_pool_stub_step(pool, session, dt) != sim_status_ok():
-    return sim_status_invalid_dt()
-  graph.pool_size = pool.pool_size
-  graph.job_count = pool.steps_emitted
-  graph.samples_collected = pool.steps_emitted
-  graph.total_reward = pool.total_reward
-  graph.async_workers = pool.pool_size
+  graph.pool_size = session.env_pool_size
+  graph.samples_collected = session.env_pool_steps_emitted - steps_before
+  graph.total_reward = session.env_pool_total_reward
+  if ml_rl_worker_mode() == 0:
+    graph.async_workers = session.env_pool_size
   if graph.samples_collected < 4:
     return sim_status_invalid_dt()
-  if sim_session_replay_last_tick(session) != pool.pool_size:
+  graph.job_count = graph.samples_collected
+  var sample0: SampleJob = ml_rl_sample_job_from_session(session, graph.samples_collected)
+  graph.last_sample.env_index = sample0.env_index
+  graph.last_sample.sample_id = sample0.sample_id
+  graph.last_sample.reward = sample0.reward
+  graph.last_sample.done = sample0.done
+  if sim_session_replay_last_tick(session) != session.tick:
     return sim_status_invalid_dt()
   return sim_status_ok()
 

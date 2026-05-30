@@ -1,0 +1,2 @@
+/usr/bin/llvm-ar-22 Dqc libli_config.a CMakeFiles/li_config.dir/check_config.cpp.o
+/usr/bin/llvm-ranlib-22 -D libli_config.a

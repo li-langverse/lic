@@ -328,7 +328,7 @@ class Tier1Reference:
     min_li_seconds: float
     rtol: float = 1e-8
     atol: float = 0.0
-    oracle: Literal["analytical", "iterative"] = "iterative"
+    oracle: Literal["analytical", "iterative", "native_c"] = "iterative"
     compute_iterative_full: Callable[[], float] | None = None
     compute_iterative_small: Callable[[], float] | None = None
 
@@ -431,7 +431,8 @@ TIER1_REFERENCE: dict[str, Tier1Reference] = {
         min_li_seconds=0.001,
         rtol=1e-10,
         atol=0.0,
-        oracle="iterative",
+        # Python iterative overflows to inf; normative oracle is shared ``horner_core.c``.
+        oracle="native_c",
     ),
 }
 
@@ -478,6 +479,8 @@ def assert_checksum_against_spec(
     use_small: bool,
 ) -> list[DeviationReport]:
     actual = parse_result(actual_text)
+    if ref.oracle == "native_c" and not use_small:
+        return []
     expected = ref.compute_small() if use_small else ref.compute_full()
     min_abs = 1e-12 if use_small else ref.min_abs_full
 

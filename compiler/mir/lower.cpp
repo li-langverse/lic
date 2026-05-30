@@ -2220,7 +2220,7 @@ void lower_stmt(const Stmt& stmt, LowerCtx& ctx, bool returns_float, std::vector
         if (horner_ok && float_names.count(acc_name) > 0) {
           const double* const_x =
               ctx.const_floats ? lookup_const_float(*ctx.const_floats, factor) : nullptr;
-          if (const_x != nullptr && trip >= 65536) {
+          if (const_x != nullptr && trip >= kHornerScalarSteps) {
             MirInsn full;
             full.op = MirOp::HornerConstLoopF64;
             full.ident = acc_name;

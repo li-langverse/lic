@@ -15,6 +15,8 @@ chmod +x "$ROOT/li-tests/tooling/bounds_refinement_lean_gap.sh"
 "$ROOT/li-tests/tooling/bounds_refinement_lean_gap.sh"
 chmod +x "$ROOT/li-tests/tooling/method_requires_lean_gap.sh"
 "$ROOT/li-tests/tooling/method_requires_lean_gap.sh"
+chmod +x "$ROOT/li-tests/tooling/vec3_dot_ensures_lean_gap.sh"
+"$ROOT/li-tests/tooling/vec3_dot_ensures_lean_gap.sh"
 LIC="${LIC:-$("$ROOT/scripts/resolve-lic.sh")}"
 "$LIC" build "$ROOT/li-tests/contracts_verify/index_refinement.li" -o /dev/null
 chmod +x "$ROOT/scripts/check-autovc-open-goals.sh"

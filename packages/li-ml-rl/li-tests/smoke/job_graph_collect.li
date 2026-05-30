@@ -6,7 +6,7 @@ def main() -> int
   ensures result == 0
   decreases 0
 =
-  if ml_rl_version() != 3:
+  if ml_rl_version() != 4:
     return 1
   var sess: SimSessionStub = sim_session_stub_default()
   sim_session_apply_studio_profile(2, sess)
@@ -23,6 +23,10 @@ def main() -> int
     return 6
   if graph.total_reward <= 0.0:
     return 7
+  if graph.last_sample.sample_id < 4:
+    return 9
+  if graph.last_sample.env_index != graph.pool_size - 1:
+    return 10
   if sess.tick != graph.pool_size:
     return 8
   return 0

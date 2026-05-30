@@ -216,7 +216,7 @@ def llm_forward(tokens: LlmTokenIds, weights: LlmModelWeights, cache: LlmKVCache
   var matmul_hint: int = llm_forward_matmul_cpu_hint()
   if matmul_hint < 0:
     acc = acc + 7
-  else:
+  if matmul_hint >= 0:
     acc = acc + matmul_hint
   if out.vocab_size > 0:
     out.top_id = acc % out.vocab_size

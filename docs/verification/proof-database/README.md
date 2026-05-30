@@ -2,7 +2,7 @@
 
 **Audience:** agents extending **P-physics** and tier-2 bench oracles without weakening discharge honesty.
 
-**Index:** [proof-database.md](../proof-database.md) · [Provability gaps](../provability-gaps.md) (**G-physics**, **G-proof-db**) · [Proof corpus roadmap](../proof-corpus-roadmap.md) · **Schema:** [schema.toml](schema.toml)
+**Index:** [proof-database.md](../proof-database.md) · **Extension roadmap:** [proof-database-extension-roadmap.md](../proof-database-extension-roadmap.md) · **Schema:** v2 ([schema.toml](schema.toml)) · [Provability gaps](../provability-gaps.md) (**G-physics**, **G-proof-db**) · [Proof corpus roadmap](../proof-corpus-roadmap.md) · **Schema:** [schema.toml](schema.toml)
 
 ## Discrepancy taxonomy (`gap_kind`)
 
@@ -13,6 +13,21 @@
 | **`none`** | Row matches `Discharge.lean` or closed specimen | Refresh `last_verified_lic_commit` on compiler change |
 
 `proof_status = discrepancy` (schema) means catalog vs spec/Lean/MIR disagree — triage before blaming the compiler.
+
+## Schema v2 (WP0-A)
+
+Optional fields: `domain`, `erdos_id`, `erdos_status`, `convergence_class`, `benchmark_ref`, `mathlib_ref`, `priority_tier`. New `proof_status`: **`target`** (aspirational — not discharged).
+
+| Vertical | Entry files | ID prefix |
+|----------|-------------|----------|
+| Numerics | `numerics-*.toml` | `N-AX-*`, `N-LM-*` |
+| Discrete | `discrete-*.toml` | `D-AX-*`, `D-LM-*` |
+| Statistics | `statistics-*.toml` | `ST-AX-*`, `ST-LM-*` |
+| ML | `ml-*.toml` | `ML-AX-*`, `ML-LM-*` |
+| Graph | `graph-*.toml` | `GT-AX-*`, `GT-LM-*` |
+| Erdős | `erdos-register.toml` | `E-*` |
+| Chemistry | `chemistry-*.toml` | `CHEM-*` |
+| Biology | `biology-*.toml` | `BIO-*` |
 
 ## Layout
 

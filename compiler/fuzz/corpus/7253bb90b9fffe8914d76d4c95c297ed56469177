@@ -1,0 +1,5 @@
+@cp@cpu
+@parallel(disjoint=disjoint_row)
+proc f() -> incpu
+@parallel(disjoint=disjoint_uFrow)
+proc f() -> i@pnt

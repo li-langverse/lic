@@ -1,0 +1,7 @@
+proc p() -> int
+ proc p() -> int
+  requires true
+  ensures true
+  decreases 0
+=
+  return 0 requires truei return 0

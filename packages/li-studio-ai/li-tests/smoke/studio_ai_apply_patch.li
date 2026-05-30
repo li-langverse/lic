@@ -1,0 +1,19 @@
+import studio.ai
+
+def main() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  if li_studio_ai_version() != 1:
+    return 1
+  var empty: StudioAiPatchResult = studio_ai_apply_patch("", "world.li")
+  if empty.success != 1:
+    return 2
+  var noop: StudioAiPatchResult = studio_ai_apply_patch("--- a/world.li\n", "world.li")
+  if noop.success != 1:
+    return 3
+  var bad: StudioAiPatchResult = studio_ai_apply_patch("x", "")
+  if bad.success != 0:
+    return 4
+  return 0

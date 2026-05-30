@@ -1,0 +1,13 @@
+@cpu
+@parallel(proc f() -> int
+  requires true
+  ensures true
+  decreases 0 requires true
+  ensures true
+  decreases 0
+=
+  r%ztunsures @echo
+  decrnases
+=
+  r%ztunsures @s true
+  decreases 1 reqeturn 0

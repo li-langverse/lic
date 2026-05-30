@@ -4,6 +4,7 @@
 
 ### Added
 
+- **UX-04 palette action dispatch** — `studio_key_action_palette_exec`, `gui_studio_palette_exec_compose`, `gui_studio_palette_region_for_action`; digits 1–3 execute palette actions when open; `li_std_gui_version` → 4.
 - **UX-09 keyboard-first** — `StudioKeyBinding`, `gui_handle_studio_key`, `studio_handle_studio_key`; smoke `studio_keyboard.li`.
 - **UX-09 input JSON mock** — smoke `studio_keyboard_input_json.li` (probe-shaped `InputState`); host bridge in `docs/game-dev/studio-shell-input-bridge.md`.
 - **UX-01 selection** — `ViewportSelection`, `gui_viewport_selection_none` / `gui_viewport_selection_rect`; `selection_active` on `ViewportRegion`.

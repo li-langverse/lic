@@ -1,6 +1,29 @@
-def lkir_matmul_tile() -> int
+# lig.kernel.matmul_f32 — LKIR tile contract (CPU pilot, tile 4×4×4)
+
+def lkir_matmul_tile_m() -> int
   requires true
   ensures result == 4
   decreases 0
 =
   return 4
+
+def lkir_matmul_tile_n() -> int
+  requires true
+  ensures result == 4
+  decreases 0
+=
+  return 4
+
+def lkir_matmul_tile_k() -> int
+  requires true
+  ensures result == 4
+  decreases 0
+=
+  return 4
+
+def lkir_matmul_validity_min() -> float
+  requires true
+  ensures result == 0.999
+  decreases 0
+=
+  return 0.999

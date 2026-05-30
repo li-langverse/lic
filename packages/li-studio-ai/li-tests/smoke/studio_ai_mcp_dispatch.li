@@ -1,0 +1,16 @@
+import studio.ai
+
+def main() -> int raises IO
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  if li_studio_ai_version() != 1:
+    return 1
+  var bg: StudioAiToolResult = studio_ai_mcp_dispatch("set_viewport_background", 1)
+  if bg.success != 1:
+    return 2
+  var bad: StudioAiToolResult = studio_ai_mcp_dispatch("not_a_real_tool", 0)
+  if bad.success != 0:
+    return 3
+  return 0

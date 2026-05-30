@@ -21,7 +21,7 @@ Complements **PH-ML** (classical DL) and **li-studio-ai** (orchestration, not in
 | **WP-LLM-02** | Safetensors + GGUF loader (f32/f16; no MoE v1) | WP-LLM-01 | load Llama-3.2-1B-class fixture | **stub** |
 | **WP-LLM-03** | Transformer graph (`llm.attn`, `llm.ffn`, RoPE) | `li-ml` matmul | forward vs reference logits ULP | **stub** |
 | **WP-LLM-04** | KV-cache + decode loop (`llm_generate`) | WP-LLM-03 | greedy decode smoke | **stub** |
-| **WP-LLM-05** | CPU perf via `li-ml`/`linalg` matmul | PH-ML WP-ML-04 | tier-3 bench row | planned |
+| **WP-LLM-05** | CPU perf via `li-ml`/`linalg` matmul | PH-ML WP-ML-04 | tier-3 bench row | **partial** (`llm_forward_matmul_cpu_hint` → `ml_lig_matmul_run_auto`) |
 | **WP-LLM-06** | GPU matmul/attention via `@gpu` + LKIR | PH-HW WP-HW-06 | tier-3 GPU column | planned |
 | **WP-LLM-07** | HF → safetensors export doc + `lillm import` CLI | WP-LLM-02 | one documented model path | planned |
 | **WP-LLM-08** | Trusted backend (Ollama/OpenAI-compatible) — Wave 2 | `li-httpd` | audit + `[trusted]` fence | optional |

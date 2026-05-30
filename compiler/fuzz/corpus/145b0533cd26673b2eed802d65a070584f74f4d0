@@ -1,0 +1,7 @@
+@cpu
+@pa
+proc fires true
+decreases 1
+=
+  rpu
+@para 0

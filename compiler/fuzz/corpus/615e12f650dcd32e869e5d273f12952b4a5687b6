@@ -1,0 +1,5 @@
+@cpu
+@parallel(diparallelisjoint_row,
+proc fs%s 0
+=
+  robjecteturn 0

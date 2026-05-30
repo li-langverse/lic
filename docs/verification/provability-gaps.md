@@ -1,6 +1,6 @@
 # Provability gaps (current compiler)
 
-**Last updated:** 2026-05-26  
+**Last updated:** 2026-05-30  
 **Audience:** contributors, package authors, anyone relying on `lic build` as a proof certificate  
 
 Li’s **north star** is: user logic is proved before ship; runtime failures for proved programs → **~0%**. That is the **target**, not a complete description of **`lic` today**.
@@ -48,20 +48,24 @@ This page is the **honest inventory** of what is **not** fully proved or not yet
 | **G-net** | Partial | Net effect codegen + proofs |
 | **G-trust** | Stub | `Core.lean` / `MIR.lean` semantics, not placeholder |
 | **G-ann** | Missing | PEP 649 deferred annotations |
-| **G-gpu** | Missing | `@gpu` address-space proofs + codegen |
+| **G-gpu** | Partial | **Closed slice:** `@gpu` / `@gpu(devices=N)` are MIR-visible (`mir_gpu_def`, `mir_gpu_multi_device_def`) with `devices >= 1` policy. Still open: address-space proofs, LKIR lowering, device buffers, and vendor codegen |
 | **G-meta** | Missing | Compiler ↔ Lean equivalence (research) |
 | **G-authz** | Missing | Capability / IDOR (OS phase) |
 | **G-test-verify** | **Done** | `prove_lean_ok` in `run_all.sh`; 14 closed `contracts_verify` specimens |
 | **G-proof-db** | Partial | [Proof database](proof-database.md): register at `docs/verification/proof-database/entries/physics-*.toml` (`P-AX-*`, `P-LM-*`) |
 | **G-physics** | Partial | **P-physics** slice: 7× `P-AX-*` + 3× `P-LM-*`; 2× proved scalar lemmas in `Discharge.lean`; tier-2 **modeling_gap** on extern stubs |
 | **G-hw** | Axiomatic | FP/hardware model limit (documented, not closable) |
+| **G-num** | Stub | **WP0-A:** planned entries/num-*.toml + proof-db/num/; Peano/order linkage via **G-math**; no discharge slice yet |
+| **G-discrete** | Stub | **WP0-A:** combinatorics / finitary specs; catalog rows TBD; specimens after num axiom layer |
+| **G-stats** | Stub | **WP0-A:** descriptive stats + confidence stubs; tier-2 bench hooks (**5b**) TBD |
+| **G-ml** | Stub | **WP0-C:** [ml-convergence-program](ml-convergence-program.md) — parallel Lean + specimen tracks; no closed convergence VC |
+| **G-graph** | Stub | **WP0-A:** graph invariants (connectivity, bounds); proof-db/graph/ layout TBD |
+| **G-erdos** | Partial | **WP0-B:** proof-db/erdos/register.json → erdos-register.toml (E-*); **WP1+** Lean per 	arget row |
+| **G-chem** | Stub | **WP0-D:** reaction / stoichiometry catalog; tier-2 chem benches (**5b**) TBD |
+| **G-bio** | Stub | **WP0-D:** population / sequence toy models; tier-2 bio benches (**5b**) TBD |
 | **G-wrong-spec** | Social | User theorem quality (not tool-closable) |
 
-**Proof backlog still open:** **P-refine**, **P-ensures-witness**, **P-float**, **P-linalg** (float `@` Props; full matmul), **P-par**, **P-dec**, **P-bnd**, **P-http**, **P-narrow**, **P-meta**, **P-physics** — see [proof-corpus-roadmap](proof-corpus-roadmap.md). **P-linalg partial:** closed dot/sum/matmul-entry + **loop dot** (`linalg_dot4_int_loop_open`, `dot4_int_loop_eval_spec`); open float `vec3_dot`, 2D CallProc. **P-physics partial:** [proof-database.md](proof-database.md) index + `docs/verification/proof-database/entries/physics-*.toml` (`P-AX-*`, `P-LM-*`, pin `a9542bfc`); tier-2 wrappers still **modeling_gap** (`ensures true` on extern kernels).
-
-### Proof-db discrepancy appendix
-
-[`../../proof-database/DISCREPANCIES.md`](../../proof-database/DISCREPANCIES.md) — `python3 scripts/proof-db/compare_reference.py --write`. Kinds: `missing_lemma`, `open_vc`, `spec_drift`, `trusted_axiom`, `hardware_axiom` (**G-hw**).
+**Proof backlog still open:** **P-refine**, **P-ensures-witness**, **P-float**, **P-linalg** (float `@` Props; full matmul), **P-par**, **P-dec**, **P-bnd**, **P-http**, **P-narrow**, **P-meta**, **P-physics**, **P-num**, **P-discrete**, **P-stats**, **P-ml-convergence**, **P-graph**, **P-erdos**, **P-chem**, **P-bio** — see [proof-corpus-roadmap](proof-corpus-roadmap.md). **P-linalg partial:** closed dot/sum/matmul-entry + **loop dot** (`linalg_dot4_int_loop_open`, `dot4_int_loop_eval_spec`); open float `vec3_dot`, 2D CallProc. **P-physics partial:** [proof-database.md](proof-database.md) index + `docs/verification/proof-database/entries/physics-*.toml` (`P-AX-*`, `P-LM-*`, pin `a9542bfc`); tier-2 wrappers still **modeling_gap** (`ensures true` on extern kernels).
 
 ### Proof-db discrepancy appendix
 
@@ -89,7 +93,7 @@ Status legend: **Missing** · **Stub** · **Partial** · **CI only** · **Done**
 | **G-oop** | Full OOP | Methods, traits, inheritance, cross-module encapsulation | **Partial** — **2j-a…f** surface done; Lean `ensures` on methods / trait laws open | **2j** | `li-tests/encapsulation/trait_*.li`, `method_call_requires_*.li` |
 | **G-math-syn** | Python-math (`**`, `for`, …) | Ergonomic surface | **Partial** — `%`, `//`, `**` on `int`; **`for i in 0..<n`** (`for_range_sum.li`); `range()` helper + dynamic bounds open | **2h** | `li-tests/math_syntax/` |
 | **G-ann** | Deferred annotations (PEP 649) | Lazy resolve at check | **Missing** — shown in pipeline diagram as planned | **4** | Not in compiler tree |
-| **G-gpu** | `@gpu` / device buffers | Separate address space proofs | **Missing** | **3+**, **7d** | Spec Phase 3+ |
+| **G-gpu** | `@gpu` / device buffers | Separate address space proofs | **Partial** — `@gpu` / `@gpu(devices=N)` MIR telemetry plus `devices >= 1` policy; no address-space proofs, LKIR lowering, device buffers, or vendor codegen yet | **3+**, **7d** | `li-tests/decorators/gpu_*`, `scripts/check-mir-gpu-decorator.sh` |
 | **G-async** | `@async` / `raises Async` | Structured concurrency proofs | **Partial** — `@async` requires `raises Async`; await not parsed | **2+**, **7d** | `li-tests/effects/` |
 | **G-net** | `raises Net` | Trusted syscall surface | **Partial** — effect propagation + `trusted.lean` axioms; no codegen | **H**, **2f** | `li-tests/effects/net_*.li` |
 | **G-trust** | Trusted base growth | Only `trusted.lean` | **Stub** — file exists; `Core.lean` / `MIR.lean` **planned** | **2f** | [semantics/README.md](../semantics/README.md) |
@@ -101,6 +105,14 @@ Status legend: **Missing** · **Stub** · **Partial** · **CI only** · **Done**
 | **G-test-verify** | Manifest honesty | `verify_ok` vs Lean QED | **Done** — `prove_lean_ok` outcome; 14 closed `contracts_verify` rows | **2f** | `li-tests/run_all.sh`, `li-tests/manifest.toml`, `contracts_discharge_corpus.sh` |
 | **G-proof-db** | Proof database | Axiom → lemma → discharge status vs `lic` commit | **Partial** — physics TOML under `docs/verification/proof-database/entries/physics-*.toml` | **Doc**, **2f**, **5b** | [proof-database.md](proof-database.md) |
 | **G-physics** | Classical physics proofs | Newton + conservation linked to tier-2 benches | **Partial** — `entries/physics-*.toml`; 2× `proved` + 1× open `P-LM-*` in `Discharge.lean` | **Doc**, **2f**, **5b** | [proof-database/entries/physics-*.toml](proof-database/entries/physics-mechanics.toml), `benchmarks/tier2_physics/`, `Discharge.lean` |
+| **G-num** | Number theory / arithmetic | Peano-through-primes lemmas in proof-db catalog | **Stub** — **WP0-A** entry TOML + proof-db/num/ not wired | **Doc**, **2f**, WP0-A | proof-db/math/ axiom overlap; scripts/proof-db/proof-db.py list --field num (planned) |
+| **G-discrete** | Discrete math | Combinatorial identities, finite sums | **Stub** — **WP0-A** catalog + specimens TBD | **Doc**, **2f**, WP0-A | Depends on **G-num** axiom layer |
+| **G-stats** | Statistics | Estimators, CLT-class bounds (axiomatic first) | **Stub** — **WP0-A** | **Doc**, **2f**, **5b**, WP0-A | Tier-2 stats benches (planned) |
+| **G-ml** | ML training safety | Optimizer step contracts, convergence guards | **Stub** — [ml-convergence-program](ml-convergence-program.md) (**WP0-C**) | **Doc**, **2f**, WP0-C | proof-db/ml/ (planned); **P-ml-convergence** |
+| **G-graph** | Graph theory | Reachability, coloring bounds | **Stub** — **WP0-A** | **Doc**, **2f**, WP0-A | proof-db/graph/ (planned) |
+| **G-erdos** | Erdős problem register | Curated open problems → catalog E-* | **Partial** — **WP0-B** register + sync; Lean per row **WP1+** | **Doc**, **2f**, WP0-B | proof-db/erdos/register.json, proof-db/erdos/ROADMAP.md |
+| **G-chem** | Chemistry models | Stoichiometry, energy bookkeeping | **Stub** — **WP0-D** | **Doc**, **5b**, WP0-D | Tier-2 chem benches (planned) |
+| **G-bio** | Biology models | Growth / sequence toy dynamics | **Stub** — **WP0-D** | **Doc**, **5b**, WP0-D | Tier-2 bio benches (planned) |
 
 ---
 
@@ -179,10 +191,6 @@ Passing **`./li-tests/run_all.sh`** means the **current** gate holds — not the
 
 **Corpus inventory, run commands, and proof backlog for the master plan:** [proof-corpus-roadmap.md](proof-corpus-roadmap.md).
 
-### Proof-db discrepancy appendix
-
-[`../../proof-database/DISCREPANCIES.md`](../../proof-database/DISCREPANCIES.md) — `python3 scripts/proof-db/compare_reference.py --write`. Kinds: `missing_lemma`, `open_vc`, `spec_drift`, `trusted_axiom`, `hardware_axiom` (**G-hw**).
-
 ---
 
 ## Documentation that must stay aligned
@@ -197,6 +205,8 @@ When editing handbook pages, do **not** imply features beyond this register with
 | [Language overview](../language/overview.md) | “Status honesty” links here |
 | [SIMD and parallel](../language/simd-parallel.md) | Note heuristic disjoint until 7d-c |
 | Decorator / math spec stubs | Say “planned” until gaps closed |
+| [Plan cross-links](../ecosystem/plan-cross-links.md) | Master plan ↔ phase plans ↔ benchmarks; update when PH rows move |
+| [Handbook index](../handbook/README.md) | Satellite Pages table — mark deploy-pending until `main` Pages green |
 
 ---
 

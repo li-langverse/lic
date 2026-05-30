@@ -176,6 +176,43 @@ def bench_gpu_fail_recovery_hook() -> dict:
     }
 
 
+def bench_agent_chrome_hook() -> dict:
+    hook_path = root / "packages/li-ui/bench/agent_chrome.toml"
+    hook = load_toml(hook_path)
+    meta_h = hook.get("meta") or {}
+    bench = hook.get("bench") or {}
+    tick_sec = hook.get("tick") or {}
+    cancel_sec = hook.get("cancel") or {}
+    budget_tick = float(meta_h.get("budget_tick_ms", 16))
+    budget_cancel = float(meta_h.get("budget_cancel_ms", 16))
+    native = bool(meta_h.get("native_pixels", False))
+    tick_ms = float(tick_sec.get("elapsed_ms", bench.get("worst_tick_ms", 0)))
+    cancel_ms = float(cancel_sec.get("elapsed_ms", bench.get("worst_cancel_ms", 0)))
+    steps = int(bench.get("steps_completed", tick_sec.get("steps_completed", 0)))
+    progress_visible = bool(bench.get("progress_visible", False))
+    cancel_works = bool(cancel_sec.get("cancel_works", False))
+    return {
+        "budget_tick_ms": budget_tick,
+        "budget_cancel_ms": budget_cancel,
+        "tick_ms": tick_ms,
+        "cancel_ms": cancel_ms,
+        "worst_tick_ms": float(bench.get("worst_tick_ms", tick_ms)),
+        "worst_cancel_ms": float(bench.get("worst_cancel_ms", cancel_ms)),
+        "steps_completed": steps,
+        "progress_visible": progress_visible,
+        "cancel_works": cancel_works,
+        "tick_meets_target": tick_ms <= budget_tick and steps >= 3,
+        "cancel_meets_target": cancel_ms <= budget_cancel and cancel_works,
+        "meets_target": tick_ms <= budget_tick and cancel_ms <= budget_cancel and cancel_works and steps >= 3,
+        "native_pixels": native,
+        "status": "native" if native else "simulate",
+        "bench_simulate_fn": meta_h.get("bench_simulate_fn", "studio_agent_stream_tick_budget_ms"),
+        "bench_native_fn": meta_h.get("bench_native_fn", "studio_agent_bench_native"),
+        "bench_shell_fn": meta_h.get("bench_shell_fn", "studio_shell_agent_bench_native"),
+        "hook_version": meta_h.get("hook_version", 0),
+    }
+
+
 def bench_keyboard_journey_hook() -> dict:
     hook_path = root / "packages/li-gui/bench/keyboard_journey.toml"
     hook = load_toml(hook_path)
@@ -337,6 +374,14 @@ if keyboard_hook.is_file():
 else:
     report["notes"].append("skip_keyboard_journey:hook_missing")
 
+agent_chrome_hook = root / "packages/li-ui/bench/agent_chrome.toml"
+if agent_chrome_hook.is_file():
+    report["agent_chrome"] = bench_agent_chrome_hook()
+    ac_status = report["agent_chrome"].get("status", "simulate")
+    report["notes"].append(f"agent_chrome:li-ui_hook_{ac_status}")
+else:
+    report["notes"].append("skip_agent_chrome:hook_missing")
+
 scene_hook = root / "packages/li-scene/bench/particle_tiers.toml"
 if scene_hook.is_file():
     report["particle_tiers"] = bench_scene_particle_tiers()
@@ -474,6 +519,25 @@ report["gates"]["keyboard_shortcut_ms"] = {
     "unit": "ms",
     "meets_target": bool(kj.get("shortcut_meets_target", False)),
     "honest_simulate": kj.get("status") == "simulate",
+}
+
+ac = report.get("agent_chrome") or {}
+report["gates"]["agent_tick_ms"] = {
+    "target": ac.get("budget_tick_ms", 16),
+    "value": ac.get("worst_tick_ms"),
+    "unit": "ms",
+    "meets_target": bool(ac.get("tick_meets_target", False)),
+    "honest_simulate": ac.get("status") == "simulate",
+    "steps_completed": ac.get("steps_completed"),
+    "progress_visible": ac.get("progress_visible"),
+}
+report["gates"]["agent_cancel_ms"] = {
+    "target": ac.get("budget_cancel_ms", 16),
+    "value": ac.get("worst_cancel_ms"),
+    "unit": "ms",
+    "meets_target": bool(ac.get("cancel_meets_target", False)),
+    "honest_simulate": ac.get("status") == "simulate",
+    "cancel_works": ac.get("cancel_works"),
 }
 
 report["gates"]["studio_load_ms"] = {

@@ -73,7 +73,7 @@ todos:
     status: done
   - id: studio-ux-23-agent-chrome-native
     content: "Wire agent chrome to native shell stream — task progress + cancel (UX-06 SOTA)"
-    status: pending
+    status: done
   - id: studio-ux-24-gpu-runner-deps
     content: "Org GPU runner matrix — Vulkan deps + wgpu swapchain CI green path"
     status: pending

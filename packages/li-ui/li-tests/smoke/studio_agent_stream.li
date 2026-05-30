@@ -1,0 +1,39 @@
+# Smoke — agent stream tick + cancel on native shell bench hook (UX-06, studio-ux-23).
+import ui
+
+def main() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  var stream: StudioAgentStreamState = studio_agent_stream_new()
+  if studio_agent_stream_ok(stream) != 1:
+    return 1
+  studio_agent_stream_start(stream)
+  var tick_ms: float = studio_agent_tick_latency_native_ms()
+  studio_agent_stream_tick(stream, tick_ms)
+  studio_agent_stream_tick(stream, tick_ms)
+  studio_agent_stream_tick(stream, tick_ms)
+  if stream.task_state != studio_agent_task_done():
+    return 2
+  if stream.progress_pct != 1.0:
+    return 3
+  var cancel_stream: StudioAgentStreamState = studio_agent_stream_new()
+  studio_agent_stream_start(cancel_stream)
+  studio_agent_stream_cancel(cancel_stream)
+  if cancel_stream.task_state != studio_agent_task_idle():
+    return 4
+  if cancel_stream.cancel_requested != 1:
+    return 5
+  var bench: StudioAgentBenchNative = studio_agent_bench_native(1920.0, 1080.0)
+  if bench.native_pixels != 1:
+    return 6
+  if bench.steps_completed != studio_agent_stream_step_total():
+    return 7
+  if bench.cancel_works != 1:
+    return 8
+  if bench.tick_ms != studio_agent_tick_latency_native_ms():
+    return 9
+  if bench.cancel_ms != studio_agent_cancel_latency_native_ms():
+    return 10
+  return 0

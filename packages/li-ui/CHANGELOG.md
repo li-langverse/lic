@@ -9,6 +9,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- **Native agent stream (UX-06, studio-ux-23)** — `StudioAgentStreamState`, tick/cancel stream, `studio_agent_bench_native`; `agent_chrome.toml` status=native.
 - **Native palette bench (UX-04, studio-ux-22)** — `StudioPaletteBenchLatency`, `studio_palette_bench_native`, native open/filter latency hooks; `palette_latency.toml` status=native.
 - **Design tokens** — `studio_color_border`, `studio_color_accent_amber` (TOML sync for timeline playhead + borders).
 - Studio shell **layout IR** (`studio_layout.li`): adaptive dock/topbar/viewport/inspector/timeline/agent-strip rects aligned to design tokens.

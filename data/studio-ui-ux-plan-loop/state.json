@@ -21,9 +21,10 @@
     "studio-ux-18-proactive-wave3",
     "studio-ux-19-wgpu-swapchain-readback",
     "studio-ux-20-proactive-sweep-20260530",
-    "studio-ux-22-palette-native-latency"
+    "studio-ux-22-palette-native-latency",
+    "studio-ux-23-agent-chrome-native"
   ],
-  "iterations": 20,
+  "iterations": 21,
   "history": [
     {
       "at": "2026-05-24T14:53:41+00:00",
@@ -186,6 +187,15 @@
       "gates_ok": true,
       "ux_pass": true,
       "note": "Native palette bench 14ms/9.5ms; palette_latency status=native; issue #182 comment 4583225944"
+    },
+    {
+      "at": "2026-05-30T21:52:00+00:00",
+      "todo_id": "studio-ux-23-agent-chrome-native",
+      "agent_exit": 0,
+      "capture_exit": 0,
+      "gates_ok": true,
+      "ux_pass": true,
+      "note": "Agent stream tick/cancel native (12ms/8ms); agent_chrome status=native; issue #182 comment 4584960809"
     }
   ]
 }

@@ -30,6 +30,7 @@ python3 "$ROOT/scripts/studio-ui-ux-verify-tokens.py" || fail "studio token sync
 python3 "$ROOT/scripts/studio-ui-ux-verify-harness-audit.py" || fail "studio-ui-ux-verify-harness-audit"
 python3 "$ROOT/scripts/studio-ui-ux-verify-keyboard-journey.py" || fail "studio-ui-ux-verify-keyboard-journey"
 python3 "$ROOT/scripts/studio-ui-ux-verify-palette-native.py" || fail "studio-ui-ux-verify-palette-native"
+python3 "$ROOT/scripts/studio-ui-ux-verify-agent-chrome-native.py" || fail "studio-ui-ux-verify-agent-chrome-native"
 python3 "$ROOT/scripts/studio-ui-ux-verify-wgpu-swapchain.py" || fail "studio-ui-ux-verify-wgpu-swapchain"
 if [[ -x "$ROOT/scripts/studio-ui-ux-probe-capture-deps.sh" ]]; then
   "$ROOT/scripts/studio-ui-ux-probe-capture-deps.sh" || li_warn "capture-deps probe failed"

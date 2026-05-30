@@ -10,6 +10,8 @@
 | Panel switch | &lt; 100 ms | Instrumented composable or mock timing |
 | Palette open | &lt; 50 ms | `palette_latency` hook → `palette_open_ms` in bench JSON |
 | Palette filter | &lt; 30 ms | Fuzzy filter refresh → `palette_filter_ms` in bench JSON |
+| Agent stream tick | &lt; 16 ms | `agent_chrome` hook → `agent_tick_ms` (UX-06) |
+| Agent cancel | &lt; 16 ms | One-click cancel → `agent_cancel_ms` (UX-06) |
 | Studio cold load | &lt; 2 s to interactive shell | `load_ms` in bench JSON |
 | MD particles (display) | 10k @ 60 fps; 100k @ 30 fps (tiered) | `md_lennard_jones` + scene path |
 | Memory (animate MD) | Document peak MiB; no unbounded growth | `profile-animate-memory.sh` |

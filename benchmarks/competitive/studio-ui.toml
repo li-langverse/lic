@@ -64,6 +64,12 @@ package = "li-gui"
 path = "packages/li-gui/bench/keyboard_journey.toml"
 gates = ["keyboard_tab_ms", "keyboard_shortcut_ms"]
 
+[[hook]]
+id = "agent_chrome"
+package = "li-ui"
+path = "packages/li-ui/bench/agent_chrome.toml"
+gates = ["agent_tick_ms", "agent_cancel_ms"]
+
 [[gate]]
 id = "viewport_fps"
 target = 60
@@ -119,6 +125,20 @@ target = 16
 unit = "ms"
 compare = "lte"
 notes = "Cmd+K palette shortcut response (UX-09)"
+
+[[gate]]
+id = "agent_tick_ms"
+target = 16
+unit = "ms"
+compare = "lte"
+notes = "Agent stream step tick on native shell (UX-06)"
+
+[[gate]]
+id = "agent_cancel_ms"
+target = 16
+unit = "ms"
+compare = "lte"
+notes = "Agent cancel one-click response on native shell (UX-06)"
 
 [[particle_tier]]
 id = "md_1k"

@@ -55,13 +55,23 @@ def studio_gaps(bench: dict, deps: dict, ux: dict) -> list[dict]:
                 "reason": "palette open/filter latency simulate-only; native SDL shell measurement pending",
             }
         )
-    dims = (ux.get("dimensions") or {}).get("UX-06") or {}
-    if isinstance(dims, dict) and float(dims.get("score", 3)) < 2.8:
+    agent = bench.get("agent_chrome") or {}
+    if agent.get("status") != "native":
         gaps.append(
             {
                 "id": "studio-ux-23-agent-chrome-native",
                 "severity": "medium",
                 "reason": "agent chrome composables exist; native shell stream wiring vs Cursor SOTA",
+            }
+        )
+    elif isinstance((ux.get("dimensions") or {}).get("UX-06"), dict) and float(
+        (ux.get("dimensions") or {}).get("UX-06", {}).get("score", 3)
+    ) < 2.8:
+        gaps.append(
+            {
+                "id": "studio-ux-23-agent-chrome-native",
+                "severity": "low",
+                "reason": "agent stream native but UX-06 score below SOTA bar — progress UI polish",
             }
         )
     if not deps.get("ready_for_wgpu_swapchain"):

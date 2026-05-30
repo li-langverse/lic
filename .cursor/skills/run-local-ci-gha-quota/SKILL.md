@@ -34,10 +34,8 @@ GitHub Actions may be **skipped, queued forever, or red** when org minutes are c
 ```bash
 # lic — mirrors scripts/ci.sh (build, li-tests, tier-0, security, …)
 cd lic && ./scripts/local-ci.sh
-# Optional Ubuntu 24.04 container parity (prebuilt image — no apt/llvm each run):
-cd lic && ./scripts/local-ci.sh --prepare-docker
+# Optional Ubuntu 24.04 container parity:
 cd lic && ./scripts/local-ci.sh --docker
-# Image: ghcr.io/li-langverse/lic-ci:debian12-llvm22 (ubuntu24 tag for GHA parity — see docs/ecosystem/local-ci-docker-images.md)
 
 # benchmarks
 cd benchmarks && ./scripts/ci.sh   # if present; else see repo README
@@ -49,8 +47,8 @@ cd li-cursor-agents && npm run ci:local
 Set LLVM on Linux/macOS before `lic` host CI:
 
 ```bash
-export LLVM_DIR=/usr/lib/llvm-22/lib/cmake/llvm   # org pin LLVM 22
-export CC=clang-22 CXX=clang++-22
+export LLVM_DIR=/usr/lib/llvm-18/lib/cmake/llvm   # Debian llvm-18
+export CC=clang CXX=clang++
 ```
 
 ## li-local-ci (PR-accurate)

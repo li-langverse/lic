@@ -2,8 +2,8 @@
 
 **Date:** 2026-05-30  
 **Agent:** `swarm_observer`  
-**Research goal:** `swarm_coverage`  
-**Work item:** Sweep `missing_std_modules` + seed `line_profiler`; ensure `ecosystem-package-backlog.md` todos pending
+**Research goal:** `swarm_coverage` (north_star_fit: ecosystem, ai)  
+**Work item:** Sweep `missing_std_modules` + seed `line_profiler`; ensure `ecosystem-package-backlog` todos pending.
 
 ---
 
@@ -11,68 +11,84 @@
 
 | Field | Value |
 |-------|-------|
-| Swarm posture | **Degraded** (ecosystem grade **D**, 69.0; `unattended_safe: false`) |
-| `orch-r3` | **Completed** — 3 open `missing_package` gaps reconciled; backlog synced |
-| `missing_package` open | **3** (`line_profiler`, `std.summary`, `std.plot`) |
-| Closed this pass | `std.io`, `std.csv` backlog → `completed` (modules present; registry already closed) |
-| Unattended? | **No** — orchestration-only; handoff to `issue_planner` for package issues |
-
-Programmatic prep: `swarm-gap-ingest.py` + `swarm-gap-apply-actions.py` (idempotent @ 09:28Z).
+| Swarm posture | **Degraded (recoverable)** — ecosystem grade **C** (75.0); `unattended_safe: true` on scorecard; swarm_execution 70 (stuck SDK runs) |
+| `missing_package` open | **3** (`gap-line-profiler-001`, `gap-missing-std-std-summary`, `gap-missing-std-std-plot`) |
+| Explorer `missing_std_modules` | **2 missing** (`std.summary`, `std.plot`); `std.io` / `std.csv` **present** |
+| Backlog patches | **3** todos set `pending` in `ecosystem-package-backlog.md` |
+| `orch-r3` status | **Completed** @ 2026-05-30T10:03Z — hand off to `issue_planner` / `package_architect` |
 
 ---
 
-## Missing-package gap reconciliation
+## Evidence paths
 
-| Gap id | Title | Registry | Backlog todo | Action |
-|--------|-------|----------|--------------|--------|
-| `gap-line-profiler-001` | li-line-profiler seed | open | `pkg-line-profiler` | patched → **pending** |
-| `gap-missing-std-std-summary` | std.summary | open | `pkg-std-summary` | patched → **pending** |
-| `gap-missing-std-std-plot` | std.plot | open | `pkg-std-plot` | patched → **pending** |
-| `gap-missing-std-std-io` | std.io | closed | `pkg-std-io` | backlog → **completed** |
-| `gap-missing-std-std-csv` | std.csv | closed | `pkg-std-csv` | backlog → **completed** |
-
-**Handoff:** `issue_planner` for open rows (priority 6–8); `package_architect` for std module design.
+| Artifact | Path |
+|----------|------|
+| Package backlog | `lic/docs/ecosystem/ecosystem-package-backlog.md` |
+| Gap registry | `lic/data/swarm-gap-registry/registry.yaml` |
+| Apply manifest | `benchmarks/data/latest/swarm-gap-actions.json` |
+| Explorer | `benchmarks/data/latest/ecosystem-explorer.json` (`missing_std_modules`) |
+| Quality scorecard | `benchmarks/data/latest/ecosystem-quality-report.json` |
+| Meta audit (prior) | `benchmarks/data/runs/swarm_observer-1780135360070.md` |
+| Meta audit (this pass) | `benchmarks/data/runs/swarm_observer-1780135924979.md` |
 
 ---
 
 ## Scripts executed
 
 ```bash
-cd lic && python3 scripts/swarm-gap-ingest.py
-cd lic && python3 scripts/swarm-gap-apply-actions.py
-cd benchmarks && python3 scripts/ecosystem-quality-grade.py
+cd lic
+python3 scripts/swarm-gap-ingest.py
+python3 scripts/swarm-gap-apply-actions.py
+cd ../benchmarks
+python3 scripts/ecosystem-quality-grade.py
 ```
 
-**Apply patches (missing_package):**
+**Re-verification @ 2026-05-30T10:13Z** — ingest/apply idempotent; 3 `missing_package` patches re-confirmed; scorecard 75.0 grade C unchanged.
 
-- `patched pkg-line-profiler → pending in ecosystem-package-backlog.md`
-- `patched pkg-std-summary → pending in ecosystem-package-backlog.md`
-- `patched pkg-std-plot → pending in ecosystem-package-backlog.md`
+**Apply patches (missing_package @ 2026-05-30T10:01Z / 10:13Z):**
 
-Evidence: `benchmarks/data/latest/swarm-gap-actions.json` @ 2026-05-30T09:28Z.
+| `target_todo_id` | Patch |
+|------------------|-------|
+| `pkg-line-profiler` | pending in `ecosystem-package-backlog.md` |
+| `pkg-std-summary` | pending |
+| `pkg-std-plot` | pending |
 
----
-
-## Registry / backlog updates
-
-| Artifact | Change |
-|----------|--------|
-| `docs/ecosystem/ecosystem-package-backlog.md` | std.io/std.csv completed; 3 open gaps pending |
-| `docs/ecosystem/swarm-observer-plan-backlog.md` | `orch-r3-missing-package-sweep` → completed |
-| `data/swarm-gap-registry/registry.yaml` | `gap-plan-pending-swarm-observer-orch-r3-*` → closed |
+**Registry hygiene:** `gap-missing-std-std-io` and `gap-missing-std-std-csv` remain **closed** (explorer status `present`).
 
 ---
 
-## Recommended handoffs (no product code)
+## Gap taxonomy (`missing_package`)
 
-| Target | Reason |
-|--------|--------|
-| `issue_planner` | Open `pkg-line-profiler`, `pkg-std-summary`, `pkg-std-plot` → lic issues |
-| `gap_explorer` | Re-scan `missing_std_modules` after std.io/csv land on main |
-| `swarm_observer` | Next: `orch-r4-ui-ux-signals` |
+| Gap id | Priority | Handoff |
+|--------|---------:|---------|
+| `gap-line-profiler-001` | 8 | `issue_planner` — seed `li-line-profiler` WP-B |
+| `gap-missing-std-std-summary` | 6 | `issue_planner`, `package_architect` (PH-IO-7) |
+| `gap-missing-std-std-plot` | 6 | `issue_planner`, `package_architect` (PH-IO-5) |
+
+Do **not** install new systemd plan loops — use `research-goals.yaml` / implement lane per `docs/ecosystem/swarm-architecture.md`.
 
 ---
 
-## north_star_fit
+## Recommended handoffs (swarm goals)
 
-Swarm gap orchestration — registry, backlog apply, handoffs — domains: **ecosystem**, **ai**. Proof-before-perf: package gaps are IO/plotting surface (PH-IO-4/5/7), not perf shortcuts.
+| Agent | Reason |
+|-------|--------|
+| `issue_planner` | Open lic issues for `pkg-std-summary`, `pkg-std-plot`, `pkg-line-profiler` (max 3/run) |
+| `gap_explorer` | Re-ingest after `std.*` land; close registry rows when explorer reports `present` |
+| `package_architect` | Placement + `REQ-*` for PH-IO packages |
+
+---
+
+## Human-only blockers
+
+- **GitHub GraphQL rate limit** — `workspace_sweeper` could not open PRs @ 09:58Z.
+- **Package implementation** — agents must not ship std modules without `plan-approved`.
+- **`trusted.lean`** — out of scope for gap orchestration.
+
+---
+
+## Next orchestrator todos
+
+| Todo | Owner |
+|------|-------|
+| `orch-r4-ui-ux-signals` | `swarm_observer` — studio-ui-ux plan debt + `ui_ux` gaps |

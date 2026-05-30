@@ -1,0 +1,14 @@
+version = 1
+
+[[entry]]
+id = "ST-LM-SAMPLE-MEAN-UNBIASED"
+kind = "lemma"
+field = "statistics"
+domain = "estimation"
+statement = "Sample mean is an unbiased estimator of population mean (finite variance target)."
+proof_status = "target"
+gap_id = "G-stats"
+gap_kind = "proof_gap"
+lean_module = "proof-db/statistics/StatsAxioms.lean"
+lean_thm = "Li.ProofDb.Statistics.sample_mean_unbiased"
+last_verified_lic_commit = "17b150a"

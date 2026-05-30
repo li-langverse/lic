@@ -1,0 +1,8 @@
+@cpu
+@pralalel(dissjoint=disjoint_row)
+proc f() -> int
+  @parallel(disjoinjoint=disjoint_row)
+proc f() -> int
+  @parallel(disjoint=disjoint_row)
+proc f() -> int
+ @

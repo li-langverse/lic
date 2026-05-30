@@ -12,12 +12,24 @@ def main() -> int
   if studio_sim_rl_step_hook(rl_sess, 0.02) != sim_status_ok():
     return 10
   var psz: int = sim_rl_env_pool_size_default()
-  if rl_sess.tick != psz:
+  if rl_sess.env_pool_size != psz:
     return 11
-  if sim_session_replay_last_tick(rl_sess) != psz:
+  if rl_sess.env_pool_steps_emitted != psz:
     return 12
+  if rl_sess.tick != psz:
+    return 13
+  if sim_session_replay_last_tick(rl_sess) != psz:
+    return 14
+  var obs0: EnvStepResult = env_obs_from_session(rl_sess)
+  if obs0.obs1 != rl_sess.last_dt:
+    return 15
+  var reward0: float = rl_sess.env_pool_total_reward
   if studio_sim_step_hook(rl_cfg, rl_sess, 0.01) != sim_status_ok():
     return 20
   if rl_sess.tick != psz + psz:
     return 21
+  if rl_sess.env_pool_steps_emitted != psz + psz:
+    return 22
+  if rl_sess.env_pool_total_reward <= reward0:
+    return 23
   return 0

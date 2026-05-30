@@ -12,10 +12,7 @@
 
 **Honesty:** `capture_mode=paint_blit` means `studio_shell_paint_fb.c` rasterizes the same region geometry as `studio_paint_shell_chrome` / `layout_studio_shell_adaptive` — not a live `li-studio-demo` window or wgpu swapchain readback. Legacy `cpu_chip_only` (grid + topbar chip only) is available via `STUDIO_VERTICALS_CAPTURE_MODE=cpu_chip_only`.
 
-**Step 1 (in progress):** `capture_mode=li_ppm` uses `studio_vertical_capture_ppm` → `li_rt_studio_shell_paint_ppm` (same layout mirror; still grandfathered C paint until Step 4 deletion). Script: `./scripts/studio-verticals-capture-li-demo.sh` (falls back to `studio-verticals-capture-native.sh`).
-
-**User MP4 policy:** native frames only — local `./scripts/record-studio-verticals-demo.sh` after PNG capture. **No** Chrome headless on HTML mocks (archived under `deploy/studio-demo/archive/verticals-html-mocks/`).
-
+**User MP4 policy:** native frames only — `deploy/studio-demo/native/studio_verticals_present_host` under `LIG_HOST_PRESENT=1`, or future screen capture of `li-studio-demo`. **No** Chrome headless on HTML mocks (archived under `deploy/studio-demo/archive/verticals-html-mocks/`).
 ## Policy: local capture only (no GitHub Release demo videos)
 
 - Capture remains **local-only**: `LIG_HOST_PRESENT=1 ./scripts/record-studio-verticals-demo.sh`

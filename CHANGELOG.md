@@ -6,13 +6,23 @@ All notable changes to Li are documented here. The format follows
 
 ## [Unreleased]
 
+### Added
+
+- **Docs:** GitHub Pages handbook hub at https://li-langverse.github.io/lic/ (`site/index.html`, `pages.yml`) — [2026-05-30-lic-handbook-pages.md](docs/release-notes/2026-05-30-lic-handbook-pages.md), [2026-05-30-lic-pages-site-artifact.md](docs/release-notes/2026-05-30-lic-pages-site-artifact.md) (fix missing `site/` artifact after #535).
+
 ### Changed
+
+- **Docs:** README and `docs/handbook/README.md` link live [lic Pages hub](https://li-langverse.github.io/lic/); satellite handbook table reflects deployed org Pages (audit green).
 
 - **Harness timing:** `latest.csv` reports **mean** in `value`, plus `stddev` and `sample_runs`; default ≥6 runs, ≥20 when mean wall &lt; 1s (`timing_stats.py`) — tier 1–2, ecosystem, HTTP (`bench_http.py`), toolchain, execution-resource sweep — [2026-05-28-bench-mean-std-timing.md](docs/release-notes/2026-05-28-bench-mean-std-timing.md).
 - **Tier-3 ecosystem:** parallel `lic build` fixtures when `BENCH_JOBS>1` (`bench_ecosystem.py`).
 
 ### Added
 
+- **Docs:** handbook index and plan cross-links for master plan ↔ provability-gaps ↔ satellite Pages — [2026-05-30-docs-maintainer-handbook-cross-links.md](docs/release-notes/2026-05-30-docs-maintainer-handbook-cross-links.md).
+- **Docs:** GUI UX quality handoff for `gui_ux_tester` + **Doc-c** proof-gap links on open phase plans — [2026-05-30-gui-ux-handoff-plan-cross-links.md](docs/release-notes/2026-05-30-gui-ux-handoff-plan-cross-links.md); handbook + Pages hub nav link; studio-ux-12 harness **Partial** note.
+
+- **PH-7d / G-gpu decorator telemetry:** `@gpu` and `@gpu(devices=N)` now survive MIR lowering and `lic verify` reports `mir_gpu_def` / `mir_gpu_multi_device_def`; invalid device counts and source-level vendor args are rejected before LKIR/codegen — [2026-05-28-gpu-decorator-mir.md](docs/release-notes/2026-05-28-gpu-decorator-mir.md).
 - **PH-AGENT-2 Studio agent run:** `packages/li-studio/src/lib.li` now exposes `StudioAgentRun` for the world-patch → `lic_check` → `lic_build` tool sequence with `used_html_mock == 0`; package/root smokes `studio_agentic_run.li` and `import_studio_agentic_run.li` — [2026-05-28-studio-agentic-run.md](docs/release-notes/2026-05-28-studio-agentic-run.md).
 - **PH-DB planning docs:** `ph-db-battle-plan.md`, `ph-db-ci-hosting-plan.md`, `ph-db-execution-tracker.md`, WP verification matrix cross-link — supersedes conflicting PRs #323–#325.
 

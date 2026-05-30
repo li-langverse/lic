@@ -14,6 +14,7 @@ alwaysApply: false
 
 # Li World Studio & Li Engine
 
+**Hub:** `docs/game-dev/WORLD-STUDIO-MASTER-PLAN.md`
 **Canonical:** `docs/game-dev/world-studio-vision.md`  
 **Tracker:** `docs/game-dev/PH-world-studio-program.md`  
 **RFCs:** `docs/game-dev/specs/`

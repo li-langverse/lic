@@ -1,8 +1,10 @@
-/build/
+﻿/build/
 build-fuzz/
 .venv-plot/
 .venv-docs/
-site/
+site/*
+!site/index.html
+site-proofs/
 __pycache__/
 *.pyc
 *.pyo
@@ -45,7 +47,7 @@ build-asan/
 
 # Lean 4 (docs/semantics)
 docs/semantics/.lake/
-# Autonomous plan-loop (agent logs, goals, overnight tee — local only)
+# Autonomous plan-loop (agent logs, goals, overnight tee â€” local only)
 data/httpd-plan-loop/
 !data/httpd-plan-loop/state.json.example
 data/studio-ui-ux-plan-loop/*
@@ -67,3 +69,4 @@ docs/demo/media/ffmpeg-*.txt
 
 # Local CI sweep output (benchmarks local-ci)
 data/local-ci*.log
+

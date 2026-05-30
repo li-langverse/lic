@@ -1,0 +1,16 @@
+version = 1
+
+[[entry]]
+id = "N-AX-FP-ROUND"
+kind = "axiom"
+field = "numerics"
+domain = "floating_point"
+statement = "IEEE-style rounding: result of float op equals exact result rounded to nearest representable (axiomatic under G-hw)."
+proof_status = "target"
+gap_id = "G-num"
+gap_kind = "modeling_gap"
+lean_module = "proof-db/numerics/axioms/NumericsAxioms.lean"
+lean_thm = "Li.ProofDb.Numerics.fp_round_axiom"
+li_specimen = "proof-db/numerics/lemmas/fp_horner_round_stub.li"
+benchmark_ref = "benchmarks/tier1_numerics/horner_pure_li"
+last_verified_lic_commit = "56726948"

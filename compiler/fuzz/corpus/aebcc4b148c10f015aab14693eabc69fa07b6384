@@ -1,0 +1,3 @@
+@cpu
+@parallel(proc f() -> 
+  re return 0

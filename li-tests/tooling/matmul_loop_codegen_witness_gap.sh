@@ -7,6 +7,7 @@ LIC="${LIC:-$ROOT/build/compiler/lic/lic}"
 PROBE="$ROOT/li-tests/math_linalg/matmul_25x25_at_codegen.li"
 WITNESS_CPP="$ROOT/compiler/verify/vc_witness.cpp"
 DISCHARGE="$ROOT/docs/semantics/Discharge.lean"
+EMIT="$ROOT/compiler/codegen/emit.cpp"
 
 if [[ ! -x "$LIC" ]]; then
   echo "SKIP: lic not built at $LIC" >&2
@@ -22,30 +23,49 @@ if grep -q 'matmul.*loop_eval\|matmul2d.*loop' "$DISCHARGE" 2>/dev/null; then
   exit 1
 fi
 
+if ! grep -q 'MirOp::ArrayMatMul2DF64' "$ROOT/compiler/mir/lower.cpp"; then
+  echo "FAIL: expected ArrayMatMul2DF64 lowering" >&2
+  exit 1
+fi
+if ! grep -A20 'void emit_matmul2d_ijk_loops' "$EMIT" | grep -q 'fp_numerically_stable'; then
+  echo "FAIL: matmul loop FMA gate should reference fp_numerically_stable (emit.cpp:232-247)" >&2
+  exit 1
+fi
+
 "$LIC" check "$PROBE"
 
 TMP="$(mktemp -d)"
 trap 'rm -rf "$TMP"' EXIT
 
-build_ir() {
+build_bin() {
   local stable_flag=("$@")
   "$LIC" build "$PROBE" -o "$TMP/matmul_probe" --release "${stable_flag[@]}" 2>/dev/null
-  llvm-dis "$TMP/matmul_probe" -o - 2>/dev/null || true
 }
 
-IR_FAST="$(build_ir)"
-IR_STABLE="$(build_ir --numerically-stable)"
+build_bin
+USER_ASM="$(sed -n '/<li_user_main>:/,/^$/p' <(objdump -d "$TMP/matmul_probe" 2>/dev/null))"
+FAST_FMA="$(grep -c vfmadd <<<"$USER_ASM" || true)"
+FAST_MUL="$(grep -c mulsd <<<"$USER_ASM" || true)"
 
-if ! grep -q 'mm_i' <<<"$IR_FAST"; then
-  echo "FAIL: loop-path matmul IR should contain mm_i alloca (emit_matmul2d_ijk_loops)" >&2
+build_bin --numerically-stable
+USER_ASM_STABLE="$(sed -n '/<li_user_main>:/,/^$/p' <(objdump -d "$TMP/matmul_probe" 2>/dev/null))"
+STABLE_FMA="$(grep -c vfmadd <<<"$USER_ASM_STABLE" || true)"
+STABLE_MUL="$(grep -c mulsd <<<"$USER_ASM_STABLE" || true)"
+
+if [[ "${FAST_FMA:-0}" -lt 1 ]] && [[ "${FAST_MUL:-0}" -lt 1 ]]; then
+  echo "FAIL: release matmul should emit vfmadd or mulsd in li_user_main (loop path)" >&2
   exit 1
 fi
-if ! grep -q 'fmuladd' <<<"$IR_FAST"; then
-  echo "FAIL: release matmul loop path should use llvm.fmuladd when not numerically-stable" >&2
+if [[ "${FAST_FMA:-0}" -lt 1 ]]; then
+  echo "FAIL: release matmul loop path should prefer vfmadd (llvm.fmuladd; emit.cpp:232-247)" >&2
   exit 1
 fi
-if grep -q 'fmuladd' <<<"$IR_STABLE"; then
-  echo "FAIL: --numerically-stable matmul should not emit fmuladd (emit.cpp:232-247)" >&2
+if [[ "${STABLE_FMA:-0}" -ge 1 ]]; then
+  echo "FAIL: --numerically-stable matmul should not emit vfmadd (emit.cpp:232-247)" >&2
+  exit 1
+fi
+if [[ "${STABLE_MUL:-0}" -lt 1 ]]; then
+  echo "FAIL: --numerically-stable matmul should use mulsd path" >&2
   exit 1
 fi
 

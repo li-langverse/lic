@@ -1,4 +1,4 @@
-# Pure-Li matmul (256×256).
+# Pure-Li matmul (256×256) — hot path via `C = A @ B` (ArrayMatMul2DF64 IKJ + FMA).
 
 extern proc li_rt_volatile_sink_f64(v: float) -> unit
   requires true
@@ -92,20 +92,9 @@ def main() -> int
     while j_init < 256
       A[i][j_init] = mm_lut_a((i + j_init) % 17)
       B[i][j_init] = mm_lut_b((i * 3 + j_init) % 13)
-      C[i][j_init] = 0.0
       j_init = j_init + 1
     i = i + 1
-  var i_mm: int = 0
-  while i_mm < 256
-    var k: int = 0
-    while k < 256
-      var aik: float = A[i_mm][k]
-      var j_mm: int = 0
-      while j_mm < 256
-        C[i_mm][j_mm] = C[i_mm][j_mm] + aik * B[k][j_mm]
-        j_mm = j_mm + 1
-      k = k + 1
-    i_mm = i_mm + 1
+  C = A @ B
   var acc: float = 0.0
   var i_sum: int = 0
   while i_sum < 256

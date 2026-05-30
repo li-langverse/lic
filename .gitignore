@@ -49,5 +49,9 @@ docs/semantics/.lake/
 data/httpd-plan-loop/
 !data/httpd-plan-loop/state.json.example
 
+# HTTP runtime access logs (nginx/httpd soak — never commit)
+logs/access.log*
+logs/*.log*
+
 # Local CI sweep output (benchmarks local-ci)
 data/local-ci*.log

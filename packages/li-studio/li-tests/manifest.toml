@@ -108,6 +108,12 @@ note = "PH-SIM scientific step: tick_at + scene_bench tier sync to viewport disp
 
 [[tests]]
 suite = "smoke"
+file = "smoke/studio_sim_scientific_viz_viewport.li"
+outcome = "check_ok"
+note = "WP-SCI-04: sim.viz pipeline panels → viewport fields"
+
+[[tests]]
+suite = "smoke"
 file = "smoke/studio_game_step_hook.li"
 outcome = "check_ok"
 note = "PH-GD-2: studio_game_step_hook + studio_game_world_checkpoint_roundtrip"

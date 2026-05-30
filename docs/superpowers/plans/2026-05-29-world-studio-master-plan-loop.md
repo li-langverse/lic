@@ -82,7 +82,7 @@ todos:
     status: done
   - id: wsm-w5-sim-viz
     content: "sim.viz pipeline panels → viewport fields (WP-SCI-04)"
-    status: pending
+    status: done
   - id: wsm-w5-robo-ik
     content: "6-DOF IK numeric stub + inspector live joints (WP-ROBO-03, WP-UX-03)"
     status: pending

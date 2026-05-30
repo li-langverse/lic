@@ -15,6 +15,7 @@ li-sim-robotics = { path = "../li-sim-robotics" }
 li-sim-sensors = { path = "../li-sim-sensors" }
 li-sim-additive = { path = "../li-sim-additive" }
 li-sim-drug-design = { path = "../li-sim-drug-design" }
+li-sim-viz = { path = "../li-sim-viz" }
 li-scene = { path = "../li-scene" }
 li-physics-runtime = { path = "../li-physics-runtime" }
 li-world = { path = "../li-world" }

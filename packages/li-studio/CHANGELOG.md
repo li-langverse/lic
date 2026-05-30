@@ -4,6 +4,7 @@
 
 ### Added
 
+- **WP-SCI-04 sim.viz pipeline → viewport fields** — `import sim.viz`; `studio_viewport_display_apply_viz_pipeline`, `studio_sim_scientific_viz_viewport_ok`, `studio_viz_tick_for_particle_tier`; scientific compose applies viz panel state to particle dots; smoke `studio_sim_scientific_viz_viewport.li`; `li_std_studio_version` → 25.
 - **WP-GD-04 glTF ingest** — `li-assets` + `studio_shell_apply_gltf_ingest`; smoke `studio_gltf_ingest.li`; `li_std_studio_version` → 24.
 - **WP-GD-02 world checkpoint after sim tick** — `StudioWorldCheckpoint` on shell; `studio_world_checkpoint_after_sim_tick` in `studio_sim_step_hook`; timeline stores checkpoint via `studio_shell_timeline_tick_sim_step`; smoke `studio_world_checkpoint_after_tick.li`.
 - **WP-AG-03 MCP stdio server** — `studio_mcp_server_*` handlers, `scripts/lis-mcp-li-engine.py` + `.sh`, integration smoke; `studio_ai_mcp_dispatch` wired; smokes `studio_mcp_stdio_server.li`, `studio_ai_mcp_dispatch.li`; `li_std_studio_version` → 21.

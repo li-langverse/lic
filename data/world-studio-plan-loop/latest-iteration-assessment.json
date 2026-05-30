@@ -1,17 +1,16 @@
 {
   "pass": true,
-  "todo_id": "wsm-w5-sci-kernels",
-  "wps_touched": ["WP-SCI-03", "WP-SCI-02"],
+  "todo_id": "wsm-w5-sim-viz",
+  "wps_touched": ["WP-SCI-04", "WP-GD-05"],
   "smokes_run": [
-    "packages/li-sim-scientific/li-tests/smoke/scientific_oracle_bench.li",
-    "packages/li-sim-scientific/li-tests/smoke/run_algo_registry_tier2.li",
-    "packages/li-sim-scientific/li-tests/smoke/builds.li",
-    "packages/li-sim-scientific/li-tests/smoke/multi_physics_tick.li"
+    "packages/li-sim-viz/li-tests/smoke/viz_viewport_fields.li",
+    "packages/li-studio/li-tests/smoke/studio_sim_scientific_viz_viewport.li",
+    "li-tests/composable/import_sim_viz_pipeline_source_display.li"
   ],
   "native_only": true,
   "gates": {
     "world_studio_plan_gates": "pass",
-    "lic_check_local": "wsl"
+    "lic_check_local": "wsl_pass"
   },
-  "notes": "WP-SCI-03: pure-Li tier-2 oracles (4-particle LJ chain 8-step energy drift; 1D heat explicit stencil sum); run_algo_registry dispatches MD 101-117 and heat 201-216 to real kernels; QM/rigid families unchanged."
+  "notes": "WP-SCI-04: VizViewportFields maps sim.viz Properties/Display/View panels to viewport compose (tier label, particle dots, biomol chip). studio_viewport_display_apply_viz_pipeline + studio_sim_scientific_viz_viewport_ok wire pipeline into scientific profile compose. viz_pipeline_scientific_step advances pipeline with sim tick. No wgpu field volume draw — compose-time contract only."
 }

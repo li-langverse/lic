@@ -44,6 +44,7 @@ for smoke in \
   studio_world_checkpoint_after_tick.li \
   studio_world_io_roundtrip.li \
   studio_gltf_ingest.li \
+  studio_sim_scientific_viz_viewport.li \
   studio_viewport_hud.li \
   studio_viewport_error.li \
   studio_native_pixels_wgpu_readback.li; do

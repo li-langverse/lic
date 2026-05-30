@@ -11,6 +11,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - `viz_pipeline_*` source/display/view state machine stub (`workload_class=stub`).
 - Composable hook `import_sim_viz_pipeline_source_display.li` + `viz.toml` bench row.
+- **WP-SCI-04** — `VizViewportFields`, `viz_pipeline_to_viewport_fields`, `viz_pipeline_viewport_ok`, `viz_pipeline_scientific_step`; smoke `viz_viewport_fields.li`.
 
 ## [0.1.0] - 2026-05-23
 

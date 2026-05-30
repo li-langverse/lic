@@ -9,6 +9,7 @@ import sim.sensors
 import sim.additive
 import sim.drug_design
 import sim.additive
+import sim.viz
 import scene
 import physics.runtime
 import world
@@ -1878,6 +1879,12 @@ def studio_compose_viewport_display(vp: Rect, profile_id: int) raises IO -> Stud
   out.fps_hud_rect = studio_viewport_hud_fps_rect(vp)
   out.particle_hud_rect = studio_viewport_hud_particle_rect(vp)
   out.native_badge_rect = studio_viewport_hud_native_badge_rect(vp)
+  if profile_id == studio_profile_sim_scientific():
+    if out.particle_tier_id >= scene_md_tier_1k():
+      var viz_tick: int = studio_viz_tick_for_particle_tier(out.particle_tier_id)
+      var viz_pipe: VizPipelineState = studio_sim_scientific_viz_for_tick(viz_tick)
+      if viz_pipe.source_count >= 1:
+        out = studio_viewport_display_apply_viz_pipeline(out, viz_pipe)
   return out
 
 def studio_viewport_hud_ok(display: StudioViewportDisplayCompose) -> int
@@ -2060,10 +2067,10 @@ def studio_compose_shell_drug_litl(w: float, h: float, tick: int, has_selection:
 
 def li_std_studio_version() -> int
   requires true
-  ensures result == 24
+  ensures result == 25
   decreases 0
 =
-  return 24
+  return 25
 
 def studio_agent_context_none() -> int
   requires true
@@ -3298,6 +3305,69 @@ def studio_sim_scientific_tier_for_tick(tick: int) -> int
   if tick <= 10:
     return scene_md_tier_10k()
   return scene_md_tier_100k()
+
+# WP-SCI-04 — sim.viz pipeline panels drive viewport field compose (not wgpu volume draw).
+def studio_viz_pipeline_init() -> VizPipelineState
+  requires true
+  ensures result.profile_id == viz_profile_sim_scientific()
+  decreases 0
+=
+  return viz_pipeline_init()
+
+def studio_viewport_display_apply_viz_pipeline(
+    display: StudioViewportDisplayCompose, pipeline: VizPipelineState) -> StudioViewportDisplayCompose
+  requires pipeline.profile_id == viz_profile_sim_scientific()
+  ensures result.background == display.background
+  decreases pipeline.source_count
+=
+  var out: StudioViewportDisplayCompose = display
+  var fields: VizViewportFields = viz_pipeline_to_viewport_fields(pipeline)
+  if fields.particle_dots_visible == 1:
+    out.particle_dots_visible = 1
+  if fields.tier_label_visible != 1:
+    out.particle_dots_visible = 0
+  return out
+
+def studio_sim_scientific_viz_viewport_ok(
+    pipeline: VizPipelineState, display: StudioViewportDisplayCompose) -> int
+  requires pipeline.profile_id == viz_profile_sim_scientific()
+  requires display.particle_tier_id >= scene_md_tier_1k()
+  ensures result >= 0
+  ensures result <= 1
+  decreases pipeline.source_count
+=
+  if viz_pipeline_viewport_ok(pipeline, display.particle_tier_id, display.tier_particles) != 1:
+    return 0
+  var applied: StudioViewportDisplayCompose = studio_viewport_display_apply_viz_pipeline(display, pipeline)
+  if pipeline.inspector_section == viz_inspector_section_display():
+    if applied.particle_dots_visible != 1:
+      return 0
+  if display.tier_particles <= 0:
+    return 0
+  if display.tier_label_rect.w <= 0.0:
+    return 0
+  return 1
+
+def studio_sim_scientific_viz_for_tick(tick: int) -> VizPipelineState
+  requires tick >= 1
+  requires tick <= 64
+  ensures result.profile_id == viz_profile_sim_scientific()
+  decreases tick
+=
+  return viz_pipeline_scientific_step(viz_pipeline_init(), tick)
+
+def studio_viz_tick_for_particle_tier(tier_id: int) -> int
+  requires tier_id >= scene_md_tier_1k()
+  requires tier_id <= scene_md_tier_100k()
+  ensures result >= 1
+  ensures result <= 64
+  decreases tier_id
+=
+  if tier_id == scene_md_tier_1k():
+    return 3
+  if tier_id == scene_md_tier_10k():
+    return 5
+  return 8
 
 def studio_sim_scientific_step_hook(sim_out: var SimSessionStub, dt: float) -> int
   requires sim_out.tick >= 0

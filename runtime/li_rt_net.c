@@ -315,6 +315,7 @@ static char g_proxy_snap[HTTPD_PROXY_SNAP_MAX];
 static int g_proxy_snap_len = 0;
 static int g_proxy_snap_ready = 0;
 static int g_proxy_snap_recording = 0;
+static int32_t g_proxy_snap_owner_slot = -1;
 static int32_t g_li_scratch = 0;
 
 /* Li-native proxy per-slot glue (logic in packages/li-net-httpd/src/lib.li). */
@@ -710,10 +711,23 @@ intptr_t net_lit_index_html_i(void) { return iptr("/index.html"); }
 
 intptr_t net_lit_loopback_i(void) { return iptr("127.0.0.1"); }
 
+static void httpd_proxy_snap_reset(void);
+static int httpd_proxy_snap_may_use(int32_t slot);
+
 static void httpd_proxy_snap_reset(void) {
   g_proxy_snap_ready = 0;
   g_proxy_snap_recording = 0;
   g_proxy_snap_len = 0;
+  g_proxy_snap_owner_slot = -1;
+}
+
+static int httpd_proxy_other_active(int32_t except_slot) {
+  for (int i = 0; i < HTTPD_MAX_CONN; i++) {
+    if (i != except_slot && g_slots[i].proxy_active) {
+      return 1;
+    }
+  }
+  return 0;
 }
 
 static int httpd_m2_policy_blocks_proxy_snap(void) {
@@ -722,6 +736,19 @@ static int httpd_m2_policy_blocks_proxy_snap(void) {
 
 static int httpd_proxy_snap_disabled(void) {
   return httpd_m2_policy_blocks_proxy_snap() || g_lb_mode == HTTPD_LB_MODE_COOKIE;
+}
+
+static int httpd_proxy_snap_may_use(int32_t slot) {
+  if (slot < 0 || slot >= HTTPD_MAX_CONN || httpd_proxy_snap_disabled()) {
+    return 0;
+  }
+  if (httpd_proxy_other_active(slot)) {
+    return 0;
+  }
+  if (g_proxy_snap_recording && g_proxy_snap_owner_slot >= 0 && g_proxy_snap_owner_slot != slot) {
+    return 0;
+  }
+  return 1;
 }
 
 static int httpd_m2_webhook_url_allowed(const char* url) {
@@ -2959,7 +2986,7 @@ static int32_t httpd_try_drain_once(int32_t conn, int32_t slot) {
       }
       return 0;
     }
-    if (g_proxy_snap_ready && !httpd_proxy_snap_disabled() && method_is(&req, "GET")) {
+    if (g_proxy_snap_ready && httpd_proxy_snap_may_use(slot) && method_is(&req, "GET")) {
       size_t off = 0;
       ssize_t rc = httpd_send_nb(conn, g_proxy_snap, (size_t)g_proxy_snap_len, &off);
       if (rc < 0) {
@@ -3105,6 +3132,10 @@ static void httpd_proxy_clear(int epfd, int32_t slot) {
   if (slot < 0 || slot >= HTTPD_MAX_CONN) {
     return;
   }
+  if (g_proxy_snap_owner_slot == slot) {
+    g_proxy_snap_recording = 0;
+    g_proxy_snap_owner_slot = -1;
+  }
   if (g_slots[slot].proxy_active && g_active_proxy_streams > 0) {
     g_active_proxy_streams--;
   }
@@ -3170,9 +3201,10 @@ static void httpd_proxy_finish_ok(int epfd, int32_t slot) {
   int keep = g_slots[slot].proxy_keep;
   int hdr_end = g_slots[slot].proxy_hdr_end;
   int conn = g_slots[slot].fd;
-  if (g_proxy_snap_recording && g_proxy_snap_len > 0) {
+  if (g_proxy_snap_recording && g_proxy_snap_owner_slot == slot && g_proxy_snap_len > 0) {
     g_proxy_snap_ready = 1;
     g_proxy_snap_recording = 0;
+    g_proxy_snap_owner_slot = -1;
   }
   httpd_proxy_clear(epfd, slot);
   net_slot_consume(slot, hdr_end);
@@ -3754,7 +3786,8 @@ static int httpd_proxy_relay_to_client(int epfd, int32_t slot, const char* data,
     }
     return -1;
   }
-  if (g_proxy_snap_recording && g_proxy_snap_len + (int)send_len <= HTTPD_PROXY_SNAP_MAX) {
+  if (g_proxy_snap_recording && g_proxy_snap_owner_slot == slot &&
+      g_proxy_snap_len + (int)send_len <= HTTPD_PROXY_SNAP_MAX) {
     memcpy(g_proxy_snap + g_proxy_snap_len, send_data, send_len);
     g_proxy_snap_len += (int)send_len;
   }
@@ -4554,8 +4587,9 @@ static int httpd_proxy_start_async(int epfd, int32_t conn, int32_t slot, int hdr
     g_queue_depth++;
   }
   g_proxy_snap_recording = 0;
-  if (method_is(req, "GET") && !g_proxy_snap_ready && !httpd_proxy_snap_disabled() && !s->proxy_is_ws) {
+  if (method_is(req, "GET") && !g_proxy_snap_ready && httpd_proxy_snap_may_use(slot) && !s->proxy_is_ws) {
     g_proxy_snap_recording = 1;
+    g_proxy_snap_owner_slot = slot;
     g_proxy_snap_len = 0;
   }
   if (req->body_mode == 1) {
@@ -5768,7 +5802,7 @@ static int httpd_proxy_start_async(int epfd, int32_t conn, int32_t slot, int hdr
 
 static void httpd_proxy_snap_begin_recording_if_get(int32_t slot) {
   g_proxy_snap_recording = 0;
-  if (g_proxy_snap_ready || g_proxy_snap_recording || slot < 0 || slot >= HTTPD_MAX_CONN) {
+  if (g_proxy_snap_ready || !httpd_proxy_snap_may_use(slot) || slot < 0 || slot >= HTTPD_MAX_CONN) {
     return;
   }
   if (g_slots[slot].len < 4) {
@@ -5777,6 +5811,7 @@ static void httpd_proxy_snap_begin_recording_if_get(int32_t slot) {
   const char* b = g_slots[slot].buf;
   if (b[0] == 'G' && b[1] == 'E' && b[2] == 'T' && b[3] == ' ') {
     g_proxy_snap_recording = 1;
+    g_proxy_snap_owner_slot = slot;
     g_proxy_snap_len = 0;
   }
 }

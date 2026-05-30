@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-05-30T00:05:53.545339+00:00",
+  "generated_at": "2026-05-30T00:16:08.014653+00:00",
   "tz": "Europe/Berlin",
   "agents_live": 0,
   "runners": [
@@ -7,7 +7,7 @@
       "id": "httpd",
       "name": "li-httpd gap parity",
       "branch": "cursor/httpd-plan-continue",
-      "head": "c4c7dcf6",
+      "head": "e2f3aa37",
       "running": true,
       "process": "2010567 bash ./scripts/httpd-plan-until-deadline.sh",
       "log_path": "/home/s4il0r/Documents/Cursor/li-langverse/lic/../lic/data/httpd-plan-loop/iter-20260522-132846.log",
@@ -45,7 +45,7 @@
         {
           "id": "gap-phase2-perf-wrk-soak",
           "content": "Full wrk soak vs nginx \u2014 HTTPD_BENCH_SKIP_TIMING=0, \u226530s on parity + parity_streaming + nextjs; li RPS/TTFB bars in perf-regression gate; gate check-tier5-perf-wrk-soak.sh",
-          "status": "pending"
+          "status": "completed"
         },
         {
           "id": "gap-phase2-mitigation-exploits",
@@ -63,16 +63,15 @@
           "status": "completed"
         }
       ],
-      "plan_completed": 8,
+      "plan_completed": 9,
       "plan_total": 10,
       "plan_pending": [
-        "gap-phase2-perf-wrk-soak",
         "gap-phase2-streaming-wrk"
       ],
       "agent_live": false,
       "agent": "",
       "goal_file": "",
-      "log_age_sec": 3755,
+      "log_age_sec": 523,
       "last_state_at": "",
       "last_state_todo": "",
       "last_state_gates": "",
@@ -87,8 +86,8 @@
         "ursor/li-langverse/li-cursor-agents/data/workspaces/li-langverse/lic/code_implementer-1779456669806/repo/docs/ecosystem/httpd-m1-baseline.md",
         "[sdk] \u2717 tool"
       ],
-      "status_note": "supervisor idle (log 3755s stale \u2014 check log_path)",
-      "active_todo_id": "gap-phase2-perf-wrk-soak"
+      "status_note": "supervisor idle (log 523s stale \u2014 check log_path)",
+      "active_todo_id": "gap-phase2-streaming-wrk"
     },
     {
       "id": "compiler-studio",
@@ -815,7 +814,7 @@
       "agent_live": false,
       "agent": "",
       "goal_file": "",
-      "log_age_sec": 361421,
+      "log_age_sec": 362035,
       "last_state_at": "2026-05-25T19:26:43.369615+00:00",
       "last_state_todo": "wave-d-gui-scaffold",
       "last_state_gates": false,
@@ -1578,7 +1577,7 @@
       "agent_live": false,
       "agent": "",
       "goal_file": "",
-      "log_age_sec": 361816,
+      "log_age_sec": 362430,
       "last_state_at": "2026-05-25T19:35:36.548468+00:00",
       "last_state_todo": "sim-p1-num-dot-axpy",
       "last_state_gates": false,
@@ -1749,7 +1748,7 @@
       "agent_live": false,
       "agent": "",
       "goal_file": "",
-      "log_age_sec": 62494,
+      "log_age_sec": 63108,
       "last_state_at": "2026-05-25T02:14:50+00:00",
       "last_state_todo": "studio-ux-06-agent-chrome",
       "last_state_gates": true,
@@ -1840,7 +1839,7 @@
       "agent_live": false,
       "agent": "",
       "goal_file": "",
-      "log_age_sec": 361397,
+      "log_age_sec": 362011,
       "last_state_at": "2026-05-25T19:42:04.198858+00:00",
       "last_state_todo": "md-r2-neighbor-list-gap",
       "last_state_gates": true,
@@ -1919,7 +1918,7 @@
       "agent_live": false,
       "agent": "",
       "goal_file": "",
-      "log_age_sec": 361908,
+      "log_age_sec": 362523,
       "last_state_at": "2026-05-25T19:32:04.164094+00:00",
       "last_state_todo": "chem-r2-dft-scf-gap",
       "last_state_gates": false,
@@ -1991,7 +1990,7 @@
       "agent_live": false,
       "agent": "",
       "goal_file": "",
-      "log_age_sec": 362060,
+      "log_age_sec": 362674,
       "last_state_at": "2026-05-25T19:29:32.615546+00:00",
       "last_state_todo": "sec-r1-httpd-fuzz-smoke",
       "last_state_gates": true,
@@ -2006,9 +2005,9 @@
       "id": "swarm-observer",
       "name": "Swarm gap orchestrator",
       "branch": "cursor/swarm-observer-plan-loop",
-      "head": "c4c7dcf6",
+      "head": "e2f3aa37",
       "running": true,
-      "process": "254841 python3 /home/s4il0r/Documents/Cursor/li-langverse/lic/scripts/goal-directed-agents-snapshot.py",
+      "process": "271571 /bin/bash -O extglob -c snap=$(command cat <&3) && builtin shopt -s extglob && builtin eval -- \"$snap\" && { built",
       "log_path": "/home/s4il0r/Documents/Cursor/li-langverse/lic/../lic/data/swarm-observer-plan-loop/iter-20260525-193501.log",
       "todos": [
         {
@@ -2065,7 +2064,7 @@
       "agent_live": false,
       "agent": "",
       "goal_file": "",
-      "log_age_sec": 18235,
+      "log_age_sec": 525,
       "last_state_at": "2026-05-25T19:34:28.890041+00:00",
       "last_state_todo": "orch-r1-plan-debt-sync",
       "last_state_gates": true,
@@ -2073,7 +2072,7 @@
       "activity": [
         "SDK tool activity streams to stderr ([sdk] \u25b6/\u2713 lines). Set LI_SDK_TERMINAL_STREAM=0 to disable."
       ],
-      "status_note": "supervisor idle (log 18235s stale \u2014 check log_path)"
+      "status_note": "supervisor idle (log 525s stale \u2014 check log_path)"
     }
   ],
   "history": [

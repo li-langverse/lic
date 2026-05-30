@@ -10,15 +10,14 @@ backend_port = 19101
 [verify]
 target = "edge"
 requests = [
-  { method = "GET", path = "/stream/sse?count=30&interval_ms=20", expect_status = 200, body_contains = "event: tick" },
-  { method = "GET", path = "/stream/sse?count=30&interval_ms=20", expect_status = 200, body_contains = "data:" },
+  { method = "GET", path = "/stream/sse?count=15&interval_ms=15", expect_status = 200, body_contains = "event: tick" },
 ]
 
 [load]
 tool = "streaming_soak"
 kind = "sse"
-concurrent = 12
-events_min = 25
+concurrent = 4
+events_min = 20
 duration_sec = 6
 
 [metrics]

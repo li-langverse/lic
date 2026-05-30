@@ -155,7 +155,7 @@ def render_fps_counter_host_tick(counter: var RenderFpsCounter) -> unit raises I
   render_fps_counter_tick(counter, dt)
   if lig_present_host_active() == 1:
     counter.native_pixels = lig_present_host_native_pixels_flag()
-  else:
+  if lig_present_host_active() != 1:
     counter.native_pixels = 0
 
 def render_viewport_host_fps_counter(frame_count: int) -> RenderFpsCounter raises IO

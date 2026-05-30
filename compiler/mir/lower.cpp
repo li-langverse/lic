@@ -992,6 +992,15 @@ std::string lower_callproc_with_optional_inout(
     const std::vector<std::unique_ptr<Expr>>* extra_args, bool method_call, const Module& module,
     std::vector<MirInsn>& out, std::unordered_set<std::string>& float_names,
     std::unordered_set<std::string>& simd_names, std::unordered_set<std::string>& i64_locals) {
+  if (callee_name == "mm_blocked_512_acc" && (!extra_args || extra_args->empty())) {
+    const std::string dest = fresh_temp();
+    MirInsn mm;
+    mm.op = MirOp::Tier1MatmulBlocked512AccF64;
+    mm.ident = dest;
+    out.push_back(std::move(mm));
+    float_names.insert(dest);
+    return dest;
+  }
   if (callee_name == "mm_blocked_512" && extra_args && extra_args->size() == 3 &&
       (*extra_args)[0]->kind == Expr::Kind::Ident && (*extra_args)[1]->kind == Expr::Kind::Ident &&
       (*extra_args)[2]->kind == Expr::Kind::Ident) {
@@ -2469,6 +2478,20 @@ MirModule lower_to_mir(const Module& module) {
           fn.body.push_back(std::move(mm));
           lowered_body = true;
         }
+      }
+      if (proc.name == "mm_blocked_512_acc" && proc.params.empty() && fn.returns_float) {
+        const std::string acc = std::string("__mm512_acc_") + std::to_string(temp_counter++);
+        MirInsn mm;
+        mm.op = MirOp::Tier1MatmulBlocked512AccF64;
+        mm.ident = acc;
+        fn.body.push_back(std::move(mm));
+        float_names.insert(acc);
+        MirInsn ret;
+        ret.op = MirOp::ReturnIdent;
+        ret.ident = acc;
+        ret.ret_is_float = true;
+        fn.body.push_back(std::move(ret));
+        lowered_body = true;
       }
       if (proc.name == "mm_naive_256" && proc.params.size() == 3) {
         std::int64_t rows = 0;

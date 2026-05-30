@@ -733,11 +733,11 @@ def verify_benchmark_results(spec: BenchSpec, build_dir: Path) -> BenchmarkVerif
             # below a fixed wall-time threshold on fast machines. Confirm against the
             # native oracle before reporting DCE / wrong-size suspicion.
             native_elapsed_for_guard = time_command([str(native)], runs=1)
-            if li_elapsed < native_elapsed_for_guard * 0.45:
+            if li_elapsed < native_elapsed_for_guard.mean * 0.45:
                 raise RuntimeError(
                     f"{spec.name}: Li ran in {li_elapsed:.4f}s < "
                     f"{ref_case.min_li_seconds}s and <45% of native "
-                    f"({native_elapsed_for_guard:.4f}s), likely DCE / wrong problem size"
+                    f"({native_elapsed_for_guard.mean:.4f}s), likely DCE / wrong problem size"
                 )
         deviation_logs.extend(
             assert_checksum_against_spec(

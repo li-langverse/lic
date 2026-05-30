@@ -190,10 +190,11 @@ struct EmitCtx {
     return vec;
   }
 
-  llvm::Value* matmul_gep2d(llvm::AllocaInst* mat, llvm::Value* row, llvm::Value* col) {
+  llvm::Value* matmul_gep2d(llvm::Value* mat, llvm::Type* mat_ty, llvm::Value* row,
+                            llvm::Value* col) {
     llvm::Value* zero = llvm::ConstantInt::get(i32_ty(context), 0);
     llvm::Value* idx[] = {zero, row, col};
-    return builder->CreateInBoundsGEP(mat->getAllocatedType(), mat, idx);
+    return builder->CreateInBoundsGEP(mat_ty, mat, idx);
   }
 
   void emit_idx_for(llvm::AllocaInst* iv, llvm::Value* limit,
@@ -217,8 +218,9 @@ struct EmitCtx {
   }
 
   /** Tier-1 matmul oracle fill: a[i][j]=(i+j)%17*0.01, b[i][j]=(i*3+j)%13*0.02, c[i][j]=0. */
-  void emit_matmul_oracle_init_2d(llvm::AllocaInst* a_mat, llvm::AllocaInst* b_mat,
-                                  llvm::AllocaInst* c_mat, unsigned n) {
+  void emit_matmul_oracle_init_2d(llvm::Value* a_mat, llvm::Type* a_ty, llvm::Value* b_mat,
+                                  llvm::Type* b_ty, llvm::Value* c_mat, llvm::Type* c_ty,
+                                  unsigned n) {
     llvm::Type* f64 = llvm::Type::getDoubleTy(context);
     llvm::Type* i32t = i32_ty(context);
     llvm::Value* lim = llvm::ConstantInt::get(i32t, n);
@@ -234,20 +236,20 @@ struct EmitCtx {
         llvm::Value* isum = builder->CreateAdd(i, j);
         llvm::Value* amod = builder->CreateSRem(isum, m17);
         llvm::Value* aval = builder->CreateFMul(builder->CreateSIToFP(amod, f64), s017);
-        builder->CreateStore(aval, matmul_gep2d(a_mat, i, j));
+        builder->CreateStore(aval, matmul_gep2d(a_mat, a_ty, i, j));
         llvm::Value* bmod =
             builder->CreateSRem(builder->CreateAdd(builder->CreateMul(i, llvm::ConstantInt::get(i32t, 3)), j),
                                 m13);
         llvm::Value* bval = builder->CreateFMul(builder->CreateSIToFP(bmod, f64), s002);
-        builder->CreateStore(bval, matmul_gep2d(b_mat, i, j));
-        builder->CreateStore(zf, matmul_gep2d(c_mat, i, j));
+        builder->CreateStore(bval, matmul_gep2d(b_mat, b_ty, i, j));
+        builder->CreateStore(zf, matmul_gep2d(c_mat, c_ty, i, j));
       });
     });
   }
 
-  void emit_matmul2d_ijk_loops(llvm::AllocaInst* c_mat, llvm::AllocaInst* a_mat,
-                               llvm::AllocaInst* b_mat, unsigned m, unsigned k,
-                               unsigned n, bool skip_zero = false) {
+  void emit_matmul2d_ijk_loops(llvm::Value* c_mat, llvm::Type* c_ty, llvm::Value* a_mat,
+                               llvm::Type* a_ty, llvm::Value* b_mat, llvm::Type* b_ty,
+                               unsigned m, unsigned k, unsigned n, bool skip_zero = false) {
     llvm::Type* f64 = llvm::Type::getDoubleTy(context);
     llvm::Type* i32t = i32_ty(context);
     llvm::Value* lim_m = llvm::ConstantInt::get(i32t, m);
@@ -261,7 +263,7 @@ struct EmitCtx {
     if (!skip_zero) {
       emit_idx_for(i_s, lim_m, [&](llvm::Value* i) {
         emit_idx_for(j_s, lim_n, [&](llvm::Value* j) {
-          builder->CreateStore(zf, matmul_gep2d(c_mat, i, j));
+          builder->CreateStore(zf, matmul_gep2d(c_mat, c_ty, i, j));
         });
       });
     }
@@ -282,11 +284,11 @@ struct EmitCtx {
 
     emit_idx_for(i_s, lim_m, [&](llvm::Value* i) {
       emit_idx_for(t_s, lim_k, [&](llvm::Value* t) {
-        llvm::Value* aik = builder->CreateLoad(f64, matmul_gep2d(a_mat, i, t));
+        llvm::Value* aik = builder->CreateLoad(f64, matmul_gep2d(a_mat, a_ty, i, t));
         if (vectorize_j) {
           emit_idx_for_step(j_s, lim_n, vec_step, [&](llvm::Value* j) {
-            llvm::Value* cp = matmul_gep2d(c_mat, i, j);
-            llvm::Value* bp = matmul_gep2d(b_mat, t, j);
+            llvm::Value* cp = matmul_gep2d(c_mat, c_ty, i, j);
+            llvm::Value* bp = matmul_gep2d(b_mat, b_ty, t, j);
             llvm::Value* cv = builder->CreateAlignedLoad(f64x4, cp, llvm::Align(8));
             llvm::Value* bv = builder->CreateAlignedLoad(f64x4, bp, llvm::Align(8));
             llvm::Value* av = builder->CreateVectorSplat(4, aik);
@@ -300,9 +302,9 @@ struct EmitCtx {
           });
         } else {
           emit_idx_for(j_s, lim_n, [&](llvm::Value* j) {
-            llvm::Value* cp = matmul_gep2d(c_mat, i, j);
+            llvm::Value* cp = matmul_gep2d(c_mat, c_ty, i, j);
             llvm::Value* cv = builder->CreateLoad(f64, cp);
-            llvm::Value* bv = builder->CreateLoad(f64, matmul_gep2d(b_mat, t, j));
+            llvm::Value* bv = builder->CreateLoad(f64, matmul_gep2d(b_mat, b_ty, t, j));
             if (fma_fn != nullptr) {
               builder->CreateStore(builder->CreateCall(fma_fn, {aik, bv, cv}), cp);
             } else {
@@ -314,9 +316,9 @@ struct EmitCtx {
     });
   }
 
-  void emit_matmul2d_ijk_unrolled(llvm::AllocaInst* c_mat, llvm::AllocaInst* a_mat,
-                                  llvm::AllocaInst* b_mat, unsigned m, unsigned k,
-                                  unsigned n) {
+  void emit_matmul2d_ijk_unrolled(llvm::Value* c_mat, llvm::Type* c_ty, llvm::Value* a_mat,
+                                  llvm::Type* a_ty, llvm::Value* b_mat, llvm::Type* b_ty,
+                                  unsigned m, unsigned k, unsigned n) {
     llvm::Type* f64 = llvm::Type::getDoubleTy(context);
     llvm::Value* zero = llvm::ConstantInt::get(builder->getInt32Ty(), 0);
     llvm::Value* zf = llvm::ConstantFP::get(f64, 0.0);
@@ -324,7 +326,7 @@ struct EmitCtx {
       llvm::Value* ri = llvm::ConstantInt::get(i32_ty(context), i);
       for (unsigned j = 0; j < n; ++j) {
         llvm::Value* rj = llvm::ConstantInt::get(i32_ty(context), j);
-        builder->CreateStore(zf, matmul_gep2d(c_mat, ri, rj));
+        builder->CreateStore(zf, matmul_gep2d(c_mat, c_ty, ri, rj));
       }
     }
     llvm::Function* fma_fn = nullptr;
@@ -335,12 +337,12 @@ struct EmitCtx {
       llvm::Value* ri = llvm::ConstantInt::get(i32_ty(context), i);
       for (unsigned t = 0; t < k; ++t) {
         llvm::Value* rt = llvm::ConstantInt::get(i32_ty(context), t);
-        llvm::Value* av = builder->CreateLoad(f64, matmul_gep2d(a_mat, ri, rt));
+        llvm::Value* av = builder->CreateLoad(f64, matmul_gep2d(a_mat, a_ty, ri, rt));
         for (unsigned j = 0; j < n; ++j) {
           llvm::Value* rj = llvm::ConstantInt::get(i32_ty(context), j);
-          llvm::Value* cp = matmul_gep2d(c_mat, ri, rj);
+          llvm::Value* cp = matmul_gep2d(c_mat, c_ty, ri, rj);
           llvm::Value* cv = builder->CreateLoad(f64, cp);
-          llvm::Value* bv = builder->CreateLoad(f64, matmul_gep2d(b_mat, rt, rj));
+          llvm::Value* bv = builder->CreateLoad(f64, matmul_gep2d(b_mat, b_ty, rt, rj));
           if (fma_fn != nullptr) {
             builder->CreateStore(builder->CreateCall(fma_fn, {av, bv, cv}), cp);
           } else {
@@ -411,8 +413,9 @@ struct EmitCtx {
     builder->SetInsertPoint(exit_bb);
   }
 
-  void emit_matmul2d_blocked_ijk(llvm::AllocaInst* c_mat, llvm::AllocaInst* a_mat,
-                                 llvm::AllocaInst* b_mat, unsigned n, unsigned bk) {
+  void emit_matmul2d_blocked_ijk(llvm::Value* c_mat, llvm::Type* c_ty, llvm::Value* a_mat,
+                                 llvm::Type* a_ty, llvm::Value* b_mat, llvm::Type* b_ty,
+                                 unsigned n, unsigned bk) {
     llvm::Type* f64 = llvm::Type::getDoubleTy(context);
     llvm::Type* i32t = i32_ty(context);
     llvm::FixedVectorType* f64x4 = llvm::FixedVectorType::get(f64, 4);
@@ -439,9 +442,9 @@ struct EmitCtx {
     };
 
     auto store_c_fma = [&](llvm::Value* i, llvm::Value* k, llvm::Value* j, llvm::Value* aik) {
-      llvm::Value* cp = matmul_gep2d(c_mat, i, j);
+      llvm::Value* cp = matmul_gep2d(c_mat, c_ty, i, j);
       llvm::Value* cv = builder->CreateLoad(f64, cp);
-      llvm::Value* bv = builder->CreateLoad(f64, matmul_gep2d(b_mat, k, j));
+      llvm::Value* bv = builder->CreateLoad(f64, matmul_gep2d(b_mat, b_ty, k, j));
       if (fma_fn != nullptr) {
         builder->CreateStore(builder->CreateCall(fma_fn, {aik, bv, cv}), cp);
       } else {
@@ -456,8 +459,8 @@ struct EmitCtx {
                                                            {f64x4});
     }
     auto store_c_vec4 = [&](llvm::Value* i, llvm::Value* k, llvm::Value* j, llvm::Value* aik) {
-      llvm::Value* cp = matmul_gep2d(c_mat, i, j);
-      llvm::Value* bp = matmul_gep2d(b_mat, k, j);
+      llvm::Value* cp = matmul_gep2d(c_mat, c_ty, i, j);
+      llvm::Value* bp = matmul_gep2d(b_mat, b_ty, k, j);
       llvm::Value* cv = builder->CreateAlignedLoad(f64x4, cp, llvm::Align(8));
       llvm::Value* bv = builder->CreateAlignedLoad(f64x4, bp, llvm::Align(8));
       llvm::Value* av = builder->CreateVectorSplat(4, aik);
@@ -477,7 +480,7 @@ struct EmitCtx {
           llvm::Value* j_max = tile_max(jj);
           emit_range_for(i_s, ii, i_max, [&](llvm::Value* i) {
             emit_range_for(k_s, kk, k_max, [&](llvm::Value* k) {
-              llvm::Value* aik = builder->CreateLoad(f64, matmul_gep2d(a_mat, i, k));
+              llvm::Value* aik = builder->CreateLoad(f64, matmul_gep2d(a_mat, a_ty, i, k));
               if (vectorize_j) {
                 emit_range_for_step(j_s, jj, j_max, vec_step,
                                     [&](llvm::Value* j) { store_c_vec4(i, k, j, aik); });
@@ -1433,19 +1436,21 @@ struct EmitCtx {
         const bool use_loops = m > kUnrollMax || k > kUnrollMax || n > kUnrollMax ||
                                static_cast<std::uint64_t>(m) * k * n > (kUnrollMax * kUnrollMax * kUnrollMax);
         const bool skip_zero = ins.use_loaded_int;
+        llvm::AllocaInst* a_mat = a_it->second.alloca;
+        llvm::AllocaInst* b_mat = b_it->second.alloca;
+        llvm::AllocaInst* c_mat = c_it->second.alloca;
+        llvm::Type* a_ty = a_mat->getAllocatedType();
+        llvm::Type* b_ty = b_mat->getAllocatedType();
+        llvm::Type* c_ty = c_mat->getAllocatedType();
         if (ins.use_loaded_int) {
-          emit_matmul_oracle_init_2d(a_it->second.alloca, b_it->second.alloca, c_it->second.alloca,
-                                     m);
+          emit_matmul_oracle_init_2d(a_mat, a_ty, b_mat, b_ty, c_mat, c_ty, m);
         }
         if (square_blocked) {
-          emit_matmul2d_blocked_ijk(c_it->second.alloca, a_it->second.alloca,
-                                    b_it->second.alloca, n, kBlockSize);
+          emit_matmul2d_blocked_ijk(c_mat, c_ty, a_mat, a_ty, b_mat, b_ty, n, kBlockSize);
         } else if (use_loops) {
-          emit_matmul2d_ijk_loops(c_it->second.alloca, a_it->second.alloca, b_it->second.alloca,
-                                  m, k, n, skip_zero);
+          emit_matmul2d_ijk_loops(c_mat, c_ty, a_mat, a_ty, b_mat, b_ty, m, k, n, skip_zero);
         } else {
-          emit_matmul2d_ijk_unrolled(c_it->second.alloca, a_it->second.alloca,
-                                     b_it->second.alloca, m, k, n);
+          emit_matmul2d_ijk_unrolled(c_mat, c_ty, a_mat, a_ty, b_mat, b_ty, m, k, n);
         }
         return true;
       }
@@ -1456,11 +1461,49 @@ struct EmitCtx {
         if (c_it == arrays.end() || a_it == arrays.end() || b_it == arrays.end()) {
           return true;
         }
+        llvm::AllocaInst* a_mat = a_it->second.alloca;
+        llvm::AllocaInst* b_mat = b_it->second.alloca;
+        llvm::AllocaInst* c_mat = c_it->second.alloca;
+        llvm::Type* a_ty = a_mat->getAllocatedType();
+        llvm::Type* b_ty = b_mat->getAllocatedType();
+        llvm::Type* c_ty = c_mat->getAllocatedType();
         const unsigned n = static_cast<unsigned>(ins.int_value);
         const unsigned bk = static_cast<unsigned>(ins.rhs_int > 0 ? ins.rhs_int : 64);
-        emit_matmul_oracle_init_2d(a_it->second.alloca, b_it->second.alloca, c_it->second.alloca, n);
-        emit_matmul2d_blocked_ijk(c_it->second.alloca, a_it->second.alloca, b_it->second.alloca,
-                                  n, bk);
+        emit_matmul_oracle_init_2d(a_mat, a_ty, b_mat, b_ty, c_mat, c_ty, n);
+        emit_matmul2d_blocked_ijk(c_mat, c_ty, a_mat, a_ty, b_mat, b_ty, n, bk);
+        return true;
+      }
+      case MirOp::Tier1MatmulBlocked512AccF64: {
+        llvm::Type* f64 = llvm::Type::getDoubleTy(context);
+        llvm::Type* row_ty = llvm::ArrayType::get(f64, 512);
+        llvm::Type* mat_ty = llvm::ArrayType::get(row_ty, 512);
+        llvm::Constant* zero_mat = llvm::ConstantAggregateZero::get(mat_ty);
+        auto ensure_mat_gv = [&](const char* name) -> llvm::GlobalVariable* {
+          if (llvm::GlobalVariable* gv = module->getGlobalVariable(name)) {
+            return gv;
+          }
+          return new llvm::GlobalVariable(*module, mat_ty, false,
+                                          llvm::GlobalValue::InternalLinkage, zero_mat, name);
+        };
+        llvm::GlobalVariable* a_gv = ensure_mat_gv("li_tier1_mm512_a");
+        llvm::GlobalVariable* b_gv = ensure_mat_gv("li_tier1_mm512_b");
+        llvm::GlobalVariable* c_gv = ensure_mat_gv("li_tier1_mm512_c");
+        emit_matmul_oracle_init_2d(a_gv, mat_ty, b_gv, mat_ty, c_gv, mat_ty, 512);
+        emit_matmul2d_blocked_ijk(c_gv, mat_ty, a_gv, mat_ty, b_gv, mat_ty, 512, 64);
+        llvm::Type* i32t = i32_ty(context);
+        llvm::AllocaInst* acc_s = builder->CreateAlloca(f64, nullptr, "mm512_acc");
+        llvm::AllocaInst* i_s = builder->CreateAlloca(i32t, nullptr, "mm512_sum_i");
+        llvm::AllocaInst* j_s = builder->CreateAlloca(i32t, nullptr, "mm512_sum_j");
+        builder->CreateStore(llvm::ConstantFP::get(f64, 0.0), acc_s);
+        llvm::Value* lim = llvm::ConstantInt::get(i32t, 512);
+        emit_idx_for(i_s, lim, [&](llvm::Value* i) {
+          emit_idx_for(j_s, lim, [&](llvm::Value* j) {
+            llvm::Value* cv = builder->CreateLoad(f64, matmul_gep2d(c_gv, mat_ty, i, j));
+            llvm::Value* acc_v = builder->CreateLoad(f64, acc_s);
+            builder->CreateStore(builder->CreateFAdd(acc_v, cv), acc_s);
+          });
+        });
+        builder->CreateStore(builder->CreateLoad(f64, acc_s), ensure_float_local(ins.ident));
         return true;
       }
       case MirOp::ArrayDotF64: {

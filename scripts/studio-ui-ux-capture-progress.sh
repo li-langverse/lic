@@ -149,7 +149,9 @@ write_report() {
     fi
     echo ""
     echo "### Artifacts"
-    echo "- PNG count: $(ls -1 "$PNG"/*.png 2>/dev/null | wc -l)"
+    shopt -s nullglob
+    local _png_files=("$PNG"/*.png)
+    echo "- PNG count: ${#_png_files[@]}"
     [[ -f "$ART/iter-reel.mp4" ]] && echo "- Video: \`iter-reel.mp4\` (GitHub release only)"
     echo ""
     echo "Rubric: \`docs/game-dev/competitive-intel/ui-ux-by-dimension.md\`"
@@ -161,7 +163,9 @@ write_capture_meta() {
   local issue="${1:-}" comment_url="${2:-}" upload_count="${3:-0}" dry="${4:-0}"
   local meta="$STATE_DIR/latest-capture.json"
   local png_count
-  png_count="$(ls -1 "$PNG"/*.png 2>/dev/null | wc -l | tr -d ' ')"
+  shopt -s nullglob
+  local _png_files=("$PNG"/*.png)
+  png_count="${#_png_files[@]}"
   python3 - "$meta" "$ITER" "$REPO" "$RELEASE_TAG" "$issue" "$comment_url" \
     "$png_count" "$upload_count" "$dry" "$ART" "$ROOT" <<'PY'
 import json, sys

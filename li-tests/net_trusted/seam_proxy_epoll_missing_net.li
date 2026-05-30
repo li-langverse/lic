@@ -1,0 +1,20 @@
+# G-net / G-trust gap: Li proxy epoll seam performs socket I/O in li_rt_net.c but
+# std/runtime/seam.li omits `raises Net` on httpd_li_proxy_* handlers.
+# Contrast: tcp_listen (seam.li:49) requires caller `raises Net` (see seam_missing_net.li).
+import std.runtime.seam
+
+def calls_proxy_client_epoll_without_net(epfd: var int, slot: var int) raises IO -> unit
+  requires epfd >= 0
+  requires 0 <= slot
+  ensures true
+  decreases 0
+=
+  httpd_li_proxy_client_epoll_i(epfd, slot, 1)
+
+def calls_proxy_finish_drain_without_net(epfd: var int, slot: var int) raises IO -> int
+  requires epfd >= 0
+  requires 0 <= slot
+  ensures result == httpd_li_proxy_finish_drain_i(epfd, slot)
+  decreases 0
+=
+  return httpd_li_proxy_finish_drain_i(epfd, slot)

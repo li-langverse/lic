@@ -651,6 +651,12 @@ outcome = "compile_fail"
 expected_substr = "raises Net"
 
 [[tests]]
+suite = "net_trusted"
+file = "net_trusted/seam_proxy_epoll_missing_net.li"
+outcome = "compile_ok"
+note = "G-net/G-trust gap: httpd_li_proxy_* seam omits raises Net (see seam_proxy_net_effect_gap.sh)"
+
+[[tests]]
 suite = "effects"
 file = "effects/async_missing_raises.li"
 outcome = "compile_fail"

@@ -53,6 +53,10 @@ if "$LIC" build "$ROOT/li-tests/net_trusted/seam_missing_net.li" -o /tmp/li_net_
   exit 1
 fi
 
+echo "==> proxy seam Net effect gap (documented G-net)"
+chmod +x "$ROOT/li-tests/tooling/seam_proxy_net_effect_gap.sh"
+"$ROOT/li-tests/tooling/seam_proxy_net_effect_gap.sh"
+
 echo "==> li-bytes package smoke"
 "$LIC" check "$ROOT/packages/li-bytes/src/lib.li"
 "$LIC" build "$ROOT/packages/li-bytes/li-tests/smoke/builds.li" \

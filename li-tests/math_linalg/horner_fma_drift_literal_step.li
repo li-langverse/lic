@@ -1,6 +1,6 @@
-# Negative control: ident addend does NOT lower to FmaFloatF64 (lower.cpp:350-356 requires float lit).
-# Use horner_fma_drift_literal_step.li + horner_fma_literal_lean_drift.sh for true FMA codegen drift.
-# Runtime fixtures via LI_EXTRA_C (horner_fma_drift_rt.c).
+# G-hw / G-meta witness: `acc = acc * x + <float lit>` → MirOp::FmaFloatF64 (see lower.cpp:345-382).
+# Variable factor/acc from LI_EXTRA_C; literal addend required for FMA MIR (not ident addend).
+# Harness: horner_fma_literal_lean_drift.sh
 
 extern proc li_rt_volatile_sink_f64(v: float) -> unit
   requires true
@@ -14,10 +14,6 @@ extern proc horner_fma_drift_x() -> float
   requires true
   ensures true
 
-extern proc horner_fma_drift_addend() -> float
-  requires true
-  ensures true
-
 def main() -> int
   requires true
   ensures result == 0
@@ -25,7 +21,6 @@ def main() -> int
 =
   var acc: float = horner_fma_drift_acc()
   var x: float = horner_fma_drift_x()
-  var addend: float = horner_fma_drift_addend()
-  acc = acc * x + addend
+  acc = acc * x + -190131.7250991714
   li_rt_volatile_sink_f64(acc)
   return 0

@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
-# G-hw / G-meta: Horner FmaFloatF64 (llvm.fmuladd) can diverge from mul+add IEEE model.
-# Unlike matmul, FmaFloatF64 codegen ignores fp_numerically_stable (emit.cpp:910-919).
+# Negative control: horner_fma_drift_step.li uses ident addend → mul+add codegen (not FmaFloatF64).
+# True FMA witness: horner_fma_literal_lean_drift.sh (literal addend; FmaFloatF64 ignores fp_numerically_stable).
 set -euo pipefail
 ROOT="$(cd "$(dirname "$0")/../.." && pwd)"
 export LI_REPO_ROOT="$ROOT"
@@ -41,19 +41,15 @@ if ! "$LIC" build "$SAMPLE" -o "$OUT_REL" --no-lean-verify --release >/dev/null 
   exit 1
 fi
 REL_OUT="$(LI_PRINT_SINK_F64=1 "$OUT_REL" | tail -1 | tr -d '\r\n')"
-if [[ "$REL_OUT" == "$LEAN_EXPECT" ]]; then
-  echo "horner_fma_lean_drift: release FMA runtime must differ from Lean eval (got $REL_OUT)"
-  exit 1
-fi
 
 if ! "$LIC" build "$SAMPLE" -o "$OUT_STABLE" --no-lean-verify --release --numerically-stable >/dev/null 2>&1; then
   echo "horner_fma_lean_drift: --release --numerically-stable build must succeed"
   exit 1
 fi
 STABLE_OUT="$(LI_PRINT_SINK_F64=1 "$OUT_STABLE" | tail -1 | tr -d '\r\n')"
-if [[ "$STABLE_OUT" == "$LEAN_EXPECT" ]]; then
-  echo "horner_fma_lean_drift: stable release still uses FMA intrinsic path (expected drift; got $STABLE_OUT == lean)"
+if [[ "$DBG_OUT" != "$LEAN_EXPECT" ]] || [[ "$STABLE_OUT" != "$LEAN_EXPECT" ]]; then
+  echo "horner_fma_lean_drift: ident-addend control must match Lean in debug+stable (dbg=$DBG_OUT stable=$STABLE_OUT lean=$LEAN_EXPECT)"
   exit 1
 fi
 
-echo "horner_fma_lean_drift: ok (release FMA=$REL_OUT != lean=$LEAN_EXPECT; stable FMA=$STABLE_OUT != lean; debug matches lean)"
+echo "horner_fma_lean_drift: ok (ident addend: debug+stable=lean; rel=$REL_OUT — no FmaFloatF64 MIR)"

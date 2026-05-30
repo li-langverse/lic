@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-05-30T14:07:56.658314+00:00",
+  "generated_at": "2026-05-30T14:08:13.301954+00:00",
   "tz": "Europe/Berlin",
   "agents_live": 0,
   "runners": [
@@ -7,7 +7,7 @@
       "id": "httpd",
       "name": "li-httpd gap parity",
       "branch": "cursor/httpd-plan-continue",
-      "head": "bb60de5f",
+      "head": "bfd49126",
       "running": true,
       "process": "2387744 /bin/bash -O extglob -c snap=$(command cat <&3) && builtin shopt -s extglob && builtin eval -- \"$snap\" && { buil",
       "log_path": "/home/s4il0r/Documents/Cursor/li-langverse/lic/../lic/data/httpd-plan-loop/until-deadline-20260530-050645.log",
@@ -91,7 +91,7 @@
       "agent_live": false,
       "agent": "",
       "goal_file": "",
-      "log_age_sec": 26872,
+      "log_age_sec": 26888,
       "last_state_at": "2026-05-30T06:38:33.327023+00:00",
       "last_state_todo": "gap-phase2-streaming-wrk",
       "last_state_gates": false,
@@ -106,7 +106,7 @@
         "==> batch 2 exit 124 @ 2026-05-30T08:38:33+02:00",
         "==> batch 2 exit 124 @ 2026-05-30T08:38:33+02:00"
       ],
-      "status_note": "supervisor idle (log 26872s stale \u2014 check log_path)"
+      "status_note": "supervisor idle (log 26888s stale \u2014 check log_path)"
     },
     {
       "id": "compiler-studio",
@@ -419,7 +419,7 @@
       "agent_live": false,
       "agent": "",
       "goal_file": "",
-      "log_age_sec": 411945,
+      "log_age_sec": 411961,
       "last_state_at": "2026-05-25T06:41:51.000000+00:00",
       "last_state_todo": "wave-d-gui-scaffold",
       "last_state_gates": true,
@@ -536,7 +536,7 @@
       "agent_live": false,
       "agent": "",
       "goal_file": "",
-      "log_age_sec": 509213,
+      "log_age_sec": 509230,
       "last_state_at": "2026-05-24T16:32:27.410480+00:00",
       "last_state_todo": "sim-p0-md-lj-li-parity",
       "last_state_gates": false,
@@ -794,7 +794,7 @@
       "agent_live": false,
       "agent": "",
       "goal_file": "",
-      "log_age_sec": 459353,
+      "log_age_sec": 459370,
       "last_state_at": "2026-05-30T08:11:00+00:00",
       "last_state_todo": "studio-ux-15-wgpu-readback",
       "last_state_gates": true,
@@ -886,7 +886,7 @@
       "agent_live": false,
       "agent": "",
       "goal_file": "",
-      "log_age_sec": 411920,
+      "log_age_sec": 411937,
       "last_state_at": "2026-05-25T19:42:04.198858+00:00",
       "last_state_todo": "md-r2-neighbor-list-gap",
       "last_state_gates": true,
@@ -965,7 +965,7 @@
       "agent_live": false,
       "agent": "",
       "goal_file": "",
-      "log_age_sec": 412432,
+      "log_age_sec": 412448,
       "last_state_at": "2026-05-25T19:32:04.164094+00:00",
       "last_state_todo": "chem-r2-dft-scf-gap",
       "last_state_gates": false,
@@ -1037,7 +1037,7 @@
       "agent_live": false,
       "agent": "",
       "goal_file": "",
-      "log_age_sec": 412583,
+      "log_age_sec": 412600,
       "last_state_at": "2026-05-25T19:29:32.615546+00:00",
       "last_state_todo": "sec-r1-httpd-fuzz-smoke",
       "last_state_gates": true,
@@ -1052,7 +1052,7 @@
       "id": "swarm-observer",
       "name": "Swarm gap orchestrator",
       "branch": "cursor/swarm-observer-plan-loop",
-      "head": "bb60de5f",
+      "head": "bfd49126",
       "running": true,
       "process": "2387744 /bin/bash -O extglob -c snap=$(command cat <&3) && builtin shopt -s extglob && builtin eval -- \"$snap\" && { buil",
       "log_path": "/home/s4il0r/Documents/Cursor/li-langverse/lic/../lic/data/swarm-observer-plan-loop/iter-20260525-193501.log",
@@ -1111,7 +1111,7 @@
       "agent_live": false,
       "agent": "",
       "goal_file": "",
-      "log_age_sec": 25270,
+      "log_age_sec": 25286,
       "last_state_at": "2026-05-25T19:34:28.890041+00:00",
       "last_state_todo": "orch-r1-plan-debt-sync",
       "last_state_gates": true,
@@ -1119,7 +1119,7 @@
       "activity": [
         "SDK tool activity streams to stderr ([sdk] \u25b6/\u2713 lines). Set LI_SDK_TERMINAL_STREAM=0 to disable."
       ],
-      "status_note": "supervisor idle (log 25270s stale \u2014 check log_path)"
+      "status_note": "supervisor idle (log 25286s stale \u2014 check log_path)"
     }
   ],
   "history": [

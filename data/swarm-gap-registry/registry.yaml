@@ -1,0 +1,117 @@
+version: 1
+gaps:
+- id: gap-plan-debt-lic-master-plan-phase-2i-math-linalg-surface-par
+  gap_kind: plan_debt
+  title: "Phase 2i \u2014 Math / linalg surface \u2014 **partial:** **2i-a/c** (#148);\
+    \ **2i-b** `norm`, `sum`/`dot`, `reductions/`, same-len"
+  status: open
+  priority: 5
+  discovered_by: plan_verifier
+  evidence:
+  - "lic:master_plan: Phase 2i \u2014 Math / linalg surface \u2014 **partial:** **2i-a/c**\
+    \ (#148); **2i-b** `norm`, `sum`/`dot`, `reductions/`, same-len"
+  target_backlog: null
+  suggested_loop: null
+  handoff_to:
+  - plan_verifier
+  - issue_planner
+- id: gap-plan-debt-lic-master-plan-phase-7d-execution-decorators-pa
+  gap_kind: plan_debt
+  title: "Phase 7d \u2014 Execution decorators \u2014 **partial (#150 7d-c):** `@vectorized`\
+    \ on `for` \u2192 `ArraySimdScope`; **7d-b** lanes=4; "
+  status: open
+  priority: 5
+  discovered_by: plan_verifier
+  evidence:
+  - "lic:master_plan: Phase 7d \u2014 Execution decorators \u2014 **partial (#150\
+    \ 7d-c):** `@vectorized` on `for` \u2192 `ArraySimdScope`; **7d-b** lanes=4; "
+  target_backlog: null
+  suggested_loop: null
+  handoff_to:
+  - plan_verifier
+  - issue_planner
+- id: gap-plan-debt-lic-master-plan-phase-7e-math-simd-parallel-lowe
+  gap_kind: plan_debt
+  title: "Phase 7e \u2014 Math \u2192 SIMD/parallel lowering \u2014 **partial (#148,\
+    \ #150, #155):** loop matmul + FMA horner; tier-1 advisory \u22641."
+  status: open
+  priority: 5
+  discovered_by: plan_verifier
+  evidence:
+  - "lic:master_plan: Phase 7e \u2014 Math \u2192 SIMD/parallel lowering \u2014 **partial\
+    \ (#148, #150, #155):** loop matmul + FMA horner; tier-1 advisory \u22641."
+  target_backlog: null
+  suggested_loop: null
+  handoff_to:
+  - plan_verifier
+  - issue_planner
+- id: gap-plan-debt-lic-master-plan-phase-8p-parallel-compile-ci-thr
+  gap_kind: plan_debt
+  title: "Phase 8p \u2014 Parallel compile + CI throughput \u2014 **partial:** Ninja\
+    \ `-j` for C++ only; `lic --jobs` reserved not wired; `ru"
+  status: open
+  priority: 5
+  discovered_by: plan_verifier
+  evidence:
+  - "lic:master_plan: Phase 8p \u2014 Parallel compile + CI throughput \u2014 **partial:**\
+    \ Ninja `-j` for C++ only; `lic --jobs` reserved not wired; `ru"
+  target_backlog: null
+  suggested_loop: null
+  handoff_to:
+  - plan_verifier
+  - issue_planner
+- id: gap-plan-debt-lic-master-plan-vision-llm-llm-first-agent-json-
+  gap_kind: plan_debt
+  title: "**Vision-LLM** \u2014 LLM-first + agent JSON diagnostics \u2014 **partial:**\
+    \ `lic check --format=json`, `lic diagnose`, `diagnosti"
+  status: open
+  priority: 5
+  discovered_by: plan_verifier
+  evidence:
+  - "lic:master_plan: **Vision-LLM** \u2014 LLM-first + agent JSON diagnostics \u2014\
+    \ **partial:** `lic check --format=json`, `lic diagnose`, `diagnosti"
+  target_backlog: null
+  suggested_loop: null
+  handoff_to:
+  - plan_verifier
+  - issue_planner
+- id: gap-plan-pending-httpd-gap-phase2-perf-wrk-soak
+  gap_kind: plan_debt
+  title: 'httpd: pending plan todo gap-phase2-perf-wrk-soak'
+  status: open
+  priority: 7
+  discovered_by: plan_verifier
+  evidence:
+  - snapshot runner=httpd plan_pending=gap-phase2-perf-wrk-soak
+  runner_id: httpd
+  plan_todo_id: gap-phase2-perf-wrk-soak
+  suggested_loop: httpd
+  handoff_to:
+  - swarm_observer
+- id: gap-plan-pending-httpd-gap-phase2-streaming-wrk
+  gap_kind: plan_debt
+  title: 'httpd: pending plan todo gap-phase2-streaming-wrk'
+  status: open
+  priority: 7
+  discovered_by: plan_verifier
+  evidence:
+  - snapshot runner=httpd plan_pending=gap-phase2-streaming-wrk
+  runner_id: httpd
+  plan_todo_id: gap-phase2-streaming-wrk
+  suggested_loop: httpd
+  handoff_to:
+  - swarm_observer
+- id: gap-plan-pending-sim-sim-p2-qm-dft-scf
+  gap_kind: plan_debt
+  title: 'sim: pending plan todo sim-p2-qm-dft-scf'
+  status: open
+  priority: 7
+  discovered_by: plan_verifier
+  evidence:
+  - snapshot runner=sim plan_pending=sim-p2-qm-dft-scf
+  runner_id: sim
+  plan_todo_id: sim-p2-qm-dft-scf
+  suggested_loop: sim
+  handoff_to:
+  - swarm_observer
+updated_at: '2026-05-30T02:32:08Z'

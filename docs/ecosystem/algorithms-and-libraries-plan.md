@@ -39,7 +39,7 @@ This page is the **algorithms-and-libraries** layer under World Studio — not t
 | Physics packages | `packages/physics.*` | Tier-2 kernels, not full CAE/QM |
 | UX competitive intel | `docs/game-dev/competitive-intel/` | 14 dimensions; steal patterns for Studio |
 | Bio/drug plans | `competitive-bioengineering-plan.md`, `drug-design-lab-loop-rfc.md` | Best vertical example of competitor + bench rows |
-| CAD (Li repo) | `li-language/docs/ecosystem/cad-fundamentals.md` | Gap analysis only — no kernel |
+| CAD (Li repo) | `docs/ecosystem/cad-fundamentals.md` | Gap analysis + `li-geometry` stub (AL-4/AL-13) |
 
 ---
 
@@ -250,7 +250,7 @@ Start `anim` under `scene` if package count is a concern; split when `import ani
 | `geometry` | — | **missing** | **new** — mesh predicates, booleans (Manifold-class); thin B-rep later | D | `math`, `voxel` |
 | `voxel` | `packages/voxel` | exists-stub | **extend** — grids for AM/games/science | D | `math` |
 
-CAD gap doc (li-language): merge into `lic/docs/ecosystem/cad-fundamentals.md` — **AL-4**.
+CAD gap doc: canonical at `docs/ecosystem/cad-fundamentals.md` — **AL-4** (merged from li-language).
 
 ### 7.5 Already exist — deepen in place (no new package name)
 
@@ -341,7 +341,7 @@ P4  deepen physics.* / sim.* / chem per verticals.toml
 
 - [Engineering standards](engineering-standards.md)  
 - [Official packages](official-packages.md)  
-- [CAD fundamentals (li-language)](https://github.com/li-langverse/li-language/blob/dev/docs/ecosystem/cad-fundamentals.md)  
+- [CAD fundamentals](./cad-fundamentals.md) (canonical; [li-language source](https://github.com/li-langverse/li-language/blob/dev/docs/ecosystem/cad-fundamentals.md))  
 - [Master plan phase map](../superpowers/plans/2026-05-14-li-master-plan.md)
 
 **Maintainers:** Update §7 when adding/removing `packages/*` members. Bump `updated` in `verticals.toml` / `registry.toml` on quarterly SOTA review.

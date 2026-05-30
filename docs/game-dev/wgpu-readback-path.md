@@ -1,6 +1,6 @@
 # Native viewport pixels (gap #2)
 
-**Status:** Phase A shipped; **Phase B scaffold** (runtime stub + `LIG_WGPU_READBACK=1`) — in-tree wgpu-rs swapchain readback not yet wired.
+**Status:** Phase B scaffold (`LIG_WGPU_READBACK=1`). Studio capture: `studio_vertical_capture_ppm_auto` (Step 1b). Real GPU readback not wired.
 
 Phase A: `lig.kernel.present_blit_rgba8` kid=3 via `lig_present_blit_paint_summary`.
 

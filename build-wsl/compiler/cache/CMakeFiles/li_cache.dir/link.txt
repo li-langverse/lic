@@ -1,0 +1,2 @@
+/usr/bin/ar Dqc libli_cache.a CMakeFiles/li_cache.dir/check_cache.cpp.o
+/usr/bin/ranlib -D libli_cache.a

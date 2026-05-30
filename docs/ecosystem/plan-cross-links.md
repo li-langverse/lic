@@ -36,8 +36,24 @@ Agents use this map so **vision**, **PH trackers**, and **honest proof status** 
 | `2026-05-14-benchmarks-and-simulations.md` | Bench harness |
 | `2026-05-16-li-package-manager-lip.md` | **lip** |
 | `2026-05-16-li-httpd-plan.md` | **lis** / httpd |
-| `2026-05-16-li-math-linalg-surface.md` | Math / **PH-7e** |
+| `2026-05-16-li-math-linalg-surface.md` | Math / **PH-7e** · **G-math**, **G-math-syn** |
+| `2026-05-22-parallel-compile-ci.md` | **PH-8p** (CI throughput; no **G-*** closure) |
+| `2026-05-24-studio-ui-ux-plan-loop.md` | **PH-UX** / Studio (UX honesty, not Lean) |
+| `2026-05-20-li-oop-roadmap.md` | **PH-2j** · **G-oop**, **G-def** |
+| `2026-05-16-li-package-scaffold.md` | **Pkg** / **8a** |
+| `2026-05-16-li-ecosystem-governance.md` | **PH-Pkg** governance |
 | `ph-db-lidb-platform.md` | **PH-DB** (roadmap ADR owns detail) |
+
+## UI/UX quality (`ui_ux_quality` research goal)
+
+| Layer | Path |
+|-------|------|
+| **Handoff (this repo)** | [gui-ux-quality-handoff.md](gui-ux-quality-handoff.md) |
+| **Orchestrator ingest** | [orch-r4-ui-ux-signals](orchestrator-notes/2026-05-29-orch-r4-ui-ux-signals.md) |
+| **UX digests** | `benchmarks/docs/ecosystem/ux-digests/` (`*-gui-ux.md`, `*-gui-ui.md`) |
+| **Targets** | `li-cursor-agents/config/ux-targets.json` |
+
+Primary agent: **`gui_ux_tester`**. Companion: **`gui_ui_tester`** (axe/pixel). Implementation: **`studio_ui_ux_builder`**.
 
 ## Automation
 

@@ -64,6 +64,18 @@ todos:
     status: done
   - id: studio-ux-20-proactive-sweep-20260530
     content: "Proactive briefing refresh — capture-deps + ecosystem audit follow-ups for studio_ui_ux_builder"
+    status: done
+  - id: studio-ux-21-wgpu-swapchain-gpu-runner
+    content: "Real wgpu-rs swapchain texture readback on org GPU runner (LIG_WGPU_SWAPCHAIN=1)"
+    status: pending
+  - id: studio-ux-22-palette-native-latency
+    content: "Native palette open/filter latency on SDL shell — bench status native (UX-04)"
+    status: pending
+  - id: studio-ux-23-agent-chrome-native
+    content: "Wire agent chrome to native shell stream — task progress + cancel (UX-06 SOTA)"
+    status: pending
+  - id: studio-ux-24-gpu-runner-deps
+    content: "Org GPU runner matrix — Vulkan deps + wgpu swapchain CI green path"
     status: pending
 isProject: false
 ---

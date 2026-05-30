@@ -35,6 +35,9 @@ if [[ -x "$ROOT/scripts/studio-ui-ux-probe-capture-deps.sh" ]]; then
   [[ -f "$ROOT/data/studio-ui-ux-plan-loop/latest-capture-deps.json" ]] \
     || fail "latest-capture-deps.json missing after probe"
 fi
+python3 "$ROOT/scripts/studio-ui-ux-write-briefing-snapshot.py" || fail "studio-ui-ux-write-briefing-snapshot"
+[[ -f "$ROOT/data/studio-ui-ux-plan-loop/latest-briefing-snapshot.json" ]] \
+  || fail "latest-briefing-snapshot.json missing"
 
 li_phase "competitive intel doc"
 [[ -f "$ROOT/docs/game-dev/competitive-intel/ui-ux-by-dimension.md" ]] || fail "ui-ux-by-dimension.md"

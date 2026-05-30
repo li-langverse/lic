@@ -36,10 +36,11 @@ Rejected: 512×(64³) tile repetition harness (wrong workload vs C); outlined `n
 
 ## Quality table
 
-| Axis | Before (dashboard) | After (local n=15) |
-|------|-------------------|---------------------|
-| **Speed** `matmul_naive` | 1.222× yellow | **1.167×** green |
-| **Speed** `matmul_blocked` | 1.244× yellow | **1.216×** advisory (↓2.3%) |
+| Axis | Before (dashboard @ 14:55Z) | After (local n=20 + ingest) |
+|------|---------------------------|------------------------------|
+| **Speed** `matmul_naive` | 1.222× yellow | **1.105×** green |
+| **Speed** `matmul_blocked` | 1.244× yellow | **1.202×** yellow (↓3.4%) |
+| **Speed** `simd_dot` | 1.052× near | **1.039×** green |
 | **Accuracy** | verify ok | unchanged (`1288460.7563999966`) |
 | **Stability** | tier-0 skip | not touched |
 

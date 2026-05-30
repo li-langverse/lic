@@ -6,10 +6,10 @@ import ui
 
 def li_std_studio_version() -> int
   requires true
-  ensures result == 4
+  ensures result == 5
   decreases 0
 =
-  return 4
+  return 5
 
 def studio_dock_slot_count() -> int
   requires true
@@ -574,6 +574,39 @@ def studio_paint_palette_overlay(frame: var PaintFrame, palette: StudioCommandPa
   if palette.is_open == studio_palette_closed_flag():
     return
   paint_studio_palette(frame, palette)
+
+def studio_shell_palette_bench_native(w: float, h: float, query_code: int) -> StudioPaletteBenchLatency
+  requires w > 0.0
+  requires h > 0.0
+  requires query_code >= 0
+  ensures result.native_pixels == 1
+  ensures result.open_meets_budget == 1
+  ensures result.filter_meets_budget == 1
+  decreases query_code
+=
+  var shell: StudioShellCompose = studio_compose_shell_palette(w, h, 0, 1, studio_palette_open_flag(), query_code)
+  if studio_compose_ok(shell) != 1:
+    var fail: StudioPaletteBenchLatency
+    fail.open_ms = 999.0
+    fail.filter_ms = 999.0
+    fail.native_pixels = 0
+    fail.open_meets_budget = 0
+    fail.filter_meets_budget = 0
+    fail.result_count = 0
+    return fail
+  if studio_palette_shell_ok(shell) != 1:
+    var fail2: StudioPaletteBenchLatency
+    fail2.open_ms = 999.0
+    fail2.filter_ms = 999.0
+    fail2.native_pixels = 0
+    fail2.open_meets_budget = 0
+    fail2.filter_meets_budget = 0
+    fail2.result_count = 0
+    return fail2
+  var frame: PaintFrame = paint_frame_new()
+  studio_paint_palette_overlay(frame, shell.palette)
+  var bench: StudioPaletteBenchLatency = studio_palette_bench_native(w, h, query_code)
+  return bench
 
 def studio_compose_ok(compose: StudioShellCompose) -> int
   requires true

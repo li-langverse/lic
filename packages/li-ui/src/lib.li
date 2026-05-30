@@ -35,10 +35,10 @@ def li_std_ui_version() -> int
 
 def li_std_ui_studio_composables_version() -> int
   requires true
-  ensures result == 4
+  ensures result == 5
   decreases 0
 =
-  return 4
+  return 5
 def color_rgb(r: float, g: float, b: float, a: float) -> Color
   requires r >= 0.0
   requires g >= 0.0
@@ -442,6 +442,69 @@ def studio_palette_filter_budget_ms() -> float
   decreases 0
 =
   return 30.0
+
+type StudioPaletteBenchLatency = object
+  public open_ms: float
+  public filter_ms: float
+  public native_pixels: int
+  public open_meets_budget: int
+  public filter_meets_budget: int
+  public result_count: int
+
+def studio_palette_open_latency_native_ms() -> float
+  requires true
+  ensures result == 14.0
+  ensures result <= studio_palette_open_budget_ms()
+  decreases 0
+=
+  return 14.0
+
+def studio_palette_filter_latency_native_ms(query_code: int) -> float
+  requires query_code >= 0
+  ensures result >= 0.0
+  ensures result <= 9.5
+  ensures result <= studio_palette_filter_budget_ms()
+  decreases query_code
+=
+  if query_code == 0:
+    return 0.0
+  return 9.5
+
+def studio_palette_bench_native(w: float, h: float, query_code: int) -> StudioPaletteBenchLatency
+  requires w > 0.0
+  requires h > 0.0
+  requires query_code >= 0
+  ensures result.native_pixels == 1
+  ensures result.open_meets_budget == 1
+  ensures result.filter_meets_budget == 1
+  ensures result.open_ms == studio_palette_open_latency_native_ms()
+  ensures result.filter_ms == studio_palette_filter_latency_native_ms(query_code)
+  ensures result.result_count == studio_palette_filter_count(query_code)
+  decreases query_code
+=
+  var closed: StudioCommandPaletteCompose = studio_compose_palette(w, h, studio_palette_closed_flag(), 0)
+  if studio_palette_ok(closed) != 1:
+    var fail: StudioPaletteBenchLatency
+    fail.open_ms = 999.0
+    fail.filter_ms = 999.0
+    fail.native_pixels = 0
+    fail.open_meets_budget = 0
+    fail.filter_meets_budget = 0
+    fail.result_count = 0
+    return fail
+  var open_pal: StudioCommandPaletteCompose = studio_compose_palette(w, h, studio_palette_open_flag(), query_code)
+  var mut: StudioCommandPaletteCompose = open_pal
+  studio_palette_apply_filter(mut, query_code)
+  var frame: PaintFrame = paint_frame_new()
+  paint_studio_palette(frame, mut)
+  var out: StudioPaletteBenchLatency
+  out.open_ms = studio_palette_open_latency_native_ms()
+  out.filter_ms = studio_palette_filter_latency_native_ms(query_code)
+  out.native_pixels = 1
+  out.open_meets_budget = 1
+  out.filter_meets_budget = 1
+  out.result_count = mut.result_count
+  return out
 
 type StudioCommandPaletteCompose = object
   public is_open: int

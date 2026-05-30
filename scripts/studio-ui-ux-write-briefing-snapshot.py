@@ -75,6 +75,39 @@ def studio_gaps(bench: dict, deps: dict, ux: dict) -> list[dict]:
     return gaps
 
 
+FOLLOW_UP_BY_GAP = {
+    "studio-ux-21-wgpu-swapchain-gpu-runner": {
+        "repo": "lic",
+        "title": "feat(studio-ui): wgpu swapchain readback on org GPU runner (studio-ux-21)",
+        "labels": ["studio-ui", "PH-UX", "wgpu"],
+    },
+    "studio-ux-22-palette-native-latency": {
+        "repo": "lic",
+        "title": "feat(studio-ui): native palette latency on SDL shell (studio-ux-22)",
+        "labels": ["studio-ui", "PH-UX", "UX-04"],
+    },
+    "studio-ux-23-agent-chrome-native": {
+        "repo": "lic",
+        "title": "feat(studio-ui): agent chrome native stream wiring (studio-ux-23)",
+        "labels": ["studio-ui", "agentic", "UX-06"],
+    },
+    "studio-ux-24-gpu-runner-deps": {
+        "repo": "lic",
+        "title": "chore(studio-ui): org GPU runner Vulkan deps + wgpu swapchain CI (studio-ux-24)",
+        "labels": ["studio-ui", "PH-UX", "ci"],
+    },
+}
+
+
+def follow_up_issues(gaps: list[dict]) -> list[dict]:
+    out: list[dict] = []
+    for gap in gaps:
+        item = FOLLOW_UP_BY_GAP.get(gap.get("id", ""))
+        if item:
+            out.append(item)
+    return out
+
+
 def briefing_signals(briefing: dict) -> dict:
     rec = briefing.get("recommended_agents") or []
     studio_agents = [a for a in rec if "studio" in str(a.get("agent", "")).lower()]
@@ -141,23 +174,7 @@ def main() -> int:
             "gaps": deps.get("gaps", []),
         },
         "wave_4_gaps": gaps,
-        "follow_up_issues": [
-            {
-                "repo": "lic",
-                "title": "feat(studio-ui): wgpu swapchain readback on org GPU runner (studio-ux-21)",
-                "labels": ["studio-ui", "PH-UX", "wgpu"],
-            },
-            {
-                "repo": "lic",
-                "title": "feat(studio-ui): native palette latency on SDL shell (studio-ux-22)",
-                "labels": ["studio-ui", "PH-UX", "UX-04"],
-            },
-            {
-                "repo": "lic",
-                "title": "feat(studio-ui): agent chrome native stream wiring (studio-ux-23)",
-                "labels": ["studio-ui", "agentic", "UX-06"],
-            },
-        ],
+        "follow_up_issues": follow_up_issues(gaps),
     }
     OUT.write_text(json.dumps(payload, indent=2) + "\n", encoding="utf-8")
     print(f"studio-ui-ux-write-briefing-snapshot: ok → {OUT} (gaps={len(gaps)})")

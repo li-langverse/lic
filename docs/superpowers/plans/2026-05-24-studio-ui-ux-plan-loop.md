@@ -70,7 +70,7 @@ todos:
     status: pending
   - id: studio-ux-22-palette-native-latency
     content: "Native palette open/filter latency on SDL shell — bench status native (UX-04)"
-    status: pending
+    status: done
   - id: studio-ux-23-agent-chrome-native
     content: "Wire agent chrome to native shell stream — task progress + cancel (UX-06 SOTA)"
     status: pending

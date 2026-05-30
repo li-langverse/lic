@@ -132,6 +132,7 @@ def bench_palette_latency_hook() -> dict:
     filter_sec = hook.get("filter") or {}
     budget_open = float(meta_h.get("budget_open_ms", 50))
     budget_filter = float(meta_h.get("budget_filter_ms", 30))
+    native = bool(meta_h.get("native_pixels", False))
     open_ms = float(open_sec.get("elapsed_ms", bench.get("worst_open_ms", 0)))
     filter_ms = float(filter_sec.get("elapsed_ms", bench.get("worst_filter_ms", 0)))
     return {
@@ -144,8 +145,11 @@ def bench_palette_latency_hook() -> dict:
         "open_meets_target": open_ms <= budget_open,
         "filter_meets_target": filter_ms <= budget_filter,
         "meets_target": open_ms <= budget_open and filter_ms <= budget_filter,
-        "status": "simulate",
+        "native_pixels": native,
+        "status": "native" if native else "simulate",
         "bench_simulate_fn": meta_h.get("bench_simulate_fn", "studio_palette_open_latency_ms"),
+        "bench_native_fn": meta_h.get("bench_native_fn", "studio_palette_bench_native"),
+        "hook_version": meta_h.get("hook_version", 0),
     }
 
 
@@ -314,7 +318,8 @@ else:
 palette_hook = root / "packages/li-ui/bench/palette_latency.toml"
 if palette_hook.is_file():
     report["palette_latency"] = bench_palette_latency_hook()
-    report["notes"].append("palette_latency:li-ui_hook_simulate")
+    pl_status = report["palette_latency"].get("status", "simulate")
+    report["notes"].append(f"palette_latency:li-ui_hook_{pl_status}")
 else:
     report["notes"].append("skip_palette_latency:hook_missing")
 

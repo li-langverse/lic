@@ -12,4 +12,4 @@
 ## Verification
 
 - No **G-*** status changes.
-- Post-merge satellite Pages PRs → re-run `python3 scripts/ecosystem-audit.py` in benchmarks.
+- lic Pages hub PR (this wave) + merge **lis** Pages PR #32 → re-run `python3 scripts/ecosystem-audit.py` in benchmarks.

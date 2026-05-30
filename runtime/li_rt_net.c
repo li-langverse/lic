@@ -6094,15 +6094,14 @@ int32_t httpd_li_proxy_mark_active_i(int32_t epfd, int32_t slot, int32_t up_fd, 
   s->proxy_resp_body_left = 0;
   httpd_req_info_t req;
   memset(&req, 0, sizeof(req));
-  if (parse_request_line_c(s->buf, hdr_end, &req) == 0 &&
-      httpd_path_is_stream_proxy(req.path, req.path_len)) {
+  int req_ok = parse_request_line_c(s->buf, hdr_end, &req) == 0;
+  if (req_ok && httpd_path_is_stream_proxy(req.path, req.path_len)) {
     g_proxy_resp_cl_cached = -1;
     g_proxy_resp_hdr_bytes_cached = 0;
     httpd_proxy_snap_reset();
   }
   s->proxy_is_sse =
-      httpd_client_wants_sse(s->buf, hdr_end) ||
-      (parse_request_line_c(s->buf, hdr_end, &req) == 0 && httpd_path_is_stream_sse(req.path, req.path_len));
+      httpd_client_wants_sse(s->buf, hdr_end) || (req_ok && httpd_path_is_stream_sse(req.path, req.path_len));
   s->proxy_is_ws = httpd_client_wants_websocket(s->buf, hdr_end);
   s->proxy_last_chunk_ts = 0.0;
   s->proxy_stream_start_ts = s->proxy_is_sse ? httpd_monotonic_now() : 0.0;

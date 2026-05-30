@@ -377,6 +377,11 @@ extern proc httpd_li_proxy_store_resp_cache_i(slot: var int) -> int
   ensures true
   decreases 0
 
+extern proc httpd_li_proxy_slot_allows_resp_cache_i(slot: var int) -> int
+  requires 0 <= slot
+  ensures true
+  decreases 0
+
 extern proc httpd_li_proxy_cached_hdr_len_i() -> int
   requires true
   ensures true

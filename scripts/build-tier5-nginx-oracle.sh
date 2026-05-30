@@ -5,8 +5,8 @@ ROOT="$(cd "$(dirname "$0")/.." && pwd)"
 NGINX_SRC="$ROOT/benchmarks/tier5_http/third_party/nginx"
 PREFIX="$ROOT/benchmarks/tier5_http/.nginx-prefix"
 
-if [[ ! -d "$NGINX_SRC" ]]; then
-  echo "build-tier5-nginx-oracle: init submodule first" >&2
+if [[ ! -f "$NGINX_SRC/auto/configure" ]]; then
+  echo "build-tier5-nginx-oracle: init submodule (missing nginx sources)" >&2
   git -C "$ROOT" submodule update --init benchmarks/tier5_http/third_party/nginx
 fi
 

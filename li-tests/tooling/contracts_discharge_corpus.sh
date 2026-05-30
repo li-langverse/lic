@@ -14,7 +14,8 @@ chmod +x "$ROOT/li-tests/tooling/discharge_trivial_lean.sh" \
   "$ROOT/li-tests/tooling/prelude_linalg_manifest_tier_gap.sh" \
   "$ROOT/li-tests/tooling/horner_fma_numerically_stable_gap.sh" \
   "$ROOT/li-tests/tooling/sum_dot_product_equiv_gap.sh" \
-  "$ROOT/li-tests/tooling/matmul_loop_codegen_witness_gap.sh"
+  "$ROOT/li-tests/tooling/matmul_loop_codegen_witness_gap.sh" \
+  "$ROOT/li-tests/tooling/method_call_requires_lean_gap.sh"
 "$ROOT/li-tests/tooling/discharge_trivial_lean.sh"
 "$ROOT/li-tests/tooling/discharge_const_lean.sh"
 "$ROOT/li-tests/tooling/discharge_linalg_int_lean.sh"
@@ -27,6 +28,7 @@ chmod +x "$ROOT/li-tests/tooling/discharge_trivial_lean.sh" \
 "$ROOT/li-tests/tooling/horner_fma_numerically_stable_gap.sh"
 "$ROOT/li-tests/tooling/sum_dot_product_equiv_gap.sh"
 "$ROOT/li-tests/tooling/matmul_loop_codegen_witness_gap.sh"
+"$ROOT/li-tests/tooling/method_call_requires_lean_gap.sh"
 LIC="${LIC:-$("$ROOT/scripts/resolve-lic.sh")}"
 "$LIC" build "$ROOT/li-tests/contracts_verify/index_refinement.li" -o /dev/null
 chmod +x "$ROOT/scripts/check-autovc-open-goals.sh"

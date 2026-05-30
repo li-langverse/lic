@@ -178,7 +178,7 @@ Cross-tracks (not separate phases above): **PH-PORT**, **PH-COMPLY**, **PH-CIN**
 | ID | Title | Profile | State | Target | Proof gate | Cx | Blocks | Par? |
 |----|-------|---------|-------|--------|------------|-----|--------|------|
 | WP-AG-01 | MCP tool registry AGENT-0 | all | **done** | Stable tool IDs | `studio_mcp_tools.li` | S | — | Y |
-| WP-AG-02 | In-process dispatch AGENT-1 | all | **partial** | `studio_mcp_tool_dispatch` + `StudioAgentRun` state model | `studio_mcp_dispatch_run.li`, `studio_agentic_run.li` | M | WP-AG-01 | Y |
+| WP-AG-02 | In-process dispatch AGENT-1 | all | **done** | `studio_mcp_tool_dispatch` + `StudioAgentRun` state model | `studio_mcp_dispatch_run.li`, `studio_agentic_run.li` | M | WP-AG-01 | Y |
 | WP-AG-03 | `lis mcp li-engine` HTTP server | all | stub | Wire tools to studio | integration smoke | L | WP-AG-02 | N |
 | WP-AG-04 | `@cursor/sdk` apply_patch loop | all | stub | Prompt → patch → `lic check` | agent eval set | L | WP-AG-03, WP-GD-07 | N |
 | WP-AG-05 | `chem_dft_run` / `am_export_print` live | sim_drug, sim_additive | stub | Domain dispatch | composable per tool | M | WP-AG-03 | Y |

@@ -1,23 +1,23 @@
 import ml_rl
 import sim
-import studio
+
+# PH-ML Wave 3 — sim_rl profile JobGraph collect + env pool tick (sim spine; studio hook in studio_sim_rl_step_hook.li).
 
 def main() -> int
   requires true
   ensures result == 0
   decreases 0
 =
-  var rl_cfg: StudioProjectConfig = studio_project_config_new(studio_profile_sim_rl())
-  var rl_sess: SimSessionStub = sim_session_stub_default()
-  studio_apply_profile_to_sim(rl_cfg, rl_sess)
+  var sess: SimSessionStub = sim_session_stub_default()
+  sim_session_apply_studio_profile(2, sess)
   var graph: JobGraphStub = job_graph_stub_default()
-  if ml_rl_job_graph_collect(rl_sess, 0.02, graph) != sim_status_ok():
+  if ml_rl_job_graph_collect(sess, 0.02, graph) != sim_status_ok():
     return 10
   if graph.samples_collected < 4:
     return 11
-  if studio_sim_rl_step_hook(rl_sess, 0.02) != sim_status_ok():
+  if sim_rl_session_env_pool_step(sess, 0.02) != sim_status_ok():
     return 12
   var expected: int = ml_rl_async_env_count() + ml_rl_async_env_count()
-  if rl_sess.tick != expected:
+  if sess.tick != expected:
     return 13
   return 0

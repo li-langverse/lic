@@ -55,7 +55,7 @@ if lic.is_file() and smoke.is_file():
         if not report["compile_ok"]:
             report["stderr_tail"] = (build.stderr or "")[-500:]
         elif bin_path.is_file():
-            run = subprocess.run([str(bin_path)], capture_output=True, text=True, env=env)
+            run = subprocess.run([str(bin_path)], cwd=root, capture_output=True, text=True, env=env)
             report["executed"] = True
             report["run_exit_code"] = run.returncode
             report["validity_gate_pass"] = run.returncode == 0

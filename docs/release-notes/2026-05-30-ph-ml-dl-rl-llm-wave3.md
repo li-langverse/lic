@@ -11,7 +11,7 @@ Wave 3 tranche: async JobGraph scaffold in li-ml-rl, >=4 parallel env sample col
 | `JobGraphStub` / `SampleJob` | in-process DAG counters | sync stub workers over 4 env slots | job_graph_collect.li |
 | `ml_rl_job_graph_collect` | wraps `env_pool_stub_step` | same; fills graph + replay contract | job_graph_collect.li |
 | `ml_rl_env_pool_async_collect` | n/a | >=4 env handles via default pool | env_pool_async_four.li |
-| Studio sim_rl | profile + step hook | JobGraph collect + `studio_sim_rl_step_hook` | studio_sim_rl_step.li |
+| Studio sim_rl | profile + step hook | JobGraph collect + `sim_rl_session_env_pool_step` on sim spine; full studio hook in `studio_sim_rl_step_hook.li` | studio_sim_rl_step.li |
 
 ## Packages
 

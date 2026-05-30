@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-05-30T03:58:42.464281+00:00",
+  "generated_at": "2026-05-30T07:03:08.829600+00:00",
   "tz": "Europe/Berlin",
   "agents_live": 0,
   "runners": [
@@ -7,10 +7,10 @@
       "id": "httpd",
       "name": "li-httpd gap parity",
       "branch": "cursor/httpd-plan-continue",
-      "head": "42b1f778",
+      "head": "b78a4c4d",
       "running": true,
-      "process": "2010567 bash ./scripts/httpd-plan-until-deadline.sh",
-      "log_path": "/home/s4il0r/Documents/Cursor/li-langverse/lic/../lic/data/httpd-plan-loop/until-deadline-20260529-191636.log",
+      "process": "2811759 /usr/bin/python3 /home/s4il0r/Documents/Cursor/li-langverse/lic/benchmarks/tier5_http/fixtures/streaming-soak/se",
+      "log_path": "/home/s4il0r/Documents/Cursor/li-langverse/lic/../lic/data/httpd-plan-loop/until-deadline-20260530-050645.log",
       "todos": [
         {
           "id": "gap-exploit-owasp-cwe-suite",
@@ -69,17 +69,44 @@
         "gap-phase2-perf-wrk-soak",
         "gap-phase2-streaming-wrk"
       ],
+      "state": {
+        "completed_ids": [],
+        "iterations": 2,
+        "history": [
+          {
+            "at": "2026-05-30T05:51:52.407662+00:00",
+            "todo_id": "gap-phase2-perf-wrk-soak",
+            "agent_exit": 124,
+            "gates_ok": false
+          },
+          {
+            "at": "2026-05-30T06:38:33.327023+00:00",
+            "todo_id": "gap-phase2-streaming-wrk",
+            "agent_exit": 124,
+            "gates_ok": false
+          }
+        ]
+      },
+      "state_iterations": 2,
       "agent_live": false,
       "agent": "",
       "goal_file": "",
-      "log_age_sec": 31325,
-      "last_state_at": "",
-      "last_state_todo": "",
-      "last_state_gates": "",
-      "current_iteration": "",
-      "activity": [],
-      "status_note": "supervisor idle (log 31325s stale \u2014 check log_path)",
-      "active_todo_id": "gap-phase2-perf-wrk-soak"
+      "log_age_sec": 1384,
+      "last_state_at": "2026-05-30T06:38:33.327023+00:00",
+      "last_state_todo": "gap-phase2-streaming-wrk",
+      "last_state_gates": false,
+      "current_iteration": "==> batch 2 exit 124 @ 2026-05-30T08:38:33+02:00",
+      "activity": [
+        "[sdk] thinking\u2026",
+        "[sdk] thinking\u2026",
+        "[sdk] assistant reply",
+        "[sdk] assistant reply",
+        "agent exit 124 \u2014 stopping loop (fix and re-run)",
+        "agent exit 124 \u2014 stopping loop (fix and re-run)",
+        "==> batch 2 exit 124 @ 2026-05-30T08:38:33+02:00",
+        "==> batch 2 exit 124 @ 2026-05-30T08:38:33+02:00"
+      ],
+      "status_note": "supervisor idle (log 1384s stale \u2014 check log_path)"
     },
     {
       "id": "compiler-studio",
@@ -392,7 +419,7 @@
       "agent_live": false,
       "agent": "",
       "goal_file": "",
-      "log_age_sec": 375391,
+      "log_age_sec": 386457,
       "last_state_at": "2026-05-25T06:41:51.000000+00:00",
       "last_state_todo": "wave-d-gui-scaffold",
       "last_state_gates": true,
@@ -441,14 +468,12 @@
         {
           "id": "sim-p2-qm-dft-scf",
           "content": "Implement algo_id=418 qm_dft_scf_energy minimal SCF stub with summary metrics",
-          "status": "pending"
+          "status": "completed"
         }
       ],
-      "plan_completed": 4,
+      "plan_completed": 5,
       "plan_total": 5,
-      "plan_pending": [
-        "sim-p2-qm-dft-scf"
-      ],
+      "plan_pending": [],
       "state": {
         "completed_ids": [],
         "iterations": 8,
@@ -511,7 +536,7 @@
       "agent_live": false,
       "agent": "",
       "goal_file": "",
-      "log_age_sec": 472660,
+      "log_age_sec": 483726,
       "last_state_at": "2026-05-24T16:32:27.410480+00:00",
       "last_state_todo": "sim-p0-md-lj-li-parity",
       "last_state_gates": false,
@@ -526,8 +551,7 @@
         "[sdk] thinking\u2026",
         "[sdk] assistant reply"
       ],
-      "status_note": "supervisor off",
-      "active_todo_id": "sim-p2-qm-dft-scf"
+      "status_note": "supervisor off"
     },
     {
       "id": "studio-ui-ux",
@@ -712,7 +736,7 @@
       "agent_live": false,
       "agent": "",
       "goal_file": "",
-      "log_age_sec": 422800,
+      "log_age_sec": 433866,
       "last_state_at": "2026-05-30T01:04:00+00:00",
       "last_state_todo": "studio-ux-12-world-studio-demo-linux-audit",
       "last_state_gates": true,
@@ -731,6 +755,20 @@
     }
   ],
   "history": [
+    {
+      "runner": "httpd",
+      "at": "2026-05-30T06:38:33.327023+00:00",
+      "todo_id": "gap-phase2-streaming-wrk",
+      "agent_exit": 124,
+      "gates_ok": false
+    },
+    {
+      "runner": "httpd",
+      "at": "2026-05-30T05:51:52.407662+00:00",
+      "todo_id": "gap-phase2-perf-wrk-soak",
+      "agent_exit": 124,
+      "gates_ok": false
+    },
     {
       "runner": "studio-ui-ux",
       "at": "2026-05-30T01:04:00+00:00",
@@ -798,20 +836,6 @@
       "runner": "compiler-studio",
       "at": "2026-05-24T17:19:56.590015+00:00",
       "todo_id": "wave-a-llvm22-typecheck-warnings",
-      "agent_exit": 0,
-      "gates_ok": false
-    },
-    {
-      "runner": "compiler-studio",
-      "at": "2026-05-24T17:08:31.389794+00:00",
-      "todo_id": "wave-a-llvm22-typecheck-warnings",
-      "agent_exit": 1,
-      "gates_ok": false
-    },
-    {
-      "runner": "sim",
-      "at": "2026-05-24T16:32:27.410480+00:00",
-      "todo_id": "sim-p0-md-lj-li-parity",
       "agent_exit": 0,
       "gates_ok": false
     }

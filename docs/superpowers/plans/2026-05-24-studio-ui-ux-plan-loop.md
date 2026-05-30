@@ -41,6 +41,21 @@ todos:
   - id: studio-ux-12-world-studio-demo-linux-audit
     content: "ux-harness world-studio-demo fixture audit on Linux (non-mock) + agentic_ai SOTA refs in gates"
     status: done
+  - id: studio-ux-13-proactive-sweep
+    content: "Proactive ecosystem sweep — capture-deps probe, briefing snapshot refresh, wave-2 gap registry"
+    status: done
+  - id: studio-ux-14-native-sdl-ci
+    content: "Agent runner SDL/Xvfb deps — native_pixels=true in capture + latest-native-capture.json"
+    status: pending
+  - id: studio-ux-15-wgpu-readback
+    content: "li-render wgpu real pixel draw — bench status native (not simulate) for viewport + particles"
+    status: pending
+  - id: studio-ux-16-palette-search-latency
+    content: "Command palette fuzzy search + measured open/filter latency hook (UX-04)"
+    status: pending
+  - id: studio-ux-17-gpu-fail-recovery
+    content: "Native GPU fail strip + retry affordance in li-studio shell (UX-08)"
+    status: pending
 isProject: false
 ---
 

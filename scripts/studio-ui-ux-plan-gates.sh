@@ -28,6 +28,11 @@ python3 "$ROOT/scripts/studio-ui-ux-verify-capture.py" || fail "studio-ui-ux-ver
 python3 "$ROOT/scripts/studio-ui-ux-verify-native-capture.py" || fail "studio-ui-ux-verify-native-capture"
 python3 "$ROOT/scripts/studio-ui-ux-verify-tokens.py" || fail "studio token sync (TOML ↔ li-ui)"
 python3 "$ROOT/scripts/studio-ui-ux-verify-harness-audit.py" || fail "studio-ui-ux-verify-harness-audit"
+if [[ -x "$ROOT/scripts/studio-ui-ux-probe-capture-deps.sh" ]]; then
+  "$ROOT/scripts/studio-ui-ux-probe-capture-deps.sh" || li_warn "capture-deps probe failed"
+  [[ -f "$ROOT/data/studio-ui-ux-plan-loop/latest-capture-deps.json" ]] \
+    || fail "latest-capture-deps.json missing after probe"
+fi
 
 li_phase "competitive intel doc"
 [[ -f "$ROOT/docs/game-dev/competitive-intel/ui-ux-by-dimension.md" ]] || fail "ui-ux-by-dimension.md"

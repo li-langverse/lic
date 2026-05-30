@@ -12,9 +12,10 @@
     "studio-ux-09-memory-budget",
     "studio-ux-10-native-capture",
     "studio-ux-11-panel-switch-gate",
-    "studio-ux-12-world-studio-demo-linux-audit"
+    "studio-ux-12-world-studio-demo-linux-audit",
+    "studio-ux-13-proactive-sweep"
   ],
-  "iterations": 11,
+  "iterations": 12,
   "history": [
     {
       "at": "2026-05-24T14:53:41+00:00",
@@ -96,6 +97,15 @@
       "gates_ok": true,
       "ux_pass": true,
       "note": "Linux non-mock world-studio-demo harness; agentic_ai SOTA refs; capture dry exit 0"
+    },
+    {
+      "at": "2026-05-30T04:33:00+00:00",
+      "todo_id": "studio-ux-13-proactive-sweep",
+      "agent_exit": 0,
+      "capture_exit": 0,
+      "gates_ok": true,
+      "ux_pass": true,
+      "note": "Proactive sweep: capture-deps probe, wave-2 todos, issue #182 comment 4581660167; native_pixels=false (SDL gap)"
     }
   ]
 }

@@ -138,6 +138,12 @@ note = "T-PKG-li-studio-mcp-extended PH-AGENT gap-6-7"
 
 [[tests]]
 suite = "smoke"
+file = "smoke/studio_viewport_hud.li"
+outcome = "check_ok"
+note = "T-PKG-li-studio-viewport-hud UX-13 WP-UX-13 live FPS + particle tier HUD"
+
+[[tests]]
+suite = "smoke"
 file = "smoke/studio_viewport_display.li"
 outcome = "check_ok"
 note = "PH-UX viewport display MCP + paint_blit biomol/particle placeholders"

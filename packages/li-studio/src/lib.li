@@ -15,6 +15,7 @@ import world
 import lig
 import lig.present
 import lig.memory
+import render
 
 # li-studio — compose dock + timeline + inspector + agent chrome (PH-UX-05/06/07).
 
@@ -1300,6 +1301,33 @@ def studio_viewport_menu_btn_rect_at(vp: Rect, slot: int) -> Rect
   var y: float = vp.y + pad
   return rect_make(x, y, studio_viewport_menu_btn_width_px(), studio_viewport_menu_btn_height_px())
 
+def studio_viewport_hud_fps_rect(vp: Rect) -> Rect
+  requires vp.w >= 80.0
+  requires vp.h >= 24.0
+  ensures result.w == 56.0
+  ensures result.h == 14.0
+  decreases 0
+=
+  return rect_make(vp.x + 8.0, vp.y + 8.0, 56.0, 14.0)
+
+def studio_viewport_hud_particle_rect(vp: Rect) -> Rect
+  requires vp.w >= 140.0
+  requires vp.h >= 24.0
+  ensures result.w == 72.0
+  ensures result.h == 14.0
+  decreases 0
+=
+  return rect_make(vp.x + 68.0, vp.y + 8.0, 72.0, 14.0)
+
+def studio_viewport_hud_native_badge_rect(vp: Rect) -> Rect
+  requires vp.w >= 160.0
+  requires vp.h >= 24.0
+  ensures result.w == 18.0
+  ensures result.h == 14.0
+  decreases 0
+=
+  return rect_make(vp.x + 144.0, vp.y + 8.0, 18.0, 14.0)
+
 def studio_viewport_display_tier_label_rect(vp: Rect) -> Rect
   requires vp.w >= 120.0
   requires vp.h >= 24.0
@@ -1362,6 +1390,13 @@ type StudioViewportDisplayCompose = object
   public tier_label_rect: Rect
   public biomol_chip_rect: Rect
   public particle_dots_visible: int
+  public fps_display: int
+  public fps_meets_target: int
+  public fps_hud_tag: int
+  public hud_native_pixels: int
+  public fps_hud_rect: Rect
+  public particle_hud_rect: Rect
+  public native_badge_rect: Rect
 
 type StudioViewportMenuCompose = object
   public menu_visible: int
@@ -1383,6 +1418,13 @@ def studio_viewport_display_compose_new() -> StudioViewportDisplayCompose
   d.tier_label_rect = rect_make(0.0, 0.0, 0.0, 0.0)
   d.biomol_chip_rect = rect_make(0.0, 0.0, 0.0, 0.0)
   d.particle_dots_visible = 0
+  d.fps_display = 0
+  d.fps_meets_target = 0
+  d.fps_hud_tag = 0
+  d.hud_native_pixels = 0
+  d.fps_hud_rect = rect_make(0.0, 0.0, 0.0, 0.0)
+  d.particle_hud_rect = rect_make(0.0, 0.0, 0.0, 0.0)
+  d.native_badge_rect = rect_make(0.0, 0.0, 0.0, 0.0)
   return d
 
 def studio_viewport_menu_compose_new() -> StudioViewportMenuCompose
@@ -1418,7 +1460,93 @@ def studio_compose_viewport_display(vp: Rect, profile_id: int) raises IO -> Stud
     if draw_pts > 0:
       out.tier_particles = draw_pts
     out.particle_dots_visible = 1
+  var fps_counter: RenderFpsCounter = render_fps_counter_shell_simulate()
+  out.fps_display = render_fps_counter_display_fps(fps_counter)
+  out.fps_meets_target = render_fps_counter_meets_target(fps_counter)
+  out.fps_hud_tag = render_fps_counter_hud_tag(fps_counter)
+  out.hud_native_pixels = fps_counter.native_pixels
+  out.fps_hud_rect = studio_viewport_hud_fps_rect(vp)
+  out.particle_hud_rect = studio_viewport_hud_particle_rect(vp)
+  out.native_badge_rect = studio_viewport_hud_native_badge_rect(vp)
   return out
+
+def studio_viewport_hud_ok(display: StudioViewportDisplayCompose) -> int
+  requires display.fps_display >= 0
+  requires display.hud_native_pixels >= 0
+  requires display.hud_native_pixels <= 1
+  ensures result >= 0
+  ensures result <= 1
+  decreases display.fps_hud_tag
+=
+  if display.fps_display < 60:
+    return 0
+  if display.fps_meets_target != 1:
+    return 0
+  if display.fps_hud_tag != 1:
+    return 0
+  if display.fps_hud_rect.w != 56.0:
+    return 0
+  if display.particle_hud_rect.w != 72.0:
+    return 0
+  if display.hud_native_pixels != 0:
+    return 0
+  return 1
+
+def studio_viewport_hud_particle_ok(display: StudioViewportDisplayCompose) -> int
+  requires display.tier_particles >= 0
+  ensures result >= 0
+  ensures result <= 1
+  decreases display.tier_particles
+=
+  if display.particle_tier_id < scene_md_tier_1k():
+    return 1
+  if display.tier_particles < 1000:
+    return 0
+  return 1
+
+def studio_viewport_hud_color_fps(meets_target: int, native_pixels: int) -> Color
+  requires meets_target >= 0
+  requires meets_target <= 1
+  requires native_pixels >= 0
+  requires native_pixels <= 1
+  ensures result.a == 1.0
+  decreases meets_target
+=
+  if native_pixels == 1:
+    return studio_color_accent_cyan()
+  if meets_target == 1:
+    return color_rgb(0.2, 0.75, 0.45, 1.0)
+  return studio_color_accent_amber()
+
+def studio_viewport_hud_color_particle(tier_particles: int) -> Color
+  requires tier_particles >= 0
+  ensures result.a == 1.0
+  decreases tier_particles
+=
+  if tier_particles >= 100000:
+    return color_rgb(0.85, 0.35, 0.55, 1.0)
+  if tier_particles >= 10000:
+    return studio_color_accent_amber()
+  if tier_particles >= 1000:
+    return studio_color_accent_cyan()
+  return studio_color_border()
+
+def studio_viewport_hud_color_native_badge(native_pixels: int) -> Color
+  requires native_pixels >= 0
+  requires native_pixels <= 1
+  ensures result.a == 1.0
+  decreases native_pixels
+=
+  if native_pixels == 1:
+    return studio_color_accent_cyan()
+  return studio_color_border()
+
+def studio_paint_viewport_hud_cmds() -> int
+  requires true
+  ensures result == 3
+  decreases 0
+=
+  return 3
 
 def studio_compose_viewport_menu(vp: Rect, profile_id: int) -> StudioViewportMenuCompose
   requires vp.w >= 0.0
@@ -1517,10 +1645,10 @@ def studio_compose_shell_drug_litl(w: float, h: float, tick: int, has_selection:
 
 def li_std_studio_version() -> int
   requires true
-  ensures result == 16
+  ensures result == 17
   decreases 0
 =
-  return 16
+  return 17
 
 def studio_agent_context_none() -> int
   requires true
@@ -3895,6 +4023,7 @@ def studio_paint_viewport_display_cmds(display: StudioViewportDisplayCompose) ->
   if display.tier_particles > 0:
     n = n + 1
   n = n + 1
+  n = n + studio_paint_viewport_hud_cmds()
   return n
 
 def studio_paint_viewport_menu_cmds(menu: StudioViewportMenuCompose) -> int
@@ -3981,6 +4110,18 @@ def studio_paint_viewport_display(frame: var PaintFrame, vp: Rect, display: Stud
   frame.last_kind = paint_op_stroke_rect()
   frame.last_rect = display.biomol_chip_rect
   frame.last_color = studio_viewport_display_biomol_color(display.biomol_style)
+  frame.cmd_count = frame.cmd_count + 1
+  frame.last_kind = paint_op_fill_rect()
+  frame.last_rect = display.fps_hud_rect
+  frame.last_color = studio_viewport_hud_color_fps(display.fps_meets_target, display.hud_native_pixels)
+  frame.cmd_count = frame.cmd_count + 1
+  frame.last_kind = paint_op_fill_rect()
+  frame.last_rect = display.particle_hud_rect
+  frame.last_color = studio_viewport_hud_color_particle(display.tier_particles)
+  frame.cmd_count = frame.cmd_count + 1
+  frame.last_kind = paint_op_stroke_rect()
+  frame.last_rect = display.native_badge_rect
+  frame.last_color = studio_viewport_hud_color_native_badge(display.hud_native_pixels)
 
 def studio_paint_viewport_menu(frame: var PaintFrame, menu: StudioViewportMenuCompose) -> unit
   requires frame.cmd_count >= 0

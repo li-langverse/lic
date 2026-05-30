@@ -46,7 +46,7 @@ todos:
     status: done
   - id: wsm-w2-viewport-hud
     content: "Live FPS + particle tier HUD in viewport (WP-UX-13)"
-    status: pending
+    status: done
   - id: wsm-w2-viewport-error
     content: "GPU/asset error overlay + retry (WP-UX-08)"
     status: pending

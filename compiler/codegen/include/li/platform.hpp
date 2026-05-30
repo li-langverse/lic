@@ -1,5 +1,7 @@
 #pragma once
 
+#include "li/resource_options.hpp"
+
 #include <cstddef>
 #include <cstdlib>
 #include <string>
@@ -7,6 +9,24 @@
 
 namespace li {
 
+
+inline std::string repo_root_from_env() {
+  if (const char* root = std::getenv("LI_REPO_ROOT")) { return root; }
+  return {};
+}
+inline std::string repo_build_prefix() {
+  if (const char* dir = std::getenv("LI_BUILD_DIR")) { return dir; }
+  const std::string root = repo_root_from_env();
+  if (!root.empty()) return root + "/build";
+  return "build";
+}
+inline std::string repo_build_path(const char* relative) {
+  std::string prefix = repo_build_prefix();
+  if (relative == nullptr || relative[0] == 0) return prefix;
+  if (prefix.empty() || prefix.back() != '/') prefix += '/';
+  prefix += relative;
+  return prefix;
+}
 /// Host CPU count for tool defaults (LI_BUILD_JOBS / lic --jobs).
 inline unsigned default_host_jobs() {
   if (const char* env = std::getenv("LI_BUILD_JOBS")) {
@@ -21,6 +41,9 @@ inline unsigned default_host_jobs() {
 
 /// Optional compile-time memory budget (MB); 0 = unset.
 inline std::size_t max_memory_mb_from_env() {
+  if (const std::size_t from_opts = resource_options().max_memory_mb; from_opts > 0) {
+    return from_opts;
+  }
   if (const char* env = std::getenv("LI_MAX_MEMORY_MB")) {
     const int n = std::atoi(env);
     if (n > 0) {
@@ -28,6 +51,21 @@ inline std::size_t max_memory_mb_from_env() {
     }
   }
   return 0;
+}
+
+/// Parallel frontend job budget reserved for this `lic build` (8p-c).
+inline unsigned compile_jobs_from_options() {
+  const unsigned reserved = compile_jobs_reserved();
+  if (reserved > 0) {
+    return reserved;
+  }
+  if (const char* env = std::getenv("LI_COMPILE_JOBS")) {
+    const int n = std::atoi(env);
+    if (n > 0) {
+      return static_cast<unsigned>(n);
+    }
+  }
+  return default_host_jobs();
 }
 
 

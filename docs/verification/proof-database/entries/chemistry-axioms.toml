@@ -1,0 +1,35 @@
+version = 1
+
+[[entry]]
+id = "CHEM-AX-HARTREE-FOCK"
+kind = "axiom"
+field = "chemistry"
+domain = "quantum_chemistry"
+statement = "Hartree-Fock: variational ground-state energy under single-determinant ansatz (modeling stub)."
+proof_status = "target"
+gap_id = "G-chem"
+gap_kind = "modeling_gap"
+lean_module = "proof-db/chemistry/ChemAxioms.lean"
+lean_thm = "Li.ProofDb.Chemistry.hf_variational_axiom"
+bench_refs = [
+  "benchmarks/tier2_physics/qm_dft_scf_energy",
+  "benchmarks/tier2_physics/qm_scf_solver",
+]
+last_verified_lic_commit = "940e93e"
+
+[[entry]]
+id = "CHEM-AX-SCF-ENERGY-MODEL"
+kind = "axiom"
+field = "chemistry"
+domain = "quantum_chemistry"
+statement = "SCF energy functional E_k at iteration k is well-defined on the HF/DFT ansatz (modeling stub)."
+proof_status = "target"
+gap_id = "G-chem"
+gap_kind = "modeling_gap"
+lean_module = "proof-db/chemistry/ChemAxioms.lean"
+lean_thm = "Li.ProofDb.Chemistry.scfEnergy"
+bench_refs = [
+  "benchmarks/tier2_physics/qm_dft_scf_energy",
+  "benchmarks/tier2_physics/qm_hf_fock_build",
+]
+last_verified_lic_commit = "940e93e"

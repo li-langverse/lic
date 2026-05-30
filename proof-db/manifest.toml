@@ -1,0 +1,59 @@
+schema_version = 2
+
+[config]
+gaps_doc = "docs/verification/provability-gaps.md"
+roadmap_doc = "docs/verification/proof-corpus-roadmap.md"
+spec_doc = "docs/verification/proof-database.md"
+catalog_schema = "docs/verification/proof-database/schema.toml"
+catalog_entries_root = "docs/verification/proof-database/entries"
+
+# Catalog vertical slices (TOML source of truth under entries/)
+[[catalog_slices]]
+field = "numerics"
+entries = ["numerics-axioms.toml", "numerics-lemmas.toml"]
+
+[[catalog_slices]]
+field = "discrete"
+entries = ["discrete-axioms.toml", "discrete-lemmas.toml"]
+
+[[catalog_slices]]
+field = "statistics"
+entries = ["statistics-axioms.toml", "statistics-lemmas.toml"]
+
+[[catalog_slices]]
+field = "ml"
+entries = ["ml-axioms.toml", "ml-lemmas.toml"]
+
+[[catalog_slices]]
+field = "graph"
+entries = ["graph-axioms.toml", "graph-lemmas.toml"]
+
+[[catalog_slices]]
+field = "erdos"
+entries = ["erdos-register.toml"]
+
+[[catalog_slices]]
+field = "chemistry"
+entries = ["chemistry-axioms.toml", "chemistry-lemmas.toml"]
+
+[[catalog_slices]]
+field = "biology"
+entries = ["biology-axioms.toml", "biology-lemmas.toml"]
+
+[[includes]]
+path = "axioms/T-GetElem.toml"
+
+[[includes]]
+path = "axioms/G-hw-fp-model.toml"
+
+[[includes]]
+path = "lemmas/P-linalg-dot4-int-closed.toml"
+
+[[includes]]
+path = "lemmas/P-float-sqrt-open-bound.toml"
+
+[[includes]]
+path = "lemmas/P-linalg-dot4-int-loop-open.toml"
+
+[[includes]]
+path = "lemmas/G-lean-autovc-strict.toml"

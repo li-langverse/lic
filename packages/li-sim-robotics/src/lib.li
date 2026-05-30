@@ -1,0 +1,293 @@
+
+
+import sim
+
+def li_sim_robotics_version() -> int
+  requires true
+  ensures result == 2
+  decreases 0
+=
+  return 2
+
+def li_sim_robotics_profile_contract() -> int
+  requires true
+  ensures result == sim_contract_sim_robotics()
+  decreases 0
+=
+  return sim_contract_sim_robotics()
+
+def li_sim_robotics_studio_profile_id() -> int
+  requires true
+  ensures result == 4
+  decreases 0
+=
+  return 4
+
+type RoboArmState = object
+  public j0_rad: float
+  public j1_rad: float
+  public j0_vel: float
+  public j1_vel: float
+
+type RoboArmSpec = object
+  public l0_m: float
+  public l1_m: float
+  public torque_max_nm: float
+  public ws_min_x: float
+  public ws_min_y: float
+  public ws_max_x: float
+  public ws_max_y: float
+
+def robo_arm_spec_default() -> RoboArmSpec
+  requires true
+  ensures result.l0_m == 0.5
+  ensures result.l1_m == 0.4
+  ensures result.torque_max_nm == 10.0
+  decreases 0
+=
+  var s: RoboArmSpec
+  s.l0_m = 0.5
+  s.l1_m = 0.4
+  s.torque_max_nm = 10.0
+  s.ws_min_x = -0.2
+  s.ws_min_y = -0.2
+  s.ws_max_x = 0.9
+  s.ws_max_y = 0.9
+  return s
+
+def robo_arm_state_default() -> RoboArmState
+  requires true
+  ensures result.j0_rad == 0.3
+  ensures result.j1_rad == 0.2
+  decreases 0
+=
+  var st: RoboArmState
+  st.j0_rad = 0.3
+  st.j1_rad = 0.2
+  st.j0_vel = 0.0
+  st.j1_vel = 0.0
+  return st
+
+def robo_arm_clamp_torque(tau: float, tau_max: float) -> float
+  requires tau_max > 0.0
+  ensures result >= -tau_max
+  ensures result <= tau_max
+  decreases 0
+=
+  if tau > tau_max:
+    return tau_max
+  if tau < -tau_max:
+    return -tau_max
+  return tau
+
+type RoboArmFk = object
+  public ee_x: float
+  public ee_y: float
+
+# WP-ROBO-02 — 2-DOF planar FK (small-angle cos stub; not full trig until math quat lands).
+def robo_arm_fk(l0: float, l1: float, j0: float, j1: float) -> RoboArmFk
+  requires l0 > 0.0
+  requires l1 > 0.0
+  ensures result.ee_x >= 0.0
+  ensures result.ee_x <= 2.0
+  ensures result.ee_y >= -1.0
+  ensures result.ee_y <= 1.0
+  decreases 0
+=
+  var fk: RoboArmFk
+  var c0: float = 1.0 - 0.5 * j0 * j0
+  var c01: float = 1.0 - 0.5 * (j0 + j1) * (j0 + j1)
+  fk.ee_x = l0 * c0 + l1 * c01
+  fk.ee_y = l0 * j0 + l1 * (j0 + j1)
+  return fk
+
+def robo_workspace_contains(ws_min_x: float, ws_min_y: float, ws_max_x: float, ws_max_y: float, x: float, y: float) -> int
+  requires ws_min_x <= ws_max_x
+  requires ws_min_y <= ws_max_y
+  ensures result >= 0
+  ensures result <= 1
+  decreases 0
+=
+  if x < ws_min_x:
+    return 0
+  if x > ws_max_x:
+    return 0
+  if y < ws_min_y:
+    return 0
+  if y > ws_max_y:
+    return 0
+  return 1
+
+def sim_robotics_workspace_bounds_ok(spec: RoboArmSpec, st: RoboArmState) -> int
+  requires spec.l0_m > 0.0
+  requires spec.l1_m > 0.0
+  requires spec.ws_min_x <= spec.ws_max_x
+  requires spec.ws_min_y <= spec.ws_max_y
+  ensures result >= 0
+  ensures result <= 1
+  decreases 0
+=
+  var fk: RoboArmFk = robo_arm_fk(spec.l0_m, spec.l1_m, st.j0_rad, st.j1_rad)
+  return robo_workspace_contains(spec.ws_min_x, spec.ws_min_y, spec.ws_max_x, spec.ws_max_y, fk.ee_x, fk.ee_y)
+
+def robo_arm_integrate(st: var RoboArmState, tau0: float, tau1: float, dt: float, torque_max: float) -> unit
+  requires dt > 0.0
+  requires torque_max > 0.0
+  ensures true
+  decreases 0
+=
+  var tmax0: float = torque_max
+  var tmax1: float = torque_max
+  var t0: float = robo_arm_clamp_torque(tau0, tmax0)
+  var t1: float = robo_arm_clamp_torque(tau1, tmax1)
+  st.j0_vel = st.j0_vel + t0 * dt
+  st.j1_vel = st.j1_vel + t1 * dt
+  st.j0_rad = st.j0_rad + st.j0_vel * dt
+  st.j1_rad = st.j1_rad + st.j1_vel * dt
+
+def robo_arm_ik_torque_stub(tick: int) -> float
+  requires tick >= 0
+  requires tick <= 64
+  ensures result >= -0.5
+  ensures result <= 0.5
+  decreases tick
+=
+  if tick > 32:
+    return -0.1
+  return 0.2
+
+# WP-ROBO-03 partial — numeric IK stub: tick-indexed torques advance joint angles one step.
+def sim_robotics_joint_angles_tick(tick: int, st: var RoboArmState, spec: RoboArmSpec, dt: float) -> int
+  requires tick >= 0
+  requires tick <= 64
+  requires dt > 0.0
+  requires spec.torque_max_nm > 0.0
+  requires spec.l0_m > 0.0
+  requires spec.l1_m > 0.0
+  ensures result >= 0
+  ensures result <= 1
+  decreases tick
+=
+  var tau0: float = robo_arm_ik_torque_stub(tick)
+  var tau1: float = 0.1
+  if tick > 32:
+    tau1 = -0.05
+  robo_arm_integrate(st, tau0, tau1, dt, spec.torque_max_nm)
+  return sim_robotics_workspace_bounds_ok(spec, st)
+
+def robo_arm_state_after_steps(steps: int) -> RoboArmState
+  requires steps >= 0
+  requires steps <= 64
+  ensures result.j0_rad >= 0.0
+  decreases steps
+=
+  var st: RoboArmState = robo_arm_state_default()
+  var spec: RoboArmSpec = robo_arm_spec_default()
+  var dt: float = 0.01
+  var i: int = 0
+  while i < steps
+    if sim_robotics_joint_angles_tick(i, st, spec, dt) != 1:
+      return st
+    i = i + 1
+  return st
+
+def robo_arm_tick_checksum_fk(fk: RoboArmFk) -> float
+  requires true
+  ensures result >= -2.0
+  ensures result <= 2.0
+  decreases 0
+=
+  return fk.ee_x * 1.001 + fk.ee_y * 0.01
+
+def robo_vertical_sim_robotics() -> int
+  requires true
+  ensures result == 5
+  decreases 0
+=
+  return 5
+
+def run_robo_arm_at_steps(steps: int) -> SimRunResult
+  requires steps >= 1
+  requires steps <= 64
+  ensures result.algo_id == algo_robo_multibody_step()
+  ensures result.vertical_id == robo_vertical_sim_robotics()
+  ensures result.detail_emitted == steps - 1
+  decreases steps
+=
+  var nsteps: int = steps
+  var emitted: int = nsteps - 1
+  var st: RoboArmState = robo_arm_state_after_steps(nsteps)
+  var spec: RoboArmSpec = robo_arm_spec_default()
+  var fk: RoboArmFk = robo_arm_fk(spec.l0_m, spec.l1_m, st.j0_rad, st.j1_rad)
+  var r: SimRunResult
+  r.ok = sim_robotics_workspace_bounds_ok(spec, st)
+  r.algo_id = algo_robo_multibody_step()
+  r.vertical_id = robo_vertical_sim_robotics()
+  r.checksum = robo_arm_tick_checksum_fk(fk)
+  r.detail_emitted = emitted
+  return r
+
+def run_robo_arm_smoke(detail: int) -> SimRunResult
+  requires detail >= 0
+  requires detail <= 3
+  ensures result.ok == 1
+  ensures result.algo_id == algo_robo_multibody_step()
+  ensures result.vertical_id == robo_vertical_sim_robotics()
+  decreases 0
+=
+  var nsteps: int = detail + 1
+  return run_robo_arm_at_steps(nsteps)
+
+def sim_robotics_tick_at(step_index: int, detail: int) -> int
+  requires step_index >= 1
+  requires step_index <= 64
+  requires detail >= 0
+  requires detail <= 3
+  ensures result >= 0
+  ensures result <= 1
+  decreases step_index
+=
+  var r: SimRunResult = run_robo_arm_at_steps(step_index)
+  if run_result_ok(r) != 1:
+    return 0
+  return 1
+
+def sim_robotics_tick_stub(detail: int) -> int
+  requires detail >= 0
+  requires detail <= 3
+  ensures result >= 0
+  ensures result <= 1
+  decreases 0
+=
+  return sim_robotics_tick_at(1, detail)
+
+def run_robo_multibody_smoke(detail: int) -> SimRunResult
+  requires detail >= 0
+  requires detail <= 3
+  ensures result.ok == 1
+  ensures result.algo_id == algo_robo_multibody_step()
+  ensures result.vertical_id == robo_vertical_sim_robotics()
+  ensures result.detail_emitted == detail
+  decreases 0
+=
+  return run_robo_arm_smoke(detail)
+
+def run_robotics_smoke() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  if sim_robotics_tick_stub(0) != 1:
+    return 1
+  var spec: RoboArmSpec = robo_arm_spec_default()
+  var st: RoboArmState = robo_arm_state_default()
+  if sim_robotics_workspace_bounds_ok(spec, st) != 1:
+    return 2
+  if sim_robotics_joint_angles_tick(0, st, spec, 0.01) != 1:
+    return 3
+  var tau_cap: float = spec.torque_max_nm
+  var tau_expect: float = spec.torque_max_nm
+  var over: float = robo_arm_clamp_torque(20.0, tau_cap)
+  if over != tau_expect:
+    return 4
+  return 0

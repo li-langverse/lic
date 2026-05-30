@@ -1,0 +1,15 @@
+# N-LM-HORNER-FP-ROUND: Horner-style FP accumulation (target; G-hw rounding layer).
+def horner_step(c: float, x: float, acc: float) -> float
+  requires true
+  ensures true
+  decreases 0
+=
+  return acc * x + c
+
+def main() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  var y: float = horner_step(1.0, 0.5, 0.0)
+  return 0

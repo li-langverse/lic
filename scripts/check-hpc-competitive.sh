@@ -35,7 +35,7 @@ strict = os.environ.get("STRICT", "0") == "1"
 
 data = tomllib.loads(registry.read_text())
 required_eco = ("id", "track", "repo_url", "compare", "last_reviewed", "kernel_honesty")
-valid_tracks = {"watch", "bench_tier0", "bench_tier1", "bench_tier2"}
+valid_tracks = {"watch", "bench_tier0", "bench_tier1", "bench_tier2", "execution_resource_sweep"}
 bench_langs: set[str] = set()
 errors: list[str] = []
 warnings: list[str] = []

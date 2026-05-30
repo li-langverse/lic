@@ -2,18 +2,6 @@
 
 namespace li {
 
-namespace {
-
-std::string cat(std::string_view a, std::string_view b) {
-  std::string out;
-  out.reserve(a.size() + b.size());
-  out.append(a);
-  out.append(b);
-  return out;
-}
-
-}  // namespace
-
 std::string_view error_code_string(ErrorCode code) {
   switch (code) {
     case ErrorCode::E0101:
@@ -66,6 +54,26 @@ std::string_view error_code_string(ErrorCode code) {
   return "E0000";
 }
 
+std::string_view warning_code_string(WarningCode code) {
+  switch (code) {
+    case WarningCode::W0401:
+      return "W0401";
+    case WarningCode::W0402:
+      return "W0402";
+    case WarningCode::W0403:
+      return "W0403";
+  }
+  return "W0000";
+}
+
+std::string_view note_code_string(NoteCode code) {
+  switch (code) {
+    case NoteCode::N0401:
+      return "N0401";
+  }
+  return "N0000";
+}
+
 FormattedDiagnostic format_diagnostic(ErrorCode code, std::string_view message,
                                       std::string_view hint) {
   return FormattedDiagnostic{std::string(error_code_string(code)), std::string(message),
@@ -76,6 +84,18 @@ void diag_error(DiagnosticBag& bag, SourceLoc loc, ErrorCode code, std::string_v
                 std::string_view hint) {
   const auto fd = format_diagnostic(code, message, hint);
   bag.error(loc, fd.code, fd.message, fd.hint);
+}
+
+void diag_warning(DiagnosticBag& bag, SourceLoc loc, WarningCode code, std::string_view message,
+                  std::string_view hint) {
+  bag.warning(std::move(loc), std::string(warning_code_string(code)), std::string(message),
+              std::string(hint));
+}
+
+void diag_note(DiagnosticBag& bag, SourceLoc loc, NoteCode code, std::string_view message,
+               std::string_view hint) {
+  bag.note(std::move(loc), std::string(note_code_string(code)), std::string(message),
+           std::string(hint));
 }
 
 }  // namespace li

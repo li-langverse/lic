@@ -54,6 +54,10 @@ enum class MirOp {
   HornerFmaUnroll,
   /** acc = acc * x^4 + (1+x+x²+x³); lhs_is_literal, float_value = const x; int_value = supersteps. */
   HornerStepPow4,
+  /** Tight loop: acc = acc * float_value + 1.0 repeated int_value times (const x in float_value). */
+  HornerConstLoopF64,
+  /** Blocked IKJ: C[n,n] += A[n,n] @ B[n,n]; int_value = n, rhs_int = block size. */
+  ArrayMatMulBlocked2DF64,
   LocalAllocFloat,
   LocalAllocSimdF64,
   SimdSplatF64,
@@ -126,6 +130,8 @@ struct MirInsn {
   bool array_broadcast_lhs_len1 = false;
   bool array_broadcast_rhs_len1 = false;
   std::int64_t simd_lanes = 0;
+  /** Policy-accepted disjoint witness on this `OmpParallelFor` (**G-par**). */
+  bool parallel_disjoint_proven = false;
   std::vector<MirArg> args;
   /** Layout entries under object root (`name` paths). Used for ReturnObject pack and CallProc
    *  unpack into `ident + "_" + name` (scalar locals or ArrayAlloc slots). */
@@ -136,6 +142,14 @@ struct MirDecorator {
   std::string name;
   /** `@vectorized(lanes=N)` when name is vectorized; 0 if omitted. */
   std::int64_t lanes = 0;
+  /** `@vectorized` on the owning `def` (7d-b MIR proc tag); SIMD LLVM only, never `OmpParallelFor`. */
+  bool vectorized = false;
+  /** `@gpu` device-placement tag. Lowering/codegen remains G-gpu; this makes placement visible to gates. */
+  bool gpu = false;
+  /** Requested device count for `@gpu(devices=N)`; 1 means ordinary single-device placement. */
+  std::int64_t gpu_devices = 0;
+  bool parallel = false;
+  bool disjoint_proven = false;
 };
 
 struct MirFn {
@@ -170,6 +184,12 @@ struct MirModule {
   /** When true: MIR stability pass + strict FP codegen (no fast-math reassociation). */
   bool fp_numerically_stable = false;
 };
+
+/** Count `def` decorators with {@link MirDecorator::vectorized}. */
+std::size_t count_mir_vectorized_proc(const MirModule& mir);
+std::size_t count_mir_gpu_def(const MirModule& mir);
+std::size_t count_mir_gpu_multi_device_def(const MirModule& mir);
+std::size_t count_mir_parallel_disjoint_proven(const MirModule& mir);
 
 MirModule lower_to_mir(const Module& module);
 

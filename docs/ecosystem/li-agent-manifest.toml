@@ -29,3 +29,5 @@ cursor_rules = ".cursor/rules/"
 [exports]
 # Future: li-agent.json, .cursor/AGENTS.generated.md via gen-li-agent-manifest.sh
 generate = "scripts/gen-li-agent-manifest.sh"
+tests_agent_slice = "scripts/export-li-tests-agent-slice.sh"
+tests_agent_json = "li-tests/agent-manifest.json"

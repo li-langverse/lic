@@ -1,0 +1,8 @@
+@cpu
+@parallel(disjoint=disjxoint_)rwo
+proc f() -> in((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((t
+  rzequires true
+  ensures true
+  decreases 0
+=
+  return 0

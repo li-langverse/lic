@@ -1,0 +1,11 @@
+@cpu
+@poc f() -> int
+  require_row)
+proc f()oc f() -> int
+  require_row)
+proc f() -> int
+ -> int
+  requires |ires true
+  ensures true
+  decreas00000000 0
+turn 0

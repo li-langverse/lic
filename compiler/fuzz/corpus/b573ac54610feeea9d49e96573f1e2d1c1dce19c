@@ -1,0 +1,4 @@
+@cpu
+@parallel(proc fs 0
+=
+  retu (r0

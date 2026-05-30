@@ -1,0 +1,14 @@
+@gpu(devices=two)
+def non_literal_device_count() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0
+
+def main() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return non_literal_device_count()

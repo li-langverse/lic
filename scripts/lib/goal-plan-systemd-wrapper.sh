@@ -34,6 +34,7 @@ if [[ -f "$ENV_FILE" ]]; then
   source "$ENV_FILE"
   set +a
 fi
+export GITHUB_TOKEN="${GITHUB_TOKEN:-${GH_TOKEN:-}}"
 
 export LI_LLVM_MAJOR="${LI_LLVM_MAJOR:-22}"
 export PATH="${HOME}/.local/node/bin:${PATH:-/usr/bin:/bin}"
@@ -61,6 +62,7 @@ run_cwd="$ROOT"
 if [[ -n "${GOAL_PLAN_WORKTREE:-}" ]]; then
   run_cwd="$GOAL_PLAN_WORKTREE"
   branch="${GOAL_PLAN_BRANCH:-}"
+  export LIC_ROOT="$run_cwd"
   if git -C "$run_cwd" rev-parse --git-dir >/dev/null 2>&1; then
     echo "goal-plan-systemd[$GOAL_PLAN_ID]: using checkout $run_cwd"
   else

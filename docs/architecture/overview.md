@@ -60,7 +60,7 @@ Build with **CMake + Ninja**; one static library per stage so incremental rebuil
 
 `runtime/li_rt.c` provides:
 
-- `li_panic`, `li_bounds_fail`
+- `li_panic`, `li_bounds_fail` (see [bounds-release-path](../verification/bounds-release-path.md))
 - Helpers for `echo` / printing (Phase 4)
 - No GC — owned heap types (`list`, `dict`) call `raises Alloc`
 

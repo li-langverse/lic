@@ -1,0 +1,28 @@
+version = 1
+
+[[entry]]
+id = "ST-AX-PROB-FINITE"
+kind = "axiom"
+field = "statistics"
+domain = "probability"
+statement = "Finite probability space: sample space Fin n, mass function p with p_i >= 0 and sum p_i = 1."
+proof_status = "target"
+gap_id = "G-stats"
+gap_kind = "axiom_layer"
+lean_module = "proof-db/statistics/StatsAxioms.lean"
+lean_thm = "Li.ProofDb.Statistics.FiniteProbSpace"
+mathlib_ref = "Mathlib.Probability.ProbabilityMassFunction.Basic"
+last_verified_lic_commit = "17b150a"
+
+[[entry]]
+id = "ST-AX-EXPECT-LINEAR"
+kind = "axiom"
+field = "statistics"
+domain = "probability"
+statement = "Expectation is linear: E[aX + bY] = a E[X] + b E[Y] (finite discrete sample space)."
+proof_status = "target"
+gap_id = "G-stats"
+gap_kind = "axiom_layer"
+lean_module = "proof-db/statistics/StatsAxioms.lean"
+lean_thm = "Li.ProofDb.Statistics.expect_linear"
+last_verified_lic_commit = "17b150a"

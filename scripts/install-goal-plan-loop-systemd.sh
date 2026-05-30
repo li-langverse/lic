@@ -24,6 +24,18 @@ plan_def() {
     studio-ui-ux)
       echo "li-studio-ui-ux-plan-loop|scripts/studio-ui-ux-plan-loop-systemd.sh|../lic-studio-ui/data/studio-ui-ux-plan-loop|LI_CONTROL_PLANE_STORE=disk|LI_STACK_SKIP_SUPABASE=1|LI_EXPORT_DISK_CACHE=1"
       ;;
+    sim-md-research)
+      echo "li-sim-md-research-plan-loop|scripts/sim-md-research-plan-loop-systemd.sh|../lic-worktrees/sim-md-research/data/sim-md-research-loop|SIM_RESEARCH_VERTICAL=md"
+      ;;
+    sim-chem-research)
+      echo "li-sim-chem-research-plan-loop|scripts/sim-chem-research-plan-loop-systemd.sh|../lic-worktrees/sim-chem-research/data/sim-chem-research-loop|SIM_RESEARCH_VERTICAL=chem"
+      ;;
+    security-research)
+      echo "li-security-research-plan-loop|scripts/security-research-plan-loop-systemd.sh|../lic-worktrees/security-research/data/security-research-loop|LI_SECURITY_PLAN_AGENT=security_auditor"
+      ;;
+    swarm-observer)
+      echo "li-swarm-observer-plan-loop|scripts/swarm-observer-plan-loop-systemd.sh|data/swarm-observer-plan-loop|LI_SWARM_PLAN_AGENT=swarm_observer"
+      ;;
     *)
       return 1
       ;;
@@ -101,9 +113,20 @@ list_plans() {
   echo "  httpd             — lic (cursor/httpd-plan-continue)"
   echo "  compiler-studio   — lic-worktrees/compiler-studio"
   echo "  studio-ui-ux      — lic-studio-ui"
+  echo "  sim-md-research   — lic-worktrees/sim-md-research (numerics_researcher)"
+  echo "  sim-chem-research — lic-worktrees/sim-chem-research (numerics_researcher)"
+  echo "  security-research — lic-worktrees/security-research (security_auditor)"
+  echo "  swarm-observer    — lic (swarm_observer gap orchestration)"
+  echo ""
+  echo "Quality grade timer (benchmarks, weekly):"
+  echo "  $0 ecosystem-quality-grade"
   echo ""
   echo "Install all: $0 --all"
 }
+
+if [[ "${1:-}" == "ecosystem-quality-grade" ]]; then
+  exec "$ROOT/scripts/ecosystem-quality-grade-systemd.sh"
+fi
 
 if [[ "${1:-}" == "--list" ]]; then
   list_plans
@@ -114,7 +137,7 @@ if [[ "${1:-}" == "--all" ]]; then
   if command -v loginctl >/dev/null 2>&1; then
     loginctl enable-linger "$(whoami)" 2>/dev/null || true
   fi
-  for id in sim-algo httpd compiler-studio studio-ui-ux; do
+  for id in sim-algo sim-md-research sim-chem-research security-research swarm-observer httpd compiler-studio studio-ui-ux; do
     install_one "$id" || true
     echo ""
   done

@@ -1,9 +1,11 @@
 ---
 name: goal-plan-loop-persistent
-description: Installs and manages goal-directed plan loops (sim, httpd, compiler-studio, studio-ui-ux) as user systemd services that survive reboot. Use when the user wants autonomous agents to keep running, restart after reboot, install plan-loop systemd units, enable linger, or manage DISABLE_AUTOSTART for plan loops.
+description: DEPRECATED — lic systemd plan loops are retired in favor of the li-cursor-agents async swarm. Use install-agents-swarm-systemd.sh and config/research-goals.yaml / implement-goals.yaml instead. Only reference this skill for migrating or disabling old li-*-plan-loop units.
 ---
 
-# Goal-directed plan loops (persistent)
+> **Deprecated (2026-05):** Autonomous work runs in **li-cursor-agents** (async swarm + YAML goals), not lic systemd plan loops. See [swarm-architecture.md](https://github.com/li-langverse/li-cursor-agents/blob/main/docs/ecosystem/swarm-architecture.md) (or `li-cursor-agents/docs/ecosystem/swarm-architecture.md` locally). Retire old units with `lic/scripts/retire-goal-plan-loops.sh` (dry-run by default).
+
+# Goal-directed plan loops (persistent) — deprecated
 
 Autonomous plan loops use `li-cursor-agents` + `code_implementer` (or a named agent). **User systemd + linger** keeps them running after logout and reboot.
 
@@ -30,6 +32,26 @@ source ~/Documents/Cursor/.env   # CURSOR_API_KEY, GH_TOKEN
 | `httpd` | `li-httpd-plan-loop` | `cursor/httpd-plan-continue` | `../lic-worktrees/httpd` |
 | `compiler-studio` | `li-compiler-studio-plan-loop` | `cursor/compiler-studio-plan-loop` | `../lic-worktrees/compiler-studio` |
 | `studio-ui-ux` | `li-studio-ui-ux-plan-loop` | (see studio script) | main repo |
+| `sim-md-research` | `li-sim-md-research-plan-loop` | `cursor/sim-md-research-loop` | `../lic-worktrees/sim-md-research` |
+| `sim-chem-research` | `li-sim-chem-research-plan-loop` | `cursor/sim-chem-research-loop` | `../lic-worktrees/sim-chem-research` |
+| `security-research` | `li-security-research-plan-loop` | `cursor/security-research-loop` | `../lic-worktrees/security-research` |
+| `swarm-observer` | `li-swarm-observer-plan-loop` | `cursor/swarm-observer-plan-loop` | main `lic` checkout |
+
+Research loops use `numerics_researcher` and `sim-algo-research-gates.sh` (validity hard gate). See `docs/ecosystem/sim-algo-research-grading.md`.
+
+Security research uses `security_auditor` and `security-research-gates.sh` (posture + CWE feed hard gates). See `docs/ecosystem/security-research-grading.md`.
+
+**Swarm observer** uses `swarm_observer`, gap registry (`data/swarm-gap-registry/registry.yaml`), `swarm-gap-ingest.py` / `swarm-gap-apply-actions.py`, and `swarm-observer-plan-gates.sh` — orchestration only, no product code.
+
+**Ecosystem quality grade** (weekly timer, no plan loop):
+
+```bash
+cd lic
+./scripts/install-goal-plan-loop-systemd.sh ecosystem-quality-grade
+# or: ./scripts/ecosystem-quality-grade-systemd.sh
+```
+
+Writes `../benchmarks/data/latest/ecosystem-quality-report.json` via `ecosystem-quality-grade.py`. Meta-agents `ecosystem_grader`, `swarm_observer`, and `gap_explorer` read `ecosystem_quality_report` from that file.
 
 ## Requirements
 

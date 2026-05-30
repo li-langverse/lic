@@ -10,10 +10,10 @@
 | **Static gate** | `lic build` (default on branch with 2f) | Parse, typecheck, borrow, emit MIR/LLVM; emit `AutoVC.lean`; **fail if open Prop goals** (`check-autovc-open-goals.sh`) |
 | **VC inventory** | `lic verify <file>` | Counts `requires`/`ensures`/witnesses — **not** Lean kernel |
 | **Lean discharge (real math)** | `li-tests/tooling/discharge_*_lean.sh`, `contracts_discharge_corpus.sh` | Regenerates AutoVC + **zero open goals**; optional `lake build` in `docs/semantics` |
-| **Manifest smoke** | `./li-tests/run_all.sh contracts_verify` | Today: **`verify_ok` = `lic build` only** — see gap **G-test-verify** below |
+| **Manifest smoke** | `./li-tests/run_all.sh contracts_verify` | **`verify_ok`** = strict `lic build` (open VC fails). **`prove_lean_ok`** = build + `check-autovc-open-goals.sh` + `lake build AutoVC` when Lean installed (else skip). |
 
-!!! warning "Do not equate `verify_ok` with Lean QED"
-    Until manifest outcomes are split (`prove_compile_ok` vs `prove_lean_ok`), passing `run_all.sh contracts_verify` only means **build + autovc script**, not full kernel verification.
+!!! note "Manifest outcomes (G-test-verify)"
+    Closed P-linalg / discharge specimens use **`prove_lean_ok`**. Intentional open VCs use **`verify_open_ok`**. **`verify_ok`** remains for specimens that compile under strict build but are not in the closed Lean corpus yet.
 
 ## Corpus library (positives)
 
@@ -27,7 +27,7 @@
 | `extern_call_requires_ok.li` | Imported callee `requires` | Discharged |
 | `index_refinement.li` | Index refinement type + array access | Build + autovc check in corpus |
 | `sqrt_contract.li` | Float `requires`/`ensures` (toy `sqrt`) | Emits real Props; float goals may stay open |
-| `sqrt_open_bound.li` | `abs(result² - x) < ε` with `li_rt_sqrt` body | **Intentionally open** — `verify_open_ok` / `--allow-open-vc` |
+| `sqrt_open_bound.li` | `abs(result² - x) < ε` with `li_rt_sqrt` body | **Closed** — `Li.Discharge.sqrt_open_bound_spec` + `Li.Trusted.li_rt_sqrt_square_bound` |
 | `refinement_*_ok.li` | Refinement types at call/init | **Partial** — refinement VCs often `True`; user `ensures` may stay open |
 | `refinement_guard_ok.li` | `if n >= 0` branch discharge | Same |
 | `linalg_dot4_int_closed.li` | Fixed 4-term int dot — return matches ensures | Fully discharged (`discharge_linalg_int_lean.sh`) |
@@ -38,9 +38,20 @@
 | `linalg_axpy4_int_closed.li` | Scalar axpy `alpha*x+y` | Fully discharged |
 | `linalg_dot4_float_closed.li` | Float dot via prelude | Fully discharged |
 
+**Proof-db sweep reporter:**
+
+```bash
+./scripts/proof-db-report.sh --baseline proof-db/expected.json --run <sweep.jsonl>
+```
+
+See [proof-db/reporter.md](../../proof-db/reporter.md).
+
+**Proof database (lemma inventory):** `proof-db/**/lemmas/*.li` — rebuild with `./scripts/proof-db-rebuild.sh` (see `proof-db/README.md`).
+
 **Tooling entrypoints:**
 
 ```bash
+./scripts/proof-db-rebuild.sh
 ./li-tests/tooling/contracts_discharge_corpus.sh
 ./li-tests/tooling/discharge_linalg_int_lean.sh   # P-linalg closed specimens
 ./li-tests/tooling/contracts_verify_lean.sh   # needs Lean 4 + lake for full 2f
@@ -62,11 +73,11 @@
 | `prove_reject/weak_ensures_true.li` | reject | **E0303** |
 | `cve_patterns/cwe676_extern_no_contract.li` | reject | Extern must have contracts |
 
-## Run results (2026-05-21, `main` after PR **#151** P-linalg)
+## Run results (2026-05-25, `feat/g-items-wave`)
 
 | Suite | Result | Notes |
 |-------|--------|-------|
-| `run_all.sh contracts_verify` | **26 pass / 0 fail** | Includes **P-linalg** closed + loop dot `verify_ok` |
+| `run_all.sh contracts_verify` | **26 pass / 0 fail** (14 `prove_lean_ok` + 12 `verify_ok`/`verify_open_ok`) | `prove_lean_ok` runs lake when elan on PATH |
 | `contracts_discharge_corpus.sh` | **ok** | Trivial/const/index/caller-requires/**linalg closed**; `sqrt_open_bound` + loop dot intentionally open |
 | `run_httpd_config.sh` | **ok** | Python oracle + Li `match_routes.li` binary exit 0 |
 | `contracts_verify_lean.sh` | **partial** | Needs Lean 4 + lake; may stop on specimens with open user `ensures` |
@@ -80,14 +91,24 @@ Priority order aligned with [provability-gaps](provability-gaps.md) and **2e →
 |----|-------|-------------------|------------------|
 | **P-refine** | Refinement types emit real Props | Call-site VCs stubbed `True`; user `ensures` still open | Extend `refinement_*` + Lean lemmas in `Discharge.lean` |
 | **P-ensures-witness** | MIR-linked `ensures` for non-literal returns | `witnessed_ensures` partial | `caller()`, `use_positive.li`, physics smokes |
-| **P-float** | `Float.abs`, sqrt error bounds | **G-vc** open (`sqrt_open_bound`) | `sqrt_open_bound.li` + `Li.Discharge` lemmas |
+| **P-float** | `Float.abs`, sqrt error bounds | **G-vc** partial — `sqrt_open_bound` closed (trusted libm); other float ensures open | `sqrt_open_bound.li` + `Li.Discharge` + `trusted.lean` |
 | **P-loop** | `while` invariant preservation | Few loop specimens | New `contracts_verify/loop_invariant_*.li` |
 | **P-linalg** | Matrix/vector shapes (`@`, slices) | **Partial** — closed dot/sum/matmul-entry/norm/axpy + loop witness. **Open:** float `vec3_dot` Props, 2D array CallProc | `contracts_verify/linalg_*`, `math_linalg/*` |
-| **P-par** | `parallel for` disjointness | **G-par** string heuristics only | Lean specs for `disjoint=` (7d-c) |
+| **P-par** | `parallel for` disjointness | **Partial** — `_par*` → `disjoint_*_spec` + policy witnesses + MIR tag | Iteration-independence Lean specs (7d-c) |
 | **P-dec** | Decorators never run at runtime | **G-dec** no MIR lowering | `decorator_exploits/` + elaboration proofs |
-| **P-bnd** | Release builds omit `li_bounds_fail` | **G-bnd** | Refined indices + codegen proof |
+| **P-bnd** | Release builds omit `li_bounds_fail` | **Partial** — `check_release_bounds_ir.sh` | [bounds-release-path](bounds-release-path.md) |
 | **P-http** | Parser/route config safety | Phase **H** | `httpd/*`, TOML desugar invariants |
 | **P-narrow** | Width-narrowing / casts | **G-narrow** partial | Ariane-style `prove_reject` + proved narrowing |
+
+| **P-physics** | Classical mechanics + conservation | **Partial** — physics-*.toml; 2× proved scalar lemmas; tier-2 **modeling_gap** on extern kernels | proof-db/physics/, enchmarks/tier2_physics/, Discharge.lean |
+| **P-num** | Number theory lemmas | **Stub** — **WP0-A** catalog (N-AX-*, N-LM-*) not in entries/ yet | proof-db/num/ (planned), **G-num** |
+| **P-discrete** | Combinatorics / finite structures | **Stub** — **WP0-A** after **P-num** axiom layer | proof-db/discrete/ (planned), **G-discrete** |
+| **P-stats** | Estimators + sampling bounds | **Stub** — axiomatic stats rows first | Tier-2 stats benches (planned), **G-stats** |
+| **P-ml-convergence** | Optimizer / SGD convergence | **Stub** — [ml-convergence-program](ml-convergence-program.md) dual track | proof-db/ml/ (planned), **G-ml** |
+| **P-graph** | Graph invariants | **Stub** — **WP0-A** | proof-db/graph/ (planned), **G-graph** |
+| **P-erdos** | Erdős register → formal targets | **Partial** — **WP0-B** E-* catalog; specimens **WP1+** | proof-db/erdos/register.json, **G-erdos** |
+| **P-chem** | Stoichiometry + reaction bookkeeping | **Stub** — **WP0-D** | Tier-2 chem benches (planned), **G-chem** |
+| **P-bio** | Population / sequence dynamics | **Stub** — **WP0-D** | Tier-2 bio benches (planned), **G-bio** |
 | **P-meta** | Compiler ↔ `Core.lean` | **G-meta** research | Long-term; cite Dafny/CakeML VCG literature |
 
 **Learned from (external):** Dafny `requires`/`ensures`/`decreases`; Lean 4 `mvcgen` / WP tactics; verified Dafny VCG (HOL4) for “what a finished pipeline proves.”
@@ -96,8 +117,10 @@ Priority order aligned with [provability-gaps](provability-gaps.md) and **2e →
 
 | Today | Target |
 |-------|--------|
-| `verify_ok` runs `lic build` only | `prove_compile_ok` + `prove_lean_ok` (lake + zero open goals) |
-| Mixed open-VC policy on branch | Document per-file: closed / open-intentional / lean-handwritten |
+| **`prove_lean_ok`** in `run_all.sh` + 14 closed `contracts_verify` rows | **Done** for split; lake step skips when elan absent |
+| **`verify_ok`** = strict `lic build` (default open-VC gate) | Same as planned `prove_compile_ok` name |
+| Remaining corpus on `verify_ok` | Retag when `discharge_*_lean.sh` covers them |
+| CI without Lean | `prove_lean_ok` → skip (not fail) — install elan in semantics job for full gate |
 
 ## Agent checklist (before claiming “proofs pass”)
 

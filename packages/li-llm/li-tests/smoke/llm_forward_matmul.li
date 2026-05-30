@@ -1,0 +1,19 @@
+import llm
+
+def main() -> int raises IO
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  if llm_forward_matmul_cpu_hint() < -1:
+    return 1
+  var weights: LlmModelWeights = llm_load_weights("fixtures/model.safetensors")
+  var tok: LlmTokenIds = llm_tokenize("ab", "fixtures/vocab.txt")
+  var cache: LlmKVCache
+  cache.seq_len = tok.count
+  var logits: LlmLogits = llm_forward(tok, weights, cache)
+  if logits.vocab_size != 256:
+    return 2
+  if logits.top_id < 0:
+    return 3
+  return 0

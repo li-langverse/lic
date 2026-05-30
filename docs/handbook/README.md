@@ -1,6 +1,6 @@
 # Li handbook index (in-repo)
 
-Canonical **language** handbook is published from [li-language](https://github.com/li-langverse/li-language) → [li-langverse.github.io/li-language](https://li-langverse.github.io/li-language/). This tree under `lic/docs/` is the **compiler + verification** source of truth until submodule wiring completes; edit [lic-docs](https://github.com/li-langverse/lic-docs) for user-facing Pages when split.
+Canonical **language** handbook: [li-language Pages](https://li-langverse.github.io/li-language/). **Compiler + verification** hub: [lic Pages](https://li-langverse.github.io/lic/) (static `site/index.html` + plan cross-links nav). This tree under `lic/docs/` is the source of truth until submodule wiring completes; edit [lic-docs](https://github.com/li-langverse/lic-docs) for user-facing Pages when split.
 
 ## Start here
 
@@ -11,14 +11,15 @@ Canonical **language** handbook is published from [li-language](https://github.c
 | What `lic build` proves **today** | [Provability gaps](../verification/provability-gaps.md) |
 | PH order and repo policy | [Master plan](../superpowers/plans/2026-05-14-li-master-plan.md) |
 | Map plans ↔ gaps ↔ benchmarks | [Plan cross-links](../ecosystem/plan-cross-links.md) |
+| GUI UX agent handoff (`ui_ux_quality`) | [gui-ux-quality-handoff](../ecosystem/gui-ux-quality-handoff.md) |
 | Org vision (human merge) | [Vision & roadmap](../ecosystem/vision-and-roadmap.md) → [roadmap repo](https://github.com/li-langverse/roadmap) |
 | Perf dashboard (not proof) | [Benchmarks](https://li-langverse.github.io/benchmarks/) |
 
 ## Satellite package handbooks (GitHub Pages)
 
-Deploy-pending until each repo merges `site/` + `.github/workflows/pages.yml` to `main`:
+Live handbook roots (HEAD-checked by `benchmarks/scripts/ecosystem-audit.py`):
 
-| Repo | Live URL (after deploy) | In-repo handbook |
+| Repo | Live URL | In-repo handbook |
 |------|-------------------------|------------------|
 | lip | https://li-langverse.github.io/lip/ | [lip/docs/handbook.md](https://github.com/li-langverse/lip/blob/main/docs/handbook.md) |
 | lit | https://li-langverse.github.io/lit/ | [lit/docs/handbook.md](https://github.com/li-langverse/lit/blob/main/docs/handbook.md) |

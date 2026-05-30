@@ -1,16 +1,16 @@
 {
   "pass": true,
-  "todo_id": "wsm-w1-profile-smokes",
-  "wps_touched": ["WP-SIM-00", "WP-SIM-01", "WP-UX-05"],
+  "todo_id": "wsm-w1-studio-toml-engine",
+  "wps_touched": ["WP-SIM-06"],
   "smokes_run": [
-    "packages/li-studio/li-tests/smoke/studio_vertical_profile_roundtrip.li",
-    "packages/li-studio/li-tests/smoke/studio_sim_step_by_profile.li"
+    "packages/li-studio/li-tests/smoke/studio_toml_engine_export.li",
+    "packages/li-studio/li-tests/smoke/studio_sim_step_by_profile.li",
+    "packages/li-studio/li-tests/smoke/studio_vertical_profile_roundtrip.li"
   ],
   "native_only": true,
   "gates": {
     "world_studio_plan_gates": "pass",
-    "lic_check_local": "skipped_llvm_dev_missing",
-    "lic_check_ci": "pending"
+    "lic_check_local": "pending"
   },
-  "notes": "Extended studio_sim_step_by_profile.li with studio_sim_step_profile_ok helper covering all 7 runtime profiles (game, sim_rl, sim_automotive, sim_robotics, sim_additive, sim_scientific, sim_drug_design). Scientific and RL retain specialized assertions (MD tier viewport sync, env pool batch tick). studio_vertical_profile_roundtrip.li already covered all 7 compose/TOML paths. Local lic check blocked: LLVM 22 runtime present but LLVMConfig.cmake dev package missing on Windows host; CI will verify lic check."
+  "notes": "Cumulative studio.toml line parser (li_rt_studio_toml_*) lands determinism_tier 0-3, [engine.export] formats/require_sim_pass/printer_profile into StudioProjectConfig; studio_apply_config_to_sim maps tier to sim output_detail. Full TOML file I/O and publish manifest remain WP-PUB-03."
 }

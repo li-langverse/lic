@@ -151,7 +151,7 @@ Cross-tracks (not separate phases above): **PH-PORT**, **PH-COMPLY**, **PH-CIN**
 | WP-SIM-02 | Replay metadata SIM-2 | all sim | **done** | `sim_session_replay_*` | `sim_replay_stub.li` | S | WP-SIM-01 | Y |
 | WP-SIM-03 | RL EnvPool SIM-3 | sim_rl | **partial** | Persistent pool + obs contract | `env_pool_step_contract.li` | M | WP-SIM-01 | Y |
 | WP-SIM-04 | Full `SimWorld` replay buffer | all sim | stub | Entity/state ring buffer | composable replay roundtrip | L | WP-SIM-02 | N |
-| WP-SIM-05 | Sensor bus stub | sim_automotive, sim_robotics | stub | `sim.sensors` raycast IDs | smoke + composable | M | WP-SIM-01 | Y |
+| WP-SIM-05 | Sensor bus stub | sim_automotive, sim_robotics | **partial** | `sim.sensors` raycast IDs | `sensor_bus_raycast_contract.li` | M | WP-SIM-01 | Y |
 | WP-SIM-06 | `studio.toml` engine section | all | **partial** | Parse `determinism_tier`, export | example vertical `studio.toml` | S | WP-SIM-00 | Y |
 
 ### 3.4 PH-UX
@@ -287,6 +287,7 @@ Every **named** stub/mock surface tied to World Studio (expand when adding packa
 | `sim_additive_tick_stub` | `li-sim-additive` | `packages/li-sim-additive/src/lib.li` | AM tick |
 | `sim_drug_design_tick_stub` | `li-sim-drug-design` | `packages/li-sim-drug-design/src/lib.li` | LITL tick |
 | `EnvPoolStub` / `env_pool_stub_step` | `li-ml-rl` | `packages/li-ml-rl/src/lib.li` | SIM-3 RL batch |
+| `sim_sensor_session_bus_step` | `li-sim-sensors` | `packages/li-sim-sensors/src/lib.li` | SIM-5 raycast bus |
 | `studio_sim_step_hook` | `li-studio` | `packages/li-studio/src/lib.li` | Profile multiplexer |
 | `studio_game_world_checkpoint_stub` | `li-studio` | same | GD-2 validity gate |
 | `game_physics_step_hook` | `li-physics-runtime` | `packages/li-physics-runtime/src/lib.li` | Single-body integrate stub |

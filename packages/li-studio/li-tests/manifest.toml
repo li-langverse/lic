@@ -72,6 +72,18 @@ note = "PH-SIM SIM-3: studio_sim_rl_step_hook env pool on live session"
 
 [[tests]]
 suite = "smoke"
+file = "smoke/studio_sim_sensor_step_hook.li"
+outcome = "check_ok"
+note = "PH-SIM SIM-5: studio_sim_sensor_step_hook raycast bus auto/robo"
+
+[[tests]]
+suite = "smoke"
+file = "smoke/studio_toml_engine_export.li"
+outcome = "check_ok"
+note = "WP-SIM-06: studio.toml [engine] determinism_tier + [engine.export] parse"
+
+[[tests]]
+suite = "smoke"
 file = "smoke/studio_sim_scientific_step_hook.li"
 outcome = "check_ok"
 note = "PH-SIM scientific step: tick_at + scene_bench tier sync to viewport display"

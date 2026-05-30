@@ -1,4 +1,5 @@
 import sim
+import sim.sensors
 import scene
 import studio
 
@@ -60,22 +61,32 @@ def main() -> int raises IO
     return 24
   if studio_md_particle_tier_select_ok(scene_md_tier_10k()) != 1:
     return 25
-  var auto: int = studio_sim_step_profile_ok(
-    studio_profile_sim_automotive(),
-    sim_contract_sim_automotive(),
-    0.02,
-    1,
-  )
-  if auto != 0:
-    return 30 + auto
-  var robo: int = studio_sim_step_profile_ok(
-    studio_profile_sim_robotics(),
-    sim_contract_sim_robotics(),
-    0.01,
-    1,
-  )
-  if robo != 0:
-    return 40 + robo
+  var auto_cfg: StudioProjectConfig = studio_project_config_new(studio_profile_sim_automotive())
+  var auto_sess: SimSessionStub = sim_session_stub_default()
+  if studio_sim_step_hook(auto_cfg, auto_sess, 0.02) != sim_status_ok():
+    return 30
+  if auto_sess.tick != 1:
+    return 31
+  var auto_bus: int = sensor_bus_size_default()
+  if auto_sess.sensor_bus_size != auto_bus:
+    return 32
+  if auto_sess.sensor_rays_emitted != auto_bus:
+    return 33
+  if sensor_raycast_id_valid(auto_sess.sensor_last_raycast_id) != 1:
+    return 34
+  var auto_hits: SensorHitSnapshot = sensor_hit_from_session(auto_sess)
+  if auto_hits.hit0 > sensor_raycast_max_range_m():
+    return 35
+  var robo_cfg: StudioProjectConfig = studio_project_config_new(studio_profile_sim_robotics())
+  var robo_sess: SimSessionStub = sim_session_stub_default()
+  if studio_sim_step_hook(robo_cfg, robo_sess, 0.01) != sim_status_ok():
+    return 40
+  if robo_sess.tick != 1:
+    return 41
+  if robo_sess.sensor_rays_emitted != auto_bus:
+    return 42
+  if sensor_hit_from_session(robo_sess).hit1 > sensor_raycast_max_range_m():
+    return 43
   var add: int = studio_sim_step_profile_ok(
     studio_profile_sim_additive(),
     sim_contract_sim_additive(),
@@ -105,4 +116,10 @@ def main() -> int raises IO
     return 73
   if rl_sess.last_dt != 0.01:
     return 74
+  if rl_sess.env_pool_size != rl_pool_sz:
+    return 75
+  if rl_sess.env_pool_steps_emitted != rl_pool_sz:
+    return 76
+  if env_obs_from_session(rl_sess).obs1 != rl_sess.last_dt:
+    return 77
   return 0

@@ -565,6 +565,244 @@ int32_t li_rt_studio_parse_toml_profile_line(const char* line) {
   return li_rt_studio_profile_match_name(buf);
 }
 
+/* WP-SIM-06 — cumulative studio.toml [engine] + [engine.export] line parser. */
+#define LI_RT_STUDIO_TOML_SECTION_NONE 0
+#define LI_RT_STUDIO_TOML_SECTION_ENGINE 1
+#define LI_RT_STUDIO_TOML_SECTION_EXPORT 2
+
+#define LI_RT_STUDIO_EXPORT_FMT_STL (1 << 0)
+#define LI_RT_STUDIO_EXPORT_FMT_3MF (1 << 1)
+#define LI_RT_STUDIO_EXPORT_FMT_GCODE (1 << 2)
+
+typedef struct {
+  int32_t section;
+  int32_t profile_id;
+  int32_t determinism_tier;
+  int32_t export_format_mask;
+  int32_t require_sim_pass;
+  int32_t printer_profile_slot;
+} LiRtStudioTomlState;
+
+static LiRtStudioTomlState g_studio_toml;
+
+static void li_rt_studio_toml_set_defaults(void) {
+  g_studio_toml.section = LI_RT_STUDIO_TOML_SECTION_NONE;
+  g_studio_toml.profile_id = 1;
+  g_studio_toml.determinism_tier = 1;
+  g_studio_toml.export_format_mask = 0;
+  g_studio_toml.require_sim_pass = 0;
+  g_studio_toml.printer_profile_slot = 0;
+}
+
+int32_t li_rt_studio_toml_reset(void) {
+  li_rt_studio_toml_set_defaults();
+  return 1;
+}
+
+static const char* li_rt_studio_toml_skip_ws(const char* p) {
+  while (p != NULL && (*p == ' ' || *p == '\t')) {
+    p++;
+  }
+  return p;
+}
+
+static int32_t li_rt_studio_toml_parse_int_value(const char* p) {
+  p = li_rt_studio_toml_skip_ws(p);
+  if (p == NULL || *p == '\0') {
+    return -1;
+  }
+  const int n = atoi(p);
+  if (n < 0) {
+    return -1;
+  }
+  return (int32_t)n;
+}
+
+static int32_t li_rt_studio_toml_parse_bool_value(const char* p) {
+  p = li_rt_studio_toml_skip_ws(p);
+  if (p == NULL) {
+    return 0;
+  }
+  if (strncmp(p, "true", 4) == 0) {
+    return 1;
+  }
+  if (strncmp(p, "false", 5) == 0) {
+    return 0;
+  }
+  return li_rt_studio_toml_parse_int_value(p) == 1 ? 1 : 0;
+}
+
+static int32_t li_rt_studio_toml_parse_quoted_value(const char* p, char* out, size_t cap) {
+  p = li_rt_studio_toml_skip_ws(p);
+  if (p == NULL || *p != '"') {
+    return 0;
+  }
+  p++;
+  const char* start = p;
+  while (*p != '\0' && *p != '"') {
+    p++;
+  }
+  if (*p != '"') {
+    return 0;
+  }
+  const size_t n = (size_t)(p - start);
+  if (n == 0 || n >= cap) {
+    return 0;
+  }
+  memcpy(out, start, n);
+  out[n] = '\0';
+  return 1;
+}
+
+static int32_t li_rt_studio_toml_parse_formats_mask(const char* line) {
+  int32_t mask = 0;
+  if (line == NULL) {
+    return 0;
+  }
+  if (strstr(line, "3mf") != NULL) {
+    mask |= LI_RT_STUDIO_EXPORT_FMT_3MF;
+  }
+  if (strstr(line, "gcode") != NULL) {
+    mask |= LI_RT_STUDIO_EXPORT_FMT_GCODE;
+  }
+  if (strstr(line, "stl") != NULL) {
+    mask |= LI_RT_STUDIO_EXPORT_FMT_STL;
+  }
+  return mask;
+}
+
+static int32_t li_rt_studio_toml_printer_slot_for_path(const char* path) {
+  if (path == NULL || path[0] == '\0') {
+    return 0;
+  }
+  if (strstr(path, "bambu") != NULL) {
+    return 1;
+  }
+  return 2;
+}
+
+static int32_t li_rt_studio_toml_parse_key_value(const char* line, const char* key) {
+  const char* p = strstr(line, key);
+  if (p == NULL) {
+    return 0;
+  }
+  p += strlen(key);
+  p = li_rt_studio_toml_skip_ws(p);
+  if (p == NULL || *p != '=') {
+    return 0;
+  }
+  p++;
+  p = li_rt_studio_toml_skip_ws(p);
+  if (p == NULL) {
+    return 0;
+  }
+  if (li_rt_str_eq(key, "profile")) {
+    char buf[64];
+    if (li_rt_studio_toml_parse_quoted_value(p, buf, sizeof(buf)) != 1) {
+      return 0;
+    }
+    const int32_t id = li_rt_studio_profile_match_name(buf);
+    if (id == 0) {
+      return 0;
+    }
+    g_studio_toml.profile_id = id;
+    return 1;
+  }
+  if (li_rt_str_eq(key, "determinism_tier")) {
+    const int32_t tier = li_rt_studio_toml_parse_int_value(p);
+    if (tier < 0 || tier > 3) {
+      return 0;
+    }
+    g_studio_toml.determinism_tier = tier;
+    return 1;
+  }
+  if (li_rt_str_eq(key, "formats")) {
+    const int32_t mask = li_rt_studio_toml_parse_formats_mask(line);
+    if (mask == 0) {
+      return 0;
+    }
+    g_studio_toml.export_format_mask = mask;
+    return 1;
+  }
+  if (li_rt_str_eq(key, "require_sim_pass")) {
+    g_studio_toml.require_sim_pass = li_rt_studio_toml_parse_bool_value(p);
+    return 1;
+  }
+  if (li_rt_str_eq(key, "printer_profile")) {
+    char buf[128];
+    if (li_rt_studio_toml_parse_quoted_value(p, buf, sizeof(buf)) != 1) {
+      return 0;
+    }
+    g_studio_toml.printer_profile_slot = li_rt_studio_toml_printer_slot_for_path(buf);
+    return g_studio_toml.printer_profile_slot == 0 ? 0 : 1;
+  }
+  return 0;
+}
+
+int32_t li_rt_studio_toml_parse_line(const char* line) {
+  if (line == NULL) {
+    return 0;
+  }
+  const char* p = li_rt_studio_toml_skip_ws(line);
+  if (p == NULL || *p == '\0' || *p == '#') {
+    return 0;
+  }
+  if (*p == '[') {
+    if (strstr(p, "[engine.export]") != NULL) {
+      g_studio_toml.section = LI_RT_STUDIO_TOML_SECTION_EXPORT;
+      return 1;
+    }
+    if (strstr(p, "[engine]") != NULL) {
+      g_studio_toml.section = LI_RT_STUDIO_TOML_SECTION_ENGINE;
+      return 1;
+    }
+    return 0;
+  }
+  if (g_studio_toml.section == LI_RT_STUDIO_TOML_SECTION_ENGINE ||
+      g_studio_toml.section == LI_RT_STUDIO_TOML_SECTION_NONE) {
+    if (li_rt_studio_toml_parse_key_value(line, "profile") == 1) {
+      g_studio_toml.section = LI_RT_STUDIO_TOML_SECTION_ENGINE;
+      return 1;
+    }
+    if (li_rt_studio_toml_parse_key_value(line, "determinism_tier") == 1) {
+      g_studio_toml.section = LI_RT_STUDIO_TOML_SECTION_ENGINE;
+      return 1;
+    }
+  }
+  if (g_studio_toml.section == LI_RT_STUDIO_TOML_SECTION_EXPORT ||
+      g_studio_toml.section == LI_RT_STUDIO_TOML_SECTION_NONE) {
+    if (li_rt_studio_toml_parse_key_value(line, "formats") == 1) {
+      g_studio_toml.section = LI_RT_STUDIO_TOML_SECTION_EXPORT;
+      return 1;
+    }
+    if (li_rt_studio_toml_parse_key_value(line, "require_sim_pass") == 1) {
+      g_studio_toml.section = LI_RT_STUDIO_TOML_SECTION_EXPORT;
+      return 1;
+    }
+    if (li_rt_studio_toml_parse_key_value(line, "printer_profile") == 1) {
+      g_studio_toml.section = LI_RT_STUDIO_TOML_SECTION_EXPORT;
+      return 1;
+    }
+  }
+  return 0;
+}
+
+int32_t li_rt_studio_toml_parsed_profile(void) { return g_studio_toml.profile_id; }
+
+int32_t li_rt_studio_toml_parsed_determinism_tier(void) { return g_studio_toml.determinism_tier; }
+
+int32_t li_rt_studio_toml_parsed_export_format_mask(void) {
+  return g_studio_toml.export_format_mask;
+}
+
+int32_t li_rt_studio_toml_parsed_require_sim_pass(void) {
+  return g_studio_toml.require_sim_pass;
+}
+
+int32_t li_rt_studio_toml_parsed_printer_profile_slot(void) {
+  return g_studio_toml.printer_profile_slot;
+}
+
 
 int32_t li_rt_studio_demo_profile_from_env(void) {
   const char* v = getenv("STUDIO_DEMO_PROFILE");

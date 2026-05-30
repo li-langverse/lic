@@ -71,10 +71,6 @@ This page is the **honest inventory** of what is **not** fully proved or not yet
 
 [`../../proof-database/DISCREPANCIES.md`](../../proof-database/DISCREPANCIES.md) — `python3 scripts/proof-db/compare_reference.py --write`. Kinds: `missing_lemma`, `open_vc`, `spec_drift`, `trusted_axiom`, `hardware_axiom` (**G-hw**).
 
-### Proof-db discrepancy appendix
-
-[`../../proof-database/DISCREPANCIES.md`](../../proof-database/DISCREPANCIES.md) — `python3 scripts/proof-db/compare_reference.py --write`. Kinds: `missing_lemma`, `open_vc`, `spec_drift`, `trusted_axiom`, `hardware_axiom` (**G-hw**).
-
 !!! warning "Do not overclaim in docs or packages"
     Until **Phase 2f** lands, saying “`lic build` proves your program in Lean” is **aspirational**. Prefer: “`lic build` runs the current static gate; see [provability gaps](provability-gaps.md).”
 
@@ -195,10 +191,6 @@ Passing **`./li-tests/run_all.sh`** means the **current** gate holds — not the
 
 **Corpus inventory, run commands, and proof backlog for the master plan:** [proof-corpus-roadmap.md](proof-corpus-roadmap.md).
 
-### Proof-db discrepancy appendix
-
-[`../../proof-database/DISCREPANCIES.md`](../../proof-database/DISCREPANCIES.md) — `python3 scripts/proof-db/compare_reference.py --write`. Kinds: `missing_lemma`, `open_vc`, `spec_drift`, `trusted_axiom`, `hardware_axiom` (**G-hw**).
-
 ---
 
 ## Documentation that must stay aligned
@@ -213,6 +205,8 @@ When editing handbook pages, do **not** imply features beyond this register with
 | [Language overview](../language/overview.md) | “Status honesty” links here |
 | [SIMD and parallel](../language/simd-parallel.md) | Note heuristic disjoint until 7d-c |
 | Decorator / math spec stubs | Say “planned” until gaps closed |
+| [Plan cross-links](../ecosystem/plan-cross-links.md) | Master plan ↔ phase plans ↔ benchmarks; update when PH rows move |
+| [Handbook index](../handbook/README.md) | Satellite Pages table — mark deploy-pending until `main` Pages green |
 
 ---
 

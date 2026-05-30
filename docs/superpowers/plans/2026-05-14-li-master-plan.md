@@ -332,13 +332,13 @@ See [local-ci-docker-images.md](../ecosystem/local-ci-docker-images.md).
 
 **Problem:** Handbook and specs must not read as if Lean, full disjoint proofs, decorators, or math lowering already ship when they do not. Contributors need a **single gap register** and **compiler-task linkage**.
 
-**Canonical register:** [docs/verification/provability-gaps.md](../verification/provability-gaps.md) (`G-*` IDs).
+**Canonical register:** [docs/verification/provability-gaps.md](../verification/provability-gaps.md) (`G-*` IDs). **Plan map:** [docs/ecosystem/plan-cross-links.md](../ecosystem/plan-cross-links.md) · [handbook index](../../handbook/README.md).
 
 ### Phase Doc — sub-phases
 
 | Sub | Task | Exit gate |
 |-----|------|-----------|
-| **Doc-a** | **Gap register** — keep `provability-gaps.md` current; link from index, overview, master plan, mkdocs | Register lists every open **G-*** row; last-updated date |
+| **Doc-a** | **Gap register** — keep `provability-gaps.md` current; link from index, overview, master plan, mkdocs, [plan-cross-links](../ecosystem/plan-cross-links.md) | Register lists every open **G-*** row; last-updated date |
 | **Doc-b** | **Handbook audit** — every `docs/language/*`, `docs/guide/*`, `docs/compiler/*` uses *target vs today* where spec ≠ `lic` | No page implies Lean runs on `lic build` without a status note |
 | **Doc-c** | **Spec stubs** — decorator, math, language design cross-link gaps | `2026-05-16-li-execution-decorators.md`, `2026-05-16-li-math-linalg-surface.md` point at **G-*** |
 | **Doc-d** | **Contributing rule** — [documentation style](../contributing/documentation.md) § Provability | PR template / agent skill: “updated gap register?” |

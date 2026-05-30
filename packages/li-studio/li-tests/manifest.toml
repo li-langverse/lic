@@ -78,6 +78,12 @@ note = "PH-SIM SIM-3: studio_sim_rl_step_hook env pool on live session"
 
 [[tests]]
 suite = "smoke"
+file = "smoke/studio_sim_rl_step.li"
+outcome = "compile_open_ok"
+note = "PH-ML Wave 3: JobGraph collect + sim_rl step hook"
+
+[[tests]]
+suite = "smoke"
 file = "smoke/studio_sim_sensor_step_hook.li"
 outcome = "check_ok"
 note = "PH-SIM SIM-5: studio_sim_sensor_step_hook raycast bus auto/robo"

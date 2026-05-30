@@ -1,5 +1,17 @@
-﻿[[tests]]
+[[tests]]
 suite = "smoke"
 file = "smoke/env_pool_reexport.li"
 outcome = "compile_open_ok"
 note = "T-PKG-li-ml-rl-env-pool PH-ML WP-ML-03"
+
+[[tests]]
+suite = "smoke"
+file = "smoke/job_graph_collect.li"
+outcome = "compile_open_ok"
+note = "T-PKG-li-ml-rl-job-graph PH-ML WP-RL-02 Wave 3"
+
+[[tests]]
+suite = "smoke"
+file = "smoke/env_pool_async_four.li"
+outcome = "compile_open_ok"
+note = "T-PKG-li-ml-rl-async-four PH-ML WP-RL-02 Wave 3"

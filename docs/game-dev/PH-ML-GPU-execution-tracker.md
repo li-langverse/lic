@@ -2,6 +2,8 @@
 
 **Wave 2:** LKIR matmul + @gpu stub (WP-ML-04..06)
 
+**Wave 3:** Async JobGraph + >=4 env sample collection (WP-RL-02)
+
 **Battle plan:** [PH-ML-GPU-battle-plan.md](PH-ML-GPU-battle-plan.md)
 
 | WP | Title | Wave | Status | Verification |
@@ -13,4 +15,4 @@
 | WP-ML-05 | @gpu matmul emit stub | 2 | done | ml_gpu_matmul_stub.li |
 | WP-ML-06 | tier-3 ph-ml-lkir-matmul.json | 2 | done | bench-ph-ml-lkir-matmul.sh |
 | WP-LLM-01 | Byte tokenizer roundtrip | 1 | stub | llm_tokenize_roundtrip.li |
-| WP-RL-02 | Async parallel pools | 3 | blocked | PH-ML Wave 3 |
+| WP-RL-02 | Async parallel pools | 3 | done | job_graph_collect.li + ph-ml-async-env-collect.json |

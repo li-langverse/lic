@@ -11,11 +11,18 @@ Studio sim_rl and chem.ml workloads need **async sample collection** across mult
 
 ## Proposal
 
-### JobGraph
+### JobGraph (Wave 3 — implemented in li-ml-rl)
 
-- **JobGraph** — DAG of `SampleJob`, `TrainStep`, `EvalStep` nodes
-- **EnvPoolWorker** — N worker handles referencing `SimSessionStub` clones
-- **AsyncCollect** — non-blocking `env_pool_collect(batch)` returning when >=K samples ready
+| Symbol | Kind | Role |
+|--------|------|------|
+| `SampleJob` | type | One env transition: `env_index`, `sample_id`, `reward`, `done` |
+| `JobGraphStub` | type | DAG scaffold: `pool_size`, `job_count`, `samples_collected`, `total_reward`, `async_workers` |
+| `job_graph_stub_default()` | def | Default graph with `pool_size == async_workers == 4` |
+| `ml_rl_job_graph_collect(session, dt, graph)` | def | Run EnvPool step across >=4 env slots; fill graph counters |
+| `ml_rl_env_pool_async_collect(session, dt)` | def | Convenience wrapper; returns `sim_status_ok()` when >=4 samples |
+| `ml_rl_async_env_count()` | def | Honest parallel env handle count (currently `sim_rl_env_pool_size_default() == 4`) |
+
+Future waves add `TrainStep` / `EvalStep` nodes and non-blocking worker processes; Wave 3 uses synchronous stub workers with honest `async_workers` count in bench JSON.
 
 ### Packages
 

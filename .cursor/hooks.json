@@ -25,6 +25,9 @@
     ],
     "afterFileEdit": [
       {
+        "command": ".cursor/hooks/guard-li-surface.sh"
+      },
+      {
         "command": ".cursor/hooks/remind-governance-docs.sh",
         "matcher": "docs/**"
       },

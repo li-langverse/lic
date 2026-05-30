@@ -1,16 +1,17 @@
 {
   "pass": true,
-  "todo_id": "wsm-w4-gltf-ingest",
-  "wps_touched": ["WP-GD-04"],
+  "todo_id": "wsm-w5-sci-kernels",
+  "wps_touched": ["WP-SCI-03", "WP-SCI-02"],
   "smokes_run": [
-    "packages/li-assets/li-tests/smoke/gltf_ingest.li",
-    "packages/li-studio/li-tests/smoke/studio_gltf_ingest.li"
+    "packages/li-sim-scientific/li-tests/smoke/scientific_oracle_bench.li",
+    "packages/li-sim-scientific/li-tests/smoke/run_algo_registry_tier2.li",
+    "packages/li-sim-scientific/li-tests/smoke/builds.li",
+    "packages/li-sim-scientific/li-tests/smoke/multi_physics_tick.li"
   ],
   "native_only": true,
   "gates": {
     "world_studio_plan_gates": "pass",
-    "lic_check_local": "wsl",
-    "lic_check_ci": "pending"
+    "lic_check_local": "wsl"
   },
-  "notes": "WP-GD-04: new li-assets package (GltfIngestMesh, assets_gltf_ingest_path, scene_attach); studio_shell_apply_gltf_ingest updates scene_entity_count from default assets/mesh.gltf path aligned with world asset_ref stub."
+  "notes": "WP-SCI-03: pure-Li tier-2 oracles (4-particle LJ chain 8-step energy drift; 1D heat explicit stencil sum); run_algo_registry dispatches MD 101-117 and heat 201-216 to real kernels; QM/rigid families unchanged."
 }

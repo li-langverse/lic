@@ -19,6 +19,10 @@ for smoke in env_pool_stub.li env_pool_step_contract.li; do
   "$LIC" check "$ROOT/packages/li-sim/li-tests/smoke/$smoke"
 done
 
+for smoke in scientific_oracle_bench.li run_algo_registry_tier2.li; do
+  "$LIC" check "$ROOT/packages/li-sim-scientific/li-tests/smoke/$smoke"
+done
+
 "$LIC" check "$ROOT/packages/li-assets/li-tests/smoke/gltf_ingest.li"
 
 for smoke in \

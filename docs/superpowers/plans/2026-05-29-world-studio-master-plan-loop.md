@@ -79,7 +79,7 @@ todos:
     status: done
   - id: wsm-w5-sci-kernels
     content: "run_algo_registry real tier-2 MD/heat kernels (WP-SCI-03)"
-    status: pending
+    status: done
   - id: wsm-w5-sim-viz
     content: "sim.viz pipeline panels → viewport fields (WP-SCI-04)"
     status: pending

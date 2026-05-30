@@ -1,0 +1,5 @@
+@cpu
+@parallel(disjoint=disnjoit_
+proc f() -> int
+  requires t@caraltel(ditel(dis@rue
+  ensures trun 0

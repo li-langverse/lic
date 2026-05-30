@@ -1,0 +1,19 @@
+# Forces ArrayMatMul2DF64 on 512×512 tiles (tier-1 matmul_blocked size class).
+# On branches with emit_matmul2d_blocked_ijk wired, selects blocked `@` lowering;
+# otherwise IKJ loop path (m,k,n > kUnrollMax=24). No P-linalg loop witness either way.
+# li_rt_volatile_sink_f64 prevents LLVM from deleting matmul codegen (tier-1 DCE guard).
+
+extern proc li_rt_volatile_sink_f64(v: float) -> unit
+  requires true
+  ensures true
+
+def main() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  var A: array[512, array[512, float]]
+  var B: array[512, array[512, float]]
+  var C: array[512, array[512, float]] = A @ B
+  li_rt_volatile_sink_f64(C[0][0])
+  return 0

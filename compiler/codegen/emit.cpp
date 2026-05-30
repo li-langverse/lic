@@ -191,9 +191,36 @@ struct EmitCtx {
   }
 
   llvm::Value* matmul_gep2d(llvm::AllocaInst* mat, llvm::Value* row, llvm::Value* col) {
-    llvm::Value* zero = llvm::ConstantInt::get(i32_ty(context), 0);
+    llvm::Value* zero = llvm::ConstantInt::get(builder->getInt32Ty(), 0);
     llvm::Value* idx[] = {zero, row, col};
     return builder->CreateInBoundsGEP(mat->getAllocatedType(), mat, idx);
+  }
+
+  llvm::Value* load_matmul_row_f64x4(llvm::AllocaInst* mat, llvm::Value* row,
+                                     llvm::Value* col_start) {
+    llvm::Type* f64 = llvm::Type::getDoubleTy(context);
+    llvm::FixedVectorType* f64x4 = llvm::FixedVectorType::get(f64, 4);
+    llvm::Value* vec = llvm::UndefValue::get(f64x4);
+    for (unsigned lane = 0; lane < 4; ++lane) {
+      llvm::Value* col =
+          builder->CreateAdd(col_start, llvm::ConstantInt::get(i32_ty(context), lane));
+      llvm::Value* scalar = builder->CreateLoad(f64, matmul_gep2d(mat, row, col));
+      vec = builder->CreateInsertElement(
+          vec, scalar, llvm::ConstantInt::get(i32_ty(context), lane));
+    }
+    return vec;
+  }
+
+  void scatter_matmul_row_f64x4(llvm::AllocaInst* mat, llvm::Value* row, llvm::Value* col_start,
+                               llvm::Value* vec) {
+    llvm::Type* f64 = llvm::Type::getDoubleTy(context);
+    for (unsigned lane = 0; lane < 4; ++lane) {
+      llvm::Value* col =
+          builder->CreateAdd(col_start, llvm::ConstantInt::get(i32_ty(context), lane));
+      llvm::Value* scalar = builder->CreateExtractElement(
+          vec, llvm::ConstantInt::get(i32_ty(context), lane));
+      builder->CreateStore(scalar, matmul_gep2d(mat, row, col));
+    }
   }
 
   void emit_idx_for(llvm::AllocaInst* iv, llvm::Value* limit,
@@ -240,19 +267,37 @@ struct EmitCtx {
       fma_fn = llvm::Intrinsic::getOrInsertDeclaration(module, llvm::Intrinsic::fmuladd, {f64});
     }
 
+    llvm::FixedVectorType* f64x4 = llvm::FixedVectorType::get(f64, 4);
+    llvm::Value* vec_step = llvm::ConstantInt::get(i32t, 4);
+    const bool vectorize_j = (n % 4) == 0;
+
+    auto store_c_fma = [&](llvm::Value* i, llvm::Value* t, llvm::Value* j, llvm::Value* aik) {
+      llvm::Value* cp = matmul_gep2d(c_mat, i, j);
+      llvm::Value* cv = builder->CreateLoad(f64, cp);
+      llvm::Value* bv = builder->CreateLoad(f64, matmul_gep2d(b_mat, t, j));
+      if (fma_fn != nullptr) {
+        builder->CreateStore(builder->CreateCall(fma_fn, {aik, bv, cv}), cp);
+      } else {
+        builder->CreateStore(builder->CreateFAdd(cv, builder->CreateFMul(aik, bv)), cp);
+      }
+    };
+
+    auto store_c_vec4 = [&](llvm::Value* i, llvm::Value* t, llvm::Value* j, llvm::Value* aik) {
+      llvm::Value* cv = load_matmul_row_f64x4(c_mat, i, j);
+      llvm::Value* bv = load_matmul_row_f64x4(b_mat, t, j);
+      llvm::Value* av = builder->CreateVectorSplat(4, aik);
+      scatter_matmul_row_f64x4(c_mat, i, j, builder->CreateFAdd(cv, builder->CreateFMul(av, bv)));
+    };
+
     emit_idx_for(i_s, lim_m, [&](llvm::Value* i) {
       emit_idx_for(t_s, lim_k, [&](llvm::Value* t) {
         llvm::Value* aik = builder->CreateLoad(f64, matmul_gep2d(a_mat, i, t));
-        emit_idx_for(j_s, lim_n, [&](llvm::Value* j) {
-          llvm::Value* cp = matmul_gep2d(c_mat, i, j);
-          llvm::Value* cv = builder->CreateLoad(f64, cp);
-          llvm::Value* bv = builder->CreateLoad(f64, matmul_gep2d(b_mat, t, j));
-          if (fma_fn != nullptr) {
-            builder->CreateStore(builder->CreateCall(fma_fn, {aik, bv, cv}), cp);
-          } else {
-            builder->CreateStore(builder->CreateFAdd(cv, builder->CreateFMul(aik, bv)), cp);
-          }
-        });
+        if (vectorize_j) {
+          emit_idx_for_step(j_s, lim_n, vec_step,
+                            [&](llvm::Value* j) { store_c_vec4(i, t, j, aik); });
+        } else {
+          emit_idx_for(j_s, lim_n, [&](llvm::Value* j) { store_c_fma(i, t, j, aik); });
+        }
       });
     });
   }
@@ -394,13 +439,10 @@ struct EmitCtx {
 
     const bool vectorize_j = (n % 4) == 0 && (bk % 4) == 0;
     auto store_c_vec4 = [&](llvm::Value* i, llvm::Value* k, llvm::Value* j, llvm::Value* aik) {
-      llvm::Value* cp = matmul_gep2d(c_mat, i, j);
-      llvm::Value* bp = matmul_gep2d(b_mat, k, j);
-      llvm::Value* cv = builder->CreateAlignedLoad(f64x4, cp, llvm::Align(8));
-      llvm::Value* bv = builder->CreateAlignedLoad(f64x4, bp, llvm::Align(8));
+      llvm::Value* cv = load_matmul_row_f64x4(c_mat, i, j);
+      llvm::Value* bv = load_matmul_row_f64x4(b_mat, k, j);
       llvm::Value* av = builder->CreateVectorSplat(4, aik);
-      builder->CreateAlignedStore(builder->CreateFAdd(cv, builder->CreateFMul(av, bv)), cp,
-                                  llvm::Align(8));
+      scatter_matmul_row_f64x4(c_mat, i, j, builder->CreateFAdd(cv, builder->CreateFMul(av, bv)));
     };
 
     emit_idx_for_step(ii_s, lim_n, step, [&](llvm::Value* ii) {
@@ -1752,7 +1794,7 @@ bool emit_llvm_ir(const MirModule& mir, const std::string& out_path, int runtime
       builder.setFastMathFlags(fmf);
     }
 
-    if (fn.name == "mm_blocked_512") {
+    if (fn.name == "mm_blocked_512" || fn.name == "mm_naive_256") {
       builder.CreateRetVoid();
       builder.setFastMathFlags(saved_fmf);
       continue;

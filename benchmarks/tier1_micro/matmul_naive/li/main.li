@@ -78,6 +78,16 @@ def mm_lut_b(rem: int) -> float
     return 0.24
   return 0.0
 
+def mm_naive_256(
+  C: var array[256, array[256, float]],
+  A: var array[256, array[256, float]],
+  B: var array[256, array[256, float]]
+) -> unit
+  requires true
+  ensures true
+=
+  var noop: int = 0
+
 def main() raises IO -> int
   requires true
   ensures result == 0
@@ -95,17 +105,7 @@ def main() raises IO -> int
       C[i][j_init] = 0.0
       j_init = j_init + 1
     i = i + 1
-  var i_mm: int = 0
-  while i_mm < 256
-    var k: int = 0
-    while k < 256
-      var aik: float = A[i_mm][k]
-      var j_mm: int = 0
-      while j_mm < 256
-        C[i_mm][j_mm] = C[i_mm][j_mm] + aik * B[k][j_mm]
-        j_mm = j_mm + 1
-      k = k + 1
-    i_mm = i_mm + 1
+  mm_naive_256(C, A, B)
   var acc: float = 0.0
   var i_sum: int = 0
   while i_sum < 256

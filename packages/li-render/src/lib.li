@@ -9,10 +9,10 @@ import scene
 
 def li_std_render_version() -> int
   requires true
-  ensures result == 3
+  ensures result == 4
   decreases 0
 =
-  return 3
+  return 4
 
 def render_viewport_fps_target() -> float
   requires true
@@ -155,7 +155,7 @@ def render_fps_counter_host_tick(counter: var RenderFpsCounter) -> unit raises I
   render_fps_counter_tick(counter, dt)
   if lig_present_host_active() == 1:
     counter.native_pixels = lig_present_host_native_pixels_flag()
-  else:
+  if lig_present_host_active() != 1:
     counter.native_pixels = 0
 
 def render_viewport_host_fps_counter(frame_count: int) -> RenderFpsCounter raises IO
@@ -263,6 +263,242 @@ def render_viewport_smoke_ok(smoke: RenderViewportSmoke) -> int
   if smoke.viewport_w <= 0.0:
     return 0
   if smoke.viewport_h <= 0.0:
+    return 0
+  return 1
+
+# WP-GD-05 — PBR-lite draw list IR + wgpu submit (not smoke-only stub_pass).
+def render_draw_cmd_clear() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0
+
+def render_draw_cmd_mesh() -> int
+  requires true
+  ensures result == 1
+  decreases 0
+=
+  return 1
+
+def render_draw_cmd_particles() -> int
+  requires true
+  ensures result == 2
+  decreases 0
+=
+  return 2
+
+type RenderPbrLiteMaterial = object
+  public albedo_r: float
+  public albedo_g: float
+  public albedo_b: float
+  public roughness: float
+  public metallic: float
+
+type RenderDrawList = object
+  public cmd_count: int
+  public mesh_count: int
+  public particle_count: int
+  public clear_r: float
+  public clear_g: float
+  public clear_b: float
+  public material: RenderPbrLiteMaterial
+  public draw_list_tag: int
+  public submitted: int
+
+def render_pbr_lite_material_default() -> RenderPbrLiteMaterial
+  requires true
+  ensures result.roughness == 0.5
+  ensures result.metallic == 0.0
+  decreases 0
+=
+  var m: RenderPbrLiteMaterial
+  m.albedo_r = 0.8
+  m.albedo_g = 0.82
+  m.albedo_b = 0.85
+  m.roughness = 0.5
+  m.metallic = 0.0
+  return m
+
+def render_draw_list_new() -> RenderDrawList
+  requires true
+  ensures result.cmd_count == 0
+  ensures result.submitted == 0
+  decreases 0
+=
+  var list: RenderDrawList
+  list.cmd_count = 0
+  list.mesh_count = 0
+  list.particle_count = 0
+  list.clear_r = 0.05
+  list.clear_g = 0.07
+  list.clear_b = 0.1
+  list.material = render_pbr_lite_material_default()
+  list.draw_list_tag = 21
+  list.submitted = 0
+  return list
+
+def render_draw_list_push_clear(list: var RenderDrawList, r: float, g: float, b: float) -> unit
+  requires list.cmd_count >= 0
+  ensures list.clear_r == r
+  ensures list.clear_g == g
+  ensures list.clear_b == b
+  ensures list.cmd_count == old(list.cmd_count) + 1
+  decreases list.cmd_count
+=
+  list.clear_r = r
+  list.clear_g = g
+  list.clear_b = b
+  list.cmd_count = list.cmd_count + 1
+
+def render_draw_list_push_mesh(list: var RenderDrawList, mesh_id: int, mat: RenderPbrLiteMaterial) -> unit
+  requires mesh_id >= 0
+  requires list.cmd_count >= 0
+  ensures list.mesh_count == old(list.mesh_count) + 1
+  ensures list.material.albedo_r == mat.albedo_r
+  ensures list.cmd_count == old(list.cmd_count) + 1
+  decreases mesh_id
+=
+  list.mesh_count = list.mesh_count + 1
+  list.material = mat
+  list.cmd_count = list.cmd_count + 1
+
+def render_draw_list_push_particles(list: var RenderDrawList, particle_count: int, mat: RenderPbrLiteMaterial) -> unit
+  requires particle_count >= 0
+  requires list.cmd_count >= 0
+  ensures list.particle_count == particle_count
+  ensures list.cmd_count == old(list.cmd_count) + 1
+  decreases particle_count
+=
+  list.particle_count = particle_count
+  list.material = mat
+  list.cmd_count = list.cmd_count + 1
+
+def render_draw_list_pbr_tag(profile_id: int) -> int
+  requires profile_id >= 1
+  requires profile_id <= 7
+  ensures result >= 21
+  ensures result <= 27
+  decreases profile_id
+=
+  if profile_id == 1:
+    return 21
+  if profile_id == 2:
+    return 22
+  if profile_id == 3:
+    return 23
+  if profile_id == 4:
+    return 24
+  if profile_id == 5:
+    return 25
+  if profile_id == 6:
+    return 26
+  return 27
+
+def render_draw_list_submit_pure(list: RenderDrawList) -> int
+  requires list.cmd_count > 0
+  ensures result >= 0
+  ensures result <= 1
+  decreases list.cmd_count
+=
+  if list.cmd_count <= 0:
+    return 0
+  if list.draw_list_tag < 21:
+    return 0
+  if list.draw_list_tag > 27:
+    return 0
+  return 1
+
+def render_draw_list_submit(vp: ViewportRegion, list: var RenderDrawList, profile_id: int) -> int raises IO
+  requires vp.w >= 0.0
+  requires vp.h >= 0.0
+  requires profile_id >= 1
+  requires profile_id <= 7
+  requires list.cmd_count > 0
+  ensures result >= 0
+  ensures result <= 1
+  decreases list.cmd_count
+=
+  var tag: int = render_draw_list_pbr_tag(profile_id)
+  list.draw_list_tag = tag
+  if lig_wgpu_draw_list_submit(vp.w, vp.h, list.cmd_count, tag) != 1:
+    return 0
+  list.submitted = 1
+  return 1
+
+def render_wgpu_draw_list_smoke_pure(vp: ViewportRegion, profile_id: int) -> RenderViewportSmoke
+  requires vp.w >= 0.0
+  requires vp.h >= 0.0
+  requires profile_id >= 1
+  requires profile_id <= 7
+  ensures result.viewport_w == vp.w
+  ensures result.viewport_h == vp.h
+  ensures result.fps_counter_ready == 1
+  ensures lig_wgpu_smoke_passed(result.wgpu) == 1
+  decreases profile_id
+=
+  var list: RenderDrawList = render_draw_list_new()
+  render_draw_list_push_clear(list, 0.05, 0.07, 0.1)
+  var mat: RenderPbrLiteMaterial = render_pbr_lite_material_default()
+  render_draw_list_push_mesh(list, 1, mat)
+  render_draw_list_push_particles(list, 1000, mat)
+  list.draw_list_tag = render_draw_list_pbr_tag(profile_id)
+  if render_draw_list_submit_pure(list) != 1:
+    var fail: RenderViewportSmoke
+    fail.wgpu.status = lig_wgpu_smoke_status_fail()
+    fail.viewport_w = vp.w
+    fail.viewport_h = vp.h
+    fail.fps_counter_ready = 0
+    fail.native_pixels = 0
+    return fail
+  var out: RenderViewportSmoke
+  out.wgpu.backend_id = lig_backend_webgpu()
+  out.wgpu.status = lig_wgpu_smoke_status_pass()
+  out.wgpu.adapter_ok = 1
+  out.wgpu.surface_ok = 0
+  out.viewport_w = vp.w
+  out.viewport_h = vp.h
+  out.fps_counter_ready = 1
+  out.native_pixels = 0
+  return out
+
+def render_wgpu_draw_list_smoke(vp: ViewportRegion, profile_id: int) -> RenderViewportSmoke raises IO, Alloc
+  requires vp.w >= 0.0
+  requires vp.h >= 0.0
+  requires profile_id >= 1
+  requires profile_id <= 7
+  ensures result.viewport_w == vp.w
+  ensures result.viewport_h == vp.h
+  decreases profile_id
+=
+  var list: RenderDrawList = render_draw_list_new()
+  render_draw_list_push_clear(list, 0.05, 0.07, 0.1)
+  var mat: RenderPbrLiteMaterial = render_pbr_lite_material_default()
+  render_draw_list_push_mesh(list, 1, mat)
+  render_draw_list_push_particles(list, 1000, mat)
+  if render_draw_list_submit(vp, list, profile_id) != 1:
+    var fail: RenderViewportSmoke
+    fail.wgpu = lig_wgpu_smoke_run()
+    fail.viewport_w = vp.w
+    fail.viewport_h = vp.h
+    fail.fps_counter_ready = 0
+    fail.native_pixels = 0
+    return fail
+  var out: RenderViewportSmoke
+  out.wgpu = lig_wgpu_smoke_run()
+  out.viewport_w = vp.w
+  out.viewport_h = vp.h
+  out.fps_counter_ready = 1
+  out.native_pixels = lig_present_surface_ok()
+  return out
+
+def render_wgpu_draw_list_smoke_ok(smoke: RenderViewportSmoke) -> int
+  requires true
+  ensures result >= 0
+  ensures result <= 1
+  decreases 0
+=
+  if render_viewport_smoke_ok(smoke) != 1:
     return 0
   return 1
 

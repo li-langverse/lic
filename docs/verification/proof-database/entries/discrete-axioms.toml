@@ -1,0 +1,16 @@
+version = 1
+
+[[entry]]
+id = "D-AX-INT-RING"
+kind = "axiom"
+field = "discrete"
+domain = "integer_algebra"
+statement = "Integers form a commutative ring (addition commutative/associative, multiplication distributes)."
+proof_status = "target"
+gap_id = "G-discrete"
+gap_kind = "axiom_layer"
+lean_module = "proof-db/discrete/axioms/DiscreteAxioms.lean"
+lean_thm = "Li.ProofDb.Discrete.int_add_comm"
+li_specimen = "proof-db/discrete/lemmas/int_ring_stub.li"
+mathlib_ref = "Mathlib.Data.Int.Basic"
+last_verified_lic_commit = "56726948"

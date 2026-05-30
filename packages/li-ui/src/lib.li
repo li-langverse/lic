@@ -37,10 +37,10 @@ def li_std_ui_version() -> int
 
 def li_std_ui_studio_composables_version() -> int
   requires true
-  ensures result == 5
+  ensures result == 6
   decreases 0
 =
-  return 5
+  return 6
 def color_rgb(r: float, g: float, b: float, a: float) -> Color
   requires r >= 0.0
   requires g >= 0.0
@@ -390,12 +390,55 @@ def studio_palette_result_count_stub() -> int
 =
   return 3
 
+def studio_palette_action_none() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0
+
+def studio_palette_action_focus_inspector() -> int
+  requires true
+  ensures result == 1
+  decreases 0
+=
+  return 1
+
+def studio_palette_action_focus_timeline() -> int
+  requires true
+  ensures result == 2
+  decreases 0
+=
+  return 2
+
+def studio_palette_action_focus_agent() -> int
+  requires true
+  ensures result == 3
+  decreases 0
+=
+  return 3
+
+def studio_palette_action_for_slot(slot: int) -> int
+  requires slot >= 1
+  requires slot <= studio_palette_result_count_stub()
+  ensures result >= studio_palette_action_focus_inspector()
+  ensures result <= studio_palette_action_focus_agent()
+  decreases slot
+=
+  if slot == 1:
+    return studio_palette_action_focus_inspector()
+  if slot == 2:
+    return studio_palette_action_focus_timeline()
+  return studio_palette_action_focus_agent()
+
 type StudioCommandPaletteCompose = object
   public is_open: int
   public backdrop_rect: Rect
   public panel_rect: Rect
   public search_rect: Rect
   public result_count: int
+  public selected_slot: int
+  public last_action_id: int
 
 def studio_palette_backdrop_rect_at(w: float, h: float) -> Rect
   requires w > 0.0
@@ -448,6 +491,8 @@ def studio_compose_palette(w: float, h: float, is_open: int) -> StudioCommandPal
   out.panel_rect = rect_make(0.0, 0.0, 0.0, 0.0)
   out.search_rect = rect_make(0.0, 0.0, 0.0, 0.0)
   out.result_count = 0
+  out.selected_slot = 0
+  out.last_action_id = studio_palette_action_none()
   if is_open == studio_palette_open_flag():
     var backdrop_w: float = w
     var backdrop_h: float = h
@@ -477,6 +522,8 @@ def studio_palette_open(palette: var StudioCommandPaletteCompose, w: float, h: f
   palette.panel_rect = opened.panel_rect
   palette.search_rect = opened.search_rect
   palette.result_count = opened.result_count
+  palette.selected_slot = 0
+  palette.last_action_id = studio_palette_action_none()
 
 def studio_palette_close(palette: var StudioCommandPaletteCompose) -> unit
   requires palette.is_open == studio_palette_open_flag()
@@ -489,6 +536,21 @@ def studio_palette_close(palette: var StudioCommandPaletteCompose) -> unit
   palette.backdrop_rect = rect_make(0.0, 0.0, 0.0, 0.0)
   palette.panel_rect = rect_make(0.0, 0.0, 0.0, 0.0)
   palette.search_rect = rect_make(0.0, 0.0, 0.0, 0.0)
+  palette.selected_slot = 0
+
+def studio_palette_exec_slot(palette: var StudioCommandPaletteCompose, slot: int) -> int
+  requires slot >= 1
+  requires slot <= studio_palette_result_count_stub()
+  requires palette.is_open == studio_palette_open_flag()
+  ensures palette.is_open == studio_palette_closed_flag()
+  ensures palette.last_action_id == studio_palette_action_for_slot(slot)
+  ensures result == palette.last_action_id
+  decreases slot
+=
+  palette.selected_slot = slot
+  palette.last_action_id = studio_palette_action_for_slot(slot)
+  studio_palette_close(palette)
+  return palette.last_action_id
 
 def studio_palette_toggle(palette: var StudioCommandPaletteCompose, w: float, h: float) -> unit
   requires w > 0.0

@@ -1,14 +1,34 @@
-# Proof database schema (v1)
+# Proof database schema (v2)
 [schema]
-version = 1
+version = 2
 entries_root = "docs/verification/proof-database/entries"
 corpus_root = "proof-db/lemmas"
 
+[id_prefixes]
+math = ["M-AX-", "M-LM-"]
+numerics = ["N-AX-", "N-LM-"]
+discrete = ["D-AX-", "D-LM-"]
+statistics = ["ST-AX-", "ST-LM-"]
+ml = ["ML-AX-", "ML-LM-"]
+graph = ["GT-AX-", "GT-LM-"]
+erdos = ["E-"]
+physics = ["P-AX-", "P-LM-"]
+chemistry = ["CHEM-AX-", "CHEM-LM-"]
+biology = ["BIO-AX-", "BIO-LM-"]
+
 [entry_types.axiom]
 required = ["id", "kind", "field", "statement", "proof_status", "lean_module", "last_verified_lic_commit"]
+optional = ["domain", "erdos_id", "erdos_status", "convergence_class", "benchmark_ref", "mathlib_ref", "priority_tier", "gap_id", "gap_kind", "lean_thm", "li_specimen", "bench_refs", "release_pin", "notes"]
 
 [entry_types.lemma]
 required = ["id", "kind", "field", "statement", "proof_status", "lean_module", "last_verified_lic_commit"]
+optional = ["domain", "erdos_id", "erdos_status", "convergence_class", "benchmark_ref", "mathlib_ref", "priority_tier", "gap_id", "gap_kind", "lean_thm", "li_specimen", "bench_refs", "release_pin", "notes"]
 
 [proof_status]
-values = ["proved", "open", "discrepancy", "axiomatic"]
+values = ["proved", "open", "discrepancy", "axiomatic", "target"]
+
+[erdos_status]
+values = ["open", "proved", "disputed", "target"]
+
+[priority_tier]
+values = ["P0", "P1", "P2", "P3"]

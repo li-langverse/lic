@@ -305,6 +305,13 @@ def algo_am_export_gcode_3mf() -> int
 =
   return 610
 
+def algo_auto_sensor_raycast() -> int
+  requires true
+  ensures result == 903
+  decreases 0
+=
+  return 903
+
 def run_result_ok(r: SimRunResult) -> int
   requires true
   ensures result >= 0
@@ -510,6 +517,27 @@ type SimSessionStub = object
   public game_vy: float
   public game_vz: float
   public game_physics_steps: int
+  public env_pool_size: int
+  public env_pool_steps_emitted: int
+  public env_pool_total_reward: float
+  public env_last_obs0: float
+  public env_last_obs1: float
+  public env_last_obs2: float
+  public env_last_obs3: float
+  public env_last_obs4: float
+  public env_last_obs5: float
+  public env_last_obs6: float
+  public env_last_obs7: float
+  public env_last_reward: float
+  public env_last_done: int
+  public env_last_env_index: int
+  public sensor_bus_size: int
+  public sensor_rays_emitted: int
+  public sensor_last_hit0: float
+  public sensor_last_hit1: float
+  public sensor_last_hit2: float
+  public sensor_last_hit3: float
+  public sensor_last_raycast_id: int
 
 def sim_session_stub_default() -> SimSessionStub
   requires true
@@ -524,6 +552,12 @@ def sim_session_stub_default() -> SimSessionStub
   ensures result.game_px == 0.0
   ensures result.game_pz == 0.0
   ensures result.game_physics_steps == 0
+  ensures result.env_pool_size == 0
+  ensures result.env_pool_steps_emitted == 0
+  ensures result.env_pool_total_reward == 0.0
+  ensures result.sensor_bus_size == 0
+  ensures result.sensor_rays_emitted == 0
+  ensures result.sensor_last_raycast_id == 0
   decreases 0
 =
   var s: SimSessionStub
@@ -542,6 +576,27 @@ def sim_session_stub_default() -> SimSessionStub
   s.game_vy = 0.0
   s.game_vz = 0.0
   s.game_physics_steps = 0
+  s.env_pool_size = 0
+  s.env_pool_steps_emitted = 0
+  s.env_pool_total_reward = 0.0
+  s.env_last_obs0 = 0.0
+  s.env_last_obs1 = 0.0
+  s.env_last_obs2 = 0.0
+  s.env_last_obs3 = 0.0
+  s.env_last_obs4 = 0.0
+  s.env_last_obs5 = 0.0
+  s.env_last_obs6 = 0.0
+  s.env_last_obs7 = 0.0
+  s.env_last_reward = 0.0
+  s.env_last_done = 0
+  s.env_last_env_index = 0
+  s.sensor_bus_size = 0
+  s.sensor_rays_emitted = 0
+  s.sensor_last_hit0 = 0.0
+  s.sensor_last_hit1 = 0.0
+  s.sensor_last_hit2 = 0.0
+  s.sensor_last_hit3 = 0.0
+  s.sensor_last_raycast_id = 0
   return s
 
 def sim_session_replay_record(session: var SimSessionStub) -> unit
@@ -573,6 +628,10 @@ def sim_reset(session: var SimSessionStub) -> int
   ensures session.game_px == 0.0
   ensures session.game_pz == 0.0
   ensures session.game_physics_steps == 0
+  ensures session.env_pool_steps_emitted == 0
+  ensures session.env_pool_total_reward == 0.0
+  ensures session.sensor_rays_emitted == 0
+  ensures session.sensor_last_raycast_id == 0
   decreases 0
 =
   session.tick = 0
@@ -586,6 +645,25 @@ def sim_reset(session: var SimSessionStub) -> int
   session.game_vy = 0.0
   session.game_vz = 0.0
   session.game_physics_steps = 0
+  session.env_pool_steps_emitted = 0
+  session.env_pool_total_reward = 0.0
+  session.env_last_obs0 = 0.0
+  session.env_last_obs1 = 0.0
+  session.env_last_obs2 = 0.0
+  session.env_last_obs3 = 0.0
+  session.env_last_obs4 = 0.0
+  session.env_last_obs5 = 0.0
+  session.env_last_obs6 = 0.0
+  session.env_last_obs7 = 0.0
+  session.env_last_reward = 0.0
+  session.env_last_done = 0
+  session.env_last_env_index = 0
+  session.sensor_rays_emitted = 0
+  session.sensor_last_hit0 = 0.0
+  session.sensor_last_hit1 = 0.0
+  session.sensor_last_hit2 = 0.0
+  session.sensor_last_hit3 = 0.0
+  session.sensor_last_raycast_id = 0
   return sim_status_ok()
 
 def sim_step(session: var SimSessionStub, dt: float) -> int
@@ -679,6 +757,96 @@ def env_pool_stub_default() -> EnvPoolStub
   p.steps_emitted = 0
   p.total_reward = 0.0
   return p
+
+def sim_env_obs_dim() -> int
+  requires true
+  ensures result == 8
+  decreases 0
+=
+  return 8
+
+def sim_session_env_pool_init(session: var SimSessionStub) -> unit
+  requires true
+  ensures session.env_pool_size == sim_rl_env_pool_size_default()
+  ensures session.env_pool_steps_emitted == 0
+  ensures session.env_pool_total_reward == 0.0
+  decreases 0
+=
+  session.env_pool_size = sim_rl_env_pool_size_default()
+  session.env_pool_steps_emitted = 0
+  session.env_pool_total_reward = 0.0
+
+def sim_session_env_pool_load(session: SimSessionStub) -> EnvPoolStub
+  requires session.env_pool_size > 0
+  ensures result.pool_size == session.env_pool_size
+  ensures result.steps_emitted == session.env_pool_steps_emitted
+  ensures result.total_reward == session.env_pool_total_reward
+  decreases 0
+=
+  var p: EnvPoolStub
+  p.pool_size = session.env_pool_size
+  p.steps_emitted = session.env_pool_steps_emitted
+  p.total_reward = session.env_pool_total_reward
+  return p
+
+def sim_session_env_pool_store(session: var SimSessionStub, pool: EnvPoolStub) -> unit
+  requires pool.pool_size > 0
+  ensures session.env_pool_size == pool.pool_size
+  ensures session.env_pool_steps_emitted == pool.steps_emitted
+  ensures session.env_pool_total_reward == pool.total_reward
+  decreases 0
+=
+  session.env_pool_size = pool.pool_size
+  session.env_pool_steps_emitted = pool.steps_emitted
+  session.env_pool_total_reward = pool.total_reward
+
+def env_obs_store_on_session(session: var SimSessionStub, post: EnvStepResult) -> unit
+  requires true
+  ensures session.env_last_obs0 == post.obs0
+  ensures session.env_last_obs1 == post.obs1
+  ensures session.env_last_reward == post.reward
+  ensures session.env_last_done == post.done
+  ensures session.env_last_env_index == post.env_index
+  decreases 0
+=
+  session.env_last_obs0 = post.obs0
+  session.env_last_obs1 = post.obs1
+  session.env_last_obs2 = post.obs2
+  session.env_last_obs3 = post.obs3
+  session.env_last_obs4 = post.obs4
+  session.env_last_obs5 = post.obs5
+  session.env_last_obs6 = post.obs6
+  session.env_last_obs7 = post.obs7
+  session.env_last_reward = post.reward
+  session.env_last_done = post.done
+  session.env_last_env_index = post.env_index
+
+def env_obs_from_session(session: SimSessionStub) -> EnvStepResult
+  requires true
+  ensures result.obs0 == session.env_last_obs0
+  ensures result.obs1 == session.env_last_obs1
+  ensures result.reward == session.env_last_reward
+  ensures result.done == session.env_last_done
+  ensures result.env_index == session.env_last_env_index
+  decreases 0
+=
+  var r: EnvStepResult
+  r.obs0 = session.env_last_obs0
+  r.obs1 = session.env_last_obs1
+  r.obs2 = session.env_last_obs2
+  r.obs3 = session.env_last_obs3
+  r.obs4 = session.env_last_obs4
+  r.obs5 = session.env_last_obs5
+  r.obs6 = session.env_last_obs6
+  r.obs7 = session.env_last_obs7
+  r.act0 = 0.0
+  r.act1 = 0.0
+  r.act2 = 0.0
+  r.act3 = 0.0
+  r.reward = session.env_last_reward
+  r.done = session.env_last_done
+  r.env_index = session.env_last_env_index
+  return r
 
 def env_tick_as_float(tick: int) -> float
   requires tick >= 0
@@ -847,6 +1015,7 @@ def env_pool_stub_step(pool: var EnvPoolStub, session: var SimSessionStub, dt: f
     var post: EnvStepResult = env_step_contract_post(pre, tick1, last_dt1, psz)
     pool.total_reward = pool.total_reward + post.reward
     pool.steps_emitted = pool.steps_emitted + 1
+    env_obs_store_on_session(session, post)
     i = i + 1
   return sim_status_ok()
 
@@ -860,14 +1029,24 @@ def sim_rl_session_env_pool_step(session: var SimSessionStub, dt: float) -> int
 =
   if dt <= 0.0:
     return sim_status_invalid_dt()
-  var pool: EnvPoolStub = env_pool_stub_default()
+  if session.env_pool_size <= 0:
+    sim_session_env_pool_init(session)
+  var steps_before: int = session.env_pool_steps_emitted
+  var pool: EnvPoolStub = sim_session_env_pool_load(session)
   if env_pool_stub_step(pool, session, dt) != sim_status_ok():
     return sim_status_invalid_dt()
-  if pool.steps_emitted != pool.pool_size:
+  sim_session_env_pool_store(session, pool)
+  var psz: int = session.env_pool_size
+  if session.env_pool_steps_emitted != steps_before + psz:
     return sim_status_invalid_dt()
-  if pool.total_reward <= 0.0:
+  if session.env_pool_total_reward <= 0.0:
     return sim_status_invalid_dt()
-  if sim_session_replay_last_tick(session) != pool.pool_size:
+  if sim_session_replay_last_tick(session) != session.tick:
+    return sim_status_invalid_dt()
+  var obs: EnvStepResult = env_obs_from_session(session)
+  if obs.obs1 != session.last_dt:
+    return sim_status_invalid_dt()
+  if obs.env_index != psz - 1:
     return sim_status_invalid_dt()
   return sim_status_ok()
 

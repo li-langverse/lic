@@ -24,11 +24,11 @@ todos:
 
 - id: orch-r3-missing-package-sweep
   content: "Sweep missing_std_modules + seed line_profiler; ensure ecosystem-package-backlog todos pending"
-  status: completed
+  status: pending
 
 - id: orch-r4-ui-ux-signals
   content: "Surface studio-ui-ux / gui_ux_tester signals as ui_ux gaps; link studio backlog if needed"
-  status: completed
+  status: pending
 
 ---
 

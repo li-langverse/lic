@@ -104,6 +104,8 @@ nav:
       - Upstream notifications: ecosystem/upstream-notifications.md
       - Official packages: ecosystem/official-packages.md
       - HTTPd prerequisites: ecosystem/httpd-prerequisites.md
+      - Plan cross-links: ecosystem/plan-cross-links.md
+      - Satellite handbook Pages: ecosystem/satellite-handbook-pages.md
   - Language handbook:
       - li.toml manifest: language/li-toml.md
       - Overview: language/overview.md

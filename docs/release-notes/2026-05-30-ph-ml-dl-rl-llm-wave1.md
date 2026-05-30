@@ -25,4 +25,6 @@ Wave 1 tranche: CPU matmul spine in li-ml, li-ml-rl EnvPool re-export, PH-ML pro
 
 ## Branch
 
-cursor/ph-ml-dl-rl-llm-wave1 — PR https://github.com/li-langverse/lic/pull/492
+Swarm run: `code_implementer-1780121552859` · agent: `code_implementer`
+
+Verification run 2026-05-30: progress + completion gates exit 0 (smoke paths; `lic check` deferred without local compiler build).

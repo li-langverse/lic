@@ -243,13 +243,16 @@ struct EmitCtx {
       fma_fn = llvm::Intrinsic::getOrInsertDeclaration(module, llvm::Intrinsic::fmuladd, {f64});
     }
 
-    const bool vectorize_j = (n % 4) == 0;
-    llvm::FixedVectorType* f64x4 = vectorize_j ? llvm::FixedVectorType::get(f64, 4) : nullptr;
+    const unsigned vec_lanes =
+        (n <= 256 && (n % 8) == 0) ? 8u : ((n % 4) == 0 ? 4u : 0u);
+    const bool vectorize_j = vec_lanes > 0;
+    llvm::FixedVectorType* f64xn =
+        vectorize_j ? llvm::FixedVectorType::get(f64, vec_lanes) : nullptr;
     if (vectorize_j && fma_fn != nullptr) {
       fma_vec_fn = llvm::Intrinsic::getOrInsertDeclaration(module, llvm::Intrinsic::fmuladd,
-                                                           {f64x4});
+                                                           {f64xn});
     }
-    llvm::Value* vec_step = llvm::ConstantInt::get(i32t, 4);
+    llvm::Value* vec_step = llvm::ConstantInt::get(i32t, vec_lanes);
 
     emit_idx_for(i_s, lim_m, [&](llvm::Value* i) {
       emit_idx_for(t_s, lim_k, [&](llvm::Value* t) {
@@ -258,9 +261,9 @@ struct EmitCtx {
           emit_idx_for_step(j_s, lim_n, vec_step, [&](llvm::Value* j) {
             llvm::Value* cp = matmul_gep2d(c_mat, i, j);
             llvm::Value* bp = matmul_gep2d(b_mat, t, j);
-            llvm::Value* cv = builder->CreateAlignedLoad(f64x4, cp, llvm::Align(8));
-            llvm::Value* bv = builder->CreateAlignedLoad(f64x4, bp, llvm::Align(8));
-            llvm::Value* av = builder->CreateVectorSplat(4, aik);
+            llvm::Value* cv = builder->CreateAlignedLoad(f64xn, cp, llvm::Align(8));
+            llvm::Value* bv = builder->CreateAlignedLoad(f64xn, bp, llvm::Align(8));
+            llvm::Value* av = builder->CreateVectorSplat(vec_lanes, aik);
             if (fma_vec_fn != nullptr) {
               builder->CreateAlignedStore(builder->CreateCall(fma_vec_fn, {av, bv, cv}), cp,
                                         llvm::Align(8));

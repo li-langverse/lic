@@ -156,6 +156,44 @@ bool matrix_slot_dims(const std::string& name, MatrixDims* out) {
   return true;
 }
 
+MirInsn make_matmul2d_insn(const std::string& dest, const std::string& a, const std::string& b,
+                             std::int64_t m, std::int64_t k, std::int64_t n,
+                             bool skip_zero = false) {
+  MirInsn mm;
+  mm.op = MirOp::ArrayMatMul2DF64;
+  mm.ident = dest;
+  mm.lhs_ident = a;
+  mm.rhs_ident = b;
+  mm.int_value = m;
+  mm.rhs_int = k;
+  mm.lhs_int = n;
+  mm.use_loaded_int = skip_zero;
+  return mm;
+}
+
+MirInsn make_matmul2d_blocked_insn(const std::string& dest, const std::string& a,
+                                   const std::string& b, std::int64_t n, std::int64_t bk) {
+  MirInsn mm;
+  mm.op = MirOp::ArrayMatMulBlocked2DF64;
+  mm.ident = dest;
+  mm.lhs_ident = a;
+  mm.rhs_ident = b;
+  mm.int_value = n;
+  mm.rhs_int = bk;
+  return mm;
+}
+
+void push_matmul2d_blocked(std::vector<MirInsn>& out, const std::string& dest, const std::string& a,
+                           const std::string& b, std::int64_t n, std::int64_t bk) {
+  out.push_back(make_matmul2d_blocked_insn(dest, a, b, n, bk));
+}
+
+void push_matmul2d(std::vector<MirInsn>& out, const std::string& dest, const std::string& a,
+                   const std::string& b, std::int64_t m, std::int64_t k, std::int64_t n,
+                   bool skip_zero = false) {
+  out.push_back(make_matmul2d_insn(dest, a, b, m, k, n, skip_zero));
+}
+
 bool parse_matrix_index_pair(const Expr& row_index, const Expr& col_index, MirInsn& ins) {
   if (row_index.kind == Expr::Kind::IntLit) {
     ins.index_is_literal = true;
@@ -1201,15 +1239,7 @@ std::string lower_expr_to(const Expr& e, const Module& module, std::vector<MirIn
             g_arr_ctx->matrix_names->insert(dest);
           }
           g_arr_ctx->matrix_dims[dest] = MatrixDims{da.rows, db.cols};
-          MirInsn mm;
-          mm.op = MirOp::ArrayMatMul2DF64;
-          mm.ident = dest;
-          mm.lhs_ident = e.lhs->ident;
-          mm.rhs_ident = e.rhs->ident;
-          mm.int_value = da.rows;
-          mm.rhs_int = da.cols;
-          mm.lhs_int = db.cols;
-          out.push_back(std::move(mm));
+          push_matmul2d(out, dest, e.lhs->ident, e.rhs->ident, da.rows, da.cols, db.cols);
           return dest;
         }
         const std::string dest =
@@ -1690,15 +1720,8 @@ void lower_stmt(const Stmt& stmt, LowerCtx& ctx, bool returns_float, std::vector
             if (matrix_slot_dims(stmt.init->lhs->ident, &da) &&
                 matrix_slot_dims(stmt.init->rhs->ident, &db) && da.cols == db.rows &&
                 da.rows == m_rows && db.cols == m_cols) {
-              MirInsn mm;
-              mm.op = MirOp::ArrayMatMul2DF64;
-              mm.ident = stmt.var_name;
-              mm.lhs_ident = stmt.init->lhs->ident;
-              mm.rhs_ident = stmt.init->rhs->ident;
-              mm.int_value = m_rows;
-              mm.rhs_int = da.cols;
-              mm.lhs_int = m_cols;
-              out.push_back(std::move(mm));
+              push_matmul2d(out, stmt.var_name, stmt.init->lhs->ident, stmt.init->rhs->ident,
+                            m_rows, da.cols, m_cols);
             }
           }
         } else {
@@ -1932,15 +1955,8 @@ void lower_stmt(const Stmt& stmt, LowerCtx& ctx, bool returns_float, std::vector
             matrix_slot_dims(stmt.expr->lhs->ident, &da) &&
             matrix_slot_dims(stmt.expr->rhs->ident, &db) && da.cols == db.rows &&
             dc.rows == da.rows && dc.cols == db.cols) {
-          MirInsn mm;
-          mm.op = MirOp::ArrayMatMul2DF64;
-          mm.ident = stmt.init->ident;
-          mm.lhs_ident = stmt.expr->lhs->ident;
-          mm.rhs_ident = stmt.expr->rhs->ident;
-          mm.int_value = dc.rows;
-          mm.rhs_int = da.cols;
-          mm.lhs_int = dc.cols;
-          out.push_back(std::move(mm));
+          push_matmul2d(out, stmt.init->ident, stmt.expr->lhs->ident, stmt.expr->rhs->ident,
+                        dc.rows, da.cols, dc.cols, /*skip_zero=*/true);
           break;
         }
       } else if (stmt.init && stmt.init->kind == Expr::Kind::FieldAccess && stmt.expr) {

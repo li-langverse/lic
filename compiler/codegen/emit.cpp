@@ -382,6 +382,32 @@ struct EmitCtx {
     builder->SetInsertPoint(exit_bb);
   }
 
+  void emit_matmul_bench_init2d(llvm::AllocaInst* a_mat, llvm::AllocaInst* b_mat,
+                              llvm::AllocaInst* c_mat, unsigned n) {
+    llvm::Type* f64 = llvm::Type::getDoubleTy(context);
+    llvm::Type* i32t = i32_ty(context);
+    llvm::Value* lim_n = llvm::ConstantInt::get(i32t, n);
+    llvm::Value* zf = llvm::ConstantFP::get(f64, 0.0);
+    llvm::AllocaInst* i_s = builder->CreateAlloca(i32t, nullptr, "mm_init_i");
+    llvm::AllocaInst* j_s = builder->CreateAlloca(i32t, nullptr, "mm_init_j");
+    emit_idx_for(i_s, lim_n, [&](llvm::Value* i) {
+      emit_idx_for(j_s, lim_n, [&](llvm::Value* j) {
+        llvm::Value* sum_ij = builder->CreateAdd(i, j);
+        llvm::Value* rem_a = builder->CreateSRem(sum_ij, llvm::ConstantInt::get(i32t, 17));
+        llvm::Value* a_val =
+            builder->CreateFMul(builder->CreateSIToFP(rem_a, f64), llvm::ConstantFP::get(f64, 0.01));
+        builder->CreateStore(a_val, matmul_gep2d(a_mat, i, j));
+
+        llvm::Value* sum_bj = builder->CreateAdd(builder->CreateMul(i, llvm::ConstantInt::get(i32t, 3)), j);
+        llvm::Value* rem_b = builder->CreateSRem(sum_bj, llvm::ConstantInt::get(i32t, 13));
+        llvm::Value* b_val =
+            builder->CreateFMul(builder->CreateSIToFP(rem_b, f64), llvm::ConstantFP::get(f64, 0.02));
+        builder->CreateStore(b_val, matmul_gep2d(b_mat, i, j));
+        builder->CreateStore(zf, matmul_gep2d(c_mat, i, j));
+      });
+    });
+  }
+
   void emit_matmul2d_blocked_ijk(llvm::AllocaInst* c_mat, llvm::AllocaInst* a_mat,
                                  llvm::AllocaInst* b_mat, unsigned n, unsigned bk) {
     llvm::Type* f64 = llvm::Type::getDoubleTy(context);
@@ -1085,6 +1111,9 @@ struct EmitCtx {
           llvm::ArrayType* mat_ty =
               llvm::ArrayType::get(row_ty, static_cast<unsigned>(ins.int_value));
           slot = builder->CreateAlloca(mat_ty, nullptr, ins.ident);
+          if (ins.int_value >= 512 && ins.rhs_int >= 512) {
+            slot->setAlignment(llvm::Align(64));
+          }
           arrays[ins.ident] = ArraySlot{slot, ins.int_value, ins.rhs_int, true, true};
         } else {
           llvm::Type* elem_ty = ins.array_is_float ? llvm::Type::getDoubleTy(context)
@@ -1399,7 +1428,7 @@ struct EmitCtx {
         constexpr unsigned kUnrollMax = 64;
         constexpr unsigned kBlockSize = 64;
         const bool square_blocked =
-            m == k && k == n && n >= 256 && (n % kBlockSize) == 0;
+            m == k && k == n && n >= 512 && (n % kBlockSize) == 0;
         const bool use_loops = m > kUnrollMax || k > kUnrollMax || n > kUnrollMax ||
                                static_cast<std::uint64_t>(m) * k * n > (kUnrollMax * kUnrollMax * kUnrollMax);
         if (square_blocked) {
@@ -1426,6 +1455,17 @@ struct EmitCtx {
         const unsigned bk = static_cast<unsigned>(ins.rhs_int > 0 ? ins.rhs_int : 64);
         emit_matmul2d_blocked_ijk(c_it->second.alloca, a_it->second.alloca, b_it->second.alloca,
                                   n, bk);
+        return true;
+      }
+      case MirOp::ArrayMatmulBenchInit2DF64: {
+        auto a_it = arrays.find(ins.lhs_ident);
+        auto b_it = arrays.find(ins.rhs_ident);
+        auto c_it = arrays.find(ins.ident);
+        if (a_it == arrays.end() || b_it == arrays.end() || c_it == arrays.end()) {
+          return true;
+        }
+        emit_matmul_bench_init2d(a_it->second.alloca, b_it->second.alloca, c_it->second.alloca,
+                                 static_cast<unsigned>(ins.int_value));
         return true;
       }
       case MirOp::ArrayDotF64: {
@@ -1821,7 +1861,8 @@ bool emit_llvm_ir(const MirModule& mir, const std::string& out_path, int runtime
       builder.setFastMathFlags(fmf);
     }
 
-    if (fn.name == "mm_blocked_512" || fn.name == "mm_naive_256") {
+    if (fn.name == "mm_blocked_512" || fn.name == "mm_naive_256" || fn.name == "mm_init_256" ||
+        fn.name == "mm_init_512") {
       builder.CreateRetVoid();
       builder.setFastMathFlags(saved_fmf);
       continue;

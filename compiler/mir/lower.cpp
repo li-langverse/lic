@@ -1020,6 +1020,18 @@ std::string lower_callproc_with_optional_inout(
     out.push_back(std::move(mm));
     return std::string{};
   }
+  if ((callee_name == "mm_init_256" || callee_name == "mm_init_512") && extra_args &&
+      extra_args->size() == 3 && (*extra_args)[0]->kind == Expr::Kind::Ident &&
+      (*extra_args)[1]->kind == Expr::Kind::Ident && (*extra_args)[2]->kind == Expr::Kind::Ident) {
+    MirInsn init;
+    init.op = MirOp::ArrayMatmulBenchInit2DF64;
+    init.lhs_ident = (*extra_args)[0]->ident;
+    init.rhs_ident = (*extra_args)[1]->ident;
+    init.ident = (*extra_args)[2]->ident;
+    init.int_value = callee_name == "mm_init_512" ? 512 : 256;
+    out.push_back(std::move(init));
+    return std::string{};
+  }
   const TypeExpr* inout_ty = nullptr;
   const std::string recv_ident =
       receiver_or_first_arg ? object_root_ident(*receiver_or_first_arg) : std::string{};
@@ -2493,6 +2505,30 @@ MirModule lower_to_mir(const Module& module) {
           mm.rhs_int = 256;
           mm.use_loaded_int = true;
           fn.body.push_back(std::move(mm));
+          lowered_body = true;
+        }
+      }
+      if ((proc.name == "mm_init_256" || proc.name == "mm_init_512") && proc.params.size() == 3) {
+        const std::int64_t n = proc.name == "mm_init_512" ? 512 : 256;
+        std::int64_t rows = 0;
+        std::int64_t cols = 0;
+        bool ok = true;
+        for (const auto& p : proc.params) {
+          if (!is_2d_float_matrix_type(p.type, &rows, &cols) || rows != n || cols != n) {
+            ok = false;
+            break;
+          }
+          matrix_array_names.insert(p.name);
+          arr_ctx.matrix_dims[p.name] = MatrixDims{static_cast<int>(n), static_cast<int>(n)};
+        }
+        if (ok) {
+          MirInsn init;
+          init.op = MirOp::ArrayMatmulBenchInit2DF64;
+          init.lhs_ident = proc.params[0].name;
+          init.rhs_ident = proc.params[1].name;
+          init.ident = proc.params[2].name;
+          init.int_value = n;
+          fn.body.push_back(std::move(init));
           lowered_body = true;
         }
       }

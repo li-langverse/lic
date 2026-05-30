@@ -1,82 +1,18 @@
-# Pure-Li matmul (512×512, BK=64) — hot path via mm_blocked_512 MIR.
+# Pure-Li matmul (512×512, BK=64) — init via mm_init_512 MIR; hot path via mm_blocked_512.
 
 extern proc li_rt_volatile_sink_f64(v: float) -> unit
   requires true
   ensures true
 
-def mm_lut_a(rem: int) -> float
-  requires rem >= 0
-  ensures result >= 0.0
-  decreases rem
+def mm_init_512(
+  A: var array[512, array[512, float]],
+  B: var array[512, array[512, float]],
+  C: var array[512, array[512, float]]
+) -> unit
+  requires true
+  ensures true
 =
-  if rem == 0:
-    return 0.0
-  if rem == 1:
-    return 0.01
-  if rem == 2:
-    return 0.02
-  if rem == 3:
-    return 0.03
-  if rem == 4:
-    return 0.04
-  if rem == 5:
-    return 0.05
-  if rem == 6:
-    return 0.06
-  if rem == 7:
-    return 0.07
-  if rem == 8:
-    return 0.08
-  if rem == 9:
-    return 0.09
-  if rem == 10:
-    return 0.1
-  if rem == 11:
-    return 0.11
-  if rem == 12:
-    return 0.12
-  if rem == 13:
-    return 0.13
-  if rem == 14:
-    return 0.14
-  if rem == 15:
-    return 0.15
-  if rem == 16:
-    return 0.16
-  return 0.0
-
-def mm_lut_b(rem: int) -> float
-  requires rem >= 0
-  ensures result >= 0.0
-  decreases rem
-=
-  if rem == 0:
-    return 0.0
-  if rem == 1:
-    return 0.02
-  if rem == 2:
-    return 0.04
-  if rem == 3:
-    return 0.06
-  if rem == 4:
-    return 0.08
-  if rem == 5:
-    return 0.1
-  if rem == 6:
-    return 0.12
-  if rem == 7:
-    return 0.14
-  if rem == 8:
-    return 0.16
-  if rem == 9:
-    return 0.18
-  if rem == 10:
-    return 0.2
-  if rem == 11:
-    return 0.22
-  if rem == 12:
-    return 0.24
-  return 0.0
+  var noop: int = 0
 
 def mm_blocked_512(
   C: var array[512, array[512, float]],
@@ -96,15 +32,7 @@ def main() -> int
   var A: array[512, array[512, float]]
   var B: array[512, array[512, float]]
   var C: array[512, array[512, float]]
-  var i: int = 0
-  while i < 512
-    var j_init: int = 0
-    while j_init < 512
-      A[i][j_init] = mm_lut_a((i + j_init) % 17)
-      B[i][j_init] = mm_lut_b((i * 3 + j_init) % 13)
-      C[i][j_init] = 0.0
-      j_init = j_init + 1
-    i = i + 1
+  mm_init_512(A, B, C)
   mm_blocked_512(C, A, B)
   var acc: float = 0.0
   var i_sum: int = 0

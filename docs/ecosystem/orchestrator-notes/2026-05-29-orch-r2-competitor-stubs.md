@@ -2,9 +2,9 @@
 
 **Date:** 2026-05-29  
 **Agent:** `swarm_observer`  
-**Research goal:** `swarm_coverage`  
-**Branch:** `cursor/swarm-observer-plan-loop`  
-**Work item:** Ingest `verticals.toml` stubs + ecosystem explorer catalog gaps as `competitor_feature` rows; apply backlog patches.
+**Research goal:** `swarm_coverage` (`li-cursor-agents/config/research-goals.yaml`)  
+**Branch:** `feat/world-studio-wave3-agentic` (lic working tree)  
+**north_star_fit:** ecosystem + ai — gap registry drives numerics/bench handoffs without new systemd loops
 
 ---
 
@@ -12,13 +12,13 @@
 
 | Field | Value |
 |-------|-------|
-| Swarm posture | **Degraded** (ecosystem grade **D**, 60.3; `unattended_safe: false`) |
-| `competitor_feature` open | **30** (stable after ingest) |
-| Ingest delta | `verticals_stubs: 0`, `competitor_catalog: 0` — rows already present |
-| Apply delta | **8** vertical-stub rows appended to `sim-md-research-backlog.md` |
-| Unattended? | **No** — 35 failing PRs, supervisor reconcile noise in DB |
+| Swarm posture | **Degraded** — ecosystem grade **D** (66.1), `unattended_safe: false` |
+| Gap registry (post-ingest) | **79** gaps; **54 open** (`missing_package` 3, `plan_debt` 21, `competitor_feature` 30) |
+| `competitor_feature` | **30 open** — catalog + vertical stubs + tier-1 red rows (ingest added 0 new this cycle; rows already present) |
+| Vertical stub ingest | **0** from `verticals.toml` on disk — `benchmarks/competitive/verticals.toml` missing on benchmarks `main` |
+| Unattended? | **No** — 106 runs stuck `running`, 21% terminal error rate, 36 failing PRs |
 
-`orch-r2-competitor-stubs` is **complete** for registry ingest + backlog apply. Remaining competitor rows route to `gap_explorer`, `numerics_researcher`, and sim/httpd implement goals — not new lic systemd loops.
+`orch-r2` reconciled registry ↔ apply pipeline: competitor rows hand off to `numerics_researcher` / `bench_improver`; vertical stubs patched into `sim-md-research-backlog.md`.
 
 ---
 
@@ -26,54 +26,60 @@
 
 ```bash
 cd lic
-python3 scripts/swarm-gap-ingest.py    # 79 gaps in file; +0 verticals_stubs this pass
+python3 scripts/swarm-gap-ingest.py
 python3 scripts/swarm-gap-apply-actions.py
 ```
 
-**Outputs:**
-
-- `lic/data/swarm-gap-registry/registry.yaml` — `updated_at: 2026-05-29T10:53:00Z`
-- `benchmarks/data/latest/swarm-gap-actions.json` — `open_gaps: 54` (30 `competitor_feature`)
+**Ingest stdout:** `registry gaps: 79 ({'missing_package': 5, 'plan_debt': 44, 'competitor_feature': 30}) added={..., 'verticals_stubs': 0}`  
+**Apply output:** `benchmarks/data/latest/swarm-gap-actions.json` — 18 backlog patches (3 package, 6 sim plan_debt, 9 vertical competitor append)
 
 ---
 
-## Registry: competitor / vertical coverage
+## Gap counts by `gap_kind` (open)
 
-| Source | Rows | Status |
-|--------|------|--------|
-| `gap-vertical-stub-*` (MD, PDE, FEA, CFD, drug, bio, viz, cinematic, mmo, qm) | 12+ in registry | `open`, `gap_kind: competitor_feature` |
-| `gap-competitor-*` (catalog, chapel, pure_li, etc.) | remainder of 30 | `open` |
-| `verticals.toml` on benchmarks main | infra gap if missing on main | track via `gap_explorer` / docs PR |
-
-**Ingest:** No new stub rows — prior passes (2026-05-25 r0/r1) already ingested verticals + explorer catalog.
-
-**Apply (this pass):** Appended competitor gap refs to `docs/ecosystem/sim-md-research-backlog.md` for:
-
-- `gap-vertical-stub-md-lennard-jones`
-- `gap-vertical-stub-drug-litl`, `bio-litl`, `scientific-viz`
-- `gap-vertical-stub-cinematic-encode`, `color-grade`, `audio-sync`
-- `gap-vertical-stub-mmo-shard`, `qm-dft`
-
-Evidence: `benchmarks/data/latest/swarm-gap-actions.json` (`patch: appended gap-competitor-…`).
+| `gap_kind` | Open | Primary discoverer | Orchestrator action |
+|------------|-----:|--------------------|---------------------|
+| `competitor_feature` | 30 | `gap_explorer` | Handoffs to research/implement goals; no lic product code |
+| `plan_debt` | 21 | `plan_verifier`, snapshot | 6 sim backlogs patched; master_plan rows deferred |
+| `missing_package` | 3 | `gap_explorer` | `ecosystem-package-backlog.md` todos pending |
 
 ---
 
-## Handoffs (swarm goals — no new agent ids)
+## Competitor_feature highlights
 
-| Gap kind | Route to | Notes |
-|----------|----------|-------|
-| `competitor_feature` (sim verticals) | `numerics_researcher`, `bench_improver` via implement goals | sim-algo / sim-md backlogs patched |
-| `competitor_feature` (httpd tier5) | `bug_fixer`, httpd runner `plan_pending` | existing httpd plan-loop runner |
-| `competitor_feature` (studio/cinematic) | `studio_ui_ux_builder` when `orch-r4` runs | deferred ui_ux linkage |
+| Gap id | Title | Handoff |
+|--------|-------|---------|
+| `gap-benchmark-red-matmul-naive-tier1` | matmul_naive 1.73× vs cpp | `bench_improver`, `numerics_researcher` |
+| `gap-benchmark-red-num-gmres-tier1` | num_gmres 1.68× vs cpp | `numerics_researcher` |
+| `gap-infra-verticals-toml-missing-benchmarks-main` | verticals.toml missing on benchmarks main | `gap_explorer`, `docs_maintainer` |
+| `gap-vertical-stub-md-lennard-jones` | MD vertical stub honesty | `numerics_researcher` → `sim-md-research-backlog.md` |
+| `gap-hpc-kokkos-execution-memory-spaces` | Kokkos-class execution | `numerics_researcher`, `issue_planner` |
 
-Do **not** install `install-goal-plan-loop-systemd.sh` for retired loops — see `docs/ecosystem/swarm-architecture.md`.
+**Blocker:** `gap-infra-verticals-toml-missing-benchmarks-main` — merge or cherry-pick `benchmarks/competitive/verticals.toml` so future ingest cycles populate stub rows automatically.
 
 ---
 
-## Registry closure
+## Backlog patches (apply-actions)
 
-- Close `gap-plan-pending-swarm-observer-orch-r2-competitor-stubs` (`plan_debt`) → `status: closed`
-- Mark `orch-r2-competitor-stubs` **completed** in `docs/ecosystem/swarm-observer-plan-backlog.md`
+| Target | Action |
+|--------|--------|
+| `docs/ecosystem/sim-md-research-backlog.md` | Appended 9 `gap_orchestrator` vertical stub todos |
+| `docs/ecosystem/sim-algorithm-backlog.md` | `sim-p1-*`, `sim-p2-qm-dft-scf` → pending |
+| `docs/ecosystem/sim-md-research-backlog.md` | `md-r3-oracle-plan` → pending |
+| `docs/ecosystem/ecosystem-package-backlog.md` | line_profiler, std.summary, std.plot → pending |
+
+**Systemd:** None — swarm goals only (`research-goals.yaml` `swarm_coverage`, `stdlib_numerics`, etc.).
+
+---
+
+## Swarm routing (no new agent ids)
+
+| Work | Route |
+|------|-------|
+| Tier-1 red microbenches | `bench_improver` + `numerics_researcher` via implement goals |
+| Vertical stub research | `numerics_researcher` / `autoresearch` — sim-md backlog todos |
+| verticals.toml on main | Human or `code_implementer` PR on **benchmarks** (not lic product) |
+| Package seeds | `issue_planner` ← `ecosystem-package-backlog.md` |
 
 ---
 
@@ -82,13 +88,5 @@ Do **not** install `install-goal-plan-loop-systemd.sh` for retired loops — see
 - `lic/data/swarm-gap-registry/registry.yaml`
 - `benchmarks/data/latest/swarm-gap-actions.json`
 - `benchmarks/data/latest/ecosystem-quality-report.json`
-- `benchmarks/data/runs/swarm_observer-2026-05-29-swarm-coverage.md`
-- `lic/docs/ecosystem/sim-md-research-backlog.md`
-
----
-
-## Deferred
-
-- `orch-r3-missing-package-sweep` — 3 open `missing_package` gaps (line_profiler, std.summary, std.plot)
-- `orch-r4-ui-ux-signals` — studio-ui-ux / `gui_ux_tester` → `ui_ux` registry rows
-- benchmarks `verticals.toml` on **main** if branch-only — human/docs_maintainer PR
+- `benchmarks/data/latest/agent-briefing.json`
+- `li-cursor-agents/data/runs/swarm_observer-1780048585287.md`

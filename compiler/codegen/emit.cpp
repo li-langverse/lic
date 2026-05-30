@@ -250,6 +250,143 @@ struct EmitCtx {
     });
   }
 
+  void emit_matmul2d_blocked_ijk(llvm::AllocaInst* c_mat, llvm::AllocaInst* a_mat,
+                                 llvm::AllocaInst* b_mat, unsigned n, unsigned bk) {
+    llvm::Type* f64 = llvm::Type::getDoubleTy(context);
+    llvm::Type* i32t = i32_ty(context);
+    llvm::Value* lim_n = llvm::ConstantInt::get(i32t, n);
+    llvm::Value* step_bk = llvm::ConstantInt::get(i32t, bk);
+    llvm::Value* zf = llvm::ConstantFP::get(f64, 0.0);
+    llvm::AllocaInst* ii_s = builder->CreateAlloca(i32t, nullptr, "mm_ii");
+    llvm::AllocaInst* kk_s = builder->CreateAlloca(i32t, nullptr, "mm_kk");
+    llvm::AllocaInst* jj_s = builder->CreateAlloca(i32t, nullptr, "mm_jj");
+    llvm::AllocaInst* i_s = builder->CreateAlloca(i32t, nullptr, "mm_i");
+    llvm::AllocaInst* k_s = builder->CreateAlloca(i32t, nullptr, "mm_k");
+    llvm::AllocaInst* j_s = builder->CreateAlloca(i32t, nullptr, "mm_j");
+    llvm::AllocaInst* i_max_s = builder->CreateAlloca(i32t, nullptr, "mm_imax");
+    llvm::AllocaInst* k_max_s = builder->CreateAlloca(i32t, nullptr, "mm_kmax");
+    llvm::AllocaInst* j_max_s = builder->CreateAlloca(i32t, nullptr, "mm_jmax");
+
+    emit_idx_for(i_s, lim_n, [&](llvm::Value* row) {
+      emit_idx_for(j_s, lim_n, [&](llvm::Value* col) {
+        builder->CreateStore(zf, matmul_gep2d(c_mat, row, col));
+      });
+    });
+
+    llvm::Function* fma_fn = nullptr;
+    if (!fp_numerically_stable) {
+      fma_fn = llvm::Intrinsic::getOrInsertDeclaration(module, llvm::Intrinsic::fmuladd, {f64});
+    }
+
+    auto emit_tile_max = [&](llvm::AllocaInst* base, llvm::AllocaInst* out_max) {
+      llvm::Value* base_v = builder->CreateLoad(i32t, base);
+      llvm::Value* cand = builder->CreateAdd(base_v, step_bk);
+      llvm::Value* use_lim = builder->CreateICmpUGT(cand, lim_n);
+      llvm::Value* capped = builder->CreateSelect(use_lim, lim_n, cand);
+      builder->CreateStore(capped, out_max);
+    };
+
+    llvm::BasicBlock* blk_head = llvm::BasicBlock::Create(context, "mm_blk_head", func);
+    llvm::BasicBlock* blk_body = llvm::BasicBlock::Create(context, "mm_blk_body", func);
+    llvm::BasicBlock* blk_exit = llvm::BasicBlock::Create(context, "mm_blk_exit", func);
+    builder->CreateStore(llvm::ConstantInt::get(i32t, 0), ii_s);
+    builder->CreateBr(blk_head);
+    builder->SetInsertPoint(blk_head);
+    llvm::Value* ii_v = builder->CreateLoad(i32t, ii_s);
+    llvm::Value* ii_ok = builder->CreateICmpULT(ii_v, lim_n);
+    builder->CreateCondBr(ii_ok, blk_body, blk_exit);
+    builder->SetInsertPoint(blk_body);
+    builder->CreateStore(ii_v, kk_s);
+    llvm::BasicBlock* kk_head = llvm::BasicBlock::Create(context, "mm_kk_head", func);
+    llvm::BasicBlock* kk_body = llvm::BasicBlock::Create(context, "mm_kk_body", func);
+    llvm::BasicBlock* kk_exit = llvm::BasicBlock::Create(context, "mm_kk_exit", func);
+    builder->CreateBr(kk_head);
+    builder->SetInsertPoint(kk_head);
+    llvm::Value* kk_v = builder->CreateLoad(i32t, kk_s);
+    llvm::Value* kk_ok = builder->CreateICmpULT(kk_v, lim_n);
+    builder->CreateCondBr(kk_ok, kk_body, kk_exit);
+    builder->SetInsertPoint(kk_body);
+    builder->CreateStore(kk_v, jj_s);
+    llvm::BasicBlock* jj_head = llvm::BasicBlock::Create(context, "mm_jj_head", func);
+    llvm::BasicBlock* jj_body = llvm::BasicBlock::Create(context, "mm_jj_body", func);
+    llvm::BasicBlock* jj_exit = llvm::BasicBlock::Create(context, "mm_jj_exit", func);
+    builder->CreateBr(jj_head);
+    builder->SetInsertPoint(jj_head);
+    llvm::Value* jj_v = builder->CreateLoad(i32t, jj_s);
+    llvm::Value* jj_ok = builder->CreateICmpULT(jj_v, lim_n);
+    builder->CreateCondBr(jj_ok, jj_body, jj_exit);
+    builder->SetInsertPoint(jj_body);
+    emit_tile_max(ii_s, i_max_s);
+    emit_tile_max(kk_s, k_max_s);
+    emit_tile_max(jj_s, j_max_s);
+    builder->CreateStore(ii_v, i_s);
+    llvm::BasicBlock* i_head = llvm::BasicBlock::Create(context, "mm_i_head", func);
+    llvm::BasicBlock* i_body = llvm::BasicBlock::Create(context, "mm_i_body", func);
+    llvm::BasicBlock* i_exit = llvm::BasicBlock::Create(context, "mm_i_exit", func);
+    builder->CreateBr(i_head);
+    builder->SetInsertPoint(i_head);
+    llvm::Value* i_v = builder->CreateLoad(i32t, i_s);
+    llvm::Value* i_max_v = builder->CreateLoad(i32t, i_max_s);
+    llvm::Value* i_ok = builder->CreateICmpULT(i_v, i_max_v);
+    builder->CreateCondBr(i_ok, i_body, i_exit);
+    builder->SetInsertPoint(i_body);
+    builder->CreateStore(kk_v, k_s);
+    llvm::BasicBlock* k_head = llvm::BasicBlock::Create(context, "mm_k_head", func);
+    llvm::BasicBlock* k_body = llvm::BasicBlock::Create(context, "mm_k_body", func);
+    llvm::BasicBlock* k_exit = llvm::BasicBlock::Create(context, "mm_k_exit", func);
+    builder->CreateBr(k_head);
+    builder->SetInsertPoint(k_head);
+    llvm::Value* k_v = builder->CreateLoad(i32t, k_s);
+    llvm::Value* k_max_v = builder->CreateLoad(i32t, k_max_s);
+    llvm::Value* k_ok = builder->CreateICmpULT(k_v, k_max_v);
+    builder->CreateCondBr(k_ok, k_body, k_exit);
+    builder->SetInsertPoint(k_body);
+    llvm::Value* aik = builder->CreateLoad(f64, matmul_gep2d(a_mat, i_v, k_v));
+    builder->CreateStore(jj_v, j_s);
+    llvm::BasicBlock* j_head = llvm::BasicBlock::Create(context, "mm_j_head", func);
+    llvm::BasicBlock* j_body = llvm::BasicBlock::Create(context, "mm_j_body", func);
+    llvm::BasicBlock* j_exit = llvm::BasicBlock::Create(context, "mm_j_exit", func);
+    builder->CreateBr(j_head);
+    builder->SetInsertPoint(j_head);
+    llvm::Value* j_v = builder->CreateLoad(i32t, j_s);
+    llvm::Value* j_max_v = builder->CreateLoad(i32t, j_max_s);
+    llvm::Value* j_ok = builder->CreateICmpULT(j_v, j_max_v);
+    builder->CreateCondBr(j_ok, j_body, j_exit);
+    builder->SetInsertPoint(j_body);
+    llvm::Value* cp = matmul_gep2d(c_mat, i_v, j_v);
+    llvm::Value* cv = builder->CreateLoad(f64, cp);
+    llvm::Value* bv = builder->CreateLoad(f64, matmul_gep2d(b_mat, k_v, j_v));
+    if (fma_fn != nullptr) {
+      builder->CreateStore(builder->CreateCall(fma_fn, {aik, bv, cv}), cp);
+    } else {
+      builder->CreateStore(builder->CreateFAdd(cv, builder->CreateFMul(aik, bv)), cp);
+    }
+    llvm::Value* j_next = builder->CreateAdd(j_v, llvm::ConstantInt::get(i32t, 1));
+    builder->CreateStore(j_next, j_s);
+    builder->CreateBr(j_head);
+    builder->SetInsertPoint(j_exit);
+    llvm::Value* k_next = builder->CreateAdd(k_v, llvm::ConstantInt::get(i32t, 1));
+    builder->CreateStore(k_next, k_s);
+    builder->CreateBr(k_head);
+    builder->SetInsertPoint(k_exit);
+    llvm::Value* i_next = builder->CreateAdd(i_v, llvm::ConstantInt::get(i32t, 1));
+    builder->CreateStore(i_next, i_s);
+    builder->CreateBr(i_head);
+    builder->SetInsertPoint(i_exit);
+    llvm::Value* jj_next = builder->CreateAdd(jj_v, step_bk);
+    builder->CreateStore(jj_next, jj_s);
+    builder->CreateBr(jj_head);
+    builder->SetInsertPoint(jj_exit);
+    llvm::Value* kk_next = builder->CreateAdd(kk_v, step_bk);
+    builder->CreateStore(kk_next, kk_s);
+    builder->CreateBr(kk_head);
+    builder->SetInsertPoint(kk_exit);
+    llvm::Value* ii_next = builder->CreateAdd(ii_v, step_bk);
+    builder->CreateStore(ii_next, ii_s);
+    builder->CreateBr(blk_head);
+    builder->SetInsertPoint(blk_exit);
+  }
+
   void emit_matmul2d_ijk_unrolled(llvm::AllocaInst* c_mat, llvm::AllocaInst* a_mat,
                                   llvm::AllocaInst* b_mat, unsigned m, unsigned k,
                                   unsigned n) {
@@ -1183,9 +1320,16 @@ struct EmitCtx {
         const unsigned k = static_cast<unsigned>(ins.rhs_int);
         const unsigned n = static_cast<unsigned>(ins.lhs_int);
         constexpr unsigned kUnrollMax = 24;
+        constexpr unsigned kBlockedN = 512;
+        constexpr unsigned kBlockedBk = 64;
+        const bool use_blocked =
+            m == kBlockedN && k == kBlockedN && n == kBlockedN && m == k && k == n;
         const bool use_loops = m > kUnrollMax || k > kUnrollMax || n > kUnrollMax ||
                                static_cast<std::uint64_t>(m) * k * n > 4096;
-        if (use_loops) {
+        if (use_blocked) {
+          emit_matmul2d_blocked_ijk(c_it->second.alloca, a_it->second.alloca,
+                                    b_it->second.alloca, kBlockedN, kBlockedBk);
+        } else if (use_loops) {
           emit_matmul2d_ijk_loops(c_it->second.alloca, a_it->second.alloca, b_it->second.alloca,
                                   m, k, n);
         } else {

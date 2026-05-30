@@ -12,5 +12,6 @@
 ## Verification
 
 - Enable **Settings → Pages → GitHub Actions** after merge to `main`
+- **`site/index.html` required** — without it the Pages workflow fails (fixed in [2026-05-30-lic-pages-site-artifact.md](2026-05-30-lic-pages-site-artifact.md))
 - Re-run `python3 scripts/ecosystem-audit.py` in benchmarks (HEAD-based handbook check)
 - No **G-*** status changes

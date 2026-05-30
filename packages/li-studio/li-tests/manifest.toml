@@ -181,6 +181,12 @@ note = "T-PKG-li-studio-agent-invoke PH-AGENT"
 
 [[tests]]
 suite = "smoke"
+file = "smoke/studio_agent_chrome_fsm.li"
+outcome = "check_ok"
+note = "T-PKG-li-studio-agent-chrome-fsm UX-06 WP-AG-02 cancel/retry/tool trace FSM"
+
+[[tests]]
+suite = "smoke"
 file = "smoke/studio_agentic_run.li"
 outcome = "check_ok"
 note = "T-PKG-li-studio-agentic-run PH-AGENT-2 Studio agent state model"

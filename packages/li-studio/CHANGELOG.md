@@ -4,6 +4,8 @@
 
 ### Added
 
+- **WP-UX-06 / WP-AG-02 agent chrome FSM** — `studio_agent_run_cancel`, `studio_agent_run_fail`, `studio_agent_run_retry`, `studio_agent_run_undo`, `studio_agent_sync_chrome_from_run`, `studio_shell_handle_agent_pointer`, `studio_shell_agent_run_tick`; invoke + tool-trace paint; smoke `studio_agent_chrome_fsm.li`; `li_std_studio_version` → 16.
+
 - **WP-UX-09 keyboard bridge** — `studio_shell_input_probe_mock_*`, `studio_shell_handle_host_key`; demo/host frames apply keys on live compose; smoke `studio_keyboard_bridge.li`; `li_std_studio_version` → 15.
 
 - **WP-UX-04 command palette actions** — `studio_palette_action_*`, `studio_palette_exec_slot`, `studio_key_action_palette_exec`, `studio_palette_apply_action`; digits 1–3 run focus actions when palette open; smoke `studio_command_palette.li` extended with Cmd+K + exec path; `li_std_studio_version` → 14.

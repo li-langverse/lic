@@ -1,17 +1,17 @@
 {
   "pass": true,
-  "todo_id": "wsm-w1-keyboard-bridge",
-  "wps_touched": ["WP-UX-09"],
+  "todo_id": "wsm-w1-agent-chrome-fsm",
+  "wps_touched": ["WP-UX-06", "WP-AG-02"],
   "smokes_run": [
-    "packages/li-studio/li-tests/smoke/studio_keyboard_bridge.li",
-    "packages/li-gui/li-tests/smoke/studio_keyboard.li",
-    "packages/li-gui/li-tests/smoke/studio_keyboard_input_json.li",
-    "packages/li-studio/li-tests/smoke/studio_host_present.li"
+    "packages/li-studio/li-tests/smoke/studio_agent_chrome_fsm.li",
+    "packages/li-studio/li-tests/smoke/studio_agent_chrome.li",
+    "packages/li-studio/li-tests/smoke/studio_agentic_run.li",
+    "packages/li-studio/li-tests/smoke/studio_agent_invoke.li"
   ],
   "native_only": true,
   "gates": {
     "world_studio_plan_gates": "pass",
     "lic_check_local": "skipped_no_lic_binary"
   },
-  "notes": "End-to-end SDL/mock InputState bridge: studio_shell_handle_host_key applies studio_handle_studio_key on live compose; studio_vertical_demo_frame and studio_shell_host_frame no longer discard key mutations on a copy. Probe mocks match studio_shell_input_probe JSON for lic check smokes."
+  "notes": "Agent task FSM wired to shell compose: cancel/retry/send pointer handlers, run tick sync, undo last patch; invoke + tool-trace paint cmds; smoke studio_agent_chrome_fsm.li covers idle→running→cancel, fail→retry→done→undo path."
 }

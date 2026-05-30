@@ -895,6 +895,229 @@ def studio_agent_tool_request_for_run(run: StudioAgentRun) -> StudioAgentToolReq
   out.status = studio_mcp_tool_status_ok()
   return out
 
+def studio_agent_action_none() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0
+
+def studio_agent_action_cancel() -> int
+  requires true
+  ensures result == 1
+  decreases 0
+=
+  return 1
+
+def studio_agent_action_retry() -> int
+  requires true
+  ensures result == 2
+  decreases 0
+=
+  return 2
+
+def studio_agent_action_send() -> int
+  requires true
+  ensures result == 3
+  decreases 0
+=
+  return 3
+
+def studio_agent_action_undo() -> int
+  requires true
+  ensures result == 4
+  decreases 0
+=
+  return 4
+
+def studio_agent_run_idle() -> StudioAgentRun
+  requires true
+  ensures result.task_state == studio_agent_task_idle()
+  ensures result.used_html_mock == 0
+  ensures result.step_total == studio_agent_real_pipeline_steps()
+  decreases 0
+=
+  var out: StudioAgentRun
+  out.task_state = studio_agent_task_idle()
+  out.agent_context_label = studio_agent_context_none()
+  out.active_tool_id = studio_mcp_tool_unknown()
+  out.last_tool_status = studio_mcp_tool_status_idle()
+  out.last_result_code = studio_mcp_tool_result_ok()
+  out.step_index = 0
+  out.step_total = studio_agent_real_pipeline_steps()
+  out.patch_applied = 0
+  out.check_step_done = 0
+  out.build_step_done = 0
+  out.used_html_mock = 0
+  return out
+
+def studio_agent_run_cancel(run: StudioAgentRun) -> StudioAgentRun
+  requires run.task_state >= studio_agent_task_idle()
+  requires run.task_state <= studio_agent_task_done()
+  ensures result.task_state == studio_agent_task_idle()
+  ensures result.used_html_mock == 0
+  decreases run.task_state
+=
+  var out: StudioAgentRun = run
+  out.used_html_mock = 0
+  if out.task_state == studio_agent_task_running():
+    out.task_state = studio_agent_task_idle()
+    out.active_tool_id = studio_mcp_tool_unknown()
+    out.last_tool_status = studio_mcp_tool_status_idle()
+    out.step_index = 0
+    return out
+  if out.task_state == studio_agent_task_blocked():
+    out.task_state = studio_agent_task_idle()
+    out.active_tool_id = studio_mcp_tool_unknown()
+    out.last_tool_status = studio_mcp_tool_status_idle()
+    out.step_index = 0
+    return out
+  return out
+
+def studio_agent_run_fail(run: StudioAgentRun) -> StudioAgentRun
+  requires run.task_state >= studio_agent_task_idle()
+  requires run.task_state <= studio_agent_task_done()
+  ensures result.used_html_mock == 0
+  decreases run.task_state
+=
+  var out: StudioAgentRun = run
+  out.used_html_mock = 0
+  if out.task_state != studio_agent_task_running():
+    return out
+  out.task_state = studio_agent_task_failed()
+  out.last_tool_status = studio_mcp_tool_status_failed()
+  out.last_result_code = studio_mcp_tool_result_err_proof()
+  return out
+
+def studio_agent_run_retry(run: StudioAgentRun) -> StudioAgentRun
+  requires run.task_state >= studio_agent_task_idle()
+  requires run.task_state <= studio_agent_task_done()
+  requires run.agent_context_label >= studio_agent_context_none()
+  requires run.agent_context_label <= studio_agent_context_selection()
+  ensures result.used_html_mock == 0
+  decreases run.task_state
+=
+  if run.task_state != studio_agent_task_failed():
+    return run
+  return studio_agent_run_start(run.agent_context_label)
+
+def studio_agent_run_undo(run: StudioAgentRun) -> StudioAgentRun
+  requires run.task_state >= studio_agent_task_idle()
+  requires run.task_state <= studio_agent_task_done()
+  ensures result.used_html_mock == 0
+  decreases run.patch_applied
+=
+  var out: StudioAgentRun = run
+  out.used_html_mock = 0
+  if out.patch_applied != 1:
+    return out
+  if out.task_state == studio_agent_task_running():
+    return out
+  out.patch_applied = 0
+  out.check_step_done = 0
+  out.build_step_done = 0
+  out.step_index = 0
+  out.active_tool_id = studio_mcp_tool_unknown()
+  out.last_tool_status = studio_mcp_tool_status_idle()
+  out.last_result_code = studio_mcp_tool_result_ok()
+  if out.task_state == studio_agent_task_failed():
+    out.task_state = studio_agent_task_idle()
+  return out
+
+def studio_agent_last_action_reversible_for(run: StudioAgentRun) -> int
+  requires run.task_state >= studio_agent_task_idle()
+  requires run.task_state <= studio_agent_task_done()
+  ensures result >= 0
+  ensures result <= 1
+  decreases run.patch_applied
+=
+  if run.patch_applied != 1:
+    return 0
+  if run.task_state == studio_agent_task_running():
+    return 0
+  return 1
+
+def studio_compose_agent_progress_run(run: StudioAgentRun, status_rect: Rect) -> StudioAgentProgress
+  requires run.task_state >= studio_agent_task_idle()
+  requires run.task_state <= studio_agent_task_done()
+  requires run.step_index >= 0
+  requires run.step_total == studio_agent_real_pipeline_steps()
+  requires run.step_index <= run.step_total
+  ensures result.visible == studio_agent_progress_visible(run.task_state)
+  decreases run.step_index
+=
+  var out: StudioAgentProgress
+  out.visible = studio_agent_progress_visible(run.task_state)
+  out.step_index = run.step_index
+  out.step_total = run.step_total
+  out.progress_rect = rect_make(0.0, 0.0, 0.0, 0.0)
+  if out.visible == 1:
+    out.progress_rect = studio_agent_progress_rect_at(status_rect, out.step_index, out.step_total)
+  return out
+
+def studio_agent_sync_chrome_from_run(compose: var StudioShellCompose, run: StudioAgentRun) -> unit
+  requires compose.layout.viewport_w > 0.0
+  requires run.task_state >= studio_agent_task_idle()
+  requires run.task_state <= studio_agent_task_done()
+  requires run.agent_context_label >= studio_agent_context_none()
+  requires run.agent_context_label <= studio_agent_context_selection()
+  ensures compose.agent.task_state == run.task_state
+  decreases run.task_state
+=
+  var ctx: int = run.agent_context_label
+  if ctx == studio_agent_context_none():
+    ctx = studio_agent_context_for_shell(compose.inspector.has_selection, run.task_state)
+  var tool: StudioAgentToolRequest = studio_agent_tool_request_for_run(run)
+  compose.agent = studio_compose_agent_chrome_with_tool(compose.layout, run.task_state, ctx, tool)
+  if run.task_state == studio_agent_task_running():
+    compose.agent.progress = studio_compose_agent_progress_run(run, compose.agent.status_rect)
+  if run.task_state == studio_agent_task_done():
+    compose.agent.progress = studio_compose_agent_progress_run(run, compose.agent.status_rect)
+
+def studio_shell_agent_run_tick(compose: var StudioShellCompose, run: var StudioAgentRun) -> int
+  requires compose.layout.viewport_w > 0.0
+  requires run.task_state >= studio_agent_task_idle()
+  requires run.task_state <= studio_agent_task_done()
+  ensures result >= 0
+  ensures result <= 1
+  decreases run.step_index
+=
+  if run.task_state != studio_agent_task_running():
+    return 0
+  run = studio_agent_run_next(run)
+  studio_agent_sync_chrome_from_run(compose, run)
+  return 1
+
+def studio_shell_handle_agent_pointer(compose: var StudioShellCompose, run: var StudioAgentRun, input: InputState) -> int
+  requires compose.layout.viewport_w > 0.0
+  requires run.task_state >= studio_agent_task_idle()
+  requires run.task_state <= studio_agent_task_done()
+  requires input.pointer_down >= 0
+  requires input.pointer_down <= 1
+  ensures result >= studio_agent_action_none()
+  ensures result <= studio_agent_action_undo()
+  decreases input.pointer_down
+=
+  if input.pointer_down != 1:
+    return studio_agent_action_none()
+  if compose.agent.cancel_visible == 1:
+    if rect_contains(compose.agent.cancel_rect, input.pointer_x, input.pointer_y) == 1:
+      run = studio_agent_run_cancel(run)
+      studio_agent_sync_chrome_from_run(compose, run)
+      return studio_agent_action_cancel()
+  if compose.agent.retry_visible == 1:
+    if rect_contains(compose.agent.retry_hint_rect, input.pointer_x, input.pointer_y) == 1:
+      run = studio_agent_run_retry(run)
+      studio_agent_sync_chrome_from_run(compose, run)
+      return studio_agent_action_retry()
+  if compose.agent.invoke_input_visible == 1:
+    if rect_contains(compose.agent.send_rect, input.pointer_x, input.pointer_y) == 1:
+      var ctx: int = studio_agent_context_for_shell(compose.inspector.has_selection, studio_agent_task_idle())
+      run = studio_agent_run_start(ctx)
+      studio_agent_sync_chrome_from_run(compose, run)
+      return studio_agent_action_send()
+  return studio_agent_action_none()
+
 def studio_mcp_tool_dispatch(tool_id: int) -> StudioAgentToolRequest
   requires true
   ensures result.tool_id == tool_id
@@ -1294,10 +1517,10 @@ def studio_compose_shell_drug_litl(w: float, h: float, tick: int, has_selection:
 
 def li_std_studio_version() -> int
   requires true
-  ensures result == 15
+  ensures result == 16
   decreases 0
 =
-  return 15
+  return 16
 
 def studio_agent_context_none() -> int
   requires true
@@ -3242,13 +3465,17 @@ def studio_compose_agent_progress(task_state: int, status_rect: Rect) -> StudioA
     out.progress_rect = studio_agent_progress_rect_at(status_rect, out.step_index, out.step_total)
   return out
 
-def studio_paint_agent_cmds(task_state: int, agent_context_label: int) -> int
+def studio_paint_agent_cmds(task_state: int, agent_context_label: int, invoke_visible: int, tool_trace_visible: int) -> int
   requires task_state >= studio_agent_task_idle()
   requires task_state <= studio_agent_task_done()
   requires agent_context_label >= studio_agent_context_none()
   requires agent_context_label <= studio_agent_context_selection()
+  requires invoke_visible >= 0
+  requires invoke_visible <= 1
+  requires tool_trace_visible >= 0
+  requires tool_trace_visible <= 1
   ensures result >= 2
-  ensures result <= 9
+  ensures result <= 12
   decreases task_state
 =
   var ctx0: int = agent_context_label
@@ -3256,8 +3483,6 @@ def studio_paint_agent_cmds(task_state: int, agent_context_label: int) -> int
   var ts_progress: int = task_state
   var ts_error: int = task_state
   var ts_retry: int = task_state
-  var ts_invoke: int = task_state
-  var ts_trace: int = task_state
   var n: int = 2
   if studio_agent_context_visible(ctx0) == 1:
     n = n + 1
@@ -3268,6 +3493,10 @@ def studio_paint_agent_cmds(task_state: int, agent_context_label: int) -> int
   if studio_agent_error_visible(ts_error) == 1:
     n = n + 2
   if studio_agent_retry_visible(ts_retry) == 1:
+    n = n + 1
+  if invoke_visible == 1:
+    n = n + 2
+  if tool_trace_visible == 1:
     n = n + 1
   return n
 
@@ -3798,11 +4027,11 @@ def studio_paint_timeline(frame: var PaintFrame, timeline: StudioTimelineCompose
 
 def studio_paint_agent(frame: var PaintFrame, agent: StudioAgentChromeCompose) -> unit
   requires frame.cmd_count >= 0
-  ensures frame.cmd_count == old(frame.cmd_count) + studio_paint_agent_cmds(agent.task_state, agent.agent_context_label)
+  ensures frame.cmd_count == old(frame.cmd_count) + studio_paint_agent_cmds(agent.task_state, agent.agent_context_label, agent.invoke_input_visible, agent.tool_trace_visible)
   ensures frame.last_color.r >= 0.0
   decreases agent.task_state
 =
-  frame.cmd_count = frame.cmd_count + studio_paint_agent_cmds(agent.task_state, agent.agent_context_label)
+  frame.cmd_count = frame.cmd_count + studio_paint_agent_cmds(agent.task_state, agent.agent_context_label, agent.invoke_input_visible, agent.tool_trace_visible)
   frame.last_kind = paint_op_fill_rect()
   frame.last_rect = agent.rect
   frame.last_color = studio_color_bg_elevated()
@@ -3832,6 +4061,17 @@ def studio_paint_agent(frame: var PaintFrame, agent: StudioAgentChromeCompose) -
     frame.last_kind = paint_op_stroke_rect()
     frame.last_rect = agent.retry_hint_rect
     frame.last_color = studio_color_accent_cyan()
+  if agent.invoke_input_visible == 1:
+    frame.last_kind = paint_op_stroke_rect()
+    frame.last_rect = agent.send_rect
+    frame.last_color = studio_color_accent_cyan()
+    frame.last_kind = paint_op_fill_rect()
+    frame.last_rect = agent.task_input_rect
+    frame.last_color = studio_color_bg_elevated()
+  if agent.tool_trace_visible == 1:
+    frame.last_kind = paint_op_stroke_rect()
+    frame.last_rect = agent.tool_trace_rect
+    frame.last_color = studio_color_accent_mint()
 
 def studio_paint_inspector(frame: var PaintFrame, inspector: StudioInspectorCompose) -> unit
   requires frame.cmd_count >= 0
@@ -3911,9 +4151,11 @@ def studio_shell_chrome_count(has_selection: int, scene_entity_count: int, task_
   var ts0: int = task_state
   var disp0: StudioViewportDisplayCompose = studio_viewport_display_compose_new()
   var menu0: StudioViewportMenuCompose = studio_viewport_menu_compose_new()
-  return studio_shell_chrome_count_palette(sel_palette, scene0, ts0, studio_palette_closed_flag(), studio_agent_context_for_shell(sel_ctx, ts0), studio_viewport_error_none(), disp0, menu0)
+  var invoke0: int = studio_agent_invoke_input_visible(ts0)
+  var trace0: int = studio_agent_tool_trace_visible_for(ts0, studio_mcp_tool_unknown())
+  return studio_shell_chrome_count_palette(sel_palette, scene0, ts0, studio_palette_closed_flag(), studio_agent_context_for_shell(sel_ctx, ts0), studio_viewport_error_none(), disp0, menu0, invoke0, trace0)
 
-def studio_shell_chrome_count_palette(has_selection: int, scene_entity_count: int, task_state: int, palette_open: int, agent_context_label: int, viewport_error_kind: int, display: StudioViewportDisplayCompose, menu: StudioViewportMenuCompose) -> int
+def studio_shell_chrome_count_palette(has_selection: int, scene_entity_count: int, task_state: int, palette_open: int, agent_context_label: int, viewport_error_kind: int, display: StudioViewportDisplayCompose, menu: StudioViewportMenuCompose, invoke_visible: int, tool_trace_visible: int) -> int
   requires has_selection >= 0
   requires has_selection <= 1
   requires scene_entity_count >= 0
@@ -3925,6 +4167,10 @@ def studio_shell_chrome_count_palette(has_selection: int, scene_entity_count: in
   requires agent_context_label <= studio_agent_context_selection()
   requires viewport_error_kind >= studio_viewport_error_none()
   requires viewport_error_kind <= studio_err_missing_asset()
+  requires invoke_visible >= 0
+  requires invoke_visible <= 1
+  requires tool_trace_visible >= 0
+  requires tool_trace_visible <= 1
   ensures result >= studio_paint_compose_panels_count(has_selection)
   decreases task_state
 =
@@ -3933,12 +4179,12 @@ def studio_shell_chrome_count_palette(has_selection: int, scene_entity_count: in
   var ts0: int = task_state
   var pal0: int = palette_open
   var ctx0: int = agent_context_label
-  return studio_paint_compose_panels_count(sel0) + 1 + studio_paint_topbar_profile_cmds() + studio_shell_viewport_cmds(scene0, viewport_error_kind, display, menu) + studio_paint_agent_cmds(ts0, ctx0) + studio_paint_palette_cmds(pal0)
+  return studio_paint_compose_panels_count(sel0) + 1 + studio_paint_topbar_profile_cmds() + studio_shell_viewport_cmds(scene0, viewport_error_kind, display, menu) + studio_paint_agent_cmds(ts0, ctx0, invoke_visible, tool_trace_visible) + studio_paint_palette_cmds(pal0)
 
 
 def studio_paint_shell_chrome(frame: var PaintFrame, compose: StudioShellCompose) -> unit
   requires frame.cmd_count >= 0
-  ensures frame.cmd_count == studio_shell_chrome_count_palette(compose.inspector.has_selection, compose.scene_entity_count, compose.agent.task_state, compose.palette.is_open, compose.agent.agent_context_label, compose.viewport_error.error_kind, compose.viewport_display, compose.viewport_menu)
+  ensures frame.cmd_count == studio_shell_chrome_count_palette(compose.inspector.has_selection, compose.scene_entity_count, compose.agent.task_state, compose.palette.is_open, compose.agent.agent_context_label, compose.viewport_error.error_kind, compose.viewport_display, compose.viewport_menu, compose.agent.invoke_input_visible, compose.agent.tool_trace_visible)
   decreases compose.agent.task_state
 =
   frame.cmd_count = frame.cmd_count + studio_paint_dock_cmds()

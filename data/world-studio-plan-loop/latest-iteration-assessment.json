@@ -1,18 +1,16 @@
 {
   "pass": true,
-  "todo_id": "wsm-w4-world-io",
-  "wps_touched": ["WP-GD-03"],
+  "todo_id": "wsm-w4-gltf-ingest",
+  "wps_touched": ["WP-GD-04"],
   "smokes_run": [
-    "packages/li-world/li-tests/smoke/world_roundtrip.li",
-    "packages/li-world/li-tests/smoke/world_file_roundtrip.li",
-    "packages/li-studio/li-tests/smoke/studio_world_io_roundtrip.li",
-    "li-tests/composable/import_world_roundtrip.li"
+    "packages/li-assets/li-tests/smoke/gltf_ingest.li",
+    "packages/li-studio/li-tests/smoke/studio_gltf_ingest.li"
   ],
   "native_only": true,
   "gates": {
     "world_studio_plan_gates": "pass",
-    "lic_check_local": "wsl studio_world_io_roundtrip.li + import_world_roundtrip.li green",
+    "lic_check_local": "wsl",
     "lic_check_ci": "pending"
   },
-  "notes": "WP-GD-03: extended world_v1 line with asset_ref_count (0..1 stub; default ref path assets/mesh.gltf). Studio studio_world_save/load/io_roundtrip/scaffold_write; world_scaffold MCP writes world.li. Composable import_world_roundtrip.li + smoke studio_world_io_roundtrip.li. Scene graph / multi-asset paths remain stub."
+  "notes": "WP-GD-04: new li-assets package (GltfIngestMesh, assets_gltf_ingest_path, scene_attach); studio_shell_apply_gltf_ingest updates scene_entity_count from default assets/mesh.gltf path aligned with world asset_ref stub."
 }

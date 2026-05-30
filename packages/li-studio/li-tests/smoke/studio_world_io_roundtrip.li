@@ -14,12 +14,14 @@ def main() raises Alloc, IO -> int
     return 2
   if scaffold.asset_ref_count != studio_game_asset_ref_count_stub():
     return 3
-  var path: str = studio_world_li_path_default()
-  if studio_world_scaffold_write(path) != 1:
+  var path_write: str = studio_world_li_path_default()
+  if studio_world_scaffold_write(path_write) != 1:
     return 4
-  if studio_world_io_roundtrip(scaffold, path) != 1:
+  var path_rt: str = studio_world_li_path_default()
+  if studio_world_io_roundtrip(scaffold, path_rt) != 1:
     return 5
-  var loaded: WorldSnapshot = studio_world_load(path)
+  var path_load: str = studio_world_li_path_default()
+  var loaded: WorldSnapshot = studio_world_load(path_load)
   if world_snapshot_fields_match(scaffold, loaded) != 1:
     return 6
   if studio_world_asset_ref_path_default() == "":
@@ -29,9 +31,11 @@ def main() raises Alloc, IO -> int
   if studio_sim_step_hook(game_cfg, game_sess, 0.016) != sim_status_ok():
     return 10
   var snap: WorldSnapshot = studio_game_world_checkpoint_from_session(game_sess)
-  if studio_world_save(snap, path) != 1:
+  var path_save: str = studio_world_li_path_default()
+  if studio_world_save(snap, path_save) != 1:
     return 11
-  var reloaded: WorldSnapshot = studio_world_load(path)
+  var path_reload: str = studio_world_li_path_default()
+  var reloaded: WorldSnapshot = studio_world_load(path_reload)
   if studio_game_world_checkpoint_stub(reloaded) != 1:
     return 12
   if reloaded.tick != game_sess.tick:

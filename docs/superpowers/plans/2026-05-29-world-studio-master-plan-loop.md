@@ -76,7 +76,7 @@ todos:
     status: done
   - id: wsm-w4-gltf-ingest
     content: "glTF ingest via li-assets into scene (WP-GD-04)"
-    status: pending
+    status: done
   - id: wsm-w5-sci-kernels
     content: "run_algo_registry real tier-2 MD/heat kernels (WP-SCI-03)"
     status: pending

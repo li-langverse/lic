@@ -19,6 +19,8 @@ for smoke in env_pool_stub.li env_pool_step_contract.li; do
   "$LIC" check "$ROOT/packages/li-sim/li-tests/smoke/$smoke"
 done
 
+"$LIC" check "$ROOT/packages/li-assets/li-tests/smoke/gltf_ingest.li"
+
 for smoke in \
   studio_shell_demo.li \
   studio_vertical_profile_roundtrip.li \
@@ -37,6 +39,7 @@ for smoke in \
   studio_interaction_modes.li \
   studio_world_checkpoint_after_tick.li \
   studio_world_io_roundtrip.li \
+  studio_gltf_ingest.li \
   studio_viewport_hud.li \
   studio_viewport_error.li \
   studio_native_pixels_wgpu_readback.li; do

@@ -12,6 +12,7 @@ import sim.additive
 import scene
 import physics.runtime
 import world
+import assets
 import lig
 import lig.present
 import lig.memory
@@ -2059,10 +2060,10 @@ def studio_compose_shell_drug_litl(w: float, h: float, tick: int, has_selection:
 
 def li_std_studio_version() -> int
   requires true
-  ensures result == 23
+  ensures result == 24
   decreases 0
 =
-  return 23
+  return 24
 
 def studio_agent_context_none() -> int
   requires true
@@ -3416,6 +3417,44 @@ def studio_world_asset_ref_path_default() raises Alloc, IO -> str
 =
   return world_default_asset_ref_path()
 
+# WP-GD-04 — glTF ingest via li-assets into studio scene entity count.
+def studio_gltf_ingest_mesh(path: str) raises Alloc, IO -> GltfIngestMesh
+  requires true
+  ensures result.status >= assets_gltf_status_ok()
+  ensures result.status <= assets_gltf_status_err()
+  decreases 0
+=
+  return assets_gltf_ingest_path(path)
+
+def studio_shell_apply_gltf_ingest(compose: var StudioShellCompose, path: str) raises Alloc, IO -> int
+  requires compose.layout.viewport_w > 0.0
+  ensures result >= 0
+  ensures result <= 1
+  decreases 0
+=
+  var mesh: GltfIngestMesh = assets_gltf_ingest_path(path)
+  if assets_gltf_ingest_ok(mesh) != 1:
+    return 0
+  compose.scene_entity_count = mesh.entity_slots
+  compose.viewport_empty.empty_visible = 0
+  compose.viewport_empty.title_rect = rect_make(0.0, 0.0, 0.0, 0.0)
+  compose.viewport_empty.cta_rect = rect_make(0.0, 0.0, 0.0, 0.0)
+  var sc: Scene = scene_new()
+  if assets_gltf_scene_attach(mesh, sc) != 1:
+    return 0
+  if sc.node_count != compose.scene_entity_count:
+    return 0
+  return 1
+
+def studio_gltf_ingest_default_into_shell(compose: var StudioShellCompose) raises Alloc, IO -> int
+  requires compose.layout.viewport_w > 0.0
+  ensures result >= 0
+  ensures result <= 1
+  decreases 0
+=
+  var path: str = studio_world_asset_ref_path_default()
+  return studio_shell_apply_gltf_ingest(compose, path)
+
 def studio_world_li_path_default() raises Alloc, IO -> str
   requires true
   ensures result != ""
@@ -3538,6 +3577,7 @@ def studio_world_checkpoint_from_snapshot(snapshot: WorldSnapshot) -> StudioWorl
 
 def studio_world_checkpoint_capture(profile_id: int, session: SimSessionStub) -> StudioWorldCheckpoint
   requires session.tick >= 0
+  ensures result.tick >= 0
   decreases profile_id
 =
   if profile_id != studio_profile_game():
@@ -3566,6 +3606,7 @@ def studio_world_checkpoint_after_sim_tick(profile_id: int, session: SimSessionS
 
 def studio_shell_world_checkpoint_store(compose: var StudioShellCompose, session: SimSessionStub) -> unit
   requires session.tick >= 0
+  ensures compose.world_checkpoint.tick == session.tick
   decreases session.tick
 =
   compose.world_checkpoint = studio_world_checkpoint_capture(compose.config.active_profile, session)

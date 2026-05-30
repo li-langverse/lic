@@ -126,6 +126,12 @@ note = "WP-GD-03: world.li text save/load roundtrip + asset_ref_count stub"
 
 [[tests]]
 suite = "smoke"
+file = "smoke/studio_gltf_ingest.li"
+outcome = "check_ok"
+note = "WP-GD-04: glTF ingest via li-assets into scene entity count"
+
+[[tests]]
+suite = "smoke"
 file = "smoke/studio_shell_loading.li"
 outcome = "check_ok"
 note = "T-PKG-li-studio-shell-loading-ux10-ux11"

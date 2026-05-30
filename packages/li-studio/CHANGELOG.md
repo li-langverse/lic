@@ -4,6 +4,7 @@
 
 ### Added
 
+- **WP-GD-04 glTF ingest** — `li-assets` + `studio_shell_apply_gltf_ingest`; smoke `studio_gltf_ingest.li`; `li_std_studio_version` → 24.
 - **WP-GD-02 world checkpoint after sim tick** — `StudioWorldCheckpoint` on shell; `studio_world_checkpoint_after_sim_tick` in `studio_sim_step_hook`; timeline stores checkpoint via `studio_shell_timeline_tick_sim_step`; smoke `studio_world_checkpoint_after_tick.li`.
 - **WP-AG-03 MCP stdio server** — `studio_mcp_server_*` handlers, `scripts/lis-mcp-li-engine.py` + `.sh`, integration smoke; `studio_ai_mcp_dispatch` wired; smokes `studio_mcp_stdio_server.li`, `studio_ai_mcp_dispatch.li`; `li_std_studio_version` → 21.
 - **WP-UX-15 interaction modes FSM** — `StudioShellCompose.mode`, `studio_mode_transition`, `studio_shell_apply_mode`, `studio_mode_mcp_tool_allowed`, `studio_shell_timeline_tick_sim_step`; smokes `studio_interaction_modes.li`; `li_std_studio_version` → 22.

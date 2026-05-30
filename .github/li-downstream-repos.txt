@@ -7,3 +7,4 @@ li-langverse/li-core
 li-langverse/li-math
 li-langverse/li-demo
 li-langverse/li-httpd
+li-langverse/limq

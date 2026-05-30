@@ -27,3 +27,32 @@ def lig_alloc_within_budget(ledger: var LigMemoryLedger, bytes: int) -> int
   if ledger.allocated_bytes > ledger.peak_bytes:
     ledger.peak_bytes = ledger.allocated_bytes
   return 1
+
+def lig_memory_tier_estimated_bytes(tier: int) -> int
+  requires tier >= 0
+  ensures result == tier * 13727
+  decreases tier
+=
+  return tier * 13727
+
+def lig_memory_ledger_new(budget_mib: int) -> LigMemoryLedger
+  requires budget_mib > 0
+  ensures result.budget_mib == budget_mib
+  ensures result.allocated_bytes == 0
+  ensures result.peak_bytes == 0
+  decreases budget_mib
+=
+  var ledger: LigMemoryLedger
+  ledger.budget_mib = budget_mib
+  ledger.allocated_bytes = 0
+  ledger.peak_bytes = 0
+  return ledger
+
+def lig_memory_ledger_peak_mib(ledger: LigMemoryLedger) -> int
+  requires true
+  ensures result >= 0
+  decreases ledger.peak_bytes
+=
+  if ledger.peak_bytes <= 0:
+    return 0
+  return ledger.peak_bytes / 1048576

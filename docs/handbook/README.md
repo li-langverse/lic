@@ -1,36 +1,25 @@
-# Li handbook index (in-repo)
+# Li compiler handbook index
 
-Canonical **language** handbook: [li-language Pages](https://li-langverse.github.io/li-language/). **Compiler + verification** hub: [lic Pages](https://li-langverse.github.io/lic/) (static `site/index.html` + plan cross-links nav). This tree under `lic/docs/` is the source of truth until submodule wiring completes; edit [lic-docs](https://github.com/li-langverse/lic-docs) for user-facing Pages when split.
+In-repo docs for **`lic`** — language, compiler, verification, and ecosystem plans. Live MkDocs site: **https://li-langverse.github.io/li-language/** (alias **https://li-langverse.github.io/lic/**).
 
-## Start here
+If Pages returns **404**, merge strict MkDocs CI on `main` and enable **Settings → Pages → GitHub Actions** — see [lic#403](https://github.com/li-langverse/lic/issues/403).
 
-| I want to… | Doc |
-|------------|-----|
-| Install and first build | [Getting started](../guide/getting-started-tools.md) |
-| Language surface (honest status) | [Language overview](../language/overview.md) |
-| What `lic build` proves **today** | [Provability gaps](../verification/provability-gaps.md) |
-| PH order and repo policy | [Master plan](../superpowers/plans/2026-05-14-li-master-plan.md) |
-| Map plans ↔ gaps ↔ benchmarks | [Plan cross-links](../ecosystem/plan-cross-links.md) |
-| GUI UX agent handoff (`ui_ux_quality`) | [gui-ux-quality-handoff](../ecosystem/gui-ux-quality-handoff.md) |
-| Org vision (human merge) | [Vision & roadmap](../ecosystem/vision-and-roadmap.md) → [roadmap repo](https://github.com/li-langverse/roadmap) |
-| Perf dashboard (not proof) | [Benchmarks](https://li-langverse.github.io/benchmarks/) |
+## Vision & plan cross-links
 
-## Satellite package handbooks (GitHub Pages)
+| Doc | Role |
+|-----|------|
+| [**Master plan**](../superpowers/plans/2026-05-14-li-master-plan.md) | **PH-*** phase tracker (normative order) |
+| [**Provability gaps**](../verification/provability-gaps.md) | Honest **G-*** register — do not overclaim proof |
+| [**Plan cross-links**](../ecosystem/plan-cross-links.md) | Master plan ↔ gaps ↔ phase plans ↔ bench ↔ UI audit |
+| [Org vision & roadmap](https://github.com/li-langverse/roadmap/blob/main/docs/ecosystem/vision-and-roadmap.md) | Pillars, where visions live |
+| [Engineering standards](https://github.com/li-langverse/roadmap/blob/main/docs/ecosystem/engineering-standards.md) | Security, perf, PR discipline |
+| [Benchmark dashboard](https://li-langverse.github.io/benchmarks/) | Tier-1/2 measurements (**not** proof certificates) |
+| [Benchmarks handbook](https://github.com/li-langverse/benchmarks/blob/main/docs/handbook/README.md) | Catalog, ingest, agent preflight |
 
-Live handbook roots (HEAD-checked by `benchmarks/scripts/ecosystem-audit.py`):
+## Open tracker rows (partial only)
 
-| Repo | Live URL | In-repo handbook |
-|------|-------------------------|------------------|
-| lip | https://li-langverse.github.io/lip/ | [lip/docs/handbook.md](https://github.com/li-langverse/lip/blob/main/docs/handbook.md) |
-| lit | https://li-langverse.github.io/lit/ | [lit/docs/handbook.md](https://github.com/li-langverse/lit/blob/main/docs/handbook.md) |
-| lis | https://li-langverse.github.io/lis/ | [lis/docs/handbook.md](https://github.com/li-langverse/lis/blob/main/docs/handbook.md) |
-| li-net | https://li-langverse.github.io/li-net/ | [li-net/docs/handbook.md](https://github.com/li-langverse/li-net/blob/main/docs/handbook.md) |
-| li-httpd | https://li-langverse.github.io/li-httpd/ | [li-httpd/docs/handbook.md](https://github.com/li-langverse/li-httpd/blob/main/docs/handbook.md) |
-| li-std-core | https://li-langverse.github.io/li-std-core/ | [li-std-core/docs/handbook.md](https://github.com/li-langverse/li-std-core/blob/main/docs/handbook.md) |
-| li-std-math | https://li-langverse.github.io/li-std-math/ | [li-std-math/docs/handbook.md](https://github.com/li-langverse/li-std-math/blob/main/docs/handbook.md) |
-| li-demo | https://li-langverse.github.io/li-demo/ | [li-demo/docs/handbook.md](https://github.com/li-langverse/li-demo/blob/main/docs/handbook.md) |
+See [plan-cross-links — open rows](../ecosystem/plan-cross-links.md#open-master-plan-tracker-rows-2026-05-30) for **2i**, **7d**, **7e**, **8p**, **Vision-LLM**, **PH-UX** with linked phase plans and **G-*** IDs.
 
-## Honesty
+## Agents
 
-- Benchmark green ≠ **G-*** Done — cite `li-tests`, Lean, or VC evidence in [provability-gaps](../verification/provability-gaps.md).
-- Engineering standards: [roadmap](https://github.com/li-langverse/roadmap/blob/main/docs/ecosystem/engineering-standards.md).
+[AGENTS.md](../../AGENTS.md) · [Release notes policy](https://github.com/li-langverse/roadmap/blob/main/docs/ecosystem/release-notes.md) · Preflight: `benchmarks/scripts/agent-preflight.sh`

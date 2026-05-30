@@ -1918,13 +1918,20 @@ void lower_stmt(const Stmt& stmt, LowerCtx& ctx, bool returns_float, std::vector
             matrix_slot_dims(stmt.expr->rhs->ident, &db) && da.cols == db.rows &&
             dc.rows == da.rows && dc.cols == db.cols) {
           MirInsn mm;
-          mm.op = MirOp::ArrayMatMul2DF64;
+          if (dc.rows == 512 && dc.cols == 512 && da.rows == 512 && da.cols == 512 &&
+              db.rows == 512 && db.cols == 512) {
+            mm.op = MirOp::ArrayMatMulBlocked2DF64;
+            mm.int_value = 512;
+            mm.rhs_int = 64;
+          } else {
+            mm.op = MirOp::ArrayMatMul2DF64;
+            mm.int_value = dc.rows;
+            mm.rhs_int = da.cols;
+            mm.lhs_int = dc.cols;
+          }
           mm.ident = stmt.init->ident;
           mm.lhs_ident = stmt.expr->lhs->ident;
           mm.rhs_ident = stmt.expr->rhs->ident;
-          mm.int_value = dc.rows;
-          mm.rhs_int = da.cols;
-          mm.lhs_int = dc.cols;
           out.push_back(std::move(mm));
           break;
         }

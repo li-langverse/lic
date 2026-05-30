@@ -393,14 +393,21 @@ struct EmitCtx {
     };
 
     const bool vectorize_j = (n % 4) == 0 && (bk % 4) == 0;
+    llvm::Function* fma_vec_fn = nullptr;
+    if (vectorize_j && fma_fn != nullptr) {
+      fma_vec_fn =
+          llvm::Intrinsic::getOrInsertDeclaration(module, llvm::Intrinsic::fmuladd, {f64x4});
+    }
     auto store_c_vec4 = [&](llvm::Value* i, llvm::Value* k, llvm::Value* j, llvm::Value* aik) {
       llvm::Value* cp = matmul_gep2d(c_mat, i, j);
       llvm::Value* bp = matmul_gep2d(b_mat, k, j);
       llvm::Value* cv = builder->CreateAlignedLoad(f64x4, cp, llvm::Align(8));
       llvm::Value* bv = builder->CreateAlignedLoad(f64x4, bp, llvm::Align(8));
       llvm::Value* av = builder->CreateVectorSplat(4, aik);
-      builder->CreateAlignedStore(builder->CreateFAdd(cv, builder->CreateFMul(av, bv)), cp,
-                                  llvm::Align(8));
+      llvm::Value* outv = fma_vec_fn != nullptr
+                              ? builder->CreateCall(fma_vec_fn, {av, bv, cv})
+                              : builder->CreateFAdd(cv, builder->CreateFMul(av, bv));
+      builder->CreateAlignedStore(outv, cp, llvm::Align(8));
     };
 
     emit_idx_for_step(ii_s, lim_n, step, [&](llvm::Value* ii) {

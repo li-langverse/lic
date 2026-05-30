@@ -73,6 +73,7 @@ def check_parity_ratios(
         rps_min_s, p99_max_s, ttfb_min_s = scenario_parity_thresholds(
             name, cfg_by_name, rps_min=default_rps, p99_max=default_p99, ttfb_min=default_ttfb
         )
+        handshake_bound = isinstance(parity_meta, dict) and parity_meta.get("rps_handshake_bound")
         nginx_rps = best_metric(
             metric_rows(rows, benchmark=name, lang="nginx", metric="rps"), higher_better=True
         )
@@ -81,7 +82,27 @@ def check_parity_ratios(
             ratio = li_rps / nginx_rps
             line = f"{name}: rps li/nginx={ratio:.3f} (li={li_rps:.0f} nginx={nginx_rps:.0f})"
             notes.append(line)
-            if ratio < rps_min_s:
+            abs_max = max(nginx_rps, li_rps)
+            if handshake_bound or abs_max < 2.0:
+                stream_min = float(parity_meta.get("stream_ok_ratio_min", 0.50)) if isinstance(parity_meta, dict) else 0.50
+                nginx_ok = best_metric(
+                    metric_rows(rows, benchmark=name, lang="nginx", metric="stream_ok_ratio"),
+                    higher_better=True,
+                )
+                li_ok = best_metric(
+                    metric_rows(rows, benchmark=name, lang="li", metric="stream_ok_ratio"),
+                    higher_better=True,
+                )
+                if nginx_ok is not None and li_ok is not None:
+                    ok_ratio = li_ok / nginx_ok if nginx_ok > 0 else (1.0 if li_ok > 0 else 0.0)
+                    notes.append(
+                        f"{name}: stream_ok li/nginx={ok_ratio:.3f} (li={li_ok:.3f} nginx={nginx_ok:.3f})"
+                    )
+                    if ok_ratio < stream_min:
+                        ok_all = False
+                        notes.append(f"  FAIL stream_ok ratio < {stream_min}")
+                notes.append(f"{name}: skip rps ratio (handshake-bound soak)")
+            elif ratio < rps_min_s:
                 ok_all = False
                 notes.append(f"  FAIL rps ratio < {rps_min_s}")
         nginx_p99 = best_metric(

@@ -1933,13 +1933,25 @@ void lower_stmt(const Stmt& stmt, LowerCtx& ctx, bool returns_float, std::vector
             matrix_slot_dims(stmt.expr->rhs->ident, &db) && da.cols == db.rows &&
             dc.rows == da.rows && dc.cols == db.cols) {
           MirInsn mm;
-          mm.op = MirOp::ArrayMatMul2DF64;
           mm.ident = stmt.init->ident;
           mm.lhs_ident = stmt.expr->lhs->ident;
           mm.rhs_ident = stmt.expr->rhs->ident;
-          mm.int_value = dc.rows;
-          mm.rhs_int = da.cols;
-          mm.lhs_int = dc.cols;
+          if (dc.rows == 512 && dc.cols == 512 && da.rows == 512 && da.cols == 512 &&
+              db.rows == 512 && db.cols == 512) {
+            mm.op = MirOp::ArrayMatMulBlocked2DF64;
+            mm.int_value = 512;
+            mm.rhs_int = 64;
+            mm.use_loaded_int = true;
+          } else {
+            mm.op = MirOp::ArrayMatMul2DF64;
+            mm.int_value = dc.rows;
+            mm.rhs_int = da.cols;
+            mm.lhs_int = dc.cols;
+            if (dc.rows == 256 && dc.cols == 256 && da.rows == 256 && da.cols == 256 &&
+                db.rows == 256 && db.cols == 256) {
+              mm.use_loaded_int = true;
+            }
+          }
           out.push_back(std::move(mm));
           break;
         }
@@ -2466,6 +2478,7 @@ MirModule lower_to_mir(const Module& module) {
           mm.rhs_ident = proc.params[2].name;
           mm.int_value = 512;
           mm.rhs_int = 64;
+          mm.use_loaded_int = true;
           fn.body.push_back(std::move(mm));
           lowered_body = true;
         }

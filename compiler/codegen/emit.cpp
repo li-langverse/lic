@@ -243,7 +243,7 @@ struct EmitCtx {
       fma_fn = llvm::Intrinsic::getOrInsertDeclaration(module, llvm::Intrinsic::fmuladd, {f64});
     }
 
-    const bool vectorize_j = (n % 4) == 0;
+    const bool vectorize_j = false;
     llvm::FixedVectorType* f64x4 = vectorize_j ? llvm::FixedVectorType::get(f64, 4) : nullptr;
     if (vectorize_j && fma_fn != nullptr) {
       fma_vec_fn = llvm::Intrinsic::getOrInsertDeclaration(module, llvm::Intrinsic::fmuladd,
@@ -383,7 +383,8 @@ struct EmitCtx {
   }
 
   void emit_matmul2d_blocked_ijk(llvm::AllocaInst* c_mat, llvm::AllocaInst* a_mat,
-                                 llvm::AllocaInst* b_mat, unsigned n, unsigned bk) {
+                                 llvm::AllocaInst* b_mat, unsigned n, unsigned bk,
+                                 bool skip_zero = false) {
     llvm::Type* f64 = llvm::Type::getDoubleTy(context);
     llvm::Type* i32t = i32_ty(context);
     llvm::FixedVectorType* f64x4 = llvm::FixedVectorType::get(f64, 4);
@@ -396,6 +397,17 @@ struct EmitCtx {
     llvm::AllocaInst* i_s = builder->CreateAlloca(i32t, nullptr, "mm_i");
     llvm::AllocaInst* k_s = builder->CreateAlloca(i32t, nullptr, "mm_k");
     llvm::AllocaInst* j_s = builder->CreateAlloca(i32t, nullptr, "mm_j");
+
+    if (!skip_zero) {
+      llvm::Value* zf = llvm::ConstantFP::get(f64, 0.0);
+      llvm::AllocaInst* zi_s = builder->CreateAlloca(i32t, nullptr, "mm_zi");
+      llvm::AllocaInst* zj_s = builder->CreateAlloca(i32t, nullptr, "mm_zj");
+      emit_idx_for(zi_s, lim_n, [&](llvm::Value* i) {
+        emit_idx_for(zj_s, lim_n, [&](llvm::Value* j) {
+          builder->CreateStore(zf, matmul_gep2d(c_mat, i, j));
+        });
+      });
+    }
 
     llvm::Function* fma_fn = nullptr;
     if (!fp_numerically_stable) {
@@ -1418,8 +1430,9 @@ struct EmitCtx {
         }
         const unsigned n = static_cast<unsigned>(ins.int_value);
         const unsigned bk = static_cast<unsigned>(ins.rhs_int > 0 ? ins.rhs_int : 64);
+        const bool skip_zero = ins.use_loaded_int;
         emit_matmul2d_blocked_ijk(c_it->second.alloca, a_it->second.alloca, b_it->second.alloca,
-                                  n, bk);
+                                  n, bk, skip_zero);
         return true;
       }
       case MirOp::ArrayDotF64: {

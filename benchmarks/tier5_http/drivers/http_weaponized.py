@@ -101,6 +101,50 @@ def attack_pipeline_request_stuffing(host: str, port: int, attack: dict[str, Any
     }
 
 
+def attack_h2_rapid_reset(host: str, port: int, attack: dict[str, Any]) -> dict[str, Any]:
+    preface = b"PRI * HTTP/2.0\r\n\r\nSM\r\n\r\n"
+    attempts = min(int(attack.get("streams") or 50), 32)
+    rejected = True
+    for _ in range(attempts):
+        data = _raw(host, port, preface, timeout=1.5)
+        status = data.split(b"\r\n", 1)[0] if data else b""
+        if data and (b"HTTP/2" in status or b"200" in status):
+            rejected = False
+            break
+    legit = http_attacks.legitimate_get(host, port)
+    return {
+        "reject_or_close_attack": rejected,
+        "legitimate_client_ok": legit,
+        "no_crash": True,
+    }
+
+
+def attack_dns_resolver_oversize(host: str, port: int, attack: dict[str, Any]) -> dict[str, Any]:
+    """Oversized Host labels — resolver/DNS-adjacent bound before upstream resolve."""
+    label_len = min(int(attack.get("label_bytes") or 8192), 16384)
+    label = "x" * label_len
+    req = (
+        f"GET / HTTP/1.1\r\nHost: {label}\r\nConnection: close\r\n\r\n"
+    ).encode()
+    data = _raw(host, port, req, timeout=2.0)
+    status = data.split(b"\r\n", 1)[0] if data else b""
+    rejected = (
+        len(data) == 0
+        or b"400" in status
+        or b"414" in status
+        or b"431" in status
+        or b"413" in status
+    )
+    legit = http_attacks.legitimate_get(host, port)
+    out: dict[str, Any] = {
+        "legitimate_client_ok": legit,
+        "no_crash": True,
+    }
+    if rejected:
+        out["reject_or_close_attack"] = True
+    return out
+
+
 def attack_absolute_uri_connect(host: str, port: int, attack: dict[str, Any]) -> dict[str, Any]:
     req = (
         f"GET http://{host}:{port}/ HTTP/1.1\r\nHost: {host}:{port}\r\nConnection: close\r\n\r\n"
@@ -134,6 +178,8 @@ def attack_post_method_override(host: str, port: int, attack: dict[str, Any]) ->
 
 
 WEAPONIZED_DRIVERS = {
+    "h2_rapid_reset": attack_h2_rapid_reset,
+    "dns_resolver_oversize": attack_dns_resolver_oversize,
     "chunked_encoding_bomb": attack_chunked_encoding_bomb,
     "oversized_headers": attack_oversized_headers,
     "cache_poisoning_forwarded": attack_cache_poisoning_forwarded,

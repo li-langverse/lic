@@ -139,6 +139,47 @@ def attack_slowloris(host: str, port: int, attack: dict[str, Any]) -> dict[str, 
     }
 
 
+def attack_oversized_body(host: str, port: int, attack: dict[str, Any]) -> dict[str, Any]:
+    body_len = int(attack.get("body_bytes") or 65536)
+    payload = b"A" * body_len
+    req = (
+        b"POST / HTTP/1.1\r\n"
+        b"Host: "
+        + host.encode()
+        + b":"
+        + str(port).encode()
+        + b"\r\nContent-Length: "
+        + str(body_len).encode()
+        + b"\r\nConnection: close\r\n\r\n"
+        + payload
+    )
+    try:
+        s = _connect(host, port, 2.0)
+        s.sendall(req)
+        data = s.recv(1024)
+        s.close()
+        rejected = (
+            b"413" in data
+            or b"400" in data
+            or b"414" in data
+            or b"431" in data
+            or len(data) == 0
+        )
+    except OSError:
+        rejected = True
+    legit = False
+    for _ in range(5):
+        if legitimate_get(host, port):
+            legit = True
+            break
+        time.sleep(0.15)
+    return {
+        "reject_or_close_attack": rejected,
+        "legitimate_client_ok": legit,
+        "no_crash": True,
+    }
+
+
 def attack_oversized_request_line(host: str, port: int, attack: dict[str, Any]) -> dict[str, Any]:
     line_len = int(attack.get("line_bytes") or 8192)
     payload = b"A" * line_len
@@ -541,6 +582,7 @@ def attack_host_header_ssrf(host: str, port: int, attack: dict[str, Any]) -> dic
 
 DRIVERS = {
     "slowloris": attack_slowloris,
+    "oversized_body": attack_oversized_body,
     "oversized_request_line": attack_oversized_request_line,
     "path_traversal": attack_path_traversal,
     "duplicate_content_length": attack_duplicate_content_length,

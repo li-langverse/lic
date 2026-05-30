@@ -25,4 +25,12 @@ def main() -> int
     return 7
   if sess.tick != graph.pool_size:
     return 8
+  var steps0: int = sess.env_pool_steps_emitted
+  var reward0: float = sess.env_pool_total_reward
+  if ml_rl_job_graph_collect(sess, 0.02, graph) != sim_status_ok():
+    return 9
+  if sess.env_pool_steps_emitted != steps0 + graph.pool_size:
+    return 10
+  if sess.env_pool_total_reward <= reward0:
+    return 11
   return 0

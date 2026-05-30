@@ -51,7 +51,7 @@ Recording matrix: [VERTICALS-RECORDING.md](../demo/VERTICALS-RECORDING.md) — a
 | PH-SIM SIM-0 | **DONE** | Profile bridge, contracts |
 | PH-SIM SIM-1 | **DONE** | `sim_step` / `studio_sim_step_hook` |
 | PH-SIM SIM-2 | **DONE** | Replay metadata on session |
-| PH-SIM SIM-3 | **PARTIAL** | `li-ml-rl` `EnvPoolStub` only |
+| PH-SIM SIM-3 | **done** | Session `env_pool_*` + obs contract; `sim_rl_session_env_pool_step` |
 | PH-ROBO ROBO-0 | **DONE** | Tick + workspace composables |
 | PH-AM AM-0 | **DONE** | Slicer workflow stub |
 | PH-DRUG DRUG-0 | **DONE** | LITL workflow stub |
@@ -149,7 +149,7 @@ Cross-tracks (not separate phases above): **PH-PORT**, **PH-COMPLY**, **PH-CIN**
 | WP-SIM-00 | Profile bridge SIM-0 | all sim | **done** | `sim_session_apply_studio_profile` | `studio_profile_bridge.li` | S | — | N |
 | WP-SIM-01 | Session tick SIM-1 | all sim | **done** | `sim_reset`/`sim_step` | `sim_step_stub.li` | S | WP-SIM-00 | N |
 | WP-SIM-02 | Replay metadata SIM-2 | all sim | **done** | `sim_session_replay_*` | `sim_replay_stub.li` | S | WP-SIM-01 | Y |
-| WP-SIM-03 | RL EnvPool SIM-3 | sim_rl | **partial** | Persistent pool + obs contract | `env_pool_step_contract.li` | M | WP-SIM-01 | Y |
+| WP-SIM-03 | RL EnvPool SIM-3 | sim_rl | **done** | Persistent pool + obs contract | `env_pool_step_contract.li`, `studio_sim_rl_step_hook.li` | M | WP-SIM-01 | Y |
 | WP-SIM-04 | Full `SimWorld` replay buffer | all sim | stub | Entity/state ring buffer | composable replay roundtrip | L | WP-SIM-02 | N |
 | WP-SIM-05 | Sensor bus stub | sim_automotive, sim_robotics | **partial** | `sim.sensors` raycast IDs | `sensor_bus_raycast_contract.li` | M | WP-SIM-01 | Y |
 | WP-SIM-06 | `studio.toml` engine section | all | **partial** | Parse `determinism_tier`, export | example vertical `studio.toml` | S | WP-SIM-00 | Y |
@@ -340,7 +340,7 @@ Each profile is **done** when all bullets hold simultaneously (not composable-on
 
 ### 6.2 `sim_rl`
 
-- [ ] `EnvPool` survives across frames (not stack-allocated stub) (`WP-SIM-03`, `WP-RL-02`)
+- [x] `EnvPool` survives across frames (not stack-allocated stub) (`WP-SIM-03`, `WP-RL-02`)
 - [ ] Async sample collection ≥4 envs documented in bench (`PH-ML`)
 - [ ] `studio_sim_step_hook` returns obs tensors matching `env_obs_dim` contract
 - [ ] Replay can reproduce rollout checksum (`WP-SIM-04`)

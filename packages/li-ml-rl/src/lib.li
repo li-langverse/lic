@@ -65,19 +65,21 @@ def ml_rl_job_graph_collect(
 =
   if dt <= 0.0:
     return sim_status_invalid_dt()
-  var pool: EnvPoolStub = env_pool_stub_default()
-  if pool.pool_size < 4:
+  if sim_rl_session_env_pool_step(session, dt) != sim_status_ok():
     return sim_status_invalid_dt()
-  if env_pool_stub_step(pool, session, dt) != sim_status_ok():
-    return sim_status_invalid_dt()
-  graph.pool_size = pool.pool_size
-  graph.job_count = pool.steps_emitted
-  graph.samples_collected = pool.steps_emitted
-  graph.total_reward = pool.total_reward
-  graph.async_workers = pool.pool_size
+  graph.pool_size = session.env_pool_size
+  graph.job_count = session.env_pool_steps_emitted
+  graph.samples_collected = session.env_pool_steps_emitted
+  graph.total_reward = session.env_pool_total_reward
+  graph.async_workers = session.env_pool_size
   if graph.samples_collected < 4:
     return sim_status_invalid_dt()
-  if sim_session_replay_last_tick(session) != pool.pool_size:
+  if sim_session_replay_last_tick(session) != session.tick:
+    return sim_status_invalid_dt()
+  var obs: EnvStepResult = env_obs_from_session(session)
+  if obs.obs1 != session.last_dt:
+    return sim_status_invalid_dt()
+  if obs.env_index != session.env_pool_size - 1:
     return sim_status_invalid_dt()
   return sim_status_ok()
 

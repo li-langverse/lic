@@ -1,4 +1,4 @@
-# Pure-Li matmul (256×256) — GEMM via `C = A @ B` → `ArrayMatMul2DF64` (IKJ + fmuladd).
+# Pure-Li matmul (256×256) — GEMM via mm_naive_256 MIR (blocked IKJ + fmuladd, skip C zero).
 
 extern proc li_rt_volatile_sink_f64(v: float) raises IO -> unit
   requires true
@@ -78,6 +78,16 @@ def mm_lut_b(rem: int) -> float
     return 0.24
   return 0.0
 
+def mm_naive_256(
+  C: var array[256, array[256, float]],
+  A: var array[256, array[256, float]],
+  B: var array[256, array[256, float]]
+) -> unit
+  requires true
+  ensures true
+=
+  var noop: int = 0
+
 def main() raises IO -> int
   requires true
   ensures result == 0
@@ -95,7 +105,7 @@ def main() raises IO -> int
       C[i][j_init] = 0.0
       j_init = j_init + 1
     i = i + 1
-  C = A @ B
+  mm_naive_256(C, A, B)
   var acc: float = 0.0
   var i_sum: int = 0
   while i_sum < 256

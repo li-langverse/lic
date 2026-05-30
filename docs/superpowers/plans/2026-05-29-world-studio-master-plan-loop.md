@@ -43,7 +43,7 @@ todos:
     status: done
   - id: wsm-w2-wgpu-viewport
     content: "li-render PBR-lite wgpu draw list — not stub_pass only (WP-GD-05)"
-    status: pending
+    status: done
   - id: wsm-w2-viewport-hud
     content: "Live FPS + particle tier HUD in viewport (WP-UX-13)"
     status: pending

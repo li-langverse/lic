@@ -1,17 +1,17 @@
 {
   "pass": true,
-  "todo_id": "wsm-w1-agent-chrome-fsm",
-  "wps_touched": ["WP-UX-06", "WP-AG-02"],
+  "todo_id": "wsm-w2-wgpu-viewport",
+  "wps_touched": ["WP-GD-05"],
   "smokes_run": [
-    "packages/li-studio/li-tests/smoke/studio_agent_chrome_fsm.li",
-    "packages/li-studio/li-tests/smoke/studio_agent_chrome.li",
-    "packages/li-studio/li-tests/smoke/studio_agentic_run.li",
-    "packages/li-studio/li-tests/smoke/studio_agent_invoke.li"
+    "packages/li-render/li-tests/smoke/wgpu_draw_list.li",
+    "packages/li-render/li-tests/smoke/viewport_fps_counter.li",
+    "packages/li-render/li-tests/smoke/scene_md_particles.li"
   ],
   "native_only": true,
   "gates": {
     "world_studio_plan_gates": "pass",
-    "lic_check_local": "skipped_no_lic_binary"
+    "lic_check_local": "skipped_no_lic_binary",
+    "viewport_fps_toml_status": "draw_list"
   },
-  "notes": "Agent task FSM wired to shell compose: cancel/retry/send pointer handlers, run tick sync, undo last patch; invoke + tool-trace paint cmds; smoke studio_agent_chrome_fsm.li covers idle→running→cancel, fail→retry→done→undo path."
+  "notes": "WP-GD-05 PBR-lite draw list IR in li-render (RenderDrawList, RenderPbrLiteMaterial, push/submit); lig.present li_rt_lig_wgpu_draw_list_submit runtime hook; viewport_fps.toml status draw_list (not stub_pass); smoke wgpu_draw_list.li."
 }

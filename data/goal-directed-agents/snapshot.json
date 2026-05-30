@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-05-28T19:38:12.261914+00:00",
+  "generated_at": "2026-05-30T06:01:00.779936+00:00",
   "tz": "Europe/Berlin",
   "agents_live": 0,
   "runners": [
@@ -7,10 +7,10 @@
       "id": "httpd",
       "name": "li-httpd gap parity",
       "branch": "cursor/httpd-plan-continue",
-      "head": "c8c18657",
-      "running": true,
-      "process": "4100598 python3 /home/s4il0r/Documents/Cursor/li-langverse/lic/scripts/goal-directed-agents-snapshot.py",
-      "log_path": "/home/s4il0r/Documents/Cursor/li-langverse/lic/../lic/data/httpd-plan-loop/iter-20260522-132846.log",
+      "head": "8c2bd6d",
+      "running": false,
+      "process": "",
+      "log_path": "/mnt/c/Users/Julian/Documents/Programming/li/lic/data/httpd-plan-loop/iter-20260522-132846.log",
       "todos": [
         {
           "id": "gap-exploit-owasp-cwe-suite",
@@ -72,7 +72,7 @@
       "agent_live": false,
       "agent": "",
       "goal_file": "",
-      "log_age_sec": 182491,
+      "log_age_sec": 60472,
       "last_state_at": "",
       "last_state_todo": "",
       "last_state_gates": "",
@@ -87,1958 +87,131 @@
         "ursor/li-langverse/li-cursor-agents/data/workspaces/li-langverse/lic/code_implementer-1779456669806/repo/docs/ecosystem/httpd-m1-baseline.md",
         "[sdk] \u2717 tool"
       ],
-      "status_note": "supervisor idle (log 182491s stale \u2014 check log_path)",
+      "status_note": "supervisor off",
       "active_todo_id": "gap-phase2-perf-wrk-soak"
     },
     {
       "id": "compiler-studio",
       "name": "Compiler + Studio",
       "branch": "cursor/compiler-studio-plan-loop",
-      "head": "4767dd8a",
+      "head": "",
       "running": false,
       "process": "",
-      "log_path": "/home/s4il0r/Documents/Cursor/li-langverse/lic/../lic-worktrees/compiler-studio/data/compiler-studio-plan-loop/until-deadline-20260525-180023.log",
-      "todos": [
-        {
-          "id": "wave-a-7e-verify",
-          "content": "Tier-1 result verify \u2014 reference.py + bench-verify-results.sh 1; all checksums pass",
-          "status": "completed"
-        },
-        {
-          "id": "wave-a-7e-pure-li-simd",
-          "content": "Pure-Li simd_dot \u2014 correct spec checksum at realistic wall time (DCE allowed if verified)",
-          "status": "completed"
-        },
-        {
-          "id": "wave-a-7e-matmul-pure",
-          "content": "Pure-Li matmul_naive/matmul_blocked \u2014 maintain verify + perf row honesty",
-          "status": "completed"
-        },
-        {
-          "id": "wave-a-7e-horner",
-          "content": "horner_pure_li \u2014 volatile sink + reference; no unverified fast-math DCE",
-          "status": "completed"
-        },
-        {
-          "id": "wave-a-2f-lean-strict",
-          "content": "G-lean \u2014 autovc_lake_typecheck + glean_strict_build_smoke green on lic build",
-          "status": "completed"
-        },
-        {
-          "id": "wave-a-2f-vc-corpus",
-          "content": "contracts_discharge_corpus + contracts_verify_lean; close sqrt_open_bound or document",
-          "status": "completed"
-        },
-        {
-          "id": "wave-a-llvm22-typecheck-warnings",
-          "content": "LLVM 22 \u2014 fix -Wmissing-field-initializers in compiler/types/typecheck.cpp (make_bool/make_str/make_i64 Ty initializers); verify ./scripts/build.sh clean",
-          "status": "completed"
-        },
-        {
-          "id": "wave-a-2i-explicit-math",
-          "content": "2i \u2014 explicit math only (dot, matmul, sum, element-wise on matching shapes); reject NumPy broadcast; document tensor/quaternion path",
-          "status": "completed"
-        },
-        {
-          "id": "wave-a-7d-vectorized",
-          "content": "7d \u2014 @vectorized on def + Lean G-par disjoint roadmap note",
-          "status": "completed"
-        },
-        {
-          "id": "wave-b-tier2-verify",
-          "content": "Tier-2 physics \u2014 verify.py green on md_lennard_jones + one PDE smoke",
-          "status": "completed"
-        },
-        {
-          "id": "wave-b-md-oracle",
-          "content": "md_lennard_jones \u2014 external oracle column plan in competitive-engines (doc + stub driver)",
-          "status": "completed"
-        },
-        {
-          "id": "studio-math-goldens",
-          "content": "verify-math-physics-goldens.sh in CI gates; li-math golden procs documented",
-          "status": "completed"
-        },
-        {
-          "id": "studio-algo-wave-a-doc",
-          "content": "algorithms-and-libraries-plan Wave A table synced to provability-gaps",
-          "status": "completed"
-        },
-        {
-          "id": "studio-ph-ux-slice",
-          "content": "PH-UX \u2014 one adaptive layout composable + li-tests compile_ok (no httpd)",
-          "status": "completed"
-        },
-        {
-          "id": "wave-c-competitive-intel",
-          "content": "Download Layer C UX intel \u2014 competitive-intel/ + fetch script + ui-ux-by-dimension.md",
-          "status": "completed"
-        },
-        {
-          "id": "wave-c-verticals-toml",
-          "content": "AL-1 benchmarks/competitive/verticals.toml + vertical-algorithm-catalog stub",
-          "status": "completed"
-        },
-        {
-          "id": "wave-c-ui-rect-vc",
-          "content": "li-ui rect_contains single-return VC + composable compile_ok",
-          "status": "completed"
-        },
-        {
-          "id": "wave-d-gui-scaffold",
-          "content": "AL-9 packages/gui scaffold + composable import gui (studio shell; UX-02/04)",
-          "status": "in_progress"
-        },
-        {
-          "id": "wave-d-02-al2-catalog",
-          "content": "AL-2 vertical-algorithm-catalog.md \u2014 one kernel section per verticals.toml row",
-          "status": "completed"
-        },
-        {
-          "id": "wave-d-03-ux-inspector",
-          "content": "PH-UX inspector/properties panel stub in li-ui (UX-04, scientific-editor intel)",
-          "status": "completed"
-        },
-        {
-          "id": "wave-d-04-math-quat-mat4",
-          "content": "AL-11 math quat_dot/slerp/mat4_mul + scene.Transform3 wire-up + li-tests",
-          "status": "completed"
-        },
-        {
-          "id": "wave-d-05-linalg-scaffold",
-          "content": "AL-10 packages/linalg scaffold + composable matmul smoke + math_linalg test",
-          "status": "completed"
-        },
-        {
-          "id": "wave-d-06-gpu-wgpu-smoke",
-          "content": "gpu package \u2014 device enum + wgpu smoke composable (LKIR stub ok)",
-          "status": "completed"
-        },
-        {
-          "id": "wave-d-07-render-present",
-          "content": "render \u2014 present/swapchain stub + import render composable",
-          "status": "completed"
-        },
-        {
-          "id": "wave-d-08-scene-hierarchy",
-          "content": "scene \u2014 hierarchy + transform via math.Quat + composable",
-          "status": "completed"
-        },
-        {
-          "id": "wave-d-09-assets-gltf",
-          "content": "assets \u2014 glTF ingest stub + composable import",
-          "status": "completed"
-        },
-        {
-          "id": "wave-d-10-ui-studio-wire",
-          "content": "ui extend \u2014 studio chrome hooks + wire gui import in packages/studio",
-          "status": "completed"
-        },
-        {
-          "id": "wave-d-11-ux-dock-ux02",
-          "content": "PH-UX dock/workspace chrome from competitive-intel UX-02 + adaptive_layout",
-          "status": "completed"
-        },
-        {
-          "id": "wave-d-12-ux-command-palette",
-          "content": "PH-UX command palette / agent cmd IDs stub (UX-01 patterns)",
-          "status": "completed"
-        },
-        {
-          "id": "wave-d-13-anim-scaffold",
-          "content": "AL-12 packages/anim \u2014 keyframe/clip types + composable",
-          "status": "completed"
-        },
-        {
-          "id": "wave-d-14-seq-scaffold",
-          "content": "AL-12 packages/seq \u2014 shot/timeline types + composable",
-          "status": "completed"
-        },
-        {
-          "id": "wave-d-15-geometry-scaffold",
-          "content": "AL-13 packages/geometry \u2014 mesh predicates stub + composable",
-          "status": "completed"
-        },
-        {
-          "id": "wave-d-16-cad-fundamentals",
-          "content": "AL-4 docs/ecosystem/cad-fundamentals.md merge + link geometry PH",
-          "status": "completed"
-        },
-        {
-          "id": "wave-d-17-cae-rfc",
-          "content": "AL-5 engineering/CAE RFC stub (FEA/CFD split from PH-SCI)",
-          "status": "completed"
-        },
-        {
-          "id": "wave-d-18-cinematic-rfc",
-          "content": "AL-6 cinematic algorithm RFC (encode/color/audio; not UX-only)",
-          "status": "completed"
-        },
-        {
-          "id": "wave-d-19-vertical-gaming",
-          "content": "gaming \u2014 physics.rigid composable + verticals.toml notes + bench row",
-          "status": "completed"
-        },
-        {
-          "id": "wave-d-20-vertical-md-oracle",
-          "content": "MD \u2014 md_oracle driver stub doc + verticals.toml LAMMPS column plan",
-          "status": "completed"
-        },
-        {
-          "id": "wave-d-21-vertical-chem",
-          "content": "chem \u2014 DFT composable smoke + qm_dft vertical row honesty",
-          "status": "completed"
-        },
-        {
-          "id": "wave-d-22-vertical-bioeng",
-          "content": "bioeng \u2014 LITL workflow composable + bioengineering.toml hook",
-          "status": "completed"
-        },
-        {
-          "id": "wave-d-23-vertical-robo",
-          "content": "sim.robotics \u2014 workspace composable + PH-ROBO cross-link",
-          "status": "completed"
-        },
-        {
-          "id": "wave-d-24-vertical-am",
-          "content": "sim.additive \u2014 slicer workflow composable + am_slicer vertical",
-          "status": "completed"
-        },
-        {
-          "id": "wave-d-25-vertical-viz",
-          "content": "sim.viz \u2014 pipeline source/display stub (ParaView UX-03 patterns)",
-          "status": "completed"
-        },
-        {
-          "id": "wave-d-26-vertical-mmo",
-          "content": "mmo \u2014 shard composable + mmorpg.toml bench stub row",
-          "status": "completed"
-        },
-        {
-          "id": "wave-d-27-physics-deepen",
-          "content": "physics.* \u2014 one tier-2 kernel harden (rigid or soft) + verify.py note",
-          "status": "completed"
-        },
-        {
-          "id": "wave-d-28-studio-compose",
-          "content": "studio \u2014 compose ui+gui+render+world public API + composable",
-          "status": "completed"
-        },
-        {
-          "id": "wave-e-01-rect-vc-close",
-          "content": "li-ui rect_contains VC close \u2192 composable compile_ok (was wave-c)",
-          "status": "completed"
-        },
-        {
-          "id": "wave-e-02-player-hud",
-          "content": "player \u2014 load gui HUD composable + import test",
-          "status": "completed"
-        }
-      ],
-      "plan_completed": 46,
-      "plan_total": 47,
-      "plan_pending": [],
-      "state": {
-        "completed_ids": [
-          "wave-a-7e-verify",
-          "wave-a-7e-pure-li-simd",
-          "wave-a-7e-matmul-pure",
-          "wave-a-7e-horner",
-          "wave-a-2f-lean-strict",
-          "wave-a-2f-vc-corpus",
-          "wave-a-2i-explicit-math",
-          "wave-a-7d-vectorized",
-          "wave-b-tier2-verify",
-          "wave-b-md-oracle",
-          "studio-math-goldens",
-          "studio-algo-wave-a-doc",
-          "studio-ph-ux-slice",
-          "wave-c-competitive-intel",
-          "wave-c-verticals-toml",
-          "wave-c-ui-rect-vc",
-          "wave-d-02-al2-catalog",
-          "wave-d-03-ux-inspector",
-          "wave-d-04-math-quat-mat4",
-          "wave-d-05-linalg-scaffold",
-          "wave-d-gui-scaffold"
-        ],
-        "iterations": 74,
-        "history": [
-          {
-            "at": "2026-05-23T09:02:50.508081+00:00",
-            "todo_id": "wave-d-gui-scaffold",
-            "agent_exit": 1,
-            "gates_ok": true
-          },
-          {
-            "at": "2026-05-23T09:08:34.335255+00:00",
-            "todo_id": "wave-d-gui-scaffold",
-            "agent_exit": 0,
-            "gates_ok": true
-          },
-          {
-            "at": "2026-05-24T17:08:31.389794+00:00",
-            "todo_id": "wave-a-llvm22-typecheck-warnings",
-            "agent_exit": 1,
-            "gates_ok": false
-          },
-          {
-            "at": "2026-05-24T17:19:56.590015+00:00",
-            "todo_id": "wave-a-llvm22-typecheck-warnings",
-            "agent_exit": 0,
-            "gates_ok": false
-          },
-          {
-            "at": "2026-05-24T19:35:09.248291+00:00",
-            "todo_id": "wave-d-gui-scaffold",
-            "agent_exit": 0,
-            "gates_ok": false
-          },
-          {
-            "at": "2026-05-24T19:53:34.860479+00:00",
-            "todo_id": "wave-d-gui-scaffold",
-            "agent_exit": 0,
-            "gates_ok": false
-          },
-          {
-            "at": "2026-05-24T20:06:02.114368+00:00",
-            "todo_id": "wave-d-gui-scaffold",
-            "agent_exit": 0,
-            "gates_ok": false
-          },
-          {
-            "at": "2026-05-24T20:27:58.164632+00:00",
-            "todo_id": "wave-d-gui-scaffold",
-            "agent_exit": 0,
-            "gates_ok": false
-          },
-          {
-            "at": "2026-05-24T20:42:03.743213+00:00",
-            "todo_id": "wave-d-gui-scaffold",
-            "agent_exit": 0,
-            "gates_ok": false
-          },
-          {
-            "at": "2026-05-24T21:28:33.788765+00:00",
-            "todo_id": "wave-d-gui-scaffold",
-            "agent_exit": 124,
-            "gates_ok": false
-          },
-          {
-            "at": "2026-05-24T21:32:13.473435+00:00",
-            "todo_id": "wave-d-gui-scaffold",
-            "agent_exit": -15,
-            "gates_ok": false
-          },
-          {
-            "at": "2026-05-24T21:46:49.869436+00:00",
-            "todo_id": "wave-d-gui-scaffold",
-            "agent_exit": 1,
-            "gates_ok": false
-          },
-          {
-            "at": "2026-05-24T22:34:10.538378+00:00",
-            "todo_id": "wave-d-gui-scaffold",
-            "agent_exit": 124,
-            "gates_ok": false
-          },
-          {
-            "at": "2026-05-24T22:53:59.295760+00:00",
-            "todo_id": "wave-d-gui-scaffold",
-            "agent_exit": 1,
-            "gates_ok": false
-          },
-          {
-            "at": "2026-05-24T23:20:15.290384+00:00",
-            "todo_id": "wave-d-gui-scaffold",
-            "agent_exit": 0,
-            "gates_ok": true
-          },
-          {
-            "at": "2026-05-24T23:38:40.778108+00:00",
-            "todo_id": "wave-d-gui-scaffold",
-            "agent_exit": 1,
-            "gates_ok": false
-          },
-          {
-            "at": "2026-05-24T23:58:02.874568+00:00",
-            "todo_id": "wave-d-gui-scaffold",
-            "agent_exit": 1,
-            "gates_ok": false
-          },
-          {
-            "at": "2026-05-25T00:23:48.159960+00:00",
-            "todo_id": "wave-d-gui-scaffold",
-            "agent_exit": 0,
-            "gates_ok": true
-          },
-          {
-            "at": "2026-05-25T00:53:24.739028+00:00",
-            "todo_id": "wave-d-gui-scaffold",
-            "agent_exit": 1,
-            "gates_ok": false
-          },
-          {
-            "at": "2026-05-25T01:07:42.744840+00:00",
-            "todo_id": "wave-d-gui-scaffold",
-            "agent_exit": 1,
-            "gates_ok": false
-          },
-          {
-            "at": "2026-05-25T01:25:19.219821+00:00",
-            "todo_id": "wave-d-gui-scaffold",
-            "agent_exit": 0,
-            "gates_ok": true
-          },
-          {
-            "at": "2026-05-25T01:38:21.263886+00:00",
-            "todo_id": "wave-d-gui-scaffold",
-            "agent_exit": 1,
-            "gates_ok": false
-          },
-          {
-            "at": "2026-05-25T01:52:44.791868+00:00",
-            "todo_id": "wave-d-gui-scaffold",
-            "agent_exit": 1,
-            "gates_ok": false
-          },
-          {
-            "at": "2026-05-25T02:07:25.489757+00:00",
-            "todo_id": "wave-d-gui-scaffold",
-            "agent_exit": 1,
-            "gates_ok": false
-          },
-          {
-            "at": "2026-05-25T02:25:28.893455+00:00",
-            "todo_id": "wave-d-gui-scaffold",
-            "agent_exit": 0,
-            "gates_ok": true
-          },
-          {
-            "at": "2026-05-25T02:38:21.417524+00:00",
-            "todo_id": "wave-d-gui-scaffold",
-            "agent_exit": 1,
-            "gates_ok": false
-          },
-          {
-            "at": "2026-05-25T02:52:41.943793+00:00",
-            "todo_id": "wave-d-gui-scaffold",
-            "agent_exit": 1,
-            "gates_ok": false
-          },
-          {
-            "at": "2026-05-25T03:07:33.157835+00:00",
-            "todo_id": "wave-d-gui-scaffold",
-            "agent_exit": 0,
-            "gates_ok": true
-          },
-          {
-            "at": "2026-05-25T03:19:38.273007+00:00",
-            "todo_id": "wave-d-gui-scaffold",
-            "agent_exit": 0,
-            "gates_ok": true
-          },
-          {
-            "at": "2026-05-25T03:31:53.213316+00:00",
-            "todo_id": "wave-d-gui-scaffold",
-            "agent_exit": 1,
-            "gates_ok": false
-          },
-          {
-            "at": "2026-05-25T03:46:21.408720+00:00",
-            "todo_id": "wave-d-gui-scaffold",
-            "agent_exit": 1,
-            "gates_ok": false
-          },
-          {
-            "at": "2026-05-25T04:01:02.701103+00:00",
-            "todo_id": "wave-d-gui-scaffold",
-            "agent_exit": 1,
-            "gates_ok": false
-          },
-          {
-            "at": "2026-05-25T04:15:28.068845+00:00",
-            "todo_id": "wave-d-gui-scaffold",
-            "agent_exit": 1,
-            "gates_ok": false
-          },
-          {
-            "at": "2026-05-25T04:37:13.031245+00:00",
-            "todo_id": "wave-d-gui-scaffold",
-            "agent_exit": 0,
-            "gates_ok": true
-          },
-          {
-            "at": "2026-05-25T04:50:18.886756+00:00",
-            "todo_id": "wave-d-gui-scaffold",
-            "agent_exit": 1,
-            "gates_ok": false
-          },
-          {
-            "at": "2026-05-25T05:05:04.567689+00:00",
-            "todo_id": "wave-d-gui-scaffold",
-            "agent_exit": 1,
-            "gates_ok": false
-          },
-          {
-            "at": "2026-05-25T05:21:26.715978+00:00",
-            "todo_id": "wave-d-gui-scaffold",
-            "agent_exit": 0,
-            "gates_ok": false
-          },
-          {
-            "at": "2026-05-25T05:42:06.879901+00:00",
-            "todo_id": "wave-d-gui-scaffold",
-            "agent_exit": 0,
-            "gates_ok": true
-          },
-          {
-            "at": "2026-05-25T05:55:00.519499+00:00",
-            "todo_id": "wave-d-gui-scaffold",
-            "agent_exit": 1,
-            "gates_ok": false
-          },
-          {
-            "at": "2026-05-25T06:09:22.345926+00:00",
-            "todo_id": "wave-d-gui-scaffold",
-            "agent_exit": 1,
-            "gates_ok": false
-          },
-          {
-            "at": "2026-05-25T06:23:50.392853+00:00",
-            "todo_id": "wave-d-gui-scaffold",
-            "agent_exit": 1,
-            "gates_ok": false
-          },
-          {
-            "at": "2026-05-25T06:44:04.821315+00:00",
-            "todo_id": "wave-d-gui-scaffold",
-            "agent_exit": 0,
-            "gates_ok": true
-          },
-          {
-            "at": "2026-05-25T06:57:04.647288+00:00",
-            "todo_id": "wave-d-gui-scaffold",
-            "agent_exit": 1,
-            "gates_ok": false
-          },
-          {
-            "at": "2026-05-25T07:11:41.358919+00:00",
-            "todo_id": "wave-d-gui-scaffold",
-            "agent_exit": 1,
-            "gates_ok": false
-          },
-          {
-            "at": "2026-05-25T07:27:10.609591+00:00",
-            "todo_id": "wave-d-gui-scaffold",
-            "agent_exit": 0,
-            "gates_ok": false
-          },
-          {
-            "at": "2026-05-25T07:41:49.156764+00:00",
-            "todo_id": "wave-d-gui-scaffold",
-            "agent_exit": 1,
-            "gates_ok": false
-          },
-          {
-            "at": "2026-05-25T07:56:31.068126+00:00",
-            "todo_id": "wave-d-gui-scaffold",
-            "agent_exit": 1,
-            "gates_ok": false
-          },
-          {
-            "at": "2026-05-25T08:12:58.898604+00:00",
-            "todo_id": "wave-d-gui-scaffold",
-            "agent_exit": 0,
-            "gates_ok": true
-          },
-          {
-            "at": "2026-05-25T08:26:54.100716+00:00",
-            "todo_id": "wave-d-gui-scaffold",
-            "agent_exit": 1,
-            "gates_ok": false
-          },
-          {
-            "at": "2026-05-25T08:42:07.674882+00:00",
-            "todo_id": "wave-d-gui-scaffold",
-            "agent_exit": 1,
-            "gates_ok": false
-          },
-          {
-            "at": "2026-05-25T09:00:46.613077+00:00",
-            "todo_id": "wave-d-gui-scaffold",
-            "agent_exit": 0,
-            "gates_ok": true
-          },
-          {
-            "at": "2026-05-25T09:14:55.269612+00:00",
-            "todo_id": "wave-d-gui-scaffold",
-            "agent_exit": 1,
-            "gates_ok": false
-          },
-          {
-            "at": "2026-05-25T09:30:58.836382+00:00",
-            "todo_id": "wave-d-gui-scaffold",
-            "agent_exit": 1,
-            "gates_ok": false
-          },
-          {
-            "at": "2026-05-25T09:49:23.050358+00:00",
-            "todo_id": "wave-d-gui-scaffold",
-            "agent_exit": 0,
-            "gates_ok": true
-          },
-          {
-            "at": "2026-05-25T10:07:03.429984+00:00",
-            "todo_id": "wave-d-gui-scaffold",
-            "agent_exit": 1,
-            "gates_ok": false
-          },
-          {
-            "at": "2026-05-25T10:30:23.917003+00:00",
-            "todo_id": "wave-d-gui-scaffold",
-            "agent_exit": 0,
-            "gates_ok": true
-          },
-          {
-            "at": "2026-05-25T10:53:35.549094+00:00",
-            "todo_id": "wave-d-gui-scaffold",
-            "agent_exit": 1,
-            "gates_ok": false
-          },
-          {
-            "at": "2026-05-25T11:37:46.653884+00:00",
-            "todo_id": "wave-d-gui-scaffold",
-            "agent_exit": 0,
-            "gates_ok": true
-          },
-          {
-            "at": "2026-05-25T12:03:42.884178+00:00",
-            "todo_id": "wave-d-gui-scaffold",
-            "agent_exit": 0,
-            "gates_ok": true
-          },
-          {
-            "at": "2026-05-25T12:49:51.700194+00:00",
-            "todo_id": "wave-d-gui-scaffold",
-            "agent_exit": 124,
-            "gates_ok": false
-          },
-          {
-            "at": "2026-05-25T13:13:34.949812+00:00",
-            "todo_id": "wave-d-gui-scaffold",
-            "agent_exit": 1,
-            "gates_ok": false
-          },
-          {
-            "at": "2026-05-25T13:39:58.475661+00:00",
-            "todo_id": "wave-d-gui-scaffold",
-            "agent_exit": 0,
-            "gates_ok": true
-          },
-          {
-            "at": "2026-05-25T13:54:41.598113+00:00",
-            "todo_id": "wave-d-gui-scaffold",
-            "agent_exit": 1,
-            "gates_ok": false
-          },
-          {
-            "at": "2026-05-25T14:32:29.033763+00:00",
-            "todo_id": "wave-d-gui-scaffold",
-            "agent_exit": 0,
-            "gates_ok": true
-          },
-          {
-            "at": "2026-05-25T14:49:46.168126+00:00",
-            "todo_id": "wave-d-gui-scaffold",
-            "agent_exit": 1,
-            "gates_ok": false
-          },
-          {
-            "at": "2026-05-25T15:34:56.153655+00:00",
-            "todo_id": "wave-d-gui-scaffold",
-            "agent_exit": 0,
-            "gates_ok": true
-          },
-          {
-            "at": "2026-05-25T15:52:40.125679+00:00",
-            "todo_id": "wave-d-gui-scaffold",
-            "agent_exit": 1,
-            "gates_ok": false
-          },
-          {
-            "at": "2026-05-25T16:31:21.257143+00:00",
-            "todo_id": "wave-d-gui-scaffold",
-            "agent_exit": 0,
-            "gates_ok": true
-          },
-          {
-            "at": "2026-05-25T16:48:46.000762+00:00",
-            "todo_id": "wave-d-gui-scaffold",
-            "agent_exit": 1,
-            "gates_ok": false
-          },
-          {
-            "at": "2026-05-25T17:26:44.196325+00:00",
-            "todo_id": "wave-d-gui-scaffold",
-            "agent_exit": 1,
-            "gates_ok": false
-          },
-          {
-            "at": "2026-05-25T17:45:50.263799+00:00",
-            "todo_id": "wave-d-gui-scaffold",
-            "agent_exit": 1,
-            "gates_ok": false
-          },
-          {
-            "at": "2026-05-25T18:37:22.299597+00:00",
-            "todo_id": "wave-d-gui-scaffold",
-            "agent_exit": 0,
-            "gates_ok": true
-          },
-          {
-            "at": "2026-05-25T18:56:44.778223+00:00",
-            "todo_id": "wave-d-gui-scaffold",
-            "agent_exit": 0,
-            "gates_ok": true
-          },
-          {
-            "at": "2026-05-25T19:26:43.369615+00:00",
-            "todo_id": "wave-d-gui-scaffold",
-            "agent_exit": 1,
-            "gates_ok": false
-          }
-        ],
-        "note": "2026-05-24: cleared premature completed_ids for wave-a-llvm22-typecheck-warnings and wave-d-gui-scaffold (plan still open; gates had failed or plan YAML not updated)"
-      },
-      "state_iterations": 74,
+      "log_path": "/mnt/c/Users/Julian/Documents/Programming/li/lic-worktrees/compiler-studio/data/compiler-studio-plan-loop/runner.log",
       "agent_live": false,
       "agent": "",
       "goal_file": "",
-      "log_age_sec": 258960,
-      "last_state_at": "2026-05-25T19:26:43.369615+00:00",
-      "last_state_todo": "wave-d-gui-scaffold",
-      "last_state_gates": false,
-      "current_iteration": "=== iteration 1: wave-d-gui-scaffold ===",
-      "activity": [
-        "[sdk] \u2717 tool",
-        "[sdk] \u2713 shell cd /home/s4il0r/Documents/Cursor/li-langverse/li-cursor-agents/data/workspaces/l",
-        "[sdk] \u2717 tool",
-        "[sdk] thinking\u2026",
-        "[sdk] \u25b6 tool",
-        "[sdk] \u25b6 tool",
-        "[sdk] \u2713 shell cd /home/s4il0r/Documents/Cursor/li-langverse/li-cursor-agents/data/workspaces/l",
-        "[sdk] \u2717 tool"
-      ],
+      "log_age_sec": null,
+      "last_state_at": "",
+      "last_state_todo": "",
+      "last_state_gates": "",
+      "current_iteration": "",
+      "activity": [],
       "status_note": "supervisor off"
     },
     {
       "id": "sim",
       "name": "Sim / algo registry",
       "branch": "cursor/sim-algo-plan-loop",
-      "head": "32187436",
+      "head": "",
       "running": false,
       "process": "",
-      "log_path": "/home/s4il0r/Documents/Cursor/li-langverse/lic/../lic-worktrees/sim-algo/data/sim-plan-loop/runner.log",
-      "todos": [
-        {
-          "id": "sim-p0-md-lj-li-parity",
-          "content": "Tier-2 Li md_lennard_jones checksum parity vs native (fix runtime sink / driver)",
-          "status": "completed"
-        },
-        {
-          "id": "sim-p0-heat-li-smoke",
-          "content": "Pure-Li heat_equation_2d smoke with harness verify row",
-          "status": "completed"
-        },
-        {
-          "id": "sim-p1-num-dot-axpy",
-          "content": "Implement algo_id=1 num_dot_axpy in li-math-numerics + bench-package gate",
-          "status": "pending"
-        },
-        {
-          "id": "sim-p1-md-neighbor-cell",
-          "content": "Implement algo_id=105 md_neighbor_cell_list stub\u2192smoke in li-physics-particles",
-          "status": "pending"
-        },
-        {
-          "id": "sim-p2-qm-dft-scf",
-          "content": "Implement algo_id=418 qm_dft_scf_energy minimal SCF stub with summary metrics",
-          "status": "pending"
-        }
-      ],
-      "plan_completed": 2,
-      "plan_total": 5,
-      "plan_pending": [
-        "sim-p1-num-dot-axpy",
-        "sim-p1-md-neighbor-cell",
-        "sim-p2-qm-dft-scf"
-      ],
-      "state": {
-        "completed_ids": [],
-        "iterations": 115,
-        "history": [
-          {
-            "at": "2026-05-24T15:02:54.490019+00:00",
-            "todo_id": "sim-p0-md-lj-li-parity",
-            "agent_exit": 1,
-            "gates_ok": false
-          },
-          {
-            "at": "2026-05-24T15:16:27.411191+00:00",
-            "todo_id": "sim-p0-md-lj-li-parity",
-            "agent_exit": 1,
-            "gates_ok": false
-          },
-          {
-            "at": "2026-05-24T15:29:49.379145+00:00",
-            "todo_id": "sim-p0-md-lj-li-parity",
-            "agent_exit": 1,
-            "gates_ok": false
-          },
-          {
-            "at": "2026-05-24T15:40:57.682346+00:00",
-            "todo_id": "sim-p0-md-lj-li-parity",
-            "agent_exit": 0,
-            "gates_ok": false
-          },
-          {
-            "at": "2026-05-24T15:59:15.531627+00:00",
-            "todo_id": "sim-p0-md-lj-li-parity",
-            "agent_exit": 1,
-            "gates_ok": false
-          },
-          {
-            "at": "2026-05-24T16:13:05.985211+00:00",
-            "todo_id": "sim-p0-md-lj-li-parity",
-            "agent_exit": 1,
-            "gates_ok": false
-          },
-          {
-            "at": "2026-05-24T16:21:16.339757+00:00",
-            "todo_id": "sim-p0-md-lj-li-parity",
-            "agent_exit": 0,
-            "gates_ok": false
-          },
-          {
-            "at": "2026-05-24T16:32:27.410480+00:00",
-            "todo_id": "sim-p0-md-lj-li-parity",
-            "agent_exit": 0,
-            "gates_ok": false
-          },
-          {
-            "at": "2026-05-24T17:12:10.136689+00:00",
-            "todo_id": "sim-p0-heat-li-smoke",
-            "agent_exit": 0,
-            "gates_ok": false
-          },
-          {
-            "at": "2026-05-24T17:22:12.298471+00:00",
-            "todo_id": "sim-p0-heat-li-smoke",
-            "agent_exit": 0,
-            "gates_ok": false
-          },
-          {
-            "at": "2026-05-24T17:35:36.186316+00:00",
-            "todo_id": "sim-p0-heat-li-smoke",
-            "agent_exit": 0,
-            "gates_ok": false
-          },
-          {
-            "at": "2026-05-24T17:42:43.583129+00:00",
-            "todo_id": "sim-p0-heat-li-smoke",
-            "agent_exit": 0,
-            "gates_ok": false
-          },
-          {
-            "at": "2026-05-24T17:49:39.417934+00:00",
-            "todo_id": "sim-p0-heat-li-smoke",
-            "agent_exit": 0,
-            "gates_ok": false
-          },
-          {
-            "at": "2026-05-24T18:00:06.812245+00:00",
-            "todo_id": "sim-p0-heat-li-smoke",
-            "agent_exit": 0,
-            "gates_ok": false
-          },
-          {
-            "at": "2026-05-24T18:08:00.156935+00:00",
-            "todo_id": "sim-p0-heat-li-smoke",
-            "agent_exit": 0,
-            "gates_ok": false
-          },
-          {
-            "at": "2026-05-24T18:15:31.650644+00:00",
-            "todo_id": "sim-p0-heat-li-smoke",
-            "agent_exit": 0,
-            "gates_ok": false
-          },
-          {
-            "at": "2026-05-24T18:22:15.016643+00:00",
-            "todo_id": "sim-p0-heat-li-smoke",
-            "agent_exit": 0,
-            "gates_ok": false
-          },
-          {
-            "at": "2026-05-24T18:29:52.254067+00:00",
-            "todo_id": "sim-p0-heat-li-smoke",
-            "agent_exit": 0,
-            "gates_ok": false
-          },
-          {
-            "at": "2026-05-24T18:41:29.414742+00:00",
-            "todo_id": "sim-p0-heat-li-smoke",
-            "agent_exit": 0,
-            "gates_ok": false
-          },
-          {
-            "at": "2026-05-24T18:48:23.381886+00:00",
-            "todo_id": "sim-p0-heat-li-smoke",
-            "agent_exit": 0,
-            "gates_ok": false
-          },
-          {
-            "at": "2026-05-24T18:55:12.900099+00:00",
-            "todo_id": "sim-p0-heat-li-smoke",
-            "agent_exit": 0,
-            "gates_ok": false
-          },
-          {
-            "at": "2026-05-24T19:01:58.197709+00:00",
-            "todo_id": "sim-p0-heat-li-smoke",
-            "agent_exit": 0,
-            "gates_ok": false
-          },
-          {
-            "at": "2026-05-24T19:08:39.614535+00:00",
-            "todo_id": "sim-p0-heat-li-smoke",
-            "agent_exit": 0,
-            "gates_ok": false
-          },
-          {
-            "at": "2026-05-24T19:18:40.803564+00:00",
-            "todo_id": "sim-p0-heat-li-smoke",
-            "agent_exit": 0,
-            "gates_ok": false
-          },
-          {
-            "at": "2026-05-24T19:25:26.673734+00:00",
-            "todo_id": "sim-p0-heat-li-smoke",
-            "agent_exit": 0,
-            "gates_ok": false
-          },
-          {
-            "at": "2026-05-24T19:40:32.405350+00:00",
-            "todo_id": "sim-p0-heat-li-smoke",
-            "agent_exit": 0,
-            "gates_ok": false
-          },
-          {
-            "at": "2026-05-24T19:54:15.348570+00:00",
-            "todo_id": "sim-p0-heat-li-smoke",
-            "agent_exit": 1,
-            "gates_ok": false
-          },
-          {
-            "at": "2026-05-24T20:09:11.853593+00:00",
-            "todo_id": "sim-p0-heat-li-smoke",
-            "agent_exit": 0,
-            "gates_ok": false
-          },
-          {
-            "at": "2026-05-24T20:25:54.817094+00:00",
-            "todo_id": "sim-p0-heat-li-smoke",
-            "agent_exit": 1,
-            "gates_ok": false
-          },
-          {
-            "at": "2026-05-24T20:39:56.047293+00:00",
-            "todo_id": "sim-p0-heat-li-smoke",
-            "agent_exit": 1,
-            "gates_ok": false
-          },
-          {
-            "at": "2026-05-24T20:53:38.945663+00:00",
-            "todo_id": "sim-p0-heat-li-smoke",
-            "agent_exit": 1,
-            "gates_ok": false
-          },
-          {
-            "at": "2026-05-24T21:01:35.750917+00:00",
-            "todo_id": "sim-p0-heat-li-smoke",
-            "agent_exit": 0,
-            "gates_ok": false
-          },
-          {
-            "at": "2026-05-24T21:12:25.406231+00:00",
-            "todo_id": "sim-p0-heat-li-smoke",
-            "agent_exit": 0,
-            "gates_ok": false
-          },
-          {
-            "at": "2026-05-24T21:23:41.262072+00:00",
-            "todo_id": "sim-p0-heat-li-smoke",
-            "agent_exit": 0,
-            "gates_ok": false
-          },
-          {
-            "at": "2026-05-24T21:32:14.346517+00:00",
-            "todo_id": "sim-p0-heat-li-smoke",
-            "agent_exit": -15,
-            "gates_ok": false
-          },
-          {
-            "at": "2026-05-24T21:37:50.862283+00:00",
-            "todo_id": "sim-p1-num-dot-axpy",
-            "agent_exit": 1,
-            "gates_ok": false
-          },
-          {
-            "at": "2026-05-24T21:49:49.777800+00:00",
-            "todo_id": "sim-p1-num-dot-axpy",
-            "agent_exit": 1,
-            "gates_ok": false
-          },
-          {
-            "at": "2026-05-24T22:10:18.849668+00:00",
-            "todo_id": "sim-p1-num-dot-axpy",
-            "agent_exit": 0,
-            "gates_ok": false
-          },
-          {
-            "at": "2026-05-24T22:27:02.461879+00:00",
-            "todo_id": "sim-p1-num-dot-axpy",
-            "agent_exit": 1,
-            "gates_ok": false
-          },
-          {
-            "at": "2026-05-24T22:40:56.439704+00:00",
-            "todo_id": "sim-p1-num-dot-axpy",
-            "agent_exit": 1,
-            "gates_ok": false
-          },
-          {
-            "at": "2026-05-24T22:54:51.221413+00:00",
-            "todo_id": "sim-p1-num-dot-axpy",
-            "agent_exit": 1,
-            "gates_ok": false
-          },
-          {
-            "at": "2026-05-24T23:03:12.528289+00:00",
-            "todo_id": "sim-p1-num-dot-axpy",
-            "agent_exit": 0,
-            "gates_ok": false
-          },
-          {
-            "at": "2026-05-24T23:17:07.860210+00:00",
-            "todo_id": "sim-p1-num-dot-axpy",
-            "agent_exit": 0,
-            "gates_ok": false
-          },
-          {
-            "at": "2026-05-24T23:34:16.069960+00:00",
-            "todo_id": "sim-p1-num-dot-axpy",
-            "agent_exit": 1,
-            "gates_ok": false
-          },
-          {
-            "at": "2026-05-24T23:48:12.696082+00:00",
-            "todo_id": "sim-p1-num-dot-axpy",
-            "agent_exit": 1,
-            "gates_ok": false
-          },
-          {
-            "at": "2026-05-25T00:03:38.287315+00:00",
-            "todo_id": "sim-p1-num-dot-axpy",
-            "agent_exit": 0,
-            "gates_ok": false
-          },
-          {
-            "at": "2026-05-25T00:10:24.767532+00:00",
-            "todo_id": "sim-p1-num-dot-axpy",
-            "agent_exit": 0,
-            "gates_ok": false
-          },
-          {
-            "at": "2026-05-25T00:19:01.119003+00:00",
-            "todo_id": "sim-p1-num-dot-axpy",
-            "agent_exit": 0,
-            "gates_ok": false
-          },
-          {
-            "at": "2026-05-25T00:36:11.603368+00:00",
-            "todo_id": "sim-p1-num-dot-axpy",
-            "agent_exit": 1,
-            "gates_ok": false
-          },
-          {
-            "at": "2026-05-25T00:45:26.847274+00:00",
-            "todo_id": "sim-p1-num-dot-axpy",
-            "agent_exit": 0,
-            "gates_ok": false
-          },
-          {
-            "at": "2026-05-25T00:59:41.430636+00:00",
-            "todo_id": "sim-p1-num-dot-axpy",
-            "agent_exit": 1,
-            "gates_ok": false
-          },
-          {
-            "at": "2026-05-25T01:13:46.792987+00:00",
-            "todo_id": "sim-p1-num-dot-axpy",
-            "agent_exit": 0,
-            "gates_ok": false
-          },
-          {
-            "at": "2026-05-25T01:26:34.550727+00:00",
-            "todo_id": "sim-p1-num-dot-axpy",
-            "agent_exit": 0,
-            "gates_ok": false
-          },
-          {
-            "at": "2026-05-25T01:40:34.234184+00:00",
-            "todo_id": "sim-p1-num-dot-axpy",
-            "agent_exit": 1,
-            "gates_ok": false
-          },
-          {
-            "at": "2026-05-25T01:57:45.554049+00:00",
-            "todo_id": "sim-p1-num-dot-axpy",
-            "agent_exit": 1,
-            "gates_ok": false
-          },
-          {
-            "at": "2026-05-25T02:11:44.074916+00:00",
-            "todo_id": "sim-p1-num-dot-axpy",
-            "agent_exit": 1,
-            "gates_ok": false
-          },
-          {
-            "at": "2026-05-25T02:25:25.801728+00:00",
-            "todo_id": "sim-p1-num-dot-axpy",
-            "agent_exit": 1,
-            "gates_ok": false
-          },
-          {
-            "at": "2026-05-25T02:39:07.757616+00:00",
-            "todo_id": "sim-p1-num-dot-axpy",
-            "agent_exit": 1,
-            "gates_ok": false
-          },
-          {
-            "at": "2026-05-25T02:52:57.867528+00:00",
-            "todo_id": "sim-p1-num-dot-axpy",
-            "agent_exit": 1,
-            "gates_ok": false
-          },
-          {
-            "at": "2026-05-25T03:09:39.111992+00:00",
-            "todo_id": "sim-p1-num-dot-axpy",
-            "agent_exit": 1,
-            "gates_ok": false
-          },
-          {
-            "at": "2026-05-25T03:23:38.795835+00:00",
-            "todo_id": "sim-p1-num-dot-axpy",
-            "agent_exit": 1,
-            "gates_ok": false
-          },
-          {
-            "at": "2026-05-25T03:37:28.988939+00:00",
-            "todo_id": "sim-p1-num-dot-axpy",
-            "agent_exit": 1,
-            "gates_ok": false
-          },
-          {
-            "at": "2026-05-25T03:51:20.296509+00:00",
-            "todo_id": "sim-p1-num-dot-axpy",
-            "agent_exit": 1,
-            "gates_ok": false
-          },
-          {
-            "at": "2026-05-25T04:05:08.341813+00:00",
-            "todo_id": "sim-p1-num-dot-axpy",
-            "agent_exit": 1,
-            "gates_ok": false
-          },
-          {
-            "at": "2026-05-25T04:22:11.509614+00:00",
-            "todo_id": "sim-p1-num-dot-axpy",
-            "agent_exit": 1,
-            "gates_ok": false
-          },
-          {
-            "at": "2026-05-25T04:27:54.865000+00:00",
-            "todo_id": "sim-p1-num-dot-axpy",
-            "agent_exit": 1,
-            "gates_ok": false
-          },
-          {
-            "at": "2026-05-25T04:41:48.137716+00:00",
-            "todo_id": "sim-p1-num-dot-axpy",
-            "agent_exit": 1,
-            "gates_ok": false
-          },
-          {
-            "at": "2026-05-25T04:55:32.959744+00:00",
-            "todo_id": "sim-p1-num-dot-axpy",
-            "agent_exit": 1,
-            "gates_ok": false
-          },
-          {
-            "at": "2026-05-25T05:09:28.295178+00:00",
-            "todo_id": "sim-p1-num-dot-axpy",
-            "agent_exit": 1,
-            "gates_ok": false
-          },
-          {
-            "at": "2026-05-25T05:33:25.922993+00:00",
-            "todo_id": "sim-p1-num-dot-axpy",
-            "agent_exit": 0,
-            "gates_ok": false
-          },
-          {
-            "at": "2026-05-25T05:42:36.345981+00:00",
-            "todo_id": "sim-p1-num-dot-axpy",
-            "agent_exit": 0,
-            "gates_ok": false
-          },
-          {
-            "at": "2026-05-25T05:56:41.496921+00:00",
-            "todo_id": "sim-p1-num-dot-axpy",
-            "agent_exit": 1,
-            "gates_ok": false
-          },
-          {
-            "at": "2026-05-25T06:10:39.919520+00:00",
-            "todo_id": "sim-p1-num-dot-axpy",
-            "agent_exit": 1,
-            "gates_ok": false
-          },
-          {
-            "at": "2026-05-25T06:24:30.933863+00:00",
-            "todo_id": "sim-p1-num-dot-axpy",
-            "agent_exit": 1,
-            "gates_ok": false
-          },
-          {
-            "at": "2026-05-25T06:34:08.666403+00:00",
-            "todo_id": "sim-p1-num-dot-axpy",
-            "agent_exit": 0,
-            "gates_ok": false
-          },
-          {
-            "at": "2026-05-25T06:44:20.541059+00:00",
-            "todo_id": "sim-p1-num-dot-axpy",
-            "agent_exit": 0,
-            "gates_ok": false
-          },
-          {
-            "at": "2026-05-25T06:58:09.473035+00:00",
-            "todo_id": "sim-p1-num-dot-axpy",
-            "agent_exit": 1,
-            "gates_ok": false
-          },
-          {
-            "at": "2026-05-25T07:12:15.066237+00:00",
-            "todo_id": "sim-p1-num-dot-axpy",
-            "agent_exit": 1,
-            "gates_ok": false
-          },
-          {
-            "at": "2026-05-25T07:19:15.584779+00:00",
-            "todo_id": "sim-p1-num-dot-axpy",
-            "agent_exit": 0,
-            "gates_ok": false
-          },
-          {
-            "at": "2026-05-25T07:36:12.305628+00:00",
-            "todo_id": "sim-p1-num-dot-axpy",
-            "agent_exit": 1,
-            "gates_ok": false
-          },
-          {
-            "at": "2026-05-25T07:50:06.221173+00:00",
-            "todo_id": "sim-p1-num-dot-axpy",
-            "agent_exit": 1,
-            "gates_ok": false
-          },
-          {
-            "at": "2026-05-25T08:04:02.784022+00:00",
-            "todo_id": "sim-p1-num-dot-axpy",
-            "agent_exit": 0,
-            "gates_ok": false
-          },
-          {
-            "at": "2026-05-25T08:15:15.547814+00:00",
-            "todo_id": "sim-p1-num-dot-axpy",
-            "agent_exit": 0,
-            "gates_ok": false
-          },
-          {
-            "at": "2026-05-25T08:29:48.064107+00:00",
-            "todo_id": "sim-p1-num-dot-axpy",
-            "agent_exit": 1,
-            "gates_ok": false
-          },
-          {
-            "at": "2026-05-25T08:51:15.083796+00:00",
-            "todo_id": "sim-p1-num-dot-axpy",
-            "agent_exit": 0,
-            "gates_ok": false
-          },
-          {
-            "at": "2026-05-25T09:05:34.281522+00:00",
-            "todo_id": "sim-p1-num-dot-axpy",
-            "agent_exit": 1,
-            "gates_ok": false
-          },
-          {
-            "at": "2026-05-25T09:20:58.661359+00:00",
-            "todo_id": "sim-p1-num-dot-axpy",
-            "agent_exit": 1,
-            "gates_ok": false
-          },
-          {
-            "at": "2026-05-25T09:36:35.290573+00:00",
-            "todo_id": "sim-p1-num-dot-axpy",
-            "agent_exit": 0,
-            "gates_ok": false
-          },
-          {
-            "at": "2026-05-25T09:50:58.439886+00:00",
-            "todo_id": "sim-p1-num-dot-axpy",
-            "agent_exit": 1,
-            "gates_ok": false
-          },
-          {
-            "at": "2026-05-25T10:11:47.816744+00:00",
-            "todo_id": "sim-p1-num-dot-axpy",
-            "agent_exit": 1,
-            "gates_ok": false
-          },
-          {
-            "at": "2026-05-25T10:30:49.039118+00:00",
-            "todo_id": "sim-p1-num-dot-axpy",
-            "agent_exit": 0,
-            "gates_ok": false
-          },
-          {
-            "at": "2026-05-25T10:54:31.271556+00:00",
-            "todo_id": "sim-p1-num-dot-axpy",
-            "agent_exit": 1,
-            "gates_ok": false
-          },
-          {
-            "at": "2026-05-25T11:39:06.114509+00:00",
-            "todo_id": "sim-p1-num-dot-axpy",
-            "agent_exit": 0,
-            "gates_ok": false
-          },
-          {
-            "at": "2026-05-25T11:57:13.058974+00:00",
-            "todo_id": "sim-p1-num-dot-axpy",
-            "agent_exit": 1,
-            "gates_ok": false
-          },
-          {
-            "at": "2026-05-25T12:22:15.537712+00:00",
-            "todo_id": "sim-p1-num-dot-axpy",
-            "agent_exit": 0,
-            "gates_ok": false
-          },
-          {
-            "at": "2026-05-25T12:37:30.410524+00:00",
-            "todo_id": "sim-p1-num-dot-axpy",
-            "agent_exit": 1,
-            "gates_ok": false
-          },
-          {
-            "at": "2026-05-25T12:43:51.562650+00:00",
-            "todo_id": "sim-p1-num-dot-axpy",
-            "agent_exit": 0,
-            "gates_ok": false
-          },
-          {
-            "at": "2026-05-25T12:58:26.111628+00:00",
-            "todo_id": "sim-p1-num-dot-axpy",
-            "agent_exit": 1,
-            "gates_ok": false
-          },
-          {
-            "at": "2026-05-25T13:18:47.766584+00:00",
-            "todo_id": "sim-p1-num-dot-axpy",
-            "agent_exit": 1,
-            "gates_ok": false
-          },
-          {
-            "at": "2026-05-25T13:41:33.004747+00:00",
-            "todo_id": "sim-p1-num-dot-axpy",
-            "agent_exit": 1,
-            "gates_ok": false
-          },
-          {
-            "at": "2026-05-25T13:57:18.779230+00:00",
-            "todo_id": "sim-p1-num-dot-axpy",
-            "agent_exit": 1,
-            "gates_ok": false
-          },
-          {
-            "at": "2026-05-25T14:32:06.129664+00:00",
-            "todo_id": "sim-p1-num-dot-axpy",
-            "agent_exit": 1,
-            "gates_ok": false
-          },
-          {
-            "at": "2026-05-25T14:50:10.539960+00:00",
-            "todo_id": "sim-p1-num-dot-axpy",
-            "agent_exit": 1,
-            "gates_ok": false
-          },
-          {
-            "at": "2026-05-25T15:30:41.071123+00:00",
-            "todo_id": "sim-p1-num-dot-axpy",
-            "agent_exit": 1,
-            "gates_ok": false
-          },
-          {
-            "at": "2026-05-25T15:52:20.113997+00:00",
-            "todo_id": "sim-p1-num-dot-axpy",
-            "agent_exit": 1,
-            "gates_ok": false
-          },
-          {
-            "at": "2026-05-25T16:22:01.776532+00:00",
-            "todo_id": "sim-p1-num-dot-axpy",
-            "agent_exit": 0,
-            "gates_ok": false
-          },
-          {
-            "at": "2026-05-25T16:40:06.144086+00:00",
-            "todo_id": "sim-p1-num-dot-axpy",
-            "agent_exit": 1,
-            "gates_ok": false
-          },
-          {
-            "at": "2026-05-25T16:58:21.961986+00:00",
-            "todo_id": "sim-p1-num-dot-axpy",
-            "agent_exit": 1,
-            "gates_ok": false
-          },
-          {
-            "at": "2026-05-25T17:29:37.295719+00:00",
-            "todo_id": "sim-p1-num-dot-axpy",
-            "agent_exit": 1,
-            "gates_ok": false
-          },
-          {
-            "at": "2026-05-25T17:51:19.672048+00:00",
-            "todo_id": "sim-p1-num-dot-axpy",
-            "agent_exit": 1,
-            "gates_ok": false
-          },
-          {
-            "at": "2026-05-25T18:26:46.226090+00:00",
-            "todo_id": "sim-p1-num-dot-axpy",
-            "agent_exit": 0,
-            "gates_ok": false
-          },
-          {
-            "at": "2026-05-25T18:38:03.635209+00:00",
-            "todo_id": "sim-p1-num-dot-axpy",
-            "agent_exit": 0,
-            "gates_ok": false
-          },
-          {
-            "at": "2026-05-25T18:51:54.308801+00:00",
-            "todo_id": "sim-p1-num-dot-axpy",
-            "agent_exit": 0,
-            "gates_ok": false
-          },
-          {
-            "at": "2026-05-25T19:18:32.771185+00:00",
-            "todo_id": "sim-p1-num-dot-axpy",
-            "agent_exit": 0,
-            "gates_ok": false
-          },
-          {
-            "at": "2026-05-25T19:35:36.548468+00:00",
-            "todo_id": "sim-p1-num-dot-axpy",
-            "agent_exit": 0,
-            "gates_ok": false
-          }
-        ],
-        "registry": {
-          "implemented": 43,
-          "total": 126
-        }
-      },
-      "state_iterations": 115,
+      "log_path": "/mnt/c/Users/Julian/Documents/Programming/li/lic-worktrees/sim-algo/data/sim-plan-loop/runner.log",
       "agent_live": false,
       "agent": "",
       "goal_file": "",
-      "log_age_sec": 259354,
-      "last_state_at": "2026-05-25T19:35:36.548468+00:00",
-      "last_state_todo": "sim-p1-num-dot-axpy",
-      "last_state_gates": false,
-      "current_iteration": "=== iteration 1: sim-p1-num-dot-axpy ===",
-      "activity": [
-        "Documents/Cursor/li-langverse/li-cursor-agents/data/workspaces/li-langverse/lic/code_implementer-1779737577743/repo/benchmarks/manifest.toml",
-        "[sdk] \u2717 tool",
-        "[sdk] \u2713 shell cd /home/s4il0r/Documents/Cursor/li-langverse/li-cursor-agents/data/workspaces/l",
-        "[sdk] \u2717 tool",
-        "[sdk] thinking\u2026",
-        "[sdk] assistant reply",
-        "=== iteration 1: sim-p1-num-dot-axpy ===",
-        "gates: FAIL"
-      ],
-      "status_note": "supervisor off",
-      "active_todo_id": "sim-p1-num-dot-axpy"
+      "log_age_sec": null,
+      "last_state_at": "",
+      "last_state_todo": "",
+      "last_state_gates": "",
+      "current_iteration": "",
+      "activity": [],
+      "status_note": "supervisor off"
     },
     {
       "id": "studio-ui-ux",
       "name": "Studio UI/UX",
       "branch": "cursor/studio-ui-ux-plan-loop",
-      "head": "d102c79e",
+      "head": "",
       "running": false,
       "process": "",
-      "log_path": "/home/s4il0r/Documents/Cursor/li-langverse/lic/../lic-studio-ui/data/studio-ui-ux-plan-loop/runner.log",
-      "todos": [
-        {
-          "id": "studio-ux-00-design-system",
-          "content": "Design system \u2014 studio-ui-ux-generate-design-system.sh + tokens + demo HTML refresh",
-          "status": "done"
-        },
-        {
-          "id": "studio-ux-01-ui-composables",
-          "content": "li-ui \u2014 layout + paint IR composables; li-tests compile_ok for studio shell",
-          "status": "done"
-        },
-        {
-          "id": "studio-ux-02-gui-viewport-stub",
-          "content": "li-gui \u2014 viewport region + panel switch timing hooks (<100ms target)",
-          "status": "done"
-        },
-        {
-          "id": "studio-ux-03-render-wgpu-smoke",
-          "content": "li-render/gpu \u2014 wgpu smoke + FPS counter hook for bench harness",
-          "status": "done"
-        },
-        {
-          "id": "studio-ux-04-particle-display",
-          "content": "Scene path \u2014 MD particle draw tiers (1k/10k/100k) with honest FPS reporting",
-          "status": "pending"
-        },
-        {
-          "id": "studio-ux-05-studio-compose",
-          "content": "li-studio \u2014 compose dock + timeline + inspector from composables",
-          "status": "pending"
-        },
-        {
-          "id": "studio-ux-06-agent-chrome",
-          "content": "Agentic chrome \u2014 task status, cancel, error strip (PH UX-06)",
-          "status": "pending"
-        },
-        {
-          "id": "studio-ux-07-capture-harness",
-          "content": "Wire studio-ui-ux-capture-progress.sh + demo HTML mocks; verify gh upload path",
-          "status": "pending"
-        },
-        {
-          "id": "studio-ux-08-bench-registry",
-          "content": "benchmarks/competitive/studio-ui.toml + bench-studio-viewport-perf.json output",
-          "status": "pending"
-        },
-        {
-          "id": "studio-ux-09-memory-budget",
-          "content": "profile-animate-memory in loop gates; document peak MiB budget in ui-ux-by-dimension",
-          "status": "pending"
-        },
-        {
-          "id": "studio-ux-10-native-capture",
-          "content": "Extend ux-harness native_gui for Xvfb SDL capture when viewport draws pixels",
-          "status": "pending"
-        }
-      ],
-      "plan_completed": 0,
-      "plan_total": 11,
-      "plan_pending": [
-        "studio-ux-04-particle-display",
-        "studio-ux-05-studio-compose",
-        "studio-ux-06-agent-chrome",
-        "studio-ux-07-capture-harness",
-        "studio-ux-08-bench-registry",
-        "studio-ux-09-memory-budget",
-        "studio-ux-10-native-capture"
-      ],
-      "state": {
-        "completed_ids": [
-          "studio-ux-00-design-system",
-          "studio-ux-01-ui-composables",
-          "studio-ux-02-gui-viewport-stub",
-          "studio-ux-03-render-wgpu-smoke",
-          "studio-ux-04-particle-display",
-          "studio-ux-05-studio-compose",
-          "studio-ux-06-agent-chrome",
-          "studio-ux-07-capture-harness",
-          "studio-ux-08-bench-registry",
-          "studio-ux-09-memory-budget",
-          "studio-ux-10-native-capture"
-        ],
-        "iterations": 11,
-        "history": [
-          {
-            "at": "2026-05-24T14:53:41+00:00",
-            "todo_id": "studio-ux-01-ui-composables",
-            "agent_exit": 0,
-            "capture_exit": 0,
-            "gates_ok": true,
-            "ux_pass": true,
-            "note": "recovered after persist fix; work on 6218d35"
-          },
-          {
-            "at": "2026-05-24T18:23:10+00:00",
-            "todo_id": "studio-ux-02-gui-viewport-stub",
-            "agent_exit": 0,
-            "capture_exit": 0,
-            "gates_ok": true,
-            "ux_pass": true,
-            "note": "li-gui viewport + panel switch hooks; gates/capture/bench verified"
-          },
-          {
-            "at": "2026-05-24T19:36:50+00:00",
-            "todo_id": "studio-ux-03-render-wgpu-smoke",
-            "agent_exit": 0,
-            "capture_exit": 0,
-            "gates_ok": true,
-            "ux_pass": true,
-            "note": "li-gpu wgpu smoke + li-render FPS counter bench hooks"
-          },
-          {
-            "at": "2026-05-24T21:42:00+00:00",
-            "todo_id": "studio-ux-03-render-wgpu-smoke",
-            "agent_exit": 0,
-            "capture_exit": 0,
-            "gates_ok": true,
-            "ux_pass": true,
-            "note": "re-verified gates/capture; issue #181 comment"
-          },
-          {
-            "at": "2026-05-25T00:44:11.085589+00:00",
-            "todo_id": "studio-ux-04-particle-display",
-            "agent_exit": 0,
-            "capture_exit": 0,
-            "gates_ok": true,
-            "ux_pass": true
-          },
-          {
-            "at": "2026-05-25T01:39:06.746882+00:00",
-            "todo_id": "studio-ux-05-studio-compose",
-            "agent_exit": 0,
-            "capture_exit": 0,
-            "gates_ok": true,
-            "ux_pass": true
-          },
-          {
-            "at": "2026-05-25T02:16:34.197349+00:00",
-            "todo_id": "studio-ux-06-agent-chrome",
-            "agent_exit": 0,
-            "capture_exit": 0,
-            "gates_ok": true,
-            "ux_pass": true
-          },
-          {
-            "at": "2026-05-25T03:11:04.676214+00:00",
-            "todo_id": "studio-ux-07-capture-harness",
-            "agent_exit": 0,
-            "capture_exit": 0,
-            "gates_ok": true,
-            "ux_pass": true
-          },
-          {
-            "at": "2026-05-25T04:03:38.791590+00:00",
-            "todo_id": "studio-ux-08-bench-registry",
-            "agent_exit": 0,
-            "capture_exit": 0,
-            "gates_ok": true,
-            "ux_pass": true
-          },
-          {
-            "at": "2026-05-25T05:26:38.195920+00:00",
-            "todo_id": "studio-ux-09-memory-budget",
-            "agent_exit": 0,
-            "capture_exit": 0,
-            "gates_ok": true,
-            "ux_pass": true
-          },
-          {
-            "at": "2026-05-25T06:32:37.228062+00:00",
-            "todo_id": "studio-ux-10-native-capture",
-            "agent_exit": 0,
-            "capture_exit": 0,
-            "gates_ok": true,
-            "ux_pass": true
-          }
-        ]
-      },
-      "state_iterations": 11,
+      "log_path": "/mnt/c/Users/Julian/Documents/Programming/li/lic-studio-ui/data/studio-ui-ux-plan-loop/runner.log",
       "agent_live": false,
       "agent": "",
       "goal_file": "",
-      "log_age_sec": 259665,
-      "last_state_at": "2026-05-25T06:32:37.228062+00:00",
-      "last_state_todo": "studio-ux-10-native-capture",
-      "last_state_gates": true,
+      "log_age_sec": null,
+      "last_state_at": "",
+      "last_state_todo": "",
+      "last_state_gates": "",
       "current_iteration": "",
       "activity": [],
-      "status_note": "supervisor off",
-      "active_todo_id": "studio-ux-04-particle-display"
+      "status_note": "supervisor off"
     },
     {
       "id": "sim-md-research",
       "name": "MD algorithm research",
       "branch": "cursor/sim-md-research-loop",
-      "head": "01fa7b68",
+      "head": "",
       "running": false,
       "process": "",
-      "log_path": "/home/s4il0r/Documents/Cursor/li-langverse/lic/../lic-worktrees/sim-md-research/data/sim-md-research-loop/iter-20260525-194235.log",
-      "todos": [
-        {
-          "id": "md-r0-sota-survey",
-          "content": "LAMMPS/GROMACS/OpenMM \u2014 integrators, neighbor lists, cutoffs; map to algo_registry 101\u2013120",
-          "status": "completed"
-        },
-        {
-          "id": "md-r1-stability-matrix",
-          "content": "CFL / neighbor-skin / size scaling for md_lennard_jones; tier-0 stability row proposal",
-          "status": "completed"
-        },
-        {
-          "id": "md-r2-neighbor-list-gap",
-          "content": "SOTA vs Li stub for md_neighbor_cell_list (algo 105) \u2014 hand off sim-p1-md-neighbor-cell",
-          "status": "completed"
-        },
-        {
-          "id": "md-r3-oracle-plan",
-          "content": "External LAMMPS/GROMACS oracle column plan; update verticals.toml honesty",
-          "status": "pending"
-        }
-      ],
-      "plan_completed": 3,
-      "plan_total": 4,
-      "plan_pending": [
-        "md-r3-oracle-plan"
-      ],
-      "state": {
-        "completed_ids": [
-          "md-r0-sota-survey",
-          "md-r1-stability-matrix",
-          "md-r2-neighbor-list-gap"
-        ],
-        "iterations": 4,
-        "history": [
-          {
-            "at": "2026-05-25T18:44:18.938689+00:00",
-            "todo_id": "md-r0-sota-survey",
-            "agent_exit": 0,
-            "gates_ok": true
-          },
-          {
-            "at": "2026-05-25T18:55:29.188178+00:00",
-            "todo_id": "md-r1-stability-matrix",
-            "agent_exit": 0,
-            "gates_ok": true
-          },
-          {
-            "at": "2026-05-25T19:23:10.135969+00:00",
-            "todo_id": "md-r2-neighbor-list-gap",
-            "agent_exit": 0,
-            "gates_ok": false
-          },
-          {
-            "at": "2026-05-25T19:42:04.198858+00:00",
-            "todo_id": "md-r2-neighbor-list-gap",
-            "agent_exit": 0,
-            "gates_ok": true
-          }
-        ],
-        "vertical": "md"
-      },
-      "state_iterations": 4,
+      "log_path": "/mnt/c/Users/Julian/Documents/Programming/li/lic-worktrees/sim-md-research/data/sim-md-research-loop/runner.log",
       "agent_live": false,
       "agent": "",
       "goal_file": "",
-      "log_age_sec": 258936,
-      "last_state_at": "2026-05-25T19:42:04.198858+00:00",
-      "last_state_todo": "md-r2-neighbor-list-gap",
-      "last_state_gates": true,
+      "log_age_sec": null,
+      "last_state_at": "",
+      "last_state_todo": "",
+      "last_state_gates": "",
       "current_iteration": "",
-      "activity": [
-        "SDK tool activity streams to stderr ([sdk] \u25b6/\u2713 lines). Set LI_SDK_TERMINAL_STREAM=0 to disable."
-      ],
-      "status_note": "supervisor off",
-      "active_todo_id": "md-r3-oracle-plan"
+      "activity": [],
+      "status_note": "supervisor off"
     },
     {
       "id": "sim-chem-research",
       "name": "Chemistry algorithm research",
       "branch": "cursor/sim-chem-research-loop",
-      "head": "a6881697",
+      "head": "",
       "running": false,
       "process": "",
-      "log_path": "/home/s4il0r/Documents/Cursor/li-langverse/lic/../lic-worktrees/sim-chem-research/data/sim-chem-research-loop/iter-20260525-193404.log",
-      "todos": [
-        {
-          "id": "chem-r0-sota-survey",
-          "content": "Gaussian/ORCA/Psi4/PySCF minimal workflows; map to QM registry 401\u2013432",
-          "status": "completed"
-        },
-        {
-          "id": "chem-r1-basis-size-scaling",
-          "content": "STO-3G vs larger basis \u2014 cost/accuracy table for stub SCF",
-          "status": "completed"
-        },
-        {
-          "id": "chem-r2-dft-scf-gap",
-          "content": "Minimal SCF recipe vs Li stub \u2014 hand off sim-p2-qm-dft-scf",
-          "status": "pending"
-        },
-        {
-          "id": "chem-r3-package-placement",
-          "content": "chem package placement (lic vs sim.drug_design bridge) for package_architect",
-          "status": "pending"
-        }
-      ],
-      "plan_completed": 2,
-      "plan_total": 4,
-      "plan_pending": [
-        "chem-r2-dft-scf-gap",
-        "chem-r3-package-placement"
-      ],
-      "state": {
-        "completed_ids": [
-          "chem-r0-sota-survey",
-          "chem-r1-basis-size-scaling"
-        ],
-        "iterations": 3,
-        "history": [
-          {
-            "at": "2026-05-25T18:47:25.514244+00:00",
-            "todo_id": "chem-r0-sota-survey",
-            "agent_exit": 0,
-            "gates_ok": true
-          },
-          {
-            "at": "2026-05-25T19:03:25.678512+00:00",
-            "todo_id": "chem-r1-basis-size-scaling",
-            "agent_exit": 0,
-            "gates_ok": true
-          },
-          {
-            "at": "2026-05-25T19:32:04.164094+00:00",
-            "todo_id": "chem-r2-dft-scf-gap",
-            "agent_exit": 0,
-            "gates_ok": false
-          }
-        ],
-        "vertical": "chem"
-      },
-      "state_iterations": 3,
+      "log_path": "/mnt/c/Users/Julian/Documents/Programming/li/lic-worktrees/sim-chem-research/data/sim-chem-research-loop/runner.log",
       "agent_live": false,
       "agent": "",
       "goal_file": "",
-      "log_age_sec": 259447,
-      "last_state_at": "2026-05-25T19:32:04.164094+00:00",
-      "last_state_todo": "chem-r2-dft-scf-gap",
-      "last_state_gates": false,
+      "log_age_sec": null,
+      "last_state_at": "",
+      "last_state_todo": "",
+      "last_state_gates": "",
       "current_iteration": "",
-      "activity": [
-        "SDK tool activity streams to stderr ([sdk] \u25b6/\u2713 lines). Set LI_SDK_TERMINAL_STREAM=0 to disable."
-      ],
-      "status_note": "supervisor off",
-      "active_todo_id": "chem-r2-dft-scf-gap"
+      "activity": [],
+      "status_note": "supervisor off"
     },
     {
       "id": "security-research",
       "name": "Offensive security research",
       "branch": "cursor/security-research-loop",
-      "head": "9a0e1b01",
+      "head": "",
       "running": false,
       "process": "",
-      "log_path": "/home/s4il0r/Documents/Cursor/li-langverse/lic/../lic-worktrees/security-research/data/security-research-loop/iter-20260525-193132.log",
-      "todos": [
-        {
-          "id": "sec-r0-cwe-delta",
-          "content": "CWE Top 25 feed sync vs cve-catalog.json \u2014 map new CWEs to catalog_gaps and li-tests",
-          "status": "completed"
-        },
-        {
-          "id": "sec-r1-httpd-fuzz-smoke",
-          "content": "httpd fuzz table \u2014 libFuzzer/AFL smoke paths; tier5 exploit smoke vs live li-httpd",
-          "status": "pending"
-        },
-        {
-          "id": "sec-r2-tier5-gap-exploit",
-          "content": "Close one empty nginx_mitigations / tier5 exploit row \u2014 stricter-or-equal vs nginx",
-          "status": "pending"
-        },
-        {
-          "id": "sec-r3-runtime-surface",
-          "content": "Runtime attack surface \u2014 parse/crypto/HTTP; ASan slice on touched native cores",
-          "status": "pending"
-        }
-      ],
-      "plan_completed": 1,
-      "plan_total": 4,
-      "plan_pending": [
-        "sec-r1-httpd-fuzz-smoke",
-        "sec-r2-tier5-gap-exploit",
-        "sec-r3-runtime-surface"
-      ],
-      "state": {
-        "completed_ids": [
-          "sec-r0-cwe-delta"
-        ],
-        "iterations": 2,
-        "history": [
-          {
-            "at": "2026-05-25T19:08:08.544345+00:00",
-            "todo_id": "sec-r0-cwe-delta",
-            "agent_exit": 0,
-            "gates_ok": true
-          },
-          {
-            "at": "2026-05-25T19:29:32.615546+00:00",
-            "todo_id": "sec-r1-httpd-fuzz-smoke",
-            "agent_exit": 1,
-            "gates_ok": true
-          }
-        ]
-      },
-      "state_iterations": 2,
+      "log_path": "/mnt/c/Users/Julian/Documents/Programming/li/lic-worktrees/security-research/data/security-research-loop/runner.log",
       "agent_live": false,
       "agent": "",
       "goal_file": "",
-      "log_age_sec": 259599,
-      "last_state_at": "2026-05-25T19:29:32.615546+00:00",
-      "last_state_todo": "sec-r1-httpd-fuzz-smoke",
-      "last_state_gates": true,
+      "log_age_sec": null,
+      "last_state_at": "",
+      "last_state_todo": "",
+      "last_state_gates": "",
       "current_iteration": "",
-      "activity": [
-        "SDK tool activity streams to stderr ([sdk] \u25b6/\u2713 lines). Set LI_SDK_TERMINAL_STREAM=0 to disable."
-      ],
-      "status_note": "supervisor off",
-      "active_todo_id": "sec-r1-httpd-fuzz-smoke"
+      "activity": [],
+      "status_note": "supervisor off"
     },
     {
       "id": "swarm-observer",
       "name": "Swarm gap orchestrator",
       "branch": "cursor/swarm-observer-plan-loop",
-      "head": "c8c18657",
-      "running": true,
-      "process": "4100598 python3 /home/s4il0r/Documents/Cursor/li-langverse/lic/scripts/goal-directed-agents-snapshot.py",
-      "log_path": "/home/s4il0r/Documents/Cursor/li-langverse/lic/../lic/data/swarm-observer-plan-loop/iter-20260525-193501.log",
+      "head": "8c2bd6d",
+      "running": false,
+      "process": "",
+      "log_path": "/mnt/c/Users/Julian/Documents/Programming/li/lic/data/swarm-observer-plan-loop/runner.log",
       "todos": [
         {
           "id": "orch-r0-ingest-snapshot",
@@ -2098,33 +271,156 @@
       "agent_live": false,
       "agent": "",
       "goal_file": "",
-      "log_age_sec": 132329,
+      "log_age_sec": 60473,
       "last_state_at": "2026-05-25T19:34:28.890041+00:00",
       "last_state_todo": "orch-r1-plan-debt-sync",
       "last_state_gates": true,
       "current_iteration": "",
-      "activity": [
-        "SDK tool activity streams to stderr ([sdk] \u25b6/\u2713 lines). Set LI_SDK_TERMINAL_STREAM=0 to disable."
-      ],
-      "status_note": "supervisor idle (log 132329s stale \u2014 check log_path)",
+      "activity": [],
+      "status_note": "supervisor off",
       "active_todo_id": "orch-r2-competitor-stubs"
+    },
+    {
+      "id": "ph-db",
+      "name": "PH-DB / native Li platform",
+      "branch": "main",
+      "head": "8c2bd6d",
+      "running": false,
+      "process": "",
+      "log_path": "/mnt/c/Users/Julian/Documents/Programming/li/lic/data/ph-db-plan-loop/runner.log",
+      "todos": [
+        {
+          "id": "wp-a-engine-native",
+          "content": "WP-A lidb native embed + liorm.execute + security/bench harness (lidb feat/ph-db-native-embed-wp-a)",
+          "status": "completed"
+        },
+        {
+          "id": "wp-b-lis-db",
+          "content": "WP-B lis db native embed + LiormRegistryStore rows + docker-compose.ph-db.yml (lis feat/ph-db-3-lis-db-native)",
+          "status": "completed"
+        },
+        {
+          "id": "wp-c-registry-bench",
+          "content": "WP-C tier_db_registry lidb P95 harness + compare manifest (benchmarks feat/ph-db-5-registry-compare)",
+          "status": "completed"
+        },
+        {
+          "id": "wp-e-control-plane",
+          "content": "WP-E control-plane persist on lidb + test:e2e:lidb-engine 10/10 + agent-self-unblock skills (li-cursor-agents feat/ph-db-10-native-persist)",
+          "status": "completed"
+        },
+        {
+          "id": "wp-g-ci-cross-repo",
+          "content": "WP-G lidb-engine-e2e CI job on agents PR (partial \u2014 merge PR required)",
+          "status": "pending"
+        },
+        {
+          "id": "wp-h-containers",
+          "content": "WP-H docker-compose.ph-db.yml + Dockerfile.supervisor (on branch \u2014 compose smoke not in CI yet)",
+          "status": "pending"
+        },
+        {
+          "id": "wp-k-postgres-nightly",
+          "content": "WP-K nightly Postgres P95 compare GHA + honest ratio_vs_postgres (workflow on branch; needs merge + first green run)",
+          "status": "pending"
+        },
+        {
+          "id": "wp-pr-merge-wave",
+          "content": "Open PRs + merge four feat/ph-db-* branches across lidb/lis/benchmarks/li-cursor-agents",
+          "status": "pending"
+        },
+        {
+          "id": "wp-h0-default-main",
+          "content": "WP-H0 lidb default branch \u2192 main (lidb/scripts/set-default-branch-main.sh + gh admin)",
+          "status": "pending"
+        },
+        {
+          "id": "wp-n3-realtime",
+          "content": "WP-N3 merge lis#10 realtime changefeed WebSocket",
+          "status": "pending"
+        },
+        {
+          "id": "wp-n5-security-bench",
+          "content": "WP-N5 merge benchmarks#96 tier_db_security \u2192 lidb harness",
+          "status": "pending"
+        },
+        {
+          "id": "wp-d-registry-v2",
+          "content": "WP-D registry schema v2 + lip OpenAPI parity (PH-8d-v2 human sign-off)",
+          "status": "pending"
+        },
+        {
+          "id": "wp-prod-lidb-default",
+          "content": "Production flip LI_CONTROL_PLANE_STORE=lidb (human sign-off after Phase 3 gates)",
+          "status": "pending"
+        }
+      ],
+      "plan_completed": 4,
+      "plan_total": 13,
+      "plan_pending": [
+        "wp-g-ci-cross-repo",
+        "wp-h-containers",
+        "wp-k-postgres-nightly",
+        "wp-pr-merge-wave",
+        "wp-h0-default-main",
+        "wp-n3-realtime",
+        "wp-n5-security-bench",
+        "wp-d-registry-v2",
+        "wp-prod-lidb-default"
+      ],
+      "state": {
+        "note": "PH-DB cross-repo sprint \u2014 state tracked via ph-db-swarm-plan.md todos; no YAML plan-loop yet",
+        "updated_at": "2026-05-30T00:00:00Z",
+        "iterations": 0,
+        "completed_ids": [
+          "wp-a-engine-native",
+          "wp-b-lis-db",
+          "wp-c-registry-bench",
+          "wp-e-control-plane"
+        ],
+        "history": []
+      },
+      "state_iterations": 0,
+      "agent_live": false,
+      "agent": "",
+      "goal_file": "",
+      "log_age_sec": null,
+      "last_state_at": "",
+      "last_state_todo": "",
+      "last_state_gates": "",
+      "current_iteration": "",
+      "activity": [],
+      "status_note": "supervisor off",
+      "active_todo_id": "wp-g-ci-cross-repo",
+      "cross_repo": [
+        {
+          "repo": "lidb",
+          "branch": "feat/ph-db-native-embed-wp-a",
+          "head": "fa88c18",
+          "expected_branch": "feat/ph-db-native-embed-wp-a"
+        },
+        {
+          "repo": "lis",
+          "branch": "feat/ph-db-3-lis-db-native",
+          "head": "a8649cd",
+          "expected_branch": "feat/ph-db-3-lis-db-native"
+        },
+        {
+          "repo": "benchmarks",
+          "branch": "feat/ph-db-5-registry-compare",
+          "head": "ed2fa64",
+          "expected_branch": "feat/ph-db-5-registry-compare"
+        },
+        {
+          "repo": "li-cursor-agents",
+          "branch": "feat/ph-db-10-native-persist",
+          "head": "6582bd6",
+          "expected_branch": "feat/ph-db-10-native-persist"
+        }
+      ]
     }
   ],
   "history": [
-    {
-      "runner": "sim-md-research",
-      "at": "2026-05-25T19:42:04.198858+00:00",
-      "todo_id": "md-r2-neighbor-list-gap",
-      "agent_exit": 0,
-      "gates_ok": true
-    },
-    {
-      "runner": "sim",
-      "at": "2026-05-25T19:35:36.548468+00:00",
-      "todo_id": "sim-p1-num-dot-axpy",
-      "agent_exit": 0,
-      "gates_ok": false
-    },
     {
       "runner": "swarm-observer",
       "at": "2026-05-25T19:34:28.890041+00:00",
@@ -2133,65 +429,9 @@
       "gates_ok": true
     },
     {
-      "runner": "sim-chem-research",
-      "at": "2026-05-25T19:32:04.164094+00:00",
-      "todo_id": "chem-r2-dft-scf-gap",
-      "agent_exit": 0,
-      "gates_ok": false
-    },
-    {
-      "runner": "security-research",
-      "at": "2026-05-25T19:29:32.615546+00:00",
-      "todo_id": "sec-r1-httpd-fuzz-smoke",
-      "agent_exit": 1,
-      "gates_ok": true
-    },
-    {
-      "runner": "compiler-studio",
-      "at": "2026-05-25T19:26:43.369615+00:00",
-      "todo_id": "wave-d-gui-scaffold",
-      "agent_exit": 1,
-      "gates_ok": false
-    },
-    {
-      "runner": "sim-md-research",
-      "at": "2026-05-25T19:23:10.135969+00:00",
-      "todo_id": "md-r2-neighbor-list-gap",
-      "agent_exit": 0,
-      "gates_ok": false
-    },
-    {
-      "runner": "sim",
-      "at": "2026-05-25T19:18:32.771185+00:00",
-      "todo_id": "sim-p1-num-dot-axpy",
-      "agent_exit": 0,
-      "gates_ok": false
-    },
-    {
       "runner": "swarm-observer",
       "at": "2026-05-25T19:09:59.208177+00:00",
       "todo_id": "orch-r0-ingest-snapshot",
-      "agent_exit": 0,
-      "gates_ok": true
-    },
-    {
-      "runner": "security-research",
-      "at": "2026-05-25T19:08:08.544345+00:00",
-      "todo_id": "sec-r0-cwe-delta",
-      "agent_exit": 0,
-      "gates_ok": true
-    },
-    {
-      "runner": "sim-chem-research",
-      "at": "2026-05-25T19:03:25.678512+00:00",
-      "todo_id": "chem-r1-basis-size-scaling",
-      "agent_exit": 0,
-      "gates_ok": true
-    },
-    {
-      "runner": "compiler-studio",
-      "at": "2026-05-25T18:56:44.778223+00:00",
-      "todo_id": "wave-d-gui-scaffold",
       "agent_exit": 0,
       "gates_ok": true
     }

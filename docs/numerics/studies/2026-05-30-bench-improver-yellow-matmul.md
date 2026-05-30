@@ -44,6 +44,18 @@ LI_TIER1_PERF_STRICT=0 ../scripts/check-tier1-li-vs-cpp.sh
 | Route 256³ `@` via plain IKJ (`n>=512` blocked threshold) | ~1.22× (regression vs blocked @256) | — | **Reject** — keep blocked path for 256³ in `ArrayMatMul2DF64` |
 | `llvm.prefetch` on B rows in blocked kernel | — | ~1.31× | **Reject** |
 | Incomplete BSS hoist for ≥512² matrices | build break | — | **Defer** — needs `ArraySlot` helper migration |
+| PR #524 harness: 512×(64³) tiled reps | — | 0.044× (verify **fail**) | **Revert** — DCE guard; unfair vs C 512³ oracle |
+
+## Pass 2 (2026-05-30T14:55Z, `4ddbd3c6`)
+
+Reverted `matmul_blocked/li/main.li` to fair `mm_blocked_512` (512×512, BK=64 MIR). Fixed `bench.py` verify guard (`TimingStats.mean`).
+
+| benchmark | cpp | li | ratio | verify |
+|-----------|-----|-----|-------|--------|
+| `matmul_naive` | 0.0018s | 0.0020s | **1.111×** | ok |
+| `matmul_blocked` | 0.0087s | 0.0112s | **1.287×** | ok |
+
+Dashboard ingest still stale (09:25Z CI host `11ef5e37`); local `matmul_naive` within 1.2× cap.
 
 ## Root cause — `matmul_blocked`
 

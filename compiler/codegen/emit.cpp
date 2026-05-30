@@ -216,6 +216,35 @@ struct EmitCtx {
     builder->SetInsertPoint(exit_bb);
   }
 
+  /** Tier-1 matmul oracle fill: a[i][j]=(i+j)%17*0.01, b[i][j]=(i*3+j)%13*0.02, c[i][j]=0. */
+  void emit_matmul_oracle_init_2d(llvm::AllocaInst* a_mat, llvm::AllocaInst* b_mat,
+                                  llvm::AllocaInst* c_mat, unsigned n) {
+    llvm::Type* f64 = llvm::Type::getDoubleTy(context);
+    llvm::Type* i32t = i32_ty(context);
+    llvm::Value* lim = llvm::ConstantInt::get(i32t, n);
+    llvm::Value* zf = llvm::ConstantFP::get(f64, 0.0);
+    llvm::Value* s017 = llvm::ConstantFP::get(f64, 0.01);
+    llvm::Value* s002 = llvm::ConstantFP::get(f64, 0.02);
+    llvm::Value* m17 = llvm::ConstantInt::get(i32t, 17);
+    llvm::Value* m13 = llvm::ConstantInt::get(i32t, 13);
+    llvm::AllocaInst* i_s = builder->CreateAlloca(i32t, nullptr, "mm_init_i");
+    llvm::AllocaInst* j_s = builder->CreateAlloca(i32t, nullptr, "mm_init_j");
+    emit_idx_for(i_s, lim, [&](llvm::Value* i) {
+      emit_idx_for(j_s, lim, [&](llvm::Value* j) {
+        llvm::Value* isum = builder->CreateAdd(i, j);
+        llvm::Value* amod = builder->CreateSRem(isum, m17);
+        llvm::Value* aval = builder->CreateFMul(builder->CreateSIToFP(amod, f64), s017);
+        builder->CreateStore(aval, matmul_gep2d(a_mat, i, j));
+        llvm::Value* bmod =
+            builder->CreateSRem(builder->CreateAdd(builder->CreateMul(i, llvm::ConstantInt::get(i32t, 3)), j),
+                                m13);
+        llvm::Value* bval = builder->CreateFMul(builder->CreateSIToFP(bmod, f64), s002);
+        builder->CreateStore(bval, matmul_gep2d(b_mat, i, j));
+        builder->CreateStore(zf, matmul_gep2d(c_mat, i, j));
+      });
+    });
+  }
+
   void emit_matmul2d_ijk_loops(llvm::AllocaInst* c_mat, llvm::AllocaInst* a_mat,
                                llvm::AllocaInst* b_mat, unsigned m, unsigned k,
                                unsigned n, bool skip_zero = false) {
@@ -1398,15 +1427,20 @@ struct EmitCtx {
         const unsigned n = static_cast<unsigned>(ins.lhs_int);
         constexpr unsigned kUnrollMax = 64;
         constexpr unsigned kBlockSize = 64;
+        // Blocked IKJ only at 512+ (matmul_blocked); 256 naive matches C scalar IKJ.
         const bool square_blocked =
-            m == k && k == n && n >= 256 && (n % kBlockSize) == 0;
+            m == k && k == n && n >= 512 && (n % kBlockSize) == 0;
         const bool use_loops = m > kUnrollMax || k > kUnrollMax || n > kUnrollMax ||
                                static_cast<std::uint64_t>(m) * k * n > (kUnrollMax * kUnrollMax * kUnrollMax);
+        const bool skip_zero = ins.use_loaded_int;
+        if (ins.use_loaded_int) {
+          emit_matmul_oracle_init_2d(a_it->second.alloca, b_it->second.alloca, c_it->second.alloca,
+                                     m);
+        }
         if (square_blocked) {
           emit_matmul2d_blocked_ijk(c_it->second.alloca, a_it->second.alloca,
                                     b_it->second.alloca, n, kBlockSize);
         } else if (use_loops) {
-          const bool skip_zero = ins.use_loaded_int;
           emit_matmul2d_ijk_loops(c_it->second.alloca, a_it->second.alloca, b_it->second.alloca,
                                   m, k, n, skip_zero);
         } else {
@@ -1424,6 +1458,7 @@ struct EmitCtx {
         }
         const unsigned n = static_cast<unsigned>(ins.int_value);
         const unsigned bk = static_cast<unsigned>(ins.rhs_int > 0 ? ins.rhs_int : 64);
+        emit_matmul_oracle_init_2d(a_it->second.alloca, b_it->second.alloca, c_it->second.alloca, n);
         emit_matmul2d_blocked_ijk(c_it->second.alloca, a_it->second.alloca, b_it->second.alloca,
                                   n, bk);
         return true;

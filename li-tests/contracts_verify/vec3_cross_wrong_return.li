@@ -1,0 +1,41 @@
+# Soundness repro: wrong vec3 literal return still certifies with CallProc+FieldAccess ensures.
+type Vec3 = object
+  public x: float
+  public y: float
+  public z: float
+
+def vec3(x: float, y: float, z: float) -> Vec3
+  requires true
+  ensures result.x == x
+  ensures result.y == y
+  ensures result.z == z
+  decreases 0
+=
+  var v: Vec3
+  v.x = x
+  v.y = y
+  v.z = z
+  return v
+
+def vec3_cross_bad(a: Vec3, b: Vec3) -> Vec3
+  requires true
+  ensures result == vec3(a.y * b.z - a.z * b.y, a.z * b.x - a.x * b.z, a.x * b.y - a.y * b.x)
+  decreases 0
+=
+  return vec3(0.0, 0.0, 0.0)
+
+def main() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  var a: Vec3
+  a.x = 1.0
+  a.y = 0.0
+  a.z = 0.0
+  var b: Vec3
+  b.x = 0.0
+  b.y = 1.0
+  b.z = 0.0
+  var c: Vec3 = vec3_cross_bad(a, b)
+  return 0

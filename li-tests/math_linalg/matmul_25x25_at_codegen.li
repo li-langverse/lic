@@ -1,4 +1,10 @@
 # Forces ArrayMatMul2DF64 loop codegen (m,k,n > kUnrollMax=24 in emit.cpp).
+# li_rt_volatile_sink_f64 prevents LLVM from deleting the IKJ loop (tier-1 DCE guard).
+
+extern proc li_rt_volatile_sink_f64(v: float) -> unit
+  requires true
+  ensures true
+
 def main() -> int
   requires true
   ensures result == 0
@@ -7,4 +13,5 @@ def main() -> int
   var A: array[25, array[25, float]]
   var B: array[25, array[25, float]]
   var C: array[25, array[25, float]] = A @ B
+  li_rt_volatile_sink_f64(C[0][0])
   return 0

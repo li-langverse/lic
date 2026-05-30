@@ -928,6 +928,12 @@ outcome = "compile_ok"
 note = "tier-1 dot spec N=8; runtime via verify-math-physics-goldens.sh"
 
 [[tests]]
+suite = "math_linalg"
+file = "math_linalg/matmul_25x25_at_codegen.li"
+outcome = "compile_ok"
+note = "P-linalg gap: 25×25 @ loop codegen; witness gate via matmul_loop_codegen_witness_gap.sh"
+
+[[tests]]
 suite = "physics"
 file = "physics/golden_positions_sum.li"
 outcome = "compile_ok"

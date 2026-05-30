@@ -1,4 +1,4 @@
-﻿import ml_rl
+import ml_rl
 import sim
 
 def main() -> int
@@ -6,7 +6,7 @@ def main() -> int
   ensures result == 0
   decreases 0
 =
-  if ml_rl_version() != 1:
+  if ml_rl_version() != 3:
     return 1
   var sess: SimSessionStub = sim_session_stub_default()
   if ml_rl_env_pool_step(sess, 0.02) != sim_status_ok():

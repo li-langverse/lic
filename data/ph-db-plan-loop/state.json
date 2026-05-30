@@ -1,5 +1,5 @@
 {
-  "note": "PH-DB cross-repo sprint — state tracked via ph-db-swarm-plan.md todos; no YAML plan-loop yet",
+  "note": "2026-05-30 WP-K first green Postgres nightly",
   "updated_at": "2026-05-30T00:00:00Z",
   "iterations": 0,
   "completed_ids": [
@@ -8,5 +8,7 @@
     "wp-c-registry-bench",
     "wp-e-control-plane"
   ],
-  "history": []
+  "history": [],
+  "completed": 8,
+  "total": 13
 }

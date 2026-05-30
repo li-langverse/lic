@@ -9,7 +9,17 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
 LATEST = ROOT / "data/studio-ui-ux-plan-loop/latest-bench.json"
-HOOK = ROOT / "packages/li-gpu/bench/wgpu_smoke.toml"
+
+
+def hook_path() -> Path | None:
+    for rel in (
+        "packages/lig/bench/wgpu_smoke.toml",
+        "packages/li-gpu/bench/wgpu_smoke.toml",
+    ):
+        p = ROOT / rel
+        if p.is_file():
+            return p
+    return None
 
 
 def fail(msg: str) -> None:
@@ -18,15 +28,16 @@ def fail(msg: str) -> None:
 
 
 def main() -> None:
-    if not HOOK.is_file():
-        fail(f"missing {HOOK.relative_to(ROOT)}")
+    hook = hook_path()
+    if hook is None:
+        fail("missing packages/lig/bench/wgpu_smoke.toml (or legacy li-gpu path)")
     if not LATEST.is_file():
         fail("missing latest-bench.json — run bench-studio-viewport-perf.sh")
 
     import tomllib
 
-    hook = tomllib.loads(HOOK.read_text(encoding="utf-8"))
-    if "wgpu_swapchain" not in hook:
+    hook_data = tomllib.loads(hook.read_text(encoding="utf-8"))
+    if "wgpu_swapchain" not in hook_data:
         fail("wgpu_smoke.toml missing [wgpu_swapchain]")
 
     bench = json.loads(LATEST.read_text(encoding="utf-8"))

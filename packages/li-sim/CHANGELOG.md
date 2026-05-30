@@ -10,6 +10,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 
 - **PH-GAME-01** — `SimSessionStub.game_px`…`game_vz`, `game_physics_steps`; cleared in `sim_reset` / `sim_session_stub_default`.
+- **PH-SIM SIM-3 persistent env pool** — `SimSessionStub.env_pool_*` + `env_obs_from_session`; session-backed `sim_rl_session_env_pool_step` (not stack pool); smoke `env_pool_step_contract.li`.
+- **PH-SIM SIM-5 sensor bus fields** — `SimSessionStub.sensor_*` cleared in `sim_reset`; `algo_auto_sensor_raycast()` registry id 903; wired via `li-sim-sensors` (`sim.sensors`).
 - **PH-SIM SIM-3** — `EnvPoolStub`, `env_pool_stub_step`, `sim_rl_session_env_pool_step`, `sim_rl_tick_stub` (RL batch via `sim_step`); smoke `env_pool_stub.li`.
 - **PH-SIM SIM-3 studio wire** — `sim_rl_session_env_pool_step` shared with `studio_sim_rl_step_hook` — [2026-05-27-studio-sim-rl-env-pool-step.md](../../docs/release-notes/2026-05-27-studio-sim-rl-env-pool-step.md).
 - **PH-SIM SIM-2** — replay metadata on `SimSessionStub` (`sim_session_replay_*`, `SimReplay`).

@@ -1,0 +1,23 @@
+# CHEM-LM-SCF-ENERGY-DECREASE — toy SCF energy step (WP7 stub; open target).
+
+def scf_energy(iter: int) -> float
+  requires iter >= 0
+  ensures result >= 0.0
+  decreases 0
+:=
+  return 1.0 / (1.0 + float(iter))
+
+def scf_step_energy(iter: int) -> float
+  requires iter >= 0
+  ensures result <= scf_energy(iter)
+  decreases 0
+:=
+  return scf_energy(iter + 1)
+
+def main() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+:=
+  discard scf_step_energy(0)
+  return 0

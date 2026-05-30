@@ -8,7 +8,7 @@ note = "T-PKG-li-studio-smoke"
 suite = "smoke"
 file = "smoke/studio_timeline_playback.li"
 outcome = "check_ok"
-note = "T-PKG-li-studio-timeline-playback UX-02"
+note = "T-PKG-li-studio-timeline-playback UX-02 WP-GD-08 sim tick sync"
 
 [[tests]]
 suite = "smoke"
@@ -54,6 +54,12 @@ note = "T-PKG-li-studio-command-palette-ux04"
 
 [[tests]]
 suite = "smoke"
+file = "smoke/studio_keyboard_bridge.li"
+outcome = "check_ok"
+note = "T-PKG-li-studio-keyboard-bridge UX-09 WP-UX-09 SDL/mock InputState end-to-end"
+
+[[tests]]
+suite = "smoke"
 file = "smoke/studio_profile_roundtrip.li"
 outcome = "check_ok"
 note = "T-PKG-li-studio-profile-roundtrip PH-UX-05 PH-SIM"
@@ -69,6 +75,24 @@ suite = "smoke"
 file = "smoke/studio_sim_rl_step_hook.li"
 outcome = "check_ok"
 note = "PH-SIM SIM-3: studio_sim_rl_step_hook env pool on live session"
+
+[[tests]]
+suite = "smoke"
+file = "smoke/studio_sim_rl_step.li"
+outcome = "compile_open_ok"
+note = "PH-ML Wave 3: JobGraph collect + sim_rl step hook"
+
+[[tests]]
+suite = "smoke"
+file = "smoke/studio_sim_sensor_step_hook.li"
+outcome = "check_ok"
+note = "PH-SIM SIM-5: studio_sim_sensor_step_hook raycast bus auto/robo"
+
+[[tests]]
+suite = "smoke"
+file = "smoke/studio_toml_engine_export.li"
+outcome = "check_ok"
+note = "WP-SIM-06: studio.toml [engine] determinism_tier + [engine.export] parse"
 
 [[tests]]
 suite = "smoke"
@@ -120,6 +144,12 @@ note = "T-PKG-li-studio-mcp-extended PH-AGENT gap-6-7"
 
 [[tests]]
 suite = "smoke"
+file = "smoke/studio_viewport_hud.li"
+outcome = "check_ok"
+note = "T-PKG-li-studio-viewport-hud UX-13 WP-UX-13 live FPS + particle tier HUD"
+
+[[tests]]
+suite = "smoke"
 file = "smoke/studio_viewport_display.li"
 outcome = "check_ok"
 note = "PH-UX viewport display MCP + paint_blit biomol/particle placeholders"
@@ -160,6 +190,12 @@ suite = "smoke"
 file = "smoke/studio_agent_invoke.li"
 outcome = "check_ok"
 note = "T-PKG-li-studio-agent-invoke PH-AGENT"
+
+[[tests]]
+suite = "smoke"
+file = "smoke/studio_agent_chrome_fsm.li"
+outcome = "check_ok"
+note = "T-PKG-li-studio-agent-chrome-fsm UX-06 WP-AG-02 cancel/retry/tool trace FSM"
 
 [[tests]]
 suite = "smoke"

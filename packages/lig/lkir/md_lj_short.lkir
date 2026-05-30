@@ -1,0 +1,2 @@
+; lig.kernel.md_force_short
+; cutoff=short neighbor=cell_list validity_ref=cpu

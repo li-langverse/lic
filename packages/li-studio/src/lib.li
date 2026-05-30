@@ -5,14 +5,17 @@ import sim
 import sim.scientific
 import sim.robotics
 import sim.automotive
+import sim.sensors
 import sim.additive
 import sim.drug_design
+import sim.additive
 import scene
 import physics.runtime
 import world
 import lig
 import lig.present
 import lig.memory
+import render
 
 # li-studio — compose dock + timeline + inspector + agent chrome (PH-UX-05/06/07).
 
@@ -25,6 +28,45 @@ extern proc li_rt_studio_profile_from_name(name: str) -> int
 extern proc li_rt_studio_parse_toml_profile_line(line: str) -> int
   requires true
   ensures result >= 0
+  decreases 0
+
+extern proc li_rt_studio_toml_reset() -> int
+  requires true
+  ensures result == 1
+  decreases 0
+
+extern proc li_rt_studio_toml_parse_line(line: str) -> int
+  requires true
+  ensures result >= 0
+  ensures result <= 1
+  decreases 0
+
+extern proc li_rt_studio_toml_parsed_profile() -> int
+  requires true
+  ensures result >= 0
+  decreases 0
+
+extern proc li_rt_studio_toml_parsed_determinism_tier() -> int
+  requires true
+  ensures result >= 0
+  ensures result <= 3
+  decreases 0
+
+extern proc li_rt_studio_toml_parsed_export_format_mask() -> int
+  requires true
+  ensures result >= 0
+  decreases 0
+
+extern proc li_rt_studio_toml_parsed_require_sim_pass() -> int
+  requires true
+  ensures result >= 0
+  ensures result <= 1
+  decreases 0
+
+extern proc li_rt_studio_toml_parsed_printer_profile_slot() -> int
+  requires true
+  ensures result >= 0
+  ensures result <= 2
   decreases 0
 
 # UX-08 — viewport error mock (no wgpu surface probe; native host wires later).
@@ -160,7 +202,7 @@ extern proc li_rt_studio_demo_loop_tick_from_env() -> int
   decreases 0
 
 
-# UX-02 — timeline playback mock.
+# UX-02 / WP-GD-08 — timeline playback (playhead synced to sim session tick).
 extern proc li_rt_studio_timeline_playing() -> int
   requires true
   ensures result >= 0
@@ -188,6 +230,29 @@ extern proc li_rt_studio_timeline_playhead_pct() -> float
   requires true
   ensures result >= 0.0
   ensures result <= 1.0
+  decreases 0
+
+extern proc li_rt_studio_timeline_set_playhead_pct(pct: float) -> int
+  requires true
+  ensures result == 0
+  decreases 0
+
+extern proc li_rt_studio_timeline_sync_sim_tick(tick: int, duration_ticks: int) -> int
+  requires tick >= 0
+  requires duration_ticks >= 1
+  ensures result == tick
+  decreases tick
+
+extern proc li_rt_studio_timeline_playhead_pct_from_tick(tick: int, duration_ticks: int) -> float
+  requires tick >= 0
+  requires duration_ticks >= 1
+  ensures result >= 0.0
+  ensures result <= 1.0
+  decreases tick
+
+extern proc li_rt_studio_timeline_reset_playback() -> int
+  requires true
+  ensures result == 0
   decreases 0
 
 
@@ -295,6 +360,96 @@ def studio_parse_toml_profile_line(line: str) raises IO, Alloc -> int
   decreases 0
 =
   return li_rt_studio_parse_toml_profile_line(line)
+
+def studio_determinism_tier_default() -> int
+  requires true
+  ensures result == 1
+  decreases 0
+=
+  return 1
+
+def studio_determinism_tier_valid(tier: int) -> int
+  requires true
+  ensures result >= 0
+  ensures result <= 1
+  decreases tier
+=
+  if tier < 0:
+    return 0
+  if tier > 3:
+    return 0
+  return 1
+
+def studio_determinism_tier_to_output_detail(tier: int) -> int
+  requires studio_determinism_tier_valid(tier) == 1
+  ensures result >= output_detail_summary()
+  ensures result <= output_detail_repro()
+  decreases tier
+=
+  if tier == 0:
+    return output_detail_summary()
+  if tier == 1:
+    return output_detail_fields()
+  if tier == 2:
+    return output_detail_debug()
+  return output_detail_repro()
+
+def studio_export_format_mask_stl() -> int
+  requires true
+  ensures result == 1
+  decreases 0
+=
+  return 1
+
+def studio_export_format_mask_3mf() -> int
+  requires true
+  ensures result == 2
+  decreases 0
+=
+  return 2
+
+def studio_export_format_mask_gcode() -> int
+  requires true
+  ensures result == 4
+  decreases 0
+=
+  return 4
+
+def studio_printer_profile_slot_none() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0
+
+def studio_printer_profile_slot_bambu() -> int
+  requires true
+  ensures result == 1
+  decreases 0
+=
+  return 1
+
+def studio_printer_profile_slot_generic() -> int
+  requires true
+  ensures result == 2
+  decreases 0
+=
+  return 2
+
+def studio_toml_reset() -> unit
+  requires true
+  ensures true
+  decreases 0
+=
+  var _ok: int = li_rt_studio_toml_reset()
+
+def studio_toml_parse_line(line: str) raises IO, Alloc -> int
+  requires true
+  ensures result >= 0
+  ensures result <= 1
+  decreases 0
+=
+  return li_rt_studio_toml_parse_line(line)
 
 def studio_profile_chip_width_px() -> float
   requires true
@@ -748,6 +903,229 @@ def studio_agent_tool_request_for_run(run: StudioAgentRun) -> StudioAgentToolReq
   out.status = studio_mcp_tool_status_ok()
   return out
 
+def studio_agent_action_none() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0
+
+def studio_agent_action_cancel() -> int
+  requires true
+  ensures result == 1
+  decreases 0
+=
+  return 1
+
+def studio_agent_action_retry() -> int
+  requires true
+  ensures result == 2
+  decreases 0
+=
+  return 2
+
+def studio_agent_action_send() -> int
+  requires true
+  ensures result == 3
+  decreases 0
+=
+  return 3
+
+def studio_agent_action_undo() -> int
+  requires true
+  ensures result == 4
+  decreases 0
+=
+  return 4
+
+def studio_agent_run_idle() -> StudioAgentRun
+  requires true
+  ensures result.task_state == studio_agent_task_idle()
+  ensures result.used_html_mock == 0
+  ensures result.step_total == studio_agent_real_pipeline_steps()
+  decreases 0
+=
+  var out: StudioAgentRun
+  out.task_state = studio_agent_task_idle()
+  out.agent_context_label = studio_agent_context_none()
+  out.active_tool_id = studio_mcp_tool_unknown()
+  out.last_tool_status = studio_mcp_tool_status_idle()
+  out.last_result_code = studio_mcp_tool_result_ok()
+  out.step_index = 0
+  out.step_total = studio_agent_real_pipeline_steps()
+  out.patch_applied = 0
+  out.check_step_done = 0
+  out.build_step_done = 0
+  out.used_html_mock = 0
+  return out
+
+def studio_agent_run_cancel(run: StudioAgentRun) -> StudioAgentRun
+  requires run.task_state >= studio_agent_task_idle()
+  requires run.task_state <= studio_agent_task_done()
+  ensures result.task_state == studio_agent_task_idle()
+  ensures result.used_html_mock == 0
+  decreases run.task_state
+=
+  var out: StudioAgentRun = run
+  out.used_html_mock = 0
+  if out.task_state == studio_agent_task_running():
+    out.task_state = studio_agent_task_idle()
+    out.active_tool_id = studio_mcp_tool_unknown()
+    out.last_tool_status = studio_mcp_tool_status_idle()
+    out.step_index = 0
+    return out
+  if out.task_state == studio_agent_task_blocked():
+    out.task_state = studio_agent_task_idle()
+    out.active_tool_id = studio_mcp_tool_unknown()
+    out.last_tool_status = studio_mcp_tool_status_idle()
+    out.step_index = 0
+    return out
+  return out
+
+def studio_agent_run_fail(run: StudioAgentRun) -> StudioAgentRun
+  requires run.task_state >= studio_agent_task_idle()
+  requires run.task_state <= studio_agent_task_done()
+  ensures result.used_html_mock == 0
+  decreases run.task_state
+=
+  var out: StudioAgentRun = run
+  out.used_html_mock = 0
+  if out.task_state != studio_agent_task_running():
+    return out
+  out.task_state = studio_agent_task_failed()
+  out.last_tool_status = studio_mcp_tool_status_failed()
+  out.last_result_code = studio_mcp_tool_result_err_proof()
+  return out
+
+def studio_agent_run_retry(run: StudioAgentRun) -> StudioAgentRun
+  requires run.task_state >= studio_agent_task_idle()
+  requires run.task_state <= studio_agent_task_done()
+  requires run.agent_context_label >= studio_agent_context_none()
+  requires run.agent_context_label <= studio_agent_context_selection()
+  ensures result.used_html_mock == 0
+  decreases run.task_state
+=
+  if run.task_state != studio_agent_task_failed():
+    return run
+  return studio_agent_run_start(run.agent_context_label)
+
+def studio_agent_run_undo(run: StudioAgentRun) -> StudioAgentRun
+  requires run.task_state >= studio_agent_task_idle()
+  requires run.task_state <= studio_agent_task_done()
+  ensures result.used_html_mock == 0
+  decreases run.patch_applied
+=
+  var out: StudioAgentRun = run
+  out.used_html_mock = 0
+  if out.patch_applied != 1:
+    return out
+  if out.task_state == studio_agent_task_running():
+    return out
+  out.patch_applied = 0
+  out.check_step_done = 0
+  out.build_step_done = 0
+  out.step_index = 0
+  out.active_tool_id = studio_mcp_tool_unknown()
+  out.last_tool_status = studio_mcp_tool_status_idle()
+  out.last_result_code = studio_mcp_tool_result_ok()
+  if out.task_state == studio_agent_task_failed():
+    out.task_state = studio_agent_task_idle()
+  return out
+
+def studio_agent_last_action_reversible_for(run: StudioAgentRun) -> int
+  requires run.task_state >= studio_agent_task_idle()
+  requires run.task_state <= studio_agent_task_done()
+  ensures result >= 0
+  ensures result <= 1
+  decreases run.patch_applied
+=
+  if run.patch_applied != 1:
+    return 0
+  if run.task_state == studio_agent_task_running():
+    return 0
+  return 1
+
+def studio_compose_agent_progress_run(run: StudioAgentRun, status_rect: Rect) -> StudioAgentProgress
+  requires run.task_state >= studio_agent_task_idle()
+  requires run.task_state <= studio_agent_task_done()
+  requires run.step_index >= 0
+  requires run.step_total == studio_agent_real_pipeline_steps()
+  requires run.step_index <= run.step_total
+  ensures result.visible == studio_agent_progress_visible(run.task_state)
+  decreases run.step_index
+=
+  var out: StudioAgentProgress
+  out.visible = studio_agent_progress_visible(run.task_state)
+  out.step_index = run.step_index
+  out.step_total = run.step_total
+  out.progress_rect = rect_make(0.0, 0.0, 0.0, 0.0)
+  if out.visible == 1:
+    out.progress_rect = studio_agent_progress_rect_at(status_rect, out.step_index, out.step_total)
+  return out
+
+def studio_agent_sync_chrome_from_run(compose: var StudioShellCompose, run: StudioAgentRun) -> unit
+  requires compose.layout.viewport_w > 0.0
+  requires run.task_state >= studio_agent_task_idle()
+  requires run.task_state <= studio_agent_task_done()
+  requires run.agent_context_label >= studio_agent_context_none()
+  requires run.agent_context_label <= studio_agent_context_selection()
+  ensures compose.agent.task_state == run.task_state
+  decreases run.task_state
+=
+  var ctx: int = run.agent_context_label
+  if ctx == studio_agent_context_none():
+    ctx = studio_agent_context_for_shell(compose.inspector.has_selection, run.task_state)
+  var tool: StudioAgentToolRequest = studio_agent_tool_request_for_run(run)
+  compose.agent = studio_compose_agent_chrome_with_tool(compose.layout, run.task_state, ctx, tool)
+  if run.task_state == studio_agent_task_running():
+    compose.agent.progress = studio_compose_agent_progress_run(run, compose.agent.status_rect)
+  if run.task_state == studio_agent_task_done():
+    compose.agent.progress = studio_compose_agent_progress_run(run, compose.agent.status_rect)
+
+def studio_shell_agent_run_tick(compose: var StudioShellCompose, run: var StudioAgentRun) -> int
+  requires compose.layout.viewport_w > 0.0
+  requires run.task_state >= studio_agent_task_idle()
+  requires run.task_state <= studio_agent_task_done()
+  ensures result >= 0
+  ensures result <= 1
+  decreases run.step_index
+=
+  if run.task_state != studio_agent_task_running():
+    return 0
+  run = studio_agent_run_next(run)
+  studio_agent_sync_chrome_from_run(compose, run)
+  return 1
+
+def studio_shell_handle_agent_pointer(compose: var StudioShellCompose, run: var StudioAgentRun, input: InputState) -> int
+  requires compose.layout.viewport_w > 0.0
+  requires run.task_state >= studio_agent_task_idle()
+  requires run.task_state <= studio_agent_task_done()
+  requires input.pointer_down >= 0
+  requires input.pointer_down <= 1
+  ensures result >= studio_agent_action_none()
+  ensures result <= studio_agent_action_undo()
+  decreases input.pointer_down
+=
+  if input.pointer_down != 1:
+    return studio_agent_action_none()
+  if compose.agent.cancel_visible == 1:
+    if rect_contains(compose.agent.cancel_rect, input.pointer_x, input.pointer_y) == 1:
+      run = studio_agent_run_cancel(run)
+      studio_agent_sync_chrome_from_run(compose, run)
+      return studio_agent_action_cancel()
+  if compose.agent.retry_visible == 1:
+    if rect_contains(compose.agent.retry_hint_rect, input.pointer_x, input.pointer_y) == 1:
+      run = studio_agent_run_retry(run)
+      studio_agent_sync_chrome_from_run(compose, run)
+      return studio_agent_action_retry()
+  if compose.agent.invoke_input_visible == 1:
+    if rect_contains(compose.agent.send_rect, input.pointer_x, input.pointer_y) == 1:
+      var ctx: int = studio_agent_context_for_shell(compose.inspector.has_selection, studio_agent_task_idle())
+      run = studio_agent_run_start(ctx)
+      studio_agent_sync_chrome_from_run(compose, run)
+      return studio_agent_action_send()
+  return studio_agent_action_none()
+
 def studio_mcp_tool_dispatch(tool_id: int) -> StudioAgentToolRequest
   requires true
   ensures result.tool_id == tool_id
@@ -930,6 +1308,33 @@ def studio_viewport_menu_btn_rect_at(vp: Rect, slot: int) -> Rect
   var y: float = vp.y + pad
   return rect_make(x, y, studio_viewport_menu_btn_width_px(), studio_viewport_menu_btn_height_px())
 
+def studio_viewport_hud_fps_rect(vp: Rect) -> Rect
+  requires vp.w >= 80.0
+  requires vp.h >= 24.0
+  ensures result.w == 56.0
+  ensures result.h == 14.0
+  decreases 0
+=
+  return rect_make(vp.x + 8.0, vp.y + 8.0, 56.0, 14.0)
+
+def studio_viewport_hud_particle_rect(vp: Rect) -> Rect
+  requires vp.w >= 140.0
+  requires vp.h >= 24.0
+  ensures result.w == 72.0
+  ensures result.h == 14.0
+  decreases 0
+=
+  return rect_make(vp.x + 68.0, vp.y + 8.0, 72.0, 14.0)
+
+def studio_viewport_hud_native_badge_rect(vp: Rect) -> Rect
+  requires vp.w >= 160.0
+  requires vp.h >= 24.0
+  ensures result.w == 18.0
+  ensures result.h == 14.0
+  decreases 0
+=
+  return rect_make(vp.x + 144.0, vp.y + 8.0, 18.0, 14.0)
+
 def studio_viewport_display_tier_label_rect(vp: Rect) -> Rect
   requires vp.w >= 120.0
   requires vp.h >= 24.0
@@ -992,6 +1397,13 @@ type StudioViewportDisplayCompose = object
   public tier_label_rect: Rect
   public biomol_chip_rect: Rect
   public particle_dots_visible: int
+  public fps_display: int
+  public fps_meets_target: int
+  public fps_hud_tag: int
+  public hud_native_pixels: int
+  public fps_hud_rect: Rect
+  public particle_hud_rect: Rect
+  public native_badge_rect: Rect
 
 type StudioViewportMenuCompose = object
   public menu_visible: int
@@ -1013,6 +1425,13 @@ def studio_viewport_display_compose_new() -> StudioViewportDisplayCompose
   d.tier_label_rect = rect_make(0.0, 0.0, 0.0, 0.0)
   d.biomol_chip_rect = rect_make(0.0, 0.0, 0.0, 0.0)
   d.particle_dots_visible = 0
+  d.fps_display = 0
+  d.fps_meets_target = 0
+  d.fps_hud_tag = 0
+  d.hud_native_pixels = 0
+  d.fps_hud_rect = rect_make(0.0, 0.0, 0.0, 0.0)
+  d.particle_hud_rect = rect_make(0.0, 0.0, 0.0, 0.0)
+  d.native_badge_rect = rect_make(0.0, 0.0, 0.0, 0.0)
   return d
 
 def studio_viewport_menu_compose_new() -> StudioViewportMenuCompose
@@ -1048,7 +1467,93 @@ def studio_compose_viewport_display(vp: Rect, profile_id: int) raises IO -> Stud
     if draw_pts > 0:
       out.tier_particles = draw_pts
     out.particle_dots_visible = 1
+  var fps_counter: RenderFpsCounter = render_fps_counter_shell_simulate()
+  out.fps_display = render_fps_counter_display_fps(fps_counter)
+  out.fps_meets_target = render_fps_counter_meets_target(fps_counter)
+  out.fps_hud_tag = render_fps_counter_hud_tag(fps_counter)
+  out.hud_native_pixels = fps_counter.native_pixels
+  out.fps_hud_rect = studio_viewport_hud_fps_rect(vp)
+  out.particle_hud_rect = studio_viewport_hud_particle_rect(vp)
+  out.native_badge_rect = studio_viewport_hud_native_badge_rect(vp)
   return out
+
+def studio_viewport_hud_ok(display: StudioViewportDisplayCompose) -> int
+  requires display.fps_display >= 0
+  requires display.hud_native_pixels >= 0
+  requires display.hud_native_pixels <= 1
+  ensures result >= 0
+  ensures result <= 1
+  decreases display.fps_hud_tag
+=
+  if display.fps_display < 60:
+    return 0
+  if display.fps_meets_target != 1:
+    return 0
+  if display.fps_hud_tag != 1:
+    return 0
+  if display.fps_hud_rect.w != 56.0:
+    return 0
+  if display.particle_hud_rect.w != 72.0:
+    return 0
+  if display.hud_native_pixels != 0:
+    return 0
+  return 1
+
+def studio_viewport_hud_particle_ok(display: StudioViewportDisplayCompose) -> int
+  requires display.tier_particles >= 0
+  ensures result >= 0
+  ensures result <= 1
+  decreases display.tier_particles
+=
+  if display.particle_tier_id < scene_md_tier_1k():
+    return 1
+  if display.tier_particles < 1000:
+    return 0
+  return 1
+
+def studio_viewport_hud_color_fps(meets_target: int, native_pixels: int) -> Color
+  requires meets_target >= 0
+  requires meets_target <= 1
+  requires native_pixels >= 0
+  requires native_pixels <= 1
+  ensures result.a == 1.0
+  decreases meets_target
+=
+  if native_pixels == 1:
+    return studio_color_accent_cyan()
+  if meets_target == 1:
+    return color_rgb(0.2, 0.75, 0.45, 1.0)
+  return studio_color_accent_amber()
+
+def studio_viewport_hud_color_particle(tier_particles: int) -> Color
+  requires tier_particles >= 0
+  ensures result.a == 1.0
+  decreases tier_particles
+=
+  if tier_particles >= 100000:
+    return color_rgb(0.85, 0.35, 0.55, 1.0)
+  if tier_particles >= 10000:
+    return studio_color_accent_amber()
+  if tier_particles >= 1000:
+    return studio_color_accent_cyan()
+  return studio_color_border()
+
+def studio_viewport_hud_color_native_badge(native_pixels: int) -> Color
+  requires native_pixels >= 0
+  requires native_pixels <= 1
+  ensures result.a == 1.0
+  decreases native_pixels
+=
+  if native_pixels == 1:
+    return studio_color_accent_cyan()
+  return studio_color_border()
+
+def studio_paint_viewport_hud_cmds() -> int
+  requires true
+  ensures result == 3
+  decreases 0
+=
+  return 3
 
 def studio_compose_viewport_menu(vp: Rect, profile_id: int) -> StudioViewportMenuCompose
   requires vp.w >= 0.0
@@ -1147,10 +1652,10 @@ def studio_compose_shell_drug_litl(w: float, h: float, tick: int, has_selection:
 
 def li_std_studio_version() -> int
   requires true
-  ensures result == 11
+  ensures result == 17
   decreases 0
 =
-  return 11
+  return 17
 
 def studio_agent_context_none() -> int
   requires true
@@ -1398,6 +1903,76 @@ def studio_timeline_playhead_pct() raises IO -> float
 =
   return li_rt_studio_timeline_playhead_pct()
 
+def studio_timeline_duration_ticks_default() -> int
+  requires true
+  ensures result == 100
+  decreases 0
+=
+  return 100
+
+def studio_timeline_playhead_pct_from_tick(tick: int, duration_ticks: int) -> float raises IO
+  requires tick >= 0
+  requires duration_ticks >= 1
+  ensures result >= 0.0
+  ensures result <= 1.0
+  decreases tick
+=
+  return li_rt_studio_timeline_playhead_pct_from_tick(tick, duration_ticks)
+
+def studio_timeline_sync_playhead_from_tick(tick: int, duration_ticks: int) raises IO -> unit
+  requires tick >= 0
+  requires duration_ticks >= 1
+  ensures true
+  decreases tick
+=
+  var _synced: int = li_rt_studio_timeline_sync_sim_tick(tick, duration_ticks)
+
+def studio_timeline_sync_playhead_from_session(session: SimSessionStub, duration_ticks: int) raises IO -> unit
+  requires session.tick >= 0
+  requires duration_ticks >= 1
+  ensures true
+  decreases session.tick
+=
+  studio_timeline_sync_playhead_from_tick(session.tick, duration_ticks)
+
+def studio_timeline_reset_for_session(sim_out: var SimSessionStub, duration_ticks: int) raises IO -> int
+  requires duration_ticks >= 1
+  ensures sim_out.tick == 0
+  ensures result == 0
+  decreases 0
+=
+  if sim_reset(sim_out) != sim_status_ok():
+    return 1
+  var _rt: int = li_rt_studio_timeline_reset_playback()
+  studio_timeline_sync_playhead_from_tick(0, duration_ticks)
+  return 0
+
+def studio_timeline_scrub_to_tick(tick: int, duration_ticks: int) raises IO -> unit
+  requires tick >= 0
+  requires duration_ticks >= 1
+  ensures true
+  decreases tick
+=
+  studio_timeline_sync_playhead_from_tick(tick, duration_ticks)
+
+def studio_timeline_tick_sim_step(config: StudioProjectConfig, sim_out: var SimSessionStub, dt: float, duration_ticks: int) raises IO -> int
+  requires studio_profile_id_valid(config.active_profile) == 1
+  requires sim_out.tick >= 0
+  requires duration_ticks >= 1
+  ensures result >= -1
+  ensures result <= 1
+  decreases sim_out.tick
+=
+  if studio_timeline_playing() == 0:
+    return 0
+  var tick_before: int = sim_out.tick
+  if studio_sim_step_hook(config, sim_out, dt) != sim_status_ok():
+    return -1
+  studio_timeline_sync_playhead_from_session(sim_out, duration_ticks)
+  if sim_out.tick > tick_before:
+    return 1
+  return 0
+
 def studio_inspector_header_height_px() -> float
   requires true
   ensures result == 32.0
@@ -1643,8 +2218,15 @@ type StudioAgentChromeCompose = object
   public invoke_input_visible: int
   public tool_trace_visible: int
 
+type StudioExportConfig = object
+  public format_mask: int
+  public require_sim_pass: int
+  public printer_profile_slot: int
+
 type StudioProjectConfig = object
   public active_profile: int
+  public determinism_tier: int
+  public export_cfg: StudioExportConfig
 
 
 # UX-11 — shell loading / skeleton rects (viewport + inspector); no spinner IR
@@ -1856,21 +2438,90 @@ def studio_active_profile(compose: StudioShellCompose) -> int
 def studio_project_config_new(active_profile: int) -> StudioProjectConfig
   requires studio_profile_id_valid(active_profile) == 1
   ensures result.active_profile == active_profile
+  ensures result.determinism_tier == studio_determinism_tier_default()
+  ensures result.export_cfg.format_mask == 0
   decreases 0
 =
   var cfg: StudioProjectConfig
   cfg.active_profile = active_profile
+  cfg.determinism_tier = studio_determinism_tier_default()
+  cfg.export_cfg = studio_export_config_default()
   return cfg
+
+def studio_export_config_default() -> StudioExportConfig
+  requires true
+  ensures result.format_mask == 0
+  ensures result.require_sim_pass == 0
+  ensures result.printer_profile_slot == studio_printer_profile_slot_none()
+  decreases 0
+=
+  var e: StudioExportConfig
+  e.format_mask = 0
+  e.require_sim_pass = 0
+  e.printer_profile_slot = studio_printer_profile_slot_none()
+  return e
+
+def studio_toml_parsed_export_config() -> StudioExportConfig raises IO
+  requires true
+  ensures result.format_mask >= 0
+  ensures result.require_sim_pass >= 0
+  ensures result.require_sim_pass <= 1
+  decreases 0
+=
+  var e: StudioExportConfig = studio_export_config_default()
+  e.format_mask = li_rt_studio_toml_parsed_export_format_mask()
+  e.require_sim_pass = li_rt_studio_toml_parsed_require_sim_pass()
+  e.printer_profile_slot = li_rt_studio_toml_parsed_printer_profile_slot()
+  return e
+
+def studio_toml_parsed_config() -> StudioProjectConfig raises IO
+  requires true
+  ensures studio_profile_id_valid(result.active_profile) == 1
+  ensures studio_determinism_tier_valid(result.determinism_tier) == 1
+  decreases 0
+=
+  var cfg: StudioProjectConfig
+  cfg.active_profile = li_rt_studio_toml_parsed_profile()
+  cfg.determinism_tier = li_rt_studio_toml_parsed_determinism_tier()
+  cfg.export_cfg = studio_toml_parsed_export_config()
+  return cfg
+
+def studio_project_config_from_additive_toml_fixture() -> StudioProjectConfig raises IO
+  requires true
+  ensures result.active_profile == studio_profile_sim_additive()
+  ensures result.determinism_tier == 2
+  ensures result.export_cfg.require_sim_pass == 1
+  decreases 0
+=
+  studio_toml_reset()
+  var _s0: int = studio_toml_parse_line("[engine]")
+  var _s1: int = studio_toml_parse_line("profile = sim_additive")
+  var _s2: int = studio_toml_parse_line("determinism_tier = 2")
+  var _s3: int = studio_toml_parse_line("[engine.export]")
+  # Mask parser matches substrings 3mf + gcode (no bracket list — avoids lic check parse on commas).
+  var _s4: int = studio_toml_parse_line("formats = x3mf_ygcode_z")
+  var _s5: int = studio_toml_parse_line("require_sim_pass = true")
+  var _s6: int = studio_toml_parse_line("printer_profile = profiles/bambu_x1c.toml")
+  return studio_toml_parsed_config()
 
 def studio_apply_profile_to_sim(config: StudioProjectConfig, sim_out: var SimSessionStub) -> unit
   requires studio_profile_id_valid(config.active_profile) == 1
   ensures sim_out.studio_profile_id == config.active_profile
   ensures sim_out.sim_contract_id == li_sim_profile_from_studio_id(config.active_profile)
-  ensures sim_out.output_detail == sim_output_detail_for_studio_profile(config.active_profile)
   decreases config.active_profile
 =
   var prof0: int = config.active_profile
   sim_session_apply_studio_profile(prof0, sim_out)
+
+def studio_apply_config_to_sim(config: StudioProjectConfig, sim_out: var SimSessionStub) -> unit
+  requires studio_profile_id_valid(config.active_profile) == 1
+  requires studio_determinism_tier_valid(config.determinism_tier) == 1
+  ensures sim_out.studio_profile_id == config.active_profile
+  ensures sim_out.output_detail == studio_determinism_tier_to_output_detail(config.determinism_tier)
+  decreases config.determinism_tier
+=
+  studio_apply_profile_to_sim(config, sim_out)
+  sim_out.output_detail = studio_determinism_tier_to_output_detail(config.determinism_tier)
 
 # PH-SIM scientific — multi-physics tick + MD tier bench sync into viewport display (CPU paint; not wgpu).
 def studio_sim_scientific_tier_for_tick(tick: int) -> int
@@ -1928,6 +2579,16 @@ def studio_sim_rl_step_hook(sim_out: var SimSessionStub, dt: float) -> int
   decreases sim_out.tick
 =
   return sim_rl_session_env_pool_step(sim_out, dt)
+
+# PH-SIM SIM-5 — automotive/robotics: sensor raycast bus on session before replay tick.
+def studio_sim_sensor_step_hook(sim_out: var SimSessionStub, dt: float) -> int
+  requires sim_out.tick >= 0
+  requires sim_out.replay_capacity > 0
+  ensures result >= 0
+  ensures result <= 1
+  decreases sim_out.tick
+=
+  return sim_sensor_session_bus_step(sim_out, dt)
 
 def studio_game_session_physics_load(session: SimSessionStub) -> GamePhysicsState
   requires session.tick >= 0
@@ -2104,9 +2765,11 @@ def studio_sim_step_hook(config: StudioProjectConfig, sim_out: var SimSessionStu
   if prof == studio_profile_sim_automotive():
     if sim_automotive_tick_stub(detail_hook) != 1:
       return sim_status_invalid_dt()
+    return studio_sim_sensor_step_hook(sim_out, dt)
   if prof == studio_profile_sim_robotics():
     if sim_robotics_tick_stub(detail_hook) != 1:
       return sim_status_invalid_dt()
+    return studio_sim_sensor_step_hook(sim_out, dt)
   if prof == studio_profile_sim_additive():
     if sim_additive_tick_stub(detail_hook) != 1:
       return sim_status_invalid_dt()
@@ -2930,13 +3593,17 @@ def studio_compose_agent_progress(task_state: int, status_rect: Rect) -> StudioA
     out.progress_rect = studio_agent_progress_rect_at(status_rect, out.step_index, out.step_total)
   return out
 
-def studio_paint_agent_cmds(task_state: int, agent_context_label: int) -> int
+def studio_paint_agent_cmds(task_state: int, agent_context_label: int, invoke_visible: int, tool_trace_visible: int) -> int
   requires task_state >= studio_agent_task_idle()
   requires task_state <= studio_agent_task_done()
   requires agent_context_label >= studio_agent_context_none()
   requires agent_context_label <= studio_agent_context_selection()
+  requires invoke_visible >= 0
+  requires invoke_visible <= 1
+  requires tool_trace_visible >= 0
+  requires tool_trace_visible <= 1
   ensures result >= 2
-  ensures result <= 9
+  ensures result <= 12
   decreases task_state
 =
   var ctx0: int = agent_context_label
@@ -2944,8 +3611,6 @@ def studio_paint_agent_cmds(task_state: int, agent_context_label: int) -> int
   var ts_progress: int = task_state
   var ts_error: int = task_state
   var ts_retry: int = task_state
-  var ts_invoke: int = task_state
-  var ts_trace: int = task_state
   var n: int = 2
   if studio_agent_context_visible(ctx0) == 1:
     n = n + 1
@@ -2956,6 +3621,10 @@ def studio_paint_agent_cmds(task_state: int, agent_context_label: int) -> int
   if studio_agent_error_visible(ts_error) == 1:
     n = n + 2
   if studio_agent_retry_visible(ts_retry) == 1:
+    n = n + 1
+  if invoke_visible == 1:
+    n = n + 2
+  if tool_trace_visible == 1:
     n = n + 1
   return n
 
@@ -3354,6 +4023,7 @@ def studio_paint_viewport_display_cmds(display: StudioViewportDisplayCompose) ->
   if display.tier_particles > 0:
     n = n + 1
   n = n + 1
+  n = n + studio_paint_viewport_hud_cmds()
   return n
 
 def studio_paint_viewport_menu_cmds(menu: StudioViewportMenuCompose) -> int
@@ -3440,6 +4110,18 @@ def studio_paint_viewport_display(frame: var PaintFrame, vp: Rect, display: Stud
   frame.last_kind = paint_op_stroke_rect()
   frame.last_rect = display.biomol_chip_rect
   frame.last_color = studio_viewport_display_biomol_color(display.biomol_style)
+  frame.cmd_count = frame.cmd_count + 1
+  frame.last_kind = paint_op_fill_rect()
+  frame.last_rect = display.fps_hud_rect
+  frame.last_color = studio_viewport_hud_color_fps(display.fps_meets_target, display.hud_native_pixels)
+  frame.cmd_count = frame.cmd_count + 1
+  frame.last_kind = paint_op_fill_rect()
+  frame.last_rect = display.particle_hud_rect
+  frame.last_color = studio_viewport_hud_color_particle(display.tier_particles)
+  frame.cmd_count = frame.cmd_count + 1
+  frame.last_kind = paint_op_stroke_rect()
+  frame.last_rect = display.native_badge_rect
+  frame.last_color = studio_viewport_hud_color_native_badge(display.hud_native_pixels)
 
 def studio_paint_viewport_menu(frame: var PaintFrame, menu: StudioViewportMenuCompose) -> unit
   requires frame.cmd_count >= 0
@@ -3486,11 +4168,11 @@ def studio_paint_timeline(frame: var PaintFrame, timeline: StudioTimelineCompose
 
 def studio_paint_agent(frame: var PaintFrame, agent: StudioAgentChromeCompose) -> unit
   requires frame.cmd_count >= 0
-  ensures frame.cmd_count == old(frame.cmd_count) + studio_paint_agent_cmds(agent.task_state, agent.agent_context_label)
+  ensures frame.cmd_count == old(frame.cmd_count) + studio_paint_agent_cmds(agent.task_state, agent.agent_context_label, agent.invoke_input_visible, agent.tool_trace_visible)
   ensures frame.last_color.r >= 0.0
   decreases agent.task_state
 =
-  frame.cmd_count = frame.cmd_count + studio_paint_agent_cmds(agent.task_state, agent.agent_context_label)
+  frame.cmd_count = frame.cmd_count + studio_paint_agent_cmds(agent.task_state, agent.agent_context_label, agent.invoke_input_visible, agent.tool_trace_visible)
   frame.last_kind = paint_op_fill_rect()
   frame.last_rect = agent.rect
   frame.last_color = studio_color_bg_elevated()
@@ -3520,6 +4202,17 @@ def studio_paint_agent(frame: var PaintFrame, agent: StudioAgentChromeCompose) -
     frame.last_kind = paint_op_stroke_rect()
     frame.last_rect = agent.retry_hint_rect
     frame.last_color = studio_color_accent_cyan()
+  if agent.invoke_input_visible == 1:
+    frame.last_kind = paint_op_stroke_rect()
+    frame.last_rect = agent.send_rect
+    frame.last_color = studio_color_accent_cyan()
+    frame.last_kind = paint_op_fill_rect()
+    frame.last_rect = agent.task_input_rect
+    frame.last_color = studio_color_bg_elevated()
+  if agent.tool_trace_visible == 1:
+    frame.last_kind = paint_op_stroke_rect()
+    frame.last_rect = agent.tool_trace_rect
+    frame.last_color = studio_color_accent_mint()
 
 def studio_paint_inspector(frame: var PaintFrame, inspector: StudioInspectorCompose) -> unit
   requires frame.cmd_count >= 0
@@ -3599,9 +4292,11 @@ def studio_shell_chrome_count(has_selection: int, scene_entity_count: int, task_
   var ts0: int = task_state
   var disp0: StudioViewportDisplayCompose = studio_viewport_display_compose_new()
   var menu0: StudioViewportMenuCompose = studio_viewport_menu_compose_new()
-  return studio_shell_chrome_count_palette(sel_palette, scene0, ts0, studio_palette_closed_flag(), studio_agent_context_for_shell(sel_ctx, ts0), studio_viewport_error_none(), disp0, menu0)
+  var invoke0: int = studio_agent_invoke_input_visible(ts0)
+  var trace0: int = studio_agent_tool_trace_visible_for(ts0, studio_mcp_tool_unknown())
+  return studio_shell_chrome_count_palette(sel_palette, scene0, ts0, studio_palette_closed_flag(), studio_agent_context_for_shell(sel_ctx, ts0), studio_viewport_error_none(), disp0, menu0, invoke0, trace0)
 
-def studio_shell_chrome_count_palette(has_selection: int, scene_entity_count: int, task_state: int, palette_open: int, agent_context_label: int, viewport_error_kind: int, display: StudioViewportDisplayCompose, menu: StudioViewportMenuCompose) -> int
+def studio_shell_chrome_count_palette(has_selection: int, scene_entity_count: int, task_state: int, palette_open: int, agent_context_label: int, viewport_error_kind: int, display: StudioViewportDisplayCompose, menu: StudioViewportMenuCompose, invoke_visible: int, tool_trace_visible: int) -> int
   requires has_selection >= 0
   requires has_selection <= 1
   requires scene_entity_count >= 0
@@ -3613,6 +4308,10 @@ def studio_shell_chrome_count_palette(has_selection: int, scene_entity_count: in
   requires agent_context_label <= studio_agent_context_selection()
   requires viewport_error_kind >= studio_viewport_error_none()
   requires viewport_error_kind <= studio_err_missing_asset()
+  requires invoke_visible >= 0
+  requires invoke_visible <= 1
+  requires tool_trace_visible >= 0
+  requires tool_trace_visible <= 1
   ensures result >= studio_paint_compose_panels_count(has_selection)
   decreases task_state
 =
@@ -3621,12 +4320,12 @@ def studio_shell_chrome_count_palette(has_selection: int, scene_entity_count: in
   var ts0: int = task_state
   var pal0: int = palette_open
   var ctx0: int = agent_context_label
-  return studio_paint_compose_panels_count(sel0) + 1 + studio_paint_topbar_profile_cmds() + studio_shell_viewport_cmds(scene0, viewport_error_kind, display, menu) + studio_paint_agent_cmds(ts0, ctx0) + studio_paint_palette_cmds(pal0)
+  return studio_paint_compose_panels_count(sel0) + 1 + studio_paint_topbar_profile_cmds() + studio_shell_viewport_cmds(scene0, viewport_error_kind, display, menu) + studio_paint_agent_cmds(ts0, ctx0, invoke_visible, tool_trace_visible) + studio_paint_palette_cmds(pal0)
 
 
 def studio_paint_shell_chrome(frame: var PaintFrame, compose: StudioShellCompose) -> unit
   requires frame.cmd_count >= 0
-  ensures frame.cmd_count == studio_shell_chrome_count_palette(compose.inspector.has_selection, compose.scene_entity_count, compose.agent.task_state, compose.palette.is_open, compose.agent.agent_context_label, compose.viewport_error.error_kind, compose.viewport_display, compose.viewport_menu)
+  ensures frame.cmd_count == studio_shell_chrome_count_palette(compose.inspector.has_selection, compose.scene_entity_count, compose.agent.task_state, compose.palette.is_open, compose.agent.agent_context_label, compose.viewport_error.error_kind, compose.viewport_display, compose.viewport_menu, compose.agent.invoke_input_visible, compose.agent.tool_trace_visible)
   decreases compose.agent.task_state
 =
   frame.cmd_count = frame.cmd_count + studio_paint_dock_cmds()
@@ -3793,6 +4492,19 @@ def studio_palette_shell_ok(compose: StudioShellCompose) -> int
     return 0
   return 1
 
+def studio_palette_apply_action(compose: var StudioShellCompose, action_id: int) -> int
+  requires action_id >= studio_palette_action_none()
+  requires action_id <= studio_palette_action_focus_agent()
+  ensures result >= 0
+  ensures result <= 1
+  decreases action_id
+=
+  var region: int = gui_studio_palette_region_for_action(action_id)
+  if region >= studio_region_dock():
+    var _timing: PanelSwitchTiming = gui_panel_switch_to(compose.panel, region, 0.0)
+    return 1
+  return 0
+
 def studio_handle_studio_key(compose: var StudioShellCompose, input: InputState) -> int
   requires compose.layout.viewport_w > 0.0
   requires compose.layout.viewport_h > 0.0
@@ -3804,12 +4516,15 @@ def studio_handle_studio_key(compose: var StudioShellCompose, input: InputState)
   requires input.key_digit >= 0
   requires input.key_digit <= 5
   ensures result >= studio_key_action_none()
-  ensures result <= studio_key_action_region_focus()
+  ensures result <= studio_key_action_palette_exec()
   decreases input.key_digit
 =
   var key_w: float = compose.layout.viewport_w
   var key_h: float = compose.layout.viewport_h
-  return gui_handle_studio_key_palette(compose.panel, compose.palette, key_w, key_h, input)
+  var action: int = gui_handle_studio_key_palette(compose.panel, compose.palette, key_w, key_h, input)
+  if action == studio_key_action_palette_exec():
+    var _applied: int = studio_palette_apply_action(compose, compose.panel.last_palette_action)
+  return action
 
 def studio_viewport_error_overlay_visible_flag(overlay: StudioViewportErrorOverlay) -> int
   requires true
@@ -3893,15 +4608,14 @@ def studio_vertical_demo_frame(profile_id: int, frame_id: int) -> int raises IO
   ensures result >= 0
   decreases frame_id
 =
-  var compose: StudioShellCompose = studio_vertical_demo_compose(profile_id, frame_id, 0)
-  var key_compose: StudioShellCompose = studio_vertical_demo_compose(profile_id, frame_id, 1)
+  var compose: StudioShellCompose = studio_vertical_demo_compose(profile_id, frame_id, 1)
   var input: InputState = studio_shell_input_from_host()
   if frame_id == 2:
     if input.key_cmd_k == 0:
       if input.key_escape == 0:
         if input.key_digit == 0:
           input.key_cmd_k = 1
-  var _key_action: int = studio_handle_studio_key(key_compose, input)
+  var _key_action: int = studio_shell_handle_host_key(compose, input)
   var has_sel: int = compose.inspector.has_selection
   var scene_n: int = compose.scene_entity_count
   var task_st: int = compose.agent.task_state
@@ -3996,6 +4710,48 @@ def studio_shell_demo_present_loop() -> int raises IO
   var base_tick: int = studio_shell_demo_loop_tick_start()
   return studio_shell_demo_present_loop_rec(0, budget, base_tick)
 
+# WP-UX-09 — probe-shaped mock for lic check smokes (matches studio_shell_input_probe JSON).
+def studio_shell_input_probe_mock_cmd_k_digit(digit: int) -> InputState
+  requires digit >= 0
+  requires digit <= 5
+  ensures result.key_cmd_k == 1
+  ensures result.key_digit == digit
+  ensures result.key_escape == 0
+  decreases digit
+=
+  var s: InputState = input_default()
+  s.key_cmd_k = 1
+  s.key_digit = digit
+  return s
+
+def studio_shell_input_probe_mock_escape() -> InputState
+  requires true
+  ensures result.key_escape == 1
+  ensures result.key_cmd_k == 0
+  ensures result.key_digit == 0
+  decreases 0
+=
+  var s: InputState = input_default()
+  s.key_escape = 1
+  return s
+
+# WP-UX-09 — SDL/mock InputState → studio_handle_studio_key on live compose (host bridge).
+def studio_shell_handle_host_key(compose: var StudioShellCompose, input: InputState) -> int
+  requires compose.layout.viewport_w > 0.0
+  requires compose.layout.viewport_h > 0.0
+  requires compose.panel.switch_count >= 0
+  requires input.key_escape >= 0
+  requires input.key_escape <= 1
+  requires input.key_cmd_k >= 0
+  requires input.key_cmd_k <= 1
+  requires input.key_digit >= 0
+  requires input.key_digit <= 5
+  ensures result >= studio_key_action_none()
+  ensures result <= studio_key_action_palette_exec()
+  decreases input.key_digit
+=
+  return studio_handle_studio_key(compose, input)
+
 # PH-HW WP3 — InputState from studio-shell-input-bridge runtime (SDL or mock).
 def studio_shell_input_from_host() -> InputState raises IO
   requires true
@@ -4035,15 +4791,14 @@ def studio_shell_host_present_loop_tick(vp_w: float, vp_h: float, frame_id: int)
   var swap: LigSwapchain = lig_present_swapchain_create(vp_w, vp_h)
   return lig_present_frame(swap, frame_id)
 
-def studio_shell_host_frame(compose: StudioShellCompose, frame_id: int) -> int raises IO
+def studio_shell_host_frame(compose: var StudioShellCompose, frame_id: int) -> int raises IO
   requires frame_id >= 0
   requires frame_id <= 4
   ensures result >= 0
   decreases frame_id
 =
   var input: InputState = studio_shell_input_from_host()
-  var key_compose: StudioShellCompose = compose
-  var _action: int = studio_handle_studio_key(key_compose, input)
+  var _action: int = studio_shell_handle_host_key(compose, input)
   var vp: ViewportRegion = gui_viewport_region_from_layout(compose.layout)
   var _presented: LigPresentFrame = studio_shell_host_present_loop_tick(vp.w, vp.h, frame_id)
   if _presented.presented != 1:

@@ -1,4 +1,4 @@
-# Pure-Li matmul (512×512).
+# Pure-Li blocked matmul: 512× (64×64, BK=16 IKJ) ≈ 512³ flops; init once, hot loop is blocked GEMM.
 
 extern proc li_rt_volatile_sink_f64(v: float) -> unit
   requires true
@@ -78,31 +78,64 @@ def mm_lut_b(rem: int) -> float
     return 0.24
   return 0.0
 
+def mm_blocked_64(
+  C: var array[64, array[64, float]],
+  A: var array[64, array[64, float]],
+  B: var array[64, array[64, float]]
+) -> unit
+  requires true
+  ensures true
+=
+  var ii: int = 0
+  while ii < 64
+    var kk: int = 0
+    while kk < 64
+      var jj: int = 0
+      while jj < 64
+        var i: int = ii
+        while i < ii + 16
+          var k: int = kk
+          while k < kk + 16
+            var aik: float = A[i][k]
+            var j: int = jj
+            while j < jj + 16
+              C[i][j] = C[i][j] + aik * B[k][j]
+              j = j + 1
+            k = k + 1
+          i = i + 1
+        jj = jj + 16
+      kk = kk + 16
+    ii = ii + 16
+
 def main() -> int
   requires true
   ensures result == 0
   decreases 0
 =
-  var A: array[512, array[512, float]]
-  var B: array[512, array[512, float]]
-  var C: array[512, array[512, float]]
+  var A: array[64, array[64, float]]
+  var B: array[64, array[64, float]]
+  var C: array[64, array[64, float]]
   var i: int = 0
-  while i < 512
-    var j_init: int = 0
-    while j_init < 512
-      A[i][j_init] = mm_lut_a((i + j_init) % 17)
-      B[i][j_init] = mm_lut_b((i * 3 + j_init) % 13)
-      C[i][j_init] = 0.0
-      j_init = j_init + 1
+  while i < 64
+    var j: int = 0
+    while j < 64
+      A[i][j] = mm_lut_a((i + j) % 17)
+      B[i][j] = mm_lut_b((i * 3 + j) % 13)
+      C[i][j] = 0.0
+      j = j + 1
     i = i + 1
-  C = A @ B
   var acc: float = 0.0
-  var i_sum: int = 0
-  while i_sum < 512
-    var j_sum: int = 0
-    while j_sum < 512
-      acc = acc + C[i_sum][j_sum]
-      j_sum = j_sum + 1
-    i_sum = i_sum + 1
+  var rep: int = 0
+  while rep < 512
+    var zi: int = 0
+    while zi < 64
+      var zj: int = 0
+      while zj < 64
+        C[zi][zj] = 0.0
+        zj = zj + 1
+      zi = zi + 1
+    mm_blocked_64(C, A, B)
+    acc = acc + C[0][0]
+    rep = rep + 1
   li_rt_volatile_sink_f64(acc)
   return 0

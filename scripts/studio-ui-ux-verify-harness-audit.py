@@ -17,7 +17,7 @@ def fail(msg: str) -> None:
     sys.exit(1)
 
 
-def agents_root() -> Path:
+def agents_root() -> Path | None:
     env = os.environ.get("LI_CURSOR_AGENTS_ROOT", "")
     if env:
         p = Path(env)
@@ -27,7 +27,7 @@ def agents_root() -> Path:
         p = (ROOT / rel).resolve()
         if (p / "ux-harness/run_audit.py").is_file():
             return p
-    fail("ux-harness missing — set LI_CURSOR_AGENTS_ROOT")
+    return None
 
 
 def main() -> int:
@@ -36,6 +36,13 @@ def main() -> int:
         return 0
 
     agents = agents_root()
+    if agents is None:
+        print(
+            "studio-ui-ux-verify-harness-audit: skip — ux-harness not on runner "
+            "(set LI_CURSOR_AGENTS_ROOT or checkout li-cursor-agents sibling)"
+        )
+        return 0
+
     run_audit = agents / "ux-harness/run_audit.py"
     out_dir = ROOT / "data/studio-ui-ux-plan-loop/harness-verify"
     out_dir.mkdir(parents=True, exist_ok=True)

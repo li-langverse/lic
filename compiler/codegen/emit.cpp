@@ -1397,9 +1397,15 @@ struct EmitCtx {
         const unsigned k = static_cast<unsigned>(ins.rhs_int);
         const unsigned n = static_cast<unsigned>(ins.lhs_int);
         constexpr unsigned kUnrollMax = 64;
+        constexpr unsigned kBlockSize = 64;
+        const bool square_blocked =
+            m == k && k == n && n >= 256 && (n % kBlockSize) == 0;
         const bool use_loops = m > kUnrollMax || k > kUnrollMax || n > kUnrollMax ||
                                static_cast<std::uint64_t>(m) * k * n > (kUnrollMax * kUnrollMax * kUnrollMax);
-        if (use_loops) {
+        if (square_blocked) {
+          emit_matmul2d_blocked_ijk(c_it->second.alloca, a_it->second.alloca,
+                                    b_it->second.alloca, n, kBlockSize);
+        } else if (use_loops) {
           const bool skip_zero = ins.use_loaded_int;
           emit_matmul2d_ijk_loops(c_it->second.alloca, a_it->second.alloca, b_it->second.alloca,
                                   m, k, n, skip_zero);

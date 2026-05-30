@@ -8,6 +8,8 @@ on:
       - "scripts/studio-ui-ux-*.py"
       - "scripts/ci-studio-ui-ux-native.sh"
       - "scripts/ci-studio-ui-ux-wgpu.sh"
+      - "scripts/ci-studio-ui-ux-wgpu-swapchain.sh"
+      - "packages/li-gpu/**"
       - "scripts/bench-studio-viewport-perf.sh"
       - "benchmarks/competitive/studio-ui.toml"
       - "packages/li-ui/**"
@@ -80,5 +82,28 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: studio-wgpu-bench-meta
+          path: data/studio-ui-ux-plan-loop/latest-bench.json
+          if-no-files-found: error
+
+  wgpu-swapchain-readback:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install bench deps
+        run: sudo apt-get update -qq && sudo apt-get install -y --no-install-recommends python3
+
+      - name: Swapchain readback hook (honest blocked on CPU runner)
+        env:
+          STUDIO_UI_UX_GATES_SKIP_BUILD: "1"
+          LIG_WGPU_SWAPCHAIN: "1"
+        run: |
+          chmod +x scripts/ci-studio-ui-ux-wgpu-swapchain.sh scripts/bench-studio-viewport-perf.sh
+          ./scripts/ci-studio-ui-ux-wgpu-swapchain.sh
+
+      - name: Upload swapchain bench metadata
+        uses: actions/upload-artifact@v4
+        with:
+          name: studio-wgpu-swapchain-meta
           path: data/studio-ui-ux-plan-loop/latest-bench.json
           if-no-files-found: error

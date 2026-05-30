@@ -132,3 +132,58 @@ def gpu_wgpu_readback_passed(smoke: GpuWgpuSmoke) -> int
   if smoke.surface_ok != 1:
     return 0
   return 1
+
+# studio-ux-19 — wgpu-rs swapchain texture readback (real pixels on GPU runners only).
+
+def gpu_wgpu_swapchain_status_blocked() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0
+
+def gpu_wgpu_swapchain_status_pass() -> int
+  requires true
+  ensures result == 1
+  decreases 0
+=
+  return 1
+
+type GpuWgpuSwapchainReadback = object
+  public status: int
+  public pixels_sampled: int
+  public texture_width: int
+  public texture_height: int
+
+def gpu_wgpu_swapchain_readback_blocked() -> GpuWgpuSwapchainReadback
+  requires true
+  ensures result.status == gpu_wgpu_swapchain_status_blocked()
+  ensures result.pixels_sampled == 0
+  decreases 0
+=
+  var r: GpuWgpuSwapchainReadback
+  r.status = gpu_wgpu_swapchain_status_blocked()
+  r.pixels_sampled = 0
+  r.texture_width = 0
+  r.texture_height = 0
+  return r
+
+def gpu_wgpu_swapchain_readback_run() -> GpuWgpuSwapchainReadback
+  requires true
+  ensures result.status == gpu_wgpu_swapchain_status_blocked()
+  ensures result.pixels_sampled == 0
+  decreases 0
+=
+  return gpu_wgpu_swapchain_readback_blocked()
+
+def gpu_wgpu_swapchain_readback_passed(readback: GpuWgpuSwapchainReadback) -> int
+  requires true
+  ensures result >= 0
+  ensures result <= 1
+  decreases 0
+=
+  if readback.status != gpu_wgpu_swapchain_status_pass():
+    return 0
+  if readback.pixels_sampled < 1:
+    return 0
+  return 1

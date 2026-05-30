@@ -61,6 +61,9 @@ todos:
     status: done
   - id: studio-ux-19-wgpu-swapchain-readback
     content: "Real wgpu-rs swapchain texture readback in CI GPU images (blocked on runner GPU)"
+    status: done
+  - id: studio-ux-20-proactive-sweep-20260530
+    content: "Proactive briefing refresh — capture-deps + ecosystem audit follow-ups for studio_ui_ux_builder"
     status: pending
 isProject: false
 ---

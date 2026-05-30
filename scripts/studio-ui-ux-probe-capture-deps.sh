@@ -43,6 +43,9 @@ display = bool(os.environ.get("DISPLAY"))
 ffmpeg = has_cmd("ffmpeg")
 gh = has_cmd("gh")
 gh_token = bool(os.environ.get("GH_TOKEN") or os.environ.get("GITHUB_TOKEN"))
+vulkan = pkg_config("vulkan") if has_cmd("pkg-config") else False
+nvidia_smi = has_cmd("nvidia-smi")
+wgpu_swapchain_env = os.environ.get("LIG_WGPU_SWAPCHAIN", "") == "1"
 
 gaps: list[str] = []
 if not sdl2:
@@ -57,8 +60,11 @@ if not gh:
     gaps.append("gh CLI for issue/release upload")
 elif not gh_token:
     gaps.append("GH_TOKEN for release upload")
+if not vulkan and not nvidia_smi:
+    gaps.append("Vulkan pkg-config or nvidia-smi for wgpu swapchain GPU CI (studio-ux-19)")
 
 ready_native = sdl2 and (xvfb or display)
+ready_wgpu_swapchain = (vulkan or nvidia_smi) and wgpu_swapchain_env
 ready_html = chrome is not None
 
 payload = {
@@ -71,8 +77,12 @@ payload = {
         "chrome": {"present": chrome is not None, "binary": chrome},
         "ffmpeg": {"present": ffmpeg},
         "gh": {"present": gh, "token_set": gh_token},
+        "vulkan": {"present": vulkan, "probe": "pkg-config --exists vulkan"},
+        "nvidia_smi": {"present": nvidia_smi},
+        "lig_wgpu_swapchain": {"env_set": wgpu_swapchain_env},
     },
     "ready_for_native_capture": ready_native,
+    "ready_for_wgpu_swapchain": ready_wgpu_swapchain,
     "ready_for_html_capture": ready_html,
     "gaps": gaps,
     "notes": [

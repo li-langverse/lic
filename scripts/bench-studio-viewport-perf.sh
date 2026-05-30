@@ -67,6 +67,30 @@ report = {
 }
 
 
+def bench_wgpu_swapchain_hook() -> dict:
+    hook_path = root / "packages/li-gpu/bench/wgpu_smoke.toml"
+    hook = load_toml(hook_path)
+    sec = hook.get("wgpu_swapchain") or {}
+    env_on = os.environ.get(sec.get("env_enable", "LIG_WGPU_SWAPCHAIN"), "") == "1"
+    status = sec.get("status", "blocked_runner")
+    runner_gpu = bool(sec.get("runner_gpu_required", True))
+    # Honest: CPU ubuntu runners stay blocked until lig wgpu-rs swapchain readback lands.
+    if env_on and status == "blocked_runner":
+        status = "blocked_runner"
+    meets = status == "swapchain_pass"
+    return {
+        "status": status,
+        "runner_gpu_required": runner_gpu,
+        "env_enable": sec.get("env_enable", "LIG_WGPU_SWAPCHAIN"),
+        "env_active": env_on,
+        "readback_fn": sec.get("readback_fn", "gpu_wgpu_swapchain_readback_run"),
+        "meets_target": meets,
+        "native_pixels": meets,
+        "honest_blocked": status == "blocked_runner",
+        "notes": sec.get("notes", ""),
+    }
+
+
 def bench_render_fps_hook() -> dict:
     hook_path = root / "packages/li-render/bench/viewport_fps.toml"
     gpu_hook = root / "packages/li-gpu/bench/wgpu_smoke.toml"
@@ -275,6 +299,13 @@ if pkg_dir("li-render") is not None:
 else:
     report["notes"].append("skip_viewport_fps:li-render_missing")
 
+wgpu_hook = root / "packages/li-gpu/bench/wgpu_smoke.toml"
+if wgpu_hook.is_file():
+    report["wgpu_swapchain"] = bench_wgpu_swapchain_hook()
+    report["notes"].append(f"wgpu_swapchain:{report['wgpu_swapchain'].get('status', 'missing')}")
+else:
+    report["notes"].append("skip_wgpu_swapchain:hook_missing")
+
 if (root / "packages/li-gui/bench/panel_switch.toml").is_file():
     report["panel_switch_ms"] = bench_panel_switch_hook()
 else:
@@ -470,7 +501,19 @@ report["gates"][mid] = {
     "peak_rss_mib": mem_prof.get("peak_rss_mib"),
 }
 
+ws = report.get("wgpu_swapchain") or {}
+if ws:
+    report["gates"]["wgpu_swapchain_readback"] = {
+        "target": "swapchain_pass",
+        "value": ws.get("status"),
+        "unit": "status",
+        "meets_target": bool(ws.get("meets_target", False)),
+        "honest_blocked": bool(ws.get("honest_blocked", False)),
+        "env_active": bool(ws.get("env_active", False)),
+    }
+
 memory_gate_ids = set(memory_defs)
+# wgpu_swapchain_readback is informational until GPU CI runners exist (studio-ux-19).
 report["gates_pass"] = all(
     g.get("meets_target")
     for gid, g in report["gates"].items()

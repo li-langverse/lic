@@ -51,4 +51,6 @@ Registry: `benchmarks/competitive/studio-ui.toml` → `[[memory]] id = animate_m
 
 **Evidence:** screenshots + short reel per iteration on GitHub (release `studio-ui-ux-progress`), not in git tree. Native SDL viewport frames (`deploy/studio-demo/native/`, `scripts/studio-ui-ux-capture-native.sh`, `ux-harness` `world-studio-native`) set `native_pixels=true` in `latest-capture.json` when Xvfb draws pixels; HTML mocks remain labeled marketing-only (UX-14).
 
+**Wgpu swapchain (studio-ux-19):** `packages/li-gpu/bench/wgpu_smoke.toml` → `[wgpu_swapchain]` reports `blocked_runner` on CPU CI until a GPU runner sets `LIG_WGPU_SWAPCHAIN=1` and lig host readback passes. Bench JSON field `wgpu_swapchain.status` is informational (not in `gates_pass`).
+
 **Bench registry:** `benchmarks/competitive/studio-ui.toml` → `./scripts/bench-studio-viewport-perf.sh` → `benchmarks/results/bench-studio-viewport-perf.json` (regenerated; plan loop also writes `data/studio-ui-ux-plan-loop/latest-bench.json`).

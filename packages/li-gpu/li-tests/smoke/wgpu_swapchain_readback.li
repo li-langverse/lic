@@ -1,0 +1,18 @@
+# studio-ux-19 — swapchain readback contract (blocked on GPU runner until lig host wires wgpu-rs).
+
+import gpu
+
+def main() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  var blocked: GpuWgpuSwapchainReadback = gpu_wgpu_swapchain_readback_blocked()
+  if blocked.status != gpu_wgpu_swapchain_status_blocked():
+    return 1
+  if gpu_wgpu_swapchain_readback_passed(blocked) != 0:
+    return 2
+  var run: GpuWgpuSwapchainReadback = gpu_wgpu_swapchain_readback_run()
+  if run.pixels_sampled != 0:
+    return 3
+  return 0

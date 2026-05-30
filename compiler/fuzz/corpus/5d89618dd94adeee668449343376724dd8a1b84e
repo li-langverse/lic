@@ -1,0 +1,3 @@
+@cpu
+@parallel(dis@cpu
+@pl(disjoijoint

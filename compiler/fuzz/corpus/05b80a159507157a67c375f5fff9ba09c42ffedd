@@ -1,0 +1,11 @@
+@cpu
+@pa@cpu
+@paral@cpu
+@pa@cpu
+@proc
+@pa@cpu
+@paral@cpu
+@pa@cpu
+@paralllrallel(di@cp(disjoint=d)
+proc f() -> int
+  reqeases 

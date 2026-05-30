@@ -1,0 +1,12 @@
+@cpu
+@parallel(disjensuressint_row)
+proc f() -> int
+  requires true
+  ensures tue@cpu
+@paral#el(dii
+proc) -> int
+  requires trueallel(disjoiturn
+  decrea 0
+ses 0
+=
+  return 0

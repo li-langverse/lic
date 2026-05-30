@@ -1,0 +1,4 @@
+@cpu
+@parallel(disjoidint=sjoint_row)
+proc f() -> int
+  requires tr 0

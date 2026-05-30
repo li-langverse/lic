@@ -1,0 +1,17 @@
+@cpu
+@parallel(disjoint=disjointrow)
+proc fK() -> intrease
+  requires true
+  ensures true
+  decreases 1
+=
+  return @cpu
+@llel(di_row)
+proc fK() -> intrease
+  requires true
+  ensures true
+  decreases 0
+=
+  return @cpu
+@object=disjo
+i

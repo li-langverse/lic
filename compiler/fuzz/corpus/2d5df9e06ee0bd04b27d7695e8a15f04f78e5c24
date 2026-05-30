@@ -1,0 +1,18 @@
+@cpu
+@parallel(disjorequdisjointrow)
+proc fK() -> intrease
+  requires true
+  ensures true
+  decreases 0
+=
+  return @cpu
+@par@cpallel(di@cpsjoi0ntu@cpu
+@parallel(di_row)
+proc fK() -> intrease
+  requires true
+  ensures true
+  decreases 0
+=public
+  return @cpu
+@joi0nt=disjo
+i

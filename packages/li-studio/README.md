@@ -45,6 +45,7 @@ Dimensions: `examples/studio_shell_demo.toml` (1280×720). Smokes: `studio_shell
 
 - `studio_compose_shell` / `studio_compose_shell_profile` — layout + `StudioProjectConfig.active_profile`
 - `studio_profile_from_name` / `studio_parse_toml_profile_line` — PH-SIM profile stub (`fixtures/studio.toml`)
+- `studio_toml_parse_line` / `studio_toml_parsed_config` — WP-SIM-06 `[engine]` determinism + `[engine.export]` (`examples/verticals/sim_additive/studio.toml`)
 - `studio_paint_topbar_profile` — topbar chip; `last_rect.h` encodes active profile id
 - `studio_compose_outliner` / `studio_paint_outliner` — scene hierarchy stub (Root, Camera, Mesh) in dock strip below slots (PH-GD-1)
 - `studio_paint_compose_panels` — paint dock slots, outliner rows, timeline track/playhead, inspector chrome

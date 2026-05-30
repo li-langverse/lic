@@ -1,0 +1,15 @@
+version = 1
+
+[[entry]]
+id = "GT-AX-SIMPLE-GRAPH"
+kind = "axiom"
+field = "graph"
+domain = "combinatorics"
+statement = "Simple graph: adjacency is irreflexive (no self-loops) and symmetric."
+proof_status = "target"
+gap_id = "G-graph"
+gap_kind = "axiom_layer"
+lean_module = "proof-db/graph/GraphAxioms.lean"
+lean_thm = "Li.ProofDb.Graph.simple_graph_axiom"
+mathlib_ref = "Mathlib.Combinatorics.SimpleGraph.Basic"
+last_verified_lic_commit = "17b150a"

@@ -1,0 +1,10 @@
+@cpu
+@parallel(disjoi@cpu
+@parallel(disjoint=disjoint_row)
+proc typedictnt
+  requires tr
+@parallel(disnt=dis
+proc fprocnt=disjoint_ro f() -> int
+  requires true
+=
+  re() -> inturn 0

@@ -1,0 +1,8 @@
+@cpu
+@parallel(disjensuressint_row)
+proc f() -> int
+  requires true
+  ensures tue
+  decreases 0
+=
+  return 0

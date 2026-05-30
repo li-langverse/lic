@@ -1,0 +1,6 @@
+@cpu
+@parallel(cpuldlnt=disjoi_row)
+proc F() 
+  requires t decreases 0
+=@cpu
+@prn 0

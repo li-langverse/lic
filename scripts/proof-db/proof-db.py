@@ -51,6 +51,12 @@ def allowed_proof_status(schema: dict) -> set[str]:
     return set(vals) if isinstance(vals, list) else set()
 
 
+def allowed_enum(schema: dict, key: str) -> set[str]:
+    block = schema.get(key, {})
+    vals = block.get("values", []) if isinstance(block, dict) else []
+    return set(vals) if isinstance(vals, list) else set()
+
+
 def verify_entry(entry: dict, rel_path: Path, schema: dict, errors: list[str]) -> None:
     eid = entry.get("id", "<no-id>")
     kind = entry.get("kind")
@@ -63,6 +69,16 @@ def verify_entry(entry: dict, rel_path: Path, schema: dict, errors: list[str]) -
     allowed = allowed_proof_status(schema)
     if status and allowed and status not in allowed:
         errors.append(f"{rel_path}::{eid}: proof_status {status!r} not in {sorted(allowed)}")
+
+    erdos_st = entry.get("erdos_status")
+    erdos_allowed = allowed_enum(schema, "erdos_status")
+    if erdos_st and erdos_allowed and erdos_st not in erdos_allowed:
+        errors.append(f"{rel_path}::{eid}: erdos_status {erdos_st!r} not in {sorted(erdos_allowed)}")
+
+    tier = entry.get("priority_tier")
+    tier_allowed = allowed_enum(schema, "priority_tier")
+    if tier and tier_allowed and tier not in tier_allowed:
+        errors.append(f"{rel_path}::{eid}: priority_tier {tier!r} not in {sorted(tier_allowed)}")
 
     lean = (entry.get("lean_module") or "").strip()
     if lean:
@@ -115,7 +131,11 @@ def cmd_list(args: argparse.Namespace) -> None:
         for entry in parse_entries(path):
             if args.field and entry.get("field") != args.field:
                 continue
+            if args.status and entry.get("proof_status") != args.status:
+                continue
             eid = entry.get("id", "?")
+            if args.prefix and not str(eid).startswith(args.prefix):
+                continue
             kind = entry.get("kind", "?")
             status = entry.get("proof_status", "?")
             field = entry.get("field", "")
@@ -128,6 +148,8 @@ def main() -> None:
 
     p_list = sub.add_parser("list", help="List catalog entries")
     p_list.add_argument("--field", help="Filter by field column (e.g. math)")
+    p_list.add_argument("--status", help="Filter by proof_status (e.g. target)")
+    p_list.add_argument("--prefix", help="Filter by ID prefix (e.g. N-AX-, E-)")
     p_list.set_defaults(func=cmd_list)
 
     p_verify = sub.add_parser("verify-slice", help="Validate TOML entries against schema")

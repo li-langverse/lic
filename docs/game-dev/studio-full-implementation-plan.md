@@ -3,6 +3,7 @@
 **Status:** Active (rev. 1 — 2026-05-26)  
 **Branch baseline:** `cursor/wp-lic-01-verticals-toml` @ `e1fa5826` (includes `efb3739f`…`fddb41ca` vertical increment series)  
 **Audience:** Architects, parallel agents, package owners  
+**Navigation hub:** [WORLD-STUDIO-MASTER-PLAN.md](WORLD-STUDIO-MASTER-PLAN.md)
 **Canonical vision:** [world-studio-vision.md](world-studio-vision.md) · [PH-world-studio-program.md](PH-world-studio-program.md) · [algorithms-and-libraries-plan.md](../ecosystem/algorithms-and-libraries-plan.md)
 
 **Honesty rule:** `lic check` composable green = **interface landed**, not product parity. Wave A compiler gates ([provability-gaps.md](../verification/provability-gaps.md) G-VERIFY-01) block “production” domain kernels.
@@ -150,7 +151,7 @@ Cross-tracks (not separate phases above): **PH-PORT**, **PH-COMPLY**, **PH-CIN**
 | WP-SIM-02 | Replay metadata SIM-2 | all sim | **done** | `sim_session_replay_*` | `sim_replay_stub.li` | S | WP-SIM-01 | Y |
 | WP-SIM-03 | RL EnvPool SIM-3 | sim_rl | **partial** | Persistent pool + obs contract | `env_pool_step_contract.li` | M | WP-SIM-01 | Y |
 | WP-SIM-04 | Full `SimWorld` replay buffer | all sim | stub | Entity/state ring buffer | composable replay roundtrip | L | WP-SIM-02 | N |
-| WP-SIM-05 | Sensor bus stub | sim_automotive, sim_robotics | stub | `sim.sensors` raycast IDs | smoke + composable | M | WP-SIM-01 | Y |
+| WP-SIM-05 | Sensor bus stub | sim_automotive, sim_robotics | **partial** | `sim.sensors` raycast IDs | `sensor_bus_raycast_contract.li` | M | WP-SIM-01 | Y |
 | WP-SIM-06 | `studio.toml` engine section | all | **partial** | Parse `determinism_tier`, export | example vertical `studio.toml` | S | WP-SIM-00 | Y |
 
 ### 3.4 PH-UX
@@ -158,9 +159,9 @@ Cross-tracks (not separate phases above): **PH-PORT**, **PH-COMPLY**, **PH-CIN**
 | ID | Title | Profile | State | Target | Proof gate | Cx | Blocks | Par? |
 |----|-------|---------|-------|--------|------------|-----|--------|------|
 | WP-UX-01 | Viewport grid + selection ring | game | **partial** | Depth cues in compose | `studio_shell_demo.li` | S | WP-GD-01 | Y |
-| WP-UX-02 | Timeline playback | game | **partial** | Playhead advance | `studio_timeline_playback.li` | S | WP-GD-01 | Y |
+| WP-UX-02 | Timeline playback | game | **partial** | Playhead from `sim_step` tick | `studio_timeline_playback.li` | S | WP-GD-01 | Y |
 | WP-UX-03 | Inspector fields | sim_robotics, game | **partial** | ≥2 rows on selection | `studio_inspector_fields.li` | S | WP-GD-01 | Y |
-| WP-UX-04 | Command palette | all | **partial** | ⌘K overlay | `studio_command_palette.li` | S | WP-GD-01 | Y |
+| WP-UX-04 | Command palette | all | **done** | ⌘K overlay + action dispatch | `studio_command_palette.li` | S | WP-GD-01 | Y |
 | WP-UX-05 | Profile chip + TOML | all 7 | **done** | `studio_vertical_profile_roundtrip.li` | smoke | S | WP-SIM-00 | Y |
 | WP-UX-06 | Agent chrome | sim_rl, sim_drug | **partial** | Task states + cancel | `studio_agent_*.li` | M | WP-GD-01 | Y |
 | WP-UX-07 | Empty states | all | **partial** | Inspector/viewport hints | smokes | S | WP-GD-01 | Y |
@@ -286,6 +287,7 @@ Every **named** stub/mock surface tied to World Studio (expand when adding packa
 | `sim_additive_tick_stub` | `li-sim-additive` | `packages/li-sim-additive/src/lib.li` | AM tick |
 | `sim_drug_design_tick_stub` | `li-sim-drug-design` | `packages/li-sim-drug-design/src/lib.li` | LITL tick |
 | `EnvPoolStub` / `env_pool_stub_step` | `li-ml-rl` | `packages/li-ml-rl/src/lib.li` | SIM-3 RL batch |
+| `sim_sensor_session_bus_step` | `li-sim-sensors` | `packages/li-sim-sensors/src/lib.li` | SIM-5 raycast bus |
 | `studio_sim_step_hook` | `li-studio` | `packages/li-studio/src/lib.li` | Profile multiplexer |
 | `studio_game_world_checkpoint_stub` | `li-studio` | same | GD-2 validity gate |
 | `game_physics_step_hook` | `li-physics-runtime` | `packages/li-physics-runtime/src/lib.li` | Single-body integrate stub |

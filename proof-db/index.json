@@ -1,8 +1,13 @@
 {
   "version": 1,
-  "updated": "2026-05-25",
+  "updated": "2026-05-30",
   "lean_module": "Li.ProofDB",
   "lean_path": "proof-db/lean/ProofDB.lean",
+  "vertical_modules": {
+    "numerics": "proof-db/numerics/axioms/NumericsAxioms.lean",
+    "discrete": "proof-db/discrete/axioms/DiscreteAxioms.lean",
+    "math": "proof-db/math/axioms/MathAxioms.lean"
+  },
   "discharge_path": "docs/semantics/Discharge.lean",
   "lake_package": "docs/semantics",
   "lake_target": "ProofDB",

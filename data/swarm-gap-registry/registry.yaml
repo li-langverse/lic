@@ -1,5 +1,5 @@
 version: 1
-updated_at: '2026-05-26T06:18:44Z'
+updated_at: '2026-05-30T04:14:47Z'
 gaps:
 - id: gap-line-profiler-001
   gap_kind: missing_package
@@ -965,3 +965,91 @@ gaps:
   handoff_to:
   - gap_explorer
   - issue_planner
+- id: gap-vertical-stub-drug-litl
+  gap_kind: competitor_feature
+  title: 'verticals.toml stub/honesty: drug_litl'
+  status: open
+  priority: 4
+  discovered_by: gap_explorer
+  evidence:
+  - verticals.toml id=drug_litl
+  suggested_loop: sim-md-research
+  handoff_to:
+  - numerics_researcher
+- id: gap-vertical-stub-bio-litl
+  gap_kind: competitor_feature
+  title: 'verticals.toml stub/honesty: bio_litl'
+  status: open
+  priority: 4
+  discovered_by: gap_explorer
+  evidence:
+  - verticals.toml id=bio_litl
+  suggested_loop: sim-md-research
+  handoff_to:
+  - numerics_researcher
+- id: gap-vertical-stub-scientific-viz
+  gap_kind: competitor_feature
+  title: 'verticals.toml stub/honesty: scientific_viz'
+  status: open
+  priority: 4
+  discovered_by: gap_explorer
+  evidence:
+  - verticals.toml id=scientific_viz
+  suggested_loop: sim-md-research
+  handoff_to:
+  - numerics_researcher
+- id: gap-vertical-stub-cinematic-encode
+  gap_kind: competitor_feature
+  title: 'verticals.toml stub/honesty: cinematic_encode'
+  status: open
+  priority: 4
+  discovered_by: gap_explorer
+  evidence:
+  - verticals.toml id=cinematic_encode
+  suggested_loop: sim-md-research
+  handoff_to:
+  - numerics_researcher
+- id: gap-vertical-stub-cinematic-color-grade
+  gap_kind: competitor_feature
+  title: 'verticals.toml stub/honesty: cinematic_color_grade'
+  status: open
+  priority: 4
+  discovered_by: gap_explorer
+  evidence:
+  - verticals.toml id=cinematic_color_grade
+  suggested_loop: sim-md-research
+  handoff_to:
+  - numerics_researcher
+- id: gap-vertical-stub-cinematic-audio-sync
+  gap_kind: competitor_feature
+  title: 'verticals.toml stub/honesty: cinematic_audio_sync'
+  status: open
+  priority: 4
+  discovered_by: gap_explorer
+  evidence:
+  - verticals.toml id=cinematic_audio_sync
+  suggested_loop: sim-md-research
+  handoff_to:
+  - numerics_researcher
+- id: gap-vertical-stub-mmo-shard
+  gap_kind: competitor_feature
+  title: 'verticals.toml stub/honesty: mmo_shard'
+  status: open
+  priority: 4
+  discovered_by: gap_explorer
+  evidence:
+  - verticals.toml id=mmo_shard
+  suggested_loop: sim-md-research
+  handoff_to:
+  - numerics_researcher
+- id: gap-vertical-stub-qm-dft
+  gap_kind: competitor_feature
+  title: 'verticals.toml stub/honesty: qm_dft'
+  status: open
+  priority: 4
+  discovered_by: gap_explorer
+  evidence:
+  - verticals.toml id=qm_dft
+  suggested_loop: sim-md-research
+  handoff_to:
+  - numerics_researcher

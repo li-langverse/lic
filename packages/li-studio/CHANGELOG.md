@@ -4,9 +4,19 @@
 
 ### Added
 
+- **WP-UX-06 / WP-AG-02 agent chrome FSM** — `studio_agent_run_cancel`, `studio_agent_run_fail`, `studio_agent_run_retry`, `studio_agent_run_undo`, `studio_agent_sync_chrome_from_run`, `studio_shell_handle_agent_pointer`, `studio_shell_agent_run_tick`; invoke + tool-trace paint; smoke `studio_agent_chrome_fsm.li`; `li_std_studio_version` → 16.
+
+- **WP-UX-09 keyboard bridge** — `studio_shell_input_probe_mock_*`, `studio_shell_handle_host_key`; demo/host frames apply keys on live compose; smoke `studio_keyboard_bridge.li`; `li_std_studio_version` → 15.
+
+- **WP-UX-04 command palette actions** — `studio_palette_action_*`, `studio_palette_exec_slot`, `studio_key_action_palette_exec`, `studio_palette_apply_action`; digits 1–3 run focus actions when palette open; smoke `studio_command_palette.li` extended with Cmd+K + exec path; `li_std_studio_version` → 14.
+
+- **WP-UX-02 / WP-GD-08 timeline ↔ sim tick** — `studio_timeline_tick_sim_step`, `studio_timeline_sync_playhead_from_session`, `studio_timeline_scrub_to_tick`, `studio_timeline_reset_for_session`; playhead from `SimSessionStub.tick` / `studio_timeline_duration_ticks_default()` (not mock +0.01); runtime `li_rt_studio_timeline_sync_sim_tick`; smoke `studio_timeline_playback.li`; `li_std_studio_version` → 13.
+
+- **WP-SIM-06 studio.toml engine/export** — `StudioExportConfig`, cumulative `studio_toml_parse_line` / `studio_toml_parsed_config`, `determinism_tier` → `output_detail` via `studio_apply_config_to_sim`; fixture `examples/verticals/sim_additive/studio.toml`; smoke `studio_toml_engine_export.li`; `li_std_studio_version` → 12.
 - **PH-AGENT-2 Studio agent run state:** `StudioAgentRun`, `studio_agent_run_start`, `studio_agent_run_next`, `studio_agent_run_complete`, and `studio_agent_tool_request_for_run` model the in-process world-patch → `lic_check` → `lic_build` tool sequence with `used_html_mock == 0`; smokes `studio_agentic_run.li` and root `import_studio_agentic_run.li`; `li_std_studio_version` → 11.
 - **PH-SIM scientific viewport sync** — `studio_sim_scientific_step_hook`, `studio_sim_scientific_tier_for_tick`; `sim_scientific` profile runs `sim_scientific_tick_at` + `scene_bench_particle_tier_simulate` and syncs tier/draw_points into viewport display; smoke `studio_sim_scientific_step_hook.li`; `li_std_studio_version` → 10.
 - **PH-SIM SIM-3 studio RL step** — `studio_sim_rl_step_hook`; `sim_rl` in `studio_sim_step_hook` uses `sim_rl_session_env_pool_step` on live session; smokes `studio_sim_rl_step_hook.li`, extended `studio_sim_step_by_profile.li` — [2026-05-27-studio-sim-rl-env-pool-step.md](../../docs/release-notes/2026-05-27-studio-sim-rl-env-pool-step.md).
+- **PH-SIM SIM-5 sensor bus** — `studio_sim_sensor_step_hook`; `sim_automotive` / `sim_robotics` use `sim_sensor_session_bus_step` via `li-sim-sensors`; smokes `studio_sim_sensor_step_hook.li`, extended `studio_sim_step_by_profile.li`.
 - **PH-GAME-01 session game physics** — `studio_game_step_hook(sim_out, dt)` + `game_physics_step_hook`; smokes assert `game_pz` / `game_physics_steps` — [2026-05-27-studio-game-session-physics.md](../../docs/release-notes/2026-05-27-studio-game-session-physics.md).
 
 - **PH-GD-2 game checkpoint roundtrip** — `studio_game_world_checkpoint_from_session`, `studio_game_world_checkpoint_stub`, `studio_game_world_checkpoint_roundtrip` (`li-world` buffer seam); smoke `studio_game_step_hook.li` — [2026-05-27-vertical-game-checkpoint-roundtrip.md](docs/release-notes/2026-05-27-vertical-game-checkpoint-roundtrip.md).

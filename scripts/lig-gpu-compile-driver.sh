@@ -25,7 +25,16 @@ esac
 [[ "$LI_GPU_BACKEND" == "wgpu" ]] && LI_GPU_BACKEND=webgpu
 export LI_GPU_BACKEND
 echo "lig-gpu-compile-driver: LI_GPU_BACKEND=$LI_GPU_BACKEND (from $TOML)"
-LIC="${LIC:-$("$ROOT/scripts/resolve-lic.sh")}"
-[[ -x "$LIC" ]] || { echo "lig-gpu-compile-driver: lic not built" >&2; exit 1; }
+if [[ -z "${LIC:-}" ]]; then
+  if [[ -f "$ROOT/build-wsl/compiler/lic/lic" ]]; then
+    LIC="$ROOT/build-wsl/compiler/lic/lic"
+  elif [[ -f "$ROOT/build/compiler/lic/lic" ]]; then
+    LIC="$ROOT/build/compiler/lic/lic"
+  else
+    LIC="$("$ROOT/scripts/resolve-lic.sh")"
+  fi
+fi
+export LIC
+[[ -f "$LIC" ]] || { echo "lig-gpu-compile-driver: lic not built" >&2; exit 1; }
 "$ROOT/scripts/check-mir-gpu-decorator.sh"
 echo "lig-gpu-compile-driver: MIR decorator gate ok; LKIR vendor emit remains G-gpu (stub)"

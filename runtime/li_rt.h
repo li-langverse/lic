@@ -262,6 +262,8 @@ int32_t li_rt_studio_demo_loop_tick_from_env(void);
 
 /* PH-HW HW-0: lig device layer. */
 int32_t li_rt_lig_device_kind(void);
+void li_rt_lig_gpu_for_i64(long long start, long long end, void (*body)(long long),
+                           int32_t backend_id);
 int32_t li_rt_lig_backend_available(int32_t backend_id);
 int32_t li_rt_lig_backend_select_auto(void);
 const char* li_rt_lig_capability_json(void);
@@ -273,6 +275,8 @@ void li_rt_lig_gpu_for_i64(long long start, long long end, void (*body)(long lon
 
 /* PH-HW HW-0: lig device layer. */
 int32_t li_rt_lig_device_kind(void);
+void li_rt_lig_gpu_for_i64(long long start, long long end, void (*body)(long long),
+                           int32_t backend_id);
 int32_t li_rt_lig_backend_available(int32_t backend_id);
 int32_t li_rt_lig_backend_select_auto(void);
 const char* li_rt_lig_capability_json(void);

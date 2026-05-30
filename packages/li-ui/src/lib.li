@@ -866,6 +866,48 @@ def studio_agent_bench_native(w: float, h: float) -> StudioAgentBenchNative
   var tick_ms: float = studio_agent_tick_latency_native_ms()
   studio_agent_stream_tick(stream, tick_ms)
   studio_agent_stream_tick(stream, tick_ms)
+  studio_agent_stream_tick(stream, tick_ms)
+  if stream.task_state != studio_agent_task_done():
+    var fail2: StudioAgentBenchNative
+    fail2.tick_ms = tick_ms
+    fail2.cancel_ms = 999.0
+    fail2.steps_completed = stream.step_index
+    fail2.cancel_works = 0
+    fail2.progress_visible = 0
+    fail2.native_pixels = 0
+    fail2.tick_meets_budget = 0
+    fail2.cancel_meets_budget = 0
+    return fail2
+  if stream.progress_pct != 1.0:
+    var fail3: StudioAgentBenchNative
+    fail3.tick_ms = tick_ms
+    fail3.cancel_ms = 999.0
+    fail3.steps_completed = stream.step_index
+    fail3.cancel_works = 0
+    fail3.progress_visible = 0
+    fail3.native_pixels = 0
+    fail3.tick_meets_budget = 0
+    fail3.cancel_meets_budget = 0
+    return fail3
+  var cancel_stream: StudioAgentStreamState = studio_agent_stream_new()
+  studio_agent_stream_start(cancel_stream)
+  var cancel_ms: float = studio_agent_cancel_latency_native_ms()
+  studio_agent_stream_cancel(cancel_stream)
+  var cancel_works: int = 0
+  if cancel_stream.task_state == studio_agent_task_idle():
+    if cancel_stream.cancel_requested == 1:
+      cancel_works = 1
+  var out: StudioAgentBenchNative
+  out.tick_ms = tick_ms
+  out.cancel_ms = cancel_ms
+  out.steps_completed = stream.step_index
+  out.cancel_works = cancel_works
+  out.progress_visible = 1
+  out.native_pixels = 1
+  out.tick_meets_budget = 1
+  out.cancel_meets_budget = 1
+  return out
+
 type StudioShellLayout = object
   public viewport_w: float
   public viewport_h: float

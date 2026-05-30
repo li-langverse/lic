@@ -58,6 +58,9 @@ todos:
     status: done
   - id: studio-ux-18-proactive-wave3
     content: "Proactive sweep wave-3 — keyboard journey audit + native wgpu CI matrix"
+    status: done
+  - id: studio-ux-19-wgpu-swapchain-readback
+    content: "Real wgpu-rs swapchain texture readback in CI GPU images (blocked on runner GPU)"
     status: pending
 isProject: false
 ---

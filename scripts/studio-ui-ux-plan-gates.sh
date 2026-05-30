@@ -28,6 +28,7 @@ python3 "$ROOT/scripts/studio-ui-ux-verify-capture.py" || fail "studio-ui-ux-ver
 python3 "$ROOT/scripts/studio-ui-ux-verify-native-capture.py" || fail "studio-ui-ux-verify-native-capture"
 python3 "$ROOT/scripts/studio-ui-ux-verify-tokens.py" || fail "studio token sync (TOML ↔ li-ui)"
 python3 "$ROOT/scripts/studio-ui-ux-verify-harness-audit.py" || fail "studio-ui-ux-verify-harness-audit"
+python3 "$ROOT/scripts/studio-ui-ux-verify-keyboard-journey.py" || fail "studio-ui-ux-verify-keyboard-journey"
 if [[ -x "$ROOT/scripts/studio-ui-ux-probe-capture-deps.sh" ]]; then
   "$ROOT/scripts/studio-ui-ux-probe-capture-deps.sh" || li_warn "capture-deps probe failed"
   [[ -f "$ROOT/data/studio-ui-ux-plan-loop/latest-capture-deps.json" ]] \

@@ -148,6 +148,46 @@ def bench_gpu_fail_recovery_hook() -> dict:
     }
 
 
+def bench_keyboard_journey_hook() -> dict:
+    hook_path = root / "packages/li-gui/bench/keyboard_journey.toml"
+    hook = load_toml(hook_path)
+    meta_h = hook.get("meta") or {}
+    bench = hook.get("bench") or {}
+    steps = hook.get("step") or []
+    budget_tab = float(meta_h.get("budget_tab_ms", 16))
+    budget_shortcut = float(meta_h.get("budget_shortcut_ms", 16))
+    tab_elapsed = [
+        float(s.get("elapsed_ms", 0))
+        for s in steps
+        if isinstance(s, dict) and s.get("kind") == "tab"
+    ]
+    shortcut_elapsed = [
+        float(s.get("elapsed_ms", 0))
+        for s in steps
+        if isinstance(s, dict) and s.get("kind") == "shortcut"
+    ]
+    worst_tab = float(bench.get("worst_elapsed_ms", max(tab_elapsed) if tab_elapsed else 0))
+    worst_shortcut = max(shortcut_elapsed) if shortcut_elapsed else 0.0
+    tab_ok = all(
+        bool(s.get("within_budget", False))
+        for s in steps
+        if isinstance(s, dict) and s.get("kind") == "tab"
+    )
+    shortcut_ok = bool(bench.get("palette_shortcut_ok", False))
+    return {
+        "budget_tab_ms": budget_tab,
+        "budget_shortcut_ms": budget_shortcut,
+        "worst_tab_ms": worst_tab,
+        "worst_shortcut_ms": worst_shortcut,
+        "tab_meets_target": tab_ok and worst_tab <= budget_tab,
+        "shortcut_meets_target": shortcut_ok and worst_shortcut <= budget_shortcut,
+        "meets_target": tab_ok and shortcut_ok and worst_tab <= budget_tab and worst_shortcut <= budget_shortcut,
+        "step_count": len(steps),
+        "status": "simulate",
+        "bench_simulate_fn": meta_h.get("bench_simulate_fn", "gui_keyboard_journey_budget_ms"),
+    }
+
+
 def bench_panel_switch_hook() -> dict:
     hook_path = root / "packages/li-gui/bench/panel_switch.toml"
     hook = load_toml(hook_path)
@@ -253,6 +293,13 @@ if gpu_fail_hook.is_file():
     report["notes"].append("gpu_fail_recovery:li-studio_hook_simulate")
 else:
     report["notes"].append("skip_gpu_fail_recovery:hook_missing")
+
+keyboard_hook = root / "packages/li-gui/bench/keyboard_journey.toml"
+if keyboard_hook.is_file():
+    report["keyboard_journey"] = bench_keyboard_journey_hook()
+    report["notes"].append("keyboard_journey:li-gui_hook_simulate")
+else:
+    report["notes"].append("skip_keyboard_journey:hook_missing")
 
 scene_hook = root / "packages/li-scene/bench/particle_tiers.toml"
 if scene_hook.is_file():
@@ -375,6 +422,22 @@ report["gates"]["gpu_fail_retry_ms"] = {
     "honest_simulate": gf.get("status") == "simulate",
     "strip_visible": gf.get("strip_visible"),
     "retry_visible": gf.get("retry_visible"),
+}
+
+kj = report.get("keyboard_journey") or {}
+report["gates"]["keyboard_tab_ms"] = {
+    "target": kj.get("budget_tab_ms", 16),
+    "value": kj.get("worst_tab_ms"),
+    "unit": "ms",
+    "meets_target": bool(kj.get("tab_meets_target", False)),
+    "honest_simulate": kj.get("status") == "simulate",
+}
+report["gates"]["keyboard_shortcut_ms"] = {
+    "target": kj.get("budget_shortcut_ms", 16),
+    "value": kj.get("worst_shortcut_ms"),
+    "unit": "ms",
+    "meets_target": bool(kj.get("shortcut_meets_target", False)),
+    "honest_simulate": kj.get("status") == "simulate",
 }
 
 report["gates"]["studio_load_ms"] = {

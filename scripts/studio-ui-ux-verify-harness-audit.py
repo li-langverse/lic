@@ -81,7 +81,12 @@ def main() -> int:
         fail(f"world-studio-demo UX status={ux_t.get('status')} reason={ux_t.get('skip_reason')}")
 
     journey_ids = {j.get("id") for j in ux_t.get("journeys") or [] if isinstance(j, dict)}
-    for required in ("studio_workspace", "command_palette", "vertical_profile"):
+    for required in (
+        "studio_workspace",
+        "command_palette",
+        "vertical_profile",
+        "keyboard_first_workflow",
+    ):
         if required not in journey_ids:
             fail(f"missing journey id={required} in ux audit")
 

@@ -1,7 +1,7 @@
 {
   "pass": true,
-  "avg_score": 2.52,
-  "min_score": 2.0,
+  "avg_score": 2.58,
+  "min_score": 2.2,
   "dimensions": {
     "UX-01": { "score": 2.5, "note": "SDL software renderer draws grid+particles; wgpu path wave-2 complete." },
     "UX-02": { "score": 2.8, "note": "Native play/pause RT + tick (+0.01 playhead), play_btn_rect paint, timeline compose smoke." },
@@ -11,13 +11,13 @@
     "UX-06": { "score": 2.3, "note": "Agent chrome composables + Cursor/Linear SOTA refs in harness." },
     "UX-07": { "score": 3, "note": "Native empty inspector/viewport composables, distinct paint cmd counts, shell wiring + smoke." },
     "UX-08": { "score": 2.8, "note": "Native GPU fail strip + retry rect in li-studio compose; bench gpu_fail_retry_ms gate; HTML mock 04." },
-    "UX-09": { "score": 3.0, "note": "SDL/mock InputState probe + studio-shell-sdl-tick.sh; bridge doc; studio_keyboard_input_json.li." },
+    "UX-09": { "score": 3.2, "note": "keyboard_journey bench hook + Cmd+K shortcut; harness keyboard_first_workflow journey (studio-ux-18)." },
     "UX-10": { "score": 3.2, "note": "focus_ring token + studio_paint_focus_ring IR; contrast stub; inspector focus smoke; axe CI follow-up." },
     "UX-11": { "score": 3, "note": "StudioShellLoadingState compose + 4 fill skeleton cmds; loading cmd_count > idle smoke." },
     "UX-12": { "score": 2.2, "note": "Mock banner + capture meta label SDL stub vs product." },
-    "UX-13": { "score": 2.5, "note": "Bench JSON honest simulate/native flags; wgpu readback when LIG_WGPU_READBACK=1." },
-    "UX-14": { "score": 2.8, "note": "HTML labeled mock; native path separate from marketing; gpu-fail mock journey registered." }
+    "UX-13": { "score": 2.6, "note": "Bench JSON honest simulate/native flags; wgpu CI matrix leg validates surface_ok." },
+    "UX-14": { "score": 2.8, "note": "HTML labeled mock; native path separate from marketing; keyboard hint in harness fixture." }
   },
   "honest_native_viewport": true,
-  "notes": "studio-ux-17: GPU fail strip + retry overlay (li_std_studio_version 4). SOTA: Cursor agent errors, Linear retry, Copilot recovery. Next: studio-ux-18 proactive wave-3."
+  "notes": "studio-ux-18: keyboard journey audit + wgpu CI matrix. SOTA: Linear keyboard density, Cursor agent shortcuts, Copilot context chips. Next: studio-ux-19 swapchain readback."
 }

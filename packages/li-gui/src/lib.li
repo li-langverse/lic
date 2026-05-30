@@ -109,6 +109,103 @@ def gui_panel_switch_within_budget(timing: PanelSwitchTiming) -> int
 =
   return timing.within_budget
 
+# UX-09 keyboard-first workflow — tab order + Cmd+K palette (studio-ux-18).
+
+def gui_keyboard_tab_budget_ms() -> float
+  requires true
+  ensures result == 16.0
+  decreases 0
+=
+  return 16.0
+
+def gui_keyboard_tab_step_count() -> int
+  requires true
+  ensures result == 3
+  decreases 0
+=
+  return 3
+
+def gui_keyboard_tab_region_for_step(step: int) -> int
+  requires step >= 1
+  requires step <= gui_keyboard_tab_step_count()
+  ensures result >= studio_region_dock()
+  ensures result <= studio_region_inspector()
+  decreases step
+=
+  if step == 1:
+    return studio_region_dock()
+  if step == 2:
+    return studio_region_viewport()
+  return studio_region_inspector()
+
+def gui_keyboard_mod_cmd() -> int
+  requires true
+  ensures result == 256
+  decreases 0
+=
+  return 256
+
+def gui_keyboard_key_k() -> int
+  requires true
+  ensures result == 75
+  decreases 0
+=
+  return 75
+
+def gui_keyboard_palette_shortcut_matches(key_code: int, mod_flags: int) -> int
+  requires key_code >= 0
+  requires mod_flags >= 0
+  ensures result >= 0
+  ensures result <= 1
+  decreases 0
+=
+  if key_code == gui_keyboard_key_k():
+    if mod_flags == gui_keyboard_mod_cmd():
+      return 1
+  return 0
+
+type KeyboardJourneyTiming = object
+  public step: int
+  public region: int
+  public elapsed_ms: float
+  public budget_ms: float
+  public within_budget: int
+
+def gui_keyboard_journey_timing(step: int, elapsed_ms: float) -> KeyboardJourneyTiming
+  requires step >= 1
+  requires step <= gui_keyboard_tab_step_count()
+  requires elapsed_ms >= 0.0
+  ensures result.budget_ms == gui_keyboard_tab_budget_ms()
+  ensures result.within_budget >= 0
+  ensures result.within_budget <= 1
+  decreases 0
+=
+  var t: KeyboardJourneyTiming
+  t.step = step
+  t.region = gui_keyboard_tab_region_for_step(step)
+  t.elapsed_ms = elapsed_ms
+  t.budget_ms = gui_keyboard_tab_budget_ms()
+  if elapsed_ms <= t.budget_ms:
+    t.within_budget = 1
+  if elapsed_ms > t.budget_ms:
+    t.within_budget = 0
+  return t
+
+def gui_keyboard_journey_within_budget(timing: KeyboardJourneyTiming) -> int
+  requires true
+  ensures result >= 0
+  ensures result <= 1
+  decreases 0
+=
+  return timing.within_budget
+
+def gui_keyboard_journey_budget_ms() -> float
+  requires true
+  ensures result == gui_keyboard_tab_budget_ms()
+  decreases 0
+=
+  return gui_keyboard_tab_budget_ms()
+
 def gui_paint_studio_shell_chrome(frame: var PaintFrame, layout: var StudioShellLayout) -> unit
   requires frame.cmd_count >= 0
   ensures frame.cmd_count == paint_studio_shell_chrome_count()

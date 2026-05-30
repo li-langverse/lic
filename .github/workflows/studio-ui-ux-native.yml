@@ -7,6 +7,7 @@ on:
       - "scripts/studio-ui-ux-*.sh"
       - "scripts/studio-ui-ux-*.py"
       - "scripts/ci-studio-ui-ux-native.sh"
+      - "scripts/ci-studio-ui-ux-wgpu.sh"
       - "scripts/bench-studio-viewport-perf.sh"
       - "benchmarks/competitive/studio-ui.toml"
       - "packages/li-ui/**"
@@ -57,4 +58,27 @@ jobs:
             data/studio-ui-ux-plan-loop/latest-native-capture.json
             data/studio-ui-ux-plan-loop/latest-capture-deps.json
             data/studio-ui-ux-plan-loop/latest-bench.json
+          if-no-files-found: error
+
+  native-wgpu-bench:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install bench deps
+        run: sudo apt-get update -qq && sudo apt-get install -y --no-install-recommends python3
+
+      - name: Wgpu readback bench matrix leg
+        env:
+          STUDIO_UI_UX_GATES_SKIP_BUILD: "1"
+          LIG_WGPU_READBACK: "1"
+        run: |
+          chmod +x scripts/ci-studio-ui-ux-wgpu.sh scripts/bench-studio-viewport-perf.sh
+          ./scripts/ci-studio-ui-ux-wgpu.sh
+
+      - name: Upload wgpu bench metadata
+        uses: actions/upload-artifact@v4
+        with:
+          name: studio-wgpu-bench-meta
+          path: data/studio-ui-ux-plan-loop/latest-bench.json
           if-no-files-found: error

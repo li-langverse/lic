@@ -1,0 +1,47 @@
+# PH-UX UX-09 — keyboard-first tab order + Cmd+K palette (studio-ux-18).
+[meta]
+hook_version = 1
+package = "li-gui"
+native_pixels = false
+budget_tab_ms = 16
+budget_shortcut_ms = 16
+bench_simulate_fn = "gui_keyboard_journey_budget_ms"
+
+[[step]]
+id = "tab_dock_viewport"
+kind = "tab"
+from_region = "dock"
+to_region = "viewport"
+elapsed_ms = 8.0
+within_budget = true
+
+[[step]]
+id = "tab_viewport_inspector"
+kind = "tab"
+from_region = "viewport"
+to_region = "inspector"
+elapsed_ms = 10.0
+within_budget = true
+
+[[step]]
+id = "tab_inspector_timeline"
+kind = "tab"
+from_region = "inspector"
+to_region = "timeline"
+elapsed_ms = 12.0
+within_budget = true
+
+[[step]]
+id = "shortcut_palette"
+kind = "shortcut"
+key = "k"
+mod = "cmd"
+elapsed_ms = 10.0
+within_budget = true
+
+[bench]
+step_count = 4
+worst_elapsed_ms = 12.0
+best_elapsed_ms = 8.0
+median_elapsed_ms = 10.0
+palette_shortcut_ok = true

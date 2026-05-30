@@ -58,6 +58,12 @@ package = "li-studio"
 path = "packages/li-studio/bench/gpu_fail_recovery.toml"
 gates = ["gpu_fail_retry_ms"]
 
+[[hook]]
+id = "keyboard_journey"
+package = "li-gui"
+path = "packages/li-gui/bench/keyboard_journey.toml"
+gates = ["keyboard_tab_ms", "keyboard_shortcut_ms"]
+
 [[gate]]
 id = "viewport_fps"
 target = 60
@@ -99,6 +105,20 @@ target = 100
 unit = "ms"
 compare = "lte"
 notes = "GPU fail strip retry affordance latency (UX-08)"
+
+[[gate]]
+id = "keyboard_tab_ms"
+target = 16
+unit = "ms"
+compare = "lte"
+notes = "Tab focus move between dock/viewport/inspector (UX-09)"
+
+[[gate]]
+id = "keyboard_shortcut_ms"
+target = 16
+unit = "ms"
+compare = "lte"
+notes = "Cmd+K palette shortcut response (UX-09)"
 
 [[particle_tier]]
 id = "md_1k"

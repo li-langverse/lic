@@ -1,4 +1,5 @@
 import bytes
+import ml
 
 # li-llm (PH-LLM): native LLM inference — tokenizer, loader, forward, generate.
 # Wave 1 minimal: byte tokenizer, fixture-path weight loader, matmul-free forward stub.
@@ -185,8 +186,16 @@ def llm_load_weights(path: str) -> LlmModelWeights raises IO, Alloc
     return w2
   return llm_model_weights_none()
 
+# WP-LLM-05: CPU matmul bridge via li-ml/lig (honest probe; LKIR emit may still be blocked).
+def llm_forward_matmul_cpu_hint() raises IO -> int
+  requires true
+  ensures result >= -1
+  decreases 0
+=
+  return ml_lig_matmul_run_auto()
+
 # WP-LLM-03: forward stub — checksum top_id (oracle-friendly, not trained).
-def llm_forward(tokens: LlmTokenIds, weights: LlmModelWeights, cache: LlmKVCache) -> LlmLogits
+def llm_forward(tokens: LlmTokenIds, weights: LlmModelWeights, cache: LlmKVCache) -> LlmLogits raises IO
   requires tokens.count >= 0
   requires cache.seq_len >= 0
   ensures result.vocab_size >= 0
@@ -204,6 +213,11 @@ def llm_forward(tokens: LlmTokenIds, weights: LlmModelWeights, cache: LlmKVCache
   while i < tokens.count:
     acc = acc + tokens.ids[i]
     i = i + 1
+  var matmul_hint: int = llm_forward_matmul_cpu_hint()
+  if matmul_hint < 0:
+    acc = acc + 7
+  else:
+    acc = acc + matmul_hint
   if out.vocab_size > 0:
     out.top_id = acc % out.vocab_size
   return out

@@ -38,7 +38,8 @@ run_capture() {
 if [[ -n "${DISPLAY:-}" ]]; then
   run_capture
 elif command -v xvfb-run >/dev/null 2>&1; then
-  xvfb-run -a -s "-screen 0 ${WIDTH}x${HEIGHT}x24" run_capture
+  xvfb-run -a -s "-screen 0 ${WIDTH}x${HEIGHT}x24" \
+    "$BIN" --out "$OUT" --width "$WIDTH" --height "$HEIGHT" --frames "$FRAMES"
 elif command -v Xvfb >/dev/null 2>&1; then
   DISP=":199"
   Xvfb "$DISP" -screen 0 "${WIDTH}x${HEIGHT}x24" >/dev/null 2>&1 &

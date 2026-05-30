@@ -6071,6 +6071,51 @@ int32_t httpd_li_proxy_slot_allows_resp_cache_i(int32_t slot) {
   return 1;
 }
 
+int32_t httpd_li_proxy_finish_uncached_resp_i(int32_t epfd, int32_t slot) {
+  if (slot < 0 || slot >= HTTPD_MAX_CONN) {
+    return -1;
+  }
+  httpd_slot_t* s = &g_slots[slot];
+  int he = hdr_end_at_c(s->proxy_resp_hdr_acc, s->proxy_resp_hdr_len);
+  if (he < 0) {
+    return -1;
+  }
+  int keep = 0;
+  int cl = parse_resp_content_length(s->proxy_resp_hdr_acc, he, &keep);
+  if (cl < 0) {
+    return -1;
+  }
+  s->proxy_up_reuse = keep;
+  s->proxy_resp_body_mode = PROXY_RESP_BODY_CL;
+  s->proxy_resp_body_left = cl;
+  if (httpd_proxy_resp_has_event_stream(s->proxy_resp_hdr_acc, he)) {
+    s->proxy_is_sse = 1;
+  }
+  if (httpd_proxy_relay_to_client(epfd, slot, s->proxy_resp_hdr_acc, (size_t)he) < 0) {
+    return -1;
+  }
+  s->proxy_resp_parsing = 0;
+  if (s->proxy_is_sse) {
+    s->proxy_sse_hdr_done = 1;
+  }
+  if (httpd_resp_status_code(s->proxy_resp_hdr_acc, he) == 101 && s->proxy_is_ws) {
+    s->proxy_resp_body_mode = PROXY_RESP_BODY_TUNNEL;
+    s->proxy_resp_body_left = 0;
+    s->proxy_keep = 0;
+    s->proxy_up_reuse = 0;
+  }
+  int tail = s->proxy_resp_hdr_len - he;
+  if (tail > 0) {
+    if (httpd_proxy_relay_to_client(epfd, slot, s->proxy_resp_hdr_acc + he, (size_t)tail) < 0) {
+      return -1;
+    }
+    if (s->proxy_resp_body_left > 0) {
+      s->proxy_resp_body_left -= tail;
+    }
+  }
+  return 0;
+}
+
 intptr_t httpd_li_proxy_cached_hdr_ptr_i(void) {
   return g_proxy_resp_hdr_bytes_cached > 0 ? iptr(g_proxy_resp_hdr_copy) : 0;
 }

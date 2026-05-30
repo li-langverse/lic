@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-05-30T05:18:07.809874+00:00",
+  "generated_at": "2026-05-30T05:20:44.719039+00:00",
   "tz": "Europe/Berlin",
   "agents_live": 1,
   "runners": [
@@ -7,7 +7,7 @@
       "id": "httpd",
       "name": "li-httpd gap parity",
       "branch": "cursor/httpd-plan-continue",
-      "head": "4655f465",
+      "head": "1a30be73",
       "running": true,
       "process": "2751704 python3 /home/s4il0r/Documents/Cursor/li-langverse/lic/scripts/httpd-plan-loop.py --max 4",
       "log_path": "/home/s4il0r/Documents/Cursor/li-langverse/lic/../lic/data/httpd-plan-loop/until-deadline-20260530-050645.log",
@@ -71,7 +71,7 @@
       "agent_live": true,
       "agent": "code_implementer",
       "goal_file": "goal-20260530-050652.md",
-      "log_age_sec": 1,
+      "log_age_sec": 27,
       "last_state_at": "",
       "last_state_todo": "",
       "last_state_gates": "",
@@ -79,12 +79,12 @@
       "activity": [
         "[sdk] \u25b6 tool",
         "[sdk] \u25b6 tool",
-        "[sdk] \u2713 shell cd /home/s4il0r/Documents/Cursor/li-langverse/lic && python3 <<'PY'",
-        "[sdk] \u2713 shell cd /home/s4il0r/Documents/Cursor/li-langverse/lic && python3 <<'PY'",
+        "[sdk] \u2713 shell cd /home/s4il0r/Documents/Cursor/li-langverse/lic && rm -f build/li-httpd build/",
+        "[sdk] \u2713 shell cd /home/s4il0r/Documents/Cursor/li-langverse/lic && rm -f build/li-httpd build/",
         "[sdk] \u2717 tool",
         "[sdk] \u2717 tool",
-        "[sdk] thinking\u2026",
-        "[sdk] thinking\u2026"
+        "[sdk] \u25b6 tool",
+        "[sdk] \u25b6 tool"
       ],
       "status_note": "agent coding (code_implementer)",
       "active_todo_id": "gap-phase2-perf-wrk-soak"
@@ -400,7 +400,7 @@
       "agent_live": false,
       "agent": "",
       "goal_file": "",
-      "log_age_sec": 380156,
+      "log_age_sec": 380313,
       "last_state_at": "2026-05-25T06:41:51.000000+00:00",
       "last_state_todo": "wave-d-gui-scaffold",
       "last_state_gates": true,
@@ -519,7 +519,7 @@
       "agent_live": false,
       "agent": "",
       "goal_file": "",
-      "log_age_sec": 477425,
+      "log_age_sec": 477582,
       "last_state_at": "2026-05-24T16:32:27.410480+00:00",
       "last_state_todo": "sim-p0-md-lj-li-parity",
       "last_state_gates": false,
@@ -720,7 +720,7 @@
       "agent_live": false,
       "agent": "",
       "goal_file": "",
-      "log_age_sec": 427565,
+      "log_age_sec": 427722,
       "last_state_at": "2026-05-30T01:04:00+00:00",
       "last_state_todo": "studio-ux-12-world-studio-demo-linux-audit",
       "last_state_gates": true,

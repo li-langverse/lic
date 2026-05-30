@@ -555,10 +555,8 @@ def proxy_li_finish_resp_headers(epfd: var int, slot: var int) raises Net, Alloc
   var he_end: int = hdr_end_at(acc, 0, hlen)
   if he_end < 0:
     return proxy_li_finish_err(epfd, slot)
-  var hdr_term: int = he_end
-  var cl_parse_at: int = hdr_term
-  var cl: int = proxy_parse_resp_cl(acc, cl_parse_at)
-  if cl < 0:
+  var cl_at: int = he_end
+  if proxy_parse_resp_cl(acc, cl_at) < 0:
     return proxy_li_finish_err(epfd, slot)
   var stored: int = httpd_li_proxy_store_resp_cache_i(slot)
   if stored == 1:
@@ -570,28 +568,16 @@ def proxy_li_finish_resp_headers(epfd: var int, slot: var int) raises Net, Alloc
     httpd_li_proxy_set_resp_parsing_i(slot, 0)
     httpd_li_proxy_set_resp_body_mode_i(slot, proxy_body_cl())
     httpd_li_proxy_set_resp_body_left_i(slot, httpd_li_proxy_cached_cl_i())
-    var tail_cached: int = hlen - hdr_bytes
-    if tail_cached > 0:
-      var conn_cached: int = httpd_slot_conn_i(slot)
-      if tcp_send_nb_i(conn_cached, acc, hdr_bytes, tail_cached) < 0:
+    var tail: int = hlen - hdr_bytes
+    if tail > 0:
+      var conn: int = httpd_slot_conn_i(slot)
+      if tcp_send_nb_i(conn, acc, hdr_bytes, tail) < 0:
         return proxy_li_finish_err(epfd, slot)
-      var left_cached: int = httpd_li_proxy_get_resp_body_left_i(slot)
-      httpd_li_proxy_set_resp_body_left_i(slot, left_cached - tail_cached)
+      var left0: int = httpd_li_proxy_get_resp_body_left_i(slot)
+      httpd_li_proxy_set_resp_body_left_i(slot, left0 - tail)
     return proxy_li_pump_cl(epfd, slot)
-  var fwd_len: int = he_end
-  if httpd_li_proxy_forward_bytes_i(epfd, slot, acc, fwd_len) < 0:
+  if httpd_li_proxy_finish_uncached_resp_i(epfd, slot) < 0:
     return proxy_li_finish_err(epfd, slot)
-  httpd_li_proxy_set_resp_parsing_i(slot, 0)
-  httpd_li_proxy_set_resp_body_mode_i(slot, proxy_body_cl())
-  httpd_li_proxy_set_resp_body_left_i(slot, cl)
-  var tail: int = hlen - he_end
-  if tail > 0:
-    var conn: int = httpd_slot_conn_i(slot)
-    var hdr_off: int = he_end
-    if tcp_send_nb_i(conn, acc, hdr_off, tail) < 0:
-      return proxy_li_finish_err(epfd, slot)
-    var left0: int = httpd_li_proxy_get_resp_body_left_i(slot)
-    httpd_li_proxy_set_resp_body_left_i(slot, left0 - tail)
   return proxy_li_pump_cl(epfd, slot)
 
 def proxy_li_feed_cached_hdr(epfd: var int, slot: var int, data: var ptr, n: var int) raises Net, Alloc, IO -> int

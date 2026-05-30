@@ -392,15 +392,27 @@ struct EmitCtx {
       }
     };
 
-    const bool vectorize_j = (n % 4) == 0 && (bk % 4) == 0;
+    const bool vectorize_j = false;
     auto store_c_vec4 = [&](llvm::Value* i, llvm::Value* k, llvm::Value* j, llvm::Value* aik) {
       llvm::Value* cp = matmul_gep2d(c_mat, i, j);
       llvm::Value* bp = matmul_gep2d(b_mat, k, j);
       llvm::Value* cv = builder->CreateAlignedLoad(f64x4, cp, llvm::Align(8));
       llvm::Value* bv = builder->CreateAlignedLoad(f64x4, bp, llvm::Align(8));
       llvm::Value* av = builder->CreateVectorSplat(4, aik);
-      builder->CreateAlignedStore(builder->CreateFAdd(cv, builder->CreateFMul(av, bv)), cp,
-                                  llvm::Align(8));
+      llvm::Value* out = builder->CreateFAdd(cv, builder->CreateFMul(av, bv));
+      if (fma_fn != nullptr) {
+        llvm::Value* out_vec = llvm::UndefValue::get(f64x4);
+        for (unsigned lane = 0; lane < 4; ++lane) {
+          llvm::Value* li = llvm::ConstantInt::get(i32_ty(context), lane);
+          llvm::Value* av_s = builder->CreateExtractElement(av, li);
+          llvm::Value* bv_s = builder->CreateExtractElement(bv, li);
+          llvm::Value* cv_s = builder->CreateExtractElement(cv, li);
+          llvm::Value* lane_out = builder->CreateCall(fma_fn, {av_s, bv_s, cv_s});
+          out_vec = builder->CreateInsertElement(out_vec, lane_out, li);
+        }
+        out = out_vec;
+      }
+      builder->CreateAlignedStore(out, cp, llvm::Align(8));
     };
 
     emit_idx_for_step(ii_s, lim_n, step, [&](llvm::Value* ii) {
@@ -1750,12 +1762,6 @@ bool emit_llvm_ir(const MirModule& mir, const std::string& out_path, int runtime
       fmf.setAllowContract(true);
       fmf.setAllowReassoc(true);
       builder.setFastMathFlags(fmf);
-    }
-
-    if (fn.name == "mm_blocked_512") {
-      builder.CreateRetVoid();
-      builder.setFastMathFlags(saved_fmf);
-      continue;
     }
 
     EmitCtx ctx{context,

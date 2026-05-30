@@ -58,6 +58,8 @@ enum class MirOp {
   HornerConstLoopF64,
   /** Blocked IKJ: C[n,n] += A[n,n] @ B[n,n]; int_value = n, rhs_int = block size. */
   ArrayMatMulBlocked2DF64,
+  /** Sum all elements of square `array[n,n]` matrix ident into float local lhs_ident. */
+  ArrayMatSum2DF64,
   LocalAllocFloat,
   LocalAllocSimdF64,
   SimdSplatF64,

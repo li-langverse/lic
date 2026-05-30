@@ -102,7 +102,7 @@ llvm::Value* string_ptr(llvm::IRBuilder<>& builder, llvm::GlobalVariable* gv) {
 }
 
 struct ArraySlot {
-  llvm::AllocaInst* alloca = nullptr;
+  llvm::Value* ptr = nullptr;
   std::int64_t size = 0;
   std::int64_t cols = 0;
   bool is_float = false;
@@ -174,15 +174,15 @@ struct EmitCtx {
     return sum;
   }
 
-  llvm::Value* gather_array_f64x4(llvm::AllocaInst* alloca, unsigned start) {
+  llvm::Value* gather_array_f64x4(llvm::Value* storage, unsigned start) {
     llvm::Type* f64 = llvm::Type::getDoubleTy(context);
     llvm::Value* zero = llvm::ConstantInt::get(builder->getInt32Ty(), 0);
-    llvm::Type* arr_ty = alloca->getAllocatedType();
+    llvm::Type* arr_ty = array_storage_ty(storage);
     llvm::Value* vec = llvm::UndefValue::get(vec4_f64());
     for (unsigned lane = 0; lane < 4; ++lane) {
       llvm::Value* idx = llvm::ConstantInt::get(i32_ty(context), start + lane);
       llvm::Value* gep_idx[] = {zero, idx};
-      llvm::Value* ptr = builder->CreateInBoundsGEP(arr_ty, alloca, gep_idx);
+      llvm::Value* ptr = builder->CreateInBoundsGEP(arr_ty, storage, gep_idx);
       llvm::Value* scalar = builder->CreateLoad(f64, ptr);
       vec = builder->CreateInsertElement(
           vec, scalar, llvm::ConstantInt::get(i32_ty(context), lane));
@@ -190,10 +190,20 @@ struct EmitCtx {
     return vec;
   }
 
-  llvm::Value* matmul_gep2d(llvm::AllocaInst* mat, llvm::Value* row, llvm::Value* col) {
+  llvm::Type* array_storage_ty(llvm::Value* ptr) {
+    if (auto* alloca = llvm::dyn_cast<llvm::AllocaInst>(ptr)) {
+      return alloca->getAllocatedType();
+    }
+    if (auto* gv = llvm::dyn_cast<llvm::GlobalVariable>(ptr)) {
+      return gv->getValueType();
+    }
+    llvm_unreachable("array_storage_ty: expected alloca or global matrix storage");
+  }
+
+  llvm::Value* matmul_gep2d(llvm::Value* mat, llvm::Value* row, llvm::Value* col) {
     llvm::Value* zero = llvm::ConstantInt::get(i32_ty(context), 0);
     llvm::Value* idx[] = {zero, row, col};
-    return builder->CreateInBoundsGEP(mat->getAllocatedType(), mat, idx);
+    return builder->CreateInBoundsGEP(array_storage_ty(mat), mat, idx);
   }
 
   void emit_idx_for(llvm::AllocaInst* iv, llvm::Value* limit,
@@ -216,50 +226,90 @@ struct EmitCtx {
     builder->SetInsertPoint(exit_bb);
   }
 
-  void emit_matmul2d_ijk_loops(llvm::AllocaInst* c_mat, llvm::AllocaInst* a_mat,
-                               llvm::AllocaInst* b_mat, unsigned m, unsigned k,
-                               unsigned n) {
+  llvm::Function* matmul_fma_fn() {
+    if (fp_numerically_stable) {
+      return nullptr;
+    }
+    llvm::Type* f64 = llvm::Type::getDoubleTy(context);
+    return llvm::Intrinsic::getOrInsertDeclaration(module, llvm::Intrinsic::fmuladd, {f64});
+  }
+
+  llvm::Function* matmul_fma_vec4_fn() {
+    if (fp_numerically_stable) {
+      return nullptr;
+    }
+    llvm::Type* f64 = llvm::Type::getDoubleTy(context);
+    llvm::FixedVectorType* f64x4 = llvm::FixedVectorType::get(f64, 4);
+    return llvm::Intrinsic::getOrInsertDeclaration(module, llvm::Intrinsic::fmuladd, {f64x4});
+  }
+
+  void emit_matmul2d_ijk_loops(llvm::Value* c_mat, llvm::Value* a_mat, llvm::Value* b_mat,
+                               unsigned m, unsigned k, unsigned n, bool skip_c_zero = false) {
     llvm::Type* f64 = llvm::Type::getDoubleTy(context);
     llvm::Type* i32t = i32_ty(context);
+    llvm::FixedVectorType* f64x4 = llvm::FixedVectorType::get(f64, 4);
     llvm::Value* lim_m = llvm::ConstantInt::get(i32t, m);
     llvm::Value* lim_k = llvm::ConstantInt::get(i32t, k);
     llvm::Value* lim_n = llvm::ConstantInt::get(i32t, n);
+    llvm::Value* vec_step = llvm::ConstantInt::get(i32t, 4);
     llvm::Value* zf = llvm::ConstantFP::get(f64, 0.0);
     llvm::AllocaInst* i_s = builder->CreateAlloca(i32t, nullptr, "mm_i");
     llvm::AllocaInst* j_s = builder->CreateAlloca(i32t, nullptr, "mm_j");
     llvm::AllocaInst* t_s = builder->CreateAlloca(i32t, nullptr, "mm_t");
 
-    emit_idx_for(i_s, lim_m, [&](llvm::Value* i) {
-      emit_idx_for(j_s, lim_n, [&](llvm::Value* j) {
-        builder->CreateStore(zf, matmul_gep2d(c_mat, i, j));
+    if (!skip_c_zero) {
+      emit_idx_for(i_s, lim_m, [&](llvm::Value* i) {
+        emit_idx_for(j_s, lim_n, [&](llvm::Value* j) {
+          builder->CreateStore(zf, matmul_gep2d(c_mat, i, j));
+        });
       });
-    });
-
-    llvm::Function* fma_fn = nullptr;
-    if (!fp_numerically_stable) {
-      fma_fn = llvm::Intrinsic::getOrInsertDeclaration(module, llvm::Intrinsic::fmuladd, {f64});
     }
+
+    llvm::Function* fma_fn = matmul_fma_fn();
+    llvm::Function* fma_vec4_fn = matmul_fma_vec4_fn();
+    const bool vectorize_j = (n % 4) == 0;
+
+    auto store_c_fma = [&](llvm::Value* i, llvm::Value* t, llvm::Value* j, llvm::Value* aik) {
+      llvm::Value* cp = matmul_gep2d(c_mat, i, j);
+      llvm::Value* cv = builder->CreateLoad(f64, cp);
+      llvm::Value* bv = builder->CreateLoad(f64, matmul_gep2d(b_mat, t, j));
+      if (fma_fn != nullptr) {
+        builder->CreateStore(builder->CreateCall(fma_fn, {aik, bv, cv}), cp);
+      } else {
+        builder->CreateStore(builder->CreateFAdd(cv, builder->CreateFMul(aik, bv)), cp);
+      }
+    };
+
+    auto store_c_vec4 = [&](llvm::Value* i, llvm::Value* t, llvm::Value* j, llvm::Value* aik) {
+      llvm::Value* cp = matmul_gep2d(c_mat, i, j);
+      llvm::Value* bp = matmul_gep2d(b_mat, t, j);
+      llvm::Value* cv = builder->CreateAlignedLoad(f64x4, cp, llvm::Align(8));
+      llvm::Value* bv = builder->CreateAlignedLoad(f64x4, bp, llvm::Align(8));
+      llvm::Value* av = builder->CreateVectorSplat(4, aik);
+      if (fma_vec4_fn != nullptr) {
+        builder->CreateAlignedStore(builder->CreateCall(fma_vec4_fn, {av, bv, cv}), cp,
+                                    llvm::Align(8));
+      } else {
+        builder->CreateAlignedStore(builder->CreateFAdd(cv, builder->CreateFMul(av, bv)), cp,
+                                    llvm::Align(8));
+      }
+    };
 
     emit_idx_for(i_s, lim_m, [&](llvm::Value* i) {
       emit_idx_for(t_s, lim_k, [&](llvm::Value* t) {
         llvm::Value* aik = builder->CreateLoad(f64, matmul_gep2d(a_mat, i, t));
-        emit_idx_for(j_s, lim_n, [&](llvm::Value* j) {
-          llvm::Value* cp = matmul_gep2d(c_mat, i, j);
-          llvm::Value* cv = builder->CreateLoad(f64, cp);
-          llvm::Value* bv = builder->CreateLoad(f64, matmul_gep2d(b_mat, t, j));
-          if (fma_fn != nullptr) {
-            builder->CreateStore(builder->CreateCall(fma_fn, {aik, bv, cv}), cp);
-          } else {
-            builder->CreateStore(builder->CreateFAdd(cv, builder->CreateFMul(aik, bv)), cp);
-          }
-        });
+        if (vectorize_j) {
+          emit_range_for_step(j_s, llvm::ConstantInt::get(i32t, 0), lim_n, vec_step,
+                              [&](llvm::Value* j) { store_c_vec4(i, t, j, aik); });
+        } else {
+          emit_idx_for(j_s, lim_n, [&](llvm::Value* j) { store_c_fma(i, t, j, aik); });
+        }
       });
     });
   }
 
-  void emit_matmul2d_ijk_unrolled(llvm::AllocaInst* c_mat, llvm::AllocaInst* a_mat,
-                                  llvm::AllocaInst* b_mat, unsigned m, unsigned k,
-                                  unsigned n) {
+  void emit_matmul2d_ijk_unrolled(llvm::Value* c_mat, llvm::Value* a_mat, llvm::Value* b_mat,
+                                  unsigned m, unsigned k, unsigned n) {
     llvm::Type* f64 = llvm::Type::getDoubleTy(context);
     llvm::Value* zero = llvm::ConstantInt::get(builder->getInt32Ty(), 0);
     llvm::Value* zf = llvm::ConstantFP::get(f64, 0.0);
@@ -354,8 +404,34 @@ struct EmitCtx {
     builder->SetInsertPoint(exit_bb);
   }
 
-  void emit_matmul2d_blocked_ijk(llvm::AllocaInst* c_mat, llvm::AllocaInst* a_mat,
-                                 llvm::AllocaInst* b_mat, unsigned n, unsigned bk) {
+  void emit_matmul_bench_init(llvm::Value* a_mat, llvm::Value* b_mat, llvm::Value* c_mat,
+                              unsigned n) {
+    llvm::Type* f64 = llvm::Type::getDoubleTy(context);
+    llvm::Type* i32t = i32_ty(context);
+    llvm::Value* lim = llvm::ConstantInt::get(i32t, n);
+    llvm::Value* zf = llvm::ConstantFP::get(f64, 0.0);
+    llvm::AllocaInst* i_s = builder->CreateAlloca(i32t, nullptr, "mm_init_i");
+    llvm::AllocaInst* j_s = builder->CreateAlloca(i32t, nullptr, "mm_init_j");
+    emit_idx_for(i_s, lim, [&](llvm::Value* i) {
+      emit_idx_for(j_s, lim, [&](llvm::Value* j) {
+        llvm::Value* sum_ij = builder->CreateAdd(i, j);
+        llvm::Value* rem_a = builder->CreateURem(sum_ij, llvm::ConstantInt::get(i32t, 17));
+        llvm::Value* av = builder->CreateFMul(
+            builder->CreateSIToFP(rem_a, f64), llvm::ConstantFP::get(f64, 0.01));
+        builder->CreateStore(av, matmul_gep2d(a_mat, i, j));
+        llvm::Value* prod = builder->CreateMul(i, llvm::ConstantInt::get(i32t, 3));
+        llvm::Value* rem_b = builder->CreateURem(builder->CreateAdd(prod, j),
+                                                 llvm::ConstantInt::get(i32t, 13));
+        llvm::Value* bv = builder->CreateFMul(
+            builder->CreateSIToFP(rem_b, f64), llvm::ConstantFP::get(f64, 0.02));
+        builder->CreateStore(bv, matmul_gep2d(b_mat, i, j));
+        builder->CreateStore(zf, matmul_gep2d(c_mat, i, j));
+      });
+    });
+  }
+
+  void emit_matmul2d_blocked_ijk(llvm::Value* c_mat, llvm::Value* a_mat, llvm::Value* b_mat,
+                                 unsigned n, unsigned bk) {
     llvm::Type* f64 = llvm::Type::getDoubleTy(context);
     llvm::Type* i32t = i32_ty(context);
     llvm::FixedVectorType* f64x4 = llvm::FixedVectorType::get(f64, 4);
@@ -369,10 +445,8 @@ struct EmitCtx {
     llvm::AllocaInst* k_s = builder->CreateAlloca(i32t, nullptr, "mm_k");
     llvm::AllocaInst* j_s = builder->CreateAlloca(i32t, nullptr, "mm_j");
 
-    llvm::Function* fma_fn = nullptr;
-    if (!fp_numerically_stable) {
-      fma_fn = llvm::Intrinsic::getOrInsertDeclaration(module, llvm::Intrinsic::fmuladd, {f64});
-    }
+    llvm::Function* fma_fn = matmul_fma_fn();
+    llvm::Function* fma_vec4_fn = matmul_fma_vec4_fn();
     const bool tiles_align = bk > 0 && (n % bk) == 0;
 
     auto tile_max = [&](llvm::Value* base) -> llvm::Value* {
@@ -399,8 +473,13 @@ struct EmitCtx {
       llvm::Value* cv = builder->CreateAlignedLoad(f64x4, cp, llvm::Align(8));
       llvm::Value* bv = builder->CreateAlignedLoad(f64x4, bp, llvm::Align(8));
       llvm::Value* av = builder->CreateVectorSplat(4, aik);
-      builder->CreateAlignedStore(builder->CreateFAdd(cv, builder->CreateFMul(av, bv)), cp,
-                                  llvm::Align(8));
+      if (fma_vec4_fn != nullptr) {
+        builder->CreateAlignedStore(builder->CreateCall(fma_vec4_fn, {av, bv, cv}), cp,
+                                    llvm::Align(8));
+      } else {
+        builder->CreateAlignedStore(builder->CreateFAdd(cv, builder->CreateFMul(av, bv)), cp,
+                                    llvm::Align(8));
+      }
     };
 
     emit_idx_for_step(ii_s, lim_n, step, [&](llvm::Value* ii) {
@@ -426,14 +505,14 @@ struct EmitCtx {
     });
   }
 
-  void scatter_array_f64x4(llvm::AllocaInst* alloca, unsigned start, llvm::Value* vec) {
+  void scatter_array_f64x4(llvm::Value* storage, unsigned start, llvm::Value* vec) {
     llvm::Type* f64 = llvm::Type::getDoubleTy(context);
     llvm::Value* zero = llvm::ConstantInt::get(builder->getInt32Ty(), 0);
-    llvm::Type* arr_ty = alloca->getAllocatedType();
+    llvm::Type* arr_ty = array_storage_ty(storage);
     for (unsigned lane = 0; lane < 4; ++lane) {
       llvm::Value* idx = llvm::ConstantInt::get(i32_ty(context), start + lane);
       llvm::Value* gep_idx[] = {zero, idx};
-      llvm::Value* ptr = builder->CreateInBoundsGEP(arr_ty, alloca, gep_idx);
+      llvm::Value* ptr = builder->CreateInBoundsGEP(arr_ty, storage, gep_idx);
       llvm::Value* scalar = builder->CreateExtractElement(
           vec, llvm::ConstantInt::get(i32_ty(context), lane));
       builder->CreateStore(scalar, ptr);
@@ -614,12 +693,12 @@ struct EmitCtx {
     }
     if (arg.is_array_ident) {
       if (auto a_it = arrays.find(arg.ident); a_it != arrays.end()) {
-        return a_it->second.alloca;
+        return a_it->second.ptr;
       }
     }
     if (auto a_it = arrays.find(arg.ident); a_it != arrays.end()) {
-      llvm::Type* arr_ty = a_it->second.alloca->getAllocatedType();
-      return builder->CreateLoad(arr_ty, a_it->second.alloca);
+      llvm::Type* arr_ty = array_storage_ty(a_it->second.ptr);
+      return builder->CreateLoad(arr_ty, a_it->second.ptr);
     }
     if (float_locals.find(arg.ident) != float_locals.end()) {
       return load_float(arg.ident);
@@ -703,8 +782,8 @@ struct EmitCtx {
           if (leaf.fixed_array_elems > 0) {
             auto a_it = arrays.find(full);
             if (a_it != arrays.end()) {
-              llvm::Type* arr_ty = a_it->second.alloca->getAllocatedType();
-              v = builder->CreateLoad(arr_ty, a_it->second.alloca);
+              llvm::Type* arr_ty = array_storage_ty(a_it->second.ptr);
+              v = builder->CreateLoad(arr_ty, a_it->second.ptr);
             }
           } else {
             v = leaf.is_float ? load_float(full)
@@ -941,8 +1020,8 @@ struct EmitCtx {
             llvm::Type* want = st->getElementType(i);
             if (leaf.fixed_array_elems > 0) {
               auto a_it = arrays.find(full);
-              if (a_it != arrays.end() && elt->getType() == a_it->second.alloca->getAllocatedType()) {
-                builder->CreateStore(elt, a_it->second.alloca);
+              if (a_it != arrays.end() && elt->getType() == array_storage_ty(a_it->second.ptr)) {
+                builder->CreateStore(elt, a_it->second.ptr);
               }
               continue;
             }
@@ -1040,14 +1119,24 @@ struct EmitCtx {
         return true;
       }
       case MirOp::ArrayAlloc: {
-        llvm::AllocaInst* slot = nullptr;
+        llvm::Value* slot = nullptr;
         if (ins.array_is_matrix) {
           llvm::Type* f64 = llvm::Type::getDoubleTy(context);
           llvm::ArrayType* row_ty =
               llvm::ArrayType::get(f64, static_cast<unsigned>(ins.rhs_int));
           llvm::ArrayType* mat_ty =
               llvm::ArrayType::get(row_ty, static_cast<unsigned>(ins.int_value));
-          slot = builder->CreateAlloca(mat_ty, nullptr, ins.ident);
+          const std::uint64_t elems =
+              static_cast<std::uint64_t>(ins.int_value) * static_cast<std::uint64_t>(ins.rhs_int);
+          if (elems >= 65536) {
+            const std::string gv_name =
+                func->getName().str() + "_mat_" + ins.ident + "_" + std::to_string(elems);
+            slot = new llvm::GlobalVariable(
+                *module, mat_ty, false, llvm::GlobalValue::InternalLinkage,
+                llvm::ConstantAggregateZero::get(mat_ty), gv_name);
+          } else {
+            slot = builder->CreateAlloca(mat_ty, nullptr, ins.ident);
+          }
           arrays[ins.ident] = ArraySlot{slot, ins.int_value, ins.rhs_int, true, true};
         } else {
           llvm::Type* elem_ty = ins.array_is_float ? llvm::Type::getDoubleTy(context)
@@ -1071,7 +1160,7 @@ struct EmitCtx {
         llvm::Value* zero = llvm::ConstantInt::get(builder->getInt32Ty(), 0);
         llvm::Value* gep_indices[] = {zero, idx};
         llvm::Value* ptr = builder->CreateInBoundsGEP(
-            it->second.alloca->getAllocatedType(), it->second.alloca, gep_indices);
+            array_storage_ty(it->second.ptr), it->second.ptr, gep_indices);
         if (it->second.is_float || ins.op == MirOp::ArrayStoreFloat) {
           llvm::Value* val =
               ins.rhs_is_literal
@@ -1096,7 +1185,7 @@ struct EmitCtx {
         llvm::Value* zero = llvm::ConstantInt::get(builder->getInt32Ty(), 0);
         llvm::Value* gep_indices[] = {zero, idx};
         llvm::Value* ptr = builder->CreateInBoundsGEP(
-            it->second.alloca->getAllocatedType(), it->second.alloca, gep_indices);
+            array_storage_ty(it->second.ptr), it->second.ptr, gep_indices);
         if (it->second.is_float) {
           llvm::Value* loaded = builder->CreateLoad(llvm::Type::getDoubleTy(context), ptr);
           if (!ins.lhs_ident.empty()) {
@@ -1126,7 +1215,7 @@ struct EmitCtx {
           llvm::Value* zero = llvm::ConstantInt::get(builder->getInt32Ty(), 0);
           llvm::Value* gep_idx[] = {zero, idx};
           llvm::Value* ap = builder->CreateInBoundsGEP(
-              a_it->second.alloca->getAllocatedType(), a_it->second.alloca, gep_idx);
+              array_storage_ty(a_it->second.ptr), a_it->second.ptr, gep_idx);
           llvm::Value* y = builder->CreateLoad(f64, ap);
           if (fp_numerically_stable) {
             llvm::Value* y_adj = builder->CreateFSub(y, c_comp);
@@ -1152,7 +1241,7 @@ struct EmitCtx {
           llvm::Value* zero = llvm::ConstantInt::get(builder->getInt32Ty(), 0);
           llvm::Value* gep_idx[] = {zero, idx};
           llvm::Value* ap = builder->CreateInBoundsGEP(
-              a_it->second.alloca->getAllocatedType(), a_it->second.alloca, gep_idx);
+              array_storage_ty(a_it->second.ptr), a_it->second.ptr, gep_idx);
           llvm::Value* av = builder->CreateLoad(i32_ty(context), ap);
           acc = builder->CreateAdd(acc, av);
         }
@@ -1172,35 +1261,35 @@ struct EmitCtx {
                              !ins.array_broadcast_lhs_len1 && !ins.array_broadcast_rhs_len1;
         const unsigned simd_end = simd_ok ? (n / 4) * 4 : 0;
         for (unsigned i = 0; i < simd_end; i += 4) {
-          llvm::Value* av = gather_array_f64x4(a_it->second.alloca, i);
-          llvm::Value* bv = gather_array_f64x4(b_it->second.alloca, i);
+          llvm::Value* av = gather_array_f64x4(a_it->second.ptr, i);
+          llvm::Value* bv = gather_array_f64x4(b_it->second.ptr, i);
           llvm::Value* rv = emit_fbinop(ins.bin_op, av, bv);
-          scatter_array_f64x4(d_it->second.alloca, i, rv);
+          scatter_array_f64x4(d_it->second.ptr, i, rv);
         }
         llvm::Value* zero = llvm::ConstantInt::get(builder->getInt32Ty(), 0);
         llvm::Value* b_broadcast = nullptr;
         if (ins.array_broadcast_rhs_len1) {
           llvm::Value* gep0[] = {zero, zero};
           llvm::Value* bp0 = builder->CreateInBoundsGEP(
-              b_it->second.alloca->getAllocatedType(), b_it->second.alloca, gep0);
+              array_storage_ty(b_it->second.ptr), b_it->second.ptr, gep0);
           b_broadcast = builder->CreateLoad(f64, bp0);
         }
         llvm::Value* a_broadcast = nullptr;
         if (ins.array_broadcast_lhs_len1) {
           llvm::Value* gep0[] = {zero, zero};
           llvm::Value* ap0 = builder->CreateInBoundsGEP(
-              a_it->second.alloca->getAllocatedType(), a_it->second.alloca, gep0);
+              array_storage_ty(a_it->second.ptr), a_it->second.ptr, gep0);
           a_broadcast = builder->CreateLoad(f64, ap0);
         }
         for (unsigned i = simd_end; i < n; ++i) {
           llvm::Value* idx = llvm::ConstantInt::get(i32_ty(context), i);
           llvm::Value* gep_idx[] = {zero, idx};
           llvm::Value* ap = builder->CreateInBoundsGEP(
-              a_it->second.alloca->getAllocatedType(), a_it->second.alloca, gep_idx);
+              array_storage_ty(a_it->second.ptr), a_it->second.ptr, gep_idx);
           llvm::Value* bp = builder->CreateInBoundsGEP(
-              b_it->second.alloca->getAllocatedType(), b_it->second.alloca, gep_idx);
+              array_storage_ty(b_it->second.ptr), b_it->second.ptr, gep_idx);
           llvm::Value* dp = builder->CreateInBoundsGEP(
-              d_it->second.alloca->getAllocatedType(), d_it->second.alloca, gep_idx);
+              array_storage_ty(d_it->second.ptr), d_it->second.ptr, gep_idx);
           llvm::Value* av =
               ins.array_broadcast_lhs_len1 ? a_broadcast : builder->CreateLoad(f64, ap);
           llvm::Value* bv =
@@ -1223,25 +1312,25 @@ struct EmitCtx {
         if (ins.array_broadcast_rhs_len1) {
           llvm::Value* gep0[] = {zero, zero};
           llvm::Value* bp0 = builder->CreateInBoundsGEP(
-              b_it->second.alloca->getAllocatedType(), b_it->second.alloca, gep0);
+              array_storage_ty(b_it->second.ptr), b_it->second.ptr, gep0);
           b_broadcast = builder->CreateLoad(i32_ty(context), bp0);
         }
         llvm::Value* a_broadcast = nullptr;
         if (ins.array_broadcast_lhs_len1) {
           llvm::Value* gep0[] = {zero, zero};
           llvm::Value* ap0 = builder->CreateInBoundsGEP(
-              a_it->second.alloca->getAllocatedType(), a_it->second.alloca, gep0);
+              array_storage_ty(a_it->second.ptr), a_it->second.ptr, gep0);
           a_broadcast = builder->CreateLoad(i32_ty(context), ap0);
         }
         for (unsigned i = 0; i < n; ++i) {
           llvm::Value* idx = llvm::ConstantInt::get(i32_ty(context), i);
           llvm::Value* gep_idx[] = {zero, idx};
           llvm::Value* ap = builder->CreateInBoundsGEP(
-              a_it->second.alloca->getAllocatedType(), a_it->second.alloca, gep_idx);
+              array_storage_ty(a_it->second.ptr), a_it->second.ptr, gep_idx);
           llvm::Value* bp = builder->CreateInBoundsGEP(
-              b_it->second.alloca->getAllocatedType(), b_it->second.alloca, gep_idx);
+              array_storage_ty(b_it->second.ptr), b_it->second.ptr, gep_idx);
           llvm::Value* dp = builder->CreateInBoundsGEP(
-              d_it->second.alloca->getAllocatedType(), d_it->second.alloca, gep_idx);
+              array_storage_ty(d_it->second.ptr), d_it->second.ptr, gep_idx);
           llvm::Value* av = ins.array_broadcast_lhs_len1
                                 ? a_broadcast
                                 : builder->CreateLoad(i32_ty(context), ap);
@@ -1269,9 +1358,9 @@ struct EmitCtx {
           llvm::Value* idx = llvm::ConstantInt::get(i32_ty(context), i);
           llvm::Value* gep_idx[] = {zero, idx};
           llvm::Value* ap = builder->CreateInBoundsGEP(
-              a_it->second.alloca->getAllocatedType(), a_it->second.alloca, gep_idx);
+              array_storage_ty(a_it->second.ptr), a_it->second.ptr, gep_idx);
           llvm::Value* dp = builder->CreateInBoundsGEP(
-              d_it->second.alloca->getAllocatedType(), d_it->second.alloca, gep_idx);
+              array_storage_ty(d_it->second.ptr), d_it->second.ptr, gep_idx);
           llvm::Value* av = builder->CreateLoad(f64, ap);
           llvm::Value* rv = builder->CreateFMul(av, scale_v);
           builder->CreateStore(rv, dp);
@@ -1294,9 +1383,9 @@ struct EmitCtx {
           llvm::Value* idx = llvm::ConstantInt::get(i32_ty(context), i);
           llvm::Value* gep_idx[] = {zero, idx};
           llvm::Value* xp = builder->CreateInBoundsGEP(
-              x_it->second.alloca->getAllocatedType(), x_it->second.alloca, gep_idx);
+              array_storage_ty(x_it->second.ptr), x_it->second.ptr, gep_idx);
           llvm::Value* yp = builder->CreateInBoundsGEP(
-              y_it->second.alloca->getAllocatedType(), y_it->second.alloca, gep_idx);
+              array_storage_ty(y_it->second.ptr), y_it->second.ptr, gep_idx);
           llvm::Value* xv = builder->CreateLoad(f64, xp);
           llvm::Value* yv = builder->CreateLoad(f64, yp);
           llvm::Value* rv = builder->CreateFAdd(builder->CreateFMul(xv, scale_v), yv);
@@ -1319,7 +1408,7 @@ struct EmitCtx {
         llvm::Value* zero = llvm::ConstantInt::get(builder->getInt32Ty(), 0);
         llvm::Value* gep_idx[] = {zero, row, col};
         llvm::Value* ptr = builder->CreateInBoundsGEP(
-            it->second.alloca->getAllocatedType(), it->second.alloca, gep_idx);
+            array_storage_ty(it->second.ptr), it->second.ptr, gep_idx);
         llvm::Value* loaded = builder->CreateLoad(f64, ptr);
         if (!ins.lhs_ident.empty()) {
           builder->CreateStore(loaded, ensure_float_local(ins.lhs_ident));
@@ -1345,7 +1434,7 @@ struct EmitCtx {
         llvm::Value* zero = llvm::ConstantInt::get(builder->getInt32Ty(), 0);
         llvm::Value* gep_idx[] = {zero, row, col};
         llvm::Value* ptr = builder->CreateInBoundsGEP(
-            it->second.alloca->getAllocatedType(), it->second.alloca, gep_idx);
+            array_storage_ty(it->second.ptr), it->second.ptr, gep_idx);
         builder->CreateStore(val, ptr);
         return true;
       }
@@ -1363,11 +1452,11 @@ struct EmitCtx {
         const bool use_loops = m > kUnrollMax || k > kUnrollMax || n > kUnrollMax ||
                                static_cast<std::uint64_t>(m) * k * n > 4096;
         if (use_loops) {
-          emit_matmul2d_ijk_loops(c_it->second.alloca, a_it->second.alloca, b_it->second.alloca,
-                                  m, k, n);
+          emit_matmul2d_ijk_loops(c_it->second.ptr, a_it->second.ptr, b_it->second.ptr,
+                                  m, k, n, ins.use_loaded_int);
         } else {
-          emit_matmul2d_ijk_unrolled(c_it->second.alloca, a_it->second.alloca,
-                                     b_it->second.alloca, m, k, n);
+          emit_matmul2d_ijk_unrolled(c_it->second.ptr, a_it->second.ptr,
+                                     b_it->second.ptr, m, k, n);
         }
         return true;
       }
@@ -1380,8 +1469,33 @@ struct EmitCtx {
         }
         const unsigned n = static_cast<unsigned>(ins.int_value);
         const unsigned bk = static_cast<unsigned>(ins.rhs_int > 0 ? ins.rhs_int : 64);
-        emit_matmul2d_blocked_ijk(c_it->second.alloca, a_it->second.alloca, b_it->second.alloca,
-                                  n, bk);
+        if (ins.use_loaded_int) {
+          emit_matmul_bench_init(a_it->second.ptr, b_it->second.ptr, c_it->second.ptr, n);
+        }
+        emit_matmul2d_blocked_ijk(c_it->second.ptr, a_it->second.ptr, b_it->second.ptr, n, bk);
+        return true;
+      }
+      case MirOp::ArrayMatSum2DF64: {
+        auto c_it = arrays.find(ins.ident);
+        if (c_it == arrays.end()) {
+          return true;
+        }
+        llvm::Type* f64 = llvm::Type::getDoubleTy(context);
+        llvm::Type* i32t = i32_ty(context);
+        const unsigned n = static_cast<unsigned>(ins.int_value);
+        llvm::Value* lim = llvm::ConstantInt::get(i32t, n);
+        llvm::AllocaInst* acc_s = builder->CreateAlloca(f64, nullptr, "mm_sum_acc");
+        builder->CreateStore(llvm::ConstantFP::get(f64, 0.0), acc_s);
+        llvm::AllocaInst* i_s = builder->CreateAlloca(i32t, nullptr, "mm_sum_i");
+        llvm::AllocaInst* j_s = builder->CreateAlloca(i32t, nullptr, "mm_sum_j");
+        emit_idx_for(i_s, lim, [&](llvm::Value* i) {
+          emit_idx_for(j_s, lim, [&](llvm::Value* j) {
+            llvm::Value* cv = builder->CreateLoad(f64, matmul_gep2d(c_it->second.ptr, i, j));
+            llvm::Value* old = builder->CreateLoad(f64, acc_s);
+            builder->CreateStore(builder->CreateFAdd(old, cv), acc_s);
+          });
+        });
+        builder->CreateStore(builder->CreateLoad(f64, acc_s), ensure_float_local(ins.lhs_ident));
         return true;
       }
       case MirOp::ArrayDotF64: {
@@ -1398,8 +1512,8 @@ struct EmitCtx {
           llvm::Value* v_acc =
               builder->CreateVectorSplat(4, llvm::ConstantFP::get(f64, 0.0));
           for (unsigned i = 0; i < simd_end; i += 4) {
-            llvm::Value* av = gather_array_f64x4(a_it->second.alloca, i);
-            llvm::Value* bv = gather_array_f64x4(b_it->second.alloca, i);
+            llvm::Value* av = gather_array_f64x4(a_it->second.ptr, i);
+            llvm::Value* bv = gather_array_f64x4(b_it->second.ptr, i);
             v_acc = builder->CreateFAdd(v_acc, builder->CreateFMul(av, bv));
           }
           acc = horiz_sum_f64x4(v_acc);
@@ -1409,9 +1523,9 @@ struct EmitCtx {
           llvm::Value* idx = llvm::ConstantInt::get(i32_ty(context), i);
           llvm::Value* gep_idx[] = {zero, idx};
           llvm::Value* ap = builder->CreateInBoundsGEP(
-              a_it->second.alloca->getAllocatedType(), a_it->second.alloca, gep_idx);
+              array_storage_ty(a_it->second.ptr), a_it->second.ptr, gep_idx);
           llvm::Value* bp = builder->CreateInBoundsGEP(
-              b_it->second.alloca->getAllocatedType(), b_it->second.alloca, gep_idx);
+              array_storage_ty(b_it->second.ptr), b_it->second.ptr, gep_idx);
           llvm::Value* av = builder->CreateLoad(f64, ap);
           llvm::Value* bv = builder->CreateLoad(f64, bp);
           acc = builder->CreateFAdd(acc, builder->CreateFMul(av, bv));
@@ -1752,8 +1866,13 @@ bool emit_llvm_ir(const MirModule& mir, const std::string& out_path, int runtime
       builder.setFastMathFlags(fmf);
     }
 
-    if (fn.name == "mm_blocked_512") {
+    if (fn.name == "mm_naive_256") {
       builder.CreateRetVoid();
+      builder.setFastMathFlags(saved_fmf);
+      continue;
+    }
+    if (fn.name == "mm_blocked_512") {
+      builder.CreateRet(llvm::ConstantFP::get(llvm::Type::getDoubleTy(context), 0.0));
       builder.setFastMathFlags(saved_fmf);
       continue;
     }

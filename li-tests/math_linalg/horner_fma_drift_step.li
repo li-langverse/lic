@@ -1,0 +1,31 @@
+# G-hw / G-meta witness: Horner step `acc = acc * x + c` lowers to FmaFloatF64 (llvm.fmuladd).
+# Runtime fixtures via LI_EXTRA_C (horner_fma_drift_rt.c).
+# Harness compares LI_PRINT_SINK_F64 output to Python mul+add eval (see horner_fma_lean_drift.sh).
+
+extern proc li_rt_volatile_sink_f64(v: float) -> unit
+  requires true
+  ensures true
+
+extern proc horner_fma_drift_acc() -> float
+  requires true
+  ensures true
+
+extern proc horner_fma_drift_x() -> float
+  requires true
+  ensures true
+
+extern proc horner_fma_drift_addend() -> float
+  requires true
+  ensures true
+
+def main() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  var acc: float = horner_fma_drift_acc()
+  var x: float = horner_fma_drift_x()
+  var addend: float = horner_fma_drift_addend()
+  acc = acc * x + addend
+  li_rt_volatile_sink_f64(acc)
+  return 0

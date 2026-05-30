@@ -1,16 +1,16 @@
 {
-  "generated_at": "2026-05-24T19:35:09.522880+00:00",
+  "generated_at": "2026-05-30T05:01:46.232571+00:00",
   "tz": "Europe/Berlin",
-  "agents_live": 3,
+  "agents_live": 0,
   "runners": [
     {
       "id": "httpd",
       "name": "li-httpd gap parity",
       "branch": "cursor/httpd-plan-continue",
-      "head": "ed2ca83",
+      "head": "44fba21f",
       "running": true,
-      "process": "systemd:li-httpd-plan-loop.service (active)",
-      "log_path": "/home/s4il0r/Documents/Cursor/li-langverse/lic/data/httpd-plan-loop/until-deadline-20260524-154617.log",
+      "process": "2010567 bash ./scripts/httpd-plan-until-deadline.sh",
+      "log_path": "/home/s4il0r/Documents/Cursor/li-langverse/lic/../lic/data/httpd-plan-loop/until-deadline-20260529-191636.log",
       "todos": [
         {
           "id": "gap-exploit-owasp-cwe-suite",
@@ -50,7 +50,7 @@
         {
           "id": "gap-phase2-mitigation-exploits",
           "content": "Close nginx_mitigations.toml rows with empty exploit \u2014 client_max_body_size, h2_rapid_reset, dns_resolver_limits; tier5 TOML + live li-httpd vs nginx compare; gate check-tier5-mitigation-exploits-complete.sh",
-          "status": "pending"
+          "status": "completed"
         },
         {
           "id": "gap-phase2-streaming-wrk",
@@ -60,114 +60,34 @@
         {
           "id": "gap-phase2-exploit-nginx-regression",
           "content": "Every enabled tier5 exploit row \u2014 live li-httpd vs nginx, --fail-on-regression; no nginx-pass/li-fail; document in release note",
-          "status": "pending"
+          "status": "completed"
         }
       ],
-      "plan_completed": 7,
+      "plan_completed": 9,
       "plan_total": 10,
       "plan_pending": [
-        "gap-phase2-mitigation-exploits",
-        "gap-phase2-streaming-wrk",
-        "gap-phase2-exploit-nginx-regression"
+        "gap-phase2-streaming-wrk"
       ],
-      "state": {
-        "completed_ids": [
-          "h-lean-server-modules",
-          "gap-exploit-owasp-cwe-suite",
-          "gap-lb-sticky-sessions",
-          "gap-llvm22-build-warnings",
-          "gap-nginx-perf-regression-gate",
-          "gap-tier5-streaming-soak",
-          "gap-phase2-perf-wrk-soak"
-        ],
-        "iterations": 9,
-        "history": [
-          {
-            "at": "2026-05-24T12:57:17.198584+00:00",
-            "todo_id": "h-lean-server-modules",
-            "agent_exit": 0,
-            "gates_ok": true
-          },
-          {
-            "at": "2026-05-24T13:18:08.570188+00:00",
-            "todo_id": "gap-exploit-owasp-cwe-suite",
-            "agent_exit": 1,
-            "gates_ok": true
-          },
-          {
-            "at": "2026-05-24T15:35:27.740040+00:00",
-            "todo_id": "gap-lb-sticky-sessions",
-            "agent_exit": 124,
-            "gates_ok": true
-          },
-          {
-            "at": "2026-05-24T16:31:24.966765+00:00",
-            "todo_id": "gap-lb-sticky-sessions",
-            "agent_exit": 124,
-            "gates_ok": true
-          },
-          {
-            "at": "2026-05-24T16:36:56.980658+00:00",
-            "todo_id": "gap-lb-sticky-sessions",
-            "agent_exit": 0,
-            "gates_ok": true
-          },
-          {
-            "at": "2026-05-24T17:22:22.312204+00:00",
-            "todo_id": "gap-nextjs-toy-bench",
-            "agent_exit": 124,
-            "gates_ok": true
-          },
-          {
-            "at": "2026-05-24T17:37:43.123270+00:00",
-            "todo_id": "gap-llvm22-build-warnings",
-            "agent_exit": 0,
-            "gates_ok": true
-          },
-          {
-            "at": "2026-05-24T17:44:52.221370+00:00",
-            "todo_id": "gap-nginx-perf-regression-gate",
-            "agent_exit": 0,
-            "gates_ok": true
-          },
-          {
-            "at": "2026-05-24T17:56:57.082111+00:00",
-            "todo_id": "gap-tier5-streaming-soak",
-            "agent_exit": 0,
-            "gates_ok": true
-          }
-        ]
-      },
-      "state_iterations": 9,
-      "agent_live": true,
-      "agent": "code_implementer",
-      "goal_file": "goal-20260524-192314.md",
-      "log_age_sec": 715,
-      "last_state_at": "2026-05-24T17:56:57.082111+00:00",
-      "last_state_todo": "gap-tier5-streaming-soak",
-      "last_state_gates": true,
-      "current_iteration": "=== iteration 1: gap-phase2-exploit-nginx-regression ===",
-      "activity": [
-        "==> batch 344 exit 0 @ 2026-05-24T21:22:38+02:00",
-        "==> batch 345 @ 2026-05-24T21:22:53+02:00 \u2014 --max 30 (~637m until deadline)",
-        "All actionable todos complete (or none in pending/in_progress).",
-        "==> batch 345 exit 0 @ 2026-05-24T21:22:53+02:00",
-        "==> batch 346 @ 2026-05-24T21:23:08+02:00 \u2014 --max 30 (~636m until deadline)",
-        "=== iteration 1: gap-phase2-exploit-nginx-regression ===",
-        "gates: FAIL (agent should fix first)",
-        "SDK tool activity streams to stderr ([sdk] \u25b6/\u2713 lines). Set LI_SDK_TERMINAL_STREAM=0 to disable."
-      ],
-      "status_note": "agent coding (code_implementer)",
-      "active_todo_id": "gap-phase2-exploit-nginx-regression"
+      "agent_live": false,
+      "agent": "",
+      "goal_file": "",
+      "log_age_sec": 35109,
+      "last_state_at": "",
+      "last_state_todo": "",
+      "last_state_gates": "",
+      "current_iteration": "",
+      "activity": [],
+      "status_note": "supervisor idle (log 35109s stale \u2014 check log_path)",
+      "active_todo_id": "gap-phase2-streaming-wrk"
     },
     {
       "id": "compiler-studio",
       "name": "Compiler + Studio",
       "branch": "cursor/compiler-studio-plan-loop",
-      "head": "3b2953b",
-      "running": true,
-      "process": "systemd:li-compiler-studio-plan-loop.service (active)",
-      "log_path": "/home/s4il0r/Documents/Cursor/li-langverse/lic-worktrees/compiler-studio/data/compiler-studio-plan-loop/until-deadline-20260524-154702.log",
+      "head": "b0edbdc8",
+      "running": false,
+      "process": "",
+      "log_path": "/home/s4il0r/Documents/Cursor/li-langverse/lic/../lic-worktrees/compiler-studio/data/compiler-studio-plan-loop/until-deadline-20260525-180023.log",
       "todos": [
         {
           "id": "wave-a-7e-verify",
@@ -257,7 +177,7 @@
         {
           "id": "wave-d-gui-scaffold",
           "content": "AL-9 packages/gui scaffold + composable import gui (studio shell; UX-02/04)",
-          "status": "in_progress"
+          "status": "completed"
         },
         {
           "id": "wave-d-02-al2-catalog",
@@ -405,7 +325,7 @@
           "status": "completed"
         }
       ],
-      "plan_completed": 46,
+      "plan_completed": 47,
       "plan_total": 47,
       "plan_pending": [],
       "state": {
@@ -426,12 +346,13 @@
           "wave-c-competitive-intel",
           "wave-c-verticals-toml",
           "wave-c-ui-rect-vc",
+          "wave-d-gui-scaffold",
           "wave-d-02-al2-catalog",
           "wave-d-03-ux-inspector",
           "wave-d-04-math-quat-mat4",
           "wave-d-05-linalg-scaffold"
         ],
-        "iterations": 5,
+        "iterations": 4,
         "history": [
           {
             "at": "2026-05-23T09:02:50.508081+00:00",
@@ -458,43 +379,43 @@
             "gates_ok": false
           },
           {
-            "at": "2026-05-24T19:35:09.248291+00:00",
+            "at": "2026-05-25T06:41:51.000000+00:00",
             "todo_id": "wave-d-gui-scaffold",
             "agent_exit": 0,
-            "gates_ok": false
+            "gates_ok": true
           }
         ],
-        "note": "2026-05-24: cleared premature completed_ids for wave-a-llvm22-typecheck-warnings and wave-d-gui-scaffold (plan still open; gates had failed or plan YAML not updated)"
+        "note": "2026-05-25: wave-d-gui-scaffold re-verified (compiler-studio-plan-gates + bench/math green); wave-a-llvm22-typecheck-warnings still open"
       },
-      "state_iterations": 5,
+      "state_iterations": 4,
       "agent_live": false,
       "agent": "",
       "goal_file": "",
-      "log_age_sec": 0,
-      "last_state_at": "2026-05-24T19:35:09.248291+00:00",
+      "log_age_sec": 379175,
+      "last_state_at": "2026-05-25T06:41:51.000000+00:00",
       "last_state_todo": "wave-d-gui-scaffold",
-      "last_state_gates": false,
-      "current_iteration": "==> batch 637 exit 1 @ 2026-05-24T21:35:09+02:00",
+      "last_state_gates": true,
+      "current_iteration": "=== iteration 1: wave-d-gui-scaffold ===",
       "activity": [
+        "[sdk] \u2717 tool",
         "[sdk] \u2713 shell cd /home/s4il0r/Documents/Cursor/li-langverse/li-cursor-agents/data/workspaces/l",
         "[sdk] \u2717 tool",
+        "[sdk] thinking\u2026",
+        "[sdk] \u25b6 tool",
         "[sdk] \u25b6 tool",
         "[sdk] \u2713 shell cd /home/s4il0r/Documents/Cursor/li-langverse/li-cursor-agents/data/workspaces/l",
-        "[sdk] \u2717 tool",
-        "[sdk] assistant reply",
-        "gates: FAIL after agent (not marking done)",
-        "==> batch 637 exit 1 @ 2026-05-24T21:35:09+02:00"
+        "[sdk] \u2717 tool"
       ],
-      "status_note": "supervisor up, between agent runs"
+      "status_note": "supervisor off"
     },
     {
       "id": "sim",
       "name": "Sim / algo registry",
       "branch": "cursor/sim-algo-plan-loop",
-      "head": "a27c920",
-      "running": true,
-      "process": "systemd:li-sim-algo-plan-loop.service (active)",
-      "log_path": "/home/s4il0r/Documents/Cursor/li-langverse/lic-worktrees/sim-algo/data/sim-plan-loop/iter-20260524-192726.log",
+      "head": "f9a3fc57",
+      "running": false,
+      "process": "",
+      "log_path": "/home/s4il0r/Documents/Cursor/li-langverse/lic/../lic-worktrees/sim-algo/data/sim-plan-loop/iter-20260524-163427.log",
       "todos": [
         {
           "id": "sim-p0-md-lj-li-parity",
@@ -504,17 +425,17 @@
         {
           "id": "sim-p0-heat-li-smoke",
           "content": "Pure-Li heat_equation_2d smoke with harness verify row",
-          "status": "pending"
+          "status": "completed"
         },
         {
           "id": "sim-p1-num-dot-axpy",
           "content": "Implement algo_id=1 num_dot_axpy in li-math-numerics + bench-package gate",
-          "status": "pending"
+          "status": "completed"
         },
         {
           "id": "sim-p1-md-neighbor-cell",
           "content": "Implement algo_id=105 md_neighbor_cell_list stub\u2192smoke in li-physics-particles",
-          "status": "pending"
+          "status": "completed"
         },
         {
           "id": "sim-p2-qm-dft-scf",
@@ -522,17 +443,14 @@
           "status": "pending"
         }
       ],
-      "plan_completed": 1,
+      "plan_completed": 4,
       "plan_total": 5,
       "plan_pending": [
-        "sim-p0-heat-li-smoke",
-        "sim-p1-num-dot-axpy",
-        "sim-p1-md-neighbor-cell",
         "sim-p2-qm-dft-scf"
       ],
       "state": {
         "completed_ids": [],
-        "iterations": 25,
+        "iterations": 8,
         "history": [
           {
             "at": "2026-05-24T15:02:54.490019+00:00",
@@ -581,108 +499,6 @@
             "todo_id": "sim-p0-md-lj-li-parity",
             "agent_exit": 0,
             "gates_ok": false
-          },
-          {
-            "at": "2026-05-24T17:12:10.136689+00:00",
-            "todo_id": "sim-p0-heat-li-smoke",
-            "agent_exit": 0,
-            "gates_ok": false
-          },
-          {
-            "at": "2026-05-24T17:22:12.298471+00:00",
-            "todo_id": "sim-p0-heat-li-smoke",
-            "agent_exit": 0,
-            "gates_ok": false
-          },
-          {
-            "at": "2026-05-24T17:35:36.186316+00:00",
-            "todo_id": "sim-p0-heat-li-smoke",
-            "agent_exit": 0,
-            "gates_ok": false
-          },
-          {
-            "at": "2026-05-24T17:42:43.583129+00:00",
-            "todo_id": "sim-p0-heat-li-smoke",
-            "agent_exit": 0,
-            "gates_ok": false
-          },
-          {
-            "at": "2026-05-24T17:49:39.417934+00:00",
-            "todo_id": "sim-p0-heat-li-smoke",
-            "agent_exit": 0,
-            "gates_ok": false
-          },
-          {
-            "at": "2026-05-24T18:00:06.812245+00:00",
-            "todo_id": "sim-p0-heat-li-smoke",
-            "agent_exit": 0,
-            "gates_ok": false
-          },
-          {
-            "at": "2026-05-24T18:08:00.156935+00:00",
-            "todo_id": "sim-p0-heat-li-smoke",
-            "agent_exit": 0,
-            "gates_ok": false
-          },
-          {
-            "at": "2026-05-24T18:15:31.650644+00:00",
-            "todo_id": "sim-p0-heat-li-smoke",
-            "agent_exit": 0,
-            "gates_ok": false
-          },
-          {
-            "at": "2026-05-24T18:22:15.016643+00:00",
-            "todo_id": "sim-p0-heat-li-smoke",
-            "agent_exit": 0,
-            "gates_ok": false
-          },
-          {
-            "at": "2026-05-24T18:29:52.254067+00:00",
-            "todo_id": "sim-p0-heat-li-smoke",
-            "agent_exit": 0,
-            "gates_ok": false
-          },
-          {
-            "at": "2026-05-24T18:41:29.414742+00:00",
-            "todo_id": "sim-p0-heat-li-smoke",
-            "agent_exit": 0,
-            "gates_ok": false
-          },
-          {
-            "at": "2026-05-24T18:48:23.381886+00:00",
-            "todo_id": "sim-p0-heat-li-smoke",
-            "agent_exit": 0,
-            "gates_ok": false
-          },
-          {
-            "at": "2026-05-24T18:55:12.900099+00:00",
-            "todo_id": "sim-p0-heat-li-smoke",
-            "agent_exit": 0,
-            "gates_ok": false
-          },
-          {
-            "at": "2026-05-24T19:01:58.197709+00:00",
-            "todo_id": "sim-p0-heat-li-smoke",
-            "agent_exit": 0,
-            "gates_ok": false
-          },
-          {
-            "at": "2026-05-24T19:08:39.614535+00:00",
-            "todo_id": "sim-p0-heat-li-smoke",
-            "agent_exit": 0,
-            "gates_ok": false
-          },
-          {
-            "at": "2026-05-24T19:18:40.803564+00:00",
-            "todo_id": "sim-p0-heat-li-smoke",
-            "agent_exit": 0,
-            "gates_ok": false
-          },
-          {
-            "at": "2026-05-24T19:25:26.673734+00:00",
-            "todo_id": "sim-p0-heat-li-smoke",
-            "agent_exit": 0,
-            "gates_ok": false
           }
         ],
         "registry": {
@@ -690,29 +506,36 @@
           "total": 126
         }
       },
-      "state_iterations": 25,
-      "agent_live": true,
-      "agent": "code_implementer",
-      "goal_file": "goal-20260524-192726.md",
-      "log_age_sec": 462,
-      "last_state_at": "2026-05-24T19:25:26.673734+00:00",
-      "last_state_todo": "sim-p0-heat-li-smoke",
+      "state_iterations": 8,
+      "agent_live": false,
+      "agent": "",
+      "goal_file": "",
+      "log_age_sec": 476443,
+      "last_state_at": "2026-05-24T16:32:27.410480+00:00",
+      "last_state_todo": "sim-p0-md-lj-li-parity",
       "last_state_gates": false,
       "current_iteration": "",
       "activity": [
-        "SDK tool activity streams to stderr ([sdk] \u25b6/\u2713 lines). Set LI_SDK_TERMINAL_STREAM=0 to disable."
+        "[sdk] \u25b6 tool",
+        "[sdk] \u2713 shell cd /home/s4il0r/Documents/Cursor/li-langverse/li-cursor-agents/data/workspaces/l",
+        "[sdk] \u2717 tool",
+        "[sdk] \u25b6 tool",
+        "[sdk] \u2713 shell cd /home/s4il0r/Documents/Cursor/li-langverse/li-cursor-agents/data/workspaces/l",
+        "[sdk] \u2717 tool",
+        "[sdk] thinking\u2026",
+        "[sdk] assistant reply"
       ],
-      "status_note": "agent coding (code_implementer)",
-      "active_todo_id": "sim-p0-heat-li-smoke"
+      "status_note": "supervisor off",
+      "active_todo_id": "sim-p2-qm-dft-scf"
     },
     {
       "id": "studio-ui-ux",
       "name": "Studio UI/UX",
       "branch": "cursor/studio-ui-ux-plan-loop",
-      "head": "ca1b091",
-      "running": true,
-      "process": "systemd:li-studio-ui-ux-plan-loop.service (active)",
-      "log_path": "/home/s4il0r/Documents/Cursor/li-langverse/lic-studio-ui/data/studio-ui-ux-plan-loop/iter-20260524-192343.log",
+      "head": "f398a1e4",
+      "running": false,
+      "process": "",
+      "log_path": "/home/s4il0r/Documents/Cursor/li-langverse/lic/../lic-studio-ui/data/studio-ui-ux-plan-loop/iter-20260525-062259.log",
       "todos": [
         {
           "id": "studio-ux-00-design-system",
@@ -732,63 +555,74 @@
         {
           "id": "studio-ux-03-render-wgpu-smoke",
           "content": "li-render/gpu \u2014 wgpu smoke + FPS counter hook for bench harness",
-          "status": "pending"
+          "status": "done"
         },
         {
           "id": "studio-ux-04-particle-display",
           "content": "Scene path \u2014 MD particle draw tiers (1k/10k/100k) with honest FPS reporting",
-          "status": "pending"
+          "status": "done"
         },
         {
           "id": "studio-ux-05-studio-compose",
           "content": "li-studio \u2014 compose dock + timeline + inspector from composables",
-          "status": "pending"
+          "status": "done"
         },
         {
           "id": "studio-ux-06-agent-chrome",
           "content": "Agentic chrome \u2014 task status, cancel, error strip (PH UX-06)",
-          "status": "pending"
+          "status": "done"
         },
         {
           "id": "studio-ux-07-capture-harness",
           "content": "Wire studio-ui-ux-capture-progress.sh + demo HTML mocks; verify gh upload path",
-          "status": "pending"
+          "status": "done"
         },
         {
           "id": "studio-ux-08-bench-registry",
           "content": "benchmarks/competitive/studio-ui.toml + bench-studio-viewport-perf.json output",
-          "status": "pending"
+          "status": "done"
         },
         {
           "id": "studio-ux-09-memory-budget",
           "content": "profile-animate-memory in loop gates; document peak MiB budget in ui-ux-by-dimension",
-          "status": "pending"
+          "status": "done"
         },
         {
           "id": "studio-ux-10-native-capture",
           "content": "Extend ux-harness native_gui for Xvfb SDL capture when viewport draws pixels",
-          "status": "pending"
+          "status": "done"
+        },
+        {
+          "id": "studio-ux-11-panel-switch-gate",
+          "content": "PH-UX panel_switch_ms gate \u2014 bench hook within 100ms + gui_panel_switch_to region fix",
+          "status": "done"
+        },
+        {
+          "id": "studio-ux-12-world-studio-demo-linux-audit",
+          "content": "ux-harness world-studio-demo fixture audit on Linux (non-mock) + agentic_ai SOTA refs in gates",
+          "status": "done"
         }
       ],
       "plan_completed": 0,
-      "plan_total": 11,
-      "plan_pending": [
-        "studio-ux-03-render-wgpu-smoke",
-        "studio-ux-04-particle-display",
-        "studio-ux-05-studio-compose",
-        "studio-ux-06-agent-chrome",
-        "studio-ux-07-capture-harness",
-        "studio-ux-08-bench-registry",
-        "studio-ux-09-memory-budget",
-        "studio-ux-10-native-capture"
-      ],
+      "plan_total": 13,
+      "plan_pending": [],
       "state": {
         "completed_ids": [
           "studio-ux-00-design-system",
           "studio-ux-01-ui-composables",
-          "studio-ux-02-gui-viewport-stub"
+          "studio-ux-02-gui-viewport-stub",
+          "studio-ux-03-render-wgpu-smoke",
+          "studio-ux-04-particle-display",
+          "studio-ux-05-studio-compose",
+          "studio-ux-06-agent-chrome",
+          "studio-ux-07-capture-harness",
+          "studio-ux-08-bench-registry",
+          "studio-ux-09-memory-budget",
+          "studio-ux-10-native-capture",
+          "studio-ux-11-panel-switch-gate",
+          "studio-ux-12-world-studio-demo-linux-audit"
         ],
-        "iterations": 3,
+        "iterations": 11,
         "history": [
           {
             "at": "2026-05-24T14:53:41+00:00",
@@ -807,95 +641,150 @@
             "gates_ok": true,
             "ux_pass": true,
             "note": "li-gui viewport + panel switch hooks; gates/capture/bench verified"
+          },
+          {
+            "at": "2026-05-24T19:36:50+00:00",
+            "todo_id": "studio-ux-03-render-wgpu-smoke",
+            "agent_exit": 0,
+            "capture_exit": 0,
+            "gates_ok": true,
+            "ux_pass": true,
+            "note": "li-gpu wgpu smoke + li-render FPS counter bench hooks"
+          },
+          {
+            "at": "2026-05-24T21:42:00+00:00",
+            "todo_id": "studio-ux-03-render-wgpu-smoke",
+            "agent_exit": 0,
+            "capture_exit": 0,
+            "gates_ok": true,
+            "ux_pass": true,
+            "note": "re-verified gates/capture; issue #181 comment"
+          },
+          {
+            "at": "2026-05-24T23:05:00+00:00",
+            "todo_id": "studio-ux-04-particle-display",
+            "agent_exit": 0,
+            "capture_exit": 0,
+            "gates_ok": true,
+            "ux_pass": true,
+            "note": "li-scene MD tiers + li-render scene path; issue #181 comment"
+          },
+          {
+            "at": "2026-05-25T00:42:54+00:00",
+            "todo_id": "studio-ux-04-particle-display",
+            "agent_exit": 0,
+            "capture_exit": 0,
+            "gates_ok": true,
+            "ux_pass": true,
+            "note": "re-verified gates/capture/bench; issue #181 comment 4530713964"
+          },
+          {
+            "at": "2026-05-25T02:14:50+00:00",
+            "todo_id": "studio-ux-06-agent-chrome",
+            "agent_exit": 0,
+            "capture_exit": 0,
+            "gates_ok": true,
+            "ux_pass": true,
+            "note": "StudioAgentChromeCompose task states + cancel + error strip; issue #181"
+          },
+          {
+            "at": "2026-05-29T08:42:00+00:00",
+            "todo_id": "studio-ux-11-panel-switch-gate",
+            "agent_exit": 0,
+            "capture_exit": 0,
+            "gates_ok": true,
+            "ux_pass": true,
+            "note": "panel_switch bench worst 95ms; gui_panel_switch_to region fix; gates_pass true"
+          },
+          {
+            "at": "2026-05-30T01:04:00+00:00",
+            "todo_id": "studio-ux-12-world-studio-demo-linux-audit",
+            "agent_exit": 0,
+            "capture_exit": 0,
+            "gates_ok": true,
+            "ux_pass": true,
+            "note": "Linux non-mock world-studio-demo harness; agentic_ai SOTA refs; capture dry exit 0"
           }
         ]
       },
-      "state_iterations": 3,
-      "agent_live": true,
-      "agent": "studio_ui_ux_builder",
-      "goal_file": "goal-20260524-192343.md",
-      "log_age_sec": 1,
-      "last_state_at": "2026-05-24T18:23:10+00:00",
-      "last_state_todo": "studio-ux-02-gui-viewport-stub",
+      "state_iterations": 11,
+      "agent_live": false,
+      "agent": "",
+      "goal_file": "",
+      "log_age_sec": 426583,
+      "last_state_at": "2026-05-30T01:04:00+00:00",
+      "last_state_todo": "studio-ux-12-world-studio-demo-linux-audit",
       "last_state_gates": true,
       "current_iteration": "",
       "activity": [
-        "sor/li-langverse/li-cursor-agents/data/workspaces/li-langverse/lic/studio_ui_ux_builder-1779650721295/repo/packages/li-gui/li-toolchain.toml",
+        "[sdk] thinking\u2026",
+        "[sdk] \u25b6 tool",
+        "[sdk] \u2713 shell cd /home/s4il0r/Documents/Cursor/li-langverse/li-cursor-agents/data/workspaces/l",
         "[sdk] \u2717 tool",
         "[sdk] \u25b6 tool",
-        "rsor-agents/data/workspaces/li-langverse/lic/studio_ui_ux_builder-1779650721295/repo/deploy/studio-demo/screenshots/01-studio-workspace.html",
+        "[sdk] \u2713 shell cd /home/s4il0r/Documents/Cursor/li-langverse/li-cursor-agents/data/workspaces/l",
         "[sdk] \u2717 tool",
-        "[sdk] \u25b6 tool",
-        " \u2713 grep /home/s4il0r/Documents/Cursor/li-langverse/li-cursor-agents/data/workspaces/li-langverse/lic/studio_ui_ux_builder-1779650721295/repo",
-        "[sdk] \u2717 tool"
+        "[sdk] assistant reply"
       ],
-      "status_note": "agent coding (studio_ui_ux_builder)",
-      "active_todo_id": "studio-ux-03-render-wgpu-smoke"
+      "status_note": "supervisor off"
     }
   ],
   "history": [
     {
+      "runner": "studio-ui-ux",
+      "at": "2026-05-30T01:04:00+00:00",
+      "todo_id": "studio-ux-12-world-studio-demo-linux-audit",
+      "agent_exit": 0,
+      "gates_ok": true
+    },
+    {
+      "runner": "studio-ui-ux",
+      "at": "2026-05-29T08:42:00+00:00",
+      "todo_id": "studio-ux-11-panel-switch-gate",
+      "agent_exit": 0,
+      "gates_ok": true
+    },
+    {
       "runner": "compiler-studio",
-      "at": "2026-05-24T19:35:09.248291+00:00",
+      "at": "2026-05-25T06:41:51.000000+00:00",
       "todo_id": "wave-d-gui-scaffold",
       "agent_exit": 0,
-      "gates_ok": false
+      "gates_ok": true
     },
     {
-      "runner": "sim",
-      "at": "2026-05-24T19:25:26.673734+00:00",
-      "todo_id": "sim-p0-heat-li-smoke",
+      "runner": "studio-ui-ux",
+      "at": "2026-05-25T02:14:50+00:00",
+      "todo_id": "studio-ux-06-agent-chrome",
       "agent_exit": 0,
-      "gates_ok": false
+      "gates_ok": true
     },
     {
-      "runner": "sim",
-      "at": "2026-05-24T19:18:40.803564+00:00",
-      "todo_id": "sim-p0-heat-li-smoke",
+      "runner": "studio-ui-ux",
+      "at": "2026-05-25T00:42:54+00:00",
+      "todo_id": "studio-ux-04-particle-display",
       "agent_exit": 0,
-      "gates_ok": false
+      "gates_ok": true
     },
     {
-      "runner": "sim",
-      "at": "2026-05-24T19:08:39.614535+00:00",
-      "todo_id": "sim-p0-heat-li-smoke",
+      "runner": "studio-ui-ux",
+      "at": "2026-05-24T23:05:00+00:00",
+      "todo_id": "studio-ux-04-particle-display",
       "agent_exit": 0,
-      "gates_ok": false
+      "gates_ok": true
     },
     {
-      "runner": "sim",
-      "at": "2026-05-24T19:01:58.197709+00:00",
-      "todo_id": "sim-p0-heat-li-smoke",
+      "runner": "studio-ui-ux",
+      "at": "2026-05-24T21:42:00+00:00",
+      "todo_id": "studio-ux-03-render-wgpu-smoke",
       "agent_exit": 0,
-      "gates_ok": false
+      "gates_ok": true
     },
     {
-      "runner": "sim",
-      "at": "2026-05-24T18:55:12.900099+00:00",
-      "todo_id": "sim-p0-heat-li-smoke",
+      "runner": "studio-ui-ux",
+      "at": "2026-05-24T19:36:50+00:00",
+      "todo_id": "studio-ux-03-render-wgpu-smoke",
       "agent_exit": 0,
-      "gates_ok": false
-    },
-    {
-      "runner": "sim",
-      "at": "2026-05-24T18:48:23.381886+00:00",
-      "todo_id": "sim-p0-heat-li-smoke",
-      "agent_exit": 0,
-      "gates_ok": false
-    },
-    {
-      "runner": "sim",
-      "at": "2026-05-24T18:41:29.414742+00:00",
-      "todo_id": "sim-p0-heat-li-smoke",
-      "agent_exit": 0,
-      "gates_ok": false
-    },
-    {
-      "runner": "sim",
-      "at": "2026-05-24T18:29:52.254067+00:00",
-      "todo_id": "sim-p0-heat-li-smoke",
-      "agent_exit": 0,
-      "gates_ok": false
+      "gates_ok": true
     },
     {
       "runner": "studio-ui-ux",
@@ -905,16 +794,23 @@
       "gates_ok": true
     },
     {
-      "runner": "sim",
-      "at": "2026-05-24T18:22:15.016643+00:00",
-      "todo_id": "sim-p0-heat-li-smoke",
+      "runner": "compiler-studio",
+      "at": "2026-05-24T17:19:56.590015+00:00",
+      "todo_id": "wave-a-llvm22-typecheck-warnings",
       "agent_exit": 0,
       "gates_ok": false
     },
     {
+      "runner": "compiler-studio",
+      "at": "2026-05-24T17:08:31.389794+00:00",
+      "todo_id": "wave-a-llvm22-typecheck-warnings",
+      "agent_exit": 1,
+      "gates_ok": false
+    },
+    {
       "runner": "sim",
-      "at": "2026-05-24T18:15:31.650644+00:00",
-      "todo_id": "sim-p0-heat-li-smoke",
+      "at": "2026-05-24T16:32:27.410480+00:00",
+      "todo_id": "sim-p0-md-lj-li-parity",
       "agent_exit": 0,
       "gates_ok": false
     }

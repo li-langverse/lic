@@ -9,6 +9,7 @@ Static previews for the Studio UI/UX plan loop. **Not** the shipped native app (
 | `screenshots/01-studio-workspace.html` | Full shell: viewport, timeline, inspector, agent running |
 | `screenshots/02-studio-empty-viewport.html` | Empty scene / selection / idle agent |
 | `screenshots/03-studio-agent-error.html` | Agent failed + error strip (recovery UX) |
+| `screenshots/04-studio-gpu-fail.html` | GPU init fail strip + retry (UX-08) |
 | `screenshots/studio-tokens.css` | Generated from `docs/design/studio-design-tokens.toml` |
 | `screenshots/capture.sh` | Headless Chrome PNG capture (1920×1080) |
 | `screenshots/verticals/` | Per-profile HTML mocks (`game`, `sim_*`) + `manifest.json` |

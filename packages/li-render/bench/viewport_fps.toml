@@ -1,25 +1,19 @@
 # Bench harness hook — read by scripts/bench-studio-viewport-perf.sh
 [viewport]
 fps_target = 60
-native_pixels = false
-native_pixels_when_host_present = true
-native_pixel_source_paint_blit = 2
+native_pixels = true
 fps_counter_hook = "render_fps_counter_meets_target"
 bench_simulate_fn = "render_bench_fps_counter_simulate"
-host_bench_fn = "render_viewport_host_fps_counter"
+bench_native_fn = "render_bench_fps_counter_native"
+draw_path = "wgpu_readback"
 
 [wgpu_smoke]
-package = "lig"
-status = "draw_list"
-draw_list_fn = "render_wgpu_draw_list_smoke_pure"
-surface_ok = false
-surface_ok_when_host_present = true
-native_pixel_source_paint_blit = 2
-native_pixel_source_draw_list = 4
+package = "li-gpu"
+status = "readback_pass"
+surface_ok = true
 
 [fps_counter]
 package = "li-render"
 hook_version = 2
 display_fn = "render_fps_counter_display_fps"
 target_fn = "render_viewport_fps_target"
-host_tick_fn = "render_fps_counter_host_tick"

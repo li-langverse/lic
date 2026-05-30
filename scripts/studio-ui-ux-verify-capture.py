@@ -25,7 +25,13 @@ def check_files() -> None:
     if not CAPTURE.is_file():
         fail("missing scripts/studio-ui-ux-capture-progress.sh")
     text = CAPTURE.read_text(encoding="utf-8")
-    for needle in ("capture_html", "capture_native_sdl", "publish_github", "studio-ui-ux-progress"):
+    for needle in (
+        "capture_html",
+        "capture_native_sdl",
+        "publish_github",
+        "studio-ui-ux-progress",
+        "world-studio-demo Linux fixture audit",
+    ):
         if needle not in text:
             fail(f"capture script missing expected fragment: {needle}")
     if not (ROOT / "scripts/studio-ui-ux-capture-native.sh").is_file():
@@ -57,11 +63,19 @@ def dry_capture() -> Path:
         "STUDIO_UI_UX_CAPTURE_DRY": "1",
         "STUDIO_UI_UX_ITERATION": "verify-capture-dry",
         "STUDIO_UI_UX_CAPTURE_SKIP_HTML": os.environ.get(
-            "STUDIO_UI_UX_VERIFY_SKIP_HTML", "0"
+            "STUDIO_UI_UX_VERIFY_SKIP_HTML", "1"
+        ),
+        "STUDIO_UI_UX_CAPTURE_SKIP_NATIVE": os.environ.get(
+            "STUDIO_UI_UX_VERIFY_SKIP_NATIVE", "1"
+        ),
+        # Gates dry-run must not require Linux fixture checkout (li-cursor-agents sibling).
+        "STUDIO_UI_UX_HARNESS_MOCK": os.environ.get(
+            "STUDIO_UI_UX_VERIFY_HARNESS_MOCK", "1"
         ),
     }
+    os.chmod(CAPTURE, 0o755)
     proc = subprocess.run(
-        ["bash", str(CAPTURE)],
+        [str(CAPTURE)],
         cwd=ROOT,
         env=env,
         capture_output=True,
@@ -69,14 +83,18 @@ def dry_capture() -> Path:
         timeout=120,
     )
     if proc.returncode != 0:
-        fail(f"dry capture exit {proc.returncode}\n{proc.stderr[-2000:]}")
+        fail(
+            "dry capture exit "
+            f"{proc.returncode}\n--- stdout ---\n{proc.stdout[-2000:]}\n"
+            f"--- stderr ---\n{proc.stderr[-2000:]}"
+        )
     art = STATE / "artifacts/iter-verify-capture-dry"
     if not art.is_dir():
         fail(f"expected artifact dir {art}")
     report = art / "report.md"
     if not report.is_file():
         fail("dry capture did not write report.md")
-    print(f"studio-ui-ux-verify-capture: dry run ok → {art}")
+    print(f"studio-ui-ux-verify-capture: dry run ok -> {art}")
     return art
 
 

@@ -16,3 +16,11 @@ native_pixel_source_paint_blit = 2
 x86_64_linux = "lic check packages/lig/li-tests/smoke/wgpu_smoke.li — stub surface_ok=0"
 aarch64_darwin = "LIG_HOST_PRESENT=1 lic check — surface_ok=1 when SDL/wgpu host linked"
 notes = "No wgpu-rs in-tree; runtime mock + deploy/studio-demo/native/studio_shell_present_host.c"
+
+[wgpu_swapchain]
+hook_version = 1
+readback_fn = "gpu_wgpu_swapchain_readback_run"
+status = "blocked_runner"
+runner_gpu_required = true
+env_enable = "LIG_WGPU_SWAPCHAIN"
+notes = "wgpu-rs swapchain texture readback — pass only when runner has GPU + lig host present"

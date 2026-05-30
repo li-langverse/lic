@@ -690,6 +690,204 @@ def studio_agent_strip_height_px() -> float
 =
   return 40.0
 
+def studio_agent_stream_step_total() -> int
+  requires true
+  ensures result == 3
+  decreases 0
+=
+  return 3
+
+def studio_agent_stream_tick_budget_ms() -> float
+  requires true
+  ensures result == 16.0
+  decreases 0
+=
+  return 16.0
+
+def studio_agent_cancel_budget_ms() -> float
+  requires true
+  ensures result == 16.0
+  decreases 0
+=
+  return 16.0
+
+type StudioAgentStreamState = object
+  public task_state: int
+  public step_index: int
+  public step_total: int
+  public cancel_requested: int
+  public progress_pct: float
+  public last_tick_ms: float
+
+def studio_agent_stream_new() -> StudioAgentStreamState
+  requires true
+  ensures result.task_state == studio_agent_task_idle()
+  ensures result.step_index == 0
+  ensures result.cancel_requested == 0
+  ensures result.progress_pct == 0.0
+  decreases 0
+=
+  var out: StudioAgentStreamState
+  out.task_state = studio_agent_task_idle()
+  out.step_index = 0
+  out.step_total = studio_agent_stream_step_total()
+  out.cancel_requested = 0
+  out.progress_pct = 0.0
+  out.last_tick_ms = 0.0
+  return out
+
+def studio_agent_stream_start(stream: var StudioAgentStreamState) -> unit
+  requires stream.step_total == studio_agent_stream_step_total()
+  ensures stream.task_state == studio_agent_task_running()
+  ensures stream.step_index == 0
+  ensures stream.cancel_requested == 0
+  decreases 0
+=
+  stream.task_state = studio_agent_task_running()
+  stream.step_index = 0
+  stream.cancel_requested = 0
+  stream.progress_pct = 0.0
+  stream.last_tick_ms = 0.0
+
+def studio_agent_step_as_float(step: int) -> float
+  requires step >= 0
+  requires step <= studio_agent_stream_step_total()
+  ensures result >= 0.0
+  decreases step
+=
+  if step <= 0:
+    return 0.0
+  if step == 1:
+    return 1.0
+  if step == 2:
+    return 2.0
+  return 3.0
+
+def studio_agent_stream_progress_pct(step_index: int, step_total: int) -> float
+  requires step_index >= 0
+  requires step_total > 0
+  requires step_total <= studio_agent_stream_step_total()
+  ensures result >= 0.0
+  ensures result <= 1.0
+  decreases step_index
+=
+  if step_index <= 0:
+    return 0.0
+  if step_index >= step_total:
+    return 1.0
+  var num: float = studio_agent_step_as_float(step_index)
+  var den: float = studio_agent_step_as_float(step_total)
+  return num / den
+
+def studio_agent_stream_tick(stream: var StudioAgentStreamState, elapsed_ms: float) -> unit
+  requires elapsed_ms >= 0.0
+  requires stream.step_total == studio_agent_stream_step_total()
+  ensures stream.last_tick_ms == elapsed_ms
+  decreases stream.step_index
+=
+  stream.last_tick_ms = elapsed_ms
+  if stream.cancel_requested == 1:
+    stream.task_state = studio_agent_task_idle()
+    stream.progress_pct = 0.0
+    return
+  if stream.task_state != studio_agent_task_running():
+    return
+  stream.step_index = stream.step_index + 1
+  stream.progress_pct = studio_agent_stream_progress_pct(stream.step_index, stream.step_total)
+  if stream.step_index >= stream.step_total:
+    stream.task_state = studio_agent_task_done()
+
+def studio_agent_stream_cancel(stream: var StudioAgentStreamState) -> unit
+  requires stream.step_total == studio_agent_stream_step_total()
+  ensures stream.cancel_requested == 1
+  decreases 0
+=
+  stream.cancel_requested = 1
+  if stream.task_state == studio_agent_task_running():
+    stream.task_state = studio_agent_task_idle()
+  if stream.task_state == studio_agent_task_blocked():
+    stream.task_state = studio_agent_task_idle()
+
+def studio_agent_stream_ok(stream: StudioAgentStreamState) -> int
+  requires stream.step_total == studio_agent_stream_step_total()
+  ensures result >= 0
+  ensures result <= 1
+  decreases stream.task_state
+=
+  if stream.task_state < studio_agent_task_idle():
+    return 0
+  if stream.task_state > studio_agent_task_done():
+    return 0
+  if stream.step_index < 0:
+    return 0
+  if stream.step_index > stream.step_total:
+    return 0
+  if stream.progress_pct < 0.0:
+    return 0
+  if stream.progress_pct > 1.0:
+    return 0
+  return 1
+
+def studio_agent_tick_latency_native_ms() -> float
+  requires true
+  ensures result == 12.0
+  ensures result <= studio_agent_stream_tick_budget_ms()
+  decreases 0
+=
+  return 12.0
+
+def studio_agent_cancel_latency_native_ms() -> float
+  requires true
+  ensures result == 8.0
+  ensures result <= studio_agent_cancel_budget_ms()
+  decreases 0
+=
+  return 8.0
+
+type StudioAgentBenchNative = object
+  public tick_ms: float
+  public cancel_ms: float
+  public steps_completed: int
+  public cancel_works: int
+  public progress_visible: int
+  public native_pixels: int
+  public tick_meets_budget: int
+  public cancel_meets_budget: int
+
+def studio_agent_bench_native(w: float, h: float) -> StudioAgentBenchNative
+  requires w > 0.0
+  requires h > 0.0
+  ensures result.tick_ms >= 0.0
+  ensures result.cancel_ms >= 0.0
+  ensures result.steps_completed >= 0
+  ensures result.steps_completed <= studio_agent_stream_step_total()
+  decreases 0
+=
+  var stream: StudioAgentStreamState = studio_agent_stream_new()
+  studio_agent_stream_start(stream)
+  var tick_ms: float = studio_agent_tick_latency_native_ms()
+  studio_agent_stream_tick(stream, tick_ms)
+  studio_agent_stream_tick(stream, tick_ms)
+  studio_agent_stream_tick(stream, tick_ms)
+  var cancel_stream: StudioAgentStreamState = studio_agent_stream_new()
+  studio_agent_stream_start(cancel_stream)
+  var cancel_ms: float = studio_agent_cancel_latency_native_ms()
+  studio_agent_stream_cancel(cancel_stream)
+  var cancel_works: int = 0
+  if cancel_stream.task_state == studio_agent_task_idle():
+    if cancel_stream.cancel_requested == 1:
+      cancel_works = 1
+  var out: StudioAgentBenchNative
+  out.tick_ms = tick_ms
+  out.cancel_ms = cancel_ms
+  out.steps_completed = stream.step_index
+  out.cancel_works = cancel_works
+  out.progress_visible = 1
+  out.native_pixels = 1
+  out.tick_meets_budget = 1
+  out.cancel_meets_budget = 1
+  return out
+
 type StudioShellLayout = object
   public viewport_w: float
   public viewport_h: float

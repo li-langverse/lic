@@ -52,6 +52,30 @@ package = "li-scene"
 path = "packages/li-scene/bench/particle_tiers.toml"
 gates = ["md_1k", "md_10k", "md_100k"]
 
+[[hook]]
+id = "palette_latency"
+package = "li-ui"
+path = "packages/li-ui/bench/palette_latency.toml"
+gates = ["palette_open_ms", "palette_filter_ms"]
+
+[[hook]]
+id = "gpu_fail_recovery"
+package = "li-studio"
+path = "packages/li-studio/bench/gpu_fail_recovery.toml"
+gates = ["gpu_fail_retry_ms"]
+
+[[hook]]
+id = "keyboard_journey"
+package = "li-gui"
+path = "packages/li-gui/bench/keyboard_journey.toml"
+gates = ["keyboard_tab_ms", "keyboard_shortcut_ms"]
+
+[[hook]]
+id = "agent_chrome"
+package = "li-ui"
+path = "packages/li-ui/bench/agent_chrome.toml"
+gates = ["agent_tick_ms", "agent_cancel_ms"]
+
 [[gate]]
 id = "viewport_fps"
 target = 60
@@ -72,6 +96,55 @@ target = 2000
 unit = "ms"
 compare = "lte"
 notes = "Cold start to interactive shell"
+
+[[gate]]
+id = "palette_open_ms"
+target = 50
+unit = "ms"
+compare = "lte"
+notes = "Command palette open to first paint (UX-04)"
+
+[[gate]]
+id = "palette_filter_ms"
+target = 30
+unit = "ms"
+compare = "lte"
+notes = "Fuzzy filter keystroke to result list refresh (UX-04)"
+
+[[gate]]
+id = "gpu_fail_retry_ms"
+target = 100
+unit = "ms"
+compare = "lte"
+notes = "GPU fail strip retry affordance latency (UX-08)"
+
+[[gate]]
+id = "keyboard_tab_ms"
+target = 16
+unit = "ms"
+compare = "lte"
+notes = "Tab focus move between dock/viewport/inspector (UX-09)"
+
+[[gate]]
+id = "keyboard_shortcut_ms"
+target = 16
+unit = "ms"
+compare = "lte"
+notes = "Cmd+K palette shortcut response (UX-09)"
+
+[[gate]]
+id = "agent_tick_ms"
+target = 16
+unit = "ms"
+compare = "lte"
+notes = "Agent stream step tick on native shell (UX-06)"
+
+[[gate]]
+id = "agent_cancel_ms"
+target = 16
+unit = "ms"
+compare = "lte"
+notes = "Agent cancel one-click response on native shell (UX-06)"
 
 [[particle_tier]]
 id = "md_1k"

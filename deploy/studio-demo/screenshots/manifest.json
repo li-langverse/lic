@@ -5,7 +5,8 @@
   "mocks": [
     { "file": "01-studio-workspace.html", "journey": "workspace_with_selection" },
     { "file": "02-studio-empty-viewport.html", "journey": "empty_scene_and_inspector" },
-    { "file": "03-studio-agent-error.html", "journey": "agent_error_recovery" }
+    { "file": "03-studio-agent-error.html", "journey": "agent_error_recovery" },
+    { "file": "04-studio-gpu-fail.html", "journey": "gpu_fail_recovery" }
   ],
   "upload": {
     "repo": "li-langverse/lic",

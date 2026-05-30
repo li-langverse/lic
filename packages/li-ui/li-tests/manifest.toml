@@ -10,7 +10,7 @@ note = "T-PKG-li-std-ui-smoke"
 suite = "smoke"
 file = "smoke/studio_palette.li"
 outcome = "verify_ok"
-note = "T-PKG-li-ui-studio-palette-ux04"
+note = "T-PKG-li-ui-studio-palette-tokens"
 
 [[tests]]
 suite = "smoke"
@@ -20,6 +20,24 @@ note = "T-PKG-li-ui-studio-shell-layout-paint-ir"
 
 [[tests]]
 suite = "smoke"
-file = "smoke/studio_accessibility.li"
+file = "smoke/studio_palette_search.li"
 outcome = "compile_open_ok"
-note = "T-PKG-li-ui-studio-accessibility-ux10"
+note = "T-PKG-li-ui-studio-palette-fuzzy-search"
+
+[[tests]]
+suite = "smoke"
+file = "smoke/studio_palette_native.li"
+outcome = "compile_open_ok"
+note = "T-PKG-li-ui-studio-palette-native-bench"
+
+[[tests]]
+suite = "smoke"
+file = "smoke/studio_gpu_fail_recovery.li"
+outcome = "compile_open_ok"
+note = "T-PKG-li-ui-studio-gpu-fail-recovery"
+
+[[tests]]
+suite = "smoke"
+file = "smoke/studio_agent_stream.li"
+outcome = "compile_open_ok"
+note = "T-PKG-li-ui-studio-agent-stream-native"

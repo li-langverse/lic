@@ -9,6 +9,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- **sim-p2-qm-dft-scf (algo_id=418)** — `run_qm_dft_scf_energy_smoke`, `run_qm_dft_scf_tier2_registry`, `qm_dft_scf_interface_smoke.li`; H2 STO-3G LDA stub via `physics.quantum`; `li_sim_scientific_version` → 7.
 - **WP-ECHEM-15 multiscale SEI growth kMC** — `sim_scientific_oracle_checksum_echem_sei_kmc`, `run_echem_sei_kmc_tier2_registry`, `algo_echem_sei_kmc()` (435) dispatch; 48-step NEB-barrier deposition kMC vs mean-field growth law; smoke `echem_sei_kmc_interface_smoke.li`.
 - **WP-ECHEM-12 grand-canonical SHE AIMD** — `sim_scientific_oracle_checksum_echem_gc_aimd`, `run_echem_gc_aimd_tier2_registry`, `algo_echem_gc_aimd_interface()` (434) dispatch; 10-step constant-potential MD with `echem_gc_charge_neutrality_step` feedback; smoke `echem_gc_aimd_interface_smoke.li`.
 - **WP-ECHEM-09 AIMD coupling** — `sim_scientific_oracle_checksum_echem_aimd`, `run_echem_aimd_tier2_registry`, `algo_echem_aimd_interface()` (433) dispatch; 8-step velocity-Verlet + Berendsen toy thermostat calling `chem_dft_energy_kernel_hartree` each step; smoke `echem_aimd_interface_smoke.li`.

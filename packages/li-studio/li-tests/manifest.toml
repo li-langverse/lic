@@ -114,6 +114,12 @@ note = "WP-PUB-01: studio.publish.figure SVG/PDF/PNG vector export + ≤3-click 
 
 [[tests]]
 suite = "smoke"
+file = "smoke/studio_publish_table.li"
+outcome = "check_ok"
+note = "WP-PUB-02: studio.publish.table HDF5/CSV scientific export + ≤3-click publish flow"
+
+[[tests]]
+suite = "smoke"
 file = "smoke/studio_sim_scientific_step_hook.li"
 outcome = "check_ok"
 note = "PH-SIM scientific step: tick_at + scene_bench tier sync to viewport display"

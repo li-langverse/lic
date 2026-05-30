@@ -4,6 +4,7 @@
 
 ### Added
 
+- **WP-PUB-02 studio.publish.table scientific export** — `studio_publish_table`, `studio_publish_table_from_viz_tick`, `studio_publish_table_three_click_flow` (Select → lic build proof → Export); HDF5/CSV contract from sim.viz pipeline rows; smoke `studio_publish_table.li`; `li_std_studio_version` → 30.
 - **WP-PUB-01 studio.publish.figure vector export** — `studio_publish_figure`, `studio_publish_three_click_flow` (Select → lic build proof → Export); SVG/PDF/300+dpi PNG contract with journal templates; smoke `studio_publish_figure.li`; `li_std_studio_version` → 29.
 - **WP-DRUG-03 adaptive LITL panel sets** — `studio_adaptive_panel_region_for_litl_stage`, `studio_shell_apply_adaptive_panel_set`; drug compose switches panel focus per LITL stage; smoke `studio_adaptive_litl_panel_sets.li`; `li_std_studio_version` → 28.
 - **WP-AM-03 / WP-UX-16 AM export print + ≤3-click wizard** — `sim_export_print` in `li-sim-additive`; `studio_am_export_three_click_flow` (Review → Pre-flight → Export); MCP `am_export_print` runs print contract; smokes `sim_export_print.li`, `studio_am_export_three_click.li`; `li_std_studio_version` → 27.

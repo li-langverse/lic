@@ -97,7 +97,7 @@ todos:
     status: done
   - id: wsm-w6-publish-data
     content: "HDF5/CSV scientific table export (WP-PUB-02)"
-    status: pending
+    status: done
   - id: wsm-w6-repro-bundle
     content: "publish_bundle MCP → manifest zip after lic build (WP-PUB-03)"
     status: pending

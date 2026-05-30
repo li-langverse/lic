@@ -1,14 +1,14 @@
 {
   "pass": true,
-  "todo_id": "wsm-w6-publish-figures",
-  "wps_touched": ["WP-PUB-01", "WP-UX-12"],
+  "todo_id": "wsm-w6-publish-data",
+  "wps_touched": ["WP-PUB-02", "WP-SCI-04"],
   "smokes_run": [
-    "packages/li-studio/li-tests/smoke/studio_publish_figure.li"
+    "packages/li-studio/li-tests/smoke/studio_publish_table.li"
   ],
   "native_only": true,
   "gates": {
     "world_studio_plan_gates": "pass",
     "lic_check_local": "wsl"
   },
-  "notes": "WP-PUB-01: studio_publish_figure + studio_publish_three_click_flow (Select → lic build proof → Export); SVG/PDF/300+dpi PNG contract with nature_single/double/letter/viewport templates; smoke studio_publish_figure.li; li_std_studio_version 29."
+  "notes": "WP-PUB-02: studio_publish_table + studio_publish_table_from_viz_tick + studio_publish_table_three_click_flow (Select → lic build proof → Export); HDF5/CSV contract with sim.viz pipeline row/col schema; smoke studio_publish_table.li; li_std_studio_version 30."
 }

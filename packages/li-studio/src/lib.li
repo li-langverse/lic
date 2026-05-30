@@ -2107,10 +2107,10 @@ def studio_compose_shell_drug_litl(w: float, h: float, tick: int, has_selection:
 
 def li_std_studio_version() -> int
   requires true
-  ensures result == 29
+  ensures result == 30
   decreases 0
 =
-  return 29
+  return 30
 
 def studio_agent_context_none() -> int
   requires true
@@ -3649,7 +3649,10 @@ def studio_publish_figure(
   if format == studio_publish_format_png():
     if r.dpi < 300:
       r.dpi = 300
-  r.byte_checksum = sim_checksum + float(r.width_px) + float(r.height_px) + float(r.dpi)
+  var w_f: float = (r.width_px * 1.0)
+  var h_f: float = (r.height_px * 1.0)
+  var d_f: float = (r.dpi * 1.0)
+  r.byte_checksum = sim_checksum + w_f + h_f + d_f
   r.magic_tag = studio_publish_magic_for_format(format)
   r.ok = 1
   return r
@@ -3760,6 +3763,275 @@ def studio_publish_three_click_flow(
     return 6
   if flow.last_magic != studio_publish_magic_for_format(fmt):
     return 7
+  return 0
+
+# WP-PUB-02 — studio.publish.table scientific export (HDF5/CSV contract; not file I/O).
+def studio_publish_table_format_hdf5() -> int
+  requires true
+  ensures result == 1
+  decreases 0
+=
+  return 1
+
+def studio_publish_table_format_csv() -> int
+  requires true
+  ensures result == 2
+  decreases 0
+=
+  return 2
+
+def studio_publish_table_format_ok(fmt: int) -> int
+  requires true
+  ensures result >= 0
+  ensures result <= 1
+  decreases fmt
+=
+  if fmt == studio_publish_table_format_hdf5():
+    return 1
+  if fmt == studio_publish_table_format_csv():
+    return 1
+  return 0
+
+def studio_publish_table_schema_columns() -> int
+  requires true
+  ensures result == 5
+  decreases 0
+=
+  return 5
+
+def studio_publish_table_magic_hdf5() -> int
+  requires true
+  ensures result == 48465
+  decreases 0
+=
+  return 48465
+
+def studio_publish_table_magic_csv() -> int
+  requires true
+  ensures result == 43553
+  decreases 0
+=
+  return 43553
+
+def studio_publish_table_magic_for_format(fmt: int) -> int
+  requires studio_publish_table_format_ok(fmt) == 1
+  ensures result > 0
+  decreases fmt
+=
+  if fmt == studio_publish_table_format_csv():
+    return studio_publish_table_magic_csv()
+  return studio_publish_table_magic_hdf5()
+
+def studio_publish_table_rows_from_pipeline(pipeline: VizPipelineState) -> int
+  requires pipeline.profile_id == viz_profile_sim_scientific()
+  requires pipeline.source_count >= 0
+  ensures result >= 0
+  ensures result <= 512
+  decreases pipeline.source_count
+=
+  if pipeline.source_count <= 0:
+    return 0
+  var dots: int = viz_pipeline_viewport_particle_dots(pipeline)
+  if dots <= 0:
+    return pipeline.source_count
+  return pipeline.source_count + dots
+
+def studio_publish_table_pipeline_ok(pipeline: VizPipelineState) -> int
+  requires pipeline.profile_id == viz_profile_sim_scientific()
+  ensures result >= 0
+  ensures result <= 1
+  decreases pipeline.source_count
+=
+  if pipeline.source_count < 1:
+    return 0
+  if studio_publish_table_rows_from_pipeline(pipeline) <= 0:
+    return 0
+  return 1
+
+type PublishTableResult = object
+  public ok: int
+  public format: int
+  public row_count: int
+  public col_count: int
+  public source_count: int
+  public sim_checksum: float
+  public byte_checksum: float
+  public magic_tag: int
+
+def studio_publish_table(
+    format: int,
+    pipeline: VizPipelineState,
+    sim_checksum: float,
+    proof_pass: int) -> PublishTableResult
+  requires sim_checksum >= 0.0
+  requires pipeline.profile_id == viz_profile_sim_scientific()
+  ensures result.format == format
+  ensures result.ok >= 0
+  ensures result.ok <= 1
+  ensures result.row_count >= 0
+  ensures result.col_count >= 0
+  decreases format
+=
+  var r: PublishTableResult
+  r.ok = 0
+  r.format = format
+  r.row_count = 0
+  r.col_count = 0
+  r.source_count = pipeline.source_count
+  r.sim_checksum = sim_checksum
+  r.byte_checksum = 0.0
+  r.magic_tag = 0
+  if studio_publish_table_format_ok(format) != 1:
+    return r
+  if studio_publish_proof_pass_ok(proof_pass) != 1:
+    return r
+  if studio_publish_table_pipeline_ok(pipeline) != 1:
+    return r
+  r.row_count = studio_publish_table_rows_from_pipeline(pipeline)
+  r.col_count = studio_publish_table_schema_columns()
+  var rows_f: float = (r.row_count * 1.0)
+  var cols_f: float = (r.col_count * 1.0)
+  var src_f: float = (r.source_count * 1.0)
+  r.byte_checksum = sim_checksum + rows_f + cols_f + src_f
+  r.magic_tag = studio_publish_table_magic_for_format(format)
+  r.ok = 1
+  return r
+
+def studio_publish_table_from_viz_tick(
+    tick: int,
+    format: int,
+    sim_checksum: float,
+    proof_pass: int) -> PublishTableResult
+  requires tick >= 1
+  requires tick <= 64
+  requires sim_checksum >= 0.0
+  ensures result.format == format
+  ensures result.ok >= 0
+  ensures result.ok <= 1
+  decreases tick
+=
+  var pipe: VizPipelineState = studio_sim_scientific_viz_for_tick(tick)
+  return studio_publish_table(format, pipe, sim_checksum, proof_pass)
+
+def studio_publish_table_wizard_step_select() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0
+
+def studio_publish_table_wizard_step_proof() -> int
+  requires true
+  ensures result == 1
+  decreases 0
+=
+  return 1
+
+def studio_publish_table_wizard_step_export() -> int
+  requires true
+  ensures result == 2
+  decreases 0
+=
+  return 2
+
+type StudioPublishTableFlowState = object
+  public format: int
+  public viz_tick: int
+  public wizard_step: int
+  public click_count: int
+  public proof_pass: int
+  public export_ok: int
+  public last_magic: int
+  public last_row_count: int
+
+def studio_publish_table_flow_init(fmt: int, viz_tick: int) -> StudioPublishTableFlowState
+  requires studio_publish_table_format_ok(fmt) == 1
+  requires viz_tick >= 1
+  requires viz_tick <= 64
+  ensures result.format == fmt
+  ensures result.viz_tick == viz_tick
+  ensures result.wizard_step == studio_publish_table_wizard_step_select()
+  decreases fmt
+=
+  var f: StudioPublishTableFlowState
+  f.format = fmt
+  f.viz_tick = viz_tick
+  f.wizard_step = studio_publish_table_wizard_step_select()
+  f.click_count = 0
+  f.proof_pass = 0
+  f.export_ok = 0
+  f.last_magic = 0
+  f.last_row_count = 0
+  return f
+
+def studio_publish_table_flow_advance(
+    flow: var StudioPublishTableFlowState,
+    sim_checksum: float) -> int
+  requires studio_publish_table_format_ok(flow.format) == 1
+  requires flow.viz_tick >= 1
+  requires flow.viz_tick <= 64
+  requires sim_checksum >= 0.0
+  ensures flow.click_count >= 0
+  ensures result >= 0
+  ensures result <= 6
+  decreases flow.wizard_step
+=
+  flow.click_count = flow.click_count + 1
+  if flow.wizard_step == studio_publish_table_wizard_step_select():
+    flow.wizard_step = studio_publish_table_wizard_step_proof()
+    return 0
+  if flow.wizard_step == studio_publish_table_wizard_step_proof():
+    if flow.proof_pass != 1:
+      return 1
+    flow.wizard_step = studio_publish_table_wizard_step_export()
+    return 0
+  if flow.wizard_step == studio_publish_table_wizard_step_export():
+    var tbl: PublishTableResult = studio_publish_table_from_viz_tick(flow.viz_tick, flow.format, sim_checksum, flow.proof_pass)
+    if tbl.ok != 1:
+      return 2
+    if tbl.magic_tag != studio_publish_table_magic_for_format(flow.format):
+      return 3
+    if tbl.row_count <= 0:
+      return 4
+    if tbl.col_count != studio_publish_table_schema_columns():
+      return 5
+    flow.export_ok = 1
+    flow.last_magic = tbl.magic_tag
+    flow.last_row_count = tbl.row_count
+    return 0
+  return 6
+
+def studio_publish_table_three_click_flow(
+    fmt: int,
+    viz_tick: int,
+    sim_checksum: float,
+    proof_pass: int) -> int
+  requires studio_publish_table_format_ok(fmt) == 1
+  requires viz_tick >= 1
+  requires viz_tick <= 64
+  requires sim_checksum >= 0.0
+  ensures result >= 0
+  ensures result <= 8
+  decreases fmt
+=
+  var flow: StudioPublishTableFlowState = studio_publish_table_flow_init(fmt, viz_tick)
+  if studio_publish_table_flow_advance(flow, sim_checksum) != 0:
+    return 1
+  flow.proof_pass = proof_pass
+  if studio_publish_table_flow_advance(flow, sim_checksum) != 0:
+    return 2
+  if proof_pass != 1:
+    return 3
+  if studio_publish_table_flow_advance(flow, sim_checksum) != 0:
+    return 4
+  if flow.click_count != 3:
+    return 5
+  if flow.export_ok != 1:
+    return 6
+  if flow.last_magic != studio_publish_table_magic_for_format(fmt):
+    return 7
+  if flow.last_row_count <= 0:
+    return 8
   return 0
 
 def studio_apply_profile_to_sim(config: StudioProjectConfig, sim_out: var SimSessionStub) -> unit

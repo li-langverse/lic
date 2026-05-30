@@ -1,16 +1,16 @@
 {
-  "iteration": "studio-ux-10-native-capture",
-  "artifact_dir": "/home/s4il0r/Documents/Cursor/li-langverse/li-cursor-agents/data/workspaces/li-langverse/lic/studio_ui_ux_builder-1779690286545/repo/data/studio-ui-ux-plan-loop/artifacts/iter-studio-ux-10-native-capture",
+  "iteration": "wsm-w6-publish-data",
+  "artifact_dir": "C:/Users/Julian/Documents/Programming/li/lic/data/studio-ui-ux-plan-loop/artifacts/iter-wsm-w6-publish-data",
   "repo": "li-langverse/lic",
   "release_tag": "studio-ui-ux-progress",
-  "tracking_issue": null,
-  "issue_url": null,
-  "issue_comment_url": null,
+  "tracking_issue": 182,
+  "issue_url": "https://github.com/li-langverse/lic/issues/182",
+  "issue_comment_url": "https://github.com/li-langverse/lic/issues/182#issuecomment-4582779792",
   "release_url": "https://github.com/li-langverse/lic/releases/tag/studio-ui-ux-progress",
-  "png_count": 23,
+  "png_count": 27,
   "upload_count": 0,
   "has_reel": false,
-  "dry_run": true,
+  "dry_run": false,
   "native_pixels": false,
   "capture_mode": "html_mock"
 }

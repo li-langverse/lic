@@ -37,32 +37,22 @@ todos:
     status: done
 isProject: false
 ---
-- id: gap-ux-gap-ux-studio-ux01-viewport-wgpu-grid
-  content: "UX-01 viewport — SDL stub; full li-render wgpu grid pending (score 2.2/3)"
+- id: studio-ux-14-native-sdl-ci
+  content: "studio-ui-ux: pending plan todo studio-ux-14-native-sdl-ci"
   status: pending
   gap_orchestrator: true
-- id: gap-ux-gap-ux-studio-ux08-agent-error-strip
-  content: "UX-08 agent error strip — mock only; GPU fail path undocumented (score 2.0/3)"
+- id: studio-ux-15-wgpu-readback
+  content: "studio-ui-ux: pending plan todo studio-ux-15-wgpu-readback"
   status: pending
   gap_orchestrator: true
-- id: gap-ux-gap-ux-studio-ux12-mock-vs-native
-  content: "UX-12 mock banner vs native capture honesty (score 2.2/3)"
+- id: studio-ux-16-palette-search-latency
+  content: "studio-ui-ux: pending plan todo studio-ux-16-palette-search-latency"
   status: pending
   gap_orchestrator: true
-- id: gap-ux-gap-ux-gui-tester-workflow-repo
-  content: "gui_ux_tester workflow_repo — searches benchmarks root, misses lic-studio-ui ux-harness"
+- id: studio-ux-17-gpu-fail-recovery
+  content: "studio-ui-ux: pending plan todo studio-ux-17-gpu-fail-recovery"
   status: pending
   gap_orchestrator: true
-- id: gap-ux-gap-ux-harness-world-studio-demo
-  content: "ux-harness world-studio-demo fixture not audited on Linux"
-  status: pending
-  gap_orchestrator: true
-- id: gap-ux-gap-ux-studio-wave2-bench-loops
-  content: "Studio UI wave 2 — expand ux-harness targets + CI capture deps (studio-ux-13/16)"
-  status: pending
-  gap_orchestrator: true
-
-
 
 
 

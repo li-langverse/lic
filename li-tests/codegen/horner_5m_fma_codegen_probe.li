@@ -1,0 +1,20 @@
+# Horner while i < 5000000 triggers HornerStepPow4 (const x) — same trip as tier-1 horner_pure_li.
+# Shorter trips (e.g. 64) LLVM-folds entirely; li_rt_volatile_sink_f64 on acc only is insufficient then.
+
+extern proc li_rt_volatile_sink_f64(v: float) -> unit
+  requires true
+  ensures true
+
+def main() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  var x: float = 1.1
+  var acc: float = 0.0
+  var i: int = 0
+  while i < 5000000
+    acc = acc * x + 1.0
+    i = i + 1
+  li_rt_volatile_sink_f64(acc)
+  return 0

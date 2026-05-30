@@ -934,6 +934,12 @@ outcome = "compile_ok"
 note = "P-linalg gap: 25×25 @ loop codegen; witness gate via matmul_loop_codegen_witness_gap.sh"
 
 [[tests]]
+suite = "codegen"
+file = "codegen/horner_5m_fma_codegen_probe.li"
+outcome = "compile_ok"
+note = "G-hw/G-meta: HornerStepPow4 FMA codegen; witness gate via horner_fma_codegen_lean_drift.sh"
+
+[[tests]]
 suite = "physics"
 file = "physics/golden_positions_sum.li"
 outcome = "compile_ok"

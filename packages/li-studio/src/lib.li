@@ -1119,6 +1119,85 @@ def studio_shell_handle_agent_pointer(compose: var StudioShellCompose, run: var 
       return studio_agent_action_send()
   return studio_agent_action_none()
 
+# WP-AG-02 — int arg slots for in-process MCP dispatch (stdio server maps strings → these).
+def studio_mcp_arg_lic_check_pass() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0
+
+def studio_mcp_arg_lic_build_pass() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0
+
+def studio_mcp_arg_lic_build_fail() -> int
+  requires true
+  ensures result == -1
+  decreases 0
+=
+  return -1
+
+def studio_mcp_arg_normalize_profile(arg: int) -> int
+  requires true
+  ensures studio_profile_id_valid(result) == 1
+  decreases arg
+=
+  if studio_profile_id_valid(arg) == 1:
+    return arg
+  return studio_profile_game()
+
+def studio_mcp_arg_normalize_litl_stage(arg: int) -> int
+  requires true
+  ensures drug_litl_stage_valid(result) == 1
+  decreases arg
+=
+  if drug_litl_stage_valid(arg) == 1:
+    return arg
+  return drug_litl_stage_hypothesis()
+
+def studio_mcp_arg_normalize_am_format(arg: int) -> int
+  requires true
+  ensures sim_additive_export_format_ok(result) == 1
+  decreases arg
+=
+  if sim_additive_export_format_ok(arg) == 1:
+    return arg
+  return am_export_format_3mf()
+
+def studio_mcp_arg_normalize_export_mask(arg: int) -> int
+  requires true
+  ensures result >= 0
+  decreases arg
+=
+  var mask: int = arg
+  if mask < 0:
+    mask = 0
+  if mask == 0:
+    mask = studio_export_format_mask_3mf()
+  return mask
+
+def studio_mcp_export_mask_valid(mask: int) -> int
+  requires true
+  ensures result >= 0
+  ensures result <= 1
+  decreases mask
+=
+  if mask == 0:
+    return 0
+  if mask == studio_export_format_mask_stl():
+    return 1
+  if mask == studio_export_format_mask_3mf():
+    return 1
+  if mask == studio_export_format_mask_gcode():
+    return 1
+  if mask == studio_export_format_mask_3mf() + studio_export_format_mask_gcode():
+    return 1
+  return 0
+
 def studio_mcp_tool_dispatch(tool_id: int) -> StudioAgentToolRequest
   requires true
   ensures result.tool_id == tool_id
@@ -1136,6 +1215,80 @@ def studio_mcp_tool_dispatch_arg(tool_id: int, arg: int) -> StudioAgentToolReque
   if studio_mcp_tool_id_valid(tool_id) != 1:
     out.status = studio_mcp_tool_status_failed()
     out.result_code = studio_mcp_tool_result_err_io()
+    return out
+  if tool_id == studio_mcp_world_scaffold():
+    var profile0: int = studio_mcp_arg_normalize_profile(arg)
+    var snap: WorldSnapshot
+    snap.name = world_name_slot_default()
+    snap.tick = 0
+    snap.entity_count = studio_game_entity_count_stub()
+    if world_snapshot_valid(snap) != 1:
+      out.status = studio_mcp_tool_status_failed()
+      out.result_code = studio_mcp_tool_result_err_io()
+      return out
+    out.status = studio_mcp_tool_status_ok()
+    out.result_code = profile0
+    return out
+  if tool_id == studio_mcp_sim_set_profile():
+    var profile1: int = studio_mcp_arg_normalize_profile(arg)
+    out.status = studio_mcp_tool_status_ok()
+    out.result_code = profile1
+    return out
+  if tool_id == studio_mcp_lic_check():
+    if arg < studio_mcp_arg_lic_check_pass():
+      out.status = studio_mcp_tool_status_failed()
+      out.result_code = studio_mcp_tool_result_err_proof()
+      return out
+    out.status = studio_mcp_tool_status_ok()
+    out.result_code = studio_mcp_tool_result_ok()
+    return out
+  if tool_id == studio_mcp_lic_build():
+    if arg == studio_mcp_arg_lic_build_fail():
+      out.status = studio_mcp_tool_status_failed()
+      out.result_code = studio_mcp_tool_result_err_proof()
+      return out
+    out.status = studio_mcp_tool_status_ok()
+    out.result_code = studio_mcp_tool_result_ok()
+    return out
+  if tool_id == studio_mcp_publish_bundle():
+    var mask0: int = studio_mcp_arg_normalize_export_mask(arg)
+    if studio_mcp_export_mask_valid(mask0) != 1:
+      out.status = studio_mcp_tool_status_failed()
+      out.result_code = studio_mcp_tool_result_err_proof()
+      return out
+    out.status = studio_mcp_tool_status_ok()
+    out.result_code = mask0
+    return out
+  if tool_id == studio_mcp_am_export_print():
+    var fmt: int = studio_mcp_arg_normalize_am_format(arg)
+    if sim_additive_export_format_ok(fmt) != 1:
+      out.status = studio_mcp_tool_status_failed()
+      out.result_code = studio_mcp_tool_result_err_io()
+      return out
+    out.status = studio_mcp_tool_status_ok()
+    out.result_code = fmt
+    return out
+  if tool_id == studio_mcp_chem_dft_run():
+    var method: int = arg
+    if method < 0:
+      method = 0
+    var dft: DrugLitlStagePayload = drug_litl_stage_payload(drug_litl_stage_dft())
+    if dft.dft_energy_hartree >= 0.0:
+      out.status = studio_mcp_tool_status_failed()
+      out.result_code = studio_mcp_tool_result_err_io()
+      return out
+    out.status = studio_mcp_tool_status_ok()
+    out.result_code = method
+    return out
+  if tool_id == studio_mcp_studio_adaptive_layout():
+    var stage0: int = studio_mcp_arg_normalize_litl_stage(arg)
+    var layout0: StudioShellLayout = layout_studio_shell_drug_litl(1280.0, 720.0, stage0)
+    if layout0.inspector.w < studio_inspector_width_for_drug_litl_stage(stage0):
+      out.status = studio_mcp_tool_status_failed()
+      out.result_code = studio_mcp_tool_result_err_io()
+      return out
+    out.status = studio_mcp_tool_status_ok()
+    out.result_code = stage0
     return out
   if tool_id == studio_mcp_set_viewport_background():
     var bg: int = arg
@@ -1164,8 +1317,8 @@ def studio_mcp_tool_dispatch_arg(tool_id: int, arg: int) -> StudioAgentToolReque
     out.result_code = li_rt_studio_viewport_display_set_biomol_style(style)
     out.status = studio_mcp_tool_status_ok()
     return out
-  out.status = studio_mcp_tool_status_ok()
-  out.result_code = studio_mcp_tool_result_ok()
+  out.status = studio_mcp_tool_status_failed()
+  out.result_code = studio_mcp_tool_result_err_io()
   return out
 
 def studio_viewport_bg_solid() -> int
@@ -1652,10 +1805,10 @@ def studio_compose_shell_drug_litl(w: float, h: float, tick: int, has_selection:
 
 def li_std_studio_version() -> int
   requires true
-  ensures result == 19
+  ensures result == 20
   decreases 0
 =
-  return 19
+  return 20
 
 def studio_agent_context_none() -> int
   requires true

@@ -138,6 +138,12 @@ note = "T-PKG-li-studio-mcp-extended PH-AGENT gap-6-7"
 
 [[tests]]
 suite = "smoke"
+file = "smoke/studio_mcp_dispatch_run.li"
+outcome = "check_ok"
+note = "T-PKG-li-studio-mcp-dispatch-run WP-AG-02 all 11 tools real args"
+
+[[tests]]
+suite = "smoke"
 file = "smoke/studio_native_pixels_honesty.li"
 outcome = "compile_open_ok"
 note = "T-PKG-li-studio-native-pixels-honesty WP-UX-14"

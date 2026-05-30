@@ -1,18 +1,17 @@
 {
   "pass": true,
-  "todo_id": "wsm-w2-c-host-retire",
-  "wps_touched": ["WP-UX-14b", "WP-GD-05"],
+  "todo_id": "wsm-w3-mcp-dispatch",
+  "wps_touched": ["WP-AG-02"],
   "smokes_run": [
-    "packages/li-studio/li-tests/smoke/studio_c_host_retirement_gate.li",
-    "packages/li-studio/li-tests/smoke/studio_native_pixels_honesty.li",
-    "packages/li-render/li-tests/smoke/native_pixels_honesty.li",
-    "packages/li-sim/li-tests/smoke/env_pool_session_persistent.li"
+    "packages/li-studio/li-tests/smoke/studio_mcp_dispatch_run.li",
+    "packages/li-studio/li-tests/smoke/studio_mcp_tools.li",
+    "packages/li-studio/li-tests/smoke/studio_mcp_extended.li",
+    "packages/li-studio/li-tests/smoke/studio_agentic_run.li"
   ],
   "native_only": true,
   "gates": {
     "world_studio_plan_gates": "pass",
-    "studio_c_host_retirement_gate": "pass",
     "lic_check_local": "pending"
   },
-  "notes": "WP-UX-14b: fenced C paint hosts (DEPRECATED.md), studio_c_host_retirement_gate.li proves all 7 vertical demo frames + wgpu honesty without C symbols; studio-c-host-retirement-gate.sh wired into world-studio-plan-gates. C sources not deleted until li-studio-demo runs without paint_blit per retirement plan step 4. Also landed env_pool_session_persistent.li (SIM-3 session-persistent pool counters on SimSessionStub)."
+  "notes": "WP-AG-02: studio_mcp_tool_dispatch_arg now applies normalized int args for all 11 MCP tools — world_scaffold (profile template + WorldSnapshot valid), sim_set_profile, lic_check/lic_build proof gates, publish_bundle export mask, am_export_print format, chem_dft_run via drug LITL DFT payload, studio_adaptive_layout LITL stage + layout width, plus existing viewport display hooks. Added studio_mcp_dispatch_run.li smoke; li_std_studio_version 20. lis stdio MCP server (WP-AG-03) still pending."
 }

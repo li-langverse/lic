@@ -58,7 +58,7 @@ todos:
     status: done
   - id: wsm-w3-mcp-dispatch
     content: "studio_mcp_tool_dispatch with real args for all 11 tools (WP-AG-02)"
-    status: pending
+    status: done
   - id: wsm-w3-mcp-server
     content: "lis mcp li-engine stdio server wiring (WP-AG-03)"
     status: pending

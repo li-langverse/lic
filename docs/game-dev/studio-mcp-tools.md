@@ -31,8 +31,8 @@ Any tool that mutates project state or ships artifacts must run **`lic build`** 
 | Symbol | Role |
 |--------|------|
 | `studio_mcp_tool_count()` | Returns `11` |
-| `studio_mcp_tool_dispatch_arg(tool_id, arg)` | Viewport MCP tools apply `arg` via `li_rt_studio_viewport_display_*` |
-| `studio_mcp_tool_dispatch(tool_id)` | Stub: valid ID → `status_ok`, invalid → `status_failed` + `result_err_io` |
+| `studio_mcp_tool_dispatch_arg(tool_id, arg)` | All 11 tools apply normalized `arg` (profile, proof gate, export mask, viewport, LITL stage) |
+| `studio_mcp_tool_dispatch(tool_id)` | Default arg `0`; invalid ID → `status_failed` + `result_err_io` |
 | `studio_mcp_tool_name(id)` | Round-trip name via `li_rt` const table |
 | `studio_mcp_tool_from_name(name)` | Parse MCP tool name → ID |
 | `studio_mcp_tool_id_valid(id)` | Non-zero IDs only |
@@ -58,6 +58,7 @@ Any tool that mutates project state or ships artifacts must run **`lic build`** 
 
 - `packages/li-studio/li-tests/smoke/studio_mcp_tools.li` — wave-1 ID/name round-trip and agent chrome optional field.
 - `packages/li-studio/li-tests/smoke/studio_mcp_extended.li` — gap #6/#7 tool IDs, `studio_mcp_tool_dispatch`, adaptive layout hook.
+- `packages/li-studio/li-tests/smoke/studio_mcp_dispatch_run.li` — WP-AG-02 all 11 tools with real int args + proof-gate failure path.
 - `packages/li-studio/li-tests/smoke/studio_viewport_display.li` — viewport background / particle tier / biomol style MCP + compose/paint.
 - `li-tests/composable/import_lig_chem_backend.li` — `chem_dft_run_smoke()` stub energy (`-76.0` Hartree); `chem_lig_backend_auto` unchanged.
 

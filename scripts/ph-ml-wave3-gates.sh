@@ -11,13 +11,8 @@ run_in_wsl() {
 }
 
 lic_bin_for_smokes() {
+  # Run from /mnt/c when executable — copying to /tmp breaks package resolution for li-studio smokes.
   local lic="$1"
-  if [[ "$lic" == /mnt/* ]] && [[ -x "$lic" ]]; then
-    local tmp_lic="/tmp/lic-ph-ml-wave3-$$"
-    cp -f "$lic" "$tmp_lic" && chmod +x "$tmp_lic"
-    echo "$tmp_lic"
-    return
-  fi
   echo "$lic"
 }
 
@@ -35,7 +30,8 @@ lic_check_smokes() {
 }
 
 if [[ "${PH_ML_WAVE3_INNER:-0}" != "1" ]] && [[ ! -x "$ROOT/build/compiler/lic/lic" && ! -x "$ROOT/build/compiler/lic/lic.exe" ]] && command -v wsl.exe >/dev/null 2>&1; then
-  if wsl.exe bash -lc "test -x \"\$(wslpath -u '$ROOT')/build-wsl/compiler/lic/lic\"" 2>/dev/null; then
+  wsl_root="$(wsl.exe wslpath -u "$ROOT" 2>/dev/null | tr -d '\r\n')"
+  if [[ -n "$wsl_root" ]] && wsl.exe bash -lc "test -x '$wsl_root/build-wsl/compiler/lic/lic'" 2>/dev/null; then
     run_in_wsl
     exit 0
   fi

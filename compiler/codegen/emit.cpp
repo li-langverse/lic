@@ -189,7 +189,15 @@ struct EmitCtx {
     return builder->CreateInBoundsGEP(mat->getAllocatedType(), mat, idx);
   }
 
+  bool matmul_row_contiguous_f64x4(llvm::AllocaInst* mat) {
+    return mat->getAlign().value() >= 32;
+  }
+
   llvm::Value* gather_matrow_f64x4(llvm::AllocaInst* mat, llvm::Value* row, llvm::Value* col) {
+    if (matmul_row_contiguous_f64x4(mat)) {
+      llvm::Value* ptr = matmul_gep2d(mat, row, col);
+      return builder->CreateAlignedLoad(vec4_f64(), ptr, llvm::Align(32));
+    }
     llvm::Type* f64 = llvm::Type::getDoubleTy(context);
     llvm::Value* vec = llvm::UndefValue::get(vec4_f64());
     for (unsigned lane = 0; lane < 4; ++lane) {
@@ -203,6 +211,11 @@ struct EmitCtx {
 
   void scatter_matrow_f64x4(llvm::AllocaInst* mat, llvm::Value* row, llvm::Value* col,
                             llvm::Value* vec) {
+    if (matmul_row_contiguous_f64x4(mat)) {
+      llvm::Value* ptr = matmul_gep2d(mat, row, col);
+      builder->CreateAlignedStore(vec, ptr, llvm::Align(32));
+      return;
+    }
     llvm::Type* f64 = llvm::Type::getDoubleTy(context);
     for (unsigned lane = 0; lane < 4; ++lane) {
       llvm::Value* col_i = builder->CreateAdd(col, llvm::ConstantInt::get(i32_ty(context), lane));
@@ -332,7 +345,7 @@ struct EmitCtx {
     emit_idx_for(i_s, lim_m, [&](llvm::Value* i) {
       emit_idx_for(t_s, lim_k, [&](llvm::Value* t) {
         llvm::Value* aik = builder->CreateLoad(f64, matmul_gep2d(a_mat, i, t));
-        if (array_simd_enabled() && n >= 128) {
+        if (array_simd_enabled() && n >= 64) {
           llvm::Value* four = llvm::ConstantInt::get(i32t, 4);
           llvm::Value* simd_lim = builder->CreateSub(lim_n, builder->CreateURem(lim_n, four));
           emit_idx_for_step(j_s, simd_lim, 4, [&](llvm::Value* j) {
@@ -1136,6 +1149,9 @@ struct EmitCtx {
           llvm::ArrayType* mat_ty =
               llvm::ArrayType::get(row_ty, static_cast<unsigned>(ins.int_value));
           slot = builder->CreateAlloca(mat_ty, nullptr, ins.ident);
+          if (ins.int_value >= 128 && ins.rhs_int >= 128) {
+            slot->setAlignment(llvm::Align(32));
+          }
           arrays[ins.ident] = ArraySlot{slot, ins.int_value, ins.rhs_int, true, true};
         } else {
           llvm::Type* elem_ty = ins.array_is_float ? llvm::Type::getDoubleTy(context)
@@ -1448,15 +1464,15 @@ struct EmitCtx {
         const unsigned k = static_cast<unsigned>(ins.rhs_int);
         const unsigned n = static_cast<unsigned>(ins.lhs_int);
         constexpr unsigned kUnrollMax = 24;
-        constexpr unsigned kBlockedN = 512;
-        constexpr unsigned kBlockedBk = 64;
-        const bool use_blocked =
-            m == kBlockedN && k == kBlockedN && n == kBlockedN && m == k && k == n;
+        constexpr unsigned kBlocked512 = 512;
+        constexpr unsigned kBk512 = 64;
+        const bool use_blocked_512 =
+            m == kBlocked512 && k == kBlocked512 && n == kBlocked512;
         const bool use_loops = m > kUnrollMax || k > kUnrollMax || n > kUnrollMax ||
                                static_cast<std::uint64_t>(m) * k * n > 4096;
-        if (use_blocked) {
+        if (use_blocked_512) {
           emit_matmul2d_blocked_ijk(c_it->second.alloca, a_it->second.alloca,
-                                    b_it->second.alloca, kBlockedN, kBlockedBk);
+                                    b_it->second.alloca, kBlocked512, kBk512);
         } else if (use_loops) {
           emit_matmul2d_ijk_loops(c_it->second.alloca, a_it->second.alloca, b_it->second.alloca,
                                   m, k, n);

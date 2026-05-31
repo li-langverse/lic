@@ -1,4 +1,4 @@
-# Proof Explorer Phase 5 — Discharge sprint (compiler fixes + core lemma discharges)
+# Proof Explorer Phase 5 — Discharge sprint (compiler **reports** + core lemma discharges)
 
 ## Motivation
 
@@ -12,7 +12,7 @@ Phase 5 turns the proof explorer into a **research tool for finding lic bugs** �
 
 ## North star
 
-Core math/linalg lemmas (dot4, sqrt, witnessed ensures) discharge through `lic verify` with evidence on disk. Known audit bugs are fixed or catalog rows are **honestly downgraded**. At least three new verified discharges land in the core corpus with verify logs linked in proof-db.
+Core math/linalg lemmas (dot4, sqrt, witnessed ensures) discharge through `lic verify` with evidence on disk. Known audit bugs are **documented** (report-only) or catalog rows are **honestly downgraded**. At least three new verified discharges land in the core corpus with verify logs linked in proof-db.
 
 ---
 
@@ -54,10 +54,10 @@ flowchart LR
     Verify[lic verify batch]
     Classify[C vs L classifier]
   end
-  subgraph fixes [Compiler lane]
-    Dot4[dot4 loop witness fix]
-    Baseline[baseline.jsonl sync]
-    Ensures[witnessed_ensures corpus]
+  subgraph reports [Compiler report lane]
+    Dot4[BUG-C-01 audit report]
+    Baseline[baseline drift reports]
+    Ensures[witnessed_ensures report]
   end
   subgraph catalog [Catalog honesty]
     Downgrade[proof_status downgrade]
@@ -66,9 +66,9 @@ flowchart LR
   Open --> Strengthen
   Strengthen --> Verify
   Verify --> Classify
-  Classify -->|compiler| fixes
+  Classify -->|compiler| reports
   Classify -->|logic| catalog
-  fixes --> Verify
+  reports --> Verify
   Verify -->|ok| Evidence
   Verify -->|blocked| Downgrade
 ```

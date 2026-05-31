@@ -7,9 +7,10 @@
     "wsm-w0-profile-chips",
     "wsm-w1-profile-smokes",
     "wsm-w1-sim3-envpool",
-    "wsm-w1-sim-sensors"
+    "wsm-w1-sim-sensors",
+    "wsm-w1-studio-toml-engine"
   ],
-  "iterations": 3,
+  "iterations": 4,
   "history": [
     {
       "todo_id": "wsm-w1-profile-smokes",
@@ -25,6 +26,11 @@
       "todo_id": "wsm-w1-sim-sensors",
       "completed_at": "2026-05-31T03:45:00Z",
       "wps": ["WP-SIM-05"]
+    },
+    {
+      "todo_id": "wsm-w1-studio-toml-engine",
+      "completed_at": "2026-05-31T04:00:00Z",
+      "wps": ["WP-SIM-06"]
     }
   ]
 }

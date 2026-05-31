@@ -1,18 +1,19 @@
 {
   "pass": true,
-  "todo_id": "wsm-w1-sim-sensors",
-  "wps_touched": ["WP-SIM-05"],
+  "todo_id": "wsm-w1-studio-toml-engine",
+  "wps_touched": ["WP-SIM-06"],
   "smokes_run": [
-    "packages/li-sim-sensors/li-tests/smoke/sensor_bus_raycast_contract.li",
-    "packages/li-studio/li-tests/smoke/studio_sim_sensor_step_hook.li",
-    "packages/li-studio/li-tests/smoke/studio_sim_step_by_profile.li"
+    "packages/li-studio/li-tests/smoke/studio_toml_engine_export.li",
+    "packages/li-studio/li-tests/smoke/studio_sim_step_by_profile.li",
+    "packages/li-studio/li-tests/smoke/studio_vertical_profile_roundtrip.li"
   ],
   "native_only": true,
   "gates": {
     "world_studio_plan_gates": "pass",
     "world_studio_runnable_gate": "pass",
-    "lic_check_local": "wsl_build-wsl"
+    "lic_check_local": "wsl_build-wsl",
+    "li_studio_demo_build": "pass"
   },
-  "notes": "PH-SIM SIM-5 sensor raycast bus via li-sim-sensors (sim_sensor_session_bus_step); studio_sim_sensor_step_hook wired for automotive + robotics profiles; plan gates now use build-wsl/WSL lic check path.",
-  "pr": "https://github.com/li-langverse/lic/pull/634"
+  "notes": "WP-SIM-06 cumulative studio.toml line parser (li_rt_studio_toml_*) parses determinism_tier 0-3 and [engine.export] formats/require_sim_pass/printer_profile into StudioProjectConfig; studio_apply_config_to_sim maps tier to sim output_detail. emit.cpp pointer-return + CallExtern coercion fix enables li-studio-demo link on WSL.",
+  "pr": "https://github.com/li-langverse/lic/pull/635"
 }

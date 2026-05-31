@@ -45,3 +45,9 @@ suite = "smoke"
 file = "smoke/studio_sim_sensor_step_hook.li"
 outcome = "verify_ok"
 note = "T-PKG-li-studio-sensor-step-hook PH-SIM SIM-5 WP-SIM-05"
+
+[[tests]]
+suite = "smoke"
+file = "smoke/studio_toml_engine_export.li"
+outcome = "verify_ok"
+note = "T-PKG-li-studio-toml-engine WP-SIM-06 wsm-w1-studio-toml-engine"

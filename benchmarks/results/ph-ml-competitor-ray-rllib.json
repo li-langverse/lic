@@ -2,13 +2,13 @@
   "competitor_id": "ray_rllib",
   "suite": "ph-ml-competitor-ray-rllib",
   "workload": "async_env_collect_4",
-  "executed": true,
-  "cpu_sec": 0.222761,
-  "validity_gate_pass": true,
-  "validity_ratio": 1.0,
-  "framework_version": "subprocess-scaffold",
+  "executed": false,
+  "cpu_sec": null,
+  "validity_gate_pass": false,
+  "validity_ratio": 0.0,
+  "framework_version": null,
   "device": "cpu",
   "workload_size": 4,
-  "note": "ray unavailable; multiprocessing CartPole rollout scaffold (Wave 13 T5)",
-  "generated_at": "2026-05-31T16:06:57Z"
+  "note": "ray not installed",
+  "generated_at": "2026-05-31T16:15:31Z"
 }

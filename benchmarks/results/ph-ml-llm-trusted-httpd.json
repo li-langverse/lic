@@ -1,10 +1,12 @@
 {
   "suite": "ph-ml-llm-trusted-httpd",
-  "generated_at": "2026-05-31T16:07:06Z",
+  "generated_at": "2026-05-31T16:19:14Z",
   "executed": true,
   "live_proxy": true,
   "validity_gate_pass": true,
   "validity_ratio": 1.0,
   "route": "/v1/chat/completions",
-  "note": "httpd not live (scaffold OK): <urlopen error timed out>; Wave 13 live_proxy wiring"
+  "note": "li-httpd route reachable (Wave 13 live proxy)",
+  "http_status": 200,
+  "proxy_base": "http://127.0.0.1:39163"
 }

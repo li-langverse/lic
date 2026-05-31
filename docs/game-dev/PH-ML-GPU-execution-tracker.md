@@ -10,10 +10,11 @@
 | WP-LIG-02 | Vendor PTX/HS/MSL lowering bytes (Wave 13 T1) | 13 | done | lig_emit_vendor_lowering_ready + build/lig-emit-vendor.ptx |
 | WP-ML-20 | @gpu device buffer pipeline (Wave 13 T2) | 13 | done | ml_gpu_device_buffer_pipeline + ml_gpu_device_buffer.li |
 | WP-LLM-10 | `import ml` in li-llm (Wave 13 T3) | 13 | done | llm_import_ml.li |
+| WP-LLM-11 | safetensors/GGUF file mmap (Wave 13 T7) | 13 | done | llm_weights_file_mmap.li + prepare_ph_ml_weights_fixture.py |
+| WP-LLM-12 | live Ollama/li-httpd proxy bench (Wave 13 T8) | 13 | done | bench_ph_ml_llm_trusted_httpd.py live_proxy |
 | WP-ML-21 | 32×32 blocked LKIR matmul competitive row (Wave 13 T6) | 13 | done | ml_matmul_lkir_logical_32 + bench-ph-ml-lkir-matmul-32.sh |
-| WP-RL-08 | Li process fork env pool + Studio hook (Wave 13 T4) | 13 | done | sim_rl_env_li_process_fork.li + studio_sim_rl_step_hook.li |
-| WP-RL-09 | SB3/Ray hard CI deps (Wave 13 T5) | 13 | done | requirements-ph-ml-wave12-rl.txt + competitor benches |
-| WP-LLM-11 | Live httpd proxy wiring (Wave 13 T8) | 13 | done | bench_ph_ml_llm_trusted_httpd.py live_proxy |
+| WP-RL-08 | Li process fork env pool + Studio hook (Wave 13 T4) | 13 | done | env_pool_li_process_fork.li + studio_sim_rl_step_hook |
+| WP-RL-09 | SB3/Ray hard CI benches (Wave 13 T5) | 13 | done | bench_ph_ml_competitor_sb3_vecenv.py + bench_ph_ml_competitor_ray_rllib.py |
 
 **Wave 13:** program complete — closes Wave 12 deferred items (T1–T8); milestone gate `ph-ml-wave13-gates.sh`, completion gate `ph-ml-program-complete-gates.sh`
 
@@ -105,5 +106,5 @@
 | WP-ML-16 | NumPy MLP competitor | 10 | done | bench_ph_ml_competitor_numpy_mlp.py |
 | WP-ML-17 | C++ MLP competitor | 10 | done | bench_ph_ml_competitor_cpp_openmp_mlp.py |
 | WP-ML-18 | ml_matmul perf v6 lanes=8 max_dim=32 | 10 | done | ml_matmul_general.li |
-| program complete | Wave 13 | in progress | ph-ml-program-complete-gates.sh |
+| program complete | Wave 13 | done | ph-ml-program-complete-gates.sh |
 

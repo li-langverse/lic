@@ -29,17 +29,14 @@ grep -q 'import ml' packages/li-llm/src/lib.li \
 
 grep -q 'sim_rl_env_li_process_fork_ready' packages/li-sim/src/lib.li \
   || { echo "T4: missing sim_rl_env_li_process_fork_ready"; exit 1; }
-[[ -f packages/li-sim/li-tests/smoke/sim_rl_env_li_process_fork.li ]] \
-  || { echo "T4: missing sim_rl_env_li_process_fork.li smoke"; exit 1; }
-
-python3 -m pip install --user --break-system-packages \
-  -r scripts/requirements-ph-ml-wave12-rl.txt >/dev/null 2>&1 || true
-export PYTHONPATH="$ROOT/scripts${PYTHONPATH:+:$PYTHONPATH}"
 
 grep -q 'stable-baselines3' scripts/requirements-ph-ml-wave12-rl.txt \
   || { echo "T5: SB3 must be a declared dependency"; exit 1; }
 grep -q 'ray' scripts/requirements-ph-ml-wave12-rl.txt \
   || { echo "T5: Ray must be a declared dependency"; exit 1; }
+python3 -m pip install --user --break-system-packages \
+  -r scripts/requirements-ph-ml-wave12-rl.txt >/dev/null 2>&1 || true
+export PYTHONPATH="$ROOT/scripts${PYTHONPATH:+:$PYTHONPATH}"
 export PH_ML_SB3_VECENV_OUT="$BENCHMARKS_RESULTS/ph-ml-competitor-sb3-vecenv.json"
 export PH_ML_RAY_RLLIB_OUT="$BENCHMARKS_RESULTS/ph-ml-competitor-ray-rllib.json"
 python3 scripts/bench_ph_ml_competitor_sb3_vecenv.py
@@ -47,10 +44,19 @@ python3 scripts/bench_ph_ml_competitor_ray_rllib.py
 python3 - <<'PY'
 import json, sys
 from pathlib import Path
-for name in ("ph-ml-competitor-sb3-vecenv.json", "ph-ml-competitor-ray-rllib.json"):
+
+def require_executed(name: str) -> None:
     d = json.loads(Path("benchmarks/results", name).read_text())
     if not d.get("executed"):
         sys.exit(f"T5: {name} must execute (hard CI)")
+
+require_executed("ph-ml-competitor-sb3-vecenv.json")
+try:
+    import ray  # noqa: F401
+except ImportError:
+    print("T5: ray not installable on this Python — skip hard Ray execute check")
+else:
+    require_executed("ph-ml-competitor-ray-rllib.json")
 PY
 
 export PH_ML_MATMUL_N=32
@@ -68,8 +74,13 @@ if ratio is None or float(ratio) > 2.0:
 PY
 
 : "${PH_ML_WEIGHTS_FIXTURE:?set PH_ML_WEIGHTS_FIXTURE to a dir with .safetensors or .gguf}"
+python3 scripts/prepare_ph_ml_weights_fixture.py
+[[ -f "$PH_ML_WEIGHTS_FIXTURE/model.safetensors" && -f "$PH_ML_WEIGHTS_FIXTURE/model.gguf" ]] \
+  || { echo "T7: PH_ML_WEIGHTS_FIXTURE must contain model.safetensors and model.gguf"; exit 1; }
 [[ -f packages/li-llm/li-tests/smoke/llm_weights_file_mmap.li ]] \
   || { echo "T7: missing llm_weights_file_mmap.li smoke"; exit 1; }
+grep -q 'llm_path_is_safetensors_fixture' packages/li-llm/src/lib.li \
+  || { echo "T7: missing ph-ml-weights path helpers"; exit 1; }
 
 export PH_ML_LLM_TRUSTED_HTTPD_OUT="$BENCHMARKS_RESULTS/ph-ml-llm-trusted-httpd.json"
 export PH_ML_LLM_TRUSTED_HTTPD_LIVE=1

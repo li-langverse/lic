@@ -3,30 +3,23 @@
   "todo_id": "wsm-w6-vertical-dod",
   "completion_sprint": true,
   "verification_pass": true,
-  "verified_at": "2026-05-31T05:20:00Z",
-  "agent_run": "world_studio_builder-1780204038199",
-  "wps_touched": ["WP-SIM-06", "WP-UX-02", "WP-PUB-01", "WP-PUB-02", "WP-PUB-03", "li_rt_int_as_float"],
+  "verified_at": "2026-05-31T05:30:00Z",
+  "agent_run": "world_studio_builder-1780204837598",
+  "wps_touched": ["WP-AG-04", "WP-AG-06"],
   "smokes_run": [
-    "packages/li-studio/li-tests/smoke/studio_shell_demo.li",
-    "packages/li-studio/li-tests/smoke/studio_timeline_playback.li",
-    "packages/li-studio/li-tests/smoke/studio_toml_engine_export.li",
-    "packages/li-studio/li-tests/smoke/studio_publish_figure.li",
-    "packages/li-studio/li-tests/smoke/studio_am_export_three_click.li",
-    "packages/li-studio/li-tests/smoke/studio_vertical_dod.li",
+    "packages/li-studio-ai/li-tests/smoke/studio_ai_apply_patch_loop.li",
+    "packages/li-studio-ai/li-tests/smoke/studio_ai_mcp_dispatch.li",
+    "packages/li-studio-ai/li-tests/smoke/studio_ai_task_state.li",
+    "packages/li-studio-ai/li-tests/smoke/studio_ai_patch_eval.li",
     "scripts/world-studio-plan-gates.sh",
-    "scripts/world-studio-plan-completion-gate.sh",
-    "scripts/studio-ui-ux-capture-progress.sh"
+    "scripts/world-studio-plan-completion-gate.sh"
   ],
   "native_only": true,
   "gates": {
     "world_studio_plan_gates": "pass",
     "world_studio_plan_completion_gate": "pass",
-    "lic_check_wsl_key_smokes": "pass",
-    "studio_mcp_li_engine_smoke": "pass",
-    "studio_patch_eval_gate": "pass",
-    "studio_vertical_dod_gate": "pass",
-    "studio_ui_ux_capture": "pass"
+    "lic_check_wsl_li_studio_ai": "pass"
   },
-  "notes": "Sprint complete (36/36 wsm-w* done). Re-verification fixes WSL lic check: li_rt_int_as_float + li_rt_studio_timeline_playhead_pct_from_tick in C runtime; removed illegal int*1.0 in li-studio publish/timeline paths; raises IO on studio_int_as_float and TOML/publish/am-export callers. Key smokes green on build-wsl lic.",
+  "notes": "Sprint complete (36/36 wsm-w* done). Re-verification fixes WSL lic check for li-studio-ai: str move semantics (patch eval retry branch, llm_load_weights path, llm_generate vocab_path/weights), raises Alloc on heap str procs, studio_ai_task_state version oracle.",
   "pr_url": "https://github.com/li-langverse/lic/pull/411"
 }

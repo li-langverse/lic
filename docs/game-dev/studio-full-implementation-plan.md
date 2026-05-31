@@ -151,7 +151,7 @@ Cross-tracks (not separate phases above): **PH-PORT**, **PH-COMPLY**, **PH-CIN**
 | WP-SIM-02 | Replay metadata SIM-2 | all sim | **done** | `sim_session_replay_*` | `sim_replay_stub.li` | S | WP-SIM-01 | Y |
 | WP-SIM-03 | RL EnvPool SIM-3 | sim_rl | **done** | Persistent pool + obs contract | `env_pool_step_contract.li` | M | WP-SIM-01 | Y |
 | WP-SIM-04 | Full `SimWorld` replay buffer | all sim | stub | Entity/state ring buffer | composable replay roundtrip | L | WP-SIM-02 | N |
-| WP-SIM-05 | Sensor bus stub | sim_automotive, sim_robotics | **partial** | `sim.sensors` raycast IDs | `sensor_bus_raycast_contract.li` | M | WP-SIM-01 | Y |
+| WP-SIM-05 | Sensor bus stub | sim_automotive, sim_robotics | **done** | `sim.sensors` raycast IDs | `sensor_bus_raycast_contract.li` | M | WP-SIM-01 | Y |
 | WP-SIM-06 | `studio.toml` engine section | all | **partial** | Parse `determinism_tier`, export | example vertical `studio.toml` | S | WP-SIM-00 | Y |
 
 ### 3.4 PH-UX
@@ -348,7 +348,7 @@ Each profile is **done** when all bullets hold simultaneously (not composable-on
 ### 6.3 `sim_automotive`
 
 - [ ] Map + bicycle/kinematic model tied to `sim.step` (`WP-AUTO-02`)
-- [ ] Sensor raycast bus with proved bounds (`WP-SIM-05`)
+- [x] Sensor raycast bus with proved bounds (`WP-SIM-05`)
 - [ ] Native demo shows driving scene (not color chip only)
 - [ ] `verticals.toml` automotive row `workload_class=partial` → `full`
 

@@ -39,3 +39,9 @@ suite = "smoke"
 file = "smoke/studio_agent_stream_native.li"
 outcome = "compile_open_ok"
 note = "T-PKG-li-studio-agent-stream-native-bench"
+
+[[tests]]
+suite = "smoke"
+file = "smoke/studio_sim_sensor_step_hook.li"
+outcome = "verify_ok"
+note = "T-PKG-li-studio-sensor-step-hook PH-SIM SIM-5 WP-SIM-05"

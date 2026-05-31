@@ -8,7 +8,7 @@ LIT_ORG="${LIT_ORG:-li-langverse/lit}"
 BENCHMARKS_ORG="${BENCHMARKS_ORG:-li-langverse/benchmarks}"
 REF="${ECOSYSTEM_REF:-main}"
 # Until benchmarks#276 merges: tier-0 stability.py paths after repo split.
-BENCHMARKS_REF="${BENCHMARKS_REF:-fix/stability-paths-post-split}"
+BENCHMARKS_REF="${BENCHMARKS_REF:-fix/tier5-lic-server-config-paths}"
 
 clone_repo() {
   local slug="$1" dest="$2" ref="$3"

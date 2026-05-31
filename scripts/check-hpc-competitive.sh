@@ -96,7 +96,7 @@ if csv_path.is_file():
     if missing:
         warnings.append(
             f"latest.csv missing lang rows for bench ecosystems: {', '.join(missing)} "
-            f"(run: "$BENCHMARKS_ROOT/scripts/run-bench.sh" --tier 12)"
+            f"(run: {os.environ.get('BENCHMARKS_ROOT', 'benchmarks')}/scripts/run-bench.sh --tier 12)"
         )
 else:
     warnings.append(f"no CSV at {csv_path} — column check skipped")

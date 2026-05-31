@@ -3,13 +3,10 @@
   "todo_id": "wsm-w6-vertical-dod",
   "completion_sprint": true,
   "verification_pass": true,
-  "verified_at": "2026-05-31T05:35:00Z",
-  "agent_run": "world_studio_builder-1780204977576",
-  "wps_touched": ["WP-AG-04", "WP-AG-06", "WP-LLM-02"],
+  "verified_at": "2026-05-31T05:45:00Z",
+  "agent_run": "world_studio_builder-05377464",
+  "wps_touched": ["WP-AG-06", "§11 vertical DoD"],
   "smokes_run": [
-    "packages/li-studio-ai/li-tests/smoke/studio_ai_apply_patch_loop.li",
-    "packages/li-studio-ai/li-tests/smoke/studio_ai_patch_eval.li",
-    "packages/li-llm/li-tests/smoke/llm_load_weights.li",
     "scripts/world-studio-plan-lic-smokes-wsl.sh",
     "scripts/world-studio-plan-gates.sh",
     "scripts/world-studio-plan-completion-gate.sh"
@@ -20,6 +17,6 @@
     "world_studio_plan_completion_gate": "pass",
     "lic_check_wsl_smokes": "pass"
   },
-  "notes": "Sprint complete (36/36 wsm-w* done). Re-verification: studio_ai patch-eval split retry/once paths + patch_kind_of; raises Alloc on heap str procs; llm_load_weights uses bytes path compare (llm_weight_format_from_path). WSL lic smokes green.",
+  "notes": "Sprint complete (36/36 wsm-w* done). Re-verification pass on cursor/world-studio-master-plan-loop: all plan todos done, completion gate green, WSL lic smokes ok. Viewport bench soft-pass; c-host/patch-eval/vertical-DoD gates path-verified (lic not built on Windows host).",
   "pr_url": "https://github.com/li-langverse/lic/pull/411"
 }

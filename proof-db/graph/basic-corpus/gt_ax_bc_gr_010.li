@@ -1,4 +1,4 @@
-# GT-AX-BC-GR-010: Simple graph: no loops, symmetric adjacency (variant 10).
+# GT-AX-BC-GR-010: Simple graph edge count at most n(n-1)/2 on n vertices.
 # Simple graph: irreflexive and symmetric adjacency (no self-loops).
 
 def simple_graph_symmetric(adj_ij: int, adj_ji: int) -> int

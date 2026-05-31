@@ -114,7 +114,7 @@ kind = "axiom"
 tranche = 2
 proof_status = "axiomatic"
 domain = "electromagnetism"
-statement = "Ampere-Maxwell law (stub integral form)."
+statement = "Ampere-Maxwell law: line integral of H equals enclosed conduction current plus displacement current."
 
 [[planned]]
 id = "P-LM-BC-EM-015"
@@ -138,7 +138,7 @@ kind = "lemma"
 tranche = 2
 proof_status = "open"
 domain = "electromagnetism"
-statement = "Ohm law V = I R (linear resistor stub)."
+statement = "Ohm law: V = I R for an ohmic conductor at fixed temperature."
 
 [[planned]]
 id = "P-LM-BC-EM-018"
@@ -146,7 +146,7 @@ kind = "lemma"
 tranche = 2
 proof_status = "open"
 domain = "electromagnetism"
-statement = "Poynting vector S = E x H (stub)."
+statement = "Poynting vector S = E x H gives electromagnetic energy flux density."
 
 [[planned]]
 id = "P-AX-BC-EM-019"
@@ -154,7 +154,7 @@ kind = "axiom"
 tranche = 2
 proof_status = "axiomatic"
 domain = "electromagnetism"
-statement = "Lorentz force F = q (E + v x B) stub."
+statement = "Lorentz force: F = q (E + v x B) on charge q in electric and magnetic fields."
 
 [[planned]]
 id = "P-LM-BC-EM-020"
@@ -162,7 +162,7 @@ kind = "lemma"
 tranche = 2
 proof_status = "open"
 domain = "electromagnetism"
-statement = "Wave equation from Maxwell in vacuum (stub)."
+statement = "Vacuum Maxwell equations imply wave equation nabla^2 E = mu0 eps0 d^2E/dt^2."
 
 [[planned]]
 id = "P-AX-BC-TH-021"
@@ -194,7 +194,7 @@ kind = "axiom"
 tranche = 3
 proof_status = "axiomatic"
 domain = "thermodynamics"
-statement = "Joule law stub: ideal gas internal energy depends only on temperature T."
+statement = "Joule law: ideal gas internal energy U depends only on temperature T."
 
 [[planned]]
 id = "P-LM-BC-TH-025"
@@ -234,7 +234,7 @@ kind = "lemma"
 tranche = 3
 proof_status = "open"
 domain = "thermodynamics"
-statement = "Maxwell-Boltzmann speed distribution stub."
+statement = "Maxwell-Boltzmann speed distribution: f(v) proportional to v^2 exp(-m v^2 / (2 k T)) in ideal gas."
 
 [[planned]]
 id = "P-AX-BC-TH-030"
@@ -274,7 +274,7 @@ kind = "lemma"
 tranche = 3
 proof_status = "open"
 domain = "waves-fluids"
-statement = "Bernoulli equation along streamline (stub)."
+statement = "Bernoulli equation: p + (1/2) rho v^2 + rho g h = const along a streamline (steady, inviscid flow)."
 
 [[planned]]
 id = "P-LM-BC-WV-035"
@@ -314,7 +314,7 @@ kind = "lemma"
 tranche = 3
 proof_status = "open"
 domain = "waves-fluids"
-statement = "Huygens principle stub for wavefront propagation."
+statement = "Huygens principle: each point on a wavefront is a source of secondary spherical wavelets."
 
 [[planned]]
 id = "P-LM-BC-WV-040"
@@ -370,7 +370,7 @@ kind = "lemma"
 tranche = 3
 proof_status = "open"
 domain = "mechanics"
-statement = "Drag force linear model F = -b v stub."
+statement = "Linear drag model: F = -b v at low Reynolds number in a viscous fluid."
 
 [[planned]]
 id = "P-LM-BC-EX-047"
@@ -394,7 +394,7 @@ kind = "lemma"
 tranche = 3
 proof_status = "open"
 domain = "mechanics"
-statement = "Stefan-Boltzmann j = sigma T^4 stub."
+statement = "Stefan-Boltzmann law: blackbody radiative flux j = sigma T^4."
 
 [[planned]]
 id = "P-LM-BC-EX-050"
@@ -402,4 +402,4 @@ kind = "lemma"
 tranche = 3
 proof_status = "open"
 domain = "mechanics"
-statement = "Planck blackbody spectral peak Wien law stub."
+statement = "Wien displacement law: blackbody spectral peak wavelength lambda_max T = b."

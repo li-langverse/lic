@@ -222,6 +222,12 @@ std::optional<std::string> expr_to_lean_bin(BinOp op, const std::string& lhs,
       return "(" + lhs + " ∧ " + rhs + ")";
     case BinOp::Or:
       return "(" + lhs + " ∨ " + rhs + ")";
+    case BinOp::BitXor:
+      return "(" + lhs + " ^ " + rhs + ")";
+    case BinOp::Shl:
+      return "(" + lhs + " << " + rhs + ")";
+    case BinOp::Shr:
+      return "(" + lhs + " >> " + rhs + ")";
     default:
       return std::nullopt;
   }
@@ -286,6 +292,16 @@ std::optional<std::string> expr_to_lean(const Expr& e, const VcCtx& ctx) {
         return std::nullopt;
       }
       return "(" + *b + "[" + *idx + "]!)";
+    }
+    case Expr::Kind::UnaryBitNot: {
+      if (!e.operand) {
+        return std::nullopt;
+      }
+      const auto inner = expr_to_lean(*e.operand, ctx);
+      if (!inner) {
+        return std::nullopt;
+      }
+      return "(~" + *inner + ")";
     }
     case Expr::Kind::UnaryNot:
       if (e.operand) {

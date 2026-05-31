@@ -10,7 +10,7 @@ kind = "lemma"
 tranche = 1
 proof_status = "open"
 domain = "induction"
-statement = "Mathematical induction principle (variant 1)."
+statement = "Mathematical induction: if P(0) and forall k (P(k) implies P(k+1)) then forall n P(n)."
 
 [[planned]]
 id = "D-LM-BC-CMB-002"
@@ -18,7 +18,7 @@ kind = "lemma"
 tranche = 1
 proof_status = "open"
 domain = "combinatorics"
-statement = "Binomial coefficient identity (variant 2)."
+statement = "Pascal identity: C(n,k) = C(n-1,k-1) + C(n-1,k) for 1 <= k <= n-1."
 
 [[planned]]
 id = "D-LM-BC-NT-003"
@@ -26,7 +26,7 @@ kind = "lemma"
 tranche = 1
 proof_status = "open"
 domain = "number-theory"
-statement = "Divisibility / gcd property (variant 3)."
+statement = "Euclidean algorithm: gcd(a,b) = gcd(b, a mod b) for b != 0."
 
 [[planned]]
 id = "D-LM-BC-REC-004"
@@ -34,7 +34,7 @@ kind = "lemma"
 tranche = 1
 proof_status = "open"
 domain = "recurrence"
-statement = "Linear recurrence solution stub (variant 4)."
+statement = "Fibonacci recurrence: F_n = F_{n-1} + F_{n-2} with F_0=0, F_1=1."
 
 [[planned]]
 id = "D-AX-BC-LOG-005"
@@ -42,7 +42,7 @@ kind = "axiom"
 tranche = 1
 proof_status = "axiomatic"
 domain = "logic"
-statement = "Propositional tautology schema (variant 5)."
+statement = "Excluded middle: P or not P (propositional tautology)."
 
 [[planned]]
 id = "D-LM-BC-IND-006"
@@ -50,7 +50,7 @@ kind = "lemma"
 tranche = 1
 proof_status = "open"
 domain = "induction"
-statement = "Mathematical induction principle (variant 6)."
+statement = "Strong induction: if P(0) and forall k ((forall j <= k P(j)) implies P(k+1)) then forall n P(n)."
 
 [[planned]]
 id = "D-LM-BC-CMB-007"
@@ -58,7 +58,7 @@ kind = "lemma"
 tranche = 1
 proof_status = "open"
 domain = "combinatorics"
-statement = "Binomial coefficient identity (variant 7)."
+statement = "Binomial symmetry: C(n,k) = C(n,n-k)."
 
 [[planned]]
 id = "D-LM-BC-NT-008"
@@ -66,7 +66,7 @@ kind = "lemma"
 tranche = 1
 proof_status = "open"
 domain = "number-theory"
-statement = "Divisibility / gcd property (variant 8)."
+statement = "Bezout identity: exists x,y with gcd(a,b) = a x + b y."
 
 [[planned]]
 id = "D-LM-BC-REC-009"
@@ -74,7 +74,7 @@ kind = "lemma"
 tranche = 1
 proof_status = "open"
 domain = "recurrence"
-statement = "Linear recurrence solution stub (variant 9)."
+statement = "Geometric sequence: a_n = r a_{n-1} has closed form a_n = a_0 r^n."
 
 [[planned]]
 id = "D-AX-BC-LOG-010"
@@ -82,7 +82,7 @@ kind = "axiom"
 tranche = 1
 proof_status = "axiomatic"
 domain = "logic"
-statement = "Propositional tautology schema (variant 10)."
+statement = "Identity: P implies P."
 
 [[planned]]
 id = "D-LM-BC-IND-011"
@@ -90,7 +90,7 @@ kind = "lemma"
 tranche = 2
 proof_status = "open"
 domain = "induction"
-statement = "Mathematical induction principle (variant 11)."
+statement = "Induction on sums: 1 + 2 + ... + n = n(n+1)/2 proved by induction on n."
 
 [[planned]]
 id = "D-LM-BC-CMB-012"
@@ -98,7 +98,7 @@ kind = "lemma"
 tranche = 2
 proof_status = "open"
 domain = "combinatorics"
-statement = "Binomial coefficient identity (variant 12)."
+statement = "Row sum identity: sum_{k=0}^n C(n,k) = 2^n."
 
 [[planned]]
 id = "D-LM-BC-NT-013"
@@ -106,7 +106,7 @@ kind = "lemma"
 tranche = 2
 proof_status = "open"
 domain = "number-theory"
-statement = "Divisibility / gcd property (variant 13)."
+statement = "gcd-lcm relation: gcd(a,b) * lcm(a,b) = |a b| for integers a,b."
 
 [[planned]]
 id = "D-LM-BC-REC-014"
@@ -114,7 +114,7 @@ kind = "lemma"
 tranche = 2
 proof_status = "open"
 domain = "recurrence"
-statement = "Linear recurrence solution stub (variant 14)."
+statement = "Arithmetic sequence: a_n = a_{n-1} + d has closed form a_n = a_0 + n d."
 
 [[planned]]
 id = "D-AX-BC-LOG-015"
@@ -122,7 +122,7 @@ kind = "axiom"
 tranche = 2
 proof_status = "axiomatic"
 domain = "logic"
-statement = "Propositional tautology schema (variant 15)."
+statement = "Modus ponens schema: (P and (P implies Q)) implies Q."
 
 [[planned]]
 id = "D-LM-BC-IND-016"
@@ -130,7 +130,7 @@ kind = "lemma"
 tranche = 2
 proof_status = "open"
 domain = "induction"
-statement = "Mathematical induction principle (variant 16)."
+statement = "Induction on powers: 1 + 2 + ... + 2^n = 2^(n+1) - 1."
 
 [[planned]]
 id = "D-LM-BC-CMB-017"
@@ -138,7 +138,7 @@ kind = "lemma"
 tranche = 2
 proof_status = "open"
 domain = "combinatorics"
-statement = "Binomial coefficient identity (variant 17)."
+statement = "Alternating row sum: sum_{k=0}^n (-1)^k C(n,k) = 0 for n > 0."
 
 [[planned]]
 id = "D-LM-BC-NT-018"
@@ -146,7 +146,7 @@ kind = "lemma"
 tranche = 2
 proof_status = "open"
 domain = "number-theory"
-statement = "Divisibility / gcd property (variant 18)."
+statement = "Common divisor: if d|a and d|b then d|gcd(a,b)."
 
 [[planned]]
 id = "D-LM-BC-REC-019"
@@ -154,7 +154,7 @@ kind = "lemma"
 tranche = 2
 proof_status = "open"
 domain = "recurrence"
-statement = "Linear recurrence solution stub (variant 19)."
+statement = "Towers of Hanoi: T(n) = 2 T(n-1) + 1 with T(1)=1, so T(n)=2^n - 1."
 
 [[planned]]
 id = "D-AX-BC-LOG-020"
@@ -162,7 +162,7 @@ kind = "axiom"
 tranche = 2
 proof_status = "axiomatic"
 domain = "logic"
-statement = "Propositional tautology schema (variant 20)."
+statement = "Contrapositive: (P implies Q) equivalent to (not Q implies not P)."
 
 [[planned]]
 id = "D-LM-BC-IND-021"
@@ -170,7 +170,7 @@ kind = "lemma"
 tranche = 3
 proof_status = "open"
 domain = "induction"
-statement = "Mathematical induction principle (variant 21)."
+statement = "Induction on inequalities: 2^n > n for all n >= 1."
 
 [[planned]]
 id = "D-LM-BC-CMB-022"
@@ -178,7 +178,7 @@ kind = "lemma"
 tranche = 3
 proof_status = "open"
 domain = "combinatorics"
-statement = "Binomial coefficient identity (variant 22)."
+statement = "Vandermonde identity: sum_{k=0}^r C(m,k) C(n,r-k) = C(m+n,r)."
 
 [[planned]]
 id = "D-LM-BC-NT-023"
@@ -186,7 +186,7 @@ kind = "lemma"
 tranche = 3
 proof_status = "open"
 domain = "number-theory"
-statement = "Divisibility / gcd property (variant 23)."
+statement = "Coprimality: gcd(a,b)=1 iff a and b share no prime factor."
 
 [[planned]]
 id = "D-LM-BC-REC-024"
@@ -194,7 +194,7 @@ kind = "lemma"
 tranche = 3
 proof_status = "open"
 domain = "recurrence"
-statement = "Linear recurrence solution stub (variant 24)."
+statement = "Linear recurrence order 2: a_n = c1 a_{n-1} + c2 a_{n-2} solved via characteristic roots."
 
 [[planned]]
 id = "D-AX-BC-LOG-025"
@@ -202,7 +202,7 @@ kind = "axiom"
 tranche = 3
 proof_status = "axiomatic"
 domain = "logic"
-statement = "Propositional tautology schema (variant 25)."
+statement = "De Morgan: not (P and Q) equivalent to (not P or not Q)."
 
 [[planned]]
 id = "D-LM-BC-IND-026"
@@ -210,7 +210,7 @@ kind = "lemma"
 tranche = 3
 proof_status = "open"
 domain = "induction"
-statement = "Mathematical induction principle (variant 26)."
+statement = "Induction on divisibility: 3 divides 4^n - 1 for all n >= 1."
 
 [[planned]]
 id = "D-LM-BC-CMB-027"
@@ -218,7 +218,7 @@ kind = "lemma"
 tranche = 3
 proof_status = "open"
 domain = "combinatorics"
-statement = "Binomial coefficient identity (variant 27)."
+statement = "Hockey-stick identity: sum_{i=r}^n C(i,r) = C(n+1,r+1)."
 
 [[planned]]
 id = "D-LM-BC-NT-028"
@@ -226,7 +226,7 @@ kind = "lemma"
 tranche = 3
 proof_status = "open"
 domain = "number-theory"
-statement = "Divisibility / gcd property (variant 28)."
+statement = "gcd with product: if gcd(a,b)=1 then gcd(a,bc)=gcd(a,c)."
 
 [[planned]]
 id = "D-LM-BC-REC-029"
@@ -234,7 +234,7 @@ kind = "lemma"
 tranche = 3
 proof_status = "open"
 domain = "recurrence"
-statement = "Linear recurrence solution stub (variant 29)."
+statement = "Catalan numbers: C_n = sum_{i=0}^{n-1} C_i C_{n-1-i} with C_0=1."
 
 [[planned]]
 id = "D-AX-BC-LOG-030"
@@ -242,7 +242,7 @@ kind = "axiom"
 tranche = 3
 proof_status = "axiomatic"
 domain = "logic"
-statement = "Propositional tautology schema (variant 30)."
+statement = "Disjunctive syllogism: (P or Q) and (not P) implies Q."
 
 [[planned]]
 id = "D-LM-BC-IND-031"
@@ -250,7 +250,7 @@ kind = "lemma"
 tranche = 3
 proof_status = "open"
 domain = "induction"
-statement = "Mathematical induction principle (variant 31)."
+statement = "Induction on Fibonacci: F_n <= 2^n for all n >= 0."
 
 [[planned]]
 id = "D-LM-BC-CMB-032"
@@ -258,7 +258,7 @@ kind = "lemma"
 tranche = 3
 proof_status = "open"
 domain = "combinatorics"
-statement = "Binomial coefficient identity (variant 32)."
+statement = "Square of row sum: (sum C(n,k))^2 = sum_{k=0}^n C(n,k)^2."
 
 [[planned]]
 id = "D-LM-BC-NT-033"
@@ -266,7 +266,7 @@ kind = "lemma"
 tranche = 3
 proof_status = "open"
 domain = "number-theory"
-statement = "Divisibility / gcd property (variant 33)."
+statement = "Division property: if a|bc and gcd(a,b)=1 then a|c."
 
 [[planned]]
 id = "D-LM-BC-REC-034"
@@ -274,7 +274,7 @@ kind = "lemma"
 tranche = 3
 proof_status = "open"
 domain = "recurrence"
-statement = "Linear recurrence solution stub (variant 34)."
+statement = "Factorial recurrence: n! = n (n-1)! with 0!=1."
 
 [[planned]]
 id = "D-AX-BC-LOG-035"
@@ -282,7 +282,7 @@ kind = "axiom"
 tranche = 3
 proof_status = "axiomatic"
 domain = "logic"
-statement = "Propositional tautology schema (variant 35)."
+statement = "Hypothetical syllogism: (P implies Q) and (Q implies R) implies (P implies R)."
 
 [[planned]]
 id = "D-LM-BC-IND-036"
@@ -290,7 +290,7 @@ kind = "lemma"
 tranche = 3
 proof_status = "open"
 domain = "induction"
-statement = "Mathematical induction principle (variant 36)."
+statement = "Induction on factorial: n! >= 2^(n-1) for n >= 3."
 
 [[planned]]
 id = "D-LM-BC-CMB-037"
@@ -298,7 +298,7 @@ kind = "lemma"
 tranche = 3
 proof_status = "open"
 domain = "combinatorics"
-statement = "Binomial coefficient identity (variant 37)."
+statement = "Binomial theorem: (x+y)^n = sum_{k=0}^n C(n,k) x^k y^(n-k)."
 
 [[planned]]
 id = "D-LM-BC-NT-038"
@@ -306,7 +306,7 @@ kind = "lemma"
 tranche = 3
 proof_status = "open"
 domain = "number-theory"
-statement = "Divisibility / gcd property (variant 38)."
+statement = "Euclid lemma: if p prime and p|ab then p|a or p|b."
 
 [[planned]]
 id = "D-LM-BC-REC-039"
@@ -314,7 +314,7 @@ kind = "lemma"
 tranche = 3
 proof_status = "open"
 domain = "recurrence"
-statement = "Linear recurrence solution stub (variant 39)."
+statement = "Derangements: D_n = (n-1)(D_{n-1} + D_{n-2}) with D_0=1, D_1=0."
 
 [[planned]]
 id = "D-AX-BC-LOG-040"
@@ -322,7 +322,7 @@ kind = "axiom"
 tranche = 3
 proof_status = "axiomatic"
 domain = "logic"
-statement = "Propositional tautology schema (variant 40)."
+statement = "Material implication: (P implies Q) equivalent to (not P or Q)."
 
 [[planned]]
 id = "D-LM-BC-IND-041"
@@ -330,7 +330,7 @@ kind = "lemma"
 tranche = 3
 proof_status = "open"
 domain = "induction"
-statement = "Mathematical induction principle (variant 41)."
+statement = "Well-ordering equivalence: every nonempty subset of N has a least element."
 
 [[planned]]
 id = "D-LM-BC-CMB-042"
@@ -338,7 +338,7 @@ kind = "lemma"
 tranche = 3
 proof_status = "open"
 domain = "combinatorics"
-statement = "Binomial coefficient identity (variant 42)."
+statement = "Chu-Vandermonde: sum_{k} C(m,k) C(n,l-k) = C(m+n,l)."
 
 [[planned]]
 id = "D-LM-BC-NT-043"
@@ -346,7 +346,7 @@ kind = "lemma"
 tranche = 3
 proof_status = "open"
 domain = "number-theory"
-statement = "Divisibility / gcd property (variant 43)."
+statement = "gcd is associative: gcd(gcd(a,b),c) = gcd(a,gcd(b,c))."
 
 [[planned]]
 id = "D-LM-BC-REC-044"
@@ -354,7 +354,7 @@ kind = "lemma"
 tranche = 3
 proof_status = "open"
 domain = "recurrence"
-statement = "Linear recurrence solution stub (variant 44)."
+statement = "Lucas sequence: L_n = L_{n-1} + L_{n-2} with L_0=2, L_1=1."
 
 [[planned]]
 id = "D-AX-BC-LOG-045"
@@ -362,7 +362,7 @@ kind = "axiom"
 tranche = 3
 proof_status = "axiomatic"
 domain = "logic"
-statement = "Propositional tautology schema (variant 45)."
+statement = "Double negation: not (not P) equivalent to P."
 
 [[planned]]
 id = "D-LM-BC-IND-046"
@@ -370,7 +370,7 @@ kind = "lemma"
 tranche = 3
 proof_status = "open"
 domain = "induction"
-statement = "Mathematical induction principle (variant 46)."
+statement = "Structural induction on finite binary trees: |nodes| = |leaves| + |internals| for full trees."
 
 [[planned]]
 id = "D-LM-BC-CMB-047"
@@ -378,7 +378,7 @@ kind = "lemma"
 tranche = 3
 proof_status = "open"
 domain = "combinatorics"
-statement = "Binomial coefficient identity (variant 47)."
+statement = "Absorption identity: k C(n,k) = n C(n-1,k-1)."
 
 [[planned]]
 id = "D-LM-BC-NT-048"
@@ -386,7 +386,7 @@ kind = "lemma"
 tranche = 3
 proof_status = "open"
 domain = "number-theory"
-statement = "Divisibility / gcd property (variant 48)."
+statement = "Relative primality: gcd(a,b)=1 implies gcd(a^n,b)=1 for n >= 1."
 
 [[planned]]
 id = "D-LM-BC-REC-049"
@@ -394,7 +394,7 @@ kind = "lemma"
 tranche = 3
 proof_status = "open"
 domain = "recurrence"
-statement = "Linear recurrence solution stub (variant 49)."
+statement = "Divide-and-conquer recurrence T(n)=2T(n/2)+n has solution T(n)=O(n log n)."
 
 [[planned]]
 id = "D-AX-BC-LOG-050"
@@ -402,4 +402,4 @@ kind = "axiom"
 tranche = 3
 proof_status = "axiomatic"
 domain = "logic"
-statement = "Propositional tautology schema (variant 50)."
+statement = "Resolution schema: (P or R) and (not P or Q) implies (Q or R)."

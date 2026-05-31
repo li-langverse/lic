@@ -1,4 +1,4 @@
-# GT-LM-BC-TR-002: Tree on n vertices has n-1 edges (variant 2).
+# GT-LM-BC-TR-002: Tree on n vertices has exactly n-1 edges.
 
 def tree_edge_count(n: int) -> int
   requires n >= 1

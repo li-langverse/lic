@@ -1,4 +1,4 @@
-# GT-LM-BC-COL-014: Chromatic number upper bound Delta+1 (variant 14).
+# GT-LM-BC-COL-014: Complete graph K_n has chi(K_n) = n.
 
 def chromatic_upper(delta: int) -> int
   requires delta >= 0

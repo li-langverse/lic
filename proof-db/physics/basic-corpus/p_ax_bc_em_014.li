@@ -1,4 +1,4 @@
-# P-AX-BC-EM-014: Ampere-Maxwell law (stub integral form).
+# P-AX-BC-EM-014: Ampere-Maxwell law: line integral of H equals enclosed conduction current plus displacement current.
 
 extern proc p_ax_bc_em_014_axiom_witness() -> int
   requires true

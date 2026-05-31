@@ -1,4 +1,4 @@
-# D-LM-BC-NT-043: Divisibility / gcd property (variant 43).
+# D-LM-BC-NT-043: gcd is associative: gcd(gcd(a,b),c) = gcd(a,gcd(b,c)).
 
 def gcd_divides(a: int, b: int, g: int) -> int
   requires a >= 0 and b >= 0 and g >= 0

@@ -1,4 +1,4 @@
-# GT-LM-BC-COL-049: Chromatic number upper bound Delta+1 (variant 49).
+# GT-LM-BC-COL-049: Greedy coloring uses at most Delta+1 colors in some vertex order.
 
 def chromatic_upper(delta: int) -> int
   requires delta >= 0

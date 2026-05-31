@@ -1,4 +1,4 @@
-# P-LM-BC-EM-020: Wave equation from Maxwell in vacuum (stub).
+# P-LM-BC-EM-020: Vacuum Maxwell equations imply wave equation nabla^2 E = mu0 eps0 d^2E/dt^2.
 
 def p_lm_bc_em_020_witness(x: float) -> float
   requires true

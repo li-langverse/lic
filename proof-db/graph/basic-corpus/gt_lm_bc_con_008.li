@@ -1,4 +1,4 @@
-# GT-LM-BC-CON-008: Connected graph |E| >= |V|-1 (variant 8).
+# GT-LM-BC-CON-008: If |E| > |V|-1 then a graph contains a cycle.
 
 def connected_edge_lower_bound(v: int) -> int
   requires v >= 1

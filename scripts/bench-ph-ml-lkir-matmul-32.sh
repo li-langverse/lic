@@ -5,8 +5,12 @@ ROOT="$(cd "$(dirname "$0")/.." && pwd)"
 source "$ROOT/scripts/lib/benchmarks-env.sh"
 export BENCHMARKS_RESULTS="$ROOT/benchmarks/results"
 mkdir -p "$BENCHMARKS_RESULTS"
-LIC="${LIC:-$($ROOT/scripts/resolve-lic.sh)}"
-[[ -x "$ROOT/build-wsl/compiler/lic/lic" ]] && LIC="$ROOT/build-wsl/compiler/lic/lic"
+LIC="${LIC:-}"
+if [[ -x "$ROOT/build-wsl/compiler/lic/lic" ]]; then
+  LIC="$ROOT/build-wsl/compiler/lic/lic"
+elif [[ -z "$LIC" ]]; then
+  LIC="$($ROOT/scripts/resolve-lic.sh)"
+fi
 OUT="$BENCHMARKS_RESULTS/ph-ml-lkir-matmul-32.json"
 NUMPY_OUT="$BENCHMARKS_RESULTS/ph-ml-competitor-numpy-matmul-32.json"
 SMOKE="$ROOT/packages/li-ml/li-tests/smoke/ml_matmul_32_lkir.li"

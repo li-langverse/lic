@@ -10,10 +10,19 @@ mkdir -p "$BENCHMARKS_RESULTS"
 export LIG_EMIT_CUDA=1
 
 run_in_wsl() {
-  local wsl_root
+  local wsl_root wsl_bench
   wsl_root="$(wsl.exe wslpath -u "$ROOT" 2>/dev/null | tr -d '
 ')"
-  wsl.exe bash -lc "cd '$wsl_root' && export PH_ML_WAVE12_ROOT='$wsl_root' PH_ML_WAVE12_INNER=1 LIG_EMIT_CUDA=1 LIC=./build-wsl/compiler/lic/lic && source scripts/ph-ml-wave12-gates.sh"
+  wsl_bench=""
+  if [[ -n "${BENCHMARKS_ROOT:-}" ]]; then
+    wsl_bench="$(wsl.exe wslpath -u "$BENCHMARKS_ROOT" 2>/dev/null | tr -d '
+')" || wsl_bench=""
+  fi
+  if [[ -z "$wsl_bench" && -f "$ROOT/../../../../../benchmarks/harness/bench.py" ]]; then
+    wsl_bench="$(wsl.exe wslpath -u "$(cd "$ROOT/../../../../../benchmarks" && pwd)" 2>/dev/null | tr -d '
+')" || wsl_bench=""
+  fi
+  wsl.exe bash -lc "cd '$wsl_root' && export PH_ML_WAVE12_ROOT='$wsl_root' PH_ML_WAVE12_INNER=1 LIG_EMIT_CUDA=1 BENCHMARKS_ROOT='${wsl_bench}' LIC=./build-wsl/compiler/lic/lic && source scripts/ph-ml-wave12-gates.sh"
 }
 
 lic_bin_for_smokes() {

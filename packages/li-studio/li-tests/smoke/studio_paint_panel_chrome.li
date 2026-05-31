@@ -17,7 +17,7 @@ def main() -> int
   studio_paint_dock(frame, dock)
   if frame.cmd_count != studio_paint_dock_cmds():
     return 2
-  if frame.last_kind != paint_op_stroke_round_rect():
+  if frame.last_kind != paint_op_draw_image():
     return 3
   var timeline: StudioTimelineCompose
   timeline.track_rect = rect_make(56.0, 540.0, 800.0, 48.0)

@@ -38,6 +38,12 @@ note = "T-PKG-li-ui-font-atlas-inter-mono-wsg-w3"
 
 [[tests]]
 suite = "smoke"
+file = "smoke/icon_atlas_dock_tokens.li"
+outcome = "compile_open_ok"
+note = "T-PKG-li-ui-icon-atlas-dock-tokens-wsg-w3"
+
+[[tests]]
+suite = "smoke"
 file = "smoke/paint_cmds_ext_phase3.li"
 outcome = "compile_open_ok"
 note = "T-PKG-li-ui-paint-cmd-glyphs-clip-image-wsg-w3"

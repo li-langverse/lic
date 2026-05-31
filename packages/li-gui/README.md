@@ -61,3 +61,17 @@ Smoke: `li-tests/smoke/layout_engines_flex_grid.li`. Paint helper: `flex_layout_
 - `gui_handle_studio_key_palette` / `studio_handle_studio_key(compose, input)` — full `StudioCommandPaletteCompose` via `studio_palette_*` in `li-ui`.
 
 Import: `import gui`
+
+## Reactive compose (W2)
+
+Convention-based **Function** layer stores until compiler `@compose` dependency tracking lands:
+
+| Type | Role |
+|------|------|
+| `StoreInt` / `StoreFloat` | Writable cells with `generation` + `dirty` flags |
+| `DerivedInt` / `DerivedFloat` | Dependent values synced from source stores |
+| `ComposeInvalidation` | Tick counter + dirty store/derived counts for partial re-compose |
+
+Source: `src/reactive.li`. Shell slot ids: `reactive_store_id_agent_task`, `reactive_store_id_palette_open`, `reactive_store_id_shell_mode`, `reactive_store_id_timeline_tick`.
+
+Smoke: `li-tests/smoke/reactive_store_derived.li`. Version: `gui_reactive_version() == 1`, `li_std_gui_version() == 11`.

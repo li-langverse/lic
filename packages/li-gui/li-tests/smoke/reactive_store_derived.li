@@ -1,0 +1,49 @@
+import gui
+
+def main() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  if li_std_gui_version() < 11:
+    return 1
+  if gui_reactive_version() != 1:
+    return 2
+  var inv: ComposeInvalidation = compose_invalidation_new()
+  if compose_invalidation_any_dirty(inv) != 0:
+    return 3
+  var task: StoreInt = store_int_new(reactive_store_id_agent_task(), 0)
+  var progress: DerivedInt = derived_int_new(0, reactive_store_id_agent_task(), 0)
+  if store_int_get(task) != 0:
+    return 4
+  if derived_int_get(progress) != 0:
+    return 5
+  store_int_set(task, 2, inv)
+  if store_int_is_dirty(task) != 1:
+    return 6
+  if inv.dirty_store_count != 1:
+    return 7
+  if compose_invalidation_any_dirty(inv) != 1:
+    return 8
+  derived_int_sync_agent_progress(progress, task, inv)
+  if derived_int_get(progress) != 50:
+    return 9
+  if derived_int_is_dirty(progress) != 1:
+    return 10
+  if inv.dirty_derived_count != 1:
+    return 11
+  store_int_clear_dirty(task, inv)
+  derived_int_clear_dirty(progress, inv)
+  if compose_invalidation_any_dirty(inv) != 0:
+    return 12
+  var playhead: StoreFloat = store_float_new(reactive_store_id_timeline_tick(), 0.0)
+  var playhead_pct: DerivedFloat = derived_float_new(1, reactive_store_id_timeline_tick(), 0.0)
+  store_float_set(playhead, 0.5, inv)
+  derived_float_sync_value(playhead_pct, playhead, 50.0, inv)
+  if store_float_get(playhead) != 0.5:
+    return 13
+  if playhead_pct.value != 50.0:
+    return 14
+  if inv.dirty_store_count != 1:
+    return 15
+  return 0

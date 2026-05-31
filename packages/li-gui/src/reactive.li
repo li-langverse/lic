@@ -1,0 +1,361 @@
+# Phase 2 — Reactive compose primitives (Function layer).
+# Convention-based Store<T> / Derived<T> until compiler dependency tracking lands.
+
+def gui_reactive_version() -> int
+  requires true
+  ensures result == 1
+  decreases 0
+=
+  return 1
+
+def reactive_store_max_id() -> int
+  requires true
+  ensures result == 15
+  decreases 0
+=
+  return 15
+
+def reactive_derived_max_id() -> int
+  requires true
+  ensures result == 15
+  decreases 0
+=
+  return 15
+
+# Shell store slot ids (convention for studio Function → Layout invalidation).
+def reactive_store_id_agent_task() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0
+
+def reactive_store_id_palette_open() -> int
+  requires true
+  ensures result == 1
+  decreases 0
+=
+  return 1
+
+def reactive_store_id_shell_mode() -> int
+  requires true
+  ensures result == 2
+  decreases 0
+=
+  return 2
+
+def reactive_store_id_timeline_tick() -> int
+  requires true
+  ensures result == 3
+  decreases 0
+=
+  return 3
+
+type StoreInt = object
+  public store_id: int
+  public value: int
+  public generation: int
+  public dirty: int
+
+type DerivedInt = object
+  public derived_id: int
+  public source_store_id: int
+  public value: int
+  public generation: int
+  public dirty: int
+
+type StoreFloat = object
+  public store_id: int
+  public value: float
+  public generation: int
+  public dirty: int
+
+type DerivedFloat = object
+  public derived_id: int
+  public source_store_id: int
+  public value: float
+  public generation: int
+  public dirty: int
+
+type ComposeInvalidation = object
+  public tick: int
+  public dirty_store_count: int
+  public dirty_derived_count: int
+
+def compose_invalidation_new() -> ComposeInvalidation
+  requires true
+  ensures result.dirty_store_count == 0
+  ensures result.dirty_derived_count == 0
+  ensures result.tick == 0
+  decreases 0
+=
+  var inv: ComposeInvalidation
+  inv.tick = 0
+  inv.dirty_store_count = 0
+  inv.dirty_derived_count = 0
+  return inv
+
+def store_int_new(store_id: int, initial: int) -> StoreInt
+  requires store_id >= 0
+  requires store_id <= reactive_store_max_id()
+  ensures result.store_id == store_id
+  ensures result.value == initial
+  ensures result.generation == 0
+  ensures result.dirty == 0
+  decreases 0
+=
+  var s: StoreInt
+  s.store_id = store_id
+  s.value = initial
+  s.generation = 0
+  s.dirty = 0
+  return s
+
+def store_int_get(store: StoreInt) -> int
+  requires true
+  ensures result == store.value
+  decreases 0
+=
+  return store.value
+
+def store_int_is_dirty(store: StoreInt) -> int
+  requires store.dirty >= 0
+  requires store.dirty <= 1
+  ensures result >= 0
+  ensures result <= 1
+  decreases 0
+=
+  return store.dirty
+
+def store_int_clear_dirty(store: var StoreInt, inv: var ComposeInvalidation) -> unit
+  requires store.dirty >= 0
+  requires store.dirty <= 1
+  requires inv.dirty_store_count >= 0
+  ensures store.dirty == 0
+  decreases 0
+=
+  if store.dirty == 1:
+    if inv.dirty_store_count > 0:
+      inv.dirty_store_count = inv.dirty_store_count - 1
+  store.dirty = 0
+
+def store_int_set(store: var StoreInt, value: int, inv: var ComposeInvalidation) -> unit
+  requires store.store_id >= 0
+  requires store.store_id <= reactive_store_max_id()
+  requires store.dirty >= 0
+  requires store.dirty <= 1
+  requires inv.dirty_store_count >= 0
+  ensures store.value == value
+  ensures store.dirty == 1
+  ensures store.generation == old(store.generation) + 1
+  decreases 0
+=
+  if store.value != value:
+    store.value = value
+  if store.dirty == 0:
+    inv.dirty_store_count = inv.dirty_store_count + 1
+  store.dirty = 1
+  store.generation = store.generation + 1
+  inv.tick = inv.tick + 1
+
+def derived_int_new(derived_id: int, source_store_id: int, initial: int) -> DerivedInt
+  requires derived_id >= 0
+  requires derived_id <= reactive_derived_max_id()
+  requires source_store_id >= 0
+  requires source_store_id <= reactive_store_max_id()
+  ensures result.derived_id == derived_id
+  ensures result.source_store_id == source_store_id
+  ensures result.value == initial
+  ensures result.generation == 0
+  ensures result.dirty == 0
+  decreases 0
+=
+  var d: DerivedInt
+  d.derived_id = derived_id
+  d.source_store_id = source_store_id
+  d.value = initial
+  d.generation = 0
+  d.dirty = 0
+  return d
+
+def derived_int_get(derived: DerivedInt) -> int
+  requires true
+  ensures result == derived.value
+  decreases 0
+=
+  return derived.value
+
+def derived_int_is_dirty(derived: DerivedInt) -> int
+  requires derived.dirty >= 0
+  requires derived.dirty <= 1
+  ensures result >= 0
+  ensures result <= 1
+  decreases 0
+=
+  return derived.dirty
+
+def derived_int_mark_dirty(derived: var DerivedInt, inv: var ComposeInvalidation) -> unit
+  requires derived.dirty >= 0
+  requires derived.dirty <= 1
+  requires inv.dirty_derived_count >= 0
+  ensures derived.dirty == 1
+  decreases 0
+=
+  if derived.dirty == 0:
+    inv.dirty_derived_count = inv.dirty_derived_count + 1
+  derived.dirty = 1
+
+def derived_int_clear_dirty(derived: var DerivedInt, inv: var ComposeInvalidation) -> unit
+  requires derived.dirty >= 0
+  requires derived.dirty <= 1
+  requires inv.dirty_derived_count >= 0
+  ensures derived.dirty == 0
+  decreases 0
+=
+  if derived.dirty == 1:
+    if inv.dirty_derived_count > 0:
+      inv.dirty_derived_count = inv.dirty_derived_count - 1
+  derived.dirty = 0
+
+def reactive_propagate_store_int(source: StoreInt, derived: var DerivedInt, inv: var ComposeInvalidation) -> unit
+  requires source.store_id == derived.source_store_id
+  requires source.dirty >= 0
+  requires source.dirty <= 1
+  ensures derived.dirty >= old(derived.dirty)
+  decreases 0
+=
+  if source.dirty == 1:
+    derived_int_mark_dirty(derived, inv)
+
+def derived_int_sync_value(derived: var DerivedInt, source: StoreInt, new_value: int, inv: var ComposeInvalidation) -> unit
+  requires source.store_id == derived.source_store_id
+  requires source.dirty >= 0
+  requires source.dirty <= 1
+  ensures derived.value == new_value
+  ensures derived.generation == source.generation
+  decreases 0
+=
+  reactive_propagate_store_int(source, derived, inv)
+  if source.dirty == 1:
+    derived.value = new_value
+    derived.generation = source.generation
+    derived_int_mark_dirty(derived, inv)
+
+def compose_invalidation_any_dirty(inv: ComposeInvalidation) -> int
+  requires inv.dirty_store_count >= 0
+  requires inv.dirty_derived_count >= 0
+  ensures result >= 0
+  ensures result <= 1
+  decreases 0
+=
+  if inv.dirty_store_count > 0:
+    return 1
+  if inv.dirty_derived_count > 0:
+    return 1
+  return 0
+
+def store_float_new(store_id: int, initial: float) -> StoreFloat
+  requires store_id >= 0
+  requires store_id <= reactive_store_max_id()
+  ensures result.store_id == store_id
+  ensures result.value == initial
+  ensures result.generation == 0
+  ensures result.dirty == 0
+  decreases 0
+=
+  var s: StoreFloat
+  s.store_id = store_id
+  s.value = initial
+  s.generation = 0
+  s.dirty = 0
+  return s
+
+def store_float_get(store: StoreFloat) -> float
+  requires true
+  ensures result == store.value
+  decreases 0
+=
+  return store.value
+
+def store_float_set(store: var StoreFloat, value: float, inv: var ComposeInvalidation) -> unit
+  requires store.store_id >= 0
+  requires store.store_id <= reactive_store_max_id()
+  requires store.dirty >= 0
+  requires store.dirty <= 1
+  requires inv.dirty_store_count >= 0
+  ensures store.value == value
+  ensures store.dirty == 1
+  ensures store.generation == old(store.generation) + 1
+  decreases 0
+=
+  if store.value != value:
+    store.value = value
+  if store.dirty == 0:
+    inv.dirty_store_count = inv.dirty_store_count + 1
+  store.dirty = 1
+  store.generation = store.generation + 1
+  inv.tick = inv.tick + 1
+
+def derived_float_new(derived_id: int, source_store_id: int, initial: float) -> DerivedFloat
+  requires derived_id >= 0
+  requires derived_id <= reactive_derived_max_id()
+  requires source_store_id >= 0
+  requires source_store_id <= reactive_store_max_id()
+  ensures result.derived_id == derived_id
+  ensures result.source_store_id == source_store_id
+  ensures result.value == initial
+  ensures result.generation == 0
+  ensures result.dirty == 0
+  decreases 0
+=
+  var d: DerivedFloat
+  d.derived_id = derived_id
+  d.source_store_id = source_store_id
+  d.value = initial
+  d.generation = 0
+  d.dirty = 0
+  return d
+
+def derived_float_sync_value(derived: var DerivedFloat, source: StoreFloat, new_value: float, inv: var ComposeInvalidation) -> unit
+  requires source.store_id == derived.source_store_id
+  requires source.dirty >= 0
+  requires source.dirty <= 1
+  ensures derived.value == new_value
+  ensures derived.generation == source.generation
+  decreases 0
+=
+  if source.dirty == 1:
+    if derived.dirty == 0:
+      inv.dirty_derived_count = inv.dirty_derived_count + 1
+    derived.dirty = 1
+  if source.dirty == 1:
+    derived.value = new_value
+    derived.generation = source.generation
+
+def derived_int_from_agent_task_state(task_state: int) -> int
+  requires task_state >= 0
+  requires task_state <= 4
+  ensures result >= 0
+  ensures result <= 100
+  decreases task_state
+=
+  if task_state == 0:
+    return 0
+  if task_state == 1:
+    return 25
+  if task_state == 2:
+    return 50
+  if task_state == 3:
+    return 75
+  return 100
+
+def derived_int_sync_agent_progress(derived: var DerivedInt, task_store: StoreInt, inv: var ComposeInvalidation) -> unit
+  requires task_store.store_id >= 0
+  requires task_store.store_id <= reactive_store_max_id()
+  requires task_store.value >= 0
+  requires task_store.value <= 4
+  ensures derived.source_store_id == task_store.store_id
+  decreases task_store.value
+=
+  var pct: int = derived_int_from_agent_task_state(task_store.value)
+  derived_int_sync_value(derived, task_store, pct, inv)

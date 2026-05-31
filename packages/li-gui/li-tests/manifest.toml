@@ -51,3 +51,9 @@ suite = "smoke"
 file = "smoke/inspector_pilot_widget.li"
 outcome = "compile_open_ok"
 note = "T-PKG-li-gui-inspector-pilot"
+
+[[tests]]
+suite = "smoke"
+file = "smoke/reactive_store_derived.li"
+outcome = "compile_open_ok"
+note = "T-PKG-li-gui-reactive-store"

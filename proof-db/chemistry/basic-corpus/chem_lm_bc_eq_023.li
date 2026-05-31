@@ -1,4 +1,13 @@
-# CHEM-LM-BC-EQ-023: Equilibrium constant K = products/reactants (form 23).
+# CHEM-LM-BC-EQ-023: Equilibrium constant K = prod [products]^nu / prod [reactants]^mu at equilibrium (form 23).
+# At equilibrium: K = prod_i [product_i]^nu_i / prod_j [reactant_j]^mu_j
+# with stoichiometric coefficients nu, mu (activities or concentrations).
+
+def equilibrium_constant(k_forward: float, k_reverse: float) -> float
+  requires k_reverse > 0.0
+  ensures result == k_forward / k_reverse
+  decreases 0
+=
+  return k_forward / k_reverse
 
 def main() -> int
   requires true

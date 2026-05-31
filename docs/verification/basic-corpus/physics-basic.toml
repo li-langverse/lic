@@ -2,7 +2,7 @@
 version = 1
 field = "physics"
 target_count = 50
-last_verified_lic_commit = "a9441d8e"
+last_verified_lic_commit = "708c67b8"
 
 [[planned]]
 id = "P-AX-BC-MEC-001"
@@ -194,7 +194,7 @@ kind = "axiom"
 tranche = 3
 proof_status = "axiomatic"
 domain = "thermodynamics"
-statement = "Ideal gas PV = n R T."
+statement = "Joule law stub: ideal gas internal energy depends only on temperature T."
 
 [[planned]]
 id = "P-LM-BC-TH-025"

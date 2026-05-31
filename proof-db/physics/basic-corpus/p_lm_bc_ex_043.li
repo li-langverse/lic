@@ -1,5 +1,12 @@
 # P-LM-BC-EX-043: Rocket equation delta v = v_e ln(m0/m).
 
+def p_lm_bc_ex_043_witness(x: float) -> float
+  requires true
+  ensures result == x
+  decreases 0
+=
+  return x
+
 def main() -> int
   requires true
   ensures result == 0

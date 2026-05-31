@@ -1,9 +1,16 @@
 # D-AX-BC-LOG-040: Propositional tautology schema (variant 40).
 
-extern proc proof_db_d_ax_bc_log_040() -> int
+extern proc d_ax_bc_log_040_axiom_witness() -> int
   requires true
   ensures result == 0
   decreases 0
+
+def d_ax_bc_log_040_tautology(p: bool, q: bool) -> bool
+  requires true
+  ensures result == (p and q) or (not p) or (not q)
+  decreases 0
+=
+  return (p and q) or (not p) or (not q)
 
 def main() -> int
   requires true

@@ -2,7 +2,7 @@
 version = 1
 field = "discrete"
 target_count = 50
-last_verified_lic_commit = "a9441d8e"
+last_verified_lic_commit = "708c67b8"
 
 [[planned]]
 id = "D-LM-BC-IND-001"

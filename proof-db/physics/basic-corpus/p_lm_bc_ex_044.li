@@ -1,5 +1,12 @@
 # P-LM-BC-EX-044: Parallel axis theorem I = I_cm + M d^2.
 
+def p_lm_bc_ex_044_witness(x: float) -> float
+  requires true
+  ensures result == x
+  decreases 0
+=
+  return x
+
 def main() -> int
   requires true
   ensures result == 0

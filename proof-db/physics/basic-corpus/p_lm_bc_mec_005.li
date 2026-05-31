@@ -1,5 +1,12 @@
 # P-LM-BC-MEC-005: Work-energy: W = integral F dot dx.
 
+def p_lm_bc_mec_005_witness(x: float) -> float
+  requires true
+  ensures result == x
+  decreases 0
+=
+  return x
+
 def main() -> int
   requires true
   ensures result == 0

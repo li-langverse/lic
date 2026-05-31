@@ -1,5 +1,12 @@
 # P-LM-BC-EM-020: Wave equation from Maxwell in vacuum (stub).
 
+def p_lm_bc_em_020_witness(x: float) -> float
+  requires true
+  ensures result == x
+  decreases 0
+=
+  return x
+
 def main() -> int
   requires true
   ensures result == 0

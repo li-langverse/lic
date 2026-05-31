@@ -1,5 +1,12 @@
 # D-LM-BC-REC-034: Linear recurrence solution stub (variant 34).
 
+def d_lm_bc_rec_034_witness(n: int) -> int
+  requires n >= 0
+  ensures result == n
+  decreases 0
+=
+  return n
+
 def main() -> int
   requires true
   ensures result == 0

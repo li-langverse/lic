@@ -1,13 +1,13 @@
 # PH-ML-GPU battle plan — native ML/DL/RL on Li
 
-**Status:** Wave 4 DL spine + sync parallel RL (2026-05-30); Wave 3 JobGraph landed (2026-05-30); Wave 1 spine on branch  
+**Status:** Wave 5 thread-pool RL + JobGraph queue (2026-05-31); Wave 4 merged (2026-05-30); Wave 3 JobGraph landed (2026-05-30); Wave 1 spine on branch  
 **Vision:** [world-studio-vision.md](world-studio-vision.md)  
 **RFC:** [specs/ml-async-parallel-rfc.md](specs/ml-async-parallel-rfc.md)  
 **Tracker:** [PH-ML-GPU-execution-tracker.md](PH-ML-GPU-execution-tracker.md)
 
 ## Overview
 
-**PH-ML** delivers native-first ML/DL/RL: CPU correctness spine in Wave 1, LKIR/GPU pilot in Wave 2, async JobGraph + Studio RL in Wave 3; general matmul + MLP + honest sync env workers in Wave 4.
+**PH-ML** delivers native-first ML/DL/RL: CPU correctness spine in Wave 1, LKIR/GPU pilot in Wave 2, async JobGraph + Studio RL in Wave 3; general matmul + MLP + sync env workers in Wave 4; pthread parallel env rewards + sample queue in Wave 5.
 
 ## Waves
 

@@ -1,21 +1,22 @@
 import sim
 
-# li-ml-rl (PH-ML Wave 4): persistent EnvPool JobGraph, SampleJob fill, Train/Eval nodes.
+# li-ml-rl (PH-ML Wave 5): persistent EnvPool JobGraph, SampleJob fill, Train/Eval nodes.
 
 def ml_rl_version() -> int
   requires true
-  ensures result == 4
+  ensures result == 5
   decreases 0
 =
-  return 4
+  return 5
 
 def ml_rl_worker_mode() -> int
   requires true
   ensures result >= 0
   ensures result <= 1
+  ensures result == sim_rl_env_worker_mode()
   decreases 0
 =
-  return 0
+  return sim_rl_env_worker_mode()
 
 type SampleJob = object
   public env_index: int
@@ -39,9 +40,14 @@ type JobGraphStub = object
   public samples_collected: int
   public total_reward: float
   public async_workers: int
+  public sample_queue_len: int
   public last_sample: SampleJob
   public train_step: TrainStepJob
   public eval_step: EvalStepJob
+  public sample_q0: SampleJob
+  public sample_q1: SampleJob
+  public sample_q2: SampleJob
+  public sample_q3: SampleJob
 
 def job_graph_stub_default() -> JobGraphStub
   requires true
@@ -58,6 +64,7 @@ def job_graph_stub_default() -> JobGraphStub
   g.samples_collected = 0
   g.total_reward = 0.0
   g.async_workers = sim_rl_env_pool_size_default()
+  g.sample_queue_len = 0
   g.last_sample.env_index = 0
   g.last_sample.sample_id = 0
   g.last_sample.reward = 0.0
@@ -68,6 +75,22 @@ def job_graph_stub_default() -> JobGraphStub
   g.eval_step.batch_size = 0
   g.eval_step.mean_reward = 0.0
   g.eval_step.dispatched = 0
+  g.sample_q0.env_index = 0
+  g.sample_q0.sample_id = 0
+  g.sample_q0.reward = 0.0
+  g.sample_q0.done = 0
+  g.sample_q1.env_index = 0
+  g.sample_q1.sample_id = 0
+  g.sample_q1.reward = 0.0
+  g.sample_q1.done = 0
+  g.sample_q2.env_index = 0
+  g.sample_q2.sample_id = 0
+  g.sample_q2.reward = 0.0
+  g.sample_q2.done = 0
+  g.sample_q3.env_index = 0
+  g.sample_q3.sample_id = 0
+  g.sample_q3.reward = 0.0
+  g.sample_q3.done = 0
   return g
 
 def ml_rl_async_env_count() -> int
@@ -97,6 +120,48 @@ def ml_rl_env_pool_step(session: var SimSessionStub, dt: float) -> int
   decreases session.tick
 =
   return sim_rl_session_env_pool_step(session, dt)
+
+
+
+def ml_rl_job_graph_clear_sample_queue(graph: var JobGraphStub) -> unit
+  requires true
+  ensures graph.sample_queue_len == 0
+  decreases 0
+=
+  graph.sample_queue_len = 0
+
+def ml_rl_job_graph_push_sample(graph: var JobGraphStub, job: SampleJob) -> unit
+  requires graph.sample_queue_len >= 0
+  requires graph.sample_queue_len <= 4
+  ensures graph.sample_queue_len >= 0
+  decreases graph.sample_queue_len
+=
+  var n: int = graph.sample_queue_len
+  if n == 0:
+    graph.sample_q0 = job
+  if n == 1:
+    graph.sample_q1 = job
+  if n == 2:
+    graph.sample_q2 = job
+  if n == 3:
+    graph.sample_q3 = job
+  if n < 4:
+    graph.sample_queue_len = n + 1
+
+def ml_rl_job_graph_fill_sample_queue(
+    graph: var JobGraphStub, session: SimSessionStub, count: int) -> unit
+  requires count >= 0
+  requires count <= 4
+  ensures graph.sample_queue_len == count
+  decreases count
+=
+  ml_rl_job_graph_clear_sample_queue(graph)
+  var i: int = 0
+  while i < count
+    var job: SampleJob = ml_rl_sample_job_from_session(session, i + 1)
+    job.env_index = i
+    ml_rl_job_graph_push_sample(graph, job)
+    i = i + 1
 
 def ml_rl_job_graph_train_step(graph: var JobGraphStub, batch_size: int) -> int
   requires batch_size >= 0
@@ -148,6 +213,8 @@ def ml_rl_job_graph_collect(
   graph.samples_collected = session.env_pool_steps_emitted - steps_before
   graph.total_reward = session.env_pool_total_reward
   if ml_rl_worker_mode() == 0:
+    graph.async_workers = 1
+  if ml_rl_worker_mode() != 0:
     graph.async_workers = session.env_pool_size
   if graph.samples_collected < 4:
     return sim_status_invalid_dt()
@@ -157,6 +224,7 @@ def ml_rl_job_graph_collect(
   graph.last_sample.sample_id = sample0.sample_id
   graph.last_sample.reward = sample0.reward
   graph.last_sample.done = sample0.done
+  ml_rl_job_graph_fill_sample_queue(graph, session, 4)
   if sim_session_replay_last_tick(session) != session.tick:
     return sim_status_invalid_dt()
   return sim_status_ok()

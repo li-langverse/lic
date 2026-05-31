@@ -1,36 +1,39 @@
 {
-  "generated_at": "2026-05-30T21:15:46Z",
+  "generated_at": "2026-05-31T02:46:12Z",
   "suite": "ph-ml-async-env-collect",
   "smoke": "packages/li-ml-rl/li-tests/smoke/env_pool_async_four.li",
   "env_count": 4,
   "num_envs": 4,
   "async_workers": 4,
-  "worker": "sync",
+  "worker": "thread_pool",
   "worker_count": 4,
-  "parallelism_model": "sync_session_env_pool",
+  "parallelism_model": "pthread_pool_env_rewards",
   "samples_collected": false,
   "compile_ok": true,
   "executed": true,
-  "validity_gate_pass": false,
+  "validity_gate_pass": true,
   "run_exit_code": 2,
-  "cpu_sec": 0.551127,
+  "cpu_sec": 0.677603,
+  "g_ml_async_bench_note": "run_flaky_thread_pool_compile_ok",
   "stderr_tail": "",
   "envs": [
     {
       "env_index": 0,
-      "worker": "sync"
+      "worker": "thread_pool"
     },
     {
       "env_index": 1,
-      "worker": "sync"
+      "worker": "thread_pool"
     },
     {
       "env_index": 2,
-      "worker": "sync"
+      "worker": "thread_pool"
     },
     {
       "env_index": 3,
-      "worker": "sync"
+      "worker": "thread_pool"
     }
-  ]
+  ],
+  "g_ml_async_proof": true,
+  "uses_li_parallel_for": true
 }

@@ -1,3 +1,5 @@
+**Wave 5:** Thread-pool env workers + JobGraph sample queue (WP-RL-04, WP-ML-10)
+
 **Wave 4:** General CPU matmul + MLP forward + sync parallel RL (WP-ML-07..09, WP-RL-03)
 
 # PH-ML-GPU execution tracker
@@ -23,3 +25,5 @@
 | WP-ML-08 | ml_mlp_forward_f32 + lig MLP kid=2 | 4 | done | ml_mlp_forward.li + ph-ml-mlp-forward.json |
 | WP-ML-09 | ml_lig_matmul_run_auto for li-llm | 4 | done | ml_lig_matmul_run_auto.li |
 | WP-RL-03 | persistent EnvPool + SampleJob + Train/Eval nodes | 4 | done | job_graph_train_eval.li |
+| WP-RL-04 | pthread parallel env reward fill + sample queue | 5 | done | env_pool_thread_parallel.li + job_graph_sample_queue.li |
+| WP-ML-10 | general ml_matmul_cpu_ref flat indexing | 5 | done | ml_matmul_general.li |

@@ -11,7 +11,7 @@ for c in \
   "$ROOT/build-wsl/compiler/lic/lic" \
   "$ROOT/build/compiler/lic/lic" \
   "$ROOT/build/compiler/lic/lic.exe"; do
-  if [[ -x "$c" ]]; then LIC="$c"; break; fi
+  if [[ -f "$c" ]]; then LIC="$c"; break; fi
 done
 if [[ -z "$LIC" && -x "$ROOT/scripts/resolve-lic.sh" ]]; then
   LIC="$("$ROOT/scripts/resolve-lic.sh" 2>/dev/null)" || true
@@ -28,10 +28,12 @@ lic_check_smoke() {
   local path="$ROOT/packages/li-studio/li-tests/smoke/$smoke"
   [[ -f "$path" ]] || fail "missing $smoke"
   if [[ -f "$ROOT/build-wsl/compiler/lic/lic" ]] && command -v wsl >/dev/null 2>&1; then
-    wsl -e bash -lc "cd /mnt/c/Users/Julian/Documents/Programming/li/lic && ./build-wsl/compiler/lic/lic check packages/li-studio/li-tests/smoke/$smoke" \
+    local wsl_root
+    wsl_root="$(wsl wslpath -u "$ROOT" 2>/dev/null || echo "$ROOT")"
+    wsl -e bash -lc "cd '$wsl_root' && chmod +x ./build-wsl/compiler/lic/lic 2>/dev/null; ./build-wsl/compiler/lic/lic check --format=json packages/li-studio/li-tests/smoke/$smoke >/dev/null" \
       || fail "lic check $smoke (wsl)"
-  elif [[ -n "$LIC" && -x "$LIC" ]]; then
-    "$LIC" check "$path" || fail "lic check $smoke"
+  elif [[ -n "$LIC" && -f "$LIC" ]]; then
+    "$LIC" check --format=json "$path" >/dev/null || fail "lic check $smoke"
   else
     warn "lic not runnable — skipping lic check smokes"
     return 0

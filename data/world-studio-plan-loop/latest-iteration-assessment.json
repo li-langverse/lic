@@ -1,16 +1,18 @@
 {
   "pass": true,
-  "todo_id": "wsm-w1-profile-smokes",
-  "wps_touched": ["WP-SIM-00", "WP-SIM-01", "WP-UX-05"],
+  "todo_id": "wsm-w1-sim3-envpool",
+  "wps_touched": ["WP-SIM-03", "WP-RL-01", "WP-UX-02"],
   "smokes_run": [
-    "packages/li-studio/li-tests/smoke/studio_vertical_profile_roundtrip.li",
-    "packages/li-studio/li-tests/smoke/studio_sim_step_by_profile.li"
+    "packages/li-sim/li-tests/smoke/env_pool_step_contract.li",
+    "packages/li-sim/li-tests/smoke/env_pool_stub.li",
+    "packages/li-studio/li-tests/smoke/studio_sim_step_by_profile.li",
+    "packages/li-studio/li-tests/smoke/studio_vertical_demo_env.li"
   ],
   "native_only": true,
   "gates": {
     "world_studio_plan_gates": "pass",
-    "lic_check_local": "skipped_llvm_dev_missing",
-    "lic_check_ci": "pending"
+    "world_studio_runnable_gate": "pass",
+    "lic_check_wsl": "pass"
   },
-  "notes": "Extended studio_sim_step_by_profile.li with studio_sim_step_profile_ok helper covering all 7 runtime profiles (game, sim_rl, sim_automotive, sim_robotics, sim_additive, sim_scientific, sim_drug_design). Scientific and RL retain specialized assertions (MD tier viewport sync, env pool batch tick). studio_vertical_profile_roundtrip.li already covered all 7 compose/TOML paths. Local lic check blocked: LLVM 22 runtime present but LLVMConfig.cmake dev package missing on Windows host; CI will verify lic check."
+  "notes": "Runnable-installer sprint: merged main, added li-scene MD memory ledger helpers (scene_md_particle_memory_ledger_default/tier_would_fit/refuse_md_100k), fixed studio demo sim-tick ensures, fixed studio_sim_step_by_profile trailing commas for lic parser, world-studio-runnable-gate uses wslpath + JSON lic check. SIM-3 persistent env pool + env_pool_step_contract.li verified on WSL lic. Inno Setup + li-studio-demo binary build deferred when iscc/build not on agent host."
 }

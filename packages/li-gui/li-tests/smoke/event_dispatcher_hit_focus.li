@@ -1,0 +1,55 @@
+import gui
+
+def main() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  if li_std_gui_version() < 7:
+    return 1
+  if gui_event_dispatcher_version() != 1:
+    return 2
+  var constraints: LayoutConstraints = layout_constraints_loose(320.0, 240.0)
+  var spacer: WidgetNode = widget_node_spacer(0.0, 0.0)
+  var btn_a: WidgetNode = widget_node_button(4.0)
+  var btn_b: WidgetNode = widget_node_button(6.0)
+  var label: WidgetNode = widget_node_label(8.0)
+  var flex_row: FlexLayout = flex_layout_row(8.0, 3, btn_a, btn_b, label, spacer)
+  var row_layout: FlexLayoutResult = flex_layout_layout(flex_row, constraints, 0.0, 0.0)
+  var layout_b: WidgetLayoutResult = row_layout.child_layouts[1]
+  var layout_label: WidgetLayoutResult = row_layout.child_layouts[2]
+  var state: EventDispatcherState = event_dispatcher_state_new()
+  var hit_b: int = event_dispatcher_hit_test_flex(flex_row, row_layout, layout_b.bounds.x + 4.0, layout_b.bounds.y + 4.0)
+  if hit_b != 1:
+    return 3
+  var hit_label: int = event_dispatcher_hit_test_flex(flex_row, row_layout, layout_label.bounds.x + 2.0, layout_label.bounds.y + 2.0)
+  if hit_label != 2:
+    return 4
+  var miss: int = event_dispatcher_hit_test_flex(flex_row, row_layout, 0.0, 0.0)
+  if miss != event_dispatcher_hit_none():
+    return 5
+  var click: EventDispatchResult = event_dispatcher_pointer_down(flex_row, row_layout, state, layout_b.bounds.x + 4.0, layout_b.bounds.y + 4.0)
+  if click.handled != 1:
+    return 6
+  if click.target_index != 1:
+    return 7
+  if state.focus_active != 1:
+    return 8
+  if state.focus_index != 1:
+    return 9
+  var next: int = event_dispatcher_focus_next(flex_row, row_layout, state)
+  if next != 0:
+    return 10
+  if state.focus_index != 0:
+    return 11
+  var prev: int = event_dispatcher_focus_prev(flex_row, row_layout, state)
+  if prev != 1:
+    return 12
+  if state.focus_index != 1:
+    return 13
+  var key: EventDispatchResult = event_dispatcher_dispatch_key_focus(flex_row, row_layout, state)
+  if key.handled != 1:
+    return 14
+  if key.target_index != 1:
+    return 15
+  return 0

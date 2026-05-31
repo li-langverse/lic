@@ -5,10 +5,10 @@ import ui
 
 def li_std_gui_version() -> int
   requires true
-  ensures result == 6
+  ensures result == 7
   decreases 0
 =
-  return 6
+  return 7
 
 def gui_widget_protocol_version() -> int
   requires true
@@ -247,10 +247,10 @@ def studio_key_binding_digit_inspector() -> int
 
 def studio_key_binding_digit_timeline() -> int
   requires true
-  ensures result == 6
+  ensures result == 7
   decreases 0
 =
-  return 6
+  return 7
 
 def studio_key_binding_digit_agent() -> int
   requires true
@@ -624,10 +624,10 @@ def gui_widget_pad_y_px() -> float
 
 def gui_widget_button_min_w_px() -> float
   requires true
-  ensures result == 64.0
+  ensures result == 74.0
   decreases 0
 =
-  return 64.0
+  return 74.0
 
 def gui_widget_button_min_h_px() -> float
   requires true
@@ -1332,3 +1332,354 @@ def flex_layout_paint(spec: FlexLayout, frame: var PaintFrame, layout: FlexLayou
   while idx < spec.child_count
     widget_paint(spec.children[idx], frame, layout.child_layouts[idx])
     idx = idx + 1
+
+# --- Phase 1 (W1): EventDispatcher — hit-test tree + focus manager ---
+
+def gui_event_dispatcher_version() -> int
+  requires true
+  ensures result == 1
+  decreases 0
+=
+  return 1
+
+def event_dispatcher_hit_none() -> int
+  requires true
+  ensures result == layout_engine_max_children()
+  decreases 0
+=
+  return layout_engine_max_children()
+
+type EventDispatcherState = object
+  public focus_active: int
+  public focus_index: int
+  public last_hit_index: int
+
+type EventDispatchResult = object
+  public handled: int
+  public target_index: int
+  public wants_focus: int
+
+def event_dispatcher_state_new() -> EventDispatcherState
+  requires true
+  ensures result.focus_active == 0
+  ensures result.focus_index == 0
+  ensures result.last_hit_index == event_dispatcher_hit_none()
+  decreases 0
+=
+  var s: EventDispatcherState
+  s.focus_active = 0
+  s.focus_index = 0
+  s.last_hit_index = event_dispatcher_hit_none()
+  return s
+
+def widget_node_accepts_focus(node: WidgetNode) -> int
+  requires node.kind >= widget_kind_none()
+  requires node.kind <= widget_kind_spacer()
+  ensures result >= 0
+  ensures result <= 1
+  decreases node.kind
+=
+  if node.enabled != 1:
+    return 0
+  if node.kind == widget_kind_button():
+    return 1
+  return 0
+
+def event_dispatcher_clear_focus(spec: var FlexLayout) -> unit
+  requires spec.child_count >= 0
+  requires spec.child_count <= layout_engine_max_children()
+  ensures spec.child_count == old(spec.child_count)
+  decreases spec.child_count
+=
+  if spec.child_count > 0:
+    spec.children[0].focused = 0
+  if spec.child_count > 1:
+    spec.children[1].focused = 0
+  if spec.child_count > 2:
+    spec.children[2].focused = 0
+  if spec.child_count > 3:
+    spec.children[3].focused = 0
+
+def flex_layout_accepts_focus_at(spec: FlexLayout, index: int) -> int
+  requires index >= 0
+  requires index <= 3
+  ensures result >= 0
+  ensures result <= 1
+  decreases index
+=
+  if index == 0:
+    return widget_node_accepts_focus(spec.children[0])
+  if index == 1:
+    return widget_node_accepts_focus(spec.children[1])
+  if index == 2:
+    return widget_node_accepts_focus(spec.children[2])
+  if index == 3:
+    return widget_node_accepts_focus(spec.children[3])
+  return 0
+
+def flex_layout_handle_event_at(spec: var FlexLayout, layout: FlexLayoutResult, index: int, event: WidgetEvent) -> WidgetEventResult
+  requires spec.child_count == layout.child_count
+  requires index >= 0
+  requires index <= 3
+  requires event.kind >= widget_event_none()
+  requires event.kind <= widget_event_key_focus()
+  ensures result.handled >= 0
+  ensures result.handled <= 1
+  ensures result.wants_focus >= 0
+  ensures result.wants_focus <= 1
+  decreases index
+=
+  if index == 0:
+    return widget_handle_event(spec.children[0], layout.child_layouts[0], event)
+  if index == 1:
+    return widget_handle_event(spec.children[1], layout.child_layouts[1], event)
+  if index == 2:
+    return widget_handle_event(spec.children[2], layout.child_layouts[2], event)
+  if index == 3:
+    return widget_handle_event(spec.children[3], layout.child_layouts[3], event)
+  var empty: WidgetEventResult
+  empty.handled = 0
+  empty.wants_focus = 0
+  return empty
+
+def event_dispatcher_hit_test_flex(spec: FlexLayout, layout: FlexLayoutResult, px: float, py: float) -> int
+  requires spec.child_count == layout.child_count
+  requires spec.child_count >= 0
+  requires spec.child_count <= layout_engine_max_children()
+  ensures result >= 0
+  ensures result <= layout_engine_max_children()
+  decreases spec.child_count
+=
+  if spec.child_count > 3:
+    if widget_hit_test(layout.child_layouts[3], px, py) == 1:
+      return 3
+  if spec.child_count > 2:
+    if widget_hit_test(layout.child_layouts[2], px, py) == 1:
+      return 2
+  if spec.child_count > 1:
+    if widget_hit_test(layout.child_layouts[1], px, py) == 1:
+      return 1
+  if spec.child_count > 0:
+    if widget_hit_test(layout.child_layouts[0], px, py) == 1:
+      return 0
+  return event_dispatcher_hit_none()
+
+def event_dispatcher_pointer_down(spec: var FlexLayout, layout: FlexLayoutResult, state: var EventDispatcherState, px: float, py: float) -> EventDispatchResult
+  requires spec.child_count == layout.child_count
+  requires spec.child_count >= 0
+  requires spec.child_count <= layout_engine_max_children()
+  requires state.focus_active >= 0
+  requires state.focus_active <= 1
+  ensures result.handled >= 0
+  ensures result.handled <= 1
+  ensures result.target_index >= 0
+  ensures result.target_index <= layout_engine_max_children()
+  ensures result.wants_focus >= 0
+  ensures result.wants_focus <= 1
+  decreases spec.child_count
+=
+  var out: EventDispatchResult
+  out.handled = 0
+  out.target_index = event_dispatcher_hit_none()
+  out.wants_focus = 0
+  var hit: int = event_dispatcher_hit_test_flex(spec, layout, px, py)
+  state.last_hit_index = hit
+  if hit == event_dispatcher_hit_none():
+    event_dispatcher_clear_focus(spec)
+    state.focus_active = 0
+    return out
+  event_dispatcher_clear_focus(spec)
+  var event: WidgetEvent
+  event.kind = widget_event_pointer_down()
+  event.x = px
+  event.y = py
+  var child_result: WidgetEventResult
+  child_result.handled = 0
+  child_result.wants_focus = 0
+  if hit == 0:
+    child_result = flex_layout_handle_event_at(spec, layout, 0, event)
+  if hit == 1:
+    child_result = flex_layout_handle_event_at(spec, layout, 1, event)
+  if hit == 2:
+    child_result = flex_layout_handle_event_at(spec, layout, 2, event)
+  if hit == 3:
+    child_result = flex_layout_handle_event_at(spec, layout, 3, event)
+  out.target_index = hit
+  out.handled = child_result.handled
+  out.wants_focus = child_result.wants_focus
+  if child_result.wants_focus == 1:
+    state.focus_active = 1
+    state.focus_index = hit
+  return out
+
+def event_dispatcher_focus_child(spec: var FlexLayout, layout: FlexLayoutResult, state: var EventDispatcherState, index: int) -> int
+  requires spec.child_count == layout.child_count
+  requires spec.child_count >= 0
+  requires spec.child_count <= layout_engine_max_children()
+  requires index >= 0
+  requires index <= 3
+  requires index < spec.child_count
+  requires state.focus_active >= 0
+  requires state.focus_active <= 1
+  ensures result >= 0
+  ensures result <= 1
+  ensures state.focus_active == result
+  decreases index
+=
+  if flex_layout_accepts_focus_at(spec, index) != 1:
+    return 0
+  event_dispatcher_clear_focus(spec)
+  var event: WidgetEvent
+  event.kind = widget_event_key_focus()
+  event.x = 0.0
+  event.y = 0.0
+  var child_result: WidgetEventResult
+  child_result.handled = 0
+  child_result.wants_focus = 0
+  if index == 0:
+    child_result = flex_layout_handle_event_at(spec, layout, 0, event)
+  if index == 1:
+    child_result = flex_layout_handle_event_at(spec, layout, 1, event)
+  if index == 2:
+    child_result = flex_layout_handle_event_at(spec, layout, 2, event)
+  if index == 3:
+    child_result = flex_layout_handle_event_at(spec, layout, 3, event)
+  if child_result.wants_focus == 1:
+    state.focus_active = 1
+    state.focus_index = index
+    return 1
+  return 0
+
+def event_dispatcher_focus_next(spec: var FlexLayout, layout: FlexLayoutResult, state: var EventDispatcherState) -> int
+  requires spec.child_count == layout.child_count
+  requires spec.child_count >= 0
+  requires spec.child_count <= layout_engine_max_children()
+  requires state.focus_active >= 0
+  requires state.focus_active <= 1
+  ensures result >= 0
+  ensures result <= layout_engine_max_children()
+  decreases spec.child_count
+=
+  if spec.child_count <= 0:
+    return event_dispatcher_hit_none()
+  var start: int = 0
+  if state.focus_active == 1:
+    start = state.focus_index + 1
+  if start <= 0:
+    if spec.child_count > 0:
+      if event_dispatcher_focus_child(spec, layout, state, 0) == 1:
+        return 0
+  if start <= 1:
+    if spec.child_count > 1:
+      if event_dispatcher_focus_child(spec, layout, state, 1) == 1:
+        return 1
+  if start <= 2:
+    if spec.child_count > 2:
+      if event_dispatcher_focus_child(spec, layout, state, 2) == 1:
+        return 2
+  if start <= 3:
+    if spec.child_count > 3:
+      if event_dispatcher_focus_child(spec, layout, state, 3) == 1:
+        return 3
+  if start > 0:
+    if spec.child_count > 0:
+      if event_dispatcher_focus_child(spec, layout, state, 0) == 1:
+        return 0
+  if start > 1:
+    if spec.child_count > 1:
+      if event_dispatcher_focus_child(spec, layout, state, 1) == 1:
+        return 1
+  if start > 2:
+    if spec.child_count > 2:
+      if event_dispatcher_focus_child(spec, layout, state, 2) == 1:
+        return 2
+  return event_dispatcher_hit_none()
+
+def event_dispatcher_focus_prev(spec: var FlexLayout, layout: FlexLayoutResult, state: var EventDispatcherState) -> int
+  requires spec.child_count == layout.child_count
+  requires spec.child_count >= 0
+  requires spec.child_count <= layout_engine_max_children()
+  requires state.focus_active >= 0
+  requires state.focus_active <= 1
+  ensures result >= 0
+  ensures result <= layout_engine_max_children()
+  decreases spec.child_count
+=
+  if spec.child_count <= 0:
+    return event_dispatcher_hit_none()
+  var start: int = spec.child_count - 1
+  if state.focus_active == 1:
+    start = state.focus_index - 1
+  if start >= 3:
+    if spec.child_count > 3:
+      if event_dispatcher_focus_child(spec, layout, state, 3) == 1:
+        return 3
+  if start >= 2:
+    if spec.child_count > 2:
+      if event_dispatcher_focus_child(spec, layout, state, 2) == 1:
+        return 2
+  if start >= 1:
+    if spec.child_count > 1:
+      if event_dispatcher_focus_child(spec, layout, state, 1) == 1:
+        return 1
+  if start >= 0:
+    if spec.child_count > 0:
+      if event_dispatcher_focus_child(spec, layout, state, 0) == 1:
+        return 0
+  if start < 3:
+    if spec.child_count > 3:
+      if event_dispatcher_focus_child(spec, layout, state, 3) == 1:
+        return 3
+  if start < 2:
+    if spec.child_count > 2:
+      if event_dispatcher_focus_child(spec, layout, state, 2) == 1:
+        return 2
+  if start < 1:
+    if spec.child_count > 1:
+      if event_dispatcher_focus_child(spec, layout, state, 1) == 1:
+        return 1
+  return event_dispatcher_hit_none()
+
+def event_dispatcher_dispatch_key_focus(spec: var FlexLayout, layout: FlexLayoutResult, state: EventDispatcherState) -> EventDispatchResult
+  requires spec.child_count == layout.child_count
+  requires spec.child_count >= 0
+  requires spec.child_count <= layout_engine_max_children()
+  requires state.focus_active >= 0
+  requires state.focus_active <= 1
+  ensures result.handled >= 0
+  ensures result.handled <= 1
+  ensures result.target_index >= 0
+  ensures result.target_index <= layout_engine_max_children()
+  ensures result.wants_focus >= 0
+  ensures result.wants_focus <= 1
+  decreases state.focus_active
+=
+  var out: EventDispatchResult
+  out.handled = 0
+  out.target_index = event_dispatcher_hit_none()
+  out.wants_focus = 0
+  if state.focus_active != 1:
+    return out
+  if state.focus_index < 0:
+    return out
+  if state.focus_index >= spec.child_count:
+    return out
+  var event: WidgetEvent
+  event.kind = widget_event_key_focus()
+  event.x = 0.0
+  event.y = 0.0
+  var child_result: WidgetEventResult
+  child_result.handled = 0
+  child_result.wants_focus = 0
+  if state.focus_index == 0:
+    child_result = flex_layout_handle_event_at(spec, layout, 0, event)
+  if state.focus_index == 1:
+    child_result = flex_layout_handle_event_at(spec, layout, 1, event)
+  if state.focus_index == 2:
+    child_result = flex_layout_handle_event_at(spec, layout, 2, event)
+  if state.focus_index == 3:
+    child_result = flex_layout_handle_event_at(spec, layout, 3, event)
+  out.target_index = state.focus_index
+  out.handled = child_result.handled
+  out.wants_focus = child_result.wants_focus
+  return out

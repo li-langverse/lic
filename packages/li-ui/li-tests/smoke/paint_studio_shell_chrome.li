@@ -5,17 +5,17 @@ def main() -> int
   ensures result == 0
   decreases 0
 =
-  if li_std_ui_version() < 4:
+  if li_std_ui_version() < 5:
     return 1
   if paint_op_kind_max() != paint_op_fill_gradient():
     return 2
   var panel: Rect = rect_make(8.0, 8.0, 120.0, 40.0)
-  var fill_round: PaintCmd = paint_cmd_fill_round(panel, studio_color_bg_elevated(), 6.0)
+  var fill_round: PaintCmd = paint_cmd_fill_round(panel, studio_color_bg_elevated(), studio_default_panel_radius_px())
   if fill_round.kind != paint_op_fill_round_rect():
     return 3
   if fill_round.radius_px != 6.0:
     return 4
-  var stroke_round: PaintCmd = paint_cmd_stroke_round(panel, studio_color_border(), 1.0, 6.0)
+  var stroke_round: PaintCmd = paint_cmd_stroke_round(panel, studio_color_border(), 1.0, studio_default_panel_radius_px())
   if stroke_round.kind != paint_op_stroke_round_rect():
     return 5
   var grad: PaintCmd = paint_cmd_fill_gradient(panel, studio_color_bg_primary(), studio_color_bg_elevated())

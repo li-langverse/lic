@@ -30,10 +30,10 @@ type UiFrame = object
   public viewport_h: float
 def li_std_ui_version() -> int
   requires true
-  ensures result == 4
+  ensures result == 5
   decreases 0
 =
-  return 4
+  return 5
 
 def li_std_ui_studio_composables_version() -> int
   requires true
@@ -160,6 +160,112 @@ def studio_color_border() -> Color
 =
   return color_rgb(0.188, 0.212, 0.239, 1.0)
 
+def studio_color_text_primary() -> Color
+  requires true
+  ensures result.r >= 0.0
+  decreases 0
+=
+  return color_rgb(0.902, 0.929, 0.953, 1.0)
+
+def studio_color_text_muted() -> Color
+  requires true
+  ensures result.r >= 0.0
+  decreases 0
+=
+  return color_rgb(0.545, 0.580, 0.620, 1.0)
+
+def studio_color_accent_rose() -> Color
+  requires true
+  ensures result.r >= 0.0
+  decreases 0
+=
+  return color_rgb(1.0, 0.361, 0.478, 1.0)
+
+def studio_color_viewport_grid() -> Color
+  requires true
+  ensures result.r >= 0.0
+  decreases 0
+=
+  return color_rgb(0.129, 0.149, 0.176, 1.0)
+
+# [typography] docs/design/studio-design-tokens.toml — font families as length stubs until Phase 3 atlas
+def studio_typography_ui_family_len() -> int
+  requires true
+  ensures result == 28
+  decreases 0
+=
+  return 28
+
+def studio_typography_mono_family_len() -> int
+  requires true
+  ensures result == 23
+  decreases 0
+=
+  return 23
+
+def studio_typography_dock_label_px() -> float
+  requires true
+  ensures result == 9.0
+  decreases 0
+=
+  return 9.0
+
+def studio_typography_caption_px() -> float
+  requires true
+  ensures result == 11.0
+  decreases 0
+=
+  return 11.0
+
+def studio_typography_body_px() -> float
+  requires true
+  ensures result == 12.0
+  decreases 0
+=
+  return 12.0
+
+def studio_typography_heading_px() -> float
+  requires true
+  ensures result == 14.0
+  decreases 0
+=
+  return 14.0
+
+# [radius] docs/design/studio-design-tokens.toml
+def studio_radius_sm_px() -> float
+  requires true
+  ensures result == 4.0
+  decreases 0
+=
+  return 4.0
+
+def studio_radius_md_px() -> float
+  requires true
+  ensures result == 6.0
+  decreases 0
+=
+  return 6.0
+
+def studio_radius_lg_px() -> float
+  requires true
+  ensures result == 8.0
+  decreases 0
+=
+  return 8.0
+
+def studio_radius_pill_px() -> float
+  requires true
+  ensures result == 999.0
+  decreases 0
+=
+  return 999.0
+
+def studio_default_panel_radius_px() -> float
+  requires true
+  ensures result == studio_radius_md_px()
+  decreases 0
+=
+  return studio_radius_md_px()
 
 # UX-10 — focus_ring in docs/design/studio-design-tokens.toml (#3dd6ff)
 def studio_color_focus_ring() -> Color
@@ -457,6 +563,20 @@ def studio_inspector_width_px() -> float
   decreases 0
 =
   return 320.0
+
+def studio_outliner_width_px() -> float
+  requires true
+  ensures result == 200.0
+  decreases 0
+=
+  return 200.0
+
+def studio_hover_transition_ms() -> float
+  requires true
+  ensures result == 200.0
+  decreases 0
+=
+  return 200.0
 
 def studio_panel_transition_ms() -> float
   requires true

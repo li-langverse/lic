@@ -26,6 +26,12 @@ note = "T-PKG-li-ui-paint-cmd-round-gradient-ops"
 
 [[tests]]
 suite = "smoke"
+file = "smoke/studio_typography_tokens.li"
+outcome = "compile_open_ok"
+note = "T-PKG-li-ui-studio-typography-radius-tokens"
+
+[[tests]]
+suite = "smoke"
 file = "smoke/studio_palette_search.li"
 outcome = "compile_open_ok"
 note = "T-PKG-li-ui-studio-palette-fuzzy-search"

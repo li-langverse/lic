@@ -3,8 +3,8 @@
   "todo_id": "wsm-w6-vertical-dod",
   "completion_sprint": true,
   "verification_pass": true,
-  "verified_at": "2026-05-31T07:37:43Z",
-  "agent_run": "world_studio_builder-1780212668742",
+  "verified_at": "2026-05-31T07:45:00Z",
+  "agent_run": "world_studio_builder-1780212956525",
   "wps_touched": ["§11 vertical DoD", "WP-SIM-06", "WP-UX-02", "WP-UX-04", "WP-UX-06", "WP-UX-09", "WP-GD-05", "WP-AG-03", "WP-AG-06", "WP-PUB-03"],
   "smokes_run": [
     "scripts/world-studio-plan-lic-smokes-wsl.sh",
@@ -29,6 +29,6 @@
     "panel_switch_ms_meets_target": false,
     "viewport_fps_meets_target": true
   },
-  "notes": "Sprint complete (36/36 wsm-w* done). Re-verified on cursor/world-studio-master-plan-loop: completion gate exit 0 (~147s WSL lic smokes), plan gates exit 0, viewport bench ok, MCP li-engine stdio ok. Windows host: c-host/patch-eval/vertical-DoD gates path-verified only (lic not on PATH). panel_switch_ms honest_simulate worst 150ms exceeds 100ms PH-UX budget. PR #411 open for human merge to main.",
+  "notes": "Sprint complete (36/36 wsm-w* done). Re-verified on cursor/world-studio-master-plan-loop: completion gate exit 0 (~99s WSL lic smokes), plan gates exit 0, MCP li-engine stdio ok. Windows host: patch-eval/vertical-DoD/c-host gates path-verified only (lic not on PATH). panel_switch_ms honest_simulate worst 150ms exceeds 100ms PH-UX budget. PR #411 open for human merge to main.",
   "pr_url": "https://github.com/li-langverse/lic/pull/411"
 }

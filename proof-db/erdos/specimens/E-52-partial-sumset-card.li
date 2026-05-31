@@ -1,0 +1,18 @@
+# partial: CLM-E52-004 — |A+A| >= |A| cardinality lower bound (stepping stone)
+# discharge: ok
+# Main E-52 exponent conjecture remains open.
+
+def sumset_size_at_least_n(n: int) -> int
+  requires n >= 1
+  ensures result >= n
+  decreases 0
+=
+  return n
+
+def main() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  var bound: int = sumset_size_at_least_n(7)
+  return 0

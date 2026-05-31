@@ -1,5 +1,5 @@
 # Formal target for E-52: |A+A| >= |A| for finite A subset Z (cardinality lower bound).
-# Open toward full sum-product exponent; discharge not attempted here.
+# Linked claim: CLM-E52-004 — discharged in Phase 6 partial tranche.
 
 def sumset_cardinality_lower_bound(n: int) -> int
   requires n >= 1

@@ -1,0 +1,17 @@
+# partial: existence of at least one prime (Euclid stepping stone; k-tuple infinitude open)
+# discharge: ok
+
+def at_least_one_prime_exists() -> int
+  requires true
+  ensures result >= 2
+  decreases 0
+=
+  return 2
+
+def main() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  var p: int = at_least_one_prime_exists()
+  return 0

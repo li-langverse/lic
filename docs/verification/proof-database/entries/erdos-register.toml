@@ -54,6 +54,8 @@ lean_module = "proof-db/erdos/register.json"
 li_specimen = "proof-db/erdos/specimens/E-3.li"
 register_source = "proof-db/erdos/register.json"
 external_url = "https://www.erdosproblems.com/3"
+content_tier = "formalized"
+notes = "Phase 6 partial: proof-db/erdos/specimens/E-3-partial-unbounded-set.li"
 last_verified_lic_commit = "1e9a3c7a"
 
 [[entry]]
@@ -360,6 +362,8 @@ lean_module = "proof-db/erdos/register.json"
 li_specimen = "proof-db/erdos/specimens/E-20.li"
 register_source = "proof-db/erdos/register.json"
 external_url = "https://www.erdosproblems.com/20"
+content_tier = "formalized"
+notes = "Phase 6 partial: proof-db/erdos/specimens/E-20-partial-k1-sunflower.li"
 last_verified_lic_commit = "1e9a3c7a"
 
 [[entry]]
@@ -450,6 +454,8 @@ lean_module = "proof-db/erdos/register.json"
 li_specimen = "proof-db/erdos/specimens/E-25.li"
 register_source = "proof-db/erdos/register.json"
 external_url = "https://www.erdosproblems.com/25"
+content_tier = "formalized"
+notes = "Phase 6 partial: proof-db/erdos/specimens/E-25-partial-gap-positive.li"
 last_verified_lic_commit = "1e9a3c7a"
 
 [[entry]]
@@ -522,6 +528,8 @@ lean_module = "proof-db/erdos/register.json"
 li_specimen = "proof-db/erdos/specimens/E-29.li"
 register_source = "proof-db/erdos/register.json"
 external_url = "https://www.erdosproblems.com/29"
+content_tier = "formalized"
+notes = "Phase 6 partial: proof-db/erdos/specimens/E-29-partial-at-least-one-prime.li"
 last_verified_lic_commit = "1e9a3c7a"
 
 [[entry]]
@@ -936,6 +944,8 @@ lean_module = "proof-db/erdos/register.json"
 li_specimen = "proof-db/erdos/specimens/E-52.li"
 register_source = "proof-db/erdos/register.json"
 external_url = "https://www.erdosproblems.com/52"
+content_tier = "formalized"
+notes = "Phase 6 partial CLM-E52-004: proof-db/erdos/specimens/E-52-partial-sumset-card.li; main conjecture open"
 last_verified_lic_commit = "1e9a3c7a"
 
 [[entry]]

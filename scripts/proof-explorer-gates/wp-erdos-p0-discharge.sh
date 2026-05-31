@@ -16,7 +16,18 @@ if log.is_file():
             rows.append(json.loads(line))
 
 register = json.loads(Path("proof-db/erdos/register.json").read_text(encoding="utf-8"))
-p0_ids = {p["id"] for p in register.get("problems", []) if p.get("priority_tier") == "P0"}
+
+
+def problem_id(problem: dict) -> str:
+    if problem.get("id"):
+        return str(problem["id"])
+    number = problem.get("number")
+    if number is not None:
+        return f"E-{number}"
+    return ""
+
+
+p0_ids = {problem_id(p) for p in register.get("problems", []) if p.get("priority_tier") == "P0"}
 
 # Count from discharge log
 logged_p0 = {r["entry_id"] for r in rows if r.get("entry_id", "").startswith("E-") and r["entry_id"] in p0_ids}
@@ -24,7 +35,7 @@ logged_p0 = {r["entry_id"] for r in rows if r.get("entry_id", "").startswith("E-
 # Also count catalog rows with proved + specimen evidence
 proved_p0 = set()
 for p in register.get("problems", []):
-    pid = p.get("id", "")
+    pid = problem_id(p)
     if pid not in p0_ids:
         continue
     if p.get("proof_status") == "proved" and (p.get("lean_thm") or p.get("li_specimen")):

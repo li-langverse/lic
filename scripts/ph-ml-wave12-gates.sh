@@ -9,20 +9,21 @@ export BENCHMARKS_RESULTS="$ROOT/benchmarks/results"
 mkdir -p "$BENCHMARKS_RESULTS"
 export LIG_EMIT_CUDA=1
 
+_wsl_path_u() {
+  wsl.exe wslpath -u "$1" 2>/dev/null | tr -d '\r\n'
+}
+
 run_in_wsl() {
   local wsl_root wsl_bench
-  wsl_root="$(wsl.exe wslpath -u "$ROOT" 2>/dev/null | tr -d '
-')"
+  wsl_root="$(_wsl_path_u "$ROOT")"
   wsl_bench=""
   if [[ -n "${BENCHMARKS_ROOT:-}" ]]; then
-    wsl_bench="$(wsl.exe wslpath -u "$BENCHMARKS_ROOT" 2>/dev/null | tr -d '
-')" || wsl_bench=""
+    wsl_bench="$(_wsl_path_u "$BENCHMARKS_ROOT")" || wsl_bench=""
   fi
   if [[ -z "$wsl_bench" ]]; then
     for _c in "$ROOT/../benchmarks" "$ROOT/../../benchmarks" "$ROOT/../../../../../benchmarks"; do
       if [[ -f "$_c/harness/bench.py" ]]; then
-        wsl_bench="$(wsl.exe wslpath -u "$(cd "$_c" && pwd)" 2>/dev/null | tr -d '
-')" || wsl_bench=""
+        wsl_bench="$(_wsl_path_u "$(cd "$_c" && pwd)")" || wsl_bench=""
         break
       fi
     done
@@ -68,8 +69,7 @@ lic_check_smokes() {
 }
 
 if [[ "${PH_ML_WAVE12_INNER:-0}" != "1" ]] && [[ ! -x "$ROOT/build/compiler/lic/lic" && ! -x "$ROOT/build/compiler/lic/lic.exe" ]] && command -v wsl.exe >/dev/null 2>&1; then
-  wsl_root="$(wsl.exe wslpath -u "$ROOT" 2>/dev/null | tr -d '
-')"
+  wsl_root="$(_wsl_path_u "$ROOT")"
   if [[ -n "$wsl_root" ]] && wsl.exe bash -lc "test -x '$wsl_root/build-wsl/compiler/lic/lic'" 2>/dev/null; then
     run_in_wsl
     exit $?

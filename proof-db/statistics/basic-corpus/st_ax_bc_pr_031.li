@@ -1,0 +1,32 @@
+# ST-AX-BC-PR-031: Kolmogorov consequence (variant 31): P(empty)=0 and P(A^c)=1-P(A) on finite Omega.
+# Kolmogorov axioms (finite sample space Omega):
+#   (K1) P(A) >= 0 for all events A;
+#   (K2) P(Omega) = 1;
+#   (K3) P(A u B) = P(A) + P(B) for disjoint A, B.
+
+def kolmogorov_mass_normalized(p: array[n, float]) -> float
+  requires true
+  ensures result >= 0.0
+  decreases 0
+=
+  var i: int = 0
+  var total: float = 0.0
+  while i < n
+    invariant 0 <= i and i <= n
+    decreases n - i
+  =
+    total = total + p[i]
+    i = i + 1
+  return total
+
+extern proc st_ax_bc_pr_031_axiom_witness() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+
+def main() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0

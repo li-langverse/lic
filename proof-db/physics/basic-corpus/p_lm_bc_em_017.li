@@ -1,5 +1,12 @@
 # P-LM-BC-EM-017: Ohm law V = I R (linear resistor stub).
 
+def ohm_law(i: float, r: float) -> float
+  requires r > 0.0
+  ensures result == i * r
+  decreases 0
+=
+  return i * r
+
 def main() -> int
   requires true
   ensures result == 0

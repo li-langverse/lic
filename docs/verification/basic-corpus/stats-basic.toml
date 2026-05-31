@@ -2,7 +2,7 @@
 version = 1
 field = "statistics"
 target_count = 50
-last_verified_lic_commit = "a9441d8e"
+last_verified_lic_commit = "708c67b8"
 
 [[planned]]
 id = "ST-AX-BC-PR-001"
@@ -10,7 +10,7 @@ kind = "axiom"
 tranche = 1
 proof_status = "axiomatic"
 domain = "probability"
-statement = "Kolmogorov probability axioms on finite space (variant 1)."
+statement = "Kolmogorov axioms on finite Omega: (K1) P(A)>=0; (K2) P(Omega)=1; (K3) P(A u B)=P(A)+P(B) for disjoint A,B."
 
 [[planned]]
 id = "ST-AX-BC-EX-002"
@@ -18,7 +18,7 @@ kind = "axiom"
 tranche = 1
 proof_status = "axiomatic"
 domain = "probability"
-statement = "Expectation linearity E[aX+bY] = aE[X]+bE[Y] (case 2)."
+statement = "Expectation linearity E[aX+bY] = aE[X]+bE[Y] on finite spaces (case 2)."
 
 [[planned]]
 id = "ST-LM-BC-VR-003"
@@ -50,7 +50,7 @@ kind = "lemma"
 tranche = 1
 proof_status = "open"
 domain = "probability"
-statement = "Bayes theorem P(A|B) = P(B|A)P(A)/P(B) (case 6)."
+statement = "Bayes: P(A|B) = P(B|A)P(A)/P(B) when P(B) > 0 (case 6)."
 
 [[planned]]
 id = "ST-LM-BC-COV-007"
@@ -90,7 +90,7 @@ kind = "axiom"
 tranche = 2
 proof_status = "axiomatic"
 domain = "probability"
-statement = "Kolmogorov probability axioms on finite space (variant 11)."
+statement = "Kolmogorov consequence (variant 11): P(empty)=0 and P(A^c)=1-P(A) on finite Omega."
 
 [[planned]]
 id = "ST-AX-BC-EX-012"
@@ -98,7 +98,7 @@ kind = "axiom"
 tranche = 2
 proof_status = "axiomatic"
 domain = "probability"
-statement = "Expectation linearity E[aX+bY] = aE[X]+bE[Y] (case 12)."
+statement = "Expectation linearity E[aX+bY] = aE[X]+bE[Y] on finite spaces (case 12)."
 
 [[planned]]
 id = "ST-LM-BC-VR-013"
@@ -130,7 +130,7 @@ kind = "lemma"
 tranche = 2
 proof_status = "open"
 domain = "probability"
-statement = "Bayes theorem P(A|B) = P(B|A)P(A)/P(B) (case 16)."
+statement = "Bayes: P(A|B) = P(B|A)P(A)/P(B) when P(B) > 0 (case 16)."
 
 [[planned]]
 id = "ST-LM-BC-COV-017"
@@ -170,7 +170,7 @@ kind = "axiom"
 tranche = 3
 proof_status = "axiomatic"
 domain = "probability"
-statement = "Kolmogorov probability axioms on finite space (variant 21)."
+statement = "Kolmogorov consequence (variant 21): P(empty)=0 and P(A^c)=1-P(A) on finite Omega."
 
 [[planned]]
 id = "ST-AX-BC-EX-022"
@@ -178,7 +178,7 @@ kind = "axiom"
 tranche = 3
 proof_status = "axiomatic"
 domain = "probability"
-statement = "Expectation linearity E[aX+bY] = aE[X]+bE[Y] (case 22)."
+statement = "Expectation linearity E[aX+bY] = aE[X]+bE[Y] on finite spaces (case 22)."
 
 [[planned]]
 id = "ST-LM-BC-VR-023"
@@ -210,7 +210,7 @@ kind = "lemma"
 tranche = 3
 proof_status = "open"
 domain = "probability"
-statement = "Bayes theorem P(A|B) = P(B|A)P(A)/P(B) (case 26)."
+statement = "Bayes: P(A|B) = P(B|A)P(A)/P(B) when P(B) > 0 (case 26)."
 
 [[planned]]
 id = "ST-LM-BC-COV-027"
@@ -250,7 +250,7 @@ kind = "axiom"
 tranche = 3
 proof_status = "axiomatic"
 domain = "probability"
-statement = "Kolmogorov probability axioms on finite space (variant 31)."
+statement = "Kolmogorov consequence (variant 31): P(empty)=0 and P(A^c)=1-P(A) on finite Omega."
 
 [[planned]]
 id = "ST-AX-BC-EX-032"
@@ -258,7 +258,7 @@ kind = "axiom"
 tranche = 3
 proof_status = "axiomatic"
 domain = "probability"
-statement = "Expectation linearity E[aX+bY] = aE[X]+bE[Y] (case 32)."
+statement = "Expectation linearity E[aX+bY] = aE[X]+bE[Y] on finite spaces (case 32)."
 
 [[planned]]
 id = "ST-LM-BC-VR-033"
@@ -290,7 +290,7 @@ kind = "lemma"
 tranche = 3
 proof_status = "open"
 domain = "probability"
-statement = "Bayes theorem P(A|B) = P(B|A)P(A)/P(B) (case 36)."
+statement = "Bayes: P(A|B) = P(B|A)P(A)/P(B) when P(B) > 0 (case 36)."
 
 [[planned]]
 id = "ST-LM-BC-COV-037"
@@ -330,7 +330,7 @@ kind = "axiom"
 tranche = 3
 proof_status = "axiomatic"
 domain = "probability"
-statement = "Kolmogorov probability axioms on finite space (variant 41)."
+statement = "Kolmogorov consequence (variant 41): P(empty)=0 and P(A^c)=1-P(A) on finite Omega."
 
 [[planned]]
 id = "ST-AX-BC-EX-042"
@@ -338,7 +338,7 @@ kind = "axiom"
 tranche = 3
 proof_status = "axiomatic"
 domain = "probability"
-statement = "Expectation linearity E[aX+bY] = aE[X]+bE[Y] (case 42)."
+statement = "Expectation linearity E[aX+bY] = aE[X]+bE[Y] on finite spaces (case 42)."
 
 [[planned]]
 id = "ST-LM-BC-VR-043"
@@ -370,7 +370,7 @@ kind = "lemma"
 tranche = 3
 proof_status = "open"
 domain = "probability"
-statement = "Bayes theorem P(A|B) = P(B|A)P(A)/P(B) (case 46)."
+statement = "Bayes: P(A|B) = P(B|A)P(A)/P(B) when P(B) > 0 (case 46)."
 
 [[planned]]
 id = "ST-LM-BC-COV-047"

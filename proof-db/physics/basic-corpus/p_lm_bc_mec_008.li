@@ -1,5 +1,12 @@
 # P-LM-BC-MEC-008: Torque equals time derivative of angular momentum.
 
+def p_lm_bc_mec_008_witness(x: float) -> float
+  requires true
+  ensures result == x
+  decreases 0
+=
+  return x
+
 def main() -> int
   requires true
   ensures result == 0

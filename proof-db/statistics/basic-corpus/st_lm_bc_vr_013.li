@@ -1,5 +1,12 @@
 # ST-LM-BC-VR-013: Variance Var(X) = E[X^2] - E[X]^2 (case 13).
 
+def variance_from_moments(e_x2: float, e_x: float) -> float
+  requires true
+  ensures result == e_x2 - e_x * e_x
+  decreases 0
+=
+  return e_x2 - e_x * e_x
+
 def main() -> int
   requires true
   ensures result == 0

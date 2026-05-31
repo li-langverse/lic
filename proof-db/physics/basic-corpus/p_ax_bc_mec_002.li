@@ -1,6 +1,13 @@
 # P-AX-BC-MEC-002: Newton II: F = m a for point mass in inertial frame.
 
-extern proc proof_db_p_ax_bc_mec_002() -> int
+def newton_second(m: float, a: float) -> float
+  requires m > 0.0
+  ensures result == m * a
+  decreases 0
+=
+  return m * a
+
+extern proc p_ax_bc_mec_002_axiom_witness() -> int
   requires true
   ensures result == 0
   decreases 0

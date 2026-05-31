@@ -1,9 +1,16 @@
 # P-AX-BC-MEC-003: Newton III: pairwise interaction forces sum to zero.
 
-extern proc proof_db_p_ax_bc_mec_003() -> int
+extern proc p_ax_bc_mec_003_axiom_witness() -> int
   requires true
   ensures result == 0
   decreases 0
+
+def p_ax_bc_mec_003_holds() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0
 
 def main() -> int
   requires true

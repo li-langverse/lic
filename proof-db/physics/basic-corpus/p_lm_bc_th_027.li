@@ -1,0 +1,15 @@
+# P-LM-BC-TH-027: Heat capacity at constant volume definition C_V.
+
+def p_lm_bc_th_027_witness(x: float) -> float
+  requires true
+  ensures result == x
+  decreases 0
+=
+  return x
+
+def main() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0

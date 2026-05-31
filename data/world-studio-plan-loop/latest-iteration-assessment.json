@@ -14,5 +14,5 @@
     "lic_check_local": "wsl_build-wsl"
   },
   "notes": "PH-SIM SIM-5 sensor raycast bus via li-sim-sensors (sim_sensor_session_bus_step); studio_sim_sensor_step_hook wired for automotive + robotics profiles; plan gates now use build-wsl/WSL lic check path.",
-  "pr": null
+  "pr": "https://github.com/li-langverse/lic/pull/634"
 }

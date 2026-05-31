@@ -563,6 +563,8 @@ def llm_gpu_lkir_matmul_progress() -> int
   ensures result <= 1
   decreases 0
 =
+  if ml_gpu_matmul_lkir_progress() == 1:
+    return 1
   if li_rt_lig_matmul_ready() == 1:
     return 1
   return llm_matmul_indirect_bridge(1.0, 1.0)

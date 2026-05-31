@@ -82,19 +82,63 @@ def bench_wgpu_swapchain_hook() -> dict:
     hook_path = wgpu_smoke_hook_path()
     hook = load_toml(hook_path) if hook_path else {}
     sec = hook.get("wgpu_swapchain") or {}
-    env_on = os.environ.get(sec.get("env_enable", "LIG_WGPU_SWAPCHAIN"), "") == "1"
-    status = sec.get("status", "blocked_runner")
+    env_enable = sec.get("env_enable", "LIG_WGPU_SWAPCHAIN")
+    env_on = os.environ.get(env_enable, "") == "1"
     runner_gpu = bool(sec.get("runner_gpu_required", True))
-    # Honest: CPU ubuntu runners stay blocked until lig wgpu-rs swapchain readback lands.
-    if env_on and status == "blocked_runner":
+    status = sec.get("status", "blocked_runner")
+    pixels_sampled = 0
+    probe_ok = False
+
+    probe_src = root / "deploy/studio-demo/native/lig_swapchain_bench_probe.c"
+    probe_bin = root / "data/studio-ui-ux-plan-loop/lig_swapchain_bench_probe"
+    if probe_src.is_file() and env_on:
+        build = subprocess.run(
+            [
+                "gcc",
+                "-O2",
+                "-I",
+                str(root / "runtime"),
+                str(probe_src),
+                str(root / "runtime/li_rt.c"),
+                "-lm",
+                "-o",
+                str(probe_bin),
+            ],
+            capture_output=True,
+            text=True,
+        )
+        if build.returncode == 0:
+            env = {
+                **os.environ,
+                env_enable: "1",
+                "LIG_HOST_PRESENT": "1",
+            }
+            run = subprocess.run(
+                [str(probe_bin)],
+                capture_output=True,
+                text=True,
+                env=env,
+            )
+            if run.returncode == 0 and run.stdout.strip():
+                try:
+                    probe = json.loads(run.stdout.strip().splitlines()[-1])
+                    status = probe.get("bench_status", status)
+                    pixels_sampled = int(probe.get("pixels_sampled", 0))
+                    probe_ok = True
+                except (json.JSONDecodeError, ValueError, TypeError):
+                    pass
+
+    if not probe_ok and env_on and status == "blocked_runner":
         status = "blocked_runner"
     meets = status == "swapchain_pass"
     return {
         "status": status,
         "runner_gpu_required": runner_gpu,
-        "env_enable": sec.get("env_enable", "LIG_WGPU_SWAPCHAIN"),
+        "env_enable": env_enable,
         "env_active": env_on,
-        "readback_fn": sec.get("readback_fn", "gpu_wgpu_swapchain_readback_run"),
+        "readback_fn": sec.get("readback_fn", "lig_wgpu_swapchain_readback_run"),
+        "pixels_sampled": pixels_sampled,
+        "probe_ok": probe_ok,
         "meets_target": meets,
         "native_pixels": meets,
         "honest_blocked": status == "blocked_runner",

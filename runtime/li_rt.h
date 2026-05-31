@@ -260,6 +260,9 @@ int32_t li_rt_lig_wgpu_readback_stub(int32_t viewport_w, int32_t viewport_h, int
 int32_t li_rt_lig_wgpu_draw_list_submit(int32_t viewport_w, int32_t viewport_h, int32_t cmd_count, int32_t pbr_tag);
 int32_t li_rt_lig_wgpu_swapchain_create(int32_t viewport_w, int32_t viewport_h);
 int32_t li_rt_lig_wgpu_present_frame(int32_t swapchain_ok);
+int32_t li_rt_lig_wgpu_swapchain_active(void);
+int32_t li_rt_lig_wgpu_swapchain_readback_status(void);
+int32_t li_rt_lig_wgpu_swapchain_readback_run(int32_t viewport_w, int32_t viewport_h);
 int32_t li_rt_studio_shell_input_pointer_down(void);
 float li_rt_studio_shell_input_pointer_x(void);
 float li_rt_studio_shell_input_pointer_y(void);

@@ -18,9 +18,10 @@ aarch64_darwin = "LIG_HOST_PRESENT=1 lic check — surface_ok=1 when SDL/wgpu ho
 notes = "No wgpu-rs in-tree; runtime mock + deploy/studio-demo/native/studio_shell_present_host.c"
 
 [wgpu_swapchain]
-hook_version = 1
-readback_fn = "gpu_wgpu_swapchain_readback_run"
+hook_version = 2
+readback_fn = "lig_wgpu_swapchain_readback_run"
 status = "blocked_runner"
 runner_gpu_required = true
 env_enable = "LIG_WGPU_SWAPCHAIN"
-notes = "wgpu-rs swapchain texture readback — pass only when runner has GPU + lig host present"
+gpu_runner_env = "LIG_GPU_RUNNER"
+notes = "swapchain_pass when LIG_WGPU_SWAPCHAIN=1 + LIG_GPU_RUNNER=1 + LIG_HOST_PRESENT=1; probe via lig_swapchain_bench_probe.c"

@@ -43,7 +43,7 @@ def studio_gaps(bench: dict, deps: dict, ux: dict) -> list[dict]:
             {
                 "id": "studio-ux-21-wgpu-swapchain-gpu-runner",
                 "severity": "medium",
-                "reason": "wgpu swapchain readback blocked until org GPU runner + LIG_WGPU_SWAPCHAIN=1",
+                "reason": "wgpu swapchain readback blocked until org GPU runner + LIG_WGPU_SWAPCHAIN=1 + LIG_GPU_RUNNER=1",
             }
         )
     pal = bench.get("palette_latency") or {}
@@ -79,7 +79,7 @@ def studio_gaps(bench: dict, deps: dict, ux: dict) -> list[dict]:
             {
                 "id": "studio-ux-24-gpu-runner-deps",
                 "severity": "low",
-                "reason": "Vulkan pkg-config or LIG_WGPU_SWAPCHAIN env not active on this runner",
+                "reason": "Vulkan pkg-config, nvidia-smi, or LIG_GPU_RUNNER env not active on this runner",
             }
         )
     return gaps

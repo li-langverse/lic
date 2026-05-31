@@ -16,5 +16,5 @@
     "li_studio_demo_binary": "pass"
   },
   "notes": "WP-SIM-06 complete: li_rt_studio_toml_* parses [engine] determinism_tier 0-3 and [engine.export] formats/require_sim_pass/printer_profile into StudioProjectConfig; studio_apply_config_to_sim maps tier to output_detail. Added studio_toml_engine_export.li to plan gates. Built build/li-studio-demo (STUDIO_DEMO_FRAMES=1 exit 0). Completion gate passes; iscc skipped (not on PATH).",
-  "pr_url": null
+  "pr_url": "https://github.com/li-langverse/lic/pull/639"
 }

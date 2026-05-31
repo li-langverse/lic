@@ -1,1 +1,368 @@
-{"overlays":[]}
+{
+  "schema_version": 1,
+  "updated": "2026-05-31",
+  "overlays": [
+    {
+      "number": 3,
+      "tranche": "tier-b-bloom-p0-2026",
+      "patch": {
+        "content_tier": "polished",
+        "context": "Erdős asked whether every set of naturals with divergent reciprocal sum must contain arbitrarily long arithmetic progressions. It is a major open problem in combinatorial number theory; Bloom's 2026 prize list highlights it.",
+        "sources": [
+          {
+            "title": "Erdős Problem #3",
+            "url": "https://www.erdosproblems.com/3"
+          },
+          {
+            "title": "Bloom Erdős prize list (2026)",
+            "url": "https://www.erdosproblems.com/"
+          }
+        ]
+      }
+    },
+    {
+      "number": 20,
+      "tranche": "tier-b-bloom-p0-2026",
+      "patch": {
+        "content_tier": "curated",
+        "context": "Hypergraph sunflower / uniform family extremal problem on Erdős–Rado type bounds f(n,k). Listed among Bloom's top open Erdős problems with a $1000 prize for k=3.",
+        "sources": [
+          {
+            "title": "Erdős Problem #20",
+            "url": "https://www.erdosproblems.com/20"
+          }
+        ]
+      }
+    },
+    {
+      "number": 25,
+      "tranche": "tier-b-prime-gaps-2026",
+      "patch": {
+        "content_tier": "curated",
+        "context": "Asks for infinitely often prime gaps smaller than any fixed power of log n beyond the trivial o((log n)^2) target; ties to Cramér-type heuristics and recent bounded-gap results.",
+        "sources": [
+          {
+            "title": "Erdős Problem #25",
+            "url": "https://www.erdosproblems.com/25"
+          },
+          {
+            "title": "Maynard–Tao bounded gaps",
+            "url": "https://arxiv.org/abs/1310.1055"
+          }
+        ]
+      }
+    },
+    {
+      "number": 29,
+      "tranche": "tier-b-prime-k-tuples-2026",
+      "patch": {
+        "content_tier": "curated",
+        "context": "Prime k-tuple conjecture flavor: infinitely many primes p with p+k also prime for some fixed k>0. Standard open problem in analytic number theory.",
+        "sources": [
+          {
+            "title": "Erdős Problem #29",
+            "url": "https://www.erdosproblems.com/29"
+          }
+        ]
+      }
+    },
+    {
+      "number": 42,
+      "tranche": "tier-b-semiprimes-2026",
+      "patch": {
+        "content_tier": "curated",
+        "context": "Twin semiprime problem: infinitely many n such that n and n+2 are each products of exactly two primes. Connects to sieve methods and almost-prime pairs.",
+        "sources": [
+          {
+            "title": "Erdős Problem #42",
+            "url": "https://www.erdosproblems.com/42"
+          }
+        ]
+      }
+    },
+    {
+      "number": 47,
+      "tranche": "tier-b-collatz-2026",
+      "patch": {
+        "content_tier": "polished",
+        "context": "The Collatz (3n+1) conjecture: every positive integer eventually reaches 1 under the usual map. One of the most famous open problems in recreational and arithmetic dynamics.",
+        "sources": [
+          {
+            "title": "Erdős Problem #47",
+            "url": "https://www.erdosproblems.com/47"
+          },
+          {
+            "title": "Lagarias survey (2003)",
+            "url": "https://doi.org/10.1090/S0273-0979-03-00992-6"
+          }
+        ]
+      }
+    },
+    {
+      "number": 52,
+      "tranche": "tier-b-sum-product-2026",
+      "patch": {
+        "content_tier": "curated",
+        "context": "Sum-product phenomenon for finite A⊂ℤ: max(|A+A|,|AA|) should exceed |A|^{2-ε} for every ε>0. Central to additive combinatorics and expander heuristics.",
+        "sources": [
+          {
+            "title": "Erdős Problem #52",
+            "url": "https://www.erdosproblems.com/52"
+          },
+          {
+            "title": "Elekes–Ruzsa sum-product",
+            "url": "https://en.wikipedia.org/wiki/Sum-product_problem"
+          }
+        ]
+      }
+    },
+    {
+      "number": 61,
+      "tranche": "tier-b-ramsey-turan-2026",
+      "patch": {
+        "content_tier": "curated",
+        "context": "Turán-type extremal question: every large H-free graph should contain a large clique. Relates Ramsey numbers and the Erdős–Stone theorem program.",
+        "sources": [
+          {
+            "title": "Erdős Problem #61",
+            "url": "https://www.erdosproblems.com/61"
+          }
+        ]
+      }
+    },
+    {
+      "number": 69,
+      "tranche": "tier-b-prime-gaps-2026",
+      "patch": {
+        "content_tier": "curated",
+        "context": "Infinitely many consecutive prime gaps strictly larger than log p for the smaller prime p. Tests fine structure of gap distribution beyond average spacing.",
+        "sources": [
+          {
+            "title": "Erdős Problem #69",
+            "url": "https://www.erdosproblems.com/69"
+          }
+        ]
+      }
+    },
+    {
+      "number": 77,
+      "tranche": "tier-b-ramsey-2026",
+      "patch": {
+        "content_tier": "curated",
+        "context": "Asymptotics of diagonal Ramsey numbers R(k): Erdős asked for the limit of R(k)^{1/k}. Exponential lower and tower-type upper bounds are known.",
+        "sources": [
+          {
+            "title": "Erdős Problem #77",
+            "url": "https://www.erdosproblems.com/77"
+          },
+          {
+            "title": "Campos et al. (2023) breakthrough",
+            "url": "https://arxiv.org/abs/2303.09521"
+          }
+        ]
+      }
+    },
+    {
+      "number": 86,
+      "tranche": "tier-b-goldbach-2026",
+      "patch": {
+        "content_tier": "polished",
+        "context": "Goldbach conjecture: every even integer greater than 2 is the sum of two primes. Weak Goldbach (odd sums of three primes) is proved; the binary case remains open.",
+        "sources": [
+          {
+            "title": "Erdős Problem #86",
+            "url": "https://www.erdosproblems.com/86"
+          },
+          {
+            "title": "Helfgott weak Goldbach",
+            "url": "https://arxiv.org/abs/1310.1055"
+          }
+        ]
+      }
+    },
+    {
+      "number": 87,
+      "tranche": "tier-b-twin-primes-2026",
+      "patch": {
+        "content_tier": "polished",
+        "context": "Twin prime conjecture: infinitely many primes p with p+2 also prime. Zhang (2013) and Polymath8 showed bounded gaps occur infinitely often; gap 2 is unproved.",
+        "sources": [
+          {
+            "title": "Erdős Problem #87",
+            "url": "https://www.erdosproblems.com/87"
+          },
+          {
+            "title": "Zhang bounded gaps",
+            "url": "https://arxiv.org/abs/1111.4700"
+          }
+        ]
+      }
+    },
+    {
+      "number": 89,
+      "tranche": "tier-b-prime-gaps-2026",
+      "patch": {
+        "content_tier": "curated",
+        "context": "Existence of very large prime gaps of size at least c√p log p infinitely often. Connects to Cramér-type conjectures and recent explicit gap constructions.",
+        "sources": [
+          {
+            "title": "Erdős Problem #89",
+            "url": "https://www.erdosproblems.com/89"
+          }
+        ]
+      }
+    },
+    {
+      "number": 92,
+      "tranche": "tier-b-primes-2026",
+      "patch": {
+        "content_tier": "curated",
+        "context": "Infinitely many primes of the form n²+1. A classical sieve obstacle problem; Iwaniec showed infinitely many primes in shifted quadratics under weaker forms.",
+        "sources": [
+          {
+            "title": "Erdős Problem #92",
+            "url": "https://www.erdosproblems.com/92"
+          }
+        ]
+      }
+    },
+    {
+      "number": 120,
+      "tranche": "tier-b-goldbach-2026",
+      "patch": {
+        "content_tier": "curated",
+        "context": "Infinitely many n such that n and n+2 are each sums of two primes. A Goldbach–twin hybrid problem in additive prime number theory.",
+        "sources": [
+          {
+            "title": "Erdős Problem #120",
+            "url": "https://www.erdosproblems.com/120"
+          }
+        ]
+      }
+    },
+    {
+      "number": 128,
+      "tranche": "tier-b-rh-2026",
+      "patch": {
+        "content_tier": "curated",
+        "context": "Error term for π(x) vs Li(x) at Riemann-hypothesis strength. Equivalent to RH in standard formulations; catalogued as an Erdős-flavored open target.",
+        "sources": [
+          {
+            "title": "Erdős Problem #128",
+            "url": "https://www.erdosproblems.com/128"
+          },
+          {
+            "title": "Clay Millennium: RH",
+            "url": "https://www.claymath.org/millennium-problems/riemann-hypothesis"
+          }
+        ]
+      }
+    },
+    {
+      "number": 4,
+      "tranche": "tier-b-proved-context-2026",
+      "patch": {
+        "content_tier": "curated",
+        "context": "Large prime gaps beyond any fixed multiple of log n (with iterated log factors). Proved independently by Maynard and Ford–Green–Konyagin–Tao in 2016.",
+        "sources": [
+          {
+            "title": "Erdős Problem #4",
+            "url": "https://www.erdosproblems.com/4"
+          },
+          {
+            "title": "Maynard (2016)",
+            "url": "https://arxiv.org/abs/1408.4508"
+          }
+        ]
+      }
+    },
+    {
+      "number": 10,
+      "tranche": "tier-b-additive-2026",
+      "patch": {
+        "content_tier": "curated",
+        "context": "Sets with divergent harmonic sum but no long arithmetic progressions. A cousin of Erdős–Turán conjectures; ties to Szemerédi-type obstructions.",
+        "sources": [
+          {
+            "title": "Erdős Problem #10",
+            "url": "https://www.erdosproblems.com/10"
+          }
+        ]
+      }
+    },
+    {
+      "number": 11,
+      "tranche": "tier-b-additive-2026",
+      "patch": {
+        "content_tier": "curated",
+        "context": "Every large odd integer as a squarefree number plus a power of two. Mixes binary representations with squarefree structure.",
+        "sources": [
+          {
+            "title": "Erdős Problem #11",
+            "url": "https://www.erdosproblems.com/11"
+          }
+        ]
+      }
+    },
+    {
+      "number": 28,
+      "tranche": "tier-b-bloom-p0-2026",
+      "patch": {
+        "content_tier": "curated",
+        "context": "If A+A covers all but finitely many integers, does the upper density of A tend to 1? Bloom Top 10; links sumset covering to density conjectures.",
+        "sources": [
+          {
+            "title": "Erdős Problem #28",
+            "url": "https://www.erdosproblems.com/28"
+          }
+        ]
+      }
+    },
+    {
+      "number": 39,
+      "tranche": "tier-b-covering-2026",
+      "patch": {
+        "content_tier": "curated",
+        "context": "Finite covering systems with distinct moduli: existence and minimal modulus questions. Hough disproved the distinct-odd-moduli variant in 2022.",
+        "sources": [
+          {
+            "title": "Erdős Problem #39",
+            "url": "https://www.erdosproblems.com/39"
+          }
+        ]
+      }
+    },
+    {
+      "number": 80,
+      "tranche": "tier-b-proved-context-2026",
+      "patch": {
+        "content_tier": "curated",
+        "context": "Szemerédi theorem: positive upper density sets contain 3-term arithmetic progressions. Proved 1975; cornerstone of modern additive combinatorics.",
+        "sources": [
+          {
+            "title": "Erdős Problem #80",
+            "url": "https://www.erdosproblems.com/80"
+          },
+          {
+            "title": "Szemerédi (1975)",
+            "url": "https://doi.org/10.1007/BF02010379"
+          }
+        ]
+      }
+    },
+    {
+      "number": 110,
+      "tranche": "wp6-cap-set-2026",
+      "patch": {
+        "content_tier": "curated",
+        "context": "Cap-set style problem: arbitrarily large sets without 4-term arithmetic progressions. Related to Roth/Szemerédi and recent polynomial-method bounds.",
+        "sources": [
+          {
+            "title": "Erdős Problem #110",
+            "url": "https://www.erdosproblems.com/110"
+          }
+        ]
+      }
+    }
+  ]
+}

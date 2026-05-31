@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-05-30T09:15:50.659654+00:00",
+  "generated_at": "2026-05-31T01:53:12.707587+00:00",
   "tz": "Europe/Berlin",
   "agents_live": 0,
   "runners": [
@@ -7,9 +7,9 @@
       "id": "httpd",
       "name": "li-httpd gap parity",
       "branch": "cursor/httpd-plan-continue",
-      "head": "cc3ad9a6",
+      "head": "528e081d",
       "running": true,
-      "process": "138862 python3 /home/s4il0r/Documents/Cursor/li-langverse/lic/scripts/goal-directed-agents-snapshot.py",
+      "process": "1698494 /bin/bash -O extglob -c snap=$(command cat <&3) && builtin shopt -s extglob && builtin eval -- \"$snap\" && { buil",
       "log_path": "/home/s4il0r/Documents/Cursor/li-langverse/lic/../lic/data/httpd-plan-loop/iter-20260522-132846.log",
       "todos": [
         {
@@ -91,7 +91,7 @@
       "agent_live": false,
       "agent": "",
       "goal_file": "",
-      "log_age_sec": 222,
+      "log_age_sec": 19,
       "last_state_at": "2026-05-30T06:38:33.327023+00:00",
       "last_state_todo": "gap-phase2-streaming-wrk",
       "last_state_gates": false,
@@ -420,7 +420,7 @@
       "agent_live": false,
       "agent": "",
       "goal_file": "",
-      "log_age_sec": 394419,
+      "log_age_sec": 454260,
       "last_state_at": "2026-05-25T06:41:51.000000+00:00",
       "last_state_todo": "wave-d-gui-scaffold",
       "last_state_gates": true,
@@ -537,7 +537,7 @@
       "agent_live": false,
       "agent": "",
       "goal_file": "",
-      "log_age_sec": 491687,
+      "log_age_sec": 551529,
       "last_state_at": "2026-05-24T16:32:27.410480+00:00",
       "last_state_todo": "sim-p0-md-lj-li-parity",
       "last_state_gates": false,
@@ -558,10 +558,10 @@
       "id": "studio-ui-ux",
       "name": "Studio UI/UX",
       "branch": "cursor/studio-ui-ux-plan-loop",
-      "head": "ca77d2c6",
+      "head": "eb3b4427",
       "running": false,
       "process": "",
-      "log_path": "/home/s4il0r/Documents/Cursor/li-langverse/lic/../lic-studio-ui/data/studio-ui-ux-plan-loop/iter-20260525-062259.log",
+      "log_path": "/home/s4il0r/Documents/Cursor/li-langverse/lic/../lic-studio-ui/data/studio-ui-ux-plan-loop/runner.log",
       "todos": [
         {
           "id": "studio-ux-00-design-system",
@@ -641,24 +641,59 @@
         {
           "id": "studio-ux-15-wgpu-readback",
           "content": "li-render wgpu real pixel draw \u2014 bench status native (not simulate) for viewport + particles",
-          "status": "completed"
+          "status": "done"
         },
         {
           "id": "studio-ux-16-palette-search-latency",
           "content": "Command palette fuzzy search + measured open/filter latency hook (UX-04)",
-          "status": "pending"
+          "status": "done"
         },
         {
           "id": "studio-ux-17-gpu-fail-recovery",
           "content": "Native GPU fail strip + retry affordance in li-studio shell (UX-08)",
+          "status": "done"
+        },
+        {
+          "id": "studio-ux-18-proactive-wave3",
+          "content": "Proactive sweep wave-3 \u2014 keyboard journey audit + native wgpu CI matrix",
+          "status": "done"
+        },
+        {
+          "id": "studio-ux-19-wgpu-swapchain-readback",
+          "content": "Real wgpu-rs swapchain texture readback in CI GPU images (blocked on runner GPU)",
+          "status": "done"
+        },
+        {
+          "id": "studio-ux-20-proactive-sweep-20260530",
+          "content": "Proactive briefing refresh \u2014 capture-deps + ecosystem audit follow-ups for studio_ui_ux_builder",
+          "status": "done"
+        },
+        {
+          "id": "studio-ux-21-wgpu-swapchain-gpu-runner",
+          "content": "studio-ui-ux: pending plan todo studio-ux-21-wgpu-swapchain-gpu-runner \u2014 gap orchestrator",
+          "status": "pending"
+        },
+        {
+          "id": "studio-ux-22-palette-native-latency",
+          "content": "Native palette open/filter latency on SDL shell \u2014 bench status native (UX-04)",
+          "status": "done"
+        },
+        {
+          "id": "studio-ux-23-agent-chrome-native",
+          "content": "Wire agent chrome to native shell stream \u2014 task progress + cancel (UX-06 SOTA)",
+          "status": "done"
+        },
+        {
+          "id": "studio-ux-24-gpu-runner-deps",
+          "content": "studio-ui-ux: pending plan todo studio-ux-24-gpu-runner-deps \u2014 gap orchestrator",
           "status": "pending"
         }
       ],
-      "plan_completed": 1,
-      "plan_total": 18,
+      "plan_completed": 0,
+      "plan_total": 25,
       "plan_pending": [
-        "studio-ux-16-palette-search-latency",
-        "studio-ux-17-gpu-fail-recovery"
+        "studio-ux-21-wgpu-swapchain-gpu-runner",
+        "studio-ux-24-gpu-runner-deps"
       ],
       "state": {
         "completed_ids": [
@@ -677,9 +712,16 @@
           "studio-ux-12-world-studio-demo-linux-audit",
           "studio-ux-13-proactive-sweep",
           "studio-ux-14-native-sdl-ci",
-          "studio-ux-15-wgpu-readback"
+          "studio-ux-15-wgpu-readback",
+          "studio-ux-16-palette-search-latency",
+          "studio-ux-17-gpu-fail-recovery",
+          "studio-ux-18-proactive-wave3",
+          "studio-ux-19-wgpu-swapchain-readback",
+          "studio-ux-20-proactive-sweep-20260530",
+          "studio-ux-22-palette-native-latency",
+          "studio-ux-23-agent-chrome-native"
         ],
-        "iterations": 14,
+        "iterations": 21,
         "history": [
           {
             "at": "2026-05-24T14:53:41+00:00",
@@ -788,30 +830,93 @@
             "gates_ok": true,
             "ux_pass": true,
             "note": "wgpu readback bench hooks; viewport+particles status=native; honest_simulate=false on PH gates"
+          },
+          {
+            "at": "2026-05-30T08:15:00+00:00",
+            "todo_id": "studio-ux-16-palette-search-latency",
+            "agent_exit": 0,
+            "capture_exit": 0,
+            "gates_ok": true,
+            "ux_pass": true,
+            "note": "palette fuzzy filter + palette_latency bench hook; UX-04 score bump"
+          },
+          {
+            "at": "2026-05-30T12:08:00+00:00",
+            "todo_id": "studio-ux-17-gpu-fail-recovery",
+            "agent_exit": 0,
+            "capture_exit": 0,
+            "gates_ok": true,
+            "ux_pass": true,
+            "note": "GPU fail strip + retry overlay; gpu_fail_retry_ms gate; UX-08 bump; issue #182"
+          },
+          {
+            "at": "2026-05-30T12:50:00+00:00",
+            "todo_id": "studio-ux-18-proactive-wave3",
+            "agent_exit": 0,
+            "capture_exit": 0,
+            "gates_ok": true,
+            "ux_pass": true,
+            "note": "keyboard_journey bench + harness audit; wgpu CI matrix leg; issue #182"
+          },
+          {
+            "at": "2026-05-30T13:24:00+00:00",
+            "todo_id": "studio-ux-19-wgpu-swapchain-readback",
+            "agent_exit": 0,
+            "capture_exit": 0,
+            "gates_ok": true,
+            "ux_pass": true,
+            "note": "swapchain blocked_runner hooks + CI job; capture issue #182 comment 4582947162; gates_pass true"
+          },
+          {
+            "at": "2026-05-30T14:35:00+00:00",
+            "todo_id": "studio-ux-20-proactive-sweep-20260530",
+            "agent_exit": 0,
+            "capture_exit": 0,
+            "gates_ok": true,
+            "ux_pass": true,
+            "note": "Briefing snapshot refresh; wave-4 todos studio-ux-21..24; capture-deps zero gaps; issue #182"
+          },
+          {
+            "at": "2026-05-30T15:20:00+00:00",
+            "todo_id": "studio-ux-22-palette-native-latency",
+            "agent_exit": 0,
+            "capture_exit": 0,
+            "gates_ok": true,
+            "ux_pass": true,
+            "note": "Native palette bench 14ms/9.5ms; palette_latency status=native; issue #182 comment 4583225944"
+          },
+          {
+            "at": "2026-05-30T21:52:00+00:00",
+            "todo_id": "studio-ux-23-agent-chrome-native",
+            "agent_exit": 0,
+            "capture_exit": 0,
+            "gates_ok": true,
+            "ux_pass": true,
+            "note": "Agent stream tick/cancel native (12ms/8ms); agent_chrome status=native; issue #182 comment 4584960809"
           }
         ]
       },
-      "state_iterations": 14,
+      "state_iterations": 21,
       "agent_live": false,
       "agent": "",
       "goal_file": "",
-      "log_age_sec": 441827,
-      "last_state_at": "2026-05-30T08:11:00+00:00",
-      "last_state_todo": "studio-ux-15-wgpu-readback",
+      "log_age_sec": 3042,
+      "last_state_at": "2026-05-30T21:52:00+00:00",
+      "last_state_todo": "studio-ux-23-agent-chrome-native",
       "last_state_gates": true,
       "current_iteration": "",
       "activity": [
+        "[sdk] \u25b6 tool",
+        "[sdk] \u2713 updateTodos",
+        "[sdk] \u2717 tool",
+        "[sdk] \u25b6 tool",
+        "[sdk] \u2713 shell cd /home/s4il0r/Documents/Cursor/li-langverse/li-cursor-agents/data/workspaces/l",
+        "[sdk] \u2717 tool",
         "[sdk] thinking\u2026",
-        "[sdk] \u25b6 tool",
-        "[sdk] \u2713 shell cd /home/s4il0r/Documents/Cursor/li-langverse/li-cursor-agents/data/workspaces/l",
-        "[sdk] \u2717 tool",
-        "[sdk] \u25b6 tool",
-        "[sdk] \u2713 shell cd /home/s4il0r/Documents/Cursor/li-langverse/li-cursor-agents/data/workspaces/l",
-        "[sdk] \u2717 tool",
         "[sdk] assistant reply"
       ],
       "status_note": "supervisor off",
-      "active_todo_id": "studio-ux-16-palette-search-latency"
+      "active_todo_id": "studio-ux-21-wgpu-swapchain-gpu-runner"
     },
     {
       "id": "sim-md-research",
@@ -887,7 +992,7 @@
       "agent_live": false,
       "agent": "",
       "goal_file": "",
-      "log_age_sec": 394394,
+      "log_age_sec": 454236,
       "last_state_at": "2026-05-25T19:42:04.198858+00:00",
       "last_state_todo": "md-r2-neighbor-list-gap",
       "last_state_gates": true,
@@ -966,7 +1071,7 @@
       "agent_live": false,
       "agent": "",
       "goal_file": "",
-      "log_age_sec": 394905,
+      "log_age_sec": 454747,
       "last_state_at": "2026-05-25T19:32:04.164094+00:00",
       "last_state_todo": "chem-r2-dft-scf-gap",
       "last_state_gates": false,
@@ -1038,7 +1143,7 @@
       "agent_live": false,
       "agent": "",
       "goal_file": "",
-      "log_age_sec": 395057,
+      "log_age_sec": 454899,
       "last_state_at": "2026-05-25T19:29:32.615546+00:00",
       "last_state_todo": "sec-r1-httpd-fuzz-smoke",
       "last_state_gates": true,
@@ -1053,10 +1158,10 @@
       "id": "swarm-observer",
       "name": "Swarm gap orchestrator",
       "branch": "cursor/swarm-observer-plan-loop",
-      "head": "cc3ad9a6",
+      "head": "528e081d",
       "running": true,
-      "process": "138862 python3 /home/s4il0r/Documents/Cursor/li-langverse/lic/scripts/goal-directed-agents-snapshot.py",
-      "log_path": "/home/s4il0r/Documents/Cursor/li-langverse/lic/../lic/data/swarm-observer-plan-loop/iter-20260525-193501.log",
+      "process": "1698494 /bin/bash -O extglob -c snap=$(command cat <&3) && builtin shopt -s extglob && builtin eval -- \"$snap\" && { buil",
+      "log_path": "/home/s4il0r/Documents/Cursor/li-langverse/lic/../lic/data/swarm-observer-plan-loop/runner.log",
       "todos": [
         {
           "id": "orch-r0-ingest-snapshot",
@@ -1071,7 +1176,7 @@
         {
           "id": "orch-r2-competitor-stubs",
           "content": "Ingest verticals.toml stubs + ecosystem explorer catalog gaps as competitor_feature rows",
-          "status": "pending"
+          "status": "completed"
         },
         {
           "id": "orch-r3-missing-package-sweep",
@@ -1084,10 +1189,9 @@
           "status": "pending"
         }
       ],
-      "plan_completed": 2,
+      "plan_completed": 3,
       "plan_total": 5,
       "plan_pending": [
-        "orch-r2-competitor-stubs",
         "orch-r3-missing-package-sweep",
         "orch-r4-ui-ux-signals"
       ],
@@ -1116,24 +1220,31 @@
       "agent_live": false,
       "agent": "",
       "goal_file": "",
-      "log_age_sec": 7743,
+      "log_age_sec": 20,
       "last_state_at": "2026-05-25T19:34:28.890041+00:00",
       "last_state_todo": "orch-r1-plan-debt-sync",
       "last_state_gates": true,
-      "current_iteration": "",
+      "current_iteration": "=== iteration 1: orch-r0-ingest-snapshot ===",
       "activity": [
+        "[sdk] \u2713 edit /home/s4il0r/Documents/Cursor/li-langverse/lic/docs/ecosystem/orchestrator-notes/2026-05-25-orch-r0-ingest-snapshot.md",
+        "[sdk] \u2717 tool",
+        "[sdk] \u25b6 tool",
+        "[sdk] \u2713 shell cd /home/s4il0r/Documents/Cursor/li-langverse/lic && git add data/runs/swarm_obs",
+        "[sdk] \u2717 tool",
+        "[sdk] assistant reply",
+        "=== iteration 1: orch-r0-ingest-snapshot ===",
         "SDK tool activity streams to stderr ([sdk] \u25b6/\u2713 lines). Set LI_SDK_TERMINAL_STREAM=0 to disable."
       ],
-      "status_note": "supervisor idle (log 7743s stale \u2014 check log_path)",
-      "active_todo_id": "orch-r2-competitor-stubs"
+      "status_note": "supervisor up, between agent runs",
+      "active_todo_id": "orch-r0-ingest-snapshot"
     },
     {
       "id": "ph-db",
       "name": "PH-DB / native Li platform",
       "branch": "main",
-      "head": "cc3ad9a6",
+      "head": "528e081d",
       "running": true,
-      "process": "138862 python3 /home/s4il0r/Documents/Cursor/li-langverse/lic/scripts/goal-directed-agents-snapshot.py",
+      "process": "1698494 /bin/bash -O extglob -c snap=$(command cat <&3) && builtin shopt -s extglob && builtin eval -- \"$snap\" && { buil",
       "log_path": "/home/s4il0r/Documents/Cursor/li-langverse/lic/../lic/data/ph-db-plan-loop/runner.log",
       "todos": [
         {
@@ -1248,26 +1359,75 @@
         },
         {
           "repo": "lis",
-          "branch": "chore/agent-docs_maintainer-20260530",
-          "head": "94873aa",
+          "branch": "chore/agent-docs_maintainer-pages-20260530",
+          "head": "85434de",
           "expected_branch": "feat/ph-db-3-lis-db-native"
         },
         {
           "repo": "benchmarks",
-          "branch": "chore/agent-bench_improver-20260530-matmul-tier1-digest",
-          "head": "a693d12",
+          "branch": "chore/agent-docs_ui_tester-proactive-20260531T0152Z-digest",
+          "head": "c2c44bf",
           "expected_branch": "feat/ph-db-5-registry-compare"
         },
         {
           "repo": "li-cursor-agents",
           "branch": "chore/studio-ux-12-harness-sota",
-          "head": "d875154",
+          "head": "426c7c9",
           "expected_branch": "feat/ph-db-10-native-persist"
         }
       ]
     }
   ],
   "history": [
+    {
+      "runner": "studio-ui-ux",
+      "at": "2026-05-30T21:52:00+00:00",
+      "todo_id": "studio-ux-23-agent-chrome-native",
+      "agent_exit": 0,
+      "gates_ok": true
+    },
+    {
+      "runner": "studio-ui-ux",
+      "at": "2026-05-30T15:20:00+00:00",
+      "todo_id": "studio-ux-22-palette-native-latency",
+      "agent_exit": 0,
+      "gates_ok": true
+    },
+    {
+      "runner": "studio-ui-ux",
+      "at": "2026-05-30T14:35:00+00:00",
+      "todo_id": "studio-ux-20-proactive-sweep-20260530",
+      "agent_exit": 0,
+      "gates_ok": true
+    },
+    {
+      "runner": "studio-ui-ux",
+      "at": "2026-05-30T13:24:00+00:00",
+      "todo_id": "studio-ux-19-wgpu-swapchain-readback",
+      "agent_exit": 0,
+      "gates_ok": true
+    },
+    {
+      "runner": "studio-ui-ux",
+      "at": "2026-05-30T12:50:00+00:00",
+      "todo_id": "studio-ux-18-proactive-wave3",
+      "agent_exit": 0,
+      "gates_ok": true
+    },
+    {
+      "runner": "studio-ui-ux",
+      "at": "2026-05-30T12:08:00+00:00",
+      "todo_id": "studio-ux-17-gpu-fail-recovery",
+      "agent_exit": 0,
+      "gates_ok": true
+    },
+    {
+      "runner": "studio-ui-ux",
+      "at": "2026-05-30T08:15:00+00:00",
+      "todo_id": "studio-ux-16-palette-search-latency",
+      "agent_exit": 0,
+      "gates_ok": true
+    },
     {
       "runner": "studio-ui-ux",
       "at": "2026-05-30T08:11:00+00:00",
@@ -1302,55 +1462,6 @@
       "todo_id": "studio-ux-13-proactive-sweep",
       "agent_exit": 0,
       "gates_ok": true
-    },
-    {
-      "runner": "studio-ui-ux",
-      "at": "2026-05-30T01:04:00+00:00",
-      "todo_id": "studio-ux-12-world-studio-demo-linux-audit",
-      "agent_exit": 0,
-      "gates_ok": true
-    },
-    {
-      "runner": "studio-ui-ux",
-      "at": "2026-05-29T08:42:00+00:00",
-      "todo_id": "studio-ux-11-panel-switch-gate",
-      "agent_exit": 0,
-      "gates_ok": true
-    },
-    {
-      "runner": "sim-md-research",
-      "at": "2026-05-25T19:42:04.198858+00:00",
-      "todo_id": "md-r2-neighbor-list-gap",
-      "agent_exit": 0,
-      "gates_ok": true
-    },
-    {
-      "runner": "swarm-observer",
-      "at": "2026-05-25T19:34:28.890041+00:00",
-      "todo_id": "orch-r1-plan-debt-sync",
-      "agent_exit": 0,
-      "gates_ok": true
-    },
-    {
-      "runner": "sim-chem-research",
-      "at": "2026-05-25T19:32:04.164094+00:00",
-      "todo_id": "chem-r2-dft-scf-gap",
-      "agent_exit": 0,
-      "gates_ok": false
-    },
-    {
-      "runner": "security-research",
-      "at": "2026-05-25T19:29:32.615546+00:00",
-      "todo_id": "sec-r1-httpd-fuzz-smoke",
-      "agent_exit": 1,
-      "gates_ok": true
-    },
-    {
-      "runner": "sim-md-research",
-      "at": "2026-05-25T19:23:10.135969+00:00",
-      "todo_id": "md-r2-neighbor-list-gap",
-      "agent_exit": 0,
-      "gates_ok": false
     }
   ]
 }

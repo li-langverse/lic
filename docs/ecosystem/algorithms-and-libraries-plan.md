@@ -50,7 +50,7 @@ This page is the **algorithms-and-libraries** layer under World Studio — not t
 | Vertical | Studio profile / workspace | Primary Li packages (target) | Incumbent algorithms/libs (track) | Plan depth today | Bench today |
 |----------|---------------------------|--------------------------------|-----------------------------------|------------------|-------------|
 | **Gaming** | `game` | `world`, `physics.*`, `render`, `player` | UE5, Unity, Godot, Bullet, PhysX, Jolt | RFC + UE proxy | `world-studio.toml`, tier-2 proxies |
-| **HPC / physics sim** | `sim_scientific` | `sim.scientific`, `physics.*`, `math` | GROMACS, LAMMPS, OpenFOAM, PETSc, Kokkos | Medium | tier-2 MD/PDE + registry |
+| **HPC / physics sim** | `sim_scientific` | `sim.scientific`, `physics.*`, `math` | GROMACS, LAMMPS, OpenFOAM, PETSc, Kokkos ([execution/memory requirements](../superpowers/specs/2026-05-31-li-petsc-kokkos-execution-memory-model.md)) | Medium | tier-2 MD/PDE + registry |
 | **Computational chemistry** | `sim_scientific` / drug | `chem`, `chem.dft` | Psi4, ORCA, Gaussian, xTB, ASE | RFC (PH-QM) | DFT smoke stub; no external oracle column |
 | **Drug design** | `sim_drug_design` | `sim.drug_design`, `chem`, `studio.adaptive` | Roche LITL, Schrödinger, DiffDock-class | Strong (PH-DRUG) | LITL composables |
 | **Comp. biology / bioeng** | `sim_drug_design` + `bioeng` | `bioeng`, `chem`, `ml` | Benchling, Rosetta, ProteinMPNN, RFdiffusion | Strong (PH-BIOENG) | `bioengineering.toml` stub |

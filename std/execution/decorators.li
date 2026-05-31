@@ -1,5 +1,8 @@
 # std/execution/decorators.li — reserved execution decorator names (Phase 7d-d)
 #
+# Normative Kokkos/PETSc mapping (execution + memory spaces): see
+# docs/superpowers/specs/2026-05-31-li-petsc-kokkos-execution-memory-model.md
+#
 # Users write @cpu, @parallel(disjoint=disjoint_elem), @vectorized on def/for/while.
 # The compiler elaborates these at compile time; they are NOT runtime calls.
 #

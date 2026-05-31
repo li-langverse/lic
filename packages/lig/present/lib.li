@@ -132,7 +132,7 @@ def lig_native_pixel_source_wgpu_draw_list() -> int
 =
   return 4
 
-# UX-14 — honest product truth: paint blit or wgpu readback/draw-list (not host_cpu alone).
+# UX-14 — honest product truth: paint blit or wgpu readback/draw-list/swapchain (not host_cpu alone).
 def lig_native_pixel_source_honest_product(source: int) -> int
   requires true
   ensures result >= 0
@@ -145,6 +145,8 @@ def lig_native_pixel_source_honest_product(source: int) -> int
     return 1
   if source == lig_native_pixel_source_wgpu_draw_list():
     return 1
+  if source == lig_native_pixel_source_wgpu_swapchain():
+    return 1
   return 0
 
 def lig_native_pixel_source_is_wgpu_path(source: int) -> int
@@ -156,6 +158,8 @@ def lig_native_pixel_source_is_wgpu_path(source: int) -> int
   if source == lig_native_pixel_source_wgpu_readback():
     return 1
   if source == lig_native_pixel_source_wgpu_draw_list():
+    return 1
+  if source == lig_native_pixel_source_wgpu_swapchain():
     return 1
   return 0
 
@@ -180,6 +184,14 @@ def lig_present_wgpu_readback_active() -> int raises IO
   decreases 0
 =
   return li_rt_lig_wgpu_readback_active()
+
+def lig_present_wgpu_swapchain_active() -> int raises IO
+  requires true
+  ensures result >= 0
+  ensures result <= 1
+  decreases 0
+=
+  return li_rt_lig_wgpu_swapchain_active()
 
 def lig_backend_webgpu() -> int
   requires true
@@ -287,7 +299,7 @@ def lig_present_frame(swap: LigSwapchain, frame_id: int) -> LigPresentFrame rais
 def lig_present_host_native_pixel_source_flag() -> int raises IO
   requires true
   ensures result >= 0
-  ensures result <= 4
+  ensures result <= 5
   decreases 0
 =
   return li_rt_lig_host_native_pixel_source()

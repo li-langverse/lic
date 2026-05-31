@@ -1,0 +1,40 @@
+# wsg-w3-wgpu-viewport-pixels — Path A swapchain readback via lig.present + li-render bridge.
+
+import render
+import lig.present
+import gui
+import ui
+
+def main() -> int raises IO
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  if li_std_render_version() < 7:
+    return 1
+  var blocked: LigWgpuSwapchainReadback = lig_wgpu_swapchain_readback_blocked()
+  if blocked.status != lig_wgpu_swapchain_status_blocked():
+    return 2
+  if lig_wgpu_swapchain_readback_passed(blocked) != 0:
+    return 3
+  var layout: StudioShellLayout = layout_studio_shell_adaptive(1920.0, 1080.0)
+  var vp: ViewportRegion = gui_viewport_region_from_layout(layout)
+  var smoke: RenderViewportSmoke = render_wgpu_viewport_readback(vp)
+  if render_viewport_readback_ok(smoke) != 1:
+    return 4
+  var run: LigWgpuSwapchainReadback = lig_wgpu_swapchain_readback_run()
+  if run.status == lig_wgpu_swapchain_status_pass():
+    if lig_wgpu_swapchain_readback_passed(run) != 1:
+      return 5
+    if run.pixels_sampled <= 0:
+      return 6
+    if smoke.native_pixels != 1:
+      return 7
+    if lig_native_pixel_source_honest_product(lig_native_pixel_source_wgpu_swapchain()) != 1:
+      return 8
+    return 0
+  if run.pixels_sampled != 0:
+    return 9
+  if smoke.native_pixels != 0:
+    return 10
+  return 0

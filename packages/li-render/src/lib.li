@@ -10,10 +10,10 @@ import ui
 
 def li_std_render_version() -> int
   requires true
-  ensures result == 6
+  ensures result == 7
   decreases 0
 =
-  return 6
+  return 7
 
 def render_viewport_fps_target() -> float
   requires true
@@ -149,7 +149,7 @@ def render_fps_counter_shell_tick(counter: var RenderFpsCounter) -> unit
 
 def render_native_pixel_source_honest(source: int) -> int
   requires source >= 0
-  requires source <= 4
+  requires source <= 5
   ensures result >= 0
   ensures result <= 1
   decreases source
@@ -159,6 +159,8 @@ def render_native_pixel_source_honest(source: int) -> int
   if source == lig_native_pixel_source_wgpu_readback():
     return 1
   if source == lig_native_pixel_source_wgpu_draw_list():
+    return 1
+  if source == lig_native_pixel_source_wgpu_swapchain():
     return 1
   return 0
 
@@ -295,6 +297,59 @@ def render_viewport_smoke_ok(smoke: RenderViewportSmoke) -> int
   if smoke.viewport_h <= 0.0:
     return 0
   return 1
+
+# WP-GD-05 Path A — wgpu swapchain readback pixels via lig.present (wsg-w3-wgpu-viewport-pixels).
+def render_wgpu_viewport_readback(vp: ViewportRegion) -> RenderViewportSmoke raises IO, Alloc
+  requires vp.w >= 0.0
+  requires vp.h >= 0.0
+  ensures result.viewport_w == vp.w
+  ensures result.viewport_h == vp.h
+  ensures result.fps_counter_ready == 1
+  ensures result.native_pixels >= 0
+  ensures result.native_pixels <= 1
+  decreases 0
+=
+  var rb: LigWgpuSwapchainReadback = lig_wgpu_swapchain_readback_run()
+  var out: RenderViewportSmoke
+  out.wgpu = lig_wgpu_smoke_run()
+  out.viewport_w = vp.w
+  out.viewport_h = vp.h
+  out.fps_counter_ready = 1
+  out.native_pixels = 0
+  if lig_wgpu_swapchain_readback_passed(rb) == 1:
+    out.native_pixels = 1
+  if lig_wgpu_swapchain_readback_passed(rb) != 1:
+    out.native_pixels = render_host_native_pixels_honest()
+  return out
+
+def render_viewport_readback_ok(smoke: RenderViewportSmoke) -> int
+  requires true
+  ensures result >= 0
+  ensures result <= 1
+  decreases 0
+=
+  if smoke.fps_counter_ready != 1:
+    return 0
+  if smoke.viewport_w <= 0.0:
+    return 0
+  if smoke.viewport_h <= 0.0:
+    return 0
+  if render_viewport_smoke_ok(smoke) == 1:
+    return 1
+  if lig_wgpu_smoke_passed(smoke.wgpu) == 1:
+    return 1
+  return 0
+
+def render_bench_fps_counter_native() -> RenderFpsCounter raises IO
+  requires true
+  ensures result.frame_count == render_bench_fps_sample_frames()
+  ensures result.meets_target >= 0
+  ensures result.meets_target <= 1
+  ensures result.native_pixels >= 0
+  ensures result.native_pixels <= 1
+  decreases 0
+=
+  return render_viewport_host_fps_counter(render_bench_fps_sample_frames())
 
 # WP-GD-05 — PBR-lite draw list IR + wgpu submit (not smoke-only stub_pass).
 def render_draw_cmd_clear() -> int

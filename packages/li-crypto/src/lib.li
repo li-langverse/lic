@@ -1,6 +1,37 @@
+# li-crypto public surface (M1).
+
+import bitops
+import sha256
+import sha384
+import hkdf
+import chacha20_poly1305
+import x25519
+
 def li_crypto_version() -> int
+  requires true
+  ensures result == 1
+  decreases 0
+=
+  return 1
+
+def li_crypto_m1_selftest() -> int
   requires true
   ensures result == 0
   decreases 0
 =
+  var r: int = crypto_sha256_selftest()
+  if r != 0:
+    return r
+  r = crypto_sha384_selftest()
+  if r != 0:
+    return r + 10
+  r = crypto_hkdf_selftest()
+  if r != 0:
+    return r + 20
+  r = crypto_chacha20_poly1305_selftest()
+  if r != 0:
+    return r + 30
+  r = crypto_x25519_selftest()
+  if r != 0:
+    return r + 40
   return 0

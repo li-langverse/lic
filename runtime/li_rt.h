@@ -125,6 +125,9 @@ const char* bytes_push_byte(const char* buf, int32_t byte);
 int32_t net_byte_at(const char* b, int32_t off);
 int32_t net_atoi(const char* s);
 
+/* OS CSPRNG trusted seam (li_rt_rng.c — getrandom / arc4random_buf). */
+int32_t li_rt_rng_fill_bytes(intptr_t out_buf, int32_t n);
+
 intptr_t tcp_recv_i(int32_t conn, int32_t max);
 int32_t tcp_send_i(int32_t conn, intptr_t data);
 intptr_t li_rt_argv_i(int32_t index);

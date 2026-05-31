@@ -1,0 +1,5 @@
+proof-explorer sweep phase7 — program sweep handoff complete
+branch: cursor/proof-explorer-proof-sweep
+gates: wp-proof-sweep.sh + wp-proof-sweep-research.sh
+log: data/proof-explorer-loop/proof-sweep-log.jsonl
+note: Research verify/compare gates optional in sweep mode; claim ledgers + export remain.

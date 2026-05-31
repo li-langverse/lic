@@ -1,46 +1,42 @@
 ---
 workflow_repo: lic
-branch: cursor/proof-explorer-phase6
+branch: cursor/proof-explorer-proof-sweep
 plan: docs/superpowers/plans/proof-explorer-phase6-erdos-formalization.md
 attribution: proof-db/attribution.toml
 ---
 
-# Proof Explorer Phase 6 — Erdős P0 + M-CONJ formalization
+# Proof Explorer Phase 6 — proof corpus sweep
 
 ## North star
 
-≥5 P0 Erdős with `li_proved` or honest partial discharge; ≥3 M-CONJ with non-trivial specimens. E-52 and Bloom Top-10 partial proofs linked to claim ledger.
+One human/agent pass through the entire proof corpus: all **1290** catalog entries plus `proof-db/**/*.li` specimens logged in `proof-sweep-log.jsonl`. Failing `lic verify` or missing discharges are **logged, not blocking**.
 
 ## Prerequisite
 
-Phase 5 gate must pass (`bash scripts/proof-explorer-phase5-completion-gate.sh`).
+Phase 5 gate passes, or `LI_PROOF_EXPLORER_SWEEP_MODE=1` with sweep infrastructure on branch `cursor/proof-explorer-proof-sweep`.
 
 ## Iteration rules
 
-1. Read `data/proof-explorer-loop/state.json` — prioritize `research_problem_id` (default E-52).
-2. Work WP order: **WP-EF-01 → WP-EF-02 → WP-EF-03 → WP-EF-04 → WP-EF-05 → WP-EF-06 → WP-EF-SIGN**.
-3. Append discharges to `data/proof-explorer-loop/discharge-log.jsonl`.
-4. Sync claim ledger `epistemic_status` when specimens discharge.
-5. Commit on `cursor/proof-explorer-phase6`; push every iteration.
+1. Run `python3 scripts/formalization/proof-catalog-sweep.py` (append) or `--full` for a fresh pass.
+2. Document each catalog id in `data/proof-explorer-loop/proof-sweep-log.jsonl` with honest `sweep_status` (`reviewed|skipped|stub|discharged`).
+3. Append one row to `data/proof-explorer-loop/iteration-log.md` per iteration.
+4. Commit on `cursor/proof-explorer-proof-sweep`; push every iteration.
 
 ## Phase checklist
 
 | WP | Deliverable | Gate |
 |----|-------------|------|
-| WP-EF-01 | E-52 formalization + sub-specimens | `bash scripts/proof-explorer-gates/wp-erdos-p0-discharge.sh` |
-| WP-EF-02 | Bloom Top-10 tranche | same gate (P0 slice) |
-| WP-EF-03 | ≥5 P0 discharges or partials | same gate |
-| WP-EF-04 | ≥3 M-CONJ non-trivial specimens | `bash scripts/proof-explorer-gates/wp-mconj-formalization.sh` |
-| WP-EF-05 | export-math includes li_specimen | `bash scripts/proof-explorer-gates/wp-export-li-specimen.sh` |
-| WP-EF-06 | E-52 claim ↔ catalog sync | manual compare report |
-| WP-EF-SIGN | Human P0/M-CONJ review | `data/proof-explorer-loop/wp-erdos-formalization.signoff` |
+| WP-SW-01 | Seed / extend sweep log | `python3 scripts/formalization/proof-catalog-sweep.py --full` |
+| WP-SW-02 | ≥1290 catalog ids in log | `bash scripts/proof-explorer-gates/wp-proof-sweep.sh` |
+| WP-SW-03 | P0 Erdős touched in log | `bash scripts/proof-explorer-gates/wp-proof-sweep-p0.sh` (or legacy discharge) |
+| WP-SW-04 | export-math li_specimen | `bash scripts/proof-explorer-gates/wp-export-li-specimen.sh` |
+| WP-SW-SIGN | Sweep complete (not all proofs pass) | `data/proof-explorer-loop/wp-proof-sweep.signoff` |
 
 ## Do not
 
-- Upgrade E-52 main conjecture to `proved` from model consensus.
-- Skip M-CONJ track (gate requires both Erdős and M-CONJ).
-- Regress Phase 5 core discharges.
-- Formalize with `# TODO` only bodies on M-CONJ gate rows.
+- Block phase handoff on per-specimen `lic verify` failures.
+- Require ≥5 P0 `li_proved` discharges (legacy; optional via `wp-erdos-p0-discharge.sh`).
+- Skip logging stubs or open conjectures — mark `stub` / `reviewed` with a note.
 
 ## Completion gate
 

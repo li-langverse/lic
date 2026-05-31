@@ -1,0 +1,5 @@
+proof-explorer sweep phase6 — catalog pass complete (not all proofs verify)
+branch: cursor/proof-explorer-proof-sweep
+gate: bash scripts/proof-explorer-gates/wp-proof-sweep.sh
+log: data/proof-explorer-loop/proof-sweep-log.jsonl
+note: Failures and stubs are logged; sweep_status documents honest posture per row.

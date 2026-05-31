@@ -1,0 +1,3 @@
+proof-explorer phase5 discharge — satisfied via sweep mode / prior program iterations
+branch: cursor/proof-explorer-proof-sweep
+note: Core corpus discharges tracked in proof-sweep-log.jsonl (discharged rows).

@@ -17,6 +17,19 @@
 | **T7** | Full safetensors/GGUF from real weight files | mmap/GGUF smokes against `PH_ML_WEIGHTS_FIXTURE` on disk |
 | **T8** | Ollama / live li-httpd proxy wiring | `bench_ph_ml_llm_trusted_httpd.py` with `live_proxy: true` |
 
+## Status
+
+| Tranche | Status |
+|---------|--------|
+| T1 | **DONE** — `lig_emit_vendor_lowering_ready`, PTX stub bytes |
+| T2 | open |
+| T3 | open |
+| T4 | open |
+| T5 | open |
+| T6 | **DONE** — `ml_matmul_lkir_logical_32`, `bench-ph-ml-lkir-matmul-32.sh` |
+| T7 | open |
+| T8 | open |
+
 ## Agent rules
 
 - One PR per tranche when possible; merge to `main` when CI green.

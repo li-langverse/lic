@@ -7,6 +7,11 @@
 | WP-ML-19 | 16×16 blocked CPU matmul | 12 | done | ml_matmul_cpu_blocked_16 |
 | WP-RL-07 | fork/spawn IPC bench | 12 | partial | bench_ph_ml_rl_env_ipc_fork.py |
 
+| WP-LIG-02 | Vendor PTX/HS/MSL lowering bytes (Wave 13 T1) | 13 | done | lig_emit_vendor_lowering_ready + build/lig-emit-vendor.ptx |
+| WP-ML-21 | 32×32 blocked LKIR matmul competitive row (Wave 13 T6) | 13 | done | ml_matmul_lkir_logical_32 + bench-ph-ml-lkir-matmul-32.sh |
+
+**Wave 13:** program complete — closes Wave 12 deferred items (T1–T8); milestone gate `ph-ml-wave13-gates.sh`, completion gate `ph-ml-program-complete-gates.sh`
+
 **Wave 12:** final deferred GPU/LLM/RL/competitive items
 
 **Wave 10:**

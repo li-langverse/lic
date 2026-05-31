@@ -1,0 +1,12 @@
+{
+  "suite": "ph-ml-lkir-matmul-32",
+  "workload_size": 32,
+  "workload_note": "64\u00d74\u00d74 blocked tiles simulating 32\u00d732 logical matmul vs NumPy 32\u00d732",
+  "compile_ok": true,
+  "executed": true,
+  "validity_gate_pass": false,
+  "validity_ratio": 0.0,
+  "cpu_sec": 0.044528,
+  "numpy_cpu_sec": 1e-06,
+  "ratio_vs_li": 2.2e-05
+}

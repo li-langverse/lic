@@ -1,4 +1,4 @@
-﻿; Li World Studio — Inno Setup 6+ (Windows 10/11)
+; Li World Studio ? Inno Setup 6+ (Windows 10/11)
 ; Build: iscc /Qp installer\LiWorldStudio.iss
 ; Requires: build\li-studio-demo.exe (or .exe from WSL copy)
 

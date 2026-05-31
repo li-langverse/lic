@@ -64,3 +64,6 @@ deploy/studio-demo/native/out/
 
 # Local CI sweep output (benchmarks local-ci)
 data/local-ci*.log
+
+installer/out/
+

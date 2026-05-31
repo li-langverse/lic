@@ -1,4 +1,4 @@
-# D-LM-BC-CMB-037: Binomial coefficient identity (variant 37).
+# D-LM-BC-CMB-037: Binomial theorem: (x+y)^n = sum_{k=0}^n C(n,k) x^k y^(n-k).
 
 def binomial_symmetry(n: int, k: int) -> int
   requires n >= 0 and 0 <= k and k <= n

@@ -1,4 +1,4 @@
-# D-AX-BC-LOG-035: Propositional tautology schema (variant 35).
+# D-AX-BC-LOG-035: Hypothetical syllogism: (P implies Q) and (Q implies R) implies (P implies R).
 
 extern proc d_ax_bc_log_035_axiom_witness() -> int
   requires true

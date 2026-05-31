@@ -183,6 +183,11 @@ SIMPLE_GRAPH: list[str] = [
     "Path graph P_n is simple with n-1 edges and max degree 2 (except endpoints).",
 ]
 
+KOLMOGOROV_AXIOMS = (
+    "Kolmogorov axioms on finite Omega: (K1) P(A)>=0; (K2) P(Omega)=1; "
+    "(K3) P(A u B)=P(A)+P(B) for disjoint A,B."
+)
+
 KOLMOGOROV_CONSEQUENCE: list[str] = [
     "Probability consequence: P(empty)=0 and P(A^c)=1-P(A) on finite Omega.",
     "Monotonicity: if A subset B then P(A) <= P(B).",
@@ -266,6 +271,10 @@ def destub_statement(entry_id: str, statement: str, domain: str | None = None) -
 
     if re.search(r"\(variant \d+\)", statement):
         slot = family_slot(entry_id)
+        if "Kolmogorov probability axioms on finite space" in statement:
+            if entry_index(entry_id) == 1:
+                return KOLMOGOROV_AXIOMS
+            return KOLMOGOROV_CONSEQUENCE[slot % len(KOLMOGOROV_CONSEQUENCE)]
         if entry_id.startswith(("D-LM-BC-", "D-AX-BC-")):
             fam = discrete_family_key(entry_id)
             if fam and fam in DISCRETE_FAMILIES:
@@ -295,5 +304,30 @@ def destub_statement(entry_id: str, statement: str, domain: str | None = None) -
     for prefix, resolver in placeholders:
         if statement.startswith(prefix) and "(variant" in statement:
             return resolver()
+
+
+    cross_field: dict[str, str] = {
+        "Protein folding energy landscape: native state minimizes effective free energy (modeling stub).": (
+            "Protein folding energy landscape: native conformation R* minimizes effective free energy "
+            "E(R) over admissible conformations R."
+        ),
+        "Pairwise alignment score is additive over matched columns under substitution matrix S (modeling stub).": (
+            "Pairwise alignment score Score(A,B) = sum_i S(a_i, b_i) over matched columns with "
+            "substitution matrix S."
+        ),
+        "Hartree-Fock: variational ground-state energy under single-determinant ansatz (modeling stub).": (
+            "Hartree-Fock variational principle: E_HF = min_{psi in SD} <psi|H|psi> over single-determinant "
+            "ansatz psi."
+        ),
+        "SCF energy functional E_k at iteration k is well-defined on the HF/DFT ansatz (modeling stub).": (
+            "SCF energy functional E_k = <psi_k|F(psi_k)|psi_k> is well-defined at Hartree-Fock/DFT "
+            "iteration k."
+        ),
+        "Newton II: net force equals mass times acceleration (scalar stub).": (
+            "Newton II: net force F_net equals mass m times acceleration a (F_net = m a)."
+        ),
+    }
+    if statement in cross_field:
+        return cross_field[statement]
 
     return None

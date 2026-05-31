@@ -1,4 +1,4 @@
-# GT-LM-BC-CON-018: Connected graph |E| >= |V|-1 (variant 18).
+# GT-LM-BC-CON-018: Minimal connected spanning subgraph has |V|-1 edges.
 
 def connected_edge_lower_bound(v: int) -> int
   requires v >= 1

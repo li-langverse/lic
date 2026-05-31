@@ -1,4 +1,4 @@
-# GT-LM-BC-HS-001: Handshaking lemma: sum deg(v) = 2|E| (variant 1).
+# GT-LM-BC-HS-001: Handshaking lemma: sum_{v in V} deg(v) = 2|E| in any finite graph.
 
 def handshaking_sum(deg_sum: int, edge_count: int) -> int
   requires edge_count >= 0

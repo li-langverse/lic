@@ -1,4 +1,4 @@
-# GT-LM-BC-HS-026: Handshaking lemma: sum deg(v) = 2|E| (variant 26).
+# GT-LM-BC-HS-026: Loop-free simple graph: sum of degrees is twice the edge count.
 
 def handshaking_sum(deg_sum: int, edge_count: int) -> int
   requires edge_count >= 0

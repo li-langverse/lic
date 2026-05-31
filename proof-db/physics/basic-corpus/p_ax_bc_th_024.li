@@ -1,4 +1,4 @@
-# P-AX-BC-TH-024: Joule law stub: ideal gas internal energy depends only on temperature T.
+# P-AX-BC-TH-024: Joule law: ideal gas internal energy U depends only on temperature T.
 
 extern proc p_ax_bc_th_024_axiom_witness() -> int
   requires true

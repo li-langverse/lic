@@ -1,4 +1,4 @@
-# P-LM-BC-WV-039: Huygens principle stub for wavefront propagation.
+# P-LM-BC-WV-039: Huygens principle: each point on a wavefront is a source of secondary spherical wavelets.
 
 def p_lm_bc_wv_039_witness(x: float) -> float
   requires true

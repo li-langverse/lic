@@ -1,4 +1,4 @@
-# D-AX-BC-LOG-030: Propositional tautology schema (variant 30).
+# D-AX-BC-LOG-030: Disjunctive syllogism: (P or Q) and (not P) implies Q.
 
 extern proc d_ax_bc_log_030_axiom_witness() -> int
   requires true

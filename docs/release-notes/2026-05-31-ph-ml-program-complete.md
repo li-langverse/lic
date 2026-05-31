@@ -32,4 +32,4 @@ export PH_ML_WEIGHTS_FIXTURE="$PWD/fixtures/ph-ml-weights"
 bash scripts/ph-ml-program-complete-gates.sh
 ```
 
-**Agent verification (2026-05-31):** run `code_implementer-1780246266094` — program-complete gate exit 0 on Windows host (WSL delegation for `build-wsl/lic`); PR [#676](https://github.com/li-langverse/lic/pull/676) all CI checks green.
+**Agent verification (2026-05-31):** runs `code_implementer-1780246266094`, `1780246278249`, `1780246897084` — program-complete gate exit 0 on Windows host (WSL delegation for matmul-32); PR [#676](https://github.com/li-langverse/lic/pull/676) all CI checks green.

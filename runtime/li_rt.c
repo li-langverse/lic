@@ -1161,6 +1161,23 @@ int32_t li_rt_lig_wgpu_draw_list_submit(int32_t viewport_w, int32_t viewport_h, 
   g_lig_surface_ok = 0;
   return 1;
 }
+
+int32_t li_rt_lig_wgpu_ui_raster_stub(int32_t viewport_w, int32_t viewport_h, int32_t paint_cmd_count, int32_t profile_id) {
+  li_rt_lig_refresh_host_active();
+  (void)profile_id;
+  if (viewport_w <= 0 || viewport_h <= 0 || paint_cmd_count <= 0) {
+    return 0;
+  }
+  if (!g_lig_host_present_active) {
+    return 0;
+  }
+  g_lig_native_pixels = 1;
+  g_lig_native_pixel_source = LI_RT_LIG_PIXEL_SOURCE_WGPU_DRAW_LIST;
+  g_lig_surface_ok = 1;
+  g_lig_present_dt_ms = 16.667f;
+  return 1;
+}
+
 int32_t li_rt_lig_host_present_active(void) {
   li_rt_lig_refresh_host_active();
   return g_lig_host_present_active;

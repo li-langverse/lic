@@ -46,6 +46,16 @@ extern proc li_rt_lig_wgpu_draw_list_submit(viewport_w: int, viewport_h: int, cm
   ensures result <= 1
   decreases viewport_w
 
+extern proc li_rt_lig_wgpu_ui_raster_stub(viewport_w: int, viewport_h: int, paint_cmd_count: int, profile_id: int) -> int
+  requires viewport_w >= 0
+  requires viewport_h >= 0
+  requires paint_cmd_count >= 0
+  requires profile_id >= 1
+  requires profile_id <= 7
+  ensures result >= 0
+  ensures result <= 1
+  decreases viewport_w
+
 extern proc li_rt_lig_present_surface_ok() -> int
   requires true
   ensures result >= 0
@@ -281,6 +291,24 @@ def lig_present_host_native_pixel_source_flag() -> int raises IO
   decreases 0
 =
   return li_rt_lig_host_native_pixel_source()
+
+def lig_wgpu_ui_raster_submit(viewport_w: int, viewport_h: int, paint_cmd_count: int, profile_id: int) -> int raises IO
+  requires viewport_w >= 0
+  requires viewport_h >= 0
+  requires paint_cmd_count >= 0
+  requires profile_id >= 1
+  requires profile_id <= 7
+  ensures result >= 0
+  ensures result <= 1
+  decreases paint_cmd_count
+=
+  if paint_cmd_count <= 0:
+    return 0
+  if viewport_w <= 0:
+    return 0
+  if viewport_h <= 0:
+    return 0
+  return li_rt_lig_wgpu_ui_raster_stub(viewport_w, viewport_h, paint_cmd_count, profile_id)
 
 def lig_wgpu_draw_list_submit(vp_w: float, vp_h: float, cmd_count: int, pbr_tag: int) -> int raises IO
   requires vp_w >= 0.0

@@ -3,16 +3,17 @@ import lig
 import lig.present
 import gui
 import scene
+import ui
 
 # li-render — viewport FPS counter + wgpu smoke bridge (PH-UX viewport_fps ≥ 60).
 # Scene path: MD particle draw tiers with honest FPS/particle HUD (native_pixels=0 until wgpu draws).
 
 def li_std_render_version() -> int
   requires true
-  ensures result == 5
+  ensures result == 6
   decreases 0
 =
-  return 5
+  return 6
 
 def render_viewport_fps_target() -> float
   requires true
@@ -685,3 +686,247 @@ def render_viewport_wgpu_probe_ok(probe: RenderViewportWgpuProbe) -> int
   if probe.surface_ok == 0:
     return 0
   return 1
+
+# Canonical split: src/ui_raster.li (mirrored for `import render`).
+
+def render_ui_raster_version() -> int
+  requires true
+  ensures result == 1
+  decreases 0
+=
+  return 1
+
+def render_ui_raster_backend_none() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0
+
+def render_ui_raster_backend_cpu() -> int
+  requires true
+  ensures result == 1
+  decreases 0
+=
+  return 1
+
+def render_ui_raster_backend_wgpu() -> int
+  requires true
+  ensures result == 2
+  decreases 0
+=
+  return 2
+
+type RenderUiRasterResult = object
+  public width_px: int
+  public height_px: int
+  public cmd_count: int
+  public cpu_pixels: int
+  public wgpu_ok: int
+  public native_pixels: int
+  public backend: int
+
+def render_ui_raster_dim_band(v: float) -> int
+  requires v >= 0.0
+  ensures result >= 0
+  decreases v
+=
+  if v <= 0.0:
+    return 0
+  if v >= 1920.0:
+    return 1920
+  if v >= 1080.0:
+    return 1080
+  if v >= 256.0:
+    return 256
+  if v >= 120.0:
+    return 120
+  if v >= 40.0:
+    return 40
+  if v >= 8.0:
+    return 8
+  return 1
+
+def render_ui_raster_rect_area_px(r: Rect) -> int
+  requires r.w >= 0.0
+  requires r.h >= 0.0
+  ensures result >= 0
+  decreases r.w
+=
+  var w: int = render_ui_raster_dim_band(r.w)
+  var h: int = render_ui_raster_dim_band(r.h)
+  return w * h
+
+def render_ui_raster_cpu_cmd_pixels(cmd: PaintCmd) -> int
+  requires cmd.kind >= paint_op_fill_rect()
+  requires cmd.kind <= paint_op_kind_max()
+  ensures result >= 0
+  decreases cmd.kind
+=
+  if cmd.kind == paint_op_clip_push():
+    return 0
+  if cmd.kind == paint_op_clip_pop():
+    return 0
+  if cmd.kind == paint_op_stroke_rect():
+    var stroke_band: int = render_ui_raster_dim_band(cmd.stroke_px)
+    if stroke_band <= 0:
+      return 0
+    var w: int = render_ui_raster_dim_band(cmd.rect.w)
+    var h: int = render_ui_raster_dim_band(cmd.rect.h)
+    return (w + h) * 2 * stroke_band
+  if cmd.kind == paint_op_stroke_round_rect():
+    var stroke_band2: int = render_ui_raster_dim_band(cmd.stroke_px)
+    if stroke_band2 <= 0:
+      return 0
+    var w2: int = render_ui_raster_dim_band(cmd.rect.w)
+    var h2: int = render_ui_raster_dim_band(cmd.rect.h)
+    return (w2 + h2) * 2 * stroke_band2
+  if cmd.kind == paint_op_draw_glyphs():
+    return render_ui_raster_rect_area_px(cmd.rect)
+  if cmd.kind == paint_op_draw_image():
+    return render_ui_raster_rect_area_px(cmd.rect)
+  return render_ui_raster_rect_area_px(cmd.rect)
+
+def render_ui_raster_cpu_pass(frame: PaintFrame, w: float, h: float) -> RenderUiRasterResult
+  requires frame.cmd_count >= 0
+  requires w >= 0.0
+  requires h >= 0.0
+  ensures result.cmd_count == frame.cmd_count
+  ensures result.width_px == render_ui_raster_dim_band(w)
+  ensures result.height_px == render_ui_raster_dim_band(h)
+  decreases frame.cmd_count
+=
+  var out: RenderUiRasterResult
+  out.width_px = render_ui_raster_dim_band(w)
+  out.height_px = render_ui_raster_dim_band(h)
+  out.cmd_count = frame.cmd_count
+  out.wgpu_ok = 0
+  out.native_pixels = 0
+  if frame.cmd_count <= 0:
+    out.cpu_pixels = 0
+    out.backend = render_ui_raster_backend_none()
+    return out
+  var probe_cmd: PaintCmd = paint_cmd_fill_round(frame.last_rect, frame.last_color, studio_default_panel_radius_px())
+  var area: int = render_ui_raster_cpu_cmd_pixels(probe_cmd)
+  if area <= 0:
+    area = render_ui_raster_rect_area_px(frame.last_rect)
+  out.cpu_pixels = area * frame.cmd_count
+  var cap: int = out.width_px * out.height_px
+  if cap > 0:
+    if out.cpu_pixels > cap:
+      out.cpu_pixels = cap
+  out.backend = render_ui_raster_backend_cpu()
+  return out
+
+def render_ui_raster_cpu_chrome(w: float, h: float) -> RenderUiRasterResult
+  requires w >= 0.0
+  requires h >= 0.0
+  ensures result.cmd_count == paint_studio_shell_chrome_count()
+  decreases w
+=
+  var layout: StudioShellLayout = layout_studio_shell_adaptive(w, h)
+  var frame: PaintFrame = paint_frame_new()
+  paint_studio_shell_chrome(frame, layout)
+  return render_ui_raster_cpu_pass(frame, w, h)
+
+def render_ui_raster_cpu_panel_demo(w: float, h: float) -> RenderUiRasterResult
+  requires w >= 8.0
+  requires h >= 8.0
+  ensures result.cmd_count == 3
+  decreases w
+=
+  var panel: Rect = rect_make(8.0, 8.0, 120.0, 40.0)
+  var frame: PaintFrame = paint_frame_new()
+  paint_frame_push(frame, paint_cmd_fill_round(panel, studio_color_bg_elevated(), studio_default_panel_radius_px()))
+  paint_frame_push(frame, paint_cmd_stroke_round(panel, studio_color_border(), 1.0, studio_default_panel_radius_px()))
+  paint_frame_push(frame, paint_cmd_fill_gradient(panel, studio_color_bg_primary(), studio_color_bg_elevated()))
+  return render_ui_raster_cpu_pass(frame, w, h)
+
+def render_ui_raster_result_ok(r: RenderUiRasterResult) -> int
+  requires true
+  ensures result >= 0
+  ensures result <= 1
+  decreases 0
+=
+  if r.cmd_count <= 0:
+    return 0
+  if r.cpu_pixels <= 0:
+    if r.wgpu_ok != 1:
+      return 0
+  if r.backend == render_ui_raster_backend_none():
+    return 0
+  return 1
+
+def render_ui_raster_wgpu_pass(vp_w: float, vp_h: float, frame: PaintFrame, profile_id: int) -> RenderUiRasterResult raises IO
+  requires vp_w >= 0.0
+  requires vp_h >= 0.0
+  requires profile_id >= 1
+  requires profile_id <= 7
+  requires frame.cmd_count >= 0
+  ensures result.cmd_count == frame.cmd_count
+  decreases frame.cmd_count
+=
+  var cpu: RenderUiRasterResult = render_ui_raster_cpu_pass(frame, vp_w, vp_h)
+  if frame.cmd_count <= 0:
+    return cpu
+  if lig_present_host_active() != 1:
+    return cpu
+  var iw: int = render_ui_raster_dim_band(vp_w)
+  var ih: int = render_ui_raster_dim_band(vp_h)
+  if iw <= 0:
+    return cpu
+  if ih <= 0:
+    return cpu
+  if lig_wgpu_ui_raster_submit(iw, ih, frame.cmd_count, profile_id) != 1:
+    return cpu
+  cpu.wgpu_ok = 1
+  cpu.backend = render_ui_raster_backend_wgpu()
+  cpu.native_pixels = render_ui_raster_native_pixels_honest()
+  return cpu
+
+def render_ui_raster_native_pixels_honest() -> int raises IO
+  requires true
+  ensures result >= 0
+  ensures result <= 1
+  decreases 0
+=
+  if lig_present_host_active() != 1:
+    return 0
+  if lig_present_host_native_pixels_flag() != 1:
+    return 0
+  if lig_native_pixel_source_honest_product(lig_present_host_native_pixel_source_flag()) != 1:
+    return 0
+  return 1
+
+def render_ui_raster_pass(vp_w: float, vp_h: float, frame: PaintFrame, profile_id: int) -> RenderUiRasterResult raises IO
+  requires vp_w >= 0.0
+  requires vp_h >= 0.0
+  requires profile_id >= 1
+  requires profile_id <= 7
+  requires frame.cmd_count >= 0
+  ensures result.cmd_count == frame.cmd_count
+  decreases frame.cmd_count
+=
+  var wgpu: RenderUiRasterResult = render_ui_raster_wgpu_pass(vp_w, vp_h, frame, profile_id)
+  if wgpu.wgpu_ok == 1:
+    return wgpu
+  return render_ui_raster_cpu_pass(frame, vp_w, vp_h)
+
+def render_ui_raster_pass_pure(vp_w: float, vp_h: float, frame: PaintFrame, profile_id: int) -> RenderUiRasterResult
+  requires vp_w >= 0.0
+  requires vp_h >= 0.0
+  requires profile_id >= 1
+  requires profile_id <= 7
+  requires frame.cmd_count >= 0
+  ensures result.cmd_count == frame.cmd_count
+  decreases frame.cmd_count
+=
+  return render_ui_raster_cpu_pass(frame, vp_w, vp_h)
+
+def render_ui_raster_chrome_smoke_pure() -> RenderUiRasterResult
+  requires true
+  ensures result.cmd_count == paint_studio_shell_chrome_count()
+  ensures result.cpu_pixels > 0
+  decreases 0
+=
+  return render_ui_raster_cpu_chrome(1920.0, 1080.0)

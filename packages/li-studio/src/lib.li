@@ -4481,6 +4481,8 @@ def studio_sim_rl_step_hook(sim_out: var SimSessionStub, dt: float) -> int
   ensures result <= 1
   decreases sim_out.tick
 =
+  if sim_rl_env_li_process_fork_ready() == 1:
+    return sim_rl_session_env_pool_step_li_fork(sim_out, dt)
   return sim_rl_session_env_pool_step(sim_out, dt)
 
 # PH-SIM SIM-5 — automotive/robotics: sensor raycast bus on session before replay tick.

@@ -27,8 +27,8 @@
 | T4 | open |
 | T5 | open |
 | T6 | **DONE** — `ml_matmul_lkir_logical_32`, `bench-ph-ml-lkir-matmul-32.sh` |
-| T7 | open |
-| T8 | open |
+| T7 | **DONE** — `llm_weights_file_mmap.li`, `prepare_ph_ml_weights_fixture.py`, `PH_ML_WEIGHTS_FIXTURE` on-disk weights |
+| T8 | **DONE** — `bench_ph_ml_llm_trusted_httpd.py` live proxy (`live_proxy: true`) |
 
 ## Agent rules
 

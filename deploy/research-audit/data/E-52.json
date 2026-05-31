@@ -142,6 +142,23 @@
       "created_at": "2026-05-31T12:00:00Z",
       "epistemic_status": "heuristic",
       "notes": "Methodological claim from May 2026 register notes."
+    },
+    {
+      "claim_id": "CLM-E52-013",
+      "problem_id": "E-52",
+      "statement_plain": "Plünnecke-Ruzsa inequality: for finite A,B subset Z, |A+B| <= (|A|/|A-B|) * |A+B| bounds sumset growth via difference set.",
+      "statement_latex": "|A+B| \\leq \\frac{|A|}{|A-B|} \\cdot |A+B|",
+      "author_agent": "code_implementer",
+      "author_model": "composer-2.5-fast",
+      "created_at": "2026-05-31T14:00:00Z",
+      "epistemic_status": "literature_proved",
+      "sources": [
+        {
+          "title": "Plünnecke-Ruzsa inequality",
+          "url": "https://en.wikipedia.org/wiki/Pl%C3%BCnnecke%E2%80%93Ruzsa_inequality"
+        }
+      ],
+      "notes": "Standard additive combinatorics tool relevant to E-52 sumset lower bounds."
     }
   ],
   "reviews_by_claim": {
@@ -360,15 +377,33 @@
         "reviewed_at": "2026-05-31T13:30:00Z",
         "rationale_plain": "Independent second review for CLM-E52-012."
       }
+    ],
+    "CLM-E52-013": [
+      {
+        "claim_id": "CLM-E52-013",
+        "reviewer_model": "claude-4.6-sonnet",
+        "verdict": "proved",
+        "confidence": 0.82,
+        "rationale_plain": "Classical Plünnecke-Ruzsa; well-established in additive combinatorics.",
+        "reviewed_at": "2026-05-31T08:55:44Z"
+      },
+      {
+        "claim_id": "CLM-E52-013",
+        "reviewer_model": "gpt-5.2-codex",
+        "verdict": "proved",
+        "confidence": 0.79,
+        "rationale_plain": "Literature-backed inequality; matches Wikipedia statement.",
+        "reviewed_at": "2026-05-31T08:55:44Z"
+      }
     ]
   },
   "compare_report": {
     "problem_id": "E-52",
-    "generated_at": "2026-05-31T08:49:30Z",
-    "claims_total": 12,
+    "generated_at": "2026-05-31T08:55:46Z",
+    "claims_total": 13,
     "by_epistemic_status": {
       "heuristic": 6,
-      "literature_proved": 2,
+      "literature_proved": 3,
       "li_open": 1,
       "model_consensus": 1,
       "model_conflict": 1,

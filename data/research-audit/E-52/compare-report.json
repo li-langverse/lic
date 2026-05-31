@@ -1,10 +1,10 @@
 {
   "problem_id": "E-52",
-  "generated_at": "2026-05-31T08:53:03Z",
-  "claims_total": 12,
+  "generated_at": "2026-05-31T08:55:46Z",
+  "claims_total": 13,
   "by_epistemic_status": {
     "heuristic": 6,
-    "literature_proved": 2,
+    "literature_proved": 3,
     "li_open": 1,
     "model_consensus": 1,
     "model_conflict": 1,

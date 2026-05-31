@@ -1057,13 +1057,20 @@ static int32_t li_rt_lig_try_sdl_present_host(int32_t viewport_w, int32_t viewpo
   if (viewport_w <= 0 || viewport_h <= 0) {
     return 0;
   }
-  char cmd[640];
-  snprintf(cmd, sizeof(cmd), "%s --width %d --height %d", bin, (int)viewport_w, (int)viewport_h);
+  const char* rgb_ppm = getenv("STUDIO_SHELL_RGB_PPM");
+  char cmd[960];
+  if (rgb_ppm != NULL && rgb_ppm[0] != '\0') {
+    snprintf(cmd, sizeof(cmd), "%s --width %d --height %d --rgb-ppm \"%s\"", bin, (int)viewport_w,
+             (int)viewport_h, rgb_ppm);
+  } else {
+    snprintf(cmd, sizeof(cmd), "%s --width %d --height %d", bin, (int)viewport_w, (int)viewport_h);
+  }
   if (system(cmd) != 0) {
     return 0;
   }
   g_lig_native_pixels = 1;
-  g_lig_native_pixel_source = LI_RT_LIG_PIXEL_SOURCE_HOST_CPU;
+  g_lig_native_pixel_source = rgb_ppm != NULL && rgb_ppm[0] != '\0' ? LI_RT_LIG_PIXEL_SOURCE_PAINT_BLIT
+                                                                        : LI_RT_LIG_PIXEL_SOURCE_HOST_CPU;
   g_lig_surface_ok = 1;
   g_lig_present_dt_ms = 16.667f;
   return 1;

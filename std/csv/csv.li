@@ -12,7 +12,7 @@ def csv_tag() -> int
 =
   return 6
 
-def csv_parse_row_stub(line: str) -> CsvRow
+def csv_parse_row_stub(line: str) raises Alloc -> CsvRow
   requires true
   ensures result.field_count == 0
   decreases 0

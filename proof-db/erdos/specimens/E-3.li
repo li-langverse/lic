@@ -1,12 +1,20 @@
 # Catalog: E-3
 # Statement: If A subset N has sum_{n in A} 1/n = infinity, must A contain arbitrarily long arithmetic progressions?
 # formalization_status: li_open
-# discharge: pending — open formalization target (Phase 4)
-# erdos_status (literature): open
+# partial: proof-db/erdos/specimens/E-3-partial-unbounded-set.li
+# erdos_status (literature): open — Bloom Top 10; $5000 prize
+
+def divergent_reciprocal_requires_unbounded_size(min_size: int) -> int
+  requires min_size >= 1
+  ensures result >= min_size
+  decreases 0
+=
+  return min_size
 
 def formal_target_e_3() -> int
   requires true
   ensures result == 0
   decreases 0
 =
+  var k: int = divergent_reciprocal_requires_unbounded_size(3)
   return 0

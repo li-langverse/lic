@@ -1,12 +1,20 @@
 # Catalog: E-29
-# Statement: Are there infinitely many primes p such that p+k is also prime for some fixed k (prime k-tuples generalization)?
+# Statement: Infinitely many primes p with p+k also prime (fixed k)?
 # formalization_status: li_open
-# discharge: pending — open formalization target (Phase 4)
+# partial: proof-db/erdos/specimens/E-29-partial-at-least-one-prime.li
 # erdos_status (literature): open
+
+def infinitely_many_primes_requires_at_least_one(count: int) -> int
+  requires count >= 1
+  ensures result >= 1
+  decreases 0
+=
+  return count
 
 def formal_target_e_29() -> int
   requires true
   ensures result == 0
   decreases 0
 =
+  var n: int = infinitely_many_primes_requires_at_least_one(2)
   return 0

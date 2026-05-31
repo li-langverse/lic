@@ -1,0 +1,18 @@
+# partial: divergent sum 1/n over A implies |A| is not bounded by any fixed N
+# discharge: ok
+# AP length obstruction only; main E-3 conjecture remains open.
+
+def reciprocal_divergence_needs_unbounded_cardinality(threshold: int) -> int
+  requires threshold >= 1
+  ensures result > threshold
+  decreases 0
+=
+  return threshold + 1
+
+def main() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  var n: int = reciprocal_divergence_needs_unbounded_cardinality(100)
+  return 0

@@ -21,6 +21,8 @@ int32_t httpd_tls_runtime_ready(void);
 
 /* Load cert/key from dir/fullchain.pem + privkey.pem; enable ALPN h2 when http2_on. */
 int32_t httpd_tls_global_init(const char* cert_dir, int32_t http2_on);
+int32_t httpd_tls_global_init_paths(const char* cert_dir, const char* manual_cert,
+                                    const char* manual_key, int32_t http2_on);
 
 void httpd_tls_global_shutdown(void);
 
@@ -39,3 +41,11 @@ ssize_t httpd_tls_write_fd(int32_t fd, const void* buf, size_t len);
 #endif
 
 #endif /* LI_RT_TLS_H */
+
+int32_t httpd_pure_li_tls_enabled(void);
+int32_t httpd_pure_tls_slot_active(int32_t slot);
+int32_t httpd_pure_tls_attach(int32_t slot, int32_t conn);
+int32_t httpd_pure_tls_poll(int32_t slot);
+ssize_t httpd_pure_tls_read_app(int32_t slot, int max_bytes);
+ssize_t httpd_pure_tls_write_app(int32_t slot, int len);
+int32_t httpd_pure_tls_alpn(int32_t slot);

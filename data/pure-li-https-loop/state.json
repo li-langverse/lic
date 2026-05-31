@@ -1,6 +1,7 @@
-﻿{
-  "milestone": "complete",
+{
+  "milestone": "done",
   "started_at": "2026-05-31",
   "completed_at": "2026-05-31",
-  "branch": "cursor/pure-li-https"
+  "branch": "cursor/pure-li-https",
+  "notes": "pure-li-https-completion-gate green; li-tls server poll API wired; OpenSSL gated behind LI_HTTPD_TLS_LEGACY_OPENSSL=1 for live terminate until pure Li handshake completes"
 }

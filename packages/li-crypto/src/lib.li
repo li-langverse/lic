@@ -12,6 +12,8 @@ import pem
 import asn1
 import ed25519_pem
 import x509
+import key
+import aes128gcm
 
 def li_crypto_version() -> int
   requires true
@@ -40,6 +42,12 @@ def li_crypto_m1_selftest() -> int
   r = crypto_x25519_selftest()
   if r != 0:
     return r + 40
+  r = crypto_key_kind_selftest()
+  if r != 0:
+    return r + 50
+  r = crypto_aes128gcm_selftest()
+  if r != 0:
+    return r + 60
   return 0
 
 def li_crypto_m1_pem_selftest() -> int

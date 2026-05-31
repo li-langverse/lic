@@ -82,6 +82,78 @@ static int tls_alpn_select_cb(SSL* ssl, const unsigned char** out, unsigned char
 }
 static int g_slot_proto[LI_HTTPD_MAX_CONN_TLS];
 static SSL* g_slot_ssl[LI_HTTPD_MAX_CONN_TLS];
+static int g_pure_li_tls;
+static int g_legacy_openssl = 1;
+static int g_pure_slot_active[LI_HTTPD_MAX_CONN_TLS];
+static int g_pure_slot_alpn[LI_HTTPD_MAX_CONN_TLS];
+
+static void tls_read_env_mode(void) {
+  const char* legacy = getenv("LI_HTTPD_TLS_LEGACY_OPENSSL");
+  if (legacy && (legacy[0] == '0' || legacy[0] == 'f' || legacy[0] == 'F')) {
+    g_legacy_openssl = 0;
+  }
+  const char* pure = getenv("LI_HTTPD_TLS_PURE_LI");
+  if (pure && pure[0] == '1') {
+    g_pure_li_tls = 1;
+    g_legacy_openssl = 0;
+  }
+}
+
+int32_t httpd_pure_li_tls_enabled(void) {
+  return g_pure_li_tls && !g_legacy_openssl;
+}
+
+int32_t httpd_pure_tls_slot_active(int32_t slot) {
+  if (slot < 0 || slot >= LI_HTTPD_MAX_CONN_TLS) {
+    return 0;
+  }
+  return g_pure_slot_active[slot] ? 1 : 0;
+}
+
+int32_t httpd_pure_tls_attach(int32_t slot, int32_t conn) {
+  (void)conn;
+  if (slot < 0 || slot >= LI_HTTPD_MAX_CONN_TLS) {
+    return -1;
+  }
+  g_pure_slot_active[slot] = 1;
+  g_pure_slot_alpn[slot] = 0;
+  return 0;
+}
+
+int32_t httpd_pure_tls_poll(int32_t slot) {
+  if (slot < 0 || slot >= LI_HTTPD_MAX_CONN_TLS || !g_pure_slot_active[slot]) {
+    return -1;
+  }
+  if (g_slot_ssl[slot]) {
+    return 1;
+  }
+  return 0;
+}
+
+ssize_t httpd_pure_tls_read_app(int32_t slot, int max_bytes) {
+  (void)max_bytes;
+  return -1;
+}
+
+ssize_t httpd_pure_tls_write_app(int32_t slot, int len) {
+  (void)slot;
+  (void)len;
+  return -1;
+}
+
+int32_t httpd_pure_tls_alpn(int32_t slot) {
+  if (slot < 0 || slot >= LI_HTTPD_MAX_CONN_TLS) {
+    return 0;
+  }
+  if (g_slot_proto[slot] == 2) {
+    return 1;
+  }
+  if (g_slot_proto[slot] == 1) {
+    return 2;
+  }
+  return g_pure_slot_alpn[slot];
+}
+
 
 static int tls_load_sym(void* lib, const char* name, void** out) {
   void* sym = dlsym(lib, name);
@@ -188,22 +260,46 @@ void httpd_tls_free_slot(int32_t slot) {
   g_slot_proto[slot] = 0;
 }
 
+static int32_t httpd_tls_global_init_files(const char* cert_path, const char* key_path);
+
+
 int32_t httpd_tls_global_init(const char* cert_dir, int32_t http2_on) {
-  g_tls_wanted = 1;
+  return httpd_tls_global_init_paths(cert_dir, NULL, NULL, http2_on);
+}
+
+int32_t httpd_tls_global_init_paths(const char* cert_dir, const char* manual_cert,
+                                    const char* manual_key, int32_t http2_on) {
+  static char cert_path[4096];
+  static char key_path[4096];
+  cert_path[0] = key_path[0] = '\0';
+  if (manual_cert && manual_cert[0] && manual_key && manual_key[0]) {
+    strncpy(cert_path, manual_cert, sizeof(cert_path) - 1);
+    strncpy(key_path, manual_key, sizeof(key_path) - 1);
+  } else if (cert_dir && cert_dir[0]) {
+    snprintf(cert_path, sizeof(cert_path), "%s/fullchain.pem", cert_dir);
+    snprintf(key_path, sizeof(key_path), "%s/privkey.pem", cert_dir);
+  }
   g_tls_http2 = http2_on ? 1 : 0;
+  return httpd_tls_global_init_files(cert_path, key_path);
+}
+
+
+int32_t httpd_tls_global_init_files(const char* cert_path, const char* key_path) {
+  tls_read_env_mode();
+  g_tls_wanted = 1;
   memset(g_slot_proto, 0, sizeof(g_slot_proto));
   memset(g_slot_ssl, 0, sizeof(g_slot_ssl));
+  if (httpd_pure_li_tls_enabled()) {
+    g_tls_ready = 1;
+    return 0;
+  }
   if (tls_load_openssl() != 0) {
     fprintf(stderr, "li-httpd tls: failed to load libssl (install openssl)\n");
     return -1;
   }
-  if (!cert_dir || !cert_dir[0]) {
+  if (!cert_path || !cert_path[0] || !key_path || !key_path[0]) {
     return -1;
   }
-  char cert_path[PATH_MAX];
-  char key_path[PATH_MAX];
-  snprintf(cert_path, sizeof(cert_path), "%s/fullchain.pem", cert_dir);
-  snprintf(key_path, sizeof(key_path), "%s/privkey.pem", cert_dir);
   if (access(cert_path, R_OK) != 0 || access(key_path, R_OK) != 0) {
     fprintf(stderr, "li-httpd tls: missing %s or %s (run setup-tls)\n", cert_path, key_path);
     return -1;

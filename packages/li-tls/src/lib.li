@@ -3,6 +3,10 @@
 import record
 import key_schedule
 import handshake_server
+import alpn
+import session_ticket
+import sni
+import server
 
 def li_tls_version() -> int
   requires true
@@ -25,4 +29,16 @@ def li_tls_m2_selftest() -> int
   r = tls_hs_server_selftest()
   if r != 0:
     return r + 20
+  r = tls_alpn_selftest()
+  if r != 0:
+    return r + 30
+  r = tls_session_ticket_selftest()
+  if r != 0:
+    return r + 40
+  r = tls_sni_selftest()
+  if r != 0:
+    return r + 50
+  r = tls_server_selftest()
+  if r != 0:
+    return r + 60
   return 0

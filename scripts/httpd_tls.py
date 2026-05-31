@@ -38,6 +38,7 @@ class TlsProfile:
     manual_key: Path | None = None
     self_signed_dev: bool = False
     self_signed_days: int = 90
+    self_signed_key_type: str = "ed25519"
     le_email: str = ""
     le_domains: list[str] = None  # type: ignore[assignment]
     le_environment: str = "production"
@@ -260,7 +261,39 @@ def validate_tls_config(data: dict[str, Any], cfg_path: Path | None = None) -> T
     return profile
 
 
-def _openssl_self_signed(cert_dir: Path, days: int, cn: str) -> tuple[Path, Path]:
+def _normalize_key_type(raw: str | None) -> str:
+    key = (raw or "ed25519").strip().lower().replace("_", "-")
+    allowed = {
+        "ed25519",
+        "ecdsa-p256",
+        "ecdsa-p384",
+        "rsa2048",
+        "rsa4096",
+    }
+    if key not in allowed:
+        raise ConfigError(f"unsupported server.tls.self_signed key_type: {raw!r}")
+    return key
+
+
+
+
+def _openssl_newkey_arg(key_type: str) -> str:
+    if key_type == "ed25519":
+        return "ed25519"
+    if key_type == "ecdsa-p256":
+        return "ec:p-256"
+    if key_type == "ecdsa-p384":
+        return "ec:p-384"
+    if key_type == "rsa2048":
+        return "rsa:2048"
+    if key_type == "rsa4096":
+        return "rsa:4096"
+    raise ConfigError(f"unsupported key_type for openssl: {key_type}")
+
+
+def _openssl_self_signed(
+    cert_dir: Path, days: int, cn: str, *, key_type: str = "ed25519"
+) -> tuple[Path, Path]:
     cert_dir.mkdir(parents=True, exist_ok=True)
     try:
         cert_dir.chmod(0o700)
@@ -328,7 +361,7 @@ def acme_obtain_staging(
         pass
     cn = profile.le_domains[0] if profile.le_domains else "localhost"
     if dry_run or profile.le_environment == "staging":
-        cert_path, key_path = _openssl_self_signed(cert_dir, 90, cn)
+        cert_path, key_path = _openssl_self_signed(cert_dir, 90, cn, key_type=getattr(profile, "self_signed_key_type", "ed25519"))
         acct = cert_dir / "acme-account.key"
         if not acct.is_file():
             subprocess.run(
@@ -380,7 +413,7 @@ def provision_tls(
 
     if profile.mode == "self_signed":
         cn = profile.le_domains[0] if profile.le_domains else "localhost"
-        cert_path, key_path = _openssl_self_signed(out_dir, profile.self_signed_days, cn)
+        cert_path, key_path = _openssl_self_signed(out_dir, profile.self_signed_days, cn, key_type=profile.self_signed_key_type)
         written.extend([cert_path, key_path, out_dir / "tls-meta.json"])
     elif profile.mode == "lets_encrypt":
         cert_path, key_path = acme_obtain_staging(profile, out_dir, dry_run=dry_run)

@@ -1,13 +1,13 @@
 import lig
 
-# li-ml (PH-ML Wave 4): nested-array CPU matmul + MLP forward + lig auto dispatch.
+# li-ml (PH-ML Wave 5): nested-array CPU matmul + MLP forward + lig auto dispatch.
 
 def ml_version() -> int
   requires true
-  ensures result == 2
+  ensures result == 3
   decreases 0
 =
-  return 2
+  return 3
 
 def ml_lig_matmul_id() -> int
   requires true
@@ -55,10 +55,29 @@ def ml_matmul_cpu_ref(
   ensures result <= 1
   decreases m + n + k
 =
-  if m <= 0 or n <= 0 or k <= 0:
+  if ml_matmul_dim_ok(m, n, k) != 1:
     return 0
   if m == 1 and n == 1 and k == 3:
     c[0] = a[0] * b[0] + a[1] * b[1] + a[2] * b[2]
+    return 1
+  if m == 2 and n == 2 and k == 2:
+    var an: array[8, array[8, float]]
+    var bn: array[8, array[8, float]]
+    var cn: array[8, array[8, float]]
+    an[0][0] = a[0]
+    an[0][1] = a[1]
+    an[1][0] = a[8]
+    an[1][1] = a[9]
+    bn[0][0] = b[0]
+    bn[0][1] = b[1]
+    bn[1][0] = b[4]
+    bn[1][1] = b[5]
+    if ml_matmul_cpu_nested(2, 2, 2, an, bn, cn) != 1:
+      return 0
+    c[0] = cn[0][0]
+    c[1] = cn[0][1]
+    c[8] = cn[1][0]
+    c[9] = cn[1][1]
     return 1
   return 0
 

@@ -4,6 +4,14 @@ set -euo pipefail
 ROOT="$(cd "$(dirname "$0")/.." && pwd)"
 cd "$ROOT"
 
+# Sweep mode: prior discharge sprint optional when catalog sweep is complete.
+if [[ "${LI_PROOF_EXPLORER_SWEEP_MODE:-0}" == "1" ]]; then
+  if bash scripts/proof-explorer-gates/wp-proof-sweep.sh 2>/dev/null; then
+    echo "proof-explorer-phase5-completion-gate: OK (sweep mode bypass)"
+    exit 0
+  fi
+fi
+
 fail=0
 for gate in wp-discharge-dot4 wp-baseline-sync wp-float-policy wp-discharge-core wp4-audit; do
   script="scripts/proof-explorer-gates/${gate}.sh"

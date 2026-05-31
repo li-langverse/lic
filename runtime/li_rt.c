@@ -1085,7 +1085,10 @@ static int32_t li_rt_lig_gpu_runner_detected(void) {
   if (runner != NULL && runner[0] == '1' && runner[1] == '\0') {
     return 1;
   }
-#if !defined(_WIN32)
+#if defined(__APPLE__)
+  return 1;
+#endif
+#if !defined(_WIN32) && !defined(__APPLE__)
   struct stat st;
   if (stat("/dev/nvidia0", &st) == 0) {
     return 1;

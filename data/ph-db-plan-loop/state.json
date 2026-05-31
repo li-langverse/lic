@@ -1,12 +1,18 @@
 {
-  "note": "PH-DB cross-repo sprint — state tracked via ph-db-swarm-plan.md todos; no YAML plan-loop yet",
-  "updated_at": "2026-05-30T00:00:00Z",
+  "note": "PH-DB plan loop \u2014 synced 2026-05-31",
+  "updated_at": "2026-05-31T03:29:10.408799+00:00",
   "iterations": 0,
   "completed_ids": [
     "wp-a-engine-native",
     "wp-b-lis-db",
     "wp-c-registry-bench",
-    "wp-e-control-plane"
+    "wp-e-control-plane",
+    "wp-g-ci-cross-repo",
+    "wp-k-postgres-nightly",
+    "wp-pr-merge-wave",
+    "wp-h0-default-main",
+    "wp-n3-realtime",
+    "wp-n5-security-bench"
   ],
   "history": []
 }

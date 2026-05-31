@@ -1,0 +1,305 @@
+version = 1
+
+# Open conjectures outside the Erdős E-* register (Millennium, Landau, etc.).
+# Metadata only — proof_status=open until Lean/specimen discharge exists.
+# Registry: proof-db/math/open-conjectures.json
+
+[[entry]]
+id = "M-CONJ-ABC"
+kind = "target"
+field = "math"
+domain = "number_theory"
+statement = "For coprime positive integers a,b,c with a+b=c, is c < K rad(abc)^{1+epsilon} for every epsilon>0 (abc / Oesterlé–Masser conjecture)?"
+latex = "For coprime positive integers $a,b,c$ with $a+b=c$, does $c < K\\,\\mathrm{rad}(abc)^{1+\\varepsilon}$ hold for every $\\varepsilon>0$ (abc / Oesterlé–Masser conjecture)?"
+context = "Relates additive and multiplicative structure of integers; a proof would imply Fermat's Last Theorem for large exponents and tighten many Diophantine bounds."
+content_tier = "curated"
+proof_status = "open"
+gap_id = "G-math"
+gap_kind = "proof_gap"
+priority_tier = "P0"
+lean_module = "proof-db/math/open-conjectures.json"
+register_source = "proof-db/math/open-conjectures.json"
+external_url = "https://en.wikipedia.org/wiki/Abc_conjecture"
+sources = [
+  { title = "Wikipedia: abc conjecture", url = "https://en.wikipedia.org/wiki/Abc_conjecture" },
+]
+notes = "Formerly mis-filed as Erdős E-61; not an erdosproblems.com numbered problem."
+last_verified_lic_commit = "4c6d0206"
+
+[[entry]]
+id = "M-CONJ-RH"
+kind = "target"
+field = "math"
+domain = "analytic_number_theory"
+statement = "Do all non-trivial zeros of the Riemann zeta function have real part 1/2 (Riemann hypothesis)?"
+latex = "Do all non-trivial zeros of the Riemann zeta function $\\zeta(s)$ satisfy $\\Re(s)=\\tfrac{1}{2}$ (Riemann hypothesis)?"
+context = "Clay Millennium problem; equivalent formulations tie prime distribution, explicit formulas, and error terms in the prime-counting function."
+content_tier = "curated"
+proof_status = "open"
+gap_id = "G-math"
+gap_kind = "proof_gap"
+priority_tier = "P0"
+lean_module = "proof-db/math/open-conjectures.json"
+register_source = "proof-db/math/open-conjectures.json"
+external_url = "https://www.claymath.org/millennium-problems/riemann-hypothesis"
+sources = [
+  { title = "Clay Mathematics Institute: Riemann hypothesis", url = "https://www.claymath.org/millennium-problems/riemann-hypothesis" },
+]
+notes = "Related Erdős catalog row E-128 (prime-count error term)."
+last_verified_lic_commit = "4c6d0206"
+
+[[entry]]
+id = "M-CONJ-P-NP"
+kind = "target"
+field = "math"
+domain = "complexity"
+statement = "Is every language in NP decidable in polynomial time (P versus NP)?"
+latex = "Is every language in $\\mathrm{NP}$ decidable in polynomial time ($\\mathrm{P}$ versus $\\mathrm{NP}$)?"
+context = "Clay Millennium problem; separates feasible verification from feasible computation for combinatorial search problems."
+content_tier = "curated"
+proof_status = "open"
+gap_id = "G-math"
+gap_kind = "proof_gap"
+priority_tier = "P0"
+lean_module = "proof-db/math/open-conjectures.json"
+register_source = "proof-db/math/open-conjectures.json"
+external_url = "https://www.claymath.org/millennium-problems/p-vs-np-problem"
+sources = [
+  { title = "Clay Mathematics Institute: P vs NP", url = "https://www.claymath.org/millennium-problems/p-vs-np-problem" },
+]
+last_verified_lic_commit = "4c6d0206"
+
+[[entry]]
+id = "M-CONJ-BSD"
+kind = "target"
+field = "math"
+domain = "number_theory"
+statement = "For an elliptic curve E over Q, does ord_{s=1} L(E,s) equal the Mordell–Weil rank of E(Q) (Birch and Swinnerton-Dyer conjecture)?"
+latex = "For an elliptic curve $E/\\mathbb{Q}$, does $\\mathrm{ord}_{s=1} L(E,s)$ equal the Mordell–Weil rank of $E(\\mathbb{Q})$ (Birch and Swinnerton-Dyer conjecture)?"
+context = "Clay Millennium problem connecting analytic invariants of L-functions to arithmetic ranks of elliptic curves."
+content_tier = "curated"
+proof_status = "open"
+gap_id = "G-math"
+gap_kind = "proof_gap"
+priority_tier = "P0"
+lean_module = "proof-db/math/open-conjectures.json"
+register_source = "proof-db/math/open-conjectures.json"
+external_url = "https://www.claymath.org/millennium-problems/birch-and-swinnerton-dyer-conjecture"
+sources = [
+  { title = "Clay Mathematics Institute: Birch and Swinnerton-Dyer", url = "https://www.claymath.org/millennium-problems/birch-and-swinnerton-dyer-conjecture" },
+]
+last_verified_lic_commit = "4c6d0206"
+
+[[entry]]
+id = "M-CONJ-NAVIER"
+kind = "target"
+field = "math"
+domain = "pde"
+statement = "Do smooth solutions to the 3D incompressible Navier–Stokes equations exist globally in time (Millennium problem)?"
+latex = "Do smooth solutions to the three-dimensional incompressible Navier–Stokes equations exist globally in time (Millennium problem)?"
+context = "Clay Millennium problem on existence and smoothness of fluid dynamics solutions; blow-up vs global regularity remains open."
+content_tier = "curated"
+proof_status = "open"
+gap_id = "G-math"
+gap_kind = "proof_gap"
+priority_tier = "P0"
+lean_module = "proof-db/math/open-conjectures.json"
+register_source = "proof-db/math/open-conjectures.json"
+external_url = "https://www.claymath.org/millennium-problems/navier-stokes-equation"
+sources = [
+  { title = "Clay Mathematics Institute: Navier–Stokes", url = "https://www.claymath.org/millennium-problems/navier-stokes-equation" },
+]
+last_verified_lic_commit = "4c6d0206"
+
+[[entry]]
+id = "M-CONJ-HODGE"
+kind = "target"
+field = "math"
+domain = "algebraic_geometry"
+statement = "Is every Hodge class on a smooth projective variety a rational linear combination of classes of algebraic cycles (Hodge conjecture)?"
+latex = "Is every Hodge class on a smooth projective variety a rational linear combination of classes of algebraic cycles (Hodge conjecture)?"
+context = "Clay Millennium problem bridging transcendental and algebraic geometry; known in many special cases but open in general."
+content_tier = "curated"
+proof_status = "open"
+gap_id = "G-math"
+gap_kind = "proof_gap"
+priority_tier = "P0"
+lean_module = "proof-db/math/open-conjectures.json"
+register_source = "proof-db/math/open-conjectures.json"
+external_url = "https://www.claymath.org/millennium-problems/hodge-conjecture"
+sources = [
+  { title = "Clay Mathematics Institute: Hodge conjecture", url = "https://www.claymath.org/millennium-problems/hodge-conjecture" },
+]
+last_verified_lic_commit = "4c6d0206"
+
+[[entry]]
+id = "M-CONJ-YM"
+kind = "target"
+field = "math"
+domain = "mathematical_physics"
+statement = "Does quantum Yang–Mills theory exist rigorously and exhibit a mass gap (Millennium problem)?"
+latex = "Does quantum Yang–Mills theory exist rigorously and exhibit a mass gap (Millennium problem)?"
+context = "Clay Millennium problem in constructive quantum field theory; mass gap formalizes confinement heuristics from particle physics."
+content_tier = "curated"
+proof_status = "open"
+gap_id = "G-math"
+gap_kind = "proof_gap"
+priority_tier = "P0"
+lean_module = "proof-db/math/open-conjectures.json"
+register_source = "proof-db/math/open-conjectures.json"
+external_url = "https://www.claymath.org/millennium-problems/yang-mills-and-mass-gap"
+sources = [
+  { title = "Clay Mathematics Institute: Yang–Mills and mass gap", url = "https://www.claymath.org/millennium-problems/yang-mills-and-mass-gap" },
+]
+last_verified_lic_commit = "4c6d0206"
+
+[[entry]]
+id = "M-CONJ-LANDAU-LEGENDRE"
+kind = "target"
+field = "math"
+domain = "number_theory"
+statement = "Are there infinitely many primes p with n^2 < p < (n+1)^2 for some n (Legendre's conjecture)?"
+latex = "Are there infinitely many primes $p$ with $n^2 < p < (n+1)^2$ for some $n$ (Legendre's conjecture)?"
+context = "One of Landau's four problems on primes near perfect squares; weaker than the twin-prime conjecture but still open."
+content_tier = "curated"
+proof_status = "open"
+gap_id = "G-math"
+gap_kind = "proof_gap"
+priority_tier = "P1"
+lean_module = "proof-db/math/open-conjectures.json"
+register_source = "proof-db/math/open-conjectures.json"
+external_url = "https://en.wikipedia.org/wiki/Legendre%27s_conjecture"
+sources = [
+  { title = "Wikipedia: Legendre's conjecture", url = "https://en.wikipedia.org/wiki/Legendre%27s_conjecture" },
+]
+notes = "Landau's four problems; distinct from E-86 Goldbach and E-87 twin primes."
+last_verified_lic_commit = "4c6d0206"
+
+[[entry]]
+id = "M-CONJ-LANDAU-N2P2"
+kind = "target"
+field = "math"
+domain = "number_theory"
+statement = "Are there infinitely many primes of the form n^2+2 (Landau problem)?"
+latex = "Are there infinitely many primes of the form $n^2+2$ (Landau problem)?"
+context = "Landau's four problems; infinitely many primes of the form $n^2+1$ is Erdős E-92, a distinct question."
+content_tier = "curated"
+proof_status = "open"
+gap_id = "G-math"
+gap_kind = "proof_gap"
+priority_tier = "P1"
+lean_module = "proof-db/math/open-conjectures.json"
+register_source = "proof-db/math/open-conjectures.json"
+external_url = "https://en.wikipedia.org/wiki/Landau%27s_problems"
+sources = [
+  { title = "Wikipedia: Landau's problems", url = "https://en.wikipedia.org/wiki/Landau%27s_problems" },
+]
+notes = "Distinct from Erdős E-92 (n^2+1)."
+last_verified_lic_commit = "4c6d0206"
+
+[[entry]]
+id = "M-CONJ-BEAL"
+kind = "target"
+field = "math"
+domain = "diophantine"
+statement = "If A^x + B^y = C^z with positive integers A,B,C and x,y,z > 2, must gcd(A,B,C) > 1 (Beal conjecture)?"
+latex = "If $A^x + B^y = C^z$ with positive integers $A,B,C$ and $x,y,z>2$, must $\\gcd(A,B,C)>1$ (Beal conjecture)?"
+context = "Generalizes Fermat's Last Theorem to unequal exponents; a cash prize is offered for a proof or counterexample."
+content_tier = "curated"
+proof_status = "open"
+gap_id = "G-math"
+gap_kind = "proof_gap"
+priority_tier = "P1"
+lean_module = "proof-db/math/open-conjectures.json"
+register_source = "proof-db/math/open-conjectures.json"
+external_url = "https://en.wikipedia.org/wiki/Beal%27s_conjecture"
+sources = [
+  { title = "Wikipedia: Beal's conjecture", url = "https://en.wikipedia.org/wiki/Beal%27s_conjecture" },
+]
+last_verified_lic_commit = "4c6d0206"
+
+[[entry]]
+id = "M-CONJ-ODD-PERFECT"
+kind = "target"
+field = "math"
+domain = "number_theory"
+statement = "Does an odd perfect number exist?"
+latex = "Does an odd perfect number exist?"
+context = "Even perfect numbers are classified by Euclid–Euler; no odd example is known and structural constraints make them unlikely."
+content_tier = "curated"
+proof_status = "open"
+gap_id = "G-math"
+gap_kind = "proof_gap"
+priority_tier = "P2"
+lean_module = "proof-db/math/open-conjectures.json"
+register_source = "proof-db/math/open-conjectures.json"
+external_url = "https://en.wikipedia.org/wiki/Perfect_number"
+sources = [
+  { title = "Wikipedia: Perfect number", url = "https://en.wikipedia.org/wiki/Perfect_number" },
+]
+last_verified_lic_commit = "4c6d0206"
+
+[[entry]]
+id = "M-CONJ-JACOBIAN"
+kind = "target"
+field = "math"
+domain = "algebra"
+statement = "Is every polynomial automorphism of C^n with Jacobian determinant 1 invertible (Jacobian conjecture)?"
+latex = "Is every polynomial automorphism of $\\mathbb{C}^n$ with Jacobian determinant $1$ invertible (Jacobian conjecture)?"
+context = "Open since the 1930s; many reductions exist but no proof in full generality; important for computer algebra."
+content_tier = "curated"
+proof_status = "open"
+gap_id = "G-math"
+gap_kind = "proof_gap"
+priority_tier = "P1"
+lean_module = "proof-db/math/open-conjectures.json"
+register_source = "proof-db/math/open-conjectures.json"
+external_url = "https://en.wikipedia.org/wiki/Jacobian_conjecture"
+sources = [
+  { title = "Wikipedia: Jacobian conjecture", url = "https://en.wikipedia.org/wiki/Jacobian_conjecture" },
+]
+last_verified_lic_commit = "4c6d0206"
+
+[[entry]]
+id = "M-CONJ-SMOOTH-4D-POINCARE"
+kind = "target"
+field = "math"
+domain = "topology"
+statement = "Is every smooth homotopy 4-sphere diffeomorphic to the standard 4-sphere (smooth 4D Poincaré conjecture)?"
+latex = "Is every smooth homotopy $4$-sphere diffeomorphic to the standard $4$-sphere (smooth $4$D Poincaré conjecture)?"
+context = "Perelman proved the 3D Poincaré conjecture; the smooth 4D analogue remains open and is distinct from the topological 4D case."
+content_tier = "curated"
+proof_status = "open"
+gap_id = "G-math"
+gap_kind = "proof_gap"
+priority_tier = "P1"
+lean_module = "proof-db/math/open-conjectures.json"
+register_source = "proof-db/math/open-conjectures.json"
+external_url = "https://en.wikipedia.org/wiki/generalized_Poincar%C3%A9_conjecture"
+sources = [
+  { title = "Wikipedia: Generalized Poincaré conjecture", url = "https://en.wikipedia.org/wiki/generalized_Poincar%C3%A9_conjecture" },
+]
+notes = "Millennium Poincaré (dim 3) proved; smooth 4D variant open."
+last_verified_lic_commit = "4c6d0206"
+
+[[entry]]
+id = "M-CONJ-HADWIGER-NELSON"
+kind = "target"
+field = "math"
+domain = "discrete_geometry"
+statement = "What is the minimum number of colors needed to color the plane so that no two points at unit distance share a color (Hadwiger–Nelson problem)?"
+latex = "What is the minimum number of colors needed to color the plane so that no two points at unit distance share a color (Hadwiger–Nelson problem)?"
+context = "The chromatic number of the plane is known to lie between 4 and 7; finite unit-distance graphs give lower bounds."
+content_tier = "curated"
+proof_status = "open"
+gap_id = "G-math"
+gap_kind = "proof_gap"
+priority_tier = "P1"
+lean_module = "proof-db/math/open-conjectures.json"
+register_source = "proof-db/math/open-conjectures.json"
+external_url = "https://en.wikipedia.org/wiki/Hadwiger%E2%80%93Nelson_problem"
+sources = [
+  { title = "Wikipedia: Hadwiger–Nelson problem", url = "https://en.wikipedia.org/wiki/Hadwiger%E2%80%93Nelson_problem" },
+]
+notes = "Related to Erdős unit-distance family (E-90 disproved upper bound)."
+last_verified_lic_commit = "4c6d0206"

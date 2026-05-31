@@ -80,11 +80,20 @@ def verify_entry(entry: dict, rel_path: Path, schema: dict, errors: list[str]) -
     if tier and tier_allowed and tier not in tier_allowed:
         errors.append(f"{rel_path}::{eid}: priority_tier {tier!r} not in {sorted(tier_allowed)}")
 
+    content_tier = entry.get("content_tier")
+    ct_allowed = allowed_enum(schema, "content_tier")
+    if content_tier and ct_allowed and content_tier not in ct_allowed:
+        errors.append(f"{rel_path}::{eid}: content_tier {content_tier!r} not in {sorted(ct_allowed)}")
+
     lean = (entry.get("lean_module") or "").strip()
     if lean:
         lean_path = lean.split("#", 1)[0]
         if lean_path and not (ROOT / lean_path).is_file():
-            errors.append(f"{rel_path}::{eid}: lean_module not found: {lean_path}")
+            # Generated AutoVC is build-time; skip when absent (export-proof-db.py parity).
+            if lean_path.startswith("build/generated/"):
+                pass
+            else:
+                errors.append(f"{rel_path}::{eid}: lean_module not found: {lean_path}")
 
     specimen = (entry.get("li_specimen") or "").strip()
     if specimen and not (ROOT / specimen).is_file():

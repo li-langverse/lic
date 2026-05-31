@@ -118,8 +118,8 @@ From [stdlib.md](../../language/stdlib.md) L23–40 and [httpd plan](../../super
 | Source | Issue |
 |--------|-------|
 | `benchmarks/data/latest/ecosystem-explorer.json` | Lists 22 modules; **missing** `std.collections`, `std.heap`, `std.algorithms` (added WP0-B after 2026-05-26 scan) |
-| `docs/language/stdlib.md` L53 | States collections/heap/algorithms **not shipped** — **stale** |
-| `missing_std_modules` | `std.summary`, `std.plot` still `status: missing` (PH-IO-7, PH-IO-5) |
+| `docs/language/stdlib.md` | Refreshed 2026-06-01 — 27 modules shipped incl. WP0-B + PH-IO stubs |
+| `missing_std_modules` | `std.io`, `std.csv`, `std.summary`, `std.plot` **present** on `cursor/proof-explorer-program` (PH-IO-4/5/7) |
 
 ---
 
@@ -129,8 +129,6 @@ From [stdlib.md](../../language/stdlib.md) L23–40 and [httpd plan](../../super
 packages_to_build: []          # deferred — audit li-std-* next step
 packages_to_improve: []        # deferred
 std_modules_to_add:            # from explorer + plans (not implementing this run)
-  - std.summary   # PH-IO-7
-  - std.plot      # PH-IO-5
   - std.http.*    # httpd M1+ (router, config, upstream)
   - std.tensor    # Phase 3 / 2i linalg
   - std.sparse
@@ -149,7 +147,7 @@ connections:
 | **lic** | docs: refresh `stdlib.md` shipped tree (collections/heap/algorithms WP0-B) | `documentation`, `stdlib` |
 | **benchmarks** | ecosystem-explorer: include WP0-B std modules in `std_modules_on_disk` | `ecosystem`, `agent-kit` |
 | **lic** | stdlib_coverage: enable `build_std_collections` harness when WP0-B modules stable | `stdlib`, `PH-2` |
-| **lic** | tracking: implement `std.summary` / `std.plot` for PH-IO ingest (no Python/Node) | `PH-IO-7`, `PH-IO-5` |
+| **lic** | ~~tracking: implement `std.summary` / `std.plot`~~ — **done** on `cursor/proof-explorer-program` | `PH-IO-7`, `PH-IO-5` |
 | **lic** | merge `cursor/stdlib-adt-wp0` per ph-db battle plan §6 | `stdlib`, `wave-a` |
 
 ---

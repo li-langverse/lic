@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Gates for World Studio master plan loop — native li-studio smokes + plan docs.
+# Gates for World Studio master plan loop Â native li-studio smokes + plan docs.
 set -euo pipefail
 ROOT="$(cd "$(dirname "$0")/.." && pwd)"
 # shellcheck source=lib/li-ui.sh
@@ -10,45 +10,15 @@ export LI_REPO_ROOT="$ROOT"
 fail() { li_gate_fail "$*"; exit 1; }
 
 LIC="${LIC:-}"
-for c in \
-  "$ROOT/build-wsl/compiler/lic/lic" \
-  "$ROOT/build/compiler/lic/lic" \
-  "$ROOT/build/compiler/lic/lic.exe"; do
-  if [[ -x "$c" ]]; then LIC="$c"; break; fi
-done
-if [[ -z "$LIC" && -x "$ROOT/scripts/resolve-lic.sh" ]]; then
+if [[ -x "$ROOT/build/compiler/lic/lic" ]]; then
+  LIC="$ROOT/build/compiler/lic/lic"
+elif [[ -x "$ROOT/build/compiler/lic/lic.exe" ]]; then
+  LIC="$ROOT/build/compiler/lic/lic.exe"
+elif [[ "$(uname -s)" == "Linux" && -x "$ROOT/build-wsl/compiler/lic/lic" ]]; then
+  LIC="$ROOT/build-wsl/compiler/lic/lic"
+elif [[ -x "$ROOT/scripts/resolve-lic.sh" ]]; then
   LIC="$("$ROOT/scripts/resolve-lic.sh" 2>/dev/null)" || true
 fi
-
-wsl_root_path() {
-  local p="$ROOT"
-  p="${p//\\//}"
-  if [[ "$p" =~ ^/([a-zA-Z])/(.*)$ ]]; then
-    echo "/mnt/${BASH_REMATCH[1],,}/${BASH_REMATCH[2]}"
-    return
-  fi
-  if [[ "$p" =~ ^([A-Za-z]):/(.*)$ ]]; then
-    echo "/mnt/${BASH_REMATCH[1],,}/${BASH_REMATCH[2]}"
-    return
-  fi
-  echo "$p"
-}
-
-lic_check_rel() {
-  local rel="$1"
-  local path="$ROOT/$rel"
-  [[ -f "$path" ]] || fail "missing $rel"
-  if [[ -f "$ROOT/build-wsl/compiler/lic/lic" ]] && command -v wsl >/dev/null 2>&1; then
-    local wsl_root
-    wsl_root="$(wsl_root_path)"
-    wsl -e bash -lc "cd '$wsl_root' && ./build-wsl/compiler/lic/lic check --no-cache $rel" \
-      || fail "lic check $rel (wsl)"
-  elif [[ -n "$LIC" && -x "$LIC" ]]; then
-    "$LIC" check "$path" || fail "lic check $rel"
-  else
-    fail "lic not runnable for $rel"
-  fi
-}
 
 li_phase "plan documents"
 [[ -f "$ROOT/docs/game-dev/WORLD-STUDIO-MASTER-PLAN.md" ]] || fail "WORLD-STUDIO-MASTER-PLAN.md"
@@ -63,31 +33,66 @@ li_phase "loop scripts"
 li_phase "design tokens"
 [[ -f "$ROOT/docs/design/studio-design-tokens.toml" ]] || fail "studio-design-tokens.toml"
 
+run_lic_smokes() {
+  li_phase "lic check smokes"
+  LIC="$1" bash "$ROOT/scripts/world-studio-plan-lic-smokes.sh"
+}
+
+wsl_build_wsl_lic_ready() {
+  command -v wsl.exe >/dev/null 2>&1 || return 1
+  local wsl_root
+  wsl_root="$(wsl.exe wslpath -u "$ROOT" 2>/dev/null | tr -d '\r\n')"
+  [[ -n "$wsl_root" ]] || return 1
+  wsl.exe bash -lc "test -x '$wsl_root/build-wsl/compiler/lic/lic'" 2>/dev/null
+}
+
+try_wsl_lic_smokes() {
+  [[ "${WORLD_STUDIO_GATES_WSL:-auto}" == "0" ]] && return 1
+  wsl_build_wsl_lic_ready || return 1
+  [[ -f "$ROOT/scripts/world-studio-plan-lic-smokes-wsl.sh" ]] || return 1
+  li_phase "wsl lic check smokes"
+  local attempt
+  for attempt in 1 2 3; do
+    if bash "$ROOT/scripts/world-studio-plan-lic-smokes-wsl.sh"; then
+      return 0
+    fi
+    [[ "$attempt" -lt 3 ]] && sleep 2
+  done
+  return 1
+}
 if [[ "${WORLD_STUDIO_GATES_SKIP_LIC:-0}" == "1" ]]; then
   li_warn "skip lic check smokes (WORLD_STUDIO_GATES_SKIP_LIC=1)"
+elif [[ -n "$LIC" && -x "$LIC" ]]; then
+  run_lic_smokes "$LIC"
+elif try_wsl_lic_smokes; then
+  li_ok "wsl lic smokes passed"
 else
-  if [[ ! -f "$ROOT/build-wsl/compiler/lic/lic" && ( -z "$LIC" || ! -x "$LIC" ) ]]; then
-    li_warn "lic not built — set WORLD_STUDIO_GATES_SKIP_LIC=1 or run ./scripts/build.sh"
-  else
-    li_phase "li-studio core smokes"
-    for smoke in \
-      studio_shell_demo.li \
-      studio_vertical_profile_roundtrip.li \
-      studio_sim_step_by_profile.li \
-      studio_sim_rl_step_hook.li \
-      studio_sim_sensor_step_hook.li \
-      studio_mcp_tools.li \
-      studio_agentic_run.li; do
-      lic_check_rel "packages/li-studio/li-tests/smoke/$smoke"
-    done
-    li_phase "li-sim-sensors smoke"
-    lic_check_rel "packages/li-sim-sensors/li-tests/smoke/sensor_bus_raycast_contract.li"
-  fi
+  li_warn "lic not built - set WORLD_STUDIO_GATES_SKIP_LIC=1, build lic, or enable WSL"
 fi
 
 if [[ -f "$ROOT/scripts/bench-studio-viewport-perf.sh" ]]; then
   li_phase "viewport bench (soft)"
   "$ROOT/scripts/bench-studio-viewport-perf.sh" || li_warn "bench-studio-viewport-perf soft-fail"
+fi
+
+if [[ -x "$ROOT/scripts/studio-c-host-retirement-gate.sh" ]]; then
+  li_phase "c-host retirement (WP-UX-14b)"
+  "$ROOT/scripts/studio-c-host-retirement-gate.sh" || li_warn "studio-c-host-retirement-gate soft-fail"
+fi
+
+if [[ -x "$ROOT/scripts/studio-mcp-li-engine-smoke.sh" ]]; then
+  li_phase "mcp li-engine stdio (WP-AG-03)"
+  "$ROOT/scripts/studio-mcp-li-engine-smoke.sh" || li_warn "studio-mcp-li-engine-smoke soft-fail"
+fi
+
+if [[ -x "$ROOT/scripts/studio-patch-eval-gate.sh" ]]; then
+  li_phase "patch eval harness (WP-AG-06)"
+  "$ROOT/scripts/studio-patch-eval-gate.sh" || fail "studio-patch-eval-gate"
+fi
+
+if [[ -x "$ROOT/scripts/studio-vertical-dod-gate.sh" ]]; then
+  li_phase "vertical DoD composable (wsm-w6)"
+  "$ROOT/scripts/studio-vertical-dod-gate.sh" || fail "studio-vertical-dod-gate"
 fi
 
 li_phase "iteration assessment"

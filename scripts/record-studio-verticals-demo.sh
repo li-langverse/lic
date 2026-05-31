@@ -18,6 +18,10 @@ if [[ "$DRY_RUN" == "1" ]]; then
 fi
 
 export LIG_HOST_PRESENT=1
+if [[ "${STUDIO_VERTICALS_WGPU_READBACK:-0}" == "1" ]]; then
+  export LIG_WGPU_READBACK=1
+  echo "record-studio-verticals-demo: LIG_WGPU_READBACK=1 (Li wgpu readback honesty path)"
+fi
 CAPTURE="$ROOT/scripts/studio-verticals-capture-native.sh"
 chmod +x "$CAPTURE" 2>/dev/null || true
 if ! bash "$CAPTURE"; then

@@ -1,8 +1,10 @@
-# Proof database schema (v2)
+# Proof database schema (v3 — Proof Explorer rich content)
 [schema]
-version = 2
+version = 3
 entries_root = "docs/verification/proof-database/entries"
 corpus_root = "proof-db/lemmas"
+attribution = "proof-db/attribution.toml"
+style_guide = "docs/verification/proof-database/proof-explorer-style-guide.md"
 
 [id_prefixes]
 math = ["M-AX-", "M-LM-"]
@@ -18,11 +20,18 @@ biology = ["BIO-AX-", "BIO-LM-"]
 
 [entry_types.axiom]
 required = ["id", "kind", "field", "statement", "proof_status", "lean_module", "last_verified_lic_commit"]
-optional = ["domain", "erdos_id", "erdos_status", "convergence_class", "benchmark_ref", "mathlib_ref", "priority_tier", "gap_id", "gap_kind", "lean_thm", "li_specimen", "bench_refs", "release_pin", "notes"]
+optional = ["domain", "erdos_id", "erdos_status", "convergence_class", "benchmark_ref", "mathlib_ref", "priority_tier", "gap_id", "gap_kind", "lean_thm", "li_specimen", "bench_refs", "release_pin", "notes", "content_tier", "latex", "context", "sources", "external_url"]
 
 [entry_types.lemma]
 required = ["id", "kind", "field", "statement", "proof_status", "lean_module", "last_verified_lic_commit"]
-optional = ["domain", "erdos_id", "erdos_status", "convergence_class", "benchmark_ref", "mathlib_ref", "priority_tier", "gap_id", "gap_kind", "lean_thm", "li_specimen", "bench_refs", "release_pin", "notes"]
+optional = ["domain", "erdos_id", "erdos_status", "convergence_class", "benchmark_ref", "mathlib_ref", "priority_tier", "gap_id", "gap_kind", "lean_thm", "li_specimen", "bench_refs", "release_pin", "notes", "content_tier", "latex", "context", "sources", "external_url"]
+
+[entry_types.target]
+required = ["id", "kind", "field", "statement", "proof_status", "last_verified_lic_commit"]
+optional = ["domain", "erdos_number", "erdos_status", "priority_tier", "gap_id", "gap_kind", "lean_module", "register_source", "external_url", "tags", "notes", "content_tier", "latex", "context", "sources", "li_specimen", "last_verified_lic_commit"]
+
+[content_tier]
+values = ["raw", "curated", "polished"]
 
 [proof_status]
 values = ["proved", "open", "discrepancy", "axiomatic", "target"]

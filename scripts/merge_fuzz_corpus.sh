@@ -60,10 +60,12 @@ fi
 # Cap corpus size (keep regressions, trim oldest flat seeds).
 count=$(find "$REPO_CORPUS" -maxdepth 1 -type f | wc -l | tr -d ' ')
 if (( count > MAX_FILES )); then
-  find "$REPO_CORPUS" -maxdepth 1 -type f -printf '%T@ %p\n' | sort -n | head -n $((count - MAX_FILES)) |
-    while read -r _ path; do
-      rm -f "$path"
-    done
+  trim=$((count - MAX_FILES))
+  mapfile -t _oldest < <(find "$REPO_CORPUS" -maxdepth 1 -type f -printf '%T@ %p\n' | sort -n)
+  for ((i = 0; i < trim && i < ${#_oldest[@]}; i++)); do
+    read -r _mtime _path <<< "${_oldest[i]}"
+    rm -f "$_path"
+  done
 fi
 
 echo "merge_fuzz_corpus: $(find "$REPO_CORPUS" -type f | wc -l | tr -d ' ') files under $REPO_CORPUS"

@@ -1,0 +1,62 @@
+# WP-AG-06 curated patch-eval tasks (contract markers; harness in studio.ai lib.li).
+# Fix-rate gate: ≥70% of tasks must match expected lic-check outcome (10 tasks → 7+ pass).
+
+[[tasks]]
+id = 0
+patch = "@@valid@@"
+target = "world.li"
+expect_success = true
+
+[[tasks]]
+id = 1
+patch = "@@valid@@"
+target = "world.li"
+expect_success = true
+
+[[tasks]]
+id = 2
+patch = "@@valid@@"
+target = "world.li"
+expect_success = true
+
+[[tasks]]
+id = 3
+patch = "@@valid@@"
+target = "world.li"
+expect_success = true
+
+[[tasks]]
+id = 4
+patch = "@@valid@@"
+target = "world.li"
+expect_success = true
+
+[[tasks]]
+id = 5
+patch = "@@valid@@"
+target = "world.li"
+expect_success = true
+
+[[tasks]]
+id = 6
+patch = "@@valid@@"
+target = "world.li"
+expect_success = true
+
+[[tasks]]
+id = 7
+patch = "@@retry@@"
+target = "world.li"
+expect_success = true
+
+[[tasks]]
+id = 8
+patch = "@@fail@@"
+target = "scene.li"
+expect_success = false
+
+[[tasks]]
+id = 9
+patch = "@@fail@@"
+target = "world.li"
+expect_success = false

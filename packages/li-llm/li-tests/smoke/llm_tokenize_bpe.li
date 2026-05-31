@@ -5,13 +5,15 @@ def main() -> int raises IO, Alloc
   ensures result == 0
   decreases 0
 =
-  if li_llm_version() != 2:
+  if li_llm_version() != 3:
     return 1
   if llm_tokenizer_mode_for_vocab("fixtures/vocab.bpe.json") != llm_tokenizer_mode_bpe_scaffold():
     return 2
   if llm_bpe_merge_id_ll() != 259:
     return 3
   var tok: LlmTokenIds = llm_tokenize("hello", "fixtures/vocab.bpe.json")
-  if tok.count != 5:
+  if tok.count != 4:
     return 4
+  if tok.ids[2] != 259:
+    return 5
   return 0

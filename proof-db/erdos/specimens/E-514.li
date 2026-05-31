@@ -1,0 +1,12 @@
+# Catalog: E-514
+# Statement: Let $f(z)$ be an entire transcendental function. Does there exist a path $L$ so that, for every $n$,\[\lvert f(z)/z^n\rvert \to \infty\]as $z\to \infty$ along $L$? Can the length of this path be estimated in terms of $M(r)=\max_{\lvert z\rv
+# formalization_status: li_open
+# discharge: pending — open formalization target (Phase 4)
+# erdos_status (literature): open
+
+def formal_target_e_514() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0

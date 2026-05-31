@@ -1,0 +1,12 @@
+# Catalog: E-88
+# Statement: For any $\epsilon>0$ there exists $\delta=\delta(\epsilon)>0$ such that if $G$ is a graph on $n$ vertices with no independent set or clique of size $\geq \epsilon\log n$ then $G$ contains an induced subgraph with $m$ edges for all $m\leq \d
+# formalization_status: li_open
+# discharge: pending — open formalization target (Phase 4)
+# erdos_status (literature): proved
+
+def formal_target_e_88() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0

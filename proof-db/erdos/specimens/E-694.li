@@ -1,0 +1,12 @@
+# Catalog: E-694
+# Statement: Let $f_{\max}(n)$ be the largest $m$ such that $\phi(m)=n$, and $f_{\min}(n)$ be the smallest such $m$, where $\phi$ is Euler's totient function. Investigate\[\max_{n\leq x}\frac{f_{\max}(n)}{f_{\min}(n)}\](where the maximum is restricted t
+# formalization_status: li_open
+# discharge: pending — open formalization target (Phase 4)
+# erdos_status (literature): open
+
+def formal_target_e_694() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0

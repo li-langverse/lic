@@ -1,0 +1,12 @@
+# Catalog: E-886
+# Statement: Let $\epsilon>0$. Is it true that, for all large $n$, the number of divisors of $n$ in $(n^{1/2},n^{1/2}+n^{1/2-\epsilon})$ is $O_\epsilon(1)$?
+# formalization_status: li_open
+# discharge: pending — open formalization target (Phase 4)
+# erdos_status (literature): open
+
+def formal_target_e_886() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0

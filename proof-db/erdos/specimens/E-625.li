@@ -1,0 +1,12 @@
+# Catalog: E-625
+# Statement: The cochromatic number of $G$, denoted by $\zeta(G)$, is the minimum number of colours needed to colour the vertices of $G$ such that each colour class induces either a complete graph or empty graph. Let $\chi(G)$ denote the chromatic numbe
+# formalization_status: li_open
+# discharge: pending — open formalization target (Phase 4)
+# erdos_status (literature): open
+
+def formal_target_e_625() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0

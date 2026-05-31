@@ -1,0 +1,12 @@
+# Catalog: E-468
+# Statement: For any $n$ let $D_n$ be the set of sums of the shape $d_1,d_1+d_2,d_1+d_2+d_3,\ldots$ where $1<d_1<d_2<\cdots$ are the divisors of $n$. What is the size of $D_n\backslash \cup_{m<n}D_m$? If $f(N)$ is the minimal $n$ such that $N\in D_n$ th
+# formalization_status: li_open
+# discharge: pending — open formalization target (Phase 4)
+# erdos_status (literature): open
+
+def formal_target_e_468() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0

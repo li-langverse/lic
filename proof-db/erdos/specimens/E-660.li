@@ -1,0 +1,12 @@
+# Catalog: E-660
+# Statement: Let $x_1,\ldots,x_n\in \mathbb{R}^3$ be the vertices of a convex polyhedron. Are there at least\[(1-o(1))\frac{n}{2}\]many distinct distances between the $x_i$?
+# formalization_status: li_open
+# discharge: pending — open formalization target (Phase 4)
+# erdos_status (literature): open
+
+def formal_target_e_660() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0

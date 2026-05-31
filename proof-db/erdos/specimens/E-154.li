@@ -1,0 +1,12 @@
+# Catalog: E-154
+# Statement: Let $A\subset \{1,\ldots,N\}$ be a Sidon set with $\lvert A\rvert\sim N^{1/2}$. Must $A+A$ be well-distributed over all small moduli? In particular, must about half the elements of $A+A$ be even and half odd?
+# formalization_status: li_open
+# discharge: pending — open formalization target (Phase 4)
+# erdos_status (literature): proved
+
+def formal_target_e_154() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0

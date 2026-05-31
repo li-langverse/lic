@@ -1,0 +1,12 @@
+# Catalog: E-114
+# Statement: If $p(z)\in\mathbb{C}[z]$ is a monic polynomial of degree $n$ then is the length of the curve $\{ z\in \mathbb{C} : \lvert p(z)\rvert=1\}$ maximised when $p(z)=z^n-1$?
+# formalization_status: li_open
+# discharge: pending — open formalization target (Phase 4)
+# erdos_status (literature): open
+
+def formal_target_e_114() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0

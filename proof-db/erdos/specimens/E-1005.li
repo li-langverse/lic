@@ -1,0 +1,12 @@
+# Catalog: E-1005
+# Statement: Let $\frac{a_1}{b_1},\frac{a_2}{b_2},\ldots$ be the Farey fractions of order $n\geq 4$. Let $f(n)$ be the largest integer such that if $1\leq k<l\leq k+f(n)$ then $\frac{a_k}{b_k}$ and $\frac{a_l}{b_l}$ are similarly ordered - in other word
+# formalization_status: li_open
+# discharge: pending — open formalization target (Phase 4)
+# erdos_status (literature): open
+
+def formal_target_e_1005() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0

@@ -1,0 +1,12 @@
+# Catalog: E-137
+# Statement: We say that $N$ is powerful if whenever $p\mid N$ we also have $p^2\mid N$. Let $k\geq 3$. Can the product of any $k$ consecutive positive integers ever be powerful?
+# formalization_status: li_open
+# discharge: pending — open formalization target (Phase 4)
+# erdos_status (literature): open
+
+def formal_target_e_137() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0

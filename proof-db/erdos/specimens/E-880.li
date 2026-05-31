@@ -1,0 +1,12 @@
+# Catalog: E-880
+# Statement: Let $A\subset\mathbb{N}$ be an additive basis of order $k$. Let $B=\{b_1<b_2<\cdots\}$ be the set of integers which are the sum of $k$ or fewer distinct $a\in A$. Is it true that $b_{n+1}-b_n=O(1)$? (Where the implied constant may depend on
+# formalization_status: li_open
+# discharge: pending — open formalization target (Phase 4)
+# erdos_status (literature): proved
+
+def formal_target_e_880() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0

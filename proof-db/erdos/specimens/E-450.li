@@ -1,0 +1,12 @@
+# Catalog: E-450
+# Statement: How large must $y=y(\epsilon,n)$ be such that the number of integers in $(x,x+y)$ with a divisor in $(n,2n)$ is at most $\epsilon y$?
+# formalization_status: li_open
+# discharge: pending — open formalization target (Phase 4)
+# erdos_status (literature): open
+
+def formal_target_e_450() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0

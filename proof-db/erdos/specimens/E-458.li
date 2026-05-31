@@ -1,0 +1,12 @@
+# Catalog: E-458
+# Statement: Let $[1,\ldots,n]$ denote the least common multiple of $\{1,\ldots,n\}$. Is it true that, for all $k\geq 1$,\[[1,\ldots,p_{k+1}-1]< p_k[1,\ldots,p_k]?\]
+# formalization_status: li_open
+# discharge: pending — open formalization target (Phase 4)
+# erdos_status (literature): open
+
+def formal_target_e_458() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0

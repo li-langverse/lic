@@ -1,0 +1,12 @@
+# Catalog: E-1173
+# Statement: Assume the generalised continuum hypothesis. Let\[f: \omega_{\omega+1}\to [\omega_{\omega+1}]^{\leq \aleph_\omega}\]be a set mapping such that\[\lvert f(\alpha)\cap f(\beta)\rvert <\aleph_\omega\]for all $\alpha\neq \beta$. Does there exist
+# formalization_status: li_open
+# discharge: pending — open formalization target (Phase 4)
+# erdos_status (literature): open
+
+def formal_target_e_1173() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0

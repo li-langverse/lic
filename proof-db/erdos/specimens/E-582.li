@@ -1,0 +1,12 @@
+# Catalog: E-582
+# Statement: Does there exist a graph $G$ which contains no $K_4$, and yet any $2$-colouring of the edges produces a monochromatic $K_3$?
+# formalization_status: li_open
+# discharge: pending — open formalization target (Phase 4)
+# erdos_status (literature): proved
+
+def formal_target_e_582() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0

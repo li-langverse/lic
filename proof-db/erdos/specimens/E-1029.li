@@ -1,0 +1,12 @@
+# Catalog: E-1029
+# Statement: If $R(k)$ is the Ramsey number for $K_k$, the minimal $n$ such that every $2$-colouring of the edges of $K_n$ contains a monochromatic copy of $K_k$, then\[\frac{R(k)}{k2^{k/2}}\to \infty.\]
+# formalization_status: li_open
+# discharge: pending — open formalization target (Phase 4)
+# erdos_status (literature): open
+
+def formal_target_e_1029() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0

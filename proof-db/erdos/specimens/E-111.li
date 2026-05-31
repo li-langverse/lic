@@ -1,0 +1,12 @@
+# Catalog: E-111
+# Statement: If $G$ is a graph let $h_G(n)$ be defined such that any subgraph of $G$ on $n$ vertices can be made bipartite after deleting at most $h_G(n)$ edges. What is the behaviour of $h_G(n)$? Is it true that $h_G(n)/n\to \infty$ for every graph $G$
+# formalization_status: li_open
+# discharge: pending — open formalization target (Phase 4)
+# erdos_status (literature): open
+
+def formal_target_e_111() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0

@@ -1,0 +1,12 @@
+# Catalog: E-390
+# Statement: Let $f(n)$ be the minimal $m$ such that\[n! = a_1\cdots a_k\]with $n< a_1<\cdots <a_k=m$. Is there (and what is it) a constant $c$ such that\[f(n)-2n \sim c\frac{n}{\log n}?\]
+# formalization_status: li_open
+# discharge: pending — open formalization target (Phase 4)
+# erdos_status (literature): open
+
+def formal_target_e_390() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0

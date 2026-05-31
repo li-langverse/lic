@@ -1,0 +1,12 @@
+# Catalog: E-6
+# Statement: Let $d_n=p_{n+1}-p_n$. Are there infinitely many $n$ such that $d_n<d_{n+1}<d_{n+2}$?
+# formalization_status: li_open
+# discharge: pending — open formalization target (Phase 4)
+# erdos_status (literature): proved
+
+def formal_target_e_6() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0

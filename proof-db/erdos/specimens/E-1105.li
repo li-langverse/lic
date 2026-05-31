@@ -1,0 +1,12 @@
+# Catalog: E-1105
+# Statement: The anti-Ramsey number $\mathrm{AR}(n,G)$ is the maximum possible number of colours in which the edges of $K_n$ can be coloured without creating a rainbow copy of $G$ (i.e. one in which all edges have different colours). Let $C_k$ be the cy
+# formalization_status: li_open
+# discharge: pending — open formalization target (Phase 4)
+# erdos_status (literature): proved
+
+def formal_target_e_1105() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0

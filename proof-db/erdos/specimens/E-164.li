@@ -1,0 +1,12 @@
+# Catalog: E-164
+# Statement: A set $A\subset \mathbb{N}$ is primitive if no member of $A$ divides another. Is the sum\[\sum_{n\in A}\frac{1}{n\log n}\]maximised over all primitive sets when $A$ is the set of primes?
+# formalization_status: li_open
+# discharge: pending — open formalization target (Phase 4)
+# erdos_status (literature): proved
+
+def formal_target_e_164() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0

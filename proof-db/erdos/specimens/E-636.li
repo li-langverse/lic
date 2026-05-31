@@ -1,0 +1,12 @@
+# Catalog: E-636
+# Statement: Suppose $G$ is a graph on $n$ vertices which contains no complete graph or independent set on $\gg \log n$ many vertices. Must $G$ contain $\gg n^{5/2}$ induced subgraphs which pairwise differ in either the number of vertices or the number 
+# formalization_status: li_open
+# discharge: pending — open formalization target (Phase 4)
+# erdos_status (literature): proved
+
+def formal_target_e_636() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0

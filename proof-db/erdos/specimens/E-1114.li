@@ -1,0 +1,12 @@
+# Catalog: E-1114
+# Statement: Let $f(x)\in \mathbb{R}[x]$ be a polynomial of degree $n$ whose roots $\{a_0<\cdots<a_n\}$ are all real and form an arithmetic progression. The differences between consecutive zeros of $f'(x)$, beginning from the midpoint of $(a_0,a_m)$ tow
+# formalization_status: li_open
+# discharge: pending — open formalization target (Phase 4)
+# erdos_status (literature): proved
+
+def formal_target_e_1114() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0

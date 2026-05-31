@@ -1,0 +1,12 @@
+# Catalog: E-812
+# Statement: Is it true that\[\frac{R(n+1)}{R(n)}\geq 1+c\]for some constant $c>0$, for all large $n$? Is it true that\[R(n+1)-R(n) \gg n^2?\]
+# formalization_status: li_open
+# discharge: pending — open formalization target (Phase 4)
+# erdos_status (literature): open
+
+def formal_target_e_812() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0

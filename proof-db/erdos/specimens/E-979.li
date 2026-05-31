@@ -1,0 +1,12 @@
+# Catalog: E-979
+# Statement: Let $k\geq 2$, and let $f_k(n)$ count the number of solutions to\[n=p_1^k+\cdots+p_k^k,\]where the $p_i$ are prime numbers. Is it true that $\limsup f_k(n)=\infty$?
+# formalization_status: li_open
+# discharge: pending — open formalization target (Phase 4)
+# erdos_status (literature): open
+
+def formal_target_e_979() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0

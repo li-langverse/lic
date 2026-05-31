@@ -1,0 +1,12 @@
+# Catalog: E-786
+# Statement: Let $\epsilon>0$. Is there some set $A\subset \mathbb{N}$ of density $>1-\epsilon$ such that $a_1\cdots a_r=b_1\cdots b_s$ with $a_i,b_j\in A$ can only hold when $r=s$? Similarly, can one always find a set $A\subset\{1,\ldots,N\}$ with this
+# formalization_status: li_open
+# discharge: pending — open formalization target (Phase 4)
+# erdos_status (literature): open
+
+def formal_target_e_786() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0

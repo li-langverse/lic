@@ -1,0 +1,12 @@
+# Catalog: E-897
+# Statement: Let $f(n)$ be an additive function (so that $f(ab)=f(a)+f(b)$ if $(a,b)=1$) such that\[\limsup_{p,k}\frac{f(p^k)}{\log p^k}=\infty.\]Is it true that\[\limsup_n \frac{f(n+1)-f(n)}{\log n}=\infty?\]Or perhaps even\[\limsup_n \frac{f(n+1)}{f(n
+# formalization_status: li_open
+# discharge: pending — open formalization target (Phase 4)
+# erdos_status (literature): open
+
+def formal_target_e_897() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0

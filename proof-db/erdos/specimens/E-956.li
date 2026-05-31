@@ -1,0 +1,12 @@
+# Catalog: E-956
+# Statement: If $C,D\subseteq \mathbb{R}^2$ then the distance between $C$ and $D$ is defined by\[\delta(C,D)=\inf_{\substack{c\in C\\ d\in D}}\| c-d\|.\]Let $h(n)$ be the maximal number of unit distances between disjoint convex translates. That is, the 
+# formalization_status: li_open
+# discharge: pending — open formalization target (Phase 4)
+# erdos_status (literature): open
+
+def formal_target_e_956() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0

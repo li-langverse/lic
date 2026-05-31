@@ -1,0 +1,12 @@
+# Catalog: E-1130
+# Statement: For $x_1,\ldots,x_n\in [-1,1]$ let\[l_k(x)=\frac{\prod_{i\neq k}(x-x_i)}{\prod_{i\neq k}(x_k-x_i)},\]which are such that $l_k(x_k)=1$ and $l_k(x_i)=0$ for $i\neq k$. Let $x_0=-1$ and $x_{n+1}=1$ and\[\Upsilon(x_1,\ldots,x_n)=\min_{0\leq i\l
+# formalization_status: li_open
+# discharge: pending — open formalization target (Phase 4)
+# erdos_status (literature): proved
+
+def formal_target_e_1130() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0

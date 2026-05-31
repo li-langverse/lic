@@ -1,0 +1,12 @@
+# Catalog: E-502
+# Statement: What is the size of the largest $A\subseteq \mathbb{R}^n$ such that there are only two distinct distances between elements of $A$? That is,\[\# \{ \lvert x-y\rvert : x\neq y\in A\} = 2.\]
+# formalization_status: li_open
+# discharge: pending — open formalization target (Phase 4)
+# erdos_status (literature): open
+
+def formal_target_e_502() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0

@@ -1,0 +1,12 @@
+# Catalog: E-720
+# Statement: Let $\hat{R}(G)$ denote the size Ramsey number, the minimal number of edges $m$ such that there is a graph $H$ with $m$ edges such that in any $2$-colouring of the edges of $H$ there is a monochromatic copy of $G$. Is it true that, if $P_n$
+# formalization_status: li_open
+# discharge: pending — open formalization target (Phase 4)
+# erdos_status (literature): proved
+
+def formal_target_e_720() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0

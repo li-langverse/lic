@@ -1,0 +1,12 @@
+# Catalog: E-221
+# Statement: Is there a set $A\subset\mathbb{N}$ such that, for all large $N$,\[\lvert A\cap\{1,\ldots,N\}\rvert \ll N/\log N\]and such that every large integer can be written as $2^k+a$ for some $k\geq 0$ and $a\in A$?
+# formalization_status: li_open
+# discharge: pending — open formalization target (Phase 4)
+# erdos_status (literature): proved
+
+def formal_target_e_221() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0

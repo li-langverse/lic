@@ -1,0 +1,12 @@
+# Catalog: E-790
+# Statement: Let $l(n)$ be maximal such that if $A\subset\mathbb{Z}$ with $\lvert A\rvert=n$ then there exists a sum-free $B\subseteq A$ with $\lvert B\rvert \geq l(n)$ - that is, $B$ is such that there are no solutions to\[a_1=a_2+\cdots+a_r\]with $a_i
+# formalization_status: li_open
+# discharge: pending — open formalization target (Phase 4)
+# erdos_status (literature): open
+
+def formal_target_e_790() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0

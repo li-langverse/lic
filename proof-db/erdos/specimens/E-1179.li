@@ -1,0 +1,12 @@
+# Catalog: E-1179
+# Statement: Let $0<\epsilon<1$ and let $g_\epsilon(N)$ be the minimal $k$ such that if $G$ is an abelian group of size $N$ and $A\subseteq G$ is a uniformly random subset of size $k$, and\[F_A(g) = \#\left\{ S\subseteq A : g = \sum_{x\in S}x\right\},\]
+# formalization_status: li_open
+# discharge: pending — open formalization target (Phase 4)
+# erdos_status (literature): proved
+
+def formal_target_e_1179() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0

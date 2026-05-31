@@ -1,0 +1,12 @@
+# Catalog: E-792
+# Statement: Let $f(n)$ be maximal such that in any $A\subset \mathbb{Z}$ with $\lvert A\rvert=n$ there exists some sum-free subset $B\subseteq A$ with $\lvert B\rvert \geq f(n)$, so that there are no solutions to\[a+b=c\]with $a,b,c\in B$. Estimate $f(
+# formalization_status: li_open
+# discharge: pending — open formalization target (Phase 4)
+# erdos_status (literature): open
+
+def formal_target_e_792() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0

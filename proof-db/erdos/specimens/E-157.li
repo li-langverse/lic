@@ -1,0 +1,12 @@
+# Catalog: E-157
+# Statement: Does there exist an infinite Sidon set which is an asymptotic basis of order 3?
+# formalization_status: li_open
+# discharge: pending — open formalization target (Phase 4)
+# erdos_status (literature): proved
+
+def formal_target_e_157() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0

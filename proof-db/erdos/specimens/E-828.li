@@ -1,0 +1,12 @@
+# Catalog: E-828
+# Statement: Is it true that, for any $a\in\mathbb{Z}$, there are infinitely many $n$ such that\[\phi(n) \mid n+a?\]
+# formalization_status: li_open
+# discharge: pending — open formalization target (Phase 4)
+# erdos_status (literature): open
+
+def formal_target_e_828() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0

@@ -1,0 +1,12 @@
+# Catalog: E-1198
+# Statement: If $\mathbb{N}$ is $2$-coloured then must there exist an infinite set $A=\{a_1<\cdots\}$ such that all expressions of the shape\[\prod_{i\in S_1}a_i+\cdots+\prod_{i\in S_k}a_i,\]for disjoint $S_1,\ldots,S_k$ (excluding the trivial expressio
+# formalization_status: li_open
+# discharge: pending — open formalization target (Phase 4)
+# erdos_status (literature): open
+
+def formal_target_e_1198() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0

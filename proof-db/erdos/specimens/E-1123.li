@@ -1,0 +1,12 @@
+# Catalog: E-1123
+# Statement: Let $B_1$ be the Boolean algebra of sets of integers modulo sets of density $0$ (that is, in which two sets are equivalent if and only if they differ by a set of density $0$) and let $B_2$ be the Boolean algebra of sets modulo sets of logar
+# formalization_status: li_open
+# discharge: pending — open formalization target (Phase 4)
+# erdos_status (literature): open
+
+def formal_target_e_1123() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0

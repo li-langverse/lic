@@ -1,0 +1,12 @@
+# Catalog: E-863
+# Statement: Let $r\geq 2$ and let $A\subseteq \{1,\ldots,N\}$ be a set of maximal size such that there are at most $r$ solutions to $n=a+b$ with $a\leq b$ for any $n$. (That is, $A$ is a $B_2[r]$ set.) Similarly, let $B\subseteq \{1,\ldots,N\}$ be a se
+# formalization_status: li_open
+# discharge: pending — open formalization target (Phase 4)
+# erdos_status (literature): proved
+
+def formal_target_e_863() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0

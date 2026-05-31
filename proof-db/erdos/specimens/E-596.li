@@ -1,0 +1,12 @@
+# Catalog: E-596
+# Statement: For which graphs $G_1,G_2$ is it true that for every $n\geq 1$ there is a graph $H$ without a $G_1$ but if the edges of $H$ are $n$-coloured then there is a monochromatic copy of $G_2$, and yet for every graph $H$ without a $G_1$ there is a
+# formalization_status: li_open
+# discharge: pending — open formalization target (Phase 4)
+# erdos_status (literature): open
+
+def formal_target_e_596() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0

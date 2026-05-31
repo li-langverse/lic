@@ -1,0 +1,12 @@
+# Catalog: E-334
+# Statement: Find the best function $f(n)$ such that every $n$ can be written as $n=a+b$ where both $a,b$ are $f(n)$-smooth (that is, are not divisible by any prime $p>f(n)$.)
+# formalization_status: li_open
+# discharge: pending — open formalization target (Phase 4)
+# erdos_status (literature): open
+
+def formal_target_e_334() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0

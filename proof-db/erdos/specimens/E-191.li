@@ -1,0 +1,12 @@
+# Catalog: E-191
+# Statement: Let $C>0$ be arbitrary. Is it true that, if $n$ is sufficiently large depending on $C$, then in any $2$-colouring of $\binom{\{2,\ldots,n\}}{2}$ there exists some $X\subseteq \{2,\ldots,n\}$ such that $\binom{X}{2}$ is monochromatic and\[\s
+# formalization_status: li_open
+# discharge: pending — open formalization target (Phase 4)
+# erdos_status (literature): proved
+
+def formal_target_e_191() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0

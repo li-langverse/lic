@@ -1,0 +1,12 @@
+# Catalog: E-498
+# Statement: Let $z_1,\ldots,z_n\in\mathbb{C}$ with $1\leq \lvert z_i\rvert$ for $1\leq i\leq n$. Let $D$ be an arbitrary disc of radius $1$. Is it true that the number of sums of the shape\[\sum_{i=1}^n\epsilon_iz_i \textrm{ for }\epsilon_i\in \{-1,1\}
+# formalization_status: li_open
+# discharge: pending — open formalization target (Phase 4)
+# erdos_status (literature): proved
+
+def formal_target_e_498() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0

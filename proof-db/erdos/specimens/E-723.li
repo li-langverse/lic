@@ -1,0 +1,12 @@
+# Catalog: E-723
+# Statement: If there is a finite projective plane of order $n$ then must $n$ be a prime power? A finite projective plane of order $n$ is a collection of subsets of $\{1,\ldots,n^2+n+1\}$ of size $n+1$ such that every pair of elements is contained in ex
+# formalization_status: li_open
+# discharge: pending — open formalization target (Phase 4)
+# erdos_status (literature): open
+
+def formal_target_e_723() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0

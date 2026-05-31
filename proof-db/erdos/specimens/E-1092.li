@@ -1,0 +1,12 @@
+# Catalog: E-1092
+# Statement: Let $f_r(n)$ be maximal such that, if a graph $G$ has the property that every subgraph $H$ on $m$ vertices is the union of a graph with chromatic number $\leq r$ and a graph with $\leq f_r(m)$ edges, then $G$ has chromatic number $\leq r+1$
+# formalization_status: li_open
+# discharge: pending — open formalization target (Phase 4)
+# erdos_status (literature): open
+
+def formal_target_e_1092() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0

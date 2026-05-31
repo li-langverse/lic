@@ -1,0 +1,12 @@
+# Catalog: E-632
+# Statement: A graph is $(a,b)$-choosable if for any assignment of a list of $a$ colours to each of its vertices there is a subset of $b$ colours from each list such that the subsets of adjacent vertices are disjoint. If $G$ is $(a,b)$-choosable then $G
+# formalization_status: li_open
+# discharge: pending — open formalization target (Phase 4)
+# erdos_status (literature): open
+
+def formal_target_e_632() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0

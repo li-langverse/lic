@@ -1,0 +1,12 @@
+# Catalog: E-993
+# Statement: The independent set sequence of any tree or forest is unimodal. In other words, if $i_k(G)$ counts the number of independent sets of vertices of size $k$ in a graph $G$, and $T$ is any tree or forest, then for some $m\geq 0$ $$i_{0}(T)\leq 
+# formalization_status: li_open
+# discharge: pending — open formalization target (Phase 4)
+# erdos_status (literature): open
+
+def formal_target_e_993() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0

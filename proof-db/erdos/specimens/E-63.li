@@ -1,0 +1,12 @@
+# Catalog: E-63
+# Statement: Are there infinitely many Carmichael numbers (composite n with a^{n-1} = 1 mod n for all a coprime to n)?
+# formalization_status: li_open
+# discharge: pending — open formalization target (Phase 4)
+# erdos_status (literature): open
+
+def formal_target_e_63() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0

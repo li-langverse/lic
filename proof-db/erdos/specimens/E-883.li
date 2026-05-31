@@ -1,0 +1,12 @@
+# Catalog: E-883
+# Statement: For $A\subseteq \{1,\ldots,n\}$ let $G(A)$ be the graph with vertex set $A$, where two integers are joined by an edge if they are coprime. Is it true that if\[\lvert A\rvert >\lfloor\tfrac{n}{2}\rfloor+\lfloor\tfrac{n}{3}\rfloor-\lfloor\tfr
+# formalization_status: li_open
+# discharge: pending — open formalization target (Phase 4)
+# erdos_status (literature): open
+
+def formal_target_e_883() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0

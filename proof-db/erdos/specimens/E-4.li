@@ -1,0 +1,12 @@
+# Catalog: E-4
+# Statement: For any C>0, are there infinitely many n with p_{n+1}-p_n > C (log log n log log log log n / (log log log n)^2) log n?
+# formalization_status: li_open
+# discharge: pending — open formalization target (Phase 4)
+# erdos_status (literature): proved
+
+def formal_target_e_4() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0

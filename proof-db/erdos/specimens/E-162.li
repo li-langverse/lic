@@ -1,0 +1,12 @@
+# Catalog: E-162
+# Statement: Let $\alpha>0$ and $n\geq 1$. Let $F(n,\alpha)$ be the largest $k$ such that there exists some 2-colouring of the edges of $K_n$ in which any induced subgraph $H$ on at least $k$ vertices contains more than $\alpha\binom{\lvert H\rvert}{2}$
+# formalization_status: li_open
+# discharge: pending — open formalization target (Phase 4)
+# erdos_status (literature): open
+
+def formal_target_e_162() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0

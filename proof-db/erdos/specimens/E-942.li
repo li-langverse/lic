@@ -1,0 +1,12 @@
+# Catalog: E-942
+# Statement: Let $h(n)$ count the number of powerful (if $p\mid m$ then $p^2\mid m$) integers in $[n^2,(n+1)^2)$. Estimate $h(n)$. In particular is there some constant $c>0$ such that\[h(n) < (\log n)^{c+o(1)}\]and, for infinitely many $n$,\[h(n) >(\log
+# formalization_status: li_open
+# discharge: pending — open formalization target (Phase 4)
+# erdos_status (literature): open
+
+def formal_target_e_942() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0

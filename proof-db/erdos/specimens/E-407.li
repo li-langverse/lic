@@ -1,0 +1,12 @@
+# Catalog: E-407
+# Statement: Let $w(n)$ count the number of solutions to\[n=2^a+3^b+2^c3^d\]with $a,b,c,d\geq 0$ integers. Is it true that $w(n)$ is bounded by some absolute constant?
+# formalization_status: li_open
+# discharge: pending — open formalization target (Phase 4)
+# erdos_status (literature): proved
+
+def formal_target_e_407() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0

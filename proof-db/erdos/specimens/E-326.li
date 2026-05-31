@@ -1,0 +1,12 @@
+# Catalog: E-326
+# Statement: Does there exist $A=\{a_1<a_2<\cdots\}\subset \mathbb{N}$ which is a minimal basis of order $2$ (i.e. every large integer is the sum of $2$ elements from $A$, and no proper subset of $A$ has this property), such that\[\lim_{k\to \infty}\fra
+# formalization_status: li_open
+# discharge: pending — open formalization target (Phase 4)
+# erdos_status (literature): open
+
+def formal_target_e_326() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0

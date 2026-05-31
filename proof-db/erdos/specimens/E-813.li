@@ -1,0 +1,12 @@
+# Catalog: E-813
+# Statement: Let $h(n)$ be minimal such that every graph on $n$ vertices where every set of $7$ vertices contains a triangle (a copy of $K_3$) must contain a clique on at least $h(n)$ vertices. Estimate $h(n)$ - in particular, do there exist constants $
+# formalization_status: li_open
+# discharge: pending — open formalization target (Phase 4)
+# erdos_status (literature): open
+
+def formal_target_e_813() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0

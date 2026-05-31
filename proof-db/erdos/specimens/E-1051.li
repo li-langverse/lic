@@ -1,0 +1,12 @@
+# Catalog: E-1051
+# Statement: Is it true that if $1\leq a_1<a_2<\cdots$ is a sequence of integers with\[\liminf a_n^{1/2^n}>1\]then\[\sum_{n=1}^\infty \frac{1}{a_na_{n+1}}\]is irrational?
+# formalization_status: li_open
+# discharge: pending — open formalization target (Phase 4)
+# erdos_status (literature): proved
+
+def formal_target_e_1051() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0

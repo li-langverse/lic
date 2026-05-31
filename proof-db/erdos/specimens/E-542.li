@@ -1,0 +1,12 @@
+# Catalog: E-542
+# Statement: Is it true that if $A\subseteq\{1,\ldots,n\}$ is a set such that $[a,b]>n$ for all $a\neq b$, where $[a,b]$ is the least common multiple, then\[\sum_{a\in A}\frac{1}{a}\leq \frac{31}{30}?\]Is it true that there must be $\gg n$ many $m\leq n
+# formalization_status: li_open
+# discharge: pending — open formalization target (Phase 4)
+# erdos_status (literature): open
+
+def formal_target_e_542() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0

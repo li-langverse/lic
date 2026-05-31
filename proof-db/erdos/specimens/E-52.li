@@ -1,0 +1,12 @@
+# Catalog: E-52
+# Statement: For finite A subset Z and every epsilon>0, is max(|A+A|,|AA|) >>_epsilon |A|^{2-epsilon} (integer sum-product)?
+# formalization_status: li_open
+# discharge: pending — open formalization target (Phase 4)
+# erdos_status (literature): open
+
+def formal_target_e_52() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0

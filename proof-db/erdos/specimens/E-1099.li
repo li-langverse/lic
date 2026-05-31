@@ -1,0 +1,12 @@
+# Catalog: E-1099
+# Statement: Let $1=d_1<\cdots<d_{\tau(n)}=n$ be the divisors of $n$, and for $\alpha>1$ let\[h_\alpha(n) = \sum_i \left( \frac{d_{i+1}}{d_i}-1\right)^\alpha.\]Is it true that\[\liminf_{n\to \infty}h_\alpha(n) \ll_\alpha 1?\]
+# formalization_status: li_open
+# discharge: pending — open formalization target (Phase 4)
+# erdos_status (literature): proved
+
+def formal_target_e_1099() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0

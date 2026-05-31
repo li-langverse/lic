@@ -1,0 +1,12 @@
+# Catalog: E-27
+# Statement: An $\epsilon$-almost covering system is a set of congruences $a_i\pmod{n_i}$ for distinct moduli $n_1<\ldots<n_k$ such that the density of those integers which satisfy none of them is $\leq \epsilon$. Is there a constant $C>1$ such that for
+# formalization_status: li_open
+# discharge: pending — open formalization target (Phase 4)
+# erdos_status (literature): open
+
+def formal_target_e_27() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0

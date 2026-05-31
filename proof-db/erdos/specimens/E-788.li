@@ -1,0 +1,12 @@
+# Catalog: E-788
+# Statement: Let $f(n)$ be maximal such that if $B\subset (2n,4n)\cap \mathbb{N}$ there exists some $C\subset (n,2n)\cap \mathbb{N}$ such that $c_1+c_2\not\in B$ for all $c_1\neq c_2\in C$ and $\lvert C\rvert+\lvert B\rvert \geq f(n)$. Estimate $f(n)$. 
+# formalization_status: li_open
+# discharge: pending — open formalization target (Phase 4)
+# erdos_status (literature): open
+
+def formal_target_e_788() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0

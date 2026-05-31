@@ -1,0 +1,12 @@
+# Catalog: E-487
+# Statement: Let $A\subseteq \mathbb{N}$ have positive density. Must there exist distinct $a,b,c\in A$ such that $[a,b]=c$ (where $[a,b]$ is the least common multiple of $a$ and $b$)?
+# formalization_status: li_open
+# discharge: pending — open formalization target (Phase 4)
+# erdos_status (literature): proved
+
+def formal_target_e_487() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0

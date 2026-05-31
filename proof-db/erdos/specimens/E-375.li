@@ -1,0 +1,12 @@
+# Catalog: E-375
+# Statement: Is it true that for any $n,k\geq 1$, if $n+1,\ldots,n+k$ are all composite then there are distinct primes $p_1,\ldots,p_k$ such that $p_i\mid n+i$ for $1\leq i\leq k$?
+# formalization_status: li_open
+# discharge: pending — open formalization target (Phase 4)
+# erdos_status (literature): open
+
+def formal_target_e_375() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0

@@ -24,11 +24,11 @@
 | T1 | **DONE** — `lig_emit_vendor_lowering_ready`, PTX stub bytes |
 | T2 | **DONE** — `ml_gpu_device_buffer_pipeline`, `ml_gpu_device_buffer.li` smoke |
 | T3 | **DONE** — `import ml` in li-llm + `llm_import_ml.li` smoke |
-| T4 | open |
-| T5 | open |
+| T4 | **DONE** — `sim_rl_env_li_process_fork.li` + Studio hook fork path |
+| T5 | **DONE** — Ray undeferred; program-complete gate pip-installs SB3/Ray |
 | T6 | **DONE** — `ml_matmul_lkir_logical_32`, `bench-ph-ml-lkir-matmul-32.sh` |
 | T7 | open |
-| T8 | open |
+| T8 | **DONE** — `bench_ph_ml_llm_trusted_httpd.py` `live_proxy` when `PH_ML_LLM_TRUSTED_HTTPD_LIVE=1` |
 
 ## Agent rules
 

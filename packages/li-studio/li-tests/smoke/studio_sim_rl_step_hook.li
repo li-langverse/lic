@@ -9,6 +9,8 @@ def main() -> int
   var rl_cfg: StudioProjectConfig = studio_project_config_new(studio_profile_sim_rl())
   var rl_sess: SimSessionStub = sim_session_stub_default()
   studio_apply_profile_to_sim(rl_cfg, rl_sess)
+  if sim_rl_env_li_process_fork_ready() != 1:
+    return 5
   if studio_sim_rl_step_hook(rl_sess, 0.02) != sim_status_ok():
     return 10
   var psz: int = sim_rl_env_pool_size_default()

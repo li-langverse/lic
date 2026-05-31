@@ -29,6 +29,12 @@ grep -q 'import ml' packages/li-llm/src/lib.li \
 
 grep -q 'sim_rl_env_li_process_fork_ready' packages/li-sim/src/lib.li \
   || { echo "T4: missing sim_rl_env_li_process_fork_ready"; exit 1; }
+[[ -f packages/li-sim/li-tests/smoke/sim_rl_env_li_process_fork.li ]] \
+  || { echo "T4: missing sim_rl_env_li_process_fork.li smoke"; exit 1; }
+
+python3 -m pip install --user --break-system-packages \
+  -r scripts/requirements-ph-ml-wave12-rl.txt >/dev/null 2>&1 || true
+export PYTHONPATH="$ROOT/scripts${PYTHONPATH:+:$PYTHONPATH}"
 
 grep -q 'stable-baselines3' scripts/requirements-ph-ml-wave12-rl.txt \
   || { echo "T5: SB3 must be a declared dependency"; exit 1; }

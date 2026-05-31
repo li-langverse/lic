@@ -1,5 +1,4 @@
-# Wave 12 RL competitive deps (installed by ph-ml-wave12-gates.sh).
+# Wave 12/13 RL competitive deps (installed by ph-ml-wave12-gates.sh + program-complete gate).
 gymnasium==1.0.0
 stable-baselines3==2.5.0
-# Optional full rollout bench when present:
-# ray[rllib]==2.44.1
+ray[rllib]==2.44.1

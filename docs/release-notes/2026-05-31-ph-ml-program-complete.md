@@ -12,15 +12,15 @@
 | **T6** | `ml_matmul_lkir_logical_32` (64×4×4 blocked tiles), `ml_matmul_32_lkir.li` smoke, `bench-ph-ml-lkir-matmul-32.sh` with `ratio_vs_li` vs NumPy 32×32 |
 | **T2** | `ml_gpu_device_buffer_pipeline` chains LKIR launch + `lig_gpu_device_buffer_ready`; smoke `ml_gpu_device_buffer.li` |
 | **T3** | `import ml` in `packages/li-llm/src/lib.li`; smoke `llm_import_ml.li` |
+| **T4** | `sim_rl_env_li_process_fork_ready` + `sim_rl_env_li_process_fork.li` + Studio hook asserts fork path |
+| **T5** | SB3 + Ray declared in `requirements-ph-ml-wave12-rl.txt`; program-complete gate pip-installs + `executed:true` benches |
+| **T8** | `bench_ph_ml_llm_trusted_httpd.py` sets `live_proxy: true` when `PH_ML_LLM_TRUSTED_HTTPD_LIVE=1` |
 
 ## Open (deferred to follow-up PRs)
 
 | Tranche | Blocker |
 |---------|---------|
-| T4 | Li process fork env pool + Studio hook |
-| T5 | SB3/Ray hard CI `executed:true` without skip |
-| T7 | Real safetensors/GGUF mmap against `PH_ML_WEIGHTS_FIXTURE` |
-| T8 | Live Ollama / li-httpd proxy (`live_proxy: true`) |
+| T7 | Real safetensors/GGUF mmap against `PH_ML_WEIGHTS_FIXTURE` on disk |
 
 ## Verification
 

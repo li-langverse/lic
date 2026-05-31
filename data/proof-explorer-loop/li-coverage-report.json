@@ -95,7 +95,7 @@
     {
       "entry_id": "P-linalg-dot4-int-loop-open",
       "field": "linalg",
-      "proof_status": "target",
+      "proof_status": "open",
       "tranche": "OTHER",
       "covered": true,
       "reason": "li_specimen stub",
@@ -104,10 +104,10 @@
     {
       "entry_id": "P-float-sqrt-open-bound",
       "field": "math",
-      "proof_status": "proved",
+      "proof_status": "target",
       "tranche": "OTHER",
       "covered": true,
-      "reason": "proved+specimen discharge marker",
+      "reason": "li_specimen stub",
       "li_specimen": "li-tests/contracts_verify/sqrt_open_bound.li"
     },
     {

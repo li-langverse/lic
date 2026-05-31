@@ -1,0 +1,21 @@
+{
+  "schema_version": 1,
+  "updated": "2026-05-31",
+  "description": "Non-Erdős open conjectures tracked in math-conjectures.toml (metadata only until specimens exist).",
+  "conjectures": [
+    { "id": "M-CONJ-ABC", "name": "abc conjecture (Oesterlé–Masser)", "external_url": "https://en.wikipedia.org/wiki/Abc_conjecture" },
+    { "id": "M-CONJ-RH", "name": "Riemann hypothesis", "external_url": "https://www.claymath.org/millennium-problems/riemann-hypothesis" },
+    { "id": "M-CONJ-P-NP", "name": "P versus NP", "external_url": "https://www.claymath.org/millennium-problems/p-vs-np-problem" },
+    { "id": "M-CONJ-BSD", "name": "Birch and Swinnerton-Dyer conjecture", "external_url": "https://www.claymath.org/millennium-problems/birch-and-swinnerton-dyer-conjecture" },
+    { "id": "M-CONJ-NAVIER", "name": "Navier–Stokes existence and smoothness", "external_url": "https://www.claymath.org/millennium-problems/navier-stokes-equation" },
+    { "id": "M-CONJ-HODGE", "name": "Hodge conjecture", "external_url": "https://www.claymath.org/millennium-problems/hodge-conjecture" },
+    { "id": "M-CONJ-YM", "name": "Yang–Mills and mass gap", "external_url": "https://www.claymath.org/millennium-problems/yang-mills-and-mass-gap" },
+    { "id": "M-CONJ-LANDAU-LEGENDRE", "name": "Legendre's conjecture", "external_url": "https://en.wikipedia.org/wiki/Legendre%27s_conjecture" },
+    { "id": "M-CONJ-LANDAU-N2P2", "name": "Infinitely many primes n^2+2", "external_url": "https://en.wikipedia.org/wiki/Landau%27s_problems" },
+    { "id": "M-CONJ-BEAL", "name": "Beal conjecture", "external_url": "https://en.wikipedia.org/wiki/Beal%27s_conjecture" },
+    { "id": "M-CONJ-ODD-PERFECT", "name": "Odd perfect numbers", "external_url": "https://en.wikipedia.org/wiki/Perfect_number" },
+    { "id": "M-CONJ-JACOBIAN", "name": "Jacobian conjecture", "external_url": "https://en.wikipedia.org/wiki/Jacobian_conjecture" },
+    { "id": "M-CONJ-SMOOTH-4D-POINCARE", "name": "Smooth 4D Poincaré conjecture", "external_url": "https://en.wikipedia.org/wiki/generalized_Poincar%C3%A9_conjecture" },
+    { "id": "M-CONJ-HADWIGER-NELSON", "name": "Hadwiger–Nelson problem", "external_url": "https://en.wikipedia.org/wiki/Hadwiger%E2%80%93Nelson_problem" }
+  ]
+}

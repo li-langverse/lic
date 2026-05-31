@@ -120,6 +120,7 @@ int usage() {
             << "  lic httpd explain-config <file.toml>  desugar [routes] to canonical form\n"
             << "  lic httpd validate-config <file.toml>  validate [routes] (E0501–E0504)\n"
             << "  lic validate-httpd-config <file.toml>  M1 TOML schema + overlap (Python)\n"
+            << "  lic export-math [-o PATH] [--pretty]  export math-field proof-db catalog (JSON)\n"
             << "  lic --version          print version\n"
             << "\n"
             << "resource flags (preferred; LI_* env deprecated):\n"
@@ -189,6 +190,25 @@ int httpd_validate_config(int argc, char** argv) {
   }
   std::cout << "OK: " << li_rt_httpd_route_count() << " routes\n";
   return 0;
+}
+
+int export_math_cmd(int argc, char** argv) {
+  std::filesystem::path repo = std::filesystem::current_path();
+  if (const char* root = std::getenv("LI_REPO_ROOT")) {
+    repo = root;
+  }
+  const std::filesystem::path script = repo / "scripts/export-math.py";
+  if (!std::filesystem::is_regular_file(script)) {
+    std::cerr << "export-math: missing " << script << " (set LI_REPO_ROOT)\n";
+    return 1;
+  }
+  std::ostringstream cmd;
+  cmd << "python3 " << script.string();
+  for (int i = 2; i < argc; ++i) {
+    cmd << " \"" << argv[i] << "\"";
+  }
+  const int st = std::system(cmd.str().c_str());
+  return st != 0 ? 1 : 0;
 }
 
 int validate_httpd_config_cmd(int argc, char** argv) {
@@ -526,6 +546,9 @@ int main(int argc, char** argv) {
   }
   if (cmd == "validate-httpd-config") {
     return validate_httpd_config_cmd(argc, argv);
+  }
+  if (cmd == "export-math") {
+    return export_math_cmd(argc, argv);
   }
   if (cmd == "httpd") {
     if (argc >= 3 && std::string_view(argv[2]) == "validate-config") {

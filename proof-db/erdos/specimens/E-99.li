@@ -1,0 +1,12 @@
+# Catalog: E-99
+# Statement: Are there infinitely many n such that the sum of prime gaps up to n exceeds n^{1+epsilon} for some epsilon>0?
+# formalization_status: li_open
+# discharge: pending — open formalization target (Phase 4)
+# erdos_status (literature): open
+
+def formal_target_e_99() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0

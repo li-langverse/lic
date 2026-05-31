@@ -1,0 +1,12 @@
+# Catalog: E-207
+# Statement: For any $g\geq 2$, if $n$ is sufficiently large and $\equiv 1,3\pmod{6}$ then there exists a 3-uniform hypergraph on $n$ vertices such that every pair of vertices is contained in exactly one edge (i.e. the graph is a Steiner triple system) 
+# formalization_status: li_open
+# discharge: pending — open formalization target (Phase 4)
+# erdos_status (literature): proved
+
+def formal_target_e_207() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0

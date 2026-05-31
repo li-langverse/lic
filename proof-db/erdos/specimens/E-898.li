@@ -1,0 +1,12 @@
+# Catalog: E-898
+# Statement: If $A,B,C\in \mathbb{R}^2$ form a triangle and $P$ is a point in the interior then, if $N$ is where the perpendicular from $P$ to $AB$ meets the triangle, and similarly for $M$ and $L$,\[\overline{PA}+\overline{PB}+\overline{PC}\geq 2(\over
+# formalization_status: li_open
+# discharge: pending — open formalization target (Phase 4)
+# erdos_status (literature): proved
+
+def formal_target_e_898() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0

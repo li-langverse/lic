@@ -1,0 +1,12 @@
+# Catalog: E-1013
+# Statement: Let $h_3(k)$ be the minimal $n$ such that there exists a triangle-free graph on $n$ vertices with chromatic number $k$. Find an asymptotic for $h_3(k)$, and also prove\[\lim_{k\to \infty}\frac{h_3(k+1)}{h_3(k)}=1.\]
+# formalization_status: li_open
+# discharge: pending — open formalization target (Phase 4)
+# erdos_status (literature): open
+
+def formal_target_e_1013() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0

@@ -1,0 +1,12 @@
+# Catalog: E-76
+# Statement: Can every infinite set of primes contain a subset whose reciprocals sum to infinity?
+# formalization_status: li_open
+# discharge: pending — open formalization target (Phase 4)
+# erdos_status (literature): open
+
+def formal_target_e_76() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0

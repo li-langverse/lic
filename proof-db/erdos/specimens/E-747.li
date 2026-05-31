@@ -1,0 +1,12 @@
+# Catalog: E-747
+# Statement: How large should $\ell(n)$ be such that, almost surely, a random $3$-uniform hypergraph on $3n$ vertices with $\ell(n)$ edges must contain $n$ vertex-disjoint edges?
+# formalization_status: li_open
+# discharge: pending — open formalization target (Phase 4)
+# erdos_status (literature): open
+
+def formal_target_e_747() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0

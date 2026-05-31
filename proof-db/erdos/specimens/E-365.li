@@ -1,0 +1,12 @@
+# Catalog: E-365
+# Statement: Do all pairs of consecutive powerful numbers $n$ and $n+1$ come from solutions to Pell equations ? In other words, must either $n$ or $n+1$ be a square? Is the number of such $n\leq x$ bounded by $(\log x)^{O(1)}$?
+# formalization_status: li_open
+# discharge: pending — open formalization target (Phase 4)
+# erdos_status (literature): open
+
+def formal_target_e_365() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0

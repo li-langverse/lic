@@ -1,0 +1,12 @@
+# Catalog: E-555
+# Statement: Let $R_k(G)$ denote the minimal $m$ such that if the edges of $K_m$ are $k$-coloured then there is a monochromatic copy of $G$. Determine the value of\[R_k(C_{2n}).\]
+# formalization_status: li_open
+# discharge: pending — open formalization target (Phase 4)
+# erdos_status (literature): open
+
+def formal_target_e_555() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0

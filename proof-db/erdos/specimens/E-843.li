@@ -1,0 +1,12 @@
+# Catalog: E-843
+# Statement: Are the squares Ramsey $2$-complete? That is, is it true that, in any 2-colouring of the square numbers, every sufficiently large $n\in \mathbb{N}$ can be written as a monochromatic sum of distinct squares?
+# formalization_status: li_open
+# discharge: pending — open formalization target (Phase 4)
+# erdos_status (literature): proved
+
+def formal_target_e_843() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0

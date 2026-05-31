@@ -1,0 +1,12 @@
+# Catalog: E-338
+# Statement: The restricted order of a basis is the least integer $t$ (if it exists) such that every large integer is the sum of at most $t$ distinct summands from $A$. What are necessary and sufficient conditions that this exists? Can it be bounded (wh
+# formalization_status: li_open
+# discharge: pending — open formalization target (Phase 4)
+# erdos_status (literature): open
+
+def formal_target_e_338() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0

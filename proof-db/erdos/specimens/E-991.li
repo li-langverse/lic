@@ -1,0 +1,12 @@
+# Catalog: E-991
+# Statement: Suppose $A=\{w_1,\ldots,w_n\}\subset S^2$ maximises\[\prod_{i<j}\lvert w_i-w_j\rvert\]over all possible sets of size $n$. Is it true that\[\max_C\lvert \lvert A\cap C\rvert - \alpha_C n\rvert =o(n),\]where the maximum is taken over all sphe
+# formalization_status: li_open
+# discharge: pending — open formalization target (Phase 4)
+# erdos_status (literature): proved
+
+def formal_target_e_991() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0

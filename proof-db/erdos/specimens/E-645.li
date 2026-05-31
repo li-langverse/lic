@@ -1,0 +1,12 @@
+# Catalog: E-645
+# Statement: If $\mathbb{N}$ is 2-coloured then must there exist a monochromatic three-term arithmetic progression $x,x+d,x+2d$ such that $d>x$?
+# formalization_status: li_open
+# discharge: pending — open formalization target (Phase 4)
+# erdos_status (literature): proved
+
+def formal_target_e_645() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0

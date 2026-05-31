@@ -1,0 +1,12 @@
+# Catalog: E-439
+# Statement: Is it true that, in any finite colouring of the integers, there must be two integers $x\neq y$ of the same colour such that $x+y$ is a square? What about a $k$th power?
+# formalization_status: li_open
+# discharge: pending — open formalization target (Phase 4)
+# erdos_status (literature): proved
+
+def formal_target_e_439() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0

@@ -1,0 +1,12 @@
+# Catalog: E-640
+# Statement: Let $k\geq 3$. Does there exist some $f(k)$ such that if a graph $G$ has chromatic number $\geq f(k)$ then $G$ must contain some odd cycle whose vertices span a graph of chromatic number $\geq k$?
+# formalization_status: li_open
+# discharge: pending — open formalization target (Phase 4)
+# erdos_status (literature): open
+
+def formal_target_e_640() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0

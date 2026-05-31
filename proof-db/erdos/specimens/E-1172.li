@@ -1,0 +1,12 @@
+# Catalog: E-1172
+# Statement: Establish whether the following are true assuming the generalised continuum hypothesis:\[\omega_3 \to (\omega_2,\omega_1+2)^2,\]\[\omega_3\to (\omega_2+\omega_1,\omega_2+\omega)^2,\]\[\omega_2\to (\omega_1^{\omega+2}+2, \omega_1+2)^2.\]Esta
+# formalization_status: li_open
+# discharge: pending — open formalization target (Phase 4)
+# erdos_status (literature): open
+
+def formal_target_e_1172() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0

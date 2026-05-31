@@ -1,0 +1,12 @@
+# Catalog: E-902
+# Statement: Let $f(n)$ be minimal such that there is a tournament (a complete directed graph) on $f(n)$ vertices such that every set of $n$ vertices is dominated by at least one other vertex. Estimate $f(n)$.
+# formalization_status: li_open
+# discharge: pending — open formalization target (Phase 4)
+# erdos_status (literature): open
+
+def formal_target_e_902() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0

@@ -1,0 +1,12 @@
+# Catalog: E-607
+# Statement: For a set of $n$ points $P\subset \mathbb{R}^2$ let $\ell_1,\ldots,\ell_m$ be the lines determined by $P$, and let $A=\{\lvert \ell_1\cap P\rvert,\ldots,\lvert \ell_m\cap P\rvert\}$. Let $F(n)$ count the number of possible sets $A$ that can
+# formalization_status: li_open
+# discharge: pending — open formalization target (Phase 4)
+# erdos_status (literature): proved
+
+def formal_target_e_607() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0

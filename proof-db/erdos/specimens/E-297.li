@@ -1,0 +1,12 @@
+# Catalog: E-297
+# Statement: Let $N\geq 1$. How many $A\subseteq \{1,\ldots,N\}$ are there such that $\sum_{n\in A}\frac{1}{n}=1$?
+# formalization_status: li_open
+# discharge: pending — open formalization target (Phase 4)
+# erdos_status (literature): open
+
+def formal_target_e_297() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0

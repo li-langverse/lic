@@ -1,0 +1,12 @@
+# Catalog: E-717
+# Statement: Let $G$ be a graph on $n$ vertices with chromatic number $\chi(G)$ and let $\sigma(G)$ be the maximal $k$ such that $G$ contains a subdivision of $K_k$. Is it true that\[\chi(G) \ll \frac{n^{1/2}}{\log n}\sigma(G)?\]
+# formalization_status: li_open
+# discharge: pending — open formalization target (Phase 4)
+# erdos_status (literature): proved
+
+def formal_target_e_717() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0

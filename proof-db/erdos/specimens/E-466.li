@@ -1,0 +1,12 @@
+# Catalog: E-466
+# Statement: Let $N(X,\delta)$ denote the maximum number of points $P_1,\ldots,P_n$ which can be chosen in a circle of radius $X$ such that\[\| \lvert P_i-P_j\rvert \| \geq \delta\]for all $1\leq i<j\leq n$. (Here $\|x\|$ is the distance from $x$ to the
+# formalization_status: li_open
+# discharge: pending — open formalization target (Phase 4)
+# erdos_status (literature): proved
+
+def formal_target_e_466() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0

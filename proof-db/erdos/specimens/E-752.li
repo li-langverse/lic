@@ -1,0 +1,12 @@
+# Catalog: E-752
+# Statement: Let $G$ be a graph with minimum degree $k$ and girth $>2s$ (i.e. $G$ contains no cycles of length $\leq 2s$). Must there be $\gg k^s$ many distinct cycle lengths in $G$?
+# formalization_status: li_open
+# discharge: pending — open formalization target (Phase 4)
+# erdos_status (literature): proved
+
+def formal_target_e_752() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0

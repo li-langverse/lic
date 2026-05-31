@@ -1,0 +1,12 @@
+# Catalog: E-860
+# Statement: Let $h(n)$ be such that, for any $m\geq 1$, in the interval $(m,m+h(n))$ there exist distinct integers $a_i$ for $1\leq i\leq \pi(n)$ such that $p_i\mid a_i$, where $p_i$ denotes the $i$th prime. Estimate $h(n)$.
+# formalization_status: li_open
+# discharge: pending — open formalization target (Phase 4)
+# erdos_status (literature): open
+
+def formal_target_e_860() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0

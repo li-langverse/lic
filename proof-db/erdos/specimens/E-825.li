@@ -1,0 +1,12 @@
+# Catalog: E-825
+# Statement: Is there an absolute constant $C>0$ such that every integer $n$ with $\sigma(n)>Cn$ is the distinct sum of proper divisors of $n$?
+# formalization_status: li_open
+# discharge: pending — open formalization target (Phase 4)
+# erdos_status (literature): proved
+
+def formal_target_e_825() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0

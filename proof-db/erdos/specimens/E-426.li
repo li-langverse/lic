@@ -1,0 +1,12 @@
+# Catalog: E-426
+# Statement: We say $H$ is a unique subgraph of $G$ if there is exactly one way to find $H$ as a subgraph (not necessarily induced) of $G$. Is there a graph on $n$ vertices with\[\gg \frac{2^{\binom{n}{2}}}{n!}\]many distinct unique subgraphs?
+# formalization_status: li_open
+# discharge: pending — open formalization target (Phase 4)
+# erdos_status (literature): open
+
+def formal_target_e_426() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0

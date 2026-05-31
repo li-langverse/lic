@@ -1,0 +1,12 @@
+# Catalog: E-757
+# Statement: Let $A\subset \mathbb{R}$ be a set of size $n$ such that every subset $B\subseteq A$ with $\lvert B\rvert =4$ has $\lvert B-B\rvert\geq 11$. Find the best constant $c>0$ such that $A$ must always contain a Sidon set of size $\geq cn$.
+# formalization_status: li_open
+# discharge: pending — open formalization target (Phase 4)
+# erdos_status (literature): open
+
+def formal_target_e_757() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0

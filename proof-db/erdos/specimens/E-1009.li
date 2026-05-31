@@ -1,0 +1,12 @@
+# Catalog: E-1009
+# Statement: Is it true that, for every $c>0$, there exists $f(c)$ such that every graph on $n$ vertices with at least $\lfloor n^2/4\rfloor+k$ edges, where $k<c n$, contains at least $k-f(c)$ many edge disjoint triangles?
+# formalization_status: li_open
+# discharge: pending — open formalization target (Phase 4)
+# erdos_status (literature): proved
+
+def formal_target_e_1009() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0

@@ -1,0 +1,12 @@
+# Catalog: E-43
+# Statement: If $A,B\subset \{1,\ldots,N\}$ are two Sidon sets such that $(A-A)\cap(B-B)=\{0\}$ then is it true that\[ \binom{\lvert A\rvert}{2}+\binom{\lvert B\rvert}{2}\leq\binom{f(N)}{2}+O(1),\]where $f(N)$ is the maximum possible size of a Sidon set
+# formalization_status: li_open
+# discharge: pending — open formalization target (Phase 4)
+# erdos_status (literature): open
+
+def formal_target_e_43() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0

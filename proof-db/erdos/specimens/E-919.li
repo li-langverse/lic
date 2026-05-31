@@ -1,0 +1,12 @@
+# Catalog: E-919
+# Statement: Is there a graph $G$ with vertex set $\omega_2^2$ and chromatic number $\aleph_2$ such that every subgraph whose vertices have a lesser type has chromatic number $\leq \aleph_0$? What if instead we ask for $G$ to have chromatic number $\ale
+# formalization_status: li_open
+# discharge: pending — open formalization target (Phase 4)
+# erdos_status (literature): open
+
+def formal_target_e_919() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0

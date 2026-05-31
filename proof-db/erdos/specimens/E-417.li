@@ -1,0 +1,12 @@
+# Catalog: E-417
+# Statement: Let\[V'(x)=\#\{\phi(m) : 1\leq m\leq x\}\]and\[V(x)=\#\{\phi(m) \leq x : 1\leq m\}.\]Does $\lim V(x)/V'(x)$ exist? Is it $>1$?
+# formalization_status: li_open
+# discharge: pending — open formalization target (Phase 4)
+# erdos_status (literature): open
+
+def formal_target_e_417() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0

@@ -1,0 +1,12 @@
+# Catalog: E-220
+# Statement: Let $n\geq 1$ and\[A=\{a_1<\cdots <a_{\phi(n)}\}=\{ 1\leq m<n : (m,n)=1\}.\]Is it true that\[ \sum_{1\leq k<\phi(n)}(a_{k+1}-a_k)^2 \ll \frac{n^2}{\phi(n)}?\]
+# formalization_status: li_open
+# discharge: pending — open formalization target (Phase 4)
+# erdos_status (literature): proved
+
+def formal_target_e_220() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0

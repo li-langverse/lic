@@ -1,0 +1,12 @@
+# Catalog: E-1150
+# Statement: Does there exist a constant $c>0$ such that, for all large $n$ and all polynomials $P$ of degree $n$ with coefficients $\pm 1$,\[\max_{\lvert z\rvert=1}\lvert P(z)\rvert > (1+c)\sqrt{n}?\]
+# formalization_status: li_open
+# discharge: pending — open formalization target (Phase 4)
+# erdos_status (literature): open
+
+def formal_target_e_1150() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0

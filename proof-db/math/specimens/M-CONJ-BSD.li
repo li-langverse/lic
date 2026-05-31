@@ -1,0 +1,11 @@
+# Catalog: M-CONJ-BSD
+# Statement: For an elliptic curve E over Q, does ord_{s=1} L(E,s) equal the Mordell–Weil rank of E(Q) (Birch and Swinnerton-Dyer conjecture)?
+# formalization_status: li_open
+# discharge: pending — open formalization target (Phase 4)
+
+def formal_target_m_conj_bsd() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0

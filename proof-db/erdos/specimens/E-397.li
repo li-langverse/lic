@@ -1,0 +1,12 @@
+# Catalog: E-397
+# Statement: Are there only finitely many solutions to\[\prod_i \binom{2m_i}{m_i}=\prod_j \binom{2n_j}{n_j}\]with the $m_i,n_j$ distinct?
+# formalization_status: li_open
+# discharge: pending — open formalization target (Phase 4)
+# erdos_status (literature): open
+
+def formal_target_e_397() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0

@@ -1,0 +1,12 @@
+# Catalog: E-167
+# Statement: If $G$ is a graph with at most $k$ edge disjoint triangles then can $G$ be made triangle-free after removing at most $2k$ edges?
+# formalization_status: li_open
+# discharge: pending — open formalization target (Phase 4)
+# erdos_status (literature): open
+
+def formal_target_e_167() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0

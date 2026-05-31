@@ -1,0 +1,12 @@
+# Catalog: E-738
+# Statement: If $G$ has infinite chromatic number and is triangle-free (contains no $K_3$) then must $G$ contain every tree as an induced subgraph?
+# formalization_status: li_open
+# discharge: pending — open formalization target (Phase 4)
+# erdos_status (literature): open
+
+def formal_target_e_738() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0

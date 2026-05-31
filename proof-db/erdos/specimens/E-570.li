@@ -1,0 +1,12 @@
+# Catalog: E-570
+# Statement: Let $k\geq 3$. Is it true that, if $m$ is sufficiently large, for any graph $H$ on $m$ edges without isolated vertices,\[R(C_k,H) \leq 2m+\left\lfloor\frac{k-1}{2}\right\rfloor?\]
+# formalization_status: li_open
+# discharge: pending — open formalization target (Phase 4)
+# erdos_status (literature): proved
+
+def formal_target_e_570() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0

@@ -1,0 +1,12 @@
+# Catalog: E-340
+# Statement: Let $A=\{1,2,4,8,13,21,31,45,66,81,97,\ldots\}$ be the greedy Sidon sequence: we begin with $1$ and iteratively include the next smallest integer that preserves the Sidon property (i.e. there are no non-trivial solutions to $a+b=c+d$). What
+# formalization_status: li_open
+# discharge: pending — open formalization target (Phase 4)
+# erdos_status (literature): open
+
+def formal_target_e_340() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0

@@ -1,0 +1,12 @@
+# Catalog: E-437
+# Statement: Let $1\leq a_1<\cdots<a_k\leq x$. How many of the partial products $a_1,a_1a_2,\ldots,a_1\cdots a_k$ can be squares? Is it true that, for any $\epsilon>0$, there can be more than $x^{1-\epsilon}$ squares?
+# formalization_status: li_open
+# discharge: pending — open formalization target (Phase 4)
+# erdos_status (literature): proved
+
+def formal_target_e_437() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0

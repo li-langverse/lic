@@ -1,0 +1,12 @@
+# Catalog: E-681
+# Statement: For all large n, does there exist k such that n+k is composite and p(n+k) > k^2, where p(m) is the least prime factor of m?
+# formalization_status: li_open
+# discharge: pending — open formalization target (Phase 4)
+# erdos_status (literature): open
+
+def formal_target_e_681() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0

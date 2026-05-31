@@ -1,0 +1,12 @@
+# Catalog: E-982
+# Statement: If $n$ distinct points in $\mathbb{R}^2$ form a convex polygon then some vertex has at least $\lfloor \frac{n}{2}\rfloor$ different distances to other vertices.
+# formalization_status: li_open
+# discharge: pending — open formalization target (Phase 4)
+# erdos_status (literature): open
+
+def formal_target_e_982() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0

@@ -1,0 +1,12 @@
+# Catalog: E-240
+# Statement: Is there an infinite set of primes $P$ such that if $\{a_1<a_2<\cdots\}$ is the set of integers divisible only by primes in $P$ then $\lim a_{i+1}-a_i=\infty$?
+# formalization_status: li_open
+# discharge: pending — open formalization target (Phase 4)
+# erdos_status (literature): proved
+
+def formal_target_e_240() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0

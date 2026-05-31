@@ -1,0 +1,12 @@
+# Catalog: E-485
+# Statement: Let $f(k)$ be the minimum number of terms in $P(x)^2$, where $P\in \mathbb{Q}[x]$ ranges over all polynomials with exactly $k$ non-zero terms. Is it true that $f(k)\to\infty$ as $k\to \infty$?
+# formalization_status: li_open
+# discharge: pending — open formalization target (Phase 4)
+# erdos_status (literature): proved
+
+def formal_target_e_485() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0

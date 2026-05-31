@@ -1,0 +1,12 @@
+# Catalog: E-807
+# Statement: The bipartition number $\tau(G)$ of a graph $G$ is the smallest number of pairwise edge disjoint complete bipartite graphs whose union is $G$. The independence number $\alpha(G)$ is the size of the largest independent subset of $G$. Is it t
+# formalization_status: li_open
+# discharge: pending — open formalization target (Phase 4)
+# erdos_status (literature): open
+
+def formal_target_e_807() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0

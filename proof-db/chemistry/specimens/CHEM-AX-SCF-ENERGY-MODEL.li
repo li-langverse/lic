@@ -1,0 +1,11 @@
+# Catalog: CHEM-AX-SCF-ENERGY-MODEL
+# Statement: SCF energy functional E_k at iteration k is well-defined on the HF/DFT ansatz (modeling stub).
+# formalization_status: li_open
+# discharge: pending — open formalization target (Phase 4)
+
+def formal_target_chem_ax_scf_energy_model() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0

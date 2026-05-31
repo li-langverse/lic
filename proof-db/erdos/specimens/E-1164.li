@@ -1,0 +1,12 @@
+# Catalog: E-1164
+# Statement: Let $R_n$ be the maximal integer such that almost every random walk from the origin in $\mathbb{Z}^2$ visits every $x\in\mathbb{Z}^2$ with $\| x\|\leq R_n$ in at most $n$ steps. Is it true that\[\log R_n \asymp \sqrt{\log n}?\]
+# formalization_status: li_open
+# discharge: pending — open formalization target (Phase 4)
+# erdos_status (literature): proved
+
+def formal_target_e_1164() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0

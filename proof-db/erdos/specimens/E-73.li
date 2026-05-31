@@ -1,0 +1,12 @@
+# Catalog: E-73
+# Statement: Does the sum over primes p of 1/(p log p) vary slowly enough that partial sums determine convergence?
+# formalization_status: li_open
+# discharge: pending — open formalization target (Phase 4)
+# erdos_status (literature): open
+
+def formal_target_e_73() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0

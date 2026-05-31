@@ -1,0 +1,12 @@
+# Catalog: E-254
+# Statement: Let $A\subseteq \mathbb{N}$ be such that\[\lvert A\cap [1,2x]\rvert -\lvert A\cap [1,x]\rvert \to \infty\textrm{ as }x\to \infty\]and\[\sum_{n\in A} \{ \theta n\}=\infty\]for every $\theta\in (0,1)$, where $\{x\}$ is the distance of $x$ fro
+# formalization_status: li_open
+# discharge: pending — open formalization target (Phase 4)
+# erdos_status (literature): open
+
+def formal_target_e_254() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0

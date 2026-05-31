@@ -1,0 +1,12 @@
+# Catalog: E-798
+# Statement: Let $t(n)$ be the minimum number of points in $\{1,\ldots,n\}^2$ such that the $\binom{t}{2}$ lines determined by these points cover all points in $\{1,\ldots,n\}^2$. Estimate $t(n)$. In particular, is it true that $t(n)=o(n)$?
+# formalization_status: li_open
+# discharge: pending — open formalization target (Phase 4)
+# erdos_status (literature): proved
+
+def formal_target_e_798() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0

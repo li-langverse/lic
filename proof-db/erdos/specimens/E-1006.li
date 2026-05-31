@@ -1,0 +1,12 @@
+# Catalog: E-1006
+# Statement: Let $G$ be a graph with girth $>4$ (that is, it contains no cycles of length $3$ or $4$). Can the edges of $G$ always be directed such that there is no directed cycle, and reversing the direction of any edge also creates no directed cycle?
+# formalization_status: li_open
+# discharge: pending — open formalization target (Phase 4)
+# erdos_status (literature): open
+
+def formal_target_e_1006() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0

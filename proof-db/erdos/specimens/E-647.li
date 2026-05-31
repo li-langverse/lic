@@ -1,0 +1,12 @@
+# Catalog: E-647
+# Statement: Let $\tau(n)$ count the number of divisors of $n$. Is there some $n>24$ such that\[\max_{m<n}(m+\tau(m))\leq n+2?\]
+# formalization_status: li_open
+# discharge: pending — open formalization target (Phase 4)
+# erdos_status (literature): open
+
+def formal_target_e_647() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0

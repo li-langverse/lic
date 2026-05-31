@@ -1,0 +1,12 @@
+# Catalog: E-984
+# Statement: Can $\mathbb{N}$ be $2$-coloured such that if\[\{a,a+d,\ldots,a+(k-1)d\}\]is a $k$-term monochromatic arithmetic progression then $k\ll_\epsilon a^\epsilon$ for all $\epsilon>0$?
+# formalization_status: li_open
+# discharge: pending — open formalization target (Phase 4)
+# erdos_status (literature): proved
+
+def formal_target_e_984() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0

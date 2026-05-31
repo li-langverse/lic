@@ -1,0 +1,12 @@
+# Catalog: E-634
+# Statement: Find all $n$ such that there is at least one triangle which can be cut into $n$ congruent triangles.
+# formalization_status: li_open
+# discharge: pending — open formalization target (Phase 4)
+# erdos_status (literature): open
+
+def formal_target_e_634() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0

@@ -1,0 +1,12 @@
+# Catalog: E-969
+# Statement: Let $Q(x)$ count the number of squarefree integers in $[1,x]$. Determine the order of magnitude in the error term in the asymptotic\[Q(x)=\frac{6}{\pi^2}x+E(x).\]
+# formalization_status: li_open
+# discharge: pending — open formalization target (Phase 4)
+# erdos_status (literature): open
+
+def formal_target_e_969() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0

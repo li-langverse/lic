@@ -1,0 +1,12 @@
+# Catalog: E-1185
+# Statement: Let $\delta>0$ and $k\geq 3$. Is it true that there exists $m\geq 1$ (depending only on $\delta$ and $k$) such that, for all large $N$, if $A,B\subseteq \{1,\ldots,N\}$ with $\lvert A\rvert \geq \delta N$ and $\lvert B\rvert \geq m$ then th
+# formalization_status: li_open
+# discharge: pending — open formalization target (Phase 4)
+# erdos_status (literature): open
+
+def formal_target_e_1185() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0

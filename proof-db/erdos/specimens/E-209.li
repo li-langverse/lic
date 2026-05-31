@@ -1,0 +1,12 @@
+# Catalog: E-209
+# Statement: Let $A$ be a finite collection of $d\geq 4$ non-parallel lines in $\mathbb{R}^2$ such that there are no points where at least four lines from $A$ meet. Must there exist a 'Gallai triangle' (or 'ordinary triangle'): three lines from $A$ whic
+# formalization_status: li_open
+# discharge: pending — open formalization target (Phase 4)
+# erdos_status (literature): open
+
+def formal_target_e_209() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0

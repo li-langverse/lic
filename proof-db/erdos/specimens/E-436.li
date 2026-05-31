@@ -1,0 +1,12 @@
+# Catalog: E-436
+# Statement: If $p$ is a prime and $k,m\geq 2$ then let $r(k,m,p)$ be the minimal $r$ such that $r,r+1,\ldots,r+m-1$ are all $k$th power residues modulo $p$. Let\[\Lambda(k,m)=\limsup_{p\to \infty} r(k,m,p).\]Is it true that $\Lambda(k,2)$ is finite for
+# formalization_status: li_open
+# discharge: pending — open formalization target (Phase 4)
+# erdos_status (literature): open
+
+def formal_target_e_436() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0

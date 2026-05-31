@@ -1,0 +1,12 @@
+# Catalog: E-37
+# Statement: We say that $A\subset \mathbb{N}$ is an essential component if $d_s(A+B)>d_s(B)$ for every $B\subset \mathbb{N}$ with $0<d_s(B)<1$ where $d_s$ is the Schnirelmann density . Can a lacunary set $A\subset\mathbb{N}$ be an essential component?
+# formalization_status: li_open
+# discharge: pending — open formalization target (Phase 4)
+# erdos_status (literature): open
+
+def formal_target_e_37() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0

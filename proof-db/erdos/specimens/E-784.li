@@ -1,0 +1,12 @@
+# Catalog: E-784
+# Statement: Let $C>0$. Does there exist a $c>0$ (depending on $C$) such that, for all sufficiently large $x$, if $A\subseteq [1,x]$ has $\sum_{n\in A}\frac{1}{n}\leq C$ then\[\#\{ m\leq x : a\nmid m\textrm{ for all }a\in A\}\gg\frac{x}{(\log x)^c}?\]
+# formalization_status: li_open
+# discharge: pending — open formalization target (Phase 4)
+# erdos_status (literature): open
+
+def formal_target_e_784() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0

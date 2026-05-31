@@ -1,0 +1,12 @@
+# Catalog: E-862
+# Statement: Let $A_1(N)$ be the number of maximal Sidon subsets of $\{1,\ldots,N\}$. Is it true that\[A_1(N) < 2^{o(N^{1/2})}?\]Is it true that\[A_1(N) > 2^{N^c}\]for some constant $c>0$?
+# formalization_status: li_open
+# discharge: pending — open formalization target (Phase 4)
+# erdos_status (literature): open
+
+def formal_target_e_862() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0

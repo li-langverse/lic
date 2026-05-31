@@ -1,0 +1,12 @@
+# Catalog: E-671
+# Statement: Given $a_{i}^n\in [-1,1]$ for all $1\leq i\leq n<\infty$ we define $p_{i}^n$ as the unique polynomial of degree $n-1$ such that $p_{i}^n(a_{i}^n)=1$ and $p_{i}^n(a_{i'}^n)=0$ if $1\leq i'\leq n$ with $i\neq i'$. We similarly define\[\mathca
+# formalization_status: li_open
+# discharge: pending — open formalization target (Phase 4)
+# erdos_status (literature): open
+
+def formal_target_e_671() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0

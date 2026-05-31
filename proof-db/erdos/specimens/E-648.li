@@ -1,0 +1,12 @@
+# Catalog: E-648
+# Statement: Let $g(n)$ denote the largest $t$ such that there exist integers $2\leq a_1<a_2<\cdots <a_t <n$ such that\[P(a_1)>P(a_2)>\cdots >P(a_t)\]where $P(m)$ is the greatest prime factor of $m$. Estimate $g(n)$.
+# formalization_status: li_open
+# discharge: pending — open formalization target (Phase 4)
+# erdos_status (literature): open
+
+def formal_target_e_648() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0

@@ -1,0 +1,12 @@
+# Catalog: E-1166
+# Statement: Given a random walk $s_0,s_1,\ldots$ in $\mathbb{Z}^2$, starting at the origin, let $f_k(x)$ count the number of $0\leq l\leq k$ such that $s_l=x$. Let\[F(k)=\{ x: f_k(x) = \max_y f_k(y)\}\]be the set of 'favourite values'. Is it true that\
+# formalization_status: li_open
+# discharge: pending — open formalization target (Phase 4)
+# erdos_status (literature): proved
+
+def formal_target_e_1166() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0

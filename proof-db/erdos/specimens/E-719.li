@@ -1,0 +1,12 @@
+# Catalog: E-719
+# Statement: Let $\mathrm{ex}_r(n;K_{r+1}^r)$ be the maximum number of $r$-edges that can be placed on $n$ vertices without forming a $K_{r+1}^r$ (the $r$-uniform complete graph on $r+1$ vertices). Is every $r$-hypergraph $G$ on $n$ vertices the union o
+# formalization_status: li_open
+# discharge: pending — open formalization target (Phase 4)
+# erdos_status (literature): open
+
+def formal_target_e_719() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0

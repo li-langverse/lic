@@ -1,0 +1,12 @@
+# Catalog: E-377
+# Statement: Is there some absolute constant $C>0$ such that\[\sum_{p\leq n}1_{p\nmid \binom{2n}{n}}\frac{1}{p}\leq C\]for all $n$ (where the summation is restricted to primes $p\leq n$)?
+# formalization_status: li_open
+# discharge: pending — open formalization target (Phase 4)
+# erdos_status (literature): open
+
+def formal_target_e_377() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0

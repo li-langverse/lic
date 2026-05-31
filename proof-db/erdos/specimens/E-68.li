@@ -1,0 +1,12 @@
+# Catalog: E-68
+# Statement: Can the positive integers be covered by finitely many residue classes with distinct moduli whose least common multiple is odd?
+# formalization_status: li_open
+# discharge: pending — open formalization target (Phase 4)
+# erdos_status (literature): open
+
+def formal_target_e_68() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0

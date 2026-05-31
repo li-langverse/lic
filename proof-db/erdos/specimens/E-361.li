@@ -1,0 +1,12 @@
+# Catalog: E-361
+# Statement: Let $c>0$ and $n$ be some large integer. What is the size of the largest $A\subseteq \{1,\ldots,\lfloor cn\rfloor\}$ such that $n$ is not a sum of a subset of $A$? Does this depend on $n$ in an irregular way?
+# formalization_status: li_open
+# discharge: pending — open formalization target (Phase 4)
+# erdos_status (literature): open
+
+def formal_target_e_361() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0

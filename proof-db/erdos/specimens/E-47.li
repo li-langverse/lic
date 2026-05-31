@@ -1,0 +1,12 @@
+# Catalog: E-47
+# Statement: Does the Collatz map n -> n/2 (even) or 3n+1 (odd) always reach 1 from every positive starting value?
+# formalization_status: li_open
+# discharge: pending — open formalization target (Phase 4)
+# erdos_status (literature): target
+
+def formal_target_e_47() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0

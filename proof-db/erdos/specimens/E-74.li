@@ -1,0 +1,12 @@
+# Catalog: E-74
+# Statement: Does sum_{n=1}^infty 1/(n * product_{p|n} p) converge?
+# formalization_status: li_open
+# discharge: pending — open formalization target (Phase 4)
+# erdos_status (literature): open
+
+def formal_target_e_74() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0

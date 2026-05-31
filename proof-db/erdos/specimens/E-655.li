@@ -1,0 +1,12 @@
+# Catalog: E-655
+# Statement: Let $x_1,\ldots,x_n\in \mathbb{R}^2$ be such that no circle whose centre is one of the $x_i$ contains three other points. Are there at least\[(1+c)\frac{n}{2}\]distinct distances determined between the $x_i$, for some constant $c>0$ and all
+# formalization_status: li_open
+# discharge: pending — open formalization target (Phase 4)
+# erdos_status (literature): open
+
+def formal_target_e_655() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0

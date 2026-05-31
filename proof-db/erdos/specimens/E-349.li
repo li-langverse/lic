@@ -1,0 +1,12 @@
+# Catalog: E-349
+# Statement: For what values of $t,\alpha \in (0,\infty)$ is the sequence $\lfloor t\alpha^n\rfloor$ complete (that is, all sufficiently large integers are the sum of distinct integers of the form $\lfloor t\alpha^n\rfloor$)?
+# formalization_status: li_open
+# discharge: pending — open formalization target (Phase 4)
+# erdos_status (literature): open
+
+def formal_target_e_349() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0

@@ -1,0 +1,12 @@
+# Catalog: E-456
+# Statement: Let $p_n$ be the smallest prime $\equiv 1\pmod{n}$ and let $m_n$ be the smallest integer such that $n\mid \phi(m_n)$. Is it true that $m_n<p_n$ for almost all $n$? Does $p_n/m_n\to \infty$ for almost all $n$? Are there infinitely many prime
+# formalization_status: li_open
+# discharge: pending — open formalization target (Phase 4)
+# erdos_status (literature): open
+
+def formal_target_e_456() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0

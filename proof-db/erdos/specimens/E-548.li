@@ -1,0 +1,12 @@
+# Catalog: E-548
+# Statement: Let $n\geq k+1$. Every graph on $n$ vertices with at least $\frac{k-1}{2}n+1$ edges contains every tree on $k+1$ vertices.
+# formalization_status: li_open
+# discharge: pending — open formalization target (Phase 4)
+# erdos_status (literature): open
+
+def formal_target_e_548() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0

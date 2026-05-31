@@ -1,0 +1,12 @@
+# Catalog: E-700
+# Statement: Let\[f(n)=\min_{1<k\leq n/2}\textrm{gcd}\left(n,\binom{n}{k}\right).\] Characterise those composite $n$ such that $f(n)=n/P(n)$, where $P(n)$ is the largest prime dividing $n$. Are there infinitely many composite $n$ such that $f(n)>n^{1/2}
+# formalization_status: li_open
+# discharge: pending — open formalization target (Phase 4)
+# erdos_status (literature): open
+
+def formal_target_e_700() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0

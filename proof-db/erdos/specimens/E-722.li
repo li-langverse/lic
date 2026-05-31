@@ -1,0 +1,12 @@
+# Catalog: E-722
+# Statement: Let $k>r$ and $n$ be sufficiently large in terms of $k$ and $r$. Does there always exist a block $r-(n,k,1)$ design (or Steiner system with parameters $(n,k,r)$), provided the trivial necessary divisibility conditions $\binom{k-i}{r-i}\mid 
+# formalization_status: li_open
+# discharge: pending — open formalization target (Phase 4)
+# erdos_status (literature): proved
+
+def formal_target_e_722() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0

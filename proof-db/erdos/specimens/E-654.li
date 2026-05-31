@@ -1,0 +1,12 @@
+# Catalog: E-654
+# Statement: Let $f(n)$ be such that, given any $x_1,\ldots,x_n\in \mathbb{R}^2$ with no four points on a circle, there exists some $x_i$ with at least $f(n)$ many distinct distances to other $x_j$. Estimate $f(n)$ - in particular, is it true that\[f(n)
+# formalization_status: li_open
+# discharge: pending — open formalization target (Phase 4)
+# erdos_status (literature): open
+
+def formal_target_e_654() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0

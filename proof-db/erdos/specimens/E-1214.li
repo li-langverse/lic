@@ -1,0 +1,12 @@
+# Catalog: E-1214
+# Statement: Let $x,y\geq 1$ be integers such that, for all $n\geq 1$, the set of primes dividing $x^{n}-1$ is equal to set of primes dividing $y^n-1$. Must $x=y$?
+# formalization_status: li_open
+# discharge: pending — open formalization target (Phase 4)
+# erdos_status (literature): proved
+
+def formal_target_e_1214() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0

@@ -1,0 +1,12 @@
+# Catalog: E-194
+# Statement: Let $k\geq 3$. Must any ordering of $\mathbb{R}$ contain a monotone $k$-term arithmetic progression, that is, some $x_1<\cdots<x_k$ which forms an increasing or decreasing $k$-term arithmetic progression?
+# formalization_status: li_open
+# discharge: pending — open formalization target (Phase 4)
+# erdos_status (literature): open
+
+def formal_target_e_194() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0

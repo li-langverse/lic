@@ -1,0 +1,12 @@
+# Catalog: E-513
+# Statement: Let $f=\sum_{n=0}^\infty a_nz^n$ be a transcendental entire function. What is the greatest possible value of\[\liminf_{r\to \infty} \frac{\max_n\lvert a_nr^n\rvert}{\max_{\lvert z\rvert=r}\lvert f(z)\rvert}?\]
+# formalization_status: li_open
+# discharge: pending — open formalization target (Phase 4)
+# erdos_status (literature): open
+
+def formal_target_e_513() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0

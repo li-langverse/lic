@@ -1,0 +1,12 @@
+# Catalog: E-774
+# Statement: We call $A\subset \mathbb{N}$ dissociated if $\sum_{n\in X}n\neq \sum_{m\in Y}m$ for all finite $X,Y\subset A$ with $X\neq Y$. Let $A\subset \mathbb{N}$ be an infinite set. We call $A$ proportionately dissociated if every finite $B\subset A
+# formalization_status: li_open
+# discharge: pending — open formalization target (Phase 4)
+# erdos_status (literature): open
+
+def formal_target_e_774() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0

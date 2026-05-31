@@ -4,6 +4,7 @@
 
 ### Added
 
+- **studio.toml engine section (WP-SIM-06, wsm-w1-studio-toml-engine)** — `studio_toml_parse_line` / `studio_toml_parsed_config` for `determinism_tier` and `[engine.export]`; smoke `studio_toml_engine_export.li`.
 - **Native agent shell bench (UX-06, studio-ux-23)** — `studio_shell_agent_bench_native` wires shell compose + agent paint for stream tick/cancel bench hook.
 - **Native palette shell bench (UX-04, studio-ux-22)** — `studio_shell_palette_bench_native` wires shell compose + palette overlay paint for native bench hook.
 - **GPU fail recovery (UX-08, studio-ux-17)** — `studio_compose_shell_gpu_fail`, `studio_paint_gpu_fail_overlay`; viewport fail strip + retry rect from `li-ui`.

@@ -13,14 +13,14 @@ unset_stale_insteadof() {
   local scope="${1:-}"
   local cfg=(git config)
   [[ -n "$scope" ]] && cfg+=(--"$scope")
-  mapfile -t keys < <("${cfg[@]}" --get-regexp '^url\..*\.insteadof$' 2>/dev/null | awk '{print $1}' | sort -u || true)
-  for key in "${keys[@]}"; do
+  # Portable loop (macOS /bin/bash 3.2 lacks mapfile).
+  while IFS= read -r key; do
     [[ -z "$key" ]] && continue
     # Only remove GitHub x-access-token rewrites (Cloud Agent injection).
     if [[ "$key" == *"x-access-token@github.com"* ]] || [[ "$key" == *"x-access-token:"* ]]; then
       "${cfg[@]}" --unset-all "$key" 2>/dev/null || true
     fi
-  done
+  done < <("${cfg[@]}" --get-regexp '^url\..*\.insteadof$' 2>/dev/null | awk '{print $1}' | sort -u || true)
 }
 
 unset_stale_insteadof global

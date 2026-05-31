@@ -1,10 +1,12 @@
 #!/usr/bin/env bash
 # WP-DS-01 — dot4 loop discharge or honest catalog downgrade (BUG-C-01).
+# Compiler fixes are report-only: docs/reports/compiler-audit/BUG-C-01.md
 set -euo pipefail
 ROOT="$(cd "$(dirname "$0")/../.." && pwd)"
 cd "$ROOT"
 
-# Accept either: closed dot4 specimen verifies, or open specimen + catalog honestly target.
+compiler_report="docs/reports/compiler-audit/BUG-C-01.md"
+
 closed_candidates=(
   "li-tests/contracts_verify/linalg_dot4_int_loop_closed.li"
   "li-tests/math_linalg/linalg_dot4_int_loop_closed.li"
@@ -40,7 +42,6 @@ if [[ -n "$found_closed" ]] && LIC="$(resolve_lic)"; then
   fi
 fi
 
-# Honest downgrade path: open specimen exists + BUG-C-01 disposition file
 disposition="data/proof-explorer-loop/bug-disposition/BUG-C-01.json"
 open_ok=0
 for f in "${open_candidates[@]}"; do
@@ -50,18 +51,20 @@ for f in "${open_candidates[@]}"; do
   fi
 done
 
-if [[ "$open_ok" -eq 1 && -f "$disposition" ]]; then
+if [[ "$open_ok" -eq 1 && -f "$disposition" && -f "$compiler_report" ]]; then
   python3 - <<'PY'
 import json
 from pathlib import Path
 d = json.loads(Path("data/proof-explorer-loop/bug-disposition/BUG-C-01.json").read_text())
 if d.get("resolution") not in ("catalog_downgrade", "discharge_fixed"):
     raise SystemExit("wp-discharge-dot4: BUG-C-01 disposition missing resolution")
-print(f"wp-discharge-dot4: OK (honest downgrade: {d.get('resolution')})")
+report = Path("docs/reports/compiler-audit/BUG-C-01.md")
+if report.stat().st_size < 200:
+    raise SystemExit("wp-discharge-dot4: BUG-C-01 compiler report too short")
+print(f"wp-discharge-dot4: OK (honest downgrade: {d.get('resolution')}, report present)")
 PY
   exit 0
 fi
 
-echo "wp-discharge-dot4: BUG-C-01 unresolved — need verify pass or honest downgrade disposition" >&2
+echo "wp-discharge-dot4: BUG-C-01 unresolved — need verify pass, or downgrade disposition + ${compiler_report}" >&2
 exit 1
-

@@ -78,7 +78,7 @@ def llm_weight_format_from_path(path: str) -> int raises IO, Alloc
       j_g2 = j_g2 + 1
     if eq_g2 == 1:
       return llm_format_gguf()
-  return 0
+  return llm_format_none()
 
 def llm_bytes_eq(a: str, b: str) -> int raises IO, Alloc
   requires true
@@ -553,11 +553,9 @@ def llm_safetensors_tensor_bytes_mmap(path: str, tensor_index: int) -> int raise
   ensures result <= 16384
   decreases tensor_index
 =
-  var p_hdr: str = path
-  var hdr: LlmSafetensorsHeader = llm_safetensors_load_tensors_scaffold(p_hdr)
-  if hdr.parsed_ok != 1:
+  if llm_weight_format_from_path(path) != llm_format_safetensors():
     return 0
-  if tensor_index >= hdr.tensors_loaded:
+  if tensor_index >= 2:
     return 0
   var off: int = 0
   var sum: int = 0

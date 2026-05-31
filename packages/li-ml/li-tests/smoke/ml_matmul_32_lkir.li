@@ -9,8 +9,8 @@ def main() -> int raises IO
   var b: array[64, float]
   var c: array[64, float]
   var i: int = 0
-  while i < 8
-    var fi: int = ml_matmul_flat_idx(i, i, 8)
+  while i < 16
+    var fi: int = ml_matmul_flat_idx(i, i, 4)
     a[fi] = 1.0
     b[fi] = 1.0
     i = i + 1

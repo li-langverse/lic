@@ -3,12 +3,12 @@
   "suite": "ph-ml-competitor-pytorch-cpu-matmul",
   "workload": "matmul_4x4_f32",
   "executed": true,
-  "cpu_sec": 6e-06,
+  "cpu_sec": 7e-06,
   "validity_gate_pass": true,
   "validity_ratio": 1.0,
   "framework_version": "2.6.0+cu124",
   "device": "cpu",
   "workload_size": 4,
   "note": null,
-  "generated_at": "2026-05-31T17:40:52Z"
+  "generated_at": "2026-05-31T17:51:40Z"
 }

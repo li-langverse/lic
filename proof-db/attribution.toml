@@ -1,0 +1,9 @@
+[project]
+name = "Li Proof Library"
+url = "https://github.com/li-langverse/proof-library"
+org = "li-langverse"
+
+[curator]
+name = "Julian Kleber"
+url = "https://julianmkleber.com"
+social_x = "capjmk"

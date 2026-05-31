@@ -1,18 +1,22 @@
 {
-  "note": "PH-DB plan loop \u2014 synced 2026-05-31",
-  "updated_at": "2026-05-31T03:29:10.408799+00:00",
+  "note": "WP-D merged lidb#28; PH-8d-v2 technical gates clear",
+  "updated_at": "2026-05-31T07:38:46Z",
   "iterations": 0,
   "completed_ids": [
     "wp-a-engine-native",
     "wp-b-lis-db",
     "wp-c-registry-bench",
+    "wp-d-registry-v2",
     "wp-e-control-plane",
     "wp-g-ci-cross-repo",
-    "wp-k-postgres-nightly",
-    "wp-pr-merge-wave",
     "wp-h0-default-main",
+    "wp-k-postgres-nightly",
     "wp-n3-realtime",
-    "wp-n5-security-bench"
+    "wp-n5-security-bench",
+    "wp-pr-merge-wave"
   ],
-  "history": []
+  "history": [],
+  "pending_ids": [
+    "wp-prod-lidb-default"
+  ]
 }

@@ -340,7 +340,7 @@ Each profile is **done** when all bullets hold simultaneously (not composable-on
 
 ### 6.2 `sim_rl`
 
-- [ ] `EnvPool` survives across frames (not stack-allocated stub) (`WP-SIM-03`, `WP-RL-02`)
+- [x] `EnvPool` survives across frames (not stack-allocated stub) (`WP-SIM-03`, `WP-RL-02`)
 - [ ] Async sample collection ≥4 envs documented in bench (`PH-ML`)
 - [ ] `studio_sim_step_hook` returns obs tensors matching `env_obs_dim` contract
 - [ ] Replay can reproduce rollout checksum (`WP-SIM-04`)

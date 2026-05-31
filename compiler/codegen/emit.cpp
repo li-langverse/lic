@@ -729,13 +729,21 @@ struct EmitCtx {
           builder->CreateRetVoid();
         } else if (returns_object && ret_ty->isStructTy()) {
           builder->CreateRet(llvm::ConstantAggregateZero::get(ret_ty));
+        } else if (ret_ty->isPointerTy()) {
+          builder->CreateRet(
+              llvm::ConstantPointerNull::get(llvm::cast<llvm::PointerType>(ret_ty)));
         } else {
           builder->CreateRet(returns_float ? llvm::ConstantFP::get(ret_ty, 0.0)
                                            : llvm::ConstantInt::get(ret_ty, 0));
         }
         return false;
       case MirOp::ReturnInt:
-        builder->CreateRet(int32_val(*builder, context, ins.int_value));
+        if (ret_ty->isPointerTy()) {
+          builder->CreateRet(
+              llvm::ConstantPointerNull::get(llvm::cast<llvm::PointerType>(ret_ty)));
+        } else {
+          builder->CreateRet(int32_val(*builder, context, ins.int_value));
+        }
         return false;
       case MirOp::ReturnFloat:
         builder->CreateRet(llvm::ConstantFP::get(llvm::Type::getDoubleTy(context),
@@ -938,12 +946,26 @@ struct EmitCtx {
         }
         std::vector<llvm::Value*> args;
         for (std::size_t ai = 0; ai < ins.args.size(); ++ai) {
-          const bool ptr_param =
-              ai < callee->arg_size() &&
-              callee->getArg(ai)->getType() == i8_ptr(context);
+          llvm::Type* want =
+              ai < callee->arg_size() ? callee->getArg(ai)->getType() : nullptr;
+          const bool ptr_param = want && want == i8_ptr(context);
           llvm::Value* val = mir_arg_value(ins.args[ai], ptr_param);
           if (ptr_param && val->getType() == i64_ty(context)) {
             val = builder->CreateIntToPtr(val, i8_ptr(context));
+          }
+          if (want != nullptr && val->getType() != want) {
+            if (ins.args[ai].is_array_ident && want->isPointerTy()) {
+              val = builder->CreatePointerCast(val, want);
+            } else if (want->isDoubleTy() && val->getType()->isIntegerTy(32)) {
+              val = builder->CreateSIToFP(val, want);
+            } else if (want->isFloatTy() && val->getType()->isDoubleTy()) {
+              val = builder->CreateFPTrunc(val, want);
+            } else if (want->isIntegerTy(32) && val->getType()->isDoubleTy()) {
+              val = builder->CreateFPTrunc(val, llvm::Type::getFloatTy(context));
+              val = builder->CreateBitCast(val, want);
+            } else if (want->isIntegerTy(32) && val->getType()->isFloatTy()) {
+              val = builder->CreateBitCast(val, want);
+            }
           }
           args.push_back(val);
         }

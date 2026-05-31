@@ -24,6 +24,11 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
+      - name: Checkout benchmarks sibling
+        run: |
+          chmod +x scripts/checkout-ecosystem-siblings.sh
+          ./scripts/checkout-ecosystem-siblings.sh
+
       - name: Install build tools
         run: |
           chmod +x scripts/ci-install-llvm.sh
@@ -39,28 +44,30 @@ jobs:
       - name: Toolchain snapshot (no network)
         run: ./scripts/hpc-competitive-snapshot.sh
 
-      - uses: actions/checkout@v4
-        with:
-          repository: li-langverse/benchmarks
-          path: benchmarks-repo
-          token: ${{ secrets.GITHUB_TOKEN }}
-
       - name: Build lic + tier-0 bench (strict, unchanged gate)
         env:
           LLVM_DIR: /usr/lib/llvm-22/lib/cmake/llvm
           CC: clang-22
           CXX: clang++-22
-          BENCHMARKS_ROOT: ${{ github.workspace }}/benchmarks-repo
         run: |
-          chmod +x scripts/build.sh scripts/resolve-lic.sh
+          chmod +x scripts/build.sh scripts/resolve-lic.sh scripts/lib/benchmarks-env.sh
+          # shellcheck source=lib/benchmarks-env.sh
+          source scripts/lib/benchmarks-env.sh
           ./scripts/build.sh
           export LIC="$(./scripts/resolve-lic.sh)"
           export LIC_ROOT="$GITHUB_WORKSPACE"
           bash "$BENCHMARKS_ROOT/scripts/run-bench.sh" --tier 0
 
+      - name: Stage snapshot for upload
+        run: |
+          chmod +x scripts/lib/benchmarks-env.sh
+          # shellcheck source=lib/benchmarks-env.sh
+          source scripts/lib/benchmarks-env.sh
+          cp "$BENCHMARKS_COMPETITIVE/snapshots/latest.env" hpc-competitive-snapshot.env
+
       - name: Upload snapshot
         uses: actions/upload-artifact@v4
         with:
           name: hpc-competitive-snapshot
-          path: benchmarks-repo/benchmarks/workloads/competitive/snapshots/latest.env
+          path: hpc-competitive-snapshot.env
           if-no-files-found: warn

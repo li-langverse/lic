@@ -642,6 +642,12 @@ struct EmitCtx {
         return builder->CreateAnd(lhs, rhs);
       case BinOp::Or:
         return builder->CreateOr(lhs, rhs);
+      case BinOp::BitXor:
+        return builder->CreateXor(lhs, rhs);
+      case BinOp::Shl:
+        return builder->CreateShl(lhs, rhs);
+      case BinOp::Shr:
+        return builder->CreateAShr(lhs, rhs);
     }
     return lhs;
   }
@@ -836,6 +842,12 @@ struct EmitCtx {
         llvm::Value* rhs = ins.rhs_is_literal ? int32_val(*builder, context, ins.rhs_int)
                                               : load_int(ins.rhs_ident);
         llvm::Value* result = emit_binop(ins.bin_op, lhs, rhs);
+        builder->CreateStore(result, ensure_int_local(ins.ident));
+        return true;
+      }
+      case MirOp::UnaryBitNotInt: {
+        llvm::Value* val = load_int(ins.lhs_ident);
+        llvm::Value* result = builder->CreateNot(val);
         builder->CreateStore(result, ensure_int_local(ins.ident));
         return true;
       }

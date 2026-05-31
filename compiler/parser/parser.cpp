@@ -341,21 +341,25 @@ std::unique_ptr<Expr> Parser::parse_postfix(std::unique_ptr<Expr> base) {
 int prec(TokenKind k) {
   switch (k) {
     case TokenKind::KwOr: return 1;
-    case TokenKind::KwAnd: return 2;
+    case TokenKind::KwXor:
+    case TokenKind::Caret: return 2;
+    case TokenKind::KwAnd: return 3;
     case TokenKind::EqEq:
     case TokenKind::Ne:
     case TokenKind::Lt:
     case TokenKind::Le:
     case TokenKind::Gt:
-    case TokenKind::Ge: return 3;
+    case TokenKind::Ge: return 4;
     case TokenKind::Plus:
-    case TokenKind::Minus: return 4;
+    case TokenKind::Minus: return 5;
+    case TokenKind::Shl:
+    case TokenKind::Shr: return 6;
     case TokenKind::Star:
     case TokenKind::Slash:
     case TokenKind::Percent:
-    case TokenKind::SlashSlash: return 5;
-    case TokenKind::StarStar: return 6;
-    case TokenKind::At: return 6;
+    case TokenKind::SlashSlash: return 7;
+    case TokenKind::StarStar: return 8;
+    case TokenKind::At: return 8;
     default: return -1;
   }
 }
@@ -377,6 +381,10 @@ BinOp binop(TokenKind k) {
     case TokenKind::EqEq: return BinOp::Eq;
     case TokenKind::Ne: return BinOp::Ne;
     case TokenKind::KwAnd: return BinOp::And;
+    case TokenKind::KwXor:
+    case TokenKind::Caret: return BinOp::BitXor;
+    case TokenKind::Shl: return BinOp::Shl;
+    case TokenKind::Shr: return BinOp::Shr;
     case TokenKind::KwOr: return BinOp::Or;
     default: return BinOp::Add;
   }
@@ -389,6 +397,13 @@ std::unique_ptr<Expr> Parser::parse_expr(int min_prec) {
     i++;
     left = std::make_unique<Expr>();
     left->kind = Expr::Kind::UnaryNot;
+    left->span = {t.start, t.end};
+    left->operand = parse_expr(100);
+  } else if (at(TokenKind::Tilde)) {
+    const Token t = cur();
+    i++;
+    left = std::make_unique<Expr>();
+    left->kind = Expr::Kind::UnaryBitNot;
     left->span = {t.start, t.end};
     left->operand = parse_expr(100);
   } else if (at(TokenKind::Minus)) {

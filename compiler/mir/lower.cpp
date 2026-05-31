@@ -1165,6 +1165,20 @@ std::string lower_expr_to(const Expr& e, const Module& module, std::vector<MirIn
     }
     case Expr::Kind::Ident:
       return e.ident;
+    case Expr::Kind::UnaryBitNot: {
+      if (!e.operand) {
+        return fresh_temp();
+      }
+      const std::string op =
+          lower_expr_to(*e.operand, module, out, float_names, simd_names, i64_locals);
+      const std::string dest = fresh_temp();
+      MirInsn ins;
+      ins.op = MirOp::UnaryBitNotInt;
+      ins.ident = dest;
+      ins.lhs_ident = op;
+      out.push_back(std::move(ins));
+      return dest;
+    }
     case Expr::Kind::Await: {
       if (!e.operand) {
         return fresh_temp();

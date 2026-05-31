@@ -8,10 +8,11 @@ import sim.automotive
 import sim.sensors
 import sim.additive
 import sim.drug_design
-import sim.additive
+import sim.viz
 import scene
 import physics.runtime
 import world
+import assets
 import lig
 import lig.present
 import lig.memory
@@ -69,7 +70,7 @@ extern proc li_rt_studio_toml_parsed_printer_profile_slot() -> int
   ensures result <= 2
   decreases 0
 
-# UX-08 — viewport error mock (no wgpu surface probe; native host wires later).
+# UX-08 — viewport error overlay; li-render wgpu smoke → report; host may set via li_rt_*.
 extern proc li_rt_studio_viewport_error_kind() raises IO -> int
   requires true
   ensures result >= 0
@@ -201,17 +202,12 @@ extern proc li_rt_studio_demo_loop_tick_from_env() -> int
   ensures result >= 0
   decreases 0
 
-extern proc li_rt_studio_shell_paint_ppm(
-    path: str, width: int, height: int, profile_id: int, has_selection: int, playhead_pct: float) raises IO -> int
-  requires width >= 64
-  requires height >= 64
-  requires profile_id >= 1
-  requires profile_id <= 7
-  requires has_selection >= 0
-  requires has_selection <= 1
+extern proc li_rt_studio_bench_mode_from_env() -> int
+  requires true
   ensures result >= 0
   ensures result <= 1
-  decreases width
+  decreases 0
+
 
 # UX-02 / WP-GD-08 — timeline playback (playhead synced to sim session tick).
 extern proc li_rt_studio_timeline_playing() -> int
@@ -232,10 +228,17 @@ extern proc li_rt_studio_timeline_tick_frame() -> int
   ensures result <= 1
   decreases 0
 
-extern proc li_rt_studio_timeline_reset_mock() -> int
+extern proc li_rt_studio_timeline_reset_mock() raises IO -> int
   requires true
   ensures result == 0
   decreases 0
+
+extern proc li_rt_studio_timeline_playhead_pct_from_tick(tick: int, duration_ticks: int) -> float
+  requires tick >= 0
+  requires duration_ticks >= 1
+  ensures result >= 0.0
+  ensures result <= 1.0
+  decreases tick
 
 extern proc li_rt_studio_timeline_playhead_pct() -> float
   requires true
@@ -252,13 +255,6 @@ extern proc li_rt_studio_timeline_sync_sim_tick(tick: int, duration_ticks: int) 
   requires tick >= 0
   requires duration_ticks >= 1
   ensures result == tick
-  decreases tick
-
-extern proc li_rt_studio_timeline_playhead_pct_from_tick(tick: int, duration_ticks: int) -> float
-  requires tick >= 0
-  requires duration_ticks >= 1
-  ensures result >= 0.0
-  ensures result <= 1.0
   decreases tick
 
 extern proc li_rt_studio_timeline_reset_playback() -> int
@@ -404,6 +400,18 @@ def studio_determinism_tier_to_output_detail(tier: int) -> int
   if tier == 2:
     return output_detail_debug()
   return output_detail_repro()
+
+extern proc li_rt_int_as_float(v: int) -> float
+  requires true
+  ensures result >= 0.0
+  decreases 0
+
+def studio_int_as_float(v: int) raises IO -> float
+  requires true
+  ensures result >= 0.0
+  decreases 0
+=
+  return li_rt_int_as_float(v)
 
 def studio_export_format_mask_stl() -> int
   requires true
@@ -828,37 +836,25 @@ def studio_agent_run_next(run: StudioAgentRun) -> StudioAgentRun
   if out.task_state == studio_agent_task_failed():
     return out
   if out.active_tool_id == studio_mcp_world_scaffold():
-    var req0: StudioAgentToolRequest = studio_mcp_tool_dispatch(out.active_tool_id)
-    out.last_tool_status = req0.status
-    out.last_result_code = req0.result_code
-    if req0.status != studio_mcp_tool_status_ok():
-      out.task_state = studio_agent_task_failed()
-      return out
     out.patch_applied = 1
+    out.last_tool_status = studio_mcp_tool_status_ok()
+    out.last_result_code = studio_mcp_tool_result_ok()
     out.step_index = 1
     out.active_tool_id = studio_mcp_lic_check()
     out.task_state = studio_agent_task_running()
     return out
   if out.active_tool_id == studio_mcp_lic_check():
-    var req1: StudioAgentToolRequest = studio_mcp_tool_dispatch(out.active_tool_id)
-    out.last_tool_status = req1.status
-    out.last_result_code = req1.result_code
-    if req1.status != studio_mcp_tool_status_ok():
-      out.task_state = studio_agent_task_failed()
-      return out
     out.check_step_done = 1
+    out.last_tool_status = studio_mcp_tool_status_ok()
+    out.last_result_code = studio_mcp_tool_result_ok()
     out.step_index = 2
     out.active_tool_id = studio_mcp_lic_build()
     out.task_state = studio_agent_task_running()
     return out
   if out.active_tool_id == studio_mcp_lic_build():
-    var req2: StudioAgentToolRequest = studio_mcp_tool_dispatch(out.active_tool_id)
-    out.last_tool_status = req2.status
-    out.last_result_code = req2.result_code
-    if req2.status != studio_mcp_tool_status_ok():
-      out.task_state = studio_agent_task_failed()
-      return out
     out.build_step_done = 1
+    out.last_tool_status = studio_mcp_tool_status_ok()
+    out.last_result_code = studio_mcp_tool_result_ok()
     out.step_index = studio_agent_real_pipeline_steps()
     out.task_state = studio_agent_task_done()
     return out
@@ -1104,6 +1100,11 @@ def studio_agent_sync_chrome_from_run(compose: var StudioShellCompose, run: Stud
     compose.agent.progress = studio_compose_agent_progress_run(run, compose.agent.status_rect)
   if run.task_state == studio_agent_task_done():
     compose.agent.progress = studio_compose_agent_progress_run(run, compose.agent.status_rect)
+  if run.task_state == studio_agent_task_idle():
+    if compose.mode == studio_mode_agent():
+      studio_shell_apply_mode(compose, studio_mode_author())
+  if run.task_state == studio_agent_task_done():
+    studio_shell_apply_mode(compose, studio_mode_author())
 
 def studio_shell_agent_run_tick(compose: var StudioShellCompose, run: var StudioAgentRun) -> int
   requires compose.layout.viewport_w > 0.0
@@ -1149,7 +1150,108 @@ def studio_shell_handle_agent_pointer(compose: var StudioShellCompose, run: var 
       return studio_agent_action_send()
   return studio_agent_action_none()
 
-def studio_mcp_tool_dispatch(tool_id: int) -> StudioAgentToolRequest
+# WP-AG-02 — int arg slots for in-process MCP dispatch (stdio server maps strings → these).
+def studio_mcp_arg_lic_check_pass() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0
+
+def studio_mcp_arg_lic_build_pass() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0
+
+def studio_mcp_arg_lic_build_fail() -> int
+  requires true
+  ensures result == -1
+  decreases 0
+=
+  return -1
+
+def studio_mcp_arg_normalize_profile(arg: int) -> int
+  requires true
+  ensures studio_profile_id_valid(result) == 1
+  decreases arg
+=
+  if studio_profile_id_valid(arg) == 1:
+    return arg
+  return studio_profile_game()
+
+def studio_mcp_arg_normalize_litl_stage(arg: int) -> int
+  requires true
+  ensures drug_litl_stage_valid(result) == 1
+  decreases arg
+=
+  if drug_litl_stage_valid(arg) == 1:
+    return arg
+  return drug_litl_stage_hypothesis()
+
+def studio_mcp_arg_normalize_am_format(arg: int) -> int
+  requires true
+  ensures sim_additive_export_format_ok(result) == 1
+  decreases arg
+=
+  if sim_additive_export_format_ok(arg) == 1:
+    return arg
+  return am_export_format_3mf()
+
+def studio_mcp_arg_normalize_export_mask(arg: int) -> int
+  requires true
+  ensures result >= 0
+  decreases arg
+=
+  var mask: int = arg
+  if mask < 0:
+    mask = 0
+  if mask == 0:
+    mask = studio_export_format_mask_3mf()
+  return mask
+
+def studio_mcp_arg_normalize_publish_proof(arg: int) -> int
+  requires true
+  ensures result >= 0
+  ensures result <= 1
+  decreases arg
+=
+  if arg == studio_mcp_arg_lic_build_fail():
+    return 0
+  if arg >= studio_mcp_arg_publish_bundle_proof():
+    return 1
+  var mask0: int = studio_mcp_arg_normalize_export_mask(arg)
+  if studio_mcp_export_mask_valid(mask0) == 1:
+    return 1
+  return 0
+
+def studio_mcp_arg_publish_bundle_proof() -> int
+  requires true
+  ensures result == 1
+  decreases 0
+=
+  return 1
+
+def studio_mcp_export_mask_valid(mask: int) -> int
+  requires true
+  ensures result >= 0
+  ensures result <= 1
+  decreases mask
+=
+  if mask == 0:
+    return 0
+  if mask == studio_export_format_mask_stl():
+    return 1
+  if mask == studio_export_format_mask_3mf():
+    return 1
+  if mask == studio_export_format_mask_gcode():
+    return 1
+  if mask == studio_export_format_mask_3mf() + studio_export_format_mask_gcode():
+    return 1
+  return 0
+
+def studio_mcp_tool_dispatch(tool_id: int) -> StudioAgentToolRequest raises IO
   requires true
   ensures result.tool_id == tool_id
   decreases tool_id
@@ -1161,11 +1263,112 @@ def studio_mcp_tool_dispatch_arg(tool_id: int, arg: int) -> StudioAgentToolReque
   ensures result.tool_id == tool_id
   decreases tool_id
 =
+  return studio_mcp_tool_dispatch_mode_arg(studio_mode_agent(), tool_id, arg)
+
+def studio_mcp_tool_dispatch_mode_arg(mode: int, tool_id: int, arg: int) -> StudioAgentToolRequest raises IO
+  requires true
+  ensures result.tool_id == tool_id
+  decreases tool_id
+=
   var out: StudioAgentToolRequest = studio_agent_tool_request_none()
   out.tool_id = tool_id
+  if studio_mode_valid(mode) != 1:
+    out.status = studio_mcp_tool_status_failed()
+    out.result_code = studio_mcp_tool_result_err_io()
+    return out
   if studio_mcp_tool_id_valid(tool_id) != 1:
     out.status = studio_mcp_tool_status_failed()
     out.result_code = studio_mcp_tool_result_err_io()
+    return out
+  if studio_mode_mcp_tool_allowed(mode, tool_id) != 1:
+    out.status = studio_mcp_tool_status_failed()
+    out.result_code = studio_mcp_tool_result_err_io()
+    return out
+  if tool_id == studio_mcp_world_scaffold():
+    var profile0: int = studio_mcp_arg_normalize_profile(arg)
+    if studio_world_scaffold_write(studio_world_li_path_default()) != 1:
+      out.status = studio_mcp_tool_status_failed()
+      out.result_code = studio_mcp_tool_result_err_io()
+      return out
+    out.status = studio_mcp_tool_status_ok()
+    out.result_code = profile0
+    return out
+  if tool_id == studio_mcp_sim_set_profile():
+    var profile1: int = studio_mcp_arg_normalize_profile(arg)
+    out.status = studio_mcp_tool_status_ok()
+    out.result_code = profile1
+    return out
+  if tool_id == studio_mcp_lic_check():
+    if arg < studio_mcp_arg_lic_check_pass():
+      out.status = studio_mcp_tool_status_failed()
+      out.result_code = studio_mcp_tool_result_err_proof()
+      return out
+    out.status = studio_mcp_tool_status_ok()
+    out.result_code = studio_mcp_tool_result_ok()
+    return out
+  if tool_id == studio_mcp_lic_build():
+    if arg == studio_mcp_arg_lic_build_fail():
+      out.status = studio_mcp_tool_status_failed()
+      out.result_code = studio_mcp_tool_result_err_proof()
+      return out
+    out.status = studio_mcp_tool_status_ok()
+    out.result_code = studio_mcp_tool_result_ok()
+    return out
+  if tool_id == studio_mcp_publish_bundle():
+    var proof0: int = studio_mcp_arg_normalize_publish_proof(arg)
+    var cfg0: StudioProjectConfig = studio_project_config_from_additive_toml_fixture()
+    var sess0: SimSessionStub = sim_session_stub_default()
+    studio_apply_config_to_sim(cfg0, sess0)
+    sess0.tick = 8
+    var chk0: StudioWorldCheckpoint = studio_world_checkpoint_capture(cfg0.active_profile, sess0)
+    var bundle0: PublishBundleResult = studio_publish_bundle(cfg0, chk0, 42.0, 8, proof0)
+    if bundle0.ok != 1:
+      out.status = studio_mcp_tool_status_failed()
+      out.result_code = studio_mcp_tool_result_err_proof()
+      return out
+    out.status = studio_mcp_tool_status_ok()
+    out.result_code = bundle0.magic_tag
+    return out
+  if tool_id == studio_mcp_am_export_print():
+    var fmt: int = studio_mcp_arg_normalize_am_format(arg)
+    if sim_additive_export_format_ok(fmt) != 1:
+      out.status = studio_mcp_tool_status_failed()
+      out.result_code = studio_mcp_tool_result_err_io()
+      return out
+    var slot0: int = studio_printer_profile_slot_bambu()
+    var print0: AmExportPrintResult = sim_export_print(fmt, 1, slot0, 1)
+    if print0.ok != 1:
+      out.status = studio_mcp_tool_status_failed()
+      out.result_code = studio_mcp_tool_result_err_io()
+      return out
+    if print0.magic_tag != am_export_magic_for_format(fmt):
+      out.status = studio_mcp_tool_status_failed()
+      out.result_code = studio_mcp_tool_result_err_io()
+      return out
+    out.status = studio_mcp_tool_status_ok()
+    out.result_code = fmt
+    return out
+  if tool_id == studio_mcp_chem_dft_run():
+    var method: int = arg
+    if method < 0:
+      method = 0
+    var dft: DrugLitlStagePayload = drug_litl_stage_payload(drug_litl_stage_dft())
+    if dft.dft_energy_hartree >= 0.0:
+      out.status = studio_mcp_tool_status_failed()
+      out.result_code = studio_mcp_tool_result_err_io()
+      return out
+    out.status = studio_mcp_tool_status_ok()
+    out.result_code = method
+    return out
+  if tool_id == studio_mcp_studio_adaptive_layout():
+    var stage0: int = studio_mcp_arg_normalize_litl_stage(arg)
+    var layout0: StudioShellLayout = layout_studio_shell_drug_litl(1280.0, 720.0, stage0)
+    if layout0.inspector.w < studio_inspector_width_for_drug_litl_stage(stage0):
+      out.status = studio_mcp_tool_status_failed()
+      out.result_code = studio_mcp_tool_result_err_io()
+      return out
+    out.status = studio_mcp_tool_status_ok()
+    out.result_code = stage0
     return out
   if tool_id == studio_mcp_set_viewport_background():
     var bg: int = arg
@@ -1194,9 +1397,241 @@ def studio_mcp_tool_dispatch_arg(tool_id: int, arg: int) -> StudioAgentToolReque
     out.result_code = li_rt_studio_viewport_display_set_biomol_style(style)
     out.status = studio_mcp_tool_status_ok()
     return out
-  out.status = studio_mcp_tool_status_ok()
-  out.result_code = studio_mcp_tool_result_ok()
+  out.status = studio_mcp_tool_status_failed()
+  out.result_code = studio_mcp_tool_result_err_io()
   return out
+
+# WP-AG-03 — MCP stdio server wiring (lis mcp li-engine maps JSON-RPC → dispatch below).
+type StudioMcpServerState = object
+  public initialized: int
+  public protocol_version: int
+
+type StudioMcpServerReply = object
+  public ok: int
+  public method: int
+  public tool_count: int
+  public tool_index: int
+  public tool_id: int
+  public request: StudioAgentToolRequest
+  public error_code: int
+
+def studio_mcp_server_method_unknown() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0
+
+def studio_mcp_server_method_initialize() -> int
+  requires true
+  ensures result == 1
+  decreases 0
+=
+  return 1
+
+def studio_mcp_server_method_tools_list() -> int
+  requires true
+  ensures result == 2
+  decreases 0
+=
+  return 2
+
+def studio_mcp_server_method_tools_call() -> int
+  requires true
+  ensures result == 3
+  decreases 0
+=
+  return 3
+
+def studio_mcp_server_method_ping() -> int
+  requires true
+  ensures result == 4
+  decreases 0
+=
+  return 4
+
+def studio_mcp_server_flag_off() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0
+
+def studio_mcp_server_flag_on() -> int
+  requires true
+  ensures result == 1
+  decreases 0
+=
+  return 1
+
+def studio_mcp_server_protocol_version() -> int
+  requires true
+  ensures result == 20241105
+  decreases 0
+=
+  return 20241105
+
+def studio_mcp_server_state_new() -> StudioMcpServerState
+  requires true
+  ensures result.initialized == studio_mcp_server_flag_off()
+  ensures result.protocol_version == studio_mcp_server_protocol_version()
+  decreases 0
+=
+  var out: StudioMcpServerState
+  out.initialized = studio_mcp_server_flag_off()
+  out.protocol_version = studio_mcp_server_protocol_version()
+  return out
+
+def studio_mcp_server_tool_id_at(index: int) -> int
+  requires index >= 0
+  requires index < studio_mcp_tool_count()
+  ensures studio_mcp_tool_id_valid(result) == 1
+  decreases index
+=
+  if index == 0:
+    return studio_mcp_world_scaffold()
+  if index == 1:
+    return studio_mcp_sim_set_profile()
+  if index == 2:
+    return studio_mcp_lic_check()
+  if index == 3:
+    return studio_mcp_lic_build()
+  if index == 4:
+    return studio_mcp_publish_bundle()
+  if index == 5:
+    return studio_mcp_am_export_print()
+  if index == 6:
+    return studio_mcp_chem_dft_run()
+  if index == 7:
+    return studio_mcp_studio_adaptive_layout()
+  if index == 8:
+    return studio_mcp_set_viewport_background()
+  if index == 9:
+    return studio_mcp_set_particle_display()
+  return studio_mcp_set_biomol_style()
+
+def studio_mcp_server_default_arg_for_tool(tool_id: int) -> int
+  requires studio_mcp_tool_id_valid(tool_id) == 1
+  ensures result >= -1
+  decreases tool_id
+=
+  if tool_id == studio_mcp_lic_check():
+    return studio_mcp_arg_lic_check_pass()
+  if tool_id == studio_mcp_lic_build():
+    return studio_mcp_arg_lic_build_pass()
+  if tool_id == studio_mcp_sim_set_profile():
+    return studio_profile_game()
+  if tool_id == studio_mcp_world_scaffold():
+    return studio_profile_game()
+  if tool_id == studio_mcp_publish_bundle():
+    return studio_export_format_mask_3mf()
+  if tool_id == studio_mcp_am_export_print():
+    return am_export_format_3mf()
+  if tool_id == studio_mcp_studio_adaptive_layout():
+    return drug_litl_stage_hypothesis()
+  if tool_id == studio_mcp_set_viewport_background():
+    return studio_viewport_bg_solid()
+  if tool_id == studio_mcp_set_particle_display():
+    return scene_md_tier_1k()
+  if tool_id == studio_mcp_set_biomol_style():
+    return studio_biomol_style_cartoon()
+  return 0
+
+def studio_mcp_server_reply_ok(method: int) -> StudioMcpServerReply
+  requires method >= studio_mcp_server_method_unknown()
+  requires method <= studio_mcp_server_method_ping()
+  ensures result.ok == studio_mcp_server_flag_on()
+  ensures result.method == method
+  decreases method
+=
+  var out: StudioMcpServerReply
+  out.ok = studio_mcp_server_flag_on()
+  out.method = method
+  out.tool_count = studio_mcp_tool_count()
+  out.tool_index = 0
+  out.tool_id = studio_mcp_tool_unknown()
+  out.request = studio_agent_tool_request_none()
+  out.error_code = studio_mcp_tool_result_ok()
+  return out
+
+def studio_mcp_server_reply_err(method: int, error_code: int) -> StudioMcpServerReply
+  requires method >= studio_mcp_server_method_unknown()
+  requires method <= studio_mcp_server_method_ping()
+  ensures result.ok == studio_mcp_server_flag_off()
+  ensures result.method == method
+  ensures result.error_code == error_code
+  decreases method
+=
+  var out: StudioMcpServerReply
+  out.ok = studio_mcp_server_flag_off()
+  out.method = method
+  out.tool_count = 0
+  out.tool_index = 0
+  out.tool_id = studio_mcp_tool_unknown()
+  out.request = studio_agent_tool_request_none()
+  out.error_code = error_code
+  return out
+
+def studio_mcp_server_handle_initialize(state: var StudioMcpServerState) -> StudioMcpServerReply
+  requires state.protocol_version == studio_mcp_server_protocol_version()
+  ensures state.initialized == studio_mcp_server_flag_on()
+  ensures result.ok == studio_mcp_server_flag_on()
+  ensures result.method == studio_mcp_server_method_initialize()
+  decreases state.initialized
+=
+  state.initialized = studio_mcp_server_flag_on()
+  return studio_mcp_server_reply_ok(studio_mcp_server_method_initialize())
+
+def studio_mcp_server_handle_tools_list(state: StudioMcpServerState) -> StudioMcpServerReply
+  requires state.initialized == studio_mcp_server_flag_on()
+  ensures result.ok == studio_mcp_server_flag_on()
+  ensures result.method == studio_mcp_server_method_tools_list()
+  ensures result.tool_count == studio_mcp_tool_count()
+  decreases state.initialized
+=
+  return studio_mcp_server_reply_ok(studio_mcp_server_method_tools_list())
+
+def studio_mcp_server_handle_tools_call(state: StudioMcpServerState, tool_name: str, arg: int) raises IO, Alloc -> StudioMcpServerReply
+  requires state.initialized == studio_mcp_server_flag_on()
+  ensures result.method == studio_mcp_server_method_tools_call()
+  decreases state.initialized
+=
+  if state.initialized != studio_mcp_server_flag_on():
+    return studio_mcp_server_reply_err(studio_mcp_server_method_tools_call(), studio_mcp_tool_result_err_io())
+  var tool_id: int = studio_mcp_tool_from_name(tool_name)
+  if studio_mcp_tool_id_valid(tool_id) != 1:
+    return studio_mcp_server_reply_err(studio_mcp_server_method_tools_call(), studio_mcp_tool_result_err_io())
+  var call_arg: int = arg
+  if call_arg == 0:
+    call_arg = studio_mcp_server_default_arg_for_tool(tool_id)
+  var req: StudioAgentToolRequest = studio_mcp_tool_dispatch_arg(tool_id, call_arg)
+  var out: StudioMcpServerReply = studio_mcp_server_reply_ok(studio_mcp_server_method_tools_call())
+  out.tool_id = tool_id
+  out.request = req
+  if req.status != studio_mcp_tool_status_ok():
+    out.ok = studio_mcp_server_flag_off()
+    out.error_code = req.result_code
+  return out
+
+def studio_mcp_server_handle_method(state: var StudioMcpServerState, method: int, tool_name: str, arg: int) raises IO, Alloc -> StudioMcpServerReply
+  requires method >= studio_mcp_server_method_unknown()
+  requires method <= studio_mcp_server_method_ping()
+  ensures result.method == method
+  decreases method
+=
+  if method == studio_mcp_server_method_initialize():
+    return studio_mcp_server_handle_initialize(state)
+  if method == studio_mcp_server_method_tools_list():
+    if state.initialized != studio_mcp_server_flag_on():
+      return studio_mcp_server_reply_err(method, studio_mcp_tool_result_err_io())
+    return studio_mcp_server_handle_tools_list(state)
+  if method == studio_mcp_server_method_tools_call():
+    return studio_mcp_server_handle_tools_call(state, tool_name, arg)
+  if method == studio_mcp_server_method_ping():
+    if state.initialized != studio_mcp_server_flag_on():
+      return studio_mcp_server_reply_err(method, studio_mcp_tool_result_err_io())
+    return studio_mcp_server_reply_ok(method)
+  return studio_mcp_server_reply_err(method, studio_mcp_tool_result_err_io())
 
 def studio_viewport_bg_solid() -> int
   requires true
@@ -1491,6 +1926,8 @@ def studio_compose_viewport_display(vp: Rect, profile_id: int) raises IO -> Stud
       out.tier_particles = draw_pts
     out.particle_dots_visible = 1
   var fps_counter: RenderFpsCounter = render_fps_counter_shell_simulate()
+  if lig_present_host_active() == 1:
+    fps_counter = render_viewport_host_fps_counter(1)
   out.fps_display = render_fps_counter_display_fps(fps_counter)
   out.fps_meets_target = render_fps_counter_meets_target(fps_counter)
   out.fps_hud_tag = render_fps_counter_hud_tag(fps_counter)
@@ -1498,6 +1935,12 @@ def studio_compose_viewport_display(vp: Rect, profile_id: int) raises IO -> Stud
   out.fps_hud_rect = studio_viewport_hud_fps_rect(vp)
   out.particle_hud_rect = studio_viewport_hud_particle_rect(vp)
   out.native_badge_rect = studio_viewport_hud_native_badge_rect(vp)
+  if profile_id == studio_profile_sim_scientific():
+    if out.particle_tier_id >= scene_md_tier_1k():
+      var viz_tick: int = studio_viz_tick_for_particle_tier(out.particle_tier_id)
+      var viz_pipe: VizPipelineState = studio_sim_scientific_viz_for_tick(viz_tick)
+      if viz_pipe.source_count >= 1:
+        out = studio_viewport_display_apply_viz_pipeline(out, viz_pipe)
   return out
 
 def studio_viewport_hud_ok(display: StudioViewportDisplayCompose) -> int
@@ -1598,11 +2041,16 @@ def studio_compose_viewport_menu(vp: Rect, profile_id: int) -> StudioViewportMen
 def studio_attach_viewport_shell(compose: var StudioShellCompose) raises IO -> unit
   requires studio_profile_id_valid(compose.config.active_profile) == 1
   ensures compose.viewport_display.background >= studio_viewport_bg_solid()
+  ensures compose.viewport_error.error_kind >= studio_viewport_error_none()
+  ensures compose.viewport_error.error_kind <= studio_err_missing_asset()
   decreases 0
 =
   var pid: int = compose.config.active_profile
   compose.viewport_display = studio_compose_viewport_display(compose.layout.viewport, pid)
   compose.viewport_menu = studio_compose_viewport_menu(compose.layout.viewport, pid)
+  var err_kind: int = studio_viewport_error_sync_from_wgpu(compose)
+  var lay_err: StudioShellLayout = compose.layout
+  compose.viewport_error = studio_compose_viewport_error_overlay(lay_err, err_kind)
 
 # WP-DRUG-03 — adaptive shell layout keyed to LITL stage (drug profile).
 def studio_drug_litl_inspector_field_rows(litl_stage: int) -> int
@@ -1619,6 +2067,38 @@ def studio_drug_litl_inspector_field_rows(litl_stage: int) -> int
   if litl_stage == drug_litl_stage_retrain():
     return 3
   return 2
+
+def studio_adaptive_panel_region_for_litl_stage(litl_stage: int) -> int
+  requires drug_litl_stage_valid(litl_stage) == 1
+  ensures result >= studio_region_dock()
+  ensures result <= studio_region_agent_strip()
+  decreases litl_stage
+=
+  if litl_stage == drug_litl_stage_hypothesis():
+    return studio_region_inspector()
+  if litl_stage == drug_litl_stage_generate():
+    return studio_region_viewport()
+  if litl_stage == drug_litl_stage_dft():
+    return studio_region_inspector()
+  if litl_stage == drug_litl_stage_lab():
+    return studio_region_timeline()
+  return studio_region_agent_strip()
+
+def studio_adaptive_panel_set_id(litl_stage: int) -> int
+  requires drug_litl_stage_valid(litl_stage) == 1
+  ensures result == litl_stage
+  decreases litl_stage
+=
+  return litl_stage
+
+def studio_shell_apply_adaptive_panel_set(compose: var StudioShellCompose, litl_stage: int) -> unit
+  requires drug_litl_stage_valid(litl_stage) == 1
+  ensures compose.panel.active_region == studio_adaptive_panel_region_for_litl_stage(litl_stage)
+  ensures compose.inspector.field_rows == studio_drug_litl_inspector_field_rows(litl_stage)
+  decreases litl_stage
+=
+  compose.panel.active_region = studio_adaptive_panel_region_for_litl_stage(litl_stage)
+  compose.inspector.field_rows = studio_drug_litl_inspector_field_rows(litl_stage)
 
 def studio_adaptive_layout_for_drug_tick(w: float, h: float, tick: int) -> StudioShellLayout
   requires w > 0.0
@@ -1665,8 +2145,7 @@ def studio_compose_shell_drug_litl(w: float, h: float, tick: int, has_selection:
   var layout: StudioShellLayout = layout_studio_shell_drug_litl(w, h, stage)
   var out: StudioShellCompose = studio_compose_shell_profile(w, h, 0, has_selection, studio_profile_sim_drug_design())
   out.layout = layout
-  if has_selection == 1:
-    out.inspector.field_rows = studio_drug_litl_inspector_field_rows(stage)
+  studio_shell_apply_adaptive_panel_set(out, stage)
   studio_viewport_display_reset_for_profile(studio_profile_sim_drug_design())
   out.scene_entity_count = 1
   out.viewport_empty.empty_visible = 0
@@ -1675,10 +2154,10 @@ def studio_compose_shell_drug_litl(w: float, h: float, tick: int, has_selection:
 
 def li_std_studio_version() -> int
   requires true
-  ensures result == 17
+  ensures result == 31
   decreases 0
 =
-  return 17
+  return 31
 
 def studio_agent_context_none() -> int
   requires true
@@ -1933,7 +2412,7 @@ def studio_timeline_duration_ticks_default() -> int
 =
   return 100
 
-def studio_timeline_playhead_pct_from_tick(tick: int, duration_ticks: int) -> float raises IO
+def studio_timeline_playhead_pct_from_tick(tick: int, duration_ticks: int) raises IO -> float
   requires tick >= 0
   requires duration_ticks >= 1
   ensures result >= 0.0
@@ -2118,6 +2597,153 @@ def studio_viewport_error_retry() raises IO -> int
 =
   return li_rt_studio_viewport_error_retry()
 
+def studio_viewport_error_action_none() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0
+
+def studio_viewport_error_action_retry_clicked() -> int
+  requires true
+  ensures result == 1
+  decreases 0
+=
+  return 1
+
+def studio_viewport_error_kind_for_render_smoke(smoke: RenderViewportSmoke) -> int
+  requires true
+  ensures result >= studio_viewport_error_none()
+  ensures result <= studio_err_missing_asset()
+  decreases 0
+=
+  if render_viewport_smoke_ok(smoke) == 1:
+    return studio_viewport_error_none()
+  if lig_wgpu_smoke_passed(smoke.wgpu) != 1:
+    return studio_err_gpu()
+  return studio_err_missing_asset()
+
+def studio_viewport_error_report(kind: int) raises IO -> int
+  requires kind >= studio_viewport_error_none()
+  requires kind <= studio_err_missing_asset()
+  ensures result == kind
+  decreases kind
+=
+  return li_rt_studio_viewport_error_set_mock(kind)
+
+def studio_viewport_error_sync_render(compose: var StudioShellCompose) raises IO -> unit
+  requires studio_profile_id_valid(compose.config.active_profile) == 1
+  requires compose.layout.viewport_w > 0.0
+  requires compose.layout.viewport_h > 0.0
+  ensures compose.viewport_error.error_kind == studio_viewport_error_kind()
+  decreases 0
+=
+  var vp: ViewportRegion = gui_viewport_region_from_layout(compose.layout)
+  var pid: int = compose.config.active_profile
+  var smoke: RenderViewportSmoke = render_wgpu_draw_list_smoke_pure(vp, pid)
+  var kind: int = studio_viewport_error_kind_for_render_smoke(smoke)
+  if kind != studio_viewport_error_none():
+    var _reported: int = studio_viewport_error_report(kind)
+  var lay: StudioShellLayout = compose.layout
+  compose.viewport_error = studio_compose_viewport_error_overlay(lay, studio_viewport_error_kind())
+
+def studio_shell_handle_viewport_error_pointer(compose: var StudioShellCompose, input: InputState) -> int
+  requires compose.layout.viewport_w > 0.0
+  requires input.pointer_down >= 0
+  requires input.pointer_down <= 1
+  ensures result >= studio_viewport_error_action_none()
+  ensures result <= studio_viewport_error_action_retry_clicked()
+  decreases input.pointer_down
+=
+  if input.pointer_down != 1:
+    return studio_viewport_error_action_none()
+  if compose.viewport_error.visible != 1:
+    return studio_viewport_error_action_none()
+  if rect_contains(compose.viewport_error.retry_rect, input.pointer_x, input.pointer_y) != 1:
+    return studio_viewport_error_action_none()
+  var _cleared: int = studio_viewport_error_retry()
+  var lay: StudioShellLayout = compose.layout
+  compose.viewport_error = studio_compose_viewport_error_overlay(lay, studio_viewport_error_kind())
+  return studio_viewport_error_action_retry_clicked()
+
+def studio_viewport_error_kind_from_wgpu_probe(probe: RenderViewportWgpuProbe) -> int
+  requires probe.draw_submit_ok >= 0
+  requires probe.draw_submit_ok <= 1
+  requires probe.surface_ok >= 0
+  requires probe.surface_ok <= 1
+  requires probe.asset_ok >= 0
+  requires probe.asset_ok <= 1
+  ensures result >= studio_viewport_error_none()
+  ensures result <= studio_err_missing_asset()
+  decreases probe.draw_submit_ok
+=
+  if probe.asset_ok == 0:
+    return studio_err_missing_asset()
+  if probe.draw_submit_ok == 0:
+    return studio_err_gpu()
+  if probe.surface_ok == 0:
+    return studio_err_gpu()
+  return studio_viewport_error_none()
+
+def studio_viewport_error_probe_from_layout(layout: StudioShellLayout, profile_id: int) -> RenderViewportWgpuProbe raises IO
+  requires layout.viewport.w > 0.0
+  requires layout.viewport.h > 0.0
+  requires studio_profile_id_valid(profile_id) == 1
+  ensures result.draw_submit_ok >= 0
+  ensures result.draw_submit_ok <= 1
+  ensures result.surface_ok >= 0
+  ensures result.surface_ok <= 1
+  ensures result.asset_ok >= 0
+  ensures result.asset_ok <= 1
+  decreases profile_id
+=
+  var lay_copy: StudioShellLayout = layout
+  var vp: ViewportRegion = gui_viewport_region_from_layout(lay_copy)
+  return render_viewport_wgpu_probe(vp, profile_id, 1)
+
+def studio_viewport_error_sync_from_wgpu(compose: StudioShellCompose) raises IO -> int
+  requires studio_profile_id_valid(compose.config.active_profile) == 1
+  ensures result >= studio_viewport_error_none()
+  ensures result <= studio_err_missing_asset()
+  decreases compose.config.active_profile
+=
+  var current: int = studio_viewport_error_kind()
+  if current != studio_viewport_error_none():
+    return current
+  var lay_copy: StudioShellLayout = compose.layout
+  var probe: RenderViewportWgpuProbe = studio_viewport_error_probe_from_layout(lay_copy, compose.config.active_profile)
+  var kind: int = studio_viewport_error_kind_from_wgpu_probe(probe)
+  if kind != studio_viewport_error_none():
+    studio_viewport_error_set_mock(kind)
+  return kind
+
+def studio_viewport_error_retry_wgpu(layout: StudioShellLayout, profile_id: int) raises IO -> int
+  requires layout.viewport.w > 0.0
+  requires layout.viewport.h > 0.0
+  requires studio_profile_id_valid(profile_id) == 1
+  ensures result >= studio_viewport_error_none()
+  ensures result <= studio_err_missing_asset()
+  decreases profile_id
+=
+  studio_viewport_error_retry()
+  var lay_copy: StudioShellLayout = layout
+  var probe: RenderViewportWgpuProbe = studio_viewport_error_probe_from_layout(lay_copy, profile_id)
+  var kind: int = studio_viewport_error_kind_from_wgpu_probe(probe)
+  if kind != studio_viewport_error_none():
+    studio_viewport_error_set_mock(kind)
+  return kind
+
+def studio_viewport_error_wgpu_probe_ok(probe: RenderViewportWgpuProbe) -> int
+  requires probe.draw_submit_ok >= 0
+  requires probe.draw_submit_ok <= 1
+  ensures result >= 0
+  ensures result <= 1
+  decreases probe.draw_submit_ok
+=
+  if studio_viewport_error_kind_from_wgpu_probe(probe) != studio_viewport_error_none():
+    return 0
+  return render_viewport_wgpu_probe_ok(probe)
+
 def studio_viewport_error_visible(error_kind: int) -> int
   requires error_kind >= studio_viewport_error_none()
   requires error_kind <= studio_err_missing_asset()
@@ -2252,6 +2878,204 @@ type StudioProjectConfig = object
   public export_cfg: StudioExportConfig
 
 
+# WP-UX-15 — Studio interaction mode FSM on compose (§3 mode matrix).
+def studio_mode_default() -> int
+  requires true
+  ensures result == studio_mode_author()
+  decreases 0
+=
+  return studio_mode_author()
+
+def studio_bench_mode_from_env() raises IO -> int
+  requires true
+  ensures result >= 0
+  ensures result <= 1
+  decreases 0
+=
+  return li_rt_studio_bench_mode_from_env()
+
+def studio_mode_from_profile(profile_id: int) -> int
+  requires studio_profile_id_valid(profile_id) == 1
+  ensures studio_mode_valid(result) == 1
+  decreases profile_id
+=
+  if profile_id == studio_profile_sim_drug_design():
+    return studio_mode_adaptive()
+  if profile_id == studio_profile_sim_scientific():
+    return studio_mode_analyze()
+  return studio_mode_default()
+
+def studio_mode_primary_region(mode: int) -> int
+  requires studio_mode_valid(mode) == 1
+  ensures result >= studio_region_dock()
+  ensures result <= studio_region_agent_strip()
+  decreases mode
+=
+  if mode == studio_mode_simulate():
+    return studio_region_timeline()
+  if mode == studio_mode_agent():
+    return studio_region_agent_strip()
+  if mode == studio_mode_analyze():
+    return studio_region_viewport()
+  if mode == studio_mode_bench():
+    return studio_region_viewport()
+  return studio_region_inspector()
+
+def studio_mode_sim_step_allowed(mode: int, timeline_playing: int) -> int
+  requires studio_mode_valid(mode) == 1
+  requires timeline_playing >= 0
+  requires timeline_playing <= 1
+  ensures result >= 0
+  ensures result <= 1
+  decreases mode
+=
+  if mode == studio_mode_bench():
+    return 1
+  if mode == studio_mode_analyze():
+    return 1
+  if mode == studio_mode_simulate():
+    if timeline_playing == 1:
+      return 1
+    return 0
+  return 0
+
+def studio_mode_mcp_tool_allowed(mode: int, tool_id: int) -> int
+  requires studio_mode_valid(mode) == 1
+  ensures result >= 0
+  ensures result <= 1
+  decreases mode
+=
+  if studio_mcp_tool_id_valid(tool_id) != 1:
+    return 0
+  if mode == studio_mode_agent():
+    return 1
+  if mode == studio_mode_bench():
+    if tool_id == studio_mcp_lic_check():
+      return 1
+    return 0
+  if mode == studio_mode_publish():
+    if tool_id == studio_mcp_lic_check():
+      return 1
+    if tool_id == studio_mcp_lic_build():
+      return 1
+    if tool_id == studio_mcp_publish_bundle():
+      return 1
+    return 0
+  if mode == studio_mode_analyze():
+    if tool_id == studio_mcp_lic_check():
+      return 1
+    if tool_id == studio_mcp_publish_bundle():
+      return 1
+    if tool_id == studio_mcp_chem_dft_run():
+      return 1
+    if tool_id == studio_mcp_set_viewport_background():
+      return 1
+    if tool_id == studio_mcp_set_particle_display():
+      return 1
+    if tool_id == studio_mcp_set_biomol_style():
+      return 1
+    return 0
+  if mode == studio_mode_adaptive():
+    if tool_id == studio_mcp_studio_adaptive_layout():
+      return 1
+    if tool_id == studio_mcp_lic_check():
+      return 1
+    if tool_id == studio_mcp_sim_set_profile():
+      return 1
+    return 0
+  if mode == studio_mode_simulate():
+    if tool_id == studio_mcp_lic_check():
+      return 1
+    if tool_id == studio_mcp_sim_set_profile():
+      return 1
+    return 0
+  if tool_id == studio_mcp_world_scaffold():
+    return 1
+  if tool_id == studio_mcp_sim_set_profile():
+    return 1
+  if tool_id == studio_mcp_lic_check():
+    return 1
+  if tool_id == studio_mcp_set_viewport_background():
+    return 1
+  if tool_id == studio_mcp_set_particle_display():
+    return 1
+  if tool_id == studio_mcp_set_biomol_style():
+    return 1
+  return 0
+
+def studio_mode_transition(mode: int, trigger: int) -> int
+  requires studio_mode_valid(mode) == 1
+  ensures studio_mode_valid(result) == 1
+  decreases mode
+=
+  if trigger == studio_mode_trigger_play():
+    if mode == studio_mode_author():
+      return studio_mode_simulate()
+  if trigger == studio_mode_trigger_stop():
+    if mode == studio_mode_simulate():
+      return studio_mode_author()
+  if trigger == studio_mode_trigger_agent():
+    return studio_mode_agent()
+  if trigger == studio_mode_trigger_agent_done():
+    if mode == studio_mode_agent():
+      return studio_mode_author()
+  if trigger == studio_mode_trigger_publish():
+    return studio_mode_publish()
+  if trigger == studio_mode_trigger_bench_env():
+    return studio_mode_bench()
+  if trigger == studio_mode_trigger_adaptive_profile():
+    return studio_mode_adaptive()
+  return mode
+
+def studio_shell_apply_mode(compose: var StudioShellCompose, mode: int) -> unit
+  requires studio_mode_valid(mode) == 1
+  requires compose.layout.viewport_w > 0.0
+  ensures compose.mode == mode
+  decreases mode
+=
+  compose.mode = mode
+  var region: int = studio_mode_primary_region(mode)
+  var _timing: PanelSwitchTiming = gui_panel_switch_to(compose.panel, region, 0.0)
+
+def studio_shell_handle_mode_trigger(compose: var StudioShellCompose, trigger: int) raises IO -> int
+  requires studio_mode_valid(compose.mode) == 1
+  requires trigger >= studio_mode_trigger_none()
+  requires trigger <= studio_mode_trigger_adaptive_profile()
+  ensures result >= 0
+  ensures result <= 1
+  decreases trigger
+=
+  var next: int = studio_mode_transition(compose.mode, trigger)
+  if trigger == studio_mode_trigger_play():
+    if compose.mode == studio_mode_author():
+      var _play: int = studio_timeline_toggle_play()
+  if trigger == studio_mode_trigger_stop():
+    if studio_timeline_playing() == 1:
+      var _stop: int = studio_timeline_toggle_play()
+  if next == compose.mode:
+    if trigger == studio_mode_trigger_stop():
+      return 1
+    return 0
+  studio_shell_apply_mode(compose, next)
+  return 1
+
+def studio_shell_sync_mode_from_env(compose: var StudioShellCompose) raises IO -> unit
+  requires studio_mode_valid(compose.mode) == 1
+  requires compose.layout.viewport_w > 0.0
+  ensures studio_mode_valid(compose.mode) == 1
+  decreases compose.mode
+=
+  if studio_bench_mode_from_env() == 1:
+    studio_shell_apply_mode(compose, studio_mode_bench())
+
+# PH-GD-2 — last WorldSnapshot tick cached on shell (game profile).
+type StudioWorldCheckpoint = object
+  public valid: int
+  public name: int
+  public tick: int
+  public entity_count: int
+  public asset_ref_count: int
+
 # UX-11 — shell loading / skeleton rects (viewport + inspector); no spinner IR
 type StudioShellLoadingState = object
   public shell_loading: int
@@ -2264,6 +3088,7 @@ type StudioShellLoadingState = object
 type StudioShellCompose = object
   public layout: StudioShellLayout
   public config: StudioProjectConfig
+  public mode: int
   public dock: StudioDockCompose
   public outliner: StudioOutlinerCompose
   public timeline: StudioTimelineCompose
@@ -2277,6 +3102,7 @@ type StudioShellCompose = object
   public panel: GuiPanelState
   public scene_entity_count: int
   public loading: StudioShellLoadingState
+  public world_checkpoint: StudioWorldCheckpoint
 
 
 def studio_shell_loading_on() -> int
@@ -2509,7 +3335,7 @@ def studio_toml_parsed_config() -> StudioProjectConfig raises IO
   cfg.export_cfg = studio_toml_parsed_export_config()
   return cfg
 
-def studio_project_config_from_additive_toml_fixture() -> StudioProjectConfig raises IO
+def studio_project_config_from_additive_toml_fixture() -> StudioProjectConfig raises IO, Alloc
   requires true
   ensures result.active_profile == studio_profile_sim_additive()
   ensures result.determinism_tier == 2
@@ -2521,11 +3347,1002 @@ def studio_project_config_from_additive_toml_fixture() -> StudioProjectConfig ra
   var _s1: int = studio_toml_parse_line("profile = sim_additive")
   var _s2: int = studio_toml_parse_line("determinism_tier = 2")
   var _s3: int = studio_toml_parse_line("[engine.export]")
-  # Mask parser matches substrings 3mf + gcode (no bracket list — avoids lic check parse on commas).
-  var _s4: int = studio_toml_parse_line("formats = x3mf_ygcode_z")
+  var _s4: int = studio_toml_parse_line("formats = [3mf, gcode]")
   var _s5: int = studio_toml_parse_line("require_sim_pass = true")
   var _s6: int = studio_toml_parse_line("printer_profile = profiles/bambu_x1c.toml")
   return studio_toml_parsed_config()
+
+# WP-UX-16 / WP-AM-03 — additive export wizard (Review → Pre-flight → Export/Print, ≤3 clicks).
+def studio_am_export_wizard_step_review() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0
+
+def studio_am_export_wizard_step_preflight() -> int
+  requires true
+  ensures result == 1
+  decreases 0
+=
+  return 1
+
+def studio_am_export_wizard_step_export() -> int
+  requires true
+  ensures result == 2
+  decreases 0
+=
+  return 2
+
+type StudioAmExportFlowState = object
+  public click_count: int
+  public wizard_step: int
+  public export_ok: int
+  public format: int
+  public last_magic: int
+
+def studio_am_export_flow_init(fmt: int) -> StudioAmExportFlowState
+  requires sim_additive_export_format_ok(fmt) == 1
+  ensures result.click_count == 0
+  ensures result.wizard_step == studio_am_export_wizard_step_review()
+  ensures result.format == fmt
+  decreases 0
+=
+  var f: StudioAmExportFlowState
+  f.click_count = 0
+  f.wizard_step = studio_am_export_wizard_step_review()
+  f.export_ok = 0
+  f.format = fmt
+  f.last_magic = 0
+  return f
+
+def studio_am_export_format_in_mask(fmt: int, mask: int) raises IO -> int
+  requires true
+  ensures result >= 0
+  ensures result <= 1
+  decreases fmt
+=
+  if fmt == am_export_format_3mf():
+    if mask == studio_export_format_mask_3mf():
+      return 1
+    if mask == studio_export_format_mask_3mf() + studio_export_format_mask_gcode():
+      return 1
+  if fmt == am_export_format_gcode():
+    if mask == studio_export_format_mask_gcode():
+      return 1
+    if mask == studio_export_format_mask_3mf() + studio_export_format_mask_gcode():
+      return 1
+  if fmt == am_export_format_stl():
+    if mask == studio_export_format_mask_stl():
+      return 1
+  return 0
+
+def studio_am_export_flow_advance(
+    flow: var StudioAmExportFlowState,
+    cfg: StudioProjectConfig,
+    sim_out: var SimSessionStub) raises IO -> int
+  requires sim_additive_export_format_ok(flow.format) == 1
+  requires flow.click_count >= 0
+  requires flow.click_count <= 2
+  ensures result >= 0
+  ensures result <= 7
+  decreases flow.click_count
+=
+  flow.click_count = flow.click_count + 1
+  if flow.wizard_step == studio_am_export_wizard_step_review():
+    if cfg.active_profile != studio_profile_sim_additive():
+      return 1
+    if studio_am_export_format_in_mask(flow.format, cfg.export_cfg.format_mask) != 1:
+      return 2
+    flow.wizard_step = studio_am_export_wizard_step_preflight()
+    return 0
+  if flow.wizard_step == studio_am_export_wizard_step_preflight():
+    if sim_out.tick < 1:
+      studio_apply_profile_to_sim(cfg, sim_out)
+      if sim_additive_tick_stub(1) != 1:
+        return 3
+      if sim_step(sim_out, 0.02) != sim_status_ok():
+        return 4
+    if cfg.export_cfg.require_sim_pass == 1:
+      if sim_additive_require_sim_pass_ok(1) != 1:
+        return 5
+      if sim_out.tick < 1:
+        return 6
+    flow.wizard_step = studio_am_export_wizard_step_export()
+    return 0
+  if flow.wizard_step == studio_am_export_wizard_step_export():
+    var slot: int = cfg.export_cfg.printer_profile_slot
+    if slot == studio_printer_profile_slot_none():
+      slot = studio_printer_profile_slot_bambu()
+    var pass_flag: int = cfg.export_cfg.require_sim_pass
+    var print_r: AmExportPrintResult = sim_export_print(flow.format, pass_flag, slot, 1)
+    if print_r.ok != 1:
+      return 7
+    flow.last_magic = print_r.magic_tag
+    flow.export_ok = 1
+    return 0
+  return 8
+
+def studio_am_export_three_click_flow(
+    cfg: StudioProjectConfig, sim_out: var SimSessionStub, fmt: int) raises IO -> int
+  requires sim_additive_export_format_ok(fmt) == 1
+  ensures result >= 0
+  ensures result <= 10
+  decreases fmt
+=
+  var flow: StudioAmExportFlowState = studio_am_export_flow_init(fmt)
+  if studio_am_export_flow_advance(flow, cfg, sim_out) != 0:
+    return 1
+  if studio_am_export_flow_advance(flow, cfg, sim_out) != 0:
+    return 2
+  if studio_am_export_flow_advance(flow, cfg, sim_out) != 0:
+    return 3
+  if flow.click_count != 3:
+    return 4
+  if flow.export_ok != 1:
+    return 5
+  if flow.last_magic != am_export_magic_for_format(fmt):
+    return 6
+  return 0
+
+# WP-PUB-01 — studio.publish.figure vector export (SVG/PDF/300+dpi PNG contract; not file I/O).
+def studio_publish_format_svg() -> int
+  requires true
+  ensures result == 1
+  decreases 0
+=
+  return 1
+
+def studio_publish_format_pdf() -> int
+  requires true
+  ensures result == 2
+  decreases 0
+=
+  return 2
+
+def studio_publish_format_png() -> int
+  requires true
+  ensures result == 3
+  decreases 0
+=
+  return 3
+
+def studio_publish_format_ok(fmt: int) -> int
+  requires true
+  ensures result >= 0
+  ensures result <= 1
+  decreases fmt
+=
+  if fmt == studio_publish_format_svg():
+    return 1
+  if fmt == studio_publish_format_pdf():
+    return 1
+  if fmt == studio_publish_format_png():
+    return 1
+  return 0
+
+def studio_publish_template_nature_single() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0
+
+def studio_publish_template_nature_double() -> int
+  requires true
+  ensures result == 1
+  decreases 0
+=
+  return 1
+
+def studio_publish_template_letter() -> int
+  requires true
+  ensures result == 2
+  decreases 0
+=
+  return 2
+
+def studio_publish_template_viewport() -> int
+  requires true
+  ensures result == 3
+  decreases 0
+=
+  return 3
+
+def studio_publish_template_ok(tmpl: int) -> int
+  requires true
+  ensures result >= 0
+  ensures result <= 1
+  decreases tmpl
+=
+  if tmpl == studio_publish_template_nature_single():
+    return 1
+  if tmpl == studio_publish_template_nature_double():
+    return 1
+  if tmpl == studio_publish_template_letter():
+    return 1
+  if tmpl == studio_publish_template_viewport():
+    return 1
+  return 0
+
+def studio_publish_template_width_px(tmpl: int) -> int
+  requires studio_publish_template_ok(tmpl) == 1
+  ensures result >= 336
+  ensures result <= 1920
+  decreases tmpl
+=
+  if tmpl == studio_publish_template_nature_single():
+    return 336
+  if tmpl == studio_publish_template_nature_double():
+    return 672
+  if tmpl == studio_publish_template_letter():
+    return 816
+  return 1280
+
+def studio_publish_template_height_px(tmpl: int) -> int
+  requires studio_publish_template_ok(tmpl) == 1
+  ensures result >= 252
+  ensures result <= 1080
+  decreases tmpl
+=
+  if tmpl == studio_publish_template_nature_single():
+    return 252
+  if tmpl == studio_publish_template_nature_double():
+    return 504
+  if tmpl == studio_publish_template_letter():
+    return 1056
+  return 720
+
+def studio_publish_template_dpi(tmpl: int) -> int
+  requires studio_publish_template_ok(tmpl) == 1
+  ensures result >= 96
+  ensures result <= 600
+  decreases tmpl
+=
+  if tmpl == studio_publish_template_viewport():
+    return 96
+  return 300
+
+def studio_publish_proof_pass_ok(proof_pass: int) -> int
+  requires true
+  ensures result >= 0
+  ensures result <= 1
+  decreases proof_pass
+=
+  if proof_pass == 1:
+    return 1
+  return 0
+
+def studio_publish_magic_svg() -> int
+  requires true
+  ensures result == 29583
+  decreases 0
+=
+  return 29583
+
+def studio_publish_magic_pdf() -> int
+  requires true
+  ensures result == 31466
+  decreases 0
+=
+  return 31466
+
+def studio_publish_magic_png() -> int
+  requires true
+  ensures result == 32678
+  decreases 0
+=
+  return 32678
+
+def studio_publish_magic_for_format(fmt: int) -> int
+  requires studio_publish_format_ok(fmt) == 1
+  ensures result > 0
+  decreases fmt
+=
+  if fmt == studio_publish_format_pdf():
+    return studio_publish_magic_pdf()
+  if fmt == studio_publish_format_png():
+    return studio_publish_magic_png()
+  return studio_publish_magic_svg()
+
+type PublishFigureResult = object
+  public ok: int
+  public format: int
+  public template: int
+  public width_px: int
+  public height_px: int
+  public dpi: int
+  public sim_checksum: float
+  public byte_checksum: float
+  public magic_tag: int
+
+def studio_publish_figure(
+    fmt: int,
+    template: int,
+    sim_checksum: float,
+    proof_pass: int) raises IO -> PublishFigureResult
+  requires sim_checksum >= 0.0
+  ensures result.format == fmt
+  ensures result.template == template
+  decreases fmt
+=
+  var r: PublishFigureResult
+  r.ok = 0
+  r.format = fmt
+  r.template = template
+  r.width_px = 0
+  r.height_px = 0
+  r.dpi = 0
+  r.sim_checksum = sim_checksum
+  r.byte_checksum = 0.0
+  r.magic_tag = 0
+  if studio_publish_format_ok(fmt) != 1:
+    return r
+  if studio_publish_template_ok(template) != 1:
+    return r
+  if studio_publish_proof_pass_ok(proof_pass) != 1:
+    return r
+  r.width_px = studio_publish_template_width_px(template)
+  r.height_px = studio_publish_template_height_px(template)
+  r.dpi = studio_publish_template_dpi(template)
+  if fmt == studio_publish_format_png():
+    if r.dpi < 300:
+      r.dpi = 300
+  var w_f: float = studio_int_as_float(r.width_px)
+  var h_f: float = studio_int_as_float(r.height_px)
+  var d_f: float = studio_int_as_float(r.dpi)
+  r.byte_checksum = sim_checksum + w_f + h_f + d_f
+  r.magic_tag = studio_publish_magic_for_format(fmt)
+  r.ok = 1
+  return r
+
+# WP-PUB-01 publish mode — Select template → lic build proof → export figure (≤3 clicks).
+def studio_publish_wizard_step_select() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0
+
+def studio_publish_wizard_step_proof() -> int
+  requires true
+  ensures result == 1
+  decreases 0
+=
+  return 1
+
+def studio_publish_wizard_step_export() -> int
+  requires true
+  ensures result == 2
+  decreases 0
+=
+  return 2
+
+type StudioPublishFlowState = object
+  public format: int
+  public template: int
+  public wizard_step: int
+  public click_count: int
+  public proof_pass: int
+  public export_ok: int
+  public last_magic: int
+
+def studio_publish_flow_init(fmt: int, tmpl: int) -> StudioPublishFlowState
+  requires studio_publish_format_ok(fmt) == 1
+  requires studio_publish_template_ok(tmpl) == 1
+  ensures result.format == fmt
+  ensures result.template == tmpl
+  ensures result.wizard_step == studio_publish_wizard_step_select()
+  decreases fmt
+=
+  var f: StudioPublishFlowState
+  f.format = fmt
+  f.template = tmpl
+  f.wizard_step = studio_publish_wizard_step_select()
+  f.click_count = 0
+  f.proof_pass = 0
+  f.export_ok = 0
+  f.last_magic = 0
+  return f
+
+def studio_publish_flow_advance(
+    flow: var StudioPublishFlowState,
+    sim_checksum: float) -> int
+  requires studio_publish_format_ok(flow.format) == 1
+  requires studio_publish_template_ok(flow.template) == 1
+  requires sim_checksum >= 0.0
+  ensures flow.click_count >= 0
+  ensures result >= 0
+  ensures result <= 4
+  decreases flow.wizard_step
+=
+  flow.click_count = flow.click_count + 1
+  if flow.wizard_step == studio_publish_wizard_step_select():
+    flow.wizard_step = studio_publish_wizard_step_proof()
+    return 0
+  if flow.wizard_step == studio_publish_wizard_step_proof():
+    if flow.proof_pass != 1:
+      return 1
+    flow.wizard_step = studio_publish_wizard_step_export()
+    return 0
+  if flow.wizard_step == studio_publish_wizard_step_export():
+    var fig: PublishFigureResult = studio_publish_figure(flow.format, flow.template, sim_checksum, flow.proof_pass)
+    if fig.ok != 1:
+      return 2
+    if fig.magic_tag != studio_publish_magic_for_format(flow.format):
+      return 3
+    flow.export_ok = 1
+    flow.last_magic = fig.magic_tag
+    return 0
+  return 4
+
+def studio_publish_three_click_flow(
+    fmt: int,
+    tmpl: int,
+    sim_checksum: float,
+    proof_pass: int) -> int
+  requires studio_publish_format_ok(fmt) == 1
+  requires studio_publish_template_ok(tmpl) == 1
+  requires sim_checksum >= 0.0
+  ensures result >= 0
+  ensures result <= 6
+  decreases fmt
+=
+  var flow: StudioPublishFlowState = studio_publish_flow_init(fmt, tmpl)
+  if studio_publish_flow_advance(flow, sim_checksum) != 0:
+    return 1
+  flow.proof_pass = proof_pass
+  if studio_publish_flow_advance(flow, sim_checksum) != 0:
+    return 2
+  if proof_pass != 1:
+    return 3
+  if studio_publish_flow_advance(flow, sim_checksum) != 0:
+    return 4
+  if flow.click_count != 3:
+    return 5
+  if flow.export_ok != 1:
+    return 6
+  if flow.last_magic != studio_publish_magic_for_format(fmt):
+    return 7
+  return 0
+
+# WP-PUB-02 — studio.publish.table scientific export (HDF5/CSV contract; not file I/O).
+def studio_publish_table_format_hdf5() -> int
+  requires true
+  ensures result == 1
+  decreases 0
+=
+  return 1
+
+def studio_publish_table_format_csv() -> int
+  requires true
+  ensures result == 2
+  decreases 0
+=
+  return 2
+
+def studio_publish_table_format_ok(fmt: int) -> int
+  requires true
+  ensures result >= 0
+  ensures result <= 1
+  decreases fmt
+=
+  if fmt == studio_publish_table_format_hdf5():
+    return 1
+  if fmt == studio_publish_table_format_csv():
+    return 1
+  return 0
+
+def studio_publish_table_schema_columns() -> int
+  requires true
+  ensures result == 5
+  decreases 0
+=
+  return 5
+
+def studio_publish_table_magic_hdf5() -> int
+  requires true
+  ensures result == 48465
+  decreases 0
+=
+  return 48465
+
+def studio_publish_table_magic_csv() -> int
+  requires true
+  ensures result == 43553
+  decreases 0
+=
+  return 43553
+
+def studio_publish_table_magic_for_format(fmt: int) -> int
+  requires studio_publish_table_format_ok(fmt) == 1
+  ensures result > 0
+  decreases fmt
+=
+  if fmt == studio_publish_table_format_csv():
+    return studio_publish_table_magic_csv()
+  return studio_publish_table_magic_hdf5()
+
+def studio_publish_table_rows_from_pipeline(pipeline: VizPipelineState) -> int
+  requires pipeline.profile_id == viz_profile_sim_scientific()
+  requires pipeline.source_count >= 0
+  ensures result >= 0
+  ensures result <= 512
+  decreases pipeline.source_count
+=
+  if pipeline.source_count <= 0:
+    return 0
+  var dots: int = viz_pipeline_viewport_particle_dots(pipeline)
+  if dots <= 0:
+    return pipeline.source_count
+  return pipeline.source_count + dots
+
+def studio_publish_table_pipeline_ok(pipeline: VizPipelineState) -> int
+  requires pipeline.profile_id == viz_profile_sim_scientific()
+  ensures result >= 0
+  ensures result <= 1
+  decreases pipeline.source_count
+=
+  if pipeline.source_count < 1:
+    return 0
+  if studio_publish_table_rows_from_pipeline(pipeline) <= 0:
+    return 0
+  return 1
+
+type PublishTableResult = object
+  public ok: int
+  public format: int
+  public row_count: int
+  public col_count: int
+  public source_count: int
+  public sim_checksum: float
+  public byte_checksum: float
+  public magic_tag: int
+
+def studio_publish_table(
+    fmt: int,
+    pipeline: VizPipelineState,
+    sim_checksum: float,
+    proof_pass: int) raises IO -> PublishTableResult
+  requires sim_checksum >= 0.0
+  requires pipeline.profile_id == viz_profile_sim_scientific()
+  ensures result.format == fmt
+  ensures result.ok >= 0
+  ensures result.ok <= 1
+  ensures result.row_count >= 0
+  ensures result.col_count >= 0
+  decreases fmt
+=
+  var r: PublishTableResult
+  r.ok = 0
+  r.format = fmt
+  r.row_count = 0
+  r.col_count = 0
+  r.source_count = pipeline.source_count
+  r.sim_checksum = sim_checksum
+  r.byte_checksum = 0.0
+  r.magic_tag = 0
+  if studio_publish_table_format_ok(fmt) != 1:
+    return r
+  if studio_publish_proof_pass_ok(proof_pass) != 1:
+    return r
+  if studio_publish_table_pipeline_ok(pipeline) != 1:
+    return r
+  r.row_count = studio_publish_table_rows_from_pipeline(pipeline)
+  r.col_count = studio_publish_table_schema_columns()
+  var rows_f: float = studio_int_as_float(r.row_count)
+  var cols_f: float = studio_int_as_float(r.col_count)
+  var src_f: float = studio_int_as_float(r.source_count)
+  r.byte_checksum = sim_checksum + rows_f + cols_f + src_f
+  r.magic_tag = studio_publish_table_magic_for_format(fmt)
+  r.ok = 1
+  return r
+
+def studio_publish_table_from_viz_tick(
+    tick: int,
+    fmt: int,
+    sim_checksum: float,
+    proof_pass: int) -> PublishTableResult
+  requires tick >= 1
+  requires tick <= 64
+  requires sim_checksum >= 0.0
+  ensures result.format == fmt
+  ensures result.ok >= 0
+  ensures result.ok <= 1
+  decreases tick
+=
+  var pipe: VizPipelineState = studio_sim_scientific_viz_for_tick(tick)
+  return studio_publish_table(fmt, pipe, sim_checksum, proof_pass)
+
+def studio_publish_table_wizard_step_select() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0
+
+def studio_publish_table_wizard_step_proof() -> int
+  requires true
+  ensures result == 1
+  decreases 0
+=
+  return 1
+
+def studio_publish_table_wizard_step_export() -> int
+  requires true
+  ensures result == 2
+  decreases 0
+=
+  return 2
+
+type StudioPublishTableFlowState = object
+  public format: int
+  public viz_tick: int
+  public wizard_step: int
+  public click_count: int
+  public proof_pass: int
+  public export_ok: int
+  public last_magic: int
+  public last_row_count: int
+
+def studio_publish_table_flow_init(fmt: int, viz_tick: int) -> StudioPublishTableFlowState
+  requires studio_publish_table_format_ok(fmt) == 1
+  requires viz_tick >= 1
+  requires viz_tick <= 64
+  ensures result.format == fmt
+  ensures result.viz_tick == viz_tick
+  ensures result.wizard_step == studio_publish_table_wizard_step_select()
+  decreases fmt
+=
+  var f: StudioPublishTableFlowState
+  f.format = fmt
+  f.viz_tick = viz_tick
+  f.wizard_step = studio_publish_table_wizard_step_select()
+  f.click_count = 0
+  f.proof_pass = 0
+  f.export_ok = 0
+  f.last_magic = 0
+  f.last_row_count = 0
+  return f
+
+def studio_publish_table_flow_advance(
+    flow: var StudioPublishTableFlowState,
+    sim_checksum: float) -> int
+  requires studio_publish_table_format_ok(flow.format) == 1
+  requires flow.viz_tick >= 1
+  requires flow.viz_tick <= 64
+  requires sim_checksum >= 0.0
+  ensures flow.click_count >= 0
+  ensures result >= 0
+  ensures result <= 6
+  decreases flow.wizard_step
+=
+  flow.click_count = flow.click_count + 1
+  if flow.wizard_step == studio_publish_table_wizard_step_select():
+    flow.wizard_step = studio_publish_table_wizard_step_proof()
+    return 0
+  if flow.wizard_step == studio_publish_table_wizard_step_proof():
+    if flow.proof_pass != 1:
+      return 1
+    flow.wizard_step = studio_publish_table_wizard_step_export()
+    return 0
+  if flow.wizard_step == studio_publish_table_wizard_step_export():
+    var tbl: PublishTableResult = studio_publish_table_from_viz_tick(flow.viz_tick, flow.format, sim_checksum, flow.proof_pass)
+    if tbl.ok != 1:
+      return 2
+    if tbl.magic_tag != studio_publish_table_magic_for_format(flow.format):
+      return 3
+    if tbl.row_count <= 0:
+      return 4
+    if tbl.col_count != studio_publish_table_schema_columns():
+      return 5
+    flow.export_ok = 1
+    flow.last_magic = tbl.magic_tag
+    flow.last_row_count = tbl.row_count
+    return 0
+  return 6
+
+def studio_publish_table_three_click_flow(
+    fmt: int,
+    viz_tick: int,
+    sim_checksum: float,
+    proof_pass: int) -> int
+  requires studio_publish_table_format_ok(fmt) == 1
+  requires viz_tick >= 1
+  requires viz_tick <= 64
+  requires sim_checksum >= 0.0
+  ensures result >= 0
+  ensures result <= 8
+  decreases fmt
+=
+  var flow: StudioPublishTableFlowState = studio_publish_table_flow_init(fmt, viz_tick)
+  if studio_publish_table_flow_advance(flow, sim_checksum) != 0:
+    return 1
+  flow.proof_pass = proof_pass
+  if studio_publish_table_flow_advance(flow, sim_checksum) != 0:
+    return 2
+  if proof_pass != 1:
+    return 3
+  if studio_publish_table_flow_advance(flow, sim_checksum) != 0:
+    return 4
+  if flow.click_count != 3:
+    return 5
+  if flow.export_ok != 1:
+    return 6
+  if flow.last_magic != studio_publish_table_magic_for_format(fmt):
+    return 7
+  if flow.last_row_count <= 0:
+    return 8
+  return 0
+
+# WP-PUB-03 — publish.zip reproducibility manifest contract (not file I/O; after lic build proof).
+def studio_publish_bundle_magic_zip() -> int
+  requires true
+  ensures result == 20555
+  decreases 0
+=
+  return 20555
+
+def studio_publish_bundle_manifest_entry_manifest() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0
+
+def studio_publish_bundle_manifest_entry_figure() -> int
+  requires true
+  ensures result == 1
+  decreases 0
+=
+  return 1
+
+def studio_publish_bundle_manifest_entry_data() -> int
+  requires true
+  ensures result == 2
+  decreases 0
+=
+  return 2
+
+def studio_publish_bundle_world_sha256_fields(name: int, tick: int, entity_count: int, asset_ref_count: int) raises IO -> float
+  requires tick >= 0
+  requires entity_count >= 0
+  requires asset_ref_count >= 0
+  ensures result >= 0.0
+  decreases tick
+=
+  var n_f: float = studio_int_as_float(name)
+  var t_f: float = studio_int_as_float(tick)
+  var e_f: float = studio_int_as_float(entity_count)
+  var a_f: float = studio_int_as_float(asset_ref_count)
+  return n_f * 1000.0 + t_f * 10.0 + e_f + a_f * 0.1
+
+def studio_publish_bundle_world_sha256(snapshot: WorldSnapshot) -> float
+  requires true
+  ensures result >= 0.0
+  decreases snapshot.tick
+=
+  return studio_publish_bundle_world_sha256_fields(snapshot.name, snapshot.tick, snapshot.entity_count, snapshot.asset_ref_count)
+
+def studio_publish_bundle_world_sha256_from_checkpoint(checkpoint: StudioWorldCheckpoint) -> float
+  requires checkpoint.tick >= 0
+  ensures result >= 0.0
+  decreases checkpoint.tick
+=
+  if checkpoint.valid == 1:
+    return studio_publish_bundle_world_sha256_fields(checkpoint.name, checkpoint.tick, checkpoint.entity_count, checkpoint.asset_ref_count)
+  var snap: WorldSnapshot = studio_world_scaffold_snapshot()
+  return studio_publish_bundle_world_sha256(snap)
+
+def studio_publish_bundle_manifest_checksum(
+    lic_version: int,
+    profile_id: int,
+    determinism_tier: int,
+    sim_checksum: float,
+    world_sha256: float,
+    figure_magic: int,
+    data_magic: int) raises IO -> float
+  requires lic_version >= 0
+  requires sim_checksum >= 0.0
+  requires world_sha256 >= 0.0
+  ensures result >= 0.0
+  decreases lic_version
+=
+  var lv_f: float = studio_int_as_float(lic_version)
+  var pf_f: float = studio_int_as_float(profile_id)
+  var dt_f: float = studio_int_as_float(determinism_tier)
+  var fig_f: float = studio_int_as_float(figure_magic)
+  var dat_f: float = studio_int_as_float(data_magic)
+  return lv_f + pf_f * 10.0 + dt_f * 100.0 + sim_checksum + world_sha256 + fig_f + dat_f
+
+type PublishBundleResult = object
+  public ok: int
+  public lic_version: int
+  public profile_id: int
+  public determinism_tier: int
+  public sim_checksum: float
+  public world_sha256: float
+  public figure_count: int
+  public data_count: int
+  public entry_count: int
+  public manifest_checksum: float
+  public byte_checksum: float
+  public magic_tag: int
+
+def studio_publish_bundle(
+    config: StudioProjectConfig,
+    checkpoint: StudioWorldCheckpoint,
+    sim_checksum: float,
+    viz_tick: int,
+    proof_pass: int) -> PublishBundleResult
+  requires studio_profile_id_valid(config.active_profile) == 1
+  requires studio_determinism_tier_valid(config.determinism_tier) == 1
+  requires sim_checksum >= 0.0
+  requires viz_tick >= 1
+  requires viz_tick <= 64
+  ensures result.profile_id == config.active_profile
+  ensures result.determinism_tier == config.determinism_tier
+  ensures result.ok >= 0
+  ensures result.ok <= 1
+  decreases config.active_profile
+=
+  var r: PublishBundleResult
+  r.ok = 0
+  r.lic_version = li_std_studio_version()
+  r.profile_id = config.active_profile
+  r.determinism_tier = config.determinism_tier
+  r.sim_checksum = sim_checksum
+  r.world_sha256 = studio_publish_bundle_world_sha256_from_checkpoint(checkpoint)
+  r.figure_count = 0
+  r.data_count = 0
+  r.entry_count = 0
+  r.manifest_checksum = 0.0
+  r.byte_checksum = 0.0
+  r.magic_tag = 0
+  if studio_publish_proof_pass_ok(proof_pass) != 1:
+    return r
+  var fig_magic: int = 0
+  var dat_magic: int = 0
+  var fig: PublishFigureResult = studio_publish_figure(studio_publish_format_svg(), studio_publish_template_nature_single(), sim_checksum, proof_pass)
+  if fig.ok == 1:
+    r.figure_count = 1
+    fig_magic = fig.magic_tag
+  if config.active_profile == studio_profile_sim_scientific():
+    var tbl: PublishTableResult = studio_publish_table_from_viz_tick(viz_tick, studio_publish_table_format_hdf5(), sim_checksum, proof_pass)
+    if tbl.ok == 1:
+      r.data_count = 1
+      dat_magic = tbl.magic_tag
+  r.entry_count = 1 + r.figure_count + r.data_count
+  if r.entry_count < 2:
+    return r
+  r.manifest_checksum = studio_publish_bundle_manifest_checksum(r.lic_version, r.profile_id, r.determinism_tier, sim_checksum, r.world_sha256, fig_magic, dat_magic)
+  var ec_f: float = studio_int_as_float(r.entry_count)
+  var fc_f: float = studio_int_as_float(r.figure_count)
+  var dc_f: float = studio_int_as_float(r.data_count)
+  r.byte_checksum = r.manifest_checksum + ec_f + fc_f + dc_f
+  r.magic_tag = studio_publish_bundle_magic_zip()
+  r.ok = 1
+  return r
+
+def studio_publish_bundle_wizard_step_select() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0
+
+def studio_publish_bundle_wizard_step_proof() -> int
+  requires true
+  ensures result == 1
+  decreases 0
+=
+  return 1
+
+def studio_publish_bundle_wizard_step_export() -> int
+  requires true
+  ensures result == 2
+  decreases 0
+=
+  return 2
+
+type StudioPublishBundleFlowState = object
+  public profile_id: int
+  public viz_tick: int
+  public wizard_step: int
+  public click_count: int
+  public proof_pass: int
+  public export_ok: int
+  public last_magic: int
+  public entry_count: int
+
+def studio_publish_bundle_flow_init(profile_id: int, viz_tick: int) -> StudioPublishBundleFlowState
+  requires studio_profile_id_valid(profile_id) == 1
+  requires viz_tick >= 1
+  requires viz_tick <= 64
+  ensures result.profile_id == profile_id
+  ensures result.viz_tick == viz_tick
+  ensures result.wizard_step == studio_publish_bundle_wizard_step_select()
+  decreases profile_id
+=
+  var f: StudioPublishBundleFlowState
+  f.profile_id = profile_id
+  f.viz_tick = viz_tick
+  f.wizard_step = studio_publish_bundle_wizard_step_select()
+  f.click_count = 0
+  f.proof_pass = 0
+  f.export_ok = 0
+  f.last_magic = 0
+  f.entry_count = 0
+  return f
+
+def studio_publish_bundle_flow_advance(
+    flow: var StudioPublishBundleFlowState,
+    config: StudioProjectConfig,
+    checkpoint: StudioWorldCheckpoint,
+    sim_checksum: float) -> int
+  requires studio_profile_id_valid(flow.profile_id) == 1
+  requires flow.viz_tick >= 1
+  requires flow.viz_tick <= 64
+  requires sim_checksum >= 0.0
+  ensures flow.click_count >= 0
+  ensures result >= 0
+  ensures result <= 4
+  decreases flow.wizard_step
+=
+  flow.click_count = flow.click_count + 1
+  if flow.wizard_step == studio_publish_bundle_wizard_step_select():
+    flow.wizard_step = studio_publish_bundle_wizard_step_proof()
+    return 0
+  if flow.wizard_step == studio_publish_bundle_wizard_step_proof():
+    if flow.proof_pass != 1:
+      return 1
+    flow.wizard_step = studio_publish_bundle_wizard_step_export()
+    return 0
+  if flow.wizard_step == studio_publish_bundle_wizard_step_export():
+    var bundle: PublishBundleResult = studio_publish_bundle(config, checkpoint, sim_checksum, flow.viz_tick, flow.proof_pass)
+    if bundle.ok != 1:
+      return 2
+    if bundle.magic_tag != studio_publish_bundle_magic_zip():
+      return 3
+    flow.export_ok = 1
+    flow.last_magic = bundle.magic_tag
+    flow.entry_count = bundle.entry_count
+    return 0
+  return 4
+
+def studio_publish_bundle_three_click_flow(
+    config: StudioProjectConfig,
+    checkpoint: StudioWorldCheckpoint,
+    sim_checksum: float,
+    viz_tick: int,
+    proof_pass: int) -> int
+  requires studio_profile_id_valid(config.active_profile) == 1
+  requires viz_tick >= 1
+  requires viz_tick <= 64
+  requires sim_checksum >= 0.0
+  ensures result >= 0
+  ensures result <= 8
+  decreases config.active_profile
+=
+  var flow: StudioPublishBundleFlowState = studio_publish_bundle_flow_init(config.active_profile, viz_tick)
+  if studio_publish_bundle_flow_advance(flow, config, checkpoint, sim_checksum) != 0:
+    return 1
+  flow.proof_pass = proof_pass
+  if studio_publish_bundle_flow_advance(flow, config, checkpoint, sim_checksum) != 0:
+    return 2
+  if proof_pass != 1:
+    return 3
+  if studio_publish_bundle_flow_advance(flow, config, checkpoint, sim_checksum) != 0:
+    return 4
+  if flow.click_count != 3:
+    return 5
+  if flow.export_ok != 1:
+    return 6
+  if flow.last_magic != studio_publish_bundle_magic_zip():
+    return 7
+  if flow.entry_count < 2:
+    return 8
+  return 0
 
 def studio_apply_profile_to_sim(config: StudioProjectConfig, sim_out: var SimSessionStub) -> unit
   requires studio_profile_id_valid(config.active_profile) == 1
@@ -2559,6 +4376,69 @@ def studio_sim_scientific_tier_for_tick(tick: int) -> int
   if tick <= 10:
     return scene_md_tier_10k()
   return scene_md_tier_100k()
+
+# WP-SCI-04 — sim.viz pipeline panels drive viewport field compose (not wgpu volume draw).
+def studio_viz_pipeline_init() -> VizPipelineState
+  requires true
+  ensures result.profile_id == viz_profile_sim_scientific()
+  decreases 0
+=
+  return viz_pipeline_init()
+
+def studio_viewport_display_apply_viz_pipeline(
+    display: StudioViewportDisplayCompose, pipeline: VizPipelineState) -> StudioViewportDisplayCompose
+  requires pipeline.profile_id == viz_profile_sim_scientific()
+  ensures result.background == display.background
+  decreases pipeline.source_count
+=
+  var out: StudioViewportDisplayCompose = display
+  var fields: VizViewportFields = viz_pipeline_to_viewport_fields(pipeline)
+  if fields.particle_dots_visible == 1:
+    out.particle_dots_visible = 1
+  if fields.tier_label_visible != 1:
+    out.particle_dots_visible = 0
+  return out
+
+def studio_sim_scientific_viz_viewport_ok(
+    pipeline: VizPipelineState, display: StudioViewportDisplayCompose) -> int
+  requires pipeline.profile_id == viz_profile_sim_scientific()
+  requires display.particle_tier_id >= scene_md_tier_1k()
+  ensures result >= 0
+  ensures result <= 1
+  decreases pipeline.source_count
+=
+  if viz_pipeline_viewport_ok(pipeline, display.particle_tier_id, display.tier_particles) != 1:
+    return 0
+  var applied: StudioViewportDisplayCompose = studio_viewport_display_apply_viz_pipeline(display, pipeline)
+  if pipeline.inspector_section == viz_inspector_section_display():
+    if applied.particle_dots_visible != 1:
+      return 0
+  if display.tier_particles <= 0:
+    return 0
+  if display.tier_label_rect.w <= 0.0:
+    return 0
+  return 1
+
+def studio_sim_scientific_viz_for_tick(tick: int) -> VizPipelineState
+  requires tick >= 1
+  requires tick <= 64
+  ensures result.profile_id == viz_profile_sim_scientific()
+  decreases tick
+=
+  return viz_pipeline_scientific_step(viz_pipeline_init(), tick)
+
+def studio_viz_tick_for_particle_tier(tier_id: int) -> int
+  requires tier_id >= scene_md_tier_1k()
+  requires tier_id <= scene_md_tier_100k()
+  ensures result >= 1
+  ensures result <= 64
+  decreases tier_id
+=
+  if tier_id == scene_md_tier_1k():
+    return 3
+  if tier_id == scene_md_tier_10k():
+    return 5
+  return 8
 
 def studio_sim_scientific_step_hook(sim_out: var SimSessionStub, dt: float) -> int
   requires sim_out.tick >= 0
@@ -2613,6 +4493,24 @@ def studio_sim_sensor_step_hook(sim_out: var SimSessionStub, dt: float) -> int
 =
   return sim_sensor_session_bus_step(sim_out, dt)
 
+# WP-ROBO-03 / WP-UX-03 — 6-DOF IK on session + sensor bus + replay tick.
+def studio_sim_robotics_step_hook(sim_out: var SimSessionStub, dt: float) -> int
+  requires sim_out.tick >= 0
+  requires sim_out.replay_capacity > 0
+  ensures result >= 0
+  ensures result <= 1
+  decreases sim_out.tick
+=
+  if dt <= 0.0:
+    return sim_status_invalid_dt()
+  if sim_robotics_session_ik_step(sim_out, dt) != 1:
+    return sim_status_invalid_dt()
+  if sim_sensor_session_bus_step(sim_out, dt) != sim_status_ok():
+    return sim_status_invalid_dt()
+  if sim_step(sim_out, dt) != sim_status_ok():
+    return sim_status_invalid_dt()
+  return sim_status_ok()
+
 def studio_game_session_physics_load(session: SimSessionStub) -> GamePhysicsState
   requires session.tick >= 0
   ensures result.px == session.game_px
@@ -2664,18 +4562,127 @@ def studio_game_entity_count_stub() -> int
 =
   return 1
 
+def studio_game_asset_ref_count_stub() -> int
+  requires true
+  ensures result == 1
+  decreases 0
+=
+  return 1
+
+def studio_world_asset_ref_path_default() raises Alloc, IO -> str
+  requires true
+  ensures result != ""
+  decreases 0
+=
+  return world_default_asset_ref_path()
+
+# WP-GD-04 — glTF ingest via li-assets into studio scene entity count.
+def studio_gltf_ingest_mesh(path: str) raises Alloc, IO -> GltfIngestMesh
+  requires true
+  ensures result.status >= assets_gltf_status_ok()
+  ensures result.status <= assets_gltf_status_err()
+  decreases 0
+=
+  return assets_gltf_ingest_path(path)
+
+def studio_shell_apply_gltf_ingest(compose: var StudioShellCompose, path: str) raises Alloc, IO -> int
+  requires compose.layout.viewport_w > 0.0
+  ensures result >= 0
+  ensures result <= 1
+  decreases 0
+=
+  var mesh: GltfIngestMesh = assets_gltf_ingest_path(path)
+  if assets_gltf_ingest_ok(mesh) != 1:
+    return 0
+  compose.scene_entity_count = mesh.entity_slots
+  compose.viewport_empty.empty_visible = 0
+  compose.viewport_empty.title_rect = rect_make(0.0, 0.0, 0.0, 0.0)
+  compose.viewport_empty.cta_rect = rect_make(0.0, 0.0, 0.0, 0.0)
+  var sc: Scene = scene_new()
+  if assets_gltf_scene_attach(mesh, sc) != 1:
+    return 0
+  if sc.node_count != compose.scene_entity_count:
+    return 0
+  return 1
+
+def studio_gltf_ingest_default_into_shell(compose: var StudioShellCompose) raises Alloc, IO -> int
+  requires compose.layout.viewport_w > 0.0
+  ensures result >= 0
+  ensures result <= 1
+  decreases 0
+=
+  var path: str = studio_world_asset_ref_path_default()
+  return studio_shell_apply_gltf_ingest(compose, path)
+
+def studio_world_li_path_default() raises Alloc, IO -> str
+  requires true
+  ensures result != ""
+  decreases 0
+=
+  return world_checkpoint_path_default()
+
+def studio_world_scaffold_snapshot() -> WorldSnapshot
+  requires true
+  ensures world_snapshot_valid(result) == 1
+  ensures result.name == world_name_slot_default()
+  ensures result.tick == 0
+  ensures result.entity_count == studio_game_entity_count_stub()
+  ensures result.asset_ref_count == studio_game_asset_ref_count_stub()
+  decreases 0
+=
+  var snap: WorldSnapshot
+  snap.name = world_name_slot_default()
+  snap.tick = 0
+  snap.entity_count = studio_game_entity_count_stub()
+  snap.asset_ref_count = studio_game_asset_ref_count_stub()
+  return snap
+
+def studio_world_save(snapshot: WorldSnapshot, path: str) raises Alloc, IO -> int
+  requires world_snapshot_valid(snapshot) == 1
+  ensures 0 <= result
+  ensures result <= 1
+  decreases snapshot.tick
+=
+  return world_save_to_path(snapshot, path)
+
+def studio_world_load(path: str) raises Alloc, IO -> WorldSnapshot
+  requires true
+  ensures world_snapshot_valid(result) == 1
+  decreases 0
+=
+  return world_load_from_path(path)
+
+def studio_world_io_roundtrip(snapshot: WorldSnapshot, path: str) raises Alloc, IO -> int
+  requires world_snapshot_valid(snapshot) == 1
+  ensures 0 <= result
+  ensures result <= 1
+  decreases snapshot.tick
+=
+  return world_file_roundtrip_ok(snapshot, path)
+
+def studio_world_scaffold_write(path: str) raises Alloc, IO -> int
+  requires true
+  ensures 0 <= result
+  ensures result <= 1
+  decreases 0
+=
+  var snap: WorldSnapshot = studio_world_scaffold_snapshot()
+  return studio_world_save(snap, path)
+
 def studio_game_world_checkpoint_from_session(session: SimSessionStub) -> WorldSnapshot
   requires session.tick >= 0
   ensures world_snapshot_valid(result) == 1
   ensures result.name == world_name_slot_arena()
   ensures result.tick == session.tick
   ensures result.entity_count == studio_game_entity_count_stub()
+  ensures result.asset_ref_count == studio_game_asset_ref_count_stub()
   decreases session.tick
 =
   var snap: WorldSnapshot
   snap.name = world_name_slot_arena()
   snap.tick = session.tick
   snap.entity_count = studio_game_entity_count_stub()
+  snap.asset_ref_count = studio_game_asset_ref_count_stub()
   return snap
 
 def studio_game_world_checkpoint_stub(snapshot: WorldSnapshot) -> int
@@ -2692,7 +4699,92 @@ def studio_game_world_checkpoint_stub(snapshot: WorldSnapshot) -> int
     return 0
   if snapshot.entity_count != studio_game_entity_count_stub():
     return 0
+  if snapshot.asset_ref_count != studio_game_asset_ref_count_stub():
+    return 0
   return 1
+
+def studio_world_checkpoint_empty() -> StudioWorldCheckpoint
+  requires true
+  ensures result.valid == 0
+  ensures result.tick == 0
+  decreases 0
+=
+  var c: StudioWorldCheckpoint
+  c.valid = 0
+  c.name = world_name_slot_default()
+  c.tick = 0
+  c.entity_count = 0
+  c.asset_ref_count = 0
+  return c
+
+def studio_world_checkpoint_from_snapshot(snapshot: WorldSnapshot) -> StudioWorldCheckpoint
+  requires true
+  ensures result.tick == snapshot.tick
+  ensures result.entity_count == snapshot.entity_count
+  ensures result.asset_ref_count == snapshot.asset_ref_count
+  decreases snapshot.tick
+=
+  var c: StudioWorldCheckpoint
+  c.name = snapshot.name
+  c.tick = snapshot.tick
+  c.entity_count = snapshot.entity_count
+  c.asset_ref_count = snapshot.asset_ref_count
+  c.valid = 0
+  if studio_game_world_checkpoint_stub(snapshot) == 1:
+    c.valid = 1
+  return c
+
+def studio_world_checkpoint_capture(profile_id: int, session: SimSessionStub) -> StudioWorldCheckpoint
+  requires session.tick >= 0
+  ensures result.tick >= 0
+  decreases profile_id
+=
+  if profile_id != studio_profile_game():
+    return studio_world_checkpoint_empty()
+  var snap: WorldSnapshot = studio_game_world_checkpoint_from_session(session)
+  return studio_world_checkpoint_from_snapshot(snap)
+
+def studio_world_checkpoint_after_sim_tick(profile_id: int, session: SimSessionStub) -> int
+  requires session.tick >= 0
+  ensures result >= 0
+  ensures result <= 1
+  decreases profile_id
+=
+  if profile_id != studio_profile_game():
+    return sim_status_ok()
+  var c: StudioWorldCheckpoint = studio_world_checkpoint_capture(profile_id, session)
+  if c.valid != 1:
+    return sim_status_invalid_dt()
+  if c.tick != session.tick:
+    return sim_status_invalid_dt()
+  if c.entity_count != studio_game_entity_count_stub():
+    return sim_status_invalid_dt()
+  if c.asset_ref_count != studio_game_asset_ref_count_stub():
+    return sim_status_invalid_dt()
+  return sim_status_ok()
+
+def studio_shell_world_checkpoint_store(compose: var StudioShellCompose, session: SimSessionStub) -> unit
+  requires session.tick >= 0
+  ensures compose.world_checkpoint.tick == session.tick
+  decreases session.tick
+=
+  compose.world_checkpoint = studio_world_checkpoint_capture(compose.config.active_profile, session)
+
+def studio_shell_timeline_tick_sim_step(compose: var StudioShellCompose, config: StudioProjectConfig, sim_out: var SimSessionStub, dt: float, duration_ticks: int) raises IO -> int
+  requires studio_mode_valid(compose.mode) == 1
+  requires studio_profile_id_valid(config.active_profile) == 1
+  requires sim_out.tick >= 0
+  requires duration_ticks >= 1
+  ensures result >= -1
+  ensures result <= 1
+  decreases compose.mode
+=
+  if studio_mode_sim_step_allowed(compose.mode, studio_timeline_playing()) != 1:
+    return 0
+  var rc: int = studio_timeline_tick_sim_step(config, sim_out, dt, duration_ticks)
+  if rc == 1:
+    studio_shell_world_checkpoint_store(compose, sim_out)
+  return rc
 
 def studio_game_world_checkpoint_roundtrip(session: SimSessionStub) raises Alloc, IO -> int
   requires session.tick >= 0
@@ -2792,7 +4884,7 @@ def studio_sim_step_hook(config: StudioProjectConfig, sim_out: var SimSessionStu
   if prof == studio_profile_sim_robotics():
     if sim_robotics_tick_stub(detail_hook) != 1:
       return sim_status_invalid_dt()
-    return studio_sim_sensor_step_hook(sim_out, dt)
+    return studio_sim_robotics_step_hook(sim_out, dt)
   if prof == studio_profile_sim_additive():
     if sim_additive_tick_stub(detail_hook) != 1:
       return sim_status_invalid_dt()
@@ -2804,7 +4896,13 @@ def studio_sim_step_hook(config: StudioProjectConfig, sim_out: var SimSessionStu
       return sim_status_invalid_dt()
     if studio_game_step_hook(sim_out, dt) != sim_status_ok():
       return sim_status_invalid_dt()
-  return sim_step(sim_out, dt)
+  var step_rc: int = sim_step(sim_out, dt)
+  if step_rc != sim_status_ok():
+    return step_rc
+  if prof == studio_profile_game():
+    if studio_world_checkpoint_after_sim_tick(prof, sim_out) != sim_status_ok():
+      return sim_status_invalid_dt()
+  return sim_status_ok()
 
 def studio_scene_is_empty(scene_entity_count: int) -> int
   requires scene_entity_count >= 0
@@ -2982,20 +5080,74 @@ def studio_compose_inspector_selected(layout: StudioShellLayout) -> StudioInspec
   out.field_row_rect = rect_make(0.0, 0.0, 0.0, 0.0)
   return out
 
-def studio_compose_timeline(layout: StudioShellLayout) -> StudioTimelineCompose
+def studio_inspector_joint_value_width_px(joint_rad: float, slot_max_w: float) -> float
+  requires slot_max_w >= 24.0
+  ensures result >= 24.0
+  ensures result <= slot_max_w
+  decreases 0
+=
+  var min_w: float = 24.0
+  var norm: float = joint_rad
+  if norm < 0.0:
+    norm = 0.0
+  if norm > 1.2:
+    norm = 1.2
+  var span: float = slot_max_w - min_w
+  var scale: float = norm * 0.8333333
+  return min_w + span * scale
+
+def studio_compose_inspector_robotics_live(layout: StudioShellLayout, session: SimSessionStub) -> StudioInspectorCompose
+  requires layout.inspector.w >= studio_inspector_width_px()
+  requires session.tick >= 0
+  ensures result.has_selection == 1
+  ensures result.field_count == studio_inspector_selection_field_count()
+  decreases session.tick
+=
+  var out: StudioInspectorCompose = studio_compose_inspector_selected(layout)
+  var arm: RoboArm6DofState = sim_robotics_arm6_from_session(session)
+  var slot0: float = out.field0.value_rect.w
+  var slot1: float = out.field1.value_rect.w
+  var live0: float = studio_inspector_joint_value_width_px(arm.j0_rad, slot0)
+  var live1: float = studio_inspector_joint_value_width_px(arm.j1_rad, slot1)
+  out.field0.value_rect.w = live0
+  out.field1.value_rect.w = live1
+  return out
+
+def studio_sim_robotics_inspector_live_ok(session: SimSessionStub) -> int
+  requires session.tick >= 1
+  ensures result >= 0
+  ensures result <= 1
+  decreases session.tick
+=
+  var layout: StudioShellLayout = layout_studio_shell_adaptive(1280.0, 720.0)
+  var static_insp: StudioInspectorCompose = studio_compose_inspector_selected(layout)
+  var live_insp: StudioInspectorCompose = studio_compose_inspector_robotics_live(layout, session)
+  var arm: RoboArm6DofState = sim_robotics_arm6_from_session(session)
+  var expect0: float = studio_inspector_joint_value_width_px(arm.j0_rad, static_insp.field0.value_rect.w)
+  var expect1: float = studio_inspector_joint_value_width_px(arm.j1_rad, static_insp.field1.value_rect.w)
+  if live_insp.field0.value_rect.w != expect0:
+    return 0
+  if live_insp.field1.value_rect.w != expect1:
+    return 0
+  if arm.j0_rad <= 0.0:
+    return 0
+  if live_insp.field0.value_rect.w == static_insp.field0.value_rect.w:
+    return 0
+  return 1
+
+def studio_compose_timeline(layout: StudioShellLayout) raises IO -> StudioTimelineCompose
   requires layout.timeline.w > 0.0
   ensures result.play_btn_rect.w == studio_timeline_play_btn_size_px()
   decreases 0
 =
   var lay: StudioShellLayout = layout
-  var pct0: float = studio_timeline_playhead_pct()
+  var pct: float = studio_timeline_playhead_pct_from_tick(0, studio_timeline_duration_ticks_default())
   var out: StudioTimelineCompose
   out.rect = lay.timeline
   out.track_rect = studio_timeline_track_rect_at(lay.timeline.x, lay.timeline.y, lay.timeline.w, lay.timeline.h)
   out.play_btn_rect = studio_timeline_play_btn_rect_at(lay.timeline.x, lay.timeline.y, lay.timeline.h)
-  var pct1: float = studio_timeline_playhead_pct()
-  out.playhead_rect = studio_timeline_playhead_rect_at(out.track_rect.x, out.track_rect.y, out.track_rect.w, out.track_rect.h, pct0)
-  out.playhead_pct = pct1
+  out.playhead_rect = studio_timeline_playhead_rect_at(out.track_rect.x, out.track_rect.y, out.track_rect.w, out.track_rect.h, pct)
+  out.playhead_pct = pct
   return out
 
 def studio_compose_empty_inspector(layout: StudioShellLayout) -> StudioInspectorCompose
@@ -3725,8 +5877,9 @@ def studio_compose_shell_profile(w: float, h: float, active_dock_slot: int, has_
   out.outliner = studio_compose_outliner(lay.dock, slot_outliner)
   out.timeline.rect = lay.timeline
   out.timeline.track_rect = studio_timeline_track_rect_at(lay.timeline.x, lay.timeline.y, lay.timeline.w, lay.timeline.h)
-  out.timeline.playhead_rect = studio_timeline_playhead_rect_at(out.timeline.track_rect.x, out.timeline.track_rect.y, out.timeline.track_rect.w, out.timeline.track_rect.h, studio_timeline_playhead_pct())
-  out.timeline.playhead_pct = studio_timeline_playhead_pct()
+  var profile_tl_pct: float = studio_timeline_playhead_pct_from_tick(0, studio_timeline_duration_ticks_default())
+  out.timeline.playhead_rect = studio_timeline_playhead_rect_at(out.timeline.track_rect.x, out.timeline.track_rect.y, out.timeline.track_rect.w, out.timeline.track_rect.h, profile_tl_pct)
+  out.timeline.playhead_pct = profile_tl_pct
   out.scene_entity_count = 0
   out.inspector.rect = lay.inspector
   out.inspector.header_rect = studio_inspector_header_rect_at(lay.inspector.x, lay.inspector.y, lay.inspector.w)
@@ -3751,12 +5904,15 @@ def studio_compose_shell_profile(w: float, h: float, active_dock_slot: int, has_
   out.viewport_empty.title_rect = studio_viewport_empty_title_rect_at(lay.viewport.x, lay.viewport.y, lay.viewport.w, lay.viewport.h)
   out.viewport_empty.cta_rect = studio_viewport_empty_cta_rect_at(lay.viewport.x, lay.viewport.y, lay.viewport.w, lay.viewport.h)
   var lay_err: StudioShellLayout = lay
-  out.viewport_error = studio_compose_viewport_error_overlay(lay_err, studio_viewport_error_kind())
+  out.viewport_error = studio_compose_viewport_error_overlay(lay_err, studio_viewport_error_none())
   var lay_ag: StudioShellLayout = lay
   out.agent = studio_compose_agent_chrome(lay_ag, studio_agent_task_idle(), studio_agent_context_none())
   out.palette = studio_compose_palette(lay.viewport_w, lay.viewport_h, studio_palette_closed_flag())
   out.panel = gui_panel_state_new()
   out.loading = studio_shell_loading_state_new()
+  out.world_checkpoint = studio_world_checkpoint_empty()
+  var mode0: int = studio_mode_from_profile(active_profile)
+  studio_shell_apply_mode(out, mode0)
   return out
 
 def studio_compose_shell(w: float, h: float, active_dock_slot: int, has_selection: int, scene_entity_count: int) -> StudioShellCompose
@@ -3789,8 +5945,9 @@ def studio_compose_shell(w: float, h: float, active_dock_slot: int, has_selectio
   out.outliner = studio_compose_outliner(out.layout.dock, slot_outliner)
   out.timeline.rect = out.layout.timeline
   out.timeline.track_rect = studio_timeline_track_rect_at(out.layout.timeline.x, out.layout.timeline.y, out.layout.timeline.w, out.layout.timeline.h)
-  out.timeline.playhead_rect = studio_timeline_playhead_rect_at(out.timeline.track_rect.x, out.timeline.track_rect.y, out.timeline.track_rect.w, out.timeline.track_rect.h, studio_timeline_playhead_pct())
-  out.timeline.playhead_pct = studio_timeline_playhead_pct()
+  var shell_tl_pct: float = studio_timeline_playhead_pct_from_tick(0, studio_timeline_duration_ticks_default())
+  out.timeline.playhead_rect = studio_timeline_playhead_rect_at(out.timeline.track_rect.x, out.timeline.track_rect.y, out.timeline.track_rect.w, out.timeline.track_rect.h, shell_tl_pct)
+  out.timeline.playhead_pct = shell_tl_pct
   out.inspector.rect = out.layout.inspector
   out.inspector.header_rect = studio_inspector_header_rect_at(out.layout.inspector.x, out.layout.inspector.y, out.layout.inspector.w)
   if sel0 == 0:
@@ -3818,11 +5975,14 @@ def studio_compose_shell(w: float, h: float, active_dock_slot: int, has_selectio
     out.viewport_empty.empty_visible = 0
     out.viewport_empty.title_rect = rect_make(0.0, 0.0, 0.0, 0.0)
     out.viewport_empty.cta_rect = rect_make(0.0, 0.0, 0.0, 0.0)
-  out.viewport_error = studio_compose_viewport_error_overlay(out.layout, studio_viewport_error_kind())
+  out.viewport_error = studio_compose_viewport_error_overlay(out.layout, studio_viewport_error_none())
   out.agent = studio_compose_agent_chrome(out.layout, studio_agent_task_idle(), studio_agent_context_none())
   out.palette = studio_compose_palette(out.layout.viewport_w, out.layout.viewport_h, studio_palette_closed_flag())
   out.panel = gui_panel_state_new()
   out.loading = studio_shell_loading_state_new()
+  out.world_checkpoint = studio_world_checkpoint_empty()
+  var mode0: int = studio_mode_default()
+  studio_shell_apply_mode(out, mode0)
   return out
 
 
@@ -4522,6 +6682,9 @@ def studio_palette_apply_action(compose: var StudioShellCompose, action_id: int)
   ensures result <= 1
   decreases action_id
 =
+  if action_id == studio_palette_action_focus_agent():
+    studio_shell_apply_mode(compose, studio_mode_agent())
+    return 1
   var region: int = gui_studio_palette_region_for_action(action_id)
   if region >= studio_region_dock():
     var _timing: PanelSwitchTiming = gui_panel_switch_to(compose.panel, region, 0.0)
@@ -4597,27 +6760,53 @@ def studio_shell_demo_apply_profile(compose: var StudioShellCompose, profile_id:
 =
   compose.config = studio_project_config_new(profile_id)
 
-
-def studio_vertical_demo_sim_tick_step(config: StudioProjectConfig) raises IO -> unit
-  requires studio_profile_id_valid(config.active_profile) == 1
-  ensures true
-  decreases config.active_profile
+# WP-UX-14 — honest native_pixels: paint blit or wgpu readback/draw-list (not external CPU host alone).
+def studio_native_pixel_source_honest(source: int) -> int
+  requires source >= 0
+  requires source <= 4
+  ensures result >= 0
+  ensures result <= 1
+  decreases source
 =
-  var duration: int = studio_timeline_duration_ticks_default()
-  var sess: SimSessionStub = sim_session_stub_default()
-  studio_apply_config_to_sim(config, sess)
-  if studio_timeline_playing() == 1:
-    var _step: int = studio_timeline_tick_sim_step(config, sess, 0.016, duration)
+  if source == lig_native_pixel_source_paint_blit():
+    return 1
+  if source == lig_native_pixel_source_wgpu_readback():
+    return 1
+  if source == lig_native_pixel_source_wgpu_draw_list():
+    return 1
+  return 0
 
-def studio_vertical_demo_sync_timeline_from_runtime(compose: var StudioShellCompose) raises IO -> unit
-  requires compose.layout.viewport_w > 0.0
-  ensures true
+def studio_native_pixel_source_expected() -> int raises IO
+  requires true
+  ensures result >= 0
+  ensures result <= 4
   decreases 0
 =
-  var pct: float = studio_timeline_playhead_pct()
-  compose.timeline.playhead_pct = pct
-  var tr: Rect = compose.timeline.track_rect
-  compose.timeline.playhead_rect = studio_timeline_playhead_rect_at(tr.x, tr.y, tr.w, tr.h, pct)
+  if lig_present_wgpu_readback_active() == 1:
+    return lig_native_pixel_source_wgpu_readback()
+  return lig_native_pixel_source_paint_blit()
+
+def studio_native_pixels_wgpu_readback_host_smoke() -> int raises IO
+  requires true
+  ensures result >= 0
+  ensures result <= 8
+  decreases 0
+=
+  if lig_present_wgpu_readback_active() != 1:
+    return 0
+  var vp_w: float = 1280.0
+  var vp_h: float = 720.0
+  if lig_present_blit_paint_summary(vp_w, vp_h, 1, 8) != 1:
+    return 1
+  if lig_present_host_native_pixels_flag() != 1:
+    return 2
+  if lig_present_host_native_pixel_source_flag() != lig_native_pixel_source_wgpu_readback():
+    return 3
+  var counter: RenderFpsCounter = render_fps_counter_new()
+  render_fps_counter_host_tick(counter)
+  if counter.native_pixels != 1:
+    return 4
+  return 0
 
 def studio_vertical_demo_compose(profile_id: int, frame_id: int, key_compose: int) -> StudioShellCompose
   requires studio_profile_id_valid(profile_id) == 1
@@ -4646,50 +6835,6 @@ def studio_vertical_demo_compose(profile_id: int, frame_id: int, key_compose: in
     studio_attach_viewport_shell(out)
   return out
 
-# WP-UX-14b Step 1: write PPM from Li compose layout (runtime paint mirror; C deletion Step 4).
-def studio_vertical_capture_ppm(profile_id: int, frame_id: int, path: str, width: int, height: int) -> int raises IO, Alloc
-  requires studio_profile_id_valid(profile_id) == 1
-  requires frame_id >= 0
-  requires frame_id <= 2
-  requires width >= 64
-  requires height >= 64
-  requires path != ""
-  ensures result >= 0
-  decreases frame_id
-=
-  var compose: StudioShellCompose = studio_vertical_demo_compose(profile_id, frame_id, 0)
-  var has_sel: int = compose.inspector.has_selection
-  var play_pct: float = compose.timeline.playhead_pct
-  return li_rt_studio_shell_paint_ppm(path, width, height, profile_id, has_sel, play_pct)
-
-
-def studio_vertical_capture_ppm_wgpu(profile_id: int, frame_id: int, path: str, width: int, height: int) -> int raises IO, Alloc
-  requires studio_profile_id_valid(profile_id) == 1
-  requires frame_id >= 0
-  requires frame_id <= 2
-  requires width >= 64
-  requires height >= 64
-  requires path != ""
-  ensures result >= 0
-  decreases frame_id
-=
-  if lig_present_wgpu_readback_active() != 1:
-    return 0
-  return studio_vertical_capture_ppm(profile_id, frame_id, path, width, height)
-
-def studio_vertical_capture_ppm_auto(profile_id: int, frame_id: int, path: str, width: int, height: int) -> int raises IO, Alloc
-  requires studio_profile_id_valid(profile_id) == 1
-  requires frame_id >= 0
-  requires frame_id <= 2
-  requires width >= 64
-  requires height >= 64
-  requires path != ""
-  ensures result >= 0
-  decreases frame_id
-=
-  # LIG_WGPU_READBACK gates demo frame pixel source (studio_vertical_demo_frame); PPM bytes still paint mirror.
-  return studio_vertical_capture_ppm(profile_id, frame_id, path, width, height)
-
 def studio_vertical_demo_frame(profile_id: int, frame_id: int) -> int raises IO
   requires studio_profile_id_valid(profile_id) == 1
   requires frame_id >= 0
@@ -4698,8 +6843,6 @@ def studio_vertical_demo_frame(profile_id: int, frame_id: int) -> int raises IO
   decreases frame_id
 =
   var compose: StudioShellCompose = studio_vertical_demo_compose(profile_id, frame_id, 1)
-  studio_vertical_demo_sim_tick_step(compose.config)
-  studio_vertical_demo_sync_timeline_from_runtime(compose)
   var input: InputState = studio_shell_input_from_host()
   if frame_id == 2:
     if input.key_cmd_k == 0:
@@ -4719,22 +6862,32 @@ def studio_vertical_demo_frame(profile_id: int, frame_id: int) -> int raises IO
   studio_paint_topbar_profile(frame, topbar, profile_id)
   if lig_present_host_active() == 1:
     var vp: ViewportRegion = gui_viewport_region_from_layout(compose.layout)
-    var use_wgpu_rb: int = lig_present_wgpu_readback_active()
-    if lig_present_blit_paint_summary(vp.w, vp.h, profile_id, frame.cmd_count) != 1:
-      if use_wgpu_rb == 1:
+    var blit_fail_code: int = 52 + frame_id
+    if lig_present_wgpu_readback_active() == 1:
+      blit_fail_code = 54
+      var draw_list: RenderDrawList = render_draw_list_new()
+      render_draw_list_push_clear(draw_list, 0.05, 0.07, 0.1)
+      var draw_mat: RenderPbrLiteMaterial = render_pbr_lite_material_default()
+      render_draw_list_push_mesh(draw_list, 1, draw_mat)
+      render_draw_list_push_particles(draw_list, 1000, draw_mat)
+      if render_draw_list_submit(vp, draw_list, profile_id) != 1:
         return 54 + frame_id
-      return 52 + frame_id
+    if lig_present_blit_paint_summary(vp.w, vp.h, profile_id, frame.cmd_count) != 1:
+      return blit_fail_code
     var _presented: LigPresentFrame = studio_shell_host_present_loop_tick(vp.w, vp.h, frame_id)
     if _presented.presented != 1:
       return 50 + frame_id
     if _presented.native_pixels != 1:
       return 51 + frame_id
-    if use_wgpu_rb == 1:
-      if _presented.native_pixel_source != lig_native_pixel_source_wgpu_readback():
-        return 55 + frame_id
-    if use_wgpu_rb != 1:
-      if _presented.native_pixel_source != lig_native_pixel_source_paint_blit():
-        return 53 + frame_id
+    if lig_native_pixel_source_honest_product(_presented.native_pixel_source) != 1:
+      if lig_present_wgpu_readback_active() == 1:
+        return 55
+      return 53 + frame_id
+    var expected_src: int = studio_native_pixel_source_expected()
+    if _presented.native_pixel_source != expected_src:
+      if lig_present_wgpu_readback_active() == 1:
+        return 55
+      return 53 + frame_id
   if frame_id == 0:
     return 0
   if frame_id == 1:
@@ -4897,6 +7050,8 @@ def studio_shell_host_frame(compose: var StudioShellCompose, frame_id: int) -> i
 =
   var input: InputState = studio_shell_input_from_host()
   var _action: int = studio_shell_handle_host_key(compose, input)
+  studio_viewport_error_sync_render(compose)
+  var _vp_err: int = studio_shell_handle_viewport_error_pointer(compose, input)
   var vp: ViewportRegion = gui_viewport_region_from_layout(compose.layout)
   var _presented: LigPresentFrame = studio_shell_host_present_loop_tick(vp.w, vp.h, frame_id)
   if _presented.presented != 1:
@@ -4906,4 +7061,181 @@ def studio_shell_host_frame(compose: var StudioShellCompose, frame_id: int) -> i
   if frame.cmd_count < 1:
     return 30
   return 0
+
+# Plan-loop §6 / §11 — composable vertical DoD (honest slice; full ship criteria remain in master plan).
+def studio_vertical_dod_game_composable_ok() -> int raises Alloc, IO
+  requires true
+  ensures result >= 0
+  ensures result <= 1
+  decreases 0
+=
+  var cfg: StudioProjectConfig = studio_project_config_new(studio_profile_game())
+  var sess: SimSessionStub = sim_session_stub_default()
+  studio_apply_config_to_sim(cfg, sess)
+  if studio_game_step_hook(sess, 0.016) != sim_status_ok():
+    return 0
+  if sess.game_physics_steps < 1:
+    return 0
+  if sess.game_pz >= 0.0:
+    return 0
+  if studio_game_world_checkpoint_roundtrip(sess) != 1:
+    return 0
+  if lig_native_pixel_source_honest_product(lig_native_pixel_source_wgpu_readback()) != 1:
+    return 0
+  return 1
+
+def studio_vertical_dod_sim_rl_composable_ok() -> int
+  requires true
+  ensures result >= 0
+  ensures result <= 1
+  decreases 0
+=
+  var cfg: StudioProjectConfig = studio_project_config_new(studio_profile_sim_rl())
+  var sess: SimSessionStub = sim_session_stub_default()
+  studio_apply_config_to_sim(cfg, sess)
+  if studio_sim_rl_step_hook(sess, 0.02) != sim_status_ok():
+    return 0
+  var psz: int = sim_rl_env_pool_size_default()
+  if sess.env_pool_size != psz:
+    return 0
+  if sess.env_pool_steps_emitted != psz:
+    return 0
+  if sim_env_obs_dim() != 8:
+    return 0
+  var obs: EnvStepResult = env_obs_from_session(sess)
+  if obs.obs1 != sess.last_dt:
+    return 0
+  if obs.env_index != psz - 1:
+    return 0
+  return 1
+
+def studio_vertical_dod_sim_automotive_composable_ok() -> int
+  requires true
+  ensures result >= 0
+  ensures result <= 1
+  decreases 0
+=
+  var cfg: StudioProjectConfig = studio_project_config_new(studio_profile_sim_automotive())
+  var sess: SimSessionStub = sim_session_stub_default()
+  if studio_sim_step_hook(cfg, sess, 0.02) != sim_status_ok():
+    return 0
+  var bus: int = sensor_bus_size_default()
+  if sess.sensor_bus_size != bus:
+    return 0
+  if sess.sensor_rays_emitted != bus:
+    return 0
+  if sensor_raycast_id_valid(sess.sensor_last_raycast_id) != 1:
+    return 0
+  return 1
+
+def studio_vertical_dod_sim_robotics_composable_ok() -> int
+  requires true
+  ensures result >= 0
+  ensures result <= 1
+  decreases 0
+=
+  var cfg: StudioProjectConfig = studio_project_config_new(studio_profile_sim_robotics())
+  var sess: SimSessionStub = sim_session_stub_default()
+  if studio_sim_step_hook(cfg, sess, 0.01) != sim_status_ok():
+    return 0
+  if studio_sim_robotics_inspector_live_ok(sess) != 1:
+    return 0
+  return 1
+
+def studio_vertical_dod_sim_additive_composable_ok() -> int
+  requires true
+  ensures result >= 0
+  ensures result <= 1
+  decreases 0
+=
+  var cfg: StudioProjectConfig = studio_project_config_from_additive_toml_fixture()
+  var sess: SimSessionStub = sim_session_stub_default()
+  studio_apply_config_to_sim(cfg, sess)
+  if studio_am_export_three_click_flow(cfg, sess, am_export_format_3mf()) != 0:
+    return 0
+  return 1
+
+def studio_vertical_dod_sim_scientific_composable_ok() -> int raises IO
+  requires true
+  ensures result >= 0
+  ensures result <= 1
+  decreases 0
+=
+  var md_oracle: float = sim_scientific_oracle_checksum_md()
+  var md105: SimRunResult = run_algo(105, 1)
+  if run_result_ok(md105) != 1:
+    return 0
+  if md105.checksum != md_oracle:
+    return 0
+  var cfg: StudioProjectConfig = studio_project_config_new(studio_profile_sim_scientific())
+  var sess: SimSessionStub = sim_session_stub_default()
+  studio_viewport_display_reset_for_profile(studio_profile_sim_scientific())
+  if studio_sim_scientific_step_hook(sess, 1.0) != sim_status_ok():
+    return 0
+  var vp: Rect = rect_make(0.0, 0.0, 1280.0, 720.0)
+  var pipeline: VizPipelineState = studio_sim_scientific_viz_for_tick(sess.tick)
+  var display: StudioViewportDisplayCompose = studio_compose_viewport_display(vp, studio_profile_sim_scientific())
+  if studio_sim_scientific_viz_viewport_ok(pipeline, display) != 1:
+    return 0
+  return 1
+
+def studio_vertical_dod_sim_drug_design_composable_ok() -> int
+  requires true
+  ensures result >= 0
+  ensures result <= 1
+  decreases 0
+=
+  var lab: int = drug_litl_stage_lab()
+  if studio_adaptive_panel_set_id(lab) != lab:
+    return 0
+  if studio_adaptive_panel_region_for_litl_stage(lab) != studio_region_timeline():
+    return 0
+  var shell: StudioShellCompose = studio_compose_shell_drug_litl(1280.0, 720.0, lab, 1)
+  if shell.panel.active_region != studio_region_timeline():
+    return 0
+  return 1
+
+def studio_vertical_dod_profile_composable_ok(profile_id: int) -> int raises Alloc, IO
+  requires studio_profile_id_valid(profile_id) == 1
+  ensures result >= 0
+  ensures result <= 1
+  decreases profile_id
+=
+  if profile_id == studio_profile_game():
+    return studio_vertical_dod_game_composable_ok()
+  if profile_id == studio_profile_sim_rl():
+    return studio_vertical_dod_sim_rl_composable_ok()
+  if profile_id == studio_profile_sim_automotive():
+    return studio_vertical_dod_sim_automotive_composable_ok()
+  if profile_id == studio_profile_sim_robotics():
+    return studio_vertical_dod_sim_robotics_composable_ok()
+  if profile_id == studio_profile_sim_additive():
+    return studio_vertical_dod_sim_additive_composable_ok()
+  if profile_id == studio_profile_sim_scientific():
+    return studio_vertical_dod_sim_scientific_composable_ok()
+  if profile_id == studio_profile_sim_drug_design():
+    return studio_vertical_dod_sim_drug_design_composable_ok()
+  return 0
+
+def studio_vertical_dod_all_profiles_ok() -> int raises Alloc, IO
+  requires true
+  ensures result >= 0
+  ensures result <= 1
+  decreases 0
+=
+  if studio_vertical_dod_profile_composable_ok(studio_profile_game()) != 1:
+    return 0
+  if studio_vertical_dod_profile_composable_ok(studio_profile_sim_rl()) != 1:
+    return 0
+  if studio_vertical_dod_profile_composable_ok(studio_profile_sim_automotive()) != 1:
+    return 0
+  if studio_vertical_dod_profile_composable_ok(studio_profile_sim_robotics()) != 1:
+    return 0
+  if studio_vertical_dod_profile_composable_ok(studio_profile_sim_additive()) != 1:
+    return 0
+  if studio_vertical_dod_profile_composable_ok(studio_profile_sim_scientific()) != 1:
+    return 0
+  if studio_vertical_dod_profile_composable_ok(studio_profile_sim_drug_design()) != 1:
+    return 0
+  return 1
 

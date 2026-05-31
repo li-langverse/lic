@@ -5,3 +5,15 @@ suite = "smoke"
 file = "smoke/builds.li"
 outcome = "verify_ok"
 note = "T-PKG-li-sim-scientific-smoke"
+
+[[tests]]
+suite = "smoke"
+file = "smoke/scientific_oracle_bench.li"
+outcome = "verify_ok"
+note = "WP-SCI-03 tier-2 MD/heat oracle checksums"
+
+[[tests]]
+suite = "smoke"
+file = "smoke/run_algo_registry_tier2.li"
+outcome = "verify_ok"
+note = "WP-SCI-03 run_algo_registry MD/heat tier-2 dispatch"

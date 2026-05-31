@@ -291,6 +291,131 @@ def studio_agent_task_done() -> int
 =
   return 4
 
+# WP-UX-15 — Studio interaction modes FSM (author / simulate / analyze / agent / publish / adaptive / bench)
+def studio_mode_author() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0
+
+def studio_mode_simulate() -> int
+  requires true
+  ensures result == 1
+  decreases 0
+=
+  return 1
+
+def studio_mode_analyze() -> int
+  requires true
+  ensures result == 2
+  decreases 0
+=
+  return 2
+
+def studio_mode_agent() -> int
+  requires true
+  ensures result == 3
+  decreases 0
+=
+  return 3
+
+def studio_mode_publish() -> int
+  requires true
+  ensures result == 4
+  decreases 0
+=
+  return 4
+
+def studio_mode_adaptive() -> int
+  requires true
+  ensures result == 5
+  decreases 0
+=
+  return 5
+
+def studio_mode_bench() -> int
+  requires true
+  ensures result == 6
+  decreases 0
+=
+  return 6
+
+def studio_mode_count() -> int
+  requires true
+  ensures result == 7
+  decreases 0
+=
+  return 7
+
+def studio_mode_valid(mode: int) -> int
+  requires true
+  ensures result >= 0
+  ensures result <= 1
+  decreases mode
+=
+  if mode < 0:
+    return 0
+  if mode >= studio_mode_count():
+    return 0
+  return 1
+
+def studio_mode_trigger_none() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0
+
+def studio_mode_trigger_play() -> int
+  requires true
+  ensures result == 1
+  decreases 0
+=
+  return 1
+
+def studio_mode_trigger_stop() -> int
+  requires true
+  ensures result == 2
+  decreases 0
+=
+  return 2
+
+def studio_mode_trigger_agent() -> int
+  requires true
+  ensures result == 3
+  decreases 0
+=
+  return 3
+
+def studio_mode_trigger_agent_done() -> int
+  requires true
+  ensures result == 4
+  decreases 0
+=
+  return 4
+
+def studio_mode_trigger_publish() -> int
+  requires true
+  ensures result == 5
+  decreases 0
+=
+  return 5
+
+def studio_mode_trigger_bench_env() -> int
+  requires true
+  ensures result == 6
+  decreases 0
+=
+  return 6
+
+def studio_mode_trigger_adaptive_profile() -> int
+  requires true
+  ensures result == 7
+  decreases 0
+=
+  return 7
+
 def studio_agent_cancel_btn_width_px() -> float
   requires true
   ensures result == 72.0

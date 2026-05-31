@@ -1,8 +1,11 @@
 {
   "pass": true,
-  "todo_id": "world-studio-runnable-sprint-w1",
-  "wps_touched": ["WP-SIM-00", "WP-UX-13", "WP-GD-01"],
+  "todo_id": "wsm-w1-sim3-envpool",
+  "wps_touched": ["WP-SIM-03", "WP-RL-01"],
   "smokes_run": [
+    "packages/li-sim/li-tests/smoke/env_pool_step_contract.li",
+    "packages/li-ml-rl/li-tests/smoke/env_pool_persistent.li",
+    "packages/li-studio/li-tests/smoke/studio_sim_rl_step_hook.li",
     "packages/li-studio/li-tests/smoke/studio_vertical_demo_env.li",
     "packages/li-studio/li-tests/smoke/studio_sim_step_by_profile.li"
   ],
@@ -11,7 +14,8 @@
     "world_studio_runnable_gate": "pass",
     "world_studio_plan_gates": "pass",
     "lic_check_wsl": "pass",
-    "li_studio_demo_binary": "missing_local_build"
+    "li_studio_demo_binary": "pass"
   },
-  "notes": "Added li-scene MD particle memory ledger helpers (lig.memory) for studio_md_particle_tier_select_ok; fixed studio_vertical_demo ensures; runnable gate uses wsl wslpath for isolated workspace; studio_sim_step_by_profile smoke uses single-line calls (no trailing commas). Completion gate li-studio-demo still needs local lic build."
+  "notes": "Marked wsm-w1-sim3-envpool done. emit.cpp ReturnVoid/ReturnInt pointer null + CallExtern f64→f32 coercion enables li-studio-demo link on WSL (clang-22). Demo runs STUDIO_DEMO_FRAMES=1 exit 0.",
+  "pr_url": "https://github.com/li-langverse/lic/pull/624"
 }

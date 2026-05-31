@@ -91,6 +91,8 @@ def emit_lookup(name: str, rows: list[list[int]]) -> str:
         "  requires slot < icon_atlas_slot_count()",
         "  requires row >= 0",
         "  requires row < icon_atlas_cell_px()",
+        "  ensures result >= 0",
+        "  ensures result <= 255",
         "  decreases slot",
         "=",
     ]

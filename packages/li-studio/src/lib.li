@@ -4597,6 +4597,26 @@ def studio_shell_demo_apply_profile(compose: var StudioShellCompose, profile_id:
 =
   compose.config = studio_project_config_new(profile_id)
 
+
+def studio_vertical_demo_sim_tick_step(config: StudioProjectConfig) raises IO -> unit
+  requires studio_profile_id_valid(config.active_profile) == 1
+  decreases config.active_profile
+=
+  var duration: int = studio_timeline_duration_ticks_default()
+  var sess: SimSessionStub = sim_session_stub_default()
+  studio_apply_config_to_sim(config, sess)
+  if studio_timeline_playing() == 1:
+    var _step: int = studio_timeline_tick_sim_step(config, sess, 0.016, duration)
+
+def studio_vertical_demo_sync_timeline_from_runtime(compose: var StudioShellCompose) raises IO -> unit
+  requires compose.layout.viewport_w > 0.0
+  decreases 0
+=
+  var pct: float = studio_timeline_playhead_pct()
+  compose.timeline.playhead_pct = pct
+  var tr: Rect = compose.timeline.track_rect
+  compose.timeline.playhead_rect = studio_timeline_playhead_rect_at(tr.x, tr.y, tr.w, tr.h, pct)
+
 def studio_vertical_demo_compose(profile_id: int, frame_id: int, key_compose: int) -> StudioShellCompose
   requires studio_profile_id_valid(profile_id) == 1
   requires frame_id >= 0
@@ -4676,6 +4696,8 @@ def studio_vertical_demo_frame(profile_id: int, frame_id: int) -> int raises IO
   decreases frame_id
 =
   var compose: StudioShellCompose = studio_vertical_demo_compose(profile_id, frame_id, 1)
+  studio_vertical_demo_sim_tick_step(compose.config)
+  studio_vertical_demo_sync_timeline_from_runtime(compose)
   var input: InputState = studio_shell_input_from_host()
   if frame_id == 2:
     if input.key_cmd_k == 0:

@@ -1,0 +1,2 @@
+/usr/bin/ar Dqc libli_ast.a CMakeFiles/li_ast.dir/ast.cpp.o
+/usr/bin/ranlib -D libli_ast.a

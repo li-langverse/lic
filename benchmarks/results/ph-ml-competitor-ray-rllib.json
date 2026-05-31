@@ -9,6 +9,6 @@
   "framework_version": null,
   "device": "cpu",
   "workload_size": 4,
-  "note": "ray not installed (optional Wave 12)",
-  "generated_at": "2026-05-31T15:27:57Z"
+  "note": "ray not installed",
+  "generated_at": "2026-05-31T16:15:31Z"
 }

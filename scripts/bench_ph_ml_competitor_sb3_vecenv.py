@@ -6,7 +6,7 @@ import sys
 import time
 from pathlib import Path
 
-from ph_ml_competitor_workloads import DEFAULT_RUNS, DEFAULT_WARMUP, bench_loop, report_base
+from ph_ml_competitor_workloads import DEFAULT_RUNS, bench_loop, report_base
 
 out = os.environ["PH_ML_SB3_VECENV_OUT"]
 report = report_base("sb3_vecenv", "ph-ml-competitor-sb3-vecenv", "async_env_collect_4")
@@ -22,14 +22,16 @@ def write_report() -> None:
 
 try:
     import gymnasium as gym
+    import numpy as np
     import stable_baselines3
-    from stable_baselines3.common.vec_env import SubprocVecEnv
+    from stable_baselines3.common.vec_env import DummyVecEnv, SubprocVecEnv
 except ImportError:
     report["note"] = "stable_baselines3/gymnasium not installed"
     write_report()
     sys.exit(0)
 
 n_envs = 4
+use_subproc = sys.platform != "win32"
 
 
 def make_env():
@@ -39,21 +41,33 @@ def make_env():
     return _init
 
 
-def setup():
-    return SubprocVecEnv([make_env() for _ in range(n_envs)])
+def setup_vec_env():
+    makers = [make_env() for _ in range(n_envs)]
+    if use_subproc:
+        try:
+            return SubprocVecEnv(makers), "SubprocVecEnv"
+        except (OSError, RuntimeError) as exc:
+            report["subproc_fallback"] = str(exc)[:200]
+    return DummyVecEnv(makers), "DummyVecEnv"
 
 
-def run(vec):
-    obs = vec.reset()
-    rewards = 0.0
-    for _ in range(4):
-        import numpy as np
-
-        actions = [vec.action_space.sample() for _ in range(n_envs)]
-        obs, rew, done, info = vec.step(actions)
-        rewards += float(sum(rew))
-    vec.close()
-    return rewards
+def run_once() -> float:
+    vec, backend = setup_vec_env()
+    try:
+        vec.reset()
+        rewards = 0.0
+        for _ in range(4):
+            actions = np.array([vec.action_space.sample() for _ in range(n_envs)])
+            step_out = vec.step(actions)
+            if len(step_out) == 5:
+                _obs, rew, _term, _trunc, _info = step_out
+            else:
+                _obs, rew, _done, _info = step_out
+            rewards += float(np.sum(rew))
+        report["vecenv_backend"] = backend
+        return rewards
+    finally:
+        vec.close()
 
 
 def sanity(r) -> bool:
@@ -61,8 +75,7 @@ def sanity(r) -> bool:
 
 
 try:
-    vec = setup()
-    cpu_sec, err = bench_loop(max(1, DEFAULT_RUNS // 10), 1, lambda: run(vec), sanity)
+    cpu_sec, err = bench_loop(max(1, DEFAULT_RUNS // 10), 1, run_once, sanity)
     if err:
         report["note"] = err
         write_report()
@@ -72,7 +85,8 @@ try:
     report["validity_gate_pass"] = True
     report["validity_ratio"] = 1.0
     report["framework_version"] = stable_baselines3.__version__
-    report["note"] = "SubprocVecEnv CartPole-v1 x4 (Wave 10)"
+    backend = report.get("vecenv_backend", "VecEnv")
+    report["note"] = f"{backend} CartPole-v1 x4 (Wave 13 T5)"
 except Exception as exc:  # noqa: BLE001
-    report["note"] = f"SubprocVecEnv failed: {exc}"
+    report["note"] = f"VecEnv failed: {exc}"
 write_report()

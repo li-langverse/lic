@@ -66,7 +66,7 @@ numpy_path = Path(os.environ["PH_ML_BENCH_NUMPY"])
 report = {
     "suite": "ph-ml-lkir-matmul-32",
     "workload_size": 32,
-    "workload_note": "64×4×4 blocked tiles simulating 32×32 logical matmul vs NumPy 32×32",
+    "workload_note": "8x8 blocked LKIR matmul (32x32 logical gate) vs NumPy 32x32",
     "compile_ok": False,
     "executed": False,
     "validity_gate_pass": False,

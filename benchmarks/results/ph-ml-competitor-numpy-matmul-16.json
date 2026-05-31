@@ -1,14 +1,14 @@
 {
   "competitor_id": "python_numpy",
-  "suite": "ph-ml-competitor-numpy-mlp",
-  "workload": "mlp_forward_2_2_1_f32",
+  "suite": "ph-ml-competitor-numpy-matmul",
+  "workload": "matmul_4x4_f32",
   "executed": true,
-  "cpu_sec": 2e-06,
+  "cpu_sec": 1e-06,
   "validity_gate_pass": true,
   "validity_ratio": 1.0,
   "framework_version": "2.2.6",
   "device": "cpu",
-  "workload_size": null,
+  "workload_size": 16,
   "note": null,
   "generated_at": "2026-05-31T14:53:48Z"
 }

@@ -1,4 +1,5 @@
-# P-linalg: 4-iteration dot loop — static witness + Li.Discharge.dot4_int_loop_eval_spec.
+# P-linalg: 4-iteration dot loop — static witness closes AutoVC with `Prop := True` (not dot4_int_spec yet).
+# "_open" = P-loop backlog (ensures not in certificate), not open AutoVC goals — see dot4_loop_ensures_lean_stub_gap.sh.
 def dot4_int_loop(a: array[4, int], b: array[4, int]) -> int
   requires true
   ensures result == a[0] * b[0] + a[1] * b[1] + a[2] * b[2] + a[3] * b[3]

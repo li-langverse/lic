@@ -4,10 +4,10 @@ import lig
 
 def ml_version() -> int
   requires true
-  ensures result == 4
+  ensures result == 5
   decreases 0
 =
-  return 4
+  return 5
 
 def ml_matmul_max_dim() -> int
   requires true

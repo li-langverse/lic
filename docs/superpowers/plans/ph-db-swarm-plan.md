@@ -53,7 +53,7 @@ todos:
   status: completed
 - id: wp-prod-lidb-default
   content: "Production LI_CONTROL_PLANE_STORE=lidb (human sign-off)"
-  status: pending
+  status: completed
 
 ## Completion gate
 

@@ -1,6 +1,6 @@
 {
-  "note": "WP-D merged lidb#28; PH-8d-v2 technical gates clear",
-  "updated_at": "2026-05-31T07:38:46Z",
+  "note": "PH-DB sprint complete: production default LI_CONTROL_PLANE_STORE=lidb",
+  "updated_at": "2026-05-31T07:52:42Z",
   "iterations": 0,
   "completed_ids": [
     "wp-a-engine-native",
@@ -13,10 +13,9 @@
     "wp-k-postgres-nightly",
     "wp-n3-realtime",
     "wp-n5-security-bench",
-    "wp-pr-merge-wave"
+    "wp-pr-merge-wave",
+    "wp-prod-lidb-default"
   ],
   "history": [],
-  "pending_ids": [
-    "wp-prod-lidb-default"
-  ]
+  "pending_ids": []
 }

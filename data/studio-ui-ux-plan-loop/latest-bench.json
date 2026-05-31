@@ -204,9 +204,9 @@
     "honest_blocked": true,
     "meets_target": false,
     "native_pixels": false,
-    "env_active": false,
-    "gpu_runner": false,
-    "host_present": false,
+    "env_active": true,
+    "gpu_runner": true,
+    "host_present": true,
     "notes": "probe_compile_unavailable"
   },
   "gates_pass": true

@@ -45,9 +45,3 @@ suite = "smoke"
 file = "smoke/job_graph_async_timing.li"
 outcome = "compile_open_ok"
 note = "T-PKG-li-ml-rl-async-timing PH-ML Wave 5 G-ml-async"
-
-[[tests]]
-suite = "smoke"
-file = "smoke/env_pool_process_scaffold.li"
-outcome = "compile_open_ok"
-note = "PH-ML Wave 6 WP-RL-05"

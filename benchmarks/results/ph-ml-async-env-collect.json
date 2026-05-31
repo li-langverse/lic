@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-05-31T03:03:53Z",
+  "generated_at": "2026-05-31T02:46:12Z",
   "suite": "ph-ml-async-env-collect",
   "smoke": "packages/li-ml-rl/li-tests/smoke/env_pool_async_four.li",
   "env_count": 4,
@@ -13,7 +13,7 @@
   "executed": true,
   "validity_gate_pass": true,
   "run_exit_code": 2,
-  "cpu_sec": 2.115965,
+  "cpu_sec": 0.677603,
   "g_ml_async_bench_note": "run_flaky_thread_pool_compile_ok",
   "stderr_tail": "",
   "envs": [

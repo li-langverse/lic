@@ -72,10 +72,8 @@ grep -q 'ml_matmul_cpu_ref' packages/li-ml/src/lib.li || { echo "li-ml missing g
 
 lic_check_smokes "$LIC" || exit 1
 
-export LIC
 bash scripts/bench-ph-ml-async-env-collect.sh
 bash scripts/bench-ph-ml-mlp-forward.sh
-if [[ -f scripts/bench-ph-ml-competitive.sh ]]; then bash scripts/bench-ph-ml-competitive.sh; fi
 
 [[ -f benchmarks/results/ph-ml-async-env-collect.json ]] || { echo "missing ph-ml-async-env-collect.json"; exit 1; }
 

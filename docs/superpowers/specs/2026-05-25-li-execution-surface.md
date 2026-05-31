@@ -52,5 +52,6 @@ Spec only until parser lands.
 | Rust rayon | `@parallel` inherits; static chunks v1 |
 | numba | prange vs SIMD = separate knobs |
 | Chapel | `team()` phase 2 |
+| Kokkos + PETSc | execution/memory spaces, explicit `deep_copy`, device KSP — [requirements spec](2026-05-31-li-petsc-kokkos-execution-memory-model.md) |
 
 Handbook: [parallelism.md](../../language/parallelism.md).

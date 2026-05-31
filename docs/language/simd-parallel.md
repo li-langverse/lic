@@ -86,6 +86,6 @@ Values captured into parallel regions must be safe to share. Laws are defined in
 
 ## GPU (future)
 
-`gpu proc` and device buffers are **not** v1 — CPU SIMD + OpenMP first.
+`gpu proc` and device buffers are **not** v1 — CPU SIMD + OpenMP first. Normative mapping from Kokkos/PETSc exascale patterns (execution spaces, memory spaces, data movement): [PETSc–Kokkos execution/memory model spec](../superpowers/specs/2026-05-31-li-petsc-kokkos-execution-memory-model.md).
 
 Benchmarks: [Benchmarks guide](../benchmarks.md).

@@ -719,6 +719,8 @@ gaps:
   - ecosystem-explorer.json hpc_libraries[kokkos] li_status=missing
   - https://github.com/kokkos/kokkos
   - lic issue
+  - docs/superpowers/specs/2026-05-31-li-petsc-kokkos-execution-memory-model.md
+  - lic#28 requirements slice (2026-05-31)
   ph_id: PH-7e
   handoff_to:
   - numerics_researcher

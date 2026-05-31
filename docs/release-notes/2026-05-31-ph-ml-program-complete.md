@@ -32,4 +32,4 @@ export PH_ML_WEIGHTS_FIXTURE="$PWD/fixtures/ph-ml-weights"
 bash scripts/ph-ml-program-complete-gates.sh
 ```
 
-**Agent verification (2026-05-31):** runs include `code_implementer-1780262240226`, `code_implementer-1780262407890` — `ph-ml-program-complete-gates.sh` exit 0 post-merge `main` (~112s); T1–T8 unchanged; bench JSON spot-check (`ratio_vs_li` ≤2.0, SB3/Ray `executed:true`, `live_proxy:true`); PR [#676](https://github.com/li-langverse/lic/pull/676) — CI green (all checks SUCCESS), await human `merge-approved`.
+**Agent verification (2026-05-31):** runs include `code_implementer-1780262240226`, `code_implementer-1780262407890`, `code_implementer-1780262952380` — `ph-ml-program-complete-gates.sh` exit 0 post-merge `main` (~111s); T1–T8 unchanged; bench JSON spot-check (`ratio_vs_li` ≤2.0, SB3/Ray `executed:true`, `live_proxy:true`); PR [#676](https://github.com/li-langverse/lic/pull/676) — CI green (all checks SUCCESS), await human `merge-approved`.

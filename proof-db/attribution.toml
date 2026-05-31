@@ -7,3 +7,10 @@ org = "li-langverse"
 name = "Julian Kleber"
 url = "https://julianmkleber.com"
 social_x = "capjmk"
+
+[footer]
+# Rendered on every Proof Explorer page (WP0).
+line1 = "Li Proof Library"
+line2 = "Curated by Julian Kleber"
+curator_url = "https://julianmkleber.com"
+curator_x = "https://x.com/capjmk"

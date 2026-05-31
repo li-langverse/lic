@@ -17,7 +17,7 @@ li_phase "HPC competitive snapshot"
 {
   echo "# generated $(date -u +%Y-%m-%dT%H:%M:%SZ)"
   echo "LI_REPO_SHA=$(git -C "$ROOT" rev-parse HEAD 2>/dev/null || echo unknown)"
-  echo "LI_REGISTRY=$(git -C "$ROOT" log -1 --format=%h -- benchmarks/competitive/registry.toml 2>/dev/null || echo unknown)"
+  echo "LI_REGISTRY=$(git -C "$BENCHMARKS_ROOT" log -1 --format=%h -- benchmarks/workloads/competitive/registry.toml 2>/dev/null || echo unknown)"
 
   ver() {
     local name="$1" cmd="$2"

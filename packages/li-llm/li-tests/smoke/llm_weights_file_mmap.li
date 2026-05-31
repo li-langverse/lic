@@ -6,22 +6,24 @@ def main() -> int raises IO, Alloc
   ensures result == 0
   decreases 0
 =
-  if llm_path_format_tag("fixtures/ph-ml-weights/model.safetensors") != llm_format_safetensors():
+  var st_path: str = "fixtures/ph-ml-weights/model.safetensors"
+  var gg_path: str = "fixtures/ph-ml-weights/model.gguf"
+  if llm_path_format_tag(st_path) != llm_format_safetensors():
     return 1
-  if llm_path_format_tag("fixtures/ph-ml-weights/model.gguf") != llm_format_gguf():
+  if llm_path_format_tag(gg_path) != llm_format_gguf():
     return 2
-  var b0: int = llm_safetensors_tensor_bytes_mmap("fixtures/ph-ml-weights/model.safetensors", 0)
+  var b0: int = llm_safetensors_tensor_bytes_mmap(st_path, 0)
   if b0 <= 0:
     return 3
-  var hdr: LlmSafetensorsHeader = llm_safetensors_load_tensors_scaffold("fixtures/ph-ml-weights/model.safetensors")
+  var hdr: LlmSafetensorsHeader = llm_safetensors_load_tensors_scaffold(st_path)
   if hdr.tensor_bytes_read != 128:
     return 4
-  var w: LlmModelWeights = llm_load_weights("fixtures/ph-ml-weights/model.safetensors")
+  var w: LlmModelWeights = llm_load_weights(st_path)
   if llm_model_weights_valid(w) != 1:
     return 5
   if w.format_tag != llm_format_safetensors():
     return 6
-  var g: LlmModelWeights = llm_load_weights("fixtures/ph-ml-weights/model.gguf")
+  var g: LlmModelWeights = llm_load_weights(gg_path)
   if g.format_tag != llm_format_gguf():
     return 7
   if g.loaded != 1:

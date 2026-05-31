@@ -66,6 +66,7 @@ if ratio is None or float(ratio) > 2.0:
     sys.exit(f"T6: ratio_vs_li must be <= 2.0 (got {ratio})")
 PY
 
+<<<<<<< HEAD
 export PH_ML_WEIGHTS_FIXTURE="${PH_ML_WEIGHTS_FIXTURE:-$ROOT/benchmarks/fixtures/ph-ml-weights}"
 python3 scripts/prepare_ph_ml_weights_fixture.py
 [[ -f "$PH_ML_WEIGHTS_FIXTURE/model.safetensors" && -f "$PH_ML_WEIGHTS_FIXTURE/model.gguf" ]] \

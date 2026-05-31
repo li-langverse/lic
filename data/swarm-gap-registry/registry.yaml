@@ -49,11 +49,12 @@ gaps:
 - id: gap-missing-std-std-summary
   gap_kind: missing_package
   title: Missing std module std.summary
-  status: open
+  status: closed
   priority: 6
   discovered_by: gap_explorer
   evidence:
   - Build data/latest/summary.json in Li
+  - std/summary/summary.li + import harness 2026-05-31
   ph_id: PH-IO-7
   target_backlog: docs/ecosystem/ecosystem-package-backlog.md
   target_todo_id: pkg-std-summary
@@ -64,11 +65,12 @@ gaps:
 - id: gap-missing-std-std-plot
   gap_kind: missing_package
   title: Missing std module std.plot
-  status: open
+  status: closed
   priority: 6
   discovered_by: gap_explorer
   evidence:
   - Static dashboard without Node/Vite
+  - std/plot/plot.li + import harness 2026-05-31
   ph_id: PH-IO-5
   target_backlog: docs/ecosystem/ecosystem-package-backlog.md
   target_todo_id: pkg-std-plot

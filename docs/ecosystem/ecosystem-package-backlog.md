@@ -18,13 +18,15 @@ todos:
   gap_orchestrator: true
   gap_ref: gap-missing-std-std-csv
 - id: pkg-std-summary
-  content: "Missing std module std.summary"
-  status: pending
+  content: "std.summary — PH-IO-7 compile harness (`std/summary/summary.li`, `import std.summary`)"
+  status: completed
   gap_orchestrator: true
+  gap_ref: gap-missing-std-std-summary
 - id: pkg-std-plot
-  content: "Missing std module std.plot"
-  status: pending
+  content: "std.plot — PH-IO-5 compile harness (`std/plot/plot.li`, `import std.plot`)"
+  status: completed
   gap_orchestrator: true
+  gap_ref: gap-missing-std-std-plot
 
 
 

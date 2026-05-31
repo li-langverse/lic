@@ -66,6 +66,12 @@ bool is_std_module_symbol(const std::string_view name) {
                        "file_close", "file_read_all_stub", "path_join",
                        "CsvRow", "CsvTable", "csv_tag", "csv_parse_row_stub",
                        "csv_read_table_stub",
+                       // std.summary (PH-IO-7)
+                       "SummaryRow", "SummaryStats", "summary_tag",
+                       "build_summary_json_stub", "summary_row_count_stub",
+                       // std.plot (PH-IO-5)
+                       "PlotSpec", "PlotCanvas", "plot_tag",
+                       "render_static_dashboard_stub", "plot_canvas_new_stub",
                        nullptr});
 }
 

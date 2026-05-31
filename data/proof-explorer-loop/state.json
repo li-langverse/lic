@@ -1,7 +1,7 @@
 {
   "sprint": "proof-explorer-program",
   "started": "2026-05-31",
-  "completed_wps": ["wp-k8", "wp0"],
-  "current_wp": "wp1",
+  "completed_wps": ["wp-k8", "wp0", "wp1", "wp4"],
+  "current_wp": "wp5",
   "branch": "cursor/proof-explorer-program"
 }

@@ -7,4 +7,8 @@ if [[ "$n" -lt 75 ]]; then
   echo "wp1-ingest: only $n problems (want >=75 curated, target 1200)" >&2
   exit 1
 fi
-echo "wp1-ingest: advisory OK ($n register rows; full ingest pending)"
+if [[ "$n" -ge 1200 ]]; then
+  echo "wp1-ingest: OK ($n register rows; Tier-A catalog complete)"
+else
+  echo "wp1-ingest: advisory OK ($n register rows; full ingest pending)"
+fi

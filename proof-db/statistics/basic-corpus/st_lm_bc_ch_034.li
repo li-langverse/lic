@@ -1,0 +1,15 @@
+# ST-LM-BC-CH-034: Chebyshev inequality P(|X-mu|>=k sigma) <= 1/k^2 (case 34).
+
+def chebyshev_bound(k: float) -> float
+  requires k > 0.0
+  ensures result == 1.0 / (k * k)
+  decreases 0
+=
+  return 1.0 / (k * k)
+
+def main() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0

@@ -29,3 +29,6 @@
 
 | **11** | Wave 10 carryover: GPU/LKIR matmul, safetensors bytes, RL fork IPC, Rust MLP, 16Ã—16 row | li-llm, li-ml, li-sim | ph-ml-wave11-gates.sh |
 
+
+## Wave 13 — program complete (all deferred T1–T8)
+

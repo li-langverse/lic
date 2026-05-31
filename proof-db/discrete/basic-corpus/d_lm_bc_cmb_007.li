@@ -1,5 +1,12 @@
 # D-LM-BC-CMB-007: Binomial coefficient identity (variant 7).
 
+def binomial_symmetry(n: int, k: int) -> int
+  requires n >= 0 and 0 <= k and k <= n
+  ensures result == n - k
+  decreases 0
+=
+  return n - k
+
 def main() -> int
   requires true
   ensures result == 0

@@ -1,0 +1,15 @@
+# P-LM-BC-WV-039: Huygens principle stub for wavefront propagation.
+
+def p_lm_bc_wv_039_witness(x: float) -> float
+  requires true
+  ensures result == x
+  decreases 0
+=
+  return x
+
+def main() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0

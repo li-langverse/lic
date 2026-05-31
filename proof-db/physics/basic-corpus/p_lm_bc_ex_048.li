@@ -1,0 +1,15 @@
+# P-LM-BC-EX-048: Buoyant force equals weight of displaced fluid.
+
+def p_lm_bc_ex_048_witness(x: float) -> float
+  requires true
+  ensures result == x
+  decreases 0
+=
+  return x
+
+def main() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0

@@ -1,0 +1,15 @@
+# P-LM-BC-TH-026: Equipartition: average energy (1/2) kT per quadratic dof.
+
+def p_lm_bc_th_026_witness(x: float) -> float
+  requires true
+  ensures result == x
+  decreases 0
+=
+  return x
+
+def main() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0

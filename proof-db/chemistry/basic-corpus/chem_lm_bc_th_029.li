@@ -1,5 +1,12 @@
 # CHEM-LM-BC-TH-029: Gibbs free energy Delta G = Delta H - T Delta S (form 29).
 
+def gibbs_free_energy(dh: float, t: float, ds: float) -> float
+  requires true
+  ensures result == dh - t * ds
+  decreases 0
+=
+  return dh - t * ds
+
 def main() -> int
   requires true
   ensures result == 0

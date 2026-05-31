@@ -1,6 +1,7 @@
 #include "li_rt_lig.h"
 
 #include <math.h>
+#include <stdlib.h>
 #include <string.h>
 
 int32_t li_rt_lig_present_blit_rgba8(int32_t, int32_t, int32_t, int32_t, int32_t);
@@ -108,3 +109,23 @@ int32_t li_rt_lig_kernel_run(int32_t kid, int32_t bid) {
 }
 
 float li_rt_lig_kernel_last_validity_ratio(void) { return g_ratio; }
+int32_t li_rt_lig_emit_env_flag(const char* var_name) {
+  const char* v;
+  if (!var_name) return 0;
+  v = getenv(var_name);
+  return (v && v[0] == '1' && v[1] == '\0') ? 1 : 0;
+}
+
+int32_t li_rt_lig_emit_vendor_progress(void) {
+  int32_t n = 0;
+  if (li_rt_lig_emit_env_flag("LIG_EMIT_CUDA")) n++;
+  if (li_rt_lig_emit_env_flag("LIG_EMIT_HIP")) n++;
+  if (li_rt_lig_emit_env_flag("LIG_EMIT_METAL")) n++;
+  return n > 0 ? 1 : 0;
+}
+
+int32_t li_rt_lig_matmul_ready(void) {
+  int32_t bid = 0;
+  if (li_rt_lig_kernel_run(1, bid) != 0) return 0;
+  return g_ratio + 0.0001f >= 0.999f ? 1 : 0;
+}

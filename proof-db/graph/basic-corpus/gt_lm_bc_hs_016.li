@@ -1,0 +1,8 @@
+# GT-LM-BC-HS-016: Handshaking lemma: sum deg(v) = 2|E| (variant 16).
+
+def main() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0

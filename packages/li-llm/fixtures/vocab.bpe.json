@@ -1,0 +1,7 @@
+{
+  "version": 1,
+  "mode": "bpe_scaffold",
+  "vocab_size": 260,
+  "merges": ["t h", "h e", "l l", "l o"],
+  "note": "Wave 9 fixture — merge ids 257-260 in li-llm lib.li"
+}

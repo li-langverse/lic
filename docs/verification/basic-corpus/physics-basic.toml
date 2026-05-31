@@ -1,0 +1,405 @@
+# Phase-8 basic corpus plan — field "physics"
+version = 1
+field = "physics"
+target_count = 50
+last_verified_lic_commit = "a9441d8e"
+
+[[planned]]
+id = "P-AX-BC-MEC-001"
+kind = "axiom"
+tranche = 1
+proof_status = "axiomatic"
+domain = "mechanics"
+statement = "Newton I: zero net force implies constant velocity."
+
+[[planned]]
+id = "P-AX-BC-MEC-002"
+kind = "axiom"
+tranche = 1
+proof_status = "axiomatic"
+domain = "mechanics"
+statement = "Newton II: F = m a for point mass in inertial frame."
+
+[[planned]]
+id = "P-AX-BC-MEC-003"
+kind = "axiom"
+tranche = 1
+proof_status = "axiomatic"
+domain = "mechanics"
+statement = "Newton III: pairwise interaction forces sum to zero."
+
+[[planned]]
+id = "P-LM-BC-MEC-004"
+kind = "lemma"
+tranche = 1
+proof_status = "open"
+domain = "mechanics"
+statement = "Impulse equals change of linear momentum."
+
+[[planned]]
+id = "P-LM-BC-MEC-005"
+kind = "lemma"
+tranche = 1
+proof_status = "open"
+domain = "mechanics"
+statement = "Work-energy: W = integral F dot dx."
+
+[[planned]]
+id = "P-LM-BC-MEC-006"
+kind = "lemma"
+tranche = 1
+proof_status = "open"
+domain = "mechanics"
+statement = "Kinetic energy T = (1/2) m v^2 for point mass."
+
+[[planned]]
+id = "P-AX-BC-MEC-007"
+kind = "axiom"
+tranche = 1
+proof_status = "axiomatic"
+domain = "mechanics"
+statement = "Angular momentum L = r x p definition."
+
+[[planned]]
+id = "P-LM-BC-MEC-008"
+kind = "lemma"
+tranche = 1
+proof_status = "open"
+domain = "mechanics"
+statement = "Torque equals time derivative of angular momentum."
+
+[[planned]]
+id = "P-LM-BC-MEC-009"
+kind = "lemma"
+tranche = 1
+proof_status = "open"
+domain = "mechanics"
+statement = "Center of mass moves as if all mass were concentrated there."
+
+[[planned]]
+id = "P-LM-BC-MEC-010"
+kind = "lemma"
+tranche = 1
+proof_status = "open"
+domain = "mechanics"
+statement = "Reduced mass for two-body central force problem."
+
+[[planned]]
+id = "P-AX-BC-EM-011"
+kind = "axiom"
+tranche = 2
+proof_status = "axiomatic"
+domain = "electromagnetism"
+statement = "Coulomb law: F proportional to q1 q2 / r^2."
+
+[[planned]]
+id = "P-AX-BC-EM-012"
+kind = "axiom"
+tranche = 2
+proof_status = "axiomatic"
+domain = "electromagnetism"
+statement = "Gauss law (integral form) for electric flux."
+
+[[planned]]
+id = "P-AX-BC-EM-013"
+kind = "axiom"
+tranche = 2
+proof_status = "axiomatic"
+domain = "electromagnetism"
+statement = "Faraday law: induced EMF equals -dPhi/dt."
+
+[[planned]]
+id = "P-AX-BC-EM-014"
+kind = "axiom"
+tranche = 2
+proof_status = "axiomatic"
+domain = "electromagnetism"
+statement = "Ampere-Maxwell law (stub integral form)."
+
+[[planned]]
+id = "P-LM-BC-EM-015"
+kind = "lemma"
+tranche = 2
+proof_status = "open"
+domain = "electromagnetism"
+statement = "Electrostatic potential energy U = q V."
+
+[[planned]]
+id = "P-LM-BC-EM-016"
+kind = "lemma"
+tranche = 2
+proof_status = "open"
+domain = "electromagnetism"
+statement = "Capacitor energy stored U = (1/2) C V^2."
+
+[[planned]]
+id = "P-LM-BC-EM-017"
+kind = "lemma"
+tranche = 2
+proof_status = "open"
+domain = "electromagnetism"
+statement = "Ohm law V = I R (linear resistor stub)."
+
+[[planned]]
+id = "P-LM-BC-EM-018"
+kind = "lemma"
+tranche = 2
+proof_status = "open"
+domain = "electromagnetism"
+statement = "Poynting vector S = E x H (stub)."
+
+[[planned]]
+id = "P-AX-BC-EM-019"
+kind = "axiom"
+tranche = 2
+proof_status = "axiomatic"
+domain = "electromagnetism"
+statement = "Lorentz force F = q (E + v x B) stub."
+
+[[planned]]
+id = "P-LM-BC-EM-020"
+kind = "lemma"
+tranche = 2
+proof_status = "open"
+domain = "electromagnetism"
+statement = "Wave equation from Maxwell in vacuum (stub)."
+
+[[planned]]
+id = "P-AX-BC-TH-021"
+kind = "axiom"
+tranche = 3
+proof_status = "axiomatic"
+domain = "thermodynamics"
+statement = "Zeroth law: thermal equilibrium is transitive."
+
+[[planned]]
+id = "P-AX-BC-TH-022"
+kind = "axiom"
+tranche = 3
+proof_status = "axiomatic"
+domain = "thermodynamics"
+statement = "First law: dU = delta Q - delta W."
+
+[[planned]]
+id = "P-AX-BC-TH-023"
+kind = "axiom"
+tranche = 3
+proof_status = "axiomatic"
+domain = "thermodynamics"
+statement = "Second law: entropy of isolated system non-decreasing."
+
+[[planned]]
+id = "P-AX-BC-TH-024"
+kind = "axiom"
+tranche = 3
+proof_status = "axiomatic"
+domain = "thermodynamics"
+statement = "Ideal gas PV = n R T."
+
+[[planned]]
+id = "P-LM-BC-TH-025"
+kind = "lemma"
+tranche = 3
+proof_status = "open"
+domain = "thermodynamics"
+statement = "Carnot efficiency upper bound 1 - T_c/T_h."
+
+[[planned]]
+id = "P-LM-BC-TH-026"
+kind = "lemma"
+tranche = 3
+proof_status = "open"
+domain = "thermodynamics"
+statement = "Equipartition: average energy (1/2) kT per quadratic dof."
+
+[[planned]]
+id = "P-LM-BC-TH-027"
+kind = "lemma"
+tranche = 3
+proof_status = "open"
+domain = "thermodynamics"
+statement = "Heat capacity at constant volume definition C_V."
+
+[[planned]]
+id = "P-LM-BC-TH-028"
+kind = "lemma"
+tranche = 3
+proof_status = "open"
+domain = "thermodynamics"
+statement = "Adiabatic ideal gas PV^gamma = const."
+
+[[planned]]
+id = "P-LM-BC-TH-029"
+kind = "lemma"
+tranche = 3
+proof_status = "open"
+domain = "thermodynamics"
+statement = "Maxwell-Boltzmann speed distribution stub."
+
+[[planned]]
+id = "P-AX-BC-TH-030"
+kind = "axiom"
+tranche = 3
+proof_status = "axiomatic"
+domain = "thermodynamics"
+statement = "Third law: entropy approaches constant as T -> 0."
+
+[[planned]]
+id = "P-LM-BC-WV-031"
+kind = "lemma"
+tranche = 3
+proof_status = "open"
+domain = "waves-fluids"
+statement = "Harmonic oscillator omega = sqrt(k/m)."
+
+[[planned]]
+id = "P-LM-BC-WV-032"
+kind = "lemma"
+tranche = 3
+proof_status = "open"
+domain = "waves-fluids"
+statement = "Doppler shift f' = f (1 +/- v/c) non-relativistic."
+
+[[planned]]
+id = "P-LM-BC-WV-033"
+kind = "lemma"
+tranche = 3
+proof_status = "open"
+domain = "waves-fluids"
+statement = "Snell law n1 sin theta1 = n2 sin theta2."
+
+[[planned]]
+id = "P-LM-BC-WV-034"
+kind = "lemma"
+tranche = 3
+proof_status = "open"
+domain = "waves-fluids"
+statement = "Bernoulli equation along streamline (stub)."
+
+[[planned]]
+id = "P-LM-BC-WV-035"
+kind = "lemma"
+tranche = 3
+proof_status = "open"
+domain = "waves-fluids"
+statement = "Continuity equation div v = 0 incompressible."
+
+[[planned]]
+id = "P-LM-BC-WV-036"
+kind = "lemma"
+tranche = 3
+proof_status = "open"
+domain = "waves-fluids"
+statement = "Sound speed c = sqrt(gamma R T / M) ideal gas."
+
+[[planned]]
+id = "P-LM-BC-WV-037"
+kind = "lemma"
+tranche = 3
+proof_status = "open"
+domain = "waves-fluids"
+statement = "SHM period T = 2 pi / omega."
+
+[[planned]]
+id = "P-LM-BC-WV-038"
+kind = "lemma"
+tranche = 3
+proof_status = "open"
+domain = "waves-fluids"
+statement = "Standing wave boundary conditions on string."
+
+[[planned]]
+id = "P-LM-BC-WV-039"
+kind = "lemma"
+tranche = 3
+proof_status = "open"
+domain = "waves-fluids"
+statement = "Huygens principle stub for wavefront propagation."
+
+[[planned]]
+id = "P-LM-BC-WV-040"
+kind = "lemma"
+tranche = 3
+proof_status = "open"
+domain = "waves-fluids"
+statement = "Reynolds number Re = rho v L / mu scaling."
+
+[[planned]]
+id = "P-LM-BC-EX-041"
+kind = "lemma"
+tranche = 3
+proof_status = "open"
+domain = "mechanics"
+statement = "Kepler third law T^2 proportional to a^3."
+
+[[planned]]
+id = "P-LM-BC-EX-042"
+kind = "lemma"
+tranche = 3
+proof_status = "open"
+domain = "mechanics"
+statement = "Escape velocity v_e = sqrt(2 G M / r)."
+
+[[planned]]
+id = "P-LM-BC-EX-043"
+kind = "lemma"
+tranche = 3
+proof_status = "open"
+domain = "mechanics"
+statement = "Rocket equation delta v = v_e ln(m0/m)."
+
+[[planned]]
+id = "P-LM-BC-EX-044"
+kind = "lemma"
+tranche = 3
+proof_status = "open"
+domain = "mechanics"
+statement = "Parallel axis theorem I = I_cm + M d^2."
+
+[[planned]]
+id = "P-LM-BC-EX-045"
+kind = "lemma"
+tranche = 3
+proof_status = "open"
+domain = "mechanics"
+statement = "Small angle sin theta approx theta radians."
+
+[[planned]]
+id = "P-LM-BC-EX-046"
+kind = "lemma"
+tranche = 3
+proof_status = "open"
+domain = "mechanics"
+statement = "Drag force linear model F = -b v stub."
+
+[[planned]]
+id = "P-LM-BC-EX-047"
+kind = "lemma"
+tranche = 3
+proof_status = "open"
+domain = "mechanics"
+statement = "Simple pendulum period T = 2 pi sqrt(L/g) small angle."
+
+[[planned]]
+id = "P-LM-BC-EX-048"
+kind = "lemma"
+tranche = 3
+proof_status = "open"
+domain = "mechanics"
+statement = "Buoyant force equals weight of displaced fluid."
+
+[[planned]]
+id = "P-LM-BC-EX-049"
+kind = "lemma"
+tranche = 3
+proof_status = "open"
+domain = "mechanics"
+statement = "Stefan-Boltzmann j = sigma T^4 stub."
+
+[[planned]]
+id = "P-LM-BC-EX-050"
+kind = "lemma"
+tranche = 3
+proof_status = "open"
+domain = "mechanics"
+statement = "Planck blackbody spectral peak Wien law stub."

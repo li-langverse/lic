@@ -1,0 +1,405 @@
+# Phase-8 basic corpus plan — field "graph"
+version = 1
+field = "graph"
+target_count = 50
+last_verified_lic_commit = "a9441d8e"
+
+[[planned]]
+id = "GT-LM-BC-HS-001"
+kind = "lemma"
+tranche = 1
+proof_status = "open"
+domain = "combinatorics"
+statement = "Handshaking lemma: sum deg(v) = 2|E| (variant 1)."
+
+[[planned]]
+id = "GT-LM-BC-TR-002"
+kind = "lemma"
+tranche = 1
+proof_status = "open"
+domain = "combinatorics"
+statement = "Tree on n vertices has n-1 edges (variant 2)."
+
+[[planned]]
+id = "GT-LM-BC-CON-003"
+kind = "lemma"
+tranche = 1
+proof_status = "open"
+domain = "combinatorics"
+statement = "Connected graph |E| >= |V|-1 (variant 3)."
+
+[[planned]]
+id = "GT-LM-BC-COL-004"
+kind = "lemma"
+tranche = 1
+proof_status = "open"
+domain = "combinatorics"
+statement = "Chromatic number upper bound Delta+1 (variant 4)."
+
+[[planned]]
+id = "GT-AX-BC-GR-005"
+kind = "axiom"
+tranche = 1
+proof_status = "axiomatic"
+domain = "combinatorics"
+statement = "Simple graph: no loops, symmetric adjacency (variant 5)."
+
+[[planned]]
+id = "GT-LM-BC-HS-006"
+kind = "lemma"
+tranche = 1
+proof_status = "open"
+domain = "combinatorics"
+statement = "Handshaking lemma: sum deg(v) = 2|E| (variant 6)."
+
+[[planned]]
+id = "GT-LM-BC-TR-007"
+kind = "lemma"
+tranche = 1
+proof_status = "open"
+domain = "combinatorics"
+statement = "Tree on n vertices has n-1 edges (variant 7)."
+
+[[planned]]
+id = "GT-LM-BC-CON-008"
+kind = "lemma"
+tranche = 1
+proof_status = "open"
+domain = "combinatorics"
+statement = "Connected graph |E| >= |V|-1 (variant 8)."
+
+[[planned]]
+id = "GT-LM-BC-COL-009"
+kind = "lemma"
+tranche = 1
+proof_status = "open"
+domain = "combinatorics"
+statement = "Chromatic number upper bound Delta+1 (variant 9)."
+
+[[planned]]
+id = "GT-AX-BC-GR-010"
+kind = "axiom"
+tranche = 1
+proof_status = "axiomatic"
+domain = "combinatorics"
+statement = "Simple graph: no loops, symmetric adjacency (variant 10)."
+
+[[planned]]
+id = "GT-LM-BC-HS-011"
+kind = "lemma"
+tranche = 2
+proof_status = "open"
+domain = "combinatorics"
+statement = "Handshaking lemma: sum deg(v) = 2|E| (variant 11)."
+
+[[planned]]
+id = "GT-LM-BC-TR-012"
+kind = "lemma"
+tranche = 2
+proof_status = "open"
+domain = "combinatorics"
+statement = "Tree on n vertices has n-1 edges (variant 12)."
+
+[[planned]]
+id = "GT-LM-BC-CON-013"
+kind = "lemma"
+tranche = 2
+proof_status = "open"
+domain = "combinatorics"
+statement = "Connected graph |E| >= |V|-1 (variant 13)."
+
+[[planned]]
+id = "GT-LM-BC-COL-014"
+kind = "lemma"
+tranche = 2
+proof_status = "open"
+domain = "combinatorics"
+statement = "Chromatic number upper bound Delta+1 (variant 14)."
+
+[[planned]]
+id = "GT-AX-BC-GR-015"
+kind = "axiom"
+tranche = 2
+proof_status = "axiomatic"
+domain = "combinatorics"
+statement = "Simple graph: no loops, symmetric adjacency (variant 15)."
+
+[[planned]]
+id = "GT-LM-BC-HS-016"
+kind = "lemma"
+tranche = 2
+proof_status = "open"
+domain = "combinatorics"
+statement = "Handshaking lemma: sum deg(v) = 2|E| (variant 16)."
+
+[[planned]]
+id = "GT-LM-BC-TR-017"
+kind = "lemma"
+tranche = 2
+proof_status = "open"
+domain = "combinatorics"
+statement = "Tree on n vertices has n-1 edges (variant 17)."
+
+[[planned]]
+id = "GT-LM-BC-CON-018"
+kind = "lemma"
+tranche = 2
+proof_status = "open"
+domain = "combinatorics"
+statement = "Connected graph |E| >= |V|-1 (variant 18)."
+
+[[planned]]
+id = "GT-LM-BC-COL-019"
+kind = "lemma"
+tranche = 2
+proof_status = "open"
+domain = "combinatorics"
+statement = "Chromatic number upper bound Delta+1 (variant 19)."
+
+[[planned]]
+id = "GT-AX-BC-GR-020"
+kind = "axiom"
+tranche = 2
+proof_status = "axiomatic"
+domain = "combinatorics"
+statement = "Simple graph: no loops, symmetric adjacency (variant 20)."
+
+[[planned]]
+id = "GT-LM-BC-HS-021"
+kind = "lemma"
+tranche = 3
+proof_status = "open"
+domain = "combinatorics"
+statement = "Handshaking lemma: sum deg(v) = 2|E| (variant 21)."
+
+[[planned]]
+id = "GT-LM-BC-TR-022"
+kind = "lemma"
+tranche = 3
+proof_status = "open"
+domain = "combinatorics"
+statement = "Tree on n vertices has n-1 edges (variant 22)."
+
+[[planned]]
+id = "GT-LM-BC-CON-023"
+kind = "lemma"
+tranche = 3
+proof_status = "open"
+domain = "combinatorics"
+statement = "Connected graph |E| >= |V|-1 (variant 23)."
+
+[[planned]]
+id = "GT-LM-BC-COL-024"
+kind = "lemma"
+tranche = 3
+proof_status = "open"
+domain = "combinatorics"
+statement = "Chromatic number upper bound Delta+1 (variant 24)."
+
+[[planned]]
+id = "GT-AX-BC-GR-025"
+kind = "axiom"
+tranche = 3
+proof_status = "axiomatic"
+domain = "combinatorics"
+statement = "Simple graph: no loops, symmetric adjacency (variant 25)."
+
+[[planned]]
+id = "GT-LM-BC-HS-026"
+kind = "lemma"
+tranche = 3
+proof_status = "open"
+domain = "combinatorics"
+statement = "Handshaking lemma: sum deg(v) = 2|E| (variant 26)."
+
+[[planned]]
+id = "GT-LM-BC-TR-027"
+kind = "lemma"
+tranche = 3
+proof_status = "open"
+domain = "combinatorics"
+statement = "Tree on n vertices has n-1 edges (variant 27)."
+
+[[planned]]
+id = "GT-LM-BC-CON-028"
+kind = "lemma"
+tranche = 3
+proof_status = "open"
+domain = "combinatorics"
+statement = "Connected graph |E| >= |V|-1 (variant 28)."
+
+[[planned]]
+id = "GT-LM-BC-COL-029"
+kind = "lemma"
+tranche = 3
+proof_status = "open"
+domain = "combinatorics"
+statement = "Chromatic number upper bound Delta+1 (variant 29)."
+
+[[planned]]
+id = "GT-AX-BC-GR-030"
+kind = "axiom"
+tranche = 3
+proof_status = "axiomatic"
+domain = "combinatorics"
+statement = "Simple graph: no loops, symmetric adjacency (variant 30)."
+
+[[planned]]
+id = "GT-LM-BC-HS-031"
+kind = "lemma"
+tranche = 3
+proof_status = "open"
+domain = "combinatorics"
+statement = "Handshaking lemma: sum deg(v) = 2|E| (variant 31)."
+
+[[planned]]
+id = "GT-LM-BC-TR-032"
+kind = "lemma"
+tranche = 3
+proof_status = "open"
+domain = "combinatorics"
+statement = "Tree on n vertices has n-1 edges (variant 32)."
+
+[[planned]]
+id = "GT-LM-BC-CON-033"
+kind = "lemma"
+tranche = 3
+proof_status = "open"
+domain = "combinatorics"
+statement = "Connected graph |E| >= |V|-1 (variant 33)."
+
+[[planned]]
+id = "GT-LM-BC-COL-034"
+kind = "lemma"
+tranche = 3
+proof_status = "open"
+domain = "combinatorics"
+statement = "Chromatic number upper bound Delta+1 (variant 34)."
+
+[[planned]]
+id = "GT-AX-BC-GR-035"
+kind = "axiom"
+tranche = 3
+proof_status = "axiomatic"
+domain = "combinatorics"
+statement = "Simple graph: no loops, symmetric adjacency (variant 35)."
+
+[[planned]]
+id = "GT-LM-BC-HS-036"
+kind = "lemma"
+tranche = 3
+proof_status = "open"
+domain = "combinatorics"
+statement = "Handshaking lemma: sum deg(v) = 2|E| (variant 36)."
+
+[[planned]]
+id = "GT-LM-BC-TR-037"
+kind = "lemma"
+tranche = 3
+proof_status = "open"
+domain = "combinatorics"
+statement = "Tree on n vertices has n-1 edges (variant 37)."
+
+[[planned]]
+id = "GT-LM-BC-CON-038"
+kind = "lemma"
+tranche = 3
+proof_status = "open"
+domain = "combinatorics"
+statement = "Connected graph |E| >= |V|-1 (variant 38)."
+
+[[planned]]
+id = "GT-LM-BC-COL-039"
+kind = "lemma"
+tranche = 3
+proof_status = "open"
+domain = "combinatorics"
+statement = "Chromatic number upper bound Delta+1 (variant 39)."
+
+[[planned]]
+id = "GT-AX-BC-GR-040"
+kind = "axiom"
+tranche = 3
+proof_status = "axiomatic"
+domain = "combinatorics"
+statement = "Simple graph: no loops, symmetric adjacency (variant 40)."
+
+[[planned]]
+id = "GT-LM-BC-HS-041"
+kind = "lemma"
+tranche = 3
+proof_status = "open"
+domain = "combinatorics"
+statement = "Handshaking lemma: sum deg(v) = 2|E| (variant 41)."
+
+[[planned]]
+id = "GT-LM-BC-TR-042"
+kind = "lemma"
+tranche = 3
+proof_status = "open"
+domain = "combinatorics"
+statement = "Tree on n vertices has n-1 edges (variant 42)."
+
+[[planned]]
+id = "GT-LM-BC-CON-043"
+kind = "lemma"
+tranche = 3
+proof_status = "open"
+domain = "combinatorics"
+statement = "Connected graph |E| >= |V|-1 (variant 43)."
+
+[[planned]]
+id = "GT-LM-BC-COL-044"
+kind = "lemma"
+tranche = 3
+proof_status = "open"
+domain = "combinatorics"
+statement = "Chromatic number upper bound Delta+1 (variant 44)."
+
+[[planned]]
+id = "GT-AX-BC-GR-045"
+kind = "axiom"
+tranche = 3
+proof_status = "axiomatic"
+domain = "combinatorics"
+statement = "Simple graph: no loops, symmetric adjacency (variant 45)."
+
+[[planned]]
+id = "GT-LM-BC-HS-046"
+kind = "lemma"
+tranche = 3
+proof_status = "open"
+domain = "combinatorics"
+statement = "Handshaking lemma: sum deg(v) = 2|E| (variant 46)."
+
+[[planned]]
+id = "GT-LM-BC-TR-047"
+kind = "lemma"
+tranche = 3
+proof_status = "open"
+domain = "combinatorics"
+statement = "Tree on n vertices has n-1 edges (variant 47)."
+
+[[planned]]
+id = "GT-LM-BC-CON-048"
+kind = "lemma"
+tranche = 3
+proof_status = "open"
+domain = "combinatorics"
+statement = "Connected graph |E| >= |V|-1 (variant 48)."
+
+[[planned]]
+id = "GT-LM-BC-COL-049"
+kind = "lemma"
+tranche = 3
+proof_status = "open"
+domain = "combinatorics"
+statement = "Chromatic number upper bound Delta+1 (variant 49)."
+
+[[planned]]
+id = "GT-AX-BC-GR-050"
+kind = "axiom"
+tranche = 3
+proof_status = "axiomatic"
+domain = "combinatorics"
+statement = "Simple graph: no loops, symmetric adjacency (variant 50)."

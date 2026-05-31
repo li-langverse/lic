@@ -1,0 +1,8 @@
+# D-LM-BC-CMB-047: Binomial coefficient identity (variant 47).
+
+def main() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0

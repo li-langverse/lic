@@ -1,3 +1,4 @@
+import scene
 import studio
 
 def main() -> int raises IO

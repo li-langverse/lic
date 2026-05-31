@@ -321,6 +321,8 @@ collect_manifest_rows() {
   : >"$rows_file"
   local cur_suite="" cur_file="" cur_outcome="" cur_substr=""
   while IFS= read -r line; do
+    # Windows/WSL checkouts may leave CRLF in manifest.toml; strip before matching.
+    line="${line%$'\r'}"
     if [[ "$line" == "[[tests]]" ]]; then
       if [[ -n "${cur_file:-}" && -n "${cur_outcome:-}" ]]; then
         if [[ "$FILTER" == "all" || "$FILTER" == "$cur_suite" ]]; then

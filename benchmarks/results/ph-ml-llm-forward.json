@@ -1,0 +1,10 @@
+{
+  "generated_at": "2026-05-31T03:03:55Z",
+  "suite": "ph-ml-llm-forward",
+  "workload_class": "stub",
+  "compile_ok": false,
+  "executed": false,
+  "validity_gate_pass": false,
+  "worker": "cpu_sync",
+  "worker_count": 1
+}

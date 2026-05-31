@@ -18,7 +18,7 @@ def main() -> int raises IO, Alloc
   var acc: int = 104 + 99
   if hint < 0:
     acc = acc + 7
-  else:
+  if hint >= 0:
     acc = acc + hint
   var expect: int = acc % 256
   if logits.top_id != expect:

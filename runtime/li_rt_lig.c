@@ -181,3 +181,14 @@ int32_t li_rt_lig_matmul_ready(void) {
   if (li_rt_lig_kernel_run(1, bid) != 0) return 0;
   return g_ratio + 0.0001f >= 0.999f ? 1 : 0;
 }
+
+int32_t li_rt_lig_gpu_device_buffer_ready(void) {
+  /* Wave 13 T2: host-side device buffer contract — requires vendor emit + matmul pilot. */
+  static int32_t g_device_bytes = 0;
+  if (li_rt_lig_emit_vendor_progress() != 1) return 0;
+  if (li_rt_lig_matmul_ready() != 1) return 0;
+  if (g_device_bytes <= 0) {
+    g_device_bytes = LIG_MATMUL_N * LIG_MATMUL_N * (int32_t)sizeof(float) * 3;
+  }
+  return g_device_bytes > 0 ? 1 : 0;
+}

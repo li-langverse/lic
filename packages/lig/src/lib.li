@@ -192,6 +192,20 @@ extern proc li_rt_lig_matmul_ready() -> int
   ensures result <= 1
   decreases 0
 
+extern proc li_rt_lig_gpu_device_buffer_ready() -> int
+  requires true
+  ensures result >= 0
+  ensures result <= 1
+  decreases 0
+
+def lig_gpu_device_buffer_ready() -> int raises IO
+  requires true
+  ensures result >= 0
+  ensures result <= 1
+  decreases 0
+=
+  return li_rt_lig_gpu_device_buffer_ready()
+
 def lig_emit_cuda_enabled() -> int raises IO
   requires true
   ensures result >= 0

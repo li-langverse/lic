@@ -5,10 +5,17 @@ import ui
 
 def li_std_gui_version() -> int
   requires true
-  ensures result == 8
+  ensures result == 9
   decreases 0
 =
-  return 8
+  return 9
+
+def gui_focus_model_version() -> int
+  requires true
+  ensures result == 1
+  decreases 0
+=
+  return 1
 
 def gui_widget_protocol_version() -> int
   requires true
@@ -577,6 +584,27 @@ def widget_event_key_focus() -> int
 =
   return 3
 
+def widget_event_key_tab() -> int
+  requires true
+  ensures result == 4
+  decreases 0
+=
+  return 4
+
+def widget_event_key_shift_tab() -> int
+  requires true
+  ensures result == 5
+  decreases 0
+=
+  return 5
+
+def widget_tab_index_none() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0
+
 type LayoutConstraints = object
   public min_w: float
   public max_w: float
@@ -594,6 +622,7 @@ type WidgetNode = object
   public min_h: float
   public focused: int
   public enabled: int
+  public tab_index: int
 
 type WidgetLayoutResult = object
   public bounds: Rect
@@ -685,6 +714,7 @@ def widget_node_label(label_chars: float) -> WidgetNode
   n.min_h = 0.0
   n.focused = 0
   n.enabled = 1
+  n.tab_index = widget_tab_index_none()
   return n
 
 def widget_node_button(label_chars: float) -> WidgetNode
@@ -701,6 +731,7 @@ def widget_node_button(label_chars: float) -> WidgetNode
   n.min_h = gui_widget_button_min_h_px()
   n.focused = 0
   n.enabled = 1
+  n.tab_index = widget_tab_index_none()
   return n
 
 def widget_node_panel(min_w: float, min_h: float) -> WidgetNode
@@ -718,6 +749,7 @@ def widget_node_panel(min_w: float, min_h: float) -> WidgetNode
   n.min_h = min_h
   n.focused = 0
   n.enabled = 1
+  n.tab_index = widget_tab_index_none()
   return n
 
 def widget_node_spacer(w: float, h: float) -> WidgetNode
@@ -735,6 +767,7 @@ def widget_node_spacer(w: float, h: float) -> WidgetNode
   n.min_h = h
   n.focused = 0
   n.enabled = 1
+  n.tab_index = widget_tab_index_none()
   return n
 
 def widget_node_text_input(text_chars: float) -> WidgetNode
@@ -753,7 +786,15 @@ def widget_node_text_input(text_chars: float) -> WidgetNode
   n.min_h = gui_widget_text_input_min_h_px()
   n.focused = 0
   n.enabled = 1
+  n.tab_index = widget_tab_index_none()
   return n
+
+def widget_node_set_tab_index(node: var WidgetNode, tab_index: int) -> unit
+  requires tab_index >= 0
+  ensures node.tab_index == tab_index
+  decreases 0
+=
+  node.tab_index = tab_index
 
 def widget_clamp_size(w: float, h: float, constraints: LayoutConstraints) -> WidgetSize
   requires w >= 0.0
@@ -900,7 +941,7 @@ def widget_handle_event(node: var WidgetNode, layout: WidgetLayoutResult, event:
   requires node.kind >= widget_kind_none()
   requires node.kind <= widget_kind_text_input()
   requires event.kind >= widget_event_none()
-  requires event.kind <= widget_event_key_focus()
+  requires event.kind <= widget_event_key_shift_tab()
   requires layout.bounds.w >= 0.0
   requires layout.bounds.h >= 0.0
   ensures result.handled >= 0
@@ -1495,7 +1536,7 @@ def scroll_area_hit_test(layout: ScrollAreaLayoutResult, px: float, py: float) -
 
 def scroll_area_handle_event(spec: var ScrollAreaWidget, layout: ScrollAreaLayoutResult, event: WidgetEvent) -> WidgetEventResult
   requires event.kind >= widget_event_none()
-  requires event.kind <= widget_event_key_focus()
+  requires event.kind <= widget_event_key_shift_tab()
   requires layout.bounds.w >= 0.0
   requires layout.bounds.h >= 0.0
   ensures result.handled >= 0
@@ -1617,7 +1658,7 @@ def flex_layout_handle_event_at(spec: var FlexLayout, layout: FlexLayoutResult, 
   requires index >= 0
   requires index <= 3
   requires event.kind >= widget_event_none()
-  requires event.kind <= widget_event_key_focus()
+  requires event.kind <= widget_event_key_shift_tab()
   ensures result.handled >= 0
   ensures result.handled <= 1
   ensures result.wants_focus >= 0
@@ -1877,4 +1918,354 @@ def event_dispatcher_dispatch_key_focus(spec: var FlexLayout, layout: FlexLayout
   out.target_index = state.focus_index
   out.handled = child_result.handled
   out.wants_focus = child_result.wants_focus
+  return out
+
+# --- Phase 1 (W1): Focus model — roving tabindex + studio_paint_focus_ring integration ---
+
+def flex_layout_child_tab_index(spec: FlexLayout, index: int) -> int
+  requires spec.child_count >= 0
+  requires spec.child_count <= layout_engine_max_children()
+  requires index >= 0
+  requires index <= 3
+  ensures result >= 0
+  decreases index
+=
+  if index == 0:
+    var child0: WidgetNode = spec.children[0]
+    return child0.tab_index
+  if index == 1:
+    var child1: WidgetNode = spec.children[1]
+    return child1.tab_index
+  if index == 2:
+    var child2: WidgetNode = spec.children[2]
+    return child2.tab_index
+  if index == 3:
+    var child3: WidgetNode = spec.children[3]
+    return child3.tab_index
+  return widget_tab_index_none()
+
+def flex_layout_child_is_focused(spec: FlexLayout, index: int) -> int
+  requires spec.child_count >= 0
+  requires spec.child_count <= layout_engine_max_children()
+  requires index >= 0
+  requires index <= 3
+  ensures result >= 0
+  ensures result <= 1
+  decreases index
+=
+  if index == 0:
+    var child0: WidgetNode = spec.children[0]
+    return child0.focused
+  if index == 1:
+    var child1: WidgetNode = spec.children[1]
+    return child1.focused
+  if index == 2:
+    var child2: WidgetNode = spec.children[2]
+    return child2.focused
+  if index == 3:
+    var child3: WidgetNode = spec.children[3]
+    return child3.focused
+  return 0
+
+def focus_model_child_order_key(spec: FlexLayout, index: int) -> int
+  requires spec.child_count >= 0
+  requires spec.child_count <= layout_engine_max_children()
+  requires index >= 0
+  requires index <= 3
+  ensures result >= 0
+  decreases index
+=
+  var tab: int = flex_layout_child_tab_index(spec, index)
+  if tab > widget_tab_index_none():
+    return tab
+  return (index + 1) * 100
+
+def focus_model_roving_focus_child(spec: var FlexLayout, layout: FlexLayoutResult, state: var EventDispatcherState, index: int) -> int
+  requires spec.child_count == layout.child_count
+  requires spec.child_count >= 0
+  requires spec.child_count <= layout_engine_max_children()
+  requires index >= 0
+  requires index <= 3
+  requires index < spec.child_count
+  requires state.focus_active >= 0
+  requires state.focus_active <= 1
+  ensures result >= 0
+  ensures result <= 1
+  decreases index
+=
+  return event_dispatcher_focus_child(spec, layout, state, index)
+
+def focus_model_roving_next(spec: var FlexLayout, layout: FlexLayoutResult, state: var EventDispatcherState) -> int
+  requires spec.child_count == layout.child_count
+  requires spec.child_count >= 0
+  requires spec.child_count <= layout_engine_max_children()
+  requires state.focus_active >= 0
+  requires state.focus_active <= 1
+  ensures result >= 0
+  ensures result <= layout_engine_max_children()
+  decreases spec.child_count
+=
+  if spec.child_count <= 0:
+    return event_dispatcher_hit_none()
+  var cur_key: int = 0
+  if state.focus_active == 1:
+    cur_key = focus_model_child_order_key(spec, state.focus_index)
+  var best_idx: int = event_dispatcher_hit_none()
+  var best_key: int = 999999
+  if spec.child_count > 0:
+    if flex_layout_accepts_focus_at(spec, 0) == 1:
+      var key0: int = focus_model_child_order_key(spec, 0)
+      if state.focus_active != 1:
+        if key0 < best_key:
+          best_key = key0
+          best_idx = 0
+      if state.focus_active == 1:
+        if key0 > cur_key:
+          if key0 < best_key:
+            best_key = key0
+            best_idx = 0
+  if spec.child_count > 1:
+    if flex_layout_accepts_focus_at(spec, 1) == 1:
+      var key1: int = focus_model_child_order_key(spec, 1)
+      if state.focus_active != 1:
+        if key1 < best_key:
+          best_key = key1
+          best_idx = 1
+      if state.focus_active == 1:
+        if key1 > cur_key:
+          if key1 < best_key:
+            best_key = key1
+            best_idx = 1
+  if spec.child_count > 2:
+    if flex_layout_accepts_focus_at(spec, 2) == 1:
+      var key2: int = focus_model_child_order_key(spec, 2)
+      if state.focus_active != 1:
+        if key2 < best_key:
+          best_key = key2
+          best_idx = 2
+      if state.focus_active == 1:
+        if key2 > cur_key:
+          if key2 < best_key:
+            best_key = key2
+            best_idx = 2
+  if spec.child_count > 3:
+    if flex_layout_accepts_focus_at(spec, 3) == 1:
+      var key3: int = focus_model_child_order_key(spec, 3)
+      if state.focus_active != 1:
+        if key3 < best_key:
+          best_key = key3
+          best_idx = 3
+      if state.focus_active == 1:
+        if key3 > cur_key:
+          if key3 < best_key:
+            best_key = key3
+            best_idx = 3
+  if best_idx != event_dispatcher_hit_none():
+    if focus_model_roving_focus_child(spec, layout, state, best_idx) == 1:
+      return best_idx
+  best_idx = event_dispatcher_hit_none()
+  best_key = 999999
+  if spec.child_count > 0:
+    if flex_layout_accepts_focus_at(spec, 0) == 1:
+      var wrap0: int = focus_model_child_order_key(spec, 0)
+      if wrap0 < best_key:
+        best_key = wrap0
+        best_idx = 0
+  if spec.child_count > 1:
+    if flex_layout_accepts_focus_at(spec, 1) == 1:
+      var wrap1: int = focus_model_child_order_key(spec, 1)
+      if wrap1 < best_key:
+        best_key = wrap1
+        best_idx = 1
+  if spec.child_count > 2:
+    if flex_layout_accepts_focus_at(spec, 2) == 1:
+      var wrap2: int = focus_model_child_order_key(spec, 2)
+      if wrap2 < best_key:
+        best_key = wrap2
+        best_idx = 2
+  if spec.child_count > 3:
+    if flex_layout_accepts_focus_at(spec, 3) == 1:
+      var wrap3: int = focus_model_child_order_key(spec, 3)
+      if wrap3 < best_key:
+        best_key = wrap3
+        best_idx = 3
+  if best_idx != event_dispatcher_hit_none():
+    if focus_model_roving_focus_child(spec, layout, state, best_idx) == 1:
+      return best_idx
+  return event_dispatcher_hit_none()
+
+def focus_model_roving_prev(spec: var FlexLayout, layout: FlexLayoutResult, state: var EventDispatcherState) -> int
+  requires spec.child_count == layout.child_count
+  requires spec.child_count >= 0
+  requires spec.child_count <= layout_engine_max_children()
+  requires state.focus_active >= 0
+  requires state.focus_active <= 1
+  ensures result >= 0
+  ensures result <= layout_engine_max_children()
+  decreases spec.child_count
+=
+  if spec.child_count <= 0:
+    return event_dispatcher_hit_none()
+  var cur_key: int = 999999
+  if state.focus_active == 1:
+    cur_key = focus_model_child_order_key(spec, state.focus_index)
+  var best_idx: int = event_dispatcher_hit_none()
+  var best_key: int = 0
+  if spec.child_count > 3:
+    if flex_layout_accepts_focus_at(spec, 3) == 1:
+      var key3: int = focus_model_child_order_key(spec, 3)
+      if state.focus_active != 1:
+        if key3 > best_key:
+          best_key = key3
+          best_idx = 3
+      if state.focus_active == 1:
+        if key3 < cur_key:
+          if key3 > best_key:
+            best_key = key3
+            best_idx = 3
+  if spec.child_count > 2:
+    if flex_layout_accepts_focus_at(spec, 2) == 1:
+      var key2: int = focus_model_child_order_key(spec, 2)
+      if state.focus_active != 1:
+        if key2 > best_key:
+          best_key = key2
+          best_idx = 2
+      if state.focus_active == 1:
+        if key2 < cur_key:
+          if key2 > best_key:
+            best_key = key2
+            best_idx = 2
+  if spec.child_count > 1:
+    if flex_layout_accepts_focus_at(spec, 1) == 1:
+      var key1: int = focus_model_child_order_key(spec, 1)
+      if state.focus_active != 1:
+        if key1 > best_key:
+          best_key = key1
+          best_idx = 1
+      if state.focus_active == 1:
+        if key1 < cur_key:
+          if key1 > best_key:
+            best_key = key1
+            best_idx = 1
+  if spec.child_count > 0:
+    if flex_layout_accepts_focus_at(spec, 0) == 1:
+      var key0: int = focus_model_child_order_key(spec, 0)
+      if state.focus_active != 1:
+        if key0 > best_key:
+          best_key = key0
+          best_idx = 0
+      if state.focus_active == 1:
+        if key0 < cur_key:
+          if key0 > best_key:
+            best_key = key0
+            best_idx = 0
+  if best_idx != event_dispatcher_hit_none():
+    if focus_model_roving_focus_child(spec, layout, state, best_idx) == 1:
+      return best_idx
+  best_idx = event_dispatcher_hit_none()
+  best_key = 0
+  if spec.child_count > 3:
+    if flex_layout_accepts_focus_at(spec, 3) == 1:
+      var wrap3: int = focus_model_child_order_key(spec, 3)
+      if wrap3 > best_key:
+        best_key = wrap3
+        best_idx = 3
+  if spec.child_count > 2:
+    if flex_layout_accepts_focus_at(spec, 2) == 1:
+      var wrap2: int = focus_model_child_order_key(spec, 2)
+      if wrap2 > best_key:
+        best_key = wrap2
+        best_idx = 2
+  if spec.child_count > 1:
+    if flex_layout_accepts_focus_at(spec, 1) == 1:
+      var wrap1: int = focus_model_child_order_key(spec, 1)
+      if wrap1 > best_key:
+        best_key = wrap1
+        best_idx = 1
+  if spec.child_count > 0:
+    if flex_layout_accepts_focus_at(spec, 0) == 1:
+      var wrap0: int = focus_model_child_order_key(spec, 0)
+      if wrap0 > best_key:
+        best_key = wrap0
+        best_idx = 0
+  if best_idx != event_dispatcher_hit_none():
+    if focus_model_roving_focus_child(spec, layout, state, best_idx) == 1:
+      return best_idx
+  return event_dispatcher_hit_none()
+
+def focus_model_paint_focus_ring_for_child(spec: FlexLayout, layout: FlexLayoutResult, frame: var PaintFrame, index: int) -> unit
+  requires spec.child_count == layout.child_count
+  requires spec.child_count >= 0
+  requires spec.child_count <= layout_engine_max_children()
+  requires index >= 0
+  requires index <= 3
+  requires index < spec.child_count
+  requires frame.cmd_count >= 0
+  ensures frame.cmd_count >= old(frame.cmd_count)
+  decreases index
+=
+  if index == 0:
+    if flex_layout_child_is_focused(spec, 0) == 1:
+      var layout0: WidgetLayoutResult = layout.child_layouts[0]
+      studio_paint_focus_ring(frame, layout0.bounds)
+  if index == 1:
+    if flex_layout_child_is_focused(spec, 1) == 1:
+      var layout1: WidgetLayoutResult = layout.child_layouts[1]
+      studio_paint_focus_ring(frame, layout1.bounds)
+  if index == 2:
+    if flex_layout_child_is_focused(spec, 2) == 1:
+      var layout2: WidgetLayoutResult = layout.child_layouts[2]
+      studio_paint_focus_ring(frame, layout2.bounds)
+  if index == 3:
+    if flex_layout_child_is_focused(spec, 3) == 1:
+      var layout3: WidgetLayoutResult = layout.child_layouts[3]
+      studio_paint_focus_ring(frame, layout3.bounds)
+
+def focus_model_paint_flex_focus_rings(spec: FlexLayout, layout: FlexLayoutResult, frame: var PaintFrame) -> unit
+  requires spec.child_count == layout.child_count
+  requires spec.child_count >= 0
+  requires spec.child_count <= layout_engine_max_children()
+  requires frame.cmd_count >= 0
+  ensures frame.cmd_count >= old(frame.cmd_count)
+  decreases spec.child_count
+=
+  if spec.child_count > 0:
+    focus_model_paint_focus_ring_for_child(spec, layout, frame, 0)
+  if spec.child_count > 1:
+    focus_model_paint_focus_ring_for_child(spec, layout, frame, 1)
+  if spec.child_count > 2:
+    focus_model_paint_focus_ring_for_child(spec, layout, frame, 2)
+  if spec.child_count > 3:
+    focus_model_paint_focus_ring_for_child(spec, layout, frame, 3)
+
+def event_dispatcher_handle_tab_key(spec: var FlexLayout, layout: FlexLayoutResult, state: var EventDispatcherState, shift_pressed: int) -> EventDispatchResult
+  requires spec.child_count == layout.child_count
+  requires spec.child_count >= 0
+  requires spec.child_count <= layout_engine_max_children()
+  requires state.focus_active >= 0
+  requires state.focus_active <= 1
+  requires shift_pressed >= 0
+  requires shift_pressed <= 1
+  ensures result.handled >= 0
+  ensures result.handled <= 1
+  ensures result.target_index >= 0
+  ensures result.target_index <= layout_engine_max_children()
+  ensures result.wants_focus >= 0
+  ensures result.wants_focus <= 1
+  decreases shift_pressed
+=
+  var out: EventDispatchResult
+  out.handled = 0
+  out.target_index = event_dispatcher_hit_none()
+  out.wants_focus = 0
+  var moved: int = event_dispatcher_hit_none()
+  if shift_pressed == 1:
+    moved = focus_model_roving_prev(spec, layout, state)
+  if shift_pressed != 1:
+    moved = focus_model_roving_next(spec, layout, state)
+  if moved == event_dispatcher_hit_none():
+    return out
+  out.handled = 1
+  out.target_index = moved
+  out.wants_focus = 1
   return out

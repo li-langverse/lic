@@ -5,7 +5,7 @@ def main() -> int
   ensures result == 0
   decreases 0
 =
-  if gui_reactive_version() != 2:
+  if gui_reactive_version() != 3:
     return 1
   if compose_dep_plan_version() != 1:
     return 2

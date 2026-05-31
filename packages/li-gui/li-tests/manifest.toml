@@ -63,3 +63,9 @@ suite = "smoke"
 file = "smoke/compose_dep_invalidation.li"
 outcome = "compile_open_ok"
 note = "T-PKG-li-gui-compose-deps"
+
+[[tests]]
+suite = "smoke"
+file = "smoke/compose_cache_partial_recompose.li"
+outcome = "compile_open_ok"
+note = "T-PKG-li-gui-compose-cache"

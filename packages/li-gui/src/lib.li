@@ -5,10 +5,10 @@ import ui
 
 def li_std_gui_version() -> int
   requires true
-  ensures result == 11
+  ensures result == 12
   decreases 0
 =
-  return 11
+  return 12
 
 def gui_inspector_pilot_version() -> int
   requires true
@@ -2494,10 +2494,10 @@ def inspector_pilot_empty_hint_box_rect(layout: InspectorPilotLayoutResult) -> R
 
 def gui_reactive_version() -> int
   requires true
-  ensures result == 2
+  ensures result == 3
   decreases 0
 =
-  return 2
+  return 3
 
 def reactive_store_max_id() -> int
   requires true
@@ -3110,3 +3110,233 @@ def store_float_set_with_deps(store: var StoreFloat, value: float, inv: var Comp
 =
   store_float_set(store, value, inv)
   compose_dep_invalidate_store(graph, store.store_id)
+
+# Phase 2 — ComposeCache: per-subtree store-generation snapshots for partial re-compose.
+
+def compose_cache_version() -> int
+  requires true
+  ensures result == 1
+  decreases 0
+=
+  return 1
+
+def compose_cache_region_count() -> int
+  requires true
+  ensures result == 6
+  decreases 0
+=
+  return 6
+
+def compose_cache_gen_unset() -> int
+  requires true
+  ensures result == -1
+  decreases 0
+=
+  return -1
+
+type ComposeCache = object
+  public agent_gen: int
+  public palette_gen: int
+  public dock_gen: int
+  public inspector_gen: int
+  public timeline_gen: int
+  public viewport_hud_gen: int
+  public recompose_count: int
+  public skip_count: int
+  public frame_tick: int
+
+def compose_cache_new() -> ComposeCache
+  requires true
+  ensures result.agent_gen == compose_cache_gen_unset()
+  ensures result.palette_gen == compose_cache_gen_unset()
+  ensures result.dock_gen == compose_cache_gen_unset()
+  ensures result.inspector_gen == compose_cache_gen_unset()
+  ensures result.timeline_gen == compose_cache_gen_unset()
+  ensures result.viewport_hud_gen == compose_cache_gen_unset()
+  ensures result.recompose_count == 0
+  ensures result.skip_count == 0
+  ensures result.frame_tick == 0
+  decreases 0
+=
+  var c: ComposeCache
+  c.agent_gen = compose_cache_gen_unset()
+  c.palette_gen = compose_cache_gen_unset()
+  c.dock_gen = compose_cache_gen_unset()
+  c.inspector_gen = compose_cache_gen_unset()
+  c.timeline_gen = compose_cache_gen_unset()
+  c.viewport_hud_gen = compose_cache_gen_unset()
+  c.recompose_count = 0
+  c.skip_count = 0
+  c.frame_tick = 0
+  return c
+
+def compose_cache_begin_frame(cache: var ComposeCache) -> unit
+  requires true
+  ensures cache.recompose_count == 0
+  ensures cache.skip_count == 0
+  ensures cache.frame_tick == old(cache.frame_tick) + 1
+  decreases 0
+=
+  cache.recompose_count = 0
+  cache.skip_count = 0
+  cache.frame_tick = cache.frame_tick + 1
+
+def compose_cache_region_gen(cache: ComposeCache, region_id: int) -> int
+  requires region_id >= 0
+  requires region_id <= compose_region_max()
+  ensures result >= compose_cache_gen_unset()
+  decreases region_id
+=
+  if region_id == compose_region_id_agent():
+    return cache.agent_gen
+  if region_id == compose_region_id_palette():
+    return cache.palette_gen
+  if region_id == compose_region_id_dock():
+    return cache.dock_gen
+  if region_id == compose_region_id_inspector():
+    return cache.inspector_gen
+  if region_id == compose_region_id_timeline():
+    return cache.timeline_gen
+  if region_id == compose_region_id_viewport_hud():
+    return cache.viewport_hud_gen
+  return compose_cache_gen_unset()
+
+def compose_cache_set_region_gen(cache: var ComposeCache, region_id: int, store_gen: int) -> unit
+  requires region_id >= 0
+  requires region_id <= compose_region_max()
+  requires store_gen >= 0
+  ensures compose_cache_region_gen(cache, region_id) == store_gen
+  decreases region_id
+=
+  if region_id == compose_region_id_agent():
+    cache.agent_gen = store_gen
+  if region_id == compose_region_id_palette():
+    cache.palette_gen = store_gen
+  if region_id == compose_region_id_dock():
+    cache.dock_gen = store_gen
+  if region_id == compose_region_id_inspector():
+    cache.inspector_gen = store_gen
+  if region_id == compose_region_id_timeline():
+    cache.timeline_gen = store_gen
+  if region_id == compose_region_id_viewport_hud():
+    cache.viewport_hud_gen = store_gen
+
+def compose_cache_invalidate_region(cache: var ComposeCache, region_id: int) -> unit
+  requires region_id >= 0
+  requires region_id <= compose_region_max()
+  ensures compose_cache_region_gen(cache, region_id) == compose_cache_gen_unset()
+  decreases region_id
+=
+  if region_id == compose_region_id_agent():
+    cache.agent_gen = compose_cache_gen_unset()
+  if region_id == compose_region_id_palette():
+    cache.palette_gen = compose_cache_gen_unset()
+  if region_id == compose_region_id_dock():
+    cache.dock_gen = compose_cache_gen_unset()
+  if region_id == compose_region_id_inspector():
+    cache.inspector_gen = compose_cache_gen_unset()
+  if region_id == compose_region_id_timeline():
+    cache.timeline_gen = compose_cache_gen_unset()
+  if region_id == compose_region_id_viewport_hud():
+    cache.viewport_hud_gen = compose_cache_gen_unset()
+
+def compose_cache_should_recompose(cache: ComposeCache, graph: ComposeDepGraph, region_id: int, store_gen: int) -> int
+  requires region_id >= 0
+  requires region_id <= compose_region_max()
+  requires store_gen >= 0
+  ensures result >= 0
+  ensures result <= 1
+  decreases region_id
+=
+  if compose_dep_region_is_dirty(graph, region_id) == 1:
+    return 1
+  var cached: int = compose_cache_region_gen(cache, region_id)
+  if cached == compose_cache_gen_unset():
+    return 1
+  if cached != store_gen:
+    return 1
+  return 0
+
+def compose_cache_note_recomposed(cache: var ComposeCache, region_id: int, store_gen: int) -> unit
+  requires region_id >= 0
+  requires region_id <= compose_region_max()
+  requires store_gen >= 0
+  ensures cache.recompose_count == old(cache.recompose_count) + 1
+  ensures compose_cache_region_gen(cache, region_id) == store_gen
+  decreases region_id
+=
+  compose_cache_set_region_gen(cache, region_id, store_gen)
+  cache.recompose_count = cache.recompose_count + 1
+
+def compose_cache_note_skipped(cache: var ComposeCache, region_id: int) -> unit
+  requires region_id >= 0
+  requires region_id <= compose_region_max()
+  ensures cache.skip_count == old(cache.skip_count) + 1
+  decreases region_id
+=
+  cache.skip_count = cache.skip_count + 1
+
+def compose_cache_dirty_region_count(graph: ComposeDepGraph) -> int
+  requires true
+  ensures result >= 0
+  ensures result <= compose_cache_region_count()
+  decreases 0
+=
+  var n: int = 0
+  if compose_dep_region_is_dirty(graph, compose_region_id_agent()) == 1:
+    n = n + 1
+  if compose_dep_region_is_dirty(graph, compose_region_id_palette()) == 1:
+    n = n + 1
+  if compose_dep_region_is_dirty(graph, compose_region_id_dock()) == 1:
+    n = n + 1
+  if compose_dep_region_is_dirty(graph, compose_region_id_inspector()) == 1:
+    n = n + 1
+  if compose_dep_region_is_dirty(graph, compose_region_id_timeline()) == 1:
+    n = n + 1
+  if compose_dep_region_is_dirty(graph, compose_region_id_viewport_hud()) == 1:
+    n = n + 1
+  return n
+
+def compose_cache_tally_partial(cache: var ComposeCache, graph: ComposeDepGraph, agent_gen: int, palette_gen: int, mode_gen: int, timeline_gen: int) -> int
+  requires agent_gen >= 0
+  requires palette_gen >= 0
+  requires mode_gen >= 0
+  requires timeline_gen >= 0
+  ensures cache.recompose_count + cache.skip_count == compose_cache_region_count()
+  ensures result >= 0
+  ensures result <= compose_cache_region_count()
+  decreases agent_gen
+=
+  compose_cache_begin_frame(cache)
+  var need: int = 0
+  if compose_cache_should_recompose(cache, graph, compose_region_id_agent(), agent_gen) == 1:
+    need = need + 1
+    compose_cache_note_recomposed(cache, compose_region_id_agent(), agent_gen)
+  if compose_cache_should_recompose(cache, graph, compose_region_id_agent(), agent_gen) == 0:
+    compose_cache_note_skipped(cache, compose_region_id_agent())
+  if compose_cache_should_recompose(cache, graph, compose_region_id_palette(), palette_gen) == 1:
+    need = need + 1
+    compose_cache_note_recomposed(cache, compose_region_id_palette(), palette_gen)
+  if compose_cache_should_recompose(cache, graph, compose_region_id_palette(), palette_gen) == 0:
+    compose_cache_note_skipped(cache, compose_region_id_palette())
+  if compose_cache_should_recompose(cache, graph, compose_region_id_dock(), mode_gen) == 1:
+    need = need + 1
+    compose_cache_note_recomposed(cache, compose_region_id_dock(), mode_gen)
+  if compose_cache_should_recompose(cache, graph, compose_region_id_dock(), mode_gen) == 0:
+    compose_cache_note_skipped(cache, compose_region_id_dock())
+  if compose_cache_should_recompose(cache, graph, compose_region_id_inspector(), mode_gen) == 1:
+    need = need + 1
+    compose_cache_note_recomposed(cache, compose_region_id_inspector(), mode_gen)
+  if compose_cache_should_recompose(cache, graph, compose_region_id_inspector(), mode_gen) == 0:
+    compose_cache_note_skipped(cache, compose_region_id_inspector())
+  if compose_cache_should_recompose(cache, graph, compose_region_id_timeline(), timeline_gen) == 1:
+    need = need + 1
+    compose_cache_note_recomposed(cache, compose_region_id_timeline(), timeline_gen)
+  if compose_cache_should_recompose(cache, graph, compose_region_id_timeline(), timeline_gen) == 0:
+    compose_cache_note_skipped(cache, compose_region_id_timeline())
+  if compose_cache_should_recompose(cache, graph, compose_region_id_viewport_hud(), mode_gen) == 1:
+    need = need + 1
+    compose_cache_note_recomposed(cache, compose_region_id_viewport_hud(), mode_gen)
+  if compose_cache_should_recompose(cache, graph, compose_region_id_viewport_hud(), mode_gen) == 0:
+    compose_cache_note_skipped(cache, compose_region_id_viewport_hud())
+  return need

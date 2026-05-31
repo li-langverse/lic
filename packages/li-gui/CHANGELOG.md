@@ -4,6 +4,7 @@
 
 ### Added
 
+- **W2 ComposeCache** — `ComposeCache` per-subtree store-generation snapshots, `compose_cache_should_recompose`, `compose_cache_tally_partial`; flush procs skip clean regions; smokes `compose_cache_partial_recompose.li`, `studio_compose_cache_partial.li`; `gui_reactive_version() == 3`; `li_std_gui_version` → 12.
 - **W2 Compose dependency graph** — `ComposeDepGraph`, static `ComposePlan` table (`compose_dep_plan_store_at`/`compose_dep_plan_region_at`), region ids for agent/palette/dock/inspector/timeline/viewport HUD; `store_int_set_with_deps` / `store_float_set_with_deps`; smoke `compose_dep_invalidation.li`; `gui_reactive_version() == 2`.
 - **W2 Reactive stores** — `StoreInt`/`StoreFloat`, `DerivedInt`/`DerivedFloat`, `ComposeInvalidation` in `src/reactive.li`; shell slot ids; `derived_int_sync_agent_progress`; smoke `reactive_store_derived.li`; `gui_reactive_version() == 1`; `li_std_gui_version` → 11. — `FlexLayout`, `GridLayout`, `PaddingLayout`, `ScrollLayout` with measure/layout procs; `flex_layout_paint`; smoke `layout_engines_flex_grid.li`; `li_std_gui_version` → 6.
 - **W1 Widget protocol** — `WidgetNode`, `widget_measure`, `widget_layout`, `widget_paint`, `widget_handle_event`; kinds label/button/panel/spacer; smoke `widget_protocol_measure_layout.li`; `li_std_gui_version` → 5.

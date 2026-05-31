@@ -1,0 +1,42 @@
+# Smoke — ComposeCache partial re-compose on StudioShellCompose (wsg-w2-compose-cache).
+import studio
+
+def main() raises IO -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  if studio_reactive_shell_version() != gui_reactive_version():
+    return 1
+  if compose_cache_version() != 1:
+    return 2
+  var compose: StudioShellCompose = studio_compose_shell_palette(1280.0, 720.0, 0, 1, studio_palette_closed_flag())
+  var warm: int = studio_reactive_cache_tally(compose)
+  if warm != compose_cache_region_count():
+    return 3
+  var run: StudioAgentRun = studio_agent_run_start(studio_agent_context_world())
+  studio_agent_sync_chrome_from_run(compose, run)
+  studio_reactive_flush_agent_from_run(compose, run)
+  studio_reactive_flush_palette(compose)
+  studio_reactive_flush_timeline(compose)
+  studio_reactive_flush_mode_regions(compose)
+  var idle: int = studio_reactive_cache_tally(compose)
+  if idle != 0:
+    return 4
+  if compose.reactive.cache.skip_count != compose_cache_region_count():
+    return 5
+  store_int_set_with_deps(compose.reactive.palette_open, studio_palette_open_flag(), compose.reactive.inv, compose.reactive.graph)
+  var partial: int = studio_reactive_cache_tally(compose)
+  if partial != 1:
+    return 6
+  if compose.reactive.cache.recompose_count != 1:
+    return 7
+  if compose.reactive.cache.skip_count != compose_cache_region_count() - 1:
+    return 8
+  studio_reactive_flush_palette(compose)
+  if compose_dep_region_is_dirty(compose.reactive.graph, compose_region_id_palette()) != 0:
+    return 9
+  var after_flush: int = studio_reactive_cache_tally(compose)
+  if after_flush != 0:
+    return 10
+  return 0

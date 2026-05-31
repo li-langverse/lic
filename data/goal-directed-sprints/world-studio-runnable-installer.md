@@ -12,9 +12,9 @@ Ship a **native** `li-studio-demo` that runs on Windows 10/11 (WSL or native `li
 
 | Phase | Scope | Status |
 |-------|-------|--------|
-| **W0** | `lic` build (LLVM 22), `emit.cpp` f64→f32 `CallProc`, workspace `li-sim-sensors` | **IN PROGRESS** |
-| **W1** | `li-studio-demo` build, sim tick in `studio_vertical_demo_frame`, PowerShell launcher | **IN PROGRESS** |
-| **W2** | Inno Setup installer, completion gate script, sprint loop | **IN PROGRESS** |
+| **W0** | `lic` build (LLVM 22), `emit.cpp` f64→f32 `CallProc`, workspace `li-sim-sensors` | **DONE** |
+| **W1** | `li-studio-demo` build, sim tick in `studio_vertical_demo_frame`, PowerShell launcher | **DONE** |
+| **W2** | Inno Setup installer, completion gate script, sprint loop | **DONE** |
 
 ## Progress gate
 

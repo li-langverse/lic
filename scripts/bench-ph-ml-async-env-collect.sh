@@ -1,15 +1,18 @@
 #!/usr/bin/env bash
 set -euo pipefail
 ROOT="$(cd "$(dirname "$0")/.." && pwd)"
+# shellcheck source=lib/benchmarks-env.sh
+source "$ROOT/scripts/lib/benchmarks-env.sh"
+
 # shellcheck source=lib/li-ui.sh
 source "$ROOT/scripts/lib/li-ui.sh"
 LIC="${LIC:-$($ROOT/scripts/resolve-lic.sh)}"
 if [[ ! -x "$LIC" && -x "$ROOT/build-wsl/compiler/lic/lic" ]]; then
   LIC="$ROOT/build-wsl/compiler/lic/lic"
 fi
-OUT="$ROOT/benchmarks/results/ph-ml-async-env-collect.json"
+OUT="$BENCHMARKS_RESULTS/ph-ml-async-env-collect.json"
 SMOKE="$ROOT/packages/li-ml-rl/li-tests/smoke/env_pool_async_four.li"
-mkdir -p "$ROOT/benchmarks/results"
+mkdir -p "$BENCHMARKS_RESULTS"
 export PH_ML_BENCH_ROOT="$ROOT" PH_ML_BENCH_LIC="$LIC" PH_ML_BENCH_OUT="$OUT" PH_ML_BENCH_SMOKE="$SMOKE"
 python3 <<'PY'
 import json, os, subprocess, tempfile, time

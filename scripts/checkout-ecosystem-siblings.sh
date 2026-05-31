@@ -1,10 +1,11 @@
 #!/usr/bin/env bash
-# Clone li-langverse/lip and lit beside lic (CI and local smoke).
+# Clone li-langverse/lip, lit, and benchmarks beside lic (CI and local smoke).
 set -euo pipefail
 ROOT="$(cd "$(dirname "$0")/.." && pwd)"
 PARENT="$(cd "$ROOT/.." && pwd)"
 LIP_ORG="${LIP_ORG:-li-langverse/lip}"
 LIT_ORG="${LIT_ORG:-li-langverse/lit}"
+BENCHMARKS_ORG="${BENCHMARKS_ORG:-li-langverse/benchmarks}"
 REF="${ECOSYSTEM_REF:-main}"
 
 clone_repo() {
@@ -21,4 +22,5 @@ clone_repo() {
 
 clone_repo "$LIP_ORG" "$PARENT/lip"
 clone_repo "$LIT_ORG" "$PARENT/lit"
-echo "ecosystem siblings: $PARENT/lip $PARENT/lit @ ${REF}"
+clone_repo "$BENCHMARKS_ORG" "$PARENT/benchmarks"
+echo "ecosystem siblings: $PARENT/lip $PARENT/lit $PARENT/benchmarks @ ${REF}"

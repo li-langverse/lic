@@ -68,11 +68,12 @@ grep -q 'JobGraph' packages/li-ml-rl/src/lib.li || { echo "li-ml-rl missing JobG
 
 lic_check_smokes "$LIC" || exit 1
 
-[[ -f benchmarks/results/ph-ml-async-env-collect.json ]] || { echo "missing benchmarks/results/ph-ml-async-env-collect.json"; exit 1; }
+[[ -f "$BENCHMARKS_RESULTS/ph-ml-async-env-collect.json ]] || { echo "missing benchmarks/results/ph-ml-async-env-collect.json"; exit 1; }
 python3 - <<'PY'
-import json, sys
+import json, os, sys
 from pathlib import Path
-p = Path("benchmarks/results/ph-ml-async-env-collect.json")
+import os
+p = Path(os.environ["BENCHMARKS_RESULTS"] + "/" + "ph-ml-async-env-collect.json")
 d = json.loads(p.read_text())
 n = d.get("env_count") or d.get("num_envs") or len(d.get("envs", []))
 if n < 4:

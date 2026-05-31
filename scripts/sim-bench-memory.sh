@@ -2,12 +2,15 @@
 # Sample peak RSS for scoped native bench binaries (/usr/bin/time -v).
 set -euo pipefail
 ROOT="$(cd "$(dirname "$0")/.." && pwd)"
+# shellcheck source=lib/benchmarks-env.sh
+source "$ROOT/scripts/lib/benchmarks-env.sh"
+
 BENCHES="${1:-}"
-OUT_DIR="${ROOT}/benchmarks/results/memory"
+OUT_DIR="$BENCHMARKS_RESULTS/memory"
 mkdir -p "$OUT_DIR"
 
 if [[ -z "$BENCHES" ]]; then
-  BENCHES="$(python3 "$ROOT/benchmarks/harness/bench_scope.py" --package "${SIM_PLAN_PACKAGE:-li-sim-scientific}" --print-benches 2>/dev/null || true)"
+  BENCHES="$(python3 "$HARNESS/bench_scope.py" --package "${SIM_PLAN_PACKAGE:-li-sim-scientific}" --print-benches 2>/dev/null || true)"
 fi
 
 if [[ -z "$BENCHES" ]]; then

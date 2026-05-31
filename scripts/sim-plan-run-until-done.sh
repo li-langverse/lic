@@ -2,6 +2,9 @@
 # Run goal-directed sim agent until all registry smokes implemented (or failure).
 set -euo pipefail
 ROOT="$(cd "$(dirname "$0")/.." && pwd)"
+# shellcheck source=lib/benchmarks-env.sh
+source "$ROOT/scripts/lib/benchmarks-env.sh"
+
 LOG_DIR="$ROOT/data/sim-plan-loop"
 mkdir -p "$LOG_DIR"
 STAMP="$(date -u +%Y%m%d-%H%M%S)"
@@ -32,7 +35,8 @@ remaining() {
   python3 - <<'PY'
 import json
 from pathlib import Path
-d = json.loads(Path("benchmarks/competitive/algo_registry.json").read_text())
+import os
+d = json.loads(Path(os.environ["BENCHMARKS_COMPETITIVE"] + "/" + "algo_registry.json").read_text())
 impl = sum(1 for a in d["algorithms"] if a.get("implemented_smoke"))
 print(len(d["algorithms"]) - impl)
 PY

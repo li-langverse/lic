@@ -3,11 +3,14 @@
 # v1: stale last_reviewed warns only (LI_HPC_COMPETITIVE_STRICT=1 → exit 1 on stale).
 set -euo pipefail
 ROOT="$(cd "$(dirname "$0")/.." && pwd)"
+# shellcheck source=lib/benchmarks-env.sh
+source "$ROOT/scripts/lib/benchmarks-env.sh"
+
 # shellcheck source=lib/li-ui.sh
 source "$ROOT/scripts/lib/li-ui.sh"
 
-REGISTRY="$ROOT/benchmarks/competitive/registry.toml"
-CSV="${LI_HPC_COMPETITIVE_CSV:-$ROOT/benchmarks/results/latest.csv}"
+REGISTRY="$BENCHMARKS_COMPETITIVE/registry.toml"
+CSV="${LI_HPC_COMPETITIVE_CSV:-$BENCHMARKS_RESULTS/latest.csv}"
 STRICT="${LI_HPC_COMPETITIVE_STRICT:-0}"
 WARN_DAYS="${LI_HPC_COMPETITIVE_REVIEW_DAYS:-90}"
 
@@ -93,7 +96,7 @@ if csv_path.is_file():
     if missing:
         warnings.append(
             f"latest.csv missing lang rows for bench ecosystems: {', '.join(missing)} "
-            f"(run: python3 benchmarks/harness/bench.py --tier 12)"
+            f"(run: "$BENCHMARKS_ROOT/scripts/run-bench.sh" --tier 12)"
         )
 else:
     warnings.append(f"no CSV at {csv_path} — column check skipped")

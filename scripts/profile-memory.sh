@@ -15,7 +15,10 @@
 set -euo pipefail
 
 ROOT="$(cd "$(dirname "$0")/.." && pwd)"
-MD_DIR="$ROOT/benchmarks/tier2_physics/md_lennard_jones"
+# shellcheck source=lib/benchmarks-env.sh
+source "$ROOT/scripts/lib/benchmarks-env.sh"
+
+MD_DIR="$BENCHMARKS_WORKLOADS/tier2_physics/md_lennard_jones"
 BUILD_BENCH="$ROOT/build/bench/md_lennard_jones"
 LIC="$ROOT/build/compiler/lic/lic"
 NATIVE_BIN="$BUILD_BENCH/md_lj_native"

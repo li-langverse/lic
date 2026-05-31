@@ -75,13 +75,14 @@ lic_check_smokes "$LIC" || exit 1
 bash scripts/bench-ph-ml-async-env-collect.sh
 bash scripts/bench-ph-ml-mlp-forward.sh
 
-[[ -f benchmarks/results/ph-ml-async-env-collect.json ]] || { echo "missing ph-ml-async-env-collect.json"; exit 1; }
+[[ -f "$BENCHMARKS_RESULTS/ph-ml-async-env-collect.json ]] || { echo "missing ph-ml-async-env-collect.json"; exit 1; }
 
 python3 - <<'PY'
-import json, sys
+import json, os, sys
 from pathlib import Path
+import os
 
-async_p = Path("benchmarks/results/ph-ml-async-env-collect.json")
+async_p = Path(os.environ["BENCHMARKS_RESULTS"] + "/" + "ph-ml-async-env-collect.json")
 async_d = json.loads(async_p.read_text())
 if async_d.get("worker") != "thread_pool":
     sys.exit("async bench worker must be thread_pool")

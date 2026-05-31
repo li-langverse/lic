@@ -2,14 +2,16 @@
 """Validate benchmarks/competitive/studio-ui.toml and bench JSON outputs."""
 from __future__ import annotations
 
+import os
+
 import json
 import sys
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
-REGISTRY = ROOT / "benchmarks/competitive/studio-ui.toml"
+REGISTRY = Path(os.environ["BENCHMARKS_COMPETITIVE"]) / "studio-ui.toml"
 LATEST = ROOT / "data/studio-ui-ux-plan-loop/latest-bench.json"
-COMPETITIVE = ROOT / "benchmarks/results/bench-studio-viewport-perf.json"
+COMPETITIVE = Path(os.environ["BENCHMARKS_RESULTS"]) / "bench-studio-viewport-perf.json"
 
 
 def fail(msg: str) -> None:

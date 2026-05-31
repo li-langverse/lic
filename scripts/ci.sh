@@ -70,7 +70,11 @@ li_phase "E2E li-tests (full manifest)"
 "$ROOT/li-tests/run_all.sh" "${RUN_ALL_FLAGS[@]}"
 
 li_phase "tier 0 physics (strict stability)"
-python3 "$ROOT/benchmarks/harness/bench.py" --tier 0
+if [[ -n "${BENCHMARKS_ROOT:-}" && -f "${BENCHMARKS_ROOT}/scripts/run-bench.sh" ]]; then
+  BENCHMARKS_ROOT="$BENCHMARKS_ROOT" LIC_ROOT="$ROOT" bash "$ROOT/scripts/bench-via-benchmarks.sh" --tier 0
+else
+  python3 "$ROOT/benchmarks/harness/bench.py" --tier 0
+fi
 
 li_phase "race_shared_memory"
 "$ROOT/li-tests/run_all.sh" "${RUN_ALL_FLAGS[@]}" race_shared_memory

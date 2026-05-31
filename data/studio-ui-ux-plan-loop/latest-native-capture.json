@@ -1,0 +1,9 @@
+{
+  "status": "pass",
+  "native_pixels": true,
+  "png_count": 3,
+  "png_dir": "/home/s4il0r/Documents/Cursor/li-langverse/li-cursor-agents/ux-harness/artifacts/world-studio-native/png/native",
+  "ppm_dir": "/home/s4il0r/Documents/Cursor/li-langverse/lic/deploy/studio-demo/native/out",
+  "capture_mode": "xvfb_sdl",
+  "note": "SDL viewport stub \u2014 not full li-studio binary"
+}

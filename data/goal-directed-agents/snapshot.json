@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-05-30T07:05:31.327085+00:00",
+  "generated_at": "2026-05-31T01:57:12.932796+00:00",
   "tz": "Europe/Berlin",
   "agents_live": 0,
   "runners": [
@@ -7,9 +7,9 @@
       "id": "httpd",
       "name": "li-httpd gap parity",
       "branch": "cursor/httpd-plan-continue",
-      "head": "5a495d2c",
+      "head": "27e5aee9",
       "running": true,
-      "process": "2811759 /usr/bin/python3 /home/s4il0r/Documents/Cursor/li-langverse/lic/benchmarks/tier5_http/fixtures/streaming-soak/se",
+      "process": "1698494 /bin/bash -O extglob -c snap=$(command cat <&3) && builtin shopt -s extglob && builtin eval -- \"$snap\" && { buil",
       "log_path": "/home/s4il0r/Documents/Cursor/li-langverse/lic/../lic/data/httpd-plan-loop/until-deadline-20260530-050645.log",
       "todos": [
         {
@@ -88,7 +88,7 @@
       "agent_live": false,
       "agent": "",
       "goal_file": "",
-      "log_age_sec": 1527,
+      "log_age_sec": 69429,
       "last_state_at": "2026-05-30T06:38:33.327023+00:00",
       "last_state_todo": "gap-phase2-streaming-wrk",
       "last_state_gates": false,
@@ -103,7 +103,7 @@
         "==> batch 2 exit 124 @ 2026-05-30T08:38:33+02:00",
         "==> batch 2 exit 124 @ 2026-05-30T08:38:33+02:00"
       ],
-      "status_note": "supervisor idle (log 1527s stale \u2014 check log_path)"
+      "status_note": "supervisor idle (log 69429s stale \u2014 check log_path)"
     },
     {
       "id": "compiler-studio",
@@ -416,7 +416,7 @@
       "agent_live": false,
       "agent": "",
       "goal_file": "",
-      "log_age_sec": 386600,
+      "log_age_sec": 454502,
       "last_state_at": "2026-05-25T06:41:51.000000+00:00",
       "last_state_todo": "wave-d-gui-scaffold",
       "last_state_gates": true,
@@ -533,7 +533,7 @@
       "agent_live": false,
       "agent": "",
       "goal_file": "",
-      "log_age_sec": 483868,
+      "log_age_sec": 551770,
       "last_state_at": "2026-05-24T16:32:27.410480+00:00",
       "last_state_todo": "sim-p0-md-lj-li-parity",
       "last_state_gates": false,
@@ -554,10 +554,10 @@
       "id": "studio-ui-ux",
       "name": "Studio UI/UX",
       "branch": "cursor/studio-ui-ux-plan-loop",
-      "head": "f398a1e4",
+      "head": "eb3b4427",
       "running": false,
       "process": "",
-      "log_path": "/home/s4il0r/Documents/Cursor/li-langverse/lic/../lic-studio-ui/data/studio-ui-ux-plan-loop/iter-20260525-062259.log",
+      "log_path": "/home/s4il0r/Documents/Cursor/li-langverse/lic/../lic-studio-ui/data/studio-ui-ux-plan-loop/runner.log",
       "todos": [
         {
           "id": "studio-ux-00-design-system",
@@ -623,11 +623,74 @@
           "id": "studio-ux-12-world-studio-demo-linux-audit",
           "content": "ux-harness world-studio-demo fixture audit on Linux (non-mock) + agentic_ai SOTA refs in gates",
           "status": "done"
+        },
+        {
+          "id": "studio-ux-13-proactive-sweep",
+          "content": "Proactive ecosystem sweep \u2014 capture-deps probe, briefing snapshot refresh, wave-2 gap registry",
+          "status": "done"
+        },
+        {
+          "id": "studio-ux-14-native-sdl-ci",
+          "content": "Agent runner SDL/Xvfb deps \u2014 native_pixels=true in capture + latest-native-capture.json",
+          "status": "done"
+        },
+        {
+          "id": "studio-ux-15-wgpu-readback",
+          "content": "li-render wgpu real pixel draw \u2014 bench status native (not simulate) for viewport + particles",
+          "status": "done"
+        },
+        {
+          "id": "studio-ux-16-palette-search-latency",
+          "content": "Command palette fuzzy search + measured open/filter latency hook (UX-04)",
+          "status": "done"
+        },
+        {
+          "id": "studio-ux-17-gpu-fail-recovery",
+          "content": "Native GPU fail strip + retry affordance in li-studio shell (UX-08)",
+          "status": "done"
+        },
+        {
+          "id": "studio-ux-18-proactive-wave3",
+          "content": "Proactive sweep wave-3 \u2014 keyboard journey audit + native wgpu CI matrix",
+          "status": "done"
+        },
+        {
+          "id": "studio-ux-19-wgpu-swapchain-readback",
+          "content": "Real wgpu-rs swapchain texture readback in CI GPU images (blocked on runner GPU)",
+          "status": "done"
+        },
+        {
+          "id": "studio-ux-20-proactive-sweep-20260530",
+          "content": "Proactive briefing refresh \u2014 capture-deps + ecosystem audit follow-ups for studio_ui_ux_builder",
+          "status": "done"
+        },
+        {
+          "id": "studio-ux-21-wgpu-swapchain-gpu-runner",
+          "content": "studio-ui-ux: pending plan todo studio-ux-21-wgpu-swapchain-gpu-runner \u2014 gap orchestrator",
+          "status": "pending"
+        },
+        {
+          "id": "studio-ux-22-palette-native-latency",
+          "content": "Native palette open/filter latency on SDL shell \u2014 bench status native (UX-04)",
+          "status": "done"
+        },
+        {
+          "id": "studio-ux-23-agent-chrome-native",
+          "content": "Wire agent chrome to native shell stream \u2014 task progress + cancel (UX-06 SOTA)",
+          "status": "done"
+        },
+        {
+          "id": "studio-ux-24-gpu-runner-deps",
+          "content": "studio-ui-ux: pending plan todo studio-ux-24-gpu-runner-deps \u2014 gap orchestrator",
+          "status": "pending"
         }
       ],
       "plan_completed": 0,
-      "plan_total": 13,
-      "plan_pending": [],
+      "plan_total": 25,
+      "plan_pending": [
+        "studio-ux-21-wgpu-swapchain-gpu-runner",
+        "studio-ux-24-gpu-runner-deps"
+      ],
       "state": {
         "completed_ids": [
           "studio-ux-00-design-system",
@@ -642,9 +705,19 @@
           "studio-ux-09-memory-budget",
           "studio-ux-10-native-capture",
           "studio-ux-11-panel-switch-gate",
-          "studio-ux-12-world-studio-demo-linux-audit"
+          "studio-ux-12-world-studio-demo-linux-audit",
+          "studio-ux-13-proactive-sweep",
+          "studio-ux-14-native-sdl-ci",
+          "studio-ux-15-wgpu-readback",
+          "studio-ux-16-palette-search-latency",
+          "studio-ux-17-gpu-fail-recovery",
+          "studio-ux-18-proactive-wave3",
+          "studio-ux-19-wgpu-swapchain-readback",
+          "studio-ux-20-proactive-sweep-20260530",
+          "studio-ux-22-palette-native-latency",
+          "studio-ux-23-agent-chrome-native"
         ],
-        "iterations": 11,
+        "iterations": 21,
         "history": [
           {
             "at": "2026-05-24T14:53:41+00:00",
@@ -726,32 +799,186 @@
             "gates_ok": true,
             "ux_pass": true,
             "note": "Linux non-mock world-studio-demo harness; agentic_ai SOTA refs; capture dry exit 0"
+          },
+          {
+            "at": "2026-05-30T04:33:00+00:00",
+            "todo_id": "studio-ux-13-proactive-sweep",
+            "agent_exit": 0,
+            "capture_exit": 0,
+            "gates_ok": true,
+            "ux_pass": true,
+            "note": "Proactive sweep: capture-deps probe, wave-2 todos, issue #182 comment 4581660167; native_pixels=false (SDL gap)"
+          },
+          {
+            "at": "2026-05-30T08:05:00+00:00",
+            "todo_id": "studio-ux-14-native-sdl-ci",
+            "agent_exit": 0,
+            "capture_exit": 0,
+            "gates_ok": true,
+            "ux_pass": true,
+            "note": "SDL software renderer readback; ci-studio-ui-ux-native.sh + studio-ui-ux-native.yml; native_pixels=true; issue #182"
+          },
+          {
+            "at": "2026-05-30T08:11:00+00:00",
+            "todo_id": "studio-ux-15-wgpu-readback",
+            "agent_exit": 0,
+            "capture_exit": 0,
+            "gates_ok": true,
+            "ux_pass": true,
+            "note": "wgpu readback bench hooks; viewport+particles status=native; honest_simulate=false on PH gates"
+          },
+          {
+            "at": "2026-05-30T08:15:00+00:00",
+            "todo_id": "studio-ux-16-palette-search-latency",
+            "agent_exit": 0,
+            "capture_exit": 0,
+            "gates_ok": true,
+            "ux_pass": true,
+            "note": "palette fuzzy filter + palette_latency bench hook; UX-04 score bump"
+          },
+          {
+            "at": "2026-05-30T12:08:00+00:00",
+            "todo_id": "studio-ux-17-gpu-fail-recovery",
+            "agent_exit": 0,
+            "capture_exit": 0,
+            "gates_ok": true,
+            "ux_pass": true,
+            "note": "GPU fail strip + retry overlay; gpu_fail_retry_ms gate; UX-08 bump; issue #182"
+          },
+          {
+            "at": "2026-05-30T12:50:00+00:00",
+            "todo_id": "studio-ux-18-proactive-wave3",
+            "agent_exit": 0,
+            "capture_exit": 0,
+            "gates_ok": true,
+            "ux_pass": true,
+            "note": "keyboard_journey bench + harness audit; wgpu CI matrix leg; issue #182"
+          },
+          {
+            "at": "2026-05-30T13:24:00+00:00",
+            "todo_id": "studio-ux-19-wgpu-swapchain-readback",
+            "agent_exit": 0,
+            "capture_exit": 0,
+            "gates_ok": true,
+            "ux_pass": true,
+            "note": "swapchain blocked_runner hooks + CI job; capture issue #182 comment 4582947162; gates_pass true"
+          },
+          {
+            "at": "2026-05-30T14:35:00+00:00",
+            "todo_id": "studio-ux-20-proactive-sweep-20260530",
+            "agent_exit": 0,
+            "capture_exit": 0,
+            "gates_ok": true,
+            "ux_pass": true,
+            "note": "Briefing snapshot refresh; wave-4 todos studio-ux-21..24; capture-deps zero gaps; issue #182"
+          },
+          {
+            "at": "2026-05-30T15:20:00+00:00",
+            "todo_id": "studio-ux-22-palette-native-latency",
+            "agent_exit": 0,
+            "capture_exit": 0,
+            "gates_ok": true,
+            "ux_pass": true,
+            "note": "Native palette bench 14ms/9.5ms; palette_latency status=native; issue #182 comment 4583225944"
+          },
+          {
+            "at": "2026-05-30T21:52:00+00:00",
+            "todo_id": "studio-ux-23-agent-chrome-native",
+            "agent_exit": 0,
+            "capture_exit": 0,
+            "gates_ok": true,
+            "ux_pass": true,
+            "note": "Agent stream tick/cancel native (12ms/8ms); agent_chrome status=native; issue #182 comment 4584960809"
           }
         ]
       },
-      "state_iterations": 11,
+      "state_iterations": 21,
       "agent_live": false,
       "agent": "",
       "goal_file": "",
-      "log_age_sec": 434008,
-      "last_state_at": "2026-05-30T01:04:00+00:00",
-      "last_state_todo": "studio-ux-12-world-studio-demo-linux-audit",
+      "log_age_sec": 3283,
+      "last_state_at": "2026-05-30T21:52:00+00:00",
+      "last_state_todo": "studio-ux-23-agent-chrome-native",
       "last_state_gates": true,
       "current_iteration": "",
       "activity": [
+        "[sdk] \u25b6 tool",
+        "[sdk] \u2713 updateTodos",
+        "[sdk] \u2717 tool",
+        "[sdk] \u25b6 tool",
+        "[sdk] \u2713 shell cd /home/s4il0r/Documents/Cursor/li-langverse/li-cursor-agents/data/workspaces/l",
+        "[sdk] \u2717 tool",
         "[sdk] thinking\u2026",
-        "[sdk] \u25b6 tool",
-        "[sdk] \u2713 shell cd /home/s4il0r/Documents/Cursor/li-langverse/li-cursor-agents/data/workspaces/l",
-        "[sdk] \u2717 tool",
-        "[sdk] \u25b6 tool",
-        "[sdk] \u2713 shell cd /home/s4il0r/Documents/Cursor/li-langverse/li-cursor-agents/data/workspaces/l",
-        "[sdk] \u2717 tool",
         "[sdk] assistant reply"
       ],
-      "status_note": "supervisor off"
+      "status_note": "supervisor off",
+      "active_todo_id": "studio-ux-21-wgpu-swapchain-gpu-runner"
     }
   ],
   "history": [
+    {
+      "runner": "studio-ui-ux",
+      "at": "2026-05-30T21:52:00+00:00",
+      "todo_id": "studio-ux-23-agent-chrome-native",
+      "agent_exit": 0,
+      "gates_ok": true
+    },
+    {
+      "runner": "studio-ui-ux",
+      "at": "2026-05-30T15:20:00+00:00",
+      "todo_id": "studio-ux-22-palette-native-latency",
+      "agent_exit": 0,
+      "gates_ok": true
+    },
+    {
+      "runner": "studio-ui-ux",
+      "at": "2026-05-30T14:35:00+00:00",
+      "todo_id": "studio-ux-20-proactive-sweep-20260530",
+      "agent_exit": 0,
+      "gates_ok": true
+    },
+    {
+      "runner": "studio-ui-ux",
+      "at": "2026-05-30T13:24:00+00:00",
+      "todo_id": "studio-ux-19-wgpu-swapchain-readback",
+      "agent_exit": 0,
+      "gates_ok": true
+    },
+    {
+      "runner": "studio-ui-ux",
+      "at": "2026-05-30T12:50:00+00:00",
+      "todo_id": "studio-ux-18-proactive-wave3",
+      "agent_exit": 0,
+      "gates_ok": true
+    },
+    {
+      "runner": "studio-ui-ux",
+      "at": "2026-05-30T12:08:00+00:00",
+      "todo_id": "studio-ux-17-gpu-fail-recovery",
+      "agent_exit": 0,
+      "gates_ok": true
+    },
+    {
+      "runner": "studio-ui-ux",
+      "at": "2026-05-30T08:15:00+00:00",
+      "todo_id": "studio-ux-16-palette-search-latency",
+      "agent_exit": 0,
+      "gates_ok": true
+    },
+    {
+      "runner": "studio-ui-ux",
+      "at": "2026-05-30T08:11:00+00:00",
+      "todo_id": "studio-ux-15-wgpu-readback",
+      "agent_exit": 0,
+      "gates_ok": true
+    },
+    {
+      "runner": "studio-ui-ux",
+      "at": "2026-05-30T08:05:00+00:00",
+      "todo_id": "studio-ux-14-native-sdl-ci",
+      "agent_exit": 0,
+      "gates_ok": true
+    },
     {
       "runner": "httpd",
       "at": "2026-05-30T06:38:33.327023+00:00",
@@ -768,73 +995,10 @@
     },
     {
       "runner": "studio-ui-ux",
-      "at": "2026-05-30T01:04:00+00:00",
-      "todo_id": "studio-ux-12-world-studio-demo-linux-audit",
+      "at": "2026-05-30T04:33:00+00:00",
+      "todo_id": "studio-ux-13-proactive-sweep",
       "agent_exit": 0,
       "gates_ok": true
-    },
-    {
-      "runner": "studio-ui-ux",
-      "at": "2026-05-29T08:42:00+00:00",
-      "todo_id": "studio-ux-11-panel-switch-gate",
-      "agent_exit": 0,
-      "gates_ok": true
-    },
-    {
-      "runner": "compiler-studio",
-      "at": "2026-05-25T06:41:51.000000+00:00",
-      "todo_id": "wave-d-gui-scaffold",
-      "agent_exit": 0,
-      "gates_ok": true
-    },
-    {
-      "runner": "studio-ui-ux",
-      "at": "2026-05-25T02:14:50+00:00",
-      "todo_id": "studio-ux-06-agent-chrome",
-      "agent_exit": 0,
-      "gates_ok": true
-    },
-    {
-      "runner": "studio-ui-ux",
-      "at": "2026-05-25T00:42:54+00:00",
-      "todo_id": "studio-ux-04-particle-display",
-      "agent_exit": 0,
-      "gates_ok": true
-    },
-    {
-      "runner": "studio-ui-ux",
-      "at": "2026-05-24T23:05:00+00:00",
-      "todo_id": "studio-ux-04-particle-display",
-      "agent_exit": 0,
-      "gates_ok": true
-    },
-    {
-      "runner": "studio-ui-ux",
-      "at": "2026-05-24T21:42:00+00:00",
-      "todo_id": "studio-ux-03-render-wgpu-smoke",
-      "agent_exit": 0,
-      "gates_ok": true
-    },
-    {
-      "runner": "studio-ui-ux",
-      "at": "2026-05-24T19:36:50+00:00",
-      "todo_id": "studio-ux-03-render-wgpu-smoke",
-      "agent_exit": 0,
-      "gates_ok": true
-    },
-    {
-      "runner": "studio-ui-ux",
-      "at": "2026-05-24T18:23:10+00:00",
-      "todo_id": "studio-ux-02-gui-viewport-stub",
-      "agent_exit": 0,
-      "gates_ok": true
-    },
-    {
-      "runner": "compiler-studio",
-      "at": "2026-05-24T17:19:56.590015+00:00",
-      "todo_id": "wave-a-llvm22-typecheck-warnings",
-      "agent_exit": 0,
-      "gates_ok": false
     }
   ]
 }

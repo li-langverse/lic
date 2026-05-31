@@ -1,9 +1,9 @@
 {
-  "generated_at": "2026-05-31T03:06:45Z",
-  "registry_path": "benchmarks\\competitive\\studio-ui.toml",
+  "generated_at": "2026-05-31T03:37:22Z",
+  "registry_path": "benchmarks/competitive/studio-ui.toml",
   "registry_schema": "li_studio_ui_bench_v1",
   "registry_version": 1,
-  "load_ms": 0.31,
+  "load_ms": 6.06,
   "viewport_fps_target": 60,
   "panel_switch_ms_target": 100,
   "studio_load_ms_target": 2000,
@@ -80,23 +80,24 @@
     }
   ],
   "memory_mib": {
-    "profile_exit": 1,
+    "profile_exit": 0,
     "lines": [
-      "tracemalloc peak (import): 0.56 MiB",
-      "==> budget warn_peak_mib=512 observed=0.56 meets=True",
-      "STUDIO_MEMORY_JSON={\"schema\":\"li_studio_memory_profile_v1\",\"generated_at\":\"2026-05-31T03:06:45Z\",\"memory_id\":\"animate_md_import\",\"warn_peak_mib\":512.0,\"peak_import_mib\":0.56,\"peak_rss_mib\":null,\"peak_observed_mib\":0.56,\"meets_budget\":true,\"rss_status\":\"skip\",\"registry_path\":\"benchmarks\\\\competitive\\\\studio-ui.toml\",\"notes\":[\"import peak = tracemalloc after loading animate_md\",\"rss peak = --skip-export --max-frames 4 when /usr/bin/time available\",\"full GIF export can exceed budget; Studio timeline uses streamed frames\"]}"
+      "tracemalloc peak (import): 0.45 MiB",
+      "peak RSS: 30.25 MiB",
+      "==> budget warn_peak_mib=512 observed=30.25 meets=True",
+      "STUDIO_MEMORY_JSON={\"schema\":\"li_studio_memory_profile_v1\",\"generated_at\":\"2026-05-31T03:37:23Z\",\"memory_id\":\"animate_md_import\",\"warn_peak_mib\":512.0,\"peak_import_mib\":0.45,\"peak_rss_mib\":30.25,\"peak_observed_mib\":30.25,\"meets_budget\":true,\"rss_status\":\"linux_time_v\",\"registry_path\":\"benchmarks/competitive/studio-ui.toml\",\"notes\":[\"import peak = tracemalloc after loading animate_md\",\"rss peak = --skip-export --max-frames 4 when /usr/bin/time available\",\"full GIF export can exceed budget; Studio timeline uses streamed frames\"]}"
     ],
     "profile": {
       "schema": "li_studio_memory_profile_v1",
-      "generated_at": "2026-05-31T03:06:45Z",
+      "generated_at": "2026-05-31T03:37:23Z",
       "memory_id": "animate_md_import",
       "warn_peak_mib": 512.0,
-      "peak_import_mib": 0.56,
-      "peak_rss_mib": null,
-      "peak_observed_mib": 0.56,
+      "peak_import_mib": 0.45,
+      "peak_rss_mib": 30.25,
+      "peak_observed_mib": 30.25,
       "meets_budget": true,
-      "rss_status": "skip",
-      "registry_path": "benchmarks\\competitive\\studio-ui.toml",
+      "rss_status": "linux_time_v",
+      "registry_path": "benchmarks/competitive/studio-ui.toml",
       "notes": [
         "import peak = tracemalloc after loading animate_md",
         "rss peak = --skip-export --max-frames 4 when /usr/bin/time available",
@@ -104,7 +105,7 @@
       ]
     },
     "warn_peak_mib": 512.0,
-    "peak_observed_mib": 0.56,
+    "peak_observed_mib": 30.25,
     "meets_budget": true
   },
   "gates": {
@@ -178,7 +179,7 @@
     },
     "studio_load_ms": {
       "target": 2000,
-      "value": 0.31,
+      "value": 6.06,
       "unit": "ms",
       "meets_target": true,
       "honest_simulate": true
@@ -209,12 +210,12 @@
     },
     "animate_md_import": {
       "target": 512.0,
-      "value": 0.56,
+      "value": 30.25,
       "unit": "mib",
       "meets_target": true,
-      "honest_simulate": true,
-      "peak_import_mib": 0.56,
-      "peak_rss_mib": null
+      "honest_simulate": false,
+      "peak_import_mib": 0.45,
+      "peak_rss_mib": 30.25
     },
     "wgpu_swapchain_readback": {
       "target": "swapchain_pass",

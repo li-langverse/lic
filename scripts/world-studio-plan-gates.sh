@@ -10,11 +10,16 @@ export LI_REPO_ROOT="$ROOT"
 fail() { li_gate_fail "$*"; exit 1; }
 
 LIC="${LIC:-}"
-if [[ -x "$ROOT/build/compiler/lic/lic" ]]; then
-  LIC="$ROOT/build/compiler/lic/lic"
-elif [[ -x "$ROOT/build/compiler/lic/lic.exe" ]]; then
-  LIC="$ROOT/build/compiler/lic/lic.exe"
-elif [[ -x "$ROOT/scripts/resolve-lic.sh" ]]; then
+for c in \
+  "$ROOT/build-wsl/compiler/lic/lic" \
+  "$ROOT/build/compiler/lic/lic" \
+  "$ROOT/build/compiler/lic/lic.exe"; do
+  if [[ -x "$c" ]]; then
+    LIC="$c"
+    break
+  fi
+done
+if [[ -z "$LIC" && -x "$ROOT/scripts/resolve-lic.sh" ]]; then
   LIC="$("$ROOT/scripts/resolve-lic.sh" 2>/dev/null)" || true
 fi
 
@@ -42,6 +47,7 @@ else
       studio_shell_demo.li \
       studio_vertical_profile_roundtrip.li \
       studio_sim_step_by_profile.li \
+      studio_sim_sensor_step_hook.li \
       studio_sim_rl_step_hook.li \
       studio_mcp_tools.li \
       studio_agentic_run.li; do
@@ -49,6 +55,10 @@ else
       [[ -f "$path" ]] || fail "missing smoke $smoke"
       "$LIC" check "$path" || fail "lic check $smoke"
     done
+    li_phase "li-sim-sensors smokes"
+    sensor_smoke="$ROOT/packages/li-sim-sensors/li-tests/smoke/sensor_bus_raycast_contract.li"
+    [[ -f "$sensor_smoke" ]] || fail "missing sensor_bus_raycast_contract.li"
+    "$LIC" check "$sensor_smoke" || fail "lic check sensor_bus_raycast_contract.li"
   fi
 fi
 

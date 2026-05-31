@@ -4,6 +4,7 @@
 
 ### Added
 
+- **WP-SIM-05 sensor bus (automotive/robotics)** — `studio_sim_sensor_step_hook` via `sim.sensors` / `sim_sensor_session_bus_step`; smoke `studio_sim_sensor_step_hook.li`.
 - **Native agent shell bench (UX-06, studio-ux-23)** — `studio_shell_agent_bench_native` wires shell compose + agent paint for stream tick/cancel bench hook.
 - **Native palette shell bench (UX-04, studio-ux-22)** — `studio_shell_palette_bench_native` wires shell compose + palette overlay paint for native bench hook.
 - **GPU fail recovery (UX-08, studio-ux-17)** — `studio_compose_shell_gpu_fail`, `studio_paint_gpu_fail_overlay`; viewport fail strip + retry rect from `li-ui`.

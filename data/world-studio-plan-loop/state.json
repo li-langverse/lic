@@ -6,9 +6,10 @@
     "wsm-w0-agent-registry",
     "wsm-w0-profile-chips",
     "wsm-w1-profile-smokes",
-    "wsm-w1-sim3-envpool"
+    "wsm-w1-sim3-envpool",
+    "wsm-w1-sim-sensors"
   ],
-  "iterations": 2,
+  "iterations": 3,
   "history": [
     {
       "todo_id": "wsm-w1-profile-smokes",
@@ -19,6 +20,11 @@
       "todo_id": "wsm-w1-sim3-envpool",
       "completed_at": "2026-05-31T03:30:00Z",
       "wps": ["WP-SIM-03", "WP-RL-01"]
+    },
+    {
+      "todo_id": "wsm-w1-sim-sensors",
+      "completed_at": "2026-05-31T04:00:00Z",
+      "wps": ["WP-SIM-05"]
     }
   ]
 }

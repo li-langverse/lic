@@ -216,6 +216,30 @@ def llm_model_config_fixture() -> LlmModelConfig
   return c
 
 # WP-LLM-02: fixture-path loader (safetensors/GGUF magic by path); no tensor parse yet.
+def llm_load_weights_safetensors_fixture() -> LlmModelWeights
+  requires true
+  ensures result.loaded == 1
+  ensures result.format_tag == llm_format_safetensors()
+  decreases 0
+=
+  var w: LlmModelWeights
+  w.loaded = 1
+  w.format_tag = llm_format_safetensors()
+  w.config = llm_model_config_fixture()
+  return w
+
+def llm_load_weights_gguf_fixture() -> LlmModelWeights
+  requires true
+  ensures result.loaded == 1
+  ensures result.format_tag == llm_format_gguf()
+  decreases 0
+=
+  var w2: LlmModelWeights
+  w2.loaded = 1
+  w2.format_tag = llm_format_gguf()
+  w2.config = llm_model_config_fixture()
+  return w2
+
 def llm_load_weights(path: str) -> LlmModelWeights raises IO, Alloc
   requires true
   ensures result.loaded == 0
@@ -223,17 +247,9 @@ def llm_load_weights(path: str) -> LlmModelWeights raises IO, Alloc
 =
   var tag: int = llm_weight_format_from_path(path)
   if tag == llm_format_safetensors():
-    var w: LlmModelWeights
-    w.loaded = 1
-    w.format_tag = llm_format_safetensors()
-    w.config = llm_model_config_fixture()
-    return w
+    return llm_load_weights_safetensors_fixture()
   if tag == llm_format_gguf():
-    var w2: LlmModelWeights
-    w2.loaded = 1
-    w2.format_tag = llm_format_gguf()
-    w2.config = llm_model_config_fixture()
-    return w2
+    return llm_load_weights_gguf_fixture()
   return llm_model_weights_none()
 
 # WP-LLM-03: forward stub — checksum top_id (oracle-friendly, not trained).

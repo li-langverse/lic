@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-05-31T06:35:01Z",
+  "generated_at": "2026-05-31T06:40:55Z",
   "registry_path": "benchmarks\\competitive\\studio-ui.toml",
   "registry_schema": "li_studio_ui_bench_v1",
   "registry_version": 1,
@@ -83,18 +83,18 @@
   "memory_mib": {
     "profile_exit": 1,
     "lines": [
-      "tracemalloc peak (import): 4.48 MiB",
-      "==> budget warn_peak_mib=512 observed=4.48 meets=True",
-      "STUDIO_MEMORY_JSON={\"schema\":\"li_studio_memory_profile_v1\",\"generated_at\":\"2026-05-31T06:35:02Z\",\"memory_id\":\"animate_md_import\",\"warn_peak_mib\":512.0,\"peak_import_mib\":4.48,\"peak_rss_mib\":null,\"peak_observed_mib\":4.48,\"meets_budget\":true,\"rss_status\":\"skip\",\"registry_path\":\"benchmarks\\\\competitive\\\\studio-ui.toml\",\"notes\":[\"import peak = tracemalloc after loading animate_md\",\"rss peak = --skip-export --max-frames 4 when /usr/bin/time available\",\"full GIF export can exceed budget; Studio timeline uses streamed frames\"]}"
+      "tracemalloc peak (import): 0.56 MiB",
+      "==> budget warn_peak_mib=512 observed=0.56 meets=True",
+      "STUDIO_MEMORY_JSON={\"schema\":\"li_studio_memory_profile_v1\",\"generated_at\":\"2026-05-31T06:40:55Z\",\"memory_id\":\"animate_md_import\",\"warn_peak_mib\":512.0,\"peak_import_mib\":0.56,\"peak_rss_mib\":null,\"peak_observed_mib\":0.56,\"meets_budget\":true,\"rss_status\":\"skip\",\"registry_path\":\"benchmarks\\\\competitive\\\\studio-ui.toml\",\"notes\":[\"import peak = tracemalloc after loading animate_md\",\"rss peak = --skip-export --max-frames 4 when /usr/bin/time available\",\"full GIF export can exceed budget; Studio timeline uses streamed frames\"]}"
     ],
     "profile": {
       "schema": "li_studio_memory_profile_v1",
-      "generated_at": "2026-05-31T06:35:02Z",
+      "generated_at": "2026-05-31T06:40:55Z",
       "memory_id": "animate_md_import",
       "warn_peak_mib": 512.0,
-      "peak_import_mib": 4.48,
+      "peak_import_mib": 0.56,
       "peak_rss_mib": null,
-      "peak_observed_mib": 4.48,
+      "peak_observed_mib": 0.56,
       "meets_budget": true,
       "rss_status": "skip",
       "registry_path": "benchmarks\\competitive\\studio-ui.toml",
@@ -105,7 +105,7 @@
       ]
     },
     "warn_peak_mib": 512.0,
-    "peak_observed_mib": 4.48,
+    "peak_observed_mib": 0.56,
     "meets_budget": true
   },
   "gates": {
@@ -156,11 +156,11 @@
     },
     "animate_md_import": {
       "target": 512.0,
-      "value": 4.48,
+      "value": 0.56,
       "unit": "mib",
       "meets_target": true,
       "honest_simulate": true,
-      "peak_import_mib": 4.48,
+      "peak_import_mib": 0.56,
       "peak_rss_mib": null
     }
   },

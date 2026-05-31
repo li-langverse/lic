@@ -34,3 +34,6 @@
 | WP-LLM-02 | llm_forward smoke + bench row | 6 | stub | llm_forward.li + ph-ml-llm-forward.json |
 | WP-LLM-03 | llm_generate smoke | 6 | stub | llm_generate.li |
 | WP-LLM-04 | competitive llm_forward row | 6 | stub | ph-ml-competitive.json |
+
+**Wave 8:** SOTA competitor drivers (PyTorch/JAX/TF/Triton) + ratio_vs_li (WP-ML-12)
+| WP-ML-12 | SOTA competitor drivers + ph-ml-competitive ratio_vs_li | 8 | done | bench-ph-ml-competitor-all.sh + ph-ml-wave8-gates.sh |

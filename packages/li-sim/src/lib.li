@@ -991,41 +991,91 @@ def env_step_contract_post(
     r.done = 1
   return r
 
-# PH-SIM SIM-3 — session-persistent env pool (counters live on SimSessionStub, not stack EnvPoolStub).
-def sim_session_env_pool_step(session: var SimSessionStub, dt: float) -> int
-  requires session.tick >= 0
-  requires session.replay_capacity > 0
+# PH-SIM SIM-3 Wave 5 � scratch buffers for pthread parallel env reward fill (G-ml-async).
+type EnvPoolParallelScratch = object
+  public pool_size: int
+  public rewards: array[32, float]
+  public env_indices: array[32, int]
+
+def sim_rl_env_worker_mode() -> int
+  requires true
+  ensures result >= 0
+  ensures result <= 2
+  decreases 0
+=
+  return sim_rl_env_worker_mode_config()
+
+def sim_rl_env_worker_mode_config() -> int
+  requires true
+  ensures result >= 0
+  ensures result <= 2
+  decreases 0
+=
+  return 1
+
+def sim_rl_env_worker_mode_process_scaffold() -> int
+  requires true
+  ensures result == 2
+  decreases 0
+=
+  return 2
+
+def env_pool_parallel_scratch_default(pool_size: int) -> EnvPoolParallelScratch
+  requires pool_size > 0
+  requires pool_size <= 32
+  ensures result.pool_size == pool_size
+  decreases pool_size
+=
+  var s: EnvPoolParallelScratch
+  s.pool_size = pool_size
+  var i: int = 0
+  while i < 32
+    s.rewards[i] = 0.0
+    s.env_indices[i] = 0
+    i = i + 1
+  return s
+
+def env_pool_parallel_reward_at(pool_size: int, base_tick: int, last_dt: float, env_index: int) -> float
+  requires pool_size > 0
+  requires pool_size <= 32
+  requires base_tick >= 0
+  requires env_index >= 0
+  requires env_index < pool_size
+  ensures result >= -1.0
+  decreases env_index
+=
+  var pre: EnvStepResult = env_step_contract_pre(pool_size, base_tick + env_index, last_dt, env_index)
+  var post: EnvStepResult = env_step_contract_post(pre, base_tick + env_index + 1, last_dt, pool_size)
+  return post.reward
+
+@cpu
+@parallel(disjoint=disjoint_elem)
+def env_pool_fill_rewards_parallel(scratch: var EnvPoolParallelScratch, base_tick: int, last_dt: float) -> int
+  requires scratch.pool_size > 0
+  requires scratch.pool_size <= 32
+  requires base_tick >= 0
   ensures result >= 0
   ensures result <= 1
-  decreases session.tick
+  decreases scratch.pool_size
 =
-  if dt <= 0.0:
-    return sim_status_invalid_dt()
-  if session.env_pool_size <= 0:
-    sim_session_env_pool_init(session)
-  var psz: int = session.env_pool_size
-  if psz <= 0:
-    return sim_status_invalid_dt()
-  if psz > 32:
-    return sim_status_invalid_dt()
-  var i: int = 0
-  while i < psz
-    var tick0: int = session.tick
-    var last_dt0: float = session.last_dt
-    var pre: EnvStepResult = env_step_contract_pre(psz, tick0, last_dt0, i)
-    if sim_step(session, dt) != sim_status_ok():
-      return sim_status_invalid_dt()
-    var tick1: int = session.tick
-    var last_dt1: float = session.last_dt
-    var post: EnvStepResult = env_step_contract_post(pre, tick1, last_dt1, psz)
-    session.env_pool_total_reward = session.env_pool_total_reward + post.reward
-    session.env_pool_steps_emitted = session.env_pool_steps_emitted + 1
-    env_obs_store_on_session(session, post)
-    i = i + 1
+  var psz: int = scratch.pool_size
+  parallel for i in 0..<4
+    requires disjoint_elem(i, scratch.rewards)
+    decreases 4 - i
+  =
+    var ei: int = 0
+    if i == 1:
+      ei = 1
+    if i == 2:
+      ei = 2
+    if i == 3:
+      ei = 3
+    if i < psz:
+      scratch.env_indices[ei] = ei
+      scratch.rewards[ei] = env_pool_parallel_reward_at(psz, base_tick, last_dt, ei)
   return sim_status_ok()
 
-# Legacy EnvPoolStub adapter — syncs stack stub ↔ session fields for isolated unit smokes.
-def env_pool_stub_step(pool: var EnvPoolStub, session: var SimSessionStub, dt: float) -> int
+def env_pool_stub_step_sync(pool: var EnvPoolStub, session: var SimSessionStub, dt: float) -> int
   requires pool.pool_size > 0
   requires pool.pool_size <= 32
   requires session.tick >= 0
@@ -1036,16 +1086,110 @@ def env_pool_stub_step(pool: var EnvPoolStub, session: var SimSessionStub, dt: f
 =
   if dt <= 0.0:
     return sim_status_invalid_dt()
-  session.env_pool_size = pool.pool_size
-  session.env_pool_steps_emitted = pool.steps_emitted
-  session.env_pool_total_reward = pool.total_reward
-  if sim_session_env_pool_step(session, dt) != sim_status_ok():
-    return sim_status_invalid_dt()
-  pool.steps_emitted = session.env_pool_steps_emitted
-  pool.total_reward = session.env_pool_total_reward
+  var i: int = 0
+  while i < pool.pool_size
+    var tick0: int = session.tick
+    var last_dt0: float = session.last_dt
+    var psz: int = pool.pool_size
+    var pre: EnvStepResult = env_step_contract_pre(psz, tick0, last_dt0, i)
+    if sim_step(session, dt) != sim_status_ok():
+      return sim_status_invalid_dt()
+    var tick1: int = session.tick
+    var last_dt1: float = session.last_dt
+    var post: EnvStepResult = env_step_contract_post(pre, tick1, last_dt1, psz)
+    pool.total_reward = pool.total_reward + post.reward
+    pool.steps_emitted = pool.steps_emitted + 1
+    env_obs_store_on_session(session, post)
+    i = i + 1
   return sim_status_ok()
 
-# PH-SIM SIM-3 — batch env pool step on a live session (obs/reward contract + replay).
+def env_pool_stub_step_thread_pool(pool: var EnvPoolStub, session: var SimSessionStub, dt: float) -> int
+  requires pool.pool_size > 0
+  requires pool.pool_size <= 32
+  requires session.tick >= 0
+  requires session.replay_capacity > 0
+  ensures result >= 0
+  ensures result <= 1
+  decreases pool.pool_size
+=
+  if dt <= 0.0:
+    return sim_status_invalid_dt()
+  var scratch: EnvPoolParallelScratch = env_pool_parallel_scratch_default(pool.pool_size)
+  var base_tick: int = session.tick
+  var last_dt0: float = session.last_dt
+  if env_pool_fill_rewards_parallel(scratch, base_tick, last_dt0) != sim_status_ok():
+    return sim_status_invalid_dt()
+  var i: int = 0
+  while i < pool.pool_size
+    var tick0: int = session.tick
+    var psz: int = pool.pool_size
+    var pre: EnvStepResult = env_step_contract_pre(psz, tick0, last_dt0, i)
+    if sim_step(session, dt) != sim_status_ok():
+      return sim_status_invalid_dt()
+    var tick1: int = session.tick
+    var last_dt1: float = session.last_dt
+    var post: EnvStepResult = env_step_contract_post(pre, tick1, last_dt1, psz)
+    post.reward = scratch.rewards[i]
+    post.env_index = scratch.env_indices[i]
+    pool.total_reward = pool.total_reward + post.reward
+    pool.steps_emitted = pool.steps_emitted + 1
+    env_obs_store_on_session(session, post)
+    i = i + 1
+  return sim_status_ok()
+
+def env_pool_stub_step_process_pool(pool: var EnvPoolStub, session: var SimSessionStub, dt: float) -> int
+  requires pool.pool_size > 0
+  requires pool.pool_size <= 32
+  requires session.tick >= 0
+  requires session.replay_capacity > 0
+  ensures result >= 0
+  ensures result <= 1
+  decreases pool.pool_size
+=
+  # Wave 6 scaffold: serial reward fill; OS subprocess workers deferred until fork IPC exists.
+  return env_pool_stub_step_sync(pool, session, dt)
+
+def env_pool_stub_step(pool: var EnvPoolStub, session: var SimSessionStub, dt: float) -> int
+  requires pool.pool_size > 0
+  requires pool.pool_size <= 32
+  requires session.tick >= 0
+  requires session.replay_capacity > 0
+  ensures result >= 0
+  ensures result <= 1
+  decreases pool.pool_size
+=
+  var mode: int = sim_rl_env_worker_mode()
+  if mode == 0:
+    return env_pool_stub_step_sync(pool, session, dt)
+  if mode == sim_rl_env_worker_mode_process_scaffold():
+    return env_pool_stub_step_process_pool(pool, session, dt)
+  return env_pool_stub_step_thread_pool(pool, session, dt)
+
+def sim_rl_session_env_pool_step_process_scaffold(session: var SimSessionStub, dt: float) -> int
+  requires session.tick >= 0
+  requires session.replay_capacity > 0
+  ensures result >= 0
+  ensures result <= 1
+  decreases session.tick
+=
+  if dt <= 0.0:
+    return sim_status_invalid_dt()
+  if session.env_pool_size <= 0:
+    sim_session_env_pool_init(session)
+  var steps_before: int = session.env_pool_steps_emitted
+  var pool: EnvPoolStub = sim_session_env_pool_load(session)
+  if env_pool_stub_step_process_pool(pool, session, dt) != sim_status_ok():
+    return sim_status_invalid_dt()
+  sim_session_env_pool_store(session, pool)
+  var psz: int = session.env_pool_size
+  if session.env_pool_steps_emitted != steps_before + psz:
+    return sim_status_invalid_dt()
+  if session.env_pool_total_reward <= 0.0:
+    return sim_status_invalid_dt()
+  if sim_session_replay_last_tick(session) != session.tick:
+    return sim_status_invalid_dt()
+  return sim_status_ok()
+
 def sim_rl_session_env_pool_step(session: var SimSessionStub, dt: float) -> int
   requires session.tick >= 0
   requires session.replay_capacity > 0
@@ -1055,16 +1199,14 @@ def sim_rl_session_env_pool_step(session: var SimSessionStub, dt: float) -> int
 =
   if dt <= 0.0:
     return sim_status_invalid_dt()
+  if session.env_pool_size <= 0:
+    sim_session_env_pool_init(session)
   var steps_before: int = session.env_pool_steps_emitted
-  var pool_size_before: int = session.env_pool_size
-  if sim_session_env_pool_step(session, dt) != sim_status_ok():
+  var pool: EnvPoolStub = sim_session_env_pool_load(session)
+  if env_pool_stub_step(pool, session, dt) != sim_status_ok():
     return sim_status_invalid_dt()
+  sim_session_env_pool_store(session, pool)
   var psz: int = session.env_pool_size
-  if psz <= 0:
-    return sim_status_invalid_dt()
-  if pool_size_before > 0:
-    if session.env_pool_size != pool_size_before:
-      return sim_status_invalid_dt()
   if session.env_pool_steps_emitted != steps_before + psz:
     return sim_status_invalid_dt()
   if session.env_pool_total_reward <= 0.0:

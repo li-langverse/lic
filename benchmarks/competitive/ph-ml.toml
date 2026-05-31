@@ -6,20 +6,24 @@ schema = "li_ph_ml_competitive_v1"
 [harness]
 script = "scripts/bench-ph-ml-competitive.sh"
 output_competitive = "benchmarks/results/ph-ml-competitive.json"
+competitor_drivers = "scripts/bench-ph-ml-competitor-all.sh"
+requirements = "scripts/requirements-ph-ml-competitive.txt"
 
 [[row]]
 id = "matmul_lkir"
 kernel = "ml.lkir.matmul_f32"
 workload_class = "pilot"
-incumbent = "PyTorch CPU / NumPy BLAS"
-competitors = ["cpp_openmp", "rust_ndarray_rayon", "python_numpy"]
+workload_sizes = [4, 16]
+incumbent = "PyTorch CPU / JAX / NumPy BLAS"
+competitors = ["cpp_openmp", "rust_ndarray_rayon", "python_numpy", "pytorch_cpu", "pytorch_cuda", "jax_cpu", "tensorflow_cpu", "triton_cuda"]
 
 [[row]]
 id = "mlp_forward"
 kernel = "ml.mlp_forward_f32"
 workload_class = "pilot"
-incumbent = "PyTorch nn.Linear"
-competitors = ["cpp_openmp", "python_numpy"]
+workload_sizes = [2, 2, 1]
+incumbent = "PyTorch nn.Linear stack"
+competitors = ["cpp_openmp", "python_numpy", "pytorch_cpu"]
 
 [[row]]
 id = "async_env_collect"

@@ -125,12 +125,14 @@ chmod +x "$ROOT/li-tests/tooling/diagnose_json_smoke.sh" \
   "$ROOT/li-tests/tooling/check_workspace_cache_smoke.sh" \
   "$ROOT/li-tests/tooling/run_all_parallel_smoke.sh" \
   "$ROOT/li-tests/tooling/agent_manifest_smoke.sh" \
+  "$ROOT/li-tests/tooling/agent_github_pr_smoke.sh" \
   "$ROOT/scripts/export-li-tests-agent-slice.sh" \
   "$ROOT/scripts/lic-fix-suggest.sh"
 "$ROOT/li-tests/tooling/diagnose_json_smoke.sh"
 "$ROOT/li-tests/tooling/check_workspace_cache_smoke.sh"
 "$ROOT/li-tests/tooling/run_all_parallel_smoke.sh"
 "$ROOT/li-tests/tooling/agent_manifest_smoke.sh"
+"$ROOT/li-tests/tooling/agent_github_pr_smoke.sh"
 
 li_phase "8p parallel smokes"
 chmod +x "$ROOT/li-tests/tooling/ci_test_jobs_smoke.sh"   "$ROOT/li-tests/tooling/resource_flags_smoke.sh"   "$ROOT/li-tests/tooling/parallel_run_all_smoke.sh"

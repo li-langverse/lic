@@ -65,5 +65,10 @@ deploy/studio-demo/native/out/
 # Local CI sweep output (benchmarks local-ci)
 data/local-ci*.log
 
+<<<<<<< Updated upstream
 installer/out/
+=======
+build/installer-tools/
+Li_World_Studio-*.AppImage
+>>>>>>> Stashed changes
 

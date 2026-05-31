@@ -1,21 +1,18 @@
 {
   "pass": true,
-  "todo_id": "wsm-w1-sim3-envpool",
-  "wps_touched": ["WP-SIM-03", "WP-RL-01"],
+  "todo_id": "wsm-w1-studio-toml-engine",
+  "wps_touched": ["WP-SIM-06"],
   "smokes_run": [
-    "packages/li-sim/li-tests/smoke/env_pool_step_contract.li",
-    "packages/li-ml-rl/li-tests/smoke/env_pool_persistent.li",
-    "packages/li-studio/li-tests/smoke/studio_sim_rl_step_hook.li",
-    "packages/li-studio/li-tests/smoke/studio_vertical_demo_env.li",
-    "packages/li-studio/li-tests/smoke/studio_sim_step_by_profile.li"
+    "packages/li-studio/li-tests/smoke/studio_toml_engine_export.li",
+    "packages/li-studio/li-tests/smoke/studio_sim_step_by_profile.li",
+    "packages/li-studio/li-tests/smoke/studio_vertical_profile_roundtrip.li"
   ],
   "native_only": true,
   "gates": {
-    "world_studio_runnable_gate": "pass",
     "world_studio_plan_gates": "pass",
     "lic_check_wsl": "pass",
-    "li_studio_demo_binary": "pass"
+    "world_studio_runnable_gate": "pass"
   },
-  "notes": "Marked wsm-w1-sim3-envpool done. emit.cpp ReturnVoid/ReturnInt pointer null + CallExtern f64→f32 coercion enables li-studio-demo link on WSL (clang-22). Demo runs STUDIO_DEMO_FRAMES=1 exit 0.",
-  "pr_url": "https://github.com/li-langverse/lic/pull/633"
+  "notes": "WP-SIM-06 verified: li_rt_studio_toml_* parses [engine] determinism_tier 0-3 and [engine.export] formats/require_sim_pass/printer_profile into StudioProjectConfig; studio_apply_config_to_sim maps tier to sim output_detail. Gates now include studio_toml_engine_export.li smoke.",
+  "pr_url": "https://github.com/li-langverse/lic/pull/411"
 }

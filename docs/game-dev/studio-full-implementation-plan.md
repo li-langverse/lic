@@ -152,7 +152,7 @@ Cross-tracks (not separate phases above): **PH-PORT**, **PH-COMPLY**, **PH-CIN**
 | WP-SIM-03 | RL EnvPool SIM-3 | sim_rl | **done** | Persistent pool + obs contract | `env_pool_step_contract.li` | M | WP-SIM-01 | Y |
 | WP-SIM-04 | Full `SimWorld` replay buffer | all sim | stub | Entity/state ring buffer | composable replay roundtrip | L | WP-SIM-02 | N |
 | WP-SIM-05 | Sensor bus stub | sim_automotive, sim_robotics | **done** | `sim.sensors` raycast IDs | `sensor_bus_raycast_contract.li` | M | WP-SIM-01 | Y |
-| WP-SIM-06 | `studio.toml` engine section | all | **partial** | Parse `determinism_tier`, export | example vertical `studio.toml` | S | WP-SIM-00 | Y |
+| WP-SIM-06 | `studio.toml` engine section | all | **DONE** | Parse `determinism_tier`, export | `studio_toml_engine_export.li` + additive `studio.toml` | S | WP-SIM-00 | Y |
 
 ### 3.4 PH-UX
 

@@ -10,5 +10,5 @@
   "device": "cpu",
   "workload_size": null,
   "note": "C++ serial MLP 2-2-1 (OpenMP optional deferred)",
-  "generated_at": "2026-05-31T22:52:35Z"
+  "generated_at": "2026-05-31T23:08:03Z"
 }

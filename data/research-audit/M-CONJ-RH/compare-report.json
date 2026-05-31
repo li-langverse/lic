@@ -1,0 +1,17 @@
+{
+  "problem_id": "M-CONJ-RH",
+  "generated_at": "2026-05-31T13:29:07Z",
+  "claims_total": 12,
+  "by_epistemic_status": {
+    "li_open": 1,
+    "li_proved": 1,
+    "literature_proved": 3,
+    "refuted": 2,
+    "heuristic": 4,
+    "model_consensus": 1
+  },
+  "model_conflicts": 0,
+  "li_proved": 1,
+  "unprovable_language_flags": [],
+  "unprovable_language_detail": []
+}

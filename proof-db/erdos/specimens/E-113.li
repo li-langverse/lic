@@ -1,0 +1,12 @@
+# Catalog: E-113
+# Statement: If $G$ is bipartite then $\mathrm{ex}(n;G)\ll n^{3/2}$ if and only $G$ is $2$-degenerate, that is, $G$ contains no induced subgraph with minimal degree at least 3.
+# formalization_status: li_open
+# discharge: pending — open formalization target (Phase 4)
+# erdos_status (literature): open
+
+def formal_target_e_113() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0

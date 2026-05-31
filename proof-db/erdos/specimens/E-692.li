@@ -1,0 +1,12 @@
+# Catalog: E-692
+# Statement: Let $\delta_1(n,m)$ be the density of the set of integers with exactly one divisor in $(n,m)$. Is $\delta_1(n,m)$ unimodular for $m>n+1$ (i.e. increases until some $m$ then decreases thereafter)? For fixed $n$, where does $\delta_1(n,m)$ ac
+# formalization_status: li_open
+# discharge: pending — open formalization target (Phase 4)
+# erdos_status (literature): open
+
+def formal_target_e_692() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0

@@ -1,0 +1,12 @@
+# Catalog: E-309
+# Statement: Let $N\geq 1$. How many integers can be written as the sum of distinct unit fractions with denominators from $\{1,\ldots,N\}$? Are there $o(\log N)$ such integers?
+# formalization_status: li_open
+# discharge: pending — open formalization target (Phase 4)
+# erdos_status (literature): open
+
+def formal_target_e_309() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0

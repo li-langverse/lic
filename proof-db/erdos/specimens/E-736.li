@@ -1,0 +1,12 @@
+# Catalog: E-736
+# Statement: Let $G$ be a graph with chromatic number $\aleph_1$. Is there, for every cardinal number $m$, some graph $G_m$ of chromatic number $m$ such that every finite subgraph of $G_m$ is a subgraph of $G$?
+# formalization_status: li_open
+# discharge: pending — open formalization target (Phase 4)
+# erdos_status (literature): open
+
+def formal_target_e_736() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0

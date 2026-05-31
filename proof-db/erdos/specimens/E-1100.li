@@ -1,0 +1,12 @@
+# Catalog: E-1100
+# Statement: If $1=d_1<\cdots<d_{\tau(n)}=n$ are the divisors of $n$, then let $\tau_\perp(n)$ count the number of $i$ for which $(d_i,d_{i+1})=1$. Is it true that $\tau_\perp(n)/\omega(n)\to \infty$ for almost all $n$? Is it true that\[\tau_\perp(n)< \
+# formalization_status: li_open
+# discharge: pending — open formalization target (Phase 4)
+# erdos_status (literature): open
+
+def formal_target_e_1100() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0

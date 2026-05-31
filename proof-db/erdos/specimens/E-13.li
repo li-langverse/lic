@@ -1,0 +1,12 @@
+# Catalog: E-13
+# Statement: Let $A\subseteq \{1,\ldots,N\}$ be such that there are no $a,b,c\in A$ such that $a\mid(b+c)$ and $a<\min(b,c)$. Is it true that $\lvert A\rvert\leq N/3+O(1)$?
+# formalization_status: li_open
+# discharge: pending — open formalization target (Phase 4)
+# erdos_status (literature): proved
+
+def formal_target_e_13() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0

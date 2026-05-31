@@ -1,0 +1,12 @@
+# Catalog: E-520
+# Statement: Let $f$ be a Rademacher multiplicative function: a random $\{-1,0,1\}$-valued multiplicative function, where for each prime $p$ we independently choose $f(p)\in \{-1,1\}$ uniformly at random, and for square-free integers $n$ we extend $f(p_
+# formalization_status: li_open
+# discharge: pending — open formalization target (Phase 4)
+# erdos_status (literature): open
+
+def formal_target_e_520() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0

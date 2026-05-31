@@ -1,0 +1,12 @@
+# Catalog: E-393
+# Statement: Let $f(n)$ denote the minimal $m\geq 1$ such that\[n! = a_1\cdots a_t\]with $a_1<\cdots <a_t=a_1+m$. What is the behaviour of $f(n)$?
+# formalization_status: li_open
+# discharge: pending — open formalization target (Phase 4)
+# erdos_status (literature): open
+
+def formal_target_e_393() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0

@@ -1,0 +1,12 @@
+# Catalog: E-253
+# Statement: Let $1\leq a_1<a_2<\cdots $ be an infinite sequence of integers such that $a_{i+1}/a_i\to 1$. If every infinite arithmetic progression contains infinitely many integers which are the sum of distinct $a_i$ then every sufficiently large integ
+# formalization_status: li_open
+# discharge: pending — open formalization target (Phase 4)
+# erdos_status (literature): open
+
+def formal_target_e_253() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0

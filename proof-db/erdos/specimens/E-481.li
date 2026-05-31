@@ -1,0 +1,12 @@
+# Catalog: E-481
+# Statement: Let $a_1,\ldots,a_r,b_1,\ldots,b_r\in \mathbb{N}$ such that $\sum_{i}\frac{1}{a_i}>1$. For any finite sequence of $n$ (not necessarily distinct) integers $A=(x_1,\ldots,x_n)$ let $T(A)$ denote the sequence of length $rn$ given by\[(a_ix_j+b
+# formalization_status: li_open
+# discharge: pending — open formalization target (Phase 4)
+# erdos_status (literature): proved
+
+def formal_target_e_481() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0

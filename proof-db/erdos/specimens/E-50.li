@@ -1,0 +1,12 @@
+# Catalog: E-50
+# Statement: For simple random walk on Z^d, is the probability of return to the origin after 2n steps asymptotic to (4/pi)^n n^{-3/2} in d=2?
+# formalization_status: li_open
+# discharge: pending — open formalization target (Phase 4)
+# erdos_status (literature): open
+
+def formal_target_e_50() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0

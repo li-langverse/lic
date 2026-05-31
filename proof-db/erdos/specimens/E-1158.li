@@ -1,0 +1,12 @@
+# Catalog: E-1158
+# Statement: Let $K_{t}(r)$ be the complete $t$-partite $t$-uniform hypergraph with $r$ vertices in each class. Is it true that\[\mathrm{ex}_t(n,K_t(r)) \geq n^{t-r^{1-t}-o(1)}\]for all $t,r$?
+# formalization_status: li_open
+# discharge: pending — open formalization target (Phase 4)
+# erdos_status (literature): open
+
+def formal_target_e_1158() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0

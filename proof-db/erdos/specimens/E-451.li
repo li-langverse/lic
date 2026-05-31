@@ -1,0 +1,12 @@
+# Catalog: E-451
+# Statement: Estimate $n_k$, the smallest integer $>2k$ such that $\prod_{1\leq i\leq k}(n_k-i)$ has no prime factor in $(k,2k)$.
+# formalization_status: li_open
+# discharge: pending — open formalization target (Phase 4)
+# erdos_status (literature): open
+
+def formal_target_e_451() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0

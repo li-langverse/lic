@@ -1,0 +1,12 @@
+# Catalog: E-1024
+# Statement: Let $f(n)$ be such that every $3$-uniform linear hypergraph on $n$ vertices contains an independent set on $f(n)$ vertices. Estimate $f(n)$.
+# formalization_status: li_open
+# discharge: pending — open formalization target (Phase 4)
+# erdos_status (literature): open
+
+def formal_target_e_1024() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0

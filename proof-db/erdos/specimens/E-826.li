@@ -1,0 +1,12 @@
+# Catalog: E-826
+# Statement: Are there infinitely many $n$ such that, for all $k\geq 1$,\[\tau(n+k)\ll k?\]
+# formalization_status: li_open
+# discharge: pending — open formalization target (Phase 4)
+# erdos_status (literature): open
+
+def formal_target_e_826() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0

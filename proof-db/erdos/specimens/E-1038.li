@@ -1,0 +1,12 @@
+# Catalog: E-1038
+# Statement: Determine the infimum and supremum of\[\lvert \{ x\in \mathbb{R} : \lvert f(x)\rvert < 1\}\rvert\]as $f\in \mathbb{R}[x]$ ranges over all non-constant monic polynomials, all of whose roots are real and in the interval $[-1,1]$.
+# formalization_status: li_open
+# discharge: pending — open formalization target (Phase 4)
+# erdos_status (literature): open
+
+def formal_target_e_1038() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0

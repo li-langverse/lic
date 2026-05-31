@@ -1,0 +1,12 @@
+# Catalog: E-112
+# Statement: Let $k=k(n,m)$ be minimal such that any directed graph on $k$ vertices must contain either an independent set of size $n$ or a transitive tournament of size $m$. Determine $k(n,m)$.
+# formalization_status: li_open
+# discharge: pending — open formalization target (Phase 4)
+# erdos_status (literature): open
+
+def formal_target_e_112() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0

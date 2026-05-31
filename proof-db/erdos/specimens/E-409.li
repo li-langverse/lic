@@ -1,0 +1,12 @@
+# Catalog: E-409
+# Statement: How many iterations of $n\mapsto \phi(n)+1$ are needed before a prime is reached? Can infinitely many $n$ reach the same prime? What is the density of $n$ which reach any fixed prime?
+# formalization_status: li_open
+# discharge: pending — open formalization target (Phase 4)
+# erdos_status (literature): open
+
+def formal_target_e_409() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0

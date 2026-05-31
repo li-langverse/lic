@@ -1,0 +1,12 @@
+# Catalog: E-335
+# Statement: Let $d(A)$ denote the density of $A\subseteq \mathbb{N}$. Characterise those $A,B\subseteq \mathbb{N}$ with positive density such that\[d(A+B)=d(A)+d(B).\]
+# formalization_status: li_open
+# discharge: pending — open formalization target (Phase 4)
+# erdos_status (literature): open
+
+def formal_target_e_335() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0

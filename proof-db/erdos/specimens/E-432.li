@@ -1,0 +1,12 @@
+# Catalog: E-432
+# Statement: Let $A,B\subseteq \mathbb{N}$ be two infinite sets. How dense can $A+B$ be if all elements of $A+B$ are pairwise relatively prime?
+# formalization_status: li_open
+# discharge: pending — open formalization target (Phase 4)
+# erdos_status (literature): open
+
+def formal_target_e_432() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0

@@ -1,0 +1,12 @@
+# Catalog: E-336
+# Statement: For $r\geq 2$ let $h(r)$ be the maximal finite $k$ such that there exists a basis $A\subseteq \mathbb{N}$ of order $r$ (so every large integer is the sum of at most $r$ integers from $A$) and exact order $k$ (so every large integer is the s
+# formalization_status: li_open
+# discharge: pending — open formalization target (Phase 4)
+# erdos_status (literature): open
+
+def formal_target_e_336() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0

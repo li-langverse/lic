@@ -1,0 +1,12 @@
+# Catalog: E-98
+# Statement: Does sum_{n=1}^infty (1/n) * sum_{p|n} 1/p converge?
+# formalization_status: li_open
+# discharge: pending — open formalization target (Phase 4)
+# erdos_status (literature): open
+
+def formal_target_e_98() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0

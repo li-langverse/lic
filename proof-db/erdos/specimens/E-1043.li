@@ -1,0 +1,12 @@
+# Catalog: E-1043
+# Statement: Let $f\in \mathbb{C}[x]$ be a monic non-constant polynomial. Must there exist a straight line $\ell$ such that the projection of\[\{ z: \lvert f(z)\rvert\leq 1\}\]onto $\ell$ has measure at most $2$?
+# formalization_status: li_open
+# discharge: pending — open formalization target (Phase 4)
+# erdos_status (literature): open
+
+def formal_target_e_1043() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0

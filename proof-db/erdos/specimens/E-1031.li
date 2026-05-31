@@ -1,0 +1,12 @@
+# Catalog: E-1031
+# Statement: If $G$ is a graph on $n$ vertices which contains no trivial (empty or complete) subgraph on $\geq 10\log n$ many vertices, then must $G$ contain an induced non-trivial regular subgraph on $\gg \log n$ many vertices?
+# formalization_status: li_open
+# discharge: pending — open formalization target (Phase 4)
+# erdos_status (literature): proved
+
+def formal_target_e_1031() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0

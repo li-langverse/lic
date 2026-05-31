@@ -1,0 +1,12 @@
+# Catalog: E-1199
+# Statement: Is it true that in any $2$-colouring of $\mathbb{N}$ there exists an infinite set $A$ such that all elements of $A+A$ are the same colour?
+# formalization_status: li_open
+# discharge: pending — open formalization target (Phase 4)
+# erdos_status (literature): open
+
+def formal_target_e_1199() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0

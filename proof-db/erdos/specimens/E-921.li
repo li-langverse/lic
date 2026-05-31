@@ -1,0 +1,12 @@
+# Catalog: E-921
+# Statement: Let $k\geq 4$ and let $f_k(n)$ be the largest $m$ such that there is a graph on $n$ vertices with chromatic number $k$ in which every odd cycle has length $> m$. Is it true that\[f_k(n) \asymp n^{\frac{1}{k-2}}?\]
+# formalization_status: li_open
+# discharge: pending — open formalization target (Phase 4)
+# erdos_status (literature): proved
+
+def formal_target_e_921() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0

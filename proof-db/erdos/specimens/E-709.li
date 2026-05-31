@@ -1,0 +1,12 @@
+# Catalog: E-709
+# Statement: Let $f(n)$ be minimal such that, for any $A=\{a_1,\ldots,a_n\}\subseteq [2,\infty)\cap\mathbb{N}$ of size $n$, in any interval $I$ of $f(n)\max(A)$ consecutive integers there exist distinct $x_1,\ldots,x_n\in I$ such that $a_i\mid x_i$. Obt
+# formalization_status: li_open
+# discharge: pending — open formalization target (Phase 4)
+# erdos_status (literature): open
+
+def formal_target_e_709() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0

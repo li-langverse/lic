@@ -1,0 +1,12 @@
+# Catalog: E-373
+# Statement: Show that the equation\[n! = a_1!a_2!\cdots a_k!,\]with $n-1>a_1\geq a_2\geq \cdots \geq a_k\geq 2$, has only finitely many solutions.
+# formalization_status: li_open
+# discharge: pending — open formalization target (Phase 4)
+# erdos_status (literature): open
+
+def formal_target_e_373() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0

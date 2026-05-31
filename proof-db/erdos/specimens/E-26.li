@@ -1,0 +1,12 @@
+# Catalog: E-26
+# Statement: Can every sufficiently large integer be written as the sum of a square and a prime?
+# formalization_status: li_open
+# discharge: pending — open formalization target (Phase 4)
+# erdos_status (literature): open
+
+def formal_target_e_26() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0

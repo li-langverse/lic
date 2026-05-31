@@ -1,0 +1,12 @@
+# Catalog: E-1115
+# Statement: Let $f(z)$ be an entire function of finite order, and let $\Gamma$ be a rectifiable path on which $f(z)\to \infty$. Let $\ell(r)$ be the length of $\Gamma$ in the disc $\lvert z\rvert<r$. Find a path for which $\ell(r)$ grows as slowly as p
+# formalization_status: li_open
+# discharge: pending — open formalization target (Phase 4)
+# erdos_status (literature): open
+
+def formal_target_e_1115() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0

@@ -1,0 +1,12 @@
+# Catalog: E-408
+# Statement: Let $\phi(n)$ be the Euler totient function and $\phi_k(n)$ be the iterated $\phi$ function, so that $\phi_1(n)=\phi(n)$ and $\phi_k(n)=\phi(\phi_{k-1}(n))$. Let\[f(n) = \min \{ k : \phi_k(n)=1\}.\]Does $f(n)/\log n$ have a distribution fun
+# formalization_status: li_open
+# discharge: pending — open formalization target (Phase 4)
+# erdos_status (literature): open
+
+def formal_target_e_408() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0

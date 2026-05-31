@@ -1,0 +1,12 @@
+# Catalog: E-676
+# Statement: Is every sufficiently large integer of the form\[ap^2+b\]for some prime $p$ and integer $a\geq 1$ and $0\leq b<p$?
+# formalization_status: li_open
+# discharge: pending — open formalization target (Phase 4)
+# erdos_status (literature): open
+
+def formal_target_e_676() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0

@@ -1,0 +1,12 @@
+# Catalog: E-604
+# Statement: Given $n$ distinct points $A\subset\mathbb{R}^2$ must there be a point $x\in A$ such that\[\#\{ d(x,y) : y \in A\} \gg n^{1-o(1)}?\]Or even $\gg n/\sqrt{\log n}$?
+# formalization_status: li_open
+# discharge: pending — open formalization target (Phase 4)
+# erdos_status (literature): open
+
+def formal_target_e_604() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0

@@ -1,0 +1,12 @@
+# Catalog: E-793
+# Statement: Let $F(n)$ be the maximum possible size of a subset $A\subseteq\{1,\ldots,n\}$ such that $a\nmid bc$ whenever $a,b,c\in A$ with $a\neq b$ and $a\neq c$. Is there a constant $C$ such that\[F(n)=\pi(n)+(C+o(1))n^{2/3}(\log n)^{-2}?\]
+# formalization_status: li_open
+# discharge: pending — open formalization target (Phase 4)
+# erdos_status (literature): open
+
+def formal_target_e_793() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0

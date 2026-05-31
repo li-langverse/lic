@@ -1,0 +1,12 @@
+# Catalog: E-1070
+# Statement: Let $f(n)$ be maximal such that, given any $n$ points in $\mathbb{R}^2$, there exist $f(n)$ points such that no two are distance $1$ apart. Estimate $f(n)$. In particular, is it true that $f(n)\geq n/4$?
+# formalization_status: li_open
+# discharge: pending — open formalization target (Phase 4)
+# erdos_status (literature): open
+
+def formal_target_e_1070() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0

@@ -1,0 +1,12 @@
+# Catalog: E-495
+# Statement: Let $\alpha,\beta \in \mathbb{R}$. Is it true that\[\liminf_{n\to \infty} n \| n\alpha \| \| n\beta\| =0\]where $\|x\|$ is the distance from $x$ to the nearest integer?
+# formalization_status: li_open
+# discharge: pending — open formalization target (Phase 4)
+# erdos_status (literature): open
+
+def formal_target_e_495() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0

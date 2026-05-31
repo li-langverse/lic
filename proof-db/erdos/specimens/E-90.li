@@ -1,0 +1,12 @@
+# Catalog: E-90
+# Statement: Does every set of n distinct points in R^2 contain at most n^{1+O(1/log log n)} pairs at unit distance (unit distance problem)?
+# formalization_status: li_open
+# discharge: pending — open formalization target (Phase 4)
+# erdos_status (literature): proved
+
+def formal_target_e_90() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0

@@ -1,0 +1,12 @@
+# Catalog: E-425
+# Statement: Let $F(n)$ be the maximum possible size of a subset $A\subseteq\{1,\ldots,N\}$ such that the products $ab$ are distinct for all $a<b$. Is there a constant $c$ such that\[F(n)=\pi(n)+(c+o(1))n^{3/4}(\log n)^{-3/2}?\]If $A\subseteq \{1,\ldots
+# formalization_status: li_open
+# discharge: pending — open formalization target (Phase 4)
+# erdos_status (literature): open
+
+def formal_target_e_425() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0

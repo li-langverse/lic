@@ -1,0 +1,12 @@
+# Catalog: E-939
+# Statement: Let $r\geq 2$. An $r$-powerful number $n$ is one such that if $p\mid n$ then $p^r\mid n$. If $r\geq 4$ then can the sum of $r-2$ coprime $r$-powerful numbers ever be itself $r$-powerful? Are there at most finitely many such solutions? Are t
+# formalization_status: li_open
+# discharge: pending — open formalization target (Phase 4)
+# erdos_status (literature): open
+
+def formal_target_e_939() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0

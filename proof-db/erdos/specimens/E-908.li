@@ -1,0 +1,12 @@
+# Catalog: E-908
+# Statement: Let $f:\mathbb{R}\to \mathbb{R}$ be such that $f(x+h)-f(x)$ is measurable for every $h>0$. Is it true that\[f=g+h+r\]where $g$ is continuous, $h$ is additive (so $h(x+y)=h(x)+h(y)$), and $r(x+h)-r(x)=0$ for every $h$ and almost all (dependi
+# formalization_status: li_open
+# discharge: pending — open formalization target (Phase 4)
+# erdos_status (literature): proved
+
+def formal_target_e_908() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0

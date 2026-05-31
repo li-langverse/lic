@@ -1,0 +1,12 @@
+# Catalog: E-803
+# Statement: We call a graph $H$ $D$-balanced (or $D$-almost-regular) if the maximum degree of $H$ is at most $D$ times the minimum degree of $H$. Is it true that for every $m\geq 1$, if $n$ is sufficiently large, any graph on $n$ vertices with $\geq n\
+# formalization_status: li_open
+# discharge: pending — open formalization target (Phase 4)
+# erdos_status (literature): open
+
+def formal_target_e_803() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0

@@ -1,0 +1,12 @@
+# Catalog: E-168
+# Statement: Let $F(N)$ be the size of the largest subset of $\{1,\ldots,N\}$ which does not contain any set of the form $\{n,2n,3n\}$. What is\[ \lim_{N\to \infty}\frac{F(N)}{N}?\]Is this limit irrational?
+# formalization_status: li_open
+# discharge: pending — open formalization target (Phase 4)
+# erdos_status (literature): open
+
+def formal_target_e_168() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0

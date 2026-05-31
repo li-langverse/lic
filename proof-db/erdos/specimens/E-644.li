@@ -1,0 +1,12 @@
+# Catalog: E-644
+# Statement: Let $f(k,r)$ be minimal such that if $A_1,A_2,\ldots$ is a family of sets, all of size $k$, such that for every collection of $r$ of the $A_is$ there is some pair $\{x,y\}$ which intersects all of the $A_j$, then there is some set of size $
+# formalization_status: li_open
+# discharge: pending — open formalization target (Phase 4)
+# erdos_status (literature): open
+
+def formal_target_e_644() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0

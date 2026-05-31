@@ -1,0 +1,12 @@
+# Catalog: E-617
+# Statement: Let $r\geq 3$. If the edges of $K_{r^2+1}$ are $r$-coloured then there exist $r+1$ vertices with at least one colour missing on the edges of the induced $K_{r+1}$.
+# formalization_status: li_open
+# discharge: pending — open formalization target (Phase 4)
+# erdos_status (literature): open
+
+def formal_target_e_617() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0

@@ -1,0 +1,12 @@
+# Catalog: E-337
+# Statement: Let $A\subseteq \mathbb{N}$ be an additive basis (of any finite order) such that $\lvert A\cap \{1,\ldots,N\}\rvert=o(N)$. Is it true that\[\lim_{N\to \infty}\frac{\lvert (A+A)\cap \{1,\ldots,N\}\rvert}{\lvert A\cap \{1,\ldots,N\}\rvert}=\i
+# formalization_status: li_open
+# discharge: pending — open formalization target (Phase 4)
+# erdos_status (literature): open
+
+def formal_target_e_337() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0

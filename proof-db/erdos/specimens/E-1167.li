@@ -1,0 +1,12 @@
+# Catalog: E-1167
+# Statement: Let $r\geq 2$ be finite and $\lambda$ be an infinite cardinal. Let $\kappa_\alpha$ be cardinals for all $\alpha<\gamma$. Is it true that\[2^\lambda \to (\kappa_\alpha+1)_{\alpha<\gamma}^{r+1}\]implies\[\lambda \to (\kappa_\alpha)_{\alpha<\g
+# formalization_status: li_open
+# discharge: pending — open formalization target (Phase 4)
+# erdos_status (literature): open
+
+def formal_target_e_1167() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0

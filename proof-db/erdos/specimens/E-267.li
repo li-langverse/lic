@@ -1,0 +1,12 @@
+# Catalog: E-267
+# Statement: Let $F_1=F_2=1$ and $F_{n+1}=F_n+F_{n-1}$ be the Fibonacci sequence. Let $n_1<n_2<\cdots $ be an infinite sequence with $n_{k+1}/n_k \geq c>1$. Must\[\sum_k\frac{1}{F_{n_k}}\]be irrational?
+# formalization_status: li_open
+# discharge: pending — open formalization target (Phase 4)
+# erdos_status (literature): open
+
+def formal_target_e_267() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0

@@ -1,0 +1,12 @@
+# Catalog: E-1200
+# Statement: There exists a constant $C$ such that for all large $x$ there is a collection of primes $p_1<\ldots<p_k<x$ with $\sum\frac{1}{p_i}<C$ together with a system of congruences $a_i\pmod{p_i}$ such that every integer $n<x$ satisfies at least one
+# formalization_status: li_open
+# discharge: pending — open formalization target (Phase 4)
+# erdos_status (literature): open
+
+def formal_target_e_1200() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0

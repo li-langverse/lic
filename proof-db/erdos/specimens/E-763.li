@@ -1,0 +1,12 @@
+# Catalog: E-763
+# Statement: Let $A\subseteq \mathbb{N}$. Can there exist some constant $c>0$ such that\[\sum_{n\leq N} 1_A\ast 1_A(n) = cN+O(1)?\]
+# formalization_status: li_open
+# discharge: pending — open formalization target (Phase 4)
+# erdos_status (literature): open
+
+def formal_target_e_763() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0

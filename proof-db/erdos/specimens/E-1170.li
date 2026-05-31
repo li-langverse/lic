@@ -1,0 +1,12 @@
+# Catalog: E-1170
+# Statement: Is it consistent that\[\omega_2\to (\alpha)_2^2\]for every $\alpha <\omega_2$?
+# formalization_status: li_open
+# discharge: pending — open formalization target (Phase 4)
+# erdos_status (literature): open
+
+def formal_target_e_1170() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0

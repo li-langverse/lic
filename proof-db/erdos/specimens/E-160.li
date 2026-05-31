@@ -1,0 +1,12 @@
+# Catalog: E-160
+# Statement: Let $h(N)$ be the smallest $k$ such that $\{1,\ldots,N\}$ can be coloured with $k$ colours so that every four-term arithmetic progression must contain at least three distinct colours. Estimate $h(N)$.
+# formalization_status: li_open
+# discharge: pending — open formalization target (Phase 4)
+# erdos_status (literature): open
+
+def formal_target_e_160() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0

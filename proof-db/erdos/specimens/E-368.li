@@ -1,0 +1,12 @@
+# Catalog: E-368
+# Statement: How large is the largest prime factor of $n(n+1)$?
+# formalization_status: li_open
+# discharge: pending — open formalization target (Phase 4)
+# erdos_status (literature): open
+
+def formal_target_e_368() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0

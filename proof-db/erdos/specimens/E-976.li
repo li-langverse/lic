@@ -1,0 +1,12 @@
+# Catalog: E-976
+# Statement: Let $f\in \mathbb{Z}[x]$ be an irreducible polynomial of degree $d\geq 2$. Let $F_f(n)$ be maximal such that there exists $1\leq m\leq n$ with $f(m)$ is divisible by a prime $\geq F_f(n)$. Equivalently, $F_f(n)$ is the greatest prime diviso
+# formalization_status: li_open
+# discharge: pending — open formalization target (Phase 4)
+# erdos_status (literature): open
+
+def formal_target_e_976() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0

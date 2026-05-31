@@ -1,0 +1,12 @@
+# Catalog: E-559
+# Statement: Let $\hat{R}(G)$ denote the size Ramsey number, the minimal number of edges $m$ such that there is a graph $H$ with $m$ edges that is Ramsey for $G$. If $G$ has $n$ vertices and maximum degree $d$ then prove that\[\hat{R}(G)\ll_d n.\]
+# formalization_status: li_open
+# discharge: pending — open formalization target (Phase 4)
+# erdos_status (literature): open
+
+def formal_target_e_559() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0

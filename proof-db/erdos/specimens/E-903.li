@@ -1,0 +1,12 @@
+# Catalog: E-903
+# Statement: Let $n=p^2+p+1$ for some prime power $p$, and let $A_1,\ldots,A_t\subseteq \{1,\ldots,n\}$ be a block design (so that every pair $x,y\in \{1,\ldots,n\}$ is contained in exactly one $A_i$). Is it true that if $t>n$ then $t\geq n+p$?
+# formalization_status: li_open
+# discharge: pending — open formalization target (Phase 4)
+# erdos_status (literature): proved
+
+def formal_target_e_903() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0

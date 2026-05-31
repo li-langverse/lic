@@ -1,0 +1,12 @@
+# Catalog: E-276
+# Statement: Is there an infinite Lucas sequence $a_0,a_1,\ldots$ where $a_{n+2}=a_{n+1}+a_n$ for $n\geq 0$ such that all $a_k$ are composite, and yet no integer has a common factor with every term of the sequence?
+# formalization_status: li_open
+# discharge: pending — open formalization target (Phase 4)
+# erdos_status (literature): open
+
+def formal_target_e_276() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0

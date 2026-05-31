@@ -1,0 +1,12 @@
+# Catalog: E-355
+# Statement: Is there a lacunary sequence $A\subseteq \mathbb{N}$ (so that $A=\{a_1<a_2<\cdots\}$ and there exists some $\lambda>1$ such that $a_{n+1}/a_n\geq \lambda$ for all $n\geq 1$) such that\[\left\{ \sum_{a\in A'}\frac{1}{a} : A'\subseteq A\textr
+# formalization_status: li_open
+# discharge: pending — open formalization target (Phase 4)
+# erdos_status (literature): proved
+
+def formal_target_e_355() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0

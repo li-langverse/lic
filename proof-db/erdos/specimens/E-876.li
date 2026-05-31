@@ -1,0 +1,12 @@
+# Catalog: E-876
+# Statement: Let $A=\{a_1<a_2<\cdots\}\subset \mathbb{N}$ be an infinite sum-free set - that is, there are no solutions to\[a=b_1+\cdots+b_r\]with $b_1<\cdots<b_r<a\in A$. How small can $a_{n+1}-a_n$ be? Is it possible that $a_{n+1}-a_n<n$?
+# formalization_status: li_open
+# discharge: pending — open formalization target (Phase 4)
+# erdos_status (literature): open
+
+def formal_target_e_876() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0

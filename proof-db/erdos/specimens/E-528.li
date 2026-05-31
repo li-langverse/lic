@@ -1,0 +1,12 @@
+# Catalog: E-528
+# Statement: Let $f(n,k)$ count the number of self-avoiding walks of $n$ steps (beginning at the origin) in $\mathbb{Z}^k$ (i.e. those walks which do not intersect themselves). Determine\[C_k=\lim_{n\to\infty}f(n,k)^{1/n}.\]
+# formalization_status: li_open
+# discharge: pending — open formalization target (Phase 4)
+# erdos_status (literature): open
+
+def formal_target_e_528() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0

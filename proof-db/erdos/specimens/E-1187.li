@@ -1,0 +1,12 @@
+# Catalog: E-1187
+# Statement: Let $k\geq 3$. Is it true that, in any finite colouring of the integers, there are monochromatic arithmetic progressions of primes of length $k$? Are there monochromatic arithmetic progressions of length $k$ whose common difference is a pri
+# formalization_status: li_open
+# discharge: pending — open formalization target (Phase 4)
+# erdos_status (literature): open
+
+def formal_target_e_1187() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0

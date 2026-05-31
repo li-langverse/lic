@@ -1,0 +1,12 @@
+# Catalog: E-1001
+# Statement: Let $S(N,A,c)$ be the measure of the set of those $\alpha\in (0,1)$ such that\[\left\lvert \alpha-\frac{x}{y}\right\rvert< \frac{A}{y^2}\]for some $N\leq y\leq cN$ and $(x,y)=1$. Does\[\lim_{N\to \infty}S(N,A,c)=f(A,c)\]exist? What is its e
+# formalization_status: li_open
+# discharge: pending — open formalization target (Phase 4)
+# erdos_status (literature): open
+
+def formal_target_e_1001() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0

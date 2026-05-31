@@ -1,0 +1,12 @@
+# Catalog: E-975
+# Statement: Let $f\in \mathbb{Z}[x]$ be an irreducible non-constant polynomial such that $f(n)\geq 1$ for all large $n\in\mathbb{N}$. Does there exist a constant $c=c(f)>0$ such that\[\sum_{n\leq X} \tau(f(n))\sim cX\log X,\]where $\tau$ is the divisor
+# formalization_status: li_open
+# discharge: pending — open formalization target (Phase 4)
+# erdos_status (literature): open
+
+def formal_target_e_975() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0

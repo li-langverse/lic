@@ -1,0 +1,12 @@
+# Catalog: E-595
+# Statement: Is there an infinite graph $G$ which contains no $K_4$ and is not the union of countably many triangle-free graphs?
+# formalization_status: li_open
+# discharge: pending — open formalization target (Phase 4)
+# erdos_status (literature): open
+
+def formal_target_e_595() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0

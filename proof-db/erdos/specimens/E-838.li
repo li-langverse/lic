@@ -1,0 +1,12 @@
+# Catalog: E-838
+# Statement: Let $f(n)$ be maximal such that any $n$ points in $\mathbb{R}^2$, with no three on a line, determine at least $f(n)$ different convex subsets. Estimate $f(n)$ - in particular, does there exist a constant $c$ such that\[\lim \frac{\log f(n)}
+# formalization_status: li_open
+# discharge: pending — open formalization target (Phase 4)
+# erdos_status (literature): open
+
+def formal_target_e_838() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0

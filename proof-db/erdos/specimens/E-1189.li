@@ -1,0 +1,12 @@
+# Catalog: E-1189
+# Statement: Call a set of distinct integers $1<n_1<\cdots<n_k$ a covering set if there is a choice of $a_i\pmod{n_i}$ for $1\leq i\leq k$ such that every integer satisfies at least one of these congruences. A set is an irreducible covering set if no pr
+# formalization_status: li_open
+# discharge: pending — open formalization target (Phase 4)
+# erdos_status (literature): open
+
+def formal_target_e_1189() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0

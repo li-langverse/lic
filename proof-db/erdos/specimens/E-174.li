@@ -1,0 +1,12 @@
+# Catalog: E-174
+# Statement: A finite set $A\subset \mathbb{R}^n$ is called Ramsey if, for any $k\geq 1$, there exists some $d=d(A,k)$ such that in any $k$-colouring of $\mathbb{R}^d$ there exists a monochromatic copy of $A$. Characterise the Ramsey sets in $\mathbb{R}
+# formalization_status: li_open
+# discharge: pending — open formalization target (Phase 4)
+# erdos_status (literature): open
+
+def formal_target_e_174() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0

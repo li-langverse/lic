@@ -1,0 +1,12 @@
+# Catalog: E-1161
+# Statement: Let $f_k(n)$ count the number of elements of $S_n$ of order $k$. For which values of $k$ will $f_k(n)$ be maximal?
+# formalization_status: li_open
+# discharge: pending — open formalization target (Phase 4)
+# erdos_status (literature): open
+
+def formal_target_e_1161() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0

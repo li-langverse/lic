@@ -1,0 +1,12 @@
+# Catalog: E-55
+# Statement: A set of integers $A$ is Ramsey $r$-complete if, whenever $A$ is $r$-coloured, all sufficiently large integers can be written as a monochromatic sum of elements of $A$. Prove any non-trivial bounds about the growth rate of such an $A$ for $
+# formalization_status: li_open
+# discharge: pending — open formalization target (Phase 4)
+# erdos_status (literature): open
+
+def formal_target_e_55() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0

@@ -1,0 +1,12 @@
+# Catalog: E-997
+# Statement: Call $x_1,x_2,\ldots \in (0,1)$ well-distributed if, for every $\epsilon>0$, if $k$ is sufficiently large then, for all $n>0$ and intervals $I\subseteq [0,1]$,\[\lvert \# \{ n<m\leq n+k : x_m\in I\} - \lvert I\rvert k\rvert < \epsilon k.\]I
+# formalization_status: li_open
+# discharge: pending — open formalization target (Phase 4)
+# erdos_status (literature): proved
+
+def formal_target_e_997() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0

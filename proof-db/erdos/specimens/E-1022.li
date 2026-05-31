@@ -1,0 +1,12 @@
+# Catalog: E-1022
+# Statement: Is there a constant $c_t$, where $c_t\to \infty$ as $t\to \infty$, such that if $\mathcal{F}$ is a finite family of finite sets, all of size at least $t$, and for every set $X$ there are $<c_t\lvert X\rvert$ many $A\in \mathcal{F}$ with $A\
+# formalization_status: li_open
+# discharge: pending — open formalization target (Phase 4)
+# erdos_status (literature): proved
+
+def formal_target_e_1022() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0

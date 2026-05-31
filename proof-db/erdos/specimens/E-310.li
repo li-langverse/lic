@@ -1,0 +1,12 @@
+# Catalog: E-310
+# Statement: Let $\alpha >0$ and $N\geq 1$. Is it true that for any $A\subseteq \{1,\ldots,N\}$ with $\lvert A\rvert \geq \alpha N$ there exists some $S\subseteq A$ such that\[\frac{a}{b}=\sum_{n\in S}\frac{1}{n}\]with $a\leq b =O_\alpha(1)$?
+# formalization_status: li_open
+# discharge: pending — open formalization target (Phase 4)
+# erdos_status (literature): proved
+
+def formal_target_e_310() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0

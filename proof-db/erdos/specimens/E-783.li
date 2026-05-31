@@ -1,0 +1,12 @@
+# Catalog: E-783
+# Statement: Fix some constant $C>0$ and let $N$ be large. Let $A\subseteq \{2,\ldots,N\}$ be such that $(a,b)=1$ for all $a\neq b\in A$ and $\sum_{n\in A}\frac{1}{n}\leq C$. What choice of such an $A$ minimises the number of integers $m\leq N$ not divi
+# formalization_status: li_open
+# discharge: pending — open formalization target (Phase 4)
+# erdos_status (literature): open
+
+def formal_target_e_783() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0

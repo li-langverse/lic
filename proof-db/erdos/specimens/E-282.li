@@ -1,0 +1,12 @@
+# Catalog: E-282
+# Statement: Let $A\subseteq \mathbb{N}$ be an infinite set and consider the following greedy algorithm for a rational $x\in (0,1)$: choose the minimal $n\in A$ such that $n\geq 1/x$ and repeat with $x$ replaced by $x-\frac{1}{n}$. If this terminates af
+# formalization_status: li_open
+# discharge: pending — open formalization target (Phase 4)
+# erdos_status (literature): open
+
+def formal_target_e_282() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0

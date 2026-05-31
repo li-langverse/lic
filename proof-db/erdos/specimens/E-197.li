@@ -1,0 +1,12 @@
+# Catalog: E-197
+# Statement: Can $\mathbb{N}$ be partitioned into two sets, each of which can be permuted to avoid monotone 3-term arithmetic progressions?
+# formalization_status: li_open
+# discharge: pending — open formalization target (Phase 4)
+# erdos_status (literature): open
+
+def formal_target_e_197() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0

@@ -1,0 +1,12 @@
+# Catalog: E-291
+# Statement: Let $n\geq 1$ and define $L_n$ to be the least common multiple of $\{1,\ldots,n\}$ and $a_n$ by\[\sum_{1\leq k\leq n}\frac{1}{k}=\frac{a_n}{L_n}.\]Is it true that $(a_n,L_n)=1$ and $(a_n,L_n)>1$ both occur for infinitely many $n$?
+# formalization_status: li_open
+# discharge: pending — open formalization target (Phase 4)
+# erdos_status (literature): open
+
+def formal_target_e_291() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0

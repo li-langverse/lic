@@ -1,0 +1,12 @@
+# Catalog: E-303
+# Statement: Is it true that in any finite colouring of the integers there exists a monochromatic solution to\[\frac{1}{a}=\frac{1}{b}+\frac{1}{c}\]with distinct $a,b,c$?
+# formalization_status: li_open
+# discharge: pending — open formalization target (Phase 4)
+# erdos_status (literature): proved
+
+def formal_target_e_303() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0

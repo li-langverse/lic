@@ -1,0 +1,12 @@
+# Catalog: E-873
+# Statement: Let $A=\{a_1<a_2<\cdots\}\subseteq \mathbb{N}$ and let $F(A,X,k)$ count the number of $i$ such that\[[a_i,a_{i+1},\ldots,a_{i+k-1}] < X,\]where the left-hand side is the least common multiple. Is it true that, for every $\epsilon >0$, there
+# formalization_status: li_open
+# discharge: pending — open formalization target (Phase 4)
+# erdos_status (literature): open
+
+def formal_target_e_873() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0

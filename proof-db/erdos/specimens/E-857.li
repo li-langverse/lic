@@ -1,0 +1,12 @@
+# Catalog: E-857
+# Statement: Let $m=m(n,k)$ be minimal such that in any collection of sets $A_1,\ldots,A_m\subseteq \{1,\ldots,n\}$ there must exist a sunflower of size $k$ - that is, some collection of $k$ of the $A_i$ which pairwise have the same intersection. Estima
+# formalization_status: li_open
+# discharge: pending — open formalization target (Phase 4)
+# erdos_status (literature): open
+
+def formal_target_e_857() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0

@@ -1,0 +1,12 @@
+# Catalog: E-147
+# Statement: If $H$ is bipartite with minimum degree $r$ then there exists $\epsilon=\epsilon(H)>0$ such that\[\mathrm{ex}(n;H) \gg n^{2-\frac{1}{r-1}+\epsilon}.\]
+# formalization_status: li_open
+# discharge: pending — open formalization target (Phase 4)
+# erdos_status (literature): open
+
+def formal_target_e_147() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0

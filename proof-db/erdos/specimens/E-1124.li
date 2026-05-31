@@ -1,0 +1,12 @@
+# Catalog: E-1124
+# Statement: Can a square and a circle of the same area be decomposed into a finite number of congruent parts?
+# formalization_status: li_open
+# discharge: pending — open formalization target (Phase 4)
+# erdos_status (literature): proved
+
+def formal_target_e_1124() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0

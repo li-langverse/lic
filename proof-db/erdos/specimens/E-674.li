@@ -1,0 +1,12 @@
+# Catalog: E-674
+# Statement: Are there any integer solutions to $x^xy^y=z^z$ with $x,y,z>1$?
+# formalization_status: li_open
+# discharge: pending — open formalization target (Phase 4)
+# erdos_status (literature): proved
+
+def formal_target_e_674() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0

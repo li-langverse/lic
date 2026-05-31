@@ -1,0 +1,12 @@
+# Catalog: E-22
+# Statement: Let $\epsilon>0$ and $n$ be sufficiently large depending on $\epsilon$. Is there a graph on $n$ vertices with $\geq n^2/8$ many edges which contains no $K_4$ such that the largest independent set has size at most $\epsilon n$?
+# formalization_status: li_open
+# discharge: pending — open formalization target (Phase 4)
+# erdos_status (literature): proved
+
+def formal_target_e_22() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0

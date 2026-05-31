@@ -1,0 +1,12 @@
+# Catalog: E-737
+# Statement: Let $G$ be a graph with chromatic number $\aleph_1$. Must there exist an edge $e$ such that, for all large $n$, $G$ contains a cycle of length $n$ containing $e$?
+# formalization_status: li_open
+# discharge: pending — open formalization target (Phase 4)
+# erdos_status (literature): proved
+
+def formal_target_e_737() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0

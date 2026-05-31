@@ -1,0 +1,12 @@
+# Catalog: E-1186
+# Statement: Let $\delta_k$ be such that in any $2$-colouring of $\{1,\ldots,n\}$ there exist at least $(\delta_k+o(1))n^2$ many monochromatic $k$-term arithmetic progressions. Give reasonable bounds (or even an asymptotic formula) for $\delta_k$.
+# formalization_status: li_open
+# discharge: pending — open formalization target (Phase 4)
+# erdos_status (literature): open
+
+def formal_target_e_1186() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0

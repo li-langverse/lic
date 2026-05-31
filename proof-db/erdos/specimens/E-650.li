@@ -1,0 +1,12 @@
+# Catalog: E-650
+# Statement: Let $f(m)$ be such that if $A\subseteq \{1,\ldots,N\}$ has $\lvert A\rvert=m$ then every interval in $[1,\infty)$ of length $2N$ contains $\geq f(m)$ many distinct integers $b_1,\ldots,b_r$ where each $b_i$ is divisible by some $a_i\in A$, 
+# formalization_status: li_open
+# discharge: pending — open formalization target (Phase 4)
+# erdos_status (literature): open
+
+def formal_target_e_650() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0

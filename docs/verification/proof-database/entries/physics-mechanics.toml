@@ -1,5 +1,4 @@
 version = 1
-
 [[entry]]
 id = "P-AX-MECH-001"
 kind = "axiom"
@@ -9,12 +8,8 @@ proof_status = "open"
 gap_id = "G-physics"
 gap_kind = "modeling_gap"
 lean_module = "docs/semantics/Discharge.lean"
-li_specimen = "proof-db/physics/axioms/newton_laws.li"
-bench_refs = [
-  "benchmarks/tier2_physics/three_body",
-  "benchmarks/tier2_physics/nbody_gravity",
-  "benchmarks/tier2_physics/md_lennard_jones",
-]
+li_specimen = "proof-db/physics/specimens/P-AX-MECH-001.li"
+bench_refs = ["benchmarks/tier2_physics/three_body", "benchmarks/tier2_physics/nbody_gravity", "benchmarks/tier2_physics/md_lennard_jones"]
 last_verified_lic_commit = "a9542bfc"
 
 [[entry]]
@@ -27,12 +22,8 @@ gap_id = "G-physics"
 gap_kind = "proof_gap"
 lean_module = "docs/semantics/Discharge.lean"
 lean_thm = "Li.Discharge.force_equals_mass_accel_stub"
-li_specimen = "proof-db/physics/axioms/newton_laws.li"
-bench_refs = [
-  "benchmarks/tier2_physics/three_body",
-  "benchmarks/tier2_physics/nbody_gravity",
-  "benchmarks/tier2_physics/md_lennard_jones",
-]
+li_specimen = "proof-db/physics/specimens/P-AX-MECH-002.li"
+bench_refs = ["benchmarks/tier2_physics/three_body", "benchmarks/tier2_physics/nbody_gravity", "benchmarks/tier2_physics/md_lennard_jones"]
 last_verified_lic_commit = "a9542bfc"
 
 [[entry]]
@@ -44,10 +35,6 @@ proof_status = "open"
 gap_id = "G-physics"
 gap_kind = "modeling_gap"
 lean_module = "docs/semantics/Discharge.lean"
-li_specimen = "proof-db/physics/axioms/newton_laws.li"
-bench_refs = [
-  "benchmarks/tier2_physics/three_body",
-  "benchmarks/tier2_physics/nbody_gravity",
-  "benchmarks/tier2_physics/md_lennard_jones",
-]
+li_specimen = "proof-db/physics/specimens/P-AX-MECH-003.li"
+bench_refs = ["benchmarks/tier2_physics/three_body", "benchmarks/tier2_physics/nbody_gravity", "benchmarks/tier2_physics/md_lennard_jones"]
 last_verified_lic_commit = "a9542bfc"

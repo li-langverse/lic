@@ -1,0 +1,12 @@
+# Catalog: E-344
+# Statement: If $A\subseteq \mathbb{N}$ is a set of integers such that\[\lvert A\cap \{1,\ldots,N\}\rvert\gg N^{1/2}\]for all $N$ then must $A$ be subcomplete? That is, must\[P(A) = \left\{\sum_{n\in B}n : B\subseteq A\textrm{ finite }\right\}\]contain 
+# formalization_status: li_open
+# discharge: pending — open formalization target (Phase 4)
+# erdos_status (literature): proved
+
+def formal_target_e_344() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0

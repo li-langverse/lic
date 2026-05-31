@@ -1,0 +1,12 @@
+# Catalog: E-724
+# Statement: Let $f(n)$ be the maximum number of mutually orthogonal Latin squares of order $n$. Is it true that\[f(n) \gg n^{1/2}?\]
+# formalization_status: li_open
+# discharge: pending — open formalization target (Phase 4)
+# erdos_status (literature): open
+
+def formal_target_e_724() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0

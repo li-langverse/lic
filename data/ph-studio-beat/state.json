@@ -1,0 +1,37 @@
+﻿{
+  "note": "PH-DB-12 beat Supabase — B1/B2/B4/B6 shipped in lis/data-studio-ui",
+  "updated_at": "2026-05-31T20:00:00Z",
+  "iterations": 1,
+  "completed_ids": [
+    "wp-b1-command-palette",
+    "wp-b2-agent-trace",
+    "wp-b4-control-plane",
+    "wp-b6-home-dashboard"
+  ],
+  "pending_ids": [
+    "wp-b3-proof-gate",
+    "wp-b5-run-drawer"
+  ],
+  "history": [
+    {
+      "at": "2026-05-31T20:00:00Z",
+      "completed": "wp-b1-command-palette",
+      "summary": "⌘K palette with fuzzy filter, arrow-key nav, sidebar trigger"
+    },
+    {
+      "at": "2026-05-31T20:00:00Z",
+      "completed": "wp-b6-home-dashboard",
+      "summary": "Project home with db/registry/realtime/agents status cards + recovery steps"
+    },
+    {
+      "at": "2026-05-31T20:00:00Z",
+      "completed": "wp-b2-agent-trace",
+      "summary": "Live trace sidebar on /agents via proxy to li-cursor-agents :9477"
+    },
+    {
+      "at": "2026-05-31T20:00:00Z",
+      "completed": "wp-b4-control-plane",
+      "summary": "Filtered control-plane table browser (agent_runs, events, queue)"
+    }
+  ]
+}

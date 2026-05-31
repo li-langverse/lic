@@ -2,13 +2,16 @@
 # Studio viewport / particle / load benchmarks — writes JSON for plan loop + competitive registry.
 set -euo pipefail
 ROOT="$(cd "$(dirname "$0")/.." && pwd)"
+# shellcheck source=lib/benchmarks-env.sh
+source "$ROOT/scripts/lib/benchmarks-env.sh"
+
 OUT_DIR="${STUDIO_UI_UX_BENCH_DIR:-$ROOT/data/studio-ui-ux-plan-loop}"
-mkdir -p "$OUT_DIR" "$ROOT/benchmarks/results"
+mkdir -p "$OUT_DIR" "$BENCHMARKS_RESULTS"
 STAMP="$(date -u +%Y%m%dT%H%M%SZ)"
 OUT="$OUT_DIR/bench-${STAMP}.json"
 LATEST="$OUT_DIR/latest-bench.json"
-COMPETITIVE="$ROOT/benchmarks/results/bench-studio-viewport-perf.json"
-REGISTRY="$ROOT/benchmarks/competitive/studio-ui.toml"
+COMPETITIVE="$BENCHMARKS_RESULTS/bench-studio-viewport-perf.json"
+REGISTRY="$BENCHMARKS_COMPETITIVE/studio-ui.toml"
 
 python3 - "$ROOT" "$OUT" "$LATEST" "$COMPETITIVE" "$REGISTRY" <<'PY'
 import json
@@ -443,7 +446,7 @@ if scene_hook.is_file():
     report["notes"].append("particle_tiers:li-scene_hook_native")
 
 lic = root / "build/compiler/lic/lic"
-bench_py = root / "benchmarks/harness/bench.py"
+bench_py = Path(os.environ["BENCHMARKS_ROOT"]) / "harness" / "bench.py"
 if lic.is_file() and bench_py.is_file() and not report["particle_tiers"]:
     for particles, fps_target in ((1000, 60), (10000, 60), (100000, 30)):
         tier = {

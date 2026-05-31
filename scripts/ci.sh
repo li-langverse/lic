@@ -2,6 +2,9 @@
 # CI entry: build lic, li-tests, tier-0 benchmarks (verify + stability).
 set -euo pipefail
 ROOT="$(cd "$(dirname "$0")/.." && pwd)"
+# shellcheck source=lib/benchmarks-env.sh
+source "$ROOT/scripts/lib/benchmarks-env.sh"
+
 # shellcheck source=lib/li-ui.sh
 source "$ROOT/scripts/lib/li-ui.sh"
 export CC="${CC:-clang}"
@@ -70,7 +73,7 @@ li_phase "E2E li-tests (full manifest)"
 "$ROOT/li-tests/run_all.sh" "${RUN_ALL_FLAGS[@]}"
 
 li_phase "tier 0 physics (strict stability)"
-python3 "$ROOT/benchmarks/harness/bench.py" --tier 0
+"$BENCHMARKS_ROOT/scripts/run-bench.sh" --tier 0
 
 li_phase "race_shared_memory"
 "$ROOT/li-tests/run_all.sh" "${RUN_ALL_FLAGS[@]}" race_shared_memory

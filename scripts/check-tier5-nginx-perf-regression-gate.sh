@@ -3,8 +3,11 @@
 # Fails when li p99 > 2× nginx (bench profiles) or an exploit row regresses (nginx pass, li fail).
 set -euo pipefail
 ROOT="$(cd "$(dirname "$0")/.." && pwd)"
+# shellcheck source=lib/benchmarks-env.sh
+source "$ROOT/scripts/lib/benchmarks-env.sh"
+
 HTTPD="${LI_HTTPD_BIN:-$ROOT/build/li-httpd}"
-HARNESS="$ROOT/benchmarks/harness"
+HARNESS="$BENCHMARKS_ROOT/harness"
 export PYTHONPATH="$HARNESS${PYTHONPATH:+:$PYTHONPATH}"
 export LI_HTTPD_BIN="$HTTPD"
 export PATH="/usr/sbin:/usr/local/bin:${PATH:-}"
@@ -42,7 +45,7 @@ pkill -9 -f '[/]build/li-httpd' 2>/dev/null || true
 sleep 2
 
 EXPLOIT_PROFILE="${HTTPD_REGRESSION_EXPLOIT_PROFILE:-pr}"
-EXPLOIT_OUT="${HTTPD_REGRESSION_EXPLOIT_CSV:-$ROOT/benchmarks/results/tier5_exploit_regression.csv}"
+EXPLOIT_OUT="${HTTPD_REGRESSION_EXPLOIT_CSV:-$BENCHMARKS_RESULTS/tier5_exploit_regression.csv}"
 
 echo "==> tier5 exploit nginx compare (profile ${EXPLOIT_PROFILE}, fail on regression)"
 unset TIER5_EXPLOIT_STUB

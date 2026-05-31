@@ -2,6 +2,9 @@
 # Validate li_sim_summary_v1 under benchmarks/results (JSON, minified JSON, YAML).
 set -euo pipefail
 ROOT="$(cd "$(dirname "$0")/.." && pwd)"
+# shellcheck source=lib/benchmarks-env.sh
+source "$ROOT/scripts/lib/benchmarks-env.sh"
+
 shopt -s nullglob
 fail=0
 found=0

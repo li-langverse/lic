@@ -2,8 +2,11 @@
 # m1-nginx-bench-parity: tier5_http agent-gateway scenarios meet or beat nginx (RPS/latency ratios).
 set -euo pipefail
 ROOT="$(cd "$(dirname "$0")/.." && pwd)"
+# shellcheck source=lib/benchmarks-env.sh
+source "$ROOT/scripts/lib/benchmarks-env.sh"
+
 HTTPD="${LI_HTTPD_BIN:-$ROOT/build/li-httpd}"
-HARNESS="$ROOT/benchmarks/harness"
+HARNESS="$BENCHMARKS_ROOT/harness"
 export PYTHONPATH="$HARNESS${PYTHONPATH:+:$PYTHONPATH}"
 export LI_HTTPD_BIN="$HTTPD"
 
@@ -44,6 +47,6 @@ DUR="${HTTPD_BENCH_DURATION_SEC:-8}"
 echo "==> bench_http.py --profile parity --check-parity (duration ${DUR}s)"
 python3 "$HARNESS/bench_http.py" --profile parity --check-parity \
   --set "load.duration_sec=${DUR}" \
-  --out "$ROOT/benchmarks/results/tier5_http_parity.csv"
+  --out "$BENCHMARKS_RESULTS/tier5_http_parity.csv"
 
 echo "check-tier5-nginx-bench-parity: OK"

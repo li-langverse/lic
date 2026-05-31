@@ -4,7 +4,7 @@ set -euo pipefail
 ROOT="$(cd "$(dirname "$0")/../.." && pwd)"
 LIC="${LIC:-$ROOT/build/compiler/lic/lic}"
 FORMAT="${LI_SIM_SUMMARY_FORMAT:-json_min}"
-OUT_DIR="${LI_SIM_RESULTS_DIR:-$ROOT/benchmarks/results/li_runs}"
+OUT_DIR="${LI_SIM_RESULTS_DIR:-$BENCHMARKS_RESULTS/li_runs}"
 DETAIL="${LI_SIM_OUTPUT_DETAIL:-summary}"
 
 if [[ ! -x "$LIC" ]]; then

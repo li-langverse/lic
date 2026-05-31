@@ -1,3 +1,0 @@
-# Generated family-template harness (orchestration via bench_registry.py).
-template = "rigid_body_stack"
-family = "rigid"

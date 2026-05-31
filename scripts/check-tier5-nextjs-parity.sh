@@ -2,8 +2,11 @@
 # gap-nextjs-toy-bench: Next.js toy (API/SSR/SSE/WS) proxy scenarios — li RPS/TTFB >= 0.85× nginx.
 set -euo pipefail
 ROOT="$(cd "$(dirname "$0")/.." && pwd)"
+# shellcheck source=lib/benchmarks-env.sh
+source "$ROOT/scripts/lib/benchmarks-env.sh"
+
 HTTPD="${LI_HTTPD_BIN:-$ROOT/build/li-httpd}"
-HARNESS="$ROOT/benchmarks/harness"
+HARNESS="$BENCHMARKS_ROOT/harness"
 export PYTHONPATH="$HARNESS${PYTHONPATH:+:$PYTHONPATH}"
 export LI_HTTPD_BIN="$HTTPD"
 
@@ -15,7 +18,7 @@ fi
 export PATH="/usr/sbin:/usr/local/bin:${PATH:-}"
 
 chmod +x "$HARNESS/bench_http.py" "$HARNESS/verify_http.py" 2>/dev/null || true
-chmod +x "$ROOT/benchmarks/tier5_http/fixtures/nextjs-toy/server.mjs" 2>/dev/null || true
+chmod +x "$BENCHMARKS_WORKLOADS/tier5_http/fixtures/nextjs-toy/server.mjs" 2>/dev/null || true
 
 if ! command -v node >/dev/null 2>&1 && ! command -v nodejs >/dev/null 2>&1; then
   echo "check-tier5-nextjs-parity: node missing — verify-only (set HTTPD_BENCH_SKIP_TIMING=1)" >&2
@@ -52,6 +55,6 @@ export HTTPD_BENCH_P99_RATIO_MAX="${HTTPD_BENCH_P99_RATIO_MAX:-2.0}"
 echo "==> bench_http.py --profile nextjs_parity --check-parity (duration ${DUR}s, RPS/TTFB >= ${HTTPD_BENCH_RPS_RATIO_MIN}x nginx)"
 python3 "$HARNESS/bench_http.py" --profile nextjs_parity --check-parity \
   --set "load.duration_sec=${DUR}" \
-  --out "$ROOT/benchmarks/results/tier5_nextjs_parity.csv"
+  --out "$BENCHMARKS_RESULTS/tier5_nextjs_parity.csv"
 
 echo "check-tier5-nextjs-parity: OK"

@@ -2,15 +2,18 @@
 # tier5_http TOML harness smoke (no nginx/wrk required).
 set -euo pipefail
 ROOT="$(cd "$(dirname "$0")/.." && pwd)"
+# shellcheck source=lib/benchmarks-env.sh
+source "$ROOT/scripts/lib/benchmarks-env.sh"
+
 export TIER5_HTTP_STUB=1
-HARNESS="$ROOT/benchmarks/harness"
+HARNESS="$BENCHMARKS_ROOT/harness"
 
 echo "== tier5_http TOML merge unit checks =="
 python3 - <<PY
 import sys
 from pathlib import Path
 
-sys.path.insert(0, "$ROOT/benchmarks/harness")
+sys.path.insert(0, "$HARNESS")
 from http_bench_toml import (
     list_scenario_names,
     merge_scenario,

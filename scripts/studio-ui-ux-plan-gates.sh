@@ -2,6 +2,9 @@
 # Gates for Studio UI/UX plan loop — native ui/gui/render + UX capture scripts.
 set -euo pipefail
 ROOT="$(cd "$(dirname "$0")/.." && pwd)"
+# shellcheck source=lib/benchmarks-env.sh
+source "$ROOT/scripts/lib/benchmarks-env.sh"
+
 # shellcheck source=lib/li-ui.sh
 source "$ROOT/scripts/lib/li-ui.sh"
 li_detect_compilers 2>/dev/null || true
@@ -43,7 +46,7 @@ python3 "$ROOT/scripts/studio-ui-ux-write-briefing-snapshot.py" || fail "studio-
 
 li_phase "competitive intel doc"
 [[ -f "$ROOT/docs/game-dev/competitive-intel/ui-ux-by-dimension.md" ]] || fail "ui-ux-by-dimension.md"
-[[ -f "$ROOT/benchmarks/competitive/studio-ui.toml" ]] || fail "studio-ui.toml bench registry"
+[[ -f "$BENCHMARKS_COMPETITIVE/studio-ui.toml" ]] || fail "studio-ui.toml bench registry"
 
 li_phase "studio-ui bench registry"
 "$ROOT/scripts/bench-studio-viewport-perf.sh" || fail "bench-studio-viewport-perf"

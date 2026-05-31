@@ -2,6 +2,9 @@
 # Verify benchmark numerical results (Li vs native --verify). No timing sweep.
 set -euo pipefail
 ROOT="$(cd "$(dirname "$0")/.." && pwd)"
+# shellcheck source=lib/benchmarks-env.sh
+source "$ROOT/scripts/lib/benchmarks-env.sh"
+
 # shellcheck source=lib/li-ui.sh
 source "$ROOT/scripts/lib/li-ui.sh"
 
@@ -16,5 +19,5 @@ fi
 
 TIER="${1:-12}"
 li_phase "benchmark result verify (tier ${TIER}, no timing)"
-python3 "$ROOT/benchmarks/harness/bench.py" --verify-results --tier "$TIER"
+"$BENCHMARKS_ROOT/scripts/run-bench.sh" --verify-results --tier "$TIER"
 li_ok "benchmark result verify finished"

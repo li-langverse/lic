@@ -32,7 +32,13 @@ lic_check_smokes() {
     packages/li-ml/li-tests/smoke/ml_matmul_16_flat.li \
     packages/li-ml-rl/li-tests/smoke/env_pool_thread_parallel.li \
     packages/li-ml-rl/li-tests/smoke/env_pool_process_scaffold.li \
+<<<<<<< HEAD
+    packages/li-ml-rl/li-tests/smoke/job_graph_sample_queue.li \
+    packages/li-llm/li-tests/smoke/llm_forward.li \
+    packages/li-llm/li-tests/smoke/llm_generate.li; do
+=======
     packages/li-ml-rl/li-tests/smoke/job_graph_sample_queue.li; do
+>>>>>>> origin/main
     [[ -f "$smoke" ]] || { echo "missing smoke: $smoke"; return 1; }
     set +e
     "$lic" build --allow-open-vc "$smoke" -o /dev/null 2>&1
@@ -67,6 +73,16 @@ fi
 grep -q 'Wave 6' docs/game-dev/PH-ML-GPU-battle-plan.md || { echo "battle plan missing Wave 6"; exit 1; }
 grep -q 'env_pool_stub_step_process_pool' packages/li-sim/src/lib.li || { echo "li-sim missing process pool scaffold"; exit 1; }
 grep -q 'ml_matmul_flat_idx' packages/li-ml/src/lib.li || { echo "li-ml missing flat matmul idx"; exit 1; }
+<<<<<<< HEAD
+[[ -f "$BENCHMARKS_COMPETITIVE/ph-ml.toml ]] || { echo "missing ph-ml competitive registry"; exit 1; }
+
+lic_check_smokes "$LIC" || exit 1
+
+bash scripts/bench-ph-ml-competitive.sh
+
+[[ -f "$BENCHMARKS_RESULTS/ph-ml-competitive.json ]] || { echo "missing ph-ml-competitive.json"; exit 1; }
+[[ -f "$BENCHMARKS_RESULTS/ph-ml-llm-forward.json ]] || { echo "missing ph-ml-llm-forward.json"; exit 1; }
+=======
 [[ -f benchmarks/competitive/ph-ml.toml ]] || { echo "missing ph-ml competitive registry"; exit 1; }
 
 lic_check_smokes "$LIC" || exit 1
@@ -76,13 +92,18 @@ bash scripts/bench-ph-ml-competitive.sh
 
 [[ -f benchmarks/results/ph-ml-competitive.json ]] || { echo "missing ph-ml-competitive.json"; exit 1; }
 [[ -f benchmarks/results/ph-ml-llm-forward.json ]] || { echo "missing ph-ml-llm-forward.json"; exit 1; }
+>>>>>>> origin/main
 
 python3 - <<'PY'
 import json, os, sys
 from pathlib import Path
 import os
 
+<<<<<<< HEAD
+comp = json.loads(Path(os.environ["BENCHMARKS_RESULTS"] + "/" + "ph-ml-competitive.json").read_text())
+=======
 comp = json.loads(Path("benchmarks/results/ph-ml-competitive.json").read_text())
+>>>>>>> origin/main
 rows = comp.get("rows") or []
 if len(rows) < 4:
     sys.exit("competitive JSON needs >=4 rows")

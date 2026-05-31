@@ -30,10 +30,10 @@ type UiFrame = object
   public viewport_h: float
 def li_std_ui_version() -> int
   requires true
-  ensures result == 6
+  ensures result == 7
   decreases 0
 =
-  return 6
+  return 7
 
 def li_std_ui_studio_composables_version() -> int
   requires true
@@ -1317,12 +1317,40 @@ def paint_op_fill_gradient() -> int
 =
   return 6
 
-def paint_op_kind_max() -> int
+def paint_op_clip_push() -> int
   requires true
-  ensures result == paint_op_fill_gradient()
+  ensures result == 7
   decreases 0
 =
-  return paint_op_fill_gradient()
+  return 7
+
+def paint_op_clip_pop() -> int
+  requires true
+  ensures result == 8
+  decreases 0
+=
+  return 8
+
+def paint_op_draw_glyphs() -> int
+  requires true
+  ensures result == 9
+  decreases 0
+=
+  return 9
+
+def paint_op_draw_image() -> int
+  requires true
+  ensures result == 10
+  decreases 0
+=
+  return 10
+
+def paint_op_kind_max() -> int
+  requires true
+  ensures result == paint_op_draw_image()
+  decreases 0
+=
+  return paint_op_draw_image()
 
 type PaintCmd = object
   public kind: int
@@ -1331,6 +1359,25 @@ type PaintCmd = object
   public stroke_px: float
   public radius_px: float
   public color_b: Color
+  public face_id: int
+  public codepoint: int
+  public glyph_count: int
+  public image_id: int
+  public src_rect: Rect
+
+def paint_cmd_ext_zero(c: var PaintCmd) -> unit
+  requires true
+  ensures c.face_id == 0
+  ensures c.codepoint == 0
+  ensures c.glyph_count == 0
+  ensures c.image_id == 0
+  decreases 0
+=
+  c.face_id = 0
+  c.codepoint = 0
+  c.glyph_count = 0
+  c.image_id = 0
+  c.src_rect = rect_make(0.0, 0.0, 0.0, 0.0)
 
 type PaintFrame = object
   public cmd_count: int
@@ -1375,6 +1422,7 @@ def paint_cmd_fill(rect: Rect, color: Color) -> PaintCmd
   c.stroke_px = 0.0
   c.radius_px = 0.0
   c.color_b = color_rgb(0.0, 0.0, 0.0, 0.0)
+  paint_cmd_ext_zero(c)
   return c
 
 def paint_cmd_stroke(rect: Rect, color: Color, stroke_px: float) -> PaintCmd
@@ -1391,6 +1439,7 @@ def paint_cmd_stroke(rect: Rect, color: Color, stroke_px: float) -> PaintCmd
   c.stroke_px = stroke_px
   c.radius_px = 0.0
   c.color_b = color_rgb(0.0, 0.0, 0.0, 0.0)
+  paint_cmd_ext_zero(c)
   return c
 
 def paint_cmd_fill_round(rect: Rect, color: Color, radius_px: float) -> PaintCmd
@@ -1408,6 +1457,7 @@ def paint_cmd_fill_round(rect: Rect, color: Color, radius_px: float) -> PaintCmd
   c.stroke_px = 0.0
   c.radius_px = radius_px
   c.color_b = color_rgb(0.0, 0.0, 0.0, 0.0)
+  paint_cmd_ext_zero(c)
   return c
 
 def paint_cmd_stroke_round(rect: Rect, color: Color, stroke_px: float, radius_px: float) -> PaintCmd
@@ -1426,6 +1476,7 @@ def paint_cmd_stroke_round(rect: Rect, color: Color, stroke_px: float, radius_px
   c.stroke_px = stroke_px
   c.radius_px = radius_px
   c.color_b = color_rgb(0.0, 0.0, 0.0, 0.0)
+  paint_cmd_ext_zero(c)
   return c
 
 def paint_cmd_fill_gradient(rect: Rect, color_top: Color, color_bottom: Color) -> PaintCmd
@@ -1443,6 +1494,7 @@ def paint_cmd_fill_gradient(rect: Rect, color_top: Color, color_bottom: Color) -
   c.stroke_px = 0.0
   c.radius_px = 0.0
   c.color_b = color_bottom
+  paint_cmd_ext_zero(c)
   return c
 
 def paint_cmd_viewport_grid(rect: Rect) -> PaintCmd
@@ -1458,7 +1510,170 @@ def paint_cmd_viewport_grid(rect: Rect) -> PaintCmd
   c.stroke_px = 1.0
   c.radius_px = 0.0
   c.color_b = color_rgb(0.0, 0.0, 0.0, 0.0)
+  paint_cmd_ext_zero(c)
   return c
+
+# BEGIN paint-cmds-ext (scripts/sync-paint-cmds-ext.py)
+# Mirrored for `import ui` — edit src/paint_cmds_ext.li + re-run sync.
+
+# Phase 3 — PaintCmd builders (clip, glyphs, image). Mirrored into lib.li for `import ui`.
+# Opcodes 7–10 and paint_op_kind_max live in lib.li before PaintCmd type.
+
+def paint_image_id_none() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0
+
+def paint_image_id_studio_logo() -> int
+  requires true
+  ensures result == 1
+  decreases 0
+=
+  return 1
+
+def paint_image_id_dock_icon() -> int
+  requires true
+  ensures result == 2
+  decreases 0
+=
+  return 2
+
+def paint_cmd_clip_push(clip_rect: Rect) -> PaintCmd
+  requires clip_rect.w >= 0.0
+  requires clip_rect.h >= 0.0
+  ensures result.kind == paint_op_clip_push()
+  ensures result.rect == clip_rect
+  decreases 0
+=
+  var c: PaintCmd
+  c.kind = paint_op_clip_push()
+  c.rect = clip_rect
+  c.color = studio_color_bg_primary()
+  c.stroke_px = 0.0
+  c.radius_px = 0.0
+  c.color_b = color_rgb(0.0, 0.0, 0.0, 0.0)
+  paint_cmd_ext_zero(c)
+  return c
+
+def paint_cmd_clip_pop() -> PaintCmd
+  requires true
+  ensures result.kind == paint_op_clip_pop()
+  decreases 0
+=
+  var c: PaintCmd
+  c.kind = paint_op_clip_pop()
+  c.rect = rect_make(0.0, 0.0, 0.0, 0.0)
+  c.color = studio_color_bg_primary()
+  c.stroke_px = 0.0
+  c.radius_px = 0.0
+  c.color_b = color_rgb(0.0, 0.0, 0.0, 0.0)
+  paint_cmd_ext_zero(c)
+  return c
+
+def paint_cmd_draw_glyph(dest: Rect, face_id: int, codepoint: int, color: Color) -> PaintCmd
+  requires dest.w >= 0.0
+  requires dest.h >= 0.0
+  requires face_id == font_face_inter() or face_id == font_face_ui_mono()
+  requires font_atlas_codepoint_supported(codepoint) == 1
+  ensures result.kind == paint_op_draw_glyphs()
+  ensures result.rect == dest
+  ensures result.color == color
+  ensures result.face_id == face_id
+  ensures result.codepoint == codepoint
+  ensures result.glyph_count == 1
+  decreases codepoint
+=
+  var c: PaintCmd
+  c.kind = paint_op_draw_glyphs()
+  c.rect = dest
+  c.color = color
+  c.stroke_px = 0.0
+  c.radius_px = 0.0
+  c.color_b = color_rgb(0.0, 0.0, 0.0, 0.0)
+  c.face_id = face_id
+  c.codepoint = codepoint
+  c.glyph_count = 1
+  c.image_id = 0
+  c.src_rect = rect_make(0.0, 0.0, 0.0, 0.0)
+  return c
+
+def paint_cmd_draw_glyphs_run(dest: Rect, face_id: int, color: Color, first_codepoint: int, glyph_count: int) -> PaintCmd
+  requires dest.w >= 0.0
+  requires dest.h >= 0.0
+  requires face_id == font_face_inter() or face_id == font_face_ui_mono()
+  requires glyph_count >= 1
+  requires glyph_count <= 32
+  requires font_atlas_codepoint_supported(first_codepoint) == 1
+  ensures result.kind == paint_op_draw_glyphs()
+  ensures result.rect == dest
+  ensures result.color == color
+  ensures result.face_id == face_id
+  ensures result.codepoint == first_codepoint
+  ensures result.glyph_count == glyph_count
+  decreases glyph_count
+=
+  var c: PaintCmd
+  c.kind = paint_op_draw_glyphs()
+  c.rect = dest
+  c.color = color
+  c.stroke_px = 0.0
+  c.radius_px = 0.0
+  c.color_b = color_rgb(0.0, 0.0, 0.0, 0.0)
+  c.face_id = face_id
+  c.codepoint = first_codepoint
+  c.glyph_count = glyph_count
+  c.image_id = 0
+  c.src_rect = rect_make(0.0, 0.0, 0.0, 0.0)
+  return c
+
+def paint_cmd_draw_image(dest: Rect, image_id: int, src: Rect, tint: Color) -> PaintCmd
+  requires dest.w >= 0.0
+  requires dest.h >= 0.0
+  requires src.w >= 0.0
+  requires src.h >= 0.0
+  requires image_id >= paint_image_id_none()
+  requires image_id <= paint_image_id_dock_icon()
+  ensures result.kind == paint_op_draw_image()
+  ensures result.rect == dest
+  ensures result.src_rect == src
+  ensures result.image_id == image_id
+  ensures result.color == tint
+  decreases image_id
+=
+  var c: PaintCmd
+  c.kind = paint_op_draw_image()
+  c.rect = dest
+  c.color = tint
+  c.stroke_px = 0.0
+  c.radius_px = 0.0
+  c.color_b = color_rgb(0.0, 0.0, 0.0, 0.0)
+  c.face_id = 0
+  c.codepoint = 0
+  c.glyph_count = 0
+  c.image_id = image_id
+  c.src_rect = src
+  return c
+
+def paint_frame_push_clip_scope(frame: var PaintFrame, clip_rect: Rect) -> unit
+  requires frame.cmd_count >= 0
+  requires clip_rect.w >= 0.0
+  requires clip_rect.h >= 0.0
+  ensures frame.cmd_count == old(frame.cmd_count) + 1
+  ensures frame.last_kind == paint_op_clip_push()
+  decreases 0
+=
+  paint_frame_push(frame, paint_cmd_clip_push(clip_rect))
+
+def paint_frame_pop_clip_scope(frame: var PaintFrame) -> unit
+  requires frame.cmd_count >= 0
+  ensures frame.cmd_count == old(frame.cmd_count) + 1
+  ensures frame.last_kind == paint_op_clip_pop()
+  decreases 0
+=
+  paint_frame_push(frame, paint_cmd_clip_pop())
+# END paint-cmds-ext
 
 def paint_frame_push_elevated_panel(frame: var PaintFrame, rect: Rect) -> unit
   requires frame.cmd_count >= 0

@@ -7,7 +7,7 @@ def main() -> int
 =
   if li_std_ui_version() < 5:
     return 1
-  if paint_op_kind_max() != paint_op_fill_gradient():
+  if paint_op_kind_max() != paint_op_draw_image():
     return 2
   var panel: Rect = rect_make(8.0, 8.0, 120.0, 40.0)
   var fill_round: PaintCmd = paint_cmd_fill_round(panel, studio_color_bg_elevated(), studio_default_panel_radius_px())

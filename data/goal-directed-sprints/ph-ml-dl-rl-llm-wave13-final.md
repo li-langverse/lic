@@ -29,7 +29,7 @@
 | T6 | **DONE** — `ml_matmul_lkir_logical_32`, `bench-ph-ml-lkir-matmul-32.sh` |
 | T7 | **DONE** — `llm_weights_file_mmap.li`, `prepare_ph_ml_weights_fixture.py`, `PH_ML_WEIGHTS_FIXTURE` on-disk weights |
 | T8 | **DONE** — `bench_ph_ml_llm_trusted_httpd.py` live proxy (`live_proxy: true`) |
-| **Completion gate** | **DONE** — `bash scripts/ph-ml-program-complete-gates.sh` exit 0 (2026-05-31, runs include `1780262240226`, `1780262407890`, `1780262952380`, `1780262969556`, `1780263279126`, `1780263456991`, `1780263593398`, `1780264039024`, `1780264110881`, `1780264164515`, `1780264587635` post-merge `main` #683/#684/#686); PR [#676](https://github.com/li-langverse/lic/pull/676) — await human merge |
+| **Completion gate** | **DONE** — `bash scripts/ph-ml-program-complete-gates.sh` exit 0 (2026-05-31, runs include `1780262240226`, `1780262407890`, `1780262952380`, `1780262969556`, `1780263279126`, `1780263456991`, `1780263593398`, `1780264039024`, `1780264110881`, `1780264164515`, `1780264587635`, `1780264873589` post-merge `main` #683/#684/#686); PR [#676](https://github.com/li-langverse/lic/pull/676) — await human merge |
 
 ## Agent rules
 

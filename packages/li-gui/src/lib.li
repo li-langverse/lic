@@ -5,10 +5,17 @@ import ui
 
 def li_std_gui_version() -> int
   requires true
-  ensures result == 9
+  ensures result == 10
   decreases 0
 =
-  return 9
+  return 10
+
+def gui_inspector_pilot_version() -> int
+  requires true
+  ensures result == 1
+  decreases 0
+=
+  return 1
 
 def gui_focus_model_version() -> int
   requires true
@@ -2269,3 +2276,215 @@ def event_dispatcher_handle_tab_key(spec: var FlexLayout, layout: FlexLayoutResu
   out.target_index = moved
   out.wants_focus = 1
   return out
+
+# --- Phase 1 (W1): Inspector region Widget tree pilot ---
+
+def gui_inspector_pilot_header_h_px() -> float
+  requires true
+  ensures result == 32.0
+  decreases 0
+=
+  return 32.0
+
+def gui_inspector_pilot_label_w_px() -> float
+  requires true
+  ensures result == 96.0
+  decreases 0
+=
+  return 96.0
+
+def gui_inspector_pilot_section_gap_px() -> float
+  requires true
+  ensures result == 8.0
+  decreases 0
+=
+  return 8.0
+
+def gui_inspector_pilot_hint_box_h_px() -> float
+  requires true
+  ensures result == 72.0
+  decreases 0
+=
+  return 72.0
+
+type InspectorPilotWidget = object
+  public has_selection: int
+  public header: WidgetNode
+  public fields: GridLayout
+  public empty_hints: FlexLayout
+
+type InspectorPilotLayoutResult = object
+  public bounds: Rect
+  public has_selection: int
+  public header_layout: WidgetLayoutResult
+  public fields_layout: GridLayoutResult
+  public hints_layout: FlexLayoutResult
+
+def inspector_pilot_header_node(insp_w: float) -> WidgetNode
+  requires insp_w > 0.0
+  ensures result.kind == widget_kind_panel()
+  decreases 0
+=
+  return widget_node_panel(insp_w, gui_inspector_pilot_header_h_px())
+
+def inspector_pilot_selected_fields(insp_w: float) -> GridLayout
+  requires insp_w >= gui_inspector_pilot_label_w_px()
+  ensures result.child_count == 4
+  ensures result.rows == 2
+  ensures result.cols == 2
+  decreases 0
+=
+  var label0: WidgetNode = widget_node_label(8.0)
+  var input0: WidgetNode = widget_node_text_input(6.0)
+  widget_node_set_tab_index(input0, 1)
+  var label1: WidgetNode = widget_node_label(6.0)
+  var input1: WidgetNode = widget_node_text_input(6.0)
+  widget_node_set_tab_index(input1, 2)
+  return grid_layout_new(2, 2, gui_inspector_pilot_section_gap_px(), 4, label0, input0, label1, input1)
+
+def inspector_pilot_empty_hints(insp_w: float) -> FlexLayout
+  requires insp_w > 24.0
+  ensures result.child_count == 3
+  ensures result.direction == flex_direction_column()
+  decreases 0
+=
+  var hint1: WidgetNode = widget_node_label(18.0)
+  var hint2: WidgetNode = widget_node_label(22.0)
+  var hint_box: WidgetNode = widget_node_panel(insp_w - 24.0, gui_inspector_pilot_hint_box_h_px())
+  var spacer: WidgetNode = widget_node_spacer(0.0, 0.0)
+  return flex_layout_column(gui_inspector_pilot_section_gap_px(), 3, hint1, hint2, hint_box, spacer)
+
+def inspector_pilot_new(has_selection: int, insp_w: float, insp_h: float) -> InspectorPilotWidget
+  requires has_selection >= 0
+  requires has_selection <= 1
+  requires insp_w > 0.0
+  requires insp_h > gui_inspector_pilot_header_h_px()
+  ensures result.has_selection == has_selection
+  decreases has_selection
+=
+  var out: InspectorPilotWidget
+  out.has_selection = has_selection
+  out.header = inspector_pilot_header_node(insp_w)
+  out.fields = inspector_pilot_selected_fields(insp_w)
+  out.empty_hints = inspector_pilot_empty_hints(insp_w)
+  return out
+
+def inspector_pilot_body_constraints(insp_w: float, insp_h: float) -> LayoutConstraints
+  requires insp_w > 0.0
+  requires insp_h > gui_inspector_pilot_header_h_px()
+  ensures result.max_w == insp_w
+  decreases 0
+=
+  var body_h: float = insp_h - gui_inspector_pilot_header_h_px() - gui_inspector_pilot_section_gap_px()
+  if body_h < 0.0:
+    body_h = 0.0
+  return layout_constraints_loose(insp_w, body_h)
+
+def inspector_pilot_layout(spec: InspectorPilotWidget, insp_x: float, insp_y: float, insp_w: float, insp_h: float) -> InspectorPilotLayoutResult
+  requires insp_w > 0.0
+  requires insp_h > gui_inspector_pilot_header_h_px()
+  requires spec.has_selection >= 0
+  requires spec.has_selection <= 1
+  ensures result.bounds.w == insp_w
+  ensures result.bounds.h == insp_h
+  ensures result.has_selection == spec.has_selection
+  decreases spec.has_selection
+=
+  var out: InspectorPilotLayoutResult
+  out.has_selection = spec.has_selection
+  out.bounds = rect_make(insp_x, insp_y, insp_w, insp_h)
+  var header_constraints: LayoutConstraints = layout_constraints_loose(insp_w, gui_inspector_pilot_header_h_px())
+  out.header_layout = widget_layout(spec.header, header_constraints, insp_x, insp_y)
+  var body_y: float = insp_y + out.header_layout.bounds.h + gui_inspector_pilot_section_gap_px()
+  var body: LayoutConstraints = inspector_pilot_body_constraints(insp_w, insp_h)
+  if spec.has_selection == 1:
+    out.fields_layout = grid_layout_layout(spec.fields, body, insp_x, body_y)
+  if spec.has_selection == 0:
+    out.hints_layout = flex_layout_layout(spec.empty_hints, body, insp_x, body_y)
+  return out
+
+def grid_layout_paint(spec: GridLayout, frame: var PaintFrame, layout: GridLayoutResult) -> unit
+  requires spec.child_count == layout.child_count
+  requires spec.child_count >= 0
+  requires spec.child_count <= layout_engine_max_children()
+  requires frame.cmd_count >= 0
+  ensures frame.cmd_count >= old(frame.cmd_count)
+  decreases spec.child_count
+=
+  var idx: int = 0
+  while idx < spec.child_count
+    widget_paint(spec.children[idx], frame, layout.child_layouts[idx])
+    idx = idx + 1
+
+def inspector_pilot_paint_cmds(has_selection: int) -> int
+  requires has_selection >= 0
+  requires has_selection <= 1
+  ensures result >= 4
+  ensures result <= 24
+  decreases has_selection
+=
+  if has_selection == 0:
+    return 4
+  return 19
+
+def inspector_pilot_paint(spec: InspectorPilotWidget, layout: InspectorPilotLayoutResult, frame: var PaintFrame) -> unit
+  requires spec.has_selection == layout.has_selection
+  requires frame.cmd_count >= 0
+  ensures frame.cmd_count == old(frame.cmd_count) + inspector_pilot_paint_cmds(spec.has_selection)
+  decreases spec.has_selection
+=
+  if spec.has_selection == 0:
+    paint_frame_push_elevated_panel(frame, layout.bounds)
+    flex_layout_paint(spec.empty_hints, frame, layout.hints_layout)
+    return
+  paint_frame_push(frame, paint_cmd_fill_gradient(layout.bounds, studio_color_bg_primary(), studio_color_bg_elevated()))
+  paint_frame_push(frame, paint_cmd_stroke_round(layout.bounds, studio_color_accent_violet(), 1.0, studio_default_panel_radius_px()))
+  widget_paint(spec.header, frame, layout.header_layout)
+  grid_layout_paint(spec.fields, frame, layout.fields_layout)
+
+def inspector_pilot_field_label_rect(layout: InspectorPilotLayoutResult, row: int) -> Rect
+  requires layout.has_selection == 1
+  requires row >= 0
+  requires row <= 1
+  ensures result.w >= 0.0
+  decreases row
+=
+  if row == 0:
+    var layout0: WidgetLayoutResult = layout.fields_layout.child_layouts[0]
+    return layout0.bounds
+  var layout2: WidgetLayoutResult = layout.fields_layout.child_layouts[2]
+  return layout2.bounds
+
+def inspector_pilot_field_value_rect(layout: InspectorPilotLayoutResult, row: int) -> Rect
+  requires layout.has_selection == 1
+  requires row >= 0
+  requires row <= 1
+  ensures result.w >= 0.0
+  decreases row
+=
+  if row == 0:
+    var layout1: WidgetLayoutResult = layout.fields_layout.child_layouts[1]
+    return layout1.bounds
+  var layout3: WidgetLayoutResult = layout.fields_layout.child_layouts[3]
+  return layout3.bounds
+
+def inspector_pilot_empty_hint_rect(layout: InspectorPilotLayoutResult, line: int) -> Rect
+  requires layout.has_selection == 0
+  requires line >= 0
+  requires line <= 1
+  ensures result.w >= 0.0
+  decreases line
+=
+  if line == 0:
+    var layout0: WidgetLayoutResult = layout.hints_layout.child_layouts[0]
+    return layout0.bounds
+  var layout1: WidgetLayoutResult = layout.hints_layout.child_layouts[1]
+  return layout1.bounds
+
+def inspector_pilot_empty_hint_box_rect(layout: InspectorPilotLayoutResult) -> Rect
+  requires layout.has_selection == 0
+  ensures result.w >= 0.0
+  decreases 0
+=
+  var layout2: WidgetLayoutResult = layout.hints_layout.child_layouts[2]
+  return layout2.bounds

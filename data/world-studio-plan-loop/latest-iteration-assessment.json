@@ -14,5 +14,5 @@
     "world_studio_plan_completion": "pending_remaining_todos"
   },
   "notes": "WP-SIM-06 complete: cumulative studio.toml line parser (li_rt_studio_toml_*) for [engine] determinism_tier 0-3 and [engine.export] formats/require_sim_pass/printer_profile; StudioProjectConfig + studio_apply_config_to_sim maps tier to output_detail. Gates now include studio_toml_engine_export.li.",
-  "pr_url": "https://github.com/li-langverse/lic/pull/411"
+  "pr_url": "https://github.com/li-langverse/lic/pull/649"
 }

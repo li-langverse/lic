@@ -1,0 +1,15 @@
+import llm
+
+def main() -> int raises IO, Alloc
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  var b0: int = llm_safetensors_tensor_bytes_scaffold("fixtures/model.safetensors", 0)
+  var b1: int = llm_safetensors_tensor_bytes_scaffold("fixtures/model.safetensors", 1)
+  if b0 != 8 or b1 != 8:
+    return 1
+  var hdr: LlmSafetensorsHeader = llm_safetensors_load_tensors_scaffold("fixtures/model.safetensors")
+  if hdr.tensor_bytes_read != 16:
+    return 2
+  return 0

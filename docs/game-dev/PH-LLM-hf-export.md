@@ -21,3 +21,8 @@ Writes `manifest.json` with model id and format tag. Full `huggingface-cli downl
 ## LLVM / import ml note
 
 Cross-package `import ml` in `li-llm` remains blocked for LLVM codegen. Use `llm_transformer_matmul_contrib` inline until linker story is fixed.
+
+## Wave 11
+
+- `LILLM_IMPORT_OFFLINE=1` for CI manifest-only smoke.
+- `llm_matmul_indirect_bridge` avoids `import ml` LLVM blocker; use `packages/li-llm/li-tests/smoke/llm_matmul_bridge.li`.

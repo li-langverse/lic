@@ -4,10 +4,10 @@ import lig
 
 def ml_version() -> int
   requires true
-  ensures result == 6
+  ensures result == 7
   decreases 0
 =
-  return 6
+  return 7
 
 def ml_matmul_max_dim() -> int
   requires true
@@ -164,6 +164,23 @@ def ml_matmul_cpu_ref_flat(
     return 0
   return ml_matmul_nested_to_flat(m, n, cn, c)
 
+def ml_matmul_lkir_logical_16(a: array[64, float], b: array[64, float], c: var array[64, float]) -> int
+  requires true
+  ensures result >= 0
+  ensures result <= 1
+  decreases 0
+=
+  if ml_use_lkir() != 0:
+    var t: int = 0
+    while t < 4
+      if lig_kernel_run(ml_lig_matmul_id(), lig_backend_select_auto()) != 0:
+        return 0
+      if lig_validity_gate_pass(0.999) != 1:
+        return 0
+      t = t + 1
+  return ml_matmul_cpu_ref_flat(4, 4, 4, a, b, c)
+
+
 def ml_matmul_cpu_ref(
     m: int, n: int, k: int,
     a: array[64, float], b: array[64, float], c: var array[64, float]) -> int
@@ -262,6 +279,18 @@ def ml_matmul_f32(
     if lig_validity_gate_pass(0.999) != 1:
       return 0
   return ml_matmul_cpu_ref(m, n, k, a, b, c)
+
+def ml_gpu_matmul_lkir_progress() -> int
+  requires true
+  ensures result >= 0
+  ensures result <= 1
+  decreases 0
+=
+  if ml_use_lkir() == 0:
+    return 0
+  if ml_lig_matmul_run_auto() != 0:
+    return 0
+  return 1
 
 def ml_lig_matmul_run_auto() raises IO -> int
   requires true

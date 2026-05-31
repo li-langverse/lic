@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-05-31T00:46:20.120447+00:00",
+  "generated_at": "2026-05-31T00:48:33.433650+00:00",
   "tz": "Europe/Berlin",
   "agents_live": 0,
   "runners": [
@@ -7,9 +7,9 @@
       "id": "httpd",
       "name": "li-httpd gap parity",
       "branch": "cursor/httpd-plan-continue",
-      "head": "60f86635",
+      "head": "ac04fb89",
       "running": true,
-      "process": "1389116 python3 /home/s4il0r/Documents/Cursor/li-langverse/lic/scripts/goal-directed-agents-snapshot.py",
+      "process": "1400815 python3 /home/s4il0r/Documents/Cursor/li-langverse/lic/scripts/goal-directed-agents-snapshot.py",
       "log_path": "/home/s4il0r/Documents/Cursor/li-langverse/lic/../lic/data/httpd-plan-loop/iter-20260522-132846.log",
       "todos": [
         {
@@ -91,7 +91,7 @@
       "agent_live": false,
       "agent": "",
       "goal_file": "",
-      "log_age_sec": 15617,
+      "log_age_sec": 15750,
       "last_state_at": "2026-05-30T06:38:33.327023+00:00",
       "last_state_todo": "gap-phase2-streaming-wrk",
       "last_state_gates": false,
@@ -106,7 +106,7 @@
         "ursor/li-langverse/li-cursor-agents/data/workspaces/li-langverse/lic/code_implementer-1779456669806/repo/docs/ecosystem/httpd-m1-baseline.md",
         "[sdk] \u2717 tool"
       ],
-      "status_note": "supervisor idle (log 15617s stale \u2014 check log_path)",
+      "status_note": "supervisor idle (log 15750s stale \u2014 check log_path)",
       "active_todo_id": "gap-phase2-perf-wrk-soak"
     },
     {
@@ -420,7 +420,7 @@
       "agent_live": false,
       "agent": "",
       "goal_file": "",
-      "log_age_sec": 450248,
+      "log_age_sec": 450381,
       "last_state_at": "2026-05-25T06:41:51.000000+00:00",
       "last_state_todo": "wave-d-gui-scaffold",
       "last_state_gates": true,
@@ -537,7 +537,7 @@
       "agent_live": false,
       "agent": "",
       "goal_file": "",
-      "log_age_sec": 547516,
+      "log_age_sec": 547650,
       "last_state_at": "2026-05-24T16:32:27.410480+00:00",
       "last_state_todo": "sim-p0-md-lj-li-parity",
       "last_state_gates": false,
@@ -795,7 +795,7 @@
       "agent_live": false,
       "agent": "",
       "goal_file": "",
-      "log_age_sec": 497656,
+      "log_age_sec": 497790,
       "last_state_at": "2026-05-30T08:11:00+00:00",
       "last_state_todo": "studio-ux-15-wgpu-readback",
       "last_state_gates": true,
@@ -887,7 +887,7 @@
       "agent_live": false,
       "agent": "",
       "goal_file": "",
-      "log_age_sec": 450224,
+      "log_age_sec": 450357,
       "last_state_at": "2026-05-25T19:42:04.198858+00:00",
       "last_state_todo": "md-r2-neighbor-list-gap",
       "last_state_gates": true,
@@ -966,7 +966,7 @@
       "agent_live": false,
       "agent": "",
       "goal_file": "",
-      "log_age_sec": 450735,
+      "log_age_sec": 450868,
       "last_state_at": "2026-05-25T19:32:04.164094+00:00",
       "last_state_todo": "chem-r2-dft-scf-gap",
       "last_state_gates": false,
@@ -1038,7 +1038,7 @@
       "agent_live": false,
       "agent": "",
       "goal_file": "",
-      "log_age_sec": 450887,
+      "log_age_sec": 451020,
       "last_state_at": "2026-05-25T19:29:32.615546+00:00",
       "last_state_todo": "sec-r1-httpd-fuzz-smoke",
       "last_state_gates": true,
@@ -1053,9 +1053,9 @@
       "id": "swarm-observer",
       "name": "Swarm gap orchestrator",
       "branch": "cursor/swarm-observer-plan-loop",
-      "head": "60f86635",
+      "head": "ac04fb89",
       "running": true,
-      "process": "1389116 python3 /home/s4il0r/Documents/Cursor/li-langverse/lic/scripts/goal-directed-agents-snapshot.py",
+      "process": "1400815 python3 /home/s4il0r/Documents/Cursor/li-langverse/lic/scripts/goal-directed-agents-snapshot.py",
       "log_path": "/home/s4il0r/Documents/Cursor/li-langverse/lic/../lic/data/swarm-observer-plan-loop/iter-20260525-193501.log",
       "todos": [
         {
@@ -1115,7 +1115,7 @@
       "agent_live": false,
       "agent": "",
       "goal_file": "",
-      "log_age_sec": 63573,
+      "log_age_sec": 63706,
       "last_state_at": "2026-05-25T19:34:28.890041+00:00",
       "last_state_todo": "orch-r1-plan-debt-sync",
       "last_state_gates": true,
@@ -1123,16 +1123,16 @@
       "activity": [
         "SDK tool activity streams to stderr ([sdk] \u25b6/\u2713 lines). Set LI_SDK_TERMINAL_STREAM=0 to disable."
       ],
-      "status_note": "supervisor idle (log 63573s stale \u2014 check log_path)",
+      "status_note": "supervisor idle (log 63706s stale \u2014 check log_path)",
       "active_todo_id": "orch-r3-missing-package-sweep"
     },
     {
       "id": "ph-db",
       "name": "PH-DB / native Li platform",
       "branch": "main",
-      "head": "60f86635",
+      "head": "ac04fb89",
       "running": true,
-      "process": "1389116 python3 /home/s4il0r/Documents/Cursor/li-langverse/lic/scripts/goal-directed-agents-snapshot.py",
+      "process": "1400815 python3 /home/s4il0r/Documents/Cursor/li-langverse/lic/scripts/goal-directed-agents-snapshot.py",
       "log_path": "/home/s4il0r/Documents/Cursor/li-langverse/lic/../lic/data/ph-db-plan-loop/runner.log",
       "todos": [
         {
@@ -1260,7 +1260,7 @@
         {
           "repo": "li-cursor-agents",
           "branch": "chore/studio-ux-12-harness-sota",
-          "head": "971e558",
+          "head": "8fd4180",
           "expected_branch": "feat/ph-db-10-native-persist"
         }
       ]

@@ -1,0 +1,9 @@
+# Pinned deps for PH-ML Wave 8 competitive drivers (installed by ph-ml-wave8-gates.sh).
+# CPU baselines required; GPU frameworks optional when CUDA unavailable.
+numpy==2.2.6
+torch==2.6.0
+jax==0.5.3
+jaxlib==0.5.3
+# Optional — gate allows executed:false when install skipped:
+# tensorflow==2.18.1
+# triton==3.2.0

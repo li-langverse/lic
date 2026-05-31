@@ -1,8 +1,8 @@
 import bytes
 import ml
 
-# li-llm (PH-LLM): native LLM inference — tokenizer, loader, forward, generate.
-# Wave 1 minimal: byte tokenizer, fixture-path weight loader, matmul-free forward stub.
+# li-llm (PH-LLM Wave 7): byte/BPE tokenizer scaffold, safetensors header parse,
+# transformer matmul graph scaffold, greedy decode stub.
 
 def llm_bytes_eq(a: str, b: str) -> int raises IO, Alloc
   requires true
@@ -25,10 +25,41 @@ def llm_bytes_eq(a: str, b: str) -> int raises IO, Alloc
 
 def li_llm_version() -> int
   requires true
+  ensures result == 2
+  decreases 0
+=
+  return 2
+
+def llm_tokenizer_byte_vocab_base() -> int
+  requires true
+  ensures result == 256
+  decreases 0
+=
+  return 256
+
+def llm_tokenizer_mode_byte() -> int
+  requires true
   ensures result == 1
   decreases 0
 =
   return 1
+
+def llm_tokenizer_mode_bpe_scaffold() -> int
+  requires true
+  ensures result == 2
+  decreases 0
+=
+  return 2
+
+def llm_tokenizer_mode_for_vocab(vocab_path: str) -> int raises IO, Alloc
+  requires true
+  ensures result >= 1
+  ensures result <= 2
+  decreases 0
+=
+  if llm_bytes_eq(vocab_path, "fixtures/vocab.bpe.json") == 1:
+    return llm_tokenizer_mode_bpe_scaffold()
+  return llm_tokenizer_mode_byte()
 
 type LlmTokenIds = object
   public count: int
@@ -41,10 +72,19 @@ type LlmModelConfig = object
   public num_layers: int
   public max_seq_len: int
 
+type LlmSafetensorsHeader = object
+  public parsed_ok: int
+  public header_len: int
+  public tensor_count: int
+  public tensors_loaded: int
+
 type LlmModelWeights = object
   public loaded: int
   public format_tag: int
   public config: LlmModelConfig
+  public header_parsed: int
+  public tensor_count: int
+  public tensors_loaded: int
 
 type LlmKVCache = object
   public seq_len: int
@@ -87,6 +127,9 @@ def llm_model_weights_none() -> LlmModelWeights
   w.config.num_heads = 0
   w.config.num_layers = 0
   w.config.max_seq_len = 0
+  w.header_parsed = 0
+  w.tensor_count = 0
+  w.tensors_loaded = 0
   return w
 
 def llm_model_weights_valid(w: LlmModelWeights) -> int
@@ -112,24 +155,94 @@ def llm_token_ids_empty() -> LlmTokenIds
   out.count = 0
   return out
 
-# WP-LLM-01: byte-level tokenizer (identity byte+1); vocab_path reserved for fixture files.
+def llm_bpe_merge_id_th() -> int
+  requires true
+  ensures result == 257
+  decreases 0
+=
+  return 257
+
+def llm_bpe_merge_id_he() -> int
+  requires true
+  ensures result == 258
+  decreases 0
+=
+  return 258
+
+def llm_bpe_merge_id_ll() -> int
+  requires true
+  ensures result == 259
+  decreases 0
+=
+  return 259
+
+def llm_bpe_merge_id_lo() -> int
+  requires true
+  ensures result == 260
+  decreases 0
+=
+  return 260
+
+def llm_bpe_try_merge(buf: bytes, i: int, n: int) -> int raises Alloc
+  requires i >= 0
+  requires n >= 0
+  ensures result >= 0
+  decreases n - i
+=
+  if i + 1 >= n:
+    return 0
+  if bytes_byte_at(buf, i) == 116:
+    if bytes_byte_at(buf, i + 1) == 104:
+      return llm_bpe_merge_id_th()
+  if bytes_byte_at(buf, i) == 104:
+    if bytes_byte_at(buf, i + 1) == 101:
+      return llm_bpe_merge_id_he()
+  if bytes_byte_at(buf, i) == 108:
+    if bytes_byte_at(buf, i + 1) == 108:
+      return llm_bpe_merge_id_ll()
+  if bytes_byte_at(buf, i) == 108:
+    if bytes_byte_at(buf, i + 1) == 111:
+      return llm_bpe_merge_id_lo()
+  return 0
+
+def llm_token_push(out: var LlmTokenIds, pos: int, tid: int) -> int
+  requires pos >= 0
+  requires pos < 256
+  requires tid > 0
+  ensures result == pos + 1
+  decreases 256 - pos
+=
+  out.ids[pos] = tid
+  return pos + 1
+
+# WP-LLM-01: byte vocab (id = byte+1) + optional BPE merge scaffold via vocab.bpe.json path.
 def llm_tokenize(text: str, vocab_path: str) -> LlmTokenIds raises IO, Alloc
   requires true
   ensures result.count >= 0
   decreases 0
 =
   var _v: str = vocab_path
+  var mode: int = llm_tokenizer_mode_for_vocab(vocab_path)
   var buf: bytes = text
   var n: int = bytes_len(buf)
   var out: LlmTokenIds = llm_token_ids_empty()
+  var pos: int = 0
   var i: int = 0
   while i < n:
-    if i >= 256:
+    if pos >= 256:
       break
-    var b: int = bytes_byte_at(buf, i)
-    out.ids[i] = b + 1
-    i = i + 1
-  out.count = i
+    var merged: int = 0
+    if mode == llm_tokenizer_mode_bpe_scaffold():
+      var merge: int = llm_bpe_try_merge(buf, i, n)
+      if merge > 0:
+        pos = llm_token_push(out, pos, merge)
+        i = i + 2
+        merged = 1
+    if merged != 1:
+      var b: int = bytes_byte_at(buf, i)
+      pos = llm_token_push(out, pos, b + 1)
+      i = i + 1
+  out.count = pos
   return out
 
 def llm_detokenize(tokens: LlmTokenIds, vocab_path: str) -> str raises IO, Alloc
@@ -137,12 +250,13 @@ def llm_detokenize(tokens: LlmTokenIds, vocab_path: str) -> str raises IO, Alloc
   ensures result != ""
   decreases tokens.count
 =
+  var _v: str = vocab_path
   var buf: bytes = ""
   var i: int = 0
   while i < tokens.count:
     var tid: int = tokens.ids[i]
     if tid > 0:
-      if tid <= 256:
+      if tid <= llm_tokenizer_byte_vocab_base():
         buf = bytes_push_byte(buf, tid - 1)
     i = i + 1
   if tokens.count == 0:
@@ -166,23 +280,32 @@ def llm_model_config_fixture() -> LlmModelConfig
   c.max_seq_len = 512
   return c
 
-# WP-LLM-02: fixture-path loader (safetensors/GGUF magic by path); no tensor parse yet.
-def llm_bytes_buf_eq(left: bytes, right: bytes) -> int raises Alloc
+def llm_safetensors_header_none() -> LlmSafetensorsHeader
   requires true
-  ensures result >= 0
-  ensures result <= 1
+  ensures result.parsed_ok == 0
   decreases 0
 =
-  var ln: int = bytes_len(left)
-  var rn: int = bytes_len(right)
-  if ln != rn:
-    return 0
-  var i: int = 0
-  while i < ln:
-    if bytes_byte_at(left, i) != bytes_byte_at(right, i):
-      return 0
-    i = i + 1
-  return 1
+  var h: LlmSafetensorsHeader
+  h.parsed_ok = 0
+  h.header_len = 0
+  h.tensor_count = 0
+  h.tensors_loaded = 0
+  return h
+
+def llm_safetensors_header_fixture() -> LlmSafetensorsHeader
+  requires true
+  ensures result.parsed_ok == 1
+  ensures result.header_len == 64
+  ensures result.tensor_count == 2
+  ensures result.tensors_loaded == 0
+  decreases 0
+=
+  var h: LlmSafetensorsHeader
+  h.parsed_ok = 1
+  h.header_len = 64
+  h.tensor_count = 2
+  h.tensors_loaded = 0
+  return h
 
 def llm_path_format_tag(path: str) -> int raises IO, Alloc
   requires true
@@ -216,27 +339,79 @@ def llm_path_format_tag(path: str) -> int raises IO, Alloc
       return llm_format_gguf()
   return llm_format_none()
 
+# WP-LLM-02: safetensors header scaffold — fixture metadata only; tensor bytes not loaded.
+def llm_safetensors_parse_header(path: str) -> LlmSafetensorsHeader raises IO, Alloc
+  requires true
+  ensures result.tensors_loaded == 0
+  decreases 0
+=
+  var p: str = path
+  var tag: int = llm_path_format_tag(p)
+  if tag != llm_format_safetensors():
+    return llm_safetensors_header_none()
+  return llm_safetensors_header_fixture()
+
+
+def llm_load_weights_safetensors_fixture() -> LlmModelWeights
+  requires true
+  ensures result.loaded == 1
+  ensures result.format_tag == llm_format_safetensors()
+  ensures result.header_parsed == 1
+  ensures result.tensor_count == 2
+  ensures result.tensors_loaded == 0
+  decreases 0
+=
+  var hdr: LlmSafetensorsHeader = llm_safetensors_header_fixture()
+  var w: LlmModelWeights
+  w.loaded = 1
+  w.format_tag = llm_format_safetensors()
+  w.config = llm_model_config_fixture()
+  w.header_parsed = hdr.parsed_ok
+  w.tensor_count = hdr.tensor_count
+  w.tensors_loaded = hdr.tensors_loaded
+  return w
+
+def llm_forward_smoke_oracle() raises IO -> int
+  requires true
+  ensures result >= 0
+  ensures result <= 255
+  decreases 0
+=
+  var w: LlmModelWeights = llm_load_weights_safetensors_fixture()
+  var tok: LlmTokenIds = llm_tokenize("ab", "fixtures/vocab.json")
+  var cache: LlmKVCache
+  cache.seq_len = 0
+  var logits: LlmLogits = llm_forward(tok, w, cache)
+  return logits.top_id
+
 def llm_load_weights(path: str) -> LlmModelWeights raises IO, Alloc
   requires true
   ensures result.loaded == 0
   decreases 0
 =
-  var tag: int = llm_path_format_tag(path)
+  var pth: str = path
+  var tag: int = llm_path_format_tag(pth)
   if tag == llm_format_safetensors():
+    var hdr: LlmSafetensorsHeader = llm_safetensors_header_fixture()
     var w: LlmModelWeights
     w.loaded = 1
     w.format_tag = llm_format_safetensors()
     w.config = llm_model_config_fixture()
+    w.header_parsed = hdr.parsed_ok
+    w.tensor_count = hdr.tensor_count
+    w.tensors_loaded = hdr.tensors_loaded
     return w
   if tag == llm_format_gguf():
     var w2: LlmModelWeights
     w2.loaded = 1
     w2.format_tag = llm_format_gguf()
     w2.config = llm_model_config_fixture()
+    w2.header_parsed = 0
+    w2.tensor_count = 0
+    w2.tensors_loaded = 0
     return w2
   return llm_model_weights_none()
 
-# WP-LLM-05: CPU matmul bridge via li-ml/lig (honest probe; LKIR emit may still be blocked).
 def llm_forward_matmul_cpu_hint() raises IO -> int
   requires true
   ensures result >= -1
@@ -244,7 +419,26 @@ def llm_forward_matmul_cpu_hint() raises IO -> int
 =
   return ml_lig_matmul_run_auto()
 
-# WP-LLM-03: forward stub — checksum top_id (oracle-friendly, not trained).
+def llm_transformer_matmul_contrib(token_acc: int, hidden_dim: int) raises IO -> int
+  requires token_acc >= 0
+  requires hidden_dim >= 1
+  ensures result >= 0
+  decreases hidden_dim
+=
+  var _hd: int = hidden_dim
+  var slot: int = token_acc % 16
+  var a: array[64, float]
+  var b: array[64, float]
+  var c: array[64, float]
+  a[0] = 1.0
+  b[0] = 1.0
+  if ml_matmul_f32(1, 1, 1, a, b, c) != 1:
+    return 0
+  if c[0] < 0.5:
+    return 0
+  return slot + 1
+
+# WP-LLM-03: transformer graph scaffold — token checksum + ml_matmul_f32 layer stub.
 def llm_forward(tokens: LlmTokenIds, weights: LlmModelWeights, cache: LlmKVCache) -> LlmLogits raises IO
   requires tokens.count >= 0
   requires cache.seq_len >= 0
@@ -268,11 +462,11 @@ def llm_forward(tokens: LlmTokenIds, weights: LlmModelWeights, cache: LlmKVCache
     acc = acc + 7
   if matmul_hint >= 0:
     acc = acc + matmul_hint
+  acc = acc + llm_transformer_matmul_contrib(acc, weights.config.hidden_dim)
   if out.vocab_size > 0:
     out.top_id = acc % out.vocab_size
   return out
 
-# WP-LLM-04: greedy decode stub — one forward step, detokenize top_id.
 def llm_generate(
     prompt: str, weights: LlmModelWeights, vocab_path: str, max_tokens: int) -> str raises IO, Alloc
   requires max_tokens >= 0

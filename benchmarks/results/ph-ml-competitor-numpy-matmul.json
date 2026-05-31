@@ -1,0 +1,11 @@
+{
+  "generated_at": "2026-05-31T08:13:43Z",
+  "suite": "ph-ml-competitor-numpy-matmul",
+  "competitor_id": "python_numpy",
+  "numpy_version": "2.2.6",
+  "executed": true,
+  "cpu_sec": 1e-06,
+  "validity_gate_pass": true,
+  "workload": "matmul_4x4_pilot",
+  "validity_ratio": 1.0
+}

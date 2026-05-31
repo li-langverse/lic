@@ -1,3 +1,5 @@
+**Wave 7:** PH-LLM tokenizer/safetensors/transformer + NumPy competitor (WP-LLM-01..03, WP-ML-12)
+
 **Wave 6:** 16×16 flat matmul + process env scaffold + competitive benches (WP-ML-11, WP-RL-05, WP-LLM-02..04)
 
 **Wave 5:** Thread-pool env workers + JobGraph sample queue (WP-RL-04, WP-ML-10)
@@ -34,3 +36,9 @@
 | WP-LLM-02 | llm_forward smoke + bench row | 6 | stub | llm_forward.li + ph-ml-llm-forward.json |
 | WP-LLM-03 | llm_generate smoke | 6 | stub | llm_generate.li |
 | WP-LLM-04 | competitive llm_forward row | 6 | stub | ph-ml-competitive.json |
+
+| WP-LLM-01 | BPE/byte tokenizer scaffold | 7 | partial | llm_tokenize_bpe.li |
+| WP-LLM-02 | safetensors header parse scaffold | 7 | partial | llm_safetensors_header.li |
+| WP-LLM-03 | transformer matmul graph scaffold | 7 | partial | llm_forward.li + ml_matmul_f32 |
+| WP-ML-12 | NumPy matmul competitive driver | 7 | done | bench-ph-ml-competitor-numpy-matmul.sh |
+| WP-RL-06 | process worker defer label | 7 | deferred | sim_rl_env_worker_process_mode_label |

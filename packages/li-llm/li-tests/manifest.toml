@@ -33,3 +33,15 @@ suite = "smoke"
 file = "smoke/llm_forward_matmul.li"
 outcome = "check_ok"
 note = "PH-LLM WP-LLM-05 forward + ml_lig_matmul_run_auto hint"
+
+[[tests]]
+suite = "smoke"
+file = "smoke/llm_tokenize_bpe.li"
+outcome = "verify_ok"
+note = "PH-LLM WP-LLM-01 BPE merge scaffold"
+
+[[tests]]
+suite = "smoke"
+file = "smoke/llm_safetensors_header.li"
+outcome = "verify_ok"
+note = "PH-LLM WP-LLM-02 safetensors header parse scaffold"

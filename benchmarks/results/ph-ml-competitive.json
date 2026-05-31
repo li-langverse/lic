@@ -1,7 +1,7 @@
 {
-  "generated_at": "2026-05-31T03:03:56Z",
+  "generated_at": "2026-05-31T08:13:43Z",
   "suite": "ph-ml-competitive",
-  "registry_path": "benchmarks/competitive/ph-ml.toml",
+  "registry_path": "/mnt/c/Users/Julian/Documents/Programming/li/benchmarks/benchmarks/workloads/competitive/ph-ml.toml",
   "registry_schema": "li_ph_ml_competitive_v1",
   "rows": [
     {
@@ -14,7 +14,7 @@
         "incumbent": "Li native",
         "workload_class": "pilot",
         "executed": true,
-        "cpu_sec": 0.001043,
+        "cpu_sec": 0.000882,
         "validity_gate_pass": true,
         "validity_ratio": 1.0,
         "ratio_vs_li": 1.0
@@ -46,12 +46,13 @@
           "id": "python_numpy",
           "incumbent": "NumPy BLAS matmul",
           "workload_class": "blas_labeled",
-          "executed": false,
-          "cpu_sec": null,
-          "validity_gate_pass": null,
-          "validity_ratio": null,
-          "ratio_vs_li": null,
-          "note": "BLAS labeled"
+          "executed": true,
+          "cpu_sec": 1e-06,
+          "validity_gate_pass": true,
+          "validity_ratio": 1.0,
+          "ratio_vs_li": 1.0,
+          "note": "numpy==pinned in driver",
+          "numpy_version": "2.2.6"
         }
       ]
     },
@@ -65,7 +66,7 @@
         "incumbent": "Li native",
         "workload_class": "pilot",
         "executed": true,
-        "cpu_sec": 0.874111,
+        "cpu_sec": 0.674048,
         "validity_gate_pass": true,
         "validity_ratio": 1.0,
         "ratio_vs_li": 1.0
@@ -105,7 +106,7 @@
         "incumbent": "Li native",
         "workload_class": "pilot",
         "executed": true,
-        "cpu_sec": 2.115965,
+        "cpu_sec": 0.624647,
         "validity_gate_pass": true,
         "validity_ratio": 1.0,
         "ratio_vs_li": 1.0,
@@ -142,15 +143,15 @@
       "id": "llm_forward",
       "kernel": "llm.forward_stub",
       "workload_class": "stub",
-      "executed": false,
+      "executed": true,
       "li": {
         "id": "li",
         "incumbent": "Li native",
         "workload_class": "stub",
-        "executed": false,
-        "cpu_sec": null,
-        "validity_gate_pass": false,
-        "validity_ratio": 0.0,
+        "executed": true,
+        "cpu_sec": 1.427395,
+        "validity_gate_pass": true,
+        "validity_ratio": 1.0,
         "ratio_vs_li": 1.0
       },
       "competitors": [

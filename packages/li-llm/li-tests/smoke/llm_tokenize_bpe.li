@@ -1,0 +1,15 @@
+import llm
+
+def main() -> int raises IO, Alloc
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  if llm_tokenizer_mode_for_vocab("fixtures/vocab.bpe.json") != llm_tokenizer_mode_bpe_scaffold():
+    return 1
+  var tok: LlmTokenIds = llm_tokenize("hello", "fixtures/vocab.bpe.json")
+  if tok.count != 4:
+    return 2
+  if tok.ids[2] != llm_bpe_merge_id_ll():
+    return 3
+  return 0

@@ -1,9 +1,9 @@
-﻿# li-studio (moved)
+﻿# li-studio (compiler API in lic)
 
-**Li World Studio** product source, smokes, installers, and demo deploy moved to:
+**Product** installers, deploy demos, plan loops, and studio CI moved to:
 
 https://github.com/li-langverse/studio
 
-This path is kept as a workspace pointer only. Do not add product code here — use the studio repo.
+**Compiler-facing** `import studio` library source remains here so `li-studio-ai`, `li-player`, and lic composable smokes keep building while the product repo matures. Do not add deploy/installer/product-only code under `packages/li-studio/` — use the studio repo.
 
-For compiler-only work, `li-studio-ai` remains under `packages/li-studio-ai` until migrated to studio.ai.
+For agent orchestration, `li-studio-ai` remains under `packages/li-studio-ai` until migrated to studio.ai.

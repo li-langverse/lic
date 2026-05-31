@@ -984,6 +984,8 @@ struct EmitCtx {
               val = builder->CreatePointerCast(val, want);
             } else if (want->isDoubleTy() && val->getType()->isIntegerTy(32)) {
               val = builder->CreateSIToFP(val, want);
+            } else if (want->isFloatTy() && val->getType()->isDoubleTy()) {
+              val = builder->CreateFPTrunc(val, want);
             } else if (want->isIntegerTy(32) && val->getType()->isDoubleTy()) {
               val = builder->CreateFPTrunc(val, llvm::Type::getFloatTy(context));
               val = builder->CreateBitCast(val, want);

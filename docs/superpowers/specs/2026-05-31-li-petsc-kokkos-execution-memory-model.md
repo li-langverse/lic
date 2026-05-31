@@ -5,7 +5,7 @@
 **Issue:** [lic#28](https://github.com/li-langverse/lic/issues/28)  
 **Related:** [lic#15](https://github.com/li-langverse/lic/issues/15) (Kokkos-class lowering), [execution surface](2026-05-25-li-execution-surface.md), [execution resources](2026-05-25-li-execution-resources.md), [execution decorators](2026-05-16-li-execution-decorators.md)  
 **PH / G:** PH-7e, PH-7d, **G-par**, **G-gpu** (partial), **G-async** (future)  
-**Intel:** [ALCF PETSc exascale](https://www.alcf.anl.gov/news/optimizing-petsc-exascale), [arXiv:2406.08646](https://arxiv.org/html/2406.08646v1), [PETSc-users Kokkos thread](https://lists.mcs.anl.gov/pipermail/petsc-users/2024-June/050848.html)
+**Intel:** [ALCF PETSc exascale](https://www.alcf.anl.gov/news/optimizing-petsc-exascale), [arXiv:2406.08646](https://arxiv.org/html/2406.08646v1), [PETSc-users Kokkos thread](https://lists.mcs.anl.gov/pipermail/petsc-users/2024-June/050848.html), [explorer digest (benchmarks)](https://github.com/li-langverse/benchmarks/blob/main/docs/ecosystem/explorer-digests/2026-05-17-explorer.md), [Kokkos releases](https://kokkos.org/about/releases/)
 
 ## Problem
 

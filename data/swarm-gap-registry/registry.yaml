@@ -721,6 +721,7 @@ gaps:
   - lic issue
   - docs/superpowers/specs/2026-05-31-li-petsc-kokkos-execution-memory-model.md
   - lic#28 requirements slice (2026-05-31)
+  - PR https://github.com/li-langverse/lic/pull/671 (planning slice; lowering open)
   ph_id: PH-7e
   handoff_to:
   - numerics_researcher

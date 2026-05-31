@@ -2,9 +2,12 @@
 # tier5_http nginx-src-audit gate (read-only checklist; no live nginx build).
 set -euo pipefail
 ROOT="$(cd "$(dirname "$0")/.." && pwd)"
-export PYTHONPATH="$ROOT/benchmarks/harness${PYTHONPATH:+:$PYTHONPATH}"
-HARNESS="$ROOT/benchmarks/harness"
-TIER5="$ROOT/benchmarks/tier5_http"
+# shellcheck source=lib/benchmarks-env.sh
+source "$ROOT/scripts/lib/benchmarks-env.sh"
+
+export PYTHONPATH="$HARNESS${PYTHONPATH:+:$PYTHONPATH}"
+HARNESS="$BENCHMARKS_ROOT/harness"
+TIER5="$BENCHMARKS_WORKLOADS/tier5_http"
 
 echo "== nginx_mitigations.toml present =="
 test -f "$TIER5/nginx_mitigations.toml"

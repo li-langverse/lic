@@ -2,6 +2,9 @@
 # PH-HW lig/LKIR sprint completion gate (native or WSL build-wsl).
 set -euo pipefail
 ROOT="$(cd "$(dirname "$0")/.." && pwd)"
+# shellcheck source=lib/benchmarks-env.sh
+source "$ROOT/scripts/lib/benchmarks-env.sh"
+
 cd "$ROOT"
 
 run_gate() {
@@ -17,7 +20,8 @@ run_gate() {
   python3 - <<'PY'
 import json, sys
 from pathlib import Path
-p = Path("benchmarks/results/lig-lkir-matmul.json")
+import os
+p = Path(os.environ["BENCHMARKS_RESULTS"] + "/" + "lig-lkir-matmul.json")
 d = json.loads(p.read_text())
 if not d.get("compile_ok"):
     sys.exit("compile_ok false")

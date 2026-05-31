@@ -36,6 +36,11 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
+      - name: Checkout benchmarks sibling
+        run: |
+          chmod +x scripts/checkout-ecosystem-siblings.sh
+          ./scripts/checkout-ecosystem-siblings.sh
+
       - name: Install SDL2 + Xvfb + capture tools
         run: |
           sudo apt-get update -qq
@@ -67,6 +72,11 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
+      - name: Checkout benchmarks sibling
+        run: |
+          chmod +x scripts/checkout-ecosystem-siblings.sh
+          ./scripts/checkout-ecosystem-siblings.sh
+
       - name: Install bench deps
         run: sudo apt-get update -qq && sudo apt-get install -y --no-install-recommends python3
 
@@ -90,6 +100,11 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
+      - name: Checkout benchmarks sibling
+        run: |
+          chmod +x scripts/checkout-ecosystem-siblings.sh
+          ./scripts/checkout-ecosystem-siblings.sh
+
       - name: Install bench deps
         run: sudo apt-get update -qq && sudo apt-get install -y --no-install-recommends python3 gcc
 
@@ -112,6 +127,11 @@ jobs:
     runs-on: ubuntu-24.04
     steps:
       - uses: actions/checkout@v4
+
+      - name: Checkout benchmarks sibling
+        run: |
+          chmod +x scripts/checkout-ecosystem-siblings.sh
+          ./scripts/checkout-ecosystem-siblings.sh
 
       - name: Install bench + probe deps
         run: sudo apt-get update -qq && sudo apt-get install -y --no-install-recommends python3 gcc

@@ -2,8 +2,11 @@
 # gap-tier5-streaming-soak: SSE long stream + WS fanout vs nginx on live li-httpd.
 set -euo pipefail
 ROOT="$(cd "$(dirname "$0")/.." && pwd)"
+# shellcheck source=lib/benchmarks-env.sh
+source "$ROOT/scripts/lib/benchmarks-env.sh"
+
 HTTPD="${LI_HTTPD_BIN:-$ROOT/build/li-httpd}"
-HARNESS="$ROOT/benchmarks/harness"
+HARNESS="$BENCHMARKS_ROOT/harness"
 export PYTHONPATH="$HARNESS${PYTHONPATH:+:$PYTHONPATH}"
 export LI_HTTPD_BIN="$HTTPD"
 export PATH="/usr/sbin:/usr/local/bin:${PATH:-}"
@@ -14,7 +17,7 @@ if [[ ! -x "$HTTPD" ]]; then
 fi
 
 chmod +x "$HARNESS/bench_http.py" "$HARNESS/verify_http.py" 2>/dev/null || true
-chmod +x "$ROOT/benchmarks/tier5_http/fixtures/streaming-soak/server.py" 2>/dev/null || true
+chmod +x "$BENCHMARKS_WORKLOADS/tier5_http/fixtures/streaming-soak/server.py" 2>/dev/null || true
 
 echo "==> verify_http.py --profile streaming_ci (SSE + WS edge)"
 python3 "$HARNESS/verify_http.py" --profile streaming_ci
@@ -39,6 +42,6 @@ export HTTPD_BENCH_P99_RATIO_MAX="${HTTPD_BENCH_P99_RATIO_MAX:-2.0}"
 echo "==> bench_http.py --profile parity_streaming --check-parity (soak ${DUR}s, li vs nginx)"
 python3 "$HARNESS/bench_http.py" --profile parity_streaming --check-parity \
   --set "load.duration_sec=${DUR}" \
-  --out "$ROOT/benchmarks/results/tier5_streaming_parity.csv"
+  --out "$BENCHMARKS_RESULTS/tier5_streaming_parity.csv"
 
 echo "check-tier5-streaming-soak: OK"

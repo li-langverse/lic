@@ -76,14 +76,15 @@ lic_check_smokes "$LIC" || exit 1
 bash scripts/bench-ph-ml-async-env-collect.sh
 bash scripts/bench-ph-ml-mlp-forward.sh
 
-[[ -f benchmarks/results/ph-ml-async-env-collect.json ]] || { echo "missing ph-ml-async-env-collect.json"; exit 1; }
-[[ -f benchmarks/results/ph-ml-mlp-forward.json ]] || { echo "missing ph-ml-mlp-forward.json"; exit 1; }
+[[ -f "$BENCHMARKS_RESULTS/ph-ml-async-env-collect.json ]] || { echo "missing ph-ml-async-env-collect.json"; exit 1; }
+[[ -f "$BENCHMARKS_RESULTS/ph-ml-mlp-forward.json ]] || { echo "missing ph-ml-mlp-forward.json"; exit 1; }
 
 python3 - <<'PY'
-import json, sys
+import json, os, sys
 from pathlib import Path
+import os
 
-async_p = Path("benchmarks/results/ph-ml-async-env-collect.json")
+async_p = Path(os.environ["BENCHMARKS_RESULTS"] + "/" + "ph-ml-async-env-collect.json")
 async_d = json.loads(async_p.read_text())
 if async_d.get("worker") == "stub":
     sys.exit('async bench must not label worker "stub"')
@@ -92,7 +93,7 @@ if async_d.get("worker") != "sync":
 if (async_d.get("env_count") or 0) < 4:
     sys.exit("need >=4 envs")
 
-mlp_p = Path("benchmarks/results/ph-ml-mlp-forward.json")
+mlp_p = Path(os.environ["BENCHMARKS_RESULTS"] + "/" + "ph-ml-mlp-forward.json")
 mlp_d = json.loads(mlp_p.read_text())
 if not mlp_d.get("executed"):
     sys.exit("mlp bench must record executed: true")

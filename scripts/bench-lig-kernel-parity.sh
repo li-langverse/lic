@@ -1,6 +1,9 @@
 #!/usr/bin/env bash
 set -euo pipefail
 ROOT="$(cd "$(dirname "$0")/.." && pwd)"
+# shellcheck source=lib/benchmarks-env.sh
+source "$ROOT/scripts/lib/benchmarks-env.sh"
+
 LIC="${LIC:-$ROOT/build/compiler/lic/lic}"
 if [[ ! -x "$LIC" && -x "$ROOT/build/compiler/lic/lic" ]]; then
   LIC="$ROOT/build/compiler/lic/lic"
@@ -11,11 +14,11 @@ fi
 if [[ -x "$LIC" ]]; then
   LIC="$(cd "$(dirname "$LIC")" && pwd)/$(basename "$LIC")"
 fi
-OUT="$ROOT/benchmarks/results/lig-lkir-matmul.json"
-REG="$ROOT/benchmarks/competitive/lig-kernels.toml"
+OUT="$BENCHMARKS_RESULTS/lig-lkir-matmul.json"
+REG="$BENCHMARKS_COMPETITIVE/lig-kernels.toml"
 SMOKE="$ROOT/packages/lig/li-tests/smoke/kernel_matmul_parity.li"
 PILOT_ID="${LIG_BENCH_PILOT_KERNEL_ID:-lig.kernel.matmul_f32}"
-mkdir -p "$ROOT/benchmarks/results"
+mkdir -p "$BENCHMARKS_RESULTS"
 export LIG_BENCH_ROOT="$ROOT" LIG_BENCH_LIC="$LIC" LIG_BENCH_OUT="$OUT" LIG_BENCH_REG="$REG" LIG_BENCH_SMOKE="$SMOKE" LIG_BENCH_PILOT_ID="$PILOT_ID"
 python3 <<'PY'
 import json, os, re, shutil, subprocess, tempfile, time

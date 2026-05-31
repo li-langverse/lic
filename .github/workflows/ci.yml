@@ -34,7 +34,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Checkout lip + lit (GitHub siblings)
+      - name: Checkout lip + lit + benchmarks (GitHub siblings)
         run: |
           chmod +x scripts/checkout-ecosystem-siblings.sh
           ./scripts/checkout-ecosystem-siblings.sh
@@ -60,7 +60,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Checkout lip + lit (GitHub siblings)
+      - name: Checkout lip + lit + benchmarks (GitHub siblings)
         run: |
           chmod +x scripts/checkout-ecosystem-siblings.sh
           ./scripts/checkout-ecosystem-siblings.sh

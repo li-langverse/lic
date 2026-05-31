@@ -2,6 +2,9 @@
 # Gates for compiler+Studio plan loop (Wave A first). Not httpd.
 set -euo pipefail
 ROOT="$(cd "$(dirname "$0")/.." && pwd)"
+# shellcheck source=lib/benchmarks-env.sh
+source "$ROOT/scripts/lib/benchmarks-env.sh"
+
 # shellcheck source=llvm-env.sh
 source "$ROOT/scripts/llvm-env.sh"
 # shellcheck source=lib/li-ui.sh
@@ -23,7 +26,7 @@ else
   "$ROOT/scripts/verify-math-physics-goldens.sh" || fail "verify-math-physics-goldens"
   if command -v clang-22 >/dev/null 2>&1 || command -v clang >/dev/null 2>&1; then
     li_phase "tier-1 result verify"
-    python3 "$ROOT/benchmarks/harness/bench.py" --verify-results --tier 1 || fail "bench verify tier 1"
+    "$BENCHMARKS_ROOT/scripts/run-bench.sh" --verify-results --tier 1 || fail "bench verify tier 1"
   else
     li_warn "skip tier-1 verify (no clang)"
   fi
@@ -38,7 +41,7 @@ fi
 
 li_phase "tier 0 bench"
 export LIC
-python3 "$ROOT/benchmarks/harness/bench.py" --tier 0 || fail "bench tier 0"
+"$BENCHMARKS_ROOT/scripts/run-bench.sh" --tier 0 || fail "bench tier 0"
 
 if [[ "${COMPILER_STUDIO_GATES_FULL:-0}" == "1" ]]; then
   li_phase "full master-plan gates"

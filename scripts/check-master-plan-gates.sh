@@ -2,6 +2,9 @@
 # Exit gates for lic monorepo v1 (master plan phases 0–7 core, 2g–2h, partial 2e/7d/7e).
 set -euo pipefail
 ROOT="$(cd "$(dirname "$0")/.." && pwd)"
+# shellcheck source=lib/benchmarks-env.sh
+source "$ROOT/scripts/lib/benchmarks-env.sh"
+
 # shellcheck source=lib/li-ui.sh
 source "$ROOT/scripts/lib/li-ui.sh"
 export LI_REPO_ROOT="$ROOT"
@@ -42,7 +45,7 @@ else
 fi
 
 li_phase "tier 0 bench"
-python3 "$ROOT/benchmarks/harness/bench.py" --tier 0 || fail "bench tier 0"
+"$BENCHMARKS_ROOT/scripts/run-bench.sh" --tier 0 || fail "bench tier 0"
 
 li_phase "toolchain / doc / package smoke"
 chmod +x "$ROOT/scripts/check-doc-provability-claims.sh" \

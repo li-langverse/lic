@@ -2,6 +2,9 @@
 # Daily 08:00 operator report — registry progress, last iterations, perf/memory snapshot.
 set -euo pipefail
 ROOT="$(cd "$(dirname "$0")/.." && pwd)"
+# shellcheck source=lib/benchmarks-env.sh
+source "$ROOT/scripts/lib/benchmarks-env.sh"
+
 ENV_FILE="${LI_CURSOR_ENV_FILE:-$HOME/Documents/Cursor/.env}"
 if [[ -f "$ENV_FILE" ]]; then
   set -a
@@ -18,7 +21,7 @@ mkdir -p "$(dirname "$OUT")"
 STATS="$(python3 - <<'PY'
 import json
 from pathlib import Path
-r = Path("benchmarks/competitive/algo_registry.json")
+r = Path(os.environ["BENCHMARKS_COMPETITIVE"] + "/" + "algo_registry.json")
 d = json.loads(r.read_text())
 algos = d["algorithms"]
 impl = sum(1 for a in algos if a.get("implemented_smoke"))
@@ -74,10 +77,10 @@ SHA="$(git -C "$ROOT" rev-parse --short HEAD 2>/dev/null || echo unknown)"
   echo ""
   echo "## Performance (latest.csv excerpt)"
   echo ""
-  if [[ -f "${ROOT}/benchmarks/results/latest.csv" ]]; then
+  if [[ -f "$BENCHMARKS_RESULTS/latest.csv" ]]; then
     echo '```'
-    head -1 "${ROOT}/benchmarks/results/latest.csv"
-    rg -i 'md_lennard_jones|heat_equation|li,' "${ROOT}/benchmarks/results/latest.csv" 2>/dev/null | head -20 || true
+    head -1 "$BENCHMARKS_RESULTS/latest.csv"
+    rg -i 'md_lennard_jones|heat_equation|li,' "$BENCHMARKS_RESULTS/latest.csv" 2>/dev/null | head -20 || true
     echo '```'
   else
     echo "_No latest.csv_"
@@ -85,9 +88,9 @@ SHA="$(git -C "$ROOT" rev-parse --short HEAD 2>/dev/null || echo unknown)"
   echo ""
   echo "## Memory"
   echo ""
-  if [[ -f "${ROOT}/benchmarks/results/memory/latest_memory.json" ]]; then
+  if [[ -f "$BENCHMARKS_RESULTS/memory/latest_memory.json" ]]; then
     echo '```json'
-    cat "${ROOT}/benchmarks/results/memory/latest_memory.json"
+    cat "$BENCHMARKS_RESULTS/memory/latest_memory.json"
     echo '```'
   else
     echo "_No memory snapshot_"

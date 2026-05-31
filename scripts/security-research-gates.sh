@@ -2,6 +2,9 @@
 # Security research gates: CWE feed freshness (hard) + study-only + optional li-tests slice.
 set -euo pipefail
 ROOT="$(cd "$(dirname "$0")/.." && pwd)"
+# shellcheck source=lib/benchmarks-env.sh
+source "$ROOT/scripts/lib/benchmarks-env.sh"
+
 export LI_REPO_ROOT="$ROOT"
 export LIC_ROOT="${LIC_ROOT:-$ROOT}"
 LANGVERSE="$(cd "$ROOT/.." && pwd)"

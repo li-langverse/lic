@@ -7,10 +7,13 @@
 set -euo pipefail
 
 ROOT="$(cd "$(dirname "$0")/.." && pwd)"
+# shellcheck source=lib/benchmarks-env.sh
+source "$ROOT/scripts/lib/benchmarks-env.sh"
+
 OUT_DIR="${STUDIO_UI_UX_BENCH_DIR:-$ROOT/data/studio-ui-ux-plan-loop}"
 mkdir -p "$OUT_DIR"
 LATEST_JSON="$OUT_DIR/latest-memory-profile.json"
-REGISTRY="$ROOT/benchmarks/competitive/studio-ui.toml"
+REGISTRY="$BENCHMARKS_COMPETITIVE/studio-ui.toml"
 
 python3 - "$ROOT" "$LATEST_JSON" "$REGISTRY" <<'PY'
 from __future__ import annotations
@@ -39,7 +42,7 @@ if registry_path.is_file():
             memory_id = block.get("id", memory_id)
             break
 
-harness_dir = root / "benchmarks/harness"
+harness_dir = Path(os.environ["BENCHMARKS_ROOT"]) / "harness"
 harness_py = harness_dir / "animate_md.py"
 
 # --- tracemalloc peak on import ---

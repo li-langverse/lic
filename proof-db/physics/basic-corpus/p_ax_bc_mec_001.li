@@ -1,0 +1,13 @@
+# P-AX-BC-MEC-001: Newton I: zero net force implies constant velocity.
+
+extern proc proof_db_p_ax_bc_mec_001() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+
+def main() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0

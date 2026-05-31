@@ -1,0 +1,8 @@
+# P-LM-BC-EX-045: Small angle sin theta approx theta radians.
+
+def main() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0

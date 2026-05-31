@@ -14,6 +14,7 @@ def csv_tag() -> int
 
 def csv_parse_row_stub(line: str) -> CsvRow
   requires true
+  ensures result.field_count == 0
   decreases 0
 =
   var r: CsvRow

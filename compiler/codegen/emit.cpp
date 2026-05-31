@@ -1905,12 +1905,6 @@ bool emit_llvm_ir(const MirModule& mir, const std::string& out_path, int runtime
       builder.setFastMathFlags(fmf);
     }
 
-    if (fn.name == "mm_blocked_512" || fn.name == "mm_naive_256") {
-      builder.CreateRetVoid();
-      builder.setFastMathFlags(saved_fmf);
-      continue;
-    }
-
     EmitCtx ctx{context,
                 module.get(),
                 func,

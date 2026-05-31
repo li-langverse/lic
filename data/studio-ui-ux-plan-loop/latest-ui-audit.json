@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-05-24T13:14:00.378226+00:00",
+  "generated_at": "2026-05-31T01:55:55.082518+00:00",
   "platform": "Linux",
   "summary": {
     "total": 1,
@@ -13,10 +13,7 @@
       "repo": "lic",
       "surface": "gui",
       "surface_class": "gui_app",
-      "status": "pass",
-      "artifacts": [
-        "/home/s4il0r/Documents/Cursor/li-langverse/li-cursor-agents/ux-harness/artifacts/world-studio-demo/home.png"
-      ],
+      "artifacts": [],
       "axe_violations": [],
       "pixel_diff": {
         "max_ratio": 0.0,
@@ -25,7 +22,10 @@
       "contrast_failures": [],
       "baseline_status": "ok",
       "tokens_deviation": [],
-      "broken_links": 0
+      "broken_links": 0,
+      "mode": "http_probe",
+      "status": "pass",
+      "fixture": "/home/s4il0r/Documents/Cursor/li-langverse/li-cursor-agents/ux-harness/fixtures/world-studio-workspace.html"
     }
   ]
 }

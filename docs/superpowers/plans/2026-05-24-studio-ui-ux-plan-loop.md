@@ -67,7 +67,7 @@ todos:
     status: done
   - id: studio-ux-21-wgpu-swapchain-gpu-runner
     content: "Real wgpu-rs swapchain texture readback on org GPU runner (LIG_WGPU_SWAPCHAIN=1)"
-    status: pending
+    status: done
   - id: studio-ux-22-palette-native-latency
     content: "Native palette open/filter latency on SDL shell — bench status native (UX-04)"
     status: done
@@ -76,6 +76,9 @@ todos:
     status: done
   - id: studio-ux-24-gpu-runner-deps
     content: "Org GPU runner matrix — Vulkan deps + wgpu swapchain CI green path"
+    status: done
+  - id: studio-ux-25-proactive-sweep-20260531
+    content: "Proactive briefing refresh — wave-5 gaps + ecosystem follow-ups for studio_ui_ux_builder"
     status: pending
 isProject: false
 ---

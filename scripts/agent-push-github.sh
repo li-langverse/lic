@@ -28,7 +28,12 @@ else
   echo "agent-push-github: working tree clean"
 fi
 
-"$WRAPPER" gh auth setup-git 2>/dev/null || true
+RESET="$ROOT/scripts/reset-git-github-profile.sh"
+if [[ -x "$RESET" ]]; then
+  "$RESET"
+else
+  "$WRAPPER" gh auth setup-git 2>/dev/null || true
+fi
 
 if git remote get-url origin &>/dev/null; then
   li_phase "push origin $branch"

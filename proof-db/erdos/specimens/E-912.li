@@ -1,0 +1,12 @@
+# Catalog: E-912
+# Statement: If\[n! = \prod_i p_i^{k_i}\]is the factorisation into distinct primes then let $h(n)$ count the number of distinct exponents $k_i$. Prove that there exists some $c>0$ such that\[h(n) \sim c \left(\frac{n}{\log n}\right)^{1/2}\]as $n\to \inf
+# formalization_status: li_open
+# discharge: pending — open formalization target (Phase 4)
+# erdos_status (literature): open
+
+def formal_target_e_912() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0

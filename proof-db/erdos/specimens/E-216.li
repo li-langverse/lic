@@ -1,0 +1,12 @@
+# Catalog: E-216
+# Statement: Let $g(k)$ be the smallest integer (if any such exists) such that any $g(k)$ points in $\mathbb{R}^2$ contains an empty convex $k$-gon (i.e. with no point in the interior). Does $g(k)$ exist? If so, estimate $g(k)$.
+# formalization_status: li_open
+# discharge: pending — open formalization target (Phase 4)
+# erdos_status (literature): open
+
+def formal_target_e_216() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0

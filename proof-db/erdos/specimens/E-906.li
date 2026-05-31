@@ -1,0 +1,12 @@
+# Catalog: E-906
+# Statement: Is there an entire non-zero function $f:\mathbb{C}\to \mathbb{C}$ such that, for any infinite sequence $n_1<n_2<\cdots$, the set\[\{ z: f^{(n_k)}(z)=0 \textrm{ for some }k\geq 1\}\]is everywhere dense?
+# formalization_status: li_open
+# discharge: pending — open formalization target (Phase 4)
+# erdos_status (literature): open
+
+def formal_target_e_906() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0

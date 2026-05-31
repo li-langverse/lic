@@ -1,0 +1,12 @@
+# Catalog: E-656
+# Statement: Let $A\subset \mathbb{N}$ be a set with positive upper density. Must there exist an infinite set $B\subseteq A$ and integer $t$ such that\[\{b_1+b_2: b_1\neq b_2\in B\}+t\subseteq A?\]
+# formalization_status: li_open
+# discharge: pending — open formalization target (Phase 4)
+# erdos_status (literature): proved
+
+def formal_target_e_656() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0

@@ -1,0 +1,12 @@
+# Catalog: E-887
+# Statement: Is there an absolute constant $K$ such that, for every $C>0$, if $n$ is sufficiently large then $n$ has at most $K$ divisors in $(n^{1/2},n^{1/2}+C n^{1/4})$.
+# formalization_status: li_open
+# discharge: pending — open formalization target (Phase 4)
+# erdos_status (literature): open
+
+def formal_target_e_887() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0

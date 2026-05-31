@@ -1,0 +1,12 @@
+# Catalog: E-1057
+# Statement: Let $C(x)$ count the number of Carmichael numbers in the interval $[1,x]$. Is it true that $C(x)=x^{1-o(1)}$?
+# formalization_status: li_open
+# discharge: pending — open formalization target (Phase 4)
+# erdos_status (literature): open
+
+def formal_target_e_1057() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0

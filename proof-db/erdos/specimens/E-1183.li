@@ -1,0 +1,12 @@
+# Catalog: E-1183
+# Statement: Let $f(n)$ be maximal such that in any $2$-colouring of the subsets of $\{1,\ldots,n\}$ there is always a monochromatic family of at least $f(n)$ sets which is closed under taking unions and intersections. Estimate $f(n)$. Let $F(n)$ be def
+# formalization_status: li_open
+# discharge: pending — open formalization target (Phase 4)
+# erdos_status (literature): open
+
+def formal_target_e_1183() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0

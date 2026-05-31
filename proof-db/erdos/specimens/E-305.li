@@ -1,0 +1,12 @@
+# Catalog: E-305
+# Statement: For integers $1\leq a<b$ let $D(a,b)$ be the minimal value of $n_k$ such that there exist integers $1\leq n_1<\cdots <n_k$ with\[\frac{a}{b}=\frac{1}{n_1}+\cdots+\frac{1}{n_k}.\]Estimate $D(b)=\max_{1\leq a<b}D(a,b)$. Is it true that\[D(b) 
+# formalization_status: li_open
+# discharge: pending — open formalization target (Phase 4)
+# erdos_status (literature): proved
+
+def formal_target_e_305() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0

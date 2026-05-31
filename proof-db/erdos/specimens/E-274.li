@@ -1,0 +1,12 @@
+# Catalog: E-274
+# Statement: If $G$ is a group then can there exist an exact covering of $G$ by more than one cosets of different sizes? (i.e. each element is contained in exactly one of the cosets)
+# formalization_status: li_open
+# discharge: pending — open formalization target (Phase 4)
+# erdos_status (literature): open
+
+def formal_target_e_274() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0

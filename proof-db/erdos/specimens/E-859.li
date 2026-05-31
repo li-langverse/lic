@@ -1,0 +1,12 @@
+# Catalog: E-859
+# Statement: Let $t\geq 1$ and let $d_t$ be the density of the set of integers $n\in\mathbb{N}$ for which $t$ can be represented as the sum of distinct divisors of $n$. Do there exist constants $c_1,c_2>0$ such that\[d_t \sim \frac{c_1}{(\log t)^{c_2}}\
+# formalization_status: li_open
+# discharge: pending — open formalization target (Phase 4)
+# erdos_status (literature): open
+
+def formal_target_e_859() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0

@@ -1,0 +1,12 @@
+# Catalog: E-1041
+# Statement: Let $f(z)=\prod_{i=1}^n(z-z_i)\in \mathbb{C}[z]$ with $\lvert z_i\rvert < 1$ for all $i$. Must there always exist a path of length less than $2$ in\[\{z: \lvert f(z)\rvert < 1\}\]which connects two of the roots of $f$?
+# formalization_status: li_open
+# discharge: pending — open formalization target (Phase 4)
+# erdos_status (literature): open
+
+def formal_target_e_1041() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0

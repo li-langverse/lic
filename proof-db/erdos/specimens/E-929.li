@@ -1,0 +1,12 @@
+# Catalog: E-929
+# Statement: Let $k\geq 2$ be large and let $S(k)$ be the minimal $x$ such that there is a positive density set of $n$ where\[n+1,n+2,\ldots,n+k\]are all divisible by primes $\leq x$. Estimate $S(k)$ - in particular, is it true that $S(k)\geq k^{1-o(1)}
+# formalization_status: li_open
+# discharge: pending — open formalization target (Phase 4)
+# erdos_status (literature): open
+
+def formal_target_e_929() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0

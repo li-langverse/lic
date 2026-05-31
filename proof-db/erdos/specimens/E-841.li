@@ -1,0 +1,12 @@
+# Catalog: E-841
+# Statement: Let $t_n$ be minimal such that $\{n+1,\ldots,n+t_n\}$ contains a subset whose product with $n$ is a square number (and let $t_n=0$ if $n$ is itself square). Estimate $t_n$.
+# formalization_status: li_open
+# discharge: pending — open formalization target (Phase 4)
+# erdos_status (literature): open
+
+def formal_target_e_841() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0

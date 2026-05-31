@@ -1,0 +1,12 @@
+# Catalog: E-697
+# Statement: Let $\delta(m,\alpha)$ denote the density of the set of integers which are divisible by some $d\equiv 1\pmod{m}$ with $1<d<\exp(m^\alpha)$. Does there exist some $\beta\in (1,\infty)$ such that\[\lim_{m\to \infty}\delta(m,\alpha)\]is $0$ if
+# formalization_status: li_open
+# discharge: pending — open formalization target (Phase 4)
+# erdos_status (literature): proved
+
+def formal_target_e_697() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0

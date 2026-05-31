@@ -1,0 +1,12 @@
+# Catalog: E-260
+# Statement: Let $a_1<a_2<\cdots$ be an increasing sequence such that $a_n/n\to \infty$. Is the sum\[\sum_n \frac{a_n}{2^{a_n}}\]irrational?
+# formalization_status: li_open
+# discharge: pending — open formalization target (Phase 4)
+# erdos_status (literature): open
+
+def formal_target_e_260() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0

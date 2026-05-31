@@ -1,0 +1,12 @@
+# Catalog: E-205
+# Statement: Is it true that all sufficiently large $n$ can be written as $2^k+m$ for some $k\geq 0$, where $\Omega(m)<\log\log m$? (Here $\Omega(m)$ is the number of prime divisors of $m$ counted with multiplicity.) What about $<\epsilon \log\log m$? O
+# formalization_status: li_open
+# discharge: pending — open formalization target (Phase 4)
+# erdos_status (literature): open
+
+def formal_target_e_205() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0

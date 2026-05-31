@@ -1,0 +1,12 @@
+# Catalog: E-316
+# Statement: Is it true that if $A\subset \mathbb{N}\backslash\{1\}$ is a finite set with $\sum_{n\in A}\frac{1}{n}<2$ then there is a partition $A=A_1\sqcup A_2$ such that\[\sum_{n\in A_i}\frac{1}{n}<1\]for $i=1,2$?
+# formalization_status: li_open
+# discharge: pending — open formalization target (Phase 4)
+# erdos_status (literature): open
+
+def formal_target_e_316() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0

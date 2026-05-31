@@ -1,0 +1,12 @@
+# Catalog: E-659
+# Statement: Is there a set of $n$ points in $\mathbb{R}^2$ such that every subset of $4$ points determines at least $3$ distances, yet the total number of distinct distances is\[\ll \frac{n}{\sqrt{\log n}}?\]
+# formalization_status: li_open
+# discharge: pending — open formalization target (Phase 4)
+# erdos_status (literature): proved
+
+def formal_target_e_659() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0

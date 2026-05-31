@@ -1,0 +1,12 @@
+# Catalog: E-869
+# Statement: If $A_1,A_2$ are disjoint additive bases of order $2$ (i.e. $A_i+A_i$ contains all large integers) then must $A=A_1\cup A_2$ contain a minimal additive basis of order $2$ (one such that deleting any element creates infinitely many $n\not\in
+# formalization_status: li_open
+# discharge: pending — open formalization target (Phase 4)
+# erdos_status (literature): open
+
+def formal_target_e_869() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0

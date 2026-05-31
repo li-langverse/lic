@@ -1,0 +1,12 @@
+# Catalog: E-639
+# Statement: Is it true that if the edges of $K_n$ are 2-coloured then there are at most $n^2/4$ many edges which do not occur in a monochromatic triangle?
+# formalization_status: li_open
+# discharge: pending — open formalization target (Phase 4)
+# erdos_status (literature): proved
+
+def formal_target_e_639() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0

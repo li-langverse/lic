@@ -1,0 +1,12 @@
+# Catalog: E-391
+# Statement: Let $t(n)$ be maximal such that there is a representation\[n!=a_1\cdots a_n\]with $t(n)=a_1\leq \cdots \leq a_n$. Obtain good bounds for $t(n)/n$. In particular, is it true that\[\lim \frac{t(n)}{n}=\frac{1}{e}?\]Furthermore, does there exi
+# formalization_status: li_open
+# discharge: pending — open formalization target (Phase 4)
+# erdos_status (literature): proved
+
+def formal_target_e_391() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0

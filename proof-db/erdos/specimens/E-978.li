@@ -1,0 +1,12 @@
+# Catalog: E-978
+# Statement: Let $f\in \mathbb{Z}[x]$ be an irreducible polynomial of degree $k>2$ (and suppose that $k\neq 2^l$ for any $l\geq 1$) such that the leading coefficient of $f$ is positive. Does the set of integers $n\geq 1$ for which $f(n)$ is $(k-1)$-powe
+# formalization_status: li_open
+# discharge: pending — open formalization target (Phase 4)
+# erdos_status (literature): open
+
+def formal_target_e_978() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0

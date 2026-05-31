@@ -1,0 +1,12 @@
+# Catalog: E-811
+# Statement: Suppose $n\equiv 1\pmod{m}$. We say that an edge-colouring of $K_n$ using $m$ colours is balanced if every vertex sees exactly $\lfloor n/m\rfloor$ many edges of each colours. For which graphs $G$ is it true that, if $m=e(G)$, for all large
+# formalization_status: li_open
+# discharge: pending — open formalization target (Phase 4)
+# erdos_status (literature): open
+
+def formal_target_e_811() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0

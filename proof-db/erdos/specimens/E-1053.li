@@ -1,0 +1,12 @@
+# Catalog: E-1053
+# Statement: Call a number $k$-perfect if $\sigma(n)=kn$, where $\sigma(n)$ is the sum of the divisors of $n$. Must $k=o(\log\log n)$?
+# formalization_status: li_open
+# discharge: pending — open formalization target (Phase 4)
+# erdos_status (literature): open
+
+def formal_target_e_1053() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0

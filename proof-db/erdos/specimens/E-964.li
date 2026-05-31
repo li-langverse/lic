@@ -1,0 +1,12 @@
+# Catalog: E-964
+# Statement: Let $\tau(n)$ count the number of divisors of $n$. Is the sequence\[\frac{\tau(n+1)}{\tau(n)}\]everywhere dense in $(0,\infty)$?
+# formalization_status: li_open
+# discharge: pending — open formalization target (Phase 4)
+# erdos_status (literature): proved
+
+def formal_target_e_964() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0

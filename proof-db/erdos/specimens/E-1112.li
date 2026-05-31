@@ -1,0 +1,12 @@
+# Catalog: E-1112
+# Statement: Let $1\leq d_1<d_2$ and $k\geq 3$. Does there exist an integer $r$ such that if $B=\{b_1<\cdots\}$ is a lacunary sequence of positive integers with $b_{i+1}\geq rb_i$ then there exists a sequence of positive integers $A=\{a_1<\cdots\}$ such
+# formalization_status: li_open
+# discharge: pending — open formalization target (Phase 4)
+# erdos_status (literature): open
+
+def formal_target_e_1112() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0

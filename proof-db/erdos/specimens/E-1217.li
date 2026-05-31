@@ -1,0 +1,12 @@
+# Catalog: E-1217
+# Statement: Let $A=\{a_1<a_2<\cdots\}$ be an infinite sequence of positive integers with positive lower logarithmic density. Must there exist a sequence $n_1<\cdots$ such that\[a_{n_i}\mid a_{n_{i+1}}\]for all $i\geq 1$ and\[\limsup_{x\to \infty}\frac{
+# formalization_status: li_open
+# discharge: pending — open formalization target (Phase 4)
+# erdos_status (literature): proved
+
+def formal_target_e_1217() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0

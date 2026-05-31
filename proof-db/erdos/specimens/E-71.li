@@ -1,0 +1,12 @@
+# Catalog: E-71
+# Statement: Is it true that for every infinite arithmetic progression $P$ which contains even numbers there is some constant $c=c(P)$ such that every graph with average degree at least $c$ contains a cycle whose length is in $P$?
+# formalization_status: li_open
+# discharge: pending — open formalization target (Phase 4)
+# erdos_status (literature): proved
+
+def formal_target_e_71() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0

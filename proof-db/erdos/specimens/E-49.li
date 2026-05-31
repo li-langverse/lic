@@ -1,0 +1,12 @@
+# Catalog: E-49
+# Statement: Let $A=\{a_1<\cdots<a_t\}\subseteq \{1,\ldots,N\}$ be such that $\phi(a_1)<\cdots<\phi(a_t)$. The primes are such an example. Are they the largest possible? Can one show that $\lvert A\rvert<(1+o(1))\pi(N)$ or even $\lvert A\rvert=o(N)$?
+# formalization_status: li_open
+# discharge: pending — open formalization target (Phase 4)
+# erdos_status (literature): proved
+
+def formal_target_e_49() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0

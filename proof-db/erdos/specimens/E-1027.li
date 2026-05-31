@@ -1,0 +1,12 @@
+# Catalog: E-1027
+# Statement: Let $c>0$, and let $n$ be sufficiently large depending on $c$. Suppose that $\mathcal{F}$ is a family of at most $c2^n$ many finite sets of size $n$. Let $X=\cup_{A\in \mathcal{F}}A$. Must there exist $\gg_c 2^{\lvert X\rvert}$ many sets $B
+# formalization_status: li_open
+# discharge: pending — open formalization target (Phase 4)
+# erdos_status (literature): proved
+
+def formal_target_e_1027() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0

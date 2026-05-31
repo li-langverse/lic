@@ -1,0 +1,12 @@
+# Catalog: E-258
+# Statement: Let $a_1,a_2,\ldots$ be a sequence of positive integers with $a_n\to \infty$. Is\[\sum_{n} \frac{\tau(n)}{a_1\cdots a_n}\]irrational, where $\tau(n)$ is the number of divisors of $n$?
+# formalization_status: li_open
+# discharge: pending — open formalization target (Phase 4)
+# erdos_status (literature): proved
+
+def formal_target_e_258() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0

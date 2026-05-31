@@ -1,0 +1,12 @@
+# Catalog: E-1165
+# Statement: Given a random walk $s_0,s_1,\ldots$ in $\mathbb{Z}^2$, starting at the origin, let $f_n(x)$ count the number of $0\leq k\leq n$ such that $s_k=x$. Let\[F(n)=\{ x: f_n(x) = \max_y f_n(y)\}\]be the set of 'favourite values'. Find\[\mathbb{P}
+# formalization_status: li_open
+# discharge: pending — open formalization target (Phase 4)
+# erdos_status (literature): open
+
+def formal_target_e_1165() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0

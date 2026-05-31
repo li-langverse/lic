@@ -1,0 +1,12 @@
+# Catalog: E-383
+# Statement: Is it true that for every $k$ there are infinitely many primes $p$ such that the largest prime divisor of\[\prod_{0\leq i\leq k}(p^2+i)\]is $p$?
+# formalization_status: li_open
+# discharge: pending — open formalization target (Phase 4)
+# erdos_status (literature): open
+
+def formal_target_e_383() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0

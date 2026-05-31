@@ -1,0 +1,12 @@
+# Catalog: E-653
+# Statement: Let $x_1,\ldots,x_n\in \mathbb{R}^2$ and let $R(x_i)=\#\{ \lvert x_j-x_i\rvert : j\neq i\}$, where the points are ordered such that\[R(x_1)\leq \cdots \leq R(x_n).\]Let $g(n)$ be the maximum number of distinct values the $R(x_i)$ can take. 
+# formalization_status: li_open
+# discharge: pending — open formalization target (Phase 4)
+# erdos_status (literature): open
+
+def formal_target_e_653() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0

@@ -1,0 +1,12 @@
+# Catalog: E-916
+# Statement: Does every graph with $n$ vertices and $2n-2$ edges contain a cycle and another vertex adjacent to three vertices on the cycle?
+# formalization_status: li_open
+# discharge: pending — open formalization target (Phase 4)
+# erdos_status (literature): proved
+
+def formal_target_e_916() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0

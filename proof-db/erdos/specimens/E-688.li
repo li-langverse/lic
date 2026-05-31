@@ -1,0 +1,12 @@
+# Catalog: E-688
+# Statement: Define $\epsilon_n$ to be maximal such that there exists some choice of congruence class $a_p$ for all primes $n^{\epsilon_n}<p\leq n$ such that every integer in $[1,n]$ satisfies at least one of the congruences $\equiv a_p\pmod{p}$. Estima
+# formalization_status: li_open
+# discharge: pending — open formalization target (Phase 4)
+# erdos_status (literature): open
+
+def formal_target_e_688() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0

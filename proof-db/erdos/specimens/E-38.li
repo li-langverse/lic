@@ -1,0 +1,12 @@
+# Catalog: E-38
+# Statement: Does there exist $B\subset\mathbb{N}$ which is not an additive basis, but is such that for every set $A\subseteq\mathbb{N}$ of Schnirelmann density $\alpha$ and every $N$ there exists $b\in B$ such that\[\lvert (A\cup (A+b))\cap \{1,\ldots,
+# formalization_status: li_open
+# discharge: pending — open formalization target (Phase 4)
+# erdos_status (literature): proved
+
+def formal_target_e_38() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0

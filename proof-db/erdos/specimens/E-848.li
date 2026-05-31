@@ -1,0 +1,12 @@
+# Catalog: E-848
+# Statement: Is the maximum size of a set $A\subseteq \{1,\ldots,N\}$ such that $ab+1$ is never squarefree (for all $a,b\in A$) achieved by taking those $n\equiv 7\pmod{25}$?
+# formalization_status: li_open
+# discharge: pending — open formalization target (Phase 4)
+# erdos_status (literature): open
+
+def formal_target_e_848() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0

@@ -1,0 +1,12 @@
+# Catalog: E-1002
+# Statement: For any $0<\alpha<1$, let\[f(\alpha,n)=\frac{1}{\log n}\sum_{1\leq k\leq n}(\tfrac{1}{2}-\{ \alpha k\}).\]Does $f(\alpha,n)$ have an asymptotic distribution function? In other words, is there a non-decreasing function $g$ such that $g(-\inf
+# formalization_status: li_open
+# discharge: pending — open formalization target (Phase 4)
+# erdos_status (literature): open
+
+def formal_target_e_1002() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0

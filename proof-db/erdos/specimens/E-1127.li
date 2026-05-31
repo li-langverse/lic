@@ -1,0 +1,12 @@
+# Catalog: E-1127
+# Statement: Can $\mathbb{R}^n$ be decomposed into countably many sets, such that within each set all the pairwise distances are distinct?
+# formalization_status: li_open
+# discharge: pending — open formalization target (Phase 4)
+# erdos_status (literature): open
+
+def formal_target_e_1127() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0

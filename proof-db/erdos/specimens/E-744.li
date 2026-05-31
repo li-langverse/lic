@@ -1,0 +1,12 @@
+# Catalog: E-744
+# Statement: Let $k$ be a large fixed constant. Let $f_k(n)$ be the minimal $m$ such that there exists a graph $G$ on $n$ vertices with chromatic number $k$, such that every proper subgraph has chromatic number $<k$, and $G$ can be made bipartite by del
+# formalization_status: li_open
+# discharge: pending — open formalization target (Phase 4)
+# erdos_status (literature): open
+
+def formal_target_e_744() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0

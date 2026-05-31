@@ -1,0 +1,12 @@
+# Catalog: E-18
+# Statement: We call m practical if every integer 1<=n<=m is a sum of distinct divisors of m. Does the density of practical numbers tend to 0?
+# formalization_status: li_open
+# discharge: pending — open formalization target (Phase 4)
+# erdos_status (literature): open
+
+def formal_target_e_18() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0

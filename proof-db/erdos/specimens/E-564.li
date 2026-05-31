@@ -1,0 +1,12 @@
+# Catalog: E-564
+# Statement: Let $R_3(n)$ be the minimal $m$ such that if the edges of the $3$-uniform hypergraph on $m$ vertices are $2$-coloured then there is a monochromatic copy of the complete $3$-uniform hypergraph on $n$ vertices. Is there some constant $c>0$ su
+# formalization_status: li_open
+# discharge: pending — open formalization target (Phase 4)
+# erdos_status (literature): open
+
+def formal_target_e_564() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0

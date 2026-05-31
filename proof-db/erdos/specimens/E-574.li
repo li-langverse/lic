@@ -1,0 +1,12 @@
+# Catalog: E-574
+# Statement: Is it true that, for $k\geq 2$,\[\mathrm{ex}(n;\{C_{2k-1},C_{2k}\})=(1+o(1))(n/2)^{1+\frac{1}{k}}.\]
+# formalization_status: li_open
+# discharge: pending — open formalization target (Phase 4)
+# erdos_status (literature): open
+
+def formal_target_e_574() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0

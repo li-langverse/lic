@@ -1,0 +1,12 @@
+# Catalog: E-86
+# Statement: Is every even integer greater than 2 the sum of two primes (Goldbach conjecture)?
+# formalization_status: li_open
+# discharge: pending — open formalization target (Phase 4)
+# erdos_status (literature): target
+
+def formal_target_e_86() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0

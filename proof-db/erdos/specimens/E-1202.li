@@ -1,0 +1,12 @@
+# Catalog: E-1202
+# Statement: Let $\epsilon,\eta>0$. Does there exist a $k$ such that, given any set of $k$ primes $p_1<\cdots<p_k<n^{1-\epsilon}$, each with a set $A_i$ of $\frac{p_i-1}{2}$ many congruence classes modulo $p_i$, the number of $m\leq n$ such that $m\not\
+# formalization_status: li_open
+# discharge: pending — open formalization target (Phase 4)
+# erdos_status (literature): open
+
+def formal_target_e_1202() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0

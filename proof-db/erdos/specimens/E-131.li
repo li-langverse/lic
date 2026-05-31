@@ -1,0 +1,12 @@
+# Catalog: E-131
+# Statement: Let $F(N)$ be the maximal size of $A\subseteq\{1,\ldots,N\}$ such that no $a\in A$ divides the sum of any distinct elements of $A\backslash\{a\}$. Estimate $F(N)$. In particular, is it true that\[F(N) > N^{1/2-o(1)}?\]
+# formalization_status: li_open
+# discharge: pending — open formalization target (Phase 4)
+# erdos_status (literature): open
+
+def formal_target_e_131() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0

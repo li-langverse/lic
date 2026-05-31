@@ -1,0 +1,12 @@
+# Catalog: E-579
+# Statement: Let $\delta>0$. If $n$ is sufficiently large and $G$ is a graph on $n$ vertices with no $K_{2,2,2}$ and at least $\delta n^2$ edges then $G$ contains an independent set of size $\gg_\delta n$.
+# formalization_status: li_open
+# discharge: pending — open formalization target (Phase 4)
+# erdos_status (literature): open
+
+def formal_target_e_579() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0

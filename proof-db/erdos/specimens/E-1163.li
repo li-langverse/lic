@@ -1,0 +1,12 @@
+# Catalog: E-1163
+# Statement: Describe (by statistical means) the arithmetic structure of the orders of subgroups of $S_n$.
+# formalization_status: li_open
+# discharge: pending — open formalization target (Phase 4)
+# erdos_status (literature): open
+
+def formal_target_e_1163() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0

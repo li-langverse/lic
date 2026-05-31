@@ -1,0 +1,12 @@
+# Catalog: E-766
+# Statement: Let $f(n;k,l)=\min \mathrm{ex}(n;G)$, where $G$ ranges over all graphs with $k$ vertices and $l$ edges. Give good estimates for $f(n;k,l)$ in the range $k<l\leq k^2/4$. For fixed $k$ and large $n$ is $f(n;k,l)$ a strictly monotone function 
+# formalization_status: li_open
+# discharge: pending — open formalization target (Phase 4)
+# erdos_status (literature): open
+
+def formal_target_e_766() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0

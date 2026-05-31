@@ -1,0 +1,12 @@
+# Catalog: E-169
+# Statement: Let $k\geq 3$ and $f(k)$ be the supremum of $\sum_{n\in A}\frac{1}{n}$ as $A$ ranges over all sets of positive integers which do not contain a $k$-term arithmetic progression. Estimate $f(k)$. Is\[\lim_{k\to \infty}\frac{f(k)}{\log W(k)}=\i
+# formalization_status: li_open
+# discharge: pending — open formalization target (Phase 4)
+# erdos_status (literature): open
+
+def formal_target_e_169() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0

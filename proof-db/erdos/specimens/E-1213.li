@@ -1,0 +1,12 @@
+# Catalog: E-1213
+# Statement: Let $a,K\geq 1$. Does there exist $f(a,K)$ such that if\[a=a_1<\cdots <a_s\]is a sequence of integers with $a_s> f(a,K)$ and with bounded gaps $a_{i+1}-a_i\leq K$ then there are two distinct intervals $I$ and $J$ such that\[\sum_{i\in I}a_i
+# formalization_status: li_open
+# discharge: pending — open formalization target (Phase 4)
+# erdos_status (literature): proved
+
+def formal_target_e_1213() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0

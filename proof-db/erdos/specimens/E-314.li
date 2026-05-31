@@ -1,0 +1,12 @@
+# Catalog: E-314
+# Statement: Let $n\geq 1$ and let $m$ be minimal such that $\sum_{n\leq k\leq m}\frac{1}{k}\geq 1$. We define\[\epsilon(n) = \sum_{n\leq k\leq m}\frac{1}{k}-1.\]How small can $\epsilon(n)$ be? Is it true that\[\liminf n^2\epsilon(n)=0?\]
+# formalization_status: li_open
+# discharge: pending — open formalization target (Phase 4)
+# erdos_status (literature): proved
+
+def formal_target_e_314() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0

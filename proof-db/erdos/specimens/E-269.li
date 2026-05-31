@@ -1,0 +1,12 @@
+# Catalog: E-269
+# Statement: Let $P$ be a finite set of primes with $\lvert P\rvert \geq 2$ and let $\{a_1<a_2<\cdots\}=\{ n\in \mathbb{N} : \textrm{if }p\mid n\textrm{ then }p\in P\}$. Is the sum\[\sum_{n=1}^\infty \frac{1}{[a_1,\ldots,a_n]},\]where $[a_1,\ldots,a_n]$
+# formalization_status: li_open
+# discharge: pending — open formalization target (Phase 4)
+# erdos_status (literature): open
+
+def formal_target_e_269() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0

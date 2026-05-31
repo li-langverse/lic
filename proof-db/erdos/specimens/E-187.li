@@ -1,0 +1,12 @@
+# Catalog: E-187
+# Statement: Find the best function $f(d)$ such that, in any 2-colouring of the integers, at least one colour class contains an arithmetic progression with common difference $d$ of length $f(d)$ for infinitely many $d$.
+# formalization_status: li_open
+# discharge: pending — open formalization target (Phase 4)
+# erdos_status (literature): open
+
+def formal_target_e_187() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0

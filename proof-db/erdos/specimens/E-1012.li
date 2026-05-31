@@ -1,0 +1,12 @@
+# Catalog: E-1012
+# Statement: Let $k\geq 0$. Let $f(k)$ be such that every graph on $n\geq f(k)$ vertices with at least $\binom{n-k-1}{2}+\binom{k+2}{2}+1$ edges contains a cycle on $n-k$ vertices. Determine or estimate $f(k)$.
+# formalization_status: li_open
+# discharge: pending — open formalization target (Phase 4)
+# erdos_status (literature): open
+
+def formal_target_e_1012() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0

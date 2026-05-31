@@ -1,0 +1,12 @@
+# Catalog: E-455
+# Statement: Let $q_1<q_2<\cdots$ be a sequence of primes such that\[q_{n+1}-q_n\geq q_n-q_{n-1}.\]Must\[\lim_n \frac{q_n}{n^2}=\infty?\]
+# formalization_status: li_open
+# discharge: pending — open formalization target (Phase 4)
+# erdos_status (literature): open
+
+def formal_target_e_455() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0

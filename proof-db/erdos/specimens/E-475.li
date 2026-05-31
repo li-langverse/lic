@@ -1,0 +1,12 @@
+# Catalog: E-475
+# Statement: Let $p$ be a prime. Given any finite set $A\subseteq \mathbb{F}_p\backslash \{0\}$, is there always a rearrangement $A=\{a_1,\ldots,a_t\}$ such that all partial sums $\sum_{1\leq k\leq m}a_{k}$ are distinct, for all $1\leq m\leq t$?
+# formalization_status: li_open
+# discharge: pending — open formalization target (Phase 4)
+# erdos_status (literature): open
+
+def formal_target_e_475() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0

@@ -1,0 +1,12 @@
+# Catalog: E-895
+# Statement: Is it true that, for all sufficiently large $n$, if $G$ is a triangle-free graph on $\{1,\ldots,n\}$ then there must exist three independent points $a,b,a+b$?
+# formalization_status: li_open
+# discharge: pending — open formalization target (Phase 4)
+# erdos_status (literature): proved
+
+def formal_target_e_895() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0

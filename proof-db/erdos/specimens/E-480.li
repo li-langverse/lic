@@ -1,0 +1,12 @@
+# Catalog: E-480
+# Statement: Let $x_1,x_2,\ldots\in [0,1]$ be an infinite sequence. Is it true that\[\inf_n \liminf_{m\to \infty} n \lvert x_{m+n}-x_m\rvert\leq 5^{-1/2}\approx 0.447?\]
+# formalization_status: li_open
+# discharge: pending — open formalization target (Phase 4)
+# erdos_status (literature): proved
+
+def formal_target_e_480() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0

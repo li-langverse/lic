@@ -1,0 +1,12 @@
+# Catalog: E-463
+# Statement: Is there a function $f$ with $f(n)\to \infty$ as $n\to \infty$ such that, for all large $n$, there is a composite number $m$ such that\[n+f(n)<m<n+p(m)?\](Here $p(m)$ is the least prime factor of $m$.)
+# formalization_status: li_open
+# discharge: pending — open formalization target (Phase 4)
+# erdos_status (literature): open
+
+def formal_target_e_463() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0

@@ -1,0 +1,12 @@
+# Catalog: E-1000
+# Statement: Let $A=\{n_1<n_2<\cdots\}$ be an infinite sequence of integers, and let $\phi_A(k)$ count the number of $1\leq m\leq n_k$ such that the fraction $\frac{m}{n_k}$ does not have denominator $n_j$ for $j<k$ when written in lowest form; equivale
+# formalization_status: li_open
+# discharge: pending — open formalization target (Phase 4)
+# erdos_status (literature): proved
+
+def formal_target_e_1000() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0

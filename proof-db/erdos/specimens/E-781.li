@@ -1,0 +1,12 @@
+# Catalog: E-781
+# Statement: Let $f(k)$ be the minimal $n$ such that any $2$-colouring of $\{1,\ldots,n\}$ contains a monochromatic $k$-term descending wave: a sequence $x_1<\cdots <x_k$ such that, for $1<j<k$,\[x_j \geq \frac{x_{j+1}+x_{j-1}}{2}.\]Estimate $f(k)$. In 
+# formalization_status: li_open
+# discharge: pending — open formalization target (Phase 4)
+# erdos_status (literature): open
+
+def formal_target_e_781() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0

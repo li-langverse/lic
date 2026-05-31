@@ -1,0 +1,12 @@
+# Catalog: E-57
+# Statement: Are there infinitely many n such that n^4+4 is prime (Fermat-style)?
+# formalization_status: li_open
+# discharge: pending — open formalization target (Phase 4)
+# erdos_status (literature): open
+
+def formal_target_e_57() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0

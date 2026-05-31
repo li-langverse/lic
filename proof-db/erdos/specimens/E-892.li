@@ -1,0 +1,12 @@
+# Catalog: E-892
+# Statement: Is there a necessary and sufficient condition for a sequence of integers $b_1<b_2<\cdots$ that ensures there exists a primitive sequence $a_1<a_2<\cdots$ (i.e. no element divides another) with $a_n \ll b_n$ for all $n$? In particular, is th
+# formalization_status: li_open
+# discharge: pending — open formalization target (Phase 4)
+# erdos_status (literature): open
+
+def formal_target_e_892() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0

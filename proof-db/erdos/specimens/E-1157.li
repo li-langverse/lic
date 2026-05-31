@@ -1,0 +1,12 @@
+# Catalog: E-1157
+# Statement: Let $t,k,r\geq 2$. Let $\mathcal{F}$ be the family of all $r$-uniform hypergraphs with $k$ vertices and $s$ edges. Determine\[\mathrm{ex}_r(n,\mathcal{F}).\]
+# formalization_status: li_open
+# discharge: pending — open formalization target (Phase 4)
+# erdos_status (literature): open
+
+def formal_target_e_1157() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0

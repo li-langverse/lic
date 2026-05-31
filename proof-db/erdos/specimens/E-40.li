@@ -1,0 +1,12 @@
+# Catalog: E-40
+# Statement: For what functions $g(N)\to \infty$ is it true that\[\lvert A\cap \{1,\ldots,N\}\rvert \gg \frac{N^{1/2}}{g(N)}\]implies $\limsup 1_A\ast 1_A(n)=\infty$?
+# formalization_status: li_open
+# discharge: pending — open formalization target (Phase 4)
+# erdos_status (literature): open
+
+def formal_target_e_40() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0

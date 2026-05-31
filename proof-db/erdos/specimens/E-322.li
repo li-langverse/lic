@@ -1,0 +1,12 @@
+# Catalog: E-322
+# Statement: Let $k\geq 3$ and $A\subset \mathbb{N}$ be the set of $k$th powers. What is the order of growth of $1_A^{(k)}(n)$, i.e. the number of representations of $n$ as the sum of $k$ many $k$th powers? Does there exist some $c>0$ and infinitely man
+# formalization_status: li_open
+# discharge: pending — open formalization target (Phase 4)
+# erdos_status (literature): open
+
+def formal_target_e_322() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0

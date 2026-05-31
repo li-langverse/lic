@@ -1,0 +1,12 @@
+# Catalog: E-215
+# Statement: Does there exist $S\subseteq \mathbb{R}^2$ such that every set congruent to $S$ (that is, $S$ after some translation and rotation) contains exactly one point from $\mathbb{Z}^2$?
+# formalization_status: li_open
+# discharge: pending — open formalization target (Phase 4)
+# erdos_status (literature): proved
+
+def formal_target_e_215() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0

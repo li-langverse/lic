@@ -1,0 +1,12 @@
+# Catalog: E-832
+# Statement: Let $r\geq 3$ and $k$ be sufficiently large in terms of $r$. Is it true that every $r$-uniform hypergraph with chromatic number $k$ has at least\[\binom{(r-1)(k-1)+1}{r}\]edges, with equality only for the complete graph on $(r-1)(k-1)+1$ ve
+# formalization_status: li_open
+# discharge: pending — open formalization target (Phase 4)
+# erdos_status (literature): open
+
+def formal_target_e_832() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0

@@ -1,0 +1,12 @@
+# Catalog: E-1151
+# Statement: Given $a_1,\ldots,a_n\in [-1,1]$ let\[\mathcal{L}^nf(x) = \sum_{1\leq i\leq n}f(a_i)\ell_i(x)\]be the unique polynomial of degree $n-1$ which agrees with $f$ on $a_i$ for $1\leq i\leq n$ (that is, the Lagrange interpolation polynomial). Let
+# formalization_status: li_open
+# discharge: pending — open formalization target (Phase 4)
+# erdos_status (literature): open
+
+def formal_target_e_1151() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0

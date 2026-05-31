@@ -1,0 +1,12 @@
+# Catalog: E-743
+# Statement: Let $T_2,\ldots,T_n$ be a collection of trees such that $T_k$ has $k$ vertices. Can we always write $K_n$ as the edge disjoint union of the $T_k$?
+# formalization_status: li_open
+# discharge: pending — open formalization target (Phase 4)
+# erdos_status (literature): open
+
+def formal_target_e_743() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0

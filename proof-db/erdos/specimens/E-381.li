@@ -1,0 +1,12 @@
+# Catalog: E-381
+# Statement: A number $n$ is highly composite if $\tau(m)<\tau(n)$ for all $m<n$, where $\tau(m)$ counts the number of divisors of $m$. Let $Q(x)$ count the number of highly composite numbers in $[1,x]$. Is it true that\[Q(x)\gg_k (\log x)^k\]for every 
+# formalization_status: li_open
+# discharge: pending — open formalization target (Phase 4)
+# erdos_status (literature): open
+
+def formal_target_e_381() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0

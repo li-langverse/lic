@@ -1,0 +1,12 @@
+# Catalog: E-120
+# Statement: Are there infinitely many n such that n and n+2 are both sums of two primes?
+# formalization_status: li_open
+# discharge: pending — open formalization target (Phase 4)
+# erdos_status (literature): open
+
+def formal_target_e_120() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0

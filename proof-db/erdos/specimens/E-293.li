@@ -1,0 +1,12 @@
+# Catalog: E-293
+# Statement: Let $k\geq 1$ and let $v(k)$ be the minimal integer which does not appear as some $n_i$ in a solution to\[1=\frac{1}{n_1}+\cdots+\frac{1}{n_k}\]with $1\leq n_1<\cdots <n_k$. Estimate the growth of $v(k)$.
+# formalization_status: li_open
+# discharge: pending — open formalization target (Phase 4)
+# erdos_status (literature): open
+
+def formal_target_e_293() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0

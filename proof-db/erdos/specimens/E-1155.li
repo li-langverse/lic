@@ -1,0 +1,12 @@
+# Catalog: E-1155
+# Statement: Construct a random graph on $n$ vertices in the following way: begin with the complete graph $K_n$. At each stage, choose uniformly a random triangle in the graph and delete all the edges of this triangle. Repeat until the graph is triangle
+# formalization_status: li_open
+# discharge: pending — open formalization target (Phase 4)
+# erdos_status (literature): open
+
+def formal_target_e_1155() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0

@@ -1,0 +1,12 @@
+# Catalog: E-771
+# Statement: Let $f(n)$ be maximal such that, for every $m\geq 1$, there exists some $S\subseteq \{1,\ldots,n\}$ with $\lvert S\rvert=f(n)$ such that $m\neq \sum_{a\in A}a$ for all $A\subseteq S$. Is it true that\[f(n) = \left(\frac{1}{2}+o(1)\right)\fr
+# formalization_status: li_open
+# discharge: pending — open formalization target (Phase 4)
+# erdos_status (literature): proved
+
+def formal_target_e_771() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0

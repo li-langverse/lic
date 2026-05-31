@@ -1,0 +1,12 @@
+# Catalog: E-1143
+# Statement: Let $p_1<\cdots<p_u$ be primes and let $k\geq 1$. Let $F_k(p_1,\ldots,p_u)$ be such that every interval of $k$ positive integers contains at least $F_k(p_1,\ldots,p_u)$ multiples of at least one of the $p_i$. Estimate $F_k(p_1,\ldots,p_u)$,
+# formalization_status: li_open
+# discharge: pending — open formalization target (Phase 4)
+# erdos_status (literature): open
+
+def formal_target_e_1143() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0

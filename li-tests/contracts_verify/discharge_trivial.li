@@ -1,3 +1,4 @@
+# discharge: ok
 def main() -> int
   requires true
   ensures result == 0

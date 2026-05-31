@@ -1,0 +1,12 @@
+# Catalog: E-943
+# Statement: Let $A$ be the set of powerful numbers (if $p\mid n$ then $p^2\mid n$). Is it true that\[1_A\ast 1_A(n)=n^{o(1)}\]for every $n$?
+# formalization_status: li_open
+# discharge: pending — open formalization target (Phase 4)
+# erdos_status (literature): open
+
+def formal_target_e_943() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0

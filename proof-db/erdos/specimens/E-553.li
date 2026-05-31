@@ -1,0 +1,12 @@
+# Catalog: E-553
+# Statement: Let $R(3,3,n)$ denote the smallest integer $m$ such that if we $3$-colour the edges of $K_m$ then there is either a monochromatic triangle in one of the first two colours or a monochromatic $K_n$ in the third colour. Define $R(3,n)$ similar
+# formalization_status: li_open
+# discharge: pending — open formalization target (Phase 4)
+# erdos_status (literature): proved
+
+def formal_target_e_553() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0

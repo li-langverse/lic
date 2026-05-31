@@ -1,0 +1,12 @@
+# Catalog: E-782
+# Statement: Do the squares contain arbitrarily long quasi-progressions? That is, does there exist some constant $C>0$ such that, for any $k$, the squares contain a sequence $x_1,\ldots,x_k$ where, for some $d$ and all $1\leq i<k$,\[x_i+d\leq x_{i+1}\le
+# formalization_status: li_open
+# discharge: pending — open formalization target (Phase 4)
+# erdos_status (literature): open
+
+def formal_target_e_782() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0

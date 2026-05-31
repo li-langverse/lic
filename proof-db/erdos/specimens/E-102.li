@@ -1,0 +1,12 @@
+# Catalog: E-102
+# Statement: Can every sufficiently large integer be written as a sum of distinct powers of 2 times distinct primes?
+# formalization_status: li_open
+# discharge: pending — open formalization target (Phase 4)
+# erdos_status (literature): open
+
+def formal_target_e_102() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0

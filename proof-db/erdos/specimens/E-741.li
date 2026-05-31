@@ -1,0 +1,12 @@
+# Catalog: E-741
+# Statement: Let $A\subseteq \mathbb{N}$ be such that $A+A$ has positive (upper) density. Can one always decompose $A=A_1\sqcup A_2$ such that $A_1+A_1$ and $A_2+A_2$ both have positive (upper) density? Is there a basis $A$ of order $2$ such that if $A=
+# formalization_status: li_open
+# discharge: pending — open formalization target (Phase 4)
+# erdos_status (literature): open
+
+def formal_target_e_741() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0

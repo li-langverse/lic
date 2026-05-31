@@ -1,0 +1,12 @@
+# Catalog: E-664
+# Statement: Let $c<1$ be some constant and $A_1,\ldots,A_m\subseteq \{1,\ldots,n\}$ be such that $\lvert A_i\rvert >c\sqrt{n}$ for all $i$ and $\lvert A_i\cap A_j\rvert\leq 1$ for all $i\neq j$. Must there exist some set $B$ such that $B\cap A_i\neq \e
+# formalization_status: li_open
+# discharge: pending — open formalization target (Phase 4)
+# erdos_status (literature): open
+
+def formal_target_e_664() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0

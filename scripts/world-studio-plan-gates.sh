@@ -74,6 +74,7 @@ else
       studio_shell_demo.li \
       studio_vertical_profile_roundtrip.li \
       studio_sim_step_by_profile.li \
+      studio_toml_engine_export.li \
       studio_sim_rl_step_hook.li \
       studio_sim_sensor_step_hook.li \
       studio_mcp_tools.li \

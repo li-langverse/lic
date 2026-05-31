@@ -5,7 +5,7 @@ def main() -> int
   ensures result == 0
   decreases 0
 =
-  if li_std_studio_version() < 8:
+  if li_std_studio_version() < 28:
     return 1
   var tick0: int = 0
   var tick2: int = 2

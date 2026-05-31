@@ -1,0 +1,12 @@
+# Catalog: E-352
+# Statement: Is there some $c>0$ such that every measurable $A\subseteq \mathbb{R}^2$ of measure $\geq c$ contains the vertices of a triangle of area 1?
+# formalization_status: li_open
+# discharge: pending — open formalization target (Phase 4)
+# erdos_status (literature): open
+
+def formal_target_e_352() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0

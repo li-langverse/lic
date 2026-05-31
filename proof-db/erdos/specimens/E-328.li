@@ -1,0 +1,12 @@
+# Catalog: E-328
+# Statement: Suppose $A\subseteq\mathbb{N}$ and $C>0$ is such that $1_A\ast 1_A(n)\leq C$ for all $n\in\mathbb{N}$. Can $A$ be partitioned into $t$ many subsets $A_1,\ldots,A_t$ (where $t=t(C)$ depends only on $C$) such that $1_{A_i}\ast 1_{A_i}(n)<C$ f
+# formalization_status: li_open
+# discharge: pending — open formalization target (Phase 4)
+# erdos_status (literature): open
+
+def formal_target_e_328() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0

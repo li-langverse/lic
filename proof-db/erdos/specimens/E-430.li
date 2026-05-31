@@ -1,0 +1,12 @@
+# Catalog: E-430
+# Statement: Fix some integer $n$ and define a decreasing sequence in $[1,n)$ by $a_1=n-1$ and, for $k\geq 2$, letting $a_k$ be the greatest integer in $[1,a_{k-1})$ such that all of the prime factors of $a_k$ are $>n-a_k$. Is it true that, for sufficie
+# formalization_status: li_open
+# discharge: pending — open formalization target (Phase 4)
+# erdos_status (literature): open
+
+def formal_target_e_430() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0

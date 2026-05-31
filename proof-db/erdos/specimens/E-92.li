@@ -1,0 +1,12 @@
+# Catalog: E-92
+# Statement: Are there infinitely many primes of the form n^2+1?
+# formalization_status: li_open
+# discharge: pending — open formalization target (Phase 4)
+# erdos_status (literature): open
+
+def formal_target_e_92() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0

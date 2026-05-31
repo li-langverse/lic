@@ -1,7 +1,7 @@
 import studio
 import sim.additive
 
-def main() raises IO -> int
+def main() -> int
   requires true
   ensures result == 0
   decreases 0

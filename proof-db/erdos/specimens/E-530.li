@@ -1,0 +1,12 @@
+# Catalog: E-530
+# Statement: Let $\ell(N)$ be maximal such that in any finite set $A\subset \mathbb{R}$ of size $N$ there exists a Sidon subset $S$ of size $\ell(N)$ (i.e. the only solutions to $a+b=c+d$ in $S$ are the trivial ones). Determine the order of $\ell(N)$. I
+# formalization_status: li_open
+# discharge: pending — open formalization target (Phase 4)
+# erdos_status (literature): open
+
+def formal_target_e_530() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0

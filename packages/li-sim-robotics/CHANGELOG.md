@@ -9,6 +9,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- **WP-ROBO-03 6-DOF numeric IK** — `RoboArm6DofState`, `robo_arm_6dof_ik_numeric_step`, `sim_robotics_session_ik_step`, session persistence via `env_last_obs0..5`; smoke `li-tests/smoke/robo_ik_6dof.li`.
 - **WP-ROBO-02/03** — 2-DOF FK (`robo_arm_fk`), workspace gate (`sim_robotics_workspace_bounds_ok`), numeric IK stub tick (`sim_robotics_joint_angles_tick`), ROBO-0 tick helpers (`sim_robotics_tick_at` / `sim_robotics_tick_stub`), smoke `li-tests/smoke/workspace_bounds.li`.
 
 ### Changed

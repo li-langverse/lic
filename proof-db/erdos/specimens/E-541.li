@@ -1,0 +1,12 @@
+# Catalog: E-541
+# Statement: Let $a_1,\ldots,a_p$ be (not necessarily distinct) residues modulo $p$, such that there exists some $r$ so that if $S\subseteq [p]$ is non-empty and\[\sum_{i\in S}a_i\equiv 0\pmod{p}\]then $\lvert S\rvert=r$. Must there be at most two disti
+# formalization_status: li_open
+# discharge: pending — open formalization target (Phase 4)
+# erdos_status (literature): proved
+
+def formal_target_e_541() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0

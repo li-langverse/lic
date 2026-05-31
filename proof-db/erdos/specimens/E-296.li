@@ -1,0 +1,12 @@
+# Catalog: E-296
+# Statement: Let $N\geq 1$ and let $k(N)$ be maximal such that there are $k$ disjoint $A_1,\ldots,A_k\subseteq \{1,\ldots,N\}$ with $\sum_{n\in A_i}\frac{1}{n}=1$ for all $i$. Estimate $k(N)$. Is it true that $k(N)=o(\log N)$?
+# formalization_status: li_open
+# discharge: pending — open formalization target (Phase 4)
+# erdos_status (literature): proved
+
+def formal_target_e_296() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0

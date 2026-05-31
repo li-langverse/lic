@@ -1,0 +1,12 @@
+# Catalog: E-45
+# Statement: Are there infinitely many n such that the least prime factor of n!+1 exceeds n^{1+epsilon} for some fixed epsilon>0?
+# formalization_status: li_open
+# discharge: pending — open formalization target (Phase 4)
+# erdos_status (literature): open
+
+def formal_target_e_45() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0

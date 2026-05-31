@@ -1,0 +1,12 @@
+# Catalog: E-851
+# Statement: Let $\epsilon>0$. Is there some $r\ll_\epsilon 1$ such that the density of integers of the form $2^k+n$, where $k\geq 0$ and $n$ has at most $r$ prime divisors, is at least $1-\epsilon$?
+# formalization_status: li_open
+# discharge: pending — open formalization target (Phase 4)
+# erdos_status (literature): proved
+
+def formal_target_e_851() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0

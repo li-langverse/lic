@@ -1,0 +1,12 @@
+# Catalog: E-67
+# Statement: If $f:\mathbb{N}\to \{-1,+1\}$ then is it true that for every $C>0$ there exist $d,m\geq 1$ such that\[\left\lvert \sum_{1\leq k\leq m}f(kd)\right\rvert > C?\]
+# formalization_status: li_open
+# discharge: pending — open formalization target (Phase 4)
+# erdos_status (literature): proved
+
+def formal_target_e_67() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0

@@ -1,0 +1,12 @@
+# Catalog: E-80
+# Statement: Does every set of integers with positive upper density contain a three-term arithmetic progression?
+# formalization_status: li_open
+# discharge: pending — open formalization target (Phase 4)
+# erdos_status (literature): proved
+
+def formal_target_e_80() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0

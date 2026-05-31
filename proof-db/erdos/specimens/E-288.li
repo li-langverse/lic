@@ -1,0 +1,12 @@
+# Catalog: E-288
+# Statement: Is it true that there are only finitely many pairs of intervals $I_1,I_2$ such that\[\sum_{n_1\in I_1}\frac{1}{n_1}+\sum_{n_2\in I_2}\frac{1}{n_2}\in \mathbb{N}?\]
+# formalization_status: li_open
+# discharge: pending — open formalization target (Phase 4)
+# erdos_status (literature): open
+
+def formal_target_e_288() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0

@@ -1,0 +1,12 @@
+# Catalog: E-998
+# Statement: Let $\alpha$ be an irrational number. Is it true that if, for all large $n$,\[\#\{ 1\leq m\leq n : \{ \alpha m\} \in [u,v)\} = n(v-u)+O(1)\]then $u=\{\alpha k\}$ and $v=\{\alpha \ell\}$ for some integers $k$ and $\ell$?
+# formalization_status: li_open
+# discharge: pending — open formalization target (Phase 4)
+# erdos_status (literature): proved
+
+def formal_target_e_998() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0

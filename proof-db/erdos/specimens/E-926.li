@@ -1,0 +1,12 @@
+# Catalog: E-926
+# Statement: Let $k\geq 4$. Is it true that\[\mathrm{ex}(n;H_k) \ll_k n^{3/2},\]where $H_k$ is the graph on vertices $x,y_1,\ldots,y_k,z_1,\ldots,z_{\binom{k}{2}}$, where $x$ is adjacent to all $y_i$ and each pair of $y_i,y_j$ is adjacent to a unique $z
+# formalization_status: li_open
+# discharge: pending — open formalization target (Phase 4)
+# erdos_status (literature): proved
+
+def formal_target_e_926() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0

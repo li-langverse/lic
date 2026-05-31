@@ -1,0 +1,12 @@
+# Catalog: E-708
+# Statement: Let $g(n)$ be minimal such that for any $A\subseteq [2,\infty)\cap \mathbb{N}$ with $\lvert A\rvert =n$ and any set $I$ of $\max(A)$ consecutive integers there exists some $B\subseteq I$ with $\lvert B\rvert=g(n)$ such that\[\prod_{a\in A} 
+# formalization_status: li_open
+# discharge: pending — open formalization target (Phase 4)
+# erdos_status (literature): open
+
+def formal_target_e_708() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0

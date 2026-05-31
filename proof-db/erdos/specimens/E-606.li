@@ -1,0 +1,12 @@
+# Catalog: E-606
+# Statement: Given any $n$ distinct points in $\mathbb{R}^2$ let $f(n)$ count the number of distinct lines determined by these points. What are the possible values of $f(n)$?
+# formalization_status: li_open
+# discharge: pending — open formalization target (Phase 4)
+# erdos_status (literature): open
+
+def formal_target_e_606() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0

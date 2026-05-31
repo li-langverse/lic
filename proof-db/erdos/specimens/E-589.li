@@ -1,0 +1,12 @@
+# Catalog: E-589
+# Statement: Let $g(n)$ be maximal such that in any set of $n$ points in $\mathbb{R}^2$ with no four points on a line there exists a subset on $g(n)$ points with no three points on a line. Estimate $g(n)$.
+# formalization_status: li_open
+# discharge: pending — open formalization target (Phase 4)
+# erdos_status (literature): open
+
+def formal_target_e_589() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0

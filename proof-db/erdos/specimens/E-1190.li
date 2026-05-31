@@ -1,0 +1,12 @@
+# Catalog: E-1190
+# Statement: Let\[\epsilon_m=\max \sum \frac{1}{n_i}\]where the maximum is taken over all finite sequences $m<n_1<\cdots<n_k$ for which there exist congruences $a_i\pmod{n_i}$ such that no integer satisfies two such congruences. Estimate $\epsilon_m$.
+# formalization_status: li_open
+# discharge: pending — open formalization target (Phase 4)
+# erdos_status (literature): open
+
+def formal_target_e_1190() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0

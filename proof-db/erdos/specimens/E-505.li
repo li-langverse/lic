@@ -1,0 +1,12 @@
+# Catalog: E-505
+# Statement: Is every set of diameter $1$ in $\mathbb{R}^n$ the union of at most $n+1$ sets of diameter $<1$?
+# formalization_status: li_open
+# discharge: pending — open formalization target (Phase 4)
+# erdos_status (literature): open
+
+def formal_target_e_505() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0

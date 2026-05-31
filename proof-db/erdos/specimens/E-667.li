@@ -1,0 +1,12 @@
+# Catalog: E-667
+# Statement: Let $p,q\geq 1$ be fixed integers. We define $H(n)=H(N;p,q)$ to be the largest $m$ such that any graph on $n$ vertices where every set of $p$ vertices spans at least $q$ edges must contain a complete graph on $m$ vertices. Is\[c(p,q)=\limin
+# formalization_status: li_open
+# discharge: pending — open formalization target (Phase 4)
+# erdos_status (literature): open
+
+def formal_target_e_667() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0

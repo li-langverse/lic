@@ -1,0 +1,12 @@
+# Catalog: E-1203
+# Statement: If $\omega(n)$ counts the number of distinct prime divisors of $n$ then let\[F(n)=\max_k \omega(n+k)\frac{\log\log k}{\log k}.\]Prove that $F(n)\to \infty$ as $n\to \infty$.
+# formalization_status: li_open
+# discharge: pending — open formalization target (Phase 4)
+# erdos_status (literature): open
+
+def formal_target_e_1203() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0

@@ -231,9 +231,10 @@ int32_t li_rt_studio_timeline_playing(void);
 int32_t li_rt_studio_timeline_toggle_play(void);
 int32_t li_rt_studio_timeline_tick_frame(void);
 float li_rt_studio_timeline_playhead_pct(void);
+float li_rt_studio_timeline_playhead_pct_from_tick(int32_t tick, int32_t duration_ticks);
+float li_rt_int_as_float(int32_t v);
 int32_t li_rt_studio_timeline_set_playhead_pct(float pct);
 int32_t li_rt_studio_timeline_sync_sim_tick(int32_t tick, int32_t duration_ticks);
-float li_rt_studio_timeline_playhead_pct_from_tick(int32_t tick, int32_t duration_ticks);
 int32_t li_rt_studio_timeline_reset_playback(void);
 int32_t li_rt_studio_timeline_reset_mock(void);
 int32_t li_rt_studio_viewport_error_kind(void);
@@ -260,9 +261,6 @@ int32_t li_rt_lig_wgpu_readback_stub(int32_t viewport_w, int32_t viewport_h, int
 int32_t li_rt_lig_wgpu_draw_list_submit(int32_t viewport_w, int32_t viewport_h, int32_t cmd_count, int32_t pbr_tag);
 int32_t li_rt_lig_wgpu_swapchain_create(int32_t viewport_w, int32_t viewport_h);
 int32_t li_rt_lig_wgpu_present_frame(int32_t swapchain_ok);
-int32_t li_rt_lig_wgpu_swapchain_active(void);
-int32_t li_rt_lig_wgpu_swapchain_readback_status(void);
-int32_t li_rt_lig_wgpu_swapchain_readback_run(int32_t viewport_w, int32_t viewport_h);
 int32_t li_rt_studio_shell_input_pointer_down(void);
 float li_rt_studio_shell_input_pointer_x(void);
 float li_rt_studio_shell_input_pointer_y(void);
@@ -273,9 +271,9 @@ int32_t li_rt_studio_host_present_tick(int32_t viewport_w, int32_t viewport_h);
 int32_t li_rt_studio_demo_profile_from_env(void);
 int32_t li_rt_studio_demo_frames_from_env(void);
 int32_t li_rt_studio_demo_loop_tick_from_env(void);
-int32_t li_rt_studio_shell_paint_ppm(
-    const char* path, int32_t width, int32_t height, int32_t profile_id, int32_t has_selection,
-    float playhead_pct);
+int32_t li_rt_studio_bench_mode_from_env(void);
+
+int32_t li_rt_studio_ai_patch_kind(const char* patch);
 
 
 /* PH-HW HW-0: lig device layer. */
@@ -298,15 +296,21 @@ int32_t li_rt_lig_present_surface_ok(void);
 /* PH-GD-2: li-world text save/load (buffer + single-line world.li file I/O). */
 int32_t li_rt_world_format_version(void);
 const char* li_rt_world_serialize_slot(int32_t name_slot, int32_t tick, int32_t entity_count);
+const char* li_rt_world_serialize_fields(int32_t name_slot, int32_t tick, int32_t entity_count,
+                                         int32_t asset_ref_count);
 int32_t li_rt_world_parse_line(const char* line);
 int32_t li_rt_world_parsed_name_slot(void);
 int32_t li_rt_world_parsed_tick(void);
 int32_t li_rt_world_parsed_entity_count(void);
-int32_t li_rt_world_snapshot_eq_fields(int32_t an, int32_t at, int32_t ae, int32_t bn, int32_t bt,
-                                       int32_t be);
-int32_t li_rt_world_roundtrip_fields(int32_t name_slot, int32_t tick, int32_t entity_count);
-int32_t li_rt_world_write_path(const char* path, int32_t name_slot, int32_t tick, int32_t entity_count);
+int32_t li_rt_world_parsed_asset_ref_count(void);
+int32_t li_rt_world_snapshot_eq_fields(int32_t an, int32_t at, int32_t ae, int32_t aar, int32_t bn,
+                                       int32_t bt, int32_t be, int32_t bar);
+int32_t li_rt_world_roundtrip_fields(int32_t name_slot, int32_t tick, int32_t entity_count,
+                                     int32_t asset_ref_count);
+int32_t li_rt_world_write_path(const char* path, int32_t name_slot, int32_t tick, int32_t entity_count,
+                               int32_t asset_ref_count);
 int32_t li_rt_world_read_path(const char* path);
 int32_t li_rt_world_file_roundtrip_path(const char* path, int32_t name_slot, int32_t tick,
-                                        int32_t entity_count);
+                                        int32_t entity_count, int32_t asset_ref_count);
+const char* li_rt_world_default_asset_ref_path(void);
 const char* li_rt_world_checkpoint_path_default(void);

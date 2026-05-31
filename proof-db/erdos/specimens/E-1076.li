@@ -1,0 +1,12 @@
+# Catalog: E-1076
+# Statement: Let $k\geq 5$ and let $\mathcal{F}_k$ be the family of all $3$-uniform hypergraphs with $k$ vertices and $k-2$ edges. Is it true that\[\mathrm{ex}_3(n,\mathcal{F}_k)\sim \frac{n^2}{6}?\]
+# formalization_status: li_open
+# discharge: pending — open formalization target (Phase 4)
+# erdos_status (literature): proved
+
+def formal_target_e_1076() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0

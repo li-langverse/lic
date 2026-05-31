@@ -1,0 +1,12 @@
+# Catalog: E-1125
+# Statement: Let $f:\mathbb{R}\to \mathbb{R}$ be such that\[2f(x) \leq f(x+h)+f(x+2h)\]for every $x\in \mathbb{R}$ and $h>0$. Must $f$ be monotonic?
+# formalization_status: li_open
+# discharge: pending — open formalization target (Phase 4)
+# erdos_status (literature): proved
+
+def formal_target_e_1125() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0

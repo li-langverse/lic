@@ -1,5 +1,4 @@
 version = 1
-
 [[entry]]
 id = "CHEM-LM-SCF-ENERGY-DECREASE"
 kind = "lemma"
@@ -11,11 +10,8 @@ gap_id = "G-chem"
 gap_kind = "proof_gap"
 lean_module = "proof-db/chemistry/ChemAxioms.lean"
 lean_thm = "Li.ProofDb.Chemistry.scf_energy_decrease"
-li_specimen = "proof-db/chemistry/lemmas/scf_energy_decrease_stub.li"
-bench_refs = [
-  "benchmarks/tier2_physics/qm_dft_scf_energy",
-  "benchmarks/tier2_physics/qm_scf_solver",
-]
+li_specimen = "proof-db/chemistry/specimens/CHEM-LM-SCF-ENERGY-DECREASE.li"
+bench_refs = ["benchmarks/tier2_physics/qm_dft_scf_energy", "benchmarks/tier2_physics/qm_scf_solver"]
 last_verified_lic_commit = "940e93e"
 
 [[entry]]
@@ -29,8 +25,6 @@ gap_id = "G-chem"
 gap_kind = "proof_gap"
 lean_module = "proof-db/chemistry/ChemAxioms.lean"
 lean_thm = "Li.ProofDb.Chemistry.scf_energy_decrease"
-bench_refs = [
-  "benchmarks/tier2_physics/qm_hf_diis",
-  "benchmarks/tier2_physics/qm_scf_solver",
-]
+bench_refs = ["benchmarks/tier2_physics/qm_hf_diis", "benchmarks/tier2_physics/qm_scf_solver"]
 last_verified_lic_commit = "940e93e"
+li_specimen = "proof-db/chemistry/specimens/CHEM-LM-DIIS-CONVERGENCE.li"

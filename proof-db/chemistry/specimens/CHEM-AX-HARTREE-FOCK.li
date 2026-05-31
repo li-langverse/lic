@@ -1,0 +1,11 @@
+# Catalog: CHEM-AX-HARTREE-FOCK
+# Statement: Hartree-Fock: variational ground-state energy under single-determinant ansatz (modeling stub).
+# formalization_status: li_open
+# discharge: pending — open formalization target (Phase 4)
+
+def formal_target_chem_ax_hartree_fock() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0

@@ -1,0 +1,12 @@
+# Catalog: E-474
+# Statement: Under what set theoretic assumptions is it true that $\mathbb{R}^2$ can be $3$-coloured such that, for every uncountable $A\subseteq \mathbb{R}^2$, $A^2$ contains a pair of each colour?
+# formalization_status: li_open
+# discharge: pending — open formalization target (Phase 4)
+# erdos_status (literature): open
+
+def formal_target_e_474() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0

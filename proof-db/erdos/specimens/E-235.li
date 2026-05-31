@@ -1,0 +1,12 @@
+# Catalog: E-235
+# Statement: Let $N_k=2\cdot 3\cdots p_k$ and $\{a_1<a_2<\cdots <a_{\phi(N_k)}\}$ be the integers $<N_k$ which are relatively prime to $N_k$. Then, for any $c\geq 0$, the limit\[\frac{\#\{ a_i-a_{i-1}\leq c \frac{N_k}{\phi(N_k)} : 2\leq i\leq \phi(N_k)\
+# formalization_status: li_open
+# discharge: pending — open formalization target (Phase 4)
+# erdos_status (literature): proved
+
+def formal_target_e_235() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0

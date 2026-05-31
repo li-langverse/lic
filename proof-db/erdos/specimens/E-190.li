@@ -1,0 +1,12 @@
+# Catalog: E-190
+# Statement: Let $H(k)$ be the smallest $N$ such that in any finite colouring of $\{1,\ldots,N\}$ (into any number of colours) there is always either a monochromatic $k$-term arithmetic progression or a rainbow arithmetic progression (i.e. all elements 
+# formalization_status: li_open
+# discharge: pending — open formalization target (Phase 4)
+# erdos_status (literature): open
+
+def formal_target_e_190() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0

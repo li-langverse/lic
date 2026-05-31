@@ -1,0 +1,12 @@
+# Catalog: E-686
+# Statement: Can every integer $N\geq 2$ be written as\[N=\frac{\prod_{1\leq i\leq k}(m+i)}{\prod_{1\leq i\leq k}(n+i)}\]for some $k\geq 2$ and $m\geq n+k$?
+# formalization_status: li_open
+# discharge: pending — open formalization target (Phase 4)
+# erdos_status (literature): open
+
+def formal_target_e_686() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0

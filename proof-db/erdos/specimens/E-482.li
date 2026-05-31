@@ -1,0 +1,12 @@
+# Catalog: E-482
+# Statement: Define a sequence by $a_1=1$ and\[a_{n+1}=\lfloor\sqrt{2}(a_n+1/2)\rfloor\]for $n\geq 1$. The difference $a_{2n+1}-2a_{2n-1}$ is the $n$th digit in the binary expansion of $\sqrt{2}$. Find similar results for $\theta=\sqrt{m}$, and other al
+# formalization_status: li_open
+# discharge: pending — open formalization target (Phase 4)
+# erdos_status (literature): open
+
+def formal_target_e_482() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0

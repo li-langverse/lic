@@ -1,0 +1,18 @@
+import sim.robotics
+
+def main() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  if sim_robotics_6dof_ik_smoke() != 0:
+    return 1
+  var spec: RoboArm6DofSpec = robo_arm_6dof_spec_default()
+  var st: RoboArm6DofState = robo_arm_6dof_state_default()
+  var target: RoboArm6DofTarget = sim_robotics_ik_target_for_tick(8)
+  if robo_arm_6dof_ik_numeric_step(st, target, spec, 0.5) != 1:
+    return 2
+  var fk: RoboArmFk3D = robo_arm_6dof_fk(st, spec)
+  if robo_workspace_contains_3d(spec.ws_min_x, spec.ws_min_y, spec.ws_min_z, spec.ws_max_x, spec.ws_max_y, spec.ws_max_z, fk.ee_x, fk.ee_y, fk.ee_z) != 1:
+    return 3
+  return 0

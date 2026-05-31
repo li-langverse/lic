@@ -1,0 +1,12 @@
+# Catalog: E-800
+# Statement: If $G$ is a graph on $n$ vertices which has no two adjacent vertices of degree $\geq 3$ then\[R(G)\ll n,\]where the implied constant is absolute.
+# formalization_status: li_open
+# discharge: pending — open formalization target (Phase 4)
+# erdos_status (literature): proved
+
+def formal_target_e_800() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0

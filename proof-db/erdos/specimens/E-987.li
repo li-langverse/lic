@@ -1,0 +1,12 @@
+# Catalog: E-987
+# Statement: Let $x_1,x_2,\ldots \in (0,1)$ be an infinite sequence and let\[A_k=\limsup_{n\to \infty}\left\lvert \sum_{j\leq n} e(kx_j)\right\rvert,\]where $e(x)=e^{2\pi ix}$. Is it true that\[\limsup_{k\to \infty} A_k=\infty?\]Is it possible for $A_k=
+# formalization_status: li_open
+# discharge: pending — open formalization target (Phase 4)
+# erdos_status (literature): proved
+
+def formal_target_e_987() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0

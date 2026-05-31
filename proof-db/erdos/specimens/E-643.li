@@ -1,0 +1,12 @@
+# Catalog: E-643
+# Statement: Let $f(n;t)$ be minimal such that if a $t$-uniform hypergraph on $n$ vertices contains at least $f(n;t)$ edges then there must be four edges $A,B,C,D$ such that\[A\cup B= C\cup D\]and\[A\cap B=C\cap D=\emptyset.\]Estimate $f(n;t)$ - in part
+# formalization_status: li_open
+# discharge: pending — open formalization target (Phase 4)
+# erdos_status (literature): open
+
+def formal_target_e_643() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0

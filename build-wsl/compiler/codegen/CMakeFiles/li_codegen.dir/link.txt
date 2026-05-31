@@ -1,0 +1,2 @@
+/usr/bin/ar Dqc libli_codegen.a CMakeFiles/li_codegen.dir/codegen.cpp.o CMakeFiles/li_codegen.dir/smoke_llvm.cpp.o CMakeFiles/li_codegen.dir/emit.cpp.o CMakeFiles/li_codegen.dir/compile.cpp.o
+/usr/bin/ranlib -D libli_codegen.a

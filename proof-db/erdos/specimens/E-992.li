@@ -1,0 +1,12 @@
+# Catalog: E-992
+# Statement: Let $x_1<x_2<\cdots$ be an infinite sequence of integers. Is it true that, for almost all $\alpha \in [0,1]$, the discrepancy\[D(N)=\max_{I\subseteq [0,1]} \lvert \#\{ n\leq N : \{ \alpha x_n\}\in I\} - \lvert I\rvert N\rvert\]satisfies\[D(
+# formalization_status: li_open
+# discharge: pending — open formalization target (Phase 4)
+# erdos_status (literature): open
+
+def formal_target_e_992() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0

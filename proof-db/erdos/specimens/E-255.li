@@ -1,0 +1,12 @@
+# Catalog: E-255
+# Statement: Let $z_1,z_2,\ldots \in [0,1]$ be an infinite sequence, and define the discrepancy\[D_N(I) = \#\{ n\leq N : z_n\in I\} - N\lvert I\rvert.\]Must there exist some interval $I\subseteq [0,1]$ such that\[\limsup_{N\to \infty}\lvert D_N(I)\rvert
+# formalization_status: li_open
+# discharge: pending — open formalization target (Phase 4)
+# erdos_status (literature): proved
+
+def formal_target_e_255() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0

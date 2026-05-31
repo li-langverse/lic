@@ -1,0 +1,12 @@
+# Catalog: E-443
+# Statement: Let $m,n\geq 1$. What is\[\# \{ k(m-k) : 1\leq k\leq m/2\} \cap \{ l(n-l) : 1\leq l\leq n/2\}?\]Can it be arbitrarily large? Is it $\leq (mn)^{o(1)}$ for all sufficiently large $m,n$?
+# formalization_status: li_open
+# discharge: pending — open formalization target (Phase 4)
+# erdos_status (literature): proved
+
+def formal_target_e_443() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0

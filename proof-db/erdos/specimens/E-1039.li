@@ -1,0 +1,12 @@
+# Catalog: E-1039
+# Statement: Let $f(z)=\prod_{i=1}^n(z-z_i)\in \mathbb{C}[z]$ with $\lvert z_i\rvert \leq 1$ for all $i$. Let $\rho(f)$ be the radius of the largest disc which is contained in $\{z: \lvert f(z)\rvert< 1\}$. Determine the behaviour of $\rho(f)$. In parti
+# formalization_status: li_open
+# discharge: pending — open formalization target (Phase 4)
+# erdos_status (literature): open
+
+def formal_target_e_1039() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0

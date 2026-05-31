@@ -1,0 +1,12 @@
+# Catalog: E-363
+# Statement: Is it true that there are only finitely many collections of disjoint intervals $I_1,\ldots,I_n$ of size $\lvert I_i\rvert \geq 4$ for $1\leq i\leq n$ such that\[\prod_{1\leq i\leq n}\prod_{m\in I_i}m\]is a square?
+# formalization_status: li_open
+# discharge: pending — open formalization target (Phase 4)
+# erdos_status (literature): open
+
+def formal_target_e_363() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0

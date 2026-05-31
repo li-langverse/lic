@@ -406,6 +406,20 @@ const char* li_rt_studio_mcp_tool_name(int32_t tool_id) {
   }
 }
 
+/* WP-AG-04: patch marker classification for studio_ai_apply_patch loop (smoke/eval contract). */
+int32_t li_rt_studio_ai_patch_kind(const char* patch) {
+  if (patch == NULL || patch[0] == '\0') {
+    return -1;
+  }
+  if (li_rt_str_eq(patch, "@@fail@@")) {
+    return 1;
+  }
+  if (li_rt_str_eq(patch, "@@retry@@")) {
+    return 2;
+  }
+  return 0;
+}
+
 /* PH-UX viewport display — CPU paint_blit placeholders (not wgpu MD/PDB). */
 static int32_t g_studio_viewport_bg = 0;
 static int32_t g_studio_viewport_particle_tier = -1;
@@ -499,6 +513,25 @@ int32_t li_rt_studio_timeline_tick_frame(void) {
 
 float li_rt_studio_timeline_playhead_pct(void) { return g_studio_timeline_playhead_pct; }
 
+float li_rt_studio_timeline_playhead_pct_from_tick(int32_t tick, int32_t duration_ticks) {
+  if (duration_ticks < 1) {
+    duration_ticks = 1;
+  }
+  if (tick < 0) {
+    tick = 0;
+  }
+  if (tick > duration_ticks) {
+    tick = duration_ticks;
+  }
+  float pct = (float)tick / (float)duration_ticks;
+  if (pct > 1.0f) {
+    pct = 1.0f;
+  }
+  return pct;
+}
+
+float li_rt_int_as_float(int32_t v) { return (float)v; }
+
 int32_t li_rt_studio_timeline_set_playhead_pct(float pct) {
   if (pct < 0.0f) {
     pct = 0.0f;
@@ -523,23 +556,6 @@ int32_t li_rt_studio_timeline_sync_sim_tick(int32_t tick, int32_t duration_ticks
   }
   g_studio_timeline_playhead_pct = pct;
   return tick;
-}
-
-float li_rt_studio_timeline_playhead_pct_from_tick(int32_t tick, int32_t duration_ticks) {
-  if (duration_ticks < 1) {
-    duration_ticks = 1;
-  }
-  if (tick < 0) {
-    tick = 0;
-  }
-  if (tick > duration_ticks) {
-    tick = duration_ticks;
-  }
-  float pct = (float)tick / (float)duration_ticks;
-  if (pct > 1.0f) {
-    pct = 1.0f;
-  }
-  return pct;
 }
 
 int32_t li_rt_studio_timeline_reset_playback(void) {
@@ -699,31 +715,6 @@ static int32_t li_rt_studio_toml_parse_quoted_value(const char* p, char* out, si
   return 1;
 }
 
-static int32_t li_rt_studio_toml_parse_bare_value(const char* p, char* out, size_t cap) {
-  p = li_rt_studio_toml_skip_ws(p);
-  if (p == NULL || *p == '\0') {
-    return 0;
-  }
-  const char* start = p;
-  while (*p != '\0' && *p != ' ' && *p != '\t' && *p != ',' && *p != ']' && *p != '#') {
-    p++;
-  }
-  const size_t n = (size_t)(p - start);
-  if (n == 0 || n >= cap) {
-    return 0;
-  }
-  memcpy(out, start, n);
-  out[n] = '\0';
-  return 1;
-}
-
-static int32_t li_rt_studio_toml_parse_string_value(const char* p, char* out, size_t cap) {
-  if (li_rt_studio_toml_parse_quoted_value(p, out, cap) == 1) {
-    return 1;
-  }
-  return li_rt_studio_toml_parse_bare_value(p, out, cap);
-}
-
 static int32_t li_rt_studio_toml_parse_formats_mask(const char* line) {
   int32_t mask = 0;
   if (line == NULL) {
@@ -751,6 +742,24 @@ static int32_t li_rt_studio_toml_printer_slot_for_path(const char* path) {
   return 2;
 }
 
+static int32_t li_rt_studio_toml_parse_unquoted_token(const char* p, char* out, size_t cap) {
+  p = li_rt_studio_toml_skip_ws(p);
+  if (p == NULL || *p == '\0') {
+    return 0;
+  }
+  const char* start = p;
+  while (*p != '\0' && *p != ' ' && *p != '\t' && *p != '\r' && *p != '\n') {
+    p++;
+  }
+  const size_t n = (size_t)(p - start);
+  if (n == 0 || n >= cap) {
+    return 0;
+  }
+  memcpy(out, start, n);
+  out[n] = '\0';
+  return 1;
+}
+
 static int32_t li_rt_studio_toml_parse_key_value(const char* line, const char* key) {
   const char* p = strstr(line, key);
   if (p == NULL) {
@@ -768,8 +777,10 @@ static int32_t li_rt_studio_toml_parse_key_value(const char* line, const char* k
   }
   if (li_rt_str_eq(key, "profile")) {
     char buf[64];
-    if (li_rt_studio_toml_parse_string_value(p, buf, sizeof(buf)) != 1) {
-      return 0;
+    if (li_rt_studio_toml_parse_quoted_value(p, buf, sizeof(buf)) != 1) {
+      if (li_rt_studio_toml_parse_unquoted_token(p, buf, sizeof(buf)) != 1) {
+        return 0;
+      }
     }
     const int32_t id = li_rt_studio_profile_match_name(buf);
     if (id == 0) {
@@ -800,8 +811,10 @@ static int32_t li_rt_studio_toml_parse_key_value(const char* line, const char* k
   }
   if (li_rt_str_eq(key, "printer_profile")) {
     char buf[128];
-    if (li_rt_studio_toml_parse_string_value(p, buf, sizeof(buf)) != 1) {
-      return 0;
+    if (li_rt_studio_toml_parse_quoted_value(p, buf, sizeof(buf)) != 1) {
+      if (li_rt_studio_toml_parse_unquoted_token(p, buf, sizeof(buf)) != 1) {
+        return 0;
+      }
     }
     g_studio_toml.printer_profile_slot = li_rt_studio_toml_printer_slot_for_path(buf);
     return g_studio_toml.printer_profile_slot == 0 ? 0 : 1;
@@ -902,6 +915,10 @@ int32_t li_rt_studio_demo_frames_from_env(void) {
 }
 
 static int32_t li_rt_studio_env_flag_one(const char* name);
+
+int32_t li_rt_studio_bench_mode_from_env(void) {
+  return li_rt_studio_env_flag_one("STUDIO_BENCH_MODE");
+}
 
 static int32_t g_studio_demo_loop_tick = 0;
 
@@ -1376,6 +1393,7 @@ static struct {
   int32_t name_slot;
   int32_t tick;
   int32_t entity_count;
+  int32_t asset_ref_count;
   int32_t valid;
 } li_rt_world_parsed;
 
@@ -1395,7 +1413,8 @@ static int32_t li_rt_world_slot_for_token(const char* name) {
 
 int32_t li_rt_world_format_version(void) { return 1; }
 
-const char* li_rt_world_serialize_slot(int32_t name_slot, int32_t tick, int32_t entity_count) {
+const char* li_rt_world_serialize_fields(int32_t name_slot, int32_t tick, int32_t entity_count,
+                                       int32_t asset_ref_count) {
   if (name_slot < 0 || name_slot > 1) {
     name_slot = 0;
   }
@@ -1405,9 +1424,20 @@ const char* li_rt_world_serialize_slot(int32_t name_slot, int32_t tick, int32_t 
   if (entity_count < 0) {
     entity_count = 0;
   }
-  snprintf(li_rt_world_line_buf, sizeof(li_rt_world_line_buf), "world_v1 name=%s tick=%d entity_count=%d",
-           li_rt_world_token_for_slot(name_slot), (int)tick, (int)entity_count);
+  if (asset_ref_count < 0) {
+    asset_ref_count = 0;
+  }
+  if (asset_ref_count > 1) {
+    asset_ref_count = 1;
+  }
+  snprintf(li_rt_world_line_buf, sizeof(li_rt_world_line_buf),
+           "world_v1 name=%s tick=%d entity_count=%d asset_ref_count=%d",
+           li_rt_world_token_for_slot(name_slot), (int)tick, (int)entity_count, (int)asset_ref_count);
   return li_rt_world_line_buf;
+}
+
+const char* li_rt_world_serialize_slot(int32_t name_slot, int32_t tick, int32_t entity_count) {
+  return li_rt_world_serialize_fields(name_slot, tick, entity_count, 0);
 }
 
 int32_t li_rt_world_parse_line(const char* line) {
@@ -1415,21 +1445,33 @@ int32_t li_rt_world_parse_line(const char* line) {
   li_rt_world_parsed.name_slot = 0;
   li_rt_world_parsed.tick = 0;
   li_rt_world_parsed.entity_count = 0;
+  li_rt_world_parsed.asset_ref_count = 0;
   if (line == NULL) {
     return 0;
   }
   char name[LI_RT_WORLD_NAME_MAX];
   int tick = 0;
   int entity_count = 0;
-  if (sscanf(line, "world_v1 name=%63s tick=%d entity_count=%d", name, &tick, &entity_count) != 3) {
+  int asset_ref_count = 0;
+  int parsed = sscanf(line, "world_v1 name=%63s tick=%d entity_count=%d asset_ref_count=%d", name,
+                      &tick, &entity_count, &asset_ref_count);
+  if (parsed != 4) {
+    asset_ref_count = 0;
+    parsed = sscanf(line, "world_v1 name=%63s tick=%d entity_count=%d", name, &tick, &entity_count);
+    if (parsed != 3) {
+      return 0;
+    }
+  }
+  if (tick < 0 || entity_count < 0 || asset_ref_count < 0) {
     return 0;
   }
-  if (tick < 0 || entity_count < 0) {
+  if (asset_ref_count > 1) {
     return 0;
   }
   li_rt_world_parsed.name_slot = li_rt_world_slot_for_token(name);
   li_rt_world_parsed.tick = (int32_t)tick;
   li_rt_world_parsed.entity_count = (int32_t)entity_count;
+  li_rt_world_parsed.asset_ref_count = (int32_t)asset_ref_count;
   li_rt_world_parsed.valid = 1;
   return 1;
 }
@@ -1455,13 +1497,21 @@ int32_t li_rt_world_parsed_entity_count(void) {
   return li_rt_world_parsed.entity_count;
 }
 
-int32_t li_rt_world_snapshot_eq_fields(int32_t an, int32_t at, int32_t ae, int32_t bn, int32_t bt,
-                                     int32_t be) {
-  return (an == bn && at == bt && ae == be) ? 1 : 0;
+int32_t li_rt_world_parsed_asset_ref_count(void) {
+  if (li_rt_world_parsed.valid == 0) {
+    return 0;
+  }
+  return li_rt_world_parsed.asset_ref_count;
 }
 
-int32_t li_rt_world_roundtrip_fields(int32_t name_slot, int32_t tick, int32_t entity_count) {
-  const char* line = li_rt_world_serialize_slot(name_slot, tick, entity_count);
+int32_t li_rt_world_snapshot_eq_fields(int32_t an, int32_t at, int32_t ae, int32_t aar, int32_t bn,
+                                     int32_t bt, int32_t be, int32_t bar) {
+  return (an == bn && at == bt && ae == be && aar == bar) ? 1 : 0;
+}
+
+int32_t li_rt_world_roundtrip_fields(int32_t name_slot, int32_t tick, int32_t entity_count,
+                                     int32_t asset_ref_count) {
+  const char* line = li_rt_world_serialize_fields(name_slot, tick, entity_count, asset_ref_count);
   if (li_rt_world_parse_line(line) != 1) {
     return 0;
   }
@@ -1472,6 +1522,9 @@ int32_t li_rt_world_roundtrip_fields(int32_t name_slot, int32_t tick, int32_t en
     return 0;
   }
   if (li_rt_world_parsed.entity_count != entity_count) {
+    return 0;
+  }
+  if (li_rt_world_parsed.asset_ref_count != asset_ref_count) {
     return 0;
   }
   return 1;
@@ -1487,11 +1540,12 @@ static int32_t li_rt_world_path_safe(const char* path) {
   return 1;
 }
 
-int32_t li_rt_world_write_path(const char* path, int32_t name_slot, int32_t tick, int32_t entity_count) {
+int32_t li_rt_world_write_path(const char* path, int32_t name_slot, int32_t tick, int32_t entity_count,
+                               int32_t asset_ref_count) {
   if (!li_rt_world_path_safe(path)) {
     return 0;
   }
-  const char* line = li_rt_world_serialize_slot(name_slot, tick, entity_count);
+  const char* line = li_rt_world_serialize_fields(name_slot, tick, entity_count, asset_ref_count);
   FILE* f = fopen(path, "w");
   if (f == NULL) {
     return 0;
@@ -1528,8 +1582,8 @@ int32_t li_rt_world_read_path(const char* path) {
 }
 
 int32_t li_rt_world_file_roundtrip_path(const char* path, int32_t name_slot, int32_t tick,
-                                        int32_t entity_count) {
-  if (li_rt_world_write_path(path, name_slot, tick, entity_count) != 1) {
+                                        int32_t entity_count, int32_t asset_ref_count) {
+  if (li_rt_world_write_path(path, name_slot, tick, entity_count, asset_ref_count) != 1) {
     return 0;
   }
   if (li_rt_world_read_path(path) != 1) {
@@ -1544,8 +1598,13 @@ int32_t li_rt_world_file_roundtrip_path(const char* path, int32_t name_slot, int
   if (li_rt_world_parsed.entity_count != entity_count) {
     return 0;
   }
+  if (li_rt_world_parsed.asset_ref_count != asset_ref_count) {
+    return 0;
+  }
   return 1;
 }
+
+const char* li_rt_world_default_asset_ref_path(void) { return "assets/mesh.gltf"; }
 
 const char* li_rt_world_checkpoint_path_default(void) {
   const char* v = getenv("LI_WORLD_CHECKPOINT_PATH");

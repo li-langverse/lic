@@ -1,0 +1,12 @@
+# Catalog: E-286
+# Statement: Let $k\geq 2$. Is it true that there exists an interval $I$ of width $(e-1+o(1))k$ and integers $n_1<\cdots<n_k\in I$ such that\[1=\frac{1}{n_1}+\cdots+\frac{1}{n_k}?\]
+# formalization_status: li_open
+# discharge: pending — open formalization target (Phase 4)
+# erdos_status (literature): proved
+
+def formal_target_e_286() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0

@@ -1,0 +1,12 @@
+# Catalog: E-731
+# Statement: Find some reasonable function $f(n)$ such that, for almost all integers $n$, the least integer $m$ such that $m\nmid \binom{2n}{n}$ satisfies\[m\sim f(n).\]
+# formalization_status: li_open
+# discharge: pending — open formalization target (Phase 4)
+# erdos_status (literature): open
+
+def formal_target_e_731() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0

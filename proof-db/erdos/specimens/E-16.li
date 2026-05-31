@@ -1,0 +1,12 @@
+# Catalog: E-16
+# Statement: Is the set of odd integers not of the form 2^k+p the union of an infinite arithmetic progression and a set of density 0?
+# formalization_status: li_open
+# discharge: pending — open formalization target (Phase 4)
+# erdos_status (literature): proved
+
+def formal_target_e_16() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0

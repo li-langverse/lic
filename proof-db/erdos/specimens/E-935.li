@@ -1,0 +1,12 @@
+# Catalog: E-935
+# Statement: For any integer $n=\prod p^{k_p}$ let $Q_2(n)$ be the powerful part of $n$, so that\[Q_2(n) = \prod_{\substack{p\\ k_p\geq 2}}p^{k_p}.\]Is it true that, for every $\epsilon>0$ and $\ell\geq 1$, if $n$ is sufficiently large then\[Q_2(n(n+1)\
+# formalization_status: li_open
+# discharge: pending — open formalization target (Phase 4)
+# erdos_status (literature): open
+
+def formal_target_e_935() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0

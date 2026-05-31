@@ -1,0 +1,25 @@
+import sim.viz
+
+def main() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  var s0: VizPipelineState = viz_pipeline_init()
+  var s1: VizPipelineState = viz_pipeline_add_source(s0, viz_source_kind_sphere())
+  var fields0: VizViewportFields = viz_pipeline_to_viewport_fields(s1)
+  if fields0.tier_label_visible != 1:
+    return 1
+  var s2: VizPipelineState = viz_pipeline_set_inspector_section(s1, viz_inspector_section_display())
+  var s3: VizPipelineState = viz_pipeline_set_display_rep(s2, viz_display_rep_wireframe())
+  var s4: VizPipelineState = viz_pipeline_apply(s3)
+  if viz_pipeline_viewport_particle_dots(s4) != 8:
+    return 2
+  if viz_pipeline_viewport_ok(s4, 1, 1000) != 1:
+    return 3
+  var s5: VizPipelineState = viz_pipeline_scientific_step(viz_pipeline_init(), 8)
+  if s5.pending_apply != 0:
+    return 4
+  if s5.inspector_section != viz_inspector_section_display():
+    return 5
+  return 0

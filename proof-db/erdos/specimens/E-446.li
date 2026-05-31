@@ -1,0 +1,12 @@
+# Catalog: E-446
+# Statement: Let $\delta(n)$ denote the density of integers which are divisible by some integer in $(n,2n)$. What is the growth rate of $\delta(n)$? If $\delta_1(n)$ is the density of integers which have exactly one divisor in $(n,2n)$ then is it true t
+# formalization_status: li_open
+# discharge: pending — open formalization target (Phase 4)
+# erdos_status (literature): open
+
+def formal_target_e_446() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0

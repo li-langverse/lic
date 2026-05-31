@@ -1,0 +1,12 @@
+# Catalog: E-140
+# Statement: Can one color the positive integers with c colors so that no monochromatic solution to x+y=z exists for fixed c?
+# formalization_status: li_open
+# discharge: pending — open formalization target (Phase 4)
+# erdos_status (literature): open
+
+def formal_target_e_140() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0

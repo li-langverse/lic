@@ -1,0 +1,12 @@
+# Catalog: E-228
+# Statement: Does there exist, for all large $n$, a polynomial $P$ of degree $n$, with coefficients $\pm 1$, such that\[\sqrt{n} \ll \lvert P(z) \rvert \ll \sqrt{n}\]for all $\lvert z\rvert =1$, with the implied constants independent of $z$ and $n$?
+# formalization_status: li_open
+# discharge: pending — open formalization target (Phase 4)
+# erdos_status (literature): proved
+
+def formal_target_e_228() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0

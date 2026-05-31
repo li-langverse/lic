@@ -1,0 +1,12 @@
+# Catalog: E-615
+# Statement: Does there exist some constant $c>0$ such that if $G$ is a graph with $n$ vertices and $\geq (1/8-c)n^2$ edges then $G$ must contain either a $K_4$ or an independent set on at least $n/\log n$ vertices?
+# formalization_status: li_open
+# discharge: pending — open formalization target (Phase 4)
+# erdos_status (literature): open
+
+def formal_target_e_615() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0

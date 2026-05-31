@@ -1,0 +1,12 @@
+# Catalog: E-1008
+# Statement: Does every graph with $m$ edges contain a subgraph with $\gg m^{2/3}$ edges which contains no $C_4$?
+# formalization_status: li_open
+# discharge: pending — open formalization target (Phase 4)
+# erdos_status (literature): proved
+
+def formal_target_e_1008() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0

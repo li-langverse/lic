@@ -1,0 +1,12 @@
+# Catalog: E-471
+# Statement: Given a finite set of primes $Q=Q_0$, define a sequence of sets $Q_i$ by letting $Q_{i+1}$ be $Q_i$ together with all primes formed by adding three distinct elements of $Q_i$. Is there some initial choice of $Q$ such that the $Q_i$ become a
+# formalization_status: li_open
+# discharge: pending — open formalization target (Phase 4)
+# erdos_status (literature): proved
+
+def formal_target_e_471() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0

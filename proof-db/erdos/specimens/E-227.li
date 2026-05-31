@@ -1,0 +1,12 @@
+# Catalog: E-227
+# Statement: Let $f=\sum_{n=0}^\infty a_nz^n$ be an entire function which is not a polynomial. Is it true that if\[\lim_{r\to \infty} \frac{\max_n\lvert a_nr^n\rvert}{\max_{\lvert z\rvert=r}\lvert f(z)\rvert}\]exists then it must be $0$?
+# formalization_status: li_open
+# discharge: pending — open formalization target (Phase 4)
+# erdos_status (literature): open
+
+def formal_target_e_227() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0

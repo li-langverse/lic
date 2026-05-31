@@ -1,0 +1,12 @@
+# Catalog: E-703
+# Statement: Let $r\geq 1$ and define $T(n,r)$ to be maximal such that there exists a family $\mathcal{F}$ of subsets of $\{1,\ldots,n\}$ of size $T(n,r)$ such that $\lvert A\cap B\rvert\neq r$ for all $A,B\in \mathcal{F}$. Estimate $T(n,r)$ for $r\geq 
+# formalization_status: li_open
+# discharge: pending — open formalization target (Phase 4)
+# erdos_status (literature): proved
+
+def formal_target_e_703() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0

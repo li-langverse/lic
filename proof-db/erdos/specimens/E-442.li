@@ -1,0 +1,12 @@
+# Catalog: E-442
+# Statement: Is it true that if $A\subseteq\mathbb{N}$ is such that\[\frac{1}{\log\log x}\sum_{n\in A\cap [1,x)}\frac{1}{n}\to \infty\]then\[\left(\sum_{n\in A\cap [1,x)}\frac{1}{n}\right)^{-2} \sum_{\substack{a,b\in A\cap (1,x]\\ a<b}}\frac{1}{\mathrm{
+# formalization_status: li_open
+# discharge: pending — open formalization target (Phase 4)
+# erdos_status (literature): open
+
+def formal_target_e_442() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0

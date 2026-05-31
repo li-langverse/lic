@@ -1,0 +1,12 @@
+# Catalog: E-626
+# Statement: Let $k\geq 4$ and $g_k(n)$ denote the largest $m$ such that there is a graph on $n$ vertices with chromatic number $k$ and girth $>m$ (i.e. contains no cycle of length $\leq m$). Does\[\lim_{n\to \infty}\frac{g_k(n)}{\log n}\]exist? Convers
+# formalization_status: li_open
+# discharge: pending — open formalization target (Phase 4)
+# erdos_status (literature): open
+
+def formal_target_e_626() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0

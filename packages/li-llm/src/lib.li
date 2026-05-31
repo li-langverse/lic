@@ -1,8 +1,57 @@
 import bytes
-import ml
 
 # li-llm (PH-LLM): native LLM inference — tokenizer, loader, forward, generate.
 # Wave 1 minimal: byte tokenizer, fixture-path weight loader, matmul-free forward stub.
+
+def llm_path_bytes_eq(p: bytes, expect: str) -> int raises IO, Alloc
+  requires true
+  ensures result >= 0
+  ensures result <= 1
+  decreases 0
+=
+  var right: bytes = expect
+  var ln: int = bytes_len(p)
+  var rn: int = bytes_len(right)
+  if ln != rn:
+    return 0
+  var i: int = 0
+  while i < ln:
+    if bytes_byte_at(p, i) != bytes_byte_at(right, i):
+      return 0
+    i = i + 1
+  return 1
+
+def llm_weight_format_from_path(path: str) -> int raises IO, Alloc
+  requires true
+  ensures result >= 0
+  ensures result <= 2
+  decreases 0
+=
+  var p: bytes = path
+  var ln: int = bytes_len(p)
+  var safetensors: bytes = "fixtures/model.safetensors"
+  if ln == bytes_len(safetensors):
+    var eq: int = 1
+    var i: int = 0
+    while i < ln:
+      if bytes_byte_at(p, i) != bytes_byte_at(safetensors, i):
+        eq = 0
+        break
+      i = i + 1
+    if eq == 1:
+      return llm_format_safetensors()
+  var gguf: bytes = "fixtures/model.gguf"
+  if ln == bytes_len(gguf):
+    var eq2: int = 1
+    var j: int = 0
+    while j < ln:
+      if bytes_byte_at(p, j) != bytes_byte_at(gguf, j):
+        eq2 = 0
+        break
+      j = j + 1
+    if eq2 == 1:
+      return llm_format_gguf()
+  return 0
 
 def llm_bytes_eq(a: str, b: str) -> int raises IO, Alloc
   requires true
@@ -167,85 +216,44 @@ def llm_model_config_fixture() -> LlmModelConfig
   return c
 
 # WP-LLM-02: fixture-path loader (safetensors/GGUF magic by path); no tensor parse yet.
-def llm_bytes_buf_eq(left: bytes, right: bytes) -> int raises Alloc
+def llm_load_weights_safetensors_fixture() -> LlmModelWeights
   requires true
-  ensures result >= 0
-  ensures result <= 1
+  ensures result.loaded == 1
+  ensures result.format_tag == llm_format_safetensors()
   decreases 0
 =
-  var ln: int = bytes_len(left)
-  var rn: int = bytes_len(right)
-  if ln != rn:
-    return 0
-  var i: int = 0
-  while i < ln:
-    if bytes_byte_at(left, i) != bytes_byte_at(right, i):
-      return 0
-    i = i + 1
-  return 1
+  var w: LlmModelWeights
+  w.loaded = 1
+  w.format_tag = llm_format_safetensors()
+  w.config = llm_model_config_fixture()
+  return w
 
-def llm_path_format_tag(path: str) -> int raises IO, Alloc
+def llm_load_weights_gguf_fixture() -> LlmModelWeights
   requires true
-  ensures result >= 0
-  ensures result <= 2
+  ensures result.loaded == 1
+  ensures result.format_tag == llm_format_gguf()
   decreases 0
 =
-  var left: bytes = path
-  var st: bytes = "fixtures/model.safetensors"
-  var gguf: bytes = "fixtures/model.gguf"
-  var ln: int = bytes_len(left)
-  if ln == bytes_len(st):
-    var i: int = 0
-    var ok: int = 1
-    while i < ln:
-      if bytes_byte_at(left, i) != bytes_byte_at(st, i):
-        ok = 0
-        break
-      i = i + 1
-    if ok == 1:
-      return llm_format_safetensors()
-  if ln == bytes_len(gguf):
-    var j: int = 0
-    var ok2: int = 1
-    while j < ln:
-      if bytes_byte_at(left, j) != bytes_byte_at(gguf, j):
-        ok2 = 0
-        break
-      j = j + 1
-    if ok2 == 1:
-      return llm_format_gguf()
-  return llm_format_none()
+  var w2: LlmModelWeights
+  w2.loaded = 1
+  w2.format_tag = llm_format_gguf()
+  w2.config = llm_model_config_fixture()
+  return w2
 
 def llm_load_weights(path: str) -> LlmModelWeights raises IO, Alloc
   requires true
   ensures result.loaded == 0
   decreases 0
 =
-  var tag: int = llm_path_format_tag(path)
+  var tag: int = llm_weight_format_from_path(path)
   if tag == llm_format_safetensors():
-    var w: LlmModelWeights
-    w.loaded = 1
-    w.format_tag = llm_format_safetensors()
-    w.config = llm_model_config_fixture()
-    return w
+    return llm_load_weights_safetensors_fixture()
   if tag == llm_format_gguf():
-    var w2: LlmModelWeights
-    w2.loaded = 1
-    w2.format_tag = llm_format_gguf()
-    w2.config = llm_model_config_fixture()
-    return w2
+    return llm_load_weights_gguf_fixture()
   return llm_model_weights_none()
 
-# WP-LLM-05: CPU matmul bridge via li-ml/lig (honest probe; LKIR emit may still be blocked).
-def llm_forward_matmul_cpu_hint() raises IO -> int
-  requires true
-  ensures result >= -1
-  decreases 0
-=
-  return ml_lig_matmul_run_auto()
-
 # WP-LLM-03: forward stub — checksum top_id (oracle-friendly, not trained).
-def llm_forward(tokens: LlmTokenIds, weights: LlmModelWeights, cache: LlmKVCache) -> LlmLogits raises IO
+def llm_forward(tokens: LlmTokenIds, weights: LlmModelWeights, cache: LlmKVCache) -> LlmLogits
   requires tokens.count >= 0
   requires cache.seq_len >= 0
   ensures result.vocab_size >= 0
@@ -263,11 +271,6 @@ def llm_forward(tokens: LlmTokenIds, weights: LlmModelWeights, cache: LlmKVCache
   while i < tokens.count:
     acc = acc + tokens.ids[i]
     i = i + 1
-  var matmul_hint: int = llm_forward_matmul_cpu_hint()
-  if matmul_hint < 0:
-    acc = acc + 7
-  if matmul_hint >= 0:
-    acc = acc + matmul_hint
   if out.vocab_size > 0:
     out.top_id = acc % out.vocab_size
   return out
@@ -279,11 +282,14 @@ def llm_generate(
   ensures result != ""
   decreases max_tokens
 =
-  if llm_model_weights_valid(weights) != 1:
+  if weights.loaded != 1:
+    return "."
+  if weights.config.num_layers <= 0:
+    return "."
+  if weights.config.vocab_size <= 0:
     return "."
   if max_tokens <= 0:
     return "."
-  var vocab_copy: str = vocab_path
   var tok: LlmTokenIds = llm_tokenize(prompt, vocab_path)
   var cache: LlmKVCache
   cache.seq_len = tok.count
@@ -293,4 +299,4 @@ def llm_generate(
   out_ids.ids[0] = logits.top_id + 1
   if logits.top_id == 0:
     out_ids.ids[0] = 1
-  return llm_detokenize(out_ids, vocab_copy)
+  return llm_detokenize(out_ids, ".")

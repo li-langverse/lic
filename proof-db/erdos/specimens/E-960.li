@@ -1,0 +1,12 @@
+# Catalog: E-960
+# Statement: Let $r,k\geq 2$ be fixed. Let $A\subset \mathbb{R}^2$ be a set of $n$ points with no $k$ points on a line. Determine the threshold $f_{r,k}(n)$ such that if there are at least $f_{r,k}(n)$ many ordinary lines (lines containing exactly two p
+# formalization_status: li_open
+# discharge: pending — open formalization target (Phase 4)
+# erdos_status (literature): open
+
+def formal_target_e_960() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0

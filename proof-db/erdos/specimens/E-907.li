@@ -1,0 +1,12 @@
+# Catalog: E-907
+# Statement: Let $f:\mathbb{R}\to \mathbb{R}$ be such that $f(x+h)-f(x)$ is continuous for every $h>0$. Is it true that\[f=g+h\]for some continuous $g$ and additive $h$ (i.e. $h(x+y)=h(x)+h(y)$)?
+# formalization_status: li_open
+# discharge: pending — open formalization target (Phase 4)
+# erdos_status (literature): proved
+
+def formal_target_e_907() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0

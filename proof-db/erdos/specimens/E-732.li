@@ -1,0 +1,12 @@
+# Catalog: E-732
+# Statement: Call a sequence $1< X_1\leq \cdots \leq X_m\leq n$ block-compatible if there is a pairwise balanced block design $A_1,\ldots,A_m\subseteq \{1,\ldots,n\}$ such that $\lvert A_i\rvert=X_i$ for $1\leq i\leq m$. (A pairwise block design means t
+# formalization_status: li_open
+# discharge: pending — open formalization target (Phase 4)
+# erdos_status (literature): proved
+
+def formal_target_e_732() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0

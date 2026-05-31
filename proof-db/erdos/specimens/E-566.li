@@ -1,0 +1,12 @@
+# Catalog: E-566
+# Statement: Let $G$ be such that any subgraph on $k$ vertices has at most $2k-3$ edges. Is it true that, if $H$ has $m$ edges and no isolated vertices, then\[R(G,H)\ll m?\]
+# formalization_status: li_open
+# discharge: pending — open formalization target (Phase 4)
+# erdos_status (literature): open
+
+def formal_target_e_566() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0

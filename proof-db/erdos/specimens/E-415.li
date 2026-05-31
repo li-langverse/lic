@@ -1,0 +1,12 @@
+# Catalog: E-415
+# Statement: For any $n$ let $F(n)$ be the largest $k$ such that any of the $k!$ possible ordering patterns appears in some sequence of $\phi(m+1),\ldots,\phi(m+k)$ with $m+k\leq n$. Is it true that\[F(n)=(c+o(1))\log\log\log n\]for some constant $c$? I
+# formalization_status: li_open
+# discharge: pending — open formalization target (Phase 4)
+# erdos_status (literature): open
+
+def formal_target_e_415() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0

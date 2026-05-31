@@ -1,0 +1,12 @@
+# Catalog: E-1121
+# Statement: If $C_1,\ldots,C_n$ are circles in $\mathbb{R}^2$ with radii $r_1,\ldots,r_n$ such that no line disjoint from all the circles divides them into two non-empty sets then the circles can be covered by a circle of radius $r=\sum r_i$.
+# formalization_status: li_open
+# discharge: pending — open formalization target (Phase 4)
+# erdos_status (literature): proved
+
+def formal_target_e_1121() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0

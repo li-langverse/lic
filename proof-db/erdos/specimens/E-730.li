@@ -1,0 +1,12 @@
+# Catalog: E-730
+# Statement: Are there infinitely many pairs of integers $n\neq m$ such that $\binom{2n}{n}$ and $\binom{2m}{m}$ have the same set of prime divisors?
+# formalization_status: li_open
+# discharge: pending — open formalization target (Phase 4)
+# erdos_status (literature): open
+
+def formal_target_e_730() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0

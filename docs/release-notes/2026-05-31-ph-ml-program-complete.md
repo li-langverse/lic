@@ -13,7 +13,7 @@
 | **T3** | `import ml` in `packages/li-llm/src/lib.li`; smoke `llm_import_ml.li` |
 | **T4** | `sim_rl_env_li_process_fork_ready` + `sim_rl_session_env_pool_step_li_fork`; Studio `studio_sim_rl_step_hook` dispatches; smoke `env_pool_li_process_fork.li` |
 | **T5** | SB3/Ray declared in `requirements-ph-ml-wave12-rl.txt`; benches use DummyVecEnv fallback on Windows and Ray core fallback when RLlib unavailable |
-| **T6** | `ml_matmul_lkir_logical_32` (64×4×4 blocked tiles), `ml_matmul_32_lkir.li` smoke, `bench-ph-ml-lkir-matmul-32.sh` with WSL delegation on Windows hosts and `ratio_vs_li` vs NumPy 32×32 |
+| **T6** | `ml_matmul_lkir_logical_32` (8×8 blocked LKIR + 32×32 tile gate), `ml_matmul_32_lkir.li` smoke (in-bounds flat init), `bench-ph-ml-lkir-matmul-32.sh` with WSL delegation on Windows hosts and `ratio_vs_li` vs NumPy 32×32 |
 | **T7** | `llm_path_is_*_fixture` helpers + `prepare_ph_ml_weights_fixture.py` + smoke `llm_weights_file_mmap.li` against on-disk safetensors/GGUF |
 | **T8** | `bench_ph_ml_llm_trusted_httpd.py` spins live Ollama-compat proxy when `PH_ML_LLM_TRUSTED_HTTPD_LIVE=1` (`live_proxy: true`) |
 

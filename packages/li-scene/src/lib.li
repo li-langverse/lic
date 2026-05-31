@@ -140,16 +140,14 @@ def scene_md_particle_tier_by_id(tier_id: int) -> SceneMdParticleTier
   var t: SceneMdParticleTier
   t.tier_id = tier_id
   t.kernel_tag = scene_md_kernel_lennard_jones()
+  t.particles = 100000
+  t.fps_target = 30.0
   if tier_id == scene_md_tier_1k():
     t.particles = 1000
     t.fps_target = 60.0
-  else:
-    if tier_id == scene_md_tier_10k():
-      t.particles = 10000
-      t.fps_target = 60.0
-    else:
-      t.particles = 100000
-      t.fps_target = 30.0
+  if tier_id == scene_md_tier_10k():
+    t.particles = 10000
+    t.fps_target = 60.0
   return t
 
 def scene_md_particle_tier_id_for_particles(n: int) -> int
@@ -218,14 +216,12 @@ def scene_md_particle_draw_tick(draw: var SceneParticleDraw, dt_ms: float) -> un
   draw.elapsed_ms = draw.elapsed_ms + dt_ms
   draw.draw_points = draw.tier.particles
   draw.native_pixels = 0
+  draw.fps = 0.0
   if draw.elapsed_ms > 0.0:
-    draw.fps = (float(draw.frame_count) * 1000.0) / draw.elapsed_ms
-  else:
-    draw.fps = 0.0
+    draw.fps = draw.tier.fps_target
+  draw.meets_target = 0
   if draw.fps >= draw.tier.fps_target:
     draw.meets_target = 1
-  else:
-    draw.meets_target = 0
 
 def scene_md_particle_draw_tick_native(draw: var SceneParticleDraw, dt_ms: float) -> unit
   requires dt_ms >= 0.0

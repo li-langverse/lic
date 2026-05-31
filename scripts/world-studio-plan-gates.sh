@@ -76,6 +76,7 @@ else
       studio_sim_step_by_profile.li \
       studio_sim_rl_step_hook.li \
       studio_sim_sensor_step_hook.li \
+      studio_toml_engine_export.li \
       studio_mcp_tools.li \
       studio_agentic_run.li; do
       lic_check_rel "packages/li-studio/li-tests/smoke/$smoke"

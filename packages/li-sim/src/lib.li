@@ -1014,6 +1014,20 @@ def sim_rl_env_worker_mode_config() -> int
   return 1
 
 
+def sim_rl_env_ipc_multiprocess_label() -> int
+  requires true
+  ensures result == 3
+  decreases 0
+=
+  return 3
+
+def sim_rl_env_ipc_scaffold_note() -> int
+  requires true
+  ensures result == 1
+  decreases 0
+=
+  return 1
+
 def sim_rl_env_worker_process_mode_label() -> int
   requires true
   ensures result == 2
@@ -1145,6 +1159,20 @@ def env_pool_stub_step_thread_pool(pool: var EnvPoolStub, session: var SimSessio
     i = i + 1
   return sim_status_ok()
 
+def env_pool_stub_step_ipc_scaffold(pool: var EnvPoolStub, session: var SimSessionStub, dt: float) -> int
+  requires pool.pool_size > 0
+  requires pool.pool_size <= 32
+  requires session.tick >= 0
+  requires session.replay_capacity > 0
+  ensures result >= 0
+  ensures result <= 1
+  decreases pool.pool_size
+=
+  # Wave 10 honest multiprocessing IPC scaffold — thread-pool fill + subprocess label until fork IPC.
+  if sim_rl_env_ipc_scaffold_note() != 1:
+    return sim_status_invalid_dt()
+  return env_pool_stub_step_thread_pool(pool, session, dt)
+
 def env_pool_stub_step_process_pool(pool: var EnvPoolStub, session: var SimSessionStub, dt: float) -> int
   requires pool.pool_size > 0
   requires pool.pool_size <= 32
@@ -1154,9 +1182,11 @@ def env_pool_stub_step_process_pool(pool: var EnvPoolStub, session: var SimSessi
   ensures result <= 1
   decreases pool.pool_size
 =
-  # Wave 9 honest parallel label: mode 2 uses thread-pool fill until fork IPC lands.
+  # Wave 10: mode 2 thread-pool; mode 3 IPC multiprocess scaffold label.
   if sim_rl_env_worker_process_mode_label() == 2:
     return env_pool_stub_step_thread_pool(pool, session, dt)
+  if sim_rl_env_ipc_multiprocess_label() == 3:
+    return env_pool_stub_step_ipc_scaffold(pool, session, dt)
   return env_pool_stub_step_sync(pool, session, dt)
 
 def env_pool_stub_step(pool: var EnvPoolStub, session: var SimSessionStub, dt: float) -> int

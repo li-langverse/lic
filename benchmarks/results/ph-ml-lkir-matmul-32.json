@@ -6,7 +6,7 @@
   "executed": true,
   "validity_gate_pass": false,
   "validity_ratio": 0.0,
-  "cpu_sec": 0.000975,
-  "numpy_cpu_sec": 1e-06,
-  "ratio_vs_li": 0.001026
+  "cpu_sec": 0.001372,
+  "numpy_cpu_sec": 2e-06,
+  "ratio_vs_li": 0.001458
 }

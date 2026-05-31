@@ -9,3 +9,4 @@
 | 2026-05-31T20:15:00Z | m3-httpd | m3-httpd-curl-gate.sh | OK | f42b7ec2 |
 | 2026-05-31T21:40:00Z | m4-bench | m4-benchmark-matrix-gate.sh | OK | f8a4c86b |
 | 2026-05-31T21:42:00Z | complete | pure-li-https-completion-gate.sh | OK | f8a4c86b |
+| 2026-05-31T22:15:00Z | complete | pure-li-https-completion-gate.sh (LLVM22 clang link fix) | OK | 4defc513 |

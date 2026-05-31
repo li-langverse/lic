@@ -10,7 +10,27 @@ Execution decorator names (`@parallel`, `@cpu`, …) are also reserved; see [Dec
 
 ## Shipped std/
 
-Today the repository ships minimal std under `std/` (e.g. `std/execution/decorators.li`). As the std tree grows, names exported from those modules are added to the compiler seal list.
+Today the repository ships **27 `.li` modules** under `std/` (compile harnesses + trusted seams). Names exported from those modules are added to the compiler seal list.
+
+| Import | Path | Maturity |
+|--------|------|----------|
+| `import std.runtime.seam` | `std/runtime/seam.li` | Trusted extern seam (httpd/net/async) |
+| `import std.bytes` | `std/bytes/bytes.li` | Reader/Writer over buffer externs |
+| `import std.collections` | `std/collections/collections.li` | WP0-B compile-only stub |
+| `import std.heap` | `std/heap/heap.li` | WP0-B compile-only stub |
+| `import std.algorithms` | `std/algorithms/algorithms.li` | WP0-B compile-only stub |
+| `import std.io` | `std/io/io.li` | PH-IO-4 stub (`io_tag`, file read stub) |
+| `import std.csv` | `std/csv/csv.li` | PH-IO-4 stub (CSV row/parse stubs) |
+| `import std.summary` | `std/summary/summary.li` | PH-IO-7 stub (summary JSON build stub) |
+| `import std.plot` | `std/plot/plot.li` | PH-IO-5 stub (static dashboard stub) |
+| `import std.execution.decorators` | `std/execution/decorators.li` | Reserved decorator names |
+| `import std.ui` | `std/ui/ui.li` | Color/Rect stub |
+| `import std.math` | `std/math/math.li` | Tag facade |
+| `import std.physics.*` | `std/physics/*.li` | Tag facades (13 subdomains) |
+| `import std.scene` | `std/scene/scene.li` | Tag facade |
+| `import std.binary` | `std/binary/binary.li` | Tag facade |
+
+**CI harnesses:** `li-tests/stdlib_seal/` (import without shadow errors) and `li-tests/stdlib_coverage/` (instrumented build). See `scripts/check-stdlib-coverage.sh`.
 
 ## Imports (preview)
 
@@ -50,4 +70,4 @@ std/
 
 **Prelude (Phase 1)** — not under `std/`: `list`, `dict`, `set`, `frozenset`, `str`, `bytes`. See [Data structures roadmap](../superpowers/specs/2026-05-14-li-language-design.md#data-structures-roadmap).
 
-**Shipped today:** `std/execution/decorators.li` and other non-ADT modules only; no `std/collections`, `std/heap`, or `std/algorithms` sources yet.
+**Shipped today (WP0-B compile-only):** `std/collections`, `std/heap`, and `std/algorithms` — types + no-op stubs; runtime deferred until WP-WA + WP1. **PH-IO ingest:** `std/io`, `std/csv`, `std/summary`, `std/plot` compile harnesses for benchmarks/proof-db without Python/Node.

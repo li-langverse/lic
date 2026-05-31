@@ -28,7 +28,12 @@ Catalog rows use `kind = "target"` and `field = "erdos"` — an extension to the
 
 ## Sync to catalog
 
-1. Edit `register.json` (validate against `register.schema.json`).
+1. Edit `register.json` (validate against `register.schema.json`), or bulk-fetch missing rows:
+
+   ```bash
+   python3 proof-db/erdos/scripts/erdos_fetch_register.py --from 1 --to 1217 --skip-existing
+   ```
+
 2. Run from `lic` root:
 
    ```bash

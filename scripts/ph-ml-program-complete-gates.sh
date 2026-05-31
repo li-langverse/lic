@@ -62,8 +62,13 @@ if ratio is None or float(ratio) > 2.0:
 PY
 
 : "${PH_ML_WEIGHTS_FIXTURE:?set PH_ML_WEIGHTS_FIXTURE to a dir with .safetensors or .gguf}"
+python3 scripts/prepare_ph_ml_weights_fixture.py
+[[ -f "$PH_ML_WEIGHTS_FIXTURE/model.safetensors" && -f "$PH_ML_WEIGHTS_FIXTURE/model.gguf" ]] \
+  || { echo "T7: PH_ML_WEIGHTS_FIXTURE must contain model.safetensors and model.gguf"; exit 1; }
 [[ -f packages/li-llm/li-tests/smoke/llm_weights_file_mmap.li ]] \
   || { echo "T7: missing llm_weights_file_mmap.li smoke"; exit 1; }
+grep -q 'llm_path_is_safetensors_fixture' packages/li-llm/src/lib.li \
+  || { echo "T7: missing ph-ml-weights path helpers"; exit 1; }
 
 export PH_ML_LLM_TRUSTED_HTTPD_OUT="$BENCHMARKS_RESULTS/ph-ml-llm-trusted-httpd.json"
 export PH_ML_LLM_TRUSTED_HTTPD_LIVE=1

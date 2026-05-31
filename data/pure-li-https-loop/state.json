@@ -1,5 +1,6 @@
 ﻿{
-  "milestone": "m4-bench",
+  "milestone": "complete",
   "started_at": "2026-05-31",
+  "completed_at": "2026-05-31",
   "branch": "cursor/pure-li-https"
 }

@@ -1013,6 +1013,14 @@ def sim_rl_env_worker_mode_config() -> int
 =
   return 1
 
+
+def sim_rl_env_worker_process_mode_label() -> int
+  requires true
+  ensures result == 2
+  decreases 0
+=
+  return sim_rl_env_worker_mode_process_scaffold()
+
 def sim_rl_env_worker_mode_process_scaffold() -> int
   requires true
   ensures result == 2
@@ -1146,7 +1154,9 @@ def env_pool_stub_step_process_pool(pool: var EnvPoolStub, session: var SimSessi
   ensures result <= 1
   decreases pool.pool_size
 =
-  # Wave 6 scaffold: serial reward fill; OS subprocess workers deferred until fork IPC exists.
+  # Wave 9 honest parallel label: mode 2 uses thread-pool fill until fork IPC lands.
+  if sim_rl_env_worker_process_mode_label() == 2:
+    return env_pool_stub_step_thread_pool(pool, session, dt)
   return env_pool_stub_step_sync(pool, session, dt)
 
 def env_pool_stub_step(pool: var EnvPoolStub, session: var SimSessionStub, dt: float) -> int

@@ -1,6 +1,6 @@
 {
-  "competitor_id": "tensorflow_cpu",
-  "suite": "ph-ml-competitor-tensorflow-cpu-matmul",
+  "competitor_id": "rust_ndarray_rayon",
+  "suite": "ph-ml-competitor-rust-ndarray-matmul",
   "workload": "matmul_4x4_f32",
   "executed": false,
   "cpu_sec": null,
@@ -9,6 +9,6 @@
   "framework_version": null,
   "device": "cpu",
   "workload_size": 4,
-  "note": "tensorflow not installed (optional Wave 8 dep)",
-  "generated_at": "2026-05-31T11:47:40Z"
+  "note": "rustc not found",
+  "generated_at": "2026-05-31T11:47:37Z"
 }

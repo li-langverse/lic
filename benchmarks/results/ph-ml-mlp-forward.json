@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-05-31T09:21:36Z",
+  "generated_at": "2026-05-31T11:47:34Z",
   "suite": "ph-ml-mlp-forward",
   "smoke": "packages/li-ml/li-tests/smoke/ml_mlp_forward.li",
   "compile_ok": true,
@@ -9,5 +9,5 @@
   "worker_count": 1,
   "parallelism_model": "cpu_sync_simd_vectorized",
   "run_exit_code": 0,
-  "cpu_sec": 1.020016
+  "cpu_sec": 0.650593
 }

@@ -1,14 +1,14 @@
 {
-  "generated_at": "2026-05-31T09:21:35Z",
+  "generated_at": "2026-05-31T11:47:34Z",
   "suite": "ph-ml-lkir-matmul",
   "smoke": "packages/li-ml/li-tests/smoke/ml_matmul_lkir_parity.li",
   "compile_ok": true,
   "validity_gate_pass": true,
   "validity_ratio": 1.0,
   "executed": true,
-  "cpu_sec": 0.001001,
+  "cpu_sec": 0.00102,
   "run_exit_code": 0,
-  "build_cpu_sec": 0.357223,
+  "build_cpu_sec": 0.348907,
   "kernels": [
     {
       "kernel_id": "ml.lkir.matmul_f32",

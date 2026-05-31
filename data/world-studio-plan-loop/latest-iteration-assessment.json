@@ -17,5 +17,5 @@
     "li_studio_demo_binary": "pass"
   },
   "notes": "Marked wsm-w1-sim3-envpool done. emit.cpp ReturnVoid/ReturnInt pointer null + CallExtern f64→f32 coercion enables li-studio-demo link on WSL (clang-22). Demo runs STUDIO_DEMO_FRAMES=1 exit 0.",
-  "pr_url": "https://github.com/li-langverse/lic/pull/624"
+  "pr_url": "https://github.com/li-langverse/lic/pull/633"
 }

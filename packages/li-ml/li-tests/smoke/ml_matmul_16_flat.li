@@ -1,0 +1,31 @@
+import ml
+
+def main() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  if ml_version() != 4:
+    return 1
+  if ml_matmul_max_dim() != 16:
+    return 2
+  var a: array[64, float]
+  var b: array[64, float]
+  var c: array[64, float]
+  a[0] = 1.0
+  a[1] = 0.0
+  a[2] = 0.0
+  a[3] = 0.0
+  a[4] = 0.0
+  a[5] = 1.0
+  b[0] = 1.0
+  b[1] = 2.0
+  b[4] = 3.0
+  b[5] = 4.0
+  if ml_matmul_cpu_ref_flat(4, 4, 4, a, b, c) != 1:
+    return 3
+  if c[0] < 0.9 or c[0] > 1.1:
+    return 4
+  if c[5] < 3.9 or c[5] > 4.1:
+    return 5
+  return 0

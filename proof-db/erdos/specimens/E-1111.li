@@ -1,0 +1,12 @@
+# Catalog: E-1111
+# Statement: If $G$ is a finite graph and $A,B$ are disjoint sets of vertices then we call $A,B$ anticomplete if there are no edges between $A$ and $B$. If $t,c\geq 1$ then there exists $d\geq 1$ such that if $\chi(G)\geq d$ and $\omega(G)<t$ then there
+# formalization_status: li_open
+# discharge: pending — open formalization target (Phase 4)
+# erdos_status (literature): open
+
+def formal_target_e_1111() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0

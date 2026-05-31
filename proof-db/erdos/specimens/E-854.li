@@ -1,0 +1,12 @@
+# Catalog: E-854
+# Statement: Let $n_k$ denote the $k$th primorial, i.e. the product of the first $k$ primes. If $1=a_1<a_2<\cdots a_{\phi(n_k)}=n_k-1$ is the sequence of integers coprime to $n_k$, then estimate the smallest even integer not of the form $a_{i+1}-a_i$. A
+# formalization_status: li_open
+# discharge: pending — open formalization target (Phase 4)
+# erdos_status (literature): open
+
+def formal_target_e_854() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0

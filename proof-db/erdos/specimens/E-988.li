@@ -1,0 +1,12 @@
+# Catalog: E-988
+# Statement: If $P\subseteq S^2$ is a subset of the unit sphere then define the discrepancy\[D(P) = \max_C \lvert \lvert C\cap P\rvert - \alpha_C \lvert P\rvert \rvert,\]where the maximum is taken over all spherical caps $C$, and $\alpha_C$ is the appro
+# formalization_status: li_open
+# discharge: pending — open formalization target (Phase 4)
+# erdos_status (literature): open
+
+def formal_target_e_988() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0

@@ -1,0 +1,12 @@
+# Catalog: E-526
+# Statement: Let $a_n\geq 0$ with $a_n\to 0$ and $\sum a_n=\infty$. Find a necessary and sufficient condition on the $a_n$ such that, if we choose (independently and uniformly) random arcs on the unit circle of length $a_n$, then all the circle is cover
+# formalization_status: li_open
+# discharge: pending — open formalization target (Phase 4)
+# erdos_status (literature): open
+
+def formal_target_e_526() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0

@@ -1,0 +1,12 @@
+# Catalog: E-225
+# Statement: Let\[ f(\theta) = \sum_{0\leq k\leq n}c_k e^{ik\theta}\]be a trigonometric polynomial all of whose roots are real, such that $\max_{\theta\in [0,2\pi]}\lvert f(\theta)\rvert=1$. Then\[\int_0^{2\pi}\lvert f(\theta)\rvert \mathrm{d}\theta \le
+# formalization_status: li_open
+# discharge: pending — open formalization target (Phase 4)
+# erdos_status (literature): proved
+
+def formal_target_e_225() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0

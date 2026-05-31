@@ -1,17 +1,17 @@
 {
   "problem_id": "E-52",
-  "generated_at": "2026-05-31T08:53:03Z",
+  "generated_at": "2026-05-31T14:04:19Z",
   "claims_total": 12,
   "by_epistemic_status": {
     "heuristic": 6,
     "literature_proved": 2,
-    "li_open": 1,
+    "li_proved": 1,
     "model_consensus": 1,
     "model_conflict": 1,
     "refuted": 1
   },
   "model_conflicts": 1,
-  "li_proved": 0,
+  "li_proved": 1,
   "unprovable_language_flags": [
     "CLM-E52-006"
   ],

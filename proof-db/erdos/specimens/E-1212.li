@@ -1,0 +1,12 @@
+# Catalog: E-1212
+# Statement: Let $G$ be the graph with vertex set those pairs $(x,y)\in \mathbb{N}^2$ with $\mathrm{gcd}(x,y)=1$, in which we join two vertices if the differ in only one coordinate, and there by $\pm 1$. Is there a path going to infinity on $G$, say $P$
+# formalization_status: li_open
+# discharge: pending — open formalization target (Phase 4)
+# erdos_status (literature): open
+
+def formal_target_e_1212() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0

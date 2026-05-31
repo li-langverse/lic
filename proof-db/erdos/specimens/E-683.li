@@ -1,0 +1,12 @@
+# Catalog: E-683
+# Statement: Is it true that for every $1\leq k\leq n$ the largest prime divisor of $\binom{n}{k}$, say $P(\binom{n}{k})$, satisfies\[P\left(\binom{n}{k}\right)\geq \min(n-k+1, k^{1+c})\]for some constant $c>0$?
+# formalization_status: li_open
+# discharge: pending — open formalization target (Phase 4)
+# erdos_status (literature): open
+
+def formal_target_e_683() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0

@@ -1,0 +1,12 @@
+# Catalog: E-232
+# Statement: For $A\subset \mathbb{R}^2$ we define the upper density as\[\overline{\delta}(A)=\limsup_{R\to \infty}\frac{\lambda(A \cap B_R)}{\lambda(B_R)},\]where $\lambda$ is the Lebesgue measure and $B_R$ is the ball of radius $R$. Estimate\[m_1=\sup
+# formalization_status: li_open
+# discharge: pending — open formalization target (Phase 4)
+# erdos_status (literature): proved
+
+def formal_target_e_232() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0

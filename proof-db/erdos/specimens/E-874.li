@@ -1,0 +1,12 @@
+# Catalog: E-874
+# Statement: Let $k(N)$ denote the size of the largest set $A\subseteq \{1,\ldots,N\}$ such that the sets\[S_r = \{ a_1+\cdots +a_r : a_1<\cdots<a_r\in A\}\]are disjoint for distinct $r\geq 1$. Estimate $k(N)$ - in particular, is it true that $k(N)\sim 
+# formalization_status: li_open
+# discharge: pending — open formalization target (Phase 4)
+# erdos_status (literature): proved
+
+def formal_target_e_874() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0

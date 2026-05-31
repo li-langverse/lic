@@ -1,0 +1,12 @@
+# Catalog: E-82
+# Statement: For any finite set of primes, can every sufficiently large integer be written as a sum of prime powers from that set?
+# formalization_status: li_open
+# discharge: pending — open formalization target (Phase 4)
+# erdos_status (literature): open
+
+def formal_target_e_82() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0

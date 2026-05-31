@@ -1,0 +1,12 @@
+# Catalog: E-1211
+# Statement: Let $\mathbb{N}=A\cup B$ where $A$ and $B$ are disjoint. Let $S(A)$ be those integers which are the sum of finitely many distinct elements of $A$, and similarly for $S(B)$. If\[\overline{\delta}(X)=\limsup_{x\to \infty}\frac{1}{\log x}\sum_
+# formalization_status: li_open
+# discharge: pending — open formalization target (Phase 4)
+# erdos_status (literature): open
+
+def formal_target_e_1211() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0

@@ -1,0 +1,12 @@
+# Catalog: E-609
+# Statement: Let $f(n)$ be the minimal $m$ such that if the edges of $K_{2^n+1}$ are coloured with $n$ colours then there must be a monochromatic odd cycle of length at most $m$. Estimate $f(n)$.
+# formalization_status: li_open
+# discharge: pending — open formalization target (Phase 4)
+# erdos_status (literature): open
+
+def formal_target_e_609() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0

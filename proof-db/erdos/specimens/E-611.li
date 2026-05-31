@@ -1,0 +1,12 @@
+# Catalog: E-611
+# Statement: For a graph $G$ let $\tau(G)$ denote the minimal number of vertices that include at least one from each maximal clique of $G$ (sometimes called the clique transversal number). Is it true that if all maximal cliques in $G$ have at least $cn$
+# formalization_status: li_open
+# discharge: pending — open formalization target (Phase 4)
+# erdos_status (literature): open
+
+def formal_target_e_611() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0

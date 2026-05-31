@@ -1,15 +1,15 @@
 {
   "sprint": "proof-explorer-program",
-  "phase": 3,
+  "phase": 7,
   "started": "2026-05-31",
-  "completed_wps": ["wp-k8", "wp0", "wp1", "wp2", "wp3", "wp4", "wp5", "wp6", "tier-b"],
-  "current_wp": "wp-ra",
-  "branch": "cursor/proof-explorer-phase3",
+  "completed_wps": ["WP-EF-01", "WP-EF-02", "WP-EF-03", "WP-EF-04", "WP-EF-05", "WP-EF-06", "WP-EF-SIGN", "WP-RS-01", "WP-RS-02", "WP-RS-03", "WP-RS-04", "WP-RS-05"],
+  "current_wp": "WP-RS-SIGN",
+  "branch": "cursor/proof-explorer-phase6",
   "research_problem_id": "E-52",
-  "claim_count": 12,
+  "claim_count": 36,
   "review_round": 1,
-  "current_wp": "complete",
   "loop_sleep_sec": 300,
   "problem_source": "erdos_register",
-  "priority_tier": "P0"
+  "priority_tier": "P0",
+  "problem_rotation": ["E-52", "E-3", "M-CONJ-RH"]
 }

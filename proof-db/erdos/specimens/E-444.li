@@ -1,0 +1,12 @@
+# Catalog: E-444
+# Statement: Let $A\subseteq\mathbb{N}$ be infinite and $d_A(n)$ count the number of $a\in A$ which divide $n$. Is it true that, for every $k$,\[\limsup_{x\to \infty} \frac{\max_{n<x}d_A(n)}{\left(\sum_{n\in A\cap[1,x)}\frac{1}{n}\right)^k}=\infty?\]
+# formalization_status: li_open
+# discharge: pending — open formalization target (Phase 4)
+# erdos_status (literature): proved
+
+def formal_target_e_444() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0

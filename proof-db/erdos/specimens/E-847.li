@@ -1,0 +1,12 @@
+# Catalog: E-847
+# Statement: Let $A\subset \mathbb{N}$ be an infinite set for which there exists some $\epsilon>0$ such that in any subset of $A$ of size $n$ there is a subset of size at least $\epsilon n$ which contains no three-term arithmetic progression. Is it true
+# formalization_status: li_open
+# discharge: pending — open formalization target (Phase 4)
+# erdos_status (literature): open
+
+def formal_target_e_847() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0

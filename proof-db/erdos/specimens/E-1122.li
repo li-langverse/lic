@@ -1,0 +1,12 @@
+# Catalog: E-1122
+# Statement: Let $f:\mathbb{N}\to \mathbb{R}$ be an additive function (i.e. $f(ab)=f(a)+f(b)$ whenever $(a,b)=1$). Let\[A=\{ n \geq 1: f(n+1)< f(n)\}.\]If $\lvert A\cap [1,X]\rvert =o(X)$ then must $f(n)=c\log n$ for some $c\in \mathbb{R}$?
+# formalization_status: li_open
+# discharge: pending — open formalization target (Phase 4)
+# erdos_status (literature): open
+
+def formal_target_e_1122() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0

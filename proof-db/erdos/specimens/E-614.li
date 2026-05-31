@@ -1,0 +1,12 @@
+# Catalog: E-614
+# Statement: Let $f(n,k)$ be minimal such that there is a graph with $n$ vertices and $f(n,k)$ edges where every set of $k+2$ vertices induces a subgraph with maximum degree at least $k$. Determine $f(n,k)$.
+# formalization_status: li_open
+# discharge: pending — open formalization target (Phase 4)
+# erdos_status (literature): open
+
+def formal_target_e_614() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0

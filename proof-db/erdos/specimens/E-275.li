@@ -1,0 +1,12 @@
+# Catalog: E-275
+# Statement: If a finite system of $r$ congruences $\{ a_i\pmod{n_i} : 1\leq i\leq r\}$ (the $n_i$ are not necessarily distinct) covers $2^r$ consecutive integers then it covers all integers.
+# formalization_status: li_open
+# discharge: pending — open formalization target (Phase 4)
+# erdos_status (literature): proved
+
+def formal_target_e_275() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0

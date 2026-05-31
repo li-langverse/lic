@@ -1,0 +1,12 @@
+# Catalog: E-867
+# Statement: Is it true that if $A=\{a_1<\cdots <a_t\}\subseteq \{1,\ldots,N\}$ has no solutions to\[a_i+a_{i+1}+\cdots+a_j\in A\]then\[\lvert A\rvert \leq \frac{N}{2}+O(1)?\]
+# formalization_status: li_open
+# discharge: pending — open formalization target (Phase 4)
+# erdos_status (literature): open
+
+def formal_target_e_867() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0

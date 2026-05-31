@@ -1,0 +1,12 @@
+# Catalog: E-616
+# Statement: Let $r\geq 3$. For an $r$-uniform hypergraph $G$ let $\tau(G)$ denote the covering number (or transversal number), the minimum size of a set of vertices which includes at least one from each edge in $G$. Determine the best possible $t$ such
+# formalization_status: li_open
+# discharge: pending — open formalization target (Phase 4)
+# erdos_status (literature): open
+
+def formal_target_e_616() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0

@@ -1,0 +1,12 @@
+# Catalog: E-431
+# Statement: Are there two infinite sets $A$ and $B$ such that $A+B$ agrees with the set of prime numbers up to finitely many exceptions?
+# formalization_status: li_open
+# discharge: pending — open formalization target (Phase 4)
+# erdos_status (literature): open
+
+def formal_target_e_431() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0

@@ -31,7 +31,7 @@ required = ["id", "kind", "field", "statement", "proof_status", "last_verified_l
 optional = ["domain", "erdos_number", "erdos_status", "priority_tier", "gap_id", "gap_kind", "lean_module", "register_source", "external_url", "tags", "notes", "content_tier", "latex", "context", "sources", "li_specimen", "last_verified_lic_commit"]
 
 [content_tier]
-values = ["raw", "curated", "polished"]
+values = ["raw", "curated", "formalized", "polished"]
 
 [proof_status]
 values = ["proved", "open", "discrepancy", "axiomatic", "target"]

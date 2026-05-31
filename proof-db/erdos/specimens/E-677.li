@@ -1,0 +1,12 @@
+# Catalog: E-677
+# Statement: Let $M(n,k)=[n+1,\ldots,n+k]$ be the least common multiple of $\{n+1,\ldots,n+k\}$. Is it true that for all $m\geq n+k$\[M(n,k) \neq M(m,k)?\]
+# formalization_status: li_open
+# discharge: pending — open formalization target (Phase 4)
+# erdos_status (literature): open
+
+def formal_target_e_677() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0

@@ -1,0 +1,12 @@
+# Catalog: E-106
+# Statement: Draw $n$ squares inside the unit square with no common interior point. Let $f(n)$ be the maximum possible sum of the side-lengths of the squares. Is $f(k^2+1)=k$?
+# formalization_status: li_open
+# discharge: pending — open formalization target (Phase 4)
+# erdos_status (literature): open
+
+def formal_target_e_106() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0

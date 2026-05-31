@@ -1,0 +1,12 @@
+# Catalog: E-477
+# Statement: Is there a polynomial $f:\mathbb{Z}\to \mathbb{Z}$ of degree at least $2$ and a set $A\subset \mathbb{Z}$ such that for any $n\in \mathbb{Z}$ there is exactly one $a\in A$ and $b\in \{ f(k) : k\in\mathbb{Z}\}$ such that $n=a+b$?
+# formalization_status: li_open
+# discharge: pending — open formalization target (Phase 4)
+# erdos_status (literature): open
+
+def formal_target_e_477() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0

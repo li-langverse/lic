@@ -1,0 +1,12 @@
+# Catalog: E-134
+# Statement: Let $\epsilon,\delta>0$ and $n$ be sufficiently large in terms of $\epsilon$ and $\delta$. Let $G$ be a triangle-free graph on $n$ vertices with maximum degree $<n^{1/2-\epsilon}$. Can $G$ be made into a triangle-free graph with diameter $2
+# formalization_status: li_open
+# discharge: pending — open formalization target (Phase 4)
+# erdos_status (literature): proved
+
+def formal_target_e_134() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0

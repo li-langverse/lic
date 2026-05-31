@@ -1,0 +1,12 @@
+# Catalog: E-1133
+# Statement: Let $C>0$. There exists $\epsilon>0$ such that if $n$ is sufficiently large the following holds. For any $x_1,\ldots,x_n\in [-1,1]$ there exist $y_1,\ldots,y_n\in [-1,1]$ such that, if $P$ is a polynomial of degree $m<(1+\epsilon)n$ with $P
+# formalization_status: li_open
+# discharge: pending — open formalization target (Phase 4)
+# erdos_status (literature): open
+
+def formal_target_e_1133() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0

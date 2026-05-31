@@ -1,0 +1,12 @@
+# Catalog: E-524
+# Statement: For any $t\in (0,1)$ let $t=\sum_{k=1}^\infty \epsilon_k(t)2^{-k}$ (where $\epsilon_k(t)\in \{0,1\}$). What is the correct order of magnitude (for almost all $t\in(0,1)$) for\[M_n(t)=\max_{x\in [-1,1]}\left\lvert \sum_{k\leq n}(-1)^{\epsilo
+# formalization_status: li_open
+# discharge: pending — open formalization target (Phase 4)
+# erdos_status (literature): open
+
+def formal_target_e_524() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0

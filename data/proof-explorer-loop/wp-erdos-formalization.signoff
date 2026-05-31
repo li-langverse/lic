@@ -1,0 +1,23 @@
+Phase 6 Erdős P0 + M-CONJ formalization — pending human review.
+
+| Target | Partial / formal | Claim link |
+|--------|------------------|------------|
+| E-52 | sumset cardinality lower bound | CLM-E52-004 |
+| E-3 | divergent reciprocal ⇒ unbounded \|A\| | — |
+| E-20 | k=1 sunflower base case | — |
+| E-25 | positive consecutive prime gap | — |
+| E-29 | at-least-one-prime stepping stone | — |
+| M-CONJ-RH | critical-line formal scaffold | — |
+| M-CONJ-P-NP | P⊆NP trivial scaffold | — |
+| M-CONJ-NAVIER | local existence scaffold | — |
+
+Discharge log: data/proof-explorer-loop/discharge-log.jsonl (9 entries: 4 Phase 5 core + 5 P0 partial)
+
+Gates:
+- bash scripts/proof-explorer-phase6-completion-gate.sh
+- bash scripts/proof-explorer-gates/wp-erdos-p0-discharge.sh
+- bash scripts/proof-explorer-gates/wp-mconj-formalization.sh
+- bash scripts/proof-explorer-gates/wp-export-li-specimen.sh
+- bash scripts/proof-explorer-phase5-completion-gate.sh (no regression)
+
+Compare report: data/proof-explorer-loop/e52-claim-catalog-compare.md

@@ -1,0 +1,12 @@
+# Catalog: E-689
+# Statement: Let $n$ be sufficiently large. Is there some choice of congruence class $a_p$ for all primes $2\leq p\leq n$ such that every integer in $[1,n]$ satisfies at least two of the congruences $\equiv a_p\pmod{p}$?
+# formalization_status: li_open
+# discharge: pending — open formalization target (Phase 4)
+# erdos_status (literature): open
+
+def formal_target_e_689() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0

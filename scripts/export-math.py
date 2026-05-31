@@ -86,7 +86,11 @@ def collect_math_entries() -> list[dict]:
         for entry in parse_entries(path):
             field = str(entry.get("field", "")).lower()
             eid = str(entry.get("id", ""))
-            if field != "math" and not eid.startswith(("M-AX-", "M-LM-", "M-CONJ-")):
+            if field == "erdos":
+                # Phase 6: export formalized P0 Erdős rows with li_specimen for Proof Explorer.
+                if entry.get("priority_tier") != "P0" or not entry.get("li_specimen"):
+                    continue
+            elif field != "math" and not eid.startswith(("M-AX-", "M-LM-", "M-CONJ-")):
                 continue
             if not entry.get("id"):
                 continue

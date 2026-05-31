@@ -1,0 +1,12 @@
+# Catalog: E-1126
+# Statement: If\[f(x+y)=f(x)+f(y)\]for almost all $x,y\in \mathbb{R}$ then there exists a function $g$ such that\[g(x+y)=g(x)+g(y)\]for all $x,y\in\mathbb{R}$ such that $f(x)=g(x)$ for almost all $x$.
+# formalization_status: li_open
+# discharge: pending — open formalization target (Phase 4)
+# erdos_status (literature): proved
+
+def formal_target_e_1126() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0

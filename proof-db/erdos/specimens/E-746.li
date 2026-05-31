@@ -1,0 +1,12 @@
+# Catalog: E-746
+# Statement: Is it true that, almost surely, a random graph on $n$ vertices with $\geq (\tfrac{1}{2}+\epsilon)n\log n$ edges is Hamiltonian?
+# formalization_status: li_open
+# discharge: pending — open formalization target (Phase 4)
+# erdos_status (literature): proved
+
+def formal_target_e_746() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0

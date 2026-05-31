@@ -1,0 +1,12 @@
+# Catalog: E-885
+# Statement: For integer $n\geq 1$ we define the factor difference set of $n$ by\[D(n) = \{\lvert a-b\rvert : n=ab\}.\]Is it true that, for every $k\geq 1$, there exist integers $N_1<\cdots<N_k$ such that\[\lvert \cap_i D(N_i)\rvert \geq k?\]
+# formalization_status: li_open
+# discharge: pending — open formalization target (Phase 4)
+# erdos_status (literature): open
+
+def formal_target_e_885() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0

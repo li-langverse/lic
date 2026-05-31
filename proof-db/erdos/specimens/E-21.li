@@ -1,0 +1,12 @@
+# Catalog: E-21
+# Statement: Let $f(n)$ be minimal such that there is an intersecting family $\mathcal{F}$ of sets of size $n$ (so $A\cap B\neq\emptyset$ for all $A,B\in \mathcal{F}$) with $\lvert \mathcal{F}\rvert=f(n)$ such that any set $S$ with $\lvert S\rvert \leq 
+# formalization_status: li_open
+# discharge: pending — open formalization target (Phase 4)
+# erdos_status (literature): proved
+
+def formal_target_e_21() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0

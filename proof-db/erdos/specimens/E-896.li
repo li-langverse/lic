@@ -1,0 +1,12 @@
+# Catalog: E-896
+# Statement: Estimate the maximum of $F(A,B)$ as $A,B$ range over all subsets of $\{1,\ldots,N\}$, where $F(A,B)$ counts the number of $m$ such that $m=ab$ has exactly one solution (with $a\in A$ and $b\in B$).
+# formalization_status: li_open
+# discharge: pending — open formalization target (Phase 4)
+# erdos_status (literature): open
+
+def formal_target_e_896() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0

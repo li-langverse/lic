@@ -1,0 +1,12 @@
+# Catalog: E-934
+# Statement: Let $h_t(d)$ be minimal such that every graph $G$ with $h_t(d)$ edges and maximal degree $\leq d$ contains two edges whose shortest path between them has length $\geq t$. Estimate $h_t(d)$.
+# formalization_status: li_open
+# discharge: pending — open formalization target (Phase 4)
+# erdos_status (literature): open
+
+def formal_target_e_934() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0

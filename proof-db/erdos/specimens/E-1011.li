@@ -1,0 +1,12 @@
+# Catalog: E-1011
+# Statement: Let $f_r(n)$ be minimal such that every graph on $n$ vertices with $\geq f_r(n)$ edges and chromatic number $\geq r$ contains a triangle. Determine $f_r(n)$.
+# formalization_status: li_open
+# discharge: pending — open formalization target (Phase 4)
+# erdos_status (literature): open
+
+def formal_target_e_1011() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0

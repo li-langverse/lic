@@ -1,0 +1,7 @@
+# WP-RS-SIGN — research audit at scale (Phase 7)
+
+Problems: E-52, E-3, M-CONJ-RH (36 claims total, ≥10 each)
+Compare reports: `data/research-audit/{E-52,E-3,M-CONJ-RH}/compare-report.json`
+Claim audit UI: `deploy/research-audit/` (static export via `scripts/research-audit/export-audit-ui.py`)
+Lic PR: https://github.com/li-langverse/lic/pull/668
+Signed: 2026-05-31 (code_implementer agent run 1780236072548)

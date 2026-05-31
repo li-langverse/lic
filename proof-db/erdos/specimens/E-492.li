@@ -1,0 +1,12 @@
+# Catalog: E-492
+# Statement: Let $A=\{a_1<a_2<\cdots\}\subseteq \mathbb{N}$ be infinite such that $a_{i+1}/a_i\to 1$. For any $x\geq a_1$ let\[f(x) = \frac{x-a_i}{a_{i+1}-a_i}\in [0,1),\]where $x\in [a_i,a_{i+1})$. Is it true that, for almost all $\alpha$, the sequence
+# formalization_status: li_open
+# discharge: pending — open formalization target (Phase 4)
+# erdos_status (literature): open
+
+def formal_target_e_492() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0

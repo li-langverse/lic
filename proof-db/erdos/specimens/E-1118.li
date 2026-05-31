@@ -1,0 +1,12 @@
+# Catalog: E-1118
+# Statement: Let $f(z)$ be a non-constant entire function such that, for some $c$, the set $E(c)=\{ z: \lvert f(z)\rvert >c\}$ has finite measure. What is the minimum growth rate of $f(z)$? If $E(c)$ has finite measure then must there exist $c'<c$ such 
+# formalization_status: li_open
+# discharge: pending — open formalization target (Phase 4)
+# erdos_status (literature): open
+
+def formal_target_e_1118() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0

@@ -1,0 +1,12 @@
+# Catalog: E-359
+# Statement: Let $a_1<a_2<\cdots$ be an infinite sequence of integers such that $a_1=n$ and $a_{i+1}$ is the least integer which is not a sum of consecutive earlier $a_j$s. What can be said about the density of this sequence? In particular, in the case 
+# formalization_status: li_open
+# discharge: pending — open formalization target (Phase 4)
+# erdos_status (literature): open
+
+def formal_target_e_359() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0

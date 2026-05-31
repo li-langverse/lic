@@ -1,0 +1,12 @@
+# Catalog: E-893
+# Statement: If $\tau(n)$ counts the divisors of $n$ then let\[f(n)=\sum_{1\leq k\leq n}\tau(2^k-1).\]Does $f(2n)/f(n)$ tend to a limit?
+# formalization_status: li_open
+# discharge: pending — open formalization target (Phase 4)
+# erdos_status (literature): open
+
+def formal_target_e_893() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0

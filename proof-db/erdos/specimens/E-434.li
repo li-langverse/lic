@@ -1,0 +1,12 @@
+# Catalog: E-434
+# Statement: Let $k\leq n$. What choice of $A\subseteq \{1,\ldots,n\}$ (with $\mathrm{gcd}(A)=1$) of size $\lvert A\rvert=k$ maximises the number of integers not representable as the sum of finitely many elements from $A$ (with repetitions allowed)? Is 
+# formalization_status: li_open
+# discharge: pending — open formalization target (Phase 4)
+# erdos_status (literature): proved
+
+def formal_target_e_434() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0

@@ -1,0 +1,12 @@
+# Catalog: E-715
+# Statement: Does every regular graph of degree $4$ contain a regular subgraph of degree $3$? Is there any $r$ such that every regular graph of degree $r$ must contain a regular subgraph of degree $3$?
+# formalization_status: li_open
+# discharge: pending — open formalization target (Phase 4)
+# erdos_status (literature): proved
+
+def formal_target_e_715() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0

@@ -1,0 +1,12 @@
+# Catalog: E-546
+# Statement: Let $G$ be a graph with no isolated vertices and $m$ edges. Is it true that\[R(G) \leq 2^{O(m^{1/2})}?\]
+# formalization_status: li_open
+# discharge: pending — open formalization target (Phase 4)
+# erdos_status (literature): proved
+
+def formal_target_e_546() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0

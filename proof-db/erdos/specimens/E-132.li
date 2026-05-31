@@ -1,0 +1,12 @@
+# Catalog: E-132
+# Statement: Let $A\subset \mathbb{R}^2$ be a set of $n$ points. Must there be two distances which occur at least once but between at most $n$ pairs of points? Must the number of such distances $\to \infty$ as $n\to \infty$?
+# formalization_status: li_open
+# discharge: pending — open formalization target (Phase 4)
+# erdos_status (literature): open
+
+def formal_target_e_132() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0

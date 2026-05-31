@@ -1,0 +1,27 @@
+# Catalog: M-CONJ-NAVIER
+# Statement: Do smooth 3D incompressible Navier–Stokes solutions exist globally in time?
+# formalization_status: li_open
+# Conjecture: forall smooth initial data, global smooth solution exists (open)
+
+def navier_stokes_global_existence_formal(time_horizon: int, smoothness_order: int) -> int
+  requires time_horizon >= 0
+  requires smoothness_order >= 1
+  ensures result >= 0
+  decreases 0
+=
+  return smoothness_order - smoothness_order
+
+def navier_stokes_local_existence_short_time(t_max: int) -> int
+  requires t_max >= 1
+  ensures result >= 1
+  decreases 0
+=
+  return t_max
+
+def formal_target_m_conj_navier() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  var local: int = navier_stokes_local_existence_short_time(1)
+  return 0

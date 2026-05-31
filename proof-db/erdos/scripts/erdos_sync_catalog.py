@@ -13,7 +13,8 @@ ROOT = Path(__file__).resolve().parents[3]
 REGISTER = ROOT / "proof-db" / "erdos" / "register.json"
 CATALOG = ROOT / "docs" / "verification" / "proof-database" / "entries" / "erdos-register.toml"
 
-PROOF_STATUS = {"open": "open", "proved": "proved", "target": "open"}
+PROOF_STATUS = {"open": "open", "proved": "target", "target": "open", "disputed": "open"}
+SPECIMENS = ROOT / "proof-db" / "erdos" / "specimens"
 
 
 def git_head(short: int = 8) -> str:
@@ -57,6 +58,9 @@ def row_to_entry(row: dict[str, Any], commit: str) -> dict[str, Any]:
     url = row.get("external_url")
     if url:
         entry["external_url"] = url
+    specimen = SPECIMENS / f"E-{n}.li"
+    if specimen.is_file():
+        entry["li_specimen"] = specimen.relative_to(ROOT).as_posix()
     return entry
 
 
@@ -89,6 +93,7 @@ def render_catalog(entries: list[dict[str, Any]], version: int = 1) -> str:
             "gap_id",
             "gap_kind",
             "lean_module",
+            "li_specimen",
             "register_source",
             "external_url",
             "last_verified_lic_commit",

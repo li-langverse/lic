@@ -1,0 +1,12 @@
+# Catalog: E-396
+# Statement: Is it true that for every $k$ there exists $n$ such that\[\prod_{0\leq i\leq k}(n-i) \mid \binom{2n}{n}?\]
+# formalization_status: li_open
+# discharge: pending — open formalization target (Phase 4)
+# erdos_status (literature): open
+
+def formal_target_e_396() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0

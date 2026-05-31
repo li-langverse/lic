@@ -1,0 +1,35 @@
+{
+  "problem_id": "E-3",
+  "generated_at": "2026-05-31T14:04:19Z",
+  "claims_total": 12,
+  "by_epistemic_status": {
+    "li_proved": 1,
+    "heuristic": 6,
+    "literature_proved": 2,
+    "model_conflict": 1,
+    "refuted": 1,
+    "li_open": 1
+  },
+  "model_conflicts": 1,
+  "li_proved": 1,
+  "unprovable_language_flags": [
+    "CLM-E3-002",
+    "CLM-E3-006"
+  ],
+  "unprovable_language_detail": [
+    {
+      "claim_id": "CLM-E3-002",
+      "epistemic_status": "heuristic",
+      "reviewers_proved": [
+        "gpt-5.2-codex"
+      ]
+    },
+    {
+      "claim_id": "CLM-E3-006",
+      "epistemic_status": "model_conflict",
+      "reviewers_proved": [
+        "claude-4.6-sonnet"
+      ]
+    }
+  ]
+}

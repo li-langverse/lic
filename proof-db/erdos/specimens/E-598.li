@@ -1,0 +1,12 @@
+# Catalog: E-598
+# Statement: Let $m$ be an infinite cardinal and $\kappa$ be the successor cardinal of $2^{\aleph_0}$. Can one colour the countable subsets of $m$ using $\kappa$ many colours so that every $X\subseteq m$ with $\lvert X\rvert=\kappa$ contains subsets of 
+# formalization_status: li_open
+# discharge: pending — open formalization target (Phase 4)
+# erdos_status (literature): open
+
+def formal_target_e_598() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0

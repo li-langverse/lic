@@ -1,0 +1,12 @@
+# Catalog: E-259
+# Statement: Is the sum\[\sum_{n} \mu(n)^2\frac{n}{2^n}\]irrational?
+# formalization_status: li_open
+# discharge: pending — open formalization target (Phase 4)
+# erdos_status (literature): proved
+
+def formal_target_e_259() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0

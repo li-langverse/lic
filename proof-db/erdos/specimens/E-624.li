@@ -1,0 +1,12 @@
+# Catalog: E-624
+# Statement: Let $X$ be a finite set of size $n$ and $H(n)$ be such that there is a function $f:\{A : A\subseteq X\}\to X$ so that for every $Y\subseteq X$ with $\lvert Y\rvert \geq H(n)$ we have\[\{ f(A) : A\subseteq Y\}=X.\]Prove that\[H(n)-\log_2 n \
+# formalization_status: li_open
+# discharge: pending — open formalization target (Phase 4)
+# erdos_status (literature): open
+
+def formal_target_e_624() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0

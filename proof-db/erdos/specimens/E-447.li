@@ -1,0 +1,12 @@
+# Catalog: E-447
+# Statement: How large can a union-free collection $\mathcal{F}$ of subsets of $[n]$ be? By union-free we mean there are no solutions to $A\cup B=C$ with distinct $A,B,C\in \mathcal{F}$. Must $\lvert \mathcal{F}\rvert =o(2^n)$? Perhaps even\[\lvert \mat
+# formalization_status: li_open
+# discharge: pending — open formalization target (Phase 4)
+# erdos_status (literature): proved
+
+def formal_target_e_447() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0

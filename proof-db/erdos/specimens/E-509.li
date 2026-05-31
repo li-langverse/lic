@@ -1,0 +1,12 @@
+# Catalog: E-509
+# Statement: Let $f(z)\in\mathbb{C}[z]$ be a monic non-constant polynomial. Can the set\[\{ z\in \mathbb{C} : \lvert f(z)\rvert \leq 1\}\]be covered by a set of circles the sum of whose radii is $\leq 2$?
+# formalization_status: li_open
+# discharge: pending — open formalization target (Phase 4)
+# erdos_status (literature): open
+
+def formal_target_e_509() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0

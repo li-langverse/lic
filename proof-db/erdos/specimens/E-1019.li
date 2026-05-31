@@ -1,0 +1,12 @@
+# Catalog: E-1019
+# Statement: A planar graph on $n$ vertices with $3n-6$ edges (the maximum possible) is called saturated. Does every graph on $n$ vertices with $\lfloor n^2/4\rfloor+\lfloor \frac{n+1}{2}\rfloor$ edges contain a saturated planar graph with $>3$ vertices
+# formalization_status: li_open
+# discharge: pending — open formalization target (Phase 4)
+# erdos_status (literature): proved
+
+def formal_target_e_1019() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0

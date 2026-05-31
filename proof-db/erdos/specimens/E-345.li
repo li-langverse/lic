@@ -1,0 +1,12 @@
+# Catalog: E-345
+# Statement: Let $A\subseteq \mathbb{N}$ be a complete sequence, and define the threshold of completeness $T(A)$ to be the least integer $m$ such that all $n\geq m$ are in\[P(A) = \left\{\sum_{n\in B}n : B\subseteq A\textrm{ finite }\right\}\](the exist
+# formalization_status: li_open
+# discharge: pending — open formalization target (Phase 4)
+# erdos_status (literature): open
+
+def formal_target_e_345() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0

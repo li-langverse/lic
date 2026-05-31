@@ -1,0 +1,12 @@
+# Catalog: E-767
+# Statement: Let $g_k(n)$ be the maximal number of edges possible on a graph with $n$ vertices which does not contain a cycle with $k$ chords incident to a vertex on the cycle. Is it true that\[g_k(n)=(k+1)n-(k+1)^2\]for $n$ sufficiently large?
+# formalization_status: li_open
+# discharge: pending — open formalization target (Phase 4)
+# erdos_status (literature): proved
+
+def formal_target_e_767() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0

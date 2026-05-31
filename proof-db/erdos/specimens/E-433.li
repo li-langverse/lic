@@ -1,0 +1,12 @@
+# Catalog: E-433
+# Statement: If $A\subset \mathbb{N}$ is a finite set then let $G(A)$ denote the greatest integer which is not expressible as a finite sum of elements from $A$ (with repetitions allowed). Let\[g(k,n)=\max G(A)\]where the maximum is taken over all $A\sub
+# formalization_status: li_open
+# discharge: pending — open formalization target (Phase 4)
+# erdos_status (literature): proved
+
+def formal_target_e_433() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0

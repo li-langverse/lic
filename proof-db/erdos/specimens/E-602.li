@@ -1,0 +1,12 @@
+# Catalog: E-602
+# Statement: Let $(A_i)$ be a family of sets with $\lvert A_i\rvert=\aleph_0$ for all $i$, such that for any $i\neq j$ we have $\lvert A_i\cap A_j\rvert$ finite and $\neq 1$. Is there a $2$-colouring of $\cup A_i$ such that no $A_i$ is monochromatic?
+# formalization_status: li_open
+# discharge: pending — open formalization target (Phase 4)
+# erdos_status (literature): open
+
+def formal_target_e_602() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0

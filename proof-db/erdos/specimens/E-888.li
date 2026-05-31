@@ -1,0 +1,12 @@
+# Catalog: E-888
+# Statement: What is the size of the largest $A\subseteq \{1,\ldots,n\}$ such that if $a\leq b\leq c\leq d\in A$ are such that $abcd$ is a square then $ad=bc$?
+# formalization_status: li_open
+# discharge: pending — open formalization target (Phase 4)
+# erdos_status (literature): open
+
+def formal_target_e_888() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0

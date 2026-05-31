@@ -1,0 +1,12 @@
+# Catalog: E-1032
+# Statement: We say that a graph is $4$-chromatic critical if it has chromatic number $4$, and removing any edge decreases the chromatic number to $3$. Is there, for arbitrarily large $n$, a $4$-chromatic critical graph on $n$ vertices with minimum degr
+# formalization_status: li_open
+# discharge: pending — open formalization target (Phase 4)
+# erdos_status (literature): open
+
+def formal_target_e_1032() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0

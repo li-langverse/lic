@@ -1,0 +1,12 @@
+# Catalog: E-60
+# Statement: Does there exist a prime between n and 2n for all sufficiently large n with an explicit effective bound?
+# formalization_status: li_open
+# discharge: pending — open formalization target (Phase 4)
+# erdos_status (literature): proved
+
+def formal_target_e_60() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0

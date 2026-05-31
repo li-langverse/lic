@@ -1,0 +1,12 @@
+# Catalog: E-755
+# Statement: The number of equilateral triangles of size $1$ formed by any set of $n$ points in $\mathbb{R}^6$ is at most $(\frac{1}{27}+o(1))n^3$.
+# formalization_status: li_open
+# discharge: pending — open formalization target (Phase 4)
+# erdos_status (literature): proved
+
+def formal_target_e_755() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0

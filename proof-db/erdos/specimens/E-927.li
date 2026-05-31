@@ -1,0 +1,12 @@
+# Catalog: E-927
+# Statement: Let $g(n)$ be the maximum number of different sizes of cliques that can occur in a graph on $n$ vertices. Estimate $g(n)$ - in particular, is it true that\[g(n)=n-\log_2n-\log_*(n)+O(1),\]where $\log_*(n)$ is the number of iterated logarith
+# formalization_status: li_open
+# discharge: pending — open formalization target (Phase 4)
+# erdos_status (literature): open
+
+def formal_target_e_927() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0

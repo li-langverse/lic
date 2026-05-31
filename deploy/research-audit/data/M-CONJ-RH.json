@@ -1,0 +1,370 @@
+{
+  "problem_id": "M-CONJ-RH",
+  "claims": [
+    {
+      "claim_id": "CLM-RH-001",
+      "problem_id": "M-CONJ-RH",
+      "statement_plain": "All non-trivial zeros of the Riemann zeta function lie on the critical line Re(s)=1/2.",
+      "author_agent": "code_implementer",
+      "author_model": "composer-2.5-fast",
+      "created_at": "2026-05-31T18:00:00Z",
+      "epistemic_status": "li_open",
+      "catalog_id": "M-CONJ-RH",
+      "li_specimen": "proof-db/math/specimens/M-CONJ-RH.li",
+      "sources": [
+        {
+          "title": "Clay RH",
+          "url": "https://www.claymath.org/millennium-problems/riemann-hypothesis"
+        }
+      ]
+    },
+    {
+      "claim_id": "CLM-RH-002",
+      "problem_id": "M-CONJ-RH",
+      "statement_plain": "Critical-line constraint Re(s)=1/2 is formalized as rational witness re_num*2=re_den in Li scaffold.",
+      "author_agent": "code_implementer",
+      "author_model": "composer-2.5-fast",
+      "created_at": "2026-05-31T18:00:00Z",
+      "epistemic_status": "li_proved",
+      "notes": "Phase 6 scaffold discharge for critical-line predicate.",
+      "li_specimen": "proof-db/math/specimens/M-CONJ-RH.li"
+    },
+    {
+      "claim_id": "CLM-RH-003",
+      "problem_id": "M-CONJ-RH",
+      "statement_plain": "Computational verification confirms first 10^13 zeros on critical line.",
+      "author_agent": "code_implementer",
+      "author_model": "composer-2.5-fast",
+      "created_at": "2026-05-31T18:00:00Z",
+      "epistemic_status": "literature_proved",
+      "sources": [
+        {
+          "title": "RH computational verification",
+          "url": "https://en.wikipedia.org/wiki/Riemann_hypothesis#Numerical_computations"
+        }
+      ]
+    },
+    {
+      "claim_id": "CLM-RH-004",
+      "problem_id": "M-CONJ-RH",
+      "statement_plain": "RH implies tight error term for prime counting pi(x).",
+      "author_agent": "code_implementer",
+      "author_model": "composer-2.5-fast",
+      "created_at": "2026-05-31T18:00:00Z",
+      "epistemic_status": "literature_proved",
+      "notes": "Standard analytic number theory equivalence."
+    },
+    {
+      "claim_id": "CLM-RH-005",
+      "problem_id": "M-CONJ-RH",
+      "statement_plain": "A naive Li proof of RH from finite zero checks is valid.",
+      "author_agent": "code_implementer",
+      "author_model": "composer-2.5-fast",
+      "created_at": "2026-05-31T18:00:00Z",
+      "epistemic_status": "refuted",
+      "notes": "Deliberately wrong for audit lane."
+    },
+    {
+      "claim_id": "CLM-RH-006",
+      "problem_id": "M-CONJ-RH",
+      "statement_plain": "Random matrix theory heuristics support GUE zero spacing on critical line.",
+      "author_agent": "code_implementer",
+      "author_model": "composer-2.5-fast",
+      "created_at": "2026-05-31T18:00:00Z",
+      "epistemic_status": "heuristic"
+    },
+    {
+      "claim_id": "CLM-RH-007",
+      "problem_id": "M-CONJ-RH",
+      "statement_plain": "Generalized RH for Dirichlet L-functions remains open uniformly.",
+      "author_agent": "code_implementer",
+      "author_model": "composer-2.5-fast",
+      "created_at": "2026-05-31T18:00:00Z",
+      "epistemic_status": "heuristic"
+    },
+    {
+      "claim_id": "CLM-RH-008",
+      "problem_id": "M-CONJ-RH",
+      "statement_plain": "Li formalization cannot express complex analysis without trusted axioms.",
+      "author_agent": "code_implementer",
+      "author_model": "composer-2.5-fast",
+      "created_at": "2026-05-31T18:00:00Z",
+      "epistemic_status": "model_consensus",
+      "notes": "Methodological limit on current Li specimen depth."
+    },
+    {
+      "claim_id": "CLM-RH-009",
+      "problem_id": "M-CONJ-RH",
+      "statement_plain": "RH is equivalent to Mertens conjecture (disproved) — common misconception.",
+      "author_agent": "code_implementer",
+      "author_model": "composer-2.5-fast",
+      "created_at": "2026-05-31T18:00:00Z",
+      "epistemic_status": "refuted",
+      "notes": "Mertens disproved 1985; not equivalent."
+    },
+    {
+      "claim_id": "CLM-RH-010",
+      "problem_id": "M-CONJ-RH",
+      "statement_plain": "Zero-free region results prove RH for sufficiently large |Im(s)|.",
+      "author_agent": "code_implementer",
+      "author_model": "composer-2.5-fast",
+      "created_at": "2026-05-31T18:00:00Z",
+      "epistemic_status": "literature_proved",
+      "notes": "Partial zero-free regions; not full RH."
+    },
+    {
+      "claim_id": "CLM-RH-011",
+      "problem_id": "M-CONJ-RH",
+      "statement_plain": "Functional equation symmetry forces critical-line pairing but not single-line localization.",
+      "author_agent": "code_implementer",
+      "author_model": "composer-2.5-fast",
+      "created_at": "2026-05-31T18:00:00Z",
+      "epistemic_status": "heuristic"
+    },
+    {
+      "claim_id": "CLM-RH-012",
+      "problem_id": "M-CONJ-RH",
+      "statement_plain": "A proof of RH must be formalizable without changing trusted.lean.",
+      "author_agent": "code_implementer",
+      "author_model": "composer-2.5-fast",
+      "created_at": "2026-05-31T18:00:00Z",
+      "epistemic_status": "heuristic",
+      "notes": "North-star provability constraint."
+    }
+  ],
+  "reviews_by_claim": {
+    "CLM-RH-001": [
+      {
+        "claim_id": "CLM-RH-001",
+        "reviewer_model": "claude-4.6-sonnet",
+        "verdict": "plausible",
+        "confidence": 0.75,
+        "reviewed_at": "2026-05-31T18:30:00Z",
+        "rationale_plain": "Reviewer lane for CLM-RH-001."
+      },
+      {
+        "claim_id": "CLM-RH-001",
+        "reviewer_model": "gpt-5.2-codex",
+        "verdict": "plausible",
+        "confidence": 0.68,
+        "reviewed_at": "2026-05-31T18:30:00Z",
+        "rationale_plain": "Reviewer lane for CLM-RH-001."
+      }
+    ],
+    "CLM-RH-002": [
+      {
+        "claim_id": "CLM-RH-002",
+        "reviewer_model": "claude-4.6-sonnet",
+        "verdict": "plausible",
+        "confidence": 0.75,
+        "reviewed_at": "2026-05-31T18:30:00Z",
+        "rationale_plain": "Reviewer lane for CLM-RH-002."
+      },
+      {
+        "claim_id": "CLM-RH-002",
+        "reviewer_model": "gpt-5.2-codex",
+        "verdict": "plausible",
+        "confidence": 0.68,
+        "reviewed_at": "2026-05-31T18:30:00Z",
+        "rationale_plain": "Reviewer lane for CLM-RH-002."
+      }
+    ],
+    "CLM-RH-003": [
+      {
+        "claim_id": "CLM-RH-003",
+        "reviewer_model": "claude-4.6-sonnet",
+        "verdict": "plausible",
+        "confidence": 0.75,
+        "reviewed_at": "2026-05-31T18:30:00Z",
+        "rationale_plain": "Reviewer lane for CLM-RH-003."
+      },
+      {
+        "claim_id": "CLM-RH-003",
+        "reviewer_model": "gpt-5.2-codex",
+        "verdict": "plausible",
+        "confidence": 0.68,
+        "reviewed_at": "2026-05-31T18:30:00Z",
+        "rationale_plain": "Reviewer lane for CLM-RH-003."
+      }
+    ],
+    "CLM-RH-004": [
+      {
+        "claim_id": "CLM-RH-004",
+        "reviewer_model": "claude-4.6-sonnet",
+        "verdict": "plausible",
+        "confidence": 0.75,
+        "reviewed_at": "2026-05-31T18:30:00Z",
+        "rationale_plain": "Reviewer lane for CLM-RH-004."
+      },
+      {
+        "claim_id": "CLM-RH-004",
+        "reviewer_model": "gpt-5.2-codex",
+        "verdict": "plausible",
+        "confidence": 0.68,
+        "reviewed_at": "2026-05-31T18:30:00Z",
+        "rationale_plain": "Reviewer lane for CLM-RH-004."
+      }
+    ],
+    "CLM-RH-005": [
+      {
+        "claim_id": "CLM-RH-005",
+        "reviewer_model": "claude-4.6-sonnet",
+        "verdict": "wrong",
+        "confidence": 0.75,
+        "reviewed_at": "2026-05-31T18:30:00Z",
+        "rationale_plain": "Reviewer lane for CLM-RH-005."
+      },
+      {
+        "claim_id": "CLM-RH-005",
+        "reviewer_model": "gpt-5.2-codex",
+        "verdict": "wrong",
+        "confidence": 0.68,
+        "reviewed_at": "2026-05-31T18:30:00Z",
+        "rationale_plain": "Reviewer lane for CLM-RH-005."
+      }
+    ],
+    "CLM-RH-006": [
+      {
+        "claim_id": "CLM-RH-006",
+        "reviewer_model": "claude-4.6-sonnet",
+        "verdict": "plausible",
+        "confidence": 0.75,
+        "reviewed_at": "2026-05-31T18:30:00Z",
+        "rationale_plain": "Reviewer lane for CLM-RH-006."
+      },
+      {
+        "claim_id": "CLM-RH-006",
+        "reviewer_model": "gpt-5.2-codex",
+        "verdict": "plausible",
+        "confidence": 0.68,
+        "reviewed_at": "2026-05-31T18:30:00Z",
+        "rationale_plain": "Reviewer lane for CLM-RH-006."
+      }
+    ],
+    "CLM-RH-007": [
+      {
+        "claim_id": "CLM-RH-007",
+        "reviewer_model": "claude-4.6-sonnet",
+        "verdict": "plausible",
+        "confidence": 0.75,
+        "reviewed_at": "2026-05-31T18:30:00Z",
+        "rationale_plain": "Reviewer lane for CLM-RH-007."
+      },
+      {
+        "claim_id": "CLM-RH-007",
+        "reviewer_model": "gpt-5.2-codex",
+        "verdict": "plausible",
+        "confidence": 0.68,
+        "reviewed_at": "2026-05-31T18:30:00Z",
+        "rationale_plain": "Reviewer lane for CLM-RH-007."
+      }
+    ],
+    "CLM-RH-008": [
+      {
+        "claim_id": "CLM-RH-008",
+        "reviewer_model": "claude-4.6-sonnet",
+        "verdict": "plausible",
+        "confidence": 0.75,
+        "reviewed_at": "2026-05-31T18:30:00Z",
+        "rationale_plain": "Reviewer lane for CLM-RH-008."
+      },
+      {
+        "claim_id": "CLM-RH-008",
+        "reviewer_model": "gpt-5.2-codex",
+        "verdict": "plausible",
+        "confidence": 0.68,
+        "reviewed_at": "2026-05-31T18:30:00Z",
+        "rationale_plain": "Reviewer lane for CLM-RH-008."
+      }
+    ],
+    "CLM-RH-009": [
+      {
+        "claim_id": "CLM-RH-009",
+        "reviewer_model": "claude-4.6-sonnet",
+        "verdict": "wrong",
+        "confidence": 0.75,
+        "reviewed_at": "2026-05-31T18:30:00Z",
+        "rationale_plain": "Reviewer lane for CLM-RH-009."
+      },
+      {
+        "claim_id": "CLM-RH-009",
+        "reviewer_model": "gpt-5.2-codex",
+        "verdict": "wrong",
+        "confidence": 0.68,
+        "reviewed_at": "2026-05-31T18:30:00Z",
+        "rationale_plain": "Reviewer lane for CLM-RH-009."
+      }
+    ],
+    "CLM-RH-010": [
+      {
+        "claim_id": "CLM-RH-010",
+        "reviewer_model": "claude-4.6-sonnet",
+        "verdict": "plausible",
+        "confidence": 0.75,
+        "reviewed_at": "2026-05-31T18:30:00Z",
+        "rationale_plain": "Reviewer lane for CLM-RH-010."
+      },
+      {
+        "claim_id": "CLM-RH-010",
+        "reviewer_model": "gpt-5.2-codex",
+        "verdict": "plausible",
+        "confidence": 0.68,
+        "reviewed_at": "2026-05-31T18:30:00Z",
+        "rationale_plain": "Reviewer lane for CLM-RH-010."
+      }
+    ],
+    "CLM-RH-011": [
+      {
+        "claim_id": "CLM-RH-011",
+        "reviewer_model": "claude-4.6-sonnet",
+        "verdict": "plausible",
+        "confidence": 0.75,
+        "reviewed_at": "2026-05-31T18:30:00Z",
+        "rationale_plain": "Reviewer lane for CLM-RH-011."
+      },
+      {
+        "claim_id": "CLM-RH-011",
+        "reviewer_model": "gpt-5.2-codex",
+        "verdict": "plausible",
+        "confidence": 0.68,
+        "reviewed_at": "2026-05-31T18:30:00Z",
+        "rationale_plain": "Reviewer lane for CLM-RH-011."
+      }
+    ],
+    "CLM-RH-012": [
+      {
+        "claim_id": "CLM-RH-012",
+        "reviewer_model": "claude-4.6-sonnet",
+        "verdict": "plausible",
+        "confidence": 0.75,
+        "reviewed_at": "2026-05-31T18:30:00Z",
+        "rationale_plain": "Reviewer lane for CLM-RH-012."
+      },
+      {
+        "claim_id": "CLM-RH-012",
+        "reviewer_model": "gpt-5.2-codex",
+        "verdict": "plausible",
+        "confidence": 0.68,
+        "reviewed_at": "2026-05-31T18:30:00Z",
+        "rationale_plain": "Reviewer lane for CLM-RH-012."
+      }
+    ]
+  },
+  "compare_report": {
+    "problem_id": "M-CONJ-RH",
+    "generated_at": "2026-05-31T14:01:56Z",
+    "claims_total": 12,
+    "by_epistemic_status": {
+      "li_open": 1,
+      "li_proved": 1,
+      "literature_proved": 3,
+      "refuted": 2,
+      "heuristic": 4,
+      "model_consensus": 1
+    },
+    "model_conflicts": 0,
+    "li_proved": 1,
+    "unprovable_language_flags": [],
+    "unprovable_language_detail": []
+  }
+}

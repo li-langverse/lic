@@ -1,0 +1,12 @@
+# Catalog: E-367
+# Statement: Let $B_2(n)$ be the $2$-full part of $n$ (that is, $B_2(n)=n/n'$ where $n'$ is the product of all primes that divide $n$ exactly once). Is it true that, for every fixed $k\geq 1$,\[\prod_{n\leq m<n+k}B_2(m) \ll n^{2+o(1)}?\]Or perhaps even 
+# formalization_status: li_open
+# discharge: pending — open formalization target (Phase 4)
+# erdos_status (literature): open
+
+def formal_target_e_367() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0

@@ -1,0 +1,12 @@
+# Catalog: E-1109
+# Statement: Let $f(N)$ be the size of the largest subset $A\subseteq \{1,\ldots,N\}$ such that every $n\in A+A$ is squarefree. Estimate $f(N)$. In particular, is it true that $f(N)\leq N^{o(1)}$, or even $f(N) \leq (\log N)^{O(1)}$?
+# formalization_status: li_open
+# discharge: pending — open formalization target (Phase 4)
+# erdos_status (literature): open
+
+def formal_target_e_1109() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0

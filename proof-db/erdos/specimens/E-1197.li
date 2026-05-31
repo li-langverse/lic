@@ -1,0 +1,12 @@
+# Catalog: E-1197
+# Statement: Let $E\subset (0,\infty)$ be a set of positive measure. Is it true that, for almost all $x>0$, for all sufficiently large (depending on $x$) integers $n$ there exists an integer $r\geq 1$ such that $nx\in r\cdot E$?
+# formalization_status: li_open
+# discharge: pending — open formalization target (Phase 4)
+# erdos_status (literature): open
+
+def formal_target_e_1197() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0

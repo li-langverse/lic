@@ -1,0 +1,12 @@
+# Catalog: E-34
+# Statement: For any permutation $\pi\in S_n$ of $\{1,\ldots,n\}$ let $S(\pi)$ count the number of distinct consecutive sums, that is, sums of the shape $\sum_{u\leq i\leq v}\pi(i)$. Is it true that\[S(\pi) = o(n^2)\]for all $\pi\in S_n$?
+# formalization_status: li_open
+# discharge: pending — open formalization target (Phase 4)
+# erdos_status (literature): open
+
+def formal_target_e_34() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0

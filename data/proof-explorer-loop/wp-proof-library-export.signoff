@@ -1,0 +1,12 @@
+# WP-RS-05 — proof-library export-math integration
+
+PR: https://github.com/li-langverse/proof-library/pull/4
+Title: feat(ui): ingest lic export-math overlay + specimen links (Proof Explorer WP-RS-05)
+Signed: 2026-05-31 (code_implementer agent run 1780236072548)
+
+Integration:
+- `scripts/build-library.py` merges `proof-db/export-math.json` (li_specimen, content_tier, v3 fields)
+- Board renders clickable `li_specimen` GitHub links + formalization tier badge
+- Research audit links for E-52, E-3, M-CONJ-RH on proof-library home
+
+Lic snapshot: `proof-db/export-math.json` via `scripts/proof-library-export-snapshot.sh`

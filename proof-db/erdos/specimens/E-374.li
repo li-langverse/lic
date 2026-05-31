@@ -1,0 +1,12 @@
+# Catalog: E-374
+# Statement: For any $m\in \mathbb{N}$, let $F(m)$ be the minimal $k\geq 2$ (if it exists) such that there are $a_1<\cdots <a_k=m$ with $a_1!\cdots a_k!$ a square. Let $D_k=\{ m : F(m)=k\}$. What is the order of growth of $\lvert D_k\cap\{1,\ldots,n\}\r
+# formalization_status: li_open
+# discharge: pending — open formalization target (Phase 4)
+# erdos_status (literature): open
+
+def formal_target_e_374() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0

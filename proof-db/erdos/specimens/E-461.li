@@ -1,0 +1,12 @@
+# Catalog: E-461
+# Statement: Let $s_t(n)$ be the $t$-smooth component of $n$ - that is, the product of all primes $p$ (with multiplicity) dividing $n$ such that $p<t$. Let $f(n,t)$ count the number of distinct possible values for $s_t(m)$ for $m\in [n+1,n+t]$. Is it tr
+# formalization_status: li_open
+# discharge: pending — open formalization target (Phase 4)
+# erdos_status (literature): open
+
+def formal_target_e_461() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0

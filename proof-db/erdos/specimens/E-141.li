@@ -1,0 +1,12 @@
+# Catalog: E-141
+# Statement: Let $k\geq 3$. Are there $k$ consecutive primes in arithmetic progression?
+# formalization_status: li_open
+# discharge: pending — open formalization target (Phase 4)
+# erdos_status (literature): open
+
+def formal_target_e_141() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0

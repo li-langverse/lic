@@ -1,0 +1,12 @@
+# Catalog: E-161
+# Statement: Let $\alpha\in[0,1/2)$ and $n,t\geq 1$. Let $F^{(t)}(n,\alpha)$ be the smallest $m$ such that we can $2$-colour the edges of the complete $t$-uniform hypergraph on $n$ vertices such that if $X\subseteq [n]$ with $\lvert X\rvert \geq m$ then
+# formalization_status: li_open
+# discharge: pending — open formalization target (Phase 4)
+# erdos_status (literature): open
+
+def formal_target_e_161() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0

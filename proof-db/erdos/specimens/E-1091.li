@@ -1,0 +1,12 @@
+# Catalog: E-1091
+# Statement: Let $G$ be a $K_4$-free graph with chromatic number $4$. Must $G$ contain an odd cycle with at least two diagonals? More generally, is there some $f(r)\to \infty$ such that every graph with chromatic number $4$, in which every subgraph on $
+# formalization_status: li_open
+# discharge: pending — open formalization target (Phase 4)
+# erdos_status (literature): open
+
+def formal_target_e_1091() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0

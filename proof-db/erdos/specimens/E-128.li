@@ -1,0 +1,12 @@
+# Catalog: E-128
+# Statement: Is the number of primes less than x equal to Li(x) + O(sqrt(x) log x) (Riemann hypothesis consequence)?
+# formalization_status: li_open
+# discharge: pending — open formalization target (Phase 4)
+# erdos_status (literature): open
+
+def formal_target_e_128() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0

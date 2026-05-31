@@ -1,0 +1,12 @@
+# Catalog: E-105
+# Statement: Does the sum of 1/p over all primes p diverge?
+# formalization_status: li_open
+# discharge: pending — open formalization target (Phase 4)
+# erdos_status (literature): proved
+
+def formal_target_e_105() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0

@@ -28,7 +28,12 @@
 <body>
   <nav><a href="https://li-langverse.github.io/lic/">lic handbook</a><a href="https://github.com/li-langverse/proof-library">proof-library</a></nav>
   <h1>Research claim audit</h1>
-  <p class="meta">Phase 3 — Li-grounded epistemic status vs multi-model reviewer verdicts. No reviewer “proved” counts as machine proof unless status is <code>li_proved</code> or <code>literature_proved</code>.</p>
+  <p class="meta">Phase 7 — Li-grounded epistemic status vs multi-model reviewer verdicts. No reviewer “proved” counts as machine proof unless status is <code>li_proved</code> or <code>literature_proved</code>.</p>
+  <p class="meta">Problem:
+    <a href="?problem=E-52">E-52</a> ·
+    <a href="?problem=E-3">E-3</a> ·
+    <a href="?problem=M-CONJ-RH">M-CONJ-RH</a>
+  </p>
   <div id="summary"></div>
   <div id="claims"></div>
   <p class="meta"><small>Li Proof Library · Julian Kleber · <a href="https://julianmkleber.com">julianmkleber.com</a></small></p>
@@ -66,7 +71,10 @@
       const rows = data.claims.map(c => {
         const rev = data.reviews_by_claim[c.claim_id] || [];
         const flagged = flags.has(c.claim_id);
-        const spec = c.li_specimen ? `<code>${c.li_specimen}</code>` : '—';
+        const specPath = c.li_specimen || '';
+        const spec = specPath
+          ? `<a href="https://github.com/li-langverse/lic/blob/main/${specPath}" target="_blank" rel="noopener"><code>${specPath}</code></a>`
+          : '—';
         return `<tr>
           <td><code>${c.claim_id}</code>${flagged ? ' <span class="flag">FLAG</span>' : ''}</td>
           <td>${badge(c.epistemic_status)}</td>

@@ -1,0 +1,12 @@
+# Catalog: E-400
+# Statement: For any $k\geq 2$ let $g_k(n)$ denote the maximum value of\[(a_1+\cdots+a_k)-n\]where $a_1,\ldots,a_k$ are integers such that $a_1!\cdots a_k! \mid n!$. Can one show that\[\sum_{n\leq x}g_k(n) \sim c_k x\log x\]for some constant $c_k$? Is i
+# formalization_status: li_open
+# discharge: pending — open formalization target (Phase 4)
+# erdos_status (literature): open
+
+def formal_target_e_400() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0

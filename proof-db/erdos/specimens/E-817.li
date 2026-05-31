@@ -1,0 +1,12 @@
+# Catalog: E-817
+# Statement: Let $k\geq 3$ and define $g_k(n)$ to be the minimal $N$ such that $\{1,\ldots,N\}$ contains some $A$ of size $\lvert A\rvert=n$ such that\[\langle A\rangle = \left\{\sum_{a\in A}\epsilon_aa: \epsilon_a\in \{0,1\}\right\}\]contains no non-tr
+# formalization_status: li_open
+# discharge: pending — open formalization target (Phase 4)
+# erdos_status (literature): open
+
+def formal_target_e_817() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0

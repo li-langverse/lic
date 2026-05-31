@@ -1,0 +1,12 @@
+# Catalog: E-364
+# Statement: Are there any triples of consecutive positive integers all of which are powerful (i.e. if $p\mid n$ then $p^2\mid n$)?
+# formalization_status: li_open
+# discharge: pending — open formalization target (Phase 4)
+# erdos_status (literature): open
+
+def formal_target_e_364() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0

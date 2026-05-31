@@ -1,0 +1,27 @@
+# Catalog: M-CONJ-P-NP
+# Statement: Is every language in NP decidable in polynomial time?
+# formalization_status: li_open
+# Conjecture: forall L in NP, L in P (open)
+
+def p_np_separation_formal_target(n_languages: int, poly_time_witness: int) -> int
+  requires n_languages >= 1
+  requires poly_time_witness >= 0
+  ensures result >= 0
+  decreases 0
+=
+  return n_languages - n_languages
+
+def p_contains_trivial_language() -> int
+  requires true
+  ensures result >= 1
+  decreases 0
+=
+  return 1
+
+def formal_target_m_conj_p_np() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  var p_sub: int = p_contains_trivial_language()
+  return 0

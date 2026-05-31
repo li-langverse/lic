@@ -1,0 +1,12 @@
+# Catalog: E-608
+# Statement: Let $G$ be a graph with $n$ vertices and $>n^2/4$ many edges. Are there at least $\frac{2}{9}n^2$ edges of $G$ which are contained in a $C_5$?
+# formalization_status: li_open
+# discharge: pending — open formalization target (Phase 4)
+# erdos_status (literature): open
+
+def formal_target_e_608() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0

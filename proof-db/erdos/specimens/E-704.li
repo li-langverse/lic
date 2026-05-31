@@ -1,0 +1,12 @@
+# Catalog: E-704
+# Statement: Let $G_n$ be the unit distance graph in $\mathbb{R}^n$, with two vertices joined by an edge if and only if the distance between them is $1$. Estimate the chromatic number $\chi(G_n)$. Does it grow exponentially in $n$? Does\[\lim_{n\to \inf
+# formalization_status: li_open
+# discharge: pending — open formalization target (Phase 4)
+# erdos_status (literature): open
+
+def formal_target_e_704() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0

@@ -1,0 +1,12 @@
+# Catalog: E-820
+# Statement: Let $H(n)$ be the smallest integer $l$ such that there exist $k<l$ with $(k^n-1,l^n-1)=1$. Is it true that $H(n)=3$ infinitely often? (That is, $(2^n-1,3^n-1)=1$ infinitely often?) Estimate $H(n)$. Is it true that there exists some constant
+# formalization_status: li_open
+# discharge: pending — open formalization target (Phase 4)
+# erdos_status (literature): open
+
+def formal_target_e_820() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0

@@ -1,0 +1,12 @@
+# Catalog: E-103
+# Statement: Let $h(n)$ count the number of incongruent sets of $n$ points in $\mathbb{R}^2$ which minimise the diameter subject to the constraint that $d(x,y)\geq 1$ for all points $x\neq y$. Is it true that $h(n)\to \infty$?
+# formalization_status: li_open
+# discharge: pending — open formalization target (Phase 4)
+# erdos_status (literature): open
+
+def formal_target_e_103() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0

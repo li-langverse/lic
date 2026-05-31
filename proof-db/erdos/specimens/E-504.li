@@ -1,0 +1,12 @@
+# Catalog: E-504
+# Statement: Let $\alpha_n$ be the supremum of all $0\leq \alpha\leq \pi$ such that in every set $A\subset \mathbb{R}^2$ of size $n$ there exist three distinct points $x,y,z\in A$ such that the angle determined by $xyz$ is at least $\alpha$. Determine $
+# formalization_status: li_open
+# discharge: pending — open formalization target (Phase 4)
+# erdos_status (literature): open
+
+def formal_target_e_504() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0

@@ -1,0 +1,12 @@
+# Catalog: E-581
+# Statement: Let $f(m)$ be the maximal $k$ such that a triangle-free graph on $m$ edges must contain a bipartite graph with $k$ edges. Determine $f(m)$.
+# formalization_status: li_open
+# discharge: pending — open formalization target (Phase 4)
+# erdos_status (literature): open
+
+def formal_target_e_581() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0

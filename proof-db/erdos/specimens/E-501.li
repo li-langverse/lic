@@ -1,0 +1,12 @@
+# Catalog: E-501
+# Statement: For every $x\in\mathbb{R}$ let $A_x\subset \mathbb{R}$ be a bounded set with outer measure $<1$. Must there exist an infinite independent set, that is, some infinite $X\subseteq \mathbb{R}$ such that $x\not\in A_y$ for all $x\neq y\in X$? I
+# formalization_status: li_open
+# discharge: pending — open formalization target (Phase 4)
+# erdos_status (literature): open
+
+def formal_target_e_501() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0

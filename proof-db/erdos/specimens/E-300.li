@@ -1,0 +1,12 @@
+# Catalog: E-300
+# Statement: Let $A(N)$ denote the maximal cardinality of $A\subseteq \{1,\ldots,N\}$ such that $\sum_{n\in S}\frac{1}{n}\neq 1$ for all $S\subseteq A$. Estimate $A(N)$.
+# formalization_status: li_open
+# discharge: pending — open formalization target (Phase 4)
+# erdos_status (literature): open
+
+def formal_target_e_300() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0

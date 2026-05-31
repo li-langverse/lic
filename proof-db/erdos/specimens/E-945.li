@@ -1,0 +1,12 @@
+# Catalog: E-945
+# Statement: Let $F(x)$ be the maximal $k$ such that there exist $n+1,\ldots,n+k\leq x$ with $\tau(n+1),\ldots,\tau(n+k)$ all distinct (where $\tau(m)$ counts the divisors of $m$). Estimate $F(x)$. In particular, is it true that\[F(x) \leq (\log x)^{O(1
+# formalization_status: li_open
+# discharge: pending — open formalization target (Phase 4)
+# erdos_status (literature): open
+
+def formal_target_e_945() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0

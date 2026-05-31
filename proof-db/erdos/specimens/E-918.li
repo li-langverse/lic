@@ -1,0 +1,12 @@
+# Catalog: E-918
+# Statement: Is there a graph with $\aleph_2$ vertices and chromatic number $\aleph_2$ such that every subgraph on $\aleph_1$ vertices has chromatic number $\leq\aleph_0$? Is there a graph with $\aleph_{\omega+1}$ vertices and chromatic number $\aleph_1
+# formalization_status: li_open
+# discharge: pending — open formalization target (Phase 4)
+# erdos_status (literature): open
+
+def formal_target_e_918() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0

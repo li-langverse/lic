@@ -1,0 +1,27 @@
+# Catalog: E-52
+# Statement: For finite A subset Z and every epsilon>0, is max(|A+A|,|AA|) >>_epsilon |A|^{2-epsilon}?
+# formalization_status: li_open
+# partial: proof-db/erdos/specimens/E-52-partial-sumset-card.li (CLM-E52-004)
+# erdos_status (literature): open — real-field variant disproved May 2026; Z variant open
+
+def sumset_cardinality_lower_bound(n: int) -> int
+  requires n >= 1
+  ensures result >= n
+  decreases 0
+=
+  return n
+
+def sum_product_formal_target(n: int) -> int
+  requires n >= 2
+  ensures result >= sumset_cardinality_lower_bound(n)
+  decreases 0
+=
+  return sumset_cardinality_lower_bound(n)
+
+def formal_target_e_52() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  var k: int = sum_product_formal_target(5)
+  return 0

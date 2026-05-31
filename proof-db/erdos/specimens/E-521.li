@@ -1,0 +1,12 @@
+# Catalog: E-521
+# Statement: Let $(\epsilon_k)_{k\geq 0}$ be independently uniformly chosen at random from $\{-1,1\}$. If $R_n$ counts the number of real roots of $f_n(z)=\sum_{0\leq k\leq n}\epsilon_k z^k$ then is it true that, almost surely,\[\lim_{n\to \infty}\frac{
+# formalization_status: li_open
+# discharge: pending — open formalization target (Phase 4)
+# erdos_status (literature): open
+
+def formal_target_e_521() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0

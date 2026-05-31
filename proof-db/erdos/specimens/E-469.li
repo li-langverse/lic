@@ -1,0 +1,12 @@
+# Catalog: E-469
+# Statement: Let $A$ be the set of all $n$ such that $n=d_1+\cdots+d_k$ with $d_i$ distinct proper divisors of $n$, but this is not true for any $m\mid n$ with $m<n$. Does\[\sum_{n\in A}\frac{1}{n}\]converge?
+# formalization_status: li_open
+# discharge: pending — open formalization target (Phase 4)
+# erdos_status (literature): open
+
+def formal_target_e_469() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0

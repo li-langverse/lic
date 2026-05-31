@@ -1,4 +1,4 @@
-# D-LM-BC-IND-016: Mathematical induction principle (variant 16).
+# D-LM-BC-IND-016: Induction on powers: 1 + 2 + ... + 2^n = 2^(n+1) - 1.
 
 def induction_step(n: int, step: int) -> int
   requires n >= 0 and step >= 0

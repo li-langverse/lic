@@ -1,0 +1,24 @@
+# E-619: For a triangle-free graph $G$ let $h_r(G)$ be the smallest number of edges that need to be added to $G$ so that it has diameter $r$ (while preserving the property of being triangle-free). Is it true that there exists a constant $c>0$ such that if $G$ is a connected graph on $n$ vertices then $h_4(G)<(1-c)n$?
+# erdos_number: 619
+# erdos_status: open
+# priority_tier: P2
+# tags: graph_theory
+
+def erdos_e619_for_a_triangle_free_graph_g_let_h_r_g_be() -> int
+  requires true
+  ensures result == 0  # open: E-619
+  decreases 0
+=
+  return 0
+
+extern proc erdos_e619_open_witness() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+
+def main() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0

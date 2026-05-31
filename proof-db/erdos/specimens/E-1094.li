@@ -1,0 +1,24 @@
+# E-1094: For all $n\geq 2k$ the least prime factor of $\binom{n}{k}$ is $\leq \max(n/k,k)$, with only finitely many exceptions.
+# erdos_number: 1094
+# erdos_status: open
+# priority_tier: P2
+# tags: binomial_coefficients, number_theory
+
+def erdos_e1094_for_all_n_geq_2k_the_least_prime_factor() -> int
+  requires true
+  ensures result == 0  # open: E-1094
+  decreases 0
+=
+  return 0
+
+extern proc erdos_e1094_open_witness() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+
+def main() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0

@@ -1,0 +1,24 @@
+# E-85: Let $n\geq 4$ and $f(n)$ be minimal such that every graph on $n$ vertices with minimal degree $\geq f(n)$ contains a $C_4$. Is it true that, for all large $n$, $f(n+1)\geq f(n)$?
+# erdos_number: 85
+# erdos_status: open
+# priority_tier: P2
+# tags: graph_theory, ramsey_theory
+
+def erdos_e85_let_n_geq_4_and_f_n_be_minimal_such_that() -> int
+  requires true
+  ensures result == 0  # open: E-85
+  decreases 0
+=
+  return 0
+
+extern proc erdos_e85_open_witness() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+
+def main() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0

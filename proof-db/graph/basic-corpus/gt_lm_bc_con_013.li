@@ -1,4 +1,4 @@
-# GT-LM-BC-CON-013: Connected graph |E| >= |V|-1 (variant 13).
+# GT-LM-BC-CON-013: Tree characterization: connected and |E| = |V|-1.
 
 def connected_edge_lower_bound(v: int) -> int
   requires v >= 1

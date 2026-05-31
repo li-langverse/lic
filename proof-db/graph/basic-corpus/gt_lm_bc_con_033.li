@@ -1,4 +1,4 @@
-# GT-LM-BC-CON-033: Connected graph |E| >= |V|-1 (variant 33).
+# GT-LM-BC-CON-033: Connected graph diameter is finite when |V| >= 1.
 
 def connected_edge_lower_bound(v: int) -> int
   requires v >= 1

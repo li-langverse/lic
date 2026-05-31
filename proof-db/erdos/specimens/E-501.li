@@ -1,0 +1,24 @@
+# E-501: For every $x\in\mathbb{R}$ let $A_x\subset \mathbb{R}$ be a bounded set with outer measure $<1$. Must there exist an infinite independent set, that is, some infinite $X\subseteq \mathbb{R}$ such that $x\not\in A_y$ for all $x\neq y\in X$? If the sets $A_x$ are closed and have measure $<1$, then must there exist an independent set of size $3$?
+# erdos_number: 501
+# erdos_status: open
+# priority_tier: P2
+# tags: combinatorics, set_theory
+
+def erdos_e501_for_every_x_in_mathbb_r_let_a_x_subset_m() -> int
+  requires true
+  ensures result == 0  # open: E-501
+  decreases 0
+=
+  return 0
+
+extern proc erdos_e501_open_witness() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+
+def main() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0

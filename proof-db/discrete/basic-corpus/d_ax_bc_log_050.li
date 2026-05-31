@@ -1,4 +1,4 @@
-# D-AX-BC-LOG-050: Propositional tautology schema (variant 50).
+# D-AX-BC-LOG-050: Resolution schema: (P or R) and (not P or Q) implies (Q or R).
 
 extern proc d_ax_bc_log_050_axiom_witness() -> int
   requires true

@@ -1,0 +1,24 @@
+# E-970: Let $h(k)$ be Jacobsthal's function, defined to as the minimal $m$ such that, if $n$ has at most $k$ prime factors, then in any set of $m$ consecutive integers there exists an integer coprime to $n$. Determine the order of magnitude of $h(k)$. In particular, is it true that\[h(k) \ll k^2?\]
+# erdos_number: 970
+# erdos_status: open
+# priority_tier: P2
+# tags: number_theory
+
+def erdos_e970_let_h_k_be_jacobsthal_s_function_defined() -> int
+  requires true
+  ensures result == 0  # open: E-970
+  decreases 0
+=
+  return 0
+
+extern proc erdos_e970_open_witness() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+
+def main() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0

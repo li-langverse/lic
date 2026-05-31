@@ -1,0 +1,24 @@
+# E-287: Let $k\geq 2$. Is it true that, for any distinct integers $1<n_1<\cdots <n_k$ such that\[1=\frac{1}{n_1}+\cdots+\frac{1}{n_k}\]we must have $\max(n_{i+1}-n_i)\geq 3$?
+# erdos_number: 287
+# erdos_status: open
+# priority_tier: P2
+# tags: number_theory, unit_fractions
+
+def erdos_e287_let_k_geq_2_is_it_true_that_for_any_dist() -> int
+  requires true
+  ensures result == 0  # open: E-287
+  decreases 0
+=
+  return 0
+
+extern proc erdos_e287_open_witness() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+
+def main() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0

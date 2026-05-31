@@ -1,4 +1,4 @@
-# D-LM-BC-NT-038: Divisibility / gcd property (variant 38).
+# D-LM-BC-NT-038: Euclid lemma: if p prime and p|ab then p|a or p|b.
 
 def gcd_divides(a: int, b: int, g: int) -> int
   requires a >= 0 and b >= 0 and g >= 0

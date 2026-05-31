@@ -1,4 +1,4 @@
-# D-LM-DOT4-INT-LOOP: loop dot specimen (links P-linalg / Li.Discharge.dot4_int_loop_eval_spec).
+# D-LM-DOT4-INT-LOOP: Loop dot4 over int arrays matches closed form (discrete / P-linalg bridge).
 def dot4_int_loop(a: array[4, int], b: array[4, int]) -> int
   requires true
   ensures result == a[0] * b[0] + a[1] * b[1] + a[2] * b[2] + a[3] * b[3]

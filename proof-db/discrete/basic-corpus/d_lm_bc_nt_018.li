@@ -1,4 +1,4 @@
-# D-LM-BC-NT-018: Divisibility / gcd property (variant 18).
+# D-LM-BC-NT-018: Common divisor: if d|a and d|b then d|gcd(a,b).
 
 def gcd_divides(a: int, b: int, g: int) -> int
   requires a >= 0 and b >= 0 and g >= 0

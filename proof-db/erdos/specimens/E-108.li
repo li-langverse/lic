@@ -1,0 +1,24 @@
+# E-108: For every $r\geq 4$ and $k\geq 2$ is there some finite $f(k,r)$ such that every graph of chromatic number $\geq f(k,r)$ contains a subgraph of girth $\geq r$ and chromatic number $\geq k$?
+# erdos_number: 108
+# erdos_status: open
+# priority_tier: P2
+# tags: chromatic_number, cycles, graph_theory
+
+def erdos_e108_for_every_r_geq_4_and_k_geq_2_is_there_s() -> int
+  requires true
+  ensures result == 0  # open: E-108
+  decreases 0
+=
+  return 0
+
+extern proc erdos_e108_open_witness() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+
+def main() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0

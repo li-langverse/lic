@@ -1,4 +1,4 @@
-# D-LM-BC-REC-039: Linear recurrence solution stub (variant 39).
+# D-LM-BC-REC-039: Derangements: D_n = (n-1)(D_{n-1} + D_{n-2}) with D_0=1, D_1=0.
 
 def d_lm_bc_rec_039_witness(n: int) -> int
   requires n >= 0

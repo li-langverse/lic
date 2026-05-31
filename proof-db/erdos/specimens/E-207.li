@@ -1,0 +1,24 @@
+# E-207: For any $g\geq 2$, if $n$ is sufficiently large and $\equiv 1,3\pmod{6}$ then there exists a 3-uniform hypergraph on $n$ vertices such that every pair of vertices is contained in exactly one edge (i.e. the graph is a Steiner triple system) and for any $2\leq j\leq g$ any collection of $j$ edges contains at least $j+3$ vertices.
+# erdos_number: 207
+# erdos_status: proved
+# priority_tier: P2
+# tags: combinatorics, hypergraphs
+
+def erdos_e207_for_any_g_geq_2_if_n_is_sufficiently_lar() -> int
+  requires true
+  ensures result == 0  # open: E-207
+  decreases 0
+=
+  return 0
+
+extern proc erdos_e207_open_witness() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+
+def main() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0

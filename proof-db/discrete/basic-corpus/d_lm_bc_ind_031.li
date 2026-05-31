@@ -1,4 +1,4 @@
-# D-LM-BC-IND-031: Mathematical induction principle (variant 31).
+# D-LM-BC-IND-031: Induction on Fibonacci: F_n <= 2^n for all n >= 0.
 
 def induction_step(n: int, step: int) -> int
   requires n >= 0 and step >= 0

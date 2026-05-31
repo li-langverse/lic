@@ -1,4 +1,4 @@
-# GT-AX-BC-GR-015: Simple graph: no loops, symmetric adjacency (variant 15).
+# GT-AX-BC-GR-015: Adjacency symmetry: A[i,j] = A[j,i] for simple undirected graphs.
 # Simple graph: irreflexive and symmetric adjacency (no self-loops).
 
 def simple_graph_symmetric(adj_ij: int, adj_ji: int) -> int

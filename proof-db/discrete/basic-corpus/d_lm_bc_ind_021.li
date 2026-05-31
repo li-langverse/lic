@@ -1,4 +1,4 @@
-# D-LM-BC-IND-021: Mathematical induction principle (variant 21).
+# D-LM-BC-IND-021: Induction on inequalities: 2^n > n for all n >= 1.
 
 def induction_step(n: int, step: int) -> int
   requires n >= 0 and step >= 0

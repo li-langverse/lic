@@ -1,0 +1,24 @@
+# E-574: Is it true that, for $k\geq 2$,\[\mathrm{ex}(n;\{C_{2k-1},C_{2k}\})=(1+o(1))(n/2)^{1+\frac{1}{k}}.\]
+# erdos_number: 574
+# erdos_status: open
+# priority_tier: P2
+# tags: graph_theory, turan_number
+
+def erdos_e574_is_it_true_that_for_k_geq_2_mathrm_ex_n() -> int
+  requires true
+  ensures result == 0  # open: E-574
+  decreases 0
+=
+  return 0
+
+extern proc erdos_e574_open_witness() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+
+def main() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0

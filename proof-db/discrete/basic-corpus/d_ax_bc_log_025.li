@@ -1,4 +1,4 @@
-# D-AX-BC-LOG-025: Propositional tautology schema (variant 25).
+# D-AX-BC-LOG-025: De Morgan: not (P and Q) equivalent to (not P or not Q).
 
 extern proc d_ax_bc_log_025_axiom_witness() -> int
   requires true

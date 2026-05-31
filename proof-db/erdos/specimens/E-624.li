@@ -1,0 +1,24 @@
+# E-624: Let $X$ be a finite set of size $n$ and $H(n)$ be such that there is a function $f:\{A : A\subseteq X\}\to X$ so that for every $Y\subseteq X$ with $\lvert Y\rvert \geq H(n)$ we have\[\{ f(A) : A\subseteq Y\}=X.\]Prove that\[H(n)-\log_2 n \to \infty.\]
+# erdos_number: 624
+# erdos_status: open
+# priority_tier: P2
+# tags: combinatorics
+
+def erdos_e624_let_x_be_a_finite_set_of_size_n_and_h_n() -> int
+  requires true
+  ensures result == 0  # open: E-624
+  decreases 0
+=
+  return 0
+
+extern proc erdos_e624_open_witness() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+
+def main() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0

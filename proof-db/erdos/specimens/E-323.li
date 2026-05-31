@@ -1,0 +1,24 @@
+# E-323: Let $1\leq m\leq k$ and $f_{k,m}(x)$ denote the number of integers $\leq x$ which are the sum of $m$ many nonnegative $k$th powers. Is it true that\[f_{k,k}(x) \gg_\epsilon x^{1-\epsilon}\]for all $\epsilon>0$? Is it true that if $m<k$ then\[f_{k,m}(x) \gg x^{m/k}\]for sufficiently large $x$?
+# erdos_number: 323
+# erdos_status: open
+# priority_tier: P2
+# tags: number_theory, powers
+
+def erdos_e323_let_1_leq_m_leq_k_and_f_k_m_x_denote_the() -> int
+  requires true
+  ensures result == 0  # open: E-323
+  decreases 0
+=
+  return 0
+
+extern proc erdos_e323_open_witness() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+
+def main() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0

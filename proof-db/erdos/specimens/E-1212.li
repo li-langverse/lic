@@ -1,0 +1,24 @@
+# E-1212: Let $G$ be the graph with vertex set those pairs $(x,y)\in \mathbb{N}^2$ with $\mathrm{gcd}(x,y)=1$, in which we join two vertices if the differ in only one coordinate, and there by $\pm 1$. Is there a path going to infinity on $G$, say $P$, such that for all $(x,y)\in P$ both $\min(x,y)>1$ and at least one of $x$ or $y$ is composite?
+# erdos_number: 1212
+# erdos_status: open
+# priority_tier: P2
+# tags: number_theory, primes
+
+def erdos_e1212_let_g_be_the_graph_with_vertex_set_those() -> int
+  requires true
+  ensures result == 0  # open: E-1212
+  decreases 0
+=
+  return 0
+
+extern proc erdos_e1212_open_witness() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+
+def main() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0

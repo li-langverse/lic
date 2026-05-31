@@ -1,0 +1,24 @@
+# E-673: Let $1=d_1<\cdots <d_{\tau(n)}=n$ be the divisors of $n$ and\[G(n) = \sum_{1\leq i<\tau(n)}\frac{d_i}{d_{i+1}}.\]Is it true that $G(n)\to \infty$ for almost all $n$? Can one prove an asymptotic formula for $\sum_{n\leq X}G(n)$?
+# erdos_number: 673
+# erdos_status: proved
+# priority_tier: P2
+# tags: divisors, number_theory
+
+def erdos_e673_let_1_d_1_cdots_d_tau_n_n_be_the_divisor() -> int
+  requires true
+  ensures result == 0  # open: E-673
+  decreases 0
+=
+  return 0
+
+extern proc erdos_e673_open_witness() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+
+def main() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0

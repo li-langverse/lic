@@ -1,0 +1,24 @@
+# E-955: Let\[s(n)=\sigma(n)-n=\sum_{\substack{d\mid n\\ d<n}}d\]be the sum of proper divisors function. If $A\subset \mathbb{N}$ has density $0$ then $s^{-1}(A)$ must also have density $0$.
+# erdos_number: 955
+# erdos_status: open
+# priority_tier: P2
+# tags: number_theory
+
+def erdos_e955_let_s_n_sigma_n_n_sum_substack_d_mid_n_d() -> int
+  requires true
+  ensures result == 0  # open: E-955
+  decreases 0
+=
+  return 0
+
+extern proc erdos_e955_open_witness() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+
+def main() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0

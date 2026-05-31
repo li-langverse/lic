@@ -1,0 +1,24 @@
+# E-48: Is the distance sqrt(2) rational from every point of a dense set of points in the plane?
+# erdos_number: 48
+# erdos_status: open
+# priority_tier: P2
+# tags: combinatorial_geometry, diophantine
+
+def erdos_e48_is_the_distance_sqrt_2_rational_from_eve() -> int
+  requires true
+  ensures result == 0  # open: E-48
+  decreases 0
+=
+  return 0
+
+extern proc erdos_e48_open_witness() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+
+def main() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0

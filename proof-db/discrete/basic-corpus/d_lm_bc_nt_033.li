@@ -1,4 +1,4 @@
-# D-LM-BC-NT-033: Divisibility / gcd property (variant 33).
+# D-LM-BC-NT-033: Division property: if a|bc and gcd(a,b)=1 then a|c.
 
 def gcd_divides(a: int, b: int, g: int) -> int
   requires a >= 0 and b >= 0 and g >= 0

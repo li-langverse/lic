@@ -1,0 +1,24 @@
+# E-903: Let $n=p^2+p+1$ for some prime power $p$, and let $A_1,\ldots,A_t\subseteq \{1,\ldots,n\}$ be a block design (so that every pair $x,y\in \{1,\ldots,n\}$ is contained in exactly one $A_i$). Is it true that if $t>n$ then $t\geq n+p$?
+# erdos_number: 903
+# erdos_status: proved
+# priority_tier: P2
+# tags: combinatorics
+
+def erdos_e903_let_n_p_2_p_1_for_some_prime_power_p_and() -> int
+  requires true
+  ensures result == 0  # open: E-903
+  decreases 0
+=
+  return 0
+
+extern proc erdos_e903_open_witness() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+
+def main() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0

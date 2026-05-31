@@ -1,4 +1,4 @@
-# D-LM-BC-IND-001: Mathematical induction principle (variant 1).
+# D-LM-BC-IND-001: Mathematical induction: if P(0) and forall k (P(k) implies P(k+1)) then forall n P(n).
 
 def induction_step(n: int, step: int) -> int
   requires n >= 0 and step >= 0

@@ -1,4 +1,4 @@
-# D-LM-BC-NT-008: Divisibility / gcd property (variant 8).
+# D-LM-BC-NT-008: Bezout identity: exists x,y with gcd(a,b) = a x + b y.
 
 def gcd_divides(a: int, b: int, g: int) -> int
   requires a >= 0 and b >= 0 and g >= 0

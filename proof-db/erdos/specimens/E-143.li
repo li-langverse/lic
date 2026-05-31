@@ -1,0 +1,24 @@
+# E-143: Let $A\subset (1,\infty)$ be a countably infinite set such that for all $x\neq y\in A$ and integers $k\geq 1$ we have\[ \lvert kx -y\rvert \geq 1.\]Does this imply that $A$ is sparse? In particular, does this imply that\[\sum_{x\in A}\frac{1}{x\log x}<\infty\]or\[\sum_{\substack{x <n\\ x\in A}}\frac{1}{x}=o(\log n)?\]
+# erdos_number: 143
+# erdos_status: open
+# priority_tier: P2
+# tags: primitive_sets
+
+def erdos_e143_let_a_subset_1_infty_be_a_countably_infi() -> int
+  requires true
+  ensures result == 0  # open: E-143
+  decreases 0
+=
+  return 0
+
+extern proc erdos_e143_open_witness() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+
+def main() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0

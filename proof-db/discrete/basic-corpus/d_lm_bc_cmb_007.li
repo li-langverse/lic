@@ -1,4 +1,4 @@
-# D-LM-BC-CMB-007: Binomial coefficient identity (variant 7).
+# D-LM-BC-CMB-007: Binomial symmetry: C(n,k) = C(n,n-k).
 
 def binomial_symmetry(n: int, k: int) -> int
   requires n >= 0 and 0 <= k and k <= n

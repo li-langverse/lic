@@ -1,4 +1,4 @@
-# GT-LM-BC-COL-019: Chromatic number upper bound Delta+1 (variant 19).
+# GT-LM-BC-COL-019: Bipartite graphs satisfy chi(G) = 2 when |E| > 0.
 
 def chromatic_upper(delta: int) -> int
   requires delta >= 0

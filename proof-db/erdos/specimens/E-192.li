@@ -1,0 +1,24 @@
+# E-192: Let $A=\{a_1,a_2,\ldots\}\subset \mathbb{R}^d$ be an infinite sequence such that $a_{i+1}-a_i$ is a positive unit vector (i.e. is of the form $(0,0,\ldots,1,0,\ldots,0)$). For which $d$ must $A$ contain a three-term arithmetic progression?
+# erdos_number: 192
+# erdos_status: open
+# priority_tier: P2
+# tags: arithmetic_progressions, combinatorics
+
+def erdos_e192_let_a_a_1_a_2_ldots_subset_mathbb_r_d_be() -> int
+  requires true
+  ensures result == 0  # open: E-192
+  decreases 0
+=
+  return 0
+
+extern proc erdos_e192_open_witness() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+
+def main() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0

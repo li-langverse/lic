@@ -1,4 +1,4 @@
-# D-LM-BC-NT-003: Divisibility / gcd property (variant 3).
+# D-LM-BC-NT-003: Euclidean algorithm: gcd(a,b) = gcd(b, a mod b) for b != 0.
 
 def gcd_divides(a: int, b: int, g: int) -> int
   requires a >= 0 and b >= 0 and g >= 0

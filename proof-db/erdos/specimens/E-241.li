@@ -1,0 +1,24 @@
+# E-241: Let $f(N)$ be the maximum size of $A\subseteq \{1,\ldots,N\}$ such that the sums $a+b+c$ with $a,b,c\in A$ are all distinct (aside from the trivial coincidences). Is it true that\[ f(N)\sim N^{1/3}?\]
+# erdos_number: 241
+# erdos_status: open
+# priority_tier: P2
+# tags: additive_combinatorics, sidon_sets
+
+def erdos_e241_let_f_n_be_the_maximum_size_of_a_subsete() -> int
+  requires true
+  ensures result == 0  # open: E-241
+  decreases 0
+=
+  return 0
+
+extern proc erdos_e241_open_witness() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+
+def main() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0

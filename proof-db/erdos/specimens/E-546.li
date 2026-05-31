@@ -1,0 +1,24 @@
+# E-546: Let $G$ be a graph with no isolated vertices and $m$ edges. Is it true that\[R(G) \leq 2^{O(m^{1/2})}?\]
+# erdos_number: 546
+# erdos_status: proved
+# priority_tier: P2
+# tags: graph_theory, ramsey_theory
+
+def erdos_e546_let_g_be_a_graph_with_no_isolated_vertic() -> int
+  requires true
+  ensures result == 0  # open: E-546
+  decreases 0
+=
+  return 0
+
+extern proc erdos_e546_open_witness() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+
+def main() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0

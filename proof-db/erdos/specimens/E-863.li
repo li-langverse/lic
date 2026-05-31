@@ -1,0 +1,24 @@
+# E-863: Let $r\geq 2$ and let $A\subseteq \{1,\ldots,N\}$ be a set of maximal size such that there are at most $r$ solutions to $n=a+b$ with $a\leq b$ for any $n$. (That is, $A$ is a $B_2[r]$ set.) Similarly, let $B\subseteq \{1,\ldots,N\}$ be a set of maximal size such that there are at most $r$ solutions to $n=a-b$ for any $n\geq 1$. If $\lvert A\rvert\sim c_rN^{1/2}$ as $N\to \infty$ and $\lvert B\rvert \sim c_r'N^{1/2}$ as $N\to \infty$ then is it true that $c_r\neq c_r'$ for $r\geq 2$? Is it true that $c_r'<c_r$?
+# erdos_number: 863
+# erdos_status: proved
+# priority_tier: P2
+# tags: additive_combinatorics, number_theory, sidon_sets
+
+def erdos_e863_let_r_geq_2_and_let_a_subseteq_1_ldots_n() -> int
+  requires true
+  ensures result == 0  # open: E-863
+  decreases 0
+=
+  return 0
+
+extern proc erdos_e863_open_witness() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+
+def main() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0

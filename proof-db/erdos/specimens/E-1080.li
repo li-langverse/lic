@@ -1,0 +1,24 @@
+# E-1080: Let $G$ be a bipartite graph on $n$ vertices such that one part has $\lfloor n^{2/3}\rfloor$ vertices. Is there a constant $c>0$ such that if $G$ has at least $cn$ edges then $G$ must contain a $C_6$?
+# erdos_number: 1080
+# erdos_status: open
+# priority_tier: P2
+# tags: graph_theory
+
+def erdos_e1080_let_g_be_a_bipartite_graph_on_n_vertices() -> int
+  requires true
+  ensures result == 0  # open: E-1080
+  decreases 0
+=
+  return 0
+
+extern proc erdos_e1080_open_witness() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+
+def main() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0

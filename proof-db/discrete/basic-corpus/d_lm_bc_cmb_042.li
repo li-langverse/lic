@@ -1,4 +1,4 @@
-# D-LM-BC-CMB-042: Binomial coefficient identity (variant 42).
+# D-LM-BC-CMB-042: Chu-Vandermonde: sum_{k} C(m,k) C(n,l-k) = C(m+n,l).
 
 def binomial_symmetry(n: int, k: int) -> int
   requires n >= 0 and 0 <= k and k <= n

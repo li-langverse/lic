@@ -1,0 +1,24 @@
+# E-1142: Are there infinitely many $n$ (or any $n>105$) such that $n-2^k$ is prime for all $1<2^k<n$?
+# erdos_number: 1142
+# erdos_status: open
+# priority_tier: P2
+# tags: number_theory, primes
+
+def erdos_e1142_are_there_infinitely_many_n_or_any_n_105() -> int
+  requires true
+  ensures result == 0  # open: E-1142
+  decreases 0
+=
+  return 0
+
+extern proc erdos_e1142_open_witness() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+
+def main() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0

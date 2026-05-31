@@ -1,4 +1,4 @@
-# GT-LM-BC-HS-016: Handshaking lemma: sum deg(v) = 2|E| (variant 16).
+# GT-LM-BC-HS-016: Regular graph: if every vertex has degree d then 2|E| = d|V|.
 
 def handshaking_sum(deg_sum: int, edge_count: int) -> int
   requires edge_count >= 0

@@ -1,0 +1,24 @@
+# E-413: Let $\omega(n)$ count the number of distinct primes dividing $n$. Are there infinitely many $n$ such that, for all $m<n$, we have $m+\omega(m) \leq n$? Can one show that there exists an $\epsilon>0$ such that there are infinitely many $n$ where $m+\epsilon \omega(m)\leq n$ for all $m<n$?
+# erdos_number: 413
+# erdos_status: open
+# priority_tier: P2
+# tags: iterated_functions, number_theory
+
+def erdos_e413_let_omega_n_count_the_number_of_distinct() -> int
+  requires true
+  ensures result == 0  # open: E-413
+  decreases 0
+=
+  return 0
+
+extern proc erdos_e413_open_witness() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+
+def main() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0

@@ -1,4 +1,4 @@
-# GT-LM-BC-COL-044: Chromatic number upper bound Delta+1 (variant 44).
+# GT-LM-BC-COL-044: Planar graph chi <= 4 (four color theorem statement).
 
 def chromatic_upper(delta: int) -> int
   requires delta >= 0

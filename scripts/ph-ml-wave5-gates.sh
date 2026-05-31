@@ -7,7 +7,7 @@ cd "$ROOT"
 run_in_wsl() {
   local wsl_root
   wsl_root="$(wsl.exe wslpath -u "$ROOT" 2>/dev/null | tr -d '\r\n')"
-  wsl.exe bash -lc "cd '$wsl_root' && export PH_ML_WAVE5_ROOT='$wsl_root' PH_ML_WAVE5_INNER=1 LIC=./build-wsl/compiler/lic/lic source scripts/ph-ml-wave5-gates.sh"
+  wsl.exe bash -lc "cd '$wsl_root' && export PH_ML_WAVE5_ROOT='$wsl_root' PH_ML_WAVE5_INNER=1 LIC=./build-wsl/compiler/lic/lic; source scripts/ph-ml-wave5-gates.sh"
 }
 
 lic_bin_for_smokes() {

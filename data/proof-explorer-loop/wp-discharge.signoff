@@ -1,0 +1,20 @@
+https://github.com/li-langverse/lic/pull/TBD
+Phase 5 discharge sprint — pending human review.
+
+| Bug | Disposition |
+|-----|-------------|
+| BUG-C-01 | catalog_downgrade — docs/reports/compiler-audit/BUG-C-01.md |
+| BUG-C-05 | specimen added — witnessed_ensures_ident.li |
+| BUG-C-06/07 | baseline synced — proof-db/baseline.jsonl + catalog-baseline.jsonl |
+| BUG-L-01 | float-discharge-policy.md + gap_kind=float_open tagging |
+| BUG-L-05/06 | P-float-sqrt-open-bound downgraded; duplicate specimens documented |
+
+Discharge log: data/proof-explorer-loop/discharge-log.jsonl (4 core entries)
+
+Gates:
+- bash scripts/proof-explorer-phase4-completion-gate.sh
+- bash scripts/proof-explorer-gates/wp-discharge-dot4.sh
+- bash scripts/proof-explorer-gates/wp-baseline-sync.sh
+- bash scripts/proof-explorer-gates/wp-float-policy.sh
+- bash scripts/proof-explorer-gates/wp-discharge-core.sh
+- bash scripts/proof-explorer-gates/wp4-audit.sh

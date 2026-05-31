@@ -1,0 +1,15 @@
+# BUG-C-05: MIR-linked ensures witness — identity return matches postcondition.
+def identity_witness(x: int) -> int
+  requires true
+  ensures result == x
+  decreases 0
+=
+  return x
+
+def main() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  var y: int = identity_witness(42)
+  return 0

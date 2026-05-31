@@ -3,6 +3,37 @@
 set -euo pipefail
 ROOT="${PH_ML_PROGRAM_COMPLETE_ROOT:-$(cd "$(dirname "${BASH_SOURCE[0]:-$0}")/.." && pwd)}"
 cd "$ROOT"
+
+run_in_wsl() {
+  local wsl_root wsl_bench
+  wsl_root="$(wsl.exe wslpath -u "$ROOT" 2>/dev/null | tr -d '\r\n')"
+  wsl_bench=""
+  if [[ -n "${BENCHMARKS_ROOT:-}" ]]; then
+    wsl_bench="$(wsl.exe wslpath -u "$BENCHMARKS_ROOT" 2>/dev/null | tr -d '\r\n')" || wsl_bench=""
+  fi
+  if [[ -z "$wsl_bench" ]]; then
+    for _c in "$ROOT/../benchmarks" "$ROOT/../../benchmarks" "$ROOT/../../../../../benchmarks"; do
+      if [[ -f "$_c/harness/bench.py" ]]; then
+        wsl_bench="$(wsl.exe wslpath -u "$(cd "$_c" && pwd)" 2>/dev/null | tr -d '\r\n')" || wsl_bench=""
+        break
+      fi
+    done
+  fi
+  local wsl_weights=""
+  if [[ -n "${PH_ML_WEIGHTS_FIXTURE:-}" ]]; then
+    wsl_weights="$(wsl.exe wslpath -u "$PH_ML_WEIGHTS_FIXTURE" 2>/dev/null | tr -d '\r\n')" || wsl_weights=""
+  fi
+  wsl.exe bash -lc "cd '$wsl_root' && export PH_ML_PROGRAM_COMPLETE_ROOT='$wsl_root' PH_ML_PROGRAM_COMPLETE_INNER=1 LIG_EMIT_CUDA=1 BENCHMARKS_ROOT='${wsl_bench}' BENCHMARKS_RESULTS='$wsl_root/benchmarks/results' PH_ML_WEIGHTS_FIXTURE='${wsl_weights:-$wsl_root/benchmarks/fixtures/ph-ml-weights}' && bash scripts/ph-ml-program-complete-gates.sh"
+}
+
+if [[ "${PH_ML_PROGRAM_COMPLETE_INNER:-0}" != "1" ]] && [[ ! -x "$ROOT/build/compiler/lic/lic" && ! -x "$ROOT/build/compiler/lic/lic.exe" ]] && command -v wsl.exe >/dev/null 2>&1; then
+  wsl_root="$(wsl.exe wslpath -u "$ROOT" 2>/dev/null | tr -d '\r\n')"
+  if [[ -n "$wsl_root" ]] && wsl.exe bash -lc "test -x '$wsl_root/build-wsl/compiler/lic/lic'" 2>/dev/null; then
+    run_in_wsl
+    exit $?
+  fi
+fi
+
 # shellcheck source=lib/benchmarks-env.sh
 source "$ROOT/scripts/lib/benchmarks-env.sh"
 export BENCHMARKS_RESULTS="$ROOT/benchmarks/results"
@@ -73,7 +104,7 @@ if ratio is None or float(ratio) > 2.0:
     sys.exit(f"T6: ratio_vs_li must be <= 2.0 (got {ratio})")
 PY
 
-: "${PH_ML_WEIGHTS_FIXTURE:?set PH_ML_WEIGHTS_FIXTURE to a dir with .safetensors or .gguf}"
+export PH_ML_WEIGHTS_FIXTURE="${PH_ML_WEIGHTS_FIXTURE:-$ROOT/benchmarks/fixtures/ph-ml-weights}"
 python3 scripts/prepare_ph_ml_weights_fixture.py
 [[ -f "$PH_ML_WEIGHTS_FIXTURE/model.safetensors" && -f "$PH_ML_WEIGHTS_FIXTURE/model.gguf" ]] \
   || { echo "T7: PH_ML_WEIGHTS_FIXTURE must contain model.safetensors and model.gguf"; exit 1; }

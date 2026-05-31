@@ -28,7 +28,7 @@
 Runs Wave 12 baseline plus strict checks for **all** tranches T1–T8:
 
 ```bash
-cd lic && bash scripts/ph-ml-program-complete-gates.sh
+bash scripts/ph-ml-program-complete-gates.sh
 ```
 
 Milestone-only (not sufficient to stop the loop): `bash scripts/ph-ml-wave13-gates.sh`

@@ -16,5 +16,5 @@
     "li_studio_demo_binary": "pass"
   },
   "notes": "WP-SIM-06 cumulative studio.toml line parser (li_rt_studio_toml_*) parses determinism_tier 0-3 and [engine.export] formats/require_sim_pass/printer_profile into StudioProjectConfig; studio_apply_config_to_sim maps tier to sim output_detail. li-studio-demo built and runs STUDIO_DEMO_FRAMES=1 on WSL.",
-  "pr_url": "https://github.com/li-langverse/lic/pull/637"
+  "pr_url": "https://github.com/li-langverse/lic/pull/638"
 }

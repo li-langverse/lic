@@ -23,16 +23,9 @@ def load_toml(path: Path) -> dict:
     return tomllib.loads(path.read_text(encoding="utf-8"))
 
 
-def rel_to_root(path: Path) -> str:
-    try:
-        return str(path.relative_to(ROOT))
-    except ValueError:
-        return str(path)
-
-
 def main() -> None:
     if not REGISTRY.is_file():
-        fail(f"missing {rel_to_root(REGISTRY)}")
+        fail(f"missing {REGISTRY.relative_to(ROOT)}")
 
     reg = load_toml(REGISTRY)
     meta = reg.get("meta") or {}
@@ -48,11 +41,7 @@ def main() -> None:
         "output_competitive", "benchmarks/results/bench-studio-viewport-perf.json"
     )
     LATEST = ROOT / latest_rel
-    bench_results = os.environ.get("BENCHMARKS_RESULTS")
-    if bench_results:
-        COMPETITIVE = Path(bench_results) / Path(competitive_rel).name
-    else:
-        COMPETITIVE = ROOT / competitive_rel
+    COMPETITIVE = ROOT / competitive_rel
 
     gate_ids = {g["id"] for g in reg.get("gate") or [] if isinstance(g, dict) and "id" in g}
     for required in ("viewport_fps", "panel_switch_ms", "studio_load_ms"):

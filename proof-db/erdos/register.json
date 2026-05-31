@@ -1,28 +1,53 @@
 {
   "schema_version": 1,
-  "updated": "2026-05-30",
-  "source": "Curated from erdosproblems.com index; tiers per proof-db/erdos/ROADMAP.md",
+  "updated": "2026-05-31",
+  "source": "Curated from erdosproblems.com; Tier-1 patch 2026-05-31 (fixes E-4/16/18/61/90 + Bloom Top-10 adds)",
   "problems": [
     {
       "number": 1,
       "statement": "Are there infinitely many integers n such that at least one of n!+1, n!-1, or n!+(n+1) is prime?",
-      "tags": ["number_theory", "primes", "factorial"],
+      "tags": [
+        "number_theory",
+        "primes",
+        "factorial"
+      ],
       "priority_tier": "P2",
       "erdos_status": "open",
       "external_url": "https://www.erdosproblems.com/1"
     },
     {
-      "number": 4,
-      "statement": "Does the pair-correlation function of normalized zeros of the Riemann zeta function agree with the GUE prediction (Montgomery conjecture)?",
-      "tags": ["analytic_number_theory", "zeta"],
-      "priority_tier": "P1",
+      "number": 3,
+      "statement": "If A subset N has sum_{n in A} 1/n = infinity, must A contain arbitrarily long arithmetic progressions?",
+      "tags": [
+        "number_theory",
+        "additive_combinatorics",
+        "arithmetic_progressions"
+      ],
+      "priority_tier": "P0",
       "erdos_status": "open",
-      "external_url": "https://www.erdosproblems.com/4"
+      "external_url": "https://www.erdosproblems.com/3",
+      "notes": "Bloom Top 10; $5000 prize."
+    },
+    {
+      "number": 4,
+      "statement": "For any C>0, are there infinitely many n with p_{n+1}-p_n > C (log log n log log log log n / (log log log n)^2) log n?",
+      "tags": [
+        "number_theory",
+        "primes",
+        "prime_gaps"
+      ],
+      "priority_tier": "P1",
+      "erdos_status": "proved",
+      "external_url": "https://www.erdosproblems.com/4",
+      "notes": "Proved by Maynard (2016) and Ford–Green–Konyagin–Tao (2016)."
     },
     {
       "number": 5,
       "statement": "Is there a constant c such that every n can be written as a sum of at most c squares of primes?",
-      "tags": ["additive_number_theory", "primes"],
+      "tags": [
+        "additive_number_theory",
+        "primes"
+      ],
       "priority_tier": "P2",
       "erdos_status": "open",
       "external_url": "https://www.erdosproblems.com/5"
@@ -30,7 +55,10 @@
     {
       "number": 8,
       "statement": "Do there exist infinitely many n with sigma(n) a perfect square (sigma is the sum-of-divisors function)?",
-      "tags": ["number_theory", "divisors"],
+      "tags": [
+        "number_theory",
+        "divisors"
+      ],
       "priority_tier": "P3",
       "erdos_status": "open",
       "external_url": "https://www.erdosproblems.com/8"
@@ -38,48 +66,102 @@
     {
       "number": 9,
       "statement": "Are there infinitely many n such that sigma(n) and sigma(n+1) are both perfect squares?",
-      "tags": ["number_theory", "divisors"],
+      "tags": [
+        "number_theory",
+        "divisors"
+      ],
       "priority_tier": "P3",
       "erdos_status": "open",
       "external_url": "https://www.erdosproblems.com/9"
     },
     {
+      "number": 10,
+      "statement": "Does there exist a set A of positive integers with sum_{n in A} 1/n = infinity such that A contains no three-term arithmetic progression?",
+      "tags": [
+        "number_theory",
+        "additive_combinatorics",
+        "arithmetic_progressions"
+      ],
+      "priority_tier": "P1",
+      "erdos_status": "open",
+      "external_url": "https://www.erdosproblems.com/10"
+    },
+    {
+      "number": 11,
+      "statement": "Is every large odd integer n the sum of a squarefree number and a power of 2?",
+      "tags": [
+        "number_theory",
+        "additive_combinatorics"
+      ],
+      "priority_tier": "P1",
+      "erdos_status": "open",
+      "external_url": "https://www.erdosproblems.com/11"
+    },
+    {
       "number": 12,
       "statement": "Does the sum of 1/(p log p) over primes p diverge (with log the natural logarithm)?",
-      "tags": ["analytic_number_theory", "primes"],
+      "tags": [
+        "analytic_number_theory",
+        "primes"
+      ],
       "priority_tier": "P2",
       "erdos_status": "open",
       "external_url": "https://www.erdosproblems.com/12"
     },
     {
       "number": 16,
-      "statement": "What is the maximum number of unit distances among n points in the plane (Erdős unit-distance problem)?",
-      "tags": ["combinatorial_geometry", "extremal"],
-      "priority_tier": "P1",
-      "erdos_status": "open",
-      "external_url": "https://www.erdosproblems.com/16"
+      "statement": "Is the set of odd integers not of the form 2^k+p the union of an infinite arithmetic progression and a set of density 0?",
+      "tags": [
+        "number_theory",
+        "additive_combinatorics"
+      ],
+      "priority_tier": "P2",
+      "erdos_status": "proved",
+      "external_url": "https://www.erdosproblems.com/16",
+      "notes": "Disproved by Chen (2023)."
     },
     {
       "number": 18,
-      "statement": "Must every set of n points in the plane determine at least n^{1-o(1)} distinct distances (distinct-distance problem)?",
-      "tags": ["combinatorial_geometry", "extremal"],
-      "priority_tier": "P1",
+      "statement": "We call m practical if every integer 1<=n<=m is a sum of distinct divisors of m. Does the density of practical numbers tend to 0?",
+      "tags": [
+        "number_theory",
+        "divisors"
+      ],
+      "priority_tier": "P2",
       "erdos_status": "open",
       "external_url": "https://www.erdosproblems.com/18"
     },
     {
       "number": 19,
       "statement": "Is it true that sum_{n=1}^infty 1/(n phi(n)) converges, where phi is Euler's totient?",
-      "tags": ["number_theory", "series"],
+      "tags": [
+        "number_theory",
+        "series"
+      ],
       "priority_tier": "P2",
       "erdos_status": "proved",
       "external_url": "https://www.erdosproblems.com/19",
       "notes": "Proved by Goldfeld (1973)."
     },
     {
+      "number": 20,
+      "statement": "Let f(n,k) be minimal such that every family of n-uniform sets of size >= f(n,k) contains a k-sunflower. Is f(n,k) < c_k^n for some constant c_k>0?",
+      "tags": [
+        "combinatorics",
+        "sunflower"
+      ],
+      "priority_tier": "P0",
+      "erdos_status": "open",
+      "external_url": "https://www.erdosproblems.com/20",
+      "notes": "Bloom Top 10; $1000 prize for k=3."
+    },
+    {
       "number": 25,
       "statement": "Are prime gaps o((log n)^2) infinitely often (better than trivial Cramer-type bounds)?",
-      "tags": ["primes", "prime_gaps"],
+      "tags": [
+        "primes",
+        "prime_gaps"
+      ],
       "priority_tier": "P0",
       "erdos_status": "target",
       "external_url": "https://www.erdosproblems.com/25"
@@ -87,15 +169,33 @@
     {
       "number": 26,
       "statement": "Can every sufficiently large integer be written as the sum of a square and a prime?",
-      "tags": ["additive_number_theory", "primes"],
+      "tags": [
+        "additive_number_theory",
+        "primes"
+      ],
       "priority_tier": "P1",
       "erdos_status": "open",
       "external_url": "https://www.erdosproblems.com/26"
     },
     {
+      "number": 28,
+      "statement": "If A subset N is such that A+A contains all but finitely many integers, does limsup 1_A * 1_A(n) = infinity (Erdős–Turán additive bases)?",
+      "tags": [
+        "number_theory",
+        "additive_combinatorics"
+      ],
+      "priority_tier": "P1",
+      "erdos_status": "open",
+      "external_url": "https://www.erdosproblems.com/28",
+      "notes": "Bloom Top 10."
+    },
+    {
       "number": 29,
       "statement": "Are there infinitely many primes p such that p+k is also prime for some fixed k (prime k-tuples generalization)?",
-      "tags": ["primes", "prime_gaps"],
+      "tags": [
+        "primes",
+        "prime_gaps"
+      ],
       "priority_tier": "P0",
       "erdos_status": "open",
       "external_url": "https://www.erdosproblems.com/29"
@@ -103,7 +203,10 @@
     {
       "number": 33,
       "statement": "Are there infinitely many n such that n and n+2 are both sums of two cubes of integers?",
-      "tags": ["diophantine", "additive"],
+      "tags": [
+        "diophantine",
+        "additive"
+      ],
       "priority_tier": "P2",
       "erdos_status": "open",
       "external_url": "https://www.erdosproblems.com/33"
@@ -111,7 +214,10 @@
     {
       "number": 39,
       "statement": "Does there exist a finite covering system of the integers by distinct residue classes with odd distinct moduli?",
-      "tags": ["combinatorics", "covering_systems"],
+      "tags": [
+        "combinatorics",
+        "covering_systems"
+      ],
       "priority_tier": "P1",
       "erdos_status": "open",
       "external_url": "https://www.erdosproblems.com/39"
@@ -119,7 +225,10 @@
     {
       "number": 42,
       "statement": "Are there infinitely many n such that n and n+2 are both products of exactly two primes (Chen-type twin)?",
-      "tags": ["primes", "almost_prime"],
+      "tags": [
+        "primes",
+        "almost_prime"
+      ],
       "priority_tier": "P0",
       "erdos_status": "open",
       "external_url": "https://www.erdosproblems.com/42"
@@ -127,7 +236,10 @@
     {
       "number": 44,
       "statement": "Are there infinitely many n such that n!+1 is prime?",
-      "tags": ["primes", "factorial"],
+      "tags": [
+        "primes",
+        "factorial"
+      ],
       "priority_tier": "P2",
       "erdos_status": "open",
       "external_url": "https://www.erdosproblems.com/44"
@@ -135,7 +247,10 @@
     {
       "number": 45,
       "statement": "Are there infinitely many n such that the least prime factor of n!+1 exceeds n^{1+epsilon} for some fixed epsilon>0?",
-      "tags": ["primes", "factorial"],
+      "tags": [
+        "primes",
+        "factorial"
+      ],
       "priority_tier": "P3",
       "erdos_status": "open",
       "external_url": "https://www.erdosproblems.com/45"
@@ -143,7 +258,10 @@
     {
       "number": 47,
       "statement": "Does the Collatz map n -> n/2 (even) or 3n+1 (odd) always reach 1 from every positive starting value?",
-      "tags": ["dynamics", "iterative"],
+      "tags": [
+        "dynamics",
+        "iterative"
+      ],
       "priority_tier": "P0",
       "erdos_status": "target",
       "external_url": "https://www.erdosproblems.com/47"
@@ -151,7 +269,10 @@
     {
       "number": 48,
       "statement": "Is the distance sqrt(2) rational from every point of a dense set of points in the plane?",
-      "tags": ["combinatorial_geometry", "diophantine"],
+      "tags": [
+        "combinatorial_geometry",
+        "diophantine"
+      ],
       "priority_tier": "P2",
       "erdos_status": "open",
       "external_url": "https://www.erdosproblems.com/48"
@@ -159,7 +280,10 @@
     {
       "number": 50,
       "statement": "For simple random walk on Z^d, is the probability of return to the origin after 2n steps asymptotic to (4/pi)^n n^{-3/2} in d=2?",
-      "tags": ["probability", "random_walk"],
+      "tags": [
+        "probability",
+        "random_walk"
+      ],
       "priority_tier": "P3",
       "erdos_status": "open",
       "external_url": "https://www.erdosproblems.com/50"
@@ -167,15 +291,33 @@
     {
       "number": 51,
       "statement": "Can every dense set of points in the plane realize every rational distance?",
-      "tags": ["combinatorial_geometry"],
+      "tags": [
+        "combinatorial_geometry"
+      ],
       "priority_tier": "P2",
       "erdos_status": "open",
       "external_url": "https://www.erdosproblems.com/51"
     },
     {
+      "number": 52,
+      "statement": "For finite A subset Z and every epsilon>0, is max(|A+A|,|AA|) >>_epsilon |A|^{2-epsilon} (integer sum-product)?",
+      "tags": [
+        "number_theory",
+        "additive_combinatorics",
+        "sum_product"
+      ],
+      "priority_tier": "P0",
+      "erdos_status": "open",
+      "external_url": "https://www.erdosproblems.com/52",
+      "notes": "Bloom Top 10; real-number variant disproved May 2026; Z variant open."
+    },
+    {
       "number": 54,
       "statement": "For odd prime p, is the least quadratic non-residue mod p bounded by (log p)^2?",
-      "tags": ["analytic_number_theory", "primes"],
+      "tags": [
+        "analytic_number_theory",
+        "primes"
+      ],
       "priority_tier": "P2",
       "erdos_status": "open",
       "external_url": "https://www.erdosproblems.com/54"
@@ -183,7 +325,10 @@
     {
       "number": 57,
       "statement": "Are there infinitely many n such that n^4+4 is prime (Fermat-style)?",
-      "tags": ["primes", "polynomials"],
+      "tags": [
+        "primes",
+        "polynomials"
+      ],
       "priority_tier": "P2",
       "erdos_status": "open",
       "external_url": "https://www.erdosproblems.com/57"
@@ -191,7 +336,10 @@
     {
       "number": 58,
       "statement": "Does the greedy algorithm for Egyptian fractions always terminate with denominators at most n^2 for numerator n?",
-      "tags": ["number_theory", "egyptian_fractions"],
+      "tags": [
+        "number_theory",
+        "egyptian_fractions"
+      ],
       "priority_tier": "P2",
       "erdos_status": "open",
       "external_url": "https://www.erdosproblems.com/58"
@@ -199,7 +347,10 @@
     {
       "number": 60,
       "statement": "Does there exist a prime between n and 2n for all sufficiently large n with an explicit effective bound?",
-      "tags": ["primes", "bertrand"],
+      "tags": [
+        "primes",
+        "bertrand"
+      ],
       "priority_tier": "P1",
       "erdos_status": "proved",
       "external_url": "https://www.erdosproblems.com/60",
@@ -207,8 +358,11 @@
     },
     {
       "number": 61,
-      "statement": "Does the abc conjecture hold (for coprime a+b=c, c < K rad(abc)^{1+epsilon})?",
-      "tags": ["diophantine", "abc"],
+      "statement": "For any graph H, is there c=c(H)>0 such that every n-vertex H-free graph contains a clique or independent set on at least n^c vertices (Erdős–Hajnal)?",
+      "tags": [
+        "graph_theory",
+        "extremal"
+      ],
       "priority_tier": "P0",
       "erdos_status": "open",
       "external_url": "https://www.erdosproblems.com/61",
@@ -217,7 +371,10 @@
     {
       "number": 62,
       "statement": "Can every integer n>1 be written as a sum of three fractions 4/x with x a positive integer (Erdős–Straus)?",
-      "tags": ["diophantine", "unit_fractions"],
+      "tags": [
+        "diophantine",
+        "unit_fractions"
+      ],
       "priority_tier": "P1",
       "erdos_status": "open",
       "external_url": "https://www.erdosproblems.com/62"
@@ -225,7 +382,10 @@
     {
       "number": 63,
       "statement": "Are there infinitely many Carmichael numbers (composite n with a^{n-1} = 1 mod n for all a coprime to n)?",
-      "tags": ["primes", "pseudoprimes"],
+      "tags": [
+        "primes",
+        "pseudoprimes"
+      ],
       "priority_tier": "P1",
       "erdos_status": "open",
       "external_url": "https://www.erdosproblems.com/63"
@@ -233,7 +393,10 @@
     {
       "number": 64,
       "statement": "Does sum_{p prime} 1/(p log log p) diverge?",
-      "tags": ["analytic_number_theory", "primes"],
+      "tags": [
+        "analytic_number_theory",
+        "primes"
+      ],
       "priority_tier": "P2",
       "erdos_status": "open",
       "external_url": "https://www.erdosproblems.com/64"
@@ -241,7 +404,10 @@
     {
       "number": 66,
       "statement": "Are there infinitely many n such that n + phi(n) is prime?",
-      "tags": ["primes", "totient"],
+      "tags": [
+        "primes",
+        "totient"
+      ],
       "priority_tier": "P2",
       "erdos_status": "open",
       "external_url": "https://www.erdosproblems.com/66"
@@ -249,7 +415,10 @@
     {
       "number": 68,
       "statement": "Can the positive integers be covered by finitely many residue classes with distinct moduli whose least common multiple is odd?",
-      "tags": ["combinatorics", "covering_systems"],
+      "tags": [
+        "combinatorics",
+        "covering_systems"
+      ],
       "priority_tier": "P1",
       "erdos_status": "open",
       "external_url": "https://www.erdosproblems.com/68"
@@ -257,7 +426,10 @@
     {
       "number": 69,
       "statement": "Are there infinitely many consecutive prime gaps strictly larger than log p for the smaller prime p?",
-      "tags": ["primes", "prime_gaps"],
+      "tags": [
+        "primes",
+        "prime_gaps"
+      ],
       "priority_tier": "P0",
       "erdos_status": "open",
       "external_url": "https://www.erdosproblems.com/69"
@@ -265,7 +437,10 @@
     {
       "number": 73,
       "statement": "Does the sum over primes p of 1/(p log p) vary slowly enough that partial sums determine convergence?",
-      "tags": ["analytic_number_theory", "primes"],
+      "tags": [
+        "analytic_number_theory",
+        "primes"
+      ],
       "priority_tier": "P3",
       "erdos_status": "open",
       "external_url": "https://www.erdosproblems.com/73"
@@ -273,7 +448,10 @@
     {
       "number": 74,
       "statement": "Does sum_{n=1}^infty 1/(n * product_{p|n} p) converge?",
-      "tags": ["number_theory", "series"],
+      "tags": [
+        "number_theory",
+        "series"
+      ],
       "priority_tier": "P3",
       "erdos_status": "open",
       "external_url": "https://www.erdosproblems.com/74"
@@ -281,7 +459,10 @@
     {
       "number": 75,
       "statement": "Is the density of amicable numbers zero among the positive integers?",
-      "tags": ["number_theory", "divisors"],
+      "tags": [
+        "number_theory",
+        "divisors"
+      ],
       "priority_tier": "P3",
       "erdos_status": "open",
       "external_url": "https://www.erdosproblems.com/75"
@@ -289,15 +470,34 @@
     {
       "number": 76,
       "statement": "Can every infinite set of primes contain a subset whose reciprocals sum to infinity?",
-      "tags": ["primes", "series"],
+      "tags": [
+        "primes",
+        "series"
+      ],
       "priority_tier": "P2",
       "erdos_status": "open",
       "external_url": "https://www.erdosproblems.com/76"
     },
     {
+      "number": 77,
+      "statement": "If R(k) is the Ramsey number for K_k, what is the value of lim_{k->infty} R(k)^{1/k}?",
+      "tags": [
+        "combinatorics",
+        "ramsey_theory",
+        "graph_theory"
+      ],
+      "priority_tier": "P1",
+      "erdos_status": "open",
+      "external_url": "https://www.erdosproblems.com/77",
+      "notes": "Bloom Top 10."
+    },
+    {
       "number": 78,
       "statement": "Are there infinitely many n such that the sum of distinct powers of 2 dividing n equals a prescribed value?",
-      "tags": ["binary", "divisors"],
+      "tags": [
+        "binary",
+        "divisors"
+      ],
       "priority_tier": "P3",
       "erdos_status": "open",
       "external_url": "https://www.erdosproblems.com/78"
@@ -305,7 +505,10 @@
     {
       "number": 80,
       "statement": "Does every set of integers with positive upper density contain a three-term arithmetic progression?",
-      "tags": ["combinatorics", "ramsey_theory"],
+      "tags": [
+        "combinatorics",
+        "ramsey_theory"
+      ],
       "priority_tier": "P0",
       "erdos_status": "proved",
       "external_url": "https://www.erdosproblems.com/80",
@@ -314,7 +517,10 @@
     {
       "number": 82,
       "statement": "For any finite set of primes, can every sufficiently large integer be written as a sum of prime powers from that set?",
-      "tags": ["additive_number_theory", "primes"],
+      "tags": [
+        "additive_number_theory",
+        "primes"
+      ],
       "priority_tier": "P2",
       "erdos_status": "open",
       "external_url": "https://www.erdosproblems.com/82"
@@ -322,7 +528,10 @@
     {
       "number": 83,
       "statement": "Are there infinitely many n such that n!!+1 is prime (double factorial)?",
-      "tags": ["primes", "factorial"],
+      "tags": [
+        "primes",
+        "factorial"
+      ],
       "priority_tier": "P3",
       "erdos_status": "open",
       "external_url": "https://www.erdosproblems.com/83"
@@ -330,7 +539,10 @@
     {
       "number": 86,
       "statement": "Is every even integer greater than 2 the sum of two primes (Goldbach conjecture)?",
-      "tags": ["primes", "additive"],
+      "tags": [
+        "primes",
+        "additive"
+      ],
       "priority_tier": "P0",
       "erdos_status": "target",
       "external_url": "https://www.erdosproblems.com/86"
@@ -338,7 +550,10 @@
     {
       "number": 87,
       "statement": "Are there infinitely many primes p such that p+2 is also prime (twin prime conjecture)?",
-      "tags": ["primes", "twin_primes"],
+      "tags": [
+        "primes",
+        "twin_primes"
+      ],
       "priority_tier": "P0",
       "erdos_status": "target",
       "external_url": "https://www.erdosproblems.com/87"
@@ -346,23 +561,33 @@
     {
       "number": 89,
       "statement": "Are there infinitely many prime gaps of size at least c*sqrt(p)*log p for some c>0 and large p?",
-      "tags": ["primes", "prime_gaps"],
+      "tags": [
+        "primes",
+        "prime_gaps"
+      ],
       "priority_tier": "P0",
       "erdos_status": "open",
       "external_url": "https://www.erdosproblems.com/89"
     },
     {
       "number": 90,
-      "statement": "For each k, does there exist n such that the interval (n, n+k] contains no primes?",
-      "tags": ["primes", "prime_gaps"],
-      "priority_tier": "P1",
-      "erdos_status": "open",
-      "external_url": "https://www.erdosproblems.com/90"
+      "statement": "Does every set of n distinct points in R^2 contain at most n^{1+O(1/log log n)} pairs at unit distance (unit distance problem)?",
+      "tags": [
+        "discrete_geometry",
+        "combinatorics"
+      ],
+      "priority_tier": "P0",
+      "erdos_status": "proved",
+      "external_url": "https://www.erdosproblems.com/90",
+      "notes": "Upper-bound conjecture disproved (OpenAI counterexample, May 2026); record as settled negative result."
     },
     {
       "number": 91,
       "statement": "Are there arbitrarily long runs of consecutive composite integers?",
-      "tags": ["primes", "composites"],
+      "tags": [
+        "primes",
+        "composites"
+      ],
       "priority_tier": "P1",
       "erdos_status": "proved",
       "external_url": "https://www.erdosproblems.com/91",
@@ -371,7 +596,10 @@
     {
       "number": 92,
       "statement": "Are there infinitely many primes of the form n^2+1?",
-      "tags": ["primes", "polynomials"],
+      "tags": [
+        "primes",
+        "polynomials"
+      ],
       "priority_tier": "P0",
       "erdos_status": "open",
       "external_url": "https://www.erdosproblems.com/92"
@@ -379,7 +607,10 @@
     {
       "number": 93,
       "statement": "Are there infinitely many n such that both 2^n-1 and 2^n+1 have few prime factors?",
-      "tags": ["primes", "mersenne"],
+      "tags": [
+        "primes",
+        "mersenne"
+      ],
       "priority_tier": "P2",
       "erdos_status": "open",
       "external_url": "https://www.erdosproblems.com/93"
@@ -387,7 +618,10 @@
     {
       "number": 95,
       "statement": "Does every covering system of the integers have a modulus divisible by 6?",
-      "tags": ["combinatorics", "covering_systems"],
+      "tags": [
+        "combinatorics",
+        "covering_systems"
+      ],
       "priority_tier": "P2",
       "erdos_status": "open",
       "external_url": "https://www.erdosproblems.com/95"
@@ -395,7 +629,10 @@
     {
       "number": 96,
       "statement": "Does sum_{n=1}^infty 1/(n log n (log log n)^c) diverge for every c?",
-      "tags": ["analysis", "series"],
+      "tags": [
+        "analysis",
+        "series"
+      ],
       "priority_tier": "P3",
       "erdos_status": "open",
       "external_url": "https://www.erdosproblems.com/96"
@@ -403,7 +640,10 @@
     {
       "number": 98,
       "statement": "Does sum_{n=1}^infty (1/n) * sum_{p|n} 1/p converge?",
-      "tags": ["number_theory", "series"],
+      "tags": [
+        "number_theory",
+        "series"
+      ],
       "priority_tier": "P3",
       "erdos_status": "open",
       "external_url": "https://www.erdosproblems.com/98"
@@ -411,7 +651,10 @@
     {
       "number": 99,
       "statement": "Are there infinitely many n such that the sum of prime gaps up to n exceeds n^{1+epsilon} for some epsilon>0?",
-      "tags": ["primes", "prime_gaps"],
+      "tags": [
+        "primes",
+        "prime_gaps"
+      ],
       "priority_tier": "P2",
       "erdos_status": "open",
       "external_url": "https://www.erdosproblems.com/99"
@@ -419,7 +662,9 @@
     {
       "number": 102,
       "statement": "Can every sufficiently large integer be written as a sum of distinct powers of 2 times distinct primes?",
-      "tags": ["additive_number_theory"],
+      "tags": [
+        "additive_number_theory"
+      ],
       "priority_tier": "P2",
       "erdos_status": "open",
       "external_url": "https://www.erdosproblems.com/102"
@@ -427,7 +672,10 @@
     {
       "number": 105,
       "statement": "Does the sum of 1/p over all primes p diverge?",
-      "tags": ["primes", "series"],
+      "tags": [
+        "primes",
+        "series"
+      ],
       "priority_tier": "P1",
       "erdos_status": "proved",
       "external_url": "https://www.erdosproblems.com/105",
@@ -436,7 +684,10 @@
     {
       "number": 107,
       "statement": "Are there infinitely many n such that phi(n) divides n^d - 1 for some fixed d?",
-      "tags": ["totient", "divisibility"],
+      "tags": [
+        "totient",
+        "divisibility"
+      ],
       "priority_tier": "P3",
       "erdos_status": "open",
       "external_url": "https://www.erdosproblems.com/107"
@@ -444,7 +695,10 @@
     {
       "number": 110,
       "statement": "Do there exist arbitrarily large sets of integers with no 4-term arithmetic progression?",
-      "tags": ["combinatorics", "ramsey_theory"],
+      "tags": [
+        "combinatorics",
+        "ramsey_theory"
+      ],
       "priority_tier": "P1",
       "erdos_status": "open",
       "external_url": "https://www.erdosproblems.com/110"
@@ -452,7 +706,10 @@
     {
       "number": 115,
       "statement": "Is every sufficiently large odd integer the sum of three primes (weak Goldbach)?",
-      "tags": ["primes", "additive"],
+      "tags": [
+        "primes",
+        "additive"
+      ],
       "priority_tier": "P0",
       "erdos_status": "proved",
       "external_url": "https://www.erdosproblems.com/115",
@@ -461,7 +718,10 @@
     {
       "number": 120,
       "statement": "Are there infinitely many n such that n and n+2 are both sums of two primes?",
-      "tags": ["primes", "additive"],
+      "tags": [
+        "primes",
+        "additive"
+      ],
       "priority_tier": "P0",
       "erdos_status": "open",
       "external_url": "https://www.erdosproblems.com/120"
@@ -469,7 +729,10 @@
     {
       "number": 126,
       "statement": "Does there exist a set of integers of positive density with no two elements differing by a square?",
-      "tags": ["combinatorics", "additive"],
+      "tags": [
+        "combinatorics",
+        "additive"
+      ],
       "priority_tier": "P2",
       "erdos_status": "open",
       "external_url": "https://www.erdosproblems.com/126"
@@ -477,7 +740,10 @@
     {
       "number": 127,
       "statement": "Are there infinitely many n such that n divides 2^n - 2 (Poulet pseudoprimes)?",
-      "tags": ["pseudoprimes", "divisibility"],
+      "tags": [
+        "pseudoprimes",
+        "divisibility"
+      ],
       "priority_tier": "P2",
       "erdos_status": "open",
       "external_url": "https://www.erdosproblems.com/127"
@@ -485,7 +751,10 @@
     {
       "number": 128,
       "statement": "Is the number of primes less than x equal to Li(x) + O(sqrt(x) log x) (Riemann hypothesis consequence)?",
-      "tags": ["primes", "zeta"],
+      "tags": [
+        "primes",
+        "zeta"
+      ],
       "priority_tier": "P0",
       "erdos_status": "open",
       "external_url": "https://www.erdosproblems.com/128"
@@ -493,7 +762,10 @@
     {
       "number": 130,
       "statement": "Are there infinitely many n such that n and n+1 are both squarefree?",
-      "tags": ["squarefree", "primes"],
+      "tags": [
+        "squarefree",
+        "primes"
+      ],
       "priority_tier": "P2",
       "erdos_status": "open",
       "external_url": "https://www.erdosproblems.com/130"
@@ -501,7 +773,10 @@
     {
       "number": 135,
       "statement": "Does every graph with average degree at least 4 contain a cycle of length at most 4?",
-      "tags": ["graph_theory", "extremal"],
+      "tags": [
+        "graph_theory",
+        "extremal"
+      ],
       "priority_tier": "P2",
       "erdos_status": "open",
       "external_url": "https://www.erdosproblems.com/135"
@@ -509,7 +784,10 @@
     {
       "number": 140,
       "statement": "Can one color the positive integers with c colors so that no monochromatic solution to x+y=z exists for fixed c?",
-      "tags": ["combinatorics", "ramsey_theory"],
+      "tags": [
+        "combinatorics",
+        "ramsey_theory"
+      ],
       "priority_tier": "P1",
       "erdos_status": "open",
       "external_url": "https://www.erdosproblems.com/140"
@@ -517,7 +795,10 @@
     {
       "number": 145,
       "statement": "Are there infinitely many n such that sigma(n) is a prime power?",
-      "tags": ["divisors", "primes"],
+      "tags": [
+        "divisors",
+        "primes"
+      ],
       "priority_tier": "P3",
       "erdos_status": "open",
       "external_url": "https://www.erdosproblems.com/145"
@@ -525,11 +806,51 @@
     {
       "number": 150,
       "statement": "Does every triangle-free graph on n vertices have at most n^2/4 edges (Mantel/Turán for K_3)?",
-      "tags": ["graph_theory", "extremal"],
+      "tags": [
+        "graph_theory",
+        "extremal"
+      ],
       "priority_tier": "P1",
       "erdos_status": "proved",
       "external_url": "https://www.erdosproblems.com/150",
       "notes": "Mantel (1907); Turán (1941)."
+    },
+    {
+      "number": 571,
+      "statement": "For any rational alpha in [1,2), does there exist a bipartite graph G with ex(n;G) asymptotic to n^alpha (Turán exponent)?",
+      "tags": [
+        "graph_theory",
+        "extremal",
+        "turán"
+      ],
+      "priority_tier": "P1",
+      "erdos_status": "open",
+      "external_url": "https://www.erdosproblems.com/571",
+      "notes": "Bloom Top 10."
+    },
+    {
+      "number": 681,
+      "statement": "For all large n, does there exist k such that n+k is composite and p(n+k) > k^2, where p(m) is the least prime factor of m?",
+      "tags": [
+        "number_theory",
+        "primes"
+      ],
+      "priority_tier": "P2",
+      "erdos_status": "open",
+      "external_url": "https://www.erdosproblems.com/681"
+    },
+    {
+      "number": 713,
+      "statement": "For every bipartite graph G, does there exist alpha in [1,2) and c>0 with ex(n;G) ~ c n^alpha? Must alpha be rational?",
+      "tags": [
+        "graph_theory",
+        "extremal",
+        "turán"
+      ],
+      "priority_tier": "P1",
+      "erdos_status": "open",
+      "external_url": "https://www.erdosproblems.com/713",
+      "notes": "Bloom Top 10; $500 prize."
     }
   ]
 }

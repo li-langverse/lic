@@ -1,0 +1,22 @@
+{
+  "schema_version": 1,
+  "updated": "2026-05-31",
+  "description": "Non-Erdős open conjectures tracked in math-conjectures.toml (metadata only until specimens exist).",
+  "conjectures": [
+    {
+      "id": "M-CONJ-ABC",
+      "name": "abc conjecture (Oesterlé–Masser)",
+      "external_url": "https://en.wikipedia.org/wiki/Abc_conjecture"
+    },
+    {
+      "id": "M-CONJ-RH",
+      "name": "Riemann hypothesis",
+      "external_url": "https://www.claymath.org/millennium-problems/riemann-hypothesis"
+    },
+    {
+      "id": "M-CONJ-P-NP",
+      "name": "P versus NP",
+      "external_url": "https://www.claymath.org/millennium-problems/p-vs-np-problem"
+    }
+  ]
+}

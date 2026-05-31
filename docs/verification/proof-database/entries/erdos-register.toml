@@ -17,24 +17,41 @@ gap_kind = "proof_gap"
 lean_module = "proof-db/erdos/register.json"
 register_source = "proof-db/erdos/register.json"
 external_url = "https://www.erdosproblems.com/1"
-last_verified_lic_commit = "a0dd0577"
+last_verified_lic_commit = "4c1847ab"
+
+[[entry]]
+id = "E-3"
+kind = "target"
+field = "erdos"
+statement = "If A subset N has sum_{n in A} 1/n = infinity, must A contain arbitrarily long arithmetic progressions?"
+proof_status = "open"
+erdos_number = 3
+erdos_status = "open"
+priority_tier = "P0"
+tags = ["number_theory", "additive_combinatorics", "arithmetic_progressions"]
+gap_id = "G-erdos"
+gap_kind = "proof_gap"
+lean_module = "proof-db/erdos/register.json"
+register_source = "proof-db/erdos/register.json"
+external_url = "https://www.erdosproblems.com/3"
+last_verified_lic_commit = "4c1847ab"
 
 [[entry]]
 id = "E-4"
 kind = "target"
 field = "erdos"
-statement = "Does the pair-correlation function of normalized zeros of the Riemann zeta function agree with the GUE prediction (Montgomery conjecture)?"
-proof_status = "open"
+statement = "For any C>0, are there infinitely many n with p_{n+1}-p_n > C (log log n log log log log n / (log log log n)^2) log n?"
+proof_status = "proved"
 erdos_number = 4
-erdos_status = "open"
+erdos_status = "proved"
 priority_tier = "P1"
-tags = ["analytic_number_theory", "zeta"]
+tags = ["number_theory", "primes", "prime_gaps"]
 gap_id = "G-erdos"
 gap_kind = "proof_gap"
 lean_module = "proof-db/erdos/register.json"
 register_source = "proof-db/erdos/register.json"
 external_url = "https://www.erdosproblems.com/4"
-last_verified_lic_commit = "a0dd0577"
+last_verified_lic_commit = "4c1847ab"
 
 [[entry]]
 id = "E-5"
@@ -51,7 +68,7 @@ gap_kind = "proof_gap"
 lean_module = "proof-db/erdos/register.json"
 register_source = "proof-db/erdos/register.json"
 external_url = "https://www.erdosproblems.com/5"
-last_verified_lic_commit = "a0dd0577"
+last_verified_lic_commit = "4c1847ab"
 
 [[entry]]
 id = "E-8"
@@ -68,7 +85,7 @@ gap_kind = "proof_gap"
 lean_module = "proof-db/erdos/register.json"
 register_source = "proof-db/erdos/register.json"
 external_url = "https://www.erdosproblems.com/8"
-last_verified_lic_commit = "a0dd0577"
+last_verified_lic_commit = "4c1847ab"
 
 [[entry]]
 id = "E-9"
@@ -85,7 +102,41 @@ gap_kind = "proof_gap"
 lean_module = "proof-db/erdos/register.json"
 register_source = "proof-db/erdos/register.json"
 external_url = "https://www.erdosproblems.com/9"
-last_verified_lic_commit = "a0dd0577"
+last_verified_lic_commit = "4c1847ab"
+
+[[entry]]
+id = "E-10"
+kind = "target"
+field = "erdos"
+statement = "Does there exist a set A of positive integers with sum_{n in A} 1/n = infinity such that A contains no three-term arithmetic progression?"
+proof_status = "open"
+erdos_number = 10
+erdos_status = "open"
+priority_tier = "P1"
+tags = ["number_theory", "additive_combinatorics", "arithmetic_progressions"]
+gap_id = "G-erdos"
+gap_kind = "proof_gap"
+lean_module = "proof-db/erdos/register.json"
+register_source = "proof-db/erdos/register.json"
+external_url = "https://www.erdosproblems.com/10"
+last_verified_lic_commit = "4c1847ab"
+
+[[entry]]
+id = "E-11"
+kind = "target"
+field = "erdos"
+statement = "Is every large odd integer n the sum of a squarefree number and a power of 2?"
+proof_status = "open"
+erdos_number = 11
+erdos_status = "open"
+priority_tier = "P1"
+tags = ["number_theory", "additive_combinatorics"]
+gap_id = "G-erdos"
+gap_kind = "proof_gap"
+lean_module = "proof-db/erdos/register.json"
+register_source = "proof-db/erdos/register.json"
+external_url = "https://www.erdosproblems.com/11"
+last_verified_lic_commit = "4c1847ab"
 
 [[entry]]
 id = "E-12"
@@ -102,41 +153,41 @@ gap_kind = "proof_gap"
 lean_module = "proof-db/erdos/register.json"
 register_source = "proof-db/erdos/register.json"
 external_url = "https://www.erdosproblems.com/12"
-last_verified_lic_commit = "a0dd0577"
+last_verified_lic_commit = "4c1847ab"
 
 [[entry]]
 id = "E-16"
 kind = "target"
 field = "erdos"
-statement = "What is the maximum number of unit distances among n points in the plane (Erdős unit-distance problem)?"
-proof_status = "open"
+statement = "Is the set of odd integers not of the form 2^k+p the union of an infinite arithmetic progression and a set of density 0?"
+proof_status = "proved"
 erdos_number = 16
-erdos_status = "open"
-priority_tier = "P1"
-tags = ["combinatorial_geometry", "extremal"]
+erdos_status = "proved"
+priority_tier = "P2"
+tags = ["number_theory", "additive_combinatorics"]
 gap_id = "G-erdos"
 gap_kind = "proof_gap"
 lean_module = "proof-db/erdos/register.json"
 register_source = "proof-db/erdos/register.json"
 external_url = "https://www.erdosproblems.com/16"
-last_verified_lic_commit = "a0dd0577"
+last_verified_lic_commit = "4c1847ab"
 
 [[entry]]
 id = "E-18"
 kind = "target"
 field = "erdos"
-statement = "Must every set of n points in the plane determine at least n^{1-o(1)} distinct distances (distinct-distance problem)?"
+statement = "We call m practical if every integer 1<=n<=m is a sum of distinct divisors of m. Does the density of practical numbers tend to 0?"
 proof_status = "open"
 erdos_number = 18
 erdos_status = "open"
-priority_tier = "P1"
-tags = ["combinatorial_geometry", "extremal"]
+priority_tier = "P2"
+tags = ["number_theory", "divisors"]
 gap_id = "G-erdos"
 gap_kind = "proof_gap"
 lean_module = "proof-db/erdos/register.json"
 register_source = "proof-db/erdos/register.json"
 external_url = "https://www.erdosproblems.com/18"
-last_verified_lic_commit = "a0dd0577"
+last_verified_lic_commit = "4c1847ab"
 
 [[entry]]
 id = "E-19"
@@ -153,7 +204,24 @@ gap_kind = "proof_gap"
 lean_module = "proof-db/erdos/register.json"
 register_source = "proof-db/erdos/register.json"
 external_url = "https://www.erdosproblems.com/19"
-last_verified_lic_commit = "a0dd0577"
+last_verified_lic_commit = "4c1847ab"
+
+[[entry]]
+id = "E-20"
+kind = "target"
+field = "erdos"
+statement = "Let f(n,k) be minimal such that every family of n-uniform sets of size >= f(n,k) contains a k-sunflower. Is f(n,k) < c_k^n for some constant c_k>0?"
+proof_status = "open"
+erdos_number = 20
+erdos_status = "open"
+priority_tier = "P0"
+tags = ["combinatorics", "sunflower"]
+gap_id = "G-erdos"
+gap_kind = "proof_gap"
+lean_module = "proof-db/erdos/register.json"
+register_source = "proof-db/erdos/register.json"
+external_url = "https://www.erdosproblems.com/20"
+last_verified_lic_commit = "4c1847ab"
 
 [[entry]]
 id = "E-25"
@@ -170,7 +238,7 @@ gap_kind = "proof_gap"
 lean_module = "proof-db/erdos/register.json"
 register_source = "proof-db/erdos/register.json"
 external_url = "https://www.erdosproblems.com/25"
-last_verified_lic_commit = "a0dd0577"
+last_verified_lic_commit = "4c1847ab"
 
 [[entry]]
 id = "E-26"
@@ -187,7 +255,24 @@ gap_kind = "proof_gap"
 lean_module = "proof-db/erdos/register.json"
 register_source = "proof-db/erdos/register.json"
 external_url = "https://www.erdosproblems.com/26"
-last_verified_lic_commit = "a0dd0577"
+last_verified_lic_commit = "4c1847ab"
+
+[[entry]]
+id = "E-28"
+kind = "target"
+field = "erdos"
+statement = "If A subset N is such that A+A contains all but finitely many integers, does limsup 1_A * 1_A(n) = infinity (Erdős–Turán additive bases)?"
+proof_status = "open"
+erdos_number = 28
+erdos_status = "open"
+priority_tier = "P1"
+tags = ["number_theory", "additive_combinatorics"]
+gap_id = "G-erdos"
+gap_kind = "proof_gap"
+lean_module = "proof-db/erdos/register.json"
+register_source = "proof-db/erdos/register.json"
+external_url = "https://www.erdosproblems.com/28"
+last_verified_lic_commit = "4c1847ab"
 
 [[entry]]
 id = "E-29"
@@ -204,7 +289,7 @@ gap_kind = "proof_gap"
 lean_module = "proof-db/erdos/register.json"
 register_source = "proof-db/erdos/register.json"
 external_url = "https://www.erdosproblems.com/29"
-last_verified_lic_commit = "a0dd0577"
+last_verified_lic_commit = "4c1847ab"
 
 [[entry]]
 id = "E-33"
@@ -221,7 +306,7 @@ gap_kind = "proof_gap"
 lean_module = "proof-db/erdos/register.json"
 register_source = "proof-db/erdos/register.json"
 external_url = "https://www.erdosproblems.com/33"
-last_verified_lic_commit = "a0dd0577"
+last_verified_lic_commit = "4c1847ab"
 
 [[entry]]
 id = "E-39"
@@ -238,7 +323,7 @@ gap_kind = "proof_gap"
 lean_module = "proof-db/erdos/register.json"
 register_source = "proof-db/erdos/register.json"
 external_url = "https://www.erdosproblems.com/39"
-last_verified_lic_commit = "a0dd0577"
+last_verified_lic_commit = "4c1847ab"
 
 [[entry]]
 id = "E-42"
@@ -255,7 +340,7 @@ gap_kind = "proof_gap"
 lean_module = "proof-db/erdos/register.json"
 register_source = "proof-db/erdos/register.json"
 external_url = "https://www.erdosproblems.com/42"
-last_verified_lic_commit = "a0dd0577"
+last_verified_lic_commit = "4c1847ab"
 
 [[entry]]
 id = "E-44"
@@ -272,7 +357,7 @@ gap_kind = "proof_gap"
 lean_module = "proof-db/erdos/register.json"
 register_source = "proof-db/erdos/register.json"
 external_url = "https://www.erdosproblems.com/44"
-last_verified_lic_commit = "a0dd0577"
+last_verified_lic_commit = "4c1847ab"
 
 [[entry]]
 id = "E-45"
@@ -289,7 +374,7 @@ gap_kind = "proof_gap"
 lean_module = "proof-db/erdos/register.json"
 register_source = "proof-db/erdos/register.json"
 external_url = "https://www.erdosproblems.com/45"
-last_verified_lic_commit = "a0dd0577"
+last_verified_lic_commit = "4c1847ab"
 
 [[entry]]
 id = "E-47"
@@ -306,7 +391,7 @@ gap_kind = "proof_gap"
 lean_module = "proof-db/erdos/register.json"
 register_source = "proof-db/erdos/register.json"
 external_url = "https://www.erdosproblems.com/47"
-last_verified_lic_commit = "a0dd0577"
+last_verified_lic_commit = "4c1847ab"
 
 [[entry]]
 id = "E-48"
@@ -323,7 +408,7 @@ gap_kind = "proof_gap"
 lean_module = "proof-db/erdos/register.json"
 register_source = "proof-db/erdos/register.json"
 external_url = "https://www.erdosproblems.com/48"
-last_verified_lic_commit = "a0dd0577"
+last_verified_lic_commit = "4c1847ab"
 
 [[entry]]
 id = "E-50"
@@ -340,4 +425,854 @@ gap_kind = "proof_gap"
 lean_module = "proof-db/erdos/register.json"
 register_source = "proof-db/erdos/register.json"
 external_url = "https://www.erdosproblems.com/50"
-last_verified_lic_commit = "a0dd0577"
+last_verified_lic_commit = "4c1847ab"
+
+[[entry]]
+id = "E-51"
+kind = "target"
+field = "erdos"
+statement = "Can every dense set of points in the plane realize every rational distance?"
+proof_status = "open"
+erdos_number = 51
+erdos_status = "open"
+priority_tier = "P2"
+tags = ["combinatorial_geometry"]
+gap_id = "G-erdos"
+gap_kind = "proof_gap"
+lean_module = "proof-db/erdos/register.json"
+register_source = "proof-db/erdos/register.json"
+external_url = "https://www.erdosproblems.com/51"
+last_verified_lic_commit = "4c1847ab"
+
+[[entry]]
+id = "E-52"
+kind = "target"
+field = "erdos"
+statement = "For finite A subset Z and every epsilon>0, is max(|A+A|,|AA|) >>_epsilon |A|^{2-epsilon} (integer sum-product)?"
+proof_status = "open"
+erdos_number = 52
+erdos_status = "open"
+priority_tier = "P0"
+tags = ["number_theory", "additive_combinatorics", "sum_product"]
+gap_id = "G-erdos"
+gap_kind = "proof_gap"
+lean_module = "proof-db/erdos/register.json"
+register_source = "proof-db/erdos/register.json"
+external_url = "https://www.erdosproblems.com/52"
+last_verified_lic_commit = "4c1847ab"
+
+[[entry]]
+id = "E-54"
+kind = "target"
+field = "erdos"
+statement = "For odd prime p, is the least quadratic non-residue mod p bounded by (log p)^2?"
+proof_status = "open"
+erdos_number = 54
+erdos_status = "open"
+priority_tier = "P2"
+tags = ["analytic_number_theory", "primes"]
+gap_id = "G-erdos"
+gap_kind = "proof_gap"
+lean_module = "proof-db/erdos/register.json"
+register_source = "proof-db/erdos/register.json"
+external_url = "https://www.erdosproblems.com/54"
+last_verified_lic_commit = "4c1847ab"
+
+[[entry]]
+id = "E-57"
+kind = "target"
+field = "erdos"
+statement = "Are there infinitely many n such that n^4+4 is prime (Fermat-style)?"
+proof_status = "open"
+erdos_number = 57
+erdos_status = "open"
+priority_tier = "P2"
+tags = ["primes", "polynomials"]
+gap_id = "G-erdos"
+gap_kind = "proof_gap"
+lean_module = "proof-db/erdos/register.json"
+register_source = "proof-db/erdos/register.json"
+external_url = "https://www.erdosproblems.com/57"
+last_verified_lic_commit = "4c1847ab"
+
+[[entry]]
+id = "E-58"
+kind = "target"
+field = "erdos"
+statement = "Does the greedy algorithm for Egyptian fractions always terminate with denominators at most n^2 for numerator n?"
+proof_status = "open"
+erdos_number = 58
+erdos_status = "open"
+priority_tier = "P2"
+tags = ["number_theory", "egyptian_fractions"]
+gap_id = "G-erdos"
+gap_kind = "proof_gap"
+lean_module = "proof-db/erdos/register.json"
+register_source = "proof-db/erdos/register.json"
+external_url = "https://www.erdosproblems.com/58"
+last_verified_lic_commit = "4c1847ab"
+
+[[entry]]
+id = "E-60"
+kind = "target"
+field = "erdos"
+statement = "Does there exist a prime between n and 2n for all sufficiently large n with an explicit effective bound?"
+proof_status = "proved"
+erdos_number = 60
+erdos_status = "proved"
+priority_tier = "P1"
+tags = ["primes", "bertrand"]
+gap_id = "G-erdos"
+gap_kind = "proof_gap"
+lean_module = "proof-db/erdos/register.json"
+register_source = "proof-db/erdos/register.json"
+external_url = "https://www.erdosproblems.com/60"
+last_verified_lic_commit = "4c1847ab"
+
+[[entry]]
+id = "E-61"
+kind = "target"
+field = "erdos"
+statement = "For any graph H, is there c=c(H)>0 such that every n-vertex H-free graph contains a clique or independent set on at least n^c vertices (Erdős–Hajnal)?"
+proof_status = "open"
+erdos_number = 61
+erdos_status = "open"
+priority_tier = "P0"
+tags = ["graph_theory", "extremal"]
+gap_id = "G-erdos"
+gap_kind = "proof_gap"
+lean_module = "proof-db/erdos/register.json"
+register_source = "proof-db/erdos/register.json"
+external_url = "https://www.erdosproblems.com/61"
+last_verified_lic_commit = "4c1847ab"
+
+[[entry]]
+id = "E-62"
+kind = "target"
+field = "erdos"
+statement = "Can every integer n>1 be written as a sum of three fractions 4/x with x a positive integer (Erdős–Straus)?"
+proof_status = "open"
+erdos_number = 62
+erdos_status = "open"
+priority_tier = "P1"
+tags = ["diophantine", "unit_fractions"]
+gap_id = "G-erdos"
+gap_kind = "proof_gap"
+lean_module = "proof-db/erdos/register.json"
+register_source = "proof-db/erdos/register.json"
+external_url = "https://www.erdosproblems.com/62"
+last_verified_lic_commit = "4c1847ab"
+
+[[entry]]
+id = "E-63"
+kind = "target"
+field = "erdos"
+statement = "Are there infinitely many Carmichael numbers (composite n with a^{n-1} = 1 mod n for all a coprime to n)?"
+proof_status = "open"
+erdos_number = 63
+erdos_status = "open"
+priority_tier = "P1"
+tags = ["primes", "pseudoprimes"]
+gap_id = "G-erdos"
+gap_kind = "proof_gap"
+lean_module = "proof-db/erdos/register.json"
+register_source = "proof-db/erdos/register.json"
+external_url = "https://www.erdosproblems.com/63"
+last_verified_lic_commit = "4c1847ab"
+
+[[entry]]
+id = "E-64"
+kind = "target"
+field = "erdos"
+statement = "Does sum_{p prime} 1/(p log log p) diverge?"
+proof_status = "open"
+erdos_number = 64
+erdos_status = "open"
+priority_tier = "P2"
+tags = ["analytic_number_theory", "primes"]
+gap_id = "G-erdos"
+gap_kind = "proof_gap"
+lean_module = "proof-db/erdos/register.json"
+register_source = "proof-db/erdos/register.json"
+external_url = "https://www.erdosproblems.com/64"
+last_verified_lic_commit = "4c1847ab"
+
+[[entry]]
+id = "E-66"
+kind = "target"
+field = "erdos"
+statement = "Are there infinitely many n such that n + phi(n) is prime?"
+proof_status = "open"
+erdos_number = 66
+erdos_status = "open"
+priority_tier = "P2"
+tags = ["primes", "totient"]
+gap_id = "G-erdos"
+gap_kind = "proof_gap"
+lean_module = "proof-db/erdos/register.json"
+register_source = "proof-db/erdos/register.json"
+external_url = "https://www.erdosproblems.com/66"
+last_verified_lic_commit = "4c1847ab"
+
+[[entry]]
+id = "E-68"
+kind = "target"
+field = "erdos"
+statement = "Can the positive integers be covered by finitely many residue classes with distinct moduli whose least common multiple is odd?"
+proof_status = "open"
+erdos_number = 68
+erdos_status = "open"
+priority_tier = "P1"
+tags = ["combinatorics", "covering_systems"]
+gap_id = "G-erdos"
+gap_kind = "proof_gap"
+lean_module = "proof-db/erdos/register.json"
+register_source = "proof-db/erdos/register.json"
+external_url = "https://www.erdosproblems.com/68"
+last_verified_lic_commit = "4c1847ab"
+
+[[entry]]
+id = "E-69"
+kind = "target"
+field = "erdos"
+statement = "Are there infinitely many consecutive prime gaps strictly larger than log p for the smaller prime p?"
+proof_status = "open"
+erdos_number = 69
+erdos_status = "open"
+priority_tier = "P0"
+tags = ["primes", "prime_gaps"]
+gap_id = "G-erdos"
+gap_kind = "proof_gap"
+lean_module = "proof-db/erdos/register.json"
+register_source = "proof-db/erdos/register.json"
+external_url = "https://www.erdosproblems.com/69"
+last_verified_lic_commit = "4c1847ab"
+
+[[entry]]
+id = "E-73"
+kind = "target"
+field = "erdos"
+statement = "Does the sum over primes p of 1/(p log p) vary slowly enough that partial sums determine convergence?"
+proof_status = "open"
+erdos_number = 73
+erdos_status = "open"
+priority_tier = "P3"
+tags = ["analytic_number_theory", "primes"]
+gap_id = "G-erdos"
+gap_kind = "proof_gap"
+lean_module = "proof-db/erdos/register.json"
+register_source = "proof-db/erdos/register.json"
+external_url = "https://www.erdosproblems.com/73"
+last_verified_lic_commit = "4c1847ab"
+
+[[entry]]
+id = "E-74"
+kind = "target"
+field = "erdos"
+statement = "Does sum_{n=1}^infty 1/(n * product_{p|n} p) converge?"
+proof_status = "open"
+erdos_number = 74
+erdos_status = "open"
+priority_tier = "P3"
+tags = ["number_theory", "series"]
+gap_id = "G-erdos"
+gap_kind = "proof_gap"
+lean_module = "proof-db/erdos/register.json"
+register_source = "proof-db/erdos/register.json"
+external_url = "https://www.erdosproblems.com/74"
+last_verified_lic_commit = "4c1847ab"
+
+[[entry]]
+id = "E-75"
+kind = "target"
+field = "erdos"
+statement = "Is the density of amicable numbers zero among the positive integers?"
+proof_status = "open"
+erdos_number = 75
+erdos_status = "open"
+priority_tier = "P3"
+tags = ["number_theory", "divisors"]
+gap_id = "G-erdos"
+gap_kind = "proof_gap"
+lean_module = "proof-db/erdos/register.json"
+register_source = "proof-db/erdos/register.json"
+external_url = "https://www.erdosproblems.com/75"
+last_verified_lic_commit = "4c1847ab"
+
+[[entry]]
+id = "E-76"
+kind = "target"
+field = "erdos"
+statement = "Can every infinite set of primes contain a subset whose reciprocals sum to infinity?"
+proof_status = "open"
+erdos_number = 76
+erdos_status = "open"
+priority_tier = "P2"
+tags = ["primes", "series"]
+gap_id = "G-erdos"
+gap_kind = "proof_gap"
+lean_module = "proof-db/erdos/register.json"
+register_source = "proof-db/erdos/register.json"
+external_url = "https://www.erdosproblems.com/76"
+last_verified_lic_commit = "4c1847ab"
+
+[[entry]]
+id = "E-77"
+kind = "target"
+field = "erdos"
+statement = "If R(k) is the Ramsey number for K_k, what is the value of lim_{k->infty} R(k)^{1/k}?"
+proof_status = "open"
+erdos_number = 77
+erdos_status = "open"
+priority_tier = "P1"
+tags = ["combinatorics", "ramsey_theory", "graph_theory"]
+gap_id = "G-erdos"
+gap_kind = "proof_gap"
+lean_module = "proof-db/erdos/register.json"
+register_source = "proof-db/erdos/register.json"
+external_url = "https://www.erdosproblems.com/77"
+last_verified_lic_commit = "4c1847ab"
+
+[[entry]]
+id = "E-78"
+kind = "target"
+field = "erdos"
+statement = "Are there infinitely many n such that the sum of distinct powers of 2 dividing n equals a prescribed value?"
+proof_status = "open"
+erdos_number = 78
+erdos_status = "open"
+priority_tier = "P3"
+tags = ["binary", "divisors"]
+gap_id = "G-erdos"
+gap_kind = "proof_gap"
+lean_module = "proof-db/erdos/register.json"
+register_source = "proof-db/erdos/register.json"
+external_url = "https://www.erdosproblems.com/78"
+last_verified_lic_commit = "4c1847ab"
+
+[[entry]]
+id = "E-80"
+kind = "target"
+field = "erdos"
+statement = "Does every set of integers with positive upper density contain a three-term arithmetic progression?"
+proof_status = "proved"
+erdos_number = 80
+erdos_status = "proved"
+priority_tier = "P0"
+tags = ["combinatorics", "ramsey_theory"]
+gap_id = "G-erdos"
+gap_kind = "proof_gap"
+lean_module = "proof-db/erdos/register.json"
+register_source = "proof-db/erdos/register.json"
+external_url = "https://www.erdosproblems.com/80"
+last_verified_lic_commit = "4c1847ab"
+
+[[entry]]
+id = "E-82"
+kind = "target"
+field = "erdos"
+statement = "For any finite set of primes, can every sufficiently large integer be written as a sum of prime powers from that set?"
+proof_status = "open"
+erdos_number = 82
+erdos_status = "open"
+priority_tier = "P2"
+tags = ["additive_number_theory", "primes"]
+gap_id = "G-erdos"
+gap_kind = "proof_gap"
+lean_module = "proof-db/erdos/register.json"
+register_source = "proof-db/erdos/register.json"
+external_url = "https://www.erdosproblems.com/82"
+last_verified_lic_commit = "4c1847ab"
+
+[[entry]]
+id = "E-83"
+kind = "target"
+field = "erdos"
+statement = "Are there infinitely many n such that n!!+1 is prime (double factorial)?"
+proof_status = "open"
+erdos_number = 83
+erdos_status = "open"
+priority_tier = "P3"
+tags = ["primes", "factorial"]
+gap_id = "G-erdos"
+gap_kind = "proof_gap"
+lean_module = "proof-db/erdos/register.json"
+register_source = "proof-db/erdos/register.json"
+external_url = "https://www.erdosproblems.com/83"
+last_verified_lic_commit = "4c1847ab"
+
+[[entry]]
+id = "E-86"
+kind = "target"
+field = "erdos"
+statement = "Is every even integer greater than 2 the sum of two primes (Goldbach conjecture)?"
+proof_status = "open"
+erdos_number = 86
+erdos_status = "target"
+priority_tier = "P0"
+tags = ["primes", "additive"]
+gap_id = "G-erdos"
+gap_kind = "proof_gap"
+lean_module = "proof-db/erdos/register.json"
+register_source = "proof-db/erdos/register.json"
+external_url = "https://www.erdosproblems.com/86"
+last_verified_lic_commit = "4c1847ab"
+
+[[entry]]
+id = "E-87"
+kind = "target"
+field = "erdos"
+statement = "Are there infinitely many primes p such that p+2 is also prime (twin prime conjecture)?"
+proof_status = "open"
+erdos_number = 87
+erdos_status = "target"
+priority_tier = "P0"
+tags = ["primes", "twin_primes"]
+gap_id = "G-erdos"
+gap_kind = "proof_gap"
+lean_module = "proof-db/erdos/register.json"
+register_source = "proof-db/erdos/register.json"
+external_url = "https://www.erdosproblems.com/87"
+last_verified_lic_commit = "4c1847ab"
+
+[[entry]]
+id = "E-89"
+kind = "target"
+field = "erdos"
+statement = "Are there infinitely many prime gaps of size at least c*sqrt(p)*log p for some c>0 and large p?"
+proof_status = "open"
+erdos_number = 89
+erdos_status = "open"
+priority_tier = "P0"
+tags = ["primes", "prime_gaps"]
+gap_id = "G-erdos"
+gap_kind = "proof_gap"
+lean_module = "proof-db/erdos/register.json"
+register_source = "proof-db/erdos/register.json"
+external_url = "https://www.erdosproblems.com/89"
+last_verified_lic_commit = "4c1847ab"
+
+[[entry]]
+id = "E-90"
+kind = "target"
+field = "erdos"
+statement = "Does every set of n distinct points in R^2 contain at most n^{1+O(1/log log n)} pairs at unit distance (unit distance problem)?"
+proof_status = "proved"
+erdos_number = 90
+erdos_status = "proved"
+priority_tier = "P0"
+tags = ["discrete_geometry", "combinatorics"]
+gap_id = "G-erdos"
+gap_kind = "proof_gap"
+lean_module = "proof-db/erdos/register.json"
+register_source = "proof-db/erdos/register.json"
+external_url = "https://www.erdosproblems.com/90"
+last_verified_lic_commit = "4c1847ab"
+
+[[entry]]
+id = "E-91"
+kind = "target"
+field = "erdos"
+statement = "Are there arbitrarily long runs of consecutive composite integers?"
+proof_status = "proved"
+erdos_number = 91
+erdos_status = "proved"
+priority_tier = "P1"
+tags = ["primes", "composites"]
+gap_id = "G-erdos"
+gap_kind = "proof_gap"
+lean_module = "proof-db/erdos/register.json"
+register_source = "proof-db/erdos/register.json"
+external_url = "https://www.erdosproblems.com/91"
+last_verified_lic_commit = "4c1847ab"
+
+[[entry]]
+id = "E-92"
+kind = "target"
+field = "erdos"
+statement = "Are there infinitely many primes of the form n^2+1?"
+proof_status = "open"
+erdos_number = 92
+erdos_status = "open"
+priority_tier = "P0"
+tags = ["primes", "polynomials"]
+gap_id = "G-erdos"
+gap_kind = "proof_gap"
+lean_module = "proof-db/erdos/register.json"
+register_source = "proof-db/erdos/register.json"
+external_url = "https://www.erdosproblems.com/92"
+last_verified_lic_commit = "4c1847ab"
+
+[[entry]]
+id = "E-93"
+kind = "target"
+field = "erdos"
+statement = "Are there infinitely many n such that both 2^n-1 and 2^n+1 have few prime factors?"
+proof_status = "open"
+erdos_number = 93
+erdos_status = "open"
+priority_tier = "P2"
+tags = ["primes", "mersenne"]
+gap_id = "G-erdos"
+gap_kind = "proof_gap"
+lean_module = "proof-db/erdos/register.json"
+register_source = "proof-db/erdos/register.json"
+external_url = "https://www.erdosproblems.com/93"
+last_verified_lic_commit = "4c1847ab"
+
+[[entry]]
+id = "E-95"
+kind = "target"
+field = "erdos"
+statement = "Does every covering system of the integers have a modulus divisible by 6?"
+proof_status = "open"
+erdos_number = 95
+erdos_status = "open"
+priority_tier = "P2"
+tags = ["combinatorics", "covering_systems"]
+gap_id = "G-erdos"
+gap_kind = "proof_gap"
+lean_module = "proof-db/erdos/register.json"
+register_source = "proof-db/erdos/register.json"
+external_url = "https://www.erdosproblems.com/95"
+last_verified_lic_commit = "4c1847ab"
+
+[[entry]]
+id = "E-96"
+kind = "target"
+field = "erdos"
+statement = "Does sum_{n=1}^infty 1/(n log n (log log n)^c) diverge for every c?"
+proof_status = "open"
+erdos_number = 96
+erdos_status = "open"
+priority_tier = "P3"
+tags = ["analysis", "series"]
+gap_id = "G-erdos"
+gap_kind = "proof_gap"
+lean_module = "proof-db/erdos/register.json"
+register_source = "proof-db/erdos/register.json"
+external_url = "https://www.erdosproblems.com/96"
+last_verified_lic_commit = "4c1847ab"
+
+[[entry]]
+id = "E-98"
+kind = "target"
+field = "erdos"
+statement = "Does sum_{n=1}^infty (1/n) * sum_{p|n} 1/p converge?"
+proof_status = "open"
+erdos_number = 98
+erdos_status = "open"
+priority_tier = "P3"
+tags = ["number_theory", "series"]
+gap_id = "G-erdos"
+gap_kind = "proof_gap"
+lean_module = "proof-db/erdos/register.json"
+register_source = "proof-db/erdos/register.json"
+external_url = "https://www.erdosproblems.com/98"
+last_verified_lic_commit = "4c1847ab"
+
+[[entry]]
+id = "E-99"
+kind = "target"
+field = "erdos"
+statement = "Are there infinitely many n such that the sum of prime gaps up to n exceeds n^{1+epsilon} for some epsilon>0?"
+proof_status = "open"
+erdos_number = 99
+erdos_status = "open"
+priority_tier = "P2"
+tags = ["primes", "prime_gaps"]
+gap_id = "G-erdos"
+gap_kind = "proof_gap"
+lean_module = "proof-db/erdos/register.json"
+register_source = "proof-db/erdos/register.json"
+external_url = "https://www.erdosproblems.com/99"
+last_verified_lic_commit = "4c1847ab"
+
+[[entry]]
+id = "E-102"
+kind = "target"
+field = "erdos"
+statement = "Can every sufficiently large integer be written as a sum of distinct powers of 2 times distinct primes?"
+proof_status = "open"
+erdos_number = 102
+erdos_status = "open"
+priority_tier = "P2"
+tags = ["additive_number_theory"]
+gap_id = "G-erdos"
+gap_kind = "proof_gap"
+lean_module = "proof-db/erdos/register.json"
+register_source = "proof-db/erdos/register.json"
+external_url = "https://www.erdosproblems.com/102"
+last_verified_lic_commit = "4c1847ab"
+
+[[entry]]
+id = "E-105"
+kind = "target"
+field = "erdos"
+statement = "Does the sum of 1/p over all primes p diverge?"
+proof_status = "proved"
+erdos_number = 105
+erdos_status = "proved"
+priority_tier = "P1"
+tags = ["primes", "series"]
+gap_id = "G-erdos"
+gap_kind = "proof_gap"
+lean_module = "proof-db/erdos/register.json"
+register_source = "proof-db/erdos/register.json"
+external_url = "https://www.erdosproblems.com/105"
+last_verified_lic_commit = "4c1847ab"
+
+[[entry]]
+id = "E-107"
+kind = "target"
+field = "erdos"
+statement = "Are there infinitely many n such that phi(n) divides n^d - 1 for some fixed d?"
+proof_status = "open"
+erdos_number = 107
+erdos_status = "open"
+priority_tier = "P3"
+tags = ["totient", "divisibility"]
+gap_id = "G-erdos"
+gap_kind = "proof_gap"
+lean_module = "proof-db/erdos/register.json"
+register_source = "proof-db/erdos/register.json"
+external_url = "https://www.erdosproblems.com/107"
+last_verified_lic_commit = "4c1847ab"
+
+[[entry]]
+id = "E-110"
+kind = "target"
+field = "erdos"
+statement = "Do there exist arbitrarily large sets of integers with no 4-term arithmetic progression?"
+proof_status = "open"
+erdos_number = 110
+erdos_status = "open"
+priority_tier = "P1"
+tags = ["combinatorics", "ramsey_theory"]
+gap_id = "G-erdos"
+gap_kind = "proof_gap"
+lean_module = "proof-db/erdos/register.json"
+register_source = "proof-db/erdos/register.json"
+external_url = "https://www.erdosproblems.com/110"
+last_verified_lic_commit = "4c1847ab"
+
+[[entry]]
+id = "E-115"
+kind = "target"
+field = "erdos"
+statement = "Is every sufficiently large odd integer the sum of three primes (weak Goldbach)?"
+proof_status = "proved"
+erdos_number = 115
+erdos_status = "proved"
+priority_tier = "P0"
+tags = ["primes", "additive"]
+gap_id = "G-erdos"
+gap_kind = "proof_gap"
+lean_module = "proof-db/erdos/register.json"
+register_source = "proof-db/erdos/register.json"
+external_url = "https://www.erdosproblems.com/115"
+last_verified_lic_commit = "4c1847ab"
+
+[[entry]]
+id = "E-120"
+kind = "target"
+field = "erdos"
+statement = "Are there infinitely many n such that n and n+2 are both sums of two primes?"
+proof_status = "open"
+erdos_number = 120
+erdos_status = "open"
+priority_tier = "P0"
+tags = ["primes", "additive"]
+gap_id = "G-erdos"
+gap_kind = "proof_gap"
+lean_module = "proof-db/erdos/register.json"
+register_source = "proof-db/erdos/register.json"
+external_url = "https://www.erdosproblems.com/120"
+last_verified_lic_commit = "4c1847ab"
+
+[[entry]]
+id = "E-126"
+kind = "target"
+field = "erdos"
+statement = "Does there exist a set of integers of positive density with no two elements differing by a square?"
+proof_status = "open"
+erdos_number = 126
+erdos_status = "open"
+priority_tier = "P2"
+tags = ["combinatorics", "additive"]
+gap_id = "G-erdos"
+gap_kind = "proof_gap"
+lean_module = "proof-db/erdos/register.json"
+register_source = "proof-db/erdos/register.json"
+external_url = "https://www.erdosproblems.com/126"
+last_verified_lic_commit = "4c1847ab"
+
+[[entry]]
+id = "E-127"
+kind = "target"
+field = "erdos"
+statement = "Are there infinitely many n such that n divides 2^n - 2 (Poulet pseudoprimes)?"
+proof_status = "open"
+erdos_number = 127
+erdos_status = "open"
+priority_tier = "P2"
+tags = ["pseudoprimes", "divisibility"]
+gap_id = "G-erdos"
+gap_kind = "proof_gap"
+lean_module = "proof-db/erdos/register.json"
+register_source = "proof-db/erdos/register.json"
+external_url = "https://www.erdosproblems.com/127"
+last_verified_lic_commit = "4c1847ab"
+
+[[entry]]
+id = "E-128"
+kind = "target"
+field = "erdos"
+statement = "Is the number of primes less than x equal to Li(x) + O(sqrt(x) log x) (Riemann hypothesis consequence)?"
+proof_status = "open"
+erdos_number = 128
+erdos_status = "open"
+priority_tier = "P0"
+tags = ["primes", "zeta"]
+gap_id = "G-erdos"
+gap_kind = "proof_gap"
+lean_module = "proof-db/erdos/register.json"
+register_source = "proof-db/erdos/register.json"
+external_url = "https://www.erdosproblems.com/128"
+last_verified_lic_commit = "4c1847ab"
+
+[[entry]]
+id = "E-130"
+kind = "target"
+field = "erdos"
+statement = "Are there infinitely many n such that n and n+1 are both squarefree?"
+proof_status = "open"
+erdos_number = 130
+erdos_status = "open"
+priority_tier = "P2"
+tags = ["squarefree", "primes"]
+gap_id = "G-erdos"
+gap_kind = "proof_gap"
+lean_module = "proof-db/erdos/register.json"
+register_source = "proof-db/erdos/register.json"
+external_url = "https://www.erdosproblems.com/130"
+last_verified_lic_commit = "4c1847ab"
+
+[[entry]]
+id = "E-135"
+kind = "target"
+field = "erdos"
+statement = "Does every graph with average degree at least 4 contain a cycle of length at most 4?"
+proof_status = "open"
+erdos_number = 135
+erdos_status = "open"
+priority_tier = "P2"
+tags = ["graph_theory", "extremal"]
+gap_id = "G-erdos"
+gap_kind = "proof_gap"
+lean_module = "proof-db/erdos/register.json"
+register_source = "proof-db/erdos/register.json"
+external_url = "https://www.erdosproblems.com/135"
+last_verified_lic_commit = "4c1847ab"
+
+[[entry]]
+id = "E-140"
+kind = "target"
+field = "erdos"
+statement = "Can one color the positive integers with c colors so that no monochromatic solution to x+y=z exists for fixed c?"
+proof_status = "open"
+erdos_number = 140
+erdos_status = "open"
+priority_tier = "P1"
+tags = ["combinatorics", "ramsey_theory"]
+gap_id = "G-erdos"
+gap_kind = "proof_gap"
+lean_module = "proof-db/erdos/register.json"
+register_source = "proof-db/erdos/register.json"
+external_url = "https://www.erdosproblems.com/140"
+last_verified_lic_commit = "4c1847ab"
+
+[[entry]]
+id = "E-145"
+kind = "target"
+field = "erdos"
+statement = "Are there infinitely many n such that sigma(n) is a prime power?"
+proof_status = "open"
+erdos_number = 145
+erdos_status = "open"
+priority_tier = "P3"
+tags = ["divisors", "primes"]
+gap_id = "G-erdos"
+gap_kind = "proof_gap"
+lean_module = "proof-db/erdos/register.json"
+register_source = "proof-db/erdos/register.json"
+external_url = "https://www.erdosproblems.com/145"
+last_verified_lic_commit = "4c1847ab"
+
+[[entry]]
+id = "E-150"
+kind = "target"
+field = "erdos"
+statement = "Does every triangle-free graph on n vertices have at most n^2/4 edges (Mantel/Turán for K_3)?"
+proof_status = "proved"
+erdos_number = 150
+erdos_status = "proved"
+priority_tier = "P1"
+tags = ["graph_theory", "extremal"]
+gap_id = "G-erdos"
+gap_kind = "proof_gap"
+lean_module = "proof-db/erdos/register.json"
+register_source = "proof-db/erdos/register.json"
+external_url = "https://www.erdosproblems.com/150"
+last_verified_lic_commit = "4c1847ab"
+
+[[entry]]
+id = "E-571"
+kind = "target"
+field = "erdos"
+statement = "For any rational alpha in [1,2), does there exist a bipartite graph G with ex(n;G) asymptotic to n^alpha (Turán exponent)?"
+proof_status = "open"
+erdos_number = 571
+erdos_status = "open"
+priority_tier = "P1"
+tags = ["graph_theory", "extremal", "turán"]
+gap_id = "G-erdos"
+gap_kind = "proof_gap"
+lean_module = "proof-db/erdos/register.json"
+register_source = "proof-db/erdos/register.json"
+external_url = "https://www.erdosproblems.com/571"
+last_verified_lic_commit = "4c1847ab"
+
+[[entry]]
+id = "E-681"
+kind = "target"
+field = "erdos"
+statement = "For all large n, does there exist k such that n+k is composite and p(n+k) > k^2, where p(m) is the least prime factor of m?"
+proof_status = "open"
+erdos_number = 681
+erdos_status = "open"
+priority_tier = "P2"
+tags = ["number_theory", "primes"]
+gap_id = "G-erdos"
+gap_kind = "proof_gap"
+lean_module = "proof-db/erdos/register.json"
+register_source = "proof-db/erdos/register.json"
+external_url = "https://www.erdosproblems.com/681"
+last_verified_lic_commit = "4c1847ab"
+
+[[entry]]
+id = "E-713"
+kind = "target"
+field = "erdos"
+statement = "For every bipartite graph G, does there exist alpha in [1,2) and c>0 with ex(n;G) ~ c n^alpha? Must alpha be rational?"
+proof_status = "open"
+erdos_number = 713
+erdos_status = "open"
+priority_tier = "P1"
+tags = ["graph_theory", "extremal", "turán"]
+gap_id = "G-erdos"
+gap_kind = "proof_gap"
+lean_module = "proof-db/erdos/register.json"
+register_source = "proof-db/erdos/register.json"
+external_url = "https://www.erdosproblems.com/713"
+last_verified_lic_commit = "4c1847ab"

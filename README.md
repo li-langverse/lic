@@ -146,5 +146,5 @@ Create a new package: `./scripts/li-new-package <name> --kind library` â€” 
 
 ## License
 
-MIT OR Apache-2.0 â€” use Li in open or closed projects under either license.
+MIT OR GPL-3.0-or-later â€” use Li in open or closed projects under either license.
 

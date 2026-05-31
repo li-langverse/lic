@@ -3,9 +3,9 @@
   "todo_id": "wsm-w6-vertical-dod",
   "completion_sprint": true,
   "verification_pass": true,
-  "verified_at": "2026-05-31T06:57:30Z",
-  "agent_run": "world_studio_builder-10294877",
-  "wps_touched": ["WP-SIM-06", "WP-UX-02", "WP-UX-04", "WP-UX-06", "WP-UX-09", "WP-GD-05", "WP-AG-03", "WP-AG-06", "WP-PUB-03", "§11 vertical DoD"],
+  "verified_at": "2026-05-31T07:05:33Z",
+  "agent_run": "world_studio_builder-1780210697717",
+  "wps_touched": ["§11 vertical DoD", "WP-SIM-06", "WP-UX-02", "WP-UX-04", "WP-UX-06", "WP-UX-09", "WP-GD-05", "WP-AG-03", "WP-AG-06", "WP-PUB-03"],
   "smokes_run": [
     "scripts/world-studio-plan-lic-smokes-wsl.sh",
     "scripts/world-studio-plan-gates.sh",
@@ -28,6 +28,6 @@
     "panel_switch_ms_meets_target": false,
     "viewport_fps_meets_target": true
   },
-  "notes": "Sprint complete (36/36 wsm-w* done). Re-verification on cursor/world-studio-master-plan-loop: completion gate exit 0, WSL lic smokes ok, viewport bench ok, MCP li-engine stdio ok. Windows host: lic not built locally — c-host/patch-eval/vertical-DoD gates path-verified only; panel_switch_ms 150ms simulate exceeds 100ms budget (honest_simulate). Branch 91 commits ahead / 32 behind main — merge to main is follow-up.",
+  "notes": "Sprint complete (36/36 wsm-w* done). Re-verified on cursor/world-studio-master-plan-loop: completion gate exit 0, plan gates exit 0, WSL lic smokes ok, viewport bench ok, MCP li-engine stdio ok. Windows host: c-host/patch-eval/vertical-DoD gates path-verified only (lic not on PATH). panel_switch_ms honest_simulate 150ms exceeds 100ms PH-UX budget. PR #411 open for merge to main.",
   "pr_url": "https://github.com/li-langverse/lic/pull/411"
 }

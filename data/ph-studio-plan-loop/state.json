@@ -1,17 +1,35 @@
 ﻿{
-    "note":  "WP-S1 shell landed in lis/data-studio-ui",
-    "updated_at":  "2026-05-31T12:04:43Z",
-    "iterations":  0,
-    "completed_ids":  [
-                          "wp-s1-shell"
-                      ],
-    "pending_ids":  [
-                        "wp-s2-table-editor",
-                        "wp-s3-sql-editor",
-                        "wp-s4-auth-studio",
-                        "wp-s5-realtime-logs-storage"
-                    ],
-    "history":  [
-
-                ]
+  "note": "WP-S1 through WP-S5 complete in lis/data-studio-ui",
+  "updated_at": "2026-05-31T18:00:00Z",
+  "iterations": 1,
+  "completed_ids": [
+    "wp-s1-shell",
+    "wp-s2-table-editor",
+    "wp-s3-sql-editor",
+    "wp-s4-auth-studio",
+    "wp-s5-realtime-logs-storage"
+  ],
+  "pending_ids": [],
+  "history": [
+    {
+      "at": "2026-05-31T18:00:00Z",
+      "completed": "wp-s2-table-editor",
+      "summary": "Catalog table browser + read-only row viewer via lidb_studio_bridge.py"
+    },
+    {
+      "at": "2026-05-31T18:00:00Z",
+      "completed": "wp-s3-sql-editor",
+      "summary": "Read-only SQL editor with CSV export"
+    },
+    {
+      "at": "2026-05-31T18:00:00Z",
+      "completed": "wp-s4-auth-studio",
+      "summary": "Registry health + packages grid + RLS doc links"
+    },
+    {
+      "at": "2026-05-31T18:00:00Z",
+      "completed": "wp-s5-realtime-logs-storage",
+      "summary": "Realtime status, log tail, storage/settings panels"
+    }
+  ]
 }

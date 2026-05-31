@@ -1,18 +1,12 @@
-Li World Studio installer assets
-================================
-Place optional branding files here before running iscc:
-  app.ico          — 256x256 application icon
-  wizard.bmp       — 164x314 sidebar (Inno standard)
-  wizard-small.bmp — 55x55 top-right
+ï»¿# Moved to studio repo
 
-Colors match docs/design/studio-design-tokens.toml (bg #0d1117, accent #3dd6ff).
+Li World Studio installers (Inno Setup, AppImage, macOS packaging) now live in the **studio** product repo:
 
-Build from lic repo root:
-  iscc /Qp installer\LiWorldStudio.iss
+https://github.com/li-langverse/studio/tree/main/installer
 
-If `iscc` is not on PATH, install Inno Setup 6+ (https://jrsoftware.org/isinfo.php)
-and add its folder (typically `C:\Program Files (x86)\Inno Setup 6`) to PATH, or invoke
-with the full path. `scripts/world-studio-runnable-completion-gate.sh` skips the compile
-step with a WARN when `iscc` is missing.
+Build from a sibling checkout:
 
-Output: installer\out\LiWorldStudio-Setup.exe
+```powershell
+cd ../studio
+./scripts/build-li-world-studio-installer.ps1
+```

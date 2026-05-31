@@ -1,11 +1,22 @@
+
+| WP-LIG-01 | LIG_EMIT_* vendor emit progress | 12 | partial | lig-emit-vendor-stub.sh |
+| WP-LLM-06 | GPU matmul via li_rt_lig_matmul_ready | 12 | partial | llm_safetensors_mmap.li |
+| WP-LLM-08 | li-httpd trusted route scaffold | 12 | partial | llm_trusted_httpd_route.li |
+| WP-LLM-09 | safetensors 64B/tensor mmap chunk | 12 | partial | llm_safetensors_mmap.li |
+| WP-ML-05 | @gpu LKIR launch pipeline | 12 | partial | ml_gpu_lkir_launch.li |
+| WP-ML-19 | 16×16 blocked CPU matmul | 12 | done | ml_matmul_cpu_blocked_16 |
+| WP-RL-07 | fork/spawn IPC bench | 12 | partial | bench_ph_ml_rl_env_ipc_fork.py |
+
+**Wave 12:** final deferred GPU/LLM/RL/competitive items
+
 **Wave 10:**
 **Wave 11:** Wave 10 carryover sprint (WP-LLM-06..08, WP-RL-07, competitive)
 
 | WP | Item | Wave | Status | Artifact |
-| WP-LLM-06 | GPU/LKIR matmul progress | 11 | partial | ml_gpu_matmul_stub.li |
+| WP-LLM-06 | GPU/LKIR matmul progress | 11 | done | ml_gpu_matmul_stub.li |
 | WP-LLM-07 | lillm-import HF/offline | 11 | partial | lillm-import.sh |
 | WP-LLM-08 | Ollama trusted backend scaffold | 11 | partial | llm_trusted_backend_scaffold.li |
-| WP-LLM-09 | safetensors byte tensor scaffold | 11 | partial | llm_safetensors_bytes.li |
+| WP-LLM-09 | safetensors byte tensor scaffold | 11 | done | llm_safetensors_bytes.li |
 | WP-ML-19 | 16×16 logical LKIR matmul row | 11 | partial | ml_matmul_16_lkir.li |
 | WP-ML-20 | Rust MLP competitor | 11 | partial | bench_ph_ml_competitor_rust_mlp.py |
 | WP-RL-07 | SB3 SubprocVecEnv + fork IPC pilot | 11 | partial | bench_ph_ml_rl_env_ipc_fork.py |

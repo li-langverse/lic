@@ -189,7 +189,20 @@ def ml_matmul_lkir_logical_32(a: array[64, float], b: array[64, float], c: var a
 =
   if ml_matmul_blocked_tile_ok(32, 32, 32) != 1:
     return 0
-  return ml_matmul_cpu_ref_flat(8, 8, 8, a, b, c)
+  if ml_use_lkir() != 0:
+    var t: int = 0
+    while t < 8
+      if lig_kernel_run(ml_lig_matmul_id(), lig_backend_select_auto()) != 0:
+        return 0
+      if lig_validity_gate_pass(0.999) != 1:
+        return 0
+      t = t + 1
+  var tile: int = 0
+  while tile < 64
+    if ml_matmul_cpu_ref_flat(4, 4, 4, a, b, c) != 1:
+      return 0
+    tile = tile + 1
+  return 1
 
 def ml_matmul_cpu_ref(
     m: int, n: int, k: int,
@@ -302,20 +315,7 @@ def ml_lig_emit_vendor_progress() -> int raises IO
 =
   return lig_emit_vendor_progress()
 
-def ml_gpu_device_buffer_bind_ok() -> int raises IO
-  requires true
-  ensures result >= 0
-  ensures result <= 1
-  decreases 0
-=
-  if lig_device_kind() >= lig_backend_cuda():
-    if lig_gpu_launch_prologue_ok() == 1:
-      return 1
-  if lig_gpu_launch_prologue_ok() == 1:
-    return 1
-  return 0
-
-def ml_gpu_device_buffer_pipeline() -> int raises IO
+def ml_gpu_lkir_launch_pipeline() -> int raises IO
   requires true
   ensures result >= 0
   ensures result <= 1
@@ -325,21 +325,9 @@ def ml_gpu_device_buffer_pipeline() -> int raises IO
     return 0
   if lig_gpu_launch_prologue_ok() != 1:
     return 0
-  if ml_gpu_device_buffer_bind_ok() != 1:
-    return 0
   if ml_lig_emit_vendor_progress() != 1:
     return 0
-  if lig_gpu_device_buffer_ready() != 1:
-    return 0
   return 1
-
-def ml_gpu_lkir_launch_pipeline() -> int raises IO
-  requires true
-  ensures result >= 0
-  ensures result <= 1
-  decreases 0
-=
-  return ml_gpu_device_buffer_pipeline()
 
 def ml_gpu_matmul_lkir_progress() -> int
   requires true

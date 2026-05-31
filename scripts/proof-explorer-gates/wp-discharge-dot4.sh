@@ -64,3 +64,4 @@ fi
 
 echo "wp-discharge-dot4: BUG-C-01 unresolved — need verify pass or honest downgrade disposition" >&2
 exit 1
+

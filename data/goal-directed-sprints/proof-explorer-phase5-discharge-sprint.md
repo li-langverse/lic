@@ -37,6 +37,7 @@ Phase 4 gate must pass (`bash scripts/proof-explorer-phase4-completion-gate.sh`)
 
 ## Do not
 
+- Never edit compiler/ or discharge-pipeline C++ (compiler findings → docs/reports/compiler-audit/ only).
 - Set `proof_status = proved` without `lic verify` evidence.
 - Fix BUG-C-01 with silent `Prop := True` (must wire Discharge spec or downgrade catalog).
 - Batch-discharge all 1217 Erdős rows in this phase.

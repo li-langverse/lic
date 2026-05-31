@@ -2740,6 +2740,41 @@ def studio_game_world_checkpoint_file_roundtrip(session: SimSessionStub) raises 
     return 0
   return 1
 
+# PH-HW HW-3 — MD tier bytes vs lig memory ledger (refuse 100k after 1k+10k simulated load).
+def studio_md_particle_memory_ledger_default() -> LigMemoryLedger
+  requires true
+  ensures result.budget_mib == lig_memory_budget_mib()
+  ensures result.allocated_bytes == 0
+  decreases 0
+=
+  return lig_memory_ledger_new(lig_memory_budget_mib())
+
+def studio_md_particle_tier_refuse_md_100k_over_budget(ledger: LigMemoryLedger) -> int
+  requires ledger.budget_mib > 0
+  ensures result >= 0
+  ensures result <= 1
+  decreases ledger.budget_mib
+=
+  var sim: LigMemoryLedger = ledger
+  var _k: int = lig_alloc_within_budget(sim, lig_memory_tier_estimated_bytes(scene_md_tier_1k()))
+  var _t: int = lig_alloc_within_budget(sim, lig_memory_tier_estimated_bytes(scene_md_tier_10k()))
+  if lig_alloc_within_budget(sim, lig_memory_tier_estimated_bytes(scene_md_tier_100k())) == 0:
+    return 1
+  return 0
+
+def studio_md_particle_tier_would_fit(tier_id: int, ledger: LigMemoryLedger) -> int
+  requires tier_id >= 0
+  requires tier_id <= 2
+  requires ledger.budget_mib > 0
+  ensures result >= 0
+  ensures result <= 1
+  decreases tier_id
+=
+  var sim: LigMemoryLedger = ledger
+  if lig_alloc_within_budget(sim, lig_memory_tier_estimated_bytes(tier_id)) == 1:
+    return 1
+  return 0
+
 # PH-SIM vertical gap #9 — MD particle tier gate via li-scene tier metadata + lig ledger.
 def studio_md_particle_tier_select_ok(tier_id: int) -> int
   requires tier_id >= 0
@@ -2755,11 +2790,11 @@ def studio_md_particle_tier_select_ok(tier_id: int) -> int
     return 0
   if tier.kernel_tag != scene_md_kernel_lennard_jones():
     return 0
-  var ledger: LigMemoryLedger = scene_md_particle_memory_ledger_default()
+  var ledger: LigMemoryLedger = studio_md_particle_memory_ledger_default()
   if tier_id == scene_md_tier_100k():
-    if scene_md_particle_tier_refuse_md_100k_over_budget(ledger) == 1:
+    if studio_md_particle_tier_refuse_md_100k_over_budget(ledger) == 1:
       return 0
-  if scene_md_particle_tier_would_fit(tier_id, ledger) != 1:
+  if studio_md_particle_tier_would_fit(tier_id, ledger) != 1:
     return 0
   return 1
 
@@ -4600,6 +4635,7 @@ def studio_shell_demo_apply_profile(compose: var StudioShellCompose, profile_id:
 
 def studio_vertical_demo_sim_tick_step(config: StudioProjectConfig) raises IO -> unit
   requires studio_profile_id_valid(config.active_profile) == 1
+  ensures true
   decreases config.active_profile
 =
   var duration: int = studio_timeline_duration_ticks_default()
@@ -4610,6 +4646,7 @@ def studio_vertical_demo_sim_tick_step(config: StudioProjectConfig) raises IO ->
 
 def studio_vertical_demo_sync_timeline_from_runtime(compose: var StudioShellCompose) raises IO -> unit
   requires compose.layout.viewport_w > 0.0
+  ensures true
   decreases 0
 =
   var pct: float = studio_timeline_playhead_pct()

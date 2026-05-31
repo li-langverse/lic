@@ -7,6 +7,8 @@ def main() -> int raises IO
 =
   if li_std_studio_version() < 6:
     return 1
+  if studio_profile_id_valid(studio_profile_game()) != 1:
+    return 2
   var game: int = studio_profile_game()
   var rl: int = studio_profile_sim_rl()
   if studio_vertical_demo_frame(game, 0) != 0:

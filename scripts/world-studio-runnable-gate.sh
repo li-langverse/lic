@@ -27,15 +27,29 @@ lic_check_smoke() {
   local smoke="$1"
   local path="$ROOT/packages/li-studio/li-tests/smoke/$smoke"
   [[ -f "$path" ]] || fail "missing $smoke"
-  if [[ -f "$ROOT/build-wsl/compiler/lic/lic" ]] && command -v wsl >/dev/null 2>&1; then
-    wsl -e bash -lc "cd /mnt/c/Users/Julian/Documents/Programming/li/lic && ./build-wsl/compiler/lic/lic check packages/li-studio/li-tests/smoke/$smoke" \
-      || fail "lic check $smoke (wsl)"
-  elif [[ -n "$LIC" && -x "$LIC" ]]; then
-    "$LIC" check "$path" || fail "lic check $smoke"
-  else
-    warn "lic not runnable — skipping lic check smokes"
-    return 0
-  fi
+  lic_check_path() {
+    local check_path="$1"
+    local label="$2"
+    if [[ -f "$ROOT/build-wsl/compiler/lic/lic" ]] && command -v wsl >/dev/null 2>&1; then
+      local wsl_root
+      wsl_root="$(wsl wslpath -a "$ROOT" 2>/dev/null || true)"
+      if [[ -z "$wsl_root" ]]; then
+        wsl_root="/mnt/c${ROOT#*:}"
+        wsl_root="${wsl_root//\\//}"
+      fi
+      wsl -e bash -lc "cd '$wsl_root' && ./build-wsl/compiler/lic/lic check --format=json '$check_path'" \
+        | python3 -c "import json,sys; d=json.load(sys.stdin); sys.exit(0 if d.get('ok') else 1)" \
+        || fail "lic check $label (wsl)"
+    elif [[ -n "$LIC" && -x "$LIC" ]]; then
+      "$LIC" check --format=json "$check_path" \
+        | python3 -c "import json,sys; d=json.load(sys.stdin); sys.exit(0 if d.get('ok') else 1)" \
+        || fail "lic check $label"
+    else
+      warn "lic not runnable — skipping lic check smokes"
+      return 0
+    fi
+  }
+  lic_check_path "$path" "$smoke"
 }
 
 if [[ -f "$ROOT/build-wsl/compiler/lic/lic" ]] || [[ -n "$LIC" && -x "$LIC" ]]; then

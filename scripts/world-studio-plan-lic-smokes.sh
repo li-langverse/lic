@@ -47,6 +47,7 @@ for smoke in \
   studio_agentic_run.li \
   studio_agent_chrome.li \
   studio_agent_chrome_fsm.li \
+  studio_native_styled_chrome.li \
   studio_interaction_modes.li \
   studio_world_checkpoint_after_tick.li \
   studio_world_io_roundtrip.li \

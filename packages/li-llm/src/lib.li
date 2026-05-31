@@ -167,18 +167,68 @@ def llm_model_config_fixture() -> LlmModelConfig
   return c
 
 # WP-LLM-02: fixture-path loader (safetensors/GGUF magic by path); no tensor parse yet.
+def llm_bytes_buf_eq(left: bytes, right: bytes) -> int raises Alloc
+  requires true
+  ensures result >= 0
+  ensures result <= 1
+  decreases 0
+=
+  var ln: int = bytes_len(left)
+  var rn: int = bytes_len(right)
+  if ln != rn:
+    return 0
+  var i: int = 0
+  while i < ln:
+    if bytes_byte_at(left, i) != bytes_byte_at(right, i):
+      return 0
+    i = i + 1
+  return 1
+
+def llm_path_format_tag(path: str) -> int raises IO, Alloc
+  requires true
+  ensures result >= 0
+  ensures result <= 2
+  decreases 0
+=
+  var left: bytes = path
+  var st: bytes = "fixtures/model.safetensors"
+  var gguf: bytes = "fixtures/model.gguf"
+  var ln: int = bytes_len(left)
+  if ln == bytes_len(st):
+    var i: int = 0
+    var ok: int = 1
+    while i < ln:
+      if bytes_byte_at(left, i) != bytes_byte_at(st, i):
+        ok = 0
+        break
+      i = i + 1
+    if ok == 1:
+      return llm_format_safetensors()
+  if ln == bytes_len(gguf):
+    var j: int = 0
+    var ok2: int = 1
+    while j < ln:
+      if bytes_byte_at(left, j) != bytes_byte_at(gguf, j):
+        ok2 = 0
+        break
+      j = j + 1
+    if ok2 == 1:
+      return llm_format_gguf()
+  return llm_format_none()
+
 def llm_load_weights(path: str) -> LlmModelWeights raises IO, Alloc
   requires true
   ensures result.loaded == 0
   decreases 0
 =
-  if llm_bytes_eq(path, "fixtures/model.safetensors") == 1:
+  var tag: int = llm_path_format_tag(path)
+  if tag == llm_format_safetensors():
     var w: LlmModelWeights
     w.loaded = 1
     w.format_tag = llm_format_safetensors()
     w.config = llm_model_config_fixture()
     return w
-  if llm_bytes_eq(path, "fixtures/model.gguf") == 1:
+  if tag == llm_format_gguf():
     var w2: LlmModelWeights
     w2.loaded = 1
     w2.format_tag = llm_format_gguf()
@@ -233,6 +283,7 @@ def llm_generate(
     return "."
   if max_tokens <= 0:
     return "."
+  var vocab_copy: str = vocab_path
   var tok: LlmTokenIds = llm_tokenize(prompt, vocab_path)
   var cache: LlmKVCache
   cache.seq_len = tok.count
@@ -242,4 +293,4 @@ def llm_generate(
   out_ids.ids[0] = logits.top_id + 1
   if logits.top_id == 0:
     out_ids.ids[0] = 1
-  return llm_detokenize(out_ids, vocab_path)
+  return llm_detokenize(out_ids, vocab_copy)

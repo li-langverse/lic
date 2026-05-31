@@ -1,22 +1,10 @@
-# E-683: Is it true that for every $1\leq k\leq n$ the largest prime divisor of $\binom{n}{k}$, say $P(\binom{n}{k})$, satisfies\[P\left(\binom{n}{k}\right)\geq \min(n-k+1, k^{1+c})\]for some constant $c>0$?
-# erdos_number: 683
-# erdos_status: open
-# priority_tier: P2
-# tags: binomial_coefficients, number_theory, primes
+# Catalog: E-683
+# Statement: Is it true that for every $1\leq k\leq n$ the largest prime divisor of $\binom{n}{k}$, say $P(\binom{n}{k})$, satisfies\[P\left(\binom{n}{k}\right)\geq \min(n-k+1, k^{1+c})\]for some constant $c>0$?
+# formalization_status: li_open
+# discharge: pending — open formalization target (Phase 4)
+# erdos_status (literature): open
 
-def erdos_e683_is_it_true_that_for_every_1_leq_k_leq_n() -> int
-  requires true
-  ensures result == 0  # open: E-683
-  decreases 0
-=
-  return 0
-
-extern proc erdos_e683_open_witness() -> int
-  requires true
-  ensures result == 0
-  decreases 0
-
-def main() -> int
+def formal_target_e_683() -> int
   requires true
   ensures result == 0
   decreases 0

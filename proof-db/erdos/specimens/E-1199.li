@@ -1,22 +1,10 @@
-# E-1199: Is it true that in any $2$-colouring of $\mathbb{N}$ there exists an infinite set $A$ such that all elements of $A+A$ are the same colour?
-# erdos_number: 1199
-# erdos_status: open
-# priority_tier: P2
-# tags: additive_combinatorics, ramsey_theory
+# Catalog: E-1199
+# Statement: Is it true that in any $2$-colouring of $\mathbb{N}$ there exists an infinite set $A$ such that all elements of $A+A$ are the same colour?
+# formalization_status: li_open
+# discharge: pending — open formalization target (Phase 4)
+# erdos_status (literature): open
 
-def erdos_e1199_is_it_true_that_in_any_2_colouring_of_ma() -> int
-  requires true
-  ensures result == 0  # open: E-1199
-  decreases 0
-=
-  return 0
-
-extern proc erdos_e1199_open_witness() -> int
-  requires true
-  ensures result == 0
-  decreases 0
-
-def main() -> int
+def formal_target_e_1199() -> int
   requires true
   ensures result == 0
   decreases 0

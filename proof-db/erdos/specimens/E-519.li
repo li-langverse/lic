@@ -1,22 +1,10 @@
-# E-519: Let $z_1,\ldots,z_n\in \mathbb{C}$ with $z_1=1$. Must there exist an absolute constant $c>0$ such that\[\max_{1\leq k\leq n}\left\lvert \sum_{i}z_i^k\right\rvert>c?\]
-# erdos_number: 519
-# erdos_status: proved
-# priority_tier: P2
-# tags: analysis
+# Catalog: E-519
+# Statement: Let $z_1,\ldots,z_n\in \mathbb{C}$ with $z_1=1$. Must there exist an absolute constant $c>0$ such that\[\max_{1\leq k\leq n}\left\lvert \sum_{i}z_i^k\right\rvert>c?\]
+# formalization_status: li_open
+# discharge: pending — open formalization target (Phase 4)
+# erdos_status (literature): proved
 
-def erdos_e519_let_z_1_ldots_z_n_in_mathbb_c_with_z_1_1() -> int
-  requires true
-  ensures result == 0  # open: E-519
-  decreases 0
-=
-  return 0
-
-extern proc erdos_e519_open_witness() -> int
-  requires true
-  ensures result == 0
-  decreases 0
-
-def main() -> int
+def formal_target_e_519() -> int
   requires true
   ensures result == 0
   decreases 0

@@ -1,22 +1,10 @@
-# E-992: Let $x_1<x_2<\cdots$ be an infinite sequence of integers. Is it true that, for almost all $\alpha \in [0,1]$, the discrepancy\[D(N)=\max_{I\subseteq [0,1]} \lvert \#\{ n\leq N : \{ \alpha x_n\}\in I\} - \lvert I\rvert N\rvert\]satisfies\[D(N) \ll N^{1/2}(\log N)^{o(1)}?\]Or even\[D(N)\ll N^{1/2}(\log\log N)^{O(1)}?\]
-# erdos_number: 992
-# erdos_status: open
-# priority_tier: P2
-# tags: discrepancy
+# Catalog: E-992
+# Statement: Let $x_1<x_2<\cdots$ be an infinite sequence of integers. Is it true that, for almost all $\alpha \in [0,1]$, the discrepancy\[D(N)=\max_{I\subseteq [0,1]} \lvert \#\{ n\leq N : \{ \alpha x_n\}\in I\} - \lvert I\rvert N\rvert\]satisfies\[D(
+# formalization_status: li_open
+# discharge: pending — open formalization target (Phase 4)
+# erdos_status (literature): open
 
-def erdos_e992_let_x_1_x_2_cdots_be_an_infinite_sequenc() -> int
-  requires true
-  ensures result == 0  # open: E-992
-  decreases 0
-=
-  return 0
-
-extern proc erdos_e992_open_witness() -> int
-  requires true
-  ensures result == 0
-  decreases 0
-
-def main() -> int
+def formal_target_e_992() -> int
   requires true
   ensures result == 0
   decreases 0

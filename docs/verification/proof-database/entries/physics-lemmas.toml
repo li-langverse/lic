@@ -1,3 +1,5 @@
+version = 1
+
 # Derived physics lemmas — proof database v1
 
 [[entry]]
@@ -10,7 +12,7 @@ gap_kind = "none"
 gap_id = "G-physics"
 lean_module = "docs/semantics/Discharge.lean"
 lean_thm = "kinetic_energy_def_consistent"
-li_specimen = ""
+li_specimen = "proof-db/physics/specimens/P-LM-ENERGY-001.li"
 last_verified_lic_commit = "a9542bfc"
 
 [[entry]]
@@ -23,7 +25,7 @@ gap_kind = "none"
 gap_id = "G-physics"
 lean_module = "docs/semantics/Discharge.lean"
 lean_thm = "linear_momentum_linear_stub"
-li_specimen = ""
+li_specimen = "proof-db/physics/specimens/P-LM-MOM-001.li"
 last_verified_lic_commit = "a9542bfc"
 
 [[entry]]
@@ -36,13 +38,7 @@ gap_kind = "modeling_gap"
 gap_id = "G-physics"
 lean_module = "proof-db/physics/lemmas/energy_drift_bound.li"
 lean_thm = ""
-li_specimen = "proof-db/physics/lemmas/energy_drift_bound.li"
-li_tests = [
-  "li-tests/benchmarks/tier0_correctness/md_energy_single_step.li",
-  "li-tests/benchmarks/tier0_correctness/three_body_invariants.li",
-]
-bench_refs = [
-  "benchmarks/tier2_physics/md_lennard_jones",
-  "benchmarks/tier2_physics/three_body",
-]
+li_specimen = "proof-db/physics/specimens/P-LM-CONS-001.li"
+li_tests = ["li-tests/benchmarks/tier0_correctness/md_energy_single_step.li", "li-tests/benchmarks/tier0_correctness/three_body_invariants.li"]
+bench_refs = ["benchmarks/tier2_physics/md_lennard_jones", "benchmarks/tier2_physics/three_body"]
 last_verified_lic_commit = "a9542bfc"

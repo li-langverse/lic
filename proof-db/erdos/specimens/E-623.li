@@ -1,22 +1,10 @@
-# E-623: Let $X$ be a set of cardinality $\aleph_\omega$ and $f$ be a function from the finite subsets of $X$ to $X$ such that $f(A)\not\in A$ for all $A$. Must there exist an infinite $Y\subseteq X$ that is independent - that is, for all finite $B\subset Y$ we have $f(B)\not\in Y$?
-# erdos_number: 623
-# erdos_status: open
-# priority_tier: P2
-# tags: set_theory
+# Catalog: E-623
+# Statement: Let $X$ be a set of cardinality $\aleph_\omega$ and $f$ be a function from the finite subsets of $X$ to $X$ such that $f(A)\not\in A$ for all $A$. Must there exist an infinite $Y\subseteq X$ that is independent - that is, for all finite $B\
+# formalization_status: li_open
+# discharge: pending — open formalization target (Phase 4)
+# erdos_status (literature): open
 
-def erdos_e623_let_x_be_a_set_of_cardinality_aleph_omeg() -> int
-  requires true
-  ensures result == 0  # open: E-623
-  decreases 0
-=
-  return 0
-
-extern proc erdos_e623_open_witness() -> int
-  requires true
-  ensures result == 0
-  decreases 0
-
-def main() -> int
+def formal_target_e_623() -> int
   requires true
   ensures result == 0
   decreases 0

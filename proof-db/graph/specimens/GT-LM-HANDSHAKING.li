@@ -1,0 +1,11 @@
+# Catalog: GT-LM-HANDSHAKING
+# Statement: Handshaking lemma: sum of vertex degrees equals twice the number of edges.
+# formalization_status: li_open
+# discharge: pending — open formalization target (Phase 4)
+
+def formal_target_gt_lm_handshaking() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0

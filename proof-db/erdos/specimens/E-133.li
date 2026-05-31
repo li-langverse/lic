@@ -1,22 +1,10 @@
-# E-133: Let $f(n)$ be minimal such that every triangle-free graph $G$ with $n$ vertices and diameter $2$ contains a vertex with degree $\geq f(n)$. What is the order of growth of $f(n)$? Does $f(n)/\sqrt{n}\to \infty$?
-# erdos_number: 133
-# erdos_status: open
-# priority_tier: P2
-# tags: graph_theory
+# Catalog: E-133
+# Statement: Let $f(n)$ be minimal such that every triangle-free graph $G$ with $n$ vertices and diameter $2$ contains a vertex with degree $\geq f(n)$. What is the order of growth of $f(n)$? Does $f(n)/\sqrt{n}\to \infty$?
+# formalization_status: li_open
+# discharge: pending — open formalization target (Phase 4)
+# erdos_status (literature): open
 
-def erdos_e133_let_f_n_be_minimal_such_that_every_trian() -> int
-  requires true
-  ensures result == 0  # open: E-133
-  decreases 0
-=
-  return 0
-
-extern proc erdos_e133_open_witness() -> int
-  requires true
-  ensures result == 0
-  decreases 0
-
-def main() -> int
+def formal_target_e_133() -> int
   requires true
   ensures result == 0
   decreases 0

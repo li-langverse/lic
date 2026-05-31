@@ -1,22 +1,10 @@
-# E-1: Are there infinitely many integers n such that at least one of n!+1, n!-1, or n!+(n+1) is prime?
-# erdos_number: 1
-# erdos_status: open
-# priority_tier: P2
-# tags: number_theory, primes, factorial
+# Catalog: E-1
+# Statement: Are there infinitely many integers n such that at least one of n!+1, n!-1, or n!+(n+1) is prime?
+# formalization_status: li_open
+# discharge: pending — open formalization target (Phase 4)
+# erdos_status (literature): open
 
-def erdos_e1_are_there_infinitely_many_integers_n_suc() -> int
-  requires true
-  ensures result == 0  # open: E-1
-  decreases 0
-=
-  return 0
-
-extern proc erdos_e1_open_witness() -> int
-  requires true
-  ensures result == 0
-  decreases 0
-
-def main() -> int
+def formal_target_e_1() -> int
   requires true
   ensures result == 0
   decreases 0

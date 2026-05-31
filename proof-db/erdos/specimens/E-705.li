@@ -1,22 +1,10 @@
-# E-705: Let $G$ be a finite unit distance graph in $\mathbb{R}^2$ (i.e. the vertices are a finite collection of points in $\mathbb{R}^2$ and there is an edge between two points if and only if the distance between them is $1$). Is there some $k$ such that if $G$ has girth $\geq k$ (i.e. $G$ contains no cycles of length $<k$) then $\chi(G)\leq 3$?
-# erdos_number: 705
-# erdos_status: open
-# priority_tier: P2
-# tags: chromatic_number, graph_theory
+# Catalog: E-705
+# Statement: Let $G$ be a finite unit distance graph in $\mathbb{R}^2$ (i.e. the vertices are a finite collection of points in $\mathbb{R}^2$ and there is an edge between two points if and only if the distance between them is $1$). Is there some $k$ suc
+# formalization_status: li_open
+# discharge: pending — open formalization target (Phase 4)
+# erdos_status (literature): open
 
-def erdos_e705_let_g_be_a_finite_unit_distance_graph_in() -> int
-  requires true
-  ensures result == 0  # open: E-705
-  decreases 0
-=
-  return 0
-
-extern proc erdos_e705_open_witness() -> int
-  requires true
-  ensures result == 0
-  decreases 0
-
-def main() -> int
+def formal_target_e_705() -> int
   requires true
   ensures result == 0
   decreases 0

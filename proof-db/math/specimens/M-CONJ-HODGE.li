@@ -1,0 +1,11 @@
+# Catalog: M-CONJ-HODGE
+# Statement: Is every Hodge class on a smooth projective variety a rational linear combination of classes of algebraic cycles (Hodge conjecture)?
+# formalization_status: li_open
+# discharge: pending — open formalization target (Phase 4)
+
+def formal_target_m_conj_hodge() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0

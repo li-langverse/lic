@@ -1,22 +1,10 @@
-# E-701: Let $\mathcal{F}$ be a family of sets closed under taking subsets (i.e. if $B\subseteq A\in\mathcal{F}$ then $B\in \mathcal{F}$). There exists some element $x$ such that whenever $\mathcal{F}'\subseteq \mathcal{F}$ is an intersecting subfamily we have\[\lvert \mathcal{F}'\rvert \leq \lvert \{ A\in \mathcal{F} : x\in A\}\rvert.\]
-# erdos_number: 701
-# erdos_status: open
-# priority_tier: P2
-# tags: combinatorics, intersecting_family
+# Catalog: E-701
+# Statement: Let $\mathcal{F}$ be a family of sets closed under taking subsets (i.e. if $B\subseteq A\in\mathcal{F}$ then $B\in \mathcal{F}$). There exists some element $x$ such that whenever $\mathcal{F}'\subseteq \mathcal{F}$ is an intersecting subfam
+# formalization_status: li_open
+# discharge: pending — open formalization target (Phase 4)
+# erdos_status (literature): open
 
-def erdos_e701_let_mathcal_f_be_a_family_of_sets_closed() -> int
-  requires true
-  ensures result == 0  # open: E-701
-  decreases 0
-=
-  return 0
-
-extern proc erdos_e701_open_witness() -> int
-  requires true
-  ensures result == 0
-  decreases 0
-
-def main() -> int
+def formal_target_e_701() -> int
   requires true
   ensures result == 0
   decreases 0

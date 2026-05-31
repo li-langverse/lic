@@ -1,22 +1,10 @@
-# E-1023: Let $F(n)$ be the maximal size of a family of subsets of $\{1,\ldots,n\}$ such that no set in this family is the union of other members of the family. Is it true that there is a constant $c>0$ such that\[F(n)\sim c \frac{2^n}{n^{1/2}}?\]
-# erdos_number: 1023
-# erdos_status: open
-# priority_tier: P2
-# tags: combinatorics
+# Catalog: E-1023
+# Statement: Let $F(n)$ be the maximal size of a family of subsets of $\{1,\ldots,n\}$ such that no set in this family is the union of other members of the family. Is it true that there is a constant $c>0$ such that\[F(n)\sim c \frac{2^n}{n^{1/2}}?\]
+# formalization_status: li_open
+# discharge: pending — open formalization target (Phase 4)
+# erdos_status (literature): open
 
-def erdos_e1023_let_f_n_be_the_maximal_size_of_a_family() -> int
-  requires true
-  ensures result == 0  # open: E-1023
-  decreases 0
-=
-  return 0
-
-extern proc erdos_e1023_open_witness() -> int
-  requires true
-  ensures result == 0
-  decreases 0
-
-def main() -> int
+def formal_target_e_1023() -> int
   requires true
   ensures result == 0
   decreases 0

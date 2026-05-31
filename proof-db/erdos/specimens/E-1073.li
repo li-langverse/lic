@@ -1,22 +1,10 @@
-# E-1073: Let $A(x)$ count the number of composite $u<x$ such that $n!+1\equiv 0\pmod{u}$ for some $n$. Is it true that $A(x)\leq x^{o(1)}$?
-# erdos_number: 1073
-# erdos_status: open
-# priority_tier: P2
-# tags: number_theory
+# Catalog: E-1073
+# Statement: Let $A(x)$ count the number of composite $u<x$ such that $n!+1\equiv 0\pmod{u}$ for some $n$. Is it true that $A(x)\leq x^{o(1)}$?
+# formalization_status: li_open
+# discharge: pending — open formalization target (Phase 4)
+# erdos_status (literature): open
 
-def erdos_e1073_let_a_x_count_the_number_of_composite_u() -> int
-  requires true
-  ensures result == 0  # open: E-1073
-  decreases 0
-=
-  return 0
-
-extern proc erdos_e1073_open_witness() -> int
-  requires true
-  ensures result == 0
-  decreases 0
-
-def main() -> int
+def formal_target_e_1073() -> int
   requires true
   ensures result == 0
   decreases 0

@@ -1,22 +1,10 @@
-# E-938: Let $A=\{n_1<n_2<\cdots\}$ be the sequence of powerful numbers (if $p\mid n$ then $p^2\mid n$). Are there only finitely many three-term progressions of consecutive terms $n_k,n_{k+1},n_{k+2}$?
-# erdos_number: 938
-# erdos_status: open
-# priority_tier: P2
-# tags: number_theory, powerful
+# Catalog: E-938
+# Statement: Let $A=\{n_1<n_2<\cdots\}$ be the sequence of powerful numbers (if $p\mid n$ then $p^2\mid n$). Are there only finitely many three-term progressions of consecutive terms $n_k,n_{k+1},n_{k+2}$?
+# formalization_status: li_open
+# discharge: pending — open formalization target (Phase 4)
+# erdos_status (literature): open
 
-def erdos_e938_let_a_n_1_n_2_cdots_be_the_sequence_of_p() -> int
-  requires true
-  ensures result == 0  # open: E-938
-  decreases 0
-=
-  return 0
-
-extern proc erdos_e938_open_witness() -> int
-  requires true
-  ensures result == 0
-  decreases 0
-
-def main() -> int
+def formal_target_e_938() -> int
   requires true
   ensures result == 0
   decreases 0

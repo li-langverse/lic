@@ -1,22 +1,10 @@
-# E-475: Let $p$ be a prime. Given any finite set $A\subseteq \mathbb{F}_p\backslash \{0\}$, is there always a rearrangement $A=\{a_1,\ldots,a_t\}$ such that all partial sums $\sum_{1\leq k\leq m}a_{k}$ are distinct, for all $1\leq m\leq t$?
-# erdos_number: 475
-# erdos_status: open
-# priority_tier: P2
-# tags: additive_combinatorics, number_theory
+# Catalog: E-475
+# Statement: Let $p$ be a prime. Given any finite set $A\subseteq \mathbb{F}_p\backslash \{0\}$, is there always a rearrangement $A=\{a_1,\ldots,a_t\}$ such that all partial sums $\sum_{1\leq k\leq m}a_{k}$ are distinct, for all $1\leq m\leq t$?
+# formalization_status: li_open
+# discharge: pending — open formalization target (Phase 4)
+# erdos_status (literature): open
 
-def erdos_e475_let_p_be_a_prime_given_any_finite_set_a() -> int
-  requires true
-  ensures result == 0  # open: E-475
-  decreases 0
-=
-  return 0
-
-extern proc erdos_e475_open_witness() -> int
-  requires true
-  ensures result == 0
-  decreases 0
-
-def main() -> int
+def formal_target_e_475() -> int
   requires true
   ensures result == 0
   decreases 0

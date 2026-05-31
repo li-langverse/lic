@@ -1,22 +1,10 @@
-# E-922: Let $k\geq 0$. Let $G$ be a graph such that every subgraph $H$ contains an independent set of size $\geq (n-k)/2$, where $n$ is the number of vertices of $H$. Must $G$ have chromatic number at most $k+2$?
-# erdos_number: 922
-# erdos_status: proved
-# priority_tier: P2
-# tags: chromatic_number, graph_theory
+# Catalog: E-922
+# Statement: Let $k\geq 0$. Let $G$ be a graph such that every subgraph $H$ contains an independent set of size $\geq (n-k)/2$, where $n$ is the number of vertices of $H$. Must $G$ have chromatic number at most $k+2$?
+# formalization_status: li_open
+# discharge: pending — open formalization target (Phase 4)
+# erdos_status (literature): proved
 
-def erdos_e922_let_k_geq_0_let_g_be_a_graph_such_that_e() -> int
-  requires true
-  ensures result == 0  # open: E-922
-  decreases 0
-=
-  return 0
-
-extern proc erdos_e922_open_witness() -> int
-  requires true
-  ensures result == 0
-  decreases 0
-
-def main() -> int
+def formal_target_e_922() -> int
   requires true
   ensures result == 0
   decreases 0

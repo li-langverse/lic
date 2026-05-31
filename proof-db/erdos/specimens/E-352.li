@@ -1,22 +1,10 @@
-# E-352: Is there some $c>0$ such that every measurable $A\subseteq \mathbb{R}^2$ of measure $\geq c$ contains the vertices of a triangle of area 1?
-# erdos_number: 352
-# erdos_status: open
-# priority_tier: P2
-# tags: geometry
+# Catalog: E-352
+# Statement: Is there some $c>0$ such that every measurable $A\subseteq \mathbb{R}^2$ of measure $\geq c$ contains the vertices of a triangle of area 1?
+# formalization_status: li_open
+# discharge: pending — open formalization target (Phase 4)
+# erdos_status (literature): open
 
-def erdos_e352_is_there_some_c_0_such_that_every_measur() -> int
-  requires true
-  ensures result == 0  # open: E-352
-  decreases 0
-=
-  return 0
-
-extern proc erdos_e352_open_witness() -> int
-  requires true
-  ensures result == 0
-  decreases 0
-
-def main() -> int
+def formal_target_e_352() -> int
   requires true
   ensures result == 0
   decreases 0

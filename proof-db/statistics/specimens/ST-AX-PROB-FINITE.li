@@ -1,0 +1,11 @@
+# Catalog: ST-AX-PROB-FINITE
+# Statement: Finite probability space: sample space Fin n, mass function p with p_i >= 0 and sum p_i = 1.
+# formalization_status: li_open
+# discharge: pending — open formalization target (Phase 4)
+
+def formal_target_st_ax_prob_finite() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0

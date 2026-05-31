@@ -1,22 +1,10 @@
-# E-290: Let $a\geq 1$. Must there exist some $b>a$ such that\[\sum_{a\leq n\leq b}\frac{1}{n}=\frac{r_1}{s_1}\textrm{ and }\sum_{a\leq n\leq b+1}\frac{1}{n}=\frac{r_2}{s_2},\]with $(r_i,s_i)=1$ and $s_2<s_1$? If so, how does this $b(a)$ grow with $a$?
-# erdos_number: 290
-# erdos_status: proved
-# priority_tier: P2
-# tags: number_theory, unit_fractions
+# Catalog: E-290
+# Statement: Let $a\geq 1$. Must there exist some $b>a$ such that\[\sum_{a\leq n\leq b}\frac{1}{n}=\frac{r_1}{s_1}\textrm{ and }\sum_{a\leq n\leq b+1}\frac{1}{n}=\frac{r_2}{s_2},\]with $(r_i,s_i)=1$ and $s_2<s_1$? If so, how does this $b(a)$ grow with $
+# formalization_status: li_open
+# discharge: pending — open formalization target (Phase 4)
+# erdos_status (literature): proved
 
-def erdos_e290_let_a_geq_1_must_there_exist_some_b_a_su() -> int
-  requires true
-  ensures result == 0  # open: E-290
-  decreases 0
-=
-  return 0
-
-extern proc erdos_e290_open_witness() -> int
-  requires true
-  ensures result == 0
-  decreases 0
-
-def main() -> int
+def formal_target_e_290() -> int
   requires true
   ensures result == 0
   decreases 0

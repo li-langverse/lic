@@ -1,22 +1,10 @@
-# E-1042: Let $F\subset\mathbb{C}$ be a closed set of transfinite diameter $1$ which is not contained in any closed disc of radius $1$. If $f(z)=\prod_{i=1}^n(z-z_i)\in\mathbb{C}[x]$ with all $z_i\in F$ then can\[\{ z: \lvert f(z)\rvert < 1\}\]have $n$ connected components? If the transfinite diameter of $F$ is $<1$ then must this set only have at most $(1-c)n$ connected components, where $c>0$ depends only on $F$ (or just the transfinite diameter of $F$)?
-# erdos_number: 1042
-# erdos_status: proved
-# priority_tier: P2
-# tags: analysis
+# Catalog: E-1042
+# Statement: Let $F\subset\mathbb{C}$ be a closed set of transfinite diameter $1$ which is not contained in any closed disc of radius $1$. If $f(z)=\prod_{i=1}^n(z-z_i)\in\mathbb{C}[x]$ with all $z_i\in F$ then can\[\{ z: \lvert f(z)\rvert < 1\}\]have $
+# formalization_status: li_open
+# discharge: pending — open formalization target (Phase 4)
+# erdos_status (literature): proved
 
-def erdos_e1042_let_f_subset_mathbb_c_be_a_closed_set_of() -> int
-  requires true
-  ensures result == 0  # open: E-1042
-  decreases 0
-=
-  return 0
-
-extern proc erdos_e1042_open_witness() -> int
-  requires true
-  ensures result == 0
-  decreases 0
-
-def main() -> int
+def formal_target_e_1042() -> int
   requires true
   ensures result == 0
   decreases 0

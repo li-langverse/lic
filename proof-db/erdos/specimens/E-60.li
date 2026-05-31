@@ -1,22 +1,10 @@
-# E-60: Does there exist a prime between n and 2n for all sufficiently large n with an explicit effective bound?
-# erdos_number: 60
-# erdos_status: proved
-# priority_tier: P1
-# tags: primes, bertrand
+# Catalog: E-60
+# Statement: Does there exist a prime between n and 2n for all sufficiently large n with an explicit effective bound?
+# formalization_status: li_open
+# discharge: pending — open formalization target (Phase 4)
+# erdos_status (literature): proved
 
-def erdos_e60_does_there_exist_a_prime_between_n_and_2() -> int
-  requires true
-  ensures result == 0  # open: E-60
-  decreases 0
-=
-  return 0
-
-extern proc erdos_e60_open_witness() -> int
-  requires true
-  ensures result == 0
-  decreases 0
-
-def main() -> int
+def formal_target_e_60() -> int
   requires true
   ensures result == 0
   decreases 0

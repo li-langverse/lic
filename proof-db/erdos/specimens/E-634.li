@@ -1,22 +1,10 @@
-# E-634: Find all $n$ such that there is at least one triangle which can be cut into $n$ congruent triangles.
-# erdos_number: 634
-# erdos_status: open
-# priority_tier: P2
-# tags: geometry
+# Catalog: E-634
+# Statement: Find all $n$ such that there is at least one triangle which can be cut into $n$ congruent triangles.
+# formalization_status: li_open
+# discharge: pending — open formalization target (Phase 4)
+# erdos_status (literature): open
 
-def erdos_e634_find_all_n_such_that_there_is_at_least_o() -> int
-  requires true
-  ensures result == 0  # open: E-634
-  decreases 0
-=
-  return 0
-
-extern proc erdos_e634_open_witness() -> int
-  requires true
-  ensures result == 0
-  decreases 0
-
-def main() -> int
+def formal_target_e_634() -> int
   requires true
   ensures result == 0
   decreases 0

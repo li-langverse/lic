@@ -1,22 +1,10 @@
-# E-157: Does there exist an infinite Sidon set which is an asymptotic basis of order 3?
-# erdos_number: 157
-# erdos_status: proved
-# priority_tier: P2
-# tags: sidon_sets
+# Catalog: E-157
+# Statement: Does there exist an infinite Sidon set which is an asymptotic basis of order 3?
+# formalization_status: li_open
+# discharge: pending — open formalization target (Phase 4)
+# erdos_status (literature): proved
 
-def erdos_e157_does_there_exist_an_infinite_sidon_set_w() -> int
-  requires true
-  ensures result == 0  # open: E-157
-  decreases 0
-=
-  return 0
-
-extern proc erdos_e157_open_witness() -> int
-  requires true
-  ensures result == 0
-  decreases 0
-
-def main() -> int
+def formal_target_e_157() -> int
   requires true
   ensures result == 0
   decreases 0

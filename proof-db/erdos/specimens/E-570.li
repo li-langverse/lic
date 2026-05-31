@@ -1,22 +1,10 @@
-# E-570: Let $k\geq 3$. Is it true that, if $m$ is sufficiently large, for any graph $H$ on $m$ edges without isolated vertices,\[R(C_k,H) \leq 2m+\left\lfloor\frac{k-1}{2}\right\rfloor?\]
-# erdos_number: 570
-# erdos_status: proved
-# priority_tier: P2
-# tags: graph_theory, ramsey_theory
+# Catalog: E-570
+# Statement: Let $k\geq 3$. Is it true that, if $m$ is sufficiently large, for any graph $H$ on $m$ edges without isolated vertices,\[R(C_k,H) \leq 2m+\left\lfloor\frac{k-1}{2}\right\rfloor?\]
+# formalization_status: li_open
+# discharge: pending — open formalization target (Phase 4)
+# erdos_status (literature): proved
 
-def erdos_e570_let_k_geq_3_is_it_true_that_if_m_is_suff() -> int
-  requires true
-  ensures result == 0  # open: E-570
-  decreases 0
-=
-  return 0
-
-extern proc erdos_e570_open_witness() -> int
-  requires true
-  ensures result == 0
-  decreases 0
-
-def main() -> int
+def formal_target_e_570() -> int
   requires true
   ensures result == 0
   decreases 0

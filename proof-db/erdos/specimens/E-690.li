@@ -1,22 +1,10 @@
-# E-690: Let $d_k(p)$ be the density of those integers whose $k$th smallest prime factor is $p$ (i.e. if $p_1<p_2<\cdots$ are the primes dividing $n$ then $p_k=p$). For fixed $k\geq 1$ is $d_k(p)$ unimodular in $p$? That is, it first increases in $p$ until its maximum then decreases.
-# erdos_number: 690
-# erdos_status: open
-# priority_tier: P2
-# tags: number_theory
+# Catalog: E-690
+# Statement: Let $d_k(p)$ be the density of those integers whose $k$th smallest prime factor is $p$ (i.e. if $p_1<p_2<\cdots$ are the primes dividing $n$ then $p_k=p$). For fixed $k\geq 1$ is $d_k(p)$ unimodular in $p$? That is, it first increases in $p
+# formalization_status: li_open
+# discharge: pending — open formalization target (Phase 4)
+# erdos_status (literature): open
 
-def erdos_e690_let_d_k_p_be_the_density_of_those_intege() -> int
-  requires true
-  ensures result == 0  # open: E-690
-  decreases 0
-=
-  return 0
-
-extern proc erdos_e690_open_witness() -> int
-  requires true
-  ensures result == 0
-  decreases 0
-
-def main() -> int
+def formal_target_e_690() -> int
   requires true
   ensures result == 0
   decreases 0

@@ -1,22 +1,10 @@
-# E-200: Does the longest arithmetic progression of primes in $\{1,\ldots,N\}$ have length $o(\log N)$?
-# erdos_number: 200
-# erdos_status: open
-# priority_tier: P2
-# tags: arithmetic_progressions, primes
+# Catalog: E-200
+# Statement: Does the longest arithmetic progression of primes in $\{1,\ldots,N\}$ have length $o(\log N)$?
+# formalization_status: li_open
+# discharge: pending — open formalization target (Phase 4)
+# erdos_status (literature): open
 
-def erdos_e200_does_the_longest_arithmetic_progression() -> int
-  requires true
-  ensures result == 0  # open: E-200
-  decreases 0
-=
-  return 0
-
-extern proc erdos_e200_open_witness() -> int
-  requires true
-  ensures result == 0
-  decreases 0
-
-def main() -> int
+def formal_target_e_200() -> int
   requires true
   ensures result == 0
   decreases 0

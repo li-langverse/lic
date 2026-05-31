@@ -1,22 +1,10 @@
-# E-1196: Is it true that, for any $x$, if $A\subset [x,\infty)$ is a primitive set of integers (so that no distinct elements of $A$ divide each other) then\[\sum_{a\in A}\frac{1}{a\log a}< 1+o(1),\]where the $o(1)$ term $\to 0$ as $x\to \infty$?
-# erdos_number: 1196
-# erdos_status: proved
-# priority_tier: P2
-# tags: number_theory, primitive_sets
+# Catalog: E-1196
+# Statement: Is it true that, for any $x$, if $A\subset [x,\infty)$ is a primitive set of integers (so that no distinct elements of $A$ divide each other) then\[\sum_{a\in A}\frac{1}{a\log a}< 1+o(1),\]where the $o(1)$ term $\to 0$ as $x\to \infty$?
+# formalization_status: li_open
+# discharge: pending — open formalization target (Phase 4)
+# erdos_status (literature): proved
 
-def erdos_e1196_is_it_true_that_for_any_x_if_a_subset_x() -> int
-  requires true
-  ensures result == 0  # open: E-1196
-  decreases 0
-=
-  return 0
-
-extern proc erdos_e1196_open_witness() -> int
-  requires true
-  ensures result == 0
-  decreases 0
-
-def main() -> int
+def formal_target_e_1196() -> int
   requires true
   ensures result == 0
   decreases 0

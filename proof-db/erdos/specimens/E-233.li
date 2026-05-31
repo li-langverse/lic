@@ -1,22 +1,10 @@
-# E-233: Let $d_n=p_{n+1}-p_n$, where $p_n$ is the $n$th prime. Prove that\[\sum_{1\leq n\leq N}d_n^2 \ll N(\log N)^2.\]
-# erdos_number: 233
-# erdos_status: open
-# priority_tier: P2
-# tags: number_theory, primes
+# Catalog: E-233
+# Statement: Let $d_n=p_{n+1}-p_n$, where $p_n$ is the $n$th prime. Prove that\[\sum_{1\leq n\leq N}d_n^2 \ll N(\log N)^2.\]
+# formalization_status: li_open
+# discharge: pending — open formalization target (Phase 4)
+# erdos_status (literature): open
 
-def erdos_e233_let_d_n_p_n_1_p_n_where_p_n_is_the_n_th() -> int
-  requires true
-  ensures result == 0  # open: E-233
-  decreases 0
-=
-  return 0
-
-extern proc erdos_e233_open_witness() -> int
-  requires true
-  ensures result == 0
-  decreases 0
-
-def main() -> int
+def formal_target_e_233() -> int
   requires true
   ensures result == 0
   decreases 0

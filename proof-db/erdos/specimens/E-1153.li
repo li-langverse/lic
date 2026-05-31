@@ -1,22 +1,10 @@
-# E-1153: For $x_1,\ldots,x_n\in [-1,1]$ let\[l_k(x)=\frac{\prod_{i\neq k}(x-x_i)}{\prod_{i\neq k}(x_k-x_i)},\]which are such that $l_k(x_k)=1$ and $l_k(x_i)=0$ for $i\neq k$. Let\[\lambda(x)=\sum_k \lvert l_k(x)\rvert.\]Is it true that, for any fixed $-1\leq a< b\leq 1$,\[\max_{x\in [a,b]}\lambda(x)> \left(\frac{2}{\pi}-o(1)\right)\log n?\]
-# erdos_number: 1153
-# erdos_status: proved
-# priority_tier: P2
-# tags: analysis, polynomials
+# Catalog: E-1153
+# Statement: For $x_1,\ldots,x_n\in [-1,1]$ let\[l_k(x)=\frac{\prod_{i\neq k}(x-x_i)}{\prod_{i\neq k}(x_k-x_i)},\]which are such that $l_k(x_k)=1$ and $l_k(x_i)=0$ for $i\neq k$. Let\[\lambda(x)=\sum_k \lvert l_k(x)\rvert.\]Is it true that, for any fixe
+# formalization_status: li_open
+# discharge: pending — open formalization target (Phase 4)
+# erdos_status (literature): proved
 
-def erdos_e1153_for_x_1_ldots_x_n_in_1_1_let_l_k_x_frac() -> int
-  requires true
-  ensures result == 0  # open: E-1153
-  decreases 0
-=
-  return 0
-
-extern proc erdos_e1153_open_witness() -> int
-  requires true
-  ensures result == 0
-  decreases 0
-
-def main() -> int
+def formal_target_e_1153() -> int
   requires true
   ensures result == 0
   decreases 0

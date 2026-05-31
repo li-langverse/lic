@@ -1,22 +1,10 @@
-# E-709: Let $f(n)$ be minimal such that, for any $A=\{a_1,\ldots,a_n\}\subseteq [2,\infty)\cap\mathbb{N}$ of size $n$, in any interval $I$ of $f(n)\max(A)$ consecutive integers there exist distinct $x_1,\ldots,x_n\in I$ such that $a_i\mid x_i$. Obtain good bounds for $f(n)$, or even an asymptotic formula.
-# erdos_number: 709
-# erdos_status: open
-# priority_tier: P2
-# tags: number_theory
+# Catalog: E-709
+# Statement: Let $f(n)$ be minimal such that, for any $A=\{a_1,\ldots,a_n\}\subseteq [2,\infty)\cap\mathbb{N}$ of size $n$, in any interval $I$ of $f(n)\max(A)$ consecutive integers there exist distinct $x_1,\ldots,x_n\in I$ such that $a_i\mid x_i$. Obt
+# formalization_status: li_open
+# discharge: pending — open formalization target (Phase 4)
+# erdos_status (literature): open
 
-def erdos_e709_let_f_n_be_minimal_such_that_for_any_a_a() -> int
-  requires true
-  ensures result == 0  # open: E-709
-  decreases 0
-=
-  return 0
-
-extern proc erdos_e709_open_witness() -> int
-  requires true
-  ensures result == 0
-  decreases 0
-
-def main() -> int
+def formal_target_e_709() -> int
   requires true
   ensures result == 0
   decreases 0

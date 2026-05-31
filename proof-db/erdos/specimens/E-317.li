@@ -1,22 +1,10 @@
-# E-317: Is there some constant $c>0$ such that for every $n\geq 1$ there exists some $\delta_k\in \{-1,0,1\}$ for $1\leq k\leq n$ with\[0< \left\lvert \sum_{1\leq k\leq n}\frac{\delta_k}{k}\right\rvert < \frac{c}{2^n}?\]Is it true that for sufficiently large $n$, for any $\delta_k\in \{-1,0,1\}$,\[\left\lvert \sum_{1\leq k\leq n}\frac{\delta_k}{k}\right\rvert > \frac{1}{[1,\ldots,n]}\]whenever the left-hand side is not zero?
-# erdos_number: 317
-# erdos_status: open
-# priority_tier: P2
-# tags: number_theory, unit_fractions
+# Catalog: E-317
+# Statement: Is there some constant $c>0$ such that for every $n\geq 1$ there exists some $\delta_k\in \{-1,0,1\}$ for $1\leq k\leq n$ with\[0< \left\lvert \sum_{1\leq k\leq n}\frac{\delta_k}{k}\right\rvert < \frac{c}{2^n}?\]Is it true that for sufficie
+# formalization_status: li_open
+# discharge: pending — open formalization target (Phase 4)
+# erdos_status (literature): open
 
-def erdos_e317_is_there_some_constant_c_0_such_that_for() -> int
-  requires true
-  ensures result == 0  # open: E-317
-  decreases 0
-=
-  return 0
-
-extern proc erdos_e317_open_witness() -> int
-  requires true
-  ensures result == 0
-  decreases 0
-
-def main() -> int
+def formal_target_e_317() -> int
   requires true
   ensures result == 0
   decreases 0

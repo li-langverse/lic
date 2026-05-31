@@ -1,22 +1,10 @@
-# E-1081: Let $A(x)$ count the number of $n\leq x$ which are the sum of two squarefull numbers (a number $m$ is squarefull if $p\mid m$ implies $p^2\mid m$). Is it true that\[A(x) \sim c \frac{x}{\sqrt{\log x}}\]for some $c>0$?
-# erdos_number: 1081
-# erdos_status: open
-# priority_tier: P2
-# tags: number_theory, powerful
+# Catalog: E-1081
+# Statement: Let $A(x)$ count the number of $n\leq x$ which are the sum of two squarefull numbers (a number $m$ is squarefull if $p\mid m$ implies $p^2\mid m$). Is it true that\[A(x) \sim c \frac{x}{\sqrt{\log x}}\]for some $c>0$?
+# formalization_status: li_open
+# discharge: pending — open formalization target (Phase 4)
+# erdos_status (literature): open
 
-def erdos_e1081_let_a_x_count_the_number_of_n_leq_x_whic() -> int
-  requires true
-  ensures result == 0  # open: E-1081
-  decreases 0
-=
-  return 0
-
-extern proc erdos_e1081_open_witness() -> int
-  requires true
-  ensures result == 0
-  decreases 0
-
-def main() -> int
+def formal_target_e_1081() -> int
   requires true
   ensures result == 0
   decreases 0

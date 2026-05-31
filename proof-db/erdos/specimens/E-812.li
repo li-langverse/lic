@@ -1,22 +1,10 @@
-# E-812: Is it true that\[\frac{R(n+1)}{R(n)}\geq 1+c\]for some constant $c>0$, for all large $n$? Is it true that\[R(n+1)-R(n) \gg n^2?\]
-# erdos_number: 812
-# erdos_status: open
-# priority_tier: P2
-# tags: graph_theory, ramsey_theory
+# Catalog: E-812
+# Statement: Is it true that\[\frac{R(n+1)}{R(n)}\geq 1+c\]for some constant $c>0$, for all large $n$? Is it true that\[R(n+1)-R(n) \gg n^2?\]
+# formalization_status: li_open
+# discharge: pending — open formalization target (Phase 4)
+# erdos_status (literature): open
 
-def erdos_e812_is_it_true_that_frac_r_n_1_r_n_geq_1_c_f() -> int
-  requires true
-  ensures result == 0  # open: E-812
-  decreases 0
-=
-  return 0
-
-extern proc erdos_e812_open_witness() -> int
-  requires true
-  ensures result == 0
-  decreases 0
-
-def main() -> int
+def formal_target_e_812() -> int
   requires true
   ensures result == 0
   decreases 0

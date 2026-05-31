@@ -1,22 +1,10 @@
-# E-388: Can one classify all solutions of\[\prod_{1\leq i\leq k_1}(m_1+i)=\prod_{1\leq j\leq k_2}(m_2+j)\]where $k_1,k_2>3$ and $m_1+k_1\leq m_2$? Are there only finitely many solutions?
-# erdos_number: 388
-# erdos_status: open
-# priority_tier: P2
-# tags: number_theory
+# Catalog: E-388
+# Statement: Can one classify all solutions of\[\prod_{1\leq i\leq k_1}(m_1+i)=\prod_{1\leq j\leq k_2}(m_2+j)\]where $k_1,k_2>3$ and $m_1+k_1\leq m_2$? Are there only finitely many solutions?
+# formalization_status: li_open
+# discharge: pending — open formalization target (Phase 4)
+# erdos_status (literature): open
 
-def erdos_e388_can_one_classify_all_solutions_of_prod_1() -> int
-  requires true
-  ensures result == 0  # open: E-388
-  decreases 0
-=
-  return 0
-
-extern proc erdos_e388_open_witness() -> int
-  requires true
-  ensures result == 0
-  decreases 0
-
-def main() -> int
+def formal_target_e_388() -> int
   requires true
   ensures result == 0
   decreases 0

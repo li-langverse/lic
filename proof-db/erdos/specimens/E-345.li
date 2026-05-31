@@ -1,22 +1,10 @@
-# E-345: Let $A\subseteq \mathbb{N}$ be a complete sequence, and define the threshold of completeness $T(A)$ to be the least integer $m$ such that all $n\geq m$ are in\[P(A) = \left\{\sum_{n\in B}n : B\subseteq A\textrm{ finite }\right\}\](the existence of $T(A)$ is guaranteed by completeness). Is it true that there are infinitely many $k$ such that $T(n^k)>T(n^{k+1})$?
-# erdos_number: 345
-# erdos_status: open
-# priority_tier: P2
-# tags: complete_sequences, number_theory
+# Catalog: E-345
+# Statement: Let $A\subseteq \mathbb{N}$ be a complete sequence, and define the threshold of completeness $T(A)$ to be the least integer $m$ such that all $n\geq m$ are in\[P(A) = \left\{\sum_{n\in B}n : B\subseteq A\textrm{ finite }\right\}\](the exist
+# formalization_status: li_open
+# discharge: pending — open formalization target (Phase 4)
+# erdos_status (literature): open
 
-def erdos_e345_let_a_subseteq_mathbb_n_be_a_complete_se() -> int
-  requires true
-  ensures result == 0  # open: E-345
-  decreases 0
-=
-  return 0
-
-extern proc erdos_e345_open_witness() -> int
-  requires true
-  ensures result == 0
-  decreases 0
-
-def main() -> int
+def formal_target_e_345() -> int
   requires true
   ensures result == 0
   decreases 0

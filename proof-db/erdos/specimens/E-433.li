@@ -1,22 +1,10 @@
-# E-433: If $A\subset \mathbb{N}$ is a finite set then let $G(A)$ denote the greatest integer which is not expressible as a finite sum of elements from $A$ (with repetitions allowed). Let\[g(k,n)=\max G(A)\]where the maximum is taken over all $A\subseteq \{1,\ldots,n\}$ of size $\lvert A\rvert=k$ which has no common divisor. Is it true that\[g(k,n)\sim \frac{n^2}{k-1}?\]
-# erdos_number: 433
-# erdos_status: proved
-# priority_tier: P2
-# tags: number_theory
+# Catalog: E-433
+# Statement: If $A\subset \mathbb{N}$ is a finite set then let $G(A)$ denote the greatest integer which is not expressible as a finite sum of elements from $A$ (with repetitions allowed). Let\[g(k,n)=\max G(A)\]where the maximum is taken over all $A\sub
+# formalization_status: li_open
+# discharge: pending — open formalization target (Phase 4)
+# erdos_status (literature): proved
 
-def erdos_e433_if_a_subset_mathbb_n_is_a_finite_set_the() -> int
-  requires true
-  ensures result == 0  # open: E-433
-  decreases 0
-=
-  return 0
-
-extern proc erdos_e433_open_witness() -> int
-  requires true
-  ensures result == 0
-  decreases 0
-
-def main() -> int
+def formal_target_e_433() -> int
   requires true
   ensures result == 0
   decreases 0

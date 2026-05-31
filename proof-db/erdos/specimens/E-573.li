@@ -1,22 +1,10 @@
-# E-573: Is it true that\[\mathrm{ex}(n;\{C_3,C_4\})\sim (n/2)^{3/2}?\]
-# erdos_number: 573
-# erdos_status: open
-# priority_tier: P2
-# tags: graph_theory, turan_number
+# Catalog: E-573
+# Statement: Is it true that\[\mathrm{ex}(n;\{C_3,C_4\})\sim (n/2)^{3/2}?\]
+# formalization_status: li_open
+# discharge: pending — open formalization target (Phase 4)
+# erdos_status (literature): open
 
-def erdos_e573_is_it_true_that_mathrm_ex_n_c_3_c_4_sim() -> int
-  requires true
-  ensures result == 0  # open: E-573
-  decreases 0
-=
-  return 0
-
-extern proc erdos_e573_open_witness() -> int
-  requires true
-  ensures result == 0
-  decreases 0
-
-def main() -> int
+def formal_target_e_573() -> int
   requires true
   ensures result == 0
   decreases 0

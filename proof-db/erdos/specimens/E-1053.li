@@ -1,22 +1,10 @@
-# E-1053: Call a number $k$-perfect if $\sigma(n)=kn$, where $\sigma(n)$ is the sum of the divisors of $n$. Must $k=o(\log\log n)$?
-# erdos_number: 1053
-# erdos_status: open
-# priority_tier: P2
-# tags: number_theory
+# Catalog: E-1053
+# Statement: Call a number $k$-perfect if $\sigma(n)=kn$, where $\sigma(n)$ is the sum of the divisors of $n$. Must $k=o(\log\log n)$?
+# formalization_status: li_open
+# discharge: pending — open formalization target (Phase 4)
+# erdos_status (literature): open
 
-def erdos_e1053_call_a_number_k_perfect_if_sigma_n_kn_wh() -> int
-  requires true
-  ensures result == 0  # open: E-1053
-  decreases 0
-=
-  return 0
-
-extern proc erdos_e1053_open_witness() -> int
-  requires true
-  ensures result == 0
-  decreases 0
-
-def main() -> int
+def formal_target_e_1053() -> int
   requires true
   ensures result == 0
   decreases 0

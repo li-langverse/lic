@@ -1,22 +1,10 @@
-# E-956: If $C,D\subseteq \mathbb{R}^2$ then the distance between $C$ and $D$ is defined by\[\delta(C,D)=\inf_{\substack{c\in C\\ d\in D}}\| c-d\|.\]Let $h(n)$ be the maximal number of unit distances between disjoint convex translates. That is, the maximal $m$ such that there is a compact convex set $C\subset \mathbb{R}^2$ and a set $X$ of size $n$ such that all $(C+x)_{x\in X}$ are disjoint and there are $m$ pairs $x_1,x_2\in X$ such that\[\delta(C+x_1,C+x_2)=1.\]Determine $h(n)$ - in particular, prove that there exists a constant $c>0$ such that $h(n)>n^{1+c}$ for all large $n$.
-# erdos_number: 956
-# erdos_status: open
-# priority_tier: P2
-# tags: convex, distances, geometry
+# Catalog: E-956
+# Statement: If $C,D\subseteq \mathbb{R}^2$ then the distance between $C$ and $D$ is defined by\[\delta(C,D)=\inf_{\substack{c\in C\\ d\in D}}\| c-d\|.\]Let $h(n)$ be the maximal number of unit distances between disjoint convex translates. That is, the 
+# formalization_status: li_open
+# discharge: pending — open formalization target (Phase 4)
+# erdos_status (literature): open
 
-def erdos_e956_if_c_d_subseteq_mathbb_r_2_then_the_dist() -> int
-  requires true
-  ensures result == 0  # open: E-956
-  decreases 0
-=
-  return 0
-
-extern proc erdos_e956_open_witness() -> int
-  requires true
-  ensures result == 0
-  decreases 0
-
-def main() -> int
+def formal_target_e_956() -> int
   requires true
   ensures result == 0
   decreases 0

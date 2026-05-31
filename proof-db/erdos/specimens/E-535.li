@@ -1,22 +1,10 @@
-# E-535: Let $r\geq 3$, and let $f_r(N)$ denote the size of the largest subset of $\{1,\ldots,N\}$ such that no subset of size $r$ has the same pairwise greatest common divisor between all elements. Estimate $f_r(N)$.
-# erdos_number: 535
-# erdos_status: open
-# priority_tier: P2
-# tags: number_theory
+# Catalog: E-535
+# Statement: Let $r\geq 3$, and let $f_r(N)$ denote the size of the largest subset of $\{1,\ldots,N\}$ such that no subset of size $r$ has the same pairwise greatest common divisor between all elements. Estimate $f_r(N)$.
+# formalization_status: li_open
+# discharge: pending — open formalization target (Phase 4)
+# erdos_status (literature): open
 
-def erdos_e535_let_r_geq_3_and_let_f_r_n_denote_the_siz() -> int
-  requires true
-  ensures result == 0  # open: E-535
-  decreases 0
-=
-  return 0
-
-extern proc erdos_e535_open_witness() -> int
-  requires true
-  ensures result == 0
-  decreases 0
-
-def main() -> int
+def formal_target_e_535() -> int
   requires true
   ensures result == 0
   decreases 0

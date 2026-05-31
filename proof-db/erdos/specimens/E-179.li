@@ -1,22 +1,10 @@
-# E-179: Let $1\leq k<\ell$ be integers and define $F_k(N,\ell)$ to be minimal such that every set $A\subset \mathbb{N}$ of size $N$ which contains at least $F_k(N,\ell)$ many $k$-term arithmetic progressions must contain an $\ell$-term arithmetic progression. Find good upper bounds for $F_k(N,\ell)$. Is it true that\[F_3(N,4)=o(N^2)?\]Is it true that for every $\ell>3$\[\lim_{N\to \infty}\frac{\log F_3(N,\ell)}{\log N}=2?\]
-# erdos_number: 179
-# erdos_status: proved
-# priority_tier: P2
-# tags: additive_combinatorics, arithmetic_progressions
+# Catalog: E-179
+# Statement: Let $1\leq k<\ell$ be integers and define $F_k(N,\ell)$ to be minimal such that every set $A\subset \mathbb{N}$ of size $N$ which contains at least $F_k(N,\ell)$ many $k$-term arithmetic progressions must contain an $\ell$-term arithmetic p
+# formalization_status: li_open
+# discharge: pending — open formalization target (Phase 4)
+# erdos_status (literature): proved
 
-def erdos_e179_let_1_leq_k_ell_be_integers_and_define_f() -> int
-  requires true
-  ensures result == 0  # open: E-179
-  decreases 0
-=
-  return 0
-
-extern proc erdos_e179_open_witness() -> int
-  requires true
-  ensures result == 0
-  decreases 0
-
-def main() -> int
+def formal_target_e_179() -> int
   requires true
   ensures result == 0
   decreases 0

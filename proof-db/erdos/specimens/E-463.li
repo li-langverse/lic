@@ -1,22 +1,10 @@
-# E-463: Is there a function $f$ with $f(n)\to \infty$ as $n\to \infty$ such that, for all large $n$, there is a composite number $m$ such that\[n+f(n)<m<n+p(m)?\](Here $p(m)$ is the least prime factor of $m$.)
-# erdos_number: 463
-# erdos_status: open
-# priority_tier: P2
-# tags: number_theory, primes
+# Catalog: E-463
+# Statement: Is there a function $f$ with $f(n)\to \infty$ as $n\to \infty$ such that, for all large $n$, there is a composite number $m$ such that\[n+f(n)<m<n+p(m)?\](Here $p(m)$ is the least prime factor of $m$.)
+# formalization_status: li_open
+# discharge: pending — open formalization target (Phase 4)
+# erdos_status (literature): open
 
-def erdos_e463_is_there_a_function_f_with_f_n_to_infty() -> int
-  requires true
-  ensures result == 0  # open: E-463
-  decreases 0
-=
-  return 0
-
-extern proc erdos_e463_open_witness() -> int
-  requires true
-  ensures result == 0
-  decreases 0
-
-def main() -> int
+def formal_target_e_463() -> int
   requires true
   ensures result == 0
   decreases 0

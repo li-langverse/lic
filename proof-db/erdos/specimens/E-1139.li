@@ -1,22 +1,10 @@
-# E-1139: Let $1\leq u_1<u_2<\cdots$ be the sequence of integers with at most $2$ prime factors. Is it true that\[\limsup \frac{u_{k+1}-u_k}{\log k}=\infty?\]
-# erdos_number: 1139
-# erdos_status: open
-# priority_tier: P2
-# tags: number_theory, primes
+# Catalog: E-1139
+# Statement: Let $1\leq u_1<u_2<\cdots$ be the sequence of integers with at most $2$ prime factors. Is it true that\[\limsup \frac{u_{k+1}-u_k}{\log k}=\infty?\]
+# formalization_status: li_open
+# discharge: pending — open formalization target (Phase 4)
+# erdos_status (literature): open
 
-def erdos_e1139_let_1_leq_u_1_u_2_cdots_be_the_sequence() -> int
-  requires true
-  ensures result == 0  # open: E-1139
-  decreases 0
-=
-  return 0
-
-extern proc erdos_e1139_open_witness() -> int
-  requires true
-  ensures result == 0
-  decreases 0
-
-def main() -> int
+def formal_target_e_1139() -> int
   requires true
   ensures result == 0
   decreases 0

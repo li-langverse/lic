@@ -1,22 +1,10 @@
-# E-1070: Let $f(n)$ be maximal such that, given any $n$ points in $\mathbb{R}^2$, there exist $f(n)$ points such that no two are distance $1$ apart. Estimate $f(n)$. In particular, is it true that $f(n)\geq n/4$?
-# erdos_number: 1070
-# erdos_status: open
-# priority_tier: P2
-# tags: geometry
+# Catalog: E-1070
+# Statement: Let $f(n)$ be maximal such that, given any $n$ points in $\mathbb{R}^2$, there exist $f(n)$ points such that no two are distance $1$ apart. Estimate $f(n)$. In particular, is it true that $f(n)\geq n/4$?
+# formalization_status: li_open
+# discharge: pending — open formalization target (Phase 4)
+# erdos_status (literature): open
 
-def erdos_e1070_let_f_n_be_maximal_such_that_given_any_n() -> int
-  requires true
-  ensures result == 0  # open: E-1070
-  decreases 0
-=
-  return 0
-
-extern proc erdos_e1070_open_witness() -> int
-  requires true
-  ensures result == 0
-  decreases 0
-
-def main() -> int
+def formal_target_e_1070() -> int
   requires true
   ensures result == 0
   decreases 0

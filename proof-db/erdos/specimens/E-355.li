@@ -1,22 +1,10 @@
-# E-355: Is there a lacunary sequence $A\subseteq \mathbb{N}$ (so that $A=\{a_1<a_2<\cdots\}$ and there exists some $\lambda>1$ such that $a_{n+1}/a_n\geq \lambda$ for all $n\geq 1$) such that\[\left\{ \sum_{a\in A'}\frac{1}{a} : A'\subseteq A\textrm{ finite}\right\}\]contains all rationals in some open interval?
-# erdos_number: 355
-# erdos_status: proved
-# priority_tier: P2
-# tags: number_theory, unit_fractions
+# Catalog: E-355
+# Statement: Is there a lacunary sequence $A\subseteq \mathbb{N}$ (so that $A=\{a_1<a_2<\cdots\}$ and there exists some $\lambda>1$ such that $a_{n+1}/a_n\geq \lambda$ for all $n\geq 1$) such that\[\left\{ \sum_{a\in A'}\frac{1}{a} : A'\subseteq A\textr
+# formalization_status: li_open
+# discharge: pending — open formalization target (Phase 4)
+# erdos_status (literature): proved
 
-def erdos_e355_is_there_a_lacunary_sequence_a_subseteq() -> int
-  requires true
-  ensures result == 0  # open: E-355
-  decreases 0
-=
-  return 0
-
-extern proc erdos_e355_open_witness() -> int
-  requires true
-  ensures result == 0
-  decreases 0
-
-def main() -> int
+def formal_target_e_355() -> int
   requires true
   ensures result == 0
   decreases 0

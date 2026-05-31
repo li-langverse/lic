@@ -1,0 +1,11 @@
+# Catalog: ML-AX-CONVEX-DOM
+# Statement: Training domain S subset R^n is convex and contains the GD iterate path.
+# formalization_status: li_open
+# discharge: pending — open formalization target (Phase 4)
+
+def formal_target_ml_ax_convex_dom() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0

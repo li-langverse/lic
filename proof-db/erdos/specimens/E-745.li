@@ -1,22 +1,10 @@
-# E-745: Describe the size of the second largest component of the random graph on $n$ vertices, where each edge is included independently with probability $1/n$.
-# erdos_number: 745
-# erdos_status: proved
-# priority_tier: P2
-# tags: graph_theory
+# Catalog: E-745
+# Statement: Describe the size of the second largest component of the random graph on $n$ vertices, where each edge is included independently with probability $1/n$.
+# formalization_status: li_open
+# discharge: pending — open formalization target (Phase 4)
+# erdos_status (literature): proved
 
-def erdos_e745_describe_the_size_of_the_second_largest() -> int
-  requires true
-  ensures result == 0  # open: E-745
-  decreases 0
-=
-  return 0
-
-extern proc erdos_e745_open_witness() -> int
-  requires true
-  ensures result == 0
-  decreases 0
-
-def main() -> int
+def formal_target_e_745() -> int
   requires true
   ensures result == 0
   decreases 0

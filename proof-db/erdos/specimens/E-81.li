@@ -1,22 +1,10 @@
-# E-81: Let $G$ be a chordal graph on $n$ vertices - that is, $G$ has no induced cycles of length greater than $3$. Can the edges of $G$ be partitioned into $n^2/6+O(n)$ many cliques?
-# erdos_number: 81
-# erdos_status: open
-# priority_tier: P2
-# tags: graph_theory
+# Catalog: E-81
+# Statement: Let $G$ be a chordal graph on $n$ vertices - that is, $G$ has no induced cycles of length greater than $3$. Can the edges of $G$ be partitioned into $n^2/6+O(n)$ many cliques?
+# formalization_status: li_open
+# discharge: pending — open formalization target (Phase 4)
+# erdos_status (literature): open
 
-def erdos_e81_let_g_be_a_chordal_graph_on_n_vertices_t() -> int
-  requires true
-  ensures result == 0  # open: E-81
-  decreases 0
-=
-  return 0
-
-extern proc erdos_e81_open_witness() -> int
-  requires true
-  ensures result == 0
-  decreases 0
-
-def main() -> int
+def formal_target_e_81() -> int
   requires true
   ensures result == 0
   decreases 0

@@ -1,22 +1,10 @@
-# E-215: Does there exist $S\subseteq \mathbb{R}^2$ such that every set congruent to $S$ (that is, $S$ after some translation and rotation) contains exactly one point from $\mathbb{Z}^2$?
-# erdos_number: 215
-# erdos_status: proved
-# priority_tier: P2
-# tags: geometry
+# Catalog: E-215
+# Statement: Does there exist $S\subseteq \mathbb{R}^2$ such that every set congruent to $S$ (that is, $S$ after some translation and rotation) contains exactly one point from $\mathbb{Z}^2$?
+# formalization_status: li_open
+# discharge: pending — open formalization target (Phase 4)
+# erdos_status (literature): proved
 
-def erdos_e215_does_there_exist_s_subseteq_mathbb_r_2_s() -> int
-  requires true
-  ensures result == 0  # open: E-215
-  decreases 0
-=
-  return 0
-
-extern proc erdos_e215_open_witness() -> int
-  requires true
-  ensures result == 0
-  decreases 0
-
-def main() -> int
+def formal_target_e_215() -> int
   requires true
   ensures result == 0
   decreases 0

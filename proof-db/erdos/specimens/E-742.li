@@ -1,22 +1,10 @@
-# E-742: Let $G$ be a graph on $n$ vertices with diameter $2$, such that deleting any edge increases the diameter of $G$. Is it true that $G$ has at most $n^2/4$ edges?
-# erdos_number: 742
-# erdos_status: open
-# priority_tier: P2
-# tags: graph_theory
+# Catalog: E-742
+# Statement: Let $G$ be a graph on $n$ vertices with diameter $2$, such that deleting any edge increases the diameter of $G$. Is it true that $G$ has at most $n^2/4$ edges?
+# formalization_status: li_open
+# discharge: pending — open formalization target (Phase 4)
+# erdos_status (literature): open
 
-def erdos_e742_let_g_be_a_graph_on_n_vertices_with_diam() -> int
-  requires true
-  ensures result == 0  # open: E-742
-  decreases 0
-=
-  return 0
-
-extern proc erdos_e742_open_witness() -> int
-  requires true
-  ensures result == 0
-  decreases 0
-
-def main() -> int
+def formal_target_e_742() -> int
   requires true
   ensures result == 0
   decreases 0

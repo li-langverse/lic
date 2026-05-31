@@ -1,22 +1,10 @@
-# E-847: Let $A\subset \mathbb{N}$ be an infinite set for which there exists some $\epsilon>0$ such that in any subset of $A$ of size $n$ there is a subset of size at least $\epsilon n$ which contains no three-term arithmetic progression. Is it true that $A$ is the union of a finite number of sets which contain no three-term arithmetic progression?
-# erdos_number: 847
-# erdos_status: open
-# priority_tier: P2
-# tags: additive_combinatorics
+# Catalog: E-847
+# Statement: Let $A\subset \mathbb{N}$ be an infinite set for which there exists some $\epsilon>0$ such that in any subset of $A$ of size $n$ there is a subset of size at least $\epsilon n$ which contains no three-term arithmetic progression. Is it true
+# formalization_status: li_open
+# discharge: pending — open formalization target (Phase 4)
+# erdos_status (literature): open
 
-def erdos_e847_let_a_subset_mathbb_n_be_an_infinite_set() -> int
-  requires true
-  ensures result == 0  # open: E-847
-  decreases 0
-=
-  return 0
-
-extern proc erdos_e847_open_witness() -> int
-  requires true
-  ensures result == 0
-  decreases 0
-
-def main() -> int
+def formal_target_e_847() -> int
   requires true
   ensures result == 0
   decreases 0

@@ -1,22 +1,10 @@
-# E-2: Can the smallest modulus of a covering system be arbitrarily large?
-# erdos_number: 2
-# erdos_status: open
-# priority_tier: P2
-# tags: covering_systems, number_theory
+# Catalog: E-2
+# Statement: Can the smallest modulus of a covering system be arbitrarily large?
+# formalization_status: li_open
+# discharge: pending — open formalization target (Phase 4)
+# erdos_status (literature): open
 
-def erdos_e2_can_the_smallest_modulus_of_a_covering_s() -> int
-  requires true
-  ensures result == 0  # open: E-2
-  decreases 0
-=
-  return 0
-
-extern proc erdos_e2_open_witness() -> int
-  requires true
-  ensures result == 0
-  decreases 0
-
-def main() -> int
+def formal_target_e_2() -> int
   requires true
   ensures result == 0
   decreases 0

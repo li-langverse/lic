@@ -1,22 +1,10 @@
-# E-944: A critical vertex, edge, or set of edges, is one whose deletion lowers the chromatic number. Let $k\geq 4$ and $r\geq 1$. Must there exist a graph $G$ with chromatic number $k$ such that every vertex is critical, yet every critical set of edges has size $>r$?
-# erdos_number: 944
-# erdos_status: open
-# priority_tier: P2
-# tags: chromatic_number, graph_theory
+# Catalog: E-944
+# Statement: A critical vertex, edge, or set of edges, is one whose deletion lowers the chromatic number. Let $k\geq 4$ and $r\geq 1$. Must there exist a graph $G$ with chromatic number $k$ such that every vertex is critical, yet every critical set of e
+# formalization_status: li_open
+# discharge: pending — open formalization target (Phase 4)
+# erdos_status (literature): open
 
-def erdos_e944_a_critical_vertex_edge_or_set_of_edges_i() -> int
-  requires true
-  ensures result == 0  # open: E-944
-  decreases 0
-=
-  return 0
-
-extern proc erdos_e944_open_witness() -> int
-  requires true
-  ensures result == 0
-  decreases 0
-
-def main() -> int
+def formal_target_e_944() -> int
   requires true
   ensures result == 0
   decreases 0

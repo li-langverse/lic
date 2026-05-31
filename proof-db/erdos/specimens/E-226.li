@@ -1,22 +1,10 @@
-# E-226: Is there an entire non-linear function $f$ such that, for all $x\in\mathbb{R}$, $x$ is rational if and only if $f(x)$ is?
-# erdos_number: 226
-# erdos_status: proved
-# priority_tier: P2
-# tags: analysis
+# Catalog: E-226
+# Statement: Is there an entire non-linear function $f$ such that, for all $x\in\mathbb{R}$, $x$ is rational if and only if $f(x)$ is?
+# formalization_status: li_open
+# discharge: pending — open formalization target (Phase 4)
+# erdos_status (literature): proved
 
-def erdos_e226_is_there_an_entire_non_linear_function_f() -> int
-  requires true
-  ensures result == 0  # open: E-226
-  decreases 0
-=
-  return 0
-
-extern proc erdos_e226_open_witness() -> int
-  requires true
-  ensures result == 0
-  decreases 0
-
-def main() -> int
+def formal_target_e_226() -> int
   requires true
   ensures result == 0
   decreases 0

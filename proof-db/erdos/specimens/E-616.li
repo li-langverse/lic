@@ -1,22 +1,10 @@
-# E-616: Let $r\geq 3$. For an $r$-uniform hypergraph $G$ let $\tau(G)$ denote the covering number (or transversal number), the minimum size of a set of vertices which includes at least one from each edge in $G$. Determine the best possible $t$ such that, if $G$ is an $r$-uniform hypergraph $G$ where every subgraph $G'$ on at most $3r-3$ vertices has $\tau(G')\leq 1$, we have $\tau(G)\leq t$.
-# erdos_number: 616
-# erdos_status: open
-# priority_tier: P2
-# tags: graph_theory
+# Catalog: E-616
+# Statement: Let $r\geq 3$. For an $r$-uniform hypergraph $G$ let $\tau(G)$ denote the covering number (or transversal number), the minimum size of a set of vertices which includes at least one from each edge in $G$. Determine the best possible $t$ such
+# formalization_status: li_open
+# discharge: pending — open formalization target (Phase 4)
+# erdos_status (literature): open
 
-def erdos_e616_let_r_geq_3_for_an_r_uniform_hypergraph() -> int
-  requires true
-  ensures result == 0  # open: E-616
-  decreases 0
-=
-  return 0
-
-extern proc erdos_e616_open_witness() -> int
-  requires true
-  ensures result == 0
-  decreases 0
-
-def main() -> int
+def formal_target_e_616() -> int
   requires true
   ensures result == 0
   decreases 0

@@ -1,22 +1,10 @@
-# E-839: Let $1\leq a_1<a_2<\cdots$ be a sequence of integers such that no $a_i$ is the sum of consecutive $a_j$ for $j<i$. Is it true that\[\limsup \frac{a_n}{n}=\infty?\]Or even\[\lim \frac{1}{\log x}\sum_{a_n<x}\frac{1}{a_n}=0?\]
-# erdos_number: 839
-# erdos_status: open
-# priority_tier: P2
-# tags: number_theory
+# Catalog: E-839
+# Statement: Let $1\leq a_1<a_2<\cdots$ be a sequence of integers such that no $a_i$ is the sum of consecutive $a_j$ for $j<i$. Is it true that\[\limsup \frac{a_n}{n}=\infty?\]Or even\[\lim \frac{1}{\log x}\sum_{a_n<x}\frac{1}{a_n}=0?\]
+# formalization_status: li_open
+# discharge: pending — open formalization target (Phase 4)
+# erdos_status (literature): open
 
-def erdos_e839_let_1_leq_a_1_a_2_cdots_be_a_sequence_of() -> int
-  requires true
-  ensures result == 0  # open: E-839
-  decreases 0
-=
-  return 0
-
-extern proc erdos_e839_open_witness() -> int
-  requires true
-  ensures result == 0
-  decreases 0
-
-def main() -> int
+def formal_target_e_839() -> int
   requires true
   ensures result == 0
   decreases 0

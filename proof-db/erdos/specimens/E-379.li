@@ -1,22 +1,10 @@
-# E-379: Let $S(n)$ denote the largest integer such that, for all $1\leq k<n$, the binomial coefficient $\binom{n}{k}$ is divisible by $p^{S(n)}$ for some prime $p$ (depending on $k$). Is it true that\[\limsup S(n)=\infty?\]
-# erdos_number: 379
-# erdos_status: proved
-# priority_tier: P2
-# tags: binomial_coefficients, number_theory
+# Catalog: E-379
+# Statement: Let $S(n)$ denote the largest integer such that, for all $1\leq k<n$, the binomial coefficient $\binom{n}{k}$ is divisible by $p^{S(n)}$ for some prime $p$ (depending on $k$). Is it true that\[\limsup S(n)=\infty?\]
+# formalization_status: li_open
+# discharge: pending — open formalization target (Phase 4)
+# erdos_status (literature): proved
 
-def erdos_e379_let_s_n_denote_the_largest_integer_such() -> int
-  requires true
-  ensures result == 0  # open: E-379
-  decreases 0
-=
-  return 0
-
-extern proc erdos_e379_open_witness() -> int
-  requires true
-  ensures result == 0
-  decreases 0
-
-def main() -> int
+def formal_target_e_379() -> int
   requires true
   ensures result == 0
   decreases 0

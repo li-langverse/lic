@@ -1,22 +1,10 @@
-# E-662: Consider the triangular lattice with minimal distance between two points $1$. Denote by $f(t)$ the number of distances from any points $\leq t$. For example $f(1)=6$, $f(\sqrt{3})=12$, and $f(3)=18$. Let $x_1,\ldots,x_n\in \mathbb{R}^2$ be such that $d(x_i,x_j)\geq 1$ for all $i\neq j$. Is it true that, provided $n$ is sufficiently large depending on $t$, the number of distances $d(x_i,x_j)\leq t$ is less than or equal to $f(t)$ with equality perhaps only for the triangular lattice? In particular, is it true that the number of distances $\leq \sqrt{3}-\epsilon$ is less than $1$?
-# erdos_number: 662
-# erdos_status: open
-# priority_tier: P2
-# tags: distances, geometry
+# Catalog: E-662
+# Statement: Consider the triangular lattice with minimal distance between two points $1$. Denote by $f(t)$ the number of distances from any points $\leq t$. For example $f(1)=6$, $f(\sqrt{3})=12$, and $f(3)=18$. Let $x_1,\ldots,x_n\in \mathbb{R}^2$ be 
+# formalization_status: li_open
+# discharge: pending — open formalization target (Phase 4)
+# erdos_status (literature): open
 
-def erdos_e662_consider_the_triangular_lattice_with_min() -> int
-  requires true
-  ensures result == 0  # open: E-662
-  decreases 0
-=
-  return 0
-
-extern proc erdos_e662_open_witness() -> int
-  requires true
-  ensures result == 0
-  decreases 0
-
-def main() -> int
+def formal_target_e_662() -> int
   requires true
   ensures result == 0
   decreases 0

@@ -1,22 +1,10 @@
-# E-613: Let $n\geq 3$ and $G$ be a graph with $\binom{2n+1}{2}-\binom{n}{2}-1$ edges. Must $G$ be the union of a bipartite graph and a graph with maximum degree less than $n$?
-# erdos_number: 613
-# erdos_status: open
-# priority_tier: P2
-# tags: graph_theory, ramsey
+# Catalog: E-613
+# Statement: Let $n\geq 3$ and $G$ be a graph with $\binom{2n+1}{2}-\binom{n}{2}-1$ edges. Must $G$ be the union of a bipartite graph and a graph with maximum degree less than $n$?
+# formalization_status: li_open
+# discharge: pending — open formalization target (Phase 4)
+# erdos_status (literature): open
 
-def erdos_e613_let_n_geq_3_and_g_be_a_graph_with_binom() -> int
-  requires true
-  ensures result == 0  # open: E-613
-  decreases 0
-=
-  return 0
-
-extern proc erdos_e613_open_witness() -> int
-  requires true
-  ensures result == 0
-  decreases 0
-
-def main() -> int
+def formal_target_e_613() -> int
   requires true
   ensures result == 0
   decreases 0

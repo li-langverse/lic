@@ -1,22 +1,10 @@
-# E-921: Let $k\geq 4$ and let $f_k(n)$ be the largest $m$ such that there is a graph on $n$ vertices with chromatic number $k$ in which every odd cycle has length $> m$. Is it true that\[f_k(n) \asymp n^{\frac{1}{k-2}}?\]
-# erdos_number: 921
-# erdos_status: proved
-# priority_tier: P2
-# tags: chromatic_number, cycles, graph_theory
+# Catalog: E-921
+# Statement: Let $k\geq 4$ and let $f_k(n)$ be the largest $m$ such that there is a graph on $n$ vertices with chromatic number $k$ in which every odd cycle has length $> m$. Is it true that\[f_k(n) \asymp n^{\frac{1}{k-2}}?\]
+# formalization_status: li_open
+# discharge: pending — open formalization target (Phase 4)
+# erdos_status (literature): proved
 
-def erdos_e921_let_k_geq_4_and_let_f_k_n_be_the_largest() -> int
-  requires true
-  ensures result == 0  # open: E-921
-  decreases 0
-=
-  return 0
-
-extern proc erdos_e921_open_witness() -> int
-  requires true
-  ensures result == 0
-  decreases 0
-
-def main() -> int
+def formal_target_e_921() -> int
   requires true
   ensures result == 0
   decreases 0

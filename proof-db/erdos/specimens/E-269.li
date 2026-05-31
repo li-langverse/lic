@@ -1,22 +1,10 @@
-# E-269: Let $P$ be a finite set of primes with $\lvert P\rvert \geq 2$ and let $\{a_1<a_2<\cdots\}=\{ n\in \mathbb{N} : \textrm{if }p\mid n\textrm{ then }p\in P\}$. Is the sum\[\sum_{n=1}^\infty \frac{1}{[a_1,\ldots,a_n]},\]where $[a_1,\ldots,a_n]$ is the lowest common multiple of $a_1,\ldots,a_n$, irrational?
-# erdos_number: 269
-# erdos_status: open
-# priority_tier: P2
-# tags: irrationality
+# Catalog: E-269
+# Statement: Let $P$ be a finite set of primes with $\lvert P\rvert \geq 2$ and let $\{a_1<a_2<\cdots\}=\{ n\in \mathbb{N} : \textrm{if }p\mid n\textrm{ then }p\in P\}$. Is the sum\[\sum_{n=1}^\infty \frac{1}{[a_1,\ldots,a_n]},\]where $[a_1,\ldots,a_n]$
+# formalization_status: li_open
+# discharge: pending — open formalization target (Phase 4)
+# erdos_status (literature): open
 
-def erdos_e269_let_p_be_a_finite_set_of_primes_with_lve() -> int
-  requires true
-  ensures result == 0  # open: E-269
-  decreases 0
-=
-  return 0
-
-extern proc erdos_e269_open_witness() -> int
-  requires true
-  ensures result == 0
-  decreases 0
-
-def main() -> int
+def formal_target_e_269() -> int
   requires true
   ensures result == 0
   decreases 0

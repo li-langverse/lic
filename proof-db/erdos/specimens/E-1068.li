@@ -1,22 +1,10 @@
-# E-1068: Does every graph with chromatic number $\aleph_1$ contain a countable subgraph which is infinitely vertex-connected?
-# erdos_number: 1068
-# erdos_status: open
-# priority_tier: P2
-# tags: chromatic_number, graph_theory, set_theory
+# Catalog: E-1068
+# Statement: Does every graph with chromatic number $\aleph_1$ contain a countable subgraph which is infinitely vertex-connected?
+# formalization_status: li_open
+# discharge: pending — open formalization target (Phase 4)
+# erdos_status (literature): open
 
-def erdos_e1068_does_every_graph_with_chromatic_number_a() -> int
-  requires true
-  ensures result == 0  # open: E-1068
-  decreases 0
-=
-  return 0
-
-extern proc erdos_e1068_open_witness() -> int
-  requires true
-  ensures result == 0
-  decreases 0
-
-def main() -> int
+def formal_target_e_1068() -> int
   requires true
   ensures result == 0
   decreases 0

@@ -1,22 +1,10 @@
-# E-1128: Let $A,B,C$ be three sets of cardinality $\aleph_1$. Is it true that, in any $2$-colouring of $A\times B\times C$, there must exist $A_1\subset A$, $B_1\subset B$, $C_1\subset C$, all of cardinality $\aleph_0$, such that $A_1\times B_1\times C_1$ is monochromatic?
-# erdos_number: 1128
-# erdos_status: open
-# priority_tier: P2
-# tags: hypergraphs, ramsey_theory, set_theory
+# Catalog: E-1128
+# Statement: Let $A,B,C$ be three sets of cardinality $\aleph_1$. Is it true that, in any $2$-colouring of $A\times B\times C$, there must exist $A_1\subset A$, $B_1\subset B$, $C_1\subset C$, all of cardinality $\aleph_0$, such that $A_1\times B_1\time
+# formalization_status: li_open
+# discharge: pending — open formalization target (Phase 4)
+# erdos_status (literature): open
 
-def erdos_e1128_let_a_b_c_be_three_sets_of_cardinality_a() -> int
-  requires true
-  ensures result == 0  # open: E-1128
-  decreases 0
-=
-  return 0
-
-extern proc erdos_e1128_open_witness() -> int
-  requires true
-  ensures result == 0
-  decreases 0
-
-def main() -> int
+def formal_target_e_1128() -> int
   requires true
   ensures result == 0
   decreases 0

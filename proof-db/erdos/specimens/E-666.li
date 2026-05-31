@@ -1,22 +1,10 @@
-# E-666: Let $Q_n$ be the $n$-dimensional hypercube graph (so that $Q_n$ has $2^n$ vertices and $n2^{n-1}$ edges). Is it true that, for every $\epsilon>0$, if $n$ is sufficiently large, every subgraph of $Q_n$ with\[\geq \epsilon n2^{n-1}\]many edges contains a $C_6$?
-# erdos_number: 666
-# erdos_status: open
-# priority_tier: P2
-# tags: graph_theory
+# Catalog: E-666
+# Statement: Let $Q_n$ be the $n$-dimensional hypercube graph (so that $Q_n$ has $2^n$ vertices and $n2^{n-1}$ edges). Is it true that, for every $\epsilon>0$, if $n$ is sufficiently large, every subgraph of $Q_n$ with\[\geq \epsilon n2^{n-1}\]many edge
+# formalization_status: li_open
+# discharge: pending — open formalization target (Phase 4)
+# erdos_status (literature): open
 
-def erdos_e666_let_q_n_be_the_n_dimensional_hypercube_g() -> int
-  requires true
-  ensures result == 0  # open: E-666
-  decreases 0
-=
-  return 0
-
-extern proc erdos_e666_open_witness() -> int
-  requires true
-  ensures result == 0
-  decreases 0
-
-def main() -> int
+def formal_target_e_666() -> int
   requires true
   ensures result == 0
   decreases 0

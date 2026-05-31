@@ -1,22 +1,10 @@
-# E-112: Let $k=k(n,m)$ be minimal such that any directed graph on $k$ vertices must contain either an independent set of size $n$ or a transitive tournament of size $m$. Determine $k(n,m)$.
-# erdos_number: 112
-# erdos_status: open
-# priority_tier: P2
-# tags: graph_theory, ramsey_theory
+# Catalog: E-112
+# Statement: Let $k=k(n,m)$ be minimal such that any directed graph on $k$ vertices must contain either an independent set of size $n$ or a transitive tournament of size $m$. Determine $k(n,m)$.
+# formalization_status: li_open
+# discharge: pending — open formalization target (Phase 4)
+# erdos_status (literature): open
 
-def erdos_e112_let_k_k_n_m_be_minimal_such_that_any_dir() -> int
-  requires true
-  ensures result == 0  # open: E-112
-  decreases 0
-=
-  return 0
-
-extern proc erdos_e112_open_witness() -> int
-  requires true
-  ensures result == 0
-  decreases 0
-
-def main() -> int
+def formal_target_e_112() -> int
   requires true
   ensures result == 0
   decreases 0

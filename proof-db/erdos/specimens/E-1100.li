@@ -1,22 +1,10 @@
-# E-1100: If $1=d_1<\cdots<d_{\tau(n)}=n$ are the divisors of $n$, then let $\tau_\perp(n)$ count the number of $i$ for which $(d_i,d_{i+1})=1$. Is it true that $\tau_\perp(n)/\omega(n)\to \infty$ for almost all $n$? Is it true that\[\tau_\perp(n)< \exp((\log n)^{o(1)})\]for all $n$? Let\[g(k) = \max_{\omega(n)=k}\tau_\perp(n),\]where $\omega(n)$ counts the number of distinct prime divisors of $n$, and $n$ is restricted to squarefree integers. Determine the growth of $g(k)$.
-# erdos_number: 1100
-# erdos_status: open
-# priority_tier: P2
-# tags: divisors, number_theory
+# Catalog: E-1100
+# Statement: If $1=d_1<\cdots<d_{\tau(n)}=n$ are the divisors of $n$, then let $\tau_\perp(n)$ count the number of $i$ for which $(d_i,d_{i+1})=1$. Is it true that $\tau_\perp(n)/\omega(n)\to \infty$ for almost all $n$? Is it true that\[\tau_\perp(n)< \
+# formalization_status: li_open
+# discharge: pending — open formalization target (Phase 4)
+# erdos_status (literature): open
 
-def erdos_e1100_if_1_d_1_cdots_d_tau_n_n_are_the_divisor() -> int
-  requires true
-  ensures result == 0  # open: E-1100
-  decreases 0
-=
-  return 0
-
-extern proc erdos_e1100_open_witness() -> int
-  requires true
-  ensures result == 0
-  decreases 0
-
-def main() -> int
+def formal_target_e_1100() -> int
   requires true
   ensures result == 0
   decreases 0

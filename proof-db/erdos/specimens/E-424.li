@@ -1,22 +1,10 @@
-# E-424: Let $a_1=2$ and $a_2=3$ and continue the sequence by appending to $a_1,\ldots,a_n$ all possible values of $a_ia_j-1$ with $i\neq j$. Is it true that the set of integers which eventually appear has positive density?
-# erdos_number: 424
-# erdos_status: open
-# priority_tier: P2
-# tags: number_theory
+# Catalog: E-424
+# Statement: Let $a_1=2$ and $a_2=3$ and continue the sequence by appending to $a_1,\ldots,a_n$ all possible values of $a_ia_j-1$ with $i\neq j$. Is it true that the set of integers which eventually appear has positive density?
+# formalization_status: li_open
+# discharge: pending — open formalization target (Phase 4)
+# erdos_status (literature): open
 
-def erdos_e424_let_a_1_2_and_a_2_3_and_continue_the_seq() -> int
-  requires true
-  ensures result == 0  # open: E-424
-  decreases 0
-=
-  return 0
-
-extern proc erdos_e424_open_witness() -> int
-  requires true
-  ensures result == 0
-  decreases 0
-
-def main() -> int
+def formal_target_e_424() -> int
   requires true
   ensures result == 0
   decreases 0

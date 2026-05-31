@@ -1,22 +1,10 @@
-# E-579: Let $\delta>0$. If $n$ is sufficiently large and $G$ is a graph on $n$ vertices with no $K_{2,2,2}$ and at least $\delta n^2$ edges then $G$ contains an independent set of size $\gg_\delta n$.
-# erdos_number: 579
-# erdos_status: open
-# priority_tier: P2
-# tags: graph_theory, turan_number
+# Catalog: E-579
+# Statement: Let $\delta>0$. If $n$ is sufficiently large and $G$ is a graph on $n$ vertices with no $K_{2,2,2}$ and at least $\delta n^2$ edges then $G$ contains an independent set of size $\gg_\delta n$.
+# formalization_status: li_open
+# discharge: pending — open formalization target (Phase 4)
+# erdos_status (literature): open
 
-def erdos_e579_let_delta_0_if_n_is_sufficiently_large_a() -> int
-  requires true
-  ensures result == 0  # open: E-579
-  decreases 0
-=
-  return 0
-
-extern proc erdos_e579_open_witness() -> int
-  requires true
-  ensures result == 0
-  decreases 0
-
-def main() -> int
+def formal_target_e_579() -> int
   requires true
   ensures result == 0
   decreases 0

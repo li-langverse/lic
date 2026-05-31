@@ -1,22 +1,10 @@
-# E-1121: If $C_1,\ldots,C_n$ are circles in $\mathbb{R}^2$ with radii $r_1,\ldots,r_n$ such that no line disjoint from all the circles divides them into two non-empty sets then the circles can be covered by a circle of radius $r=\sum r_i$.
-# erdos_number: 1121
-# erdos_status: proved
-# priority_tier: P2
-# tags: geometry
+# Catalog: E-1121
+# Statement: If $C_1,\ldots,C_n$ are circles in $\mathbb{R}^2$ with radii $r_1,\ldots,r_n$ such that no line disjoint from all the circles divides them into two non-empty sets then the circles can be covered by a circle of radius $r=\sum r_i$.
+# formalization_status: li_open
+# discharge: pending — open formalization target (Phase 4)
+# erdos_status (literature): proved
 
-def erdos_e1121_if_c_1_ldots_c_n_are_circles_in_mathbb_r() -> int
-  requires true
-  ensures result == 0  # open: E-1121
-  decreases 0
-=
-  return 0
-
-extern proc erdos_e1121_open_witness() -> int
-  requires true
-  ensures result == 0
-  decreases 0
-
-def main() -> int
+def formal_target_e_1121() -> int
   requires true
   ensures result == 0
   decreases 0

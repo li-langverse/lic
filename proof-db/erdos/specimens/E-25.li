@@ -1,23 +1,10 @@
-# E-25: Are prime gaps o((log n)^2) infinitely often (better than trivial Cramer-type bounds)?
-# erdos_number: 25
-# erdos_status: target
-# priority_tier: P0
-# tags: primes, prime_gaps
-# context: Asks for infinitely often prime gaps smaller than any fixed power of log n beyond the trivial o((log n)^2) target; ties to Cramér-type heuristics and recent bounded-gap results..
+# Catalog: E-25
+# Statement: Are prime gaps o((log n)^2) infinitely often (better than trivial Cramer-type bounds)?
+# formalization_status: li_open
+# discharge: pending — open formalization target (Phase 4)
+# erdos_status (literature): target
 
-def erdos_e25_are_prime_gaps_o_log_n_2_infinitely_ofte() -> int
-  requires true
-  ensures result == 0  # open: E-25
-  decreases 0
-=
-  return 0
-
-extern proc erdos_e25_open_witness() -> int
-  requires true
-  ensures result == 0
-  decreases 0
-
-def main() -> int
+def formal_target_e_25() -> int
   requires true
   ensures result == 0
   decreases 0

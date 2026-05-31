@@ -1,24 +1,10 @@
-# E-87: Are there infinitely many primes p such that p+2 is also prime (twin prime conjecture)?
-# erdos_number: 87
-# erdos_status: target
-# priority_tier: P0
-# tags: primes, twin_primes
-# context: Twin prime conjecture: infinitely many primes p with p+2 also prime.
-# context: Zhang (2013) and Polymath8 showed bounded gaps occur infinitely often; gap 2 is unproved..
+# Catalog: E-87
+# Statement: Are there infinitely many primes p such that p+2 is also prime (twin prime conjecture)?
+# formalization_status: li_open
+# discharge: pending — open formalization target (Phase 4)
+# erdos_status (literature): target
 
-def erdos_e87_are_there_infinitely_many_primes_p_such() -> int
-  requires true
-  ensures result == 0  # open: E-87
-  decreases 0
-=
-  return 0
-
-extern proc erdos_e87_open_witness() -> int
-  requires true
-  ensures result == 0
-  decreases 0
-
-def main() -> int
+def formal_target_e_87() -> int
   requires true
   ensures result == 0
   decreases 0

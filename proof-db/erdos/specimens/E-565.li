@@ -1,22 +1,10 @@
-# E-565: Let $R^*(G)$ be the induced Ramsey number: the minimal $m$ such that there is a graph $H$ on $m$ vertices such that any $2$-colouring of the edges of $H$ contains an induced monochromatic copy of $G$. Is it true that\[R^*(G) \leq 2^{O(n)}\]for any graph $G$ on $n$ vertices?
-# erdos_number: 565
-# erdos_status: proved
-# priority_tier: P2
-# tags: graph_theory, ramsey_theory
+# Catalog: E-565
+# Statement: Let $R^*(G)$ be the induced Ramsey number: the minimal $m$ such that there is a graph $H$ on $m$ vertices such that any $2$-colouring of the edges of $H$ contains an induced monochromatic copy of $G$. Is it true that\[R^*(G) \leq 2^{O(n)}\]
+# formalization_status: li_open
+# discharge: pending — open formalization target (Phase 4)
+# erdos_status (literature): proved
 
-def erdos_e565_let_r_g_be_the_induced_ramsey_number_the() -> int
-  requires true
-  ensures result == 0  # open: E-565
-  decreases 0
-=
-  return 0
-
-extern proc erdos_e565_open_witness() -> int
-  requires true
-  ensures result == 0
-  decreases 0
-
-def main() -> int
+def formal_target_e_565() -> int
   requires true
   ensures result == 0
   decreases 0

@@ -1,22 +1,10 @@
-# E-611: For a graph $G$ let $\tau(G)$ denote the minimal number of vertices that include at least one from each maximal clique of $G$ (sometimes called the clique transversal number). Is it true that if all maximal cliques in $G$ have at least $cn$ vertices then $\tau(G)=o_c(n)$? Similarly, estimate for $c>0$ the minimal $k_c(n)$ such that if every maximal clique in $G$ has at least $k_c(n)$ vertices then $\tau(G)<(1-c)n$.
-# erdos_number: 611
-# erdos_status: open
-# priority_tier: P2
-# tags: graph_theory
+# Catalog: E-611
+# Statement: For a graph $G$ let $\tau(G)$ denote the minimal number of vertices that include at least one from each maximal clique of $G$ (sometimes called the clique transversal number). Is it true that if all maximal cliques in $G$ have at least $cn$
+# formalization_status: li_open
+# discharge: pending — open formalization target (Phase 4)
+# erdos_status (literature): open
 
-def erdos_e611_for_a_graph_g_let_tau_g_denote_the_minim() -> int
-  requires true
-  ensures result == 0  # open: E-611
-  decreases 0
-=
-  return 0
-
-extern proc erdos_e611_open_witness() -> int
-  requires true
-  ensures result == 0
-  decreases 0
-
-def main() -> int
+def formal_target_e_611() -> int
   requires true
   ensures result == 0
   decreases 0

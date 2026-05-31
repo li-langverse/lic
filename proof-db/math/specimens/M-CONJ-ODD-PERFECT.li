@@ -1,0 +1,11 @@
+# Catalog: M-CONJ-ODD-PERFECT
+# Statement: Does an odd perfect number exist?
+# formalization_status: li_open
+# discharge: pending — open formalization target (Phase 4)
+
+def formal_target_m_conj_odd_perfect() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0

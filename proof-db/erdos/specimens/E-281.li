@@ -1,22 +1,10 @@
-# E-281: Let $n_1<n_2<\cdots$ be an infinite sequence such that, for any choice of congruence classes $a_i\pmod{n_i}$, the set of integers not satisfying any of the congruences $a_i\pmod{n_i}$ has density $0$. Is it true that for every $\epsilon>0$ there exists some $k$ such that, for every choice of congruence classes $a_i$, the density of integers not satisfying any of the congruences $a_i\pmod{n_i}$ for $1\leq i\leq k$ is less than $\epsilon$?
-# erdos_number: 281
-# erdos_status: proved
-# priority_tier: P2
-# tags: covering_systems, number_theory
+# Catalog: E-281
+# Statement: Let $n_1<n_2<\cdots$ be an infinite sequence such that, for any choice of congruence classes $a_i\pmod{n_i}$, the set of integers not satisfying any of the congruences $a_i\pmod{n_i}$ has density $0$. Is it true that for every $\epsilon>0$ 
+# formalization_status: li_open
+# discharge: pending — open formalization target (Phase 4)
+# erdos_status (literature): proved
 
-def erdos_e281_let_n_1_n_2_cdots_be_an_infinite_sequenc() -> int
-  requires true
-  ensures result == 0  # open: E-281
-  decreases 0
-=
-  return 0
-
-extern proc erdos_e281_open_witness() -> int
-  requires true
-  ensures result == 0
-  decreases 0
-
-def main() -> int
+def formal_target_e_281() -> int
   requires true
   ensures result == 0
   decreases 0

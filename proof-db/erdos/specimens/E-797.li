@@ -1,22 +1,10 @@
-# E-797: Let $f(d)$ be the maximal acyclic chromatic number of any graph with maximum degree $d$ - that is, the vertices of any graph with maximum degree $d$ can be coloured with $f(d)$ colours such that there is no edge between vertices of the same colour and no cycle containing only two colours. Estimate $f(d)$. In particular is it true that $f(d)=o(d^2)$?
-# erdos_number: 797
-# erdos_status: proved
-# priority_tier: P2
-# tags: chromatic_number, graph_theory
+# Catalog: E-797
+# Statement: Let $f(d)$ be the maximal acyclic chromatic number of any graph with maximum degree $d$ - that is, the vertices of any graph with maximum degree $d$ can be coloured with $f(d)$ colours such that there is no edge between vertices of the same
+# formalization_status: li_open
+# discharge: pending — open formalization target (Phase 4)
+# erdos_status (literature): proved
 
-def erdos_e797_let_f_d_be_the_maximal_acyclic_chromatic() -> int
-  requires true
-  ensures result == 0  # open: E-797
-  decreases 0
-=
-  return 0
-
-extern proc erdos_e797_open_witness() -> int
-  requires true
-  ensures result == 0
-  decreases 0
-
-def main() -> int
+def formal_target_e_797() -> int
   requires true
   ensures result == 0
   decreases 0

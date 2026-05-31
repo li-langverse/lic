@@ -1,22 +1,10 @@
-# E-325: Let $k\geq 3$ and $f_{k,3}(x)$ denote the number of integers $\leq x$ which are the sum of three nonnegative $k$th powers. Is it true that\[f_{k,3}(x) \gg x^{3/k}\]or even $\gg_\epsilon x^{3/k-\epsilon}$?
-# erdos_number: 325
-# erdos_status: open
-# priority_tier: P2
-# tags: number_theory, powers
+# Catalog: E-325
+# Statement: Let $k\geq 3$ and $f_{k,3}(x)$ denote the number of integers $\leq x$ which are the sum of three nonnegative $k$th powers. Is it true that\[f_{k,3}(x) \gg x^{3/k}\]or even $\gg_\epsilon x^{3/k-\epsilon}$?
+# formalization_status: li_open
+# discharge: pending — open formalization target (Phase 4)
+# erdos_status (literature): open
 
-def erdos_e325_let_k_geq_3_and_f_k_3_x_denote_the_numbe() -> int
-  requires true
-  ensures result == 0  # open: E-325
-  decreases 0
-=
-  return 0
-
-extern proc erdos_e325_open_witness() -> int
-  requires true
-  ensures result == 0
-  decreases 0
-
-def main() -> int
+def formal_target_e_325() -> int
   requires true
   ensures result == 0
   decreases 0

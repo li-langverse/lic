@@ -1,23 +1,10 @@
-# E-28: If A subset N is such that A+A contains all but finitely many integers, does limsup 1_A * 1_A(n) = infinity (Erdős–Turán additive bases)?
-# erdos_number: 28
-# erdos_status: open
-# priority_tier: P1
-# tags: number_theory, additive_combinatorics
-# context: If A+A covers all but finitely many integers, does the upper density of A tend to 1? Bloom Top 10; links sumset covering to density conjectures..
+# Catalog: E-28
+# Statement: If A subset N is such that A+A contains all but finitely many integers, does limsup 1_A * 1_A(n) = infinity (Erdős–Turán additive bases)?
+# formalization_status: li_open
+# discharge: pending — open formalization target (Phase 4)
+# erdos_status (literature): open
 
-def erdos_e28_if_a_subset_n_is_such_that_a_a_contains() -> int
-  requires true
-  ensures result == 0  # open: E-28
-  decreases 0
-=
-  return 0
-
-extern proc erdos_e28_open_witness() -> int
-  requires true
-  ensures result == 0
-  decreases 0
-
-def main() -> int
+def formal_target_e_28() -> int
   requires true
   ensures result == 0
   decreases 0

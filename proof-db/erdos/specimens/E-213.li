@@ -1,22 +1,10 @@
-# E-213: Let $n\geq 4$. Are there $n$ points in $\mathbb{R}^2$, no three on a line and no four on a circle, such that all pairwise distances are integers?
-# erdos_number: 213
-# erdos_status: open
-# priority_tier: P2
-# tags: distances, geometry
+# Catalog: E-213
+# Statement: Let $n\geq 4$. Are there $n$ points in $\mathbb{R}^2$, no three on a line and no four on a circle, such that all pairwise distances are integers?
+# formalization_status: li_open
+# discharge: pending — open formalization target (Phase 4)
+# erdos_status (literature): open
 
-def erdos_e213_let_n_geq_4_are_there_n_points_in_mathbb() -> int
-  requires true
-  ensures result == 0  # open: E-213
-  decreases 0
-=
-  return 0
-
-extern proc erdos_e213_open_witness() -> int
-  requires true
-  ensures result == 0
-  decreases 0
-
-def main() -> int
+def formal_target_e_213() -> int
   requires true
   ensures result == 0
   decreases 0

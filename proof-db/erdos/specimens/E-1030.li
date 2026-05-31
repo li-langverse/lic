@@ -1,22 +1,10 @@
-# E-1030: Let $R(k,l)$ be the usual Ramsey number: the smallest $n$ such that if the edges of $K_n$ are coloured red and blue then there exists either a red $K_k$ or a blue $K_l$. Prove the existence of some $c>0$ such that\[\lim_{k\to \infty}\frac{R(k+1,k)}{R(k,k)}> 1+c.\]
-# erdos_number: 1030
-# erdos_status: open
-# priority_tier: P2
-# tags: graph_theory, ramsey_theory
+# Catalog: E-1030
+# Statement: Let $R(k,l)$ be the usual Ramsey number: the smallest $n$ such that if the edges of $K_n$ are coloured red and blue then there exists either a red $K_k$ or a blue $K_l$. Prove the existence of some $c>0$ such that\[\lim_{k\to \infty}\frac{R
+# formalization_status: li_open
+# discharge: pending — open formalization target (Phase 4)
+# erdos_status (literature): open
 
-def erdos_e1030_let_r_k_l_be_the_usual_ramsey_number_the() -> int
-  requires true
-  ensures result == 0  # open: E-1030
-  decreases 0
-=
-  return 0
-
-extern proc erdos_e1030_open_witness() -> int
-  requires true
-  ensures result == 0
-  decreases 0
-
-def main() -> int
+def formal_target_e_1030() -> int
   requires true
   ensures result == 0
   decreases 0

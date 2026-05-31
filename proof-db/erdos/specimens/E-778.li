@@ -1,22 +1,10 @@
-# E-778: Alice and Bob play a game on the edges of $K_n$, alternating colouring edges by red (Alice) and blue (Bob). Alice goes first, and wins if at the end the largest red clique is larger than any of the blue cliques. Does Bob have a winning strategy for $n\geq 3$? (Erdős believed the answer is yes.) If we change the game so that Bob colours two edges after each edge that Alice colours, but now require Bob's largest clique to be strictly larger than Alice's, then does Bob have a winning strategy for $n>3$? Finally, consider the game when Alice wins if the maximum degree of the red subgraph is larger than the maximum degree of the blue subgraph. Who wins?
-# erdos_number: 778
-# erdos_status: open
-# priority_tier: P2
-# tags: graph_theory
+# Catalog: E-778
+# Statement: Alice and Bob play a game on the edges of $K_n$, alternating colouring edges by red (Alice) and blue (Bob). Alice goes first, and wins if at the end the largest red clique is larger than any of the blue cliques. Does Bob have a winning stra
+# formalization_status: li_open
+# discharge: pending — open formalization target (Phase 4)
+# erdos_status (literature): open
 
-def erdos_e778_alice_and_bob_play_a_game_on_the_edges_o() -> int
-  requires true
-  ensures result == 0  # open: E-778
-  decreases 0
-=
-  return 0
-
-extern proc erdos_e778_open_witness() -> int
-  requires true
-  ensures result == 0
-  decreases 0
-
-def main() -> int
+def formal_target_e_778() -> int
   requires true
   ensures result == 0
   decreases 0

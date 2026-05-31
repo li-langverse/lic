@@ -1,22 +1,10 @@
-# E-886: Let $\epsilon>0$. Is it true that, for all large $n$, the number of divisors of $n$ in $(n^{1/2},n^{1/2}+n^{1/2-\epsilon})$ is $O_\epsilon(1)$?
-# erdos_number: 886
-# erdos_status: open
-# priority_tier: P2
-# tags: divisors, number_theory
+# Catalog: E-886
+# Statement: Let $\epsilon>0$. Is it true that, for all large $n$, the number of divisors of $n$ in $(n^{1/2},n^{1/2}+n^{1/2-\epsilon})$ is $O_\epsilon(1)$?
+# formalization_status: li_open
+# discharge: pending — open formalization target (Phase 4)
+# erdos_status (literature): open
 
-def erdos_e886_let_epsilon_0_is_it_true_that_for_all_la() -> int
-  requires true
-  ensures result == 0  # open: E-886
-  decreases 0
-=
-  return 0
-
-extern proc erdos_e886_open_witness() -> int
-  requires true
-  ensures result == 0
-  decreases 0
-
-def main() -> int
+def formal_target_e_886() -> int
   requires true
   ensures result == 0
   decreases 0

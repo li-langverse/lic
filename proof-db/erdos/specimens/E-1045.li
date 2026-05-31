@@ -1,22 +1,10 @@
-# E-1045: Let $z_1,\ldots,z_n\in \mathbb{C}$ with $\lvert z_i-z_j\rvert\leq 2$ for all $i,j$, and\[\Delta(z_1,\ldots,z_n)=\prod_{i\neq j}\lvert z_i-z_j\rvert.\]What is the maximum possible value of $\Delta$? Is it maximised by taking the $z_i$ to be the vertices of a regular polygon?
-# erdos_number: 1045
-# erdos_status: open
-# priority_tier: P2
-# tags: analysis
+# Catalog: E-1045
+# Statement: Let $z_1,\ldots,z_n\in \mathbb{C}$ with $\lvert z_i-z_j\rvert\leq 2$ for all $i,j$, and\[\Delta(z_1,\ldots,z_n)=\prod_{i\neq j}\lvert z_i-z_j\rvert.\]What is the maximum possible value of $\Delta$? Is it maximised by taking the $z_i$ to be 
+# formalization_status: li_open
+# discharge: pending — open formalization target (Phase 4)
+# erdos_status (literature): open
 
-def erdos_e1045_let_z_1_ldots_z_n_in_mathbb_c_with_lvert() -> int
-  requires true
-  ensures result == 0  # open: E-1045
-  decreases 0
-=
-  return 0
-
-extern proc erdos_e1045_open_witness() -> int
-  requires true
-  ensures result == 0
-  decreases 0
-
-def main() -> int
+def formal_target_e_1045() -> int
   requires true
   ensures result == 0
   decreases 0

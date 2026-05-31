@@ -1,22 +1,10 @@
-# E-387: Is there an absolute constant $c>0$ such that, for all $1\leq k< n$, the binomial coefficient $\binom{n}{k}$ has a divisor in $(cn,n]$?
-# erdos_number: 387
-# erdos_status: open
-# priority_tier: P2
-# tags: binomial_coefficients, number_theory
+# Catalog: E-387
+# Statement: Is there an absolute constant $c>0$ such that, for all $1\leq k< n$, the binomial coefficient $\binom{n}{k}$ has a divisor in $(cn,n]$?
+# formalization_status: li_open
+# discharge: pending — open formalization target (Phase 4)
+# erdos_status (literature): open
 
-def erdos_e387_is_there_an_absolute_constant_c_0_such_t() -> int
-  requires true
-  ensures result == 0  # open: E-387
-  decreases 0
-=
-  return 0
-
-extern proc erdos_e387_open_witness() -> int
-  requires true
-  ensures result == 0
-  decreases 0
-
-def main() -> int
+def formal_target_e_387() -> int
   requires true
   ensures result == 0
   decreases 0

@@ -1,0 +1,11 @@
+# Catalog: ST-AX-EXPECT-LINEAR
+# Statement: Expectation is linear: E[aX + bY] = a E[X] + b E[Y] (finite discrete sample space).
+# formalization_status: li_open
+# discharge: pending — open formalization target (Phase 4)
+
+def formal_target_st_ax_expect_linear() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0

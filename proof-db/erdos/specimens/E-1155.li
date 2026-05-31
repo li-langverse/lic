@@ -1,22 +1,10 @@
-# E-1155: Construct a random graph on $n$ vertices in the following way: begin with the complete graph $K_n$. At each stage, choose uniformly a random triangle in the graph and delete all the edges of this triangle. Repeat until the graph is triangle-free. Describe the typical parameters and structure of such a graph. In particular, if $f(n)$ is the number of edges remaining, then is it true that\[\mathbb{E}f(n)\asymp n^{3/2}\]and that $f(n) \ll n^{3/2}$ almost surely?
-# erdos_number: 1155
-# erdos_status: open
-# priority_tier: P2
-# tags: graph_theory
+# Catalog: E-1155
+# Statement: Construct a random graph on $n$ vertices in the following way: begin with the complete graph $K_n$. At each stage, choose uniformly a random triangle in the graph and delete all the edges of this triangle. Repeat until the graph is triangle
+# formalization_status: li_open
+# discharge: pending — open formalization target (Phase 4)
+# erdos_status (literature): open
 
-def erdos_e1155_construct_a_random_graph_on_n_vertices_i() -> int
-  requires true
-  ensures result == 0  # open: E-1155
-  decreases 0
-=
-  return 0
-
-extern proc erdos_e1155_open_witness() -> int
-  requires true
-  ensures result == 0
-  decreases 0
-
-def main() -> int
+def formal_target_e_1155() -> int
   requires true
   ensures result == 0
   decreases 0

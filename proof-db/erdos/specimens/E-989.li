@@ -1,22 +1,10 @@
-# E-989: If $A=\{z_1,z_2,\ldots \}\in \mathbb{R}^2$ is an infinite sequence then let\[f(r)=\max_C \left\lvert \lvert A\cap C\rvert-\pi r^2\right\rvert,\]where the maximum is taken over all circles $C$ of radius $r$. Is $f(r)$ unbounded for every $A$? How fast does $f(r)$ grow?
-# erdos_number: 989
-# erdos_status: open
-# priority_tier: P2
-# tags: discrepancy
+# Catalog: E-989
+# Statement: If $A=\{z_1,z_2,\ldots \}\in \mathbb{R}^2$ is an infinite sequence then let\[f(r)=\max_C \left\lvert \lvert A\cap C\rvert-\pi r^2\right\rvert,\]where the maximum is taken over all circles $C$ of radius $r$. Is $f(r)$ unbounded for every $A$
+# formalization_status: li_open
+# discharge: pending — open formalization target (Phase 4)
+# erdos_status (literature): open
 
-def erdos_e989_if_a_z_1_z_2_ldots_in_mathbb_r_2_is_an_i() -> int
-  requires true
-  ensures result == 0  # open: E-989
-  decreases 0
-=
-  return 0
-
-extern proc erdos_e989_open_witness() -> int
-  requires true
-  ensures result == 0
-  decreases 0
-
-def main() -> int
+def formal_target_e_989() -> int
   requires true
   ensures result == 0
   decreases 0

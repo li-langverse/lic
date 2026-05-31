@@ -1,22 +1,10 @@
-# E-958: Let $A\subset \mathbb{R}^2$ be a finite set of size $n$, and let $\{d_1,\ldots,d_k\}$ be the set of distances determined by $A$. Let $f(d)$ be the multiplicity of $d$, that is, the number of ordered pairs from $A$ of distance $d$ apart. Is it true that $k=n-1$ and $\{f(d_i)\}=\{n-1,\ldots,1\}$ if and only if $A$ is a set of equidistant points on a line or a circle?
-# erdos_number: 958
-# erdos_status: open
-# priority_tier: P2
-# tags: distances, geometry
+# Catalog: E-958
+# Statement: Let $A\subset \mathbb{R}^2$ be a finite set of size $n$, and let $\{d_1,\ldots,d_k\}$ be the set of distances determined by $A$. Let $f(d)$ be the multiplicity of $d$, that is, the number of ordered pairs from $A$ of distance $d$ apart. Is 
+# formalization_status: li_open
+# discharge: pending — open formalization target (Phase 4)
+# erdos_status (literature): open
 
-def erdos_e958_let_a_subset_mathbb_r_2_be_a_finite_set() -> int
-  requires true
-  ensures result == 0  # open: E-958
-  decreases 0
-=
-  return 0
-
-extern proc erdos_e958_open_witness() -> int
-  requires true
-  ensures result == 0
-  decreases 0
-
-def main() -> int
+def formal_target_e_958() -> int
   requires true
   ensures result == 0
   decreases 0

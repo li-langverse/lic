@@ -1,22 +1,10 @@
-# E-300: Let $A(N)$ denote the maximal cardinality of $A\subseteq \{1,\ldots,N\}$ such that $\sum_{n\in S}\frac{1}{n}\neq 1$ for all $S\subseteq A$. Estimate $A(N)$.
-# erdos_number: 300
-# erdos_status: open
-# priority_tier: P2
-# tags: number_theory, unit_fractions
+# Catalog: E-300
+# Statement: Let $A(N)$ denote the maximal cardinality of $A\subseteq \{1,\ldots,N\}$ such that $\sum_{n\in S}\frac{1}{n}\neq 1$ for all $S\subseteq A$. Estimate $A(N)$.
+# formalization_status: li_open
+# discharge: pending — open formalization target (Phase 4)
+# erdos_status (literature): open
 
-def erdos_e300_let_a_n_denote_the_maximal_cardinality_o() -> int
-  requires true
-  ensures result == 0  # open: E-300
-  decreases 0
-=
-  return 0
-
-extern proc erdos_e300_open_witness() -> int
-  requires true
-  ensures result == 0
-  decreases 0
-
-def main() -> int
+def formal_target_e_300() -> int
   requires true
   ensures result == 0
   decreases 0

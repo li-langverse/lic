@@ -1,22 +1,10 @@
-# E-563: Let $F(n,\alpha)$ denote the smallest $m$ such that there exists a $2$-colouring of the edges of $K_n$ so that every $X\subseteq [n]$ with $\lvert X\rvert\geq m$ contains more than $\alpha \binom{\lvert X\rvert}{2}$ many edges of each colour. Prove that, for every $0\leq \alpha< 1/2$,\[F(n,\alpha)\sim c_\alpha\log n\]for some constant $c_\alpha$ depending only on $\alpha$.
-# erdos_number: 563
-# erdos_status: open
-# priority_tier: P2
-# tags: graph_theory, hypergraphs, ramsey_theory
+# Catalog: E-563
+# Statement: Let $F(n,\alpha)$ denote the smallest $m$ such that there exists a $2$-colouring of the edges of $K_n$ so that every $X\subseteq [n]$ with $\lvert X\rvert\geq m$ contains more than $\alpha \binom{\lvert X\rvert}{2}$ many edges of each colou
+# formalization_status: li_open
+# discharge: pending — open formalization target (Phase 4)
+# erdos_status (literature): open
 
-def erdos_e563_let_f_n_alpha_denote_the_smallest_m_such() -> int
-  requires true
-  ensures result == 0  # open: E-563
-  decreases 0
-=
-  return 0
-
-extern proc erdos_e563_open_witness() -> int
-  requires true
-  ensures result == 0
-  decreases 0
-
-def main() -> int
+def formal_target_e_563() -> int
   requires true
   ensures result == 0
   decreases 0

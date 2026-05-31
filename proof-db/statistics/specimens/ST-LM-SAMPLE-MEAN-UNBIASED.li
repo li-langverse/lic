@@ -1,0 +1,11 @@
+# Catalog: ST-LM-SAMPLE-MEAN-UNBIASED
+# Statement: Sample mean is an unbiased estimator of population mean (finite variance target).
+# formalization_status: li_open
+# discharge: pending — open formalization target (Phase 4)
+
+def formal_target_st_lm_sample_mean_unbiased() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0

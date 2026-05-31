@@ -1,22 +1,10 @@
-# E-117: Let $h(n)$ be minimal such that any group $G$ with the property that any subset of $>n$ elements contains some $x\neq y$ such that $xy=yx$ can be covered by at most $h(n)$ many Abelian subgroups. Estimate $h(n)$ as well as possible.
-# erdos_number: 117
-# erdos_status: open
-# priority_tier: P2
-# tags: group_theory
+# Catalog: E-117
+# Statement: Let $h(n)$ be minimal such that any group $G$ with the property that any subset of $>n$ elements contains some $x\neq y$ such that $xy=yx$ can be covered by at most $h(n)$ many Abelian subgroups. Estimate $h(n)$ as well as possible.
+# formalization_status: li_open
+# discharge: pending — open formalization target (Phase 4)
+# erdos_status (literature): open
 
-def erdos_e117_let_h_n_be_minimal_such_that_any_group_g() -> int
-  requires true
-  ensures result == 0  # open: E-117
-  decreases 0
-=
-  return 0
-
-extern proc erdos_e117_open_witness() -> int
-  requires true
-  ensures result == 0
-  decreases 0
-
-def main() -> int
+def formal_target_e_117() -> int
   requires true
   ensures result == 0
   decreases 0

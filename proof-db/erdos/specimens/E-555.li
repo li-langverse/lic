@@ -1,22 +1,10 @@
-# E-555: Let $R_k(G)$ denote the minimal $m$ such that if the edges of $K_m$ are $k$-coloured then there is a monochromatic copy of $G$. Determine the value of\[R_k(C_{2n}).\]
-# erdos_number: 555
-# erdos_status: open
-# priority_tier: P2
-# tags: graph_theory, ramsey_theory
+# Catalog: E-555
+# Statement: Let $R_k(G)$ denote the minimal $m$ such that if the edges of $K_m$ are $k$-coloured then there is a monochromatic copy of $G$. Determine the value of\[R_k(C_{2n}).\]
+# formalization_status: li_open
+# discharge: pending — open formalization target (Phase 4)
+# erdos_status (literature): open
 
-def erdos_e555_let_r_k_g_denote_the_minimal_m_such_that() -> int
-  requires true
-  ensures result == 0  # open: E-555
-  decreases 0
-=
-  return 0
-
-extern proc erdos_e555_open_witness() -> int
-  requires true
-  ensures result == 0
-  decreases 0
-
-def main() -> int
+def formal_target_e_555() -> int
   requires true
   ensures result == 0
   decreases 0

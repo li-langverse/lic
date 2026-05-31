@@ -1,22 +1,10 @@
-# E-434: Let $k\leq n$. What choice of $A\subseteq \{1,\ldots,n\}$ (with $\mathrm{gcd}(A)=1$) of size $\lvert A\rvert=k$ maximises the number of integers not representable as the sum of finitely many elements from $A$ (with repetitions allowed)? Is it $\{n,n-1,\ldots,n-k+1\}$?
-# erdos_number: 434
-# erdos_status: proved
-# priority_tier: P2
-# tags: number_theory
+# Catalog: E-434
+# Statement: Let $k\leq n$. What choice of $A\subseteq \{1,\ldots,n\}$ (with $\mathrm{gcd}(A)=1$) of size $\lvert A\rvert=k$ maximises the number of integers not representable as the sum of finitely many elements from $A$ (with repetitions allowed)? Is 
+# formalization_status: li_open
+# discharge: pending — open formalization target (Phase 4)
+# erdos_status (literature): proved
 
-def erdos_e434_let_k_leq_n_what_choice_of_a_subseteq_1() -> int
-  requires true
-  ensures result == 0  # open: E-434
-  decreases 0
-=
-  return 0
-
-extern proc erdos_e434_open_witness() -> int
-  requires true
-  ensures result == 0
-  decreases 0
-
-def main() -> int
+def formal_target_e_434() -> int
   requires true
   ensures result == 0
   decreases 0

@@ -1,22 +1,10 @@
-# E-33: Are there infinitely many n such that n and n+2 are both sums of two cubes of integers?
-# erdos_number: 33
-# erdos_status: open
-# priority_tier: P2
-# tags: diophantine, additive
+# Catalog: E-33
+# Statement: Are there infinitely many n such that n and n+2 are both sums of two cubes of integers?
+# formalization_status: li_open
+# discharge: pending — open formalization target (Phase 4)
+# erdos_status (literature): open
 
-def erdos_e33_are_there_infinitely_many_n_such_that_n() -> int
-  requires true
-  ensures result == 0  # open: E-33
-  decreases 0
-=
-  return 0
-
-extern proc erdos_e33_open_witness() -> int
-  requires true
-  ensures result == 0
-  decreases 0
-
-def main() -> int
+def formal_target_e_33() -> int
   requires true
   ensures result == 0
   decreases 0

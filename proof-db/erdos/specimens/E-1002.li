@@ -1,22 +1,10 @@
-# E-1002: For any $0<\alpha<1$, let\[f(\alpha,n)=\frac{1}{\log n}\sum_{1\leq k\leq n}(\tfrac{1}{2}-\{ \alpha k\}).\]Does $f(\alpha,n)$ have an asymptotic distribution function? In other words, is there a non-decreasing function $g$ such that $g(-\infty)=0$, $g(\infty)=1$, and\[\lim_{n\to \infty}\lvert \{ \alpha\in (0,1): f(\alpha,n)\leq c\}\rvert=g(c)?\]
-# erdos_number: 1002
-# erdos_status: open
-# priority_tier: P2
-# tags: analysis, diophantine_approximation
+# Catalog: E-1002
+# Statement: For any $0<\alpha<1$, let\[f(\alpha,n)=\frac{1}{\log n}\sum_{1\leq k\leq n}(\tfrac{1}{2}-\{ \alpha k\}).\]Does $f(\alpha,n)$ have an asymptotic distribution function? In other words, is there a non-decreasing function $g$ such that $g(-\inf
+# formalization_status: li_open
+# discharge: pending — open formalization target (Phase 4)
+# erdos_status (literature): open
 
-def erdos_e1002_for_any_0_alpha_1_let_f_alpha_n_frac_1_l() -> int
-  requires true
-  ensures result == 0  # open: E-1002
-  decreases 0
-=
-  return 0
-
-extern proc erdos_e1002_open_witness() -> int
-  requires true
-  ensures result == 0
-  decreases 0
-
-def main() -> int
+def formal_target_e_1002() -> int
   requires true
   ensures result == 0
   decreases 0

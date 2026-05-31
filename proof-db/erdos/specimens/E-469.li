@@ -1,22 +1,10 @@
-# E-469: Let $A$ be the set of all $n$ such that $n=d_1+\cdots+d_k$ with $d_i$ distinct proper divisors of $n$, but this is not true for any $m\mid n$ with $m<n$. Does\[\sum_{n\in A}\frac{1}{n}\]converge?
-# erdos_number: 469
-# erdos_status: open
-# priority_tier: P2
-# tags: divisors, number_theory
+# Catalog: E-469
+# Statement: Let $A$ be the set of all $n$ such that $n=d_1+\cdots+d_k$ with $d_i$ distinct proper divisors of $n$, but this is not true for any $m\mid n$ with $m<n$. Does\[\sum_{n\in A}\frac{1}{n}\]converge?
+# formalization_status: li_open
+# discharge: pending — open formalization target (Phase 4)
+# erdos_status (literature): open
 
-def erdos_e469_let_a_be_the_set_of_all_n_such_that_n_d() -> int
-  requires true
-  ensures result == 0  # open: E-469
-  decreases 0
-=
-  return 0
-
-extern proc erdos_e469_open_witness() -> int
-  requires true
-  ensures result == 0
-  decreases 0
-
-def main() -> int
+def formal_target_e_469() -> int
   requires true
   ensures result == 0
   decreases 0

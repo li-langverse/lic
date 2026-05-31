@@ -1,22 +1,10 @@
-# E-895: Is it true that, for all sufficiently large $n$, if $G$ is a triangle-free graph on $\{1,\ldots,n\}$ then there must exist three independent points $a,b,a+b$?
-# erdos_number: 895
-# erdos_status: proved
-# priority_tier: P2
-# tags: additive_combinatorics, graph_theory
+# Catalog: E-895
+# Statement: Is it true that, for all sufficiently large $n$, if $G$ is a triangle-free graph on $\{1,\ldots,n\}$ then there must exist three independent points $a,b,a+b$?
+# formalization_status: li_open
+# discharge: pending — open formalization target (Phase 4)
+# erdos_status (literature): proved
 
-def erdos_e895_is_it_true_that_for_all_sufficiently_lar() -> int
-  requires true
-  ensures result == 0  # open: E-895
-  decreases 0
-=
-  return 0
-
-extern proc erdos_e895_open_witness() -> int
-  requires true
-  ensures result == 0
-  decreases 0
-
-def main() -> int
+def formal_target_e_895() -> int
   requires true
   ensures result == 0
   decreases 0

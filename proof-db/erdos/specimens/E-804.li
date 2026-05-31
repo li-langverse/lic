@@ -1,22 +1,10 @@
-# E-804: Let $f(m,n)$ be maximal such that any graph on $n$ vertices in which every induced subgraph on $m$ vertices has an independent set of size at least $\log n$ must contain an independent set of size at least $f(n)$. Estimate $f(n)$. In particular, is it true that $f((\log n)^2,n) \geq n^{1/2-o(1)}$? Is it true that $f((\log n)^3,n)\gg (\log n)^3$?
-# erdos_number: 804
-# erdos_status: open
-# priority_tier: P2
-# tags: graph_theory
+# Catalog: E-804
+# Statement: Let $f(m,n)$ be maximal such that any graph on $n$ vertices in which every induced subgraph on $m$ vertices has an independent set of size at least $\log n$ must contain an independent set of size at least $f(n)$. Estimate $f(n)$. In partic
+# formalization_status: li_open
+# discharge: pending — open formalization target (Phase 4)
+# erdos_status (literature): open
 
-def erdos_e804_let_f_m_n_be_maximal_such_that_any_graph() -> int
-  requires true
-  ensures result == 0  # open: E-804
-  decreases 0
-=
-  return 0
-
-extern proc erdos_e804_open_witness() -> int
-  requires true
-  ensures result == 0
-  decreases 0
-
-def main() -> int
+def formal_target_e_804() -> int
   requires true
   ensures result == 0
   decreases 0

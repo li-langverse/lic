@@ -1,22 +1,10 @@
-# E-105: Does the sum of 1/p over all primes p diverge?
-# erdos_number: 105
-# erdos_status: proved
-# priority_tier: P1
-# tags: primes, series
+# Catalog: E-105
+# Statement: Does the sum of 1/p over all primes p diverge?
+# formalization_status: li_open
+# discharge: pending — open formalization target (Phase 4)
+# erdos_status (literature): proved
 
-def erdos_e105_does_the_sum_of_1_p_over_all_primes_p_di() -> int
-  requires true
-  ensures result == 0  # open: E-105
-  decreases 0
-=
-  return 0
-
-extern proc erdos_e105_open_witness() -> int
-  requires true
-  ensures result == 0
-  decreases 0
-
-def main() -> int
+def formal_target_e_105() -> int
   requires true
   ensures result == 0
   decreases 0

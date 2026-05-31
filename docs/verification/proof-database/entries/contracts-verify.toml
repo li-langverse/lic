@@ -1,14 +1,13 @@
 version = 1
-
 [[entry]]
 id = "P-linalg-dot4-int-closed"
 kind = "lemma"
 field = "linalg"
 gap_id = "G-math"
 statement = "Fixed 4-term int dot closed witness."
-proof_status = "proved"
+proof_status = "target"
 lean_module = "build/generated/AutoVC.lean"
-li_specimen = "li-tests/contracts_verify/linalg_dot4_int_closed.li"
+li_specimen = "proof-db/linalg/specimens/P-linalg-dot4-int-closed.li"
 last_verified_lic_commit = "main"
 
 [[entry]]
@@ -17,9 +16,9 @@ kind = "lemma"
 field = "linalg"
 gap_id = "G-math"
 statement = "Loop dot4 int closed."
-proof_status = "proved"
+proof_status = "target"
 lean_module = "build/generated/AutoVC.lean"
-li_specimen = "li-tests/contracts_verify/linalg_dot4_int_loop_open.li"
+li_specimen = "proof-db/linalg/specimens/P-linalg-dot4-int-loop-open.li"
 last_verified_lic_commit = "main"
 
 [[entry]]

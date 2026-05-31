@@ -1,22 +1,10 @@
-# E-418: Are there infinitely many positive integers not of the form $n-\phi(n)$?
-# erdos_number: 418
-# erdos_status: proved
-# priority_tier: P2
-# tags: number_theory
+# Catalog: E-418
+# Statement: Are there infinitely many positive integers not of the form $n-\phi(n)$?
+# formalization_status: li_open
+# discharge: pending — open formalization target (Phase 4)
+# erdos_status (literature): proved
 
-def erdos_e418_are_there_infinitely_many_positive_integ() -> int
-  requires true
-  ensures result == 0  # open: E-418
-  decreases 0
-=
-  return 0
-
-extern proc erdos_e418_open_witness() -> int
-  requires true
-  ensures result == 0
-  decreases 0
-
-def main() -> int
+def formal_target_e_418() -> int
   requires true
   ensures result == 0
   decreases 0

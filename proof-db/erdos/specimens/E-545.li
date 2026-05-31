@@ -1,22 +1,10 @@
-# E-545: Let $G$ be a graph with $m$ edges and no isolated vertices. Is the Ramsey number $R(G)$ maximised when $G$ is 'as complete as possible'? That is, if $m=\binom{n}{2}+t$ edges with $0\leq t<n$ then is\[R(G)\leq R(H),\]where $H$ is the graph formed by connecting a new vertex to $t$ of the vertices of $K_n$?
-# erdos_number: 545
-# erdos_status: open
-# priority_tier: P2
-# tags: graph_theory, ramsey_theory
+# Catalog: E-545
+# Statement: Let $G$ be a graph with $m$ edges and no isolated vertices. Is the Ramsey number $R(G)$ maximised when $G$ is 'as complete as possible'? That is, if $m=\binom{n}{2}+t$ edges with $0\leq t<n$ then is\[R(G)\leq R(H),\]where $H$ is the graph f
+# formalization_status: li_open
+# discharge: pending — open formalization target (Phase 4)
+# erdos_status (literature): open
 
-def erdos_e545_let_g_be_a_graph_with_m_edges_and_no_iso() -> int
-  requires true
-  ensures result == 0  # open: E-545
-  decreases 0
-=
-  return 0
-
-extern proc erdos_e545_open_witness() -> int
-  requires true
-  ensures result == 0
-  decreases 0
-
-def main() -> int
+def formal_target_e_545() -> int
   requires true
   ensures result == 0
   decreases 0

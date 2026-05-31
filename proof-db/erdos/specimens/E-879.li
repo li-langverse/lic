@@ -1,22 +1,10 @@
-# E-879: Call a set $S\subseteq \{1,\ldots,n\}$ admissible if $(a,b)=1$ for all $a\neq b\in S$. Let\[G(n) = \max_{S\subseteq \{1,\ldots,n\}} \sum_{a\in S}a\]and\[H(n)=\sum_{p<n}p+ n\pi(n^{1/2}).\]Is it true that\[G(n) >H(n)-n^{1+o(1)}?\]Is it true that, for every $k\geq 2$, if $n$ is sufficiently large then the admissible set which maximises $G(n)$ contains at least one integer with at least $k$ prime factors?
-# erdos_number: 879
-# erdos_status: open
-# priority_tier: P2
-# tags: number_theory
+# Catalog: E-879
+# Statement: Call a set $S\subseteq \{1,\ldots,n\}$ admissible if $(a,b)=1$ for all $a\neq b\in S$. Let\[G(n) = \max_{S\subseteq \{1,\ldots,n\}} \sum_{a\in S}a\]and\[H(n)=\sum_{p<n}p+ n\pi(n^{1/2}).\]Is it true that\[G(n) >H(n)-n^{1+o(1)}?\]Is it true t
+# formalization_status: li_open
+# discharge: pending — open formalization target (Phase 4)
+# erdos_status (literature): open
 
-def erdos_e879_call_a_set_s_subseteq_1_ldots_n_admissib() -> int
-  requires true
-  ensures result == 0  # open: E-879
-  decreases 0
-=
-  return 0
-
-extern proc erdos_e879_open_witness() -> int
-  requires true
-  ensures result == 0
-  decreases 0
-
-def main() -> int
+def formal_target_e_879() -> int
   requires true
   ensures result == 0
   decreases 0

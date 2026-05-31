@@ -1,22 +1,10 @@
-# E-249: Is\[\sum_n \frac{\phi(n)}{2^n}\]irrational? Here $\phi$ is the Euler totient function .
-# erdos_number: 249
-# erdos_status: open
-# priority_tier: P2
-# tags: irrationality, number_theory
+# Catalog: E-249
+# Statement: Is\[\sum_n \frac{\phi(n)}{2^n}\]irrational? Here $\phi$ is the Euler totient function .
+# formalization_status: li_open
+# discharge: pending — open formalization target (Phase 4)
+# erdos_status (literature): open
 
-def erdos_e249_is_sum_n_frac_phi_n_2_n_irrational_here() -> int
-  requires true
-  ensures result == 0  # open: E-249
-  decreases 0
-=
-  return 0
-
-extern proc erdos_e249_open_witness() -> int
-  requires true
-  ensures result == 0
-  decreases 0
-
-def main() -> int
+def formal_target_e_249() -> int
   requires true
   ensures result == 0
   decreases 0

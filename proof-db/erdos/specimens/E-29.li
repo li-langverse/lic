@@ -1,24 +1,10 @@
-# E-29: Are there infinitely many primes p such that p+k is also prime for some fixed k (prime k-tuples generalization)?
-# erdos_number: 29
-# erdos_status: open
-# priority_tier: P0
-# tags: primes, prime_gaps
-# context: Prime k-tuple conjecture flavor: infinitely many primes p with p+k also prime for some fixed k>0.
-# context: Standard open problem in analytic number theory..
+# Catalog: E-29
+# Statement: Are there infinitely many primes p such that p+k is also prime for some fixed k (prime k-tuples generalization)?
+# formalization_status: li_open
+# discharge: pending — open formalization target (Phase 4)
+# erdos_status (literature): open
 
-def erdos_e29_are_there_infinitely_many_primes_p_such() -> int
-  requires true
-  ensures result == 0  # open: E-29
-  decreases 0
-=
-  return 0
-
-extern proc erdos_e29_open_witness() -> int
-  requires true
-  ensures result == 0
-  decreases 0
-
-def main() -> int
+def formal_target_e_29() -> int
   requires true
   ensures result == 0
   decreases 0

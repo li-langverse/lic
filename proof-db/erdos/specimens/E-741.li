@@ -1,22 +1,10 @@
-# E-741: Let $A\subseteq \mathbb{N}$ be such that $A+A$ has positive (upper) density. Can one always decompose $A=A_1\sqcup A_2$ such that $A_1+A_1$ and $A_2+A_2$ both have positive (upper) density? Is there a basis $A$ of order $2$ such that if $A=A_1\sqcup A_2$ then $A_1+A_1$ and $A_2+A_2$ cannot both have bounded gaps?
-# erdos_number: 741
-# erdos_status: open
-# priority_tier: P2
-# tags: additive_combinatorics
+# Catalog: E-741
+# Statement: Let $A\subseteq \mathbb{N}$ be such that $A+A$ has positive (upper) density. Can one always decompose $A=A_1\sqcup A_2$ such that $A_1+A_1$ and $A_2+A_2$ both have positive (upper) density? Is there a basis $A$ of order $2$ such that if $A=
+# formalization_status: li_open
+# discharge: pending — open formalization target (Phase 4)
+# erdos_status (literature): open
 
-def erdos_e741_let_a_subseteq_mathbb_n_be_such_that_a_a() -> int
-  requires true
-  ensures result == 0  # open: E-741
-  decreases 0
-=
-  return 0
-
-extern proc erdos_e741_open_witness() -> int
-  requires true
-  ensures result == 0
-  decreases 0
-
-def main() -> int
+def formal_target_e_741() -> int
   requires true
   ensures result == 0
   decreases 0

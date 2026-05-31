@@ -1,22 +1,10 @@
-# E-943: Let $A$ be the set of powerful numbers (if $p\mid n$ then $p^2\mid n$). Is it true that\[1_A\ast 1_A(n)=n^{o(1)}\]for every $n$?
-# erdos_number: 943
-# erdos_status: open
-# priority_tier: P2
-# tags: number_theory, powerful
+# Catalog: E-943
+# Statement: Let $A$ be the set of powerful numbers (if $p\mid n$ then $p^2\mid n$). Is it true that\[1_A\ast 1_A(n)=n^{o(1)}\]for every $n$?
+# formalization_status: li_open
+# discharge: pending — open formalization target (Phase 4)
+# erdos_status (literature): open
 
-def erdos_e943_let_a_be_the_set_of_powerful_numbers_if() -> int
-  requires true
-  ensures result == 0  # open: E-943
-  decreases 0
-=
-  return 0
-
-extern proc erdos_e943_open_witness() -> int
-  requires true
-  ensures result == 0
-  decreases 0
-
-def main() -> int
+def formal_target_e_943() -> int
   requires true
   ensures result == 0
   decreases 0

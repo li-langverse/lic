@@ -1,22 +1,10 @@
-# E-451: Estimate $n_k$, the smallest integer $>2k$ such that $\prod_{1\leq i\leq k}(n_k-i)$ has no prime factor in $(k,2k)$.
-# erdos_number: 451
-# erdos_status: open
-# priority_tier: P2
-# tags: number_theory
+# Catalog: E-451
+# Statement: Estimate $n_k$, the smallest integer $>2k$ such that $\prod_{1\leq i\leq k}(n_k-i)$ has no prime factor in $(k,2k)$.
+# formalization_status: li_open
+# discharge: pending — open formalization target (Phase 4)
+# erdos_status (literature): open
 
-def erdos_e451_estimate_n_k_the_smallest_integer_2k_suc() -> int
-  requires true
-  ensures result == 0  # open: E-451
-  decreases 0
-=
-  return 0
-
-extern proc erdos_e451_open_witness() -> int
-  requires true
-  ensures result == 0
-  decreases 0
-
-def main() -> int
+def formal_target_e_451() -> int
   requires true
   ensures result == 0
   decreases 0

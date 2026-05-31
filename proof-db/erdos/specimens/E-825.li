@@ -1,22 +1,10 @@
-# E-825: Is there an absolute constant $C>0$ such that every integer $n$ with $\sigma(n)>Cn$ is the distinct sum of proper divisors of $n$?
-# erdos_number: 825
-# erdos_status: proved
-# priority_tier: P2
-# tags: divisors, number_theory, unit_fractions
+# Catalog: E-825
+# Statement: Is there an absolute constant $C>0$ such that every integer $n$ with $\sigma(n)>Cn$ is the distinct sum of proper divisors of $n$?
+# formalization_status: li_open
+# discharge: pending — open formalization target (Phase 4)
+# erdos_status (literature): proved
 
-def erdos_e825_is_there_an_absolute_constant_c_0_such_t() -> int
-  requires true
-  ensures result == 0  # open: E-825
-  decreases 0
-=
-  return 0
-
-extern proc erdos_e825_open_witness() -> int
-  requires true
-  ensures result == 0
-  decreases 0
-
-def main() -> int
+def formal_target_e_825() -> int
   requires true
   ensures result == 0
   decreases 0

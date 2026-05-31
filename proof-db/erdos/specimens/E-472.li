@@ -1,22 +1,10 @@
-# E-472: Given some initial finite sequence of primes $q_1<\cdots<q_m$ extend it so that $q_{n+1}$ is the smallest prime of the form $q_n+q_i-1$ for $n\geq m$. Is there an initial starting sequence so that the resulting sequence is infinite?
-# erdos_number: 472
-# erdos_status: open
-# priority_tier: P2
-# tags: number_theory
+# Catalog: E-472
+# Statement: Given some initial finite sequence of primes $q_1<\cdots<q_m$ extend it so that $q_{n+1}$ is the smallest prime of the form $q_n+q_i-1$ for $n\geq m$. Is there an initial starting sequence so that the resulting sequence is infinite?
+# formalization_status: li_open
+# discharge: pending — open formalization target (Phase 4)
+# erdos_status (literature): open
 
-def erdos_e472_given_some_initial_finite_sequence_of_pr() -> int
-  requires true
-  ensures result == 0  # open: E-472
-  decreases 0
-=
-  return 0
-
-extern proc erdos_e472_open_witness() -> int
-  requires true
-  ensures result == 0
-  decreases 0
-
-def main() -> int
+def formal_target_e_472() -> int
   requires true
   ensures result == 0
   decreases 0

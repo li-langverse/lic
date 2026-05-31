@@ -1,22 +1,10 @@
-# E-824: Let $h(x)$ count the number of integers $1\leq a<b<x$ such that $(a,b)=1$ and $\sigma(a)=\sigma(b)$, where $\sigma$ is the sum of divisors function. Is it true that $h(x)>x^{2-o(1)}$?
-# erdos_number: 824
-# erdos_status: open
-# priority_tier: P2
-# tags: number_theory
+# Catalog: E-824
+# Statement: Let $h(x)$ count the number of integers $1\leq a<b<x$ such that $(a,b)=1$ and $\sigma(a)=\sigma(b)$, where $\sigma$ is the sum of divisors function. Is it true that $h(x)>x^{2-o(1)}$?
+# formalization_status: li_open
+# discharge: pending — open formalization target (Phase 4)
+# erdos_status (literature): open
 
-def erdos_e824_let_h_x_count_the_number_of_integers_1_l() -> int
-  requires true
-  ensures result == 0  # open: E-824
-  decreases 0
-=
-  return 0
-
-extern proc erdos_e824_open_witness() -> int
-  requires true
-  ensures result == 0
-  decreases 0
-
-def main() -> int
+def formal_target_e_824() -> int
   requires true
   ensures result == 0
   decreases 0

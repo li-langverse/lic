@@ -1,22 +1,10 @@
-# E-779: Let $n> 1$ and $p_1<\cdots<p_n$ denote the first $n$ primes. Let $P=\prod_{1\leq i\leq n}p_i$. Does there always exist some prime $p$ with $p_n<p<P$ such that $P+p$ is prime?
-# erdos_number: 779
-# erdos_status: open
-# priority_tier: P2
-# tags: number_theory, primes
+# Catalog: E-779
+# Statement: Let $n> 1$ and $p_1<\cdots<p_n$ denote the first $n$ primes. Let $P=\prod_{1\leq i\leq n}p_i$. Does there always exist some prime $p$ with $p_n<p<P$ such that $P+p$ is prime?
+# formalization_status: li_open
+# discharge: pending — open formalization target (Phase 4)
+# erdos_status (literature): open
 
-def erdos_e779_let_n_1_and_p_1_cdots_p_n_denote_the_fir() -> int
-  requires true
-  ensures result == 0  # open: E-779
-  decreases 0
-=
-  return 0
-
-extern proc erdos_e779_open_witness() -> int
-  requires true
-  ensures result == 0
-  decreases 0
-
-def main() -> int
+def formal_target_e_779() -> int
   requires true
   ensures result == 0
   decreases 0

@@ -1,22 +1,10 @@
-# E-55: A set of integers $A$ is Ramsey $r$-complete if, whenever $A$ is $r$-coloured, all sufficiently large integers can be written as a monochromatic sum of elements of $A$. Prove any non-trivial bounds about the growth rate of such an $A$ for $r>2$.
-# erdos_number: 55
-# erdos_status: open
-# priority_tier: P2
-# tags: number_theory, ramsey_theory
+# Catalog: E-55
+# Statement: A set of integers $A$ is Ramsey $r$-complete if, whenever $A$ is $r$-coloured, all sufficiently large integers can be written as a monochromatic sum of elements of $A$. Prove any non-trivial bounds about the growth rate of such an $A$ for $
+# formalization_status: li_open
+# discharge: pending — open formalization target (Phase 4)
+# erdos_status (literature): open
 
-def erdos_e55_a_set_of_integers_a_is_ramsey_r_complete() -> int
-  requires true
-  ensures result == 0  # open: E-55
-  decreases 0
-=
-  return 0
-
-extern proc erdos_e55_open_witness() -> int
-  requires true
-  ensures result == 0
-  decreases 0
-
-def main() -> int
+def formal_target_e_55() -> int
   requires true
   ensures result == 0
   decreases 0

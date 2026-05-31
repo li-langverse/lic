@@ -1,22 +1,10 @@
-# E-46: Does every finite colouring of the integers have a monochromatic solution to $1=\sum \frac{1}{n_i}$ with $2\leq n_1<\cdots <n_k$?
-# erdos_number: 46
-# erdos_status: proved
-# priority_tier: P2
-# tags: number_theory, ramsey_theory, unit_fractions
+# Catalog: E-46
+# Statement: Does every finite colouring of the integers have a monochromatic solution to $1=\sum \frac{1}{n_i}$ with $2\leq n_1<\cdots <n_k$?
+# formalization_status: li_open
+# discharge: pending — open formalization target (Phase 4)
+# erdos_status (literature): proved
 
-def erdos_e46_does_every_finite_colouring_of_the_integ() -> int
-  requires true
-  ensures result == 0  # open: E-46
-  decreases 0
-=
-  return 0
-
-extern proc erdos_e46_open_witness() -> int
-  requires true
-  ensures result == 0
-  decreases 0
-
-def main() -> int
+def formal_target_e_46() -> int
   requires true
   ensures result == 0
   decreases 0

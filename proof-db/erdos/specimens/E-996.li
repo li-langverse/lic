@@ -1,22 +1,10 @@
-# E-996: Let $n_1<n_2<\cdots$ be a lacunary sequence of integers, and let $f\in L^2([0,1])$. Let $f_n$ be the $n$th partial sum of the Fourier series of $f(x)$. Is there an absolute constant $C>0$ such that, if\[\| f-f_n\|_2 \ll \frac{1}{(\log\log\log n)^{C}}\]then\[\lim_{N\to\infty}\frac{1}{N}\sum_{k\leq N}f(\{\alpha n_k\})=\int_0^1 f(x)\mathrm{d}x\]for almost every $\alpha$?
-# erdos_number: 996
-# erdos_status: open
-# priority_tier: P2
-# tags: analysis
+# Catalog: E-996
+# Statement: Let $n_1<n_2<\cdots$ be a lacunary sequence of integers, and let $f\in L^2([0,1])$. Let $f_n$ be the $n$th partial sum of the Fourier series of $f(x)$. Is there an absolute constant $C>0$ such that, if\[\| f-f_n\|_2 \ll \frac{1}{(\log\log\l
+# formalization_status: li_open
+# discharge: pending — open formalization target (Phase 4)
+# erdos_status (literature): open
 
-def erdos_e996_let_n_1_n_2_cdots_be_a_lacunary_sequence() -> int
-  requires true
-  ensures result == 0  # open: E-996
-  decreases 0
-=
-  return 0
-
-extern proc erdos_e996_open_witness() -> int
-  requires true
-  ensures result == 0
-  decreases 0
-
-def main() -> int
+def formal_target_e_996() -> int
   requires true
   ensures result == 0
   decreases 0

@@ -1,22 +1,10 @@
-# E-98: Does sum_{n=1}^infty (1/n) * sum_{p|n} 1/p converge?
-# erdos_number: 98
-# erdos_status: open
-# priority_tier: P3
-# tags: number_theory, series
+# Catalog: E-98
+# Statement: Does sum_{n=1}^infty (1/n) * sum_{p|n} 1/p converge?
+# formalization_status: li_open
+# discharge: pending — open formalization target (Phase 4)
+# erdos_status (literature): open
 
-def erdos_e98_does_sum_n_1_infty_1_n_sum_p_n_1_p_conve() -> int
-  requires true
-  ensures result == 0  # open: E-98
-  decreases 0
-=
-  return 0
-
-extern proc erdos_e98_open_witness() -> int
-  requires true
-  ensures result == 0
-  decreases 0
-
-def main() -> int
+def formal_target_e_98() -> int
   requires true
   ensures result == 0
   decreases 0

@@ -1,22 +1,10 @@
-# E-790: Let $l(n)$ be maximal such that if $A\subset\mathbb{Z}$ with $\lvert A\rvert=n$ then there exists a sum-free $B\subseteq A$ with $\lvert B\rvert \geq l(n)$ - that is, $B$ is such that there are no solutions to\[a_1=a_2+\cdots+a_r\]with $a_i\in B$ all distinct. Estimate $l(n)$. In particular, is it true that $l(n)n^{-1/2}\to \infty$? Is it true that $l(n)< n^{1-c}$ for some $c>0$?
-# erdos_number: 790
-# erdos_status: open
-# priority_tier: P2
-# tags: additive_combinatorics
+# Catalog: E-790
+# Statement: Let $l(n)$ be maximal such that if $A\subset\mathbb{Z}$ with $\lvert A\rvert=n$ then there exists a sum-free $B\subseteq A$ with $\lvert B\rvert \geq l(n)$ - that is, $B$ is such that there are no solutions to\[a_1=a_2+\cdots+a_r\]with $a_i
+# formalization_status: li_open
+# discharge: pending — open formalization target (Phase 4)
+# erdos_status (literature): open
 
-def erdos_e790_let_l_n_be_maximal_such_that_if_a_subset() -> int
-  requires true
-  ensures result == 0  # open: E-790
-  decreases 0
-=
-  return 0
-
-extern proc erdos_e790_open_witness() -> int
-  requires true
-  ensures result == 0
-  decreases 0
-
-def main() -> int
+def formal_target_e_790() -> int
   requires true
   ensures result == 0
   decreases 0

@@ -1,22 +1,10 @@
-# E-370: Are there infinitely many $n$ such that the largest prime factor of $n$ is $<n^{1/2}$ and the largest prime factor of $n+1$ is $<(n+1)^{1/2}$?
-# erdos_number: 370
-# erdos_status: proved
-# priority_tier: P2
-# tags: number_theory
+# Catalog: E-370
+# Statement: Are there infinitely many $n$ such that the largest prime factor of $n$ is $<n^{1/2}$ and the largest prime factor of $n+1$ is $<(n+1)^{1/2}$?
+# formalization_status: li_open
+# discharge: pending — open formalization target (Phase 4)
+# erdos_status (literature): proved
 
-def erdos_e370_are_there_infinitely_many_n_such_that_th() -> int
-  requires true
-  ensures result == 0  # open: E-370
-  decreases 0
-=
-  return 0
-
-extern proc erdos_e370_open_witness() -> int
-  requires true
-  ensures result == 0
-  decreases 0
-
-def main() -> int
+def formal_target_e_370() -> int
   requires true
   ensures result == 0
   decreases 0

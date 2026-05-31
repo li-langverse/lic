@@ -1,24 +1,10 @@
-# E-86: Is every even integer greater than 2 the sum of two primes (Goldbach conjecture)?
-# erdos_number: 86
-# erdos_status: target
-# priority_tier: P0
-# tags: primes, additive
-# context: Goldbach conjecture: every even integer greater than 2 is the sum of two primes.
-# context: Weak Goldbach (odd sums of three primes) is proved; the binary case remains open..
+# Catalog: E-86
+# Statement: Is every even integer greater than 2 the sum of two primes (Goldbach conjecture)?
+# formalization_status: li_open
+# discharge: pending — open formalization target (Phase 4)
+# erdos_status (literature): target
 
-def erdos_e86_is_every_even_integer_greater_than_2_the() -> int
-  requires true
-  ensures result == 0  # open: E-86
-  decreases 0
-=
-  return 0
-
-extern proc erdos_e86_open_witness() -> int
-  requires true
-  ensures result == 0
-  decreases 0
-
-def main() -> int
+def formal_target_e_86() -> int
   requires true
   ensures result == 0
   decreases 0

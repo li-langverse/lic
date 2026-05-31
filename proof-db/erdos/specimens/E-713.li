@@ -1,22 +1,10 @@
-# E-713: For every bipartite graph G, does there exist alpha in [1,2) and c>0 with ex(n;G) ~ c n^alpha? Must alpha be rational?
-# erdos_number: 713
-# erdos_status: open
-# priority_tier: P1
-# tags: graph_theory, extremal, turán
+# Catalog: E-713
+# Statement: For every bipartite graph G, does there exist alpha in [1,2) and c>0 with ex(n;G) ~ c n^alpha? Must alpha be rational?
+# formalization_status: li_open
+# discharge: pending — open formalization target (Phase 4)
+# erdos_status (literature): open
 
-def erdos_e713_for_every_bipartite_graph_g_does_there_e() -> int
-  requires true
-  ensures result == 0  # open: E-713
-  decreases 0
-=
-  return 0
-
-extern proc erdos_e713_open_witness() -> int
-  requires true
-  ensures result == 0
-  decreases 0
-
-def main() -> int
+def formal_target_e_713() -> int
   requires true
   ensures result == 0
   decreases 0

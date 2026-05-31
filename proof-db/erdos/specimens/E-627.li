@@ -1,22 +1,10 @@
-# E-627: Let $\omega(G)$ denote the clique number of $G$ and $\chi(G)$ the chromatic number. If $f(n)$ is the maximum value of $\chi(G)/\omega(G)$, as $G$ ranges over all graphs on $n$ vertices, then does\[\lim_{n\to\infty}\frac{f(n)}{n/(\log_2n)^2}\]exist?
-# erdos_number: 627
-# erdos_status: open
-# priority_tier: P2
-# tags: chromatic_number, graph_theory
+# Catalog: E-627
+# Statement: Let $\omega(G)$ denote the clique number of $G$ and $\chi(G)$ the chromatic number. If $f(n)$ is the maximum value of $\chi(G)/\omega(G)$, as $G$ ranges over all graphs on $n$ vertices, then does\[\lim_{n\to\infty}\frac{f(n)}{n/(\log_2n)^2}
+# formalization_status: li_open
+# discharge: pending — open formalization target (Phase 4)
+# erdos_status (literature): open
 
-def erdos_e627_let_omega_g_denote_the_clique_number_of() -> int
-  requires true
-  ensures result == 0  # open: E-627
-  decreases 0
-=
-  return 0
-
-extern proc erdos_e627_open_witness() -> int
-  requires true
-  ensures result == 0
-  decreases 0
-
-def main() -> int
+def formal_target_e_627() -> int
   requires true
   ensures result == 0
   decreases 0

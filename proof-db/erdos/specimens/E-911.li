@@ -1,22 +1,10 @@
-# E-911: Let $\hat{R}(G)$ denote the size Ramsey number, the minimal number of edges $m$ such that there is a graph $H$ with $m$ edges that is Ramsey for $G$. Is there a function $f$ such that $f(x)/x\to \infty$ as $x\to \infty$ such that, for all large $C$, if $G$ is a graph with $n$ vertices and $e\geq Cn$ edges then\[\hat{R}(G) > f(C) e?\]
-# erdos_number: 911
-# erdos_status: open
-# priority_tier: P2
-# tags: graph_theory, ramsey_theory
+# Catalog: E-911
+# Statement: Let $\hat{R}(G)$ denote the size Ramsey number, the minimal number of edges $m$ such that there is a graph $H$ with $m$ edges that is Ramsey for $G$. Is there a function $f$ such that $f(x)/x\to \infty$ as $x\to \infty$ such that, for all l
+# formalization_status: li_open
+# discharge: pending — open formalization target (Phase 4)
+# erdos_status (literature): open
 
-def erdos_e911_let_hat_r_g_denote_the_size_ramsey_numbe() -> int
-  requires true
-  ensures result == 0  # open: E-911
-  decreases 0
-=
-  return 0
-
-extern proc erdos_e911_open_witness() -> int
-  requires true
-  ensures result == 0
-  decreases 0
-
-def main() -> int
+def formal_target_e_911() -> int
   requires true
   ensures result == 0
   decreases 0

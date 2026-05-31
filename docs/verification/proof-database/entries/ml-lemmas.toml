@@ -1,5 +1,4 @@
 version = 1
-
 [[entry]]
 id = "ML-LM-GRAD-DESCENT-RATE"
 kind = "lemma"
@@ -12,6 +11,6 @@ gap_kind = "proof_gap"
 convergence_class = "convex_first_order"
 lean_module = "proof-db/ml/SGD.lean"
 lean_thm = "Li.ProofDb.ML.ml_lm_grad_descent_rate"
-li_specimen = "proof-db/ml/lemmas/grad_descent_step.li"
+li_specimen = "proof-db/ml/specimens/ML-LM-GRAD-DESCENT-RATE.li"
 benchmark_ref = "benchmarks/tier3_ml/sgd_convergence"
 last_verified_lic_commit = "7e64ba8"

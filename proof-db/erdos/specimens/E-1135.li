@@ -1,22 +1,10 @@
-# E-1135: Define $f:\mathbb{N}\to \mathbb{N}$ by $f(n)=n/2$ if $n$ is even and $f(n)=\frac{3n+1}{2}$ if $n$ is odd. Given any integer $m\geq 1$ does there exist $k\geq 1$ such that $f^{(k)}(m)=1$?
-# erdos_number: 1135
-# erdos_status: open
-# priority_tier: P2
-# tags: iterated_functions, number_theory
+# Catalog: E-1135
+# Statement: Define $f:\mathbb{N}\to \mathbb{N}$ by $f(n)=n/2$ if $n$ is even and $f(n)=\frac{3n+1}{2}$ if $n$ is odd. Given any integer $m\geq 1$ does there exist $k\geq 1$ such that $f^{(k)}(m)=1$?
+# formalization_status: li_open
+# discharge: pending — open formalization target (Phase 4)
+# erdos_status (literature): open
 
-def erdos_e1135_define_f_mathbb_n_to_mathbb_n_by_f_n_n_2() -> int
-  requires true
-  ensures result == 0  # open: E-1135
-  decreases 0
-=
-  return 0
-
-extern proc erdos_e1135_open_witness() -> int
-  requires true
-  ensures result == 0
-  decreases 0
-
-def main() -> int
+def formal_target_e_1135() -> int
   requires true
   ensures result == 0
   decreases 0

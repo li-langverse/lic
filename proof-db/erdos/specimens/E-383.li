@@ -1,22 +1,10 @@
-# E-383: Is it true that for every $k$ there are infinitely many primes $p$ such that the largest prime divisor of\[\prod_{0\leq i\leq k}(p^2+i)\]is $p$?
-# erdos_number: 383
-# erdos_status: open
-# priority_tier: P2
-# tags: number_theory
+# Catalog: E-383
+# Statement: Is it true that for every $k$ there are infinitely many primes $p$ such that the largest prime divisor of\[\prod_{0\leq i\leq k}(p^2+i)\]is $p$?
+# formalization_status: li_open
+# discharge: pending — open formalization target (Phase 4)
+# erdos_status (literature): open
 
-def erdos_e383_is_it_true_that_for_every_k_there_are_in() -> int
-  requires true
-  ensures result == 0  # open: E-383
-  decreases 0
-=
-  return 0
-
-extern proc erdos_e383_open_witness() -> int
-  requires true
-  ensures result == 0
-  decreases 0
-
-def main() -> int
+def formal_target_e_383() -> int
   requires true
   ensures result == 0
   decreases 0

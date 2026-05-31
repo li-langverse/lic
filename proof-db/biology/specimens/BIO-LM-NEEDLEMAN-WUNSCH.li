@@ -1,0 +1,11 @@
+# Catalog: BIO-LM-NEEDLEMAN-WUNSCH
+# Statement: Needleman-Wunsch dynamic programming yields optimal global alignment score.
+# formalization_status: li_open
+# discharge: pending — open formalization target (Phase 4)
+
+def formal_target_bio_lm_needleman_wunsch() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0

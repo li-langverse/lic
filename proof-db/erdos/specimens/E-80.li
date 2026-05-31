@@ -1,24 +1,10 @@
-# E-80: Does every set of integers with positive upper density contain a three-term arithmetic progression?
-# erdos_number: 80
-# erdos_status: proved
-# priority_tier: P0
-# tags: combinatorics, ramsey_theory
-# context: Szemerédi theorem: positive upper density sets contain 3-term arithmetic progressions.
-# context: Proved 1975; cornerstone of modern additive combinatorics..
+# Catalog: E-80
+# Statement: Does every set of integers with positive upper density contain a three-term arithmetic progression?
+# formalization_status: li_open
+# discharge: pending — open formalization target (Phase 4)
+# erdos_status (literature): proved
 
-def erdos_e80_does_every_set_of_integers_with_positive() -> int
-  requires true
-  ensures result == 0  # open: E-80
-  decreases 0
-=
-  return 0
-
-extern proc erdos_e80_open_witness() -> int
-  requires true
-  ensures result == 0
-  decreases 0
-
-def main() -> int
+def formal_target_e_80() -> int
   requires true
   ensures result == 0
   decreases 0

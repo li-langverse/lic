@@ -1,22 +1,10 @@
-# E-562: Let $R_r(n)$ denote the $r$-uniform hypergraph Ramsey number: the minimal $m$ such that if we $2$-colour all edges of the complete $r$-uniform hypergraph on $m$ vertices then there must be some monochromatic copy of the complete $r$-uniform hypergraph on $n$ vertices. Prove that, for $r\geq 3$,\[\log_{r-1} R_r(n) \asymp_r n,\]where $\log_{r-1}$ denotes the $(r-1)$-fold iterated logarithm. That is, does $R_r(n)$ grow like\[2^{2^{\cdots n}}\]where the tower of exponentials has height $r-1$?
-# erdos_number: 562
-# erdos_status: open
-# priority_tier: P2
-# tags: graph_theory, hypergraphs, ramsey_theory
+# Catalog: E-562
+# Statement: Let $R_r(n)$ denote the $r$-uniform hypergraph Ramsey number: the minimal $m$ such that if we $2$-colour all edges of the complete $r$-uniform hypergraph on $m$ vertices then there must be some monochromatic copy of the complete $r$-uniform
+# formalization_status: li_open
+# discharge: pending — open formalization target (Phase 4)
+# erdos_status (literature): open
 
-def erdos_e562_let_r_r_n_denote_the_r_uniform_hypergrap() -> int
-  requires true
-  ensures result == 0  # open: E-562
-  decreases 0
-=
-  return 0
-
-extern proc erdos_e562_open_witness() -> int
-  requires true
-  ensures result == 0
-  decreases 0
-
-def main() -> int
+def formal_target_e_562() -> int
   requires true
   ensures result == 0
   decreases 0

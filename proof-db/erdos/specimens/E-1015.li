@@ -1,22 +1,10 @@
-# E-1015: Let $f(t)$ be minimal such that, in any two-colouring of the edges of $K_n$, the edges can be partitioned into vertex disjoint monochromatic copies of $K_t$ (not necessarily the same colour) with at most $f(t)$ vertices remaining. Estimate $f(t)$. In particular, is it true that $f(t)^{1/t}\to 1$? Is it true that $f(t)\ll t$?
-# erdos_number: 1015
-# erdos_status: open
-# priority_tier: P2
-# tags: graph_theory, ramsey_theory
+# Catalog: E-1015
+# Statement: Let $f(t)$ be minimal such that, in any two-colouring of the edges of $K_n$, the edges can be partitioned into vertex disjoint monochromatic copies of $K_t$ (not necessarily the same colour) with at most $f(t)$ vertices remaining. Estimate 
+# formalization_status: li_open
+# discharge: pending — open formalization target (Phase 4)
+# erdos_status (literature): open
 
-def erdos_e1015_let_f_t_be_minimal_such_that_in_any_two() -> int
-  requires true
-  ensures result == 0  # open: E-1015
-  decreases 0
-=
-  return 0
-
-extern proc erdos_e1015_open_witness() -> int
-  requires true
-  ensures result == 0
-  decreases 0
-
-def main() -> int
+def formal_target_e_1015() -> int
   requires true
   ensures result == 0
   decreases 0

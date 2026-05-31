@@ -1,22 +1,10 @@
-# E-750: Let $f(m)$ be some function such that $f(m)\to \infty$ as $m\to \infty$. Does there exist a graph $G$ of infinite chromatic number such that every subgraph on $m$ vertices contains an independent set of size at least $\frac{m}{2}-f(m)$?
-# erdos_number: 750
-# erdos_status: open
-# priority_tier: P2
-# tags: chromatic_number, graph_theory
+# Catalog: E-750
+# Statement: Let $f(m)$ be some function such that $f(m)\to \infty$ as $m\to \infty$. Does there exist a graph $G$ of infinite chromatic number such that every subgraph on $m$ vertices contains an independent set of size at least $\frac{m}{2}-f(m)$?
+# formalization_status: li_open
+# discharge: pending — open formalization target (Phase 4)
+# erdos_status (literature): open
 
-def erdos_e750_let_f_m_be_some_function_such_that_f_m_t() -> int
-  requires true
-  ensures result == 0  # open: E-750
-  decreases 0
-=
-  return 0
-
-extern proc erdos_e750_open_witness() -> int
-  requires true
-  ensures result == 0
-  decreases 0
-
-def main() -> int
+def formal_target_e_750() -> int
   requires true
   ensures result == 0
   decreases 0

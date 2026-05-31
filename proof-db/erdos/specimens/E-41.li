@@ -1,22 +1,10 @@
-# E-41: Let $A\subset\mathbb{N}$ be an infinite set such that the triple sums $a+b+c$ are all distinct for $a,b,c\in A$ (aside from the trivial coincidences). Is it true that\[\liminf \frac{\lvert A\cap \{1,\ldots,N\}\rvert}{N^{1/3}}=0?\]
-# erdos_number: 41
-# erdos_status: open
-# priority_tier: P2
-# tags: additive_combinatorics, number_theory, sidon_sets
+# Catalog: E-41
+# Statement: Let $A\subset\mathbb{N}$ be an infinite set such that the triple sums $a+b+c$ are all distinct for $a,b,c\in A$ (aside from the trivial coincidences). Is it true that\[\liminf \frac{\lvert A\cap \{1,\ldots,N\}\rvert}{N^{1/3}}=0?\]
+# formalization_status: li_open
+# discharge: pending — open formalization target (Phase 4)
+# erdos_status (literature): open
 
-def erdos_e41_let_a_subset_mathbb_n_be_an_infinite_set() -> int
-  requires true
-  ensures result == 0  # open: E-41
-  decreases 0
-=
-  return 0
-
-extern proc erdos_e41_open_witness() -> int
-  requires true
-  ensures result == 0
-  decreases 0
-
-def main() -> int
+def formal_target_e_41() -> int
   requires true
   ensures result == 0
   decreases 0

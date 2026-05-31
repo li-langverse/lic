@@ -1,22 +1,10 @@
-# E-740: Let $\mathfrak{m}$ be an infinite cardinal and $G$ be a graph with chromatic number $\mathfrak{m}$. Let $r\geq 1$. Must $G$ contain a subgraph of chromatic number $\mathfrak{m}$ which does not contain any odd cycle of length $\leq r$?
-# erdos_number: 740
-# erdos_status: open
-# priority_tier: P2
-# tags: chromatic_number, graph_theory
+# Catalog: E-740
+# Statement: Let $\mathfrak{m}$ be an infinite cardinal and $G$ be a graph with chromatic number $\mathfrak{m}$. Let $r\geq 1$. Must $G$ contain a subgraph of chromatic number $\mathfrak{m}$ which does not contain any odd cycle of length $\leq r$?
+# formalization_status: li_open
+# discharge: pending — open formalization target (Phase 4)
+# erdos_status (literature): open
 
-def erdos_e740_let_mathfrak_m_be_an_infinite_cardinal_a() -> int
-  requires true
-  ensures result == 0  # open: E-740
-  decreases 0
-=
-  return 0
-
-extern proc erdos_e740_open_witness() -> int
-  requires true
-  ensures result == 0
-  decreases 0
-
-def main() -> int
+def formal_target_e_740() -> int
   requires true
   ensures result == 0
   decreases 0

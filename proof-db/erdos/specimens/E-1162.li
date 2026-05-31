@@ -1,22 +1,10 @@
-# E-1162: Give an asymptotic formula for the number of subgroups of $S_n$. Is there a statistical theorem on their order?
-# erdos_number: 1162
-# erdos_status: open
-# priority_tier: P2
-# tags: group_theory
+# Catalog: E-1162
+# Statement: Give an asymptotic formula for the number of subgroups of $S_n$. Is there a statistical theorem on their order?
+# formalization_status: li_open
+# discharge: pending — open formalization target (Phase 4)
+# erdos_status (literature): open
 
-def erdos_e1162_give_an_asymptotic_formula_for_the_numbe() -> int
-  requires true
-  ensures result == 0  # open: E-1162
-  decreases 0
-=
-  return 0
-
-extern proc erdos_e1162_open_witness() -> int
-  requires true
-  ensures result == 0
-  decreases 0
-
-def main() -> int
+def formal_target_e_1162() -> int
   requires true
   ensures result == 0
   decreases 0

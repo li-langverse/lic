@@ -1,22 +1,10 @@
-# E-1012: Let $k\geq 0$. Let $f(k)$ be such that every graph on $n\geq f(k)$ vertices with at least $\binom{n-k-1}{2}+\binom{k+2}{2}+1$ edges contains a cycle on $n-k$ vertices. Determine or estimate $f(k)$.
-# erdos_number: 1012
-# erdos_status: open
-# priority_tier: P2
-# tags: graph_theory
+# Catalog: E-1012
+# Statement: Let $k\geq 0$. Let $f(k)$ be such that every graph on $n\geq f(k)$ vertices with at least $\binom{n-k-1}{2}+\binom{k+2}{2}+1$ edges contains a cycle on $n-k$ vertices. Determine or estimate $f(k)$.
+# formalization_status: li_open
+# discharge: pending — open formalization target (Phase 4)
+# erdos_status (literature): open
 
-def erdos_e1012_let_k_geq_0_let_f_k_be_such_that_every_g() -> int
-  requires true
-  ensures result == 0  # open: E-1012
-  decreases 0
-=
-  return 0
-
-extern proc erdos_e1012_open_witness() -> int
-  requires true
-  ensures result == 0
-  decreases 0
-
-def main() -> int
+def formal_target_e_1012() -> int
   requires true
   ensures result == 0
   decreases 0

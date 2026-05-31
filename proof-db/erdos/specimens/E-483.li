@@ -1,22 +1,10 @@
-# E-483: Let $f(k)$ be the minimal $N$ such that if $\{1,\ldots,N\}$ is $k$-coloured then there is a monochromatic solution to $a+b=c$. Estimate $f(k)$. In particular, is it true that $f(k) < c^k$ for some constant $c>0$?
-# erdos_number: 483
-# erdos_status: open
-# priority_tier: P2
-# tags: additive_combinatorics, number_theory, ramsey_theory
+# Catalog: E-483
+# Statement: Let $f(k)$ be the minimal $N$ such that if $\{1,\ldots,N\}$ is $k$-coloured then there is a monochromatic solution to $a+b=c$. Estimate $f(k)$. In particular, is it true that $f(k) < c^k$ for some constant $c>0$?
+# formalization_status: li_open
+# discharge: pending — open formalization target (Phase 4)
+# erdos_status (literature): open
 
-def erdos_e483_let_f_k_be_the_minimal_n_such_that_if_1() -> int
-  requires true
-  ensures result == 0  # open: E-483
-  decreases 0
-=
-  return 0
-
-extern proc erdos_e483_open_witness() -> int
-  requires true
-  ensures result == 0
-  decreases 0
-
-def main() -> int
+def formal_target_e_483() -> int
   requires true
   ensures result == 0
   decreases 0

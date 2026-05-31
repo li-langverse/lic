@@ -1,22 +1,10 @@
-# E-185: Let $f_3(n)$ be the maximal size of a subset of $\{0,1,2\}^n$ which contains no three points on a line. Is it true that $f_3(n)=o(3^n)$?
-# erdos_number: 185
-# erdos_status: proved
-# priority_tier: P2
-# tags: additive_combinatorics
+# Catalog: E-185
+# Statement: Let $f_3(n)$ be the maximal size of a subset of $\{0,1,2\}^n$ which contains no three points on a line. Is it true that $f_3(n)=o(3^n)$?
+# formalization_status: li_open
+# discharge: pending — open formalization target (Phase 4)
+# erdos_status (literature): proved
 
-def erdos_e185_let_f_3_n_be_the_maximal_size_of_a_subse() -> int
-  requires true
-  ensures result == 0  # open: E-185
-  decreases 0
-=
-  return 0
-
-extern proc erdos_e185_open_witness() -> int
-  requires true
-  ensures result == 0
-  decreases 0
-
-def main() -> int
+def formal_target_e_185() -> int
   requires true
   ensures result == 0
   decreases 0

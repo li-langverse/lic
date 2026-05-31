@@ -1,22 +1,10 @@
-# E-1050: Is\[\sum_{n=1}^\infty \frac{1}{2^n-3}\]irrational?
-# erdos_number: 1050
-# erdos_status: proved
-# priority_tier: P2
-# tags: irrationality
+# Catalog: E-1050
+# Statement: Is\[\sum_{n=1}^\infty \frac{1}{2^n-3}\]irrational?
+# formalization_status: li_open
+# discharge: pending — open formalization target (Phase 4)
+# erdos_status (literature): proved
 
-def erdos_e1050_is_sum_n_1_infty_frac_1_2_n_3_irrational() -> int
-  requires true
-  ensures result == 0  # open: E-1050
-  decreases 0
-=
-  return 0
-
-extern proc erdos_e1050_open_witness() -> int
-  requires true
-  ensures result == 0
-  decreases 0
-
-def main() -> int
+def formal_target_e_1050() -> int
   requires true
   ensures result == 0
   decreases 0

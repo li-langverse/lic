@@ -1,22 +1,10 @@
-# E-664: Let $c<1$ be some constant and $A_1,\ldots,A_m\subseteq \{1,\ldots,n\}$ be such that $\lvert A_i\rvert >c\sqrt{n}$ for all $i$ and $\lvert A_i\cap A_j\rvert\leq 1$ for all $i\neq j$. Must there exist some set $B$ such that $B\cap A_i\neq \emptyset$ and $\lvert B\cap A_i\rvert \ll_c 1$ for all $i$?
-# erdos_number: 664
-# erdos_status: open
-# priority_tier: P2
-# tags: combinatorics
+# Catalog: E-664
+# Statement: Let $c<1$ be some constant and $A_1,\ldots,A_m\subseteq \{1,\ldots,n\}$ be such that $\lvert A_i\rvert >c\sqrt{n}$ for all $i$ and $\lvert A_i\cap A_j\rvert\leq 1$ for all $i\neq j$. Must there exist some set $B$ such that $B\cap A_i\neq \e
+# formalization_status: li_open
+# discharge: pending — open formalization target (Phase 4)
+# erdos_status (literature): open
 
-def erdos_e664_let_c_1_be_some_constant_and_a_1_ldots_a() -> int
-  requires true
-  ensures result == 0  # open: E-664
-  decreases 0
-=
-  return 0
-
-extern proc erdos_e664_open_witness() -> int
-  requires true
-  ensures result == 0
-  decreases 0
-
-def main() -> int
+def formal_target_e_664() -> int
   requires true
   ensures result == 0
   decreases 0

@@ -1,22 +1,10 @@
-# E-941: Are all large integers the sum of at most three powerful numbers (i.e. if $p\mid n$ then $p^2\mid n$)?
-# erdos_number: 941
-# erdos_status: proved
-# priority_tier: P2
-# tags: number_theory, powerful
+# Catalog: E-941
+# Statement: Are all large integers the sum of at most three powerful numbers (i.e. if $p\mid n$ then $p^2\mid n$)?
+# formalization_status: li_open
+# discharge: pending — open formalization target (Phase 4)
+# erdos_status (literature): proved
 
-def erdos_e941_are_all_large_integers_the_sum_of_at_mos() -> int
-  requires true
-  ensures result == 0  # open: E-941
-  decreases 0
-=
-  return 0
-
-extern proc erdos_e941_open_witness() -> int
-  requires true
-  ensures result == 0
-  decreases 0
-
-def main() -> int
+def formal_target_e_941() -> int
   requires true
   ensures result == 0
   decreases 0

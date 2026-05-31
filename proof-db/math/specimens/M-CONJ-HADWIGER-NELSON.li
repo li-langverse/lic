@@ -1,0 +1,11 @@
+# Catalog: M-CONJ-HADWIGER-NELSON
+# Statement: What is the minimum number of colors needed to color the plane so that no two points at unit distance share a color (Hadwiger–Nelson problem)?
+# formalization_status: li_open
+# discharge: pending — open formalization target (Phase 4)
+
+def formal_target_m_conj_hadwiger_nelson() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0

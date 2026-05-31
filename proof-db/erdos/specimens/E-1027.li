@@ -1,22 +1,10 @@
-# E-1027: Let $c>0$, and let $n$ be sufficiently large depending on $c$. Suppose that $\mathcal{F}$ is a family of at most $c2^n$ many finite sets of size $n$. Let $X=\cup_{A\in \mathcal{F}}A$. Must there exist $\gg_c 2^{\lvert X\rvert}$ many sets $B\subset X$ which intersect every set in $\mathcal{F}$, yet contain none of them?
-# erdos_number: 1027
-# erdos_status: proved
-# priority_tier: P2
-# tags: combinatorics
+# Catalog: E-1027
+# Statement: Let $c>0$, and let $n$ be sufficiently large depending on $c$. Suppose that $\mathcal{F}$ is a family of at most $c2^n$ many finite sets of size $n$. Let $X=\cup_{A\in \mathcal{F}}A$. Must there exist $\gg_c 2^{\lvert X\rvert}$ many sets $B
+# formalization_status: li_open
+# discharge: pending — open formalization target (Phase 4)
+# erdos_status (literature): proved
 
-def erdos_e1027_let_c_0_and_let_n_be_sufficiently_large() -> int
-  requires true
-  ensures result == 0  # open: E-1027
-  decreases 0
-=
-  return 0
-
-extern proc erdos_e1027_open_witness() -> int
-  requires true
-  ensures result == 0
-  decreases 0
-
-def main() -> int
+def formal_target_e_1027() -> int
   requires true
   ensures result == 0
   decreases 0

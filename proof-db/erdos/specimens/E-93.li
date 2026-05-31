@@ -1,22 +1,10 @@
-# E-93: Are there infinitely many n such that both 2^n-1 and 2^n+1 have few prime factors?
-# erdos_number: 93
-# erdos_status: open
-# priority_tier: P2
-# tags: primes, mersenne
+# Catalog: E-93
+# Statement: Are there infinitely many n such that both 2^n-1 and 2^n+1 have few prime factors?
+# formalization_status: li_open
+# discharge: pending — open formalization target (Phase 4)
+# erdos_status (literature): open
 
-def erdos_e93_are_there_infinitely_many_n_such_that_bo() -> int
-  requires true
-  ensures result == 0  # open: E-93
-  decreases 0
-=
-  return 0
-
-extern proc erdos_e93_open_witness() -> int
-  requires true
-  ensures result == 0
-  decreases 0
-
-def main() -> int
+def formal_target_e_93() -> int
   requires true
   ensures result == 0
   decreases 0

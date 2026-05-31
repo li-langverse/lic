@@ -1,22 +1,10 @@
-# E-959: Let $A\subset \mathbb{R}^2$ be a set of size $n$ and let $\{d_1,\ldots,d_k\}$ be the set of distinct distances determined by $A$. Let $f(d)$ be the number of times the distance $d$ is determined, and suppose the $d_i$ are ordered such that\[f(d_1)\geq f(d_2)\geq \cdots \geq f(d_k).\]Estimate\[\max (f(d_1)-f(d_2)),\]where the maximum is taken over all $A$ of size $n$.
-# erdos_number: 959
-# erdos_status: open
-# priority_tier: P2
-# tags: distances, geometry
+# Catalog: E-959
+# Statement: Let $A\subset \mathbb{R}^2$ be a set of size $n$ and let $\{d_1,\ldots,d_k\}$ be the set of distinct distances determined by $A$. Let $f(d)$ be the number of times the distance $d$ is determined, and suppose the $d_i$ are ordered such that\
+# formalization_status: li_open
+# discharge: pending — open formalization target (Phase 4)
+# erdos_status (literature): open
 
-def erdos_e959_let_a_subset_mathbb_r_2_be_a_set_of_size() -> int
-  requires true
-  ensures result == 0  # open: E-959
-  decreases 0
-=
-  return 0
-
-extern proc erdos_e959_open_witness() -> int
-  requires true
-  ensures result == 0
-  decreases 0
-
-def main() -> int
+def formal_target_e_959() -> int
   requires true
   ensures result == 0
   decreases 0

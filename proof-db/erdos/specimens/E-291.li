@@ -1,22 +1,10 @@
-# E-291: Let $n\geq 1$ and define $L_n$ to be the least common multiple of $\{1,\ldots,n\}$ and $a_n$ by\[\sum_{1\leq k\leq n}\frac{1}{k}=\frac{a_n}{L_n}.\]Is it true that $(a_n,L_n)=1$ and $(a_n,L_n)>1$ both occur for infinitely many $n$?
-# erdos_number: 291
-# erdos_status: open
-# priority_tier: P2
-# tags: number_theory, unit_fractions
+# Catalog: E-291
+# Statement: Let $n\geq 1$ and define $L_n$ to be the least common multiple of $\{1,\ldots,n\}$ and $a_n$ by\[\sum_{1\leq k\leq n}\frac{1}{k}=\frac{a_n}{L_n}.\]Is it true that $(a_n,L_n)=1$ and $(a_n,L_n)>1$ both occur for infinitely many $n$?
+# formalization_status: li_open
+# discharge: pending — open formalization target (Phase 4)
+# erdos_status (literature): open
 
-def erdos_e291_let_n_geq_1_and_define_l_n_to_be_the_lea() -> int
-  requires true
-  ensures result == 0  # open: E-291
-  decreases 0
-=
-  return 0
-
-extern proc erdos_e291_open_witness() -> int
-  requires true
-  ensures result == 0
-  decreases 0
-
-def main() -> int
+def formal_target_e_291() -> int
   requires true
   ensures result == 0
   decreases 0

@@ -1,22 +1,10 @@
-# E-1147: Let $\alpha>0$ be an irrational number. Is the set\[A=\left\{ n\geq 1: \| \alpha n^2\| < \frac{1}{\log n}\right\},\]where $\|\cdot\|$ denotes the distance to the nearest integer, an additive basis of order $2$?
-# erdos_number: 1147
-# erdos_status: open
-# priority_tier: P2
-# tags: additive_basis, irrational
+# Catalog: E-1147
+# Statement: Let $\alpha>0$ be an irrational number. Is the set\[A=\left\{ n\geq 1: \| \alpha n^2\| < \frac{1}{\log n}\right\},\]where $\|\cdot\|$ denotes the distance to the nearest integer, an additive basis of order $2$?
+# formalization_status: li_open
+# discharge: pending — open formalization target (Phase 4)
+# erdos_status (literature): open
 
-def erdos_e1147_let_alpha_0_be_an_irrational_number_is_t() -> int
-  requires true
-  ensures result == 0  # open: E-1147
-  decreases 0
-=
-  return 0
-
-extern proc erdos_e1147_open_witness() -> int
-  requires true
-  ensures result == 0
-  decreases 0
-
-def main() -> int
+def formal_target_e_1147() -> int
   requires true
   ensures result == 0
   decreases 0

@@ -1,22 +1,10 @@
-# E-1022: Is there a constant $c_t$, where $c_t\to \infty$ as $t\to \infty$, such that if $\mathcal{F}$ is a finite family of finite sets, all of size at least $t$, and for every set $X$ there are $<c_t\lvert X\rvert$ many $A\in \mathcal{F}$ with $A\subseteq X$, then $\mathcal{F}$ has chromatic number $2$ (in other words, has property B)?
-# erdos_number: 1022
-# erdos_status: proved
-# priority_tier: P2
-# tags: combinatorics, hypergraphs
+# Catalog: E-1022
+# Statement: Is there a constant $c_t$, where $c_t\to \infty$ as $t\to \infty$, such that if $\mathcal{F}$ is a finite family of finite sets, all of size at least $t$, and for every set $X$ there are $<c_t\lvert X\rvert$ many $A\in \mathcal{F}$ with $A\
+# formalization_status: li_open
+# discharge: pending — open formalization target (Phase 4)
+# erdos_status (literature): proved
 
-def erdos_e1022_is_there_a_constant_c_t_where_c_t_to_inf() -> int
-  requires true
-  ensures result == 0  # open: E-1022
-  decreases 0
-=
-  return 0
-
-extern proc erdos_e1022_open_witness() -> int
-  requires true
-  ensures result == 0
-  decreases 0
-
-def main() -> int
+def formal_target_e_1022() -> int
   requires true
   ensures result == 0
   decreases 0

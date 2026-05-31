@@ -1,22 +1,10 @@
-# E-694: Let $f_{\max}(n)$ be the largest $m$ such that $\phi(m)=n$, and $f_{\min}(n)$ be the smallest such $m$, where $\phi$ is Euler's totient function. Investigate\[\max_{n\leq x}\frac{f_{\max}(n)}{f_{\min}(n)}\](where the maximum is restricted to those $n$ of the form $n=\phi(m)$ for some $m$.)
-# erdos_number: 694
-# erdos_status: open
-# priority_tier: P2
-# tags: number_theory
+# Catalog: E-694
+# Statement: Let $f_{\max}(n)$ be the largest $m$ such that $\phi(m)=n$, and $f_{\min}(n)$ be the smallest such $m$, where $\phi$ is Euler's totient function. Investigate\[\max_{n\leq x}\frac{f_{\max}(n)}{f_{\min}(n)}\](where the maximum is restricted t
+# formalization_status: li_open
+# discharge: pending — open formalization target (Phase 4)
+# erdos_status (literature): open
 
-def erdos_e694_let_f_max_n_be_the_largest_m_such_that_p() -> int
-  requires true
-  ensures result == 0  # open: E-694
-  decreases 0
-=
-  return 0
-
-extern proc erdos_e694_open_witness() -> int
-  requires true
-  ensures result == 0
-  decreases 0
-
-def main() -> int
+def formal_target_e_694() -> int
   requires true
   ensures result == 0
   decreases 0

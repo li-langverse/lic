@@ -1,22 +1,10 @@
-# E-1133: Let $C>0$. There exists $\epsilon>0$ such that if $n$ is sufficiently large the following holds. For any $x_1,\ldots,x_n\in [-1,1]$ there exist $y_1,\ldots,y_n\in [-1,1]$ such that, if $P$ is a polynomial of degree $m<(1+\epsilon)n$ with $P(x_i)=y_i$ for at least $(1-\epsilon)n$ many $1\leq i\leq n$, then\[\max_{x\in [-1,1]}\lvert P(x)\rvert >C.\]
-# erdos_number: 1133
-# erdos_status: open
-# priority_tier: P2
-# tags: analysis, polynomials
+# Catalog: E-1133
+# Statement: Let $C>0$. There exists $\epsilon>0$ such that if $n$ is sufficiently large the following holds. For any $x_1,\ldots,x_n\in [-1,1]$ there exist $y_1,\ldots,y_n\in [-1,1]$ such that, if $P$ is a polynomial of degree $m<(1+\epsilon)n$ with $P
+# formalization_status: li_open
+# discharge: pending — open formalization target (Phase 4)
+# erdos_status (literature): open
 
-def erdos_e1133_let_c_0_there_exists_epsilon_0_such_that() -> int
-  requires true
-  ensures result == 0  # open: E-1133
-  decreases 0
-=
-  return 0
-
-extern proc erdos_e1133_open_witness() -> int
-  requires true
-  ensures result == 0
-  decreases 0
-
-def main() -> int
+def formal_target_e_1133() -> int
   requires true
   ensures result == 0
   decreases 0

@@ -1,22 +1,10 @@
-# E-330: Does there exist a minimal basis with positive density, say $A\subset\mathbb{N}$, such that for any $n\in A$ the (upper) density of integers which cannot be represented without using $n$ is positive?
-# erdos_number: 330
-# erdos_status: proved
-# priority_tier: P2
-# tags: additive_basis, number_theory
+# Catalog: E-330
+# Statement: Does there exist a minimal basis with positive density, say $A\subset\mathbb{N}$, such that for any $n\in A$ the (upper) density of integers which cannot be represented without using $n$ is positive?
+# formalization_status: li_open
+# discharge: pending — open formalization target (Phase 4)
+# erdos_status (literature): proved
 
-def erdos_e330_does_there_exist_a_minimal_basis_with_po() -> int
-  requires true
-  ensures result == 0  # open: E-330
-  decreases 0
-=
-  return 0
-
-extern proc erdos_e330_open_witness() -> int
-  requires true
-  ensures result == 0
-  decreases 0
-
-def main() -> int
+def formal_target_e_330() -> int
   requires true
   ensures result == 0
   decreases 0

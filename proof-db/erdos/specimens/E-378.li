@@ -1,22 +1,10 @@
-# E-378: Let $r\geq 0$. Does the density of integers $n$ for which $\binom{n}{k}$ is squarefree for at least $r$ values of $1\leq k<n$ exist? Is this density $>0$?
-# erdos_number: 378
-# erdos_status: proved
-# priority_tier: P2
-# tags: binomial_coefficients, number_theory
+# Catalog: E-378
+# Statement: Let $r\geq 0$. Does the density of integers $n$ for which $\binom{n}{k}$ is squarefree for at least $r$ values of $1\leq k<n$ exist? Is this density $>0$?
+# formalization_status: li_open
+# discharge: pending — open formalization target (Phase 4)
+# erdos_status (literature): proved
 
-def erdos_e378_let_r_geq_0_does_the_density_of_integers() -> int
-  requires true
-  ensures result == 0  # open: E-378
-  decreases 0
-=
-  return 0
-
-extern proc erdos_e378_open_witness() -> int
-  requires true
-  ensures result == 0
-  decreases 0
-
-def main() -> int
+def formal_target_e_378() -> int
   requires true
   ensures result == 0
   decreases 0

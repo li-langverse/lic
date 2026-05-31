@@ -1,5 +1,4 @@
 version = 1
-
 [[entry]]
 id = "P-AX-CONS-001"
 kind = "axiom"
@@ -9,7 +8,7 @@ proof_status = "open"
 gap_id = "G-physics"
 gap_kind = "modeling_gap"
 lean_module = "docs/semantics/Discharge.lean"
-li_specimen = "proof-db/physics/axioms/conservation.li"
+li_specimen = "proof-db/physics/specimens/P-AX-CONS-001.li"
 li_tests = ["li-tests/benchmarks/tier0_correctness/md_energy_single_step.li"]
 bench_refs = ["benchmarks/tier2_physics/md_lennard_jones"]
 last_verified_lic_commit = "a9542bfc"
@@ -23,10 +22,7 @@ proof_status = "open"
 gap_id = "G-physics"
 gap_kind = "modeling_gap"
 lean_module = "docs/semantics/Discharge.lean"
-li_specimen = "proof-db/physics/axioms/conservation.li"
+li_specimen = "proof-db/physics/specimens/P-AX-CONS-002.li"
 li_tests = ["li-tests/benchmarks/tier0_correctness/three_body_invariants.li"]
-bench_refs = [
-  "benchmarks/tier2_physics/three_body",
-  "benchmarks/tier2_physics/nbody_gravity",
-]
+bench_refs = ["benchmarks/tier2_physics/three_body", "benchmarks/tier2_physics/nbody_gravity"]
 last_verified_lic_commit = "a9542bfc"

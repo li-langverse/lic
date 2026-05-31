@@ -1,22 +1,10 @@
-# E-1098: Let $G$ be a group and $\Gamma=\Gamma(G)$ be the non-commuting graph, with vertices the elements of $G$ and an edge between $g$ and $h$ if and only if $g$ and $h$ do not commute, $gh\neq hg$. If $\Gamma$ contains no infinite complete subgraph, then is there a finite bound on the size of complete subgraphs of $\Gamma$?
-# erdos_number: 1098
-# erdos_status: proved
-# priority_tier: P2
-# tags: group_theory
+# Catalog: E-1098
+# Statement: Let $G$ be a group and $\Gamma=\Gamma(G)$ be the non-commuting graph, with vertices the elements of $G$ and an edge between $g$ and $h$ if and only if $g$ and $h$ do not commute, $gh\neq hg$. If $\Gamma$ contains no infinite complete subgra
+# formalization_status: li_open
+# discharge: pending — open formalization target (Phase 4)
+# erdos_status (literature): proved
 
-def erdos_e1098_let_g_be_a_group_and_gamma_gamma_g_be_th() -> int
-  requires true
-  ensures result == 0  # open: E-1098
-  decreases 0
-=
-  return 0
-
-extern proc erdos_e1098_open_witness() -> int
-  requires true
-  ensures result == 0
-  decreases 0
-
-def main() -> int
+def formal_target_e_1098() -> int
   requires true
   ensures result == 0
   decreases 0

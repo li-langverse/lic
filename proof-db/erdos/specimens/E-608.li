@@ -1,22 +1,10 @@
-# E-608: Let $G$ be a graph with $n$ vertices and $>n^2/4$ many edges. Are there at least $\frac{2}{9}n^2$ edges of $G$ which are contained in a $C_5$?
-# erdos_number: 608
-# erdos_status: open
-# priority_tier: P2
-# tags: graph_theory
+# Catalog: E-608
+# Statement: Let $G$ be a graph with $n$ vertices and $>n^2/4$ many edges. Are there at least $\frac{2}{9}n^2$ edges of $G$ which are contained in a $C_5$?
+# formalization_status: li_open
+# discharge: pending — open formalization target (Phase 4)
+# erdos_status (literature): open
 
-def erdos_e608_let_g_be_a_graph_with_n_vertices_and_n_2() -> int
-  requires true
-  ensures result == 0  # open: E-608
-  decreases 0
-=
-  return 0
-
-extern proc erdos_e608_open_witness() -> int
-  requires true
-  ensures result == 0
-  decreases 0
-
-def main() -> int
+def formal_target_e_608() -> int
   requires true
   ensures result == 0
   decreases 0

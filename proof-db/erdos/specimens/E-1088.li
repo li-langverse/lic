@@ -1,22 +1,10 @@
-# E-1088: Let $f_d(n)$ be the minimal $m$ such that any set of $m$ points in $\mathbb{R}^d$ contains a set of $n$ points such that any two determined distances are distinct. Estimate $f_d(n)$. In particular, is it true that, for fixed $n\geq 3$,\[f_d(n)=2^{o(d)}?\]
-# erdos_number: 1088
-# erdos_status: open
-# priority_tier: P2
-# tags: geometry
+# Catalog: E-1088
+# Statement: Let $f_d(n)$ be the minimal $m$ such that any set of $m$ points in $\mathbb{R}^d$ contains a set of $n$ points such that any two determined distances are distinct. Estimate $f_d(n)$. In particular, is it true that, for fixed $n\geq 3$,\[f_d
+# formalization_status: li_open
+# discharge: pending — open formalization target (Phase 4)
+# erdos_status (literature): open
 
-def erdos_e1088_let_f_d_n_be_the_minimal_m_such_that_any() -> int
-  requires true
-  ensures result == 0  # open: E-1088
-  decreases 0
-=
-  return 0
-
-extern proc erdos_e1088_open_witness() -> int
-  requires true
-  ensures result == 0
-  decreases 0
-
-def main() -> int
+def formal_target_e_1088() -> int
   requires true
   ensures result == 0
   decreases 0

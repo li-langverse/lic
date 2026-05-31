@@ -1,22 +1,10 @@
-# E-195: What is the largest $k$ such that in any permutation of $\mathbb{Z}$ there must exist a monotone $k$-term arithmetic progression $x_1<\cdots<x_k$?
-# erdos_number: 195
-# erdos_status: open
-# priority_tier: P2
-# tags: arithmetic_progressions
+# Catalog: E-195
+# Statement: What is the largest $k$ such that in any permutation of $\mathbb{Z}$ there must exist a monotone $k$-term arithmetic progression $x_1<\cdots<x_k$?
+# formalization_status: li_open
+# discharge: pending — open formalization target (Phase 4)
+# erdos_status (literature): open
 
-def erdos_e195_what_is_the_largest_k_such_that_in_any_p() -> int
-  requires true
-  ensures result == 0  # open: E-195
-  decreases 0
-=
-  return 0
-
-extern proc erdos_e195_open_witness() -> int
-  requires true
-  ensures result == 0
-  decreases 0
-
-def main() -> int
+def formal_target_e_195() -> int
   requires true
   ensures result == 0
   decreases 0

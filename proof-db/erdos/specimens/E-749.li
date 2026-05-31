@@ -1,22 +1,10 @@
-# E-749: Let $\epsilon>0$. Does there exist $A\subseteq \mathbb{N}$ such that the lower density of $A+A$ is at least $1-\epsilon$ and yet $1_A\ast 1_A(n) \ll_\epsilon 1$ for all $n$?
-# erdos_number: 749
-# erdos_status: open
-# priority_tier: P2
-# tags: additive_combinatorics
+# Catalog: E-749
+# Statement: Let $\epsilon>0$. Does there exist $A\subseteq \mathbb{N}$ such that the lower density of $A+A$ is at least $1-\epsilon$ and yet $1_A\ast 1_A(n) \ll_\epsilon 1$ for all $n$?
+# formalization_status: li_open
+# discharge: pending — open formalization target (Phase 4)
+# erdos_status (literature): open
 
-def erdos_e749_let_epsilon_0_does_there_exist_a_subsete() -> int
-  requires true
-  ensures result == 0  # open: E-749
-  decreases 0
-=
-  return 0
-
-extern proc erdos_e749_open_witness() -> int
-  requires true
-  ensures result == 0
-  decreases 0
-
-def main() -> int
+def formal_target_e_749() -> int
   requires true
   ensures result == 0
   decreases 0

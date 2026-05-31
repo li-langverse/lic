@@ -1,22 +1,10 @@
-# E-187: Find the best function $f(d)$ such that, in any 2-colouring of the integers, at least one colour class contains an arithmetic progression with common difference $d$ of length $f(d)$ for infinitely many $d$.
-# erdos_number: 187
-# erdos_status: open
-# priority_tier: P2
-# tags: additive_combinatorics, arithmetic_progressions, ramsey_theory
+# Catalog: E-187
+# Statement: Find the best function $f(d)$ such that, in any 2-colouring of the integers, at least one colour class contains an arithmetic progression with common difference $d$ of length $f(d)$ for infinitely many $d$.
+# formalization_status: li_open
+# discharge: pending — open formalization target (Phase 4)
+# erdos_status (literature): open
 
-def erdos_e187_find_the_best_function_f_d_such_that_in() -> int
-  requires true
-  ensures result == 0  # open: E-187
-  decreases 0
-=
-  return 0
-
-extern proc erdos_e187_open_witness() -> int
-  requires true
-  ensures result == 0
-  decreases 0
-
-def main() -> int
+def formal_target_e_187() -> int
   requires true
   ensures result == 0
   decreases 0

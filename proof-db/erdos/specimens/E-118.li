@@ -1,22 +1,10 @@
-# E-118: Let $\alpha$ be a cardinal or ordinal number or an order type such that every two-colouring of $K_\alpha$ contains either a red $K_\alpha$ or a blue $K_3$. For every $n\geq 3$ must every two-colouring of $K_\alpha$ contain either a red $K_\alpha$ or a blue $K_n$?
-# erdos_number: 118
-# erdos_status: open
-# priority_tier: P2
-# tags: ramsey_theory, set_theory
+# Catalog: E-118
+# Statement: Let $\alpha$ be a cardinal or ordinal number or an order type such that every two-colouring of $K_\alpha$ contains either a red $K_\alpha$ or a blue $K_3$. For every $n\geq 3$ must every two-colouring of $K_\alpha$ contain either a red $K_\
+# formalization_status: li_open
+# discharge: pending — open formalization target (Phase 4)
+# erdos_status (literature): open
 
-def erdos_e118_let_alpha_be_a_cardinal_or_ordinal_numbe() -> int
-  requires true
-  ensures result == 0  # open: E-118
-  decreases 0
-=
-  return 0
-
-extern proc erdos_e118_open_witness() -> int
-  requires true
-  ensures result == 0
-  decreases 0
-
-def main() -> int
+def formal_target_e_118() -> int
   requires true
   ensures result == 0
   decreases 0

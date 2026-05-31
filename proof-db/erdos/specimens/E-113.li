@@ -1,22 +1,10 @@
-# E-113: If $G$ is bipartite then $\mathrm{ex}(n;G)\ll n^{3/2}$ if and only $G$ is $2$-degenerate, that is, $G$ contains no induced subgraph with minimal degree at least 3.
-# erdos_number: 113
-# erdos_status: open
-# priority_tier: P2
-# tags: graph_theory, turan_number
+# Catalog: E-113
+# Statement: If $G$ is bipartite then $\mathrm{ex}(n;G)\ll n^{3/2}$ if and only $G$ is $2$-degenerate, that is, $G$ contains no induced subgraph with minimal degree at least 3.
+# formalization_status: li_open
+# discharge: pending — open formalization target (Phase 4)
+# erdos_status (literature): open
 
-def erdos_e113_if_g_is_bipartite_then_mathrm_ex_n_g_ll() -> int
-  requires true
-  ensures result == 0  # open: E-113
-  decreases 0
-=
-  return 0
-
-extern proc erdos_e113_open_witness() -> int
-  requires true
-  ensures result == 0
-  decreases 0
-
-def main() -> int
+def formal_target_e_113() -> int
   requires true
   ensures result == 0
   decreases 0

@@ -1,22 +1,10 @@
-# E-933: If $n(n+1)=2^k3^lm$, where $(m,6)=1$, then is it true that\[\limsup_{n\to \infty} \frac{2^k3^l}{n\log n}=\infty?\]
-# erdos_number: 933
-# erdos_status: open
-# priority_tier: P2
-# tags: number_theory
+# Catalog: E-933
+# Statement: If $n(n+1)=2^k3^lm$, where $(m,6)=1$, then is it true that\[\limsup_{n\to \infty} \frac{2^k3^l}{n\log n}=\infty?\]
+# formalization_status: li_open
+# discharge: pending — open formalization target (Phase 4)
+# erdos_status (literature): open
 
-def erdos_e933_if_n_n_1_2_k3_lm_where_m_6_1_then_is_it() -> int
-  requires true
-  ensures result == 0  # open: E-933
-  decreases 0
-=
-  return 0
-
-extern proc erdos_e933_open_witness() -> int
-  requires true
-  ensures result == 0
-  decreases 0
-
-def main() -> int
+def formal_target_e_933() -> int
   requires true
   ensures result == 0
   decreases 0

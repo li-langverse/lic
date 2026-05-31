@@ -1,22 +1,10 @@
-# E-961: Let $f(k)$ be the minimal $n$ such that every set of $n$ consecutive integers $>k$ contains an integer divisible by a prime $>k$. Estimate $f(k)$.
-# erdos_number: 961
-# erdos_status: open
-# priority_tier: P2
-# tags: number_theory
+# Catalog: E-961
+# Statement: Let $f(k)$ be the minimal $n$ such that every set of $n$ consecutive integers $>k$ contains an integer divisible by a prime $>k$. Estimate $f(k)$.
+# formalization_status: li_open
+# discharge: pending — open formalization target (Phase 4)
+# erdos_status (literature): open
 
-def erdos_e961_let_f_k_be_the_minimal_n_such_that_every() -> int
-  requires true
-  ensures result == 0  # open: E-961
-  decreases 0
-=
-  return 0
-
-extern proc erdos_e961_open_witness() -> int
-  requires true
-  ensures result == 0
-  decreases 0
-
-def main() -> int
+def formal_target_e_961() -> int
   requires true
   ensures result == 0
   decreases 0

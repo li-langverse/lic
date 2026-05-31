@@ -1,22 +1,10 @@
-# E-484: Prove that there exists an absolute constant $c>0$ such that, whenever $\{1,\ldots,N\}$ is $k$-coloured (and $N$ is large enough depending on $k$) then there are at least $cN$ many integers in $\{1,\ldots,N\}$ which are representable as a monochromatic sum (that is, $a+b$ where $a,b\in \{1,\ldots,N\}$ are in the same colour class and $a\neq b$).
-# erdos_number: 484
-# erdos_status: proved
-# priority_tier: P2
-# tags: additive_combinatorics, number_theory, ramsey_theory
+# Catalog: E-484
+# Statement: Prove that there exists an absolute constant $c>0$ such that, whenever $\{1,\ldots,N\}$ is $k$-coloured (and $N$ is large enough depending on $k$) then there are at least $cN$ many integers in $\{1,\ldots,N\}$ which are representable as a m
+# formalization_status: li_open
+# discharge: pending — open formalization target (Phase 4)
+# erdos_status (literature): proved
 
-def erdos_e484_prove_that_there_exists_an_absolute_cons() -> int
-  requires true
-  ensures result == 0  # open: E-484
-  decreases 0
-=
-  return 0
-
-extern proc erdos_e484_open_witness() -> int
-  requires true
-  ensures result == 0
-  decreases 0
-
-def main() -> int
+def formal_target_e_484() -> int
   requires true
   ensures result == 0
   decreases 0

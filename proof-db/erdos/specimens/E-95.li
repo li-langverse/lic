@@ -1,22 +1,10 @@
-# E-95: Does every covering system of the integers have a modulus divisible by 6?
-# erdos_number: 95
-# erdos_status: open
-# priority_tier: P2
-# tags: combinatorics, covering_systems
+# Catalog: E-95
+# Statement: Does every covering system of the integers have a modulus divisible by 6?
+# formalization_status: li_open
+# discharge: pending — open formalization target (Phase 4)
+# erdos_status (literature): open
 
-def erdos_e95_does_every_covering_system_of_the_intege() -> int
-  requires true
-  ensures result == 0  # open: E-95
-  decreases 0
-=
-  return 0
-
-extern proc erdos_e95_open_witness() -> int
-  requires true
-  ensures result == 0
-  decreases 0
-
-def main() -> int
+def formal_target_e_95() -> int
   requires true
   ensures result == 0
   decreases 0

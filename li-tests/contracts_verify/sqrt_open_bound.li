@@ -1,3 +1,4 @@
+# discharge: ok
 # P-float: `li_rt_sqrt` + abs error bound — closed in Lean via `Li.Discharge.sqrt_open_bound_spec`.
 extern proc li_rt_sqrt(x: float) -> float
   requires true

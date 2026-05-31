@@ -1,22 +1,10 @@
-# E-335: Let $d(A)$ denote the density of $A\subseteq \mathbb{N}$. Characterise those $A,B\subseteq \mathbb{N}$ with positive density such that\[d(A+B)=d(A)+d(B).\]
-# erdos_number: 335
-# erdos_status: open
-# priority_tier: P2
-# tags: additive_combinatorics, number_theory
+# Catalog: E-335
+# Statement: Let $d(A)$ denote the density of $A\subseteq \mathbb{N}$. Characterise those $A,B\subseteq \mathbb{N}$ with positive density such that\[d(A+B)=d(A)+d(B).\]
+# formalization_status: li_open
+# discharge: pending — open formalization target (Phase 4)
+# erdos_status (literature): open
 
-def erdos_e335_let_d_a_denote_the_density_of_a_subseteq() -> int
-  requires true
-  ensures result == 0  # open: E-335
-  decreases 0
-=
-  return 0
-
-extern proc erdos_e335_open_witness() -> int
-  requires true
-  ensures result == 0
-  decreases 0
-
-def main() -> int
+def formal_target_e_335() -> int
   requires true
   ensures result == 0
   decreases 0

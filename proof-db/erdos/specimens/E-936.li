@@ -1,22 +1,10 @@
-# E-936: Are\[2^n\pm 1\]and\[n!\pm 1\]powerful (i.e. if $p\mid m$ then $p^2\mid m$) for only finitely many $n$?
-# erdos_number: 936
-# erdos_status: open
-# priority_tier: P2
-# tags: number_theory, powerful
+# Catalog: E-936
+# Statement: Are\[2^n\pm 1\]and\[n!\pm 1\]powerful (i.e. if $p\mid m$ then $p^2\mid m$) for only finitely many $n$?
+# formalization_status: li_open
+# discharge: pending — open formalization target (Phase 4)
+# erdos_status (literature): open
 
-def erdos_e936_are_2_n_pm_1_and_n_pm_1_powerful_i_e_if() -> int
-  requires true
-  ensures result == 0  # open: E-936
-  decreases 0
-=
-  return 0
-
-extern proc erdos_e936_open_witness() -> int
-  requires true
-  ensures result == 0
-  decreases 0
-
-def main() -> int
+def formal_target_e_936() -> int
   requires true
   ensures result == 0
   decreases 0

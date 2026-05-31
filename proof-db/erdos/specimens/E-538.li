@@ -1,22 +1,10 @@
-# E-538: Let $r\geq 2$ and suppose that $A\subseteq\{1,\ldots,N\}$ is such that, for any $m$, there are at most $r$ solutions to $m=pa$ where $p$ is prime and $a\in A$. Give the best possible upper bound for\[\sum_{n\in A}\frac{1}{n}.\]
-# erdos_number: 538
-# erdos_status: open
-# priority_tier: P2
-# tags: number_theory
+# Catalog: E-538
+# Statement: Let $r\geq 2$ and suppose that $A\subseteq\{1,\ldots,N\}$ is such that, for any $m$, there are at most $r$ solutions to $m=pa$ where $p$ is prime and $a\in A$. Give the best possible upper bound for\[\sum_{n\in A}\frac{1}{n}.\]
+# formalization_status: li_open
+# discharge: pending — open formalization target (Phase 4)
+# erdos_status (literature): open
 
-def erdos_e538_let_r_geq_2_and_suppose_that_a_subseteq() -> int
-  requires true
-  ensures result == 0  # open: E-538
-  decreases 0
-=
-  return 0
-
-extern proc erdos_e538_open_witness() -> int
-  requires true
-  ensures result == 0
-  decreases 0
-
-def main() -> int
+def formal_target_e_538() -> int
   requires true
   ensures result == 0
   decreases 0

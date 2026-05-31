@@ -1,0 +1,11 @@
+# Catalog: P-AX-CONS-002
+# Statement: Linear/angular momentum invariants for N-body integration (tier-0 + tier-2).
+# formalization_status: li_open
+# discharge: pending — open formalization target (Phase 4)
+
+def formal_target_p_ax_cons_002() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0

@@ -1,22 +1,10 @@
-# E-1104: Let $f(n)$ be the maximum possible chromatic number of a triangle-free graph on $n$ vertices. Estimate $f(n)$.
-# erdos_number: 1104
-# erdos_status: open
-# priority_tier: P2
-# tags: chromatic_number, graph_theory
+# Catalog: E-1104
+# Statement: Let $f(n)$ be the maximum possible chromatic number of a triangle-free graph on $n$ vertices. Estimate $f(n)$.
+# formalization_status: li_open
+# discharge: pending — open formalization target (Phase 4)
+# erdos_status (literature): open
 
-def erdos_e1104_let_f_n_be_the_maximum_possible_chromati() -> int
-  requires true
-  ensures result == 0  # open: E-1104
-  decreases 0
-=
-  return 0
-
-extern proc erdos_e1104_open_witness() -> int
-  requires true
-  ensures result == 0
-  decreases 0
-
-def main() -> int
+def formal_target_e_1104() -> int
   requires true
   ensures result == 0
   decreases 0

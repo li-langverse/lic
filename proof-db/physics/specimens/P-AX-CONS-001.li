@@ -1,0 +1,11 @@
+# Catalog: P-AX-CONS-001
+# Statement: Energy drift within a bounded window over one MD step (tier-0 smoke + tier-2 MD).
+# formalization_status: li_open
+# discharge: pending — open formalization target (Phase 4)
+
+def formal_target_p_ax_cons_001() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0

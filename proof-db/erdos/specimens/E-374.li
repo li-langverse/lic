@@ -1,22 +1,10 @@
-# E-374: For any $m\in \mathbb{N}$, let $F(m)$ be the minimal $k\geq 2$ (if it exists) such that there are $a_1<\cdots <a_k=m$ with $a_1!\cdots a_k!$ a square. Let $D_k=\{ m : F(m)=k\}$. What is the order of growth of $\lvert D_k\cap\{1,\ldots,n\}\rvert$ for $3\leq k\leq 6$? For example, is it true that $\lvert D_6\cap \{1,\ldots,n\}\rvert \gg n$?
-# erdos_number: 374
-# erdos_status: open
-# priority_tier: P2
-# tags: number_theory
+# Catalog: E-374
+# Statement: For any $m\in \mathbb{N}$, let $F(m)$ be the minimal $k\geq 2$ (if it exists) such that there are $a_1<\cdots <a_k=m$ with $a_1!\cdots a_k!$ a square. Let $D_k=\{ m : F(m)=k\}$. What is the order of growth of $\lvert D_k\cap\{1,\ldots,n\}\r
+# formalization_status: li_open
+# discharge: pending — open formalization target (Phase 4)
+# erdos_status (literature): open
 
-def erdos_e374_for_any_m_in_mathbb_n_let_f_m_be_the_min() -> int
-  requires true
-  ensures result == 0  # open: E-374
-  decreases 0
-=
-  return 0
-
-extern proc erdos_e374_open_witness() -> int
-  requires true
-  ensures result == 0
-  decreases 0
-
-def main() -> int
+def formal_target_e_374() -> int
   requires true
   ensures result == 0
   decreases 0

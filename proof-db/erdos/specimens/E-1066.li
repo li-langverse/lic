@@ -1,22 +1,10 @@
-# E-1066: Let $G$ be a graph given by $n$ points in $\mathbb{R}^2$, where any two distinct points are at least distance $1$ apart, and we draw an edge between two points if they are distance $1$ apart. Let $g(n)$ be maximal such that any such graph always has an independent set on at least $g(n)$ vertices. Estimate $g(n)$, or perhaps $\lim \frac{g(n)}{n}$.
-# erdos_number: 1066
-# erdos_status: open
-# priority_tier: P2
-# tags: graph_theory, planar_graphs
+# Catalog: E-1066
+# Statement: Let $G$ be a graph given by $n$ points in $\mathbb{R}^2$, where any two distinct points are at least distance $1$ apart, and we draw an edge between two points if they are distance $1$ apart. Let $g(n)$ be maximal such that any such graph a
+# formalization_status: li_open
+# discharge: pending — open formalization target (Phase 4)
+# erdos_status (literature): open
 
-def erdos_e1066_let_g_be_a_graph_given_by_n_points_in_ma() -> int
-  requires true
-  ensures result == 0  # open: E-1066
-  decreases 0
-=
-  return 0
-
-extern proc erdos_e1066_open_witness() -> int
-  requires true
-  ensures result == 0
-  decreases 0
-
-def main() -> int
+def formal_target_e_1066() -> int
   requires true
   ensures result == 0
   decreases 0

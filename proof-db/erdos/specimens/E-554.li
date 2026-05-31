@@ -1,22 +1,10 @@
-# E-554: Let $R_k(G)$ denote the minimal $m$ such that if the edges of $K_m$ are $k$-coloured then there is a monochromatic copy of $G$. Show that\[\lim_{k\to \infty}\frac{R_k(C_{2n+1})}{R_k(K_3)}=0\]for any $n\geq 2$.
-# erdos_number: 554
-# erdos_status: open
-# priority_tier: P2
-# tags: graph_theory, ramsey_theory
+# Catalog: E-554
+# Statement: Let $R_k(G)$ denote the minimal $m$ such that if the edges of $K_m$ are $k$-coloured then there is a monochromatic copy of $G$. Show that\[\lim_{k\to \infty}\frac{R_k(C_{2n+1})}{R_k(K_3)}=0\]for any $n\geq 2$.
+# formalization_status: li_open
+# discharge: pending — open formalization target (Phase 4)
+# erdos_status (literature): open
 
-def erdos_e554_let_r_k_g_denote_the_minimal_m_such_that() -> int
-  requires true
-  ensures result == 0  # open: E-554
-  decreases 0
-=
-  return 0
-
-extern proc erdos_e554_open_witness() -> int
-  requires true
-  ensures result == 0
-  decreases 0
-
-def main() -> int
+def formal_target_e_554() -> int
   requires true
   ensures result == 0
   decreases 0

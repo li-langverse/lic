@@ -1,22 +1,10 @@
-# E-218: Let $d_n=p_{n+1}-p_n$. The set of $n$ such that $d_{n+1}\geq d_n$ has density $1/2$, and similarly for $d_{n+1}\leq d_n$. Furthermore, there are infinitely many $n$ such that $d_{n+1}=d_n$.
-# erdos_number: 218
-# erdos_status: open
-# priority_tier: P2
-# tags: number_theory, primes
+# Catalog: E-218
+# Statement: Let $d_n=p_{n+1}-p_n$. The set of $n$ such that $d_{n+1}\geq d_n$ has density $1/2$, and similarly for $d_{n+1}\leq d_n$. Furthermore, there are infinitely many $n$ such that $d_{n+1}=d_n$.
+# formalization_status: li_open
+# discharge: pending — open formalization target (Phase 4)
+# erdos_status (literature): open
 
-def erdos_e218_let_d_n_p_n_1_p_n_the_set_of_n_such_that() -> int
-  requires true
-  ensures result == 0  # open: E-218
-  decreases 0
-=
-  return 0
-
-extern proc erdos_e218_open_witness() -> int
-  requires true
-  ensures result == 0
-  decreases 0
-
-def main() -> int
+def formal_target_e_218() -> int
   requires true
   ensures result == 0
   decreases 0

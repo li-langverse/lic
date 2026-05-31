@@ -1,22 +1,10 @@
-# E-35: Let $B\subseteq\mathbb{N}$ be an additive basis of order $k$ with $0\in B$. Is it true that for every $A\subseteq\mathbb{N}$ we have\[d_s(A+B)\geq \alpha+\frac{\alpha(1-\alpha)}{k},\]where $\alpha=d_s(A)$ and\[d_s(A) = \inf \frac{\lvert A\cap\{1,\ldots,N\}\rvert}{N}\]is the Schnirelmann density?
-# erdos_number: 35
-# erdos_status: proved
-# priority_tier: P2
-# tags: additive_basis, number_theory
+# Catalog: E-35
+# Statement: Let $B\subseteq\mathbb{N}$ be an additive basis of order $k$ with $0\in B$. Is it true that for every $A\subseteq\mathbb{N}$ we have\[d_s(A+B)\geq \alpha+\frac{\alpha(1-\alpha)}{k},\]where $\alpha=d_s(A)$ and\[d_s(A) = \inf \frac{\lvert A\c
+# formalization_status: li_open
+# discharge: pending — open formalization target (Phase 4)
+# erdos_status (literature): proved
 
-def erdos_e35_let_b_subseteq_mathbb_n_be_an_additive_b() -> int
-  requires true
-  ensures result == 0  # open: E-35
-  decreases 0
-=
-  return 0
-
-extern proc erdos_e35_open_witness() -> int
-  requires true
-  ensures result == 0
-  decreases 0
-
-def main() -> int
+def formal_target_e_35() -> int
   requires true
   ensures result == 0
   decreases 0

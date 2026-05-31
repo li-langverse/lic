@@ -1,22 +1,10 @@
-# E-668: Is it true that the number of incongruent sets of $n$ points in $\mathbb{R}^2$ which maximise the number of unit distances tends to infinity as $n\to\infty$? Is it always $>1$ for $n>3$?
-# erdos_number: 668
-# erdos_status: open
-# priority_tier: P2
-# tags: distances, geometry
+# Catalog: E-668
+# Statement: Is it true that the number of incongruent sets of $n$ points in $\mathbb{R}^2$ which maximise the number of unit distances tends to infinity as $n\to\infty$? Is it always $>1$ for $n>3$?
+# formalization_status: li_open
+# discharge: pending — open formalization target (Phase 4)
+# erdos_status (literature): open
 
-def erdos_e668_is_it_true_that_the_number_of_incongruen() -> int
-  requires true
-  ensures result == 0  # open: E-668
-  decreases 0
-=
-  return 0
-
-extern proc erdos_e668_open_witness() -> int
-  requires true
-  ensures result == 0
-  decreases 0
-
-def main() -> int
+def formal_target_e_668() -> int
   requires true
   ensures result == 0
   decreases 0

@@ -1,22 +1,10 @@
-# E-127: Are there infinitely many n such that n divides 2^n - 2 (Poulet pseudoprimes)?
-# erdos_number: 127
-# erdos_status: open
-# priority_tier: P2
-# tags: pseudoprimes, divisibility
+# Catalog: E-127
+# Statement: Are there infinitely many n such that n divides 2^n - 2 (Poulet pseudoprimes)?
+# formalization_status: li_open
+# discharge: pending — open formalization target (Phase 4)
+# erdos_status (literature): open
 
-def erdos_e127_are_there_infinitely_many_n_such_that_n() -> int
-  requires true
-  ensures result == 0  # open: E-127
-  decreases 0
-=
-  return 0
-
-extern proc erdos_e127_open_witness() -> int
-  requires true
-  ensures result == 0
-  decreases 0
-
-def main() -> int
+def formal_target_e_127() -> int
   requires true
   ensures result == 0
   decreases 0

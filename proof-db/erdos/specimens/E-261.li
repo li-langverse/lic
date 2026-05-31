@@ -1,22 +1,10 @@
-# E-261: Are there infinitely many $n$ such that there exists some $t\geq 2$ and distinct integers $a_1,\ldots,a_t\geq 1$ such that\[\frac{n}{2^n}=\sum_{1\leq k\leq t}\frac{a_k}{2^{a_k}}?\]Is this true for all $n$? Is there a rational $x$ such that\[x = \sum_{k=1}^\infty \frac{a_k}{2^{a_k}}\]has at least $2^{\aleph_0}$ solutions?
-# erdos_number: 261
-# erdos_status: open
-# priority_tier: P2
-# tags: number_theory
+# Catalog: E-261
+# Statement: Are there infinitely many $n$ such that there exists some $t\geq 2$ and distinct integers $a_1,\ldots,a_t\geq 1$ such that\[\frac{n}{2^n}=\sum_{1\leq k\leq t}\frac{a_k}{2^{a_k}}?\]Is this true for all $n$? Is there a rational $x$ such that\
+# formalization_status: li_open
+# discharge: pending — open formalization target (Phase 4)
+# erdos_status (literature): open
 
-def erdos_e261_are_there_infinitely_many_n_such_that_th() -> int
-  requires true
-  ensures result == 0  # open: E-261
-  decreases 0
-=
-  return 0
-
-extern proc erdos_e261_open_witness() -> int
-  requires true
-  ensures result == 0
-  decreases 0
-
-def main() -> int
+def formal_target_e_261() -> int
   requires true
   ensures result == 0
   decreases 0

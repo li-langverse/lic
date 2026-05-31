@@ -1,22 +1,10 @@
-# E-711: Let $f(n,m)$ be minimal such that in $(m,m+f(n,m))$ there exist distinct integers $a_1,\ldots,a_n$ such that $k\mid a_k$ for all $1\leq k\leq n$. Prove that\[\max_m f(n,m) \leq n^{1+o(1)}\]and that\[\max_m (f(n,m)-f(n,n))\to \infty.\]
-# erdos_number: 711
-# erdos_status: open
-# priority_tier: P2
-# tags: number_theory
+# Catalog: E-711
+# Statement: Let $f(n,m)$ be minimal such that in $(m,m+f(n,m))$ there exist distinct integers $a_1,\ldots,a_n$ such that $k\mid a_k$ for all $1\leq k\leq n$. Prove that\[\max_m f(n,m) \leq n^{1+o(1)}\]and that\[\max_m (f(n,m)-f(n,n))\to \infty.\]
+# formalization_status: li_open
+# discharge: pending — open formalization target (Phase 4)
+# erdos_status (literature): open
 
-def erdos_e711_let_f_n_m_be_minimal_such_that_in_m_m_f() -> int
-  requires true
-  ensures result == 0  # open: E-711
-  decreases 0
-=
-  return 0
-
-extern proc erdos_e711_open_witness() -> int
-  requires true
-  ensures result == 0
-  decreases 0
-
-def main() -> int
+def formal_target_e_711() -> int
   requires true
   ensures result == 0
   decreases 0

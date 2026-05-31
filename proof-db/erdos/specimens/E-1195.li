@@ -1,22 +1,10 @@
-# E-1195: Let $S\subset \mathbb{R}$ be a set of infinite measure such that $x/y$ is never an integer for all distinct $x,y\in S$. How fast can $\lvert S\cap (0,x)\rvert$ tend to infinity?
-# erdos_number: 1195
-# erdos_status: open
-# priority_tier: P2
-# tags: analysis, number_theory
+# Catalog: E-1195
+# Statement: Let $S\subset \mathbb{R}$ be a set of infinite measure such that $x/y$ is never an integer for all distinct $x,y\in S$. How fast can $\lvert S\cap (0,x)\rvert$ tend to infinity?
+# formalization_status: li_open
+# discharge: pending — open formalization target (Phase 4)
+# erdos_status (literature): open
 
-def erdos_e1195_let_s_subset_mathbb_r_be_a_set_of_infini() -> int
-  requires true
-  ensures result == 0  # open: E-1195
-  decreases 0
-=
-  return 0
-
-extern proc erdos_e1195_open_witness() -> int
-  requires true
-  ensures result == 0
-  decreases 0
-
-def main() -> int
+def formal_target_e_1195() -> int
   requires true
   ensures result == 0
   decreases 0

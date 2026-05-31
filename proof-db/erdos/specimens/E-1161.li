@@ -1,22 +1,10 @@
-# E-1161: Let $f_k(n)$ count the number of elements of $S_n$ of order $k$. For which values of $k$ will $f_k(n)$ be maximal?
-# erdos_number: 1161
-# erdos_status: open
-# priority_tier: P2
-# tags: group_theory
+# Catalog: E-1161
+# Statement: Let $f_k(n)$ count the number of elements of $S_n$ of order $k$. For which values of $k$ will $f_k(n)$ be maximal?
+# formalization_status: li_open
+# discharge: pending — open formalization target (Phase 4)
+# erdos_status (literature): open
 
-def erdos_e1161_let_f_k_n_count_the_number_of_elements_o() -> int
-  requires true
-  ensures result == 0  # open: E-1161
-  decreases 0
-=
-  return 0
-
-extern proc erdos_e1161_open_witness() -> int
-  requires true
-  ensures result == 0
-  decreases 0
-
-def main() -> int
+def formal_target_e_1161() -> int
   requires true
   ensures result == 0
   decreases 0

@@ -1,22 +1,10 @@
-# E-768: Let $A\subset\mathbb{N}$ be the set of $n$ such that for every prime $p\mid n$ there exists some $d\mid n$ with $d>1$ such that $d\equiv 1\pmod{p}$. Is it true that there exists some constant $c>0$ such that for all large $N$\[\frac{\lvert A\cap [1,N]\rvert}{N}=\exp(-(c+o(1))\sqrt{\log N}\log\log N).\]
-# erdos_number: 768
-# erdos_status: open
-# priority_tier: P2
-# tags: number_theory
+# Catalog: E-768
+# Statement: Let $A\subset\mathbb{N}$ be the set of $n$ such that for every prime $p\mid n$ there exists some $d\mid n$ with $d>1$ such that $d\equiv 1\pmod{p}$. Is it true that there exists some constant $c>0$ such that for all large $N$\[\frac{\lvert 
+# formalization_status: li_open
+# discharge: pending — open formalization target (Phase 4)
+# erdos_status (literature): open
 
-def erdos_e768_let_a_subset_mathbb_n_be_the_set_of_n_su() -> int
-  requires true
-  ensures result == 0  # open: E-768
-  decreases 0
-=
-  return 0
-
-extern proc erdos_e768_open_witness() -> int
-  requires true
-  ensures result == 0
-  decreases 0
-
-def main() -> int
+def formal_target_e_768() -> int
   requires true
   ensures result == 0
   decreases 0

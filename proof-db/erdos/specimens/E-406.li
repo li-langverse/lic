@@ -1,22 +1,10 @@
-# E-406: Is it true that there are only finitely many powers of $2$ which have only the digits $0$ and $1$ when written in base $3$?
-# erdos_number: 406
-# erdos_status: open
-# priority_tier: P2
-# tags: base_representations, number_theory
+# Catalog: E-406
+# Statement: Is it true that there are only finitely many powers of $2$ which have only the digits $0$ and $1$ when written in base $3$?
+# formalization_status: li_open
+# discharge: pending — open formalization target (Phase 4)
+# erdos_status (literature): open
 
-def erdos_e406_is_it_true_that_there_are_only_finitely() -> int
-  requires true
-  ensures result == 0  # open: E-406
-  decreases 0
-=
-  return 0
-
-extern proc erdos_e406_open_witness() -> int
-  requires true
-  ensures result == 0
-  decreases 0
-
-def main() -> int
+def formal_target_e_406() -> int
   requires true
   ensures result == 0
   decreases 0

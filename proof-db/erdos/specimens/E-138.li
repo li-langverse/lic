@@ -1,22 +1,10 @@
-# E-138: Let the van der Waerden number $W(k)$ be such that whenever $N\geq W(k)$ and $\{1,\ldots,N\}$ is $2$-coloured there must exist a monochromatic $k$-term arithmetic progression. Improve the bounds for $W(k)$ - for example, prove that $W(k)^{1/k}\to \infty$.
-# erdos_number: 138
-# erdos_status: open
-# priority_tier: P2
-# tags: additive_combinatorics
+# Catalog: E-138
+# Statement: Let the van der Waerden number $W(k)$ be such that whenever $N\geq W(k)$ and $\{1,\ldots,N\}$ is $2$-coloured there must exist a monochromatic $k$-term arithmetic progression. Improve the bounds for $W(k)$ - for example, prove that $W(k)^{1
+# formalization_status: li_open
+# discharge: pending — open formalization target (Phase 4)
+# erdos_status (literature): open
 
-def erdos_e138_let_the_van_der_waerden_number_w_k_be_su() -> int
-  requires true
-  ensures result == 0  # open: E-138
-  decreases 0
-=
-  return 0
-
-extern proc erdos_e138_open_witness() -> int
-  requires true
-  ensures result == 0
-  decreases 0
-
-def main() -> int
+def formal_target_e_138() -> int
   requires true
   ensures result == 0
   decreases 0

@@ -1,22 +1,10 @@
-# E-1151: Given $a_1,\ldots,a_n\in [-1,1]$ let\[\mathcal{L}^nf(x) = \sum_{1\leq i\leq n}f(a_i)\ell_i(x)\]be the unique polynomial of degree $n-1$ which agrees with $f$ on $a_i$ for $1\leq i\leq n$ (that is, the Lagrange interpolation polynomial). Let $a_i$ be the set of Chebyshev nodes . Prove that, for any closed $A\subseteq [-1,1]$, there exists a continuous function $f$ such that $A$ is the set of limit points of $\mathcal{L}^nf(x)$.
-# erdos_number: 1151
-# erdos_status: open
-# priority_tier: P2
-# tags: analysis, polynomials
+# Catalog: E-1151
+# Statement: Given $a_1,\ldots,a_n\in [-1,1]$ let\[\mathcal{L}^nf(x) = \sum_{1\leq i\leq n}f(a_i)\ell_i(x)\]be the unique polynomial of degree $n-1$ which agrees with $f$ on $a_i$ for $1\leq i\leq n$ (that is, the Lagrange interpolation polynomial). Let
+# formalization_status: li_open
+# discharge: pending — open formalization target (Phase 4)
+# erdos_status (literature): open
 
-def erdos_e1151_given_a_1_ldots_a_n_in_1_1_let_mathcal_l() -> int
-  requires true
-  ensures result == 0  # open: E-1151
-  decreases 0
-=
-  return 0
-
-extern proc erdos_e1151_open_witness() -> int
-  requires true
-  ensures result == 0
-  decreases 0
-
-def main() -> int
+def formal_target_e_1151() -> int
   requires true
   ensures result == 0
   decreases 0

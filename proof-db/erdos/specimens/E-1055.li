@@ -1,22 +1,10 @@
-# E-1055: A prime $p$ is in class $1$ if the only prime divisors of $p+1$ are $2$ or $3$. In general, a prime $p$ is in class $r$ if every prime factor of $p+1$ is in some class $\leq r-1$, with equality for at least one prime factor. Are there infinitely many primes in each class? If $p_r$ is the least prime in class $r$, then how does $p_r^{1/r}$ behave?
-# erdos_number: 1055
-# erdos_status: open
-# priority_tier: P2
-# tags: number_theory, primes
+# Catalog: E-1055
+# Statement: A prime $p$ is in class $1$ if the only prime divisors of $p+1$ are $2$ or $3$. In general, a prime $p$ is in class $r$ if every prime factor of $p+1$ is in some class $\leq r-1$, with equality for at least one prime factor. Are there infin
+# formalization_status: li_open
+# discharge: pending — open formalization target (Phase 4)
+# erdos_status (literature): open
 
-def erdos_e1055_a_prime_p_is_in_class_1_if_the_only_prim() -> int
-  requires true
-  ensures result == 0  # open: E-1055
-  decreases 0
-=
-  return 0
-
-extern proc erdos_e1055_open_witness() -> int
-  requires true
-  ensures result == 0
-  decreases 0
-
-def main() -> int
+def formal_target_e_1055() -> int
   requires true
   ensures result == 0
   decreases 0

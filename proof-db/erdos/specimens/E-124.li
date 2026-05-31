@@ -1,22 +1,10 @@
-# E-124: For any $d\geq 1$ and $k\geq 0$ let $P(d,k)$ be the set of integers which are the sum of distinct powers $d^i$ with $i\geq k$. Let $3\leq d_1<d_2<\cdots <d_r$ be integers such that\[\sum_{1\leq i\leq r}\frac{1}{d_r-1}\geq 1.\]Can all sufficiently large integers be written as a sum of the shape $\sum_i c_ia_i$ where $c_i\in \{0,1\}$ and $a_i\in P(d_i,0)$? If we further have $\mathrm{gcd}(d_1,\ldots,d_r)=1$ then, for any $k\geq 1$, can all sufficiently large integers be written as a sum of the shape $\sum_i c_ia_i$ where $c_i\in \{0,1\}$ and $a_i\in P(d_i,k)$?
-# erdos_number: 124
-# erdos_status: open
-# priority_tier: P2
-# tags: base_representations, complete_sequences, number_theory
+# Catalog: E-124
+# Statement: For any $d\geq 1$ and $k\geq 0$ let $P(d,k)$ be the set of integers which are the sum of distinct powers $d^i$ with $i\geq k$. Let $3\leq d_1<d_2<\cdots <d_r$ be integers such that\[\sum_{1\leq i\leq r}\frac{1}{d_r-1}\geq 1.\]Can all suffic
+# formalization_status: li_open
+# discharge: pending — open formalization target (Phase 4)
+# erdos_status (literature): open
 
-def erdos_e124_for_any_d_geq_1_and_k_geq_0_let_p_d_k_be() -> int
-  requires true
-  ensures result == 0  # open: E-124
-  decreases 0
-=
-  return 0
-
-extern proc erdos_e124_open_witness() -> int
-  requires true
-  ensures result == 0
-  decreases 0
-
-def main() -> int
+def formal_target_e_124() -> int
   requires true
   ensures result == 0
   decreases 0

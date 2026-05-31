@@ -1,22 +1,10 @@
-# E-130: Are there infinitely many n such that n and n+1 are both squarefree?
-# erdos_number: 130
-# erdos_status: open
-# priority_tier: P2
-# tags: squarefree, primes
+# Catalog: E-130
+# Statement: Are there infinitely many n such that n and n+1 are both squarefree?
+# formalization_status: li_open
+# discharge: pending — open formalization target (Phase 4)
+# erdos_status (literature): open
 
-def erdos_e130_are_there_infinitely_many_n_such_that_n() -> int
-  requires true
-  ensures result == 0  # open: E-130
-  decreases 0
-=
-  return 0
-
-extern proc erdos_e130_open_witness() -> int
-  requires true
-  ensures result == 0
-  decreases 0
-
-def main() -> int
+def formal_target_e_130() -> int
   requires true
   ensures result == 0
   decreases 0

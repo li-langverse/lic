@@ -1,22 +1,10 @@
-# E-354: Let $\alpha,\beta\in \mathbb{R}_{>0}$ such that $\alpha/\beta$ is irrational. Is the multiset\[\{ \lfloor \alpha\rfloor,\lfloor 2\alpha\rfloor,\lfloor 4\alpha\rfloor,\ldots\}\cup \{ \lfloor \beta\rfloor,\lfloor 2\beta\rfloor,\lfloor 4\beta\rfloor,\ldots\}\]complete? That is, can all sufficiently large natural numbers $n$ be written as\[n=\sum_{s\in S}\lfloor 2^s\alpha\rfloor+\sum_{t\in T}\lfloor 2^t\beta\rfloor\]for some finite $S,T\subset \mathbb{N}$? What if $2$ is replaced by some $\gamma\in(1,2)$?
-# erdos_number: 354
-# erdos_status: open
-# priority_tier: P2
-# tags: complete_sequences, number_theory
+# Catalog: E-354
+# Statement: Let $\alpha,\beta\in \mathbb{R}_{>0}$ such that $\alpha/\beta$ is irrational. Is the multiset\[\{ \lfloor \alpha\rfloor,\lfloor 2\alpha\rfloor,\lfloor 4\alpha\rfloor,\ldots\}\cup \{ \lfloor \beta\rfloor,\lfloor 2\beta\rfloor,\lfloor 4\beta\
+# formalization_status: li_open
+# discharge: pending — open formalization target (Phase 4)
+# erdos_status (literature): open
 
-def erdos_e354_let_alpha_beta_in_mathbb_r_0_such_that_a() -> int
-  requires true
-  ensures result == 0  # open: E-354
-  decreases 0
-=
-  return 0
-
-extern proc erdos_e354_open_witness() -> int
-  requires true
-  ensures result == 0
-  decreases 0
-
-def main() -> int
+def formal_target_e_354() -> int
   requires true
   ensures result == 0
   decreases 0

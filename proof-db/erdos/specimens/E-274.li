@@ -1,22 +1,10 @@
-# E-274: If $G$ is a group then can there exist an exact covering of $G$ by more than one cosets of different sizes? (i.e. each element is contained in exactly one of the cosets)
-# erdos_number: 274
-# erdos_status: open
-# priority_tier: P2
-# tags: covering_systems, group_theory
+# Catalog: E-274
+# Statement: If $G$ is a group then can there exist an exact covering of $G$ by more than one cosets of different sizes? (i.e. each element is contained in exactly one of the cosets)
+# formalization_status: li_open
+# discharge: pending — open formalization target (Phase 4)
+# erdos_status (literature): open
 
-def erdos_e274_if_g_is_a_group_then_can_there_exist_an() -> int
-  requires true
-  ensures result == 0  # open: E-274
-  decreases 0
-=
-  return 0
-
-extern proc erdos_e274_open_witness() -> int
-  requires true
-  ensures result == 0
-  decreases 0
-
-def main() -> int
+def formal_target_e_274() -> int
   requires true
   ensures result == 0
   decreases 0

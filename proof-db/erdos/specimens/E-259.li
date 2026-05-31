@@ -1,22 +1,10 @@
-# E-259: Is the sum\[\sum_{n} \mu(n)^2\frac{n}{2^n}\]irrational?
-# erdos_number: 259
-# erdos_status: proved
-# priority_tier: P2
-# tags: irrationality
+# Catalog: E-259
+# Statement: Is the sum\[\sum_{n} \mu(n)^2\frac{n}{2^n}\]irrational?
+# formalization_status: li_open
+# discharge: pending — open formalization target (Phase 4)
+# erdos_status (literature): proved
 
-def erdos_e259_is_the_sum_sum_n_mu_n_2_frac_n_2_n_irrat() -> int
-  requires true
-  ensures result == 0  # open: E-259
-  decreases 0
-=
-  return 0
-
-extern proc erdos_e259_open_witness() -> int
-  requires true
-  ensures result == 0
-  decreases 0
-
-def main() -> int
+def formal_target_e_259() -> int
   requires true
   ensures result == 0
   decreases 0

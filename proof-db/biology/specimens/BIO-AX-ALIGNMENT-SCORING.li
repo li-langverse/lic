@@ -1,0 +1,11 @@
+# Catalog: BIO-AX-ALIGNMENT-SCORING
+# Statement: Pairwise alignment score is additive over matched columns under substitution matrix S (modeling stub).
+# formalization_status: li_open
+# discharge: pending — open formalization target (Phase 4)
+
+def formal_target_bio_ax_alignment_scoring() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0

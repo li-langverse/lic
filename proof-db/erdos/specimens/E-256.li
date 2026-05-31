@@ -1,22 +1,10 @@
-# E-256: Let $n\geq 1$ and $f(n)$ be maximal such that for any integers $1\leq a_1\leq \cdots \leq a_n$ we have\[\max_{\lvert z\rvert=1}\left\lvert \prod_{i}(1-z^{a_i})\right\rvert\geq f(n).\]Estimate $f(n)$ - in particular, is it true that there exists some constant $c>0$ such that\[\log f(n) \gg n^c?\]
-# erdos_number: 256
-# erdos_status: open
-# priority_tier: P2
-# tags: analysis
+# Catalog: E-256
+# Statement: Let $n\geq 1$ and $f(n)$ be maximal such that for any integers $1\leq a_1\leq \cdots \leq a_n$ we have\[\max_{\lvert z\rvert=1}\left\lvert \prod_{i}(1-z^{a_i})\right\rvert\geq f(n).\]Estimate $f(n)$ - in particular, is it true that there ex
+# formalization_status: li_open
+# discharge: pending — open formalization target (Phase 4)
+# erdos_status (literature): open
 
-def erdos_e256_let_n_geq_1_and_f_n_be_maximal_such_that() -> int
-  requires true
-  ensures result == 0  # open: E-256
-  decreases 0
-=
-  return 0
-
-extern proc erdos_e256_open_witness() -> int
-  requires true
-  ensures result == 0
-  decreases 0
-
-def main() -> int
+def formal_target_e_256() -> int
   requires true
   ensures result == 0
   decreases 0

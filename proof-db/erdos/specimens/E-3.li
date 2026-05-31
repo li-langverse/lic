@@ -1,24 +1,10 @@
-# E-3: If A subset N has sum_{n in A} 1/n = infinity, must A contain arbitrarily long arithmetic progressions?
-# erdos_number: 3
-# erdos_status: open
-# priority_tier: P0
-# tags: number_theory, additive_combinatorics, arithmetic_progressions
-# context: Erdős asked whether every set of naturals with divergent reciprocal sum must contain arbitrarily long arithmetic progressions.
-# context: It is a major open problem in combinatorial number theory; Bloom's 2026 prize list highlights it..
+# Catalog: E-3
+# Statement: If A subset N has sum_{n in A} 1/n = infinity, must A contain arbitrarily long arithmetic progressions?
+# formalization_status: li_open
+# discharge: pending — open formalization target (Phase 4)
+# erdos_status (literature): open
 
-def erdos_e3_if_a_subset_n_has_sum_n_in_a_1_n_infinit() -> int
-  requires true
-  ensures result == 0  # open: E-3
-  decreases 0
-=
-  return 0
-
-extern proc erdos_e3_open_witness() -> int
-  requires true
-  ensures result == 0
-  decreases 0
-
-def main() -> int
+def formal_target_e_3() -> int
   requires true
   ensures result == 0
   decreases 0

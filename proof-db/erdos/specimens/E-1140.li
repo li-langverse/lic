@@ -1,22 +1,10 @@
-# E-1140: Do there exist infinitely many $n$ such that $n-2x^2$ is prime for all $x$ with $2x^2<n$?
-# erdos_number: 1140
-# erdos_status: open
-# priority_tier: P2
-# tags: number_theory
+# Catalog: E-1140
+# Statement: Do there exist infinitely many $n$ such that $n-2x^2$ is prime for all $x$ with $2x^2<n$?
+# formalization_status: li_open
+# discharge: pending — open formalization target (Phase 4)
+# erdos_status (literature): open
 
-def erdos_e1140_do_there_exist_infinitely_many_n_such_th() -> int
-  requires true
-  ensures result == 0  # open: E-1140
-  decreases 0
-=
-  return 0
-
-extern proc erdos_e1140_open_witness() -> int
-  requires true
-  ensures result == 0
-  decreases 0
-
-def main() -> int
+def formal_target_e_1140() -> int
   requires true
   ensures result == 0
   decreases 0

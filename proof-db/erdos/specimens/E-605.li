@@ -1,22 +1,10 @@
-# E-605: Is there some function $f(n)\to \infty$ as $n\to\infty$ such that there exist $n$ distinct points on the surface of a two-dimensional sphere with at least $f(n)n$ many pairs of points whose distances are the same?
-# erdos_number: 605
-# erdos_status: proved
-# priority_tier: P2
-# tags: distances, geometry
+# Catalog: E-605
+# Statement: Is there some function $f(n)\to \infty$ as $n\to\infty$ such that there exist $n$ distinct points on the surface of a two-dimensional sphere with at least $f(n)n$ many pairs of points whose distances are the same?
+# formalization_status: li_open
+# discharge: pending — open formalization target (Phase 4)
+# erdos_status (literature): proved
 
-def erdos_e605_is_there_some_function_f_n_to_infty_as_n() -> int
-  requires true
-  ensures result == 0  # open: E-605
-  decreases 0
-=
-  return 0
-
-extern proc erdos_e605_open_witness() -> int
-  requires true
-  ensures result == 0
-  decreases 0
-
-def main() -> int
+def formal_target_e_605() -> int
   requires true
   ensures result == 0
   decreases 0

@@ -1,22 +1,10 @@
-# E-755: The number of equilateral triangles of size $1$ formed by any set of $n$ points in $\mathbb{R}^6$ is at most $(\frac{1}{27}+o(1))n^3$.
-# erdos_number: 755
-# erdos_status: proved
-# priority_tier: P2
-# tags: geometry
+# Catalog: E-755
+# Statement: The number of equilateral triangles of size $1$ formed by any set of $n$ points in $\mathbb{R}^6$ is at most $(\frac{1}{27}+o(1))n^3$.
+# formalization_status: li_open
+# discharge: pending — open formalization target (Phase 4)
+# erdos_status (literature): proved
 
-def erdos_e755_the_number_of_equilateral_triangles_of_s() -> int
-  requires true
-  ensures result == 0  # open: E-755
-  decreases 0
-=
-  return 0
-
-extern proc erdos_e755_open_witness() -> int
-  requires true
-  ensures result == 0
-  decreases 0
-
-def main() -> int
+def formal_target_e_755() -> int
   requires true
   ensures result == 0
   decreases 0

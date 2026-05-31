@@ -1,22 +1,10 @@
-# E-279: Let $k\geq 3$. Is there a choice of congruence classes $a_p\pmod{p}$ for every prime $p$ such that all sufficiently large integers can be written as $a_p+tp$ for some prime $p$ and integer $t\geq k$?
-# erdos_number: 279
-# erdos_status: open
-# priority_tier: P2
-# tags: covering_systems, number_theory, primes
+# Catalog: E-279
+# Statement: Let $k\geq 3$. Is there a choice of congruence classes $a_p\pmod{p}$ for every prime $p$ such that all sufficiently large integers can be written as $a_p+tp$ for some prime $p$ and integer $t\geq k$?
+# formalization_status: li_open
+# discharge: pending — open formalization target (Phase 4)
+# erdos_status (literature): open
 
-def erdos_e279_let_k_geq_3_is_there_a_choice_of_congrue() -> int
-  requires true
-  ensures result == 0  # open: E-279
-  decreases 0
-=
-  return 0
-
-extern proc erdos_e279_open_witness() -> int
-  requires true
-  ensures result == 0
-  decreases 0
-
-def main() -> int
+def formal_target_e_279() -> int
   requires true
   ensures result == 0
   decreases 0

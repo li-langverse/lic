@@ -1,22 +1,10 @@
-# E-141: Let $k\geq 3$. Are there $k$ consecutive primes in arithmetic progression?
-# erdos_number: 141
-# erdos_status: open
-# priority_tier: P2
-# tags: additive_combinatorics, arithmetic_progressions, primes
+# Catalog: E-141
+# Statement: Let $k\geq 3$. Are there $k$ consecutive primes in arithmetic progression?
+# formalization_status: li_open
+# discharge: pending — open formalization target (Phase 4)
+# erdos_status (literature): open
 
-def erdos_e141_let_k_geq_3_are_there_k_consecutive_prim() -> int
-  requires true
-  ensures result == 0  # open: E-141
-  decreases 0
-=
-  return 0
-
-extern proc erdos_e141_open_witness() -> int
-  requires true
-  ensures result == 0
-  decreases 0
-
-def main() -> int
+def formal_target_e_141() -> int
   requires true
   ensures result == 0
   decreases 0

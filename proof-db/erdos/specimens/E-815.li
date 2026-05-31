@@ -1,22 +1,10 @@
-# E-815: Let $k\geq 3$ and $n$ be sufficiently large. Is it true that if $G$ is a graph with $n$ vertices and $2n-2$ edges such that every proper induced subgraph has minimum degree $\leq 2$ then $G$ must contain a copy of $C_k$?
-# erdos_number: 815
-# erdos_status: open
-# priority_tier: P2
-# tags: graph_theory
+# Catalog: E-815
+# Statement: Let $k\geq 3$ and $n$ be sufficiently large. Is it true that if $G$ is a graph with $n$ vertices and $2n-2$ edges such that every proper induced subgraph has minimum degree $\leq 2$ then $G$ must contain a copy of $C_k$?
+# formalization_status: li_open
+# discharge: pending — open formalization target (Phase 4)
+# erdos_status (literature): open
 
-def erdos_e815_let_k_geq_3_and_n_be_sufficiently_large() -> int
-  requires true
-  ensures result == 0  # open: E-815
-  decreases 0
-=
-  return 0
-
-extern proc erdos_e815_open_witness() -> int
-  requires true
-  ensures result == 0
-  decreases 0
-
-def main() -> int
+def formal_target_e_815() -> int
   requires true
   ensures result == 0
   decreases 0

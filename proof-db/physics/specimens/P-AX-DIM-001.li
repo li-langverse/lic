@@ -1,0 +1,11 @@
+# Catalog: P-AX-DIM-001
+# Statement: Dimensional homogeneity: only dimensionally consistent combinations are well-formed.
+# formalization_status: li_open
+# discharge: pending — open formalization target (Phase 4)
+
+def formal_target_p_ax_dim_001() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0

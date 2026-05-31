@@ -1,24 +1,10 @@
-# E-4: For any C>0, are there infinitely many n with p_{n+1}-p_n > C (log log n log log log log n / (log log log n)^2) log n?
-# erdos_number: 4
-# erdos_status: proved
-# priority_tier: P1
-# tags: number_theory, primes, prime_gaps
-# context: Large prime gaps beyond any fixed multiple of log n (with iterated log factors).
-# context: Proved independently by Maynard and Ford–Green–Konyagin–Tao in 2016..
+# Catalog: E-4
+# Statement: For any C>0, are there infinitely many n with p_{n+1}-p_n > C (log log n log log log log n / (log log log n)^2) log n?
+# formalization_status: li_open
+# discharge: pending — open formalization target (Phase 4)
+# erdos_status (literature): proved
 
-def erdos_e4_for_any_c_0_are_there_infinitely_many_n() -> int
-  requires true
-  ensures result == 0  # open: E-4
-  decreases 0
-=
-  return 0
-
-extern proc erdos_e4_open_witness() -> int
-  requires true
-  ensures result == 0
-  decreases 0
-
-def main() -> int
+def formal_target_e_4() -> int
   requires true
   ensures result == 0
   decreases 0

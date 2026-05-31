@@ -1,22 +1,10 @@
-# E-1083: Let $d\geq 3$, and let $f_d(n)$ be the minimal $m$ such that every set of $n$ points in $\mathbb{R}^d$ determines at least $m$ distinct distances. Estimate $f_d(n)$ - in particular, is it true that\[f_d(n)=n^{\frac{2}{d}-o(1)}?\]
-# erdos_number: 1083
-# erdos_status: open
-# priority_tier: P2
-# tags: distances, geometry
+# Catalog: E-1083
+# Statement: Let $d\geq 3$, and let $f_d(n)$ be the minimal $m$ such that every set of $n$ points in $\mathbb{R}^d$ determines at least $m$ distinct distances. Estimate $f_d(n)$ - in particular, is it true that\[f_d(n)=n^{\frac{2}{d}-o(1)}?\]
+# formalization_status: li_open
+# discharge: pending — open formalization target (Phase 4)
+# erdos_status (literature): open
 
-def erdos_e1083_let_d_geq_3_and_let_f_d_n_be_the_minimal() -> int
-  requires true
-  ensures result == 0  # open: E-1083
-  decreases 0
-=
-  return 0
-
-extern proc erdos_e1083_open_witness() -> int
-  requires true
-  ensures result == 0
-  decreases 0
-
-def main() -> int
+def formal_target_e_1083() -> int
   requires true
   ensures result == 0
   decreases 0

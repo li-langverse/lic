@@ -1,22 +1,10 @@
-# E-718: Is there some constant $C>0$ such that any graph on $n$ vertices with $\geq Cr^2n$ edges contains a subdivision of $K_r$?
-# erdos_number: 718
-# erdos_status: proved
-# priority_tier: P2
-# tags: graph_theory
+# Catalog: E-718
+# Statement: Is there some constant $C>0$ such that any graph on $n$ vertices with $\geq Cr^2n$ edges contains a subdivision of $K_r$?
+# formalization_status: li_open
+# discharge: pending — open formalization target (Phase 4)
+# erdos_status (literature): proved
 
-def erdos_e718_is_there_some_constant_c_0_such_that_any() -> int
-  requires true
-  ensures result == 0  # open: E-718
-  decreases 0
-=
-  return 0
-
-extern proc erdos_e718_open_witness() -> int
-  requires true
-  ensures result == 0
-  decreases 0
-
-def main() -> int
+def formal_target_e_718() -> int
   requires true
   ensures result == 0
   decreases 0

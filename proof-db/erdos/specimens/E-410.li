@@ -1,22 +1,10 @@
-# E-410: Let $\sigma_1(n)=\sigma(n)$, the sum of divisors function, and $\sigma_k(n)=\sigma(\sigma_{k-1}(n))$. Is it true that for all $n\geq 2$\[\lim_{k\to \infty} \sigma_k(n)^{1/k}=\infty?\]
-# erdos_number: 410
-# erdos_status: open
-# priority_tier: P2
-# tags: iterated_functions, number_theory
+# Catalog: E-410
+# Statement: Let $\sigma_1(n)=\sigma(n)$, the sum of divisors function, and $\sigma_k(n)=\sigma(\sigma_{k-1}(n))$. Is it true that for all $n\geq 2$\[\lim_{k\to \infty} \sigma_k(n)^{1/k}=\infty?\]
+# formalization_status: li_open
+# discharge: pending — open formalization target (Phase 4)
+# erdos_status (literature): open
 
-def erdos_e410_let_sigma_1_n_sigma_n_the_sum_of_divisor() -> int
-  requires true
-  ensures result == 0  # open: E-410
-  decreases 0
-=
-  return 0
-
-extern proc erdos_e410_open_witness() -> int
-  requires true
-  ensures result == 0
-  decreases 0
-
-def main() -> int
+def formal_target_e_410() -> int
   requires true
   ensures result == 0
   decreases 0

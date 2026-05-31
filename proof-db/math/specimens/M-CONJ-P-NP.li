@@ -1,0 +1,11 @@
+# Catalog: M-CONJ-P-NP
+# Statement: Is every language in NP decidable in polynomial time (P versus NP)?
+# formalization_status: li_open
+# discharge: pending — open formalization target (Phase 4)
+
+def formal_target_m_conj_p_np() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0

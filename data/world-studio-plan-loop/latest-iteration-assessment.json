@@ -4,7 +4,7 @@
   "completion_sprint": true,
   "verification_pass": true,
   "verified_at": "2026-05-31T05:56:00Z",
-  "agent_run": "world_studio_builder-06596164",
+  "agent_run": "world_studio_builder-1780206585115",
   "wps_touched": ["WP-SIM-06", "WP-UX-02", "WP-UX-04", "WP-UX-06", "WP-UX-09", "WP-GD-05", "WP-AG-03", "WP-AG-06", "WP-PUB-03", "§11 vertical DoD"],
   "smokes_run": [
     "scripts/world-studio-plan-lic-smokes-wsl.sh",
@@ -24,7 +24,7 @@
     "mcp_li_engine_stdio": "pass"
   },
   "design_review": {
-    "capture_issue": "https://github.com/li-langverse/lic/issues/182#issuecomment-4585864798",
+    "capture_issue": "https://github.com/li-langverse/lic/issues/182#issuecomment-4585866088",
     "native_capture": "skip (SDL2/pkg-config missing on Windows host)",
     "ux_harness_demo": "pass",
     "panel_switch_ms_meets_target": false,

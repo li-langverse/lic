@@ -8,13 +8,15 @@
 
 todos:
 - id: pkg-std-io
-  content: "Missing std module std.io"
-  status: pending
+  content: "std.io — PH-IO-4 compile harness (`std/io/io.li`, `import std.io`)"
+  status: completed
   gap_orchestrator: true
+  gap_ref: gap-missing-std-std-io
 - id: pkg-std-csv
-  content: "Missing std module std.csv"
-  status: pending
+  content: "std.csv — PH-IO-4 compile harness (`std/csv/csv.li`, `import std.csv`)"
+  status: completed
   gap_orchestrator: true
+  gap_ref: gap-missing-std-std-csv
 - id: pkg-std-summary
   content: "Missing std module std.summary"
   status: pending

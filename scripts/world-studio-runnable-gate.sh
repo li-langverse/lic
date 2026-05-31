@@ -28,7 +28,14 @@ lic_check_smoke() {
   local path="$ROOT/packages/li-studio/li-tests/smoke/$smoke"
   [[ -f "$path" ]] || fail "missing $smoke"
   if [[ -f "$ROOT/build-wsl/compiler/lic/lic" ]] && command -v wsl >/dev/null 2>&1; then
-    wsl -e bash -lc "cd /mnt/c/Users/Julian/Documents/Programming/li/lic && ./build-wsl/compiler/lic/lic check packages/li-studio/li-tests/smoke/$smoke" \
+    local wsl_root=""
+    if command -v wsl >/dev/null 2>&1; then
+      wsl_root="$(wsl wslpath -a "$ROOT" 2>/dev/null || true)"
+    fi
+    if [[ -z "$wsl_root" ]]; then
+      wsl_root="$(cd "$ROOT" && pwd -W 2>/dev/null | sed 's|\\|/|g' | sed 's|^|/mnt/|' | sed 's|:||' | sed 's|^/mnt/\([A-Za-z]\)|/mnt/\L\1|')"
+    fi
+    wsl -e bash -lc "cd '$wsl_root' && ./build-wsl/compiler/lic/lic check packages/li-studio/li-tests/smoke/$smoke" \
       || fail "lic check $smoke (wsl)"
   elif [[ -n "$LIC" && -x "$LIC" ]]; then
     "$LIC" check "$path" || fail "lic check $smoke"

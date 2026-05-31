@@ -1,0 +1,48 @@
+# G-vc / P-float: vec3_normalize weak per-axis bound ensures — FieldAccess + comparison.
+type Vec3 = object
+  public x: float
+  public y: float
+  public z: float
+
+def vec3(a: float, b: float, c: float) -> Vec3
+  requires true
+  ensures result.x == a
+  ensures result.y == b
+  ensures result.z == c
+  decreases 0
+=
+  var r: Vec3
+  r.x = a
+  r.y = b
+  r.z = c
+  return r
+
+def vec3_normalize(a: Vec3) -> Vec3
+  requires true
+  ensures result.x >= -1.0
+  ensures result.x <= 1.0
+  ensures result.y >= -1.0
+  ensures result.y <= 1.0
+  ensures result.z >= -1.0
+  ensures result.z <= 1.0
+  decreases 0
+=
+  var ax: float = a.x
+  var ay: float = a.y
+  var az: float = a.z
+  var l: float = ax * ax + ay * ay + az * az
+  if l == 0.0:
+    return vec3(0.0, 0.0, 0.0)
+  return vec3(ax, ay, az)
+
+def main() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  var v: Vec3
+  v.x = 3.0
+  v.y = 4.0
+  v.z = 0.0
+  var n: Vec3 = vec3_normalize(v)
+  return 0

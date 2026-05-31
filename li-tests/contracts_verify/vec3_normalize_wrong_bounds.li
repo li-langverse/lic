@@ -1,0 +1,42 @@
+# G-vc soundness repro: violates [-1,1] per-axis bounds; contracts must not certify.
+type Vec3 = object
+  public x: float
+  public y: float
+  public z: float
+
+def vec3(a: float, b: float, c: float) -> Vec3
+  requires true
+  ensures result.x == a
+  ensures result.y == b
+  ensures result.z == c
+  decreases 0
+=
+  var r: Vec3
+  r.x = a
+  r.y = b
+  r.z = c
+  return r
+
+def vec3_normalize_bad(a: Vec3) -> Vec3
+  requires true
+  ensures result.x >= -1.0
+  ensures result.x <= 1.0
+  ensures result.y >= -1.0
+  ensures result.y <= 1.0
+  ensures result.z >= -1.0
+  ensures result.z <= 1.0
+  decreases 0
+=
+  return vec3(2.0, 2.0, 2.0)
+
+def main() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  var v: Vec3
+  v.x = 1.0
+  v.y = 0.0
+  v.z = 0.0
+  var n: Vec3 = vec3_normalize_bad(v)
+  return 0

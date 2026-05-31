@@ -14,5 +14,5 @@
     "lic_check_local": "wsl_build-wsl"
   },
   "notes": "SIM-5 sensor raycast bus on SimSessionStub; studio_sim_sensor_step_hook for sim_automotive and sim_robotics; plan gates include studio_sim_sensor_step_hook smoke.",
-  "pr": "https://github.com/li-langverse/lic/pull/633"
+  "pr": "https://github.com/li-langverse/lic/pull/635"
 }

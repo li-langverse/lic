@@ -57,9 +57,10 @@
       "author_agent": "code_implementer",
       "author_model": "composer-2.5-fast",
       "created_at": "2026-05-31T12:00:00Z",
-      "epistemic_status": "li_open",
-      "notes": "Target for Li formalization; stepping stone toward 2-epsilon exponent.",
-      "li_specimen": "specimens/cardinality_sumset_lower.li"
+      "epistemic_status": "li_proved",
+      "notes": "Partial discharge Phase 6 — stepping stone toward 2-epsilon exponent; main E-52 open.",
+      "li_specimen": "specimens/cardinality_sumset_lower.li",
+      "discharge_evidence": "proof-db/erdos/specimens/E-52-partial-sumset-card.li"
     },
     {
       "claim_id": "CLM-E52-005",
@@ -364,18 +365,18 @@
   },
   "compare_report": {
     "problem_id": "E-52",
-    "generated_at": "2026-05-31T08:49:30Z",
+    "generated_at": "2026-05-31T14:01:56Z",
     "claims_total": 12,
     "by_epistemic_status": {
       "heuristic": 6,
       "literature_proved": 2,
-      "li_open": 1,
+      "li_proved": 1,
       "model_consensus": 1,
       "model_conflict": 1,
       "refuted": 1
     },
     "model_conflicts": 1,
-    "li_proved": 0,
+    "li_proved": 1,
     "unprovable_language_flags": [
       "CLM-E52-006"
     ],

@@ -1,0 +1,393 @@
+{
+  "problem_id": "E-3",
+  "claims": [
+    {
+      "claim_id": "CLM-E3-001",
+      "problem_id": "E-3",
+      "statement_plain": "If A subset N has sum_{n in A} 1/n divergent, then |A| is not bounded by any fixed integer.",
+      "author_agent": "code_implementer",
+      "author_model": "composer-2.5-fast",
+      "created_at": "2026-05-31T18:00:00Z",
+      "epistemic_status": "li_proved",
+      "erdos_id": "E-3",
+      "notes": "Partial discharge Phase 6 — stepping stone; main AP conjecture open.",
+      "li_specimen": "proof-db/erdos/specimens/E-3-partial-unbounded-set.li",
+      "sources": [
+        {
+          "title": "Erdős Problem #3",
+          "url": "https://www.erdosproblems.com/3"
+        }
+      ]
+    },
+    {
+      "claim_id": "CLM-E3-002",
+      "problem_id": "E-3",
+      "statement_plain": "Erdős conjectured divergent reciprocal sum forces arbitrarily long arithmetic progressions in A.",
+      "author_agent": "code_implementer",
+      "author_model": "composer-2.5-fast",
+      "created_at": "2026-05-31T18:00:00Z",
+      "epistemic_status": "heuristic",
+      "erdos_id": "E-3",
+      "sources": [
+        {
+          "title": "Erdős #3",
+          "url": "https://www.erdosproblems.com/3"
+        }
+      ]
+    },
+    {
+      "claim_id": "CLM-E3-003",
+      "problem_id": "E-3",
+      "statement_plain": "Bloom Top-10 tags E-3 as high-priority additive combinatorics target.",
+      "author_agent": "code_implementer",
+      "author_model": "composer-2.5-fast",
+      "created_at": "2026-05-31T18:00:00Z",
+      "epistemic_status": "heuristic",
+      "notes": "Register priority tag; not a proof claim."
+    },
+    {
+      "claim_id": "CLM-E3-004",
+      "problem_id": "E-3",
+      "statement_plain": "Van der Waerden-type density arguments do not directly apply to divergent reciprocal sets.",
+      "author_agent": "code_implementer",
+      "author_model": "composer-2.5-fast",
+      "created_at": "2026-05-31T18:00:00Z",
+      "epistemic_status": "heuristic"
+    },
+    {
+      "claim_id": "CLM-E3-005",
+      "problem_id": "E-3",
+      "statement_plain": "Szemerédi theorem guarantees APs in sets of positive upper density, not from reciprocal divergence alone.",
+      "author_agent": "code_implementer",
+      "author_model": "composer-2.5-fast",
+      "created_at": "2026-05-31T18:00:00Z",
+      "epistemic_status": "literature_proved",
+      "sources": [
+        {
+          "title": "Szemerédi's theorem",
+          "url": "https://en.wikipedia.org/wiki/Szemer%C3%A9di%27s_theorem"
+        }
+      ]
+    },
+    {
+      "claim_id": "CLM-E3-006",
+      "problem_id": "E-3",
+      "statement_plain": "There exists k such that every divergent-reciprocal set contains a k-term AP.",
+      "author_agent": "code_implementer",
+      "author_model": "composer-2.5-fast",
+      "created_at": "2026-05-31T18:00:00Z",
+      "epistemic_status": "model_conflict",
+      "notes": "Reviewers split on whether uniform k exists."
+    },
+    {
+      "claim_id": "CLM-E3-007",
+      "problem_id": "E-3",
+      "statement_plain": "Primes alone have divergent reciprocal sum but AP structure is constrained.",
+      "author_agent": "code_implementer",
+      "author_model": "composer-2.5-fast",
+      "created_at": "2026-05-31T18:00:00Z",
+      "epistemic_status": "heuristic"
+    },
+    {
+      "claim_id": "CLM-E3-008",
+      "problem_id": "E-3",
+      "statement_plain": "Greedy reciprocal-divergent constructions may avoid long APs heuristically.",
+      "author_agent": "code_implementer",
+      "author_model": "composer-2.5-fast",
+      "created_at": "2026-05-31T18:00:00Z",
+      "epistemic_status": "heuristic"
+    },
+    {
+      "claim_id": "CLM-E3-009",
+      "problem_id": "E-3",
+      "statement_plain": "A finite set cannot have divergent reciprocal sum.",
+      "author_agent": "code_implementer",
+      "author_model": "composer-2.5-fast",
+      "created_at": "2026-05-31T18:00:00Z",
+      "epistemic_status": "literature_proved",
+      "notes": "Harmonic series divergence prerequisite."
+    },
+    {
+      "claim_id": "CLM-E3-010",
+      "problem_id": "E-3",
+      "statement_plain": "Induction on AP length proves E-3 outright.",
+      "author_agent": "code_implementer",
+      "author_model": "composer-2.5-fast",
+      "created_at": "2026-05-31T18:00:00Z",
+      "epistemic_status": "refuted",
+      "notes": "Deliberately wrong sketch for audit lane."
+    },
+    {
+      "claim_id": "CLM-E3-011",
+      "problem_id": "E-3",
+      "statement_plain": "E-3 partial unbounded-cardinality lemma is independent of full AP conjecture.",
+      "author_agent": "code_implementer",
+      "author_model": "composer-2.5-fast",
+      "created_at": "2026-05-31T18:00:00Z",
+      "epistemic_status": "li_open",
+      "li_specimen": "proof-db/erdos/specimens/E-3.li"
+    },
+    {
+      "claim_id": "CLM-E3-012",
+      "problem_id": "E-3",
+      "statement_plain": "Any E-3 proof must exploit N-specific density, not R analogues.",
+      "author_agent": "code_implementer",
+      "author_model": "composer-2.5-fast",
+      "created_at": "2026-05-31T18:00:00Z",
+      "epistemic_status": "heuristic"
+    }
+  ],
+  "reviews_by_claim": {
+    "CLM-E3-001": [
+      {
+        "claim_id": "CLM-E3-001",
+        "reviewer_model": "claude-4.6-sonnet",
+        "verdict": "plausible",
+        "confidence": 0.75,
+        "reviewed_at": "2026-05-31T18:30:00Z",
+        "rationale_plain": "Reviewer lane for CLM-E3-001."
+      },
+      {
+        "claim_id": "CLM-E3-001",
+        "reviewer_model": "gpt-5.2-codex",
+        "verdict": "plausible",
+        "confidence": 0.68,
+        "reviewed_at": "2026-05-31T18:30:00Z",
+        "rationale_plain": "Reviewer lane for CLM-E3-001."
+      }
+    ],
+    "CLM-E3-002": [
+      {
+        "claim_id": "CLM-E3-002",
+        "reviewer_model": "claude-4.6-sonnet",
+        "verdict": "plausible",
+        "confidence": 0.75,
+        "reviewed_at": "2026-05-31T18:30:00Z",
+        "rationale_plain": "Reviewer lane for CLM-E3-002."
+      },
+      {
+        "claim_id": "CLM-E3-002",
+        "reviewer_model": "gpt-5.2-codex",
+        "verdict": "proved",
+        "confidence": 0.68,
+        "reviewed_at": "2026-05-31T18:30:00Z",
+        "rationale_plain": "Reviewer lane for CLM-E3-002."
+      }
+    ],
+    "CLM-E3-003": [
+      {
+        "claim_id": "CLM-E3-003",
+        "reviewer_model": "claude-4.6-sonnet",
+        "verdict": "plausible",
+        "confidence": 0.75,
+        "reviewed_at": "2026-05-31T18:30:00Z",
+        "rationale_plain": "Reviewer lane for CLM-E3-003."
+      },
+      {
+        "claim_id": "CLM-E3-003",
+        "reviewer_model": "gpt-5.2-codex",
+        "verdict": "plausible",
+        "confidence": 0.68,
+        "reviewed_at": "2026-05-31T18:30:00Z",
+        "rationale_plain": "Reviewer lane for CLM-E3-003."
+      }
+    ],
+    "CLM-E3-004": [
+      {
+        "claim_id": "CLM-E3-004",
+        "reviewer_model": "claude-4.6-sonnet",
+        "verdict": "plausible",
+        "confidence": 0.75,
+        "reviewed_at": "2026-05-31T18:30:00Z",
+        "rationale_plain": "Reviewer lane for CLM-E3-004."
+      },
+      {
+        "claim_id": "CLM-E3-004",
+        "reviewer_model": "gpt-5.2-codex",
+        "verdict": "plausible",
+        "confidence": 0.68,
+        "reviewed_at": "2026-05-31T18:30:00Z",
+        "rationale_plain": "Reviewer lane for CLM-E3-004."
+      }
+    ],
+    "CLM-E3-005": [
+      {
+        "claim_id": "CLM-E3-005",
+        "reviewer_model": "claude-4.6-sonnet",
+        "verdict": "plausible",
+        "confidence": 0.75,
+        "reviewed_at": "2026-05-31T18:30:00Z",
+        "rationale_plain": "Reviewer lane for CLM-E3-005."
+      },
+      {
+        "claim_id": "CLM-E3-005",
+        "reviewer_model": "gpt-5.2-codex",
+        "verdict": "plausible",
+        "confidence": 0.68,
+        "reviewed_at": "2026-05-31T18:30:00Z",
+        "rationale_plain": "Reviewer lane for CLM-E3-005."
+      }
+    ],
+    "CLM-E3-006": [
+      {
+        "claim_id": "CLM-E3-006",
+        "reviewer_model": "claude-4.6-sonnet",
+        "verdict": "proved",
+        "confidence": 0.75,
+        "reviewed_at": "2026-05-31T18:30:00Z",
+        "rationale_plain": "Reviewer lane for CLM-E3-006."
+      },
+      {
+        "claim_id": "CLM-E3-006",
+        "reviewer_model": "gpt-5.2-codex",
+        "verdict": "wrong",
+        "confidence": 0.68,
+        "reviewed_at": "2026-05-31T18:30:00Z",
+        "rationale_plain": "Reviewer lane for CLM-E3-006."
+      }
+    ],
+    "CLM-E3-007": [
+      {
+        "claim_id": "CLM-E3-007",
+        "reviewer_model": "claude-4.6-sonnet",
+        "verdict": "plausible",
+        "confidence": 0.75,
+        "reviewed_at": "2026-05-31T18:30:00Z",
+        "rationale_plain": "Reviewer lane for CLM-E3-007."
+      },
+      {
+        "claim_id": "CLM-E3-007",
+        "reviewer_model": "gpt-5.2-codex",
+        "verdict": "plausible",
+        "confidence": 0.68,
+        "reviewed_at": "2026-05-31T18:30:00Z",
+        "rationale_plain": "Reviewer lane for CLM-E3-007."
+      }
+    ],
+    "CLM-E3-008": [
+      {
+        "claim_id": "CLM-E3-008",
+        "reviewer_model": "claude-4.6-sonnet",
+        "verdict": "plausible",
+        "confidence": 0.75,
+        "reviewed_at": "2026-05-31T18:30:00Z",
+        "rationale_plain": "Reviewer lane for CLM-E3-008."
+      },
+      {
+        "claim_id": "CLM-E3-008",
+        "reviewer_model": "gpt-5.2-codex",
+        "verdict": "plausible",
+        "confidence": 0.68,
+        "reviewed_at": "2026-05-31T18:30:00Z",
+        "rationale_plain": "Reviewer lane for CLM-E3-008."
+      }
+    ],
+    "CLM-E3-009": [
+      {
+        "claim_id": "CLM-E3-009",
+        "reviewer_model": "claude-4.6-sonnet",
+        "verdict": "plausible",
+        "confidence": 0.75,
+        "reviewed_at": "2026-05-31T18:30:00Z",
+        "rationale_plain": "Reviewer lane for CLM-E3-009."
+      },
+      {
+        "claim_id": "CLM-E3-009",
+        "reviewer_model": "gpt-5.2-codex",
+        "verdict": "plausible",
+        "confidence": 0.68,
+        "reviewed_at": "2026-05-31T18:30:00Z",
+        "rationale_plain": "Reviewer lane for CLM-E3-009."
+      }
+    ],
+    "CLM-E3-010": [
+      {
+        "claim_id": "CLM-E3-010",
+        "reviewer_model": "claude-4.6-sonnet",
+        "verdict": "wrong",
+        "confidence": 0.75,
+        "reviewed_at": "2026-05-31T18:30:00Z",
+        "rationale_plain": "Reviewer lane for CLM-E3-010."
+      },
+      {
+        "claim_id": "CLM-E3-010",
+        "reviewer_model": "gpt-5.2-codex",
+        "verdict": "wrong",
+        "confidence": 0.68,
+        "reviewed_at": "2026-05-31T18:30:00Z",
+        "rationale_plain": "Reviewer lane for CLM-E3-010."
+      }
+    ],
+    "CLM-E3-011": [
+      {
+        "claim_id": "CLM-E3-011",
+        "reviewer_model": "claude-4.6-sonnet",
+        "verdict": "plausible",
+        "confidence": 0.75,
+        "reviewed_at": "2026-05-31T18:30:00Z",
+        "rationale_plain": "Reviewer lane for CLM-E3-011."
+      },
+      {
+        "claim_id": "CLM-E3-011",
+        "reviewer_model": "gpt-5.2-codex",
+        "verdict": "plausible",
+        "confidence": 0.68,
+        "reviewed_at": "2026-05-31T18:30:00Z",
+        "rationale_plain": "Reviewer lane for CLM-E3-011."
+      }
+    ],
+    "CLM-E3-012": [
+      {
+        "claim_id": "CLM-E3-012",
+        "reviewer_model": "claude-4.6-sonnet",
+        "verdict": "plausible",
+        "confidence": 0.75,
+        "reviewed_at": "2026-05-31T18:30:00Z",
+        "rationale_plain": "Reviewer lane for CLM-E3-012."
+      },
+      {
+        "claim_id": "CLM-E3-012",
+        "reviewer_model": "gpt-5.2-codex",
+        "verdict": "plausible",
+        "confidence": 0.68,
+        "reviewed_at": "2026-05-31T18:30:00Z",
+        "rationale_plain": "Reviewer lane for CLM-E3-012."
+      }
+    ]
+  },
+  "compare_report": {
+    "problem_id": "E-3",
+    "generated_at": "2026-05-31T14:01:56Z",
+    "claims_total": 12,
+    "by_epistemic_status": {
+      "li_proved": 1,
+      "heuristic": 6,
+      "literature_proved": 2,
+      "model_conflict": 1,
+      "refuted": 1,
+      "li_open": 1
+    },
+    "model_conflicts": 1,
+    "li_proved": 1,
+    "unprovable_language_flags": [
+      "CLM-E3-002",
+      "CLM-E3-006"
+    ],
+    "unprovable_language_detail": [
+      {
+        "claim_id": "CLM-E3-002",
+        "epistemic_status": "heuristic",
+        "reviewers_proved": [
+          "gpt-5.2-codex"
+        ]
+      },
+      {
+        "claim_id": "CLM-E3-006",
+        "epistemic_status": "model_conflict",
+        "reviewers_proved": [
+          "claude-4.6-sonnet"
+        ]
+      }
+    ]
+  }
+}

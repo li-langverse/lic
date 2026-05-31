@@ -7,7 +7,7 @@ def main() -> int
 =
   if li_std_gui_version() < 11:
     return 1
-  if gui_reactive_version() != 1:
+  if gui_reactive_version() != 2:
     return 2
   var inv: ComposeInvalidation = compose_invalidation_new()
   if compose_invalidation_any_dirty(inv) != 0:

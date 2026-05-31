@@ -74,4 +74,6 @@ Convention-based **Function** layer stores until compiler `@compose` dependency 
 
 Source: `src/reactive.li`. Shell slot ids: `reactive_store_id_agent_task`, `reactive_store_id_palette_open`, `reactive_store_id_shell_mode`, `reactive_store_id_timeline_tick`.
 
-Smoke: `li-tests/smoke/reactive_store_derived.li`. Version: `gui_reactive_version() == 1`, `li_std_gui_version() == 11`.
+**ComposePlan dependency graph (W2):** `ComposeDepGraph` maps store writes → layout regions (`compose_region_id_agent`, `palette`, `dock`, `inspector`, `timeline`, `viewport_hud`). Use `store_int_set_with_deps` / `store_float_set_with_deps` to invalidate downstream regions. Static plan table: `compose_dep_plan_store_at` / `compose_dep_plan_region_at`.
+
+Smokes: `reactive_store_derived.li`, `compose_dep_invalidation.li`. Version: `gui_reactive_version() == 2`, `li_std_gui_version() == 11`.

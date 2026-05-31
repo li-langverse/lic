@@ -3,10 +3,10 @@
 
 def gui_reactive_version() -> int
   requires true
-  ensures result == 1
+  ensures result == 2
   decreases 0
 =
-  return 1
+  return 2
 
 def reactive_store_max_id() -> int
   requires true
@@ -359,3 +359,264 @@ def derived_int_sync_agent_progress(derived: var DerivedInt, task_store: StoreIn
 =
   var pct: int = derived_int_from_agent_task_state(task_store.value)
   derived_int_sync_value(derived, task_store, pct, inv)
+
+# Phase 2 — Convention-based Function → Layout dependency graph (ComposePlan table).
+# Static edges until compiler @compose dependency analysis lands.
+
+def compose_dep_plan_version() -> int
+  requires true
+  ensures result == 1
+  decreases 0
+=
+  return 1
+
+def compose_region_max() -> int
+  requires true
+  ensures result == 5
+  decreases 0
+=
+  return 5
+
+def compose_region_id_agent() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0
+
+def compose_region_id_palette() -> int
+  requires true
+  ensures result == 1
+  decreases 0
+=
+  return 1
+
+def compose_region_id_dock() -> int
+  requires true
+  ensures result == 2
+  decreases 0
+=
+  return 2
+
+def compose_region_id_inspector() -> int
+  requires true
+  ensures result == 3
+  decreases 0
+=
+  return 3
+
+def compose_region_id_timeline() -> int
+  requires true
+  ensures result == 4
+  decreases 0
+=
+  return 4
+
+def compose_region_id_viewport_hud() -> int
+  requires true
+  ensures result == 5
+  decreases 0
+=
+  return 5
+
+def compose_dep_plan_edge_count() -> int
+  requires true
+  ensures result == 6
+  decreases 0
+=
+  return 6
+
+def compose_dep_plan_store_at(edge_idx: int) -> int
+  requires edge_idx >= 0
+  requires edge_idx <= 5
+  ensures result >= 0
+  ensures result <= reactive_store_max_id()
+  decreases edge_idx
+=
+  if edge_idx == 0:
+    return reactive_store_id_agent_task()
+  if edge_idx == 1:
+    return reactive_store_id_palette_open()
+  if edge_idx == 2:
+    return reactive_store_id_shell_mode()
+  if edge_idx == 3:
+    return reactive_store_id_shell_mode()
+  if edge_idx == 4:
+    return reactive_store_id_shell_mode()
+  if edge_idx == 5:
+    return reactive_store_id_timeline_tick()
+  return reactive_store_id_agent_task()
+
+def compose_dep_plan_region_at(edge_idx: int) -> int
+  requires edge_idx >= 0
+  requires edge_idx <= 5
+  ensures result >= 0
+  ensures result <= compose_region_max()
+  decreases edge_idx
+=
+  if edge_idx == 0:
+    return compose_region_id_agent()
+  if edge_idx == 1:
+    return compose_region_id_palette()
+  if edge_idx == 2:
+    return compose_region_id_dock()
+  if edge_idx == 3:
+    return compose_region_id_inspector()
+  if edge_idx == 4:
+    return compose_region_id_viewport_hud()
+  if edge_idx == 5:
+    return compose_region_id_timeline()
+  return compose_region_id_agent()
+
+type ComposeDepGraph = object
+  public agent_dirty: int
+  public palette_dirty: int
+  public dock_dirty: int
+  public inspector_dirty: int
+  public timeline_dirty: int
+  public viewport_hud_dirty: int
+  public tick: int
+
+def compose_dep_graph_new() -> ComposeDepGraph
+  requires true
+  ensures result.tick == 0
+  ensures result.agent_dirty == 0
+  ensures result.palette_dirty == 0
+  ensures result.dock_dirty == 0
+  ensures result.inspector_dirty == 0
+  ensures result.timeline_dirty == 0
+  ensures result.viewport_hud_dirty == 0
+  decreases 0
+=
+  var g: ComposeDepGraph
+  g.agent_dirty = 0
+  g.palette_dirty = 0
+  g.dock_dirty = 0
+  g.inspector_dirty = 0
+  g.timeline_dirty = 0
+  g.viewport_hud_dirty = 0
+  g.tick = 0
+  return g
+
+def compose_dep_mark_region(graph: var ComposeDepGraph, region_id: int) -> unit
+  requires region_id >= 0
+  requires region_id <= compose_region_max()
+  ensures compose_dep_region_is_dirty(graph, region_id) == 1
+  decreases region_id
+=
+  if region_id == compose_region_id_agent():
+    graph.agent_dirty = 1
+  if region_id == compose_region_id_palette():
+    graph.palette_dirty = 1
+  if region_id == compose_region_id_dock():
+    graph.dock_dirty = 1
+  if region_id == compose_region_id_inspector():
+    graph.inspector_dirty = 1
+  if region_id == compose_region_id_timeline():
+    graph.timeline_dirty = 1
+  if region_id == compose_region_id_viewport_hud():
+    graph.viewport_hud_dirty = 1
+
+def compose_dep_region_is_dirty(graph: ComposeDepGraph, region_id: int) -> int
+  requires region_id >= 0
+  requires region_id <= compose_region_max()
+  ensures result >= 0
+  ensures result <= 1
+  decreases region_id
+=
+  if region_id == compose_region_id_agent():
+    if graph.agent_dirty == 1:
+      return 1
+  if region_id == compose_region_id_palette():
+    if graph.palette_dirty == 1:
+      return 1
+  if region_id == compose_region_id_dock():
+    if graph.dock_dirty == 1:
+      return 1
+  if region_id == compose_region_id_inspector():
+    if graph.inspector_dirty == 1:
+      return 1
+  if region_id == compose_region_id_timeline():
+    if graph.timeline_dirty == 1:
+      return 1
+  if region_id == compose_region_id_viewport_hud():
+    if graph.viewport_hud_dirty == 1:
+      return 1
+  return 0
+
+def compose_dep_clear_region(graph: var ComposeDepGraph, region_id: int) -> unit
+  requires region_id >= 0
+  requires region_id <= compose_region_max()
+  ensures compose_dep_region_is_dirty(graph, region_id) == 0
+  decreases region_id
+=
+  if region_id == compose_region_id_agent():
+    graph.agent_dirty = 0
+  if region_id == compose_region_id_palette():
+    graph.palette_dirty = 0
+  if region_id == compose_region_id_dock():
+    graph.dock_dirty = 0
+  if region_id == compose_region_id_inspector():
+    graph.inspector_dirty = 0
+  if region_id == compose_region_id_timeline():
+    graph.timeline_dirty = 0
+  if region_id == compose_region_id_viewport_hud():
+    graph.viewport_hud_dirty = 0
+
+def compose_dep_any_region_dirty(graph: ComposeDepGraph) -> int
+  requires true
+  ensures result >= 0
+  ensures result <= 1
+  decreases 0
+=
+  if graph.agent_dirty == 1:
+    return 1
+  if graph.palette_dirty == 1:
+    return 1
+  if graph.dock_dirty == 1:
+    return 1
+  if graph.inspector_dirty == 1:
+    return 1
+  if graph.timeline_dirty == 1:
+    return 1
+  if graph.viewport_hud_dirty == 1:
+    return 1
+  return 0
+
+def compose_dep_invalidate_store(graph: var ComposeDepGraph, store_id: int) -> unit
+  requires store_id >= 0
+  requires store_id <= reactive_store_max_id()
+  ensures graph.tick == old(graph.tick) + 1
+  decreases store_id
+=
+  if store_id == reactive_store_id_agent_task():
+    compose_dep_mark_region(graph, compose_region_id_agent())
+  if store_id == reactive_store_id_palette_open():
+    compose_dep_mark_region(graph, compose_region_id_palette())
+  if store_id == reactive_store_id_shell_mode():
+    compose_dep_mark_region(graph, compose_region_id_dock())
+    compose_dep_mark_region(graph, compose_region_id_inspector())
+    compose_dep_mark_region(graph, compose_region_id_viewport_hud())
+  if store_id == reactive_store_id_timeline_tick():
+    compose_dep_mark_region(graph, compose_region_id_timeline())
+  graph.tick = graph.tick + 1
+
+def store_int_set_with_deps(store: var StoreInt, value: int, inv: var ComposeInvalidation, graph: var ComposeDepGraph) -> unit
+  requires store.store_id >= 0
+  requires store.store_id <= reactive_store_max_id()
+  ensures store.value == value
+  ensures store.dirty == 1
+  decreases value
+=
+  store_int_set(store, value, inv)
+  compose_dep_invalidate_store(graph, store.store_id)
+
+def store_float_set_with_deps(store: var StoreFloat, value: float, inv: var ComposeInvalidation, graph: var ComposeDepGraph) -> unit
+  requires store.store_id >= 0
+  requires store.store_id <= reactive_store_max_id()
+  ensures store.value == value
+  ensures store.dirty == 1
+  decreases 0
+=
+  store_float_set(store, value, inv)
+  compose_dep_invalidate_store(graph, store.store_id)

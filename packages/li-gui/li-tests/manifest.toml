@@ -57,3 +57,9 @@ suite = "smoke"
 file = "smoke/reactive_store_derived.li"
 outcome = "compile_open_ok"
 note = "T-PKG-li-gui-reactive-store"
+
+[[tests]]
+suite = "smoke"
+file = "smoke/compose_dep_invalidation.li"
+outcome = "compile_open_ok"
+note = "T-PKG-li-gui-compose-deps"

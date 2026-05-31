@@ -1,0 +1,58 @@
+import gui
+
+def main() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  if gui_reactive_version() != 2:
+    return 1
+  if compose_dep_plan_version() != 1:
+    return 2
+  if compose_dep_plan_edge_count() != 6:
+    return 3
+  if compose_dep_plan_store_at(0) != reactive_store_id_agent_task():
+    return 4
+  if compose_dep_plan_region_at(0) != compose_region_id_agent():
+    return 5
+  if compose_dep_plan_store_at(5) != reactive_store_id_timeline_tick():
+    return 6
+  if compose_dep_plan_region_at(5) != compose_region_id_timeline():
+    return 7
+  var inv: ComposeInvalidation = compose_invalidation_new()
+  var graph: ComposeDepGraph = compose_dep_graph_new()
+  if compose_dep_any_region_dirty(graph) != 0:
+    return 8
+  var task: StoreInt = store_int_new(reactive_store_id_agent_task(), 0)
+  store_int_set_with_deps(task, 2, inv, graph)
+  if compose_dep_region_is_dirty(graph, compose_region_id_agent()) != 1:
+    return 9
+  if compose_dep_region_is_dirty(graph, compose_region_id_palette()) != 0:
+    return 10
+  if compose_dep_region_is_dirty(graph, compose_region_id_timeline()) != 0:
+    return 11
+  compose_dep_clear_region(graph, compose_region_id_agent())
+  var palette: StoreInt = store_int_new(reactive_store_id_palette_open(), 0)
+  store_int_set_with_deps(palette, 1, inv, graph)
+  if compose_dep_region_is_dirty(graph, compose_region_id_palette()) != 1:
+    return 12
+  if compose_dep_region_is_dirty(graph, compose_region_id_agent()) != 0:
+    return 13
+  compose_dep_clear_region(graph, compose_region_id_palette())
+  var mode: StoreInt = store_int_new(reactive_store_id_shell_mode(), 0)
+  store_int_set_with_deps(mode, 2, inv, graph)
+  if compose_dep_region_is_dirty(graph, compose_region_id_dock()) != 1:
+    return 14
+  if compose_dep_region_is_dirty(graph, compose_region_id_inspector()) != 1:
+    return 15
+  if compose_dep_region_is_dirty(graph, compose_region_id_viewport_hud()) != 1:
+    return 16
+  if compose_dep_region_is_dirty(graph, compose_region_id_agent()) != 0:
+    return 17
+  var tick: StoreFloat = store_float_new(reactive_store_id_timeline_tick(), 0.0)
+  store_float_set_with_deps(tick, 0.25, inv, graph)
+  if compose_dep_region_is_dirty(graph, compose_region_id_timeline()) != 1:
+    return 18
+  if graph.tick != 4:
+    return 19
+  return 0

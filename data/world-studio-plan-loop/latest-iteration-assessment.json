@@ -3,11 +3,12 @@
   "todo_id": "wsm-w6-vertical-dod",
   "completion_sprint": true,
   "verification_pass": true,
-  "verified_at": "2026-05-31T05:50:00Z",
-  "agent_run": "world_studio_builder-05719274",
-  "wps_touched": ["WP-AG-06", "§11 vertical DoD"],
+  "verified_at": "2026-05-31T05:47:00Z",
+  "agent_run": "world_studio_builder-1780206140600",
+  "wps_touched": ["WP-SIM-06", "WP-UX-02", "WP-UX-04", "WP-UX-06", "WP-UX-09", "WP-GD-05", "WP-AG-03", "WP-AG-06", "WP-PUB-03", "§11 vertical DoD"],
   "smokes_run": [
     "scripts/world-studio-plan-lic-smokes-wsl.sh",
+    "packages/li-studio/li-tests/smoke/studio_toml_engine_export.li",
     "scripts/world-studio-plan-gates.sh",
     "scripts/world-studio-plan-completion-gate.sh"
   ],

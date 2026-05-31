@@ -103,10 +103,16 @@ llvm::Value* string_ptr(llvm::IRBuilder<>& builder, llvm::GlobalVariable* gv) {
 
 llvm::CallInst* create_user_call(llvm::IRBuilder<>& builder, llvm::Function* callee,
                                  llvm::ArrayRef<llvm::Value*> args) {
-  llvm::CallInst* call = builder.CreateCall(callee, args);
   llvm::Type* ret_ty = callee->getReturnType();
-  if (ret_ty->isStructTy() || ret_ty->isArrayTy()) {
-    call->setFastMathFlags(llvm::FastMathFlags());
+  const bool strip_fmf = ret_ty->isStructTy() || ret_ty->isArrayTy();
+  llvm::FastMathFlags saved;
+  if (strip_fmf) {
+    saved = builder.getFastMathFlags();
+    builder.setFastMathFlags(llvm::FastMathFlags());
+  }
+  llvm::CallInst* call = builder.CreateCall(callee, args);
+  if (strip_fmf) {
+    builder.setFastMathFlags(saved);
   }
   return call;
 }

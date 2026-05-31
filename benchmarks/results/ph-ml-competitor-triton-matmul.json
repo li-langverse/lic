@@ -3,12 +3,12 @@
   "suite": "ph-ml-competitor-triton-matmul",
   "workload": "matmul_4x4_f32",
   "executed": true,
-  "cpu_sec": 0.000102,
+  "cpu_sec": 0.000152,
   "validity_gate_pass": true,
   "validity_ratio": 1.0,
   "framework_version": "3.2.0",
   "device": "cuda",
   "workload_size": 4,
   "note": null,
-  "generated_at": "2026-05-31T15:27:55Z"
+  "generated_at": "2026-05-31T16:29:48Z"
 }

@@ -6,6 +6,12 @@ import sha384
 import hkdf
 import chacha20_poly1305
 import x25519
+import pem_golden
+import base64
+import pem
+import asn1
+import ed25519_pem
+import x509
 
 def li_crypto_version() -> int
   requires true
@@ -32,6 +38,31 @@ def li_crypto_m1_selftest() -> int
   if r != 0:
     return r + 30
   r = crypto_x25519_selftest()
+  if r != 0:
+    return r + 40
+  return 0
+
+def li_crypto_m1_pem_selftest() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  var r: int = crypto_pem_scan_selftest(0)
+  if r != 0:
+    return r
+  r = crypto_pem_scan_selftest(1)
+  if r != 0:
+    return r + 2
+  r = crypto_pem_b64_der_selftest(0)
+  if r != 0:
+    return r + 10
+  r = crypto_pem_b64_der_selftest(1)
+  if r != 0:
+    return r + 20
+  r = crypto_ed25519_pkcs8_selftest()
+  if r != 0:
+    return r + 30
+  r = crypto_x509_ed25519_selftest()
   if r != 0:
     return r + 40
   return 0

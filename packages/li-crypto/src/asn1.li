@@ -1,0 +1,70 @@
+# asn1 — minimal DER helpers over golden DER bytes (M1b).
+
+import pem_golden
+
+def crypto_asn1_der_byte(kind: int, off: int) -> int
+  requires kind == 0 or kind == 1
+  requires 0 <= off
+  ensures 0 <= result and result <= 255
+  decreases 0
+=
+  if kind == 0:
+    return crypto_pem_pkcs8_der_golden_byte(off)
+  return crypto_pem_cert_der_golden_byte(off)
+
+def crypto_asn1_der_len(kind: int) -> int
+  requires kind == 0 or kind == 1
+  ensures result > 0
+  decreases 0
+=
+  if kind == 0:
+    return crypto_pem_pkcs8_der_len()
+  return crypto_pem_cert_der_len()
+
+def crypto_asn1_read_len(kind: int, off: int) -> int
+  requires kind == 0 or kind == 1
+  requires 0 <= off
+  requires off < crypto_asn1_der_len(kind)
+  ensures 0 <= result
+  decreases 0
+=
+  var b: int = crypto_asn1_der_byte(kind, off)
+  if b < 128:
+    return b
+  var n: int = b - 128
+  if n <= 0 or n > 4:
+    return 0
+  var acc: int = 0
+  var i: int = 0
+  while i < n
+    acc = acc * 256 + crypto_asn1_der_byte(kind, off + 1 + i)
+    i = i + 1
+  return acc
+
+def crypto_asn1_hdr_len(kind: int, off: int) -> int
+  requires kind == 0 or kind == 1
+  requires 0 <= off
+  requires off < crypto_asn1_der_len(kind)
+  ensures result >= 1
+  decreases 0
+=
+  var b: int = crypto_asn1_der_byte(kind, off + 1)
+  if b < 128:
+    return 2
+  return 2 + (b - 128)
+
+def crypto_asn1_tag(kind: int, off: int) -> int
+  requires kind == 0 or kind == 1
+  requires 0 <= off
+  ensures 0 <= result and result <= 255
+  decreases 0
+=
+  return crypto_asn1_der_byte(kind, off)
+
+def crypto_asn1_len(kind: int, off: int) -> int
+  requires kind == 0 or kind == 1
+  requires 0 <= off
+  ensures 0 <= result
+  decreases 0
+=
+  return crypto_asn1_read_len(kind, off + 1)

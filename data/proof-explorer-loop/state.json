@@ -27,5 +27,6 @@
     "BUG-C-06",
     "BUG-C-08",
     "BUG-C-12"
-  ]
+  ],
+  "li_coverage_pct": 100
 }

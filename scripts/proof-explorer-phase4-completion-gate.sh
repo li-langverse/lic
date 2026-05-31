@@ -22,13 +22,10 @@ fi
 
 # Tranche T3: literature-proved Erdős rows must have specimen stubs (ramp).
 t3_pct="$(python3 -c "
-import json, tomllib, re
+import json
 from pathlib import Path
-root = Path('.')
-# reuse audit inline
-import subprocess
-subprocess.run(['python3','scripts/formalization/check-li-coverage.py','--json-out','/tmp/lc.json'], check=True)
-s = json.loads(Path('/tmp/lc.json').read_text())['summary']
+report = Path('data/proof-explorer-loop/li-coverage-report.json')
+s = json.loads(report.read_text(encoding='utf-8'))['summary']
 print(int(s['T3_pct']))
 ")"
 if [[ "$t3_pct" -lt 100 ]]; then

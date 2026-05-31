@@ -1,4 +1,4 @@
-#!/usr/bin/env bash
+﻿#!/usr/bin/env bash
 # Phase 4 — Li coverage invariant (every row: li_specimen or explicit open gap).
 set -euo pipefail
 ROOT="$(cd "$(dirname "$0")/.." && pwd)"
@@ -20,29 +20,30 @@ if [[ ! -f data/proof-explorer-loop/wp-li-coverage.signoff ]]; then
   fail=1
 fi
 
-# Tranche T3: literature-proved Erdős rows must have specimen stubs (ramp).
-t3_pct="$(python3 -c "
-import json, tomllib, re
-from pathlib import Path
-root = Path('.')
-# reuse audit inline
-import subprocess
-subprocess.run(['python3','scripts/formalization/check-li-coverage.py','--json-out','/tmp/lc.json'], check=True)
-s = json.loads(Path('/tmp/lc.json').read_text())['summary']
-print(int(s['T3_pct']))
-")"
-if [[ "$t3_pct" -lt 100 ]]; then
-  echo "phase4: T3 (literature-proved Erdős) at ${t3_pct}% — continue formalization tranche (need 100%)" >&2
+report="data/proof-explorer-loop/li-coverage-report.json"
+if [[ ! -f "$report" ]]; then
+  echo "phase4: missing $report (run wp-li-coverage)" >&2
   fail=1
 else
-  echo "phase4: T3 coverage OK (${t3_pct}%)"
-fi
-
-# Full corpus: every catalog row covered.
-overall="$(python3 -c "import json; from pathlib import Path; s=json.loads(Path('data/proof-explorer-loop/li-coverage-report.json').read_text())['summary']; print(int(s['pct_overall']))")"
-if [[ "$overall" -lt 100 ]]; then
-  echo "phase4: overall Li coverage ${overall}% (need 100%)" >&2
-  fail=1
+  read -r t3_pct overall < <(python3 - <<'PY'
+import json
+from pathlib import Path
+s = json.loads(Path("data/proof-explorer-loop/li-coverage-report.json").read_text())["summary"]
+print(int(s["T3_pct"]), int(s["pct_overall"]))
+PY
+)
+  if [[ "$t3_pct" -lt 100 ]]; then
+    echo "phase4: T3 (literature-proved Erdos) at ${t3_pct} pct (need 100)" >&2
+    fail=1
+  else
+    echo "phase4: T3 coverage OK (${t3_pct} pct)"
+  fi
+  if [[ "$overall" -lt 100 ]]; then
+    echo "phase4: overall Li coverage ${overall} pct (need 100)" >&2
+    fail=1
+  else
+    echo "phase4: overall coverage OK (${overall} pct)"
+  fi
 fi
 
 if [[ "$fail" -ne 0 ]]; then

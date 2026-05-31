@@ -11,20 +11,7 @@ param(
 
 $ErrorActionPreference = "Stop"
 $LicRoot = Split-Path $PSScriptRoot -Parent
-
-function Convert-ToWslPath([string]$WinPath) {
-    $p = (Resolve-Path -LiteralPath $WinPath).Path -replace '\\', '/'
-    if ($p -match '^([A-Za-z]):(.*)$') {
-        return "/mnt/$($Matches[1].ToLower())$($Matches[2])"
-    }
-    return $p
-}
-
-function Test-ElfBinary([string]$Path) {
-    if (-not (Test-Path -LiteralPath $Path)) { return $false }
-    $b = [System.IO.File]::ReadAllBytes($Path)
-    return $b.Length -ge 4 -and $b[0] -eq 0x7F -and $b[1] -eq 0x45 -and $b[2] -eq 0x4C -and $b[3] -eq 0x46
-}
+. (Join-Path $PSScriptRoot "LiWorldStudio-Runtime.ps1")
 
 function Resolve-Lic {
     $candidates = @(
@@ -48,11 +35,7 @@ function Resolve-Lic {
 }
 
 function Resolve-Demo {
-    foreach ($name in @("li-studio-demo.exe", "li-studio-demo")) {
-        $p = Join-Path $LicRoot "build\$name"
-        if (Test-Path -LiteralPath $p) { return (Resolve-Path -LiteralPath $p).Path }
-    }
-    return $null
+    Resolve-StudioDemoPath -InstallRoot $LicRoot -DemoPath $null
 }
 
 function Resolve-PresentHostBin([bool]$PreferWindows) {
@@ -94,6 +77,7 @@ $demo = Resolve-Demo
 if ($CheckOnly) {
     Write-Host "lic:  $(if ($lic) { $lic } else { '(missing)' })"
     Write-Host "demo: $(if ($demo) { $demo } else { '(missing)' })"
+    if ($demo) { Write-Host "demo_format: $(if (Test-ElfBinary $demo) { 'ELF (WSL)' } else { 'Windows PE' })" }
     if ($HostPresent) {
         $preferWin = $demo -and -not (Test-ElfBinary $demo)
         $ph = Resolve-PresentHostBin -PreferWindows:$preferWin
@@ -101,6 +85,7 @@ if ($CheckOnly) {
         if (-not $ph) { exit 1 }
     }
     if (-not $lic -or -not $demo) { exit 1 }
+    if ($demo -and (Test-ElfBinary $demo) -and -not (Test-WslAvailable)) { exit 1 }
     exit 0
 }
 
@@ -126,30 +111,18 @@ if (-not $demo) {
     exit 2
 }
 
-$env:STUDIO_DEMO_PROFILE = $Profile
-$env:STUDIO_DEMO_FRAMES = "$Frames"
-
-if ($HostPresent) {
-    $env:LIG_HOST_PRESENT = "1"
-    if (-not $SkipPresentHostBuild) {
-        $env:STUDIO_SHELL_PRESENT_HOST_BIN = Ensure-PresentHost
-    } else {
-        $preferWin = -not (Test-ElfBinary $demo)
-        $env:STUDIO_SHELL_PRESENT_HOST_BIN = Resolve-PresentHostBin -PreferWindows:$preferWin
-        if (-not $env:STUDIO_SHELL_PRESENT_HOST_BIN) {
-            throw "STUDIO_SHELL_PRESENT_HOST_BIN not set; run build-studio-shell-present-host.ps1"
-        }
-    }
-} else {
-    Remove-Item Env:LIG_HOST_PRESENT -ErrorAction SilentlyContinue
-    Remove-Item Env:STUDIO_SHELL_PRESENT_HOST_BIN -ErrorAction SilentlyContinue
+if ($HostPresent -and -not $SkipPresentHostBuild) {
+    $null = Ensure-PresentHost
 }
 
 Write-Host "Li World Studio" -ForegroundColor Cyan
 Write-Host "  profile=$Profile frames=$Frames host_present=$($HostPresent.IsPresent)"
 Write-Host "  demo=$demo"
-if ($HostPresent) { Write-Host "  present_host=$($env:STUDIO_SHELL_PRESENT_HOST_BIN)" }
+if ($HostPresent) {
+    $phRoot = Join-Path $LicRoot "deploy\studio-demo\native"
+    $ph = Resolve-StudioPresentHost -SearchRoot $phRoot -HostPresent -DemoIsElf:(Test-ElfBinary $demo)
+    Write-Host "  present_host=$ph"
+}
 
-& $demo
-exit $LASTEXITCODE
-
+$exitCode = Invoke-LiWorldStudioDemo -InstallRoot $LicRoot -Profile $Profile -Frames $Frames -HostPresent:$HostPresent
+exit $exitCode

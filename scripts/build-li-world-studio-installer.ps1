@@ -1,4 +1,4 @@
-# Build LiWorldStudio-Setup.exe (Inno Setup 6+). Run from lic repo root or via this script path.
+﻿# Build LiWorldStudio-Setup.exe (Inno Setup 6+). Run from lic repo root or via this script path.
 param(
     [switch]$SkipPresentHost,
     [switch]$InstallInno,
@@ -57,6 +57,9 @@ if (-not $SkipPresentHost) {
     & (Join-Path $PSScriptRoot "build-studio-shell-present-host.ps1") -Quiet:$Quiet
 }
 
+
+Copy-Item -LiteralPath (Join-Path $PSScriptRoot "LiWorldStudio-Runtime.ps1") `
+    -Destination (Join-Path $LicRoot "installer\LiWorldStudio-Runtime.ps1") -Force
 & (Join-Path $PSScriptRoot "Ensure-StudioInstallerAssets.ps1")
 
 $iscc = Find-Iscc
@@ -84,3 +87,4 @@ if (-not (Test-Path -LiteralPath $out)) {
 }
 
 Write-Host "Installer built: $out" -ForegroundColor Green
+

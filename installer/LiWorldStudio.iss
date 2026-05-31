@@ -34,18 +34,28 @@ WizardSmallImageFile=installer/assets/wizard-small.bmp
 [Languages]
 Name: "english"; MessagesFile: "compiler:Default.isl"
 
-[Tasks]
-Name: "profile_scientific"; Description: "Default profile: Scientific simulation"; GroupDescription: "Demo profile"
-Name: "profile_rl"; Description: "Default profile: RL / agents"; GroupDescription: "Demo profile"
-Name: "profile_drug"; Description: "Default profile: Drug design"; GroupDescription: "Demo profile"
-Name: "profile_game"; Description: "Default profile: Game / GD (recommended)"; GroupDescription: "Demo profile"
+[CustomMessages]
+english.WelcomeLabel2=This will install [name/ver] on your computer.%n%nThe demo runs on Windows via WSL2 (Ubuntu). If WSL is not installed yet, run: wsl --install%n%nOn the next page, pick a default simulation profile (stored in studio-profile.txt).
+
+[Messages]
+english.WelcomeLabel1=Welcome to the Li World Studio Setup Wizard
+english.FinishedLabel=Setup has finished installing [name] on your computer.%n%nLaunch Li World Studio from the Start Menu. For an SDL window, use the shortcut labeled (host present).%n%nSee WINDOWS-RUN.txt if WSL or SDL setup is needed.
 
 [Tasks]
-Name: "desktopicon"; Description: "Create a desktop shortcut"; GroupDescription: "Additional icons"
+Name: "profile_scientific"; Description: "Scientific simulation"; GroupDescription: "Default demo profile (pick one)"
+Name: "profile_rl"; Description: "Reinforcement learning / agents"; GroupDescription: "Default demo profile (pick one)"
+Name: "profile_drug"; Description: "Drug design workflow"; GroupDescription: "Default demo profile (pick one)"
+Name: "profile_game"; Description: "Game / graphics demo (recommended)"; GroupDescription: "Default demo profile (pick one)"
+
+[Tasks]
+Name: "desktopicon"; Description: "Create a &desktop shortcut"; GroupDescription: "Shortcuts"
 
 [Files]
 Source: "build\{#MyAppExeName}"; DestDir: "{app}"; Flags: ignoreversion
 Source: "installer\Launch-LiWorldStudio.cmd"; DestDir: "{app}"; Flags: ignoreversion
+Source: "installer\launch-li-world-studio.ps1"; DestDir: "{app}"; Flags: ignoreversion
+Source: "installer\LiWorldStudio-Runtime.ps1"; DestDir: "{app}"; Flags: ignoreversion
+Source: "installer\assets\app.ico"; DestDir: "{app}"; DestName: "LiWorldStudio.ico"; Flags: ignoreversion
 Source: "installer\assets\README.txt"; DestDir: "{app}"; Flags: ignoreversion
 Source: "installer\WINDOWS-RUN.txt"; DestDir: "{app}"; Flags: ignoreversion
 Source: "deploy\studio-demo\native\studio_shell_present_host"; DestDir: "{app}"; DestName: "studio_shell_present_host"; Flags: ignoreversion skipifsourcedoesntexist
@@ -54,9 +64,9 @@ Source: "deploy\studio-demo\native\SDL2.dll"; DestDir: "{app}"; Flags: ignorever
 Source: "build-wsl\compiler\lic\lic.exe"; DestDir: "{app}\tools"; Flags: ignoreversion skipifsourcedoesntexist
 
 [Icons]
-Name: "{group}\{#MyAppName}"; Filename: "{app}\Launch-LiWorldStudio.cmd"; WorkingDir: "{app}"; IconFilename: "{app}\{#MyAppExeName}"
-Name: "{group}\{#MyAppName} (host present)"; Filename: "{app}\Launch-LiWorldStudio.cmd"; Parameters: "game present"; WorkingDir: "{app}"; Comment: "SDL windowed present (LIG_HOST_PRESENT=1)"
-Name: "{autodesktop}\{#MyAppName}"; Filename: "{app}\Launch-LiWorldStudio.cmd"; Tasks: desktopicon; WorkingDir: "{app}"
+Name: "{group}\{#MyAppName}"; Filename: "{app}\Launch-LiWorldStudio.cmd"; WorkingDir: "{app}"; IconFilename: "{app}\LiWorldStudio.ico"
+Name: "{group}\{#MyAppName} (host present)"; Filename: "{app}\Launch-LiWorldStudio.cmd"; Parameters: "game present"; WorkingDir: "{app}"; IconFilename: "{app}\LiWorldStudio.ico"; Comment: "SDL windowed present (LIG_HOST_PRESENT=1)"
+Name: "{autodesktop}\{#MyAppName}"; Filename: "{app}\Launch-LiWorldStudio.cmd"; Tasks: desktopicon; WorkingDir: "{app}"; IconFilename: "{app}\LiWorldStudio.ico"
 
 [Run]
 Filename: "{app}\Launch-LiWorldStudio.cmd"; Description: "Launch {#MyAppName}"; Flags: nowait postinstall skipifsilent
@@ -65,7 +75,13 @@ Filename: "{app}\Launch-LiWorldStudio.cmd"; Description: "Launch {#MyAppName}"; 
 procedure InitializeWizard;
 begin
   WizardForm.Color := $17110D;
+  WizardForm.Font.Name := 'Segoe UI';
+  WizardForm.Font.Size := 9;
   WizardForm.Font.Color := $F3EDE6;
+  WizardForm.WelcomeLabel1.Font.Style := [fsBold];
+  WizardForm.WelcomeLabel1.Font.Size := 11;
+  WizardForm.WelcomeLabel2.Font.Size := 9;
+  WizardForm.FinishedLabel.Font.Size := 9;
 end;
 
 function ProfileSlug: String;
@@ -83,10 +99,13 @@ end;
 procedure CurStepChanged(CurStep: TSetupStep);
 var
   Slug: String;
+  ProfilePath: String;
 begin
   if CurStep = ssPostInstall then
   begin
     Slug := ProfileSlug;
     RegWriteStringValue(HKCU, 'Environment', 'STUDIO_DEMO_PROFILE', Slug);
+    ProfilePath := ExpandConstant('{app}\studio-profile.txt');
+    SaveStringToFile(ProfilePath, Slug + #13#10, False);
   end;
 end;

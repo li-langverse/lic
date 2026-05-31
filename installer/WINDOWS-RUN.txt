@@ -1,28 +1,24 @@
-Li World Studio on Windows
+﻿Li World Studio on Windows
 ==========================
 
-Demo binary
+Quick start
 -----------
-The installer ships li-studio-demo.exe (often a WSL/Linux build copied for packaging).
-On Windows 10/11 with WSL2, double-click shortcuts may run via Linux interop, or use:
+1. Install WSL2 with Ubuntu (if not already):  wsl --install
+2. Launch from Start Menu: "Li World Studio"
+   For an SDL window: "Li World Studio (host present)"
 
-  wsl -e bash -lc "cd /mnt/c/.../Li World Studio && ./li-studio-demo.exe"
+The installer ships a Linux demo binary; Launch-LiWorldStudio.cmd runs it via WSL automatically.
 
-For a native Windows build, compile lic on Windows and rebuild the demo; replace the
-installed binary under Program Files.
+Demo profile
+------------
+Default profile is stored in studio-profile.txt (set during install).
+Override:  Launch-LiWorldStudio.cmd sim_rl
 
 SDL windowed mode (host present)
 --------------------------------
-Use the Start Menu shortcut "Li World Studio (host present)" or:
+Start Menu -> Li World Studio (host present)
+Requires studio_shell_present_host in the install folder (built during installer compile via WSL).
 
-  Launch-LiWorldStudio.cmd game present
-
-From the li workspace:
-
-  ..\scripts\start-li-world-studio.ps1 -HostPresent
-
-Requires the SDL present host (deploy/studio-demo/native/studio_shell_present_host).
-The build script installs libsdl2-dev in WSL on first run if needed.
-
-Optional native Windows SDL: MSYS2 + mingw-w64-x86_64-SDL2, then
-  scripts\build-studio-shell-present-host.ps1
+Native Windows demo (optional)
+--------------------------------
+Build lic on Windows, rebuild li-studio-demo, replace li-studio-demo.exe in the install folder.

@@ -1,0 +1,14 @@
+{
+  "competitor_id": "rust_mlp",
+  "suite": "ph-ml-competitor-rust-mlp",
+  "workload": "mlp_forward_2_2_1_f32",
+  "executed": false,
+  "cpu_sec": null,
+  "validity_gate_pass": false,
+  "validity_ratio": 0.0,
+  "framework_version": null,
+  "device": "cpu",
+  "workload_size": null,
+  "note": "rustc not found",
+  "generated_at": "2026-05-31T14:53:49Z"
+}

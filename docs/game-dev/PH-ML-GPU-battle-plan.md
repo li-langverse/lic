@@ -1,6 +1,6 @@
 # PH-ML-GPU battle plan — native ML/DL/RL on Li
 
-**Status:** Wave 10 LLM depth + RL IPC + MLP competitors (2026-05-31); Wave 9 LLM recovery + C++/Rust competitors (2026-05-31); Wave 8 SOTA competitive drivers (2026-05-31); Wave 6 flat matmul + process env scaffold + competitive benches (2026-05-31); Wave 5 thread-pool RL + JobGraph queue (2026-05-31); Wave 4 merged (2026-05-30); Wave 3 JobGraph landed (2026-05-30); Wave 1 spine on branch  
+**Status:** Wave 11 carryover (2026-05-31); Wave 10 LLM depth + RL IPC + MLP competitors (2026-05-31); Wave 9 LLM recovery + C++/Rust competitors (2026-05-31); Wave 8 SOTA competitive drivers (2026-05-31); Wave 6 flat matmul + process env scaffold + competitive benches (2026-05-31); Wave 5 thread-pool RL + JobGraph queue (2026-05-31); Wave 4 merged (2026-05-30); Wave 3 JobGraph landed (2026-05-30); Wave 1 spine on branch  
 **Vision:** [world-studio-vision.md](world-studio-vision.md)  
 **RFC:** [specs/ml-async-parallel-rfc.md](specs/ml-async-parallel-rfc.md)  
 **Tracker:** [PH-ML-GPU-execution-tracker.md](PH-ML-GPU-execution-tracker.md)
@@ -25,3 +25,5 @@
 | **9** | PH-LLM Wave 7 recovery + C++/Rust matmul + matmul perf + process mode 2 | li-llm, li-ml, li-sim | ph-ml-wave9-gates.sh |
 
 | **10** | PH-LLM depth + RL IPC scaffold + NumPy/C++ MLP + SB3 driver + tier-3 LLM bench | li-llm, li-ml, li-sim | ph-ml-wave10-gates.sh |
+| **11** | Wave 10 carryover: GPU/LKIR matmul, safetensors bytes, RL fork IPC, Rust MLP, 16×16 row | li-llm, li-ml, li-sim | ph-ml-wave11-gates.sh |
+

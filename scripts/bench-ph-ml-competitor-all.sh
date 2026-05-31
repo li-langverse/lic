@@ -59,3 +59,12 @@ export PH_ML_CPP_OPENMP_MLP_OUT="${PH_ML_CPP_OPENMP_MLP_OUT:-$BENCHMARKS_RESULTS
 python3 "$ROOT/scripts/bench_ph_ml_competitor_cpp_openmp_mlp.py" || true
 
 echo "bench-ph-ml-competitor-all: wave10 drivers done"
+
+export PH_ML_RUST_MLP_OUT="${PH_ML_RUST_MLP_OUT:-$BENCHMARKS_RESULTS/ph-ml-competitor-rust-mlp.json}"
+python3 "$ROOT/scripts/bench_ph_ml_competitor_rust_mlp.py" || true
+
+export PH_ML_MATMUL_N=16
+export PH_ML_NUMPY_OUT_16="${PH_ML_NUMPY_OUT_16:-$BENCHMARKS_RESULTS/ph-ml-competitor-numpy-matmul-16.json}"
+PH_ML_NUMPY_OUT="$PH_ML_NUMPY_OUT_16" PH_ML_MATMUL_N=16 python3 "$ROOT/scripts/bench_ph_ml_competitor_numpy_matmul.py" || true
+
+echo "bench-ph-ml-competitor-all: wave11 drivers done"

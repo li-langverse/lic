@@ -1159,6 +1159,27 @@ def env_pool_stub_step_thread_pool(pool: var EnvPoolStub, session: var SimSessio
     i = i + 1
   return sim_status_ok()
 
+
+def sim_rl_env_ipc_fork_mode_label() -> int
+  requires true
+  ensures result == 4
+  decreases 0
+=
+  return 4
+
+def env_pool_stub_step_fork_ipc(pool: var EnvPoolStub, session: var SimSessionStub, dt: float) -> int
+  requires pool.pool_size > 0
+  requires pool.pool_size <= 32
+  requires session.tick >= 0
+  requires session.replay_capacity > 0
+  ensures result >= 0
+  ensures result <= 1
+  decreases pool.pool_size
+=
+  if sim_rl_env_ipc_fork_mode_label() != 4:
+    return sim_status_invalid_dt()
+  return env_pool_stub_step_ipc_scaffold(pool, session, dt)
+
 def env_pool_stub_step_ipc_scaffold(pool: var EnvPoolStub, session: var SimSessionStub, dt: float) -> int
   requires pool.pool_size > 0
   requires pool.pool_size <= 32

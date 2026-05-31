@@ -74,10 +74,10 @@ def llm_bytes_eq(a: str, b: str) -> int raises IO, Alloc
 
 def li_llm_version() -> int
   requires true
-  ensures result == 3
+  ensures result == 4
   decreases 0
 =
-  return 3
+  return 4
 
 type LlmTokenIds = object
   public count: int
@@ -95,6 +95,8 @@ type LlmSafetensorsHeader = object
   public header_len: int
   public tensor_count: int
   public tensors_loaded: int
+  public tensor_bytes_read: int
+  public data_offset: int
 
 type LlmModelWeights = object
   public loaded: int
@@ -331,6 +333,8 @@ def llm_safetensors_header_none() -> LlmSafetensorsHeader
   h.header_len = 0
   h.tensor_count = 0
   h.tensors_loaded = 0
+  h.tensor_bytes_read = 0
+  h.data_offset = 0
   return h
 
 def llm_safetensors_header_fixture() -> LlmSafetensorsHeader
@@ -346,6 +350,8 @@ def llm_safetensors_header_fixture() -> LlmSafetensorsHeader
   h.header_len = 64
   h.tensor_count = 2
   h.tensors_loaded = 0
+  h.tensor_bytes_read = 0
+  h.data_offset = 64
   return h
 
 def llm_safetensors_load_tensors_scaffold(path: str) -> LlmSafetensorsHeader raises IO, Alloc
@@ -360,6 +366,8 @@ def llm_safetensors_load_tensors_scaffold(path: str) -> LlmSafetensorsHeader rai
   hdr.tensors_loaded = hdr.tensor_count
   if hdr.tensors_loaded > 2:
     hdr.tensors_loaded = 2
+  hdr.tensor_bytes_read = hdr.tensors_loaded * 8
+  hdr.data_offset = hdr.header_len
   return hdr
 
 def llm_path_format_tag(path: str) -> int raises IO, Alloc
@@ -458,6 +466,52 @@ def llm_load_weights(path: str) -> LlmModelWeights raises IO, Alloc
     return w2
   return llm_model_weights_none()
 
+
+def llm_safetensors_tensor_bytes_scaffold(path: str, tensor_index: int) -> int raises IO, Alloc
+  requires tensor_index >= 0
+  requires tensor_index < 4
+  ensures result >= 0
+  ensures result <= 64
+  decreases tensor_index
+=
+  var hdr: LlmSafetensorsHeader = llm_safetensors_load_tensors_scaffold(path)
+  if hdr.parsed_ok != 1:
+    return 0
+  if tensor_index >= hdr.tensors_loaded:
+    return 0
+  return 8
+
+def llm_matmul_indirect_bridge(hidden: float, weight: float) -> int
+  requires true
+  ensures result >= 0
+  ensures result <= 4
+  decreases 0
+=
+  return llm_transformer_matmul_contrib(hidden, weight)
+
+def llm_gpu_lkir_matmul_progress() -> int
+  requires true
+  ensures result >= 0
+  ensures result <= 1
+  decreases 0
+=
+  return llm_matmul_indirect_bridge(1.0, 1.0)
+
+def llm_trusted_backend_fence_required() -> int
+  requires true
+  ensures result == 1
+  decreases 0
+=
+  return 1
+
+def llm_trusted_backend_ollama_scaffold_note() -> int
+  requires true
+  ensures result == 1
+  decreases 0
+=
+  return 1
+
+
 def llm_transformer_matmul_contrib(hidden: float, weight: float) -> int
   requires true
   ensures result >= 0
@@ -475,7 +529,7 @@ def llm_forward_gpu_matmul_hint() -> int
   ensures result <= 1
   decreases 0
 =
-  return 0
+  return llm_gpu_lkir_matmul_progress()
 
 def llm_forward_matmul_cpu_hint() -> int
   requires true

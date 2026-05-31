@@ -1,3 +1,15 @@
+**Wave 10:**
+**Wave 11:** Wave 10 carryover sprint (WP-LLM-06..08, WP-RL-07, competitive)
+
+| WP | Item | Wave | Status | Artifact |
+| WP-LLM-06 | GPU/LKIR matmul progress | 11 | partial | ml_gpu_matmul_stub.li |
+| WP-LLM-07 | lillm-import HF/offline | 11 | partial | lillm-import.sh |
+| WP-LLM-08 | Ollama trusted backend scaffold | 11 | partial | llm_trusted_backend_scaffold.li |
+| WP-LLM-09 | safetensors byte tensor scaffold | 11 | partial | llm_safetensors_bytes.li |
+| WP-ML-19 | 16×16 logical LKIR matmul row | 11 | partial | ml_matmul_16_lkir.li |
+| WP-ML-20 | Rust MLP competitor | 11 | partial | bench_ph_ml_competitor_rust_mlp.py |
+| WP-RL-07 | SB3 SubprocVecEnv + fork IPC pilot | 11 | partial | bench_ph_ml_rl_env_ipc_fork.py |
+
 **Wave 10:** PH-LLM depth + RL IPC + competitive MLP/SB3 (WP-LLM-01..07, WP-RL-06..07)
 
 **Wave 7:** PH-LLM tokenizer/safetensors/transformer + NumPy competitor (WP-LLM-01..03, WP-ML-12)

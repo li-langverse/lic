@@ -39,16 +39,16 @@ try:
     n = DEFAULT_MATMUL_N
 
     @triton.jit
-    def matmul_kernel(a_ptr, b_ptr, c_ptr, stride, n_val, BLOCK: tl.constexpr):
+    def matmul_row_kernel(a_ptr, b_ptr, c_ptr, stride, n_val, BLOCK: tl.constexpr):
         pid = tl.program_id(0)
         if pid >= n_val:
             return
-        acc = tl.zeros((BLOCK,), dtype=tl.float32)
+        acc = 0.0
         for k in range(n_val):
             a_val = tl.load(a_ptr + pid * stride + k)
             b_val = tl.load(b_ptr + k * stride + pid)
-            acc += a_val * b_val
-        tl.store(c_ptr + pid * stride + pid, acc[0])
+            acc = acc + a_val * b_val
+        tl.store(c_ptr + pid * stride + pid, acc)
 
     a = torch.eye(n, dtype=torch.float32, device="cuda")
     b = torch.eye(n, dtype=torch.float32, device="cuda")
@@ -56,7 +56,7 @@ try:
     grid = (n,)
 
     def run():
-        matmul_kernel[grid](a, b, c, n, n, BLOCK=1)
+        matmul_row_kernel[grid](a, b, c, n, n, BLOCK=1)
         torch.cuda.synchronize()
         return c
 

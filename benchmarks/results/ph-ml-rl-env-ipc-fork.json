@@ -1,0 +1,9 @@
+{
+  "suite": "ph-ml-rl-env-ipc-fork",
+  "generated_at": "2026-05-31T14:53:49Z",
+  "executed": true,
+  "validity_gate_pass": true,
+  "note": "multiprocessing spawn x4 (Wave 11)",
+  "cpu_sec": 0.088251,
+  "validity_ratio": 1.0
+}

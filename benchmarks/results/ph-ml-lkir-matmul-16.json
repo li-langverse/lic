@@ -1,0 +1,9 @@
+{
+  "suite": "ph-ml-lkir-matmul-16",
+  "workload_size": 16,
+  "compile_ok": true,
+  "executed": true,
+  "validity_gate_pass": false,
+  "validity_ratio": 0.0,
+  "cpu_sec": 0.005199
+}

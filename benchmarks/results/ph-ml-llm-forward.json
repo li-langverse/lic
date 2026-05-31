@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-05-31T13:08:57Z",
+  "generated_at": "2026-05-31T14:53:39Z",
   "suite": "ph-ml-llm-forward",
   "workload_class": "tier3_cpu",
   "compile_ok": true,
@@ -8,5 +8,5 @@
   "worker": "cpu_sync",
   "worker_count": 1,
   "tier3_runs": 50,
-  "cpu_sec": 0.000806
+  "cpu_sec": 0.000722
 }

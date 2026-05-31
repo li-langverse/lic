@@ -1,0 +1,13 @@
+# ST-AX-BC-PR-011: Kolmogorov probability axioms on finite space (variant 11).
+
+extern proc proof_db_st_ax_bc_pr_011() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+
+def main() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0

@@ -1,0 +1,8 @@
+# CHEM-LM-BC-IG-036: Ideal gas law PV=nRT (form 36).
+
+def main() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0

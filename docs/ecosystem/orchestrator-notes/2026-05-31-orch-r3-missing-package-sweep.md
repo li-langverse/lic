@@ -11,13 +11,13 @@
 
 | Field | Value |
 |-------|-------|
-| Swarm posture | **Degraded (recoverable)** — grade **C** (77.0); `unattended_safe: true` on scorecard |
+| Swarm posture | **Degraded (recoverable)** — grade **C** (72.8 @ 01:02Z); `unattended_safe: false` (32% error rate) |
 | `orch-r3` | **Completed** — ingest + apply confirmed; 3 `missing_package` gaps patched to backlog |
 | Explorer signal | `std.io` / `std.csv` **present**; `std.summary` / `std.plot` **missing** |
 | `pkg-line-profiler` | Seed row **pending** (`gap-line-profiler-001` → `issue_planner`) |
 | Unattended? | **Marginal** — package gaps routed; implementation requires `issue_planner` / `package_architect` |
 
-Programmatic prep: `lic/scripts/swarm-gap-ingest.py` + `lic/scripts/swarm-gap-apply-actions.py` @ 2026-05-31T00:53:15Z (idempotent).
+Programmatic prep: `lic/scripts/swarm-gap-ingest.py` + `lic/scripts/swarm-gap-apply-actions.py` @ 2026-05-31T01:02:15Z (idempotent).
 
 ---
 
@@ -79,5 +79,6 @@ Research goal `swarm_coverage` remains on `swarm_observer` (cadence 6h) in `li-c
 
 - `lic/data/swarm-gap-registry/registry.yaml`
 - `benchmarks/data/latest/swarm-gap-actions.json`
-- `benchmarks/data/runs/swarm_observer-1780188806890.md`
+- `benchmarks/data/runs/swarm_observer-1780189246743.md`
+- `benchmarks/data/latest/swarm-observer-digest-2026-05-31T0102Z.md`
 - `benchmarks/data/latest/ecosystem-quality-report.json`

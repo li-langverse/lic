@@ -14,5 +14,6 @@
     "world_studio_runnable_gate": "pass",
     "lic_check_local": "pass_wsl_json"
   },
-  "notes": "Added scene MD particle memory ledger helpers (lig.memory bridge) for studio_md_particle_tier_select_ok. Fixed runnable gate WSL path + JSON ok check (W0401 false-positive warnings). SIM-3 EnvPool persistent session fields + 8-dim obs contract verified via env_pool_step_contract.li."
+  "notes": "Added scene MD particle memory ledger helpers (lig.memory bridge) for studio_md_particle_tier_select_ok. Fixed runnable gate WSL path + JSON ok check (W0401 false-positive warnings). SIM-3 EnvPool persistent session fields + 8-dim obs contract verified via env_pool_step_contract.li.",
+  "pr_url": "https://github.com/li-langverse/lic/pull/626"
 }

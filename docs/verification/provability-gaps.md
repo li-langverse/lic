@@ -1,6 +1,6 @@
 # Provability gaps (current compiler)
 
-**Last updated:** 2026-05-30  
+**Last updated:** 2026-05-31  
 **Audience:** contributors, package authors, anyone relying on `lic build` as a proof certificate  
 
 Li’s **north star** is: user logic is proved before ship; runtime failures for proved programs → **~0%**. That is the **target**, not a complete description of **`lic` today**.
@@ -35,7 +35,7 @@ This page is the **honest inventory** of what is **not** fully proved or not yet
 |----|--------|----------------|
 | **G-lean** | Partial | **Tier B (default when lake installed):** `lic build` runs `lake build AutoVC` (typecheck only; `--no-lean-verify` opt-out). **Strict** open goals: `--strict-lean`. Open obligations: fail unless `--allow-open-vc` (CLI only; env bypass removed). **`LiArray`** + fib/recursive call-site + parallel `_par*` VCs typecheck. **Closed slice:** `sqrt_open_bound` via `Li.Discharge` + `Li.Trusted.li_rt_sqrt_square_bound` (**G-hw**). **Still open:** `mat2_at2_eval` trusted vs MIR `@` (semantic closed in `Discharge.lean`) |
 | **G-vc** | Partial | **Closed slice:** `sqrt_open_bound` float `abs` bound (trusted libm axiom). Still open: opaque `vec3_dot`-style returns; loop implementations vs closed-form `ensures` |
-| **G-par** | Partial | AST `policy_module` rejects missing disjoint, false `disjoint_row`, mut capture, borrow-in-par; Lean proofs open |
+| **G-par** | Partial | AST `policy_module` rejects missing disjoint, false `disjoint_row`, mut capture, borrow-in-par; Lean proofs open. Normative Kokkos/PETSc portable-loop mapping: [PETSc–Kokkos execution/memory model](../superpowers/specs/2026-05-31-li-petsc-kokkos-execution-memory-model.md) (lic#28) |
 | **G-dec** | Partial | **Closed slice:** MIR telemetry + corpus scripts; Lean **P-dec** open |
 | **G-math** | Partial | **Closed slice (tier-1):** `matmul_naive`, `horner_pure_li` ≤1.2× C++ (`check-tier1-li-vs-cpp.sh`, loop matmul + FMA horner). **Closed slice:** full 2×2 float `@` Lean Prop (`linalg_mat2_at2_float_closed`, `mat2_at2_float_spec`). **Closed slice:** `linalg_dot4_float_closed` (prelude `dot`), `linalg_mat2_callproc_float_closed`, prelude `norm`/`axpy`/**, IKJ `ArrayMatMul2DF64` enforced only with `LI_TIER1_PERF_STRICT=1` (`check-tier1-li-vs-cpp.sh` reports gaps by default). **Closed slice:** prelude `norm`, `axpy`, same-length `**`, scalar×array, `math_linalg/reductions/`, loop-dot witness, P-linalg corpus |
 | **G-bnd** | Partial | **Closed slice:** `bounds_refinement_release_ok.li` + `check_release_bounds_ir.sh`; `discharge_refinement_lean.sh` |
@@ -48,7 +48,7 @@ This page is the **honest inventory** of what is **not** fully proved or not yet
 | **G-net** | Partial | Net effect codegen + proofs |
 | **G-trust** | Stub | `Core.lean` / `MIR.lean` semantics, not placeholder |
 | **G-ann** | Missing | PEP 649 deferred annotations |
-| **G-gpu** | Partial | **Closed slice:** `@gpu` / `@gpu(devices=N)` are MIR-visible (`mir_gpu_def`, `mir_gpu_multi_device_def`) with `devices >= 1` policy. Still open: address-space proofs, LKIR lowering, device buffers, and vendor codegen |
+| **G-gpu** | Partial | **Closed slice:** `@gpu` / `@gpu(devices=N)` are MIR-visible (`mir_gpu_def`, `mir_gpu_multi_device_def`) with `devices >= 1` policy. Still open: address-space proofs, LKIR lowering, device buffers, and vendor codegen. Memory-space / data-movement requirements: [PETSc–Kokkos execution/memory model](../superpowers/specs/2026-05-31-li-petsc-kokkos-execution-memory-model.md) (lic#28) |
 | **G-meta** | Missing | Compiler ↔ Lean equivalence (research) |
 | **G-authz** | Missing | Capability / IDOR (OS phase) |
 | **G-test-verify** | **Done** | `prove_lean_ok` in `run_all.sh`; 14 closed `contracts_verify` specimens |

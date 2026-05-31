@@ -1,0 +1,14 @@
+{
+  "competitor_id": "triton_cuda",
+  "suite": "ph-ml-competitor-triton-matmul",
+  "workload": "matmul_4x4_f32",
+  "executed": false,
+  "cpu_sec": null,
+  "validity_gate_pass": false,
+  "validity_ratio": 0.0,
+  "framework_version": "3.2.0",
+  "device": "cuda",
+  "workload_size": 4,
+  "note": "Triton kernel failed (Wave 8 pilot): at 10:41:\ndef matmul_kernel(a_ptr, b_ptr, c_ptr, stride, n_val, BLOCK: tl.constexpr):\n    pid = tl.program_id(0)\n    if pid >= n_val:\n        return\n    acc = tl.zeros((BLOCK,), dtype=tl.float32)\n    for k in range(n_val):\n        a_val = tl.load(a_ptr + pid * stride + k)\n        b_val = tl.load(b_ptr + k * stride + pid)\n        acc += a_val * b_val\n    tl.store(c_ptr + pid * stride + pid, acc[0])\n                                         ^\nValueError('unsupported tensor index: constexpr[0]')",
+  "generated_at": "2026-05-31T09:21:41Z"
+}

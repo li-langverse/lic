@@ -1,23 +1,25 @@
 {
-  "generated_at": "2026-05-31T03:03:56Z",
+  "generated_at": "2026-05-31T09:21:45Z",
   "suite": "ph-ml-competitive",
-  "registry_path": "benchmarks/competitive/ph-ml.toml",
+  "registry_path": "/mnt/c/Users/Julian/Documents/Programming/li/benchmarks/benchmarks/workloads/competitive/ph-ml.toml",
   "registry_schema": "li_ph_ml_competitive_v1",
   "rows": [
     {
       "id": "matmul_lkir",
       "kernel": "ml.lkir.matmul_f32",
       "workload_class": "pilot",
+      "workload_note": "Li row: LKIR lig kernel kid=1 validity gate; competitors: 4x4 f32 identity matmul (50 runs)",
       "executed": true,
       "li": {
         "id": "li",
         "incumbent": "Li native",
         "workload_class": "pilot",
         "executed": true,
-        "cpu_sec": 0.001043,
+        "cpu_sec": 0.001001,
         "validity_gate_pass": true,
         "validity_ratio": 1.0,
-        "ratio_vs_li": 1.0
+        "ratio_vs_li": 1.0,
+        "workload": null
       },
       "competitors": [
         {
@@ -46,12 +48,91 @@
           "id": "python_numpy",
           "incumbent": "NumPy BLAS matmul",
           "workload_class": "blas_labeled",
+          "executed": true,
+          "cpu_sec": 1e-06,
+          "validity_gate_pass": true,
+          "validity_ratio": 1.0,
+          "ratio_vs_li": 0.000999,
+          "note": "numpy pinned",
+          "framework_version": "2.2.6",
+          "device": "cpu",
+          "workload_size": 4,
+          "workload": "matmul_4x4_f32"
+        },
+        {
+          "id": "pytorch_cpu",
+          "incumbent": "PyTorch CPU matmul",
+          "workload_class": "blas_labeled",
+          "executed": true,
+          "cpu_sec": 6e-06,
+          "validity_gate_pass": true,
+          "validity_ratio": 1.0,
+          "ratio_vs_li": 0.005994,
+          "note": "torch pinned",
+          "framework_version": "2.6.0+cu124",
+          "device": "cpu",
+          "workload_size": 4,
+          "workload": "matmul_4x4_f32"
+        },
+        {
+          "id": "pytorch_cuda",
+          "incumbent": "PyTorch CUDA matmul",
+          "workload_class": "gpu_labeled",
+          "executed": true,
+          "cpu_sec": 7.6e-05,
+          "validity_gate_pass": true,
+          "validity_ratio": 1.0,
+          "ratio_vs_li": 0.075924,
+          "note": "optional GPU",
+          "framework_version": "2.6.0+cu124",
+          "device": "cuda",
+          "workload_size": 4,
+          "workload": "matmul_4x4_f32"
+        },
+        {
+          "id": "jax_cpu",
+          "incumbent": "JAX CPU matmul",
+          "workload_class": "blas_labeled",
+          "executed": true,
+          "cpu_sec": 4.7e-05,
+          "validity_gate_pass": true,
+          "validity_ratio": 1.0,
+          "ratio_vs_li": 0.046953,
+          "note": "jax pinned",
+          "framework_version": "0.5.3",
+          "device": "cpu",
+          "workload_size": 4,
+          "workload": "matmul_4x4_f32"
+        },
+        {
+          "id": "tensorflow_cpu",
+          "incumbent": "TensorFlow CPU matmul",
+          "workload_class": "blas_labeled",
           "executed": false,
           "cpu_sec": null,
-          "validity_gate_pass": null,
-          "validity_ratio": null,
+          "validity_gate_pass": false,
+          "validity_ratio": 0.0,
           "ratio_vs_li": null,
-          "note": "BLAS labeled"
+          "note": "tensorflow not installed (optional Wave 8 dep)",
+          "framework_version": null,
+          "device": "cpu",
+          "workload_size": 4,
+          "workload": "matmul_4x4_f32"
+        },
+        {
+          "id": "triton_cuda",
+          "incumbent": "Triton CUDA matmul kernel",
+          "workload_class": "gpu_labeled",
+          "executed": false,
+          "cpu_sec": null,
+          "validity_gate_pass": false,
+          "validity_ratio": 0.0,
+          "ratio_vs_li": null,
+          "note": "Triton kernel failed (Wave 8 pilot): at 10:41:\ndef matmul_kernel(a_ptr, b_ptr, c_ptr, stride, n_val, BLOCK: tl.constexpr):\n    pid = tl.program_id(0)\n    if pid >= n_val:\n        return\n    acc = tl.zeros((BLOCK,), dtype=tl.float32)\n    for k in range(n_val):\n        a_val = tl.load(a_ptr + pid * stride + k)\n        b_val = tl.load(b_ptr + k * stride + pid)\n        acc += a_val * b_val\n    tl.store(c_ptr + pid * stride + pid, acc[0])\n                                         ^\nValueError('unsupported tensor index: constexpr[0]')",
+          "framework_version": "3.2.0",
+          "device": "cuda",
+          "workload_size": 4,
+          "workload": "matmul_4x4_f32"
         }
       ]
     },
@@ -59,16 +140,18 @@
       "id": "mlp_forward",
       "kernel": "ml.mlp_forward_f32",
       "workload_class": "pilot",
+      "workload_note": "2-2-1 f32 MLP forward (ml_mlp_forward.li smoke shape)",
       "executed": true,
       "li": {
         "id": "li",
         "incumbent": "Li native",
         "workload_class": "pilot",
         "executed": true,
-        "cpu_sec": 0.874111,
+        "cpu_sec": 1.020016,
         "validity_gate_pass": true,
         "validity_ratio": 1.0,
-        "ratio_vs_li": 1.0
+        "ratio_vs_li": 1.0,
+        "workload": null
       },
       "competitors": [
         {
@@ -84,14 +167,29 @@
         },
         {
           "id": "python_numpy",
-          "incumbent": "PyTorch nn.Linear",
+          "incumbent": "NumPy manual MLP",
           "workload_class": "blas_labeled",
           "executed": false,
           "cpu_sec": null,
           "validity_gate_pass": null,
           "validity_ratio": null,
           "ratio_vs_li": null,
-          "note": "incumbent ML"
+          "note": "deferred Wave 8"
+        },
+        {
+          "id": "pytorch_cpu",
+          "incumbent": "PyTorch CPU MLP forward",
+          "workload_class": "blas_labeled",
+          "executed": true,
+          "cpu_sec": 1.4e-05,
+          "validity_gate_pass": true,
+          "validity_ratio": 1.0,
+          "ratio_vs_li": 1.4e-05,
+          "note": "torch pinned",
+          "framework_version": "2.6.0+cu124",
+          "device": "cpu",
+          "workload_size": null,
+          "workload": "mlp_forward_2_2_1_f32"
         }
       ]
     },
@@ -99,16 +197,17 @@
       "id": "async_env_collect",
       "kernel": "ml.rl.async_env_collect",
       "workload_class": "pilot",
-      "executed": true,
+      "executed": false,
       "li": {
         "id": "li",
         "incumbent": "Li native",
         "workload_class": "pilot",
-        "executed": true,
-        "cpu_sec": 2.115965,
-        "validity_gate_pass": true,
-        "validity_ratio": 1.0,
+        "executed": false,
+        "cpu_sec": null,
+        "validity_gate_pass": false,
+        "validity_ratio": 0.0,
         "ratio_vs_li": 1.0,
+        "workload": null,
         "worker": "thread_pool",
         "worker_count": 4,
         "parallelism_model": "pthread_pool_env_rewards"
@@ -151,7 +250,8 @@
         "cpu_sec": null,
         "validity_gate_pass": false,
         "validity_ratio": 0.0,
-        "ratio_vs_li": 1.0
+        "ratio_vs_li": 1.0,
+        "workload": null
       },
       "competitors": [
         {

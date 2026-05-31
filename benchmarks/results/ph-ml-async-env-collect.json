@@ -1,0 +1,36 @@
+{
+  "generated_at": "2026-05-31T09:21:37Z",
+  "suite": "ph-ml-async-env-collect",
+  "smoke": "packages/li-ml-rl/li-tests/smoke/env_pool_async_four.li",
+  "env_count": 4,
+  "num_envs": 4,
+  "async_workers": 4,
+  "worker": "thread_pool",
+  "worker_count": 4,
+  "parallelism_model": "pthread_pool_env_rewards",
+  "samples_collected": false,
+  "compile_ok": false,
+  "executed": false,
+  "validity_gate_pass": false,
+  "stderr_tail": "packages/li-ml-rl/li-tests/smoke/env_pool_async_four.li:1:1: error [resolve.import]: import_resolve: module not found: ml_rl\n",
+  "envs": [
+    {
+      "env_index": 0,
+      "worker": "thread_pool"
+    },
+    {
+      "env_index": 1,
+      "worker": "thread_pool"
+    },
+    {
+      "env_index": 2,
+      "worker": "thread_pool"
+    },
+    {
+      "env_index": 3,
+      "worker": "thread_pool"
+    }
+  ],
+  "g_ml_async_proof": false,
+  "uses_li_parallel_for": true
+}

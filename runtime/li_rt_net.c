@@ -184,7 +184,7 @@ static char g_proxy_host[64] = "127.0.0.1";
 static int32_t g_proxy_port = 0;
 static int g_proxy_all = 0;
 
-#define HTTPD_MAX_ROUTES 16
+#define HTTPD_MAX_ROUTES 128
 typedef struct {
   char method[16];
   char path_prefix[512];
@@ -270,7 +270,7 @@ static int g_auth_required = 0;
 static int g_auth_key_count = 0;
 static char g_auth_keys[HTTPD_MAX_AUTH_KEYS][HTTPD_AUTH_KEY_LEN];
 
-#define HTTPD_MAX_UPSTREAM_PEERS 8
+#define HTTPD_MAX_UPSTREAM_PEERS 32
 #define HTTPD_POOL_PER_PEER 32
 
 typedef struct {
@@ -5359,7 +5359,8 @@ int32_t httpd_load_runtime_config_i(intptr_t path) {
   if (httpd_m2_policy_blocks_proxy_snap()) {
     httpd_proxy_snap_reset();
   }
-  if (g_up_peer_count > 0) {
+  /* Defer blocking prewarm: dead NodePorts stall startup before listen bind. */
+  if (0 && g_up_peer_count > 0) {
     upstream_pool_prewarm_all();
   }
   if (g_m2_tls_terminate && g_tls_enabled_flat && g_tls_cert_dir[0]) {

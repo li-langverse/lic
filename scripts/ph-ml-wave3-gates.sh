@@ -30,7 +30,7 @@ lic_check_smokes() {
   for smoke in \
     packages/li-ml-rl/li-tests/smoke/job_graph_collect.li \
     packages/li-ml-rl/li-tests/smoke/env_pool_async_four.li \
-    packages/li-studio/li-tests/smoke/studio_sim_rl_step.li; do
+    ../studio/li-tests/smoke/studio_sim_rl_step.li; do
     [[ -f "$smoke" ]] || { echo "missing smoke: $smoke"; return 1; }
     set +e
     "$lic" check "$smoke" 2>&1

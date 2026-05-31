@@ -1,2 +1,0 @@
-deploy/studio-demo/native/demos/*_demo
-!*.c

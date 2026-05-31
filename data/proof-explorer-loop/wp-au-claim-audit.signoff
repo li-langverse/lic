@@ -1,0 +1,6 @@
+# WP-AU — research claim audit UI
+
+Page: deploy/research-audit/index.html (GitHub Pages via lic repo)
+Data: deploy/research-audit/data/E-52.json
+Export: scripts/research-audit/export-audit-ui.py
+Signed: 2026-05-31 (code_implementer agent run 1780217203809)

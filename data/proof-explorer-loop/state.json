@@ -1,8 +1,15 @@
 {
   "sprint": "proof-explorer-program",
-  "phase": 2,
+  "phase": 3,
   "started": "2026-05-31",
   "completed_wps": ["wp-k8", "wp0", "wp1", "wp2", "wp3", "wp4", "wp5", "wp6", "tier-b"],
+  "current_wp": "wp-ra",
+  "branch": "cursor/proof-explorer-phase3",
+  "research_problem_id": "E-52",
+  "claim_count": 12,
+  "review_round": 1,
   "current_wp": "complete",
-  "branch": "cursor/proof-explorer-phase2"
+  "loop_sleep_sec": 300,
+  "problem_source": "erdos_register",
+  "priority_tier": "P0"
 }

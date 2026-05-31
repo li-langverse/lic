@@ -120,6 +120,7 @@ PETSc+Kokkos integration at exascale implies:
 - [x] Li-facing requirements for execution spaces, memory spaces, data movement, async fences
 - [x] PH-7d / G-par proof attachment rules for portable loops
 - [x] Cross-link lic#15 and existing execution specs
+- [x] Shipped in [PR #671](https://github.com/li-langverse/lic/pull/671) (planning slice; CI green 2026-05-31)
 - [ ] MIR/LKIR lowering for `@gpu` kernels (lic#15 — separate issue)
 - [ ] Lean memory-space laws (**G-gpu**)
 - [ ] PETSc FFI view bindings (tier-2 PDE track)

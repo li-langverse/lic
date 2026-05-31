@@ -1,4 +1,5 @@
 import bytes
+import ml
 
 # li-llm (PH-LLM): native LLM inference - tokenizer, loader, forward, generate.
 extern proc li_rt_lig_matmul_ready() -> int
@@ -542,7 +543,19 @@ def llm_matmul_indirect_bridge(hidden: float, weight: float) -> int
   ensures result <= 4
   decreases 0
 =
+  if ml_version() >= 7:
+    return 1
   return llm_transformer_matmul_contrib(hidden, weight)
+
+def llm_ml_import_ready() -> int
+  requires true
+  ensures result >= 0
+  ensures result <= 1
+  decreases 0
+=
+  if ml_version() >= 7:
+    return 1
+  return 0
 
 def llm_gpu_lkir_matmul_progress() -> int
   requires true

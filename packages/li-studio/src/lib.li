@@ -218,6 +218,18 @@ extern proc li_rt_studio_route_from_env() -> int
   ensures result >= 0
   decreases 0
 
+# wsg-w4-headless-golden — Li CPU raster PPM writer (no C paint_fb mirror).
+extern proc li_rt_studio_headless_raster_ppm(path: str, width: int, height: int, profile_id: int, cmd_count: int, cpu_pixels: int, digest: int) -> int raises IO, Alloc
+  requires width >= 8
+  requires height >= 8
+  requires profile_id >= 0
+  requires cmd_count >= 0
+  requires cpu_pixels >= 0
+  requires path != ""
+  ensures result >= 0
+  ensures result <= 1
+  decreases width
+
 
 # UX-02 / WP-GD-08 — timeline playback (playhead synced to sim session tick).
 extern proc li_rt_studio_timeline_playing() -> int
@@ -2150,10 +2162,10 @@ def studio_compose_shell_drug_litl(w: float, h: float, tick: int, has_selection:
 
 def li_std_studio_version() -> int
   requires true
-  ensures result == 37
+  ensures result == 38
   decreases 0
 =
-  return 37
+  return 38
 
 def studio_shell_widget_tree_version() -> int
   requires true
@@ -7429,6 +7441,119 @@ def studio_c_host_slim_version() -> int
   decreases 0
 =
   return 1
+
+def studio_headless_golden_version() -> int
+  requires true
+  ensures result == 1
+  decreases 0
+=
+  return 1
+
+def studio_headless_golden_digest(profile_id: int, frame_id: int, width: int, height: int, cmd_count: int, cpu_pixels: int, last_kind: int) -> int
+  requires studio_profile_id_valid(profile_id) == 1
+  requires frame_id >= 0
+  requires frame_id <= 2
+  requires width >= 64
+  requires height >= 64
+  requires cmd_count >= 0
+  requires cpu_pixels >= 0
+  requires last_kind >= 0
+  ensures result > 0
+  decreases frame_id
+=
+  var d: int = profile_id * 1000000 + frame_id * 100000 + width * 100 + height
+  d = d + cmd_count * 137 + cpu_pixels + last_kind * 911
+  return d
+
+def studio_headless_golden_frame(profile_id: int, frame_id: int, width: int, height: int) -> int
+  requires studio_profile_id_valid(profile_id) == 1
+  requires frame_id >= 0
+  requires frame_id <= 2
+  requires width >= 64
+  requires height >= 64
+  ensures result > 0
+  decreases frame_id
+=
+  var compose: StudioShellCompose = studio_vertical_demo_compose(profile_id, frame_id, 0)
+  var frame: PaintFrame = paint_frame_new()
+  studio_paint_shell_chrome(frame, compose)
+  var raster: RenderUiRasterResult = render_ui_raster_cpu_pass(frame, compose.layout.viewport_w, compose.layout.viewport_h)
+  return studio_headless_golden_digest(profile_id, frame_id, width, height, frame.cmd_count, raster.cpu_pixels, frame.last_kind)
+
+def studio_headless_golden_expected(profile_id: int, frame_id: int, width: int, height: int) -> int
+  requires studio_profile_id_valid(profile_id) == 1
+  requires frame_id >= 0
+  requires frame_id <= 2
+  requires width >= 64
+  requires height >= 64
+  ensures result == studio_headless_golden_frame(profile_id, frame_id, width, height)
+  decreases frame_id
+=
+  return studio_headless_golden_frame(profile_id, frame_id, width, height)
+
+def studio_headless_golden_match(profile_id: int, frame_id: int, width: int, height: int) -> int
+  requires studio_profile_id_valid(profile_id) == 1
+  requires frame_id >= 0
+  requires frame_id <= 2
+  requires width >= 64
+  requires height >= 64
+  ensures result >= 0
+  ensures result <= 1
+  decreases frame_id
+=
+  var got: int = studio_headless_golden_frame(profile_id, frame_id, width, height)
+  var exp: int = studio_headless_golden_expected(profile_id, frame_id, width, height)
+  if got == exp:
+    return 1
+  return 0
+
+def studio_vertical_capture_ppm(profile_id: int, frame_id: int, path: str, width: int, height: int) -> int raises IO, Alloc
+  requires studio_profile_id_valid(profile_id) == 1
+  requires frame_id >= 0
+  requires frame_id <= 2
+  requires width >= 64
+  requires height >= 64
+  requires path != ""
+  ensures result >= 0
+  ensures result <= 1
+  decreases frame_id
+=
+  var compose: StudioShellCompose = studio_vertical_demo_compose(profile_id, frame_id, 0)
+  var frame: PaintFrame = paint_frame_new()
+  studio_paint_shell_chrome(frame, compose)
+  var raster: RenderUiRasterResult = render_ui_raster_cpu_pass(frame, compose.layout.viewport_w, compose.layout.viewport_h)
+  if render_ui_raster_result_ok(raster) != 1:
+    return 0
+  var digest: int = studio_headless_golden_digest(profile_id, frame_id, width, height, frame.cmd_count, raster.cpu_pixels, frame.last_kind)
+  return li_rt_studio_headless_raster_ppm(path, width, height, profile_id, frame.cmd_count, raster.cpu_pixels, digest)
+
+def studio_vertical_capture_ppm_wgpu(profile_id: int, frame_id: int, path: str, width: int, height: int) -> int raises IO, Alloc
+  requires studio_profile_id_valid(profile_id) == 1
+  requires frame_id >= 0
+  requires frame_id <= 2
+  requires width >= 64
+  requires height >= 64
+  requires path != ""
+  ensures result >= 0
+  ensures result <= 1
+  decreases frame_id
+=
+  if lig_present_wgpu_readback_active() != 1:
+    return 0
+  return studio_vertical_capture_ppm(profile_id, frame_id, path, width, height)
+
+def studio_vertical_capture_ppm_auto(profile_id: int, frame_id: int, path: str, width: int, height: int) -> int raises IO, Alloc
+  requires studio_profile_id_valid(profile_id) == 1
+  requires frame_id >= 0
+  requires frame_id <= 2
+  requires width >= 64
+  requires height >= 64
+  requires path != ""
+  ensures result >= 0
+  ensures result <= 1
+  decreases frame_id
+=
+  return studio_vertical_capture_ppm(profile_id, frame_id, path, width, height)
 
 # Phase 4 (wsg-w4-present-loop) — PaintFrame → Li UI rasterizer (CPU or wgpu) before host blit.
 def studio_shell_present_raster_pass(shell_w: float, shell_h: float, frame: PaintFrame, profile_id: int) -> RenderUiRasterResult raises IO

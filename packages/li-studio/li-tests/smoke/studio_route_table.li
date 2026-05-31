@@ -6,7 +6,7 @@ def main() raises IO -> int
   ensures result == 0
   decreases 0
 =
-  if li_std_studio_version() < 37:
+  if li_std_studio_version() < 38:
     return 1
   if studio_route_table_version() != 1:
     return 2

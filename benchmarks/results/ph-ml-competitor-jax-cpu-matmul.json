@@ -1,0 +1,14 @@
+{
+  "competitor_id": "jax_cpu",
+  "suite": "ph-ml-competitor-jax-cpu-matmul",
+  "workload": "matmul_4x4_f32",
+  "executed": true,
+  "cpu_sec": 4.7e-05,
+  "validity_gate_pass": true,
+  "validity_ratio": 1.0,
+  "framework_version": "0.5.3",
+  "device": "cpu",
+  "workload_size": 4,
+  "note": null,
+  "generated_at": "2026-05-31T09:21:40Z"
+}

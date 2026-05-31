@@ -50,7 +50,7 @@ todos:
   status: completed
 - id: wp-d-registry-v2
   content: "WP-D registry schema v2 + lip OpenAPI (human sign-off)"
-  status: pending
+  status: completed
 - id: wp-prod-lidb-default
   content: "Production LI_CONTROL_PLANE_STORE=lidb (human sign-off)"
   status: pending

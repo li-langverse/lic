@@ -1,0 +1,14 @@
+{
+  "competitor_id": "ray_rllib",
+  "suite": "ph-ml-competitor-ray-rllib",
+  "workload": "async_env_collect_4",
+  "executed": false,
+  "cpu_sec": null,
+  "validity_gate_pass": false,
+  "validity_ratio": 0.0,
+  "framework_version": null,
+  "device": "cpu",
+  "workload_size": 4,
+  "note": "ray not installed (optional Wave 12)",
+  "generated_at": "2026-05-31T15:27:57Z"
+}

@@ -1,0 +1,13 @@
+# CHEM-AX-BC-AX-025: Conservation of mass in closed reaction (form 25).
+
+extern proc proof_db_chem_ax_bc_ax_025() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+
+def main() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0

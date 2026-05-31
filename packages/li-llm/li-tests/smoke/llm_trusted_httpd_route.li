@@ -1,0 +1,12 @@
+import llm
+
+def main() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  if llm_trusted_backend_li_httpd_route() != 1:
+    return 1
+  if llm_trusted_backend_li_httpd_path_note() != 1:
+    return 2
+  return 0

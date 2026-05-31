@@ -101,6 +101,16 @@ llvm::Value* string_ptr(llvm::IRBuilder<>& builder, llvm::GlobalVariable* gv) {
   return builder.CreateInBoundsGEP(gv->getValueType(), gv, indices);
 }
 
+llvm::CallInst* create_user_call(llvm::IRBuilder<>& builder, llvm::Function* callee,
+                                 llvm::ArrayRef<llvm::Value*> args) {
+  llvm::CallInst* call = builder.CreateCall(callee, args);
+  llvm::Type* ret_ty = callee->getReturnType();
+  if (ret_ty->isStructTy() || ret_ty->isArrayTy()) {
+    call->setFastMathFlags(llvm::FastMathFlags());
+  }
+  return call;
+}
+
 struct ArraySlot {
   llvm::AllocaInst* alloca = nullptr;
   std::int64_t size = 0;
@@ -969,7 +979,7 @@ struct EmitCtx {
           }
           args.push_back(val);
         }
-        llvm::CallInst* call = builder->CreateCall(callee, args);
+        llvm::CallInst* call = create_user_call(*builder, callee, args);
         if (!ins.ident.empty()) {
           if (ins.is_i64) {
             llvm::Value* wide = call;
@@ -1017,7 +1027,7 @@ struct EmitCtx {
           }
           args.push_back(val);
         }
-        llvm::CallInst* call = builder->CreateCall(callee, args);
+        llvm::CallInst* call = create_user_call(*builder, callee, args);
         if (callee->getReturnType()->isVoidTy()) {
           return true;
         }

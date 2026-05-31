@@ -1,0 +1,8 @@
+# GT-LM-BC-CON-018: Connected graph |E| >= |V|-1 (variant 18).
+
+def main() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0

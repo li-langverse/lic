@@ -66,16 +66,19 @@ jobs:
         run: |
           brew update
           brew install llvm@22 sdl2 ninja cmake
-          echo "$(brew --prefix llvm@22)/bin" >> "$GITHUB_PATH"
           echo "LLVM_DIR=$(brew --prefix llvm@22)/lib/cmake/llvm" >> "$GITHUB_ENV"
 
       - name: Build lic
         run: |
+          # Link against Homebrew LLVM; compile with Xcode clang++/libc++ (see ci.yml).
           cmake -B build -G Ninja \
             -DLLVM_DIR="${LLVM_DIR}" \
             -DCMAKE_C_COMPILER=clang -DCMAKE_CXX_COMPILER=clang++ \
             -DLI_BUILD_TESTS=OFF
           cmake --build build -j "$(sysctl -n hw.ncpu)" --target lic
+        env:
+          CC: clang
+          CXX: clang++
 
       - name: Build li-studio-demo + present host
         run: |

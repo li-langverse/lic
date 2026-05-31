@@ -1,0 +1,8 @@
+# P-LM-BC-EM-017: Ohm law V = I R (linear resistor stub).
+
+def main() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0

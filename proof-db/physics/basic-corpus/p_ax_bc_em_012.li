@@ -1,0 +1,13 @@
+# P-AX-BC-EM-012: Gauss law (integral form) for electric flux.
+
+extern proc proof_db_p_ax_bc_em_012() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+
+def main() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0

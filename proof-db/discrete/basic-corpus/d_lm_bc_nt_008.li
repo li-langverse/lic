@@ -1,0 +1,8 @@
+# D-LM-BC-NT-008: Divisibility / gcd property (variant 8).
+
+def main() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0

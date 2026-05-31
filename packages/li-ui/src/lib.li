@@ -1460,6 +1460,32 @@ def paint_cmd_viewport_grid(rect: Rect) -> PaintCmd
   c.color_b = color_rgb(0.0, 0.0, 0.0, 0.0)
   return c
 
+def paint_frame_push_elevated_panel(frame: var PaintFrame, rect: Rect) -> unit
+  requires frame.cmd_count >= 0
+  requires rect.w >= 0.0
+  requires rect.h >= 0.0
+  ensures frame.cmd_count == old(frame.cmd_count) + 2
+  ensures frame.last_kind == paint_op_stroke_round_rect()
+  decreases 0
+=
+  var grad: PaintCmd = paint_cmd_fill_gradient(rect, studio_color_bg_primary(), studio_color_bg_elevated())
+  paint_frame_push(frame, grad)
+  var border: PaintCmd = paint_cmd_stroke_round(rect, studio_color_border(), 1.0, studio_default_panel_radius_px())
+  paint_frame_push(frame, border)
+
+def paint_frame_push_accent_chip(frame: var PaintFrame, rect: Rect, accent: Color) -> unit
+  requires frame.cmd_count >= 0
+  requires rect.w >= 0.0
+  requires rect.h >= 0.0
+  ensures frame.cmd_count == old(frame.cmd_count) + 2
+  ensures frame.last_kind == paint_op_stroke_round_rect()
+  decreases 0
+=
+  var fill: PaintCmd = paint_cmd_fill_round(rect, accent, studio_radius_sm_px())
+  paint_frame_push(frame, fill)
+  var ring: PaintCmd = paint_cmd_stroke_round(rect, studio_color_border(), 1.0, studio_radius_sm_px())
+  paint_frame_push(frame, ring)
+
 def paint_studio_shell_chrome(frame: var PaintFrame, layout: var StudioShellLayout) -> unit
   requires frame.cmd_count >= 0
   ensures frame.cmd_count >= 1

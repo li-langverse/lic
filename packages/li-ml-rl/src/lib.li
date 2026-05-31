@@ -237,3 +237,12 @@ def ml_rl_env_pool_async_collect(session: var SimSessionStub, dt: float) -> int
 =
   var graph: JobGraphStub = job_graph_stub_default()
   return ml_rl_job_graph_collect(session, dt, graph)
+
+def ml_rl_env_pool_process_scaffold_collect(session: var SimSessionStub, dt: float) -> int
+  requires session.tick >= 0
+  requires session.replay_capacity > 0
+  ensures result >= 0
+  ensures result <= 1
+  decreases session.tick
+=
+  return sim_rl_session_env_pool_step_process_scaffold(session, dt)

@@ -337,6 +337,12 @@ note = "W4: all shell regions on Widget tree + reactive store sync"
 
 [[tests]]
 suite = "smoke"
+file = "smoke/studio_route_table.li"
+outcome = "check_ok"
+note = "W4: StudioRoute table for verticals/modes formalized (wsg-w4-route-table)"
+
+[[tests]]
+suite = "smoke"
 file = "smoke/studio_agentic_run.li"
 outcome = "check_ok"
 note = "T-PKG-li-studio-agentic-run PH-AGENT-2 Studio agent state model"

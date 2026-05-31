@@ -920,6 +920,55 @@ int32_t li_rt_studio_bench_mode_from_env(void) {
   return li_rt_studio_env_flag_one("STUDIO_BENCH_MODE");
 }
 
+static int32_t li_rt_studio_route_match_name(const char* name) {
+  if (name == NULL || name[0] == '\0') {
+    return 0;
+  }
+  if (li_rt_str_eq(name, "author/game")) {
+    return 1;
+  }
+  if (li_rt_str_eq(name, "simulate/scientific")) {
+    return 2;
+  }
+  if (li_rt_str_eq(name, "adaptive/drug/litl-0")) {
+    return 3;
+  }
+  if (li_rt_str_eq(name, "adaptive/drug/litl-1")) {
+    return 4;
+  }
+  if (li_rt_str_eq(name, "adaptive/drug/litl-2")) {
+    return 5;
+  }
+  if (li_rt_str_eq(name, "adaptive/drug/litl-3")) {
+    return 6;
+  }
+  if (li_rt_str_eq(name, "adaptive/drug/litl-4")) {
+    return 7;
+  }
+  if (li_rt_str_eq(name, "adaptive/drug")) {
+    return 3;
+  }
+  if (li_rt_str_eq(name, "agent")) {
+    return 8;
+  }
+  if (li_rt_str_eq(name, "bench")) {
+    return 9;
+  }
+  return 0;
+}
+
+int32_t li_rt_studio_route_from_name(const char* name) {
+  return li_rt_studio_route_match_name(name);
+}
+
+int32_t li_rt_studio_route_from_env(void) {
+  const char* v = getenv("STUDIO_ROUTE");
+  if (v == NULL || v[0] == '\0') {
+    return 0;
+  }
+  return li_rt_studio_route_match_name(v);
+}
+
 static int32_t g_studio_demo_loop_tick = 0;
 
 int32_t li_rt_studio_demo_loop_tick_from_env(void) {

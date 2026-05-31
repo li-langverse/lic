@@ -6,11 +6,9 @@ if ! command -v wsl.exe >/dev/null 2>&1; then
   echo "world-studio-plan-lic-smokes-wsl: wsl.exe not found" >&2
   exit 1
 fi
-# Do not set MSYS_NO_PATHCONV for wslpath (it doubles /mnt/c/c/...).
-smoke_wsl="$(wsl.exe wslpath -u "$ROOT/scripts/world-studio-plan-lic-smokes.sh" 2>/dev/null | tr -d '\r\n')"
-[[ -n "$smoke_wsl" ]] || {
-  echo "world-studio-plan-lic-smokes-wsl: wslpath failed for smokes script" >&2
+wsl_root="$(wsl.exe wslpath -u "$ROOT" 2>/dev/null | tr -d '\r\n')"
+[[ -n "$wsl_root" ]] || {
+  echo "world-studio-plan-lic-smokes-wsl: wslpath failed for repo root" >&2
   exit 1
 }
-# Outer single quotes: avoid Git Bash mangling bash -c when MSYS rewrites /mnt/c paths.
-MSYS2_ARG_CONV_EXCL='*' MSYS_NO_PATHCONV=1 wsl.exe bash -c 'bash '"$smoke_wsl"
+MSYS2_ARG_CONV_EXCL='*' MSYS_NO_PATHCONV=1 wsl.exe bash -lc "cd '$wsl_root' && LIC=./build-wsl/compiler/lic/lic bash ./scripts/world-studio-plan-lic-smokes.sh"

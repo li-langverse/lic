@@ -228,10 +228,17 @@ extern proc li_rt_studio_timeline_tick_frame() -> int
   ensures result <= 1
   decreases 0
 
-extern proc li_rt_studio_timeline_reset_mock() -> int
+extern proc li_rt_studio_timeline_reset_mock() raises IO -> int
   requires true
   ensures result == 0
   decreases 0
+
+extern proc li_rt_studio_timeline_playhead_pct_from_tick(tick: int, duration_ticks: int) -> float
+  requires tick >= 0
+  requires duration_ticks >= 1
+  ensures result >= 0.0
+  ensures result <= 1.0
+  decreases tick
 
 extern proc li_rt_studio_timeline_playhead_pct() -> float
   requires true
@@ -393,6 +400,18 @@ def studio_determinism_tier_to_output_detail(tier: int) -> int
   if tier == 2:
     return output_detail_debug()
   return output_detail_repro()
+
+extern proc li_rt_int_as_float(v: int) -> float
+  requires true
+  ensures result >= 0.0
+  decreases 0
+
+def studio_int_as_float(v: int) raises IO -> float
+  requires true
+  ensures result >= 0.0
+  decreases 0
+=
+  return li_rt_int_as_float(v)
 
 def studio_export_format_mask_stl() -> int
   requires true
@@ -2393,25 +2412,14 @@ def studio_timeline_duration_ticks_default() -> int
 =
   return 100
 
-def studio_timeline_playhead_pct_from_tick(tick: int, duration_ticks: int) -> float
+def studio_timeline_playhead_pct_from_tick(tick: int, duration_ticks: int) raises IO -> float
   requires tick >= 0
   requires duration_ticks >= 1
   ensures result >= 0.0
   ensures result <= 1.0
   decreases tick
 =
-  var dur: int = duration_ticks
-  if dur < 1:
-    dur = 1
-  var t: int = tick
-  if t < 0:
-    t = 0
-  if t > dur:
-    t = dur
-  var pct: float = (t * 1.0) / (dur * 1.0)
-  if pct > 1.0:
-    pct = 1.0
-  return pct
+  return li_rt_studio_timeline_playhead_pct_from_tick(tick, duration_ticks)
 
 def studio_timeline_sync_playhead_from_tick(tick: int, duration_ticks: int) raises IO -> unit
   requires tick >= 0
@@ -3302,7 +3310,7 @@ def studio_export_config_default() -> StudioExportConfig
   e.printer_profile_slot = studio_printer_profile_slot_none()
   return e
 
-def studio_toml_parsed_export_config() -> StudioExportConfig
+def studio_toml_parsed_export_config() -> StudioExportConfig raises IO
   requires true
   ensures result.format_mask >= 0
   ensures result.require_sim_pass >= 0
@@ -3315,7 +3323,7 @@ def studio_toml_parsed_export_config() -> StudioExportConfig
   e.printer_profile_slot = li_rt_studio_toml_parsed_printer_profile_slot()
   return e
 
-def studio_toml_parsed_config() -> StudioProjectConfig
+def studio_toml_parsed_config() -> StudioProjectConfig raises IO
   requires true
   ensures studio_profile_id_valid(result.active_profile) == 1
   ensures studio_determinism_tier_valid(result.determinism_tier) == 1
@@ -3388,7 +3396,7 @@ def studio_am_export_flow_init(fmt: int) -> StudioAmExportFlowState
   f.last_magic = 0
   return f
 
-def studio_am_export_format_in_mask(fmt: int, mask: int) -> int
+def studio_am_export_format_in_mask(fmt: int, mask: int) raises IO -> int
   requires true
   ensures result >= 0
   ensures result <= 1
@@ -3412,7 +3420,7 @@ def studio_am_export_format_in_mask(fmt: int, mask: int) -> int
 def studio_am_export_flow_advance(
     flow: var StudioAmExportFlowState,
     cfg: StudioProjectConfig,
-    sim_out: var SimSessionStub) -> int
+    sim_out: var SimSessionStub) raises IO -> int
   requires sim_additive_export_format_ok(flow.format) == 1
   requires flow.click_count >= 0
   requires flow.click_count <= 2
@@ -3456,7 +3464,7 @@ def studio_am_export_flow_advance(
   return 8
 
 def studio_am_export_three_click_flow(
-    cfg: StudioProjectConfig, sim_out: var SimSessionStub, fmt: int) -> int
+    cfg: StudioProjectConfig, sim_out: var SimSessionStub, fmt: int) raises IO -> int
   requires sim_additive_export_format_ok(fmt) == 1
   ensures result >= 0
   ensures result <= 10
@@ -3652,7 +3660,7 @@ def studio_publish_figure(
     fmt: int,
     template: int,
     sim_checksum: float,
-    proof_pass: int) -> PublishFigureResult
+    proof_pass: int) raises IO -> PublishFigureResult
   requires sim_checksum >= 0.0
   ensures result.format == fmt
   ensures result.template == template
@@ -3680,9 +3688,9 @@ def studio_publish_figure(
   if fmt == studio_publish_format_png():
     if r.dpi < 300:
       r.dpi = 300
-  var w_f: float = (r.width_px * 1.0)
-  var h_f: float = (r.height_px * 1.0)
-  var d_f: float = (r.dpi * 1.0)
+  var w_f: float = studio_int_as_float(r.width_px)
+  var h_f: float = studio_int_as_float(r.height_px)
+  var d_f: float = studio_int_as_float(r.dpi)
   r.byte_checksum = sim_checksum + w_f + h_f + d_f
   r.magic_tag = studio_publish_magic_for_format(fmt)
   r.ok = 1
@@ -3895,7 +3903,7 @@ def studio_publish_table(
     fmt: int,
     pipeline: VizPipelineState,
     sim_checksum: float,
-    proof_pass: int) -> PublishTableResult
+    proof_pass: int) raises IO -> PublishTableResult
   requires sim_checksum >= 0.0
   requires pipeline.profile_id == viz_profile_sim_scientific()
   ensures result.format == fmt
@@ -3922,9 +3930,9 @@ def studio_publish_table(
     return r
   r.row_count = studio_publish_table_rows_from_pipeline(pipeline)
   r.col_count = studio_publish_table_schema_columns()
-  var rows_f: float = (r.row_count * 1.0)
-  var cols_f: float = (r.col_count * 1.0)
-  var src_f: float = (r.source_count * 1.0)
+  var rows_f: float = studio_int_as_float(r.row_count)
+  var cols_f: float = studio_int_as_float(r.col_count)
+  var src_f: float = studio_int_as_float(r.source_count)
   r.byte_checksum = sim_checksum + rows_f + cols_f + src_f
   r.magic_tag = studio_publish_table_magic_for_format(fmt)
   r.ok = 1
@@ -4096,17 +4104,17 @@ def studio_publish_bundle_manifest_entry_data() -> int
 =
   return 2
 
-def studio_publish_bundle_world_sha256_fields(name: int, tick: int, entity_count: int, asset_ref_count: int) -> float
+def studio_publish_bundle_world_sha256_fields(name: int, tick: int, entity_count: int, asset_ref_count: int) raises IO -> float
   requires tick >= 0
   requires entity_count >= 0
   requires asset_ref_count >= 0
   ensures result >= 0.0
   decreases tick
 =
-  var n_f: float = (name * 1.0)
-  var t_f: float = (tick * 1.0)
-  var e_f: float = (entity_count * 1.0)
-  var a_f: float = (asset_ref_count * 1.0)
+  var n_f: float = studio_int_as_float(name)
+  var t_f: float = studio_int_as_float(tick)
+  var e_f: float = studio_int_as_float(entity_count)
+  var a_f: float = studio_int_as_float(asset_ref_count)
   return n_f * 1000.0 + t_f * 10.0 + e_f + a_f * 0.1
 
 def studio_publish_bundle_world_sha256(snapshot: WorldSnapshot) -> float
@@ -4133,18 +4141,18 @@ def studio_publish_bundle_manifest_checksum(
     sim_checksum: float,
     world_sha256: float,
     figure_magic: int,
-    data_magic: int) -> float
+    data_magic: int) raises IO -> float
   requires lic_version >= 0
   requires sim_checksum >= 0.0
   requires world_sha256 >= 0.0
   ensures result >= 0.0
   decreases lic_version
 =
-  var lv_f: float = (lic_version * 1.0)
-  var pf_f: float = (profile_id * 1.0)
-  var dt_f: float = (determinism_tier * 1.0)
-  var fig_f: float = (figure_magic * 1.0)
-  var dat_f: float = (data_magic * 1.0)
+  var lv_f: float = studio_int_as_float(lic_version)
+  var pf_f: float = studio_int_as_float(profile_id)
+  var dt_f: float = studio_int_as_float(determinism_tier)
+  var fig_f: float = studio_int_as_float(figure_magic)
+  var dat_f: float = studio_int_as_float(data_magic)
   return lv_f + pf_f * 10.0 + dt_f * 100.0 + sim_checksum + world_sha256 + fig_f + dat_f
 
 type PublishBundleResult = object
@@ -4208,9 +4216,9 @@ def studio_publish_bundle(
   if r.entry_count < 2:
     return r
   r.manifest_checksum = studio_publish_bundle_manifest_checksum(r.lic_version, r.profile_id, r.determinism_tier, sim_checksum, r.world_sha256, fig_magic, dat_magic)
-  var ec_f: float = (r.entry_count * 1.0)
-  var fc_f: float = (r.figure_count * 1.0)
-  var dc_f: float = (r.data_count * 1.0)
+  var ec_f: float = studio_int_as_float(r.entry_count)
+  var fc_f: float = studio_int_as_float(r.figure_count)
+  var dc_f: float = studio_int_as_float(r.data_count)
   r.byte_checksum = r.manifest_checksum + ec_f + fc_f + dc_f
   r.magic_tag = studio_publish_bundle_magic_zip()
   r.ok = 1
@@ -5127,7 +5135,7 @@ def studio_sim_robotics_inspector_live_ok(session: SimSessionStub) -> int
     return 0
   return 1
 
-def studio_compose_timeline(layout: StudioShellLayout) -> StudioTimelineCompose
+def studio_compose_timeline(layout: StudioShellLayout) raises IO -> StudioTimelineCompose
   requires layout.timeline.w > 0.0
   ensures result.play_btn_rect.w == studio_timeline_play_btn_size_px()
   decreases 0

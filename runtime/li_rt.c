@@ -512,6 +512,25 @@ int32_t li_rt_studio_timeline_tick_frame(void) {
 
 float li_rt_studio_timeline_playhead_pct(void) { return g_studio_timeline_playhead_pct; }
 
+float li_rt_studio_timeline_playhead_pct_from_tick(int32_t tick, int32_t duration_ticks) {
+  if (duration_ticks < 1) {
+    duration_ticks = 1;
+  }
+  if (tick < 0) {
+    tick = 0;
+  }
+  if (tick > duration_ticks) {
+    tick = duration_ticks;
+  }
+  float pct = (float)tick / (float)duration_ticks;
+  if (pct > 1.0f) {
+    pct = 1.0f;
+  }
+  return pct;
+}
+
+float li_rt_int_as_float(int32_t v) { return (float)v; }
+
 int32_t li_rt_studio_timeline_set_playhead_pct(float pct) {
   if (pct < 0.0f) {
     pct = 0.0f;

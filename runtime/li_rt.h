@@ -231,6 +231,8 @@ int32_t li_rt_studio_timeline_playing(void);
 int32_t li_rt_studio_timeline_toggle_play(void);
 int32_t li_rt_studio_timeline_tick_frame(void);
 float li_rt_studio_timeline_playhead_pct(void);
+float li_rt_studio_timeline_playhead_pct_from_tick(int32_t tick, int32_t duration_ticks);
+float li_rt_int_as_float(int32_t v);
 int32_t li_rt_studio_timeline_set_playhead_pct(float pct);
 int32_t li_rt_studio_timeline_sync_sim_tick(int32_t tick, int32_t duration_ticks);
 int32_t li_rt_studio_timeline_reset_playback(void);

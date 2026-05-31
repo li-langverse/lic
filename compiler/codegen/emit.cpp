@@ -1669,6 +1669,11 @@ bool emit_llvm_ir(const MirModule& mir, const std::string& out_path, int runtime
                               {i32_ty(context), i32_ty(context), i32_ty(context)},
                               false));
   module->getOrInsertFunction(
+      "li_rt_world_serialize_fields",
+      llvm::FunctionType::get(i8_ptr(context),
+                              {i32_ty(context), i32_ty(context), i32_ty(context), i32_ty(context)},
+                              false));
+  module->getOrInsertFunction(
       "li_rt_world_parse_line",
       llvm::FunctionType::get(i32_ty(context), {i8_ptr(context)}, false));
   module->getOrInsertFunction(
@@ -1681,20 +1686,24 @@ bool emit_llvm_ir(const MirModule& mir, const std::string& out_path, int runtime
       "li_rt_world_parsed_entity_count",
       llvm::FunctionType::get(i32_ty(context), {}, false));
   module->getOrInsertFunction(
+      "li_rt_world_parsed_asset_ref_count",
+      llvm::FunctionType::get(i32_ty(context), {}, false));
+  module->getOrInsertFunction(
       "li_rt_world_snapshot_eq_fields",
       llvm::FunctionType::get(i32_ty(context),
                               {i32_ty(context), i32_ty(context), i32_ty(context), i32_ty(context),
-                               i32_ty(context), i32_ty(context)},
+                               i32_ty(context), i32_ty(context), i32_ty(context), i32_ty(context)},
                               false));
   module->getOrInsertFunction(
       "li_rt_world_roundtrip_fields",
       llvm::FunctionType::get(i32_ty(context),
-                              {i32_ty(context), i32_ty(context), i32_ty(context)},
+                              {i32_ty(context), i32_ty(context), i32_ty(context), i32_ty(context)},
                               false));
   module->getOrInsertFunction(
       "li_rt_world_write_path",
       llvm::FunctionType::get(i32_ty(context),
-                              {i8_ptr(context), i32_ty(context), i32_ty(context), i32_ty(context)},
+                              {i8_ptr(context), i32_ty(context), i32_ty(context), i32_ty(context),
+                               i32_ty(context)},
                               false));
   module->getOrInsertFunction(
       "li_rt_world_read_path",
@@ -1702,8 +1711,11 @@ bool emit_llvm_ir(const MirModule& mir, const std::string& out_path, int runtime
   module->getOrInsertFunction(
       "li_rt_world_file_roundtrip_path",
       llvm::FunctionType::get(i32_ty(context),
-                              {i8_ptr(context), i32_ty(context), i32_ty(context), i32_ty(context)},
+                              {i8_ptr(context), i32_ty(context), i32_ty(context), i32_ty(context),
+                               i32_ty(context)},
                               false));
+  module->getOrInsertFunction("li_rt_world_default_asset_ref_path",
+                              llvm::FunctionType::get(i8_ptr(context), {}, false));
   module->getOrInsertFunction("li_rt_world_checkpoint_path_default",
                               llvm::FunctionType::get(i8_ptr(context), {}, false));
   module->getOrInsertFunction(

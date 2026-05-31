@@ -1,6 +1,6 @@
 {
   "suite": "ph-ml-llm-trusted-httpd",
-  "generated_at": "2026-05-31T21:08:58Z",
+  "generated_at": "2026-05-31T21:53:32Z",
   "executed": true,
   "live_proxy": true,
   "validity_gate_pass": true,
@@ -8,5 +8,5 @@
   "route": "/v1/chat/completions",
   "note": "li-httpd route reachable (Wave 13 live proxy)",
   "http_status": 200,
-  "proxy_base": "http://127.0.0.1:43203"
+  "proxy_base": "http://127.0.0.1:43185"
 }

@@ -4600,6 +4600,7 @@ def studio_shell_demo_apply_profile(compose: var StudioShellCompose, profile_id:
 
 def studio_vertical_demo_sim_tick_step(config: StudioProjectConfig) raises IO -> unit
   requires studio_profile_id_valid(config.active_profile) == 1
+  ensures true
   decreases config.active_profile
 =
   var duration: int = studio_timeline_duration_ticks_default()
@@ -4610,6 +4611,7 @@ def studio_vertical_demo_sim_tick_step(config: StudioProjectConfig) raises IO ->
 
 def studio_vertical_demo_sync_timeline_from_runtime(compose: var StudioShellCompose) raises IO -> unit
   requires compose.layout.viewport_w > 0.0
+  ensures true
   decreases 0
 =
   var pct: float = studio_timeline_playhead_pct()

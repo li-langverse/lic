@@ -60,36 +60,16 @@ def main() -> int raises IO
     return 24
   if studio_md_particle_tier_select_ok(scene_md_tier_10k()) != 1:
     return 25
-  var auto: int = studio_sim_step_profile_ok(
-    studio_profile_sim_automotive(),
-    sim_contract_sim_automotive(),
-    0.02,
-    1,
-  )
+  var auto: int = studio_sim_step_profile_ok(studio_profile_sim_automotive(), sim_contract_sim_automotive(), 0.02, 1)
   if auto != 0:
     return 30 + auto
-  var robo: int = studio_sim_step_profile_ok(
-    studio_profile_sim_robotics(),
-    sim_contract_sim_robotics(),
-    0.01,
-    1,
-  )
+  var robo: int = studio_sim_step_profile_ok(studio_profile_sim_robotics(), sim_contract_sim_robotics(), 0.01, 1)
   if robo != 0:
     return 40 + robo
-  var add: int = studio_sim_step_profile_ok(
-    studio_profile_sim_additive(),
-    sim_contract_sim_additive(),
-    0.05,
-    1,
-  )
+  var add: int = studio_sim_step_profile_ok(studio_profile_sim_additive(), sim_contract_sim_additive(), 0.05, 1)
   if add != 0:
     return 50 + add
-  var drug: int = studio_sim_step_profile_ok(
-    studio_profile_sim_drug_design(),
-    sim_contract_sim_drug_design(),
-    0.1,
-    1,
-  )
+  var drug: int = studio_sim_step_profile_ok(studio_profile_sim_drug_design(), sim_contract_sim_drug_design(), 0.1, 1)
   if drug != 0:
     return 60 + drug
   var rl_cfg: StudioProjectConfig = studio_project_config_new(studio_profile_sim_rl())

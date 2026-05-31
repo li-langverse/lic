@@ -1,15 +1,15 @@
 {
   "sprint": "proof-explorer-program",
-  "phase": 3,
+  "phase": 4,
   "started": "2026-05-31",
-  "completed_wps": ["wp-k8", "wp0", "wp1", "wp2", "wp3", "wp4", "wp5", "wp6", "tier-b"],
-  "current_wp": "wp-ra",
-  "branch": "cursor/proof-explorer-phase3",
+  "completed_wps": ["wp-k8", "wp0", "wp1", "wp2", "wp3", "wp4", "wp5", "wp6", "tier-b", "wp-li-coverage"],
+  "current_wp": "complete",
+  "branch": "cursor/proof-explorer-phase4-li-coverage",
   "research_problem_id": "E-52",
   "claim_count": 12,
   "review_round": 1,
-  "current_wp": "complete",
   "loop_sleep_sec": 300,
   "problem_source": "erdos_register",
-  "priority_tier": "P0"
+  "priority_tier": "P0",
+  "li_coverage_pct": 100
 }

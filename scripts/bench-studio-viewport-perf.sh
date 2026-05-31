@@ -124,6 +124,89 @@ def bench_lig_present_runtime_probe() -> dict | None:
     return {"stub": stub, "host_present": host, "probe_compile_ok": True}
 
 
+def bench_wgpu_swapchain_hook() -> dict:
+    hook_path = root / "packages/lig/bench/wgpu_smoke.toml"
+    hook = load_toml(hook_path)
+    swap_cfg = hook.get("wgpu_swapchain") or {}
+    env_swap = os.environ.get(swap_cfg.get("env_enable", "LIG_WGPU_SWAPCHAIN"), "") == "1"
+    env_gpu = os.environ.get(swap_cfg.get("gpu_runner_env", "LIG_GPU_RUNNER"), "") == "1"
+    env_host = os.environ.get("LIG_HOST_PRESENT", "") == "1"
+    status = str(swap_cfg.get("status", "blocked_runner"))
+    honest_blocked = status == "blocked_runner"
+    native_pixels = False
+    meets_target = False
+    pixels_sampled = 0
+    probe_src = root / "deploy/studio-demo/native/lig_swapchain_bench_probe.c"
+    rt_c = root / "runtime/li_rt.c"
+    rt_lig = root / "runtime/li_rt_lig.c"
+    if probe_src.is_file() and rt_c.is_file():
+        bin_path = root / "build/native/lig_swapchain_bench_probe"
+        bin_path.parent.mkdir(parents=True, exist_ok=True)
+        compile_cmd = [
+            "cc",
+            "-std=c11",
+            "-Wall",
+            f"-I{root / 'runtime'}",
+            "-o",
+            str(bin_path),
+            str(probe_src),
+            str(rt_c),
+            "-lm",
+        ]
+        if rt_lig.is_file():
+            compile_cmd.append(str(rt_lig))
+        try:
+            proc = subprocess.run(compile_cmd, cwd=root, capture_output=True, text=True, timeout=120)
+            if proc.returncode == 0:
+                run_env = os.environ.copy()
+                if env_swap:
+                    run_env["LIG_WGPU_SWAPCHAIN"] = "1"
+                if env_gpu:
+                    run_env["LIG_GPU_RUNNER"] = "1"
+                if env_host:
+                    run_env["LIG_HOST_PRESENT"] = "1"
+                run = subprocess.run(
+                    [str(bin_path)],
+                    cwd=root,
+                    capture_output=True,
+                    text=True,
+                    timeout=30,
+                    env=run_env,
+                )
+                if run.returncode == 0 and run.stdout:
+                    line = run.stdout.strip().splitlines()[-1]
+                    try:
+                        probe = json.loads(line)
+                        status = str(probe.get("bench_status", status))
+                        pixels_sampled = int(probe.get("pixels_sampled", 0))
+                        native_pixels = bool(probe.get("native_pixels"))
+                        meets_target = status == "swapchain_pass"
+                        honest_blocked = status == "blocked_runner"
+                    except json.JSONDecodeError:
+                        report["notes"].append("wgpu_swapchain_probe_json_fail")
+            else:
+                report["notes"].append("wgpu_swapchain_probe_compile_fail")
+        except (subprocess.TimeoutExpired, FileNotFoundError):
+            report["notes"].append("wgpu_swapchain_probe_skip")
+    if not env_swap or not env_gpu:
+        status = "blocked_runner"
+        honest_blocked = True
+        meets_target = False
+    return {
+        "hook_version": int(swap_cfg.get("hook_version", 0)),
+        "readback_fn": swap_cfg.get("readback_fn", "lig_wgpu_swapchain_readback_run"),
+        "status": status,
+        "honest_blocked": honest_blocked,
+        "native_pixels": native_pixels,
+        "meets_target": meets_target,
+        "pixels_sampled": pixels_sampled,
+        "env_lig_wgpu_swapchain": env_swap,
+        "env_lig_gpu_runner": env_gpu,
+        "env_lig_host_present": env_host,
+        "notes": swap_cfg.get("notes", ""),
+    }
+
+
 def bench_render_fps_hook() -> dict:
     hook_path = root / "packages/li-render/bench/viewport_fps.toml"
     gpu_hook = root / "packages/lig/bench/wgpu_smoke.toml"
@@ -334,6 +417,13 @@ if (root / "packages/li-gui/bench/panel_switch.toml").is_file():
 else:
     report["notes"].append("skip_panel_switch:hook_missing")
 
+wgpu_hook = root / "packages/lig/bench/wgpu_smoke.toml"
+if wgpu_hook.is_file():
+    report["wgpu_swapchain"] = bench_wgpu_swapchain_hook()
+    report["notes"].append(f"wgpu_swapchain:{report['wgpu_swapchain'].get('status', 'unknown')}")
+else:
+    report["notes"].append("skip_wgpu_swapchain:hook_missing")
+
 scene_hook = root / "packages/li-scene/bench/particle_tiers.toml"
 if scene_hook.is_file():
     report["particle_tiers"] = bench_scene_particle_tiers()
@@ -419,6 +509,15 @@ report["gates"]["viewport_fps"] = {
     "unit": "fps",
     "meets_target": bool(vf.get("meets_target", False)),
     "honest_simulate": bool(vf.get("honest_simulate", vf.get("status") == "simulate")),
+}
+
+ws = report.get("wgpu_swapchain") or {}
+report["gates"]["wgpu_swapchain_readback"] = {
+    "target": "swapchain_pass",
+    "value": ws.get("status"),
+    "unit": "status",
+    "meets_target": bool(ws.get("meets_target", False)),
+    "honest_blocked": bool(ws.get("honest_blocked", ws.get("status") == "blocked_runner")),
 }
 
 ps = report.get("panel_switch_ms") or {}

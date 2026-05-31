@@ -1,6 +1,19 @@
 # li-gui
 
-Native Li Studio GUI layer: viewport region extraction, panel-switch timing hooks, and paint-IR expansion over `li-ui` shell composables.
+Native Li Studio GUI layer: viewport region extraction, panel-switch timing hooks, paint-IR expansion over `li-ui` shell composables, and Phase 1 **Widget protocol** (measure, layout, paint, handle_event).
+
+## Widget protocol (W1)
+
+Structural protocol in `lic/packages/li-gui/src/lib.li` — dispatch by `WidgetNode.kind`:
+
+| Phase | Proc | Role |
+|-------|------|------|
+| measure | `widget_measure(node, constraints)` | Intrinsic size under min/max constraints |
+| layout | `widget_layout(node, constraints, x, y)` | Assign bounds rect |
+| paint | `widget_paint(node, frame, layout)` | Design recipes via `li-ui` PaintCmd |
+| events | `widget_handle_event(node, layout, event)` | Pointer/focus dispatch |
+
+Kinds: `widget_kind_label`, `widget_kind_button`, `widget_kind_panel`, `widget_kind_spacer`. Smoke: `li-tests/smoke/widget_protocol_measure_layout.li`.
 
 ## Viewport (UX-01)
 

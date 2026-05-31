@@ -1,0 +1,56 @@
+import gui
+
+def main() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  if li_std_gui_version() < 5:
+    return 1
+  if gui_widget_protocol_version() != 1:
+    return 2
+  var constraints: LayoutConstraints = layout_constraints_loose(320.0, 240.0)
+  var label: WidgetNode = widget_node_label(12.0)
+  var label_size: WidgetSize = widget_measure(label, constraints)
+  if label_size.w <= 0.0:
+    return 3
+  if label_size.h < studio_typography_body_px():
+    return 4
+  var label_layout: WidgetLayoutResult = widget_layout(label, constraints, 8.0, 8.0)
+  if label_layout.bounds.x != 8.0:
+    return 5
+  if label_layout.bounds.w != label_size.w:
+    return 6
+  var panel: WidgetNode = widget_node_panel(100.0, 80.0)
+  var panel_layout: WidgetLayoutResult = widget_layout(panel, constraints, 0.0, 0.0)
+  if panel_layout.bounds.w != 320.0:
+    return 7
+  if panel_layout.bounds.h != 240.0:
+    return 8
+  var button: WidgetNode = widget_node_button(6.0)
+  var button_layout: WidgetLayoutResult = widget_layout(button, constraints, 16.0, 16.0)
+  if button_layout.bounds.w < gui_widget_button_min_w_px():
+    return 9
+  var frame: PaintFrame = paint_frame_new()
+  var before_cmds: int = frame.cmd_count
+  widget_paint(panel, frame, panel_layout)
+  if frame.cmd_count <= before_cmds:
+    return 10
+  button.focused = 1
+  widget_paint(button, frame, button_layout)
+  if frame.cmd_count <= before_cmds + 2:
+    return 11
+  var event: WidgetEvent
+  event.kind = widget_event_pointer_down()
+  event.x = button_layout.bounds.x + 4.0
+  event.y = button_layout.bounds.y + 4.0
+  var click: WidgetEventResult = widget_handle_event(button, button_layout, event)
+  if click.handled != 1:
+    return 12
+  if click.wants_focus != 1:
+    return 13
+  if widget_hit_test(button_layout, event.x, event.y) != 1:
+    return 14
+  if widget_hit_test(button_layout, 0.0, 0.0) != 0:
+    return 15
+  return 0

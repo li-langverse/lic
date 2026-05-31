@@ -5,10 +5,17 @@ import ui
 
 def li_std_gui_version() -> int
   requires true
-  ensures result == 4
+  ensures result == 5
   decreases 0
 =
-  return 4
+  return 5
+
+def gui_widget_protocol_version() -> int
+  requires true
+  ensures result == 1
+  decreases 0
+=
+  return 1
 
 def gui_panel_switch_budget_ms() -> float
   requires true
@@ -490,3 +497,354 @@ def gui_studio_shell_frame(w: float, h: float) -> PaintFrame
   var frame: PaintFrame = paint_frame_new()
   gui_paint_studio_shell_chrome(frame, layout)
   return frame
+
+# --- Phase 1 (W1): Widget protocol — measure, layout, paint, handle_event ---
+
+def widget_kind_none() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0
+
+def widget_kind_label() -> int
+  requires true
+  ensures result == 1
+  decreases 0
+=
+  return 1
+
+def widget_kind_button() -> int
+  requires true
+  ensures result == 2
+  decreases 0
+=
+  return 2
+
+def widget_kind_panel() -> int
+  requires true
+  ensures result == 3
+  decreases 0
+=
+  return 3
+
+def widget_kind_spacer() -> int
+  requires true
+  ensures result == 4
+  decreases 0
+=
+  return 4
+
+def widget_event_none() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0
+
+def widget_event_pointer_down() -> int
+  requires true
+  ensures result == 1
+  decreases 0
+=
+  return 1
+
+def widget_event_pointer_up() -> int
+  requires true
+  ensures result == 2
+  decreases 0
+=
+  return 2
+
+def widget_event_key_focus() -> int
+  requires true
+  ensures result == 3
+  decreases 0
+=
+  return 3
+
+type LayoutConstraints = object
+  public min_w: float
+  public max_w: float
+  public min_h: float
+  public max_h: float
+
+type WidgetSize = object
+  public w: float
+  public h: float
+
+type WidgetNode = object
+  public kind: int
+  public label_chars: float
+  public min_w: float
+  public min_h: float
+  public focused: int
+  public enabled: int
+
+type WidgetLayoutResult = object
+  public bounds: Rect
+  public size: WidgetSize
+
+type WidgetEvent = object
+  public kind: int
+  public x: float
+  public y: float
+
+type WidgetEventResult = object
+  public handled: int
+  public wants_focus: int
+
+def layout_constraints_loose(max_w: float, max_h: float) -> LayoutConstraints
+  requires max_w > 0.0
+  requires max_h > 0.0
+  ensures result.max_w == max_w
+  ensures result.max_h == max_h
+  decreases 0
+=
+  var c: LayoutConstraints
+  c.min_w = 0.0
+  c.max_w = max_w
+  c.min_h = 0.0
+  c.max_h = max_h
+  return c
+
+def gui_widget_pad_x_px() -> float
+  requires true
+  ensures result == 8.0
+  decreases 0
+=
+  return 8.0
+
+def gui_widget_pad_y_px() -> float
+  requires true
+  ensures result == 4.0
+  decreases 0
+=
+  return 4.0
+
+def gui_widget_button_min_w_px() -> float
+  requires true
+  ensures result == 64.0
+  decreases 0
+=
+  return 64.0
+
+def gui_widget_button_min_h_px() -> float
+  requires true
+  ensures result == 28.0
+  decreases 0
+=
+  return 28.0
+
+def gui_widget_label_char_w_px() -> float
+  requires true
+  ensures result == 7.0
+  decreases 0
+=
+  return 7.0
+
+def widget_node_label(label_chars: float) -> WidgetNode
+  requires label_chars >= 0.0
+  ensures result.kind == widget_kind_label()
+  ensures result.label_chars == label_chars
+  ensures result.enabled == 1
+  decreases 0
+=
+  var n: WidgetNode
+  n.kind = widget_kind_label()
+  n.label_chars = label_chars
+  n.min_w = 0.0
+  n.min_h = 0.0
+  n.focused = 0
+  n.enabled = 1
+  return n
+
+def widget_node_button(label_chars: float) -> WidgetNode
+  requires label_chars >= 0.0
+  ensures result.kind == widget_kind_button()
+  ensures result.label_chars == label_chars
+  ensures result.enabled == 1
+  decreases 0
+=
+  var n: WidgetNode
+  n.kind = widget_kind_button()
+  n.label_chars = label_chars
+  n.min_w = gui_widget_button_min_w_px()
+  n.min_h = gui_widget_button_min_h_px()
+  n.focused = 0
+  n.enabled = 1
+  return n
+
+def widget_node_panel(min_w: float, min_h: float) -> WidgetNode
+  requires min_w >= 0.0
+  requires min_h >= 0.0
+  ensures result.kind == widget_kind_panel()
+  ensures result.min_w == min_w
+  ensures result.min_h == min_h
+  decreases 0
+=
+  var n: WidgetNode
+  n.kind = widget_kind_panel()
+  n.label_chars = 0.0
+  n.min_w = min_w
+  n.min_h = min_h
+  n.focused = 0
+  n.enabled = 1
+  return n
+
+def widget_node_spacer(w: float, h: float) -> WidgetNode
+  requires w >= 0.0
+  requires h >= 0.0
+  ensures result.kind == widget_kind_spacer()
+  ensures result.min_w == w
+  ensures result.min_h == h
+  decreases 0
+=
+  var n: WidgetNode
+  n.kind = widget_kind_spacer()
+  n.label_chars = 0.0
+  n.min_w = w
+  n.min_h = h
+  n.focused = 0
+  n.enabled = 1
+  return n
+
+def widget_clamp_size(w: float, h: float, constraints: LayoutConstraints) -> WidgetSize
+  requires w >= 0.0
+  requires h >= 0.0
+  requires constraints.max_w >= constraints.min_w
+  requires constraints.max_h >= constraints.min_h
+  ensures result.w >= 0.0
+  ensures result.h >= 0.0
+  decreases 0
+=
+  var out: WidgetSize
+  out.w = w
+  out.h = h
+  if out.w < constraints.min_w:
+    out.w = constraints.min_w
+  if out.h < constraints.min_h:
+    out.h = constraints.min_h
+  if out.w > constraints.max_w:
+    out.w = constraints.max_w
+  if out.h > constraints.max_h:
+    out.h = constraints.max_h
+  return out
+
+def widget_measure(node: WidgetNode, constraints: LayoutConstraints) -> WidgetSize
+  requires node.kind >= widget_kind_none()
+  requires node.kind <= widget_kind_spacer()
+  requires node.label_chars >= 0.0
+  requires constraints.max_w >= constraints.min_w
+  requires constraints.max_h >= constraints.min_h
+  ensures result.w >= 0.0
+  ensures result.h >= 0.0
+  decreases node.kind
+=
+  var pad_x: float = gui_widget_pad_x_px()
+  var pad_y: float = gui_widget_pad_y_px()
+  if node.kind == widget_kind_label():
+    var text_w: float = node.label_chars * gui_widget_label_char_w_px()
+    var text_h: float = studio_typography_body_px()
+    return widget_clamp_size(text_w + (pad_x * 2.0), text_h + (pad_y * 2.0), constraints)
+  if node.kind == widget_kind_button():
+    var btn_w: float = node.min_w
+    var btn_h: float = node.min_h
+    if node.label_chars > 0.0:
+      var label_w: float = node.label_chars * gui_widget_label_char_w_px() + (pad_x * 2.0)
+      if label_w > btn_w:
+        btn_w = label_w
+    return widget_clamp_size(btn_w, btn_h, constraints)
+  if node.kind == widget_kind_panel():
+    var panel_w: float = node.min_w
+    var panel_h: float = node.min_h
+    if panel_w < constraints.max_w:
+      panel_w = constraints.max_w
+    if panel_h < constraints.max_h:
+      panel_h = constraints.max_h
+    return widget_clamp_size(panel_w, panel_h, constraints)
+  if node.kind == widget_kind_spacer():
+    return widget_clamp_size(node.min_w, node.min_h, constraints)
+  var zero: WidgetSize
+  zero.w = 0.0
+  zero.h = 0.0
+  return zero
+
+def widget_layout(node: WidgetNode, constraints: LayoutConstraints, x: float, y: float) -> WidgetLayoutResult
+  requires node.kind >= widget_kind_none()
+  requires node.kind <= widget_kind_spacer()
+  requires constraints.max_w >= constraints.min_w
+  requires constraints.max_h >= constraints.min_h
+  ensures result.bounds.x == x
+  ensures result.bounds.y == y
+  ensures result.size.w == result.bounds.w
+  ensures result.size.h == result.bounds.h
+  decreases node.kind
+=
+  var measured: WidgetSize = widget_measure(node, constraints)
+  var out: WidgetLayoutResult
+  out.size = measured
+  out.bounds = rect_make(x, y, measured.w, measured.h)
+  return out
+
+def widget_paint(node: WidgetNode, frame: var PaintFrame, layout: WidgetLayoutResult) -> unit
+  requires node.kind >= widget_kind_none()
+  requires node.kind <= widget_kind_spacer()
+  requires frame.cmd_count >= 0
+  requires layout.bounds.w >= 0.0
+  requires layout.bounds.h >= 0.0
+  ensures frame.cmd_count >= old(frame.cmd_count)
+  decreases node.kind
+=
+  if node.kind == widget_kind_label():
+    var cmd: PaintCmd = paint_cmd_fill(layout.bounds, studio_color_text_muted())
+    paint_frame_push(frame, cmd)
+  if node.kind == widget_kind_button():
+    paint_frame_push_accent_chip(frame, layout.bounds, studio_color_accent_cyan())
+  if node.kind == widget_kind_panel():
+    paint_frame_push_elevated_panel(frame, layout.bounds)
+  if node.kind == widget_kind_spacer():
+    return
+  if node.focused == 1:
+    studio_paint_focus_ring(frame, layout.bounds)
+
+def widget_hit_test(layout: WidgetLayoutResult, px: float, py: float) -> int
+  requires layout.bounds.w >= 0.0
+  requires layout.bounds.h >= 0.0
+  ensures result >= 0
+  ensures result <= 1
+  decreases 0
+=
+  return rect_contains(layout.bounds, px, py)
+
+def widget_handle_event(node: var WidgetNode, layout: WidgetLayoutResult, event: WidgetEvent) -> WidgetEventResult
+  requires node.kind >= widget_kind_none()
+  requires node.kind <= widget_kind_spacer()
+  requires event.kind >= widget_event_none()
+  requires event.kind <= widget_event_key_focus()
+  requires layout.bounds.w >= 0.0
+  requires layout.bounds.h >= 0.0
+  ensures result.handled >= 0
+  ensures result.handled <= 1
+  ensures result.wants_focus >= 0
+  ensures result.wants_focus <= 1
+  decreases event.kind
+=
+  var out: WidgetEventResult
+  out.handled = 0
+  out.wants_focus = 0
+  if node.enabled != 1:
+    return out
+  if event.kind == widget_event_pointer_down():
+    if widget_hit_test(layout, event.x, event.y) == 1:
+      out.handled = 1
+      if node.kind == widget_kind_button():
+        out.wants_focus = 1
+        node.focused = 1
+    return out
+  if event.kind == widget_event_key_focus():
+    out.handled = 1
+    out.wants_focus = 1
+    node.focused = 1
+    return out
+  return out

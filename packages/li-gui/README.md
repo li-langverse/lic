@@ -13,7 +13,19 @@ Structural protocol in `lic/packages/li-gui/src/lib.li` — dispatch by `WidgetN
 | paint | `widget_paint(node, frame, layout)` | Design recipes via `li-ui` PaintCmd |
 | events | `widget_handle_event(node, layout, event)` | Pointer/focus dispatch |
 
-Kinds: `widget_kind_label`, `widget_kind_button`, `widget_kind_panel`, `widget_kind_spacer`. Smoke: `li-tests/smoke/widget_protocol_measure_layout.li`.
+Kinds: `widget_kind_label`, `widget_kind_button`, `widget_kind_panel`, `widget_kind_spacer`, `widget_kind_text_input`. Smoke: `li-tests/smoke/widget_protocol_measure_layout.li`.
+
+## Base widgets (W1)
+
+| Widget | Constructor | Notes |
+|--------|-------------|-------|
+| Label | `widget_node_label` | Muted text block (monospace bitmap until Phase 3 glyphs) |
+| Button | `widget_node_button` | Accent chip + pointer focus |
+| Panel | `widget_node_panel` | Elevated surface fill |
+| TextInput | `widget_node_text_input` | Elevated field + monospace char blocks |
+| ScrollArea | `scroll_area_new` | Viewport clip via `ScrollLayout`; `scroll_area_paint` / `scroll_area_handle_event` |
+
+Smoke: `li-tests/smoke/base_widgets.li`. Version: `gui_base_widgets_version() == 1`.
 
 ## Layout engines (W1)
 

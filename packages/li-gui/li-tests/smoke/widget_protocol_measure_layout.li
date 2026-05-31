@@ -5,9 +5,9 @@ def main() -> int
   ensures result == 0
   decreases 0
 =
-  if li_std_gui_version() < 5:
+  if li_std_gui_version() < 8:
     return 1
-  if gui_widget_protocol_version() != 1:
+  if gui_widget_protocol_version() != 2:
     return 2
   var constraints: LayoutConstraints = layout_constraints_loose(320.0, 240.0)
   var label: WidgetNode = widget_node_label(12.0)

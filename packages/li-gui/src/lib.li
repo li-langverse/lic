@@ -5,12 +5,19 @@ import ui
 
 def li_std_gui_version() -> int
   requires true
-  ensures result == 7
+  ensures result == 8
   decreases 0
 =
-  return 7
+  return 8
 
 def gui_widget_protocol_version() -> int
+  requires true
+  ensures result == 2
+  decreases 0
+=
+  return 2
+
+def gui_base_widgets_version() -> int
   requires true
   ensures result == 1
   decreases 0
@@ -535,6 +542,13 @@ def widget_kind_spacer() -> int
 =
   return 4
 
+def widget_kind_text_input() -> int
+  requires true
+  ensures result == 5
+  decreases 0
+=
+  return 5
+
 def widget_event_none() -> int
   requires true
   ensures result == 0
@@ -643,6 +657,20 @@ def gui_widget_label_char_w_px() -> float
 =
   return 7.0
 
+def gui_widget_text_input_min_w_px() -> float
+  requires true
+  ensures result == 120.0
+  decreases 0
+=
+  return 120.0
+
+def gui_widget_text_input_min_h_px() -> float
+  requires true
+  ensures result == 28.0
+  decreases 0
+=
+  return 28.0
+
 def widget_node_label(label_chars: float) -> WidgetNode
   requires label_chars >= 0.0
   ensures result.kind == widget_kind_label()
@@ -709,6 +737,24 @@ def widget_node_spacer(w: float, h: float) -> WidgetNode
   n.enabled = 1
   return n
 
+def widget_node_text_input(text_chars: float) -> WidgetNode
+  requires text_chars >= 0.0
+  ensures result.kind == widget_kind_text_input()
+  ensures result.label_chars == text_chars
+  ensures result.min_w == gui_widget_text_input_min_w_px()
+  ensures result.min_h == gui_widget_text_input_min_h_px()
+  ensures result.enabled == 1
+  decreases 0
+=
+  var n: WidgetNode
+  n.kind = widget_kind_text_input()
+  n.label_chars = text_chars
+  n.min_w = gui_widget_text_input_min_w_px()
+  n.min_h = gui_widget_text_input_min_h_px()
+  n.focused = 0
+  n.enabled = 1
+  return n
+
 def widget_clamp_size(w: float, h: float, constraints: LayoutConstraints) -> WidgetSize
   requires w >= 0.0
   requires h >= 0.0
@@ -733,7 +779,7 @@ def widget_clamp_size(w: float, h: float, constraints: LayoutConstraints) -> Wid
 
 def widget_measure(node: WidgetNode, constraints: LayoutConstraints) -> WidgetSize
   requires node.kind >= widget_kind_none()
-  requires node.kind <= widget_kind_spacer()
+  requires node.kind <= widget_kind_text_input()
   requires node.label_chars >= 0.0
   requires constraints.max_w >= constraints.min_w
   requires constraints.max_h >= constraints.min_h
@@ -755,6 +801,14 @@ def widget_measure(node: WidgetNode, constraints: LayoutConstraints) -> WidgetSi
       if label_w > btn_w:
         btn_w = label_w
     return widget_clamp_size(btn_w, btn_h, constraints)
+  if node.kind == widget_kind_text_input():
+    var input_w: float = node.min_w
+    var input_h: float = node.min_h
+    if node.label_chars > 0.0:
+      var text_w: float = node.label_chars * gui_widget_label_char_w_px() + (pad_x * 2.0)
+      if text_w > input_w:
+        input_w = text_w
+    return widget_clamp_size(input_w, input_h, constraints)
   if node.kind == widget_kind_panel():
     var panel_w: float = node.min_w
     var panel_h: float = node.min_h
@@ -772,7 +826,7 @@ def widget_measure(node: WidgetNode, constraints: LayoutConstraints) -> WidgetSi
 
 def widget_layout(node: WidgetNode, constraints: LayoutConstraints, x: float, y: float) -> WidgetLayoutResult
   requires node.kind >= widget_kind_none()
-  requires node.kind <= widget_kind_spacer()
+  requires node.kind <= widget_kind_text_input()
   requires constraints.max_w >= constraints.min_w
   requires constraints.max_h >= constraints.min_h
   ensures result.bounds.x == x
@@ -787,9 +841,31 @@ def widget_layout(node: WidgetNode, constraints: LayoutConstraints, x: float, y:
   out.bounds = rect_make(x, y, measured.w, measured.h)
   return out
 
+def widget_paint_monospace_chars(node: WidgetNode, frame: var PaintFrame, layout: WidgetLayoutResult, color: Color) -> unit
+  requires node.label_chars >= 0.0
+  requires frame.cmd_count >= 0
+  requires layout.bounds.w >= 0.0
+  requires layout.bounds.h >= 0.0
+  ensures frame.cmd_count >= old(frame.cmd_count)
+  decreases 0
+=
+  var chars_left: float = node.label_chars
+  var pad_x: float = gui_widget_pad_x_px()
+  var pad_y: float = gui_widget_pad_y_px()
+  var char_w: float = gui_widget_label_char_w_px()
+  var char_h: float = studio_typography_body_px()
+  var cursor_x: float = layout.bounds.x + pad_x
+  var cursor_y: float = layout.bounds.y + pad_y
+  while chars_left > 0.0:
+    var glyph: Rect = rect_make(cursor_x, cursor_y, char_w - 1.0, char_h - 2.0)
+    var cmd: PaintCmd = paint_cmd_fill(glyph, color)
+    paint_frame_push(frame, cmd)
+    cursor_x = cursor_x + char_w
+    chars_left = chars_left - 1.0
+
 def widget_paint(node: WidgetNode, frame: var PaintFrame, layout: WidgetLayoutResult) -> unit
   requires node.kind >= widget_kind_none()
-  requires node.kind <= widget_kind_spacer()
+  requires node.kind <= widget_kind_text_input()
   requires frame.cmd_count >= 0
   requires layout.bounds.w >= 0.0
   requires layout.bounds.h >= 0.0
@@ -801,6 +877,9 @@ def widget_paint(node: WidgetNode, frame: var PaintFrame, layout: WidgetLayoutRe
     paint_frame_push(frame, cmd)
   if node.kind == widget_kind_button():
     paint_frame_push_accent_chip(frame, layout.bounds, studio_color_accent_cyan())
+  if node.kind == widget_kind_text_input():
+    paint_frame_push_elevated_panel(frame, layout.bounds)
+    widget_paint_monospace_chars(node, frame, layout, studio_color_text_primary())
   if node.kind == widget_kind_panel():
     paint_frame_push_elevated_panel(frame, layout.bounds)
   if node.kind == widget_kind_spacer():
@@ -819,7 +898,7 @@ def widget_hit_test(layout: WidgetLayoutResult, px: float, py: float) -> int
 
 def widget_handle_event(node: var WidgetNode, layout: WidgetLayoutResult, event: WidgetEvent) -> WidgetEventResult
   requires node.kind >= widget_kind_none()
-  requires node.kind <= widget_kind_spacer()
+  requires node.kind <= widget_kind_text_input()
   requires event.kind >= widget_event_none()
   requires event.kind <= widget_event_key_focus()
   requires layout.bounds.w >= 0.0
@@ -839,6 +918,9 @@ def widget_handle_event(node: var WidgetNode, layout: WidgetLayoutResult, event:
     if widget_hit_test(layout, event.x, event.y) == 1:
       out.handled = 1
       if node.kind == widget_kind_button():
+        out.wants_focus = 1
+        node.focused = 1
+      if node.kind == widget_kind_text_input():
         out.wants_focus = 1
         node.focused = 1
     return out
@@ -1322,6 +1404,117 @@ def scroll_layout_layout(spec: ScrollLayout, constraints: LayoutConstraints, x: 
   out.child_layout = widget_layout(spec.child, loose, child_x, child_y)
   return out
 
+# --- Phase 1 (W1): Base widgets — ScrollArea composite ---
+
+type ScrollAreaWidget = object
+  public viewport_w: float
+  public viewport_h: float
+  public scroll_x: float
+  public scroll_y: float
+  public child: WidgetNode
+
+type ScrollAreaLayoutResult = object
+  public bounds: Rect
+  public size: WidgetSize
+  public inner: ScrollLayoutResult
+
+def scroll_area_new(viewport_w: float, viewport_h: float, scroll_x: float, scroll_y: float, child: WidgetNode) -> ScrollAreaWidget
+  requires viewport_w > 0.0
+  requires viewport_h > 0.0
+  requires scroll_x >= 0.0
+  requires scroll_y >= 0.0
+  ensures result.viewport_w == viewport_w
+  ensures result.viewport_h == viewport_h
+  ensures result.scroll_x == scroll_x
+  ensures result.scroll_y == scroll_y
+  decreases 0
+=
+  var s: ScrollAreaWidget
+  s.viewport_w = viewport_w
+  s.viewport_h = viewport_h
+  s.scroll_x = scroll_x
+  s.scroll_y = scroll_y
+  s.child = child
+  return s
+
+def scroll_area_measure(spec: ScrollAreaWidget, constraints: LayoutConstraints) -> WidgetSize
+  requires spec.viewport_w > 0.0
+  requires spec.viewport_h > 0.0
+  requires constraints.max_w >= constraints.min_w
+  requires constraints.max_h >= constraints.min_h
+  ensures result.w >= 0.0
+  ensures result.h >= 0.0
+  decreases 0
+=
+  var w: float = spec.viewport_w
+  var h: float = spec.viewport_h
+  if w > constraints.max_w:
+    w = constraints.max_w
+  if h > constraints.max_h:
+    h = constraints.max_h
+  return widget_clamp_size(w, h, constraints)
+
+def scroll_area_layout(spec: ScrollAreaWidget, constraints: LayoutConstraints, x: float, y: float) -> ScrollAreaLayoutResult
+  requires spec.viewport_w > 0.0
+  requires spec.viewport_h > 0.0
+  requires spec.scroll_x >= 0.0
+  requires spec.scroll_y >= 0.0
+  requires constraints.max_w >= constraints.min_w
+  requires constraints.max_h >= constraints.min_h
+  ensures result.bounds.x == x
+  ensures result.bounds.y == y
+  decreases 0
+=
+  var measured: WidgetSize = scroll_area_measure(spec, constraints)
+  var out: ScrollAreaLayoutResult
+  out.size = measured
+  out.bounds = rect_make(x, y, measured.w, measured.h)
+  var scroll: ScrollLayout = scroll_layout_new(spec.scroll_x, spec.scroll_y, spec.child)
+  var inner_constraints: LayoutConstraints = layout_constraints_loose(measured.w, measured.h)
+  out.inner = scroll_layout_layout(scroll, inner_constraints, x, y)
+  return out
+
+def scroll_area_paint(spec: ScrollAreaWidget, frame: var PaintFrame, layout: ScrollAreaLayoutResult) -> unit
+  requires frame.cmd_count >= 0
+  requires layout.bounds.w >= 0.0
+  requires layout.bounds.h >= 0.0
+  ensures frame.cmd_count >= old(frame.cmd_count)
+  decreases 0
+=
+  paint_frame_push_elevated_panel(frame, layout.bounds)
+  widget_paint(spec.child, frame, layout.inner.child_layout)
+
+def scroll_area_hit_test(layout: ScrollAreaLayoutResult, px: float, py: float) -> int
+  requires layout.bounds.w >= 0.0
+  requires layout.bounds.h >= 0.0
+  ensures result >= 0
+  ensures result <= 1
+  decreases 0
+=
+  return rect_contains(layout.bounds, px, py)
+
+def scroll_area_handle_event(spec: var ScrollAreaWidget, layout: ScrollAreaLayoutResult, event: WidgetEvent) -> WidgetEventResult
+  requires event.kind >= widget_event_none()
+  requires event.kind <= widget_event_key_focus()
+  requires layout.bounds.w >= 0.0
+  requires layout.bounds.h >= 0.0
+  ensures result.handled >= 0
+  ensures result.handled <= 1
+  ensures result.wants_focus >= 0
+  ensures result.wants_focus <= 1
+  decreases event.kind
+=
+  var out: WidgetEventResult
+  out.handled = 0
+  out.wants_focus = 0
+  if scroll_area_hit_test(layout, event.x, event.y) != 1:
+    return out
+  var child_event: WidgetEvent
+  child_event.kind = event.kind
+  child_event.x = event.x + spec.scroll_x
+  child_event.y = event.y + spec.scroll_y
+  return widget_handle_event(spec.child, layout.inner.child_layout, child_event)
+
 def flex_layout_paint(spec: FlexLayout, frame: var PaintFrame, layout: FlexLayoutResult) -> unit
   requires spec.child_count == layout.child_count
   requires frame.cmd_count >= 0
@@ -1374,7 +1567,7 @@ def event_dispatcher_state_new() -> EventDispatcherState
 
 def widget_node_accepts_focus(node: WidgetNode) -> int
   requires node.kind >= widget_kind_none()
-  requires node.kind <= widget_kind_spacer()
+  requires node.kind <= widget_kind_text_input()
   ensures result >= 0
   ensures result <= 1
   decreases node.kind
@@ -1382,6 +1575,8 @@ def widget_node_accepts_focus(node: WidgetNode) -> int
   if node.enabled != 1:
     return 0
   if node.kind == widget_kind_button():
+    return 1
+  if node.kind == widget_kind_text_input():
     return 1
   return 0
 

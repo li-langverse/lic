@@ -5,3 +5,4 @@
 | 2026-05-31 | m1-crypto | bootstrap | pending | — |
 | 2026-05-31T15:55:00Z | m1-crypto | m1-crypto-primitives-gate.sh | OK | b218b83b |
 | 2026-05-31T17:30:00Z | m1-pem | m1-pem-ed25519-gate.sh | OK | 528f51c0 |
+| 2026-05-31T18:45:00Z | m2-tls | m2-tls-handshake-gate.sh | OK | 3f07b95f |

@@ -1,6 +1,28 @@
+# li-tls public surface (M2).
+
+import record
+import key_schedule
+import handshake_server
+
 def li_tls_version() -> int
+  requires true
+  ensures result == 2
+  decreases 0
+=
+  return 2
+
+def li_tls_m2_selftest() -> int
   requires true
   ensures result == 0
   decreases 0
 =
+  var r: int = tls_record_selftest()
+  if r != 0:
+    return r
+  r = tls_key_schedule_selftest()
+  if r != 0:
+    return r + 10
+  r = tls_hs_server_selftest()
+  if r != 0:
+    return r + 20
   return 0

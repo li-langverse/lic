@@ -1,4 +1,4 @@
-# D-AX-BC-LOG-045: Propositional tautology schema (variant 45).
+# D-AX-BC-LOG-045: Double negation: not (not P) equivalent to P.
 
 extern proc d_ax_bc_log_045_axiom_witness() -> int
   requires true

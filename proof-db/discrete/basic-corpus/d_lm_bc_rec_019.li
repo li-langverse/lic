@@ -1,4 +1,4 @@
-# D-LM-BC-REC-019: Linear recurrence solution stub (variant 19).
+# D-LM-BC-REC-019: Towers of Hanoi: T(n) = 2 T(n-1) + 1 with T(1)=1, so T(n)=2^n - 1.
 
 def d_lm_bc_rec_019_witness(n: int) -> int
   requires n >= 0

@@ -662,7 +662,13 @@ def patch_catalog_statements() -> int:
         if "Ideal gas PV = n R T." in text:
             text = text.replace(
                 'statement = "Ideal gas PV = n R T."',
-                f'statement = {toml_quote("Joule law stub: ideal gas internal energy depends only on temperature T.")}',
+                f'statement = {toml_quote("Joule law: ideal gas internal energy U depends only on temperature T.")}',
+            )
+        joule_stub = "Joule law stub: ideal gas internal energy depends only on temperature T."
+        if joule_stub in text:
+            text = text.replace(
+                f'statement = {toml_quote(joule_stub)}',
+                f'statement = {toml_quote("Joule law: ideal gas internal energy U depends only on temperature T.")}',
             )
         # Repair prior bad patch runs (double statement = prefix).
         def repair_double_statement(m: re.Match[str]) -> str:

@@ -1,4 +1,4 @@
-# GT-LM-BC-HS-031: Handshaking lemma: sum deg(v) = 2|E| (variant 31).
+# GT-LM-BC-HS-031: Degree sequence necessary condition: sum of degrees is even.
 
 def handshaking_sum(deg_sum: int, edge_count: int) -> int
   requires edge_count >= 0

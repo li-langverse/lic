@@ -223,6 +223,26 @@ def _chemistry() -> list[dict]:
     return rows
 
 
+def _apply_destub(plan: list[dict]) -> list[dict]:
+    import importlib.util
+    from pathlib import Path
+
+    lookup_path = (
+        Path(__file__).resolve().parents[2]
+        / "docs/verification/basic-corpus/destub_statements.py"
+    )
+    spec = importlib.util.spec_from_file_location("destub_statements", lookup_path)
+    if spec is None or spec.loader is None:
+        return plan
+    mod = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(mod)
+    for row in plan:
+        repl = mod.destub_statement(row["id"], row["statement"], row.get("domain"))
+        if repl:
+            row["statement"] = repl
+    return plan
+
+
 def build_plan() -> list[dict]:
     plan: list[dict] = []
     plan.extend(_physics())
@@ -230,7 +250,7 @@ def build_plan() -> list[dict]:
     plan.extend(_discrete())
     plan.extend(_graph())
     plan.extend(_chemistry())
-    return plan
+    return _apply_destub(plan)
 
 
 PLAN: list[dict] = build_plan()

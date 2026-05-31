@@ -1,4 +1,4 @@
-# D-AX-BC-LOG-040: Propositional tautology schema (variant 40).
+# D-AX-BC-LOG-040: Material implication: (P implies Q) equivalent to (not P or Q).
 
 extern proc d_ax_bc_log_040_axiom_witness() -> int
   requires true

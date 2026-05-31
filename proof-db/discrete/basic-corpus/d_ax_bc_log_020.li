@@ -1,4 +1,4 @@
-# D-AX-BC-LOG-020: Propositional tautology schema (variant 20).
+# D-AX-BC-LOG-020: Contrapositive: (P implies Q) equivalent to (not Q implies not P).
 
 extern proc d_ax_bc_log_020_axiom_witness() -> int
   requires true

@@ -1,4 +1,4 @@
-# P-LM-BC-EX-050: Planck blackbody spectral peak Wien law stub.
+# P-LM-BC-EX-050: Wien displacement law: blackbody spectral peak wavelength lambda_max T = b.
 
 def p_lm_bc_ex_050_witness(x: float) -> float
   requires true

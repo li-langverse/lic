@@ -1,4 +1,4 @@
-# GT-LM-BC-CON-003: Connected graph |E| >= |V|-1 (variant 3).
+# GT-LM-BC-CON-003: Connected graph on n vertices has at least n-1 edges.
 
 def connected_edge_lower_bound(v: int) -> int
   requires v >= 1

@@ -93,6 +93,7 @@ struct BorrowCtx {
           check_expr_uses(*e.index);
         }
         break;
+      case Expr::Kind::UnaryBitNot:
       case Expr::Kind::UnaryNot:
         if (e.operand) {
           check_expr_uses(*e.operand);

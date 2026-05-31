@@ -1,4 +1,4 @@
-# GT-LM-BC-TR-047: Tree on n vertices has n-1 edges (variant 47).
+# GT-LM-BC-TR-047: Cayley count: there are n^(n-2) labeled trees on n vertices.
 
 def tree_edge_count(n: int) -> int
   requires n >= 1

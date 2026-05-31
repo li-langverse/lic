@@ -1,4 +1,4 @@
-# P-LM-BC-EM-017: Ohm law V = I R (linear resistor stub).
+# P-LM-BC-EM-017: Ohm law: V = I R for an ohmic conductor at fixed temperature.
 
 def ohm_law(i: float, r: float) -> float
   requires r > 0.0

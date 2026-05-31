@@ -1,4 +1,4 @@
-# D-LM-BC-IND-026: Mathematical induction principle (variant 26).
+# D-LM-BC-IND-026: Induction on divisibility: 3 divides 4^n - 1 for all n >= 1.
 
 def induction_step(n: int, step: int) -> int
   requires n >= 0 and step >= 0

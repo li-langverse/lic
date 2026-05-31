@@ -1,4 +1,4 @@
-# GT-AX-BC-GR-020: Simple graph: no loops, symmetric adjacency (variant 20).
+# GT-AX-BC-GR-020: No parallel edges: at most one edge between distinct vertices.
 # Simple graph: irreflexive and symmetric adjacency (no self-loops).
 
 def simple_graph_symmetric(adj_ij: int, adj_ji: int) -> int

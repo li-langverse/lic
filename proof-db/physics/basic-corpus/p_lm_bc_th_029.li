@@ -1,4 +1,4 @@
-# P-LM-BC-TH-029: Maxwell-Boltzmann speed distribution stub.
+# P-LM-BC-TH-029: Maxwell-Boltzmann speed distribution: f(v) proportional to v^2 exp(-m v^2 / (2 k T)) in ideal gas.
 
 def p_lm_bc_th_029_witness(x: float) -> float
   requires true

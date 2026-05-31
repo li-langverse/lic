@@ -1,4 +1,4 @@
-# GT-LM-BC-HS-036: Handshaking lemma: sum deg(v) = 2|E| (variant 36).
+# GT-LM-BC-HS-036: Minimum edges for given degree sum: |E| >= (sum deg)/2.
 
 def handshaking_sum(deg_sum: int, edge_count: int) -> int
   requires edge_count >= 0

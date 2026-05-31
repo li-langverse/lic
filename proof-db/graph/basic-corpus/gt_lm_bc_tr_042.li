@@ -1,4 +1,4 @@
-# GT-LM-BC-TR-042: Tree on n vertices has n-1 edges (variant 42).
+# GT-LM-BC-TR-042: Spanning tree of connected graph has |V|-1 edges.
 
 def tree_edge_count(n: int) -> int
   requires n >= 1

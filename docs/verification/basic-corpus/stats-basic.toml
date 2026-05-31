@@ -82,7 +82,7 @@ kind = "lemma"
 tranche = 1
 proof_status = "open"
 domain = "probability"
-statement = "Normal distribution density stub (case 10)."
+statement = "Normal PDF: f(x) = (1 / (sigma sqrt(2 pi))) exp(-(x - mu)^2 / (2 sigma^2))."
 
 [[planned]]
 id = "ST-AX-BC-PR-011"
@@ -90,7 +90,7 @@ kind = "axiom"
 tranche = 2
 proof_status = "axiomatic"
 domain = "probability"
-statement = "Kolmogorov consequence (variant 11): P(empty)=0 and P(A^c)=1-P(A) on finite Omega."
+statement = "Boole inequality (finite): P(A union B) <= P(A)+P(B)."
 
 [[planned]]
 id = "ST-AX-BC-EX-012"
@@ -162,7 +162,7 @@ kind = "lemma"
 tranche = 2
 proof_status = "open"
 domain = "probability"
-statement = "Normal distribution density stub (case 20)."
+statement = "Normal PDF: f(x) = (1 / (sigma sqrt(2 pi))) exp(-(x - mu)^2 / (2 sigma^2))."
 
 [[planned]]
 id = "ST-AX-BC-PR-021"
@@ -170,7 +170,7 @@ kind = "axiom"
 tranche = 3
 proof_status = "axiomatic"
 domain = "probability"
-statement = "Kolmogorov consequence (variant 21): P(empty)=0 and P(A^c)=1-P(A) on finite Omega."
+statement = "Inclusion-exclusion (two events): P(A union B)=P(A)+P(B)-P(A intersect B)."
 
 [[planned]]
 id = "ST-AX-BC-EX-022"
@@ -242,7 +242,7 @@ kind = "lemma"
 tranche = 3
 proof_status = "open"
 domain = "probability"
-statement = "Normal distribution density stub (case 30)."
+statement = "Normal PDF: f(x) = (1 / (sigma sqrt(2 pi))) exp(-(x - mu)^2 / (2 sigma^2))."
 
 [[planned]]
 id = "ST-AX-BC-PR-031"
@@ -250,7 +250,7 @@ kind = "axiom"
 tranche = 3
 proof_status = "axiomatic"
 domain = "probability"
-statement = "Kolmogorov consequence (variant 31): P(empty)=0 and P(A^c)=1-P(A) on finite Omega."
+statement = "Non-negativity: P(A) >= 0 for all events A."
 
 [[planned]]
 id = "ST-AX-BC-EX-032"
@@ -322,7 +322,7 @@ kind = "lemma"
 tranche = 3
 proof_status = "open"
 domain = "probability"
-statement = "Normal distribution density stub (case 40)."
+statement = "Normal PDF: f(x) = (1 / (sigma sqrt(2 pi))) exp(-(x - mu)^2 / (2 sigma^2))."
 
 [[planned]]
 id = "ST-AX-BC-PR-041"
@@ -330,7 +330,7 @@ kind = "axiom"
 tranche = 3
 proof_status = "axiomatic"
 domain = "probability"
-statement = "Kolmogorov consequence (variant 41): P(empty)=0 and P(A^c)=1-P(A) on finite Omega."
+statement = "Disjoint additivity: P(A u B)=P(A)+P(B) when A and B disjoint."
 
 [[planned]]
 id = "ST-AX-BC-EX-042"
@@ -402,4 +402,4 @@ kind = "lemma"
 tranche = 3
 proof_status = "open"
 domain = "probability"
-statement = "Normal distribution density stub (case 50)."
+statement = "Normal PDF: f(x) = (1 / (sigma sqrt(2 pi))) exp(-(x - mu)^2 / (2 sigma^2))."

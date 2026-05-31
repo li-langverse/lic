@@ -1,4 +1,4 @@
-# D-LM-BC-NT-023: Divisibility / gcd property (variant 23).
+# D-LM-BC-NT-023: Coprimality: gcd(a,b)=1 iff a and b share no prime factor.
 
 def gcd_divides(a: int, b: int, g: int) -> int
   requires a >= 0 and b >= 0 and g >= 0

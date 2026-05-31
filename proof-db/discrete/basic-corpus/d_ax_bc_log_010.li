@@ -1,4 +1,4 @@
-# D-AX-BC-LOG-010: Propositional tautology schema (variant 10).
+# D-AX-BC-LOG-010: Identity: P implies P.
 
 extern proc d_ax_bc_log_010_axiom_witness() -> int
   requires true

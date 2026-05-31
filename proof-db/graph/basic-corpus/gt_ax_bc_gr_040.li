@@ -1,4 +1,4 @@
-# GT-AX-BC-GR-040: Simple graph: no loops, symmetric adjacency (variant 40).
+# GT-AX-BC-GR-040: Complete simple graph K_n has n(n-1)/2 edges.
 # Simple graph: irreflexive and symmetric adjacency (no self-loops).
 
 def simple_graph_symmetric(adj_ij: int, adj_ji: int) -> int

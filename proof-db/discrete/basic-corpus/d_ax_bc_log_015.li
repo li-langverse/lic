@@ -1,4 +1,4 @@
-# D-AX-BC-LOG-015: Propositional tautology schema (variant 15).
+# D-AX-BC-LOG-015: Modus ponens schema: (P and (P implies Q)) implies Q.
 
 extern proc d_ax_bc_log_015_axiom_witness() -> int
   requires true

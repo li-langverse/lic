@@ -31,12 +31,7 @@ static void draw_viewport(SDL_Renderer* r, int w, int h, int frame) {
 }
 
 static int save_ppm(SDL_Renderer* r, int w, int h, const char* path) {
-  Uint32* pixels = NULL;
-  int pitch = 0;
-  if (SDL_RenderReadPixels(r, NULL, SDL_PIXELFORMAT_ABGR8888, NULL, 0) != 0) {
-    return -1;
-  }
-  pixels = (Uint32*)malloc((size_t)w * (size_t)h * sizeof(Uint32));
+  Uint32* pixels = (Uint32*)malloc((size_t)w * (size_t)h * sizeof(Uint32));
   if (!pixels) {
     return -1;
   }
@@ -97,9 +92,14 @@ int main(int argc, char** argv) {
     SDL_Quit();
     return 2;
   }
-  SDL_Renderer* ren = SDL_CreateRenderer(win, -1, SDL_RENDERER_ACCELERATED);
+  /* Software renderer: headless/Xvfb readback; accelerated often rejects RenderReadPixels. */
+  SDL_Renderer* ren =
+      SDL_CreateRenderer(win, -1, SDL_RENDERER_SOFTWARE | SDL_RENDERER_TARGETTEXTURE);
   if (!ren) {
     ren = SDL_CreateRenderer(win, -1, SDL_RENDERER_SOFTWARE);
+  }
+  if (!ren) {
+    ren = SDL_CreateRenderer(win, -1, 0);
   }
   if (!ren) {
     fprintf(stderr, "SDL_CreateRenderer failed: %s\n", SDL_GetError());

@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-05-30T04:14:48.599577+00:00",
+  "generated_at": "2026-05-30T09:15:50.659654+00:00",
   "tz": "Europe/Berlin",
   "agents_live": 0,
   "runners": [
@@ -7,9 +7,9 @@
       "id": "httpd",
       "name": "li-httpd gap parity",
       "branch": "cursor/httpd-plan-continue",
-      "head": "feb08b4e",
+      "head": "cc3ad9a6",
       "running": true,
-      "process": "2010567 bash ./scripts/httpd-plan-until-deadline.sh",
+      "process": "138862 python3 /home/s4il0r/Documents/Cursor/li-langverse/lic/scripts/goal-directed-agents-snapshot.py",
       "log_path": "/home/s4il0r/Documents/Cursor/li-langverse/lic/../lic/data/httpd-plan-loop/iter-20260522-132846.log",
       "todos": [
         {
@@ -69,13 +69,32 @@
         "gap-phase2-perf-wrk-soak",
         "gap-phase2-streaming-wrk"
       ],
+      "state": {
+        "completed_ids": [],
+        "iterations": 2,
+        "history": [
+          {
+            "at": "2026-05-30T05:51:52.407662+00:00",
+            "todo_id": "gap-phase2-perf-wrk-soak",
+            "agent_exit": 124,
+            "gates_ok": false
+          },
+          {
+            "at": "2026-05-30T06:38:33.327023+00:00",
+            "todo_id": "gap-phase2-streaming-wrk",
+            "agent_exit": 124,
+            "gates_ok": false
+          }
+        ]
+      },
+      "state_iterations": 2,
       "agent_live": false,
       "agent": "",
       "goal_file": "",
-      "log_age_sec": 361,
-      "last_state_at": "",
-      "last_state_todo": "",
-      "last_state_gates": "",
+      "log_age_sec": 222,
+      "last_state_at": "2026-05-30T06:38:33.327023+00:00",
+      "last_state_todo": "gap-phase2-streaming-wrk",
+      "last_state_gates": false,
       "current_iteration": "",
       "activity": [
         "[sdk] \u2713 shell cd /home/s4il0r/Documents/Cursor/li-langverse/li-cursor-agents/data/workspaces/l",
@@ -87,7 +106,7 @@
         "ursor/li-langverse/li-cursor-agents/data/workspaces/li-langverse/lic/code_implementer-1779456669806/repo/docs/ecosystem/httpd-m1-baseline.md",
         "[sdk] \u2717 tool"
       ],
-      "status_note": "supervisor idle (log 361s stale \u2014 check log_path)",
+      "status_note": "supervisor up, between agent runs",
       "active_todo_id": "gap-phase2-perf-wrk-soak"
     },
     {
@@ -401,7 +420,7 @@
       "agent_live": false,
       "agent": "",
       "goal_file": "",
-      "log_age_sec": 376357,
+      "log_age_sec": 394419,
       "last_state_at": "2026-05-25T06:41:51.000000+00:00",
       "last_state_todo": "wave-d-gui-scaffold",
       "last_state_gates": true,
@@ -450,14 +469,12 @@
         {
           "id": "sim-p2-qm-dft-scf",
           "content": "Implement algo_id=418 qm_dft_scf_energy minimal SCF stub with summary metrics",
-          "status": "pending"
+          "status": "completed"
         }
       ],
-      "plan_completed": 4,
+      "plan_completed": 5,
       "plan_total": 5,
-      "plan_pending": [
-        "sim-p2-qm-dft-scf"
-      ],
+      "plan_pending": [],
       "state": {
         "completed_ids": [],
         "iterations": 8,
@@ -520,7 +537,7 @@
       "agent_live": false,
       "agent": "",
       "goal_file": "",
-      "log_age_sec": 473625,
+      "log_age_sec": 491687,
       "last_state_at": "2026-05-24T16:32:27.410480+00:00",
       "last_state_todo": "sim-p0-md-lj-li-parity",
       "last_state_gates": false,
@@ -535,14 +552,13 @@
         "[sdk] thinking\u2026",
         "[sdk] assistant reply"
       ],
-      "status_note": "supervisor off",
-      "active_todo_id": "sim-p2-qm-dft-scf"
+      "status_note": "supervisor off"
     },
     {
       "id": "studio-ui-ux",
       "name": "Studio UI/UX",
       "branch": "cursor/studio-ui-ux-plan-loop",
-      "head": "f398a1e4",
+      "head": "ca77d2c6",
       "running": false,
       "process": "",
       "log_path": "/home/s4il0r/Documents/Cursor/li-langverse/lic/../lic-studio-ui/data/studio-ui-ux-plan-loop/iter-20260525-062259.log",
@@ -611,11 +627,39 @@
           "id": "studio-ux-12-world-studio-demo-linux-audit",
           "content": "ux-harness world-studio-demo fixture audit on Linux (non-mock) + agentic_ai SOTA refs in gates",
           "status": "done"
+        },
+        {
+          "id": "studio-ux-13-proactive-sweep",
+          "content": "Proactive ecosystem sweep \u2014 capture-deps probe, briefing snapshot refresh, wave-2 gap registry",
+          "status": "done"
+        },
+        {
+          "id": "studio-ux-14-native-sdl-ci",
+          "content": "Agent runner SDL/Xvfb deps \u2014 native_pixels=true in capture + latest-native-capture.json",
+          "status": "done"
+        },
+        {
+          "id": "studio-ux-15-wgpu-readback",
+          "content": "li-render wgpu real pixel draw \u2014 bench status native (not simulate) for viewport + particles",
+          "status": "completed"
+        },
+        {
+          "id": "studio-ux-16-palette-search-latency",
+          "content": "Command palette fuzzy search + measured open/filter latency hook (UX-04)",
+          "status": "pending"
+        },
+        {
+          "id": "studio-ux-17-gpu-fail-recovery",
+          "content": "Native GPU fail strip + retry affordance in li-studio shell (UX-08)",
+          "status": "pending"
         }
       ],
-      "plan_completed": 0,
-      "plan_total": 13,
-      "plan_pending": [],
+      "plan_completed": 1,
+      "plan_total": 18,
+      "plan_pending": [
+        "studio-ux-16-palette-search-latency",
+        "studio-ux-17-gpu-fail-recovery"
+      ],
       "state": {
         "completed_ids": [
           "studio-ux-00-design-system",
@@ -630,9 +674,12 @@
           "studio-ux-09-memory-budget",
           "studio-ux-10-native-capture",
           "studio-ux-11-panel-switch-gate",
-          "studio-ux-12-world-studio-demo-linux-audit"
+          "studio-ux-12-world-studio-demo-linux-audit",
+          "studio-ux-13-proactive-sweep",
+          "studio-ux-14-native-sdl-ci",
+          "studio-ux-15-wgpu-readback"
         ],
-        "iterations": 11,
+        "iterations": 14,
         "history": [
           {
             "at": "2026-05-24T14:53:41+00:00",
@@ -714,16 +761,43 @@
             "gates_ok": true,
             "ux_pass": true,
             "note": "Linux non-mock world-studio-demo harness; agentic_ai SOTA refs; capture dry exit 0"
+          },
+          {
+            "at": "2026-05-30T04:33:00+00:00",
+            "todo_id": "studio-ux-13-proactive-sweep",
+            "agent_exit": 0,
+            "capture_exit": 0,
+            "gates_ok": true,
+            "ux_pass": true,
+            "note": "Proactive sweep: capture-deps probe, wave-2 todos, issue #182 comment 4581660167; native_pixels=false (SDL gap)"
+          },
+          {
+            "at": "2026-05-30T08:05:00+00:00",
+            "todo_id": "studio-ux-14-native-sdl-ci",
+            "agent_exit": 0,
+            "capture_exit": 0,
+            "gates_ok": true,
+            "ux_pass": true,
+            "note": "SDL software renderer readback; ci-studio-ui-ux-native.sh + studio-ui-ux-native.yml; native_pixels=true; issue #182"
+          },
+          {
+            "at": "2026-05-30T08:11:00+00:00",
+            "todo_id": "studio-ux-15-wgpu-readback",
+            "agent_exit": 0,
+            "capture_exit": 0,
+            "gates_ok": true,
+            "ux_pass": true,
+            "note": "wgpu readback bench hooks; viewport+particles status=native; honest_simulate=false on PH gates"
           }
         ]
       },
-      "state_iterations": 11,
+      "state_iterations": 14,
       "agent_live": false,
       "agent": "",
       "goal_file": "",
-      "log_age_sec": 423765,
-      "last_state_at": "2026-05-30T01:04:00+00:00",
-      "last_state_todo": "studio-ux-12-world-studio-demo-linux-audit",
+      "log_age_sec": 441827,
+      "last_state_at": "2026-05-30T08:11:00+00:00",
+      "last_state_todo": "studio-ux-15-wgpu-readback",
       "last_state_gates": true,
       "current_iteration": "",
       "activity": [
@@ -736,7 +810,8 @@
         "[sdk] \u2717 tool",
         "[sdk] assistant reply"
       ],
-      "status_note": "supervisor off"
+      "status_note": "supervisor off",
+      "active_todo_id": "studio-ux-16-palette-search-latency"
     },
     {
       "id": "sim-md-research",
@@ -812,7 +887,7 @@
       "agent_live": false,
       "agent": "",
       "goal_file": "",
-      "log_age_sec": 376332,
+      "log_age_sec": 394394,
       "last_state_at": "2026-05-25T19:42:04.198858+00:00",
       "last_state_todo": "md-r2-neighbor-list-gap",
       "last_state_gates": true,
@@ -891,7 +966,7 @@
       "agent_live": false,
       "agent": "",
       "goal_file": "",
-      "log_age_sec": 376844,
+      "log_age_sec": 394905,
       "last_state_at": "2026-05-25T19:32:04.164094+00:00",
       "last_state_todo": "chem-r2-dft-scf-gap",
       "last_state_gates": false,
@@ -963,7 +1038,7 @@
       "agent_live": false,
       "agent": "",
       "goal_file": "",
-      "log_age_sec": 376995,
+      "log_age_sec": 395057,
       "last_state_at": "2026-05-25T19:29:32.615546+00:00",
       "last_state_todo": "sec-r1-httpd-fuzz-smoke",
       "last_state_gates": true,
@@ -978,9 +1053,9 @@
       "id": "swarm-observer",
       "name": "Swarm gap orchestrator",
       "branch": "cursor/swarm-observer-plan-loop",
-      "head": "feb08b4e",
+      "head": "cc3ad9a6",
       "running": true,
-      "process": "2376041 python3 /home/s4il0r/Documents/Cursor/li-langverse/lic/scripts/goal-directed-agents-snapshot.py",
+      "process": "138862 python3 /home/s4il0r/Documents/Cursor/li-langverse/lic/scripts/goal-directed-agents-snapshot.py",
       "log_path": "/home/s4il0r/Documents/Cursor/li-langverse/lic/../lic/data/swarm-observer-plan-loop/iter-20260525-193501.log",
       "todos": [
         {
@@ -1041,7 +1116,7 @@
       "agent_live": false,
       "agent": "",
       "goal_file": "",
-      "log_age_sec": 790,
+      "log_age_sec": 7743,
       "last_state_at": "2026-05-25T19:34:28.890041+00:00",
       "last_state_todo": "orch-r1-plan-debt-sync",
       "last_state_gates": true,
@@ -1049,11 +1124,185 @@
       "activity": [
         "SDK tool activity streams to stderr ([sdk] \u25b6/\u2713 lines). Set LI_SDK_TERMINAL_STREAM=0 to disable."
       ],
-      "status_note": "supervisor idle (log 790s stale \u2014 check log_path)",
+      "status_note": "supervisor idle (log 7743s stale \u2014 check log_path)",
       "active_todo_id": "orch-r2-competitor-stubs"
+    },
+    {
+      "id": "ph-db",
+      "name": "PH-DB / native Li platform",
+      "branch": "main",
+      "head": "cc3ad9a6",
+      "running": true,
+      "process": "138862 python3 /home/s4il0r/Documents/Cursor/li-langverse/lic/scripts/goal-directed-agents-snapshot.py",
+      "log_path": "/home/s4il0r/Documents/Cursor/li-langverse/lic/../lic/data/ph-db-plan-loop/runner.log",
+      "todos": [
+        {
+          "id": "wp-a-engine-native",
+          "content": "WP-A lidb native embed + liorm.execute + security/bench harness (lidb feat/ph-db-native-embed-wp-a)",
+          "status": "completed"
+        },
+        {
+          "id": "wp-b-lis-db",
+          "content": "WP-B lis db native embed + LiormRegistryStore rows + docker-compose.ph-db.yml (lis feat/ph-db-3-lis-db-native)",
+          "status": "completed"
+        },
+        {
+          "id": "wp-c-registry-bench",
+          "content": "WP-C tier_db_registry lidb P95 harness + compare manifest (benchmarks feat/ph-db-5-registry-compare)",
+          "status": "completed"
+        },
+        {
+          "id": "wp-e-control-plane",
+          "content": "WP-E control-plane persist on lidb + test:e2e:lidb-engine 10/10 + agent-self-unblock skills (li-cursor-agents feat/ph-db-10-native-persist)",
+          "status": "completed"
+        },
+        {
+          "id": "wp-g-ci-cross-repo",
+          "content": "WP-G lidb-engine-e2e CI job on agents PR (partial \u2014 merge PR required)",
+          "status": "pending"
+        },
+        {
+          "id": "wp-h-containers",
+          "content": "WP-H docker-compose.ph-db.yml + Dockerfile.supervisor (on branch \u2014 compose smoke not in CI yet)",
+          "status": "pending"
+        },
+        {
+          "id": "wp-k-postgres-nightly",
+          "content": "WP-K nightly Postgres P95 compare GHA + honest ratio_vs_postgres (workflow on branch; needs merge + first green run)",
+          "status": "pending"
+        },
+        {
+          "id": "wp-pr-merge-wave",
+          "content": "Open PRs + merge four feat/ph-db-* branches across lidb/lis/benchmarks/li-cursor-agents",
+          "status": "pending"
+        },
+        {
+          "id": "wp-h0-default-main",
+          "content": "WP-H0 lidb default branch \u2192 main (lidb/scripts/set-default-branch-main.sh + gh admin)",
+          "status": "pending"
+        },
+        {
+          "id": "wp-n3-realtime",
+          "content": "WP-N3 merge lis#10 realtime changefeed WebSocket",
+          "status": "pending"
+        },
+        {
+          "id": "wp-n5-security-bench",
+          "content": "WP-N5 merge benchmarks#96 tier_db_security \u2192 lidb harness",
+          "status": "pending"
+        },
+        {
+          "id": "wp-d-registry-v2",
+          "content": "WP-D registry schema v2 + lip OpenAPI parity (PH-8d-v2 human sign-off)",
+          "status": "pending"
+        },
+        {
+          "id": "wp-prod-lidb-default",
+          "content": "Production flip LI_CONTROL_PLANE_STORE=lidb (human sign-off after Phase 3 gates)",
+          "status": "pending"
+        }
+      ],
+      "plan_completed": 4,
+      "plan_total": 13,
+      "plan_pending": [
+        "wp-g-ci-cross-repo",
+        "wp-h-containers",
+        "wp-k-postgres-nightly",
+        "wp-pr-merge-wave",
+        "wp-h0-default-main",
+        "wp-n3-realtime",
+        "wp-n5-security-bench",
+        "wp-d-registry-v2",
+        "wp-prod-lidb-default"
+      ],
+      "state": {
+        "note": "PH-DB cross-repo sprint \u2014 state tracked via ph-db-swarm-plan.md todos; no YAML plan-loop yet",
+        "updated_at": "2026-05-30T00:00:00Z",
+        "iterations": 0,
+        "completed_ids": [
+          "wp-a-engine-native",
+          "wp-b-lis-db",
+          "wp-c-registry-bench",
+          "wp-e-control-plane"
+        ],
+        "history": []
+      },
+      "state_iterations": 0,
+      "agent_live": false,
+      "agent": "",
+      "goal_file": "",
+      "log_age_sec": null,
+      "last_state_at": "",
+      "last_state_todo": "",
+      "last_state_gates": "",
+      "current_iteration": "",
+      "activity": [],
+      "status_note": "supervisor up, between agent runs",
+      "active_todo_id": "wp-g-ci-cross-repo",
+      "cross_repo": [
+        {
+          "repo": "lidb",
+          "branch": "cursor/wp-j-ph-db-orm-contracts",
+          "head": "1030b3e",
+          "expected_branch": "feat/ph-db-native-embed-wp-a"
+        },
+        {
+          "repo": "lis",
+          "branch": "chore/agent-docs_maintainer-20260530",
+          "head": "94873aa",
+          "expected_branch": "feat/ph-db-3-lis-db-native"
+        },
+        {
+          "repo": "benchmarks",
+          "branch": "chore/agent-bench_improver-20260530-matmul-tier1-digest",
+          "head": "a693d12",
+          "expected_branch": "feat/ph-db-5-registry-compare"
+        },
+        {
+          "repo": "li-cursor-agents",
+          "branch": "chore/studio-ux-12-harness-sota",
+          "head": "d875154",
+          "expected_branch": "feat/ph-db-10-native-persist"
+        }
+      ]
     }
   ],
   "history": [
+    {
+      "runner": "studio-ui-ux",
+      "at": "2026-05-30T08:11:00+00:00",
+      "todo_id": "studio-ux-15-wgpu-readback",
+      "agent_exit": 0,
+      "gates_ok": true
+    },
+    {
+      "runner": "studio-ui-ux",
+      "at": "2026-05-30T08:05:00+00:00",
+      "todo_id": "studio-ux-14-native-sdl-ci",
+      "agent_exit": 0,
+      "gates_ok": true
+    },
+    {
+      "runner": "httpd",
+      "at": "2026-05-30T06:38:33.327023+00:00",
+      "todo_id": "gap-phase2-streaming-wrk",
+      "agent_exit": 124,
+      "gates_ok": false
+    },
+    {
+      "runner": "httpd",
+      "at": "2026-05-30T05:51:52.407662+00:00",
+      "todo_id": "gap-phase2-perf-wrk-soak",
+      "agent_exit": 124,
+      "gates_ok": false
+    },
+    {
+      "runner": "studio-ui-ux",
+      "at": "2026-05-30T04:33:00+00:00",
+      "todo_id": "studio-ux-13-proactive-sweep",
+      "agent_exit": 0,
+      "gates_ok": true
+    },
     {
       "runner": "studio-ui-ux",
       "at": "2026-05-30T01:04:00+00:00",
@@ -1102,41 +1351,6 @@
       "todo_id": "md-r2-neighbor-list-gap",
       "agent_exit": 0,
       "gates_ok": false
-    },
-    {
-      "runner": "swarm-observer",
-      "at": "2026-05-25T19:09:59.208177+00:00",
-      "todo_id": "orch-r0-ingest-snapshot",
-      "agent_exit": 0,
-      "gates_ok": true
-    },
-    {
-      "runner": "security-research",
-      "at": "2026-05-25T19:08:08.544345+00:00",
-      "todo_id": "sec-r0-cwe-delta",
-      "agent_exit": 0,
-      "gates_ok": true
-    },
-    {
-      "runner": "sim-chem-research",
-      "at": "2026-05-25T19:03:25.678512+00:00",
-      "todo_id": "chem-r1-basis-size-scaling",
-      "agent_exit": 0,
-      "gates_ok": true
-    },
-    {
-      "runner": "sim-md-research",
-      "at": "2026-05-25T18:55:29.188178+00:00",
-      "todo_id": "md-r1-stability-matrix",
-      "agent_exit": 0,
-      "gates_ok": true
-    },
-    {
-      "runner": "sim-chem-research",
-      "at": "2026-05-25T18:47:25.514244+00:00",
-      "todo_id": "chem-r0-sota-survey",
-      "agent_exit": 0,
-      "gates_ok": true
     }
   ]
 }

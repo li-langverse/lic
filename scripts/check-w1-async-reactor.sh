@@ -2,6 +2,9 @@
 # w1-async-reactor: epoll/kqueue behind li_async_poll + TCP echo benchmark scenario.
 set -euo pipefail
 ROOT="$(cd "$(dirname "$0")/.." && pwd)"
+# shellcheck source=lib/benchmarks-env.sh
+source "$ROOT/scripts/lib/benchmarks-env.sh"
+
 # shellcheck source=llvm-env.sh
 source "$ROOT/scripts/llvm-env.sh"
 li_detect_compilers

@@ -2,6 +2,9 @@
 # Gates for Studio UI/UX plan loop — native ui/gui/render + UX capture scripts.
 set -euo pipefail
 ROOT="$(cd "$(dirname "$0")/.." && pwd)"
+# shellcheck source=lib/benchmarks-env.sh
+source "$ROOT/scripts/lib/benchmarks-env.sh"
+
 # shellcheck source=lib/li-ui.sh
 source "$ROOT/scripts/lib/li-ui.sh"
 li_detect_compilers 2>/dev/null || true
@@ -27,10 +30,23 @@ chmod +x "$ROOT/scripts/studio-ui-ux-capture-progress.sh" 2>/dev/null || true
 python3 "$ROOT/scripts/studio-ui-ux-verify-capture.py" || fail "studio-ui-ux-verify-capture"
 python3 "$ROOT/scripts/studio-ui-ux-verify-native-capture.py" || fail "studio-ui-ux-verify-native-capture"
 python3 "$ROOT/scripts/studio-ui-ux-verify-tokens.py" || fail "studio token sync (TOML ↔ li-ui)"
+python3 "$ROOT/scripts/studio-ui-ux-verify-harness-audit.py" || fail "studio-ui-ux-verify-harness-audit"
+python3 "$ROOT/scripts/studio-ui-ux-verify-keyboard-journey.py" || fail "studio-ui-ux-verify-keyboard-journey"
+python3 "$ROOT/scripts/studio-ui-ux-verify-palette-native.py" || fail "studio-ui-ux-verify-palette-native"
+python3 "$ROOT/scripts/studio-ui-ux-verify-agent-chrome-native.py" || fail "studio-ui-ux-verify-agent-chrome-native"
+python3 "$ROOT/scripts/studio-ui-ux-verify-wgpu-swapchain.py" || fail "studio-ui-ux-verify-wgpu-swapchain"
+if [[ -x "$ROOT/scripts/studio-ui-ux-probe-capture-deps.sh" ]]; then
+  "$ROOT/scripts/studio-ui-ux-probe-capture-deps.sh" || li_warn "capture-deps probe failed"
+  [[ -f "$ROOT/data/studio-ui-ux-plan-loop/latest-capture-deps.json" ]] \
+    || fail "latest-capture-deps.json missing after probe"
+fi
+python3 "$ROOT/scripts/studio-ui-ux-write-briefing-snapshot.py" || fail "studio-ui-ux-write-briefing-snapshot"
+[[ -f "$ROOT/data/studio-ui-ux-plan-loop/latest-briefing-snapshot.json" ]] \
+  || fail "latest-briefing-snapshot.json missing"
 
 li_phase "competitive intel doc"
 [[ -f "$ROOT/docs/game-dev/competitive-intel/ui-ux-by-dimension.md" ]] || fail "ui-ux-by-dimension.md"
-[[ -f "$ROOT/benchmarks/competitive/studio-ui.toml" ]] || fail "studio-ui.toml bench registry"
+[[ -f "$BENCHMARKS_COMPETITIVE/studio-ui.toml" ]] || fail "studio-ui.toml bench registry"
 
 li_phase "studio-ui bench registry"
 "$ROOT/scripts/bench-studio-viewport-perf.sh" || fail "bench-studio-viewport-perf"

@@ -1,0 +1,24 @@
+# studio-ux-21 — swapchain readback contract on lig.present (blocked until GPU runner).
+
+import lig.present
+
+def main() -> int raises IO
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  var blocked: LigWgpuSwapchainReadback = lig_wgpu_swapchain_readback_blocked()
+  if blocked.status != lig_wgpu_swapchain_status_blocked():
+    return 1
+  if lig_wgpu_swapchain_readback_passed(blocked) != 0:
+    return 2
+  var run: LigWgpuSwapchainReadback = lig_wgpu_swapchain_readback_run()
+  if run.status == lig_wgpu_swapchain_status_pass():
+    if lig_wgpu_swapchain_readback_passed(run) != 1:
+      return 3
+    if run.pixels_sampled <= 0:
+      return 4
+  else:
+    if run.pixels_sampled != 0:
+      return 5
+  return 0

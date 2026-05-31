@@ -21,3 +21,27 @@ suite = "smoke"
 file = "smoke/ml_gpu_matmul_stub.li"
 outcome = "compile_open_ok"
 note = "T-PKG-li-ml-gpu-stub PH-ML WP-ML-05"
+
+[[tests]]
+suite = "smoke"
+file = "smoke/ml_matmul_general.li"
+outcome = "compile_open_ok"
+note = "T-PKG-li-ml-matmul-general PH-ML Wave 4"
+
+[[tests]]
+suite = "smoke"
+file = "smoke/ml_lig_matmul_run_auto.li"
+outcome = "compile_open_ok"
+note = "T-PKG-li-ml-lig-auto PH-ML Wave 4 WP-LLM-05"
+
+[[tests]]
+suite = "smoke"
+file = "smoke/ml_mlp_forward.li"
+outcome = "compile_open_ok"
+note = "T-PKG-li-ml-mlp-forward PH-ML Wave 4"
+
+[[tests]]
+suite = "smoke"
+file = "smoke/ml_matmul_16_flat.li"
+outcome = "compile_open_ok"
+note = "PH-ML Wave 6 WP-ML-11"

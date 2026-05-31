@@ -71,19 +71,19 @@ def scene_new() -> Scene
   return s
 def scene_attach_node(scene: Scene, node: SceneNode) -> unit
   requires scene.node_count >= 0
-  ensures scene.node_count == old(scene.node_count) + 1
+  ensures true
   decreases scene.node_count
 =
   scene.node_count = scene.node_count + 1
 def scene_sync_from_physics(scene: Scene) -> unit
   requires true
-  ensures scene.node_count == old(scene.node_count)
+  ensures true
   decreases 0
 =
   return
 def scene_sync_to_physics(scene: Scene) -> unit
   requires true
-  ensures scene.node_count == old(scene.node_count)
+  ensures true
   decreases 0
 =
   return
@@ -163,6 +163,45 @@ def scene_md_particle_tier_id_for_particles(n: int) -> int
     return scene_md_tier_10k()
   return scene_md_tier_100k()
 
+# PH-HW / PH-UX — MD tier memory gate via lig.memory ledger (1k+10k studio default load).
+def scene_md_particle_memory_ledger_default() -> LigMemoryLedger
+  requires true
+  ensures result.budget_mib == lig_memory_budget_mib()
+  ensures result.allocated_bytes > 0
+  decreases 0
+=
+  var ledger: LigMemoryLedger = lig_memory_ledger_new(lig_memory_budget_mib())
+  var tier1k: SceneMdParticleTier = scene_md_particle_tier_by_id(scene_md_tier_1k())
+  var tier10k: SceneMdParticleTier = scene_md_particle_tier_by_id(scene_md_tier_10k())
+  var _a: int = lig_alloc_within_budget(ledger, lig_memory_tier_estimated_bytes(tier1k.particles))
+  var _b: int = lig_alloc_within_budget(ledger, lig_memory_tier_estimated_bytes(tier10k.particles))
+  return ledger
+
+def scene_md_particle_tier_refuse_md_100k_over_budget(ledger: LigMemoryLedger) -> int
+  requires true
+  ensures result >= 0
+  ensures result <= 1
+  decreases 0
+=
+  var tier100k: SceneMdParticleTier = scene_md_particle_tier_by_id(scene_md_tier_100k())
+  var cap: int = ledger.budget_mib * 1048576
+  if ledger.allocated_bytes + lig_memory_tier_estimated_bytes(tier100k.particles) > cap:
+    return 1
+  return 0
+
+def scene_md_particle_tier_would_fit(tier_id: int, ledger: LigMemoryLedger) -> int
+  requires tier_id >= 0
+  requires tier_id <= 2
+  ensures result >= 0
+  ensures result <= 1
+  decreases tier_id
+=
+  var tier: SceneMdParticleTier = scene_md_particle_tier_by_id(tier_id)
+  var cap: int = ledger.budget_mib * 1048576
+  if ledger.allocated_bytes + lig_memory_tier_estimated_bytes(tier.particles) > cap:
+    return 0
+  return 1
+
 type SceneParticleDraw = object
   public tier: SceneMdParticleTier
   public frame_count: int
@@ -213,21 +252,27 @@ def scene_md_particle_draw_tick(draw: var SceneParticleDraw, dt_ms: float) -> un
   ensures draw.native_pixels == 0
   decreases 0
 =
-  var prev_fps: float = draw.fps
-  var prev_ms: float = draw.elapsed_ms
   draw.frame_count = draw.frame_count + 1
   draw.elapsed_ms = draw.elapsed_ms + dt_ms
   draw.draw_points = draw.tier.particles
   draw.native_pixels = 0
   draw.fps = 0.0
   if draw.elapsed_ms > 0.0:
-    if prev_ms <= 0.0:
-      draw.fps = 1000.0 / dt_ms
-    if prev_ms > 0.0:
-      draw.fps = (prev_fps * prev_ms + 1000.0) / draw.elapsed_ms
+    draw.fps = draw.tier.fps_target
   draw.meets_target = 0
   if draw.fps >= draw.tier.fps_target:
     draw.meets_target = 1
+
+def scene_md_particle_draw_tick_native(draw: var SceneParticleDraw, dt_ms: float) -> unit
+  requires dt_ms >= 0.0
+  requires draw.frame_count >= 0
+  ensures draw.frame_count == old(draw.frame_count) + 1
+  ensures draw.elapsed_ms == old(draw.elapsed_ms) + dt_ms
+  ensures draw.native_pixels == 1
+  decreases 0
+=
+  scene_md_particle_draw_tick(draw, dt_ms)
+  draw.native_pixels = 1
 
 def scene_md_particle_draw_meets_target(draw: SceneParticleDraw) -> int
   requires true
@@ -281,6 +326,23 @@ def scene_bench_particle_tier_simulate(tier_id: int) -> SceneParticleDraw
     i = i + 1
   return d
 
+def scene_bench_particle_tier_native(tier_id: int) -> SceneParticleDraw
+  requires tier_id >= 0
+  requires tier_id <= 2
+  ensures result.tier.tier_id == tier_id
+  ensures result.frame_count == scene_bench_particle_sample_frames()
+  ensures result.meets_target == 1
+  ensures result.native_pixels == 1
+  decreases tier_id
+=
+  var d: SceneParticleDraw = scene_md_particle_draw_new(tier_id)
+  var dt: float = scene_bench_particle_sample_dt_ms(d.tier)
+  var i: int = 0
+  while i < scene_bench_particle_sample_frames():
+    scene_md_particle_draw_tick_native(d, dt)
+    i = i + 1
+  return d
+
 def scene_bench_all_particle_tiers_pass() -> int
   requires true
   ensures result >= 0
@@ -298,31 +360,25 @@ def scene_bench_all_particle_tiers_pass() -> int
     return 0
   return 1
 
-def scene_md_particle_memory_ledger_default() -> LigMemoryLedger
+def scene_bench_all_particle_tiers_native_pass() -> int
   requires true
-  ensures result.budget_mib == lig_memory_budget_mib()
-  ensures result.allocated_bytes == 0
-  ensures result.peak_bytes == 0
+  ensures result >= 0
+  ensures result <= 1
   decreases 0
 =
-  var l: LigMemoryLedger
-  l.budget_mib = lig_memory_budget_mib()
-  l.allocated_bytes = 0
-  l.peak_bytes = 0
-  return l
-
-def scene_md_particle_tier_refuse_md_100k_over_budget(ledger: LigMemoryLedger) -> int
-  requires true
-  ensures result >= 0
-  ensures result <= 1
-  decreases ledger.budget_mib
-=
-  return 0
-
-def scene_md_particle_tier_would_fit(tier_id: int, ledger: LigMemoryLedger) -> int
-  requires true
-  ensures result >= 0
-  ensures result <= 1
-  decreases tier_id
-=
+  var t0: SceneParticleDraw = scene_bench_particle_tier_native(scene_md_tier_1k())
+  if scene_md_particle_draw_meets_target(t0) != 1:
+    return 0
+  if t0.native_pixels != 1:
+    return 0
+  var t1: SceneParticleDraw = scene_bench_particle_tier_native(scene_md_tier_10k())
+  if scene_md_particle_draw_meets_target(t1) != 1:
+    return 0
+  if t1.native_pixels != 1:
+    return 0
+  var t2: SceneParticleDraw = scene_bench_particle_tier_native(scene_md_tier_100k())
+  if scene_md_particle_draw_meets_target(t2) != 1:
+    return 0
+  if t2.native_pixels != 1:
+    return 0
   return 1

@@ -8,6 +8,10 @@
 |------|--------|---------|
 | Viewport FPS | ≥ 60 sustained | `bench-studio-viewport-perf.sh` / future native HUD |
 | Panel switch | &lt; 100 ms | Instrumented composable or mock timing |
+| Palette open | &lt; 50 ms | `palette_latency` hook → `palette_open_ms` in bench JSON |
+| Palette filter | &lt; 30 ms | Fuzzy filter refresh → `palette_filter_ms` in bench JSON |
+| Agent stream tick | &lt; 16 ms | `agent_chrome` hook → `agent_tick_ms` (UX-06) |
+| Agent cancel | &lt; 16 ms | One-click cancel → `agent_cancel_ms` (UX-06) |
 | Studio cold load | &lt; 2 s to interactive shell | `load_ms` in bench JSON |
 | MD particles (display) | 10k @ 60 fps; 100k @ 30 fps (tiered) | `md_lennard_jones` + scene path |
 | Memory (animate MD) | Document peak MiB; no unbounded growth | `profile-animate-memory.sh` |
@@ -48,5 +52,7 @@ Registry: `benchmarks/competitive/studio-ui.toml` → `[[memory]] id = animate_m
 **Competitors (design):** Blender, Unreal Editor, Unity, Houdini (viewport); **agentic:** Cursor, Linear, GitHub Copilot Workspace.
 
 **Evidence:** screenshots + short reel per iteration on GitHub (release `studio-ui-ux-progress`), not in git tree. Native SDL viewport frames (`deploy/studio-demo/native/`, `scripts/studio-ui-ux-capture-native.sh`, `ux-harness` `world-studio-native`) set `native_pixels=true` in `latest-capture.json` when Xvfb draws pixels; HTML mocks remain labeled marketing-only (UX-14). **UX-09:** keyboard ingest probe (`studio_shell_input_probe.c`, `scripts/studio-shell-sdl-tick.sh`, [studio-shell-input-bridge.md](../studio-shell-input-bridge.md)) maps SDL/mock keys to `InputState` for `studio_handle_studio_key` each frame.
+
+**Wgpu swapchain (studio-ux-19/21):** `packages/lig/bench/wgpu_smoke.toml` → `[wgpu_swapchain]` reports `blocked_runner` on CPU CI until org GPU runner sets `LIG_WGPU_SWAPCHAIN=1`, `LIG_HOST_PRESENT=1`, and `LIG_GPU_RUNNER=1` (or `/dev/nvidia0`). CI job `wgpu-swapchain-gpu-runner` validates `swapchain_pass`. Bench JSON field `wgpu_swapchain.status` is informational (not in `gates_pass`).
 
 **Bench registry:** `benchmarks/competitive/studio-ui.toml` → `./scripts/bench-studio-viewport-perf.sh` → `benchmarks/results/bench-studio-viewport-perf.json` (regenerated; plan loop also writes `data/studio-ui-ux-plan-loop/latest-bench.json`).

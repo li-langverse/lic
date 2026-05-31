@@ -1,0 +1,13 @@
+# Package-local tests — register in monorepo li-tests/manifest.toml when integrated.
+
+[[tests]]
+suite = "smoke"
+file = "smoke/builds.li"
+outcome = "verify_ok"
+note = "T-PKG-li-geometry-smoke"
+
+[[tests]]
+suite = "smoke"
+file = "smoke/mesh_predicates_stub.li"
+outcome = "compile_open_ok"
+note = "T-PKG-li-geometry-mesh-predicates"

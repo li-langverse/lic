@@ -8,6 +8,7 @@
 
 #if !defined(_WIN32)
 #include <pthread.h>
+#include <sys/stat.h>
 #include <unistd.h>
 #endif
 
@@ -1004,6 +1005,10 @@ static void li_rt_studio_shell_input_apply_env(void) {
 #define LI_RT_LIG_PIXEL_SOURCE_PAINT_BLIT 2
 #define LI_RT_LIG_PIXEL_SOURCE_WGPU_READBACK 3
 #define LI_RT_LIG_PIXEL_SOURCE_WGPU_DRAW_LIST 4
+#define LI_RT_LIG_PIXEL_SOURCE_WGPU_SWAPCHAIN 5
+
+#define LI_RT_LIG_SWAPCHAIN_STATUS_BLOCKED 0
+#define LI_RT_LIG_SWAPCHAIN_STATUS_PASS 1
 
 static int32_t g_lig_host_present_active = 0;
 static int32_t g_lig_native_pixels = 0;
@@ -1019,6 +1024,25 @@ static int32_t li_rt_lig_env_host_present(void) {
 static int32_t li_rt_lig_env_wgpu_readback(void) {
   const char* v = getenv("LIG_WGPU_READBACK");
   return (v != NULL && v[0] == '1' && v[1] == '\0') ? 1 : 0;
+}
+
+static int32_t li_rt_lig_env_wgpu_swapchain(void) {
+  const char* v = getenv("LIG_WGPU_SWAPCHAIN");
+  return (v != NULL && v[0] == '1' && v[1] == '\0') ? 1 : 0;
+}
+
+static int32_t li_rt_lig_gpu_runner_detected(void) {
+  const char* runner = getenv("LIG_GPU_RUNNER");
+  if (runner != NULL && runner[0] == '1' && runner[1] == '\0') {
+    return 1;
+  }
+#if !defined(_WIN32)
+  struct stat st;
+  if (stat("/dev/nvidia0", &st) == 0) {
+    return 1;
+  }
+#endif
+  return 0;
 }
 
 static void li_rt_lig_refresh_host_active(void) {
@@ -1076,6 +1100,44 @@ int32_t li_rt_lig_wgpu_readback_stub(int32_t viewport_w, int32_t viewport_h, int
   }
   g_lig_native_pixels = 1;
   g_lig_native_pixel_source = LI_RT_LIG_PIXEL_SOURCE_WGPU_READBACK;
+  g_lig_surface_ok = 1;
+  g_lig_present_dt_ms = 16.667f;
+  return 1;
+}
+
+int32_t li_rt_lig_wgpu_swapchain_active(void) {
+  li_rt_lig_refresh_host_active();
+  if (!li_rt_lig_env_wgpu_swapchain()) {
+    return 0;
+  }
+  return g_lig_host_present_active;
+}
+
+int32_t li_rt_lig_wgpu_swapchain_readback_status(void) {
+  if (!li_rt_lig_env_wgpu_swapchain()) {
+    return LI_RT_LIG_SWAPCHAIN_STATUS_BLOCKED;
+  }
+  if (!li_rt_lig_gpu_runner_detected()) {
+    return LI_RT_LIG_SWAPCHAIN_STATUS_BLOCKED;
+  }
+  li_rt_lig_refresh_host_active();
+  if (!g_lig_host_present_active) {
+    return LI_RT_LIG_SWAPCHAIN_STATUS_BLOCKED;
+  }
+  return LI_RT_LIG_SWAPCHAIN_STATUS_PASS;
+}
+
+int32_t li_rt_lig_wgpu_swapchain_readback_run(int32_t viewport_w, int32_t viewport_h) {
+  if (li_rt_lig_wgpu_swapchain_readback_status() != LI_RT_LIG_SWAPCHAIN_STATUS_PASS) {
+    return 0;
+  }
+  if (viewport_w <= 0 || viewport_h <= 0) {
+    return 0;
+  }
+  (void)li_rt_lig_wgpu_swapchain_create(viewport_w, viewport_h);
+  (void)li_rt_lig_wgpu_present_frame(1);
+  g_lig_native_pixels = 1;
+  g_lig_native_pixel_source = LI_RT_LIG_PIXEL_SOURCE_WGPU_SWAPCHAIN;
   g_lig_surface_ok = 1;
   g_lig_present_dt_ms = 16.667f;
   return 1;

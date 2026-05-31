@@ -9,10 +9,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
-- **Accessibility (UX-10)** — `studio_color_focus_ring`, `studio_paint_focus_ring`, `studio_contrast_ratio_ok()` stub (WCAG AA 4.5:1 target in README); smoke `studio_accessibility.li`.
-- **Skeleton tokens (UX-11)** — `studio_color_skeleton_muted` / `highlight` for loading paint IR.
-- **Command palette actions (UX-04)** — `studio_palette_action_*`, `studio_palette_exec_slot`, `selected_slot` / `last_action_id` on compose; `li_std_ui_studio_composables_version` → 6.
-- **Command palette (UX-04)** — `StudioCommandPaletteCompose`, `studio_palette_open` / `close` / `toggle`, `paint_studio_palette`; smoke `studio_palette.li`.
+- **Native agent stream (UX-06, studio-ux-23)** — `StudioAgentStreamState`, tick/cancel stream, `studio_agent_bench_native`; `agent_chrome.toml` status=native.
+- **Native palette bench (UX-04, studio-ux-22)** — `StudioPaletteBenchLatency`, `studio_palette_bench_native`, native open/filter latency hooks; `palette_latency.toml` status=native.
 - **Design tokens** — `studio_color_border`, `studio_color_accent_amber` (TOML sync for timeline playhead + borders).
 - Studio shell **layout IR** (`studio_layout.li`): adaptive dock/topbar/viewport/inspector/timeline/agent-strip rects aligned to design tokens.
 - `layout_panel_switch_within_budget_ms` — PH-UX gate helper (≤100 ms token).

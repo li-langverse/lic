@@ -14,6 +14,9 @@
 set -euo pipefail
 
 ROOT="$(cd "$(dirname "$0")/.." && pwd)"
+# shellcheck source=lib/benchmarks-env.sh
+source "$ROOT/scripts/lib/benchmarks-env.sh"
+
 USE_DOCKER=0
 RUN_MEMORY=0
 PREPARE_DOCKER=0

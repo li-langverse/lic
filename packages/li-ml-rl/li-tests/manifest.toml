@@ -15,3 +15,33 @@ suite = "smoke"
 file = "smoke/env_pool_async_four.li"
 outcome = "compile_open_ok"
 note = "T-PKG-li-ml-rl-async-four PH-ML WP-RL-02 Wave 3"
+
+[[tests]]
+suite = "smoke"
+file = "smoke/job_graph_train_eval.li"
+outcome = "compile_open_ok"
+note = "T-PKG-li-ml-rl-train-eval PH-ML Wave 4"
+
+[[tests]]
+suite = "smoke"
+file = "smoke/env_pool_persistent.li"
+outcome = "compile_open_ok"
+note = "T-PKG-li-ml-rl-persistent-pool PH-ML Wave 4"
+
+[[tests]]
+suite = "smoke"
+file = "smoke/job_graph_sample_queue.li"
+outcome = "compile_open_ok"
+note = "T-PKG-li-ml-rl-sample-queue PH-ML Wave 5"
+
+[[tests]]
+suite = "smoke"
+file = "smoke/env_pool_thread_parallel.li"
+outcome = "compile_open_ok"
+note = "T-PKG-li-ml-rl-thread-pool PH-ML Wave 5"
+
+[[tests]]
+suite = "smoke"
+file = "smoke/job_graph_async_timing.li"
+outcome = "compile_open_ok"
+note = "T-PKG-li-ml-rl-async-timing PH-ML Wave 5 G-ml-async"

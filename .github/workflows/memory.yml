@@ -16,6 +16,11 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
+      - name: Checkout lip + lit + benchmarks (GitHub siblings)
+        run: |
+          chmod +x scripts/checkout-ecosystem-siblings.sh
+          ./scripts/checkout-ecosystem-siblings.sh
+
       - name: Install LLVM 22 and build tools
         run: |
           chmod +x scripts/ci-install-llvm.sh

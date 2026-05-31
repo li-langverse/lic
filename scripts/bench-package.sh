@@ -6,6 +6,9 @@
 #   ./scripts/bench-package.sh li-physics-particles --timing --runs 3
 set -euo pipefail
 ROOT="$(cd "$(dirname "$0")/.." && pwd)"
+# shellcheck source=lib/benchmarks-env.sh
+source "$ROOT/scripts/lib/benchmarks-env.sh"
+
 # shellcheck source=lib/li-ui.sh
 source "$ROOT/scripts/lib/li-ui.sh"
 export LIC="${LIC:-$($ROOT/scripts/resolve-lic.sh)}"
@@ -49,7 +52,7 @@ if [[ "${#SCOPE_ARGS[@]}" -eq 0 ]]; then
   exit 2
 fi
 
-SCOPE_JSON="$(python3 "$ROOT/benchmarks/harness/bench_scope.py" "${SCOPE_ARGS[@]}" --json)"
+SCOPE_JSON="$(python3 "$HARNESS/bench_scope.py" "${SCOPE_ARGS[@]}" --json)"
 BENCHES="$(python3 -c "import json,sys; d=json.load(sys.stdin); print(','.join(d['benches']))" <<<"$SCOPE_JSON")"
 PKGS="$(python3 -c "import json,sys; d=json.load(sys.stdin); print(' '.join(d['packages']))" <<<"$SCOPE_JSON")"
 
@@ -61,7 +64,7 @@ fi
 
 # Sim / registry hooks + composable builds
 if python3 -c "import json,sys; d=json.load(sys.stdin); sys.exit(0 if d.get('hooks') or d.get('composable') else 1)" <<<"$SCOPE_JSON"; then
-  SIM_ARGS=(python3 "$ROOT/benchmarks/harness/bench_sim.py")
+  SIM_ARGS=(python3 "$HARNESS/bench_sim.py")
   [[ "${#PACKAGES[@]}" -gt 0 ]] && SIM_ARGS+=(--package "${PACKAGES[@]}")
   [[ "$CHANGED" -eq 1 ]] && SIM_ARGS+=(--changed)
   [[ "$WRITE_SUMMARY" -eq 1 ]] && SIM_ARGS+=(--write-summary)
@@ -86,11 +89,11 @@ if [[ "$TIMING" -eq 1 && -n "$BENCHES" ]]; then
   T1="$(python3 -c "import json,sys; b=set(json.load(sys.stdin)['benches']); print('1' if b & {'simd_dot','matmul_naive','matmul_blocked','reduce_sum','horner_pure_li'} else '0')" <<<"$SCOPE_JSON")"
   T2="$(python3 -c "import json,sys; b=set(json.load(sys.stdin)['benches']); print('1' if b - {'simd_dot','matmul_naive','matmul_blocked','reduce_sum','horner_pure_li'} else '0')" <<<"$SCOPE_JSON")"
   if [[ "$T1" == "1" ]]; then
-  python3 "$ROOT/benchmarks/harness/bench.py" --tier 1 --runs "$RUNS" "${ONLY_ARGS[@]}" \
+  "$BENCHMARKS_ROOT/scripts/run-bench.sh" --tier 1 --runs "$RUNS" "${ONLY_ARGS[@]}" \
     $([[ "$VERIFY" -eq 0 ]] && echo --skip-verify)
   fi
   if [[ "$T2" == "1" ]]; then
-  python3 "$ROOT/benchmarks/harness/bench.py" --tier 2 --runs "$RUNS" "${ONLY_ARGS[@]}" \
+  "$BENCHMARKS_ROOT/scripts/run-bench.sh" --tier 2 --runs "$RUNS" "${ONLY_ARGS[@]}" \
     $([[ "$VERIFY" -eq 0 ]] && echo --skip-verify)
   fi
 fi

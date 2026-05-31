@@ -1,0 +1,193 @@
+{
+  "generated_at": "2026-05-31T03:03:56Z",
+  "suite": "ph-ml-competitive",
+  "registry_path": "benchmarks/competitive/ph-ml.toml",
+  "registry_schema": "li_ph_ml_competitive_v1",
+  "rows": [
+    {
+      "id": "matmul_lkir",
+      "kernel": "ml.lkir.matmul_f32",
+      "workload_class": "pilot",
+      "executed": true,
+      "li": {
+        "id": "li",
+        "incumbent": "Li native",
+        "workload_class": "pilot",
+        "executed": true,
+        "cpu_sec": 0.001043,
+        "validity_gate_pass": true,
+        "validity_ratio": 1.0,
+        "ratio_vs_li": 1.0
+      },
+      "competitors": [
+        {
+          "id": "cpp_openmp",
+          "incumbent": "C++/OpenMP matmul_blocked",
+          "workload_class": "reference_native",
+          "executed": false,
+          "cpu_sec": null,
+          "validity_gate_pass": null,
+          "validity_ratio": null,
+          "ratio_vs_li": null,
+          "note": "tier-2 cpp"
+        },
+        {
+          "id": "rust_ndarray_rayon",
+          "incumbent": "Rust/ndarray+rayon",
+          "workload_class": "shared_c_kernel",
+          "executed": false,
+          "cpu_sec": null,
+          "validity_gate_pass": null,
+          "validity_ratio": null,
+          "ratio_vs_li": null,
+          "note": "tier-2 rust"
+        },
+        {
+          "id": "python_numpy",
+          "incumbent": "NumPy BLAS matmul",
+          "workload_class": "blas_labeled",
+          "executed": false,
+          "cpu_sec": null,
+          "validity_gate_pass": null,
+          "validity_ratio": null,
+          "ratio_vs_li": null,
+          "note": "BLAS labeled"
+        }
+      ]
+    },
+    {
+      "id": "mlp_forward",
+      "kernel": "ml.mlp_forward_f32",
+      "workload_class": "pilot",
+      "executed": true,
+      "li": {
+        "id": "li",
+        "incumbent": "Li native",
+        "workload_class": "pilot",
+        "executed": true,
+        "cpu_sec": 0.874111,
+        "validity_gate_pass": true,
+        "validity_ratio": 1.0,
+        "ratio_vs_li": 1.0
+      },
+      "competitors": [
+        {
+          "id": "cpp_openmp",
+          "incumbent": "C++ MLP forward",
+          "workload_class": "reference_native",
+          "executed": false,
+          "cpu_sec": null,
+          "validity_gate_pass": null,
+          "validity_ratio": null,
+          "ratio_vs_li": null,
+          "note": "tier-1 catalog"
+        },
+        {
+          "id": "python_numpy",
+          "incumbent": "PyTorch nn.Linear",
+          "workload_class": "blas_labeled",
+          "executed": false,
+          "cpu_sec": null,
+          "validity_gate_pass": null,
+          "validity_ratio": null,
+          "ratio_vs_li": null,
+          "note": "incumbent ML"
+        }
+      ]
+    },
+    {
+      "id": "async_env_collect",
+      "kernel": "ml.rl.async_env_collect",
+      "workload_class": "pilot",
+      "executed": true,
+      "li": {
+        "id": "li",
+        "incumbent": "Li native",
+        "workload_class": "pilot",
+        "executed": true,
+        "cpu_sec": 2.115965,
+        "validity_gate_pass": true,
+        "validity_ratio": 1.0,
+        "ratio_vs_li": 1.0,
+        "worker": "thread_pool",
+        "worker_count": 4,
+        "parallelism_model": "pthread_pool_env_rewards"
+      },
+      "competitors": [
+        {
+          "id": "sb3_vecenv",
+          "incumbent": "SB3 SubprocVecEnv",
+          "workload_class": "stub",
+          "executed": false,
+          "cpu_sec": null,
+          "validity_gate_pass": null,
+          "validity_ratio": null,
+          "ratio_vs_li": null,
+          "note": "documented pattern"
+        },
+        {
+          "id": "ray_rllib",
+          "incumbent": "Ray RLlib RolloutWorker",
+          "workload_class": "stub",
+          "executed": false,
+          "cpu_sec": null,
+          "validity_gate_pass": null,
+          "validity_ratio": null,
+          "ratio_vs_li": null,
+          "note": "documented pattern"
+        }
+      ]
+    },
+    {
+      "id": "llm_forward",
+      "kernel": "llm.forward_stub",
+      "workload_class": "stub",
+      "executed": false,
+      "li": {
+        "id": "li",
+        "incumbent": "Li native",
+        "workload_class": "stub",
+        "executed": false,
+        "cpu_sec": null,
+        "validity_gate_pass": false,
+        "validity_ratio": 0.0,
+        "ratio_vs_li": 1.0
+      },
+      "competitors": [
+        {
+          "id": "llamacpp",
+          "incumbent": "llama.cpp",
+          "workload_class": "stub",
+          "executed": false,
+          "cpu_sec": null,
+          "validity_gate_pass": null,
+          "validity_ratio": null,
+          "ratio_vs_li": null,
+          "note": "no weights parse"
+        },
+        {
+          "id": "vllm",
+          "incumbent": "vLLM",
+          "workload_class": "stub",
+          "executed": false,
+          "cpu_sec": null,
+          "validity_gate_pass": null,
+          "validity_ratio": null,
+          "ratio_vs_li": null,
+          "note": "GPU serving"
+        },
+        {
+          "id": "pytorch_transformers",
+          "incumbent": "transformers",
+          "workload_class": "stub",
+          "executed": false,
+          "cpu_sec": null,
+          "validity_gate_pass": null,
+          "validity_ratio": null,
+          "ratio_vs_li": null,
+          "note": "external TBD"
+        }
+      ]
+    }
+  ]
+}

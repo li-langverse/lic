@@ -59,8 +59,9 @@ def try_capture() -> None:
         "STUDIO_UI_UX_NATIVE_PNG_DIR": str(png),
         "STUDIO_VIEWPORT_CAPTURE_FRAMES": "1",
     }
+    os.chmod(NATIVE_SH, 0o755)
     run = subprocess.run(
-        ["bash", str(NATIVE_SH)],
+        [str(NATIVE_SH)],
         cwd=ROOT,
         env=env,
         capture_output=True,

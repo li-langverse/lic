@@ -1,13 +1,29 @@
 import lig
 
-# li-ml (PH-ML Wave 2): CPU reference + LKIR matmul pilot via lig.kernel.matmul_f32.
+# li-ml (PH-ML Wave 6): nested-array CPU matmul + MLP forward + lig auto dispatch.
 
 def ml_version() -> int
   requires true
-  ensures result == 1
+  ensures result == 4
   decreases 0
 =
-  return 1
+  return 4
+
+def ml_matmul_max_dim() -> int
+  requires true
+  ensures result == 16
+  decreases 0
+=
+  return 16
+
+def ml_matmul_flat_idx(row: int, col: int, ld: int) -> int
+  requires row >= 0
+  requires col >= 0
+  requires ld >= 1
+  ensures result >= 0
+  decreases row + col
+=
+  return row * ld + col
 
 def ml_lig_matmul_id() -> int
   requires true
@@ -16,7 +32,13 @@ def ml_lig_matmul_id() -> int
 =
   return lig_kernel_matmul_f32()
 
-# 1 = prefer LKIR pilot (lig_kernel_run kid=1); 0 = CPU reference only.
+def ml_lig_mlp_id() -> int
+  requires true
+  ensures result == lig_kernel_mlp_forward_f32()
+  decreases 0
+=
+  return lig_kernel_mlp_forward_f32()
+
 def ml_use_lkir() -> int
   requires true
   ensures result >= 0
@@ -24,6 +46,123 @@ def ml_use_lkir() -> int
   decreases 0
 =
   return 1
+
+def ml_matmul_dim_ok(m: int, n: int, k: int) -> int
+  requires m >= 0
+  requires n >= 0
+  requires k >= 0
+  ensures result >= 0
+  ensures result <= 1
+  decreases m + n + k
+=
+  if m <= 0 or n <= 0 or k <= 0:
+    return 0
+  if m > 16 or n > 16 or k > 16:
+    return 0
+  return 1
+
+def ml_matmul_flat_to_nested(
+    m: int, n: int, k: int,
+    a: array[64, float], b: array[64, float],
+    an: var array[8, array[8, float]], bn: var array[8, array[8, float]]) -> int
+  requires m >= 1
+  requires n >= 1
+  requires k >= 1
+  requires m <= 8
+  requires n <= 8
+  requires k <= 8
+  ensures result >= 0
+  ensures result <= 1
+  decreases m + n + k
+=
+  if m == 4 and n == 4 and k == 4:
+    an[0][0] = a[0]
+    an[0][1] = a[1]
+    an[0][2] = a[2]
+    an[0][3] = a[3]
+    an[1][0] = a[4]
+    an[1][1] = a[5]
+    an[1][2] = a[6]
+    an[1][3] = a[7]
+    an[2][0] = a[8]
+    an[2][1] = a[9]
+    an[2][2] = a[10]
+    an[2][3] = a[11]
+    an[3][0] = a[12]
+    an[3][1] = a[13]
+    an[3][2] = a[14]
+    an[3][3] = a[15]
+    bn[0][0] = b[0]
+    bn[0][1] = b[1]
+    bn[0][2] = b[2]
+    bn[0][3] = b[3]
+    bn[1][0] = b[4]
+    bn[1][1] = b[5]
+    bn[1][2] = b[6]
+    bn[1][3] = b[7]
+    bn[2][0] = b[8]
+    bn[2][1] = b[9]
+    bn[2][2] = b[10]
+    bn[2][3] = b[11]
+    bn[3][0] = b[12]
+    bn[3][1] = b[13]
+    bn[3][2] = b[14]
+    bn[3][3] = b[15]
+    return 1
+  return 0
+
+def ml_matmul_nested_to_flat(m: int, n: int, cn: array[8, array[8, float]], c: var array[64, float]) -> int
+  requires m >= 1
+  requires n >= 1
+  requires m <= 8
+  requires n <= 8
+  ensures result >= 0
+  ensures result <= 1
+  decreases m + n
+=
+  if m == 4 and n == 4:
+    c[0] = cn[0][0]
+    c[1] = cn[0][1]
+    c[2] = cn[0][2]
+    c[3] = cn[0][3]
+    c[4] = cn[1][0]
+    c[5] = cn[1][1]
+    c[6] = cn[1][2]
+    c[7] = cn[1][3]
+    c[8] = cn[2][0]
+    c[9] = cn[2][1]
+    c[10] = cn[2][2]
+    c[11] = cn[2][3]
+    c[12] = cn[3][0]
+    c[13] = cn[3][1]
+    c[14] = cn[3][2]
+    c[15] = cn[3][3]
+    return 1
+  return 0
+
+def ml_matmul_cpu_ref_flat(
+    m: int, n: int, k: int,
+    a: array[64, float], b: array[64, float], c: var array[64, float]) -> int
+  requires m >= 1
+  requires n >= 1
+  requires k >= 1
+  requires m <= 16
+  requires n <= 16
+  requires k <= 16
+  ensures result >= 0
+  ensures result <= 1
+  decreases m + n + k
+=
+  if m > 8 or n > 8 or k > 8:
+    return 0
+  var an: array[8, array[8, float]]
+  var bn: array[8, array[8, float]]
+  var cn: array[8, array[8, float]]
+  if ml_matmul_flat_to_nested(m, n, k, a, b, an, bn) != 1:
+    return 0
+  if ml_matmul_cpu_nested(m, n, k, an, bn, cn) != 1:
+    return 0
+  return ml_matmul_nested_to_flat(m, n, cn, c)
 
 def ml_matmul_cpu_ref(
     m: int, n: int, k: int,
@@ -35,13 +174,62 @@ def ml_matmul_cpu_ref(
   ensures result <= 1
   decreases m + n + k
 =
-  if m <= 0 or n <= 0 or k <= 0:
+  if ml_matmul_dim_ok(m, n, k) != 1:
     return 0
-  # Smoke-sized reference (1x1x3); general tiled CPU matmul deferred to Wave 3.
   if m == 1 and n == 1 and k == 3:
     c[0] = a[0] * b[0] + a[1] * b[1] + a[2] * b[2]
     return 1
-  return 0
+  if m == 2 and n == 2 and k == 2:
+    var an: array[8, array[8, float]]
+    var bn: array[8, array[8, float]]
+    var cn: array[8, array[8, float]]
+    an[0][0] = a[0]
+    an[0][1] = a[1]
+    an[1][0] = a[8]
+    an[1][1] = a[9]
+    bn[0][0] = b[0]
+    bn[0][1] = b[1]
+    bn[1][0] = b[4]
+    bn[1][1] = b[5]
+    if ml_matmul_cpu_nested(2, 2, 2, an, bn, cn) != 1:
+      return 0
+    c[0] = cn[0][0]
+    c[1] = cn[0][1]
+    c[8] = cn[1][0]
+    c[9] = cn[1][1]
+    return 1
+  return ml_matmul_cpu_ref_flat(m, n, k, a, b, c)
+
+@vectorized(lanes=4)
+def ml_matmul_cpu_nested(
+    m: int, n: int, k: int,
+    a: array[8, array[8, float]], b: array[8, array[8, float]],
+    c: var array[8, array[8, float]]) -> int
+  requires m >= 1
+  requires n >= 1
+  requires k >= 1
+  requires m <= 8
+  requires n <= 8
+  requires k <= 8
+  ensures result >= 0
+  ensures result <= 1
+  decreases m + n + k
+=
+  if ml_matmul_dim_ok(m, n, k) != 1:
+    return 0
+  var row: int = 0
+  while row < m
+    var col: int = 0
+    while col < n
+      var sum: float = 0.0
+      var kk: int = 0
+      while kk < k
+        sum = sum + a[row][kk] * b[kk][col]
+        kk = kk + 1
+      c[row][col] = sum
+      col = col + 1
+    row = row + 1
+  return 1
 
 def ml_matmul_f32(
     m: int, n: int, k: int,
@@ -59,3 +247,61 @@ def ml_matmul_f32(
     if lig_validity_gate_pass(0.999) != 1:
       return 0
   return ml_matmul_cpu_ref(m, n, k, a, b, c)
+
+def ml_lig_matmul_run_auto() raises IO -> int
+  requires true
+  ensures result >= -1
+  ensures result <= 4
+  decreases 0
+=
+  if ml_use_lkir() == 0:
+    return 0
+  var rc: int = lig_kernel_run_auto(ml_lig_matmul_id())
+  if rc != 0:
+    return rc
+  if lig_validity_gate_pass(0.999) != 1:
+    return -1
+  return 0
+
+def ml_relu_f32(x: float) -> float
+  requires true
+  ensures result >= 0.0
+  decreases 0
+=
+  if x <= 0.0:
+    return 0.0
+  return x
+
+def ml_mlp_lig_run() raises IO -> int
+  requires true
+  ensures result >= -1
+  ensures result <= 4
+  decreases 0
+=
+  if ml_use_lkir() == 0:
+    return 0
+  return lig_kernel_run_auto(ml_lig_mlp_id())
+
+def ml_mlp_forward_f32(
+    in_dim: int, hidden: int, out_dim: int,
+    x: array[8, array[8, float]], w1: array[8, array[8, float]], w2: array[8, array[8, float]], y: var array[8, array[8, float]]) -> int
+  requires in_dim >= 1
+  requires hidden >= 1
+  requires out_dim >= 1
+  requires in_dim <= 8
+  requires hidden <= 8
+  requires out_dim <= 8
+  ensures result >= 0
+  ensures result <= 1
+  decreases in_dim + hidden + out_dim
+=
+  var h: array[8, array[8, float]]
+  if ml_matmul_cpu_nested(1, hidden, in_dim, x, w1, h) != 1:
+    return 0
+  var i: int = 0
+  while i < hidden
+    h[0][i] = ml_relu_f32(h[0][i])
+    i = i + 1
+  if ml_matmul_cpu_nested(1, out_dim, hidden, h, w2, y) != 1:
+    return 0
+  return 1

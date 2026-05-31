@@ -3,10 +3,13 @@
 # Uses benchmarks/results/latest.csv (run bench.py --tier 1 locally to refresh).
 set -euo pipefail
 ROOT="$(cd "$(dirname "$0")/.." && pwd)"
+# shellcheck source=lib/benchmarks-env.sh
+source "$ROOT/scripts/lib/benchmarks-env.sh"
+
 # shellcheck source=lib/li-ui.sh
 source "$ROOT/scripts/lib/li-ui.sh"
 
-CSV="${LI_TIER1_PERF_CSV:-$ROOT/benchmarks/results/latest.csv}"
+CSV="${LI_TIER1_PERF_CSV:-$BENCHMARKS_RESULTS/latest.csv}"
 STRICT="${LI_TIER1_PERF_STRICT:-0}"
 MAX_RATIO="${LI_TIER1_MAX_RATIO:-1.2}"
 
@@ -21,7 +24,7 @@ BENCHES=(
 li_phase "tier-1 Li vs C++ (max ${MAX_RATIO}×, strict=${STRICT})"
 
 [[ -f "$CSV" ]] || {
-  li_fail "missing $CSV — run: python3 benchmarks/harness/bench.py --tier 1"
+  li_fail "missing $CSV — run: "$BENCHMARKS_ROOT/scripts/run-bench.sh" --tier 1"
   exit 1
 }
 

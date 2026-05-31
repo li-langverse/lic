@@ -2,7 +2,8 @@
 
 > **Part of the ecosystem track.** Canonical **`li.toml` schema** and long-term UX live in [2026-05-16-li-package-manager-lip.md](2026-05-16-li-package-manager-lip.md) (§ A3). This plan covers **day-one scaffolding** before `lip init` ships in phase **8b**.
 
-**Master plan ID:** **Pkg** (prerequisite for **8a** layout consistency and **8b** `lip init`).
+**Master plan ID:** **Pkg** (prerequisite for **8a** layout consistency and **8b** `lip init`).  
+**Plan map:** [plan-cross-links](../../ecosystem/plan-cross-links.md) · [governance](2026-05-16-li-ecosystem-governance.md) · [master plan](2026-05-14-li-master-plan.md#documentation--provability-honesty-cross-cutting) (docs/traceability; no **G-*** closure in Pkg alone)
 
 ---
 

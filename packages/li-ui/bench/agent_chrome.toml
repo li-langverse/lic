@@ -1,0 +1,29 @@
+# PH-UX UX-06 — agent stream tick + cancel latency on native shell (studio-ux-23).
+[meta]
+hook_version = 1
+package = "li-ui"
+native_pixels = true
+budget_tick_ms = 16
+budget_cancel_ms = 16
+bench_simulate_fn = "studio_agent_stream_tick_budget_ms"
+bench_native_fn = "studio_agent_bench_native"
+bench_shell_fn = "studio_shell_agent_bench_native"
+
+[tick]
+elapsed_ms = 12.0
+within_budget = true
+native_pixels = true
+steps_completed = 3
+
+[cancel]
+elapsed_ms = 8.0
+within_budget = true
+native_pixels = true
+cancel_works = true
+
+[bench]
+worst_tick_ms = 12.0
+worst_cancel_ms = 8.0
+steps_completed = 3
+progress_visible = true
+native_pixels = true

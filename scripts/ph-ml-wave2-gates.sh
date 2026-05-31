@@ -2,6 +2,9 @@
 # PH-ML Wave 2 completion/progress gates — WSL-aware on Windows hosts.
 set -euo pipefail
 ROOT="$(cd "$(dirname "$0")/.." && pwd)"
+# shellcheck source=lib/benchmarks-env.sh
+source "$ROOT/scripts/lib/benchmarks-env.sh"
+
 cd "$ROOT"
 
 run_in_wsl() {
@@ -41,11 +44,12 @@ fi
 
 lic_check_smokes "$LIC"
 
-[[ -f benchmarks/results/ph-ml-lkir-matmul.json ]] || { echo "missing benchmarks/results/ph-ml-lkir-matmul.json"; exit 1; }
+[[ -f "$BENCHMARKS_RESULTS/ph-ml-lkir-matmul.json ]] || { echo "missing benchmarks/results/ph-ml-lkir-matmul.json"; exit 1; }
 python3 - <<'PY'
-import json, sys
+import json, os, sys
 from pathlib import Path
-p = Path("benchmarks/results/ph-ml-lkir-matmul.json")
+import os
+p = Path(os.environ["BENCHMARKS_RESULTS"] + "/" + "ph-ml-lkir-matmul.json")
 d = json.loads(p.read_text())
 if not d.get("compile_ok"):
     sys.exit("compile_ok false")

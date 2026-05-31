@@ -3,10 +3,13 @@
 # No network calls — reads local commands and env only.
 set -euo pipefail
 ROOT="$(cd "$(dirname "$0")/.." && pwd)"
+# shellcheck source=lib/benchmarks-env.sh
+source "$ROOT/scripts/lib/benchmarks-env.sh"
+
 # shellcheck source=lib/li-ui.sh
 source "$ROOT/scripts/lib/li-ui.sh"
 
-OUT="${LI_HPC_COMPETITIVE_SNAPSHOT:-$ROOT/benchmarks/competitive/snapshots/latest.env}"
+OUT="${LI_HPC_COMPETITIVE_SNAPSHOT:-$BENCHMARKS_COMPETITIVE/snapshots/latest.env}"
 mkdir -p "$(dirname "$OUT")"
 
 li_phase "HPC competitive snapshot"
@@ -14,7 +17,7 @@ li_phase "HPC competitive snapshot"
 {
   echo "# generated $(date -u +%Y-%m-%dT%H:%M:%SZ)"
   echo "LI_REPO_SHA=$(git -C "$ROOT" rev-parse HEAD 2>/dev/null || echo unknown)"
-  echo "LI_REGISTRY=$(git -C "$ROOT" log -1 --format=%h -- benchmarks/competitive/registry.toml 2>/dev/null || echo unknown)"
+  echo "LI_REGISTRY=$(git -C "$BENCHMARKS_ROOT" log -1 --format=%h -- benchmarks/workloads/competitive/registry.toml 2>/dev/null || echo unknown)"
 
   ver() {
     local name="$1" cmd="$2"

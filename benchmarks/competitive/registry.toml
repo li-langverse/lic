@@ -120,3 +120,23 @@ csv_lang = ""
 kernel_honesty = "n/a"
 last_reviewed = "2026-05-16"
 notes = "Tier-0 stability + race rejects gate CI; not wall-time competitive."
+
+[[ecosystem]]
+id = "sb3_vecenv"
+track = "watch"
+repo_url = "https://github.com/DLR-RM/stable-baselines3"
+compare = ["async_env_collect"]
+csv_lang = ""
+kernel_honesty = "n/a"
+last_reviewed = "2026-05-31"
+notes = "PH-ML competitive row."
+
+[[ecosystem]]
+id = "ray_rllib"
+track = "watch"
+repo_url = "https://github.com/ray-project/ray"
+compare = ["async_env_collect"]
+csv_lang = ""
+kernel_honesty = "n/a"
+last_reviewed = "2026-05-31"
+notes = "RLlib RolloutWorker stub column."

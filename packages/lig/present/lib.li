@@ -428,3 +428,99 @@ def lig_wgpu_smoke_surface_ready(smoke: LigWgpuSmoke) -> int
   decreases 0
 =
   return smoke.surface_ok
+
+extern proc li_rt_lig_wgpu_swapchain_active() -> int
+  requires true
+  ensures result >= 0
+  ensures result <= 1
+  decreases 0
+
+extern proc li_rt_lig_wgpu_swapchain_readback_status() -> int
+  requires true
+  ensures result >= 0
+  ensures result <= 1
+  decreases 0
+
+extern proc li_rt_lig_wgpu_swapchain_readback_run(viewport_w: int, viewport_h: int) -> int
+  requires viewport_w >= 0
+  requires viewport_h >= 0
+  ensures result >= 0
+  decreases viewport_w
+
+def lig_wgpu_swapchain_status_blocked() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0
+
+def lig_wgpu_swapchain_status_pass() -> int
+  requires true
+  ensures result == 1
+  decreases 0
+=
+  return 1
+
+def lig_native_pixel_source_wgpu_swapchain() -> int
+  requires true
+  ensures result == 5
+  decreases 0
+=
+  return 5
+
+type LigWgpuSwapchainReadback = object
+  public status: int
+  public pixels_sampled: int
+  public native_pixels: int
+  public native_pixel_source: int
+  public viewport_w: int
+  public viewport_h: int
+
+def lig_wgpu_swapchain_readback_blocked() -> LigWgpuSwapchainReadback raises IO
+  requires true
+  ensures result.status == lig_wgpu_swapchain_status_blocked()
+  ensures result.pixels_sampled == 0
+  decreases 0
+=
+  var out: LigWgpuSwapchainReadback
+  out.status = lig_wgpu_swapchain_status_blocked()
+  out.pixels_sampled = 0
+  out.native_pixels = 0
+  out.native_pixel_source = lig_native_pixel_source_none()
+  out.viewport_w = 0
+  out.viewport_h = 0
+  return out
+
+def lig_wgpu_swapchain_readback_run() -> LigWgpuSwapchainReadback raises IO
+  requires true
+  ensures result.viewport_w == 1280
+  ensures result.viewport_h == 720
+  decreases 0
+=
+  var out: LigWgpuSwapchainReadback
+  out.viewport_w = 1280
+  out.viewport_h = 720
+  out.status = li_rt_lig_wgpu_swapchain_readback_status()
+  out.pixels_sampled = li_rt_lig_wgpu_swapchain_readback_run(out.viewport_w, out.viewport_h)
+  out.native_pixels = 0
+  out.native_pixel_source = lig_native_pixel_source_none()
+  if out.pixels_sampled > 0:
+    out.native_pixels = 1
+    out.native_pixel_source = lig_native_pixel_source_wgpu_swapchain()
+  if out.status != lig_wgpu_swapchain_status_pass():
+    out.status = lig_wgpu_swapchain_status_blocked()
+  return out
+
+def lig_wgpu_swapchain_readback_passed(rb: LigWgpuSwapchainReadback) -> int
+  requires true
+  ensures result >= 0
+  ensures result <= 1
+  decreases 0
+=
+  if rb.status != lig_wgpu_swapchain_status_pass():
+    return 0
+  if rb.pixels_sampled <= 0:
+    return 0
+  if rb.native_pixels != 1:
+    return 0
+  return 1

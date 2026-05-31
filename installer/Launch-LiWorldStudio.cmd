@@ -1,10 +1,8 @@
 @echo off
 setlocal
-set "ROOT=%~dp0.."
+set "ROOT=%~dp0"
 set "PROFILE=%~1"
-if "%PROFILE%"=="" set "PROFILE=game"
-set STUDIO_DEMO_PROFILE=%PROFILE%
-set STUDIO_DEMO_FRAMES=3
-if /I "%~2"=="present" set LIG_HOST_PRESENT=1
-"%ROOT%li-studio-demo.exe"
+set "HOST_PRESENT="
+if /I "%~2"=="present" set "HOST_PRESENT=-HostPresent"
+powershell -NoProfile -ExecutionPolicy Bypass -File "%ROOT%launch-li-world-studio.ps1" -Profile "%PROFILE%" %HOST_PRESENT%
 exit /b %ERRORLEVEL%

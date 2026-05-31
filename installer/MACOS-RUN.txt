@@ -1,0 +1,29 @@
+Li World Studio on macOS
+========================
+
+Build (on macOS only)
+---------------------
+  brew install llvm@22 cmake ninja sdl2
+  cmake -B build -G Ninja -DLLVM_DIR=$(brew --prefix llvm@22)/lib/cmake/llvm
+  cmake --build build --target lic
+  bash scripts/build-li-world-studio-installer-macos.sh
+
+Output
+------
+  installer/out/Li World Studio.app
+  installer/out/LiWorldStudio.dmg
+
+Install
+-------
+Open the DMG and drag Li World Studio to Applications.
+
+Run
+---
+  open -a "Li World Studio"
+  # SDL present:
+  "/Applications/Li World Studio.app/Contents/MacOS/LiWorldStudio" game present
+
+Profile
+-------
+Default: Contents/Resources/studio-profile.txt
+Override: pass profile as first argument to the MacOS/LiWorldStudio launcher.

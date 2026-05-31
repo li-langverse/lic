@@ -1,0 +1,99 @@
+# Build Li World Studio distributables (AppImage on Linux, DMG on macOS).
+# Windows Inno Setup remains local/Windows CI (see installer/README.md).
+name: World Studio installers
+
+on:
+  workflow_dispatch:
+  pull_request:
+    paths:
+      - "installer/**"
+      - "deploy/studio-demo/native/**"
+      - "scripts/build-li-world-studio*.sh"
+      - "scripts/ensure-studio-installer-assets.sh"
+      - "scripts/_li-world-studio-packaging-common.sh"
+      - ".github/workflows/world-studio-installers.yml"
+
+concurrency:
+  group: world-studio-installers-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  linux-appimage:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install toolchain (LLVM 22, SDL2, FUSE)
+        run: |
+          chmod +x scripts/ci-install-llvm.sh scripts/ensure-studio-installer-assets.sh \
+            scripts/build-li-world-studio-appimage.sh
+          sudo LI_LLVM_MAJOR=22 bash scripts/ci-install-llvm.sh
+          sudo apt-get install -y -qq libsdl2-dev libfuse2 file curl
+          bash scripts/ensure-studio-installer-assets.sh
+
+      - name: Build lic
+        run: |
+          cmake -B build -G Ninja \
+            -DLLVM_DIR=/usr/lib/llvm-22/lib/cmake/llvm \
+            -DCMAKE_C_COMPILER=clang-22 -DCMAKE_CXX_COMPILER=clang++-22 \
+            -DLI_BUILD_TESTS=OFF
+          cmake --build build -j "$(nproc)" --target lic
+
+      - name: Build li-studio-demo + present host
+        run: |
+          LIC=./build/compiler/lic/lic
+          "$LIC" build --allow-open-vc --no-lean-verify \
+            packages/li-studio/src/main.li -o build/li-studio-demo
+          bash deploy/studio-demo/native/native-sdl-build.sh \
+            deploy/studio-demo/native/studio_shell_present_host.c \
+            deploy/studio-demo/native/studio_shell_present_host
+
+      - name: Build AppImage
+        run: bash scripts/build-li-world-studio-appimage.sh --skip-demo-build
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: LiWorldStudio-x86_64-AppImage
+          path: installer/out/LiWorldStudio-x86_64.AppImage
+          if-no-files-found: error
+
+  macos-dmg:
+    runs-on: macos-14
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install toolchain (LLVM, SDL2)
+        run: |
+          brew update
+          brew install llvm@22 sdl2 ninja cmake
+          echo "$(brew --prefix llvm@22)/bin" >> "$GITHUB_PATH"
+          echo "LLVM_DIR=$(brew --prefix llvm@22)/lib/cmake/llvm" >> "$GITHUB_ENV"
+
+      - name: Build lic
+        run: |
+          cmake -B build -G Ninja \
+            -DLLVM_DIR="${LLVM_DIR}" \
+            -DCMAKE_C_COMPILER=clang -DCMAKE_CXX_COMPILER=clang++ \
+            -DLI_BUILD_TESTS=OFF
+          cmake --build build -j "$(sysctl -n hw.ncpu)" --target lic
+
+      - name: Build li-studio-demo + present host
+        run: |
+          LIC=./build/compiler/lic/lic
+          "$LIC" build --allow-open-vc --no-lean-verify \
+            packages/li-studio/src/main.li -o build/li-studio-demo
+          bash deploy/studio-demo/native/native-sdl-build.sh \
+            deploy/studio-demo/native/studio_shell_present_host.c \
+            deploy/studio-demo/native/studio_shell_present_host
+          bash scripts/ensure-studio-installer-assets.sh
+
+      - name: Build DMG
+        run: bash scripts/build-li-world-studio-installer-macos.sh --skip-demo-build
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: LiWorldStudio-macos-dmg
+          path: |
+            installer/out/LiWorldStudio.dmg
+            installer/out/Li World Studio.app
+          if-no-files-found: error

@@ -22,8 +22,8 @@
 | Tranche | Status |
 |---------|--------|
 | T1 | **DONE** — `lig_emit_vendor_lowering_ready`, PTX stub bytes |
-| T2 | open |
-| T3 | open |
+| T2 | **DONE** — `ml_gpu_device_buffer_pipeline`, `ml_gpu_device_buffer.li` smoke |
+| T3 | **DONE** — `import ml` in li-llm + `llm_import_ml.li` smoke |
 | T4 | open |
 | T5 | open |
 | T6 | **DONE** — `ml_matmul_lkir_logical_32`, `bench-ph-ml-lkir-matmul-32.sh` |

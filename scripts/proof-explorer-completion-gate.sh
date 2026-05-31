@@ -1,26 +1,21 @@
 #!/usr/bin/env bash
-# Proof Explorer — program completion gate (advisory until WP0–WP1 land).
+# Proof Explorer — full program completion gate (Phase 1 deliverables).
 set -euo pipefail
 ROOT="$(cd "$(dirname "$0")/.." && pwd)"
 cd "$ROOT"
 
 fail=0
-if [[ -f scripts/proof-explorer-gates/wp0-schema.sh ]]; then
-  bash scripts/proof-explorer-gates/wp0-schema.sh || fail=1
-else
-  echo "proof-explorer: wp0-schema gate missing (OK during bootstrap)"
-fi
+for gate in wp-k8-deploy wp0-schema wp1-ingest wp2-m-conj wp3-export-math wp4-audit; do
+  script="scripts/proof-explorer-gates/${gate}.sh"
+  if [[ -f "$script" ]]; then
+    bash "$script" || fail=1
+  else
+    echo "proof-explorer: missing $script" >&2
+    fail=1
+  fi
+done
 
-if [[ -f scripts/proof-explorer-gates/wp1-ingest.sh ]]; then
-  bash scripts/proof-explorer-gates/wp1-ingest.sh || fail=1
-else
-  echo "proof-explorer: wp1-ingest gate missing (OK during bootstrap)"
-fi
-
-# K8s sprint bootstrap counts as progress
-if [[ -f data/proof-explorer-loop/state.json ]]; then
-  echo "proof-explorer: state.json present"
-else
+if [[ ! -f data/proof-explorer-loop/state.json ]]; then
   echo "proof-explorer: missing state.json" >&2
   fail=1
 fi
@@ -29,5 +24,5 @@ if [[ "$fail" -ne 0 ]]; then
   echo "proof-explorer-completion-gate: INCOMPLETE"
   exit 1
 fi
-echo "proof-explorer-completion-gate: OK (bootstrap/advisory)"
+echo "proof-explorer-completion-gate: OK"
 exit 0

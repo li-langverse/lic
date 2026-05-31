@@ -1,8 +1,8 @@
 {
   "sprint": "proof-explorer-program",
+  "phase": 2,
   "started": "2026-05-31",
-  "completed_wps": ["wp-k8", "wp0", "wp1", "wp4"],
-  "current_wp": null,
-  "branch": "cursor/proof-explorer-program",
-  "note": "WP2/WP3/WP5 tracked as follow-up; completion gate covers WP0+WP1+WP4"
+  "completed_wps": ["wp-k8", "wp0", "wp1", "wp2", "wp3", "wp4"],
+  "current_wp": "wp5",
+  "branch": "cursor/proof-explorer-phase2"
 }

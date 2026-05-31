@@ -5,42 +5,38 @@ plan: docs/superpowers/plans/proof-explorer-program.md
 attribution: proof-db/attribution.toml
 ---
 
-# Proof Explorer - goal-directed sprint
+# Proof Explorer Phase 2 — goal-directed sprint
 
 ## North star
 
-Learners can explore ~1,200 Erdos problems with plain-text math, LaTeX, context, and sources.
-Footer on every page: **Li Proof Library** + **Curated by Julian Kleber** ([julianmkleber.com](https://julianmkleber.com) / [@capjmk](https://x.com/capjmk)).
+Ship learner-facing explorer: proof-library UI, editorial overlays, Tier-B context for P0/P1 Erdos problems.
+
+Phase 1 (schema v3, 1217 Erdos ingest, export-math, gates) is merged — do not regress wp0–wp4 gates.
 
 ## Iteration rules
 
-1. Read `data/proof-explorer-loop/state.json` and the Proof Explorer WP plan.
-2. Pick the next incomplete WP in order: **WP-K8 -> WP0 -> WP1 -> WP4 -> WP5 -> WP2 -> WP3**.
-3. Implement the smallest shippable slice; commit on `cursor/proof-explorer-program`; push.
-4. Run the phase completion gate before marking a WP done.
+1. Read `data/proof-explorer-loop/state.json`.
+2. Work in order: **WP5 → WP6 → Tier-B polish**.
+3. Commit on `cursor/proof-explorer-phase2`; push every iteration.
+4. Run the relevant gate before marking a WP done.
 5. Append one row to `data/proof-explorer-loop/iteration-log.md`.
 
 ## Phase checklist
 
 | Phase | Deliverable | Gate |
 |-------|-------------|------|
-| WP-K8 | K8s worker + this sprint running on engine | `bash scripts/proof-explorer-gates/wp-k8-deploy.sh` |
-| WP0 | schema v3 + attribution.toml + style guide | `bash scripts/proof-explorer-gates/wp0-schema.sh` |
-| WP1 | ingest ~1200 Erdos rows (Tier A min) | `bash scripts/proof-explorer-gates/wp1-ingest.sh` |
-| WP4 | content audits in CI | `bash scripts/proof-explorer-gates/wp4-audit.sh` |
-| WP5 | proof-library explorer UI (separate repo PR) | manual sign-off in iteration log |
-| WP2 | M-CONJ rich fields | `bash scripts/proof-explorer-gates/wp2-m-conj.sh` |
-| WP3 | `lic export-math` MVP | `bash scripts/proof-explorer-gates/wp3-export-math.sh` |
+| WP5 | proof-library explorer UI (separate repo PR) | Create `data/proof-explorer-loop/wp5-proof-library.signoff` with PR URL after opening PR |
+| WP6 | `proof-db/erdos/overlays.json` editorial tranches | >=5 overlay rows; never overwrite `content_tier=polished` |
+| Tier-B | P0/P1 Erdos context + sources | >=20 register rows with context/sources and content_tier curated/polished |
 
 ## Do not
 
 - Mark `proof_status = proved` without Lean discharge + literature match.
-- Overwrite hand-polished `content_tier=polished` rows with auto ingest.
+- Overwrite hand-polished rows with auto ingest.
+- Re-run full Phase 1 ingest unless wp1-ingest gate fails.
 
 ## Completion gate
 
 ```bash
-bash scripts/proof-explorer-completion-gate.sh
+bash scripts/proof-explorer-phase2-completion-gate.sh
 ```
-
-Exit 0 when WP0 + WP1 Tier-A + WP4 advisory gates pass (WP3/WP5 may continue in follow-up PRs).

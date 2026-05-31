@@ -16,15 +16,22 @@ resolve_lic() {
   return 1
 }
 
+run_export() {
+  local out="$1"
+  if LIC="$(resolve_lic)"; then
+    if "$LIC" export-math -o "$out" 2>/dev/null; then
+      return 0
+    fi
+    echo "wp3-export-math: lic binary lacks export-math; using scripts/export-math.py" >&2
+  else
+    echo "wp3-export-math: lic binary missing; running scripts/export-math.py" >&2
+  fi
+  python3 scripts/export-math.py -o "$out"
+}
+
 TMP="$(mktemp)"
 trap 'rm -f "$TMP"' EXIT
-
-if LIC="$(resolve_lic)"; then
-  "$LIC" export-math -o "$TMP"
-else
-  echo "wp3-export-math: lic binary missing; running scripts/export-math.py"
-  python3 scripts/export-math.py -o "$TMP"
-fi
+run_export "$TMP"
 
 python3 - <<'PY' "$TMP"
 import json

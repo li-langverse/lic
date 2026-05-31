@@ -3,13 +3,13 @@
   "suite": "ph-ml-competitor-sb3-vecenv",
   "workload": "async_env_collect_4",
   "executed": true,
-  "cpu_sec": 0.001126,
+  "cpu_sec": 1.643589,
   "validity_gate_pass": true,
   "validity_ratio": 1.0,
   "framework_version": "2.5.0",
   "device": "cpu",
   "workload_size": 4,
-  "note": "DummyVecEnv CartPole-v1 x4 (Wave 13 T5)",
-  "generated_at": "2026-05-31T16:30:03Z",
-  "vecenv_backend": "DummyVecEnv"
+  "note": "SubprocVecEnv CartPole-v1 x4 (Wave 13 T5)",
+  "generated_at": "2026-05-31T17:19:33Z",
+  "vecenv_backend": "SubprocVecEnv"
 }

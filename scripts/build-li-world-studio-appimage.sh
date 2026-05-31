@@ -58,7 +58,7 @@ cat >"${APPDIR}/li-world-studio.desktop" <<'DESKTOP'
 [Desktop Entry]
 Type=Application
 Name=Li World Studio
-Comment=Li World Studio demo shell (li-studio-demo)
+Comment=Li World Studio demo shell - Created by Julian (GPL-3.0)
 Exec=li-studio-demo
 Icon=li-world-studio
 Categories=Development;IDE;

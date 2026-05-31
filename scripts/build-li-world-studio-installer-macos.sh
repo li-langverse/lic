@@ -96,6 +96,10 @@ cat >"${APP}/Contents/Info.plist" <<PLIST
   <string>0.1.0</string>
   <key>LSMinimumSystemVersion</key>
   <string>12.0</string>
+  <key>CFBundleGetInfoString</key>
+  <string>Li World Studio 0.1.0 - Created by Julian (GPL-3.0)</string>
+  <key>NSHumanReadableCopyright</key>
+  <string>Copyright (c) Julian. Licensed under GNU GPL version 3.</string>
   <key>NSHighResolutionCapable</key>
   <true/>
 </dict>

@@ -114,3 +114,13 @@ STUDIO_DEMO_PROFILE=sim_rl ./installer/out/LiWorldStudio-x86_64.AppImage
 Installed / bundled paths mirror Windows Inno: demo binary + present host beside launchers (or under `usr/bin` in AppImage).
 
 See also: `installer/WINDOWS-RUN.txt`, `installer/LINUX-RUN.txt`, `installer/MACOS-RUN.txt`, `packages/li-studio/README.md`.
+
+---
+
+## Credits and license
+
+- **Creator:** Julian
+- **Copyright:** (c) Julian
+- **License:** [GNU General Public License v3.0](LICENSE-GPL-3.0.txt) (`installer/LICENSE-GPL-3.0.txt`)
+
+The Windows installer displays the GPL-3.0 text on the license page and requires acceptance before installation.

@@ -3,7 +3,8 @@
 
 #define MyAppName "Li World Studio"
 #define MyAppVersion "0.1.0"
-#define MyAppPublisher "Li Langverse"
+#define MyAppPublisher "Julian"
+#define MyAppCopyright "Copyright (c) Julian"
 #define MyAppURL "https://github.com/li-langverse/lic"
 #define MyAppExeName "li-studio-demo.exe"
 
@@ -16,6 +17,9 @@ AppPublisher={#MyAppPublisher}
 AppPublisherURL={#MyAppURL}
 AppSupportURL={#MyAppURL}
 AppUpdatesURL={#MyAppURL}
+AppCopyright={#MyAppCopyright}
+VersionInfoCopyright={#MyAppCopyright}
+VersionInfoCompany={#MyAppPublisher}
 DefaultDirName={autopf}\Li World Studio
 DefaultGroupName={#MyAppName}
 AllowNoIcons=yes
@@ -30,16 +34,17 @@ ArchitecturesInstallIn64BitMode=x64compatible
 SetupIconFile=installer/assets/app.ico
 WizardImageFile=installer/assets/wizard.bmp
 WizardSmallImageFile=installer/assets/wizard-small.bmp
+LicenseFile=installer\LICENSE-GPL-3.0.txt
 
 [Languages]
 Name: "english"; MessagesFile: "compiler:Default.isl"
 
 [CustomMessages]
-english.WelcomeLabel2=This will install [name/ver] on your computer.%n%nThe demo runs on Windows via WSL2 (Ubuntu). If WSL is not installed yet, run: wsl --install%n%nOn the next page, pick a default simulation profile (stored in studio-profile.txt).
+english.WelcomeLabel2=This will install [name/ver] on your computer.%n%nCreated by Julian. Licensed under GNU GPL version 3.%n%nThe demo runs on Windows via WSL2 (Ubuntu). If WSL is not installed yet, run: wsl --install%n%nOn the next page, pick a default simulation profile (stored in studio-profile.txt).
 
 [Messages]
 english.WelcomeLabel1=Welcome to the Li World Studio Setup Wizard
-english.FinishedLabel=Setup has finished installing [name] on your computer.%n%nLaunch Li World Studio from the Start Menu. For an SDL window, use the shortcut labeled (host present).%n%nSee WINDOWS-RUN.txt if WSL or SDL setup is needed.
+english.FinishedLabel=Setup has finished installing [name] on your computer.%n%nCreated by Julian. Licensed under GNU GPL version 3.%n%nLaunch Li World Studio from the Start Menu. For an SDL window, use the shortcut labeled (host present).%n%nSee WINDOWS-RUN.txt if WSL or SDL setup is needed.
 
 [Tasks]
 Name: "profile_scientific"; Description: "Scientific simulation"; GroupDescription: "Default demo profile (pick one)"
@@ -55,6 +60,7 @@ Source: "build\{#MyAppExeName}"; DestDir: "{app}"; Flags: ignoreversion
 Source: "installer\Launch-LiWorldStudio.cmd"; DestDir: "{app}"; Flags: ignoreversion
 Source: "installer\launch-li-world-studio.ps1"; DestDir: "{app}"; Flags: ignoreversion
 Source: "installer\LiWorldStudio-Runtime.ps1"; DestDir: "{app}"; Flags: ignoreversion
+Source: "installer\LICENSE-GPL-3.0.txt"; DestDir: "{app}"; Flags: ignoreversion
 Source: "installer\assets\app.ico"; DestDir: "{app}"; DestName: "LiWorldStudio.ico"; Flags: ignoreversion
 Source: "installer\assets\README.txt"; DestDir: "{app}"; Flags: ignoreversion
 Source: "installer\WINDOWS-RUN.txt"; DestDir: "{app}"; Flags: ignoreversion
@@ -65,23 +71,79 @@ Source: "build-wsl\compiler\lic\lic.exe"; DestDir: "{app}\tools"; Flags: ignorev
 
 [Icons]
 Name: "{group}\{#MyAppName}"; Filename: "{app}\Launch-LiWorldStudio.cmd"; WorkingDir: "{app}"; IconFilename: "{app}\LiWorldStudio.ico"
-Name: "{group}\{#MyAppName} (host present)"; Filename: "{app}\Launch-LiWorldStudio.cmd"; Parameters: "game present"; WorkingDir: "{app}"; IconFilename: "{app}\LiWorldStudio.ico"; Comment: "SDL windowed present (LIG_HOST_PRESENT=1)"
+Name: "{group}\{#MyAppName} (host present)"; Filename: "{app}\Launch-LiWorldStudio.cmd"; Parameters: "game present"; WorkingDir: "{app}"; IconFilename: "{app}\LiWorldStudio.ico"; Comment: "SDL windowed present (LIG_HOST_PRESENT=1) - Created by Julian"
 Name: "{autodesktop}\{#MyAppName}"; Filename: "{app}\Launch-LiWorldStudio.cmd"; Tasks: desktopicon; WorkingDir: "{app}"; IconFilename: "{app}\LiWorldStudio.ico"
 
 [Run]
 Filename: "{app}\Launch-LiWorldStudio.cmd"; Description: "Launch {#MyAppName}"; Flags: nowait postinstall skipifsilent
 
 [Code]
-procedure InitializeWizard;
+const
+  StudioBgColor = $17110D;
+  StudioTextColor = $F3EDE6;
+  StudioMutedColor = $B4AA9E;
+
+procedure ApplyStudioWizardTheme;
+var
+  I: Integer;
 begin
-  WizardForm.Color := $17110D;
+  WizardForm.Color := StudioBgColor;
   WizardForm.Font.Name := 'Segoe UI';
   WizardForm.Font.Size := 9;
-  WizardForm.Font.Color := $F3EDE6;
+  WizardForm.Font.Color := StudioTextColor;
+
+  WizardForm.WelcomeLabel1.Font.Color := StudioTextColor;
   WizardForm.WelcomeLabel1.Font.Style := [fsBold];
   WizardForm.WelcomeLabel1.Font.Size := 11;
+  WizardForm.WelcomeLabel2.Font.Color := StudioTextColor;
   WizardForm.WelcomeLabel2.Font.Size := 9;
+  WizardForm.FinishedLabel.Font.Color := StudioTextColor;
   WizardForm.FinishedLabel.Font.Size := 9;
+
+  WizardForm.PageDescriptionLabel.Font.Color := StudioTextColor;
+  WizardForm.PageNameLabel.Font.Color := StudioTextColor;
+  WizardForm.StatusLabel.Font.Color := StudioMutedColor;
+
+  WizardForm.LicenseLabel1.Font.Color := StudioTextColor;
+  WizardForm.LicenseMemo.Font.Color := StudioTextColor;
+  WizardForm.LicenseMemo.Color := StudioBgColor;
+  WizardForm.LicenseAcceptedRadio.Font.Color := StudioTextColor;
+  WizardForm.LicenseNotAcceptedRadio.Font.Color := StudioTextColor;
+
+  WizardForm.TasksList.Font.Color := StudioTextColor;
+  WizardForm.TasksList.Color := StudioBgColor;
+
+  WizardForm.DirEdit.Font.Color := StudioTextColor;
+  WizardForm.DirEdit.Color := StudioBgColor;
+  WizardForm.NoRadio.Font.Color := StudioTextColor;
+  WizardForm.YesRadio.Font.Color := StudioTextColor;
+
+  for I := 0 to WizardForm.ComponentCount - 1 do
+  begin
+    if WizardForm.Components[I] is TLabel then
+      TLabel(WizardForm.Components[I]).Font.Color := StudioTextColor
+    else if WizardForm.Components[I] is TNewStaticText then
+      TNewStaticText(WizardForm.Components[I]).Font.Color := StudioTextColor
+    else if WizardForm.Components[I] is TNewCheckBox then
+      TNewCheckBox(WizardForm.Components[I]).Font.Color := StudioTextColor
+    else if WizardForm.Components[I] is TNewRadioButton then
+      TNewRadioButton(WizardForm.Components[I]).Font.Color := StudioTextColor
+    else if WizardForm.Components[I] is TNewMemo then
+    begin
+      TNewMemo(WizardForm.Components[I]).Font.Color := StudioTextColor;
+      TNewMemo(WizardForm.Components[I]).Color := StudioBgColor;
+    end;
+  end;
+end;
+
+procedure InitializeWizard;
+begin
+  ApplyStudioWizardTheme;
+end;
+
+procedure CurPageChanged(CurPageID: Integer);
+begin
+  ApplyStudioWizardTheme;
 end;
 
 function ProfileSlug: String;

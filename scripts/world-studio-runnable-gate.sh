@@ -23,12 +23,28 @@ grep -q 'want->isFloatTy() && val->getType()->isDoubleTy()' "$ROOT/compiler/code
 [[ -f "$ROOT/installer/LiWorldStudio.iss" ]] || fail "installer/LiWorldStudio.iss missing"
 [[ -f "$ROOT/scripts/start-li-world-studio.ps1" ]] || fail "scripts/start-li-world-studio.ps1 missing"
 
+wsl_root_path() {
+  local p="$ROOT"
+  p="${p//\\//}"
+  if [[ "$p" =~ ^/([a-zA-Z])/(.*)$ ]]; then
+    echo "/mnt/${BASH_REMATCH[1],,}/${BASH_REMATCH[2]}"
+    return
+  fi
+  if [[ "$p" =~ ^([A-Za-z]):/(.*)$ ]]; then
+    echo "/mnt/${BASH_REMATCH[1],,}/${BASH_REMATCH[2]}"
+    return
+  fi
+  echo "$p"
+}
+
 lic_check_smoke() {
   local smoke="$1"
   local path="$ROOT/packages/li-studio/li-tests/smoke/$smoke"
   [[ -f "$path" ]] || fail "missing $smoke"
   if [[ -f "$ROOT/build-wsl/compiler/lic/lic" ]] && command -v wsl >/dev/null 2>&1; then
-    wsl -e bash -lc "cd /mnt/c/Users/Julian/Documents/Programming/li/lic && ./build-wsl/compiler/lic/lic check packages/li-studio/li-tests/smoke/$smoke" \
+    local wsl_root
+    wsl_root="$(wsl_root_path)"
+    wsl -e bash -lc "cd '$wsl_root' && ./build-wsl/compiler/lic/lic check --no-cache packages/li-studio/li-tests/smoke/$smoke" \
       || fail "lic check $smoke (wsl)"
   elif [[ -n "$LIC" && -x "$LIC" ]]; then
     "$LIC" check "$path" || fail "lic check $smoke"

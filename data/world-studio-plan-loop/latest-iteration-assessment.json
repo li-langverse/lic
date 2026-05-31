@@ -3,8 +3,8 @@
   "todo_id": "wsm-w6-vertical-dod",
   "completion_sprint": true,
   "verification_pass": true,
-  "verified_at": "2026-05-31T05:47:00Z",
-  "agent_run": "world_studio_builder-1780206140600",
+  "verified_at": "2026-05-31T05:48:00Z",
+  "agent_run": "world_studio_builder-06107190",
   "wps_touched": ["WP-SIM-06", "WP-UX-02", "WP-UX-04", "WP-UX-06", "WP-UX-09", "WP-GD-05", "WP-AG-03", "WP-AG-06", "WP-PUB-03", "§11 vertical DoD"],
   "smokes_run": [
     "scripts/world-studio-plan-lic-smokes-wsl.sh",
@@ -23,6 +23,6 @@
     "vertical_dod": "pass_path_verified",
     "mcp_li_engine_stdio": "pass"
   },
-  "notes": "Sprint complete (36/36 wsm-w* done). Re-verification on cursor/world-studio-master-plan-loop: plan YAML all done, completion gate green, WSL lic smokes ok, viewport bench ok. Windows host: lic not built locally — c-host/patch-eval/vertical-DoD gates path-verified only.",
+  "notes": "Sprint complete (36/36 wsm-w* done). Re-verification pass on cursor/world-studio-master-plan-loop: plan YAML all done, completion gate green, WSL lic smokes ok, viewport bench ok, design capture posted to issue #182. Windows host: lic not built locally — c-host/patch-eval/vertical-DoD gates path-verified only.",
   "pr_url": "https://github.com/li-langverse/lic/pull/411"
 }

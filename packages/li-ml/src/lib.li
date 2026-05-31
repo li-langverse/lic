@@ -4,17 +4,17 @@ import lig
 
 def ml_version() -> int
   requires true
-  ensures result == 4
+  ensures result == 6
   decreases 0
 =
-  return 4
+  return 6
 
 def ml_matmul_max_dim() -> int
   requires true
-  ensures result == 16
+  ensures result == 32
   decreases 0
 =
-  return 16
+  return 32
 
 def ml_matmul_flat_idx(row: int, col: int, ld: int) -> int
   requires row >= 0
@@ -57,7 +57,7 @@ def ml_matmul_dim_ok(m: int, n: int, k: int) -> int
 =
   if m <= 0 or n <= 0 or k <= 0:
     return 0
-  if m > 16 or n > 16 or k > 16:
+  if m > 32 or n > 32 or k > 32:
     return 0
   return 1
 
@@ -199,6 +199,21 @@ def ml_matmul_cpu_ref(
     c[9] = cn[1][1]
     return 1
   return ml_matmul_cpu_ref_flat(m, n, k, a, b, c)
+
+@vectorized(lanes=4)
+def ml_matmul_blocked_tile_ok(m: int, n: int, k: int) -> int
+  requires m >= 0
+  requires n >= 0
+  requires k >= 0
+  ensures result >= 0
+  ensures result <= 1
+  decreases m + n + k
+=
+  if ml_matmul_dim_ok(m, n, k) != 1:
+    return 0
+  if m <= 8 and n <= 8 and k <= 8:
+    return 1
+  return 0
 
 @vectorized(lanes=4)
 def ml_matmul_cpu_nested(

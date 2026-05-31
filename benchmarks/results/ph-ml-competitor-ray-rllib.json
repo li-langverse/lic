@@ -1,6 +1,6 @@
 {
-  "competitor_id": "sb3_vecenv",
-  "suite": "ph-ml-competitor-sb3-vecenv",
+  "competitor_id": "ray_rllib",
+  "suite": "ph-ml-competitor-ray-rllib",
   "workload": "async_env_collect_4",
   "executed": false,
   "cpu_sec": null,
@@ -9,6 +9,6 @@
   "framework_version": null,
   "device": "cpu",
   "workload_size": 4,
-  "note": "stable_baselines3/gymnasium not installed",
-  "generated_at": "2026-05-31T13:08:59Z"
+  "note": "ray not installed (optional)",
+  "generated_at": "2026-05-31T13:09:07Z"
 }

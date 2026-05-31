@@ -163,49 +163,44 @@ def scene_md_particle_tier_id_for_particles(n: int) -> int
     return scene_md_tier_10k()
   return scene_md_tier_100k()
 
-# PH-HW / PH-UX — MD tier memory gate via lig ledger (studio_md_particle_tier_select_ok).
+# PH-HW / PH-UX — MD tier memory gate via lig.memory ledger (1k+10k studio default load).
 def scene_md_particle_memory_ledger_default() -> LigMemoryLedger
   requires true
   ensures result.budget_mib == lig_memory_budget_mib()
-  ensures result.allocated_bytes == 0
-  ensures result.peak_bytes == 0
+  ensures result.allocated_bytes > 0
   decreases 0
 =
-  return lig_memory_ledger_new(lig_memory_budget_mib())
+  var ledger: LigMemoryLedger = lig_memory_ledger_new(lig_memory_budget_mib())
+  var tier1k: SceneMdParticleTier = scene_md_particle_tier_by_id(scene_md_tier_1k())
+  var tier10k: SceneMdParticleTier = scene_md_particle_tier_by_id(scene_md_tier_10k())
+  var _a: int = lig_alloc_within_budget(ledger, lig_memory_tier_estimated_bytes(tier1k.particles))
+  var _b: int = lig_alloc_within_budget(ledger, lig_memory_tier_estimated_bytes(tier10k.particles))
+  return ledger
 
 def scene_md_particle_tier_refuse_md_100k_over_budget(ledger: LigMemoryLedger) -> int
-  requires ledger.budget_mib > 0
+  requires true
   ensures result >= 0
   ensures result <= 1
-  decreases ledger.budget_mib
+  decreases 0
 =
-  var sim: LigMemoryLedger = lig_memory_ledger_new(ledger.budget_mib)
-  var t1k: SceneMdParticleTier = scene_md_particle_tier_by_id(scene_md_tier_1k())
-  var t10k: SceneMdParticleTier = scene_md_particle_tier_by_id(scene_md_tier_10k())
-  var t100k: SceneMdParticleTier = scene_md_particle_tier_by_id(scene_md_tier_100k())
-  if lig_alloc_within_budget(sim, lig_memory_tier_estimated_bytes(t1k.particles)) != 1:
-    return 0
-  if lig_alloc_within_budget(sim, lig_memory_tier_estimated_bytes(t10k.particles)) != 1:
-    return 0
-  if lig_alloc_within_budget(sim, lig_memory_tier_estimated_bytes(t100k.particles)) == 1:
-    return 0
-  return 1
+  var tier100k: SceneMdParticleTier = scene_md_particle_tier_by_id(scene_md_tier_100k())
+  var cap: int = ledger.budget_mib * 1048576
+  if ledger.allocated_bytes + lig_memory_tier_estimated_bytes(tier100k.particles) > cap:
+    return 1
+  return 0
 
 def scene_md_particle_tier_would_fit(tier_id: int, ledger: LigMemoryLedger) -> int
   requires tier_id >= 0
   requires tier_id <= 2
-  requires ledger.budget_mib > 0
   ensures result >= 0
   ensures result <= 1
   decreases tier_id
 =
   var tier: SceneMdParticleTier = scene_md_particle_tier_by_id(tier_id)
-  var sim: LigMemoryLedger = lig_memory_ledger_new(ledger.budget_mib)
-  sim.allocated_bytes = ledger.allocated_bytes
-  sim.peak_bytes = ledger.peak_bytes
-  if lig_alloc_within_budget(sim, lig_memory_tier_estimated_bytes(tier.particles)) == 1:
-    return 1
-  return 0
+  var cap: int = ledger.budget_mib * 1048576
+  if ledger.allocated_bytes + lig_memory_tier_estimated_bytes(tier.particles) > cap:
+    return 0
+  return 1
 
 type SceneParticleDraw = object
   public tier: SceneMdParticleTier

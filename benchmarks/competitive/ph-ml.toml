@@ -1,0 +1,36 @@
+[meta]
+version = 1
+updated = "2026-05-31"
+schema = "li_ph_ml_competitive_v1"
+
+[harness]
+script = "scripts/bench-ph-ml-competitive.sh"
+output_competitive = "benchmarks/results/ph-ml-competitive.json"
+
+[[row]]
+id = "matmul_lkir"
+kernel = "ml.lkir.matmul_f32"
+workload_class = "pilot"
+incumbent = "PyTorch CPU / NumPy BLAS"
+competitors = ["cpp_openmp", "rust_ndarray_rayon", "python_numpy"]
+
+[[row]]
+id = "mlp_forward"
+kernel = "ml.mlp_forward_f32"
+workload_class = "pilot"
+incumbent = "PyTorch nn.Linear"
+competitors = ["cpp_openmp", "python_numpy"]
+
+[[row]]
+id = "async_env_collect"
+kernel = "ml.rl.async_env_collect"
+workload_class = "pilot"
+incumbent = "SB3 VecEnv / Ray RLlib"
+competitors = ["sb3_vecenv", "ray_rllib"]
+
+[[row]]
+id = "llm_forward"
+kernel = "llm.forward_stub"
+workload_class = "stub"
+incumbent = "llama.cpp / vLLM / transformers"
+competitors = ["llamacpp", "vllm", "pytorch_transformers"]

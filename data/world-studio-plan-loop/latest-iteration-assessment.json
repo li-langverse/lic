@@ -1,18 +1,25 @@
 {
   "pass": true,
   "todo_id": "wsm-w1-sim3-envpool",
-  "wps_touched": ["WP-SIM-03", "WP-RL-01", "WP-UX-02"],
+  "sprint_phase": "W0-W1",
+  "wps_touched": ["WP-SIM-03", "WP-RL-01", "WP-GD-01", "WP-UX-02"],
   "smokes_run": [
     "packages/li-sim/li-tests/smoke/env_pool_step_contract.li",
     "packages/li-sim/li-tests/smoke/env_pool_stub.li",
-    "packages/li-studio/li-tests/smoke/studio_sim_step_by_profile.li",
-    "packages/li-studio/li-tests/smoke/studio_vertical_demo_env.li"
+    "packages/li-studio/li-tests/smoke/studio_vertical_demo_env.li",
+    "packages/li-studio/li-tests/smoke/studio_sim_step_by_profile.li"
   ],
   "native_only": true,
   "gates": {
-    "world_studio_plan_gates": "pass",
     "world_studio_runnable_gate": "pass",
-    "lic_check_wsl": "pass"
+    "world_studio_plan_gates": "pass",
+    "lic_check_wsl": "pass",
+    "li_studio_demo_build": "pass_wsl_cc_clang22"
   },
-  "notes": "Runnable-installer sprint: merged main, added li-scene MD memory ledger helpers (scene_md_particle_memory_ledger_default/tier_would_fit/refuse_md_100k), fixed studio demo sim-tick ensures, fixed studio_sim_step_by_profile trailing commas for lic parser, world-studio-runnable-gate uses wslpath + JSON lic check. SIM-3 persistent env pool + env_pool_step_contract.li verified on WSL lic. Inno Setup + li-studio-demo binary build deferred when iscc/build not on agent host."
+  "artifacts": {
+    "li_studio_demo": "build/li-studio-demo",
+    "lic_binary": "build-wsl-agent/compiler/lic/lic",
+    "installer_iss": "installer/LiWorldStudio.iss"
+  },
+  "notes": "SIM-3 env_pool_step_contract + runnable gate green on WSL. emit.cpp fixes: pointer-return null for ReturnVoid/ReturnInt, CallExtern f64→f32 for li_rt_studio_shell_paint_ppm. Scene MD memory ledger via lig.memory. li-studio-demo builds with CC=clang-22. Inno Setup compile deferred when iscc absent."
 }

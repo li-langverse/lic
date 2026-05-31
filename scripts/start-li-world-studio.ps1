@@ -15,6 +15,7 @@ $LicRoot = Join-Path $LiRoot "lic"
 
 function Resolve-Lic {
     $candidates = @(
+        (Join-Path $LicRoot "build-wsl-agent\compiler\lic\lic"),
         (Join-Path $LicRoot "build-wsl\compiler\lic\lic"),
         (Join-Path $LicRoot "build-wsl\compiler\lic\lic.exe"),
         (Join-Path $LicRoot "build\compiler\lic\lic"),

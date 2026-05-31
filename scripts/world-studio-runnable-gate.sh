@@ -8,6 +8,7 @@ warn() { echo "WARN: $*" >&2; }
 
 LIC="${LIC:-}"
 for c in \
+  "$ROOT/build-wsl-agent/compiler/lic/lic" \
   "$ROOT/build-wsl/compiler/lic/lic" \
   "$ROOT/build/compiler/lic/lic" \
   "$ROOT/build/compiler/lic/lic.exe"; do
@@ -27,10 +28,18 @@ lic_check_smoke() {
   local smoke="$1"
   local path="$ROOT/packages/li-studio/li-tests/smoke/$smoke"
   [[ -f "$path" ]] || fail "missing $smoke"
-  if [[ -f "$ROOT/build-wsl/compiler/lic/lic" ]] && command -v wsl >/dev/null 2>&1; then
-    local wsl_root
-    wsl_root="$(wsl wslpath -u "$ROOT" 2>/dev/null || echo "$ROOT")"
-    wsl -e bash -lc "cd '$wsl_root' && chmod +x ./build-wsl/compiler/lic/lic 2>/dev/null; ./build-wsl/compiler/lic/lic check --format=json packages/li-studio/li-tests/smoke/$smoke >/dev/null" \
+  if command -v wsl >/dev/null 2>&1; then
+    local wsl_root wsl_lic
+    wsl_root="$(wsl -e wslpath -u "$ROOT" 2>/dev/null || true)"
+    [[ -n "$wsl_root" ]] || wsl_root="$ROOT"
+    if [[ -f "$ROOT/build-wsl-agent/compiler/lic/lic" ]]; then
+      wsl_lic="./build-wsl-agent/compiler/lic/lic"
+    elif [[ -f "$ROOT/build-wsl/compiler/lic/lic" ]]; then
+      wsl_lic="./build-wsl/compiler/lic/lic"
+    else
+      fail "no WSL lic binary under build-wsl-agent/ or build-wsl/"
+    fi
+    wsl bash -c "cd '$wsl_root' && chmod +x '$wsl_lic' 2>/dev/null; '$wsl_lic' check --format=json packages/li-studio/li-tests/smoke/$smoke >/dev/null" \
       || fail "lic check $smoke (wsl)"
   elif [[ -n "$LIC" && -f "$LIC" ]]; then
     "$LIC" check --format=json "$path" >/dev/null || fail "lic check $smoke"
@@ -40,7 +49,7 @@ lic_check_smoke() {
   fi
 }
 
-if [[ -f "$ROOT/build-wsl/compiler/lic/lic" ]] || [[ -n "$LIC" && -x "$LIC" ]]; then
+if [[ -f "$ROOT/build-wsl-agent/compiler/lic/lic" || -f "$ROOT/build-wsl/compiler/lic/lic" ]] || [[ -n "$LIC" && -x "$LIC" ]]; then
   lic_check_smoke studio_vertical_demo_env.li
   lic_check_smoke studio_sim_step_by_profile.li
 else

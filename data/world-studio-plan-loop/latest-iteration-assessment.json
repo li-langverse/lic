@@ -3,8 +3,8 @@
   "todo_id": "wsm-w6-vertical-dod",
   "completion_sprint": true,
   "verification_pass": true,
-  "verified_at": "2026-05-31T06:48:27Z",
-  "agent_run": "world_studio_builder-1780209754941",
+  "verified_at": "2026-05-31T06:56:12Z",
+  "agent_run": "world_studio_builder-1780210209900",
   "wps_touched": ["WP-SIM-06", "WP-UX-02", "WP-UX-04", "WP-UX-06", "WP-UX-09", "WP-GD-05", "WP-AG-03", "WP-AG-06", "WP-PUB-03", "§11 vertical DoD"],
   "smokes_run": [
     "scripts/world-studio-plan-lic-smokes-wsl.sh",

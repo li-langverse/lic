@@ -18,9 +18,14 @@ run_in_wsl() {
     wsl_bench="$(wsl.exe wslpath -u "$BENCHMARKS_ROOT" 2>/dev/null | tr -d '
 ')" || wsl_bench=""
   fi
-  if [[ -z "$wsl_bench" && -f "$ROOT/../../../../../benchmarks/harness/bench.py" ]]; then
-    wsl_bench="$(wsl.exe wslpath -u "$(cd "$ROOT/../../../../../benchmarks" && pwd)" 2>/dev/null | tr -d '
+  if [[ -z "$wsl_bench" ]]; then
+    for _c in "$ROOT/../benchmarks" "$ROOT/../../benchmarks" "$ROOT/../../../../../benchmarks"; do
+      if [[ -f "$_c/harness/bench.py" ]]; then
+        wsl_bench="$(wsl.exe wslpath -u "$(cd "$_c" && pwd)" 2>/dev/null | tr -d '
 ')" || wsl_bench=""
+        break
+      fi
+    done
   fi
   wsl.exe bash -lc "cd '$wsl_root' && export PH_ML_WAVE12_ROOT='$wsl_root' PH_ML_WAVE12_INNER=1 LIG_EMIT_CUDA=1 BENCHMARKS_ROOT='${wsl_bench}' LIC=./build-wsl/compiler/lic/lic && source scripts/ph-ml-wave12-gates.sh"
 }

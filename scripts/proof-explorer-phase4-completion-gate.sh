@@ -1,4 +1,4 @@
-﻿#!/usr/bin/env bash
+#!/usr/bin/env bash
 # Phase 4 — Li coverage invariant (every row: li_specimen or explicit open gap).
 set -euo pipefail
 ROOT="$(cd "$(dirname "$0")/.." && pwd)"

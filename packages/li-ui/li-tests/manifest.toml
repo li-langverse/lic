@@ -20,6 +20,12 @@ note = "T-PKG-li-ui-studio-shell-layout-paint-ir"
 
 [[tests]]
 suite = "smoke"
+file = "smoke/paint_studio_shell_chrome.li"
+outcome = "compile_open_ok"
+note = "T-PKG-li-ui-paint-cmd-round-gradient-ops"
+
+[[tests]]
+suite = "smoke"
 file = "smoke/studio_palette_search.li"
 outcome = "compile_open_ok"
 note = "T-PKG-li-ui-studio-palette-fuzzy-search"

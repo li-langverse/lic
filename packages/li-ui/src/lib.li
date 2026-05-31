@@ -30,10 +30,10 @@ type UiFrame = object
   public viewport_h: float
 def li_std_ui_version() -> int
   requires true
-  ensures result == 3
+  ensures result == 4
   decreases 0
 =
-  return 3
+  return 4
 
 def li_std_ui_studio_composables_version() -> int
   requires true
@@ -1176,11 +1176,41 @@ def paint_op_viewport_grid() -> int
 =
   return 3
 
+def paint_op_fill_round_rect() -> int
+  requires true
+  ensures result == 4
+  decreases 0
+=
+  return 4
+
+def paint_op_stroke_round_rect() -> int
+  requires true
+  ensures result == 5
+  decreases 0
+=
+  return 5
+
+def paint_op_fill_gradient() -> int
+  requires true
+  ensures result == 6
+  decreases 0
+=
+  return 6
+
+def paint_op_kind_max() -> int
+  requires true
+  ensures result == paint_op_fill_gradient()
+  decreases 0
+=
+  return paint_op_fill_gradient()
+
 type PaintCmd = object
   public kind: int
   public rect: Rect
   public color: Color
   public stroke_px: float
+  public radius_px: float
+  public color_b: Color
 
 type PaintFrame = object
   public cmd_count: int
@@ -1202,8 +1232,8 @@ def paint_frame_new() -> PaintFrame
 
 def paint_frame_push(frame: var PaintFrame, cmd: PaintCmd) -> unit
   requires frame.cmd_count >= 0
-  requires cmd.kind >= 1
-  requires cmd.kind <= 3
+  requires cmd.kind >= paint_op_fill_rect()
+  requires cmd.kind <= paint_op_kind_max()
   ensures frame.cmd_count == old(frame.cmd_count) + 1
   decreases 0
 =
@@ -1223,6 +1253,8 @@ def paint_cmd_fill(rect: Rect, color: Color) -> PaintCmd
   c.rect = rect
   c.color = color
   c.stroke_px = 0.0
+  c.radius_px = 0.0
+  c.color_b = color_rgb(0.0, 0.0, 0.0, 0.0)
   return c
 
 def paint_cmd_stroke(rect: Rect, color: Color, stroke_px: float) -> PaintCmd
@@ -1237,6 +1269,60 @@ def paint_cmd_stroke(rect: Rect, color: Color, stroke_px: float) -> PaintCmd
   c.rect = rect
   c.color = color
   c.stroke_px = stroke_px
+  c.radius_px = 0.0
+  c.color_b = color_rgb(0.0, 0.0, 0.0, 0.0)
+  return c
+
+def paint_cmd_fill_round(rect: Rect, color: Color, radius_px: float) -> PaintCmd
+  requires rect.w >= 0.0
+  requires rect.h >= 0.0
+  requires radius_px >= 0.0
+  ensures result.kind == paint_op_fill_round_rect()
+  ensures result.radius_px == radius_px
+  decreases 0
+=
+  var c: PaintCmd
+  c.kind = paint_op_fill_round_rect()
+  c.rect = rect
+  c.color = color
+  c.stroke_px = 0.0
+  c.radius_px = radius_px
+  c.color_b = color_rgb(0.0, 0.0, 0.0, 0.0)
+  return c
+
+def paint_cmd_stroke_round(rect: Rect, color: Color, stroke_px: float, radius_px: float) -> PaintCmd
+  requires rect.w >= 0.0
+  requires rect.h >= 0.0
+  requires stroke_px >= 0.0
+  requires radius_px >= 0.0
+  ensures result.kind == paint_op_stroke_round_rect()
+  ensures result.radius_px == radius_px
+  decreases 0
+=
+  var c: PaintCmd
+  c.kind = paint_op_stroke_round_rect()
+  c.rect = rect
+  c.color = color
+  c.stroke_px = stroke_px
+  c.radius_px = radius_px
+  c.color_b = color_rgb(0.0, 0.0, 0.0, 0.0)
+  return c
+
+def paint_cmd_fill_gradient(rect: Rect, color_top: Color, color_bottom: Color) -> PaintCmd
+  requires rect.w >= 0.0
+  requires rect.h >= 0.0
+  ensures result.kind == paint_op_fill_gradient()
+  ensures result.color == color_top
+  ensures result.color_b == color_bottom
+  decreases 0
+=
+  var c: PaintCmd
+  c.kind = paint_op_fill_gradient()
+  c.rect = rect
+  c.color = color_top
+  c.stroke_px = 0.0
+  c.radius_px = 0.0
+  c.color_b = color_bottom
   return c
 
 def paint_cmd_viewport_grid(rect: Rect) -> PaintCmd
@@ -1250,6 +1336,8 @@ def paint_cmd_viewport_grid(rect: Rect) -> PaintCmd
   c.rect = rect
   c.color = studio_color_accent_cyan()
   c.stroke_px = 1.0
+  c.radius_px = 0.0
+  c.color_b = color_rgb(0.0, 0.0, 0.0, 0.0)
   return c
 
 def paint_studio_shell_chrome(frame: var PaintFrame, layout: var StudioShellLayout) -> unit

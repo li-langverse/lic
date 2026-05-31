@@ -10,13 +10,45 @@ export LI_REPO_ROOT="$ROOT"
 fail() { li_gate_fail "$*"; exit 1; }
 
 LIC="${LIC:-}"
-if [[ -x "$ROOT/build/compiler/lic/lic" ]]; then
-  LIC="$ROOT/build/compiler/lic/lic"
-elif [[ -x "$ROOT/build/compiler/lic/lic.exe" ]]; then
-  LIC="$ROOT/build/compiler/lic/lic.exe"
-elif [[ -x "$ROOT/scripts/resolve-lic.sh" ]]; then
+for c in \
+  "$ROOT/build-wsl/compiler/lic/lic" \
+  "$ROOT/build/compiler/lic/lic" \
+  "$ROOT/build/compiler/lic/lic.exe"; do
+  if [[ -x "$c" ]]; then LIC="$c"; break; fi
+done
+if [[ -z "$LIC" && -x "$ROOT/scripts/resolve-lic.sh" ]]; then
   LIC="$("$ROOT/scripts/resolve-lic.sh" 2>/dev/null)" || true
 fi
+
+wsl_root_path() {
+  local p="$ROOT"
+  p="${p//\\//}"
+  if [[ "$p" =~ ^/([a-zA-Z])/(.*)$ ]]; then
+    echo "/mnt/${BASH_REMATCH[1],,}/${BASH_REMATCH[2]}"
+    return
+  fi
+  if [[ "$p" =~ ^([A-Za-z]):/(.*)$ ]]; then
+    echo "/mnt/${BASH_REMATCH[1],,}/${BASH_REMATCH[2]}"
+    return
+  fi
+  echo "$p"
+}
+
+lic_check_rel() {
+  local rel="$1"
+  local path="$ROOT/$rel"
+  [[ -f "$path" ]] || fail "missing $rel"
+  if [[ -f "$ROOT/build-wsl/compiler/lic/lic" ]] && command -v wsl >/dev/null 2>&1; then
+    local wsl_root
+    wsl_root="$(wsl_root_path)"
+    wsl -e bash -lc "cd '$wsl_root' && ./build-wsl/compiler/lic/lic check --no-cache $rel" \
+      || fail "lic check $rel (wsl)"
+  elif [[ -n "$LIC" && -x "$LIC" ]]; then
+    "$LIC" check "$path" || fail "lic check $rel"
+  else
+    fail "lic not runnable for $rel"
+  fi
+}
 
 li_phase "plan documents"
 [[ -f "$ROOT/docs/game-dev/WORLD-STUDIO-MASTER-PLAN.md" ]] || fail "WORLD-STUDIO-MASTER-PLAN.md"
@@ -34,7 +66,7 @@ li_phase "design tokens"
 if [[ "${WORLD_STUDIO_GATES_SKIP_LIC:-0}" == "1" ]]; then
   li_warn "skip lic check smokes (WORLD_STUDIO_GATES_SKIP_LIC=1)"
 else
-  if [[ -z "$LIC" || ! -x "$LIC" ]]; then
+  if [[ ! -f "$ROOT/build-wsl/compiler/lic/lic" && ( -z "$LIC" || ! -x "$LIC" ) ]]; then
     li_warn "lic not built — set WORLD_STUDIO_GATES_SKIP_LIC=1 or run ./scripts/build.sh"
   else
     li_phase "li-studio core smokes"
@@ -43,12 +75,13 @@ else
       studio_vertical_profile_roundtrip.li \
       studio_sim_step_by_profile.li \
       studio_sim_rl_step_hook.li \
+      studio_sim_sensor_step_hook.li \
       studio_mcp_tools.li \
       studio_agentic_run.li; do
-      path="$ROOT/packages/li-studio/li-tests/smoke/$smoke"
-      [[ -f "$path" ]] || fail "missing smoke $smoke"
-      "$LIC" check "$path" || fail "lic check $smoke"
+      lic_check_rel "packages/li-studio/li-tests/smoke/$smoke"
     done
+    li_phase "li-sim-sensors smoke"
+    lic_check_rel "packages/li-sim-sensors/li-tests/smoke/sensor_bus_raycast_contract.li"
   fi
 fi
 

@@ -25,7 +25,7 @@ todos:
     status: done
   - id: wsm-w1-sim-sensors
     content: "Sensor bus stub for automotive/robotics (WP-SIM-05)"
-    status: pending
+    status: done
   - id: wsm-w1-studio-toml-engine
     content: "Parse studio.toml [engine] determinism_tier + export section (WP-SIM-06)"
     status: pending

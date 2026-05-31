@@ -1,4 +1,4 @@
-# GT-AX-BC-GR-045: Simple graph: no loops, symmetric adjacency (variant 45).
+# GT-AX-BC-GR-045: Empty simple graph on n vertices has 0 edges.
 # Simple graph: irreflexive and symmetric adjacency (no self-loops).
 
 def simple_graph_symmetric(adj_ij: int, adj_ji: int) -> int

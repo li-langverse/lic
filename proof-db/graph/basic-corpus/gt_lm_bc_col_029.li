@@ -1,4 +1,4 @@
-# GT-LM-BC-COL-029: Chromatic number upper bound Delta+1 (variant 29).
+# GT-LM-BC-COL-029: Cycle C_n: chi(C_n) = 2 if n even, 3 if n odd.
 
 def chromatic_upper(delta: int) -> int
   requires delta >= 0

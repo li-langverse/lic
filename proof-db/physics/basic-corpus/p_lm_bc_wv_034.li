@@ -1,4 +1,4 @@
-# P-LM-BC-WV-034: Bernoulli equation along streamline (stub).
+# P-LM-BC-WV-034: Bernoulli equation: p + (1/2) rho v^2 + rho g h = const along a streamline (steady, inviscid flow).
 
 def bernoulli_variance(p: float) -> float
   requires 0.0 <= p and p <= 1.0

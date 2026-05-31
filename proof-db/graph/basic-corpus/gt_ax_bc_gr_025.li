@@ -1,4 +1,4 @@
-# GT-AX-BC-GR-025: Simple graph: no loops, symmetric adjacency (variant 25).
+# GT-AX-BC-GR-025: Simple graph complement also has no loops.
 # Simple graph: irreflexive and symmetric adjacency (no self-loops).
 
 def simple_graph_symmetric(adj_ij: int, adj_ji: int) -> int

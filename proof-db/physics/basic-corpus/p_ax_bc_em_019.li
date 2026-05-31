@@ -1,4 +1,4 @@
-# P-AX-BC-EM-019: Lorentz force F = q (E + v x B) stub.
+# P-AX-BC-EM-019: Lorentz force: F = q (E + v x B) on charge q in electric and magnetic fields.
 
 extern proc p_ax_bc_em_019_axiom_witness() -> int
   requires true

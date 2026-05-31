@@ -1,4 +1,4 @@
-# D-LM-BC-CMB-027: Binomial coefficient identity (variant 27).
+# D-LM-BC-CMB-027: Hockey-stick identity: sum_{i=r}^n C(i,r) = C(n+1,r+1).
 
 def binomial_symmetry(n: int, k: int) -> int
   requires n >= 0 and 0 <= k and k <= n

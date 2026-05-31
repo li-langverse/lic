@@ -1,4 +1,4 @@
-# ST-AX-BC-PR-011: Kolmogorov consequence (variant 11): P(empty)=0 and P(A^c)=1-P(A) on finite Omega.
+# ST-AX-BC-PR-011: Boole inequality (finite): P(A union B) <= P(A)+P(B).
 # Kolmogorov axioms (finite sample space Omega):
 #   (K1) P(A) >= 0 for all events A;
 #   (K2) P(Omega) = 1;

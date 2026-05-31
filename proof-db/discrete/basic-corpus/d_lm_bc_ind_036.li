@@ -1,4 +1,4 @@
-# D-LM-BC-IND-036: Mathematical induction principle (variant 36).
+# D-LM-BC-IND-036: Induction on factorial: n! >= 2^(n-1) for n >= 3.
 
 def induction_step(n: int, step: int) -> int
   requires n >= 0 and step >= 0

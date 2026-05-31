@@ -1,4 +1,4 @@
-# ST-AX-BC-PR-041: Kolmogorov consequence (variant 41): P(empty)=0 and P(A^c)=1-P(A) on finite Omega.
+# ST-AX-BC-PR-041: Disjoint additivity: P(A u B)=P(A)+P(B) when A and B disjoint.
 # Kolmogorov axioms (finite sample space Omega):
 #   (K1) P(A) >= 0 for all events A;
 #   (K2) P(Omega) = 1;

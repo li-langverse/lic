@@ -1,4 +1,4 @@
-# GT-LM-BC-TR-032: Tree on n vertices has n-1 edges (variant 32).
+# GT-LM-BC-TR-032: Tree edge count: |E| = |V| - 1 for connected acyclic graphs.
 
 def tree_edge_count(n: int) -> int
   requires n >= 1

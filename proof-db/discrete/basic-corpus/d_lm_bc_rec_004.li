@@ -1,4 +1,4 @@
-# D-LM-BC-REC-004: Linear recurrence solution stub (variant 4).
+# D-LM-BC-REC-004: Fibonacci recurrence: F_n = F_{n-1} + F_{n-2} with F_0=0, F_1=1.
 
 def d_lm_bc_rec_004_witness(n: int) -> int
   requires n >= 0

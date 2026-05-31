@@ -1,4 +1,4 @@
-# GT-LM-BC-CON-048: Connected graph |E| >= |V|-1 (variant 48).
+# GT-LM-BC-CON-048: Connected cubic graph on n vertices has 3n/2 edges.
 
 def connected_edge_lower_bound(v: int) -> int
   requires v >= 1

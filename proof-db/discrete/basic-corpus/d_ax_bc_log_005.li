@@ -1,4 +1,4 @@
-# D-AX-BC-LOG-005: Propositional tautology schema (variant 5).
+# D-AX-BC-LOG-005: Excluded middle: P or not P (propositional tautology).
 
 extern proc d_ax_bc_log_005_axiom_witness() -> int
   requires true

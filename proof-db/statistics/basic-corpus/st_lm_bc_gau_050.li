@@ -1,4 +1,4 @@
-# ST-LM-BC-GAU-050: Normal distribution density stub (case 50).
+# ST-LM-BC-GAU-050: Normal PDF: f(x) = (1 / (sigma sqrt(2 pi))) exp(-(x - mu)^2 / (2 sigma^2)).
 
 def normal_density_scale(sigma: float) -> float
   requires sigma > 0.0

@@ -1,4 +1,4 @@
-# GT-AX-BC-GR-030: Simple graph: no loops, symmetric adjacency (variant 30).
+# GT-AX-BC-GR-030: Degree of vertex v equals number of neighbors in simple graph.
 # Simple graph: irreflexive and symmetric adjacency (no self-loops).
 
 def simple_graph_symmetric(adj_ij: int, adj_ji: int) -> int

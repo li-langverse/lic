@@ -1,4 +1,4 @@
-# GT-LM-BC-TR-012: Tree on n vertices has n-1 edges (variant 12).
+# GT-LM-BC-TR-012: Adding one edge to a tree creates exactly one cycle.
 
 def tree_edge_count(n: int) -> int
   requires n >= 1

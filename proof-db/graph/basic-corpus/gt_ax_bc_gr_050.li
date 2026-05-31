@@ -1,4 +1,4 @@
-# GT-AX-BC-GR-050: Simple graph: no loops, symmetric adjacency (variant 50).
+# GT-AX-BC-GR-050: Path graph P_n is simple with n-1 edges and max degree 2 (except endpoints).
 # Simple graph: irreflexive and symmetric adjacency (no self-loops).
 
 def simple_graph_symmetric(adj_ij: int, adj_ji: int) -> int

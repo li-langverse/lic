@@ -1,4 +1,4 @@
-# GT-LM-BC-COL-009: Chromatic number upper bound Delta+1 (variant 9).
+# GT-LM-BC-COL-009: Brooks theorem (qualitative): chi(G) <= Delta(G) except for cliques and odd cycles.
 
 def chromatic_upper(delta: int) -> int
   requires delta >= 0

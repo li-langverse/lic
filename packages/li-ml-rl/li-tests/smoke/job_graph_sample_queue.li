@@ -1,0 +1,20 @@
+import ml_rl
+import sim
+
+def main() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  var sess: SimSessionStub = sim_session_stub_default()
+  sim_session_apply_studio_profile(2, sess)
+  var graph: JobGraphStub = job_graph_stub_default()
+  if ml_rl_job_graph_collect(sess, 0.02, graph) != sim_status_ok():
+    return 1
+  if graph.sample_queue_len != 4:
+    return 2
+  if graph.sample_q0.env_index != 0:
+    return 3
+  if graph.sample_q3.env_index != 3:
+    return 4
+  return 0

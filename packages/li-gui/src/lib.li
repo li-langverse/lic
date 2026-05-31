@@ -5,10 +5,10 @@ import ui
 
 def li_std_gui_version() -> int
   requires true
-  ensures result == 12
+  ensures result == 13
   decreases 0
 =
-  return 12
+  return 13
 
 def gui_inspector_pilot_version() -> int
   requires true
@@ -2488,6 +2488,356 @@ def inspector_pilot_empty_hint_box_rect(layout: InspectorPilotLayoutResult) -> R
 =
   var layout2: WidgetLayoutResult = layout.hints_layout.child_layouts[2]
   return layout2.bounds
+
+# --- Phase 4 (W4): Shell Widget tree — all regions + reactive store params ---
+
+def gui_shell_widget_tree_version() -> int
+  requires true
+  ensures result == 1
+  decreases 0
+=
+  return 1
+
+def shell_widget_tree_region_count() -> int
+  requires true
+  ensures result == 8
+  decreases 0
+=
+  return 8
+
+def shell_widget_tree_region_dock() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0
+
+def shell_widget_tree_region_outliner() -> int
+  requires true
+  ensures result == 1
+  decreases 0
+=
+  return 1
+
+def shell_widget_tree_region_topbar() -> int
+  requires true
+  ensures result == 2
+  decreases 0
+=
+  return 2
+
+def shell_widget_tree_region_viewport() -> int
+  requires true
+  ensures result == 3
+  decreases 0
+=
+  return 3
+
+def shell_widget_tree_region_timeline() -> int
+  requires true
+  ensures result == 4
+  decreases 0
+=
+  return 4
+
+def shell_widget_tree_region_inspector() -> int
+  requires true
+  ensures result == 5
+  decreases 0
+=
+  return 5
+
+def shell_widget_tree_region_agent() -> int
+  requires true
+  ensures result == 6
+  decreases 0
+=
+  return 6
+
+def shell_widget_tree_region_palette() -> int
+  requires true
+  ensures result == 7
+  decreases 0
+=
+  return 7
+
+def shell_widget_tree_dock_gap_px() -> float
+  requires true
+  ensures result == 8.0
+  decreases 0
+=
+  return 8.0
+
+def shell_widget_tree_timeline_track_h_px() -> float
+  requires true
+  ensures result == 24.0
+  decreases 0
+=
+  return 24.0
+
+type ShellWidgetTreeParams = object
+  public active_dock_slot: int
+  public has_selection: int
+  public scene_entity_count: int
+  public palette_open: int
+  public agent_task_state: int
+  public playhead_pct: float
+  public shell_mode: int
+
+type ShellWidgetTree = object
+  public params: ShellWidgetTreeParams
+  public dock: FlexLayout
+  public outliner: FlexLayout
+  public topbar: WidgetNode
+  public viewport: WidgetNode
+  public timeline: FlexLayout
+  public inspector: InspectorPilotWidget
+  public agent_strip: FlexLayout
+  public palette_overlay: FlexLayout
+  public region_count: int
+
+type ShellWidgetTreeLayout = object
+  public shell_bounds: Rect
+  public dock_layout: FlexLayoutResult
+  public outliner_layout: FlexLayoutResult
+  public topbar_layout: WidgetLayoutResult
+  public viewport_layout: WidgetLayoutResult
+  public timeline_layout: FlexLayoutResult
+  public inspector_layout: InspectorPilotLayoutResult
+  public agent_layout: FlexLayoutResult
+  public palette_layout: FlexLayoutResult
+  public region_count: int
+
+def shell_widget_tree_dock_flex() -> FlexLayout
+  requires true
+  ensures result.child_count == 4
+  ensures result.direction == flex_direction_column()
+  decreases 0
+=
+  var slot0: WidgetNode = widget_node_button(4.0)
+  var slot1: WidgetNode = widget_node_button(4.0)
+  var slot2: WidgetNode = widget_node_button(4.0)
+  var slot3: WidgetNode = widget_node_button(4.0)
+  return flex_layout_column(shell_widget_tree_dock_gap_px(), 4, slot0, slot1, slot2, slot3)
+
+def shell_widget_tree_outliner_flex() -> FlexLayout
+  requires true
+  ensures result.child_count == 3
+  ensures result.direction == flex_direction_column()
+  decreases 0
+=
+  var row0: WidgetNode = widget_node_label(10.0)
+  var row1: WidgetNode = widget_node_label(12.0)
+  var row2: WidgetNode = widget_node_label(8.0)
+  var spacer: WidgetNode = widget_node_spacer(0.0, 0.0)
+  return flex_layout_column(4.0, 3, row0, row1, row2, spacer)
+
+def shell_widget_tree_timeline_flex() -> FlexLayout
+  requires true
+  ensures result.child_count == 2
+  ensures result.direction == flex_direction_row()
+  decreases 0
+=
+  var play_btn: WidgetNode = widget_node_button(4.0)
+  widget_node_set_tab_index(play_btn, 3)
+  var track: WidgetNode = widget_node_panel(120.0, shell_widget_tree_timeline_track_h_px())
+  var spacer0: WidgetNode = widget_node_spacer(0.0, 0.0)
+  var spacer1: WidgetNode = widget_node_spacer(0.0, 0.0)
+  return flex_layout_row(8.0, 2, play_btn, track, spacer0, spacer1)
+
+def shell_widget_tree_agent_flex(task_state: int) -> FlexLayout
+  requires task_state >= 0
+  requires task_state <= 4
+  ensures result.child_count == 3
+  ensures result.direction == flex_direction_row()
+  decreases task_state
+=
+  var status: WidgetNode = widget_node_label(14.0)
+  var cancel: WidgetNode = widget_node_button(6.0)
+  widget_node_set_tab_index(cancel, 4)
+  var trace: WidgetNode = widget_node_panel(80.0, 20.0)
+  var spacer: WidgetNode = widget_node_spacer(0.0, 0.0)
+  if task_state == 0:
+    cancel = widget_node_spacer(0.0, 0.0)
+  return flex_layout_row(8.0, 3, status, cancel, trace, spacer)
+
+def shell_widget_tree_palette_flex() -> FlexLayout
+  requires true
+  ensures result.child_count == 2
+  ensures result.direction == flex_direction_column()
+  decreases 0
+=
+  var query: WidgetNode = widget_node_text_input(16.0)
+  widget_node_set_tab_index(query, 5)
+  var row0: WidgetNode = widget_node_label(18.0)
+  var row1: WidgetNode = widget_node_label(16.0)
+  var spacer: WidgetNode = widget_node_spacer(0.0, 0.0)
+  return flex_layout_column(6.0, 2, query, row0, row1, spacer)
+
+def shell_widget_tree_params_from_stores(agent_task: StoreInt, palette_open: StoreInt, shell_mode: StoreInt, timeline_tick: StoreFloat, active_dock: int, has_selection: int, scene_count: int) -> ShellWidgetTreeParams
+  requires active_dock >= 0
+  requires active_dock < 5
+  requires has_selection >= 0
+  requires has_selection <= 1
+  requires scene_count >= 0
+  ensures result.active_dock_slot == active_dock
+  ensures result.has_selection == has_selection
+  ensures result.agent_task_state == store_int_get(agent_task)
+  ensures result.palette_open == store_int_get(palette_open)
+  ensures result.shell_mode == store_int_get(shell_mode)
+  ensures result.playhead_pct == store_float_get(timeline_tick)
+  decreases active_dock
+=
+  var out: ShellWidgetTreeParams
+  out.active_dock_slot = active_dock
+  out.has_selection = has_selection
+  out.scene_entity_count = scene_count
+  out.palette_open = store_int_get(palette_open)
+  out.agent_task_state = store_int_get(agent_task)
+  out.playhead_pct = store_float_get(timeline_tick)
+  out.shell_mode = store_int_get(shell_mode)
+  return out
+
+def shell_widget_tree_new(params: ShellWidgetTreeParams, insp_w: float, insp_h: float) -> ShellWidgetTree
+  requires insp_w > 0.0
+  requires insp_h > gui_inspector_pilot_header_h_px()
+  requires params.active_dock_slot >= 0
+  requires params.active_dock_slot < 5
+  requires params.has_selection >= 0
+  requires params.has_selection <= 1
+  ensures result.region_count == shell_widget_tree_region_count()
+  ensures result.params.active_dock_slot == params.active_dock_slot
+  ensures result.inspector.has_selection == params.has_selection
+  decreases params.active_dock_slot
+=
+  var out: ShellWidgetTree
+  out.params = params
+  out.dock = shell_widget_tree_dock_flex()
+  out.outliner = shell_widget_tree_outliner_flex()
+  out.topbar = widget_node_panel(640.0, 48.0)
+  out.viewport = widget_node_panel(insp_w, insp_h)
+  out.timeline = shell_widget_tree_timeline_flex()
+  out.inspector = inspector_pilot_new(params.has_selection, insp_w, insp_h)
+  out.agent_strip = shell_widget_tree_agent_flex(params.agent_task_state)
+  out.palette_overlay = shell_widget_tree_palette_flex()
+  out.region_count = shell_widget_tree_region_count()
+  return out
+
+def shell_widget_tree_layout(tree: ShellWidgetTree, lay: StudioShellLayout) -> ShellWidgetTreeLayout
+  requires lay.viewport_w > 0.0
+  requires lay.viewport_h > 0.0
+  requires lay.dock.w > 0.0
+  requires lay.inspector.w > 0.0
+  requires lay.inspector.h > gui_inspector_pilot_header_h_px()
+  ensures result.region_count == shell_widget_tree_region_count()
+  ensures result.shell_bounds.w == lay.viewport_w
+  ensures result.inspector_layout.bounds.w == lay.inspector.w
+  decreases tree.region_count
+=
+  var out: ShellWidgetTreeLayout
+  out.shell_bounds = rect_make(0.0, 0.0, lay.viewport_w, lay.viewport_h)
+  var dock_c: LayoutConstraints = layout_constraints_loose(lay.dock.w, lay.dock.h)
+  out.dock_layout = flex_layout_layout(tree.dock, dock_c, lay.dock.x, lay.dock.y)
+  var outliner_c: LayoutConstraints = layout_constraints_loose(lay.dock.w, lay.dock.h * 0.45)
+  var outliner_y: float = lay.dock.y + lay.dock.h * 0.55
+  out.outliner_layout = flex_layout_layout(tree.outliner, outliner_c, lay.dock.x, outliner_y)
+  var top_c: LayoutConstraints = layout_constraints_loose(lay.topbar.w, lay.topbar.h)
+  out.topbar_layout = widget_layout(tree.topbar, top_c, lay.topbar.x, lay.topbar.y)
+  var vp_c: LayoutConstraints = layout_constraints_loose(lay.viewport.w, lay.viewport.h)
+  out.viewport_layout = widget_layout(tree.viewport, vp_c, lay.viewport.x, lay.viewport.y)
+  var tl_c: LayoutConstraints = layout_constraints_loose(lay.timeline.w, lay.timeline.h)
+  out.timeline_layout = flex_layout_layout(tree.timeline, tl_c, lay.timeline.x, lay.timeline.y)
+  out.inspector_layout = inspector_pilot_layout(tree.inspector, lay.inspector.x, lay.inspector.y, lay.inspector.w, lay.inspector.h)
+  var agent_c: LayoutConstraints = layout_constraints_loose(lay.agent_strip.w, lay.agent_strip.h)
+  out.agent_layout = flex_layout_layout(tree.agent_strip, agent_c, lay.agent_strip.x, lay.agent_strip.y)
+  var pal_c: LayoutConstraints = layout_constraints_loose(lay.viewport_w * 0.42, lay.viewport_h * 0.36)
+  var pal_x: float = lay.viewport_w * 0.29
+  var pal_y: float = lay.topbar.h + 24.0
+  out.palette_layout = flex_layout_layout(tree.palette_overlay, pal_c, pal_x, pal_y)
+  out.region_count = shell_widget_tree_region_count()
+  return out
+
+def shell_widget_tree_paint_region_cmds(has_palette: int) -> int
+  requires has_palette >= 0
+  requires has_palette <= 1
+  ensures result >= 8
+  decreases has_palette
+=
+  var n: int = 8
+  if has_palette == 1:
+    n = n + 2
+  return n
+
+def shell_widget_tree_paint(tree: ShellWidgetTree, layout: ShellWidgetTreeLayout, frame: var PaintFrame) -> unit
+  requires frame.cmd_count >= 0
+  requires layout.region_count == shell_widget_tree_region_count()
+  ensures frame.cmd_count == old(frame.cmd_count) + shell_widget_tree_paint_region_cmds(tree.params.palette_open)
+  decreases tree.region_count
+=
+  flex_layout_paint(tree.dock, frame, layout.dock_layout)
+  flex_layout_paint(tree.outliner, frame, layout.outliner_layout)
+  widget_paint(tree.topbar, frame, layout.topbar_layout)
+  widget_paint(tree.viewport, frame, layout.viewport_layout)
+  flex_layout_paint(tree.timeline, frame, layout.timeline_layout)
+  inspector_pilot_paint(tree.inspector, layout.inspector_layout, frame)
+  flex_layout_paint(tree.agent_strip, frame, layout.agent_layout)
+  if tree.params.palette_open == 1:
+    flex_layout_paint(tree.palette_overlay, frame, layout.palette_layout)
+
+def shell_widget_tree_region_laid_out(layout: ShellWidgetTreeLayout, region_id: int) -> int
+  requires region_id >= shell_widget_tree_region_dock()
+  requires region_id <= shell_widget_tree_region_palette()
+  ensures result >= 0
+  ensures result <= 1
+  decreases region_id
+=
+  if region_id == shell_widget_tree_region_dock():
+    if layout.dock_layout.bounds.w > 0.0:
+      return 1
+    return 0
+  if region_id == shell_widget_tree_region_outliner():
+    if layout.outliner_layout.bounds.w > 0.0:
+      return 1
+    return 0
+  if region_id == shell_widget_tree_region_topbar():
+    if layout.topbar_layout.bounds.w > 0.0:
+      return 1
+    return 0
+  if region_id == shell_widget_tree_region_viewport():
+    if layout.viewport_layout.bounds.w > 0.0:
+      return 1
+    return 0
+  if region_id == shell_widget_tree_region_timeline():
+    if layout.timeline_layout.bounds.w > 0.0:
+      return 1
+    return 0
+  if region_id == shell_widget_tree_region_inspector():
+    if layout.inspector_layout.bounds.w > 0.0:
+      return 1
+    return 0
+  if region_id == shell_widget_tree_region_agent():
+    if layout.agent_layout.bounds.w > 0.0:
+      return 1
+    return 0
+  if region_id == shell_widget_tree_region_palette():
+    if layout.palette_layout.bounds.w > 0.0:
+      return 1
+    return 0
+  return 0
+
+def shell_widget_tree_all_regions_laid_out(layout: ShellWidgetTreeLayout) -> int
+  requires layout.region_count == shell_widget_tree_region_count()
+  ensures result >= 0
+  ensures result <= 1
+  decreases layout.region_count
+=
+  var ok: int = 1
+  var rid: int = shell_widget_tree_region_dock()
+  while rid <= shell_widget_tree_region_agent()
+    if shell_widget_tree_region_laid_out(layout, rid) != 1:
+      ok = 0
+    rid = rid + 1
+  return ok
 
 # Phase 2 — Reactive compose primitives (Function layer).
 # Canonical split: src/reactive.li (mirrored here for `import gui`).

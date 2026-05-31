@@ -7,7 +7,8 @@ statement = "Loop 4-term int dot: witness_dot4_int_loop + dot4_int_loop_eval_spe
 li_specimen = "li-tests/contracts_verify/linalg_dot4_int_loop_open.li"
 lean_thm = "dot4_int_loop_eval_spec"
 lean_module = "docs/semantics/Li/Discharge.lean"
-proof_status = "proved"
-release_pin = "2026-05-25"
+proof_status = "open"
+release_pin = "2026-05-31"
 release_lic = "dev"
-evidence = ["li-tests/tooling/discharge_linalg_int_lean.sh", "verify_ok"]
+evidence = ["docs/reports/compiler-audit/BUG-C-01.md", "catalog_downgrade"]
+notes = "BUG-C-01: AutoVC Prop := True; honest open until Discharge spec wired"

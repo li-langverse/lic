@@ -5,10 +5,10 @@ import ui
 
 def li_std_gui_version() -> int
   requires true
-  ensures result == 5
+  ensures result == 6
   decreases 0
 =
-  return 5
+  return 6
 
 def gui_widget_protocol_version() -> int
   requires true
@@ -848,3 +848,487 @@ def widget_handle_event(node: var WidgetNode, layout: WidgetLayoutResult, event:
     node.focused = 1
     return out
   return out
+
+# --- Phase 1 (W1): Layout engines — Flex, Grid, Padding, Scroll ---
+
+def gui_layout_engine_version() -> int
+  requires true
+  ensures result == 1
+  decreases 0
+=
+  return 1
+
+def layout_engine_max_children() -> int
+  requires true
+  ensures result == 4
+  decreases 0
+=
+  return 4
+
+def flex_direction_row() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0
+
+def flex_direction_column() -> int
+  requires true
+  ensures result == 1
+  decreases 0
+=
+  return 1
+
+def layout_float_max(a: float, b: float) -> float
+  requires true
+  ensures result >= a
+  ensures result >= b
+  decreases 0
+=
+  if a >= b:
+    return a
+  return b
+
+def layout_float_min(a: float, b: float) -> float
+  requires true
+  ensures result <= a
+  ensures result <= b
+  decreases 0
+=
+  if a <= b:
+    return a
+  return b
+
+def layout_int_as_float(v: int) -> float
+  requires v >= 0
+  requires v <= layout_engine_max_children()
+  ensures result >= 0.0
+  decreases v
+=
+  if v <= 0:
+    return 0.0
+  if v == 1:
+    return 1.0
+  if v == 2:
+    return 2.0
+  if v == 3:
+    return 3.0
+  if v == 4:
+    return 4.0
+  return 4.0
+
+type FlexLayout = object
+  public direction: int
+  public gap: float
+  public child_count: int
+  public children: array[4, WidgetNode]
+
+type FlexLayoutResult = object
+  public bounds: Rect
+  public size: WidgetSize
+  public child_count: int
+  public child_layouts: array[4, WidgetLayoutResult]
+
+type GridLayout = object
+  public rows: int
+  public cols: int
+  public gap: float
+  public child_count: int
+  public children: array[4, WidgetNode]
+
+type GridLayoutResult = object
+  public bounds: Rect
+  public size: WidgetSize
+  public rows: int
+  public cols: int
+  public cell_w: float
+  public cell_h: float
+  public child_count: int
+  public child_layouts: array[4, WidgetLayoutResult]
+
+type PaddingLayout = object
+  public pad_left: float
+  public pad_top: float
+  public pad_right: float
+  public pad_bottom: float
+  public child: WidgetNode
+
+type PaddingLayoutResult = object
+  public bounds: Rect
+  public size: WidgetSize
+  public inner_bounds: Rect
+  public child_layout: WidgetLayoutResult
+
+type ScrollLayout = object
+  public scroll_x: float
+  public scroll_y: float
+  public child: WidgetNode
+
+type ScrollLayoutResult = object
+  public bounds: Rect
+  public size: WidgetSize
+  public clip_bounds: Rect
+  public scroll_x: float
+  public scroll_y: float
+  public child_layout: WidgetLayoutResult
+
+def flex_layout_empty() -> FlexLayout
+  requires true
+  ensures result.child_count == 0
+  ensures result.gap >= 0.0
+  decreases 0
+=
+  var f: FlexLayout
+  f.direction = flex_direction_row()
+  f.gap = 0.0
+  f.child_count = 0
+  return f
+
+def flex_layout_row(gap: float, child_count: int, c0: WidgetNode, c1: WidgetNode, c2: WidgetNode, c3: WidgetNode) -> FlexLayout
+  requires gap >= 0.0
+  requires child_count >= 0
+  requires child_count <= layout_engine_max_children()
+  ensures result.direction == flex_direction_row()
+  ensures result.gap == gap
+  ensures result.child_count == child_count
+  decreases child_count
+=
+  var f: FlexLayout
+  f.direction = flex_direction_row()
+  f.gap = gap
+  f.child_count = child_count
+  f.children[0] = c0
+  f.children[1] = c1
+  f.children[2] = c2
+  f.children[3] = c3
+  return f
+
+def flex_layout_column(gap: float, child_count: int, c0: WidgetNode, c1: WidgetNode, c2: WidgetNode, c3: WidgetNode) -> FlexLayout
+  requires gap >= 0.0
+  requires child_count >= 0
+  requires child_count <= layout_engine_max_children()
+  ensures result.direction == flex_direction_column()
+  ensures result.gap == gap
+  ensures result.child_count == child_count
+  decreases child_count
+=
+  var f: FlexLayout
+  f.direction = flex_direction_column()
+  f.gap = gap
+  f.child_count = child_count
+  f.children[0] = c0
+  f.children[1] = c1
+  f.children[2] = c2
+  f.children[3] = c3
+  return f
+
+def flex_layout_measure(spec: FlexLayout, constraints: LayoutConstraints) -> WidgetSize
+  requires spec.child_count >= 0
+  requires spec.child_count <= layout_engine_max_children()
+  requires spec.gap >= 0.0
+  requires constraints.max_w >= constraints.min_w
+  requires constraints.max_h >= constraints.min_h
+  ensures result.w >= 0.0
+  ensures result.h >= 0.0
+  decreases spec.child_count
+=
+  var total_w: float = 0.0
+  var total_h: float = 0.0
+  var max_w: float = 0.0
+  var max_h: float = 0.0
+  var idx: int = 0
+  var first: int = 1
+  while idx < spec.child_count
+    var child_size: WidgetSize = widget_measure(spec.children[idx], constraints)
+    if spec.direction == flex_direction_row():
+      if first == 0:
+        total_w = total_w + spec.gap
+      first = 0
+      total_w = total_w + child_size.w
+      max_h = layout_float_max(max_h, child_size.h)
+    if spec.direction == flex_direction_column():
+      if first == 0:
+        total_h = total_h + spec.gap
+      first = 0
+      total_h = total_h + child_size.h
+      max_w = layout_float_max(max_w, child_size.w)
+    idx = idx + 1
+  if spec.direction == flex_direction_row():
+    return widget_clamp_size(total_w, max_h, constraints)
+  return widget_clamp_size(max_w, total_h, constraints)
+
+def flex_layout_layout(spec: FlexLayout, constraints: LayoutConstraints, x: float, y: float) -> FlexLayoutResult
+  requires spec.child_count >= 0
+  requires spec.child_count <= layout_engine_max_children()
+  requires spec.gap >= 0.0
+  requires constraints.max_w >= constraints.min_w
+  requires constraints.max_h >= constraints.min_h
+  ensures result.bounds.x == x
+  ensures result.bounds.y == y
+  ensures result.child_count == spec.child_count
+  decreases spec.child_count
+=
+  var measured: WidgetSize = flex_layout_measure(spec, constraints)
+  var out: FlexLayoutResult
+  out.size = measured
+  out.bounds = rect_make(x, y, measured.w, measured.h)
+  out.child_count = spec.child_count
+  var cursor_x: float = x
+  var cursor_y: float = y
+  var idx: int = 0
+  var first: int = 1
+  while idx < spec.child_count
+    var child: WidgetNode = spec.children[idx]
+    var child_layout: WidgetLayoutResult = widget_layout(child, constraints, cursor_x, cursor_y)
+    out.child_layouts[idx] = child_layout
+    if spec.direction == flex_direction_row():
+      if first == 0:
+        cursor_x = cursor_x + spec.gap
+      first = 0
+      cursor_x = cursor_x + child_layout.size.w
+    if spec.direction == flex_direction_column():
+      if first == 0:
+        cursor_y = cursor_y + spec.gap
+      first = 0
+      cursor_y = cursor_y + child_layout.size.h
+    idx = idx + 1
+  return out
+
+def grid_layout_new(rows: int, cols: int, gap: float, child_count: int, c0: WidgetNode, c1: WidgetNode, c2: WidgetNode, c3: WidgetNode) -> GridLayout
+  requires rows >= 1
+  requires cols >= 1
+  requires gap >= 0.0
+  requires child_count >= 0
+  requires child_count <= layout_engine_max_children()
+  ensures result.rows == rows
+  ensures result.cols == cols
+  ensures result.child_count == child_count
+  decreases child_count
+=
+  var g: GridLayout
+  g.rows = rows
+  g.cols = cols
+  g.gap = gap
+  g.child_count = child_count
+  g.children[0] = c0
+  g.children[1] = c1
+  g.children[2] = c2
+  g.children[3] = c3
+  return g
+
+def grid_layout_measure(spec: GridLayout, constraints: LayoutConstraints) -> WidgetSize
+  requires spec.rows >= 1
+  requires spec.cols >= 1
+  requires spec.child_count >= 0
+  requires spec.child_count <= layout_engine_max_children()
+  requires spec.gap >= 0.0
+  requires constraints.max_w >= constraints.min_w
+  requires constraints.max_h >= constraints.min_h
+  ensures result.w >= 0.0
+  ensures result.h >= 0.0
+  decreases spec.rows + spec.cols
+=
+  var gap_w: float = spec.gap * layout_int_as_float(spec.cols - 1)
+  var gap_h: float = spec.gap * layout_int_as_float(spec.rows - 1)
+  var inner_w: float = constraints.max_w - gap_w
+  var inner_h: float = constraints.max_h - gap_h
+  if inner_w < 0.0:
+    inner_w = 0.0
+  if inner_h < 0.0:
+    inner_h = 0.0
+  var cell_w: float = inner_w / layout_int_as_float(spec.cols)
+  var cell_h: float = inner_h / layout_int_as_float(spec.rows)
+  var cell_constraints: LayoutConstraints = layout_constraints_loose(cell_w, cell_h)
+  var max_cell_w: float = 0.0
+  var max_cell_h: float = 0.0
+  var idx: int = 0
+  while idx < spec.child_count
+    var child_size: WidgetSize = widget_measure(spec.children[idx], cell_constraints)
+    max_cell_w = layout_float_max(max_cell_w, child_size.w)
+    max_cell_h = layout_float_max(max_cell_h, child_size.h)
+    idx = idx + 1
+  var grid_w: float = (max_cell_w * layout_int_as_float(spec.cols)) + gap_w
+  var grid_h: float = (max_cell_h * layout_int_as_float(spec.rows)) + gap_h
+  return widget_clamp_size(grid_w, grid_h, constraints)
+
+def grid_layout_layout(spec: GridLayout, constraints: LayoutConstraints, x: float, y: float) -> GridLayoutResult
+  requires spec.rows >= 1
+  requires spec.cols >= 1
+  requires spec.child_count >= 0
+  requires spec.child_count <= layout_engine_max_children()
+  requires spec.gap >= 0.0
+  requires constraints.max_w >= constraints.min_w
+  requires constraints.max_h >= constraints.min_h
+  ensures result.bounds.x == x
+  ensures result.bounds.y == y
+  ensures result.rows == spec.rows
+  ensures result.cols == spec.cols
+  ensures result.child_count == spec.child_count
+  decreases spec.child_count
+=
+  var measured: WidgetSize = grid_layout_measure(spec, constraints)
+  var gap_w: float = spec.gap * layout_int_as_float(spec.cols - 1)
+  var gap_h: float = spec.gap * layout_int_as_float(spec.rows - 1)
+  var inner_w: float = measured.w - gap_w
+  var inner_h: float = measured.h - gap_h
+  if inner_w < 0.0:
+    inner_w = 0.0
+  if inner_h < 0.0:
+    inner_h = 0.0
+  var cell_w: float = inner_w / layout_int_as_float(spec.cols)
+  var cell_h: float = inner_h / layout_int_as_float(spec.rows)
+  var out: GridLayoutResult
+  out.size = measured
+  out.bounds = rect_make(x, y, measured.w, measured.h)
+  out.rows = spec.rows
+  out.cols = spec.cols
+  out.cell_w = cell_w
+  out.cell_h = cell_h
+  out.child_count = spec.child_count
+  var idx: int = 0
+  while idx < spec.child_count
+    var row: int = idx / spec.cols
+    var col: int = idx - (row * spec.cols)
+    var cell_x: float = x + (layout_int_as_float(col) * (cell_w + spec.gap))
+    var cell_y: float = y + (layout_int_as_float(row) * (cell_h + spec.gap))
+    var cell_constraints: LayoutConstraints = layout_constraints_loose(cell_w, cell_h)
+    var child_layout: WidgetLayoutResult = widget_layout(spec.children[idx], cell_constraints, cell_x, cell_y)
+    out.child_layouts[idx] = child_layout
+    idx = idx + 1
+  return out
+
+def padding_layout_new(pad_left: float, pad_top: float, pad_right: float, pad_bottom: float, child: WidgetNode) -> PaddingLayout
+  requires pad_left >= 0.0
+  requires pad_top >= 0.0
+  requires pad_right >= 0.0
+  requires pad_bottom >= 0.0
+  ensures result.pad_left == pad_left
+  ensures result.pad_top == pad_top
+  decreases 0
+=
+  var p: PaddingLayout
+  p.pad_left = pad_left
+  p.pad_top = pad_top
+  p.pad_right = pad_right
+  p.pad_bottom = pad_bottom
+  p.child = child
+  return p
+
+def padding_layout_inner_constraints(spec: PaddingLayout, constraints: LayoutConstraints) -> LayoutConstraints
+  requires spec.pad_left >= 0.0
+  requires spec.pad_top >= 0.0
+  requires spec.pad_right >= 0.0
+  requires spec.pad_bottom >= 0.0
+  requires constraints.max_w >= constraints.min_w
+  requires constraints.max_h >= constraints.min_h
+  ensures result.max_w >= 0.0
+  ensures result.max_h >= 0.0
+  decreases 0
+=
+  var inner_w: float = constraints.max_w - spec.pad_left - spec.pad_right
+  var inner_h: float = constraints.max_h - spec.pad_top - spec.pad_bottom
+  if inner_w < 0.0:
+    inner_w = 0.0
+  if inner_h < 0.0:
+    inner_h = 0.0
+  return layout_constraints_loose(inner_w, inner_h)
+
+def padding_layout_measure(spec: PaddingLayout, constraints: LayoutConstraints) -> WidgetSize
+  requires spec.pad_left >= 0.0
+  requires spec.pad_top >= 0.0
+  requires spec.pad_right >= 0.0
+  requires spec.pad_bottom >= 0.0
+  requires constraints.max_w >= constraints.min_w
+  requires constraints.max_h >= constraints.min_h
+  ensures result.w >= 0.0
+  ensures result.h >= 0.0
+  decreases 0
+=
+  var inner: LayoutConstraints = padding_layout_inner_constraints(spec, constraints)
+  var child_size: WidgetSize = widget_measure(spec.child, inner)
+  var total_w: float = child_size.w + spec.pad_left + spec.pad_right
+  var total_h: float = child_size.h + spec.pad_top + spec.pad_bottom
+  return widget_clamp_size(total_w, total_h, constraints)
+
+def padding_layout_layout(spec: PaddingLayout, constraints: LayoutConstraints, x: float, y: float) -> PaddingLayoutResult
+  requires spec.pad_left >= 0.0
+  requires spec.pad_top >= 0.0
+  requires spec.pad_right >= 0.0
+  requires spec.pad_bottom >= 0.0
+  requires constraints.max_w >= constraints.min_w
+  requires constraints.max_h >= constraints.min_h
+  ensures result.bounds.x == x
+  ensures result.bounds.y == y
+  ensures result.inner_bounds.x == x + spec.pad_left
+  ensures result.inner_bounds.y == y + spec.pad_top
+  decreases 0
+=
+  var measured: WidgetSize = padding_layout_measure(spec, constraints)
+  var inner: LayoutConstraints = padding_layout_inner_constraints(spec, constraints)
+  var out: PaddingLayoutResult
+  out.size = measured
+  out.bounds = rect_make(x, y, measured.w, measured.h)
+  out.inner_bounds = rect_make(x + spec.pad_left, y + spec.pad_top, inner.max_w, inner.max_h)
+  out.child_layout = widget_layout(spec.child, inner, out.inner_bounds.x, out.inner_bounds.y)
+  return out
+
+def scroll_layout_new(scroll_x: float, scroll_y: float, child: WidgetNode) -> ScrollLayout
+  requires scroll_x >= 0.0
+  requires scroll_y >= 0.0
+  ensures result.scroll_x == scroll_x
+  ensures result.scroll_y == scroll_y
+  decreases 0
+=
+  var s: ScrollLayout
+  s.scroll_x = scroll_x
+  s.scroll_y = scroll_y
+  s.child = child
+  return s
+
+def scroll_layout_measure(spec: ScrollLayout, constraints: LayoutConstraints) -> WidgetSize
+  requires spec.scroll_x >= 0.0
+  requires spec.scroll_y >= 0.0
+  requires constraints.max_w >= constraints.min_w
+  requires constraints.max_h >= constraints.min_h
+  ensures result.w >= 0.0
+  ensures result.h >= 0.0
+  decreases 0
+=
+  return widget_clamp_size(constraints.max_w, constraints.max_h, constraints)
+
+def scroll_layout_layout(spec: ScrollLayout, constraints: LayoutConstraints, x: float, y: float) -> ScrollLayoutResult
+  requires spec.scroll_x >= 0.0
+  requires spec.scroll_y >= 0.0
+  requires constraints.max_w >= constraints.min_w
+  requires constraints.max_h >= constraints.min_h
+  ensures result.bounds.x == x
+  ensures result.bounds.y == y
+  ensures result.clip_bounds.x == x
+  ensures result.clip_bounds.y == y
+  ensures result.scroll_x == spec.scroll_x
+  ensures result.scroll_y == spec.scroll_y
+  decreases 0
+=
+  var measured: WidgetSize = scroll_layout_measure(spec, constraints)
+  var out: ScrollLayoutResult
+  out.size = measured
+  out.bounds = rect_make(x, y, measured.w, measured.h)
+  out.clip_bounds = rect_make(x, y, measured.w, measured.h)
+  out.scroll_x = spec.scroll_x
+  out.scroll_y = spec.scroll_y
+  var child_x: float = x - spec.scroll_x
+  var child_y: float = y - spec.scroll_y
+  var loose: LayoutConstraints = layout_constraints_loose(constraints.max_w * 2.0, constraints.max_h * 2.0)
+  out.child_layout = widget_layout(spec.child, loose, child_x, child_y)
+  return out
+
+def flex_layout_paint(spec: FlexLayout, frame: var PaintFrame, layout: FlexLayoutResult) -> unit
+  requires spec.child_count == layout.child_count
+  requires frame.cmd_count >= 0
+  ensures frame.cmd_count >= old(frame.cmd_count)
+  decreases spec.child_count
+=
+  var idx: int = 0
+  while idx < spec.child_count
+    widget_paint(spec.children[idx], frame, layout.child_layouts[idx])
+    idx = idx + 1

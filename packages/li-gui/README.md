@@ -15,6 +15,17 @@ Structural protocol in `lic/packages/li-gui/src/lib.li` — dispatch by `WidgetN
 
 Kinds: `widget_kind_label`, `widget_kind_button`, `widget_kind_panel`, `widget_kind_spacer`. Smoke: `li-tests/smoke/widget_protocol_measure_layout.li`.
 
+## Layout engines (W1)
+
+| Engine | Measure | Layout | Notes |
+|--------|---------|--------|-------|
+| Flex | `flex_layout_measure` | `flex_layout_layout` | Row/column direction, gap, up to 4 children |
+| Grid | `grid_layout_measure` | `grid_layout_layout` | Equal cells, row-major child order |
+| Padding | `padding_layout_measure` | `padding_layout_layout` | Insets around single child |
+| Scroll | `scroll_layout_measure` | `scroll_layout_layout` | Viewport clip + scroll offset |
+
+Smoke: `li-tests/smoke/layout_engines_flex_grid.li`. Paint helper: `flex_layout_paint`.
+
 ## Viewport (UX-01)
 
 - `ViewportSelection` — optional marquee (`active=0` none; `active=1` + `rect` + `depth_cue`).

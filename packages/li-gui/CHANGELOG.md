@@ -4,6 +4,7 @@
 
 ### Added
 
+- **W1 Layout engines** — `FlexLayout`, `GridLayout`, `PaddingLayout`, `ScrollLayout` with measure/layout procs; `flex_layout_paint`; smoke `layout_engines_flex_grid.li`; `li_std_gui_version` → 6.
 - **W1 Widget protocol** — `WidgetNode`, `widget_measure`, `widget_layout`, `widget_paint`, `widget_handle_event`; kinds label/button/panel/spacer; smoke `widget_protocol_measure_layout.li`; `li_std_gui_version` → 5.
 - **UX-04 palette action dispatch** — `studio_key_action_palette_exec`, `gui_studio_palette_exec_compose`, `gui_studio_palette_region_for_action`; digits 1–3 execute palette actions when open; `li_std_gui_version` → 4.
 - **UX-09 keyboard-first** — `StudioKeyBinding`, `gui_handle_studio_key`, `studio_handle_studio_key`; smoke `studio_keyboard.li`.

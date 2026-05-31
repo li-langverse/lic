@@ -1,10 +1,12 @@
 {
-  "generated_at": "2026-05-31T09:21:37Z",
+  "generated_at": "2026-05-31T11:47:35Z",
   "suite": "ph-ml-llm-forward",
   "workload_class": "stub",
-  "compile_ok": false,
-  "executed": false,
-  "validity_gate_pass": false,
+  "compile_ok": true,
+  "executed": true,
+  "validity_gate_pass": true,
   "worker": "cpu_sync",
-  "worker_count": 1
+  "worker_count": 1,
+  "run_exit_code": 0,
+  "cpu_sec": 1.143928
 }

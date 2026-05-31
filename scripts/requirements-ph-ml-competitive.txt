@@ -4,6 +4,6 @@ numpy==2.2.6
 torch==2.6.0
 jax==0.5.3
 jaxlib==0.5.3
-# Optional — gate allows executed:false when install skipped:
-# tensorflow==2.18.1
+# Optional — Wave 9 tries install; gate allows executed:false when skipped:
+tensorflow==2.18.1
 # triton==3.2.0

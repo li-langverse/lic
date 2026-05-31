@@ -10,12 +10,16 @@ def main() -> int raises IO, Alloc
     return 1
   if w.format_tag != llm_format_safetensors():
     return 2
+  if w.header_parsed != 1:
+    return 3
+  if w.tensors_loaded != 0:
+    return 4
   var g: LlmModelWeights = llm_load_weights("fixtures/model.gguf")
   if llm_model_weights_valid(g) != 1:
-    return 3
+    return 5
   if g.format_tag != llm_format_gguf():
-    return 4
+    return 6
   var bad: LlmModelWeights = llm_load_weights("fixtures/missing.bin")
   if bad.loaded != 0:
-    return 5
+    return 7
   return 0

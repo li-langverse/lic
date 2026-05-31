@@ -1,6 +1,6 @@
 # PH-ML-GPU battle plan — native ML/DL/RL on Li
 
-**Status:** Wave 8 SOTA competitive drivers (2026-05-31); Wave 6 flat matmul + process env scaffold + competitive benches (2026-05-31); Wave 5 thread-pool RL + JobGraph queue (2026-05-31); Wave 4 merged (2026-05-30); Wave 3 JobGraph landed (2026-05-30); Wave 1 spine on branch  
+**Status:** Wave 9 LLM recovery + C++/Rust competitors (2026-05-31); Wave 8 SOTA competitive drivers (2026-05-31); Wave 6 flat matmul + process env scaffold + competitive benches (2026-05-31); Wave 5 thread-pool RL + JobGraph queue (2026-05-31); Wave 4 merged (2026-05-30); Wave 3 JobGraph landed (2026-05-30); Wave 1 spine on branch  
 **Vision:** [world-studio-vision.md](world-studio-vision.md)  
 **RFC:** [specs/ml-async-parallel-rfc.md](specs/ml-async-parallel-rfc.md)  
 **Tracker:** [PH-ML-GPU-execution-tracker.md](PH-ML-GPU-execution-tracker.md)
@@ -21,3 +21,5 @@
 | **6** | 16×16 flat matmul, process env scaffold, PH-LLM bench row, competitive registry | li-ml, li-ml-rl, li-llm, li-sim | ph-ml-wave6-gates.sh |
 | **7** | PH-LLM scaffold + NumPy competitor driver | li-llm, li-ml | ph-ml-wave7-gates.sh |
 | **8** | PyTorch/JAX/TF/Triton competitor drivers + honest ratio_vs_li | li-ml, scripts | ph-ml-wave8-gates.sh |
+
+| **9** | PH-LLM Wave 7 recovery + C++/Rust matmul + matmul perf + process mode 2 | li-llm, li-ml, li-sim | ph-ml-wave9-gates.sh |

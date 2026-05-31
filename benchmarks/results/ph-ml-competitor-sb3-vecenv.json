@@ -1,0 +1,14 @@
+{
+  "competitor_id": "sb3_vecenv",
+  "suite": "ph-ml-competitor-sb3-vecenv",
+  "workload": "async_env_collect_4",
+  "executed": false,
+  "cpu_sec": null,
+  "validity_gate_pass": null,
+  "validity_ratio": null,
+  "framework_version": null,
+  "device": "cpu",
+  "workload_size": 4,
+  "note": "stable_baselines3/gymnasium not installed (Wave 9 optional)",
+  "generated_at": "2026-05-31T11:47:37Z"
+}

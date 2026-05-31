@@ -20,6 +20,15 @@ run_driver() {
 export PH_ML_NUMPY_OUT="${PH_ML_NUMPY_OUT:-$BENCHMARKS_RESULTS/ph-ml-competitor-numpy-matmul.json}"
 python3 "$ROOT/scripts/bench_ph_ml_competitor_numpy_matmul.py" || true
 
+export PH_ML_CPP_OPENMP_MATMUL_OUT="${PH_ML_CPP_OPENMP_MATMUL_OUT:-$BENCHMARKS_RESULTS/ph-ml-competitor-cpp-openmp-matmul.json}"
+python3 "$ROOT/scripts/bench_ph_ml_competitor_cpp_openmp_matmul.py" || true
+
+export PH_ML_RUST_NDARRAY_MATMUL_OUT="${PH_ML_RUST_NDARRAY_MATMUL_OUT:-$BENCHMARKS_RESULTS/ph-ml-competitor-rust-ndarray-matmul.json}"
+python3 "$ROOT/scripts/bench_ph_ml_competitor_rust_ndarray_matmul.py" || true
+
+export PH_ML_SB3_VECENV_OUT="${PH_ML_SB3_VECENV_OUT:-$BENCHMARKS_RESULTS/ph-ml-competitor-sb3-vecenv.json}"
+python3 "$ROOT/scripts/bench_ph_ml_competitor_sb3_vecenv.py" || true
+
 export PH_ML_PYTORCH_CPU_MATMUL_OUT="${PH_ML_PYTORCH_CPU_MATMUL_OUT:-$BENCHMARKS_RESULTS/ph-ml-competitor-pytorch-cpu-matmul.json}"
 python3 "$ROOT/scripts/bench_ph_ml_competitor_pytorch_cpu_matmul.py" || true
 

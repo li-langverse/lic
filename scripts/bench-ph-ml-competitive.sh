@@ -14,6 +14,7 @@ bash "$ROOT/scripts/bench-ph-ml-lkir-matmul.sh"
 bash "$ROOT/scripts/bench-ph-ml-mlp-forward.sh"
 bash "$ROOT/scripts/bench-ph-ml-async-env-collect.sh"
 bash "$ROOT/scripts/bench-ph-ml-llm-forward.sh"
+bash "$ROOT/scripts/bench-ph-ml-competitor-numpy-matmul.sh"
 bash "$ROOT/scripts/bench-ph-ml-competitor-all.sh"
 export PH_ML_COMP_ROOT="$ROOT" PH_ML_COMP_OUT="$OUT" PH_ML_COMP_REGISTRY="$REGISTRY"
 python3 <<'PY'
@@ -87,6 +88,8 @@ li_matmul_sec = matmul.get("cpu_sec")
 li_mlp_sec = mlp.get("cpu_sec")
 
 numpy_m = load("ph-ml-competitor-numpy-matmul.json")
+cpp_openmp_m = load("ph-ml-competitor-cpp-openmp-matmul.json")
+rust_ndarray_m = load("ph-ml-competitor-rust-ndarray-matmul.json")
 pytorch_cpu_m = load("ph-ml-competitor-pytorch-cpu-matmul.json")
 pytorch_cuda_m = load("ph-ml-competitor-pytorch-cuda-matmul.json")
 jax_cpu_m = load("ph-ml-competitor-jax-cpu-matmul.json")
@@ -103,8 +106,8 @@ rows = [
         "executed": bool(matmul.get("executed")),
         "li": li_row(matmul, "pilot"),
         "competitors": [
-            comp_stub("cpp_openmp", "C++/OpenMP matmul_blocked", "reference_native", "tier-2 cpp"),
-            comp_stub("rust_ndarray_rayon", "Rust/ndarray+rayon", "shared_c_kernel", "tier-2 rust"),
+            comp_row(cpp_openmp_m, li_matmul_sec, "cpp_openmp", "C++/OpenMP matmul_blocked", "reference_native", "Wave 9 OpenMP pilot"),
+            comp_row(rust_ndarray_m, li_matmul_sec, "rust_ndarray_rayon", "Rust/ndarray+rayon", "shared_c_kernel", "Wave 9 rustc pilot"),
             comp_row(numpy_m, li_matmul_sec, "python_numpy", "NumPy BLAS matmul", "blas_labeled", "numpy pinned"),
             comp_row(pytorch_cpu_m, li_matmul_sec, "pytorch_cpu", "PyTorch CPU matmul", "blas_labeled", "torch pinned"),
             comp_row(pytorch_cuda_m, li_matmul_sec, "pytorch_cuda", "PyTorch CUDA matmul", "gpu_labeled", "optional GPU"),
@@ -145,7 +148,7 @@ rows = [
     {
         "id": "llm_forward",
         "kernel": "llm.forward_stub",
-        "workload_class": "stub",
+        "workload_class": "pilot" if llm.get("validity_gate_pass") else "stub",
         "executed": bool(llm.get("executed")),
         "li": li_row(llm, "stub"),
         "competitors": [

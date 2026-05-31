@@ -15,5 +15,6 @@
     "world_studio_runnable_gate": "pass",
     "lic_check_local": "wsl_build-wsl"
   },
-  "notes": "SIM-3 EnvPool session-persistent via sim_session_env_pool_load/store + env_obs_from_session contract; li-ml-rl JobGraph async collect; li-scene MD memory ledger gate unblocks studio_vertical_demo_env; runnable gate uses dynamic WSL root."
+  "notes": "SIM-3 EnvPool session-persistent via sim_session_env_pool_load/store + env_obs_from_session contract; li-ml-rl JobGraph async collect; li-scene MD memory ledger gate unblocks studio_vertical_demo_env; runnable gate uses dynamic WSL root.",
+  "pr": "https://github.com/li-langverse/lic/pull/629"
 }

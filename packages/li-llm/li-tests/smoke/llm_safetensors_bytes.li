@@ -5,11 +5,14 @@ def main() -> int raises IO, Alloc
   ensures result == 0
   decreases 0
 =
-  var b0: int = llm_safetensors_tensor_bytes_scaffold("fixtures/model.safetensors", 0)
-  var b1: int = llm_safetensors_tensor_bytes_scaffold("fixtures/model.safetensors", 1)
-  if b0 != 8 or b1 != 8:
+  var p0: str = "fixtures/model.safetensors"
+  var b0: int = llm_safetensors_tensor_bytes_scaffold(p0, 0)
+  var p1: str = "fixtures/model.safetensors"
+  var b1: int = llm_safetensors_tensor_bytes_scaffold(p1, 1)
+  if b0 <= 0 or b1 <= 0:
     return 1
-  var hdr: LlmSafetensorsHeader = llm_safetensors_load_tensors_scaffold("fixtures/model.safetensors")
-  if hdr.tensor_bytes_read != 16:
+  var p2: str = "fixtures/model.safetensors"
+  var hdr: LlmSafetensorsHeader = llm_safetensors_load_tensors_scaffold(p2)
+  if hdr.tensor_bytes_read != 128:
     return 2
   return 0

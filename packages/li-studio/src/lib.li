@@ -6157,7 +6157,6 @@ def studio_agent_context_visible(agent_context_label: int) -> int
 def studio_agent_context_for_shell(has_selection: int, task_state: int) -> int
   requires has_selection >= 0
   requires has_selection <= 1
-  requires scene_entity_count >= 0
   requires task_state >= studio_agent_task_idle()
   requires task_state <= studio_agent_task_done()
   ensures result >= studio_agent_context_none()
@@ -6934,7 +6933,7 @@ def studio_paint_agent(frame: var PaintFrame, agent: StudioAgentChromeCompose) -
   decreases agent.task_state
 =
   frame.cmd_count = frame.cmd_count + studio_paint_agent_cmds(agent.task_state, agent.agent_context_label, agent.invoke_input_visible, agent.tool_trace_visible)
-  frame.last_kind = paint_op_fill_round()
+  frame.last_kind = paint_op_fill_round_rect()
   frame.last_rect = agent.rect
   frame.last_color = studio_color_bg_elevated()
   frame.last_kind = paint_op_fill_rect()
@@ -7466,7 +7465,7 @@ def studio_macos_wgpu_surface_smoke() -> int raises IO
   ensures result <= 8
   decreases 0
 =
-  if lig_present_host_present_active() != 1:
+  if lig_present_host_active() != 1:
     return 0
   if lig_present_wgpu_swapchain_active() != 1:
     return 0
@@ -7504,7 +7503,7 @@ def studio_linux_appimage_smoke() -> int raises IO
   ensures result <= 4
   decreases 0
 =
-  if lig_present_host_present_active() != 1:
+  if lig_present_host_active() != 1:
     return 0
   if studio_present_loop_raster_version() != 1:
     return 1

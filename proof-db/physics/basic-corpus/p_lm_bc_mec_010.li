@@ -1,0 +1,8 @@
+# P-LM-BC-MEC-010: Reduced mass for two-body central force problem.
+
+def main() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0

@@ -1,10 +1,11 @@
 """Shared PH-ML competitive workloads — sizes Li can run today (4×4, 16×16 matmul; 2-2-1 MLP)."""
 from __future__ import annotations
 
+import os
 import time
 from typing import Any, Callable
 
-DEFAULT_MATMUL_N = 4
+DEFAULT_MATMUL_N = int(os.environ.get("PH_ML_MATMUL_N", "4"))
 MATMUL_SIZES = (4, 16)
 DEFAULT_RUNS = 50
 DEFAULT_WARMUP = 3

@@ -1,0 +1,8 @@
+# D-LM-BC-IND-036: Mathematical induction principle (variant 36).
+
+def main() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0

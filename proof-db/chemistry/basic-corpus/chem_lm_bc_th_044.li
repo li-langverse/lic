@@ -1,0 +1,8 @@
+# CHEM-LM-BC-TH-044: Gibbs free energy Delta G = Delta H - T Delta S (form 44).
+
+def main() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0

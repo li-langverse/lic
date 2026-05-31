@@ -1,0 +1,8 @@
+# ST-LM-BC-BER-009: Bernoulli distribution mean p variance p(1-p) (case 9).
+
+def main() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0

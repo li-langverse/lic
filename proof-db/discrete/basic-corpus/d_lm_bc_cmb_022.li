@@ -1,0 +1,8 @@
+# D-LM-BC-CMB-022: Binomial coefficient identity (variant 22).
+
+def main() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0

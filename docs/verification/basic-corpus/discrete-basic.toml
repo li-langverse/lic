@@ -1,0 +1,405 @@
+# Phase-8 basic corpus plan — field "discrete"
+version = 1
+field = "discrete"
+target_count = 50
+last_verified_lic_commit = "a9441d8e"
+
+[[planned]]
+id = "D-LM-BC-IND-001"
+kind = "lemma"
+tranche = 1
+proof_status = "open"
+domain = "induction"
+statement = "Mathematical induction principle (variant 1)."
+
+[[planned]]
+id = "D-LM-BC-CMB-002"
+kind = "lemma"
+tranche = 1
+proof_status = "open"
+domain = "combinatorics"
+statement = "Binomial coefficient identity (variant 2)."
+
+[[planned]]
+id = "D-LM-BC-NT-003"
+kind = "lemma"
+tranche = 1
+proof_status = "open"
+domain = "number-theory"
+statement = "Divisibility / gcd property (variant 3)."
+
+[[planned]]
+id = "D-LM-BC-REC-004"
+kind = "lemma"
+tranche = 1
+proof_status = "open"
+domain = "recurrence"
+statement = "Linear recurrence solution stub (variant 4)."
+
+[[planned]]
+id = "D-AX-BC-LOG-005"
+kind = "axiom"
+tranche = 1
+proof_status = "axiomatic"
+domain = "logic"
+statement = "Propositional tautology schema (variant 5)."
+
+[[planned]]
+id = "D-LM-BC-IND-006"
+kind = "lemma"
+tranche = 1
+proof_status = "open"
+domain = "induction"
+statement = "Mathematical induction principle (variant 6)."
+
+[[planned]]
+id = "D-LM-BC-CMB-007"
+kind = "lemma"
+tranche = 1
+proof_status = "open"
+domain = "combinatorics"
+statement = "Binomial coefficient identity (variant 7)."
+
+[[planned]]
+id = "D-LM-BC-NT-008"
+kind = "lemma"
+tranche = 1
+proof_status = "open"
+domain = "number-theory"
+statement = "Divisibility / gcd property (variant 8)."
+
+[[planned]]
+id = "D-LM-BC-REC-009"
+kind = "lemma"
+tranche = 1
+proof_status = "open"
+domain = "recurrence"
+statement = "Linear recurrence solution stub (variant 9)."
+
+[[planned]]
+id = "D-AX-BC-LOG-010"
+kind = "axiom"
+tranche = 1
+proof_status = "axiomatic"
+domain = "logic"
+statement = "Propositional tautology schema (variant 10)."
+
+[[planned]]
+id = "D-LM-BC-IND-011"
+kind = "lemma"
+tranche = 2
+proof_status = "open"
+domain = "induction"
+statement = "Mathematical induction principle (variant 11)."
+
+[[planned]]
+id = "D-LM-BC-CMB-012"
+kind = "lemma"
+tranche = 2
+proof_status = "open"
+domain = "combinatorics"
+statement = "Binomial coefficient identity (variant 12)."
+
+[[planned]]
+id = "D-LM-BC-NT-013"
+kind = "lemma"
+tranche = 2
+proof_status = "open"
+domain = "number-theory"
+statement = "Divisibility / gcd property (variant 13)."
+
+[[planned]]
+id = "D-LM-BC-REC-014"
+kind = "lemma"
+tranche = 2
+proof_status = "open"
+domain = "recurrence"
+statement = "Linear recurrence solution stub (variant 14)."
+
+[[planned]]
+id = "D-AX-BC-LOG-015"
+kind = "axiom"
+tranche = 2
+proof_status = "axiomatic"
+domain = "logic"
+statement = "Propositional tautology schema (variant 15)."
+
+[[planned]]
+id = "D-LM-BC-IND-016"
+kind = "lemma"
+tranche = 2
+proof_status = "open"
+domain = "induction"
+statement = "Mathematical induction principle (variant 16)."
+
+[[planned]]
+id = "D-LM-BC-CMB-017"
+kind = "lemma"
+tranche = 2
+proof_status = "open"
+domain = "combinatorics"
+statement = "Binomial coefficient identity (variant 17)."
+
+[[planned]]
+id = "D-LM-BC-NT-018"
+kind = "lemma"
+tranche = 2
+proof_status = "open"
+domain = "number-theory"
+statement = "Divisibility / gcd property (variant 18)."
+
+[[planned]]
+id = "D-LM-BC-REC-019"
+kind = "lemma"
+tranche = 2
+proof_status = "open"
+domain = "recurrence"
+statement = "Linear recurrence solution stub (variant 19)."
+
+[[planned]]
+id = "D-AX-BC-LOG-020"
+kind = "axiom"
+tranche = 2
+proof_status = "axiomatic"
+domain = "logic"
+statement = "Propositional tautology schema (variant 20)."
+
+[[planned]]
+id = "D-LM-BC-IND-021"
+kind = "lemma"
+tranche = 3
+proof_status = "open"
+domain = "induction"
+statement = "Mathematical induction principle (variant 21)."
+
+[[planned]]
+id = "D-LM-BC-CMB-022"
+kind = "lemma"
+tranche = 3
+proof_status = "open"
+domain = "combinatorics"
+statement = "Binomial coefficient identity (variant 22)."
+
+[[planned]]
+id = "D-LM-BC-NT-023"
+kind = "lemma"
+tranche = 3
+proof_status = "open"
+domain = "number-theory"
+statement = "Divisibility / gcd property (variant 23)."
+
+[[planned]]
+id = "D-LM-BC-REC-024"
+kind = "lemma"
+tranche = 3
+proof_status = "open"
+domain = "recurrence"
+statement = "Linear recurrence solution stub (variant 24)."
+
+[[planned]]
+id = "D-AX-BC-LOG-025"
+kind = "axiom"
+tranche = 3
+proof_status = "axiomatic"
+domain = "logic"
+statement = "Propositional tautology schema (variant 25)."
+
+[[planned]]
+id = "D-LM-BC-IND-026"
+kind = "lemma"
+tranche = 3
+proof_status = "open"
+domain = "induction"
+statement = "Mathematical induction principle (variant 26)."
+
+[[planned]]
+id = "D-LM-BC-CMB-027"
+kind = "lemma"
+tranche = 3
+proof_status = "open"
+domain = "combinatorics"
+statement = "Binomial coefficient identity (variant 27)."
+
+[[planned]]
+id = "D-LM-BC-NT-028"
+kind = "lemma"
+tranche = 3
+proof_status = "open"
+domain = "number-theory"
+statement = "Divisibility / gcd property (variant 28)."
+
+[[planned]]
+id = "D-LM-BC-REC-029"
+kind = "lemma"
+tranche = 3
+proof_status = "open"
+domain = "recurrence"
+statement = "Linear recurrence solution stub (variant 29)."
+
+[[planned]]
+id = "D-AX-BC-LOG-030"
+kind = "axiom"
+tranche = 3
+proof_status = "axiomatic"
+domain = "logic"
+statement = "Propositional tautology schema (variant 30)."
+
+[[planned]]
+id = "D-LM-BC-IND-031"
+kind = "lemma"
+tranche = 3
+proof_status = "open"
+domain = "induction"
+statement = "Mathematical induction principle (variant 31)."
+
+[[planned]]
+id = "D-LM-BC-CMB-032"
+kind = "lemma"
+tranche = 3
+proof_status = "open"
+domain = "combinatorics"
+statement = "Binomial coefficient identity (variant 32)."
+
+[[planned]]
+id = "D-LM-BC-NT-033"
+kind = "lemma"
+tranche = 3
+proof_status = "open"
+domain = "number-theory"
+statement = "Divisibility / gcd property (variant 33)."
+
+[[planned]]
+id = "D-LM-BC-REC-034"
+kind = "lemma"
+tranche = 3
+proof_status = "open"
+domain = "recurrence"
+statement = "Linear recurrence solution stub (variant 34)."
+
+[[planned]]
+id = "D-AX-BC-LOG-035"
+kind = "axiom"
+tranche = 3
+proof_status = "axiomatic"
+domain = "logic"
+statement = "Propositional tautology schema (variant 35)."
+
+[[planned]]
+id = "D-LM-BC-IND-036"
+kind = "lemma"
+tranche = 3
+proof_status = "open"
+domain = "induction"
+statement = "Mathematical induction principle (variant 36)."
+
+[[planned]]
+id = "D-LM-BC-CMB-037"
+kind = "lemma"
+tranche = 3
+proof_status = "open"
+domain = "combinatorics"
+statement = "Binomial coefficient identity (variant 37)."
+
+[[planned]]
+id = "D-LM-BC-NT-038"
+kind = "lemma"
+tranche = 3
+proof_status = "open"
+domain = "number-theory"
+statement = "Divisibility / gcd property (variant 38)."
+
+[[planned]]
+id = "D-LM-BC-REC-039"
+kind = "lemma"
+tranche = 3
+proof_status = "open"
+domain = "recurrence"
+statement = "Linear recurrence solution stub (variant 39)."
+
+[[planned]]
+id = "D-AX-BC-LOG-040"
+kind = "axiom"
+tranche = 3
+proof_status = "axiomatic"
+domain = "logic"
+statement = "Propositional tautology schema (variant 40)."
+
+[[planned]]
+id = "D-LM-BC-IND-041"
+kind = "lemma"
+tranche = 3
+proof_status = "open"
+domain = "induction"
+statement = "Mathematical induction principle (variant 41)."
+
+[[planned]]
+id = "D-LM-BC-CMB-042"
+kind = "lemma"
+tranche = 3
+proof_status = "open"
+domain = "combinatorics"
+statement = "Binomial coefficient identity (variant 42)."
+
+[[planned]]
+id = "D-LM-BC-NT-043"
+kind = "lemma"
+tranche = 3
+proof_status = "open"
+domain = "number-theory"
+statement = "Divisibility / gcd property (variant 43)."
+
+[[planned]]
+id = "D-LM-BC-REC-044"
+kind = "lemma"
+tranche = 3
+proof_status = "open"
+domain = "recurrence"
+statement = "Linear recurrence solution stub (variant 44)."
+
+[[planned]]
+id = "D-AX-BC-LOG-045"
+kind = "axiom"
+tranche = 3
+proof_status = "axiomatic"
+domain = "logic"
+statement = "Propositional tautology schema (variant 45)."
+
+[[planned]]
+id = "D-LM-BC-IND-046"
+kind = "lemma"
+tranche = 3
+proof_status = "open"
+domain = "induction"
+statement = "Mathematical induction principle (variant 46)."
+
+[[planned]]
+id = "D-LM-BC-CMB-047"
+kind = "lemma"
+tranche = 3
+proof_status = "open"
+domain = "combinatorics"
+statement = "Binomial coefficient identity (variant 47)."
+
+[[planned]]
+id = "D-LM-BC-NT-048"
+kind = "lemma"
+tranche = 3
+proof_status = "open"
+domain = "number-theory"
+statement = "Divisibility / gcd property (variant 48)."
+
+[[planned]]
+id = "D-LM-BC-REC-049"
+kind = "lemma"
+tranche = 3
+proof_status = "open"
+domain = "recurrence"
+statement = "Linear recurrence solution stub (variant 49)."
+
+[[planned]]
+id = "D-AX-BC-LOG-050"
+kind = "axiom"
+tranche = 3
+proof_status = "axiomatic"
+domain = "logic"
+statement = "Propositional tautology schema (variant 50)."

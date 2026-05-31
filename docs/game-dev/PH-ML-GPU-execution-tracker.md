@@ -1,3 +1,28 @@
+
+| WP-LIG-01 | LIG_EMIT_* vendor emit progress | 12 | partial | lig-emit-vendor-stub.sh |
+| WP-LLM-06 | GPU matmul via li_rt_lig_matmul_ready | 12 | partial | llm_safetensors_mmap.li |
+| WP-LLM-08 | li-httpd trusted route scaffold | 12 | partial | llm_trusted_httpd_route.li |
+| WP-LLM-09 | safetensors 64B/tensor mmap chunk | 12 | partial | llm_safetensors_mmap.li |
+| WP-ML-05 | @gpu LKIR launch pipeline | 12 | partial | ml_gpu_lkir_launch.li |
+| WP-ML-19 | 16×16 blocked CPU matmul | 12 | done | ml_matmul_cpu_blocked_16 |
+| WP-RL-07 | fork/spawn IPC bench | 12 | partial | bench_ph_ml_rl_env_ipc_fork.py |
+
+**Wave 12:** final deferred GPU/LLM/RL/competitive items
+
+**Wave 10:**
+**Wave 11:** Wave 10 carryover sprint (WP-LLM-06..08, WP-RL-07, competitive)
+
+| WP | Item | Wave | Status | Artifact |
+| WP-LLM-06 | GPU/LKIR matmul progress | 11 | done | ml_gpu_matmul_stub.li |
+| WP-LLM-07 | lillm-import HF/offline | 11 | partial | lillm-import.sh |
+| WP-LLM-08 | Ollama trusted backend scaffold | 11 | partial | llm_trusted_backend_scaffold.li |
+| WP-LLM-09 | safetensors byte tensor scaffold | 11 | done | llm_safetensors_bytes.li |
+| WP-ML-19 | 16×16 logical LKIR matmul row | 11 | partial | ml_matmul_16_lkir.li |
+| WP-ML-20 | Rust MLP competitor | 11 | partial | bench_ph_ml_competitor_rust_mlp.py |
+| WP-RL-07 | SB3 SubprocVecEnv + fork IPC pilot | 11 | partial | bench_ph_ml_rl_env_ipc_fork.py |
+
+**Wave 10:** PH-LLM depth + RL IPC + competitive MLP/SB3 (WP-LLM-01..07, WP-RL-06..07)
+
 **Wave 7:** PH-LLM tokenizer/safetensors/transformer + NumPy competitor (WP-LLM-01..03, WP-ML-12)
 
 **Wave 9:** PH-LLM recovery (WP-LLM-01..05) + C++/Rust competitors + matmul perf
@@ -57,3 +82,16 @@
 | WP-LLM-03 | transformer matmul graph scaffold | 7 | partial | llm_forward.li + ml_matmul_f32 |
 | WP-ML-12 | NumPy matmul competitive driver | 7 | done | bench-ph-ml-competitor-numpy-matmul.sh |
 | WP-RL-06 | process worker defer label | 7 | deferred | sim_rl_env_worker_process_mode_label |
+
+| WP-LLM-01 | BPE merge pass | 10 | partial | llm_tokenize_bpe.li |
+| WP-LLM-02 | safetensors tensor scaffold | 10 | partial | llm_safetensors_tensors.li |
+| WP-LLM-03 | transformer matmul contrib | 10 | partial | llm_forward_matmul.li |
+| WP-LLM-04 | KV-cache greedy decode | 10 | partial | llm_kv_cache_decode.li |
+| WP-LLM-05 | tier-3 LLM bench row | 10 | done | ph-ml-llm-forward.json |
+| WP-LLM-06 | GPU matmul hint (honest stub) | 10 | partial | llm_forward_gpu_matmul_hint |
+| WP-LLM-07 | HF import CLI + doc | 10 | partial | lillm-import.sh |
+| WP-RL-06 | IPC multiprocess scaffold | 10 | partial | env_pool_ipc_scaffold.li |
+| WP-RL-07 | SB3 SubprocVecEnv driver | 10 | partial | bench_ph_ml_competitor_sb3_vecenv.py |
+| WP-ML-16 | NumPy MLP competitor | 10 | done | bench_ph_ml_competitor_numpy_mlp.py |
+| WP-ML-17 | C++ MLP competitor | 10 | done | bench_ph_ml_competitor_cpp_openmp_mlp.py |
+| WP-ML-18 | ml_matmul perf v6 lanes=8 max_dim=32 | 10 | done | ml_matmul_general.li |

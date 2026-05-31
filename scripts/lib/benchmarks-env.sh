@@ -40,3 +40,7 @@ export BENCHMARKS_RESULTS="${BENCHMARKS_RESULTS:-$BENCHMARKS_ROOT/results}"
 export BENCHMARKS_WORKLOADS="${BENCHMARKS_WORKLOADS:-$BENCHMARKS_ROOT/benchmarks/workloads}"
 export BENCHMARKS_COMPETITIVE="${BENCHMARKS_COMPETITIVE:-$BENCHMARKS_WORKLOADS/competitive}"
 mkdir -p "$BENCHMARKS_RESULTS"
+
+# rng_inject → httpd_bad_rng lives under lic/scripts (not benchmarks/harness).
+_benchmarks_lic_root="$(_benchmarks_env_lic_root)"
+export TIER5_PYTHONPATH="${TIER5_PYTHONPATH:-$HARNESS:${_benchmarks_lic_root}/scripts${PYTHONPATH:+:$PYTHONPATH}}"

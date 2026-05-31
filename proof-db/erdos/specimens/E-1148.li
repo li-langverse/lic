@@ -1,0 +1,12 @@
+# Catalog: E-1148
+# Statement: Can every large integer $n$ be written as $n=x^2+y^2-z^2$ with $\max(x^2,y^2,z^2)\leq n$?
+# formalization_status: li_open
+# discharge: pending — open formalization target (Phase 4)
+# erdos_status (literature): proved
+
+def formal_target_e_1148() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0

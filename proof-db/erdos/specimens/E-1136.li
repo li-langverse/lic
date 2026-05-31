@@ -1,0 +1,12 @@
+# Catalog: E-1136
+# Statement: Does there exist $A\subset \mathbb{N}$ with lower density $>1/3$ such that $a+b\neq 2^k$ for any $a,b\in A$ and $k\geq 0$?
+# formalization_status: li_open
+# discharge: pending — open formalization target (Phase 4)
+# erdos_status (literature): proved
+
+def formal_target_e_1136() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0

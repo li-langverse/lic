@@ -1,0 +1,12 @@
+# Catalog: E-904
+# Statement: Let $r\geq 2$ and let $t_r(n)$ be the Turán number (the maximal number of edges in a graph on $n$ vertices with no $K_{r+1}$). If $G$ is a graph with $n$ vertices and $m\geq t_r(n)$ edges there exists a clique on $r$ vertices, say $x_1,\ldo
+# formalization_status: li_open
+# discharge: pending — open formalization target (Phase 4)
+# erdos_status (literature): proved
+
+def formal_target_e_904() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0

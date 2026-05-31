@@ -1,0 +1,12 @@
+# Catalog: E-785
+# Statement: Let $A,B\subseteq \mathbb{N}$ be infinite sets such that $A+B$ contains all large integers. Let $A(x)=\lvert A\cap [1,x]\rvert$ and similarly for $B(x)$. Is it true that if $A(x)B(x)\sim x$ then\[A(x)B(x)-x\to \infty\]as $x\to \infty$?
+# formalization_status: li_open
+# discharge: pending — open formalization target (Phase 4)
+# erdos_status (literature): proved
+
+def formal_target_e_785() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0

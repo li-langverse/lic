@@ -1,0 +1,12 @@
+# Catalog: E-543
+# Statement: Define $f(N)$ be the minimal $k$ such that the following holds: if $G$ is an abelian group of size $N$ and $A\subseteq G$ is a random set of size $k$ then, with probability $\geq 1/2$, all elements of $G$ can be written as $\sum_{x\in S}x$ 
+# formalization_status: li_open
+# discharge: pending — open formalization target (Phase 4)
+# erdos_status (literature): open
+
+def formal_target_e_543() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0

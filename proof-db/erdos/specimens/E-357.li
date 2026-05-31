@@ -1,0 +1,12 @@
+# Catalog: E-357
+# Statement: Let $1\leq a_1<\cdots <a_k\leq n$ be integers such that all sums of the shape $\sum_{u\leq i\leq v}a_i$ are distinct. Let $f(n)$ be the maximal such $k$. How does $f(n)$ grow? Is $f(n)=o(n)$?
+# formalization_status: li_open
+# discharge: pending — open formalization target (Phase 4)
+# erdos_status (literature): open
+
+def formal_target_e_357() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0

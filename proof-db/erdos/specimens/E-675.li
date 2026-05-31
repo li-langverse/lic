@@ -1,0 +1,12 @@
+# Catalog: E-675
+# Statement: We say that $A\subset \mathbb{N}$ has the translation property if, for every $n$, there exists some integer $t_n\geq 1$ such that, for all $1\leq a\leq n$,\[a\in A\quad\textrm{ if and only if }\quad a+t_n\in A.\] Does the set of the sums of
+# formalization_status: li_open
+# discharge: pending — open formalization target (Phase 4)
+# erdos_status (literature): open
+
+def formal_target_e_675() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0

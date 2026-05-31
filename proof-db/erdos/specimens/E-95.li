@@ -1,0 +1,12 @@
+# Catalog: E-95
+# Statement: Does every covering system of the integers have a modulus divisible by 6?
+# formalization_status: li_open
+# discharge: pending — open formalization target (Phase 4)
+# erdos_status (literature): open
+
+def formal_target_e_95() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0

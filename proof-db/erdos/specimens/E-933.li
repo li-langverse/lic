@@ -1,0 +1,12 @@
+# Catalog: E-933
+# Statement: If $n(n+1)=2^k3^lm$, where $(m,6)=1$, then is it true that\[\limsup_{n\to \infty} \frac{2^k3^l}{n\log n}=\infty?\]
+# formalization_status: li_open
+# discharge: pending — open formalization target (Phase 4)
+# erdos_status (literature): open
+
+def formal_target_e_933() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0

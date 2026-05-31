@@ -1,0 +1,12 @@
+# Catalog: E-779
+# Statement: Let $n> 1$ and $p_1<\cdots<p_n$ denote the first $n$ primes. Let $P=\prod_{1\leq i\leq n}p_i$. Does there always exist some prime $p$ with $p_n<p<P$ such that $P+p$ is prime?
+# formalization_status: li_open
+# discharge: pending — open formalization target (Phase 4)
+# erdos_status (literature): open
+
+def formal_target_e_779() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0

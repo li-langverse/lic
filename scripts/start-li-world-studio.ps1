@@ -1,17 +1,30 @@
-# Launch Li World Studio (li-studio-demo) on Windows.
-# Resolves lic from build-wsl (WSL) or native build/compiler; sets demo env vars.
+﻿# Launch Li World Studio (li-studio-demo) on Windows.
 param(
     [ValidateSet("game", "sim_rl", "sim_scientific", "sim_robotics", "sim_automotive", "sim_additive", "sim_drug_design")]
     [string]$Profile = "game",
     [int]$Frames = 3,
     [switch]$HostPresent,
     [switch]$CheckOnly,
-    [switch]$Build
+    [switch]$Build,
+    [switch]$SkipPresentHostBuild
 )
 
 $ErrorActionPreference = "Stop"
-$LiRoot = Split-Path $PSScriptRoot -Parent
-$LicRoot = Join-Path $LiRoot "lic"
+$LicRoot = Split-Path $PSScriptRoot -Parent
+
+function Convert-ToWslPath([string]$WinPath) {
+    $p = (Resolve-Path -LiteralPath $WinPath).Path -replace '\\', '/'
+    if ($p -match '^([A-Za-z]):(.*)$') {
+        return "/mnt/$($Matches[1].ToLower())$($Matches[2])"
+    }
+    return $p
+}
+
+function Test-ElfBinary([string]$Path) {
+    if (-not (Test-Path -LiteralPath $Path)) { return $false }
+    $b = [System.IO.File]::ReadAllBytes($Path)
+    return $b.Length -ge 4 -and $b[0] -eq 0x7F -and $b[1] -eq 0x45 -and $b[2] -eq 0x4C -and $b[3] -eq 0x46
+}
 
 function Resolve-Lic {
     $candidates = @(
@@ -42,12 +55,51 @@ function Resolve-Demo {
     return $null
 }
 
+function Resolve-PresentHostBin([bool]$PreferWindows) {
+    $native = Join-Path $LicRoot "deploy\studio-demo\native"
+    $win = Join-Path $native "studio_shell_present_host.exe"
+    $linux = Join-Path $native "studio_shell_present_host"
+    if ($PreferWindows -and (Test-Path -LiteralPath $win)) { return $win }
+    if (Test-Path -LiteralPath $linux) { return Convert-ToWslPath $linux }
+    if (Test-Path -LiteralPath $win) { return $win }
+    return $null
+}
+
+function Ensure-PresentHost {
+    $demoPath = Resolve-Demo
+    $preferWin = $demoPath -and -not (Test-ElfBinary $demoPath)
+    $bin = Resolve-PresentHostBin -PreferWindows:$preferWin
+    if ($bin) { return $bin }
+    $build = Join-Path $LicRoot "scripts\build-studio-shell-present-host.ps1"
+    if (-not (Test-Path -LiteralPath $build)) {
+        throw "Present host missing and build script not found: $build"
+    }
+    Write-Host "Building SDL present host (first-time)..." -ForegroundColor Yellow
+    & $build
+    $bin = Resolve-PresentHostBin -PreferWindows:$preferWin
+    if (-not $bin) {
+        throw @"
+SDL present host could not be built.
+  WSL:  wsl sudo apt-get install -y libsdl2-dev
+        lic\scripts\build-studio-shell-present-host.ps1
+  Native Windows (optional): MSYS2 + pacman -S mingw-w64-x86_64-SDL2
+"@
+    }
+    return $bin
+}
+
 $lic = Resolve-Lic
 $demo = Resolve-Demo
 
 if ($CheckOnly) {
     Write-Host "lic:  $(if ($lic) { $lic } else { '(missing)' })"
     Write-Host "demo: $(if ($demo) { $demo } else { '(missing)' })"
+    if ($HostPresent) {
+        $preferWin = $demo -and -not (Test-ElfBinary $demo)
+        $ph = Resolve-PresentHostBin -PreferWindows:$preferWin
+        Write-Host "present_host: $(if ($ph) { $ph } else { '(missing)' })"
+        if (-not $ph) { exit 1 }
+    }
     if (-not $lic -or -not $demo) { exit 1 }
     exit 0
 }
@@ -76,14 +128,28 @@ if (-not $demo) {
 
 $env:STUDIO_DEMO_PROFILE = $Profile
 $env:STUDIO_DEMO_FRAMES = "$Frames"
+
 if ($HostPresent) {
     $env:LIG_HOST_PRESENT = "1"
+    if (-not $SkipPresentHostBuild) {
+        $env:STUDIO_SHELL_PRESENT_HOST_BIN = Ensure-PresentHost
+    } else {
+        $preferWin = -not (Test-ElfBinary $demo)
+        $env:STUDIO_SHELL_PRESENT_HOST_BIN = Resolve-PresentHostBin -PreferWindows:$preferWin
+        if (-not $env:STUDIO_SHELL_PRESENT_HOST_BIN) {
+            throw "STUDIO_SHELL_PRESENT_HOST_BIN not set; run build-studio-shell-present-host.ps1"
+        }
+    }
 } else {
     Remove-Item Env:LIG_HOST_PRESENT -ErrorAction SilentlyContinue
+    Remove-Item Env:STUDIO_SHELL_PRESENT_HOST_BIN -ErrorAction SilentlyContinue
 }
 
 Write-Host "Li World Studio" -ForegroundColor Cyan
 Write-Host "  profile=$Profile frames=$Frames host_present=$($HostPresent.IsPresent)"
 Write-Host "  demo=$demo"
+if ($HostPresent) { Write-Host "  present_host=$($env:STUDIO_SHELL_PRESENT_HOST_BIN)" }
+
 & $demo
 exit $LASTEXITCODE
+

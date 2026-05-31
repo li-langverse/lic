@@ -1,0 +1,12 @@
+# Catalog: E-1096
+# Statement: Let $1<q<1+\epsilon$ and consider the set of numbers of the shape $\sum_{i\in S}q^i$ (for all finite $S$), ordered by size as $0=x_1<x_2<\cdots$. Is it true that, provided $\epsilon>0$ is sufficiently small, $x_{k+1}-x_k \to 0$?
+# formalization_status: li_open
+# discharge: pending — open formalization target (Phase 4)
+# erdos_status (literature): proved
+
+def formal_target_e_1096() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0

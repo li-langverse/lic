@@ -1,0 +1,12 @@
+# Catalog: E-123
+# Statement: Let $a,b,c\geq 1$ be three integers which are pairwise coprime. Is every large integer the sum of distinct integers of the form $a^kb^lc^m$ ($k,l,m\geq 0$), none of which divide any other?
+# formalization_status: li_open
+# discharge: pending — open formalization target (Phase 4)
+# erdos_status (literature): open
+
+def formal_target_e_123() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0

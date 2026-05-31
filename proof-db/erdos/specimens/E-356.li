@@ -1,0 +1,12 @@
+# Catalog: E-356
+# Statement: Is there some $c>0$ such that, for all sufficiently large $n$, there exist integers $a_1<\cdots<a_k\leq n$ such that there are at least $cn^2$ distinct integers of the form $\sum_{u\leq i\leq v}a_i$?
+# formalization_status: li_open
+# discharge: pending — open formalization target (Phase 4)
+# erdos_status (literature): proved
+
+def formal_target_e_356() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0

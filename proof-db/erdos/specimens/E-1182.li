@@ -1,0 +1,12 @@
+# Catalog: E-1182
+# Statement: Let $f(n)$ be maximal such that there is a connected graph $G$ with $n$ vertices and $f(n)$ edges such that\[R(K_3,G)= 2n-1.\]Let $F(n)$ be maximal such that every connected graph $G$ with $n$ vertices and $\leq F(n)$ edges has\[R(K_3,G)= 2
+# formalization_status: li_open
+# discharge: pending — open formalization target (Phase 4)
+# erdos_status (literature): open
+
+def formal_target_e_1182() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0

@@ -1,0 +1,12 @@
+# Catalog: E-1090
+# Statement: Let $k\geq 3$. Does there exist a finite set $A\subset \mathbb{R}^2$ such that, in any $2$-colouring of $A$, there exists a line which contains at least $k$ points from $A$, and all the points of $A$ on the line have the same colour?
+# formalization_status: li_open
+# discharge: pending — open formalization target (Phase 4)
+# erdos_status (literature): proved
+
+def formal_target_e_1090() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0

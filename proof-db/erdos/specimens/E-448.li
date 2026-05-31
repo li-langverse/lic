@@ -1,0 +1,12 @@
+# Catalog: E-448
+# Statement: Let $\tau(n)$ count the divisors of $n$ and $\tau^+(n)$ count the number of $k$ such that $n$ has a divisor in $[2^k,2^{k+1})$. Is it true that, for all $\epsilon>0$,\[\tau^+(n) < \epsilon \tau(n)\]for almost all $n$?
+# formalization_status: li_open
+# discharge: pending — open formalization target (Phase 4)
+# erdos_status (literature): open
+
+def formal_target_e_448() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0

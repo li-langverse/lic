@@ -1,0 +1,12 @@
+# Catalog: E-1003
+# Statement: Are there infinitely many solutions to $\phi(n)=\phi(n+1)$, where $\phi$ is the Euler totient function?
+# formalization_status: li_open
+# discharge: pending — open formalization target (Phase 4)
+# erdos_status (literature): open
+
+def formal_target_e_1003() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0

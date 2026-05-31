@@ -1,0 +1,12 @@
+# Catalog: E-995
+# Statement: Let $n_1<n_2<\cdots$ be a lacunary sequence of integers and $f\in L^2([0,1])$. Estimate the growth of, for almost all $\alpha$,\[\sum_{1\leq k\leq N}f(\{ \alpha n_k\}).\]For example, is it true that, for almost all $\alpha$,\[\sum_{1\leq k\
+# formalization_status: li_open
+# discharge: pending — open formalization target (Phase 4)
+# erdos_status (literature): open
+
+def formal_target_e_995() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0

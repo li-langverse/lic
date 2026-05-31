@@ -1,0 +1,12 @@
+# Catalog: E-529
+# Statement: Let $d_k(n)$ be the expected distance from the origin after taking $n$ random steps from the origin in $\mathbb{Z}^k$ (conditional on no self intersections) - that is, a self-avoiding walk . Is it true that\[\lim_{n\to \infty}\frac{d_2(n)}{
+# formalization_status: li_open
+# discharge: pending — open formalization target (Phase 4)
+# erdos_status (literature): open
+
+def formal_target_e_529() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0

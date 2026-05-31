@@ -1,0 +1,12 @@
+# Catalog: E-1110
+# Statement: Let $p>q\geq 2$ be two coprime integers. We call $n$ representable if it is the sum of integers of the form $p^kq^l$, none of which divide each other. If $\{p,q\}\neq \{2,3\}$ then what can be said about the density of non-representable num
+# formalization_status: li_open
+# discharge: pending — open formalization target (Phase 4)
+# erdos_status (literature): open
+
+def formal_target_e_1110() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0

@@ -1,0 +1,12 @@
+# Catalog: E-404
+# Statement: For which integers $a\geq 1$ and primes $p$ is there a finite upper bound on those $k$ such that there are $a=a_1<\cdots<a_n$ with\[p^k \mid (a_1!+\cdots+a_n!)?\]If $f(a,p)$ is the greatest such $k$, how does this function behave? Is there 
+# formalization_status: li_open
+# discharge: pending — open formalization target (Phase 4)
+# erdos_status (literature): open
+
+def formal_target_e_404() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0

@@ -1,0 +1,12 @@
+# Catalog: E-1216
+# Statement: A tournament is a complete directed graph. Let $f(n)$ be such that every tournament on $n$ vertices contains a transitive tournament on $f(n)$ vertices (i.e. one such that if $i\to j\to k$ then $i\to k$). Is it true that $f(n)=\lfloor \log_
+# formalization_status: li_open
+# discharge: pending — open formalization target (Phase 4)
+# erdos_status (literature): open
+
+def formal_target_e_1216() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0

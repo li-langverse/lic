@@ -1,0 +1,12 @@
+# Catalog: E-348
+# Statement: For what values of $0\leq m<n$ is there a complete sequence $A=\{a_1\leq a_2\leq \cdots\}$ of integers such that $A$ remains complete after removing any $m$ elements, but $A$ is not complete after removing any $n$ elements?
+# formalization_status: li_open
+# discharge: pending — open formalization target (Phase 4)
+# erdos_status (literature): open
+
+def formal_target_e_348() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0

@@ -1,0 +1,12 @@
+# Catalog: E-96
+# Statement: Does sum_{n=1}^infty 1/(n log n (log log n)^c) diverge for every c?
+# formalization_status: li_open
+# discharge: pending — open formalization target (Phase 4)
+# erdos_status (literature): open
+
+def formal_target_e_96() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0

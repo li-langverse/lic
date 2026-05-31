@@ -1,0 +1,11 @@
+# Catalog: P-linalg-dot4-int-loop-open
+# Statement: Loop dot4 int closed.
+# formalization_status: li_open
+# discharge: pending — open formalization target (Phase 4)
+
+def formal_target_p_linalg_dot4_int_loop_open() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0

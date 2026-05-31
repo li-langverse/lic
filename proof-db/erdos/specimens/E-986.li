@@ -1,0 +1,12 @@
+# Catalog: E-986
+# Statement: For any fixed $s\geq 3$,\[R(s,k) \gg \frac{k^{s-1}}{(\log k)^c}\]for some constant $c=c(s)>0$.
+# formalization_status: li_open
+# discharge: pending — open formalization target (Phase 4)
+# erdos_status (literature): open
+
+def formal_target_e_986() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0

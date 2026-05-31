@@ -1,0 +1,12 @@
+# Catalog: E-687
+# Statement: Let $Y(x)$ be the maximal $y$ such that there exists a choice of congruence classes $a_p$ for all primes $p\leq x$ such that every integer in $[1,y]$ is congruent to at least one of the $a_p\pmod{p}$. Give good estimates for $Y(x)$. In part
+# formalization_status: li_open
+# discharge: pending — open formalization target (Phase 4)
+# erdos_status (literature): open
+
+def formal_target_e_687() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0

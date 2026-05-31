@@ -1,0 +1,12 @@
+# Catalog: E-1061
+# Statement: How many solutions are there to\[\sigma(a)+\sigma(b)=\sigma(a+b)\]with $a+b\leq x$, where $\sigma$ is the sum of divisors function? Is it $\sim cx$ for some constant $c>0$?
+# formalization_status: li_open
+# discharge: pending — open formalization target (Phase 4)
+# erdos_status (literature): open
+
+def formal_target_e_1061() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0

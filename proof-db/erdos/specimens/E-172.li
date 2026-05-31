@@ -1,0 +1,12 @@
+# Catalog: E-172
+# Statement: Is it true that in any finite colouring of $\mathbb{N}$ there exist arbitrarily large finite $A$ such that all sums and products of distinct elements in $A$ are the same colour?
+# formalization_status: li_open
+# discharge: pending — open formalization target (Phase 4)
+# erdos_status (literature): open
+
+def formal_target_e_172() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0

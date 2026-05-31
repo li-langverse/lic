@@ -1,0 +1,12 @@
+# Catalog: E-872
+# Statement: Consider the two-player game in which players alternately choose integers from $\{2,3,\ldots,n\}$ to be included in some set $A$ (the same set for both players) such that no $a\mid b$ for $a\neq b\in A$. The game ends when no legal move is 
+# formalization_status: li_open
+# discharge: pending — open formalization target (Phase 4)
+# erdos_status (literature): open
+
+def formal_target_e_872() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0

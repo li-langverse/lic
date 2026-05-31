@@ -1,0 +1,12 @@
+# Catalog: E-494
+# Statement: If $A\subset \mathbb{C}$ is a finite set and $k\geq 1$ then let\[A_k = \{ z_1+\cdots+z_k : z_i\in A\textrm{ distinct}\}.\]For $k>2$ does the multiset $A_k$ (together with the size of $A$) uniquely determine the set $A$?
+# formalization_status: li_open
+# discharge: pending — open formalization target (Phase 4)
+# erdos_status (literature): proved
+
+def formal_target_e_494() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0

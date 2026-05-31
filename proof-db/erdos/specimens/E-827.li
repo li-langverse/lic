@@ -1,0 +1,12 @@
+# Catalog: E-827
+# Statement: Let $n_k$ be minimal such that if $n_k$ points in $\mathbb{R}^2$ are in general position then there exists a subset of $k$ points such that all $\binom{k}{3}$ triples determine circles of different radii. Determine $n_k$.
+# formalization_status: li_open
+# discharge: pending — open formalization target (Phase 4)
+# erdos_status (literature): open
+
+def formal_target_e_827() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0

@@ -1,0 +1,12 @@
+# Catalog: E-739
+# Statement: Let $\mathfrak{m}$ be an infinite cardinal and $G$ be a graph with chromatic number $\mathfrak{m}$. Is it true that, for every infinite cardinal $\mathfrak{n}< \mathfrak{m}$, there exists a subgraph of $G$ with chromatic number $\mathfrak{n
+# formalization_status: li_open
+# discharge: pending — open formalization target (Phase 4)
+# erdos_status (literature): open
+
+def formal_target_e_739() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0

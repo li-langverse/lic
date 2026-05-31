@@ -1,0 +1,12 @@
+# Catalog: E-599
+# Statement: Let $G$ be a (possibly infinite) graph and $A,B$ be disjoint independent sets of vertices. Must there exist a family $P$ of disjoint paths between $A$ and $B$ and a set $S$ which contains exactly one vertex from each path in $P$, and such t
+# formalization_status: li_open
+# discharge: pending — open formalization target (Phase 4)
+# erdos_status (literature): proved
+
+def formal_target_e_599() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0

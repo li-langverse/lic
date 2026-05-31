@@ -1,0 +1,12 @@
+# Catalog: E-881
+# Statement: Let $A\subset\mathbb{N}$ be an additive basis of order $k$ which is minimal, in the sense that if $B\subset A$ is any infinite set then $A\backslash B$ is not a basis of order $k$. Must there exist an infinite $B\subset A$ such that $A\back
+# formalization_status: li_open
+# discharge: pending — open formalization target (Phase 4)
+# erdos_status (literature): open
+
+def formal_target_e_881() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0

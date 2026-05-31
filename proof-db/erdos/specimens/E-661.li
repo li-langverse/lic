@@ -1,0 +1,12 @@
+# Catalog: E-661
+# Statement: Are there, for all large $n$, some points $x_1,\ldots,x_n,y_1,\ldots,y_n\in \mathbb{R}^2$ such that the number of distinct distances $d(x_i,y_j)$ is\[o\left(\frac{n}{\sqrt{\log n}}\right)?\]
+# formalization_status: li_open
+# discharge: pending — open formalization target (Phase 4)
+# erdos_status (literature): open
+
+def formal_target_e_661() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0

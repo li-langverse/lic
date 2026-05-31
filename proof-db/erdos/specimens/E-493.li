@@ -1,0 +1,12 @@
+# Catalog: E-493
+# Statement: Does there exist a $k$ such that every sufficiently large integer can be written in the form\[\prod_{i=1}^k a_i - \sum_{i=1}^k a_i\]for some integers $a_i\geq 2$?
+# formalization_status: li_open
+# discharge: pending — open formalization target (Phase 4)
+# erdos_status (literature): proved
+
+def formal_target_e_493() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0

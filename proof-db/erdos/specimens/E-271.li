@@ -1,0 +1,12 @@
+# Catalog: E-271
+# Statement: Let $A(n)=\{a_0<a_1<\cdots\}$ be the sequence defined by $a_0=0$ and $a_1=n$, and for $k\geq 1$ define $a_{k+1}$ as the least positive integer such that there is no three-term arithmetic progression in $\{a_0,\ldots,a_{k+1}\}$. Can the $a_k
+# formalization_status: li_open
+# discharge: pending — open formalization target (Phase 4)
+# erdos_status (literature): open
+
+def formal_target_e_271() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0

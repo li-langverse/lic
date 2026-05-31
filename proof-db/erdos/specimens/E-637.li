@@ -1,0 +1,12 @@
+# Catalog: E-637
+# Statement: If $G$ is a graph on $n$ vertices which contains no complete graph or independent set on $\gg \log n$ vertices then $G$ contains an induced subgraph on $\gg n$ vertices which contains $\gg n^{1/2}$ distinct degrees.
+# formalization_status: li_open
+# discharge: pending — open formalization target (Phase 4)
+# erdos_status (literature): proved
+
+def formal_target_e_637() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0

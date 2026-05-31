@@ -1,0 +1,12 @@
+# Catalog: E-889
+# Statement: For $k\geq 0$ and $n\geq 1$ let $v(n,k)$ count the prime factors of $n+k$ which do not divide $n+i$ for $0\leq i<k$. Equivalently, $v(n,k)$ counts the number of prime factors of $n+k$ which are $>k$. Is it true that\[v_0(n)=\max_{k\geq 0}v(
+# formalization_status: li_open
+# discharge: pending — open formalization target (Phase 4)
+# erdos_status (literature): open
+
+def formal_target_e_889() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0

@@ -1,0 +1,12 @@
+# Catalog: E-953
+# Statement: Let $A\subset \{ x\in \mathbb{R}^2 : \lvert x\rvert <r\}$ be a measurable set with no integer distances, that is, such that $\lvert a-b\rvert \not\in \mathbb{Z}$ for any distinct $a,b\in A$. How large can the measure of $A$ be?
+# formalization_status: li_open
+# discharge: pending — open formalization target (Phase 4)
+# erdos_status (literature): open
+
+def formal_target_e_953() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0

@@ -1,0 +1,12 @@
+# Catalog: E-428
+# Statement: Is there a set $A\subseteq \mathbb{N}$ such that, for infinitely many $n$, all of $n-a$ are prime for all $a\in A$ with $0<a<n$ and\[\liminf\frac{\lvert A\cap [1,x]\rvert}{\pi(x)}>0?\]
+# formalization_status: li_open
+# discharge: pending — open formalization target (Phase 4)
+# erdos_status (literature): open
+
+def formal_target_e_428() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0

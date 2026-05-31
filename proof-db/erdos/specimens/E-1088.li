@@ -1,0 +1,12 @@
+# Catalog: E-1088
+# Statement: Let $f_d(n)$ be the minimal $m$ such that any set of $m$ points in $\mathbb{R}^d$ contains a set of $n$ points such that any two determined distances are distinct. Estimate $f_d(n)$. In particular, is it true that, for fixed $n\geq 3$,\[f_d
+# formalization_status: li_open
+# discharge: pending — open formalization target (Phase 4)
+# erdos_status (literature): open
+
+def formal_target_e_1088() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0

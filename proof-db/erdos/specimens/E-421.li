@@ -1,0 +1,12 @@
+# Catalog: E-421
+# Statement: Is there a sequence $1\leq d_1<d_2<\cdots$ with density $1$ such that all products $\prod_{u\leq i\leq v}d_i$ are distinct?
+# formalization_status: li_open
+# discharge: pending — open formalization target (Phase 4)
+# erdos_status (literature): open
+
+def formal_target_e_421() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0

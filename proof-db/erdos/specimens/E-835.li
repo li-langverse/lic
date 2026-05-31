@@ -1,0 +1,12 @@
+# Catalog: E-835
+# Statement: Does there exist a $k>2$ such that the $k$-sized subsets of $\{1,\ldots,2k\}$ can be coloured with $k+1$ colours such that for every $A\subset \{1,\ldots,2k\}$ with $\lvert A\rvert=k+1$ all $k+1$ colours appear among the $k$-sized subsets o
+# formalization_status: li_open
+# discharge: pending — open formalization target (Phase 4)
+# erdos_status (literature): open
+
+def formal_target_e_835() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0

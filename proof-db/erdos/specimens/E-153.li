@@ -1,0 +1,12 @@
+# Catalog: E-153
+# Statement: Let $A$ be a finite Sidon set and $A+A=\{s_1<\cdots<s_t\}$. Is it true that\[\frac{1}{t}\sum_{1\leq i<t}(s_{i+1}-s_i)^2 \to \infty\]as $\lvert A\rvert\to \infty$?
+# formalization_status: li_open
+# discharge: pending — open formalization target (Phase 4)
+# erdos_status (literature): open
+
+def formal_target_e_153() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0

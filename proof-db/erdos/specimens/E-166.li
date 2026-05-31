@@ -1,0 +1,12 @@
+# Catalog: E-166
+# Statement: Prove that\[R(4,k) \gg \frac{k^3}{(\log k)^{O(1)}}.\]
+# formalization_status: li_open
+# discharge: pending — open formalization target (Phase 4)
+# erdos_status (literature): proved
+
+def formal_target_e_166() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0

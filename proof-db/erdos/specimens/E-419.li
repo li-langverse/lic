@@ -1,0 +1,12 @@
+# Catalog: E-419
+# Statement: If $\tau(n)$ counts the number of divisors of $n$, then what is the set of limit points of\[\frac{\tau((n+1)!)}{\tau(n!)}?\]
+# formalization_status: li_open
+# discharge: pending — open formalization target (Phase 4)
+# erdos_status (literature): open
+
+def formal_target_e_419() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0

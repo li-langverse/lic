@@ -1,0 +1,12 @@
+# Catalog: E-1081
+# Statement: Let $A(x)$ count the number of $n\leq x$ which are the sum of two squarefull numbers (a number $m$ is squarefull if $p\mid m$ implies $p^2\mid m$). Is it true that\[A(x) \sim c \frac{x}{\sqrt{\log x}}\]for some $c>0$?
+# formalization_status: li_open
+# discharge: pending — open formalization target (Phase 4)
+# erdos_status (literature): open
+
+def formal_target_e_1081() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0

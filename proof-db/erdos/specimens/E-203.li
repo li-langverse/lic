@@ -1,0 +1,12 @@
+# Catalog: E-203
+# Statement: Is there an integer $m\geq 1$ with $(m,6)=1$ such that none of $2^k3^\ell m+1$ are prime, for any $k,\ell\geq 0$?
+# formalization_status: li_open
+# discharge: pending — open formalization target (Phase 4)
+# erdos_status (literature): open
+
+def formal_target_e_203() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0

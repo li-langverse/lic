@@ -1,0 +1,12 @@
+# Catalog: E-909
+# Statement: Let $n\geq 2$. Is there a space $S$ of dimension $n$ such that $S^2$ also has dimension $n$?
+# formalization_status: li_open
+# discharge: pending — open formalization target (Phase 4)
+# erdos_status (literature): proved
+
+def formal_target_e_909() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0

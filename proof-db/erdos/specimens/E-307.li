@@ -1,0 +1,12 @@
+# Catalog: E-307
+# Statement: Are there two finite sets of primes $P,Q$ such that\[1=\left(\sum_{p\in P}\frac{1}{p}\right)\left(\sum_{q\in Q}\frac{1}{q}\right)?\]
+# formalization_status: li_open
+# discharge: pending — open formalization target (Phase 4)
+# erdos_status (literature): open
+
+def formal_target_e_307() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0

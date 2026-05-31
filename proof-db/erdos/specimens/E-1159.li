@@ -1,0 +1,12 @@
+# Catalog: E-1159
+# Statement: Determine whether there exists a constant $C>1$ such that the following holds. Let $P$ be a finite projective plane . Must there exist a set of points $S$ such that $1\leq \lvert S\cap \ell\rvert \leq C$ for all lines $\ell$?
+# formalization_status: li_open
+# discharge: pending — open formalization target (Phase 4)
+# erdos_status (literature): open
+
+def formal_target_e_1159() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0

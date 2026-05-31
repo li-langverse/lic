@@ -1,0 +1,12 @@
+# Catalog: E-183
+# Statement: Let $R(3;k)$ be the minimal $n$ such that if the edges of $K_n$ are coloured with $k$ colours then there must exist a monochromatic triangle. Determine\[\lim_{k\to \infty}R(3;k)^{1/k}.\]
+# formalization_status: li_open
+# discharge: pending — open formalization target (Phase 4)
+# erdos_status (literature): open
+
+def formal_target_e_183() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0

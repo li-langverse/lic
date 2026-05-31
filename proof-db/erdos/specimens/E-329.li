@@ -1,0 +1,12 @@
+# Catalog: E-329
+# Statement: Suppose $A\subseteq \mathbb{N}$ is a Sidon set. How large can\[\limsup_{N\to \infty}\frac{\lvert A\cap \{1,\ldots,N\}\rvert}{N^{1/2}}\]be?
+# formalization_status: li_open
+# discharge: pending — open formalization target (Phase 4)
+# erdos_status (literature): open
+
+def formal_target_e_329() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0

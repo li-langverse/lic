@@ -1,0 +1,12 @@
+# Catalog: E-756
+# Statement: Let $A\subset \mathbb{R}^2$ be a set of $n$ points. Can there be $\gg n$ many distinct distances each of which occurs for more than $n$ many pairs from $A$?
+# formalization_status: li_open
+# discharge: pending — open formalization target (Phase 4)
+# erdos_status (literature): proved
+
+def formal_target_e_756() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0

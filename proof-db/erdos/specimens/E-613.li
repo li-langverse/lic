@@ -1,0 +1,12 @@
+# Catalog: E-613
+# Statement: Let $n\geq 3$ and $G$ be a graph with $\binom{2n+1}{2}-\binom{n}{2}-1$ edges. Must $G$ be the union of a bipartite graph and a graph with maximum degree less than $n$?
+# formalization_status: li_open
+# discharge: pending — open formalization target (Phase 4)
+# erdos_status (literature): open
+
+def formal_target_e_613() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0

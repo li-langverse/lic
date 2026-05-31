@@ -1,0 +1,12 @@
+# Catalog: E-1034
+# Statement: Let $G$ be a graph on $n$ vertices with $>n^2/4$ many edges. Must there be a triangle $T$ in $G$ and vertices $y_1,\ldots,y_t$, where $t>(\frac{1}{2}-o(1))n$, such that every vertex is joined to at least two vertices of $T$?
+# formalization_status: li_open
+# discharge: pending — open formalization target (Phase 4)
+# erdos_status (literature): open
+
+def formal_target_e_1034() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0

@@ -1,0 +1,12 @@
+# Catalog: E-970
+# Statement: Let $h(k)$ be Jacobsthal's function, defined to as the minimal $m$ such that, if $n$ has at most $k$ prime factors, then in any set of $m$ consecutive integers there exists an integer coprime to $n$. Determine the order of magnitude of $h(k
+# formalization_status: li_open
+# discharge: pending — open formalization target (Phase 4)
+# erdos_status (literature): open
+
+def formal_target_e_970() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0

@@ -1,0 +1,12 @@
+# Catalog: E-794
+# Statement: Is it true that every $3$-uniform hypergraph on $3n$ vertices with at least $n^3+1$ edges must contain either a subgraph on $4$ vertices with $3$ edges or a subgraph on $5$ vertices with $7$ edges?
+# formalization_status: li_open
+# discharge: pending — open formalization target (Phase 4)
+# erdos_status (literature): open
+
+def formal_target_e_794() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0

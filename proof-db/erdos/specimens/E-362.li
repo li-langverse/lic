@@ -1,0 +1,12 @@
+# Catalog: E-362
+# Statement: Let $A\subseteq \mathbb{N}$ be a finite set of size $N$. Is it true that, for any fixed $t$, there are\[\ll \frac{2^N}{N^{3/2}}\]many $S\subseteq A$ such that $\sum_{n\in S}n=t$? If we further ask that $\lvert S\rvert=l$ (for any fixed $l$)
+# formalization_status: li_open
+# discharge: pending — open formalization target (Phase 4)
+# erdos_status (literature): proved
+
+def formal_target_e_362() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0

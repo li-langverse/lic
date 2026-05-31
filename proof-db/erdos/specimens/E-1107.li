@@ -1,0 +1,12 @@
+# Catalog: E-1107
+# Statement: Let $r\geq 2$. A number $n$ is $r$-powerful if for every prime $p$ which divides $n$ we have $p^r\mid n$. Is every large integer the sum of at most $r+1$ many $r$-powerful numbers?
+# formalization_status: li_open
+# discharge: pending — open formalization target (Phase 4)
+# erdos_status (literature): open
+
+def formal_target_e_1107() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0

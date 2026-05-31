@@ -1,0 +1,12 @@
+# Catalog: E-470
+# Statement: Call $n$ weird if $\sigma(n)\geq 2n$ and $n$ is not pseudoperfect, that is, it is not the sum of any set of its divisors. Are there any odd weird numbers? Are there infinitely many primitive weird numbers, i.e. those such that no proper div
+# formalization_status: li_open
+# discharge: pending — open formalization target (Phase 4)
+# erdos_status (literature): open
+
+def formal_target_e_470() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0

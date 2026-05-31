@@ -1,0 +1,12 @@
+# Catalog: E-1209
+# Statement: Let $A=\{a_1<a_2<\cdots\}$ be a sequence of integers which tends to infinity sufficiently fast. If there is an $n$ such that all $n+a_k$ are primes then must there exist infinitely many such $n$? What if we ask for $n+a_k$ to be squarefree 
+# formalization_status: li_open
+# discharge: pending — open formalization target (Phase 4)
+# erdos_status (literature): open
+
+def formal_target_e_1209() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0

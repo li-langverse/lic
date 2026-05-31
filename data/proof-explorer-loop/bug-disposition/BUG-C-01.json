@@ -1,0 +1,14 @@
+{
+  "bug_id": "BUG-C-01",
+  "class": "compiler",
+  "resolution": "catalog_downgrade",
+  "catalog_entries": ["P-linalg-dot4-int-loop-open", "N-LM-DOT4-INT-LOOP"],
+  "proof_status_before": "target",
+  "proof_status_after": "open",
+  "gap_id": "G-vc",
+  "gap_kind": "proof_gap",
+  "report": "docs/reports/compiler-audit/BUG-C-01.md",
+  "notes": "AutoVC loop witness emits Prop := True; honest open until compiler wires Li.Discharge.dot4_int_loop_eval_spec",
+  "disposition_at": "2026-05-31T12:00:00Z",
+  "agent": "code_implementer"
+}

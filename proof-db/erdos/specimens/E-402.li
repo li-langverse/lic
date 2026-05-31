@@ -1,0 +1,12 @@
+# Catalog: E-402
+# Statement: Prove that, for any finite set $A\subset\mathbb{N}$, there exist $a,b\in A$ such that\[\mathrm{gcd}(a,b)\leq a/\lvert A\rvert.\]
+# formalization_status: li_open
+# discharge: pending — open formalization target (Phase 4)
+# erdos_status (literature): proved
+
+def formal_target_e_402() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0

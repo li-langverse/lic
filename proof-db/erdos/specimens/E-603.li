@@ -1,0 +1,12 @@
+# Catalog: E-603
+# Statement: Let $(A_i)$ be a family of countably infinite sets such that $\lvert A_i\cap A_j\rvert \neq 2$ for all $i\neq j$. Find the smallest cardinal $C$ such that $\cup A_i$ can always be coloured with at most $C$ colours so that no $A_i$ is monoch
+# formalization_status: li_open
+# discharge: pending — open formalization target (Phase 4)
+# erdos_status (literature): open
+
+def formal_target_e_603() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0

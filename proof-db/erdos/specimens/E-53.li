@@ -1,0 +1,12 @@
+# Catalog: E-53
+# Statement: Let $A$ be a finite set of integers. Is it true that, for every $k$, if $\lvert A\rvert$ is sufficiently large depending on $k$, then there are least $\lvert A\rvert^k$ many integers which are either the sum or product of distinct elements 
+# formalization_status: li_open
+# discharge: pending — open formalization target (Phase 4)
+# erdos_status (literature): proved
+
+def formal_target_e_53() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0

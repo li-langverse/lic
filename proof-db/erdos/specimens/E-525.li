@@ -1,0 +1,12 @@
+# Catalog: E-525
+# Statement: Is it true that all except at most $o(2^n)$ many degree $n$ polynomials with $\pm 1$-valued coefficients $f(z)$ have $\lvert f(z)\rvert <1$ for some $\lvert z\rvert=1$? What is the behaviour of\[m(f)=\min_{\lvert z\rvert=1}\lvert f(z)\rvert
+# formalization_status: li_open
+# discharge: pending — open formalization target (Phase 4)
+# erdos_status (literature): proved
+
+def formal_target_e_525() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0

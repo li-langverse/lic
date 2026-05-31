@@ -1,0 +1,12 @@
+# Catalog: E-1073
+# Statement: Let $A(x)$ count the number of composite $u<x$ such that $n!+1\equiv 0\pmod{u}$ for some $n$. Is it true that $A(x)\leq x^{o(1)}$?
+# formalization_status: li_open
+# discharge: pending — open formalization target (Phase 4)
+# erdos_status (literature): open
+
+def formal_target_e_1073() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0

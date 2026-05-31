@@ -1,0 +1,12 @@
+# Catalog: E-182
+# Statement: Let $k\geq 3$. What is the maximum number of edges that a graph on $n$ vertices can contain if it does not have a $k$-regular subgraph? Is it $\ll n^{1+o(1)}$?
+# formalization_status: li_open
+# discharge: pending — open formalization target (Phase 4)
+# erdos_status (literature): proved
+
+def formal_target_e_182() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0

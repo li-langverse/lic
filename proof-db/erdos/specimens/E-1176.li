@@ -1,0 +1,12 @@
+# Catalog: E-1176
+# Statement: Let $G$ be a graph with chromatic number $\aleph_1$. Is it true that there is a colouring of the edges with $\aleph_1$ many colours such that, in any countable colouring of the vertices, there exists a vertex colour containing all edge colo
+# formalization_status: li_open
+# discharge: pending — open formalization target (Phase 4)
+# erdos_status (literature): open
+
+def formal_target_e_1176() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0

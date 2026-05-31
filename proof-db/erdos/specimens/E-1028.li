@@ -1,0 +1,12 @@
+# Catalog: E-1028
+# Statement: Let\[H(n)=\min_f \max_{X\subseteq \{1,\ldots,n\}} \left\lvert \sum_{x\neq y\in X} f(x,y)\right\rvert,\]where $f$ ranges over all functions $f:X^2\to \{-1,1\}$. Estimate $H(n)$.
+# formalization_status: li_open
+# discharge: pending — open formalization target (Phase 4)
+# erdos_status (literature): open
+
+def formal_target_e_1028() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0

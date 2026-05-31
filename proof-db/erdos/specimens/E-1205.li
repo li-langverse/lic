@@ -1,0 +1,12 @@
+# Catalog: E-1205
+# Statement: Let $F(x)$ be maximal such that there exists, for all $n\leq x$, a congruence class $a_n\pmod{n}$ such that every $m\leq x$ satisfies at least $F(x)$ of these congruences. Estimate $F(x)$.
+# formalization_status: li_open
+# discharge: pending — open formalization target (Phase 4)
+# erdos_status (literature): open
+
+def formal_target_e_1205() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0

@@ -1,0 +1,12 @@
+# Catalog: E-641
+# Statement: Is there some function $f$ such that for all $k\geq 1$ if a finite graph $G$ has chromatic number $\geq f(k)$ then $G$ has $k$ edge disjoint cycles on the same set of vertices?
+# formalization_status: li_open
+# discharge: pending — open formalization target (Phase 4)
+# erdos_status (literature): open
+
+def formal_target_e_641() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0

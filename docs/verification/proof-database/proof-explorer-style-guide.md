@@ -12,6 +12,7 @@
 |------|---------|------------|
 | `raw` | Auto-ingested from erdosproblems.com or JSON sync | Default for bulk ingest; may omit `latex` |
 | `curated` | Human-reviewed statement, tags, and sources | Minimum bar for Tier-A register rows |
+| `formalized` | Quantified `.li` specimen linked (`li_specimen`); partial or open discharge | Phase 6+ P0/M-CONJ upgrades; honest partial proofs allowed |
 | `polished` | Hand-edited math, context, and citations | **Never overwrite** with auto ingest |
 
 ## Required fields (Erdős `E-*` / `kind = target`)

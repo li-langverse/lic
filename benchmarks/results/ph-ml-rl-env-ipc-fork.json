@@ -1,10 +1,10 @@
 {
   "suite": "ph-ml-rl-env-ipc-fork",
-  "generated_at": "2026-05-31T17:19:05Z",
+  "generated_at": "2026-05-31T17:41:11Z",
   "executed": true,
   "validity_gate_pass": true,
   "ipc_method": "fork",
   "note": "multiprocessing fork x4 (Wave 12)",
-  "cpu_sec": 0.025338,
+  "cpu_sec": 0.02223,
   "validity_ratio": 1.0
 }

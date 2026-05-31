@@ -96,6 +96,10 @@ jax_cpu_m = load("ph-ml-competitor-jax-cpu-matmul.json")
 tf_cpu_m = load("ph-ml-competitor-tensorflow-cpu-matmul.json")
 triton_m = load("ph-ml-competitor-triton-matmul.json")
 pytorch_cpu_mlp = load("ph-ml-competitor-pytorch-cpu-mlp.json")
+numpy_mlp = load("ph-ml-competitor-numpy-mlp.json")
+cpp_openmp_mlp = load("ph-ml-competitor-cpp-openmp-mlp.json")
+sb3_vecenv = load("ph-ml-competitor-sb3-vecenv.json")
+ray_rllib = load("ph-ml-competitor-ray-rllib.json")
 
 rows = [
     {
@@ -124,8 +128,8 @@ rows = [
         "executed": bool(mlp.get("executed")),
         "li": li_row(mlp, "pilot"),
         "competitors": [
-            comp_stub("cpp_openmp", "C++ MLP forward", "reference_native", "tier-1 catalog"),
-            comp_stub("python_numpy", "NumPy manual MLP", "blas_labeled", "deferred Wave 8"),
+            comp_row(cpp_openmp_mlp, li_mlp_sec, "cpp_openmp", "C++ MLP forward", "reference_native", "Wave 10 C++ MLP"),
+            comp_row(numpy_mlp, li_mlp_sec, "python_numpy", "NumPy manual MLP", "blas_labeled", "Wave 10 NumPy MLP"),
             comp_row(pytorch_cpu_mlp, li_mlp_sec, "pytorch_cpu", "PyTorch CPU MLP forward", "blas_labeled", "torch pinned"),
         ],
     },
@@ -141,14 +145,14 @@ rows = [
             "parallelism_model": async_env.get("parallelism_model"),
         },
         "competitors": [
-            comp_stub("sb3_vecenv", "SB3 SubprocVecEnv", "stub", "documented pattern"),
-            comp_stub("ray_rllib", "Ray RLlib RolloutWorker", "stub", "documented pattern"),
+            comp_row(sb3_vecenv, (async_env.get("cpu_sec") or 0.001), "sb3_vecenv", "SB3 SubprocVecEnv", "stub", "Wave 10 when gymnasium installed"),
+            comp_row(ray_rllib, None, "ray_rllib", "Ray RLlib RolloutWorker", "stub", "honest pattern stub"),
         ],
     },
     {
         "id": "llm_forward",
         "kernel": "llm.forward_stub",
-        "workload_class": "pilot" if llm.get("validity_gate_pass") else "stub",
+        "workload_class": llm.get("workload_class") or ("tier3_cpu" if llm.get("validity_gate_pass") else "stub"),
         "executed": bool(llm.get("executed")),
         "li": li_row(llm, "stub"),
         "competitors": [

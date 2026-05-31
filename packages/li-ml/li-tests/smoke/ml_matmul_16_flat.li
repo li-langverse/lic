@@ -5,9 +5,9 @@ def main() -> int
   ensures result == 0
   decreases 0
 =
-  if ml_version() != 4:
+  if ml_version() != 6:
     return 1
-  if ml_matmul_max_dim() != 16:
+  if ml_matmul_max_dim() != 32:
     return 2
   var a: array[64, float]
   var b: array[64, float]

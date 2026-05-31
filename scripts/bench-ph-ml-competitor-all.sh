@@ -48,3 +48,14 @@ export PH_ML_PYTORCH_CPU_MLP_OUT="${PH_ML_PYTORCH_CPU_MLP_OUT:-$BENCHMARKS_RESUL
 python3 "$ROOT/scripts/bench_ph_ml_competitor_pytorch_cpu_mlp.py" || true
 
 echo "bench-ph-ml-competitor-all: done"
+
+export PH_ML_RAY_RLLIB_OUT="${PH_ML_RAY_RLLIB_OUT:-$BENCHMARKS_RESULTS/ph-ml-competitor-ray-rllib.json}"
+python3 "$ROOT/scripts/bench_ph_ml_competitor_ray_rllib.py" || true
+
+export PH_ML_NUMPY_MLP_OUT="${PH_ML_NUMPY_MLP_OUT:-$BENCHMARKS_RESULTS/ph-ml-competitor-numpy-mlp.json}"
+python3 "$ROOT/scripts/bench_ph_ml_competitor_numpy_mlp.py" || true
+
+export PH_ML_CPP_OPENMP_MLP_OUT="${PH_ML_CPP_OPENMP_MLP_OUT:-$BENCHMARKS_RESULTS/ph-ml-competitor-cpp-openmp-mlp.json}"
+python3 "$ROOT/scripts/bench_ph_ml_competitor_cpp_openmp_mlp.py" || true
+
+echo "bench-ph-ml-competitor-all: wave10 drivers done"

@@ -10,3 +10,4 @@
 | 2026-05-31T21:40:00Z | m4-bench | m4-benchmark-matrix-gate.sh | OK | f8a4c86b |
 | 2026-05-31T21:42:00Z | complete | pure-li-https-completion-gate.sh | OK | f8a4c86b |
 | 2026-05-31T22:15:00Z | complete | pure-li-https-completion-gate.sh (LLVM22 clang link fix) | OK | 09fbf2dc |
+| 2026-05-31T23:10:00Z | complete | pure-li-https-completion-gate.sh (re-verify) + CI tier-F/tier5 path fixes | OK | pending |

@@ -97,6 +97,7 @@ then
 fi
 
 export BENCHMARKS_ROOT
+export LIC_ROOT="${LIC_ROOT:-$(_benchmarks_env_lic_root)}"
 export LI_BENCHMARKS_ROOT="${LI_BENCHMARKS_ROOT:-$BENCHMARKS_ROOT}"
 if [[ -z "${HARNESS:-}" ]] && [[ -d "$BENCHMARKS_ROOT/harness" ]]; then
   HARNESS="$BENCHMARKS_ROOT/harness"

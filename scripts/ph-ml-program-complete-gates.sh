@@ -43,10 +43,23 @@ export PH_ML_SB3_VECENV_OUT="$BENCHMARKS_RESULTS/ph-ml-competitor-sb3-vecenv.jso
 export PH_ML_RAY_RLLIB_OUT="$BENCHMARKS_RESULTS/ph-ml-competitor-ray-rllib.json"
 python3 scripts/bench_ph_ml_competitor_sb3_vecenv.py
 python3 scripts/bench_ph_ml_competitor_ray_rllib.py
-export PH_ML_GATE_COMPETITOR_CHECK=sb3
-python3 scripts/lib/ph_ml_gate_competitor_honesty.py
-export PH_ML_GATE_COMPETITOR_CHECK=ray
-python3 scripts/lib/ph_ml_gate_competitor_honesty.py
+python3 - <<'PY'
+import json, sys
+from pathlib import Path
+
+def require_executed(name: str) -> None:
+    d = json.loads(Path("benchmarks/results", name).read_text())
+    if not d.get("executed"):
+        sys.exit(f"T5: {name} must execute (hard CI)")
+
+require_executed("ph-ml-competitor-sb3-vecenv.json")
+try:
+    import ray  # noqa: F401
+except ImportError:
+    print("T5: ray not installable on this Python — skip hard Ray execute check")
+else:
+    require_executed("ph-ml-competitor-ray-rllib.json")
+PY
 
 export PH_ML_MATMUL_N=32
 bash scripts/bench-ph-ml-lkir-matmul-32.sh
@@ -66,7 +79,6 @@ if ratio is None or float(ratio) > 2.0:
     sys.exit(f"T6: ratio_vs_li must be <= 2.0 (got {ratio})")
 PY
 
-<<<<<<< HEAD
 export PH_ML_WEIGHTS_FIXTURE="${PH_ML_WEIGHTS_FIXTURE:-$ROOT/benchmarks/fixtures/ph-ml-weights}"
 python3 scripts/prepare_ph_ml_weights_fixture.py
 [[ -f "$PH_ML_WEIGHTS_FIXTURE/model.safetensors" && -f "$PH_ML_WEIGHTS_FIXTURE/model.gguf" ]] \

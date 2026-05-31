@@ -3,10 +3,13 @@
 # No network calls — reads local commands and env only.
 set -euo pipefail
 ROOT="$(cd "$(dirname "$0")/.." && pwd)"
+# shellcheck source=lib/benchmarks-env.sh
+source "$ROOT/scripts/lib/benchmarks-env.sh"
+
 # shellcheck source=lib/li-ui.sh
 source "$ROOT/scripts/lib/li-ui.sh"
 
-OUT="${LI_HPC_COMPETITIVE_SNAPSHOT:-$ROOT/benchmarks/competitive/snapshots/latest.env}"
+OUT="${LI_HPC_COMPETITIVE_SNAPSHOT:-$BENCHMARKS_COMPETITIVE/snapshots/latest.env}"
 mkdir -p "$(dirname "$OUT")"
 
 li_phase "HPC competitive snapshot"

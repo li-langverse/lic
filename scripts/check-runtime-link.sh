@@ -2,6 +2,9 @@
 # Smoke: microbenches must not link the full httpd/net runtime unless used.
 set -euo pipefail
 ROOT="$(cd "$(dirname "$0")/.." && pwd)"
+# shellcheck source=lib/benchmarks-env.sh
+source "$ROOT/scripts/lib/benchmarks-env.sh"
+
 # shellcheck source=lib/li-ui.sh
 source "$ROOT/scripts/lib/li-ui.sh"
 
@@ -17,11 +20,11 @@ export CXX="${CXX:-clang++-22}"
 HORNER_BIN="$ROOT/build/bench/runtime_link_smoke_horner"
 HTTPD_SRC="$ROOT/li-tests/httpd/minimal_route_match.li"
 if [[ ! -f "$HTTPD_SRC" ]]; then
-  HTTPD_SRC="$ROOT/benchmarks/tier1_micro/horner_pure_li/li/main.li"
+  HTTPD_SRC="$BENCHMARKS_WORKLOADS/tier1_micro/horner_pure_li/li/main.li"
 fi
 
 li_phase "runtime link: horner (no epoll)"
-"$LIC" build "$ROOT/benchmarks/tier1_micro/horner_pure_li/li/main.li" -o "$HORNER_BIN" \
+"$LIC" build "$BENCHMARKS_WORKLOADS/tier1_micro/horner_pure_li/li/main.li" -o "$HORNER_BIN" \
   --allow-open-vc --no-lean-verify --release -O3 -march=native -ffast-math
 if nm "$HORNER_BIN" 2>/dev/null | grep -q 'epoll_create1_i'; then
   li_fail "horner binary must not link li_rt_net (found epoll_create1_i)"

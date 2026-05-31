@@ -3,7 +3,7 @@
 # Cursor: afterFileEdit (benchmarks) or stop (session end).
 set -euo pipefail
 ROOT="${CURSOR_PROJECT_DIR:-$(pwd)}"
-REGISTRY="$ROOT/benchmarks/competitive/registry.toml"
+REGISTRY="$BENCHMARKS_COMPETITIVE/registry.toml"
 [[ -f "$REGISTRY" ]] || exit 0
 
 if ! git -C "$ROOT" rev-parse --is-inside-work-tree &>/dev/null; then

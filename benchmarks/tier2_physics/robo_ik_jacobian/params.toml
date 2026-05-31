@@ -1,3 +1,0 @@
-# WP3 harness: robo_ik_jacobian
-dof = 6
-samples = 20_000

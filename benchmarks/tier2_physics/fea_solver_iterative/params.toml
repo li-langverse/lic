@@ -1,7 +1,0 @@
-# Family template: heat_equation_2d
-nx = 128
-ny = 128
-steps = 20_000
-alpha = 0.25
-dx = 0.01
-dt = 0.0001

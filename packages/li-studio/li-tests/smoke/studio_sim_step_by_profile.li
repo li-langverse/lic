@@ -60,9 +60,9 @@ def main() -> int raises IO
     return 24
   if studio_md_particle_tier_select_ok(scene_md_tier_10k()) != 1:
     return 25
-  var automotive_ok: int = studio_sim_step_profile_ok(studio_profile_sim_automotive(), sim_contract_sim_automotive(), 0.02, 1)
-  if automotive_ok != 0:
-    return 30 + automotive_ok
+  var auto: int = studio_sim_step_profile_ok(studio_profile_sim_automotive(), sim_contract_sim_automotive(), 0.02, 1)
+  if auto != 0:
+    return 30 + auto
   var robo: int = studio_sim_step_profile_ok(studio_profile_sim_robotics(), sim_contract_sim_robotics(), 0.01, 1)
   if robo != 0:
     return 40 + robo

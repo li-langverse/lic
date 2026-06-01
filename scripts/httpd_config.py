@@ -19,6 +19,9 @@ ROUTE_KEY_RE = re.compile(
     r"^(?P<method>[A-Z]+)\s+(?P<path>/[^\s#]+)(?:\s+(?P<extras>.+))?$"
 )
 HEADER_EXTRA_RE = re.compile(r"^([a-zA-Z0-9_-]+)=([^\s]+)$")
+ALLOWED_UPSTREAM_BALANCE = frozenset(
+    {"round_robin", "least_conn", "ip_hash", "cookie"}
+)
 
 
 @dataclass
@@ -43,7 +46,12 @@ class HttpdConfig:
 
 
 def slug_route_name(method: str, path: str) -> str:
-    s = f"{method.lower()}_{path.strip('/')}".replace("/", "_").replace("*", "wild")
+    slug_path = path
+    if slug_path.endswith("/**"):
+        slug_path = f"{slug_path[:-3]}_rest"
+    elif slug_path.endswith("/*"):
+        slug_path = f"{slug_path[:-2]}_wild"
+    s = f"{method.lower()}_{slug_path.strip('/')}".replace("/", "_").replace("*", "wild")
     s = re.sub(r"[^a-z0-9_]+", "_", s).strip("_")
     return s or "route"
 
@@ -131,6 +139,14 @@ def parse_upstreams(data: dict[str, Any]) -> dict[str, list[str]]:
         peers = spec.get("peers")
         if not isinstance(peers, list) or not peers:
             raise ConfigError(f"[upstreams.{upstream_id}] peers required")
+        balance = spec.get("balance")
+        if balance is not None:
+            bal = str(balance).strip()
+            if bal not in ALLOWED_UPSTREAM_BALANCE:
+                raise ConfigError(
+                    f"[upstreams.{upstream_id}] unknown balance {bal!r} "
+                    f"(allowed: {', '.join(sorted(ALLOWED_UPSTREAM_BALANCE))})"
+                )
         out[str(upstream_id)] = [str(p).strip() for p in peers]
     for key, val in data.items():
         if not key.startswith("upstreams.") or not isinstance(val, dict):
@@ -138,6 +154,14 @@ def parse_upstreams(data: dict[str, Any]) -> dict[str, list[str]]:
         pool_id = key.split(".", 1)[1]
         peers = val.get("peers")
         if isinstance(peers, list) and peers:
+            balance = val.get("balance")
+            if balance is not None:
+                bal = str(balance).strip()
+                if bal not in ALLOWED_UPSTREAM_BALANCE:
+                    raise ConfigError(
+                        f"[upstreams.{pool_id}] unknown balance {bal!r} "
+                        f"(allowed: {', '.join(sorted(ALLOWED_UPSTREAM_BALANCE))})"
+                    )
             out[pool_id] = [str(p).strip() for p in peers]
     return out
 
@@ -190,8 +214,45 @@ def load_httpd_sites(path: Path) -> list[HttpdConfig]:
     return out
 
 
+def _validate_m15_profile(data: dict[str, Any]) -> None:
+    from httpd_m15 import (
+        ConfigError as M15Error,
+        validate_inference_require,
+        validate_m15_limits,
+        validate_route_match,
+    )
+
+    try:
+        validate_m15_limits(data)
+        validate_inference_require(data)
+        validate_route_match(data)
+    except M15Error as e:
+        raise ConfigError(str(e)) from e
+
+
+def _validate_tls_profile(data: dict[str, Any], path: Path) -> None:
+    from httpd_tls import ConfigError as TlsError, validate_tls_config
+
+    try:
+        validate_tls_config(data, path)
+    except TlsError as e:
+        raise ConfigError(str(e)) from e
+
+
+def _validate_rng_profile(data: dict[str, Any]) -> list[str]:
+    from httpd_rng import ConfigError as RngError, validate_rng_config_raise
+
+    try:
+        return validate_rng_config_raise(data)
+    except RngError as e:
+        raise ConfigError(str(e)) from e
+
+
 def load_httpd_full(path: Path) -> HttpdConfig:
     data = tomllib.loads(path.read_text(encoding="utf-8"))
+    _validate_m15_profile(data)
+    _validate_tls_profile(data, path)
+    _validate_rng_profile(data)
     if data.get("site") is not None:
         sites = load_httpd_sites(path)
         if len(sites) != 1:
@@ -248,6 +309,16 @@ def main() -> int:
         print("usage: httpd_config.py <config.toml> [--explain]", file=sys.stderr)
         return 2
     path = Path(sys.argv[1])
+    data = tomllib.loads(path.read_text(encoding="utf-8"))
+    from httpd_leak_censor import ConfigError as LeakCensorError, validate_leak_censor
+
+    try:
+        for warning in validate_leak_censor(data, path):
+            print(warning, file=sys.stderr)
+    except LeakCensorError as e:
+        raise ConfigError(str(e)) from e
+    for warning in _validate_rng_profile(data):
+        print(warning, file=sys.stderr)
     routes = load_httpd_config(path)
     if "--explain" in sys.argv:
         print(explain(routes), end="")

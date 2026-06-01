@@ -32,9 +32,9 @@ if [[ -z "${BENCHMARKS_ROOT:-}" ]]; then
       break
     fi
   done
-  # Lite fallback: vendored results/competitive only (no tier-0 run-bench.sh).
+  # Lite fallback: vendored results/competitive only when no sibling harness exists.
   if [[ -z "${BENCHMARKS_ROOT:-}" ]]; then
-    for _c in "$_lic/benchmarks"; do
+    for _c in "$_lic/benchmarks" "${LI_LANGVERSE_ROOT:-}/benchmarks" "${LANGVERSE:-}/benchmarks"; do
       if [[ -d "$_c/results" && -d "$_c/competitive" ]]; then
         BENCHMARKS_ROOT="$(cd "$_c" && pwd)"
         break

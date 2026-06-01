@@ -53,6 +53,9 @@ def flatten(cfg_path: Path, *, cert_dir: Path | None = None) -> list[str]:
     listen = server.get("listen")
     if listen:
         lines.append(f"listen_port={parse_listen(str(listen))}")
+    listen_http = server.get("listen_http")
+    if listen_http:
+        lines.append(f"listen_port_http={parse_listen(str(listen_http))}")
     root = server.get("document_root")
     if root:
         rp = Path(str(root))

@@ -104,6 +104,11 @@ if harness_py.is_file():
 peak_observed_mib = peak_rss_mib if peak_rss_mib is not None else peak_import_mib
 meets_budget = peak_observed_mib <= warn_peak_mib
 
+try:
+    registry_rel = str(registry_path.relative_to(root))
+except ValueError:
+    registry_rel = str(registry_path)
+
 doc = {
     "schema": "li_studio_memory_profile_v1",
     "generated_at": time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime()),
@@ -114,9 +119,7 @@ doc = {
     "peak_observed_mib": peak_observed_mib,
     "meets_budget": meets_budget,
     "rss_status": rss_status,
-    "registry_path": str(registry_path.relative_to(root))
-    if str(registry_path).startswith(str(root))
-    else str(registry_path),
+    "registry_path": registry_rel,
     "notes": [
         "import peak = tracemalloc after loading animate_md",
         "rss peak = --skip-export --max-frames 4 when /usr/bin/time available",

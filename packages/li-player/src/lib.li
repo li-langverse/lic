@@ -1,0 +1,118 @@
+import sim
+import studio
+
+# li-player — PH-GD-6 headless play + publish bundle ship from game profile (WP-GD-06).
+
+def li_player_version() -> int
+  requires true
+  ensures result == 1
+  decreases 0
+=
+  return 1
+
+def player_headless_tick_budget_default() -> int
+  requires true
+  ensures result == 4
+  decreases 0
+=
+  return 4
+
+def player_headless_dt_default() -> float
+  requires true
+  ensures result > 0.0
+  decreases 0
+=
+  return 0.016
+
+type PlayerShipResult = object
+  public ok: int
+  public bundle_magic: int
+  public headless_ticks: int
+  public world_tick: int
+  public entry_count: int
+  public world_sha256: float
+  public physics_steps: int
+
+def player_headless_play_tick(config: StudioProjectConfig, sim_out: var SimSessionStub, dt: float) -> int
+  requires studio_profile_id_valid(config.active_profile) == 1
+  requires config.active_profile == studio_profile_game()
+  requires sim_out.tick >= 0
+  requires dt > 0.0
+  ensures result >= 0
+  ensures result <= 1
+  decreases sim_out.tick
+=
+  if studio_sim_step_hook(config, sim_out, dt) != sim_status_ok():
+    return 0
+  return 1
+
+def player_headless_play(config: StudioProjectConfig, sim_out: var SimSessionStub, dt: float, tick_budget: int) -> int
+  requires studio_profile_id_valid(config.active_profile) == 1
+  requires config.active_profile == studio_profile_game()
+  requires sim_out.tick >= 0
+  requires dt > 0.0
+  requires tick_budget >= 1
+  requires tick_budget <= 64
+  ensures result >= 0
+  ensures result <= tick_budget
+  decreases tick_budget
+=
+  var i: int = 0
+  var played: int = 0
+  while i < tick_budget
+    if player_headless_play_tick(config, sim_out, dt) != 1:
+      return played
+    played = played + 1
+    i = i + 1
+  return played
+
+def player_publish_from_game(
+    config: StudioProjectConfig,
+    session: SimSessionStub,
+    sim_checksum: float,
+    viz_tick: int,
+    proof_pass: int) -> PlayerShipResult
+  requires studio_profile_id_valid(config.active_profile) == 1
+  requires config.active_profile == studio_profile_game()
+  requires session.tick >= 0
+  requires sim_checksum >= 0.0
+  requires viz_tick >= 1
+  requires viz_tick <= 64
+  ensures result.headless_ticks >= 0
+  ensures result.world_tick == session.tick
+  ensures result.physics_steps == session.game_physics_steps
+  decreases session.tick
+=
+  var r: PlayerShipResult
+  r.ok = 0
+  r.bundle_magic = 0
+  r.headless_ticks = session.tick
+  r.world_tick = session.tick
+  r.entry_count = 0
+  r.world_sha256 = 0.0
+  r.physics_steps = session.game_physics_steps
+  var chk: StudioWorldCheckpoint = studio_world_checkpoint_capture(config.active_profile, session)
+  if chk.valid != 1:
+    return r
+  var bundle: PublishBundleResult = studio_publish_bundle(config, chk, sim_checksum, viz_tick, proof_pass)
+  if bundle.ok != 1:
+    return r
+  r.ok = 1
+  r.bundle_magic = bundle.magic_tag
+  r.entry_count = bundle.entry_count
+  r.world_sha256 = bundle.world_sha256
+  return r
+
+def player_ship_game_demo(proof_pass: int) -> PlayerShipResult
+  requires proof_pass >= 0
+  requires proof_pass <= 1
+  ensures result.physics_steps >= 0
+  decreases proof_pass
+=
+  var cfg: StudioProjectConfig = studio_project_config_new(studio_profile_game())
+  var sess: SimSessionStub = sim_session_stub_default()
+  studio_apply_config_to_sim(cfg, sess)
+  var played: int = player_headless_play(cfg, sess, player_headless_dt_default(), player_headless_tick_budget_default())
+  var r: PlayerShipResult = player_publish_from_game(cfg, sess, 9.0, 8, proof_pass)
+  r.headless_ticks = played
+  return r

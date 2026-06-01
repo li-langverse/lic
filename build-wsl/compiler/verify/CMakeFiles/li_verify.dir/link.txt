@@ -1,0 +1,2 @@
+/usr/bin/ar Dqc libli_verify.a CMakeFiles/li_verify.dir/vc_summary.cpp.o CMakeFiles/li_verify.dir/vc_emit.cpp.o CMakeFiles/li_verify.dir/vc_emit_lean.cpp.o CMakeFiles/li_verify.dir/vc_witness.cpp.o CMakeFiles/li_verify.dir/call_requires.cpp.o
+/usr/bin/ranlib -D libli_verify.a

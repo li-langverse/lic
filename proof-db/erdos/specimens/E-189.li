@@ -1,0 +1,24 @@
+# E-189: If $\mathbb{R}^2$ is finitely coloured then must there exist some colour class which contains the vertices of a rectangle of every area?
+# erdos_number: 189
+# erdos_status: open
+# priority_tier: P2
+# tags: geometry, ramsey_theory
+
+def erdos_e189_if_mathbb_r_2_is_finitely_coloured_then() -> int
+  requires true
+  ensures result == 0  # open: E-189
+  decreases 0
+=
+  return 0
+
+extern proc erdos_e189_open_witness() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+
+def main() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0

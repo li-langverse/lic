@@ -1,0 +1,24 @@
+# E-814: Let $k\geq 2$ and $G$ be a graph with $n\geq k-1$ vertices and\[(k-1)(n-k+2)+\binom{k-2}{2}+1\]edges. Does there exist some $c_k>0$ such that $G$ must contain an induced subgraph on at most $(1-c_k)n$ vertices with minimum degree at least $k$?
+# erdos_number: 814
+# erdos_status: proved
+# priority_tier: P2
+# tags: graph_theory
+
+def erdos_e814_let_k_geq_2_and_g_be_a_graph_with_n_geq() -> int
+  requires true
+  ensures result == 0  # open: E-814
+  decreases 0
+=
+  return 0
+
+extern proc erdos_e814_open_witness() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+
+def main() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0

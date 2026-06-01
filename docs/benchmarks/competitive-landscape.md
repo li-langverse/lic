@@ -33,3 +33,15 @@ Li’s pillar order applies: **provability before speed**. Competitive intel inf
 5. **Gaps** — file master-plan **G-*** items when adoption needs a proof path.
 
 Agents: use skill `hpc-competitive-review`. Rule: `li-hpc-competitive.mdc`.
+## PH-ML tier-3 (Wave 8)
+
+| Framework | Row | Device | Gate required |
+|-----------|-----|--------|---------------|
+| NumPy BLAS | matmul_lkir | CPU | yes (baseline) |
+| PyTorch | matmul_lkir, mlp_forward | CPU (+ CUDA optional) | yes CPU |
+| JAX | matmul_lkir | CPU | yes |
+| TensorFlow | matmul_lkir | CPU | optional |
+| Triton | matmul_lkir | CUDA | optional (stub OK) |
+
+Registry: `benchmarks/competitive/ph-ml.toml`. Harness: `scripts/bench-ph-ml-competitive.sh`. Honest ratios in `benchmarks/results/ph-ml-competitive.json`.
+

@@ -1,0 +1,24 @@
+# E-604: Given $n$ distinct points $A\subset\mathbb{R}^2$ must there be a point $x\in A$ such that\[\#\{ d(x,y) : y \in A\} \gg n^{1-o(1)}?\]Or even $\gg n/\sqrt{\log n}$?
+# erdos_number: 604
+# erdos_status: open
+# priority_tier: P2
+# tags: distances, geometry
+
+def erdos_e604_given_n_distinct_points_a_subset_mathbb() -> int
+  requires true
+  ensures result == 0  # open: E-604
+  decreases 0
+=
+  return 0
+
+extern proc erdos_e604_open_witness() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+
+def main() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0

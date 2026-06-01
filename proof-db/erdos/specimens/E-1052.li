@@ -1,0 +1,24 @@
+# E-1052: A unitary divisor of $n$ is $d\mid n$ such that $(d,n/d)=1$. A number $n\geq 1$ is a unitary perfect number if it is the sum of its unitary divisors (aside from $n$ itself). Are there only finite many unitary perfect numbers?
+# erdos_number: 1052
+# erdos_status: open
+# priority_tier: P2
+# tags: number_theory
+
+def erdos_e1052_a_unitary_divisor_of_n_is_d_mid_n_such_t() -> int
+  requires true
+  ensures result == 0  # open: E-1052
+  decreases 0
+=
+  return 0
+
+extern proc erdos_e1052_open_witness() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+
+def main() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0

@@ -1,0 +1,119 @@
+import scene
+
+# li-assets — WP-GD-04 glTF ingest stub (mesh stats contract; pairs with world.li asset_ref).
+
+extern proc li_rt_world_default_asset_ref_path() -> str
+  requires true
+  ensures result != ""
+  decreases 0
+
+type GltfIngestMesh = object
+  public status: int
+  public vertex_count: int
+  public index_count: int
+  public primitive_count: int
+  public entity_slots: int
+
+def li_assets_version() -> int
+  requires true
+  ensures result == 1
+  decreases 0
+=
+  return 1
+
+def assets_gltf_status_ok() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0
+
+def assets_gltf_status_err() -> int
+  requires true
+  ensures result == 1
+  decreases 0
+=
+  return 1
+
+def assets_gltf_path_default() raises Alloc, IO -> str
+  requires true
+  ensures result != ""
+  decreases 0
+=
+  return li_rt_world_default_asset_ref_path()
+
+def assets_gltf_vertex_count_stub() -> int
+  requires true
+  ensures result == 24
+  decreases 0
+=
+  return 24
+
+def assets_gltf_index_count_stub() -> int
+  requires true
+  ensures result == 36
+  decreases 0
+=
+  return 36
+
+def assets_gltf_ingest_ok(mesh: GltfIngestMesh) -> int
+  requires true
+  ensures result >= 0
+  ensures result <= 1
+  decreases mesh.status
+=
+  if mesh.status != assets_gltf_status_ok():
+    return 0
+  if mesh.vertex_count <= 0:
+    return 0
+  if mesh.index_count <= 0:
+    return 0
+  if mesh.primitive_count <= 0:
+    return 0
+  if mesh.entity_slots <= 0:
+    return 0
+  return 1
+
+def assets_gltf_ingest_path(path: str) raises Alloc, IO -> GltfIngestMesh
+  requires true
+  ensures result.status >= assets_gltf_status_ok()
+  ensures result.status <= assets_gltf_status_err()
+  decreases 0
+=
+  var out: GltfIngestMesh
+  out.status = assets_gltf_status_err()
+  out.vertex_count = 0
+  out.index_count = 0
+  out.primitive_count = 0
+  out.entity_slots = 0
+  if path == "":
+    return out
+  out.status = assets_gltf_status_ok()
+  out.vertex_count = assets_gltf_vertex_count_stub()
+  out.index_count = assets_gltf_index_count_stub()
+  out.primitive_count = 1
+  out.entity_slots = 1
+  return out
+
+def assets_gltf_ingest_default() raises Alloc, IO -> GltfIngestMesh
+  requires true
+  ensures assets_gltf_ingest_ok(result) == 1
+  decreases 0
+=
+  return assets_gltf_ingest_path(assets_gltf_path_default())
+
+def assets_gltf_scene_attach(mesh: GltfIngestMesh, scene: var Scene) -> int
+  requires true
+  ensures result >= 0
+  ensures result <= 1
+  decreases mesh.entity_slots
+=
+  if assets_gltf_ingest_ok(mesh) != 1:
+    return 0
+  var node: SceneNode
+  node.id = entity_id_new(1)
+  node.parent = scene.root_id
+  node.transform = transform_identity()
+  node.physics_body = 0
+  scene_attach_node(scene, node)
+  return 1

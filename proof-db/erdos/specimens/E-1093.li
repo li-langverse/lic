@@ -1,0 +1,24 @@
+# E-1093: For $n\geq 2k$ we define the deficiency of $\binom{n}{k}$ as follows. If $\binom{n}{k}$ is divisible by a prime $p\leq k$ then the deficiency is undefined. Otherwise, the deficiency is the number of $0\leq i<k$ such that $n-i$ is $k$-smooth, that is, divisible only by primes $\leq k$. Are there infinitely many binomial coefficients with deficiency $1$? Are there only finitely many with deficiency $>1$?
+# erdos_number: 1093
+# erdos_status: open
+# priority_tier: P2
+# tags: binomial_coefficients, number_theory
+
+def erdos_e1093_for_n_geq_2k_we_define_the_deficiency_of() -> int
+  requires true
+  ensures result == 0  # open: E-1093
+  decreases 0
+=
+  return 0
+
+extern proc erdos_e1093_open_witness() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+
+def main() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0

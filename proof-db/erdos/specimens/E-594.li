@@ -1,0 +1,24 @@
+# E-594: Does every graph $G$ with chromatic number $\geq \aleph_1$ contain all sufficiently large odd cycles?
+# erdos_number: 594
+# erdos_status: proved
+# priority_tier: P2
+# tags: graph_theory, set_theory
+
+def erdos_e594_does_every_graph_g_with_chromatic_number() -> int
+  requires true
+  ensures result == 0  # open: E-594
+  decreases 0
+=
+  return 0
+
+extern proc erdos_e594_open_witness() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+
+def main() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0

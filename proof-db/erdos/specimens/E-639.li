@@ -1,0 +1,24 @@
+# E-639: Is it true that if the edges of $K_n$ are 2-coloured then there are at most $n^2/4$ many edges which do not occur in a monochromatic triangle?
+# erdos_number: 639
+# erdos_status: proved
+# priority_tier: P2
+# tags: graph_theory, ramsey_theory
+
+def erdos_e639_is_it_true_that_if_the_edges_of_k_n_are() -> int
+  requires true
+  ensures result == 0  # open: E-639
+  decreases 0
+=
+  return 0
+
+extern proc erdos_e639_open_witness() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+
+def main() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0

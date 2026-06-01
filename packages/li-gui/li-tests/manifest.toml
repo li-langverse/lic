@@ -15,3 +15,63 @@ suite = "smoke"
 file = "smoke/keyboard_journey.li"
 outcome = "compile_open_ok"
 note = "T-PKG-li-gui-keyboard-journey"
+
+[[tests]]
+suite = "smoke"
+file = "smoke/widget_protocol_measure_layout.li"
+outcome = "compile_open_ok"
+note = "T-PKG-li-gui-widget-protocol"
+
+[[tests]]
+suite = "smoke"
+file = "smoke/layout_engines_flex_grid.li"
+outcome = "compile_open_ok"
+note = "T-PKG-li-gui-layout-engines"
+
+[[tests]]
+suite = "smoke"
+file = "smoke/base_widgets.li"
+outcome = "compile_open_ok"
+note = "T-PKG-li-gui-base-widgets"
+
+[[tests]]
+suite = "smoke"
+file = "smoke/event_dispatcher_hit_focus.li"
+outcome = "compile_open_ok"
+note = "T-PKG-li-gui-event-dispatcher"
+
+[[tests]]
+suite = "smoke"
+file = "smoke/focus_model_roving_tab.li"
+outcome = "compile_open_ok"
+note = "T-PKG-li-gui-focus-model"
+
+[[tests]]
+suite = "smoke"
+file = "smoke/inspector_pilot_widget.li"
+outcome = "compile_open_ok"
+note = "T-PKG-li-gui-inspector-pilot"
+
+[[tests]]
+suite = "smoke"
+file = "smoke/shell_widget_tree_all_regions.li"
+outcome = "check_ok"
+note = "W4: ShellWidgetTree all shell regions + reactive store params"
+
+[[tests]]
+suite = "smoke"
+file = "smoke/reactive_store_derived.li"
+outcome = "compile_open_ok"
+note = "T-PKG-li-gui-reactive-store"
+
+[[tests]]
+suite = "smoke"
+file = "smoke/compose_dep_invalidation.li"
+outcome = "compile_open_ok"
+note = "T-PKG-li-gui-compose-deps"
+
+[[tests]]
+suite = "smoke"
+file = "smoke/compose_cache_partial_recompose.li"
+outcome = "compile_open_ok"
+note = "T-PKG-li-gui-compose-cache"

@@ -290,4 +290,226 @@ def run_robotics_smoke() -> int
   var over: float = robo_arm_clamp_torque(20.0, tau_cap)
   if over != tau_expect:
     return 4
+  if sim_robotics_6dof_ik_smoke() != 0:
+    return 5
+  return 0
+
+# WP-ROBO-03 — 6-DOF numeric IK stub (target pose → joint angles; session-persistent via env_last_obs0..5).
+
+type RoboArm6DofState = object
+  public j0_rad: float
+  public j1_rad: float
+  public j2_rad: float
+  public j3_rad: float
+  public j4_rad: float
+  public j5_rad: float
+
+type RoboArm6DofTarget = object
+  public ee_x: float
+  public ee_y: float
+  public ee_z: float
+
+type RoboArmFk3D = object
+  public ee_x: float
+  public ee_y: float
+  public ee_z: float
+
+type RoboArm6DofSpec = object
+  public link_len_m: float
+  public torque_max_nm: float
+  public ws_min_x: float
+  public ws_min_y: float
+  public ws_min_z: float
+  public ws_max_x: float
+  public ws_max_y: float
+  public ws_max_z: float
+
+def robo_arm_6dof_spec_default() -> RoboArm6DofSpec
+  requires true
+  ensures result.link_len_m == 0.15
+  ensures result.torque_max_nm == 10.0
+  decreases 0
+=
+  var s: RoboArm6DofSpec
+  s.link_len_m = 0.15
+  s.torque_max_nm = 10.0
+  s.ws_min_x = -0.2
+  s.ws_min_y = -0.2
+  s.ws_min_z = 0.0
+  s.ws_max_x = 0.95
+  s.ws_max_y = 0.95
+  s.ws_max_z = 1.2
+  return s
+
+def robo_arm_6dof_state_default() -> RoboArm6DofState
+  requires true
+  ensures result.j0_rad == 0.3
+  ensures result.j1_rad == 0.2
+  decreases 0
+=
+  var st: RoboArm6DofState
+  st.j0_rad = 0.3
+  st.j1_rad = 0.2
+  st.j2_rad = 0.1
+  st.j3_rad = 0.05
+  st.j4_rad = 0.0
+  st.j5_rad = 0.0
+  return st
+
+def robo_arm_6dof_clamp_joint(j: float) -> float
+  requires true
+  ensures result >= -1.5
+  ensures result <= 1.5
+  decreases 0
+=
+  if j > 1.5:
+    return 1.5
+  if j < -1.5:
+    return -1.5
+  return j
+
+def robo_arm_6dof_fk(st: RoboArm6DofState, spec: RoboArm6DofSpec) -> RoboArmFk3D
+  requires spec.link_len_m > 0.0
+  ensures result.ee_x >= 0.0
+  ensures result.ee_z >= 0.0
+  decreases 0
+=
+  var fk2: RoboArmFk = robo_arm_fk(spec.link_len_m * 2.0, spec.link_len_m * 1.5, st.j0_rad, st.j1_rad)
+  var fk: RoboArmFk3D
+  fk.ee_x = fk2.ee_x
+  fk.ee_y = fk2.ee_y
+  fk.ee_z = spec.link_len_m * (st.j2_rad + st.j3_rad * 0.5 + st.j4_rad * 0.25 + st.j5_rad * 0.125)
+  return fk
+
+def robo_workspace_contains_3d(ws_min_x: float, ws_min_y: float, ws_min_z: float, ws_max_x: float, ws_max_y: float, ws_max_z: float, x: float, y: float, z: float) -> int
+  requires ws_min_x <= ws_max_x
+  requires ws_min_y <= ws_max_y
+  requires ws_min_z <= ws_max_z
+  ensures result >= 0
+  ensures result <= 1
+  decreases 0
+=
+  if robo_workspace_contains(ws_min_x, ws_min_y, ws_max_x, ws_max_y, x, y) != 1:
+    return 0
+  if z < ws_min_z:
+    return 0
+  if z > ws_max_z:
+    return 0
+  return 1
+
+def sim_robotics_6dof_workspace_ok(spec: RoboArm6DofSpec, st: RoboArm6DofState) -> int
+  requires spec.link_len_m > 0.0
+  ensures result >= 0
+  ensures result <= 1
+  decreases 0
+=
+  var fk: RoboArmFk3D = robo_arm_6dof_fk(st, spec)
+  return robo_workspace_contains_3d(spec.ws_min_x, spec.ws_min_y, spec.ws_min_z, spec.ws_max_x, spec.ws_max_y, spec.ws_max_z, fk.ee_x, fk.ee_y, fk.ee_z)
+
+def sim_robotics_ik_target_for_tick(tick: int) -> RoboArm6DofTarget
+  requires tick >= 0
+  requires tick <= 64
+  ensures result.ee_x >= 0.3
+  decreases tick
+=
+  var t: RoboArm6DofTarget
+  var ti: float = 0.01 * env_tick_as_float(tick)
+  t.ee_x = 0.4 + ti
+  t.ee_y = 0.2 + (ti * 0.5)
+  t.ee_z = 0.35 + (ti * 0.25)
+  return t
+
+def robo_arm_6dof_ik_numeric_step(st: var RoboArm6DofState, target: RoboArm6DofTarget, spec: RoboArm6DofSpec, gain: float) -> int
+  requires spec.link_len_m > 0.0
+  requires gain > 0.0
+  requires gain <= 1.0
+  ensures result >= 0
+  ensures result <= 1
+  decreases 0
+=
+  var fk: RoboArmFk3D = robo_arm_6dof_fk(st, spec)
+  var err_x: float = target.ee_x - fk.ee_x
+  var err_y: float = target.ee_y - fk.ee_y
+  var err_z: float = target.ee_z - fk.ee_z
+  st.j0_rad = robo_arm_6dof_clamp_joint(st.j0_rad + gain * err_x * 0.15)
+  st.j1_rad = robo_arm_6dof_clamp_joint(st.j1_rad + gain * err_y * 0.15)
+  st.j2_rad = robo_arm_6dof_clamp_joint(st.j2_rad + gain * err_z * 0.12)
+  st.j3_rad = robo_arm_6dof_clamp_joint(st.j3_rad + gain * (err_x + err_y) * 0.08)
+  st.j4_rad = robo_arm_6dof_clamp_joint(st.j4_rad + gain * err_z * 0.06)
+  st.j5_rad = robo_arm_6dof_clamp_joint(st.j5_rad + gain * (err_x - err_y) * 0.05)
+  return sim_robotics_6dof_workspace_ok(spec, st)
+
+def sim_robotics_arm6_from_session(session: SimSessionStub) -> RoboArm6DofState
+  requires session.tick >= 0
+  ensures result.j0_rad == session.env_last_obs0
+  ensures result.j1_rad == session.env_last_obs1
+  decreases session.tick
+=
+  var st: RoboArm6DofState
+  st.j0_rad = session.env_last_obs0
+  st.j1_rad = session.env_last_obs1
+  st.j2_rad = session.env_last_obs2
+  st.j3_rad = session.env_last_obs3
+  st.j4_rad = session.env_last_obs4
+  st.j5_rad = session.env_last_obs5
+  return st
+
+def sim_robotics_arm6_to_session(session: var SimSessionStub, st: RoboArm6DofState) -> unit
+  requires session.tick >= 0
+  ensures session.env_last_obs0 == st.j0_rad
+  ensures session.env_last_obs5 == st.j5_rad
+  decreases session.tick
+=
+  session.env_last_obs0 = st.j0_rad
+  session.env_last_obs1 = st.j1_rad
+  session.env_last_obs2 = st.j2_rad
+  session.env_last_obs3 = st.j3_rad
+  session.env_last_obs4 = st.j4_rad
+  session.env_last_obs5 = st.j5_rad
+
+def sim_robotics_session_ik_step(session: var SimSessionStub, dt: float) -> int
+  requires session.tick >= 0
+  requires session.tick <= 64
+  requires dt > 0.0
+  ensures result >= 0
+  ensures result <= 1
+  decreases session.tick
+=
+  var st: RoboArm6DofState = sim_robotics_arm6_from_session(session)
+  if session.tick == 0:
+    if st.j0_rad == 0.0:
+      st = robo_arm_6dof_state_default()
+  var spec: RoboArm6DofSpec = robo_arm_6dof_spec_default()
+  var next_tick: int = session.tick + 1
+  if next_tick > 64:
+    next_tick = 64
+  var target: RoboArm6DofTarget = sim_robotics_ik_target_for_tick(next_tick)
+  if robo_arm_6dof_ik_numeric_step(st, target, spec, 0.5) != 1:
+    return 0
+  sim_robotics_arm6_to_session(session, st)
+  return 1
+
+def sim_robotics_6dof_ik_smoke() -> int
+  requires true
+  ensures result >= 0
+  ensures result <= 6
+  decreases 0
+=
+  var spec: RoboArm6DofSpec = robo_arm_6dof_spec_default()
+  var st: RoboArm6DofState = robo_arm_6dof_state_default()
+  if sim_robotics_6dof_workspace_ok(spec, st) != 1:
+    return 1
+  var target: RoboArm6DofTarget = sim_robotics_ik_target_for_tick(1)
+  var j0_before: float = st.j0_rad
+  if robo_arm_6dof_ik_numeric_step(st, target, spec, 0.5) != 1:
+    return 2
+  if st.j0_rad == j0_before:
+    return 3
+  var sess: SimSessionStub = sim_session_stub_default()
+  if sim_robotics_session_ik_step(sess, 0.01) != 1:
+    return 4
+  if sess.env_last_obs0 <= 0.0:
+    return 5
+  if sim_robotics_arm6_from_session(sess).j0_rad != sess.env_last_obs0:
+    return 6
   return 0

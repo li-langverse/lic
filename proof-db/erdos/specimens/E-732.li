@@ -1,0 +1,24 @@
+# E-732: Call a sequence $1< X_1\leq \cdots \leq X_m\leq n$ block-compatible if there is a pairwise balanced block design $A_1,\ldots,A_m\subseteq \{1,\ldots,n\}$ such that $\lvert A_i\rvert=X_i$ for $1\leq i\leq m$. (A pairwise block design means that every pair in $\{1,\ldots,n\}$ is contained in exactly one of the $A_i$.) Are there necessary and sufficient conditions for $(X_i)$ to be block-compatible? Is there some constant $c>0$ such that for all large $n$ there are\[\geq \exp(c n^{1/2}\log n)\]many block-compatible sequences for $\{1,\ldots,n\}$?
+# erdos_number: 732
+# erdos_status: proved
+# priority_tier: P2
+# tags: combinatorics
+
+def erdos_e732_call_a_sequence_1_x_1_leq_cdots_leq_x_m() -> int
+  requires true
+  ensures result == 0  # open: E-732
+  decreases 0
+=
+  return 0
+
+extern proc erdos_e732_open_witness() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+
+def main() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0

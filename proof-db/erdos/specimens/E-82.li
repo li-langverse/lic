@@ -1,0 +1,24 @@
+# E-82: For any finite set of primes, can every sufficiently large integer be written as a sum of prime powers from that set?
+# erdos_number: 82
+# erdos_status: open
+# priority_tier: P2
+# tags: additive_number_theory, primes
+
+def erdos_e82_for_any_finite_set_of_primes_can_every_s() -> int
+  requires true
+  ensures result == 0  # open: E-82
+  decreases 0
+=
+  return 0
+
+extern proc erdos_e82_open_witness() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+
+def main() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0

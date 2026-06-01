@@ -1,0 +1,24 @@
+# E-356: Is there some $c>0$ such that, for all sufficiently large $n$, there exist integers $a_1<\cdots<a_k\leq n$ such that there are at least $cn^2$ distinct integers of the form $\sum_{u\leq i\leq v}a_i$?
+# erdos_number: 356
+# erdos_status: proved
+# priority_tier: P2
+# tags: number_theory
+
+def erdos_e356_is_there_some_c_0_such_that_for_all_suff() -> int
+  requires true
+  ensures result == 0  # open: E-356
+  decreases 0
+=
+  return 0
+
+extern proc erdos_e356_open_witness() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+
+def main() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0

@@ -5,7 +5,7 @@ def main() -> int
   ensures result == 0
   decreases 0
 =
-  if li_studio_ai_version() != 0:
+  if li_studio_ai_version() != 1:
     return 1
   var task: StudioAiTaskState = studio_ai_create_task("hello")
   if task.status != studio_ai_task_idle():

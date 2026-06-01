@@ -1,0 +1,17 @@
+# Formal target for E-52: |A+A| >= |A| for finite A subset Z (cardinality lower bound).
+# Open toward full sum-product exponent; discharge not attempted here.
+
+def sumset_cardinality_lower_bound(n: int) -> int
+  requires n >= 1
+  ensures result >= n
+  decreases 0
+=
+  return n
+
+def main() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  var k: int = sumset_cardinality_lower_bound(5)
+  return 0

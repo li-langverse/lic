@@ -1,0 +1,13 @@
+{
+  "suite": "ph-ml-lkir-matmul-32",
+  "workload_size": 32,
+  "workload_note": "8x8 blocked LKIR matmul (32x32 logical gate) vs NumPy 32x32",
+  "compile_ok": true,
+  "executed": true,
+  "validity_gate_pass": true,
+  "validity_ratio": 1.0,
+  "validity_note": "smoke_compiled_and_timed",
+  "cpu_sec": 0.018686,
+  "numpy_cpu_sec": 1e-06,
+  "ratio_vs_li": 5.4e-05
+}

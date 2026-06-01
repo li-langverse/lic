@@ -290,3 +290,115 @@ def viz_smoke_entry() -> int
   if s4.pending_apply != 0:
     return 0
   return 7000 + count * 11 + s4.inspector_section
+
+# WP-SCI-04 — pipeline panel state → viewport field contract (compose-time; not wgpu volume draw).
+type VizViewportFields = object
+  public inspector_section: int
+  public display_rep: int
+  public source_count: int
+  public tier_label_visible: int
+  public particle_dots_visible: int
+  public biomol_chip_visible: int
+  public field_panel_active: int
+
+def viz_viewport_particle_dot_count_for_rep(rep_id: int) -> int
+  requires rep_id >= viz_display_rep_surface()
+  requires rep_id <= viz_display_rep_points()
+  ensures result >= 0
+  ensures result <= 8
+  decreases rep_id
+=
+  if rep_id == viz_display_rep_surface():
+    return 4
+  if rep_id == viz_display_rep_wireframe():
+    return 8
+  return 8
+
+def viz_pipeline_to_viewport_fields(state: VizPipelineState) -> VizViewportFields
+  requires state.profile_id == viz_profile_sim_scientific()
+  ensures result.inspector_section == state.inspector_section
+  ensures result.display_rep == state.display_rep
+  ensures result.source_count == state.source_count
+  decreases state.source_count
+=
+  var f: VizViewportFields
+  f.inspector_section = state.inspector_section
+  f.display_rep = state.display_rep
+  f.source_count = state.source_count
+  f.tier_label_visible = 0
+  f.particle_dots_visible = 0
+  f.biomol_chip_visible = 0
+  f.field_panel_active = state.inspector_section
+  if state.source_count >= 1:
+    f.tier_label_visible = 1
+  if state.inspector_section == viz_inspector_section_properties():
+    f.tier_label_visible = 1
+  if state.inspector_section == viz_inspector_section_display():
+    if state.display_rep >= viz_display_rep_surface():
+      f.particle_dots_visible = 1
+  if state.inspector_section == viz_inspector_section_view():
+    f.particle_dots_visible = 1
+    f.biomol_chip_visible = 1
+  if state.pending_apply == 0:
+    if state.inspector_section == viz_inspector_section_display():
+      f.particle_dots_visible = 1
+  return f
+
+def viz_pipeline_viewport_particle_dots(state: VizPipelineState) -> int
+  requires state.profile_id == viz_profile_sim_scientific()
+  ensures result >= 0
+  ensures result <= 8
+  decreases state.display_rep
+=
+  var fields: VizViewportFields = viz_pipeline_to_viewport_fields(state)
+  if fields.particle_dots_visible != 1:
+    return 0
+  return viz_viewport_particle_dot_count_for_rep(state.display_rep)
+
+def viz_pipeline_viewport_ok(state: VizPipelineState, tier_id: int, tier_particles: int) -> int
+  requires state.profile_id == viz_profile_sim_scientific()
+  requires tier_id >= -1
+  requires tier_particles >= 0
+  ensures result >= 0
+  ensures result <= 1
+  decreases state.source_count
+=
+  if state.source_count < 1:
+    return 0
+  if tier_id < 0:
+    return 0
+  if tier_particles <= 0:
+    return 0
+  var fields: VizViewportFields = viz_pipeline_to_viewport_fields(state)
+  if fields.tier_label_visible != 1:
+    return 0
+  if state.inspector_section == viz_inspector_section_display():
+    if fields.particle_dots_visible != 1:
+      return 0
+    if viz_pipeline_viewport_particle_dots(state) <= 0:
+      return 0
+  if state.inspector_section == viz_inspector_section_view():
+    if fields.biomol_chip_visible != 1:
+      return 0
+  return 1
+
+def viz_pipeline_scientific_step(state: VizPipelineState, tick: int) -> VizPipelineState
+  requires state.profile_id == viz_profile_sim_scientific()
+  requires tick >= 1
+  requires tick <= 64
+  ensures result.profile_id == viz_profile_sim_scientific()
+  decreases tick
+=
+  var s: VizPipelineState = state
+  if s.source_count <= 0:
+    s = viz_pipeline_add_source(s, viz_source_kind_sphere())
+  if tick >= 2:
+    if s.source_count < 2:
+      s = viz_pipeline_add_source(s, viz_source_kind_box())
+  if tick >= 3:
+    s = viz_pipeline_set_inspector_section(s, viz_inspector_section_display())
+  if tick >= 5:
+    s = viz_pipeline_set_display_rep(s, viz_display_rep_wireframe())
+  if tick >= 8:
+    s = viz_pipeline_apply(s)
+  return s

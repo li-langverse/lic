@@ -8,7 +8,7 @@ source "$ROOT/scripts/lib/benchmarks-env.sh"
 
 HTTPD="${LI_HTTPD_BIN:-$ROOT/build/li-httpd}"
 HARNESS="$BENCHMARKS_ROOT/harness"
-export PYTHONPATH="$HARNESS${PYTHONPATH:+:$PYTHONPATH}"
+export PYTHONPATH="$HARNESS:$ROOT/scripts${PYTHONPATH:+:$PYTHONPATH}"
 export LI_HTTPD_BIN="$HTTPD"
 export PATH="/usr/sbin:/usr/local/bin:${PATH:-}"
 

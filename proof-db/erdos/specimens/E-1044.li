@@ -1,0 +1,24 @@
+# E-1044: Let $f(z)=\prod_{i=1}^n(z-z_i)\in\mathbb{C}[x]$ where $\lvert z_i\rvert\leq 1$ for all $i$. If $\Lambda(f)$ is the maximum of the lengths of the boundaries of the connected components of\[\{ z: \lvert f(z)\rvert<1\}\]then determine the infimum of $\Lambda(f)$.
+# erdos_number: 1044
+# erdos_status: open
+# priority_tier: P2
+# tags: analysis
+
+def erdos_e1044_let_f_z_prod_i_1_n_z_z_i_in_mathbb_c_x_w() -> int
+  requires true
+  ensures result == 0  # open: E-1044
+  decreases 0
+=
+  return 0
+
+extern proc erdos_e1044_open_witness() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+
+def main() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0

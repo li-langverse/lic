@@ -1,0 +1,24 @@
+# E-380: We call an interval $[u,v]$ 'bad' if the greatest prime factor of $\prod_{u\leq m\leq v}m$ occurs with an exponent greater than $1$. Let $B(x)$ count the number of $n\leq x$ which are contained in at least one bad interval. Is it true that\[B(x)\sim \#\{ n\leq x: P(n)^2\mid n\},\]where $P(n)$ is the largest prime factor of $n$?
+# erdos_number: 380
+# erdos_status: proved
+# priority_tier: P2
+# tags: number_theory
+
+def erdos_e380_we_call_an_interval_u_v_bad_if_the_great() -> int
+  requires true
+  ensures result == 0  # open: E-380
+  decreases 0
+=
+  return 0
+
+extern proc erdos_e380_open_witness() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+
+def main() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0

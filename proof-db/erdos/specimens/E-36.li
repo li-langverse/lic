@@ -1,0 +1,24 @@
+# E-36: Find the optimal constant $c>0$ such that the following holds. For all sufficiently large $N$, if $A\sqcup B=\{1,\ldots,2N\}$ is a partition into two equal parts, so that $\lvert A\rvert=\lvert B\rvert=N$, then there is some $x$ such that the number of solutions to $a-b=x$ with $a\in A$ and $b\in B$ is at least $cN$.
+# erdos_number: 36
+# erdos_status: open
+# priority_tier: P2
+# tags: additive_combinatorics, number_theory
+
+def erdos_e36_find_the_optimal_constant_c_0_such_that() -> int
+  requires true
+  ensures result == 0  # open: E-36
+  decreases 0
+=
+  return 0
+
+extern proc erdos_e36_open_witness() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+
+def main() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0

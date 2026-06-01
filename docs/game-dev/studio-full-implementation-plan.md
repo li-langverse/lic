@@ -135,11 +135,11 @@ Cross-tracks (not separate phases above): **PH-PORT**, **PH-COMPLY**, **PH-CIN**
 | ID | Title | Profile | State | Target | Proof gate | Cx | Blocks | Par? |
 |----|-------|---------|-------|--------|------------|-----|--------|------|
 | WP-GD-01 | Studio shell MVP | game | **done** | Outliner, timeline, demo bin | `lic check packages/li-studio/li-tests/smoke/studio_shell_demo.li` | M | PH-GD-0 | N |
-| WP-GD-02 | World snapshot checkpoint | game | **partial** | Post-tick `WorldSnapshot` validity | `studio_sim_step_by_profile.li` | S | WP-GD-01 | Y |
-| WP-GD-03 | `world.li` text save/load | game | stub | Serialize snapshot + assets refs | composable `import_world_roundtrip.li` | M | WP-GD-02 | N |
+| WP-GD-02 | World snapshot checkpoint | game | **done** | Post-tick `WorldSnapshot` validity | `studio_world_checkpoint_after_tick.li` | S | WP-GD-01 | Y |
+| WP-GD-03 | `world.li` text save/load | game | **done** | Serialize snapshot + assets refs | composable `import_world_roundtrip.li` | M | WP-GD-02 | N |
 | WP-GD-04 | glTF ingest (`li-assets`) | game | stub | Load mesh into scene | `lic check packages/li-assets/...` | M | WP-GD-03 | Y |
 | WP-GD-05 | `li-render` PBR-lite | game, sim_scientific | stub | wgpu draw list | `viewport_fps.toml` not `stub_pass` | L | PH-HW-2 | N |
-| WP-GD-06 | `li-player` publish | game | stub | Headless play + ship bundle | smoke `player_publish.li` | L | WP-GD-03, WP-GD-05 | N |
+| WP-GD-06 | `li-player` publish | game | **done** | Headless play + ship bundle | smoke `player_publish.li` | L | WP-GD-03, WP-GD-05 | Y |
 | WP-GD-07 | `studio.gen` / AI patch hooks | game | stub | `world.apply_patch` contract | `lic check` + MCP tool | M | PH-AGENT-2 | N |
 
 ### 3.3 PH-SIM
@@ -149,9 +149,9 @@ Cross-tracks (not separate phases above): **PH-PORT**, **PH-COMPLY**, **PH-CIN**
 | WP-SIM-00 | Profile bridge SIM-0 | all sim | **done** | `sim_session_apply_studio_profile` | `studio_profile_bridge.li` | S | — | N |
 | WP-SIM-01 | Session tick SIM-1 | all sim | **done** | `sim_reset`/`sim_step` | `sim_step_stub.li` | S | WP-SIM-00 | N |
 | WP-SIM-02 | Replay metadata SIM-2 | all sim | **done** | `sim_session_replay_*` | `sim_replay_stub.li` | S | WP-SIM-01 | Y |
-| WP-SIM-03 | RL EnvPool SIM-3 | sim_rl | **done** | Persistent pool + obs contract | `env_pool_step_contract.li` | M | WP-SIM-01 | Y |
+| WP-SIM-03 | RL EnvPool SIM-3 | sim_rl | **done** | Persistent pool + obs contract | `env_pool_step_contract.li`, `env_pool_session_persistent.li` | M | WP-SIM-01 | Y |
 | WP-SIM-04 | Full `SimWorld` replay buffer | all sim | stub | Entity/state ring buffer | composable replay roundtrip | L | WP-SIM-02 | N |
-| WP-SIM-05 | Sensor bus stub | sim_automotive, sim_robotics | **done** | `sim.sensors` raycast IDs | `sensor_bus_raycast_contract.li` | M | WP-SIM-01 | Y |
+| WP-SIM-05 | Sensor bus stub | sim_automotive, sim_robotics | **partial** | `sim.sensors` raycast IDs | `sensor_bus_raycast_contract.li` | M | WP-SIM-01 | Y |
 | WP-SIM-06 | `studio.toml` engine section | all | **partial** | Parse `determinism_tier`, export | example vertical `studio.toml` | S | WP-SIM-00 | Y |
 
 ### 3.4 PH-UX
@@ -160,12 +160,12 @@ Cross-tracks (not separate phases above): **PH-PORT**, **PH-COMPLY**, **PH-CIN**
 |----|-------|---------|-------|--------|------------|-----|--------|------|
 | WP-UX-01 | Viewport grid + selection ring | game | **partial** | Depth cues in compose | `studio_shell_demo.li` | S | WP-GD-01 | Y |
 | WP-UX-02 | Timeline playback | game | **partial** | Playhead from `sim_step` tick | `studio_timeline_playback.li` | S | WP-GD-01 | Y |
-| WP-UX-03 | Inspector fields | sim_robotics, game | **partial** | ≥2 rows on selection | `studio_inspector_fields.li` | S | WP-GD-01 | Y |
+| WP-UX-03 | Inspector fields | sim_robotics, game | **partial** | ≥2 rows on selection + live joint encode | `studio_inspector_fields.li`, `studio_sim_robotics_inspector.li` | S | WP-GD-01 | Y |
 | WP-UX-04 | Command palette | all | **done** | ⌘K overlay + action dispatch | `studio_command_palette.li` | S | WP-GD-01 | Y |
 | WP-UX-05 | Profile chip + TOML | all 7 | **done** | `studio_vertical_profile_roundtrip.li` | smoke | S | WP-SIM-00 | Y |
 | WP-UX-06 | Agent chrome | sim_rl, sim_drug | **partial** | Task states + cancel | `studio_agent_*.li` | M | WP-GD-01 | Y |
 | WP-UX-07 | Empty states | all | **partial** | Inspector/viewport hints | smokes | S | WP-GD-01 | Y |
-| WP-UX-08 | Viewport error recovery | all | **partial** | GPU/asset overlay | `studio_viewport_error.li` | S | WP-GD-05 | Y |
+| WP-UX-08 | Viewport error recovery | all | **done** | GPU/asset overlay + wgpu probe | `studio_viewport_error.li` | S | WP-GD-05 | Y |
 | WP-UX-09 | Keyboard-first (SDL/mock) | all | **partial** | `InputState` bridge | `studio_keyboard_input_json.li` | M | PH-HW-3 | Y |
 | WP-UX-10 | WCAG contrast measured | all | stub | Real ratio from host | `studio_accessibility.li` fails ratio | M | WP-GD-05 | Y |
 | WP-UX-11 | Loading skeleton | all | **partial** | 4 fill cmds | `studio_shell_loading.li` | S | WP-GD-01 | Y |
@@ -178,7 +178,7 @@ Cross-tracks (not separate phases above): **PH-PORT**, **PH-COMPLY**, **PH-CIN**
 | ID | Title | Profile | State | Target | Proof gate | Cx | Blocks | Par? |
 |----|-------|---------|-------|--------|------------|-----|--------|------|
 | WP-AG-01 | MCP tool registry AGENT-0 | all | **done** | Stable tool IDs | `studio_mcp_tools.li` | S | — | Y |
-| WP-AG-02 | In-process dispatch AGENT-1 | all | **partial** | `studio_mcp_tool_dispatch` + `StudioAgentRun` state model | `studio_mcp_dispatch_run.li`, `studio_agentic_run.li` | M | WP-AG-01 | Y |
+| WP-AG-02 | In-process dispatch AGENT-1 | all | **done** | `studio_mcp_tool_dispatch` + `StudioAgentRun` state model | `studio_mcp_dispatch_run.li`, `studio_agentic_run.li` | M | WP-AG-01 | Y |
 | WP-AG-03 | `lis mcp li-engine` HTTP server | all | stub | Wire tools to studio | integration smoke | L | WP-AG-02 | N |
 | WP-AG-04 | `@cursor/sdk` apply_patch loop | all | stub | Prompt → patch → `lic check` | agent eval set | L | WP-AG-03, WP-GD-07 | N |
 | WP-AG-05 | `chem_dft_run` / `am_export_print` live | sim_drug, sim_additive | stub | Domain dispatch | composable per tool | M | WP-AG-03 | Y |
@@ -189,7 +189,7 @@ Cross-tracks (not separate phases above): **PH-PORT**, **PH-COMPLY**, **PH-CIN**
 |----|-------|-------|--------|------------|-----|--------|------|
 | WP-ROBO-01 | ROBO-0 tick + workspace | **done** | `sim_robotics_tick_at` | `tick_stub.li`, `import_sim_robotics_workspace.li` | S | WP-SIM-01 | Y |
 | WP-ROBO-02 | 2-DOF FK + torque (partial) | **partial** | `robo_arm_*` | `arm_workspace.li` | M | WP-ROBO-01 | Y |
-| WP-ROBO-03 | IK stub → numeric | stub | Target pose → joint angles | smoke IK | L | WP-ROBO-02, math quat | N |
+| WP-ROBO-03 | IK stub → numeric | **partial** | Target pose → joint angles (6-DOF) | `robo_ik_6dof.li`, `studio_sim_robotics_inspector.li` | L | WP-ROBO-02, math quat | N |
 | WP-ROBO-04 | Factory cell layout | stub | Multi-arm scene | composable | L | WP-ROBO-03 | N |
 | WP-ROBO-05 | ROS2 bridge (trusted) | stub | `extern` joint state | audit log | L | PH-COMPLY | N |
 
@@ -199,7 +199,7 @@ Cross-tracks (not separate phases above): **PH-PORT**, **PH-COMPLY**, **PH-CIN**
 |----|-------|-------|--------|------------|-----|--------|------|
 | WP-AM-01 | AM-0 slicer workflow | **done** | slice→preview→export | `import_sim_additive_slicer_workflow.li` | M | WP-SIM-01 | Y |
 | WP-AM-02 | `require_sim_pass` thermal gate | stub | `heat_equation` witness | tier-2 heat + composable | L | PH-SCI-2 | N |
-| WP-AM-03 | `sim.export.print` 3MF/G-code | stub | Printer profile TOML | smoke export | M | WP-AM-02, WP-UX-14 | N |
+| WP-AM-03 | `sim.export.print` 3MF/G-code | **done** | `sim_export_print` + `studio_am_export_three_click_flow` | `sim_export_print.li`, `studio_am_export_three_click.li` | M | WP-AM-02, WP-UX-14 | N |
 | WP-AM-04 | OctoPrint-class send (trusted) | stub | Audited HTTP | compliance log | L | WP-AM-03 | N |
 
 ### 3.8 PH-DRUG (`sim_drug_design`)
@@ -208,7 +208,7 @@ Cross-tracks (not separate phases above): **PH-PORT**, **PH-COMPLY**, **PH-CIN**
 |----|-------|-------|--------|------------|-----|--------|------|
 | WP-DRUG-01 | DRUG-0 LITL workflow | **done** | Five-stage stub | `import_sim_drug_design_litl_workflow.li` | M | WP-SIM-01 | Y |
 | WP-DRUG-02 | DRUG-1 adaptive inspector | **partial** | Stage from tick | `studio_adaptive_drug_inspector.li` | S | WP-DRUG-01 | Y |
-| WP-DRUG-03 | `studio.adaptive` role layouts | stub | Panel sets per stage | composable + UX-07 | M | WP-DRUG-02 | N |
+| WP-DRUG-03 | `studio.adaptive` role layouts | **partial** | Panel sets per stage | composable + UX-07 | M | WP-DRUG-02 | N |
 | WP-DRUG-04 | Live `chem.dft` queue | stub | QM job status in UI | `chem_dft_run` MCP | L | PH-QM-1 | N |
 | WP-DRUG-05 | Lab ingest + retrain hook | stub | Assay CSV witness | bioeng composable | L | WP-DRUG-04 | N |
 
@@ -243,9 +243,9 @@ Cross-tracks (not separate phases above): **PH-PORT**, **PH-COMPLY**, **PH-CIN**
 
 | ID | Title | State | Target | Proof gate | Cx | Blocks | Par? |
 |----|-------|-------|--------|------------|-----|--------|------|
-| WP-PUB-01 | `studio.publish.figure` | stub | SVG/PDF vector | composable | M | WP-UX-12 | Y |
-| WP-PUB-02 | HDF5/CSV export | stub | Scientific tables | smoke | M | WP-SCI-04 | Y |
-| WP-PUB-03 | Reproducibility bundle | stub | `publish.zip` manifest | `publish_bundle` MCP | L | WP-PUB-01, WP-SIM-04 | N |
+| WP-PUB-01 | `studio.publish.figure` | **done** | SVG/PDF vector | composable | M | WP-UX-12 | Y |
+| WP-PUB-02 | HDF5/CSV export | **done** | Scientific tables | smoke | M | WP-SCI-04 | Y |
+| WP-PUB-03 | Reproducibility bundle | **done** | `publish.zip` manifest | `publish_bundle` MCP | L | WP-PUB-01, WP-SIM-04 | N |
 
 ### 3.13 Vertical-specific (automotive + RL + game physics)
 
@@ -340,7 +340,7 @@ Each profile is **done** when all bullets hold simultaneously (not composable-on
 
 ### 6.2 `sim_rl`
 
-- [x] `EnvPool` survives across frames (not stack-allocated stub) (`WP-SIM-03`, `WP-RL-02`)
+- [ ] `EnvPool` survives across frames (not stack-allocated stub) (`WP-SIM-03`, `WP-RL-02`)
 - [ ] Async sample collection ≥4 envs documented in bench (`PH-ML`)
 - [ ] `studio_sim_step_hook` returns obs tensors matching `env_obs_dim` contract
 - [ ] Replay can reproduce rollout checksum (`WP-SIM-04`)
@@ -348,14 +348,14 @@ Each profile is **done** when all bullets hold simultaneously (not composable-on
 ### 6.3 `sim_automotive`
 
 - [ ] Map + bicycle/kinematic model tied to `sim.step` (`WP-AUTO-02`)
-- [x] Sensor raycast bus with proved bounds (`WP-SIM-05`)
+- [ ] Sensor raycast bus with proved bounds (`WP-SIM-05`)
 - [ ] Native demo shows driving scene (not color chip only)
 - [ ] `verticals.toml` automotive row `workload_class=partial` → `full`
 
 ### 6.4 `sim_robotics`
 
-- [ ] IK + workspace checks on 6-DOF arm (`WP-ROBO-03`)
-- [ ] Inspector shows live joint state from sim (`WP-UX-03`)
+- [x] IK + workspace checks on 6-DOF arm (`WP-ROBO-03`)
+- [x] Inspector shows live joint state from sim (`WP-UX-03`)
 - [ ] `robo_workspace` bench ≠ composable-only
 - [ ] Optional ROS2 bridge behind `extern` + audit (`WP-ROBO-05`)
 
@@ -375,7 +375,7 @@ Each profile is **done** when all bullets hold simultaneously (not composable-on
 
 ### 6.7 `sim_drug_design`
 
-- [ ] `studio.adaptive` switches panel sets by LITL stage (`WP-DRUG-03`)
+- [x] `studio.adaptive` switches panel sets by LITL stage (`WP-DRUG-03`)
 - [ ] Live `chem.dft` jobs with trusted backend (`WP-DRUG-04`, `WP-QM-02`)
 - [ ] Lab ingest + retrain witness (`WP-DRUG-05`)
 - [ ] CRITICAL compliance: SBOM + export audit for drug pack (`PH-COMPLY`)

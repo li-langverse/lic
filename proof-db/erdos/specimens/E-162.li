@@ -1,0 +1,24 @@
+# E-162: Let $\alpha>0$ and $n\geq 1$. Let $F(n,\alpha)$ be the largest $k$ such that there exists some 2-colouring of the edges of $K_n$ in which any induced subgraph $H$ on at least $k$ vertices contains more than $\alpha\binom{\lvert H\rvert}{2}$ many edges of each colour. Prove that for every fixed $0\leq \alpha \leq 1/2$, as $n\to\infty$,\[F(n,\alpha)\sim c_\alpha \log n\]for some constant $c_\alpha$.
+# erdos_number: 162
+# erdos_status: open
+# priority_tier: P2
+# tags: combinatorics, discrepancy, ramsey_theory
+
+def erdos_e162_let_alpha_0_and_n_geq_1_let_f_n_alpha_be() -> int
+  requires true
+  ensures result == 0  # open: E-162
+  decreases 0
+=
+  return 0
+
+extern proc erdos_e162_open_witness() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+
+def main() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0

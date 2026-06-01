@@ -11,7 +11,7 @@ for c in \
   "$ROOT/build-wsl/compiler/lic/lic" \
   "$ROOT/build/compiler/lic/lic" \
   "$ROOT/build/compiler/lic/lic.exe"; do
-  if [[ -x "$c" ]]; then LIC="$c"; break; fi
+  if [[ -f "$c" || -x "$c" ]]; then LIC="$c"; break; fi
 done
 if [[ -z "$LIC" && -x "$ROOT/scripts/resolve-lic.sh" ]]; then
   LIC="$("$ROOT/scripts/resolve-lic.sh" 2>/dev/null)" || true
@@ -54,7 +54,7 @@ lic_check_smoke() {
   fi
 }
 
-if [[ -f "$ROOT/build-wsl/compiler/lic/lic" ]] || [[ -n "$LIC" && -x "$LIC" ]]; then
+if [[ -f "$ROOT/build-wsl/compiler/lic/lic" ]] || [[ -n "$LIC" && ( -f "$LIC" || -x "$LIC" ) ]]; then
   lic_check_smoke studio_vertical_demo_env.li
   lic_check_smoke studio_sim_step_by_profile.li
 else

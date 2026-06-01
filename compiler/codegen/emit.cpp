@@ -642,6 +642,12 @@ struct EmitCtx {
         return builder->CreateAnd(lhs, rhs);
       case BinOp::Or:
         return builder->CreateOr(lhs, rhs);
+      case BinOp::BitXor:
+        return builder->CreateXor(lhs, rhs);
+      case BinOp::Shl:
+        return builder->CreateShl(lhs, rhs);
+      case BinOp::Shr:
+        return builder->CreateAShr(lhs, rhs);
     }
     return lhs;
   }
@@ -836,6 +842,12 @@ struct EmitCtx {
         llvm::Value* rhs = ins.rhs_is_literal ? int32_val(*builder, context, ins.rhs_int)
                                               : load_int(ins.rhs_ident);
         llvm::Value* result = emit_binop(ins.bin_op, lhs, rhs);
+        builder->CreateStore(result, ensure_int_local(ins.ident));
+        return true;
+      }
+      case MirOp::UnaryBitNotInt: {
+        llvm::Value* val = load_int(ins.lhs_ident);
+        llvm::Value* result = builder->CreateNot(val);
         builder->CreateStore(result, ensure_int_local(ins.ident));
         return true;
       }
@@ -1669,6 +1681,11 @@ bool emit_llvm_ir(const MirModule& mir, const std::string& out_path, int runtime
                               {i32_ty(context), i32_ty(context), i32_ty(context)},
                               false));
   module->getOrInsertFunction(
+      "li_rt_world_serialize_fields",
+      llvm::FunctionType::get(i8_ptr(context),
+                              {i32_ty(context), i32_ty(context), i32_ty(context), i32_ty(context)},
+                              false));
+  module->getOrInsertFunction(
       "li_rt_world_parse_line",
       llvm::FunctionType::get(i32_ty(context), {i8_ptr(context)}, false));
   module->getOrInsertFunction(
@@ -1681,20 +1698,24 @@ bool emit_llvm_ir(const MirModule& mir, const std::string& out_path, int runtime
       "li_rt_world_parsed_entity_count",
       llvm::FunctionType::get(i32_ty(context), {}, false));
   module->getOrInsertFunction(
+      "li_rt_world_parsed_asset_ref_count",
+      llvm::FunctionType::get(i32_ty(context), {}, false));
+  module->getOrInsertFunction(
       "li_rt_world_snapshot_eq_fields",
       llvm::FunctionType::get(i32_ty(context),
                               {i32_ty(context), i32_ty(context), i32_ty(context), i32_ty(context),
-                               i32_ty(context), i32_ty(context)},
+                               i32_ty(context), i32_ty(context), i32_ty(context), i32_ty(context)},
                               false));
   module->getOrInsertFunction(
       "li_rt_world_roundtrip_fields",
       llvm::FunctionType::get(i32_ty(context),
-                              {i32_ty(context), i32_ty(context), i32_ty(context)},
+                              {i32_ty(context), i32_ty(context), i32_ty(context), i32_ty(context)},
                               false));
   module->getOrInsertFunction(
       "li_rt_world_write_path",
       llvm::FunctionType::get(i32_ty(context),
-                              {i8_ptr(context), i32_ty(context), i32_ty(context), i32_ty(context)},
+                              {i8_ptr(context), i32_ty(context), i32_ty(context), i32_ty(context),
+                               i32_ty(context)},
                               false));
   module->getOrInsertFunction(
       "li_rt_world_read_path",
@@ -1702,8 +1723,11 @@ bool emit_llvm_ir(const MirModule& mir, const std::string& out_path, int runtime
   module->getOrInsertFunction(
       "li_rt_world_file_roundtrip_path",
       llvm::FunctionType::get(i32_ty(context),
-                              {i8_ptr(context), i32_ty(context), i32_ty(context), i32_ty(context)},
+                              {i8_ptr(context), i32_ty(context), i32_ty(context), i32_ty(context),
+                               i32_ty(context)},
                               false));
+  module->getOrInsertFunction("li_rt_world_default_asset_ref_path",
+                              llvm::FunctionType::get(i8_ptr(context), {}, false));
   module->getOrInsertFunction("li_rt_world_checkpoint_path_default",
                               llvm::FunctionType::get(i8_ptr(context), {}, false));
   module->getOrInsertFunction(
@@ -1724,6 +1748,9 @@ bool emit_llvm_ir(const MirModule& mir, const std::string& out_path, int runtime
   module->getOrInsertFunction("li_rt_studio_timeline_playhead_pct_from_tick",
                               llvm::FunctionType::get(llvm::Type::getDoubleTy(context),
                                                       {i32_ty(context), i32_ty(context)}, false));
+  module->getOrInsertFunction("li_rt_int_as_float",
+                              llvm::FunctionType::get(llvm::Type::getDoubleTy(context),
+                                                      {i32_ty(context)}, false));
   module->getOrInsertFunction(
       "li_rt_studio_timeline_reset_playback", llvm::FunctionType::get(i32_ty(context), {}, false));
   module->getOrInsertFunction(
@@ -1740,6 +1767,12 @@ bool emit_llvm_ir(const MirModule& mir, const std::string& out_path, int runtime
   module->getOrInsertFunction(
       "li_rt_studio_mcp_tool_name",
       llvm::FunctionType::get(i8_ptr(context), {i32_ty(context)}, false));
+  module->getOrInsertFunction(
+      "li_rt_studio_ai_patch_kind",
+      llvm::FunctionType::get(i32_ty(context), {i8_ptr(context)}, false));
+  module->getOrInsertFunction(
+      "li_rt_str_len",
+      llvm::FunctionType::get(i32_ty(context), {i8_ptr(context)}, false));
   module->getOrInsertFunction(
       "li_rt_studio_viewport_display_bg", llvm::FunctionType::get(i32_ty(context), {}, false));
   module->getOrInsertFunction("li_rt_studio_viewport_display_set_bg",
@@ -1764,6 +1797,12 @@ bool emit_llvm_ir(const MirModule& mir, const std::string& out_path, int runtime
       llvm::FunctionType::get(i32_ty(context),
                              {i8_ptr(context), i32_ty(context), i32_ty(context), i32_ty(context),
                               i32_ty(context), llvm::Type::getFloatTy(context)},
+                             false));
+  module->getOrInsertFunction(
+      "li_rt_studio_headless_raster_ppm",
+      llvm::FunctionType::get(i32_ty(context),
+                             {i8_ptr(context), i32_ty(context), i32_ty(context), i32_ty(context),
+                              i32_ty(context), i32_ty(context), i32_ty(context)},
                              false));
   module->getOrInsertFunction("li_rt_lig_device_kind",
                               llvm::FunctionType::get(i32_ty(context), {}, false));

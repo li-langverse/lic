@@ -13,17 +13,17 @@ note = "PH-AGENT: agentic task FSM stub (WP-AG-04 / PR #362)"
 [[tests]]
 suite = "smoke"
 file = "smoke/studio_ai_mcp_dispatch.li"
-outcome = "check_ok"
-note = "WP-AG-02: studio_ai_mcp_dispatch → studio_mcp_tool_dispatch_arg"
+outcome = "verify_ok"
+note = "WP-AG-03 studio_ai_mcp_dispatch wired to studio_mcp_tool_dispatch_arg"
 
 [[tests]]
 suite = "smoke"
-file = "smoke/studio_ai_agent_pipeline.li"
-outcome = "check_ok"
-note = "WP-AG-04: studio_ai_run_agent_pipeline → studio_agent_run_complete"
+file = "smoke/studio_ai_apply_patch_loop.li"
+outcome = "verify_ok"
+note = "WP-AG-04 apply_patch lic check JSON retry loop"
 
 [[tests]]
 suite = "smoke"
-file = "smoke/studio_ai_apply_patch.li"
-outcome = "check_ok"
-note = "WP-AG-04: studio_ai_apply_patch acceptance stub"
+file = "smoke/studio_ai_patch_eval.li"
+outcome = "verify_ok"
+note = "WP-AG-06 patch eval harness ≥70% fix-rate gate"

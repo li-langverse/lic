@@ -1,5 +1,6 @@
 #!/usr/bin/env bash
-# Capture one native PNG per World Studio vertical (SDL present host, no HTML).
+# Capture one native PNG per World Studio vertical (C paint_blit host — deprecated; prefer wgpu readback).
+# See deploy/studio-demo/native/DEPRECATED.md and scripts/studio-c-host-retirement-gate.sh.
 set -euo pipefail
 ROOT="$(cd "$(dirname "$0")/.." && pwd)"
 NATIVE="$ROOT/deploy/studio-demo/native"
@@ -9,6 +10,9 @@ META="${STUDIO_VERTICALS_NATIVE_META:-$ROOT/docs/demo/media/native-verticals/cap
 WIDTH="${STUDIO_VERTICALS_CAPTURE_WIDTH:-1920}"
 HEIGHT="${STUDIO_VERTICALS_CAPTURE_HEIGHT:-1080}"
 export LIG_HOST_PRESENT="${LIG_HOST_PRESENT:-1}"
+if [[ "${STUDIO_VERTICALS_WGPU_READBACK:-0}" == "1" ]]; then
+  export LIG_WGPU_READBACK=1
+fi
 
 # slug:profile_id — sim_drug_design (7) uses Li studio_compose_shell_drug_litl (frame_id = LITL tick).
 VERTICALS=(

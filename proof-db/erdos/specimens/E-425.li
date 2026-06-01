@@ -1,0 +1,24 @@
+# E-425: Let $F(n)$ be the maximum possible size of a subset $A\subseteq\{1,\ldots,N\}$ such that the products $ab$ are distinct for all $a<b$. Is there a constant $c$ such that\[F(n)=\pi(n)+(c+o(1))n^{3/4}(\log n)^{-3/2}?\]If $A\subseteq \{1,\ldots,n\}$ is such that all products $a_1\cdots a_r$ are distinct for $a_1<\cdots <a_r$ then is it true that\[\lvert A\rvert \leq \pi(n)+O(n^{\frac{r+1}{2r}})?\]
+# erdos_number: 425
+# erdos_status: open
+# priority_tier: P2
+# tags: number_theory, sidon_sets
+
+def erdos_e425_let_f_n_be_the_maximum_possible_size_of() -> int
+  requires true
+  ensures result == 0  # open: E-425
+  decreases 0
+=
+  return 0
+
+extern proc erdos_e425_open_witness() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+
+def main() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0

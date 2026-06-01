@@ -1,0 +1,2 @@
+/usr/bin/ar Dqc libli_analyze.a CMakeFiles/li_analyze.dir/advisory.cpp.o
+/usr/bin/ranlib -D libli_analyze.a

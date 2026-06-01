@@ -1,0 +1,24 @@
+# E-571: For any rational alpha in [1,2), does there exist a bipartite graph G with ex(n;G) asymptotic to n^alpha (Turán exponent)?
+# erdos_number: 571
+# erdos_status: open
+# priority_tier: P1
+# tags: graph_theory, extremal, turán
+
+def erdos_e571_for_any_rational_alpha_in_1_2_does_there() -> int
+  requires true
+  ensures result == 0  # open: E-571
+  decreases 0
+=
+  return 0
+
+extern proc erdos_e571_open_witness() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+
+def main() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0

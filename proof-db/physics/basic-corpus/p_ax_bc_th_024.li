@@ -1,0 +1,20 @@
+# P-AX-BC-TH-024: Joule law: ideal gas internal energy U depends only on temperature T.
+
+extern proc p_ax_bc_th_024_axiom_witness() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+
+def p_ax_bc_th_024_holds() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0
+
+def main() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0

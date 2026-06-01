@@ -1,0 +1,24 @@
+# E-1061: How many solutions are there to\[\sigma(a)+\sigma(b)=\sigma(a+b)\]with $a+b\leq x$, where $\sigma$ is the sum of divisors function? Is it $\sim cx$ for some constant $c>0$?
+# erdos_number: 1061
+# erdos_status: open
+# priority_tier: P2
+# tags: number_theory
+
+def erdos_e1061_how_many_solutions_are_there_to_sigma_a() -> int
+  requires true
+  ensures result == 0  # open: E-1061
+  decreases 0
+=
+  return 0
+
+extern proc erdos_e1061_open_witness() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+
+def main() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0

@@ -1,0 +1,22 @@
+# PH-ML Wave 13 T2: @gpu → device buffer bind + LKIR launch pipeline.
+import ml
+
+@gpu
+def ml_gpu_device_buffer_smoke() -> int raises IO
+  requires true
+  ensures result >= 0
+  ensures result <= 1
+  decreases 0
+=
+  if ml_gpu_matmul_lkir_progress() != 1:
+    return 0
+  return ml_gpu_device_buffer_pipeline()
+
+def main() -> int raises IO
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  if ml_gpu_device_buffer_smoke() != 1:
+    return 1
+  return 0

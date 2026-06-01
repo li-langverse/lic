@@ -1,0 +1,2 @@
+/usr/bin/ar Dqc libli_diagnostics.a CMakeFiles/li_diagnostics.dir/diagnostics.cpp.o CMakeFiles/li_diagnostics.dir/error_codes.cpp.o CMakeFiles/li_diagnostics.dir/terminal.cpp.o
+/usr/bin/ranlib -D libli_diagnostics.a

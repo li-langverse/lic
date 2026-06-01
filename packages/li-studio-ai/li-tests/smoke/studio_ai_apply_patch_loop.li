@@ -1,0 +1,36 @@
+import studio.ai
+
+def main() -> int raises IO, Alloc
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  if li_studio_ai_version() != 1:
+    return 1
+  var good: StudioAiPatchResult = studio_ai_apply_patch(studio_ai_patch_marker_valid(), "world.li")
+  if good.success != 1:
+    return 2
+  if good.diagnostic_count != 0:
+    return 3
+  var bad: StudioAiPatchResult = studio_ai_apply_patch(studio_ai_patch_marker_fail(), "world.li")
+  if bad.success != 0:
+    return 4
+  if bad.diagnostic_count < 1:
+    return 5
+  var empty_target: StudioAiPatchResult = studio_ai_apply_patch(studio_ai_patch_marker_valid(), "")
+  if empty_target.success != 0:
+    return 6
+  var retry: StudioAiPatchLoopResult = studio_ai_apply_patch_loop(studio_ai_patch_marker_retry(), "world.li", studio_ai_patch_loop_max_retries_default())
+  if retry.success != 1:
+    return 7
+  if retry.attempts_used != 2:
+    return 8
+  var exhausted: StudioAiPatchLoopResult = studio_ai_apply_patch_loop(studio_ai_patch_marker_fail(), "world.li", 1)
+  if exhausted.success != 0:
+    return 9
+  if exhausted.attempts_used != 2:
+    return 10
+  var plan: str = studio_ai_complete("patch world spawn")
+  if plan == "":
+    return 11
+  return 0

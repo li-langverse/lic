@@ -1,0 +1,24 @@
+# E-444: Let $A\subseteq\mathbb{N}$ be infinite and $d_A(n)$ count the number of $a\in A$ which divide $n$. Is it true that, for every $k$,\[\limsup_{x\to \infty} \frac{\max_{n<x}d_A(n)}{\left(\sum_{n\in A\cap[1,x)}\frac{1}{n}\right)^k}=\infty?\]
+# erdos_number: 444
+# erdos_status: proved
+# priority_tier: P2
+# tags: divisors, number_theory
+
+def erdos_e444_let_a_subseteq_mathbb_n_be_infinite_and() -> int
+  requires true
+  ensures result == 0  # open: E-444
+  decreases 0
+=
+  return 0
+
+extern proc erdos_e444_open_witness() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+
+def main() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0

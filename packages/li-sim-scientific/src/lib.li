@@ -5,10 +5,207 @@ import physics.rigid
 
 def li_sim_scientific_version() -> int
   requires true
-  ensures result == 2
+  ensures result == 3
   decreases 0
 =
-  return 2
+  return 3
+
+# WP-SCI-03 — tier-2 Li oracle: 4-particle LJ chain, 8 velocity-Verlet steps.
+def md_oracle_lj_fx_pair(dx: float, r2: float, rc2: float) -> float
+  requires rc2 > 0.0
+  ensures result >= 0.0
+  decreases 0
+=
+  if r2 >= rc2:
+    return 0.0
+  if r2 < 1.0e-12:
+    return 0.0
+  var inv_r2: float = 1.0 / r2
+  var inv_r6: float = inv_r2 * inv_r2 * inv_r2
+  var inv_r12: float = inv_r6 * inv_r6
+  var f_scalar: float = 48.0 * inv_r12 - 24.0 * inv_r6
+  return f_scalar * dx
+
+def md_oracle_lj_pe_pair(r2: float, rc2: float) -> float
+  requires rc2 > 0.0
+  ensures result <= 0.0
+  decreases 0
+=
+  if r2 >= rc2:
+    return 0.0
+  if r2 < 1.0e-12:
+    return 0.0
+  var inv_r2: float = 1.0 / r2
+  var inv_r6: float = inv_r2 * inv_r2 * inv_r2
+  var inv_r12: float = inv_r6 * inv_r6
+  return 4.0 * (inv_r12 - inv_r6)
+
+def md_oracle_chain_energy(
+    px: var array[4, float], py: var array[4, float],
+    vx: var array[4, float], vy: var array[4, float]) -> float
+  requires true
+  ensures result >= -1000.0
+  decreases 0
+=
+  var rc2: float = 2.5 * 2.5
+  var pe: float = 0.0
+  var ke: float = 0.0
+  var i: int = 0
+  while i < 4
+    ke = ke + 0.5 * (vx[i] * vx[i] + vy[i] * vy[i])
+    var j: int = i + 1
+    while j < 4
+      var dx: float = px[j] - px[i]
+      var dy: float = py[j] - py[i]
+      var r2: float = dx * dx + dy * dy
+      pe = pe + md_oracle_lj_pe_pair(r2, rc2)
+      j = j + 1
+    i = i + 1
+  return pe + ke
+
+def md_oracle_chain_forces(
+    px: var array[4, float], py: var array[4, float],
+    fx: var array[4, float], fy: var array[4, float]) -> unit
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  var rc2: float = 2.5 * 2.5
+  var i: int = 0
+  while i < 4
+    fx[i] = 0.0
+    fy[i] = 0.0
+    i = i + 1
+  i = 0
+  while i < 4
+    var j: int = i + 1
+    while j < 4
+      var dx: float = px[j] - px[i]
+      var dy: float = py[j] - py[i]
+      var r2: float = dx * dx + dy * dy
+      var fxi: float = md_oracle_lj_fx_pair(dx, r2, rc2)
+      var fyi: float = md_oracle_lj_fx_pair(dy, r2, rc2)
+      fx[i] = fx[i] - fxi
+      fy[i] = fy[i] - fyi
+      fx[j] = fx[j] + fxi
+      fy[j] = fy[j] + fyi
+      j = j + 1
+    i = i + 1
+
+def sim_scientific_oracle_checksum_md() -> float
+  requires true
+  ensures result >= 0.0
+  decreases 0
+=
+  var px: array[4, float]
+  var py: array[4, float]
+  var vx: array[4, float]
+  var vy: array[4, float]
+  var fx: array[4, float]
+  var fy: array[4, float]
+  var spacing: float = 1.12
+  var dt: float = 0.004
+  px[0] = 0.0
+  py[0] = 0.0
+  vx[0] = 0.0
+  vy[0] = 0.0
+  px[1] = spacing
+  py[1] = 0.0
+  vx[1] = 0.0
+  vy[1] = 0.0
+  px[2] = spacing + spacing
+  py[2] = 0.0
+  vx[2] = 0.0
+  vy[2] = 0.0
+  px[3] = spacing + spacing + spacing
+  py[3] = 0.0
+  vx[3] = 0.0
+  vy[3] = 0.0
+  var e0: float = md_oracle_chain_energy(px, py, vx, vy)
+  var step: int = 0
+  var i: int = 0
+  while step < 8
+    md_oracle_chain_forces(px, py, fx, fy)
+    i = 0
+    while i < 4
+      vx[i] = vx[i] + 0.5 * dt * fx[i]
+      vy[i] = vy[i] + 0.5 * dt * fy[i]
+      i = i + 1
+    i = 0
+    while i < 4
+      px[i] = px[i] + dt * vx[i]
+      py[i] = py[i] + dt * vy[i]
+      i = i + 1
+    md_oracle_chain_forces(px, py, fx, fy)
+    i = 0
+    while i < 4
+      vx[i] = vx[i] + 0.5 * dt * fx[i]
+      vy[i] = vy[i] + 0.5 * dt * fy[i]
+      i = i + 1
+    step = step + 1
+  var e1: float = md_oracle_chain_energy(px, py, vx, vy)
+  var denom: float = e0
+  if e1 > denom:
+    denom = e1
+  if denom < 0.0:
+    if -e0 > denom:
+      denom = -e0
+    if -e1 > denom:
+      denom = -e1
+  if denom < 1.0e-12:
+    denom = 1.0e-12
+  var diff: float = e1 - e0
+  if diff < 0.0:
+    diff = -diff
+  return diff / denom
+
+# WP-SCI-03 — tier-2 Li oracle: explicit 1D heat stencil (8-point grid).
+def heat_oracle_stencil_step(u: var array[8, float], v: var array[8, float], r: float) -> unit
+  requires r > 0.0
+  ensures result == 0
+  decreases 0
+=
+  v[0] = u[0]
+  v[1] = u[1] + r * (u[2] + u[0] - 2.0 * u[1])
+  v[2] = u[2] + r * (u[3] + u[1] - 2.0 * u[2])
+  v[3] = u[3] + r * (u[4] + u[2] - 2.0 * u[3])
+  v[4] = u[4] + r * (u[5] + u[3] - 2.0 * u[4])
+  v[5] = u[5] + r * (u[6] + u[4] - 2.0 * u[5])
+  v[6] = u[6] + r * (u[7] + u[5] - 2.0 * u[6])
+  v[7] = u[7]
+  u[0] = v[0]
+  u[1] = v[1]
+  u[2] = v[2]
+  u[3] = v[3]
+  u[4] = v[4]
+  u[5] = v[5]
+  u[6] = v[6]
+  u[7] = v[7]
+
+def sim_scientific_oracle_checksum_heat() -> float
+  requires true
+  ensures result > 0.0
+  decreases 0
+=
+  var u: array[8, float]
+  var v: array[8, float]
+  var dx: float = 0.125
+  var alpha: float = 0.25
+  var dt: float = 0.0001
+  var r: float = alpha * dt / (dx * dx)
+  u[0] = 0.0
+  u[1] = 0.3826834323650898
+  u[2] = 0.7071067811865476
+  u[3] = 0.9238795325112867
+  u[4] = 1.0
+  u[5] = 0.9238795325112867
+  u[6] = 0.7071067811865476
+  u[7] = 0.3826834323650898
+  var step: int = 0
+  while step < 200
+    heat_oracle_stencil_step(u, v, r)
+    step = step + 1
+  return u[0] + u[1] + u[2] + u[3] + u[4] + u[5] + u[6] + u[7]
 
 def sim_scientific_checksum_combine(chk_md: float, chk_heat: float, chk_rigid: float, step_index: int) -> float
   requires step_index >= 1
@@ -114,12 +311,12 @@ def run_md_lj_smoke(detail: int) -> SimRunResult
   ensures result.detail_emitted == detail
   decreases 0
 =
-  var f: float = lj_force_scalar(1.12, 1.0, 1.0, 2.5)
+  var chk: float = sim_scientific_oracle_checksum_md()
   var r: SimRunResult
   r.ok = 1
   r.algo_id = algo_md_lj_cutoff_mic()
   r.vertical_id = vertical_md_lennard_jones()
-  r.checksum = f
+  r.checksum = chk
   r.detail_emitted = detail
   return r
 
@@ -131,11 +328,12 @@ def run_heat_smoke(detail: int) -> SimRunResult
   ensures result.detail_emitted == detail
   decreases 0
 =
+  var chk: float = sim_scientific_oracle_checksum_heat()
   var r: SimRunResult
   r.ok = 1
   r.algo_id = algo_pde_heat_explicit_2d()
   r.vertical_id = vertical_pde_heat_2d()
-  r.checksum = 1.0
+  r.checksum = chk
   r.detail_emitted = detail
   return r
 
@@ -174,15 +372,6 @@ def run_algo_registry_stub(algo_id: int, detail: int) -> SimRunResult
   decreases 0
 =
   var vert: int = 0
-  if algo_id >= 101:
-    if algo_id <= 117:
-      vert = vertical_md_lennard_jones()
-  if algo_id >= 201:
-    if algo_id <= 216:
-      vert = vertical_pde_heat_2d()
-  if algo_id >= 301:
-    if algo_id <= 305:
-      vert = vertical_gaming_rigid()
   if algo_id >= 401:
     if algo_id <= 432:
       vert = vertical_qm_dft()
@@ -193,6 +382,68 @@ def run_algo_registry_stub(algo_id: int, detail: int) -> SimRunResult
   r.checksum = 1.001
   r.detail_emitted = detail
   return r
+
+def run_md_tier2_registry(algo_id: int, detail: int) -> SimRunResult
+  requires detail >= 0
+  requires detail <= 3
+  requires algo_id >= 101
+  requires algo_id <= 117
+  ensures result.ok == 1
+  ensures result.algo_id == algo_id
+  ensures result.detail_emitted == detail
+  decreases 0
+=
+  var chk: float = sim_scientific_oracle_checksum_md()
+  var r: SimRunResult
+  r.ok = 1
+  r.algo_id = algo_id
+  r.vertical_id = vertical_md_lennard_jones()
+  r.checksum = chk
+  r.detail_emitted = detail
+  return r
+
+def run_heat_tier2_registry(algo_id: int, detail: int) -> SimRunResult
+  requires detail >= 0
+  requires detail <= 3
+  requires algo_id >= 201
+  requires algo_id <= 216
+  ensures result.ok == 1
+  ensures result.algo_id == algo_id
+  ensures result.detail_emitted == detail
+  decreases 0
+=
+  var chk: float = sim_scientific_oracle_checksum_heat()
+  var r: SimRunResult
+  r.ok = 1
+  r.algo_id = algo_id
+  r.vertical_id = vertical_pde_heat_2d()
+  r.checksum = chk
+  r.detail_emitted = detail
+  return r
+
+def run_algo_registry(algo_id: int, detail: int) -> SimRunResult
+  requires detail >= 0
+  requires detail <= 3
+  requires algo_in_registry(algo_id) == 1
+  ensures result.detail_emitted == detail
+  decreases 0
+=
+  if algo_id >= 101:
+    if algo_id <= 117:
+      var d0: int = detail
+      return run_md_tier2_registry(algo_id, d0)
+  if algo_id >= 201:
+    if algo_id <= 216:
+      var d1: int = detail
+      return run_heat_tier2_registry(algo_id, d1)
+  if algo_id >= 301:
+    if algo_id <= 305:
+      var d2: int = detail
+      var rigid: SimRunResult = run_rigid_smoke(d2)
+      rigid.algo_id = algo_id
+      return rigid
+  var d3: int = detail
+  return run_algo_registry_stub(algo_id, d3)
 
 def run_algo(algo_id: int, detail: int) -> SimRunResult
   requires detail >= 0
@@ -217,7 +468,7 @@ def run_algo(algo_id: int, detail: int) -> SimRunResult
     return run_rigid_smoke(d3)
   if algo_in_registry(reg_chk) == 1:
     var d4: int = detail
-    return run_algo_registry_stub(reg_run, d4)
+    return run_algo_registry(reg_run, d4)
   var bad: SimRunResult
   var d5: int = detail
   bad.ok = 0

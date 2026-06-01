@@ -14,3 +14,9 @@ Li Studio viewport render layer: **wgpu smoke** bridge (`li-gpu`), **FPS counter
 
 - `render_wgpu_viewport_smoke(ViewportRegion)` — ties `li-gui` viewport geometry to `gpu_wgpu_smoke_run()`.
 - `native_pixels=0` in simulate bench; with `LIG_HOST_PRESENT=1`, paint blit sets `native_pixels=1` via `lig_present_surface_ok()` (no wgpu-rs readback yet).
+
+## UI raster pass (Phase 3)
+
+- `render_ui_raster_cpu_pass` / `render_ui_raster_pass` — PaintCmd summary → CPU pixel estimate; host path calls `lig_wgpu_ui_raster_submit`.
+- `render_ui_raster_chrome_smoke_pure` — studio shell chrome frame rasterized for smokes.
+- Smoke: `li-tests/smoke/ui_raster_pass.li`.

@@ -598,6 +598,73 @@ extern proc httpd_tls_handshake_slot_i(slot: var int, fd: var int) -> int
   ensures true
   decreases 0
 
+extern proc httpd_tls_handshake_begin_i(slot: var int, fd: var int) -> int
+  requires 0 <= slot
+  requires fd >= 0
+  ensures true
+  decreases 0
+
+extern proc httpd_tls_handshake_continue_i(slot: var int) -> int
+  requires 0 <= slot
+  ensures true
+  decreases 0
+
+extern proc httpd_tls_handshake_pending_i(slot: var int) -> int
+  requires 0 <= slot
+  ensures true
+  decreases 0
+
+extern proc httpd_tls_handshake_spin_i(slot: var int, fd: var int, max_rounds: var int) -> int
+  requires 0 <= slot
+  requires fd >= 0
+  ensures true
+  decreases 0
+
+extern proc httpd_epoll_add_client_tls_i(epfd: var int, conn: var int, slot: var int) -> int
+  requires epfd >= 0
+  requires conn >= 0
+  requires 0 <= slot
+  ensures true
+  decreases 0
+
+extern proc httpd_pure_li_tls_i() -> int
+  requires true
+  ensures true
+  decreases 0
+
+extern proc httpd_pure_tls_slot_active_i(slot: var int) -> int
+  requires 0 <= slot
+  ensures true
+  decreases 0
+
+extern proc httpd_pure_tls_attach_i(slot: var int, conn: var int) -> int
+  requires 0 <= slot
+  requires conn >= 0
+  ensures true
+  decreases 0
+
+extern proc httpd_pure_tls_poll_i(slot: var int) -> int
+  requires 0 <= slot
+  ensures true
+  decreases 0
+
+extern proc httpd_pure_tls_read_app_i(slot: var int, max_bytes: int) -> int
+  requires 0 <= slot
+  requires max_bytes > 0
+  ensures true
+  decreases 0
+
+extern proc httpd_pure_tls_write_app_i(slot: var int, len: int) -> int
+  requires 0 <= slot
+  requires len >= 0
+  ensures true
+  decreases 0
+
+extern proc httpd_pure_tls_alpn_i(slot: var int) -> int
+  requires 0 <= slot
+  ensures true
+  decreases 0
+
 extern proc httpd_tls_slot_h2_i(slot: var int) -> int
   requires 0 <= slot
   ensures true

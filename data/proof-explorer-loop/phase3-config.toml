@@ -1,0 +1,24 @@
+# Phase 3 long-horizon research loop (WP-RA)
+# K8s worker reads these keys via ConfigMap env injection.
+
+[loop]
+sleep_sec = 300
+max_iterations = 0  # unlimited until phase3 completion gate
+branch = "cursor/proof-explorer-phase3"
+goal_file = "data/goal-directed-sprints/proof-explorer-phase3-research-audit.md"
+
+[problem]
+id = "E-52"
+source = "erdos_register"
+priority_tier = "P0"
+external_url = "https://www.erdosproblems.com/52"
+
+[review]
+min_reviewers_per_claim = 2
+models = ["claude-4.6-sonnet", "gpt-5.2-codex", "composer-2.5-fast"]
+
+[env]
+# ConfigMap keys for homelab worker
+LI_PROOF_EXPLORER_LOOP_SLEEP_SEC = "300"
+LI_RESEARCH_REVIEW_MIN = "2"
+LI_RESEARCH_REVIEW_MODELS = "claude-4.6-sonnet,gpt-5.2-codex,composer-2.5-fast"

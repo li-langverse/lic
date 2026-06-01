@@ -1,0 +1,24 @@
+# E-219: Are there arbitrarily long arithmetic progressions of primes?
+# erdos_number: 219
+# erdos_status: proved
+# priority_tier: P2
+# tags: additive_combinatorics, arithmetic_progressions, number_theory, primes
+
+def erdos_e219_are_there_arbitrarily_long_arithmetic_pr() -> int
+  requires true
+  ensures result == 0  # open: E-219
+  decreases 0
+=
+  return 0
+
+extern proc erdos_e219_open_witness() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+
+def main() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0

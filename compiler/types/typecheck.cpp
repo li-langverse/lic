@@ -932,6 +932,23 @@ struct Ctx {
                       "cannot mix int and float in arithmetic without explicit cast");
           return make_int();
         }
+        if (e.bin_op == BinOp::And || e.bin_op == BinOp::Or || e.bin_op == BinOp::BitXor ||
+            e.bin_op == BinOp::Shl || e.bin_op == BinOp::Shr) {
+          if (l->kind == TyKind::Int && r->kind == TyKind::Int) {
+            if (l->unsigned_scalar != r->unsigned_scalar) {
+              diags.error(loc(e.span), "cannot mix signed and unsigned integers without cast");
+              return make_int();
+            }
+            if (l->numeric_bits != r->numeric_bits) {
+              diags.error(loc(e.span),
+                          "cannot mix integer widths (" + std::to_string(l->numeric_bits) + " and " +
+                              std::to_string(r->numeric_bits) +
+                              " bits) without explicit cast");
+              return make_int();
+            }
+            return l;
+          }
+        }
         return make_bool();
       }
       case Expr::Kind::Call: {
@@ -1088,6 +1105,14 @@ struct Ctx {
       }
       case Expr::Kind::UnaryNot:
         return make_bool();
+      case Expr::Kind::UnaryBitNot: {
+        const TyPtr op = type_of(*e.operand);
+        if (op->kind == TyKind::Int) {
+          return op;
+        }
+        diags.error(loc(e.span), "bitwise ~ expects an integer operand");
+        return make_int();
+      }
       case Expr::Kind::MethodCall: {
         if (!e.base) {
           diags.error(loc(e.span), "method call missing receiver");

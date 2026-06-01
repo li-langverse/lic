@@ -1,0 +1,24 @@
+# E-861: Let $f(N)$ be the size of the largest Sidon subset of $\{1,\ldots,N\}$ and $A(N)$ be the number of Sidon subsets of $\{1,\ldots,N\}$. Is it true that\[A(N)/2^{f(N)}\to \infty?\]Is it true that\[A(N) = 2^{(1+o(1))f(N)}?\]
+# erdos_number: 861
+# erdos_status: open
+# priority_tier: P2
+# tags: number_theory, sidon_sets
+
+def erdos_e861_let_f_n_be_the_size_of_the_largest_sidon() -> int
+  requires true
+  ensures result == 0  # open: E-861
+  decreases 0
+=
+  return 0
+
+extern proc erdos_e861_open_witness() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+
+def main() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0

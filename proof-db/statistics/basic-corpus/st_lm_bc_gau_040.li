@@ -1,0 +1,15 @@
+# ST-LM-BC-GAU-040: Normal PDF: f(x) = (1 / (sigma sqrt(2 pi))) exp(-(x - mu)^2 / (2 sigma^2)).
+
+def normal_density_scale(sigma: float) -> float
+  requires sigma > 0.0
+  ensures result > 0.0
+  decreases 0
+=
+  return 1.0 / sigma
+
+def main() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0

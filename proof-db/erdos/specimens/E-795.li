@@ -1,0 +1,24 @@
+# E-795: Let $g(n)$ be the maximal size of $A\subseteq \{1,\ldots,n\}$ such that the products $\prod_{n\in S}n$ are distinct for all $S\subseteq A$. Is it true that\[g(n) \leq \pi(n)+\pi(n^{1/2})+o\left(\frac{x^{1/2}}{\log n}\right)?\]
+# erdos_number: 795
+# erdos_status: proved
+# priority_tier: P2
+# tags: number_theory
+
+def erdos_e795_let_g_n_be_the_maximal_size_of_a_subsete() -> int
+  requires true
+  ensures result == 0  # open: E-795
+  decreases 0
+=
+  return 0
+
+extern proc erdos_e795_open_witness() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+
+def main() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0

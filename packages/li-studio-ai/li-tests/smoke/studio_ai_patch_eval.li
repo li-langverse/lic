@@ -1,0 +1,32 @@
+import studio.ai
+
+def main() -> int raises IO, Alloc
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  if studio_ai_patch_eval_task_count() != 10:
+    return 1
+  if studio_ai_patch_eval_fix_rate_min_pct() != 70:
+    return 2
+  var i: int = 0
+  while i < studio_ai_patch_eval_task_count()
+    if studio_ai_patch_eval_task_patch(i) == "":
+      return 10 + i
+    if studio_ai_patch_eval_task_target(i) == "":
+      return 20 + i
+    i = i + 1
+  if studio_ai_patch_eval_task_match(7) != 1:
+    return 30
+  if studio_ai_patch_eval_task_match(8) != 1:
+    return 31
+  if studio_ai_patch_eval_task_match(9) != 1:
+    return 32
+  var rate: int = studio_ai_patch_eval_fix_rate_pct()
+  if rate < studio_ai_patch_eval_fix_rate_min_pct():
+    return 40
+  if studio_ai_patch_eval_gate_ok() != 1:
+    return 41
+  if studio_ai_patch_eval_pass_count() < 7:
+    return 42
+  return 0

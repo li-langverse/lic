@@ -1,0 +1,24 @@
+# E-734: Find, for all large $n$, a non-trivial pairwise balanced block design $A_1,\ldots,A_m\subseteq \{1,\ldots,n\}$ such that, for all $t$, there are $O(n^{1/2})$ many $i$ such that $\lvert A_i\rvert=t$.
+# erdos_number: 734
+# erdos_status: open
+# priority_tier: P2
+# tags: combinatorics
+
+def erdos_e734_find_for_all_large_n_a_non_trivial_pairw() -> int
+  requires true
+  ensures result == 0  # open: E-734
+  decreases 0
+=
+  return 0
+
+extern proc erdos_e734_open_witness() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+
+def main() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0

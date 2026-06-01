@@ -1,0 +1,24 @@
+# E-225: Let\[ f(\theta) = \sum_{0\leq k\leq n}c_k e^{ik\theta}\]be a trigonometric polynomial all of whose roots are real, such that $\max_{\theta\in [0,2\pi]}\lvert f(\theta)\rvert=1$. Then\[\int_0^{2\pi}\lvert f(\theta)\rvert \mathrm{d}\theta \leq 4.\]
+# erdos_number: 225
+# erdos_status: proved
+# priority_tier: P2
+# tags: analysis
+
+def erdos_e225_let_f_theta_sum_0_leq_k_leq_n_c_k_e_ik_t() -> int
+  requires true
+  ensures result == 0  # open: E-225
+  decreases 0
+=
+  return 0
+
+extern proc erdos_e225_open_witness() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+
+def main() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0

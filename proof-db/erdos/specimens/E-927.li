@@ -1,0 +1,24 @@
+# E-927: Let $g(n)$ be the maximum number of different sizes of cliques that can occur in a graph on $n$ vertices. Estimate $g(n)$ - in particular, is it true that\[g(n)=n-\log_2n-\log_*(n)+O(1),\]where $\log_*(n)$ is the number of iterated logarithms such that $\log\cdots \log n <1$.
+# erdos_number: 927
+# erdos_status: open
+# priority_tier: P2
+# tags: graph_theory
+
+def erdos_e927_let_g_n_be_the_maximum_number_of_differe() -> int
+  requires true
+  ensures result == 0  # open: E-927
+  decreases 0
+=
+  return 0
+
+extern proc erdos_e927_open_witness() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+
+def main() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0

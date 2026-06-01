@@ -1,0 +1,20 @@
+# P-AX-BC-EM-014: Ampere-Maxwell law: line integral of H equals enclosed conduction current plus displacement current.
+
+extern proc p_ax_bc_em_014_axiom_witness() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+
+def p_ax_bc_em_014_holds() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0
+
+def main() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0

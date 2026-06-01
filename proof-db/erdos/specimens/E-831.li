@@ -1,0 +1,24 @@
+# E-831: Let $h(n)$ be maximal such that in any $n$ points in $\mathbb{R}^2$ (with no three on a line and no four on a circle) there are at least $h(n)$ many circles of different radii passing through three points. Estimate $h(n)$.
+# erdos_number: 831
+# erdos_status: open
+# priority_tier: P2
+# tags: geometry
+
+def erdos_e831_let_h_n_be_maximal_such_that_in_any_n_po() -> int
+  requires true
+  ensures result == 0  # open: E-831
+  decreases 0
+=
+  return 0
+
+extern proc erdos_e831_open_witness() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+
+def main() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0

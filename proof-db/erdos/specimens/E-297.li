@@ -1,0 +1,24 @@
+# E-297: Let $N\geq 1$. How many $A\subseteq \{1,\ldots,N\}$ are there such that $\sum_{n\in A}\frac{1}{n}=1$?
+# erdos_number: 297
+# erdos_status: open
+# priority_tier: P2
+# tags: number_theory, unit_fractions
+
+def erdos_e297_let_n_geq_1_how_many_a_subseteq_1_ldots() -> int
+  requires true
+  ensures result == 0  # open: E-297
+  decreases 0
+=
+  return 0
+
+extern proc erdos_e297_open_witness() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+
+def main() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0

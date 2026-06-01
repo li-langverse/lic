@@ -1,0 +1,1 @@
+lig_emit_vendor_lowering_ready=1

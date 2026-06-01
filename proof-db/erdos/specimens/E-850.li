@@ -1,0 +1,24 @@
+# E-850: Can there exist two distinct integers $x$ and $y$ such that $x,y$ have the same prime factors, $x+1,y+1$ have the same prime factors, and $x+2,y+2$ also have the same prime factors?
+# erdos_number: 850
+# erdos_status: open
+# priority_tier: P2
+# tags: number_theory, primes
+
+def erdos_e850_can_there_exist_two_distinct_integers_x() -> int
+  requires true
+  ensures result == 0  # open: E-850
+  decreases 0
+=
+  return 0
+
+extern proc erdos_e850_open_witness() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+
+def main() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0

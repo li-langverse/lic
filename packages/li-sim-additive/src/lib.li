@@ -4,10 +4,10 @@ import sim
 
 def li_sim_additive_version() -> int
   requires true
-  ensures result == 2
+  ensures result == 3
   decreases 0
 =
-  return 2
+  return 3
 
 def li_sim_additive_profile_contract() -> int
   requires true
@@ -173,3 +173,78 @@ def run_additive_smoke() -> int
   if sim_additive_export_format_ok(am_export_format_gcode()) != 1:
     return 3
   return 0
+
+# WP-AM-03 — sim.export.print contract (3MF / G-code headers; not printer I/O).
+type AmExportPrintResult = object
+  public ok: int
+  public format: int
+  public printer_slot: int
+  public layer_count: int
+  public byte_checksum: float
+  public magic_tag: int
+
+def am_export_magic_3mf() -> int
+  requires true
+  ensures result == 16141
+  decreases 0
+=
+  return 16141
+
+def am_export_magic_gcode() -> int
+  requires true
+  ensures result == 18243
+  decreases 0
+=
+  return 18243
+
+def am_export_magic_stl() -> int
+  requires true
+  ensures result == 21324
+  decreases 0
+=
+  return 21324
+
+def am_export_magic_for_format(fmt: int) -> int
+  requires sim_additive_export_format_ok(fmt) == 1
+  ensures result > 0
+  decreases fmt
+=
+  if fmt == am_export_format_stl():
+    return am_export_magic_stl()
+  if fmt == am_export_format_gcode():
+    return am_export_magic_gcode()
+  return am_export_magic_3mf()
+
+def sim_export_print(format: int, sim_pass: int, printer_slot: int, detail: int) -> AmExportPrintResult
+  requires detail >= 0
+  requires detail <= 3
+  requires printer_slot >= 0
+  requires printer_slot <= 2
+  ensures result.format == format
+  ensures result.printer_slot == printer_slot
+  decreases format
+=
+  var r: AmExportPrintResult
+  r.ok = 0
+  r.format = format
+  r.printer_slot = printer_slot
+  r.layer_count = 0
+  r.byte_checksum = 0.0
+  r.magic_tag = 0
+  if sim_additive_export_format_ok(format) != 1:
+    return r
+  if sim_additive_require_sim_pass_ok(sim_pass) != 1:
+    return r
+  if run_additive_slicer_workflow(detail, sim_pass) != 0:
+    return r
+  var export_run: SimRunResult = run_am_slicer_stage(am_slicer_stage_export(), detail)
+  if export_run.ok != 1:
+    return r
+  var slice_run: SimRunResult = run_am_slicer_stage(am_slicer_stage_slice(), detail)
+  r.layer_count = 64
+  if slice_run.ok == 1:
+    r.layer_count = 128
+  r.byte_checksum = export_run.checksum
+  r.magic_tag = am_export_magic_for_format(format)
+  r.ok = 1
+  return r

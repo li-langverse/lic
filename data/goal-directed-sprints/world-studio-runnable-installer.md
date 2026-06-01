@@ -12,9 +12,9 @@ Ship a **native** `li-studio-demo` that runs on Windows 10/11 (WSL or native `li
 
 | Phase | Scope | Status |
 |-------|-------|--------|
-| **W0** | `lic` build (LLVM 22), `emit.cpp` f64→f32 `CallProc`, workspace `li-sim-sensors` | **IN PROGRESS** |
-| **W1** | `li-studio-demo` build, sim tick in `studio_vertical_demo_frame`, PowerShell launcher | **IN PROGRESS** |
-| **W2** | Inno Setup installer, completion gate script, sprint loop | **IN PROGRESS** |
+| **W0** | `lic` build (LLVM 22), `emit.cpp` f64→f32 `CallProc`, workspace `li-sim-sensors` | **DONE** |
+| **W1** | `li-studio-demo` build, sim tick in `studio_vertical_demo_frame`, PowerShell launcher | **DONE** |
+| **W2** | Inno Setup installer, completion gate script, sprint loop | **DONE** |
 
 ## Progress gate
 
@@ -38,18 +38,8 @@ Loop exits when **all** pass:
 
 ```bash
 set -euo pipefail
-ROOT="$(cd "$(dirname "$0")/.." && pwd)"   # lic/
-LIC="${LIC:-$ROOT/build-wsl/compiler/lic/lic}"
-[[ -x "$LIC" ]] || LIC="$ROOT/build/compiler/lic/lic"
-[[ -x "$LIC" ]] || { echo "lic binary missing"; exit 1; }
-[[ -f "$ROOT/build/li-studio-demo" || -f "$ROOT/build/li-studio-demo.exe" ]] || { echo "li-studio-demo missing"; exit 1; }
-"$LIC" check packages/li-studio/li-tests/smoke/studio_vertical_demo_env.li
-"$LIC" check packages/li-studio/li-tests/smoke/studio_sim_step_by_profile.li
-if command -v iscc >/dev/null 2>&1; then
-  iscc /Qp installer/LiWorldStudio.iss || exit 1
-else
-  echo "WARN: Inno Setup (iscc) not on PATH — skip installer compile"
-fi
+cd "$(git rev-parse --show-toplevel 2>/dev/null || pwd)"
+bash scripts/world-studio-runnable-completion-gate.sh
 ```
 
 ## Read first

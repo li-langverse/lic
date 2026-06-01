@@ -1,0 +1,24 @@
+# E-1049: Let $t>1$ be a rational number. Is\[\sum_{n=1}^\infty\frac{1}{t^n-1}=\sum_{n=1}^\infty \frac{\tau(n)}{t^n}\]irrational, where $\tau(n)$ counts the divisors of $n$?
+# erdos_number: 1049
+# erdos_status: open
+# priority_tier: P2
+# tags: irrationality
+
+def erdos_e1049_let_t_1_be_a_rational_number_is_sum_n_1() -> int
+  requires true
+  ensures result == 0  # open: E-1049
+  decreases 0
+=
+  return 0
+
+extern proc erdos_e1049_open_witness() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+
+def main() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0

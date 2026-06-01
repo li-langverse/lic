@@ -1,0 +1,24 @@
+# E-191: Let $C>0$ be arbitrary. Is it true that, if $n$ is sufficiently large depending on $C$, then in any $2$-colouring of $\binom{\{2,\ldots,n\}}{2}$ there exists some $X\subseteq \{2,\ldots,n\}$ such that $\binom{X}{2}$ is monochromatic and\[\sum_{x\in X}\frac{1}{\log x}\geq C?\]
+# erdos_number: 191
+# erdos_status: proved
+# priority_tier: P2
+# tags: combinatorics, ramsey_theory
+
+def erdos_e191_let_c_0_be_arbitrary_is_it_true_that_if() -> int
+  requires true
+  ensures result == 0  # open: E-191
+  decreases 0
+=
+  return 0
+
+extern proc erdos_e191_open_witness() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+
+def main() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0

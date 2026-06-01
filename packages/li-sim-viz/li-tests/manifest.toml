@@ -8,6 +8,6 @@ note = "T-PKG-li-sim-viz-smoke"
 
 [[tests]]
 suite = "smoke"
-file = "smoke/viz_pipeline.li"
-outcome = "compile_open_ok"
-note = "PH-SCI: viz_pipeline source/display apply stub"
+file = "smoke/viz_viewport_fields.li"
+outcome = "check_ok"
+note = "WP-SCI-04: viz pipeline panels → viewport field contract"

@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Research claim audit — Proof Explorer Phase 3</title>
+  <link rel="canonical" href="https://li-langverse.github.io/lic/deploy/research-audit/">
+  <style>
+    :root { color-scheme: light dark; --border: #d0d7de; --muted: #656d76; --flag: #cf222e; --ok: #1a7f37; }
+    body { font-family: system-ui, sans-serif; max-width: 64rem; margin: 2rem auto; padding: 0 1rem; line-height: 1.5; }
+    h1 { font-size: 1.5rem; }
+    .meta { color: var(--muted); font-size: 0.9rem; }
+    table { border-collapse: collapse; width: 100%; font-size: 0.9rem; margin: 1rem 0; }
+    th, td { text-align: left; padding: 0.4rem 0.5rem; border-bottom: 1px solid var(--border); vertical-align: top; }
+    .badge { display: inline-block; padding: 0.1rem 0.45rem; border-radius: 0.25rem; font-size: 0.75rem; font-weight: 600; }
+    .heuristic { background: #fff8c5; color: #633c01; }
+    .li_open { background: #ddf4ff; color: #0550ae; }
+    .li_proved { background: #dafbe1; color: var(--ok); }
+    .literature_proved { background: #eaeef2; color: #24292f; }
+    .model_consensus { background: #fbefff; color: #6639ba; }
+    .model_conflict { background: #ffebe9; color: var(--flag); }
+    .refuted { background: #ffebe9; color: var(--flag); }
+    .flag { color: var(--flag); font-weight: 600; }
+    details { margin: 0.5rem 0; }
+    nav a { margin-right: 1rem; }
+  </style>
+</head>
+<body>
+  <nav><a href="https://li-langverse.github.io/lic/">lic handbook</a><a href="https://github.com/li-langverse/proof-library">proof-library</a></nav>
+  <h1>Research claim audit</h1>
+  <p class="meta">Phase 3 — Li-grounded epistemic status vs multi-model reviewer verdicts. No reviewer “proved” counts as machine proof unless status is <code>li_proved</code> or <code>literature_proved</code>.</p>
+  <div id="summary"></div>
+  <div id="claims"></div>
+  <p class="meta"><small>Li Proof Library · Julian Kleber · <a href="https://julianmkleber.com">julianmkleber.com</a></small></p>
+  <script>
+    const PROBLEM = new URLSearchParams(location.search).get('problem') || 'E-52';
+
+    function badge(status) {
+      const cls = status.replace(/[^a-z_]/g, '') || 'heuristic';
+      return `<span class="badge ${cls}">${status}</span>`;
+    }
+
+    function renderReviews(reviews, flagged) {
+      if (!reviews || !reviews.length) return '<em>no reviews</em>';
+      return reviews.map(r => {
+        const warn = (r.verdict === 'proved' && flagged) ? ' class="flag"' : '';
+        return `<div${warn}>${r.reviewer_model}: <strong>${r.verdict}</strong> (${r.confidence ?? '?'}) — ${r.rationale_plain || ''}</div>`;
+      }).join('');
+    }
+
+    async function load() {
+      const res = await fetch(`data/${PROBLEM}.json`);
+      if (!res.ok) {
+        document.getElementById('claims').innerHTML = `<p>Failed to load data/${PROBLEM}.json</p>`;
+        return;
+      }
+      const data = await res.json();
+      const flags = new Set(data.compare_report?.unprovable_language_flags || []);
+      const by = data.compare_report?.by_epistemic_status || {};
+      document.getElementById('summary').innerHTML = `
+        <h2>Problem ${data.problem_id}</h2>
+        <p>Claims: ${data.claims.length} · Li proved: ${data.compare_report?.li_proved ?? 0} ·
+        Unprovable language flags: ${flags.size}</p>
+        <p>By status: ${Object.entries(by).map(([k,v]) => `${k}=${v}`).join(', ')}</p>`;
+
+      const rows = data.claims.map(c => {
+        const rev = data.reviews_by_claim[c.claim_id] || [];
+        const flagged = flags.has(c.claim_id);
+        const spec = c.li_specimen ? `<code>${c.li_specimen}</code>` : '—';
+        return `<tr>
+          <td><code>${c.claim_id}</code>${flagged ? ' <span class="flag">FLAG</span>' : ''}</td>
+          <td>${badge(c.epistemic_status)}</td>
+          <td>${c.statement_plain}</td>
+          <td>${spec}</td>
+          <td>${renderReviews(rev, flagged)}</td>
+        </tr>`;
+      }).join('');
+
+      document.getElementById('claims').innerHTML = `
+        <table>
+          <thead><tr><th>Claim</th><th>Li status</th><th>Statement</th><th>Specimen</th><th>Reviewers</th></tr></thead>
+          <tbody>${rows}</tbody>
+        </table>`;
+    }
+    load();
+  </script>
+</body>
+</html>

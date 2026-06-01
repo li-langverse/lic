@@ -1,0 +1,24 @@
+# E-859: Let $t\geq 1$ and let $d_t$ be the density of the set of integers $n\in\mathbb{N}$ for which $t$ can be represented as the sum of distinct divisors of $n$. Do there exist constants $c_1,c_2>0$ such that\[d_t \sim \frac{c_1}{(\log t)^{c_2}}\]as $t\to \infty$?
+# erdos_number: 859
+# erdos_status: open
+# priority_tier: P2
+# tags: divisors, number_theory
+
+def erdos_e859_let_t_geq_1_and_let_d_t_be_the_density_o() -> int
+  requires true
+  ensures result == 0  # open: E-859
+  decreases 0
+=
+  return 0
+
+extern proc erdos_e859_open_witness() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+
+def main() -> int
+  requires true
+  ensures result == 0
+  decreases 0
+=
+  return 0

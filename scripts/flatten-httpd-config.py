@@ -46,7 +46,7 @@ def peer_port(url: str) -> int:
     return int(m.group(1))
 
 
-def flatten(cfg_path: Path) -> list[str]:
+def flatten(cfg_path: Path, *, cert_dir: Path | None = None) -> list[str]:
     data = tomllib.loads(cfg_path.read_text(encoding="utf-8"))
     lines: list[str] = []
     server = data.get("server") or {}
@@ -193,6 +193,11 @@ def flatten(cfg_path: Path) -> list[str]:
         lines.extend(tls_flatten_lines(data, cfg_path))
     except TlsError as e:
         raise ConfigError(str(e)) from e
+    if cert_dir is not None:
+        for i, line in enumerate(lines):
+            if line.startswith("tls_cert_dir="):
+                lines[i] = f"tls_cert_dir={cert_dir.resolve()}"
+                break
     try:
         lines.extend(m2_flatten_lines(data, cfg_path))
     except M2Error as e:
@@ -209,12 +214,18 @@ def main() -> int:
     p = argparse.ArgumentParser(description="flatten li-httpd.toml to runtime.conf")
     p.add_argument("config", type=Path)
     p.add_argument("-o", "--output", type=Path, required=True)
+    p.add_argument(
+        "--cert-dir",
+        type=Path,
+        default=None,
+        help="Override tls_cert_dir (e.g. setup-tls-httpd.py -o output)",
+    )
     args = p.parse_args()
     if not args.config.is_file():
         print(f"flatten-httpd-config: missing {args.config}", file=sys.stderr)
         return 1
     try:
-        lines = flatten(args.config)
+        lines = flatten(args.config, cert_dir=args.cert_dir)
     except (ConfigError, M15Error, M2Error, TlsError, ValueError) as e:
         print(f"flatten-httpd-config: {e}", file=sys.stderr)
         return 1

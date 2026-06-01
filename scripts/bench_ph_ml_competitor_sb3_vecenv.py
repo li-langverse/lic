@@ -1,13 +1,13 @@
 #!/usr/bin/env python3
-"""SB3 SubprocVecEnv competitive driver — executed when gymnasium+sb3 installed.
+"""SB3 VecEnv competitive driver — executed when gymnasium+sb3 installed.
 
-Note: SubprocVecEnv uses multiprocessing. On Windows this requires a `__main__`
-guard; without it the driver may silently fail and report executed:false, which
-breaks the PH-ML gates when SB3 is present.
+SubprocVecEnv uses multiprocessing. On Windows this requires a `__main__` guard;
+without it the driver may silently fail and report executed:false, which breaks
+the PH-ML gates when SB3 is present.
 """
+
 import json
 import os
-import sys
 import time
 from pathlib import Path
 
@@ -96,6 +96,7 @@ def main() -> int:
         report["note"] = f"{backend} CartPole-v1 x4 (Wave 13 T5)"
     except Exception as exc:  # noqa: BLE001
         report["note"] = f"VecEnv failed: {exc}"
+
     write_report()
     return 0
 

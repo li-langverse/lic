@@ -88,6 +88,10 @@ fi
 
 export BENCHMARKS_ROOT
 export LI_BENCHMARKS_ROOT="${LI_BENCHMARKS_ROOT:-$BENCHMARKS_ROOT}"
+if [[ -z "${HARNESS:-}" ]] && [[ -d "$BENCHMARKS_ROOT/harness" ]]; then
+  HARNESS="$BENCHMARKS_ROOT/harness"
+fi
+export HARNESS="${HARNESS:-}"
 export BENCHMARKS_RESULTS="${BENCHMARKS_RESULTS:-$BENCHMARKS_ROOT/results}"
 
 if [[ -f "${BENCHMARKS_ROOT}/harness/bench.py" ]]; then

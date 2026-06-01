@@ -1,0 +1,139 @@
+# base64 — RFC4648 decode over golden PEM slices (M1b).
+
+import pem_golden
+
+def crypto_base64_val(c: int) -> int
+  requires 0 <= c and c <= 255
+  ensures result >= -1
+  ensures result <= 63
+  decreases 0
+=
+  if c >= 65 and c <= 90:
+    return c - 65
+  if c >= 97 and c <= 122:
+    return c - 71
+  if c >= 48 and c <= 57:
+    return c + 4
+  if c == 43:
+    return 62
+  if c == 47:
+    return 63
+  if c == 61:
+    return -2
+  if c == 10 or c == 13 or c == 32 or c == 9:
+    return -3
+  return -1
+
+def crypto_base64_skip_ws(kind: int, pos: int, end: int) -> int
+  requires kind == 0 or kind == 1
+  requires 0 <= pos
+  requires pos <= end
+  ensures 0 <= result
+  ensures result <= end
+  decreases end - pos
+=
+  if pos >= end:
+    return pos
+  var c: int = crypto_pem_wire_byte(kind, pos)
+  if crypto_base64_val(c) == -3:
+    return crypto_base64_skip_ws(kind, pos + 1, end)
+  return pos
+
+def crypto_base64_decode_quad(a: int, b: int, c: int, d: int) -> int
+  requires 0 <= a and a <= 63
+  requires 0 <= b and b <= 63
+  requires -2 <= c and c <= 63
+  requires -2 <= d and d <= 63
+  ensures 0 <= result
+  ensures result < 16777216
+  decreases 0
+=
+  var n: int = a * 262144 + b * 4096
+  if c >= 0:
+    n = n + c * 64
+  if d >= 0:
+    n = n + d
+  return n
+
+def crypto_base64_emit_byte(quad: int, slot: int, pad: int) -> int
+  requires 0 <= quad and quad < 16777216
+  requires 0 <= slot and slot <= 2
+  requires 0 <= pad and pad <= 2
+  ensures 0 <= result and result <= 255
+  decreases 0
+=
+  if slot == 0:
+    return quad / 65536
+  if slot == 1:
+    if pad >= 2:
+      return 0
+    return (quad / 256) % 256
+  if pad >= 1:
+    return 0
+  return quad % 256
+
+def crypto_base64_decoded_byte(kind: int, idx: int) -> int
+  requires kind == 0 or kind == 1
+  requires 0 <= idx
+  ensures 0 <= result and result <= 255
+  decreases 0
+=
+  var start: int = 0
+  var end: int = 0
+  if kind == 0:
+    start = crypto_pem_pkcs8_b64_start()
+    end = crypto_pem_pkcs8_b64_end()
+  if kind == 1:
+    start = crypto_pem_cert_b64_start()
+    end = crypto_pem_cert_b64_end()
+  var pos: int = start
+  var out_i: int = 0
+  while pos < end
+    pos = crypto_base64_skip_ws(kind, pos, end)
+    if pos >= end:
+      return 0
+    var v0: int = crypto_base64_val(crypto_pem_wire_byte(kind, pos))
+    if v0 < 0:
+      return 0
+    pos = pos + 1
+    pos = crypto_base64_skip_ws(kind, pos, end)
+    if pos >= end:
+      return 0
+    var v1: int = crypto_base64_val(crypto_pem_wire_byte(kind, pos))
+    if v1 < 0:
+      return 0
+    pos = pos + 1
+    pos = crypto_base64_skip_ws(kind, pos, end)
+    var v2: int = -2
+    var v3: int = -2
+    if pos < end:
+      v2 = crypto_base64_val(crypto_pem_wire_byte(kind, pos))
+      if v2 >= 0:
+        pos = pos + 1
+        pos = crypto_base64_skip_ws(kind, pos, end)
+        if pos < end:
+          v3 = crypto_base64_val(crypto_pem_wire_byte(kind, pos))
+          if v3 >= 0:
+            pos = pos + 1
+    var pad: int = 0
+    if v2 == -2:
+      pad = 2
+    if v2 != -2:
+      if v3 == -2:
+        pad = 1
+    var quad: int = crypto_base64_decode_quad(v0, v1, v2, v3)
+    var slot: int = 0
+    while slot < 3 - pad
+      if out_i == idx:
+        return crypto_base64_emit_byte(quad, slot, pad)
+      out_i = out_i + 1
+      slot = slot + 1
+  return 0
+
+def crypto_base64_der_check(kind: int, idx: int) -> int
+  requires kind == 0 or kind == 1
+  requires 0 <= idx
+  ensures 0 <= result and result <= 255
+  decreases 0
+=
+  return crypto_base64_decoded_byte(kind, idx)

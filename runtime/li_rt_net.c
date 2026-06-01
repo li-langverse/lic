@@ -217,6 +217,8 @@ static int g_tls_enabled_flat = 0;
 static int g_m2_tls_terminate = 0;
 static int g_m2_http2_enabled = 0;
 static char g_tls_cert_dir[4096];
+static char g_tls_manual_cert[4096];
+static char g_tls_manual_key[4096];
 
 /* M2 queue / circuit breaker (flattened runtime.conf). */
 static int g_m2_enabled = 0;
@@ -5104,6 +5106,8 @@ int32_t httpd_load_runtime_config_i(intptr_t path) {
   g_m2_tls_terminate = 0;
   g_m2_http2_enabled = 0;
   g_tls_cert_dir[0] = '\0';
+  g_tls_manual_cert[0] = '\0';
+  g_tls_manual_key[0] = '\0';
   g_m2_enabled = 0;
   g_m2_queue_max_depth = 0;
   g_m2_queue_retry_after_sec = 1;
@@ -5209,6 +5213,12 @@ int32_t httpd_load_runtime_config_i(intptr_t path) {
       g_concurrent_streams_max = atoi(val);
     } else if (strcmp(key, "tls_enabled") == 0) {
       g_tls_enabled_flat = (strcmp(val, "0") == 0 || strcmp(val, "false") == 0) ? 0 : 1;
+    } else if (strcmp(key, "tls_manual_cert") == 0) {
+      strncpy(g_tls_manual_cert, val, sizeof(g_tls_manual_cert) - 1);
+      g_tls_manual_cert[sizeof(g_tls_manual_cert) - 1] = '\0';
+    } else if (strcmp(key, "tls_manual_key") == 0) {
+      strncpy(g_tls_manual_key, val, sizeof(g_tls_manual_key) - 1);
+      g_tls_manual_key[sizeof(g_tls_manual_key) - 1] = '\0';
     } else if (strcmp(key, "tls_cert_dir") == 0) {
       strncpy(g_tls_cert_dir, val, sizeof(g_tls_cert_dir) - 1);
       g_tls_cert_dir[sizeof(g_tls_cert_dir) - 1] = '\0';
@@ -5363,7 +5373,7 @@ int32_t httpd_load_runtime_config_i(intptr_t path) {
     upstream_pool_prewarm_all();
   }
   if (g_m2_tls_terminate && g_tls_enabled_flat && g_tls_cert_dir[0]) {
-    if (httpd_tls_global_init(g_tls_cert_dir, g_m2_http2_enabled) != 0) {
+    if (httpd_tls_global_init_paths(g_tls_cert_dir, g_tls_manual_cert, g_tls_manual_key, g_m2_http2_enabled) != 0) {
       fprintf(stderr, "li-httpd: TLS terminate init failed\n");
       return -1;
     }
@@ -5371,11 +5381,51 @@ int32_t httpd_load_runtime_config_i(intptr_t path) {
   return 0;
 }
 
+
+int32_t httpd_pure_li_tls_i(void) { return httpd_pure_li_tls_enabled(); }
+int32_t httpd_pure_tls_slot_active_i(int32_t slot) { return httpd_pure_tls_slot_active(slot); }
+int32_t httpd_pure_tls_attach_i(int32_t slot, int32_t conn) { return httpd_pure_tls_attach(slot, conn); }
+int32_t httpd_pure_tls_poll_i(int32_t slot) { return httpd_pure_tls_poll(slot); }
+int32_t httpd_pure_tls_read_app_i(int32_t slot, int32_t max_bytes) {
+  return (int32_t)httpd_pure_tls_read_app(slot, max_bytes);
+}
+int32_t httpd_pure_tls_write_app_i(int32_t slot, int32_t len) {
+  return (int32_t)httpd_pure_tls_write_app(slot, len);
+}
+int32_t httpd_pure_tls_alpn_i(int32_t slot) { return httpd_pure_tls_alpn(slot); }
+
 int32_t httpd_tls_enabled_i(void) {
+  if (g_m2_tls_terminate && g_tls_enabled_flat && httpd_pure_li_tls_enabled()) {
+    return httpd_tls_runtime_ready() ? 1 : 0;
+  }
   return (g_m2_tls_terminate && g_tls_enabled_flat && httpd_tls_runtime_ready()) ? 1 : 0;
 }
 
 int32_t httpd_tls_handshake_slot_i(int32_t slot, int32_t fd) { return httpd_tls_handshake_slot(slot, fd); }
+int32_t httpd_tls_handshake_begin_i(int32_t slot, int32_t fd) { return httpd_tls_handshake_begin(slot, fd); }
+int32_t httpd_tls_handshake_continue_i(int32_t slot) { return httpd_tls_handshake_continue(slot); }
+int32_t httpd_tls_handshake_pending_i(int32_t slot) { return httpd_tls_handshake_pending(slot); }
+int32_t httpd_tls_handshake_spin_i(int32_t slot, int32_t fd, int32_t max_rounds) {
+  return httpd_tls_handshake_spin(slot, fd, max_rounds);
+}
+int32_t httpd_epoll_add_client_tls_i(int32_t epfd, int32_t conn, int32_t slot) {
+  if (epfd < 0 || conn < 0 || slot < 0) {
+    return -1;
+  }
+#ifdef __linux__
+  struct epoll_event cev;
+  cev.events = EPOLLIN | EPOLLET;
+  if (httpd_tls_handshake_pending(slot)) {
+    cev.events |= EPOLLOUT;
+  }
+  cev.data.u64 = HTTPD_EPOLL_CLIENT_TAG | (uint64_t)(uint32_t)slot;
+  g_slots[slot].proxy_client_epoll_events = cev.events;
+  return epoll_ctl((int)epfd, EPOLL_CTL_ADD, conn, &cev) < 0 ? -1 : 0;
+#else
+  (void)slot;
+  return epoll_ctl_add_i(epfd, conn);
+#endif
+}
 
 int32_t httpd_tls_slot_h2_i(int32_t slot) { return httpd_tls_slot_proto(slot) == 2 ? 1 : 0; }
 

@@ -140,6 +140,36 @@ def validate_routes(routes: list[CanonicalRoute]) -> None:
                 )
 
 
+def validate_rate_limits_cfg(data: dict[str, Any]) -> None:
+    """Require limits.rate_limit_rps when any proxy: route exists (M1 agent gateway)."""
+    limits = data.get("limits") or {}
+    routes = data.get("routes")
+    has_proxy = isinstance(routes, dict) and any(
+        isinstance(a, str) and a.strip().startswith("proxy:") for a in routes.values()
+    )
+    if not has_proxy:
+        return
+    rps = limits.get("rate_limit_rps")
+    if rps is None:
+        raise ConfigError(
+            "limits.rate_limit_rps is required when routes include proxy: (M1 public/agent gate)"
+        )
+    try:
+        n = int(rps)
+    except (TypeError, ValueError) as e:
+        raise ConfigError("limits.rate_limit_rps must be a positive integer") from e
+    if n < 1 or n > 100_000:
+        raise ConfigError("limits.rate_limit_rps must be in [1, 100000]")
+    burst = limits.get("rate_limit_burst")
+    if burst is not None:
+        try:
+            b = int(burst)
+        except (TypeError, ValueError) as e:
+            raise ConfigError("limits.rate_limit_burst must be a positive integer") from e
+        if b < n:
+            raise ConfigError("limits.rate_limit_burst must be >= limits.rate_limit_rps")
+
+
 def _validate_upstream_balance(spec: dict[str, Any], pool_id: str) -> None:
     bal = spec.get("balance")
     if bal is None:
@@ -196,6 +226,7 @@ def _run_config_oracle_validators(data: dict[str, Any], path: Path) -> list[str]
 
     warnings: list[str] = []
     try:
+        validate_rate_limits_cfg(data)
         validate_m15_limits(data)
         validate_route_match(data)
         validate_inference_require(data)

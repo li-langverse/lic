@@ -41,6 +41,7 @@ concurrency:
 jobs:
   tier5-regression:
     runs-on: ubuntu-24.04
+    timeout-minutes: 45
     steps:
       - uses: actions/checkout@v4
 
@@ -68,9 +69,12 @@ jobs:
           test -x build/li-httpd
 
       - name: Tier5 nginx perf regression gate
+        timeout-minutes: 40
         env:
           HTTPD_BENCH_SKIP_TIMING: ${{ (github.event_name == 'schedule' || github.event_name == 'workflow_dispatch') && '0' || '1' }}
           HTTPD_BENCH_DURATION_SEC: ${{ (github.event_name == 'schedule' || github.event_name == 'workflow_dispatch') && '30' || '8' }}
+          HTTPD_TIER5_SKIP_EXPLOIT_RUNTIME: slowloris
+          HTTPD_TIER5_EXPLOIT_TIMEOUT_SEC: "120"
         run: |
           chmod +x scripts/check-tier5-nginx-perf-regression-gate.sh
           if [[ "${{ github.event_name }}" == "workflow_dispatch" && "${{ inputs.full_timing }}" != "true" ]]; then

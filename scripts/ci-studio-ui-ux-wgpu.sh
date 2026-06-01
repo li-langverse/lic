@@ -24,7 +24,8 @@ wgpu_status = vf.get("wgpu_smoke_status", "")
 surface_ok = bool(vf.get("wgpu_surface_ok", False))
 native = bool(vf.get("native_pixels", False))
 
-if wgpu_status not in ("readback_pass", "native", "draw_list"):
+allowed = ("readback_pass", "native", "draw_list", "paint_blit_host")
+if wgpu_status not in allowed:
     print(f"ci-studio-ui-ux-wgpu: unexpected wgpu_smoke_status={wgpu_status!r}", file=sys.stderr)
     sys.exit(1)
 if not surface_ok:

@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
-# P-linalg / G-vc (#472): fixed-bound dot loop witness closes AutoVC with `Prop := True`,
-# not `Li.Discharge.dot4_int_spec` / `dot4_loop_eval` (contrast mat2_at2_float_spec wiring).
+# P-linalg / G-vc (#472): fixed-bound dot loop witness wires Li.Discharge.dot4_int_spec /
+# dot4_loop_eval + dot4_int_loop_eval_spec (mirror mat2_at2_float_spec).
 set -euo pipefail
 ROOT="$(cd "$(dirname "$0")/../.." && pwd)"
 cd "$ROOT"
@@ -26,22 +26,35 @@ if ! grep -q 'witness_dot4_int_loop' "$ROOT/compiler/verify/vc_witness.cpp"; the
   exit 1
 fi
 
+if ! grep -q 'dot4_int_spec' "$VC_EMIT"; then
+  echo "FAIL: vc_emit_lean should wire dot4_int_spec discharge" >&2
+  exit 1
+fi
+
 rm -f "$AUTOVC"
 "$LIC" build "$LOOP_SAMPLE" -o /dev/null 2>/dev/null
-if ! grep -q 'fixed-bound dot loop witness' "$AUTOVC"; then
-  echo "FAIL: expected loop witness marker in AutoVC" >&2
+if ! grep -qE 'P-loop dot4.*dot4_int_loop_eval_spec' "$AUTOVC"; then
+  echo "FAIL: expected loop discharge marker in AutoVC" >&2
   exit 1
 fi
-if grep -q 'dot4_int_spec\|dot4_loop_eval' "$AUTOVC"; then
-  echo "FAIL: loop specimen should not yet link Discharge dot4_int_spec/dot4_loop_eval" >&2
+if ! grep -q 'Li.Discharge.dot4_int_spec' "$AUTOVC"; then
+  echo "FAIL: loop specimen should emit Li.Discharge.dot4_int_spec" >&2
   exit 1
 fi
-if ! grep -q 'vc_dot4_int_loop_ensures_0.*Prop := True' "$AUTOVC"; then
-  echo "FAIL: vc_dot4_int_loop_ensures_0 should stub True (G-vc gap)" >&2
+if ! grep -q 'Li.Discharge.dot4_loop_eval' "$AUTOVC"; then
+  echo "FAIL: loop specimen should emit Li.Discharge.dot4_loop_eval" >&2
   exit 1
 fi
-if ! grep -q 'vc_dot4_int_loop_ensures_0_proved.*:= trivial' "$AUTOVC"; then
-  echo "FAIL: loop ensures should discharge via trivial, not dot4_int_loop_eval_spec" >&2
+if grep -q 'vc_dot4_int_loop_ensures_0.*Prop := True' "$AUTOVC"; then
+  echo "FAIL: vc_dot4_int_loop_ensures_0 should not stub True" >&2
+  exit 1
+fi
+if ! grep -q 'vc_dot4_int_loop_ensures_0_proved.*dot4_int_loop_eval_spec' "$AUTOVC"; then
+  echo "FAIL: loop ensures should discharge via dot4_int_loop_eval_spec" >&2
+  exit 1
+fi
+if grep -q 'vc_dot4_int_loop_ensures_0_proved.*:= trivial' "$AUTOVC"; then
+  echo "FAIL: loop ensures should not use trivial proof" >&2
   exit 1
 fi
 
@@ -52,16 +65,10 @@ if ! grep -q 'Li.Discharge.mat2_at2_float_spec' "$AUTOVC"; then
   exit 1
 fi
 
-if grep -q 'dot4_int_spec' "$VC_EMIT" 2>/dev/null; then
-  echo "FAIL: vc_emit_lean should not yet wire dot4_int_spec (gap open)" >&2
-  exit 1
-fi
-
 chmod +x "$ROOT/scripts/check-autovc-open-goals.sh"
 "$ROOT/scripts/check-autovc-open-goals.sh" "$AUTOVC" >/dev/null
-# Re-check loop sample: zero open goals despite True stub (honesty gap, not open-goal failure).
 rm -f "$AUTOVC"
 "$LIC" build "$LOOP_SAMPLE" -o /dev/null 2>/dev/null
 "$ROOT/scripts/check-autovc-open-goals.sh" "$AUTOVC" >/dev/null
 
-echo "PASS dot4_loop_ensures_lean_stub_gap: loop witness → True ensures; Discharge spec unused in AutoVC"
+echo "PASS dot4_loop_ensures_lean_stub_gap: loop witness -> dot4_int_spec + dot4_int_loop_eval_spec"
